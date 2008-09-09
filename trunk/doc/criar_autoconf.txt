@@ -1,0 +1,73 @@
+Para criar configure e a estrutura para compilar:
+
+autoscan
+mv configure.scan configure.ac
+
+Editar configure.ac; supondo que o nome do programa seja intmud:
+
+Apagar:
+
+AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_HEADER([config.h])
+
+Colocar no lugar:
+
+AC_INIT(intmud, 1.0)
+AM_INIT_AUTOMAKE
+AC_CONFIG_SRCDIR([config.h.in])
+AM_CONFIG_HEADER(config.h)
+
+Colocar no final, antes de AC_OUTPUT:
+
+AC_PROG_INSTALL
+AC_CONFIG_FILES([Makefile])
+
+Para usar libglademm-2.4, acrescentar antes dessas linhas:
+
+PKG_CHECK_MODULES(LIBGLADEMMDEPS, libglademm-2.4)
+AC_SUBST(LIBGLADEMM_CFLAGS)
+AC_SUBST(LIBGLADEMM_LIBS)
+
+Executar (se for GPL, não criar o arquivo COPYING; ele será criado depois):
+
+touch COPYING INSTALL NEWS README AUTHORS ChangeLog
+ls -1 *.cpp *.h | while read i ; do echo -n " $i" ; done > Makefile.am
+
+Acrescentar no início de Makefile.am:
+
+bin_PROGRAMS = intmud
+intmud_SOURCES =
+
+Se for acrescentar arquivos ou diretórios no pacote, colocar antes algo assim:
+
+EXTRA_DIST = teste.txt
+SUBDIRS = src
+
+Para usar ligblademm colocar no final:
+INCLUDES = $(LIBGLADEMMDEPS_CFLAGS)
+LIBS = $(LIBGLADEMMDEPS_LIBS)
+AM_CXXFLAGS = -Wall
+
+Executar:
+
+aclocal
+autoheader
+autoconf
+automake --add-missing
+
+Explicação:
+
+aclocal -> cria aclocal.m4 e autom4te.cache
+autoheader -> cria config.h.in
+autoconf -> cria configure
+automake --add-missing -> cria missing, install-sh, depcomp e Makefile.in
+
+Depois:
+
+./configure        -> Configura o programa para compilar
+make               -> Compila
+make install       -> Instala
+make uninstall     -> Desinstala
+make dist-gzip     -> Cria um arquivo .tar.gz contendo o programa
+make distcheck     -> Verifica se consegue compilar e cria arquivo .tar.gz

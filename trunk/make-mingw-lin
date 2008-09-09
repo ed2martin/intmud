@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Script para gerar o executável compacto
+PROG=intmud
+
+# Cria config.h
+#./configure
+
+##### Compilar com GCC/MinGW no Linux
+CC=i586-mingw32msvc-g++
+flags="-O3 -Wall -fno-exceptions -fno-rtti"
+lflags="-mms-bitfields -mwindows -lws2_32 -lwinmm"
+
+##### Compilar com GCC/MinGW no Windows
+#CC=g++
+#flags="-O3 -Wall -g -fno-exceptions -fno-rtti"
+#lflags="-mms-bitfields -mwindows -lws2_32 -lwinmm"
+
+##### Compila
+for i in `ls *.cpp | awk '{print substr($1,1,length()-4)}'`
+do
+  echo -n '.'
+  $CC -c $flags $i.cpp
+  obj="$obj $i.o"
+done
+$CC -o $PROG $obj $lflags
+echo
+
+if [ -a $PROG ]; then
+  strip --strip-all $PROG
+fi
+if [ -a $PROG.exe ]; then
+  strip --strip-all $PROG.exe
+fi
+
