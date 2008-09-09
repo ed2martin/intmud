@@ -1,0 +1,839 @@
+Especificações - IntMUD (Interpretador MUD)
+
+O programa é um interpretador de comandos, que trabalha com pelo menos
+mais dois arquivos:
+- Arquivo que contém os comandos (a linguagem).
+- Arquivo de configuração, onde define-se algumas permissões, e se deve ou não
+  abrir uma janela na tela.
+- Na versão Windows é necessário um quarto arquivo, para relatar os erros
+  encontrados ao ler o arquivo de comandos.
+
+Quando um programa se torna grande, fica difícil trabalhar com um só arquivo.
+Nesse caso acrescenta-se no começo do arquivo a linha:
+mapagrande
+E o interpretador passa a trabalhar com vários arquivos da seguinte forma:
+1. Classes que não contém espaço no nome devem estar no arquivo intmud.map
+2. Outras classes, verifica-se a primeira palavra da classe para obter
+   o arquivo. Exemplo, uma classe [bom dia] iria no arquivo intmud-bom.map
+3. O IntMUD avisa sobre as classes que não estiverem no arquivo certo.
+
+Os arquivos de comandos contém contém as classes (tipos de objetos), conforme
+a sintaxe:
+
+[nome da classe]
+herda <classe 1>, <classe 2>, ..., <classe N>
+variáveis e constantes do objeto
+funções (func) e constantes (const) do objeto
+
+Nota: Nomes de classe podem ter espaço, mas eles são tratados como o caracter
+"_" no restante do programa.
+
+Cada função:
+
+func <nome da função>
+variáveis da função
+instruções da função
+
+Tudo o que estiver abaixo da linha func <nome da função> pertence à função,
+até a definição da próxima função ou constante.
+
+As variáveis são definidas com:
+<tipo da variável>  <nome da variável>
+Exemplos:
+int8 v1
+txt50 v2
+
+Basicamente o programa lida com quatro tipos de variáveis:
+- Numérico, como: 0, -5, 4.3
+- Texto, como: "bom dia"
+- Referência a um objeto, como a palavra este, que se refere ao objeto atual
+- Nulo, que corresponde a um valor nulo.
+Os tipos de variáveis serão vistos adiante.
+
+Tipos constantes são definidos com:
+const  <nome>  =  <valor>
+Exemplos:
+const x = "teste"
+const y = 10
+
+A linha "herda", se estiver presente, significa herança.
+A classe contém também as variáveis e funções das classes especificadas,
+apenas. Em relação a herança múltipla: a classe não herdará variáveis
+e funções herdadas por outras classes. Exemplo:
+[A]
+herda B
+int8 dia
+[B]
+herda C
+int8 mes
+[C]
+int8 ano
+
+A classe C contém a variável ano. A classe B contém as variáveis ano e mes.
+A classe A contém mes e dia, mas não contém ano.
+
+Quando houver um nome de variável ou função repetido na herança, prevalece
+a primeira encontrada. As demais são ignoradas. Exemplo:
+[A]
+herda B
+int8 x
+[B]
+txt10 x
+Nesse caso a classe A tem a variável "int8 x", mas não contém a variável
+"txt10 x".
+
+Uma função pode conter os seguintes tipos de instrução:
+1. Atribuir um valor ou expressão numérica a uma variável, ex:
+x = 10
+y = x + abs(z) * 3
+
+2. Executar uma função, sem atribuir o resultado a nenhuma variável, ex:
+x("teste")
+
+3. Uma instrução de controle de fluxo do programa: se, fimse, enquanto, etc.
+Exemplo:
+se(x=10)
+...
+fimse
+
+4. Comentários: linhas que começam com # seguido ou não de um texto.
+São ignorados pelo programa. Exemplo:
+# teste
+
+As linhas de instruções são interpretadas da esquerda para a direita,
+verificando:
+1. Operadores, como + - * / = < > | &
+2. Números: começam com um dígito de 0 a 9 e podem ter sinal de menos na frente
+3. Textos: começam e terminam com aspas dupla (").
+   Apenas aspas dupla dentro do texto deve ser escrito assim: \"
+4. Variáveis e funções: começam com uma letra ou colchetes ([).
+
+O programa interpreta variáveis e funções da seguinte forma:
+A. Se houver um ponto separando duas palavras, liga a segunda ao retorno da
+   primeira. Exemplo, a palavra este corresponde ao objeto atual.
+   este.abs deve corresponder à função ou variável abs do objeto.
+B. Se houver colchetes, interpreta o que estiver entre colchetes como uma
+   expressão numérica. O resultado disso fará parte do nome da variável ou
+   função. Exemplo:
+   x["1"] = 10
+   y = "_teste"
+   x[y] = 20
+        É equivalente a:
+   x1 = 10
+   x_teste = 20
+
+O programa processa variáveis e funções da seguinte forma:
+A. Se houver dois pontos, executa a função (depois dos dois pontos)
+   da classe especificada (antes dos dois pontos), como se pertencesse ao
+   objeto atual. Exemplo:
+   item:luminosidade(10)
+   Executa função luminosidade da classe item, como se essa função
+   pertencesse ao objeto "este".
+B. Verifica se é uma função nativa do programa (exemplo: abs).
+C. Verifica se é uma variável da função que está sendo executada.
+D. Verifica se é uma variável ou função do objeto.
+E. Se não existe, interpreta com se fosse uma variável de valor NULO.
+
+
+*** Variáveis básicas
+
+As variáveis definidas antes das funções pertencem ao objeto.
+As que forem definidas em uma função pertencem à ela. São criadas
+quando a função é chamada e deixam de existir quando a função termina.
+
+int1 <nomedavariável>
+    Pode ser 0 ou 1
+int8 <nomedavariável>
+    Número inteiro de -128 a 127
+int16 <nomedavariável>
+    Número inteiro de -32768 a 32767
+int32 <nomedavariável>
+    Número inteiro de -2147483648 a 2147483647
+uint8 <nomedavariável>
+    Número inteiro de 0 a 255
+uint16 <nomedavariável>
+    Número inteiro de 0 a 65535
+uint32 <nomedavariável>
+    Número inteiro de 0 a 4294967295
+intinc <nomedavariável>
+    Número inteiro de 0 a 65535, que é somado 1 a cada
+    décimo de segundo, até chegar a 65535
+intdec <nomedavariável>
+    Número inteiro de 0 a 65535, que é subtraido 1 a cada
+    décimo de segundo, até chegar a 0
+real
+    Corresponde ao tipo "double" em C++
+txt1 a txt512 seguido do nome da variável:
+    Define uma variável que contém um texto, de até 1 a 512 caracteres,
+    respectivamente. Exemplo:
+    Para criar uma variável: vartxt10 x
+    Para colocar um texto nessa variável: x = "bom dia"
+ref <nomedavariável>
+    Referência para um objeto; corresponde a um objeto qualquer.
+    A palavra "nulo" é usada para indicar que a referência
+    não corresponde a nenhum objeto. Quando o objeto é apagado,
+    automaticamente a referência passa a ser "nulo".
+    Exemplo:
+    ref ref1
+    # Cria objeto
+    ref1 = criar("teste")
+    # Muda variável x do objeto
+    ref1.x = 2
+    # Faz a referência não corresponder a nenhum objeto
+    # mas não apaga o objeto criado
+    ref1 = nulo
+
+Antes dos tipos das variáveis é permitido colocar as seguintes palavras:
+
+comum
+    Variável é a mesma para todos os objetos da classe.
+    Independente da quantidade de objetos, só existe uma variável.
+sav
+    Variável deve ser salva em arquivo, vide objeto salvar.
+
+
+*** Funções
+
+Funções podem ser chamadas de três formas, em relação aos argumentos:
+1. Sem argumentos
+<nomedafunção>
+
+2. Com um ou mais argumentos
+<nomedafunção> ( argumento 1, argumento 2, ..., argumento N )
+
+3. Repassando os argumentos da função que está sendo executada
+<nomedafunção> (*)
+
+Exemplos:
+teste
+teste("bom dia", 10)
+
+Quando a função é chamada, as variáveis definidas na função são criadas.
+Deixam de existir quando retorna (termina).
+Dentro da função, as seguintes palavras tem um significado próprio:
+args = número de argumentos
+arg0 a arg9 = argumentos passados para a função
+este = objeto ao qual a função pertence
+
+Os argumentos são passados por referência: alterar arg0 a arg8 dentro
+da função altera a variável que foi passada.
+
+Para retornar um valor, a instrução é:
+ret <valor de retorno>
+Exemplos:
+ret 10
+ret arg0+1
+
+Se não for especificado o valor de retorno, ret retorna nulo.
+Após a última linha da função é como se tivesse uma instrução ret nulo.
+
+Exemplo - dada uma função x, definida como:
+func x
+ret arg0+1
+O retorno pode ser usado da seguinte forma:
+y = x(10)
+z = x(2) - x(1)
+Nesse exemplo, fará y=11 e z=1.
+
+Outros exemplos:
+[abc]
+int1 x
+int8 y
+func teste1
+  ret "bom dia"
+func teste2
+  ret x + y
+func teste3
+  y = arg0 + arg1
+func fatorial
+  se(args!=1 | arg0<=1)
+    ret 1
+  fimse
+  ret arg0 * fatorial(arg0-1)
+
+
+Existe um outro tipo de função, que se comporta como se fosse uma variável.
+É definida com varfunc ao invés de func.
+Quando for feita uma leitura a variável, ao invés disso a função é chamada
+com nenhum argumento, e deve retornar o valor lido.
+Alterar a variável chama a função com um argumento (o novo valor).
+O valor de retorno da função é ignorado.
+
+Exemplo:
+varfunc x
+  se(args=0)
+# Leitura da variável: retorna "bom dia"
+    ret "bom dia"
+  fimse
+# Mudar a variável: chama outra função
+  este.msg(arg0)
+func teste
+  vartxt10 n
+# Vai fazer: n = "bom dia"
+  n = x
+# Vai fazer: este.msg("teste")
+  x = "teste"
+
+*** Funções chamadas pelo programa:
+
+ini
+    Executada quando o objeto é criado
+fim
+    Executada quando o objeto é apagado
+iniclasse
+    Executada quando a classe é criada
+    Recebe um argumento (arg0), que é o nome da classe
+
+Outras funções podem ser chamadas, por variáveis específicas, que constituem
+uma extensão do programa.
+
+
+*** Operadores
+
+Podem ser usados os seguintes operadores - sendo a e b duas variáveis
+e/ou números:
+
+!a      Se for falso (=0) vira verdadeiro (1)
+        Se for verdadeiro (diferente de 0) vira falso (0)
+a*b     Multimplica a por b
+a/b     Divide: a/b; pode resultar em um número quebrado (não inteiro)
+a%b     É o resto da divisão de a por b
+a+b     Soma
+a-b     Subtrai
+a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
+a<=b    Verdadeiro se a<=b
+a=b     Verdadeiro se a for igual a b
+a>=b    Verdadeiro se a>=b
+a>b     Verdadeiro se a>b
+a!=b    Verdadeiro se a for diferente de b
+a&b     Verdadeiro (=1) somente se a for verdadeiro e b também for
+a|b     Verdadeiro (=1) se a for verdadeiro ou b for verdadeiro
+Pode-se usar também os parênteses em expressões
+Exemplo:  2*(3+4)
+
+Os operadores +=, -=, *= e /= são formas compactas:
+variável += valor
+variável -= valor
+variável *= valor
+variável /= valor
+
+São o mesmo que:
+variável = variável + valor
+variável = variável - valor
+variável = variável * valor
+variável = variável / valor
+
+
+*** Instruções de controle de fluxo - não podem ser usadas em cálculos
+
+se(<expressão>) ... fimse
+se(<expressão>) ... senão ... fimse
+se(<expressão>) ... senão(<expressão>) ... fimse
+    Decisão
+
+enquanto(<expressão>) ... efim
+    Laço de repetição
+    Se a expressão for verdadeira, executa as instruções que estiverem entre
+    o enquanto e o efim e volta para a instrução enquanto, para testar
+    a <expressão> novamente.
+
+para(<variável 1>, <variável 2>) ... efim
+    Usado para acessar todos os elementos de <variável 2>.
+    Só tem sentido se <variável 2> for uma lista (exemplo, de objetos).
+    Entre o para e o efim, <variável 1> corresponde a cada elemento
+    encontrado. <variável 1> deve ser uma variável que existe.
+
+sair
+    Sai de um laço enquanto ou para
+
+continuar
+    Fecha um ciclo de um laço enquanto ou para, como se tivesse chegado
+    na instrução efim. A diferença entre continuar e efim é que efim define
+    aonde termina o laço.
+
+terminar
+    Encerra o programa
+
+
+*** Funções predefinidas
+
+exec(<texto>)
+    Executa a instrução que está no texto especificado.
+    Exemplo:
+    exec("x = 10")
+
+pos(a)
+    Retorna a se a>=0. Caso contrário retorna 0.
+
+abs(a)
+    O mesmo que a sem sinal.
+    Exemplo: abs(-1) e abs(1) são iguais a 1
+
+int(a)
+    O valor inteiro de a.
+
+rand(a)
+    Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) gera
+    um número aleatório de 0 a 9.
+
+txt(a)
+    Texto constante (não pode ser alterado) igual a a.
+    Se a não for texto, retorna um texto vazio.
+
+ref(a)
+    Referência constante; retorna o mesmo objeto que a.
+    Se a não for um objeto, retorna nulo.
+
+txt(<texto>, <caracter inicial>)
+txt(<texto>, <caracter inicial>, <quantidade de caracteres>)
+    Retorna um texto que é parte do texto especificado. Exemplo:
+    txt("abcdef", 2, 2) é o mesmo que "cd".
+
+txt1(<texto>)
+    Retorna a primeira palavra do texto.
+
+txt2(<texto>)
+    Retorna tudo exceto a primeira palavra do texto.
+
+txtfora(<texto>)
+    Retorna um texto semelhante a <texto>, mas removendo espaços extras
+    à esquerda e à direita. Exemplo:
+    txtfora("  bom   dia  ") é o mesmo que "bom   dia".
+
+txtdentro(<texto>)
+    Retorna um texto semelhante a <texto>, mas removendo espaços extras,
+    exceto à esquerda e à direita. Exemplo:
+    txtfora("  bom   dia  ") é o mesmo que "  bom dia  ".
+
+txttroca(<texto>, <valor anterior>, <novo valor>)
+    Troca <valor anterior> por <novo valor> no <texto>. Exemplo:
+    txttroca("possibilidade", "i", "e") é o mesmo que "possebeledade".
+
+vartroca(<texto>, <variável>, <texto2>)
+    Procura nomes de variáveis do objeto "este" que começam com <variável>.
+    Troca <variável> por <texto2> e procura por isso em <texto>.
+    Substitui pelos respectivos valores das variáveis.
+    Exemplo:
+    const t_1 = "joão"  # $1 = joão
+    const t_2 = "maria" # $2 = maria
+    vartroca("$1 falou com $2", "t_", "$")
+                # Produz o texto "joão falou com maria"
+
+txtcor(<texto>)
+    Retorna o texto sem as definições de cores. Exemplo:
+    semcor("\cF\d4Teste\b") é o mesmo que "Teste".
+
+criar(<nome da classe>)
+criar(<nome da classe>, <argumentos da função ini>)
+    Cria um objeto e chama a função ini do objeto.
+    Entrada: texto que contém o nome da classe.
+    Retorna: uma referência para o objeto, ou nulo se classe não existe.
+    Exemplos:
+    ref x
+    x = criar("teste1")
+    criar("teste2")
+
+apagar(<objeto>)
+    Marca um objeto para ser apagado. O objeto só será realmente apagado
+    após o controle retornar ao programa. Mesmo assim, antes de apagar
+    ainda será chamada a função fim do objeto.
+    Entrada: referência para o objeto.
+    Exemplo:
+    apagar(este)
+
+classe(<objeto>)
+    Retorna o nome da classe de um objeto ou "" se não for objeto.
+
+$ seguido do nome da classe
+    Exemplos: $jog  ou  $["jog"]
+    Retorna o primeiro objeto da classe especificada.
+
+objantes(<objeto>)
+    Retorna o objeto anterior da classe ou NULO se não houver.
+
+objdepois(<objeto>)
+    Retorna o próximo objeto da classe ou NULO se não houver.
+
+total(<objeto>)
+    Retorna a quantidade de objetos da classe especificada.
+
+total(<texto>)
+    Retorna o tamanho do texto, em caracteres.
+
+
+*** Caracteres especiais
+
+\n significa fim de uma linha de texto (deve passar para a próxima linha).
+
+Para conseguir cores usa-se os caracteres \b, \c e \d nas mensagens:
+    \b define cor dos caracteres: branco com fundo preto
+    \c seguido de um dígito: define a cor dos caracteres
+    \d seguido de um dígito: define a cor de fundo
+
+O dígito após \c e \d pode ser:
+    0 = preto           4 = azul
+    1 = vermelho        5 = magenta
+    2 = verde           6 = ciano
+    3 = marrom          7 = branco
+
+Somente após \c:
+    8 = cinza               C = azul intenso
+    9 = vermelho intenso    D = magenta intenso
+    A = verde intenso       E = ciano intenso
+    B = amarelo             F = branco intenso
+
+
+*** Outros tipos de variáveis
+
+Constituem uma extensão do programa interpretador. Algumas permitem
+a comunicação com o mundo externo, outras possibilitam mais recursos.
+
+Possuem funções/variáveis e podem gerar eventos (executar funções
+do objeto em que pertencem).
+
+Definição de um tipo:
+<tipo de variável>  <nome da variável>
+Exemplo:  listaobj x
+
+Executar uma função:
+<nome da variável>.<função>
+Exemplos:
+x.limpar
+x.add1(este)
+
+Eventos (funções chamadas pela variável):
+func <nome da variável>_<nome do evento>
+Exemplo, uma função teste para a variável x, acima, pode ser definida como:
+func x_teste
+
+
+*** Lista de variáveis
+
+listaobj <nomedavariável>
+    Lista de objetos.
+    Quando essa variável é apagada, os objetos da lista também são.
+
+    Possui as seguintes funções:
+    add1( <objeto> )  -> Adiciona no topo da lista
+    add2( <objeto> )  -> Adiciona no final da lista
+    remove( <objeto> ) -> Retira objeto da lista
+    limpar            -> Retira todos os objetos da lista
+    possui( <objeto> ) -> Retorna 1 se objeto está na lista ou 0 se não está
+    1   -> Primeiro objeto da lista
+    2   -> Último objeto da lista
+    obj -> objeto que contém a lista
+
+    Exemplo:
+    listaobj x
+    x.add1( este ) -> Adiciona no topo da lista
+    x.add2( este ) -> Adiciona no final da lista
+    x.remove( x.1 ) -> remove objeto da lista
+    x.possui( este) -> retorna !=0 se objeto está na lista
+    x.1 -> é o primeiro objeto da lista
+    x.2 -> é o último objeto da lista
+
+listatxt <nomedavariável>
+    Define uma lista de textos.
+
+    Possui as seguintes funções:
+    limpar       -> limpa a lista
+    add(texto)   -> adiciona texto na lista
+    add(texto, quantidade) -> adiciona uma quantidade do texto na lista
+    remove(texto)  -> remove texto da lista
+    remove(texto, quantidade) -> remove uma quantidade de textos da lista
+    procurar(texto)   -> procura mensagem que começa com o texto especificado
+                        retorna o texto completo se encontrou,
+                        ou um texto vazio se não encontrou
+    total(texto)     -> retorna a quantidade de textos que estão na lista
+
+    Exemplos:
+    listatxt x
+    vartxt10 texto
+    var8  num
+    x.add("bom dia")
+    x.add("boa tarde", 10)
+    texto = x.procurar("boa")
+    num = x.total(texto)
+
+listamsg <nomedavariável>
+    Lista de textos, para ser enviados a um usuário
+    Possui as seguintes funções:
+    limpar
+        Limpa a lista
+    add(<texto>)
+        Adiciona texto na lista.
+    add(<texto>, <separador>, <quantidade máxima>)
+        Divide <texto> vários textos, separados pelo <separador>.
+        <quantidade máxima> é a quantidade máxima de textos após a divisão.
+        Em seguida adiciona esses textos na listamsg.
+        Exemplo:
+            listamsg x
+            x.add("bom dia boa tarde", " ", 3)
+        É o mesmo que:
+            listamsg x
+            x.add("bom")
+            x.add("dia")
+            x.add("boa tarde")
+    remove(<quantidade de linhas>)
+        Retorna um texto que contém uma quantidade de linhas; retira essas
+        linhas da listamsg
+    linha(<número da linha>)
+        Retorna o texto da linha especificada. O primeiro texto adicionado
+        corresponde à linha 0.
+
+nomeobj <nomedavariável>
+    Usado para obter um ou mais objetos, correspondente ao que o usuário
+    digitou.
+    Funções:
+    ini( <texto> , <quantidade> )
+        Inicia a busca.
+        <texto> é o nome procurado (geralmente o que o usuário digitou).
+        Exemplo: "poção"
+        Pode-se digitar o número do objeto, escrevendo um número seguido
+        de ponto e um nome. Exemplo: "2.poção" corresponde à segunda poção.
+        Pode-se digitar também a quantidade, se for mais de um.
+        Exemplo: "10 poção"
+        <quantidade> é a quantidade máxima de objetos que podem ser
+        encontrados. Exemplo, se não for desejável processar mais de 10
+        objetos, <quantidade> deve ser o número 10.
+    nome( <texto> )
+        <texto> contem um ou mais nomes (separados por espaço) correspondentes
+        a um objeto. Exemplo, "chave chave_verde" significa um objeto que
+        pode ser referenciado por esses dois nomes: chave e chave_verde.
+        Essa função retorna 1 se for o objeto procurado ou 0 se não for.
+
+    Exemplo com as duas funções:
+    nomeobj x
+    x.ini("2.ch", 5)# Achar no máximo 5 objetos que começam com "ch"
+                    # No entanto, como o texto é "2.ch", procurará só o segundo
+    x.nome("bolsa") # Retorna 0 porque não é o objeto
+    x.nome("chave_azul")  # Retorna 0 porque não é o segundo começa com ch
+    x.nome("chave_verde") # Retorna 1
+    x.nome("chave_azul")  # Retorna 0 porque já encontrou o objeto
+
+log <nomedavariável>
+    Para gravar mensagens em arquivos de texto.
+    Funções:
+    abrir( <nome do arquivo> ) -> Abre/cria arquivo
+    msg( <texto> )   -> Grava texto em uma nova linha, no final do arquivo
+    fechar           -> Fecha arquivo
+
+vartempo <nomedavariável>
+    Uma variável inteira de 0 a 65535, subtraída 1 a cada décimo de segundo.
+    A diferença de vartempo para vardec é que quando chega a 0, uma função
+    do objeto é executada. O nome da função é <nomedavariável>_exec.
+
+    Exemplo:
+    [x]
+    vartempo n
+    func n_exec
+      # Essa função é executada quando a variável n chegar a zero
+
+socket <nomedavariável>
+    Quando o socket está conectado à janela do programa:
+    A janela possui 25 linhas de 80 colunas, sendo que a última linha
+    sempre corresponde ao que o usuário está escrevendo.
+
+    Funções e variáveis:
+    proto
+        Define o protocolo; um número com o significado:
+        0 = não está conectado
+        1 = telnet com cores
+        2 = telnet sem cores
+        3 = irc com cores
+        4 = irc sem cores
+        5 = papovox (sem cores)
+        6 = janela do programa com cores
+        7 = janela do programa sem cores
+        Nota: pode-se mudar entre 1 e 5 para socket conectado e
+              entre 6 e 7 quando for a janela do programa
+    aflooder
+        O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
+        0 desativa o anti flooder, outro valor ativa.
+    eco
+        Define se o que o usuário digitar deve ser ecoado na tela.
+        0 não ecoa, 1 ecoa. Não tem efeito em IRC e Papovox.
+    env
+        Permite congelar (interromper) e descongelar o envio de mensagens.
+        0 descongela, outro valor congela (interrompe o envio).
+        Nota: se o buffer de transmissão ficar cheio, a variável env vai
+        para 0 automaticamente.
+    posx
+        Posição do cursor: quantos caracteres enviou após o último \n.
+        Caracteres especiais, como definição da cor, não contam.
+    conectar(<endereço>, <porta>)
+        Tenta conectar-se a um endereço.
+    conectar("linha")
+        Conecta à janela do programa. Cada linha recebida gera um evento _msg.
+    conectar("tecla")
+        Conecta à janela do programa. Cada tecla pressionada gera um evento _msg.
+    fechar
+        Encerra a conexão; não gera o evento fechou.
+    colunas(x, y)
+        Onde x e y são números ou expressões numéricas, de 10 a 100.
+        Essa função atua nas mensagens enviadas ao socket. Define
+        quantos caracteres (colunas) uma mensagem pode ter.
+        Na hora de dividir uma mensagem em duas, o primeiro número é
+        o tamanho mínimo e o segundo é o tamanho máximo.
+    msg( <mensagem> )
+        Envia mensagem para o socket.
+        Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
+
+    Eventos:
+    <nomedavariável>_msg
+        Recebeu mensagem
+        arg0 = mensagem recebida
+        arg1 = valor anterior de conrec; 1=recepção estava congelada
+    <nomedavariável>_fechou
+        O socket foi fechado remotamente
+        Se essa função não existir, o objeto que contém o socket é apagado
+    <nomedavariável>_conectou
+        Conseguiu conectar; args=0 (nenhum argumento)
+    <nomedavariável>_conectou
+        Não conseguiu conectar; args=1 e arg0=mensagem de erro
+
+serv <nomedavariável>
+    Funções:
+    abrir(porta)  -> abrir para receber conexões na porta especificada
+    fechar        -> deixa de receber conexões
+
+    Eventos:
+    <nomedavariável>_socket
+    arg0 = socket correspondente à conexão
+
+    Exemplo de uso com socket:
+    [x]
+    comum serv servidor
+    socket conec
+    func iniclasse
+      servidor.porta(2000)
+    func servidor_socket
+      ref novo
+      novo = criar("x")
+      novo.conec = arg0
+      novo.conec.proto = 2
+      novo.conec.msg("Benvindo\n")
+    func conec_msg
+      conec.msg("você escreveu " + arg0 + "\n")
+
+salvar <nomedavariável>
+    Permite salvar objetos em arquivos e recuperar posteriormente.
+    A maioria das funções tem como parâmetro de entrada um texto, que é
+    o nome do arquivo.
+
+    Funções:
+    valido(<texto>)
+        Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
+    existe(<texto>)
+        Retorna 1 se arquivo existe ou 0 se não existe.
+    senha(<texto>, <senha>)
+        Retorna 1 se senha válida ou 0 se inválida.
+    dias(<texto>)
+        Quantos dias faltam para o arquivo expirar.
+    abrir(<texto>)
+        Cria os objetos do arquivo e retorna uma referência para o
+        primeiro objeto criado. Se não conseguir criar, retorna NULO.
+    apagar(<texto>)
+        Apaga o arquivo
+    ref(<texto>)
+        Referência para o primeiro objeto criado com o comando abrir,
+        ou o primeiro objeto salvo com o comando criar.
+    criar(<texto>, <dias>)
+    criar(<texto>, <dias>, <senha>)
+        Cria ou altera um arquivo. Em seguida chamar as funções salvar e fechar.
+    salvar(<objeto>)
+        Acrescenta objeto no arquivo.
+    fechar
+        Fecha o arquivo criado com a função criar.
+
+    Eventos:
+    <nomedavariável>_apagar
+        Arquivo foi apagado porque o tempo expirou.
+        Entrada: arg0 = nome do arquivo (texto)
+
+prog <nomedavariável>
+    Para ler e alterar o próprio programa (o mapa).
+
+    *** Funções para ler o programa:
+    Chamar uma das funções abaixo, depois usar linha() para ler o resultado.
+    classelin(<nome da classe>)
+        Obter as linhas correspondentes a uma classe.
+        Retorna: 1=sucesso, 0=falha (classe inexistente)
+    varlin(<nome da classe>, <nome da variável>)
+        Obter as linhas correspondentes a uma variável ou função.
+        Retorna: 1=sucesso, 0=falha (variável inexistente)
+    classe(<texto>)
+        Obter a lista de classes existentes. Inclui somente as classes que
+        começam com o texto especificado.
+        Retorna: 1=sucesso, 0=falha (nenhuma classe encontrada)
+    herda(<nome da classe>)
+        Obter a lista de classes que uma classe herda.
+        Retorna: 1=sucesso, 0=falha (classe não existe)
+    herdainv(<nome da classe>)
+        Obter a lista de classes herdadas por uma classe.
+        Retorna: 1=sucesso, 0=falha (classe não existe)
+    var(<nome da classe>)
+    var(<nome da classe>, <texto>)
+        Obter a lista de variáveis de uma classe, inclusive as herdadas.
+        Inclui somente as variáveis que começam com o texto especificado.
+        Retorna: 1=sucesso, 0=falha (classe ou variável inexistente)
+    varlocal(<nome da classe>)
+    varlocal(<nome da classe>, <texto>)
+        Semelhante a var(), exceto que não inclui as variáveis herdadas.
+    linha(<número da linha>)
+        Retorna a linha especificada (texto). 0 é a primeira linha.
+        Retorna um texto vazio se a linha não existe.
+    total
+        Número de linhas encontradas.
+    fechar
+        Deixa de acessar classe ou variável.
+        É chamado automaticamente quando o controle volta ao interpretador.
+
+    *** Funções para obter o tipo de variável:
+    tipo(<classe>, <variável>)
+        Retorna o tipo de variável ou "" se a variável não existe.
+    comum(<classe>, <variável>)
+        Retorna 1 se variável for comum ou 0 se não for.
+    sav(<classe>, <variável>)
+        Retorna 1 se variável for sav ou 0 se não for.
+    herda(<classe>, <variável>)
+        Em qual classe a variável está definida.
+    nomeclasse(<objeto>)
+        Retorna o nome da classe de um objeto ou "" se não existe.
+    nomeclasse(<nome da classe>)
+        Retorna o nome da classe se existe ou "" se não existe.
+
+    *** Funções para alterar o programa:
+    As alterações só serão efetuadas depois que o controle retornar ao programa
+    interpretador.
+    apagar(<classe>)
+    apagar(<classe>, <variável>)
+        Apaga classe ou variável. Retorna: 1=sucesso, 0=falha
+    criar(<texto>)
+    criar(<nome da classe>, <texto>)
+        Cria uma classe ou uma variável de uma classe.
+        Se já existia, apaga todas as instruções antes de criar.
+        <texto> contém as instruções da variável, função ou classe.
+        Se houver mais de uma linha, usar \n para separar as linhas.
+        A primeira linha deve conter o nome e o tipo. Exemplos:
+        "[xyz]" -> para criar classe xyz
+        "var8 n" -> para criar variável n
+        "func x\nret 10" -> para criar função x
+        Retorna um texto vazio se conseguiu criar ou a mensagem de erro
+        se não conseguiu.
+    apagarlin(<nome da classe>, <número da linha>)
+    apagarlin(<nome da classe>, <nome da variável>, <número da linha>)
+        Apaga uma linha de uma classe ou variável.
+    criarlin(<nome da classe>, <linha inicial>, <texto>)
+    criarlin(<nome da classe>, <nome da variável>, <linha inicial>, <texto>)
+        Adiciona linhas na classe ou variável especificada.
+    salvar
+        Salva as alterações nos arquivos correspondentes.
+
+indice <nomedavariável>
+    Permite obter um ou mais objetos a partir de um texto, denominado índice.
+
+    texto
+        Texto associado ao objeto que contém essa variável (índice).
+    ref(<texto>)
+        Retorna o objeto a partir de um texto (índice).

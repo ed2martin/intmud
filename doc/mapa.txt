@@ -1,0 +1,474 @@
+[personagem_comum]
+# Personagens
+const perso = 1 # Indica que é personagem
+#const alias -> Nomes que o usuário digita para acessar o personagem
+ref sala    # Em qual sala está
+uint8 posicao      # Posição atual
+const posicpadrao = 8 # Posição padrão
+# Posições válidas:
+# 0=morto
+# 1=mortalmente ferido
+# 2=incapacitado
+# 3=fraco
+# 4=dormindo
+# 5=descansando
+# 6=sentado
+# 7=lutando
+# 8=em pé
+uint1 invis # Se está invisível
+uint1 invisver # Se pode ver personagens invisíveis
+#
+func ini
+  posicao = posicpadrao
+func mudasala # Muda de sala; arg0 = nova sala
+  ref destino
+  destino = arg0
+  se(destino = nulo | destino = sala)
+    ret
+  fimse
+  sala.remove(este)
+  sala = destino
+  sala.add2(este)
+func descrsala # Mostra descrição de um lugar
+  txt100 saidas
+  msg(sala.nome + "\n")
+  msg(sala.descr + "\n")
+  saidas = ds1("norte", "n") + ds1("sul", "s")
+  saidas += ds1("leste", "l") + ds1("oeste", "o")
+  saidas += ds1("cima", "c") + ds1("baixo", "b")
+  se(saidas = "")
+    msg("Nenhuma saída\n")
+  senão
+    msg("Saídas:" + saidas + "\n")
+  fimse
+func ds1
+  se(classe(sala.[arg0]) != "" & sala.[arg0]_ini != 1)
+    se(sala.[arg0]_argora >= 2)
+      ret " !" + arg1
+    senao
+      ret " " + arg1
+func escr # Escreveu alguma coisa; arg0 = o que escreveu
+  ref  obj # Objeto que vai processar o comando
+  prog prg # Usado para obter obj
+  int8 lin # Usado para obter obj
+  prg.var("comandos", txt1(arg0))
+  enquanto(lin < prg.total)
+    obj = $comandos.c_[prog.linha(lin)]
+    se(obj & arg0.nivel >= obj.nivel)
+      sair
+    fimse
+    lin++
+  efim
+#### Triggers
+  se(!este.t1_escr(este, obj, arg0)) # Trigger do personagem
+    ret
+  senão(!sala.t1_escr(este, obj, arg0)) # Trigger da sala
+    ret
+  fimse
+  para(x, obj.t2_escr) # Trigger dos objetos do personagem
+    se(x.t1_escr(este, obj, arg0))
+      ret
+    fimse
+  efim
+  para(x, sala.t2_escr) # Trigger dos objetos da sala
+    se(x != este && x.t1_escr(este, obj, arg0))
+      ret
+    fimse
+  efim
+#### Processa comando
+  se(obj = nulo)
+    msg("O quê?\n")
+  senão(posicao < obj.posic)
+    se(posicao = 0) # Morto
+      msg("Você está morto!!!\n")
+    senão(posicao = 1 | posicao = 2) # Incapacitado
+      msg("Você está muito mal, incapaz de fazer qualquer coisa.\n")
+    senão(posicao = 3) # Fraco
+      msg("A única coisa que você pode fazer agora é pensar nas estrelas.\n")
+    senão(posicao = 4) # Dormindo
+      msg("Nos seus sonhos...\n")
+    senão(posicao = 5) # Descansando
+      msg("Você se sente relaxado demais para fazer isso.\n")
+    senão(posicao = 6) # Sentado
+      msg("Talvez você deva ficar em pé primeiro.\n")
+    senão(posicao = 7) # Lutando
+      msg("Sem chance! Você está lutando pela sua vida.\n")
+    senão
+      msg("Você tenta, mas não consegue.\n")
+    fimse
+  senão
+    obj.exec(este, arg0)
+
+[sala_comum]
+listaobj dentro # Itens e personagens dentro da sala
+listaobj tr2_escr # Triggers: quando um personagem escreve alguma coisa
+#
+# *** Saídas
+# ref norte
+# ref sul
+# ref leste
+# ref oeste
+# ref cima
+# ref baixo
+#
+# *** Estado inicial das saídas:
+# 0=nenhuma porta
+# 1=nenhuma porta/invisível
+# 2=aberta
+# 3=fechada
+# 4=trancada
+# 5=trancada; se fechada é trancada
+# uint8 norte_ini
+# uint8 sul_ini
+# uint8 leste_ini
+# uint8 oeste_ini
+# uint8 cima_ini
+# uint8 baixo_ini
+#
+# *** Estado atual das saídas
+# 0=nenhuma porta
+# 1=aberta
+# 2=fechada
+# 3=trancada
+uint8 norte_agora
+uint8 sul_agora
+uint8 leste_agora
+uint8 oeste_agora
+uint8 cima_agora
+uint8 baixo_agora
+#
+# *** Número da chave para trancar e destrancar a porta
+# uint8 norte_chave
+# uint8 sul_chave
+# uint8 leste_chave
+# uint8 oeste_chave
+# uint8 cima_chave
+# uint8 baixo_chave
+#
+func iniclasse # Para criar um objeto quando a classe for criada
+  criar(arg0)
+func ini
+  norte_agora = ini_sai(norte_ini)
+  sul_agora = ini_sai(sul_ini)
+  leste_agora = ini_sai(leste_ini)
+  oeste_agora = ini_sai(oeste_ini)
+  cima_agora = ini_sai(cima_ini)
+  baixo_agora = ini_sai(baixo_ini)
+func ini_sai
+  se(arg0 < 2)
+    ret 0
+  senão(arg0 < 4)
+    ret 4
+  senão
+    ret arg0 - 1
+
+[entra]
+# Entrando no jogo
+comum serv servidor # Para receber conexões
+socket conec # Usuário conectado
+vartempo fechar # Para encerrar conexão após um tempo
+vartempo espera # Tempo para pedir o apelido
+vartempo sair   # Para sair se esperou demais
+func iniclasse
+# Esperar conexões na porta 1963
+  servidor.porta(1963)
+func servidor_socket
+# Conectado: cria objeto
+  criar("entra", arg0)
+func ini
+# Objeto foi criado
+  conec = arg0
+  conec.proto = 2
+  conec.aflooder = 1
+  conec.msg("+OK Para Telnet pressione ENTER\n")
+  fechar = 100 # 10 segundos depois desconecta
+func fechar_exec
+  conec.msg("-Tempo esgotado\n")
+  apagar(este)
+func espera_exec
+  conec.msg("Digite o nome do seu personagem\n")
+  sair=600 # Para esperar 60 segundos
+func sair_exec
+  conec.msg("Tempo esgotado\n")
+  apagar(este)
+func conec_fechou
+  apagar(este)
+func conec_msg
+# Recebeu mensagem do usuário; arg0=mensagem
+  txt30 nome
+  indice ind
+  se(espera) # Se deve aguardar, ignora o que recebeu
+    ret
+  senão(fechar) # Se está no primeiro passo
+    fechar=0
+    espera=10
+    se(arg0 != "") # Papovox sempre fornece um nome
+      conec.msg("+OK Entrando via Papovox\n")
+      conec.proto = 5
+    senão # Nome vazio: é Telnet
+      conec.msg("-OK Entrando via telnet; para sair tecle /sair ou /quit\n")
+      conec.proto = 2
+    fimse
+  senão(arg0 = "") # Se não digitou um apelido
+    espera = 1
+  senão(ind.ref("usr_" + nome)) # Se apelido está sendo usado
+    conec.msg("Nome já está sendo usado; digite outro\n")
+  senão # Cria objeto do jogador
+    apagar(este)
+    criar(jog, conec, nome)
+  fimse
+
+[jog]
+herda personagem_comum
+# Personagem do jogador
+socket conec
+indice ind
+txt30 nome
+const alias = nome
+func ini
+# Objeto criado; arg0=conec, arg1=apelido
+  conec = arg0
+  nome = arg1
+  ind.texto = "usr_" + nome
+func conec_fechou
+  apagar(este)
+func msg # Envia mensagem para o usuário
+  conec.msg(arg0)
+func conec_msg # Recebeu mensagem do usuário
+  escr(arg0)
+
+[comandos]
+# Contém os objetos que tratam cada comando
+# As variáveis estão em ordem alfabética para ficar mais fácil
+# visualizar qual comando tem prioridade sobre qual comando
+const c_ = nulo # Não digitou nada: retorna nulo
+const c_a = $c_ajuda # Ajuda vem antes de abrir
+const c_abrir = $c_abrir
+const c_ajuda = $c_ajuda
+const c_baixo = $dir_baixo
+const c_cima = $dir_cima
+const c_config = $c_config
+const c_destrancar = $c_destrancar
+const c_equip = $c_equip
+const c_examinar = $c_exam
+const c_falar = $c_falar
+const c_fechar = $c_fechar
+const c_item = $c_item
+const c_leste = $dir_leste
+const c_moedas = $c_moedas
+const c_norte = $dir_norte
+const c_oeste = $dir_oeste
+const c_pegar = $c_pegar
+const c_quem = $c_quem
+const c_r = $c_remover # Para checar remover antes de rastrear
+const c_rastrear = $c_rastrear
+const c_remover = $c_remover
+const c_seguir = $c_seguir
+const c_s = $dir_sul
+const c_soltar = $c_soltar
+const c_sul = $dir_sul
+const c_trancar = $c_trancar
+const c_ver = $c_ver
+const c_vestir = $c_vestir
+func iniclasse
+  criar(arg0)
+
+[mens]
+# Para enviar mensagens
+# Preencher perso, alvo e obj
+# Chamar:
+# $mens.m_todos -> Mensagem para todos na sala exceto perso e alvo
+# $mens.m_todos2 -> Para todos na sala exceto perso, alvo e quem nâo vê perso
+# $mens.m_perso -> Mensagem para perso
+# $mens.m_alvo -> Mensagem para alvo
+# $mens.m_alvo2 -> Mensagem para alvo se alvo pode ver perso
+# O primeiro argumento é a mensagem. São feitas as substituições:
+# $p=perso, $a=alvo, $o=obj, $x=símbolo $
+#
+ref perso # Personagem que está enviando a mensagem
+ref alvo # Personagem ou objeto alvo da ação
+ref obj # Objeto secundário
+ref r # Usado nas funções m_*
+func iniclasse
+  criar(arg0)
+func m_todos
+  se(perso)
+    para(x, perso.sala.dentro)
+      se(x != perso & x != alvo)
+        r = x
+        x.msg(vartroca(arg0, "param_", "$"))
+      fimse
+    efim
+func m_todos2
+  se(perso)
+    para(x, perso.sala.dentro)
+      se(x != perso & x != alvo & (perso.invis = 0 | x.invisver = 1))
+        r = x
+        x.msg(vartroca(arg0, "param_", "$"))
+      fimse
+    efim
+func m_perso
+  se(perso)
+    r = perso
+    r.msg(vartroca(arg0, "param_", "$"))
+func m_alvo
+  se(perso & alvo)
+    r = alvo
+    r.msg(vartroca(arg0, "param_", "$"))
+func m_alvo2
+  se(perso & alvo & (perso.invis = 0 | alvo.invisver = 1))
+    r = alvo
+    r.msg(vartroca(arg0, "param_", "$"))
+func param_p # $p = personagem origem
+  se(perso.invis=0 | r.invisver)
+    ret perso.nome
+  senão(perso.perso)
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+func param_a # $a = personagem alvo
+  se(alvo.invis=0 | r.invisver)
+    ret alvo.nome
+  senão(alvo.perso)
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+func param_o # $o = objeto
+  se(obj.invis=0 | r.invisver)
+    ret obj.nome
+  senão(obj.perso)
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+const param_x = "$"
+
+[dir_norte]
+herda dir_comum
+const dir = "norte"
+const m_perso = "norte"
+const m_sair = "$p foi para o norte\n"
+const m_chegar = "$p chegou do sul\n"
+
+[dir_sul]
+herda dir_comum
+const dir = "sul"
+const m_perso = "sul"
+const m_sair = "$p foi para o sul\n"
+const m_chegar = "$p chegou do norte\n"
+
+[dir_leste]
+herda dir_comum
+const dir = "leste"
+const m_perso = "leste"
+const m_sair = "$p foi para o leste\n"
+const m_chegar = "$p chegou do oeste\n"
+
+[dir_oeste]
+herda dir_comum
+const dir = "oeste"
+const m_perso = "oeste"
+const m_sair = "$p foi para o oeste\n"
+const m_chegar = "$p chegou do leste\n"
+
+[dir_cima]
+herda dir_comum
+const dir = "cima"
+const m_perso = "cima"
+const m_sair = "$p subiu\n"
+const m_chegar = "$p chegou de baixo\n"
+
+[dir_baixo]
+herda dir_comum
+const dir = "baixo"
+const m_perso = "baixo"
+const m_sair = "$p desceu\n"
+const m_chegar = "$p chegou de cima\n"
+
+[dir_comum]
+const nivel = 0 # Nível mínimo para usar esse comando
+const posic = 8 # Posição mínima para usar esse comando; 8=em pé
+func iniclasse
+  criar(arg0)
+func exec # Executa o comando; arg0=personagem, arg1=texto completo
+  ref destino = arg0.sala.[dir]
+  se(classe(destino) = "")
+    arg0.msg("Impossível seguir nessa direção\n")
+  senão(arg0.sala.[dir]_agora >= 2)
+    arg0.msg("A porta está trancada\n")
+  senão(destino = arg0.sala)
+    arg0.msg("Você tenta, mas acaba voltando no mesmo lugar\n")
+  senão
+    $mens.perso = arg0
+    $mens.alvo = nulo
+    $mens.obj = nulo
+    $mens.m_todos(m_sair)
+    arg0.msg(m_perso)
+    arg0.mudasala(destino)
+    arg0.descrsala
+    $mens.m_todos(m_chegar)
+
+[c_exam]
+const nivel = 0 # Nível mínimo para usar esse comando
+const posic = 6 # Posição mínima para usar esse comando; 6=sentado
+func exec # Executa o comando; arg0=personagem, arg1=texto completo
+  nomeobj nome
+  se(args <= 1)
+    arg0.msg("Examinar o quê?\n")
+  senão
+    nome.ini(arg1, 1)
+    para(x, arg0.sala.dentro)
+      se((x.invis = 0 | este.invisver) & nome.nome(x.alias))
+        arg0.msg("Examinando " + x.nome + "\n")
+        arg0.msg(x.exam) # Em princípio a função exam do objeto
+                         # fornecerá toda a descrição
+        $mens.perso = arg0
+        $mens.alvo = x
+        $mens.obj = nulo
+        $mens.m_todos2("$p examina $a\n")
+        $mens.m_alvo2("$p examina você\n")
+        ret
+      fimse
+    efim
+    arg0.msg("Não encontrei " + arg1 + "\n")
+
+[casa1_area]
+const s_terreno = 1
+
+[casa1_cozinha]
+herda casa1_area, sala_comum
+const nome = "Cozinha"
+const descr = "Possui geladeira, fogão e pia. A geladeira está vazia.\
+O chão está preto de sujeira."
+ref norte = $casa1_sala
+const norte_ini = 3
+
+[casa1_sala]
+herda casa1_area, sala_comum
+const nome = "Sala"
+const descr = "Há uma mesa no meio e 3 poltronas ao redor."
+ref norte = $casa1_quarto
+ref sul = $casa1_cozinha
+ref oeste = $casa1_entrada
+const norte_ini = 3
+const sul_ini = 3
+const oeste = 3
+
+[casa1_quarto]
+herda casa1_area, sala_comum
+const nome = "Quarto"
+const descr = "Um pequeno quarto com uma janela e cama."
+ref sul = $casa1_sala
+const sul_ini = 3
+ref leste = este # Para aparecer na lista de saídas válidas
+func tr1_escr # Exemplo de trigger
+  se(arg1 = $dir_leste) # Se for o comando dir_leste...
+    arg0.msg("Impossível; há um abismo nessa direção\n")
+    ret 1 # Interrompe a ação
+
+[casa1_entrada]
+herda casa1_area, sala_comum
+const nome = "Entrada da casa"
+const descr = "O chão é asfaltado de leste a oeste, até a entrada \
+de uma casa. Ao redor há muita grama bem tratada."
+ref leste = $casa1_sala
+const leste_ini = 3
