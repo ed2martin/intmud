@@ -1,4 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "instr.h"
+#include "classe.h"
 #include "misc.h"
 
 /*** Processamento de instruções
@@ -201,6 +205,50 @@ Fim
 ***/
 
 //------------------------------------------------------------------------------
+class TListaInstr {
+public:
+    const char * Nome;
+    const char Instr;
+};
+
+// Lista de instruções, exceto cExpr
+// Deve obrigatoriamente estar em ordem alfabética
+static const TListaInstr ListaInstr[] = {
+    { "const",     cConstExpr }, // Qualquer tipo de const
+    { "continuar", cContinuar },
+    { "efim",      cEFim },
+    { "enquanto",  cEnquanto },
+    { "fimSe",     cFimSe },
+    { "func",      cFunc },
+    { "herda",     cHerda },
+    { "int16",     cInt16 },
+    { "int32",     cInt32 },
+    { "int8",      cInt8 },
+    { "intb0",     cIntb0 }, // Pode ser cIntb0 a cIntb7
+    { "intdec",    cIntDec },
+    { "intinc",    cIntInc },
+    { "listamsg",  cListaMsg },
+    { "listaobj",  cListaObj },
+    { "listatxt",  cListaTxt },
+    { "log",       cLog },
+    { "prog",      cProg },
+    { "real",      cReal },
+    { "ref",       cRef },
+    { "ret",       cRet1 }, // Pode ser cRet1 ou cRet2
+    { "sair",      cSair },
+    { "salvar",    cSalvar },
+    { "se",        cSe },
+    { "Senao",     cSenao1 }, // Pode ser cSenao1 ou cSenao2
+    { "serv",      cServ },
+    { "socket",    cSocket },
+    { "terminar",  cTerminar },
+    { "uint16",    cUInt16 },
+    { "uint32",    cUInt32 },
+    { "uint8",     cUInt8 },
+    { "vartempo",  cVarTempo }
+};
+
+//------------------------------------------------------------------------------
 // Retorna um número que corresponde à prioridade do operador
 // Usado em InstrCodif
 static int prioridade(int operador)
@@ -236,32 +284,190 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
     char * dest_ini = destino;
     char * dest_fim = destino + tamanho;
 
+// Verifica tamanho mínimo
+    if (tamanho<10)
+    {
+        *dest_ini=0;
+        return false;
+    }
 
-    destino += 2;
-    tamanho -= 2;
+// Obtém a variável/instrução em destino[2] a destino[4]
+    destino[3]=0;
+    destino[4]=0;
+    while (true)
+    {
+    // Avança enquanto for espaço
+        while (*origem==' ')
+            origem++;
+    // Verifica atributos de variáveis: comum e sav
+        if (compara(origem, "comum")==0)
+        {
+            destino[3] |= 1;
+            origem += 5;
+            continue;
+        }
+        if (compara(origem, "sav")==0)
+        {
+            destino[3] |= 2;
+            origem += 3;
+            continue;
+        }
+    // Verifica se instrução não é nula
+        if (*origem==0)
+        {
+            copiastr(dest_ini, "Faltou a instrução", tamanho);
+            return false;
+        }
+    // Verifica instrução txt1 a txt512
+        if ((origem[0]|0x20)=='t' && (origem[1]|0x20)=='x' &&
+            (origem[2]|0x20)=='t' && origem[3]!='0')
+        {
+            int valor = 0;
+            const char * p = origem+3;
+            for (; *p>='0' && *p<='9'; p++)
+            {
+                valor = valor*10 + *p-'0';
+                if (valor>0x1000)
+                    break;
+            }
+            if (valor<=256) // 1 a 256
+            {
+                destino[2] = cTxt1;
+                destino[4] = valor-1;
+                origem = p;
+                break;
+            }
+            if (valor<=512) // 257 a 512
+            {
+                destino[2] = cTxt2;
+                destino[4] = valor-257;
+                origem = p;
+                break;
+            }
+        }
+    // Obtém a instrução
+        int ini = 0;
+        int fim = sizeof(ListaInstr) / sizeof(ListaInstr[0]) - 1;
+        while (true)
+        {
+            if (ini>fim) // Não encontrou
+            {
+                destino[2] = cExpr;
+                if (destino[3]==0)
+                    break;
+                // Tem atribuição const ou sav: deveria ser tipo de variável
+                char mens[30];
+                char * p = mens;
+                copiastr(mens, origem, sizeof(mens));
+                while (*p && *p!=' ')
+                    p++;
+                *p=0;
+                mprintf(dest_ini, tamanho, "Variável não existe: %s", mens);
+                return false;
+            }
+            int meio = (ini+fim)/2;
+            int r = compara(origem, ListaInstr[meio].Nome);
+            if (r==0)
+            {
+                destino[2] = ListaInstr[meio].Instr;
+                break;
+            }
+            if (r<0)
+                fim = meio-1;
+            else
+                ini = meio+1;
+        }
+        break;
+    }
 
+// Instrução herda
+    if (destino[2] == cHerda)
+    {
+        destino[3] = 0;
+        destino+=4;
+        origem+=5; // Avança após "herda"
+    // Obtém as classes
+        while (*origem)
+        {
+            char nome[80];
+            char * p = nome;
+        // Avança enquanto for espaço
+            while (*origem==' ')
+                origem++;
+            if (*origem==0)
+                break;
+        // Copia o nome
+            while (*origem && *origem!=',' && p<nome+sizeof(nome)-1)
+                *p++ = *origem++;
+        // Apaga espaços no fim do nome
+            while (p>nome)
+            {
+                if (p[-1]!=' ')
+                    break;
+                p--;
+            }
+        // Verifica se existe classe com o nome encontrado
+            *p++=0;
+            TClasse * obj = TClasse::Procura(nome);
+            if (obj==0)
+            {
+                if (*nome)
+                    mprintf(dest_ini, tamanho, "Classe não existe: %s", nome);
+                else
+                    copiastr(dest_ini, "Faltou o nome da classe", tamanho);
+                return false;
+            }
+        // Copia o nome da classe
+            if (destino+strlen(nome)+1 > dest_fim)
+            {
+                copiastr(dest_ini, "Instrução muito grande", tamanho);
+                return false;
+            }
+            destino = copiastr(destino, nome);
+            destino++;
+            dest_ini[3]++; // Aumenta o número de classes
+        // Pula a vírgula
+            if (*origem==',')
+                origem++;
+        }
+    // Checa número de classes encontradas
+        if (dest_ini[3]==0)
+        {
+            copiastr(dest_ini, "Deve definir pelo menos uma classe", tamanho);
+            return false;
+        }
+        if ((unsigned char)dest_ini[3]>20)
+        {
+            copiastr(dest_ini, "Deve definir no máximo 20 classes", tamanho);
+            return false;
+        }
+        dest_ini[0] = (destino - dest_ini);
+        dest_ini[1] = (destino - dest_ini) >> 8;
+        return true;
+    }
 
 
 ***********
         Falta:
 
-1. Começa com uma das palavras reservadas seguido de espaço:
-É definição de variável
+Se destino[0] == cComum:
+    É do tipo comum; deve verificar expressão numérica
 
-2. Começa com const:
-É constante
+Se destino[0] > cVariavel:
+    É variável
 
-3. Começa com herda:
-Instrução especial herda
+Se destino[0] == cExpr:
+    É expressão numérica pura
 
-4. Verifica instruções de controle de fluxo
-
-5. Nenhum dos anteriores:
-Processa como expressão numérica pura
+Caso contrário:
+    Deve ser instrução de controle de fluxo
 ***********
 
 
 
+    destino += 2;
+
+// Processa expressão numérica
     char pilha[512];
     char * topo = pilha;
     int arg=0, modo=0;

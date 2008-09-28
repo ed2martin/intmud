@@ -10,7 +10,8 @@
 // Comandos
 enum TComando
 {
-    cHerda,         // Texto ASCIIZ = classes, separadas por espaço
+    cHerda,         // 1 byte = número de classes
+                    // X bytes = nomes das classes em ASCIIZ
                     // Só pode estar no início da lista de comandos
     cExpr,          // Expressão numérica pura
 
