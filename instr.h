@@ -14,6 +14,7 @@ enum TComando
                     // X bytes = nomes das classes em ASCIIZ
                     // Só pode estar no início da lista de comandos
     cExpr,          // Expressão numérica pura
+    cComent,        // Comentário
 
 // Instruções de controle de fluxo
     cSe,            // ushort,expressão   se(expressão)
@@ -21,19 +22,19 @@ enum TComando
     cSenao2,        // ushort,expressão   senão(expressão)
     cFimSe,         //                    fimse
     cEnquanto,      // ushort,expressão   enquanto(expressão)
-    cEFim,          //                    efim
+    cEFim,          // ushort             efim
     cRet1,          // ret sem argumentos
     cRet2,          // ret com expressão numérica
-    cSair,
-    cContinuar,
-    cTerminar,
+    cSair,          // ushort             sair
+    cContinuar,     // ushort             continuar
+    cTerminar,      //                    terminar
 
 // Definições de variáveis:
 // byte 3 = propriedades:
 //      bit 0=1 se comum
 //      bit 1=1 se sav
 // byte 4 = tamanho do texto em cTxt1 e cTxt2
-//        = índice para os dados extras das variáveis const
+//        = índice para os dados extras das variáveis Const
 // X bytes = nome da variável em ASCIIZ
 // Y bytes = expressão numérica, em cConstExp
 //         = texto em ASCIIZ, em cConstTxt
@@ -51,8 +52,7 @@ enum TComando
     cRef,               // Referência para um objeto
     cConstNulo,         // Constante = nulo
     cConstTxt,          // Constante = texto
-    cConstInt,          // Constante = número 32 bits com sinal
-    cConstReal,         // Constante = número - real
+    cConstNum,          // Constante = número
     cConstExpr,         // Constante = expressão numérica
     cFunc,              // Função
 
@@ -75,6 +75,7 @@ enum TComando
 enum TExpressao
 {
     ex_fim,         // Fim da variável ou expressão numérica
+    ex_coment,      // Marca início de comentário (encontrou #)
 
 // Usado em textos
     ex_barra_n,     // \n
