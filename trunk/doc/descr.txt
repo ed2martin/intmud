@@ -92,7 +92,7 @@ x("teste")
 
 3. Uma instrução de controle de fluxo do programa: se, fimse, enquanto, etc.
 Exemplo:
-se(x=10)
+se x=10
 ...
 fimse
 
@@ -246,7 +246,7 @@ func teste2
 func teste3
   y = arg0 + arg1
 func fatorial
-  se(args!=1 | arg0<=1)
+  se args!=1 | arg0<=1
     ret 1
   fimse
   ret arg0 * fatorial(arg0-1)
@@ -261,7 +261,7 @@ O valor de retorno da função é ignorado.
 
 Exemplo:
 varfunc x
-  se(args=0)
+  se args=0
 # Leitura da variável: retorna "bom dia"
     ret "bom dia"
   fimse
@@ -326,18 +326,18 @@ variável = variável / valor
 
 *** Instruções de controle de fluxo - não podem ser usadas em cálculos
 
-se(<expressão>) ... fimse
-se(<expressão>) ... senão ... fimse
-se(<expressão>) ... senão(<expressão>) ... fimse
+se <expressão>  ... fimse
+se <expressão>  ... senão ... fimse
+se <expressão>  ... senão <expressão>  ... fimse
     Decisão
 
-enquanto(<expressão>) ... efim
+enquanto <expressão>  ... efim
     Laço de repetição
     Se a expressão for verdadeira, executa as instruções que estiverem entre
     o enquanto e o efim e volta para a instrução enquanto, para testar
     a <expressão> novamente.
 
-para(<variável 1>, <variável 2>) ... efim
+para <variável 1>, <variável 2>  ... efim
     Usado para acessar todos os elementos de <variável 2>.
     Só tem sentido se <variável 2> for uma lista (exemplo, de objetos).
     Entre o para e o efim, <variável 1> corresponde a cada elemento

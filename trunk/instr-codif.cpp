@@ -1,3 +1,16 @@
+/* Este programa é software livre; você pode redistribuir e/ou
+ * modificar nos termos da GNU General Public License V2
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details at www.gnu.org
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -218,7 +231,7 @@ static const TListaInstr ListaInstr[] = {
     { "continuar", cContinuar },
     { "efim",      cEFim },
     { "enquanto",  cEnquanto },
-    { "fimSe",     cFimSe },
+    { "fimse",     cFimSe },
     { "func",      cFunc },
     { "herda",     cHerda },
     { "int16",     cInt16 },
@@ -289,6 +302,32 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
     {
         *dest_ini=0;
         return false;
+    }
+
+// Verifica se é comentário
+    while (*origem==' ')
+        origem++;
+    if (*origem=='#')
+    {
+        destino[2] = cComent;
+        origem++;
+        while (true)
+        {
+            if (destino >= dest_fim-1)
+            {
+                copiastr(dest_ini, "Instrução muito grande", tamanho);
+                return false;
+            }
+            if (*origem==0)
+                break;
+            *destino++ = *origem++;
+        }
+        while (destino[-1]==' ')
+            destino--;
+        *destino++ = 0;
+        dest_ini[0] = (destino - dest_ini);
+        dest_ini[1] = (destino - dest_ini) >> 8;
+        return true;
     }
 
 // Obtém a variável/instrução em destino[2] a destino[4]
@@ -367,10 +406,14 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
             }
             int meio = (ini+fim)/2;
             int r = compara(origem, ListaInstr[meio].Nome);
-            if (r==0)
+            if (r==0)  // Se encontrou
             {
                 destino[2] = ListaInstr[meio].Instr;
-                break;
+                if (destino[3]==0 || destino[2]>=cVariaveis)
+                    break;
+                copiastr(dest_ini, "Atribuições comum e sav só podem "
+                                "ser usadas em variáveis", tamanho);
+                return false;
             }
             if (r<0)
                 fim = meio-1;
@@ -379,8 +422,10 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
         }
         break;
     }
+    while (*origem==' ')
+        origem++;
 
-// Instrução herda
+// Instrução Herda
     if (destino[2] == cHerda)
     {
         destino[3] = 0;
@@ -397,8 +442,16 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
             if (*origem==0)
                 break;
         // Copia o nome
-            while (*origem && *origem!=',' && p<nome+sizeof(nome)-1)
-                *p++ = *origem++;
+            for (; *origem && *origem!=','; origem++)
+            {
+                if (p < nome+sizeof(nome))
+                    *p++ = *origem;
+                else if (*p==' ')
+                    continue;
+                p[-1]=0;
+                mprintf(dest_ini, tamanho, "Classe não existe: %s", nome);
+                return false;
+            }
         // Apaga espaços no fim do nome
             while (p>nome)
             {
@@ -406,8 +459,8 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
                     break;
                 p--;
             }
-        // Verifica se existe classe com o nome encontrado
             *p++=0;
+        // Verifica se existe classe com o nome encontrado
             TClasse * obj = TClasse::Procura(nome);
             if (obj==0)
             {
@@ -418,12 +471,12 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
                 return false;
             }
         // Copia o nome da classe
-            if (destino+strlen(nome)+1 > dest_fim)
+            if (destino+strlen(obj->Nome)+1 > dest_fim)
             {
                 copiastr(dest_ini, "Instrução muito grande", tamanho);
                 return false;
             }
-            destino = copiastr(destino, nome);
+            destino = copiastr(destino, obj->Nome);
             destino++;
             dest_ini[3]++; // Aumenta o número de classes
         // Pula a vírgula
@@ -446,26 +499,130 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
         return true;
     }
 
+// Processa variáveis
+// Variáveis const: avança origem e destino
+// Outras variáveis: acerta dados em destino e retorna
+    if (destino[2] > cVariaveis)
+    {
+        char nome[80];
+        char * p = nome;
+    // Avança enquanto for espaço
+        while (*origem==' ')
+            origem++;
+    // Copia o nome
+        for (; *origem && *origem!='='; origem++)
+        {
+            if (p < nome+sizeof(nome))
+                *p++ = *origem;
+            else if (*p==' ')
+                continue;
+            copiastr(dest_ini, "Nome de variável muito grande", tamanho);
+            return false;
+        }
+    // Apaga espaços no fim do nome
+        while (p>nome)
+        {
+            if (p[-1]!=' ')
+                break;
+            p--;
+        }
+        *p++=0;
+    // Verifica se nome válido
+        if (*nome==0)
+        {
+            copiastr(dest_ini, "Faltou o nome da variável", tamanho);
+            return false;
+        }
+        if (strlen(nome)>32)
+        {
+            copiastr(dest_ini, "Nome de variável muito grande", tamanho);
+            return false;
+        }
+        for (const char * p=nome; *p; p++)
+            if (tabNOMES[*(unsigned char*)p]==0)
+            {
+                copiastr(dest_ini, "Nome de variável inválido", tamanho);
+                return false;
+            }
+    // Copia o nome da variável, avança destino
+        if (destino+strlen(nome)+6 > dest_fim)
+        {
+            copiastr(dest_ini, "Instrução muito grande", tamanho);
+            return false;
+        }
+        destino = copiastr(destino+5, nome);
+        destino++;
+        dest_ini[4] = destino - dest_ini;
+    // Verifica se não é variável Const
+        if (destino[2] != cConstExpr)
+        {
+            if (*origem)
+            {
+                copiastr(dest_ini,
+                         "Variável não permite atribuição de valor", tamanho);
+                return false;
+            }
+            dest_ini[0] = (destino - dest_ini);
+            dest_ini[1] = (destino - dest_ini) >> 8;
+            return true;
+        }
+    // Variável Const
+        if (*origem==0)
+        {
+            copiastr(dest_ini, "Faltou atribuir um valor à variável const",
+                     tamanho);
+            return false;
+        }
+        origem++;
+    }
 
-***********
-        Falta:
-
-Se destino[0] == cComum:
-    É do tipo comum; deve verificar expressão numérica
-
-Se destino[0] > cVariavel:
-    É variável
-
-Se destino[0] == cExpr:
-    É expressão numérica pura
-
-Caso contrário:
-    Deve ser instrução de controle de fluxo
-***********
-
-
-
-    destino += 2;
+// Verifica instruções de controle de fluxo
+    switch (destino[2])
+    {
+    case cSe:       // Requerem expressão numérica
+    case cEnquanto:
+        destino += 5;
+        break;
+    case cSenao1:   // Pode ter ou não expressão numérica
+        if (*origem==0)
+        {
+            dest_ini[0]=3;
+            dest_ini[1]=0;
+            return true;
+        }
+        destino[2] = cSenao2;
+        destino += 5;
+        break;
+    case cRet1:     // Pode ter ou não expressão numérica
+        if (*origem==0)
+        {
+            dest_ini[0]=3;
+            dest_ini[1]=0;
+            return true;
+        }
+        destino[2] = cRet2;
+        destino += 3;
+        break;
+    case cEFim:     // Dois bytes de dados
+    case cSair:
+    case cContinuar:
+        dest_ini[0]=5;
+        dest_ini[1]=0;
+        return true;
+    case cFimSe:    // Nenhum byte de dados
+    case cTerminar:
+        dest_ini[0]=3;
+        dest_ini[1]=0;
+        return true;
+    case cExpr:  // Expressão numérica pura
+        destino += 3;
+        break;
+    case cConstExpr: // Variável Const - já foi verificado acima
+        break;
+    default: // Nenhum dos anteriores; provavelmente nunca chegará aqui
+        copiastr(dest_ini, "Instrução desconhecida", tamanho);
+        return false;
+    }
 
 // Processa expressão numérica
     char pilha[512];
@@ -716,17 +873,17 @@ Caso contrário:
                 return false;
             }
         // Anota operadores de menor precedência
-            while (modo>exo_ini && modo<exo_fim && destino < dest_ini-1)
+            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
             {
                 *destino++ = modo;
                 modo = *--topo;
             }
-            if (destino >= dest_ini-1)
+            if (destino >= dest_fim-1)
                 continue;
         // Verifica se tinha abre parênteses
             if (modo != ex_parenteses)
             {
-                mprintf(dest_ini, tamanho, ") sem (");
+                mprintf(dest_fim, tamanho, ") sem (");
                 return false;
             }
             modo = *--topo;
@@ -736,7 +893,7 @@ Caso contrário:
                 *destino++ = ex_ponto;
                 if (*origem=='.')
                     origem++;
-                else if (destino < dest_ini-1)
+                else if (destino < dest_fim-1)
                 {
                     *destino++ = ex_varfim;
                     modo = *--topo;
@@ -754,12 +911,12 @@ Caso contrário:
                 return false;
             }
         // Anota operadores de menor precedência
-            while (modo>exo_ini && modo<exo_fim && destino < dest_ini-1)
+            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
             {
                 *destino++ = modo;
                 modo = *--topo;
             }
-            if (destino >= dest_ini-1)
+            if (destino >= dest_fim-1)
                 continue;
         // Verifica se tinha abre colchetes
             if (modo != ex_colchetes)
@@ -773,25 +930,96 @@ Caso contrário:
         }
 
     // Fim da sentença
-        if (*origem==0)
+        if (*origem==0 || *origem=='#')
         {
-        // Anota operadores pendentes
-            while (modo>exo_ini && modo<exo_fim && destino < dest_ini-1)
+            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
             {
                 *destino++ = modo;
                 modo = *--topo;
             }
-            if (destino >= dest_ini-1)
+            if (destino >= dest_fim-1)
                 continue;
-            if (modo==0 && arg==1)
+            if (modo!=0 || arg!=1)
             {
-                *destino++ = 0;
-                dest_ini[0] = (destino - dest_ini);
-                dest_ini[1] = (destino - dest_ini) >> 8;
-                return true;
+                copiastr(dest_ini, "Erro na instrução", tamanho);
+                return false;
             }
-            copiastr(dest_ini, "Erro na instrução", tamanho);
-            return false;
+        // Verifica se tem comentário
+            if (*origem=='#')
+            {
+                *destino++ = ex_coment;
+                origem++;
+                while (true)
+                {
+                    if (destino >= dest_fim-1)
+                    {
+                        copiastr(dest_ini, "Instrução muito grande", tamanho);
+                        return false;
+                    }
+                    if (*origem==0)
+                        break;
+                    *destino++ = *origem++;
+                }
+            }
+        // Marca o fim da instrução
+            *destino++ = 0;
+            dest_ini[0] = (destino - dest_ini);
+            dest_ini[1] = (destino - dest_ini) >> 8;
+        // Acerta variáveis const
+            if (dest_ini[2] != cConstExpr)
+                return true;
+            const char * p = dest_ini + (unsigned char)dest_ini[4];
+            int tipo = 0;
+            while (*p)
+            {
+                switch (*p)
+                {
+                case ex_fim:
+                case ex_coment:
+                    if (tipo)
+                        dest_ini[2] = tipo;
+                    return true;
+                case ex_nulo:
+                    if (tipo)
+                        return true;
+                    tipo = cConstNulo;
+                    p++;
+                    break;
+                case ex_txt:
+                    if (tipo)
+                        return true;
+                    tipo = cConstTxt;
+                    p++;
+                    break;
+                case ex_num32p:
+                case ex_num32n:
+                    p+=2;
+                case ex_num16p:
+                case ex_num16n:
+                    p++;
+                case ex_num8p:
+                case ex_num8n:
+                    p++;
+                case ex_num0:
+                case ex_num1:
+                    p++;
+                    if (tipo)
+                        return true;
+                    tipo = cConstNum;
+                    break;
+                case ex_div1:
+                case ex_div2:
+                case ex_div3:
+                case ex_div4:
+                case ex_div5:
+                case ex_div6:
+                    if (tipo!=cConstNum)
+                        return true;
+                    break;
+                default:
+                    return true;
+                }
+            }
         }
 
     // Verifica operadores
@@ -844,12 +1072,12 @@ Caso contrário:
         int pri_sinal = prioridade(sinal);
         while (modo>exo_ini && modo<exo_fim &&
                pri_sinal >= prioridade(modo) &&
-               destino < dest_ini-1)
+               destino < dest_fim-1)
         {
             *destino++ = modo;
             modo = *--topo;
         }
-        if (destino >= dest_ini-1)
+        if (destino >= dest_fim-1)
             continue;
         *topo++ = modo;
         modo = sinal;
