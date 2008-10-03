@@ -36,6 +36,7 @@
 #include "arqler.h"
 #include "classe.h"
 #include "arqmapa.h"
+#include "instr.h"
 #include "misc.h"
 
 #define CORE    // Para gerar arquivos core
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
 void Inicializa()
 {
 // Variáveis
-    char mens[300];
+    char mens[500];
     bool erro = false;
     FILE * log = stdout; // Para onde enviar as mensagens
     TArqLer arq;
@@ -121,7 +122,7 @@ void Inicializa()
         perror("ULIMIT");
         exit(EXIT_FAILURE);
     }
-    // Muda prioridade, para programa executar o mais
+    // Muda prioridade, para o programa executar o mais
     // lento possível
     //setpriority(PRIO_PROCESS, (int)getpid(), PRIO_MAX);
 #endif
@@ -364,7 +365,7 @@ void Inicializa()
         exit(EXIT_FAILURE);
 
 // Para testes
-    printf("Classes:");
+ /*   printf("Classes:");
     for (TClasse * obj = TClasse::RBfirst(); obj; obj=TClasse::RBnext(obj))
         printf(" [%s]", obj->Nome);
     putchar('\n');
@@ -380,13 +381,107 @@ void Inicializa()
             printf(" %s", arqinicio);
         }
         putchar('\n');
-    }
+    } */
 
 // Obtém instruções das classes
+    TClasse * classeatual = 0;
+    // Abre intmud.map
+    strcpy(arqext, ".map");
+    if (!arq.Abrir(arqnome))
+    {
+        fprintf(log, "Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    mapa = TArqMapa::Inicio;
+    while (true)
+    {
+    // Lê próxima linha
+        int linhanum = arq.Linha(mens, sizeof(mens));
+        if (linhanum<0) // Erro
+        {
+            fprintf(log, "Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+        if (linhanum==0) // Fim do arquivo
+        {
+            if (mapa)
+                mapa = mapa->Proximo;
+            if (mapa==0)
+                break;
+            mprintf(arqext, 60, "-%s.map", mapa->Arquivo);
+            if (!arq.Abrir(arqnome))
+            {
+                fprintf(log, "Abrindo arquivo %s: %s\n",
+                        arqinicio, strerror(errno));
+                exit(EXIT_FAILURE);
+            }
+            classeatual = 0;
+        }
+    // Verifica linha MAPAGRANDE
+        if (comparaZ(mens, "MAPAGRANDE")==0)
+            continue;
+    // Verifica classe
+        if (*mens=='[')
+        {
+            char * p = mens+1;
+            while (*p) p++;
+            if (p[-1]!=']')
+            {
+                fprintf(log, "%s:%d: [ sem ]\n", arqinicio, linhanum);
+                erro=true;
+                continue;
+            }
+            for (p--; p[-1]==' '; p--);
+            *p=0;
+            classeatual = TClasse::Procura(mens+1);
+            if (classeatual==0)
+            {
+                fprintf(log, "%s:%d: classe não encontrada: [%s]\n",
+                            arqinicio, linhanum, mens+1);
+                erro=true;
+                break;
+            }
+            continue;
+        }
+    // Instruções antes da definição da classe
+        if (classeatual==0)
+        {
+            fprintf(log, "%s:%d: instruções não pertencem a nenhuma classe\n",
+                        arqinicio, linhanum);
+            erro=true;
+            continue;
+        }
+    // Verifica instrução
+        char codificado[500];
+        //fprintf(log, "= %s\n", mens);
+        if (!Instr::Codif(codificado, mens, sizeof(codificado)))
+        {
+            fprintf(log, "%s:%d: %s\n",
+                        arqinicio, linhanum, codificado);
+            erro=true;
+            continue;
+        }
 
 
+// **************************
+// Falta anotar as instruções nas classes
+// **************************
 
+        if (Instr::Mostra(mens, codificado, sizeof(mens)))
+            fprintf(log, "+ %s\n", mens);
+        else
+            fprintf(log, "- %s\n", mens);
+        unsigned tam = Num16(codificado);
+        if (tam>sizeof(codificado))
+            tam=sizeof(codificado);
+        for (unsigned x=0; x<tam; x++)
+            fprintf(log, " %02X", (unsigned char)codificado[x]);
+        fprintf(log, "\n");
+    }
 
+// Verifica se ocorreu erro no mapa
+    if (erro)
+        exit(EXIT_FAILURE);
 
 #ifdef __WIN32__
 // Inicializa WinSock

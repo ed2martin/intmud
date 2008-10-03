@@ -49,8 +49,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_intmud_OBJECTS = main.$(OBJEXT) classe.$(OBJEXT) arqmapa.$(OBJEXT) \
-	instr-codif.$(OBJEXT) arqler.$(OBJEXT) misc.$(OBJEXT) \
-	shs.$(OBJEXT)
+	instr-codif.$(OBJEXT) instr-mostra.$(OBJEXT) arqler.$(OBJEXT) \
+	misc.$(OBJEXT) shs.$(OBJEXT)
 intmud_OBJECTS = $(am_intmud_OBJECTS)
 intmud_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -169,7 +169,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = doc/* make-mingw-* intmud.cfg intmud.map
-intmud_SOURCES = main.cpp classe.cpp classe.h arqmapa.cpp arqmapa.h instr-codif.cpp instr.h arqler.cpp arqler.h misc.cpp misc.h shs.cpp shs.h rbt.cpp.h
+intmud_SOURCES = main.cpp classe.cpp classe.h arqmapa.cpp arqmapa.h instr-codif.cpp instr-mostra.cpp instr.h arqler.cpp arqler.h misc.cpp misc.h shs.cpp shs.h rbt.cpp.h
 AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -263,6 +263,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arqmapa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-codif.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-mostra.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shs.Po@am__quote@

@@ -1,6 +1,13 @@
 #ifndef EXPR_H
 #define EXPR_H
 
+namespace Instr {
+
+//----------------------------------------------------------------------------
+// Funções
+bool Codif(char * destino, const char * origem, int tamanho);
+bool Mostra(char * destino, const char * origem, int tamanho);
+
 //----------------------------------------------------------------------------
 // Cada linha de comando:
 // bytes 0,1 = tamanho em bytes; 0 significa fim da lista de comandos
@@ -8,7 +15,7 @@
 // X bytes = dados do comando (depende do comando)
 
 // Comandos
-enum TComando
+enum Comando
 {
     cHerda,         // 1 byte = número de classes
                     // X bytes = nomes das classes em ASCIIZ
@@ -72,7 +79,7 @@ enum TComando
 
 //----------------------------------------------------------------------------
 // Em expressões numéricas:
-enum TExpressao
+enum Expressao
 {
     ex_fim,         // Fim da variável ou expressão numérica
     ex_coment,      // Marca início de comentário (encontrou #)
@@ -149,5 +156,6 @@ enum TExpressao
 };
 
 //----------------------------------------------------------------------------
+}
 
 #endif

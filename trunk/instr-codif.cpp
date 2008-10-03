@@ -217,6 +217,8 @@ Fim
 
 ***/
 
+using namespace Instr;
+
 //------------------------------------------------------------------------------
 class TListaInstr {
 public:
@@ -292,7 +294,7 @@ static int prioridade(int operador)
 // Codifica uma instrução
 // Retorna: true = conseguiu codificar com sucesso
 //          false = erro, destino contém a mensagem de erro
-bool InstrCodif(char * destino, const char * origem, int tamanho)
+bool Instr::Codif(char * destino, const char * origem, int tamanho)
 {
     char * dest_ini = destino;
     char * dest_fim = destino + tamanho;
@@ -310,7 +312,8 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
     if (*origem=='#')
     {
         destino[2] = cComent;
-        origem++;
+        for (origem++; *origem==' '; origem++);
+        destino+=3;
         while (true)
         {
             if (destino >= dest_fim-1)
@@ -409,11 +412,15 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
             if (r==0)  // Se encontrou
             {
                 destino[2] = ListaInstr[meio].Instr;
-                if (destino[3]==0 || destino[2]>=cVariaveis)
-                    break;
-                copiastr(dest_ini, "Atribuições comum e sav só podem "
-                                "ser usadas em variáveis", tamanho);
-                return false;
+                if (destino[3] && destino[2]<cVariaveis)
+                {
+                    copiastr(dest_ini, "Atribuições comum e sav só podem "
+                                    "ser usadas em variáveis", tamanho);
+                    return false;
+                }
+                while (*origem && *origem!=' ')
+                    origem++;
+                break;
             }
             if (r<0)
                 fim = meio-1;
@@ -430,7 +437,6 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
     {
         destino[3] = 0;
         destino+=4;
-        origem+=5; // Avança após "herda"
     // Obtém as classes
         while (*origem)
         {
@@ -444,8 +450,11 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
         // Copia o nome
             for (; *origem && *origem!=','; origem++)
             {
-                if (p < nome+sizeof(nome))
+                if (p < nome+sizeof(nome)-2)
+                {
                     *p++ = *origem;
+                    continue;
+                }
                 else if (*p==' ')
                     continue;
                 p[-1]=0;
@@ -512,8 +521,11 @@ bool InstrCodif(char * destino, const char * origem, int tamanho)
     // Copia o nome
         for (; *origem && *origem!='='; origem++)
         {
-            if (p < nome+sizeof(nome))
+            if (p < nome+sizeof(nome)-1)
+            {
                 *p++ = *origem;
+                continue;
+            }
             else if (*p==' ')
                 continue;
             copiastr(dest_ini, "Nome de variável muito grande", tamanho);
