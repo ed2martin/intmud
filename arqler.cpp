@@ -71,7 +71,7 @@ int TArqLer::Linha(char * destino, int tamanho)
         if (pler >= ptotal)
         {
             if (arq<0)  // Fim do arquivo
-                return 0;
+                break;
             int x = read(arq, buf, sizeof(buf));
             if (x<0)    // Erro
                 return -1;

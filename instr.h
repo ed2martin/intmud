@@ -6,13 +6,20 @@ namespace Instr {
 //----------------------------------------------------------------------------
 // Funções
 bool Codif(char * destino, const char * origem, int tamanho);
+bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
+int  Prioridade(int operador);
 
 //----------------------------------------------------------------------------
 // Cada linha de comando:
 // bytes 0,1 = tamanho em bytes; 0 significa fim da lista de comandos
 // byte 2 = comando (vide TComando)
 // X bytes = dados do comando (depende do comando)
+
+// Nos comandos que não têm expressões numéricas (exceto Herda),
+// se houver algum comentário, ele virá após os dados do comando.
+// Exemplo,  "fimse # teste" é codificado assim:
+//           0x08, 0x00, cFimSe, 't', 'e', 's', 't', 'e'
 
 // Comandos
 enum Comando
@@ -73,6 +80,7 @@ enum Comando
     cServ,
     cSalvar,
     cProg,
+    cIndice,
 
     cTotalComandos      // Número de comandos - não usado
 };
@@ -144,6 +152,11 @@ enum Expressao
     exo_diferente,  // a!=b
     exo_e,          // a&b
     exo_ou,         // a|b
+    exo_igualmul,   // a*=b
+    exo_igualdiv,   // a/=b
+    exo_igualporcent, // a%=b
+    exo_igualadd,   // a+=b
+    exo_igualsub,   // a-=b
     exo_fim,        // Marca o fim dos operadores
     exo_ee,         // Início do operador &
     exo_ouou,       // Início do operador |
