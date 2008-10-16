@@ -15,8 +15,8 @@ const posicpadrao = 8 # Posição padrão
 # 6=sentado
 # 7=lutando
 # 8=em pé
-uint1 invis # Se está invisível
-uint1 invisver # Se pode ver personagens invisíveis
+int1 invis # Se está invisível
+int1 invisver # Se pode ver personagens invisíveis
 #
 func ini
   posicao = posicpadrao
@@ -57,7 +57,7 @@ func escr # Escreveu alguma coisa; arg0 = o que escreveu
     se(obj & arg0.nivel >= obj.nivel)
       sair
     fimse
-    lin++
+    lin+=1
   efim
 #### Triggers
   se(!este.t1_escr(este, obj, arg0)) # Trigger do personagem
@@ -71,7 +71,7 @@ func escr # Escreveu alguma coisa; arg0 = o que escreveu
     fimse
   efim
   para(x, sala.t2_escr) # Trigger dos objetos da sala
-    se(x != este && x.t1_escr(este, obj, arg0))
+    se(x != este & x.t1_escr(este, obj, arg0))
       ret
     fimse
   efim
@@ -390,7 +390,8 @@ const posic = 8 # Posição mínima para usar esse comando; 8=em pé
 func iniclasse
   criar(arg0)
 func exec # Executa o comando; arg0=personagem, arg1=texto completo
-  ref destino = arg0.sala.[dir]
+  ref destino
+  destino = arg0.sala.[dir]
   se(classe(destino) = "")
     arg0.msg("Impossível seguir nessa direção\n")
   senão(arg0.sala.[dir]_agora >= 2)
@@ -439,16 +440,16 @@ herda casa1_area, sala_comum
 const nome = "Cozinha"
 const descr = "Possui geladeira, fogão e pia. A geladeira está vazia.\
 O chão está preto de sujeira."
-ref norte = $casa1_sala
+const norte = $casa1_sala
 const norte_ini = 3
 
 [casa1_sala]
 herda casa1_area, sala_comum
 const nome = "Sala"
 const descr = "Há uma mesa no meio e 3 poltronas ao redor."
-ref norte = $casa1_quarto
-ref sul = $casa1_cozinha
-ref oeste = $casa1_entrada
+const norte = $casa1_quarto
+const sul = $casa1_cozinha
+const oeste = $casa1_entrada
 const norte_ini = 3
 const sul_ini = 3
 const oeste = 3
@@ -457,9 +458,9 @@ const oeste = 3
 herda casa1_area, sala_comum
 const nome = "Quarto"
 const descr = "Um pequeno quarto com uma janela e cama."
-ref sul = $casa1_sala
+const sul = $casa1_sala
 const sul_ini = 3
-ref leste = este # Para aparecer na lista de saídas válidas
+const leste = este # Para aparecer na lista de saídas válidas
 func tr1_escr # Exemplo de trigger
   se(arg1 = $dir_leste) # Se for o comando dir_leste...
     arg0.msg("Impossível; há um abismo nessa direção\n")
@@ -470,5 +471,5 @@ herda casa1_area, sala_comum
 const nome = "Entrada da casa"
 const descr = "O chão é asfaltado de leste a oeste, até a entrada \
 de uma casa. Ao redor há muita grama bem tratada."
-ref leste = $casa1_sala
+const leste = $casa1_sala
 const leste_ini = 3

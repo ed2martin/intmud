@@ -364,8 +364,9 @@ void Inicializa()
     if (erro)
         exit(EXIT_FAILURE);
 
-// Para testes
- /*   printf("Classes:");
+// Para testes - mostra arquivos e classes
+#if 0
+    printf("Classes:");
     for (TClasse * obj = TClasse::RBfirst(); obj; obj=TClasse::RBnext(obj))
         printf(" [%s]", obj->Nome);
     putchar('\n');
@@ -381,7 +382,8 @@ void Inicializa()
             printf(" %s", arqinicio);
         }
         putchar('\n');
-    } */
+    }
+#endif
 
 // Obtém instruções das classes
     TClasse * classeatual = 0;
@@ -467,16 +469,23 @@ void Inicializa()
 // Falta anotar as instruções nas classes
 // **************************
 
-        if (Instr::Mostra(mens, codificado, sizeof(mens)))
-            fprintf(log, "+ %s\n", mens);
-        else
-            fprintf(log, "- %s\n", mens);
+#if 0
         unsigned tam = Num16(codificado);
         if (tam>sizeof(codificado))
             tam=sizeof(codificado);
         for (unsigned x=0; x<tam; x++)
             fprintf(log, " %02X", (unsigned char)codificado[x]);
         fprintf(log, "\n");
+
+        if (Instr::Mostra(mens, codificado, sizeof(mens)))
+            fprintf(log, "+ %s\n", mens);
+        else
+            fprintf(log, "- %s\n", mens);
+#endif
+        if (Instr::Decod(mens, codificado, sizeof(mens)))
+            fprintf(log, "++ %s\n", mens);
+        else
+            fprintf(log, "-- %s\n", mens);
     }
 
 // Verifica se ocorreu erro no mapa

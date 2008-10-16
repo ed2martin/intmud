@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "instr.h"
 #include "classe.h"
 #include "misc.h"
@@ -55,8 +56,8 @@ Variável modo:
 Um valor qualquer de TExpressao
 
 Variável arg:
-0 = espera operador unitário ou valor qualquer
-1 = espera operador binário
+falso = espera operador unitário ou valor qualquer
+verdadeiro = espera operador binário
 
 Pilha:
 PUSH alguma coisa -> coloca no topo da pilha
@@ -64,7 +65,7 @@ POP alguma coisa -> tira do topo da pilha
 
 *** Algoritmo - codifica de expressão:
 
-arg=0
+arg=falso
 modo=0
 
 (1)
@@ -86,18 +87,18 @@ Se modo = ex_var1 ou modo = ex_var2
     Vai para (1)
   Se *origem for '[':
     Anota ex_abre
-    arg=0
+    arg=falso
     PUSH modo
     modo = ex_colchetes
     Vai para (1)
   Se *origem for '(':
-    arg=0
+    arg=falso
     PUSH modo
     modo = ex_parenteses
     Vai para (1)
   POP modo
   Anota modo
-  arg=1
+  arg=verdadeiro
   Vai para (1)
 
 // Ignora espaço entre operadores e operandos
@@ -106,31 +107,31 @@ Se *origem for espaço:
 
 // Operando é texto
 Se *origem for aspas duplas:
-  Se arg=1:
+  Se arg=verdadeiro:
     Erro na expressão
-  arg=1
+  arg=verdadeiro
   Copia texto, avança até encontrar aspas duplas novamente
   Vai para (1)
 
 // Operando numérico
 Se *origem for um dígito de 0 a 9:
-  Se arg=1:
+  Se arg=verdadeiro:
     Erro na expressão
-  arg=1
+  arg=verdadeiro
   Anota como constante
   Vai para (1)
 
 Se *origem for um hífen seguido de um dígito de 0 a 9:
-  Se arg=0:
-    arg=1
+  Se arg=falso:
+    arg=verdadeiro
     Anota como constante
     Vai para (1)
 
 // Início de nome de variável
 Se *origem for '$', '[' ou uma letra de A a Z:
-  Se arg=1:
+  Se arg=verdadeiro:
     Erro na expressão
-  arg=1
+  arg=verdadeiro
   Se for "nulo" seguido de alguma coisa diferente de A-Z, 0-9 e [:
     Anota ex_nulo
     Avança origem para depois da palavra "nulo"
@@ -147,14 +148,14 @@ Se *origem for '$', '[' ou uma letra de A a Z:
 
 // Parênteses
 Se *origem for abre parênteses:
-  Se arg=1
+  Se arg=verdadeiro
     Erro na expressão
   PUSH modo
   modo = ex_parenteses
   Vai para (1)
 
 Se *origem for fecha parênteses:
-  Se arg=0
+  Se arg=falso
     Erro na expressão
   Enquanto modo for operador:
     Anota modo
@@ -174,7 +175,7 @@ Se *origem for fecha parênteses:
 
 // Fecha colchetes - volta a processar nome de variável
 Se *origem for fecha colchetes:
-  Se arg=0
+  Se arg=falso
     Erro na expressão
   Enquanto modo for operador:
     Anota modo
@@ -187,7 +188,7 @@ Se *origem for fecha colchetes:
 
 // Verifica operadores e precedência de operadores
 Se for operador:
-  Se for operador '-' e arg=0:
+  Se for operador '-' e arg=falso:
     É operador '-' unitário
   Se o tipo de operador (binário ou unitário) não combinar com arg:
     Erro na expressão
@@ -197,7 +198,7 @@ Se for operador:
     POP modo
   PUSH modo
   modo=operador encontrado
-  arg=0
+  arg=falso
   Vai para (1)
 
 // Fim da sentença
@@ -205,7 +206,7 @@ Se for \0:
   Enquanto modo for operador:
     Anota modo
     POP modo
-  Se (modo=0 e arg=1):
+  Se (modo=0 e arg=verdadeiro):
     Acabou a string
   Caso contrário:
     Erro na expressão
@@ -236,10 +237,11 @@ static const TListaInstr ListaInstr[] = {
     { "fimse",     cFimSe },
     { "func",      cFunc },
     { "herda",     cHerda },
+    { "indice",    cIndice },
+    { "int1",      cIntb0 }, // Pode ser cIntb0 a cIntb7
     { "int16",     cInt16 },
     { "int32",     cInt32 },
     { "int8",      cInt8 },
-    { "intb0",     cIntb0 }, // Pode ser cIntb0 a cIntb7
     { "intdec",    cIntDec },
     { "intinc",    cIntInc },
     { "listamsg",  cListaMsg },
@@ -264,13 +266,28 @@ static const TListaInstr ListaInstr[] = {
 };
 
 //------------------------------------------------------------------------------
+static int comparaNome(const char * string1, const char * string2)
+{
+    for (;; string1++, string2++)
+    {
+        unsigned char ch1,ch2;
+        ch1=(*string1==' ' ? 0 : tabNOMES[*(unsigned char *)string1]);
+        ch2=(*string2==' ' ? 0 : tabNOMES[*(unsigned char *)string2]);
+        if (ch1==0 || ch2==0)
+            return (ch1 ? 1 : ch2 ? -1 : 0);
+        if (ch1!=ch2)
+            return (ch1<ch2 ? -1 : 1);
+    }
+}
+
+//------------------------------------------------------------------------------
 // Retorna um número que corresponde à prioridade do operador
-// Usado em InstrCodif
-static int prioridade(int operador)
+// Retorna um valor de 2 a 0x1F, ou 0 se operador inválido
+int Instr::Prioridade(int operador)
 {
     switch (operador)
     {
-    case exo_virgula:    return 1;
+    case exo_virgula:    return 20;
     case exo_neg:        return 2;
     case exo_exclamacao: return 2;
     case exo_mul:        return 3;
@@ -286,6 +303,11 @@ static int prioridade(int operador)
     case exo_diferente:  return 6;
     case exo_e:          return 7;
     case exo_ou:         return 8;
+    case exo_igualmul:   return 9;
+    case exo_igualdiv:   return 9;
+    case exo_igualporcent: return 9;
+    case exo_igualadd:   return 9;
+    case exo_igualsub:   return 9;
     }
     return 0;
 }
@@ -298,6 +320,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 {
     char * dest_ini = destino;
     char * dest_fim = destino + tamanho;
+    bool proc_expr = false; // true = vai processar expressão numérica
+                            // false = checar se tem comentário após instrução
 
 // Verifica tamanho mínimo
     if (tamanho<10)
@@ -342,13 +366,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         while (*origem==' ')
             origem++;
     // Verifica atributos de variáveis: comum e sav
-        if (compara(origem, "comum")==0)
+        if (comparaNome(origem, "comum")==0)
         {
             destino[3] |= 1;
             origem += 5;
             continue;
         }
-        if (compara(origem, "sav")==0)
+        if (comparaNome(origem, "sav")==0)
         {
             destino[3] |= 2;
             origem += 3;
@@ -408,21 +432,24 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
             int meio = (ini+fim)/2;
-            int r = compara(origem, ListaInstr[meio].Nome);
-            if (r==0)  // Se encontrou
+            int resultado = comparaNome(origem, ListaInstr[meio].Nome);
+        // Verifica se encontrou
+            if (resultado==0)  // Se encontrou
             {
+                origem += strlen(ListaInstr[meio].Nome);
+                //while (*origem && *origem!=' ')
+                //    origem++;
                 destino[2] = ListaInstr[meio].Instr;
-                if (destino[3] && destino[2]<cVariaveis)
+                if (destino[3] && (destino[2]<cVariaveis ||
+                           destino[2]==cConstExpr || destino[2]==cFunc))
                 {
                     copiastr(dest_ini, "Atribuições comum e sav só podem "
                                     "ser usadas em variáveis", tamanho);
                     return false;
                 }
-                while (*origem && *origem!=' ')
-                    origem++;
                 break;
             }
-            if (r<0)
+            if (resultado<0)
                 fim = meio-1;
             else
                 ini = meio+1;
@@ -438,6 +465,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino[3] = 0;
         destino+=4;
     // Obtém as classes
+        TClasse * classes[20];
+        unsigned int total = 0;
         while (*origem)
         {
             char nome[80];
@@ -479,6 +508,23 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     copiastr(dest_ini, "Faltou o nome da classe", tamanho);
                 return false;
             }
+        // Verifica número de classes
+            if (total >= sizeof(classes) / sizeof(classes[0]))
+            {
+                mprintf(dest_ini, tamanho,
+                        "Deve definir no máximo %d classes",
+                        sizeof(classes) / sizeof(classes[0]));
+                return false;
+            }
+        // Verifica se classe repetida
+            classes[total] = obj;
+            for (unsigned int x=0; x<total; x++)
+                if (classes[x] == obj)
+                {
+                    mprintf(dest_ini, tamanho, "Classe repetida: %s", nome);
+                    return false;
+                }
+            total++;
         // Copia o nome da classe
             if (destino+strlen(obj->Nome)+1 > dest_fim)
             {
@@ -493,14 +539,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 origem++;
         }
     // Checa número de classes encontradas
-        if (dest_ini[3]==0)
+        if (total==0)
         {
             copiastr(dest_ini, "Deve definir pelo menos uma classe", tamanho);
-            return false;
-        }
-        if ((unsigned char)dest_ini[3]>20)
-        {
-            copiastr(dest_ini, "Deve definir no máximo 20 classes", tamanho);
             return false;
         }
         dest_ini[0] = (destino - dest_ini);
@@ -519,7 +560,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         while (*origem==' ')
             origem++;
     // Copia o nome
-        for (; *origem && *origem!='='; origem++)
+        for (; *origem && *origem!='=' && *origem!='#'; origem++)
         {
             if (p < nome+sizeof(nome)-1)
             {
@@ -565,81 +606,107 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino = copiastr(destino+5, nome);
         destino++;
         dest_ini[4] = destino - dest_ini;
-    // Verifica se não é variável Const
-        if (destino[2] != cConstExpr)
+    // Variável Const
+        if (dest_ini[2] == cConstExpr)
         {
-            if (*origem)
+            if (*origem==0 || *origem=='#')
             {
-                copiastr(dest_ini,
-                         "Variável não permite atribuição de valor", tamanho);
+                copiastr(dest_ini, "Faltou atribuir um valor à variável const",
+                             tamanho);
                 return false;
             }
-            dest_ini[0] = (destino - dest_ini);
-            dest_ini[1] = (destino - dest_ini) >> 8;
-            return true;
+            origem++;
+            proc_expr=true;
         }
-    // Variável Const
-        if (*origem==0)
+    // Outros tipos de variáveis
+        else if (*origem && *origem!='#')
         {
-            copiastr(dest_ini, "Faltou atribuir um valor à variável const",
-                     tamanho);
+            copiastr(dest_ini,
+                    "Variável não permite atribuição de valor", tamanho);
             return false;
         }
-        origem++;
     }
 
 // Verifica instruções de controle de fluxo
-    switch (destino[2])
+// Acerta destino e proc_expr
+    switch (dest_ini[2])
     {
     case cSe:       // Requerem expressão numérica
     case cEnquanto:
         destino += 5;
+        proc_expr=true;
         break;
     case cSenao1:   // Pode ter ou não expressão numérica
-        if (*origem==0)
+        if (*origem==0 || *origem=='#')
         {
-            dest_ini[0]=3;
-            dest_ini[1]=0;
-            return true;
+            destino+=3;
+            break;
         }
         destino[2] = cSenao2;
         destino += 5;
+        proc_expr=true;
         break;
     case cRet1:     // Pode ter ou não expressão numérica
         if (*origem==0)
         {
-            dest_ini[0]=3;
-            dest_ini[1]=0;
-            return true;
+            destino += 3;
+            break;
         }
         destino[2] = cRet2;
         destino += 3;
+        proc_expr=true;
         break;
     case cEFim:     // Dois bytes de dados
     case cSair:
     case cContinuar:
-        dest_ini[0]=5;
-        dest_ini[1]=0;
-        return true;
+        destino += 5;
+        break;
     case cFimSe:    // Nenhum byte de dados
     case cTerminar:
-        dest_ini[0]=3;
-        dest_ini[1]=0;
-        return true;
+        destino += 3;
+        break;
     case cExpr:  // Expressão numérica pura
         destino += 3;
+        proc_expr=true;
         break;
     case cConstExpr: // Variável Const - já foi verificado acima
         break;
-    default: // Nenhum dos anteriores; provavelmente nunca chegará aqui
+    default: // Nenhum dos anteriores
+        if (dest_ini[2] > cVariaveis)
+            break;
         copiastr(dest_ini, "Instrução desconhecida", tamanho);
         return false;
+    }
+
+// Anota comentário, se houver
+    if (!proc_expr)
+    {
+        if (*origem=='#')
+        {
+            const char * final = destino;
+            origem++;
+            while (*origem==' ')
+                origem++;
+        // Verifica se tem espaço
+            if (destino + strlen(origem) + 2 >= dest_fim)
+            {
+                copiastr(dest_ini, "Instrução muito grande", tamanho);
+                return false;
+            }
+            destino = copiastr(destino, origem);
+            while (destino>final && destino[-1]==' ')
+                destino--;
+        }
+        dest_ini[0] = (destino - dest_ini);
+        dest_ini[1] = (destino - dest_ini) >> 8;
+        return true;
     }
 
 // Processa expressão numérica
     char pilha[512];
     char * topo = pilha;
-    int arg=0, modo=0;
+    int  modo=0;
+    bool arg=false;
     *topo++ = 0;
     while (true)
     {
@@ -667,26 +734,34 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
             else if (*origem=='.')
             {
-                *destino++ = ex_ponto;
+                origem++;
+                if (destino[-1] != ex_ponto)
+                    *destino++ = ex_ponto;
                 modo = ex_var2;
             }
             else if (*origem=='[')
             {
+                origem++;
                 *destino++ = ex_abre;
-                arg=0;
+                arg=false;
                 *topo++ = modo;
                 modo = ex_colchetes;
             }
             else if (*origem=='(')
             {
-                arg=0;
+                origem++;
+                *destino++ = ex_arg;
+                arg=false;
                 *topo++ = modo;
                 modo = ex_parenteses;
             }
             else
             {
+                if (destino[-1] != ex_ponto)
+                    *destino++ = ex_ponto;
+                *destino++ = ex_varfim;
                 modo = *--topo;
-                arg=1;
+                arg=true;
             }
             continue;
         }
@@ -698,12 +773,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Texto
         if (*origem=='\"')
         {
-            if (arg==1)
+            if (arg)
             {
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
             }
-            arg=1;
+            arg=true;
             *destino++ = ex_txt;
             for (origem++; *origem!='\"' && destino<dest_fim-2; origem++)
             {
@@ -720,9 +795,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     case 0:
                         copiastr(dest_ini, "Faltou fechar aspas", tamanho);
                         return false;
+                    case 'N':
                     case 'n': *destino++ = ex_barra_n; break;
+                    case 'B':
                     case 'b': *destino++ = ex_barra_b; break;
+                    case 'C':
                     case 'c': *destino++ = ex_barra_c; break;
+                    case 'D':
                     case 'd': *destino++ = ex_barra_d; break;
                     default:  *destino++ = *origem;
                     }
@@ -730,6 +809,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 }
                 *destino++ = *origem;
             }
+            origem++;
             if (destino < dest_fim-1)
                 *destino++ = 0;
             continue;
@@ -737,14 +817,14 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 
     // Número
         if (*origem>='0' && *origem<='9' ||
-             (arg==0 && *origem=='-' && origem[1]>='0' && origem[1]<='9'))
+             (!arg && *origem=='-' && origem[1]>='0' && origem[1]<='9'))
         {
-            if (arg==1)
+            if (arg)
             {
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
             }
-            arg=1;
+            arg=true;
             bool negativo=false; // Se é negativo
             int  virgula=0;      // Casas após a vírgula
             long long valor=0;   // Valor lido
@@ -757,7 +837,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 {
                     if (virgula)
                     {
-                        copiastr(dest_ini, "Números não podem ter mais de um ponto", tamanho);
+                        copiastr(dest_ini,
+                             "Números não podem ter mais de um ponto", tamanho);
                         return false;
                     }
                     virgula=1;
@@ -765,7 +846,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 }
                 if (*origem<'0' || *origem>'9')
                     break;
-                virgula++;
+                if (virgula)
+                    virgula++;
                 valor = (valor*10+*origem-'0');
                 if (valor > 0xFFFFFFFFLL)
                 {
@@ -781,7 +863,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 *destino++ = ex_num0;
                 continue;
             }
-            if (valor==0 && negativo==false) // Um
+            if (valor==1 && negativo==false) // Um
                 *destino++ = ex_num1;
             else if (valor<0x100) // Número de 8 bits
             {
@@ -822,12 +904,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             {
                 switch (virgula)
                 {
-                case 1:  *destino += ex_div1;  break;
-                case 2:  *destino += ex_div2;  break;
-                case 3:  *destino += ex_div3;  break;
-                case 4:  *destino += ex_div4;  break;
-                case 5:  *destino += ex_div5;  break;
-                default: *destino += ex_div6;
+                case 1:  *destino++ = ex_div1;  break;
+                case 2:  *destino++ = ex_div2;  break;
+                case 3:  *destino++ = ex_div3;  break;
+                case 4:  *destino++ = ex_div4;  break;
+                case 5:  *destino++ = ex_div5;  break;
+                default: *destino++ = ex_div6;
                 }
                 virgula -= 6;
             }
@@ -838,12 +920,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         if (*origem=='$' || *origem=='[' ||
                     tabNOMES[*(unsigned char*)origem]!=0)
         {
-            if (arg==1)
+            if (arg)
             {
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
             }
-            arg=1;
+            arg=true;
         // Verifica "nulo"
             if ((origem[0]|0x20)=='n' && (origem[1]|0x20)=='u' &&
                 (origem[2]|0x20)=='l' && (origem[3]|0x20)=='o' &&
@@ -854,32 +936,41 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 continue;
             }
         // Verifica se começa com colchetes
-            if (*origem=='[')
-                *destino++ = ex_varabre;
-            else
-                *destino++ = *origem;
-            origem++;
             *topo++ = modo;
             modo = ex_var1;
+            if (*origem=='[')
+            {
+                *destino++ = ex_varabre;
+                arg=false;
+                *topo++ = modo;
+                modo = ex_colchetes;
+            }
+            else
+            {
+                *destino++ = ex_varini;
+                *destino++ = *origem;
+            }
+            origem++;
             continue;
         }
 
     // Parênteses
         if (*origem=='(')
         {
-            if (arg==1)
+            origem++;
+            if (arg)
             {
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
             }
-            arg=1;
             *topo++ = modo;
             modo = ex_parenteses;
             continue;
         }
         if (*origem==')')
         {
-            if (arg==0)
+            origem++;
+            if (!arg)
             {
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
@@ -895,7 +986,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Verifica se tinha abre parênteses
             if (modo != ex_parenteses)
             {
-                mprintf(dest_fim, tamanho, ") sem (");
+                mprintf(dest_ini, tamanho, ") sem (");
                 return false;
             }
             modo = *--topo;
@@ -917,7 +1008,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Fecha colchetes
         if (*origem==']')
         {
-            if (arg==0)
+            origem++;
+            if (!arg)
             {
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
@@ -933,7 +1025,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Verifica se tinha abre colchetes
             if (modo != ex_colchetes)
             {
-                mprintf(dest_ini, tamanho, ") sem (");
+                mprintf(dest_ini, tamanho, "] sem [");
                 return false;
             }
             modo = *--topo;
@@ -951,7 +1043,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
             if (destino >= dest_fim-1)
                 continue;
-            if (modo!=0 || arg!=1)
+            if (modo!=0 || !arg)
             {
                 copiastr(dest_ini, "Erro na instrução", tamanho);
                 return false;
@@ -961,17 +1053,16 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             {
                 *destino++ = ex_coment;
                 origem++;
-                while (true)
+                while (*origem==' ')
+                    origem++;
+                if (destino + strlen(origem) + 2 >= dest_fim)
                 {
-                    if (destino >= dest_fim-1)
-                    {
-                        copiastr(dest_ini, "Instrução muito grande", tamanho);
-                        return false;
-                    }
-                    if (*origem==0)
-                        break;
-                    *destino++ = *origem++;
+                    copiastr(dest_ini, "Instrução muito grande", tamanho);
+                    return false;
                 }
+                destino = copiastr(destino, origem);
+                while (destino[-1]==' ')
+                    destino--;
             }
         // Marca o fim da instrução
             *destino++ = 0;
@@ -982,8 +1073,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return true;
             const char * p = dest_ini + (unsigned char)dest_ini[4];
             int tipo = 0;
-            while (*p)
+            while (true)
             {
+                assert(p<destino);
                 switch (*p)
                 {
                 case ex_fim:
@@ -1001,6 +1093,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     if (tipo)
                         return true;
                     tipo = cConstTxt;
+                    while (*p)
+                        p++;
                     p++;
                     break;
                 case ex_num32p:
@@ -1027,6 +1121,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 case ex_div6:
                     if (tipo!=cConstNum)
                         return true;
+                    p++;
                     break;
                 default:
                     return true;
@@ -1039,7 +1134,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         bool bsinal = true; // Verdadeiro se operador binário
         switch (*origem)
         {
-        case ',': sinal=exo_virgula, bsinal=false; break;
+        case ',': sinal=exo_virgula; break;
 
         case '!': if (origem[1]=='=')
                       sinal=exo_diferente,origem++;
@@ -1047,12 +1142,30 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                       sinal=exo_exclamacao,bsinal=false;
                   break;
 
-        case '*': sinal=exo_mul; break;
-        case '/': sinal=exo_div; break;
-        case '%': sinal=exo_porcent; break;
+        case '*': sinal=exo_mul;
+                  if (origem[1]=='=')
+                      sinal=exo_igualmul,origem++;
+                  break;
+        case '/': sinal=exo_div;
+                  if (origem[1]=='=')
+                      sinal=exo_igualdiv,origem++;
+                  break;
+        case '%': sinal=exo_porcent;
+                  if (origem[1]=='=')
+                      sinal=exo_igualporcent,origem++;
+                  break;
 
-        case '+': sinal=exo_add; break;
-        case '-': sinal=(arg ? exo_sub : exo_neg); break;
+        case '+': sinal=exo_add;
+                  if (origem[1]=='=')
+                      sinal=exo_igualadd,origem++;
+                  break;
+        case '-': if (origem[1]=='=')
+                      sinal=exo_igualsub,origem++;
+                  else if (arg)
+                      sinal=exo_sub;
+                  else
+                      sinal=exo_neg,bsinal=false;
+                  break;
 
         case '<': sinal=exo_menor;
                   if (origem[1]=='=')
@@ -1072,6 +1185,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
             return false;
         }
+        origem++;
 
     // Verifica tipo de operador
         if (arg != bsinal)
@@ -1081,18 +1195,24 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         }
 
     // Anota operadores que têm mais prioridade sobre o operador encontrado
-        int pri_sinal = prioridade(sinal);
+        int pri_sinal = Instr::Prioridade(sinal);
         while (modo>exo_ini && modo<exo_fim &&
-               pri_sinal >= prioridade(modo) &&
+               pri_sinal >= Instr::Prioridade(modo) &&
                destino < dest_fim-1)
         {
             *destino++ = modo;
             modo = *--topo;
         }
-        if (destino >= dest_fim-1)
+        if (destino >= dest_fim-2)
             continue;
+
+        if (sinal==exo_e)
+            *destino++ = exo_ee;
+        if (sinal==exo_ou)
+            *destino++ = exo_ouou;
+
         *topo++ = modo;
         modo = sinal;
-        arg=0;
+        arg=false;
     }
 }
