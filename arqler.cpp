@@ -112,7 +112,11 @@ int TArqLer::Linha(char * destino, int tamanho)
 
     // Fim da linha
         if (destinoini != destino) // Linha não vazia
-            break;
+        {
+            if (destino[-1]!='\\')
+                break;
+            destino--, tamanho++;
+        }
         linhanum++;
     }
     // Verifica se leu alguma coisa

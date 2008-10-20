@@ -16,6 +16,7 @@
 #include <string.h>     // Funções string
 #include <dirent.h>
 #include <errno.h>
+#include <assert.h>
 #ifdef __WIN32__
  #include <windows.h>
  #include <winsock.h>
@@ -386,7 +387,11 @@ void Inicializa()
 #endif
 
 // Obtém instruções das classes
+// Acerta TClasse::Comandos e TClasse::NumDeriv
     TClasse * classeatual = 0;
+    char comando[65000];
+    unsigned int pcomando=0;
+
     // Abre intmud.map
     strcpy(arqext, ".map");
     if (!arq.Abrir(arqnome))
@@ -404,8 +409,22 @@ void Inicializa()
             fprintf(log, "Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
             exit(EXIT_FAILURE);
         }
+        if (linhanum==0 || *mens=='[') // Fim do arquivo ou próxima classe
+        {
+            if (classeatual) // Anota instruções da classe
+            {
+                comando[pcomando]=0;    // Marca fim da lista de comandos
+                comando[pcomando+1]=0;
+                pcomando += 2;
+                classeatual->Comandos = new char[pcomando]; // Anota comandos
+                memcpy(classeatual->Comandos, comando, pcomando);
+            }
+            pcomando = 0;
+            classeatual = 0;
+        }
         if (linhanum==0) // Fim do arquivo
         {
+        // Avança para próximo arquivo, se existir
             if (mapa)
                 mapa = mapa->Proximo;
             if (mapa==0)
@@ -417,7 +436,6 @@ void Inicializa()
                         arqinicio, strerror(errno));
                 exit(EXIT_FAILURE);
             }
-            classeatual = 0;
         }
     // Verifica linha MAPAGRANDE
         if (comparaZ(mens, "MAPAGRANDE")==0)
@@ -453,44 +471,146 @@ void Inicializa()
             erro=true;
             continue;
         }
-    // Verifica instrução
-        char codificado[500];
+    // Codifica instrução
         //fprintf(log, "= %s\n", mens);
-        if (!Instr::Codif(codificado, mens, sizeof(codificado)))
+        if (pcomando + 500 >= sizeof(comando))
         {
-            fprintf(log, "%s:%d: %s\n",
-                        arqinicio, linhanum, codificado);
+            fprintf(log, "%s:%d: Espaço insuficiente; classe muito grande\n",
+                        arqinicio, linhanum);
             erro=true;
             continue;
         }
-
-
-// **************************
-// Falta anotar as instruções nas classes
-// **************************
-
+        if (!Instr::Codif(comando+pcomando, mens,
+                            sizeof(comando)-pcomando))
+        {
+            fprintf(log, "%s:%d: %s\n",
+                        arqinicio, linhanum, comando+pcomando);
+            erro=true;
+            continue;
+        }
+    // Informações sobre o que codificou
 #if 0
-        unsigned tam = Num16(codificado);
-        if (tam>sizeof(codificado))
-            tam=sizeof(codificado);
+        unsigned tam = Num16(comando+pcomando);
+        if (tam>sizeof(comando)-pcomando)
+            tam=sizeof(comando)-pcomando;
         for (unsigned x=0; x<tam; x++)
-            fprintf(log, " %02X", (unsigned char)codificado[x]);
+            fprintf(log, " %02X", (unsigned char)comando[pcomando+x]);
         fprintf(log, "\n");
 
-        if (Instr::Mostra(mens, codificado, sizeof(mens)))
+        if (Instr::Mostra(mens, comando+pcomando, sizeof(mens)))
             fprintf(log, "+ %s\n", mens);
         else
             fprintf(log, "- %s\n", mens);
-#endif
-        if (Instr::Decod(mens, codificado, sizeof(mens)))
+        if (Instr::Decod(mens, comando+pcomando, sizeof(mens)))
             fprintf(log, "++ %s\n", mens);
         else
             fprintf(log, "-- %s\n", mens);
+#endif
+    // Verifica instrução
+        if (comando[pcomando+2]==Instr::cHerda)
+        {
+            if (pcomando!=0)
+            {
+                fprintf(log, "%s:%d: Herda deve ser "
+                            "a primeira instrução da classe\n",
+                            arqinicio, linhanum);
+                erro=true;
+                continue;
+            }
+            const char * p = comando+pcomando+4;
+            for (unsigned char x = comando[pcomando+3]; x; x--)
+            {
+                TClasse * obj = TClasse::Procura(p);
+                assert(obj!=0);
+                obj->NumDeriv++;
+                while (*p++);
+                if (obj!=classeatual)
+                    continue;
+                fprintf(log, "%s:%d: Impossível herdar a própria classe\n",
+                            arqinicio, linhanum);
+                erro=true;
+                continue;
+            }
+        }
+        pcomando += Num16(comando+pcomando);
     }
 
 // Verifica se ocorreu erro no mapa
     if (erro)
         exit(EXIT_FAILURE);
+
+// Verifica se todas as classes foram anotadas
+// Aloca memória em TClasse::ListaDeriv
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    {
+        if (cl->NumDeriv)
+        {
+            cl->ListaDeriv = new TClasse* [cl->NumDeriv];
+            cl->NumDeriv = 0;
+        }
+        if (cl->Comandos==0)
+        {
+            fprintf(log, "Erro de fase; provavelmente algum arquivo mudou\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+// Acerta lista de classes derivadas:
+// TClasse::ListaDeriv e TClasse::NumDeriv
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    {
+    // Verifica se tem instrução herda
+        if (cl->Comandos[0]==0 && cl->Comandos[1]==0)
+            continue;
+        if (cl->Comandos[2]!=Instr::cHerda)
+            continue;
+    // Checa classes herdadas
+        const char * p = cl->Comandos+4;
+        for (unsigned char x = cl->Comandos[3]; x; x--)
+        {
+            TClasse * obj = TClasse::Procura(p);
+            assert(obj!=0);
+            obj->ListaDeriv[ obj->NumDeriv++ ] = cl;
+            while (*p++);
+        }
+    }
+
+// Para testes - mostra classes e instruções
+#if 1
+    printf("Classes:\n");
+    for (TClasse * obj = TClasse::RBfirst(); obj; obj=TClasse::RBnext(obj))
+    {
+        printf("\n[%s]\n", obj->Nome);
+        if (obj->NumDeriv)
+        {
+            printf("*** Herdada em:");
+            for (int x=0; x<obj->NumDeriv; x++)
+                printf("%s%s", x==0 ? " " : ", ", obj->ListaDeriv[x]->Nome);
+            putchar('\n');
+        }
+        for (const char * p = obj->Comandos; Num16(p); p+=Num16(p))
+        {
+            char mens[500];
+            if (Instr::Decod(mens, p, sizeof(mens)))
+                printf("%s\n", mens);
+            else
+            {
+                printf("**** Erro\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+    putchar('\n');
+#endif
+
+
+  // ***************************
+  // Falta: acertar as listas de funções variáveis das classes
+  // Falta: executar as funções ini das classes
+  // ***************************
+
+
+
 
 #ifdef __WIN32__
 // Inicializa WinSock
