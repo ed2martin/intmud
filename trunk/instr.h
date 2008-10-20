@@ -8,6 +8,7 @@ namespace Instr {
 bool Codif(char * destino, const char * origem, int tamanho);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
+bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
 
 //----------------------------------------------------------------------------
@@ -74,6 +75,7 @@ enum Comando
     cListaObj,
     cListaTxt,
     cListaMsg,
+    cNomeObj,
     cLog,
     cVarTempo,
     cSocket,

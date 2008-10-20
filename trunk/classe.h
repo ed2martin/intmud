@@ -14,6 +14,11 @@ public:
     char * Comandos;    // Lista de comandos da classe
     char Nome[32];      // Nome da classe; não deve ser mudado
 
+// Classes derivadas dessa (herança)
+// Nota: antes de apagar uma classe, deve-se apagar as classes derivadas
+    TClasse ** ListaDeriv; // Matriz (é NULL se NumDeriv==0)
+    int NumDeriv;       // Número de elementos da matriz
+
 // Árvore organizada por TClasse::Nome
 public:
     void RBinsert(void);

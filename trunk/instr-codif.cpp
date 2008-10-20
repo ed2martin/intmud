@@ -248,6 +248,7 @@ static const TListaInstr ListaInstr[] = {
     { "listaobj",  cListaObj },
     { "listatxt",  cListaTxt },
     { "log",       cLog },
+    { "nomeobj",   cNomeObj },
     { "prog",      cProg },
     { "real",      cReal },
     { "ref",       cRef },
@@ -255,7 +256,7 @@ static const TListaInstr ListaInstr[] = {
     { "sair",      cSair },
     { "salvar",    cSalvar },
     { "se",        cSe },
-    { "Senao",     cSenao1 }, // Pode ser cSenao1 ou cSenao2
+    { "senao",     cSenao1 }, // Pode ser cSenao1 ou cSenao2
     { "serv",      cServ },
     { "socket",    cSocket },
     { "terminar",  cTerminar },
@@ -310,6 +311,26 @@ int Instr::Prioridade(int operador)
     case exo_igualsub:   return 9;
     }
     return 0;
+}
+
+//------------------------------------------------------------------------------
+// Verifica se instrução codificada é herda e contém a classe especificada
+bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
+{
+    if (instr[0]==0 && instr[1]==0)
+        return false;
+    if (instr[2] != cHerda)
+        return false;
+    int x = *(unsigned char*)instr[3];
+    for (instr+=4; x; x--)
+    {
+        if (comparaZ(instr, nomeclasse)==0)
+            return true;
+        while (*instr)
+            instr++;
+        instr++;
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------

@@ -21,6 +21,8 @@ TClasse::TClasse(const char * nome)
 {
     Comandos=0;
     copiastr(Nome, nome, sizeof(Nome));
+    ListaDeriv=0;
+    NumDeriv=0;
     RBinsert();
 }
 

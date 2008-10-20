@@ -100,7 +100,10 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             copiastr(destino, "Espaço insuficiente", tamanho);
             return false;
         }
-        sprintf(destino, "# %s", origem+3);
+        if (origem[3]==0)
+            strcpy(destino, "#");
+        else
+            sprintf(destino, "# %s", origem+3);
         return true;
 
 // Constrole de fluxo
@@ -158,6 +161,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cListaObj:  strcpy(nome, "listaobj"); break;
     case cListaTxt:  strcpy(nome, "listatxt"); break;
     case cListaMsg:  strcpy(nome, "listamsg"); break;
+    case cNomeObj:   strcpy(nome, "nomeobj"); break;
     case cLog:       strcpy(nome, "log"); break;
     case cVarTempo:  strcpy(nome, "vartempo"); break;
     case cSocket:    strcpy(nome, "socket"); break;
@@ -539,7 +543,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                 else if (*origem==ex_abre)
                 {
                     origem++;
-                    *destino++ = '(';
+                    *destino++ = '[';
                     break;
                 }
                 else
