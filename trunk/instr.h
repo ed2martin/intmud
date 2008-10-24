@@ -12,6 +12,24 @@ bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
 
 //----------------------------------------------------------------------------
+class ChecaLinha
+{
+public:
+    ChecaLinha();
+    void Inicio();      // Indica que está no início da lista de instruções
+    const char * Instr(const char * instr);
+                        // Checa próxima instrução da lista
+                        // Retorna 0 se instrução está no lugar correto
+                        // Caso contrário, retorna mensagem de erro
+private:
+    char esperando;     // 0=início do arquivo; pode receber "herda"
+                        // 1=nenhuma função definida
+                        // 2=instruções e variáveis de uma função
+                        // 3=instruções de uma função
+                        // 4=após definição de função + definição de constante
+};
+
+//----------------------------------------------------------------------------
 // Cada linha de comando:
 // bytes 0,1 = tamanho em bytes; 0 significa fim da lista de comandos
 // byte 2 = comando (vide TComando)

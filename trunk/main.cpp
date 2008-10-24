@@ -245,14 +245,14 @@ void Inicializa()
         {
             if (TArqMapa::Inicio) // Se já obteve a lista de arquivos
             {
-                fprintf(log, "%s:%d: instrução repetida - MAPAGRANDE\n",
+                fprintf(log, "%s:%d: Instrução repetida - MAPAGRANDE\n",
                             arqinicio, linhanum);
                 erro=true;
                 continue;
             }
             if (TClasse::RBfirst()) // Se já criou alguma classe
             {
-                fprintf(log, "%s:%d: instrução MAPAGRANDE não pode "
+                fprintf(log, "%s:%d: Instrução MAPAGRANDE não pode "
                              "pertencer a uma classe\n", arqinicio, linhanum);
                 erro=true;
                 continue;
@@ -313,14 +313,14 @@ void Inicializa()
     // Verifica se classe é válida ou já existe
         if (TClasse::NomeClasse(mens+1)==false)
         {
-            fprintf(log, "%s:%d: classe inválida: [%s]\n",
+            fprintf(log, "%s:%d: Classe inválida: [%s]\n",
                             arqinicio, linhanum, mens+1);
             erro=true;
             continue;
         }
         if (TClasse::Procura(mens+1))
         {
-            fprintf(log, "%s:%d: classe repetida: [%s]\n",
+            fprintf(log, "%s:%d: Classe repetida: [%s]\n",
                             arqinicio, linhanum, mens+1);
             erro=true;
             continue;
@@ -339,7 +339,7 @@ void Inicializa()
         // Verifica se bate com o nome do arquivo
             if (compara(mapa->Arquivo, p)!=0)
             {
-                fprintf(log, "%s:%d: classe [%s] deveria estar "
+                fprintf(log, "%s:%d: Classe [%s] deveria estar "
                             "no arquivo ", arqinicio, linhanum, mens+1);
                 for (p=mens+1; *p && *p!=' '; p++);
                 char x = *arqext;
@@ -389,6 +389,7 @@ void Inicializa()
 // Obtém instruções das classes
 // Acerta TClasse::Comandos e TClasse::NumDeriv
     TClasse * classeatual = 0;
+    Instr::ChecaLinha checalinha;
     char comando[65000];
     unsigned int pcomando=0;
 
@@ -421,6 +422,7 @@ void Inicializa()
             }
             pcomando = 0;
             classeatual = 0;
+            checalinha.Inicio();
         }
         if (linhanum==0) // Fim do arquivo
         {
@@ -456,7 +458,7 @@ void Inicializa()
             classeatual = TClasse::Procura(mens+1);
             if (classeatual==0)
             {
-                fprintf(log, "%s:%d: classe não encontrada: [%s]\n",
+                fprintf(log, "%s:%d: Classe não encontrada: [%s]\n",
                             arqinicio, linhanum, mens+1);
                 erro=true;
                 break;
@@ -466,7 +468,7 @@ void Inicializa()
     // Instruções antes da definição da classe
         if (classeatual==0)
         {
-            fprintf(log, "%s:%d: instruções não pertencem a nenhuma classe\n",
+            fprintf(log, "%s:%d: Instruções não pertencem a nenhuma classe\n",
                         arqinicio, linhanum);
             erro=true;
             continue;
@@ -509,14 +511,6 @@ void Inicializa()
     // Verifica instrução
         if (comando[pcomando+2]==Instr::cHerda)
         {
-            if (pcomando!=0)
-            {
-                fprintf(log, "%s:%d: Herda deve ser "
-                            "a primeira instrução da classe\n",
-                            arqinicio, linhanum);
-                erro=true;
-                continue;
-            }
             const char * p = comando+pcomando+4;
             for (unsigned char x = comando[pcomando+3]; x; x--)
             {
@@ -531,6 +525,13 @@ void Inicializa()
                 erro=true;
                 continue;
             }
+        }
+        const char * p = checalinha.Instr(comando+pcomando);
+        if (p)
+        {
+            fprintf(log, "%s:%d: %s\n", arqinicio, linhanum, p);
+            erro=true;
+            continue;
         }
         pcomando += Num16(comando+pcomando);
     }
