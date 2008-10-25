@@ -65,11 +65,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         {
             const char * p = origem+4;
             for (int total=(unsigned char)origem[3]; total; total--)
-            {
-                while (*p)
-                    p++;
-                p++;
-            }
+                while (*p++);
             if (p-origem+10+(unsigned char)origem[3] > tamanho)
             {
                 copiastr(destino, "Espaço insuficiente", tamanho);
@@ -108,7 +104,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 
 // Constrole de fluxo
     case cSe:        strcpy(nome, "se "); expr=5; break;
-    case cSenao1:    strcpy(nome, "senão"); coment=3; break;
+    case cSenao1:    strcpy(nome, "senão"); coment=5; break;
     case cSenao2:    strcpy(nome, "senão "); expr=5; break;
     case cFimSe:     strcpy(nome, "fimse"); coment=3; break;
     case cEnquanto:  strcpy(nome, "enquanto "); expr=5; break;
@@ -151,11 +147,10 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cConstExpr:
         strcpy(nome, "const");
         coment=0, expr=5;
-        while (origem[expr])
-            expr++;
-        expr++;
+        while (origem[expr++]);
         break;
     case cFunc:      strcpy(nome, "func"); break;
+    case cVarFunc:   strcpy(nome, "varfunc"); break;
 
 // Variáveis extras
     case cListaObj:  strcpy(nome, "listaobj"); break;

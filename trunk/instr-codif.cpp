@@ -263,6 +263,7 @@ static const TListaInstr ListaInstr[] = {
     { "uint16",    cUInt16 },
     { "uint32",    cUInt32 },
     { "uint8",     cUInt8 },
+    { "varfunc",   cVarFunc },
     { "vartempo",  cVarTempo }
 };
 
@@ -410,7 +411,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 //    origem++;
                 destino[2] = ListaInstr[meio].Instr;
                 if (destino[3] && (destino[2]<cVariaveis ||
-                           destino[2]==cConstExpr || destino[2]==cFunc))
+                            destino[2]==cConstExpr ||
+                            destino[2]==cFunc ||
+                            destino[2]==cVarFunc))
                 {
                     copiastr(dest_ini, "Atribuições comum e sav só podem "
                                     "ser usadas em variáveis", tamanho);
@@ -608,7 +611,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     case cSenao1:   // Pode ter ou não expressão numérica
         if (*origem==0 || *origem=='#')
         {
-            destino+=3;
+            destino+=5;
             break;
         }
         destino[2] = cSenao2;
@@ -1078,9 +1081,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     if (tipo)
                         return true;
                     tipo = cConstTxt;
-                    while (*p)
-                        p++;
-                    p++;
+                    while (*p++);
                     break;
                 case ex_num32p:
                 case ex_num32n:
