@@ -51,7 +51,7 @@ enum Comando
 
 // Instruções de controle de fluxo
     cSe,            // ushort,expressão   se(expressão)
-    cSenao1,        //                    senão
+    cSenao1,        // ushort             senão
     cSenao2,        // ushort,expressão   senão(expressão)
     cFimSe,         //                    fimse
     cEnquanto,      // ushort,expressão   enquanto(expressão)
@@ -88,6 +88,7 @@ enum Comando
     cConstNum,          // Constante = número
     cConstExpr,         // Constante = expressão numérica
     cFunc,              // Função
+    cVarFunc,
 
 // Variáveis extras
     cListaObj,

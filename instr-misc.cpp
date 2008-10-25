@@ -41,14 +41,12 @@ bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
         return false;
     if (instr[2] != cHerda)
         return false;
-    int x = *(unsigned char*)instr[3];
+    int x = (unsigned char)instr[3];
     for (instr+=4; x; x--)
     {
         if (comparaZ(instr, nomeclasse)==0)
             return true;
-        while (*instr)
-            instr++;
-        instr++;
+        while (*instr++);
     }
     return false;
 }
@@ -85,7 +83,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     if (cod==cComent)
         return 0;
 // Função
-    if (cod==cFunc)
+    if (cod==cFunc || cod==cVarFunc)
     {
         esperando=2;
         return 0;

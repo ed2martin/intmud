@@ -46,11 +46,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         {
             const char * p = origem+4;
             for (int total=(unsigned char)origem[3]; total; total--)
-            {
-                while (*p)
-                    p++;
-                p++;
-            }
+                while (*p++);
             if (p-origem+10 > tamanho)
             {
                 copiastr(destino, "Espaço insuficiente", tamanho);
@@ -77,7 +73,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 
 // Constrole de fluxo
     case cSe:        strcpy(nome, "se"); expr=5; break;
-    case cSenao1:    strcpy(nome, "senão"); coment=3; break;
+    case cSenao1:    strcpy(nome, "senão"); coment=5; break;
     case cSenao2:    strcpy(nome, "senão"); expr=5; break;
     case cFimSe:     strcpy(nome, "fimse"); coment=3; break;
     case cEnquanto:  strcpy(nome, "enquanto"); expr=5; break;
@@ -119,6 +115,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cConstNum:  strcpy(nome, "const (num)"); coment=0; break;
     case cConstExpr: strcpy(nome, "const"); coment=0; break;
     case cFunc:      strcpy(nome, "func"); break;
+    case cVarFunc:   strcpy(nome, "varfunc"); break;
 
 // Variáveis extras
     case cListaObj:  strcpy(nome, "listaobj"); break;
