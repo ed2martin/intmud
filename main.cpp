@@ -577,7 +577,7 @@ void Inicializa()
     }
 
 // Para testes - mostra classes e instruções
-#if 1
+#if 0
     printf("Classes:\n");
     for (TClasse * obj = TClasse::RBfirst(); obj; obj=TClasse::RBnext(obj))
     {
@@ -604,9 +604,20 @@ void Inicializa()
     putchar('\n');
 #endif
 
+// Acerta lista de funções e variáveis das classes
+// Primeiro das classes herdadas em outras
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    {
+        cl->AcertaComandos();
+        if (cl->NumDeriv)
+            cl->AcertaVar();
+    }
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+        cl->AcertaVar();
+
+
 
   // ***************************
-  // Falta: acertar as listas de funções variáveis das classes
   // Falta: executar as funções ini das classes
   // ***************************
 

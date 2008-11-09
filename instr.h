@@ -11,6 +11,8 @@ bool Mostra(char * destino, const char * origem, int tamanho);
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
 
+int  Tamanho(const char * instr); // Retorna tamanho da variável na memória
+
 //----------------------------------------------------------------------------
 class ChecaLinha
 {
@@ -75,8 +77,7 @@ enum Comando
     cVariaveis,         // Marca o início das variáveis
     cTxt1,              // Texto de 1 a 256 caracteres
     cTxt2,              // Texto de 257 a 512 caracteres
-    cIntb0, cIntb1, cIntb2, cIntb3, // 1 bit
-    cIntb4, cIntb5, cIntb6, cIntb7, // 1 bit
+    cInt1,              // 1 bit
     cInt8, cUInt8,      // 8 bits com e sem sinal
     cInt16, cUInt16,    // 16 bits com e sem sinal
     cInt32, cUInt32,    // 32 bits com e sem sinal
@@ -131,6 +132,7 @@ enum Expressao
     //     ex_varabre = ex_varini + ex_abre
     ex_varini,      // Início do texto
     ex_varfim,      // Fim do texto
+    ex_doispontos,  // ":", que separa nome da classe da variável
     ex_ponto,       // Fim do nome da variável
     ex_arg,         // Início da lista de argumentos
     ex_varabre,     // Início do texto + abre colchetes
