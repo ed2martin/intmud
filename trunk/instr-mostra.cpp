@@ -92,14 +92,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cTxt2:
         sprintf(nome, "txt%d", (unsigned char)origem[4]+257);
         break;
-    case cIntb0:     strcpy(nome, "int1 (bit 0)"); break;
-    case cIntb1:     strcpy(nome, "int1 (bit 1)"); break;
-    case cIntb2:     strcpy(nome, "int1 (bit 2)"); break;
-    case cIntb3:     strcpy(nome, "int1 (bit 3)"); break;
-    case cIntb4:     strcpy(nome, "int1 (bit 4)"); break;
-    case cIntb5:     strcpy(nome, "int1 (bit 5)"); break;
-    case cIntb6:     strcpy(nome, "int1 (bit 6)"); break;
-    case cIntb7:     strcpy(nome, "int1 (bit 7)"); break;
+    case cInt1:      strcpy(nome, "int1"); break;
     case cInt8:      strcpy(nome, "int8"); break;
     case cUInt8:     strcpy(nome, "uint8"); break;
     case cInt16:     strcpy(nome, "int16"); break;
@@ -237,6 +230,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             strcpy(nome, " (varini)[");
             break;
         case ex_varini:      // Início do texto
+        case ex_doispontos:  // Dois pontos
         case ex_ponto:       // Fim do nome da variável
         case ex_fecha:       // Fecha colchetes
             if (tamanho<20)
@@ -245,6 +239,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 strcpy(destino, " (varini) ");
             else if (*origem==ex_ponto)
                 strcpy(destino, " (ponto) ");
+            else if (*origem==ex_doispontos)
+                strcpy(destino, " (:) ");
             else
                 strcpy(destino, " ]");
             while (*destino)

@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "classe.h"
 #include "instr.h"
@@ -28,6 +29,8 @@ TClasse::TClasse(const char * nome)
     InstrVar=0;
     IndiceVar=0;
     NumVar=0;
+    TamObj=0;
+    Vars=0;
     RBinsert();
 }
 
@@ -39,6 +42,7 @@ TClasse::~TClasse()
     if (ListaDeriv)   delete[] ListaDeriv;
     if (InstrVar)     delete[] InstrVar;
     if (IndiceVar)    delete[] IndiceVar;
+    if (Vars)         delete[] Vars;
 }
 
 //----------------------------------------------------------------------------
@@ -166,21 +170,28 @@ void TClasse::AcertaVar()
 // Limpa lista de variáveis/funções
     if (InstrVar)   delete[] InstrVar;
     if (IndiceVar)  delete[] IndiceVar;
+    if (Vars)       delete[] Vars;
     InstrVar=0;
     IndiceVar=0;
+    Vars=0;
     NumVar=0;
+    TamObj=0;
 
 // Nenhuma instrução: nada faz
     if (Comandos==0)
         return;
 
 // Obtém número de variáveis/funções definidas na classe
-    int total = 0;
+    unsigned int total = 0;
     bool inifunc = false;
     const char * ComandosFim = Comandos;
-    for (char * p = Comandos; p[0] && p[1]; p+=Num16(p))
+    for (char * p = Comandos;; p+=Num16(p))
     {
-        ComandosFim = p;
+        if (p[0]==0 && p[1]==0)
+        {
+            ComandosFim = p;
+            break;
+        }
         switch (p[2])
         {
         case Instr::cConstNulo:
@@ -209,7 +220,7 @@ void TClasse::AcertaVar()
             TClasse * c = Procura(p);
             assert(c!=0);
             for (unsigned int y=0; y<c->NumVar; y++)
-                if (c->IndiceVar[y] & 0x2000000)
+                if (c->IndiceVar[y] & 0x800000)
                     total++;
             while (*p++);
         }
@@ -223,7 +234,7 @@ void TClasse::AcertaVar()
 
 // Adiciona funções/variáveis da própria classe
     inifunc = false;
-    for (char * p = Comandos; p[0] && p[1]; p+=Num16(p))
+    for (char * p = Comandos; p[0] || p[1]; p+=Num16(p))
         switch (p[2])
         {
         case Instr::cConstNulo:
@@ -252,7 +263,7 @@ void TClasse::AcertaVar()
             TClasse * c = Procura(p);
             assert(c!=0);
             for (unsigned int y=0; y<c->NumVar; y++)
-                if (c->IndiceVar[y] & 0x2000000)
+                if (c->IndiceVar[y] & 0x800000)
                     var1[total++] = c->InstrVar[y];
             while (*p++);
         }
@@ -260,15 +271,15 @@ void TClasse::AcertaVar()
 
 // Organiza em ordem alfabética (aloca/libera memória - var2)
     char ** var2 = new char*[total];
-    for (int a=1; a<total; a+=a)
+    for (unsigned int a=1; a<total; a+=a)
     {
         char ** pont = var2;
         var2 = var1;
         var1 = pont;
         int lido=0;
-        for (int b=0; b<total; b+=a*2)
+        for (unsigned int b=0; b<total; b+=a*2)
         {
-            int b1=b, b2=b+a;
+            unsigned int b1=b, b2=b+a;
             while (b1<b+a && b2<b+a*2 && b2<total)
             {
                 if (comparaZ(var2[b1]+5, var2[b2]+5)>0)
@@ -283,40 +294,139 @@ void TClasse::AcertaVar()
         }
     }
     delete[] var2;
+    var2=0;
 
 // Obtém número de variáveis, detectando as repetidas
     NumVar = total;
     for (int x=total-2; x>=0; x--)
-        if (comparaZ(var1[x]+5, var2[x+1]+5)==0)
+        if (comparaZ(var1[x]+5, var1[x+1]+5)==0)
         {
-            var2[x+1]=0;
+            var1[x+1]=0;
             NumVar--;
         }
 
 // Acerta TClasse::InstrVar (nomes das variáveis)
-    InstrVar = new char*[NumVar];
-    for (int x=0,y=0; x<total; x++)
-        if (var2[x])
-            InstrVar[y++] = var2[x];
-
 // Libera memória alocada
-    delete[] var1;
+    if (NumVar == total)
+        InstrVar = var1;
+    else
+    {
+        InstrVar = new char*[NumVar];
+        for (unsigned int x=0,y=0; x<total; x++)
+            if (var1[x])
+                InstrVar[y++] = var1[x];
+        delete[] var1;
+    }
+    var1=0;
 
 // Acerta bits de controle de TClasse::IndiceVar
-    IndiceVar = new int[NumVar];
+// Acerta variáveis cInt1 (alinhamento de bit)
+    int indclasse=-1, bitclasse=0x80;
+    int indobjeto=-1, bitobjeto=0x80;
+    IndiceVar = new unsigned int[NumVar];
     for (unsigned int x=0; x<NumVar; x++)
     {
         unsigned int valor = 0;
     // Verifica se está na própria classe
         if (InstrVar[x]>=Comandos && InstrVar[x]<=ComandosFim)
-            valor |= 0x2000000;
+            valor |= 0x800000;
     // Verifica se é variável "comum"
         if (InstrVar[x][3] & 1)
-            valor |= 0x1000000;
+            valor |= 0x400000;
+    // Verifica cBit1
+        if (InstrVar[x][2] == Instr::cInt1)
+        {
+            if (valor & 0x400000) // Classe
+            {
+                if (bitclasse==0x80)
+                    bitclasse=1, indclasse++;
+                else
+                    bitclasse <<= 1;
+                valor += indclasse + (bitclasse << 24);
+            }
+            else // Objeto
+            {
+                if (bitobjeto==0x80)
+                    bitobjeto=1, indobjeto++;
+                else
+                    bitobjeto <<= 1;
+                valor += indobjeto + (bitobjeto << 24);
+            }
+        }
+    // Anota o resultado
         IndiceVar[x] = valor;
     }
+    indclasse++, indobjeto++;
 
+// Acerta variáveis com alinhamento de 1 byte
+    for (unsigned int x=0; x<NumVar; x++)
+    {
+        int tamanho = Instr::Tamanho(InstrVar[x]);
+        if (tamanho&1)
+            if (IndiceVar[x] & 0x400000) // Classe
+                IndiceVar[x] += indclasse, indclasse += tamanho;
+            else // Objeto
+                IndiceVar[x] += indobjeto, indobjeto += tamanho;
+    }
+    if (indclasse&1) indclasse++;
+    if (indobjeto&1) indobjeto++;
 
+// Acerta variáveis com alinhamento de 2 bytes
+    for (unsigned int x=0; x<NumVar; x++)
+    {
+        int tamanho = Instr::Tamanho(InstrVar[x]);
+        if ((tamanho&3)==2)
+            if (IndiceVar[x] & 0x400000) // Classe
+                IndiceVar[x] += indclasse, indclasse += tamanho;
+            else // Objeto
+                IndiceVar[x] += indobjeto, indobjeto += tamanho;
+    }
+    if (indclasse&2) indclasse+=2;
+    if (indobjeto&2) indobjeto+=2;
+
+// Acerta outras variáveis (alinhamento de 4 bytes)
+    for (unsigned int x=0; x<NumVar; x++)
+    {
+        int tamanho = Instr::Tamanho(InstrVar[x]);
+        if (tamanho && (tamanho&3)==0)
+            if (IndiceVar[x] & 0x400000) // Classe
+                IndiceVar[x] += indclasse, indclasse += tamanho;
+            else // Objeto
+                IndiceVar[x] += indobjeto, indobjeto += tamanho;
+    }
+
+// Acerta TClasse::Vars
+    if (indclasse)
+    {
+        Vars = new char[indclasse];
+        memset(Vars, 0, indclasse);
+    }
+    TamObj = indobjeto;
+
+// Mostra o resultado
+#if 1
+    printf("Classe=\"%s\"   Variáveis classe=%d   Variáveis Objeto=%d\n",
+           Nome, indclasse, indobjeto);
+    puts("  lugar  endereço:bit  tamanho  instrução");
+    for (int passo=0; passo<2; passo++)
+        for (unsigned int x=0; x<NumVar; x++)
+        {
+            unsigned int valor = IndiceVar[x];
+            if (((valor & 0x400000)==0) == (passo==0))
+                continue;
+            int tam = Instr::Tamanho(InstrVar[x]);
+            char mens[500];
+            if (!Instr::Decod(mens, InstrVar[x], sizeof(mens)))
+                strcpy(mens, "-----");
+            printf("  %s  %d",
+                    IndiceVar[x] & 0x400000 ? "classe" : "objeto",
+                    valor & 0x3FFFFF);
+            if ((valor>>24)!=0)
+                printf(":%02x", valor>>24);
+            printf("  %d  %s\n", tam, mens);
+        }
+    putchar('\n');
+#endif
 }
 
 //----------------------------------------------------------------------------

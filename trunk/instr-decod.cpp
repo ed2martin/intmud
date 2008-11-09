@@ -123,14 +123,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cTxt2:
         sprintf(nome, "txt%d", (unsigned char)origem[4]+257);
         break;
-    case cIntb0:
-    case cIntb1:
-    case cIntb2:
-    case cIntb3:
-    case cIntb4:
-    case cIntb5:
-    case cIntb6:
-    case cIntb7:     strcpy(nome, "int1"); break;
+    case cInt1:      strcpy(nome, "int1"); break;
     case cInt8:      strcpy(nome, "int8"); break;
     case cUInt8:     strcpy(nome, "uint8"); break;
     case cInt16:     strcpy(nome, "int16"); break;
@@ -288,6 +281,11 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case ex_varabre:     // Início do texto + abre colchetes
             indica=2;
             strcpy(nome, "\x01" "[");
+            break;
+        case ex_doispontos:
+            indica=2+4; // 2 = Copiar nome em nome[]
+                        // 4 = prossegue com o nome
+            strcpy(nome, ":");
             break;
         case ex_ponto:       // Fim do nome da variável
                              // Nesse caso é fim dos parâmetros da função
@@ -516,6 +514,12 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             // Caracter normal - faz parte do nome
                 if (*(unsigned char*)origem>=' ')
                     *destino++ = *origem++;
+            // Dois pontos
+                else if (*origem==ex_doispontos)
+                {
+                    origem++;
+                    *destino++ = ':';
+                }
             // Ponto - pode ser um ponto ou fim do nome
                 else if (*origem==ex_ponto)
                 {

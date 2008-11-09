@@ -24,12 +24,15 @@ public:
 
 // Lista de variáveis da classe, inclusive as herdadas
     char ** InstrVar;      // Instruções que definem as variáveis
-    int  * IndiceVar;      // Bits 23-0 = índice na memória
-                           // Bits 31-24 = para controle
-                           // Bit 24: 0 = índice em TObjeto::Vars
+    unsigned int * IndiceVar; // Bits 23-0 = índice na memória
+                           // Bit 22: 0 = índice em TObjeto::Vars
                            //         1 = índice em TClasse::Vars
-                           // Bit 25 =1 se variável definida na classe
+                           // Bit 23 =1 se variável definida na classe
+                           // Bits 31-24 = máscara do bit, se for int1
     unsigned int NumVar;   // Número de variáveis
+
+    unsigned int TamObj; // Tamanho de TObjeto::Vars (usado ao criar objetos)
+    char * Vars;           // Variáveis da classe (do tipo comum)
 
 // Árvore organizada por TClasse::Nome
 public:

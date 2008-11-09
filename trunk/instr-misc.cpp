@@ -111,3 +111,47 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     esperando=3;
     return 0;
 }
+
+//------------------------------------------------------------------------------
+int Instr::Tamanho(const char * instr)
+{
+    if (instr[0]==0 && instr[1]==0)
+        return 0;
+    switch (instr[2])
+    {
+// Variáveis
+    case cTxt1:      return 2 + (unsigned char)instr[4];
+    case cTxt2:      return 258 + (unsigned char)instr[4];
+    case cInt1:      return 0;
+    case cInt8:
+    case cUInt8:     return 1;
+    case cInt16:
+    case cUInt16:    return 2;
+    case cInt32:
+    case cUInt32:
+    case cIntInc:
+    case cIntDec:    return 4;
+    case cReal:      return sizeof(double);
+    case cRef:       return sizeof(void*)*3;
+    case cConstNulo:
+    case cConstTxt:
+    case cConstNum:
+    case cConstExpr:
+    case cFunc:
+    case cVarFunc:   return 0;
+
+// Variáveis extras
+   /* case cListaObj:
+    case cListaTxt:
+    case cListaMsg:
+    case cNomeObj:
+    case cLog:
+    case cVarTempo:
+    case cSocket:
+    case cServ:
+    case cSalvar:
+    case cProg:
+    case cIndice: */
+    }
+    return 0;
+}

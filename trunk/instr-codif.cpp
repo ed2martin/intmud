@@ -78,7 +78,7 @@ Se modo = ex_var1 ou modo = ex_var2
     Se modo ! ex_var1:
       Erro na expressão
     Caso contrário:
-      Anota ':'
+      Anota ex_doispontos
       modo = ex_var2
       Vai para (1)
   Se *origem for '.':
@@ -238,7 +238,7 @@ static const TListaInstr ListaInstr[] = {
     { "func",      cFunc },
     { "herda",     cHerda },
     { "indice",    cIndice },
-    { "int1",      cIntb0 }, // Pode ser cIntb0 a cIntb7
+    { "int1",      cInt1 },
     { "int16",     cInt16 },
     { "int32",     cInt32 },
     { "int8",      cInt8 },
@@ -701,7 +701,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     mprintf(dest_ini, tamanho, "Dois pontos duas vezes");
                     return false;
                 }
-                *destino++ = *origem++;
+                origem++;
+                *destino++ = ex_doispontos;
                 modo = ex_var2;
             }
             else if (*origem=='.')
