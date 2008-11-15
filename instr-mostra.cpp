@@ -22,9 +22,14 @@
 using namespace Instr;
 
 //------------------------------------------------------------------------------
-// Mostra como uma instrução está codificada
-// Retorna: true = conseguiu decodificar com sucesso
-//          false = erro, destino contém a mensagem de erro
+/// Mostra como uma instrução está codificada
+/**
+ *  @param destino Endereço destino (string ASCIIZ)
+ *  @param origem  Endereço origem (instrução codificada)
+ *  @param tamanho Tamanho do buffer em destino
+ *  @retval true Conseguiu codificar com sucesso
+ *  @retval false Erro, destino contém a mensagem de erro
+ */
 bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 {
     int  expr=0;   // Índice da expressão numérica, 0=não há

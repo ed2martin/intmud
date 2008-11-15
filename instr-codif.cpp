@@ -19,51 +19,57 @@
 #include "classe.h"
 #include "misc.h"
 
-/*** Processamento de instruções
+/** @defgroup codif Instr::Codif - Algoritmo para codificar instruções
+
+@par Princípio
 
 1. Começa com uma das palavras reservadas seguido de espaço:
-É definição de variável
+   - É definição de variável
 
 2. Começa com const:
-É constante
+   - É constante
 
 3. Começa com herda:
-Instrução especial herda
+   - Instrução especial herda
 
 4. Verifica instruções de controle de fluxo
 
 5. Nenhum dos anteriores:
-Processa como expressão numérica pura
+   - Processa como expressão numérica pura
 
-*** Princípio - expressões
+@par Princípio - expressões
 
-Uma expressão do tipo "1+2-3" é codificada da seguinte forma:
+Uma expressão do tipo "1+2-3" é codificada da seguinte forma:\n
 1 2 + 3 -
 
 E guardada na memória da seguinte forma:
-ex_num1, ex_num8p, 2, exo_soma, ex_num8p, 3, exo_sub, ex_fim
+- Instr::ex_num1
+- Instr::ex_num8p, 0x02
+- Instr::exo_add
+- Instr::ex_num8p, 0x03
+- Instr::exo_sub
+- Instr::ex_fim
 
 Nesse caso, ao executar são realizadas as operações:
-Coloca 1 na pilha
-Coloca 2 na pilha
-Soma os dois valores do topo da pilha (vai ficar 3 na pilha)
-Coloca 3 na pilha
-Subtrai os dois valores do topo da pilha (vai ficar 0 na pilha)
+- Coloca 1 na pilha
+- Coloca 2 na pilha
+- Soma os dois valores do topo da pilha (vai ficar 3 na pilha)
+- Coloca 3 na pilha
+- Subtrai os dois valores do topo da pilha (vai ficar 0 na pilha)
 
-*** Variáveis - expressões
+@par Algoritmo - codifica de expressão
 
-Variável modo:
-Um valor qualquer de TExpressao
+@verbatim
+Variável modo
+    Um valor qualquer de Instr::Expressao
 
-Variável arg:
-falso = espera operador unitário ou valor qualquer
-verdadeiro = espera operador binário
+Variável arg
+    falso = espera operador unitário ou valor qualquer
+    verdadeiro = espera operador binário
 
-Pilha:
-PUSH alguma coisa -> coloca no topo da pilha
-POP alguma coisa -> tira do topo da pilha
-
-*** Algoritmo - codifica de expressão:
+Pilha de variáveis
+    PUSH alguma coisa -> coloca no topo da pilha
+    POP alguma coisa -> tira do topo da pilha
 
 arg=falso
 modo=0
@@ -215,8 +221,8 @@ Se for \0:
 Mensagem de erro:
   Caracter inválido na expressão
 Fim
-
-***/
+@endverbatim
+*/
 
 using namespace Instr;
 
@@ -283,9 +289,15 @@ static int comparaNome(const char * string1, const char * string2)
 }
 
 //------------------------------------------------------------------------------
-// Codifica uma instrução
-// Retorna: true = conseguiu codificar com sucesso
-//          false = erro, destino contém a mensagem de erro
+/// Codifica uma instrução
+/**
+ *  @param destino Endereço destino (instrução codificada)
+ *  @param origem  Endereço origem (string ASCIIZ)
+ *  @param tamanho Tamanho do buffer em destino
+ *  @retval true Conseguiu codificar com sucesso
+ *  @retval false Erro, destino contém a mensagem de erro
+ *  @sa codif
+ */
 bool Instr::Codif(char * destino, const char * origem, int tamanho)
 {
     char * dest_ini = destino;

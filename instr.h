@@ -1,6 +1,8 @@
 #ifndef EXPR_H
 #define EXPR_H
 
+/// Codificar, decodificar e executar instruções
+/** Codificar, decodificar e executar instruções */
 namespace Instr {
 
 //----------------------------------------------------------------------------
@@ -8,187 +10,233 @@ namespace Instr {
 bool Codif(char * destino, const char * origem, int tamanho);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
+
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
+    /**< @param operador Operador em Instr::Expressao
+         @retval 2-0x2F Número que corresponde à prioridade do operador
+         @retval 0 Operador inválido */
 
-int  Tamanho(const char * instr); // Retorna tamanho da variável na memória
+int  Tamanho(const char * instr);
+    /**< Obtém o tamanho de uma variável na memória
+         @param instr Instrução codificada por Instr::Codif
+         @return Tamanho da variável (0=não ocupa lugar na memória) */
 
 //----------------------------------------------------------------------------
-class ChecaLinha
+/** Verifica se instruções de uma classe (codificadas por Instr::Codif)
+    estão na ordem correta */
+class ChecaLinha /// Verifica ordem das instruções de uma classe
 {
 public:
     ChecaLinha();
-    void Inicio();      // Indica que está no início da lista de instruções
+    void Inicio();
+            /**< Indica que está no início da lista de instruções */
     const char * Instr(const char * instr);
-                        // Checa próxima instrução da lista
-                        // Retorna 0 se instrução está no lugar correto
-                        // Caso contrário, retorna mensagem de erro
+            /**< Checa próxima instrução da lista
+                @param instr Instrução codificada
+                @return 0 se instrução está no lugar correto,
+                        outro valor=mensagem de erro */
 private:
-    char esperando;     // 0=início do arquivo; pode receber "herda"
-                        // 1=nenhuma função definida
-                        // 2=instruções e variáveis de uma função
-                        // 3=instruções de uma função
-                        // 4=após definição de função + definição de constante
+    char esperando;
+            /**< O que está esperando:
+                - 0=início do arquivo; pode receber "herda"
+                - 1=nenhuma função definida
+                - 2=instruções e variáveis de uma função
+                - 3=instruções de uma função
+                - 4=após definição de função + definição de constante */
 };
 
 //----------------------------------------------------------------------------
-// Cada linha de comando:
-// bytes 0,1 = tamanho em bytes; 0 significa fim da lista de comandos
-// byte 2 = comando (vide TComando)
-// X bytes = dados do comando (depende do comando)
+/// Comandos
+/**
+    Cada linha de comando é codificada assim:
+    - bytes 0,1 = tamanho em bytes; 0 significa fim da lista de comandos
+    - byte 2 = comando (vide TComando)
+    - X bytes = dados do comando (depende do comando)
+    .
 
-// Nos comandos que não têm expressões numéricas (exceto Herda),
-// se houver algum comentário, ele virá após os dados do comando.
-// Exemplo,  "fimse # teste" é codificado assim:
-//           0x08, 0x00, cFimSe, 't', 'e', 's', 't', 'e'
+    A partir de cVariaveis vem as definições de variáveis:
+    - byte 3 = propriedades:
+      - bit 0=1 se comum
+      - bit 1=1 se sav
+      .
+    - byte 4
+      - tamanho do texto em cTxt1 e cTxt2
+      - índice para os dados extras das variáveis Const
+      .
+    - X bytes = nome da variável em ASCIIZ
+    - Y bytes = expressão numérica, em cConstExp
+      - texto em ASCIIZ, em cConstTxt
+      - valor numérico em cConstInt e cConstReal
+      .
+    .
 
-// Comandos
+    Tipos de comandos:
+    - Comum: Instruções comuns (não se encaixam em outra categoria)
+    - Fluxo: Instruções de controle de fluxo
+    - Var:   Definições de variáveis
+    - Extra: Variáveis extras
+    .
+
+    Nos comandos que não têm expressões numéricas (exceto Herda),
+    se houver algum comentário, ele virá após os dados do comando.
+
+    Exemplo,  "fimse # teste" é codificado assim:
+              0x08, 0x00, cFimSe, 't', 'e', 's', 't', 'e'
+ */
 enum Comando
 {
-    cHerda,         // 1 byte = número de classes
-                    // X bytes = nomes das classes em ASCIIZ
-                    // Só pode estar no início da lista de comandos
-    cExpr,          // Expressão numérica pura
-    cComent,        // Comentário
+// Instruções comuns
+    cHerda,         /**< Comum: Instrução herda
+                        - 1 byte = número de classes
+                        - X bytes = nomes das classes em ASCIIZ
+                        - Só pode estar no início da lista de comandos */
+    cExpr,          ///< Comum: Expressão numérica pura
+    cComent,        ///< Comum: Comentário
 
 // Instruções de controle de fluxo
-    cSe,            // ushort,expressão   se(expressão)
-    cSenao1,        // ushort             senão
-    cSenao2,        // ushort,expressão   senão(expressão)
-    cFimSe,         //                    fimse
-    cEnquanto,      // ushort,expressão   enquanto(expressão)
-    cEFim,          // ushort             efim
-    cRet1,          // ret sem argumentos
-    cRet2,          // ret com expressão numérica
-    cSair,          // ushort             sair
-    cContinuar,     // ushort             continuar
-    cTerminar,      //                    terminar
+    cSe,            ///< Fluxo: ushort,expressão   se(expressão)
+    cSenao1,        ///< Fluxo: ushort             senão
+    cSenao2,        ///< Fluxo: ushort,expressão   senão(expressão)
+    cFimSe,         ///< Fluxo:                    fimse
+    cEnquanto,      ///< Fluxo: ushort,expressão   enquanto(expressão)
+    cEFim,          ///< Fluxo: ushort             efim
+    cRet1,          ///< Fluxo: ret sem argumentos
+    cRet2,          ///< Fluxo: ret com expressão numérica
+    cSair,          ///< Fluxo: ushort             sair
+    cContinuar,     ///< Fluxo: ushort             continuar
+    cTerminar,      ///< Fluxo:                    terminar
 
-// Definições de variáveis:
-// byte 3 = propriedades:
-//      bit 0=1 se comum
-//      bit 1=1 se sav
-// byte 4 = tamanho do texto em cTxt1 e cTxt2
-//        = índice para os dados extras das variáveis Const
-// X bytes = nome da variável em ASCIIZ
-// Y bytes = expressão numérica, em cConstExp
-//         = texto em ASCIIZ, em cConstTxt
-//         = valor numérico em cConstInt e cConstReal
-    cVariaveis,         // Marca o início das variáveis
-    cTxt1,              // Texto de 1 a 256 caracteres
-    cTxt2,              // Texto de 257 a 512 caracteres
-    cInt1,              // 1 bit
-    cInt8, cUInt8,      // 8 bits com e sem sinal
-    cInt16, cUInt16,    // 16 bits com e sem sinal
-    cInt32, cUInt32,    // 32 bits com e sem sinal
-    cIntInc, cIntDec,   // intinc e intdec
-    cReal,              // real - "double"
-    cRef,               // Referência para um objeto
-    cConstNulo,         // Constante = nulo
-    cConstTxt,          // Constante = texto
-    cConstNum,          // Constante = número
-    cConstExpr,         // Constante = expressão numérica
-    cFunc,              // Função
-    cVarFunc,
+// Definições de variáveis
+    cVariaveis,         ///< Var: Marca o início das variáveis
+    cTxt1,              ///< Var: Texto de 1 a 256 caracteres
+    cTxt2,              ///< Var: Texto de 257 a 512 caracteres
+    cInt1,              ///< Var: 1 bit
+    cInt8, cUInt8,      ///< Var: 8 bits com e sem sinal
+    cInt16, cUInt16,    ///< Var: 16 bits com e sem sinal
+    cInt32, cUInt32,    ///< Var: 32 bits com e sem sinal
+    cIntInc, cIntDec,   ///< Var: intinc e intdec
+    cReal,              ///< Var: real - "double"
+    cRef,               ///< Var: Referência para um objeto
+    cConstNulo,         ///< Var: Constante = nulo
+    cConstTxt,          ///< Var: Constante = texto
+    cConstNum,          ///< Var: Constante = número
+    cConstExpr,         ///< Var: Constante = expressão numérica
+    cFunc,              ///< Var: Função
+    cVarFunc,           ///< Var: Função
 
 // Variáveis extras
-    cListaObj,
-    cListaTxt,
-    cListaMsg,
-    cNomeObj,
-    cLog,
-    cVarTempo,
-    cSocket,
-    cServ,
-    cSalvar,
-    cProg,
-    cIndice,
+    cListaObj,      ///< Extra: ListaObj
+    cListaTxt,      ///< Extra: cListaTxt
+    cListaMsg,      ///< Extra: cListaMsg
+    cNomeObj,       ///< Extra: cNomeObj
+    cLog,           ///< Extra: cLog
+    cVarTempo,      ///< Extra: cVarTempo
+    cSocket,        ///< Extra: cSocket
+    cServ,          ///< Extra: cServ
+    cSalvar,        ///< Extra: cSalvar
+    cProg,          ///< Extra: cProg
+    cIndice,        ///< Extra: cIndice
 
-    cTotalComandos      // Número de comandos - não usado
+    cTotalComandos      ///< Número de comandos - não usado
 };
 
 //----------------------------------------------------------------------------
-// Em expressões numéricas:
+/// Idenfificadores usados em expressões numéricas
+/**
+    Texto: Usado em textos
+
+    Variável: Nome de variável ou função (um texto)
+    - Cada conjunto de variáveis/funções (no estilo x.y.x):
+      -    ex_varini + variáveis/funções + ex_varfim
+      .
+    - Cada variável/função (sem e com argumentos):
+      -    nome da variável/função + ex_ponto
+      -    nome da variável/função + ex_arg + expressões numéricas + ex_ponto
+      .
+    - Colchetes em nomes de variáveis/funções:
+      -    ex_abre + expressões numéricas + ex_fecha
+      .
+    - Substituições:
+      -    ex_varabre = ex_varini + ex_abre
+      .
+    .
+
+    Operador: Operadores numéricos
+
+    Interno: Usado internamente em Instr::Codif
+*/
 enum Expressao
 {
-    ex_fim,         // Fim da variável ou expressão numérica
-    ex_coment,      // Marca início de comentário (encontrou #)
+    ex_fim,         ///< Fim da variável ou expressão numérica
+    ex_coment,      ///< Marca início de comentário (encontrou #)
 
 // Usado em textos
-    ex_barra_n,     // \n
-    ex_barra_b,     // \b
-    ex_barra_c,     // \c
-    ex_barra_d,     // \d
+    ex_barra_n,     ///< Texto: \\n
+    ex_barra_b,     ///< Texto: \\b
+    ex_barra_c,     ///< Texto: \\c
+    ex_barra_d,     ///< Texto: \\d
 
 // Nome de variável ou função (um texto)
-    // Cada conjunto de variáveis/funções (no estilo x.y.x):
-    //     ex_varini + variáveis/funções + ex_varfim
-    // Cada variável/função (sem e com argumentos):
-    //     nome da variável/função + ex_ponto
-    //     nome da variável/função + ex_arg + expressões numéricas + ex_ponto
-    // Colchetes em nomes de variáveis/funções:
-    //     ex_abre + expressões numéricas + ex_fecha
-    // Substituições:
-    //     ex_varabre = ex_varini + ex_abre
-    ex_varini,      // Início do texto
-    ex_varfim,      // Fim do texto
-    ex_doispontos,  // ":", que separa nome da classe da variável
-    ex_ponto,       // Fim do nome da variável
-    ex_arg,         // Início da lista de argumentos
-    ex_varabre,     // Início do texto + abre colchetes
-    ex_abre,        // Abre colchetes; segue expressão numérica + ex_fecha
-    ex_fecha,       // Fecha colchetes
+    ex_varini,      ///< Variável: Início do texto
+    ex_varfim,      ///< Variável: Fim do texto
+    ex_doispontos,  ///< Variável: ":", que separa nome da classe da variável
+    ex_ponto,       ///< Variável: Fim do nome da variável
+    ex_arg,         ///< Variável: Início da lista de argumentos
+    ex_varabre,     ///< Variável: Início do texto + abre colchetes
+    ex_abre,        ///< Variável: Abre colchetes; segue expressão numérica + ex_fecha
+    ex_fecha,       ///< Variável: Fecha colchetes
 
 // Valores fixos
-    ex_nulo,        // Valor NULO
-    ex_txt,         // Texto em ASCIIZ
-    ex_num0,        // número 0
-    ex_num1,        // Número 1
-    ex_num8p,       // + 1 byte = número 8 bits sem sinal
-    ex_num16p,      // + 2 bytes = número 16 bits sem sinal
-    ex_num32p,      // + 4 bytes = número 32 bits sem sinal
-    ex_num8n,       // + 1 byte = número 8 bits negativo
-    ex_num16n,      // + 2 bytes = número 16 bits negativo
-    ex_num32n,      // + 4 bytes = número 32 bits negativo
-    ex_div1,        // Divide por 10
-    ex_div2,        // Divide por 100
-    ex_div3,        // Divide por 1000
-    ex_div4,        // Divide por 10000
-    ex_div5,        // Divide por 100000
-    ex_div6,        // Divide por 1000000
+    ex_nulo,        ///< Fixo: Valor NULO
+    ex_txt,         ///< Fixo: Texto em ASCIIZ
+    ex_num0,        ///< Fixo: número 0
+    ex_num1,        ///< Fixo: Número 1
+    ex_num8p,       ///< Fixo: + 1 byte = número 8 bits sem sinal
+    ex_num16p,      ///< Fixo: + 2 bytes = número 16 bits sem sinal
+    ex_num32p,      ///< Fixo: + 4 bytes = número 32 bits sem sinal
+    ex_num8n,       ///< Fixo: + 1 byte = número 8 bits negativo
+    ex_num16n,      ///< Fixo: + 2 bytes = número 16 bits negativo
+    ex_num32n,      ///< Fixo: + 4 bytes = número 32 bits negativo
+    ex_div1,        ///< Fixo: Divide por 10
+    ex_div2,        ///< Fixo: Divide por 100
+    ex_div3,        ///< Fixo: Divide por 1000
+    ex_div4,        ///< Fixo: Divide por 10000
+    ex_div5,        ///< Fixo: Divide por 100000
+    ex_div6,        ///< Fixo: Divide por 1000000
 
 // Operadores numéricos
-    exo_ini,        // Marca o início dos operadores
-    exo_virgula,    // Vírgula, para separar expressões
-    exo_neg,        // -a
-    exo_exclamacao, // !a
-    exo_mul,        // a*b
-    exo_div,        // a/b
-    exo_porcent,    // a%b
-    exo_add,        // a+b
-    exo_sub,        // a-b
-    exo_menor,      // a<b
-    exo_menorigual, // a<=b
-    exo_maior,      // a>b
-    exo_maiorigual, // a>=b
-    exo_igual,      // a=b
-    exo_diferente,  // a!=b
-    exo_e,          // a&b
-    exo_ou,         // a|b
-    exo_igualmul,   // a*=b
-    exo_igualdiv,   // a/=b
-    exo_igualporcent, // a%=b
-    exo_igualadd,   // a+=b
-    exo_igualsub,   // a-=b
-    exo_fim,        // Marca o fim dos operadores
-    exo_ee,         // Início do operador &
-    exo_ouou,       // Início do operador |
+    exo_ini,        ///< Operador: Marca o início dos operadores
+    exo_virgula,    ///< Operador: Vírgula, para separar expressões
+    exo_neg,        ///< Operador: -a
+    exo_exclamacao, ///< Operador: !a
+    exo_mul,        ///< Operador: a*b
+    exo_div,        ///< Operador: a/b
+    exo_porcent,    ///< Operador: a%b
+    exo_add,        ///< Operador: a+b
+    exo_sub,        ///< Operador: a-b
+    exo_menor,      ///< Operador: a<b
+    exo_menorigual, ///< Operador: a<=b
+    exo_maior,      ///< Operador: a>b
+    exo_maiorigual, ///< Operador: a>=b
+    exo_igual,      ///< Operador: a=b
+    exo_diferente,  ///< Operador: a!=b
+    exo_e,          ///< Operador: a&b
+    exo_ou,         ///< Operador: a|b
+    exo_igualmul,   ///< Operador: a*=b
+    exo_igualdiv,   ///< Operador: a/=b
+    exo_igualporcent, ///Operador: < a%=b
+    exo_igualadd,   ///< Operador: a+=b
+    exo_igualsub,   ///< Operador: a-=b
+    exo_fim,        ///< Operador: Marca o fim dos operadores
+    exo_ee,         ///< Operador: Início do operador &
+    exo_ouou,       ///< Operador: Início do operador |
 
 // Usado ao codificar expressões
-    ex_var1,        // Processando nome de variável; aceita dois pontos
-    ex_var2,        // Processando nome de variável; não aceita dois pontos
-    ex_colchetes,   // Processando colchetes em nome de variável
-    ex_parenteses   // Processando parênteses
+    ex_var1,        ///< Interno: Processando nome de variável; aceita dois pontos
+    ex_var2,        ///< Interno: Processando nome de variável; não aceita dois pontos
+    ex_colchetes,   ///< Interno: Processando colchetes em nome de variável
+    ex_parenteses   ///< Interno: Processando parênteses
 };
 
 //----------------------------------------------------------------------------
