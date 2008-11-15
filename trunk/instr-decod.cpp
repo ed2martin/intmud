@@ -40,9 +40,14 @@ static char * copiaini(char * destino, const char * texto)
 }
 
 //------------------------------------------------------------------------------
-// Decodifica uma instrução (inverso de Instr::Codif())
-// Retorna: true = conseguiu decodificar com sucesso
-//          false = erro, destino contém a mensagem de erro
+/// Decodifica uma instrução (Inverso de Instr::Codif)
+/**
+ *  @param destino Endereço destino (string ASCIIZ)
+ *  @param origem  Endereço origem (instrução codificada)
+ *  @param tamanho Tamanho do buffer em destino
+ *  @retval true Conseguiu codificar com sucesso
+ *  @retval false Erro, destino contém a mensagem de erro
+ */
 bool Instr::Decod(char * destino, const char * origem, int tamanho)
 {
     int  expr=0;   // Índice da expressão numérica, 0=não há
