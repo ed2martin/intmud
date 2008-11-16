@@ -1,6 +1,9 @@
 #ifndef EXPR_H
 #define EXPR_H
 
+class TVariavel;
+class TObjeto;
+
 /// Codificar, decodificar e executar instruções
 /** Codificar, decodificar e executar instruções */
 namespace Instr {
@@ -45,6 +48,38 @@ private:
                 - 3=instruções de uma função
                 - 4=após definição de função + definição de constante */
 };
+
+//----------------------------------------------------------------------------
+/** Pilha de funções - usado ao executar funções */
+class ExecFunc /// Pilha de funções
+{
+public:
+    TObjeto * este;     ///< Objeto ao qual a função pertence
+    const char * linha; ///< Instrução codificada sendo executada
+                        ///< Mesmo formato de TClasse::Comandos
+    const char * expr;  ///< Aonde parou na expressão numérica
+                        ///< =0 se não estiver processando expressão numérica
+    TVariavel * exprvar;///< Valor de VarAtual ao fazer expr!=0
+    TVariavel * endvar; ///< Primeiro argumento da função
+    char  numarg;       ///< Número de argumentos arg0 a arg9
+    char  numvar;       ///< Número de variáveis definidas na função
+};
+
+//----------------------------------------------------------------------------
+    /// Pilha de dados (64K)
+extern char * DadosPilha;
+    /// Pilha de dados - início da área de dados disponível
+extern char * DadosTopo;
+
+    /// Pilha de variáveis
+extern TVariavel * VarPilha;
+    /// Pilha de variáveis - última variável da pilha
+extern TVariavel * VarAtual;
+
+    /// Pilha de funções
+extern ExecFunc * FuncPilha;
+    /// Pilha de funções - última função da pilha
+extern ExecFunc * FuncAtual;
 
 //----------------------------------------------------------------------------
 /// Comandos

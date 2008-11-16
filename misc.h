@@ -40,15 +40,19 @@ char * copiastr(char * destino, const char * origem);
 char * copiastr(char * destino, const char * origem, int tamanho);
 
     /// Compara duas strings ASCIIZ
-    /** @retval 0 Strings iguais
+    /** @retval -2 string1<string2; string2 contém string1
         @retval -1 string1<string2
-        @retval 1 string1>string2 */
+        @retval 0 Strings iguais
+        @retval 1 se string1>string2
+        @retval 2 se string1>string2; string1 contém string2 */
 int comparaZ(const char * string1, const char * string2);
 
     /// Compara duas strings terminadas em espaço ou 0
-    /** @retval 0 Strings iguais
+    /** @retval -2 string1<string2; string2 contém string1
         @retval -1 string1<string2
-        @retval 1 se string1>string2 */
+        @retval 0 Strings iguais
+        @retval 1 se string1>string2
+        @retval 2 se string1>string2; string1 contém string2 */
 int compara(const char * string1, const char * string2);
 
     /// Codifica senha

@@ -16,6 +16,8 @@
 #include <string.h>
 #include <assert.h>
 #include "classe.h"
+#include "objeto.h"
+#include "variavel.h"
 #include "instr.h"
 #include "misc.h"
 
@@ -29,6 +31,9 @@ TClasse::TClasse(const char * nome)
     InstrVar=0;
     IndiceVar=0;
     NumVar=0;
+    ObjetoIni=0;
+    ObjetoFim=0;
+    NumObj=0;
     TamObj=0;
     Vars=0;
     RBinsert();
@@ -37,6 +42,8 @@ TClasse::TClasse(const char * nome)
 //----------------------------------------------------------------------------
 TClasse::~TClasse()
 {
+    while (ObjetoIni)
+        ObjetoIni->Apagar();
     RBremove();
     if (Comandos)     delete[] Comandos;
     if (ListaDeriv)   delete[] ListaDeriv;
@@ -445,6 +452,56 @@ TClasse * TClasse::Procura(const char * nome)
             y = y->RBright;
     }
     return 0;
+}
+
+//----------------------------------------------------------------------------
+int TClasse::IndiceNome(const char * nome)
+{
+    int ini = 0; // Índice inicial
+    int fim = NumVar - 1; // Índice final
+    while (ini<=fim)
+    {
+        int meio = (ini+fim)/2;
+        switch (comparaZ(nome, InstrVar[meio] + 5))
+        {
+        case 2:
+        case 1:
+            ini = meio+1;
+            break;
+        case 0:
+            return meio;
+        case -1:
+        case -2:
+            fim = meio-1;
+        }
+    }
+    return -1;
+}
+
+//----------------------------------------------------------------------------
+int TClasse::IndiceNome2(const char * nome)
+{
+    int ini = 0; // Índice inicial
+    int fim = NumVar - 1; // Índice final
+    int ind = -1;
+    while (ini<=fim)
+    {
+        int meio = (ini+fim)/2;
+        switch (comparaZ(nome, InstrVar[meio] + 5))
+        {
+        case 2:
+        case 1:
+            ini = meio+1;
+            break;
+        case 0:
+            return meio;
+        case -2:
+            ind = meio;
+        default:
+            fim = meio-1;
+        }
+    }
+    return ind;
 }
 
 //----------------------------------------------------------------------------
