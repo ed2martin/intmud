@@ -168,14 +168,13 @@ char * copiastr(char * destino, const char * origem, int tamanho)
 
 //------------------------------------------------------------------------------
 // Compara duas strings ASCIIZ
-// Retorna: 0=strings iguais  -1=string1<string2   1=string1>string2
 int comparaZ(const char * string1, const char * string2)
 {
     for (;; string1++, string2++)
     {
         unsigned char ch1,ch2;
         if (*string1==0 || *string2==0)
-            return (*string1 ? 1 : *string2 ? -1 : 0);
+            return (*string1 ? 2 : *string2 ? -2 : 0);
         ch1=tabCOMPLETO[*(unsigned char *)string1];
         ch2=tabCOMPLETO[*(unsigned char *)string2];
         if (ch1!=ch2)
@@ -185,7 +184,6 @@ int comparaZ(const char * string1, const char * string2)
 
 //------------------------------------------------------------------------------
 // Compara duas strings terminadas em espaço ou 0
-// Retorna: 0=strings iguais  -1=string1<string2  1=string1>string2
 int compara(const char * string1, const char * string2)
 {
     unsigned char ch1,ch2;
@@ -194,7 +192,7 @@ int compara(const char * string1, const char * string2)
         ch1=(*string1==' ' ? 0 : tabCOMPLETO[*(unsigned char *)string1]);
         ch2=(*string2==' ' ? 0 : tabCOMPLETO[*(unsigned char *)string2]);
         if (ch1==0 || ch1!=ch2)
-            break;
+            return (ch1 ? 2 : ch2 ? -2 : 0);
         string1++;
         string2++;
     }
