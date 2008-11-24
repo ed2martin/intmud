@@ -22,6 +22,17 @@
 #include "misc.h"
 
 //----------------------------------------------------------------------------
+/// Construtor
+/**
+ *  @param nome nome da classe
+ *
+ *  Para criar uma classe:
+ *  - Criar um objeto com new TClasse()
+ *  - Colocar as instruções em TClasse::Comandos (codificadas com Instr::Codif)
+ *  - Chamar TClasse::AcertaComandos para acertar as instruções
+ *  - Chamar TClasse::AcertaVar para levantar as variáveis existentes
+ *  - Chamar TClasse::CriaVars para criar as variáveis da classe
+ */
 TClasse::TClasse(const char * nome)
 {
     Comandos=0;
@@ -35,25 +46,35 @@ TClasse::TClasse(const char * nome)
     ObjetoFim=0;
     NumObj=0;
     TamObj=0;
+    TamVars=0;
     Vars=0;
     RBinsert();
 }
 
 //----------------------------------------------------------------------------
+/// Destrutor
+/** Para apagar uma classe:
+ *  - Certificar-se que nenhuma classe herda a classe a ser apagada
+ *  - Cuidado com herança circular (duas classes, uma herdando a outra)
+ *  - Apagar todos os objetos da classe
+ *  - Apagar a classe
+ *  .
+ *  @note Antes de apagar, não deve haver nenhuma classe derivada
+ */
 TClasse::~TClasse()
 {
     while (ObjetoIni)
         ObjetoIni->Apagar();
+    ApagaVars();
     RBremove();
     if (Comandos)     delete[] Comandos;
     if (ListaDeriv)   delete[] ListaDeriv;
     if (InstrVar)     delete[] InstrVar;
     if (IndiceVar)    delete[] IndiceVar;
-    if (Vars)         delete[] Vars;
 }
 
 //----------------------------------------------------------------------------
-bool TClasse::NomeClasse(char * nome)
+bool TClasse::NomeValido(char * nome)
 {
     char *o,*d;
 // Verifica se tem algum caracter inválido
@@ -175,14 +196,14 @@ void TClasse::AcertaComandos()
 void TClasse::AcertaVar()
 {
 // Limpa lista de variáveis/funções
+    ApagaVars();
     if (InstrVar)   delete[] InstrVar;
     if (IndiceVar)  delete[] IndiceVar;
-    if (Vars)       delete[] Vars;
     InstrVar=0;
     IndiceVar=0;
-    Vars=0;
     NumVar=0;
     TamObj=0;
+    TamVars=0;
 
 // Nenhuma instrução: nada faz
     if (Comandos==0)
@@ -368,7 +389,7 @@ void TClasse::AcertaVar()
 // Acerta variáveis com alinhamento de 1 byte
     for (unsigned int x=0; x<NumVar; x++)
     {
-        int tamanho = Instr::Tamanho(InstrVar[x]);
+        int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if (tamanho&1)
             if (IndiceVar[x] & 0x400000) // Classe
                 IndiceVar[x] += indclasse, indclasse += tamanho;
@@ -381,7 +402,7 @@ void TClasse::AcertaVar()
 // Acerta variáveis com alinhamento de 2 bytes
     for (unsigned int x=0; x<NumVar; x++)
     {
-        int tamanho = Instr::Tamanho(InstrVar[x]);
+        int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if ((tamanho&3)==2)
             if (IndiceVar[x] & 0x400000) // Classe
                 IndiceVar[x] += indclasse, indclasse += tamanho;
@@ -394,7 +415,7 @@ void TClasse::AcertaVar()
 // Acerta outras variáveis (alinhamento de 4 bytes)
     for (unsigned int x=0; x<NumVar; x++)
     {
-        int tamanho = Instr::Tamanho(InstrVar[x]);
+        int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if (tamanho && (tamanho&3)==0)
             if (IndiceVar[x] & 0x400000) // Classe
                 IndiceVar[x] += indclasse, indclasse += tamanho;
@@ -407,7 +428,18 @@ void TClasse::AcertaVar()
     {
         Vars = new char[indclasse];
         memset(Vars, 0, indclasse);
+    // Chama construtores das variáveis
+        TVariavel v;
+        for (int x=(int)NumVar-1; x>=0; x--)
+            if (InstrVar[x][2] > Instr::cVarFunc &&
+                    (IndiceVar[x] & 0x400000))
+            {
+                v.endvar = Vars + (IndiceVar[x] & 0x3FFFFF);
+                v.defvar = InstrVar[x];
+                v.Criar(this, 0);
+            }
     }
+    TamVars = indclasse;
     TamObj = indobjeto;
 
 // Mostra o resultado
@@ -421,7 +453,7 @@ void TClasse::AcertaVar()
             unsigned int valor = IndiceVar[x];
             if (((valor & 0x400000)==0) == (passo==0))
                 continue;
-            int tam = Instr::Tamanho(InstrVar[x]);
+            int tam = TVariavel::Tamanho(InstrVar[x]);
             char mens[500];
             if (!Instr::Decod(mens, InstrVar[x], sizeof(mens)))
                 strcpy(mens, "-----");
@@ -434,6 +466,45 @@ void TClasse::AcertaVar()
         }
     putchar('\n');
 #endif
+}
+
+//----------------------------------------------------------------------------
+void TClasse::CriaVars()
+{
+    ApagaVars();
+    if (TamVars==0)
+        return;
+// Acerta TClasse::Vars
+    Vars = new char[TamVars];
+    memset(Vars, 0, TamVars);
+// Chama construtores das variáveis
+    TVariavel v;
+    for (int x=(int)NumVar-1; x>=0; x--)
+        if (InstrVar[x][2] > Instr::cVarFunc &&
+                (IndiceVar[x] & 0x400000))
+        {
+            v.endvar = Vars + (IndiceVar[x] & 0x3FFFFF);
+            v.defvar = InstrVar[x];
+            v.Criar(this, 0);
+        }
+}
+
+//----------------------------------------------------------------------------
+void TClasse::ApagaVars()
+{
+// Chama destrutores das variáveis
+    TVariavel v;
+    for (int x=(int)NumVar-1; x>=0; x--)
+        if (InstrVar[x][2] > Instr::cVarFunc &&
+                (IndiceVar[x] & 0x400000))
+        {
+            v.endvar = Vars + (IndiceVar[x] & 0x3FFFFF);
+            v.defvar = InstrVar[x];
+            v.Apagar();
+        }
+// Libera memória
+    if (Vars)       delete[] Vars;
+    Vars=0;
 }
 
 //----------------------------------------------------------------------------

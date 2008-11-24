@@ -8,26 +8,25 @@ class TObjeto;
 class TClasse /// Classes
 {
 public:
-    TClasse(const char * nome); /// Construtor
-        /** @param nome nome da classe */
-    ~TClasse(); /// Destrutor
-        /** @warning Antes de apagar uma classe,
-                     deve-se apagar as classes derivadas */
+    TClasse(const char * nome);
+    ~TClasse();
 
-    static bool NomeClasse(char * nome);
-        /// Verifica se nome é um nome válido para classe
-        /**
+    static bool NomeValido(char * nome);
+        ///< Verifica se nome é um nome válido para classe
+        /**<
          *  @param nome Nome a pesquisar
          *  @return bool (se o nome é valido) */
 
     static TClasse * Procura(const char * nome);
-        /// Procura uma classe a partir do nome
-        /**
+        ///< Procura uma classe a partir do nome
+        /**<
          *  @param nome Nome a pesquisar
          *  @return Endereço da classe, ou 0 se não foi encontrada */
 
     void AcertaComandos(); ///< Acerta dados de Comandos
-    void AcertaVar();   ///< Acerta ListaVar e NumVar
+    void AcertaVar();   ///< Acerta InstrVar, IndiceVar, NumVar e Vars
+    void CriaVars();    ///< Acerta TClasse::Vars
+    void ApagaVars();   ///< Limpa TClasse::Vars
 
     char * Comandos;    ///< Lista de comandos da classe
     char Nome[32];      ///< Nome da classe; não deve ser mudado
@@ -72,6 +71,7 @@ public:
     unsigned int TamObj; ///< Tamanho de TObjeto::Vars (usado ao criar objetos)
 
     char * Vars;  ///< Variáveis da classe (do tipo comum)
+    unsigned int TamVars; ///< Número de bytes usados em TClasse::Vars
 
 // Árvore organizada por TClasse::Nome
 public:
