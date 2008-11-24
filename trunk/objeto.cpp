@@ -17,6 +17,8 @@
 #include <assert.h>
 #include "classe.h"
 #include "objeto.h"
+#include "variavel.h"
+#include "instr.h"
 
 //----------------------------------------------------------------------------
 TObjeto::TObjeto() { assert(0); }
@@ -37,6 +39,16 @@ TObjeto * TObjeto::Criar(TClasse * c)
     (c->ObjetoFim ? c->ObjetoFim->Depois : c->ObjetoIni) = obj;
     c->ObjetoFim = obj;
     c->NumObj++;
+// Chama construtores das variáveis
+    TVariavel v;
+    for (int x=(int)c->NumVar-1; x>=0; x--)
+        if (c->InstrVar[x][2] > Instr::cVarFunc &&
+                (c->IndiceVar[x] & 0x400000)==0)
+        {
+            v.endvar = obj->Vars + (c->IndiceVar[x] & 0x3FFFFF);
+            v.defvar = c->InstrVar[x];
+            v.Criar(c, obj);
+        }
     return obj;
 }
 
@@ -44,8 +56,20 @@ TObjeto * TObjeto::Criar(TClasse * c)
 void TObjeto::Apagar()
 {
     Classe->NumObj--;
+// Chama destrutores das variáveis
+    TVariavel v;
+    for (int x=(int)Classe->NumVar-1; x>=0; x--)
+        if (Classe->InstrVar[x][2] > Instr::cVarFunc &&
+                (Classe->IndiceVar[x] & 0x400000)==0)
+        {
+            v.endvar = Vars + (Classe->IndiceVar[x] & 0x3FFFFF);
+            v.defvar = Classe->InstrVar[x];
+            v.Apagar();
+        }
+// Tira da lista ligada
     (Antes ? Antes->Depois : Classe->ObjetoIni) = Depois;
     (Depois ? Depois->Antes : Classe->ObjetoFim) = Antes;
+// Libera memória
     char * x = (char*)this;
     delete[] x;
 }

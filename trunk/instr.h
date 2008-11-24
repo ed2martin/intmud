@@ -1,5 +1,5 @@
-#ifndef EXPR_H
-#define EXPR_H
+#ifndef INSTR_H
+#define INSTR_H
 
 class TVariavel;
 class TObjeto;
@@ -19,11 +19,6 @@ int  Prioridade(int operador);
     /**< @param operador Operador em Instr::Expressao
          @retval 2-0x2F Número que corresponde à prioridade do operador
          @retval 0 Operador inválido */
-
-int  Tamanho(const char * instr);
-    /**< Obtém o tamanho de uma variável na memória
-         @param instr Instrução codificada por Instr::Codif
-         @return Tamanho da variável (0=não ocupa lugar na memória) */
 
 //----------------------------------------------------------------------------
 /** Verifica se instruções de uma classe (codificadas por Instr::Codif)

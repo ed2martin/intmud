@@ -311,7 +311,7 @@ void Inicializa()
         *p=0;
 
     // Verifica se classe é válida ou já existe
-        if (TClasse::NomeClasse(mens+1)==false)
+        if (TClasse::NomeValido(mens+1)==false)
         {
             fprintf(log, "%s:%d: Classe inválida: [%s]\n",
                             arqinicio, linhanum, mens+1);
@@ -613,7 +613,10 @@ void Inicializa()
             cl->AcertaVar();
     }
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    {
         cl->AcertaVar();
+        cl->CriaVars();
+    }
 
 
 
