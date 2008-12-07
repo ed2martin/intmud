@@ -125,6 +125,8 @@ TVarTipo TVariavel::Tipo()
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice: */
+
+    case Instr::cTxtFixo:   return varTxt;
     }
     return varNulo;
 }
@@ -179,6 +181,7 @@ int TVariavel::getInt()
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
+    case Instr::cTxtFixo:
         return atoi((const char*)endvar);
     case Instr::cInt1:
         return (*(const char*)endvar & bit ? 1 : 0);
@@ -300,6 +303,7 @@ double TVariavel::getDouble()
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
+    case Instr::cTxtFixo:
         return atoi((char*)endvar);
     case Instr::cInt1:
         return (*(const char*)endvar & bit ? 1 : 0);
@@ -412,6 +416,7 @@ const char * TVariavel::getTxt()
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
+    case Instr::cTxtFixo:
         return (const char*)endvar;
     case Instr::cInt1:
         return (*(char*)endvar & bit ? "1" : "0");
