@@ -618,14 +618,14 @@ void Inicializa()
         cl->CriaVars();
     }
 
-
-
-  // ***************************
-  // Falta: executar as funções ini das classes
-  // ***************************
-
-
-
+// Executa funções iniclasse das classes
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    {
+        if (Instr::ExecIni(cl, "iniclasse")==false)
+            continue;
+        Instr::ExecX();
+        Instr::ExecFim();
+    }
 
 #ifdef __WIN32__
 // Inicializa WinSock

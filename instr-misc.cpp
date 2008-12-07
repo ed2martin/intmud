@@ -1,9 +1,25 @@
+/* Este programa é software livre; você pode redistribuir e/ou
+ * modificar nos termos da GNU General Public License V2
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details at www.gnu.org
+ */
+
 #include "instr.h"
+#include "variavel.h"
 #include "misc.h"
 
 //------------------------------------------------------------------------------
-// Retorna um número que corresponde à prioridade do operador
-// Retorna um valor de 2 a 0x1F, ou 0 se operador inválido
+/// Retorna um número que corresponde à prioridade do operador
+/** @param operador Operador em Instr::Expressao
+    @retval 2-0x2F Número que corresponde à prioridade do operador
+    @retval 0 Operador inválido */
 int Instr::Prioridade(int operador)
 {
     switch (operador)
@@ -34,7 +50,7 @@ int Instr::Prioridade(int operador)
 }
 
 //------------------------------------------------------------------------------
-// Verifica se instrução codificada é herda e contém a classe especificada
+/// Verifica se instrução codificada é herda e contém a classe especificada
 bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
 {
     if (instr[0]==0 && instr[1]==0)
@@ -110,4 +126,52 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
         return "Instrução não pertence a uma função";
     esperando=3;
     return 0;
+}
+
+//------------------------------------------------------------------------------
+/// Criar variável no topo da pilha de variáveis (Instr::VarPilha)
+/** @return true se conseguiu criar, false se memória insuficiente */
+bool Instr::CriarVar(const char * def)
+{
+    if (VarAtual >= VarFim-1)
+        return false;
+// Verifica se memória suficiente
+    int tam = TVariavel::Tamanho(def);
+    tam = (tam+3) & ~3;
+    if (Instr::DadosTopo + tam > Instr::DadosFim)
+        return false;
+// Acerta variáveis
+    VarAtual++;
+    VarAtual->defvar = def;
+    VarAtual->bit = 1;
+// Cria variável
+    if (tam)
+    {
+        VarAtual->endvar = Instr::DadosTopo;
+        VarAtual->local = 1;
+        Instr::DadosTopo += tam;
+        VarAtual->Criar(0, 0);
+    }
+    else
+    {
+        VarAtual->endvar = 0;
+        VarAtual->local = 0;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Apaga variáveis na pilha a partir da variável v
+void Instr::ApagarVar(TVariavel * v)
+{
+    while (VarAtual >= v)
+    {
+        if (VarAtual->local)
+        {
+            VarAtual->Apagar();
+            if (VarAtual->endvar)
+                DadosTopo = (char*)VarAtual->endvar;
+        }
+        VarAtual--;
+    }
 }

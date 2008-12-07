@@ -1,6 +1,8 @@
 #ifndef INSTR_H
 #define INSTR_H
 
+class TClasse;
+class TObjeto;
 class TVariavel;
 class TObjeto;
 
@@ -14,11 +16,16 @@ bool Codif(char * destino, const char * origem, int tamanho);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
 
+void ApagarVar(TVariavel * v);
+bool CriarVar(const char * defvar);
+
+bool ExecIni(TClasse * classe, const char * func);
+bool ExecIni(TObjeto * este, const char * func);
+bool ExecX();
+void ExecFim();
+
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
-    /**< @param operador Operador em Instr::Expressao
-         @retval 2-0x2F Número que corresponde à prioridade do operador
-         @retval 0 Operador inválido */
 
 //----------------------------------------------------------------------------
 /** Verifica se instruções de uma classe (codificadas por Instr::Codif)
@@ -50,9 +57,9 @@ class ExecFunc /// Pilha de funções
 {
 public:
     TObjeto * este;     ///< Objeto ao qual a função pertence
-    const char * linha; ///< Instrução codificada sendo executada
+    char * linha;       ///< Instrução codificada sendo executada
                         ///< Mesmo formato de TClasse::Comandos
-    const char * expr;  ///< Aonde parou na expressão numérica
+    char * expr;        ///< Aonde parou na expressão numérica
                         ///< =0 se não estiver processando expressão numérica
     TVariavel * exprvar;///< Valor de VarAtual ao fazer expr!=0
     TVariavel * endvar; ///< Primeiro argumento da função
@@ -62,17 +69,20 @@ public:
 
 //----------------------------------------------------------------------------
     /// Pilha de dados (64K)
-extern char * DadosPilha;
+extern char * const DadosPilha;
+extern char * const DadosFim;
     /// Pilha de dados - início da área de dados disponível
 extern char * DadosTopo;
 
     /// Pilha de variáveis
-extern TVariavel * VarPilha;
+extern TVariavel * const VarPilha;
+extern TVariavel * const VarFim;
     /// Pilha de variáveis - última variável da pilha
 extern TVariavel * VarAtual;
 
     /// Pilha de funções
-extern ExecFunc * FuncPilha;
+extern ExecFunc * const FuncPilha;
+extern ExecFunc * const FuncFim;
     /// Pilha de funções - última função da pilha
 extern ExecFunc * FuncAtual;
 
@@ -156,17 +166,20 @@ enum Comando
     cVarFunc,           ///< Var: Função
 
 // Variáveis extras
-    cListaObj,      ///< Extra: ListaObj
-    cListaTxt,      ///< Extra: cListaTxt
-    cListaMsg,      ///< Extra: cListaMsg
-    cNomeObj,       ///< Extra: cNomeObj
-    cLog,           ///< Extra: cLog
-    cVarTempo,      ///< Extra: cVarTempo
-    cSocket,        ///< Extra: cSocket
-    cServ,          ///< Extra: cServ
-    cSalvar,        ///< Extra: cSalvar
-    cProg,          ///< Extra: cProg
-    cIndice,        ///< Extra: cIndice
+    cListaObj,          ///< Extra: ListaObj
+    cListaTxt,          ///< Extra: cListaTxt
+    cListaMsg,          ///< Extra: cListaMsg
+    cNomeObj,           ///< Extra: cNomeObj
+    cLog,               ///< Extra: cLog
+    cVarTempo,          ///< Extra: cVarTempo
+    cSocket,            ///< Extra: cSocket
+    cServ,              ///< Extra: cServ
+    cSalvar,            ///< Extra: cSalvar
+    cProg,              ///< Extra: cProg
+    cIndice,            ///< Extra: cIndice
+
+// Usado internamente
+    cTxtFixo,           ///< Aponta para um texto fixo
 
     cTotalComandos      ///< Número de comandos - não usado
 };

@@ -50,7 +50,8 @@ public:
 
     void Apagar();
         ///< Apagar variável: remove dados da variável na memória
-        /**< Usa  TVariavel::defvar  e  TVariavel::endvar */
+        /**< Usa  TVariavel::defvar  e  TVariavel::endvar
+             @note Não libera memória alocada (não executa delete) */
 
     void Mover(void * destino, TClasse * c, TObjeto * o);
         ///< Move a variável para outra região da memória
@@ -70,8 +71,8 @@ public:
     void setObj(TObjeto * obj); ///< Muda variável a partir de referência
 
 // Variáveis
-    char * defvar;  ///< Instrução que define a variável
-                    /**< @sa Instr::Comando */
+    const char * defvar; ///< Instrução que define a variável
+                         /**< @sa Instr::Comando */
     void * endvar;  ///< Endereço da variável na memória (0 se não for aplicável)
     unsigned char local;///< Se deve apagar variável quando terminar a função
                         /**< @note Não é usado em TVariavel */
