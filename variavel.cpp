@@ -172,6 +172,85 @@ void TVariavel::Mover(void * destino, TClasse * c, TObjeto * o)
 }
 
 //------------------------------------------------------------------------------
+bool TVariavel::getBool()
+{
+    if (defvar==0 || defvar[0]==0 && defvar[1]==0)
+        return 0;
+    switch (defvar[2])
+    {
+// Variáveis
+    case Instr::cTxt1:
+    case Instr::cTxt2:
+    case Instr::cTxtFixo:
+    case Instr::cInt8:
+    case Instr::cUInt8:
+        return (*(const char*)endvar != 0);
+    case Instr::cInt1:
+        return (*(const char*)endvar & bit ? 1 : 0);
+    case Instr::cInt16:
+    case Instr::cUInt16:
+        return *(char*)endvar || *((char*)endvar+1);
+    case Instr::cInt32:
+    case Instr::cUInt32:
+        return *(unsigned char*)endvar ||
+               *((unsigned char*)endvar+1) ||
+               *((unsigned char*)endvar+2) ||
+               *((unsigned char*)endvar+3);
+    case Instr::cIntInc:
+    case Instr::cIntDec:
+        return 0;
+    case Instr::cReal:
+        return (*(double*)endvar != 0);
+    case Instr::cRef:
+    case Instr::cConstNulo:
+        return 0;
+    case Instr::cConstTxt:
+        return *((char*)endvar + *((char*)endvar+4)) != 0;
+    case Instr::cConstNum:
+        {
+            const char * origem = (char*)endvar + *((char*)endvar+4);
+            switch (*origem)
+            {
+            case Instr::ex_num1:
+                return true;
+            case Instr::ex_num0:
+                return false;
+            case Instr::ex_num8n:
+            case Instr::ex_num8p:
+                return origem[1]!=0;
+            case Instr::ex_num16n:
+            case Instr::ex_num16p:
+                return origem[1]!=0 || origem[2]!=0;
+            case Instr::ex_num32n:
+            case Instr::ex_num32p:
+                return origem[1]!=0 || origem[2]!=0 ||
+                       origem[3]!=0 || origem[4]!=0;
+            default:
+                assert(0);
+            }
+        }
+    case Instr::cConstExpr:
+    case Instr::cFunc:
+    case Instr::cVarFunc:
+        return 0;
+
+// Variáveis extras
+   /* case Instr::cListaObj:
+    case Instr::cListaTxt:
+    case Instr::cListaMsg:
+    case Instr::cNomeObj:
+    case Instr::cLog:
+    case Instr::cVarTempo:
+    case Instr::cSocket:
+    case Instr::cServ:
+    case Instr::cSalvar:
+    case Instr::cProg:
+    case Instr::cIndice: */
+    }
+    return 0;
+}
+
+//------------------------------------------------------------------------------
 int TVariavel::getInt()
 {
     if (defvar==0 || defvar[0]==0 && defvar[1]==0)

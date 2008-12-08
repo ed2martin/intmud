@@ -38,6 +38,7 @@
 #include "classe.h"
 #include "arqmapa.h"
 #include "instr.h"
+#include "variavel.h"
 #include "misc.h"
 
 #define CORE    // Para gerar arquivos core
@@ -623,6 +624,7 @@ void Inicializa()
     {
         if (Instr::ExecIni(cl, "iniclasse")==false)
             continue;
+        Instr::ExecArg(cl->Nome);
         Instr::ExecX();
         Instr::ExecFim();
     }
