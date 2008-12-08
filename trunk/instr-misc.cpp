@@ -11,6 +11,7 @@
  * GNU General Public License for more details at www.gnu.org
  */
 
+#include <assert.h>
 #include "instr.h"
 #include "variavel.h"
 #include "misc.h"
@@ -174,4 +175,234 @@ void Instr::ApagarVar(TVariavel * v)
         }
         VarAtual--;
     }
+}
+
+//----------------------------------------------------------------------------
+/// Procura valor (vide Instr::Expressao) em expressão numérica
+/** @return endereço do valor encontrado ou 0 se não encontrou
+ *  @note Não procura entre ex_varini e ex_varfim
+ */
+char * Instr::ProcuraExpr(char * expr, int valor)
+{
+    int contagem=0;
+    while (true)
+    {
+        if (*expr==ex_varfim || *expr==exo_e || *expr==exo_ou)
+            contagem--;
+        if (*expr==valor && contagem<=0)
+            return expr;
+        switch (*expr++)
+        {
+        case ex_fim:
+        case ex_coment:
+            return 0;
+
+        case ex_varabre:
+            contagem++;
+            break;
+        case ex_varini: // Será fechado com ex_varfim
+            contagem++;
+        case ex_fecha:  // Aberto com ex_abre
+        case ex_ponto:  // Aberto com ex_arg
+            while (*expr!=ex_abre && *expr!=ex_arg && *expr!=ex_varfim)
+            {
+                assert(*expr!=0);
+                expr++;
+            }
+            expr++;
+            break;
+
+        case ex_nulo:
+            break;
+        case ex_txt:
+            while (*expr)
+                expr++;
+            expr++;
+            break;
+        case ex_num32p:
+        case ex_num32n:
+            expr+=2;
+        case ex_num16p:
+        case ex_num16n:
+            expr++;
+        case ex_num8p:
+        case ex_num8n:
+            expr++;
+        case ex_num0:
+        case ex_num1:
+            while (*expr>=ex_div1 && *expr<=ex_div6)
+                expr++;
+            break;
+
+        case exo_virgula:
+        case exo_neg:
+        case exo_exclamacao:
+        case exo_mul:
+        case exo_div:
+        case exo_porcent:
+        case exo_add:
+        case exo_sub:
+        case exo_menor:
+        case exo_menorigual:
+        case exo_maior:
+        case exo_maiorigual:
+        case exo_igual:
+        case exo_diferente:
+        case exo_e:
+        case exo_ou:
+        case exo_igualmul:
+        case exo_igualdiv:
+        case exo_igualporcent:
+        case exo_igualadd:
+        case exo_igualsub:
+            break;
+        case exo_ee:
+        case exo_ouou:
+            contagem++;
+            break;
+        default:
+            assert(0);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+/// Obtém o nome de um valor de Instr::Comando
+/** @param  valor Valor de Instr::Comando
+ *  @return nome, ou 0 se não encontrou
+ */
+const char * Instr::NomeComando(int valor)
+{
+    switch ((Instr::Comando)valor)
+    {
+    case cHerda:            return "cHerda";
+    case cExpr:             return "cExpr";
+    case cComent:           return "cComent";
+
+    case cSe:               return "cSe";
+    case cSenao1:           return "cSenao1";
+    case cSenao2:           return "cSenao2";
+    case cFimSe:            return "cFimSe";
+    case cEnquanto:         return "cEnquanto";
+    case cEFim:             return "cEFim";
+    case cRet1:             return "cRet1";
+    case cRet2:             return "cRet2";
+    case cSair:             return "cSair";
+    case cContinuar:        return "cContinuar";
+    case cTerminar:         return "cTerminar";
+
+    case cVariaveis:        return "cVariaveis";
+    case cTxt1:             return "cTxt1";
+    case cTxt2:             return "cTxt2";
+    case cInt1:             return "cInt1";
+    case cInt8:             return "cInt8";
+    case cUInt8:            return "cUInt8";
+    case cInt16:            return "cInt16";
+    case cUInt16:           return "cUInt16";
+    case cInt32:            return "cInt32";
+    case cUInt32:           return "cUInt32";
+    case cIntInc:           return "cIntInc";
+    case cIntDec:           return "cIntDec";
+    case cReal:             return "cReal";
+    case cRef:              return "cRef";
+    case cConstNulo:        return "cConstNulo";
+    case cConstTxt:         return "cConstTxt";
+    case cConstNum:         return "cConstNum";
+    case cConstExpr:        return "cConstExpr";
+    case cFunc:             return "cFunc";
+    case cVarFunc:          return "cVarFunc";
+
+    case cListaObj:         return "cListaObj";
+    case cListaTxt:         return "cListaTxt";
+    case cListaMsg:         return "cListaMsg";
+    case cNomeObj:          return "cNomeObj";
+    case cLog:              return "cLog";
+    case cVarTempo:         return "cVarTempo";
+    case cSocket:           return "cSocket";
+    case cServ:             return "cServ";
+    case cSalvar:           return "cSalvar";
+    case cProg:             return "cProg";
+    case cIndice:           return "cIndice";
+
+    case cTxtFixo:          return "cTxtFixo";
+    case cTotalComandos:    break;
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+/// Obtém o nome de um valor de Instr::Expressao
+/** @param  valor Valor de Instr::Expressao
+ *  @return nome, ou 0 se não encontrou
+ */
+const char * Instr::NomeExpr(int valor)
+{
+    switch ((Instr::Expressao)FuncAtual->expr[0])
+    {
+    case ex_fim:            return "ex_fim";
+    case ex_coment:         return "ex_coment";
+
+    case ex_barra_n:        return "ex_barra_n";
+    case ex_barra_b:        return "ex_barra_b";
+    case ex_barra_c:        return "ex_barra_c";
+    case ex_barra_d:        return "ex_barra_d";
+
+    case ex_varini:         return "ex_varini";
+    case ex_varfim:         return "ex_varfim";
+    case ex_doispontos:     return "ex_doispontos";
+    case ex_ponto:          return "ex_ponto";
+    case ex_arg:            return "ex_arg";
+    case ex_varabre:        return "ex_varabre";
+    case ex_abre:           return "ex_abre";
+    case ex_fecha:          return "ex_fecha";
+
+    case ex_nulo:           return "ex_nulo";
+    case ex_txt:            return "ex_txt";
+    case ex_num0:           return "ex_num0";
+    case ex_num1:           return "ex_num1";
+    case ex_num8p:          return "ex_num8p";
+    case ex_num16p:         return "ex_num16p";
+    case ex_num32p:         return "ex_num32p";
+    case ex_num8n:          return "ex_num8n";
+    case ex_num16n:         return "ex_num16n";
+    case ex_num32n:         return "ex_num32n";
+    case ex_div1:           return "ex_div1";
+    case ex_div2:           return "ex_div2";
+    case ex_div3:           return "ex_div3";
+    case ex_div4:           return "ex_div4";
+    case ex_div5:           return "ex_div5";
+    case ex_div6:           return "ex_div6";
+
+    case exo_ini:           return "exo_ini";
+    case exo_virgula:       return "exo_virgula";
+    case exo_neg:           return "exo_neg";
+    case exo_exclamacao:    return "exo_exclamacao";
+    case exo_mul:           return "exo_mul";
+    case exo_div:           return "exo_div";
+    case exo_porcent:       return "exo_porcent";
+    case exo_add:           return "exo_add";
+    case exo_sub:           return "exo_sub";
+    case exo_menor:         return "exo_menor";
+    case exo_menorigual:    return "exo_menorigual";
+    case exo_maior:         return "exo_maior";
+    case exo_maiorigual:    return "exo_maiorigual";
+    case exo_igual:         return "exo_igual";
+    case exo_diferente:     return "exo_diferente";
+    case exo_e:             return "exo_e";
+    case exo_ou:            return "exo_ou";
+    case exo_igualmul:      return "exo_igualmul";
+    case exo_igualdiv:      return "exo_igualdiv";
+    case exo_igualporcent:  return "exo_igualporcent";
+    case exo_igualadd:      return "exo_igualadd";
+    case exo_igualsub:      return "exo_igualsub";
+    case exo_fim:           return "exo_fim";
+    case exo_ee:            return "exo_ee";
+    case exo_ouou:          return "exo_ouou";
+
+    case ex_var1:           return "ex_var1";
+    case ex_var2:           return "ex_var2";
+    case ex_colchetes:      return "ex_colchetes";
+    case ex_parenteses:     return "ex_parenteses";
+    }
+    return 0;
 }

@@ -58,6 +58,7 @@ public:
         /**< Usa  TVariavel::defvar  e  TVariavel::endvar */
 
 // Funções get
+    bool getBool();         ///< Obtém o valor "bool" da variável
     int getInt();           ///< Obtém o valor "int" da variável
     double getDouble();     ///< Obtém o valor "double" da variável
     const char * getTxt();  ///< Obtém o texto da variável
@@ -74,8 +75,9 @@ public:
     const char * defvar; ///< Instrução que define a variável
                          /**< @sa Instr::Comando */
     void * endvar;  ///< Endereço da variável na memória (0 se não for aplicável)
-    unsigned char local;///< Se deve apagar variável quando terminar a função
-                        /**< @note Não é usado em TVariavel */
+    unsigned char local;///< !=0 se não está usando a variável em outro lugar
+                        /**< !=0 significa apagar variável quando terminar a função
+                             @note Não é usado em TVariavel */
     unsigned char bit;  ///< Máscara do bit, se for variável de bit
 };
 

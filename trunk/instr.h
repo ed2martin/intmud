@@ -18,9 +18,13 @@ bool Mostra(char * destino, const char * origem, int tamanho);
 
 void ApagarVar(TVariavel * v);
 bool CriarVar(const char * defvar);
+char * ProcuraExpr(char * expr, int valor);
+const char * NomeComando(int valor);
+const char * NomeExpr(int valor);
 
 bool ExecIni(TClasse * classe, const char * func);
 bool ExecIni(TObjeto * este, const char * func);
+void ExecArg(char * txt);
 bool ExecX();
 void ExecFim();
 
@@ -65,6 +69,7 @@ public:
     TVariavel * endvar; ///< Primeiro argumento da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
     char  numvar;       ///< Número de variáveis definidas na função
+    bool  igualcompara; ///< Se o sinal de igual compara ou atribui
 };
 
 //----------------------------------------------------------------------------
@@ -268,7 +273,7 @@ enum Expressao
     exo_ou,         ///< Operador: a|b
     exo_igualmul,   ///< Operador: a*=b
     exo_igualdiv,   ///< Operador: a/=b
-    exo_igualporcent, ///Operador: < a%=b
+    exo_igualporcent,///< Operador: a%=b
     exo_igualadd,   ///< Operador: a+=b
     exo_igualsub,   ///< Operador: a-=b
     exo_fim,        ///< Operador: Marca o fim dos operadores
