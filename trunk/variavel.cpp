@@ -26,13 +26,13 @@
 //----------------------------------------------------------------------------
 TVariavel::TVariavel()
 {
-    memset(this, 0, sizeof(this));
+    memset(this, 0, sizeof(TVariavel));
 }
 
 //----------------------------------------------------------------------------
 void TVariavel::Limpar()
 {
-    memset(this, 0, sizeof(this));
+    memset(this, 0, sizeof(TVariavel));
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ int TVariavel::Tamanho(const char * instr)
 // Variáveis
     case Instr::cTxt1:      return 2 + (unsigned char)instr[4];
     case Instr::cTxt2:      return 258 + (unsigned char)instr[4];
-    case Instr::cInt1:      return 0;
+    case Instr::cInt1:
     case Instr::cInt8:
     case Instr::cUInt8:     return 1;
     case Instr::cInt16:
@@ -292,9 +292,9 @@ int TVariavel::getInt()
     case Instr::cReal:
         {
             double * d = (double*)endvar;
-            if (*d < -0x80000000)
+            if (*d < -0x80000000LL)
                 return -0x80000000;
-            else if (*d > 0x7FFFFFFF)
+            else if (*d > 0x7FFFFFFFLL)
                 return 0x7FFFFFFF;
             else
                 return (int)*d;
@@ -348,8 +348,8 @@ int TVariavel::getInt()
                 case Instr::ex_div6: valor/=1000000; break;
                 }
             if (negativo)
-                return (valor<0x80000000 ? -valor : -0x80000000);
-            return (valor<0x7FFFFFFF ? valor : 0x7FFFFFFF);
+                return (valor<0x80000000LL ? -valor : -0x80000000);
+            return (valor<0x7FFFFFFFLL ? valor : 0x7FFFFFFF);
         }
     case Instr::cConstExpr:
     case Instr::cFunc:
@@ -729,9 +729,9 @@ void TVariavel::setDouble(double valor)
     case Instr::cInt32:
     case Instr::cIntInc:
     case Instr::cIntDec:
-        if (valor<-0x80000000)
+        if (valor<-0x80000000LL)
             setInt(-0x80000000);
-        else if (valor>0x7FFFFFFF)
+        else if (valor>0x7FFFFFFFLL)
             setInt(0x7FFFFFFF);
         else
             setInt((int)valor);
@@ -739,7 +739,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cUInt32:
         {
             unsigned int x=0;
-            if (valor>0xFFFFFFFF)
+            if (valor>0xFFFFFFFFLL)
                 x=0xFFFFFFFF;
             else if (valor>0)
                 x=(int)valor;
@@ -810,8 +810,6 @@ void TVariavel::setTxt(const char * txt)
             errno=0, num=strtoul(txt, 0, 10);
             if (errno)
                 num=0;
-            if (num>0xFFFFFFFF)
-                num=0xFFFFFFFF;
             *((unsigned char*)endvar+0) = (unsigned char)num;
             *((unsigned char*)endvar+1) = (unsigned char)(num>>8);
             *((unsigned char*)endvar+2) = (unsigned char)(num>>16);
