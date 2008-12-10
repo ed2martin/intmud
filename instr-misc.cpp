@@ -11,6 +11,8 @@
  * GNU General Public License for more details at www.gnu.org
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include "instr.h"
 #include "variavel.h"
@@ -136,28 +138,33 @@ bool Instr::CriarVar(const char * def)
 {
     if (VarAtual >= VarFim-1)
         return false;
-// Verifica se memória suficiente
+// Verifica se tamanho da variável é nulo
     int tam = TVariavel::Tamanho(def);
-    tam = (tam+3) & ~3;
-    if (Instr::DadosTopo + tam > Instr::DadosFim)
-        return false;
-// Acerta variáveis
-    VarAtual++;
-    VarAtual->defvar = def;
-    VarAtual->bit = 1;
-// Cria variável
-    if (tam)
+    if (tam==0)
     {
-        VarAtual->endvar = Instr::DadosTopo;
-        VarAtual->local = 1;
-        Instr::DadosTopo += tam;
-        VarAtual->Criar(0, 0);
-    }
-    else
-    {
+        VarAtual++;
+        VarAtual->defvar = def;
         VarAtual->endvar = 0;
         VarAtual->local = 0;
+        VarAtual->bit = 1;
+        return true;
     }
+// Verifica se memória suficiente
+    char * p = Instr::DadosTopo;
+    if ((tam&1)==0)
+        p += ((p-Instr::DadosPilha)&1);
+    if ((tam&3)==0)
+        p += ((p-Instr::DadosPilha)&2);
+    if (p + tam > Instr::DadosFim)
+        return false;
+// Cria variável
+    VarAtual++;
+    VarAtual->endvar = p;
+    VarAtual->defvar = def;
+    VarAtual->local = 1;
+    VarAtual->bit = 1;
+    Instr::DadosTopo = p + tam;
+    VarAtual->Criar(0, 0);
     return true;
 }
 

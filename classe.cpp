@@ -389,6 +389,8 @@ void TClasse::AcertaVar()
 // Acerta variáveis com alinhamento de 1 byte
     for (unsigned int x=0; x<NumVar; x++)
     {
+        if (InstrVar[x][2] == Instr::cInt1)
+            continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if (tamanho&1)
             if (IndiceVar[x] & 0x400000) // Classe
@@ -402,6 +404,8 @@ void TClasse::AcertaVar()
 // Acerta variáveis com alinhamento de 2 bytes
     for (unsigned int x=0; x<NumVar; x++)
     {
+        if (InstrVar[x][2] == Instr::cInt1)
+            continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if ((tamanho&3)==2)
             if (IndiceVar[x] & 0x400000) // Classe
@@ -415,6 +419,8 @@ void TClasse::AcertaVar()
 // Acerta outras variáveis (alinhamento de 4 bytes)
     for (unsigned int x=0; x<NumVar; x++)
     {
+        if (InstrVar[x][2] == Instr::cInt1)
+            continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if (tamanho && (tamanho&3)==0)
             if (IndiceVar[x] & 0x400000) // Classe
