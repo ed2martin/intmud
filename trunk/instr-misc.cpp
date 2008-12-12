@@ -194,8 +194,6 @@ char * Instr::ProcuraExpr(char * expr, int valor)
     int contagem=0;
     while (true)
     {
-        if (*expr==ex_varfim || *expr==exo_e || *expr==exo_ou)
-            contagem--;
         if (*expr==valor && contagem<=0)
             return expr;
         switch (*expr++)
@@ -211,12 +209,20 @@ char * Instr::ProcuraExpr(char * expr, int valor)
             contagem++;
         case ex_fecha:  // Aberto com ex_abre
         case ex_ponto:  // Aberto com ex_arg
-            while (*expr!=ex_abre && *expr!=ex_arg && *expr!=ex_varfim)
+            while (*expr!=ex_arg && *expr!=ex_abre)
             {
+                if (*expr==ex_varfim)
+                {
+                    contagem--;
+                    break;
+                }
                 assert(*expr!=0);
                 expr++;
             }
             expr++;
+            break;
+        case ex_varfim:
+            contagem--;
             break;
 
         case ex_nulo:
@@ -255,13 +261,15 @@ char * Instr::ProcuraExpr(char * expr, int valor)
         case exo_maiorigual:
         case exo_igual:
         case exo_diferente:
-        case exo_e:
-        case exo_ou:
         case exo_igualmul:
         case exo_igualdiv:
         case exo_igualporcent:
         case exo_igualadd:
         case exo_igualsub:
+            break;
+        case exo_e:
+        case exo_ou:
+            contagem--;
             break;
         case exo_ee:
         case exo_ouou:

@@ -861,7 +861,7 @@ bool Instr::ExecX()
             {
                 char * p = ProcuraExpr(FuncAtual->expr, exo_e);
                 assert(p!=0);
-                FuncAtual->expr=p;
+                FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
                 if (!CriarVar(InstrInt))
                     return RetornoErro();
