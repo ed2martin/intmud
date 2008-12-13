@@ -489,7 +489,7 @@ const char * TVariavel::getTxt()
 {
     static char txtnum[80];
     if (defvar==0 || defvar[0]==0 && defvar[1]==0)
-        return 0;
+        return "";
     switch (defvar[2])
     {
 // Variáveis
@@ -518,7 +518,7 @@ const char * TVariavel::getTxt()
         return txtnum;
     case Instr::cRef:
     case Instr::cConstNulo:
-        return 0;
+        return "";
     case Instr::cConstTxt:
         return (char*)endvar + *((char*)endvar+4);
     case Instr::cConstNum:
@@ -594,7 +594,7 @@ const char * TVariavel::getTxt()
     case Instr::cConstExpr:
     case Instr::cFunc:
     case Instr::cVarFunc:
-        return 0;
+        return "";
 
 // Variáveis extras
    /* case Instr::cListaObj:
@@ -609,7 +609,7 @@ const char * TVariavel::getTxt()
     case Instr::cProg:
     case Instr::cIndice: */
     }
-    return 0;
+    return "";
 }
 
 //------------------------------------------------------------------------------
@@ -852,6 +852,23 @@ void TVariavel::setTxt(const char * txt)
 //------------------------------------------------------------------------------
 void TVariavel::addTxt(const char * txt)
 {
+    if (defvar==0 || defvar[0]==0 && defvar[1]==0)
+        return;
+    switch (defvar[2])
+    {
+    case Instr::cTxt1:
+    case Instr::cTxt2:
+        {
+            char * dest = (char*)endvar;
+            const char * fim = dest + Tamanho(defvar) - 1;
+            while (*dest)
+                dest++;
+            while (*txt && dest<fim)
+                *dest++ = *txt++;
+            *dest=0;
+            break;
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
