@@ -271,11 +271,11 @@ enum Expressao
     exo_diferente,  ///< Operador: a!=b
     exo_e,          ///< Operador: a&b
     exo_ou,         ///< Operador: a|b
-    exo_igualmul,   ///< Operador: a*=b
-    exo_igualdiv,   ///< Operador: a/=b
-    exo_igualporcent,///< Operador: a%=b
-    exo_igualadd,   ///< Operador: a+=b
-    exo_igualsub,   ///< Operador: a-=b
+    exo_igualmul,   ///< Operador: a*=b   (segue exo_mul, exo_igual)
+    exo_igualdiv,   ///< Operador: a/=b   (segue exo_div, exo_igual)
+    exo_igualporcent,///< Operador: a%=b  (segue exo_porcent, exo_igual)
+    exo_igualadd,   ///< Operador: a+=b   (segue exo_add, exo_igual)
+    exo_igualsub,   ///< Operador: a-=b   (segue exo_sub, exo_igual)
     exo_fim,        ///< Operador: Marca o fim dos operadores
     exo_ee,         ///< Operador: Início do operador &
     exo_ouou,       ///< Operador: Início do operador |

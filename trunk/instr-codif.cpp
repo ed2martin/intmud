@@ -289,6 +289,36 @@ static int comparaNome(const char * string1, const char * string2)
 }
 
 //------------------------------------------------------------------------------
+static char * anotaModo(char * destino, int modo)
+{
+    *destino++ = modo;
+    switch (modo)
+    {
+    case exo_igualmul:
+        *destino++ = exo_mul;
+        *destino++ = exo_igual;
+        break;
+    case exo_igualdiv:
+        *destino++ = exo_div;
+        *destino++ = exo_igual;
+        break;
+    case exo_igualporcent:
+        *destino++ = exo_porcent;
+        *destino++ = exo_igual;
+        break;
+    case exo_igualadd:
+        *destino++ = exo_add;
+        *destino++ = exo_igual;
+        break;
+    case exo_igualsub:
+        *destino++ = exo_sub;
+        *destino++ = exo_igual;
+        break;
+    }
+    return destino;
+}
+
+//------------------------------------------------------------------------------
 /// Codifica uma instrução
 /**
  *  @param destino Endereço destino (instrução codificada)
@@ -979,7 +1009,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Anota operadores de menor precedência
             while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
             {
-                *destino++ = modo;
+                destino = anotaModo(destino, modo);
                 modo = *--topo;
             }
             if (destino >= dest_fim-1)
@@ -1018,7 +1048,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Anota operadores de menor precedência
             while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
             {
-                *destino++ = modo;
+                destino = anotaModo(destino, modo);
                 modo = *--topo;
             }
             if (destino >= dest_fim-1)
@@ -1039,7 +1069,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         {
             while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
             {
-                *destino++ = modo;
+                destino = anotaModo(destino, modo);
                 modo = *--topo;
             }
             if (destino >= dest_fim-1)
@@ -1199,7 +1229,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                pri_sinal >= Instr::Prioridade(modo) &&
                destino < dest_fim-1)
         {
-            *destino++ = modo;
+            destino = anotaModo(destino, modo);
             modo = *--topo;
         }
         if (destino >= dest_fim-2)

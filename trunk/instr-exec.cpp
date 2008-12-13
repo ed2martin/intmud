@@ -896,14 +896,26 @@ bool Instr::ExecX()
                     VarAtual->setInt(1);
                 break;
             }
-
-
-     /*   case exo_igualmul:   // Operador: a*=b
+        case exo_igualadd:   // Operador: a+=b
+            if (VarAtual[-1].Tipo() == varTxt)
+            {
+                FuncAtual->expr += 3;
+                VarAtual[-1].addTxt(VarAtual[0].getTxt());
+                ApagarVar(VarAtual);
+                break;
+            }
+        case exo_igualmul:   // Operador: a*=b
         case exo_igualdiv:   // Operador: a/=b
         case exo_igualporcent: // Operador: a%=b
-        case exo_igualadd:   // Operador: a+=b
         case exo_igualsub:   // Operador: a-=b
-      */
+            FuncAtual->expr++;
+            if (VarAtual >= VarFim-1)
+                return RetornoErro();
+            VarAtual[1] = VarAtual[0];
+            VarAtual[0] = VarAtual[-1];
+            VarAtual[0].local = 0;
+            VarAtual++;
+            break;
 
     // A partir daqui processa funções e variáveis
     // Cria-se uma variável cNomeVar, que contém parte do nome da variável
