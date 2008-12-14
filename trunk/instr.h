@@ -16,8 +16,9 @@ bool Codif(char * destino, const char * origem, int tamanho);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
 
-void ApagarVar(TVariavel * v);
 bool CriarVar(const char * defvar);
+void ApagarVar(TVariavel * v);
+void ApagarVar(TVariavel * varini, TVariavel * varfim);
 char * ProcuraExpr(char * expr, int valor);
 const char * NomeComando(int valor);
 const char * NomeExpr(int valor);
@@ -185,6 +186,10 @@ enum Comando
 
 // Usado internamente
     cTxtFixo,           ///< Aponta para um texto fixo
+    cVarNome,           ///< Para obter nome da variável
+    cVarInicio,         ///< Esperando texto logo após ex_varini
+    cVarClasse,         ///< TVariavel::endvar = endereço do objeto TClasse
+    cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
 
     cTotalComandos      ///< Número de comandos - não usado
 };

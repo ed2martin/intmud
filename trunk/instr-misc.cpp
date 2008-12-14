@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "instr.h"
 #include "variavel.h"
@@ -185,6 +186,91 @@ void Instr::ApagarVar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
+/// Apaga variáveis na pilha a partir da variável v
+void Instr::ApagarVar(TVariavel * varini, TVariavel * varfim)
+{
+// Verifica se deve apagar até o fim
+    if (varfim >= VarAtual)
+    {
+        ApagarVar(varini);
+        return;
+    }
+// Apaga variáveis, obtém primeiro endereço liberado em Instr::DadosPilha
+    TVariavel * v;
+    char * fim = 0;
+    for (v=varfim; v>=varini; v--)
+        if (v->local)
+        {
+            v->Apagar();
+            if (v->endvar)
+                fim = (char*)v->endvar;
+        }
+// Move variáveis
+    for (varfim++; varfim <= VarAtual; varini++,varfim++)
+    {
+    // Copia dados da variável
+        *varini = *varfim;
+    // Se for local: não deve mover
+        if (varini->local==0)
+            continue;
+    // É texto fixo
+        if (varini->defvar[2] == cTxtFixo)
+        {
+            char * origem = (char*)varini->endvar;
+            if (fim+4 >= origem)
+            {
+                fim = origem + strlen(origem) + 1;
+                continue;
+            }
+            varini->endvar = fim;
+            fim = copiastr(fim, origem) + 1;
+            for (v=varfim+1; v<=VarAtual; v++)
+                if (v->endvar == origem)
+                    v->endvar = varini->endvar;
+            continue;
+        }
+    // Obtém tamanho da variável
+        int tam = varini->Tamanho();
+        if (tam<=0)
+            continue;
+    // Calcula novo endereço da variável
+        char * p = fim;
+        if ((tam&1)==0)
+            p += ((p-Instr::DadosPilha)&1);
+        if ((tam&3)==0)
+            p += ((p-Instr::DadosPilha)&2);
+    // Move para novo endereço
+        if (p < (char*)varini->endvar)
+        {
+            if (p + tam <= (char*)varini->endvar) // Pode mover direto
+                varini->Mover(p, 0, 0);
+            else if (tam<=1024) // Até 1024: usa a pilha
+            {
+                char mens[1024];
+                varini->Mover(mens, 0, 0);
+                varini->endvar = mens;
+                varini->Mover(p, 0, 0);
+            }
+            else    // Mais de 1024: aloca memória (mais lento)
+            {
+                char * mens = new char[tam];
+                varini->Mover(mens, 0, 0);
+                varini->endvar = mens;
+                varini->Mover(p, 0, 0);
+                delete[] mens;
+            }
+            for (v=varfim+1; v<=VarAtual; v++)
+                if (v->endvar == varini->endvar)
+                    v->endvar = p;
+            varini->endvar = p;
+        }
+        fim = (char*)varini->endvar + tam;
+    }
+    VarAtual = varini - 1;
+    DadosTopo = fim;
+}
+
+//----------------------------------------------------------------------------
 /// Procura valor (vide Instr::Expressao) em expressão numérica
 /** @return endereço do valor encontrado ou 0 se não encontrou
  *  @note Não procura entre ex_varini e ex_varfim
@@ -340,6 +426,10 @@ const char * Instr::NomeComando(int valor)
     case cIndice:           return "cIndice";
 
     case cTxtFixo:          return "cTxtFixo";
+    case cVarNome:          return "cVarNome";
+    case cVarInicio:        return "cVarInicio";
+    case cVarClasse:        return "cVarClasse";
+    case cVarObjeto:        return "cVarObjeto";
     case cTotalComandos:    break;
     }
     return 0;

@@ -75,6 +75,11 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice: */
+
+    case Instr::cVarNome:   return 48;
+    case Instr::cVarInicio:
+    case Instr::cVarClasse:
+    case Instr::cVarObjeto: return 0;
     }
     return 0;
 }
@@ -127,6 +132,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cIndice: */
 
     case Instr::cTxtFixo:   return varTxt;
+    case Instr::cVarObjeto: return varObj;
     }
     return varNulo;
 }
@@ -246,6 +252,9 @@ bool TVariavel::getBool()
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice: */
+
+    case Instr::cVarObjeto:
+        return (endvar!=0);
     }
     return 0;
 }
@@ -496,6 +505,7 @@ const char * TVariavel::getTxt()
     case Instr::cTxt1:
     case Instr::cTxt2:
     case Instr::cTxtFixo:
+    case Instr::cVarNome:
         return (const char*)endvar;
     case Instr::cInt1:
         return (*(char*)endvar & bit ? "1" : "0");
@@ -608,6 +618,11 @@ const char * TVariavel::getTxt()
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice: */
+
+    case Instr::cVarObjeto:
+        if (endvar==0)
+            break;
+        return (*(TClasse*)endvar).Nome;
     }
     return "";
 }
@@ -615,6 +630,13 @@ const char * TVariavel::getTxt()
 //------------------------------------------------------------------------------
 TObjeto * TVariavel::getObj()
 {
+    if (defvar==0 || defvar[0]==0 && defvar[1]==0)
+        return 0;
+    switch (defvar[2])
+    {
+    case Instr::cVarObjeto:
+        return (TObjeto*)endvar;
+    }
     return 0;
 }
 
@@ -786,6 +808,7 @@ void TVariavel::setTxt(const char * txt)
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
+    case Instr::cVarNome:
         copiastr((char*)endvar, txt, Tamanho(defvar));
         break;
     case Instr::cInt1:
@@ -858,6 +881,7 @@ void TVariavel::addTxt(const char * txt)
     {
     case Instr::cTxt1:
     case Instr::cTxt2:
+    case Instr::cVarNome:
         {
             char * dest = (char*)endvar;
             const char * fim = dest + Tamanho(defvar) - 1;
@@ -874,4 +898,12 @@ void TVariavel::addTxt(const char * txt)
 //------------------------------------------------------------------------------
 void TVariavel::setObj(TObjeto * obj)
 {
+    if (defvar==0 || defvar[0]==0 && defvar[1]==0)
+        return;
+    switch (defvar[2])
+    {
+    case Instr::cVarObjeto:
+        endvar = obj;
+        break;
+    }
 }
