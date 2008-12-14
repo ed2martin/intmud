@@ -1007,7 +1007,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
         // Anota operadores de menor precedência
-            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
+            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-3)
             {
                 destino = anotaModo(destino, modo);
                 modo = *--topo;
@@ -1046,7 +1046,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
         // Anota operadores de menor precedência
-            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
+            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-3)
             {
                 destino = anotaModo(destino, modo);
                 modo = *--topo;
@@ -1067,7 +1067,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Fim da sentença
         if (*origem==0 || *origem=='#')
         {
-            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-1)
+            while (modo>exo_ini && modo<exo_fim && destino < dest_fim-3)
             {
                 destino = anotaModo(destino, modo);
                 modo = *--topo;
@@ -1227,7 +1227,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         int pri_sinal = Instr::Prioridade(sinal);
         while (modo>exo_ini && modo<exo_fim &&
                pri_sinal >= Instr::Prioridade(modo) &&
-               destino < dest_fim-1)
+               destino < dest_fim-3)
         {
             destino = anotaModo(destino, modo);
             modo = *--topo;

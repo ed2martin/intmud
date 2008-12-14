@@ -57,6 +57,7 @@ Para cada modificação agendada nas classes:
 
 @par Valores de Instr::Comando usados somente aqui:
 
+- cVarNome    -> Para obter nome da variável
 - cVarInicio  -> Esperando texto logo após ex_varini
 - cVarClasse  -> Leu ':', TVariavel::endvar = endereço do objeto TClasse
 - cVarObjeto  -> TVariavel::endvar = endereço do objeto TObjeto
@@ -108,31 +109,31 @@ Se FuncAtual->expr != 0:
      Avança FuncAtual->expr
      Vai para (início)
   *** A partir daqui processa funções e variáveis
-  *** Cria-se uma variável cNomeVar, que contém parte do nome da variável
+  *** Cria-se uma variável cVarNome, que contém parte do nome da variável
   *** Cria-se uma variável em seguida, que contém o resultado anterior
   *** Isso torna possível processar várias variáveis ligadas por ponto
   *** Exemplo: a.b.c
   Se for ex_varini ou ex_varabre:
-     Cria variável cNomeVar na pilha de variáveis para armazenar o nome
+     Cria variável cVarNome na pilha de variáveis para armazenar o nome
      Cria variável cVarInicio na pilha de variáveis
      Avança FuncAtual->Expr
      Se era ex_varini:
-       Copia o que puder do nome em (um texto) para última variável cNomeVar
+       Copia o que puder do nome em (um texto) para última variável cVarNome
      Vai para (início)
   Se for ex_arg (argumento da função) ou ex_abre (abre colchetes):
      Avança FuncAtual->expr
      Vai para (início)
   Se for ex_fecha (fecha colchetes):
      Avança FuncAtual->expr
-     Sendo que: X=última variável cNomeVar da pilha e Y=variável após X
-     Transforma em texto as variáveis após Y e anoma em X
+     Sendo que: X=última variável cVarNome da pilha e Y=variável após X
+     Transforma em texto as variáveis após Y e anota em X
      Apaga variáveis após Y
      Copia o que puder do nome em FuncAtual->expr (um texto) para X
      Vai para (início)
   Se for ex_varfim:
      Avança FuncAtual->expr
-     Sendo que: X=última variável cNomeVar da pilha e Y=variável após X
-     Se variável Y for cVarInicio, cVarClasse ou cVarObjeto:
+     Sendo que: X=última variável cVarNome da pilha e Y=variável após X
+     Se variável Y for cVarInicio ou cVarClasse:
        Apaga variáveis de X em diante
        Cria variável cNulo
      Caso contrário:
@@ -141,31 +142,31 @@ Se FuncAtual->expr != 0:
        Variável Y passa a ocupar o lugar da variável X
      Vai para (início)
   Se for ex_doispontos:
-     Procura última variável cNomeVar da pilha
-     Se nome de classe em cNomeVar existe e próxima variável for cVarInicio:
+     Procura última variável cVarNome da pilha
+     Se nome de classe em cVarNome existe e próxima variável for cVarInicio:
        Muda a próxima variável para cVarClasse
        Anota o endereço da classe
      Caso contrário:
-       Apaga da variável cNomeVar em diante
+       Apaga da variável cVarNome em diante
        Cria variável cNulo na pilha de variáveis
        Avança FuncAtual->expr até ex_varfim
      Avança FuncAtual->expr
      Vai para (início)
   Se for ex_ponto:
      Avança FuncAtual->expr
-     Procura última variável cNomeVar da pilha
-     Checa próxima variável e texto em cNomeVar:
+     Procura última variável cVarNome da pilha
+     Checa próxima variável e texto em cVarNome:
         cVarInicio -> 1. Verifica se é variável/comando interno do programa
                       2. Verifica se é variável local da função
                       3. Verifica se é variável ou função do objeto
         cVarClasse -> Verifica se é função da classe especificada
         cVarObjeto -> Verifica se é variável ou função do objeto em cVarObjeto
      Depois de decidido que ação tomar:
-       Limpa texto em cNomeVar
-       Copia o que puder do nome em FuncAtual->expr (um texto) para cNomeVar
+       Limpa texto em cVarNome
+       Copia o que puder do nome em FuncAtual->expr (um texto) para cVarNome
      Executa ação, que pode ser:
      1. Processar função interna do programa:
-        Apaga variáveis após cNomeVar
+        Apaga variáveis após cVarNome
         Cria variável com o resultado
      2. Executar uma função de uma classe:
         FuncAtual++
@@ -173,11 +174,11 @@ Se FuncAtual->expr != 0:
         FuncAtual->este = endereço do objeto "este", ou NULL
         FuncAtual->expr = 0
         FuncAtual->exprvar = 0
-        FuncAtual->endvar = primeira variável após cNomeVar
+        FuncAtual->endvar = primeira variável após cVarNome
         FuncAtual->numvar = 0
-        FuncAtual->numarg = número de variáveis após cNomeVar
+        FuncAtual->numarg = número de variáveis após cVarNome
      3. Variável definida em uma classe:
-        Apaga variáveis a partir da anterior a cNomeVar
+        Apaga variáveis a partir da anterior a cVarNome
         Anota variável no topo da pilha de variáveis
      4. Uma variável qualquer:
         Consulta a variável sobre o que fazer; pode cair em 2 ou 3
@@ -207,6 +208,10 @@ static const char InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, '+', 0 };
 static const char InstrInt[] = { 7, 0, Instr::cInt32, 0, 0, '+', 0 };
 static const char InstrUInt[] = { 7, 0, Instr::cUInt32, 0, 0, '+', 0 };
 static const char InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, '+', 0 };
+static const char InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, '+', 0 };
+static const char InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, '+', 0 };
+static const char InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, '+', 0 };
+static const char InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, '+', 0 };
 
 //----------------------------------------------------------------------------
 /// Prepara para executar
@@ -307,6 +312,62 @@ static bool RetornoErro(void)
 }
 
 //----------------------------------------------------------------------------
+/// Usado internamente em Instr::ExecX()
+/** Adiciona texto em variável cVarNome
+ */
+static char * CopiaVarNome(TVariavel * v, char * txt)
+{
+    if (v->defvar[2] != Instr::cVarNome)
+        return txt;
+    char * dest = (char*)v->endvar;
+    const char * fim = dest + TVariavel::Tamanho(v->defvar) - 1;
+    while (*dest)
+        dest++;
+    for (; *txt; txt++)
+    {
+        if (*(unsigned char*)txt < Instr::ex_varini)
+            continue;
+        else if (*(unsigned char*)txt < ' ')
+            break;
+        else if (dest<fim)
+            *dest++ = *txt;
+    }
+    *dest=0;
+    return txt;
+}
+
+//----------------------------------------------------------------------------
+/// Usado internamente em Instr::ExecX()
+/** @return Última variável cVarNome da pilha
+ */
+static TVariavel * EndVarNome(void)
+{
+    for (TVariavel * v = Instr::VarAtual; v>=Instr::VarPilha; v--)
+        if (v->defvar[2] == Instr::cVarNome)
+            return v;
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+/// Usado internamente em Instr::ExecX()
+/** Avança para fim do nome da variável
+ */
+static void VarInvalido(void)
+{
+// Obtém última variável cVarNome da pilha
+    TVariavel * v = EndVarNome();
+    assert(v!=0);
+// Apaga última variável cVarNome em diante
+    Instr::ApagarVar(v);
+// Cria NULO na pilha
+    Instr::CriarVar(InstrNulo);
+// Avança para o fim do nome da variável
+    char * p = ProcuraExpr(Instr::FuncAtual->expr, Instr::ex_varfim);
+    assert(p!=0);
+    Instr::FuncAtual->expr = p + 1;
+}
+
+//----------------------------------------------------------------------------
 /// Executa função
 /** @return true se executou normal, false se cancelou por falta de memória
  *  @note Independente de retornar true ou false, executar ExecFim() depois
@@ -356,6 +417,7 @@ bool Instr::ExecX()
             {
                 if (!CriarVar(FuncAtual->linha))
                     return RetornoErro();
+                FuncAtual->numvar++;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 continue;
             }
@@ -918,83 +980,227 @@ bool Instr::ExecX()
             break;
 
     // A partir daqui processa funções e variáveis
-    // Cria-se uma variável cNomeVar, que contém parte do nome da variável
+    // Cria-se uma variável cVarNome, que contém parte do nome da variável
     // Cria-se uma variável em seguida, que contém o resultado anterior
     // Isso torna possível processar várias variáveis ligadas por ponto
     // Exemplo: a.b.c
+        case ex_varini:     // Início do texto
+        case ex_varabre:    // Início do texto + abre colchetes
+            if (!CriarVar(InstrVarNome))
+                return RetornoErro();
+            if (!CriarVar(InstrVarInicio))
+                return RetornoErro();
+            if (*FuncAtual->expr++ == ex_varini)
+                FuncAtual->expr = CopiaVarNome(VarAtual-1, FuncAtual->expr);
+            break;
+        case ex_arg:        // Início da lista de argumentos
+        case ex_abre:       // Abre colchetes
+            FuncAtual->expr++;
+            break;
+        case ex_fecha:      // Fecha colchetes
+            {
+                FuncAtual->expr++;
+                TVariavel * v = EndVarNome();
+                char mens[64];
+                char * p = mens;
+                char * pfim = p + sizeof(mens);
+                assert(v!=0);
+                for (TVariavel * x = v+2; x<=VarAtual; x++)
+                    p = copiastr(p, x->getTxt(), pfim-p);
+                ApagarVar(v+2);
+                CopiaVarNome(v, mens);
+                FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
+                break;
+            }
+        case ex_varfim:     // Fim do texto
+            {
+                FuncAtual->expr++;
+                TVariavel * v = EndVarNome();
+                assert(v!=0);
+                int tipo = v[1].defvar[2];
+            // cVarInicio ou cVarClasse: resultado nulo
+                if (tipo==cVarInicio || tipo==cVarClasse)
+                {
+                    ApagarVar(v);
+                    if (!CriarVar(InstrNulo))
+                        return RetornoErro();
+                    break;
+                }
+            // Outro valor
+                ApagarVar(v+2);
+                ApagarVar(v, v);
+                break;
+            }
+        case ex_doispontos:
+            {
+                FuncAtual->expr++;
+                TVariavel * v = EndVarNome();
+                assert(v!=0);
+                if (v[1].defvar[0] == cVarInicio)
+                {
+                    TClasse * c = TClasse::Procura(v->getTxt());
+                    if (c)
+                    {
+                        v[1].defvar = InstrVarClasse;
+                        v[1].endvar = c;
+                        break;
+                    }
+                }
+                VarInvalido();
+                break;
+            }
+        case ex_ponto:
+            {
+                FuncAtual->expr++;
+                TVariavel * v = EndVarNome();
+                const char * nome = v->getTxt(); // Nome encontrado
+                TClasse * classe = 0; // Procurar variável de classe/objeto
+                TObjeto * objeto = 0; // Procurar variável de objeto
+                assert(v!=0);
 
-/*
-  Se for ex_varini ou ex_varabre:
-     Cria variável cNomeVar na pilha de variáveis para armazenar o nome
-     Cria variável cVarInicio na pilha de variáveis
-     Avança FuncAtual->Expr
-     Se era ex_varini:
-       Copia o que puder do nome em (um texto) para última variável cNomeVar
-     Vai para (início)
-  Se for ex_arg (argumento da função) ou ex_abre (abre colchetes):
-     Avança FuncAtual->expr
-     Vai para (início)
-  Se for ex_fecha (fecha colchetes):
-     Avança FuncAtual->expr
-     Sendo que: X=última variável cNomeVar da pilha e Y=variável após X
-     Transforma em texto as variáveis após Y e anoma em X
-     Apaga variáveis após Y
-     Copia o que puder do nome em FuncAtual->expr (um texto) para X
-     Vai para (início)
-  Se for ex_varfim:
-     Avança FuncAtual->expr
-     Sendo que: X=última variável cNomeVar da pilha e Y=variável após X
-     Se variável Y for cVarInicio, cVarClasse ou cVarObjeto:
-       Apaga variáveis de X em diante
-       Cria variável cNulo
-     Caso contrário:
-       Apaga variáveis após Y
-       Apaga variável X
-       Variável Y passa a ocupar o lugar da variável X
-     Vai para (início)
-  Se for ex_doispontos:
-     Procura última variável cNomeVar da pilha
-     Se nome de classe em cNomeVar existe e próxima variável for cVarInicio:
-       Muda a próxima variável para cVarClasse
-       Anota o endereço da classe
-     Caso contrário:
-       Apaga da variável cNomeVar em diante
-       Cria variável cNulo na pilha de variáveis
-       Avança FuncAtual->expr até ex_varfim
-     Avança FuncAtual->expr
-     Vai para (início)
-  Se for ex_ponto:
-     Avança FuncAtual->expr
-     Procura última variável cNomeVar da pilha
-     Checa próxima variável e texto em cNomeVar:
-        cVarInicio -> 1. Verifica se é variável/comando interno do programa
-                      2. Verifica se é variável local da função
-                      3. Verifica se é variável ou função do objeto
-        cVarClasse -> Verifica se é função da classe especificada
-        cVarObjeto -> Verifica se é variável ou função do objeto em cVarObjeto
-     Depois de decidido que ação tomar:
-       Limpa texto em cNomeVar
-       Copia o que puder do nome em FuncAtual->expr (um texto) para cNomeVar
-     Executa ação, que pode ser:
-     1. Processar função interna do programa:
-        Apaga variáveis após cNomeVar
-        Cria variável com o resultado
-     2. Executar uma função de uma classe:
-        FuncAtual++
-        FuncAtual->linha = primeira linha após o nome da função
-        FuncAtual->este = endereço do objeto "este", ou NULL
-        FuncAtual->expr = 0
-        FuncAtual->exprvar = 0
-        FuncAtual->endvar = primeira variável após cNomeVar
-        FuncAtual->numvar = 0
-        FuncAtual->numarg = número de variáveis após cNomeVar
-     3. Variável definida em uma classe:
-        Apaga variáveis a partir da anterior a cNomeVar
-        Anota variável no topo da pilha de variáveis
-     4. Uma variável qualquer:
-        Consulta a variável sobre o que fazer; pode cair em 2 ou 3
-  Nunca deverá chegar aqui; executar assert(0) */
+            // Verifica variável/função da classe
+                if (v[1].defvar[2]==cVarClasse)
+                    classe = (TClasse*)v[1].endvar;
+            // Verifica variável/função da classe
+                else if (v[1].defvar[2]==cVarInicio)
+                {
+                // Verifica se é variável/comando interno do programa
 
+
+    //*****************************
+
+
+                // Se começa com $, verifica se objeto existe
+                    if (nome[0]=='$')
+                    {
+                        TClasse * c = TClasse::Procura(nome+1);
+                        if (c==0 || c->ObjetoIni==0)
+                        {
+                            VarInvalido();
+                            break;
+                        }
+                        ApagarVar(v+1);
+                        VarAtual++;
+                        VarAtual->defvar = InstrVarObjeto;
+                        VarAtual->endvar = c->ObjetoIni;
+                        VarAtual->local = 0;
+                        break;
+                    }
+                // Verifica se é argumento da função
+                    if ((nome[0]|0x20)=='a' && (nome[1]|0x20)=='r' &&
+                            (nome[2]|0x20)=='g' && nome[3]>='0' &&
+                            nome[3]<='9' && nome[4]==0)
+                    {
+                        int arg = nome[3] - '0';
+                        if (arg >= FuncAtual->numarg)
+                            VarInvalido();
+                        else
+                        {
+                            ApagarVar(v+1);
+                            VarAtual++;
+                            *VarAtual = *(FuncAtual->endvar + arg);
+                            VarAtual->local = 0;
+                        }
+                        break;
+                    }
+                // Verifica se é variável local da função
+                    int x = FuncAtual->numvar;
+                    TVariavel * var = FuncAtual->endvar + FuncAtual->numarg;
+                    for (; x>=0; x--,var++)
+                        if (comparaZ(nome, var->defvar+5)==0)
+                            break;
+                    if (x>=0)
+                    {
+                        ApagarVar(v+1);
+                        VarAtual++;
+                        *VarAtual = *var;
+                        VarAtual->local = 0;
+                        break;
+                    }
+                // Verifica se é variável/função do objeto
+                    objeto = FuncAtual->este;
+                    if (objeto)
+                        classe = objeto->Classe;
+                }
+            // Verifica variável/função de objeto
+                else if (v[1].Tipo()==varObj)
+                {
+                    objeto = v[1].getObj();
+                    if (objeto==0) // Objeto inexistente
+                    {
+                        VarInvalido();
+                        break;
+                    }
+                    classe = objeto->Classe;
+                }
+
+
+    // else ...
+    //******* Consulta a variável sobre o que fazer
+
+
+            // Processa classe e objeto
+                if (classe==0)
+                {
+                    VarInvalido();
+                    break;
+                }
+                int indice = classe->IndiceNome(nome);
+                if (indice<0) // Variável/função inexistente
+                {
+                    VarInvalido();
+                    break;
+                }
+                char * defvar = classe->InstrVar[indice];
+                int indvar = classe->IndiceVar[indice];
+                v->setTxt("");
+            // Função
+                if (defvar[2]==cFunc)
+                {
+                    if (FuncAtual >= FuncFim - 1)
+                        return RetornoErro();
+                    ApagarVar(v+1, v+1);
+                    FuncAtual++;
+                    FuncAtual->linha = defvar + Num16(defvar);
+                    FuncAtual->este = objeto;
+                    FuncAtual->expr = 0;
+                    FuncAtual->exprvar = 0;
+                    FuncAtual->endvar = v+1;
+                    FuncAtual->numvar = 0;
+                    FuncAtual->numarg = VarAtual - FuncAtual->endvar + 1;
+                    break;
+                }
+            // Função varfunc
+                if (defvar[2]==cVarFunc)
+                {
+                    if (objeto==0)
+                    {
+                        VarInvalido();
+                        break;
+                    }
+                    ApagarVar(v+1);
+                    VarAtual++;
+                    VarAtual->defvar = defvar;
+                    VarAtual->endvar = objeto;
+                    VarAtual->local = 0;
+                    break;
+                }
+            // Variável
+                ApagarVar(v+1);
+                VarAtual++;
+                VarAtual->defvar = defvar;
+                VarAtual->local = 0;
+                VarAtual->bit = indvar >> 24;
+                if (indvar & 0x400000) // Variável da classe
+                    VarAtual->endvar = classe->Vars +
+                            (indvar & 0x3FFFFF);
+                else if (objeto) // Variável do objeto
+                    VarAtual->endvar = objeto->Vars +
+                            (indvar & 0x3FFFFF);
+                else // Objeto inexistente
+                    VarInvalido();
+                break;
+            }
         default:
             assert(0);
         }
