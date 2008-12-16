@@ -66,10 +66,9 @@ public:
                         ///< Mesmo formato de TClasse::Comandos
     char * expr;        ///< Aonde parou na expressão numérica
                         ///< =0 se não estiver processando expressão numérica
-    TVariavel * exprvar;///< Valor de VarAtual ao fazer expr!=0
-    TVariavel * endvar; ///< Primeiro argumento da função
+    TVariavel * inivar; ///< Primeiro argumento da função
+    TVariavel * fimvar; ///< Primeira variável após variáveis locais da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
-    char  numvar;       ///< Número de variáveis definidas na função
     bool  igualcompara; ///< Se o sinal de igual compara ou atribui
 };
 
