@@ -108,7 +108,7 @@ void TClasse::AcertaComandos()
     int nivelse;
 
 // Primeiro zera endereços de desvio
-    for (char * p = Comandos; p[0] && p[1]; p+=Num16(p))
+    for (char * p = Comandos; p[0] || p[1]; p+=Num16(p))
         switch (p[2])
         {
         case Instr::cSe:
@@ -123,14 +123,14 @@ void TClasse::AcertaComandos()
         }
 
 // Acerta endereços de desvio conforme instruções
-    for (char * p = Comandos; p[0] && p[1]; p+=Num16(p))
+    for (char * p = Comandos; p[0] || p[1]; p+=Num16(p))
         switch (p[2])
         {
         case Instr::cSe:
         case Instr::cSenao1:
         case Instr::cSenao2:
             nivelse=0;
-            for (x=p+Num16(p); x[0] && x[1]; x+=Num16(x))
+            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
                 if (x[2] >= Instr::cVariaveis)
                     break;
                 else if (x[2]==Instr::cSe)
@@ -148,7 +148,7 @@ void TClasse::AcertaComandos()
             break;
         case Instr::cEnquanto:
             nivelse=0;
-            for (x=p+Num16(p); x[0] && x[1]; x+=Num16(x))
+            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
                 if (x[2] >= Instr::cVariaveis)
                     break;
                 else if (x[2]==Instr::cEnquanto)
@@ -173,7 +173,7 @@ void TClasse::AcertaComandos()
             break;
         case Instr::cSair:
             nivelse=0;
-            for (x=p+Num16(p); x[0] && x[1]; x+=Num16(x))
+            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
                 if (x[2] >= Instr::cVariaveis)
                     break;
                 else if (x[2]==Instr::cEnquanto)

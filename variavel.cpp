@@ -21,7 +21,7 @@
 #include "objeto.h"
 #include "misc.h"
 
-#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada
+//#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada
 
 //----------------------------------------------------------------------------
 TVariavel::TVariavel()
@@ -131,7 +131,9 @@ TVarTipo TVariavel::Tipo()
     case Instr::cProg:
     case Instr::cIndice: */
 
-    case Instr::cTxtFixo:   return varTxt;
+    case Instr::cTxtFixo:
+    case Instr::cVarNome:
+    case Instr::cVarClasse: return varTxt;
     case Instr::cVarObjeto: return varObj;
     }
     return varNulo;
@@ -619,10 +621,14 @@ const char * TVariavel::getTxt()
     case Instr::cProg:
     case Instr::cIndice: */
 
+    case Instr::cVarClasse:
+        if (endvar==0)
+            break;
+        return ((TClasse*)endvar)->Nome;
     case Instr::cVarObjeto:
         if (endvar==0)
             break;
-        return (*(TClasse*)endvar).Nome;
+        return ((TObjeto*)endvar)->Classe->Nome;
     }
     return "";
 }

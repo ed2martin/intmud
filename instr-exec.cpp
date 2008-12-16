@@ -21,6 +21,8 @@
 #include "objeto.h"
 #include "misc.h"
 
+void Termina(); // Encerra o programa
+
 #define DEBUG_INSTR // Mostra instruções que serão executadas
 #define DEBUG_EXPR  // Mostra valores de Instr::Expressao encontrados
 #define DEBUG_VAR   // Mostra variáveis no topo da pilha
@@ -70,12 +72,13 @@ Cria variável cNulo no topo da pilha
 Limpa pilha de funções
 Cria função referente ao que deve ser executado
 Cria argumentos da função: variáveis no topo da pilha
+FuncAtual->fimvar = endereço da primeira variável após VarAtual
 
 (início)
 Se FuncAtual->expr == 0:
   *** Está processando uma linha:
   Se for fim da função ou instrução ret sem parâmetros:
-     Apaga variáveis criadas na função (a partir de FuncAtual->endvar)
+     Apaga variáveis criadas na função (a partir de FuncAtual->inivar)
      Coloca NULO na pilha de variáveis
      Se não houver função anterior:
        Fim do algoritmo
@@ -83,9 +86,9 @@ Se FuncAtual->expr == 0:
      Vai para (início)
   Se for variável:
      Cria variável local da função atual
+     FuncAtual->fimvar++
   Se linha possui expressão numérica:
      FuncAtual->expr = início da expressão numérica
-     FuncAtual->exprvar = VarAtual + 1 (para desempilhar variáveis depois)
      Vai para (início)
   Processa instrução que não requer expressão numérica
   Passa para próxima instrução
@@ -97,7 +100,7 @@ Se FuncAtual->expr != 0:
      FuncAtual->expr = 0
      Processa instrução que depende de expressão numérica
      Passa para próxima instrução
-     Apaga variáveis de FuncAtual->exprvar em diante
+     Apaga variáveis de FuncAtual->fimvar em diante
      Vai para (início)
   Se for um valor fixo (número, texto ou NULO):
      Coloca variável na pilha de variáveis
@@ -173,9 +176,8 @@ Se FuncAtual->expr != 0:
         FuncAtual->linha = primeira linha após o nome da função
         FuncAtual->este = endereço do objeto "este", ou NULL
         FuncAtual->expr = 0
-        FuncAtual->exprvar = 0
-        FuncAtual->endvar = primeira variável após cVarNome
-        FuncAtual->numvar = 0
+        FuncAtual->inivar = primeira variável após cVarNome
+        FuncAtual->fimvar = endereço da primeira variável após VarAtual
         FuncAtual->numarg = número de variáveis após cVarNome
      3. Variável definida em uma classe:
         Apaga variáveis a partir da anterior a cVarNome
@@ -254,9 +256,8 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
     FuncAtual->este = 0;    // Nenhum objeto
     FuncAtual->linha = instr;// Primeira instrução da função
     FuncAtual->expr = 0;    // Não está processando expressão numérica
-    FuncAtual->exprvar = 0;
-    FuncAtual->endvar = VarAtual + 1; // Endereço do primeiro argumento
-    FuncAtual->numvar = 0;  // Número de variáveis da função
+    FuncAtual->inivar = VarAtual + 1; // Endereço do primeiro argumento
+    FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;  // Número de argumentos da função
     return true;
 }
@@ -293,6 +294,7 @@ void Instr::ExecArg(char * txt)
     VarAtual->Limpar();
     VarAtual->defvar = InstrTxtFixo;
     VarAtual->endvar = txt;
+    FuncAtual->fimvar = VarAtual + 1;
 }
 
 //----------------------------------------------------------------------------
@@ -398,7 +400,7 @@ bool Instr::ExecX()
             if (FuncAtual->linha == 0)
             {
             // Apaga variáveis da função
-                ApagarVar(FuncAtual->endvar);
+                ApagarVar(FuncAtual->inivar);
             // Cria NULO na pilha de variávels (retorno da função)
                 if (VarAtual >= VarFim-1)
                     return RetornoErro();
@@ -415,42 +417,17 @@ bool Instr::ExecX()
         // Variável da função
             if (FuncAtual->linha[2] > cVariaveis)
             {
-                if (!CriarVar(FuncAtual->linha))
+                const char * x = FuncAtual->linha;
+                if (x[2]==cRef)
+                    x=InstrVarObjeto;
+                if (!CriarVar(x))
                     return RetornoErro();
-                FuncAtual->numvar++;
+                FuncAtual->fimvar++;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 continue;
             }
 
         // Processa instrução
-            switch (FuncAtual->linha[2])
-            {
-            case cSe:   // Processa expressão numérica
-            case cSenao2:
-            case cEnquanto:
-                FuncAtual->expr = FuncAtual->linha + 5;
-                FuncAtual->exprvar = VarAtual + 1;
-                FuncAtual->igualcompara = true;
-                break;
-            case cRet2: // Processa expressão numérica
-                FuncAtual->expr = FuncAtual->linha + 3;
-                FuncAtual->exprvar = VarAtual + 1;
-                FuncAtual->igualcompara = true;
-                break;
-            case cExpr:
-                FuncAtual->expr = FuncAtual->linha + 3;
-                FuncAtual->exprvar = VarAtual + 1;
-                FuncAtual->igualcompara = false;
-                break;
-            case cComent: // Comentário
-                FuncAtual->linha += Num16(FuncAtual->linha);
-                break;
-            case cSenao1:
-            case cFimSe:
-            case cEFim:
-            case cSair:
-            case cContinuar:
-            case cTerminar:
 #ifdef DEBUG_INSTR
             {
                 char mens[512];
@@ -461,11 +438,50 @@ bool Instr::ExecX()
                 fflush(stdout);
             }
 #endif
-
-  //*********** Aqui deve processar a instrução
-
+            switch (FuncAtual->linha[2])
+            {
+            case cSe:   // Processa expressão numérica
+            case cEnquanto:
+                FuncAtual->expr = FuncAtual->linha + 5;
+                FuncAtual->igualcompara = true;
+                break;
+            case cRet2: // Processa expressão numérica
+                FuncAtual->expr = FuncAtual->linha + 3;
+                FuncAtual->igualcompara = true;
+                break;
+            case cExpr:
+                FuncAtual->expr = FuncAtual->linha + 3;
+                FuncAtual->igualcompara = false;
+                break;
+            case cComent: // Comentário
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 break;
+            case cSenao1: // Avança
+            case cSenao2:
+            case cSair:
+                {
+                    int desvio = Num16(FuncAtual->linha+3);
+                    if (desvio==0)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else
+                        FuncAtual->linha += desvio;
+                    break;
+                }
+            case cEFim:  // Recua
+            case cContinuar:
+                {
+                    int desvio = Num16(FuncAtual->linha+3);
+                    if (desvio==0)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else
+                        FuncAtual->linha -= desvio;
+                    break;
+                }
+            case cFimSe: // Passa para próxima instrução
+                FuncAtual->linha += Num16(FuncAtual->linha);
+                break;
+            case cTerminar: // Encerra o programa
+                Termina();
             default:  // Instrução desconhecida
                 assert(0);
             }
@@ -497,6 +513,11 @@ bool Instr::ExecX()
             }
             putchar('\n');
         }
+        for (int i=0; i<3; i++)
+            printf("   %sf%d %d/%d\n",
+                   i==FuncAtual-FuncPilha ? ">>" : "  ", i,
+                   FuncPilha[i].inivar-VarPilha,
+                   FuncPilha[i].fimvar-VarPilha);
         fflush(stdout);
 #endif
 #ifdef DEBUG_EXPR
@@ -524,11 +545,63 @@ bool Instr::ExecX()
                 fflush(stdout);
             }
 #endif
-
-  //*********** Aqui deve processar a instrução
-
-            FuncAtual->linha += Num16(FuncAtual->linha);
-            ApagarVar(FuncAtual->exprvar);
+            switch (FuncAtual->linha[2])
+            {
+            case cRet2:
+                assert(VarAtual >= FuncAtual->inivar);
+                ApagarVar(FuncAtual->inivar, VarAtual-1);
+                if (FuncAtual==FuncPilha)
+                    return true;
+                FuncAtual--;
+                break;
+            case cSe:
+            case cSenao2:
+                {
+                    int desvio = 0;
+                    for (TVariavel * v=FuncAtual->fimvar; v<=VarAtual; v++)
+                        if (v->getBool()==false)
+                        {
+                            desvio = Num16(FuncAtual->linha+3);
+                            break;
+                        }
+                    ApagarVar(FuncAtual->fimvar);
+                    if (desvio==0)
+                    {
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                        break;
+                    }
+                    FuncAtual->linha += desvio;
+                    if (FuncAtual->linha[0]==0 && FuncAtual->linha[1]==0)
+                        break;
+                    if (FuncAtual->linha[2]==cSenao1)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else if (FuncAtual->linha[2]==cSenao2)
+                    {
+                        FuncAtual->expr = FuncAtual->linha + 5;
+                        FuncAtual->igualcompara = true;
+                    }
+                    break;
+                }
+            case cEnquanto:
+                {
+                    int desvio = 0;
+                    for (TVariavel * v=FuncAtual->fimvar; v<=VarAtual; v++)
+                        if (v->getBool()==false)
+                        {
+                            desvio = Num16(FuncAtual->linha+3);
+                            break;
+                        }
+                    ApagarVar(FuncAtual->fimvar);
+                    if (desvio==0)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else
+                        FuncAtual->linha += desvio;
+                    break;
+                }
+            default:
+                FuncAtual->linha += Num16(FuncAtual->linha);
+                ApagarVar(FuncAtual->fimvar);
+            }
             break;
         case ex_nulo:
             FuncAtual->expr++;
@@ -1033,16 +1106,18 @@ bool Instr::ExecX()
             }
         case ex_doispontos:
             {
-                FuncAtual->expr++;
                 TVariavel * v = EndVarNome();
                 assert(v!=0);
-                if (v[1].defvar[0] == cVarInicio)
+                if (v[1].defvar[2] == cVarInicio)
                 {
                     TClasse * c = TClasse::Procura(v->getTxt());
                     if (c)
                     {
                         v[1].defvar = InstrVarClasse;
                         v[1].endvar = c;
+                        v->setTxt("");
+                        FuncAtual->expr = CopiaVarNome(
+                                v, FuncAtual->expr+1);
                         break;
                     }
                 }
@@ -1098,18 +1173,17 @@ bool Instr::ExecX()
                         {
                             ApagarVar(v+1);
                             VarAtual++;
-                            *VarAtual = *(FuncAtual->endvar + arg);
+                            *VarAtual = *(FuncAtual->inivar + arg);
                             VarAtual->local = 0;
                         }
                         break;
                     }
                 // Verifica se é variável local da função
-                    int x = FuncAtual->numvar;
-                    TVariavel * var = FuncAtual->endvar + FuncAtual->numarg;
-                    for (; x>=0; x--,var++)
+                    TVariavel * var = FuncAtual->inivar + FuncAtual->numarg;
+                    for (; var < FuncAtual->fimvar; var++)
                         if (comparaZ(nome, var->defvar+5)==0)
                             break;
-                    if (x>=0)
+                    if (var < FuncAtual->fimvar)
                     {
                         ApagarVar(v+1);
                         VarAtual++;
@@ -1164,10 +1238,9 @@ bool Instr::ExecX()
                     FuncAtual->linha = defvar + Num16(defvar);
                     FuncAtual->este = objeto;
                     FuncAtual->expr = 0;
-                    FuncAtual->exprvar = 0;
-                    FuncAtual->endvar = v+1;
-                    FuncAtual->numvar = 0;
-                    FuncAtual->numarg = VarAtual - FuncAtual->endvar + 1;
+                    FuncAtual->inivar = v+1;
+                    FuncAtual->fimvar = VarAtual + 1;
+                    FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     break;
                 }
             // Função varfunc

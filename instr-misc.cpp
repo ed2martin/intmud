@@ -190,6 +190,10 @@ void Instr::ApagarVar(TVariavel * v)
 void Instr::ApagarVar(TVariavel * varini, TVariavel * varfim)
 {
 // Verifica se deve apagar até o fim
+    if (varini > varfim)
+        return;
+    printf("Apagar %d %d\n", varini-VarPilha, varfim-VarPilha);
+    fflush(stdout);
     if (varfim >= VarAtual)
     {
         ApagarVar(varini);
@@ -210,8 +214,8 @@ void Instr::ApagarVar(TVariavel * varini, TVariavel * varfim)
     {
     // Copia dados da variável
         *varini = *varfim;
-    // Se for local: não deve mover
-        if (varini->local==0)
+    // Se for local ou não apagou nada de DadosPilha: não deve mover
+        if (varini->local==0 || fim==0)
             continue;
     // É texto fixo
         if (varini->defvar[2] == cTxtFixo)
@@ -267,7 +271,8 @@ void Instr::ApagarVar(TVariavel * varini, TVariavel * varfim)
         fim = (char*)varini->endvar + tam;
     }
     VarAtual = varini - 1;
-    DadosTopo = fim;
+    if (fim)
+        DadosTopo = fim;
 }
 
 //----------------------------------------------------------------------------
@@ -295,6 +300,7 @@ char * Instr::ProcuraExpr(char * expr, int valor)
             contagem++;
         case ex_fecha:  // Aberto com ex_abre
         case ex_ponto:  // Aberto com ex_arg
+        case ex_doispontos:
             while (*expr!=ex_arg && *expr!=ex_abre)
             {
                 if (*expr==ex_varfim)

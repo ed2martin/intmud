@@ -45,15 +45,15 @@
 #define DEBUG   // Para não colocar o programa em segundo plano
 
 void Inicializa();
+void Termina();
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-{
 #else
 int main(int argc, char *argv[])
-{
 #endif
+{
 // Inicialização
     Inicializa();
 
@@ -97,10 +97,7 @@ int main(int argc, char *argv[])
 
 
 // Fim
-#ifdef __WIN32__
-    WSACleanup();
-#endif
-    exit(EXIT_SUCCESS);
+    Termina();
     return 0;
 }
 
@@ -619,16 +616,6 @@ void Inicializa()
         cl->CriaVars();
     }
 
-// Executa funções iniclasse das classes
-    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-    {
-        if (Instr::ExecIni(cl, "iniclasse")==false)
-            continue;
-        Instr::ExecArg(cl->Nome);
-        Instr::ExecX();
-        Instr::ExecFim();
-    }
-
 #ifdef __WIN32__
 // Inicializa WinSock
     WSADATA info;
@@ -640,4 +627,24 @@ void Inicializa()
     }
     fclose(log);
 #endif
+
+// Executa funções iniclasse das classes
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    {
+        if (Instr::ExecIni(cl, "iniclasse")==false)
+            continue;
+        Instr::ExecArg(cl->Nome);
+        Instr::ExecX();
+        Instr::ExecFim();
+    }
+}
+
+//------------------------------------------------------------------------------
+// Encerra o programa
+void Termina()
+{
+#ifdef __WIN32__
+    WSACleanup();
+#endif
+    exit(EXIT_SUCCESS);
 }
