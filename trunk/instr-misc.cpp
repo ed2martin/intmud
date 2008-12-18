@@ -146,7 +146,7 @@ bool Instr::CriarVar(const char * def)
         VarAtual++;
         VarAtual->defvar = def;
         VarAtual->endvar = 0;
-        VarAtual->local = 0;
+        VarAtual->tamanho = tam;
         VarAtual->bit = 1;
         return true;
     }
@@ -162,7 +162,7 @@ bool Instr::CriarVar(const char * def)
     VarAtual++;
     VarAtual->endvar = p;
     VarAtual->defvar = def;
-    VarAtual->local = 1;
+    VarAtual->tamanho = tam;
     VarAtual->bit = 1;
     Instr::DadosTopo = p + tam;
     VarAtual->Criar(0, 0);
@@ -175,7 +175,7 @@ void Instr::ApagarVar(TVariavel * v)
 {
     while (VarAtual >= v)
     {
-        if (VarAtual->local)
+        if (VarAtual->tamanho)
         {
             VarAtual->Apagar();
             if (VarAtual->endvar)
@@ -186,93 +186,35 @@ void Instr::ApagarVar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-/// Apaga variáveis na pilha a partir da variável v
-void Instr::ApagarVar(TVariavel * varini, TVariavel * varfim)
+/// Apaga variáveis na pilha de v a VarAtual-1
+void Instr::ApagarRet(TVariavel * v)
 {
-// Verifica se deve apagar até o fim
-    if (varini > varfim)
-        return;
-    printf("Apagar %d %d\n", varini-VarPilha, varfim-VarPilha);
-    fflush(stdout);
-    if (varfim >= VarAtual)
+    for (TVariavel * var = VarAtual-1; var>=v; var--)
     {
-        ApagarVar(varini);
-        return;
+        if (var->tamanho==0)
+            continue;
+        DadosTopo = (char*)var->endvar;
+        if (var->endvar == VarAtual->endvar)
+            VarAtual->tamanho = var->tamanho;
+        else
+            var->Apagar();
     }
-// Apaga variáveis, obtém primeiro endereço liberado em Instr::DadosPilha
-    TVariavel * v;
-    char * fim = 0;
-    for (v=varfim; v>=varini; v--)
-        if (v->local)
-        {
-            v->Apagar();
-            if (v->endvar)
-                fim = (char*)v->endvar;
-        }
-// Move variáveis
-    for (varfim++; varfim <= VarAtual; varini++,varfim++)
+    *v = *VarAtual;
+    VarAtual = v;
+    if (VarAtual->tamanho)
     {
-    // Copia dados da variável
-        *varini = *varfim;
-    // Se for local ou não apagou nada de DadosPilha: não deve mover
-        if (varini->local==0 || fim==0)
-            continue;
-    // É texto fixo
-        if (varini->defvar[2] == cTxtFixo)
+        char * p = DadosTopo;
+        if (VarAtual->defvar[2] != cTxtFixo)
         {
-            char * origem = (char*)varini->endvar;
-            if (fim+4 >= origem)
-            {
-                fim = origem + strlen(origem) + 1;
-                continue;
-            }
-            varini->endvar = fim;
-            fim = copiastr(fim, origem) + 1;
-            for (v=varfim+1; v<=VarAtual; v++)
-                if (v->endvar == origem)
-                    v->endvar = varini->endvar;
-            continue;
+            if ((VarAtual->tamanho&1)==0)
+                p += ((p-Instr::DadosPilha)&1);
+            if ((VarAtual->tamanho&3)==0)
+                p += ((p-Instr::DadosPilha)&2);
         }
-    // Obtém tamanho da variável
-        int tam = varini->Tamanho();
-        if (tam<=0)
-            continue;
-    // Calcula novo endereço da variável
-        char * p = fim;
-        if ((tam&1)==0)
-            p += ((p-Instr::DadosPilha)&1);
-        if ((tam&3)==0)
-            p += ((p-Instr::DadosPilha)&2);
-    // Move para novo endereço
-        if (p < (char*)varini->endvar)
-        {
-            if (p + tam <= (char*)varini->endvar) // Pode mover direto
-                varini->Mover(p, 0, 0);
-            else if (tam<=1024) // Até 1024: usa a pilha
-            {
-                char mens[1024];
-                varini->Mover(mens, 0, 0);
-                varini->endvar = mens;
-                varini->Mover(p, 0, 0);
-            }
-            else    // Mais de 1024: aloca memória (mais lento)
-            {
-                char * mens = new char[tam];
-                varini->Mover(mens, 0, 0);
-                varini->endvar = mens;
-                varini->Mover(p, 0, 0);
-                delete[] mens;
-            }
-            for (v=varfim+1; v<=VarAtual; v++)
-                if (v->endvar == varini->endvar)
-                    v->endvar = p;
-            varini->endvar = p;
-        }
-        fim = (char*)varini->endvar + tam;
+        if (p < VarAtual->endvar)
+            VarAtual->Mover(p, 0, 0);
+        DadosTopo = (char*)VarAtual->endvar + VarAtual->tamanho;
     }
-    VarAtual = varini - 1;
-    if (fim)
-        DadosTopo = fim;
 }
 
 //----------------------------------------------------------------------------

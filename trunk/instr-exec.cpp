@@ -400,7 +400,7 @@ bool Instr::ExecX()
             if (FuncAtual->linha == 0)
             {
             // Apaga variáveis da função
-                ApagarVar(FuncAtual->inivar);
+                ApagarVar(FuncAtual->inivar - 1);
             // Cria NULO na pilha de variávels (retorno da função)
                 if (VarAtual >= VarFim-1)
                     return RetornoErro();
@@ -497,7 +497,7 @@ bool Instr::ExecX()
             TVariavel * v = VarAtual - x;
             if (v<VarPilha)
                 continue;
-            printf("    v%d %p l%d ", v-VarPilha, v->endvar, v->local);
+            printf("    v%d %p l%d ", v-VarPilha, v->endvar, v->tamanho);
             const char * p = NomeComando(v->defvar[2]);
             if (p)
                 printf("%s ", p);
@@ -548,8 +548,9 @@ bool Instr::ExecX()
             switch (FuncAtual->linha[2])
             {
             case cRet2:
+            case cConstExpr:
                 assert(VarAtual >= FuncAtual->inivar);
-                ApagarVar(FuncAtual->inivar, VarAtual-1);
+                ApagarRet(FuncAtual->inivar-1);
                 if (FuncAtual==FuncPilha)
                     return true;
                 FuncAtual--;
@@ -698,7 +699,7 @@ bool Instr::ExecX()
                 case ex_div5: valor/=100000; break;
                 default:      valor/=1000000; break;
                 }
-                if (VarAtual->local==0 || VarAtual->defvar[2] != cReal)
+                if (VarAtual->tamanho==0 || VarAtual->defvar[2] != cReal)
                 {
                     ApagarVar(VarAtual);
                     CriarVar(InstrDouble);
@@ -718,7 +719,7 @@ bool Instr::ExecX()
             case varNulo:
                 break;
             case varInt:
-                if (VarAtual->local)
+                if (VarAtual->tamanho)
                     VarAtual->setInt(-VarAtual->getInt());
                 else
                 {
@@ -730,7 +731,7 @@ bool Instr::ExecX()
                 }
                 break;
             case varDouble:
-                if (VarAtual->local)
+                if (VarAtual->tamanho)
                 {
                     VarAtual->setDouble(-VarAtual->getDouble());
                     break;
@@ -747,7 +748,7 @@ bool Instr::ExecX()
             break;
         case exo_exclamacao: // Operador: !a
             FuncAtual->expr++;
-            if (VarAtual->Tipo() != varInt || VarAtual->local==0)
+            if (VarAtual->Tipo() != varInt || VarAtual->tamanho==0)
             {
                 bool valor = !VarAtual->getBool();
                 ApagarVar(VarAtual);
@@ -764,7 +765,7 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() *
                                VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->local==0 || VarAtual->Tipo()!=varDouble)
+                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varDouble)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrDouble))
@@ -783,7 +784,7 @@ bool Instr::ExecX()
                 else
                     valor1 *= 1.0e1000;
                 ApagarVar(VarAtual);
-                if (VarAtual->local==0 || VarAtual->Tipo()!=varDouble)
+                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varDouble)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrDouble))
@@ -801,7 +802,7 @@ bool Instr::ExecX()
                 else
                     valor = 0;
                 ApagarVar(VarAtual);
-                if (VarAtual->local==0 || VarAtual->Tipo()!=varInt)
+                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varInt)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrInt))
@@ -814,13 +815,13 @@ bool Instr::ExecX()
             {
                 FuncAtual->expr++;
                 int tipo = VarAtual[-1].Tipo();
-            // Não é texto: executa soma numérica
+            // Caso 1: Não é texto: executa soma numérica
                 if (tipo!=varTxt)
                 {
                     double valor = VarAtual[-1].getDouble() +
                                    VarAtual[0].getDouble();
                     ApagarVar(VarAtual);
-                    if (VarAtual->local==0 || tipo!=varDouble)
+                    if (VarAtual->tamanho==0 || tipo!=varDouble)
                     {
                         ApagarVar(VarAtual);
                         if (!CriarVar(InstrDouble))
@@ -829,12 +830,26 @@ bool Instr::ExecX()
                     VarAtual->setDouble(valor);
                     break;
                 }
-            // Exemplo de comando no intmud.map que usa os 3 tipos
-            // de concatenação:  "bom"+1+("dia"+2)+4
+            // Exemplo de comando no intmud.map que usa todos os tipos
+            // de concatenação: ("abc" + ("x")) + ("def" + 1) + 4
 
-            // Primeiro texto não é cTxtFixo ou não está na pilha
-                if (VarAtual[-1].local == 0 ||
-                        VarAtual[-1].defvar[2] != cTxtFixo)
+            // Caso 2: Duas variáveis não locais
+            // Transforma em: Primeira variável é cTxtFixo local
+                if (VarAtual[-1].tamanho==0 && VarAtual[0].tamanho==0)
+                {
+                    const char * origem = VarAtual[-1].getTxt();
+                    int total = 1 + strlen(origem);
+                    if (DadosTopo + total > DadosFim)
+                        return RetornoErro();
+                    VarAtual[-1].defvar = InstrTxtFixo;
+                    VarAtual[-1].endvar = DadosTopo;
+                    VarAtual[-1].tamanho = total;
+                    memcpy(DadosTopo, origem, total);
+                    DadosTopo += total;
+                }
+            // Caso 3: Primeira variável não é cTxtFixo local
+                if (VarAtual[-1].tamanho==0 ||
+                    VarAtual[-1].defvar[2]!=cTxtFixo)
                 {
                     char mens[4096];
                 // Monta texto em mens[]
@@ -846,69 +861,60 @@ bool Instr::ExecX()
                     while (*origem && destino<mens+sizeof(mens)-1)
                         *destino++ = *origem++;
                     *destino++=0;
-                // Cria variável que conterá o texto
+                // Apaga variáveis locais
                     ApagarVar(VarAtual-1);
-                    if (VarAtual >= VarFim-1)
-                        return RetornoErro();
-                    VarAtual++;
-                    VarAtual->Limpar();
-                    VarAtual->defvar = InstrTxtFixo;
-                    VarAtual->endvar = DadosTopo;
-                    VarAtual->local = 1;
-                // Copia texto para variável
-                    int total = destino-mens;
+                    int total = destino - mens;
                     if (DadosTopo + total > DadosFim)
                         return RetornoErro();
+                // Cria variável que conterá o texto
+                    VarAtual++;
+                    VarAtual->defvar = InstrTxtFixo;
+                    VarAtual->endvar = DadosTopo;
+                    VarAtual->tamanho = total;
+                // Copia texto para variável
                     memcpy(DadosTopo, mens, total);
                     DadosTopo += total;
                     break;
                 }
-            // Segundo texto está na pilha (depois do primeiro)
-            // e segundo texto não é cTxtFixo
-                if (VarAtual->local &&
-                        VarAtual->defvar[2] != cTxtFixo)
+            // Primeira variável é cTxtFixo local
+                char * destino = (char*)VarAtual[-1].endvar +
+                        VarAtual[-1].tamanho - 1;
+                int total = 0;
+            // Caso 4: Segunda variável não é local
+                if (VarAtual->tamanho==0)
+                {
+                    const char * origem = VarAtual->getTxt();
+                    total = 1 + strlen(origem);
+                    if (destino + total >= DadosFim)
+                        return RetornoErro();
+                    memcpy(destino, origem, total);
+                    VarAtual--;
+                }
+            // Caso 5: Segunda variável é cTxtFixo local
+                else if (VarAtual->defvar[2]==cTxtFixo)
+                {
+                    total = VarAtual->tamanho;
+                    VarAtual->Mover(destino, 0, 0);
+                    VarAtual--;
+                }
+            // Caso 6: Segunda variável é local
+                else
                 {
                     char mens[4096];
-                // Monta texto em mens[]
-                    char * destino = mens;
                     const char * origem = VarAtual->getTxt();
-                    while (*origem && destino<mens+sizeof(mens)-1)
-                        *destino++ = *origem++;
-                    *destino++ = 0;
-                    int total = destino-mens;
-                // Apaga segunda variável
-                    ApagarVar(VarAtual);
-                // Obtém o final do primeiro texto, na pilha
-                    destino = DadosTopo-4;
-                    if (destino < (char*)VarAtual->endvar)
-                        destino = (char*)VarAtual->endvar;
-                    while (*destino)
-                        destino++;
-                // Acrescenta texto na primeira variável
-                    if (destino+total > DadosFim)
+                    total = 1 + strlen(origem);
+                    if (total>4096)
+                        total=4096;
+                    if (destino + total >= DadosFim)
                         return RetornoErro();
-                    memcpy(destino, mens, total);
-                    DadosTopo = destino + total;
-                    break;
-                }
-            // Concatena dois textos copiando o segundo após o primeiro
-                    const char * origem = VarAtual->getTxt();
-                // Obtém o final do primeiro texto, na pilha
-                    char * destino = DadosTopo-4;
-                    if (VarAtual->local)
-                        destino = (char*)VarAtual->endvar - 4;
-                    if (destino < (char*)VarAtual[-1].endvar)
-                        destino = (char*)VarAtual[-1].endvar;
-                    while (*destino)
-                        destino++;
-                // Copia texto
-                    while (*origem && destino<DadosFim-1)
-                        *destino++ = *origem++;
-                    *destino++=0;
-                // Apaga segunda variável
+                    memcpy(mens, origem, total);
+                    mens[4095]=0;
                     ApagarVar(VarAtual);
-                // Acerta o tamanho da primeira variável
-                    DadosTopo = destino;
+                    memcpy(destino, mens, total);
+                }
+                destino += total;
+                VarAtual->tamanho = destino - (char*)VarAtual->endvar;
+                DadosTopo = destino;
                 break;
             }
         case exo_sub:        // Operador: a-b
@@ -917,7 +923,7 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() -
                                 VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->local==0 || VarAtual->Tipo()!=varDouble)
+                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varDouble)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrDouble))
@@ -1048,7 +1054,7 @@ bool Instr::ExecX()
                 return RetornoErro();
             VarAtual[1] = VarAtual[0];
             VarAtual[0] = VarAtual[-1];
-            VarAtual[0].local = 0;
+            VarAtual[0].tamanho = 0;
             VarAtual++;
             break;
 
@@ -1101,7 +1107,14 @@ bool Instr::ExecX()
                 }
             // Outro valor
                 ApagarVar(v+2);
-                ApagarVar(v, v);
+                DadosTopo = (char*)v->endvar;
+                if (VarAtual->tamanho)
+                {
+                    VarAtual->Mover(v->endvar, 0, 0);
+                    DadosTopo += VarAtual->tamanho;
+                }
+                *v = *VarAtual;
+                VarAtual = v;
                 break;
             }
         case ex_doispontos:
@@ -1158,7 +1171,7 @@ bool Instr::ExecX()
                         VarAtual++;
                         VarAtual->defvar = InstrVarObjeto;
                         VarAtual->endvar = c->ObjetoIni;
-                        VarAtual->local = 0;
+                        VarAtual->tamanho = 0;
                         break;
                     }
                 // Verifica se é argumento da função
@@ -1174,7 +1187,7 @@ bool Instr::ExecX()
                             ApagarVar(v+1);
                             VarAtual++;
                             *VarAtual = *(FuncAtual->inivar + arg);
-                            VarAtual->local = 0;
+                            VarAtual->tamanho = 0;
                         }
                         break;
                     }
@@ -1188,7 +1201,7 @@ bool Instr::ExecX()
                         ApagarVar(v+1);
                         VarAtual++;
                         *VarAtual = *var;
-                        VarAtual->local = 0;
+                        VarAtual->tamanho = 0;
                         break;
                     }
                 // Verifica se é variável/função do objeto
@@ -1233,12 +1246,11 @@ bool Instr::ExecX()
                 {
                     if (FuncAtual >= FuncFim - 1)
                         return RetornoErro();
-                    ApagarVar(v+1, v+1);
                     FuncAtual++;
                     FuncAtual->linha = defvar + Num16(defvar);
                     FuncAtual->este = objeto;
                     FuncAtual->expr = 0;
-                    FuncAtual->inivar = v+1;
+                    FuncAtual->inivar = v+2;
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     break;
@@ -1251,20 +1263,36 @@ bool Instr::ExecX()
                         VarInvalido();
                         break;
                     }
-                    ApagarVar(v+1);
                     VarAtual++;
                     VarAtual->defvar = defvar;
                     VarAtual->endvar = objeto;
-                    VarAtual->local = 0;
+                    VarAtual->tamanho = 0;
+                    break;
+                }
+            // Expressão numérica
+                if (defvar[2]==cConstExpr)
+                {
+                    if (FuncAtual >= FuncFim - 1)
+                        return RetornoErro();
+                    FuncAtual++;
+                    FuncAtual->linha = defvar;
+                    FuncAtual->este = objeto;
+                    FuncAtual->expr = defvar + defvar[4];
+                    FuncAtual->inivar = v + 2;
+                    FuncAtual->fimvar = VarAtual + 1;
+                    FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     break;
                 }
             // Variável
                 ApagarVar(v+1);
                 VarAtual++;
                 VarAtual->defvar = defvar;
-                VarAtual->local = 0;
+                VarAtual->tamanho = 0;
                 VarAtual->bit = indvar >> 24;
-                if (indvar & 0x400000) // Variável da classe
+                if (defvar[2]==cConstTxt || // Constante
+                        defvar[2]==cConstNum)
+                    VarAtual->endvar = 0;
+                else if (indvar & 0x400000) // Variável da classe
                     VarAtual->endvar = classe->Vars +
                             (indvar & 0x3FFFFF);
                 else if (objeto) // Variável do objeto
