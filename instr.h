@@ -18,7 +18,7 @@ bool Mostra(char * destino, const char * origem, int tamanho);
 
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);
-void ApagarVar(TVariavel * varini, TVariavel * varfim);
+void ApagarRet(TVariavel * v);
 char * ProcuraExpr(char * expr, int valor);
 const char * NomeComando(int valor);
 const char * NomeExpr(int valor);

@@ -174,9 +174,109 @@ void TVariavel::Apagar()
 //------------------------------------------------------------------------------
 void TVariavel::Mover(void * destino, TClasse * c, TObjeto * o)
 {
-    int tam = Tamanho(defvar);
-    if (tam)
-        memcpy(destino, endvar, tam);
+    int tamanho = 0;
+    if (destino==endvar)
+        return;
+    switch (defvar[2])
+    {
+    case Instr::cInt1:
+    case Instr::cInt8:
+    case Instr::cUInt8:
+        *(char*)destino = *(char*)endvar;
+        endvar = destino;
+        return;
+    case Instr::cInt16:
+    case Instr::cUInt16:
+        *(short*)destino = *(short*)endvar;
+        endvar = destino;
+        return;
+    case Instr::cInt32:
+    case Instr::cUInt32:
+    case Instr::cIntInc:
+    case Instr::cIntDec:
+        tamanho = *(int*)endvar;
+        *(int*)destino = tamanho;
+        endvar = destino;
+        return;
+    case Instr::cReal:
+        tamanho = sizeof(double);
+        break;
+    case Instr::cRef:
+        tamanho = sizeof(void*)*3;
+        break;
+    case Instr::cConstNulo:
+    case Instr::cConstTxt:
+    case Instr::cConstNum:
+    case Instr::cConstExpr:
+    case Instr::cFunc:
+    case Instr::cVarFunc:
+        endvar = destino;
+        return;
+
+// Variáveis extras
+    case Instr::cListaObj:
+    case Instr::cListaTxt:
+    case Instr::cListaMsg:
+    case Instr::cNomeObj:
+    case Instr::cLog:
+    case Instr::cVarTempo:
+    case Instr::cSocket:
+    case Instr::cServ:
+    case Instr::cSalvar:
+    case Instr::cProg:
+    case Instr::cIndice:
+        endvar = destino;
+        return;
+
+// Outras variáveis
+    case Instr::cTxt1:
+    case Instr::cTxt2:
+    case Instr::cTxtFixo:
+        if (destino < endvar)
+        {
+            strcpy((char*)destino, (char*)endvar);
+            endvar = destino;
+            return;
+        }
+        tamanho = strlen((char*)endvar) + 1;
+        break;
+    case Instr::cVarNome:
+        tamanho=48;
+        break;
+    case Instr::cVarInicio:
+    case Instr::cVarClasse:
+    case Instr::cVarObjeto:
+        endvar = destino;
+        return;
+    }
+
+// Copia
+    if (destino < endvar)
+    {
+        if ((char*)destino - tamanho <= (char*)endvar)
+            memcpy(destino, endvar, tamanho);
+        else
+        {
+            const char * fim = (char*)destino + tamanho;
+            char * o = (char*)endvar;
+            char * d = (char*)destino;
+            while (d<fim)
+                *d++ = *o++;
+        }
+    }
+    else
+    {
+        if ((char*)destino + tamanho >= (char*)endvar)
+            memcpy(destino, endvar, tamanho);
+        else
+        {
+            char * o = (char*)endvar + tamanho - 1;
+            char * d = (char*)destino + tamanho - 1;
+            while (d>=destino)
+                *d-- = *o--;
+        }
+    }
+    endvar = destino;
 }
 
 //------------------------------------------------------------------------------
@@ -213,10 +313,10 @@ bool TVariavel::getBool()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        return *((char*)endvar + *((char*)endvar+4)) != 0;
+        return defvar[(unsigned char)defvar[4] + 1] != 0;
     case Instr::cConstNum:
         {
-            const char * origem = (char*)endvar + *((char*)endvar+4);
+            const char * origem = defvar + defvar[4];
             switch (*origem)
             {
             case Instr::ex_num1:
@@ -314,12 +414,12 @@ int TVariavel::getInt()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        return atoi((char*)endvar + *((char*)endvar+4));
+        return atoi(defvar + defvar[4] + 1);
     case Instr::cConstNum:
         {
             unsigned int valor = 0;
             bool negativo = false;
-            const char * origem = (char*)endvar + *((char*)endvar+4);
+            const char * origem = defvar + defvar[4];
             switch (*origem)
             {
             case Instr::ex_num1:
@@ -428,12 +528,12 @@ double TVariavel::getDouble()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        return atoi((char*)endvar + *((char*)endvar+4));
+        return atoi(defvar + defvar[4] + 1);
     case Instr::cConstNum:
         {
             double valor = 0;
             bool negativo = false;
-            const char * origem = (char*)endvar + *((char*)endvar+4);
+            const char * origem = defvar + defvar[4];
             switch (*origem)
             {
             case Instr::ex_num1:
@@ -532,13 +632,13 @@ const char * TVariavel::getTxt()
     case Instr::cConstNulo:
         return "";
     case Instr::cConstTxt:
-        return (char*)endvar + *((char*)endvar+4);
+        return defvar + defvar[4] + 1;
     case Instr::cConstNum:
         {
             unsigned int valor = 0; // Valor numérico sem sinal
             bool negativo = false; // Se é negativo
             int  virgula = 0;   // Casas após a vírgula
-            const char * origem = (char*)endvar + *((char*)endvar+4);
+            const char * origem = defvar + defvar[4];
         // Acerta variáveis valor e negativo
             switch (*origem)
             {

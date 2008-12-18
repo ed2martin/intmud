@@ -55,7 +55,9 @@ public:
 
     void Mover(void * destino, TClasse * c, TObjeto * o);
         ///< Move a variável para outra região da memória
-        /**< Usa  TVariavel::defvar  e  TVariavel::endvar */
+        /**< Usa:
+             - TVariavel::defvar = definição da variável
+             - TVariavel::endvar = endereço atual   */
 
 // Funções get
     bool getBool();         ///< Obtém o valor "bool" da variável
@@ -75,8 +77,9 @@ public:
     const char * defvar; ///< Instrução que define a variável
                          /**< @sa Instr::Comando */
     void * endvar;  ///< Endereço da variável na memória (0 se não for aplicável)
-    unsigned char local;///< !=0 se não está usando a variável em outro lugar
-                        /**< !=0 significa apagar variável quando terminar a função
+    int  tamanho;   ///< Quantos bytes está usando na memória
+                    /** 0 significa que não está usando ou a variável está
+                        sendo usada em outro lugar
                              @note Não é usado em TVariavel */
     unsigned char bit;  ///< Máscara do bit, se for variável de bit
 };
