@@ -4,13 +4,19 @@ comum int8 x1
 int1 x2
 int1 x3
 int1 x4
-const nn = arg0*2
+const nn = arg0*2+args
 func iniclasse
 #teste:x1 = teste:f1(10,20)
 #2
-"abc" + teste:nn(4)
+#"abc" + teste:nn(4)
+#teste:var + teste:var
+#teste:var = 10
+#ret teste:var
+args(teste:var)
 func f1
   ret arg0+1
+varfunc var
+  ret 4
 
 [bom dia]
 int1 y1

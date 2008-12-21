@@ -216,13 +216,116 @@ void Instr::ApagarRet(TVariavel * v)
         DadosTopo = (char*)VarAtual->endvar + VarAtual->tamanho;
     }
 }
+//----------------------------------------------------------------------------
+/// Inicialização de varfunc
+/** Prepara para executar varfunc
+   @param varini Procura variáveis varfunc a partir de varini
+   @return true se vai executar varfunc, false se não vai
+*/
+bool Instr::VarFuncIni(TVariavel * varini)
+{
+    for (TVariavel * v=VarAtual; v>=varini; v--)
+        if (v->defvar[2] == cVarFunc)
+        {
+            if (FuncAtual+1 >= FuncFim)
+                return false;
+        // Cria função
+            FuncAtual++;
+            FuncAtual->linha = v->defvar + Num16(v->defvar);
+            FuncAtual->este = (TObjeto*)v->endvar;
+            FuncAtual->expr = 0;
+            FuncAtual->inivar = VarAtual + 1;
+            FuncAtual->fimvar = VarAtual + 1;
+            FuncAtual->numarg = 0;
+            FuncAtual->tipo = 1;
+            return true;
+        }
+    return false;
+}
+
+//----------------------------------------------------------------------------
+/// Finalização de varfunc
+/** Coloca última variável da pilha no lugar da última variável cVarFunc
+    @return true se conseguiu, false se memória insuficiente em DadosPilha
+*/
+bool Instr::VarFuncFim()
+{
+    TVariavel * vfunc = VarAtual;
+    char * endini = 0;
+
+// Procura última variável cVarFunc da pilha
+    while (true)
+    {
+        vfunc--;
+        assert(vfunc >= VarPilha);
+        if (vfunc->defvar[2] == cVarFunc)
+            break;
+        if (vfunc->tamanho == 0)
+            continue;
+        endini = (char*)vfunc->endvar;
+        if (endini != VarAtual->endvar) // Se não é a mesma variável...
+            continue;
+        VarAtual->tamanho = vfunc->tamanho;
+        vfunc->tamanho = 0;
+        endini = 0;
+    }
+    assert(vfunc->tamanho==0);
+
+// Verifica se precisa acertar DadosPilha
+    if (vfunc->tamanho==0 || endini==0)
+    {
+        *vfunc = *VarAtual;
+        VarAtual--;
+        return true;
+    }
+
+// Move variáveis para o fim da área de dados
+    char * destino = DadosFim;
+    for (TVariavel * v = VarAtual; v>vfunc; v--)
+        if (v->tamanho)
+        {
+            char * origem = (char*)v->endvar;
+            destino -= (v->tamanho * 4) & ~3;
+            if (v != VarAtual)
+                DadosTopo = origem;
+            if (DadosTopo > destino)
+                return false;
+            v->Mover(destino, 0, 0);
+            for (TVariavel * vtemp = VarAtual; vtemp>vfunc; vtemp--)
+                if (vtemp->endvar == origem)
+                    vtemp->endvar = destino;
+        }
+
+// Move variáveis para onde deverão ficar
+    *vfunc = *VarAtual;
+    VarAtual--;
+    for (TVariavel * v = vfunc; v<=VarAtual; v++)
+        if (v->tamanho)
+        {
+            if (v->defvar[2] != cTxtFixo)
+            {
+                if ((v->tamanho&1)==0)
+                    endini += ((endini-Instr::DadosPilha)&1);
+                if ((v->tamanho&3)==0)
+                    endini += ((endini-Instr::DadosPilha)&2);
+            }
+            char * origem = (char*)v->endvar;
+            v->Mover(endini, 0, 0);
+            for (TVariavel * vtemp = vfunc; vtemp<=VarAtual; vtemp++)
+                if (vtemp->endvar == origem)
+                    vtemp->endvar = endini;
+            endini += v->tamanho;
+        }
+    DadosTopo = endini;
+    return true;
+}
 
 //----------------------------------------------------------------------------
 /// Procura valor (vide Instr::Expressao) em expressão numérica
 /** @return endereço do valor encontrado ou 0 se não encontrou
  *  @note Não procura entre ex_varini e ex_varfim
  */
-char * Instr::ProcuraExpr(char * expr, int valor)
+const char * Instr::ProcuraExpr(const char * expr, int valor)
 {
     int contagem=0;
     while (true)

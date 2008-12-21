@@ -205,15 +205,41 @@ Instr::ExecFunc * const Instr::FuncFim = Instr::FuncPilha + 40;
 Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
-static const char InstrNulo[] = { 7, 0, Instr::cConstNulo, 0, 0, '+', 0 };
-static const char InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, '+', 0 };
-static const char InstrInt[] = { 7, 0, Instr::cInt32, 0, 0, '+', 0 };
-static const char InstrUInt[] = { 7, 0, Instr::cUInt32, 0, 0, '+', 0 };
-static const char InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, '+', 0 };
-static const char InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, '+', 0 };
-static const char InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, '+', 0 };
-static const char InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, '+', 0 };
-static const char InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, '+', 0 };
+const char Instr::InstrNulo[] = { 7, 0, Instr::cConstNulo, 0, 0, '+', 0 };
+const char Instr::InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, '+', 0 };
+const char Instr::InstrInt[] = { 7, 0, Instr::cInt32, 0, 0, '+', 0 };
+const char Instr::InstrUInt[] = { 7, 0, Instr::cUInt32, 0, 0, '+', 0 };
+const char Instr::InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, '+', 0 };
+const char Instr::InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, '+', 0 };
+const char Instr::InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, '+', 0 };
+const char Instr::InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, '+', 0 };
+const char Instr::InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, '+', 0 };
+
+//------------------------------------------------------------------------------
+class TListaFunc {
+public:
+    const char * Nome;  // Nome da função predefinida
+    bool (*Func)(TVariavel * v, int valor);
+                        // Retorna true se processou normalmente
+                        // Retorna false se erro; resultado é tipo NULO
+    int  valor;         // Valor passado à função Func
+};
+
+// Lista de funções predefinidas
+// Deve obrigatoriamente estar em ordem alfabética
+static const TListaFunc ListaFunc[] = {
+    { "arg0",       Instr::FuncArg, 0 },
+    { "arg1",       Instr::FuncArg, 1 },
+    { "arg2",       Instr::FuncArg, 2 },
+    { "arg3",       Instr::FuncArg, 3 },
+    { "arg4",       Instr::FuncArg, 4 },
+    { "arg5",       Instr::FuncArg, 5 },
+    { "arg6",       Instr::FuncArg, 6 },
+    { "arg7",       Instr::FuncArg, 7 },
+    { "arg8",       Instr::FuncArg, 8 },
+    { "arg9",       Instr::FuncArg, 9 },
+    { "args",       Instr::FuncArgs, 0 }
+};
 
 //----------------------------------------------------------------------------
 /// Prepara para executar
@@ -259,6 +285,7 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
     FuncAtual->inivar = VarAtual + 1; // Endereço do primeiro argumento
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;  // Número de argumentos da função
+    FuncAtual->tipo = 0;
     return true;
 }
 
@@ -295,6 +322,7 @@ void Instr::ExecArg(char * txt)
     VarAtual->defvar = InstrTxtFixo;
     VarAtual->endvar = txt;
     FuncAtual->fimvar = VarAtual + 1;
+    FuncAtual->numarg++;
 }
 
 //----------------------------------------------------------------------------
@@ -305,11 +333,11 @@ void Instr::ExecArg(char * txt)
 static bool RetornoErro(void)
 {
 // Apaga variáveis da pilha
-    Instr::ApagarVar(Instr::VarPilha+1);
+    Instr::ApagarVar(Instr::VarPilha);
 // Cria NULO na pilha
     Instr::VarAtual++;
     Instr::VarAtual->Limpar();
-    Instr::VarAtual->defvar = InstrNulo;
+    Instr::VarAtual->defvar = Instr::InstrNulo;
     return false;
 }
 
@@ -317,7 +345,7 @@ static bool RetornoErro(void)
 /// Usado internamente em Instr::ExecX()
 /** Adiciona texto em variável cVarNome
  */
-static char * CopiaVarNome(TVariavel * v, char * txt)
+static const char * CopiaVarNome(TVariavel * v, const char * txt)
 {
     if (v->defvar[2] != Instr::cVarNome)
         return txt;
@@ -362,16 +390,17 @@ static void VarInvalido(void)
 // Apaga última variável cVarNome em diante
     Instr::ApagarVar(v);
 // Cria NULO na pilha
-    Instr::CriarVar(InstrNulo);
+    Instr::CriarVar(Instr::InstrNulo);
 // Avança para o fim do nome da variável
-    char * p = ProcuraExpr(Instr::FuncAtual->expr, Instr::ex_varfim);
+    const char * p = ProcuraExpr(Instr::FuncAtual->expr, Instr::ex_varfim);
     assert(p!=0);
     Instr::FuncAtual->expr = p + 1;
 }
 
 //----------------------------------------------------------------------------
 /// Executa função
-/** @return true se executou normal, false se cancelou por falta de memória
+/** VarAtual contém a variável retornada pela função
+ *  @return true se executou normal, false se cancelou por falta de memória
  *  @note Independente de retornar true ou false, executar ExecFim() depois
  */
 bool Instr::ExecX()
@@ -399,19 +428,33 @@ bool Instr::ExecX()
                 }
             if (FuncAtual->linha == 0)
             {
-            // Apaga variáveis da função
-                ApagarVar(FuncAtual->inivar - 1);
-            // Cria NULO na pilha de variávels (retorno da função)
-                if (VarAtual >= VarFim-1)
-                    return RetornoErro();
-                VarAtual++;
-                VarAtual->Limpar();
-                VarAtual->defvar = InstrNulo;
+                if (FuncAtual->tipo==1) // Ler varfunc
+                {
+                    ApagarVar(FuncAtual->inivar);
+                    if (VarAtual >= VarFim-1)
+                        return RetornoErro();
+                    VarAtual++;
+                    VarAtual->Limpar();
+                    VarAtual->defvar = InstrNulo;
+                    if (!VarFuncFim())
+                        return RetornoErro();
+                }
+                else if (FuncAtual->tipo==2) // Mudar varfunc
+                    ApagarVar(FuncAtual->inivar);
+                else // Função normal
+                {
+                    ApagarVar(FuncAtual->inivar - 1);
+                    VarAtual++;
+                    VarAtual->Limpar();
+                    VarAtual->defvar = InstrNulo;
+                }
             // Apaga função
-                if (FuncAtual==FuncPilha)
-                    return true;
                 FuncAtual--;
-                continue;
+                if (FuncAtual>=FuncPilha)
+                    continue;
+                if (VarFuncIni(VarAtual))
+                    continue;
+                return true;
             }
 
         // Variável da função
@@ -549,12 +592,26 @@ bool Instr::ExecX()
             {
             case cRet2:
             case cConstExpr:
-                assert(VarAtual >= FuncAtual->inivar);
-                ApagarRet(FuncAtual->inivar-1);
-                if (FuncAtual==FuncPilha)
-                    return true;
+                if (FuncAtual->tipo==1) // Ler varfunc
+                {
+                    ApagarRet(FuncAtual->inivar);
+                    if (!VarFuncFim())
+                        return RetornoErro();
+                }
+                else if (FuncAtual->tipo==2) // Mudar varfunc
+                    ApagarVar(FuncAtual->inivar);
+                else // Função normal
+                {
+                    assert(VarAtual >= FuncAtual->inivar);
+                    ApagarRet(FuncAtual->inivar-1);
+                }
+            // Apaga função
                 FuncAtual--;
-                break;
+                if (FuncAtual>=FuncPilha)
+                    break;
+                if (VarFuncIni(VarAtual))
+                    break;
+                return true;
             case cSe:
             case cSenao2:
                 {
@@ -619,7 +676,7 @@ bool Instr::ExecX()
             VarAtual++;
             VarAtual->Limpar();
             VarAtual->defvar = InstrTxtFixo;
-            VarAtual->endvar = FuncAtual->expr;
+            VarAtual->endfixo = FuncAtual->expr;
             while (*FuncAtual->expr)
                 FuncAtual->expr++;
             FuncAtual->expr++;
@@ -713,6 +770,8 @@ bool Instr::ExecX()
             FuncAtual->expr++;
             break;
         case exo_neg:        // Operador: -a
+            if (VarFuncIni(VarAtual))
+                break;
             FuncAtual->expr++;
             switch (VarAtual->Tipo())
             {
@@ -747,6 +806,8 @@ bool Instr::ExecX()
             }
             break;
         case exo_exclamacao: // Operador: !a
+            if (VarFuncIni(VarAtual))
+                break;
             FuncAtual->expr++;
             if (VarAtual->Tipo() != varInt || VarAtual->tamanho==0)
             {
@@ -761,6 +822,8 @@ bool Instr::ExecX()
             break;
         case exo_mul:        // Operador: a*b
             {
+                if (VarFuncIni(VarAtual-1))
+                    break;
                 FuncAtual->expr++;
                 double valor = VarAtual[-1].getDouble() *
                                VarAtual[0].getDouble();
@@ -776,6 +839,8 @@ bool Instr::ExecX()
             }
         case exo_div:        // Operador: a/b
             {
+                if (VarFuncIni(VarAtual-1))
+                    break;
                 FuncAtual->expr++;
                 double valor1 = VarAtual[-1].getDouble();
                 double valor2 = VarAtual[0].getDouble();
@@ -795,6 +860,8 @@ bool Instr::ExecX()
             }
         case exo_porcent:    // Operador: a%b
             {
+                if (VarFuncIni(VarAtual-1))
+                    break;
                 FuncAtual->expr++;
                 int valor = VarAtual[0].getInt();
                 if (valor)
@@ -813,6 +880,8 @@ bool Instr::ExecX()
             }
         case exo_add:        // Operador: a+b
             {
+                if (VarFuncIni(VarAtual-1))
+                    break;
                 FuncAtual->expr++;
                 int tipo = VarAtual[-1].Tipo();
             // Caso 1: Não é texto: executa soma numérica
@@ -919,6 +988,8 @@ bool Instr::ExecX()
             }
         case exo_sub:        // Operador: a-b
             {
+                if (VarFuncIni(VarAtual-1))
+                    break;
                 FuncAtual->expr++;
                 double valor = VarAtual[-1].getDouble() -
                                 VarAtual[0].getDouble();
@@ -935,6 +1006,24 @@ bool Instr::ExecX()
         case exo_igual:      // Operador: a=b
             if (FuncAtual->igualcompara==false)
             {
+                if (VarAtual[-1].defvar[2] == cVarFunc)
+                {
+                    if (FuncAtual+1 >= FuncFim)
+                        return RetornoErro();
+                    FuncAtual->expr++;
+                    FuncAtual++;
+                    FuncAtual->linha = VarAtual[-1].defvar +
+                            Num16(VarAtual[-1].defvar);
+                    FuncAtual->este = (TObjeto*)VarAtual[-1].endvar;
+                    FuncAtual->expr = 0;
+                    FuncAtual->inivar = VarAtual;
+                    FuncAtual->fimvar = VarAtual + 1;
+                    FuncAtual->numarg = 1;
+                    FuncAtual->tipo = 2;
+                    break;
+                }
+                if (VarFuncIni(VarAtual))
+                    break;
                 FuncAtual->expr++;
                 switch (VarAtual[-1].Tipo())
                 {
@@ -962,6 +1051,8 @@ bool Instr::ExecX()
         case exo_maiorigual: // Operador: a>=b
         case exo_diferente:  // Operador: a!=b
             {
+                if (VarFuncIni(VarAtual-1))
+                    break;
             // Compara valores
                 int tipo1 = VarAtual[-1].Tipo();
                 int tipo2 = VarAtual[0].Tipo();
@@ -997,10 +1088,12 @@ bool Instr::ExecX()
                 break;
             }
         case exo_ee:         // Operador: Início do operador &
+            if (VarFuncIni(VarAtual))
+                break;
             FuncAtual->expr++;
             if (VarAtual->getBool()==false)
             {
-                char * p = ProcuraExpr(FuncAtual->expr, exo_e);
+                const char * p = ProcuraExpr(FuncAtual->expr, exo_e);
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
@@ -1011,10 +1104,12 @@ bool Instr::ExecX()
             ApagarVar(VarAtual);
             break;
         case exo_ouou:       // Operador: Início do operador |
+            if (VarFuncIni(VarAtual))
+                break;
             FuncAtual->expr++;
             if (VarAtual->getBool())
             {
-                char * p = ProcuraExpr(FuncAtual->expr, exo_ou);
+                const char * p = ProcuraExpr(FuncAtual->expr, exo_ou);
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
@@ -1028,6 +1123,8 @@ bool Instr::ExecX()
         case exo_e:          // Operador: a&b
         case exo_ou:         // Operador: a|b
             {
+                if (VarFuncIni(VarAtual))
+                    break;
                 FuncAtual->expr++;
                 bool b = VarAtual->getBool();
                 ApagarVar(VarAtual);
@@ -1078,8 +1175,10 @@ bool Instr::ExecX()
             break;
         case ex_fecha:      // Fecha colchetes
             {
-                FuncAtual->expr++;
                 TVariavel * v = EndVarNome();
+                if (VarFuncIni(v+2))
+                    break;
+                FuncAtual->expr++;
                 char mens[64];
                 char * p = mens;
                 char * pfim = p + sizeof(mens);
@@ -1153,11 +1252,36 @@ bool Instr::ExecX()
                 else if (v[1].defvar[2]==cVarInicio)
                 {
                 // Verifica se é variável/comando interno do programa
-
-
-    //*****************************
-
-
+                    int ini = 0;
+                    int fim = sizeof(ListaFunc) / sizeof(ListaFunc[0]) - 1;
+                    int resultado = 1;
+                    while (ini <= fim)
+                    {
+                        int meio = (ini+fim)/2;
+                        resultado = comparaZ(nome, ListaFunc[meio].Nome);
+                    // Verifica se encontrou
+                        if (resultado==0)  // Se encontrou
+                        {
+                                // Ler varfunc primeiro
+                            ExecFunc * f = FuncAtual;
+                            if (VarFuncIni(v+1))
+                            {
+                                f->expr--;
+                                break;
+                            }
+                                // Processa função interna
+                            if (!ListaFunc[meio].Func(
+                                    v+1, ListaFunc[meio].valor))
+                                VarInvalido();
+                            break;
+                        }
+                        if (resultado<0)
+                            fim = meio-1;
+                        else
+                            ini = meio+1;
+                    }
+                    if (resultado==0)
+                        break;
                 // Se começa com $, verifica se objeto existe
                     if (nome[0]=='$')
                     {
@@ -1172,23 +1296,6 @@ bool Instr::ExecX()
                         VarAtual->defvar = InstrVarObjeto;
                         VarAtual->endvar = c->ObjetoIni;
                         VarAtual->tamanho = 0;
-                        break;
-                    }
-                // Verifica se é argumento da função
-                    if ((nome[0]|0x20)=='a' && (nome[1]|0x20)=='r' &&
-                            (nome[2]|0x20)=='g' && nome[3]>='0' &&
-                            nome[3]<='9' && nome[4]==0)
-                    {
-                        int arg = nome[3] - '0';
-                        if (arg >= FuncAtual->numarg)
-                            VarInvalido();
-                        else
-                        {
-                            ApagarVar(v+1);
-                            VarAtual++;
-                            *VarAtual = *(FuncAtual->inivar + arg);
-                            VarAtual->tamanho = 0;
-                        }
                         break;
                     }
                 // Verifica se é variável local da função
@@ -1224,6 +1331,13 @@ bool Instr::ExecX()
 
     // else ...
     //******* Consulta a variável sobre o que fazer
+                // Se vai interpretar argumentos, antes executar:
+                //          ExecFunc * f = FuncAtual;
+                //          if (VarFuncIni(v+1))
+                //          {
+                //              f->expr--;
+                //              break;
+                //          }
 
 
             // Processa classe e objeto
@@ -1253,16 +1367,19 @@ bool Instr::ExecX()
                     FuncAtual->inivar = v+2;
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
+                    FuncAtual->tipo = 0;
                     break;
                 }
             // Função varfunc
                 if (defvar[2]==cVarFunc)
                 {
-                    if (objeto==0)
-                    {
-                        VarInvalido();
-                        break;
-                    }
+                    ApagarVar(v+1);
+                  //  if (objeto==0)
+                  //  {
+                  //      if (!CriarVar(InstrNulo))
+                  //          return RetornoErro();
+                  //      break;
+                  //  }
                     VarAtual++;
                     VarAtual->defvar = defvar;
                     VarAtual->endvar = objeto;
@@ -1281,6 +1398,7 @@ bool Instr::ExecX()
                     FuncAtual->inivar = v + 2;
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
+                    FuncAtual->tipo = 0;
                     break;
                 }
             // Variável
@@ -1313,7 +1431,7 @@ bool Instr::ExecX()
 /// Executa procedimentos após ExecX()
 void Instr::ExecFim()
 {
-    ApagarVar(VarAtual+1);
+    ApagarVar(VarPilha);
 
 
     // Se apagar alguma classe aqui, acertar também função main()
