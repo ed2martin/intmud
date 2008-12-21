@@ -19,7 +19,9 @@ bool Mostra(char * destino, const char * origem, int tamanho);
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);
 void ApagarRet(TVariavel * v);
-char * ProcuraExpr(char * expr, int valor);
+bool VarFuncIni(TVariavel * varini);
+bool VarFuncFim();
+const char * ProcuraExpr(const char * expr, int valor);
 const char * NomeComando(int valor);
 const char * NomeExpr(int valor);
 
@@ -29,8 +31,32 @@ void ExecArg(char * txt);
 bool ExecX();
 void ExecFim();
 
+bool FuncArg(TVariavel * v, int valor);
+bool FuncArgs(TVariavel * v, int valor);
+
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
+
+//----------------------------------------------------------------------------
+// Variáveis predefinidas
+/// TVariavel::defvar para Instr::cNulo
+extern const char InstrNulo[];
+/// TVariavel::defvar para Instr::cReal
+extern const char InstrDouble[];
+/// TVariavel::defvar para Instr::cInt32
+extern const char InstrInt[];
+/// TVariavel::defvar para Instr::cUInt32
+extern const char InstrUInt[];
+/// TVariavel::defvar para Instr::cTxtFixo
+extern const char InstrTxtFixo[];
+/// TVariavel::defvar para Instr::cVarNome
+extern const char InstrVarNome[];
+/// TVariavel::defvar para Instr::cVarInicio
+extern const char InstrVarInicio[];
+/// TVariavel::defvar para Instr::cVarClasse
+extern const char InstrVarClasse[];
+/// TVariavel::defvar para Instr::cVarObjeto
+extern const char InstrVarObjeto[];
 
 //----------------------------------------------------------------------------
 /** Verifica se instruções de uma classe (codificadas por Instr::Codif)
@@ -62,13 +88,14 @@ class ExecFunc /// Pilha de funções
 {
 public:
     TObjeto * este;     ///< Objeto ao qual a função pertence
-    char * linha;       ///< Instrução codificada sendo executada
+    const char * linha; ///< Instrução codificada sendo executada
                         ///< Mesmo formato de TClasse::Comandos
-    char * expr;        ///< Aonde parou na expressão numérica
+    const char * expr;  ///< Aonde parou na expressão numérica
                         ///< =0 se não estiver processando expressão numérica
     TVariavel * inivar; ///< Primeiro argumento da função
     TVariavel * fimvar; ///< Primeira variável após variáveis locais da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
+    char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc
     bool  igualcompara; ///< Se o sinal de igual compara ou atribui
 };
 

@@ -76,9 +76,14 @@ public:
 // Variáveis
     const char * defvar; ///< Instrução que define a variável
                          /**< @sa Instr::Comando */
-    void * endvar;  ///< Endereço da variável na memória (0 se não for aplicável)
+    union {
+        void * endvar;  ///< Endereço da variável na memória (0 se não for aplicável)
+        const void * endfixo;
+                    ///< Valor "const" de endvar
+                    /**< Usar endfixo quando a variável não poderá ser mudada */
+    };
     int  tamanho;   ///< Quantos bytes está usando na memória
-                    /** 0 significa que não está usando ou a variável está
+                    /**< 0 significa que não está usando ou a variável está
                         sendo usada em outro lugar
                              @note Não é usado em TVariavel */
     unsigned char bit;  ///< Máscara do bit, se for variável de bit
