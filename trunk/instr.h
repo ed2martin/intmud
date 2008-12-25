@@ -33,6 +33,8 @@ void ExecFim();
 
 bool FuncArg(TVariavel * v, int valor);
 bool FuncArgs(TVariavel * v, int valor);
+bool FuncCriar(TVariavel * v, int valor);
+bool FuncApagar(TVariavel * v, int valor);
 
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
@@ -95,8 +97,38 @@ public:
     TVariavel * inivar; ///< Primeiro argumento da função
     TVariavel * fimvar; ///< Primeira variável após variáveis locais da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
-    char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc
+    char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc 3=criar()
     bool  igualcompara; ///< Se o sinal de igual compara ou atribui
+};
+
+//----------------------------------------------------------------------------
+/** Processa funções predefinidas
+    @note A lista de funções está definida em instr-exec.cpp
+*/
+class TListaFunc /// Funções internas
+{
+public:
+        /// Nome da função predefinida
+    const char * Nome;
+
+        /// Função que processa a função predefinida
+        /** Ao executar a função, a pilha de variáveis está assim:
+        - cVarNome
+        - cVarInicio  (v aponta para essa variável)
+        - Argumentos da função interna (VarAtual aponta para a última)
+        .
+        Se retornar true, deve:
+        - Apagar variáveis de v em diante
+        - Criar uma variável com o resultado
+        .
+        @param v Endereço da variável cVarInicio
+        @param valor Valor de TListaFunc::valor
+        @retval true Se processou normalmente
+        @retval false Se erro; o resultado será o tipo NULO */
+    bool (*Func)(TVariavel * v, int valor);
+
+        /// Valor passado à função Func
+    int  valor;
 };
 
 //----------------------------------------------------------------------------
@@ -187,15 +219,19 @@ enum Comando
     cInt8, cUInt8,      ///< Var: 8 bits com e sem sinal
     cInt16, cUInt16,    ///< Var: 16 bits com e sem sinal
     cInt32, cUInt32,    ///< Var: 32 bits com e sem sinal
-    cIntInc, cIntDec,   ///< Var: intinc e intdec
     cReal,              ///< Var: real - "double"
-    cRef,               ///< Var: Referência para um objeto
     cConstNulo,         ///< Var: Constante = nulo
     cConstTxt,          ///< Var: Constante = texto
     cConstNum,          ///< Var: Constante = número
     cConstExpr,         ///< Var: Constante = expressão numérica
     cFunc,              ///< Var: Função
     cVarFunc,           ///< Var: Função
+        /**< @note Para as variáveis após cVarFunc, deve-se
+            obrigatoriamente usar TVariavel::Criar e TVariavel::Apagar,
+            exceto quando TVariavel::Tamanho retorna 0 */
+    cIntInc, cIntDec,   ///< Var: intinc e intdec
+    cRef,               ///< Var: Referência para um objeto
+        /**< Na memória: TObjeto*Pont, TObjeto*Antes, TObjeto*Depois */
 
 // Variáveis extras
     cListaObj,          ///< Extra: ListaObj

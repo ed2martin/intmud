@@ -216,18 +216,10 @@ const char Instr::InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, '+', 0 };
 const char Instr::InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, '+', 0 };
 
 //------------------------------------------------------------------------------
-class TListaFunc {
-public:
-    const char * Nome;  // Nome da função predefinida
-    bool (*Func)(TVariavel * v, int valor);
-                        // Retorna true se processou normalmente
-                        // Retorna false se erro; resultado é tipo NULO
-    int  valor;         // Valor passado à função Func
-};
-
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
-static const TListaFunc ListaFunc[] = {
+static const Instr::TListaFunc ListaFunc[] = {
+    { "apagar",     Instr::FuncApagar, 0 },
     { "arg0",       Instr::FuncArg, 0 },
     { "arg1",       Instr::FuncArg, 1 },
     { "arg2",       Instr::FuncArg, 2 },
@@ -238,7 +230,8 @@ static const TListaFunc ListaFunc[] = {
     { "arg7",       Instr::FuncArg, 7 },
     { "arg8",       Instr::FuncArg, 8 },
     { "arg9",       Instr::FuncArg, 9 },
-    { "args",       Instr::FuncArgs, 0 }
+    { "args",       Instr::FuncArgs, 0 },
+    { "criar",      Instr::FuncCriar, 0 }
 };
 
 //----------------------------------------------------------------------------
@@ -428,8 +421,9 @@ bool Instr::ExecX()
                 }
             if (FuncAtual->linha == 0)
             {
-                if (FuncAtual->tipo==1) // Ler varfunc
+                switch (FuncAtual->tipo)
                 {
+                case 1: // Ler varfunc
                     ApagarVar(FuncAtual->inivar);
                     if (VarAtual >= VarFim-1)
                         return RetornoErro();
@@ -438,11 +432,18 @@ bool Instr::ExecX()
                     VarAtual->defvar = InstrNulo;
                     if (!VarFuncFim())
                         return RetornoErro();
-                }
-                else if (FuncAtual->tipo==2) // Mudar varfunc
+                    break;
+                case 2: // Mudar varfunc
                     ApagarVar(FuncAtual->inivar);
-                else // Função normal
-                {
+                    break;
+                case 3: // criar()
+                    ApagarVar(FuncAtual->inivar - 2);
+                    VarAtual++;
+                    VarAtual->Limpar();
+                    VarAtual->defvar = InstrVarObjeto;
+                    VarAtual->endvar = FuncAtual->este;
+                    break;
+                default: // Função normal
                     ApagarVar(FuncAtual->inivar - 1);
                     VarAtual++;
                     VarAtual->Limpar();
@@ -592,16 +593,24 @@ bool Instr::ExecX()
             {
             case cRet2:
             case cConstExpr:
-                if (FuncAtual->tipo==1) // Ler varfunc
+                switch (FuncAtual->tipo)
                 {
+                case 1: // Ler varfunc
                     ApagarRet(FuncAtual->inivar);
                     if (!VarFuncFim())
                         return RetornoErro();
-                }
-                else if (FuncAtual->tipo==2) // Mudar varfunc
+                    break;
+                case 2: // Mudar varfunc
                     ApagarVar(FuncAtual->inivar);
-                else // Função normal
-                {
+                    break;
+                case 3: // criar()
+                    ApagarVar(FuncAtual->inivar - 2);
+                    VarAtual++;
+                    VarAtual->Limpar();
+                    VarAtual->defvar = InstrVarObjeto;
+                    VarAtual->endvar = FuncAtual->este;
+                    break;
+                default: // Função normal
                     assert(VarAtual >= FuncAtual->inivar);
                     ApagarRet(FuncAtual->inivar-1);
                 }
@@ -1431,7 +1440,20 @@ bool Instr::ExecX()
 /// Executa procedimentos após ExecX()
 void Instr::ExecFim()
 {
+// Apaga variáveis pendentes
     ApagarVar(VarPilha);
+
+// Apaga objetos marcados para exclusão
+    while (TObjeto::IniApagar)
+    {
+        if (Instr::ExecIni(TObjeto::IniApagar, "fim"))
+        {
+            Instr::ExecX();
+            ApagarVar(VarPilha);
+        }
+        TObjeto::DesmarcarApagar();
+        TObjeto::IniApagar->Apagar();
+    }
 
 
     // Se apagar alguma classe aqui, acertar também função main()

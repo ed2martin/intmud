@@ -55,7 +55,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cIntInc:
     case Instr::cIntDec:    return 4;
     case Instr::cReal:      return sizeof(double);
-    case Instr::cRef:       return sizeof(void*)*3;
+    case Instr::cRef:       return sizeof(TVarRef);
     case Instr::cConstNulo:
     case Instr::cConstTxt:
     case Instr::cConstNum:
@@ -160,6 +160,12 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
 //------------------------------------------------------------------------------
 void TVariavel::Apagar()
 {
+    switch (defvar[2])
+    {
+    case Instr::cRef:
+        ((TVarRef*)endvar)->MudarPont(0);
+        break;
+    }
 #ifdef DEBUG_CRIAR
     printf("Variável apagada %p   ", endvar);
     char mens[500];
@@ -740,6 +746,8 @@ TObjeto * TVariavel::getObj()
         return 0;
     switch (defvar[2])
     {
+    case Instr::cRef:
+        return ((TVarRef*)endvar)->Pont;
     case Instr::cVarObjeto:
         return (TObjeto*)endvar;
     }
@@ -1008,8 +1016,35 @@ void TVariavel::setObj(TObjeto * obj)
         return;
     switch (defvar[2])
     {
+    case Instr::cRef:
+        ((TVarRef*)endvar)->MudarPont(obj);
+        break;
     case Instr::cVarObjeto:
         endvar = obj;
         break;
     }
+}
+
+//------------------------------------------------------------------------------
+void TVarRef::MudarPont(TObjeto * obj)
+{
+// Verifica se o endereço vai mudar
+    if (obj == Pont)
+        return;
+// Retira da lista
+    if (Pont)
+    {
+        (Antes ? Antes : Pont->VarRefIni) = Depois;
+        if (Depois)
+            Depois->Antes = Antes;
+    }
+// Coloca na lista
+    if (obj)
+    {
+        Antes = 0;
+        Depois = obj->VarRefIni;
+        obj->VarRefIni = this;
+    }
+// Atualiza ponteiro
+    Pont = obj;
 }
