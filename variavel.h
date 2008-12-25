@@ -90,5 +90,16 @@ public:
 };
 
 //----------------------------------------------------------------------------
+/** Trata das variáveis do tipo REF */
+class TVarRef /// Variável REF
+{
+public:
+    void MudarPont(TObjeto * obj);
+    TObjeto * Pont;
+    TVarRef * Antes;
+    TVarRef * Depois;
+};
+
+//----------------------------------------------------------------------------
 
 #endif

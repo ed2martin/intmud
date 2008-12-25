@@ -3,21 +3,27 @@
 
 #include "classe.h"
 
+class TVarRef;
+
 //----------------------------------------------------------------------------
 /** Objetos  */
 class TObjeto /// Objetos
 {
     TObjeto();  ///< Não deve ser chamado; usar TObjeto::Criar()
 public:
-    ~TObjeto(); ///< Não deve ser chamado; usar TObjeto::Apagar()
+    ~TObjeto(); ///< Não deve ser chamado; usar TObjeto::MarcarApagar()
     static TObjeto * Criar(TClasse * c); ///< Cria objeto
-    void Apagar();              ///< Apaga objeto
+    void Apagar();              ///< Apaga objeto @sa TObjeto::MarcarApagar
+    void MarcarApagar();        ///< Marca objeto para apagar
+    static void DesmarcarApagar(); ///< Desmarca objeto IniExcluir
 
     TClasse * Classe;           ///< Classe ao qual o objeto pertence
     TObjeto * Antes;            ///< Lista ligada: objeto anterior
     TObjeto * Depois;           ///< Lista ligada: próximo objeto
-    TObjeto * Excluir;          ///< Próximo objeto marcado para exclusão
-    static TObjeto * IniExcluir;///< Primeiro objeto marcado para exclusão
+    TObjeto * PontApagar;       ///< Próximo objeto marcado para Apagar
+    static TObjeto * IniApagar; ///< Primeiro objeto marcado para apagar
+    static TObjeto * FimApagar; ///< Último objeto marcado para apagar
+    TVarRef * VarRefIni;        ///< Primeira TVarRef apontando para o objeto
     unsigned char Vars[4];      ///< Variáveis do objeto
         /**< O tamanho real de Vars, em bytes, é Classe->TamObj
          *

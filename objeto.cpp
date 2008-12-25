@@ -20,6 +20,9 @@
 #include "variavel.h"
 #include "instr.h"
 
+TObjeto * TObjeto::IniApagar = 0;
+TObjeto * TObjeto::FimApagar = 0;
+
 //----------------------------------------------------------------------------
 TObjeto::TObjeto() { assert(0); }
 TObjeto::~TObjeto() { assert(0); }
@@ -56,6 +59,9 @@ TObjeto * TObjeto::Criar(TClasse * c)
 void TObjeto::Apagar()
 {
     Classe->NumObj--;
+// Remove variáveis TVarRef que apontam para o objeto
+    while (VarRefIni)
+        VarRefIni->MudarPont(0);
 // Chama destrutores das variáveis
     TVariavel v;
     for (int x=(int)Classe->NumVar-1; x>=0; x--)
@@ -72,4 +78,25 @@ void TObjeto::Apagar()
 // Libera memória
     char * x = (char*)this;
     delete[] x;
+}
+
+//----------------------------------------------------------------------------
+void TObjeto::MarcarApagar()
+{
+    if (PontApagar || FimApagar == this)
+        return;
+    (FimApagar ? FimApagar->PontApagar : IniApagar) = this;
+    FimApagar = this;
+}
+
+//----------------------------------------------------------------------------
+void TObjeto::DesmarcarApagar()
+{
+    if (IniApagar==0)
+        return;
+    TObjeto * obj = IniApagar;
+    IniApagar = IniApagar->PontApagar;
+    if (IniApagar==0)
+        FimApagar=0;
+    obj->PontApagar = 0;
 }
