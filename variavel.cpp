@@ -315,7 +315,6 @@ bool TVariavel::getBool()
         return 0;
     case Instr::cReal:
         return (*(double*)endvar != 0);
-    case Instr::cRef:
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
@@ -361,6 +360,8 @@ bool TVariavel::getBool()
     case Instr::cProg:
     case Instr::cIndice: */
 
+    case Instr::cRef:
+        return ((TVarRef*)endvar)->Pont != 0;
     case Instr::cVarObjeto:
         return (endvar!=0);
     }
@@ -634,7 +635,6 @@ const char * TVariavel::getTxt()
                 *((unsigned char*)endvar+2) * 0x10000 +
                 *((unsigned char*)endvar+3) * 0x1000000));
         return txtnum;
-    case Instr::cRef:
     case Instr::cConstNulo:
         return "";
     case Instr::cConstTxt:
@@ -727,6 +727,10 @@ const char * TVariavel::getTxt()
     case Instr::cProg:
     case Instr::cIndice: */
 
+    case Instr::cRef:
+        if (((TVarRef*)endvar)->Pont == 0)
+            break;
+        return ((TVarRef*)endvar)->Pont->Classe->Nome;
     case Instr::cVarClasse:
         if (endvar==0)
             break;

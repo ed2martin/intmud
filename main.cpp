@@ -44,18 +44,22 @@
 #define CORE    // Para gerar arquivos core
 #define DEBUG   // Para não colocar o programa em segundo plano
 
-void Inicializa();
+void Inicializa(const char * arg);
 void Termina();
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR lpCmdLine, int)
 #else
 int main(int argc, char *argv[])
 #endif
 {
 // Inicialização
-    Inicializa();
+#ifdef __WIN32__
+    Inicializa(lpCmdLine);
+#else
+    Inicializa(argc<=1 ? "" : argv[1]);
+#endif
 
 // Coloca o programa em segundo plano
 #if !defined DEBUG && !defined __WIN32__
@@ -102,8 +106,9 @@ int main(int argc, char *argv[])
 }
 
 //------------------------------------------------------------------------------
-// Inicialização
-void Inicializa()
+/// Inicialização do programa
+/// @param arg Nome do arquivo .map, ou "" se não foi especificado
+void Inicializa(const char * arg)
 {
 // Variáveis
     char mens[500];
@@ -129,35 +134,96 @@ void Inicializa()
 // Prepara tabela ASCII
     tabASCinic();
 
-// Obtém o diretório atual + "intmud"
-#ifdef __WIN32__
-    int x = GetCurrentDirectory((DWORD)10, mens);
-    if (x<=0)
-        exit(EXIT_FAILURE);
-    x += strlen(PACKAGE);
-    arqnome = new char[x+70];
-    GetCurrentDirectory((DWORD)x, arqnome); // Obtém o diretório atual
-    for (arqinicio=arqnome; *arqinicio; arqinicio++);
-    *arqinicio++ = '\\';
-    strcpy(arqinicio, PACKAGE);
-#else
-    int x = 100;
-    while (true)
+
+// Obtém nome do programa: arqnome, arqinicio e arqext
     {
-        arqnome = new char[x+70+strlen(PACKAGE)];
-        if (getcwd(arqnome, x) == arqnome)
-            break;
-        delete[] arqnome;
-        if (errno != ERANGE)
-            exit(EXIT_FAILURE);
-        x *= 2;
-    }
-    for (arqinicio=arqnome; *arqinicio; arqinicio++);
-    *arqinicio++ = '/';
-    strcpy(arqinicio, PACKAGE);
+        char nome[0xC000];
+        char * pnome = nome;
+        const char * endfim = nome + sizeof(nome) - 1;
+
+    // Verifica se nome é nulo
+        while (*arg==' ')
+            arg++;
+        if (*arg==0)
+            arg = PACKAGE;
+
+    // Obtém primeiro argumento em nome[]
+    // Obtém: pnome = endereço do 0 no final
+#ifdef __WIN32__
+        bool aspas = false;
+        for (; *arg && pnome<endfim; arg++)
+        {
+            if (*arg=='\"')
+                aspas = !aspas;
+            else if (*arg==' ' && !aspas)
+                break;
+            else
+                *pnome++ = *arg;
+        }
+        *pnome = 0;
+#else
+        pnome = copiastr(nome, arg, sizeof(nome));
 #endif
-    arqext = arqinicio;
-    while (*arqext) arqext++;
+
+    // Muda para o diretório do nome
+    // Obtém: pnome = endereço do nome do arquivo sem o diretório
+#ifdef __WIN32__
+        for (; pnome>=nome; pnome--)
+            if (*pnome=='\\')
+            {
+                *pnome = 0;
+                if (!SetCurrentDirectory(nome))
+                    exit(EXIT_FAILURE);
+                break;
+            }
+        pnome++;
+#else
+        for (; pnome>=nome; pnome--)
+            if (*pnome=='/')
+            {
+                *pnome = 0;
+                if (chdir(nome)<0)
+                    exit(EXIT_FAILURE);
+                break;
+            }
+        pnome++;
+#endif
+
+    // Copia o nome do arquivo para o início de nome[]
+    // Obtém: pnome = endereço do primeiro byte após o 0
+        if (pnome > nome)
+            pnome = copiastr(nome, pnome);
+        else
+            for (pnome = nome; *pnome;)
+                pnome++;
+        pnome++;
+
+    // Acerta nomearq
+#ifdef __WIN32__
+        if (GetCurrentDirectory((DWORD)(endfim-pnome), pnome) <= 0)
+            exit(EXIT_FAILURE);
+        arqnome = new char[strlen(nome) + strlen(pnome) + 70];
+        sprintf(arqnome, "%s\\%s", pnome, nome);
+#else
+        if (getcwd(pnome, endfim-pnome) == 0)
+            exit(EXIT_FAILURE);
+        arqnome = new char[strlen(nome) + strlen(pnome) + 70];
+        sprintf(arqnome, "%s/%s", pnome, nome);
+#endif
+
+    // Obtém arqinicio
+        arqinicio = arqnome;
+        if (*nome)
+            arqinicio += 1 + strlen(pnome);
+
+    // Obtém arqext
+        arqext = arqinicio + strlen(arqinicio);
+        if (arqext > arqinicio + 4)
+            if (arqext[-4]=='.' && (arqext[-3]|0x20)=='m' &&
+                    (arqext[-2]|0x20)=='a' && (arqext[-1]|0x20)=='p')
+                arqext -= 4;
+        *arqext = 0;
+    }
 
 // Obtém arquivo de log
 #ifdef __WIN32__
@@ -640,7 +706,7 @@ void Inicializa()
 }
 
 //------------------------------------------------------------------------------
-// Encerra o programa
+/// Encerra o programa
 void Termina()
 {
 #ifdef __WIN32__
