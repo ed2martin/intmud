@@ -231,7 +231,7 @@ enum Comando
             exceto quando TVariavel::Tamanho retorna 0 */
     cIntInc, cIntDec,   ///< Var: intinc e intdec
     cRef,               ///< Var: Referência para um objeto
-        /**< Na memória: TObjeto*Pont, TObjeto*Antes, TObjeto*Depois */
+                        /**< @sa TVarRef */
 
 // Variáveis extras
     cListaObj,          ///< Extra: ListaObj
