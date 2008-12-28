@@ -5,14 +5,14 @@ int1 x2
 int1 x3
 int1 x4
 const nn = arg0*2+args
-func iniclasse
+#func iniclasse
 #teste:x1 = teste:f1(10,20)
 #2
 #"abc" + teste:nn(4)
 #teste:var + teste:var
 #teste:var = 10
 #ret teste:var
-args(teste:var)
+#args(teste:var)
 func f1
   ret arg0+1
 varfunc var
@@ -44,3 +44,26 @@ fimse #teste
 saidas = ds1("norte", "n") + ds1("sul", "s")
 prg.var("comandos", txt1(arg0))
 abc = -0.0000415+-x-(3+!"teste")*(!1+2)
+
+[teste2]
+int8 x2
+int1 x3
+int1 x4
+func iniclasse
+#criar(arg0, 5).x2 += 5
+  ref r
+  r = criar(arg0, 2)
+# r.x2 += 10
+# teste2:f1.x2 += teste2:var + 3 + 2
+  apagar(r)
+func f1
+  int8 lixo
+  ref nn
+  nn = $teste
+  ret nn
+varfunc var
+  ret 8
+func ini
+  x2 = arg0
+func fim
+  10
