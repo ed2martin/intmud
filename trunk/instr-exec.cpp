@@ -461,10 +461,7 @@ bool Instr::ExecX()
         // Variável da função
             if (FuncAtual->linha[2] > cVariaveis)
             {
-                const char * x = FuncAtual->linha;
-                if (x[2]==cRef)
-                    x=InstrVarObjeto;
-                if (!CriarVar(x))
+                if (!CriarVar(FuncAtual->linha))
                     return RetornoErro();
                 FuncAtual->fimvar++;
                 FuncAtual->linha += Num16(FuncAtual->linha);
@@ -1279,8 +1276,13 @@ bool Instr::ExecX()
                                 break;
                             }
                                 // Processa função interna
-                            if (!ListaFunc[meio].Func(
+                            if (ListaFunc[meio].Func(
                                     v+1, ListaFunc[meio].valor))
+                            {
+                                v->setTxt("");
+                                f->expr = CopiaVarNome(v, f->expr);
+                            }
+                            else
                                 VarInvalido();
                             break;
                         }
@@ -1305,6 +1307,8 @@ bool Instr::ExecX()
                         VarAtual->defvar = InstrVarObjeto;
                         VarAtual->endvar = c->ObjetoIni;
                         VarAtual->tamanho = 0;
+                        v->setTxt("");
+                        FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
                         break;
                     }
                 // Verifica se é variável local da função
@@ -1318,6 +1322,8 @@ bool Instr::ExecX()
                         VarAtual++;
                         *VarAtual = *var;
                         VarAtual->tamanho = 0;
+                        v->setTxt("");
+                        FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
                         break;
                     }
                 // Verifica se é variável/função do objeto
@@ -1347,6 +1353,9 @@ bool Instr::ExecX()
                 //              f->expr--;
                 //              break;
                 //          }
+                // Não esquecer de:
+                //      v->setTxt("");
+                //      FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
 
 
             // Processa classe e objeto
@@ -1364,6 +1373,7 @@ bool Instr::ExecX()
                 char * defvar = classe->InstrVar[indice];
                 int indvar = classe->IndiceVar[indice];
                 v->setTxt("");
+                FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
             // Função
                 if (defvar[2]==cFunc)
                 {
@@ -1444,15 +1454,18 @@ void Instr::ExecFim()
     ApagarVar(VarPilha);
 
 // Apaga objetos marcados para exclusão
-    while (TObjeto::IniApagar)
+    while (true)
     {
-        if (Instr::ExecIni(TObjeto::IniApagar, "fim"))
+        TObjeto * obj = TObjeto::IniApagar;
+        if (obj==0)
+            break;
+        if (Instr::ExecIni(obj, "fim"))
         {
             Instr::ExecX();
             ApagarVar(VarPilha);
         }
         TObjeto::DesmarcarApagar();
-        TObjeto::IniApagar->Apagar();
+        obj->Apagar();
     }
 
 

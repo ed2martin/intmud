@@ -258,28 +258,29 @@ bool Instr::VarFuncFim()
     {
         vfunc--;
         assert(vfunc >= VarPilha);
-        if (vfunc->defvar[2] == cVarFunc)
+        if (vfunc->defvar[2] == cVarFunc) // Se achou varfunc...
             break;
-        if (vfunc->tamanho == 0)
+        if (vfunc->tamanho == 0) // Se está definida em outro lugar...
             continue;
         endini = (char*)vfunc->endvar;
         if (endini != VarAtual->endvar) // Se não é a mesma variável...
             continue;
-        VarAtual->tamanho = vfunc->tamanho;
-        vfunc->tamanho = 0;
-        endini = 0;
+        VarAtual->tamanho = vfunc->tamanho; // VarAtual é a primeira
+        vfunc->tamanho = 0; // A outra é cópia
+        endini = 0;         // Por enquanto está na ordem correta em DadosPilha
     }
     assert(vfunc->tamanho==0);
 
 // Verifica se precisa acertar DadosPilha
-    if (vfunc->tamanho==0 || endini==0)
+    if (VarAtual->tamanho==0 || // Se variável não está em DadosPilha
+            endini==0)  // Se variáveis então na ordem correta em DadosPilha
     {
         *vfunc = *VarAtual;
         VarAtual--;
         return true;
     }
 
-// Move variáveis para o fim da área de dados
+// Move variáveis VarAtual a (vfunc+1) para o fim da área de dados
     char * destino = DadosFim;
     for (TVariavel * v = VarAtual; v>vfunc; v--)
         if (v->tamanho)
@@ -296,13 +297,15 @@ bool Instr::VarFuncFim()
                     vtemp->endvar = destino;
         }
 
-// Move variáveis para onde deverão ficar
+// Move VarAtual para vfunc em VarPilha
     *vfunc = *VarAtual;
     VarAtual--;
+
+// Move variáveis vfunc a VarAtual para onde deverão ficar
     for (TVariavel * v = vfunc; v<=VarAtual; v++)
         if (v->tamanho)
         {
-            if (v->defvar[2] != cTxtFixo)
+            if (v->defvar[2] != cTxtFixo) // Alinhamento conforme variável
             {
                 if ((v->tamanho&1)==0)
                     endini += ((endini-Instr::DadosPilha)&1);
