@@ -3,6 +3,7 @@
 
 class TClasse;
 class TObjeto;
+class TVarRef;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -81,6 +82,13 @@ public:
         const void * endfixo;
                     ///< Valor "const" de endvar
                     /**< Usar endfixo quando a variável não poderá ser mudada */
+        char * end_char; ///< endvar como char*
+        TVarRef * end_varref;        ///< Instr::cRef
+        signed   short * end_short;  ///< Instr::cInt16
+        unsigned short * end_ushort; ///< Instr::cUInt16
+        signed   int * end_int;      ///< Instr::cInt32
+        unsigned int * end_uint;     ///< Instr::cUInt32
+        int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
                     /**< 0 significa que não está usando ou a variável está
@@ -95,6 +103,7 @@ class TVarRef /// Variável REF
 {
 public:
     void MudarPont(TObjeto * obj);
+    void Mover(TVarRef * destino);
     TObjeto * Pont;
     TVarRef * Antes;
     TVarRef * Depois;

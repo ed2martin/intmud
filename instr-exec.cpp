@@ -207,13 +207,12 @@ Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 //----------------------------------------------------------------------------
 const char Instr::InstrNulo[] = { 7, 0, Instr::cConstNulo, 0, 0, '+', 0 };
 const char Instr::InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, '+', 0 };
-const char Instr::InstrInt[] = { 7, 0, Instr::cInt32, 0, 0, '+', 0 };
-const char Instr::InstrUInt[] = { 7, 0, Instr::cUInt32, 0, 0, '+', 0 };
 const char Instr::InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, '+', 0 };
 const char Instr::InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, '+', 0 };
 const char Instr::InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, '+', 0 };
 const char Instr::InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, '+', 0 };
 const char Instr::InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, '+', 0 };
+const char Instr::InstrVarInt[] = { 7, 0, Instr::cVarInt, 0, 0, '+', 0 };
 
 //------------------------------------------------------------------------------
 // Lista de funções predefinidas
@@ -688,44 +687,54 @@ bool Instr::ExecX()
             FuncAtual->expr++;
             break;
         case ex_num0:
-            if (!CriarVar(InstrInt))
+            if (!CriarVar(InstrVarInt))
                 return RetornoErro();
             FuncAtual->expr++;
             break;
         case ex_num1:
-            if (!CriarVar(InstrInt))
+            if (!CriarVar(InstrVarInt))
                 return RetornoErro();
-            *(unsigned char*)VarAtual->endvar=1;
+            VarAtual->setInt(1);
             FuncAtual->expr++;
             break;
         case ex_num8p:
-            if (!CriarVar(InstrInt))
+            if (!CriarVar(InstrVarInt))
                 return RetornoErro();
-            *(unsigned char*)VarAtual->endvar = FuncAtual->expr[1];
+            VarAtual->setInt((unsigned char)FuncAtual->expr[1]);
             FuncAtual->expr += 2;
             break;
         case ex_num16p:
-            if (!CriarVar(InstrInt))
+            if (!CriarVar(InstrVarInt))
                 return RetornoErro();
-            *(unsigned char*)VarAtual->endvar = FuncAtual->expr[1];
-            *((unsigned char*)VarAtual->endvar+1) = FuncAtual->expr[2];
+            VarAtual->setInt(Num16(FuncAtual->expr+1));
             FuncAtual->expr += 3;
             break;
         case ex_num32p:
-            if (!CriarVar( *((unsigned char*)FuncAtual->expr+4) & 0x80 ?
-                    InstrUInt : InstrInt))
-                return RetornoErro();
-            memcpy(VarAtual->endvar, FuncAtual->expr+1, 4);
-            FuncAtual->expr += 5;
-            break;
+            {
+                unsigned int x = Num32(FuncAtual->expr + 1);
+                if (x & 0x80000000)
+                {
+                    if (!CriarVar(InstrDouble))
+                        return RetornoErro();
+                    VarAtual->setDouble(x);
+                }
+                else
+                {
+                    if (!CriarVar(InstrVarInt))
+                        return RetornoErro();
+                    VarAtual->setInt(x);
+                }
+                FuncAtual->expr += 5;
+                break;
+            }
         case ex_num8n:
-            if (!CriarVar(InstrInt))
+            if (!CriarVar(InstrVarInt))
                 return RetornoErro();
             VarAtual->setInt(-(int)(unsigned char)FuncAtual->expr[1]);
             FuncAtual->expr += 2;
             break;
         case ex_num16n:
-            if (!CriarVar(InstrInt))
+            if (!CriarVar(InstrVarInt))
                 return RetornoErro();
             VarAtual->setInt(-(int)Num16(FuncAtual->expr+1));
             FuncAtual->expr += 3;
@@ -739,7 +748,7 @@ bool Instr::ExecX()
             }
             else
             {
-                if (!CriarVar(InstrInt))
+                if (!CriarVar(InstrVarInt))
                     return RetornoErro();
                 VarAtual->setInt(-(int)Num32(FuncAtual->expr+1));
             }
@@ -790,7 +799,7 @@ bool Instr::ExecX()
                 {
                     int valor = -VarAtual->getInt();
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrInt))
+                    if (!CriarVar(InstrVarInt))
                         return RetornoErro();
                     VarAtual->setInt(valor);
                 }
@@ -819,7 +828,7 @@ bool Instr::ExecX()
             {
                 bool valor = !VarAtual->getBool();
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrInt))
+                if (!CriarVar(InstrVarInt))
                     return RetornoErro();
                 VarAtual->setInt(valor);
             }
@@ -878,7 +887,7 @@ bool Instr::ExecX()
                 if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varInt)
                 {
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrInt))
+                    if (!CriarVar(InstrVarInt))
                         return RetornoErro();
                 }
                 VarAtual->setInt(valor);
@@ -1079,7 +1088,7 @@ bool Instr::ExecX()
                 }
             // Apaga valores da pilha; cria int32 na pilha
                 ApagarVar(VarAtual-1);
-                if (!CriarVar(InstrInt))
+                if (!CriarVar(InstrVarInt))
                     return RetornoErro();
             // Avança Func->expr, verifica operador
                 switch (*FuncAtual->expr++)
@@ -1103,7 +1112,7 @@ bool Instr::ExecX()
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrInt))
+                if (!CriarVar(InstrVarInt))
                     return RetornoErro();
                 break;
             }
@@ -1119,7 +1128,7 @@ bool Instr::ExecX()
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrInt))
+                if (!CriarVar(InstrVarInt))
                     return RetornoErro();
                 VarAtual->setInt(1);
                 break;
@@ -1134,7 +1143,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 bool b = VarAtual->getBool();
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrInt))
+                if (!CriarVar(InstrVarInt))
                     return RetornoErro();
                 if (b)
                     VarAtual->setInt(1);

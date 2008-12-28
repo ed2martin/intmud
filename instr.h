@@ -45,10 +45,6 @@ int  Prioridade(int operador);
 extern const char InstrNulo[];
 /// TVariavel::defvar para Instr::cReal
 extern const char InstrDouble[];
-/// TVariavel::defvar para Instr::cInt32
-extern const char InstrInt[];
-/// TVariavel::defvar para Instr::cUInt32
-extern const char InstrUInt[];
 /// TVariavel::defvar para Instr::cTxtFixo
 extern const char InstrTxtFixo[];
 /// TVariavel::defvar para Instr::cVarNome
@@ -59,6 +55,8 @@ extern const char InstrVarInicio[];
 extern const char InstrVarClasse[];
 /// TVariavel::defvar para Instr::cVarObjeto
 extern const char InstrVarObjeto[];
+/// TVariavel::defvar para Instr::cVarInt
+extern const char InstrVarInt[];
 
 //----------------------------------------------------------------------------
 /** Verifica se instruções de uma classe (codificadas por Instr::Codif)
@@ -252,6 +250,7 @@ enum Comando
     cVarInicio,         ///< Esperando texto logo após ex_varini
     cVarClasse,         ///< TVariavel::endvar = endereço do objeto TClasse
     cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
+    cVarInt,            ///< int local; vide TVariavel::var_int
 
     cTotalComandos      ///< Número de comandos - não usado
 };
