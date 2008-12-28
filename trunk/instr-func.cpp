@@ -39,9 +39,9 @@ bool Instr::FuncArg(TVariavel * v, int valor)
 bool Instr::FuncArgs(TVariavel * v, int valor)
 {
     ApagarVar(v);
-    if (!CriarVar(InstrInt))
+    if (!CriarVar(InstrVarInt))
         return false;
-    *(unsigned char*)VarAtual->endvar = FuncAtual->numarg;
+    VarAtual->setInt(FuncAtual->numarg);
     return true;
 }
 

@@ -484,6 +484,7 @@ const char * Instr::NomeComando(int valor)
     case cVarInicio:        return "cVarInicio";
     case cVarClasse:        return "cVarClasse";
     case cVarObjeto:        return "cVarObjeto";
+    case cVarInt:           return "cVarInt";
     case cTotalComandos:    break;
     }
     return 0;

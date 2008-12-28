@@ -49,11 +49,11 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cInt8:
     case Instr::cUInt8:     return 1;
     case Instr::cInt16:
-    case Instr::cUInt16:    return 2;
+    case Instr::cUInt16:    return sizeof(short);
     case Instr::cInt32:
     case Instr::cUInt32:
     case Instr::cIntInc:
-    case Instr::cIntDec:    return 4;
+    case Instr::cIntDec:    return sizeof(int);
     case Instr::cReal:      return sizeof(double);
     case Instr::cRef:       return sizeof(TVarRef);
     case Instr::cConstNulo:
@@ -79,7 +79,8 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cVarNome:   return 48;
     case Instr::cVarInicio:
     case Instr::cVarClasse:
-    case Instr::cVarObjeto: return 0;
+    case Instr::cVarObjeto:
+    case Instr::cVarInt:    return 0;
     }
     return 0;
 }
@@ -135,6 +136,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cVarNome:
     case Instr::cVarClasse: return varTxt;
     case Instr::cVarObjeto: return varObj;
+    case Instr::cVarInt:    return varInt;
     }
     return varNulo;
 }
@@ -155,6 +157,8 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
     int tam = Tamanho(defvar);
     if (tam)
         memset(endvar, 0, tam);
+    else
+        endvar=0;
 }
 
 //------------------------------------------------------------------------------
@@ -163,7 +167,7 @@ void TVariavel::Apagar()
     switch (defvar[2])
     {
     case Instr::cRef:
-        ((TVarRef*)endvar)->MudarPont(0);
+        end_varref->MudarPont(0);
         break;
     }
 #ifdef DEBUG_CRIAR
@@ -208,7 +212,8 @@ void TVariavel::Mover(void * destino, TClasse * c, TObjeto * o)
         tamanho = sizeof(double);
         break;
     case Instr::cRef:
-        tamanho = sizeof(void*)*3;
+        end_varref->Mover((TVarRef*)destino);
+        tamanho = sizeof(TVarRef);
         break;
     case Instr::cConstNulo:
     case Instr::cConstTxt:
@@ -253,10 +258,13 @@ void TVariavel::Mover(void * destino, TClasse * c, TObjeto * o)
     case Instr::cVarClasse:
     case Instr::cVarObjeto:
         endvar = destino;
+    case Instr::cVarInt:
         return;
     }
 
 // Copia
+    if (tamanho==0)
+        return;
     if (destino < endvar)
     {
         if ((char*)destino - tamanho <= (char*)endvar)
@@ -303,13 +311,10 @@ bool TVariavel::getBool()
         return (*(const char*)endvar & bit ? 1 : 0);
     case Instr::cInt16:
     case Instr::cUInt16:
-        return *(char*)endvar || *((char*)endvar+1);
+        return *end_short;
     case Instr::cInt32:
     case Instr::cUInt32:
-        return *(unsigned char*)endvar ||
-               *((unsigned char*)endvar+1) ||
-               *((unsigned char*)endvar+2) ||
-               *((unsigned char*)endvar+3);
+        return *end_int;
     case Instr::cIntInc:
     case Instr::cIntDec:
         return 0;
@@ -361,9 +366,11 @@ bool TVariavel::getBool()
     case Instr::cIndice: */
 
     case Instr::cRef:
-        return ((TVarRef*)endvar)->Pont != 0;
+        return end_varref->Pont != 0;
     case Instr::cVarObjeto:
         return (endvar!=0);
+    case Instr::cVarInt:
+        return (valor_int!=0);
     }
     return 0;
 }
@@ -379,31 +386,21 @@ int TVariavel::getInt()
     case Instr::cTxt1:
     case Instr::cTxt2:
     case Instr::cTxtFixo:
-        return atoi((const char*)endvar);
+        return atoi(end_char);
     case Instr::cInt1:
-        return (*(const char*)endvar & bit ? 1 : 0);
+        return (*end_char & bit ? 1 : 0);
     case Instr::cInt8:
         return *(signed char*)endvar;
     case Instr::cUInt8:
         return *(unsigned char*)endvar;
     case Instr::cInt16:
-        return (short)(*(unsigned char*)endvar +
-                       *((unsigned char*)endvar+1) * 0x100);
+        return *end_short;
     case Instr::cUInt16:
-        return *(unsigned char*)endvar +
-               *((unsigned char*)endvar+1) * 0x100;
+        return *end_ushort;
     case Instr::cInt32:
-        return (int)(
-                *(unsigned char*)endvar +
-                *((unsigned char*)endvar+1) * 0x100 +
-                *((unsigned char*)endvar+2) * 0x10000 +
-                *((unsigned char*)endvar+3) * 0x1000000);
+        return *end_int;
     case Instr::cUInt32:
-        return (*(char*)endvar & 0x80 ? 0x7FFFFFFF :
-                *(unsigned char*)endvar +
-                *((unsigned char*)endvar+1) * 0x100 +
-                *((unsigned char*)endvar+2) * 0x10000 +
-                *((unsigned char*)endvar+3) * 0x1000000);
+        return (*end_uint > 0x7FFFFFFF ? 0x7FFFFFFF : *end_uint);
     case Instr::cIntInc:
     case Instr::cIntDec:
         return 0;
@@ -473,6 +470,8 @@ int TVariavel::getInt()
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
+    case Instr::cVarInt:
+        return valor_int;
 
 // Variáveis extras
    /* case Instr::cListaObj:
@@ -501,7 +500,7 @@ double TVariavel::getDouble()
     case Instr::cTxt1:
     case Instr::cTxt2:
     case Instr::cTxtFixo:
-        return atoi((char*)endvar);
+        return atoi(end_char);
     case Instr::cInt1:
         return (*(const char*)endvar & bit ? 1 : 0);
     case Instr::cInt8:
@@ -509,23 +508,13 @@ double TVariavel::getDouble()
     case Instr::cUInt8:
         return *(unsigned char*)endvar;
     case Instr::cInt16:
-        return (short)(*(unsigned char*)endvar +
-                       *((unsigned char*)endvar+1) * 0x100);
+        return *end_short;
     case Instr::cUInt16:
-        return *(unsigned char*)endvar +
-               *((unsigned char*)endvar+1) * 0x100;
+        return *end_ushort;
     case Instr::cInt32:
-        return (int)(
-                *(unsigned char*)endvar +
-                *((unsigned char*)endvar+1) * 0x100 +
-                *((unsigned char*)endvar+2) * 0x10000 +
-                *((unsigned char*)endvar+3) * 0x1000000);
+        return *end_int;
     case Instr::cUInt32:
-        return (unsigned int)(
-                *(unsigned char*)endvar +
-                *((unsigned char*)endvar+1) * 0x100 +
-                *((unsigned char*)endvar+2) * 0x10000 +
-                *((unsigned char*)endvar+3) * 0x1000000);
+        return *end_uint;
     case Instr::cIntInc:
     case Instr::cIntDec:
         return 0;
@@ -585,6 +574,8 @@ double TVariavel::getDouble()
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
+    case Instr::cVarInt:
+        return valor_int;
 
 // Variáveis extras
    /* case Instr::cListaObj:
@@ -615,7 +606,7 @@ const char * TVariavel::getTxt()
     case Instr::cTxt2:
     case Instr::cTxtFixo:
     case Instr::cVarNome:
-        return (const char*)endvar;
+        return end_char;
     case Instr::cInt1:
         return (*(char*)endvar & bit ? "1" : "0");
     case Instr::cInt8:
@@ -728,9 +719,9 @@ const char * TVariavel::getTxt()
     case Instr::cIndice: */
 
     case Instr::cRef:
-        if (((TVarRef*)endvar)->Pont == 0)
+        if (end_varref->Pont == 0)
             break;
-        return ((TVarRef*)endvar)->Pont->Classe->Nome;
+        return end_varref->Pont->Classe->Nome;
     case Instr::cVarClasse:
         if (endvar==0)
             break;
@@ -739,6 +730,9 @@ const char * TVariavel::getTxt()
         if (endvar==0)
             break;
         return ((TObjeto*)endvar)->Classe->Nome;
+    case Instr::cVarInt:
+        sprintf(txtnum, "%d", valor_int);
+        return txtnum;
     }
     return "";
 }
@@ -751,7 +745,7 @@ TObjeto * TVariavel::getObj()
     switch (defvar[2])
     {
     case Instr::cRef:
-        return ((TVarRef*)endvar)->Pont;
+        return end_varref->Pont;
     case Instr::cVarObjeto:
         return (TObjeto*)endvar;
     }
@@ -768,7 +762,7 @@ void TVariavel::setInt(int valor)
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
-        mprintf((char*)endvar, Tamanho(defvar), "%d", valor);
+        mprintf(end_char, Tamanho(defvar), "%d", valor);
         break;
     case Instr::cInt1:
         *(char*)endvar |= bit;
@@ -791,28 +785,25 @@ void TVariavel::setInt(int valor)
         break;
     case Instr::cInt16:
         if (valor<-0x8000)
-            valor=-0x8000;
+            *end_short = -0x8000;
         else if (valor>0x7FFF)
-            valor=0x7FFF;
-        *(char*)endvar = (unsigned char)valor;
-        *((char*)endvar+1) = (unsigned char)(valor>>8);
+            *end_short = 0x7FFF;
+        else
+            *end_short = valor;
         break;
     case Instr::cUInt16:
         if (valor<0)
-            valor=0;
+            *end_ushort = 0;
         else if (valor>0xFFFF)
-            valor=0xFFFF;
-        *((unsigned char*)endvar+0) = (unsigned char)valor;
-        *((unsigned char*)endvar+1) = (unsigned char)(valor>>8);
+            *end_ushort = 0xFFFF;
+        else
+            *end_ushort = valor;
         break;
     case Instr::cUInt32:
         if (valor<0)
             valor=0;
     case Instr::cInt32:
-        *((unsigned char*)endvar+0) = (unsigned char)valor;
-        *((unsigned char*)endvar+1) = (unsigned char)(valor>>8);
-        *((unsigned char*)endvar+2) = (unsigned char)(valor>>16);
-        *((unsigned char*)endvar+3) = (unsigned char)(valor>>24);
+        *end_int = valor;
         break;
     case Instr::cIntInc:
     case Instr::cIntDec:
@@ -828,6 +819,9 @@ void TVariavel::setInt(int valor)
     case Instr::cConstExpr:
     case Instr::cFunc:
     case Instr::cVarFunc:
+        break;
+    case Instr::cVarInt:
+        valor_int = valor;
         break;
 
 // Variáveis extras
@@ -855,7 +849,7 @@ void TVariavel::setDouble(double valor)
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
-        mprintf((char*)endvar, Tamanho(defvar), "%d", (int)valor);
+        mprintf(end_char, Tamanho(defvar), "%d", (int)valor);
         break;
     case Instr::cInt1:
         *(char*)endvar |= bit;
@@ -877,18 +871,13 @@ void TVariavel::setDouble(double valor)
             setInt((int)valor);
         break;
     case Instr::cUInt32:
-        {
-            unsigned int x=0;
-            if (valor>0xFFFFFFFFLL)
-                x=0xFFFFFFFF;
-            else if (valor>0)
-                x=(int)valor;
-            *((unsigned char*)endvar+0) = (unsigned char)x;
-            *((unsigned char*)endvar+1) = (unsigned char)(x>>8);
-            *((unsigned char*)endvar+2) = (unsigned char)(x>>16);
-            *((unsigned char*)endvar+3) = (unsigned char)(x>>24);
-            break;
-        }
+        if (valor > 0xFFFFFFFFLL)
+            *end_uint = 0xFFFFFFFFLL;
+        else if (valor < 0)
+            *end_uint = 0;
+        else
+            *end_uint = (unsigned int)valor;
+        break;
     case Instr::cReal:
         *(double*)endvar = valor;
         break;
@@ -899,6 +888,9 @@ void TVariavel::setDouble(double valor)
     case Instr::cConstExpr:
     case Instr::cFunc:
     case Instr::cVarFunc:
+        break;
+    case Instr::cVarInt:
+        valor_int = (int)valor;
         break;
 
 // Variáveis extras
@@ -927,7 +919,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cTxt1:
     case Instr::cTxt2:
     case Instr::cVarNome:
-        copiastr((char*)endvar, txt, Tamanho(defvar));
+        copiastr(end_char, txt, Tamanho(defvar));
         break;
     case Instr::cInt1:
     case Instr::cInt8:
@@ -937,6 +929,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cInt32:
     case Instr::cIntInc:
     case Instr::cIntDec:
+    case Instr::cVarInt:
         {
             long num;
             errno=0, num=strtol(txt, 0, 10);
@@ -1021,7 +1014,7 @@ void TVariavel::setObj(TObjeto * obj)
     switch (defvar[2])
     {
     case Instr::cRef:
-        ((TVarRef*)endvar)->MudarPont(obj);
+        end_varref->MudarPont(obj);
         break;
     case Instr::cVarObjeto:
         endvar = obj;
@@ -1051,4 +1044,14 @@ void TVarRef::MudarPont(TObjeto * obj)
     }
 // Atualiza ponteiro
     Pont = obj;
+}
+
+//------------------------------------------------------------------------------
+void TVarRef::Mover(TVarRef * destino)
+{
+    if (Pont==0)
+        return;
+    (Antes ? Antes->Depois : Pont->VarRefIni) = destino;
+    if (Depois)
+        Depois->Antes = destino;
 }
