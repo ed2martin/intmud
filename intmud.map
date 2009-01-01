@@ -50,8 +50,9 @@ int8 x2
 int1 x3
 int1 x4
 func iniclasse
-#criar(arg0, 5).x2 += 5
   ref r
+#criar(arg0, 5).x2 += 5
+  ret
   r = criar(arg0, 2)
 # r.x2 += 10
  teste2:f1.x2 += teste2:var + 3 + 2
@@ -67,3 +68,18 @@ func ini
   x2 = arg0
 func fim
   10
+
+[testesock]
+socket s
+int1 recebeu
+func iniclasse
+  criar(arg0)
+func ini
+  s.abrir("localhost", 1963)
+func s_msg
+  se recebeu=0
+    recebeu=1
+    s.msg("\n")
+#func s_fechou # Se estiver ausente, apaga objeto
+func fim
+  terminar

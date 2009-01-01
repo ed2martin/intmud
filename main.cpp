@@ -39,6 +39,7 @@
 #include "arqmapa.h"
 #include "instr.h"
 #include "variavel.h"
+#include "var-socket.h"
 #include "misc.h"
 
 #define CORE    // Para gerar arquivos core
@@ -95,10 +96,30 @@ int main(int argc, char *argv[])
 #endif
 
 // Processamento de eventos
+    struct timeval tselect;
+    fd_set set_entrada;
+    fd_set set_saida;
+    FD_ZERO(&set_entrada);
+    FD_ZERO(&set_saida);
+    while (true)
+    {
 
+    // Chama eventos
+        TSocket::ProcEventos(&set_entrada, &set_saida);
 
+    // Prepara variáveis para select()
+        FD_ZERO(&set_entrada);
+        FD_ZERO(&set_saida);
+        TSocket::Fd_Set(&set_entrada, &set_saida);
 
+    // Obtém quanto tempo deve esperar
+        int espera=10;
 
+    // Espera
+        tselect.tv_sec = espera/10;
+        tselect.tv_usec = espera%10*100000;
+        select(FD_SETSIZE, &set_entrada, &set_saida, 0, &tselect);
+    }
 
 // Fim
     Termina();
@@ -692,6 +713,9 @@ void Inicializa(const char * arg)
         exit(EXIT_FAILURE);
     }
     fclose(log);
+#else
+        // Ignora sinal PIPE
+    signal(SIGPIPE, SIG_IGN);
 #endif
 
 // Executa funções iniclasse das classes
