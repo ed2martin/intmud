@@ -340,7 +340,9 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case ex_fim:
         case ex_coment:
             return 0;
-
+        case ex_arg:    // Início da lista de argumentos
+        case ex_abre:   // Abre colchetes; segue expressão numérica + ex_fecha
+            break;
         case ex_varabre:
             contagem++;
             break;
@@ -359,7 +361,6 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
                 assert(*expr!=0);
                 expr++;
             }
-            expr++;
             break;
         case ex_varfim:
             contagem--;

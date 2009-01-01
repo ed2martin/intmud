@@ -24,8 +24,8 @@
 void Termina(); // Encerra o programa
 
 #define DEBUG_INSTR // Mostra instruções que serão executadas
-#define DEBUG_EXPR  // Mostra valores de Instr::Expressao encontrados
-#define DEBUG_VAR   // Mostra variáveis no topo da pilha
+//#define DEBUG_EXPR  // Mostra valores de Instr::Expressao encontrados
+//#define DEBUG_VAR   // Mostra variáveis no topo da pilha
 
 /** @defgroup exec Instr::Exec - Algoritmo para executar funções
 
@@ -384,7 +384,7 @@ static void VarInvalido(void)
 // Cria NULO na pilha
     Instr::CriarVar(Instr::InstrNulo);
 // Avança para o fim do nome da variável
-    const char * p = ProcuraExpr(Instr::FuncAtual->expr, Instr::ex_varfim);
+    const char * p = ProcuraExpr(Instr::FuncAtual->expr-1, Instr::ex_varfim);
     assert(p!=0);
     Instr::FuncAtual->expr = p + 1;
 }
@@ -1043,6 +1043,9 @@ bool Instr::ExecX()
                 switch (VarAtual[-1].Tipo())
                 {
                 case varNulo:
+                    if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
+                            VarAtual[-1].endvar != VarAtual[0].endvar)
+                        VarAtual[-1].Igual(VarAtual);
                     break;
                 case varInt:
                     VarAtual[-1].setInt( VarAtual->getInt() );
@@ -1071,19 +1074,46 @@ bool Instr::ExecX()
             // Compara valores
                 int tipo1 = VarAtual[-1].Tipo();
                 int tipo2 = VarAtual[0].Tipo();
+                    // Textos
                 if (tipo1==varTxt || tipo2==varTxt)
                     tipo1 = comparaZ(VarAtual[-1].getTxt(),
                                     VarAtual->getTxt());
-                else if (tipo1==varInt && tipo2==varInt)
+                    // Ref
+                else if (tipo1==varObj || tipo2==varObj)
                 {
-                    int v1 = VarAtual[-1].getInt();
-                    int v2 = VarAtual[0].getInt();
-                    tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                    if (tipo1 != tipo2)
+                        tipo1 -= tipo2;
+                    else
+                    {
+                        TObjeto * v1 = VarAtual[-1].getObj();
+                        TObjeto * v2 = VarAtual[0].getObj();
+                        tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                    }
                 }
+                    // Valores numéricos
+                else if (tipo1!=varNulo && tipo2!=varNulo)
+                {
+                    if (tipo1==varInt && tipo2==varInt)
+                    {
+                        int v1 = VarAtual[-1].getInt();
+                        int v2 = VarAtual[0].getInt();
+                        tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                    }
+                    else
+                    {
+                        double v1 = VarAtual[-1].getDouble();
+                        double v2 = VarAtual[0].getDouble();
+                        tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                    }
+                }
+                    // Mesmo tipo de variável
+                else if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2])
+                    tipo1 = VarAtual[-1].Compara(VarAtual);
+                    // Tipos diferentes de variáveis
                 else
                 {
-                    double v1 = VarAtual[-1].getDouble();
-                    double v2 = VarAtual[0].getDouble();
+                    const void * v1 = VarAtual[-1].endvar;
+                    const void * v2 = VarAtual[0].endvar;
                     tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
                 }
             // Apaga valores da pilha; cria int32 na pilha
@@ -1266,6 +1296,24 @@ bool Instr::ExecX()
             // Verifica variável/função da classe
                 else if (v[1].defvar[2]==cVarInicio)
                 {
+                // Se começa com $, verifica se objeto existe
+                    if (nome[0]=='$')
+                    {
+                        TClasse * c = TClasse::Procura(nome+1);
+                        if (c==0 || c->ObjetoIni==0)
+                        {
+                            VarInvalido();
+                            break;
+                        }
+                        ApagarVar(v+1);
+                        VarAtual++;
+                        VarAtual->defvar = InstrVarObjeto;
+                        VarAtual->endvar = c->ObjetoIni;
+                        VarAtual->tamanho = 0;
+                        v->setTxt("");
+                        FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
+                        break;
+                    }
                 // Verifica se é variável/comando interno do programa
                     int ini = 0;
                     int fim = sizeof(ListaFunc) / sizeof(ListaFunc[0]) - 1;
@@ -1302,24 +1350,6 @@ bool Instr::ExecX()
                     }
                     if (resultado==0)
                         break;
-                // Se começa com $, verifica se objeto existe
-                    if (nome[0]=='$')
-                    {
-                        TClasse * c = TClasse::Procura(nome+1);
-                        if (c==0 || c->ObjetoIni==0)
-                        {
-                            VarInvalido();
-                            break;
-                        }
-                        ApagarVar(v+1);
-                        VarAtual++;
-                        VarAtual->defvar = InstrVarObjeto;
-                        VarAtual->endvar = c->ObjetoIni;
-                        VarAtual->tamanho = 0;
-                        v->setTxt("");
-                        FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
-                        break;
-                    }
                 // Verifica se é variável local da função
                     TVariavel * var = FuncAtual->inivar + FuncAtual->numarg;
                     for (; var < FuncAtual->fimvar; var++)
@@ -1351,21 +1381,28 @@ bool Instr::ExecX()
                     }
                     classe = objeto->Classe;
                 }
-
-
-    // else ...
-    //******* Consulta a variável sobre o que fazer
-                // Se vai interpretar argumentos, antes executar:
-                //          ExecFunc * f = FuncAtual;
-                //          if (VarFuncIni(v+1))
-                //          {
-                //              f->expr--;
-                //              break;
-                //          }
-                // Não esquecer de:
-                //      v->setTxt("");
-                //      FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
-
+            // Consulta a variável sobre o que fazer
+                else
+                {
+                // Ler varfunc primeiro
+                    ExecFunc * f = FuncAtual;
+                    if (VarFuncIni(v+1))
+                    {
+                        f->expr--;
+                        break;
+                    }
+                // Executa função
+                    if (v[1].Func(nome))
+                    {
+                        ApagarVar(v+2);
+                        FuncAtual = f;
+                        v->setTxt("");
+                        f->expr = CopiaVarNome(v, f->expr);
+                    }
+                    else
+                        VarInvalido();
+                    break;
+                }
 
             // Processa classe e objeto
                 if (classe==0)

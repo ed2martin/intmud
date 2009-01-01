@@ -4,6 +4,7 @@
 class TClasse;
 class TObjeto;
 class TVarRef;
+class TVarSocket;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -74,6 +75,16 @@ public:
     void addTxt(const char * txt); ///< Adiciona texto na variável
     void setObj(TObjeto * obj); ///< Muda variável a partir de referência
 
+// Operadores numéricos
+    int Compara(TVariavel * v); ///< Compara com outra variável do mesmo tipo
+                        /**< @return -1 se menor, 0 se igual, 1 se maior */
+    void Igual(TVariavel * v); ///< Operador igual com variável do mesmo tipo
+    bool Func(const char * nome);///< Executa função da variável
+                /**< Deve verificar argumentos, após a variável
+                    @param nome Nome da função
+                    @retval true se processou
+                    @retval false se função inexistente */
+
 // Variáveis
     const char * defvar; ///< Instrução que define a variável
                          /**< @sa Instr::Comando */
@@ -88,6 +99,7 @@ public:
         unsigned short * end_ushort; ///< Instr::cUInt16
         signed   int * end_int;      ///< Instr::cInt32
         unsigned int * end_uint;     ///< Instr::cUInt32
+        TVarSocket * end_socket;     ///< Instr::cSocket
         int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
@@ -99,12 +111,12 @@ public:
 
 //----------------------------------------------------------------------------
 /** Trata das variáveis do tipo REF */
-class TVarRef /// Variável REF
+class TVarRef /// Variáveis REF
 {
 public:
-    void MudarPont(TObjeto * obj);
-    void Mover(TVarRef * destino);
-    TObjeto * Pont;
+    void MudarPont(TObjeto * obj); ///< Muda a variável TVarRef::Pont
+    void Mover(TVarRef * destino); ///< Move TVarRef para outro lugar
+    TObjeto * Pont;     ///< Objeto atual
     TVarRef * Antes;
     TVarRef * Depois;
 };
