@@ -22,8 +22,8 @@ class TObjeto;
 class TSocket /// Socket
 {
 public:
-    TSocket();      ///< Construtor
-    ~TSocket();     ///< Destrutor
+    TSocket(int socknum);       ///< Construtor
+    ~TSocket();                 ///< Destrutor
     bool Aberto(void);          ///< Retorna verdadeiro se dispositivo aberto
 
     static void Fd_Set(fd_set * set_entrada, fd_set * set_saida);
@@ -95,7 +95,7 @@ public:
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    int getValor();     ///< Ler valor numérico da variável
+    int  getValor();    ///< Ler valor numérico da variável
 
     const char * defvar;///< Como foi definida a variável
     TClasse * classe;   ///< Em que classe está definido

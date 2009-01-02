@@ -28,6 +28,7 @@ const char * NomeExpr(int valor);
 bool ExecIni(TClasse * classe, const char * func);
 bool ExecIni(TObjeto * este, const char * func);
 void ExecArg(char * txt);
+void ExecArgCriar(const char * def);
 bool ExecX();
 void ExecFim();
 
@@ -35,6 +36,7 @@ bool FuncArg(TVariavel * v, int valor);
 bool FuncArgs(TVariavel * v, int valor);
 bool FuncCriar(TVariavel * v, int valor);
 bool FuncApagar(TVariavel * v, int valor);
+bool FuncEste(TVariavel * v, int valor);
 
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
@@ -45,6 +47,8 @@ int  Prioridade(int operador);
 extern const char InstrNulo[];
 /// TVariavel::defvar para Instr::cReal
 extern const char InstrDouble[];
+/// TVariavel::defvar para Instr::cSocket
+extern const char InstrSocket[];
 /// TVariavel::defvar para Instr::cTxtFixo
 extern const char InstrTxtFixo[];
 /// TVariavel::defvar para Instr::cVarNome

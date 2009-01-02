@@ -20,6 +20,7 @@
 #include "instr.h"
 #include "objeto.h"
 #include "var-socket.h"
+#include "var-serv.h"
 #include "misc.h"
 
 //#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada
@@ -70,7 +71,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cLog:
     case Instr::cVarTempo:  return 0;
     case Instr::cSocket:    return sizeof(TVarSocket);
-    case Instr::cServ:
+    case Instr::cServ:      return sizeof(TVarServ);
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:    return 0;
@@ -164,6 +165,12 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
         end_socket->classe = c;
         end_socket->objeto = o;
         break;
+    case Instr::cServ:
+        end_serv->defvar = defvar;
+        end_serv->classe = c;
+        end_serv->objeto = o;
+        end_serv->Criar();
+        break;
     }
 }
 
@@ -177,6 +184,10 @@ void TVariavel::Apagar()
         break;
     case Instr::cSocket:
         end_socket->MudarSock(0);
+        break;
+    case Instr::cServ:
+        end_serv->Apagar();
+        break;
     }
 #ifdef DEBUG_CRIAR
     printf("Variável apagada %p   ", endvar);
@@ -249,6 +260,12 @@ void TVariavel::Mover(void * destino, TClasse * c, TObjeto * o)
         tamanho = sizeof(TVarSocket);
         break;
     case Instr::cServ:
+        end_serv->defvar = defvar;
+        end_serv->classe = c;
+        end_serv->objeto = o;
+        end_serv->Mover((TVarServ*)destino);
+        tamanho = sizeof(TVarServ);
+        break;
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -377,6 +394,7 @@ bool TVariavel::getBool()
     case Instr::cSocket:
         return end_socket->getValor();
     case Instr::cServ:
+        return end_serv->getValor();
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -498,6 +516,7 @@ int TVariavel::getInt()
     case Instr::cSocket:
         return end_socket->getValor();
     case Instr::cServ:
+        return end_serv->getValor();
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -607,6 +626,7 @@ double TVariavel::getDouble()
     case Instr::cSocket:
         return end_socket->getValor();
     case Instr::cServ:
+        return end_serv->getValor();
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -855,6 +875,7 @@ void TVariavel::setInt(int valor)
     case Instr::cSocket:
         end_socket->MudarSock(0);
     case Instr::cServ:
+        return end_serv->Fechar();
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -931,6 +952,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cSocket:
         end_socket->MudarSock(0);
     case Instr::cServ:
+        return end_serv->Fechar();
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -1013,6 +1035,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cSocket:
         end_socket->MudarSock(0);
     case Instr::cServ:
+        return end_serv->Fechar();
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -1095,6 +1118,8 @@ bool TVariavel::Func(const char * nome)
     {
     case Instr::cSocket:
         return end_socket->Func(this, nome);
+    case Instr::cServ:
+        return end_serv->Func(this, nome);
     }
     return false;
 }

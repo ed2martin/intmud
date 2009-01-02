@@ -429,22 +429,8 @@ void TClasse::AcertaVar()
                 IndiceVar[x] += indobjeto, indobjeto += tamanho;
     }
 
-// Acerta TClasse::Vars
-    if (indclasse)
-    {
-        Vars = new char[indclasse];
-        memset(Vars, 0, indclasse);
-    // Chama construtores das variáveis
-        TVariavel v;
-        for (int x=(int)NumVar-1; x>=0; x--)
-            if (InstrVar[x][2] > Instr::cVarFunc &&
-                    (IndiceVar[x] & 0x400000))
-            {
-                v.endvar = Vars + (IndiceVar[x] & 0x3FFFFF);
-                v.defvar = InstrVar[x];
-                v.Criar(this, 0);
-            }
-    }
+// Acerta variáveis
+    Vars = 0;
     TamVars = indclasse;
     TamObj = indobjeto;
 
@@ -498,6 +484,8 @@ void TClasse::CriaVars()
 //----------------------------------------------------------------------------
 void TClasse::ApagaVars()
 {
+    if (Vars==0)
+        return;
 // Chama destrutores das variáveis
     TVariavel v;
     for (int x=(int)NumVar-1; x>=0; x--)
@@ -509,7 +497,7 @@ void TClasse::ApagaVars()
             v.Apagar();
         }
 // Libera memória
-    if (Vars)       delete[] Vars;
+    delete[] Vars;
     Vars=0;
 }
 
