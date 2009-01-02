@@ -207,6 +207,7 @@ Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 //----------------------------------------------------------------------------
 const char Instr::InstrNulo[] = { 7, 0, Instr::cConstNulo, 0, 0, '+', 0 };
 const char Instr::InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, '+', 0 };
+const char Instr::InstrSocket[] = { 7, 0, Instr::cSocket, 0, 0, '+', 0 };
 const char Instr::InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, '+', 0 };
 const char Instr::InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, '+', 0 };
 const char Instr::InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, '+', 0 };
@@ -230,7 +231,8 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "arg8",       Instr::FuncArg, 8 },
     { "arg9",       Instr::FuncArg, 9 },
     { "args",       Instr::FuncArgs, 0 },
-    { "criar",      Instr::FuncCriar, 0 }
+    { "criar",      Instr::FuncCriar, 0 },
+    { "este",       Instr::FuncEste, 0 }
 };
 
 //----------------------------------------------------------------------------
@@ -313,6 +315,21 @@ void Instr::ExecArg(char * txt)
     VarAtual->Limpar();
     VarAtual->defvar = InstrTxtFixo;
     VarAtual->endvar = txt;
+    FuncAtual->fimvar = VarAtual + 1;
+    FuncAtual->numarg++;
+}
+
+//----------------------------------------------------------------------------
+/// Cria uma variável como argumento antes de executar
+/**
+ *  @param def Definição da variável, conforme Instr::Codif()
+ *  @sa exec
+ */
+void Instr::ExecArgCriar(const char * def)
+{
+    // Nota: CriarVar só retorna false no caso de memória insuficiente
+    // Nesse caso, isso não deve acontecer
+    CriarVar(def);
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg++;
 }

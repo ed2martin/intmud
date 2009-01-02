@@ -5,6 +5,7 @@ class TClasse;
 class TObjeto;
 class TVarRef;
 class TVarSocket;
+class TVarServ;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -100,6 +101,7 @@ public:
         signed   int * end_int;      ///< Instr::cInt32
         unsigned int * end_uint;     ///< Instr::cUInt32
         TVarSocket * end_socket;     ///< Instr::cSocket
+        TVarServ * end_serv;         ///< Instr::cServ
         int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória

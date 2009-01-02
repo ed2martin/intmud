@@ -102,3 +102,14 @@ bool Instr::FuncApagar(TVariavel * v, int valor)
     }
     return false;
 }
+
+//----------------------------------------------------------------------------
+/// Objeto "este"
+bool Instr::FuncEste(TVariavel * v, int valor)
+{
+    ApagarVar(v);
+    if (!CriarVar(InstrVarObjeto))
+        return false;
+    VarAtual->setObj(FuncAtual->este);
+    return true;
+}

@@ -1,3 +1,16 @@
+/* Este programa é software livre; você pode redistribuir e/ou
+ * modificar nos termos da GNU General Public License V2
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details at www.gnu.org
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef __WIN32__
@@ -28,7 +41,8 @@
 #include "instr.h"
 #include "misc.h"
 
-#define MOSTRA_MSG  // Mostra o que enviou e o que recebeu
+#define DEBUG_CRIAR  // Mostra objetos criados e apagados
+#define DEBUG_MSG    // Mostra o que enviou e o que recebeu
 
 TSocket * TSocket::sInicio = 0;
 TSocket * TSocket::sockObj = 0;
@@ -109,8 +123,11 @@ static const char * Conectar(int * socknum, const char * ender, int porta,
 }
 
 //------------------------------------------------------------------------------
-TSocket::TSocket()
+TSocket::TSocket(int socknum)
 {
+#ifdef DEBUG_CRIAR
+    printf("new TSocket(%d)\n", socknum); fflush(stdout);
+#endif
 // Coloca na lista ligada
     sAntes = 0;
     sDepois = sInicio;
@@ -119,7 +136,7 @@ TSocket::TSocket()
     sInicio = this;
 // Acerta variáveis
     Inicio=0;
-    sock=-1;
+    sock=socknum;
     pontEnv=0;
     pontTelnet=0;
     pontESC=0;
@@ -131,6 +148,9 @@ TSocket::TSocket()
 //------------------------------------------------------------------------------
 TSocket::~TSocket()
 {
+#ifdef DEBUG_CRIAR
+    printf("delete TSocket(%d)\n", sock); fflush(stdout);
+#endif
 // Fecha Socket
     Fechar();
 // Retira dos objetos TVarSocket
@@ -164,8 +184,19 @@ bool TSocket::EnvMens(const char * mensagem)
     if (sock<0)
         return false;
 
+// Obtém o tamanho
+    int tamanho=0;
+    for (const char * x = mensagem; *x;)
+        switch (*x++)
+        {
+        case Instr::ex_barra_n: tamanho+=2; break;
+        case Instr::ex_barra_b: break;
+        case Instr::ex_barra_c: if (*x) x++; break;
+        case Instr::ex_barra_d: if (*x) x++; break;
+        default: tamanho++;
+        }
+
 // Verifica se tem espaço no buffer para enviar
-    int tamanho = strlen(mensagem);
     if (tamanho > SOCKET_ENV)
         return false;
     if (tamanho > SOCKET_ENV - (int)pontEnv)
@@ -177,7 +208,7 @@ bool TSocket::EnvMens(const char * mensagem)
     boolenvpend = true;
 
 // Mostra o que está enviando
-#ifdef MOSTRA_MSG
+#ifdef DEBUG_MSG
     printf(">>>>>>> Enviou(%d): ", tamanho);
     for (int x=0; x<tamanho; x++)
         switch (mensagem[x])
@@ -197,9 +228,11 @@ bool TSocket::EnvMens(const char * mensagem)
         switch (*mensagem)
         {
         case Instr::ex_barra_n:
-            bufEnv[pontEnv++] = '\n';
-            break;
+            bufEnv[pontEnv] = 13;
+            bufEnv[pontEnv+1] = 10;
+            pontEnv += 2;
         case Instr::ex_barra_b:
+            break;
         case Instr::ex_barra_c:
         case Instr::ex_barra_d:
             if (mensagem[1])
@@ -239,7 +272,7 @@ void TSocket::EnvPend()
     if (sock<0 || pontEnv<=0)
         return;
     int resposta;
-#ifdef MOSTRA_MSG
+#ifdef DEBUG_MSG
     printf(">>> ENV \"");
     for (unsigned int x=0; x<pontEnv; x++)
         putchar(bufEnv[x]);
@@ -682,7 +715,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
         }
         *dest=0;
         pontRec=0;
-#ifdef MOSTRA_MSG
+#ifdef DEBUG_MSG
         printf(">>>>>>> Recebeu %s\n", texto);
 #endif
 
@@ -740,7 +773,7 @@ void TVarSocket::MudarSock(TSocket * obj)
 // Retira da lista
     if (Socket)
     {
-        (Antes ? Antes : Socket->Inicio) = Depois;
+        (Antes ? Antes->Depois : Socket->Inicio) = Depois;
         if (Depois)
             Depois->Antes = Antes;
         if (Socket->Inicio == 0)
@@ -815,17 +848,15 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
             return false;
         int porta = v[2].getInt();
         const char * ender = v[1].getTxt();
-    printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
+#ifdef DEBUG_MSG
+        printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
+#endif
         int sock=-1;
-        if (porta<1 || porta>65535)
+        if (porta<0 || porta>65535)
             return false;
         ender = Conectar(&sock, ender, porta, 0);
         if (ender==0)
-        {
-            Socket = new TSocket();
-            Socket->Inicio = this;
-            Socket->sock = sock;
-        }
+            MudarSock(new TSocket(sock));
         Instr::ApagarVar(v);
         if (!Instr::CriarVar(Instr::InstrTxtFixo))
             return false;

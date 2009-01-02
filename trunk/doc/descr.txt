@@ -633,6 +633,8 @@ socket <nomedavariável>
     Quando o socket está conectado à janela do programa:
     A janela possui 25 linhas de 80 colunas, sendo que a última linha
     sempre corresponde ao que o usuário está escrevendo.
+    Nota: uma conexão pode ser copiada de um objeto socket para outro.
+    Nesse caso, os eventos são gerados para todos os objetos socket.
 
     Funções e variáveis:
     proto
@@ -694,8 +696,12 @@ socket <nomedavariável>
 
 serv <nomedavariável>
     Funções:
-    abrir(porta)  -> abrir para receber conexões na porta especificada
-    fechar        -> deixa de receber conexões
+    abrir(endereço, porta)
+        Abrir para receber conexões
+        Se não quiser especificar um endereço, colocar "" no endereço
+        Retorna 1 se conseguiu abrir ou 0 se não conseguiu
+    fechar
+        Deixa de receber conexões
 
     Eventos:
     <nomedavariável>_socket
@@ -706,7 +712,7 @@ serv <nomedavariável>
     comum serv servidor
     socket conec
     func iniclasse
-      servidor.porta(2000)
+      x:servidor.abrir("", 2000)
     func servidor_socket
       ref novo
       novo = criar("x")

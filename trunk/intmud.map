@@ -83,3 +83,20 @@ func s_msg
 #func s_fechou # Se estiver ausente, apaga objeto
 func fim
   terminar
+
+[x]
+comum serv servidor
+socket conec
+func iniclasse
+  x:servidor.abrir("", 2000)
+func servidor_socket
+  ref novo
+  novo = criar("x")
+  novo.conec = arg0
+  novo.conec.proto = 2
+  novo.conec.msg("Benvindo\n")
+  novo.conec.msg("Para sair tecle fim\n")
+func conec_msg
+  conec.msg("Você escreveu " + arg0 + "\n")
+  se arg0 = "\bfim" # \b por causa da cor
+    apagar(este)

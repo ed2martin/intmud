@@ -16,6 +16,7 @@ AC_PROG_CC
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([sys/types.h sys/socket.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -27,6 +28,10 @@ AC_FUNC_MEMCMP
 AC_CHECK_FUNCS([dup2 memset strerror getcwd])
 AC_FUNC_CLOSEDIR_VOID
 AC_HEADER_DIRENT
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_ACCEPT_ARGTYPES
+AC_TYPE_SIGNAL
+AC_TYPE_SIZE_T
 
 AC_PROG_INSTALL
 AC_CONFIG_FILES([Makefile])

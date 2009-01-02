@@ -40,6 +40,7 @@
 #include "instr.h"
 #include "variavel.h"
 #include "var-socket.h"
+#include "var-serv.h"
 #include "misc.h"
 
 #define CORE    // Para gerar arquivos core
@@ -105,11 +106,13 @@ int main(int argc, char *argv[])
     {
 
     // Chama eventos
+        TVarServ::ProcEventos(&set_entrada);
         TSocket::ProcEventos(&set_entrada, &set_saida);
 
     // Prepara variáveis para select()
         FD_ZERO(&set_entrada);
         FD_ZERO(&set_saida);
+        TVarServ::Fd_Set(&set_entrada);
         TSocket::Fd_Set(&set_entrada, &set_saida);
 
     // Obtém quanto tempo deve esperar
