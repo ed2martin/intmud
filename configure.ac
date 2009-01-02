@@ -13,6 +13,21 @@ AC_PROG_CC
 
 # Checks for libraries.
 
+dnl Test for mingw32
+
+# There might be a better way to do this.
+AC_MSG_CHECKING(for mingw32)
+AC_TRY_COMPILE(,[
+#ifdef __MINGW32__
+#error MingW32 detected, adding -lws2_32 and -lwsock32 to LIBS
+#endif
+],
+AC_MSG_RESULT(no),[
+AC_MSG_RESULT(yes)
+LIBS="$LIBS -lws2_32 -lwsock32 -mms-bitfields -mwindows"
+SKSTREAM_EXTRA_LIBS="$SKSTREAM_EXTRA_LIBS -lws2_32 -lwsock32"
+])
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
