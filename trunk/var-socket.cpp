@@ -13,28 +13,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __WIN32__
- #include <windows.h>
- #include <winsock.h>
- #include <fcntl.h>
- #include <io.h>
- #define close closesocket
-#else
- #include <unistd.h>
- #include <arpa/inet.h>
- #include <fcntl.h>
- #include <netdb.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_in
- #include <string.h>
- #include <sys/time.h>
- #include <sys/types.h>
- #include <sys/socket.h> // Comunicação
- #include <signal.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_in
- #include <sys/un.h>     // Contém a estrutura sockaddr_un
- #include <errno.h>
-#endif
+#include <assert.h>
 #include "var-socket.h"
+#include "socket.h"
 #include "variavel.h"
 #include "classe.h"
 #include "objeto.h"
@@ -42,175 +23,57 @@
 #include "misc.h"
 
 #define DEBUG_CRIAR  // Mostra objetos criados e apagados
-#define DEBUG_MSG    // Mostra o que enviou e o que recebeu
+#define DEBUG_MSG    // Mostra o que enviou
 
-TSocket * TSocket::sInicio = 0;
-TSocket * TSocket::sockObj = 0;
-TVarSocket * TSocket::varObj = 0;
-bool TSocket::boolenvpend = false;
+TObjSocket * TObjSocket::sockObj = 0;
+TVarSocket * TObjSocket::varObj = 0;
 
 //------------------------------------------------------------------------------
-/// Conecta a um endereço
-/**
- @param socknum Aonde colocará o socket objtido
- @param ender  Endereço a conectar
- @param porta  Porta
- @param conSock2 Se !=0, copia struct sockaddr_in para conSock2
- @retval 0 se conseguiu conectar, colocou o socket em socknum
- @retval !=0 se não conseguiu; retorna a mensagem de erro
- */
-static const char * Conectar(int * socknum, const char * ender, int porta,
-                            struct sockaddr_in * conSock2)
-{
-    int  conManip;
-    struct sockaddr_in conSock;
-    struct hostent *hnome;
-
-    *socknum = 0;
-
-#ifdef __WIN32__
-    memset(&conSock,0,sizeof(conSock));
-    conSock.sin_addr.s_addr=inet_addr(ender);
-    if ( conSock.sin_addr.s_addr == INADDR_NONE )
-    {
-        if ( (hnome=gethostbyname(ender)) == NULL )
-            return "Problema ao obter endereço IP";
-        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-    }
-    conSock.sin_family=AF_INET;
-    conSock.sin_port=htons( (u_short)porta );
-    if ( (conManip = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-        return "Problema em socket()";
-    if ( connect(conManip, (struct sockaddr *)&conSock,
-                                      sizeof(struct sockaddr)) == SOCKET_ERROR)
-    {
-        closesocket(conManip);
-        return "Não consegui conectar";
-    }
-    unsigned long argp=1; // 0=bloquear  1=nao bloquear
-    if ( ioctlsocket(conManip, FIONBIO, &argp) !=0 )
-    {
-        closesocket(conManip);
-        return "ioctlsocket";
-    }
-#else
-    memset(&conSock.sin_zero, 0, 8);
-    conSock.sin_family=AF_INET;
-    conSock.sin_port=htons(porta);
-    conSock.sin_addr.s_addr=inet_addr(ender);
-    if ( (conSock.sin_addr.s_addr) == (unsigned long)-1 )
-    {
-        if ( (hnome=gethostbyname(ender)) == NULL )
-            return "Problema ao obter endereço IP";
-        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-    }
-    if ( (conManip=socket(PF_INET,SOCK_STREAM,0)) ==-1)
-        return "Problema em socket()";
-    //printf("Conectando a %s porta %d\n",
-    //            inet_ntoa(conSock.sin_addr), porta);
-    if ( connect(conManip, (struct sockaddr *)&conSock,
-                                      sizeof(struct sockaddr))==-1)
-    {
-        close(conManip);
-        return "Não consegui conectar";
-    }
-    fcntl(conManip, F_SETFL, O_NONBLOCK);
-#endif
-    *socknum = conManip;
-    if (conSock2)
-        memcpy(conSock2, &conSock, sizeof(conSock));
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-TSocket::TSocket(int socknum)
+TObjSocket::TObjSocket()
 {
 #ifdef DEBUG_CRIAR
-    printf("new TSocket(%d)\n", socknum); fflush(stdout);
+    printf("new TObjSocket\n"); fflush(stdout);
 #endif
-// Coloca na lista ligada
-    sAntes = 0;
-    sDepois = sInicio;
-    if (sInicio)
-        sInicio->sAntes = this;
-    sInicio = this;
 // Acerta variáveis
+    CorInic=-1;
+    CorEnvia=0x70;
+    ColunaEnvia=0;
+    ColunaMin=70;
+    ColunaMax=80;
     Inicio=0;
-    sock=socknum;
-    pontEnv=0;
-    pontTelnet=0;
-    pontESC=0;
-    pontRec=0;
-    dadoRecebido=0;
-    CorAtual=0x70;
 }
 
 //------------------------------------------------------------------------------
-TSocket::~TSocket()
+TObjSocket::~TObjSocket()
 {
 #ifdef DEBUG_CRIAR
-    printf("delete TSocket(%d)\n", sock); fflush(stdout);
+    printf("delete TObjSocket\n"); fflush(stdout);
 #endif
-// Fecha Socket
-    Fechar();
 // Retira dos objetos TVarSocket
     while (Inicio)
         Inicio->MudarSock(0);
-// Retira da lista ligada
-    (sAntes ? sAntes->sDepois : sInicio) = sDepois;
-    if (sDepois)
-        sDepois->sAntes = sAntes;
-// Acerta sObj
+// Acerta sockObj
     if (sockObj==this)
-        sockObj=sDepois;
-}
-
-//------------------------------------------------------------------------------
-void TSocket::Fechar()
-{
-    if (sock<0)
-        return;
-    close(sock);
-    sock=-1;
-    pontRec = 0;
-    pontEnv = 0;
+        sockObj=0;
 }
 
 //------------------------------------------------------------------------------
 /** @param mensagem Endereço dos bytes a enviar
  *  @return true se conseguiu enviar, false se não conseguiu */
-bool TSocket::EnvMens(const char * mensagem)
+bool TObjSocket::Enviar(const char * mensagem)
 {
-    if (sock<0)
-        return false;
-
-// Obtém o tamanho
-    int tamanho=0;
-    for (const char * x = mensagem; *x;)
-        switch (*x++)
-        {
-        case Instr::ex_barra_n: tamanho+=2; break;
-        case Instr::ex_barra_b: break;
-        case Instr::ex_barra_c: if (*x) x++; break;
-        case Instr::ex_barra_d: if (*x) x++; break;
-        default: tamanho++;
-        }
-
-// Verifica se tem espaço no buffer para enviar
-    if (tamanho > SOCKET_ENV)
-        return false;
-    if (tamanho > SOCKET_ENV - (int)pontEnv)
-    {
-        EnvPend();
-        if (tamanho > SOCKET_ENV - (int)pontEnv)
-            return false;
-    }
-    boolenvpend = true;
+    char * charesp = 0;   // Aonde encontrou espaço, para dividir mensagem
+    int coluna = ColunaEnvia; // Coluna atual
+    int agora = CorEnvia;
+    int antes = CorEnvia;
+    char mens[4096]; // Mensagem decodificada
+    char * destino = mens; // Aonde colocar a mensagem
+    const char * fim = mens + sizeof(mens); // Aonde termina
 
 // Mostra o que está enviando
 #ifdef DEBUG_MSG
-    printf(">>>>>>> Enviou(%d): ", tamanho);
-    for (int x=0; x<tamanho; x++)
+    printf(">>>>>>> Enviou: ");
+    for (int x=0; mensagem[x]; x++)
         switch (mensagem[x])
         {
         case Instr::ex_barra_n: printf("\\n"); break;
@@ -223,549 +86,207 @@ bool TSocket::EnvMens(const char * mensagem)
     putchar('\n');
 #endif
 
-// Coloca no buffer
+// Decodifica mensagem
     for (; *mensagem; mensagem++)
         switch (*mensagem)
         {
-        case Instr::ex_barra_n:
-            bufEnv[pontEnv] = 13;
-            bufEnv[pontEnv+1] = 10;
-            pontEnv += 2;
-        case Instr::ex_barra_b:
+        case Instr::ex_barra_b: // Branco com fundo preto
+            agora = 0x70;
             break;
-        case Instr::ex_barra_c:
-        case Instr::ex_barra_d:
-            if (mensagem[1])
+        case Instr::ex_barra_c: // Cor dos caracteres
+            mensagem++;
+            if (*mensagem>='0' && *mensagem<='9')
+                agora = (agora & 15) | (*mensagem-'0') * 16;
+            else if (*mensagem>='A' && *mensagem<='F')
+                agora = (agora & 15) | (*mensagem-'A'+10) * 16;
+            else if (*mensagem>='a' && *mensagem<='f')
+                agora = (agora & 15) | (*mensagem-'a'+10) * 16;
+            else
+                mensagem--;
+            break;
+        case Instr::ex_barra_d: // Cor de fundo
+            if (mensagem[1]>='0' && mensagem[1]<='7')
+            {
+                agora = (agora & 0xF0) | (mensagem[1]-'0');
                 mensagem++;
+            }
+            break;
+        case Instr::ex_barra_n: // Próxima linha
+            if (agora != antes)
+            {
+                if (destino+4 > fim)
+                    return false;
+                destino[0] = 1;
+                destino[1] = agora;
+                destino+=2;
+                antes = agora;
+            }
+            if (destino+2 > fim)
+                return false;
+            *destino++ = '\n';
+            coluna=0;
+            if (CorInic>=0)
+                agora = antes = CorInic;
             break;
         default:
-            bufEnv[pontEnv++] = *mensagem;
-        }
-    return true;
-}
-
-//------------------------------------------------------------------------------
-/** @param mensagem Endereço dos bytes a enviar
- *  @param tamanho Tamanho da mensagem
- *  @return true se conseguiu enviar, false se não conseguiu */
-bool TSocket::EnvMens(const char * mensagem, int tamanho)
-{
-    if (sock<0)
-        return false;
-    if (tamanho > SOCKET_ENV)
-        return false;
-    boolenvpend = true;
-    if (tamanho > SOCKET_ENV - (int)pontEnv)
-    {
-        EnvPend();
-        if (tamanho > SOCKET_ENV - (int)pontEnv)
-            return false;
-    }
-    memcpy(bufEnv + pontEnv, mensagem, tamanho);
-    pontEnv += tamanho;
-    return true;
-}
-
-//------------------------------------------------------------------------------
-void TSocket::EnvPend()
-{
-    if (sock<0 || pontEnv<=0)
-        return;
-    int resposta;
-#ifdef DEBUG_MSG
-    printf(">>> ENV \"");
-    for (unsigned int x=0; x<pontEnv; x++)
-        putchar(bufEnv[x]);
-    printf("\"\n");
-#endif
-#ifdef __WIN32__
-    resposta=send(sock, bufEnv, pontEnv, 0);
-    if (resposta==0)
-        resposta=-1;
-    else if (resposta==SOCKET_ERROR)
-    {
-        resposta=WSAGetLastError();
-        resposta = (resposta==WSAEWOULDBLOCK ? 0 : -1);
-    }
-#else
-    resposta=send(sock, bufEnv, pontEnv, 0);
-    if (resposta<=0)
-    {
-        if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
-            resposta=0;
-        else
-            resposta=-1;
-    }
-#endif
-    if (resposta<0)
-        Fechar();
-    else if (resposta>=(int)pontEnv)
-        pontEnv=0;
-    else if (resposta>0)
-    {
-        pontEnv -= resposta;
-        memcpy(bufEnv, bufEnv+resposta, pontEnv);
-    }
-}
-
-//------------------------------------------------------------------------------
-bool TSocket::Aberto()
-{
-    return sock>=0;
-}
-
-//------------------------------------------------------------------------------
-void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
-{
-    while (true)
-    {
-        boolenvpend = false;
-    // Envia dados pendentes
-    // Verifica se algum socket fechou
-        for (TSocket * obj = sInicio; obj;)
-        {
-            obj->EnvPend();
-            if (obj->sock >= 0)
-            {
-                obj=obj->sDepois;
-                continue;
-            }
-            sockObj = obj;
-        // Gera evento
-            for (varObj = obj->Inicio; varObj;)
-            {
-                if (varObj->objeto)
-                {
-                    TObjeto * end = varObj->objeto;
-                    char mens[80];
-                    sprintf(mens, "%s_fechou", varObj->defvar+5);
-                    varObj->MudarSock(0);
-                    if (Instr::ExecIni(end, mens)==false)
-                        end->MarcarApagar();
-                    else
-                        Instr::ExecX();
-                    Instr::ExecFim();
-                }
-                else if (varObj->classe)
-                {
-                    TClasse * end = varObj->classe;
-                    char mens[80];
-                    sprintf(mens, "%s_fechou", varObj->defvar+5);
-                    varObj->MudarSock(0);
-                    if (Instr::ExecIni(end, mens)==false)
-                        continue;
-                    Instr::ExecX();
-                    Instr::ExecFim();
-                }
-                else
-                    varObj->MudarSock(0);
-            }
-        // Passa para próximo objeto TSocket
-            if (sockObj==obj) // Se objeto Socket não foi apagado, apaga
-                delete obj; // Fará automaticamente: sockObj=sockObj->Depois
-            obj=sockObj;  // Passa para o próximo objeto
-        }
-        if (!boolenvpend)
-            break;
-    }
-    for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
-    {
-        FD_SET(obj->sock, set_entrada);
-        if (obj->pontEnv)
-            FD_SET(obj->sock, set_saida);
-    }
-}
-
-//------------------------------------------------------------------------------
-void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
-{
-    for (TSocket * obj = sInicio; obj; )
-    {
-    // Verifica se tem dados pendentes para ler
-        if (obj->sock<0 || FD_ISSET(obj->sock, set_entrada)==0)
-        {
-            obj = obj->sDepois;
-            continue;
-        }
-    // Lê e processa dados pendentes
-        while (true)
-        {
-        // Lê do socket
-            char mens[1024];
-            int resposta;
-#ifdef __WIN32__
-            resposta = recv(obj->sock, mens, sizeof(mens), 0);
-            if (resposta==0)
-                resposta=-1;
-            else if (resposta==SOCKET_ERROR)
-            {
-                resposta=WSAGetLastError();
-                resposta = (resposta==WSAEWOULDBLOCK ? 0 : -1);
-            }
-#else
-            resposta = recv(obj->sock, mens, sizeof(mens), 0);
-            if (resposta<=0)
-            {
-                if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
-                    resposta=0;
-                else
-                    resposta=-1;
-            }
-#endif
-        // Verifica se socket fechou
-            if (resposta<0)
-            {
-                obj->Fechar();
-                obj = obj->sDepois;
+            if (*(unsigned char*)mensagem < ' ')
                 break;
-            }
-        // Processa dados recebidos
-            sockObj = obj;
-            obj->Processa(mens, resposta);
-        // Verifica se objeto socket foi apagado
-            if (obj != sockObj)
+            if (agora != antes)
             {
-                obj = sockObj;
-                break;
+                if (destino+4 > fim)
+                    return false;
+                destino[0] = 1;
+                destino[1] = agora;
+                destino+=2;
+                antes = agora;
             }
-        // Verifica se fim da leitura
-            if (resposta != sizeof(mens))
+            if (destino+2 > fim)
+                return false;
+            coluna++;
+                // Antes de ColunaMin
+            if (coluna < ColunaMin)
+                *destino++ = *mensagem;
+                // Antes de ColunaMax
+            else if (coluna < ColunaMax)
             {
-                obj = obj->sDepois;
-                break;
+                if (*mensagem==' ')
+                    charesp = destino;
+                *destino++ = *mensagem;
             }
-        } // while (true)
-    } // for
-}
-
-//------------------------------------------------------------------------------
-/// Processa dados recebidos em TSocket::ProcEventos
-/** @param mensagem Endereço do buffer
- *  @param tamanho Tamanho do buffer
- *  @return Número de bytes recebidos */
-void TSocket::Processa(const char * buffer, int tamanho)
-{
-    while (tamanho>0)
-    {
-        bool sair=true;
-        char dado;
-        while (tamanho)
-        {
-        // Obtém próximo caracter
-            dado=*buffer++;
-            tamanho--;
- //------- Para mostrar o que chegou
- //printf("[%d;%d] ",dado,dadoRecebido); fflush(stdout);
- //printf(" %d ", (unsigned char)dado);
- //if ((unsigned char)dado>=32 || dado=='\n')
- //   putchar(dado); else printf("\\%02d", dado); fflush(stdout);
-        // Protocolo do Telnet
-
-        // Primeiro caracter  - IAC
-            if (pontTelnet==0)
+                // Divide; não encontrou espaço
+            else if (charesp==0)
             {
-                if (dado==0)
-                    continue;
-                if (dado==(char)255)
+                *destino++ = '\n';
+                coluna=0;
+                if (*mensagem!=' ')
                 {
-                    bufTelnet[pontTelnet++]=dado;
-                    continue;
+                    if (destino+2 > fim)
+                        return false;
+                    *destino++ = *mensagem;
                 }
             }
-        // Mensagem comprida (SB + SE)
-        // 255 250 ... 255 240 = mensagem
-            if (pontTelnet>=3)
-                if (bufTelnet[pontTelnet-1]==(char)255 && dado==(char)240)
-                {
-                    if (bufTelnet[2]==24 && bufTelnet[3]==1) // Quer saber o terminal
-                    {
-                        EnvMens("\xFF\xFA\x18\x00" // Comando
-                               "TERM" // Nome
-                               "\xFF\xF0", 10); // Fim do comando
-                    }
-                    pontTelnet=0;
-                    continue;
-                }
-        // Anota caracter no buffer
-            if (pontTelnet>=(int)sizeof(bufTelnet))
-                pontTelnet--;
-            if (pontTelnet)
-                bufTelnet[pontTelnet++]=dado;
-        // Mensagem de 2 bytes
-        // 255 255 = caracter 255
-        // 255 240 = mensagem 240
-            if (pontTelnet==2)
-            {
-                if (dado==(char)255 || dado==(char)240)
-                    pontTelnet=0;
-                continue;
-            }
-        // Mensagem de 3 bytes
-        // 255 x y = mensagem x y
-            if (pontTelnet==3 && bufTelnet[1]!=(char)250)
-            {
-                if (bufTelnet[1]==(char)251 || bufTelnet[1]==(char)253)
-                {
-                    bufTelnet[1]^=6;
-                    switch (bufTelnet[2])
-                    {
-                    case 1:
-                    case 3:
-                    case 5:
-                    case 6:
-                    case 24:
-                    case 31:
-                    case 32:
-                    case 33:
-                    case 34:
-                    case 36:
-                        break;
-                    default: bufTelnet[1]++;
-                    }
-                    EnvMens(bufTelnet, 3);
-                }
-                if (bufTelnet[2]==31) // Quer saber o tamanho da janela
-                    EnvMens("\xFF\xFA\x1F" // Comando
-                           "\x00\x50\x00\x19" // Tamanho
-                           "\xFF\xF0", 9); // Fim do comando
-                pontTelnet=0;
-                continue;
-            }
-            if (pontTelnet)
-                continue;
-        // Filtra cores do Telnet
-            if (dadoRecebido==2)
-            {
-                if (dado>' ' && ((dado|0x20)<'a' || (dado|0x20)>'z'))
-                {
-                    if (pontESC<sizeof(bufESC)-2)
-                        bufESC[pontESC++]=dado;
-                    continue;
-                }
-                dadoRecebido=0;
-                if (dado!='m' || bufESC[0]!='[' || pontESC==0)
-                    continue;
-                bufESC[pontESC]=';';
-                bufESC[pontESC+1]=0;
-                char * x = bufESC+1;
-                while (*x)
-                {
-                    if (memcmp(x, "0;", 2)==0)
-                        CorAtual=0x70;
-                    else if (memcmp(x, "1;", 2)==0)
-                        CorAtual|=0x80;
-                    else if (memcmp(x, "22;", 2)==0)
-                        CorAtual&=0x7F;
-                    else if (x[0]=='3' && x[1]>='0' && x[1]<='9' && x[2]==';')
-                    {
-                        CorAtual &= 0x8F;
-                        if (x[1]>='8')
-                            CorAtual |= 0x70;
-                        else
-                            CorAtual += (x[1]-'0')*16;
-                    }
-                    else if (x[0]=='4' && x[1]>='0' && x[1]<='9' && x[2]==';')
-                    {
-                        CorAtual &= 0xF0;
-                        if (x[1]<'8')
-                            CorAtual += (x[1]-'0');
-                    }
-                    x++;
-                    while (*x && *x!=';')
-                        x++;
-                    if (*x==';')
-                        x++;
-                }
-                continue;
-            }
- //printf(" CH(%d,%c) ", (unsigned char)dado, (unsigned char)dado>=32?dado:' '); fflush(stdout);
-        // Filtra cores do IRC
-            if (dado==3)
-            {
-                dadoRecebido=21;
-                CorIRC1 = CorIRC2 = 0;
-                continue;
-            }
-            if (dadoRecebido>=21)
-            {
-                dadoRecebido++;
-                if (dadoRecebido==23 && dado==',')
-                {
-                    dadoRecebido++;
-                    continue;
-                }
-                else if (dadoRecebido==24)
-                {
-                    if (dado==',')
-                        continue;
-                }
-                else if (dadoRecebido<=26 && dado>='0' && dado<='9')
-                {
-                    if (dadoRecebido<=24)
-                        CorIRC1 = CorIRC1*10 + dado-'0';
-                    else
-                        CorIRC2 = CorIRC2*10 + dado-'0';
-                    continue;
-                }
-                if (dadoRecebido==22)
-                    CorAtual=0x70;
-                else
-                {
-                    const char convirc[] = {
-                        15, // 0=white -> 7=branco
-                        0, // 1=black -> 0=preto
-                        4, // 2=blue  -> 4=azul
-                        2, // 3=green -> 2=verde
-                        1, // 4=red   -> 1=vermelho
-                        3, // 5=brown -> 3=marrom
-                        5, // 6=purple -> 5=magenta ???
-                        9, // 7=orange -> vermelho forte (não tinha outra cor)
-                        11, // 8=yellow
-                        10, // 9=lt.green
-                        6,  // 10=teal (a kinda green/blue cyan)
-                        14, // 11=lt.cyan
-                        12, // 12=lt.blue
-                        13, // 13=pink
-                        8,  // 14=grey
-                        7 };  // 15=lt.grey
-                // Muda a frente
-                    if (dadoRecebido<=25)
-                    {
-                        CorAtual &= 15;
-                        CorAtual |= convirc[CorIRC1&15] * 16;
-                    }
-                // Muda frente e fundo
-                    else
-                        CorAtual = convirc[CorIRC1&15] * 16 +
-                                  (convirc[CorIRC2&15] & 7);
-                }
-                dadoRecebido=0;
-            }
-        // Sequências de controle - caracter ESC
-            if (dado==27)
-            {
-                dadoRecebido=2;
-                pontESC=0;
-            }
-        // Próxima linha
-            else if (dado==10 || dado==13)
-            {
-                if (dado==13 ? dadoRecebido==10 : dadoRecebido==13)
-                    dadoRecebido=0;
-                else
-                {
-                    dadoRecebido=dado;
-                    sair=false;
-                    break;
-                }
-            }
-        // BackSpace
-            else if (dado==8 || dado==127)
-            {
-                if (pontRec>2)
-                    pontRec-=2;
-            }
-        // Caracteres imprimíveis
-            else if ((unsigned char)dado>=' ')
-            {
-                if (pontRec<sizeof(bufRec)-4)
-                {
-                    bufRec[pontRec] = dado;
-                    bufRec[pontRec+1] = CorAtual;
-                    if ((CorAtual & 15) == (CorAtual>>4))
-                        bufRec[pontRec+1] ^= 0x80;
-                    pontRec += 2;
-                }
-            }
-        } // while (tamanho)
-        if (sair)
-            return;
-
-    // Prepara mensagem
-        char texto[2048];
-        char * dest = texto;
-        char * fim = texto + sizeof(texto) - 6;
-        int cor = 0xFFF;
-        for (unsigned int x=0; x<pontRec && dest<fim; x+=2)
-        {
-            if (cor!=bufRec[x+1])
-            {
-                if (bufRec[x+1]==0x70)
-                    *dest++ = Instr::ex_barra_b;
-                else
-                {
-                    cor ^= bufRec[x+1];
-                    if (cor & 0xF0)
-                    {
-                        *dest++ = Instr::ex_barra_c;
-                        *dest = ((bufRec[x+1] >> 4) & 15) + '0';
-                        if (*dest > '9')
-                            (*dest) += 7;
-                        dest++;
-                    }
-                    if (cor & 7)
-                    {
-                        *dest++ = Instr::ex_barra_d;
-                        *dest++ = (bufRec[x+1] & 7) + '0';
-                    }
-                }
-                cor=bufRec[x+1];
-            }
-            *dest++ = bufRec[x];
-        }
-        *dest=0;
-        pontRec=0;
-#ifdef DEBUG_MSG
-        printf(">>>>>>> Recebeu %s\n", texto);
-#endif
-
-    // Processa a mensagem
-        for (TVarSocket * vobj = Inicio; vobj;)
-        {
-        // Definido em objeto: prepara para executar
-            if (vobj->objeto)
-            {
-                char mens[80];
-                sprintf(mens, "%s_msg", vobj->defvar+5);
-                if (Instr::ExecIni(vobj->objeto, mens)==false)
-                {
-                    vobj = vobj->Depois;
-                    continue;
-                }
-            }
-        // Definido em classe: prepara para executar
-            else if (vobj->classe)
-            {
-                char mens[80];
-                sprintf(mens, "%s_msg", vobj->defvar+5);
-                if (Instr::ExecIni(vobj->classe, mens)==false)
-                {
-                    vobj = vobj->Depois;
-                    continue;
-                }
-            }
-        // Variável local: não executa nenhuma função
+                // Divide; encontrou espaço
             else
-                vobj = vobj->Depois;
-        // Executa
-            varObj = vobj;
+            {
+                *destino++ = *mensagem;
+                *charesp = '\n';
+                coluna = 0;
+                for (char * p = charesp+1; p<destino; p++)
+                    if (*p==1)
+                        p++;
+                    else
+                        coluna++;
+                charesp = 0;
+            }
+            break;
+        }
+// Acrescenta cor e 0 no final
+    if (agora != antes)
+    {
+        if (destino+3 > fim)
+            return false;
+        destino[0] = 1;
+        destino[1] = agora;
+        destino += 2;
+    }
+    *destino=0;
+
+// Mostra o que está enviando
+#ifdef DEBUG_MSG
+    for (const char * x=mens; *x; x++)
+        if (*x!=1)
+            putchar(*x);
+        else
+            { x++; printf("[%d]", (unsigned char)x[0]); }
+    putchar('\n'); fflush(stdout);
+#endif
+
+// Tenta enviar mensagem
+    if (EnvMens(mens) == false)
+        return false;
+
+// Conseguiu - acerta variáveis
+    ColunaEnvia = coluna;
+    CorEnvia = agora;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+void TObjSocket::FuncFechou()
+{
+    for (varObj = Inicio; varObj;)
+    {
+        if (varObj->objeto)
+        {
+            TObjeto * end = varObj->objeto;
+            char mens[80];
+            sprintf(mens, "%s_fechou", varObj->defvar+5);
+            varObj->MudarSock(0);
+            if (Instr::ExecIni(end, mens)==false)
+                end->MarcarApagar();
+            else
+                Instr::ExecX();
+            Instr::ExecFim();
+        }
+        else if (varObj->classe)
+        {
+            TClasse * end = varObj->classe;
+            char mens[80];
+            sprintf(mens, "%s_fechou", varObj->defvar+5);
+            varObj->MudarSock(0);
+            if (Instr::ExecIni(end, mens)==false)
+                continue;
+            Instr::ExecX();
+            Instr::ExecFim();
+        }
+        else
+            varObj->MudarSock(0);
+    }
+}
+
+//------------------------------------------------------------------------------
+bool TObjSocket::FuncMsg(const char * texto)
+{
+    sockObj = this;
+    for (TVarSocket * vobj = Inicio; vobj;)
+    {
+        bool prossegue = false;
+    // Definido em objeto: prepara para executar
+        if (vobj->objeto)
+        {
+            char mens[80];
+            sprintf(mens, "%s_msg", vobj->defvar+5);
+            prossegue = Instr::ExecIni(vobj->objeto, mens);
+        }
+    // Definido em classe: prepara para executar
+        else if (vobj->classe)
+        {
+            char mens[80];
+            sprintf(mens, "%s_msg", vobj->defvar+5);
+            prossegue = Instr::ExecIni(vobj->classe, mens);
+        }
+    // Executa
+        varObj = vobj;
+        if (prossegue)
+        {
             Instr::ExecArg(texto);
             Instr::ExecX();
             Instr::ExecFim();
-        // Verifica se objeto foi apagado
-        // Passa para próximo objeto
-            if (vobj == varObj)
-                vobj = vobj->Depois;
-            else if (sockObj == this)
-                vobj = varObj;
-            else
-                return;
-        } // for (TVarSocket ...
-    } // while (tamanho>0)
+        }
+    // Verifica se objeto foi apagado
+    // Passa para próximo objeto
+        if (vobj == varObj)
+            vobj = vobj->Depois;
+        else if (sockObj)
+            vobj = varObj;
+        else
+            return false;
+    } // for (TVarSocket ...
+    return true;
 }
 
 //------------------------------------------------------------------------------
-void TVarSocket::MudarSock(TSocket * obj)
+void TVarSocket::MudarSock(TObjSocket * obj)
 {
 // Verifica se o endereço vai mudar
     if (obj == Socket)
@@ -777,10 +298,10 @@ void TVarSocket::MudarSock(TSocket * obj)
         if (Depois)
             Depois->Antes = Antes;
         if (Socket->Inicio == 0)
-            delete Socket;
-    // Acerta TSocket::varObj
-        if (TSocket::varObj == this)
-            TSocket::varObj =Depois;
+            Socket->Fechar();
+    // Acerta TObjSocket::varObj
+        if (TObjSocket::varObj == this)
+            TObjSocket::varObj =Depois;
     }
 // Coloca na lista
     if (obj)
@@ -817,8 +338,11 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 // Fecha Socket
     if (comparaZ(nome, "fechar")==0)
     {
-        if (Socket)
-            delete Socket;
+        if (Socket==0)
+            return false;
+        while (Socket->Inicio)  // Retira dos objetos TVarSocket
+            Socket->Inicio->MudarSock(0);
+        Socket->Fechar(); // Fecha socket
         return false;
     }
 // Envia mensagem
@@ -828,7 +352,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
             return false;
         int enviou = true;
         for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
-            if (Socket->EnvMens(obj->getTxt())==false)
+            if (Socket->Enviar(obj->getTxt())==false)
             {
                 enviou = false;
                 break;
@@ -854,7 +378,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         int sock=-1;
         if (porta<0 || porta>65535)
             return false;
-        ender = Conectar(&sock, ender, porta, 0);
+        ender = TSocket::Conectar(&sock, ender, porta, 0);
         if (ender==0)
             MudarSock(new TSocket(sock));
         Instr::ApagarVar(v);

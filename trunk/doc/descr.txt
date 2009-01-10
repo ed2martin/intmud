@@ -640,15 +640,16 @@ socket <nomedavariável>
     proto
         Define o protocolo; um número com o significado:
         0 = não está conectado
-        1 = telnet com cores
-        2 = telnet sem cores
-        3 = irc com cores
-        4 = irc sem cores
-        5 = papovox (sem cores)
-        6 = janela do programa com cores
-        7 = janela do programa sem cores
-        Nota: pode-se mudar entre 1 e 5 para socket conectado e
-              entre 6 e 7 quando for a janela do programa
+        1 = Telnet
+        2 = IRC
+        3 = Papovox (sem cores)
+        4 = janela do programa
+        Nota: pode-se mudar entre 1 e 3 para socket conectado
+    cores
+        0 = nenhuma cor
+        1 = cores somente ao receber
+        2 = cores somente ao enviar
+        3 = cores ao enviar e receber
     aflooder
         O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
         0 desativa o anti flooder, outro valor ativa.
@@ -665,10 +666,8 @@ socket <nomedavariável>
         Caracteres especiais, como definição da cor, não contam.
     abrir(<endereço>, <porta>)
         Tenta conectar-se a um endereço.
-    abrir("linha")
+    abrir("tela")
         Conecta à janela do programa. Cada linha recebida gera um evento _msg.
-    abrir("tecla")
-        Conecta à janela do programa. Cada tecla pressionada gera um evento _msg.
     fechar
         Encerra a conexão; não gera o evento fechou.
     colunas(x, y)
@@ -843,3 +842,45 @@ indice <nomedavariável>
         Texto associado ao objeto que contém essa variável (índice).
     ref(<texto>)
         Retorna o objeto a partir de um texto (índice).
+
+
+*** Nota - Cores no protocolo Telnet
+
+ESC [
+Seguido de números, separados por ';'
+Termina com um m
+    ESC=0x1B
+    0 = cores padrão
+    1 = ativa negrito
+    3x = cor de frente = x
+    4x = cor de fundo = x
+
+*** Nota - Cores no protocolo do IRC
+
+Definição de cores:
+    Ctrl-C       (1 byte)  -> Limpa a definição de cores
+    Cltr-C N     (2 bytes)
+    Ctrl-C NN    (3 bytes)
+    Ctrl-C N,M   (4 bytes)
+    Ctrl-C N,MM  (5 bytes)
+    Ctrl-C NN,M  (5 bytes)
+    Ctrl-C NN,MM (6 bytes)
+Onde Ctrl-C é o caracter \x03 e M e N é um dígito de 0 a 9
+N é a cor de frente, M é a cor de fundo (ausente significa padrão)
+As cores padrão são letras pretas sobre um fundo branco.
+Se o texto após a definição começar com um dígito de 0 a 9,
+deve ser usada uma das definições:
+    Ctrl-C N,MM  (5 bytes)
+    Ctrl-C NN,MM (6 bytes)
+Lista de cores:
+    0 white                    8 yellow
+    1 black                    9 lt.green (lime)
+    2 blue     (navy)          10 teal    (a kinda green/blue cyan)
+    3 green                    11 lt.cyan (cyan ?) (aqua)
+    4 red                      12 lt.blue (royal)
+    5 brown    (maroon)        13 pink    (light purple) (fuchsia)
+    6 purple                   14 grey
+    7 orange   (olive)         15 lt.grey (silver)
+Referências:
+    http://www.ircle.com/colorfaq.shtml
+    http://www.mirc.co.uk/help/color.txt

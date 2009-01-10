@@ -97,6 +97,6 @@ func servidor_socket
   novo.conec.msg("Benvindo\n")
   novo.conec.msg("Para sair tecle fim\n")
 func conec_msg
-  conec.msg("Você escreveu " + arg0 + "\n")
-  se arg0 = "\bfim" # \b por causa da cor
+  conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
+  se arg0 = "fim"
     apagar(este)

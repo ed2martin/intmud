@@ -309,12 +309,12 @@ bool Instr::ExecIni(TObjeto * este, const char * func)
  *  @note  O texto deve existir quando Instr::ExecX() for executado
  *  @sa exec
  */
-void Instr::ExecArg(char * txt)
+void Instr::ExecArg(const char * txt)
 {
     VarAtual++;
     VarAtual->Limpar();
     VarAtual->defvar = InstrTxtFixo;
-    VarAtual->endvar = txt;
+    VarAtual->endfixo = txt;
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg++;
 }
