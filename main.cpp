@@ -39,7 +39,7 @@
 #include "arqmapa.h"
 #include "instr.h"
 #include "variavel.h"
-#include "var-socket.h"
+#include "socket.h"
 #include "var-serv.h"
 #include "misc.h"
 

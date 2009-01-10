@@ -37,6 +37,7 @@
 #include "config.h"
 #include "var-serv.h"
 #include "var-socket.h"
+#include "socket.h"
 #include "variavel.h"
 #include "classe.h"
 #include "objeto.h"
@@ -260,9 +261,9 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
             }
                 // Cria argumento: TVarSocket
             Instr::ExecArgCriar(Instr::InstrSocket);
-                // Cria TSocket com o socket
+                // Cria TObjSocket com o socket
             TSocket * s = new TSocket(localSocket);
-                // Coloca TSocket em TVarSocket
+                // Coloca TObjSocket em TVarSocket
             Instr::VarAtual->end_socket->MudarSock(s);
                 // Executa
             Instr::ExecX();

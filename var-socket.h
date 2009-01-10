@@ -18,71 +18,46 @@ class TClasse;
 class TObjeto;
 
 //----------------------------------------------------------------------------
-/** Representa uma conexão, um "socket" */
-class TSocket /// Socket
+/** Representa uma conexão de uma variável Socket */
+class TObjSocket /// Conexão de Socket
 {
 public:
-    TSocket(int socknum);       ///< Construtor
-    ~TSocket();                 ///< Destrutor
-    bool Aberto(void);          ///< Retorna verdadeiro se dispositivo aberto
+    TObjSocket();               ///< Construtor
+    virtual ~TObjSocket();      ///< Destrutor
+    bool Enviar(const char * mensagem);///< Envia mensagem conforme protocolo
 
-    static void Fd_Set(fd_set * set_entrada, fd_set * set_saida);
-    static void ProcEventos(fd_set * set_entrada, fd_set * set_saida);
-    bool EnvMens(const char * mensagem);///< Envia mensagem conforme protocolo
+protected:
+    virtual bool EnvMens(const char * mensagem)=0; ///< Envia mensagem
+                    /** A mensagem segue o formato:
+                     *  - Byte =0 -> fim da mensagem
+                     *  - Byte =1 -> próximo byte = cor
+                     *     - Bits 0-3 = cor de fundo
+                     *     - Bits 4-6 = cor das letras
+                     *     - Bit 7 =1 se negrito (cor das letras mais forte)
+                     *     .
+                     *  - Byte ='\n' -> passar para próxima linha
+                     */
+    virtual void Fechar(void)=0; ///< Fecha socket, pode apagar socket
+
+    void FuncFechou();  ///< Executa função _fechou
+                        /** @note Pode apagar o próprio objeto */
+    bool FuncMsg(const char * mens);  ///< Executa função _msg
+                        /** @return true se não apagou o objeto */
+
+// Variáveis usadas para enviar mensagens
+    short CorInic;      ///< Cor do início da linha, ou -1 se não mudou
+    unsigned char CorEnvia;     ///< Cor atual, ao enviar
+    unsigned char ColunaEnvia;  ///< Quantos caracteres já enviou
+    unsigned char ColunaMin;    ///< Menor quantidade de caracteres/linha
+    unsigned char ColunaMax;    ///< Maior quantidade de caracteres/linha
+
 private:
-    void Processa(const char * buffer, int tamanho);
-    bool EnvMens(const char * mensagem, int tamanho); ///< Envia mensagem pura
-    void EnvPend();             ///< Envia dados pendentes
-    void Fechar(void);          ///< Fecha socket
-    int  sock;                  ///< Socket; menor que 0 se estiver fechado
-
-// Para enviar mensagens
-    char bufEnv[SOCKET_ENV];    ///< Contém a mensagem que será enviada
-    unsigned int pontEnv;       ///< Número de bytes pendentes em bufEnv
-    static bool boolenvpend;    ///< Verdadeiro se tem algum dado pendente
-
-// Para receber mensagens
-    char bufRec[SOCKET_REC];    ///< Contém a mensagem recebida
-                            /**< Cada caracter ocupa dois bytes:
-                             * - 1 byte = caracter ASCII
-                             * - 1 byte = cor, conforme TSocket::CorAtual
-                             */
-    unsigned int pontRec;       ///< Número do byte que está lendo
-    char dadoRecebido;          ///< Para controle da mensagem recebida
-                            /**<
-                             * - 0 = comportamento padrão
-                             * - 0x0D, 0x0A = para detectar nova linha
-                             * - 2 = para detectar seqüências de ESC
-                             * - 21=recebeu Ctrl-C
-                             * - 22=recebeu Ctrl-C X
-                             * - 23=recebeu Ctrl-C XX
-                             * - 24=recebeu Ctrl-C XX,
-                             * - 25=recebeu Ctrl-C XX,X
-                             * - 26=recebeu Ctrl-C XX,XX; esperando Ctrl+C
-                             */
-    char bufTelnet[8];          ///< Para interpretar o protocolo Telnet
-    char bufESC[20];            ///< Para interpretar seqüências de ESC
-    unsigned short pontESC;     ///< Ponteiro em bufESC
-    unsigned short pontTelnet;  ///< Ponteiro em bufTelnet
-
-    unsigned char CorAtual;     ///< Para controle da cor
-                                /**
-                                 * - Bits 0-3 = fundo
-                                 * - Bits 4-6 = frente
-                                 * - Bit  7 = negrito, 0=desativado
-                                 */
-    unsigned char CorIRC1;      ///< Para obter cores do IRC
-    unsigned char CorIRC2;      ///< Para obter cores do IRC
-
 // Para saber quando objetos foram apagados
-    static TSocket * sockObj;   ///< Usado para saber se objeto foi apagado
-    static TVarSocket * varObj; ///< Usado para saber se objeto foi apagado
+    static TObjSocket * sockObj; ///< Usado para saber se objeto foi apagado
+    static TVarSocket * varObj;  ///< Usado para saber se objeto foi apagado
 
-// Listas ligadas
+// Lista ligadas
     TVarSocket * Inicio; ///< Lista ligada de TVarSocket
-    static TSocket * sInicio; ///< Primeiro objeto da lista ligada
-    TSocket * sAntes;  ///< Objeto anterior da lista ligada
-    TSocket * sDepois; ///< Próximo objeto da lista ligada
     friend class TVarSocket;
 };
 
@@ -91,7 +66,7 @@ private:
 class TVarSocket /// Variáveis Socket
 {
 public:
-    void MudarSock(TSocket * socket); ///< Muda a variável TVarSocket::Socket
+    void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
@@ -101,7 +76,7 @@ public:
     TClasse * classe;   ///< Em que classe está definido
     TObjeto * objeto;   ///< Em que objeto está definido
 
-    TSocket * Socket;   ///< Conexão atual
+    TObjSocket * Socket;   ///< Conexão atual
     TVarSocket * Antes; ///< Objeto anterior da mesma conexão
     TVarSocket * Depois;///< Próximo objeto da mesma conexão
 };

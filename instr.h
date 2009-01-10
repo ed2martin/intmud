@@ -27,7 +27,7 @@ const char * NomeExpr(int valor);
 
 bool ExecIni(TClasse * classe, const char * func);
 bool ExecIni(TObjeto * este, const char * func);
-void ExecArg(char * txt);
+void ExecArg(const char * txt);
 void ExecArgCriar(const char * def);
 bool ExecX();
 void ExecFim();
