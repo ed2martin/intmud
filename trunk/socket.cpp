@@ -43,7 +43,7 @@
 #include "misc.h"
 
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
-#define DEBUG_MSG    // Mostra o que enviou e recebeu
+//#define DEBUG_MSG    // Mostra o que enviou e recebeu
 
 TSocket * TSocket::sockAtual = 0;
 TSocket * TSocket::sInicio = 0;
@@ -184,7 +184,7 @@ TSocket::TSocket(int socknum)
     CorAtual=0x70;
     CorAnterior=0x70;
     proto=1;
-    cores=3;
+    cores=0;
 }
 
 //------------------------------------------------------------------------------
@@ -386,9 +386,7 @@ bool TSocket::EnvMens(const char * mensagem)
             mensagem++;
             bool numero =   // Se pode ser interpretado como número
                     (mensagem[1]==0 ||
-                    mensagem[1]>='0' && mensagem[1]<='9' ||
-                    mensagem[1]>='A' && mensagem[1]<='F' ||
-                    mensagem[1]>='a' && mensagem[1]<='f');
+                    mensagem[1]>='0' && mensagem[1]<='9');
             bool virgula =  // Se pode ser interpretado como vírgula
                     (mensagem[1]==0 || mensagem[1]==',');
             int antes = cor ^ *(unsigned char*)mensagem;
@@ -505,6 +503,13 @@ void TSocket::EnvPend()
 }
 
 //------------------------------------------------------------------------------
+void TSocket::SairPend()
+{
+    for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
+        obj->EnvPend();
+}
+
+//------------------------------------------------------------------------------
 void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
 {
     while (true)
@@ -603,7 +608,7 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
 
 //------------------------------------------------------------------------------
 /// Processa dados recebidos em TSocket::ProcEventos
-/** @param mensagem Endereço do buffer
+/** @param buffer Endereço do buffer
  *  @param tamanho Tamanho do buffer
  *  @return Número de bytes recebidos */
 void TSocket::Processa(const char * buffer, int tamanho)

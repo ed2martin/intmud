@@ -27,6 +27,7 @@ public:
 
     static void Fd_Set(fd_set * set_entrada, fd_set * set_saida);
     static void ProcEventos(fd_set * set_entrada, fd_set * set_saida);
+    static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
     bool EnvMens(const char * mensagem);///< Envia mensagem conforme protocolo
 private:
     void Processa(const char * buffer, int tamanho);

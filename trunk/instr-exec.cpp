@@ -19,11 +19,12 @@
 #include "variavel.h"
 #include "classe.h"
 #include "objeto.h"
+#include "socket.h"
 #include "misc.h"
 
 void Termina(); // Encerra o programa
 
-#define DEBUG_INSTR // Mostra instruções que serão executadas
+//#define DEBUG_INSTR // Mostra instruções que serão executadas
 //#define DEBUG_EXPR  // Mostra valores de Instr::Expressao encontrados
 //#define DEBUG_VAR   // Mostra variáveis no topo da pilha
 
@@ -189,6 +190,9 @@ Se FuncAtual->expr != 0:
 */
 
 //------------------------------------------------------------------------------
+int Instr::VarExec = 0;
+int Instr::VarExecIni = 5000;
+
 // Pilha de dados - para criar/apagar variáveis
 char * const Instr::DadosPilha = new char[0x10000];
 char * const Instr::DadosFim   = Instr::DadosPilha + 0x10000;
@@ -219,6 +223,7 @@ const char Instr::InstrVarInt[] = { 7, 0, Instr::cVarInt, 0, 0, '+', 0 };
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
 static const Instr::TListaFunc ListaFunc[] = {
+    { "abs",        Instr::FuncNumero, 1 },
     { "apagar",     Instr::FuncApagar, 0 },
     { "arg0",       Instr::FuncArg, 0 },
     { "arg1",       Instr::FuncArg, 1 },
@@ -232,7 +237,18 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "arg9",       Instr::FuncArg, 9 },
     { "args",       Instr::FuncArgs, 0 },
     { "criar",      Instr::FuncCriar, 0 },
-    { "este",       Instr::FuncEste, 0 }
+    { "este",       Instr::FuncEste, 0 },
+    { "int",        Instr::FuncNumero, 2 },
+    { "objantes",   Instr::FuncAntesDepois, 0 },
+    { "objdepois",  Instr::FuncAntesDepois, 1 },
+    { "pos",        Instr::FuncNumero, 0 },
+    { "rand",       Instr::FuncNumero, 3 },
+    { "ref",        Instr::FuncRef, 0 },
+    { "total",      Instr::FuncTotal, 0 },
+    { "txt",        Instr::FuncTxt, 0 },
+    { "txt1",       Instr::FuncTxt2, 0 },
+    { "txt2",       Instr::FuncTxt2, 1 },
+    { "txtcor",     Instr::FuncTxt2, 2 }
 };
 
 //----------------------------------------------------------------------------
@@ -267,6 +283,7 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
         case cConstExpr:
             instr = vazio;
         }
+    VarExec = VarExecIni;
 // Acerta pilhas
     DadosTopo = DadosPilha; // Limpa pilha de dados
     VarAtual = VarPilha;    // Limpa pilha de variáveis
@@ -419,6 +436,8 @@ bool Instr::ExecX()
         if (FuncAtual->expr==0)
         {
     // Está processando uma linha
+            if (--VarExec < 0)
+                return RetornoErro();
 
         // Retorno sem parâmetros
             if (FuncAtual->linha[0]==0 && FuncAtual->linha[1]==0)
@@ -511,6 +530,7 @@ bool Instr::ExecX()
                 FuncAtual->igualcompara = false;
                 break;
             case cComent: // Comentário
+                VarExec++;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 break;
             case cSenao1: // Avança
@@ -538,6 +558,7 @@ bool Instr::ExecX()
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 break;
             case cTerminar: // Encerra o programa
+                TSocket::SairPend();
                 Termina();
             default:  // Instrução desconhecida
                 assert(0);
