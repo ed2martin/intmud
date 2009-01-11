@@ -41,6 +41,7 @@
 #include "variavel.h"
 #include "socket.h"
 #include "var-serv.h"
+#include "random.h"
 #include "misc.h"
 
 #define CORE    // Para gerar arquivos core
@@ -158,6 +159,8 @@ void Inicializa(const char * arg)
 // Prepara tabela ASCII
     tabASCinic();
 
+// Para gerar números aleatórios
+    circle_srandom(time(0));
 
 // Obtém nome do programa: arqnome, arqinicio e arqext
     {
@@ -290,7 +293,8 @@ void Inicializa(const char * arg)
             for (valor++; *valor==' '; valor++);
         }
         //printf("%d [%s] [%s]\n", linha, mens, valor);
-
+        if (comparaZ(mens, "exec")==0)
+            Instr::VarExecIni = atoi(valor);
 
     }
 

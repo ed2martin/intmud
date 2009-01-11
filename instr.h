@@ -37,6 +37,12 @@ bool FuncArgs(TVariavel * v, int valor);
 bool FuncCriar(TVariavel * v, int valor);
 bool FuncApagar(TVariavel * v, int valor);
 bool FuncEste(TVariavel * v, int valor);
+bool FuncNumero(TVariavel * v, int valor);
+bool FuncRef(TVariavel * v, int valor);
+bool FuncTxt(TVariavel * v, int valor);
+bool FuncTxt2(TVariavel * v, int valor);
+bool FuncAntesDepois(TVariavel * v, int valor);
+bool FuncTotal(TVariavel * v, int valor);
 
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
@@ -61,6 +67,10 @@ extern const char InstrVarClasse[];
 extern const char InstrVarObjeto[];
 /// TVariavel::defvar para Instr::cVarInt
 extern const char InstrVarInt[];
+/// Quantas instruções pode executar antes que o controle retorne ao programa
+extern int VarExec;
+/// Valor inicial de Instr::VarExec quando Instr::ExecIni é executado
+extern int VarExecIni;
 
 //----------------------------------------------------------------------------
 /** Verifica se instruções de uma classe (codificadas por Instr::Codif)

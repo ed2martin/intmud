@@ -22,8 +22,8 @@
 #include "instr.h"
 #include "misc.h"
 
-#define DEBUG_CRIAR  // Mostra objetos criados e apagados
-#define DEBUG_MSG    // Mostra o que enviou
+//#define DEBUG_CRIAR  // Mostra objetos criados e apagados
+//#define DEBUG_MSG    // Mostra o que enviou
 
 TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;

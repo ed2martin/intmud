@@ -44,7 +44,7 @@
 #include "instr.h"
 #include "misc.h"
 
-#define DEBUG_CRIAR  // Mostra objetos criados e apagados
+//#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 
 TVarServ * TVarServ::Inicio = 0;
 TVarServ * TVarServ::varObj = 0;

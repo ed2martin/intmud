@@ -21,6 +21,8 @@
 #include "instr.h"
 #include "misc.h"
 
+//#define MOSTRA_MEM // Mostrar como alocou variáveis na memória
+
 //----------------------------------------------------------------------------
 /// Construtor
 /**
@@ -435,7 +437,7 @@ void TClasse::AcertaVar()
     TamObj = indobjeto;
 
 // Mostra o resultado
-#if 1
+#ifdef MOSTRA_MEM
     printf("Classe=\"%s\"   Variáveis classe=%d   Variáveis Objeto=%d\n",
            Nome, indclasse, indobjeto);
     puts("  lugar  endereço:bit  tamanho  instrução");

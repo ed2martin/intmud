@@ -337,12 +337,6 @@ enquanto <expressão>  ... efim
     o enquanto e o efim e volta para a instrução enquanto, para testar
     a <expressão> novamente.
 
-para <variável 1>, <variável 2>  ... efim
-    Usado para acessar todos os elementos de <variável 2>.
-    Só tem sentido se <variável 2> for uma lista (exemplo, de objetos).
-    Entre o para e o efim, <variável 1> corresponde a cada elemento
-    encontrado. <variável 1> deve ser uma variável que existe.
-
 sair
     Sai de um laço enquanto ou para
 
@@ -376,13 +370,16 @@ rand(a)
     Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) gera
     um número aleatório de 0 a 9.
 
-txt(a)
-    Texto constante (não pode ser alterado) igual a a.
-    Se a não for texto, retorna um texto vazio.
-
 ref(a)
     Referência constante; retorna o mesmo objeto que a.
     Se a não for um objeto, retorna nulo.
+    Se for fornecido mais de uma referência (exemplo: ref(a,b,c)),
+    retorna a primeira que não for nula.
+
+txt(a)
+    Texto constante (não pode ser alterado) igual a a.
+    Se a não for texto, retorna um texto vazio.
+    Se for objeto, retorna o nome da classe.
 
 txt(<texto>, <caracter inicial>)
 txt(<texto>, <caracter inicial>, <quantidade de caracteres>)
@@ -441,9 +438,6 @@ apagar(<objeto>)
     Exemplo:
     apagar(este)
 
-classe(<objeto>)
-    Retorna o nome da classe de um objeto ou "" se não for objeto.
-
 $ seguido do nome da classe
     Exemplos: $jog  ou  $["jog"]
     Retorna o primeiro objeto da classe especificada.
@@ -459,6 +453,8 @@ total(<objeto>)
 
 total(<texto>)
     Retorna o tamanho do texto, em caracteres.
+    Nota: Se for especificado mais de um argumento em total, podendo variar
+    entre textos e objetos, retorna a soma.
 
 
 *** Caracteres especiais
@@ -854,6 +850,7 @@ Termina com um m
     1 = ativa negrito
     3x = cor de frente = x
     4x = cor de fundo = x
+
 
 *** Nota - Cores no protocolo do IRC
 
