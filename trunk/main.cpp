@@ -18,6 +18,9 @@
 #include <errno.h>
 #include <assert.h>
 #ifdef __WIN32__
+    // O número de sockets padrão no Windows é 64
+    // Se precisar mudar, definir FD_SETSIZE aqui, antes de winsock.h
+ #define FD_SETSIZE 128
  #include <windows.h>
  #include <winsock.h>
  #include <fcntl.h>
@@ -122,7 +125,17 @@ int main(int argc, char *argv[])
     // Espera
         tselect.tv_sec = espera/10;
         tselect.tv_usec = espera%10*100000;
+#ifdef __WIN32__
+        // Nota:
+        // Se não especificar nenhum socket, o Windows retorna SOCKET_ERROR
+        // Se acontecer da rede falhar, também pode retornar SOCKET_ERROR
+        // Nesse caso, usa-se Sleep() para esperar 100 milissegundos
+        if (select(FD_SETSIZE, &set_entrada, &set_saida, 0, &tselect)
+                == SOCKET_ERROR)
+            Sleep(100);
+#else
         select(FD_SETSIZE, &set_entrada, &set_saida, 0, &tselect);
+#endif
     }
 
 // Fim
@@ -394,11 +407,7 @@ void Inicializa(const char * arg)
         char * p = mens+1;
         while (*p) p++;
         if (p[-1]!=']')
-        {
-            fprintf(log, "%s:%d: [ sem ]\n", arqinicio, linhanum);
-            erro=true;
             continue;
-        }
         for (p--; p[-1]==' '; p--);
         *p=0;
 
@@ -502,7 +511,15 @@ void Inicializa(const char * arg)
             fprintf(log, "Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
             exit(EXIT_FAILURE);
         }
-        if (linhanum==0 || *mens=='[') // Fim do arquivo ou próxima classe
+        // Verifica se é nome de classe
+        char * pclasse = 0;
+        if (linhanum>0 && *mens=='[')
+        {
+            for (pclasse = mens+1; *pclasse; pclasse++);
+            if (pclasse[-1]!=']')
+                pclasse=0;
+        }
+        if (linhanum==0 || pclasse) // Fim do arquivo ou próxima classe
         {
             if (classeatual) // Anota instruções da classe
             {
@@ -535,18 +552,10 @@ void Inicializa(const char * arg)
         if (comparaZ(mens, "MAPAGRANDE")==0)
             continue;
     // Verifica classe
-        if (*mens=='[')
+        if (pclasse)
         {
-            char * p = mens+1;
-            while (*p) p++;
-            if (p[-1]!=']')
-            {
-                fprintf(log, "%s:%d: [ sem ]\n", arqinicio, linhanum);
-                erro=true;
-                continue;
-            }
-            for (p--; p[-1]==' '; p--);
-            *p=0;
+            for (pclasse--; pclasse[-1]==' '; pclasse--);
+            *pclasse=0;
             classeatual = TClasse::Procura(mens+1);
             if (classeatual==0)
             {
