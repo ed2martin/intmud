@@ -1,4 +1,4 @@
-/* Fom: tbaMUD */
+/* From: tbaMUD */
 
 /* I am bothered by the non-portablility of 'rand' and 'random' -- rand is ANSI
  * C, but on some systems such as Suns, rand has seriously tragic spectral
