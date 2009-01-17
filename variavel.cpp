@@ -69,7 +69,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:  return 0;
+    case Instr::cIntTempo:  return 0;
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
     case Instr::cSalvar:
@@ -123,7 +123,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cListaMsg:  return varNulo;
     case Instr::cNomeObj:   return varNulo;
     case Instr::cLog:       return varNulo;
-    case Instr::cVarTempo:  return varInt;
+    case Instr::cIntTempo:  return varInt;
     case Instr::cSocket:    return varNulo;
     case Instr::cServ:      return varNulo;
     case Instr::cSalvar:    return varNulo;
@@ -249,7 +249,7 @@ void TVariavel::Mover(void * destino, TClasse * c, TObjeto * o)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         endvar = destino;
         return;
     case Instr::cSocket:
@@ -389,7 +389,7 @@ bool TVariavel::getBool()
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         return 0;
     case Instr::cSocket:
         return end_socket->getValor();
@@ -511,7 +511,7 @@ int TVariavel::getInt()
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         return 0;
     case Instr::cSocket:
         return end_socket->getValor();
@@ -621,7 +621,7 @@ double TVariavel::getDouble()
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         return 0;
     case Instr::cSocket:
         return end_socket->getValor();
@@ -756,7 +756,7 @@ const char * TVariavel::getTxt()
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
     case Instr::cSocket:
     case Instr::cServ:
     case Instr::cSalvar:
@@ -870,7 +870,7 @@ void TVariavel::setInt(int valor)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         break;
     case Instr::cSocket:
         end_socket->MudarSock(0);
@@ -947,7 +947,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         break;
     case Instr::cSocket:
         end_socket->MudarSock(0);
@@ -1030,7 +1030,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cVarTempo:
+    case Instr::cIntTempo:
         break;
     case Instr::cSocket:
         end_socket->MudarSock(0);

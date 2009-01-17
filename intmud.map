@@ -88,7 +88,8 @@ func fim
 comum serv servidor
 socket conec
 func iniclasse
-  [arg0]:servidor.abrir("", 2000)
+  se ![arg0]:servidor.abrir("", 2000)
+    terminar
 func servidor_socket
   ref novo
   novo = criar("x")

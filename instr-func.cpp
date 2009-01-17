@@ -297,6 +297,135 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Procura texto (txtproc)
+// Usa algoritmo Boyer-Moore, mas com uma só tabela
+bool Instr::FuncTxtProc(TVariavel * v, int valor)
+{
+    int posic = -1;     // Retorno - posição onde encontrou
+    int ini = 0;        // Início
+
+    while (VarAtual >= v+2)
+    {
+        if (VarAtual >= v+3)
+            ini = v[3].getInt();
+        if (ini<0)
+            ini=0;
+    // Padrão
+        const char * p = v[2].getTxt();
+        if (*p==0)
+            break;
+    // Procurar um caracter
+        if (p[1]==0)
+        {
+            char ch = *p;
+            const char * ini = v[1].getTxt();
+            if (valor)
+            {
+                for (p=ini; *p; p++)
+                    if (*p == ch)
+                    {
+                        posic = p - ini;
+                        break;
+                    }
+            }
+            else
+            {
+                ch = tabCOMPLETO[(unsigned char)ch];
+                for (p=ini; *p; p++)
+                    if (tabCOMPLETO[*(unsigned char*)p] == ch)
+                    {
+                        posic = p - ini;
+                        break;
+                    }
+            }
+            break;
+        }
+    // Variáveis
+        char padrao[4096];  // Texto procurado
+        int  tabela[0x100]; // Tabela de deslocamento
+    // Obtém tamanho do padrão
+        int tampadrao = strlen(p);
+        if (tampadrao > (int)sizeof(padrao))
+            tampadrao = (int)sizeof(padrao);
+    // Inicializa tabela
+        for (int x=0; x<0x100; x++)
+            tabela[x] = -1;
+        if (valor)
+        {
+    // Exato - Copia padrão e acerta tabela
+            for (int x=0; x<tampadrao; x++,p++)
+            {
+                padrao[x] = *p;
+                tabela[*(unsigned char*)p] = x;
+            }
+    // Exato - Obtém o texto
+            p = v[1].getTxt();      // p = texto
+            int tamp = strlen(p);   // tamp = tamanho do texto
+            if (tampadrao > tamp)
+                break;
+    // Exato - procura
+            int i=tampadrao-1, j=0;
+            while (true)
+            {
+                char ch = p[i+j];
+                if (padrao[i]==ch)
+                {
+                    if (i--)    // Passa para próximo caracter
+                        continue;
+                    posic = j;  // Encontrou
+                    break;
+                }
+                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
+                j += (i>1 ? i : 1); // Desloca j
+                i = tampadrao-1;    // Inicializa i
+                if (i+j >= tamp)    // Verifica fim da string
+                    break;
+            }
+        }
+        else
+        {
+    // Não exato - Copia padrão e acerta tabela
+            for (int x=0; x<tampadrao; x++,p++)
+            {
+                unsigned char ch = tabCOMPLETO[*(unsigned char*)p];
+                padrao[x] = ch;
+                tabela[ch] = x;
+            }
+    // Não exato - Obtém o texto
+            p = v[1].getTxt();      // p = texto
+            int tamp = strlen(p);   // tamp = tamanho do texto
+            if (tampadrao > tamp)
+                break;
+    // Não exato - procura
+            int i=tampadrao-1, j=0;
+            while (true)
+            {
+                char ch = tabCOMPLETO[(unsigned char)p[i+j]];
+                if (padrao[i]==ch)
+                {
+                    if (i--)    // Passa para próximo caracter
+                        continue;
+                    posic = j;  // Encontrou
+                    break;
+                }
+                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
+                j += (i>1 ? i : 1); // Desloca j
+                i = tampadrao-1;    // Inicializa i
+                if (i+j >= tamp)    // Verifica fim da string
+                    break;
+            }
+        }
+        break;
+    }
+// Retorna o resultado
+    ApagarVar(v);
+    if (!CriarVar(InstrVarInt))
+        return false;
+    VarAtual->setInt(posic);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Funções objantes e objdepois
 bool Instr::FuncAntesDepois(TVariavel * v, int valor)
 {
