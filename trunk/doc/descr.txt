@@ -402,6 +402,15 @@ txtdentro(<texto>)
     exceto à esquerda e à direita. Exemplo:
     txtfora("  bom   dia  ") é o mesmo que "  bom dia  ".
 
+txtproc(<texto>, <texto procurado>)
+txtproc(<texto>, <texto procurado>, <caracter inicial>)
+    Procura <texto procurado> em <texto>
+    Retorna -1 se não encontrou ou o número do caracter se encontrou
+    <caracter inicial> = a partir de onde procurar no texto
+            0 = primeiro caracter, 1 = segundo, etc.
+    Para diferenciar letras minúsculas de maiúsculas e acentuadas de
+    não acentuadas, escrever txtprocdif ao invés de txtproc.
+
 txttroca(<texto>, <valor anterior>, <novo valor>)
     Troca <valor anterior> por <novo valor> no <texto>. Exemplo:
     txttroca("possibilidade", "i", "e") é o mesmo que "possebeledade".
@@ -614,14 +623,14 @@ log <nomedavariável>
     msg( <texto> )   -> Grava texto em uma nova linha, no final do arquivo
     fechar           -> Fecha arquivo
 
-vartempo <nomedavariável>
+inttempo <nomedavariável>
     Uma variável inteira de 0 a 65535, subtraída 1 a cada décimo de segundo.
-    A diferença de vartempo para vardec é que quando chega a 0, uma função
+    A diferença de inttempo para intdec é que quando chega a 0, uma função
     do objeto é executada. O nome da função é <nomedavariável>_exec.
 
     Exemplo:
     [x]
-    vartempo n
+    inttempo n
     func n_exec
       # Essa função é executada quando a variável n chegar a zero
 
@@ -770,7 +779,7 @@ prog <nomedavariável>
     herda(<nome da classe>)
         Obter a lista de classes que uma classe herda.
         Retorna: 1=sucesso, 0=falha (classe não existe)
-    herdainv(<nome da classe>)
+    herdado(<nome da classe>)
         Obter a lista de classes herdadas por uma classe.
         Retorna: 1=sucesso, 0=falha (classe não existe)
     var(<nome da classe>)

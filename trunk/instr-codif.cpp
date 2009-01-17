@@ -250,6 +250,7 @@ static const TListaInstr ListaInstr[] = {
     { "int8",      cInt8 },
     { "intdec",    cIntDec },
     { "intinc",    cIntInc },
+    { "inttempo",  cIntTempo },
     { "listamsg",  cListaMsg },
     { "listaobj",  cListaObj },
     { "listatxt",  cListaTxt },
@@ -269,8 +270,7 @@ static const TListaInstr ListaInstr[] = {
     { "uint16",    cUInt16 },
     { "uint32",    cUInt32 },
     { "uint8",     cUInt8 },
-    { "varfunc",   cVarFunc },
-    { "vartempo",  cVarTempo }
+    { "varfunc",   cVarFunc }
 };
 
 //------------------------------------------------------------------------------

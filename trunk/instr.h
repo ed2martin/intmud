@@ -41,6 +41,7 @@ bool FuncNumero(TVariavel * v, int valor);
 bool FuncRef(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);
+bool FuncTxtProc(TVariavel * v, int valor);
 bool FuncAntesDepois(TVariavel * v, int valor);
 bool FuncTotal(TVariavel * v, int valor);
 
@@ -251,7 +252,7 @@ enum Comando
     cListaMsg,          ///< Extra: cListaMsg
     cNomeObj,           ///< Extra: cNomeObj
     cLog,               ///< Extra: cLog
-    cVarTempo,          ///< Extra: cVarTempo
+    cIntTempo,          ///< Extra: cIntTempo
     cSocket,            ///< Extra: cSocket
     cServ,              ///< Extra: cServ
     cSalvar,            ///< Extra: cSalvar

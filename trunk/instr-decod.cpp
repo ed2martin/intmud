@@ -156,7 +156,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cListaMsg:  strcpy(nome, "listamsg"); break;
     case cNomeObj:   strcpy(nome, "nomeobj"); break;
     case cLog:       strcpy(nome, "log"); break;
-    case cVarTempo:  strcpy(nome, "vartempo"); break;
+    case cIntTempo:  strcpy(nome, "inttempo"); break;
     case cSocket:    strcpy(nome, "socket"); break;
     case cServ:      strcpy(nome, "serv"); break;
     case cSalvar:    strcpy(nome, "salvar"); break;
