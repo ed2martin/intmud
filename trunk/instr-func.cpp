@@ -19,6 +19,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "variavel.h"
+#include "procurar.h"
 #include "random.h"
 #include "misc.h"
 
@@ -298,123 +299,30 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 /// Procura texto (txtproc)
-// Usa algoritmo Boyer-Moore, mas com uma só tabela
 bool Instr::FuncTxtProc(TVariavel * v, int valor)
 {
     int posic = -1;     // Retorno - posição onde encontrou
     int ini = 0;        // Início
-
     while (VarAtual >= v+2)
     {
+    // Obtém ini
         if (VarAtual >= v+3)
             ini = v[3].getInt();
         if (ini<0)
             ini=0;
-    // Padrão
-        const char * p = v[2].getTxt();
-        if (*p==0)
+    // Obtém o padrão
+        TProcurar proc;
+        if (!proc.Padrao(v[2].getTxt(), valor))
             break;
-    // Procurar um caracter
-        if (p[1]==0)
-        {
-            char ch = *p;
-            const char * ini = v[1].getTxt();
-            if (valor)
-            {
-                for (p=ini; *p; p++)
-                    if (*p == ch)
-                    {
-                        posic = p - ini;
-                        break;
-                    }
-            }
-            else
-            {
-                ch = tabCOMPLETO[(unsigned char)ch];
-                for (p=ini; *p; p++)
-                    if (tabCOMPLETO[*(unsigned char*)p] == ch)
-                    {
-                        posic = p - ini;
-                        break;
-                    }
-            }
+    // Obtém o texto a ser procurado
+        const char * p = v[1].getTxt();
+        int tam = strlen(p);
+        if (ini>tam)
             break;
-        }
-    // Variáveis
-        char padrao[4096];  // Texto procurado
-        int  tabela[0x100]; // Tabela de deslocamento
-    // Obtém tamanho do padrão
-        int tampadrao = strlen(p);
-        if (tampadrao > (int)sizeof(padrao))
-            tampadrao = (int)sizeof(padrao);
-    // Inicializa tabela
-        for (int x=0; x<0x100; x++)
-            tabela[x] = -1;
-        if (valor)
-        {
-    // Exato - Copia padrão e acerta tabela
-            for (int x=0; x<tampadrao; x++,p++)
-            {
-                padrao[x] = *p;
-                tabela[*(unsigned char*)p] = x;
-            }
-    // Exato - Obtém o texto
-            p = v[1].getTxt();      // p = texto
-            int tamp = strlen(p);   // tamp = tamanho do texto
-            if (tampadrao > tamp)
-                break;
-    // Exato - procura
-            int i=tampadrao-1, j=0;
-            while (true)
-            {
-                char ch = p[i+j];
-                if (padrao[i]==ch)
-                {
-                    if (i--)    // Passa para próximo caracter
-                        continue;
-                    posic = j;  // Encontrou
-                    break;
-                }
-                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
-                j += (i>1 ? i : 1); // Desloca j
-                i = tampadrao-1;    // Inicializa i
-                if (i+j >= tamp)    // Verifica fim da string
-                    break;
-            }
-        }
-        else
-        {
-    // Não exato - Copia padrão e acerta tabela
-            for (int x=0; x<tampadrao; x++,p++)
-            {
-                unsigned char ch = tabCOMPLETO[*(unsigned char*)p];
-                padrao[x] = ch;
-                tabela[ch] = x;
-            }
-    // Não exato - Obtém o texto
-            p = v[1].getTxt();      // p = texto
-            int tamp = strlen(p);   // tamp = tamanho do texto
-            if (tampadrao > tamp)
-                break;
-    // Não exato - procura
-            int i=tampadrao-1, j=0;
-            while (true)
-            {
-                char ch = tabCOMPLETO[(unsigned char)p[i+j]];
-                if (padrao[i]==ch)
-                {
-                    if (i--)    // Passa para próximo caracter
-                        continue;
-                    posic = j;  // Encontrou
-                    break;
-                }
-                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
-                j += (i>1 ? i : 1); // Desloca j
-                i = tampadrao-1;    // Inicializa i
-                if (i+j >= tamp)    // Verifica fim da string
-                    break;
-            }
-        }
+    // Procura
+        posic = proc.Proc(p+ini, tam-ini);
+        if (posic>=0)
+            posic += ini;
         break;
     }
 // Retorna o resultado
@@ -422,6 +330,39 @@ bool Instr::FuncTxtProc(TVariavel * v, int valor)
     if (!CriarVar(InstrVarInt))
         return false;
     VarAtual->setInt(posic);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Troca texto (txttroca)
+bool Instr::FuncTxtTroca(TVariavel * v, int valor)
+{
+    if (VarAtual < v+3)
+        return false;
+// Obtém o padrão
+    TProcurar proc;
+    if (DadosTopo+10 >= DadosFim ||
+        !proc.Padrao(v[2].getTxt(), valor))
+    {
+        ApagarVar(v+2);
+        ApagarRet(v);
+        return true;
+    }
+// Obtém o novo texto
+    copiastr(proc.troca, v[3].getTxt(), sizeof(proc.troca));
+// Prepara variáveis
+    ApagarVar(v+2);
+    if (!CriarVar(InstrTxtFixo))
+        return false;
+    VarAtual->endvar = DadosTopo;
+    proc.dest = DadosTopo;
+    proc.tamdest = DadosFim - DadosTopo;
+// Troca
+    const char * p = v[1].getTxt();
+    proc.Proc(p, strlen(p));
+    VarAtual->tamanho = strlen(DadosTopo) + 1;
+    DadosTopo += VarAtual->tamanho;
+    ApagarRet(v);
     return true;
 }
 
