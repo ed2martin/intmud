@@ -250,7 +250,9 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "txt2",       Instr::FuncTxt2, 1 },
     { "txtcor",     Instr::FuncTxt2, 2 },
     { "txtproc",    Instr::FuncTxtProc, 0 },
-    { "txtprocdif", Instr::FuncTxtProc, 1 }
+    { "txtprocdif", Instr::FuncTxtProc, 1 },
+    { "txttroca",   Instr::FuncTxtTroca, 0 },
+    { "txttrocadif",Instr::FuncTxtTroca, 1 }
 };
 
 //----------------------------------------------------------------------------
