@@ -11,11 +11,11 @@ class TVarServ;
 /// Tipo de variável
 enum TVarTipo
 {
-    varNulo,    ///< "NULO" ou desconhecido
+    varOutros,  ///< Desconhecido
     varInt,     ///< Variável int
     varDouble,  ///< Variável double
     varTxt,     ///< Texto (const char*)
-    varObj      ///< Referência (TObjeto*)
+    varObj      ///< Referência (TObjeto*) e "NULO" (se TObjeto* = 0)
 };
 
 //----------------------------------------------------------------------------

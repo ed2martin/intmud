@@ -362,7 +362,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                     break;
                 case '\"':
                 case '\\':
-                    *destino++= '\"';
+                    *destino++= '\\';
                 default:
                     if (*(unsigned char*)origem >= ' ')
                         *destino++ = *origem;
@@ -474,6 +474,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_maior:        strcpy(nome, " > ");  indica=16; break;
         case exo_maiorigual:   strcpy(nome, " >= "); indica=16; break;
         case exo_igual:        strcpy(nome, " = ");  indica=16; break;
+        case exo_igual2:       strcpy(nome, " == "); indica=16; break;
         case exo_diferente:    strcpy(nome, " != "); indica=16; break;
         case exo_e:            strcpy(nome, " & ");  indica=16; break;
         case exo_ou:           strcpy(nome, " | ");  indica=16; break;

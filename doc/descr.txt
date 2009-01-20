@@ -303,6 +303,8 @@ a-b     Subtrai
 a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
 a<=b    Verdadeiro se a<=b
 a=b     Verdadeiro se a for igual a b
+a==b    Verdadeiro se a for exatamente igual a b
+        Em textos: diferencia letras minúsculas de letras maiúsculas
 a>=b    Verdadeiro se a>=b
 a>b     Verdadeiro se a>b
 a!=b    Verdadeiro se a for diferente de b
@@ -392,15 +394,23 @@ txt1(<texto>)
 txt2(<texto>)
     Retorna tudo exceto a primeira palavra do texto.
 
-txtfora(<texto>)
-    Retorna um texto semelhante a <texto>, mas removendo espaços extras
-    à esquerda e à direita. Exemplo:
-    txtfora("  bom   dia  ") é o mesmo que "bom   dia".
+txtcor(<texto>)
+    Retorna o texto sem as definições de cores. Exemplo:
+    semcor("\cF\d4Teste\b") é o mesmo que "Teste".
 
-txtdentro(<texto>)
-    Retorna um texto semelhante a <texto>, mas removendo espaços extras,
-    exceto à esquerda e à direita. Exemplo:
-    txtfora("  bom   dia  ") é o mesmo que "  bom dia  ".
+txtremove(<texto>, <valor>)
+    Retorna um texto semelhante a <texto>, mas removendo espaços e/ou
+    cores, conforme <valor>:
+    1 = remover espaços à esquerda
+    2 = remover espaços extras, exceto à esquerda e à direita
+    4 = remover espaços à direita
+    8 = remover cores (tem o mesmo efeito da função txtcor)
+    Os valores podem ser somados para fazer mais de uma remoção.
+    Exemplo, 5 remove espaços à esquerda e à direita (5 = 4 + 1)
+    Exemplos de uso:
+    txtremove("  bom  dia  ", 7) é o mesmo que "bom dia"
+    txtremove("  bom  dia  ", 5) é o mesmo que "bom  dia"
+    txtremove("\cF\d4Teste\b", 8) é o mesmo que "Teste"
 
 txtproc(<texto>, <texto procurado>)
 txtproc(<texto>, <texto procurado>, <caracter inicial>)
@@ -429,10 +439,6 @@ vartroca(<texto>, <variável>, <texto2>)
     const t_2 = "maria" # $2 = maria
     vartroca("$1 falou com $2", "t_", "$")
                 # Produz o texto "joão falou com maria"
-
-txtcor(<texto>)
-    Retorna o texto sem as definições de cores. Exemplo:
-    semcor("\cF\d4Teste\b") é o mesmo que "Teste".
 
 criar(<nome da classe>)
 criar(<nome da classe>, <argumentos da função ini>)

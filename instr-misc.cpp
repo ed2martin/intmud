@@ -41,6 +41,7 @@ int Instr::Prioridade(int operador)
     case exo_maior:      return 5;
     case exo_maiorigual: return 5;
     case exo_igual:      return 6;
+    case exo_igual2:     return 6;
     case exo_diferente:  return 6;
     case exo_e:          return 7;
     case exo_ou:         return 8;
@@ -397,6 +398,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_maior:
         case exo_maiorigual:
         case exo_igual:
+        case exo_igual2:
         case exo_diferente:
         case exo_igualmul:
         case exo_igualdiv:
@@ -544,6 +546,7 @@ const char * Instr::NomeExpr(int valor)
     case exo_maior:         return "exo_maior";
     case exo_maiorigual:    return "exo_maiorigual";
     case exo_igual:         return "exo_igual";
+    case exo_igual2:        return "exo_igual2";
     case exo_diferente:     return "exo_diferente";
     case exo_e:             return "exo_e";
     case exo_ou:            return "exo_ou";
