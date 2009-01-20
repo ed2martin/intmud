@@ -307,7 +307,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                     break;
                 case '\"':
                 case '\\':
-                    *destino++= '\"', tamanho--;
+                    *destino++= '\\', tamanho--;
                 default:
                     if (*(unsigned char*)origem >= ' ')
                         *destino++ = *origem, tamanho--;
@@ -368,6 +368,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_maior:        strcpy(nome, " >");  break;
         case exo_maiorigual:   strcpy(nome, " >="); break;
         case exo_igual:        strcpy(nome, " =");  break;
+        case exo_igual2:       strcpy(nome, " =="); break;
         case exo_diferente:    strcpy(nome, " !="); break;
         case exo_e:            strcpy(nome, " &");  break;
         case exo_ou:           strcpy(nome, " |");  break;

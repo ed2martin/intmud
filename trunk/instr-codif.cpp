@@ -619,7 +619,6 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         }
         destino = copiastr(destino+5, nome);
         destino++;
-        dest_ini[4] = destino - dest_ini;
     // Variável Const
         if (dest_ini[2] == cConstExpr)
         {
@@ -630,6 +629,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
             origem++;
+            dest_ini[4] = destino - dest_ini;
             proc_expr=true;
         }
     // Outros tipos de variáveis
@@ -1205,7 +1205,10 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                        sinal=exo_maiorigual,origem++;
                   break;
 
-        case '=': sinal=exo_igual; break;
+        case '=': sinal=exo_igual;
+                  if (origem[1]=='=')
+                      sinal=exo_igual2,origem++;
+                  break;
 
         case '&': sinal=exo_e; break;
         case '|': sinal=exo_ou; break;

@@ -298,6 +298,95 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtremove
+bool Instr::FuncTxtRemove(TVariavel * v, int valor)
+{
+    const char * txt;   // Texto
+    char mens[4096];    // Resultado
+    int  remove;        // O que deve remover
+    char * destino = mens;
+
+// Obtém variáveis
+    if (VarAtual < v+2)
+        return false;
+    remove = v[2].getInt();
+    if (remove<0 || remove>15)
+        return false;
+    txt = v[1].getTxt();
+
+// Copia texto conforme variável remove
+    int ini = 1; // quando encontra algo diferente de espaço vai para 2
+    int esp = 0; // quantos espaços acumulados
+
+    while (*txt)
+        switch (*txt)
+        {
+        case ex_barra_b:
+            if ((remove&8)==0)
+                goto copia;
+            txt++;
+            break;
+        case ex_barra_c:
+            if ((remove&8)==0)
+                goto copia;
+            if (txt[1]>='0' && txt[1]<='9' ||
+                    txt[1]>='A' && txt[1]<='F' ||
+                    txt[1]>='a' && txt[1]<='f')
+                txt += 2;
+            else
+                txt++;
+            break;
+        case ex_barra_d:
+            if ((remove&8)==0)
+                goto copia;
+            if (txt[1]>='0' && txt[1]<='7')
+                txt += 2;
+            else
+                txt++;
+            break;
+        case ' ':
+            esp++, txt++;
+            break;
+        default:
+        copia:
+            if (esp)
+            {
+                if (remove & ini)
+                    esp = ini-1;
+                while (esp && destino<mens+sizeof(mens))
+                    *destino++=' ', esp--;
+            }
+            if (destino<mens+sizeof(mens))
+                *destino++ = *txt;
+            txt++;
+            ini=2;
+            break;
+        }
+    if ((remove&4)==0)
+        while (esp && destino<mens+sizeof(mens))
+            *destino++=' ', esp--;
+
+// Acerta variáveis
+    ApagarVar(v);
+    if (!CriarVar(InstrTxtFixo))
+        return false;
+// Verifica espaço disponível (sem o 0 no final do texto)
+    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
+    if (disp<0)
+        return false;
+// Copia texto
+    int tam = (destino-mens < disp ? destino-mens : disp);
+    if (tam>0)
+        memcpy(Instr::DadosTopo, mens, tam);
+    Instr::DadosTopo[tam] = 0;
+// Acerta variáveis
+    VarAtual->endvar = Instr::DadosTopo;
+    VarAtual->tamanho = tam+1;
+    Instr::DadosTopo += tam+1;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Procura texto (txtproc)
 bool Instr::FuncTxtProc(TVariavel * v, int valor)
 {
@@ -400,7 +489,7 @@ bool Instr::FuncTotal(TVariavel * v, int valor)
     for (TVariavel * var = v+1; var<=VarAtual && obj==0; var++)
         switch (var->Tipo())
         {
-        case varNulo:
+        case varOutros:
         case varInt:
         case varDouble:
             break;

@@ -41,6 +41,7 @@ bool FuncNumero(TVariavel * v, int valor);
 bool FuncRef(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);
+bool FuncTxtRemove(TVariavel * v, int valor);
 bool FuncTxtProc(TVariavel * v, int valor);
 bool FuncTxtTroca(TVariavel * v, int valor);
 bool FuncAntesDepois(TVariavel * v, int valor);
@@ -350,6 +351,7 @@ enum Expressao
     exo_maior,      ///< Operador: a>b
     exo_maiorigual, ///< Operador: a>=b
     exo_igual,      ///< Operador: a=b
+    exo_igual2,     ///< Operador: a==b
     exo_diferente,  ///< Operador: a!=b
     exo_e,          ///< Operador: a&b
     exo_ou,         ///< Operador: a|b

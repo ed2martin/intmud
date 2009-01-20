@@ -110,25 +110,25 @@ TVarTipo TVariavel::Tipo()
     case Instr::cIntDec:    return varInt;
     case Instr::cReal:      return varDouble;
     case Instr::cRef:       return varObj;
-    case Instr::cConstNulo: return varNulo;
+    case Instr::cConstNulo: return varObj;
     case Instr::cConstTxt:  return varTxt;
     case Instr::cConstNum:  return varDouble;
     case Instr::cConstExpr:
     case Instr::cFunc:
-    case Instr::cVarFunc:   return varNulo;
+    case Instr::cVarFunc:   return varOutros;
 
 // Variáveis extras
-    case Instr::cListaObj:  return varNulo;
-    case Instr::cListaTxt:  return varNulo;
-    case Instr::cListaMsg:  return varNulo;
-    case Instr::cNomeObj:   return varNulo;
-    case Instr::cLog:       return varNulo;
+    case Instr::cListaObj:  return varOutros;
+    case Instr::cListaTxt:  return varOutros;
+    case Instr::cListaMsg:  return varOutros;
+    case Instr::cNomeObj:   return varOutros;
+    case Instr::cLog:       return varOutros;
     case Instr::cIntTempo:  return varInt;
-    case Instr::cSocket:    return varNulo;
-    case Instr::cServ:      return varNulo;
-    case Instr::cSalvar:    return varNulo;
-    case Instr::cProg:      return varNulo;
-    case Instr::cIndice:    return varNulo;
+    case Instr::cSocket:    return varOutros;
+    case Instr::cServ:      return varOutros;
+    case Instr::cSalvar:    return varOutros;
+    case Instr::cProg:      return varOutros;
+    case Instr::cIndice:    return varOutros;
 
     case Instr::cTxtFixo:
     case Instr::cVarNome:
@@ -136,7 +136,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cVarObjeto: return varObj;
     case Instr::cVarInt:    return varInt;
     }
-    return varNulo;
+    return varOutros;
 }
 
 //------------------------------------------------------------------------------

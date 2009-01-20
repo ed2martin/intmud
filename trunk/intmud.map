@@ -87,6 +87,7 @@ func fim
 [x]
 comum serv servidor
 socket conec
+const msg = conec.msg(arg0)
 func iniclasse
   se ![arg0]:servidor.abrir("", 2000)
     terminar
@@ -96,38 +97,58 @@ func servidor_socket
   novo.conec = arg0
   novo.conec.proto = 2
   novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 6 ou qualquer outra coisa\n")
+  novo.conec.msg("Tecle um número de 0 a 8 ou qualquer outra coisa\n")
 func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
   escr_[txt1(arg0)]
 func escr_0
-  conec.msg("pos(1) = " + pos(1) + "\n")
-  conec.msg("pos(-1) = " + pos(-1) + "\n")
-  conec.msg("abs(4) = " + abs(4) + "\n")
-  conec.msg("abs(-5) = " + abs(-5) + "\n")
-  conec.msg("int(4.3) = " + int(4.3) + "\n")
+  msg("pos(1) = " + pos(1) + "\n")
+  msg("pos(-1) = " + pos(-1) + "\n")
+  msg("abs(4) = " + abs(4) + "\n")
+  msg("abs(-5) = " + abs(-5) + "\n")
+  msg("int(4.3) = " + int(4.3) + "\n")
 func escr_1
-  conec.msg("rand(10) = " + rand(10) + "\n")
+  msg("rand(10) = " + rand(10) + "\n")
 func escr_2
-  conec.msg("txt(\"abcdef\", 2, 3) = " + txt("abcdef", 2, 3) + "\n")
+  msg("txt(\"abcdef\", 2, 3) = " + txt("abcdef", 2, 3) + "\n")
 func escr_3
-  conec.msg("txt1 - " + txt1("bom dia boa tarde") + "\n")
-  conec.msg("txt2 - " + txt2("bom dia boa tarde") + "\n")
-  conec.msg("total - " + total("bom dia boa tarde") + "\n")
+  msg("txt1 - " + txt1("bom dia boa tarde") + "\n")
+  msg("txt2 - " + txt2("bom dia boa tarde") + "\n")
+  msg("total - " + total("bom dia boa tarde") + "\n")
 func escr_4
   ref r
-  conec.msg("Objetos mm: " + total($mm) + "\n")
+  msg("Objetos mm: " + total($mm) + "\n")
   r = $mm
   enquanto r
-    conec.msg(r.texto + "\n")
+    msg(r.texto + "\n")
     r = objdepois(r)
   efim
 func escr_5
-  conec.msg("Volte sempre\n")
+  msg("Volte sempre\n")
   apagar(este)
 func escr_6
-  conec.msg("Encerrando o IntMUD\n")
+  msg("Encerrando o IntMUD\n")
   terminar
+func escr_7
+  se("A"="a")
+    msg("1\n")
+  senão
+    msg("0\n")
+  fimse
+  se("A"=="a")
+    msg("1\n")
+  senão
+    msg("0\n")
+  fimse
+func escr_8
+  txt20 tt
+  uint8 x
+  tt = " \d4  bom   dia \b  "
+  msg("Texto \"" + tt + "\"\n")
+  enquanto x<16
+    msg(txt(x) + "=\"" + txtremove(tt,x) + "\"\n")
+    x += 1
+  efim
 
 [mm]
 txt20 texto

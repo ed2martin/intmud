@@ -251,6 +251,7 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "txtcor",     Instr::FuncTxt2, 2 },
     { "txtproc",    Instr::FuncTxtProc, 0 },
     { "txtprocdif", Instr::FuncTxtProc, 1 },
+    { "txtremove",  Instr::FuncTxtRemove, 0 },
     { "txttroca",   Instr::FuncTxtTroca, 0 },
     { "txttrocadif",Instr::FuncTxtTroca, 1 }
 };
@@ -498,16 +499,6 @@ bool Instr::ExecX()
             }
 
         // Variável da função
-            if (FuncAtual->linha[2] > cVariaveis)
-            {
-                if (!CriarVar(FuncAtual->linha))
-                    return RetornoErro();
-                FuncAtual->fimvar++;
-                FuncAtual->linha += Num16(FuncAtual->linha);
-                continue;
-            }
-
-        // Processa instrução
 #ifdef DEBUG_INSTR
             {
                 char mens[512];
@@ -518,6 +509,16 @@ bool Instr::ExecX()
                 fflush(stdout);
             }
 #endif
+            if (FuncAtual->linha[2] > cVariaveis)
+            {
+                if (!CriarVar(FuncAtual->linha))
+                    return RetornoErro();
+                FuncAtual->fimvar++;
+                FuncAtual->linha += Num16(FuncAtual->linha);
+                continue;
+            }
+
+        // Processa instrução
             switch (FuncAtual->linha[2])
             {
             case cSe:   // Processa expressão numérica
@@ -587,7 +588,7 @@ bool Instr::ExecX()
                 printf("???_%d ", (unsigned char)v->defvar[2]);
             switch (v->Tipo())
             {
-            case varNulo: printf("NULL"); break;
+            case varOutros: printf("outros"); break;
             case varInt: printf("int=%d", v->getInt()); break;
             case varDouble: printf("double=%f", v->getDouble()); break;
             case varTxt: printf("txt=%s", v->getTxt()); break;
@@ -832,7 +833,8 @@ bool Instr::ExecX()
             FuncAtual->expr++;
             switch (VarAtual->Tipo())
             {
-            case varNulo:
+            case varOutros:
+            case varObj:
                 break;
             case varInt:
                 if (VarAtual->tamanho)
@@ -1084,7 +1086,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 switch (VarAtual[-1].Tipo())
                 {
-                case varNulo:
+                case varOutros:
                     if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
                             VarAtual[-1].endvar != VarAtual[0].endvar)
                         VarAtual[-1].Igual(VarAtual);
@@ -1133,7 +1135,7 @@ bool Instr::ExecX()
                     }
                 }
                     // Valores numéricos
-                else if (tipo1!=varNulo && tipo2!=varNulo)
+                else if (tipo1!=varOutros && tipo2!=varOutros)
                 {
                     if (tipo1==varInt && tipo2==varInt)
                     {
@@ -1172,6 +1174,61 @@ bool Instr::ExecX()
                 case exo_igual:      if (tipo1==0) VarAtual->setInt(1); break;
                 case exo_diferente:  if (tipo1!=0) VarAtual->setInt(1); break;
                 }
+                break;
+            }
+        case exo_igual2:     // Operador: a==b
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+            // Compara valores
+                int tipo1 = VarAtual[-1].Tipo();
+                int tipo2 = VarAtual[0].Tipo();
+                    // Números
+                switch (tipo1)
+                {
+                case varInt:
+                    tipo1 = 0;
+                    if (tipo2==varInt)
+                        tipo1 = (VarAtual[-1].getInt() ==
+                                 VarAtual[0].getInt());
+                    else if (tipo2==varDouble)
+                        tipo1 = (VarAtual[-1].getDouble() ==
+                                 VarAtual[0].getDouble());
+                    break;
+                case varDouble:
+                    tipo1 = 0;
+                    if (tipo2==varInt || tipo2==varDouble)
+                        tipo1 = (VarAtual[-1].getDouble() ==
+                                 VarAtual[0].getDouble());
+                    break;
+                case varTxt:
+                    tipo1 = 0;
+                    if (tipo2 == varTxt)
+                        tipo1 = (strcmp(VarAtual[-1].getTxt(),
+                                        VarAtual[0].getTxt())==0);
+                    break;
+                case varObj:
+                    tipo1 = 0;
+                    if (tipo2 == varObj)
+                        tipo1 = (VarAtual[-1].getObj() ==
+                                 VarAtual[0].getObj());
+                    break;
+                default:
+                    if (tipo1 != tipo2)
+                        tipo1 = 0;
+                    else if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2])
+                        tipo1 = (VarAtual[-1].Compara(VarAtual) == 0);
+                    else
+                        tipo1 = 0;
+                }
+            // Apaga valores da pilha; cria int32 na pilha
+                ApagarVar(VarAtual-1);
+                if (!CriarVar(InstrVarInt))
+                    return RetornoErro();
+            // Avança Func->expr, verifica operador
+                if (tipo1)
+                    VarAtual->setInt(1);
                 break;
             }
         case exo_ee:         // Operador: Início do operador &
