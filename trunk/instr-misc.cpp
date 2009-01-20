@@ -333,6 +333,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
     int contagem=0;
     while (true)
     {
+        //printf(">> %d %s\n", contagem, NomeExpr(*expr)); fflush(stdout);
         if (*expr==valor && contagem<=0)
             return expr;
         switch (*expr++)
@@ -351,13 +352,8 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case ex_fecha:  // Aberto com ex_abre
         case ex_ponto:  // Aberto com ex_arg
         case ex_doispontos:
-            while (*expr!=ex_arg && *expr!=ex_abre)
+            while (*expr!=ex_arg && *expr!=ex_abre && *expr!=ex_varfim)
             {
-                if (*expr==ex_varfim)
-                {
-                    contagem--;
-                    break;
-                }
                 assert(*expr!=0);
                 expr++;
             }
@@ -498,7 +494,7 @@ const char * Instr::NomeComando(int valor)
  */
 const char * Instr::NomeExpr(int valor)
 {
-    switch ((Instr::Expressao)FuncAtual->expr[0])
+    switch ((Instr::Expressao)valor)
     {
     case ex_fim:            return "ex_fim";
     case ex_coment:         return "ex_coment";
