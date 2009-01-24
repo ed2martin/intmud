@@ -88,6 +88,7 @@ func fim
 comum serv servidor
 socket conec
 const msg = conec.msg(arg0)
+uint16 xvar
 func iniclasse
   se ![arg0]:servidor.abrir("", 2000)
     terminar
@@ -97,7 +98,7 @@ func servidor_socket
   novo.conec = arg0
   novo.conec.proto = 2
   novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 8 ou qualquer outra coisa\n")
+  novo.conec.msg("Tecle um número de 0 a 9 ou qualquer outra coisa\n")
 func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
   escr_[txt1(arg0)]
@@ -149,6 +150,25 @@ func escr_8
     msg(txt(x) + "=\"" + txtremove(tt,x) + "\"\n")
     x += 1
   efim
+func escr_9
+  msg(vartroca("$1 falou com $2\n", "$", "t_"))
+  msg(vartroca("bom $da $de $di $do $du dia\n", "$", "var_"))
+  msg(vartroca("total %t valor %r%  %var %\n", "%", "x"))
+const t_1 = "joão"  # $1 = joão
+const t_2 = "maria" # $2 = maria
+const var_d = "D"
+const var_di = "DI"
+const var_dia = "DIA"
+const var_des = "DES"
+const var_do = "DO"
+const var_du = $x
+func xt
+  xvar += 1
+  ret xvar
+varfunc xr
+  ret rand(101)
+const x_ = "%"
+const x = "???"
 
 [mm]
 txt20 texto

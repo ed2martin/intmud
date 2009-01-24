@@ -191,12 +191,13 @@ int compara(const char * string1, const char * string2)
     {
         ch1=(*string1==' ' ? 0 : tabCOMPLETO[*(unsigned char *)string1]);
         ch2=(*string2==' ' ? 0 : tabCOMPLETO[*(unsigned char *)string2]);
-        if (ch1==0 || ch1!=ch2)
-            return (ch1 ? 2 : ch2 ? -2 : 0);
+        if (ch1==0)
+            return (ch2==0 ? 0 : -2);
+        if (ch1!=ch2)
+            return (ch2==0 ? 2 : ch1<ch2 ? -1 : 1);
         string1++;
         string2++;
     }
-    return (ch1==ch2 ? 0 : ch1<ch2 ? -1 : 1);
 }
 
 //------------------------------------------------------------------------------

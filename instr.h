@@ -46,6 +46,7 @@ bool FuncTxtProc(TVariavel * v, int valor);
 bool FuncTxtTroca(TVariavel * v, int valor);
 bool FuncAntesDepois(TVariavel * v, int valor);
 bool FuncTotal(TVariavel * v, int valor);
+bool FuncVarTroca(TVariavel * v, int valor);
 
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);

@@ -43,12 +43,10 @@ public:
         /**<
          *  @param nome Nome da variável
          *  @return Índice em InstrVar e IndiceVar ou -1 se não encontrou */
-    int IndiceNome2(const char * nome);
-        ///< Obtém índice de uma variável a partir do nome
-        /**< Semelhante a IndiceNome(), exceto que procura a primeira
-         *   variável que começa com o nome especificado.
-         *  @param nome Nome da variável
-         *  @return Índice em InstrVar e IndiceVar ou -1 se não encontrou */
+    int IndiceNomeIni(const char * nome);
+        ///< IndiceNome() que procura a primeira variável que começa com o nome
+    int IndiceNomeFim(const char * nome);
+        ///< IndiceNome() que procura a última variável que começa com o nome
 
     char ** InstrVar;
         ///< Instruções que definem as variáveis (inclusive herdadas)
