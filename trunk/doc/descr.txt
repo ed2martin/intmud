@@ -430,14 +430,14 @@ txttroca(<texto>, <valor anterior>, <novo valor>)
     Exemplo:
     txttroca("possibilidade", "i", "e") é o mesmo que "possebeledade".
 
-vartroca(<texto>, <variável>, <texto2>)
+vartroca(<texto>, <texto2>, <variável>)
     Procura nomes de variáveis do objeto "este" que começam com <variável>.
     Troca <variável> por <texto2> e procura por isso em <texto>.
     Substitui pelos respectivos valores das variáveis.
     Exemplo:
     const t_1 = "joão"  # $1 = joão
     const t_2 = "maria" # $2 = maria
-    vartroca("$1 falou com $2", "t_", "$")
+    vartroca("$1 falou com $2", "$", "t_")
                 # Produz o texto "joão falou com maria"
 
 criar(<nome da classe>)

@@ -546,7 +546,7 @@ int TClasse::IndiceNome(const char * nome)
 }
 
 //----------------------------------------------------------------------------
-int TClasse::IndiceNome2(const char * nome)
+int TClasse::IndiceNomeIni(const char * nome)
 {
     int ini = 0; // Índice inicial
     int fim = NumVar - 1; // Índice final
@@ -566,6 +566,33 @@ int TClasse::IndiceNome2(const char * nome)
             ind = meio;
         default:
             fim = meio-1;
+        }
+    }
+    return ind;
+}
+
+//----------------------------------------------------------------------------
+int TClasse::IndiceNomeFim(const char * nome)
+{
+    int ini = 0; // Índice inicial
+    int fim = NumVar - 1; // Índice final
+    int ind = -1;
+    while (ini<=fim)
+    {
+        int meio = (ini+fim)/2;
+        switch (comparaZ(nome, InstrVar[meio] + 5))
+        {
+        case 2:
+        case 1:
+            ini = meio+1;
+            break;
+        case -1:
+            fim = meio-1;
+            break;
+        case -2:
+        case 0:
+            ind = meio;
+            ini = meio+1;
         }
     }
     return ind;

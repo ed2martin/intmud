@@ -508,3 +508,237 @@ bool Instr::FuncTotal(TVariavel * v, int valor)
     VarAtual->setInt(tamanho);
     return true;
 }
+
+//----------------------------------------------------------------------------
+/// Função vartroca
+bool Instr::FuncVarTroca(TVariavel * v, int valor)
+{
+    if (VarAtual < v+3)
+        return false;
+    if (FuncAtual >= FuncFim - 2 || FuncAtual->este==0)
+        return false;
+
+// Variáveis
+    TClasse * c = FuncAtual->este->Classe;
+    const char * origem; // Primeiro argumento - texto original
+    char mens[4096]; // Aonde jogar o texto codificado
+
+// Obtém argumento - padrão que deve procurar no texto
+    char txtpadrao[40]; // Texto
+    int  tampadrao=0;   // Tamanho do texto sem o zero
+    origem = v[2].getTxt();
+    while (*origem && tampadrao<(int)sizeof(txtpadrao))
+        txtpadrao[tampadrao++] = tabCOMPLETO[*(unsigned char*)origem++];
+#if 0
+    printf("Padrão = [");
+    for (int x=0; x<tampadrao; x++)
+        putchar(txtpadrao[x]);
+    puts("]"); fflush(stdout);
+#endif
+
+// Obtém índices das variáveis que serão procuradas
+    origem = v[3].getTxt();
+    int tamvar = strlen(origem); // Tamanho do texto sem o zero
+    int indini = 0;              // Índice inicial
+    int indfim = c->NumVar-1;    // Índice final
+    if (tamvar)
+    {
+        indini = c->IndiceNomeIni(origem);
+        indfim = c->IndiceNomeFim(origem);
+    }
+
+// Verifica se índices válidos
+    if (indini<0)   // Índice inválido
+        indini=1, indfim=0;
+    else if (tampadrao==0) // Texto a procurar é nulo
+        if (c->InstrVar[indini][tamvar+5]==0) // Primeira variável é nula
+            indini++; // Passa para próxima variável
+#if 0
+    printf("Variáveis(%d): ", tamvar);
+    for (int x=indini; x<=indfim; x++)
+        printf("[%s]", c->InstrVar[x]+5);
+    putchar('\n'); fflush(stdout);
+#endif
+
+// Cabeçalho da instrução
+    mens[2] = cConstExpr; // Tipo de instrução
+    mens[3] = 0;
+    mens[4] = 7; // Aonde começam os dados da constante
+    mens[5] = '+'; // Nome da variável
+    mens[6] = 0;
+    mens[7] = ex_txt;
+    char * destino = mens + 8;
+    char * dest_ini = 0;// Endereço do início da variável ex_txt em destino
+                        // 0=não anotou nenhuma variável
+
+// Monta instrução
+    tamvar += 5;    // Para comparação
+    origem = v[1].getTxt();
+    while (*origem)
+    {
+        int x;
+    // Verifica padrão
+        for (x=0; x<tampadrao; x++)
+            if (tabCOMPLETO[(unsigned char)origem[x]] != txtpadrao[x])
+                break;
+    // Não achou - anota caracter
+        if (x<tampadrao)
+        {
+            if (destino >= mens+sizeof(mens)-4)
+                break;
+            *destino++ = *origem++;
+            continue;
+        }
+    // Achou - procura variável
+        int ini = indini; // Índice inicial
+        int fim = indfim; // Índice final
+        x = -1;
+        while (ini<=fim)
+        {
+            int meio = (ini+fim)/2;
+            int comp = comparaZ(origem+tampadrao,
+                    c->InstrVar[meio] + tamvar);
+#if 0
+            printf("cmp [%s] [%s] = %d\n", origem+tampadrao,
+                    c->InstrVar[meio] + tamvar, comp); fflush(stdout);
+#endif
+            switch (comp)
+            {
+            case 2:
+            case 0:
+                x = meio;
+            case 1:
+                ini = meio+1;
+                break;
+            case -1:
+            case -2:
+                fim = meio-1;
+                break;
+            }
+        }
+    // Não achou variável - anota caracter
+        if (x<0)
+        {
+            if (destino >= mens+sizeof(mens)-4)
+                break;
+            *destino++ = *origem++;
+            continue;
+        }
+    // Achou variável
+    // Acerta origem
+        const char * defvar = c->InstrVar[x];
+        origem += tampadrao + strlen(defvar + tamvar);
+        //printf("Variável [%s]\n", defvar+5); fflush(stdout);
+    // Se for variável, copia texto
+        if (defvar[2]!=cFunc && defvar[2]!=cVarFunc &&
+                defvar[2]!=cConstExpr)
+        {
+            TVariavel v;
+            x = c->IndiceVar[x];
+            v.defvar = defvar;
+            v.tamanho = 0;
+            v.bit = x >> 24;
+            if (defvar[2]==cConstTxt || // Constante
+                    defvar[2]==cConstNum)
+                v.endvar = 0;
+            else if (x & 0x400000) // Variável da classe
+                v.endvar = c->Vars + (x & 0x3FFFFF);
+            else    // Variável do objeto
+                v.endvar = FuncAtual->este->Vars + (x & 0x3FFFFF);
+            const char * o = v.getTxt();
+            while (*o && destino<mens+sizeof(mens)-4)
+                *destino++ = *o++;
+            continue;
+        }
+    // Verifica se espaço suficiente
+        if (destino + strlen(defvar+5)+10 >= mens+sizeof(mens))
+            break;
+    // Anota fim do texto
+        if (dest_ini == 0) // Início
+            *destino++ = 0;
+        else if (destino == dest_ini) // Texto vazio
+            destino--;
+        else   // Não é texto vazio
+        {
+            *destino++ = 0;
+            *destino++ = exo_add;
+        }
+    // Anota variável
+        *destino = ex_varini;
+        destino = copiastr(destino+1, defvar+5);
+        destino[0] = ex_ponto;
+        destino[1] = ex_varfim;
+        destino[2] = exo_add;
+        destino[3] = ex_txt;
+        destino += 4;
+        dest_ini = destino;
+    }
+    *destino++ = 0;
+
+// Texto puro, sem substituições
+    if (dest_ini==0)
+    {
+        int tam = destino - mens + 8;
+    // Acerta variáveis
+        ApagarVar(v);
+        if (!CriarVar(InstrTxtFixo))
+            return false;
+    // Verifica espaço disponível (sem o 0 no final do texto)
+        int disp = Instr::DadosFim - Instr::DadosTopo - 1;
+        if (disp<0)
+            return false;
+        if (tam>disp)
+            tam = disp;
+    // Copia texto
+        if (tam>0)
+            memcpy(Instr::DadosTopo, mens+8, tam);
+        Instr::DadosTopo[tam] = 0;
+    // Acerta variáveis
+        VarAtual->endvar = Instr::DadosTopo;
+        VarAtual->tamanho = tam+1;
+        Instr::DadosTopo += tam+1;
+#if 0
+        printf("vartxt txt: %s\n", (char*)VarAtual->endvar);
+        fflush(stdout);
+#endif
+        return true;
+    }
+
+// Soma com o texto anterior
+    *destino++ = exo_add;
+    *destino++ = ex_fim;
+
+// Acerta tamanho da instrução
+    int total = destino - mens;
+    mens[0] = total;    // Tamanho da instrução
+    mens[1] = total>>8;
+
+// Acerta variáveis
+    ApagarVar(v);
+    if (DadosFim - DadosTopo < total)
+        return false;
+    VarAtual++;
+    VarAtual->Limpar();
+    VarAtual->defvar = DadosTopo;
+    VarAtual->endvar = DadosTopo;
+    VarAtual->tamanho = total;
+    memcpy(DadosTopo, mens, total);
+    DadosTopo += total;
+
+// Mostra o que codificou
+#if 0
+    Instr::Decod(mens, VarAtual->defvar, sizeof(mens));
+    printf("vartxt exec: %s\n", mens); fflush(stdout);
+#endif
+
+// Acerta função
+    FuncAtual++;
+    FuncAtual->linha = VarAtual->defvar;
+    FuncAtual->este = FuncAtual[-1].este;
+    FuncAtual->expr = VarAtual->defvar + 7;
+    FuncAtual->inivar = VarAtual + 1;
+    FuncAtual->fimvar = VarAtual + 1;
+    FuncAtual->numarg = 0;
+    FuncAtual->tipo = 0;
+    return true;
+}
