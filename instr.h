@@ -28,6 +28,7 @@ const char * NomeExpr(int valor);
 bool ExecIni(TClasse * classe, const char * func);
 bool ExecIni(TObjeto * este, const char * func);
 void ExecArg(const char * txt);
+void ExecArg(int valor);
 void ExecArgCriar(const char * def);
 bool ExecX();
 void ExecFim();
@@ -166,6 +167,14 @@ extern ExecFunc * const FuncFim;
     /// Pilha de funções - última função da pilha
 extern ExecFunc * FuncAtual;
 
+enum EndVar
+{
+    endProp=3,
+    endIndice=4,
+    endVetor=5,
+    endNome=6
+};
+
 //----------------------------------------------------------------------------
 /// Comandos
 /**
@@ -176,15 +185,18 @@ extern ExecFunc * FuncAtual;
     .
 
     A partir de cVariaveis vem as definições de variáveis:
-    - byte 3 = propriedades:
+    - byte 3 (Instr::endProp) = propriedades:
       - bit 0=1 se comum
       - bit 1=1 se sav
       .
-    - byte 4
+    - byte 4 (Instr::endIndice)
       - tamanho do texto em cTxt1 e cTxt2
       - índice para os dados extras das variáveis Const
       .
-    - X bytes = nome da variável em ASCIIZ
+    - byte 5 (Instr::endVetor)
+      - número de elementos do vetor ou 0 se não for vetor
+      .
+    - X bytes (Instr::endNome) = nome da variável em ASCIIZ
     - Y bytes = expressão numérica, em cConstExp
       - texto em ASCIIZ, em cConstTxt
       - valor numérico em cConstInt e cConstReal

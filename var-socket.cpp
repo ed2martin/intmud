@@ -216,26 +216,30 @@ void TObjSocket::FuncFechou()
 {
     for (varObj = Inicio; varObj;)
     {
-        if (varObj->objeto)
+        if (varObj->b_objeto)
         {
-            TObjeto * end = varObj->objeto;
+            TObjeto * end = varObj->endobjeto;
             char mens[80];
-            sprintf(mens, "%s_fechou", varObj->defvar+5);
+            sprintf(mens, "%s_fechou", varObj->defvar+Instr::endNome);
             varObj->MudarSock(0);
             if (Instr::ExecIni(end, mens)==false)
                 end->MarcarApagar();
             else
+            {
+                Instr::ExecArg(varObj->indice);
                 Instr::ExecX();
+            }
             Instr::ExecFim();
         }
-        else if (varObj->classe)
+        else if (varObj->endclasse)
         {
-            TClasse * end = varObj->classe;
+            TClasse * end = varObj->endclasse;
             char mens[80];
-            sprintf(mens, "%s_fechou", varObj->defvar+5);
+            sprintf(mens, "%s_fechou", varObj->defvar+Instr::endNome);
             varObj->MudarSock(0);
             if (Instr::ExecIni(end, mens)==false)
                 continue;
+            Instr::ExecArg(varObj->indice);
             Instr::ExecX();
             Instr::ExecFim();
         }
@@ -252,23 +256,24 @@ bool TObjSocket::FuncMsg(const char * texto)
     {
         bool prossegue = false;
     // Definido em objeto: prepara para executar
-        if (vobj->objeto)
+        if (vobj->b_objeto)
         {
             char mens[80];
-            sprintf(mens, "%s_msg", vobj->defvar+5);
-            prossegue = Instr::ExecIni(vobj->objeto, mens);
+            sprintf(mens, "%s_msg", vobj->defvar+Instr::endNome);
+            prossegue = Instr::ExecIni(vobj->endobjeto, mens);
         }
     // Definido em classe: prepara para executar
-        else if (vobj->classe)
+        else if (vobj->endclasse)
         {
             char mens[80];
-            sprintf(mens, "%s_msg", vobj->defvar+5);
-            prossegue = Instr::ExecIni(vobj->classe, mens);
+            sprintf(mens, "%s_msg", vobj->defvar+Instr::endNome);
+            prossegue = Instr::ExecIni(vobj->endclasse, mens);
         }
     // Executa
         varObj = vobj;
         if (prossegue)
         {
+            Instr::ExecArg(vobj->indice);
             Instr::ExecArg(texto);
             Instr::ExecX();
             Instr::ExecFim();
@@ -324,6 +329,15 @@ void TVarSocket::Mover(TVarSocket * destino)
     (Antes ? Antes->Depois : Socket->Inicio) = destino;
     if (Depois)
         Depois->Antes = destino;
+}
+
+//------------------------------------------------------------------------------
+void TVarSocket::EndObjeto(TClasse * c, TObjeto * o)
+{
+    if (o)
+        endobjeto=o, b_objeto=true;
+    else
+        endclasse=c, b_objeto=false;
 }
 
 //------------------------------------------------------------------------------

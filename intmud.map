@@ -95,13 +95,13 @@ func iniclasse
 func servidor_socket
   ref novo
   novo = criar("x")
-  novo.conec = arg0
+  novo.conec = arg1
   novo.conec.proto = 2
   novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 9 ou qualquer outra coisa\n")
+  novo.conec.msg("Tecle um número de 0 a 10 ou qualquer outra coisa\n")
 func conec_msg
-  conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
-  escr_[txt1(arg0)]
+  conec.msg("Você escreveu \cA\d4" + arg1 + "\b\n")
+  escr_[txt1(arg1)]
 func escr_0
   msg("pos(1) = " + pos(1) + "\n")
   msg("pos(-1) = " + pos(-1) + "\n")
@@ -169,6 +169,12 @@ varfunc xr
   ret rand(101)
 const x_ = "%"
 const x = "???"
+func escr_10
+  uint8 teste.3
+  teste.0 = 5
+  teste.1 = 2
+  teste.2 = 8
+  msg(">" + teste.0 + " " + teste.1 + " " + teste.2 + "\n")
 
 [mm]
 txt20 texto
@@ -184,11 +190,13 @@ func ini
 [servtermina]
 # Quando conectar-se na porta 2001 pelo endereço localhost ou 127.0.0.1
 # o programa termina
-serv servidor
+serv servidor.3
 func iniclasse
   criar(arg0)
 func ini
-  servidor.abrir("localhost", 2001)
+  servidor.0.abrir("localhost", 2001)
+  servidor.1.abrir("localhost", 2002)
+  servidor.2.abrir("localhost", 2003)
 func servidor_socket
-  arg0.msg("Encerrando o IntMUD\n")
+  arg1.msg("Encerrando o IntMUD (arg0=" + arg0 + ")\n")
   terminar

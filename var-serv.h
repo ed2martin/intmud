@@ -23,6 +23,7 @@ public:
     void Apagar();          ///< Apaga objeto
     void Fechar();          ///< Fecha porta
     void Mover(TVarServ * destino); ///< Move TVarSock para outro lugar
+    void EndObjeto(TClasse * c, TObjeto * o);
     bool Abrir(const char * ender, unsigned short porta);
     static void Fd_Set(fd_set * set_entrada);
     static void ProcEventos(fd_set * set_entrada);
@@ -30,8 +31,12 @@ public:
     int  getValor();    ///< Ler valor numérico da variável
 
     const char * defvar;///< Como foi definida a variável
-    TClasse * classe;   ///< Em que classe está definido
-    TObjeto * objeto;   ///< Em que objeto está definido
+    union {
+        TClasse * endclasse;///< Em que classe está definido
+        TObjeto * endobjeto;///< Em que objeto está definido
+    };
+    bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
+    unsigned char indice;   ///< Índice na matriz
 
 private:
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

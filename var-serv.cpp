@@ -92,6 +92,15 @@ void TVarServ::Mover(TVarServ * destino)
 }
 
 //------------------------------------------------------------------------------
+void TVarServ::EndObjeto(TClasse * c, TObjeto * o)
+{
+    if (o)
+        endobjeto=o, b_objeto=true;
+    else
+        endclasse=c, b_objeto=false;
+}
+
+//------------------------------------------------------------------------------
 bool TVarServ::Abrir(const char * ender, unsigned short porta)
 {
     struct sockaddr_in strSock;
@@ -242,23 +251,25 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
 #endif
         // Gera evento
             bool prossegue = false;
-            if (obj->objeto)
+            if (obj->b_objeto)
             {
                 char mens[80];
-                sprintf(mens, "%s_socket", obj->defvar+5);
-                prossegue = Instr::ExecIni(obj->objeto, mens);
+                sprintf(mens, "%s_socket", obj->defvar+Instr::endNome);
+                prossegue = Instr::ExecIni(obj->endobjeto, mens);
             }
-            else if (varObj->classe)
+            else if (obj->endclasse)
             {
                 char mens[80];
-                sprintf(mens, "%s_socket", obj->defvar+5);
-                prossegue = Instr::ExecIni(obj->classe, mens);
+                sprintf(mens, "%s_socket", obj->defvar+Instr::endNome);
+                prossegue = Instr::ExecIni(obj->endclasse, mens);
             }
             if (prossegue==false)
             {
                 close(localSocket);
                 continue;
             }
+                // Cria argumento: índice
+            Instr::ExecArg(obj->indice);
                 // Cria argumento: TVarSocket
             Instr::ExecArgCriar(Instr::InstrSocket);
                 // Cria TObjSocket com o socket

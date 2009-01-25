@@ -147,7 +147,8 @@ bool Instr::CriarVar(const char * def)
         VarAtual++;
         VarAtual->defvar = def;
         VarAtual->endvar = 0;
-        VarAtual->tamanho = tam;
+        VarAtual->tamanho = 0;
+        VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
         VarAtual->bit = 1;
         return true;
     }
@@ -163,9 +164,10 @@ bool Instr::CriarVar(const char * def)
     VarAtual++;
     VarAtual->endvar = p;
     VarAtual->defvar = def;
-    VarAtual->tamanho = tam;
+    VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
     VarAtual->bit = 1;
-    Instr::DadosTopo = p + tam;
+    VarAtual->tamanho = VarAtual->Tamanho();
+    Instr::DadosTopo = p + VarAtual->tamanho;
     VarAtual->Criar(0, 0);
     return true;
 }

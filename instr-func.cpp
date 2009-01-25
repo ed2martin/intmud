@@ -490,6 +490,8 @@ bool Instr::FuncTotal(TVariavel * v, int valor)
         switch (var->Tipo())
         {
         case varOutros:
+            if (var->defvar[endVetor])
+                tamanho += (unsigned char)var->defvar[endVetor];
         case varInt:
         case varDouble:
             break;
@@ -551,7 +553,8 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     if (indini<0)   // Índice inválido
         indini=1, indfim=0;
     else if (tampadrao==0) // Texto a procurar é nulo
-        if (c->InstrVar[indini][tamvar+5]==0) // Primeira variável é nula
+        if (c->InstrVar[indini][tamvar+Instr::endNome]==0)
+                        // Se primeira variável é nula
             indini++; // Passa para próxima variável
 #if 0
     printf("Variáveis(%d): ", tamvar);
@@ -562,17 +565,18 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 
 // Cabeçalho da instrução
     mens[2] = cConstExpr; // Tipo de instrução
-    mens[3] = 0;
-    mens[4] = 7; // Aonde começam os dados da constante
-    mens[5] = '+'; // Nome da variável
-    mens[6] = 0;
-    mens[7] = ex_txt;
-    char * destino = mens + 8;
+    mens[Instr::endProp] = 0;
+    mens[Instr::endIndice] = Instr::endNome+2; // Aonde começam os dados da constante
+    mens[Instr::endVetor] = 0; // Não é vetor
+    mens[Instr::endNome] = '+'; // Nome da variável
+    mens[Instr::endNome+1] = 0;
+    mens[Instr::endNome+2] = ex_txt;
+    char * destino = mens + Instr::endNome + 3;
     char * dest_ini = 0;// Endereço do início da variável ex_txt em destino
                         // 0=não anotou nenhuma variável
 
 // Monta instrução
-    tamvar += 5;    // Para comparação
+    tamvar += Instr::endNome;  // Para comparação
     origem = v[1].getTxt();
     while (*origem)
     {
@@ -651,7 +655,8 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             continue;
         }
     // Verifica se espaço suficiente
-        if (destino + strlen(defvar+5)+10 >= mens+sizeof(mens))
+        if (destino + strlen(defvar + Instr::endNome) + 10
+                >= mens+sizeof(mens))
             break;
     // Anota fim do texto
         if (dest_ini == 0) // Início
@@ -665,7 +670,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         }
     // Anota variável
         *destino = ex_varini;
-        destino = copiastr(destino+1, defvar+5);
+        destino = copiastr(destino+1, defvar + Instr::endNome);
         destino[0] = ex_ponto;
         destino[1] = ex_varfim;
         destino[2] = exo_add;
@@ -678,7 +683,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 // Texto puro, sem substituições
     if (dest_ini==0)
     {
-        int tam = destino - mens + 8;
+        int tam = destino - mens + Instr::endNome + 3;
     // Acerta variáveis
         ApagarVar(v);
         if (!CriarVar(InstrTxtFixo))
@@ -691,7 +696,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             tam = disp;
     // Copia texto
         if (tam>0)
-            memcpy(Instr::DadosTopo, mens+8, tam);
+            memcpy(Instr::DadosTopo, mens+Instr::endNome+3, tam);
         Instr::DadosTopo[tam] = 0;
     // Acerta variáveis
         VarAtual->endvar = Instr::DadosTopo;
@@ -735,7 +740,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     FuncAtual++;
     FuncAtual->linha = VarAtual->defvar;
     FuncAtual->este = FuncAtual[-1].este;
-    FuncAtual->expr = VarAtual->defvar + 7;
+    FuncAtual->expr = VarAtual->defvar + Instr::endNome + 2;
     FuncAtual->inivar = VarAtual + 1;
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;

@@ -58,7 +58,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 // Comentário em variáveis
     if (origem[2] >= cVariaveis)
     {
-        for (coment=5; origem[coment]; coment++);
+        for (coment=endNome; origem[coment]; coment++);
         coment++;
     }
 
@@ -144,7 +144,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cConstNum:
     case cConstExpr:
         strcpy(nome, "const");
-        coment=0, expr=5;
+        coment=0, expr=endNome;
         while (origem[expr++]);
         break;
     case cFunc:      strcpy(nome, "func"); break;
@@ -170,15 +170,19 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 // Copia nome da instrução ou variável
     if (origem[2]>cVariaveis)
     {
-        if ((int)strlen(nome) + (int)strlen(origem+5) + 20 > tamanho)
+        if ((int)strlen(nome) + (int)strlen(origem+endNome) + 24 > tamanho)
         {
             copiastr(destino, "Espaço insuficiente", tamanho);
             return false;
         }
-        sprintf(destino, "%s%s%s %s%s",
-                origem[3]&1 ? "comum " : "",
-                origem[3]&2 ? "sav " : "",
-                nome, origem+5, expr!=0 ? " = " : "");
+        char ind[10];
+        *ind=0;
+        if (origem[endVetor])
+            sprintf(ind, ".%d", (unsigned char)origem[endVetor]);
+        sprintf(destino, "%s%s%s %s%s%s",
+                origem[endProp]&1 ? "comum " : "",
+                origem[endProp]&2 ? "sav " : "",
+                nome, origem+endNome, ind, expr!=0 ? " = " : "");
     }
     else
     {

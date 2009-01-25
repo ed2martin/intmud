@@ -33,10 +33,11 @@ public:
     static int Tamanho(const char * instr);
         ///< Obtém o tamanho de uma variável na memória
         /**< @param instr Instrução codificada por Instr::Codif
-             @return Tamanho da variável (0=não ocupa lugar na memória) */
+             @return Tamanho da variável (0=não ocupa lugar na memória)
+             @note  Se for vetor, retorna o tamanho do vetor na memória */
 
     int Tamanho();
-        ///< Obtém o tamanho de uma variável conforme TVariavel::defvar
+        ///< Obtém o tamanho de uma variável conforme TVariavel::defvar e TVariavel::vetor
 
     TVarTipo Tipo();
         ///< Obtém o tipo mais apropriado para expressões numéricas
@@ -90,7 +91,9 @@ public:
     const char * defvar; ///< Instrução que define a variável
                          /**< @sa Instr::Comando */
     union {
-        void * endvar;  ///< Endereço da variável na memória (0 se não for aplicável)
+        void * endvar;  ///< Endereço da variável na memória
+                        /** - É 0 se não for aplicável
+                         *  - Em vetores, endereço da primeira variável */
         const void * endfixo;
                     ///< Valor "const" de endvar
                     /**< Usar endfixo quando a variável não poderá ser mudada */
@@ -100,6 +103,7 @@ public:
         unsigned short * end_ushort; ///< Instr::cUInt16
         signed   int * end_int;      ///< Instr::cInt32
         unsigned int * end_uint;     ///< Instr::cUInt32
+        double       * end_double;   ///< Instr::cReal
         TVarSocket * end_socket;     ///< Instr::cSocket
         TVarServ * end_serv;         ///< Instr::cServ
         int  valor_int;              ///< Instr::cVarInt - endvar como int
@@ -108,7 +112,13 @@ public:
                     /**< 0 significa que não está usando ou a variável está
                         sendo usada em outro lugar
                              @note Não é usado em TVariavel */
+    unsigned char indice;
+        ///< Índice no vetor ou 0 se não for vetor ou 0xFF se for o vetor
     unsigned char bit;  ///< Máscara do bit, se for variável de bit
+
+private:
+    /// Semelhante a memcpy
+    static void MoverMem(void * destino, void * origem, unsigned int tamanho);
 };
 
 //----------------------------------------------------------------------------

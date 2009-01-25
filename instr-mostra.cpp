@@ -40,7 +40,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 // Comentário em variáveis
     if (origem[2] >= cVariaveis)
     {
-        for (coment=5; origem[coment]; coment++);
+        for (coment=endNome; origem[coment]; coment++);
         coment++;
     }
 
@@ -135,12 +135,12 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 // Copia nome da instrução ou variável
     if (origem[2]>cVariaveis)
     {
-        if ((int)strlen(nome) + (int)strlen(origem+5) + 2 > tamanho)
+        if ((int)strlen(nome) + (int)strlen(origem+endNome) + 2 > tamanho)
         {
             copiastr(destino, "Espaço insuficiente", tamanho);
             return false;
         }
-        sprintf(destino, "%s %s", nome, origem+5);
+        sprintf(destino, "%s %s", nome, origem+endNome);
     }
     else
     {
@@ -158,10 +158,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     if (origem[2]==cConstNulo || origem[2]==cConstTxt ||
         origem[2]==cConstNum  || origem[2]==cConstExpr)
     {
-        expr=5;
-        while (origem[expr])
-            expr++;
-        expr++;
+        expr=endNome;
+        while (origem[expr++]);
         if (tamanho<3)
         {
             copiastr(destino, "Espaço insuficiente", tamanho);

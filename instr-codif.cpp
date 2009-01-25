@@ -369,9 +369,10 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         return true;
     }
 
-// Obtém a variável/instrução em destino[2] a destino[4]
+// Obtém a variável/instrução em destino[2] a destino[5]
     destino[3]=0;
     destino[4]=0;
+    destino[5]=0;
     while (true)
     {
     // Avança enquanto for espaço
@@ -380,13 +381,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Verifica atributos de variáveis: comum e sav
         if (comparaNome(origem, "comum")==0)
         {
-            destino[3] |= 1;
+            destino[endProp] |= 1;
             origem += 5;
             continue;
         }
         if (comparaNome(origem, "sav")==0)
         {
-            destino[3] |= 2;
+            destino[endProp] |= 2;
             origem += 3;
             continue;
         }
@@ -411,14 +412,14 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             if (valor<=256) // 1 a 256
             {
                 destino[2] = cTxt1;
-                destino[4] = valor-1;
+                destino[endIndice] = valor-1;
                 origem = p;
                 break;
             }
             if (valor<=512) // 257 a 512
             {
                 destino[2] = cTxt2;
-                destino[4] = valor-257;
+                destino[endIndice] = valor-257;
                 origem = p;
                 break;
             }
@@ -431,7 +432,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             if (ini>fim) // Não encontrou
             {
                 destino[2] = cExpr;
-                if (destino[3]==0)
+                if (destino[endProp]==0)
                     break;
                 // Tem atribuição const ou sav: deveria ser tipo de variável
                 char mens[30];
@@ -452,7 +453,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 //while (*origem && *origem!=' ')
                 //    origem++;
                 destino[2] = ListaInstr[meio].Instr;
-                if (destino[3] && (destino[2]<cVariaveis ||
+                if (destino[endProp] && (destino[2]<cVariaveis ||
                             destino[2]==cConstExpr ||
                             destino[2]==cFunc ||
                             destino[2]==cVarFunc))
@@ -570,21 +571,53 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     {
         char nome[80];
         char * p = nome;
+        int  indice = -1;
     // Avança enquanto for espaço
         while (*origem==' ')
             origem++;
     // Copia o nome
         for (; *origem && *origem!='=' && *origem!='#'; origem++)
         {
+            if (indice>=0)
+            {
+                if (*origem<'0' || *origem>'9')
+                {
+                    if (dest_ini[2] == cConstExpr)
+                        copiastr(dest_ini, "Constantes não podem ser vetores",
+                                 tamanho);
+                    else
+                        copiastr(dest_ini, "Tamanho inválido do vetor",
+                                 tamanho);
+                    return false;
+                }
+                indice = indice * 10 + *origem - '0';
+                if (indice<0x100)
+                    continue;
+                copiastr(dest_ini, "Máximo 255 variáveis", tamanho);
+                return false;
+            }
             if (p < nome+sizeof(nome)-1)
             {
-                *p++ = *origem;
+                if (*origem=='.')
+                    indice = 0;
+                else
+                    *p++ = *origem;
                 continue;
             }
             else if (*p==' ')
                 continue;
             copiastr(dest_ini, "Nome de variável muito grande", tamanho);
             return false;
+        }
+        if (indice>=0)
+        {
+            dest_ini[endVetor] = indice;
+            if (dest_ini[2] == cFunc || dest_ini[2] == cVarFunc)
+            {
+                copiastr(dest_ini, "Funções não podem ser vetores",
+                                 tamanho);
+                return false;
+            }
         }
     // Apaga espaços no fim do nome
         while (p>nome)
@@ -612,12 +645,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
     // Copia o nome da variável, avança destino
-        if (destino+strlen(nome)+6 > dest_fim)
+        if (destino+strlen(nome)+endNome+1 > dest_fim)
         {
             copiastr(dest_ini, "Instrução muito grande", tamanho);
             return false;
         }
-        destino = copiastr(destino+5, nome);
+        destino = copiastr(destino+endNome, nome);
         destino++;
     // Variável Const
         if (dest_ini[2] == cConstExpr)
@@ -629,7 +662,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
             origem++;
-            dest_ini[4] = destino - dest_ini;
+            dest_ini[endIndice] = destino - dest_ini;
             proc_expr=true;
         }
     // Outros tipos de variáveis
