@@ -192,6 +192,29 @@ sav
     Variável deve ser salva em arquivo, vide objeto salvar.
 
 
+*** Vetores
+
+São conjuntos de variáveis do mesmo tipo.
+Define-se um vetor acrescentando-se após o nome da variável um ponto
+e a quantidade de variáveis, de 1 a 255.
+Exemplo:
+int8 teste.3
+
+Nesse caso existem 3 variáveis:
+teste.0
+teste.1
+teste.2
+
+Exemplo de como tratar eventos de um vetor:
+[x]
+inttempo n.5
+func n_exec # Evento para as 5 variáveis "n"
+# Aqui arg0 é o índice da variável no vetor (de 0 a 4)
+# n.[arg0] corresponde à variável que gerou o evento
+
+Nota: Funções e constantes não podem ser definidos como vetor.
+
+
 *** Funções
 
 Funções podem ser chamadas de três formas, em relação aos argumentos:
@@ -250,6 +273,13 @@ func fatorial
     ret 1
   fimse
   ret arg0 * fatorial(arg0-1)
+
+
+Internamente constantes se comportam como funções. Exemplo:
+func x
+  ret arg0 * 10
+Pode ser escrito também como:
+const x = arg0 * 10
 
 
 Existe um outro tipo de função, que se comporta como se fosse uma variável.
@@ -468,13 +498,13 @@ objantes(<objeto>)
 objdepois(<objeto>)
     Retorna o próximo objeto da classe ou NULO se não houver.
 
-total(<objeto>)
-    Retorna a quantidade de objetos da classe especificada.
-
-total(<texto>)
-    Retorna o tamanho do texto, em caracteres.
-    Nota: Se for especificado mais de um argumento em total, podendo variar
-    entre textos e objetos, retorna a soma.
+total(<variável>)
+    Se for objeto, retorna a quantidade de objetos da classe.
+    Se for texto, retorna o tamanho do texto, em caracteres.
+    Se for vetor, retorna a quantidade de variáveis do vetor.
+    Se for fornecido mais de um argumento, é retornada a soma.
+    Exemplo: total(a,b)
+    É o mesmo que: total(a) + total(b)
 
 
 *** Caracteres especiais
@@ -638,6 +668,7 @@ inttempo <nomedavariável>
     Uma variável inteira de 0 a 65535, subtraída 1 a cada décimo de segundo.
     A diferença de inttempo para intdec é que quando chega a 0, uma função
     do objeto é executada. O nome da função é <nomedavariável>_exec.
+    Na função: arg0 = índice da variável vetor, se não for vetor arg0=0
 
     Exemplo:
     [x]
@@ -699,15 +730,19 @@ socket <nomedavariável>
     Eventos:
     <nomedavariável>_msg
         Recebeu mensagem
-        arg0 = mensagem recebida
-        arg1 = valor anterior de conrec; 1=recepção estava congelada
+        arg0 = índice da variável vetor, se não for vetor arg0=0
+        arg1 = mensagem recebida
+        arg2 = valor anterior de conrec; 1=recepção estava congelada
     <nomedavariável>_fechou
+        arg0 = índice da variável vetor, se não for vetor arg0=0
         O socket foi fechado remotamente
         Se essa função não existir, o objeto que contém o socket é apagado
     <nomedavariável>_conectou
-        Conseguiu conectar; args=0 (nenhum argumento)
+        arg0 = índice da variável vetor, se não for vetor arg0=0
+        Conseguiu conectar; args=1
     <nomedavariável>_conectou
-        Não conseguiu conectar; args=1 e arg0=mensagem de erro
+        arg0 = índice da variável vetor, se não for vetor arg0=0
+        Não conseguiu conectar; args=2 e arg1=mensagem de erro
 
 serv <nomedavariável>
     Funções:
@@ -720,7 +755,8 @@ serv <nomedavariável>
 
     Eventos:
     <nomedavariável>_socket
-    arg0 = socket correspondente à conexão
+    arg0 = índice da variável vetor, se não for vetor arg0=0
+    arg1 = socket correspondente à conexão
 
     Exemplo de uso com socket:
     [x]
@@ -731,11 +767,11 @@ serv <nomedavariável>
     func servidor_socket
       ref novo
       novo = criar("x")
-      novo.conec = arg0
+      novo.conec = arg1
       novo.conec.proto = 2
       novo.conec.msg("Benvindo\n")
     func conec_msg
-      conec.msg("você escreveu " + arg0 + "\n")
+      conec.msg("você escreveu " + arg1 + "\n")
 
 salvar <nomedavariável>
     Permite salvar objetos em arquivos e recuperar posteriormente.
@@ -770,7 +806,9 @@ salvar <nomedavariável>
     Eventos:
     <nomedavariável>_apagar
         Arquivo foi apagado porque o tempo expirou.
-        Entrada: arg0 = nome do arquivo (texto)
+        Entrada:
+        arg0 = índice da variável vetor, se não for vetor arg0=0
+        arg1 = nome do arquivo (texto)
 
 prog <nomedavariável>
     Para ler e alterar o próprio programa (o mapa).

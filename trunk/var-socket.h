@@ -68,13 +68,18 @@ class TVarSocket /// Variáveis Socket
 public:
     void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
+    void EndObjeto(TClasse * c, TObjeto * o);
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();    ///< Ler valor numérico da variável
 
     const char * defvar;///< Como foi definida a variável
-    TClasse * classe;   ///< Em que classe está definido
-    TObjeto * objeto;   ///< Em que objeto está definido
+    union {
+        TClasse * endclasse;///< Em que classe está definido
+        TObjeto * endobjeto;///< Em que objeto está definido
+    };
+    bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
+    unsigned char indice;   ///< Índice na matriz
 
     TObjSocket * Socket;   ///< Conexão atual
     TVarSocket * Antes; ///< Objeto anterior da mesma conexão

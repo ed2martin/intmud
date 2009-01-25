@@ -209,15 +209,15 @@ Instr::ExecFunc * const Instr::FuncFim = Instr::FuncPilha + 40;
 Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
-const char Instr::InstrNulo[] = { 7, 0, Instr::cConstNulo, 0, 0, '+', 0 };
-const char Instr::InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, '+', 0 };
-const char Instr::InstrSocket[] = { 7, 0, Instr::cSocket, 0, 0, '+', 0 };
-const char Instr::InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, '+', 0 };
-const char Instr::InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, '+', 0 };
-const char Instr::InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, '+', 0 };
-const char Instr::InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, '+', 0 };
-const char Instr::InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, '+', 0 };
-const char Instr::InstrVarInt[] = { 7, 0, Instr::cVarInt, 0, 0, '+', 0 };
+const char Instr::InstrNulo[] = { 7, 0, Instr::cConstNulo, 0, 0, 0, '+', 0 };
+const char Instr::InstrDouble[] = { 7, 0, Instr::cReal, 0, 0, 0, '+', 0 };
+const char Instr::InstrSocket[] = { 7, 0, Instr::cSocket, 0, 0, 0, '+', 0 };
+const char Instr::InstrTxtFixo[] = { 7, 0, Instr::cTxtFixo, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarNome[] = { 7, 0, Instr::cVarNome, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarInicio[] = { 7, 0, Instr::cVarInicio, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarClasse[] = { 7, 0, Instr::cVarClasse, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarObjeto[] = { 7, 0, Instr::cVarObjeto, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarInt[] = { 7, 0, Instr::cVarInt, 0, 0, 0, '+', 0 };
 
 //------------------------------------------------------------------------------
 // Lista de funções predefinidas
@@ -338,6 +338,22 @@ void Instr::ExecArg(const char * txt)
     VarAtual->Limpar();
     VarAtual->defvar = InstrTxtFixo;
     VarAtual->endfixo = txt;
+    FuncAtual->fimvar = VarAtual + 1;
+    FuncAtual->numarg++;
+}
+
+//----------------------------------------------------------------------------
+/// Adiciona argumento antes de executar
+/**
+ *  @param valor Número
+ *  @sa exec
+ */
+void Instr::ExecArg(int valor)
+{
+    VarAtual++;
+    VarAtual->Limpar();
+    VarAtual->defvar = InstrVarInt;
+    VarAtual->setInt(valor);
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg++;
 }
@@ -581,7 +597,8 @@ bool Instr::ExecX()
             TVariavel * v = VarAtual - x;
             if (v<VarPilha)
                 continue;
-            printf("    v%d %p l%d ", v-VarPilha, v->endvar, v->tamanho);
+            printf("    v%d %p m%d/%d l%d ", v-VarPilha, v->endvar,
+                   v->indice, (unsigned char)v->defvar[endVetor], v->tamanho);
             const char * p = NomeComando(v->defvar[2]);
             if (p)
                 printf("%s ", p);
@@ -1453,7 +1470,7 @@ bool Instr::ExecX()
                 // Verifica se é variável local da função
                     TVariavel * var = FuncAtual->inivar + FuncAtual->numarg;
                     for (; var < FuncAtual->fimvar; var++)
-                        if (comparaZ(nome, var->defvar+5)==0)
+                        if (comparaZ(nome, var->defvar+endNome)==0)
                             break;
                     if (var < FuncAtual->fimvar)
                     {
@@ -1549,6 +1566,7 @@ bool Instr::ExecX()
                     VarAtual->defvar = defvar;
                     VarAtual->endvar = objeto;
                     VarAtual->tamanho = 0;
+                    VarAtual->indice = 0;
                     break;
                 }
             // Expressão numérica
@@ -1559,7 +1577,7 @@ bool Instr::ExecX()
                     FuncAtual++;
                     FuncAtual->linha = defvar;
                     FuncAtual->este = objeto;
-                    FuncAtual->expr = defvar + defvar[4];
+                    FuncAtual->expr = defvar + defvar[endIndice];
                     FuncAtual->inivar = v + 2;
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
@@ -1572,6 +1590,7 @@ bool Instr::ExecX()
                 VarAtual->defvar = defvar;
                 VarAtual->tamanho = 0;
                 VarAtual->bit = indvar >> 24;
+                VarAtual->indice = (defvar[endVetor]==0 ? 0 : 0xFF);
                 if (defvar[2]==cConstTxt || // Constante
                         defvar[2]==cConstNum)
                     VarAtual->endvar = 0;

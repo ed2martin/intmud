@@ -312,7 +312,8 @@ void TClasse::AcertaVar()
             unsigned int b1=b, b2=b+a;
             while (b1<b+a && b2<b+a*2 && b2<total)
             {
-                if (comparaZ(var2[b1]+5, var2[b2]+5)>0)
+                if (comparaZ(var2[b1] + Instr::endNome,
+                        var2[b2] + Instr::endNome) > 0)
                     var1[lido++] = var2[b2++];
                 else
                     var1[lido++] = var2[b1++];
@@ -329,7 +330,7 @@ void TClasse::AcertaVar()
 // Obtém número de variáveis, detectando as repetidas
     NumVar = total;
     for (int x=total-2; x>=0; x--)
-        if (comparaZ(var1[x]+5, var1[x+1]+5)==0)
+        if (comparaZ(var1[x]+Instr::endNome, var1[x+1]+Instr::endNome)==0)
         {
             var1[x+1]=0;
             NumVar--;
@@ -351,8 +352,8 @@ void TClasse::AcertaVar()
 
 // Acerta bits de controle de TClasse::IndiceVar
 // Acerta variáveis cInt1 (alinhamento de bit)
-    int indclasse=-1, bitclasse=0x80;
-    int indobjeto=-1, bitobjeto=0x80;
+    int indclasse=0, bitclasse=1;
+    int indobjeto=0, bitobjeto=1;
     IndiceVar = new unsigned int[NumVar];
     for (unsigned int x=0; x<NumVar; x++)
     {
@@ -361,32 +362,40 @@ void TClasse::AcertaVar()
         if (InstrVar[x]>=Comandos && InstrVar[x]<=ComandosFim)
             valor |= 0x800000;
     // Verifica se é variável "comum"
-        if (InstrVar[x][3] & 1)
+        if (InstrVar[x][Instr::endProp] & 1)
             valor |= 0x400000;
     // Verifica cBit1
         if (InstrVar[x][2] == Instr::cInt1)
         {
+            int total = (unsigned char)InstrVar[x][Instr::endVetor];
+            if (total==0)
+                total++;
             if (valor & 0x400000) // Classe
             {
-                if (bitclasse==0x80)
-                    bitclasse=1, indclasse++;
-                else
-                    bitclasse <<= 1;
                 valor += indclasse + (bitclasse << 24);
+                indclasse += total/8;
+                for (; total&7; total--)
+                    if (bitclasse==0x80)
+                        bitclasse=1, indclasse++;
+                    else
+                        bitclasse <<= 1;
             }
             else // Objeto
             {
-                if (bitobjeto==0x80)
-                    bitobjeto=1, indobjeto++;
-                else
-                    bitobjeto <<= 1;
                 valor += indobjeto + (bitobjeto << 24);
+                indobjeto += total/8;
+                for (; total&7; total--)
+                    if (bitobjeto==0x80)
+                        bitobjeto=1, indobjeto++;
+                    else
+                        bitobjeto <<= 1;
             }
         }
     // Anota o resultado
         IndiceVar[x] = valor;
     }
-    indclasse++, indobjeto++;
+    if (bitclasse!=1) indclasse++;
+    if (bitobjeto!=1) indobjeto++;
 
 // Acerta variáveis com alinhamento de 1 byte
     for (unsigned int x=0; x<NumVar; x++)
@@ -395,10 +404,15 @@ void TClasse::AcertaVar()
             continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if (tamanho&1)
+        {
+            int total = (unsigned char)InstrVar[x][Instr::endVetor];
+            if (total)
+                tamanho *= total;
             if (IndiceVar[x] & 0x400000) // Classe
                 IndiceVar[x] += indclasse, indclasse += tamanho;
             else // Objeto
                 IndiceVar[x] += indobjeto, indobjeto += tamanho;
+        }
     }
     if (indclasse&1) indclasse++;
     if (indobjeto&1) indobjeto++;
@@ -410,10 +424,15 @@ void TClasse::AcertaVar()
             continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if ((tamanho&3)==2)
+        {
+            int total = (unsigned char)InstrVar[x][Instr::endVetor];
+            if (total)
+                tamanho *= total;
             if (IndiceVar[x] & 0x400000) // Classe
                 IndiceVar[x] += indclasse, indclasse += tamanho;
             else // Objeto
                 IndiceVar[x] += indobjeto, indobjeto += tamanho;
+        }
     }
     if (indclasse&2) indclasse+=2;
     if (indobjeto&2) indobjeto+=2;
@@ -425,10 +444,15 @@ void TClasse::AcertaVar()
             continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
         if (tamanho && (tamanho&3)==0)
+        {
+            int total = (unsigned char)InstrVar[x][Instr::endVetor];
+            if (total)
+                tamanho *= total;
             if (IndiceVar[x] & 0x400000) // Classe
                 IndiceVar[x] += indclasse, indclasse += tamanho;
             else // Objeto
                 IndiceVar[x] += indobjeto, indobjeto += tamanho;
+        }
     }
 
 // Acerta variáveis
@@ -529,7 +553,7 @@ int TClasse::IndiceNome(const char * nome)
     while (ini<=fim)
     {
         int meio = (ini+fim)/2;
-        switch (comparaZ(nome, InstrVar[meio] + 5))
+        switch (comparaZ(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
@@ -554,7 +578,7 @@ int TClasse::IndiceNomeIni(const char * nome)
     while (ini<=fim)
     {
         int meio = (ini+fim)/2;
-        switch (comparaZ(nome, InstrVar[meio] + 5))
+        switch (comparaZ(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
@@ -580,7 +604,7 @@ int TClasse::IndiceNomeFim(const char * nome)
     while (ini<=fim)
     {
         int meio = (ini+fim)/2;
-        switch (comparaZ(nome, InstrVar[meio] + 5))
+        switch (comparaZ(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
