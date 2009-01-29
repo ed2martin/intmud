@@ -217,15 +217,12 @@ Nota: Funções e constantes não podem ser definidos como vetor.
 
 *** Funções
 
-Funções podem ser chamadas de três formas, em relação aos argumentos:
+Funções podem ser chamadas de duas formas, em relação aos argumentos:
 1. Sem argumentos
 <nomedafunção>
 
 2. Com um ou mais argumentos
 <nomedafunção> ( argumento 1, argumento 2, ..., argumento N )
-
-3. Repassando os argumentos da função que está sendo executada
-<nomedafunção> (*)
 
 Exemplos:
 teste
@@ -388,10 +385,10 @@ exec(<texto>)
     Exemplo:
     exec("x = 10")
 
-pos(a)
+intpos(a)
     Retorna a se a>=0. Caso contrário retorna 0.
 
-abs(a)
+intabs(a)
     O mesmo que a sem sinal.
     Exemplo: abs(-1) e abs(1) são iguais a 1
 
@@ -465,10 +462,24 @@ vartroca(<texto>, <texto2>, <variável>)
     Troca <variável> por <texto2> e procura por isso em <texto>.
     Substitui pelos respectivos valores das variáveis.
     Exemplo:
-    const t_1 = "joão"  # $1 = joão
-    const t_2 = "maria" # $2 = maria
-    vartroca("$1 falou com $2", "$", "t_")
-                # Produz o texto "joão falou com maria"
+      const t_1 = "joão"  # $1 = joão
+      const t_2 = "maria" # $2 = maria
+      vartroca("$1 falou com $2", "$", "t_")
+                  # Produz o texto "joão falou com maria"
+    Quando vartroca chama uma função, coloca em arg0 o texto encontrado.
+    Exemplo de como diferenciar letras maiúsculas de minúsculas:
+      func teste_a
+        se arg0 == "A" # Se for exatamente igual
+          ret "A maiúsculo"
+        senão
+          ret "A minúsculo"
+      vartroca("$A $a", "$", "teste_")
+                  # Produz o texto "A maiúsculo A minúsculo"
+    Outra forma de escrever:
+      const teste_a = t_a[arg0=="A"]
+      const t_a0 = "A maiúsculo"
+      const t_a1 = "A minúsculo"
+      vartroca("$A $a", "$", "teste_")
 
 criar(<nome da classe>)
 criar(<nome da classe>, <argumentos da função ini>)
@@ -498,7 +509,7 @@ objantes(<objeto>)
 objdepois(<objeto>)
     Retorna o próximo objeto da classe ou NULO se não houver.
 
-total(<variável>)
+inttotal(<variável>)
     Se for objeto, retorna a quantidade de objetos da classe.
     Se for texto, retorna o tamanho do texto, em caracteres.
     Se for vetor, retorna a quantidade de variáveis do vetor.

@@ -223,7 +223,6 @@ const char Instr::InstrVarInt[] = { 7, 0, Instr::cVarInt, 0, 0, 0, '+', 0 };
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
 static const Instr::TListaFunc ListaFunc[] = {
-    { "abs",        Instr::FuncNumero, 1 },
     { "apagar",     Instr::FuncApagar, 0 },
     { "arg0",       Instr::FuncArg, 0 },
     { "arg1",       Instr::FuncArg, 1 },
@@ -239,12 +238,13 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "criar",      Instr::FuncCriar, 0 },
     { "este",       Instr::FuncEste, 0 },
     { "int",        Instr::FuncNumero, 2 },
+    { "intabs",     Instr::FuncNumero, 1 },
+    { "intpos",     Instr::FuncNumero, 0 },
+    { "inttotal",   Instr::FuncTotal, 0 },
     { "objantes",   Instr::FuncAntesDepois, 0 },
     { "objdepois",  Instr::FuncAntesDepois, 1 },
-    { "pos",        Instr::FuncNumero, 0 },
     { "rand",       Instr::FuncNumero, 3 },
     { "ref",        Instr::FuncRef, 0 },
-    { "total",      Instr::FuncTotal, 0 },
     { "txt",        Instr::FuncTxt, 0 },
     { "txt1",       Instr::FuncTxt2, 0 },
     { "txt2",       Instr::FuncTxt2, 1 },
@@ -743,9 +743,7 @@ bool Instr::ExecX()
             VarAtual->Limpar();
             VarAtual->defvar = InstrTxtFixo;
             VarAtual->endfixo = FuncAtual->expr;
-            while (*FuncAtual->expr)
-                FuncAtual->expr++;
-            FuncAtual->expr++;
+            while (*FuncAtual->expr++);
             break;
         case ex_num0:
             if (!CriarVar(InstrVarInt))
