@@ -36,7 +36,7 @@ public:
         TObjeto * endobjeto;///< Em que objeto está definido
     };
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
-    unsigned char indice;   ///< Índice na matriz
+    unsigned char indice;   ///< Índice no vetor
 
 private:
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

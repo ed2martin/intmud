@@ -117,7 +117,7 @@ bool Instr::FuncEste(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções que lidam com números (pos, abs, int e rand)
+/// Funções que lidam com números (intpos, intabs, int e rand)
 bool Instr::FuncNumero(TVariavel * v, int valor)
 {
     double numero=0;
@@ -126,12 +126,12 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
     ApagarVar(v);
     switch (valor)
     {
-    case 0: // pos()
+    case 0: // intpos()
         if (!CriarVar(InstrDouble))
             return false;
         VarAtual->setDouble(numero<0 ? 0 : numero);
         return true;
-    case 1: // abs()
+    case 1: // intabs()
         if (!CriarVar(InstrDouble))
             return false;
         VarAtual->setDouble(numero<0 ? -numero : numero);
@@ -481,7 +481,7 @@ bool Instr::FuncAntesDepois(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Função total
+/// Função inttotal
 bool Instr::FuncTotal(TVariavel * v, int valor)
 {
     int tamanho = 0;
@@ -631,7 +631,8 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     // Achou variável
     // Acerta origem
         const char * defvar = c->InstrVar[x];
-        origem += tampadrao + strlen(defvar + tamvar);
+        int tamtxt = strlen(defvar + tamvar);
+        origem += tampadrao + tamtxt;
         //printf("Variável [%s]\n", defvar+5); fflush(stdout);
     // Se for variável, copia texto
         if (defvar[2]!=cFunc && defvar[2]!=cVarFunc &&
@@ -655,7 +656,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             continue;
         }
     // Verifica se espaço suficiente
-        if (destino + strlen(defvar + Instr::endNome) + 10
+        if (destino + strlen(defvar + Instr::endNome) + tamtxt + 15
                 >= mens+sizeof(mens))
             break;
     // Anota fim do texto
@@ -669,21 +670,34 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             *destino++ = exo_add;
         }
     // Anota variável
-        *destino = ex_varini;
+        destino[0] = ex_varini;
         destino = copiastr(destino+1, defvar + Instr::endNome);
-        destino[0] = ex_ponto;
-        destino[1] = ex_varfim;
-        destino[2] = exo_add;
-        destino[3] = ex_txt;
-        destino += 4;
+        destino[0] = ex_arg;
+        destino[1] = ex_txt;
+        destino += 2;
+        if (tamtxt)
+        {
+            memcpy(destino, origem - tamtxt, tamtxt);
+            destino += tamtxt;
+        }
+        destino[0] = 0;
+        destino[1] = ex_ponto;
+        destino[2] = ex_varfim;
+        destino[3] = exo_add;
+        destino[4] = ex_txt;
+        destino += 5;
         dest_ini = destino;
     }
-    *destino++ = 0;
+
+    destino[0] = 0;
+    destino[1] = exo_add;
+    destino[2] = ex_fim;
+    destino += 3;
 
 // Texto puro, sem substituições
     if (dest_ini==0)
     {
-        int tam = destino - mens + Instr::endNome + 3;
+        int tam = destino - (mens + Instr::endNome + 3) - 3;
     // Acerta variáveis
         ApagarVar(v);
         if (!CriarVar(InstrTxtFixo))
@@ -708,10 +722,6 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 #endif
         return true;
     }
-
-// Soma com o texto anterior
-    *destino++ = exo_add;
-    *destino++ = ex_fim;
 
 // Acerta tamanho da instrução
     int total = destino - mens;

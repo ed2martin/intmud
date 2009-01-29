@@ -103,11 +103,12 @@ func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg1 + "\b\n")
   escr_[txt1(arg1)]
 func escr_0
-  msg("pos(1) = " + pos(1) + "\n")
-  msg("pos(-1) = " + pos(-1) + "\n")
-  msg("abs(4) = " + abs(4) + "\n")
-  msg("abs(-5) = " + abs(-5) + "\n")
+  msg("intpos(1) = " + intpos(1) + "\n")
+  msg("intpos(-1) = " + intpos(-1) + "\n")
+  msg("intabs(4) = " + intabs(4) + "\n")
+  msg("intabs(-5.8) = " + intabs(-5.8) + "\n")
   msg("int(4.3) = " + int(4.3) + "\n")
+  msg(txt(1.4 + "3.84") + "\n")
 func escr_1
   msg("rand(10) = " + rand(10) + "\n")
 func escr_2
@@ -115,10 +116,10 @@ func escr_2
 func escr_3
   msg("txt1 - " + txt1("bom dia boa tarde") + "\n")
   msg("txt2 - " + txt2("bom dia boa tarde") + "\n")
-  msg("total - " + total("bom dia boa tarde") + "\n")
+  msg("inttotal - " + inttotal("bom dia boa tarde") + "\n")
 func escr_4
   ref r
-  msg("Objetos mm: " + total($mm) + "\n")
+  msg("Objetos mm: " + inttotal($mm) + "\n")
   r = $mm
   enquanto r
     msg(r.texto + "\n")
@@ -151,9 +152,18 @@ func escr_8
     x += 1
   efim
 func escr_9
+  msg(vartroca("$A $a $B $b\n", "$", "teste_"))
   msg(vartroca("$1 falou com $2\n", "$", "t_"))
   msg(vartroca("bom $da $de $di $do $du dia\n", "$", "var_"))
-  msg(vartroca("total %t valor %r%  %var %\n", "%", "x"))
+  msg(vartroca("total %t %T valor %r% %var %\n", "%", "x"))
+func teste_a
+  se arg0 == "A"
+    ret "A maiúsculo"
+  senão
+    ret "A minúsculo"
+const teste_b = teste2_b[arg0=="B"]
+const teste2_b0 = "B maiúsculo"
+const teste2_b1 = "B minúsculo"
 const t_1 = "joão"  # $1 = joão
 const t_2 = "maria" # $2 = maria
 const var_d = "D"

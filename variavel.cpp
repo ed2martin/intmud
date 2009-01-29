@@ -520,11 +520,18 @@ int TVariavel::getInt()
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
-        if (indice==0)
-            return atoi(end_char);
-        return atoi(&end_char[indice * Tamanho(defvar)]);
+        if (indice)
+        {
+            long num;
+            errno=0, num=strtol(&end_char[indice * Tamanho(defvar)], 0, 10);
+            return (errno ? 0 : num);
+        }
     case Instr::cTxtFixo:
-        return atoi(end_char);
+        {
+            long num;
+            errno=0, num=strtol(end_char, 0, 10);
+            return (errno ? 0 : num);
+        }
     case Instr::cInt8:
         return (signed char)end_char[indice];
     case Instr::cUInt8:
@@ -546,7 +553,11 @@ int TVariavel::getInt()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        return atoi(defvar + defvar[Instr::endIndice] + 1);
+        {
+            long num;
+            errno=0, num=strtol(defvar + defvar[Instr::endIndice] + 1, 0, 10);
+            return (errno ? 0 : num);
+        }
     case Instr::cConstNum:
         {
             unsigned int valor = 0;
@@ -636,11 +647,18 @@ double TVariavel::getDouble()
 // Variáveis
     case Instr::cTxt1:
     case Instr::cTxt2:
-        if (indice==0)
-            return atoi(end_char);
-        return atoi(&end_char[indice * Tamanho(defvar)]);
+        if (indice)
+        {
+            double num;
+            errno=0, num=strtod(&end_char[indice * Tamanho(defvar)], 0);
+            return (errno ? 0 : num);
+        }
     case Instr::cTxtFixo:
-        return atoi(end_char);
+        {
+            double num;
+            errno=0, num=strtod(end_char, 0);
+            return (errno ? 0 : num);
+        }
     case Instr::cInt8:
         return (signed char)end_char[indice];
     case Instr::cUInt8:
@@ -661,7 +679,11 @@ double TVariavel::getDouble()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        return atoi(defvar + defvar[Instr::endIndice] + 1);
+        {
+            double num;
+            errno=0, num=strtod(defvar + defvar[Instr::endIndice] + 1, 0);
+            return (errno ? 0 : num);
+        }
     case Instr::cConstNum:
         {
             double valor = 0;
@@ -766,11 +788,13 @@ const char * TVariavel::getTxt()
     case Instr::cInt32:
     case Instr::cIntInc:
     case Instr::cIntDec:
-    case Instr::cReal:
         sprintf(txtnum, "%d", getInt());
         return txtnum;
     case Instr::cUInt32:
         sprintf(txtnum, "%u", end_uint[indice]);
+        return txtnum;
+    case Instr::cReal:
+        sprintf(txtnum, "%G", getDouble());
         return txtnum;
     case Instr::cConstNulo:
         return "";

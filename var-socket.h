@@ -79,7 +79,7 @@ public:
         TObjeto * endobjeto;///< Em que objeto está definido
     };
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
-    unsigned char indice;   ///< Índice na matriz
+    unsigned char indice;   ///< Índice no vetor
 
     TObjSocket * Socket;   ///< Conexão atual
     TVarSocket * Antes; ///< Objeto anterior da mesma conexão
