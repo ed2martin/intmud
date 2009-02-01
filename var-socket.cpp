@@ -273,8 +273,8 @@ bool TObjSocket::FuncMsg(const char * texto)
         varObj = vobj;
         if (prossegue)
         {
-            Instr::ExecArg(vobj->indice);
             Instr::ExecArg(texto);
+            Instr::ExecArg(vobj->indice);
             Instr::ExecX();
             Instr::ExecFim();
         }
