@@ -268,14 +268,15 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
                 close(localSocket);
                 continue;
             }
-                // Cria argumento: índice
-            Instr::ExecArg(obj->indice);
                 // Cria argumento: TVarSocket
             Instr::ExecArgCriar(Instr::InstrSocket);
+            TVariavel * v = Instr::VarAtual;
+                // Cria argumento: índice
+            Instr::ExecArg(obj->indice);
                 // Cria TObjSocket com o socket
             TSocket * s = new TSocket(localSocket);
                 // Coloca TObjSocket em TVarSocket
-            Instr::VarAtual->end_socket->MudarSock(s);
+            v->end_socket->MudarSock(s);
                 // Executa
             Instr::ExecX();
             Instr::ExecFim();

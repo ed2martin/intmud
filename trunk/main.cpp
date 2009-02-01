@@ -44,6 +44,7 @@
 #include "variavel.h"
 #include "socket.h"
 #include "var-serv.h"
+#include "var-outros.h"
 #include "random.h"
 #include "misc.h"
 
@@ -52,6 +53,7 @@
 
 void Inicializa(const char * arg);
 void Termina();
+unsigned long TempoIni; // Tempo desde que o programa foi executado, 10=1seg
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
@@ -102,14 +104,32 @@ int main(int argc, char *argv[])
 
 // Processamento de eventos
     struct timeval tselect;
+    unsigned short atual=0,tempo=0; // Para calcular tempo decorrido
+    unsigned short espera;
     fd_set set_entrada;
     fd_set set_saida;
     FD_ZERO(&set_entrada);
     FD_ZERO(&set_saida);
     while (true)
     {
+    // Obtém: espera = tempo decorrido
+        espera = atual;
+#ifdef __WIN32__
+        atual = timeGetTime()/100;
+#else
+        gettimeofday(&tselect,0);
+        atual = (tselect.tv_sec&0xFFFF)*10 + tselect.tv_usec/100000;
+#endif
+        espera = atual - espera;
+        if (espera>0x800) espera=0;
+        if (espera>TESPERA_MAX) espera=TESPERA_MAX;
 
-    // Chama eventos
+    // Eventos de IntTempo
+        if (espera>0)
+            TempoIni += espera;
+        TVarIntTempo::ProcEventos(espera);
+
+    // Chama eventos serv e socket
         TVarServ::ProcEventos(&set_entrada);
         TSocket::ProcEventos(&set_entrada, &set_saida);
 
@@ -120,7 +140,18 @@ int main(int argc, char *argv[])
         TSocket::Fd_Set(&set_entrada, &set_saida);
 
     // Obtém quanto tempo deve esperar
-        int espera=10;
+        espera = TVarIntTempo::TempoEspera();
+#ifdef __WIN32__
+        tempo = timeGetTime()/100;
+#else
+        gettimeofday(&tselect,0);
+        tempo = (tselect.tv_sec&0xFFFF)*10 + tselect.tv_usec/100000;
+#endif
+        tempo-=atual;
+        if (espera<tempo)
+            espera=0;
+        else
+            espera-=tempo;
 
     // Espera
         tselect.tv_sec = espera/10;
@@ -169,11 +200,10 @@ void Inicializa(const char * arg)
     //setpriority(PRIO_PROCESS, (int)getpid(), PRIO_MAX);
 #endif
 
-// Prepara tabela ASCII
-    tabASCinic();
-
-// Para gerar números aleatórios
-    circle_srandom(time(0));
+// Inicializa variáveis
+    tabASCinic();   // Prepara tabela ASCII
+    circle_srandom(time(0)); // Para gerar números aleatórios
+    TVarIntTempo::PreparaIni(); // Variáveis inttempo
 
 // Obtém nome do programa: arqnome, arqinicio e arqext
     {

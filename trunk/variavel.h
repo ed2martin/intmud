@@ -4,6 +4,8 @@
 class TClasse;
 class TObjeto;
 class TVarRef;
+class TVarIncDec;
+class TVarIntTempo;
 class TVarSocket;
 class TVarServ;
 
@@ -103,9 +105,11 @@ public:
         unsigned short * end_ushort; ///< Instr::cUInt16
         signed   int * end_int;      ///< Instr::cInt32
         unsigned int * end_uint;     ///< Instr::cUInt32
+        TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
         double       * end_double;   ///< Instr::cReal
-        TVarSocket * end_socket;     ///< Instr::cSocket
-        TVarServ * end_serv;         ///< Instr::cServ
+        TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
+        TVarSocket   * end_socket;   ///< Instr::cSocket
+        TVarServ     * end_serv;     ///< Instr::cServ
         int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
@@ -119,18 +123,6 @@ public:
 private:
     /// Semelhante a memcpy
     static void MoverMem(void * destino, void * origem, unsigned int tamanho);
-};
-
-//----------------------------------------------------------------------------
-/** Trata das variáveis do tipo REF */
-class TVarRef /// Variáveis REF
-{
-public:
-    void MudarPont(TObjeto * obj); ///< Muda a variável TVarRef::Pont
-    void Mover(TVarRef * destino); ///< Move TVarRef para outro lugar
-    TObjeto * Pont;     ///< Objeto atual
-    TVarRef * Antes;
-    TVarRef * Depois;
 };
 
 //----------------------------------------------------------------------------

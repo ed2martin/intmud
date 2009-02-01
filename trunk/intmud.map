@@ -95,13 +95,13 @@ func iniclasse
 func servidor_socket
   ref novo
   novo = criar("x")
-  novo.conec = arg1
+  novo.conec = arg0
   novo.conec.proto = 2
   novo.conec.msg("Benvindo\n")
   novo.conec.msg("Tecle um número de 0 a 10 ou qualquer outra coisa\n")
 func conec_msg
-  conec.msg("Você escreveu \cA\d4" + arg1 + "\b\n")
-  escr_[txt1(arg1)]
+  conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
+  escr_[txt1(arg0)]
 func escr_0
   msg("intpos(1) = " + intpos(1) + "\n")
   msg("intpos(-1) = " + intpos(-1) + "\n")
@@ -197,6 +197,46 @@ func iniclasse
 func ini
   texto = arg0
 
+[testeinttempo]
+# Teste com intinc, intdec e inttempo
+comum serv servidor
+socket conec
+const msg = conec.msg(arg0)
+inttempo tempo.40
+inttempo fim
+intinc inc
+intdec dec
+func iniclasse
+  se ![arg0]:servidor.abrir("", 2010)
+    terminar
+func servidor_socket
+  criar("testeinttempo", arg0)
+func ini
+  uint8 x
+  conec = arg0
+  conec.proto = 2
+  msg("Benvindo\n")
+#inc = 65483, dec = 57
+#fim = 410
+fim = 50
+  enquanto x < 40
+    tempo.[x] = x * 10
+     x += 1
+  efim
+  x = 0
+  enquanto x < 40
+    msg(" " + tempo.[x])
+    x += 1
+  efim
+  conec.msg("\nAguarde\n")
+func conec_msg
+  msg("Você escreveu " + arg0 + "\n")
+func tempo_exec
+  msg("" + arg0 + " / " + inc + " / " + dec + " / " + fim + "\n")
+func fim_exec
+  msg("Fim\n")
+  apagar(este)
+
 [servtermina]
 # Quando conectar-se na porta 2001 pelo endereço localhost ou 127.0.0.1
 # o programa termina
@@ -208,5 +248,29 @@ func ini
   servidor.1.abrir("localhost", 2002)
   servidor.2.abrir("localhost", 2003)
 func servidor_socket
-  arg1.msg("Encerrando o IntMUD (arg0=" + arg0 + ")\n")
+  arg0.msg("Encerrando o IntMUD (arg1=" + arg1 + ")\n")
   terminar
+
+
+[teste1]
+comum serv servidor
+socket conec
+inttempo t1
+inttempo f2
+const msg = conec.msg(arg0)
+func iniclasse
+  se ![arg0]:servidor.abrir("", 2011)
+    terminar
+func servidor_socket
+  criar("teste1", arg0)
+func ini
+  conec = arg0
+  t1 = 12
+  t2 = 10
+  msg("ini\n")
+t1_exec
+  msg("" + t1 + "\n")
+  apagar(este)
+t2_exec
+  msg("" + t2 + "\n")
+  apagar(este)

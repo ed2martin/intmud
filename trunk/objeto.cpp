@@ -18,6 +18,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "variavel.h"
+#include "var-outros.h"
 #include "instr.h"
 
 TObjeto * TObjeto::IniApagar = 0;
