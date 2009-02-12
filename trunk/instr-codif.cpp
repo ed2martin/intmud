@@ -409,19 +409,22 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 if (valor>0x1000)
                     break;
             }
-            if (valor<=256) // 1 a 256
+            if (valor>=1 && comparaNome(p, "")==0)
             {
-                destino[2] = cTxt1;
-                destino[endIndice] = valor-1;
-                origem = p;
-                break;
-            }
-            if (valor<=512) // 257 a 512
-            {
-                destino[2] = cTxt2;
-                destino[endIndice] = valor-257;
-                origem = p;
-                break;
+                if (valor<=256) // 1 a 256
+                {
+                    destino[2] = cTxt1;
+                    destino[endIndice] = valor-1;
+                    origem = p;
+                    break;
+                }
+                if (valor<=512) // 257 a 512
+                {
+                    destino[2] = cTxt2;
+                    destino[endIndice] = valor-257;
+                    origem = p;
+                    break;
+                }
             }
         }
     // Obtém a instrução

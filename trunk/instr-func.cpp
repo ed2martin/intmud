@@ -169,6 +169,129 @@ bool Instr::FuncRef(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtnum
+bool Instr::FuncTxtNum(TVariavel * v, int valor)
+{
+    char mens[80];      // Resultado
+    int  flags = 0;     // bit 0=1 -> usar notação científica
+                        // bit 1=1 -> separar com pontos
+                        // bit 2=1 -> separar com vírgulas
+    int  digitos = -1;  // Dígitos após a vírgula, 0-9 ou -1=automático
+
+    if (VarAtual < v+2)
+        return false;
+
+// Obtém o tipo de conversão
+    for (const char * p = v[2].getTxt(); *p; p++)
+        switch (*p)
+        {
+        case 'E':
+        case 'e': flags |= 1; break;
+        case '.': flags |= 2; break;
+        case ',': flags |= 4; break;
+        default:
+            if (*p>='0' && *p<='9')
+                digitos = *p - '0';
+        }
+
+// Obtém o texto
+    while (true)
+    {
+        int tipo = v[1].Tipo();
+    // Inteiro
+        if (tipo == varInt)
+        {
+            const char * zeros = "000000000";
+            if (flags&1)
+            {
+                sprintf(mens, "%E", v[1].getDouble());
+                flags=0;
+            }
+            else if (digitos<1 || digitos>9)
+                sprintf(mens, "%d", v[1].getInt());
+            else
+                sprintf(mens, "%d.%s", v[1].getInt(), zeros+9-digitos);
+            break;
+        }
+    // Não é numérico
+        if (tipo != varDouble)
+            return false;
+    // Double
+        double d = v[1].getDouble();
+    // Double fora dos limites
+        if ((flags&1) || d >= DOUBLE_MAX || d <= -DOUBLE_MAX)
+        {
+            sprintf(mens, "%E", d);
+            flags=0;
+            break;
+        }
+    // Quantidade fixa de dígitos
+        if (digitos >= 0)
+        {
+            char mens2[10];
+            sprintf(mens2, "%%.%df", digitos);
+            sprintf(mens, mens2, d);
+            break;
+        }
+    // Quantidade de dígitos não foi especificada
+        sprintf(mens, "%.9f", d);
+        char * p = mens;
+        while (*p)
+            p++;
+        while (p>mens && p[-1]=='0')
+            p--;
+        if (p>mens && p[-1]=='.')
+            p--;
+        *p=0;
+        break;
+    }
+
+// Acrescenta pontos ou vírgulas, se necessário
+    if (flags&6)
+    {
+        char * p = mens;
+        int total;
+        while (*p && *p!='.')
+            p++;
+        if (*p && (flags&2))
+            *p=',';
+        total = (p - mens - (*mens=='-') - 1) / 3;
+        char * dest = p;
+        while (*dest)
+            dest++;
+        while (total > 0)
+        {
+            p -= 3;
+            assert(p>mens);
+            for (; dest >= p; dest--)
+                dest[total] = *dest;
+            dest[total--] = (flags&2 ? '.' : ',');
+        }
+    }
+
+// Acerta variáveis
+    ApagarVar(v);
+    if (!CriarVar(InstrTxtFixo))
+        return false;
+// Verifica espaço disponível (sem o 0 no final do texto)
+    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
+    if (disp<0)
+        return false;
+// Copia texto
+    int tam = strlen(mens);
+    if (tam>disp)
+        tam=disp;
+    if (tam>0)
+        memcpy(Instr::DadosTopo, mens, tam);
+    Instr::DadosTopo[tam] = 0;
+// Acerta variáveis
+    VarAtual->endvar = Instr::DadosTopo;
+    VarAtual->tamanho = tam+1;
+    Instr::DadosTopo += tam+1;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Texto (txt)
 bool Instr::FuncTxt(TVariavel * v, int valor)
 {

@@ -40,6 +40,7 @@ bool FuncApagar(TVariavel * v, int valor);
 bool FuncEste(TVariavel * v, int valor);
 bool FuncNumero(TVariavel * v, int valor);
 bool FuncRef(TVariavel * v, int valor);
+bool FuncTxtNum(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);
 bool FuncTxtRemove(TVariavel * v, int valor);

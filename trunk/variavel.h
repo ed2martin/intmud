@@ -1,6 +1,9 @@
 #ifndef VARIAVEL_H
 #define VARIAVEL_H
 
+// Acima desse valor, double é mostrado com notação científica
+#define DOUBLE_MAX 1000000000000000000.0
+
 class TClasse;
 class TObjeto;
 class TVarRef;
