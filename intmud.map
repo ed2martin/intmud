@@ -98,7 +98,7 @@ func servidor_socket
   novo.conec = arg0
   novo.conec.proto = 2
   novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 10 ou qualquer outra coisa\n")
+  novo.conec.msg("Tecle um número de 0 a 11 ou qualquer outra coisa\n")
 func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
   escr_[txt1(arg0)]
@@ -185,6 +185,16 @@ func escr_10
   teste.1 = 2
   teste.2 = 8
   msg(">" + teste.0 + " " + teste.1 + " " + teste.2 + "\n")
+func escr_11
+  msg(txtnum(10, "e") + "\n")
+  msg(txtnum(4.5, "e") + "\n")
+  msg(txtnum(10, "3") + "\n")
+  msg(txtnum(4.5, "3") + "\n")
+  msg(txtnum(10, ".") + "\n")
+  msg(txtnum(4.5, ",") + "\n")
+  msg(txtnum(1045234.7, ".5") + "\n")
+  msg(txtnum(-2328913.8, ",5") + "\n")
+
 
 [mm]
 txt20 texto

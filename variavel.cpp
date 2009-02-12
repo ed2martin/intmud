@@ -847,8 +847,24 @@ const char * TVariavel::getTxt()
         sprintf(txtnum, "%u", end_uint[indice]);
         return txtnum;
     case Instr::cReal:
-        sprintf(txtnum, "%G", getDouble());
-        return txtnum;
+        {
+            double d = getDouble();
+            if (d >= DOUBLE_MAX || d <= -DOUBLE_MAX)
+            {
+                sprintf(txtnum, "%E", getDouble());
+                return txtnum;
+            }
+            sprintf(txtnum, "%.9f", d);
+            char * p = txtnum;
+            while (*p)
+                p++;
+            while (p>txtnum && p[-1]=='0')
+                p--;
+            if (p>txtnum && p[-1]=='.')
+                p--;
+            *p=0;
+            return txtnum;
+        }
     case Instr::cConstNulo:
         return "";
     case Instr::cConstTxt:

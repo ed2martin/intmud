@@ -405,6 +405,19 @@ ref(a)
     Se for fornecido mais de uma referência (exemplo: ref(a,b,c)),
     retorna a primeira que não for nula.
 
+txtnum(número, formato)
+    Retorna um texto correspondente a um número ou variável numérica.
+    Formato é um texto que pode conter:
+    Um dígito de 0 a 9 = número de casas após a vírgula
+    Uma vírgula: separar o número com vírgulas
+    Um ponto: separar número com pontos, o ponto decimal vira vírgula
+    Letra E: mostrar em notação científica; as opções anteriores são ignoradas
+    Exemplo:
+    txtnum(1005.23, "3.") é o mesmo que "1.005,230"
+    Nota: números muito grandes (mais de 18 dígitos antes da vírgula)
+    são mostrados em notação científica.
+    Exemplo: 5.9E+18 significa 59 seguido de 17 zeros.
+
 txt(a)
     Texto constante (não pode ser alterado) igual a a.
     Se a não for texto, retorna um texto vazio.
