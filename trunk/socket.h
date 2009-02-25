@@ -6,6 +6,7 @@
  #include <winsock.h>
 #else
  #include <sys/types.h>
+ #include <netinet/in.h>
 #endif
 #include "var-socket.h"
 
@@ -21,22 +22,27 @@ public:
     ~TSocket();                 ///< Destrutor
     void Fechar();              ///< Socket fechou
 
-    static const char * Conectar(int * socknum,
-                            const char * ender, int porta,
-                            struct sockaddr_in * conSock2);
-
+    static void SockConfig(int socknum);
+    static TSocket * Conectar(const char * ender, int porta);
     static void Fd_Set(fd_set * set_entrada, fd_set * set_saida);
     static void ProcEventos(fd_set * set_entrada, fd_set * set_saida);
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
     bool EnvMens(const char * mensagem);///< Envia mensagem conforme protocolo
+    int  Variavel(char num, int valor);
 private:
     void Processa(const char * buffer, int tamanho);
     bool EnvMens(const char * mensagem, int tamanho); ///< Envia mensagem pura
     void EnvPend();             ///< Envia dados pendentes
     void FecharSock();          ///< Fecha socket
     int  sock;                  ///< Socket; menor que 0 se estiver fechado
-    char proto;                 ///< Protocolo
+    char proto;                 ///< Protocolo (quando sock>=0)
+                                /**< - 0 = conectando
+                                 *   - 1 = Telnet
+                                 *   - 2 = Papovox
+                                 *   - 3 = IRC
+                                 */
     char cores;                 ///< 0=sem 1=ao receber, 2=ao enviar, 3=com
+    struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens
     char bufEnv[SOCKET_ENV];    ///< Contém a mensagem que será enviada

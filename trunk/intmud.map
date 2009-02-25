@@ -96,9 +96,9 @@ func servidor_socket
   ref novo
   novo = criar("x")
   novo.conec = arg0
-  novo.conec.proto = 2
+  novo.conec.cores = 3
   novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 11 ou qualquer outra coisa\n")
+  novo.conec.msg("Tecle um número de 0 a 12 ou qualquer outra coisa\n")
 func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
   escr_[txt1(arg0)]
@@ -194,7 +194,21 @@ func escr_11
   msg(txtnum(4.5, ",") + "\n")
   msg(txtnum(1045234.7, ".5") + "\n")
   msg(txtnum(-2328913.8, ",5") + "\n")
-
+const cores = "0123456789ABCDEF"
+func escr_12
+  uint8 frente
+  uint8 fundo
+  txt1 texto
+  enquanto fundo<8
+    msg("\d" + fundo)
+    enquanto frente<16
+      texto = txt(cores, frente, 1)
+      msg("\c" + texto + texto + " ")
+      frente += 1
+    efim
+    msg("\b\n")
+    frente = 0, fundo += 1
+  efim
 
 [mm]
 txt20 texto
@@ -224,7 +238,6 @@ func servidor_socket
 func ini
   uint8 x
   conec = arg0
-  conec.proto = 2
   msg("Benvindo\n")
 #inc = 65483, dec = 57
 #fim = 410

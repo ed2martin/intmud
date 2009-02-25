@@ -109,8 +109,8 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 
 // Constrole de fluxo
     case cSe:        strcpy(nome, "se "); expr=5; break;
-    case cSenao1:    strcpy(nome, "senão"); coment=5; break;
-    case cSenao2:    strcpy(nome, "senão "); expr=5; break;
+    case cSenao1:    strcpy(nome, "senao"); coment=5; break;
+    case cSenao2:    strcpy(nome, "senao "); expr=5; break;
     case cFimSe:     strcpy(nome, "fimse"); coment=3; break;
     case cEnquanto:  strcpy(nome, "enquanto "); expr=5; break;
     case cEFim:      strcpy(nome, "efim"); coment=5; break;

@@ -883,7 +883,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         }
 
     // Número
-        if (*origem>='0' && *origem<='9' ||
+        if ((*origem>='0' && *origem<='9') ||
              (!arg && *origem=='-' && origem[1]>='0' && origem[1]<='9'))
         {
             if (arg)

@@ -3788,10 +3788,81 @@ fi
 # Checks for libraries.
 
 
+{ echo "$as_me:$LINENO: checking for getsockopt in -lsocket" >&5
+echo $ECHO_N "checking for getsockopt in -lsocket... $ECHO_C" >&6; }
+if test "${ac_cv_lib_socket_getsockopt+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsocket  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char getsockopt ();
+int
+main ()
+{
+return getsockopt ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_socket_getsockopt=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_socket_getsockopt=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_socket_getsockopt" >&5
+echo "${ECHO_T}$ac_cv_lib_socket_getsockopt" >&6; }
+if test $ac_cv_lib_socket_getsockopt = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBSOCKET 1
+_ACEOF
+
+  LIBS="-lsocket $LIBS"
+
+fi
+
+
+
 # There might be a better way to do this.
 { echo "$as_me:$LINENO: checking for mingw32" >&5
 echo $ECHO_N "checking for mingw32... $ECHO_C" >&6; }
-
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -3843,6 +3914,94 @@ SKSTREAM_EXTRA_LIBS="$SKSTREAM_EXTRA_LIBS -lws2_32 -lwsock32"
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+
+{ echo "$as_me:$LINENO: checking for type of socket length (socklen_t)" >&5
+echo $ECHO_N "checking for type of socket length (socklen_t)... $ECHO_C" >&6; }
+cat > conftest.$ac_ext <<EOF
+#line 3922 "configure"
+#include "confdefs.h"
+
+#include <stddef.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+int main(void) {
+
+(void)getsockopt (1, 1, 1, NULL, (socklen_t *)NULL)
+; return 0; }
+EOF
+if { (eval echo configure:3933: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; _out=`eval $ac_compile 2>&1` && test "x$_out" = x; }; then
+  rm -rf conftest*
+
+  { echo "$as_me:$LINENO: result: socklen_t *" >&5
+echo "${ECHO_T}socklen_t *" >&6; }
+  SOCK_SOCKLEN_T=socklen_t
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+
+  cat > conftest.$ac_ext <<EOF
+#line 3945 "configure"
+#include "confdefs.h"
+
+#include <stddef.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+int main(void) {
+
+(void)getsockopt (1, 1, 1, NULL, (size_t *)NULL)
+; return 0; }
+EOF
+if { (eval echo configure:3956: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; _out=`eval $ac_compile 2>&1` && test "x$_out" = x; }; then
+  rm -rf conftest*
+
+    { echo "$as_me:$LINENO: result: size_t *" >&5
+echo "${ECHO_T}size_t *" >&6; }
+    SOCK_SOCKLEN_T=size_t
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+
+    cat > conftest.$ac_ext <<EOF
+#line 3968 "configure"
+#include "confdefs.h"
+
+#include <stddef.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+int main(void) {
+
+(void)getsockopt (1, 1, 1, NULL, (int *)NULL)
+; return 0; }
+EOF
+if { (eval echo configure:3979: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; _out=`eval $ac_compile 2>&1` && test "x$_out" = x; }; then
+  rm -rf conftest*
+
+      { echo "$as_me:$LINENO: result: int *" >&5
+echo "${ECHO_T}int *" >&6; }
+      SOCK_SOCKLEN_T=int
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+
+      { echo "$as_me:$LINENO: WARNING: could not determine" >&5
+echo "$as_me: WARNING: could not determine" >&2;}
+      SOCK_SOCKLEN_T="int"
+fi
+rm -f conftest*
+fi
+rm -f conftest*
+fi
+rm -f conftest*
+
+cat >>confdefs.h <<_ACEOF
+#define SOCK_SOCKLEN_T $SOCK_SOCKLEN_T
+_ACEOF
+
+
 
 # Checks for header files.
 ac_ext=c
@@ -8051,21 +8210,22 @@ echo "$as_me: $ac_file is unchanged" >&6;}
   fi
   rm -f "$tmp/out12"
 # Compute $ac_file's index in $config_headers.
+_am_arg=$ac_file
 _am_stamp_count=1
 for _am_header in $config_headers :; do
   case $_am_header in
-    $ac_file | $ac_file:* )
+    $_am_arg | $_am_arg:* )
       break ;;
     * )
       _am_stamp_count=`expr $_am_stamp_count + 1` ;;
   esac
 done
-echo "timestamp for $ac_file" >`$as_dirname -- $ac_file ||
-$as_expr X$ac_file : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-	 X$ac_file : 'X\(//\)[^/]' \| \
-	 X$ac_file : 'X\(//\)$' \| \
-	 X$ac_file : 'X\(/\)' \| . 2>/dev/null ||
-echo X$ac_file |
+echo "timestamp for $_am_arg" >`$as_dirname -- "$_am_arg" ||
+$as_expr X"$_am_arg" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+	 X"$_am_arg" : 'X\(//\)[^/]' \| \
+	 X"$_am_arg" : 'X\(//\)$' \| \
+	 X"$_am_arg" : 'X\(/\)' \| . 2>/dev/null ||
+echo X"$_am_arg" |
     sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
 	    s//\1/
 	    q
@@ -8102,7 +8262,7 @@ echo "$as_me: executing $ac_file commands" >&6;}
   # each Makefile.in and add a new line on top of each file to say so.
   # Grep'ing the whole file is not good either: AIX grep has a line
   # limit of 2048, but all sed's we know have understand at least 4000.
-  if sed 10q "$mf" | grep '^#.*generated by automake' > /dev/null 2>&1; then
+  if sed -n 's,^#.*generated by automake.*,X,p' "$mf" | grep X >/dev/null 2>&1; then
     dirpart=`$as_dirname -- "$mf" ||
 $as_expr X"$mf" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
 	 X"$mf" : 'X\(//\)[^/]' \| \

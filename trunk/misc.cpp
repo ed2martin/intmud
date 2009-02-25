@@ -33,11 +33,12 @@ char tabCOMPLETO[256];
 // Prepara tabela ASCII (tabASC)
 void tabASCinic(void)
 {
-    char * especialASCII[] = { "aeiouç_", "ãáàâÂÃÁÀ", "êéèÊÉÈ", "îíìÎÍÌ",
-                        "ôõóòÔÓÒ", "ûúùÚÚÙ", "çÇ", "_ " };
-    char outrosASCII[] = "0123456789";
+    const char * especialASCII[] = { "aeiouç_", "ãáàâÂÃÁÀ", "êéèÊÉÈ",
+                        "îíìÎÍÌ", "ôõóòÔÓÒ", "ûúùÚÚÙ", "çÇ", "_ " };
+    const char outrosASCII[] = "0123456789";
     int  caract;
-    char ch,*cpont;
+    char ch;
+    const char * cpont;
     memset(tabNOMES,0,256);           // Limpa todos os caracteres
     for (caract='a'; caract<='z'; caract++)
         tabNOMES[caract-0x20]=tabNOMES[caract]=caract;  // Letras de A a Z
@@ -253,7 +254,7 @@ bool verifNome(const char * nome1)
                   anterior!='w' && anterior!='p')
             if ( (verifH|=1) ==3 )
                 return 0;
-        if (ch>='a' && ch<='z' || ch=='ç')
+        if ((ch>='a' && ch<='z') || ch=='ç')
         {
             if (ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u')
                 if ( (verifH|=2) ==3 )
