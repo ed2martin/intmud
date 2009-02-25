@@ -133,7 +133,10 @@ TVarTipo TVariavel::Tipo()
     case Instr::cNomeObj:   return varOutros;
     case Instr::cLog:       return varOutros;
     case Instr::cIntTempo:  return varInt;
-    case Instr::cSocket:    return varOutros;
+    case Instr::cSocket:
+            if (defvar[Instr::endNome]=='=')
+                return varInt;
+            return varOutros;
     case Instr::cServ:      return varOutros;
     case Instr::cSalvar:    return varOutros;
     case Instr::cProg:      return varOutros;
@@ -434,30 +437,19 @@ void TVariavel::MoverMem(void * destino, void * origem, unsigned int tamanho)
 {
     if (tamanho==0 || origem==destino)
         return;
-    if (destino < origem)
+    if (destino >= origem && (char*)destino - tamanho < (char*)origem)
     {
-        if ((char*)destino - tamanho <= (char*)origem)
-            memcpy(destino, origem, tamanho);
-        else
-        {
-            const char * fim = (char*)destino + tamanho;
-            char * o = (char*)origem;
-            char * d = (char*)destino;
-            while (d<fim)
-                *d++ = *o++;
-        }
+        char * o = (char*)origem + tamanho - 1;
+        char * d = (char*)destino + tamanho - 1;
+        while (tamanho--)
+            *d-- = *o--;
     }
     else
     {
-        if ((char*)destino + tamanho >= (char*)origem)
-            memcpy(destino, origem, tamanho);
-        else
-        {
-            char * o = (char*)origem + tamanho - 1;
-            char * d = (char*)destino + tamanho - 1;
-            while (d>=destino)
-                *d-- = *o--;
-        }
+        char * o = (char*)origem;
+        char * d = (char*)destino;
+        while (tamanho--)
+            *d++ = *o++;
     }
 }
 
@@ -540,7 +532,7 @@ bool TVariavel::getBool()
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cSocket:
-        return end_socket[indice].getValor();
+        return end_socket[indice].getValor(defvar);
     case Instr::cServ:
         return end_serv[indice].getValor();
     case Instr::cSalvar:
@@ -671,7 +663,7 @@ int TVariavel::getInt()
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cSocket:
-        return end_socket[indice].getValor();
+        return end_socket[indice].getValor(defvar);
     case Instr::cServ:
         return end_serv[indice].getValor();
     case Instr::cSalvar:
@@ -797,7 +789,7 @@ double TVariavel::getDouble()
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cSocket:
-        return end_socket[indice].getValor();
+        return end_socket[indice].getValor(defvar);
     case Instr::cServ:
         return end_serv[indice].getValor();
     case Instr::cSalvar:
@@ -1090,9 +1082,11 @@ void TVariavel::setInt(int valor)
         end_inttempo[indice].setValor(valor);
         break;
     case Instr::cSocket:
-        end_socket[indice].MudarSock(0);
+        end_socket[indice].setValor(defvar, valor);
+        break;
     case Instr::cServ:
-        return end_serv[indice].Fechar();
+        end_serv[indice].Fechar();
+        break;
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -1126,12 +1120,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cIntInc:
     case Instr::cIntDec:
     case Instr::cIntTempo:
-        if (valor<-0x80000000LL)
-            setInt(-0x80000000);
-        else if (valor>0x7FFFFFFFLL)
-            setInt(0x7FFFFFFF);
-        else
-            setInt((int)valor);
+        setInt((int)valor);
         break;
     case Instr::cUInt32:
         if (valor > 0xFFFFFFFFLL)
@@ -1163,9 +1152,11 @@ void TVariavel::setDouble(double valor)
     case Instr::cLog:
         break;
     case Instr::cSocket:
-        end_socket[indice].MudarSock(0);
+        end_socket[indice].setValor(defvar, (int)valor);
+        break;
     case Instr::cServ:
-        return end_serv[indice].Fechar();
+        end_serv[indice].Fechar();
+        break;
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:
@@ -1209,6 +1200,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cIntDec:
     case Instr::cIntTempo:
     case Instr::cVarInt:
+    case Instr::cSocket:
         {
             long num;
             errno=0, num=strtol(txt, 0, 10);
@@ -1250,10 +1242,9 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cNomeObj:
     case Instr::cLog:
         break;
-    case Instr::cSocket:
-        end_socket[indice].MudarSock(0);
     case Instr::cServ:
-        return end_serv[indice].Fechar();
+        end_serv[indice].Fechar();
+        break;
     case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndice:

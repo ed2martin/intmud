@@ -221,34 +221,14 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
                 (struct sockaddr *)&SockStr_in, &tamsock);
             if (localSocket==INVALID_SOCKET)
                 break;
-            int sopcoes;
-            int stamanho;
-            unsigned long argp=1; // 0=bloquear  1=nao bloquear
-            ioctlsocket(localSocket, FIONBIO, &argp);
-            sopcoes=2048;
-            stamanho=sizeof(sopcoes);
-            setsockopt(localSocket, SOL_SOCKET, SO_RCVBUF,
-                    (const char*)(void*)&sopcoes, stamanho);
-            sopcoes=2048;
-            stamanho=sizeof(sopcoes);
-            setsockopt(localSocket, SOL_SOCKET, SO_SNDBUF,
-                    (const char*)(void*)&sopcoes, stamanho);
 #else
             ACCEPT_TYPE_ARG3 tamsock = sizeof(SockStr_in);
             int localSocket=accept(obj->sock,
                 (ACCEPT_TYPE_ARG2)&SockStr_in, &tamsock);
             if (localSocket<0)
                 break;
-            size_t sopcoes;
-            ACCEPT_TYPE_ARG3 stamanho;
-            fcntl(localSocket, F_SETFL, O_NONBLOCK);
-            sopcoes=2048;
-            stamanho=sizeof(sopcoes);
-            setsockopt(localSocket, SOL_SOCKET, SO_RCVBUF, &sopcoes, stamanho);
-            sopcoes=2048;
-            stamanho=sizeof(sopcoes);
-            setsockopt(localSocket, SOL_SOCKET, SO_SNDBUF, &sopcoes, stamanho);
 #endif
+            TSocket::SockConfig(localSocket);
         // Gera evento
             bool prossegue = false;
             if (obj->b_objeto)

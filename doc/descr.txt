@@ -705,17 +705,18 @@ socket <nomedavariável>
     A janela possui 25 linhas de 80 colunas, sendo que a última linha
     sempre corresponde ao que o usuário está escrevendo.
     Nota: uma conexão pode ser copiada de um objeto socket para outro.
-    Nesse caso, os eventos são gerados para todos os objetos socket.
+    Nesse caso, os eventos são gerados em mais de uma variável socket.
 
     Funções e variáveis:
     proto
         Define o protocolo; um número com o significado:
         0 = não está conectado
-        1 = Telnet
-        2 = IRC
-        3 = Papovox (sem cores)
-        4 = janela do programa
-        Nota: pode-se mudar entre 1 e 3 para socket conectado
+        1 = conectando
+        2 = Telnet
+        3 = IRC
+        4 = Papovox (sem cores)
+        5 = janela do programa
+        Nota: pode-se mudar entre 2 e 4 para socket conectado
     cores
         0 = nenhuma cor
         1 = cores somente ao receber
@@ -727,16 +728,13 @@ socket <nomedavariável>
     eco
         Define se o que o usuário digitar deve ser ecoado na tela.
         0 não ecoa, 1 ecoa. Não tem efeito em IRC e Papovox.
-    env
-        Permite congelar (interromper) e descongelar o envio de mensagens.
-        0 descongela, outro valor congela (interrompe o envio).
-        Nota: se o buffer de transmissão ficar cheio, a variável env vai
-        para 0 automaticamente.
     posx
         Posição do cursor: quantos caracteres enviou após o último \n.
         Caracteres especiais, como definição da cor, não contam.
     abrir(<endereço>, <porta>)
         Tenta conectar-se a um endereço.
+        Retorna 1 se conexão em progresso ou 0 se ocorreu erro
+        (geralmente endereço inválido)
     abrir("tela")
         Conecta à janela do programa. Cada linha recebida gera um evento _msg.
     fechar
@@ -755,18 +753,18 @@ socket <nomedavariável>
     <nomedavariável>_msg
         Recebeu mensagem
         arg0 = mensagem recebida
-        arg1 = valor anterior de conrec; 1=recepção estava congelada
-        arg2 = índice da variável vetor, se não for vetor arg2=0
+        arg1 = índice da variável vetor, se não for vetor arg2=0
     <nomedavariável>_fechou
-        arg0 = índice da variável vetor, se não for vetor arg0=0
         O socket foi fechado remotamente
+        arg0 = índice da variável vetor, se não for vetor arg0=0
         Se essa função não existir, o objeto que contém o socket é apagado
-    <nomedavariável>_conectou
+    <nomedavariável>_con
+        Conseguiu conectar
         arg0 = índice da variável vetor, se não for vetor arg0=0
-        Conseguiu conectar; args=1
-    <nomedavariável>_conectou
-        arg0 = índice da variável vetor, se não for vetor arg0=0
-        Não conseguiu conectar; args=2 e arg1=mensagem de erro
+    <nomedavariável>_err
+        Não conseguiu conectar
+        arg0 = mensagem de erro
+        arg1 = índice da variável vetor, se não for vetor arg0=0
 
 serv <nomedavariável>
     Funções:

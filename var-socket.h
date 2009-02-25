@@ -38,11 +38,25 @@ protected:
                      *  - Byte ='\n' -> passar para próxima linha
                      */
     virtual void Fechar(void)=0; ///< Fecha socket, pode apagar socket
+    virtual int  Variavel(char num, int valor)=0;
+                    ///< Lê ou altera uma variável
+                    /** @param num número da variável
+                     *         - '0' = proto
+                     *         - '1' = cores
+                     *         - '2' = aflooder
+                     *         - '3' = eco
+                     *  @param valor Novo valor, se for >= 0
+                     *  @return valor atual da variável
+                     */
 
     void FuncFechou();  ///< Executa função _fechou
                         /** @note Pode apagar o próprio objeto */
-    bool FuncMsg(const char * mens);  ///< Executa função _msg
-                        /** @return true se não apagou o objeto */
+    bool FuncEvento(const char * evento, const char * texto);
+                    ///< Executa uma função
+                    /**< @param evento Nome do evento (ex. "msg")
+                     *   @param texto Texto do primeiro argumento, 0=nenhum texto
+                     *   @return true se não apagou o objeto, false se apagou
+                     */
 
 // Variáveis usadas para enviar mensagens
     short CorInic;      ///< Cor do início da linha, ou -1 se não mudou
@@ -71,9 +85,12 @@ public:
     void EndObjeto(TClasse * c, TObjeto * o);
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    int  getValor();    ///< Ler valor numérico da variável
+    int  getValor(const char * defvar1);
+                            ///< Ler valor numérico da variável
+    void setValor(const char * defvar1, int valor);
+                            ///< Mudar o valor numérico da variável
 
-    const char * defvar;///< Como foi definida a variável
+    const char * defvar;    ///< Como foi definida a variável
     union {
         TClasse * endclasse;///< Em que classe está definido
         TObjeto * endobjeto;///< Em que objeto está definido

@@ -25,6 +25,10 @@
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou
 
+const char SocketProto[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '0', 0 };
+const char SocketCores[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '1', 0 };
+const char SocketAFlooder[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '2', 0 };
+const char SocketEco[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '3', 0 };
 TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;
 
@@ -50,8 +54,19 @@ TObjSocket::~TObjSocket()
     printf("delete TObjSocket\n"); fflush(stdout);
 #endif
 // Retira dos objetos TVarSocket
+// Nota: não pode chamar Inicio->MudarSock(0) porque
+// isso executaria um segundo delete[] em TObjSocket
     while (Inicio)
-        Inicio->MudarSock(0);
+    {
+        TVarSocket * s = Inicio->Depois;
+        Inicio->Socket = 0;
+        Inicio->Antes = 0;
+        Inicio->Depois = 0;
+        if (TObjSocket::varObj == Inicio)
+            TObjSocket::varObj = 0;
+        Inicio = s;
+    }
+
 // Acerta sockObj
     if (sockObj==this)
         sockObj=0;
@@ -249,8 +264,9 @@ void TObjSocket::FuncFechou()
 }
 
 //------------------------------------------------------------------------------
-bool TObjSocket::FuncMsg(const char * texto)
+bool TObjSocket::FuncEvento(const char * evento, const char * texto)
 {
+    //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
     sockObj = this;
     for (TVarSocket * vobj = Inicio; vobj;)
     {
@@ -259,21 +275,22 @@ bool TObjSocket::FuncMsg(const char * texto)
         if (vobj->b_objeto)
         {
             char mens[80];
-            sprintf(mens, "%s_msg", vobj->defvar+Instr::endNome);
+            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
             prossegue = Instr::ExecIni(vobj->endobjeto, mens);
         }
     // Definido em classe: prepara para executar
         else if (vobj->endclasse)
         {
             char mens[80];
-            sprintf(mens, "%s_msg", vobj->defvar+Instr::endNome);
+            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
             prossegue = Instr::ExecIni(vobj->endclasse, mens);
         }
     // Executa
         varObj = vobj;
         if (prossegue)
         {
-            Instr::ExecArg(texto);
+            if (texto)
+                Instr::ExecArg(texto);
             Instr::ExecArg(vobj->indice);
             Instr::ExecX();
             Instr::ExecFim();
@@ -389,16 +406,30 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 #ifdef DEBUG_MSG
         printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
 #endif
-        int sock=-1;
-        if (porta<0 || porta>65535)
-            return false;
-        ender = TSocket::Conectar(&sock, ender, porta, 0);
-        if (ender==0)
-            MudarSock(new TSocket(sock));
+        TSocket * s = TSocket::Conectar(ender, porta);
+        if (s)
+            MudarSock(s);
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrTxtFixo))
+        if (!Instr::CriarVar(Instr::InstrVarInt))
             return false;
-        Instr::VarAtual->endfixo = (ender ? ender : "");
+        if (s)
+            Instr::VarAtual->setInt(1);
+        return true;
+    }
+// Variáveis
+    const char * x = 0;
+    if (comparaZ(nome, "proto")==0)
+        x = SocketProto;
+    else if (comparaZ(nome, "cores")==0)
+        x = SocketCores;
+    else if (comparaZ(nome, "aflooder")==0)
+        x = SocketAFlooder;
+    else if (comparaZ(nome, "eco")==0)
+        x = SocketEco;
+    if (x)
+    {
+        Instr::ApagarVar(v+1);
+        Instr::VarAtual->defvar = x;
         return true;
     }
 // Função ou variável desconhecida
@@ -406,7 +437,22 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int TVarSocket::getValor()
+int TVarSocket::getValor(const char * defvar1)
 {
-    return Socket != 0;
+    if (Socket==0)
+        return 0;
+    if (defvar1[Instr::endNome]!='=')
+        return 1;
+    return Socket->Variavel(defvar1[Instr::endNome+1], -1);
+}
+
+//------------------------------------------------------------------------------
+void TVarSocket::setValor(const char * defvar1, int valor)
+{
+    if (Socket==0)
+        return;
+    if (defvar1[Instr::endNome]!='=')
+        MudarSock(0);
+    else
+        Socket->Variavel(defvar1[Instr::endNome+1], valor<0 ? 0 : valor);
 }

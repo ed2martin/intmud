@@ -141,10 +141,12 @@ void TClasse::AcertaComandos()
                                         x[2]==Instr::cSenao2))
                     break;
                 else if (x[2]==Instr::cFimSe)
+                {
                     if (nivelse)
                         nivelse--;
                     else
                         break;
+                }
             p[3] = (x-p);
             p[4] = (x-p)>>8;
             break;
@@ -161,6 +163,7 @@ void TClasse::AcertaComandos()
                     x[4] = (x-p) >> 8;
                 }
                 else if (x[2]==Instr::cEFim)
+                {
                     if (nivelse)
                         nivelse--;
                     else
@@ -170,6 +173,7 @@ void TClasse::AcertaComandos()
                         x+=Num16(x);
                         break;
                     }
+                }
             p[3] = (x-p);
             p[4] = (x-p)>>8;
             break;
@@ -181,6 +185,7 @@ void TClasse::AcertaComandos()
                 else if (x[2]==Instr::cEnquanto)
                     nivelse++;
                 else if (x[2]==Instr::cEFim)
+                {
                     if (nivelse)
                         nivelse--;
                     else
@@ -188,6 +193,7 @@ void TClasse::AcertaComandos()
                         x+=Num16(x);
                         break;
                     }
+                }
             p[3] = (x-p);
             p[4] = (x-p)>>8;
             break;

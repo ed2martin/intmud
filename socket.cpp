@@ -35,6 +35,7 @@
  #include <sys/un.h>     // Contém a estrutura sockaddr_un
  #include <errno.h>
 #endif
+#include "config.h"
 #include "socket.h"
 #include "variavel.h"
 #include "classe.h"
@@ -48,6 +49,9 @@
 TSocket * TSocket::sockAtual = 0;
 TSocket * TSocket::sInicio = 0;
 bool TSocket::boolenvpend = false;
+
+// Conexão de socket, vide também:
+// http://www.muq.org/~cynbe/ref/nonblocking-connects.html
 
 //------------------------------------------------------------------------------
 // Converter do IRC para Telnet
@@ -89,49 +93,42 @@ static const char desconvirc[] = {
     0 }; // 15
 
 //------------------------------------------------------------------------------
-/// Conecta a um endereço
+/// Cria objeto TSocket a partir de endereço e porta
 /**
- @param socknum Aonde colocará o socket objtido
  @param ender  Endereço a conectar
  @param porta  Porta
- @param conSock2 Se !=0, copia struct sockaddr_in para conSock2
- @retval 0 se conseguiu conectar, colocou o socket em socknum
- @retval !=0 se não conseguiu; retorna a mensagem de erro
+ @return Objeto TSocket ou 0 se ocorreu erro (provavelmente endereço inválido)
  */
-const char * TSocket::Conectar(int * socknum,
-                            const char * ender, int porta,
-                            struct sockaddr_in * conSock2)
+TSocket * TSocket::Conectar(const char * ender, int porta)
 {
-    int  conManip;
     struct sockaddr_in conSock;
     struct hostent *hnome;
+    int conManip;
 
-    *socknum = 0;
-
+    if (porta<0 || porta>65535)
+        return 0;
 #ifdef __WIN32__
     memset(&conSock,0,sizeof(conSock));
     conSock.sin_addr.s_addr=inet_addr(ender);
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
     {
         if ( (hnome=gethostbyname(ender)) == NULL )
-            return "Problema ao obter endereço IP";
+            return 0;
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
     conSock.sin_family=AF_INET;
     conSock.sin_port=htons( (u_short)porta );
     if ( (conManip = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-        return "Problema em socket()";
+        return 0;
+    SockConfig(conManip);
     if ( connect(conManip, (struct sockaddr *)&conSock,
                                       sizeof(struct sockaddr)) == SOCKET_ERROR)
     {
-        closesocket(conManip);
-        return "Não consegui conectar";
-    }
-    unsigned long argp=1; // 0=bloquear  1=nao bloquear
-    if ( ioctlsocket(conManip, FIONBIO, &argp) !=0 )
-    {
-        closesocket(conManip);
-        return "ioctlsocket";
+        if (WSAGetLastError() != WSAEWOULDBLOCK)
+        {
+            closesocket(conManip);
+            return 0;
+        }
     }
 #else
     memset(&conSock.sin_zero, 0, 8);
@@ -141,25 +138,55 @@ const char * TSocket::Conectar(int * socknum,
     if ( (conSock.sin_addr.s_addr) == (unsigned long)-1 )
     {
         if ( (hnome=gethostbyname(ender)) == NULL )
-            return "Problema ao obter endereço IP";
+            return 0;
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
     if ( (conManip=socket(PF_INET,SOCK_STREAM,0)) ==-1)
-        return "Problema em socket()";
-    //printf("Conectando a %s porta %d\n",
-    //            inet_ntoa(conSock.sin_addr), porta);
+        return 0;
+    SockConfig(conManip);
     if ( connect(conManip, (struct sockaddr *)&conSock,
-                                      sizeof(struct sockaddr))==-1)
+                                      sizeof(struct sockaddr)) <0 )
     {
-        close(conManip);
-        return "Não consegui conectar";
+        if (errno != EINPROGRESS)
+        {
+            close(conManip);
+            return 0;
+        }
     }
-    fcntl(conManip, F_SETFL, O_NONBLOCK);
 #endif
-    *socknum = conManip;
-    if (conSock2)
-        memcpy(conSock2, &conSock, sizeof(conSock));
-    return 0;
+    TSocket * s = new TSocket(conManip);
+    s->proto = 0;
+    s->conSock = conSock;
+    return s;
+}
+
+//------------------------------------------------------------------------------
+void TSocket::SockConfig(int localSocket)
+{
+#ifdef __WIN32__
+    int sopcoes;
+    int stamanho;
+    unsigned long argp=1; // 0=bloquear  1=nao bloquear
+    ioctlsocket(localSocket, FIONBIO, &argp);
+    sopcoes=2048;
+    stamanho=sizeof(sopcoes);
+    setsockopt(localSocket, SOL_SOCKET, SO_RCVBUF,
+            (const char*)(void*)&sopcoes, stamanho);
+    sopcoes=2048;
+    stamanho=sizeof(sopcoes);
+    setsockopt(localSocket, SOL_SOCKET, SO_SNDBUF,
+            (const char*)(void*)&sopcoes, stamanho);
+#else
+    size_t sopcoes;
+    ACCEPT_TYPE_ARG3 stamanho;
+    fcntl(localSocket, F_SETFL, O_NONBLOCK);
+    sopcoes=2048;
+    stamanho=sizeof(sopcoes);
+    setsockopt(localSocket, SOL_SOCKET, SO_RCVBUF, &sopcoes, stamanho);
+    sopcoes=2048;
+    stamanho=sizeof(sopcoes);
+    setsockopt(localSocket, SOL_SOCKET, SO_SNDBUF, &sopcoes, stamanho);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -223,11 +250,45 @@ void TSocket::FecharSock()
 }
 
 //------------------------------------------------------------------------------
+int TSocket::Variavel(char num, int valor)
+{
+    switch (num)
+    {
+    case '0': // proto
+        if (sock<0)
+            return 0;
+        if (valor>=0 && proto!=0)
+        {
+            valor--;
+            if (valor<1) valor=1;
+            if (valor>3) valor=3;
+            if (proto != valor)
+            {
+                proto=valor;
+                dadoRecebido=0;
+                pontRec=0;
+                pontESC=0;
+                pontTelnet=0;
+            }
+        }
+        return proto+1;
+    case '1': // cores
+        if (valor>=0)
+            cores = (valor>3 ? 3 : valor);
+        return cores;
+    case '2': // aflooder
+    case '3': // eco
+        return 0;
+    }
+    return 0;
+}
+
+//------------------------------------------------------------------------------
 /** @param mensagem Endereço dos bytes a enviar
  *  @return true se conseguiu enviar, false se não conseguiu */
 bool TSocket::EnvMens(const char * mensagem)
 {
-    if (sock<0)
+    if (sock<0 || proto==0)
         return false;
 
 // Papovox
@@ -315,6 +376,7 @@ bool TSocket::EnvMens(const char * mensagem)
             int antes = cor;
             cor = *(unsigned char*)mensagem;
             char ini='[';
+            //sprintf(destino, "%02x", cor); destino+=2;
             *destino++ = 0x1B;
                                 // Tirar negrito
             if ((antes&0x80) && (cor&0x80)==0)
@@ -329,7 +391,7 @@ bool TSocket::EnvMens(const char * mensagem)
                 if (antes&15)    // Se fundo != preto
                     antes |= 15; // Deve acertar fundo
             }
-            else if ((antes&0x80)==0 && (antes&0x80)) // Negrito
+            else if ((antes&0x80)==0 && (cor&0x80)) // Negrito
             {
                 destino[0] = ini;
                 destino[1] = '1';
@@ -386,7 +448,7 @@ bool TSocket::EnvMens(const char * mensagem)
             mensagem++;
             bool numero =   // Se pode ser interpretado como número
                     (mensagem[1]==0 ||
-                    mensagem[1]>='0' && mensagem[1]<='9');
+                    (mensagem[1]>='0' && mensagem[1]<='9'));
             bool virgula =  // Se pode ser interpretado como vírgula
                     (mensagem[1]==0 || mensagem[1]==',');
             int antes = cor ^ *(unsigned char*)mensagem;
@@ -519,6 +581,11 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
     // Verifica se algum socket fechou
         for (TSocket * obj = sInicio; obj;)
         {
+            if (obj->proto==0)
+            {
+                obj=obj->sDepois;
+                continue;
+            }
             obj->EnvPend();
             if (obj->sock >= 0)
             {
@@ -539,7 +606,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
     for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
     {
         FD_SET(obj->sock, set_entrada);
-        if (obj->pontEnv)
+        if (obj->pontEnv || obj->proto==0)
             FD_SET(obj->sock, set_saida);
     }
 }
@@ -549,8 +616,67 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
 {
     for (TSocket * obj = sInicio; obj; )
     {
+    // Verifica se socket aberto
+        if (obj->sock<0)
+        {
+            obj = obj->sDepois;
+            continue;
+        }
+    // Verifica socket conectando
+        if (obj->proto==0)
+        {
+        // Checa se conexão pendente
+            if (FD_ISSET(obj->sock, set_entrada)==0 &&
+                    FD_ISSET(obj->sock, set_saida)==0)
+            {
+                obj = obj->sDepois;
+                continue;
+            }
+        // Checa se está conectado
+            int coderro = 0;
+#ifdef __WIN32__
+            if ( connect(obj->sock, (struct sockaddr *)&obj->conSock,
+                          sizeof(struct sockaddr)) == SOCKET_ERROR)
+            {
+                coderro = WSAGetLastError();
+                if (coderro==WSAEISCONN)
+                    coderro=0;
+            }
+#else
+            if ( connect(obj->sock, (struct sockaddr *)&obj->conSock,
+                                      sizeof(struct sockaddr)) < 0 )
+            {
+                coderro = errno;
+                if (coderro==EISCONN)
+                    coderro=0;
+            }
+#endif
+        // Conseguiu conectar
+            if (coderro==0)
+            {
+                sockAtual = obj->sDepois;
+                obj->FuncEvento("con", 0);
+                obj = sockAtual;
+                continue;
+            }
+        // Erro: obtém o código de erro
+            int err = 0;
+            SOCK_SOCKLEN_T len = sizeof(err);
+            if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
+                    (void*)&err, &len)==0)
+                if (err)
+                    coderro = err;
+            sockAtual = obj;
+            char mens[80];
+            sprintf(mens, "Erro %d", coderro);
+            if (obj->FuncEvento("err", mens))
+                delete obj; // Apaga objeto se não foi apagado
+                            // socket é fechado ao apagar objeto
+            obj = sockAtual;
+            continue;
+        }
     // Verifica se tem dados pendentes para ler
-        if (obj->sock<0 || FD_ISSET(obj->sock, set_entrada)==0)
+        if (FD_ISSET(obj->sock, set_entrada)==0)
         {
             obj = obj->sDepois;
             continue;
@@ -895,7 +1021,6 @@ void TSocket::Processa(const char * buffer, int tamanho)
                 return;
         }
 
-
 // Prepara mensagem
         char texto[2048];
         char * dest = texto;
@@ -967,7 +1092,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
 #endif
 
 // Processa a mensagem
-        if (FuncMsg(texto)==false)
+        if (FuncEvento("msg", texto)==false)
             return;
     } // while (tamanho>0)
 }
