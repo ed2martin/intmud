@@ -29,6 +29,8 @@ const char SocketProto[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '0', 0 };
 const char SocketCores[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '1', 0 };
 const char SocketAFlooder[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '2', 0 };
 const char SocketEco[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '3', 0 };
+const char SocketColMin[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'A', 0 };
+const char SocketColMax[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'B', 0 };
 TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;
 
@@ -53,6 +55,12 @@ TObjSocket::~TObjSocket()
 #ifdef DEBUG_CRIAR
     printf("delete TObjSocket\n"); fflush(stdout);
 #endif
+    RetiraVarSocket();
+}
+
+//------------------------------------------------------------------------------
+void TObjSocket::RetiraVarSocket()
+{
 // Retira dos objetos TVarSocket
 // Nota: não pode chamar Inicio->MudarSock(0) porque
 // isso executaria um segundo delete[] em TObjSocket
@@ -235,13 +243,15 @@ void TObjSocket::FuncFechou()
         {
             TObjeto * end = varObj->endobjeto;
             char mens[80];
+            int indice = varObj->indice;
             sprintf(mens, "%s_fechou", varObj->defvar+Instr::endNome);
             varObj->MudarSock(0);
+                // A partir daqui varObj pode ser nulo
             if (Instr::ExecIni(end, mens)==false)
                 end->MarcarApagar();
             else
             {
-                Instr::ExecArg(varObj->indice);
+                Instr::ExecArg(indice);
                 Instr::ExecX();
             }
             Instr::ExecFim();
@@ -250,11 +260,13 @@ void TObjSocket::FuncFechou()
         {
             TClasse * end = varObj->endclasse;
             char mens[80];
+            int indice = varObj->indice;
             sprintf(mens, "%s_fechou", varObj->defvar+Instr::endNome);
             varObj->MudarSock(0);
+                // A partir daqui varObj pode ser nulo
             if (Instr::ExecIni(end, mens)==false)
                 continue;
-            Instr::ExecArg(varObj->indice);
+            Instr::ExecArg(indice);
             Instr::ExecX();
             Instr::ExecFim();
         }
@@ -369,11 +381,8 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 // Fecha Socket
     if (comparaZ(nome, "fechar")==0)
     {
-        if (Socket==0)
-            return false;
-        while (Socket->Inicio)  // Retira dos objetos TVarSocket
-            Socket->Inicio->MudarSock(0);
-        Socket->Fechar(); // Fecha socket
+        if (Socket)
+            Socket->Fechar();
         return false;
     }
 // Envia mensagem
@@ -426,6 +435,10 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         x = SocketAFlooder;
     else if (comparaZ(nome, "eco")==0)
         x = SocketEco;
+    else if (comparaZ(nome, "colmin")==0)
+        x = SocketColMin;
+    else if (comparaZ(nome, "colmax")==0)
+        x = SocketColMax;
     if (x)
     {
         Instr::ApagarVar(v+1);
@@ -437,22 +450,41 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int TVarSocket::getValor(const char * defvar1)
+int TVarSocket::getValor(const char * defvar_l)
 {
     if (Socket==0)
         return 0;
-    if (defvar1[Instr::endNome]!='=')
+    if (defvar_l[Instr::endNome]!='=')
         return 1;
-    return Socket->Variavel(defvar1[Instr::endNome+1], -1);
+    switch (defvar_l[Instr::endNome+1])
+    {
+    case 'A': // ColMin
+        return Socket->ColunaMin;
+    case 'B': // ColMax
+        return Socket->ColunaMax;
+    }
+    return Socket->Variavel(defvar_l[Instr::endNome+1], -1);
 }
 
 //------------------------------------------------------------------------------
-void TVarSocket::setValor(const char * defvar1, int valor)
+void TVarSocket::setValor(const char * defvar_l, int valor)
 {
     if (Socket==0)
         return;
-    if (defvar1[Instr::endNome]!='=')
+    if (defvar_l[Instr::endNome]!='=')
+    {
         MudarSock(0);
-    else
-        Socket->Variavel(defvar1[Instr::endNome+1], valor<0 ? 0 : valor);
+        return;
+    }
+    switch (defvar_l[Instr::endNome+1])
+    {
+    case 'A': // ColMin
+        Socket->ColunaMin = (valor<10 ? 10 : valor>100 ? 100 : valor);
+        break;
+    case 'B': // ColMax
+        Socket->ColunaMax = (valor<10 ? 10 : valor>100 ? 100 : valor);
+        break;
+    default:
+        Socket->Variavel(defvar_l[Instr::endNome+1], valor<0 ? 0 : valor);
+    }
 }

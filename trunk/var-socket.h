@@ -28,7 +28,7 @@ public:
 
 protected:
     virtual bool EnvMens(const char * mensagem)=0; ///< Envia mensagem
-                    /** A mensagem segue o formato:
+                    /**< A mensagem segue o formato:
                      *  - Byte =0 -> fim da mensagem
                      *  - Byte =1 -> próximo byte = cor
                      *     - Bits 0-3 = cor de fundo
@@ -40,7 +40,7 @@ protected:
     virtual void Fechar(void)=0; ///< Fecha socket, pode apagar socket
     virtual int  Variavel(char num, int valor)=0;
                     ///< Lê ou altera uma variável
-                    /** @param num número da variável
+                    /**< @param num número da variável
                      *         - '0' = proto
                      *         - '1' = cores
                      *         - '2' = aflooder
@@ -49,6 +49,7 @@ protected:
                      *  @return valor atual da variável
                      */
 
+    void RetiraVarSocket(); ///< Retira objeto da lista ligada de TVarSocket
     void FuncFechou();  ///< Executa função _fechou
                         /** @note Pode apagar o próprio objeto */
     bool FuncEvento(const char * evento, const char * texto);

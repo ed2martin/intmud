@@ -937,12 +937,16 @@ const char * TVariavel::getTxt()
         return "";
 
 // Variáveis extras
+    case Instr::cSocket:
+        if (defvar[Instr::endNome]!='=')
+            return "";
+        sprintf(txtnum, "%d", getInt());
+        return txtnum;
     case Instr::cListaObj:
     case Instr::cListaTxt:
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cLog:
-    case Instr::cSocket:
     case Instr::cServ:
     case Instr::cSalvar:
     case Instr::cProg:
