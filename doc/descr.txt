@@ -739,12 +739,13 @@ socket <nomedavariável>
         Conecta à janela do programa. Cada linha recebida gera um evento _msg.
     fechar
         Encerra a conexão; não gera o evento fechou.
-    colunas(x, y)
-        Onde x e y são números ou expressões numéricas, de 10 a 100.
-        Essa função atua nas mensagens enviadas ao socket. Define
-        quantos caracteres (colunas) uma mensagem pode ter.
-        Na hora de dividir uma mensagem em duas, o primeiro número é
-        o tamanho mínimo e o segundo é o tamanho máximo.
+    colmin
+    colmax
+        Essas duas variáveis são números de 10 a 100.
+        Atuam nas mensagens enviadas ao socket, dividindo linhas grandes
+        em duas ou mais. Isso é feito colocando "\n" no meio da mensagem.
+        Colmin e colmax são os tamanhos mínimo e máximo das linhas.
+        O programa tenta dividir sempre onde houver um caracter espaço.
     msg( <mensagem> )
         Envia mensagem para o socket.
         Retorna 1 se conseguiu enviar ou 0 se buffer cheio.

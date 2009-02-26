@@ -655,6 +655,7 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
             if (coderro==0)
             {
                 sockAtual = obj->sDepois;
+                obj->proto = 1;
                 obj->FuncEvento("con", 0);
                 obj = sockAtual;
                 continue;
