@@ -108,8 +108,10 @@ int main(int argc, char *argv[])
     unsigned short espera;
     fd_set set_entrada;
     fd_set set_saida;
+    fd_set set_err;
     FD_ZERO(&set_entrada);
     FD_ZERO(&set_saida);
+    FD_ZERO(&set_err);
     while (true)
     {
     // Obtém: espera = tempo decorrido
@@ -131,13 +133,14 @@ int main(int argc, char *argv[])
 
     // Chama eventos serv e socket
         TVarServ::ProcEventos(&set_entrada);
-        TSocket::ProcEventos(&set_entrada, &set_saida);
+        TSocket::ProcEventos(&set_entrada, &set_saida, &set_err);
 
     // Prepara variáveis para select()
         FD_ZERO(&set_entrada);
         FD_ZERO(&set_saida);
+        FD_ZERO(&set_err);
         TVarServ::Fd_Set(&set_entrada);
-        TSocket::Fd_Set(&set_entrada, &set_saida);
+        TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
 
     // Obtém quanto tempo deve esperar
         espera = TVarIntTempo::TempoEspera();

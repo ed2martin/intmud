@@ -113,13 +113,13 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 
 // Cria socket
 #ifdef __WIN32__
-        BOOL iopcoes = 1;
-        int  tamanho = sizeof(iopcoes);
         if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET )
         {
             sock=-1;
             break;
         }
+        //BOOL iopcoes = 1;
+        //int  tamanho = sizeof(iopcoes);
         //setsockopt(Sock, SOL_SOCKET, SO_REUSEADDR, (const char*)(void*)&iopcoes, tamanho);
 #else
         int  iopcoes = 1;
