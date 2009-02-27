@@ -572,7 +572,7 @@ void TSocket::SairPend()
 }
 
 //------------------------------------------------------------------------------
-void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
+void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
 {
     while (true)
     {
@@ -605,14 +605,21 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
     }
     for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
     {
+#ifdef __WIN32__
+        if (obj->proto)
+            FD_SET(obj->sock, set_entrada);
+        else
+            FD_SET(obj->sock, set_err);
+#else
         FD_SET(obj->sock, set_entrada);
+#endif
         if (obj->pontEnv || obj->proto==0)
             FD_SET(obj->sock, set_saida);
     }
 }
 
 //------------------------------------------------------------------------------
-void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
+void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
 {
     for (TSocket * obj = sInicio; obj; )
     {
@@ -625,6 +632,20 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
     // Verifica socket conectando
         if (obj->proto==0)
         {
+            int coderro = 0;
+#ifdef __WIN32__
+            if (FD_ISSET(obj->sock, set_entrada)==0)
+            {
+                if (FD_ISSET(obj->sock, set_err))
+                {
+                    SOCK_SOCKLEN_T len = sizeof(coderro);
+                    getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
+                            (char*)&coderro, &len);
+                }
+                else
+                    continue;
+            }
+#else
         // Checa se conexão pendente
             if (FD_ISSET(obj->sock, set_entrada)==0 &&
                     FD_ISSET(obj->sock, set_saida)==0)
@@ -633,22 +654,22 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
                 continue;
             }
         // Checa se está conectado
-            int coderro = 0;
-#ifdef __WIN32__
-            if ( connect(obj->sock, (struct sockaddr *)&obj->conSock,
-                          sizeof(struct sockaddr)) == SOCKET_ERROR)
-            {
-                coderro = WSAGetLastError();
-                if (coderro==WSAEISCONN)
-                    coderro=0;
-            }
-#else
             if ( connect(obj->sock, (struct sockaddr *)&obj->conSock,
                                       sizeof(struct sockaddr)) < 0 )
             {
                 coderro = errno;
                 if (coderro==EISCONN)
                     coderro=0;
+            }
+        // Se erro: obtém o código de erro
+            if (coderro)
+            {
+                int err = 0;
+                SOCK_SOCKLEN_T len = sizeof(err);
+                if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
+                    (void*)&err, &len)==0)
+                if (err)
+                    coderro = err;
             }
 #endif
         // Conseguiu conectar
@@ -660,13 +681,7 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
                 obj = sockAtual;
                 continue;
             }
-        // Erro: obtém o código de erro
-            int err = 0;
-            SOCK_SOCKLEN_T len = sizeof(err);
-            if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
-                    (void*)&err, &len)==0)
-                if (err)
-                    coderro = err;
+        // Erro ao conectar
             sockAtual = obj;
             char mens[80];
             sprintf(mens, "Erro %d", coderro);
