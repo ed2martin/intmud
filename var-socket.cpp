@@ -31,6 +31,7 @@ const char SocketAFlooder[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '2', 0 };
 const char SocketEco[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '3', 0 };
 const char SocketColMin[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'A', 0 };
 const char SocketColMax[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'B', 0 };
+const char SocketPosX[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'C', 0 };
 TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;
 
@@ -439,6 +440,8 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         x = SocketColMin;
     else if (comparaZ(nome, "colmax")==0)
         x = SocketColMax;
+    else if (comparaZ(nome, "posx")==0)
+        x = SocketPosX;
     if (x)
     {
         Instr::ApagarVar(v+1);
@@ -462,6 +465,8 @@ int TVarSocket::getValor(const char * defvar_l)
         return Socket->ColunaMin;
     case 'B': // ColMax
         return Socket->ColunaMax;
+    case 'C':
+        return Socket->ColunaEnvia;
     }
     return Socket->Variavel(defvar_l[Instr::endNome+1], -1);
 }
@@ -479,10 +484,12 @@ void TVarSocket::setValor(const char * defvar_l, int valor)
     switch (defvar_l[Instr::endNome+1])
     {
     case 'A': // ColMin
-        Socket->ColunaMin = (valor<10 ? 10 : valor>100 ? 100 : valor);
+        Socket->ColunaMin = (valor<10 ? 10 : valor>1000 ? 1000 : valor);
         break;
     case 'B': // ColMax
-        Socket->ColunaMax = (valor<10 ? 10 : valor>100 ? 100 : valor);
+        Socket->ColunaMax = (valor<10 ? 10 : valor>1000 ? 1000 : valor);
+        break;
+    case 'C':
         break;
     default:
         Socket->Variavel(defvar_l[Instr::endNome+1], valor<0 ? 0 : valor);
