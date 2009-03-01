@@ -161,6 +161,130 @@ TSocket * TSocket::Conectar(const char * ender, int porta)
 }
 
 //------------------------------------------------------------------------------
+/// Fornece a descrição de um erro a partir do número
+/** @param erro Número do erro
+ *  @return Texto contendo o erro
+ *  @note Próximas chamadas a essa função podem alterar a string original
+ */
+const char * TSocket::TxtErro(int erro)
+{
+#ifdef __WIN32__
+    // Lista de erros de: http://www.sockets.com/err_lst1.htm
+    switch (erro)
+    {
+    case WSABASEERR:
+        return "";
+    case WSAEINTR: // (10004) Interrupted system call
+        return "Chamada do sistema interrompida";
+    case WSAEBADF: // (10009) Bad file number
+        return "Número de arquivo inválido";
+    case WSAEACCES: // (10013) Permission denied
+        return "Permissão negada";
+    case WSAEFAULT: // (10014) Bad address
+        return "Endereço incorreto";
+    case WSAEINVAL: // (10022) Invalid argument
+        return "Argumento inválido";
+    case WSAEMFILE: // (10024) Too many open files
+        return "Muitos arquivos abertos";
+    case WSAEWOULDBLOCK: // (10035) Operation would block
+        return "Operação deveria bloquear";
+    case WSAEINPROGRESS: // (10036) Operation now in progress
+        return "Operação em progresso";
+    case WSAEALREADY: // (10037) Operation already in progress
+        return "Operação já está em progresso";
+    case WSAENOTSOCK: // (10038) Socket operation on non-socket
+        return "Operação socket em não socket";
+    case WSAEDESTADDRREQ: // (10039) Destination address required
+        return "Faltou o endereço destino";
+    case WSAEMSGSIZE: // (10040) Message too long
+        return "Mensagem longa demais";
+    case WSAEPROTOTYPE: // (10041) Protocol wrong type for socket
+        return "Protocolo errado para socket";
+    case WSAENOPROTOOPT: // (10042) Bad protocol option
+        return "Opção de protocolo inválida";
+    case WSAEPROTONOSUPPORT: // (10043) Protocol not supported
+        return "Protocolo não suportado";
+    case WSAESOCKTNOSUPPORT: // (10044) Socket type not supported
+        return "Tipo de socket não suportado";
+    case WSAEOPNOTSUPP: // (10045) Operation not supported on socket
+        return "Operação não suportada em socket";
+    case WSAEPFNOSUPPORT: // (10046) Protocol family not supported
+        return "Protocolo não suportado";
+    case WSAEAFNOSUPPORT: // (10047) Address family not supported by protocol family
+        return "Tipo de endereço não suportado pelo protocolo";
+    case WSAEADDRINUSE: // (10048) Address already in use
+        return "Endereço já está em uso";
+    case WSAEADDRNOTAVAIL: // (10049) Can't assign requested address
+        return "Impossível designar endereço requisitado";
+    case WSAENETDOWN: // (10050) Network is down
+        return "A rede não está funcionando";
+    case WSAENETUNREACH: // (10051) Network is unreachable
+        return "A rede está inacessível";
+    case WSAENETRESET: // (10052) Net dropped connection or reset
+        return "A rede derrubou a conexão";
+    case WSAECONNABORTED: // (10053) Software caused connection abort
+        return "Software cancelou a conexão";
+    case WSAECONNRESET: // (10054) Connection reset by peer
+        return "Conexão fechada remotamente";
+    case WSAENOBUFS: // (10055) No buffer space available
+        return "Sem espaço disponível no buffer";
+    case WSAEISCONN: // (10056) Socket is already connected
+        return "Socket já está conectado";
+    case WSAENOTCONN: // (10057) Socket is not connected
+        return "Socket não está conectado";
+    case WSAESHUTDOWN: // (10058) Can't send after socket shutdown
+        return "Impossível enviar após socket fechar";
+    case WSAETOOMANYREFS: // (10059) Too many references, can't splice
+        return "Muitas referências";
+    case WSAETIMEDOUT: // (10060) Connection timed out
+        return "Conexão expirou por excesso de tempo";
+    case WSAECONNREFUSED: // (10061) Connection refused
+        return "Conexão recusada";
+    case WSAELOOP: // (10062) Too many levels of symbolic links
+        return "Muitos níveis de links simbólicos";
+    case WSAENAMETOOLONG: // (10063) File name too long
+        return "Nome de arquivo muito longo";
+    case WSAEHOSTDOWN: // (10064) Host is down
+        return "Host não está funcionando";
+    case WSAEHOSTUNREACH: // (10065) No Route to Host
+        return "Nenhuma rota para o host";
+    case WSAENOTEMPTY: // (10066) Directory not empty
+        return "Diretório não está vazio";
+    case WSAEPROCLIM: // (10067) Too many processes
+        return "Muitos processos";
+    case WSAEUSERS: // (10068) Too many users
+        return "Muitos usuários";
+    case WSAEDQUOT: // (10069) Disc Quota Exceeded
+        return "Quota de disco excedida";
+    case WSAESTALE: // (10070) Stale NFS file handle
+        return "Arquivo não disponível";
+    case WSASYSNOTREADY: // (10091) Network SubSystem is unavailable
+        return "Sistema de rede indisponível";
+    case WSAVERNOTSUPPORTED: // (10092) WINSOCK DLL Version out of range
+        return "Versão inválida da DLL Winsock";
+    case WSANOTINITIALISED: // (10093) Successful WSASTARTUP not yet performed
+        return "Não foi feito um WSASTARTUP com sucesso";
+    case WSAEREMOTE: // (10071) Too many levels of remote in path
+        return "Muitos níveis remotos no caminho";
+    case WSAHOST_NOT_FOUND: // (11001) Host not found
+        return "Host não encontrado";
+    case WSATRY_AGAIN: // (11002) Non-Authoritative Host not found
+        return "Host não autorizado não encontrado";
+    case WSANO_RECOVERY: // (11003) Non-Recoverable errors: FORMERR, REFUSED, NOTIMP
+        return "Erro não recuperável";
+    //case WSANO_DATA: // (11004)* Valid name, no data record of requested type
+    case WSANO_ADDRESS: // (11004)* No address, look for MX record
+        return "Endereço não existe";
+    }
+    static char mens[40];
+    sprintf(mens, "Erro %d", erro);
+    return mens;
+#else
+    return strerror(erro);
+#endif
+}
+
+//------------------------------------------------------------------------------
 void TSocket::SockConfig(int localSocket)
 {
 #ifdef __WIN32__
@@ -581,24 +705,42 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
     // Verifica se algum socket fechou
         for (TSocket * obj = sInicio; obj;)
         {
+        // Verifica se socket fechado
             if (obj->proto==0)
             {
                 obj=obj->sDepois;
                 continue;
             }
-            obj->EnvPend();
-            if (obj->sock >= 0)
+        // Verifica se tem dados pendentes para transmitir
+            bool ev_env = false;
+            if (obj->pontEnv)
             {
-                obj=obj->sDepois;
+                obj->EnvPend();
+                ev_env = (obj->pontEnv<=0);
+            }
+        // Verifica socket fechou
+            if (obj->sock < 0)
+            {
+                sockAtual = obj;
+            // Gera evento
+                obj->FuncFechou();
+            // Passa para próximo objeto TSocket
+                if (sockAtual==obj) // Se objeto Socket não foi apagado, apaga
+                    delete obj; // Faz automaticamente:
+                                // sockAtual = sockAtual->Depois
+                obj=sockAtual;  // Passa para o próximo objeto
                 continue;
             }
-            sockAtual = obj;
-        // Gera evento
-            obj->FuncFechou();
-        // Passa para próximo objeto TSocket
-            if (sockAtual==obj) // Se objeto Socket não foi apagado, apaga
-                delete obj; // Fará automaticamente: sockObj=sockObj->Depois
-            obj=sockAtual;  // Passa para o próximo objeto
+        // Verifica evento env
+            if (ev_env)
+            {
+                sockAtual = obj->sDepois;
+                obj->FuncEvento("env", 0);
+                obj = sockAtual;
+                continue;
+            }
+        // Passa para próximo socket
+            obj = obj->sDepois;
         }
         if (!boolenvpend)
             break;
@@ -684,7 +826,7 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida, fd_set * set
         // Erro ao conectar
             sockAtual = obj;
             char mens[80];
-            sprintf(mens, "Erro %d", coderro);
+            copiastr(mens, TxtErro(coderro), sizeof(mens));
             if (obj->FuncEvento("err", mens))
                 delete obj; // Apaga objeto se não foi apagado
                             // socket é fechado ao apagar objeto

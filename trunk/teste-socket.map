@@ -2,6 +2,8 @@
 comum serv servidor
 socket conec
 socket remoto
+txt512 ultimamens
+int8 repetemens
 const msg = conec.msg(arg0)
 func iniclasse
   se ![arg0]:servidor.abrir("localhost", 2000)
@@ -10,13 +12,15 @@ func servidor_socket
   criar("teste", arg0)
 func ini
   conec = arg0
-  conec.colmin = 20
-  conec.colmax = 30
+#conec.colmin = 20
+#conec.colmax = 30
   msg("Comandos:\n")
   msg("c=conectar\n")
   msg("f=fechar conexão\n")
   msg("i=informações\n")
   msg("m seguido ou não de um texto = enviar mensagem\n")
+  msg("n para envia 2 vezes, s para envia 3 vezes\n")
+  msg("t=teste com socket.posx\n")
 #  conec.proto = 2
 func conec_msg
   conec.msg("Você escreveu " + arg0 + "\n")
@@ -33,6 +37,16 @@ func escr_m
   remoto.msg(arg0 + "\n")
   msg("> " + arg0 + "\n")
 #remoto.proto = 4 # Papovox
+func escr_n
+  ultimamens = arg0 + "\n"
+  repetemens = 1
+  remoto.msg(ultimamens)
+  msg(">> " + ultimamens)
+func escr_s
+  ultimamens = arg0 + "\n"
+  repetemens = 2
+  remoto.msg(ultimamens)
+  msg(">>> " + ultimamens)
 func escr_i
   msg(escr_i[remoto.proto] + "\n")
   msg("Colunas remoto: " + remoto.colmin + " e " + remoto.colmax + "\n")
@@ -43,11 +57,28 @@ const escr_i2 = "Conectado Telnet"
 const escr_i3 = "Conectado IRC"
 const escr_i4 = "Conectado Papovox"
 const escr_i5 = "Conectado Tela"
+func escr_t
+  int8 x
+  int8 y
+  enquanto y<15
+    enquanto x<y
+      msg(x%10)
+      x += 1
+    efim
+    msg(" " + conec.posx + "\n")
+    x=0, y+=1
+  efim
 func remoto_con
   msg("Conectado\n")
 func remoto_err
   msg("Erro ao conectar: " + arg0 + "\n")
 func remoto_msg
   msg("< " + arg0 + "\n")
+func remoto_env
+  msg("Enviou\n")
+  se repetemens
+    repetemens -= 1
+    remoto.msg(ultimamens)
+    msg(">>\n")
 func remoto_fechou
   msg("Conexão fechada remotamente\n")

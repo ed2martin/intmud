@@ -734,14 +734,14 @@ socket <nomedavariável>
     abrir(<endereço>, <porta>)
         Tenta conectar-se a um endereço.
         Retorna 1 se conexão em progresso ou 0 se ocorreu erro
-        (geralmente endereço inválido)
+        (0 geralmente significa endereço inválido)
     abrir("tela")
         Conecta à janela do programa. Cada linha recebida gera um evento _msg.
     fechar
         Encerra a conexão; não gera o evento fechou.
     colmin
     colmax
-        Essas duas variáveis são números de 10 a 100.
+        Essas duas variáveis são números de 10 a 1000.
         Atuam nas mensagens enviadas ao socket, dividindo linhas grandes
         em duas ou mais. Isso é feito colocando "\n" no meio da mensagem.
         Colmin e colmax são os tamanhos mínimo e máximo das linhas.
@@ -755,6 +755,10 @@ socket <nomedavariável>
         Recebeu mensagem
         arg0 = mensagem recebida
         arg1 = índice da variável vetor, se não for vetor arg2=0
+    <nomedavariável>_env
+        Todas as mensagens foram transmitidas (buffer de transmissão
+        ficou vazio).
+        arg0 = índice da variável vetor, se não for vetor arg0=0
     <nomedavariável>_fechou
         O socket foi fechado remotamente
         arg0 = índice da variável vetor, se não for vetor arg0=0

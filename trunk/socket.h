@@ -24,6 +24,7 @@ public:
 
     static void SockConfig(int socknum);
     static TSocket * Conectar(const char * ender, int porta);
+    static const char * TxtErro(int erro);
     static void Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
     static void ProcEventos(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)

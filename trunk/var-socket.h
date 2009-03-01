@@ -60,11 +60,11 @@ protected:
                      */
 
 // Variáveis usadas para enviar mensagens
-    short CorInic;      ///< Cor do início da linha, ou -1 se não mudou
     unsigned char CorEnvia;     ///< Cor atual, ao enviar
-    unsigned char ColunaEnvia;  ///< Quantos caracteres já enviou
-    unsigned char ColunaMin;    ///< Menor quantidade de caracteres/linha
-    unsigned char ColunaMax;    ///< Maior quantidade de caracteres/linha
+    short CorInic;      ///< Cor do início da linha, ou -1 se não mudou
+    unsigned short ColunaEnvia;  ///< Quantos caracteres já enviou
+    unsigned short ColunaMin;   ///< Menor quantidade de caracteres/linha
+    unsigned short ColunaMax;   ///< Maior quantidade de caracteres/linha
 
 private:
 // Para saber quando objetos foram apagados
