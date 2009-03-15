@@ -133,17 +133,19 @@ int main(int argc, char *argv[])
 
     // Chama eventos serv e socket
         TVarServ::ProcEventos(&set_entrada);
-        TSocket::ProcEventos(&set_entrada, &set_saida, &set_err);
+        TSocket::ProcEventos(espera, &set_entrada, &set_saida, &set_err);
 
     // Prepara variáveis para select()
         FD_ZERO(&set_entrada);
         FD_ZERO(&set_saida);
         FD_ZERO(&set_err);
         TVarServ::Fd_Set(&set_entrada);
-        TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
+        int esp = TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
 
     // Obtém quanto tempo deve esperar
         espera = TVarIntTempo::TempoEspera();
+        if (espera>esp)
+            espera=esp;
 #ifdef __WIN32__
         tempo = timeGetTime()/100;
 #else

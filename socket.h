@@ -25,8 +25,9 @@ public:
     static void SockConfig(int socknum);
     static TSocket * Conectar(const char * ender, int porta);
     static const char * TxtErro(int erro);
-    static void Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
-    static void ProcEventos(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
+    static int  Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
+    static void ProcEventos(int tempoespera, fd_set * set_entrada,
+                                fd_set * set_saida, fd_set * set_err);
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
     bool EnvMens(const char * mensagem);///< Envia mensagem conforme protocolo
     int  Variavel(char num, int valor);
@@ -39,10 +40,14 @@ private:
     char proto;                 ///< Protocolo (quando sock>=0)
                                 /**< - 0 = conectando
                                  *   - 1 = Telnet
-                                 *   - 2 = Papovox
-                                 *   - 3 = IRC
+                                 *   - 2 = IRC
+                                 *   - 3 = Papovox
                                  */
     char cores;                 ///< 0=sem 1=ao receber, 2=ao enviar, 3=com
+    unsigned char esperatelnet; ///< Para receber mensagens sem "\n"
+    bool eventoenv;             ///< Se deve gerar evento _env
+                                /**< @note Caracteres de controle de Telnet
+                                  *  não devem gerar eventos _env */
     struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens

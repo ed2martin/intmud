@@ -749,6 +749,8 @@ socket <nomedavariável>
     msg( <mensagem> )
         Envia mensagem para o socket.
         Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
+        Nota: Se o protocolo for Papovox, devido às limitações do Papovox,
+        é acrescentado \n no final da mensagem se já não houver um \n.
 
     Eventos:
     <nomedavariável>_msg
