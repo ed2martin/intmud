@@ -46,6 +46,8 @@
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou e recebeu
 
+#define TEMPO_TELNET 5
+
 TSocket * TSocket::sockAtual = 0;
 TSocket * TSocket::sInicio = 0;
 bool TSocket::boolenvpend = false;
@@ -336,6 +338,8 @@ TSocket::TSocket(int socknum)
     CorAnterior=0x70;
     proto=1;
     cores=0;
+    esperatelnet=0;
+    eventoenv=false;
 }
 
 //------------------------------------------------------------------------------
@@ -432,6 +436,8 @@ bool TSocket::EnvMens(const char * mensagem)
                 ini[0] = 1;
                 ini[1] = (destino - ini - 3);
                 ini[2] = (destino - ini - 3) >> 8;
+                ini = destino;
+                destino += 3;
             }
             else
                 *destino++ = *mensagem;
@@ -440,10 +446,14 @@ bool TSocket::EnvMens(const char * mensagem)
         if (total>0)
         {
             ini[0] = 1;
-            ini[1] = (total - 3);
-            ini[2] = (total - 3) >> 8;
+            ini[1] = total;
+            ini[2] = total >> 8;
         }
-        return EnvMens(ini, destino - ini);
+        else
+            destino -= 3;
+        if (destino != mens)
+            eventoenv = true;
+        return EnvMens(mens, destino - mens);
     }
 
 // Sem cores
@@ -468,6 +478,8 @@ bool TSocket::EnvMens(const char * mensagem)
                 *destino++ = *mensagem;
             }
         }
+        if (destino != mens)
+            eventoenv = true;
         return EnvMens(mens, destino - mens);
     }
 
@@ -541,6 +553,8 @@ bool TSocket::EnvMens(const char * mensagem)
             //*destino++ = ((novacor>>4)&15)+'0';
             //*destino++ = (novacor&15)+'0';
         }
+        if (destino != mens)
+            eventoenv = true;
         return EnvMens(mens, destino - mens);
     }
 
@@ -617,6 +631,8 @@ bool TSocket::EnvMens(const char * mensagem)
             while (*destino)
                 destino++;
         }
+        if (destino != mens)
+            eventoenv = true;
         return EnvMens(mens, destino - mens);
     }
 
@@ -696,7 +712,7 @@ void TSocket::SairPend()
 }
 
 //------------------------------------------------------------------------------
-void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
+int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
 {
     while (true)
     {
@@ -716,7 +732,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
             if (obj->pontEnv)
             {
                 obj->EnvPend();
-                ev_env = (obj->pontEnv<=0);
+                ev_env = (obj->pontEnv<=0) && obj->eventoenv;
             }
         // Verifica socket fechou
             if (obj->sock < 0)
@@ -734,6 +750,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
         // Verifica evento env
             if (ev_env)
             {
+                obj->eventoenv = false;
                 sockAtual = obj->sDepois;
                 obj->FuncEvento("env", 0);
                 obj = sockAtual;
@@ -745,6 +762,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
         if (!boolenvpend)
             break;
     }
+    int tempo = 0x100;
     for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
     {
 #ifdef __WIN32__
@@ -757,12 +775,23 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
 #endif
         if (obj->pontEnv || obj->proto==0)
             FD_SET(obj->sock, set_saida);
+        if (obj->proto==1 && // É telnet
+            obj->pontRec!=0) // Buffer de recepção não está vazio
+        {
+            int t = TEMPO_TELNET - obj->esperatelnet;
+            if (tempo > t)
+                tempo = t;
+        }
     }
+    return (tempo>0 ? tempo : 1);
 }
 
 //------------------------------------------------------------------------------
-void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
+void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
+                          fd_set * set_saida, fd_set * set_err)
 {
+    if (tempoespera>100)
+        tempoespera=100;
     for (TSocket * obj = sInicio; obj; )
     {
     // Verifica se socket aberto
@@ -836,14 +865,29 @@ void TSocket::ProcEventos(fd_set * set_entrada, fd_set * set_saida, fd_set * set
     // Verifica se tem dados pendentes para ler
         if (FD_ISSET(obj->sock, set_entrada)==0)
         {
-            obj = obj->sDepois;
+            if (obj->proto!=1 || // Não é telnet
+                obj->pontRec==0) // Buffer de recepção está vazio
+                obj->esperatelnet=0, obj = obj->sDepois;
+            else
+            {
+                obj->esperatelnet += tempoespera;
+                if (obj->esperatelnet < TEMPO_TELNET) // Esperando mensagem
+                    obj = obj->sDepois;
+                else // Tempo demais esperando mensagem
+                {
+                    sockAtual = obj->sDepois;
+                    obj->Processa("\n", 1); // Simula chegada de "\n"
+                    obj = sockAtual;
+                }
+            }
             continue;
         }
+        obj->esperatelnet=0; // Zera tempo de espera de Telnet
     // Lê e processa dados pendentes
         while (true)
         {
         // Lê do socket
-            char mens[1024];
+            char mens[4096];
             int resposta;
 #ifdef __WIN32__
             resposta = recv(obj->sock, mens, sizeof(mens), 0);
@@ -910,7 +954,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
                 dado=*buffer++;
                 tamanho--;
     //------- Para mostrar o que chegou
-    //printf("[%d;%d] ",dado,dadoRecebido); fflush(stdout);
+    //printf("[%d;%d] ",(unsigned char)dado,dadoRecebido); fflush(stdout);
     //printf(" %d ", (unsigned char)dado);
     //if ((unsigned char)dado>=32 || dado=='\n')
     //   putchar(dado); else printf("\\%02d", dado); fflush(stdout);
@@ -932,13 +976,26 @@ void TSocket::Processa(const char * buffer, int tamanho)
                 if (pontTelnet>=3)
                     if (bufTelnet[pontTelnet-1]==(char)255 && dado==(char)240)
                     {
-                        if (bufTelnet[2]==24 &&  // Quer saber o terminal
-                                bufTelnet[3]==1)
-                        {
-                            EnvMens("\xFF\xFA\x18\x00" // Comando
-                                "TERM" // Nome
-                                "\xFF\xF0", 10); // Fim do comando
-                        }
+                        if (bufTelnet[3]==1)
+                            switch (bufTelnet[2])
+                            {
+                            case 24: // Quer saber o terminal
+                                EnvMens("\xFF\xFA\x18\x00" // Comando
+                                    "TERM" // Nome
+                                    "\xFF\xF0", 10); // Fim do comando
+                                break;
+                            case 32: // Quer saber velocidade do terminal
+                                EnvMens("\xFF\xFA\x20\x00"
+                                    "38400,38400\xFF\xF0", 17);
+                                break;
+                            case 35: // Quer saber display X
+                                EnvMens("\xFF\xFA\x23\x00"
+                                    "x.y\xFF\xF0", 9);
+                                break;
+                            case 39: // Quer saber variáveis de ambiente
+                                EnvMens("\xFF\xFA\x27\x00\xFF\xF0", 6);
+                                break;
+                            }
                         pontTelnet=0;
                         continue;
                     }
