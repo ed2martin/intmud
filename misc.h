@@ -5,6 +5,9 @@
 /** @defgroup misc_h Diversas funções */
 /** @{ */
 
+extern unsigned long TempoIni; ///< Tempo desde que o programa foi executado, 10=1seg
+                         /**< @note Atualizado em main.cpp */
+
 extern char * arqnome;   ///< Nome completo dos arquivos
 extern char * arqinicio; ///< Nome dos arquivos sem o diretório
 extern char * arqext;    ///< A partir de onde colocar a extensão.

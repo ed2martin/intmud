@@ -25,8 +25,6 @@
 
 //#define DEBUG  // Mostrar e testar vetores de TVarIntTempo
 
-extern unsigned long TempoIni;
-
 TVarIntTempo ** TVarIntTempo::VetMenos = 0;
 TVarIntTempo ** TVarIntTempo::VetMais = 0;
 unsigned int TVarIntTempo::TempoMenos = 0;

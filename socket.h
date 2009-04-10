@@ -45,9 +45,10 @@ private:
                                  */
     char cores;                 ///< 0=sem 1=ao receber, 2=ao enviar, 3=com
     unsigned char esperatelnet; ///< Para receber mensagens sem "\n"
-    bool eventoenv;             ///< Se deve gerar evento _env
+    char eventoenv:1;           ///< Se deve gerar evento _env
                                 /**< @note Caracteres de controle de Telnet
                                   *  não devem gerar eventos _env */
+    char ecotelnet:1;           ///< Variável socket.eco
     struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens
@@ -88,6 +89,8 @@ private:
     unsigned char CorAnterior;  ///< Com que cor iniciou a linha
     unsigned char CorIRC1;      ///< Para obter cores do IRC
     unsigned char CorIRC2;      ///< Para obter cores do IRC
+
+    unsigned long AFlooder;     ///< Contador do anti-flooder, 0=desativado
 
     static TSocket * sockAtual; ///< Para saber quando apagou socket
 

@@ -23,6 +23,7 @@
 #include "misc.h"
 #include "shs.h"
 
+unsigned long TempoIni;
 char * arqnome = 0;
 char * arqinicio = 0;
 char * arqext = 0;

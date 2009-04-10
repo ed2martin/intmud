@@ -69,21 +69,6 @@ func ini
 func fim
   10
 
-[testesock]
-socket s
-int1 recebeu
-func iniclasse
-  criar(arg0)
-func ini
-  s.abrir("localhost", 1963)
-func s_msg
-  se recebeu=0
-    recebeu=1
-    s.msg("\n")
-#func s_fechou # Se estiver ausente, apaga objeto
-func fim
-  terminar
-
 [x]
 comum serv servidor
 socket conec
@@ -209,6 +194,20 @@ func escr_12
     msg("\b\n")
     frente = 0, fundo += 1
   efim
+func escr_eco
+  se conec.eco
+    conec.eco=0
+    msg("Eco desabilitado\n")
+  senão
+    conec.eco=1
+    msg("Eco habilitado\n")
+func escr_flood
+  se conec.aflooder
+    conec.aflooder=0
+    msg("Anti-flooder desabilitado\n")
+  senão
+    conec.aflooder=1
+    msg("Anti-flooder habilitado\n")
 
 [mm]
 txt20 texto
