@@ -340,6 +340,8 @@ TSocket::TSocket(int socknum)
     cores=0;
     esperatelnet=0;
     eventoenv=false;
+    ecotelnet=true;
+    AFlooder=0;
 }
 
 //------------------------------------------------------------------------------
@@ -405,8 +407,27 @@ int TSocket::Variavel(char num, int valor)
             cores = (valor>3 ? 3 : valor);
         return cores;
     case '2': // aflooder
+        if (valor>=0)
+        {
+            if (valor==0)
+                AFlooder=0;
+            else if (AFlooder==0)
+                AFlooder=TempoIni+1;
+        }
+        return (AFlooder!=0);
     case '3': // eco
-        return 0;
+        if (proto!=1)
+            return 1;
+        if (valor>=0)
+        {
+            if (valor==0 && ecotelnet) // Desliga ECO
+                if (EnvMens("\xFF\xFB\x01", 3)) // IAC + WILL + TELOPT_ECHO
+                    ecotelnet=0;
+            if (valor && ecotelnet==0) // Liga ECO
+                if (EnvMens("\xFF\xFC\x01", 3)) // IAC + WONT + TELOPT_ECHO
+                    ecotelnet=1;
+        }
+        return ecotelnet;
     }
     return 0;
 }
@@ -1305,6 +1326,16 @@ void TSocket::Processa(const char * buffer, int tamanho)
 #ifdef DEBUG_MSG
         printf(">>>>>>> Recebeu %s\n", texto);
 #endif
+
+// Anti-flooder
+        if (AFlooder) // Verifica se anti-flooder ativado
+        {
+            if (AFlooder >= TempoIni + 60) // Condição de flooder
+                continue;
+            AFlooder += strlen(texto)/8+5; // Acerta AFlooder
+            if (AFlooder <= TempoIni)  // Acerta valor mínimo de AFlooder
+                AFlooder = TempoIni + 1;
+        }
 
 // Processa a mensagem
         if (FuncEvento("msg", texto)==false)

@@ -4,7 +4,6 @@
 class TClasse;
 class TObjeto;
 class TVariavel;
-class TObjeto;
 
 /// Codificar, decodificar e executar instruções
 /** Codificar, decodificar e executar instruções */

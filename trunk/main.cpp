@@ -53,7 +53,6 @@
 
 void Inicializa(const char * arg);
 void Termina();
-unsigned long TempoIni; // Tempo desde que o programa foi executado, 10=1seg
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
