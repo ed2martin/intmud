@@ -582,25 +582,47 @@ func x_teste
 listaobj <nomedavariável>
     Lista de objetos.
     Quando essa variável é apagada, os objetos da lista também são.
+    Um objeto pode ser adicionado várias vezes em uma lista.
+    Como valor numérico, é 0 se a lista estiver vazia ou 1 se não estiver.
 
     Possui as seguintes funções:
     add1( <objeto> )  -> Adiciona no topo da lista
     add2( <objeto> )  -> Adiciona no final da lista
-    remove( <objeto> ) -> Retira objeto da lista
+    remover( <objeto> ) -> Retira primeira ocorrência do objeto na lista
     limpar            -> Retira todos os objetos da lista
     possui( <objeto> ) -> Retorna 1 se objeto está na lista ou 0 se não está
-    1   -> Primeiro objeto da lista
-    2   -> Último objeto da lista
-    obj -> objeto que contém a lista
+    ini   -> Primeiro item da lista (variável listaitem)
+    fim   -> Último item da lista (variável listaitem)
+    ini.obj -> Primeiro objeto
+    fim.obj -> Último objeto
+
+listaitem <nomedavariável>
+    É usado para acessar os objetos de listaobj. Representa um objeto.
+    Como valor numérico, é 1 se for um objeto ou 0 se não for.
+
+    Possui as seguintes funções:
+    add1( <objeto> )  -> Adiciona objeto antes desse
+    add2( <objeto> )  -> Adiciona objeto depois desse
+    antes             -> Passa para o objeto anterior
+    depois            -> Passa para o objeto
+    remover           -> Remove objeto da lista;
+                         listaitem passa a ser o próximo objeto
+    obj               -> objeto
 
     Exemplo:
-    listaobj x
-    x.add1( este ) -> Adiciona no topo da lista
-    x.add2( este ) -> Adiciona no final da lista
-    x.remove( x.1 ) -> remove objeto da lista
-    x.possui( este) -> retorna !=0 se objeto está na lista
-    x.1 -> é o primeiro objeto da lista
-    x.2 -> é o último objeto da lista
+    listaobj l
+    listaitem i
+    l.add1( este ) -> Adiciona no topo da lista
+    l.add2( este ) -> Adiciona no final da lista
+    l.remove( l.ini.obj ) -> remove um objeto da lista
+    l.possui( este) -> retorna !=0 se objeto está na lista
+    l.ini.obj -> é o primeiro objeto da lista
+    l.fim.obj -> é o último objeto da lista
+    i = l.ini  -> i é o primeiro item da lista
+    enquanto i    -> Enquanto i for um objeto (não acabou a lista)
+      i.obj.l = 1   -> Faz a variável l do objeto = 1
+      i.depois      -> Passa para o próximo objeto
+    efim
 
 listatxt <nomedavariável>
     Define uma lista de textos.

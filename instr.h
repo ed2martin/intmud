@@ -263,6 +263,7 @@ enum Comando
 
 // Variáveis extras
     cListaObj,          ///< Extra: ListaObj
+    cListaItem,         ///< Extra: ListaItem
     cListaTxt,          ///< Extra: cListaTxt
     cListaMsg,          ///< Extra: cListaMsg
     cNomeObj,           ///< Extra: cNomeObj
