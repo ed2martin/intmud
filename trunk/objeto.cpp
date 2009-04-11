@@ -19,6 +19,7 @@
 #include "objeto.h"
 #include "variavel.h"
 #include "var-outros.h"
+#include "var-listaobj.h"
 #include "instr.h"
 
 TObjeto * TObjeto::IniApagar = 0;
@@ -63,6 +64,9 @@ void TObjeto::Apagar()
 // Remove variáveis TVarRef que apontam para o objeto
     while (VarRefIni)
         VarRefIni->MudarPont(0);
+// Remove variáveis TListaX que apontam para o objeto
+    while (VarListaX)
+        VarListaX->Apagar();
 // Chama destrutores das variáveis
     TVariavel v;
     for (int x=(int)Classe->NumVar-1; x>=0; x--)

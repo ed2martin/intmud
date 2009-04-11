@@ -469,6 +469,7 @@ const char * Instr::NomeComando(int valor)
     case cVarFunc:          return "cVarFunc";
 
     case cListaObj:         return "cListaObj";
+    case cListaItem:        return "cListaItem";
     case cListaTxt:         return "cListaTxt";
     case cListaMsg:         return "cListaMsg";
     case cNomeObj:          return "cNomeObj";

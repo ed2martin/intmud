@@ -9,6 +9,8 @@ class TObjeto;
 class TVarRef;
 class TVarIncDec;
 class TVarIntTempo;
+class TListaObj;
+class TListaItem;
 class TVarSocket;
 class TVarServ;
 
@@ -111,6 +113,8 @@ public:
         TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
         double       * end_double;   ///< Instr::cReal
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
+        TListaObj    * end_listaobj; ///< Instr::cListaObj
+        TListaItem   * end_listaitem;///< Instr::cListaItem
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
         int  valor_int;              ///< Instr::cVarInt - endvar como int

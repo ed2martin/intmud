@@ -4,6 +4,7 @@
 #include "classe.h"
 
 class TVarRef;
+class TListaX;
 
 //----------------------------------------------------------------------------
 /** Objetos  */
@@ -24,6 +25,7 @@ public:
     static TObjeto * IniApagar; ///< Primeiro objeto marcado para apagar
     static TObjeto * FimApagar; ///< Último objeto marcado para apagar
     TVarRef * VarRefIni;        ///< Primeira TVarRef apontando para o objeto
+    TListaX * VarListaX;        ///< Primeiro TListaX apontando para o objeto
     unsigned char Vars[4];      ///< Variáveis do objeto
         /**< O tamanho real de Vars, em bytes, é Classe->TamObj
          *
