@@ -45,6 +45,7 @@
 #include "socket.h"
 #include "var-serv.h"
 #include "var-outros.h"
+#include "var-listaobj.h"
 #include "random.h"
 #include "misc.h"
 
@@ -133,6 +134,9 @@ int main(int argc, char *argv[])
     // Chama eventos serv e socket
         TVarServ::ProcEventos(&set_entrada);
         TSocket::ProcEventos(espera, &set_entrada, &set_saida, &set_err);
+
+    // Limpa objetos de listaobj e listaitem
+        TGrupoX::ProcEventos();
 
     // Prepara variáveis para select()
         FD_ZERO(&set_entrada);

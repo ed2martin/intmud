@@ -586,13 +586,14 @@ listaobj <nomedavariável>
     Como valor numérico, é 0 se a lista estiver vazia ou 1 se não estiver.
 
     Possui as seguintes funções:
-    add1( <objeto> )  -> Adiciona no topo da lista
-    add2( <objeto> )  -> Adiciona no final da lista
-    remover( <objeto> ) -> Retira primeira ocorrência do objeto na lista
-    limpar            -> Retira todos os objetos da lista
-    possui( <objeto> ) -> Retorna 1 se objeto está na lista ou 0 se não está
-    ini   -> Primeiro item da lista (variável listaitem)
-    fim   -> Último item da lista (variável listaitem)
+    add1( <objeto> )    -> Adiciona no topo da lista
+    add2( <objeto> )    -> Adiciona no final da lista
+    remove( <objeto> )  -> Retira primeira ocorrência do objeto da lista
+    limpar              -> Retira todos os objetos da lista
+    possui( <objeto> )  -> Retorna 1 se objeto está na lista ou 0 se não está
+    objx    -> Objeto que contém a lista; pode ser NULO
+    ini     -> Primeiro item da lista (variável listaitem)
+    fim     -> Último item da lista (variável listaitem)
     ini.obj -> Primeiro objeto
     fim.obj -> Último objeto
 
@@ -605,9 +606,12 @@ listaitem <nomedavariável>
     add2( <objeto> )  -> Adiciona objeto depois desse
     antes             -> Passa para o objeto anterior
     depois            -> Passa para o objeto
-    remover           -> Remove objeto da lista;
-                         listaitem passa a ser o próximo objeto
+    remove            -> Remove objeto da lista, listaitem passa a não ser
+                         um objeto válido
+    remove1           -> Remove objeto da lista e passa para o anterior
+    remove2           -> Remove objeto da lista e passa para o próximo
     obj               -> objeto
+    objx              -> Objeto que contém a lista; pode ser NULO
 
     Exemplo:
     listaobj l
