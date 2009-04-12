@@ -232,6 +232,10 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
             end_inttempo[x].EndObjeto(c, o);
         }
         break;
+    case Instr::cListaObj:
+        for (; x>=0; x--)
+            end_listaobj[x].EndObjeto(o);
+        break;
     case Instr::cSocket:
         for (; x>=0; x--)
         {
@@ -268,6 +272,14 @@ void TVariavel::Apagar()
     case Instr::cIntTempo:
         for (; x>=0; x--)
             end_inttempo[x].setValor(0);
+        break;
+    case Instr::cListaObj:
+        for (; x>=0; x--)
+            end_listaobj[x].Apagar();
+        break;
+    case Instr::cListaItem:
+        for (; x>=0; x--)
+            end_listaitem[x].Apagar();
         break;
     case Instr::cSocket:
         for (; x>=0; x--)
@@ -364,7 +376,21 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
 
 // Variáveis extras
     case Instr::cListaObj:
-        MOVER_SIMPLES( TListaObj )
+        {
+            TListaObj * o = (TListaObj *)endvar;
+            TListaObj * d = (TListaObj *)destino;
+            int inc=1;
+            if (destino > endvar)
+                o+=vetor-1, d+=vetor-1, inc=-1;
+            for (; vetor; vetor--,o+=inc,d+=inc)
+            {
+                o->EndObjeto(objeto);
+                o->Mover(d);
+                MoverMem(d, o, sizeof(TListaObj));
+            }
+            endvar = destino;
+            return;
+        }
     case Instr::cListaItem:
         MOVER_SIMPLES( TListaItem )
     case Instr::cListaTxt:
@@ -1247,7 +1273,10 @@ void TVariavel::setTxt(const char * txt)
 
 // Variáveis extras
     case Instr::cListaObj:
+        break;
     case Instr::cListaItem:
+        end_listaitem[indice].MudarRef(0);
+        break;
     case Instr::cListaTxt:
     case Instr::cListaMsg:
     case Instr::cNomeObj:
