@@ -21,7 +21,8 @@
 #include "instr.h"
 #include "misc.h"
 
-#define DEBUG  // Checar listaobj e listaitem
+//#define DEBUG  // Checar listaobj e listaitem
+//#define DEBUG_MSG
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG
@@ -39,11 +40,15 @@ const char ListaItem1[] = { 7, 0, Instr::cListaItem, 0, 0, 0, '+', 0 };
 //----------------------------------------------------------------------------
 void TListaObj::Apagar()
 {
-    while (Inicio)
-    {
-        Inicio->Objeto->MarcarApagar();
-        Inicio->Apagar();
-    }
+    if (Objeto)
+        while (Inicio)
+        {
+            Inicio->Objeto->MarcarApagar();
+            Inicio->Apagar();
+        }
+    else
+        while (Inicio)
+            Inicio->Apagar();
     DEBUG1
 }
 
@@ -53,7 +58,6 @@ void TListaObj::Mover(TListaObj * destino)
     // Acerta TListaX::Lista em todos os TListaX da lista
     for (TListaX * obj = Inicio; obj; obj=obj->ListaDepois)
         obj->Lista = destino;
-    DEBUG1
 }
 
 //----------------------------------------------------------------------------
@@ -142,6 +146,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         if (!Instr::CriarVar(ListaItem1))
             return false;
         Instr::VarAtual->end_listaitem->MudarRef(Inicio);
+        DEBUG1
         return true;
     }
 // Último item da lista
@@ -151,6 +156,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         if (!Instr::CriarVar(ListaItem1))
             return false;
         Instr::VarAtual->end_listaitem->MudarRef(Fim);
+        DEBUG1
         return true;
     }
 // Objeto em que foi definido
@@ -158,10 +164,11 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
     {
         if (Objeto==0)
             return false;
+        TObjeto * obj = Objeto;
         Instr::ApagarVar(v);
         if (!Instr::CriarVar(Instr::InstrVarObjeto))
             return false;
-        Instr::VarAtual->setObj(Objeto);
+        Instr::VarAtual->setObj(obj);
         return true;
     }
 // Remove todos os objetos
@@ -187,6 +194,14 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
                     break;
                 }
         }
+        DEBUG1
+        return false;
+    }
+// Marca todos os objetos para exclusão
+    if (comparaZ(nome, "apagaobj")==0)
+    {
+        for (TListaX * obj = Inicio; obj; obj=obj->ListaDepois)
+            obj->Objeto->MarcarApagar();
         DEBUG1
         return false;
     }
@@ -238,7 +253,6 @@ void TListaItem::Mover(TListaItem * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    DEBUG1
 }
 
 //----------------------------------------------------------------------------
@@ -268,7 +282,6 @@ void TListaItem::MudarRef(TListaX * lista)
         if (Depois)
             Depois->Antes = this;
     }
-    DEBUG1
 }
 
 //----------------------------------------------------------------------------
@@ -279,39 +292,50 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
 // Objeto
     if (comparaZ(nome, "obj")==0)
     {
-        Instr::ApagarVar(v);
+        if (ListaX==0)
+            return false;
+        TObjeto * obj = ListaX->Objeto;
+        if (obj==0)
+            return false;
+        Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
         if (!Instr::CriarVar(Instr::InstrVarObjeto))
             return false;
-        Instr::VarAtual->setObj(ListaX->Objeto);
+        Instr::VarAtual->setObj(obj);
         return true;
     }
 // Objeto em que a lista foi definida
     if (comparaZ(nome, "objx")==0)
     {
-        if (ListaX->Lista->Objeto==0)
+        if (ListaX==0)
             return false;
-        Instr::ApagarVar(v);
+        TObjeto * obj = ListaX->Lista->Objeto;
+        if (obj==0)
+            return false;
+        Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
         if (!Instr::CriarVar(Instr::InstrVarObjeto))
             return false;
-        Instr::VarAtual->setObj(ListaX->Lista->Objeto);
+        Instr::VarAtual->setObj(obj);
         return true;
     }
 // Vai para o objeto anterior
     if (comparaZ(nome, "antes")==0)
     {
         MudarRef(ListaX->ListaAntes);
+        DEBUG1
         return false;
     }
 // Vai para o próximo objeto
     if (comparaZ(nome, "depois")==0)
     {
         MudarRef(ListaX->ListaDepois);
+        DEBUG1
         return false;
     }
 // Remove objeto da lista
     if (comparaZ(nome, "remove")==0)
     {
         ListaX->Apagar();
+        DEBUG1
         return false;
     }
     if (comparaZ(nome, "remove1")==0)
@@ -407,6 +431,9 @@ void TListaX::Apagar()
     while (ListaItem)
         ListaItem->MudarRef(0);
 // Apaga objeto
+#ifdef DEBUG_MSG
+    printf("TListaX::Apagar(%p)\n", this); fflush(stdout);
+#endif
     TGrupoX::Apagar(this); // Apagar com otimização
     //delete this;       // Apagar sem otimização
 }
@@ -414,13 +441,20 @@ void TListaX::Apagar()
 //----------------------------------------------------------------------------
 TListaX * TListaX::Criar()
 {
-    return TGrupoX::Criar(); // Criar com otimização
-    //return new TListaX;  // Criar sem otimização
+    TListaX * l = TGrupoX::Criar(); // Criar com otimização
+    //TListaX * l = new TListaX;      // Criar sem otimização
+#ifdef DEBUG_MSG
+    printf("TListaX::Criar(%p)\n", l); fflush(stdout);
+#endif
+    return l;
 }
 
 //----------------------------------------------------------------------------
 void TListaX::Mover(TListaX * destino)
 {
+#ifdef DEBUG_MSG
+    printf("TListaX::Mover(%p, %p)\n", this, destino); fflush(stdout);
+#endif
 // Move
     memcpy(destino, this, sizeof(TListaX));
 // Acerta lista
@@ -440,11 +474,16 @@ TListaX * TGrupoX::Criar()
 {
 // Se tem objeto TListaX disponível...
     if (Usado && Usado->Total < TOTAL_LISTAX)
-        return Usado->Lista + (++Usado->Total);
+        return Usado->Lista + (Usado->Total++);
 // Se não tem objeto TListaX disponível...
     TGrupoX * obj;
     if (Disp==0)    // Não tem objeto TGrupoX disponível
+    {
         obj=new TGrupoX;
+#ifdef DEBUG_MSG
+        printf("TGrupoX::Criar(%p)\n", obj); fflush(stdout);
+#endif
+    }
     else            // Tem objeto TGrupoX disponível
         obj=Disp, Disp=Disp->Depois; // Retira da lista Disp
     obj->Total = 1;
@@ -474,10 +513,13 @@ void TGrupoX::Apagar(TListaX * lista)
 //----------------------------------------------------------------------------
 void TGrupoX::ProcEventos()
 {
-    if (Disp && Tempo+10 > TempoIni)
+    if (Disp && Tempo+10 < TempoIni)
     {
         TGrupoX * obj = Disp;
         Disp = Disp->Depois; // Retira da lista Disp
+#ifdef DEBUG_MSG
+        printf("TGrupoX::Apagar(%p)\n", obj); fflush(stdout);
+#endif
         delete obj;
         Tempo = TempoIni;
     }

@@ -581,9 +581,10 @@ func x_teste
 
 listaobj <nomedavariável>
     Lista de objetos.
-    Quando essa variável é apagada, os objetos da lista também são.
     Um objeto pode ser adicionado várias vezes em uma lista.
     Como valor numérico, é 0 se a lista estiver vazia ou 1 se não estiver.
+    Quando um objeto é apagado, é executada a função apagaobj de todas
+    as variáveis listaobj do objeto.
 
     Possui as seguintes funções:
     add1( <objeto> )    -> Adiciona no topo da lista
@@ -591,6 +592,8 @@ listaobj <nomedavariável>
     remove( <objeto> )  -> Retira primeira ocorrência do objeto da lista
     limpar              -> Retira todos os objetos da lista
     possui( <objeto> )  -> Retorna 1 se objeto está na lista ou 0 se não está
+    apagaobj            -> Marca todos os objetos da lista para exclusão,
+                           usando a função apagar()
     objx    -> Objeto que contém a lista; pode ser NULO
     ini     -> Primeiro item da lista (variável listaitem)
     fim     -> Último item da lista (variável listaitem)
