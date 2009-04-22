@@ -11,6 +11,7 @@ class TVarIncDec;
 class TVarIntTempo;
 class TListaObj;
 class TListaItem;
+class TVarNomeObj;
 class TVarSocket;
 class TVarServ;
 
@@ -117,6 +118,7 @@ public:
         TListaItem   * end_listaitem;///< Instr::cListaItem
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
+        TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj
         int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória

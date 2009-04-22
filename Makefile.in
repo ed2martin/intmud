@@ -54,9 +54,9 @@ am_intmud_OBJECTS = main.$(OBJEXT) classe.$(OBJEXT) objeto.$(OBJEXT) \
 	instr-decod.$(OBJEXT) instr-mostra.$(OBJEXT) \
 	instr-exec.$(OBJEXT) instr-func.$(OBJEXT) instr-misc.$(OBJEXT) \
 	socket.$(OBJEXT) var-socket.$(OBJEXT) var-serv.$(OBJEXT) \
-	var-outros.$(OBJEXT) var-listaobj.$(OBJEXT) arqler.$(OBJEXT) \
-	misc.$(OBJEXT) procurar.$(OBJEXT) random.$(OBJEXT) \
-	shs.$(OBJEXT)
+	var-outros.$(OBJEXT) var-listaobj.$(OBJEXT) \
+	var-nomeobj.$(OBJEXT) arqler.$(OBJEXT) misc.$(OBJEXT) \
+	procurar.$(OBJEXT) random.$(OBJEXT) shs.$(OBJEXT)
 intmud_OBJECTS = $(am_intmud_OBJECTS)
 intmud_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -175,7 +175,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = doc/* make-mingw-* intmud.cfg intmud.map teste*.map Doxyfile TODO
-intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h variavel.cpp variavel.h arqmapa.cpp arqmapa.h instr-codif.cpp instr-decod.cpp instr-mostra.cpp instr-exec.cpp instr-func.cpp instr-misc.cpp instr.h socket.cpp socket.h var-socket.cpp var-socket.h var-serv.cpp var-serv.h var-outros.cpp var-outros.h var-listaobj.cpp var-listaobj.h arqler.cpp arqler.h misc.cpp misc.h procurar.cpp procurar.h random.cpp random.h shs.cpp shs.h rbt.cpp.h
+intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h variavel.cpp variavel.h arqmapa.cpp arqmapa.h instr-codif.cpp instr-decod.cpp instr-mostra.cpp instr-exec.cpp instr-func.cpp instr-misc.cpp instr.h socket.cpp socket.h var-socket.cpp var-socket.h var-serv.cpp var-serv.h var-outros.cpp var-outros.h var-listaobj.cpp var-listaobj.h var-nomeobj.cpp var-nomeobj.h arqler.cpp arqler.h misc.cpp misc.h procurar.cpp procurar.h random.cpp random.h shs.cpp shs.h rbt.cpp.h
 AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -282,6 +282,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socket.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-listaobj.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-nomeobj.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-outros.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-serv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-socket.Po@am__quote@
