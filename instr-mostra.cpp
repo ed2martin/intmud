@@ -127,7 +127,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cServ:      strcpy(nome, "serv"); break;
     case cSalvar:    strcpy(nome, "salvar"); break;
     case cProg:      strcpy(nome, "prog"); break;
-    case cIndice:    strcpy(nome, "indice"); break;
+    case cIndiceObj: strcpy(nome, "indiceobj"); break;
+    case cIndiceItem: strcpy(nome, "indiceitem"); break;
     default:
         copiastr(destino, "Instrução não existe", tamanho);
         return false;

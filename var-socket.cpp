@@ -354,11 +354,13 @@ void TVarSocket::MudarSock(TObjSocket * obj)
 //------------------------------------------------------------------------------
 void TVarSocket::Mover(TVarSocket * destino)
 {
-    if (Socket==0)
-        return;
-    (Antes ? Antes->Depois : Socket->Inicio) = destino;
-    if (Depois)
-        Depois->Antes = destino;
+    if (Socket)
+    {
+        (Antes ? Antes->Depois : Socket->Inicio) = destino;
+        if (Depois)
+            Depois->Antes = destino;
+    }
+    move_mem(destino, this, sizeof(TVarSocket));
 }
 
 //------------------------------------------------------------------------------

@@ -140,6 +140,27 @@ char * mprintf(char * destino, int tamanho, const char * mens, ...)
 }
 
 //------------------------------------------------------------------------------
+void move_mem(void * destino, void * origem, unsigned int tamanho)
+{
+    if (tamanho==0 || origem==destino)
+        return;
+    if (destino >= origem && (char*)destino - tamanho < (char*)origem)
+    {
+        char * o = (char*)origem + tamanho - 1;
+        char * d = (char*)destino + tamanho - 1;
+        while (tamanho--)
+            *d-- = *o--;
+    }
+    else
+    {
+        char * o = (char*)origem;
+        char * d = (char*)destino;
+        while (tamanho--)
+            *d++ = *o++;
+    }
+}
+
+//------------------------------------------------------------------------------
 // Semelhante a strcpy(), mas retorna endereço do byte =0 em destino
 char * copiastr(char * destino, const char * origem)
 {
@@ -200,6 +221,21 @@ int compara(const char * string1, const char * string2)
         string1++;
         string2++;
     }
+}
+
+//------------------------------------------------------------------------------
+// Compara duas strings de tamanho fixo
+int compara(const char * string1, const char * string2, int tam)
+{
+    for (; tam>0; string1++, string2++, tam--)
+    {
+        unsigned char ch1,ch2;
+        ch1=tabCOMPLETO[*(unsigned char *)string1];
+        ch2=tabCOMPLETO[*(unsigned char *)string2];
+        if (ch1!=ch2)
+            return (ch1<ch2 ? -1 : 1);
+    }
+    return 0;
 }
 
 //------------------------------------------------------------------------------

@@ -33,6 +33,9 @@ extern char tabCOMPLETO[]; ///< Todos os caracteres
         @note Usar no lugar de snprintf(), que não está presente em alguns UNIXes */
 char * mprintf(char * destino, int tamanho, const char * mens, ...);
 
+    /// Semelhante a memcpy()
+void move_mem(void * destino, void * origem, unsigned int tamanho);
+
     /// Semelhante a strcpy(), mas retorna endereço do byte =0 em destino */
 char * copiastr(char * destino, const char * origem);
 
@@ -57,6 +60,12 @@ int comparaZ(const char * string1, const char * string2);
         @retval 1 se string1>string2
         @retval 2 se string1>string2; string1 contém string2 */
 int compara(const char * string1, const char * string2);
+
+    /// Compara duas strings de tamanho fixo
+    /** @retval -1 string1<string2
+        @retval 0 Strings iguais
+        @retval 1 se string1>string2 */
+int compara(const char * string1, const char * string2, int tam);
 
     /// Codifica senha
 void gerasenha(const char * senha, unsigned long codif[5]);

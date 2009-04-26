@@ -479,7 +479,8 @@ const char * Instr::NomeComando(int valor)
     case cServ:             return "cServ";
     case cSalvar:           return "cSalvar";
     case cProg:             return "cProg";
-    case cIndice:           return "cIndice";
+    case cIndiceObj:        return "cIndiceObj";
+    case cIndiceItem:       return "cIndiceItem";
 
     case cTxtFixo:          return "cTxtFixo";
     case cVarNome:          return "cVarNome";
