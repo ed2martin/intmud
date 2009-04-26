@@ -235,7 +235,7 @@ args = número de argumentos
 arg0 a arg9 = argumentos passados para a função
 este = objeto ao qual a função pertence
 
-Os argumentos são passados por referência: alterar arg0 a arg8 dentro
+Os argumentos são passados por referência: alterar arg0 a arg9 dentro
 da função altera a variável que foi passada.
 
 Para retornar um valor, a instrução é:
@@ -367,12 +367,12 @@ enquanto <expressão>  ... efim
     a <expressão> novamente.
 
 sair
-    Sai de um laço enquanto ou para
+    Sai de um laço enquanto.
 
 continuar
-    Fecha um ciclo de um laço enquanto ou para, como se tivesse chegado
-    na instrução efim. A diferença entre continuar e efim é que efim define
-    aonde termina o laço.
+    Fecha um ciclo de um laço enquanto, como se tivesse chegado na instrução
+    efim. A diferença entre continuar e efim é que efim define aonde termina
+    o laço.
 
 terminar
     Encerra o programa
@@ -704,12 +704,12 @@ nomeobj <nomedavariável>
 
     Exemplo com as duas funções:
     nomeobj x
-    x.ini("2.ch", 5)# Achar no máximo 5 objetos que começam com "ch"
+    x.ini("2.ch", 5)# Achar no máximo 5 itens que começam com "ch"
                     # No entanto, como o texto é "2.ch", procurará só o segundo
-    x.nome("bolsa") # Retorna 0 porque não é o objeto
-    x.nome("chave_azul")  # Retorna 0 porque não é o segundo começa com ch
+    x.nome("bolsa") # Retorna 0 porque não é o item procurado
+    x.nome("chave_azul")  # Retorna 0; não é o segundo item que começa com ch
     x.nome("chave_verde") # Retorna 1
-    x.nome("chave_azul")  # Retorna 0 porque já encontrou o objeto
+    x.nome("chave_azul")  # Retorna 0 porque já encontrou o item
 
 log <nomedavariável>
     Para gravar mensagens em arquivos de texto.
@@ -786,7 +786,7 @@ socket <nomedavariável>
     <nomedavariável>_msg
         Recebeu mensagem
         arg0 = mensagem recebida
-        arg1 = índice da variável vetor, se não for vetor arg2=0
+        arg1 = índice da variável vetor, se não for vetor arg1=0
     <nomedavariável>_env
         Todas as mensagens foram transmitidas (buffer de transmissão
         ficou vazio).

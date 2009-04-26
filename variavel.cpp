@@ -595,6 +595,10 @@ int TVariavel::getInt()
             errno=0, num=strtol(end_char, 0, 10);
             return (errno ? 0 : num);
         }
+    case Instr::cInt1:
+        if (indice==0)
+            return (end_char[0] & bit) != 0;
+        return getBool();
     case Instr::cInt8:
         return (signed char)end_char[indice];
     case Instr::cUInt8:
@@ -729,6 +733,10 @@ double TVariavel::getDouble()
             errno=0, num=strtod(end_char, 0);
             return (errno ? 0 : num);
         }
+    case Instr::cInt1:
+        if (indice==0)
+            return (end_char[0] & bit) != 0;
+        return getBool();
     case Instr::cInt8:
         return (signed char)end_char[indice];
     case Instr::cUInt8:
