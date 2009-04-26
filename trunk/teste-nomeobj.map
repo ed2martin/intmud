@@ -1,0 +1,40 @@
+[x]
+comum serv porta
+socket sock
+nomeobj nomes
+int1 encontrou
+
+const msg = sock.msg(arg0)
+func porta_socket
+  criar("x", arg0)
+func ini
+  sock = arg0
+  msg("Tecle o nome do item. Exemplo: bolsa\n")
+  msg("Pode-se teclar somente o início do nome. Ex. bo\n")
+  msg("Um número antes expressa a quantidade. Ex. 10 ch\n")
+  msg("Número e ponto especificam o número do item. Ex. 3.b\n")
+func teste
+  se nomes.nome(arg0)
+    msg(arg0 + "\n")
+    encontrou = 1
+func sock_msg
+  encontrou = 0
+  nomes.ini(arg0, 4)
+  teste("bolsa")
+  teste("chave_azul")
+  teste("chave_verde")
+  teste("chave_azul")
+  teste("cadeado")
+  teste("banheira")
+  teste("berinjela")
+  teste("carne")
+  teste("bisteca")
+  teste("bolsa")
+  teste("porta")
+  teste("5")
+  teste("5")
+  se encontrou = 0
+    msg("Nada encontrado\n")
+func iniclasse
+  se ![arg0]:porta.abrir("",2000)
+    terminar

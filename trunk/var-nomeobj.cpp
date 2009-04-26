@@ -137,6 +137,8 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
             x--;
         }
         NomeTam = x;
+        if (NomeTam==0)
+            Total=0;
         return false;
     }
     return false;
