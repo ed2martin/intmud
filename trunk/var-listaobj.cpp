@@ -58,6 +58,7 @@ void TListaObj::Mover(TListaObj * destino)
     // Acerta TListaX::Lista em todos os TListaX da lista
     for (TListaX * obj = Inicio; obj; obj=obj->ListaDepois)
         obj->Lista = destino;
+    move_mem(destino, this, sizeof(TListaObj));
 }
 
 //----------------------------------------------------------------------------
@@ -253,6 +254,7 @@ void TListaItem::Mover(TListaItem * destino)
         if (Depois)
             Depois->Antes = destino;
     }
+    move_mem(destino, this, sizeof(TListaItem));
 }
 
 //----------------------------------------------------------------------------

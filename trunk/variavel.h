@@ -14,6 +14,8 @@ class TListaItem;
 class TVarNomeObj;
 class TVarSocket;
 class TVarServ;
+class TIndiceObj;
+class TIndiceItem;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -119,6 +121,8 @@ public:
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
         TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj
+        TIndiceObj   * end_indiceobj; ///< Instr::cIndiceObj
+        TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
         int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
@@ -128,10 +132,6 @@ public:
     unsigned char indice;
         ///< Índice no vetor ou 0 se não for vetor ou 0xFF se for o vetor
     unsigned char bit;  ///< Máscara do bit, se for variável de bit
-
-private:
-    /// Semelhante a memcpy
-    static void MoverMem(void * destino, void * origem, unsigned int tamanho);
 };
 
 //----------------------------------------------------------------------------

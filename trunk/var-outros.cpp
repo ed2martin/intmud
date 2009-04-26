@@ -64,6 +64,7 @@ void TVarRef::Mover(TVarRef * destino)
     (Antes ? Antes->Depois : Pont->VarRefIni) = destino;
     if (Depois)
         Depois->Antes = destino;
+    move_mem(destino, this, sizeof(TVarRef));
 }
 
 //------------------------------------------------------------------------------
@@ -259,6 +260,7 @@ void TVarIntTempo::Mover(TVarIntTempo * destino)
 #ifdef DEBUG
     DebugVet(false);
 #endif
+    move_mem(destino, this, sizeof(TVarIntTempo));
 }
 
 //------------------------------------------------------------------------------

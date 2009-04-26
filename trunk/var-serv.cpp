@@ -84,11 +84,13 @@ void TVarServ::Fechar()
 //------------------------------------------------------------------------------
 void TVarServ::Mover(TVarServ * destino)
 {
-    if (sock<0)
-        return;
-    (Antes ? Antes->Depois : Inicio) = destino;
-    if (Depois)
-        Depois->Antes = destino;
+    if (sock>=0)
+    {
+        (Antes ? Antes->Depois : Inicio) = destino;
+        if (Depois)
+            Depois->Antes = destino;
+    }
+    move_mem(destino, this, sizeof(TVarServ));
 }
 
 //------------------------------------------------------------------------------

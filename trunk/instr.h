@@ -265,15 +265,16 @@ enum Comando
     cListaObj,          ///< Extra: ListaObj
     cListaItem,         ///< Extra: ListaItem
     cListaTxt,          ///< Extra: cListaTxt
-    cListaMsg,          ///< Extra: cListaMsg
-    cNomeObj,           ///< Extra: cNomeObj
-    cLog,               ///< Extra: cLog
-    cIntTempo,          ///< Extra: cIntTempo
-    cSocket,            ///< Extra: cSocket
-    cServ,              ///< Extra: cServ
-    cSalvar,            ///< Extra: cSalvar
-    cProg,              ///< Extra: cProg
-    cIndice,            ///< Extra: cIndice
+    cListaMsg,          ///< Extra: ListaMsg
+    cNomeObj,           ///< Extra: NomeObj
+    cLog,               ///< Extra: Log
+    cIntTempo,          ///< Extra: IntTempo
+    cSocket,            ///< Extra: Socket
+    cServ,              ///< Extra: Serv
+    cSalvar,            ///< Extra: Salvar
+    cProg,              ///< Extra: Prog
+    cIndiceObj,         ///< Extra: IndiceObj
+    cIndiceItem,        ///< Extra: IndiceItem
 
 // Usado internamente
     cTxtFixo,           ///< Aponta para um texto fixo

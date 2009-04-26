@@ -17,7 +17,7 @@ E o interpretador passa a trabalhar com vários arquivos da seguinte forma:
    o arquivo. Exemplo, uma classe [bom dia] iria no arquivo intmud-bom.map
 3. O IntMUD avisa sobre as classes que não estiverem no arquivo certo.
 
-Os arquivos de comandos contém contém as classes (tipos de objetos), conforme
+Os arquivos de comandos contém as classes (tipos de objetos), conforme
 a sintaxe:
 
 [nome da classe]
@@ -608,12 +608,12 @@ listaitem <nomedavariável>
     add1( <objeto> )  -> Adiciona objeto antes desse
     add2( <objeto> )  -> Adiciona objeto depois desse
     antes             -> Passa para o objeto anterior
-    depois            -> Passa para o objeto
+    depois            -> Passa para o próximo objeto
     remove            -> Remove objeto da lista, listaitem passa a não ser
                          um objeto válido
     remove1           -> Remove objeto da lista e passa para o anterior
     remove2           -> Remove objeto da lista e passa para o próximo
-    obj               -> objeto
+    obj               -> Objeto
     objx              -> Objeto que contém a lista; pode ser NULO
 
     Exemplo:
@@ -647,8 +647,8 @@ listatxt <nomedavariável>
 
     Exemplos:
     listatxt x
-    vartxt10 texto
-    var8  num
+    txt10 texto
+    int8  num
     x.add("bom dia")
     x.add("boa tarde", 10)
     texto = x.procurar("boa")
@@ -934,7 +934,7 @@ prog <nomedavariável>
         Se houver mais de uma linha, usar \n para separar as linhas.
         A primeira linha deve conter o nome e o tipo. Exemplos:
         "[xyz]" -> para criar classe xyz
-        "var8 n" -> para criar variável n
+        "int8 n" -> para criar variável n
         "func x\nret 10" -> para criar função x
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
@@ -947,13 +947,26 @@ prog <nomedavariável>
     salvar
         Salva as alterações nos arquivos correspondentes.
 
-indice <nomedavariável>
-    Permite obter um ou mais objetos a partir de um texto, denominado índice.
+indiceobj <nomedavariável>
+    É semelhante a uma variável txt64, porém o texto é associado ao objeto
+    que contém essa variável. O processo inverso, obter um objeto a partir
+    de um texto, é possível com a variável indiceitem.
 
-    texto
-        Texto associado ao objeto que contém essa variável (índice).
-    ref(<texto>)
-        Retorna o objeto a partir de um texto (índice).
+indiceitem <nomedavariável>
+    Permite obter os objetos que contém uma variável indiceobj com um
+    determinado texto. Ignora variáveis indiceobj com texto nulo.
+
+    Possui as seguintes funções:
+    ini( <texto> )    -> Vai para o primeiro objeto com o texto ou parte dele
+    fim( <texto> )    -> Vai para o último objeto com o texto ou parte dele
+    antes             -> Passa para o objeto anterior
+    depois            -> Passa para o próximo objeto
+    obj               -> Objeto
+    txt               -> Texto associado ao objeto
+    obj( <texto> )    -> Objeto que contém o texto exato
+                         Essa função funciona independente das demais
+    Nota: Pode-se passar mais de um texto para as funções que possuem texto.
+    Nesse caso, a função procurará por todos os textos.
 
 
 *** Nota - Cores no protocolo Telnet
