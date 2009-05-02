@@ -17,6 +17,7 @@
 #include <assert.h>
 #include "instr.h"
 #include "variavel.h"
+#include "var-log.h"
 #include "classe.h"
 #include "objeto.h"
 #include "socket.h"
@@ -582,6 +583,7 @@ bool Instr::ExecX()
                 break;
             case cTerminar: // Encerra o programa
                 TSocket::SairPend();
+                TVarLog::TempoEspera(1000);
                 Termina();
             default:  // Instrução desconhecida
                 assert(0);

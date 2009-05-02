@@ -11,6 +11,7 @@ class TVarIncDec;
 class TVarIntTempo;
 class TListaObj;
 class TListaItem;
+class TVarLog;
 class TVarNomeObj;
 class TVarSocket;
 class TVarServ;
@@ -115,6 +116,7 @@ public:
         unsigned int * end_uint;     ///< Instr::cUInt32
         TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
         double       * end_double;   ///< Instr::cReal
+        TVarLog      * end_log;      ///< Instr::cLog
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
         TListaObj    * end_listaobj; ///< Instr::cListaObj
         TListaItem   * end_listaitem;///< Instr::cListaItem
