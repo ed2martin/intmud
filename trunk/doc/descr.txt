@@ -713,10 +713,20 @@ nomeobj <nomedavariável>
 
 log <nomedavariável>
     Para gravar mensagens em arquivos de texto.
+    Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
+
     Funções:
-    abrir( <nome do arquivo> ) -> Abre/cria arquivo
-    msg( <texto> )   -> Grava texto em uma nova linha, no final do arquivo
-    fechar           -> Fecha arquivo
+    abrir( <nome do arquivo> )
+        Abre arquivo, cria se não existir.
+        Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
+        Nota 1: O nome do arquivo sempre terminará com ".log".
+        Nota 2: O arquivo deve pertencer ao diretório atual ou a um
+        subdiretório dele. Não é possível criar arquivos em outros lugares.
+    msg( <texto> )
+        Grava texto em uma nova linha, no final do arquivo.
+        Nota: Não grava linhas vazias.
+    fechar
+        Fecha o arquivo.
 
 inttempo <nomedavariável>
     Uma variável inteira de 0 a 65535, subtraída 1 a cada décimo de segundo.

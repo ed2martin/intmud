@@ -21,6 +21,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "var-listaobj.h"
+#include "var-log.h"
 #include "var-nomeobj.h"
 #include "var-socket.h"
 #include "var-serv.h"
@@ -108,7 +109,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cListaTxt:  return 0;
     case Instr::cListaMsg:  return 0;
     case Instr::cNomeObj:   return sizeof(TVarNomeObj);
-    case Instr::cLog:       return 0;
+    case Instr::cLog:       return sizeof(TVarLog);
     case Instr::cIntTempo:  return sizeof(TVarIntTempo);;
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
@@ -224,6 +225,10 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
         for (; x>=0; x--)
             end_incdec[x].setDec(0);
         break;
+    case Instr::cLog:
+        for (; x>=0; x--)
+            end_log[x].Criar();
+        break;
     case Instr::cIntTempo:
         for (; x>=0; x--)
         {
@@ -272,6 +277,10 @@ void TVariavel::Apagar()
     case Instr::cRef:
         for (; x>=0; x--)
             end_varref[x].MudarPont(0);
+        break;
+    case Instr::cLog:
+        for (; x>=0; x--)
+            end_log[x].Apagar();
         break;
     case Instr::cIntTempo:
         for (; x>=0; x--)
@@ -416,8 +425,7 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         endvar = destino;
         return;
     case Instr::cLog:
-        endvar = destino;
-        return;
+        MOVER_SIMPLES( TVarLog )
     case Instr::cIntTempo:
         MOVER_COMPLETO( TVarIntTempo )
     case Instr::cSocket:
@@ -556,7 +564,7 @@ bool TVariavel::getBool()
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cLog:
-        return 0;
+        return end_log[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cSocket:
@@ -699,7 +707,7 @@ int TVariavel::getInt()
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cLog:
-        return 0;
+        return end_log[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cSocket:
@@ -841,7 +849,7 @@ double TVariavel::getDouble()
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cLog:
-        return 0;
+        return end_log[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cSocket:
@@ -896,6 +904,7 @@ const char * TVariavel::getTxt()
     case Instr::cIntInc:
     case Instr::cIntDec:
     case Instr::cIntTempo:
+    case Instr::cLog:
     case Instr::cListaObj:
     case Instr::cListaItem:
     case Instr::cNomeObj:
@@ -1011,7 +1020,6 @@ const char * TVariavel::getTxt()
         return txtnum;
     case Instr::cListaTxt:
     case Instr::cListaMsg:
-    case Instr::cLog:
     case Instr::cServ:
     case Instr::cSalvar:
     case Instr::cProg:
@@ -1474,6 +1482,8 @@ bool TVariavel::Func(const char * nome)
         return end_listaitem[indice].Func(this, nome);
     case Instr::cNomeObj:
         return end_nomeobj[indice].Func(this, nome);
+    case Instr::cLog:
+        return end_log[indice].Func(this, nome);
     case Instr::cSocket:
         return end_socket[indice].Func(this, nome);
     case Instr::cServ:

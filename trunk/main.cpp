@@ -46,6 +46,7 @@
 #include "var-serv.h"
 #include "var-outros.h"
 #include "var-listaobj.h"
+#include "var-log.h"
 #include "random.h"
 #include "misc.h"
 
@@ -138,17 +139,25 @@ int main(int argc, char *argv[])
     // Limpa objetos de listaobj e listaitem
         TGrupoX::ProcEventos();
 
+    // Grava logs pendentes
+    // Obtém tempo de espera conforme TVarLog
+        espera = TVarLog::TempoEspera(espera);
+
     // Prepara variáveis para select()
+    // Acerta tempo de espera conforme TSocket
         FD_ZERO(&set_entrada);
         FD_ZERO(&set_saida);
         FD_ZERO(&set_err);
         TVarServ::Fd_Set(&set_entrada);
         int esp = TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
-
-    // Obtém quanto tempo deve esperar
-        espera = TVarIntTempo::TempoEspera();
         if (espera>esp)
             espera=esp;
+
+    // Acerta tempo de espera conforme TVarIntTempo
+        esp = TVarIntTempo::TempoEspera();
+        if (espera>esp)
+            espera=esp;
+
 #ifdef __WIN32__
         tempo = timeGetTime()/100;
 #else

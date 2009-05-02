@@ -94,7 +94,7 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "obj")==0)
     {
     // Nenhum argumento
-        if (Instr::VarAtual == v+1)
+        if (Instr::VarAtual == v)
         {
             if (IndiceObj==0)
                 return false;
@@ -168,7 +168,7 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
             return false;
         TIndiceObj * obj = TIndiceObj::RBprevious(IndiceObj);
         if (obj)
-            if (compara(obj->Nome, IndiceObj->Nome)!=0)
+            if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
                 obj=0;
         MudarRef(obj);
         return false;
@@ -180,7 +180,7 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
             return false;
         TIndiceObj * obj = TIndiceObj::RBnext(IndiceObj);
         if (obj)
-            if (compara(obj->Nome, IndiceObj->Nome)!=0)
+            if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
                 obj=0;
         MudarRef(obj);
         return false;
@@ -200,14 +200,14 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
                 continue;
         // Encontrou
             MudarRef(indice);
-            TamTxt = strlen(indice->Nome);
+            TamTxt = strlen(txt);
             return false;
         }
         MudarRef(0);
         return false;
     }
 // Último objeto
-    if (comparaZ(nome, "ini")==0)
+    if (comparaZ(nome, "fim")==0)
     {
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
@@ -221,7 +221,7 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
                 continue;
         // Encontrou
             MudarRef(indice);
-            TamTxt = strlen(indice->Nome);
+            TamTxt = strlen(txt);
             return false;
         }
         MudarRef(0);
@@ -317,8 +317,6 @@ TIndiceObj * TIndiceObj::ProcIni(const char * nome)
             y = y->RBleft;
             break;
         default:
-            if (x==y)
-                return x;
             y = y->RBright;
         }
     }
@@ -340,8 +338,6 @@ TIndiceObj * TIndiceObj::ProcFim(const char * nome)
             y = y->RBright;
             break;
         case -1:
-            if (x==y)
-                return x;
             y = y->RBleft;
             break;
         default:

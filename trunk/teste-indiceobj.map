@@ -1,0 +1,80 @@
+[x]
+comum serv porta
+socket sock
+
+const msg = sock.msg(arg0)
+func iniclasse
+  se ![arg0]:porta.abrir("",2000)
+    terminar
+  fimse
+  criar("bolsa")
+  criar("chave_azul")
+  criar("chave_verde")
+  criar("chave_azul")
+  criar("cadeado")
+  criar("banheira")
+  criar("berinjela")
+  criar("carne")
+  criar("bisteca")
+  criar("bolsa")
+  criar("porta")
+func ini
+  sock = arg0
+  msg("Tecle o nome do item ou parte do nome\n")
+func porta_socket
+  criar("x", arg0)
+func sock_msg
+  indiceitem ind
+  ref obj
+# Procura objeto com o nome exato
+  obj = ind.obj(arg0)
+  se obj=nulo
+    msg("Objeto nulo\n")
+  senao
+    msg("Objeto " + obj + "\n")
+  fimse
+# Procura objetos que começam com o nome especificado
+  ind.ini(arg0)
+  enquanto ind
+    msg("Nome " + ind.txt + " / " + ind.obj.nome + " Objeto " + ind.obj + "\n")
+    ind.depois
+  efim
+# Procura na ordem inversa
+  msg("---\n")
+  ind.fim(arg0)
+  enquanto ind
+    msg("Nome " + ind.txt + " Objeto " + ind.obj + "\n")
+    ind.antes
+  efim
+
+[item_comum]
+indiceobj nome
+func ini
+  nome = txt(este) + "1"
+
+[banheira]
+herda item_comum
+
+[berinjela]
+herda item_comum
+
+[bisteca]
+herda item_comum
+
+[bolsa]
+herda item_comum
+
+[cadeado]
+herda item_comum
+
+[carne]
+herda item_comum
+
+[chave_azul]
+herda item_comum
+
+[chave_verde]
+herda item_comum
+
+[porta]
+herda item_comum
