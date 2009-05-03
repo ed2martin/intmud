@@ -63,18 +63,17 @@ int TVarLog::TempoEspera(int tempodecorrido)
     if (Tempo<=0)
     {
         for (TVarLog * obj = Inicio; obj; obj=obj->Depois)
-            if (obj->inilog != obj->pontlog)
+            if (obj->pontlog)
             {
-                write(obj->arq, obj->buflog + obj->inilog,
-                      obj->pontlog - obj->inilog);
-                obj->pontlog = obj->inilog;
+                write(obj->arq, obj->buflog, obj->pontlog);
+                obj->pontlog = 0;
             }
         Tempo=20;
         return 100;
     }
 // Obtém quanto tempo para gravar dados pendentes
     for (TVarLog * obj = Inicio; obj; obj=obj->Depois)
-        if (obj->inilog != obj->pontlog)
+        if (obj->pontlog)
             return Tempo;
     Tempo=20;
     return 100;
@@ -85,8 +84,8 @@ void TVarLog::Fechar()
 {
     if (arq<0)
         return;
-    if (pontlog > inilog)
-        write(arq, buflog+inilog, pontlog-inilog);
+    if (pontlog)
+        write(arq, buflog, pontlog);
     close(arq);
     arq=-1;
     (Antes ? Antes->Depois : Inicio) = Depois;
@@ -107,16 +106,16 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             const char * txt = v1->getTxt();
             while (true)
             {
-                while (*txt=='\n')
+                while (*txt==Instr::ex_barra_n)
                     txt++;
                 if (*txt==0)
                     break;
                 if (pontlog>=(int)sizeof(buflog)-500)
                 {
-                    write(arq, buflog+inilog, pontlog-inilog);
-                    pontlog=inilog;
+                    write(arq, buflog, pontlog);
+                    pontlog=0;
                 }
-                for (int x=0; x<490 && *txt!='\n'; x++)
+                for (int x=0; x<490 && *txt && *txt!=Instr::ex_barra_n; x++)
                     switch (*txt)
                     {
                     case Instr::ex_barra_b:
@@ -148,11 +147,10 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "abrir")==0)
     {
         int descr = -1;
-        char nome[300]; // Nome do arquivo
-        *nome=0;
     // Obtém nome do arquivo
         while (Instr::VarAtual == v+1)
         {
+            char nome[300]; // Nome do arquivo
             char * p = nome;
             copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
             if (nome[0]==0)
@@ -162,13 +160,13 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             if (nome[0]=='\\' || nome[1]==':')
                 break;
             for (; *p; p++)
-                if ((p==nome || p[-1]!='\\') && memcmp(p, "..\\", 3)==0)
+                if ((p==nome || p[-1]=='\\') && memcmp(p, "..\\", 3)==0)
                     break;
 #else
             if (nome[0]=='/')
                 break;
             for (; *p; p++)
-                if ((p==nome || p[-1]!='/') && memcmp(p, "../", 3)==0)
+                if ((p==nome || p[-1]=='/') && memcmp(p, "../", 3)==0)
                     break;
 #endif
             if (*p)
@@ -181,7 +179,8 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             else
                 strcpy(p-3, "log");
     // Abre arquivo
-            descr = open(nome, O_WRONLY|O_CREAT|O_APPEND);
+puts(nome); fflush(stdout);
+            descr = open(nome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
             break;
         }
     // Variável int no topo da pilha
@@ -199,9 +198,7 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             Fechar();
         // Anota variáveis
             arq = descr;
-            inilog = strlen(nome) + 1;
-            pontlog = inilog;
-            strcpy(buflog, nome);
+            pontlog = 0;
         // Insere na lista ligada
             Antes = 0;
             Depois = Inicio;
