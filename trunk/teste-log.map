@@ -1,0 +1,37 @@
+[teste]
+comum serv servidor
+comum log log1
+socket conec
+
+const msg = conec.msg(arg0)
+func iniclasse
+  se ![arg0]:servidor.abrir("localhost", 2000)
+    log1.abrir("intmud.log")
+    log1.msg("Não foi possível abrir a porta 2000")
+    terminar
+func servidor_socket
+  criar("teste", arg0)
+func ini
+  conec = arg0
+  se log1
+    msg("log está aberto\n")
+  senão log1.abrir("intmud.log")
+    msg("Log aberto com sucesso\n")
+  senao
+    msg("Erro ao abrir log\n")
+  fimse
+  msg("1 termina fechando log, 2 termina sem fechar, 3 fecha conexão\n")
+  msg("Qualquer outra coisa digitada é gravada no log\n")
+func conec_msg
+  se arg0 = "1"
+    log1.msg("Programa encerrado\n")
+    log1.fechar
+    terminar
+  senao arg0 = "2"
+    log1.msg("Programa encerrado\n")
+    terminar
+  senao arg0 = "3"
+    apagar(este)
+  senao
+    conec.msg("Você escreveu " + arg0 + "\n")
+    log1.msg("msg: " + arg0)

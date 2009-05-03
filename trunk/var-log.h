@@ -19,7 +19,6 @@ private:
     TVarLog * Antes;    ///< Objeto anterior com arq>=0
     TVarLog * Depois;   ///< Próximo objeto com arq>=0
     int  arq;           ///< Para acessar o arquivo
-    int  inilog;        ///< buflog+inilog = início do texto a ser gravado
     int  pontlog;       ///< Ponteiro para anotar texto em buflog
     char buflog[2048];  ///< Nome do arquivo + texto a ser gravado
                         /**< @note Deve ser a última variável da classe */
