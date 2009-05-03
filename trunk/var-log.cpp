@@ -179,7 +179,6 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             else
                 strcpy(p-3, "log");
     // Abre arquivo
-puts(nome); fflush(stdout);
             descr = open(nome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
             break;
         }
