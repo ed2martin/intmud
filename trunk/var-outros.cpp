@@ -31,15 +31,54 @@ unsigned int TVarIntTempo::TempoMenos = 0;
 unsigned int TVarIntTempo::TempoMais = 0;
 
 //------------------------------------------------------------------------------
+/*
+void DebugRef()
+{
+ for (TClasse * cl = TClasse::RBfirst(); cl; cl=TClasse::RBnext(cl))
+ {
+  for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+  {
+   TVarRef * vantes = 0;
+   for (TVarRef * v1 = obj->VarRefIni; v1; v1=v1->Depois)
+   {
+    assert(v1->Pont == obj);
+    assert(v1->Antes == vantes);
+    vantes = v1;
+   }
+  }
+ }
+}
+
+//------------------------------------------------------------------------------
+void MostraRef(TVarRef * r)
+{
+    printf("  this = %p\n", r);
+    if (r==0)
+        return;
+    printf("  Antes = %p\n", r->Antes);
+    printf("  Depois = %p\n", r->Depois);
+    printf("  Pont = %p\n", r->Pont);
+    if (r->Pont)
+        printf("  Pont->VarRefIni = %p\n", r->Pont->VarRefIni);
+    if (r->Antes)
+        printf("  Antes->Depois = %p\n", r->Antes->Depois);
+    if (r->Depois)
+        printf("  Depois->Antes = %p\n", r->Depois->Antes);
+    fflush(stdout);
+}
+*/
+
+//------------------------------------------------------------------------------
 void TVarRef::MudarPont(TObjeto * obj)
 {
 // Verifica se o endereço vai mudar
     if (obj == Pont)
         return;
+    //printf("ANTES\n"); MostraRef(this); fflush(stdout);
 // Retira da lista
     if (Pont)
     {
-        (Antes ? Antes : Pont->VarRefIni) = Depois;
+        (Antes ? Antes->Depois : Pont->VarRefIni) = Depois;
         if (Depois)
             Depois->Antes = Antes;
     }
@@ -54,16 +93,18 @@ void TVarRef::MudarPont(TObjeto * obj)
     }
 // Atualiza ponteiro
     Pont = obj;
+    //printf("DEPOIS\n"); MostraRef(this); fflush(stdout);
 }
 
 //------------------------------------------------------------------------------
 void TVarRef::Mover(TVarRef * destino)
 {
-    if (Pont==0)
-        return;
-    (Antes ? Antes->Depois : Pont->VarRefIni) = destino;
-    if (Depois)
-        Depois->Antes = destino;
+    if (Pont)
+    {
+        (Antes ? Antes->Depois : Pont->VarRefIni) = destino;
+        if (Depois)
+            Depois->Antes = destino;
+    }
     move_mem(destino, this, sizeof(TVarRef));
 }
 
