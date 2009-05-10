@@ -49,6 +49,9 @@ private:
                                 /**< @note Caracteres de controle de Telnet
                                   *  não devem gerar eventos _env */
     char ecotelnet:1;           ///< Variável socket.eco
+    char coneccliente:1;        ///< Se está conectado como cliente
+                                /**< @note Como cliente pode receber
+                                     mensagens incompletas (sem \\n) */
     struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens

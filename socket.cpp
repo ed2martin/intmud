@@ -159,6 +159,7 @@ TSocket * TSocket::Conectar(const char * ender, int porta)
     TSocket * s = new TSocket(conManip);
     s->proto = 0;
     s->conSock = conSock;
+    s->coneccliente = true;
     return s;
 }
 
@@ -341,6 +342,7 @@ TSocket::TSocket(int socknum)
     esperatelnet=0;
     eventoenv=false;
     ecotelnet=true;
+    coneccliente=false;
     AFlooder=0;
 }
 
@@ -887,6 +889,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
         if (FD_ISSET(obj->sock, set_entrada)==0)
         {
             if (obj->proto!=1 || // Não é telnet
+                obj->coneccliente==false || // Conectado como servidor
                 obj->pontRec==0) // Buffer de recepção está vazio
                 obj->esperatelnet=0, obj = obj->sDepois;
             else

@@ -13,11 +13,15 @@ func ini
   msg("Pode-se teclar somente o início do nome. Ex. bo\n")
   msg("Um número antes expressa a quantidade. Ex. 10 ch\n")
   msg("Número e ponto especificam o número do item. Ex. 3.b\n")
+  msg("Ou tecle fim para encerrar o programa\n")
 func teste
   se nomes.nome(arg0)
     msg(arg0 + "\n")
     encontrou = 1
 func sock_msg
+  se arg0 = "fim"
+    terminar
+  fimse
   encontrou = 0
   nomes.ini(arg0, 4)
   teste("bolsa")

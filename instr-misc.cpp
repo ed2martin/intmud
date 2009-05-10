@@ -473,7 +473,7 @@ const char * Instr::NomeComando(int valor)
     case cListaTxt:         return "cListaTxt";
     case cListaMsg:         return "cListaMsg";
     case cNomeObj:          return "cNomeObj";
-    case cLog:              return "cLog";
+    case cArqLog:           return "cArqLog";
     case cIntTempo:         return "cIntTempo";
     case cSocket:           return "cSocket";
     case cServ:             return "cServ";

@@ -109,7 +109,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cListaTxt:  return 0;
     case Instr::cListaMsg:  return 0;
     case Instr::cNomeObj:   return sizeof(TVarNomeObj);
-    case Instr::cLog:       return sizeof(TVarLog);
+    case Instr::cArqLog:    return sizeof(TVarLog);
     case Instr::cIntTempo:  return sizeof(TVarIntTempo);;
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
@@ -172,7 +172,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cListaTxt:  return varOutros;
     case Instr::cListaMsg:  return varOutros;
     case Instr::cNomeObj:   return varOutros;
-    case Instr::cLog:       return varOutros;
+    case Instr::cArqLog:    return varOutros;
     case Instr::cIntTempo:  return varInt;
     case Instr::cSocket:
             if (defvar[Instr::endNome]=='=')
@@ -225,7 +225,7 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
         for (; x>=0; x--)
             end_incdec[x].setDec(0);
         break;
-    case Instr::cLog:
+    case Instr::cArqLog:
         for (; x>=0; x--)
             end_log[x].Criar();
         break;
@@ -278,7 +278,7 @@ void TVariavel::Apagar()
         for (; x>=0; x--)
             end_varref[x].MudarPont(0);
         break;
-    case Instr::cLog:
+    case Instr::cArqLog:
         for (; x>=0; x--)
             end_log[x].Apagar();
         break;
@@ -424,7 +424,7 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
             move_mem(destino, endvar, vetor*sizeof(TVarNomeObj));
         endvar = destino;
         return;
-    case Instr::cLog:
+    case Instr::cArqLog:
         MOVER_SIMPLES( TVarLog )
     case Instr::cIntTempo:
         MOVER_COMPLETO( TVarIntTempo )
@@ -563,7 +563,7 @@ bool TVariavel::getBool()
         return 0;
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
-    case Instr::cLog:
+    case Instr::cArqLog:
         return end_log[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
@@ -706,7 +706,7 @@ int TVariavel::getInt()
         return 0;
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
-    case Instr::cLog:
+    case Instr::cArqLog:
         return end_log[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
@@ -848,7 +848,7 @@ double TVariavel::getDouble()
         return 0;
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
-    case Instr::cLog:
+    case Instr::cArqLog:
         return end_log[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
@@ -904,7 +904,7 @@ const char * TVariavel::getTxt()
     case Instr::cIntInc:
     case Instr::cIntDec:
     case Instr::cIntTempo:
-    case Instr::cLog:
+    case Instr::cArqLog:
     case Instr::cListaObj:
     case Instr::cListaItem:
     case Instr::cNomeObj:
@@ -1164,7 +1164,7 @@ void TVariavel::setInt(int valor)
     case Instr::cListaTxt:
     case Instr::cListaMsg:
     case Instr::cNomeObj:
-    case Instr::cLog:
+    case Instr::cArqLog:
         break;
     case Instr::cIntTempo:
         end_inttempo[indice].setValor(valor);
@@ -1248,7 +1248,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cListaTxt:
     case Instr::cListaMsg:
     case Instr::cNomeObj:
-    case Instr::cLog:
+    case Instr::cArqLog:
         break;
     case Instr::cSocket:
         end_socket[indice].setValor(defvar, (int)valor);
@@ -1343,7 +1343,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cListaTxt:
     case Instr::cListaMsg:
     case Instr::cNomeObj:
-    case Instr::cLog:
+    case Instr::cArqLog:
         break;
     case Instr::cServ:
         end_serv[indice].Fechar();
@@ -1482,7 +1482,7 @@ bool TVariavel::Func(const char * nome)
         return end_listaitem[indice].Func(this, nome);
     case Instr::cNomeObj:
         return end_nomeobj[indice].Func(this, nome);
-    case Instr::cLog:
+    case Instr::cArqLog:
         return end_log[indice].Func(this, nome);
     case Instr::cSocket:
         return end_socket[indice].Func(this, nome);

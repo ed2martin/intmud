@@ -20,7 +20,7 @@ private:
     TVarLog * Depois;   ///< Próximo objeto com arq>=0
     int  arq;           ///< Para acessar o arquivo
     int  pontlog;       ///< Ponteiro para anotar texto em buflog
-    char buflog[2048];  ///< Nome do arquivo + texto a ser gravado
+    char buflog[2048];  ///< Texto a ser gravado
                         /**< @note Deve ser a última variável da classe */
 };
 

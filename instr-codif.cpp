@@ -236,6 +236,7 @@ public:
 // Lista de instruções, exceto cExpr
 // Deve obrigatoriamente estar em ordem alfabética
 static const TListaInstr ListaInstr[] = {
+    { "arqlog",    cArqLog },
     { "const",     cConstExpr }, // Qualquer tipo de const
     { "continuar", cContinuar },
     { "efim",      cEFim },
@@ -256,7 +257,6 @@ static const TListaInstr ListaInstr[] = {
     { "listamsg",  cListaMsg },
     { "listaobj",  cListaObj },
     { "listatxt",  cListaTxt },
-    { "log",       cLog },
     { "nomeobj",   cNomeObj },
     { "prog",      cProg },
     { "real",      cReal },

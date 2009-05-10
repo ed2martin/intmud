@@ -1,3 +1,7 @@
+[config]
+const ender = "localhost"
+const porta = 1963
+
 [teste]
 comum serv servidor
 socket conec
@@ -23,6 +27,7 @@ func ini
   msg("m seguido ou não de um texto = enviar mensagem\n")
   msg("n para envia 2 vezes, s para envia 3 vezes\n")
   msg("t=teste com socket.posx\n")
+  msg("e=encerrar o programa\n")
 func conec_msg
   conec.msg("Você escreveu " + arg0 + "\n")
   escr_[txt1(arg0)](txt2(arg0))
@@ -30,7 +35,7 @@ const escr_c = escr_pc(0)
 const escr_p = escr_pc(1)
 func escr_pc
   papovox = arg0
-  se remoto.abrir("localhost", 1963)
+  se remoto.abrir(config:ender, config:porta)
     msg("Conectando\n")
   senão
     msg("Erro ao conectar\n")
@@ -71,6 +76,8 @@ func escr_t
     msg(" " + conec.posx + "\n")
     x=0, y+=1
   efim
+func escr_e
+  terminar
 func remoto_con
   se papovox=0
     msg("Conectado\n")

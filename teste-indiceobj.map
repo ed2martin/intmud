@@ -21,11 +21,15 @@ func iniclasse
 func ini
   sock = arg0
   msg("Tecle o nome do item ou parte do nome\n")
+  msg("Ou tecle fim para encerrar o programa\n")
 func porta_socket
   criar("x", arg0)
 func sock_msg
   indiceitem ind
   ref obj
+  se arg0 = "fim"
+    terminar
+  fimse
 # Procura objeto com o nome exato
   obj = ind.obj(arg0)
   se obj=nulo

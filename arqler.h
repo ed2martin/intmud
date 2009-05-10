@@ -25,7 +25,7 @@ public:
 private:
     int  arq;           ///< Para acessar o arquivo
     char buf[2048];     ///< Bytes lidos do arquivo
-    char *pler;         ///< Poneiro de leitura
+    char *pler;         ///< Ponteiro de leitura
     char *ptotal;       ///< Até aonde pode ler
     int  linhanum;      ///< Número da última linha lida
     unsigned char linhaCRLF; ///< Para detectar fim da linha (CR e LF)
