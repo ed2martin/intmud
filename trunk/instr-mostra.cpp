@@ -121,7 +121,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cListaTxt:  strcpy(nome, "listatxt"); break;
     case cListaMsg:  strcpy(nome, "listamsg"); break;
     case cNomeObj:   strcpy(nome, "nomeobj"); break;
-    case cLog:       strcpy(nome, "log"); break;
+    case cArqLog:    strcpy(nome, "arqlog"); break;
     case cIntTempo:  strcpy(nome, "inttempo"); break;
     case cSocket:    strcpy(nome, "socket"); break;
     case cServ:      strcpy(nome, "serv"); break;

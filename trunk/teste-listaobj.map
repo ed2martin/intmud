@@ -14,7 +14,8 @@ func ini
   msg("t - mostra os objetos\n")
   msg("x - teste com lista local\n")
   msg("y - teste sem listaitem\n")
-  msg("f - fim\n")
+  msg("e - encerrar o programa\n")
+  msg("f - fim (apenas fecha conexão)\n")
   lista.add2(criar("porta"))
   lista.add2(criar("janela"))
   lista.add2(criar("cadeira"))
@@ -65,6 +66,8 @@ func escr_y
     l1.ini.remove
   efim
   ret 1
+func escr_e
+  terminar
 func escr_f
   apagar(este)
   ret 1
