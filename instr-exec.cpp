@@ -1410,7 +1410,10 @@ bool Instr::ExecX()
 
             // Verifica variável/função da classe
                 if (v[1].defvar[2]==cVarClasse)
+                {
                     classe = (TClasse*)v[1].endvar;
+                    objeto = FuncAtual->este;
+                }
             // Verifica variável/função da classe
                 else if (v[1].defvar[2]==cVarInicio)
                 {

@@ -1,298 +1,245 @@
-[teste]
-herda bom dia
-comum int8 x1
-int1 x2
-int1 x3
-int1 x4
-const nn = arg0*2+args
-#func iniclasse
-#teste:x1 = teste:f1(10,20)
-#2
-#"abc" + teste:nn(4)
-#teste:var + teste:var
-#teste:var = 10
-#ret teste:var
-#args(teste:var)
-func f1
-  ret arg0+1
-varfunc var
-  ret 4
+MAPAGRANDE
 
-[bom dia]
-int1 y1
-int1 y2
-int1 y3
+[_config]
+# Configuração
+const porta = 1963 # Nota: O Papovox só se conecta na porta 1963
+const salaini = $casa1_sala  # Quando entra no jogo, entra nessa sala
 
-[abc def]
-#herda teste, bom dia
-int8 inteiro8
-uint16 teste1
-int1 z1
-int1 z2
-# bom dia
-const c1 = (1 | 2) & 3
-comum int1 n1
-comum uint8 n2
-func f
-x=1
-se x=0
-  bom_dia:n(1)
-  n("teste")
-  $teste.n1("abc" "def")
-  $teste.n2("abc" + "def")
-fimse #teste
-saidas = ds1("norte", "n") + ds1("sul", "s")
-prg.var("comandos", txt1(arg0))
-abc = -0.0000415+-x-(3+!"teste")*(!1+2)
+[comum_perso]
+# Personagens
+const perso = 1 # Indica que é personagem
+const alias = "" # Nomes que o usuário digita para acessar o personagem
+uint8 posicao  # Posição atual
+const pospadrao = 8 # Posição padrão
+# Posições válidas:
+# 0=morto
+# 1=mortalmente ferido
+# 2=incapacitado
+# 3=fraco
+# 4=dormindo
+# 5=descansando
+# 6=sentado
+# 7=lutando
+# 8=em pé
+const sala = sala_item.objx # Sala do personagem
+listaitem sala_item # Referência à sala do personagem
 
-[teste2]
-int8 x2
-int1 x3
-int1 x4
-func iniclasse
-  ref r
-#criar(arg0, 5).x2 += 5
-  ret
-  r = criar(arg0, 2)
-# r.x2 += 10
- teste2:f1.x2 += teste2:var + 3 + 2
-  apagar(r)
-func f1
-  int8 lixo
-  ref nn
-  nn = $teste2
-  ret nn
-varfunc var
-  ret 8
-func ini
-  x2 = arg0
-func fim
-  10
+func ini # Objeto foi criado: atualiza posição atual
+  posicao = pospadrao
 
-[x]
-comum serv servidor
-socket conec
-const msg = conec.msg(arg0)
-uint16 xvar
-func iniclasse
-  se ![arg0]:servidor.abrir("", 2000)
-    terminar
-func servidor_socket
-  ref novo
-  novo = criar("x")
-  novo.conec = arg0
-  novo.conec.cores = 3
-  novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 12 ou qualquer outra coisa\n")
-func conec_msg
-  conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
-  escr_[txt1(arg0)]
-func escr_0
-  msg("intpos(1) = " + intpos(1) + "\n")
-  msg("intpos(-1) = " + intpos(-1) + "\n")
-  msg("intabs(4) = " + intabs(4) + "\n")
-  msg("intabs(-5.8) = " + intabs(-5.8) + "\n")
-  msg("int(4.3) = " + int(4.3) + "\n")
-  msg(txt(1.4 + "3.84") + "\n")
-func escr_1
-  msg("rand(10) = " + rand(10) + "\n")
-func escr_2
-  msg("txt(\"abcdef\", 2, 3) = " + txt("abcdef", 2, 3) + "\n")
-func escr_3
-  msg("txt1 - " + txt1("bom dia boa tarde") + "\n")
-  msg("txt2 - " + txt2("bom dia boa tarde") + "\n")
-  msg("inttotal - " + inttotal("bom dia boa tarde") + "\n")
-func escr_4
-  ref r
-  msg("Objetos mm: " + inttotal($mm) + "\n")
-  r = $mm
-  enquanto r
-    msg(r.texto + "\n")
-    r = objdepois(r)
-  efim
-func escr_5
-  msg("Volte sempre\n")
-  apagar(este)
-func escr_6
-  msg("Encerrando o IntMUD\n")
-  terminar
-func escr_7
-  se("A"="a")
-    msg("1\n")
+func mudasala # Muda de sala
+# arg0=nova sala
+  sala_item.remove
+  arg0.dentro.add2(este)
+  sala_item = arg0.dentro.fim
+
+func descrsala # Mostra descrição de um lugar
+  txt100 saidas
+  msg("\cb" + sala.nome + "\b\n")
+  msg(sala.descr + "\n")
+  saidas = ds1("norte", "n") + ds1("sul", "s") + ds1("leste", "l")
+  saidas += ds1("oeste", "o") + ds1("cima", "c") + ds1("baixo", "b")
+  se saidas
+    msg("\c6Saídas\b:" + saidas + "\n")
   senão
-    msg("0\n")
-  fimse
-  se("A"=="a")
-    msg("1\n")
-  senão
-    msg("0\n")
-  fimse
-func escr_8
-  txt20 tt
-  uint8 x
-  tt = " \d4  bom   dia \b  "
-  msg("Texto \"" + tt + "\"\n")
-  enquanto x<16
-    msg(txt(x) + "=\"" + txtremove(tt,x) + "\"\n")
-    x += 1
-  efim
-func escr_9
-  msg(vartroca("$A $a $B $b\n", "$", "teste_"))
-  msg(vartroca("$1 falou com $2\n", "$", "t_"))
-  msg(vartroca("bom $da $de $di $do $du dia\n", "$", "var_"))
-  msg(vartroca("total %t %T valor %r% %var %\n", "%", "x"))
-func teste_a
-  se arg0 == "A"
-    ret "A maiúsculo"
-  senão
-    ret "A minúsculo"
-const teste_b = teste2_b[arg0=="B"]
-const teste2_b0 = "B maiúsculo"
-const teste2_b1 = "B minúsculo"
-const t_1 = "joão"  # $1 = joão
-const t_2 = "maria" # $2 = maria
-const var_d = "D"
-const var_di = "DI"
-const var_dia = "DIA"
-const var_des = "DES"
-const var_do = "DO"
-const var_du = $x
-func xt
-  xvar += 1
-  ret xvar
-varfunc xr
-  ret rand(101)
-const x_ = "%"
-const x = "???"
-func escr_10
-  uint8 teste.3
-  teste.0 = 5
-  teste.1 = 2
-  teste.2 = 8
-  msg(">" + teste.0 + " " + teste.1 + " " + teste.2 + "\n")
-func escr_11
-  msg(txtnum(10, "e") + "\n")
-  msg(txtnum(4.5, "e") + "\n")
-  msg(txtnum(10, "3") + "\n")
-  msg(txtnum(4.5, "3") + "\n")
-  msg(txtnum(10, ".") + "\n")
-  msg(txtnum(4.5, ",") + "\n")
-  msg(txtnum(1045234.7, ".5") + "\n")
-  msg(txtnum(-2328913.8, ",5") + "\n")
-const cores = "0123456789ABCDEF"
-func escr_12
-  uint8 frente
-  uint8 fundo
-  txt1 texto
-  enquanto fundo<8
-    msg("\d" + fundo)
-    enquanto frente<16
-      texto = txt(cores, frente, 1)
-      msg("\c" + texto + texto + " ")
-      frente += 1
-    efim
-    msg("\b\n")
-    frente = 0, fundo += 1
-  efim
-func escr_eco
-  se conec.eco
-    conec.eco=0
-    msg("Eco desabilitado\n")
-  senão
-    conec.eco=1
-    msg("Eco habilitado\n")
-func escr_flood
-  se conec.aflooder
-    conec.aflooder=0
-    msg("Anti-flooder desabilitado\n")
-  senão
-    conec.aflooder=1
-    msg("Anti-flooder habilitado\n")
+    msg("\c9Nenhuma saída\b\n")
 
-[mm]
-txt20 texto
-func iniclasse
-  criar(arg0, "bom dia")
-  criar(arg0, "boa tarde")
-  criar(arg0, "boa noite")
-# enquanto(1)
-# efim
-func ini
-  texto = arg0
+func ds1 # Usado em descrsala
+  se sala.[arg0] = nulo | sala.[arg0]_ini = 1
+    ret ""
+  senão sala.[arg0]_agora < 2
+    ret " \c6" + arg1 + "\b"
+  senao
+    ret " \c9!" + arg1 + "\b"
 
-[testeinttempo]
-# Teste com intinc, intdec e inttempo
-comum serv servidor
-socket conec
-const msg = conec.msg(arg0)
-inttempo tempo.40
-inttempo fim
-intinc inc
-intdec dec
-func iniclasse
-  se ![arg0]:servidor.abrir("", 2010)
-    terminar
-func servidor_socket
-  criar("testeinttempo", arg0)
-func ini
-  uint8 x
-  conec = arg0
-  msg("Benvindo\n")
-#inc = 65483, dec = 57
-#fim = 410
-fim = 50
-  enquanto x < 40
-    tempo.[x] = x * 10
-     x += 1
+func escr # Escreveu alguma coisa
+# arg0=o que escreveu
+  ref obj # Objeto que vai processar o comando
+  indiceitem ind # Para procurar o objeto
+### Procura objeto
+  ind.ini("com_" + txt1(arg0))
+  enquanto ind
+    se ind.obj & nivel >= ind.obj.nivel
+      sair
+    fimse
+    ind.depois
   efim
-  x = 0
-  enquanto x < 40
-    msg(" " + tempo.[x])
-    x += 1
-  efim
-  conec.msg("\nAguarde\n")
-func conec_msg
-  msg("Você escreveu " + arg0 + "\n")
-func tempo_exec
-  msg("" + arg0 + " / " + inc + " / " + dec + " / " + fim + "\n")
-func fim_exec
-  msg("Fim\n")
-  apagar(este)
+  obj = ind.obj
+### Processa comando
+  se obj = nulo
+    msg("O quê?\n")
+  senão posicao < obj.posic
+    se posicao = 0 # Morto
+      msg("\c9Você está morto!!!\b\n")
+    senão posicao = 1 | posicao = 2 # Incapacitado
+      msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b\n")
+    senão posicao = 3 # Fraco
+      msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b\n")
+    senão posicao = 4 # Dormindo
+      msg("\c9Nos seus sonhos...\b\n")
+    senão posicao = 5 # Descansando
+      msg("\c9Você se sente relaxado demais para fazer isso.\b\n")
+    senão posicao = 6 # Sentado
+      msg("\c9Talvez você deva ficar em pé primeiro.\b\n")
+    senão posicao = 7 # Lutando
+      msg("\c9Sem chance! Você está lutando pela sua vida.\b\n")
+    senão
+      msg("\c9Você tenta, mas não consegue.\b\n")
+    fimse
+  senão
+    obj.exec(este, arg0)
 
-[servtermina]
-# Quando conectar-se na porta 2001 pelo endereço localhost ou 127.0.0.1
-# o programa termina
-serv servidor.3
-func iniclasse
+[comum_sala]
+listaobj dentro # Itens e personagens dentro da sala
+#
+# *** Saídas
+# ref norte
+# ref sul
+# ref leste
+# ref oeste
+# ref cima
+# ref baixo
+#
+# *** Estado inicial das saídas:
+# 0=nenhuma porta
+# 1=nenhuma porta/invisível
+# 2=aberta
+# 3=fechada
+# 4=trancada
+# 5=trancada; se fechada é trancada
+# uint8 norte_ini
+# uint8 sul_ini
+# uint8 leste_ini
+# uint8 oeste_ini
+# uint8 cima_ini
+# uint8 baixo_ini
+#
+# *** Estado atual das saídas
+# 0=nenhuma porta
+# 1=aberta
+# 2=fechada
+# 3=trancada
+uint8 norte_agora
+uint8 sul_agora
+uint8 leste_agora
+uint8 oeste_agora
+uint8 cima_agora
+uint8 baixo_agora
+#
+# *** Número da chave para trancar e destrancar a porta
+# uint8 norte_chave
+# uint8 sul_chave
+# uint8 leste_chave
+# uint8 oeste_chave
+# uint8 cima_chave
+# uint8 baixo_chave
+
+func iniclasse # Para criar um objeto quando a classe for criada
   criar(arg0)
-func ini
-  servidor.0.abrir("localhost", 2001)
-  servidor.1.abrir("localhost", 2002)
-  servidor.2.abrir("localhost", 2003)
-func servidor_socket
-  arg0.msg("Encerrando o IntMUD (arg1=" + arg1 + ")\n")
-  terminar
 
+func ini # Objeto criado: atualiza saídas
+  ini_sai(norte_ini, norte_agora)
+  ini_sai(sul_ini, sul_agora)
+  ini_sai(leste_ini, leste_agora)
+  ini_sai(oeste_ini, oeste_agora)
+  ini_sai(cima_ini, cima_agora)
+  ini_sai(baixo_ini, baixo_agora)
 
-[teste1]
-comum serv servidor
-socket conec
-inttempo t1
-inttempo f2
-const msg = conec.msg(arg0)
+func ini_sai # Usado em ini; atualiza saídas
+# arg0=valor inicial da saída
+# arg1=valor atual da saída
+  arg1 = arg0
+  se arg1 >= 4
+    arg1 = 3
+  senão arg1 >= 1
+    arg1 -= 1
+
+[entra]
+# Entrando no jogo
+comum serv servidor # Para receber conexões
+socket conec # Usuário conectado
+inttempo fechar # Para encerrar conexão após um tempo
+inttempo espera # Tempo para pedir o apelido
+inttempo sair   # Para sair se esperou demais
+
 func iniclasse
-  se ![arg0]:servidor.abrir("", 2011)
+# Esperar conexões
+  se ![arg0]:servidor.abrir("", _config:porta)
     terminar
-func servidor_socket
-  criar("teste1", arg0)
-func ini
+
+func servidor_socket # Conectado: cria objeto
+  criar("entra", arg0)
+
+func ini # Objeto foi criado
   conec = arg0
-  t1 = 12
-  t2 = 10
-  msg("ini\n")
-t1_exec
-  msg("" + t1 + "\n")
+  conec.proto = 2
+  conec.aflooder = 1
+  conec.msg("+OK Para Telnet pressione ENTER\n")
+  fechar = 100 # 10 segundos depois desconecta
+
+func fechar_exec
+  conec.msg("-Tempo esgotado\n")
   apagar(este)
-t2_exec
-  msg("" + t2 + "\n")
+
+func espera_exec
+  conec.msg("Digite o nome do seu personagem\n")
+  sair=600 # Para esperar 60 segundos
+
+func sair_exec
+  conec.msg("Tempo esgotado\n")
   apagar(este)
+
+func conec_fechou
+  apagar(este)
+
+func conec_msg # Recebeu mensagem do usuário
+# arg0=mensagem
+  txt30 nome
+  indiceitem ind
+  se espera # Se deve aguardar, ignora o que recebeu
+    ret
+  senão fechar # Se está no primeiro passo
+    fechar=0
+    espera=10
+    se arg0 != "" # Papovox sempre fornece um nome
+      conec.msg("+OK Entrando via Papovox\n")
+      conec.proto = 4
+    senão # Nome vazio: é Telnet
+      conec.msg("-OK Entrando via telnet; para sair tecle quit\n")
+      conec.cores = 2
+    fimse
+  senão arg0 = "quit" # Sai do MUD
+    apagar(este)
+  senão arg0 = "" # Se não digitou um apelido
+    espera = 1
+  senão ind.obj("usr_" + nome) # Se apelido está sendo usado
+    conec.msg("Apelido já está sendo usado; digite outro\n")
+  senão # Cria objeto do jogador
+    apagar(este)
+    criar("jog", conec, nome)
+  fimse
+
+[jog]
+herda comum_perso
+# Personagem do jogador
+socket conec
+indiceobj i_apelido
+const alias = txt(i_apelido, 4)
+
+func ini # Objeto criado
+# arg0=conec
+# arg1=apelido
+  conec = arg0
+  i_apelido = "usr_" + arg1
+  comum_perso:ini
+  mudasala(_config:salaini)
+  msg("NOTA: Para encerrar o MUD tecle ENCERRAR\n")
+  descrsala
+
+func conec_fechou # Conexão encerrada
+  apagar(este)
+
+const msg = conec.msg(arg0) # Envia mensagem para o usuário
+
+func conec_msg # Recebeu mensagem do usuário
+  escr(arg0)
