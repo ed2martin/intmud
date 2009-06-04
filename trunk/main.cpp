@@ -594,6 +594,7 @@ void Inicializa(const char * arg)
                         arqinicio, strerror(errno));
                 exit(EXIT_FAILURE);
             }
+            continue;
         }
     // Verifica linha MAPAGRANDE
         if (comparaZ(mens, "MAPAGRANDE")==0)

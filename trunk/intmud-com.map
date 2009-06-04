@@ -1,0 +1,126 @@
+[com _comum]
+# Contém os comandos que os jogadores podem digitar
+#
+# Cada classe:
+#
+indiceobj comando # Contém o nome do comando
+const nivel = 0 # Nível mínimo para usar o comando
+const posic = 8 # Posição mínima para usar o comando; vide [comum_perso]
+func iniclasse # Cria um objeto do comando
+ criar(arg0)
+# func ini # Acerta a variável comando
+#  comando = "com_abc" # É sempre com_ seguido do nome do comando
+func exec # Executa o comando
+# arg0=personagem
+# arg1=o que escreveu
+  arg0.msg("Você digitou " + arg1 + "\n")
+
+[com move]
+# Movimenta-se em uma direção
+const nivel = 0
+const posic = 8
+indiceobj comando1
+indiceobj comando2
+
+func iniclasse
+  criar(arg0)
+
+func exec # Executa o comando
+# arg0=personagem
+# arg1=o que escreveu
+  ref destino
+  destino = arg0.sala.[dir]
+  se destino = nulo
+    arg0.msg("Impossível seguir nessa direção\n")
+  senão arg0.sala.[dir]_agora >= 2
+    arg0.msg("A porta está trancada\n")
+  senão destino = arg0.sala
+    arg0.msg("Você tenta, mas acaba voltando no mesmo lugar\n")
+  senão
+#$mens.perso = arg0
+#$mens.alvo = nulo
+#$mens.obj = nulo
+#$mens.m_todos(m_sair)
+    arg0.msg(m_perso + "\n")
+    arg0.mudasala(destino)
+    arg0.descrsala
+#$mens.m_todos(m_chegar)
+
+[com move_norte]
+herda com_move
+const dir = "norte"
+const m_perso = "norte"
+const m_sair = "$p foi para o norte\n"
+const m_chegar = "$p chegou do sul\n"
+func ini
+  comando1 = "com_n"
+  comando2 = "com_norte"
+
+[com move_sul]
+herda com_move
+const dir = "sul"
+const m_perso = "sul"
+const m_sair = "$p foi para o sul\n"
+const m_chegar = "$p chegou do norte\n"
+func ini
+  comando1 = "com_s"
+  comando2 = "com_sul"
+
+[com move_leste]
+herda com_move
+indiceobj comando3
+const dir = "leste"
+const m_perso = "leste"
+const m_sair = "$p foi para o leste\n"
+const m_chegar = "$p chegou do oeste\n"
+func ini
+  comando1 = "com_l"
+  comando2 = "com_leste"
+  comando3 = "com_e"
+
+[com move_oeste]
+herda com_move
+indiceobj comando3
+const dir = "oeste"
+const m_perso = "oeste"
+const m_sair = "$p foi para o oeste\n"
+const m_chegar = "$p chegou do leste\n"
+func ini
+  comando1 = "com_o"
+  comando2 = "com_oeste"
+  comando3 = "com_w"
+
+[com move_cima]
+herda com_move
+const dir = "cima"
+const m_perso = "cima"
+const m_sair = "$p subiu\n"
+const m_chegar = "$p chegou de baixo\n"
+func ini
+  comando1 = "com_c"
+  comando2 = "com_cima"
+
+[com move_baixo]
+herda com_move
+const dir = "baixo"
+const m_perso = "baixo"
+const m_sair = "$p desceu\n"
+const m_chegar = "$p chegou de cima\n"
+func ini
+  comando1 = "com_b"
+  comando2 = "com_baixo"
+
+[com quit]
+herda com__comum
+func ini
+  comando = "com_quit"
+func exec
+  apagar(arg0)
+
+[com encerrar]
+herda com__comum
+func ini
+  comando = "com_encerrar"
+func exec
+  msg("Encerrando o MUD\n")
+  terminar

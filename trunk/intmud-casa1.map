@@ -1,0 +1,34 @@
+[casa1 area]
+const s_terreno = 1
+
+[casa1 cozinha]
+herda casa1_area, comum_sala
+const nome = "Cozinha"
+const descr = "Possui geladeira, fogão e pia. A geladeira está vazia.\
+O chão está preto de sujeira."
+const norte = $casa1_sala
+const norte_ini = 3
+
+[casa1 sala]
+herda casa1_area, comum_sala
+const nome = "Sala"
+const descr = "Há uma mesa no meio e 3 poltronas ao redor."
+const norte = $casa1_quarto
+const sul = $casa1_cozinha
+const sul_ini = 3
+const oeste = $casa1_entrada
+const oeste_ini = 2
+
+[casa1 quarto]
+herda casa1_area, comum_sala
+const nome = "Quarto"
+const descr = "Um pequeno quarto com uma janela e cama."
+const sul = $casa1_sala
+
+[casa1 entrada]
+herda casa1_area, comum_sala
+const nome = "Entrada da casa"
+const descr = "O chão é asfaltado de leste a oeste, até a entrada \
+de uma casa. Ao redor há muita grama bem tratada."
+const leste = $casa1_sala
+const leste_ini = 2
