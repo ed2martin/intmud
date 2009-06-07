@@ -4,6 +4,23 @@ MAPAGRANDE
 # Configuração
 const porta = 1963 # Nota: O Papovox só se conecta na porta 1963
 const salaini = $casa1_sala  # Quando entra no jogo, entra nessa sala
+const papovox = 0 # 0=somente Telnet, 1=Telnet e Papovox
+
+[comum_item]
+# Itens do jogo
+const nome = "" # Nome do item; não colocar o sexo
+const nomesala = "" # Descrição na sala
+const alias = "" # Nomes que o usuário digita para acessar o personagem
+const sala = sala_item.objx # Sala do personagem
+listaitem sala_item # Referência à sala do personagem
+int1 invis # Se está invisível
+const sexo = "o" # "o" ou "a"
+
+func mudasala # Muda de sala ou de dono
+# arg0=nova sala
+  sala_item.remove
+  arg0.dentro.add2(este)
+  sala_item = arg0.dentro.fim
 
 [comum_perso]
 # Personagens
@@ -23,6 +40,10 @@ const pospadrao = 8 # Posição padrão
 # 8=em pé
 const sala = sala_item.objx # Sala do personagem
 listaitem sala_item # Referência à sala do personagem
+listaobj dentro # Itens que pertencem ao personagem
+int1 invis # Se está invisível
+int1 invisver # Se pode ver personagens invisíveis
+const sexo = "o" # "o" ou "a"
 
 func ini # Objeto foi criado: atualiza posição atual
   posicao = pospadrao
@@ -35,14 +56,14 @@ func mudasala # Muda de sala
 
 func descrsala # Mostra descrição de um lugar
   txt100 saidas
-  msg("\cb" + sala.nome + "\b\n")
-  msg(sala.descr + "\n")
+  msg("\cb" + sala.nome + "\b")
+  msg(sala.descr)
   saidas = ds1("norte", "n") + ds1("sul", "s") + ds1("leste", "l")
   saidas += ds1("oeste", "o") + ds1("cima", "c") + ds1("baixo", "b")
   se saidas
-    msg("\c6Saídas\b:" + saidas + "\n")
+    msg("\c6Saídas\b:" + saidas)
   senão
-    msg("\c9Nenhuma saída\b\n")
+    msg("\c9Nenhuma saída\b")
 
 func ds1 # Usado em descrsala
   se sala.[arg0] = nulo | sala.[arg0]_ini = 1
@@ -56,6 +77,7 @@ func escr # Escreveu alguma coisa
 # arg0=o que escreveu
   ref obj # Objeto que vai processar o comando
   indiceitem ind # Para procurar o objeto
+  listaitem l
 ### Procura objeto
   ind.ini("com_" + txt1(arg0))
   enquanto ind
@@ -65,32 +87,54 @@ func escr # Escreveu alguma coisa
     ind.depois
   efim
   obj = ind.obj
+#### Triggers
+  se(este.tr_escr(este, obj, arg0)) # Trigger do personagem
+    ret
+  senão(sala.tr_escr(este, obj, arg0)) # Trigger da sala
+    ret
+  fimse
+  l = dentro.ini # Trigger dos objetos do personagem
+  enquanto l
+    se l != este & l.obj.tr_escr2(este, obj, arg0)
+      ret
+    fimse
+    l.depois
+  efim
+  l = sala.dentro.ini # Trigger dos objetos da sala
+  enquanto l
+    se l.obj != este & l.obj.tr_escr2(este, obj, arg0)
+      ret
+    fimse
+    l.depois
+  efim
 ### Processa comando
   se obj = nulo
-    msg("O quê?\n")
+    msg("O quê?")
   senão posicao < obj.posic
     se posicao = 0 # Morto
-      msg("\c9Você está morto!!!\b\n")
+      msg("\c9Você está morto!!!\b")
     senão posicao = 1 | posicao = 2 # Incapacitado
-      msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b\n")
+      msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
     senão posicao = 3 # Fraco
-      msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b\n")
+      msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
     senão posicao = 4 # Dormindo
-      msg("\c9Nos seus sonhos...\b\n")
+      msg("\c9Nos seus sonhos...\b")
     senão posicao = 5 # Descansando
-      msg("\c9Você se sente relaxado demais para fazer isso.\b\n")
+      msg("\c9Você se sente relaxado demais para fazer isso.\b")
     senão posicao = 6 # Sentado
-      msg("\c9Talvez você deva ficar em pé primeiro.\b\n")
+      msg("\c9Talvez você deva ficar em pé primeiro.\b")
     senão posicao = 7 # Lutando
-      msg("\c9Sem chance! Você está lutando pela sua vida.\b\n")
+      msg("\c9Sem chance! Você está lutando pela sua vida.\b")
     senão
-      msg("\c9Você tenta, mas não consegue.\b\n")
+      msg("\c9Você tenta, mas não consegue.\b")
     fimse
   senão
-    obj.exec(este, arg0)
+    obj.exec(este, txt2(arg0))
 
 [comum_sala]
 listaobj dentro # Itens e personagens dentro da sala
+#
+# int1 semsom # Verdadeiro se não produz som
 #
 # *** Saídas
 # ref norte
@@ -174,15 +218,18 @@ func ini # Objeto foi criado
   conec = arg0
   conec.proto = 2
   conec.aflooder = 1
-  conec.msg("+OK Para Telnet pressione ENTER\n")
-  fechar = 100 # 10 segundos depois desconecta
+  se _config.papovox
+    conec.msg("+OK Para Telnet pressione ENTER\n")
+    fechar = 100 # 10 segundos depois desconecta
+  senão
+    espera = 1
 
 func fechar_exec
   conec.msg("-Tempo esgotado\n")
   apagar(este)
 
 func espera_exec
-  conec.msg("Digite o nome do seu personagem\n")
+  conec.msg("Digite o nome do seu personagem ou fim para desistir\n")
   sair=600 # Para esperar 60 segundos
 
 func sair_exec
@@ -194,7 +241,6 @@ func conec_fechou
 
 func conec_msg # Recebeu mensagem do usuário
 # arg0=mensagem
-  txt30 nome
   indiceitem ind
   se espera # Se deve aguardar, ignora o que recebeu
     ret
@@ -205,18 +251,18 @@ func conec_msg # Recebeu mensagem do usuário
       conec.msg("+OK Entrando via Papovox\n")
       conec.proto = 4
     senão # Nome vazio: é Telnet
-      conec.msg("-OK Entrando via telnet; para sair tecle quit\n")
+      conec.msg("-OK Entrando via Telnet\n")
       conec.cores = 2
     fimse
-  senão arg0 = "quit" # Sai do MUD
+  senão arg0 = "fim" # Sai do MUD
     apagar(este)
   senão arg0 = "" # Se não digitou um apelido
     espera = 1
-  senão ind.obj("usr_" + nome) # Se apelido está sendo usado
+  senão ind.obj("usr_" + arg0) # Se apelido está sendo usado
     conec.msg("Apelido já está sendo usado; digite outro\n")
   senão # Cria objeto do jogador
     apagar(este)
-    criar("jog", conec, nome)
+    criar("jog", conec, arg0)
   fimse
 
 [jog]
@@ -225,6 +271,8 @@ herda comum_perso
 socket conec
 indiceobj i_apelido
 const alias = txt(i_apelido, 4)
+const nome = txt(i_apelido, 4)
+txt1 sexo
 
 func ini # Objeto criado
 # arg0=conec
@@ -232,14 +280,152 @@ func ini # Objeto criado
   conec = arg0
   i_apelido = "usr_" + arg1
   comum_perso:ini
-  mudasala(_config:salaini)
-  msg("NOTA: Para encerrar o MUD tecle ENCERRAR\n")
-  descrsala
+  se conec.proto = 2
+    mudasala($jog_cores)
+  senão
+    mudasala($jog_sexo)
+  fimse
+  msg(sala.descr)
+
+func fim
+  se sexo != ""
+    $mens.p(este)
+    $mens.todos("$p saiu")
 
 func conec_fechou # Conexão encerrada
   apagar(este)
 
-const msg = conec.msg(arg0) # Envia mensagem para o usuário
+const msg = conec.msg(arg0 + "\n") # Envia mensagem para o usuário
 
 func conec_msg # Recebeu mensagem do usuário
   escr(arg0)
+
+[jog_cores]
+herda comum_sala
+const descr = "Ativar as cores no Telnet? Tecle S ou N"
+func tr_escr
+  se arg2 = "S"
+    arg0.conec.cores = 2
+  senão arg2 != "N"
+    arg0.msg(descr)
+    ret 1
+  fimse
+  arg0.mudasala($jog_sexo)
+  arg0.msg($jog_sexo.descr)
+  ret 1
+
+[jog_sexo]
+herda comum_sala
+const descr = "Você é homem ou mulher? Tecle O ou A"
+func tr_escr
+  se arg2 = "O"
+    arg0.sexo = "o"
+  senão arg2 = "A"
+    arg0.sexo = "a"
+  senão
+    arg0.msg(descr)
+    ret 1
+  fimse
+  arg0.msg("NOTA: Para encerrar o MUD tecle ENCERRAR")
+  arg0.msg("NOTA: Consulte a ajuda online, se você não conhece os comandos, teclando ajuda")
+  arg0.mudasala(_config:salaini)
+  arg0.descrsala
+  $mens.p(arg0)
+  $mens.todos("$p chegou")
+  ret 1
+
+[mens]
+# Para enviar mensagens
+# Chamar:
+# $mens.p(personagem, alvo, objeto) -> Define os personagens
+# $mens.todos -> Mensagem para todos na sala exceto perso e alvo
+# $mens.todos2 -> Para todos na sala exceto perso, alvo e quem não vê perso
+# $mens.perso -> Mensagem para perso
+# $mens.alvo -> Mensagem para alvo
+# $mens.alvo2 -> Mensagem para alvo se alvo pode ver perso
+# O primeiro argumento é a mensagem. São feitas as substituições:
+# $p=perso, $a=alvo, $o=obj, $x=símbolo $
+#
+ref _p # Personagem que está enviando a mensagem
+ref _a # Personagem ou objeto alvo da ação
+ref _o # Objeto secundário
+ref r # Usado nas funções m_*
+
+func iniclasse
+  criar(arg0)
+
+func p # Define os personagens
+  _p = arg0
+  _a = arg1
+  _o = arg2
+
+func todos
+  listaitem l
+  se _p
+    l = _p.sala.dentro.ini
+    enquanto l
+      r = l.obj
+      se r.perso & r != _p & r != _a
+        r.msg(vartroca(arg0, "$", "param_"))
+      fimse
+      l.depois
+    efim
+
+func todos2
+  listaitem l
+  se _p
+    l = _p.sala.dentro.ini
+    enquanto l
+      r = l.obj
+      se r.perso & r != _p & r != _a & r.invisver >= _p.invis
+        r.msg(vartroca(arg0, "$", "param_"))
+      fimse
+      l.depois
+    efim
+
+func perso
+  se _p
+    r = _p
+    r.msg(vartroca(arg0, "$", "param_"))
+
+func alvo
+  se _p & _a
+    r = _a
+    r.msg(vartroca(arg0, "$", "param_"))
+
+func alvo2
+  se _p & _a & _a.invisver >= _p.invis
+    r = _a
+    r.msg(vartroca(arg0, "$", "param_"))
+
+func param_p # $p = personagem origem
+  se r = _p
+    ret "você"
+  senão r.invisver >= _p.invis
+    ret _p.nome
+  senão _p.perso
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+
+func param_a # $a = personagem alvo
+  se r = _a
+    ret "você"
+  senão r.invisver >= _a.invis
+    ret _a.nome
+  senão _a.perso
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+
+func param_o # $o = objeto
+  se r = _o
+    ret "você"
+  senão r.invisver >= _o.invis
+    ret _o.nome
+  senão _o.perso
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+
+const param_x = "$"
