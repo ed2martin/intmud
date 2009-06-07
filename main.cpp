@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 void Inicializa(const char * arg)
 {
 // Variáveis
-    char mens[500];
+    char mens[2048];
     bool erro = false;
     FILE * log = stdout; // Para onde enviar as mensagens
     TArqLer arq;
@@ -624,7 +624,7 @@ void Inicializa(const char * arg)
         }
     // Codifica instrução
         //fprintf(log, "= %s\n", mens);
-        if (pcomando + 500 >= sizeof(comando))
+        if (pcomando + sizeof(mens) >= sizeof(comando))
         {
             fprintf(log, "%s:%d: Espaço insuficiente; classe muito grande\n",
                         arqinicio, linhanum);
@@ -740,7 +740,7 @@ void Inicializa(const char * arg)
         }
         for (const char * p = obj->Comandos; Num16(p); p+=Num16(p))
         {
-            char mens[500];
+            char mens[2048];
             if (Instr::Decod(mens, p, sizeof(mens)))
                 printf("%s\n", mens);
             else
