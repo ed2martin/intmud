@@ -837,7 +837,10 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
                             (char*)&coderro, &len);
                 }
                 else
+                {
+                    obj = obj->sDepois;
                     continue;
+                }
             }
 #else
         // Checa se conexão pendente
