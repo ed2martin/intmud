@@ -154,25 +154,9 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
         while (Instr::VarAtual == v+1)
         {
             char nome[300]; // Nome do arquivo
-            char * p = nome;
-            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
-            if (nome[0]==0)
-                break;
+            char * p = copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
     // Verifica se nome permitido
-#ifdef __WIN32__
-            if (nome[0]=='\\' || nome[1]==':')
-                break;
-            for (; *p; p++)
-                if ((p==nome || p[-1]=='\\') && memcmp(p, "..\\", 3)==0)
-                    break;
-#else
-            if (nome[0]=='/')
-                break;
-            for (; *p; p++)
-                if ((p==nome || p[-1]=='/') && memcmp(p, "../", 3)==0)
-                    break;
-#endif
-            if (*p)
+            if (!arqvalido(nome))
                 break;
     // Acrescenta ".log" se necessário
             if (p <= nome+4)

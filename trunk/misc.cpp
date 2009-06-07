@@ -269,6 +269,29 @@ bool senhavazia(bool limpar, unsigned long codif[5])
 }
 
 //------------------------------------------------------------------------------
+// Verifica se nome de arquivo permitido (está no diretório do programa)
+bool arqvalido(const char * nome)
+{
+    if (nome[0]==0)
+        return false;
+    const char * p = nome;
+#ifdef __WIN32__
+    if (nome[0]=='\\' || nome[1]==':')
+        return false;
+    for (; *p; p++)
+        if ((p==nome || p[-1]=='\\') && memcmp(p, "..\\", 3)==0)
+            return false;
+#else
+    if (nome[0]=='/')
+        return false;
+    for (; *p; p++)
+        if ((p==nome || p[-1]=='/') && memcmp(p, "../", 3)==0)
+            return false;
+#endif
+    return true;
+}
+
+//------------------------------------------------------------------------------
 // Verifica se nome válido para apelido
 // Entrada: nome em ASCIIZ (termina com 0 ou ' ')
 bool verifNome(const char * nome1)
