@@ -13,7 +13,61 @@ func iniclasse # Cria um objeto do comando
 func exec # Executa o comando
 # arg0=personagem
 # arg1=o que escreveu
-  arg0.msg("Você digitou " + arg1 + "\n")
+  arg0.msg("Você digitou " + arg1)
+
+[com encerrar]
+herda com__comum
+func ini
+  comando = "com_encerrar"
+func exec
+  msg("Encerrando o MUD")
+  terminar
+
+[com falar]
+herda com__comum
+const posic = 5
+func ini
+  comando = "com_falar"
+func exec
+  listaitem l
+  txt300 texto # O que o usuário digitou
+  txt20 ini
+  se sala.semsom
+    arg0.msg("Você tenta falar alguma coisa mas não sai nenhum som")
+    ret
+  fimse
+  texto = txttroca(arg1, "'", "")
+  ini = txt(texto, total(texto)-1)
+  se ini = ""
+    arg0.msg("Falar o quê?")
+    ret
+  senão ini = "?"
+    ini = " pergunta '"
+  senão ini = "!"
+    ini = " exclama '"
+  senão
+    ini = " fala '"
+  fimse
+  l = arg0.sala.dentro.ini
+  enquanto l
+    se l.obj = arg0
+      l.obj.msg("Você" + ini + texto + "'")
+    senão l.obj.invisver >= arg0.invis
+      l.obj.msg(arg0.nome + ini + texto + "'")
+    senão
+      l.obj.msg("Alguém" + ini + texto + "'")
+    fimse
+    l.depois
+  efim
+
+[com fim]
+herda com__comum
+indiceobj comando2
+func ini
+  comando = "com_fim"
+  comando2 = "com_quit"
+func exec
+  apagar(arg0)
 
 [com move]
 # Movimenta-se em uma direção
@@ -31,27 +85,25 @@ func exec # Executa o comando
   ref destino
   destino = arg0.sala.[dir]
   se destino = nulo
-    arg0.msg("Impossível seguir nessa direção\n")
+    arg0.msg("Impossível seguir nessa direção")
   senão arg0.sala.[dir]_agora >= 2
-    arg0.msg("A porta está trancada\n")
+    arg0.msg("A porta está trancada")
   senão destino = arg0.sala
-    arg0.msg("Você tenta, mas acaba voltando no mesmo lugar\n")
+    arg0.msg("Você tenta, mas acaba voltando no mesmo lugar")
   senão
-#$mens.perso = arg0
-#$mens.alvo = nulo
-#$mens.obj = nulo
-#$mens.m_todos(m_sair)
-    arg0.msg(m_perso + "\n")
+    $mens.p(arg0)
+    $mens.todos(m_sair)
+    arg0.msg(m_perso)
     arg0.mudasala(destino)
     arg0.descrsala
-#$mens.m_todos(m_chegar)
+    $mens.todos(m_chegar)
 
 [com move_norte]
 herda com_move
 const dir = "norte"
 const m_perso = "norte"
-const m_sair = "$p foi para o norte\n"
-const m_chegar = "$p chegou do sul\n"
+const m_sair = "$p foi para o norte"
+const m_chegar = "$p chegou do sul"
 func ini
   comando1 = "com_n"
   comando2 = "com_norte"
@@ -60,8 +112,8 @@ func ini
 herda com_move
 const dir = "sul"
 const m_perso = "sul"
-const m_sair = "$p foi para o sul\n"
-const m_chegar = "$p chegou do norte\n"
+const m_sair = "$p foi para o sul"
+const m_chegar = "$p chegou do norte"
 func ini
   comando1 = "com_s"
   comando2 = "com_sul"
@@ -71,8 +123,8 @@ herda com_move
 indiceobj comando3
 const dir = "leste"
 const m_perso = "leste"
-const m_sair = "$p foi para o leste\n"
-const m_chegar = "$p chegou do oeste\n"
+const m_sair = "$p foi para o leste"
+const m_chegar = "$p chegou do oeste"
 func ini
   comando1 = "com_l"
   comando2 = "com_leste"
@@ -83,8 +135,8 @@ herda com_move
 indiceobj comando3
 const dir = "oeste"
 const m_perso = "oeste"
-const m_sair = "$p foi para o oeste\n"
-const m_chegar = "$p chegou do leste\n"
+const m_sair = "$p foi para o oeste"
+const m_chegar = "$p chegou do leste"
 func ini
   comando1 = "com_o"
   comando2 = "com_oeste"
@@ -94,8 +146,8 @@ func ini
 herda com_move
 const dir = "cima"
 const m_perso = "cima"
-const m_sair = "$p subiu\n"
-const m_chegar = "$p chegou de baixo\n"
+const m_sair = "$p subiu"
+const m_chegar = "$p chegou de baixo"
 func ini
   comando1 = "com_c"
   comando2 = "com_cima"
@@ -104,23 +156,8 @@ func ini
 herda com_move
 const dir = "baixo"
 const m_perso = "baixo"
-const m_sair = "$p desceu\n"
-const m_chegar = "$p chegou de cima\n"
+const m_sair = "$p desceu"
+const m_chegar = "$p chegou de cima"
 func ini
   comando1 = "com_b"
   comando2 = "com_baixo"
-
-[com quit]
-herda com__comum
-func ini
-  comando = "com_quit"
-func exec
-  apagar(arg0)
-
-[com encerrar]
-herda com__comum
-func ini
-  comando = "com_encerrar"
-func exec
-  msg("Encerrando o MUD\n")
-  terminar

@@ -1,0 +1,14 @@
+[item _comum]
+# objetos do jogo
+#
+const sala = sala_item.objx # Sala do personagem
+listaitem sala_item # Referência à sala do personagem
+int1 invis # Se está invisível
+
+func mudasala # Muda de sala
+# arg0=nova sala
+  sala_item.remove
+  arg0.dentro.add2(este)
+  sala_item = arg0.dentro.fim
+
+[item lapis]
