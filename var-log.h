@@ -3,7 +3,7 @@
 
 //----------------------------------------------------------------------------
 class TVariavel;
-class TVarLog /// Variável log
+class TVarLog /// Variável arqlog
 {
 public:
     void Criar();           ///< Chamado ao criar objeto

@@ -77,10 +77,14 @@ void gerasenha(const char * senha, unsigned long codif[5]);
         @retval false Senha não vazia */
 bool senhavazia(bool limpar, unsigned long codif[5]);
 
+    /// Verifica se nome de arquivo permitido (está no diretório do programa)
+    /** @param nome Nome do arquivo
+        @return true se nome válido ou false se inválido */
+bool arqvalido(const char * nome);
+
     /// Verifica se nome válido para apelido
     /** @param nome1 nome em ASCIIZ (termina com 0 ou ' ')
-        @retval true Nome válido
-        @retval false Nome inválido */
+        @return true se nome válido ou false se inválido */
 bool verifNome(const char * nome1);
 
     /// Calcula o número do dia a partir de uma data */

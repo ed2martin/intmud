@@ -730,6 +730,52 @@ arqlog <nomedavariável>
     fechar
         Fecha o arquivo.
 
+arqtxt <nomedavariável>
+    Para ler ou gravar arquivos de texto.
+    Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
+    Nota: A escrita em arquivo não é tão eficiente quanto arqlog.
+
+    Funções:
+    abrir( <nome do arquivo>, <modo> )
+        Abre arquivo. Retorna 1 se conseguiu ou 0 se não conseguiu.
+        Modo pode ser:
+        0 = somente leitura
+        1 = leitura e escrita
+        2 = somente escrita; o tamanho do arquivo é truncado para 0 bytes
+        3 = para escrever no final do arquivo
+        Os modos 0 e 1 não criam um novo arquivo, caso ele não exista.
+        Nota 1: O nome do arquivo sempre terminará com ".txt".
+        Nota 2: O arquivo deve pertencer ao diretório atual ou a um
+        subdiretório dele. Não é possível acessar arquivos de outros lugares.
+    fechar
+        Fecha o arquivo.
+    truncar( <arquivo> , <tamanho> )
+        Trunca o tamanho de um arquivo no tamanho especificado.
+        Retorna 1 se conseguiu ou 0 se não conseguiu.
+        Exemplo: truncar("a.txt", 0) limpa o conteúdo do arquivo a.txt
+    msg( <texto> )
+        Escreve texto no arquivo.
+        Se for especificado mais de um texto, serão concatenados no arquivo.
+        Exemplo, escr("ab", "\n") é o mesmo que escr("ab\n")
+    fflush
+        Grava em arquivo as alterações pendentes.
+    ler
+        Lê uma linha do arquivo; retorna a linha lida sem o \n no final.
+        Pode ler menos se chegou no fim do arquivo.
+    ler( <tamanho> )
+        Lê um determinado número de caracteres do arquivo.
+        Pode ler menos se chegou no fim do arquivo.
+        Exemplo: ler(1) lê um caracter.
+    pos
+        Retorna a posição atual no arquivo (0=está no início do arquivo).
+    pos( <posição> , <modo> )
+        Muda a posição atual no arquivo. Modo pode ser:
+        0 = a partir do início do arquivo
+        1 = a partir da posição atual
+        2 = a partir do fim do arquivo
+    eof
+        1 se chegou no fim do arquivo, 0 se não chegou.
+
 inttempo <nomedavariável>
     Uma variável inteira de 0 a 65535, subtraída 1 a cada décimo de segundo.
     A diferença de inttempo para intdec é que quando chega a 0, uma função

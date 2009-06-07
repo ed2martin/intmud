@@ -237,6 +237,7 @@ public:
 // Deve obrigatoriamente estar em ordem alfabética
 static const TListaInstr ListaInstr[] = {
     { "arqlog",    cArqLog },
+    { "arqtxt",    cArqTxt },
     { "const",     cConstExpr }, // Qualquer tipo de const
     { "continuar", cContinuar },
     { "efim",      cEFim },
