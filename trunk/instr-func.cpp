@@ -24,6 +24,26 @@
 #include "misc.h"
 
 //----------------------------------------------------------------------------
+// Usado em bool Instr::FuncTxt2() para copiar caracteres de cores
+#define FUNCTXT_CORES \
+    case ex_barra_b:  \
+        *destino++ = *txt++;  \
+        break;                \
+    case ex_barra_c:          \
+        if ((txt[1]>='0' && txt[1]<='9') ||      \
+                (txt[1]>='A' && txt[1]<='F') ||  \
+                (txt[1]>='a' && txt[1]<='f'))    \
+            *destino++ = *txt++; \
+        *destino++ = *txt++;     \
+        break;        \
+    case ex_barra_d:  \
+        if (txt[1]>='0' && txt[1]<='7') \
+            *destino++ = *txt++; \
+    case ex_barra_n:             \
+        *destino++ = *txt++;     \
+        break;
+
+//----------------------------------------------------------------------------
 /// Argumento da função (arg0 a arg9)
 bool Instr::FuncArg(TVariavel * v, int valor)
 {
@@ -374,6 +394,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         break;
     case 2: // txtcor
         while (*txt && destino<mens+sizeof(mens))
+        {
             switch (*txt)
             {
             case ex_barra_b:
@@ -396,7 +417,87 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             default:
                 *destino++ = *txt++;
             }
+        }
         break;
+    case 3: // txtmai
+        while (*txt && destino<mens+sizeof(mens)-1)
+            switch (*txt)
+            {
+            FUNCTXT_CORES
+            default: *destino++ = tabMAI[*(unsigned char*)txt++];
+            }
+        break;
+    case 4: // txtmai2
+        while (*txt && destino<mens+sizeof(mens)-1)
+        {
+            while (*txt && *(unsigned char*)txt<'0' &&
+                    destino<mens+sizeof(mens)-1)
+                switch (*txt)
+                {
+                FUNCTXT_CORES
+                default: *destino++ = *txt++;
+                }
+            if (*txt && destino<mens+sizeof(mens)-1)
+                switch (*txt)
+                {
+                FUNCTXT_CORES
+                default: *destino++ = tabMAI[*(unsigned char*)txt++];
+                }
+            while (*txt && *txt!='.' && destino<mens+sizeof(mens)-1)
+                *destino++ = *txt++;
+        }
+        break;
+    case 5: // txtmin
+        while (*txt && destino<mens+sizeof(mens)-1)
+            switch (*txt)
+            {
+            FUNCTXT_CORES
+            default: *destino++ = tabMIN[*(unsigned char*)txt++];
+            }
+        break;
+    case 6: // txtmaimin
+        while (*txt && destino<mens+sizeof(mens)-1)
+        {
+            while (*txt && *(unsigned char*)txt<'0' &&
+                    destino<mens+sizeof(mens)-1)
+                switch (*txt)
+                {
+                FUNCTXT_CORES
+                default: *destino++ = *txt++;
+                }
+            if (*txt && destino<mens+sizeof(mens)-1)
+                switch (*txt)
+                {
+                FUNCTXT_CORES
+                default: *destino++ = tabMAI[*(unsigned char*)txt++];
+                }
+            while (*txt && *txt!='.' && destino<mens+sizeof(mens)-1)
+                switch (*txt)
+                {
+                FUNCTXT_CORES
+                default: *destino++ = tabMIN[*(unsigned char*)txt++];
+                }
+        }
+        *destino=0;
+        break;
+    case 7: // txtfiltro
+        destino = txtFiltro(destino, txt, sizeof(destino));
+        break;
+    case 8: // txtshs
+        {
+            unsigned long codif[5];
+            gerasenha(txt, codif);
+            for (int x=0; x<5; x++)
+                for (int y=0; y<5; y++)
+                {
+                    *destino++ = (codif[x] & 31) + 0x21;
+                    codif[x] >>= 6;
+                }
+            *destino++ = (codif[0]&3) + (codif[1]&3)*4 +
+                         (codif[2]&3)*16 + 0x21;
+            *destino++ = (codif[3]&3) + (codif[4]&3)*4 + 0x21;
+            break;
+        }
     default:
         return false;
     }

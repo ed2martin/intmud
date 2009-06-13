@@ -29,30 +29,53 @@ char * arqinicio = 0;
 char * arqext = 0;
 char tabNOMES[256];
 char tabCOMPLETO[256];
+char tabMAI[256];
+char tabMIN[256];
 
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
 void tabASCinic(void)
 {
-    const char * especialASCII[] = { "aeiouç_", "ãáàâÂÃÁÀ", "êéèÊÉÈ",
-                        "îíìÎÍÌ", "ôõóòÔÓÒ", "ûúùÚÚÙ", "çÇ", "_ " };
-    const char outrosASCII[] = "0123456789";
-    int  caract;
-    char ch;
+    const char especialASCII[] =
+        // Cada 3 letras: forma sem acento, minúscula, maiúscula
+            "aãÃoõÕ" // Til
+            "aáÁeéÉiíÍoóÓuúÚ" // Acento agudo
+            "aàÀeèÈiìÌoòÒuùÙ" // Acento grave
+            "aâÂeêÊiîÎoôÔuûÛ" // Acento circunflexo
+            "ççÇ"; // C cedilha
     const char * cpont;
-    memset(tabNOMES,0,256);           // Limpa todos os caracteres
-    for (caract='a'; caract<='z'; caract++)
-        tabNOMES[caract-0x20]=tabNOMES[caract]=caract;  // Letras de A a Z
-    for (caract=0; especialASCII[0][caract]; caract++)  // Caracteres especiais
-        for (cpont=especialASCII[caract+1]; *cpont; cpont++)
-        {
-            ch=especialASCII[0][caract];
-            tabNOMES[*(unsigned char *)cpont]=ch;
-        }
-    for (cpont=outrosASCII; *cpont; cpont++)
-        tabNOMES[*(unsigned char *)cpont]=*cpont;
+    int caract;
+// Acerta tabNOMES
+    memset(tabNOMES,0,256);
+    tabNOMES['_'] = '_';
+    tabNOMES[' '] = '_';
+    for (caract='a'; caract<='z'; caract++) // Letras de A a Z
+        tabNOMES[caract-0x20] = tabNOMES[caract] = caract;
+    for (caract='0' ; caract<='9'; caract++) // Números de 0 a 9
+        tabNOMES[caract] = caract;
+    for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
+    {
+        tabNOMES[(unsigned char)cpont[1]] = cpont[0];
+        tabNOMES[(unsigned char)cpont[2]] = cpont[0];
+    }
+// Acerta tabCOMPLETO
     for (caract=0; caract<256; caract++)
         tabCOMPLETO[caract] = (tabNOMES[caract] ? tabNOMES[caract] : caract);
+// Acerta tabMAI e tabMIN
+    memcpy(tabMAI, tabCOMPLETO, sizeof(tabMAI));
+    tabMAI[' '] = ' ';
+    memcpy(tabMIN, tabMAI, sizeof(tabMIN));
+    for (caract='a'; caract<='z'; caract++) // Letras de A a Z
+    {
+        tabMAI[caract] = caract-0x20;
+        tabMAI[caract-0x20] = caract-0x20;
+        tabMIN[caract-0x20] = caract;
+    }
+    for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
+    {
+        tabMAI[(unsigned char)cpont[1]] = cpont[2];
+        tabMIN[(unsigned char)cpont[2]] = cpont[1];
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -326,6 +349,101 @@ bool verifNome(const char * nome1)
         nome1++;
     }
     return (tamanho>=2 && tamanho<20);
+}
+
+//------------------------------------------------------------------------------
+// Copia mensagem, como com copiastr(), mas filtrando a mensagem
+// tamanho é o tamanho do buffer destino
+char * txtFiltro(char * destino, const char * origem, int tamanho)
+{
+    bool rep=true;
+    char * dest=destino;
+    int  tam1=0,tam2=0,tam3=0;
+    char carac;
+    while (*origem==' ') // Ignora espaços iniciais
+        origem++;
+    while (rep)
+    {
+        char repete[12]={ 0,0,0,0, 0,0,0,0, 0,0,0,0 };
+        char *passo=repete;
+        int  consoante=0;
+        char conso;
+        rep=false;
+        tamanho--;
+        for (; *origem && tamanho>0; origem++)
+        {
+            carac=*origem;
+            // Caracteres inválidos: ignora
+            if ((unsigned char)carac<' ' || (unsigned char)carac==255)
+            {
+                rep=true;
+                continue;
+            }
+            // Impede certas sequências de caracteres
+            passo--;
+            if (passo<repete)
+                passo=repete+5;
+            passo[0]=passo[6]=(carac<'A' || carac>'Z' ? carac : carac|0x20);
+            tam1++; tam2++; tam3++;
+            // 1 caracter,   exemplo: aaaaaaaaaaaa vira aaaaaa
+            if (passo[0]!=passo[1]) tam1=0;
+            // 2 caracteres, exemplo: abababababab vira ababab
+            if (passo[0]!=passo[2] || passo[1]!=passo[3]) tam2=0;
+            // 3 caracteres, exemplo: abcabcabcabc vira abcabcab
+            if (passo[0]!=passo[3] || passo[1]!=passo[4] || passo[2]!=passo[5]) tam3=0;
+            // Seqüência de espaços
+            if (tam1>5 && carac==' ')
+                tam1=tam2=tam3=0;
+            // Ignora caracteres
+            if (tam1>5 || tam2>3 || tam3>3)
+            {
+                rep=true;
+                continue;
+            }
+            // Ignora muitos caracteres seguidos sem vogais
+            // Caracteres ' ' e '0' a '9' não entram na comparaçào
+            conso=tabNOMES[(unsigned char)carac];
+            if (conso=='a' || conso=='e' || conso=='i' || conso=='o' || conso=='u')
+                consoante=0;
+            if (carac!=' ' && (carac<'0' || carac>'9'))
+                if (consoante++ > 20)
+                {
+                    rep=true;
+                    continue;
+                }
+            // Anota caracter
+            tamanho--;
+            *(destino++)=carac;
+        }
+        // Ignora espaços finais
+        for (destino--; destino>=dest; destino--)
+            if (*destino!=' ')
+                break;
+        // Próxima verificação
+        destino[1]=0;
+        origem=destino=dest;
+        tamanho=10000;
+    }
+    tam1=strlen(dest)/3;
+    if (tam1>50) tam1=50;
+    for (; tam1>3; tam1--)
+    {
+        origem=destino=&dest[tam1];
+        tam2=0;
+        for (; *origem; origem++)
+        {
+            if (*origem!=origem[-tam1])
+                tam2=0;
+            if (tam2++ < tam1*2)
+                *(destino++)=*origem;
+        }
+        *destino=0;
+        if ((unsigned int)tam1>strlen(dest)/2)
+            tam1=strlen(dest)/2;
+    }
+    while (*dest)
+        dest++;
+    return dest;
 }
 
 //------------------------------------------------------------------------------
