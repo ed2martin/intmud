@@ -20,6 +20,8 @@ void tabASCinic(void);
 
 extern char tabNOMES[];    ///< Apenas caracteres válidos em nomes de classes
 extern char tabCOMPLETO[]; ///< Todos os caracteres
+extern char tabMAI[]; ///< Todos os caracteres em letras maiúsculas
+extern char tabMIN[]; ///< Todos os caracteres em letras minúsculas
 
     /** Monta string.
         Semelhante a sprintf(), exceto que:
@@ -86,6 +88,12 @@ bool arqvalido(const char * nome);
     /** @param nome1 nome em ASCIIZ (termina com 0 ou ' ')
         @return true se nome válido ou false se inválido */
 bool verifNome(const char * nome1);
+
+    /// Copia mensagem, como com copiastr(), mas filtrando a mensagem
+    /** @param destino Endereço destino
+        @param origem Endereço origem
+        @param tamanho Tamanho do buffer em destino */
+char * txtFiltro(char * destino, const char * origem, int tamanho);
 
     /// Calcula o número do dia a partir de uma data */
 long numdata(const char *);
