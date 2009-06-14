@@ -461,6 +461,24 @@ txtshs(<texto>)
     O resultado do SHS é compactado em um texto de 27 caracteres contendo
     letras maiúsculas e alguns símbolos.
 
+txtnome(<texto>)
+    Codifica apelido para comparação.
+    Retorna o mesmo texto para dois apelidos parecidos.
+    Nota: o texto retornado nunca é maior que o apelido.
+
+intnome(<texto>)
+    Verifica se texto é válido para apelido. Retorna:
+    0 = apelido válido
+    1 = muito pequeno (menos de 2 caracteres)
+    2 = contém caracteres inválidos
+
+intsenha(<texto>)
+    Verifica se texto é válido para senha. Retorna:
+    0 = senha válida
+    1 = muito pequena (menos de 5 caracteres)
+    2 = contém caracteres inválidos
+    3 = contém só letras ou só números
+
 txtremove(<texto>, <valor>)
     Retorna um texto semelhante a <texto>, mas removendo espaços e/ou
     cores, conforme <valor>:
@@ -536,8 +554,8 @@ apagar(<objeto>)
     apagar(este)
 
 $ seguido do nome da classe
-    Exemplos: $jog  ou  $["jog"]
     Retorna o primeiro objeto da classe especificada.
+    Exemplos: $jog  ou  $["jog"]
 
 objantes(<objeto>)
     Retorna o objeto anterior da classe ou NULO se não houver.
@@ -547,7 +565,7 @@ objdepois(<objeto>)
 
 inttotal(<variável>)
     Se for objeto, retorna a quantidade de objetos da classe.
-    Se for texto, retorna o tamanho do texto, em caracteres.
+    Se for texto, retorna o tamanho do texto em caracteres.
     Se for vetor, retorna a quantidade de variáveis do vetor.
     Se for fornecido mais de um argumento, é retornada a soma.
     Exemplo: total(a,b)

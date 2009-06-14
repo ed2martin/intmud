@@ -86,7 +86,7 @@ func servidor_socket
   novo.conec.msg("Tecle um número de 0 a 12 ou qualquer outra coisa\n")
 func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
-  escr_[txt1(arg0)]
+  escr_[txt1(arg0)](txt2(arg0))
 func escr_0
   msg("intpos(1) = " + intpos(1) + "\n")
   msg("intpos(-1) = " + intpos(-1) + "\n")
@@ -99,9 +99,19 @@ func escr_1
 func escr_2
   msg("txt(\"abcdef\", 2, 3) = " + txt("abcdef", 2, 3) + "\n")
 func escr_3
-  msg("txt1 - " + txt1("bom dia boa tarde") + "\n")
-  msg("txt2 - " + txt2("bom dia boa tarde") + "\n")
-  msg("inttotal - " + inttotal("bom dia boa tarde") + "\n")
+  msg("Texto após '3': " + arg0 + "\n")
+  msg("txt1 - " + txt1(arg0) + "\n")
+  msg("txt2 - " + txt2(arg0) + "\n")
+  msg("inttotal - " + inttotal(arg0) + "\n")
+  msg("txtmai - " + txtmai(arg0) + "\n")
+  msg("txtmin - " + txtmin(arg0) + "\n")
+  msg("txtmai2 - " + txtmai2(arg0) + "\n")
+  msg("txtmaimin - " + txtmaimin(arg0) + "\n")
+  msg("txtfiltro - " + txtfiltro(arg0) + "\n")
+  msg("txtshs - " + txtshs(arg0) + "\n")
+  msg("txtnome - " + txtnome(arg0) + "\n")
+  msg("intnome - " + intnome(arg0) + "\n")
+  msg("intsenha - " + intsenha(arg0) + "\n")
 func escr_4
   ref r
   msg("Objetos mm: " + inttotal($mm) + "\n")

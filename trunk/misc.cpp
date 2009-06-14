@@ -65,15 +65,17 @@ void tabASCinic(void)
     memcpy(tabMAI, tabCOMPLETO, sizeof(tabMAI));
     tabMAI[' '] = ' ';
     memcpy(tabMIN, tabMAI, sizeof(tabMIN));
-    for (caract='a'; caract<='z'; caract++) // Letras de A a Z
+    for (caract='A'; caract<='Z'; caract++) // Letras de A a Z
     {
-        tabMAI[caract] = caract-0x20;
-        tabMAI[caract-0x20] = caract-0x20;
-        tabMIN[caract-0x20] = caract;
+        tabMAI[caract+0x20] = caract;
+        tabMAI[caract] = caract;
+        tabMIN[caract] = caract+0x20;
     }
     for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
     {
         tabMAI[(unsigned char)cpont[1]] = cpont[2];
+        tabMAI[(unsigned char)cpont[2]] = cpont[2];
+        tabMIN[(unsigned char)cpont[1]] = cpont[1];
         tabMIN[(unsigned char)cpont[2]] = cpont[1];
     }
 }
@@ -316,39 +318,296 @@ bool arqvalido(const char * nome)
 
 //------------------------------------------------------------------------------
 // Verifica se nome válido para apelido
-// Entrada: nome em ASCIIZ (termina com 0 ou ' ')
-bool verifNome(const char * nome1)
+int verifNome(const char * nome1)
 {
-    char tamanho,ch;
     char anterior=0;
     char verifH=0;      // Para não permitir letra antes de h, exceto
                         // em ch, lh, nh, quando apelido tiver vogal
-    for (tamanho=0; tamanho<=20; tamanho++)
+    for (int tamanho=0;; tamanho++,nome1++)
     {
-        if (*nome1==0 || *nome1==' ')
-            break;
-        ch=tabNOMES[*(unsigned char *)nome1];
-        if (ch==0)
-            return 0;
+        if (*nome1==0)
+            return (tamanho<2 ? 1 : 0);
+        char ch = tabNOMES[*(unsigned char *)nome1];
+        if (ch==0 || ch=='_')
+            return 2;
         if (ch=='h' && anterior>='a' && anterior<='z' &&
                   anterior!='c' && anterior!='l' && anterior!='n' &&
                   anterior!='a' && anterior!='e' && anterior!='i' &&
                   anterior!='o' && anterior!='u' && anterior!='y' &&
                   anterior!='w' && anterior!='p')
             if ( (verifH|=1) ==3 )
-                return 0;
+                return 2;
         if ((ch>='a' && ch<='z') || ch=='ç')
         {
             if (ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u')
                 if ( (verifH|=2) ==3 )
-                    return 0;
+                    return 2;
         }
         else
             verifH=0;
         anterior=ch;
-        nome1++;
     }
-    return (tamanho>=2 && tamanho<20);
+}
+
+//------------------------------------------------------------------------------
+// Verifica se nome válido para senha
+int verifSenha(const char * nome1)
+{
+    int letranum = 0;
+    for (int tamanho=0;; tamanho++,nome1++)
+    {
+        if (*(unsigned char*)nome1 <= ' ')
+            return (*nome1 ? 2 : tamanho<5 ? 1 : letranum!=3 ? 3 : 0);
+        char ch = tabCOMPLETO[*(unsigned char*)nome1];
+        if (ch)
+        {
+            if (ch>='0' && ch<='9')
+                letranum|=1;
+            if (ch>='a' && ch<='z')
+                letranum|=2;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+// Codifica apelido para comparação
+// Dois apelidos iguais ou parecidos produzem o mesmo texto
+char * txtNome(char * destino, const char * origem, int tamanho)
+{
+    if (*origem==0 || tamanho<=1)
+    {
+        if (tamanho>=1)
+            *destino=0;
+        return destino;
+    }
+    const char * fim = destino + tamanho - 1;
+    int copiar = 0;
+    for (; *origem && destino<fim; origem++)
+    {
+        char ch = tabNOMES[*(unsigned char*)origem];
+        if (ch=='ç' || (ch>='a' && ch<='z'))
+        {
+            *destino++ = *origem;
+            copiar++;
+            continue;
+        }
+        if (copiar)
+        {
+            destino = txtNomeLetras(destino - copiar, copiar);
+            copiar=0;
+        }
+        if (ch)
+            *destino++ = ch;
+    }
+    if (copiar)
+        destino = txtNomeLetras(destino - copiar, copiar);
+    *destino=0;
+    return destino;
+}
+
+//------------------------------------------------------------------------------
+// Codifica apelido, constituído só de letras, para comparação
+// O apelido codificado é sempre menor ou igual ao original
+// Retorna o endereço de onde seria o byte =0 no final do nome
+char * txtNomeLetras(char * nome, int tamanho)
+{
+    char ch1,ch2,ch3,chn,chnn;
+    char *ori,*des;
+    char * fim = nome+tamanho;
+
+// Busca 1: copia apelido passando para letras minúsculas
+    ch1=ch2=ch3=0;
+    for (ori=des=nome; ori<fim; ori++)
+    {
+    // Passa para minúsculas, Y=I, W=U
+        char ch=tabNOMES[*(unsigned char *)ori];
+        if (ch==0)
+            break;
+        ch1=ch;
+        if (ch1=='y')
+            ch1='i';
+        else if (ch1=='w')
+            ch1='u';
+        if (ch1=='a' || ch1=='e' || ch1=='i' || ch1=='o' || ch1=='u')
+            ch2=1;
+    // ão tem som de ãm
+        if (ch1=='o' && ch3==1)
+            ch1='m';
+        ch3 = (*ori=='ã' || *ori=='Ã') ? 1 : 0;
+    // Fecha o laço
+        *des++ = ch1;
+    }
+    fim = des;
+
+// Retorna se não tem vogal ou nome muito pequeno
+    if (ch2==0 || nome[1]==' ')
+        return fim;
+
+// PH tem som de PI em palavras que tenham vogais
+    for (ori=nome; ori<fim-1; ori++)
+        if (*ori=='p' && ori[1]=='h')
+            ori[1]='i';
+
+// Converte ks, kx, cs, cx, xs, xx em x
+// Ignora h no final,  h e s entre as letras  e  c, h, k, s ou x antes
+    for (des--; *des=='h'; des--); // Nota: o apelido tem também vogais
+    if (*des=='s' || *des=='x')
+    {
+        while (*des=='h' || *des=='s')
+            des--;
+        if (*des=='x' || *des=='k' || *des=='c')
+        {
+            for (des--; *des=='c' || *des=='h' || *des=='k' ||
+                        *des=='s' || *des=='x'; des--);
+            des[1]='x';
+            fim = des+2;
+        }
+    }
+
+// Busca 2: filtro
+    ch2=ch3=0;
+    ori=des=nome;
+    while (ori<fim)
+    {
+        ch1 = *ori++;
+        chn = (ori<fim ? *ori : ' ');
+    // Ignora H
+        if (ch1=='h')
+            continue;
+    // Letras seguidas de H: ch=C, sh=C, lh=L, nh=N, ph=F
+        if (chn=='h')
+        {
+            if (ch1=='c') // || ch1=='s')
+                ch1='C';
+            else if (ch1=='l')
+                ch1='L';
+            else if (ch1=='n')
+                ch1='N';
+         //   else if (ch1=='p')
+         //       ch1='f';
+            while (true)  // Pula próximos 'h' da string
+            {
+                if (ori>=fim)  { chn=' ';  break; }
+                if (*ori!='h') { chn=*ori; break; }
+                ori++;
+            }
+        }
+    // Obtém: chnn = caracter após chn
+        chnn=(ori+1<fim ? ori[1] : ' ');
+    // X no início ou antes de N tem som de CH
+        if (ch1=='x' && (ch2==0 || ch2=='n'))
+            ch1='C';
+    // S/X antes de CE/CI é ignorado
+        if ((ch1=='s' || ch1=='x') && chn=='c' && (chnn=='e' || chnn=='i'))
+            continue;
+    // X antes de consoante tem som de S
+        if (ch1=='x' && chn && chn!='a' && chn!='e' && chn!='i' && chn!='o' && chn!='u')
+            ch1='s';
+    // L que não vem antes de vogal tem som de U
+        if (ch1=='l' && chn!='a' && chn!='e' && chn!='i' && chn!='o' && chn!='u')
+            ch1='u';
+    // C exceto CE/CI tem som de K
+        if (ch1=='c' && chn!='e' && chn!='i')
+            ch1='k';
+    // Q tem som de K, em QUE/QUI o U é ignorado
+        else if (ch1=='q')
+        {
+            if (chn=='u' && (chnn=='e' || chnn=='i'))
+                ori++;
+            ch1='k';
+        }
+    // G seguido de E/I tem som de J
+        else if (ch1=='g' && (chn=='e' || chn=='i'))
+            ch1='j';
+    // GUE/GUI tem som de GE/GI
+        else if (ch1=='g' && chn=='u' && (chnn=='e' || chnn=='i'))
+            ori++;
+    // M antes de consoante tem som de N
+        if ( ch1=='m' && (chn=='ç' || (chn>='b' && chn<='z' && chn!='e' &&
+                chn!='i' && chn!='o' && chn!='u')) )
+            ch1='n';
+    // M/N, existindo M/N antes: ignora letra
+        if (ch1=='n' && (chn=='m' || chn=='n'))
+            continue;
+    // N antes de P, B ou no fim do apelido tem som de M
+        if (ch1=='n' && (chn=='p' || chn=='b' || (chn<=32 && chn!='ç')))
+            ch1='m';
+    // Ignora letra se a anterior foi a mesma e não é vogal
+        if (ch1==ch2 && ch1>='b' && ch1<='z' && ch1!='e' && ch1!='i'
+                && ch1!='o' && ch1!='u' && ch1!='r' && ch1!='s')
+            continue;
+    // Ignora R/S após não-vogal+R/S
+        if ( (ch1=='r' || ch1=='s') && ch1==ch2 && ch3!='a' && ch3!='e' &&
+                ch3!='i' && ch3!='o' && ch3!='u')
+            continue;
+    // S/R entre vogais tem som de Z/R
+        if ((ch1=='s' || ch1=='r') &&
+                (chn=='a' || chn=='e' || chn=='i' || chn=='o' || chn=='u') &&
+                (ch2=='a' || ch2=='e' || ch2=='i' || ch2=='o' || ch2=='u') )
+            ch1 = (ch1=='s' ? 'z' : 'R');
+    // Ç tem som de S
+    // CE/CI tem som de SE/SI (outros C foram convertidos para K)
+        if (ch1=='c' || ch1=='ç')
+            ch1='s';
+    // Ignora R/S repetido
+        if (ch1==ch2 && (ch1=='s' || ch1=='r'))
+            continue;
+    // Anota caracter
+        ch3 = ch2;
+        *des++ = ch2 = ch1;
+    }
+
+// Obtém: des=último caracter do nome
+    if (des>nome)
+        des--;
+
+// Verifica S/Z no final do apelido
+// Entrada: des=último caracter do nome
+    ch1=0;
+    while (des>nome && (*des=='s' || *des=='z'))
+        *des--='s', ch1=1;
+    des+=ch1;
+
+// Verifica RR/E/O/AM no final do apelido
+// Entrada: des=último caracter do nome
+    if (des>nome)
+    {
+        if (*des=='r' && *(des-1)=='r')
+            des--;
+        else if (*des=='o')
+            *des='u';
+        else if (*des=='e')
+            *des='i';
+        else if (*des=='m' && des[-1]=='a')
+            des--;
+    }
+
+// Acerta fim
+    fim = des+1;
+
+// an, am, on, om seguido de não vogal: apaga o n ou m
+    for (des=nome; des<=fim-2; des++)
+        if ( (*des=='a' || *des=='o') && (des[1]=='n' || des[1]=='m') )
+        {
+            if (des+2<fim)
+                if (des[2]=='a' || des[2]=='e' || des[2]=='i' ||
+                                   des[2]=='o' || des[2]=='u')
+                    continue;
+            fim--;
+            for (ori=des+1; ori<fim; ori++)
+                ori[0]=ori[1];
+        }
+
+// Transforma C,L,N,R em c,w,y,h
+    for (des=nome; des<fim; des++)
+        switch (*des)
+        {
+        case 'C': *des='c'; break;
+        case 'L': *des='w'; break;
+        case 'N': *des='y'; break;
+        case 'R': *des='h'; break;
+        }
+    return fim;
 }
 
 //------------------------------------------------------------------------------
@@ -359,7 +618,6 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
     bool rep=true;
     char * dest=destino;
     int  tam1=0,tam2=0,tam3=0;
-    char carac;
     while (*origem==' ') // Ignora espaços iniciais
         origem++;
     while (rep)
@@ -372,7 +630,7 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
         tamanho--;
         for (; *origem && tamanho>0; origem++)
         {
-            carac=*origem;
+            char carac=*origem;
             // Caracteres inválidos: ignora
             if ((unsigned char)carac<' ' || (unsigned char)carac==255)
             {
@@ -413,7 +671,7 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
                 }
             // Anota caracter
             tamanho--;
-            *(destino++)=carac;
+            *destino++ = carac;
         }
         // Ignora espaços finais
         for (destino--; destino>=dest; destino--)

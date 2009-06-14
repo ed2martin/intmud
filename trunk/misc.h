@@ -85,9 +85,35 @@ bool senhavazia(bool limpar, unsigned long codif[5]);
 bool arqvalido(const char * nome);
 
     /// Verifica se nome válido para apelido
-    /** @param nome1 nome em ASCIIZ (termina com 0 ou ' ')
-        @return true se nome válido ou false se inválido */
-bool verifNome(const char * nome1);
+    /** @param nome1 Texto em ASCIIZ
+        @retval 0 Apelido válido
+        @retval 1 Muito pequeno (menos de 2 caracteres)
+        @retval 2 Contém caracteres inválidos */
+int verifNome(const char * nome1);
+
+    /// Verifica se nome válido para senha
+    /** @param nome1 Texto em ASCIIZ
+        @retval 0 Senha válida
+        @retval 1 Muito pequena (menos de 5 caracteres)
+        @retval 2 Contém caracteres inválidos
+        @retval 3 Contém só letras ou só números */
+int verifSenha(const char * nome1);
+
+    /// Codifica apelido para comparação
+    /** Dois apelidos iguais ou parecidos produzem o mesmo texto
+        @param destino Endereço destino
+        @param origem Endereço origem
+        @param tamanho Tamanho do buffer em destino
+        @return Endereço do byte =0 no fim do apelido */
+char * txtNome(char * destino, const char * origem, int tamanho);
+
+    /// Codifica apelido, constituído só de letras, para comparação
+    /** O apelido codificado é sempre menor ou igual ao original
+        @param nome Endereço do apelido
+        @param tamanho Tamanho do apelido em caracteres
+        @return Endereço de onde seria o byte =0 no final do nome
+        @note Usado por txtNome() */
+char * txtNomeLetras(char * nome, int tamanho);
 
     /// Copia mensagem, como com copiastr(), mas filtrando a mensagem
     /** @param destino Endereço destino

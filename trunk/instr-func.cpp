@@ -367,7 +367,7 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções de texto: txt1, txt2, txtcor
+/// Funções de texto: txt1, txt2, txtcor, etc.
 bool Instr::FuncTxt2(TVariavel * v, int valor)
 {
     const char * txt = "";  // Texto
@@ -478,10 +478,9 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 default: *destino++ = tabMIN[*(unsigned char*)txt++];
                 }
         }
-        *destino=0;
         break;
     case 7: // txtfiltro
-        destino = txtFiltro(destino, txt, sizeof(destino));
+        destino = txtFiltro(destino, txt, sizeof(mens));
         break;
     case 8: // txtshs
         {
@@ -490,7 +489,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             for (int x=0; x<5; x++)
                 for (int y=0; y<5; y++)
                 {
-                    *destino++ = (codif[x] & 31) + 0x21;
+                    *destino++ = (codif[x] & 0x3F) + 0x21;
                     codif[x] >>= 6;
                 }
             *destino++ = (codif[0]&3) + (codif[1]&3)*4 +
@@ -498,6 +497,9 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             *destino++ = (codif[3]&3) + (codif[4]&3)*4 + 0x21;
             break;
         }
+    case 9: // txtnome
+        destino = txtNome(destino, txt, sizeof(mens));
+        break;
     default:
         return false;
     }
@@ -518,6 +520,33 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     VarAtual->endvar = Instr::DadosTopo;
     VarAtual->tamanho = tam+1;
     Instr::DadosTopo += tam+1;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Funções intnome e intsenha
+bool Instr::FuncInt(TVariavel * v, int valor)
+{
+    const char * txt = "";  // Texto
+    if (VarAtual >= v+1)
+        txt = v[1].getTxt();
+// Obtém o valor
+    switch (valor)
+    {
+    case 0: // intnome
+        valor = verifNome(txt);
+        break;
+    case 1: // intsenha
+        valor = verifSenha(txt);
+        break;
+    default:
+        valor=0;
+    }
+// Retorna o valor
+    ApagarVar(v);
+    if (!CriarVar(InstrVarInt))
+        return false;
+    VarAtual->setInt(valor);
     return true;
 }
 
