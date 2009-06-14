@@ -25,7 +25,10 @@ func mudasala # Muda de sala ou de dono
 [comum_perso]
 # Personagens
 const perso = 1 # Indica que é personagem
-const alias = "" # Nomes que o usuário digita para acessar o personagem
+const nome = txt(este) # Nome do personagem
+const dpos = descr_[posicao] # Descrição quando na posição padrão
+const dver = dpos # Descrição para o comando ver
+const alias = nome # Nomes que o usuário digita para acessar o personagem
 uint8 posicao  # Posição atual
 const pospadrao = 8 # Posição padrão
 # Posições válidas:
@@ -55,23 +58,52 @@ func mudasala # Muda de sala
   sala_item = arg0.dentro.fim
 
 func descrsala # Mostra descrição de um lugar
+# arg0 = sala
   txt100 saidas
-  msg("\cb" + sala.nome + "\b")
-  msg(sala.descr)
-  saidas = ds1("norte", "n") + ds1("sul", "s") + ds1("leste", "l")
-  saidas += ds1("oeste", "o") + ds1("cima", "c") + ds1("baixo", "b")
+  listaitem l
+  msg("\cb" + arg0.nome + "\b") # Título
+  msg(arg0.descr) # Descrição
+  saidas = ds1("norte", "n", arg0) + ds1("sul", "s", arg0) + ds1("leste", "l", arg0)
+  saidas += ds1("oeste", "o", arg0) + ds1("cima", "c", arg0) + ds1("baixo", "b", arg0)
   se saidas
     msg("\c6Saídas\b:" + saidas)
   senão
     msg("\c9Nenhuma saída\b")
+  fimse
+  l = arg0.dentro.ini
+  enquanto l
+    se l.obj != este & l.obj.invisver >= invis
+      msg("\c2" + l.obj.dnome + "\b")
+    fimse
+    l.depois
+  efim
 
 func ds1 # Usado em descrsala
-  se sala.[arg0] = nulo | sala.[arg0]_ini = 1
+# arg0 = nome da direção
+# arg1 = letra da direção
+# arg2 = sala
+  se arg2.[arg0] = nulo | arg2.[arg0]_ini = 1
     ret ""
-  senão sala.[arg0]_agora < 2
+  senão arg2.[arg0]_agora < 2
     ret " \c6" + arg1 + "\b"
   senao
     ret " \c9!" + arg1 + "\b"
+
+func dnome # Descrição do personagem na sala
+  se posicao = pospadrao
+    ret dpos
+  senão
+    ret descr_[posicao]
+
+const descr_0 = nome + " jás aqui"
+const descr_1 = nome + " está aqui mortalmente ferido"
+const descr_2 = nome + " está aqui incapacitado"
+const descr_3 = nome + " está aqui, muito fraco"
+const descr_4 = nome + " dorme aqui"
+const descr_5 = nome + " descansa aqui"
+const descr_6 = nome + " está sentado"
+const descr_7 = nome + " está lutando"
+const descr_8 = nome + " está em pé"
 
 func escr # Escreveu alguma coisa
 # arg0=o que escreveu
@@ -242,6 +274,7 @@ func conec_fechou
 func conec_msg # Recebeu mensagem do usuário
 # arg0=mensagem
   indiceitem ind
+  txt12 nome
   se espera # Se deve aguardar, ignora o que recebeu
     ret
   senão fechar # Se está no primeiro passo
@@ -258,27 +291,31 @@ func conec_msg # Recebeu mensagem do usuário
     apagar(este)
   senão arg0 = "" # Se não digitou um apelido
     espera = 1
-  senão ind.obj("usr_" + arg0) # Se apelido está sendo usado
-    conec.msg("Apelido já está sendo usado; digite outro\n")
-  senão # Cria objeto do jogador
-    apagar(este)
-    criar("jog", conec, txtmaimin(arg0))
-  fimse
+  senão inttotal(arg0) > 12 | intnome(arg0)
+    conec.msg("Apelido inválido; digite outro\n")
+  senão
+    nome = txtnome(arg0)
+    se ind.obj("usr_" + nome) # Se apelido está sendo usado
+      conec.msg("Apelido já está sendo usado; digite outro\n")
+    senão # Cria objeto do jogador
+      apagar(este)
+      criar("jog", conec, arg0)
 
 [jog]
 herda comum_perso
 # Personagem do jogador
 socket conec
-indiceobj i_apelido
-const alias = txt(i_apelido, 4)
-const nome = txt(i_apelido, 4)
+indiceobj usr_nome # Para não permitir dois jogadores com o mesmo apelido
+txt12 nome # Apelido que o jogador está usando
+const alias = nome
 txt1 sexo
 
 func ini # Objeto criado
 # arg0=conec
 # arg1=apelido
   conec = arg0
-  i_apelido = "usr_" + arg1
+  usr_nome = "usr_" + txtnome(arg1)
+  nome = txtmaimin(arg1)
   comum_perso:ini
   se conec.proto = 2
     mudasala($jog_cores)
@@ -329,7 +366,7 @@ func tr_escr
   arg0.msg("NOTA: Para encerrar o MUD tecle ENCERRAR")
   arg0.msg("NOTA: Consulte a ajuda online, se você não conhece os comandos, teclando ajuda")
   arg0.mudasala(_config:salaini)
-  arg0.descrsala
+  arg0.descrsala(arg0.sala)
   $mens.p(arg0)
   $mens.todos("$p chegou")
   ret 1

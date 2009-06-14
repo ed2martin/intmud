@@ -37,7 +37,7 @@ func exec
     ret
   fimse
   texto = txttroca(arg1, "'", "")
-  ini = txt(texto, total(texto)-1)
+  ini = txt(texto, inttotal(texto)-1)
   se ini = ""
     arg0.msg("Falar o quê?")
     ret
@@ -95,7 +95,7 @@ func exec # Executa o comando
     $mens.todos(m_sair)
     arg0.msg(m_perso)
     arg0.mudasala(destino)
-    arg0.descrsala
+    arg0.descrsala(arg0.sala)
     $mens.todos(m_chegar)
 
 [com move_norte]
@@ -161,3 +161,34 @@ const m_chegar = "$p chegou de cima"
 func ini
   comando1 = "com_b"
   comando2 = "com_baixo"
+
+[com ver]
+herda com__comum
+const posic = 5
+func ini
+  comando = "com_ver"
+func exec
+  nomeobj nomes
+  listaitem l
+  se arg1 = ""
+    arg0.descrsala(arg0.sala)
+    ret
+  fimse
+  nomes.ini(arg1, 10)
+  l = arg0.sala.dentro.ini
+  enquanto l
+    se l.obj.invisver >= arg0.invis & nomes.nome(l.obj.alias)
+      se l.obj = arg0
+        arg0.msg("Você tenta olhar para si mesmo.")
+      senão
+        $mens.p(arg0, l.obj)
+        $mens.todos2("$p olha para $a")
+        $mens.perso("$p olha para $a")
+        $mens.alvo2("$p olha para $a")
+        arg0.msg(l.obj.dver)
+      fimse
+      ret
+    fimse
+    l.depois
+  efim
+  arg0.msg("Não há nenhum " + arg1 + " aqui.")
