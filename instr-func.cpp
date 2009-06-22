@@ -23,6 +23,9 @@
 #include "random.h"
 #include "misc.h"
 
+// Funções predefinidas do programa interpretado
+// Vide TListaFunc, em instr.h
+
 //----------------------------------------------------------------------------
 // Usado em bool Instr::FuncTxt2() para copiar caracteres de cores
 #define FUNCTXT_CORES \

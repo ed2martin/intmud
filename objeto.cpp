@@ -86,6 +86,26 @@ void TObjeto::Apagar()
 }
 
 //----------------------------------------------------------------------------
+void TObjeto::Apagar(TObjeto * obj)
+{
+    Classe->NumObj--;
+// Acerta variáveis TVarRef que apontam para o objeto
+    for (TVarRef * pont = VarRefIni; pont; pont=pont->Depois)
+        pont->Pont = obj;
+    obj->VarRefIni = VarRefIni;
+// Acerta variáveis TListaX que apontam para o objeto
+    for (TListaX * pont = VarListaX; pont; pont=pont->ObjDepois)
+        pont->Objeto = obj;
+    obj->VarListaX = VarListaX;
+// Tira da lista ligada
+    (Antes ? Antes->Depois : Classe->ObjetoIni) = Depois;
+    (Depois ? Depois->Antes : Classe->ObjetoFim) = Antes;
+// Libera memória
+    char * x = (char*)this;
+    delete[] x;
+}
+
+//----------------------------------------------------------------------------
 void TObjeto::MarcarApagar()
 {
     if (PontApagar || FimApagar == this)

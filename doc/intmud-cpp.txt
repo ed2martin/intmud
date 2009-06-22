@@ -1,0 +1,135 @@
+Código fonte do IntMUD
+
+
+*** Inicialização do programa:
+
+A função main() ou WinMain() em main.cpp é executada.
+Chama Inicializa(), que realiza as seguintes tarefas:
+1. Inicializa variáveis.
+2. Obtém nome do programa: arqnome, arqinicio e arqext
+3. Abre/cria o arquivo de log
+4. Lê e interpreta o arquivo de configuração (.cfg)
+5. Lê os arquivos .map e cria as classes correspondentes com:
+   new TClasse(nome da classe)
+6. Obtém instruções das classes e anota em TClasse::Comandos.
+   Checa também se a classe está herdando a si própria.
+   As instruções são codificadas com Instr::Codif().
+7. Checa se todas as instruções foram anotadas (possuem Comandos!=0).
+8. Chama TClasse::AcertaDeriv() e TClasse::AcertaVar()
+9. Na versão para Windows, inicializa a WinSock.
+10. Executa as funções iniclasse das classes.
+Após isso, o programa vai para segundo plano (se não for Windows) e entra
+no laço de processamento de eventos. Ele basicamente trata dos eventos
+de alguns tipos de variáveis (inttempo, socket, serv, etc.).
+
+
+*** Processamento de eventos:
+
+A função main() consulta as variáveis do programa interpretado se ocorreu
+algum evento. Existem basicamente dois tipos de eventos: os que dependem
+de tempo (ex. inttempo) e de comunicação (ex. serv e socket).
+As variáveis podem executar uma instrução do programa interpretado.
+Os procedimentos são:
+1. Instr::ExecIni(<classe> ou <objeto>, <nome da função>)
+2. Instr::ExecArg() para cada argumento, se houver algum
+3. Instr::ExecX() para executar
+4. Pode-se verificar o retorno da função aqui
+5. Instr::ExecFim(); a variável pode ser apagada aqui
+
+
+*** Execução de instruções:
+
+Existem três pilhas de dados definidas em Instr:
+1. DadosPilha/DadosFim/DadosTopo, para criar variáveis temporárias na memória.
+   Ao invés de criar variáveis com new, são criadas em DadosPilha.
+   Podem ser variáveis locais de uma função ou quando se concatena um texto,
+   por exemplo (o texto fica temporariamente aqui).
+2. VarPilha/VarFim/VarAtual, contém informações sobre as definições das
+   variáveis sendo usadas e aonde estão na memória.
+3. FuncPilha/FuncFim/FuncAtual, contém as informações das funções, como no
+   caso de uma função chamar outra, que chama uma terceira.
+
+Funções:
+Instr::ExecIni() Acerta as pilhas de dados.
+Instr::ExecArg() Acrescenta uma variável em DadosPilha, como argumento
+da função.
+Instr::ExecX() Executa a função. O algoritmo está descrito em instr-exec.cpp.
+Instr::ExecFim() Executa procedimentos de finalização, como apagar variáveis
+pendentes na pilha de dados e apagar os objetos marcados para exclusão
+(vide instrução "apagar" do programa interpretado).
+
+
+*** Acesso a variáveis
+
+É sempre realizado através da classe TVariavel, em variavel.cpp.
+
+O primeiro passo é preencher as variáveis da classe:
+defvar -> endereço da definição da variável, codificado com Instr::Codif()
+endvar -> endereço da variável na memória
+indice -> índice no caso de vetores; colocar 0 se não for vetor
+bit -> máscara de bit (1,2,4,8,16,32,64 ou 128); pode ser ignorado se
+  a variável não for do tipo "int1"
+tamanho -> é usado por Instr::ExecX() para saber se a variável pertence a uma
+  classe ou objeto, ou é local (criada em DadosPilha)
+
+As funções disponíveis são:
+Tamanho() -> obter o tamanho da variável na memória
+Tipo() -> obter o tipo mais apropriado para tratar a variável
+  (bool, int, double, char*, TObjeto* ou especial)
+Criar(), Apagar() e Mover() -> devem ser chamados para criar, apagar ou mover
+  a variável para outra região de memória. No caso de vetores, o vetor inteiro
+  é criado/apagado/movido.
+getBool(), getInt(), getDouble(), getTxt(), getObj()
+  Retornam a variável como um tipo específico de dado.
+setInt(), setDouble(), setTxt(), addTxt(), setObj()
+  Modificam a variável de acordo com um tipo específico de dado.
+
+Funções geralmente usadas apenas em Instr::ExecX():
+Compara() -> Compara com outra variável do mesmo tipo.
+Igual() -> Atribui o valor de outra variável do mesmo tipo.
+Func() -> Executa função da variável, exemplo: x.abrir("teste.log")
+  Executa a função "abrir" da variável x.
+
+A criação de um novo tipo de variável no programa interpretado consiste em:
+1. Criar uma classe que será o tipo de variável
+2. Acrescentar no final de "enum Comando", em instr.h
+3. Acrescentar em instr-codif.cpp, instr-decod.cpp e instr-mostra.cpp
+4. Acrescentar o nome em Instr::NomeComando(), em instr-misc.cpp
+5. Acrescentar um novo tipo na "union" em TVariavel.h
+6. Acrescentar o acesso à variável nas funções de TVariavel
+
+
+*** Funções predefinidas
+
+São as funções listadas em instr-exec.cpp, em Instr::TListaFunc
+(obrigatoriamente em ordem alfabética), e implementadas em instr-func.cpp.
+São executadas por Instr::ExecX(); vide TListaFunc, em instr.h.
+
+Já as funções de variáveis são executadas por TVariavel::Func().
+Cada variável costuma ter uma função independente, executada por
+TVariavel::Func(), mas com os mesmos argumentos das funções predefinidas.
+
+
+*** Diversos (uso genérico)
+
+arqler.cpp (TArqLer)
+Usado para ler arquivos de texto, linha por linha, juntando as linhas
+que terminam com '\', e com bastante eficiência.
+
+misc.cpp
+Diversas funções usadas no programa.
+
+procurar.cpp (TProcurar)
+Procura ocorrência de um texto em outro. Pode realizar substituições também.
+Vide funções txtproc e txttroca, em descr.txt.
+
+random.cpp
+Gera números aleatórios.
+
+rbt.cpp.h
+Implementação de "Red Black Tree", uma estrutura de árvore balanceada que
+possibilita inserção e remoção com alguma velocidade.
+Usado em TClasse (definição de classes) e TIndiceObj (variável indiceobj).
+
+shs.cpp
+Para codificar com shs. Vide função txtshs, em descr.txt.

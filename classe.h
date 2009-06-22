@@ -4,12 +4,51 @@
 class TObjeto;
 
 //----------------------------------------------------------------------------
-/** Definição das classes dos arquivos .map */
+/** Definição das classes dos arquivos .map
+
+Na inicialização do programa:
+-# Criar classes
+-# Colocar os comandos em TClasse::Comandos das classes
+-# AcertaDeriv() para acertar herança de todas as classes
+-# AcertaVar() para cada classe
+-# Executar a função ini de cada classe
+.
+
+Para alterar uma classe:
+-# Criar um novo TClasse::Comandos, mas ainda não apagar o antigo
+-# Chamar AcertaDeriv() e AcertaVar(), nessa ordem
+-# AcertaVar() para cada classe em ListaDeriv
+-# Apagar o antigo TClasse::Comandos
+.
+
+Para criar uma classe:
+-# Checar se nome de classe existe e é válido
+-# Criar objeto TClasse
+-# Acertar TClasse::Comandos
+-# AcertaDeriv() passando um Comandos[] vazio como sendo o antigo
+-# AcertaComandos() e AcertaVar()
+.
+
+Para apagar uma classe:
+-# Se NumDeriv>0 a classe não pode ser apagada devido a herança
+-# Se a classe tiver algum objeto:
+   -# Marcar o primeiro objeto como pendente para apagar
+   -# Chamar a função fim do primeiro objeto (será apagado aqui)
+   -# Voltar ao item 1
+   .
+-# Chamar ApagaVars()
+-# Apagar objeto TClasse (com delete)
+.
+*/
 class TClasse /// Classes
 {
 public:
     TClasse(const char * nome);
+        ///< Construtor
+        /**< @param nome da classe */
     ~TClasse();
+        ///< Destrutor
+        /**< @note Antes de apagar, não deve haver nenhuma classe derivada */
 
     static bool NomeValido(char * nome);
         ///< Verifica se nome é um nome válido para classe
@@ -23,10 +62,29 @@ public:
          *  @param nome Nome a pesquisar
          *  @return Endereço da classe, ou 0 se não foi encontrada */
 
-    void AcertaComandos(); ///< Acerta dados de Comandos
-    void AcertaVar();   ///< Acerta InstrVar, IndiceVar, NumVar e Vars
-    void CriaVars();    ///< Acerta TClasse::Vars
-    void ApagaVars();   ///< Limpa TClasse::Vars
+    int Heranca(TClasse ** buffer, int tambuf);
+        ///< Obtém classes herdadas de uma determinada classe
+        /**< @param buffer Aonde colocar as classes obtidas
+             @param tambuf Número de elementos de buffer
+             @return Número de classes herdadas */
+
+    static void AcertaDeriv();
+        ///< Acerta ListaDeriv e NumDeriv de todas as classes
+
+    void AcertaDeriv(char * comandos_antes);
+        ///< Acerta ListaDeriv e NumDeriv quando Comandos[] de uma classe mudou
+        /**< @param comandos_antes Conteúdo anterior de Comandos[] */
+
+    void AcertaVar();
+        ///< Acerta as variáveis da classe e dos objetos da classe
+        /**< @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
+             @note Acerta variáveis e objetos da classe, se necessário.
+             @note Não acerta as classes derivadas. */
+
+    void AcertaComandos();
+        ///< Usado internamente: acerta dados de Comandos
+        /**< Acerta as instruções que contém desvio implícito, como
+             "se", "enquanto", "efim", etc. */
 
     char * Comandos;    ///< Lista de comandos da classe
     char Nome[32];      ///< Nome da classe; não deve ser mudado
@@ -86,6 +144,19 @@ private:
     void RBright_rotate(void);
     static int RBcomp(TClasse * x, TClasse * y); ///< Compara objetos
     unsigned char RBcolour;
+};
+
+//----------------------------------------------------------------------------
+class TClasseVar /// Usado em TClasse::AcertaVar, para acertar as variáveis
+{
+public:
+    TClasseVar();             ///< Construtor
+    ~TClasseVar();            ///< Destrutor
+    char ** InstrVar;         ///< Valor anterior de TClasse::InstrVar
+    unsigned int * IndiceVar; ///< Valor anterior de TClasse::IndiceVar
+    unsigned int NumVar;      ///< Valor anterior de TClasse::NumVar
+    char * Vars;              ///< Valor anterior de TClasse::Vars
+    unsigned int TamVars;     ///< Valor anterior de TClasse::TamVars
 };
 
 //----------------------------------------------------------------------------
