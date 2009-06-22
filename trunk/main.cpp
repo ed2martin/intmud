@@ -50,7 +50,7 @@
 #include "random.h"
 #include "misc.h"
 
-#define CORE    // Para gerar arquivos core
+//#define CORE    // Para gerar arquivos core
 #define DEBUG   // Para não colocar o programa em segundo plano
 
 void Inicializa(const char * arg);
@@ -535,7 +535,7 @@ void Inicializa(const char * arg)
 #endif
 
 // Obtém instruções das classes
-// Acerta TClasse::Comandos e TClasse::NumDeriv
+// Acerta TClasse::Comandos
     TClasse * classeatual = 0;
     Instr::ChecaLinha checalinha;
     char comando[65000];
@@ -665,7 +665,6 @@ void Inicializa(const char * arg)
             {
                 TClasse * obj = TClasse::Procura(p);
                 assert(obj!=0);
-                obj->NumDeriv++;
                 while (*p++);
                 if (obj!=classeatual)
                     continue;
@@ -690,40 +689,15 @@ void Inicializa(const char * arg)
         exit(EXIT_FAILURE);
 
 // Verifica se todas as classes foram anotadas
-// Aloca memória em TClasse::ListaDeriv
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-    {
-        if (cl->NumDeriv)
-        {
-            cl->ListaDeriv = new TClasse* [cl->NumDeriv];
-            cl->NumDeriv = 0;
-        }
         if (cl->Comandos==0)
         {
             fprintf(log, "Erro de fase; provavelmente algum arquivo mudou\n");
             exit(EXIT_FAILURE);
         }
-    }
 
-// Acerta lista de classes derivadas:
-// TClasse::ListaDeriv e TClasse::NumDeriv
-    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-    {
-    // Verifica se tem instrução herda
-        if (cl->Comandos[0]==0 && cl->Comandos[1]==0)
-            continue;
-        if (cl->Comandos[2]!=Instr::cHerda)
-            continue;
-    // Checa classes herdadas
-        const char * p = cl->Comandos+4;
-        for (unsigned char x = cl->Comandos[3]; x; x--)
-        {
-            TClasse * obj = TClasse::Procura(p);
-            assert(obj!=0);
-            obj->ListaDeriv[ obj->NumDeriv++ ] = cl;
-            while (*p++);
-        }
-    }
+// Acerta lista de classes derivadas
+    TClasse::AcertaDeriv();
 
 // Para testes - mostra classes e instruções
 #if 0
@@ -753,19 +727,9 @@ void Inicializa(const char * arg)
     putchar('\n');
 #endif
 
-// Acerta lista de funções e variáveis das classes
-// Primeiro das classes herdadas em outras
+// Acerta variáveis das classes
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-    {
-        cl->AcertaComandos();
-        if (cl->NumDeriv)
-            cl->AcertaVar();
-    }
-    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-    {
         cl->AcertaVar();
-        cl->CriaVars();
-    }
 
 #ifdef __WIN32__
 // Inicializa WinSock

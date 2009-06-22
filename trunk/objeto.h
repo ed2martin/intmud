@@ -15,6 +15,10 @@ public:
     ~TObjeto(); ///< Não deve ser chamado; usar TObjeto::MarcarApagar()
     static TObjeto * Criar(TClasse * c); ///< Cria objeto
     void Apagar();              ///< Apaga objeto @sa TObjeto::MarcarApagar
+    void Apagar(TObjeto * obj);///< Apaga objeto mudando referências obj
+        /**< Não chama destrutores das variáveis.
+         *   É usado por TClasse::AcertaVar()
+         *   @param obj Novo objeto */
     void MarcarApagar();        ///< Marca objeto para apagar
     static void DesmarcarApagar(); ///< Desmarca objeto IniExcluir
 
