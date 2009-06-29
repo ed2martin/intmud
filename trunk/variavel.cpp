@@ -26,6 +26,7 @@
 #include "var-nomeobj.h"
 #include "var-socket.h"
 #include "var-serv.h"
+#include "var-prog.h"
 #include "var-indiceobj.h"
 #include "var-outros.h"
 #include "misc.h"
@@ -116,7 +117,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
     case Instr::cSalvar:    return 0;
-    case Instr::cProg:      return 0;
+    case Instr::cProg:      return sizeof(TVarProg);
     case Instr::cIndiceObj: return sizeof(TIndiceObj);
     case Instr::cIndiceItem: return sizeof(TIndiceItem);
 
@@ -265,6 +266,10 @@ void TVariavel::Criar(TClasse * c, TObjeto * o)
             end_serv[x].Criar();
         }
         break;
+    case Instr::cProg:
+        for (; x>=0; x--)
+            end_prog[x].Criar();
+        break;
     case Instr::cIndiceObj:
         for (; x>=0; x--)
             end_indiceobj[x].Objeto = o;
@@ -312,6 +317,10 @@ void TVariavel::Apagar()
     case Instr::cServ:
         for (; x>=0; x--)
             end_serv[x].Apagar();
+        break;
+    case Instr::cProg:
+        for (; x>=0; x--)
+            end_prog[x].Apagar();
         break;
     case Instr::cIndiceObj:
         for (; x>=0; x--)
@@ -451,9 +460,10 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cServ:
         MOVER_COMPLETO( TVarServ )
     case Instr::cSalvar:
-    case Instr::cProg:
         endvar = destino;
         return;
+    case Instr::cProg:
+        MOVER_SIMPLES( TVarProg )
     case Instr::cIndiceObj:
         {
             TIndiceObj * o = (TIndiceObj *)endvar;
@@ -493,9 +503,9 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         endvar = destino;
         return;
     case Instr::cVarInicio:
+        endvar = destino;
     case Instr::cVarClasse:
     case Instr::cVarObjeto:
-        endvar = destino;
     case Instr::cVarInt:
         return;
     }
@@ -592,8 +602,9 @@ bool TVariavel::getBool()
     case Instr::cServ:
         return end_serv[indice].getValor();
     case Instr::cSalvar:
-    case Instr::cProg:
         return 0;
+    case Instr::cProg:
+        return end_prog[indice].getValor();
     case Instr::cIndiceObj:
         return end_indiceobj[indice].getNome()[0] != 0;
     case Instr::cIndiceItem:
@@ -737,8 +748,9 @@ int TVariavel::getInt()
     case Instr::cServ:
         return end_serv[indice].getValor();
     case Instr::cSalvar:
-    case Instr::cProg:
         return 0;
+    case Instr::cProg:
+        return end_prog[indice].getValor();
     case Instr::cIndiceObj:
         {
             long num;
@@ -881,8 +893,9 @@ double TVariavel::getDouble()
     case Instr::cServ:
         return end_serv[indice].getValor();
     case Instr::cSalvar:
-    case Instr::cProg:
         return 0;
+    case Instr::cProg:
+        return end_prog[indice].getValor();
     case Instr::cIndiceObj:
         {
             double num;
@@ -1518,6 +1531,8 @@ bool TVariavel::Func(const char * nome)
         return end_socket[indice].Func(this, nome);
     case Instr::cServ:
         return end_serv[indice].Func(this, nome);
+    case Instr::cProg:
+        return end_prog[indice].Func(this, nome);
     case Instr::cIndiceItem:
         return end_indiceitem[indice].Func(this, nome);
     }

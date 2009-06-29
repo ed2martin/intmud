@@ -724,6 +724,11 @@ void TClasse::AcertaVar()
                 { c1++; continue; }
             if ((InstrVar[c2][Instr::endProp] & 1) != passo)
                 { c2++; continue; }
+        // Pula variáveis com tamanho zero
+            if (TVariavel::Tamanho(antes.InstrVar[c1])==0)
+                { c1++; continue; }
+            if (TVariavel::Tamanho(InstrVar[c2])==0)
+                { c2++; continue; }
         // Acerta variáveis de aloca1
             al[total].instr1 = antes.InstrVar[c1];
             al[total].indice1 = antes.IndiceVar[c1];
@@ -790,7 +795,8 @@ void TClasse::AcertaVar()
     // Variáveis que serão apagadas
         while (c1<antes.NumVar)
         {
-            if ((antes.InstrVar[c1][Instr::endProp] & 1) != passo)
+            if ((antes.InstrVar[c1][Instr::endProp] & 1) != passo ||
+                    TVariavel::Tamanho(antes.InstrVar[c1])==0)
                 { c1++; continue; }
             if (antes.InstrVar[c1][2] > Instr::cVarFunc)
             {
@@ -804,7 +810,8 @@ void TClasse::AcertaVar()
     // Variáveis que serão criadas
         while (c2<NumVar)
         {
-            if ((InstrVar[c2][Instr::endProp] & 1) != passo)
+            if ((InstrVar[c2][Instr::endProp] & 1) != passo ||
+                    TVariavel::Tamanho(InstrVar[c2])==0)
                 { c2++; continue; }
             if (InstrVar[c2][2] > Instr::cVarFunc)
             {

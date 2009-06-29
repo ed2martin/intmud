@@ -21,6 +21,7 @@ void ApagarRet(TVariavel * v);
 bool VarFuncIni(TVariavel * varini);
 bool VarFuncFim();
 const char * ProcuraExpr(const char * expr, int valor);
+const char * NomeInstr(const char * instr);
 const char * NomeComando(int valor);
 const char * NomeExpr(int valor);
 
@@ -284,7 +285,7 @@ enum Comando
     cVarInicio,         ///< Esperando texto logo após ex_varini
     cVarClasse,         ///< TVariavel::endvar = endereço do objeto TClasse
     cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
-    cVarInt,            ///< int local; vide TVariavel::var_int
+    cVarInt,            ///< int local; vide TVariavel::valor_int
 
     cTotalComandos      ///< Número de comandos - não usado
 };

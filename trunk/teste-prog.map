@@ -1,0 +1,59 @@
+[A]
+herda b
+comum serv servidor
+socket conec
+txt16 nomeclasse
+
+const msg = conec.msg(arg0)
+func iniclasse
+  se ![arg0]:servidor.abrir("localhost", 2000)
+    terminar
+func servidor_socket
+  criar("a", arg0)
+func ini
+  conec = arg0
+  msg("Digite o nome de uma variável ou:\n")
+  msg("E para encerrar o programa\n")
+  msg("A ou B para selecionar a classe\n")
+func conec_msg
+  prog p
+  int16 i
+  se arg0 = "E"
+    msg("Programa encerrado\n")
+    terminar
+  senao arg0 = "A"
+    msg("Classe A\n")
+    nomeclasse = "A"
+  senao arg0 = "B"
+    msg("Classe B\n")
+    nomeclasse = "B"
+  senao
+    msg("Classe " + nomeclasse + existe[p.existe(nomeclasse)])
+    msg(" Variável " + arg0 + existe[p.existe(nomeclasse, arg0)] + "\n")
+    se p.vartexto(nomeclasse, arg0)
+      msg("constante de texto\n")
+    fimse
+    se p.varlocal(nomeclasse, arg0)
+      msg("(local) ")
+    fimse
+    se p.varcomum(nomeclasse, arg0)
+      msg("(comum) ")
+    fimse
+    se p.varsav(nomeclasse, arg0)
+      msg("(sav) ")
+    fimse
+    msg(p.vartipo(nomeclasse, arg0) + " " + arg0)
+    i = p.varvetor(nomeclasse, arg0)
+    se i
+      msg("." + i)
+    fimse
+    msg("\n")
+const existe0 = " (não existe)"
+const existe1 = " (existe)"
+
+[B]
+int8 var1
+int8 v.10
+sav txt10 teste
+const c1 = 10
+const c2 = "10"

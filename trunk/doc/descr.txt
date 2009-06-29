@@ -970,63 +970,74 @@ salvar <nomedavariável>
 prog <nomedavariável>
     Para ler e alterar o próprio programa (o mapa).
 
-    *** Funções para ler o programa:
-    Chamar uma das funções abaixo, depois usar linha() para ler o resultado.
-    classelin(<nome da classe>)
-        Obter as linhas correspondentes a uma classe.
-        Retorna: 1=sucesso, 0=falha (classe inexistente)
-    varlin(<nome da classe>, <nome da variável>)
-        Obter as linhas correspondentes a uma variável ou função.
-        Retorna: 1=sucesso, 0=falha (variável inexistente)
-    classe(<texto>)
-        Obter a lista de classes existentes. Inclui somente as classes que
-        começam com o texto especificado.
-        Retorna: 1=sucesso, 0=falha (nenhuma classe encontrada)
-    herda(<nome da classe>)
-        Obter a lista de classes que uma classe herda.
-        Retorna: 1=sucesso, 0=falha (classe não existe)
-    herdado(<nome da classe>)
+    As próximas funções iniciam uma consulta e retornam 1 se há algum
+    resultado (pelo menos uma linha) para a consulta ou 0 se não há.
+    iniclasse( <texto> )
+        Obter os nomes das classes que começam com o texto especificado.
+    inifunc( <nome da classe>, <texto> )
+        Obter os nomes das funções e variáveis definidas em uma classe.
+        Somente as variáveis e funções que começam com o texto especificado.
+    inifunc2( <nome da classe>, <texto> )
+        Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
+    iniherda( <nome da classe> )
+        Obter os nomes das classes definidas na instrução "herda".
+    iniherda2( <nome da classe> )
         Obter a lista de classes herdadas por uma classe.
-        Retorna: 1=sucesso, 0=falha (classe não existe)
-    var(<nome da classe>)
-    var(<nome da classe>, <texto>)
-        Obter a lista de variáveis de uma classe, inclusive as herdadas.
-        Inclui somente as variáveis que começam com o texto especificado.
-        Retorna: 1=sucesso, 0=falha (classe ou variável inexistente)
-    varlocal(<nome da classe>)
-    varlocal(<nome da classe>, <texto>)
-        Semelhante a var(), exceto que não inclui as variáveis herdadas.
-    linha(<número da linha>)
-        Retorna a linha especificada (texto). 0 é a primeira linha.
-        Retorna um texto vazio se a linha não existe.
-    total
-        Número de linhas encontradas.
-    fechar
-        Deixa de acessar classe ou variável.
-        É chamado automaticamente quando o controle volta ao interpretador.
+        Inclui também as classes herdadas indiretamente.
+    iniherdainv( <nome da classe> )
+        Herança inversa: obter os nomes das classes que herdam uma classe.
+    iniclasselin( <nome da classe> )
+        Obter as linhas correspondentes a uma classe.
+    inifunclin( <nome da classe>, <nome da função> )
+        Obter as linhas correspondentes a uma variável ou função definida
+        na classe.
+    initexto( <nome da classe>, <nome da constante> )
+        Obter as linhas correspondentes a uma constante de texto definida
+        na classe.
 
-    *** Funções para obter o tipo de variável:
-    tipo(<classe>, <variável>)
+    As próximas funções permitem ler o resultado da consulta.
+    ini
+        Volta para o início da consulta
+    lin
+        É 1 se linha válida ou 0 se chegou no fim da consulta
+    depois
+        Vai para a próxima linha
+    linha
+        Retorna o conteúdo da linha atual
+    linha( <variável de texto> )
+        Coloca o texto em uma variável de texto.
+        Retorna 1 se conseguiu anotar ou 0 se texto não cabe na variável.
+    linha( <vetor de texto> )
+        Coloca o texto em um vetor.
+        Retorna a quantidade de variáveis do vetor usadas ou 0 se o texto
+        não cabe no vetor.
+
+    As próximas funções funcionam independente das demais.
+    existe(<nome da classe>)
+        Retorna 1 se a classe existe ou 0 se não existe.
+    existe(<nome da classe>, <variável>)
+        Retorna 1 se a variável ou função existe ou 0 se não existe.
+    vartipo(<nome da classe>, <variável>)
         Retorna o tipo de variável ou "" se a variável não existe.
-    comum(<classe>, <variável>)
+    vartexto(<nome da classe>, <variável>)
+        Retorna 1 se for constante de texto ou 0 se não for.
+    varcomum(<nome da classe>, <variável>)
         Retorna 1 se variável for comum ou 0 se não for.
-    sav(<classe>, <variável>)
+    varsav(<nome da classe>, <variável>)
         Retorna 1 se variável for sav ou 0 se não for.
-    herda(<classe>, <variável>)
-        Em qual classe a variável está definida.
-    nomeclasse(<objeto>)
-        Retorna o nome da classe de um objeto ou "" se não existe.
-    nomeclasse(<nome da classe>)
-        Retorna o nome da classe se existe ou "" se não existe.
+    varvetor(<nome da classe>, <variável>)
+        Retorna a quantidade de variáveis do vetor ou 0 se não for vetor.
+    varlocal(<nome da classe>, <variável>)
+        Retorna 1 se variável estiver definida na própria classe
+        (não foi herdada) ou 0 se não estiver.
 
-    *** Funções para alterar o programa:
-    As alterações só serão efetuadas depois que o controle retornar ao programa
-    interpretador.
+    As próximas funções permitem alterar o programa. Porém, as alterações
+    só serão efetuadas quando o controle retornar ao IntMUD.
     apagar(<classe>)
     apagar(<classe>, <variável>)
         Apaga classe ou variável. Retorna: 1=sucesso, 0=falha
-    criar(<texto>)
-    criar(<nome da classe>, <texto>)
+    criar(<texto ou vetor de texto>)
+    criar(<nome da classe>, <texto ou vetor de texto>)
         Cria uma classe ou uma variável de uma classe.
         Se já existia, apaga todas as instruções antes de criar.
         <texto> contém as instruções da variável, função ou classe.

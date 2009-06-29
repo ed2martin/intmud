@@ -19,7 +19,7 @@ class TVarServ /// Variáveis Serv
 {
 public:
     void Criar();           ///< Cria objeto
-                            /** @note Acertar também defvar, classe e objeto */
+                            /**< @note Acertar também defvar, classe e objeto */
     void Apagar();          ///< Apaga objeto
     void Fechar();          ///< Fecha porta
     void Mover(TVarServ * destino); ///< Move TVarSock para outro lugar

@@ -423,6 +423,83 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Obtém o nome de uma instrução
+/** @param  valor Valor de Instr::Comando
+ *  @return nome, ou "" se não encontrou
+ */
+const char * Instr::NomeInstr(const char * instr)
+{
+    static char nome[16];
+    switch ((Instr::Comando)instr[2])
+    {
+    case cHerda:            return "herda";
+    case cExpr:             return "";
+    case cComent:           return "#";
+
+    case cSe:               return "se";
+    case cSenao1:           return "senao1";
+    case cSenao2:           return "senao2";
+    case cFimSe:            return "fimse";
+    case cEnquanto:         return "enquanto";
+    case cEFim:             return "efim";
+    case cRet1:             return "ret";
+    case cRet2:             return "ret";
+    case cSair:             return "sair";
+    case cContinuar:        return "continuar";
+    case cTerminar:         return "terminar";
+
+    case cVariaveis:        return "";
+    case cTxt1:
+        sprintf(nome, "txt%d", (unsigned char)instr[endIndice]+1);
+        return nome;
+    case cTxt2:
+        sprintf(nome, "txt%d", (unsigned char)instr[endIndice]+257);
+        return nome;
+    case cInt1:             return "int1";
+    case cInt8:             return "int8";
+    case cUInt8:            return "uint8";
+    case cInt16:            return "int16";
+    case cUInt16:           return "uint16";
+    case cInt32:            return "int32";
+    case cUInt32:           return "uint32";
+    case cIntInc:           return "intinc";
+    case cIntDec:           return "intdec";
+    case cReal:             return "real";
+    case cRef:              return "ref";
+    case cConstNulo:
+    case cConstTxt:
+    case cConstNum:
+    case cConstExpr:        return "const";
+    case cFunc:             return "func";
+    case cVarFunc:          return "varfunc";
+
+    case cListaObj:         return "listaobj";
+    case cListaItem:        return "listaitem";
+    case cListaTxt:         return "listatxt";
+    case cListaMsg:         return "listamsg";
+    case cNomeObj:          return "nomeobj";
+    case cArqLog:           return "arqlog";
+    case cArqTxt:           return "arqtxt";
+    case cIntTempo:         return "inttempo";
+    case cSocket:           return "socket";
+    case cServ:             return "serv";
+    case cSalvar:           return "salvar";
+    case cProg:             return "prog";
+    case cIndiceObj:        return "indiceobj";
+    case cIndiceItem:       return "indiceitem";
+
+    case cTxtFixo:
+    case cVarNome:
+    case cVarInicio:
+    case cVarClasse:
+    case cVarObjeto:
+    case cVarInt:           return "";
+    case cTotalComandos:    break;
+    }
+    return "";
+}
+
+//----------------------------------------------------------------------------
 /// Obtém o nome de um valor de Instr::Comando
 /** @param  valor Valor de Instr::Comando
  *  @return nome, ou 0 se não encontrou
