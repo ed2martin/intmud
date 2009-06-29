@@ -92,10 +92,10 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 // Variáveis
     case cVariaveis: break;
     case cTxt1:
-        sprintf(nome, "txt%d", (unsigned char)origem[4]+1);
+        sprintf(nome, "txt%d", (unsigned char)origem[endIndice]+1);
         break;
     case cTxt2:
-        sprintf(nome, "txt%d", (unsigned char)origem[4]+257);
+        sprintf(nome, "txt%d", (unsigned char)origem[endIndice]+257);
         break;
     case cInt1:      strcpy(nome, "int1"); break;
     case cInt8:      strcpy(nome, "int8"); break;

@@ -16,6 +16,7 @@ class TVarTxt;
 class TVarNomeObj;
 class TVarSocket;
 class TVarServ;
+class TVarProg;
 class TIndiceObj;
 class TIndiceItem;
 
@@ -125,6 +126,7 @@ public:
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
         TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj
+        TVarProg     * end_prog;     ///< Instr::cProg
         TIndiceObj   * end_indiceobj; ///< Instr::cIndiceObj
         TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
         int  valor_int;              ///< Instr::cVarInt - endvar como int
