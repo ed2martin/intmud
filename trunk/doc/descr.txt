@@ -435,7 +435,7 @@ txt2(<texto>)
 
 txtcor(<texto>)
     Retorna o texto sem as definições de cores. Exemplo:
-    semcor("\cF\d4Teste\b") é o mesmo que "Teste".
+    txtcor("\cF\d4Teste\b") é o mesmo que "Teste".
 
 txtmai(<texto>)
     Retorna o texto em letras maiúsculas.
@@ -969,6 +969,7 @@ salvar <nomedavariável>
 
 prog <nomedavariável>
     Para ler e alterar o próprio programa (o mapa).
+    Nota: pode ser usado um objeto no lugar do nome de uma classe.
 
     As próximas funções iniciam uma consulta e retornam 1 se há algum
     resultado (pelo menos uma linha) para a consulta ou 0 se não há.
@@ -996,19 +997,17 @@ prog <nomedavariável>
         na classe.
 
     As próximas funções permitem ler o resultado da consulta.
-    ini
-        Volta para o início da consulta
     lin
         É 1 se linha válida ou 0 se chegou no fim da consulta
     depois
         Vai para a próxima linha
-    linha
-        Retorna o conteúdo da linha atual
-    linha( <variável de texto> )
-        Coloca o texto em uma variável de texto.
+    texto
+        Retorna o texto da linha atual.
+    texto( <variável de texto> )
+        Coloca o texto da linha atual em uma variável de texto.
         Retorna 1 se conseguiu anotar ou 0 se texto não cabe na variável.
-    linha( <vetor de texto> )
-        Coloca o texto em um vetor.
+    texto( <vetor de texto> )
+        Coloca o texto da linha atual em um vetor.
         Retorna a quantidade de variáveis do vetor usadas ou 0 se o texto
         não cabe no vetor.
 

@@ -81,6 +81,10 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
 // Deve obrigatoriamente estar em ordem alfabética
     const TProgFunc ProgFunc[] = {
         { "existe",     &TVarProg::FuncExiste },
+        { "iniclasse",  &TVarProg::FuncIniClasse },
+        { "inifunc",    &TVarProg::FuncIniFunc },
+        { "inifunc2",   &TVarProg::FuncIniFunc2 },
+        { "lin",        &TVarProg::FuncLin },
         { "varcomum",   &TVarProg::FuncVarComum },
         { "varlocal",   &TVarProg::FuncVarLocal },
         { "varsav",     &TVarProg::FuncVarSav },
@@ -227,7 +231,7 @@ bool TVarProg::FuncVarTexto(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncVarTipo(TVariavel * v)
 {
-    const char * mens="";
+    char mens[32] = "";
     while (true)
     {
         if (Instr::VarAtual < v+2)
@@ -237,7 +241,8 @@ bool TVarProg::FuncVarTipo(TVariavel * v)
             break;
         int indice = cl->IndiceNome(v[2].getTxt());
         if (indice>=0)
-            mens = Instr::NomeInstr(cl->InstrVar[indice]);
+            copiastr(mens, Instr::NomeInstr(cl->InstrVar[indice]),
+                     sizeof(mens));
         break;
     }
 // Acerta variáveis
@@ -283,5 +288,121 @@ bool TVarProg::FuncVarVetor(TVariavel * v)
         return false;
     if (valor)
         Instr::VarAtual->setInt(valor);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+void TVarProg::MudaConsulta(int valor)
+{
+    if (valor==0)
+    {
+        if (consulta==0)
+            return;
+        consulta = 0;
+        (Antes ? Antes->Depois : Inicio) = Depois;
+        if (Depois)
+            Depois->Antes = Antes;
+        return;
+    }
+    if (consulta==0)
+    {
+        Antes = 0;
+        Depois = Inicio;
+        Inicio = this;
+        if (Depois)
+            Depois->Antes = this;
+    }
+    consulta = valor;
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncIniClasse(TVariavel * v)
+{
+    int valor = 0;
+    while (Instr::VarAtual >= v+1)
+    {
+        const char * texto = v[1].getTxt();
+        ClasseAtual = TClasse::ProcuraIni(texto);
+        if (ClasseAtual==0)
+            break;
+        ClasseFim = TClasse::ProcuraFim(texto);
+        valor = 1;
+        break;
+    }
+    MudaConsulta(valor);
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarInt))
+        return false;
+    Instr::VarAtual->setInt(valor != 0);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncIniFunc(TVariavel * v)
+{
+    int valor = 0;
+    while (Instr::VarAtual >= v+2)
+    {
+        Classe = TClasse::Procura(v[1].getTxt());
+        if (Classe==0)
+            break;
+        const char * texto = v[2].getTxt();
+        ValorAtual = Classe->IndiceNomeIni(texto);
+        if (ValorAtual<0)
+            break;
+        ValorFim = Classe->IndiceNomeFim(texto);
+        while ((Classe->IndiceVar[ValorAtual] & 0x800000)==0)
+            if (++ValorAtual > ValorFim)
+                goto fim;
+        while ((Classe->IndiceVar[ValorFim] & 0x800000)==0)
+            if (--ValorFim < ValorAtual)
+                goto fim;
+        valor = 2;
+        break;
+    }
+fim:
+    MudaConsulta(valor);
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarInt))
+        return false;
+    Instr::VarAtual->setInt(valor != 0);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncIniFunc2(TVariavel * v)
+{
+    int valor = 0;
+    while (Instr::VarAtual >= v+2)
+    {
+        Classe = TClasse::Procura(v[1].getTxt());
+        if (Classe==0)
+            break;
+        const char * texto = v[2].getTxt();
+        ValorAtual = Classe->IndiceNomeIni(texto);
+        if (ValorAtual<0)
+            break;
+        ValorFim = Classe->IndiceNomeFim(texto);
+        valor = 3;
+        break;
+    }
+    MudaConsulta(valor);
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarInt))
+        return false;
+    Instr::VarAtual->setInt(valor != 0);
+    return true;
+}
+
+
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncLin(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarInt))
+        return false;
+    if (consulta)
+        Instr::VarAtual->setInt(1);
     return true;
 }

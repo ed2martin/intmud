@@ -986,11 +986,10 @@ void TClasse::AcertaVar()
 //----------------------------------------------------------------------------
 TClasse * TClasse::Procura(const char * nome)
 {
-    int i;
     TClasse * y = RBroot;
     while (y)
     {
-        i=comparaZ(nome, y->Nome);
+        int i = comparaZ(nome, y->Nome);
         if (i==0)
             return y;
         if (i<0)
@@ -999,6 +998,44 @@ TClasse * TClasse::Procura(const char * nome)
             y = y->RBright;
     }
     return 0;
+}
+
+//----------------------------------------------------------------------------
+TClasse * TClasse::ProcuraIni(const char * nome)
+{
+    TClasse * x = 0;
+    TClasse * y = RBroot;
+    while (y)
+    {
+        int i = comparaZ(nome, y->Nome);
+        if (i==0)
+            return y;
+        if (i==-2)
+            x = y;
+        if (i<0)
+            y = y->RBleft;
+        else
+            y = y->RBright;
+    }
+    return x;
+}
+
+//----------------------------------------------------------------------------
+TClasse * TClasse::ProcuraFim(const char * nome)
+{
+    TClasse * x = 0;
+    TClasse * y = RBroot;
+    while (y)
+    {
+        int i = comparaZ(nome, y->Nome);
+        if (i==0 || i==-2)
+            x = y;
+        if (i==-1)
+            y = y->RBleft;
+        else
+            y = y->RBright;
+    }
+    return x;
 }
 
 //----------------------------------------------------------------------------
