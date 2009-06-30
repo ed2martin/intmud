@@ -27,7 +27,26 @@ private:
     bool FuncVarTipo(TVariavel * v);
     bool FuncVarVetor(TVariavel * v);
 
+    bool FuncIniClasse(TVariavel * v);
+    bool FuncIniFunc(TVariavel * v);
+    bool FuncIniFunc2(TVariavel * v);
+
+    bool FuncLin(TVariavel * v);
+
+    void MudaConsulta(int valor); ///< Muda o valor da variável consulta
     unsigned char consulta; ///< O que consultar, 0=não está consultando nada
+    TClasse * Classe;   ///< A classe que está sendo consultada
+    union {
+        TClasse * ClasseAtual; ///< Valor atual da busca como classe
+        char *    TextoAtual;  ///< Valor atual da busca como texto
+        int       ValorAtual;  ///< Valor atual da busca como int
+    };
+    union {
+        TClasse * ClasseFim; ///< Valor final da busca como classe
+        char *    TextoFim;  ///< Valor final da busca como texto
+        int       ValorFim;  ///< Valor final da busca como int
+    };
+
     static TVarProg * Inicio;   ///< Primeiro objeto (com consulta!=0)
     TVarProg * Antes;           ///< Objeto anterior (se consulta!=0)
     TVarProg * Depois;          ///< Próximo objeto (se consulta!=0)

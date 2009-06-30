@@ -61,7 +61,15 @@ public:
         /**<
          *  @param nome Nome a pesquisar
          *  @return Endereço da classe, ou 0 se não foi encontrada */
+    static TClasse * ProcuraIni(const char * nome);
+        ///< Procura() que procura a primeira classe que começa com o nome
+    static TClasse * ProcuraFim(const char * nome);
+        ///< Procura() que procura a última classe que começa com o nome
 
+    char * Comandos;    ///< Lista de comandos da classe
+    char Nome[32];      ///< Nome da classe; não deve ser mudado
+
+// Herança
     int Heranca(TClasse ** buffer, int tambuf);
         ///< Obtém classes herdadas de uma determinada classe
         /**< @param buffer Aonde colocar as classes obtidas
@@ -75,27 +83,18 @@ public:
         ///< Acerta ListaDeriv e NumDeriv quando Comandos[] de uma classe mudou
         /**< @param comandos_antes Conteúdo anterior de Comandos[] */
 
-    void AcertaVar();
-        ///< Acerta as variáveis da classe e dos objetos da classe
-        /**< @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
-             @note Acerta variáveis e objetos da classe, se necessário.
-             @note Não acerta as classes derivadas. */
-
-    void AcertaComandos();
-        ///< Usado internamente: acerta dados de Comandos
-        /**< Acerta as instruções que contém desvio implícito, como
-             "se", "enquanto", "efim", etc. */
-
-    char * Comandos;    ///< Lista de comandos da classe
-    char Nome[32];      ///< Nome da classe; não deve ser mudado
-
-// Herança
     TClasse ** ListaDeriv;
         ///< Lista de classes derivadas dessa, ou NULL se NumDeriv=0
     int NumDeriv;
         ///< Número de elementos de TClasse::ListaDeriv
 
 // Variáveis
+    void AcertaVar();
+        ///< Acerta as variáveis da classe e dos objetos da classe
+        /**< @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
+             @note Acerta variáveis e objetos da classe, se necessário.
+             @note Não acerta as classes derivadas. */
+
     int IndiceNome(const char * nome);
         ///< Obtém o índice de uma variável a partir do nome
         /**<
@@ -144,6 +143,12 @@ private:
     void RBright_rotate(void);
     static int RBcomp(TClasse * x, TClasse * y); ///< Compara objetos
     unsigned char RBcolour;
+
+// Outros
+    void AcertaComandos();
+        ///< Usado internamente: acerta dados de Comandos
+        /**< Acerta as instruções que contém desvio implícito, como
+             "se", "enquanto", "efim", etc. */
 };
 
 //----------------------------------------------------------------------------
