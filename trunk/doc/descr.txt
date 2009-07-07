@@ -860,6 +860,10 @@ socket <nomedavariável>
     posx
         Posição do cursor: quantos caracteres enviou após o último \n.
         Caracteres especiais, como definição da cor, não contam.
+    ip
+        Endereço IP correspondente a quem está conectado.
+    iplocal
+        Endereço IP local.
     abrir(<endereço>, <porta>)
         Tenta conectar-se a um endereço.
         Retorna 1 se conexão em progresso ou 0 se ocorreu erro
@@ -1004,10 +1008,10 @@ prog <nomedavariável>
     texto
         Retorna o texto da linha atual.
     texto( <variável de texto> )
-        Coloca o texto da linha atual em uma variável de texto.
+        Coloca o texto da linha atual em uma variável txt1 a txt512.
         Retorna 1 se conseguiu anotar ou 0 se texto não cabe na variável.
     texto( <vetor de texto> )
-        Coloca o texto da linha atual em um vetor.
+        Coloca o texto da linha atual em um vetor de variáveis txt1 a txt512.
         Retorna a quantidade de variáveis do vetor usadas ou 0 se o texto
         não cabe no vetor.
 

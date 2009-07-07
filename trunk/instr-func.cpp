@@ -292,26 +292,8 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
         }
     }
 
-// Acerta variáveis
     ApagarVar(v);
-    if (!CriarVar(InstrTxtFixo))
-        return false;
-// Verifica espaço disponível (sem o 0 no final do texto)
-    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-    if (disp<0)
-        return false;
-// Copia texto
-    int tam = strlen(mens);
-    if (tam>disp)
-        tam=disp;
-    if (tam>0)
-        memcpy(Instr::DadosTopo, mens, tam);
-    Instr::DadosTopo[tam] = 0;
-// Acerta variáveis
-    VarAtual->endvar = Instr::DadosTopo;
-    VarAtual->tamanho = tam+1;
-    Instr::DadosTopo += tam+1;
-    return true;
+    return CriarVarTexto(mens);
 }
 
 //----------------------------------------------------------------------------
@@ -346,27 +328,8 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
         // Copia texto
     for (const char * fim = txt+tam; *txt && txt<fim; )
         *destino++ = *txt++;
-        // Obtém: tam = tamanho do texto sem o zero no final
-    tam = destino - mens;
-// Acerta variáveis
     ApagarVar(v);
-    if (!CriarVar(InstrTxtFixo))
-        return false;
-// Verifica espaço disponível (sem o 0 no final do texto)
-    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-    if (disp<0)
-        return false;
-    if (tam>disp)
-        tam = disp;
-// Copia texto
-    if (tam>0)
-        memcpy(Instr::DadosTopo, mens, tam);
-    Instr::DadosTopo[tam] = 0;
-// Acerta variáveis
-    VarAtual->endvar = Instr::DadosTopo;
-    VarAtual->tamanho = tam+1;
-    Instr::DadosTopo += tam+1;
-    return true;
+    return CriarVarTexto(mens, destino-mens);
 }
 
 //----------------------------------------------------------------------------
@@ -506,24 +469,8 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     default:
         return false;
     }
-// Acerta variáveis
     ApagarVar(v);
-    if (!CriarVar(InstrTxtFixo))
-        return false;
-// Verifica espaço disponível (sem o 0 no final do texto)
-    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-    if (disp<0)
-        return false;
-// Copia texto
-    int tam = (destino-mens < disp ? destino-mens : disp);
-    if (tam>0)
-        memcpy(Instr::DadosTopo, mens, tam);
-    Instr::DadosTopo[tam] = 0;
-// Acerta variáveis
-    VarAtual->endvar = Instr::DadosTopo;
-    VarAtual->tamanho = tam+1;
-    Instr::DadosTopo += tam+1;
-    return true;
+    return CriarVarTexto(mens, destino-mens);
 }
 
 //----------------------------------------------------------------------------
@@ -622,24 +569,8 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
         while (esp && destino<mens+sizeof(mens))
             *destino++=' ', esp--;
 
-// Acerta variáveis
     ApagarVar(v);
-    if (!CriarVar(InstrTxtFixo))
-        return false;
-// Verifica espaço disponível (sem o 0 no final do texto)
-    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-    if (disp<0)
-        return false;
-// Copia texto
-    int tam = (destino-mens < disp ? destino-mens : disp);
-    if (tam>0)
-        memcpy(Instr::DadosTopo, mens, tam);
-    Instr::DadosTopo[tam] = 0;
-// Acerta variáveis
-    VarAtual->endvar = Instr::DadosTopo;
-    VarAtual->tamanho = tam+1;
-    Instr::DadosTopo += tam+1;
-    return true;
+    return CriarVarTexto(mens, destino-mens);
 }
 
 //----------------------------------------------------------------------------
@@ -953,30 +884,14 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 // Texto puro, sem substituições
     if (dest_ini==0)
     {
-        int tam = destino - (mens + Instr::endNome + 3) - 3;
-    // Acerta variáveis
+        const char * texto = mens + Instr::endNome + 3;
         ApagarVar(v);
-        if (!CriarVar(InstrTxtFixo))
-            return false;
-    // Verifica espaço disponível (sem o 0 no final do texto)
-        int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-        if (disp<0)
-            return false;
-        if (tam>disp)
-            tam = disp;
-    // Copia texto
-        if (tam>0)
-            memcpy(Instr::DadosTopo, mens+Instr::endNome+3, tam);
-        Instr::DadosTopo[tam] = 0;
-    // Acerta variáveis
-        VarAtual->endvar = Instr::DadosTopo;
-        VarAtual->tamanho = tam+1;
-        Instr::DadosTopo += tam+1;
+        bool b = CriarVarTexto(texto, destino-texto-3);
 #if 0
         printf("vartxt txt: %s\n", (char*)VarAtual->endvar);
         fflush(stdout);
 #endif
-        return true;
+        return b;
     }
 
 // Acerta tamanho da instrução

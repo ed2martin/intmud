@@ -435,6 +435,28 @@ int TSocket::Variavel(char num, int valor)
 }
 
 //------------------------------------------------------------------------------
+const char * TSocket::Endereco(bool remoto)
+{
+    if (sock<0)
+        return "";
+    struct sockaddr_in conSock;
+#ifdef __WIN32__
+    int tam = sizeof(conSock);
+#else
+    ACCEPT_TYPE_ARG3 tam = sizeof(conSock);
+#endif
+    tam = sizeof(struct sockaddr);
+    int r;
+    if (remoto)
+        r = getpeername(sock, (struct sockaddr *)&conSock, &tam);
+    else
+        r = getsockname(sock, (struct sockaddr *)&conSock, &tam);
+    if (r>=0)
+        return inet_ntoa(conSock.sin_addr);
+    return "";
+}
+
+//------------------------------------------------------------------------------
 /** @param mensagem Endereço dos bytes a enviar
  *  @return true se conseguiu enviar, false se não conseguiu */
 bool TSocket::EnvMens(const char * mensagem)

@@ -133,8 +133,41 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     return 0;
 }
 
+//----------------------------------------------------------------------------
+/// Cria variável de texto no topo da pilha de variáveis (Instr::VarPilha)
+/**
+ *  @param mens A mensagem que será retornada
+ *  @param tammens Deve ser strlen(mens)
+ *  @return true se conseguiu criar, false se memória insuficiente */
+bool Instr::CriarVarTexto(const char * mens, int tammens)
+{
+// Acerta variáveis
+    if (VarAtual >= VarFim-1)
+        return false;
+// Verifica espaço disponível (sem o 0 no final do texto)
+    if (tammens<0)
+        tammens=strlen(mens);
+    int disp = DadosFim - DadosTopo - 1;
+    if (disp<0)
+        return false;
+    if (tammens>disp)
+        tammens = disp;
+// Copia texto
+    if (tammens>0)
+        memcpy(DadosTopo, mens, tammens);
+    DadosTopo[tammens] = 0;
+// Acerta variáveis
+    VarAtual++;
+    VarAtual->defvar = InstrTxtFixo;
+    VarAtual->endvar = DadosTopo;
+    VarAtual->tamanho = tammens+1;
+    VarAtual->indice = 0;
+    DadosTopo += tammens+1;
+    return true;
+}
+
 //------------------------------------------------------------------------------
-/// Criar variável no topo da pilha de variáveis (Instr::VarPilha)
+/// Cria variável no topo da pilha de variáveis (Instr::VarPilha)
 /** @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVar(const char * def)
 {

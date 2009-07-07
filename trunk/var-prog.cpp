@@ -80,11 +80,13 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
 // Lista das funções de prog
 // Deve obrigatoriamente estar em ordem alfabética
     const TProgFunc ProgFunc[] = {
+        { "depois",     &TVarProg::FuncDepois },
         { "existe",     &TVarProg::FuncExiste },
         { "iniclasse",  &TVarProg::FuncIniClasse },
         { "inifunc",    &TVarProg::FuncIniFunc },
         { "inifunc2",   &TVarProg::FuncIniFunc2 },
         { "lin",        &TVarProg::FuncLin },
+        { "texto",      &TVarProg::FuncTexto },
         { "varcomum",   &TVarProg::FuncVarComum },
         { "varlocal",   &TVarProg::FuncVarLocal },
         { "varsav",     &TVarProg::FuncVarSav },
@@ -247,24 +249,7 @@ bool TVarProg::FuncVarTipo(TVariavel * v)
     }
 // Acerta variáveis
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrTxtFixo))
-        return false;
-// Verifica espaço disponível (sem o 0 no final do texto)
-    int tam = strlen(mens);
-    int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-    if (disp<0)
-        return false;
-    if (tam>disp)
-        tam = disp;
-// Copia texto
-    if (tam>0)
-        memcpy(Instr::DadosTopo, mens, tam);
-    Instr::DadosTopo[tam] = 0;
-// Acerta variáveis
-    Instr::VarAtual->endvar = Instr::DadosTopo;
-    Instr::VarAtual->tamanho = tam+1;
-    Instr::DadosTopo += tam+1;
-    return true;
+    return Instr::CriarVarTexto(mens);
 }
 
 //------------------------------------------------------------------------------
@@ -394,7 +379,135 @@ bool TVarProg::FuncIniFunc2(TVariavel * v)
     return true;
 }
 
+//------------------------------------------------------------------------------
+bool TVarProg::FuncDepois(TVariavel * v)
+{
+    switch (consulta)
+    {
+    case 1:  // iniclasse
+        if (ClasseAtual == ClasseFim)
+        {
+            MudaConsulta(0);
+            break;
+        }
+        ClasseAtual = TClasse::RBnext(ClasseAtual);
+        if (ClasseAtual==0)
+            MudaConsulta(0);
+        break;
+    case 2:  // inifunc
+        while (true)
+        {
+            ValorAtual++;
+            if (ValorAtual > ValorFim)
+            {
+                MudaConsulta(0);
+                break;
+            }
+            if (Classe->IndiceVar[ValorAtual] & 0x800000)
+                break;
+        }
+        break;
+    case 3:  // inifunc2
+        if (ValorAtual >= ValorFim)
+            MudaConsulta(0);
+        else
+            ValorAtual++;
+        break;
 
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncTexto(TVariavel * v)
+{
+    char mens[4096];
+    *mens=0;
+// Obtém o texto
+    switch (consulta)
+    {
+    case 1:  // iniclasse
+        strcpy(mens, ClasseAtual->Nome);
+        break;
+    case 2:  // inifunc
+    case 3:  // inifunc2
+        strcpy(mens, Classe->InstrVar[ValorAtual] + Instr::endNome);
+        break;
+
+    }
+// Nenhum argumento: retorna o texto
+    if (Instr::VarAtual <= v)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
+    }
+    v--;
+// Um argumento: verifica se é txt1 a txt512 e obtém o tamanho da variável
+    int tam = 0;
+    if (v->defvar[2] == Instr::cTxt1)
+        tam += (unsigned char)v->defvar[Instr::endIndice] + 1;
+    else if (v->defvar[2] == Instr::cTxt2)
+        tam += (unsigned char)v->defvar[Instr::endIndice] + 257;
+    else
+        return false;
+// Obtém a quantidade de variáveis (vetor)
+    int vetor = (unsigned char)v->defvar[Instr::endVetor];
+// Não é vetor: anota na variável
+    if (vetor==0 || v->indice!=0xFF)
+    {
+        bool valor = (tam <= (int)strlen(mens));
+        v->setTxt(mens);
+        Instr::ApagarVar(v-1);
+        if (!Instr::CriarVar(Instr::InstrVarInt))
+            return false;
+        Instr::VarAtual->setInt(valor);
+        return true;
+    }
+// Anota o texto no vetor
+    const char * fim = mens + strlen(mens);
+    char * origem = mens;
+    int tammin = tam - tam/8;
+    for (int indice=0; indice<vetor; indice++)
+    {
+        v->indice = indice;
+    // Se o texto cabe na variável...
+        if (origem+tam >= fim)
+        {
+            v->setTxt(origem); // Anota o fim do texto
+            indice++;       // Quantidade de variáveis usadas no vetor
+            while (vetor>indice) // Limpa próximas variáveis do vetor
+            {
+                v->indice = --vetor;
+                v->setTxt(origem);
+            }
+            Instr::ApagarVar(v-1);
+            if (!Instr::CriarVar(Instr::InstrVarInt))
+                return false;
+            Instr::VarAtual->setInt(indice);
+            return true;
+        }
+    // Obtém aonde deve dividir a linha
+        int x;
+        for (x=tam; x>=tammin; x--)
+            if (origem[x]==' ')
+                break;
+        if (x<tammin)
+            for (x=tam; x>=tammin; x--)
+                if (origem[x]=='.')
+                    break;
+        if (x<tammin)
+            x=tam;
+    // Anota o texto
+        char m1 = origem[x];
+        origem[x]=0;
+        v->setTxt(origem);
+        origem[x]=m1;
+        origem+=x;
+    }
+// Não cabe no vetor: retorna 0
+    Instr::ApagarVar(v-1);
+    return Instr::CriarVar(Instr::InstrVarInt);
+}
 
 //------------------------------------------------------------------------------
 bool TVarProg::FuncLin(TVariavel * v)

@@ -32,6 +32,8 @@ private:
     bool FuncIniFunc2(TVariavel * v);
 
     bool FuncLin(TVariavel * v);
+    bool FuncDepois(TVariavel * v);
+    bool FuncTexto(TVariavel * v);
 
     void MudaConsulta(int valor); ///< Muda o valor da variável consulta
     unsigned char consulta; ///< O que consultar, 0=não está consultando nada

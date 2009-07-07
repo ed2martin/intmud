@@ -82,6 +82,12 @@ void TObjSocket::RetiraVarSocket()
 }
 
 //------------------------------------------------------------------------------
+const char * TObjSocket::Endereco(bool remoto)
+{
+    return "";
+}
+
+//------------------------------------------------------------------------------
 /** @param mensagem Endereço dos bytes a enviar
  *  @return true se conseguiu enviar, false se não conseguiu */
 bool TObjSocket::Enviar(const char * mensagem)
@@ -427,6 +433,16 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         if (s)
             Instr::VarAtual->setInt(1);
         return true;
+    }
+// Endereço IP
+    if (comparaZ(nome, "ip")==0 || comparaZ(nome, "iplocal")==0)
+    {
+        char mens[50];
+        *mens=0;
+        if (Socket)
+            copiastr(mens, Socket->Endereco(nome[2]==0));
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
     }
 // Variáveis
     const char * x = 0;

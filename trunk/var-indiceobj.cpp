@@ -136,30 +136,12 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
     {
     // Obtém o texto e o tamanho do texto
         char mens[100];
-        int  tam;
         *mens=0;
         if (IndiceObj)
             copiastr(mens, IndiceObj->Nome, sizeof(mens));
-        tam = strlen(mens);
-    // Acerta variáveis
+    // Anota o texto
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrTxtFixo))
-            return false;
-    // Verifica espaço disponível (sem o 0 no final do texto)
-        int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-        if (disp<0)
-            return false;
-        if (tam>disp)
-            tam = disp;
-    // Copia texto
-        if (tam>0)
-            memcpy(Instr::DadosTopo, mens, tam);
-        Instr::DadosTopo[tam] = 0;
-    // Acerta variáveis
-        Instr::VarAtual->endvar = Instr::DadosTopo;
-        Instr::VarAtual->tamanho = tam+1;
-        Instr::DadosTopo += tam+1;
-        return true;
+        return Instr::CriarVarTexto(mens);
     }
 // Objeto anterior
     if (comparaZ(nome, "antes")==0)
