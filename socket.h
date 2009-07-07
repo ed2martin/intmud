@@ -31,6 +31,8 @@ public:
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
     bool EnvMens(const char * mensagem);///< Envia mensagem conforme protocolo
     int  Variavel(char num, int valor);
+    const char * Endereco(bool remoto);
+                    ///< Retorna o endereço local ou remoto da conexão
 private:
     void Processa(const char * buffer, int tamanho);
     bool EnvMens(const char * mensagem, int tamanho); ///< Envia mensagem pura

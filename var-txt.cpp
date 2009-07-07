@@ -90,23 +90,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         }
     // Acerta variáveis
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrTxtFixo))
-            return false;
-    // Verifica espaço disponível (sem o 0 no final do texto)
-        int disp = Instr::DadosFim - Instr::DadosTopo - 1;
-        if (disp<0)
-            return false;
-        if (pmens>disp)
-            pmens = disp;
-    // Copia texto
-        if (pmens>0)
-            memcpy(Instr::DadosTopo, mens, pmens);
-        Instr::DadosTopo[pmens] = 0;
-    // Acerta variáveis
-        Instr::VarAtual->endvar = Instr::DadosTopo;
-        Instr::VarAtual->tamanho = pmens+1;
-        Instr::DadosTopo += pmens+1;
-        return true;
+        return Instr::CriarVarTexto(mens, pmens);
     }
 // Escrever
     if (comparaZ(nome, "msg")==0)

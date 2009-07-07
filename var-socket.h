@@ -48,6 +48,8 @@ protected:
                      *  @param valor Novo valor, se for >= 0
                      *  @return valor atual da variável
                      */
+    virtual const char * Endereco(bool remoto);
+                    ///< Retorna o endereço local ou remoto da conexão
 
     void RetiraVarSocket(); ///< Retira objeto da lista ligada de TVarSocket
     void FuncFechou();  ///< Executa função _fechou

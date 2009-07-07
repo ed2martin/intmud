@@ -15,6 +15,7 @@ bool Codif(char * destino, const char * origem, int tamanho);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
 
+bool CriarVarTexto(const char * mens, int tammens=-1);
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);
 void ApagarRet(TVariavel * v);
