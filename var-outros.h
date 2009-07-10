@@ -3,6 +3,9 @@
 
 #define TESPERA_MAX 10  // Tempo máximo que pode esperar (10 = 1 segundo)
 
+class TVariavel;
+class TObjeto;
+
 //----------------------------------------------------------------------------
 /** Trata das variáveis do tipo REF */
 class TVarRef /// Variáveis REF
@@ -61,6 +64,10 @@ private:
     static TVarIntTempo ** VetMenos; ///< Primeira lista ligada
     static TVarIntTempo ** VetMais;  ///< Segunda lista ligada
 };
+
+//----------------------------------------------------------------------------
+/// Processa funções de vetores de txt1 a txt512
+bool FuncVetorTxt(TVariavel * v, const char * nome);
 
 //----------------------------------------------------------------------------
 

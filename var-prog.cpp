@@ -421,92 +421,28 @@ bool TVarProg::FuncDepois(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncTexto(TVariavel * v)
 {
-    char mens[4096];
-    *mens=0;
-// Obtém o texto
     switch (consulta)
     {
     case 1:  // iniclasse
-        strcpy(mens, ClasseAtual->Nome);
-        break;
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(Instr::InstrTxtFixo))
+            return false;
+        Instr::VarAtual->endvar = ClasseAtual->Nome;
+        return true;
     case 2:  // inifunc
     case 3:  // inifunc2
-        strcpy(mens, Classe->InstrVar[ValorAtual] + Instr::endNome);
-        break;
-
-    }
-// Nenhum argumento: retorna o texto
-    if (Instr::VarAtual <= v)
-    {
         Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
-    }
-    v--;
-// Um argumento: verifica se é txt1 a txt512 e obtém o tamanho da variável
-    int tam = 0;
-    if (v->defvar[2] == Instr::cTxt1)
-        tam += (unsigned char)v->defvar[Instr::endIndice] + 1;
-    else if (v->defvar[2] == Instr::cTxt2)
-        tam += (unsigned char)v->defvar[Instr::endIndice] + 257;
-    else
-        return false;
-// Obtém a quantidade de variáveis (vetor)
-    int vetor = (unsigned char)v->defvar[Instr::endVetor];
-// Não é vetor: anota na variável
-    if (vetor==0 || v->indice!=0xFF)
-    {
-        bool valor = (tam <= (int)strlen(mens));
-        v->setTxt(mens);
-        Instr::ApagarVar(v-1);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVar(Instr::InstrTxtFixo))
             return false;
-        Instr::VarAtual->setInt(valor);
+        Instr::VarAtual->endvar =
+                Classe->InstrVar[ValorAtual] + Instr::endNome;
         return true;
     }
-// Anota o texto no vetor
-    const char * fim = mens + strlen(mens);
-    char * origem = mens;
-    int tammin = tam - tam/8;
-    for (int indice=0; indice<vetor; indice++)
-    {
-        v->indice = indice;
-    // Se o texto cabe na variável...
-        if (origem+tam >= fim)
-        {
-            v->setTxt(origem); // Anota o fim do texto
-            indice++;       // Quantidade de variáveis usadas no vetor
-            while (vetor>indice) // Limpa próximas variáveis do vetor
-            {
-                v->indice = --vetor;
-                v->setTxt(origem);
-            }
-            Instr::ApagarVar(v-1);
-            if (!Instr::CriarVar(Instr::InstrVarInt))
-                return false;
-            Instr::VarAtual->setInt(indice);
-            return true;
-        }
-    // Obtém aonde deve dividir a linha
-        int x;
-        for (x=tam; x>=tammin; x--)
-            if (origem[x]==' ')
-                break;
-        if (x<tammin)
-            for (x=tam; x>=tammin; x--)
-                if (origem[x]=='.')
-                    break;
-        if (x<tammin)
-            x=tam;
-    // Anota o texto
-        char m1 = origem[x];
-        origem[x]=0;
-        v->setTxt(origem);
-        origem[x]=m1;
-        origem+=x;
-    }
-// Não cabe no vetor: retorna 0
-    Instr::ApagarVar(v-1);
-    return Instr::CriarVar(Instr::InstrVarInt);
+    //char mens[4096];
+    //*mens=0;
+    //Instr::ApagarVar(v);
+    //return Instr::CriarVarTexto(mens);
+    return false;
 }
 
 //------------------------------------------------------------------------------

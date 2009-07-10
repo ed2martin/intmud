@@ -21,6 +21,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "var-outros.h"
+#include "procurar.h"
 #include "misc.h"
 
 //#define DEBUG  // Mostrar e testar vetores de TVarIntTempo
@@ -348,4 +349,304 @@ void TVarIntTempo::DebugVet(bool mostrar)
         }
     if (mostrar)
         { printf("\n"); fflush(stdout); }
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorTxt(TVariavel * v, const char * nome)
+{
+// Obtém número de variáveis e tamanho de uma variável
+    int numvar = (unsigned char)v->defvar[Instr::endVetor];
+    int tamvar = (unsigned char)v->defvar[Instr::endIndice] + 2;
+    if (v->defvar[2] == Instr::cTxt2)
+        tamvar += 256;
+// Texto do vetor
+    if (comparaZ(nome, "texto")==0)
+    {
+    // Obtém índice inicial e a quantidade de variáveis
+        int ini = 0;
+        int total = numvar;
+        if (Instr::VarAtual >= v+1)
+        {
+            ini = v[1].getInt();
+            if (ini<0)
+                ini=0;
+            if (Instr::VarAtual >= v+2)
+            {
+                total = v[2].getInt() + 1;
+                if (total>numvar)
+                    total=numvar;
+            }
+        }
+        total -= ini;
+    // Cria variável
+        const char * origem = v->end_char + ini * tamvar;
+        Instr::ApagarVar(v);  // Não tem importância que v seja apagado aqui
+        if (!Instr::CriarVar(Instr::InstrTxtFixo))
+            return false;
+        if (Instr::DadosTopo >= Instr::DadosFim)
+            return false;
+    // Anota o texto
+        char * destino = Instr::DadosTopo;
+        for (; total>0; total--,origem+=tamvar)
+        {
+            //printf("texto = ["); fflush(stdout);
+            //for (const char * x=origem; *x; x++)
+            //    if (*(signed char*)x >= ' ')
+            //        putchar(*x);
+            //    else
+            //        printf("(%02X)", *(unsigned char*)x);
+            //printf("]\n"); fflush(stdout);
+            for (const char * o = origem; *o && destino < Instr::DadosFim-1; )
+                *destino++ = *o++;
+        }
+        *destino++ = 0;
+    // Acerta a variável
+        Instr::VarAtual->endvar = Instr::DadosTopo;
+        Instr::VarAtual->tamanho = destino - Instr::DadosTopo;
+        Instr::DadosTopo = destino;
+        return true;
+    }
+// Divide em palavras
+    if (comparaZ(nome, "palavras")==0)
+    {
+    // Obtém número de palavras (parâmetro de entrada)
+        int total = numvar;
+        if (Instr::VarAtual < v+1)
+            return false;
+        if (Instr::VarAtual >= v+2)
+        {
+            total = v[2].getInt();
+            if (total>numvar)
+                total=numvar;
+        }
+    // Copia o texto obtendo o número de palavras
+        int palavras = 0;
+        const char * origem = v[1].getTxt();
+        char * destino = v->end_char;
+        for (; total>1; total--)
+        {
+            while (*origem==' ' || *origem==Instr::ex_barra_n)
+                origem++;
+            if (*origem==0)
+                break;
+            char * d = destino;
+            destino += tamvar, palavras++;
+            for (; *origem && *origem!=' ' &&
+                    *origem!=Instr::ex_barra_n; origem++)
+                if (d<destino-1)
+                    *d++ = *origem;
+            *d = 0;
+        }
+    // Copia o último texto
+        while (*origem==' ' || *origem==Instr::ex_barra_n)
+            origem++;
+        if (*origem)
+        {
+            char * d = destino;
+            destino += tamvar, palavras++;
+            while (*origem && d<destino-1)
+                *d++ = *origem++;
+            while (*origem==' ' || *origem==Instr::ex_barra_n)
+                origem++;
+            if (*origem==0)
+            {
+                for (d--; d>=destino-tamvar; d--)
+                    if (*d!=' ' && *d!=Instr::ex_barra_n)
+                        break;
+                d++;
+            }
+            *d = 0;
+        }
+    // Limpa próximas variáveis do vetor
+        for (; palavras < numvar; destino += tamvar, numvar--)
+            *destino=0;
+    // Retorna o número de palavras
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(Instr::InstrVarInt))
+            return false;
+        Instr::VarAtual->setInt(palavras);
+        return true;
+    }
+// Divide em linhas
+    if (comparaZ(nome, "linhas")==0)
+    {
+    // Obtém número mínimo de colunas (parâmetro de entrada)
+        int colunas = tamvar - 1;
+        if (Instr::VarAtual < v+1)
+            return false;
+        if (Instr::VarAtual >= v+2)
+        {
+            colunas = v[2].getInt();
+            if (colunas>tamvar-1)
+                colunas=tamvar-1;
+            if (colunas<0)
+                colunas=0;
+        }
+    // Copia o texto
+        const char * origem = v[1].getTxt();
+        char * destino = v->end_char;
+        int linha = 0;  // Número de linhas copiadas
+        colunas -= tamvar-1; // Quantas colunas recuar do final do texto
+        while (linha<numvar)
+        {
+            char * d = destino;
+            linha++, destino+=tamvar;
+        // Copia linha
+            while (*origem && *origem!=Instr::ex_barra_n && d<destino)
+                *d++ = *origem++;
+        // Linha cabe na variável
+            if (d<destino)
+            {
+                *d=0;
+            // Fim da linha
+                if (*origem==Instr::ex_barra_n)
+                {
+                    origem++;
+                    continue;
+                }
+            // Fim do texto
+                break;
+            }
+        // Obtém aonde deve dividir a linha
+            d--,origem--; // Recua um caracter
+            int x;
+            for (x=-1; x>=colunas; x--)
+                if (origem[x]==' ')
+                    break;
+            if (x<colunas)
+                for (x=-1; x>=colunas; x--)
+                    if (origem[x]=='.')
+                        break;
+        // Divide a linha
+            if (x>=colunas)
+            {
+                x++;
+                origem += x;
+                d += x;
+            }
+            *d=0;
+        }
+    // Limpa próximas variáveis do vetor
+        for (; linha < numvar; destino += tamvar, numvar--)
+            *destino=0;
+    // Retorna o número de palavras
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(Instr::InstrVarInt))
+            return false;
+        Instr::VarAtual->setInt(linha);
+        return true;
+    }
+// Limpa as variáveis do vetor
+    if (comparaZ(nome, "limpar")==0)
+    {
+        char * destino = v->end_char;
+        for (; numvar>0; numvar--, destino+=tamvar)
+            *destino=0;
+        return false;
+    }
+// Junta texto
+    if (comparaZ(nome, "juntar")==0)
+    {
+    // Obtém o texto delimitador
+        int total = numvar;
+        char mens[4096];
+        *mens=0;
+        if (Instr::VarAtual >= v+1)
+        {
+            copiastr(mens, v[1].getTxt(), sizeof(mens));
+            if (Instr::VarAtual >= v+2)
+            {
+                total = v[2].getInt();
+                if (total>numvar)
+                    total=numvar;
+            }
+        }
+    // Cria variável
+        const char * origem = v->end_char;
+        Instr::ApagarVar(v);  // Não tem importância que v seja apagado aqui
+        if (!Instr::CriarVar(Instr::InstrTxtFixo))
+            return false;
+        if (Instr::DadosTopo >= Instr::DadosFim)
+            return false;
+    // Anota o texto
+        char * destino = Instr::DadosTopo;
+        for (; total>0; total--,origem+=tamvar)
+        {
+            for (const char * o = origem; *o && destino < Instr::DadosFim-1; )
+                *destino++ = *o++;
+            if (total<=1)
+                break;
+            for (const char * o = mens; *o && destino < Instr::DadosFim-1; )
+                *destino++ = *o++;
+        }
+        *destino++ = 0;
+    // Acerta a variável
+        Instr::VarAtual->endvar = Instr::DadosTopo;
+        Instr::VarAtual->tamanho = destino - Instr::DadosTopo;
+        Instr::DadosTopo = destino;
+        return true;
+    }
+// Separa texto
+    int valor = 2;
+    if (comparaZ(nome, "separar")==0)
+        valor=0;
+    else if (comparaZ(nome, "separardif")==0)
+        valor=1;
+    if (valor!=2)
+    {
+        int indice = 0;
+        int indmax = numvar;
+        char * destino = v->end_char;
+        while (true)
+        {
+            if (Instr::VarAtual < v+2)
+                break;
+            if (Instr::VarAtual >= v+3)
+            {
+                indmax = v[3].getInt();
+                if (indmax<1)
+                    break;
+                if (indmax>numvar)
+                    indmax=numvar;
+            }
+        // Obtém delimitador
+            TProcurar proc;
+            const char * origem = v[2].getTxt();
+            int tampadrao = strlen(origem);
+            if (!proc.Padrao(origem, valor))
+                break;
+        // Obtém texto
+            origem = v[1].getTxt();
+            int tam = strlen(origem);
+        // Anota texto
+            while (true)
+            {
+                indice++;
+                int posic = (indice>=indmax ? -1 : proc.Proc(origem, tam));
+                if (posic<0) // Não encontrou
+                {
+                    copiastr(destino, origem, tamvar);
+                    destino += tamvar;
+                    break;
+                }
+                int total = (posic < tamvar-1 ? posic : tamvar-1);
+                memcpy(destino, origem, total);
+                destino[total] = 0;
+                origem += posic + tampadrao;
+                tam -= posic + tampadrao;
+                destino += tamvar;
+            }
+            break;
+        }
+        // Limpa próximas variáveis do vetor
+        for (; indice < numvar; destino += tamvar, numvar--)
+            *destino=0;
+        // Retorna o número de variáveis
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(Instr::InstrVarInt))
+            return false;
+        Instr::VarAtual->setInt(indice);
+        return true;
+    }
+    return false;
 }

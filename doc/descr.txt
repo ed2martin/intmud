@@ -300,6 +300,7 @@ func teste
 # Vai fazer: este.msg("teste")
   x = "teste"
 
+
 *** Funções chamadas pelo programa:
 
 ini
@@ -569,6 +570,81 @@ inttotal(<variável>)
     Se for fornecido mais de um argumento, é retornada a soma.
     Exemplo: total(a,b)
     É o mesmo que: total(a) + total(b)
+
+
+*** Funções existentes em vetores de variáveis txt1 a txt512:
+
+limpar
+    Limpa todas as variáveis do vetor (faz todas as variáveis = "").
+    Exemplo:
+    txt10 x.3
+    x.limpar
+    É o mesmo que:
+    txt10 x.3
+    x.0 = ""
+    x.1 = ""
+    x.2 = ""
+
+texto
+texto( <número da primeira variável> )
+texto( <número da primeira variável> , <número da última variável> )
+    Retorna um texto que corresponde a todas as variáveis concatenadas
+    Exemplo:
+    txt10 x.3
+    x.0 = "a"
+    x.1 = "b"
+    x.2 = "c"
+    msg(x.texto) # É o mesmo que msg("abc")
+    msg(x.texto(0,1)) # É o mesmo que msg("ab")
+
+palavras( <texto> )
+palavras( <texto> , <número de palavras> )
+    Divide o texto em palavras.
+    As palavras são separadas por espaço ou "\n".
+    Retorna o número de palavras (pode ser zero).
+    Exemplo:
+    txt10 x.2
+    x.palavra("bom dia !")
+    É o mesmo que:
+    txt10 x.2
+    x.0 = "bom"
+    x.1 = "dia !"
+
+linhas( <texto> )
+linhas( <texto> , <número de colunas> )
+    Preenche as variáveis do vetor com o texto, da seguinte forma:
+    Cada variável recebe uma linha do texto (o caracter "\n" indica
+    o fim de uma linha).
+    Linhas que não cabem em uma variável são divididas automaticamente,
+    de preferência no último espaço entre <número de colunas> e o tamanho
+    da variável.
+    Retorna o número de linhas (pelo menos uma linha).
+
+separar( <texto> , <delimitador> )
+separar( <texto> , <delimitador> , <número de textos> )
+    Divide o texto com o delimitador especificado.
+    Cada variável do vetor recebe um texto.
+    A última variável recebe o restante do texto.
+    Retorna o número de variáveis (pelo menos uma variável).
+    Para diferenciar letras minúsculas de maiúsculas e acentuadas de
+    não acentuadas, escrever separardif ao invés de separar.
+    Exemplo:
+    txt10 x.4
+    x.separar("abc:10::def:20", ":")
+    É o mesmo que:
+    txt10 x.4
+    x.0 = "abc"
+    x.1 = "10"
+    x.2 = ""
+    x.3 = "def:20"
+
+juntar( <delimitador> )
+juntar( <delimitador> , <número de variáveis> )
+    Concatena o número de variáveis do vetor especificadas, acrescentando
+    o delimitador entre duas variáveis. Retorna o texto obtido.
+    Exemplo:
+    x.juntar(",", 3) é o mesmo que:
+    x.0 + "," + x.1 + "," + x.2
 
 
 *** Caracteres especiais
@@ -1007,13 +1083,6 @@ prog <nomedavariável>
         Vai para a próxima linha
     texto
         Retorna o texto da linha atual.
-    texto( <variável de texto> )
-        Coloca o texto da linha atual em uma variável txt1 a txt512.
-        Retorna 1 se conseguiu anotar ou 0 se texto não cabe na variável.
-    texto( <vetor de texto> )
-        Coloca o texto da linha atual em um vetor de variáveis txt1 a txt512.
-        Retorna a quantidade de variáveis do vetor usadas ou 0 se o texto
-        não cabe no vetor.
 
     As próximas funções funcionam independente das demais.
     existe(<nome da classe>)
@@ -1039,8 +1108,8 @@ prog <nomedavariável>
     apagar(<classe>)
     apagar(<classe>, <variável>)
         Apaga classe ou variável. Retorna: 1=sucesso, 0=falha
-    criar(<texto ou vetor de texto>)
-    criar(<nome da classe>, <texto ou vetor de texto>)
+    criar(<texto>)
+    criar(<nome da classe>, <texto>)
         Cria uma classe ou uma variável de uma classe.
         Se já existia, apaga todas as instruções antes de criar.
         <texto> contém as instruções da variável, função ou classe.
