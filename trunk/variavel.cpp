@@ -85,8 +85,8 @@ int TVariavel::Tamanho(const char * instr)
     switch (instr[2])
     {
 // Variáveis
-    case Instr::cTxt1:      return 2 + (unsigned char)instr[4];
-    case Instr::cTxt2:      return 258 + (unsigned char)instr[4];
+    case Instr::cTxt1:      return 2 + (unsigned char)instr[Instr::endIndice];
+    case Instr::cTxt2:      return 258 + (unsigned char)instr[Instr::endIndice];
     case Instr::cInt1:
     case Instr::cInt8:
     case Instr::cUInt8:     return 1;
@@ -1509,11 +1509,19 @@ bool TVariavel::Func(const char * nome)
             if (valor >= 0xFF)
                 return false;
         }
-        if (*nome || valor >= (unsigned char)defvar[Instr::endVetor])
-            return false;
-        indice = valor;
-        Instr::ApagarVar(this+1);
-        return true;
+        if (*nome==0 && valor < (unsigned char)defvar[Instr::endVetor])
+        {
+            indice = valor;
+            Instr::ApagarVar(this+1);
+            return true;
+        }
+        switch (defvar[2])
+        {
+        case Instr::cTxt1:
+        case Instr::cTxt2:
+            return FuncVetorTxt(this, nome);
+        }
+        return false;
     }
     switch (defvar[2])
     {

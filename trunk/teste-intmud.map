@@ -83,7 +83,7 @@ func servidor_socket
   novo.conec = arg0
   novo.conec.cores = 3
   novo.conec.msg("Benvindo\n")
-  novo.conec.msg("Tecle um número de 0 a 12 ou qualquer outra coisa\n")
+  novo.conec.msg("Tecle um número de 0 a 14 ou qualquer outra coisa\n")
 func conec_msg
   conec.msg("Você escreveu \cA\d4" + arg0 + "\b\n")
   escr_[txt1(arg0)](txt2(arg0))
@@ -204,6 +204,38 @@ func escr_12
     msg("\b\n")
     frente = 0, fundo += 1
   efim
+func escr_13
+  txt20 x.10
+  int8 total
+  int8 indice
+  msg("Texto após '13': \d4" + arg0 + "\b\n")
+  total = x.palavras(arg0, 3)
+#total = x.palavras(txttroca(arg0, "\\", "\n"), 3)
+  msg("Palavras: " + total + "\n")
+  msg("Palavra 1 = \d4" + x.0 + "\b\n")
+  msg("Palavra 2 = \d4" + x.1 + "\b\n")
+  msg("Palavra 3 = \d4" + x.2 + "\b\n")
+  msg("Concatenado: \d4" + x.texto + "\b\n")
+  total = x.linhas(arg0, 15)
+#total = x.linhas(txttroca(arg0, "\\", "\n"), 15)
+  msg("Linhas: " + total + "\n")
+  enquanto indice<total
+    indice += 1
+    msg("Linha " + indice + " = \d4" + x.[indice-1] + "\b\n")
+  efim
+  msg("Concatenado: \d4" + x.texto + "\b\n")
+func escr_14
+  txt20 x.10
+  int8 total
+  int8 indice
+  msg("Texto após '14': \d4" + arg0 + "\b\n")
+  total = x.separar(arg0, ":")
+  msg("Textos separados por ':' = \d4" + total + "\b\n")
+  enquanto indice<total
+    msg("linha " + indice + " = \d4" + x.[indice] + "\b\n")
+    indice += 1
+  efim
+  msg("Juntado = \d4" + x.juntar(":") + "\b\n")
 func escr_eco
   se conec.eco
     conec.eco=0
