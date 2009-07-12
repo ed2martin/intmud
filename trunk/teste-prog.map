@@ -14,19 +14,13 @@ func ini
   conec = arg0
   msg("Digite o nome de uma variável ou:\n")
   msg("E para encerrar o programa\n")
-  msg("A ou B para selecionar a classe\n")
+  msg("A, B ou C para selecionar a classe\n")
+  msg("0 a 2 para escolher uma função\n")
 func conec_msg
   prog p
   int16 i
-  se arg0 = "E"
-    msg("Programa encerrado\n")
-    terminar
-  senao arg0 = "A"
-    msg("Classe A\n")
-    nomeclasse = "A"
-  senao arg0 = "B"
-    msg("Classe B\n")
-    nomeclasse = "B"
+  se p.existe(este, "p" + txt1(arg0))
+    p[txt1(arg0)](txt2(arg0))
   senao
     msg("Classe " + nomeclasse + existe[p.existe(nomeclasse)])
     msg(" Variável " + arg0 + existe[p.existe(nomeclasse, arg0)] + "\n")
@@ -50,6 +44,51 @@ func conec_msg
     msg("\n")
 const existe0 = " (não existe)"
 const existe1 = " (existe)"
+func pE
+  msg("Programa encerrado\n")
+  terminar
+func pA
+  msg("Classe A\n")
+  nomeclasse = "A"
+func pB
+  msg("Classe B\n")
+  nomeclasse = "B"
+func pC
+  msg("Classe C\n")
+  nomeclasse = "C"
+func p0
+  prog p
+  msg("iniclasse=" + p.iniclasse + " (lista de classes)\n")
+  mostra(p)
+func p1
+  prog p
+  msg("inifunc=" + p.inifunc(nomeclasse) + " (funções definidas)\n")
+  mostra(p)
+func p2
+  prog p
+  msg("inifunc2=" + p.inifunc2(nomeclasse) + " (todas as funções)\n")
+  mostra(p)
+func mostra
+  enquanto arg0.lin
+    msg(" " + arg0.texto + "\n")
+    arg0.depois
+  efim
+func pteste12345
+  msg("funcionou 1\n")
+func pteste12345teste12345
+  msg("funcionou 2\n")
+func pteste12345teste12345teste12345
+  msg("funcionou 3\n")
+func pteste12345teste12345teste12345teste12345
+  msg("funcionou 4\n")
+func pteste12345teste12345teste12345teste12345teste12345
+  msg("funcionou 5\n")
+func pteste12345teste12345teste12345teste12345teste12345teste12345
+  msg("funcionou 6\n")
+func pteste12345teste12345teste12345teste12345teste12345teste12345teste12345
+  msg("funcionou 7\n")
+func pteste12345teste12345teste12345teste12345teste12345teste12345teste12345teste123
+  msg("funcionou 8\n")
 
 [B]
 int8 var1
@@ -57,3 +96,5 @@ int8 v.10
 sav txt10 teste
 const c1 = 10
 const c2 = "10"
+
+[C]

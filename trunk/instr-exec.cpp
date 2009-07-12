@@ -1351,9 +1351,10 @@ bool Instr::ExecX()
                 if (VarFuncIni(v+2))
                     break;
                 FuncAtual->expr++;
-                char mens[64];
+                char mens[VAR_NOME_TAM];
                 char * p = mens;
                 char * pfim = p + sizeof(mens);
+                *mens=0;
                 assert(v!=0);
                 for (TVariavel * x = v+2; x<=VarAtual; x++)
                     p = copiastr(p, x->getTxt(), pfim-p);
