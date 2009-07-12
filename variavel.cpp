@@ -33,6 +33,8 @@
 
 //#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada
 
+#define VAR_NOME_TAM 80
+
 //----------------------------------------------------------------------------
 // Usado em TVariavel::Mover()
 
@@ -121,7 +123,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cIndiceObj: return sizeof(TIndiceObj);
     case Instr::cIndiceItem: return sizeof(TIndiceItem);
 
-    case Instr::cVarNome:   return 48;
+    case Instr::cVarNome:   return VAR_NOME_TAM;
     case Instr::cVarInicio:
     case Instr::cVarClasse:
     case Instr::cVarObjeto:
@@ -499,7 +501,7 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         endvar = destino;
         return;
     case Instr::cVarNome:
-        move_mem(destino, endvar, 48);
+        move_mem(destino, endvar, VAR_NOME_TAM);
         endvar = destino;
         return;
     case Instr::cVarInicio:

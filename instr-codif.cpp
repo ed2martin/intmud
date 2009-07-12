@@ -575,7 +575,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 // Outras variáveis: acerta dados em destino e retorna
     if (destino[2] > cVariaveis)
     {
-        char nome[80];
+        char nome[VAR_NOME_TAM];
         char * p = nome;
         int  indice = -1;
     // Avança enquanto for espaço
@@ -584,6 +584,17 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Copia o nome
         for (; *origem && *origem!='=' && *origem!='#'; origem++)
         {
+            if (*origem==' ')
+            {
+                while (*origem==' ')
+                    origem++;
+                if (*origem && *origem!='=' && *origem!='#')
+                {
+                    copiastr(dest_ini, "Nome de variável inválido", tamanho);
+                    return false;
+                }
+                break;
+            }
             if (indice>=0)
             {
                 if (*origem<'0' || *origem>'9')
@@ -637,11 +648,6 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         if (*nome==0)
         {
             copiastr(dest_ini, "Faltou o nome da variável", tamanho);
-            return false;
-        }
-        if (strlen(nome)>32)
-        {
-            copiastr(dest_ini, "Nome de variável muito grande", tamanho);
             return false;
         }
         for (const char * p=nome; *p; p++)

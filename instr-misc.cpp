@@ -457,7 +457,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
 
 //----------------------------------------------------------------------------
 /// Obtém o nome de uma instrução
-/** @param  valor Valor de Instr::Comando
+/** @param  instr Instrução codificada
  *  @return nome, ou "" se não encontrou
  */
 const char * Instr::NomeInstr(const char * instr)

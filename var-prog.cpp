@@ -304,15 +304,21 @@ void TVarProg::MudaConsulta(int valor)
 bool TVarProg::FuncIniClasse(TVariavel * v)
 {
     int valor = 0;
-    while (Instr::VarAtual >= v+1)
+    const char * texto = "";
+    if (Instr::VarAtual >= v+1)
+        texto = v[1].getTxt();
+    if (*texto==0)
     {
-        const char * texto = v[1].getTxt();
+        ClasseAtual = TClasse::RBfirst();
+        ClasseFim = TClasse::RBlast();
+        if (ClasseAtual)
+            valor=1;
+    }
+    else
+    {
         ClasseAtual = TClasse::ProcuraIni(texto);
-        if (ClasseAtual==0)
-            break;
-        ClasseFim = TClasse::ProcuraFim(texto);
-        valor = 1;
-        break;
+        if (ClasseAtual)
+            valor=1, ClasseFim = TClasse::ProcuraFim(texto);
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
@@ -326,26 +332,37 @@ bool TVarProg::FuncIniClasse(TVariavel * v)
 bool TVarProg::FuncIniFunc(TVariavel * v)
 {
     int valor = 0;
-    while (Instr::VarAtual >= v+2)
+    while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
         if (Classe==0)
             break;
-        const char * texto = v[2].getTxt();
-        ValorAtual = Classe->IndiceNomeIni(texto);
-        if (ValorAtual<0)
-            break;
-        ValorFim = Classe->IndiceNomeFim(texto);
+        const char * texto = "";
+        if (Instr::VarAtual >= v+2)
+            texto = v[2].getTxt();
+        if (*texto)
+        {
+            ValorAtual = Classe->IndiceNomeIni(texto);
+            if (ValorAtual<0)
+                break;
+            ValorFim = Classe->IndiceNomeFim(texto);
+        }
+        else
+        {
+            if (Classe->NumVar==0)
+                break;
+            ValorAtual = 0, ValorFim = Classe->NumVar-1;
+        }
         while ((Classe->IndiceVar[ValorAtual] & 0x800000)==0)
             if (++ValorAtual > ValorFim)
-                goto fim;
+                break;
         while ((Classe->IndiceVar[ValorFim] & 0x800000)==0)
             if (--ValorFim < ValorAtual)
-                goto fim;
-        valor = 2;
+                break;
+        if (ValorAtual <= ValorFim)
+            valor = 2;
         break;
     }
-fim:
     MudaConsulta(valor);
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarInt))
@@ -358,17 +375,22 @@ fim:
 bool TVarProg::FuncIniFunc2(TVariavel * v)
 {
     int valor = 0;
-    while (Instr::VarAtual >= v+2)
+    while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
         if (Classe==0)
             break;
-        const char * texto = v[2].getTxt();
-        ValorAtual = Classe->IndiceNomeIni(texto);
-        if (ValorAtual<0)
-            break;
-        ValorFim = Classe->IndiceNomeFim(texto);
-        valor = 3;
+        const char * texto = "";
+        if (Instr::VarAtual >= v+2)
+            texto = v[2].getTxt();
+        if (*texto)
+        {
+            ValorAtual = Classe->IndiceNomeIni(texto);
+            if (ValorAtual>=0)
+                valor=3, ValorFim = Classe->IndiceNomeFim(texto);
+        }
+        else if (Classe->NumVar)
+            valor=3, ValorAtual=0, ValorFim=Classe->NumVar-1;
         break;
     }
     MudaConsulta(valor);

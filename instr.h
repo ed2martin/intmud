@@ -5,6 +5,8 @@ class TClasse;
 class TObjeto;
 class TVariavel;
 
+#define VAR_NOME_TAM 80 // Tamanho máximo dos nomes das variáveis + 1
+
 /// Codificar, decodificar e executar instruções
 /** Codificar, decodificar e executar instruções */
 namespace Instr {
