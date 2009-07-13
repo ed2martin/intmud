@@ -1,5 +1,5 @@
 [A]
-herda b
+herda b,c
 comum serv servidor
 socket conec
 txt16 nomeclasse
@@ -15,7 +15,7 @@ func ini
   msg("Digite o nome de uma variável ou:\n")
   msg("E para encerrar o programa\n")
   msg("A, B ou C para selecionar a classe\n")
-  msg("0 a 2 para escolher uma função\n")
+  msg("0 a 6 para escolher uma função\n")
 func conec_msg
   prog p
   int16 i
@@ -24,6 +24,9 @@ func conec_msg
   senao
     msg("Classe " + nomeclasse + existe[p.existe(nomeclasse)])
     msg(" Variável " + arg0 + existe[p.existe(nomeclasse, arg0)] + "\n")
+    se p.varnum(nomeclasse, arg0)
+      msg("constante numérica\n")
+    fimse
     se p.vartexto(nomeclasse, arg0)
       msg("constante de texto\n")
     fimse
@@ -68,9 +71,25 @@ func p2
   prog p
   msg("inifunc2=" + p.inifunc2(nomeclasse) + " (todas as funções)\n")
   mostra(p)
+func p3
+  prog p
+  msg("iniherda=" + p.iniherda(nomeclasse) + " (herança)\n")
+  mostra(p)
+func p4
+  prog p
+  msg("iniherda2=" + p.iniherda2(nomeclasse) + " (todas as classes hedadas)\n")
+  mostra(p)
+func p5
+  prog p
+  msg("iniherdainv=" + p.iniherdainv(nomeclasse) + " (herança inversa)\n")
+  mostra(p)
+func p6
+  prog p
+  msg("iniclasselin=" + p.iniclasselin(nomeclasse) + " (instruções da classe)\n")
+  mostra(p)
 func mostra
   enquanto arg0.lin
-    msg(" " + arg0.texto + "\n")
+    msg(txtesp(1 + arg0.nivel * 2) + arg0.texto + "\n")
     arg0.depois
   efim
 func pteste12345
@@ -98,3 +117,6 @@ const c1 = 10
 const c2 = "10"
 
 [C]
+herda teste
+
+[teste]

@@ -266,7 +266,7 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
 // Acerta ListaDeriv e NumDeriv de todas as classes
 void TClasse::AcertaDeriv()
 {
-    TClasse * buf[20];
+    TClasse * buf[HERDA_TAM];
     TClasse * cl;
 
 // Limpa ListaDeriv e NumDeriv
@@ -284,7 +284,7 @@ void TClasse::AcertaDeriv()
 #ifdef MOSTRA_HERANCA
     for (cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
     {
-        int total = cl->Heranca(buf, 20);
+        int total = cl->Heranca(buf, HERDA_TAM);
         printf("herda(%s) ", cl->Nome);
         for (int x=0; x<total; x++)
             printf("%c %s", x==0 ? '=' : ',', buf[x]->Nome);
@@ -294,7 +294,7 @@ void TClasse::AcertaDeriv()
 
 // Obtém número de classes derivadas
     for (cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-        for (int total = cl->Heranca(buf, 20); total>0; )
+        for (int total = cl->Heranca(buf, HERDA_TAM); total>0; )
             buf[--total]->NumDeriv++;
 
 // Aloca memória em TClasse::ListaDeriv
@@ -307,7 +307,7 @@ void TClasse::AcertaDeriv()
 
 // Acerta ListaDeriv e NumDeriv
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-        for (int total = cl->Heranca(buf, 20); total>0; )
+        for (int total = cl->Heranca(buf, HERDA_TAM); total>0; )
         {
             total--;
             buf[total]->ListaDeriv[ buf[total]->NumDeriv++ ] = cl;
@@ -318,8 +318,8 @@ void TClasse::AcertaDeriv()
 // Acerta ListaDeriv e NumDeriv quando Comandos[] de uma classe mudou
 void TClasse::AcertaDeriv(char * comandos_antes)
 {
-    TClasse * buf1[20];
-    TClasse * buf2[20];
+    TClasse * buf1[HERDA_TAM];
+    TClasse * buf2[HERDA_TAM];
     int total1, total2;
 
     AcertaComandos();
@@ -327,9 +327,9 @@ void TClasse::AcertaDeriv(char * comandos_antes)
 // Obtém herança antes e depois da mudança
     char * p = Comandos;
     Comandos = comandos_antes;
-    total1 = Heranca(buf1, 20);
+    total1 = Heranca(buf1, HERDA_TAM);
     Comandos = p;
-    total2 = Heranca(buf2, 20);
+    total2 = Heranca(buf2, HERDA_TAM);
 
 // Verifica se a herança não mudou
     while (total1>0 && total2>0)
@@ -408,8 +408,8 @@ void TClasse::AcertaVar()
     TamVars = 0;
 
 // Obtém classes herdadas
-    TClasse * herda[21];
-    int numherda = Heranca(herda+1, 20) + 1;
+    TClasse * herda[HERDA_TAM+1];
+    int numherda = Heranca(herda+1, HERDA_TAM) + 1;
     herda[0] = this;
 
 // Obtém número de variáveis/funções

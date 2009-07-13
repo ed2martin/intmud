@@ -252,6 +252,7 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "txt1",       Instr::FuncTxt2, 0 },
     { "txt2",       Instr::FuncTxt2, 1 },
     { "txtcor",     Instr::FuncTxt2, 2 },
+    { "txtesp",     Instr::FuncEsp, 0 },
     { "txtfiltro",  Instr::FuncTxt2, 7 },
     { "txtmai",     Instr::FuncTxt2, 3 },
     { "txtmai2",    Instr::FuncTxt2, 4 },

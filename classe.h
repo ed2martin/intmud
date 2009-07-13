@@ -3,6 +3,8 @@
 
 class TObjeto;
 
+#define HERDA_TAM 20 // Número máximo de classes herdadas por classe
+
 //----------------------------------------------------------------------------
 /** Definição das classes dos arquivos .map
 
