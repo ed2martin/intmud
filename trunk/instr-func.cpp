@@ -474,6 +474,33 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtesp
+bool Instr::FuncEsp(TVariavel * v, int valor)
+{
+    static char * texto = 0;
+    int esp = 0;
+    if (texto==0)
+    {
+        texto = new char[101];
+        memset(texto, ' ', 100);
+        texto[100]=0;
+    }
+    if (VarAtual >= v+1)
+        esp = v[1].getInt();
+    if (esp<0)
+        esp=100;
+    else if (esp>100)
+        esp = 0;
+    else
+        esp = 100-esp;
+    ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrTxtFixo))
+        return false;
+    Instr::VarAtual->endfixo = texto + esp;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Funções intnome e intsenha
 bool Instr::FuncInt(TVariavel * v, int valor)
 {

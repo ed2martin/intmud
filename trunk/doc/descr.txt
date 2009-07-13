@@ -455,6 +455,10 @@ txtmaimin(<texto>)
 txtfiltro(<texto>)
     Filtra mensagens. Retorna o texto filtrado.
 
+txtesp(<quantidade de espaços>)
+    Retorna um texto que é a quantidade de espaços requisitada.
+    O texto retornado tem de 0 a 100 caracteres.
+
 txtshs(<texto>)
     Calcula e retorna o SHS de um texto.
     O texto original é codificado de modo que não é possível decodificar.
@@ -1081,28 +1085,37 @@ prog <nomedavariável>
 
     As próximas funções permitem ler o resultado da consulta.
     lin
-        É 1 se linha válida ou 0 se chegou no fim da consulta
+        É 1 se linha válida ou 0 se chegou no fim da consulta.
     depois
-        Vai para a próxima linha
+        Vai para a próxima linha.
     texto
         Retorna o texto da linha atual.
+    nivel
+        Retorna um número, que é o nível de indentação. Usado somente com
+        iniclasselin e inifunclin.
 
     As próximas funções funcionam independente das demais.
     existe(<nome da classe>)
         Retorna 1 se a classe existe ou 0 se não existe.
-    existe(<nome da classe>, <variável>)
+    existe(<nome da classe>, <nome da variável>)
         Retorna 1 se a variável ou função existe ou 0 se não existe.
-    vartipo(<nome da classe>, <variável>)
+    vartipo(<nome da classe>, <nome da variável>)
         Retorna o tipo de variável ou "" se a variável não existe.
-    vartexto(<nome da classe>, <variável>)
-        Retorna 1 se for constante de texto ou 0 se não for.
-    varcomum(<nome da classe>, <variável>)
+    varnum(<nome da classe>, <nome da variável>)
+        Retorna 1 se for constante numérica do tipo:
+        const variável = valor numérico
+        ou 0 se não for.
+    vartexto(<nome da classe>, <nome da variável>)
+        Retorna 1 se for constante de texto do tipo:
+        const variável = "texto"
+        ou 0 se não for.
+    varcomum(<nome da classe>, <nome da variável>)
         Retorna 1 se variável for comum ou 0 se não for.
-    varsav(<nome da classe>, <variável>)
+    varsav(<nome da classe>, <nome da variável>)
         Retorna 1 se variável for sav ou 0 se não for.
-    varvetor(<nome da classe>, <variável>)
+    varvetor(<nome da classe>, <nome da variável>)
         Retorna a quantidade de variáveis do vetor ou 0 se não for vetor.
-    varlocal(<nome da classe>, <variável>)
+    varlocal(<nome da classe>, <nome da variável>)
         Retorna 1 se variável estiver definida na própria classe
         (não foi herdada) ou 0 se não estiver.
 
