@@ -27,14 +27,15 @@ private:
     bool FuncVarTexto(TVariavel * v); ///< Processa função vartexto
     bool FuncVarTipo(TVariavel * v); ///< Processa função vartipo
     bool FuncVarVetor(TVariavel * v); ///< Processa função varvetor
+    bool FuncConst(TVariavel * v); ///< Processa função const
 
     bool FuncIniClasse(TVariavel * v); ///< Processa função iniclasse
     bool FuncIniFunc(TVariavel * v); ///< Processa função inifunc
-    bool FuncIniFunc2(TVariavel * v); ///< Processa função inifunc2
+    bool FuncIniFuncTudo(TVariavel * v); ///< Processa função inifunctudo
     bool FuncIniHerda(TVariavel * v); ///< Processa função iniherda
-    bool FuncIniHerda2(TVariavel * v); ///< Processa função iniherda2
+    bool FuncIniHerdaTudo(TVariavel * v); ///< Processa função iniherdatudo
     bool FuncIniHerdaInv(TVariavel * v); ///< Processa função iniherdainv
-    bool FuncIniClasseLin(TVariavel * v); ///< Processa função iniclasselin
+    bool FuncIniLinha(TVariavel * v); ///< Processa função inilinha
 
     bool FuncLin(TVariavel * v); ///< Processa função lin
     bool FuncNivel(TVariavel * v); ///< Processa função nivel

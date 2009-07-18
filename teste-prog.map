@@ -15,7 +15,7 @@ func ini
   msg("Digite o nome de uma variável ou:\n")
   msg("E para encerrar o programa\n")
   msg("A, B ou C para selecionar a classe\n")
-  msg("0 a 6 para escolher uma função\n")
+  msg("0 a 8 para escolher uma função\n")
 func conec_msg
   prog p
   int16 i
@@ -69,7 +69,7 @@ func p1
   mostra(p)
 func p2
   prog p
-  msg("inifunc2=" + p.inifunc2(nomeclasse) + " (todas as funções)\n")
+  msg("inifunctudo=" + p.inifunctudo(nomeclasse) + " (todas as funções)\n")
   mostra(p)
 func p3
   prog p
@@ -77,7 +77,7 @@ func p3
   mostra(p)
 func p4
   prog p
-  msg("iniherda2=" + p.iniherda2(nomeclasse) + " (todas as classes hedadas)\n")
+  msg("iniherdatudo=" + p.iniherdatudo(nomeclasse) + " (todas as classes hedadas)\n")
   mostra(p)
 func p5
   prog p
@@ -85,8 +85,22 @@ func p5
   mostra(p)
 func p6
   prog p
-  msg("iniclasselin=" + p.iniclasselin(nomeclasse) + " (instruções da classe)\n")
+  msg("inilinha=" + p.inilinha(nomeclasse) + " (instruções da classe)\n")
   mostra(p)
+func p7
+  prog p
+  se arg0 = ""
+    msg("Digite o nome de uma função ou variável após 7\n")
+  senao
+    msg("inilinha=" + p.inilinha(nomeclasse, arg0) + " (instruções da função)\n")
+    mostra(p)
+func p8
+  prog p
+  se arg0 = ""
+    msg("Digite o nome de uma função ou variável após 8\n")
+  senao
+    msg("Texto da constante:\n" + p.const(nomeclasse, arg0) + "\n")
+#msg(txt([nomeclasse]:[arg0]) + "\n")
 func mostra
   enquanto arg0.lin
     msg(txtesp(1 + arg0.nivel * 2) + arg0.texto + "\n")
@@ -115,6 +129,7 @@ int8 v.10
 sav txt10 teste
 const c1 = 10
 const c2 = "10"
+const x = "\d4bom dia\b\n"
 
 [C]
 herda teste

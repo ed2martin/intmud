@@ -689,7 +689,7 @@ Executar uma função:
 <nome da variável>.<função>
 Exemplos:
 x.limpar
-x.add1(este)
+x.addini(este)
 
 Eventos (funções chamadas pela variável):
 func <nome da variável>_<nome do evento>
@@ -707,18 +707,28 @@ listaobj <nomedavariável>
     as variáveis listaobj do objeto.
 
     Possui as seguintes funções:
-    add1( <objeto> )    -> Adiciona no topo da lista
-    add2( <objeto> )    -> Adiciona no final da lista
-    remove( <objeto> )  -> Retira primeira ocorrência do objeto da lista
-    limpar              -> Retira todos os objetos da lista
-    possui( <objeto> )  -> Retorna 1 se objeto está na lista ou 0 se não está
-    apagaobj            -> Marca todos os objetos da lista para exclusão,
-                           usando a função apagar()
-    objx    -> Objeto que contém a lista; pode ser NULO
-    ini     -> Primeiro item da lista (variável listaitem)
-    fim     -> Último item da lista (variável listaitem)
-    ini.obj -> Primeiro objeto
-    fim.obj -> Último objeto
+    addini( <objeto> )
+        Adiciona no topo da lista.
+        Retorna o item adicionado da lista (variável listaitem).
+    addfim( <objeto> )
+        Adiciona no final da lista.
+        Retorna o item adicionado da lista (variável listaitem).
+    remove( <objeto> )
+        Retira primeira ocorrência do objeto da lista.
+    limpar
+        Retira todos os objetos da lista.
+    possui( <objeto> )
+        Retorna 1 se objeto está na lista ou 0 se não está.
+    apagaobj
+        Marca todos os objetos da lista para exclusão, usando a função apagar()
+    objx
+        Objeto que contém a lista; pode ser NULO.
+    ini
+        Primeiro item da lista (variável listaitem).
+        Nota: ini.obj = primeiro objeto da lista.
+    fim
+        Último item da lista (variável listaitem).
+        Nota: fim.obj = último objeto da lista.
 
 listaitem <nomedavariável>
     É usado para acessar os objetos de listaobj. Representa um objeto.
@@ -1064,24 +1074,21 @@ prog <nomedavariável>
     inifunc(<nome da classe>, <texto>)
         Obter os nomes das funções e variáveis definidas em uma classe.
         Somente as variáveis e funções que começam com o texto especificado.
-    inifunc2(<nome da classe>)
-    inifunc2(<nome da classe>, <texto>)
+    inifunctudo(<nome da classe>)
+    inifunctudo(<nome da classe>, <texto>)
         Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
     iniherda(<nome da classe>)
         Obter os nomes das classes definidas na instrução "herda".
-    iniherda2(<nome da classe>)
+    iniherdatudo(<nome da classe>)
         Obter a lista de classes herdadas por uma classe.
         Inclui também as classes herdadas indiretamente.
     iniherdainv(<nome da classe>)
         Herança inversa: obter os nomes das classes que herdam uma classe.
-    iniclasselin(<nome da classe>)
+    inilinha(<nome da classe>)
         Obter as linhas correspondentes a uma classe.
-    inifunclin(<nome da classe>, <nome da função>)
-        Obter as linhas correspondentes a uma variável ou função definida
-        na classe.
-    initexto(<nome da classe>, <nome da constante>)
-        Obter as linhas correspondentes a uma constante de texto definida
-        na classe.
+    inilinha(<nome da classe>, <nome da função>)
+        Obter as linhas correspondentes a uma variável ou função da classe
+        (definida na classe ou herdada).
 
     As próximas funções permitem ler o resultado da consulta.
     lin
@@ -1118,6 +1125,11 @@ prog <nomedavariável>
     varlocal(<nome da classe>, <nome da variável>)
         Retorna 1 se variável estiver definida na própria classe
         (não foi herdada) ou 0 se não estiver.
+    const(<nome da classe>, <nome da variável>)
+        Retorna o texto de uma variável constante do tipo:
+        const variável = valor    (nesse caso retorna valor)
+        const variável = "texto"  (nesse caso retorna texto)
+        Retorna um texto vazio para outros tipos de variáveis.
 
     As próximas funções permitem alterar o programa. Porém, as alterações
     só serão efetuadas quando o controle retornar ao IntMUD.
@@ -1155,14 +1167,22 @@ indiceitem <nomedavariável>
     determinado texto. Ignora variáveis indiceobj com texto nulo.
 
     Possui as seguintes funções:
-    ini( <texto> )    -> Vai para o primeiro objeto com o texto ou parte dele
-    fim( <texto> )    -> Vai para o último objeto com o texto ou parte dele
-    antes             -> Passa para o objeto anterior
-    depois            -> Passa para o próximo objeto
-    obj               -> Objeto
-    txt               -> Texto associado ao objeto
-    obj( <texto> )    -> Objeto que contém o texto exato
-                         Essa função funciona independente das demais
+    ini( <texto> )
+        Vai para o primeiro objeto com o texto ou parte dele.
+    fim( <texto> )
+        Vai para o último objeto com o texto ou parte dele.
+    antes
+        Passa para o objeto anterior.
+    depois
+        Passa para o próximo objeto.
+    obj
+        Objeto.
+    txt
+        Texto associado ao objeto.
+    obj( <texto> )
+        Objeto que contém o texto exato.
+        Essa função funciona independente das demais.
+
     Nota: Pode-se passar mais de um texto para as funções que possuem texto.
     Nesse caso, a função procurará por todos os textos.
 

@@ -77,8 +77,9 @@ int TListaObj::getValor()
 bool TListaObj::Func(TVariavel * v, const char * nome)
 {
 // Adiciona objetos no topo da lista
-    if (comparaZ(nome, "add1")==0)
+    if (comparaZ(nome, "addini")==0)
     {
+        TListaX * valor = 0;
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
             TObjeto * obj = v1->getObj();
@@ -86,6 +87,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
                 continue;
         // Cria objeto
             TListaX * l1 = TListaX::Criar();
+            valor = l1;
         // Acrescenta no topo da lista
             l1->Lista = this;
             l1->ListaAntes = 0;
@@ -106,11 +108,17 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
             l1->ListaItem = 0;
             DEBUG1
         }
-        return false;
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(ListaItem1))
+            return false;
+        Instr::VarAtual->end_listaitem->MudarRef(valor);
+        DEBUG1
+        return true;
     }
 // Adiciona objetos no final da lista
-    if (comparaZ(nome, "add2")==0)
+    if (comparaZ(nome, "addfim")==0)
     {
+        TListaX * valor = 0;
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
             TObjeto * obj = v1->getObj();
@@ -118,6 +126,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
                 continue;
         // Cria objeto
             TListaX * l1 = TListaX::Criar();
+            valor = l1;
         // Acrescenta no final da lista
             l1->Lista = this;
             l1->ListaAntes = Fim;
@@ -138,7 +147,12 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
             l1->ListaItem = 0;
             DEBUG1
         }
-        return false;
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(ListaItem1))
+            return false;
+        Instr::VarAtual->end_listaitem->MudarRef(valor);
+        DEBUG1
+        return true;
     }
 // Primeiro item da lista
     if (comparaZ(nome, "ini")==0)

@@ -19,8 +19,7 @@ const sexo = "o" # "o" ou "a"
 func mudasala # Muda de sala ou de dono
 # arg0=nova sala
   sala_item.remove
-  arg0.dentro.add2(este)
-  sala_item = arg0.dentro.fim
+  sala_item = arg0.dentro.addfim(este)
 
 [comum_perso]
 # Personagens
@@ -54,8 +53,7 @@ func ini # Objeto foi criado: atualiza posição atual
 func mudasala # Muda de sala
 # arg0=nova sala
   sala_item.remove
-  arg0.dentro.add2(este)
-  sala_item = arg0.dentro.fim
+  sala_item = arg0.dentro.addfim(este)
 
 func descrsala # Mostra descrição de um lugar
 # arg0 = sala
