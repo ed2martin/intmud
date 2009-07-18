@@ -16,10 +16,10 @@ func ini
   msg("y - teste sem listaitem\n")
   msg("e - encerrar o programa\n")
   msg("f - fim (apenas fecha conexão)\n")
-  lista.add2(criar("porta"))
-  lista.add2(criar("janela"))
-  lista.add2(criar("cadeira"))
-  lista.add2(criar("janela"))
+  lista.addfim(criar("porta"))
+  lista.addfim(criar("janela"))
+  lista.addfim(criar("cadeira"))
+  lista.addfim(criar("janela"))
 func conec_msg
   se !escr_[txt1(arg0)](txt2(arg0))
     msg("O quê?\n")
@@ -41,12 +41,12 @@ func escr_t
 func escr_x
   listaobj l1
   listaitem i1
-  l1.add2($janela)
-  l1.add2($janela)
-  l1.add2($cadeira)
+  l1.addfim($janela)
+  l1.addfim($janela)
+  l1.addfim($cadeira)
 #i1 = l1.ini
 #i1.depois
-#i1.add2($porta)
+#i1.addfim($porta)
 #i1.remove
   msg("Lista local\n")
   i1 = l1.fim
@@ -57,9 +57,9 @@ func escr_x
   ret 1
 func escr_y
   listaobj l1
-  l1.add2($janela)
-  l1.add2($cadeira)
-  l1.add2($cadeira)
+  l1.addfim($janela)
+  l1.addfim($cadeira)
+  l1.addfim($cadeira)
   msg("Lista local\n")
   enquanto l1.ini
     msg(txt(l1.ini.obj) + "\n")

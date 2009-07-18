@@ -1147,7 +1147,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Acerta variáveis const
             if (dest_ini[2] != cConstExpr)
                 return true;
-            const char * p = dest_ini + (unsigned char)dest_ini[4];
+            const char * p = dest_ini + (unsigned char)dest_ini[endIndice];
             int tipo = 0;
             while (true)
             {
