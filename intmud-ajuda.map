@@ -1,25 +1,20 @@
-[ajuda _comum]
-# Páginas de ajuda
-indiceobj comando
-func iniclasse
-  criar(arg0)
-func ini
-  comando = "ajuda_" + este
-
-[ajuda __comandos]
-indiceobj comando
+[ajuda _comandos]
 const posic = 8
+# Comandos de ajuda
+const c_ = $ajuda_ini
+const c_fim = $ajuda_fim
+const c_quit = $ajuda_fim
+# Processa os comandos de ajuda
 func iniclasse
  criar(arg0)
-func ini
-  comando = "com_ajuda"
 func exec
   ref obj # Objeto que vai processar o comando
-  indiceitem ind # Para procurar o objeto
-  ind.ini("ajuda_" + arg1)
-  enquanto ind
-    se ind.obj & nivel >= ind.obj.nivel
-      ind.obj.exec(arg0)
+  prog p # Para procurar o objeto
+  p.inifunc(este, "c_" + txt1(arg1))
+  enquanto p.lin
+    obj = este.[p.texto]
+    se obj & nivel >= obj.nivel
+      obj.exec(arg0)
       arg0.msg("\c6Fim da ajuda\b")
       ret
     fimse
@@ -27,33 +22,32 @@ func exec
   efim
   arg0.msg("\c6Comando ou tópico da ajuda desconhecido:\b " + arg1)
 
-[ajuda ini]
-indiceobj comando
-func iniclasse
-  criar(arg0)
-func ini
-  comando = "ajuda_"
+[ajuda comum]
+# Páginas de ajuda
+const iniclasse = criar(arg0)
 func exec
-  arg0.msg("\cbPáginas de ajuda do MUD\b")
-  arg0.msg("Para ler tecle ajuda seguido do nome de um tópico ou um comando.")
-  arg0.msg("Os tópicos são:")
-  arg0.msg("   \c2MOVER\b    Como movimentar-se no jogo")
-  arg0.msg("   \c2INFO\b     Informações sobre o seu personagem")
-  arg0.msg("   \c2OBJETOS\b  Manuseio de objetos")
-  arg0.msg("   \c2NOMES\b    Nomes de objetos e personagens")
-  arg0.msg("   \c2CONFIG\b   Opções de configuração")
-  arg0.msg("   \c2FIM\b      Sai do MUD")
+  prog p
+  p.inifunc(este, "m")
+  enquanto p.lin
+    arg0.msg([p.texto])
+    p.depois
+  efim
+
+[ajuda ini]
+herda ajuda comum
+const m1 = "\cbPáginas de ajuda do MUD\b"
+const m2 = "Para ler tecle ajuda seguido do nome de um tópico ou um comando."
+const m3 = "Os tópicos são:"
+const m4 = "   \c2MOVER\b    Como movimentar-se no jogo"
+const m5 = "   \c2INFO\b     Informações sobre o seu personagem"
+const m6 = "   \c2OBJETOS\b  Manuseio de objetos"
+const m7 = "   \c2NOMES\b    Nomes de objetos e personagens"
+const m8 = "   \c2CONFIG\b   Opções de configuração"
+const m9 = "   \c2FIM\b      Sai do MUD"
 
 [ajuda fim]
-indiceobj comando1
-indiceobj comando2
-func iniclasse
-  criar(arg0)
-func ini
-  comando1 = "ajuda_fim"
-  comando2 = "ajuda_quit"
-func exec
-  arg0.msg("\cbFim\b")
-  arg0.msg("Sintaxe: fim")
-  arg0.msg("Sintaxe: quit")
-  arg0.msg("Sai do jogo.")
+herda ajuda comum
+const m1 = "\cbFim\b"
+const m2 = "Sintaxe: fim"
+const m3 = "Sintaxe: quit"
+const m4 = "Sai do jogo."
