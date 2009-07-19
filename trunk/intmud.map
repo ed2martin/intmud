@@ -106,17 +106,17 @@ const descr_8 = nome + " está em pé"
 func escr # Escreveu alguma coisa
 # arg0=o que escreveu
   ref obj # Objeto que vai processar o comando
-  indiceitem ind # Para procurar o objeto
+  prog p # Para procurar o objeto
   listaitem l
 ### Procura objeto
-  ind.ini("com_" + txt1(arg0))
-  enquanto ind
-    se ind.obj & nivel >= ind.obj.nivel
+  p.inifunc("com _ini", "c_" + txt1(arg0))
+  enquanto p.lin
+    obj = com__ini:[p.texto]
+    se obj & nivel >= obj.nivel
       sair
     fimse
-    ind.depois
+    p.depois
   efim
-  obj = ind.obj
 #### Triggers
   se(este.tr_escr(este, obj, arg0)) # Trigger do personagem
     ret

@@ -368,6 +368,11 @@ bool TVarProg::FuncConst(TVariavel * v)
                 destino[1] = '\\';
                 destino += 2;
                 break;
+            case '\"':
+                destino[0] = '\\';
+                destino[1] = '\"';
+                destino += 2;
+                break;
             default:
                 *destino++ = *txt;
             }

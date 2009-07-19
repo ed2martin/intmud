@@ -285,22 +285,34 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
     if (indice<0)
         return false;
     char * instr = classe->InstrVar[indice];
+    char * expr = 0; // Não está processando expressão numérica
     if (instr[0]==0 && instr[1]==0)
         return false;
-    if (instr[2]!=cFunc && instr[2]!=cVarFunc)
+    switch (instr[2])
+    {
+    case cFunc:
+    case cVarFunc:
+        instr += Num16(instr);
+        if (instr[0] && instr[1])
+            switch (instr[2])
+            {
+            case cFunc:
+            case cVarFunc:
+            case cConstNulo:
+            case cConstTxt:
+            case cConstNum:
+            case cConstExpr:
+                instr = vazio;
+            }
+        break;
+    case cConstTxt:
+    case cConstNum:
+    case cConstExpr:
+        expr = instr + instr[endIndice];
+        break;
+    default:
         return false;
-    instr += Num16(instr);
-    if (instr[0] && instr[1])
-        switch (instr[2])
-        {
-        case cFunc:
-        case cVarFunc:
-        case cConstNulo:
-        case cConstTxt:
-        case cConstNum:
-        case cConstExpr:
-            instr = vazio;
-        }
+    }
     VarExec = VarExecIni;
 // Acerta pilhas
     DadosTopo = DadosPilha; // Limpa pilha de dados
@@ -310,7 +322,7 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
     FuncAtual = FuncPilha;  // Limpa pilha de funções
     FuncAtual->este = 0;    // Nenhum objeto
     FuncAtual->linha = instr;// Primeira instrução da função
-    FuncAtual->expr = 0;    // Não está processando expressão numérica
+    FuncAtual->expr = expr;
     FuncAtual->inivar = VarAtual + 1; // Endereço do primeiro argumento
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;  // Número de argumentos da função

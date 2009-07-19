@@ -1,33 +1,49 @@
-[com _comum]
-# Contém os comandos que os jogadores podem digitar
-#
-# Cada classe:
-#
-indiceobj comando # Contém o nome do comando
+[com _ini]
+# Contém os objetos que tratam cada comando
+const c_ = $com_vazio # Não digitou nada
+# Direções abreviadas
+const c_n = $com_move_norte
+const c_s = $com_move_sul
+const c_l = $com_move_leste
+const c_e = $com_move_leste
+const c_o = $com_move_oeste
+const c_w = $com_move_oeste
+const c_c = $com_move_cima
+const c_b = $com_move_baixo
+# Direções
+const c_norte = $com_move_norte
+const c_sul = $com_move_sul
+const c_leste = $com_move_leste
+const c_oeste = $com_move_oeste
+const c_cima = $com_move_cima
+const c_baixo = $com_move_baixo
+# Outros comandos
+const c_a = $ajuda__comandos
+const c_ajuda = $ajuda__comandos
+const c_encerrar = $com_encerrar
+const c_falar = $com_falar
+const c_fim = $com_fim
+const c_quit = $com_fim
+const c_ver = $com_ver
+
+[com comum]
 const nivel = 0 # Nível mínimo para usar o comando
 const posic = 8 # Posição mínima para usar o comando; vide [comum_perso]
-func iniclasse # Cria um objeto do comando
- criar(arg0)
-# func ini # Acerta a variável comando
-#  comando = "com_abc" # É sempre com_ seguido do nome do comando
+const iniclasse = criar(arg0) # Cria um objeto do comando
 func exec # Executa o comando
 # arg0=personagem
 # arg1=o que escreveu
   arg0.msg("Você digitou " + arg1)
 
 [com encerrar]
-herda com__comum
-func ini
-  comando = "com_encerrar"
+herda com_comum
 func exec
   msg("Encerrando o MUD")
   terminar
 
 [com falar]
-herda com__comum
+herda com_comum
 const posic = 5
-func ini
-  comando = "com_falar"
 func exec
   listaitem l
   txt300 texto # O que o usuário digitou
@@ -61,11 +77,7 @@ func exec
   efim
 
 [com fim]
-herda com__comum
-indiceobj comando2
-func ini
-  comando = "com_fim"
-  comando2 = "com_quit"
+herda com_comum
 func exec
   apagar(arg0)
 
@@ -73,11 +85,7 @@ func exec
 # Movimenta-se em uma direção
 const nivel = 0
 const posic = 8
-indiceobj comando1
-indiceobj comando2
-
-func iniclasse
-  criar(arg0)
+const iniclasse = criar(arg0)
 
 func exec # Executa o comando
 # arg0=personagem
@@ -104,9 +112,6 @@ const dir = "norte"
 const m_perso = "norte"
 const m_sair = "$p foi para o norte"
 const m_chegar = "$p chegou do sul"
-func ini
-  comando1 = "com_n"
-  comando2 = "com_norte"
 
 [com move_sul]
 herda com_move
@@ -114,9 +119,6 @@ const dir = "sul"
 const m_perso = "sul"
 const m_sair = "$p foi para o sul"
 const m_chegar = "$p chegou do norte"
-func ini
-  comando1 = "com_s"
-  comando2 = "com_sul"
 
 [com move_leste]
 herda com_move
@@ -125,10 +127,6 @@ const dir = "leste"
 const m_perso = "leste"
 const m_sair = "$p foi para o leste"
 const m_chegar = "$p chegou do oeste"
-func ini
-  comando1 = "com_l"
-  comando2 = "com_leste"
-  comando3 = "com_e"
 
 [com move_oeste]
 herda com_move
@@ -137,10 +135,6 @@ const dir = "oeste"
 const m_perso = "oeste"
 const m_sair = "$p foi para o oeste"
 const m_chegar = "$p chegou do leste"
-func ini
-  comando1 = "com_o"
-  comando2 = "com_oeste"
-  comando3 = "com_w"
 
 [com move_cima]
 herda com_move
@@ -148,9 +142,6 @@ const dir = "cima"
 const m_perso = "cima"
 const m_sair = "$p subiu"
 const m_chegar = "$p chegou de baixo"
-func ini
-  comando1 = "com_c"
-  comando2 = "com_cima"
 
 [com move_baixo]
 herda com_move
@@ -158,15 +149,15 @@ const dir = "baixo"
 const m_perso = "baixo"
 const m_sair = "$p desceu"
 const m_chegar = "$p chegou de cima"
-func ini
-  comando1 = "com_b"
-  comando2 = "com_baixo"
+
+[com vazio]
+const nivel = 0
+const posic = 0
+const iniclasse = criar(arg0)
 
 [com ver]
-herda com__comum
+herda com_comum
 const posic = 5
-func ini
-  comando = "com_ver"
 func exec
   nomeobj nomes
   listaitem l
