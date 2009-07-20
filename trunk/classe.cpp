@@ -871,7 +871,7 @@ void TClasse::AcertaVar()
             v2.bit = al[x].indice2 >> 24; \
             v1.indice = (unsigned char)v1.end_char[Instr::endVetor]; \
             if (v1.indice) v1.indice--; \
-            for (v2.indice=v1.indice; v1.indice>=0; v1.indice--,v2.indice--)
+            for (v2.indice=v1.indice; v1.indice<255; v1.indice--,v2.indice--)
 
     if (bitobjeto & 2) // Alguma variável mudou
     {
