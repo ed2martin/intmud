@@ -20,6 +20,8 @@
 #include "var-log.h"
 #include "classe.h"
 #include "objeto.h"
+#include "var-prog.h"
+#include "mudarclasse.h"
 #include "socket.h"
 #include "misc.h"
 
@@ -1642,25 +1644,29 @@ bool Instr::ExecX()
 /// Executa procedimentos após ExecX()
 void Instr::ExecFim()
 {
-// Apaga variáveis pendentes
-    ApagarVar(VarPilha);
-
-// Apaga objetos marcados para exclusão
     while (true)
     {
-        TObjeto * obj = TObjeto::IniApagar;
-        if (obj==0)
-            break;
-        if (Instr::ExecIni(obj, "fim"))
+        TVarProg::LimparVar(); // Apaga referências das variáveis prog
+        ApagarVar(VarPilha); // Apaga variáveis pendentes
+
+    // Apaga objetos marcados para exclusão
+        while (true)
         {
-            Instr::ExecX();
-            ApagarVar(VarPilha);
+            TObjeto * obj = TObjeto::IniApagar;
+            if (obj==0)
+                break;
+            if (Instr::ExecIni(obj, "fim"))
+            {
+                Instr::ExecX();
+                TVarProg::LimparVar(); // Apaga referências das variáveis prog
+                ApagarVar(VarPilha); // Apaga variáveis pendentes
+            }
+            TObjeto::DesmarcarApagar();
+            obj->Apagar();
         }
-        TObjeto::DesmarcarApagar();
-        obj->Apagar();
+
+    // Altera o programa
+        if (TMudarClasse::ExecPasso() == false)
+            break;
     }
-
-
-    // Se apagar alguma classe aqui, acertar também função main()
-
 }

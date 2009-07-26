@@ -735,16 +735,30 @@ listaitem <nomedavariável>
     Como valor numérico, é 1 se for um objeto ou 0 se não for.
 
     Possui as seguintes funções:
-    add1( <objeto> )  -> Adiciona objeto antes desse
-    add2( <objeto> )  -> Adiciona objeto depois desse
-    antes             -> Passa para o objeto anterior
-    depois            -> Passa para o próximo objeto
-    remove            -> Remove objeto da lista, listaitem passa a não ser
-                         um objeto válido
-    remove1           -> Remove objeto da lista e passa para o anterior
-    remove2           -> Remove objeto da lista e passa para o próximo
-    obj               -> Objeto
-    objx              -> Objeto que contém a lista; pode ser NULO
+    add1( <objeto> )
+        Adiciona objeto antes desse.
+    add2( <objeto> )
+        Adiciona objeto depois desse.
+    antes
+        Passa para o objeto anterior.
+    antes( <número de objetos> )
+        Recua o número de objetos especificado.
+        Nada faz se o número for menor ou igual a zero.
+    depois
+        Passa para o próximo objeto.
+    depois( <número de objetos> )
+        Avança o número de objetos especificado.
+        Nada faz se o número for menor ou igual a zero.
+    remove
+        Remove objeto da lista, listaitem passa a não ser um objeto válido.
+    remove1
+        Remove objeto da lista e passa para o anterior.
+    remove2
+        Remove objeto da lista e passa para o próximo.
+    obj
+        Objeto.
+    objx
+        Objeto que contém a lista; pode ser NULO.
 
     Exemplo:
     listaobj l
@@ -994,7 +1008,7 @@ socket <nomedavariável>
     <nomedavariável>_err
         Não conseguiu conectar
         arg0 = mensagem de erro
-        arg1 = índice da variável vetor, se não for vetor arg0=0
+        arg1 = índice da variável vetor, se não for vetor arg1=0
 
 serv <nomedavariável>
     Funções:
@@ -1100,6 +1114,9 @@ prog <nomedavariável>
         É 1 se linha válida ou 0 se chegou no fim da consulta.
     depois
         Vai para a próxima linha.
+    depois( <número de linhas> )
+        Avança o número de linhas especificado.
+        Nada faz se o número for menor ou igual a zero.
     texto
         Retorna o texto da linha atual.
     nivel
@@ -1140,19 +1157,33 @@ prog <nomedavariável>
     só serão efetuadas quando o controle retornar ao IntMUD.
     apagar(<classe>)
     apagar(<classe>, <variável>)
-        Apaga classe ou variável. Retorna: 1=sucesso, 0=falha
+        Apaga classe ou variável.
+        Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
     criar(<texto>)
-    criar(<nome da classe>, <texto>)
-        Cria uma classe ou uma variável de uma classe.
-        Se já existia, apaga todas as instruções antes de criar.
-        <texto> contém as instruções da variável, função ou classe.
-        Se houver mais de uma linha, usar \n para separar as linhas.
-        A primeira linha deve conter o nome e o tipo. Exemplos:
-        "[xyz]" -> para criar classe xyz
-        "int8 n" -> para criar variável n
-        "func x\nret 10" -> para criar função x
+        Cria uma classe. Se já existia, apaga todas as instruções antes.
+        <texto> contém as instruções da classe, sendo que a primeira linha
+        é o nome da classe.
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
+        Exemplo:
+            prog p
+            p.criar("abc\nint8 x\nconst n = 10")
+        Cria a seguinte classe:
+            [abc]
+            int8 x
+            const n = 10
+    criar(<nome da classe>, <texto>)
+        Cria uma função ou variável de uma classe.
+        Se já existia, antes apaga a função ou variável.
+        <texto> contém todas as instruções da função ou variável.
+        Se houver mais de uma linha, usar \n para separar as linhas.
+        A primeira linha deve conter o nome e o tipo.
+        Retorna um texto vazio se conseguiu criar ou a mensagem de erro
+        se não conseguiu.
+        Exemplos:
+            prog p
+            p.criar("abc", "int8 n") # Cria a variável n na classe abc
+            p.criar("xyz, "func x\nret 10") # cria a função x na classe xyz
     apagarlin(<nome da classe>, <número da linha>)
     apagarlin(<nome da classe>, <nome da variável>, <número da linha>)
         Apaga uma linha de uma classe ou variável.
@@ -1178,8 +1209,14 @@ indiceitem <nomedavariável>
         Vai para o último objeto com o texto ou parte dele.
     antes
         Passa para o objeto anterior.
+    antes( <número de objetos> )
+        Recua o número de objetos especificado.
+        Nada faz se o número for menor ou igual a zero.
     depois
         Passa para o próximo objeto.
+    depois( <número de objetos> )
+        Avança o número de objetos especificado.
+        Nada faz se o número for menor ou igual a zero.
     obj
         Objeto.
     txt

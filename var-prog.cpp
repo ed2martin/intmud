@@ -17,6 +17,7 @@
 #include "var-prog.h"
 #include "variavel.h"
 #include "classe.h"
+#include "mudarclasse.h"
 #include "instr.h"
 #include "misc.h"
 
@@ -61,7 +62,7 @@ int TVarProg::getValor()
 }
 
 //------------------------------------------------------------------------------
-void TVarProg::ProcEventos()
+void TVarProg::LimparVar()
 {
 // Retira todos os objetos da lista ligada
     for (TVarProg * obj = Inicio; obj; obj=obj->Depois)
@@ -80,7 +81,9 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
 // Lista das funções de prog
 // Deve obrigatoriamente estar em ordem alfabética
     const TProgFunc ProgFunc[] = {
+        { "apagar",       &TVarProg::FuncApagar },
         { "const",        &TVarProg::FuncConst },
+        { "criar",        &TVarProg::FuncCriar },
         { "depois",       &TVarProg::FuncDepois },
         { "existe",       &TVarProg::FuncExiste },
         { "iniclasse",    &TVarProg::FuncIniClasse },
@@ -526,6 +529,8 @@ bool TVarProg::FuncIniHerda(TVariavel * v)
         if (Classe==0)
             break;
         const char * txt = Classe->Comandos;
+        if (txt[0]==0 && txt[1]==0)
+            break;
         if (txt[2]!=Instr::cHerda || txt[3]==0)
             break;
         TextoAtual = txt + 4;
@@ -633,20 +638,26 @@ bool TVarProg::FuncIniLinha(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncDepois(TVariavel * v)
 {
+    int total = 1;
+    if (Instr::VarAtual >= v+1)
+        total = v[1].getInt();
     switch (consulta)
     {
     case 1:  // iniclasse
-        if (ClasseAtual == ClasseFim)
+        for (; total>0; total--)
         {
-            MudaConsulta(0);
-            break;
+            if (ClasseAtual == ClasseFim)
+            {
+                MudaConsulta(0);
+                break;
+            }
+            ClasseAtual = TClasse::RBnext(ClasseAtual);
+            if (ClasseAtual==0)
+                MudaConsulta(0);
         }
-        ClasseAtual = TClasse::RBnext(ClasseAtual);
-        if (ClasseAtual==0)
-            MudaConsulta(0);
         break;
     case 2:  // inifunc
-        while (true)
+        while (total>0)
         {
             ValorAtual++;
             if (ValorAtual > ValorFim)
@@ -655,74 +666,83 @@ bool TVarProg::FuncDepois(TVariavel * v)
                 break;
             }
             if (Classe->IndiceVar[ValorAtual] & 0x800000)
-                break;
+                total--;
         }
         break;
-    case 3:  // inifunc2
-        if (ValorAtual >= ValorFim)
+    case 3:  // inifunctudo
+        if (total <= 0)
+            break;
+        if (total >= 0xFFFF || ValorAtual + total > ValorFim)
             MudaConsulta(0);
         else
-            ValorAtual++;
+            ValorAtual += total;
         break;
     case 4:  // iniherda
-        if (ValorFim<=1)
+        if (ValorFim<=total)
             MudaConsulta(0);
-        else
+        else for (; total>0; total--)
         {
             ValorFim--;
             while (*TextoAtual++);
         }
         break;
-    case 5:  // iniherda2
-        ValorAtual++;
-        if (ValorAtual>=HERDA_TAM)
+    case 5:  // iniherdatudo
+        if (total <= 0)
+            break;
+        ValorAtual+=total;
+        if (total>=HERDA_TAM || ValorAtual>=HERDA_TAM)
             MudaConsulta(0);
         else if (ClasseHerda[ValorAtual]==0)
             MudaConsulta(0);
         break;
     case 6:  // iniherdainv
-        PontAtual++;
-        if (PontAtual >= PontFim)
+        if (total <= 0)
+            break;
+        PontAtual+=total;
+        if (total>=0xFFFFFF || PontAtual>=PontFim)
             MudaConsulta(0);
         break;
     case 7:  // inilinha com classe
     case 8:  // inilinha com função
-        switch (TextoAtual[2])
+        for (; total>0 && consulta; total--)
         {
-        case Instr::cFunc:
-        case Instr::cVarFunc:
-        case Instr::cSe:
-        case Instr::cEnquanto:
-            if (ValorFim)
-                ValorFim++;
-            break;
-        }
-        TextoAtual += Num16(TextoAtual);
-        if (TextoAtual[0]==0 && TextoAtual[1]==0)
-            MudaConsulta(0);
-        else switch (TextoAtual[2])
-        {
-        case Instr::cConstNulo:
-        case Instr::cConstTxt:
-        case Instr::cConstNum:
-        case Instr::cConstExpr:
-            if (consulta==8)
+            switch (TextoAtual[2])
+            {
+            case Instr::cFunc:
+            case Instr::cVarFunc:
+            case Instr::cSe:
+            case Instr::cEnquanto:
+                if (ValorFim)
+                    ValorFim++;
+                break;
+            }
+            TextoAtual += Num16(TextoAtual);
+            if (TextoAtual[0]==0 && TextoAtual[1]==0)
                 MudaConsulta(0);
-            else if (ValorFim>1)
-                ValorFim=1;
-            break;
-        case Instr::cFunc:
-        case Instr::cVarFunc:
-            if (consulta==8)
-                MudaConsulta(0);
-            else
-                ValorFim = 1;
-            break;
-        case Instr::cFimSe:
-        case Instr::cEFim:
-            if (ValorFim>1)
-                ValorFim--;
-            break;
+            else switch (TextoAtual[2])
+            {
+            case Instr::cConstNulo:
+            case Instr::cConstTxt:
+            case Instr::cConstNum:
+            case Instr::cConstExpr:
+                if (consulta==8)
+                    MudaConsulta(0);
+                else if (ValorFim>1)
+                    ValorFim=1;
+                break;
+            case Instr::cFunc:
+            case Instr::cVarFunc:
+                if (consulta==8)
+                    MudaConsulta(0);
+                else
+                    ValorFim = 1;
+                break;
+            case Instr::cFimSe:
+            case Instr::cEFim:
+                if (ValorFim>1)
+                    ValorFim--;
+                break;
+            }
         }
         break;
     case 9:  // inilinha com variável
@@ -742,13 +762,13 @@ bool TVarProg::FuncTexto(TVariavel * v)
         p = ClasseAtual->Nome;
         break;
     case 2:  // inifunc
-    case 3:  // inifunc2
+    case 3:  // inifunctudo
         p = Classe->InstrVar[ValorAtual] + Instr::endNome;
         break;
     case 4:  // iniherda
         p = TextoAtual;
         break;
-    case 5:  // iniherda2
+    case 5:  // iniherdatudo
         p = ClasseHerda[ValorAtual]->Nome;
         break;
     case 6:  // iniherdainv
@@ -809,4 +829,351 @@ bool TVarProg::FuncNivel(TVariavel * v)
             Instr::VarAtual->setInt(valor);
     }
     return true;
+}
+
+//------------------------------------------------------------------------------
+char * TVarProg::ProcuraInstr(char * comando, const char * nomevar)
+{
+    bool inifunc = false;
+    while (comando[0] || comando[1])
+    {
+        switch (comando[2])
+        {
+        case Instr::cFunc:
+        case Instr::cVarFunc:
+            inifunc=true;
+        case Instr::cConstNulo:
+        case Instr::cConstTxt:
+        case Instr::cConstNum:
+        case Instr::cConstExpr:
+            if (comparaZ(comando + Instr::endNome, nomevar)==0)
+                return comando;
+            comando += Num16(comando);
+            break;
+        default:
+            if (inifunc==false && comando[2] > Instr::cVariaveis)
+                if (comparaZ(comando + Instr::endNome, nomevar)==0)
+                    return comando;
+            comando += Num16(comando);
+        }
+    }
+    return comando;
+}
+
+//------------------------------------------------------------------------------
+char * TVarProg::AvancaInstr(char * comando)
+{
+    if (comando[0]==0 && comando[1]==0)
+        return comando;
+    if (comando[2] != Instr::cFunc && comando[2] != Instr::cVarFunc)
+        return comando + Num16(comando);
+    comando += Num16(comando);
+    while (comando[0] || comando[1])
+    {
+        switch (comando[2])
+        {
+        case Instr::cFunc:
+        case Instr::cVarFunc:
+        case Instr::cConstNulo:
+        case Instr::cConstTxt:
+        case Instr::cConstNum:
+        case Instr::cConstExpr:
+            return comando;
+        }
+        comando += Num16(comando);
+    }
+    return comando;
+}
+
+//------------------------------------------------------------------------------
+char * TVarProg::FimInstr(char * comando)
+{
+    while (comando[0] || comando[1])
+        comando += Num16(comando);
+    return comando + 2;
+}
+
+//------------------------------------------------------------------------------
+int TVarProg::CodifInstr(char * destino, const char * origem, int tamanho)
+{
+    char mens[2048];
+    int linhanum = 1;
+    char * linha = mens;
+    int pdestino = 0;
+    bool erro = false;
+
+    while (true)
+    {
+    // Lê uma linha
+        unsigned char ch = *origem++;
+        if (ch && ch != Instr::ex_barra_n)
+        {
+            if (ch==' ' && linha==mens)
+                continue;
+            if (linha >= mens+sizeof(mens)-1)
+            {
+                sprintf(destino, "%d: Instrução muito grande", linhanum);
+                return -1;
+            }
+            *linha++ = ch;
+            continue;
+        }
+    // Checa linha vazia
+        if (linha==mens)
+        {
+            linhanum++;
+            continue;
+        }
+    // Checa \ seguido de \n
+        if (ch==Instr::ex_barra_n && origem[-2]=='\\')
+        {
+            linha--;
+            linhanum++;
+            continue;
+        }
+    // Processa instrução
+        *linha=0;
+        linha=0;
+        if (!Instr::Codif(destino+pdestino, mens, tamanho-pdestino))
+        {
+            sprintf(mens, "%c%d: %s",
+                    Instr::ex_barra_n, linhanum, destino+pdestino);
+            if (erro==false)
+            {
+                pdestino = copiastr(destino, mens+1, tamanho) - destino;
+                erro=true;
+            }
+            else
+            {
+                pdestino = copiastr(destino+pdestino, mens,
+                                    tamanho-pdestino) - destino;
+                if (pdestino < 10)
+                    return -1;
+            }
+        }
+        if (!erro)
+            pdestino += Num16(destino+pdestino);
+        if (ch==0)
+            break;
+        linhanum++;
+    }
+    return (erro ? -1 : pdestino);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncApagar(TVariavel * v)
+{
+    int valor = 0;
+    while (Instr::VarAtual >= v+1)
+    {
+        const char * nome = v[1].getTxt();
+        TClasse * cl = TClasse::Procura(nome);
+        TMudarClasse * obj = TMudarClasse::Procurar(nome);
+    // Apagar uma classe
+        if (Instr::VarAtual < v+2)
+        {
+            if (cl)
+            {
+                if (obj==0)
+                    obj = new TMudarClasse(nome);
+                obj->MudarComandos(0);
+                obj->MarcarApagar();
+            }
+            else if (obj)
+                delete obj;
+            valor = 1;
+            break;
+        }
+    // Apagar uma variável ou função
+        char * texto1=0; // Endereço do primeiro bloco
+        int tamanho1=0; // Tamanho do primeiro bloco
+        char * texto2=0; // Endereço do segundo bloco
+        int tamanho2=0; // Tamanho do segundo bloco
+    // Obtém: texto1 = instruções da classe
+        if (obj && obj->Comandos!=0) // Comandos definidos em TMudarClasse
+            texto1 = obj->Comandos;
+        else if (cl)    // Comandos definidos em TClasse
+            texto1 = cl->Comandos;
+        else            // Nenhum comando definido, retorna
+            break;
+    // Obtém bloco de instruções
+        texto2 = ProcuraInstr(texto1, v[2].getTxt());
+        if (texto2[0]==0 && texto2[1]==0) // Não encontrou
+            break;
+        tamanho1 = texto2 - texto1;
+        texto2 = AvancaInstr(texto2);
+        tamanho2 = FimInstr(texto2) - texto2;
+    // Anota as alterações em objeto TMudarClasse
+        if (obj==0)
+            obj = new TMudarClasse(v[1].getTxt());
+        char * p = new char[tamanho1+tamanho2];
+        memcpy(p, texto1, tamanho1);
+        memcpy(p+tamanho1, texto2, tamanho2);
+        obj->MudarComandos(p);
+        valor=1;
+        break;
+    }
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarInt))
+        return false;
+    Instr::VarAtual->setInt(valor != 0);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+#define CHECA_LINHA \
+    const char * p = checalinha.Instr(com); \
+    if (p) \
+    { \
+        sprintf(mens, "%s:%d: %s\n", nomeclasse, linha, p); \
+        Instr::ApagarVar(v); \
+        return Instr::CriarVarTexto(mens); \
+    } \
+    com+=Num16(com), linha++;
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncCriar(TVariavel * v)
+{
+// Criar uma variável ou função
+    if (Instr::VarAtual >= v+2)
+    {
+        const char * nomeclasse = v[1].getTxt();
+        TClasse * cl = TClasse::Procura(nomeclasse);
+        TMudarClasse * obj = TMudarClasse::Procurar(nomeclasse);
+        char * texto1=0; // Endereço do primeiro bloco
+        int tamanho1=0; // Tamanho do primeiro bloco
+        char * texto2=0; // Endereço do segundo bloco
+        int tamanho2=0; // Tamanho do segundo bloco
+    // Obtém: texto1 = instruções da classe
+        if (obj && obj->Comandos!=0) // Comandos definidos em TMudarClasse
+            texto1 = obj->Comandos, nomeclasse=obj->Nome;
+        else if (cl)    // Comandos definidos em TClasse
+            texto1 = cl->Comandos, nomeclasse=cl->Nome;
+        else            // Nenhum comando definido, retorna
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Classe não existe");
+        }
+    // Codifica as instruções
+        char mens[65000];
+        int  total = CodifInstr(mens, v[2].getTxt(), sizeof(mens)-2);
+        if (total<0) // Erro
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens);
+        }
+        if (total==0) // Nenhuma alteração
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("");
+        }
+    // Obtém bloco de instruções
+        mens[total]=0;  // Marca o fim das instruções
+        mens[total+1]=0;
+        texto2 = AvancaInstr(mens); // Passa para próxima função/variável
+        if (texto2[0] || texto2[1])
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(
+                    "Definição de mais de uma função/variável/herda");
+        }
+        if (mens[2]==Instr::cHerda)
+        {
+            tamanho1 = 0;
+            texto2 = texto1;
+            if (texto2[0] && texto2[1] && texto2[2]==Instr::cHerda)
+                texto2 += Num16(texto2);
+            tamanho2 = FimInstr(texto2) - texto2;
+        }
+        else if (mens[2] > Instr::cVariaveis)
+        {
+            texto2 = ProcuraInstr(texto1, mens + Instr::endNome);
+            tamanho1 = texto2 - texto1;
+            texto2 = AvancaInstr(texto2);
+            tamanho2 = FimInstr(texto2) - texto2;
+        }
+        else
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(
+                    "Faltou o nome da função/variável");
+        }
+    // Checa o tamanho do bloco
+        if (total + tamanho1 + tamanho2 > 65000)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Classe muito grande");
+        }
+    // Verifica se bloco válido
+        int linha=1;
+        char * com;
+        Instr::ChecaLinha checalinha;
+        checalinha.Inicio();
+        for (com=texto1; com < texto1 + tamanho1; )
+            { CHECA_LINHA }
+        for (com=mens; com < mens+total; )
+            { CHECA_LINHA }
+        for (com=texto2; com < texto2 + tamanho2 - 2; )
+            { CHECA_LINHA }
+    // Anota alterações em objeto TMudarClasse
+        if (obj==0)
+            obj = new TMudarClasse(nomeclasse);
+        com = new char[total + tamanho1 + tamanho2];
+        memcpy(com, texto1, tamanho1);
+        memcpy(com+tamanho1, mens, total);
+        memcpy(com+tamanho1+total, texto2, tamanho2);
+        obj->MudarComandos(com);
+    }
+// Criar uma classe
+    else if (Instr::VarAtual >= v+1)
+    {
+    // Obtém o nome da classe
+        char nomeclasse[CLASSE_NOME_TAM+30];
+        const char * nome = v[1].getTxt();
+        char * p = nomeclasse;
+        while (*nome && *nome!='\n')
+        {
+            if (p >= nomeclasse+sizeof(nomeclasse)-2)
+            {
+                Instr::ApagarVar(v);
+                return Instr::CriarVarTexto("Nome de classe inválido");
+            }
+            *p++ = *nome++;
+        }
+        *p=0;
+    // Checa se nome válido / acerta o nome
+        if (!TClasse::NomeValido(nomeclasse))
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Nome de classe inválido");
+        }
+    // Codifica as instruções
+        if (*nome=='\n')
+            nome++;
+        char mens[65000];
+        int  total = CodifInstr(mens, nome, sizeof(mens)-2);
+        if (total<0)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens);
+        }
+        mens[total++] = 0;
+        mens[total++] = 0;
+    // Verifica se bloco válido
+        int linha=1;
+        char * com = mens;
+        Instr::ChecaLinha checalinha;
+        checalinha.Inicio();
+        while (com[0] && com[1])
+            { CHECA_LINHA }
+    // Anota alterações em objeto TMudarClasse
+        TMudarClasse * obj = TMudarClasse::Procurar(nomeclasse);
+        if (obj==0)
+            obj = new TMudarClasse(nomeclasse);
+        com = new char[total];
+        memcpy(com, mens, total);
+        obj->MudarComandos(com);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto("");
 }

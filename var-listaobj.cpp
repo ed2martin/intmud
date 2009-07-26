@@ -336,14 +336,20 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
 // Vai para o objeto anterior
     if (comparaZ(nome, "antes")==0)
     {
-        MudarRef(ListaX->ListaAntes);
+        if (Instr::VarAtual < v+1)
+            MudarRef(ListaX->ListaAntes);
+        else for (int total=v[1].getInt(); total>0 && ListaX; total--)
+            MudarRef(ListaX->ListaAntes);
         DEBUG1
         return false;
     }
 // Vai para o próximo objeto
     if (comparaZ(nome, "depois")==0)
     {
-        MudarRef(ListaX->ListaDepois);
+        if (Instr::VarAtual < v+1)
+            MudarRef(ListaX->ListaDepois);
+        else for (int total=v[1].getInt(); total>0 && ListaX; total--)
+            MudarRef(ListaX->ListaDepois);
         DEBUG1
         return false;
     }
