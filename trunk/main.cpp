@@ -747,13 +747,16 @@ void Inicializa(const char * arg)
 #endif
 
 // Executa funções iniclasse das classes
-    for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
+    for (TClasse * cl = TClasse::RBfirst(); cl;)
     {
-        if (Instr::ExecIni(cl, "iniclasse")==false)
-            continue;
-        Instr::ExecArg(cl->Nome);
-        Instr::ExecX();
-        Instr::ExecFim();
+        TClasse::ClInic = TClasse::RBnext(cl);
+        if (Instr::ExecIni(cl, "iniclasse"))
+        {
+            Instr::ExecArg(cl->Nome);
+            Instr::ExecX();
+            Instr::ExecFim();
+        }
+        cl = TClasse::ClInic;
     }
 }
 

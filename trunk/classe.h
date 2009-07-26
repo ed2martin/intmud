@@ -4,6 +4,7 @@
 class TObjeto;
 
 #define HERDA_TAM 20 // Número máximo de classes herdadas por classe
+#define CLASSE_NOME_TAM 48 // Tamanho máximo dos nomes das classes + 1
 
 //----------------------------------------------------------------------------
 /** Definição das classes dos arquivos .map
@@ -27,8 +28,8 @@ Para criar uma classe:
 -# Checar se nome de classe existe e é válido
 -# Criar objeto TClasse
 -# Acertar TClasse::Comandos
--# AcertaDeriv() passando um Comandos[] vazio como sendo o antigo
--# AcertaComandos() e AcertaVar()
+-# AcertaDeriv("\0\0")
+-# AcertaVar()
 .
 
 Para apagar uma classe:
@@ -38,7 +39,6 @@ Para apagar uma classe:
    -# Chamar a função fim do primeiro objeto (será apagado aqui)
    -# Voltar ao item 1
    .
--# Chamar ApagaVars()
 -# Apagar objeto TClasse (com delete)
 .
 */
@@ -56,7 +56,7 @@ public:
         ///< Verifica se nome é um nome válido para classe
         /**<
          *  @param nome Nome a pesquisar
-         *  @return bool (se o nome é valido) */
+         *  @return bool (se o nome é valido); nome original é alterado */
 
     static TClasse * Procura(const char * nome);
         ///< Procura uma classe a partir do nome
@@ -69,7 +69,7 @@ public:
         ///< Procura() que procura a última classe que começa com o nome
 
     char * Comandos;    ///< Lista de comandos da classe
-    char Nome[32];      ///< Nome da classe; não deve ser mudado
+    char Nome[CLASSE_NOME_TAM]; ///< Nome da classe; não deve ser mudado
 
 // Herança
     int Heranca(TClasse ** buffer, int tambuf);
@@ -129,6 +129,10 @@ public:
 
     char * Vars;  ///< Variáveis da classe (do tipo comum)
     unsigned int TamVars; ///< Número de bytes usados em TClasse::Vars
+
+    static TClasse * ClInic;
+        ///< Usado em conjunto com main.cpp
+        /**< Usado ao chamar funções iniclasse de todas as classes */
 
 // Árvore organizada por TClasse::Nome
 public:

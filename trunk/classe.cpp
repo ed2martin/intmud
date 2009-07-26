@@ -25,6 +25,8 @@
 //#define MOSTRA_MEM // Mostrar como alocou variáveis na memória
 //#define MOSTRA_MUDOU // Mostrar as variáveis que mudaram, em AcertaVar()
 
+TClasse * TClasse::ClInic=0;
+
 //----------------------------------------------------------------------------
 TClasseVar::TClasseVar()
 {
@@ -65,6 +67,8 @@ TClasse::TClasse(const char * nome)
 //----------------------------------------------------------------------------
 TClasse::~TClasse()
 {
+    if (ClInic==this)
+        ClInic=RBnext(this);
     while (ObjetoIni)
         ObjetoIni->Apagar();
     if (Vars)

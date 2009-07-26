@@ -148,10 +148,21 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
     {
         if (IndiceObj==0)
             return false;
-        TIndiceObj * obj = TIndiceObj::RBprevious(IndiceObj);
-        if (obj)
+        int total = 1;
+        TIndiceObj * obj = IndiceObj;
+        if (Instr::VarAtual >= v+1)
+            total = v[1].getInt();
+        for (; total>0; total--)
+        {
+            obj = TIndiceObj::RBprevious(obj);
+            if (obj==0)
+                break;
             if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
+            {
                 obj=0;
+                break;
+            }
+        }
         MudarRef(obj);
         return false;
     }
@@ -160,10 +171,21 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
     {
         if (IndiceObj==0)
             return false;
-        TIndiceObj * obj = TIndiceObj::RBnext(IndiceObj);
-        if (obj)
+        int total = 1;
+        TIndiceObj * obj = IndiceObj;
+        if (Instr::VarAtual >= v+1)
+            total = v[1].getInt();
+        for (; total>0; total--)
+        {
+            obj = TIndiceObj::RBnext(obj);
+            if (obj==0)
+                break;
             if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
+            {
                 obj=0;
+                break;
+            }
+        }
         MudarRef(obj);
         return false;
     }

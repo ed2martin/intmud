@@ -110,6 +110,25 @@ Cada variável costuma ter uma função independente, executada por
 TVariavel::Func(), mas com os mesmos argumentos das funções predefinidas.
 
 
+*** Alterar o programa interpretado
+
+A variável responsável por essa função é a prog.
+
+As funções devem:
+1. Identificar a classe que deve ser criada/apagada/alterada.
+2. Montar a lista de instruções no mesmo formato de TClasse::Comandos
+   (uma instrução após a outra, termina com 2 bytes =0).
+3. Se necessário, testar se as instruções estão na ordem certa.
+   Exemplo, a instrução "herda" deve ser sempre a primeira da classe.
+   A classe Instr::ChecaLinha é usada para essa finalidade.
+4. Criar um objeto TMudarClasse correspondente à classe, se não existir.
+5. Anotar no objeto TMudarClasse o que deve ser feito.
+
+Quando o controle retorna ao IntMUD, a função Instr::ExecFim executa
+as alterações pendentes através da função TMudarClasse::ExecPasso.
+Essa, por sua vez, segue os procedimentos especificados no arquivo classe.h.
+
+
 *** Diversos (uso genérico)
 
 arqler.cpp (TArqLer)

@@ -14,7 +14,7 @@ public:
     void Criar();           ///< Cria objeto
     void Apagar();          ///< Apaga objeto
     void Mover(TVarProg * destino); ///< Move objeto para outro lugar
-    static void ProcEventos(); ///< Processa alterações pendentes no programa
+    static void LimparVar(); ///< Apaga referências do programa nas variáveis prog
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();    ///< Ler valor numérico da variável
 
@@ -41,6 +41,23 @@ private:
     bool FuncNivel(TVariavel * v); ///< Processa função nivel
     bool FuncDepois(TVariavel * v); ///< Processa função depois
     bool FuncTexto(TVariavel * v); ///< Processa função texto
+
+    static char * ProcuraInstr(char * comando, const char * nomevar);
+        ///< Procura variável/função em lista de instruções
+    static char * AvancaInstr(char * comando);
+        ///< Avança para próxima variável/função em lista de instruções
+    static char * FimInstr(char * comando);
+        ///< Avança para o primeiro byte após a lista de instruções
+    static int CodifInstr(char * destino, const char * origem, int tamanho);
+        ///< Codifica instruções
+        /**< @param destino Endereço destino (instruções codificadas)
+             @param origem Endereço origem (texto)
+             @param tamanho Tamanho do buffer em destino
+             @return Número de bytes de instruções em destino
+                   ou -1 se ocorreu erro (destino contém a mensagem de erro) */
+
+    bool FuncApagar(TVariavel * v);
+    bool FuncCriar(TVariavel * v);
 
     void MudaConsulta(int valor); ///< Muda o valor da variável consulta
     unsigned char consulta; ///< O que consultar, 0=não está consultando nada
