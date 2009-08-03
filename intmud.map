@@ -401,7 +401,7 @@ func todos
     enquanto l
       r = l.obj
       se r.perso & r != _p & r != _a
-        r.msg(txtmai2(vartroca(arg0, "$", "param_")))
+        r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
       fimse
       l.depois
     efim
@@ -413,7 +413,7 @@ func todos2
     enquanto l
       r = l.obj
       se r.perso & r != _p & r != _a & r.invisver >= _p.invis
-        r.msg(txtmai2(vartroca(arg0, "$", "param_")))
+        r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
       fimse
       l.depois
     efim
@@ -421,17 +421,17 @@ func todos2
 func perso
   se _p
     r = _p
-    r.msg(txtmai2(vartroca(arg0, "$", "param_")))
+    r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 
 func alvo
   se _p & _a
     r = _a
-    r.msg(txtmai2(vartroca(arg0, "$", "param_")))
+    r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 
 func alvo2
   se _p & _a & _a.invisver >= _p.invis
     r = _a
-    r.msg(txtmai2(vartroca(arg0, "$", "param_")))
+    r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 
 func param_p # $p = personagem origem
   se r = _p

@@ -393,7 +393,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             default: *destino++ = tabMAI[*(unsigned char*)txt++];
             }
         break;
-    case 4: // txtmai2
+    case 4: // txtmaiini
         while (*txt && destino<mens+sizeof(mens)-1)
         {
             while (*txt && *(unsigned char*)txt<'0' &&
