@@ -56,5 +56,49 @@ private:
 };
 
 //----------------------------------------------------------------------------
+class TMudarAux /// Funções auxiliares para mudar a lista de instruções de uma classe
+{
+public:
+    TMudarAux();
+
+    static char * ProcuraInstr(char * comando, const char * nomevar);
+        ///< Procura variável/função em lista de instruções
+        /**< @return Endereço da instrução ou endereço do fim da lista
+                 de instruções (dois bytes =0) se não encontrou */
+    static char * AvancaInstr(char * comando);
+        ///< Avança para próxima variável/função em lista de instruções
+    static char * FimInstr(char * comando);
+        ///< Avança para o fim da lista de instruções (dois bytes =0)
+    static int CodifInstr(char * destino, const char * origem, int tamanho);
+        ///< Codifica instruções
+        /**< @param destino Endereço destino (instruções codificadas)
+             @param origem Endereço origem (texto)
+             @param tamanho Tamanho do buffer em destino
+             @return Número de bytes de instruções em destino
+                 ou -1 se ocorreu erro (destino contém a mensagem de erro) */
+
+    void AddBloco(char * ender, int tamanho);
+        ///< Adiciona um bloco de instruções na lista
+        /**< @param end Endereço inicial do bloco
+             @param tamanho Tamanho do bloco sem os dois bytes =0 no final */
+    bool ChecaBloco(char * mensagem, int tamanho);
+        ///< Checa instruções adicionadas com AddBloco
+        /**< Verifica se a ordem das instruções está correta
+             @param mensagem Aonde colocar a mensagem de erro
+             @param tamanho Tamanho do buffer em mensagem
+             @return true se não há nenhum erro (buffer não foi modificado),
+                     false se há algum erro */
+    void AnotaBloco(TMudarClasse * obj);
+        ///< Anota alterações em objeto TMudarClasse
+        /**< Anota em um objeto TMudarClasse a lista de instruções
+             adicionadas com AddBloco */
+
+private:
+    char * endbloco[30]; ///< Endereços dos blocos de instruções
+    char tambloco[30]; ///< Tamanhos dos blocos de instruções
+    unsigned int numbloco;  ///< Número de blocos
+};
+
+//----------------------------------------------------------------------------
 
 #endif

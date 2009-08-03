@@ -42,20 +42,6 @@ private:
     bool FuncDepois(TVariavel * v); ///< Processa função depois
     bool FuncTexto(TVariavel * v); ///< Processa função texto
 
-    static char * ProcuraInstr(char * comando, const char * nomevar);
-        ///< Procura variável/função em lista de instruções
-    static char * AvancaInstr(char * comando);
-        ///< Avança para próxima variável/função em lista de instruções
-    static char * FimInstr(char * comando);
-        ///< Avança para o primeiro byte após a lista de instruções
-    static int CodifInstr(char * destino, const char * origem, int tamanho);
-        ///< Codifica instruções
-        /**< @param destino Endereço destino (instruções codificadas)
-             @param origem Endereço origem (texto)
-             @param tamanho Tamanho do buffer em destino
-             @return Número de bytes de instruções em destino
-                   ou -1 se ocorreu erro (destino contém a mensagem de erro) */
-
     bool FuncApagar(TVariavel * v);
     bool FuncCriar(TVariavel * v);
 
