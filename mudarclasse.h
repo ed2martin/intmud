@@ -80,7 +80,9 @@ public:
     void AddBloco(char * ender, int tamanho);
         ///< Adiciona um bloco de instruções na lista
         /**< @param end Endereço inicial do bloco
-             @param tamanho Tamanho do bloco sem os dois bytes =0 no final */
+             @param tamanho Tamanho do bloco sem os dois bytes =0 no final
+             @note É adicionado apenas o endereço e o tamanho do bloco,
+                   não o conteúdo */
     bool ChecaBloco(char * mensagem, int tamanho);
         ///< Checa instruções adicionadas com AddBloco
         /**< Verifica se a ordem das instruções está correta

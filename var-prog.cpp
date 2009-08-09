@@ -82,8 +82,10 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
 // Deve obrigatoriamente estar em ordem alfabética
     const TProgFunc ProgFunc[] = {
         { "apagar",       &TVarProg::FuncApagar },
+        { "apagarlin",    &TVarProg::FuncApagarLin },
         { "const",        &TVarProg::FuncConst },
         { "criar",        &TVarProg::FuncCriar },
+        { "criarlin",     &TVarProg::FuncCriarLin },
         { "depois",       &TVarProg::FuncDepois },
         { "existe",       &TVarProg::FuncExiste },
         { "iniclasse",    &TVarProg::FuncIniClasse },
@@ -1002,7 +1004,7 @@ bool TVarProg::FuncCriar(TVariavel * v)
                 }
             // Passa para próxima instrução
                 p = TMudarAux::AvancaInstr(p);
-            } // while (p[0] && p[1])
+            } // while (p[0] || p[1])
             mudarcom.AddBloco(texto1, p-texto1);// Anota bloco atual
             if (lugar) // Anota variável
                 mudarcom.AddBloco(mens, total);
@@ -1066,12 +1068,12 @@ bool TVarProg::FuncCriar(TVariavel * v)
         char * com = mens;
         Instr::ChecaLinha checalinha;
         checalinha.Inicio();
-        while (com[0] && com[1])
+        while (com[0] || com[1])
         {
             const char * p = checalinha.Instr(com);
             if (p)
             {
-                sprintf(mens, "%s:%d: %s\n", nomeclasse, linha, p);
+                sprintf(mens, "%d: %s\n", linha, p);
                 Instr::ApagarVar(v);
                 return Instr::CriarVarTexto(mens);
             }
@@ -1085,6 +1087,168 @@ bool TVarProg::FuncCriar(TVariavel * v)
         memcpy(com, mens, total);
         obj->MudarComandos(com);
     }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto("");
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncApagarLin(TVariavel * v)
+{
+    if (Instr::VarAtual < v+2)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("");
+    }
+    const char * nome = v[1].getTxt();
+    TClasse * cl = TClasse::Procura(nome);
+    TMudarClasse * obj = TMudarClasse::Procurar(nome);
+// Variáveis do bloco
+    char * texto1=0; // Endereço do primeiro bloco
+    int tamanho1=0; // Tamanho do primeiro bloco
+    char * texto2=0; // Endereço do segundo bloco
+    int tamanho2=0; // Tamanho do segundo bloco
+// Obtém: texto1 = instruções da classe
+    if (obj && obj->Comandos!=0) // Comandos definidos em TMudarClasse
+        texto1 = obj->Comandos;
+    else if (cl)    // Comandos definidos em TClasse
+        texto1 = cl->Comandos;
+    else            // Nenhum comando definido, retorna
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("Classe inexistente");
+    }
+// Apagar linha da classe
+    if (Instr::VarAtual == v+2)
+    {
+        int linha = v[2].getInt() - 1;
+        texto2 = texto1;
+        while (linha>0 && (texto2[0] || texto2[1]))
+            linha--, texto2+=Num16(texto2);
+    }
+// Apagar uma linha da variável/função
+    else
+    {
+        int linha = v[3].getInt() - 1;
+        texto2 = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
+        const char * fim = TMudarAux::AvancaInstr(texto2);
+        while (linha>0 && texto2<fim)
+            linha--, texto2+=Num16(texto2);
+        if (texto2>=fim)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("");
+        }
+    }
+// Verifica se alguma linha será apagada
+    if (texto2[0]==0 && texto2[1]==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("");
+    }
+// Verifica se bloco válido
+    int linha=1;
+    char * com = texto1;
+    Instr::ChecaLinha checalinha;
+    checalinha.Inicio();
+    for (; com[0] || com[1]; com+=Num16(com), linha++)
+    {
+        if (com==texto2)
+            continue;
+        const char * p = checalinha.Instr(com);
+        if (p)
+        {
+            char mens[80];
+            sprintf(mens, "%d: %s\n", linha, p);
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens);
+        }
+    }
+// Obtém bloco de instruções
+    tamanho1 = texto2 - texto1;
+    texto2 += Num16(texto2);
+    tamanho2 = com - texto2 + 2;
+// Anota as alterações em objeto TMudarClasse
+    if (obj==0)
+        obj = new TMudarClasse(cl->Nome);
+    char * p = new char[tamanho1+tamanho2];
+    memcpy(p, texto1, tamanho1);
+    memcpy(p+tamanho1, texto2, tamanho2);
+    obj->MudarComandos(p);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto("");
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncCriarLin(TVariavel * v)
+{
+    if (Instr::VarAtual < v+3)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("");
+    }
+    const char * nome = v[1].getTxt();
+    TClasse * cl = TClasse::Procura(nome);
+    TMudarClasse * obj = TMudarClasse::Procurar(nome);
+    TMudarAux mudarcom; // Para mudar a lista de instruções
+// Obtém: texto1 = instruções da classe
+    char * texto1 = 0;
+    if (obj && obj->Comandos!=0) // Comandos definidos em TMudarClasse
+        texto1 = obj->Comandos;
+    else if (cl)    // Comandos definidos em TClasse
+        texto1 = cl->Comandos;
+    else            // Nenhum comando definido, retorna
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("Classe inexistente");
+    }
+// Instruções na classe
+    char * p = 0;
+    if (Instr::VarAtual == v+3)
+    {
+        int linha = v[2].getInt() - 1;
+        p = texto1;
+        while (linha>0 && (p[0] || p[1]))
+            linha--, p+=Num16(p);
+        nome = v[3].getTxt();
+    }
+// Instruções em variável/função
+    else
+    {
+        int linha = v[3].getInt() - 1;
+        p = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
+        if (p[0]==0 && p[1]==0)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Variável/função inexistente");
+        }
+        const char * fim = TMudarAux::AvancaInstr(p);
+        while (linha>0 && p<fim)
+            linha--, p+=Num16(p);
+        nome = v[4].getTxt();
+    }
+    mudarcom.AddBloco(texto1, p-texto1);
+    texto1 = p;
+// Codifica as instruções
+    char mens[65000];
+    int  total = TMudarAux::CodifInstr(mens, nome, sizeof(mens)-2);
+    if (total<=0) // 0 se nenhuma instrução, <0 se erro
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(total==0 ? "" : mens);
+    }
+    mudarcom.AddBloco(mens, total);
+    mudarcom.AddBloco(texto1, TMudarAux::FimInstr(texto1) - texto1);
+// Verifica se bloco válido
+    char err[200];
+    if (!mudarcom.ChecaBloco(err, sizeof(err)))
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(err);
+    }
+// Anota alterações em objeto TMudarClasse
+    if (obj==0)
+        obj = new TMudarClasse(cl->Nome);
+    mudarcom.AnotaBloco(obj);
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto("");
 }

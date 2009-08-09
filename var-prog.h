@@ -44,6 +44,8 @@ private:
 
     bool FuncApagar(TVariavel * v);
     bool FuncCriar(TVariavel * v);
+    bool FuncApagarLin(TVariavel * v);
+    bool FuncCriarLin(TVariavel * v);
 
     void MudaConsulta(int valor); ///< Muda o valor da variável consulta
     unsigned char consulta; ///< O que consultar, 0=não está consultando nada

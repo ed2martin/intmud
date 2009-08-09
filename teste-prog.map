@@ -15,7 +15,7 @@ func ini
   msg("Digite o nome de uma variável ou:\n")
   msg("E para encerrar o programa\n")
   msg("A, B ou C para selecionar a classe\n")
-  msg("0 a 8 para escolher uma função\n")
+  msg("0 a 9 para escolher uma função\n")
 func conec_msg
   prog p
   int16 i
@@ -101,6 +101,20 @@ func p8
   senao
     msg("Texto da constante:\n" + p.const(nomeclasse, arg0) + "\n")
 #msg(txt([nomeclasse]:[arg0]) + "\n")
+func p9
+  prog cl
+  prog p
+  msg("Lista de classes\n")
+  cl.iniclasse
+  enquanto cl.lin
+    msg("\n[" + cl.texto + "]\n")
+    p.inilinha(cl.texto)
+    enquanto p.lin
+      msg(txtesp(p.nivel * 2) + p.texto + "\n")
+      p.depois
+    efim
+    cl.depois
+  efim
 func mostra
   enquanto arg0.lin
     msg(txtesp(1 + arg0.nivel * 2) + arg0.texto + "\n")
@@ -139,6 +153,7 @@ herda teste
 [criaclasse]
 func iniclasse
   prog p
+# Teste com criar e apagar
   p.criar("x1\n#teste de prog\nint8 teste1\nconst x=10")
   p.criar("x1", "herda c")
   p.criar("x1", "herda b, teste")
@@ -148,3 +163,11 @@ func iniclasse
   p.criar("x1", "real r")
   p.apagar("x1", "f1")
   p.apagar("criaclasse")
+# Teste com criarlin e apagarlin
+  p.criar("x2\nint8 a\nconst b=a*10\nfunc f\nret arg1+n")
+  p.criarlin("x2", 1, "herda c")
+  p.criarlin("x2", 5, "int1 n\nn=arg2*10")
+  p.criarlin("x2", 8, "const nn=20")
+  p.criarlin("x2", "f", 4, "n*=30")
+  p.apagarlin("x2", 1)
+  p.apagarlin("x2", "f", 4)

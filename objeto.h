@@ -13,9 +13,15 @@ class TObjeto /// Objetos
     TObjeto();  ///< Não deve ser chamado; usar TObjeto::Criar()
 public:
     ~TObjeto(); ///< Não deve ser chamado; usar TObjeto::MarcarApagar()
-    static TObjeto * Criar(TClasse * c); ///< Cria objeto
-    void Apagar();              ///< Apaga objeto @sa TObjeto::MarcarApagar
-    void Apagar(TObjeto * obj);///< Apaga objeto mudando referências obj
+    static TObjeto * Criar(TClasse * c, bool criavar=true);
+        ///< Cria objeto
+        /**< @param c Classe ao qual o objeto pertence
+             @param criarvar Se deve chamar construtores das variáveis
+             @return Endereço do objeto criado */
+    void Apagar();
+        ///< Apaga objeto @sa TObjeto::MarcarApagar
+    void Apagar(TObjeto * obj);
+        ///< Apaga objeto mudando referências obj
         /**< Não chama destrutores das variáveis.
          *   É usado por TClasse::AcertaVar()
          *   @param obj Novo objeto */

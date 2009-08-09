@@ -788,13 +788,20 @@ void TClasse::AcertaVar()
             v.defvar = InstrVar[c2];
             switch (v.Tipo())
             {
-            case varInt:    al[total].comando = 5; break;
-            case varDouble: al[total].comando = 6; break;
-            case varTxt:    al[total].comando = 7; break;
-            case varObj:    al[total].comando = 8; break;
-            default:        al[total].comando = 2;
+            case varInt:    al[total++].comando = 5; break;
+            case varDouble: al[total++].comando = 6; break;
+            case varTxt:    al[total++].comando = 7; break;
+            case varObj:    al[total++].comando = 8; break;
+            default:
+                al[total].comando = 0;
+                if (antes.InstrVar[c1][2] > Instr::cVarFunc)
+                    al[total].comando |= 1;
+                if (InstrVar[c2][2] > Instr::cVarFunc)
+                    al[total].comando |= 2;
+                if (al[total].comando)
+                    total++;
             }
-            total++, c1++, c2++, bitobjeto |= 1;
+            c1++, c2++, bitobjeto |= 1;
         }
     // Variáveis que serão apagadas
         while (c1<antes.NumVar)
@@ -875,7 +882,7 @@ void TClasse::AcertaVar()
             v2.bit = al[x].indice2 >> 24; \
             v1.indice = (unsigned char)v1.end_char[Instr::endVetor]; \
             if (v1.indice) v1.indice--; \
-            for (v2.indice=v1.indice; v1.indice<255; v1.indice--,v2.indice--)
+            v2.indice = v1.indice;
 
     if (bitobjeto & 2) // Alguma variável mudou
     {
@@ -905,22 +912,30 @@ void TClasse::AcertaVar()
                 break;
             case 5:
                 COPIA_VAR
+                for (; v1.indice; v1.indice--,v2.indice--)
                     v2.setInt( v1.getInt() );
+                v2.setInt( v1.getInt() );
                 v1.Apagar();
                 break;
             case 6:
                 COPIA_VAR
+                for (; v1.indice; v1.indice--,v2.indice--)
                     v2.setDouble( v1.getDouble() );
+                v2.setDouble( v1.getDouble() );
                 v1.Apagar();
                 break;
             case 7:
                 COPIA_VAR
+                for (; v1.indice; v1.indice--,v2.indice--)
                     v2.setTxt( v1.getTxt() );
+                v2.setTxt( v1.getTxt() );
                 v1.Apagar();
                 break;
             case 8:
                 COPIA_VAR
+                for (; v1.indice; v1.indice--,v2.indice--)
                     v2.setObj( v1.getObj() );
+                v2.setObj( v1.getObj() );
                 v1.Apagar();
                 break;
             } // switch
@@ -933,7 +948,7 @@ void TClasse::AcertaVar()
         for (int nobj=NumObj; nobj>0; nobj--)
         {
         // Cria objeto no final da lista ligada
-            TObjeto * obj = TObjeto::Criar(this);
+            TObjeto * obj = TObjeto::Criar(this, false);
         // Copia variáveis do primeiro objeto para o objeto criado
             TVariavel v1,v2;
             for (int x=0; x<indobjeto; x++)
@@ -959,22 +974,30 @@ void TClasse::AcertaVar()
                     break;
                 case 5:
                     COPIA_VAR
+                    for (; v1.indice; v1.indice--,v2.indice--)
                         v2.setInt( v1.getInt() );
+                    v2.setInt( v1.getInt() );
                     v1.Apagar();
                     break;
                 case 6:
                     COPIA_VAR
+                    for (; v1.indice; v1.indice--,v2.indice--)
                         v2.setDouble( v1.getDouble() );
+                    v2.setDouble( v1.getDouble() );
                     v1.Apagar();
                     break;
                 case 7:
                     COPIA_VAR
+                    for (; v1.indice; v1.indice--,v2.indice--)
                         v2.setTxt( v1.getTxt() );
+                    v2.setTxt( v1.getTxt() );
                     v1.Apagar();
                     break;
                 case 8:
                     COPIA_VAR
+                    for (; v1.indice; v1.indice--,v2.indice--)
                         v2.setObj( v1.getObj() );
+                    v2.setObj( v1.getObj() );
                     v1.Apagar();
                     break;
                 } // switch

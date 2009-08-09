@@ -572,8 +572,8 @@ inttotal(<variável>)
     Se for texto, retorna o tamanho do texto em caracteres.
     Se for vetor, retorna a quantidade de variáveis do vetor.
     Se for fornecido mais de um argumento, é retornada a soma.
-    Exemplo: total(a,b)
-    É o mesmo que: total(a) + total(b)
+    Exemplo: inttotal(a,b)
+    É o mesmo que: inttotal(a) + inttotal(b)
 
 
 *** Funções existentes em vetores de variáveis txt1 a txt512:
@@ -1187,9 +1187,15 @@ prog <nomedavariável>
     apagarlin(<nome da classe>, <número da linha>)
     apagarlin(<nome da classe>, <nome da variável>, <número da linha>)
         Apaga uma linha de uma classe ou variável.
+        Nota: A primeira linha é a número 1.
+        Retorna um texto vazio se conseguiu criar ou a mensagem de erro
+        se não conseguiu.
     criarlin(<nome da classe>, <linha inicial>, <texto>)
     criarlin(<nome da classe>, <nome da variável>, <linha inicial>, <texto>)
         Adiciona linhas na classe ou variável especificada.
+        Nota: A primeira linha é a número 1.
+        Retorna um texto vazio se conseguiu criar ou a mensagem de erro
+        se não conseguiu.
     salvar
         Salva as alterações nos arquivos correspondentes.
 
