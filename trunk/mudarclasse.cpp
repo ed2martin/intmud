@@ -20,7 +20,7 @@
 #include "instr.h"
 #include "misc.h"
 
-#define SIMUL // Mostra o que vai mudar, mas não muda
+//#define SIMUL // Mostra o que vai mudar, mas não muda
 
 TMudarClasse * TMudarClasse::Inicio=0;
 TMudarClasse * TMudarClasse::Fim=0;
@@ -343,7 +343,6 @@ bool TMudarClasse::ExecPasso()
     // Alterar classe
         if (cl)
         {
-
             char * antigo_com = cl->Comandos;
             cl->Comandos = Inicio->Comandos;
             Inicio->Comandos = 0;
@@ -362,15 +361,16 @@ bool TMudarClasse::ExecPasso()
             cl = new TClasse(Inicio->Nome);
             cl->Comandos = Inicio->Comandos;
             Inicio->Comandos = 0;
+            delete Inicio;
             cl->AcertaDeriv(mens);
             cl->AcertaVar();
             if (Instr::ExecIni(cl, "iniclasse"))
             {
-                delete Inicio;
                 Instr::ExecArg(cl->Nome);
                 Instr::ExecX();
                 return true;
             }
+            continue;
         }
         delete Inicio;
     }

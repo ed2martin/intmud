@@ -30,7 +30,7 @@ TObjeto::TObjeto() { assert(0); }
 TObjeto::~TObjeto() { assert(0); }
 
 //----------------------------------------------------------------------------
-TObjeto * TObjeto::Criar(TClasse * c)
+TObjeto * TObjeto::Criar(TClasse * c, bool criavar)
 {
 // Aloca memória
     int tam = sizeof(TObjeto) - 4 + c->TamObj;
@@ -45,15 +45,18 @@ TObjeto * TObjeto::Criar(TClasse * c)
     c->ObjetoFim = obj;
     c->NumObj++;
 // Chama construtores das variáveis
-    TVariavel v;
-    for (int x=(int)c->NumVar-1; x>=0; x--)
-        if (c->InstrVar[x][2] > Instr::cVarFunc &&
-                (c->IndiceVar[x] & 0x400000)==0)
-        {
-            v.endvar = obj->Vars + (c->IndiceVar[x] & 0x3FFFFF);
-            v.defvar = c->InstrVar[x];
-            v.Criar(c, obj);
-        }
+    if (criavar)
+    {
+        TVariavel v;
+        for (int x=(int)c->NumVar-1; x>=0; x--)
+            if (c->InstrVar[x][2] > Instr::cVarFunc &&
+                    (c->IndiceVar[x] & 0x400000)==0)
+            {
+                v.endvar = obj->Vars + (c->IndiceVar[x] & 0x3FFFFF);
+                v.defvar = c->InstrVar[x];
+                v.Criar(c, obj);
+            }
+    }
     return obj;
 }
 
