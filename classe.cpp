@@ -25,6 +25,41 @@
 //#define MOSTRA_MEM // Mostrar como alocou variáveis na memória
 //#define MOSTRA_MUDOU // Mostrar as variáveis que mudaram, em AcertaVar()
 
+//----------------------------------------------------------------------------
+class TClasseAloca : public TVariavel /// Usado em TClasse::AcertaVar
+{
+public:
+    int indvar;     ///< Valor de IndiceVar
+    int tam;        ///< Tamanho do vetor em variáveis
+    int comando;    ///< O que fazer
+                    /**<
+                     - 0=nada
+                     - 1=apagar (antiga)
+                     - 2=criar (nova)
+                     - De 3 em diante, próximo objeto = nova variável
+                     - 3=mover; variável não mudou
+                     - De 4 em diante, tam=menor tam entre este e o próximo
+                     - 4=copiar como int
+                     - 5=copiar como double
+                     - 6=copiar como texto
+                     - 7=copiar como referência */
+};
+
+//----------------------------------------------------------------------------
+class TClasseVar /// Usado em TClasse::AcertaVar, para acertar as variáveis
+{
+public:
+    TClasseVar();             ///< Construtor
+    ~TClasseVar();            ///< Destrutor
+    char ** InstrVar;         ///< Valor anterior de TClasse::InstrVar
+    unsigned int * IndiceVar; ///< Valor anterior de TClasse::IndiceVar
+    unsigned int NumVar;      ///< Valor anterior de TClasse::NumVar
+    char * Vars;              ///< Valor anterior de TClasse::Vars
+    unsigned int TamVars;     ///< Valor anterior de TClasse::TamVars
+    TClasseAloca * al;        ///< Para desalocar memória de TClasseAloca
+};
+
+//----------------------------------------------------------------------------
 TClasse * TClasse::ClInic=0;
 
 //----------------------------------------------------------------------------
@@ -35,6 +70,7 @@ TClasseVar::TClasseVar()
     NumVar=0;
     Vars=0;
     TamVars=0;
+    al=0;
 }
 
 //----------------------------------------------------------------------------
@@ -43,6 +79,7 @@ TClasseVar::~TClasseVar()
     if (InstrVar) delete[] InstrVar;
     if (IndiceVar) delete[] IndiceVar;
     if (Vars) delete[] Vars;
+    if (al) delete[] al;
 }
 
 //----------------------------------------------------------------------------
@@ -397,7 +434,48 @@ void TClasse::AcertaDeriv(char * comandos_antes)
 }
 
 //----------------------------------------------------------------------------
-void TClasse::AcertaVar()
+void TClasse::AcertaVarSub()
+{
+// Obtém faixa de endereço das variáveis
+    const char * ini=0;
+    const char * fim=0;
+    if (NumVar)
+    {
+        ini = fim = InstrVar[0];
+        for (unsigned int x=1; x<NumVar; x++)
+        {
+            if (ini > InstrVar[x])
+                ini = InstrVar[x];
+            if (fim < InstrVar[x])
+                fim = InstrVar[x];
+        }
+    }
+// Acerta variáveis
+    int mudou = AcertaVar();
+// Lista de variáveis mudou: acerta classes derivadas
+    if (mudou)
+    {
+        for (int x=0; x<NumDeriv; x++)
+            ListaDeriv[x]->AcertaVar();
+        return;
+    }
+// Lista não mudou: apenas acerta os endereços das variáveis
+    for (int x=0; x<NumDeriv; x++)
+    {
+        TClasse * cl = ListaDeriv[x];
+        for (unsigned int y=0; y<cl->NumVar; y++)
+            if (cl->InstrVar[y] >= ini && cl->InstrVar[y] <= fim)
+            {
+                int ind = IndiceNome(cl->InstrVar[y] + Instr::endNome);
+                assert(ind>=0);
+                cl->InstrVar[y] = InstrVar[ind];
+                //puts(InstrVar[ind] + Instr::endNome); fflush(stdout);
+            }
+    }
+}
+
+//----------------------------------------------------------------------------
+int TClasse::AcertaVar()
 {
     TClasseVar antes;
     antes.InstrVar = InstrVar;
@@ -688,29 +766,16 @@ void TClasse::AcertaVar()
 
 // Nenhuma variável: nada para ser feito
     if (NumVar==0 && antes.NumVar==0)
-        return;
+        return 0;
 
 // Prepara lista de variáveis que mudaram
-    typedef class
-    {
-    public:
-        const char * instr1, * instr2; // Definição da variável: antes e depois
-        int indice1, indice2; // Valor de IndiceVar antes e depois
-        int comando;    // O que fazer:
-                        // 1=apagar antiga
-                        // 2=criar nova
-                        // 3=apagar antiga e criar nova
-                        // 4=mover; variável não mudou
-                        // 5=copiar como int
-                        // 6=copiar como double
-                        // 7=copiar como texto
-                        // 8=copiar como referência
-    } aloca1;
-    aloca1 * al = new aloca1[NumVar + antes.NumVar];
+    antes.al =  new TClasseAloca[NumVar + antes.NumVar];
+    TClasseAloca * al = antes.al;
     indobjeto=0; // Número de variáveis de objetos
     indclasse=0; // Número de variáveis de objetos + classe
     bitobjeto=0; // Bit 1 =1 se alguma variável da classe mudou
                  // Bit 2 =1 se alguma variável de objeto mudou
+                 // !=0 se a lista de variáveis mudou
     total = 0;   // Para obter o número de variáveis
 
         // passo=0 -> obtém variáveis de objetos
@@ -728,24 +793,29 @@ void TClasse::AcertaVar()
                 { c1++; continue; }
             if ((InstrVar[c2][Instr::endProp] & 1) != passo)
                 { c2++; continue; }
-        // Pula variáveis com tamanho zero
-            if (TVariavel::Tamanho(antes.InstrVar[c1])==0)
-                { c1++; continue; }
-            if (TVariavel::Tamanho(InstrVar[c2])==0)
-                { c2++; continue; }
-        // Acerta variáveis de aloca1
-            al[total].instr1 = antes.InstrVar[c1];
-            al[total].indice1 = antes.IndiceVar[c1];
-            al[total].instr2 = InstrVar[c2];
-            al[total].indice2 = IndiceVar[c2];
         // Compara variáveis antes e depois
             int cmp = comparaZ(antes.InstrVar[c1] + Instr::endNome,
                                InstrVar[c2] + Instr::endNome);
+            if (cmp!=0)
+                bitobjeto |= 0x10;
+        // Pula variáveis com tamanho zero
+            bool tamzero=false;
+            if (TVariavel::Tamanho(antes.InstrVar[c1])==0)
+                c1++, tamzero=true;
+            if (TVariavel::Tamanho(InstrVar[c2])==0)
+                c2++, tamzero=true;
+            if (tamzero)
+                continue;
         // Variável apagada
             if (cmp<0)
             {
                 if (antes.InstrVar[c1][2] > Instr::cVarFunc)
-                    al[total++].comando = 1;
+                {
+                    al[total].comando = 1;
+                    al[total].defvar = antes.InstrVar[c1];
+                    al[total].indvar = antes.IndiceVar[c1];
+                    total++;
+                }
                 c1++, bitobjeto |= 1;
                 continue;
             }
@@ -753,22 +823,13 @@ void TClasse::AcertaVar()
             if (cmp>0)
             {
                 if (InstrVar[c2][2] > Instr::cVarFunc)
-                    al[total++].comando = 2;
-                c2++, bitobjeto |= 1;
-                continue;
-            }
-        // Número de elementos do vetor mudou: apagar/criar
-            if (antes.InstrVar[c1][Instr::endVetor] !=
-                      InstrVar[c2][Instr::endVetor])
-            {
-                al[total].comando = 0;
-                if (antes.InstrVar[c1][2] > Instr::cVarFunc)
-                    al[total].comando |= 1;
-                if (InstrVar[c2][2] > Instr::cVarFunc)
-                    al[total].comando |= 2;
-                if (al[total].comando)
+                {
+                    al[total].comando = 2;
+                    al[total].defvar = InstrVar[c2];
+                    al[total].indvar = IndiceVar[c2];
                     total++;
-                c1++, c2++, bitobjeto |= 1;
+                }
+                c2++, bitobjeto |= 1;
                 continue;
             }
         // Tipo de variável não mudou: mover
@@ -776,11 +837,21 @@ void TClasse::AcertaVar()
                 antes.InstrVar[c1][Instr::endIndice] ==
                       InstrVar[c2][Instr::endIndice])
             {
-                if (al[total].indice1 != al[total].indice2)
+                unsigned char tam1 = antes.InstrVar[c1][Instr::endVetor];
+                unsigned char tam2 = InstrVar[c2][Instr::endVetor];
+                if (tam1==0) tam1++;
+                if (tam2==0) tam2++;
+                if (tam1!=tam2)
                     bitobjeto |= 1;
-                al[total].comando = 4;
+                al[total].comando = 3;
                 if (InstrVar[c2][2]==Instr::cInt1) // Bits: devem ser copiados
-                    al[total].comando = 5;
+                    al[total].comando = 4;
+                al[total].defvar = antes.InstrVar[c1];
+                al[total].indvar = antes.IndiceVar[c1];
+                total++;
+                al[total].comando = 0;
+                al[total].defvar = InstrVar[c2];
+                al[total].indvar = IndiceVar[c2];
                 total++, c1++, c2++;
                 continue;
             }
@@ -788,62 +859,103 @@ void TClasse::AcertaVar()
             v.defvar = InstrVar[c2];
             switch (v.Tipo())
             {
-            case varInt:    al[total++].comando = 5; break;
-            case varDouble: al[total++].comando = 6; break;
-            case varTxt:    al[total++].comando = 7; break;
-            case varObj:    al[total++].comando = 8; break;
-            default:
+            case varInt:    al[total].comando = 4; break;
+            case varDouble: al[total].comando = 5; break;
+            case varTxt:    al[total].comando = 6; break;
+            case varObj:    al[total].comando = 7; break;
+            default:        al[total].comando = 0;
+            }
+            if (al[total].comando)
+            {
+                al[total].defvar = antes.InstrVar[c1];
+                al[total].indvar = antes.IndiceVar[c1];
+                total++;
                 al[total].comando = 0;
+                al[total].defvar = InstrVar[c2];
+                al[total].indvar = IndiceVar[c2];
+                total++;
+            }
+            else
+            {
                 if (antes.InstrVar[c1][2] > Instr::cVarFunc)
-                    al[total].comando |= 1;
-                if (InstrVar[c2][2] > Instr::cVarFunc)
-                    al[total].comando |= 2;
-                if (al[total].comando)
+                {
+                    al[total].comando = 1;
+                    al[total].defvar = antes.InstrVar[c1];
+                    al[total].indvar = antes.IndiceVar[c1];
                     total++;
+                }
+                if (InstrVar[c2][2] > Instr::cVarFunc)
+                {
+                    al[total].comando = 2;
+                    al[total].defvar = InstrVar[c2];
+                    al[total].indvar = IndiceVar[c2];
+                    total++;
+                }
             }
             c1++, c2++, bitobjeto |= 1;
         }
     // Variáveis que serão apagadas
-        while (c1<antes.NumVar)
-        {
-            if ((antes.InstrVar[c1][Instr::endProp] & 1) != passo ||
-                    TVariavel::Tamanho(antes.InstrVar[c1])==0)
-                { c1++; continue; }
-            if (antes.InstrVar[c1][2] > Instr::cVarFunc)
+        for (; c1<antes.NumVar; c1++)
+            if ((antes.InstrVar[c1][Instr::endProp] & 1) == passo)
             {
-                al[total].instr1 = antes.InstrVar[c1];
-                al[total].indice1 = antes.IndiceVar[c1];
+                bitobjeto |= 0x10;
+                if (TVariavel::Tamanho(antes.InstrVar[c1])==0)
+                    continue;
+                bitobjeto |= 1;
+                if (antes.InstrVar[c1][2] <= Instr::cVarFunc)
+                    continue;
                 al[total].comando = 1;
+                al[total].defvar = antes.InstrVar[c1];
+                al[total].indvar = antes.IndiceVar[c1];
                 total++;
             }
-            c1++, bitobjeto |= 1;
-        }
     // Variáveis que serão criadas
-        while (c2<NumVar)
-        {
-            if ((InstrVar[c2][Instr::endProp] & 1) != passo ||
-                    TVariavel::Tamanho(InstrVar[c2])==0)
-                { c2++; continue; }
-            if (InstrVar[c2][2] > Instr::cVarFunc)
+        for (; c2<NumVar; c2++)
+            if ((InstrVar[c2][Instr::endProp] & 1) == passo)
             {
-                al[total].instr2 = InstrVar[c2];
-                al[total].indice2 = IndiceVar[c2];
+                bitobjeto |= 0x10;
+                if (TVariavel::Tamanho(InstrVar[c2])==0)
+                    continue;
+                bitobjeto |= 1;
+                if (InstrVar[c2][2] <= Instr::cVarFunc)
+                    continue;
                 al[total].comando = 2;
+                al[total].defvar = InstrVar[c2];
+                al[total].indvar = IndiceVar[c2];
                 total++;
             }
-            c2++, bitobjeto |= 1;
-        }
     // Acerta indobjeto e indclasse
         indobjeto = indclasse;
         indclasse = total;
         bitobjeto <<= 1;
     }
 
+// Acerta al[n].tam e al[n].bit
+    for (unsigned int x=0; x<total; x++)
+    {
+        al[x].tam = (unsigned char)al[x].defvar[Instr::endVetor];
+        if (al[x].tam==0)
+            al[x].tam=1;
+        al[x].bit = al[x].indvar >> 24;
+    }
+
+// Acerta al[n].tam para comandos 4 em diante
+    for (unsigned int x=0; x<total; x++)
+        if (al[x].comando >= 4)
+        {
+            if (al[x].tam > al[x+1].tam)
+                al[x].tam = al[x+1].tam;
+            if (al[x].tam > 0)
+                al[x].tam--;
+        }
+
 // Mostra a lista de alterações
 #ifdef MOSTRA_MUDOU
-    printf("Classe=\"%s\"   classe mudou=%s   objeto mudou=%s\n",
+    printf("Classe=\"%s\"  classe_mudou=%s  objeto_mudou=%s  "
+           "variáveis_mudaram=%s\n",
            Nome, bitobjeto&2 ? "sim" : "não",
-                 bitobjeto&4 ? "sim" : "não");
+                 bitobjeto&4 ? "sim" : "não",
+                 bitobjeto   ? "sim" : "não");
     for (int x=0; x<indclasse; x++)
     {
         int param = 0;
@@ -852,91 +964,111 @@ void TClasse::AcertaVar()
         switch (al[x].comando)
         {
         case 1: printf("apagar("); param=1; break;
-        case 2: printf("criar("); param=2; break;
-        case 3: printf("apagar_criar("); param=3; break;
-        case 4: printf("mover("); param=3; break;
-        case 5: printf("copiar_int("); param=3; break;
-        case 6: printf("copiar_double("); param=3; break;
-        case 7: printf("copiar_txt("); param=3; break;
-        case 8: printf("copiar_ref("); param=3; break;
+        case 2: printf("criar("); param=1; break;
+        case 3: printf("mover("); param=2; break;
+        case 4: printf("copiar_int("); param=2; break;
+        case 5: printf("copiar_double("); param=2; break;
+        case 6: printf("copiar_txt("); param=2; break;
+        case 7: printf("copiar_ref("); param=2; break;
         default: printf("??? (");
         }
-        if (param&1)
-            if (Instr::Decod(mens, al[x].instr1, sizeof(mens)))
+        if (param>=1)
+            if (Instr::Decod(mens, al[x].defvar, sizeof(mens)))
                 printf("%s", mens);
-        if (param==3)
-            printf(")  (");
-        if (param&2)
-            if (Instr::Decod(mens, al[x].instr2, sizeof(mens)))
-                printf("%s", mens);
+        if (param>=2)
+        {
+            if (Instr::Decod(mens, al[x+1].defvar, sizeof(mens)))
+                printf(")  (%s", mens);
+            x++;
+        }
         printf(")\n");
     }
     putchar('\n'); fflush(stdout);
 #endif
 
 // Acerta variáveis da classe
-#define COPIA_VAR \
-            v1.defvar = al[x].instr1;  \
-            v2.defvar = al[x].instr2;   \
-            v1.bit = al[x].indice1 >> 24; \
-            v2.bit = al[x].indice2 >> 24; \
-            v1.indice = (unsigned char)v1.end_char[Instr::endVetor]; \
-            if (v1.indice) v1.indice--; \
-            v2.indice = v1.indice;
-
     if (bitobjeto & 2) // Alguma variável mudou
     {
-        TVariavel v1,v2;
         if (TamVars)
             Vars = new char[TamVars];
         for (int x=indobjeto; x<indclasse; x++)
         {
-            v1.endvar = antes.Vars + (al[x].indice1 & 0x3FFFFF);
-            v2.endvar = Vars + (al[x].indice2 & 0x3FFFFF);
+            if (al[x].comando >= 3)
+            {
+                al[x].endvar = antes.Vars + (al[x].indvar & 0x3FFFFF);
+                al[x+1].endvar = Vars + (al[x+1].indvar & 0x3FFFFF);
+            }
             switch (al[x].comando)
             {
             case 1: // Apagar antiga
-                v1.defvar = al[x].instr1;
-                v1.Apagar();
+                al[x].endvar = antes.Vars + (al[x].indvar & 0x3FFFFF);
+                al[x].Apagar();
                 break;
-            case 3: // Apagar antiga e criar nova
-                v1.defvar = al[x].instr1;
-                v1.Apagar();
             case 2: // Criar nova
-                v2.defvar = al[x].instr2;
-                v2.Criar(this, 0);
+                al[x].endvar = Vars + (al[x].indvar & 0x3FFFFF);
+                al[x].Criar(this, 0);
                 break;
-            case 4: // Mover; variável não mudou
-                v1.defvar = al[x].instr1;
-                v1.Mover(v2.endvar, this, 0);
+            case 3: // Mover; variável não mudou
+                if (al[x].tam == al[x+1].tam)
+                    al[x].Mover(al[x+1].endvar, this, 0);
+                else if (al[x].tam > al[x+1].tam)
+                {
+                    const char * def = al[x].defvar;
+                    al[x].Redim(0, 0, al[x].tam, al[x+1].tam);
+                    al[x].defvar = al[x+1].defvar;
+                    al[x].Mover(al[x+1].endvar, this, 0);
+                    al[x].defvar = def;
+                }
+                else
+                {
+                    al[x].Mover(al[x+1].endvar, this, 0);
+                    al[x+1].Redim(this, 0, al[x].tam, al[x+1].tam);
+                }
+                x++;
+                break;
+            case 4:
+                if (al[x+1].defvar[2] > Instr::cVarFunc)
+                    al[x+1].Criar(this, 0);
+                al[x].indice = al[x+1].indice = al[x].tam;
+                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    al[x+1].setInt( al[x].getInt() );
+                al[x+1].setInt( al[x].getInt() );
+                if (al[x].defvar[2] > Instr::cVarFunc)
+                    al[x].Apagar();
+                x++;
                 break;
             case 5:
-                COPIA_VAR
-                for (; v1.indice; v1.indice--,v2.indice--)
-                    v2.setInt( v1.getInt() );
-                v2.setInt( v1.getInt() );
-                v1.Apagar();
+                if (al[x+1].defvar[2] > Instr::cVarFunc)
+                    al[x+1].Criar(this, 0);
+                al[x].indice = al[x+1].indice = al[x].tam;
+                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    al[x+1].setDouble( al[x].getDouble() );
+                al[x+1].setDouble( al[x].getDouble() );
+                if (al[x].defvar[2] > Instr::cVarFunc)
+                    al[x].Apagar();
+                x++;
                 break;
             case 6:
-                COPIA_VAR
-                for (; v1.indice; v1.indice--,v2.indice--)
-                    v2.setDouble( v1.getDouble() );
-                v2.setDouble( v1.getDouble() );
-                v1.Apagar();
+                if (al[x+1].defvar[2] > Instr::cVarFunc)
+                    al[x+1].Criar(this, 0);
+                al[x].indice = al[x+1].indice = al[x].tam;
+                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    al[x+1].setTxt( al[x].getTxt() );
+                al[x+1].setTxt( al[x].getTxt() );
+                if (al[x].defvar[2] > Instr::cVarFunc)
+                    al[x].Apagar();
+                x++;
                 break;
             case 7:
-                COPIA_VAR
-                for (; v1.indice; v1.indice--,v2.indice--)
-                    v2.setTxt( v1.getTxt() );
-                v2.setTxt( v1.getTxt() );
-                v1.Apagar();
-                break;
-            case 8:
-                COPIA_VAR
-                for (; v1.indice; v1.indice--,v2.indice--)
-                    v2.setObj( v1.getObj() );
-                v2.setObj( v1.getObj() );
-                v1.Apagar();
+                if (al[x+1].defvar[2] > Instr::cVarFunc)
+                    al[x+1].Criar(this, 0);
+                al[x].indice = al[x+1].indice = al[x].tam;
+                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    al[x+1].setObj( al[x].getObj() );
+                al[x+1].setObj( al[x].getObj() );
+                if (al[x].defvar[2] > Instr::cVarFunc)
+                    al[x].Apagar();
+                x++;
                 break;
             } // switch
         } // for
@@ -950,55 +1082,84 @@ void TClasse::AcertaVar()
         // Cria objeto no final da lista ligada
             TObjeto * obj = TObjeto::Criar(this, false);
         // Copia variáveis do primeiro objeto para o objeto criado
-            TVariavel v1,v2;
             for (int x=0; x<indobjeto; x++)
             {
-                v1.endvar = ObjetoIni->Vars + (al[x].indice1 & 0x3FFFFF);
-                v2.endvar = obj->Vars + (al[x].indice2 & 0x3FFFFF);
+                if (al[x].comando >= 3)
+                {
+                    al[x].endvar = ObjetoIni->Vars + (al[x].indvar & 0x3FFFFF);
+                    al[x+1].endvar = obj->Vars + (al[x+1].indvar & 0x3FFFFF);
+                }
                 switch (al[x].comando)
                 {
                 case 1: // Apagar antiga
-                    v1.defvar = al[x].instr1;
-                    v1.Apagar();
+                    al[x].endvar = ObjetoIni->Vars + (al[x].indvar & 0x3FFFFF);
+                    al[x].Apagar();
                     break;
-                case 3: // Apagar antiga e criar nova
-                    v1.defvar = al[x].instr1;
-                    v1.Apagar();
                 case 2: // Criar nova
-                    v2.defvar = al[x].instr2;
-                    v2.Criar(this, obj);
+                    al[x].endvar = obj->Vars + (al[x].indvar & 0x3FFFFF);
+                    al[x].Criar(this, obj);
                     break;
-                case 4: // Mover; variável não mudou
-                    v1.defvar = al[x].instr1;
-                    v1.Mover(v2.endvar, this, obj);
+                case 3: // Mover; variável não mudou
+                    if (al[x].tam == al[x+1].tam)
+                        al[x].Mover(al[x+1].endvar, this, obj);
+                    else if (al[x].tam > al[x+1].tam)
+                    {
+                        const char * def = al[x].defvar;
+                        al[x].Redim(0, 0, al[x].tam, al[x+1].tam);
+                        al[x].defvar = al[x+1].defvar;
+                        al[x].Mover(al[x+1].endvar, this, obj);
+                        al[x].defvar = def;
+                    }
+                    else
+                    {
+                        al[x].Mover(al[x+1].endvar, this, obj);
+                        al[x+1].Redim(this, obj, al[x].tam, al[x+1].tam);
+                    }
+                    x++;
+                    break;
+                case 4:
+                    if (al[x+1].defvar[2] > Instr::cVarFunc)
+                        al[x+1].Criar(this, obj);
+                    al[x].indice = al[x+1].indice = al[x].tam;
+                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                        al[x+1].setInt( al[x].getInt() );
+                    al[x+1].setInt( al[x].getInt() );
+                    if (al[x].defvar[2] > Instr::cVarFunc)
+                        al[x].Apagar();
+                    x++;
                     break;
                 case 5:
-                    COPIA_VAR
-                    for (; v1.indice; v1.indice--,v2.indice--)
-                        v2.setInt( v1.getInt() );
-                    v2.setInt( v1.getInt() );
-                    v1.Apagar();
+                    if (al[x+1].defvar[2] > Instr::cVarFunc)
+                        al[x+1].Criar(this, obj);
+                    al[x].indice = al[x+1].indice = al[x].tam;
+                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                        al[x+1].setDouble( al[x].getDouble() );
+                    al[x+1].setDouble( al[x].getDouble() );
+                    if (al[x].defvar[2] > Instr::cVarFunc)
+                        al[x].Apagar();
+                    x++;
                     break;
                 case 6:
-                    COPIA_VAR
-                    for (; v1.indice; v1.indice--,v2.indice--)
-                        v2.setDouble( v1.getDouble() );
-                    v2.setDouble( v1.getDouble() );
-                    v1.Apagar();
+                    if (al[x+1].defvar[2] > Instr::cVarFunc)
+                        al[x+1].Criar(this, obj);
+                    al[x].indice = al[x+1].indice = al[x].tam;
+                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                        al[x+1].setTxt( al[x].getTxt() );
+                    al[x+1].setTxt( al[x].getTxt() );
+                    if (al[x].defvar[2] > Instr::cVarFunc)
+                        al[x].Apagar();
+                    x++;
                     break;
                 case 7:
-                    COPIA_VAR
-                    for (; v1.indice; v1.indice--,v2.indice--)
-                        v2.setTxt( v1.getTxt() );
-                    v2.setTxt( v1.getTxt() );
-                    v1.Apagar();
-                    break;
-                case 8:
-                    COPIA_VAR
-                    for (; v1.indice; v1.indice--,v2.indice--)
-                        v2.setObj( v1.getObj() );
-                    v2.setObj( v1.getObj() );
-                    v1.Apagar();
+                    if (al[x+1].defvar[2] > Instr::cVarFunc)
+                        al[x+1].Criar(this, obj);
+                    al[x].indice = al[x+1].indice = al[x].tam;
+                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                        al[x+1].setObj( al[x].getObj() );
+                    al[x+1].setObj( al[x].getObj() );
+                    if (al[x].defvar[2] > Instr::cVarFunc)
+                        al[x].Apagar();
+                    x++;
                     break;
                 } // switch
             } // for
@@ -1006,8 +1167,7 @@ void TClasse::AcertaVar()
             ObjetoIni->Apagar(obj);
         }
     }
-
-    delete[] al;
+    return (bitobjeto==0 ? 0 : (bitobjeto&15)==0 ? 1 : 2);
 }
 
 //----------------------------------------------------------------------------

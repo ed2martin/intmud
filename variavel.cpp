@@ -32,8 +32,7 @@
 #include "misc.h"
 
 //#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada
-
-#define VAR_NOME_TAM 80
+//#define DEBUG_MOVER // Mostra quando uma variável é movida
 
 //----------------------------------------------------------------------------
 // Usado em TVariavel::Mover()
@@ -202,146 +201,153 @@ TVarTipo TVariavel::Tipo()
 //------------------------------------------------------------------------------
 void TVariavel::Criar(TClasse * c, TObjeto * o)
 {
-#ifdef DEBUG_CRIAR
-    printf("Variável criada %p %s%s   ",
-           endvar, (c ? c->Nome : ""), (c && o ? ":objeto" : ""));
-    char mens[500];
-    if (Instr::Decod(mens, defvar, sizeof(mens)))
-        puts(mens);
-    else
-        puts("???");
-    fflush(stdout);
-#endif
-    int tam = Tamanho(); // Tamanho da variável ou vetor
-    if (tam==0)
-    {
-        endvar=0;
-        return;
-    }
-    memset(endvar, 0, tam);
-    int x = (unsigned char)defvar[Instr::endVetor]; // Tamanho do vetor
-    if (x) x--;
-    switch (defvar[2])
-    {
-    case Instr::cIntInc:
-        for (; x>=0; x--)
-            end_incdec[x].setInc(0);
-        break;
-    case Instr::cIntDec:
-        for (; x>=0; x--)
-            end_incdec[x].setDec(0);
-        break;
-    case Instr::cArqLog:
-        for (; x>=0; x--)
-            end_log[x].Criar();
-        break;
-    case Instr::cArqTxt:
-        for (; x>=0; x--)
-            end_txt[x].Criar();
-        break;
-    case Instr::cIntTempo:
-        for (; x>=0; x--)
-        {
-            end_inttempo[x].defvar = defvar;
-            end_inttempo[x].indice = x;
-            end_inttempo[x].EndObjeto(c, o);
-        }
-        break;
-    case Instr::cListaObj:
-        for (; x>=0; x--)
-            end_listaobj[x].EndObjeto(o);
-        break;
-    case Instr::cSocket:
-        for (; x>=0; x--)
-        {
-            end_socket[x].defvar = defvar;
-            end_socket[x].indice = x;
-            end_socket[x].EndObjeto(c, o);
-        }
-        break;
-    case Instr::cServ:
-        for (; x>=0; x--)
-        {
-            end_serv[x].defvar = defvar;
-            end_serv[x].indice = x;
-            end_serv[x].EndObjeto(c, o);
-            end_serv[x].Criar();
-        }
-        break;
-    case Instr::cProg:
-        for (; x>=0; x--)
-            end_prog[x].Criar();
-        break;
-    case Instr::cIndiceObj:
-        for (; x>=0; x--)
-            end_indiceobj[x].Objeto = o;
-        break;
-    }
+    Redim(c, o, 0, defvar[Instr::endVetor] ?
+                   (unsigned char)defvar[Instr::endVetor] : 1);
 }
 
 //------------------------------------------------------------------------------
 void TVariavel::Apagar()
 {
-    if (endvar==0)
+    Redim(0, 0, defvar[Instr::endVetor] ?
+                (unsigned char)defvar[Instr::endVetor] : 1, 0);
+}
+
+//------------------------------------------------------------------------------
+void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int depois)
+{
+    if (antes==depois)
         return;
-    int x = (unsigned char)defvar[Instr::endVetor];
-    if (x) x--;
-    switch (defvar[2])
-    {
-    case Instr::cRef:
-        for (; x>=0; x--)
-            end_varref[x].MudarPont(0);
-        break;
-    case Instr::cArqLog:
-        for (; x>=0; x--)
-            end_log[x].Apagar();
-        break;
-    case Instr::cArqTxt:
-        for (; x>=0; x--)
-            end_txt[x].Apagar();
-        break;
-    case Instr::cIntTempo:
-        for (; x>=0; x--)
-            end_inttempo[x].setValor(0);
-        break;
-    case Instr::cListaObj:
-        for (; x>=0; x--)
-            end_listaobj[x].Apagar();
-        break;
-    case Instr::cListaItem:
-        for (; x>=0; x--)
-            end_listaitem[x].Apagar();
-        break;
-    case Instr::cSocket:
-        for (; x>=0; x--)
-            end_socket[x].MudarSock(0);
-        break;
-    case Instr::cServ:
-        for (; x>=0; x--)
-            end_serv[x].Apagar();
-        break;
-    case Instr::cProg:
-        for (; x>=0; x--)
-            end_prog[x].Apagar();
-        break;
-    case Instr::cIndiceObj:
-        for (; x>=0; x--)
-            end_indiceobj[x].Apagar();
-        break;
-    case Instr::cIndiceItem:
-        for (; x>=0; x--)
-            end_indiceitem[x].Apagar();
-        break;
-    }
+// Mostra o que vai fazer
 #ifdef DEBUG_CRIAR
-    printf("Variável apagada %p   ", endvar);
+    if (depois>antes)
+        printf("Variável criada (%d a %d) %p   ", antes, depois-1, endvar);
+    else
+        printf("Variável apagada (%d a %d) %p   ", depois, antes-1, endvar);
     char mens[500];
     if (Instr::Decod(mens, defvar, sizeof(mens)))
         puts(mens);
     else
-        puts("???");
+        printf("ERRO: %s\n", mens);
     fflush(stdout);
 #endif
+// Vetor de bits
+    if (defvar[2]==Instr::cInt1)
+    {
+    // Se deve apagar variáveis: retorna
+        if (depois<antes)
+            return;
+    // Obtém byte e bit inicial
+        char * end = end_char + antes/8;
+        unsigned char b = (bit + bit * 0x100) << (antes&7);
+    // Se não começa no bit 0: avança bit a bit até o fim do primeiro byte
+        if (b>1)
+        {
+            for (; antes<depois && b; antes++)
+                *end &= ~b, b<<=1;
+            end++;
+        }
+    // Preenche bytes = 0
+        for (; antes+8 <= depois; antes+=8)
+            *end++ = 0;
+    // Avança bit a bit
+        for (b=1; antes<depois; antes++)
+            *end &= ~b, b<<=1;
+        return;
+    }
+// Obtém o tamanho de uma variável
+    int tam = Tamanho(defvar);
+    if (tam==0)
+    {
+        endvar=0;
+        return;
+    }
+// Acerta variável
+    if (depois>antes)
+        memset(end_char+antes*tam, 0, (depois-antes)*tam);
+    switch (defvar[2])
+    {
+    case Instr::cRef:
+        for (; depois<antes; depois++)
+            end_varref[depois].MudarPont(0);
+        break;
+    case Instr::cIntInc:
+        for (; antes<depois; antes++)
+            end_incdec[antes].setInc(0);
+        break;
+    case Instr::cIntDec:
+        for (; antes<depois; antes++)
+            end_incdec[antes].setDec(0);
+        break;
+    case Instr::cArqLog:
+        for (; antes<depois; antes++)
+            end_log[antes].Criar();
+        for (; depois<antes; depois++)
+            end_log[depois].Apagar();
+        break;
+    case Instr::cArqTxt:
+        for (; antes<depois; antes++)
+            end_txt[antes].Criar();
+        for (; depois<antes; depois++)
+            end_txt[depois].Apagar();
+        break;
+    case Instr::cIntTempo:
+        for (; antes<depois; antes++)
+        {
+            end_inttempo[antes].defvar = defvar;
+            end_inttempo[antes].indice = antes;
+            end_inttempo[antes].EndObjeto(c, o);
+        }
+        for (; depois<antes; depois++)
+            end_inttempo[depois].setValor(0);
+        break;
+    case Instr::cListaObj:
+        for (; antes<depois; antes++)
+            end_listaobj[antes].EndObjeto(o);
+        for (; depois<antes; depois++)
+            end_listaobj[depois].Apagar();
+        break;
+    case Instr::cListaItem:
+        for (; depois<antes; depois++)
+            end_listaitem[depois].Apagar();
+        break;
+    case Instr::cSocket:
+        for (; antes<depois; antes++)
+        {
+            end_socket[antes].defvar = defvar;
+            end_socket[antes].indice = antes;
+            end_socket[antes].EndObjeto(c, o);
+        }
+        for (; depois<antes; depois++)
+            end_socket[depois].MudarSock(0);
+        break;
+    case Instr::cServ:
+        for (; antes<depois; antes++)
+        {
+            end_serv[antes].defvar = defvar;
+            end_serv[antes].indice = antes;
+            end_serv[antes].EndObjeto(c, o);
+            end_serv[antes].Criar();
+        }
+        for (; depois<antes; depois++)
+            end_serv[depois].Apagar();
+        break;
+    case Instr::cProg:
+        for (; antes<depois; antes++)
+            end_prog[antes].Criar();
+        for (; depois<antes; depois++)
+            end_prog[depois].Apagar();
+        break;
+    case Instr::cIndiceObj:
+        for (; antes<depois; antes++)
+            end_indiceobj[antes].Objeto = o;
+        for (; depois<antes; depois++)
+            end_indiceobj[depois].Apagar();
+        break;
+    case Instr::cIndiceItem:
+        for (; depois<antes; depois++)
+            end_indiceitem[depois].Apagar();
+        break;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -352,6 +358,16 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
     int vetor = (unsigned char)defvar[Instr::endVetor];
     if (vetor==0)
         vetor++;
+#ifdef DEBUG_MOVER
+    printf("Variável movida (0 a %d) de %p para %p  ",
+           vetor-1, endvar, destino);
+    char mens1[500];
+    if (Instr::Decod(mens1, defvar, sizeof(mens1)))
+        puts(mens1);
+    else
+        printf("ERRO: %s\n", mens1);
+    fflush(stdout);
+#endif
     switch (defvar[2])
     {
     case Instr::cInt1:

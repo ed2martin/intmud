@@ -19,8 +19,7 @@ Na inicialização do programa:
 
 Para alterar uma classe:
 -# Criar um novo TClasse::Comandos, mas ainda não apagar o antigo
--# Chamar AcertaDeriv() e AcertaVar(), nessa ordem
--# AcertaVar() para cada classe em ListaDeriv
+-# Chamar AcertaDeriv() e AcertaVarSub(), nessa ordem
 -# Apagar o antigo TClasse::Comandos
 .
 
@@ -29,7 +28,7 @@ Para criar uma classe:
 -# Criar objeto TClasse
 -# Acertar TClasse::Comandos
 -# AcertaDeriv("\0\0")
--# AcertaVar()
+-# AcertaVar() ou AcertaVarSub() (chamar somente um dos dois)
 .
 
 Para apagar uma classe:
@@ -91,11 +90,21 @@ public:
         ///< Número de elementos de TClasse::ListaDeriv
 
 // Variáveis
-    void AcertaVar();
+    int AcertaVar();
         ///< Acerta as variáveis da classe e dos objetos da classe
-        /**< @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
+        /**< @retval 0 Variáveis não mudaram
+             @retval 1 Lista de variáveis mudou
+             @retval 2 Lista de variáveis mudou e foi necessário
+                       criar/apagar variáveis na classe e/ou no objeto
+             @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
              @note Acerta variáveis e objetos da classe, se necessário.
              @note Não acerta as classes derivadas. */
+
+    void AcertaVarSub();
+        ///< Acerta variáveis da classe e objetos e classes derivadas
+        /**< Mesmo que chamar AcertaVar() para a classe e para cada
+             classe derivada. Entretanto, há otimizações quando a lista
+             de variáveis não mudou */
 
     int IndiceNome(const char * nome);
         ///< Obtém o índice de uma variável a partir do nome
@@ -142,12 +151,12 @@ public:
     static TClasse * RBlast(void);  ///< Último objeto da RBT
     static TClasse * RBnext(TClasse *); ///< Próximo objeto da RBT
     static TClasse * RBprevious(TClasse *); ///< Objeto anterior da RBT
+    static int RBcomp(TClasse * x, TClasse * y); ///< Compara objetos
 private:
     static TClasse * RBroot;  ///< Objeto raiz
     TClasse *RBleft,*RBright,*RBparent; ///< Objetos filhos e objeto pai
     void RBleft_rotate(void);
     void RBright_rotate(void);
-    static int RBcomp(TClasse * x, TClasse * y); ///< Compara objetos
     unsigned char RBcolour;
 
 // Outros
@@ -155,19 +164,6 @@ private:
         ///< Usado internamente: acerta dados de Comandos
         /**< Acerta as instruções que contém desvio implícito, como
              "se", "enquanto", "efim", etc. */
-};
-
-//----------------------------------------------------------------------------
-class TClasseVar /// Usado em TClasse::AcertaVar, para acertar as variáveis
-{
-public:
-    TClasseVar();             ///< Construtor
-    ~TClasseVar();            ///< Destrutor
-    char ** InstrVar;         ///< Valor anterior de TClasse::InstrVar
-    unsigned int * IndiceVar; ///< Valor anterior de TClasse::IndiceVar
-    unsigned int NumVar;      ///< Valor anterior de TClasse::NumVar
-    char * Vars;              ///< Valor anterior de TClasse::Vars
-    unsigned int TamVars;     ///< Valor anterior de TClasse::TamVars
 };
 
 //----------------------------------------------------------------------------
