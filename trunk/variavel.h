@@ -70,6 +70,15 @@ public:
         /**< Usa  TVariavel::defvar  e  TVariavel::endvar
              @note Não libera memória alocada (não executa delete) */
 
+    void Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int depois);
+        ///< Redimensiona vetor na memória
+        /**< @param c Classe ao qual a variável pertence, 0 se nenhuma classe
+             @param o Objeto ao qual a variável pertence, 0 se nenhum objeto
+             @param antes Tamanho atual do vetor (quantidade de variáveis)
+             @param depois Novo tamanho do vetor (quantidade de variáveis)
+             @note Para diminuir o tamanho do vetor, c e o podem ser 0
+             @note Não libera memória alocada (não executa delete) */
+
     void Mover(void * destino, TClasse * c, TObjeto * o);
         ///< Move a variável para outra região da memória
         /**< Usa:
@@ -133,7 +142,7 @@ public:
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
                     /**< 0 significa que não está usando ou a variável está
-                        sendo usada em outro lugar
+                         sendo usada em outro lugar
                              @note Não é usado em TVariavel */
     unsigned char indice;
         ///< Índice no vetor ou 0 se não for vetor ou 0xFF se for o vetor

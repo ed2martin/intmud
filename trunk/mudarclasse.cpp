@@ -185,6 +185,8 @@ int TMudarAux::CodifInstr(char * destino, const char * origem, int tamanho)
     // Checa linha vazia
         if (linhaend==mens)
         {
+            if (ch==0)
+                break;
             linhanum++;
             continue;
         }
@@ -348,9 +350,7 @@ bool TMudarClasse::ExecPasso()
             Inicio->Comandos = 0;
             delete Inicio;
             cl->AcertaDeriv();
-            cl->AcertaVar();
-            for (int x=0; x<cl->NumDeriv; x++)
-                cl->ListaDeriv[x]->AcertaVar();
+            cl->AcertaVarSub();
             delete[] antigo_com;
             continue;
         }
@@ -364,6 +364,9 @@ bool TMudarClasse::ExecPasso()
             delete Inicio;
             cl->AcertaDeriv(mens);
             cl->AcertaVar();
+            if (TClasse::ClInic)
+                if (TClasse::RBcomp(cl, TClasse::ClInic) >= 0)
+                    continue;
             if (Instr::ExecIni(cl, "iniclasse"))
             {
                 Instr::ExecArg(cl->Nome);

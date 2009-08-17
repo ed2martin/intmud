@@ -165,6 +165,15 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cProg:      strcpy(nome, "prog"); break;
     case cIndiceObj: strcpy(nome, "indiceobj"); break;
     case cIndiceItem: strcpy(nome, "indiceitem"); break;
+
+// Variáveis usadas internamente
+    case cTxtFixo:   strcpy(nome, "[TxtFixo]"); break;
+    case cVarNome:   strcpy(nome, "[VarNome]"); break;
+    case cVarInicio: strcpy(nome, "[VarInicio]"); break;
+    case cVarClasse: strcpy(nome, "[VarClasse]"); break;
+    case cVarObjeto: strcpy(nome, "[VarObjeto]"); break;
+    case cVarInt:    strcpy(nome, "[VarInt]"); break;
+
     default:
         copiastr(destino, "Instrução não existe", tamanho);
         return false;
