@@ -439,17 +439,16 @@ void TClasse::AcertaVarSub()
 // Obtém faixa de endereço das variáveis
     const char * ini=0;
     const char * fim=0;
-    if (NumVar)
-    {
-        ini = fim = InstrVar[0];
-        for (unsigned int x=1; x<NumVar; x++)
+    for (unsigned int x=0; x<NumVar; x++)
+        if (IndiceVar[x] & 0x800000)
         {
-            if (ini > InstrVar[x])
+            if (ini==0)
+                ini = fim = InstrVar[x];
+            else if (ini > InstrVar[x])
                 ini = InstrVar[x];
-            if (fim < InstrVar[x])
+            else if (fim < InstrVar[x])
                 fim = InstrVar[x];
         }
-    }
 // Acerta variáveis
     int mudou = AcertaVar();
 // Lista de variáveis mudou: acerta classes derivadas
@@ -794,9 +793,10 @@ int TClasse::AcertaVar()
             if ((InstrVar[c2][Instr::endProp] & 1) != passo)
                 { c2++; continue; }
         // Compara variáveis antes e depois
+        // Checa também se herança da variável mudou
             int cmp = comparaZ(antes.InstrVar[c1] + Instr::endNome,
                                InstrVar[c2] + Instr::endNome);
-            if (cmp!=0)
+            if (cmp != 0 || antes.IndiceVar[c1] != IndiceVar[c2])
                 bitobjeto |= 0x10;
         // Pula variáveis com tamanho zero
             bool tamzero=false;
