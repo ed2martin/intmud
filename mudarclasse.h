@@ -25,9 +25,9 @@ public:
         ///< Desmarca classe para exclusão
 
     static bool ExecPasso();
-            ///< Executa um passo das alterações no programa
-            /**< @return true se deve voltar ao início de Instr::ExecFim
-                 @note Chamado em Instr::ExecFim */
+        ///< Executa um passo das alterações no programa
+        /**< @return true se deve voltar ao início de Instr::ExecFim
+             @note Chamado em Instr::ExecFim */
 
     char * Comandos;    ///< Lista de comandos, =0 se não deve alterar classe
     char Nome[CLASSE_NOME_TAM]; ///< Nome da classe; não deve ser mudado
@@ -79,7 +79,7 @@ public:
 
     void AddBloco(char * ender, int tamanho);
         ///< Adiciona um bloco de instruções na lista
-        /**< @param end Endereço inicial do bloco
+        /**< @param ender Endereço inicial do bloco
              @param tamanho Tamanho do bloco sem os dois bytes =0 no final
              @note É adicionado apenas o endereço e o tamanho do bloco,
                    não o conteúdo */

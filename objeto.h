@@ -16,7 +16,7 @@ public:
     static TObjeto * Criar(TClasse * c, bool criavar=true);
         ///< Cria objeto
         /**< @param c Classe ao qual o objeto pertence
-             @param criarvar Se deve chamar construtores das variáveis
+             @param criavar Se deve chamar construtores das variáveis
              @return Endereço do objeto criado */
     void Apagar();
         ///< Apaga objeto @sa TObjeto::MarcarApagar
