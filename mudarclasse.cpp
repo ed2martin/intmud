@@ -18,13 +18,14 @@
 #include "classe.h"
 #include "objeto.h"
 #include "instr.h"
+#include "arqmapa.h"
 #include "misc.h"
 
 //#define SIMUL // Mostra o que vai mudar, mas não muda
 
 TMudarClasse * TMudarClasse::Inicio=0;
 TMudarClasse * TMudarClasse::Fim=0;
-
+char TMudarClasse::Salvar=0;
 
 //----------------------------------------------------------------------------
 TMudarAux::TMudarAux()
@@ -232,6 +233,7 @@ TMudarClasse::TMudarClasse(const char * nome)
     RBcolour=0;
     Comandos=0;
     copiastr(Nome, nome, sizeof(Nome));
+    Arquivo=0;
     RBinsert();
     Antes=Fim;
     Depois=0;
@@ -283,6 +285,8 @@ bool TMudarClasse::ExecPasso()
             else
             {
                 Inicio->RBcolour &= ~2;
+                if (Inicio->Arquivo==0)
+                    Inicio->Arquivo = cl->ArqArquivo;
 #ifdef SIMUL
                 printf("Apagar classe: %s\n", cl->Nome); fflush(stdout);
 #else
@@ -346,6 +350,8 @@ bool TMudarClasse::ExecPasso()
         if (cl)
         {
             char * antigo_com = cl->Comandos;
+            if (Inicio->Arquivo)
+                cl->Arquivo(Inicio->Arquivo);
             cl->Comandos = Inicio->Comandos;
             Inicio->Comandos = 0;
             delete Inicio;
@@ -358,12 +364,12 @@ bool TMudarClasse::ExecPasso()
         if (TClasse::NomeValido(Inicio->Nome))
         {
             char mens[2] = { 0, 0 };
-            cl = new TClasse(Inicio->Nome);
+            cl = new TClasse(Inicio->Nome, Inicio->Arquivo);
             cl->Comandos = Inicio->Comandos;
             Inicio->Comandos = 0;
             delete Inicio;
             cl->AcertaDeriv(mens);
-            cl->AcertaVar();
+            cl->AcertaVarSub();
             if (TClasse::ClInic)
                 if (TClasse::RBcomp(cl, TClasse::ClInic) >= 0)
                     continue;
@@ -376,6 +382,12 @@ bool TMudarClasse::ExecPasso()
             continue;
         }
         delete Inicio;
+    }
+    // Salvar classes
+    if (Salvar)
+    {
+        TArqMapa::SalvarArq(Salvar >= 2);
+        Salvar=0;
     }
     return false;
 }

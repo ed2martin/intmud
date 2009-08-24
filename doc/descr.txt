@@ -2,20 +2,18 @@ Especificações - IntMUD (Interpretador MUD)
 
 O programa é um interpretador de comandos, que trabalha com pelo menos
 mais dois arquivos:
-- Arquivo que contém os comandos (a linguagem).
+- Um ou mais arquivos que contém os comandos (a linguagem).
 - Arquivo de configuração, onde define-se algumas permissões, e se deve ou não
   abrir uma janela na tela.
 - Na versão Windows é necessário um quarto arquivo, para relatar os erros
   encontrados ao ler o arquivo de comandos.
 
 Quando um programa se torna grande, fica difícil trabalhar com um só arquivo.
-Nesse caso acrescenta-se no começo do arquivo a linha:
+Nesse caso acrescenta-se no começo do arquivo intmud.map a linha:
 mapagrande
-E o interpretador passa a trabalhar com vários arquivos da seguinte forma:
-1. Classes que não contém espaço no nome devem estar no arquivo intmud.map
-2. Outras classes, verifica-se a primeira palavra da classe para obter
-   o arquivo. Exemplo, uma classe [bom dia] iria no arquivo intmud-bom.map
-3. O IntMUD avisa sobre as classes que não estiverem no arquivo certo.
+E o interpretador passa a trabalhar com vários arquivos, sendo que os nomes
+dos demais arquivos sempre começam com "intmud-" e terminam com ".map".
+Exemplo: intmud-teste.map
 
 Os arquivos de comandos contém as classes (tipos de objetos), conforme
 a sintaxe:
@@ -1161,14 +1159,17 @@ prog <nomedavariável>
         Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
     criar(<texto>)
         Cria uma classe. Se já existia, apaga todas as instruções antes.
-        <texto> contém as instruções da classe, sendo que a primeira linha
-        é o nome da classe.
+        A primeira linha de <texto> é o prefixo do arquivo.
+            Exemplo, "abc" corresponde ao arquivo "intmud-abc.map".
+            Um texto vazio corresponde ao arquivo "intmud.map".
+        A segunda linha é o nome da classe.
+        Da terceira linha em diante são as instruções (o contéudo da classe).
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
         Exemplo:
             prog p
-            p.criar("abc\nint8 x\nconst n = 10")
-        Cria a seguinte classe:
+            p.criar("\nabc\nint8 x\nconst n = 10")
+        Cria a seguinte classe no arquivo intmud.map:
             [abc]
             int8 x
             const n = 10
@@ -1197,7 +1198,22 @@ prog <nomedavariável>
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
     salvar
-        Salva as alterações nos arquivos correspondentes.
+    salvar( <texto> )
+        Salva as alterações nos arquivos correspondentes, depois que todas
+        as alterações pendentes nas classes forem efetuadas.
+        O texto é composto de letras seguidas de números, que indicam como
+        o arquivo deve ser salvo. As opções são as seguintes:
+        I = espaços usados para indentação, de 0 a 8
+        C = linhas entre classes, de 0 a 10
+        F = linhas vazias entre funções, de 0 a 10
+        V = linhas vazias entre variáveis e constantes, de 0 a 10
+        A função salvar sem parâmetros é o mesmo que: salvar("I2C1F1V0")
+        que significa 2 espaços para indentação, 1 linha vazia entre classes
+        e entre funções e nenhuma linha vazia entre variáveis.
+    salvartudo
+    salvartudo( <texto> )
+        Mesmo que a função salvar, porém salva todos os arquivos,
+        independete de terem sido alterados ou não.
 
 indiceobj <nomedavariável>
     É semelhante a uma variável txt64, porém o texto é associado ao objeto

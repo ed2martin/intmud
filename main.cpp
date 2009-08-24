@@ -359,7 +359,8 @@ void Inicializa(const char * arg)
     }
 
 // Cria classes a partir dos arquivos .map
-    TArqMapa * mapa = 0;
+    TArqMapa * mapa = new TArqMapa(""); // Arquivo intmud.map
+    mapa->Existe = true;
 
     // Abre intmud.map
     strcpy(arqext, ".map");
@@ -379,8 +380,7 @@ void Inicializa(const char * arg)
         }
         if (linhanum==0) // Fim do arquivo
         {
-            if (mapa)
-                mapa = mapa->Proximo;
+            mapa = mapa->Proximo;
             if (mapa==0)
                 break;
             mprintf(arqext, 60, "-%s.map", mapa->Arquivo);
@@ -395,7 +395,7 @@ void Inicializa(const char * arg)
     // Verifica linha MAPAGRANDE, que indica vários arquivos
         if (comparaZ(mens, "MAPAGRANDE")==0)
         {
-            if (TArqMapa::Inicio) // Se já obteve a lista de arquivos
+            if (TArqMapa::MapaGrande) // Se já obteve a lista de arquivos
             {
                 fprintf(log, "%s:%d: Instrução repetida - MAPAGRANDE\n",
                             arqinicio, linhanum);
@@ -411,6 +411,7 @@ void Inicializa(const char * arg)
             }
 
         // Abre diretório
+            TArqMapa::MapaGrande = true;
             DIR * dir=opendir(".");
             dirent * sdir;
             if (dir==0)
@@ -420,7 +421,6 @@ void Inicializa(const char * arg)
             }
 
         // Obtém nomes dos arquivos
-            mapa = new TArqMapa(""); // Arquivo intmud.map
             copiastr(arqext, "-");
             int tam = strlen(arqinicio);
             while ( (sdir=readdir(dir))!=0 )
@@ -438,7 +438,11 @@ void Inicializa(const char * arg)
                 if (pont<mens+4)
                     continue;
                 pont[-4]=0;
-                new TArqMapa(mens);
+                if (TArqMapa::NomeValido(mens))
+                {
+                    TArqMapa * m = new TArqMapa(mens);
+                    m->Existe = true;
+                }
                 //printf("%s\n", sdir->d_name); fflush(stdout);
             }
             closedir(dir);
@@ -474,39 +478,9 @@ void Inicializa(const char * arg)
             continue;
         }
 
-    // Verifica se classe está no arquivo certo
-        if (mapa)
-        {
-        // Obtém parte do nome do arquivo, sendo que "" é intmud.map
-            for (p=mens+1; *p; p++)
-                if (*p==' ')
-                {
-                    p=mens+1;
-                    break;
-                }
-        // Verifica se bate com o nome do arquivo
-            if (compara(mapa->Arquivo, p)!=0)
-            {
-                fprintf(log, "%s:%d: Classe [%s] deveria estar "
-                            "no arquivo ", arqinicio, linhanum, mens+1);
-                for (p=mens+1; *p && *p!=' '; p++);
-                char x = *arqext;
-                *arqext=0;
-                if (*p==0)
-                    fprintf(log, "%s.map\n", arqinicio);
-                else
-                {
-                    *p=0;
-                    fprintf(log, "%s-%s.map\n", arqinicio, mens+1);
-                }
-                *arqext = x;
-                erro=true;
-                continue;
-            }
-        }
-
     // Cria classe
-        new TClasse(mens+1);
+        new TClasse(mens+1, mapa);
+        mapa->Mudou = false;
     }
 
 // Verifica se ocorreu erro no mapa
