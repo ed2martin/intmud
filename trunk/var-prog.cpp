@@ -18,6 +18,7 @@
 #include "variavel.h"
 #include "classe.h"
 #include "mudarclasse.h"
+#include "arqmapa.h"
 #include "instr.h"
 #include "misc.h"
 
@@ -97,6 +98,8 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "inilinha",     &TVarProg::FuncIniLinha },
         { "lin",          &TVarProg::FuncLin },
         { "nivel",        &TVarProg::FuncNivel },
+        { "salvar",       &TVarProg::FuncSalvar },
+        { "salvartudo",   &TVarProg::FuncSalvarTudo },
         { "texto",        &TVarProg::FuncTexto },
         { "varcomum",     &TVarProg::FuncVarComum },
         { "varlocal",     &TVarProg::FuncVarLocal },
@@ -1031,29 +1034,38 @@ bool TVarProg::FuncCriar(TVariavel * v)
     else if (Instr::VarAtual >= v+1)
     {
         //puts("Criar classe"); fflush(stdout);
-    // Obtém o nome da classe
+        char nomearq[MAPA_NOME_TAM+30];
         char nomeclasse[CLASSE_NOME_TAM+30];
         const char * nome = v[1].getTxt();
-        char * p = nomeclasse;
-        while (*nome && *nome!=Instr::ex_barra_n)
-        {
-            if (p >= nomeclasse+sizeof(nomeclasse)-2)
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto("Nome de classe inválido");
-            }
+    // Obtém o nome do arquivo
+        char * p = nomearq;
+        while (*nome && *nome!=Instr::ex_barra_n &&
+                p < nomearq+sizeof(nomearq)-1)
             *p++ = *nome++;
-        }
         *p=0;
-    // Checa se nome válido / acerta o nome
+        if (*nome==Instr::ex_barra_n)
+            nome++;
+    // Obtém o nome da classe
+        p = nomeclasse;
+        while (*nome && *nome!=Instr::ex_barra_n &&
+                p < nomeclasse+sizeof(nomeclasse)-1)
+            *p++ = *nome++;
+        *p=0;
+        if (*nome==Instr::ex_barra_n)
+            nome++;
+    // Checa se nome de arquivo válido
+        if (!TArqMapa::NomeValido(nomearq))
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Nome de arquivo inválido");
+        }
+    // Checa se nome de classe válido
         if (!TClasse::NomeValido(nomeclasse))
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("Nome de classe inválido");
         }
     // Codifica as instruções
-        if (*nome)
-            nome++;
         char mens[65000];
         int  total = TMudarAux::CodifInstr(mens, nome, sizeof(mens)-2);
         if (total<0)
@@ -1086,6 +1098,11 @@ bool TVarProg::FuncCriar(TVariavel * v)
         com = new char[total];
         memcpy(com, mens, total);
         obj->MudarComandos(com);
+    // Anota o arquivo correspondente à classe
+        TArqMapa * arq = TArqMapa::Procura(nomearq);
+        if (arq==0)
+            arq = new TArqMapa(nomearq);
+        obj->Arquivo = arq;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto("");
@@ -1251,4 +1268,57 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
     mudarcom.AnotaBloco(obj);
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto("");
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncSalvar(TVariavel * v)
+{
+    if (Instr::VarAtual != v+1)
+        return false;
+// Indica que deve salvar
+    if (TMudarClasse::Salvar==0)
+        TMudarClasse::Salvar=1;
+// Acerta valor padrão das variáveis
+    TArqMapa::ParamIndent = 2;
+    TArqMapa::ParamClasse = 1;
+    TArqMapa::ParamFunc = 1;
+    TArqMapa::ParamVar = 0;
+// Obtém variáveis de acordo com texto
+    char comando = 0;
+    int  valor = 0;
+    for (const char * p = v[1].getTxt(); *p; p++)
+    {
+        if (*p>='0' && *p<='9')
+        {
+            valor = valor * 10 + *p - '0';
+            if (valor>100)
+                valor=100;
+            continue;
+        }
+        switch (comando | 0x20)
+        {
+        case 'i':
+            TArqMapa::ParamIndent = (valor<8 ? valor : 8);
+            break;
+        case 'c':
+            TArqMapa::ParamClasse = (valor<10 ? valor : 10);
+            break;
+        case 'f':
+            TArqMapa::ParamFunc = (valor<10 ? valor : 10);
+            break;
+        case 'v':
+            TArqMapa::ParamVar = (valor<10 ? valor : 10);
+            break;
+        }
+        comando = *p;
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncSalvarTudo(TVariavel * v)
+{
+    bool ret = FuncSalvar(v);
+    TMudarClasse::Salvar=2;
+    return ret;
 }

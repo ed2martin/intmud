@@ -2,6 +2,7 @@
 #define CLASSE_H
 
 class TObjeto;
+class TArqMapa;
 
 #define HERDA_TAM 20 // Número máximo de classes herdadas por classe
 #define CLASSE_NOME_TAM 48 // Tamanho máximo dos nomes das classes + 1
@@ -28,7 +29,7 @@ Para criar uma classe:
 -# Criar objeto TClasse
 -# Acertar TClasse::Comandos
 -# AcertaDeriv("\0\0")
--# AcertaVar() ou AcertaVarSub() (chamar somente um dos dois)
+-# AcertaVarSub()
 .
 
 Para apagar uma classe:
@@ -44,18 +45,21 @@ Para apagar uma classe:
 class TClasse /// Classes
 {
 public:
-    TClasse(const char * nome);
+    TClasse(const char * nome, TArqMapa * arquivo);
         ///< Construtor
-        /**< @param nome da classe */
+        /**< @param nome Nome da classe
+             @param arquivo A qual arquivo pertence
+             @note Indica que o arquivo da classe foi alterado */
     ~TClasse();
         ///< Destrutor
-        /**< @note Antes de apagar, não deve haver nenhuma classe derivada */
+        /**< @note Antes de apagar, não deve haver nenhuma classe derivada
+             @note Indica que o arquivo da classe foi alterado */
 
     static bool NomeValido(char * nome);
         ///< Verifica se nome é um nome válido para classe
         /**<
          *  @param nome Nome a pesquisar
-         *  @return bool (se o nome é valido); nome original é alterado */
+         *  @return true se o nome é valido; nome original é alterado */
 
     static TClasse * Procura(const char * nome);
         ///< Procura uma classe a partir do nome
@@ -104,7 +108,8 @@ public:
         ///< Acerta variáveis da classe e objetos e classes derivadas
         /**< Mesmo que chamar AcertaVar() para a classe e para cada
              classe derivada. Entretanto, há otimizações quando a lista
-             de variáveis não mudou */
+             de variáveis não mudou.
+             @note Indica que o arquivo da classe foi alterado */
 
     int IndiceNome(const char * nome);
         ///< Obtém o índice de uma variável a partir do nome
@@ -142,6 +147,15 @@ public:
     static TClasse * ClInic;
         ///< Usado em conjunto com main.cpp
         /**< Usado ao chamar funções iniclasse de todas as classes */
+
+// Arquivo
+    void Arquivo(TArqMapa * arquivo);
+        ///< Muda a classe de arquivo
+        /**< @param arquivo Novo arquivo
+             @note Se necessário, indica que o arquivo foi alterado */
+    TClasse * ArqAntes; ///< Classe anterior no mesmo arquivo
+    TClasse * ArqDepois; ///< Próxima classe no mesmo arquivo
+    TArqMapa * ArqArquivo; ///< Em qual arquivo está
 
 // Árvore organizada por TClasse::Nome
 public:

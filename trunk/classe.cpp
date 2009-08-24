@@ -19,6 +19,7 @@
 #include "objeto.h"
 #include "variavel.h"
 #include "instr.h"
+#include "arqmapa.h"
 #include "misc.h"
 
 //#define MOSTRA_HERANCA // Mostra classes herdadas
@@ -83,7 +84,7 @@ TClasseVar::~TClasseVar()
 }
 
 //----------------------------------------------------------------------------
-TClasse::TClasse(const char * nome)
+TClasse::TClasse(const char * nome, TArqMapa * arquivo)
 {
     Comandos=0;
     copiastr(Nome, nome, sizeof(Nome));
@@ -98,7 +99,13 @@ TClasse::TClasse(const char * nome)
     TamObj=0;
     TamVars=0;
     Vars=0;
+    ArqArquivo=0;
     RBinsert();
+    ArqAntes = arquivo->ClFim;
+    ArqDepois = 0;
+    arquivo->ClFim = this;
+    (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
+    arquivo->Mudou = true;
 }
 
 //----------------------------------------------------------------------------
@@ -129,6 +136,12 @@ TClasse::~TClasse()
     if (ListaDeriv)   delete[] ListaDeriv;
     if (InstrVar)     delete[] InstrVar;
     if (IndiceVar)    delete[] IndiceVar;
+    if (ArqArquivo)
+    {
+        (ArqAntes ? ArqAntes->ArqDepois : ArqArquivo->ClInicio) = ArqDepois;
+        (ArqDepois ? ArqDepois->ArqAntes : ArqArquivo->ClFim) = ArqAntes;
+        ArqArquivo->Mudou = true;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -154,6 +167,28 @@ bool TClasse::NomeValido(char * nome)
     if (d-nome >= (int)sizeof(cl->Nome))
         return false;
     return true;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::Arquivo(TArqMapa * arquivo)
+{
+    if (ArqArquivo == arquivo)
+        return;
+    if (ArqArquivo)
+    {
+        (ArqAntes ? ArqAntes->ArqDepois : ArqArquivo->ClInicio) = ArqDepois;
+        (ArqDepois ? ArqDepois->ArqAntes : ArqArquivo->ClFim) = ArqAntes;
+        ArqArquivo->Mudou = true;
+    }
+    ArqArquivo = arquivo;
+    if (arquivo)
+    {
+        ArqAntes = arquivo->ClFim;
+        ArqDepois = 0;
+        arquivo->ClFim = this;
+        (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
+        arquivo->Mudou = true;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -436,6 +471,9 @@ void TClasse::AcertaDeriv(char * comandos_antes)
 //----------------------------------------------------------------------------
 void TClasse::AcertaVarSub()
 {
+// Indica que o arquivo foi alterado
+    if (ArqArquivo)
+        ArqArquivo->Mudou = true;
 // Obtém faixa de endereço das variáveis
     const char * ini=0;
     const char * fim=0;

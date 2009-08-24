@@ -31,6 +31,12 @@ public:
 
     char * Comandos;    ///< Lista de comandos, =0 se não deve alterar classe
     char Nome[CLASSE_NOME_TAM]; ///< Nome da classe; não deve ser mudado
+    TArqMapa * Arquivo; ///< Em qual arquivo criar classe
+    static char Salvar;
+        ///< Se deve salvar ou não as classes em arquivo
+        /**< - 0 = não salvar
+             - 1 = salvar só classes que mudaram
+             - 2 = salvar tudo */
 
 // Lista ligada - ordem em que as classes serão alteradas
     TMudarClasse * Antes;     ///< Objeto anterior
