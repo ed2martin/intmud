@@ -10,7 +10,7 @@ class TClasse;
 class TArqMapa /// Arquivos que compôem o programa interpretado
 {
 public:
-    TArqMapa(const char * classe);
+    TArqMapa(const char * arquivo);
     ~TArqMapa();
     static bool NomeValido(const char * nome);
         ///< Verifica se nome é um nome válido para arquivo
@@ -30,7 +30,8 @@ public:
     static unsigned char ParamClasse; ///< Linhas entre classes
     static unsigned char ParamFunc;   ///< Linhas entre funções
     static unsigned char ParamVar;    ///< Linhas entre variáveis
-    static bool MapaGrande; ///< Se está trabalhando com vários arquivos
+    static bool MapaGrande;
+        ///< Se o arquivo intmud.map possui a instrução "mapagrande"
 
     bool Mudou;             ///< Se o arquivo foi alterado
     bool Existe;            ///< Se o arquivo já existe
