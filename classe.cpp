@@ -22,6 +22,7 @@
 #include "arqmapa.h"
 #include "misc.h"
 
+//#define DEBUG_CRIAR // Mostra classes criadas e apagadas
 //#define MOSTRA_HERANCA // Mostra classes herdadas
 //#define MOSTRA_MEM // Mostrar como alocou variáveis na memória
 //#define MOSTRA_MUDOU // Mostrar as variáveis que mudaram, em AcertaVar()
@@ -101,16 +102,24 @@ TClasse::TClasse(const char * nome, TArqMapa * arquivo)
     Vars=0;
     ArqArquivo=0;
     RBinsert();
+    ArqArquivo = arquivo;
     ArqAntes = arquivo->ClFim;
     ArqDepois = 0;
     arquivo->ClFim = this;
     (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
     arquivo->Mudou = true;
+#ifdef DEBUG_CRIAR
+    printf("TClasse( %s , %s )\n", Nome, ArqArquivo->Arquivo); fflush(stdout);
+#endif
 }
 
 //----------------------------------------------------------------------------
 TClasse::~TClasse()
 {
+#ifdef DEBUG_CRIAR
+    printf("~TClasse( %s , %s )\n", Nome,
+           ArqArquivo ? ArqArquivo->Arquivo : "???"); fflush(stdout);
+#endif
     if (ClInic==this)
         ClInic=RBnext(this);
     while (ObjetoIni)

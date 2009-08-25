@@ -1159,20 +1159,22 @@ prog <nomedavariável>
         Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
     criar(<texto>)
         Cria uma classe. Se já existia, apaga todas as instruções antes.
-        A primeira linha de <texto> é o prefixo do arquivo.
+        A primeira linha é o nome da classe.
+        A segunda linha de <texto> é o prefixo do arquivo.
             Exemplo, "abc" corresponde ao arquivo "intmud-abc.map".
             Um texto vazio corresponde ao arquivo "intmud.map".
-        A segunda linha é o nome da classe.
         Da terceira linha em diante são as instruções (o contéudo da classe).
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
         Exemplo:
             prog p
-            p.criar("\nabc\nint8 x\nconst n = 10")
+            p.criar("abc\n\nint8 x\nconst n = 10")
         Cria a seguinte classe no arquivo intmud.map:
             [abc]
             int8 x
             const n = 10
+        Para criar a mesma classe, mas no arquivo intmud-x.map:
+            p.criar("abc\nx\nint8 x\nconst n = 10")
     criar(<nome da classe>, <texto>)
         Cria uma função ou variável de uma classe.
         Se já existia, antes apaga a função ou variável.

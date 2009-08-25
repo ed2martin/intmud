@@ -715,6 +715,8 @@ bool TVarProg::FuncDepois(TVariavel * v)
             {
             case Instr::cFunc:
             case Instr::cVarFunc:
+                ValorFim=2;
+                break;
             case Instr::cSe:
             case Instr::cEnquanto:
                 if (ValorFim)
@@ -1037,18 +1039,18 @@ bool TVarProg::FuncCriar(TVariavel * v)
         char nomearq[MAPA_NOME_TAM+30];
         char nomeclasse[CLASSE_NOME_TAM+30];
         const char * nome = v[1].getTxt();
-    // Obtém o nome do arquivo
-        char * p = nomearq;
+    // Obtém o nome da classe
+        char * p = nomeclasse;
         while (*nome && *nome!=Instr::ex_barra_n &&
-                p < nomearq+sizeof(nomearq)-1)
+                p < nomeclasse+sizeof(nomeclasse)-1)
             *p++ = *nome++;
         *p=0;
         if (*nome==Instr::ex_barra_n)
             nome++;
-    // Obtém o nome da classe
-        p = nomeclasse;
+    // Obtém o nome do arquivo
+        p = nomearq;
         while (*nome && *nome!=Instr::ex_barra_n &&
-                p < nomeclasse+sizeof(nomeclasse)-1)
+                p < nomearq+sizeof(nomearq)-1)
             *p++ = *nome++;
         *p=0;
         if (*nome==Instr::ex_barra_n)
@@ -1273,8 +1275,6 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncSalvar(TVariavel * v)
 {
-    if (Instr::VarAtual != v+1)
-        return false;
 // Indica que deve salvar
     if (TMudarClasse::Salvar==0)
         TMudarClasse::Salvar=1;
@@ -1284,9 +1284,11 @@ bool TVarProg::FuncSalvar(TVariavel * v)
     TArqMapa::ParamFunc = 1;
     TArqMapa::ParamVar = 0;
 // Obtém variáveis de acordo com texto
+    if (Instr::VarAtual < v+1)
+        return false;
     char comando = 0;
     int  valor = 0;
-    for (const char * p = v[1].getTxt(); *p; p++)
+    for (const char * p = v[1].getTxt();; p++)
     {
         if (*p>='0' && *p<='9')
         {
@@ -1310,7 +1312,10 @@ bool TVarProg::FuncSalvar(TVariavel * v)
             TArqMapa::ParamVar = (valor<10 ? valor : 10);
             break;
         }
+        valor=0;
         comando = *p;
+        if (comando==0)
+            break;
     }
     return false;
 }
