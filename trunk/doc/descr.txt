@@ -872,6 +872,35 @@ arqlog <nomedavariável>
     fechar
         Fecha o arquivo.
 
+arqsav <nomedavariável>
+    Para salvar objetos em arquivos e recuperar posteriormente.
+    Nota 1: O nome do arquivo sempre terminará com ".sav".
+    Nota 2: O arquivo deve pertencer ao diretório atual ou a um
+    subdiretório dele. Não é possível criar arquivos em outros lugares.
+
+    valido(<nome do arquivo>)
+        Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
+    existe(<nome do arquivo>)
+        Retorna 1 se arquivo existe ou 0 se não existe.
+    senha(<nome do arquivo>, <senha>)
+        Retorna 1 se senha correta ou 0 se incorreta.
+    dias(<nome do arquivo>)
+        Retorna quantos dias faltam para o arquivo expirar.
+    ler(<nome do arquivo>, <listaobj>)
+    ler(<nome do arquivo>, <listaobj>, <quantidade máxima de objetos lidos>)
+        Lê Arquivo.
+        O primeiro objeto do arquivo vai para o primeiro da listaobj.
+        O segundo do arquivo vai para o segundo da listaobj, e assim por
+        diante. Se a listaobj tiver menos objetos que o arquivo, serão
+        criados objetos na listaobj.
+        Retorna a quantidade de objetos lidos.
+    salvar(<nome do arquivo>, <listaobj>, <dias>, <senha>)
+        Salva em arquivo todos os objetos de uma listaobj.
+        <dias> é a quantidade de dias para apagar o arquivo, 0=nunca apagar
+    apagar(<nome do arquivo>)
+        Apaga arquivo.
+        Retorna 1 se conseguiu apagar ou 0 se não conseguiu.
+
 arqtxt <nomedavariável>
     Para ler ou gravar arquivos de texto.
     Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
@@ -1035,43 +1064,6 @@ serv <nomedavariável>
       novo.conec.msg("Benvindo\n")
     func conec_msg
       conec.msg("você escreveu " + arg1 + "\n")
-
-salvar <nomedavariável>
-    Permite salvar objetos em arquivos e recuperar posteriormente.
-    A maioria das funções tem como parâmetro de entrada um texto, que é
-    o nome do arquivo.
-
-    Funções:
-    valido(<texto>)
-        Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
-    existe(<texto>)
-        Retorna 1 se arquivo existe ou 0 se não existe.
-    senha(<texto>, <senha>)
-        Retorna 1 se senha válida ou 0 se inválida.
-    dias(<texto>)
-        Quantos dias faltam para o arquivo expirar.
-    abrir(<texto>)
-        Cria os objetos do arquivo e retorna uma referência para o
-        primeiro objeto criado. Se não conseguir criar, retorna NULO.
-    apagar(<texto>)
-        Apaga o arquivo
-    ref(<texto>)
-        Referência para o primeiro objeto criado com o comando abrir,
-        ou o primeiro objeto salvo com o comando criar.
-    criar(<texto>, <dias>)
-    criar(<texto>, <dias>, <senha>)
-        Cria ou altera um arquivo. Em seguida chamar as funções salvar e fechar.
-    salvar(<objeto>)
-        Acrescenta objeto no arquivo.
-    fechar
-        Fecha o arquivo criado com a função criar.
-
-    Eventos:
-    <nomedavariável>_apagar
-        Arquivo foi apagado porque o tempo expirou.
-        Entrada:
-        arg0 = nome do arquivo (texto)
-        arg1 = índice da variável vetor, se não for vetor arg1=0
 
 prog <nomedavariável>
     Para ler e alterar o próprio programa (o mapa).

@@ -22,6 +22,7 @@
 #include "objeto.h"
 #include "var-listaobj.h"
 #include "var-log.h"
+#include "var-sav.h"
 #include "var-txt.h"
 #include "var-nomeobj.h"
 #include "var-socket.h"
@@ -113,11 +114,11 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cListaMsg:  return 0;
     case Instr::cNomeObj:   return sizeof(TVarNomeObj);
     case Instr::cArqLog:    return sizeof(TVarLog);
+    case Instr::cArqSav:    return 0;
     case Instr::cArqTxt:    return sizeof(TVarTxt);
     case Instr::cIntTempo:  return sizeof(TVarIntTempo);;
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
-    case Instr::cSalvar:    return 0;
     case Instr::cProg:      return sizeof(TVarProg);
     case Instr::cIndiceObj: return sizeof(TIndiceObj);
     case Instr::cIndiceItem: return sizeof(TIndiceItem);
@@ -177,6 +178,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cListaMsg:  return varOutros;
     case Instr::cNomeObj:   return varOutros;
     case Instr::cArqLog:    return varOutros;
+    case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
     case Instr::cIntTempo:  return varInt;
     case Instr::cSocket:
@@ -184,7 +186,6 @@ TVarTipo TVariavel::Tipo()
                 return varInt;
             return varOutros;
     case Instr::cServ:      return varOutros;
-    case Instr::cSalvar:    return varOutros;
     case Instr::cProg:      return varOutros;
     case Instr::cIndiceObj: return varTxt;
     case Instr::cIndiceItem: return varOutros;
@@ -464,6 +465,9 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         return;
     case Instr::cArqLog:
         MOVER_SIMPLES( TVarLog )
+    case Instr::cArqSav:
+        endvar = destino;
+        return;
     case Instr::cArqTxt:
         if (vetor <= 1)
             move_mem(destino, endvar, sizeof(TVarTxt));
@@ -477,9 +481,6 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         MOVER_COMPLETO( TVarSocket )
     case Instr::cServ:
         MOVER_COMPLETO( TVarServ )
-    case Instr::cSalvar:
-        endvar = destino;
-        return;
     case Instr::cProg:
         MOVER_SIMPLES( TVarProg )
     case Instr::cIndiceObj:
@@ -611,6 +612,8 @@ bool TVariavel::getBool()
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
         return end_log[indice].getValor();
+    case Instr::cArqSav:
+        return 0;
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
@@ -619,8 +622,6 @@ bool TVariavel::getBool()
         return end_socket[indice].getValor(defvar);
     case Instr::cServ:
         return end_serv[indice].getValor();
-    case Instr::cSalvar:
-        return 0;
     case Instr::cProg:
         return end_prog[indice].getValor();
     case Instr::cIndiceObj:
@@ -757,6 +758,8 @@ int TVariavel::getInt()
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
         return end_log[indice].getValor();
+    case Instr::cArqSav:
+        return 0;
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
@@ -765,8 +768,6 @@ int TVariavel::getInt()
         return end_socket[indice].getValor(defvar);
     case Instr::cServ:
         return end_serv[indice].getValor();
-    case Instr::cSalvar:
-        return 0;
     case Instr::cProg:
         return end_prog[indice].getValor();
     case Instr::cIndiceObj:
@@ -902,6 +903,8 @@ double TVariavel::getDouble()
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
         return end_log[indice].getValor();
+    case Instr::cArqSav:
+        return 0;
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
@@ -910,8 +913,6 @@ double TVariavel::getDouble()
         return end_socket[indice].getValor(defvar);
     case Instr::cServ:
         return end_serv[indice].getValor();
-    case Instr::cSalvar:
-        return 0;
     case Instr::cProg:
         return end_prog[indice].getValor();
     case Instr::cIndiceObj:
@@ -1074,10 +1075,10 @@ const char * TVariavel::getTxt()
             return "";
         sprintf(txtnum, "%d", getInt());
         return txtnum;
+    case Instr::cArqSav:
     case Instr::cListaTxt:
     case Instr::cListaMsg:
     case Instr::cServ:
-    case Instr::cSalvar:
     case Instr::cProg:
         return "";
     case Instr::cIndiceObj:
@@ -1221,6 +1222,7 @@ void TVariavel::setInt(int valor)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cArqLog:
+    case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
     case Instr::cIntTempo:
@@ -1232,7 +1234,6 @@ void TVariavel::setInt(int valor)
     case Instr::cServ:
         end_serv[indice].Fechar();
         break;
-    case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndiceItem:
         break;
@@ -1306,6 +1307,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cArqLog:
+    case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
     case Instr::cSocket:
@@ -1314,7 +1316,6 @@ void TVariavel::setDouble(double valor)
     case Instr::cServ:
         end_serv[indice].Fechar();
         break;
-    case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndiceItem:
         break;
@@ -1402,12 +1403,12 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cListaMsg:
     case Instr::cNomeObj:
     case Instr::cArqLog:
+    case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
     case Instr::cServ:
         end_serv[indice].Fechar();
         break;
-    case Instr::cSalvar:
     case Instr::cProg:
     case Instr::cIndiceItem:
         break;
@@ -1551,6 +1552,8 @@ bool TVariavel::Func(const char * nome)
         return end_nomeobj[indice].Func(this, nome);
     case Instr::cArqLog:
         return end_log[indice].Func(this, nome);
+    case Instr::cArqSav:
+        return TVarSav::Func(this, nome);
     case Instr::cArqTxt:
         return end_txt[indice].Func(this, nome);
     case Instr::cSocket:

@@ -22,6 +22,7 @@
 #include "procurar.h"
 #include "random.h"
 #include "misc.h"
+#include "shs.h"
 
 // Funções predefinidas do programa interpretado
 // Vide TListaFunc, em instr.h
@@ -450,17 +451,24 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         break;
     case 8: // txtshs
         {
-            unsigned long codif[5];
-            gerasenha(txt, codif);
+            SHS_INFO shsInfo;
+            shsInit(&shsInfo);
+            shsUpdate(&shsInfo, (unsigned char *)txt, strlen(txt));
+            shsFinal(&shsInfo);
             for (int x=0; x<5; x++)
+            {
+                unsigned long codif = shsInfo.digest[x];
                 for (int y=0; y<5; y++)
                 {
-                    *destino++ = (codif[x] & 0x3F) + 0x21;
-                    codif[x] >>= 6;
+                    *destino++ = (codif & 0x3F) + 0x21;
+                    codif >>= 6;
                 }
-            *destino++ = (codif[0]&3) + (codif[1]&3)*4 +
-                         (codif[2]&3)*16 + 0x21;
-            *destino++ = (codif[3]&3) + (codif[4]&3)*4 + 0x21;
+            }
+            *destino++ = (shsInfo.digest[0]&3) +
+                         (shsInfo.digest[1]&3)*4 +
+                         (shsInfo.digest[2]&3)*16 + 0x21;
+            *destino++ = (shsInfo.digest[3]&3) +
+                         (shsInfo.digest[4]&3)*4 + 0x21;
             break;
         }
     case 9: // txtnome

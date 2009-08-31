@@ -274,11 +274,11 @@ enum Comando
     cListaMsg,          ///< Extra: ListaMsg
     cNomeObj,           ///< Extra: NomeObj
     cArqLog,            ///< Extra: ArqLog
+    cArqSav,            ///< Extra: Salvar
     cArqTxt,            ///< Extra: ArqTxt
     cIntTempo,          ///< Extra: IntTempo
     cSocket,            ///< Extra: Socket
     cServ,              ///< Extra: Serv
-    cSalvar,            ///< Extra: Salvar
     cProg,              ///< Extra: Prog
     cIndiceObj,         ///< Extra: IndiceObj
     cIndiceItem,        ///< Extra: IndiceItem
