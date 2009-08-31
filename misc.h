@@ -69,16 +69,6 @@ int compara(const char * string1, const char * string2);
         @retval 1 se string1>string2 */
 int compara(const char * string1, const char * string2, int tam);
 
-    /// Codifica senha
-void gerasenha(const char * senha, unsigned long codif[5]);
-
-    /// Verifica e/ou anota senha vazia
-    /** @param limpar Se deve limpar a senha (sem senha)
-        @param codif Senha codificada
-        @retval true Senha vazia (sem senha)
-        @retval false Senha não vazia */
-bool senhavazia(bool limpar, unsigned long codif[5]);
-
     /// Verifica se nome de arquivo permitido (está no diretório do programa)
     /** @param nome Nome do arquivo
         @return true se nome válido ou false se inválido */

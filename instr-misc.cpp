@@ -512,11 +512,11 @@ const char * Instr::NomeInstr(const char * instr)
     case cListaMsg:         return "listamsg";
     case cNomeObj:          return "nomeobj";
     case cArqLog:           return "arqlog";
+    case cArqSav:           return "arqsav";
     case cArqTxt:           return "arqtxt";
     case cIntTempo:         return "inttempo";
     case cSocket:           return "socket";
     case cServ:             return "serv";
-    case cSalvar:           return "salvar";
     case cProg:             return "prog";
     case cIndiceObj:        return "indiceobj";
     case cIndiceItem:       return "indiceitem";
@@ -584,11 +584,11 @@ const char * Instr::NomeComando(int valor)
     case cListaMsg:         return "cListaMsg";
     case cNomeObj:          return "cNomeObj";
     case cArqLog:           return "cArqLog";
+    case cArqSav:           return "cArqSav";
     case cArqTxt:           return "cArqTxt";
     case cIntTempo:         return "cIntTempo";
     case cSocket:           return "cSocket";
     case cServ:             return "cServ";
-    case cSalvar:           return "cSalvar";
     case cProg:             return "cProg";
     case cIndiceObj:        return "cIndiceObj";
     case cIndiceItem:       return "cIndiceItem";

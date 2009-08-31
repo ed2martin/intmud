@@ -13,6 +13,8 @@ public:
     void Apagar();          ///< Apaga objeto
     void Mover(TListaObj * destino); ///< Move TListaObj para outro lugar
     void EndObjeto(TObjeto * obj);
+    TListaX * AddInicio(TObjeto * obj); ///< Adiciona objeto no início da lista
+    TListaX * AddFim(TObjeto * obj); ///< Adiciona objeto no fim da lista
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
     TListaX * Inicio;       ///< Primeiro item

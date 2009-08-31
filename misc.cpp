@@ -264,36 +264,6 @@ int compara(const char * string1, const char * string2, int tam)
 }
 
 //------------------------------------------------------------------------------
-void gerasenha(const char * senha, unsigned long codif[5])
-{
-    int i;
-    SHS_INFO shsInfo;
-    shsInit(&shsInfo);
-    shsUpdate(&shsInfo, (unsigned char *)senha, strlen(senha));
-    shsFinal(&shsInfo);
-    for (i=0; i<5; i++)
-        codif[i]=shsInfo.digest[i];
-}
-
-//------------------------------------------------------------------------------
-bool senhavazia(bool limpar, unsigned long codif[5])
-{
-    static unsigned long semsenha[5];
-    static bool ini=true;
-    if (ini)
-    {
-        gerasenha("", semsenha);
-        ini=false;
-    }
-    if (limpar)
-    {
-        memcpy(codif, semsenha, sizeof(semsenha));
-        return true;
-    }
-    return (memcmp(codif, semsenha, sizeof(semsenha))==0);
-}
-
-//------------------------------------------------------------------------------
 // Verifica se nome de arquivo permitido (está no diretório do programa)
 bool arqvalido(const char * nome)
 {
