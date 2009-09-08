@@ -36,6 +36,7 @@ public:
     static TObjeto * FimApagar; ///< Último objeto marcado para apagar
     TVarRef * VarRefIni;        ///< Primeira TVarRef apontando para o objeto
     TListaX * VarListaX;        ///< Primeiro TListaX apontando para o objeto
+    unsigned short NumeroSav;   ///< Número; usado em var-sav.cpp, em "salvar"
     unsigned char Vars[4];      ///< Variáveis do objeto
         /**< O tamanho real de Vars, em bytes, é Classe->TamObj
          *
