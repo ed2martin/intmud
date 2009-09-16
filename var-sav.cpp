@@ -53,12 +53,17 @@ void TVarSav::Senha(char * senhacodif, const char * senha, char fator)
         *senhacodif = 0;
         return;
     }
+// Prepara a senha
+    unsigned char mens[512];
+    unsigned int tam = strlen(senha);
+    if (tam > sizeof(mens)-1)
+        tam = sizeof(mens)-1;
+    mens[0] = fator;
+    memcpy(mens+1, senha, tam);
 // Codifica
     SHS_INFO shsInfo;
     shsInit(&shsInfo);
-    shsUpdate(&shsInfo, (unsigned char *)&fator, 1);
-    if (*senha)
-        shsUpdate(&shsInfo, (unsigned char *)senha, strlen(senha));
+    shsUpdate(&shsInfo, mens, tam);
     shsFinal(&shsInfo);
 // Anota na string
     for (int a=0; a<5; a++)
@@ -81,17 +86,10 @@ int TVarSav::Tempo(const char * arqnome)
     {
         if (strcmp(mens, "+++")==0)
             break;
-        if (compara(mens, "data")!=0)
+        if (compara(mens, "data=",5)!=0)
             continue;
-        char * p = mens;
-        while (*p && *p!='=') p++;
-        if (*p=='=') p++;
-        if (*p==0)
-            break;
-        int tempo = HoraReg - atoi(p);
-        if (tempo<0)
-            tempo=0;
-        return (tempo+1439) / 1440;
+        int tempo = atoi(mens+5) - HoraReg;
+        return (tempo<0 ? 0 : tempo);
     }
     return -1;
 }
@@ -118,11 +116,11 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         {
     // Acrescenta ".sav" se necessário
             if (p <= arqnome+4)
-                strcpy(p, ".log");
-            else if (comparaZ(p-4, ".log")!=0)
-                strcpy(p, ".log");
+                strcpy(p, ".sav");
+            else if (comparaZ(p-4, ".sav")!=0)
+                strcpy(p, ".sav");
             else
-                strcpy(p-3, "log");
+                strcpy(p-3, "sav");
         }
     }
 // Checa se nome de arquivo é válido
@@ -163,16 +161,11 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         {
             if (strcmp(mens, "+++")==0)
                 break;
-            if (compara(mens, "senha")!=0)
+            if (compara(mens, "senha=", 6)!=0)
                 continue;
-            char * p = mens;
-            while (*p && *p!='=') p++;
-            if (*p=='=') p++;
-            if (*p==0)
-                break;
             char mens2[100];
-            Senha(mens2, v[2].getTxt(), *p);
-            if (strcmp(p, mens2)==0)
+            Senha(mens2, v[2].getTxt(), mens[6]);
+            if (strcmp(mens+6, mens2)==0)
                 break;
             Instr::ApagarVar(v);
             return Instr::CriarVar(Instr::InstrVarInt);
@@ -189,8 +182,12 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         if (!Instr::CriarVar(Instr::InstrVarInt))
             return false;
-        if (*arqnome)
-            Instr::VarAtual->setInt((Tempo(arqnome) - HoraReg)/1440);
+        if (*arqnome==0)
+            return true;
+        int x = Tempo(arqnome);
+        if (x > 0)
+            x = (x+1439)/1440;
+        Instr::VarAtual->setInt(x);
         return true;
     }
 // Ler arquivo
