@@ -1,0 +1,51 @@
+[teste]
+comum serv servidor
+socket conec
+listaobj lista1
+
+const msg = conec.msg(arg0)
+func iniclasse
+  se ![arg0]:servidor.abrir("localhost", 2000)
+    terminar
+func servidor_socket
+  criar("teste", arg0)
+func ini
+  conec = arg0
+  msg("1 seguido do nome do arquivo e senha = mostrar informações\n")
+  msg("2 seguido do nome do arquivo e senha = salvar\n")
+  msg("3 seguido do nome do arquivo = apaga arquivo\n")
+  lista1.addfim(este)
+  lista1.addfim(criar("x"))
+  lista1.addfim(criar("x"))
+  lista1.addfim(criar("y"))
+func conec_msg
+  escr_[txt1(arg0)](txt2(arg0))
+func escr_1
+  arqsav sav
+  msg("Arquivo=" + txt1(arg0) + " Senha=" + txt2(arg0) + "\n")
+  msg("Valido = " + sav.valido(txt1(arg0)) + "\n")
+  msg("Existe = " + sav.existe(txt1(arg0)) + "\n")
+  msg("Dias = " + sav.dias(txt1(arg0)) + "\n")
+  msg("Senha = " + sav.senha(txt1(arg0), txt2(arg0)) + "\n")
+func escr_2
+  arqsav sav
+  se(sav.salvar(txt1(arg0), lista1, 10, txt2(arg0)))
+    msg("Sucesso\n")
+  senão
+    msg("Falha\n")
+func escr_3
+  arqsav sav
+  se(sav.apagar(arg0))
+    msg("Sucesso\n")
+  senão
+    msg("Falha\n")
+
+[x]
+int8 x1
+func ini
+  x1 = 10
+
+[y]
+int8 y1
+func ini
+  y1 = 20

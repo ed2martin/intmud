@@ -886,6 +886,7 @@ arqsav <nomedavariável>
         Retorna 1 se senha correta ou 0 se incorreta.
     dias(<nome do arquivo>)
         Retorna quantos dias faltam para o arquivo expirar.
+        Retorna 0 se expirou, -1 se nunca expira.
     ler(<nome do arquivo>, <listaobj>)
     ler(<nome do arquivo>, <listaobj>, <quantidade máxima de objetos lidos>)
         Lê Arquivo.
@@ -900,7 +901,8 @@ arqsav <nomedavariável>
         Retorna 1 se conseguiu salvar ou 0 se não conseguiu.
     apagar(<nome do arquivo>)
         Apaga arquivo.
-        Retorna 1 se conseguiu apagar ou 0 se não conseguiu.
+        Retorna 1 se conseguiu apagar ou arquivo não existia.
+        Retorna 0 se não conseguiu apagar.
 
 arqtxt <nomedavariável>
     Para ler ou gravar arquivos de texto.
