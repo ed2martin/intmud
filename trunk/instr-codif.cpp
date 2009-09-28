@@ -373,22 +373,33 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     }
 
 // Obtém a variável/instrução em destino[2] a destino[5]
+    destino[2] = cExpr;
     destino[3]=0;
     destino[4]=0;
     destino[5]=0;
+    bool testar_def = true; // Se deve testar se é definição de variável
+    {
+        const char * p = origem;
+        while (*p==' ') p++;
+        while (*p!=' ' && tabNOMES[*(unsigned char*)p]) p++;
+        while (*p==' ') p++;
+        if (tabNOMES[*(unsigned char*)p]==0)
+            testar_def=false;
+        //printf("%d   %s\n", testar_def, origem); fflush(stdout);
+    }
     while (true)
     {
     // Avança enquanto for espaço
         while (*origem==' ')
             origem++;
     // Verifica atributos de variáveis: comum e sav
-        if (comparaNome(origem, "comum")==0)
+        if (testar_def && comparaNome(origem, "comum")==0)
         {
             destino[endProp] |= 1;
             origem += 5;
             continue;
         }
-        if (comparaNome(origem, "sav")==0)
+        if (testar_def && comparaNome(origem, "sav")==0)
         {
             destino[endProp] |= 2;
             origem += 3;
@@ -401,8 +412,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             return false;
         }
     // Verifica instrução txt1 a txt512
-        if ((origem[0]|0x20)=='t' && (origem[1]|0x20)=='x' &&
-            (origem[2]|0x20)=='t' && origem[3]!='0')
+        if (testar_def && (origem[0]|0x20)=='t' &&
+                (origem[1]|0x20)=='x' &&
+                (origem[2]|0x20)=='t' && origem[3]!='0')
         {
             int valor = 0;
             const char * p = origem+3;
@@ -437,7 +449,6 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         {
             if (ini>fim) // Não encontrou
             {
-                destino[2] = cExpr;
                 if (destino[endProp]==0)
                     break;
                 // Tem atribuição const ou sav: deveria ser tipo de variável
@@ -455,10 +466,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Verifica se encontrou
             if (resultado==0)  // Se encontrou
             {
+                int instr = ListaInstr[meio].Instr;
+                if (!testar_def && (instr>=cVariaveis || instr==cHerda))
+                    break;
+                destino[2] = instr;
                 origem += strlen(ListaInstr[meio].Nome);
                 //while (*origem && *origem!=' ')
                 //    origem++;
-                destino[2] = ListaInstr[meio].Instr;
                 if (destino[endProp] && (destino[2]<cVariaveis ||
                             destino[2]==cConstExpr ||
                             destino[2]==cFunc ||
