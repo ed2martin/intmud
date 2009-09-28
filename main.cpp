@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
         TSocket::ProcEventos(espera, &set_entrada, &set_saida, &set_err);
 
     // Chama eventos de arqsav
-        TVarSav::ProcEventos();
+        TVarSav::ProcEventos(espera);
 
     // Limpa objetos de listaobj e listaitem
         TGrupoX::ProcEventos();
@@ -161,6 +161,10 @@ int main(int argc, char *argv[])
         esp = TVarIntTempo::TempoEspera();
         if (espera>esp)
             espera=esp;
+
+    // Acerta tempo de espera conforme TVarSavDir
+        if (espera>10 && TVarSavDir::ChecaPend())
+            espera=10;
 
 #ifdef __WIN32__
         tempo = timeGetTime()/100;

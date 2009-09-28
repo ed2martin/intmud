@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
 #include "var-sav.h"
@@ -19,10 +20,11 @@ int TVarSav::HoraReg = 0;
 int TVarSav::Dia = 0;
 int TVarSav::Hora = 0;
 int TVarSav::Min = 0;
+int TVarSav::TempoSav=0;
 
 //----------------------------------------------------------------------------
 // Acerta variáveis
-void TVarSav::ProcEventos()
+void TVarSav::ProcEventos(int tempoespera)
 {
 // Obtém a hora
     time_t tempoatual=0;
@@ -41,6 +43,15 @@ void TVarSav::ProcEventos()
     HoraReg += tempolocal->tm_yday; // Dias completos desde o início do ano
     HoraReg = HoraReg*1440 + Hora*60 + Min;
     //printf("%d\n", (int)HoraReg); fflush(stdout);
+// Checa arquivos SAV pendentes
+    TempoSav += tempoespera;
+    if (TempoSav<0)
+        TempoSav=0;
+    if (TempoSav>=10)
+    {
+        TempoSav=0;
+        TVarSavDir::Checa();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -100,8 +111,29 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
 // Inicializa variáveis se necessário
     if (!InicVar)
     {
-        ProcEventos();
+        ProcEventos(0);
         InicVar=true;
+    }
+// Checar um diretório
+    if (comparaZ(nome, "limpar")==0)
+    {
+        if (Instr::VarAtual < v+1) // Menos de 1 argumento
+        {
+            TVarSavDir::ChecaTudo();
+            return false;
+        }
+        char mens[300];
+        copiastr(mens, v[1].getTxt(), sizeof(mens));
+        Instr::ApagarVar(v);
+    // Se inválido: retorna 0
+        if (!arqvalido(mens))
+            return Instr::CriarVar(Instr::InstrVarInt);
+    // Válido: coloca na lista de pendentes e retorna 1
+        TVarSavDir::NovoDir(mens);
+        if (!Instr::CriarVar(Instr::InstrVarInt))
+            return false;
+        Instr::VarAtual->setInt(1);
+        return true;
     }
 // Obtém o nome do arquivo
     char arqnome[300]; // Nome do arquivo; nulo se não for válido
@@ -267,9 +299,8 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             while (*p && *p!='=' && *p!='.')
                 p++;
             if (*p=='.')
-                for (*p++=0; *p && *p!='='; p++)
-                    if (*p>='0' && *p<='9')
-                        indvar = indvar * 10 + *p - '0';
+                for (*p++=0; *p>='0' && *p<='9'; p++)
+                    indvar = indvar * 10 + *p - '0';
             if (*p!='=')
                 continue;
             *p++ = 0;
@@ -294,8 +325,9 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                 continue;
         // Verifica o índice da variável
             if (indvar && indvar >=
-                    (unsigned char)var.defvar[Instr::endIndice])
+                    (unsigned char)var.defvar[Instr::endVetor])
                 continue;
+            //printf(" [%s] [%d]\n", mens, indvar); fflush(stdout);
         // Anota valor na variável
             switch (var.Tipo())
             {
@@ -308,11 +340,11 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             case varTxt:
                 {
                     char * d = mens;
-                    for (; *p; p++)
+                    for (; *p && d<mens+sizeof(mens)-1; p++)
                     {
                         if (*p != '\\')
                             *d++ = *p;
-                        else switch (++*p)
+                        else switch (*++p)
                         {
                         case 'n':
                         case 'N':
@@ -413,7 +445,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             TObjeto * obj = litem->Objeto;
         // Checa se objeto já está em bufobj
             unsigned int num = obj->NumeroSav;
-            if (num<numobj && bufobj[num]==obj)
+            if (num>=numobj || bufobj[num]!=obj)
             {
             // Acerta variáveis
                 obj->NumeroSav = numobj;
@@ -439,16 +471,16 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             // Prepara objeto TVariavel
                 TVariavel var;
                 var.defvar = c->InstrVar[x];
-                int indice = c->IndiceVar[x];
-                var.bit = indice >> 24;
+                int posic = c->IndiceVar[x];
+                var.bit = posic >> 24;
                 var.indice = 0;
                 if (TVariavel::Tamanho(var.defvar)==0 ||
-                        indice & 0x400000) // Variável da classe
+                        (posic & 0x400000)) // Variável da classe
                     continue;
                 // Variável do objeto
-                var.endvar = bufobj[numobj]->Vars + (indice & 0x3FFFFF);
+                var.endvar = bufobj[numobj]->Vars + (posic & 0x3FFFFF);
             // Anota valor na variável
-                indice = (unsigned char)var.defvar[Instr::endIndice];
+                posic = (unsigned char)var.defvar[Instr::endVetor];
                 switch (var.Tipo())
                 {
                 case varInt:
@@ -461,7 +493,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                             fprintf(arq, "%s=%d\n",
                                     var.defvar+Instr::endNome,
                                     var.getInt());
-                    } while (++var.indice < indice);
+                    } while (++var.indice < posic);
                     break;
                 case varDouble:
                     do {
@@ -473,7 +505,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                             fprintf(arq, "%s=%f\n",
                                     var.defvar+Instr::endNome,
                                     var.getDouble());
-                    } while (++var.indice < indice);
+                    } while (++var.indice < posic);
                     break;
                 case varTxt:
                     do {
@@ -513,7 +545,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                             fprintf(arq, "%s=%s\n",
                                     var.defvar+Instr::endNome,
                                     mens);
-                    } while (++var.indice < indice);
+                    } while (++var.indice < posic);
                     break;
                 case varObj:
                     do {
@@ -522,7 +554,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                         if (obj)
                         {
                             unsigned int num = obj->NumeroSav;
-                            if (num<numobj && bufobj[num]==obj)
+                            if (num<quantidade && bufobj[num]==obj)
                             {
                                 mens[0] = (num/0x40)+0x21;
                                 mens[1] = (num%0x40)+0x21;
@@ -537,7 +569,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                             fprintf(arq, "%s=%s\n",
                                     var.defvar+Instr::endNome,
                                     mens);
-                    } while (++var.indice < indice);
+                    } while (++var.indice < posic);
                     break;
                 default:
                     if (var.defvar[2] != Instr::cListaObj)
@@ -550,7 +582,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                         while (litem && d<mens+sizeof(mens)-3)
                         {
                             unsigned int num = litem->Objeto->NumeroSav;
-                            if (num<numobj && bufobj[num]==litem->Objeto)
+                            if (num<quantidade && bufobj[num]==litem->Objeto)
                             {
                                 *d++ = (num/0x40)+0x21;
                                 *d++ = (num%0x40)+0x21;
@@ -566,10 +598,9 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                             fprintf(arq, "%s=%s\n",
                                     var.defvar+Instr::endNome,
                                     mens);
-                    } while (++var.indice < indice);
+                    } while (++var.indice < posic);
                     break;
                 } // switch
-                break;
             } // for ... variáveis
         } // for ... objetos
     // Fecha arquivo
@@ -598,3 +629,131 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
     }
     return false;
 }
+
+//----------------------------------------------------------------------------
+void TVarSavDir::NovoDir(const char * nomedir)
+{
+// Procura objeto com o mesmo nome, retorna se encontrou
+    TVarSavDir * y = RBroot;
+    while (y)
+    {
+        int i = strcmp(nomedir, y->Nome);
+        if (i==0)
+            return;
+        if (i<0)
+            y = y->RBleft;
+        else
+            y = y->RBright;
+    }
+// Cria objeto
+    new TVarSavDir(nomedir);
+}
+
+//----------------------------------------------------------------------------
+TVarSavDir::TVarSavDir(const char * nomedir)
+{
+// Aloca memória em NomeDir
+    int tam = strlen(nomedir)+1;
+    Nome = new char[tam];
+    memcpy(Nome, nomedir, tam);
+// Coloca na RBT
+    RBinsert();
+// Coloca na lista ligada
+    if (Inicio==0)
+        Inicio=this;
+    if (Fim)
+        Fim->Proximo=this;
+    Fim=this;
+}
+
+//----------------------------------------------------------------------------
+TVarSavDir::~TVarSavDir()
+{
+// Desaloca memória em NomeDir
+    if (Nome)
+        delete[] Nome;
+// Tira da RBT
+    RBremove();
+// Tira da lista ligada
+    if (Inicio==this)
+        Inicio=Proximo;
+    else if (Inicio)
+        for (TVarSavDir * obj=Inicio; obj->Proximo; obj=obj->Proximo)
+            if (obj->Proximo==this)
+            {
+                obj->Proximo = obj->Proximo->Proximo;
+                break;
+            }
+}
+
+//----------------------------------------------------------------------------
+bool TVarSavDir::Checa()
+{
+    static DIR * dir = 0;
+    for (int x=0; x<10; x++)
+    {
+    // Abre diretório se não estiver aberto
+        if (dir==0)
+        {
+            if (Inicio==0)
+                return false;
+            dir = opendir(Inicio->Nome);
+            if (dir==0)
+                delete Inicio;
+            continue;
+        }
+        while (true)
+        {
+    // Lê o próximo arquivo
+            dirent * sdir = readdir(dir);
+            if (sdir==0)
+            {
+                delete Inicio;
+                closedir(dir);
+                dir=0;
+                break;
+            }
+    // Checa se é arquivo .sav
+            char * pont = sdir->d_name;
+            while (*pont)
+                pont++;
+            pont-=4;
+            if (pont <= sdir->d_name)
+                continue;
+            if ( pont[0]!='.' || (pont[1]|0x20)!='s' ||
+                 (pont[2]|0x20)!='a' || (pont[3]|0x20)!='v' )
+                continue;
+    // Apaga arquivo se expirou
+            if (TVarSav::Tempo(sdir->d_name) == 0)
+                remove(sdir->d_name);
+            break;
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------
+void TVarSavDir::ChecaTudo()
+{
+    while (Checa());
+}
+
+//----------------------------------------------------------------------------
+bool TVarSavDir::ChecaPend()
+{
+    return (Inicio!=0);
+}
+
+//----------------------------------------------------------------------------
+int TVarSavDir::RBcomp(TVarSavDir * x, TVarSavDir * y)
+{
+    return strcmp(x->Nome, y->Nome);
+}
+
+//----------------------------------------------------------------------------
+TVarSavDir * TVarSavDir::Inicio=0;
+TVarSavDir * TVarSavDir::Fim=0;
+TVarSavDir * TVarSavDir::RBroot=0;
+#define CLASS TVarSavDir    // Nome da classe
+#define RBmask 1 // Máscara para bit 0
+#include "rbt.cpp.h"

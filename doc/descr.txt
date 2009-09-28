@@ -903,6 +903,21 @@ arqsav <nomedavariável>
         Apaga arquivo.
         Retorna 1 se conseguiu apagar ou arquivo não existia.
         Retorna 0 se não conseguiu apagar.
+    limpar(<nome do diretório>)
+        Inicia checagem dos arquivos .sav no diretório especificado; apaga
+        arquivos que expiraram. Os arquivos são verificados aos poucos para
+        ficar transparente aos usuários.
+        Retorna 1 se conseguiu ou 0 se diretório não permitido.
+        Exemplo:
+        arqsav sav
+        sav.limpar(".") # Inicia checagem do diretório atual, em segundo plano
+    limpar
+        Checa todos os diretórios pendentes de uma vez, ao invés de checar
+        aos poucos, em segundo plano.
+        Exemplo:
+        arqsav sav
+        sav.limpar(".") # Inicia checagem do diretório atual
+        sav.limpar # Checa todos os arquivos de uma vez
 
 arqtxt <nomedavariável>
     Para ler ou gravar arquivos de texto.

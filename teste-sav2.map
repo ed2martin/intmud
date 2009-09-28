@@ -1,0 +1,111 @@
+[teste1]
+# Esse arquivo tem como objetivo testar como o IntMUD
+# salva e recupera diferentes tipos de variáveis
+ref rx
+ref ry
+ref rz
+func iniclasse
+  criar(arg0)
+func ini
+  arqsav sav
+# Cria variáveis
+  rx = criar("x")
+  ry = criar("y")
+  rz = criar("z")
+# Variáveis de rx
+  rx.num = 1
+  rx.varint = -15
+  rx.varreal = 3.45
+  rx.objetos.addfim(rx)
+  rx.objetos.addfim(ry)
+  rx.objetos.addfim(rz)
+  rx.objetos.addfim(ry)
+  rx.objetos.addfim(ry)
+  rx.objetos.addfim(rx)
+# Variáveis de ry
+  ry.bits.0 = 1
+  ry.bits.3 = 1
+  ry.bits.4 = 1
+  ry.refx = rx
+  ry.refz = rz
+# Variáveis de rz
+  rz.texto = "\c1bom\b dia\n"
+  rz.varz.0 = 12
+  rz.varz.1 = 15
+  rz.varz.2 = 18
+  rz.refx = rx
+  rz.teste1 = $teste1
+# Anota resultado no log
+  $log.anota(rx.objetos)
+# Salva arquivo
+  $log.msg("Salvando: " + sav.salvar("abc.sav", rx.objetos, 10, ""))
+# Apaga objetos
+  apagar(rx, ry, rz)
+
+[teste2]
+func iniclasse
+  arqsav sav
+  listaobj lista
+  $log.msg("Lendo: " + sav.ler("abc.sav", lista))
+  $log.anota(lista)
+  lista.apagaobj
+
+[teste3]
+func iniclasse
+  terminar
+
+[log]
+arqlog log
+func iniclasse
+  criar(arg0)
+func ini
+  log.abrir("abc.log")
+  log.msg("------")
+const msg = log.msg(arg0)
+func anota # Anota objetos em arquivo
+  listaitem l
+  l = arg0.ini
+  enquanto l
+    l.obj.anota
+    l.depois
+  efim
+
+[x]
+int8 num
+sav int8 varint
+sav real varreal
+sav listaobj objetos
+func anota
+  listaitem l
+  $log.msg("Objeto x")
+  $log.msg("  varint = " + varint)
+  $log.msg("  varreal = " + varreal)
+  $log.msg("  objetos =")
+  l = objetos.ini
+  enquanto l
+    $log.msg("    " + l.obj)
+    l.depois
+  efim
+
+[y]
+sav int1 bits.5
+sav ref refx
+sav ref refz
+func anota
+  $log.msg("Objeto y")
+  $log.msg("  bits = " + bits.0 + " " + bits.1 + " " + bits.2 + \
+       " " + bits.3 + " " + bits.4)
+  $log.msg("  refx = " + refx)
+  $log.msg("  refz = " + refz)
+
+[z]
+sav txt20 texto
+sav int8 varz.3
+sav ref refx
+sav ref teste1
+func anota
+  $log.msg("Objeto z")
+  $log.msg("  texto = " + texto)
+  $log.msg("  varz = " + varz.0 + " " + varz.1 + " " + varz.2)
+  $log.msg("  refx = " + refx)
+  $log.msg("  teste1 = " + teste1)
