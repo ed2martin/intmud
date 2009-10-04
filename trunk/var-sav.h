@@ -12,7 +12,7 @@ public:
         ///< Funções da variável arqsav
     static int Tempo(const char * arqnome);
         ///< Obtém a quantidade de minutos para expirar
-        /// Retorna: quantidade de minutos ou 0=expirou, -1=nunca expira
+        /**< @return quantidade de minutos ou 0=expirou, -1=nunca expira */
     static int Dia;  ///< Dia em relação ao início do ano, começa no 1
     static int Hora; ///< Hora atual
     static int Min;  ///< Minuto atual
