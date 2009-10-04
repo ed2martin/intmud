@@ -1,9 +1,23 @@
+/* Este programa é software livre; você pode redistribuir e/ou
+ * modificar nos termos da GNU General Public License V2
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details at www.gnu.org
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <assert.h>
 #include "var-sav.h"
 #include "var-listaobj.h"
 #include "variavel.h"
@@ -14,6 +28,8 @@
 #include "misc.h"
 #include "random.h"
 #include "shs.h"
+
+//#define DEBUG // Mostrar diretórios e arquivos acessados pela função LIMPAR
 
 bool TVarSav::InicVar = false;
 int TVarSav::HoraReg = 0;
@@ -124,9 +140,11 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         }
         char mens[300];
         copiastr(mens, v[1].getTxt(), sizeof(mens));
+        if (*mens==0)
+            strcpy(mens, ".");
         Instr::ApagarVar(v);
     // Se inválido: retorna 0
-        if (!arqvalido(mens))
+        if (memcmp(mens,"..",3)==0 || !arqvalido(mens))
             return Instr::CriarVar(Instr::InstrVarInt);
     // Válido: coloca na lista de pendentes e retorna 1
         TVarSavDir::NovoDir(mens);
@@ -609,7 +627,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         if (!Instr::CriarVar(Instr::InstrVarInt))
             return false;
-        Instr::VarAtual->setInt(quantidade);
+        Instr::VarAtual->setInt(1);
         return true;
     }
 // Apagar arquivo
@@ -652,7 +670,10 @@ void TVarSavDir::NovoDir(const char * nomedir)
 //----------------------------------------------------------------------------
 TVarSavDir::TVarSavDir(const char * nomedir)
 {
-// Aloca memória em NomeDir
+#ifdef DEBUG
+    printf("Novo dir: %s\n", nomedir); fflush(stdout);
+#endif
+// Aloca memória em Nome
     int tam = strlen(nomedir)+1;
     Nome = new char[tam];
     memcpy(Nome, nomedir, tam);
@@ -664,26 +685,26 @@ TVarSavDir::TVarSavDir(const char * nomedir)
     if (Fim)
         Fim->Proximo=this;
     Fim=this;
+    Proximo=0;
 }
 
 //----------------------------------------------------------------------------
 TVarSavDir::~TVarSavDir()
 {
-// Desaloca memória em NomeDir
+#ifdef DEBUG
+    printf("Fim do dir: %s\n", Nome); fflush(stdout);
+#endif
+// Desaloca memória em Nome
     if (Nome)
         delete[] Nome;
 // Tira da RBT
     RBremove();
 // Tira da lista ligada
-    if (Inicio==this)
-        Inicio=Proximo;
-    else if (Inicio)
-        for (TVarSavDir * obj=Inicio; obj->Proximo; obj=obj->Proximo)
-            if (obj->Proximo==this)
-            {
-                obj->Proximo = obj->Proximo->Proximo;
-                break;
-            }
+// Via de regra TVarSavDir só apaga o primeiro elemento da lista
+    assert(Inicio==this);
+    Inicio=Proximo;
+    if (Fim==this)
+        Fim=0;
 }
 
 //----------------------------------------------------------------------------
@@ -724,8 +745,19 @@ bool TVarSavDir::Checa()
                  (pont[2]|0x20)!='a' || (pont[3]|0x20)!='v' )
                 continue;
     // Apaga arquivo se expirou
-            if (TVarSav::Tempo(sdir->d_name) == 0)
-                remove(sdir->d_name);
+            char arq[2048];
+#ifdef __WIN32__
+            mprintf(arq, sizeof(arq), "%s\\%s", Inicio->Nome, sdir->d_name);
+#else
+            mprintf(arq, sizeof(arq), "%s/%s", Inicio->Nome, sdir->d_name);
+#endif
+#ifdef DEBUG
+            printf("%s arq: %s\n", TVarSav::Tempo(arq) == 0 ?
+                    "Removendo" : "Checando", arq);
+            fflush(stdout);
+#endif
+            if (TVarSav::Tempo(arq) == 0)
+                remove(arq);
             break;
         }
     }
