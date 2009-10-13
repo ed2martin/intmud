@@ -11,6 +11,8 @@ class TVarIncDec;
 class TVarIntTempo;
 class TListaObj;
 class TListaItem;
+class TTextoTxt;
+class TTextoPos;
 class TVarLog;
 class TVarTxt;
 class TVarNomeObj;
@@ -132,6 +134,8 @@ public:
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
         TListaObj    * end_listaobj; ///< Instr::cListaObj
         TListaItem   * end_listaitem;///< Instr::cListaItem
+        TTextoTxt    * end_textotxt; ///< Instr::cTextoTxt
+        TTextoPos    * end_textopos; ///< Instr::cTextoPos
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
         TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj

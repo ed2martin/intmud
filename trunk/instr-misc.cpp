@@ -136,9 +136,12 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
 //----------------------------------------------------------------------------
 /// Cria variável de texto no topo da pilha de variáveis (Instr::VarPilha)
 /**
- *  @param mens A mensagem que será retornada
- *  @param tammens Deve ser strlen(mens)
- *  @return true se conseguiu criar, false se memória insuficiente */
+ *  @param mens A mensagem que será retornada;
+ *               Se for 0, apenas aloca memória para o texto
+ *  @param tammens Tamanho da mensagem sem o 0 final;
+ *                 Se for <0, assume o valor de strlen(mens)
+ *  @return true se conseguiu criar, false se memória insuficiente
+ *  @note Pode copiar apenas parte do texto se a memória for insuficiente */
 bool Instr::CriarVarTexto(const char * mens, int tammens)
 {
 // Acerta variáveis
@@ -146,14 +149,18 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
         return false;
 // Verifica espaço disponível (sem o 0 no final do texto)
     if (tammens<0)
+    {
+        if (mens==0)
+            return false;
         tammens=strlen(mens);
+    }
     int disp = DadosFim - DadosTopo - 1;
     if (disp<0)
         return false;
     if (tammens>disp)
         tammens = disp;
 // Copia texto
-    if (tammens>0)
+    if (tammens>0 && mens)
         memcpy(DadosTopo, mens, tammens);
     DadosTopo[tammens] = 0;
 // Acerta variáveis
@@ -508,8 +515,8 @@ const char * Instr::NomeInstr(const char * instr)
 
     case cListaObj:         return "listaobj";
     case cListaItem:        return "listaitem";
-    case cListaTxt:         return "listatxt";
-    case cListaMsg:         return "listamsg";
+    case cTextoTxt:         return "textotxt";
+    case cTextoPos:         return "textopos";
     case cNomeObj:          return "nomeobj";
     case cArqLog:           return "arqlog";
     case cArqSav:           return "arqsav";
@@ -580,8 +587,8 @@ const char * Instr::NomeComando(int valor)
 
     case cListaObj:         return "cListaObj";
     case cListaItem:        return "cListaItem";
-    case cListaTxt:         return "cListaTxt";
-    case cListaMsg:         return "cListaMsg";
+    case cTextoTxt:         return "cTextoTxt";
+    case cTextoPos:         return "cTextoPos";
     case cNomeObj:          return "cNomeObj";
     case cArqLog:           return "cArqLog";
     case cArqSav:           return "cArqSav";

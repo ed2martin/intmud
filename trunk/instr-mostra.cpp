@@ -118,8 +118,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 // Variáveis extras
     case cListaObj:  strcpy(nome, "listaobj"); break;
     case cListaItem: strcpy(nome, "listaitem"); break;
-    case cListaTxt:  strcpy(nome, "listatxt"); break;
-    case cListaMsg:  strcpy(nome, "listamsg"); break;
+    case cTextoTxt:  strcpy(nome, "textotxt"); break;
+    case cTextoPos:  strcpy(nome, "textopos"); break;
     case cNomeObj:   strcpy(nome, "nomeobj"); break;
     case cArqLog:    strcpy(nome, "arqlog"); break;
     case cArqSav:    strcpy(nome, "arqsav"); break;

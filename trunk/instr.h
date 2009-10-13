@@ -270,8 +270,8 @@ enum Comando
 // Variáveis extras
     cListaObj,          ///< Extra: ListaObj
     cListaItem,         ///< Extra: ListaItem
-    cListaTxt,          ///< Extra: cListaTxt
-    cListaMsg,          ///< Extra: ListaMsg
+    cTextoTxt,          ///< Extra: TextoTxt
+    cTextoPos,          ///< Extra: TextoPos
     cNomeObj,           ///< Extra: NomeObj
     cArqLog,            ///< Extra: ArqLog
     cArqSav,            ///< Extra: Salvar
