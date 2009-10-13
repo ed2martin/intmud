@@ -53,7 +53,7 @@ public:
 };
 
 //----------------------------------------------------------------------------
-#define TOTAL_LISTAX 1024
+#define TOTAL_LISTAX 1023
 class TGrupoX /// Um grupo de objetos TListaX
 {
 public:

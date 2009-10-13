@@ -47,6 +47,7 @@
 #include "var-serv.h"
 #include "var-outros.h"
 #include "var-listaobj.h"
+#include "var-texto.h"
 #include "var-log.h"
 #include "random.h"
 #include "misc.h"
@@ -142,6 +143,9 @@ int main(int argc, char *argv[])
 
     // Limpa objetos de listaobj e listaitem
         TGrupoX::ProcEventos();
+
+    // Limpa objetos de textotxt
+        TTextoGrupo::ProcEventos();
 
     // Grava logs pendentes
     // Obtém tempo de espera conforme TVarLog

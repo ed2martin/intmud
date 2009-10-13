@@ -21,6 +21,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "var-listaobj.h"
+#include "var-texto.h"
 #include "var-log.h"
 #include "var-sav.h"
 #include "var-txt.h"
@@ -110,8 +111,8 @@ int TVariavel::Tamanho(const char * instr)
 // Variáveis extras
     case Instr::cListaObj:  return sizeof(TListaObj);
     case Instr::cListaItem: return sizeof(TListaItem);
-    case Instr::cListaTxt:  return 0;
-    case Instr::cListaMsg:  return 0;
+    case Instr::cTextoTxt:  return sizeof(TTextoTxt);
+    case Instr::cTextoPos:  return sizeof(TTextoPos);
     case Instr::cNomeObj:   return sizeof(TVarNomeObj);
     case Instr::cArqLog:    return sizeof(TVarLog);
     case Instr::cArqSav:    return 0;
@@ -174,8 +175,8 @@ TVarTipo TVariavel::Tipo()
 // Variáveis extras
     case Instr::cListaObj:  return varOutros;
     case Instr::cListaItem: return varOutros;
-    case Instr::cListaTxt:  return varOutros;
-    case Instr::cListaMsg:  return varOutros;
+    case Instr::cTextoTxt:  return varOutros;
+    case Instr::cTextoPos:  return varOutros;
     case Instr::cNomeObj:   return varOutros;
     case Instr::cArqLog:    return varOutros;
     case Instr::cArqSav:    return varOutros;
@@ -310,6 +311,14 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
     case Instr::cListaItem:
         for (; depois<antes; depois++)
             end_listaitem[depois].Apagar();
+        break;
+    case Instr::cTextoTxt:
+        for (; depois<antes; depois++)
+            end_textotxt[depois].Apagar();
+        break;
+    case Instr::cTextoPos:
+        for (; depois<antes; depois++)
+            end_textopos[depois].Apagar();
         break;
     case Instr::cSocket:
         for (; antes<depois; antes++)
@@ -452,10 +461,10 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         }
     case Instr::cListaItem:
         MOVER_SIMPLES( TListaItem )
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
-        endvar = destino;
-        return;
+    case Instr::cTextoTxt:
+        MOVER_SIMPLES( TTextoTxt )
+    case Instr::cTextoPos:
+        MOVER_SIMPLES( TTextoPos )
     case Instr::cNomeObj:
         if (vetor <= 1)
             move_mem(destino, endvar, sizeof(TVarNomeObj));
@@ -605,9 +614,10 @@ bool TVariavel::getBool()
         return end_listaobj[indice].getValor();
     case Instr::cListaItem:
         return end_listaitem[indice].getValor();
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
-        return 0;
+    case Instr::cTextoTxt:
+        return end_textotxt[indice].getValor();
+    case Instr::cTextoPos:
+        return end_textopos[indice].getValor();
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
@@ -751,9 +761,10 @@ int TVariavel::getInt()
         return end_listaobj[indice].getValor();
     case Instr::cListaItem:
         return end_listaitem[indice].getValor();
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
-        return 0;
+    case Instr::cTextoTxt:
+        return end_textotxt[indice].getValor();
+    case Instr::cTextoPos:
+        return end_textopos[indice].getValor();
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
@@ -896,9 +907,10 @@ double TVariavel::getDouble()
         return end_listaobj[indice].getValor();
     case Instr::cListaItem:
         return end_listaitem[indice].getValor();
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
-        return 0;
+    case Instr::cTextoTxt:
+        return end_textotxt[indice].getValor();
+    case Instr::cTextoPos:
+        return end_textopos[indice].getValor();
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
@@ -964,6 +976,8 @@ const char * TVariavel::getTxt()
     case Instr::cArqTxt:
     case Instr::cListaObj:
     case Instr::cListaItem:
+    case Instr::cTextoTxt:
+    case Instr::cTextoPos:
     case Instr::cNomeObj:
     case Instr::cIndiceItem:
         sprintf(txtnum, "%d", getInt());
@@ -1076,8 +1090,6 @@ const char * TVariavel::getTxt()
         sprintf(txtnum, "%d", getInt());
         return txtnum;
     case Instr::cArqSav:
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
     case Instr::cServ:
     case Instr::cProg:
         return "";
@@ -1218,8 +1230,8 @@ void TVariavel::setInt(int valor)
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(0);
         break;
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
+    case Instr::cTextoTxt:
+    case Instr::cTextoPos:
     case Instr::cNomeObj:
     case Instr::cArqLog:
     case Instr::cArqSav:
@@ -1303,8 +1315,8 @@ void TVariavel::setDouble(double valor)
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(0);
         break;
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
+    case Instr::cTextoTxt:
+    case Instr::cTextoPos:
     case Instr::cNomeObj:
     case Instr::cArqLog:
     case Instr::cArqSav:
@@ -1399,8 +1411,8 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(0);
         break;
-    case Instr::cListaTxt:
-    case Instr::cListaMsg:
+    case Instr::cTextoTxt:
+    case Instr::cTextoPos:
     case Instr::cNomeObj:
     case Instr::cArqLog:
     case Instr::cArqSav:
@@ -1548,6 +1560,10 @@ bool TVariavel::Func(const char * nome)
         return end_listaobj[indice].Func(this, nome);
     case Instr::cListaItem:
         return end_listaitem[indice].Func(this, nome);
+    case Instr::cTextoTxt:
+        return end_textotxt[indice].Func(this, nome);
+    case Instr::cTextoPos:
+        return end_textopos[indice].Func(this, nome);
     case Instr::cNomeObj:
         return end_nomeobj[indice].Func(this, nome);
     case Instr::cArqLog:

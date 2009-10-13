@@ -773,54 +773,55 @@ listaitem <nomedavariável>
       i.depois      -> Passa para o próximo objeto
     efim
 
-listatxt <nomedavariável>
-    Define uma lista de textos.
+textotxt <nomedavariável>
+    Lista de textos. É o equivalente ao texto de um editor de textos.
+    Todas as linhas de texto terminam com um caracter \n.
 
-    Possui as seguintes funções:
-    limpar       -> limpa a lista
-    add(texto)   -> adiciona texto na lista
-    add(texto, quantidade) -> adiciona uma quantidade do texto na lista
-    remove(texto)  -> remove texto da lista
-    remove(texto, quantidade) -> remove uma quantidade de textos da lista
-    procurar(texto)   -> procura mensagem que começa com o texto especificado
-                        retorna o texto completo se encontrou,
-                        ou um texto vazio se não encontrou
-    total(texto)     -> retorna a quantidade de textos que estão na lista
-
-    Exemplos:
-    listatxt x
-    txt10 texto
-    int8  num
-    x.add("bom dia")
-    x.add("boa tarde", 10)
-    texto = x.procurar("boa")
-    num = x.total(texto)
-
-listamsg <nomedavariável>
-    Lista de textos, para ser enviados a um usuário
     Possui as seguintes funções:
     limpar
-        Limpa a lista
-    add(<texto>)
-        Adiciona texto na lista.
-    add(<texto>, <separador>, <quantidade máxima>)
-        Divide <texto> vários textos, separados pelo <separador>.
-        <quantidade máxima> é a quantidade máxima de textos após a divisão.
-        Em seguida adiciona esses textos na listamsg.
-        Exemplo:
-            listamsg x
-            x.add("bom dia boa tarde", " ", 3)
-        É o mesmo que:
-            listamsg x
-            x.add("bom")
-            x.add("dia")
-            x.add("boa tarde")
+        Limpa o texto
+    addini(<texto ou textotxt>)
+        Adiciona linhas no início do textotxt.
+    addfim(<texto ou textotxt>)
+        Adiciona linhas no fim do textotxt.
     remove(<quantidade de linhas>)
-        Retorna um texto que contém uma quantidade de linhas; retira essas
-        linhas da listamsg
-    linha(<número da linha>)
-        Retorna o texto da linha especificada. O primeiro texto adicionado
-        corresponde à linha 0.
+        Retorna um texto que contém uma quantidade de linhas do início do
+        textotxt. Retira essas linhas do textotxt.
+    ordena
+        Organiza as linhas em ordem alfabética.
+    ordenalin
+        Organiza as linhas em ordem alfabética, sendo que:
+        A primeira palavra de cada linha é a quantidade de textos.
+        Da segunda palavra em diante é o texto propriamente dito.
+        Linhas iguais são somadas.
+        Exemplo:
+            "1 Carro pequeno\n"
+            "3 Carro pequeno\n"
+            "2 Caminhão\n"
+        Vira:
+            "2 Caminhão\n"
+            "4 Carro pequeno\n"
+    ordenalin(<texto1>, <texto2>)
+        Mesmo que ordenalin sem argumentos, exceto que após ordenar altera
+        as linhas de acordo com a quantidade (a primeira palavra):
+        Se for menor ou igual a 0 ou não for um número: apaga a linha
+        Se for 1: apaga o número no começo da linha
+        Se for 2 ou mais: adiciona <texto1> antes do número e <texto2> depois.
+        Exemplo:
+            "0 Bolsa\n"
+            "1 Garrafa\n"
+            "5 Copo\n"
+        Após numerolin("(", "x)"), essas linhas mudam para:
+            "(5x) Copo\n"
+            "Garrafa\n"
+    trunca(<colmin>, <colmax>)
+        Linhas que tiverem mais que <colmax> colunas são divididas entre
+        as colunas <colmin> e <colmax>, preferêncialmente no último espaço
+        encontrado.
+    linhas
+        Retorna o número de linhas de texto.
+    bytes
+        Retorna a quantidade de bytes de texto.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário
