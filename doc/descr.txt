@@ -778,13 +778,17 @@ textotxt <nomedavariável>
     Todas as linhas de texto terminam com um caracter \n.
 
     Possui as seguintes funções:
+    ini
+        Primeira linha do texto (variável textopos).
+    fim
+        Fim do texto, após a última linha do texto (variável textopos).
     limpar
         Limpa o texto
-    addini(<texto ou textotxt>)
+    addini( <texto ou textotxt> )
         Adiciona linhas no início do textotxt.
-    addfim(<texto ou textotxt>)
+    addfim( <texto ou textotxt> )
         Adiciona linhas no fim do textotxt.
-    remove(<quantidade de linhas>)
+    remove( <quantidade de linhas> )
         Retorna um texto que contém uma quantidade de linhas do início do
         textotxt. Retira essas linhas do textotxt.
     ordena
@@ -801,7 +805,7 @@ textotxt <nomedavariável>
         Vira:
             "2 Caminhão\n"
             "4 Carro pequeno\n"
-    ordenalin(<texto1>, <texto2>)
+    ordenalin( <texto1> , <texto2> )
         Mesmo que ordenalin sem argumentos, exceto que após ordenar altera
         as linhas de acordo com a quantidade (a primeira palavra):
         Se for menor ou igual a 0 ou não for um número: apaga a linha
@@ -822,6 +826,42 @@ textotxt <nomedavariável>
         Retorna o número de linhas de texto.
     bytes
         Retorna a quantidade de bytes de texto.
+
+textopos <nomedavariável>
+    É usado para acessar o texto de textotxt. Representa uma linha.
+    Como valor numérico, é 1 se linha existe ou 0 se está no fim do texto.
+
+    lin
+        É 1 se linha válida ou 0 se chegou no fim do texto.
+    antes
+        Passa para a linha anterior.
+    antes( <número de objetos> )
+        Recua o número de linhas especificado.
+        Nada faz se o número for menor ou igual a zero.
+    depois
+        Vai para a próxima linha.
+    depois( <número de linhas> )
+        Avança o número de linhas especificado.
+        Nada faz se o número for menor ou igual a zero.
+    texto
+        Retorna o texto da linha atual.
+    texto( <número de linhas> )
+        Retorna texto correspondente ao número de linhas especificado.
+    mudar( <novo texto> )
+        Muda o texto da linha atual.
+    add( <novo texto> )
+        Adiciona linha antes da linha atual.
+        Após essa função, textopos corresponde ao texto adicionado.
+    add( <textopos início> , <número de linhas> )
+        Adiciona as linhas correspondente ao texto especificado.
+    remove
+        Remove a linha atual.
+    remove( <número de linhas> )
+        Remove a quantidade de linhas especificadas, a partir da linha atual.
+    linha
+        Retorna a linha atual; começa em 0.
+    byte
+        Retorna a quantidade de bytes desde o início do texto; começa no 0.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário
