@@ -26,12 +26,44 @@ TTextoGrupo * TTextoGrupo::Usado = 0;
 unsigned long TTextoGrupo::Tempo = 0;
 
 //----------------------------------------------------------------------------
+/// Obtém o número de linhas correspondente a um texto
+static int NumLinhas(const char * texto, int total)
+{
+    int linhas=0;
+    for (; total>0; total--)
+        if (*texto==Instr::ex_barra_n)
+            linhas++;
+    return linhas;
+}
+
+//----------------------------------------------------------------------------
+/// Copia texto e retorna número de linhas
+/** @param destino Endereço destino
+ *  @param origem Endereço origem
+ *  @param total Número de bytes a copiar
+ *  @return Número de caracteres Instr::ex_barra_n copiados
+ *  @note O caracter 0 é anotado como Instr::ex_barra_n */
+static int AnotaLinhas(char * destino, const char * origem, int total)
+{
+    int linhas=0;
+    for (; total>0; total--, origem++)
+        if (*origem==0 || *origem==Instr::ex_barra_n)
+            *destino++ = Instr::ex_barra_n, linhas++;
+        else
+            *destino++ = *origem;
+    return linhas;
+}
+
+//----------------------------------------------------------------------------
 void TTextoTxt::Apagar()
 {
-    // Otimização, no caso de precisar mover algum bloco que será apagado
+// Otimização, no caso de precisar mover algum bloco que será apagado
     for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
         obj->Bytes = 0;
-    // Apaga blocos
+// Acerta objetos TTextoPos
+    while (Posic)
+        Posic->MudarTxt(0);
+// Apaga blocos
     while (Inicio)
         Inicio->Apagar();
 }
@@ -39,15 +71,550 @@ void TTextoTxt::Apagar()
 //----------------------------------------------------------------------------
 void TTextoTxt::Mover(TTextoTxt * destino)
 {
-    // Acerta TTextoBLoco::TextoTxt em todos os TTextoBLoco do objeto
+    for (TTextoPos * obj = Posic; obj; obj=obj->Depois)
+        obj->TextoTxt = destino;
     for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
         obj->TextoTxt = destino;
     move_mem(destino, this, sizeof(TTextoTxt));
 }
 
 //----------------------------------------------------------------------------
+void TTextoTxt::IniBloco()
+{
+    if (Inicio)
+        return;
+    TTextoBloco * bloco = TTextoGrupo::Criar();
+    bloco->TextoTxt = this;
+    bloco->Antes = 0;
+    bloco->Depois = 0;
+    bloco->Linhas=0;
+    bloco->Bytes=0;
+    Inicio = Fim = bloco;
+    for (TTextoPos * obj = Posic; obj; obj=obj->Depois)
+    {
+        obj->Bloco = bloco;
+        obj->PosicBloco = 0;
+        obj->PosicTxt = 0;
+        obj->LinhaTxt = 0;
+    }
+}
+
+//----------------------------------------------------------------------------
+void TTextoPos::Apagar()
+{
+    if (TextoTxt==0)
+        return;
+    (Antes ? Antes->Depois : TextoTxt->Posic) = Depois;
+    if (Depois)
+        Depois->Antes = Antes;
+    TextoTxt=0;
+}
+
+//----------------------------------------------------------------------------
+void TTextoPos::Mover(TTextoPos * destino)
+{
+    if (TextoTxt)
+    {
+        (Antes ? Antes->Depois : TextoTxt->Posic) = destino;
+        if (Depois)
+            Depois->Antes = destino;
+    }
+    move_mem(destino, this, sizeof(TTextoPos));
+}
+
+//----------------------------------------------------------------------------
+void TTextoPos::MudarTxt(TTextoTxt * obj)
+{
+// Se 0, remove da lista
+    if (obj==0)
+    {
+        Apagar();
+        return;
+    }
+// Associa ao objeto TTextoTxt
+    if (obj!=TextoTxt)
+    {
+        Apagar();
+        TextoTxt = obj;
+        Antes = 0;
+        Depois = TextoTxt->Posic;
+        if (Depois)
+            Depois->Antes = this;
+        TextoTxt->Posic = this;
+    }
+    //Bloco = TextoTxt->Inicio;
+    //PosicBloco = 0;
+    //PosicTxt = 0;
+    //LinhaTxt = 0;
+}
+
+//----------------------------------------------------------------------------
+TTextoBloco * TTextoBloco::CriarAntes()
+{
+    TTextoBloco * obj = TTextoGrupo::Criar();
+    obj->TextoTxt = TextoTxt;
+    obj->Antes = Antes;
+    obj->Depois = this;
+    obj->Linhas = 0;
+    obj->Bytes = 0;
+    (Antes ? Antes->Depois : TextoTxt->Inicio) = obj;
+    Antes = obj;
+    return obj;
+}
+
+//----------------------------------------------------------------------------
+TTextoBloco * TTextoBloco::CriarDepois()
+{
+    TTextoBloco * obj = TTextoGrupo::Criar();
+    obj->TextoTxt = TextoTxt;
+    obj->Antes = this;
+    obj->Depois = Depois;
+    obj->Linhas = 0;
+    obj->Bytes = 0;
+    (Depois ? Depois->Antes : TextoTxt->Fim) = obj;
+    Depois = obj;
+    return obj;
+}
+
+//----------------------------------------------------------------------------
+TTextoBloco * TTextoBloco::Apagar()
+{
+// Acerta ponteiros
+    (Antes ? Antes->Depois : TextoTxt->Inicio) = Depois;
+    (Depois ? Depois->Antes : TextoTxt->Fim) = Antes;
+    for (TTextoPos * obj = TextoTxt->Posic; obj; obj=obj->Depois)
+        if (obj->Bloco==this)
+            obj->Bloco=0;
+// Apaga objeto
+    return TTextoGrupo::Apagar(this);
+}
+
+//----------------------------------------------------------------------------
+void TTextoBloco::Mover(TTextoBloco * destino)
+{
+// Acerta ponteiros
+    (Antes ? Antes->Depois : TextoTxt->Inicio) = destino;
+    (Depois ? Depois->Antes : TextoTxt->Fim) = destino;
+    for (TTextoPos * obj = TextoTxt->Posic; obj; obj=obj->Depois)
+        if (obj->Bloco==this)
+            obj->Bloco=destino;
+// Move na memória
+    int total = Texto + Bytes - (char*)this;
+    assert(total <= TOTAL_TXTOBJ);
+    memcpy(destino, this, total);
+}
+
+//----------------------------------------------------------------------------
+int TTextoBloco::LinhasBytes(unsigned int posic, int numlinhas)
+{
+    TTextoBloco * obj = this;
+    int total = 0;
+    if (numlinhas<=0)
+        return 0;
+// Avança até o início de algum bloco
+    if (posic>0)
+    {
+        if (posic<Bytes)
+        {
+            for (int x=posic; x<obj->Bytes; x++)
+                if (obj->Texto[x] == Instr::ex_barra_n)
+                    if (--numlinhas==0)
+                        return x+1-posic;
+            total = obj->Bytes - posic;
+        }
+        obj=Depois;
+        if (obj==0)
+            return 0;
+    }
+// Avança blocos inteiros
+    while (numlinhas > obj->Linhas)
+    {
+        numlinhas -= obj->Linhas;
+        total += obj->Bytes;
+        obj = obj->Depois;
+        if (obj==0)
+            return total;
+    }
+// Avança em um bloco
+    for (int x=0; x<obj->Bytes; x++)
+        if (obj->Texto[x] == Instr::ex_barra_n)
+            if (--numlinhas==0)
+                return total+x+1;
+    return total + obj->Bytes;
+}
+
+//----------------------------------------------------------------------------
+int TTextoBloco::CopiarTxt(unsigned int posic, char * buffer, int tambuf)
+{
+    const char * bufini = buffer;
+    if (tambuf<=1)
+    {
+        *buffer=0;
+        return 1;
+    }
+    tambuf--;
+    TTextoBloco * obj = this;
+// Acerta posic no início ou no final do bloco
+    if (posic>=Bytes)
+    {
+        obj=Depois, posic=0;
+        if (obj==0)
+        {
+            *buffer=0;
+            return 1;
+        }
+    }
+// Copia bytes
+    while (tambuf > (int)obj->Bytes - (int)posic)
+    {
+        int total = obj->Bytes - posic;
+        memcpy(buffer, obj->Texto+posic, total);
+        buffer += total;
+        tambuf -= total;
+        obj=Depois, posic=0;
+        if (obj==0)
+        {
+            *buffer=0;
+            return buffer-bufini+1;
+        }
+    }
+// Copia bytes do último bloco
+    if (tambuf > 0)
+    {
+        memcpy(buffer, obj->Texto+posic, tambuf);
+        buffer += tambuf;
+    }
+    *buffer=0;
+    return buffer-bufini+1;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
+        unsigned int tamapagar)
+{
+    const unsigned int bloco_ini = Bloco->Texto - (char*)Bloco;
+    const unsigned int bloco_tam = TOTAL_TXTOBJ - bloco_ini;
+
+    int add_bytes = tamtexto;   // Quantidade de bytes inseridos
+    int sub_bytes = 0;          // Quantidade de bytes removidos
+    int dif_linhas = 0;         // = linhas inseridas - linhas removidas
+    TTextoTxt * TextoTxt = Bloco->TextoTxt;
+    TTextoBloco * obj;          // Bloco atual
+    int posic;                  // Posição no bloco atual
+
+// Acerta posic no início ou no final do bloco
+// Nota: PosicBloco só será 0 se estiver no começo do texto
+    if (PosicBloco > Bloco->Bytes)
+        PosicBloco = Bloco->Bytes;
+    else if (PosicBloco==0 && Bloco->Antes)
+        Bloco = Bloco->Antes, PosicBloco = Bloco->Bytes;
+    posic = PosicBloco;
+    obj = Bloco;
+
+// Limpa blocos; preenche com texto se possível
+    while (tamapagar + posic >= obj->Bytes)
+    {
+    // Apaga bytes do bloco a partir de posic
+        tamapagar -= obj->Bytes - posic;
+        if (posic==0)
+        {
+            sub_bytes += obj->Bytes;
+            dif_linhas -= obj->Linhas;
+            obj->Bytes=0, obj->Linhas=0;
+        }
+        else
+        {
+            int lin = NumLinhas(obj->Texto + posic, obj->Bytes - posic);
+            sub_bytes += obj->Bytes - posic;
+            dif_linhas -= lin;
+            obj->Bytes = posic;
+            obj->Linhas -= lin;
+        }
+    // Anota texto no bloco a partir de posic
+        if (tamtexto)
+        {
+            unsigned int copiar = bloco_tam - posic;
+                                // = qunatos bytes cabem no bloco
+            if (copiar > tamtexto)
+                copiar = tamtexto, tamtexto = 0; // copiar todo o texto
+            else
+                tamtexto -= copiar; // copiar parte do texto
+            int lin = AnotaLinhas(obj->Texto + posic, texto, copiar);
+            obj->Bytes += copiar;
+            obj->Linhas += lin;
+            dif_linhas += lin;
+            texto += copiar;
+        }
+    // Passa para o próximo bloco
+        if (obj->Depois)
+        {
+            posic = 0;
+            obj = obj->Depois;
+            continue;
+        }
+    // Encontrou o fim do texto (não há próximo bloco)
+        tamapagar = 0;
+        posic = obj->Bytes;
+        break;
+    }
+
+// Apaga bytes do bloco
+// Nota: tamapagar < obj->Bytes - posic
+    if (tamapagar)
+    {
+        char * p = obj->Texto + posic;
+        int lin = NumLinhas(p, tamapagar);
+        obj->Bytes -= tamapagar;
+        obj->Linhas -= lin;
+        sub_bytes += tamapagar;
+        dif_linhas -= lin;
+        memcpy(p, p+tamapagar, obj->Bytes-posic);
+        //tamapagar = 0;
+    }
+
+// Inserir bytes
+    while (tamtexto)
+    {
+    // Apenas insere bytes no bloco se couber
+        if (tamtexto + obj->Bytes <= bloco_tam)
+        {
+            char * p = obj->Texto + posic;
+            move_mem(p + tamtexto, p, obj->Bytes - posic);
+            int lin = AnotaLinhas(p, texto, tamtexto);
+            obj->Bytes += tamtexto;
+            obj->Linhas += lin;
+            dif_linhas += lin;
+            // tamtexto = 0;
+            break;
+        }
+    // Separa final do bloco
+        char buffer[0x100];
+        unsigned int tambuf = obj->Bytes - posic;
+        int  linhabuf = AnotaLinhas(buffer, obj->Texto + posic, tambuf);
+        obj->Linhas -= linhabuf;
+        obj->Bytes = posic;
+    // Insere bytes
+        while (true)
+        {
+            unsigned int copiar = bloco_tam - obj->Bytes;
+            if (copiar > tamtexto)
+                copiar = tamtexto;
+            int lin = AnotaLinhas(obj->Texto + obj->Bytes, texto, copiar);
+            obj->Bytes += copiar;
+            obj->Linhas += lin;
+            dif_linhas += copiar;
+            tamtexto -= copiar;
+            texto += copiar;
+            if (tamtexto==0)
+                break;
+            obj = obj->CriarDepois();
+        }
+    // Insere final do bloco
+        if (tambuf)
+        {
+            if (obj->Bytes + tambuf > bloco_tam)
+                obj = obj->CriarDepois();
+            memcpy(obj->Texto + obj->Bytes, buffer, tambuf);
+            obj->Bytes += tambuf;
+            obj->Linhas += linhabuf;
+        }
+        break;
+    } // while (tamtexto)
+
+// Apaga objetos vazios
+    if (obj->Bytes && obj->Antes)
+        obj = obj->Antes;
+    while (obj->Bytes==0)
+    {
+        TTextoBloco * outro = obj->Antes;
+        if (outro==0)
+            outro = obj->Depois;
+        if (outro != obj->Apagar())
+            obj = outro;
+        if (obj)
+            continue;
+    // Texto ficou vazio
+        for (TTextoPos * pos = TextoTxt->Posic; pos; pos=pos->Depois)
+        {
+            pos->Bloco = 0;
+            pos->PosicBloco = 0;
+            pos->PosicTxt = 0;
+            pos->LinhaTxt = 0;
+        }
+        TextoTxt->Bytes = 0;
+        TextoTxt->Linhas = 0;
+        return;
+    }
+
+// Acerta tamanho do texto
+    TextoTxt->Bytes += add_bytes - sub_bytes;
+    TextoTxt->Linhas += dif_linhas;
+
+// Se PosicBloco==0, está no início do texto
+    if (PosicBloco==0)
+        Bloco=TextoTxt->Inicio, PosicTxt=0, LinhaTxt=0;
+
+// Obtém bloco e posição após o texto adicionado
+// Posição no arquivo = PosicTxt + add_bytes
+    obj = Bloco;
+    posic = PosicBloco + add_bytes;
+    while (posic > obj->Bytes)
+        posic -= obj->Bytes, obj = obj->Depois;
+
+// Acerta objetos TTextoPos
+    for (TTextoPos * pos = TextoTxt->Posic; pos; pos=pos->Depois)
+    {
+    // Antes do texto modificado: nada faz
+        if (pos->PosicTxt < PosicTxt)
+            continue;
+
+    // Na região do texto apagado: move para o início da modificação
+        if (pos->PosicTxt <= PosicTxt + sub_bytes)
+        {
+            pos->Bloco = Bloco;
+            pos->PosicBloco = PosicBloco;
+            pos->PosicTxt = PosicTxt;
+            pos->LinhaTxt = LinhaTxt;
+            continue;
+        }
+
+    // Após a região do texto modificado: acerta posição no texto
+        pos->PosicTxt += add_bytes - sub_bytes;
+        pos->LinhaTxt += dif_linhas;
+
+    // Verifica se deve acertar bloco e posição no bloco
+        unsigned int mais = pos->PosicTxt - PosicTxt - add_bytes;
+        if (mais > bloco_tam)
+            continue;
+
+    // Acerta bloco e posição no bloco
+        TTextoBloco * bl = obj;
+        mais += posic;
+        while (mais > bl->Bytes)
+            mais -= bl->Bytes, bl = bl->Depois;
+        pos->Bloco = bl;
+        pos->PosicBloco = mais;
+    }
+
+// Obtém objeto inicial e número de bytes sobrando
+    TTextoBloco * ini = obj;
+    int sobrando = bloco_tam - ini->Bytes;
+    if (ini->Antes)
+    {
+        ini=ini->Antes, sobrando += bloco_tam - ini->Bytes;
+        if (ini->Antes)
+            ini=ini->Antes, sobrando += bloco_tam - ini->Bytes;
+    }
+    if (obj->Depois)
+    {
+        sobrando += bloco_tam - obj->Depois->Bytes;
+        if (obj->Depois->Depois)
+            sobrando += bloco_tam - obj->Depois->Depois->Bytes;
+    }
+
+// Verifica se consegue apagar algum objeto
+    if (sobrando < (int)bloco_tam)
+        return;
+
+// Compacta o texto, apagando bloco se possível
+    while (ini->Bytes == bloco_tam)
+        ini = ini->Depois;
+    while (true)
+    {
+        TTextoBloco * proximo = ini->Depois;
+    // Obtém número de bytes disponíveis em ini
+        unsigned int total = bloco_tam - ini->Bytes;
+    // Se pode copiar o bloco inteiro...
+        if (total >= proximo->Bytes)
+        {
+        // Acerta objetos TTextoPos
+            for (TTextoPos * pos = TextoTxt->Posic; pos; pos=pos->Depois)
+                if (pos->Bloco == proximo)
+                {
+                    pos->Bloco = ini;
+                    pos->PosicBloco += ini->Bytes;
+                }
+        // Copia bloco
+            memcpy(ini->Texto + ini->Bytes, proximo->Texto, proximo->Bytes);
+            ini->Bytes += proximo->Bytes;
+            ini->Linhas += proximo->Linhas;
+        // Apaga objeto
+            proximo->Apagar();
+            return;
+        }
+    // Acerta objetos TTextoPos
+        for (TTextoPos * pos = TextoTxt->Posic; pos; pos=pos->Depois)
+            if (pos->Bloco == proximo)
+            {
+                if (pos->PosicBloco < total)
+                    pos->PosicBloco += ini->Bytes, pos->Bloco = ini;
+                else
+                    pos->PosicBloco -= total;
+            }
+    // Copia parte do bloco
+        int linhas = NumLinhas(proximo->Texto, total);
+        memcpy(ini->Texto + ini->Bytes, proximo->Texto, total);
+        memcpy(proximo->Texto, proximo->Texto + total, proximo->Bytes - total);
+        ini->Bytes += total;
+        ini->Linhas += linhas;
+        proximo->Bytes -= total;
+        proximo->Linhas -= linhas;
+    }
+}
+
+//----------------------------------------------------------------------------
+TTextoBloco * TTextoGrupo::Criar()
+{
+// Se tem objeto TListaX disponível...
+    if (Usado && Usado->Total < TOTAL_TXTGR)
+        return (TTextoBloco*)Usado->Lista[Usado->Total++];
+// Se não tem objeto disponível...
+    TTextoGrupo * obj;
+    if (Disp==0)    // Não tem objeto TTextoGrupo disponível
+        obj=new TTextoGrupo;
+    else            // Tem objeto TTextoGrupo disponível
+        obj=Disp, Disp=Disp->Depois; // Retira da lista Disp
+    obj->Total = 1;
+    obj->Depois = Usado; // Coloca na lista Usado
+    Usado = obj;
+    return (TTextoBloco*)obj->Lista[0];
+}
+
+//----------------------------------------------------------------------------
+TTextoBloco * TTextoGrupo::Apagar(TTextoBloco * lista)
+{
+    TTextoBloco * lfim = (TTextoBloco*)Usado->Lista[Usado->Total - 1];
+    if (lista != lfim)
+        lfim->Mover(lista);
+    Usado->Total--;
+    if (Usado->Total==0)
+    {
+        if (Disp==0)
+            Tempo = TempoIni;
+        TTextoGrupo * obj = Usado;
+        Usado = Usado->Depois; // Retira da lista Usado
+        obj->Depois = Disp;    // Coloca na lista Disp
+        Disp = obj;
+    }
+    return lfim;
+}
+
+//----------------------------------------------------------------------------
+void TTextoGrupo::ProcEventos()
+{
+    if (Disp && Tempo+10 < TempoIni)
+    {
+        TTextoGrupo * obj = Disp;
+        Disp = Disp->Depois; // Retira da lista Disp
+        delete obj;
+        Tempo = TempoIni;
+    }
+}
+
+//----------------------------------------------------------------------------
 bool TTextoTxt::Func(TVariavel * v, const char * nome)
 {
+    /*
 // Adiciona texto no início
     if (comparaZ(nome, "addini")==0)
     {
@@ -105,6 +672,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         Inicio->ApagarTxt(0, total);
         return true;
     }
+    */
     return false;
 }
 
@@ -115,428 +683,13 @@ int TTextoTxt::getValor()
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::Apagar() { }
-void TTextoPos::Mover(TTextoPos * destino)
-    { move_mem(destino, this, sizeof(TTextoPos)); }
-bool TTextoPos::Func(TVariavel * v, const char * nome) { return false; }
-int TTextoPos::getValor() { return 0; }
-
-
-//----------------------------------------------------------------------------
-void TTextoTxt::CriarFim()
+bool TTextoPos::Func(TVariavel * v, const char * nome)
 {
-    TTextoBloco * objnovo = TTextoGrupo::Criar();
-    objnovo->TextoTxt = this;
-    objnovo->Antes = Fim;
-    objnovo->Depois = 0;
-    objnovo->Linhas = 0;
-    objnovo->Bytes = 0;
-    (Fim ? Fim->Depois : Inicio) = objnovo;
-    Fim = objnovo;
+    return false;
 }
 
 //----------------------------------------------------------------------------
-TTextoBloco * TTextoBloco::Apagar()
+int TTextoPos::getValor()
 {
-    (Antes ? Antes->Depois : TextoTxt->Inicio) = Depois;
-    (Depois ? Depois->Antes : TextoTxt->Fim) = Antes;
-    return TTextoGrupo::Apagar(this);
-}
-
-//----------------------------------------------------------------------------
-void TTextoBloco::Mover(TTextoBloco * destino)
-{
-    (Antes ? Antes->Depois : TextoTxt->Inicio) = destino;
-    (Depois ? Depois->Antes : TextoTxt->Fim) = destino;
-    int total = Bytes + (Texto - ObjChar);
-    assert(total <= TOTAL_TXTOBJ);
-    memcpy(destino, this, total);
-}
-
-//----------------------------------------------------------------------------
-void TTextoBloco::AddTxt(int posic, const char * texto, bool novalinha)
-{
-    char buffer[0x100];
-    int  tambuf=0;
-    int  linhabuf=0;
-
-// Verifica se vai acrescentar alguma coisa
-    if (*texto==0 && novalinha==false)
-        return;
-
-// Move texto a partir de posic para o buffer
-    if (posic<=0)
-    {
-        memcpy(buffer, Texto, Bytes);
-        tambuf = Bytes;
-        linhabuf = Linhas;
-        Bytes=0, Linhas=0;
-    }
-    else if (posic<Bytes)
-    {
-        memcpy(buffer, Texto+posic, Bytes-posic);
-        tambuf = Bytes-posic;
-        Bytes = posic;
-        int lin=0;
-        for (int p=0; p<tambuf; p++)
-            if (buffer[p] == Instr::ex_barra_n)
-                lin++;
-        linhabuf+=lin, Linhas-=lin;
-    }
-
-// Adiciona texto
-    TTextoBloco * obj = this;
-    int addlinhas=0, addbytes=0;
-    while (true)
-    {
-    // Obtém endereços do próximo byte e final
-        char * destino = obj->Texto + obj->Bytes;
-        char * destfim = obj->ObjChar + TOTAL_TXTOBJ;
-    // Copia texto para o objeto
-        int lin = 0;
-        while (destino < destfim)
-        {
-            if (*texto == Instr::ex_barra_n)
-                *destino++ = *texto++, lin++;
-            else if (*texto)
-                *destino++ = *texto++;
-            else
-            {
-                if (novalinha)
-                    *destino++ = Instr::ex_barra_n, lin++, novalinha=false;
-                break;
-            }
-        }
-    // Acerta número de bytes e linhas acrescentados
-        addbytes += destino - obj->Texto;
-        addlinhas += lin;
-        obj->Bytes = destino - obj->Texto;
-        obj->Linhas += lin;
-    // Termina se fim do texto
-        if (*texto==0 && !novalinha)
-            break;
-    // Cria novo objeto após obj
-        TTextoBloco * objnovo = TTextoGrupo::Criar();
-        objnovo->TextoTxt = TextoTxt;
-        objnovo->Antes = obj;
-        objnovo->Depois = obj->Depois;
-        objnovo->Linhas = 0;
-        objnovo->Bytes = 0;
-        (objnovo->Depois ? objnovo->Depois->Antes : TextoTxt->Fim) = objnovo;
-        obj->Depois = objnovo;
-        obj = objnovo;
-    }
-
-// Acerta dados da TextoTxt
-    TextoTxt->Linhas += addlinhas;
-    TextoTxt->Bytes += addbytes;
-
-// Adiciona texto do buffer
-    while (tambuf)
-    {
-    // Obtém endereços do próximo byte e final
-        char * destino = obj->Texto + obj->Bytes;
-        char * destfim = obj->ObjChar + TOTAL_TXTOBJ;
-    // Tem espaço: copia no final do objeto
-        if (destfim-destino >= tambuf)
-        {
-            memcpy(destino, buffer, tambuf);
-            obj->Bytes += tambuf;
-            obj->Linhas += linhabuf;
-            break;
-        }
-    // Não tem espaço: cria novo objeto e copia texto
-        TTextoBloco * objnovo = TTextoGrupo::Criar();
-        objnovo->TextoTxt = TextoTxt;
-        objnovo->Antes = obj;
-        objnovo->Depois = obj->Depois;
-        objnovo->Linhas = linhabuf;
-        objnovo->Bytes = tambuf;
-        (objnovo->Depois ? objnovo->Depois->Antes : TextoTxt->Fim) = objnovo;
-        obj->Depois = objnovo;
-        obj = objnovo;
-        memcpy(obj->Texto, buffer, tambuf);
-        break;
-    }
-
-// Ajusta texto; apaga objetos se for possível
-    obj->AjustarTxt();
-}
-
-//----------------------------------------------------------------------------
-void TTextoBloco::ApagarTxt(int posic, int numbytes)
-{
-    TTextoBloco * obj = this;
-    if (numbytes<=0)
-        return;
-// Acerta posic no início ou no final do bloco
-    if (posic<0)
-        posic=0;
-    else if (posic>=Bytes)
-    {
-        obj=Depois, posic=0;
-        if (obj==0)
-            return;
-    }
-// Apaga até o fim do bloco
-    else if (posic+numbytes >= Bytes)
-    {
-        int lin=0;
-        for (int x=posic; x<Bytes; x++)
-            if (obj->Texto[x] == Instr::ex_barra_n)
-                lin++;
-        numbytes -= Bytes - posic;
-        TextoTxt->Bytes -= Bytes - posic;
-        TextoTxt->Linhas -= lin;
-        Bytes = posic;
-        Linhas -= lin;
-        if (Depois==0)
-            numbytes=0;
-        else
-            obj=Depois;
-        posic=0;
-    }
-// Limpa blocos inteiros (indica que estão vazios)
-    while (numbytes >= obj->Bytes)
-    {
-        numbytes -= obj->Bytes;
-        TextoTxt->Bytes -= obj->Bytes;
-        TextoTxt->Linhas -= obj->Linhas;
-        obj->Bytes = 0;
-        obj->Linhas = 0;
-        if (obj->Depois==0)
-        {
-            numbytes = 0;
-            break;
-        }
-        obj = obj->Depois;
-    }
-// Apaga uma parte do bloco
-    if (numbytes > 0)
-    {
-        int origem = posic + numbytes;
-        int lin=0;
-        for (int x=posic; x<origem; x++)
-            if (obj->Texto[x] == Instr::ex_barra_n)
-                lin++;
-        memcpy(obj->Texto + posic, obj->Texto + origem, obj->Bytes - origem);
-        TextoTxt->Linhas -= lin;
-        TextoTxt->Bytes -= numbytes;
-        obj->Linhas -= lin;
-        obj->Bytes -= numbytes;
-    }
-// Apaga blocos vazios
-    obj = (Bytes==0 || Depois==0 ? this : Depois);
-    while (obj->Bytes==0)
-    {
-        TTextoBloco * dep = obj->Depois;
-        if (dep==0)
-            dep = obj->Antes;
-        if (dep != obj->Apagar())
-            obj = dep;
-        if (obj==0)
-            return;
-    }
-// Ajusta texto; apaga objetos se for possível
-    obj->AjustarTxt();
-}
-
-//----------------------------------------------------------------------------
-int TTextoBloco::CopiarTxt(int posic, char * buffer, int tambuf)
-{
-    const char * bufini = buffer;
-    if (tambuf<=1)
-    {
-        *buffer=0;
-        return 1;
-    }
-    tambuf--;
-    TTextoBloco * obj = this;
-// Acerta posic no início ou no final do bloco
-    if (posic<0)
-        posic=0;
-    else if (posic>=Bytes)
-    {
-        obj=Depois, posic=0;
-        if (obj==0)
-        {
-            *buffer=0;
-            return 1;
-        }
-    }
-// Copia bytes
-    while (tambuf > obj->Bytes - posic)
-    {
-        int total = obj->Bytes - posic;
-        memcpy(buffer, obj->Texto+posic, total);
-        buffer += total;
-        tambuf -= total;
-        obj=Depois, posic=0;
-        if (obj==0)
-        {
-            *buffer=0;
-            return buffer-bufini+1;
-        }
-    }
-// Copia bytes do último bloco
-    if (tambuf > 0)
-    {
-        memcpy(buffer, obj->Texto+posic, tambuf);
-        buffer += tambuf;
-    }
-    *buffer=0;
-    return buffer-bufini+1;
-}
-
-//----------------------------------------------------------------------------
-int TTextoBloco::LinhasBytes(int posic, int numlinhas)
-{
-    TTextoBloco * obj = this;
-    int total = 0;
-    if (numlinhas<=0)
-        return 0;
-// Avança até o início de algum bloco
-    if (posic>0)
-    {
-        if (posic<Bytes)
-        {
-            for (int x=posic; x<obj->Bytes; x++)
-                if (obj->Texto[x] == Instr::ex_barra_n)
-                    if (--numlinhas==0)
-                        return x+1-posic;
-            total = obj->Bytes - posic;
-        }
-        obj=Depois;
-        if (obj==0)
-            return 0;
-    }
-// Avança blocos inteiros
-    while (numlinhas > obj->Linhas)
-    {
-        numlinhas -= obj->Linhas;
-        total += obj->Bytes;
-        obj = obj->Depois;
-        if (obj==0)
-            return total;
-    }
-// Avança em um bloco
-    for (int x=0; x<obj->Bytes; x++)
-        if (obj->Texto[x] == Instr::ex_barra_n)
-            if (--numlinhas==0)
-                return total+x+1;
-    return total + obj->Bytes;
-}
-
-//----------------------------------------------------------------------------
-void TTextoBloco::AjustarTxt()
-{
-    const int objbytes = ObjChar + TOTAL_TXTOBJ - Texto;
-// Verifica se objeto está vazio
-    if (Bytes==0)
-    {
-        (Antes ? Antes->Depois : TextoTxt->Inicio) = Depois;
-        (Depois ? Depois->Antes : TextoTxt->Fim) = Antes;
-        TTextoGrupo::Apagar(this);
-        return;
-    }
-// Obtém objetos inicial e final e número de bytes
-    TTextoBloco * ini = this;
-    TTextoBloco * fim = this;
-    int maximo = objbytes;
-    int atual = Bytes;
-    if (ini->Antes)
-    {
-        ini=ini->Antes, atual+=ini->Bytes, maximo+=objbytes;
-        if (ini->Antes)
-            ini=ini->Antes, atual+=ini->Bytes, maximo+=objbytes;
-    }
-    if (ini->Depois)
-    {
-        fim=fim->Depois, atual+=fim->Bytes, maximo+=objbytes;
-        if (ini->Depois)
-            fim=fim->Depois, atual+=fim->Bytes, maximo+=objbytes;
-    }
-// Verifica se consegue apagar algum objeto
-    if (maximo - atual < objbytes)
-        return;
-// Compacta o texto
-    TTextoBloco * obj = ini->Depois;
-    while (true)
-    {
-    // Obtém número de bytes disponíveis em ini
-        int total = objbytes - ini->Bytes;
-    // Se pode copiar o bloco inteiro...
-        if (total >= obj->Bytes)
-        {
-        // Copia bloco
-            total = obj->Bytes;
-            memcpy(ini->Texto + ini->Bytes, obj->Texto, total);
-            ini->Bytes += total;
-            ini->Linhas += obj->Linhas;
-        // Apaga objeto
-            obj->Apagar();
-            return;
-        }
-    // Obtém número de linhas
-        int linhas = 0;
-        for (const char * p = obj->Texto; p < obj->Texto + total; p++)
-            if (*p == Instr::ex_barra_n)
-                linhas++;
-    // Copia parte do bloco
-        memcpy(ini->Texto + ini->Bytes, obj->Texto, total);
-        memcpy(obj->Texto, obj->Texto + total, obj->Bytes - total);
-        ini->Bytes += total;
-        ini->Linhas += linhas;
-        obj->Bytes -= total;
-        obj->Linhas -= linhas;
-    }
-}
-
-//----------------------------------------------------------------------------
-TTextoBloco * TTextoGrupo::Criar()
-{
-// Se tem objeto TListaX disponível...
-    if (Usado && Usado->Total < TOTAL_TXTGR)
-        return (TTextoBloco*)Usado->Lista[Usado->Total++];
-// Se não tem objeto disponível...
-    TTextoGrupo * obj;
-    if (Disp==0)    // Não tem objeto TTextoGrupo disponível
-        obj=new TTextoGrupo;
-    else            // Tem objeto TTextoGrupo disponível
-        obj=Disp, Disp=Disp->Depois; // Retira da lista Disp
-    obj->Total = 1;
-    obj->Depois = Usado; // Coloca na lista Usado
-    Usado = obj;
-    return (TTextoBloco*)obj->Lista[0];
-}
-
-//----------------------------------------------------------------------------
-TTextoBloco * TTextoGrupo::Apagar(TTextoBloco * lista)
-{
-    TTextoBloco * lfim = (TTextoBloco*)Usado->Lista[Usado->Total - 1];
-    if (lista != lfim)
-        lfim->Mover(lista);
-    Usado->Total--;
-    if (Usado->Total==0)
-    {
-        if (Disp==0)
-            Tempo = TempoIni;
-        TTextoGrupo * obj = Usado;
-        Usado = Usado->Depois; // Retira da lista Usado
-        obj->Depois = Disp;    // Coloca na lista Disp
-        Disp = obj;
-    }
-    return lfim;
-}
-
-//----------------------------------------------------------------------------
-void TTextoGrupo::ProcEventos()
-{
-    if (Disp && Tempo+10 < TempoIni)
-    {
-        TTextoGrupo * obj = Disp;
-        Disp = Disp->Depois; // Retira da lista Disp
-        delete obj;
-        Tempo = TempoIni;
-    }
+    return (TextoTxt && PosicTxt < TextoTxt->Bytes);
 }

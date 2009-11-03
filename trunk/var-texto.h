@@ -6,40 +6,80 @@
 // 62 * 0x108 = 0x3FF0
 
 //----------------------------------------------------------------------------
-class TTextoBloco;
 class TVariavel;
+class TBlocoPos;
+class TTextoPos;
+class TTextoBloco;
 
 class TTextoTxt  /// Variáveis TextoTxt
 {
 public:
     void Apagar();          ///< Apaga objeto
     void Mover(TTextoTxt * destino); ///< Move objeto para outro lugar
+    void IniBloco();        ///< Cria primeiro bloco, se não existir
+
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
 
-    void CriarFim();        ///< Cria bloco no final de TTextoTxt
     TTextoBloco * Inicio;   ///< Aonde começa o texto
     TTextoBloco * Fim;      ///< Aonde termina o texto
+    TTextoPos * Posic;      ///< Primeiro objeto da lista
     unsigned int Linhas;    ///< Número de linhas
     unsigned int Bytes;     ///< Número de bytes
 };
 
 //----------------------------------------------------------------------------
-class TTextoPos  /// Variáveis TextoPos
+class TBlocoPos /// Marca uma posição no texto
 {
 public:
-    void Apagar();          ///< Apaga objeto
-    void Mover(TTextoPos * destino); ///< Move objeto para outro lugar
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    int  getValor();        ///< Ler valor numérico da variável
+    TTextoBloco * Bloco;
+            ///< Bloco que contém o início da linha
+    unsigned int PosicBloco;
+            ///< Número de bytes desde o início do bloco
+    unsigned int PosicTxt;
+            ///< Número de bytes desde o início do texto
+    unsigned int LinhaTxt;
+            ///< Linha no texto; começa em 0
+            /**< Caracteres Instr::ex_barra_n desde o início do texto */
 
-    TTextoTxt * TextoTxt;
+    void MudarTxt(const char * texto, unsigned int tamtexto,
+            unsigned int tamapagar);
+            ///< Muda texto a partir de uma posição
+            /**< Substitui a quantidade especificada de bytes por um texto
+             *   @param texto Texto a adicionar
+             *   @param tamtexto Tamanho do texto, em bytes
+             *   @param tamapagar Quantidade de bytes a apagar
+             *   @note Caracteres 0 são substituídos por Instr::ex_barra_n */
+};
+
+//----------------------------------------------------------------------------
+class TTextoPos : public TBlocoPos /// Variáveis TextoPos
+{
+public:
+    void Apagar();
+            ///< Apaga objeto
+    void Mover(TTextoPos * destino);
+            ///< Move objeto para outro lugar
+    void MudarTxt(TTextoTxt * obj);
+            ///< Associa objeto a TTextoTxt sem texto, desassocia se obj==0
+    bool Func(TVariavel * v, const char * nome);
+            ///< Função da variável
+    int  getValor();
+            ///< Ler valor numérico da variável
+
+    TTextoTxt * TextoTxt;   ///< Variável TextoTxt correspondente
+    TTextoPos * Antes;      ///< Objeto anterior
+    TTextoPos * Depois;     ///< Próximo objeto
 };
 
 //----------------------------------------------------------------------------
 class TTextoBloco /// Bloco de texto de um objeto TTextoTxt
 {
 public:
+    TTextoBloco * CriarAntes();
+            ///< Cria bloco antes
+    TTextoBloco * CriarDepois();
+            ///< Cria bloco depois
     TTextoBloco * Apagar();
             ///< Retira objeto da lista e apaga objeto
             /**< @return Endereço do objeto que passou a ocupar
@@ -48,42 +88,26 @@ public:
             ///< Move bloco para outro lugar
             /**< @param destino Endereço destino
              *   @note Usado por TTextoGrupo */
-    void AddTxt(int posic, const char * texto, bool novalinha);
-            ///< Adiciona texto a partir da posição especificada
-            /**< @param texto Texto a adicionar
-             *   @param posic Posição em TTextoBloco:Texto, começa em 0
-             *   @param novalinha Se deve adicionar "\n" após o texto */
-    void ApagarTxt(int posic, int bytes);
-            ///< Apaga texto a partir da posição especificada
-            /**< @param posic Posição em TTextoBloco:Texto, começa em 0
-             *   @param bytes Quantidade de bytes */
-    int CopiarTxt(int posic, char * buffer, int tambuf);
-            ///< Copia texto para uma região na memória
-            /**< @param posic Posição em TTextoBloco:Texto, começa em 0
-             *   @param buffer Aonde copiar
-             *   @param tambuf Tamanho de buffer
-             *   @return Número de bytes preenchidos em buffer, com o 0 final */
-    int LinhasBytes(int posic, int numlinhas);
+    int LinhasBytes(unsigned int posic, int numlinhas);
             ///< Obtém quantos bytes correspondem a numlinhas
             /**< Obtém quantos bytes correspondem a avançar um determinado
              *   número de linhas
              *   @param posic Posição em TTextoBloco:Texto, começa em 0
              *   @param linhas Número de linhas
              *   @return Número de bytes, com um Instr::ex_barra_n no final */
+    int CopiarTxt(unsigned int posic, char * buffer, int tambuf);
+            ///< Copia texto para uma região na memória
+            /**< @param posic Posição em TTextoBloco:Texto, começa em 0
+             *   @param buffer Aonde copiar
+             *   @param tambuf Tamanho de buffer
+             *   @return Número de bytes preenchidos em buffer, com o 0 final */
 
-    union {
-        char ObjChar[1]; ///< Para acessar o objeto TTextoBloco como char*
-        TTextoTxt * TextoTxt; ///< TTextoTxt que contém objeto
-    };
-    TTextoBloco * Antes;  ///< TTextoBloco anterior; se (IniFim&1)!=0
-    TTextoBloco * Depois; ///< Próximo TTextoBloco; se (IniFim&2)!=0
-    unsigned char Linhas; ///< Número de caracteres '\n' do bloco
+    TTextoTxt * TextoTxt; ///< Variável TextoTxt que contém o bloco
+    TTextoBloco * Antes;  ///< TTextoBloco anterior
+    TTextoBloco * Depois; ///< Próximo TTextoBloco
+    unsigned char Linhas; ///< Número de caracteres Instr::ex_barra_n do bloco
     unsigned char Bytes;  ///< Número de bytes do bloco
     char Texto[1];        ///< A partir daqui: texto do bloco
-
-private:
-    void AjustarTxt();
-            ///< Ajusta objetos TTextoBloco reduzindo o tamanho se possível
 };
 
 //----------------------------------------------------------------------------
