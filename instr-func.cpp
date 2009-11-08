@@ -65,10 +65,7 @@ bool Instr::FuncArg(TVariavel * v, int valor)
 bool Instr::FuncArgs(TVariavel * v, int valor)
 {
     ApagarVar(v);
-    if (!CriarVar(InstrVarInt))
-        return false;
-    VarAtual->setInt(FuncAtual->numarg);
-    return true;
+    return CriarVarInt(FuncAtual->numarg);
 }
 
 //----------------------------------------------------------------------------
@@ -161,17 +158,9 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         VarAtual->setDouble(numero<0 ? -numero : numero);
         return true;
     case 2: // int()
-        if (!CriarVar(InstrVarInt))
-            return false;
-        VarAtual->setInt((int)numero);
-        return true;
+        return CriarVarInt((int)numero);
     case 3: // rand()
-        if (!CriarVar(InstrVarInt))
-            return false;
-        if (numero<1)
-            return true;
-        VarAtual->setInt(circle_random() % (int)numero);
-        return true;
+        return CriarVarInt(numero<1 ? 0 : circle_random() % (int)numero);
     }
     return false;
 }
@@ -529,10 +518,7 @@ bool Instr::FuncInt(TVariavel * v, int valor)
     }
 // Retorna o valor
     ApagarVar(v);
-    if (!CriarVar(InstrVarInt))
-        return false;
-    VarAtual->setInt(valor);
-    return true;
+    return CriarVarInt(valor);
 }
 
 //----------------------------------------------------------------------------
@@ -638,10 +624,7 @@ bool Instr::FuncTxtProc(TVariavel * v, int valor)
     }
 // Retorna o resultado
     ApagarVar(v);
-    if (!CriarVar(InstrVarInt))
-        return false;
-    VarAtual->setInt(posic);
-    return true;
+    return CriarVarInt(posic);
 }
 
 //----------------------------------------------------------------------------
@@ -727,10 +710,7 @@ bool Instr::FuncTotal(TVariavel * v, int valor)
             break;
         }
     ApagarVar(v);
-    if (!CriarVar(InstrVarInt))
-        return false;
-    VarAtual->setInt(tamanho);
-    return true;
+    return CriarVarInt(tamanho);
 }
 
 //----------------------------------------------------------------------------

@@ -171,7 +171,7 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
         }
     // Variável int no topo da pilha
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
         {
             if (descr>=0)
                 close(descr);

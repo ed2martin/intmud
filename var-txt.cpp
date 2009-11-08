@@ -145,8 +145,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "eof")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
+        if (!Instr::CriarVarInt(0))
         if (arq==0 || feof(arq))
             Instr::VarAtual->setInt(1);
 #ifdef DEBUG
@@ -172,7 +171,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
             }
         }
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
             return false;
         if (arq)
             Instr::VarAtual->setInt(ftell(arq));
@@ -212,7 +211,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         }
     // Variável int no topo da pilha
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
         {
             if (descr)
                 fclose(descr);
@@ -267,7 +266,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         }
     // Variável int no topo da pilha
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
         {
             if (descr >= 0)
                 close(descr);

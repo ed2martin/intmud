@@ -773,26 +773,23 @@ bool Instr::ExecX()
             while (*FuncAtual->expr++);
             break;
         case ex_num0:
-            if (!CriarVar(InstrVarInt))
+            if (!CriarVarInt(0))
                 return RetornoErro();
             FuncAtual->expr++;
             break;
         case ex_num1:
-            if (!CriarVar(InstrVarInt))
+            if (!CriarVarInt(1))
                 return RetornoErro();
-            VarAtual->setInt(1);
             FuncAtual->expr++;
             break;
         case ex_num8p:
-            if (!CriarVar(InstrVarInt))
+            if (!CriarVarInt((unsigned char)FuncAtual->expr[1]))
                 return RetornoErro();
-            VarAtual->setInt((unsigned char)FuncAtual->expr[1]);
             FuncAtual->expr += 2;
             break;
         case ex_num16p:
-            if (!CriarVar(InstrVarInt))
+            if (!CriarVarInt(Num16(FuncAtual->expr+1)))
                 return RetornoErro();
-            VarAtual->setInt(Num16(FuncAtual->expr+1));
             FuncAtual->expr += 3;
             break;
         case ex_num32p:
@@ -804,25 +801,19 @@ bool Instr::ExecX()
                         return RetornoErro();
                     VarAtual->setDouble(x);
                 }
-                else
-                {
-                    if (!CriarVar(InstrVarInt))
-                        return RetornoErro();
-                    VarAtual->setInt(x);
-                }
+                else if (!CriarVarInt(x))
+                    return RetornoErro();
                 FuncAtual->expr += 5;
                 break;
             }
         case ex_num8n:
-            if (!CriarVar(InstrVarInt))
+            if (!CriarVarInt( -(int)(unsigned char)FuncAtual->expr[1] ))
                 return RetornoErro();
-            VarAtual->setInt(-(int)(unsigned char)FuncAtual->expr[1]);
             FuncAtual->expr += 2;
             break;
         case ex_num16n:
-            if (!CriarVar(InstrVarInt))
+            if (!CriarVarInt( -(int)Num16(FuncAtual->expr+1) ))
                 return RetornoErro();
-            VarAtual->setInt(-(int)Num16(FuncAtual->expr+1));
             FuncAtual->expr += 3;
             break;
         case ex_num32n:
@@ -832,12 +823,8 @@ bool Instr::ExecX()
                     return RetornoErro();
                 VarAtual->setDouble(-(double)Num32(FuncAtual->expr+1));
             }
-            else
-            {
-                if (!CriarVar(InstrVarInt))
-                    return RetornoErro();
-                VarAtual->setInt(-(int)Num32(FuncAtual->expr+1));
-            }
+            else if (!CriarVarInt( -(int)Num32(FuncAtual->expr+1) ))
+                return RetornoErro();
             FuncAtual->expr += 5;
             break;
         case ex_div1:
@@ -886,9 +873,8 @@ bool Instr::ExecX()
                 {
                     int valor = -VarAtual->getInt();
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrVarInt))
+                    if (!CriarVarInt(valor))
                         return RetornoErro();
-                    VarAtual->setInt(valor);
                 }
                 break;
             case varDouble:
@@ -915,9 +901,8 @@ bool Instr::ExecX()
             {
                 bool valor = !VarAtual->getBool();
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrVarInt))
+                if (!CriarVarInt(valor))
                     return RetornoErro();
-                VarAtual->setInt(valor);
             }
             else
                 VarAtual->setInt(!VarAtual->getInt());
@@ -974,7 +959,7 @@ bool Instr::ExecX()
                 if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varInt)
                 {
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrVarInt))
+                    if (!CriarVarInt(0))
                         return RetornoErro();
                 }
                 VarAtual->setInt(valor);
@@ -1205,7 +1190,7 @@ bool Instr::ExecX()
                 }
             // Apaga valores da pilha; cria int32 na pilha
                 ApagarVar(VarAtual-1);
-                if (!CriarVar(InstrVarInt))
+                if (!CriarVarInt(0))
                     return RetornoErro();
             // Avança Func->expr, verifica operador
                 switch (*FuncAtual->expr++)
@@ -1267,11 +1252,8 @@ bool Instr::ExecX()
                 }
             // Apaga valores da pilha; cria int32 na pilha
                 ApagarVar(VarAtual-1);
-                if (!CriarVar(InstrVarInt))
+                if (!CriarVarInt(tipo1!=0))
                     return RetornoErro();
-            // Avança Func->expr, verifica operador
-                if (tipo1)
-                    VarAtual->setInt(1);
                 break;
             }
         case exo_ee:         // Operador: Início do operador &
@@ -1284,7 +1266,7 @@ bool Instr::ExecX()
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrVarInt))
+                if (!CriarVarInt(0))
                     return RetornoErro();
                 break;
             }
@@ -1300,9 +1282,8 @@ bool Instr::ExecX()
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrVarInt))
+                if (!CriarVarInt(1))
                     return RetornoErro();
-                VarAtual->setInt(1);
                 break;
             }
             ApagarVar(VarAtual);
@@ -1315,10 +1296,8 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 bool b = VarAtual->getBool();
                 ApagarVar(VarAtual);
-                if (!CriarVar(InstrVarInt))
+                if (!CriarVarInt(b))
                     return RetornoErro();
-                if (b)
-                    VarAtual->setInt(1);
                 break;
             }
         case exo_igualadd:   // Operador: a+=b

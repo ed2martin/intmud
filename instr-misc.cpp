@@ -134,6 +134,23 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
 }
 
 //----------------------------------------------------------------------------
+/// Cria variável int com um valor definido
+/**
+ *  @param valor Valor numérico da variável
+ *  @return true se conseguiu criar, false se memória insuficiente */
+bool Instr::CriarVarInt(int valor)
+{
+    if (VarAtual >= VarFim-1)
+        return false;
+    VarAtual++;
+    VarAtual->defvar = InstrVarInt;
+    VarAtual->valor_int = valor;
+    VarAtual->tamanho = 0;
+    VarAtual->indice = 0;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Cria variável de texto no topo da pilha de variáveis (Instr::VarPilha)
 /**
  *  @param mens A mensagem que será retornada;

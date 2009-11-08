@@ -29,7 +29,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         {
             // Retorna 0
             Instr::ApagarVar(v);
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
         }
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
@@ -61,22 +61,19 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
                     Inicio--;
                     // Retorna 0
                     Instr::ApagarVar(v);
-                    return Instr::CriarVar(Instr::InstrVarInt);
+                    return Instr::CriarVarInt(0);
                 }
             // Diminui quantidade de itens
                 Total--;
             // Retorna 1
                 Achou=true;
                 Instr::ApagarVar(v);
-                if (!Instr::CriarVar(Instr::InstrVarInt))
-                    return false;
-                Instr::VarAtual->setInt(1);
-                return true;
+                return Instr::CriarVarInt(1);
             } // while (true)
         } // for
         // Retorna 0
         Instr::ApagarVar(v);
-        return Instr::CriarVar(Instr::InstrVarInt);
+        return Instr::CriarVarInt(0);
     }
 // Inicialização
     if (comparaZ(nome, "ini")==0)

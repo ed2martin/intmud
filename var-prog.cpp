@@ -142,11 +142,7 @@ bool TVarProg::FuncExiste(TVariavel * v)
         }
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (existe)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(existe);
 }
 
 //------------------------------------------------------------------------------
@@ -166,11 +162,7 @@ bool TVarProg::FuncVarComum(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (valor)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -190,11 +182,7 @@ bool TVarProg::FuncVarLocal(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (valor)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -214,11 +202,7 @@ bool TVarProg::FuncVarSav(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (valor)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -238,11 +222,7 @@ bool TVarProg::FuncVarNum(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (valor)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -262,11 +242,7 @@ bool TVarProg::FuncVarTexto(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (valor)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -308,11 +284,7 @@ bool TVarProg::FuncVarVetor(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (valor)
-        Instr::VarAtual->setInt(valor);
-    return true;
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -445,10 +417,7 @@ bool TVarProg::FuncIniClasse(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -488,10 +457,7 @@ bool TVarProg::FuncIniFunc(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -518,10 +484,7 @@ bool TVarProg::FuncIniFuncTudo(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -545,10 +508,7 @@ bool TVarProg::FuncIniHerda(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -571,10 +531,7 @@ bool TVarProg::FuncIniHerdaTudo(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -595,10 +552,7 @@ bool TVarProg::FuncIniHerdaInv(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -634,10 +588,7 @@ bool TVarProg::FuncIniLinha(TVariavel * v)
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -814,18 +765,14 @@ bool TVarProg::FuncTexto(TVariavel * v)
 bool TVarProg::FuncLin(TVariavel * v)
 {
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    if (consulta)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(consulta != 0);
 }
 
 //------------------------------------------------------------------------------
 bool TVarProg::FuncNivel(TVariavel * v)
 {
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
+    if (!Instr::CriarVarInt(0))
         return false;
     if ((consulta==7 || consulta==8) && ValorFim>=2)
     {
@@ -892,10 +839,7 @@ bool TVarProg::FuncApagar(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarInt))
-        return false;
-    Instr::VarAtual->setInt(valor != 0);
-    return true;
+    return Instr::CriarVarInt(valor != 0);
 }
 
 //------------------------------------------------------------------------------

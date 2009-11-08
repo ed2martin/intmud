@@ -145,13 +145,10 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
     // Se inválido: retorna 0
         if (memcmp(mens,"..",3)==0 || !arqvalido(mens))
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
     // Válido: coloca na lista de pendentes e retorna 1
         TVarSavDir::NovoDir(mens);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(1);
-        return true;
+        return Instr::CriarVarInt(1);
     }
 // Obtém o nome do arquivo
     char arqnome[300]; // Nome do arquivo; nulo se não for válido
@@ -177,17 +174,13 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "valido")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        if (*arqnome)
-            Instr::VarAtual->setInt(1);
-        return true;
+        return Instr::CriarVarInt(*arqnome != 0);
     }
 // Checa se arquivo existe
     if (comparaZ(nome, "existe")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
             return false;
         if (*arqnome)
         {
@@ -205,7 +198,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         if (*arqnome==0 || Instr::VarAtual < v+2 || !arqler.Abrir(arqnome))
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
         }
         while (arqler.Linha(mens, sizeof(mens))>0)
         {
@@ -218,19 +211,16 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             if (strcmp(mens+6, mens2)==0)
                 break;
             Instr::ApagarVar(v);
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
         }
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(1);
-        return true;
+        return Instr::CriarVarInt(1);
     }
 // Checar a quantidade de dias para expirar
     if (comparaZ(nome, "dias")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
             return false;
         if (*arqnome==0)
             return true;
@@ -255,7 +245,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                 !arqler.Abrir(arqnome))  // Não conseguiu abrir arquivo
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
         }
     // Prepara variáveis
         TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
@@ -419,10 +409,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         } // while
     // Retorna o número de objetos lidos
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(quantidade);
-        return true;
+        return Instr::CriarVarInt(quantidade);
     }
 // Salvar arquivo
     if (comparaZ(nome, "salvar")==0)
@@ -432,14 +419,14 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                 v[2].defvar[2] != Instr::cListaObj) // Não é listaobj
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
         }
     // Cria arquivo
         FILE * arq = fopen(arqnome, "w");
         if (arq==0)
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVar(Instr::InstrVarInt);
+            return Instr::CriarVarInt(0);
         }
     // Anota a quantidade de dias para expirar
         int valor = v[3].getInt();
@@ -625,16 +612,13 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         fclose(arq);
     // Retorna 1
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(1);
-        return true;
+        return Instr::CriarVarInt(1);
     }
 // Apagar arquivo
     if (comparaZ(nome, "apagar")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
             return false;
         if (*arqnome)
         {

@@ -462,10 +462,7 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
             *destino=0;
     // Retorna o número de palavras
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(palavras);
-        return true;
+        return Instr::CriarVarInt(palavras);
     }
 // Divide em linhas
     if (comparaZ(nome, "linhas")==0)
@@ -531,10 +528,7 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
             *destino=0;
     // Retorna o número de palavras
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(linha);
-        return true;
+        return Instr::CriarVarInt(linha);
     }
 // Limpa as variáveis do vetor
     if (comparaZ(nome, "limpar")==0)
@@ -643,10 +637,7 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
             *destino=0;
         // Retorna o número de variáveis
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        Instr::VarAtual->setInt(indice);
-        return true;
+        return Instr::CriarVarInt(indice);
     }
     return false;
 }

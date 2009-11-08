@@ -15,8 +15,12 @@ class TTextoTxt  /// Variáveis TextoTxt
 {
 public:
     void Apagar();          ///< Apaga objeto
+    void Limpar();          ///< Apaga o texto do objeto
     void Mover(TTextoTxt * destino); ///< Move objeto para outro lugar
     void IniBloco();        ///< Cria primeiro bloco, se não existir
+    void AddTexto(const char * texto, unsigned int tamtexto);
+            ///< Adiciona texto no final
+            /**< @note É um pouco mais eficiente que TBlocoPos::MudarTxt */
 
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
@@ -42,7 +46,11 @@ public:
             ///< Linha no texto; começa em 0
             /**< Caracteres Instr::ex_barra_n desde o início do texto */
 
-    void MudarTxt(const char * texto, unsigned int tamtexto,
+    void MoverPos(int numlinhas);
+            ///< Avança ou recua um determinado número de linhas
+            /**< @param numlinhas Quantas linhas avançar,
+             *          se menor que zero recua ao invés de avançar */
+    void Mudar(const char * texto, unsigned int tamtexto,
             unsigned int tamapagar);
             ///< Muda texto a partir de uma posição
             /**< Substitui a quantidade especificada de bytes por um texto
@@ -62,6 +70,10 @@ public:
             ///< Move objeto para outro lugar
     void MudarTxt(TTextoTxt * obj);
             ///< Associa objeto a TTextoTxt sem texto, desassocia se obj==0
+    int  Compara(TTextoPos * v);
+            ///< Operador de comparação
+    void Igual(TTextoPos * v);
+            ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
     int  getValor();
