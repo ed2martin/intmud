@@ -24,13 +24,14 @@
 TTextoGrupo * TTextoGrupo::Disp = 0;
 TTextoGrupo * TTextoGrupo::Usado = 0;
 unsigned long TTextoGrupo::Tempo = 0;
+const char TextoItem1[] = { 7, 0, Instr::cTextoPos, 0, 0, 0, '+', 0 };
 
 //----------------------------------------------------------------------------
 /// Obtém o número de linhas correspondente a um texto
 static int NumLinhas(const char * texto, int total)
 {
     int linhas=0;
-    for (; total>0; total--)
+    for (; total>0; total--, texto++)
         if (*texto==Instr::ex_barra_n)
             linhas++;
     return linhas;
@@ -61,8 +62,31 @@ void TTextoTxt::Apagar()
     for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
         obj->Bytes = 0;
 // Acerta objetos TTextoPos
-    while (Posic)
-        Posic->MudarTxt(0);
+// Nota: mais eficiente que: while (Posic) Posic->MudarTxt(0);
+    for (TTextoPos * obj = Posic; obj; obj=obj->Depois)
+        obj->TextoTxt = 0, obj->Bloco = 0;
+    Posic = 0;
+// Apaga blocos
+    while (Inicio)
+        Inicio->Apagar();
+}
+
+//----------------------------------------------------------------------------
+void TTextoTxt::Limpar()
+{
+// Otimização, no caso de precisar mover algum bloco que será apagado
+    for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
+        obj->Bytes = 0;
+// Acerta objetos TTextoPos
+    for (TTextoPos * obj = Posic; obj; obj=obj->Depois)
+    {
+        obj->Bloco = 0;
+        obj->PosicBloco = 0;
+        obj->PosicTxt = 0;
+        obj->LinhaTxt = 0;
+    }
+    Linhas = 0;
+    Bytes = 0;
 // Apaga blocos
     while (Inicio)
         Inicio->Apagar();
@@ -100,6 +124,35 @@ void TTextoTxt::IniBloco()
 }
 
 //----------------------------------------------------------------------------
+void TTextoTxt::AddTexto(const char * texto, unsigned int tamtexto)
+{
+    const unsigned int bloco_ini = Inicio->Texto - (char*)Inicio;
+    const unsigned int bloco_tam = TOTAL_TXTOBJ - bloco_ini;
+    if (Inicio==0)
+        IniBloco();
+    Bytes += tamtexto;
+    while (true)
+    {
+        unsigned int copiar = bloco_tam - Fim->Bytes;
+        if (copiar > tamtexto)
+            copiar = tamtexto, tamtexto = 0; // copiar todo o texto
+        else
+            tamtexto -= copiar; // copiar parte do texto
+        int lin = AnotaLinhas(Fim->Texto + Fim->Bytes, texto, copiar);
+        Fim->Bytes += copiar;
+        Fim->Linhas += lin;
+        Linhas += lin;
+        texto += copiar;
+        if (tamtexto==0)
+            break;
+        if (Fim->Depois)
+            Fim = Fim->Depois;
+        else
+            Fim = Fim->CriarDepois();
+    }
+}
+
+//----------------------------------------------------------------------------
 void TTextoPos::Apagar()
 {
     if (TextoTxt==0)
@@ -107,7 +160,6 @@ void TTextoPos::Apagar()
     (Antes ? Antes->Depois : TextoTxt->Posic) = Depois;
     if (Depois)
         Depois->Antes = Antes;
-    TextoTxt=0;
 }
 
 //----------------------------------------------------------------------------
@@ -125,27 +177,32 @@ void TTextoPos::Mover(TTextoPos * destino)
 //----------------------------------------------------------------------------
 void TTextoPos::MudarTxt(TTextoTxt * obj)
 {
-// Se 0, remove da lista
-    if (obj==0)
-    {
-        Apagar();
+// Verifica se o endereço vai mudar
+    if (obj == TextoTxt)
         return;
-    }
-// Associa ao objeto TTextoTxt
-    if (obj!=TextoTxt)
+// Retira da lista
+    if (TextoTxt)
     {
-        Apagar();
-        TextoTxt = obj;
+        (Antes ? Antes->Depois : TextoTxt->Posic) = Depois;
+        if (Depois)
+            Depois->Antes = Antes;
+    }
+// Coloca na lista
+    if (obj)
+    {
         Antes = 0;
-        Depois = TextoTxt->Posic;
+        Depois = obj->Posic;
         if (Depois)
             Depois->Antes = this;
-        TextoTxt->Posic = this;
+        obj->Posic = this;
+        //Bloco = TextoTxt->Inicio;
+        //PosicBloco = 0;
+        //PosicTxt = 0;
+        //LinhaTxt = 0;
     }
-    //Bloco = TextoTxt->Inicio;
-    //PosicBloco = 0;
-    //PosicTxt = 0;
-    //LinhaTxt = 0;
+// Atualiza ponteiro
+    TextoTxt = obj;
+    Bloco = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -224,7 +281,7 @@ int TTextoBloco::LinhasBytes(unsigned int posic, int numlinhas)
         }
         obj=Depois;
         if (obj==0)
-            return 0;
+            return total;
     }
 // Avança blocos inteiros
     while (numlinhas > obj->Linhas)
@@ -289,7 +346,123 @@ int TTextoBloco::CopiarTxt(unsigned int posic, char * buffer, int tambuf)
 }
 
 //----------------------------------------------------------------------------
-void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
+void TBlocoPos::MoverPos(int numlinhas)
+{
+    if (Bloco==0)
+        return;
+// Avançar
+    if (numlinhas>0)
+    {
+    // Avança até o início de algum bloco
+        if (PosicBloco>0)
+        {
+            if (PosicBloco<Bloco->Bytes)
+            {
+                int x = PosicBloco;
+                int lin = numlinhas;
+                while (x<Bloco->Bytes)
+                    if (Bloco->Texto[x++] == Instr::ex_barra_n)
+                        if (--numlinhas==0)
+                            break;
+                LinhaTxt += lin - numlinhas;
+                PosicTxt += x - PosicBloco;
+                PosicBloco = x;
+            }
+            if (Bloco->Depois==0 || numlinhas==0)
+                return;
+            Bloco = Bloco->Depois;
+        }
+    // Avança blocos inteiros
+        while (numlinhas > Bloco->Linhas)
+        {
+            numlinhas -= Bloco->Linhas;
+            LinhaTxt += Bloco->Linhas;
+            PosicTxt += Bloco->Bytes;
+            if (Bloco->Depois)
+                Bloco = Bloco->Depois;
+            else
+            {
+                PosicBloco = Bloco->Bytes;
+                return;
+            }
+        }
+    // Avança em um bloco
+        int x = 0;
+        int lin = numlinhas;
+        while (x<Bloco->Bytes)
+            if (Bloco->Texto[x++] == Instr::ex_barra_n)
+                if (--numlinhas==0)
+                    break;
+        LinhaTxt += lin - numlinhas;
+        PosicTxt += x;
+        PosicBloco = x;
+        return;
+    }
+// Recuar
+    else
+    {
+        numlinhas = 1-numlinhas;
+    // Recua até o fim de algum bloco
+        if (PosicBloco<Bloco->Bytes)
+        {
+            if (PosicBloco>0)
+            {
+                int x = PosicBloco;
+                int lin = numlinhas;
+                while (x)
+                    if (Bloco->Texto[--x] == Instr::ex_barra_n)
+                        if (--numlinhas==0)
+                        {
+                            x++, numlinhas++;
+                            LinhaTxt -= lin - numlinhas;
+                            PosicTxt -= PosicBloco - x;
+                            PosicBloco = x;
+                            return;
+                        }
+                LinhaTxt -= lin - numlinhas;
+                PosicTxt -= PosicBloco;
+                PosicBloco = 0;
+            }
+            if (Bloco->Antes==0)
+                return;
+            Bloco = Bloco->Antes;
+        }
+    // Recua blocos inteiros
+        while (numlinhas > Bloco->Linhas)
+        {
+            numlinhas -= Bloco->Linhas;
+            LinhaTxt -= Bloco->Linhas;
+            PosicTxt -= Bloco->Bytes;
+            if (Bloco->Antes)
+                Bloco = Bloco->Antes;
+            else
+            {
+                PosicBloco = 0;
+                return;
+            }
+        }
+    // Recua em um bloco
+        int x = Bloco->Bytes;
+        int lin = numlinhas;
+        while (x)
+            if (Bloco->Texto[--x] == Instr::ex_barra_n)
+                if (--numlinhas==0)
+                {
+                    x++, numlinhas++;
+                    LinhaTxt -= lin - numlinhas;
+                    PosicTxt -= PosicBloco - x;
+                    PosicBloco = x;
+                    return;
+                }
+        LinhaTxt -= lin - numlinhas;
+        PosicTxt -= Bloco->Bytes;
+        PosicBloco = 0;
+        return;
+    }
+}
+
+//----------------------------------------------------------------------------
+void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         unsigned int tamapagar)
 {
     const unsigned int bloco_ini = Bloco->Texto - (char*)Bloco;
@@ -334,7 +507,7 @@ void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
         if (tamtexto)
         {
             unsigned int copiar = bloco_tam - posic;
-                                // = qunatos bytes cabem no bloco
+                                // = quantos bytes cabem no bloco
             if (copiar > tamtexto)
                 copiar = tamtexto, tamtexto = 0; // copiar todo o texto
             else
@@ -398,12 +571,13 @@ void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
         {
             unsigned int copiar = bloco_tam - obj->Bytes;
             if (copiar > tamtexto)
-                copiar = tamtexto;
+                copiar = tamtexto, tamtexto = 0; // copiar todo o texto
+            else
+                tamtexto -= copiar; // copiar parte do texto
             int lin = AnotaLinhas(obj->Texto + obj->Bytes, texto, copiar);
             obj->Bytes += copiar;
             obj->Linhas += lin;
-            dif_linhas += copiar;
-            tamtexto -= copiar;
+            dif_linhas += lin;
             texto += copiar;
             if (tamtexto==0)
                 break;
@@ -451,10 +625,11 @@ void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
     TextoTxt->Linhas += dif_linhas;
 
 // Se PosicBloco==0, está no início do texto
+// Caso contrário, objeto Bloco não foi apagado porque não estava vazio
     if (PosicBloco==0)
         Bloco=TextoTxt->Inicio, PosicTxt=0, LinhaTxt=0;
 
-// Obtém bloco e posição após o texto adicionado
+// Obtém bloco/posição após o texto adicionado
 // Posição no arquivo = PosicTxt + add_bytes
     obj = Bloco;
     posic = PosicBloco + add_bytes;
@@ -483,16 +658,16 @@ void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
         pos->LinhaTxt += dif_linhas;
 
     // Verifica se deve acertar bloco e posição no bloco
+    // Nota: para pos->PosicTxt == PosicTxt+add_bytes, mais=0
         unsigned int mais = pos->PosicTxt - PosicTxt - add_bytes;
         if (mais > bloco_tam)
             continue;
 
     // Acerta bloco e posição no bloco
-        TTextoBloco * bl = obj;
+        pos->Bloco = obj;
         mais += posic;
-        while (mais > bl->Bytes)
-            mais -= bl->Bytes, bl = bl->Depois;
-        pos->Bloco = bl;
+        while (mais > pos->Bloco->Bytes)
+            mais -= pos->Bloco->Bytes, pos->Bloco = pos->Bloco->Depois;
         pos->PosicBloco = mais;
     }
 
@@ -507,16 +682,16 @@ void TBlocoPos::MudarTxt(const char * texto, unsigned int tamtexto,
     }
     if (obj->Depois)
     {
-        sobrando += bloco_tam - obj->Depois->Bytes;
-        if (obj->Depois->Depois)
-            sobrando += bloco_tam - obj->Depois->Depois->Bytes;
+        obj=obj->Depois, sobrando += bloco_tam - obj->Bytes;
+        if (obj->Depois)
+            obj=obj->Depois, sobrando += bloco_tam - obj->Bytes;
     }
 
 // Verifica se consegue apagar algum objeto
     if (sobrando < (int)bloco_tam)
         return;
 
-// Compacta o texto, apagando bloco se possível
+// Compacta o texto, apagando algum objeto
     while (ini->Bytes == bloco_tam)
         ini = ini->Depois;
     while (true)
@@ -614,18 +789,48 @@ void TTextoGrupo::ProcEventos()
 //----------------------------------------------------------------------------
 bool TTextoTxt::Func(TVariavel * v, const char * nome)
 {
-    /*
+// Primeira linha do texto
+    if (comparaZ(nome, "ini")==0)
+    {
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(TextoItem1))
+            return false;
+        TTextoPos * obj = Instr::VarAtual->end_textopos;
+        obj->MudarTxt(this);
+        obj->Bloco = Inicio;
+        obj->PosicBloco = 0;
+        obj->PosicTxt = 0;
+        obj->LinhaTxt = 0;
+        return true;
+    }
+// Última linha do texto
+    if (comparaZ(nome, "fim")==0)
+    {
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(TextoItem1))
+            return false;
+        TTextoPos * obj = Instr::VarAtual->end_textopos;
+        obj->MudarTxt(this);
+        obj->Bloco = Fim;
+        obj->PosicBloco = (Fim ? Fim->Bytes : 0);
+        obj->PosicTxt = Bytes;
+        obj->LinhaTxt = Linhas;
+        return true;
+    }
 // Adiciona texto no início
     if (comparaZ(nome, "addini")==0)
     {
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
             const char * texto = v1->getTxt();
-            if (Inicio==0)
-                CriarFim();
-            Inicio->AddTxt(0, texto, true);
+            IniBloco();
+            TBlocoPos pos;
+            pos.Bloco = Inicio;
+            pos.PosicBloco = 0;
+            pos.PosicTxt = 0;
+            pos.LinhaTxt = 0;
+            pos.Mudar(texto, strlen(texto)+1, 0);
         }
-        Instr::ApagarVar(v);
         return false;
     }
 // Adiciona texto no fim
@@ -634,20 +839,8 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
             const char * texto = v1->getTxt();
-            if (Fim==0)
-                CriarFim();
-            Fim->AddTxt(0x100, texto, true);
+            AddTexto(texto, strlen(texto)+1);
         }
-        Instr::ApagarVar(v);
-        return false;
-    }
-// Remove todos os textos
-    if (comparaZ(nome, "limpar")==0)
-    {
-        for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
-            obj->Bytes = 0;
-        while (Inicio)
-            Inicio->Apagar();
         return false;
     }
 // Remove uma quantidade de linhas
@@ -658,21 +851,43 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         int linhas = v[1].getInt();
         Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será 0
         if (linhas<=0 || Inicio==0)
-            return false;
+            return Instr::CriarVarTexto("");
     // Obtém o número de bytes
         int total = Inicio->LinhasBytes(0, linhas);
     // Cria variável e aloca memória para o texto
         if (!Instr::CriarVarTexto(0, total-1))
-            return false;
+            return Instr::CriarVarTexto("");
     // Obtém tamanho da memória alocada
-        total = Instr::VarAtual->tamanho;
+        int copiar = Instr::VarAtual->tamanho;
     // Anota o texto
-        Inicio->CopiarTxt(0, Instr::VarAtual->end_char, total);
+        Inicio->CopiarTxt(0, Instr::VarAtual->end_char, copiar);
     // Apaga texto de ListaTxt
-        Inicio->ApagarTxt(0, total);
+        TBlocoPos pos;
+        pos.Bloco = Inicio;
+        pos.PosicBloco = 0;
+        pos.PosicTxt = 0;
+        pos.LinhaTxt = 0;
+        pos.Mudar(0, 0, total);
         return true;
     }
-    */
+// Remove todos os textos
+    if (comparaZ(nome, "limpar")==0)
+    {
+        Limpar();
+        return false;
+    }
+// Quantidade de linhas
+    if (comparaZ(nome, "linhas")==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(Linhas);
+    }
+// Quantidade de bytes
+    if (comparaZ(nome, "bytes")==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(Bytes);
+    }
     return false;
 }
 
@@ -683,8 +898,160 @@ int TTextoTxt::getValor()
 }
 
 //----------------------------------------------------------------------------
+int TTextoPos::Compara(TTextoPos * v)
+{
+    if (TextoTxt != v->TextoTxt)
+        return (TextoTxt < v->TextoTxt ? -1 : 1);
+    if (TextoTxt==0 || PosicTxt == v->PosicTxt)
+        return 0;
+    return (PosicTxt < v->PosicTxt ? -1 : 1);
+}
+
+//----------------------------------------------------------------------------
+void TTextoPos::Igual(TTextoPos * v)
+{
+    MudarTxt(v->TextoTxt);
+    Bloco = v->Bloco;
+    PosicBloco = v->PosicBloco;
+    PosicTxt = v->PosicTxt;
+    LinhaTxt = v->LinhaTxt;
+}
+
+//----------------------------------------------------------------------------
 bool TTextoPos::Func(TVariavel * v, const char * nome)
 {
+// Avança linhas
+    if (comparaZ(nome, "depois")==0)
+    {
+        int total = 1;
+        if (Instr::VarAtual >= v+1)
+            total = v[1].getInt();
+        if (total>0)
+            MoverPos(total);
+        return false;
+    }
+// Recua linhas
+    if (comparaZ(nome, "antes")==0)
+    {
+        int total = 1;
+        if (Instr::VarAtual >= v+1)
+            total = v[1].getInt();
+        if (total>0)
+            MoverPos(-total);
+        return false;
+    }
+// Informa se linha é válida
+    if (comparaZ(nome, "lin")==0)
+    {
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVarInt(0))
+            return false;
+        if (TextoTxt && PosicTxt < TextoTxt->Bytes)
+            Instr::VarAtual->setInt(1);
+        return true;
+    }
+// Número da linha
+    if (comparaZ(nome, "linha")==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(LinhaTxt);
+    }
+// Quantidade de bytes
+    if (comparaZ(nome, "byte")==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(PosicTxt);
+    }
+// Texto da linha atual
+    if (comparaZ(nome, "texto")==0)
+    {
+        int linhas = 1;
+        if (Instr::VarAtual >= v+1)
+            linhas = v[1].getInt();
+        Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será 0
+        if (linhas<=0 || Bloco==0)
+            return Instr::CriarVarTexto("");
+    // Obtém o número de bytes
+        int total = Bloco->LinhasBytes(PosicBloco, linhas);
+    // Cria variável e aloca memória para o texto
+        if (!Instr::CriarVarTexto(0, total-1))
+            return Instr::CriarVarTexto("");
+    // Obtém tamanho da memória alocada
+        int copiar = Instr::VarAtual->tamanho;
+    // Anota o texto
+        Bloco->CopiarTxt(PosicBloco, Instr::VarAtual->end_char, copiar);
+        return true;
+    }
+// Muda o texto da linha atual
+    if (comparaZ(nome, "mudar")==0)
+    {
+        if (TextoTxt==0 || Instr::VarAtual < v+1)
+            return false;
+        TextoTxt->IniBloco();
+    // Obtém variáveis
+        const char * txt = v[1].getTxt();
+        int tamtxt = strlen(txt) + 1;
+        int apagar = Bloco->LinhasBytes(PosicBloco, 1);
+        if (apagar>0)
+            apagar--, tamtxt--;
+    // Altera o texto
+        Mudar(txt, tamtxt, apagar);
+        return false;
+    }
+// Adiciona texto
+    if (comparaZ(nome, "add")==0)
+    {
+        if (TextoTxt==0 || Instr::VarAtual < v+1)
+            return false;
+    // Se só um argumento: adiciona texto puro
+        if (Instr::VarAtual == v+1)
+        {
+            const char * txt = v[1].getTxt();
+            Mudar(txt, strlen(txt)+1, 0);
+            return false;
+        }
+    // Obtém número de linhas
+        int linhas = v[2].getInt();
+        if (linhas<0)
+            return false;
+    // Obtém variável textopos
+        if (v[1].defvar[2] != Instr::cTextoPos)
+            return false;
+        TTextoPos * pos = v[1].end_textopos + v[1].indice;
+        if (pos->TextoTxt==0 || pos->Bloco==0)
+            return false;
+    // Adiciona o texto
+    // Evita alocação temporária de memória com "new" se o texto for pequeno
+        int total = pos->Bloco->LinhasBytes(pos->PosicBloco, linhas);
+        if (total<=0)
+            return false;
+        if (total <= 8192)
+        {
+            char txt[8192];
+            pos->Bloco->CopiarTxt(pos->PosicBloco, txt, total);
+            Mudar(txt, total, 0);
+        }
+        else
+        {
+            char * txt = new char[total];
+            pos->Bloco->CopiarTxt(pos->PosicBloco, txt, total);
+            Mudar(txt, total, 0);
+            delete[] txt;
+        }
+        return false;
+    }
+// Remove a linha atual
+    if (comparaZ(nome, "remove")==0)
+    {
+        int linhas = 1;
+        if (Instr::VarAtual >= v+1)
+            linhas = v[1].getInt();
+        if (linhas<=0 || Bloco==0)
+            return false;
+        int apagar = Bloco->LinhasBytes(PosicBloco, linhas);
+        Mudar(0, 0, apagar);
+        return false;
+    }
     return false;
 }
 

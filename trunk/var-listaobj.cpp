@@ -247,15 +247,12 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
                 {
                     // Retorna 1
                     Instr::ApagarVar(v);
-                    if (!Instr::CriarVar(Instr::InstrVarInt))
-                        return false;
-                    Instr::VarAtual->setInt(1);
-                    return true;
+                    return Instr::CriarVarInt(1);
                 }
         }
         // Retorna 0
         Instr::ApagarVar(v);
-        return Instr::CriarVar(Instr::InstrVarInt);
+        return Instr::CriarVarInt(0);
     }
     return false;
 }

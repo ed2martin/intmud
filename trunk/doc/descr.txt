@@ -782,6 +782,10 @@ textotxt <nomedavariável>
         Primeira linha do texto (variável textopos).
     fim
         Fim do texto, após a última linha do texto (variável textopos).
+    linhas
+        Retorna o número de linhas de texto.
+    bytes
+        Retorna a quantidade de bytes de texto.
     limpar
         Limpa o texto
     addini( <texto ou textotxt> )
@@ -822,15 +826,15 @@ textotxt <nomedavariável>
         Linhas que tiverem mais que <colmax> colunas são divididas entre
         as colunas <colmin> e <colmax>, preferêncialmente no último espaço
         encontrado.
-    linhas
-        Retorna o número de linhas de texto.
-    bytes
-        Retorna a quantidade de bytes de texto.
 
 textopos <nomedavariável>
     É usado para acessar o texto de textotxt. Representa uma linha.
     Como valor numérico, é 1 se linha existe ou 0 se está no fim do texto.
 
+    linha
+        Retorna a linha atual; começa em 0.
+    byte
+        Retorna a quantidade de bytes desde o início do texto; começa no 0.
     lin
         É 1 se linha válida ou 0 se chegou no fim do texto.
     antes
@@ -858,10 +862,6 @@ textopos <nomedavariável>
         Remove a linha atual.
     remove( <número de linhas> )
         Remove a quantidade de linhas especificadas, a partir da linha atual.
-    linha
-        Retorna a linha atual; começa em 0.
-    byte
-        Retorna a quantidade de bytes desde o início do texto; começa no 0.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário

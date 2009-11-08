@@ -290,7 +290,7 @@ bool TVarServ::Func(TVariavel * v, const char * nome)
         if (porta<0 || porta>65535)
             return false;
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
+        if (!Instr::CriarVarInt(0))
             return false;
         Instr::VarAtual->setInt(Abrir(ender, porta));
     //printf("%s %d -> %d\n", ender, porta, Instr::VarAtual->getInt()); fflush(stdout);

@@ -1497,6 +1497,8 @@ int TVariavel::Compara(TVariavel * v)
             var1 = end_listaitem[indice].ListaX;
             var2 = v->end_listaitem[v->indice].ListaX;
             break;
+        case Instr::cTextoPos:
+            return end_textopos[indice].Compara(v->end_textopos + v->indice);
         case Instr::cSocket:
             var1 = end_socket->Socket + indice;
             var2 = v->end_socket->Socket + v->indice;
@@ -1518,6 +1520,9 @@ void TVariavel::Igual(TVariavel * v)
     {
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(v->end_listaitem[v->indice].ListaX);
+        break;
+    case Instr::cTextoPos:
+        end_textopos[indice].Igual(v->end_textopos + v->indice);
         break;
     case Instr::cSocket:
         end_socket[indice].Igual(v->end_socket + v->indice);

@@ -399,7 +399,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
     {
         if (Socket==0)
             return false;
-        int enviou = true;
+        bool enviou = true;
         for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
             if (Socket->Enviar(obj->getTxt())==false)
             {
@@ -407,11 +407,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
                 break;
             }
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        if (enviou)
-            Instr::VarAtual->setInt(1);
-        return true;
+        return Instr::CriarVarInt(enviou);
     }
 // Conecta
     if (comparaZ(nome, "abrir")==0)
@@ -428,11 +424,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         if (s)
             MudarSock(s);
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarInt))
-            return false;
-        if (s)
-            Instr::VarAtual->setInt(1);
-        return true;
+        return Instr::CriarVarInt(s!=0);
     }
 // Endereço IP
     if (comparaZ(nome, "ip")==0 || comparaZ(nome, "iplocal")==0)
