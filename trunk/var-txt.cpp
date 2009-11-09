@@ -146,6 +146,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     {
         Instr::ApagarVar(v);
         if (!Instr::CriarVarInt(0))
+            return false;
         if (arq==0 || feof(arq))
             Instr::VarAtual->setInt(1);
 #ifdef DEBUG
