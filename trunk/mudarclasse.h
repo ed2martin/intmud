@@ -103,7 +103,7 @@ public:
 
 private:
     char * endbloco[30]; ///< Endereços dos blocos de instruções
-    char tambloco[30]; ///< Tamanhos dos blocos de instruções
+    int  tambloco[30];   ///< Tamanhos dos blocos de instruções
     unsigned int numbloco;  ///< Número de blocos
 };
 
