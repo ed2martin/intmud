@@ -33,7 +33,6 @@ Para criar uma classe:
 .
 
 Para apagar uma classe:
--# Se NumDeriv>0 a classe não pode ser apagada devido a herança
 -# Se a classe tiver algum objeto:
    -# Marcar o primeiro objeto como pendente para apagar
    -# Chamar a função fim do primeiro objeto (será apagado aqui)
@@ -88,9 +87,13 @@ public:
         ///< Acerta ListaDeriv e NumDeriv quando Comandos[] de uma classe mudou
         /**< @param comandos_antes Conteúdo anterior de Comandos[] */
 
+    void LimpaInstr();
+        ///< Apaga todas as instruções e indica que a classe não é herdada
+        /**< Chamado automaticamente no destrutor da classe */
+
     TClasse ** ListaDeriv;
         ///< Lista de classes derivadas dessa, ou NULL se NumDeriv=0
-    int NumDeriv;
+    unsigned int NumDeriv;
         ///< Número de elementos de TClasse::ListaDeriv
 
 // Variáveis
