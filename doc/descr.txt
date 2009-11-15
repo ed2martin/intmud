@@ -831,6 +831,7 @@ textopos <nomedavariável>
     É usado para acessar o texto de textotxt. Representa uma linha.
     Como valor numérico, é 1 se linha existe ou 0 se está no fim do texto.
 
+    Possui as seguintes funções:
     linha
         Retorna a linha atual; começa em 0.
     byte
@@ -839,7 +840,7 @@ textopos <nomedavariável>
         É 1 se linha válida ou 0 se chegou no fim do texto.
     antes
         Passa para a linha anterior.
-    antes( <número de objetos> )
+    antes( <número de linhas> )
         Recua o número de linhas especificado.
         Nada faz se o número for menor ou igual a zero.
     depois
@@ -1177,6 +1178,10 @@ prog <nomedavariável>
         Retorna 1 se a classe existe ou 0 se não existe.
     existe(<nome da classe>, <nome da variável>)
         Retorna 1 se a variável ou função existe ou 0 se não existe.
+    arquivo(<nome da classe>)
+        Retorna o sufixo do nome do arquivo que contém a classe.
+        Exemplo, "abc" corresponde ao arquivo "intmud-abc.map".
+        Um texto vazio significa arquivo "intmud.map".
     vartipo(<nome da classe>, <nome da variável>)
         Retorna o tipo de variável ou "" se a variável não existe.
     varnum(<nome da classe>, <nome da variável>)
@@ -1209,9 +1214,9 @@ prog <nomedavariável>
         Apaga classe ou variável.
         Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
     criar(<texto>)
-        Cria uma classe. Se já existia, apaga todas as instruções antes.
+        Cria uma classe. Se já existia, altera ao invés de criar.
         A primeira linha é o nome da classe.
-        A segunda linha de <texto> é o prefixo do arquivo.
+        A segunda linha de <texto> é o sufixo do nome do arquivo.
             Exemplo, "abc" corresponde ao arquivo "intmud-abc.map".
             Um texto vazio corresponde ao arquivo "intmud.map".
         Da terceira linha em diante são as instruções (o contéudo da classe).

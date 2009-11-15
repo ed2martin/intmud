@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "mudarclasse.h"
 #include "classe.h"
 #include "objeto.h"
@@ -21,7 +22,7 @@
 #include "arqmapa.h"
 #include "misc.h"
 
-//#define SIMUL // Mostra o que vai mudar, mas não muda
+//#define DEBUG
 
 TMudarClasse * TMudarClasse::Inicio=0;
 TMudarClasse * TMudarClasse::Fim=0;
@@ -264,126 +265,186 @@ void TMudarClasse::MudarComandos(char * com)
 //----------------------------------------------------------------------------
 bool TMudarClasse::ExecPasso()
 {
+// Executa funções iniclasse se possível
     while (Inicio)
     {
-    // Obtém a classe
+        if (Inicio->Comandos || // Se classe vai ser alterada
+            (Inicio->RBcolour & 2)) // Se classe vai ser apagada
+            break;
+        if ((Inicio->RBcolour & 4)==0) // Se não foi mudada
+        {
+            delete Inicio;
+            continue;
+        }
+            // Foi mudada
         TClasse * cl = TClasse::Procura(Inicio->Nome);
-    // Apagar classe
-        if (Inicio->RBcolour & 2)
-        {
-        // Verifica se pode apagar
-            if (cl==0 || cl->NumDeriv>0)
-                Inicio->RBcolour &= ~2;
-        // Verifica se tem objetos da classe
-            else if (cl->ObjetoIni)
-            {
-                for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
-                    obj->MarcarApagar();
-                return true;
-            }
-        // Apaga classe
-            else
-            {
-                Inicio->RBcolour &= ~2;
-                if (Inicio->Arquivo==0)
-                    Inicio->Arquivo = cl->ArqArquivo;
-#ifdef SIMUL
-                printf("Apagar classe: %s\n", cl->Nome); fflush(stdout);
-#else
-                delete cl;
+        delete Inicio;
+        if (cl==0)
+            continue;
+#ifdef DEBUG
+        printf("iniclasse %s\n", cl->Nome); fflush(stdout);
 #endif
-                cl=0;
-            }
-        }
-    // Verifica se deve criar/alterar classe
-        if (Inicio->Comandos==0)
+        if (Instr::ExecIni(cl, "iniclasse"))
         {
-            delete Inicio;
+            Instr::ExecArg(cl->Nome);
+            Instr::ExecX();
+            return true;
+        }
+    }
+// Apaga classes
+    bool pendente = false;
+    for (TMudarClasse * mudar = Inicio; mudar; )
+    {
+        TMudarClasse * m = mudar;
+        mudar = mudar->Depois;
+    // Verifica se classe deve ser apagada
+        if ((m->RBcolour & 2)==0)
+            continue;
+    // Obtém a classe
+        TClasse * cl = TClasse::Procura(m->Nome);
+        if (cl==0)
+        {
+            m->RBcolour &= ~2;
+            if (m->Comandos==0)
+                delete m;
             continue;
         }
-    // Instrução herda: verifica se instrução ainda contém classes válidas
-        if ((Inicio->Comandos[0] || Inicio->Comandos[1]) &&
-            Inicio->Comandos[2]==Instr::cHerda)
+    // Verifica se existem objetos da classe
+        if (cl->ObjetoIni)
         {
-            const char * p = Inicio->Comandos + 4;
-            for (unsigned char x = Inicio->Comandos[3]; x; x--)
+#ifdef DEBUG
+            printf("apagando objetos %s\n", cl->Nome); fflush(stdout);
+#endif
+            for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+                obj->MarcarApagar();
+            pendente = true;
+            continue;
+        }
+    // Apaga a classe
+        m->RBcolour &= ~2;
+        if (m->Comandos==0) // Nenhuma alteração: apaga TMudarClasse
+            delete m;
+        else if (m->Arquivo==0) // Anota o arquivo
+            m->Arquivo = cl->ArqArquivo;
+#ifdef DEBUG
+        printf("delete %s\n", cl->Nome); fflush(stdout);
+#endif
+        delete cl;
+    }
+// Retorna se tem objetos para apagar
+    if (pendente)
+        return true;
+// Cria classes
+    for (TMudarClasse * mudar = Inicio; mudar; mudar=mudar->Depois)
+    {
+    // Verifica se classe vai ser mudada
+        if (mudar->Comandos==0)
+            continue;
+    // Verifica se a classe já existe
+        if (TClasse::Procura(mudar->Nome) != 0)
+            continue;
+    // Cria a classe vazia
+        TClasse * cl = new TClasse(mudar->Nome, mudar->Arquivo);
+        cl->Comandos = new char[2];
+        memset(cl->Comandos, 0, 2);
+        //cl->AcertaDeriv(mens);
+        //cl->AcertaVarSub();
+#ifdef DEBUG
+        printf("new %s\n", cl->Nome); fflush(stdout);
+#endif
+    // Indica que precisa executar sinal iniclasse
+        if (TClasse::ClInic)
+            if (TClasse::RBcomp(cl, TClasse::ClInic) < 0)
+                mudar->RBcolour |= 4;
+    }
+// Altera instruções das classes
+    for (TMudarClasse * mudar = Inicio; mudar; mudar=mudar->Depois)
+    {
+    // Verifica se classe vai ser mudada
+        if (mudar->Comandos==0)
+            continue;
+    // Retira da instrução herda as classes que não existem (foram apagadas)
+        char * const instr = mudar->Comandos;
+        if ((instr[0] || instr[1]) && instr[2]==Instr::cHerda)
+        {
+            char * o = instr+4, * d = instr+4;
+            for (int x = (unsigned char)instr[3]; x; x--)
             {
-                if (TClasse::Procura(p)==0)
+                TClasse * c = TClasse::Procura(o);
+                if (c)
                 {
-                    p=0;
-                    delete Inicio;
-                    break;
+                    while (*o)
+                        *d++ = *o++;
+                    *d++ = *o++;
+                    continue;
                 }
-                while (*p++);
+#ifdef DEBUG
+                printf("Retirando herda %s\n", o); fflush(stdout);
+#endif
+                instr[3]--;
+                while (*o++);
             }
-            if (p==0)
-                continue;
+            if (o != d)
+            {
+                char * fim = instr;
+                while (fim[0] || fim[1])
+                    fim += Num16(fim);
+                fim += 2;
+                if (instr[3])
+                {
+                    memcpy(d, o, fim-o);
+                    int x = Num16(instr) + d - o;
+                    instr[0] = x;
+                    instr[1] = x >> 8;
+                }
+                else
+                    memcpy(instr, o, fim-o);
+            }
         }
-    // Mostra alterações na classe
-#ifdef SIMUL
-        if (cl)
-            printf("Mudar classe: %s\n", cl->Nome);
-        else if (TClasse::NomeValido(Inicio->Nome))
-            printf("Criar classe: %s\n", Inicio->Nome);
-        else
-        {
-            printf("Nome inválido de classe: %s:\n", Inicio->Nome);
-            delete Inicio;
-            continue;
-        }
-        for (const char * p = Inicio->Comandos; Num16(p); p+=Num16(p))
+    // Altera a classe
+        TClasse * cl = TClasse::Procura(mudar->Nome);
+#ifdef DEBUG
+        printf("Alterando %s\n", cl->Nome);
+        for (const char * p = instr; Num16(p); p+=Num16(p))
         {
             char mens[2048];
-            if (Instr::Decod(mens, p, sizeof(mens)))
-                printf("  %s\n", mens);
-            else
-            {
-                printf("  **** Erro\n");
-                exit(EXIT_FAILURE);
-            }
+            assert(Instr::Decod(mens, p, sizeof(mens)));
+            printf("  %s\n", mens);
         }
         fflush(stdout);
-        delete Inicio;
-        continue;
 #endif
-    // Alterar classe
-        if (cl)
-        {
-            char * antigo_com = cl->Comandos;
-            if (Inicio->Arquivo)
-                cl->Arquivo(Inicio->Arquivo);
-            cl->Comandos = Inicio->Comandos;
-            Inicio->Comandos = 0;
-            delete Inicio;
-            cl->AcertaDeriv();
-            cl->AcertaVarSub();
-            delete[] antigo_com;
-            continue;
-        }
-    // Criar classe
-        if (TClasse::NomeValido(Inicio->Nome))
-        {
-            char mens[2] = { 0, 0 };
-            cl = new TClasse(Inicio->Nome, Inicio->Arquivo);
-            cl->Comandos = Inicio->Comandos;
-            Inicio->Comandos = 0;
-            delete Inicio;
-            cl->AcertaDeriv(mens);
-            cl->AcertaVarSub();
-            if (TClasse::ClInic)
-                if (TClasse::RBcomp(cl, TClasse::ClInic) >= 0)
-                    continue;
-            if (Instr::ExecIni(cl, "iniclasse"))
-            {
-                Instr::ExecArg(cl->Nome);
-                Instr::ExecX();
-                return true;
-            }
-            continue;
-        }
-        delete Inicio;
+        char * antigo_com = cl->Comandos;
+        if (mudar->Arquivo)
+            cl->Arquivo(mudar->Arquivo);
+        cl->Comandos = instr;
+        mudar->Comandos = 0;
+        cl->AcertaDeriv();
+        cl->AcertaVarSub();
+        delete[] antigo_com;
     }
-    // Salvar classes
+// Executa funções iniclasse das classes que foram criadas
+    while (Inicio)
+    {
+        if ((Inicio->RBcolour & 4)==0)
+        {
+            delete Inicio;
+            continue;
+        }
+        TClasse * cl = TClasse::Procura(Inicio->Nome);
+        delete Inicio;
+        if (cl==0)
+            continue;
+#ifdef DEBUG
+        printf("iniclasse %s\n", cl->Nome); fflush(stdout);
+#endif
+        if (Instr::ExecIni(cl, "iniclasse"))
+        {
+            Instr::ExecArg(cl->Nome);
+            Instr::ExecX();
+            return true;
+        }
+    }
+// Salva classes
     if (Salvar)
     {
         TArqMapa::SalvarArq(Salvar >= 2);

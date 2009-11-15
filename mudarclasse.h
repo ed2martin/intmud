@@ -23,6 +23,8 @@ public:
         ///< Marca classe para exclusão
     void DesmarcarApagar() { RBcolour &= ~2; }
         ///< Desmarca classe para exclusão
+    bool InfoApagar() { return (RBcolour&2) && Comandos==0; }
+        ///< Retorna true se classe vai ser apagada
 
     static bool ExecPasso();
         ///< Executa um passo das alterações no programa
@@ -58,7 +60,11 @@ private:
     void RBleft_rotate(void);
     void RBright_rotate(void);
     static int RBcomp(TMudarClasse * x, TMudarClasse * y); ///< Compara objetos
-    unsigned char RBcolour; ///< Bit 0=cor, Bit 1=1 se deve apagar classe
+    unsigned char RBcolour;
+            ///< Cor da RBT e bits indicativos
+            /**< - Bit 0 = cor da RBT
+             *   - Bit 1 = 1 se deve apagar classe
+             *   - Bit 2 = 1 se deve executar função iniclasse */
 };
 
 //----------------------------------------------------------------------------

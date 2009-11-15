@@ -84,6 +84,7 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
     const TProgFunc ProgFunc[] = {
         { "apagar",       &TVarProg::FuncApagar },
         { "apagarlin",    &TVarProg::FuncApagarLin },
+        { "arquivo",      &TVarProg::FuncArquivo },
         { "const",        &TVarProg::FuncConst },
         { "criar",        &TVarProg::FuncCriar },
         { "criarlin",     &TVarProg::FuncCriarLin },
@@ -143,6 +144,23 @@ bool TVarProg::FuncExiste(TVariavel * v)
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(existe);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncArquivo(TVariavel * v)
+{
+    const char * mens = "";
+    while (true)
+    {
+        if (Instr::VarAtual < v+1)
+            break;
+        TClasse * cl = TClasse::Procura(v[1].getTxt());
+        if (cl)
+            mens = cl->ArqArquivo->Arquivo;
+        break;
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
 }
 
 //------------------------------------------------------------------------------
@@ -262,7 +280,6 @@ bool TVarProg::FuncVarTipo(TVariavel * v)
                      sizeof(mens));
         break;
     }
-// Acerta variáveis
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
 }

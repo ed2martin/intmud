@@ -17,6 +17,7 @@
 #include <assert.h>
 #include "instr.h"
 #include "classe.h"
+#include "mudarclasse.h"
 #include "misc.h"
 
 /** @defgroup codif Instr::Codif - Algoritmo para codificar instruções
@@ -500,7 +501,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino[3] = 0;
         destino+=4;
     // Obtém as classes
-        TClasse * classes[20];
+        const char * classes[20]; // nomes das classes
         unsigned int total = 0;
         while (*origem)
         {
@@ -534,7 +535,16 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
             *p++=0;
         // Verifica se existe classe com o nome encontrado
-            TClasse * obj = TClasse::Procura(nome);
+            const char * obj = 0;
+            TMudarClasse * cl1 = TMudarClasse::Procurar(nome);
+            TClasse * cl2 = TClasse::Procura(nome);
+            if (cl1==0)
+            {
+                if (cl2)
+                    obj = cl2->Nome;
+            }
+            else if (!cl1->InfoApagar())
+                obj = (cl2 ? cl2->Nome : cl1->Nome);
             if (obj==0)
             {
                 if (*nome)
@@ -561,12 +571,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 }
             total++;
         // Copia o nome da classe
-            if (destino+strlen(obj->Nome)+1 > dest_fim)
+            if (destino+strlen(obj)+1 > dest_fim)
             {
                 copiastr(dest_ini, "Instrução muito grande", tamanho);
                 return false;
             }
-            destino = copiastr(destino, obj->Nome);
+            destino = copiastr(destino, obj);
             destino++;
             dest_ini[3]++; // Aumenta o número de classes
         // Pula a vírgula

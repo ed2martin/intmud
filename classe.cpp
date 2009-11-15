@@ -120,6 +120,7 @@ TClasse::~TClasse()
     printf("~TClasse( %s , %s )\n", Nome,
            ArqArquivo ? ArqArquivo->Arquivo : "???"); fflush(stdout);
 #endif
+    LimpaInstr();
     if (ClInic==this)
         ClInic=RBnext(this);
     while (ObjetoIni)
@@ -429,7 +430,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         {
             if (x2 >= total2) // Retira herança
             {
-                int &total = buf1[x1]->NumDeriv;
+                unsigned int &total = buf1[x1]->NumDeriv;
                 TClasse ** lista = buf1[x1]->ListaDeriv;
                 TClasse ** lfim = lista + total;
                 for (;; lista++)
@@ -478,6 +479,88 @@ void TClasse::AcertaDeriv(char * comandos_antes)
 }
 
 //----------------------------------------------------------------------------
+void TClasse::LimpaInstr()
+{
+// Se não é herdada, nada faz
+    if (NumDeriv==0)
+        return;
+// Apaga as instruções da classe
+    char * antigo_com = Comandos;
+    Comandos = new char[2];
+    memset(Comandos, 0, 2);
+    AcertaDeriv(antigo_com);
+    AcertaVarSub();
+    delete[] antigo_com;
+// Acerta herança das outras classes - retira essa classe
+    for (unsigned int numcl=0; numcl < NumDeriv; numcl++)
+    {
+    // Obtém a classe derivada
+        TClasse * cl = ListaDeriv[numcl];
+        //printf("Classe %s\n", cl->Nome); fflush(stdout);
+    // A primeira instrução deve ser "Herda" obrigatoriamente
+        assert(cl->Comandos[0] || cl->Comandos[1]);
+        assert(cl->Comandos[2] == Instr::cHerda);
+    // Obtém o nome dessa classe na instrução herda
+        char * p = cl->Comandos+4;
+        int x = (unsigned char)cl->Comandos[3];
+        for (; x; x--)
+        {
+            TClasse * c = Procura(p);
+            assert(c!=0);
+            if (c == this)
+                break;
+            while (*p++);
+        }
+    // Se não achou: nada faz
+        if (x==0)
+            continue;
+    // Obtém faixa de endereço das instruções
+        char * ini = cl->Comandos;
+        char * fim = cl->Comandos;
+        while (fim[0] || fim[1])
+            fim += Num16(fim);
+        fim += 2;
+    // Retira nome da classe na instrução herda
+        int tam_herda;
+        cl->Comandos[3]--;
+        if (cl->Comandos[3])
+        {
+            tam_herda = strlen(p)+1;
+            x = Num16(cl->Comandos) - tam_herda;
+            cl->Comandos[0] = x;
+            cl->Comandos[1] = x >> 8;
+        }
+        else
+            p=cl->Comandos, tam_herda = Num16(p);
+        memcpy(p, p+tam_herda, fim-p-tam_herda);
+        //printf(">>>> %s\n", cl->Nome);
+        //for (const char * p = cl->Comandos; Num16(p); p+=Num16(p))
+        //{
+        //    char mens[2048];
+        //    assert(Instr::Decod(mens, p, sizeof(mens)));
+        //    printf("  %s\n", mens);
+        //}
+        //fflush(stdout);
+    // Acerta endereços das variáveis na classe herdada
+        for (unsigned int y=0; y<cl->NumVar; y++)
+            cl->InstrVar[y] -= tam_herda;
+    // Acerta endereços das variáveis nas outras classes
+        for (unsigned int numd=0; numd < cl->NumDeriv; numd++)
+        {
+            TClasse * deriv = cl->ListaDeriv[numd];
+            for (unsigned int y=0; y<deriv->NumVar; y++)
+                if (deriv->InstrVar[y] >= ini &&
+                        deriv->InstrVar[y] < fim)
+                    deriv->InstrVar[y] -= tam_herda;
+        }
+    }
+// Indica que a classe não está sendo herdada
+    delete[] ListaDeriv;
+    ListaDeriv = 0;
+    NumDeriv = 0;
+}
+
+//----------------------------------------------------------------------------
 void TClasse::AcertaVarSub()
 {
 // Indica que o arquivo foi alterado
@@ -501,12 +584,12 @@ void TClasse::AcertaVarSub()
 // Lista de variáveis mudou: acerta classes derivadas
     if (mudou)
     {
-        for (int x=0; x<NumDeriv; x++)
+        for (unsigned int x=0; x<NumDeriv; x++)
             ListaDeriv[x]->AcertaVar();
         return;
     }
 // Lista não mudou: apenas acerta os endereços das variáveis
-    for (int x=0; x<NumDeriv; x++)
+    for (unsigned int x=0; x<NumDeriv; x++)
     {
         TClasse * cl = ListaDeriv[x];
         for (unsigned int y=0; y<cl->NumVar; y++)

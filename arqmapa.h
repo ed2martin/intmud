@@ -5,8 +5,8 @@
 
 //------------------------------------------------------------------------------
 class TClasse;
-/** Lista de arquivos que compõem o mapa.
-    Se não houver arquivo, significa que o mapa está em um único arquivo */
+/** Lista de arquivos que compõem o programa interpretado.
+    Se não houver arquivo, significa que está em um único arquivo */
 class TArqMapa /// Arquivos que compôem o programa interpretado
 {
 public:
