@@ -76,9 +76,15 @@ public:
 // Herança
     int Heranca(TClasse ** buffer, int tambuf);
         ///< Obtém classes herdadas de uma determinada classe
-        /**< @param buffer Aonde colocar as classes obtidas
-             @param tambuf Número de elementos de buffer
-             @return Número de classes herdadas */
+        /**< @param buffer Aonde colocar as classes obtidas,
+         *            pelo menos HERDA_TAM entradas
+         *   @param tambuf Número de elementos de buffer
+         *   @return Número de classes herdadas */
+
+    bool RetiraDeriv(TClasse * cl);
+        ///< Retira classe de ListaDeriv/NumDeriv
+        /**< @param cl Classe que será removida
+         *   @return true se conseguiu remover (achou a classe) */
 
     static void AcertaDeriv();
         ///< Acerta ListaDeriv e NumDeriv de todas as classes
@@ -100,25 +106,24 @@ public:
     int AcertaVar();
         ///< Acerta as variáveis da classe e dos objetos da classe
         /**< @retval 0 Variáveis não mudaram
-             @retval 1 Lista de variáveis mudou
-             @retval 2 Lista de variáveis mudou e foi necessário
-                       criar/apagar variáveis na classe e/ou no objeto
-             @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
-             @note Acerta variáveis e objetos da classe, se necessário.
-             @note Não acerta as classes derivadas. */
+         *   @retval 1 Lista de variáveis mudou
+         *   @retval 2 Lista de variáveis mudou e foi necessário
+         *             criar/apagar variáveis na classe e/ou no objeto
+         *   @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
+         *   @note Acerta variáveis e objetos da classe, se necessário.
+         *   @note Não acerta as classes derivadas. */
 
     void AcertaVarSub();
         ///< Acerta variáveis da classe e objetos e classes derivadas
         /**< Mesmo que chamar AcertaVar() para a classe e para cada
-             classe derivada. Entretanto, há otimizações quando a lista
-             de variáveis não mudou.
-             @note Indica que o arquivo da classe foi alterado */
+         *   classe derivada. Entretanto, há otimizações quando a lista
+         *   de variáveis não mudou.
+         *   @note Indica que o arquivo da classe foi alterado */
 
     int IndiceNome(const char * nome);
         ///< Obtém o índice de uma variável a partir do nome
-        /**<
-         *  @param nome Nome da variável
-         *  @return Índice em InstrVar e IndiceVar ou -1 se não encontrou */
+        /**< @param nome Nome da variável
+         *   @return Índice em InstrVar e IndiceVar ou -1 se não encontrou */
     int IndiceNomeIni(const char * nome);
         ///< IndiceNome() que procura a primeira variável que começa com o nome
     int IndiceNomeFim(const char * nome);

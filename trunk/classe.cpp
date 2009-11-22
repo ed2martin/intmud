@@ -123,8 +123,10 @@ TClasse::~TClasse()
     LimpaInstr();
     if (ClInic==this)
         ClInic=RBnext(this);
+// Apaga objetos
     while (ObjetoIni)
         ObjetoIni->Apagar();
+// Apaga variáveis
     if (Vars)
     {
     // Chama destrutores das variáveis
@@ -141,11 +143,19 @@ TClasse::~TClasse()
         delete[] Vars;
         Vars=0;
     }
+// Retira classe de ListaDeriv das outras classes
+    TClasse * buf[HERDA_TAM];
+    int total = Heranca(buf, HERDA_TAM);
+    for (int x=0; x<total; x++)
+        assert(buf[x]->RetiraDeriv(this));
+// Remove da RBT
     RBremove();
+// Desaloca memória
     if (Comandos)     delete[] Comandos;
     if (ListaDeriv)   delete[] ListaDeriv;
     if (InstrVar)     delete[] InstrVar;
     if (IndiceVar)    delete[] IndiceVar;
+// Retira da lista ligada de arquivo
     if (ArqArquivo)
     {
         (ArqAntes ? ArqAntes->ArqDepois : ArqArquivo->ClInicio) = ArqDepois;
@@ -349,6 +359,32 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
 }
 
 //----------------------------------------------------------------------------
+bool TClasse::RetiraDeriv(TClasse * cl)
+{
+    TClasse ** lista = ListaDeriv;
+    TClasse ** lfim = lista + NumDeriv;
+    for (;; lista++)
+    {
+        if (lista >= lfim)
+            return false;
+        if (*lista == cl)
+            break;
+    }
+    lista[0] = lfim[-1];
+    if (--NumDeriv==0)
+    {
+        delete[] ListaDeriv;
+        ListaDeriv = 0;
+        return true;
+    }
+    lista = new TClasse*[NumDeriv];
+    memcpy(lista, ListaDeriv, NumDeriv*sizeof(TClasse*));
+    delete[] ListaDeriv;
+    ListaDeriv = lista;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Acerta ListaDeriv e NumDeriv de todas as classes
 void TClasse::AcertaDeriv()
 {
@@ -430,26 +466,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         {
             if (x2 >= total2) // Retira herança
             {
-                unsigned int &total = buf1[x1]->NumDeriv;
-                TClasse ** lista = buf1[x1]->ListaDeriv;
-                TClasse ** lfim = lista + total;
-                for (;; lista++)
-                {
-                    assert(lista < lfim);
-                    if (*lista == this)
-                        break;
-                }
-                lista[0] = lfim[-1];
-                if (--total==0)
-                {
-                    delete[] buf1[x1]->ListaDeriv;
-                    buf1[x1]->ListaDeriv = 0;
-                    break;
-                }
-                lista = new TClasse*[total];
-                memcpy(lista, buf1[x1]->ListaDeriv, total*sizeof(TClasse*));
-                delete[] buf1[x1]->ListaDeriv;
-                buf1[x1]->ListaDeriv = lista;
+                assert(buf1[x1]->RetiraDeriv(this));
                 break;
             }
             if (buf1[x1] == buf2[x2]) // Se herança não mudou
