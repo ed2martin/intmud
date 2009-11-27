@@ -1019,6 +1019,43 @@ inttempo <nomedavariável>
     func n_exec
       # Essa função é executada quando a variável n chegar a zero
 
+telatxt <nome da variável>
+    Semelhante a socket, mas trabalha com uma tela de texto, chamada console.
+    Essa tela é semelhante ao "prompt de comando", no Windows, ou o próprio
+    terminal, em Unix.
+
+    Funções e variáveis:
+    proto
+        0 se a tela de texto não estiver aberta
+        5 se estiver aberta
+        O valor de proto depende da opção "telatxt" no arquivo intmud.cfg.
+    posx
+        Posição do cursor: quantos caracteres enviou após o último \n.
+        Caracteres especiais, como definição da cor, não contam
+    msg( <mensagem> )
+        Envia mensagem para o socket.
+    tecla( <nome da tecla> )
+        Processa uma tecla, como se tivesse sido digitada pelo usuário.
+        Nota: não gera eventos.
+    linha
+        Conteúdo da linha sendo digitada pelo usuário.
+    bipe
+        Gera um bipe.
+    limpa
+        Limpa a tela.
+
+    Eventos:
+    <nomedavariável>_msg
+        Recebeu mensagem
+        arg0 = mensagem recebida
+        arg1 = índice da variável vetor, se não for vetor arg1=0
+    <nomedavariável>_tecla
+        Chamado sempre que o usuário pressionar uma tecla.
+        arg0 = nome da tecla
+        arg1 = índice da variável vetor, se não for vetor arg1=0
+        Se retornar verdadeiro, significa que a função já processou a tecla.
+        Portanto, não será processada pelo IntMUD.
+
 socket <nomedavariável>
     Quando o socket está conectado à janela do programa:
     A janela possui 25 linhas de 80 colunas, sendo que a última linha
@@ -1035,7 +1072,6 @@ socket <nomedavariável>
         2 = Telnet
         3 = IRC
         4 = Papovox (sem cores)
-        5 = janela do programa
         Nota: pode-se mudar entre 2 e 4 para socket conectado
     cores
         0 = nenhuma cor
@@ -1059,8 +1095,6 @@ socket <nomedavariável>
         Tenta conectar-se a um endereço.
         Retorna 1 se conexão em progresso ou 0 se ocorreu erro
         (0 geralmente significa endereço inválido)
-    abrir("tela")
-        Conecta à janela do programa. Cada linha recebida gera um evento _msg.
     fechar
         Encerra a conexão; não gera o evento fechou.
     colmin

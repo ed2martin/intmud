@@ -105,7 +105,7 @@ public:
             /**< Obtém quantos bytes correspondem a avançar um determinado
              *   número de linhas
              *   @param posic Posição em TTextoBloco:Texto, começa em 0
-             *   @param linhas Número de linhas
+             *   @param numlinhas Número de linhas
              *   @return Número de bytes, com um Instr::ex_barra_n no final */
     int CopiarTxt(unsigned int posic, char * buffer, int tambuf);
             ///< Copia texto para uma região na memória

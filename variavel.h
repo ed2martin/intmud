@@ -16,6 +16,7 @@ class TTextoPos;
 class TVarLog;
 class TVarTxt;
 class TVarNomeObj;
+class TVarTelaTxt;
 class TVarSocket;
 class TVarServ;
 class TVarProg;
@@ -136,6 +137,7 @@ public:
         TListaItem   * end_listaitem;///< Instr::cListaItem
         TTextoTxt    * end_textotxt; ///< Instr::cTextoTxt
         TTextoPos    * end_textopos; ///< Instr::cTextoPos
+        TVarTelaTxt  * end_telatxt;  ///< Instr::cTelaTxt
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
         TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj

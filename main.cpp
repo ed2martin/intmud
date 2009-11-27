@@ -49,6 +49,7 @@
 #include "var-listaobj.h"
 #include "var-texto.h"
 #include "var-log.h"
+#include "var-telatxt.h"
 #include "random.h"
 #include "misc.h"
 
@@ -57,6 +58,7 @@
 
 void Inicializa(const char * arg);
 void Termina();
+void TerminaSign(int sig);
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
@@ -129,6 +131,9 @@ int main(int argc, char *argv[])
         if (espera>0x800) espera=0;
         if (espera>TESPERA_MAX) espera=TESPERA_MAX;
 
+    // Eventos do console
+        TVarTelaTxt::Processa();
+
     // Eventos de IntTempo
         if (espera>0)
             TempoIni += espera;
@@ -160,6 +165,15 @@ int main(int argc, char *argv[])
         int esp = TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
         if (espera>esp)
             espera=esp;
+
+    // Processamento pendente no console
+        TVarTelaTxt::ProcFim();
+#ifdef __WIN32__
+        espera = 2;
+#else
+        if (TVarTelaTxt::Console)
+            FD_SET(TVarTelaTxt::Console->Stdin(), &set_entrada);
+#endif
 
     // Acerta tempo de espera conforme TVarIntTempo
         esp = TVarIntTempo::TempoEspera();
@@ -367,7 +381,9 @@ void Inicializa(const char * arg)
         //printf("%d [%s] [%s]\n", linha, mens, valor);
         if (comparaZ(mens, "exec")==0)
             Instr::VarExecIni = atoi(valor);
-
+        if (comparaZ(mens, "telatxt")==0)
+            if (atoi(valor) && TVarTelaTxt::Console==0)
+                TVarTelaTxt::Console = new TConsole;
     }
 
 // Cria classes a partir dos arquivos .map
@@ -717,6 +733,17 @@ void Inicializa(const char * arg)
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
         cl->AcertaVar();
 
+// Inicializa console
+    if (!TVarTelaTxt::Inic())
+    {
+        fprintf(log, "Problema iniciando console\n");
+        exit(EXIT_FAILURE);
+    }
+#ifndef __WIN32__
+    signal(SIGINT, TerminaSign);
+    signal(SIGQUIT, TerminaSign);
+#endif
+
 #ifdef __WIN32__
 // Inicializa WinSock
     WSADATA info;
@@ -747,11 +774,32 @@ void Inicializa(const char * arg)
 }
 
 //------------------------------------------------------------------------------
+#ifndef __WIN32__
+static int termsign = 0;
+/// Processa sinal que encerra o programa
+void TerminaSign(int sig)
+{
+// Início
+    if (termsign)
+        raise(sig);
+    termsign = 1;
+// Encerra
+    if (TVarTelaTxt::Console)
+        TVarTelaTxt::Console->Fim();
+// Gera sinal padrão
+    signal(sig, SIG_DFL);
+    raise(sig);
+}
+#endif
+
+//------------------------------------------------------------------------------
 /// Encerra o programa
 void Termina()
 {
 #ifdef __WIN32__
     WSACleanup();
 #endif
+    if (TVarTelaTxt::Console)
+        TVarTelaTxt::Console->Fim();
     exit(EXIT_SUCCESS);
 }
