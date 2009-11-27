@@ -1,0 +1,15 @@
+[teste]
+# Nota: inserir uma linha "telatxt=1" no arquivo .cfg
+telatxt tela
+func iniclasse
+  criar(arg0)
+func ini
+  se tela.proto = 0
+    terminar
+func tela_tecla
+  tela.msg(" " + arg0)
+func tela_msg
+  se tela.posx
+    tela.msg("\n")
+  fimse
+  tela.msg("Digitou: " + arg0 + "\n")

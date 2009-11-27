@@ -268,6 +268,7 @@ static const TListaInstr ListaInstr[] = {
     { "senao",     cSenao1 }, // Pode ser cSenao1 ou cSenao2
     { "serv",      cServ },
     { "socket",    cSocket },
+    { "telatxt",   cTelaTxt },
     { "terminar",  cTerminar },
     { "textopos",  cTextoPos },
     { "textotxt",  cTextoTxt },

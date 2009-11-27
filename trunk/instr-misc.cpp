@@ -539,6 +539,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cArqSav:           return "arqsav";
     case cArqTxt:           return "arqtxt";
     case cIntTempo:         return "inttempo";
+    case cTelaTxt:          return "telatxt";
     case cSocket:           return "socket";
     case cServ:             return "serv";
     case cProg:             return "prog";
@@ -611,6 +612,7 @@ const char * Instr::NomeComando(int valor)
     case cArqSav:           return "cArqSav";
     case cArqTxt:           return "cArqTxt";
     case cIntTempo:         return "cIntTempo";
+    case cTelaTxt:          return "cTelaTxt";
     case cSocket:           return "cSocket";
     case cServ:             return "cServ";
     case cProg:             return "cProg";

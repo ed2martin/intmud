@@ -47,8 +47,8 @@ void tabASCinic(void)
     int caract;
 // Acerta tabNOMES
     memset(tabNOMES,0,256);
-    tabNOMES['_'] = '_';
-    tabNOMES[' '] = '_';
+    tabNOMES[(unsigned char)'_'] = '_';
+    tabNOMES[(unsigned char)' '] = '_';
     for (caract='a'; caract<='z'; caract++) // Letras de A a Z
         tabNOMES[caract-0x20] = tabNOMES[caract] = caract;
     for (caract='0' ; caract<='9'; caract++) // Números de 0 a 9
@@ -63,7 +63,7 @@ void tabASCinic(void)
         tabCOMPLETO[caract] = (tabNOMES[caract] ? tabNOMES[caract] : caract);
 // Acerta tabMAI e tabMIN
     memcpy(tabMAI, tabCOMPLETO, sizeof(tabMAI));
-    tabMAI[' '] = ' ';
+    tabMAI[(unsigned char)' '] = ' ';
     memcpy(tabMIN, tabMAI, sizeof(tabMIN));
     for (caract='A'; caract<='Z'; caract++) // Letras de A a Z
     {

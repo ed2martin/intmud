@@ -278,6 +278,7 @@ enum Comando
     cArqSav,            ///< Extra: Salvar
     cArqTxt,            ///< Extra: ArqTxt
     cIntTempo,          ///< Extra: IntTempo
+    cTelaTxt,           ///< Extra: TelaTxt
     cSocket,            ///< Extra: Socket
     cServ,              ///< Extra: Serv
     cProg,              ///< Extra: Prog
