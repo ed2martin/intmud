@@ -33,6 +33,10 @@ public:
         /**< @return true se conseguiu inicializar */
     void Fim();
         ///< Encerra utilização do console
+    void MudaTitulo(const char * texto);
+        ///< Muda o título da janela
+    void Beep();
+        ///< Gera um bipe
     const char * LerTecla();
         ///< Lê uma tecla
         /**< @return String contendo o nome da tecla
@@ -101,6 +105,8 @@ public:
         ///< Processa uma tecla, recebida com LerTecla()
     void ProcFim();
         ///< Deve ser chamado quando acabou de usar Escrever() e ProcTecla()
+    void ProcLimpa();
+        ///< Limpa a tela mantendo a linha de edição
     unsigned int CorTela;
         ///< Cor dos textos, usada em Escreve()
         /**< - Bits 3-0 = fundo
@@ -128,6 +134,7 @@ private:
 
 #ifdef __WIN32__
     char StrConv[0x100]; ///< Para converter códigos ASCII 128 a 255
+    char StrLer[0x100];  ///< Para converter teclas lidas
     HANDLE con_in;  ///< Entrada padrão
     HANDLE con_out; ///< Saída padrão
     WORD CorAtributos; ///< Cor selecionada em CorTxt()

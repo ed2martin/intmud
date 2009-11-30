@@ -7,7 +7,14 @@ func ini
   se tela.proto = 0
     terminar
 func tela_tecla
-  tela.msg(" " + arg0)
+  se arg0 = "TAB"
+    tela.bipe
+    ret 1
+  senao arg0 = "INS"
+    tela.limpa
+    ret 1
+  senao
+    tela.msg(" " + arg0)
 func tela_msg
   se tela.posx
     tela.msg("\n")
