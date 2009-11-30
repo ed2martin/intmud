@@ -119,17 +119,20 @@ bool TConsole::Inic()
     for (int x=0; x<0x80; x++)
         StrConv[x] = x;
     memcpy(StrConv+0xA0, StrA0, 0x60);
+    memset(StrLer, ' ', sizeof(StrLer));
+    for (int x=0xFF; x>=0; x--)
+        StrLer[ (unsigned char)StrConv[x] ] = x;
 
 // Obtém HANDLE de entrada e saída
     con_in  = GetStdHandle(STD_INPUT_HANDLE);
     con_out = GetStdHandle(STD_OUTPUT_HANDLE);
 
 // Conjunto de caracteres
-    SetConsoleCP(28591); // Sets the input code page
+    SetConsoleCP(850); // Sets the input code page
     SetConsoleOutputCP(850); // Sets the output code page
         // Na prática, SetConsoleOutputCP(28591) não tem efeito.
         // Por isso, melhor deixar em 850 e acertar os códigos dos
-        // caracteres através de uma tabela (StrA0 e StrConv)
+        // caracteres através de uma tabela (StrA0, StrConv e StrLer)
 
 // Configuração do console
     if (!SetConsoleMode(con_in, ENABLE_WINDOW_INPUT))
@@ -211,6 +214,28 @@ void TConsole::Fim()
 }
 
 //---------------------------------------------------------------------------
+void TConsole::MudaTitulo(const char * texto)
+{
+#ifdef __WIN32__
+    char mens[100];
+    copiastr(mens, texto, sizeof(mens));
+    for (char * p = mens; *p; p++)
+        *p = StrConv[*(unsigned char*)p];
+    SetConsoleTitle(mens);
+#endif
+}
+
+//---------------------------------------------------------------------------
+void TConsole::Beep()
+{
+#ifdef __WIN32__
+    MessageBeep(0xFFFFFFFF);
+#else
+    putchar(7);
+#endif
+}
+
+//---------------------------------------------------------------------------
 const char * TConsole::LerTecla()
 {
 #ifdef __WIN32__
@@ -232,7 +257,8 @@ const char * TConsole::LerTecla()
             LerCont++;
             continue;
         }
-        LerTexto[0] = LerEventos[LerCont].Event.KeyEvent.uChar.AsciiChar;
+        unsigned char ch = LerEventos[LerCont].Event.KeyEvent.uChar.AsciiChar;
+        LerTexto[0] = StrLer[ch];
         LerTexto[1] = 0;
         if ((unsigned char)LerTexto[0] >= ' ')
         {
@@ -898,6 +924,22 @@ void TConsole::ProcFim()
     Flush();
 }
 
+//---------------------------------------------------------------------------
+void TConsole::ProcLimpa()
+{
+    CorTxt(0x70);
+    LimpaTela();
+    CursorPosic(1,0);
+    CorTxt(CONSOLE_COR_LINHA);
+    LimpaFim();  // Preenche do cursor até o fim da linha
+    Editor = true;
+    ColEscreve = 0;
+    int total = tam_linha - col_linha;
+    if (total > 0)
+        EnvTxt(linha + col_linha, total<(int)ColTotal-1 ? total : ColTotal-1);
+    CursorCol(ColEditor - ColAtual);
+}
+
 //------------------------------------------------------------------------------
 void TVarTelaTxt::Criar()
 {
@@ -949,9 +991,21 @@ bool TVarTelaTxt::Inic()
         return true;
     if (!Console->Inic())
         return false;
+// Acerta linha de edição
     Console->EnvTxt("\n", 1);    // Adiciona uma linha
     Console->CorTxt(CONSOLE_COR_LINHA); // Define frente branca e fundo azul
     Console->LimpaFim();         // Preenche do cursor até o fim da linha
+// Acerta o título da janela
+    int total = arqext - arqinicio;
+    if (total>0)
+    {
+        char mens[100];
+        if (total > (int)sizeof(mens)-1)
+            total = (int)sizeof(mens)-1;
+        memcpy(mens, arqinicio, total);
+        mens[total] = 0;
+        Console->MudaTitulo(mens);
+    }
     return true;
 }
 
@@ -1048,7 +1102,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
             while (true)
             {
                 const char * p = texto;
-                while (*p >= ' ')
+                while (*(unsigned char*)p >= ' ')
                     p++;
                 if (p != texto)
                 {
@@ -1117,5 +1171,20 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(Console ? 5 : 0);
     }
+// Gerar um bipe
+    if (comparaZ(nome, "bipe")==0)
+    {
+        if (Console)
+            Console->Beep();
+        return false;
+    }
+// Limpa a tela
+    if (comparaZ(nome, "limpa")==0)
+    {
+        if (Console)
+            Console->ProcLimpa();
+        return false;
+    }
+
     return false;
 }
