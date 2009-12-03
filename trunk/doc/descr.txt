@@ -1056,6 +1056,20 @@ telatxt <nome da variável>
         Se retornar verdadeiro, significa que a função já processou a tecla.
         Portanto, não será processada pelo IntMUD.
 
+    Nomes das teclas especiais:
+    Teclas de função: F1 a F12
+    Setas: UP DOWN LEFT RIGHT (nessa ordem: cima, baixo, esquerda, direita)
+    Outras: INS DEL HOME END PGUP PGDN TAB ENTER ESC BACK
+    Com SHIFT: S_F1 a S_F12 S_TAB S_ENTER
+    Com CONTROL: C_INS C_DEL C_HOME C_END C_PGUP C_PGDN
+    Setas com CONTROL: C_UP C_DOWN C_LEFT C_RIGHT
+    Letras A-Z com CONTROL: C_A a C_Z
+    Notas - em um terminal Unix ou Linux:
+    1. Control+C encerra o programa (não gera evento _tecla)
+    2. Control+Z coloca o programa em segundo plano (não gera evento _tecla)
+    3. Control+I é a tacla TAB
+    4. Control+M é a tecla ENTER
+
 socket <nomedavariável>
     Quando o socket está conectado à janela do programa:
     A janela possui 25 linhas de 80 colunas, sendo que a última linha
