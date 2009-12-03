@@ -51,7 +51,7 @@ void tabASCinic(void)
     tabNOMES[(unsigned char)' '] = '_';
     for (caract='a'; caract<='z'; caract++) // Letras de A a Z
         tabNOMES[caract-0x20] = tabNOMES[caract] = caract;
-    for (caract='0' ; caract<='9'; caract++) // Números de 0 a 9
+    for (caract='0'; caract<='9'; caract++) // Números de 0 a 9
         tabNOMES[caract] = caract;
     for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
     {

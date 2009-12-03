@@ -103,6 +103,10 @@ public:
         ///< Envia um texto para o console
     void ProcTecla(const char * texto);
         ///< Processa uma tecla, recebida com LerTecla()
+    void ProcTeclaCursor(int coluna);
+        ///< Move o cursor para uma posição na linha de edição
+        /**< Usado em ProcTecla */
+
     void ProcFim();
         ///< Deve ser chamado quando acabou de usar Escrever() e ProcTecla()
     void ProcLimpa();
