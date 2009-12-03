@@ -54,7 +54,7 @@
 #include "misc.h"
 
 //#define CORE    // Para gerar arquivos core
-#define DEBUG   // Para não colocar o programa em segundo plano
+//#define DEBUG   // Para não colocar o programa em segundo plano
 
 void Inicializa(const char * arg);
 void Termina();

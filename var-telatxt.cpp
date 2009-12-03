@@ -55,7 +55,7 @@ bool TConsole::Inic()
     tam_linha = 0;
     *linha = 0;
 
-    Editor = true;
+    EditorPosic = 0;
     ColEscreve = 0;
     ColEditor = 0;
     CorTela = 0x70;
@@ -207,8 +207,13 @@ void TConsole::Fim()
     FreeConsole();
 #else
     printf("\x1B[0m\n");
-    if (!Editor)
+    if (EditorPosic)
+    {
+        if (EditorPosic != 1)
+            for (int x=0; x<(int)LinhaPosic; x++)
+                putchar('\n');
         putchar('\n');
+    }
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_antes);
 #endif
 }
@@ -821,10 +826,13 @@ void TConsole::LimpaTela()
 //---------------------------------------------------------------------------
 void TConsole::Escrever(const char * texto, int tamanho)
 {
-    if (Editor)
+    if (EditorPosic != 1)
     {
-        Editor = false;
-        CursorLin(-1);      // Cursor sobe uma linha
+        if (EditorPosic==0)
+            CursorLin(-1);      // Cursor sobe uma linha
+        else
+            CursorLin(LinhaPosic-1);
+        EditorPosic = 1;
         CursorIni();        // Cursor no início da linha
         if (ColEscreve && ColEscreve < ColTotal)
             CursorCol(ColEscreve); // Move o cursor para a direita
@@ -841,6 +849,8 @@ void TConsole::Escrever(const char * texto, int tamanho)
             CursorLin(-1);      // Cursor sobe uma linha
             InsereLin(1);       // Insere uma linha
             ColEscreve = 0;
+            if (LinhaPosic > 0 && LinhaPosic < LinTotal - 1)
+                LinhaPosic++;
         }
         if (*texto=='\n')
             ColEscreve = 0xFFFF;
@@ -858,12 +868,14 @@ void TConsole::ProcTecla(const char * texto)
     if (texto==0)
         return;
 // Cursor na linha de edição
-    if (!Editor)
+    if (EditorPosic != 0)
     {
-        Editor = true;
-        EnvTxt("\n", 1);
-        if (ColEditor)
-            CursorCol(ColEditor);
+        if (EditorPosic == 1)
+            EnvTxt("\n", 1);
+        else
+            CursorLin(LinhaPosic);
+        EditorPosic = 0;
+        CursorCol(ColEditor - ColAtual);
         if (CorAtual != CONSOLE_COR_LINHA)
             CorTxt(CONSOLE_COR_LINHA);
     }
@@ -1007,6 +1019,20 @@ void TConsole::ProcTecla(const char * texto)
         CursorCol(-move-1);
         return;
     }
+// Cima
+    if (strcmp(texto, "UP")==0)
+    {
+        if (LinhaPosic < LinTotal-1)
+            LinhaPosic++;
+        return;
+    }
+// Baixo
+    if (strcmp(texto, "DOWN")==0)
+    {
+        if (LinhaPosic > 0)
+            LinhaPosic--;
+        return;
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -1073,14 +1099,36 @@ void TConsole::ProcTeclaCursor(int coluna)
 //---------------------------------------------------------------------------
 void TConsole::ProcFim()
 {
-    if (!Editor)
+// Posicionar na linha de edição
+    if (LinhaPosic == 0)
     {
-        Editor = true;
-        EnvTxt("\n", 1);
-        if (ColAtual)
-            CursorCol(ColAtual);
+        if (EditorPosic == 1)
+            EnvTxt("\n", 1);
+        EditorPosic = 0;
+        CursorCol(ColEditor - ColAtual);
         if (CorAtual != CONSOLE_COR_LINHA)
             CorTxt(CONSOLE_COR_LINHA);
+    }
+// Posicionar na linha escolhida pelo usuário
+    else if (EditorPosic != 2)
+    {
+    // Cursor na primeira coluna
+        if (ColAtual)
+            CursorIni();
+    // Obtém número de linhas antes da linha de edição
+        unsigned int lintexto = LinAtual;
+        if (EditorPosic==1)
+            lintexto++;
+    // Não sobe antes da primeira linha de texto
+        if (LinhaPosic > lintexto)
+            LinhaPosic = lintexto;
+    // Obtém quantas linhas subir
+        int sobe = LinhaPosic;
+        if (EditorPosic==1)
+            sobe--;
+    // Sobe cursor
+        CursorLin(-sobe);
+        EditorPosic = 2;
     }
     Flush();
 }
@@ -1093,7 +1141,8 @@ void TConsole::ProcLimpa()
     CursorPosic(1,0);
     CorTxt(CONSOLE_COR_LINHA);
     LimpaFim();  // Preenche do cursor até o fim da linha
-    Editor = true;
+    EditorPosic = 0;
+    LinhaPosic = 0;
     ColEscreve = 0;
     int total = tam_linha - col_linha;
     if (total > 0)

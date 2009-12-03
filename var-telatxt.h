@@ -116,8 +116,11 @@ public:
         /**< - Bits 3-0 = fundo
          *   - Bits 6-4 = frente
          *   - Bit 7 = negrito, 0=desativado */
-    bool Editor;
-        ///< true=cursor no editor, false=cursor no texto
+
+    unsigned char EditorPosic;
+        ///< 0=cursor no editor, 1=cursor no texto, 2=na linha selecionada
+    unsigned int LinhaPosic;
+        ///< Em que linha o usuário colocou o cursor, 0=no editor
     unsigned int ColEscreve;
         ///< Coluna do texto sendo inserido na tela
     unsigned int ColEditor;
