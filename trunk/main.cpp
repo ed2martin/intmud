@@ -43,6 +43,7 @@
 #include "instr.h"
 #include "variavel.h"
 #include "socket.h"
+#include "console.h"
 #include "var-sav.h"
 #include "var-serv.h"
 #include "var-outros.h"
@@ -76,6 +77,7 @@ int main(int argc, char *argv[])
 
 // Coloca o programa em segundo plano
 #if !defined DEBUG && !defined __WIN32__
+    if (Console==0)
     {
         fflush(stdout);
         switch (fork())
@@ -171,8 +173,8 @@ int main(int argc, char *argv[])
 #ifdef __WIN32__
         espera = 2;
 #else
-        if (TVarTelaTxt::Console)
-            FD_SET(TVarTelaTxt::Console->Stdin(), &set_entrada);
+        if (Console)
+            FD_SET(Console->Stdin(), &set_entrada);
 #endif
 
     // Acerta tempo de espera conforme TVarIntTempo
@@ -382,8 +384,8 @@ void Inicializa(const char * arg)
         if (comparaZ(mens, "exec")==0)
             Instr::VarExecIni = atoi(valor);
         if (comparaZ(mens, "telatxt")==0)
-            if (atoi(valor) && TVarTelaTxt::Console==0)
-                TVarTelaTxt::Console = new TConsole;
+            if (atoi(valor) && Console==0)
+                Console = new TConsole;
     }
 
 // Cria classes a partir dos arquivos .map
@@ -784,8 +786,7 @@ void TerminaSign(int sig)
         raise(sig);
     termsign = 1;
 // Encerra
-    if (TVarTelaTxt::Console)
-        TVarTelaTxt::Console->Fim();
+    TVarTelaTxt::Fim();
 // Gera sinal padrão
     signal(sig, SIG_DFL);
     raise(sig);
@@ -799,7 +800,6 @@ void Termina()
 #ifdef __WIN32__
     WSACleanup();
 #endif
-    if (TVarTelaTxt::Console)
-        TVarTelaTxt::Console->Fim();
+    TVarTelaTxt::Fim();
     exit(EXIT_SUCCESS);
 }

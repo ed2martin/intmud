@@ -4,15 +4,27 @@ telatxt tela
 func iniclasse
   criar(arg0)
 func ini
+  tela.total = 20
   se tela.proto = 0
     terminar
 func tela_tecla
-  se arg0 = "TAB"
+  se arg0 = "F1"
     tela.bipe
     ret 1
-  senao arg0 = "INS"
+  senao arg0 = "F2"
     tela.limpa
     ret 1
+  senao arg0 = "F3"
+    tela.msg("Linha " + tela.linha + " Máximo " + tela.total + "\n")
+    ret 1
+  senao arg0 = "F4"
+    tela.linha = "Teste de alteração do texto na linha de edição"
+  senao arg0 = "F5"
+    tela.linha += "_*"
+  senao arg0 = "F6"
+    tela.total -= 1
+  senao arg0 = "F7"
+    tela.total += 1
   senao
     tela.msg(" " + arg0)
 func tela_msg

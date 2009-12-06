@@ -184,7 +184,10 @@ TVarTipo TVariavel::Tipo()
     case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
     case Instr::cIntTempo:  return varInt;
-    case Instr::cTelaTxt:   return varOutros;
+    case Instr::cTelaTxt:
+            if (defvar[Instr::endNome]=='=')
+                return (defvar[Instr::endNome+1]=='0' ? varTxt : varInt);
+            return varOutros;
     case Instr::cSocket:
             if (defvar[Instr::endNome]=='=')
                 return varInt;
@@ -645,7 +648,7 @@ bool TVariavel::getBool()
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cTelaTxt:
-        return end_telatxt[indice].getValor();
+        return end_telatxt[indice].getValor(defvar);
     case Instr::cSocket:
         return end_socket[indice].getValor(defvar);
     case Instr::cServ:
@@ -794,7 +797,7 @@ int TVariavel::getInt()
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cTelaTxt:
-        return end_telatxt[indice].getValor();
+        return end_telatxt[indice].getValor(defvar);
     case Instr::cSocket:
         return end_socket[indice].getValor(defvar);
     case Instr::cServ:
@@ -942,7 +945,7 @@ double TVariavel::getDouble()
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor();
     case Instr::cTelaTxt:
-        return end_telatxt[indice].getValor();
+        return end_telatxt[indice].getValor(defvar);
     case Instr::cSocket:
         return end_socket[indice].getValor(defvar);
     case Instr::cServ:
@@ -1001,7 +1004,6 @@ const char * TVariavel::getTxt()
     case Instr::cTextoTxt:
     case Instr::cTextoPos:
     case Instr::cNomeObj:
-    case Instr::cTelaTxt:
     case Instr::cIndiceItem:
         sprintf(txtnum, "%d", getInt());
         return txtnum;
@@ -1107,6 +1109,8 @@ const char * TVariavel::getTxt()
         return "";
 
 // Variáveis extras
+    case Instr::cTelaTxt:
+        return end_telatxt[indice].getTxt(defvar);
     case Instr::cSocket:
         if (defvar[Instr::endNome]!='=')
             return "";
@@ -1263,6 +1267,9 @@ void TVariavel::setInt(int valor)
     case Instr::cIntTempo:
         end_inttempo[indice].setValor(valor);
         break;
+    case Instr::cTelaTxt:
+        end_telatxt[indice].setValor(defvar, valor);
+        break;
     case Instr::cSocket:
         end_socket[indice].setValor(defvar, valor);
         break;
@@ -1344,6 +1351,9 @@ void TVariavel::setDouble(double valor)
     case Instr::cArqLog:
     case Instr::cArqSav:
     case Instr::cArqTxt:
+        break;
+    case Instr::cTelaTxt:
+        end_telatxt[indice].setValor(defvar, (int)valor);
         break;
     case Instr::cSocket:
         end_socket[indice].setValor(defvar, (int)valor);
@@ -1441,6 +1451,9 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
+    case Instr::cTelaTxt:
+        end_telatxt[indice].setTxt(defvar, txt);
+        break;
     case Instr::cServ:
         end_serv[indice].Fechar();
         break;
@@ -1480,6 +1493,9 @@ void TVariavel::addTxt(const char * txt)
             *dest=0;
             break;
         }
+    case Instr::cTelaTxt:
+        end_telatxt[indice].addTxt(defvar, txt);
+        break;
     case Instr::cIndiceObj:
         {
             char mens[100];
