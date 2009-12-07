@@ -5,6 +5,8 @@
 /** @defgroup misc_h Diversas funções */
 /** @{ */
 
+#define INT_EXT "int" // Extensão dos arquivos do programa interpretado
+
 extern unsigned long TempoIni; ///< Tempo desde que o programa foi executado, 10=1seg
                          /**< @note Atualizado em main.cpp */
 

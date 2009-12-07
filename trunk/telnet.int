@@ -1,0 +1,85 @@
+[_serv]
+# Lista de endereços mais usados
+# Criar também o arquivo telnet.cfg, com a seguinte linha:
+# telatxt = 1
+const inter = "intervox.nce.ufrj.br 1963"
+const dosvox = "sitiodosvox.com 1963"
+const val = "mud.valinor.com.br 4000"
+const inferno = "mud.inferno3.com.br 4000"
+const myth = "mud.mythserver.com 4000"
+const sim = "mud.simauria.org 23"
+const dentin = "dentinmud.org 3010"
+const turf = "turf.org 4000"
+
+[tela]
+telatxt tela
+socket sock
+inttempo inic
+const msg = tela.msg(arg0)
+func iniclasse
+  criar(arg0)
+func ini
+  inic = 2
+  msg("Telnet\n")
+  se tela.proto = 0
+    terminar
+func inic_exec # Mensagem de abertura
+  msg("Digite o endereço seguido de espaço e a porta\n")
+  msg("F1 mostra os endereços predefinidos\n")
+  msg("F2 desconecta\n")
+  msg("F4 encerra o programa\n")
+func tela_tecla # Usuário pressionou uma tecla
+  prog p
+  se arg0 = "F4"
+    terminar
+  senao arg0 = "F2"
+    se sock.proto
+      sock.fechar
+      msg("\d1Desconectado\b\n")
+      inic = 2
+    senao
+      msg("\d1Já está desconectado\b\n")
+    fimse
+    ret 1
+  senão arg0 = "F1" & sock.proto = 0
+    msg("Atalhos:\n")
+    p.inifunc("_serv")
+    enquanto p.lin
+      msg("\c6" + p.texto + "\b = " + _serv:[p.texto] + "\n")
+      p.depois
+    efim
+    msg("Digite um atalho ou o endereço seguido de espaço e porta\n")
+    ret 1
+  fimse
+func tela_msg # Usuário digitou alguma coisa
+  txt80 linha
+  se sock.proto = 0 # Desconectado
+    linha = _serv:[arg0]
+    se linha = ""
+      linha = txtremove(arg0, 5)
+    fimse
+    se !sock.abrir(txt1(linha), txt2(linha))
+      msg("\d1Erro ao conectar em " + linha + "\b\n")
+      msg("\d1Endereço inválido?\b\n")
+      ret
+    fimse
+    msg("\d1Conectando em " + linha + "\b\n")
+    ret
+  senao proto = 1 # Conectando
+    msg("\d1Conexão em progresso\b\n")
+  senao # Conectado
+    se txt(arg0,0,1) = "+" # Começa com "+", não ecoa na tela
+      sock.msg(txt(arg0,1) + "\n")
+    senao # Mensagem que ecoa na tela
+      sock.msg(arg0 + "\n")
+      msg("\d1>>" + arg0 + "\b\n")
+func sock_err # Erro ao conectar
+  msg("\d1Erro: " + arg0 + "\b\n")
+func sock_con # Conectou
+  msg("\d1Conectado\b\n")
+  sock.cores = 1 # Cores somente ao receber
+func sock_fechou # Conexão foi encerrada
+  msg("\d1Conexão foi encerrada\b\n")
+  inic = 5
+func sock_msg # Recebeu uma mensagem
+  msg(arg0 + "\n")

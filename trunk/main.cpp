@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 
 //------------------------------------------------------------------------------
 /// Inicialização do programa
-/// @param arg Nome do arquivo .map, ou "" se não foi especificado
+/// @param arg Nome do arquivo .int, ou "" se não foi especificado
 void Inicializa(const char * arg)
 {
 // Variáveis
@@ -388,12 +388,12 @@ void Inicializa(const char * arg)
                 Console = new TConsole;
     }
 
-// Cria classes a partir dos arquivos .map
-    TArqMapa * mapa = new TArqMapa(""); // Arquivo intmud.map
+// Cria classes a partir dos arquivos .int
+    TArqMapa * mapa = new TArqMapa(""); // Arquivo intmud.int
     mapa->Existe = true;
 
-    // Abre intmud.map
-    strcpy(arqext, ".map");
+    // Abre intmud.int
+    strcpy(arqext, "." INT_EXT);
     if (!arq.Abrir(arqnome))
     {
         fprintf(log, "Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
@@ -413,7 +413,7 @@ void Inicializa(const char * arg)
             mapa = mapa->Proximo;
             if (mapa==0)
                 break;
-            mprintf(arqext, 60, "-%s.map", mapa->Arquivo);
+            mprintf(arqext, 60, "-%s." INT_EXT, mapa->Arquivo);
             if (!arq.Abrir(arqnome))
             {
                 fprintf(log, "Abrindo arquivo %s: %s\n",
@@ -476,7 +476,7 @@ void Inicializa(const char * arg)
                 //printf("%s\n", sdir->d_name); fflush(stdout);
             }
             closedir(dir);
-            copiastr(arqext, ".map");
+            copiastr(arqext, "." INT_EXT);
             continue;
         }
 
@@ -529,9 +529,9 @@ void Inicializa(const char * arg)
         for (TArqMapa * obj = TArqMapa::Inicio; obj; obj=obj->Proximo)
         {
             if (*obj->Arquivo==0)
-                strcpy(arqext, ".map");
+                strcpy(arqext, "." INT_EXT);
             else
-                mprintf(arqext, 60, "-%s.map", obj->Arquivo);
+                mprintf(arqext, 60, "-%s." INT_EXT, obj->Arquivo);
             printf(" %s", arqinicio);
         }
         putchar('\n');
@@ -545,8 +545,8 @@ void Inicializa(const char * arg)
     char comando[65000];
     unsigned int pcomando=0;
 
-    // Abre intmud.map
-    strcpy(arqext, ".map");
+    // Abre intmud.int
+    strcpy(arqext, "." INT_EXT);
     if (!arq.Abrir(arqnome))
     {
         fprintf(log, "Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
@@ -591,7 +591,7 @@ void Inicializa(const char * arg)
                 mapa = mapa->Proximo;
             if (mapa==0)
                 break;
-            mprintf(arqext, 60, "-%s.map", mapa->Arquivo);
+            mprintf(arqext, 60, "-%s." INT_EXT, mapa->Arquivo);
             if (!arq.Abrir(arqnome))
             {
                 fprintf(log, "Abrindo arquivo %s: %s\n",
