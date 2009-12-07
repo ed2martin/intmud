@@ -1,7 +1,7 @@
 #ifndef ARQMAPA_H
 #define ARQMAPA_H
 
-#define MAPA_NOME_TAM 32 // Tamanho máximo do prefixo dos nomes dos arquivos
+#define INT_NOME_TAM 32 // Tamanho máximo do prefixo dos nomes dos arquivos
 
 //------------------------------------------------------------------------------
 class TClasse;
@@ -31,12 +31,12 @@ public:
     static unsigned char ParamFunc;   ///< Linhas entre funções
     static unsigned char ParamVar;    ///< Linhas entre variáveis
     static bool MapaGrande;
-        ///< Se o arquivo intmud.map possui a instrução "mapagrande"
+        ///< Se o arquivo intmud.int possui a instrução "mapagrande"
 
     bool Mudou;             ///< Se o arquivo foi alterado
     bool Existe;            ///< Se o arquivo já existe
-    char Arquivo[MAPA_NOME_TAM];   /**< ??? de intmud-???.map;
-                             Se for nulo, é o arquivo intmud.map */
+    char Arquivo[INT_NOME_TAM];   /**< ??? de intmud-???.int;
+                             Se for nulo, é o arquivo intmud.int */
 
 // Objetos TClasse
     TClasse * ClInicio;     ///< Primeira classe do arquivo

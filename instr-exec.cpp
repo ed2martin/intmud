@@ -986,7 +986,7 @@ bool Instr::ExecX()
                     VarAtual->setDouble(valor);
                     break;
                 }
-            // Exemplo de comando no intmud.map que usa todos os tipos
+            // Exemplo de comando no intmud.int que usa todos os tipos
             // de concatenação: ("abc" + ("x")) + ("def" + 1) + 4
 
             // Caso 2: Duas variáveis não locais

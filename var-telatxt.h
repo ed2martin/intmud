@@ -12,6 +12,8 @@ class TVarTelaTxt
 private:
     static void Escrever(const char * texto, int tamanho = -1);
         ///< Envia um texto para o console
+    static void CursorEditor();
+        ///< Posiciona o cursor na linha de edição
     static void ProcTecla(const char * texto);
         ///< Processa uma tecla, recebida com LerTecla()
     static void ProcTeclaCursor(int coluna);
@@ -23,6 +25,8 @@ private:
         /**< - Bits 3-0 = fundo
          *   - Bits 6-4 = frente
          *   - Bit 7 = negrito, 0=desativado */
+    static unsigned int CorBarraN;
+        ///< Cor, ao processar \\n em Escrever()
     static unsigned char EditorPosic;
         ///< 0=cursor no editor, 1=cursor no texto, 2=na linha selecionada
     static unsigned int LinhaPosic;

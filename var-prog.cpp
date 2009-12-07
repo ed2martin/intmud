@@ -997,7 +997,7 @@ bool TVarProg::FuncCriar(TVariavel * v)
     else if (Instr::VarAtual >= v+1)
     {
         //puts("Criar classe"); fflush(stdout);
-        char nomearq[MAPA_NOME_TAM+30];
+        char nomearq[INT_NOME_TAM+30];
         char nomeclasse[CLASSE_NOME_TAM+30];
         const char * nome = v[1].getTxt();
     // Obtém o nome da classe

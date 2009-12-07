@@ -10,13 +10,10 @@ func ini
 func tela_tecla
   se arg0 = "F1"
     tela.bipe
-    ret 1
   senao arg0 = "F2"
     tela.limpa
-    ret 1
   senao arg0 = "F3"
     tela.msg("Linha " + tela.linha + " Máximo " + tela.total + "\n")
-    ret 1
   senao arg0 = "F4"
     tela.linha = "Teste de alteração do texto na linha de edição"
   senao arg0 = "F5"
@@ -27,6 +24,9 @@ func tela_tecla
     tela.total += 1
   senao
     tela.msg(" " + arg0)
+    ret 0
+  fimse
+  ret 1
 func tela_msg
   se tela.posx
     tela.msg("\n")

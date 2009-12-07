@@ -64,7 +64,7 @@ bool TArqMapa::NomeValido(const char * nome)
     for (; *o; o++)
         if ((*o<'0' || *o>'9') && (*o<'a' || *o>'z') && *o!=' ')
             return false;
-    if (o-nome >= MAPA_NOME_TAM)
+    if (o-nome >= INT_NOME_TAM)
         return false;
     return true;
 }
@@ -101,9 +101,9 @@ void TArqMapa::SalvarArq(bool tudo)
         }
     // Obtém o nome do arquivo
         if (*arqmapa->Arquivo)
-            mprintf(arqext, 60, "-%s.map", arqmapa->Arquivo);
+            mprintf(arqext, 60, "-%s." INT_EXT, arqmapa->Arquivo);
         else
-            strcpy(arqext, ".map");
+            strcpy(arqext, "." INT_EXT);
     // Verifica se arquivo vazio
         if (arqmapa->ClInicio==0 && *arqmapa->Arquivo)
         {

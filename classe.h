@@ -8,7 +8,7 @@ class TArqMapa;
 #define CLASSE_NOME_TAM 48 // Tamanho máximo dos nomes das classes + 1
 
 //----------------------------------------------------------------------------
-/** Definição das classes dos arquivos .map
+/** Definição das classes dos arquivos .int
 
 Na inicialização do programa:
 -# Criar classes

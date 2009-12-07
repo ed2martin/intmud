@@ -27,6 +27,7 @@ const char TelaTxtLinha[] = { 8, 0, Instr::cTelaTxt, 0, 0, 0, '=', '0', 0 };
 const char TelaTxtTotal[] = { 8, 0, Instr::cTelaTxt, 0, 0, 0, '=', '1', 0 };
 
 unsigned int TVarTelaTxt::CorTela = 0x70;
+unsigned int TVarTelaTxt::CorBarraN = 0x70;
 unsigned char TVarTelaTxt::EditorPosic = 0;
 unsigned int TVarTelaTxt::LinhaPosic = 0;
 unsigned int TVarTelaTxt::ColEscreve = 0;
@@ -61,7 +62,9 @@ void TVarTelaTxt::Escrever(const char * texto, int tamanho)
         {
             Console->EnvTxt("\n\n", 2);  // Dois '\n' para criar uma linha no final
             Console->CursorLin(-1);      // Cursor sobe uma linha
+            Console->CorTxt(CorBarraN);
             Console->InsereLin(1);       // Insere uma linha
+            Console->CorTxt(CorTela);
             ColEscreve = 0;
             if (LinhaPosic > 0 && LinhaPosic < Console->LinTotal - 1)
                 LinhaPosic++;
@@ -73,15 +76,13 @@ void TVarTelaTxt::Escrever(const char * texto, int tamanho)
             Console->EnvTxt(texto, 1);
             ColEscreve++;
         }
+        CorBarraN = CorTela;
     }
 }
 
 //---------------------------------------------------------------------------
-void TVarTelaTxt::ProcTecla(const char * texto)
+void TVarTelaTxt::CursorEditor()
 {
-    if (texto==0)
-        return;
-// Cursor na linha de edição
     if (EditorPosic != 0)
     {
         if (EditorPosic == 1)
@@ -92,9 +93,19 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         Console->CorTxt(CONSOLE_COR_LINHA);
     }
     Console->CursorCol(ColEditor - Console->ColAtual);
+}
+
+//---------------------------------------------------------------------------
+void TVarTelaTxt::ProcTecla(const char * texto)
+{
+    if (texto==0)
+        return;
+// Cursor na linha de edição
+    CursorEditor();
 // Tecla normal (texto)
     if (texto[0] && texto[1]==0)
     {
+        LinhaPosic = 0;
     // Verifica se tem espaço na linha
         if (tam_linha >= max_linha)
             return;
@@ -125,6 +136,22 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         Console->EnvTxt(txt_linha + col_linha + ColEditor - 1, 1); // Mostra caracter
         return;
     }
+// Cima
+    if (strcmp(texto, "UP")==0)
+    {
+        if (LinhaPosic < Console->LinTotal-1)
+            LinhaPosic++;
+        return;
+    }
+// Baixo
+    if (strcmp(texto, "DOWN")==0)
+    {
+        if (LinhaPosic > 0)
+            LinhaPosic--;
+        return;
+    }
+// Outras teclas - mantém o cursor na linha de edição
+    LinhaPosic = 0;
 // ENTER
     if (strcmp(texto, "ENTER")==0)
     {
@@ -233,20 +260,6 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         Console->CursorCol(-move-1);
         return;
     }
-// Cima
-    if (strcmp(texto, "UP")==0)
-    {
-        if (LinhaPosic < Console->LinTotal-1)
-            LinhaPosic++;
-        return;
-    }
-// Baixo
-    if (strcmp(texto, "DOWN")==0)
-    {
-        if (LinhaPosic > 0)
-            LinhaPosic--;
-        return;
-    }
 }
 
 //---------------------------------------------------------------------------
@@ -317,13 +330,7 @@ void TVarTelaTxt::ProcFim()
         return;
 // Posicionar na linha de edição
     if (LinhaPosic == 0)
-    {
-        if (EditorPosic == 1)
-            Console->EnvTxt("\n", 1);
-        EditorPosic = 0;
-        Console->CursorCol(ColEditor - Console->ColAtual);
-        Console->CorTxt(CONSOLE_COR_LINHA);
-    }
+        CursorEditor();
 // Posicionar na linha escolhida pelo usuário
     else if (EditorPosic != 2)
     {
@@ -427,8 +434,9 @@ void TVarTelaTxt::setValor(const char * defvar1, int valor)
             max_linha = valor;
             if ((int)tam_linha > valor)
                 tam_linha = valor;
+            CursorEditor();   // Cursor na linha de edição
             if (col_linha + ColEditor > (unsigned int)valor)
-                ProcTecla("END");
+                ProcTeclaCursor(tam_linha); // Semelhante à tecla END
             if (valor - col_linha < Console->ColTotal)
             {
                 Console->CursorCol(valor - col_linha - Console->ColAtual);
@@ -470,7 +478,8 @@ void TVarTelaTxt::setTxt(const char * defvar1, const char * txt)
         p = copiastr(txt_linha, txt, max_linha + 1);
         tam_linha = p - txt_linha;
         col_linha = 0xFFF;
-        ProcTecla("HOME");
+        CursorEditor();     // Cursor na linha de edição
+        ProcTeclaCursor(0); // Semelhante à tecla HOME
         break;
     case '1':
         setValor(defvar1, atoi(txt));
@@ -489,7 +498,8 @@ void TVarTelaTxt::addTxt(const char * defvar1, const char * txt)
         while (tam_linha < max_linha && *txt)
             txt_linha[tam_linha++] = *txt++;
         col_linha = 0xFFF;
-        ProcTecla("HOME");
+        CursorEditor();     // Cursor na linha de edição
+        ProcTeclaCursor(0); // Semelhante à tecla HOME
         break;
     case '1':
         setValor(defvar1, atoi(txt));
@@ -645,14 +655,14 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
                     {
                         CorTela = (CorTela & 0x0F) +
                                   (*texto - '0') * 0x10;
-                        p++;
+                        texto++;
                     }
                     else if ((*texto>='A' && *texto<='F') ||
                         (*texto>='a' && *texto<='f'))
                     {
                         CorTela = (CorTela & 0x0F) +
                                   ((*texto|0x20) - '7') * 0x10;
-                        p++;
+                        texto++;
                     }
                     break;
                 case Instr::ex_barra_d:
@@ -660,7 +670,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
                     {
                         CorTela = (CorTela & 0xF0) +
                                   (*texto - '0');
-                        p++;
+                        texto++;
                     }
                 } // switch
             } // while
