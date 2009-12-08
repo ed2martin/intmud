@@ -1,22 +1,46 @@
 Especificações - IntMUD (Interpretador MUD)
 
-O programa é um interpretador de comandos, que trabalha com pelo menos
-mais dois arquivos:
-- Um ou mais arquivos que contém os comandos (a linguagem).
-- Arquivo de configuração, onde define-se algumas permissões, e se deve ou não
-  abrir uma janela na tela.
-- Na versão Windows é necessário um quarto arquivo, para relatar os erros
-  encontrados ao ler o arquivo de comandos.
+O programa é um interpretador de comandos, que trabalha com um ou mais
+arquivos no formato de texto:
+- O arquivo terminado com ".int", que contém os comandos (o programa
+  interpretado). Geralmente "intmud.int".
+- Na versão Windows é criado um arquivo com o mesmo nome, mas terminado com
+  ".log", para relatar os erros encontrados ao ler o arquivo de comandos.
 
-Quando um programa se torna grande, fica difícil trabalhar com um só arquivo.
-Nesse caso acrescenta-se no começo do arquivo intmud.map a linha:
-mapagrande
-E o interpretador passa a trabalhar com vários arquivos, sendo que os nomes
-dos demais arquivos sempre começam com "intmud-" e terminam com ".map".
-Exemplo: intmud-teste.map
+Para usar outro arquivo ao invés do "intmud.int", basta executar o IntMUD
+seguido do nome do arquivo. Exemplo:
+intmud teste.int
+ou apenas:
+intmud teste
+Em ambiente gráfico, basta arrastar o arquivo .int para o executável com
+o botão esquerdo do mouse.
 
-Os arquivos de comandos contém as classes (tipos de objetos), conforme
-a sintaxe:
+O arquivo ".int" começa com algumas definições no seguinte padrão:
+opção = valor
+
+As opções são as seguintes:
+
+mapagrande = 0
+Se diferente de zero, o programa interpretado está distribuído em mais
+de um arquivo. Nesse caso, os nomes dos demais arquivos sempre começam
+com "intmud-" e terminam com ".int".
+Exemplo: intmud-teste.int
+Se ausente, assume 0 (somente um arquivo ".int").
+
+exec = 5000
+Quantas instruções uma função chamada pelo programa pode executar antes
+do controle retornar automaticamente ao programa.
+Se ausente, assume 5000.
+
+telatxt = 0
+Se zero, o programa roda em segundo plano. Não abre nenhuma janela.
+Se diferente de zero, abre uma janela de texto. Nesse caso, a comunicação
+com o usuário se dá através da variável telatxt no programa interpretado.
+Em Unix ou Linux, se diferente de zero, executar o programa em um terminal.
+Se estiver ausente, assume 0.
+
+Após as opções vem as definições de classes (tipos de objetos), que constituem
+o programa interpretado. Segue a sintaxe:
 
 [nome da classe]
 herda <classe 1>, <classe 2>, ..., <classe N>

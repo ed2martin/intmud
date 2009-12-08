@@ -332,11 +332,11 @@ void Inicializa(const char * arg)
             arqinicio += 1 + strlen(pnome);
 
     // Obtém arqext
+        int tam = strlen(INT_EXT);
         arqext = arqinicio + strlen(arqinicio);
-        if (arqext > arqinicio + 4)
-            if (arqext[-4]=='.' && (arqext[-3]|0x20)=='m' &&
-                    (arqext[-2]|0x20)=='a' && (arqext[-1]|0x20)=='p')
-                arqext -= 4;
+        if (arqext > arqinicio + tam + 1)
+            if (arqext[-tam-1]=='.' && comparaZ(arqext-tam, INT_EXT)==0)
+                arqext -= tam + 1;
         *arqext = 0;
     }
 
@@ -349,46 +349,8 @@ void Inicializa(const char * arg)
 #endif
     fprintf(log, "IntMUD versão " VERSION " (Interpretador MUD)\n");
 
-// Lê arquivo de configuração
-    strcpy(arqext, ".cfg");
-    if (!arq.Abrir(arqnome))
-    {
-        fprintf(log, "Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-    while (true)
-    {
-        int linha = arq.Linha(mens, sizeof(mens));
-        if (linha<0) // Erro
-        {
-            fprintf(log, "Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
-            exit(EXIT_FAILURE);
-        }
-        if (linha==0) // Fim do arquivo
-            break;
-        if (*mens=='#') // Comentário
-            continue;
-        char * valor = mens;
-        while (*valor && *valor!='=') // Procura um igual
-            valor++;
-        if (*valor=='=')
-        {
-            char * p = valor;
-            for (; p>mens; p--) // Retira espaços antes do igual
-                if (p[-1]!=' ')
-                    break;
-            *p=0;
-            for (valor++; *valor==' '; valor++);
-        }
-        //printf("%d [%s] [%s]\n", linha, mens, valor);
-        if (comparaZ(mens, "exec")==0)
-            Instr::VarExecIni = atoi(valor);
-        if (comparaZ(mens, "telatxt")==0)
-            if (atoi(valor) && Console==0)
-                Console = new TConsole;
-    }
-
 // Cria classes a partir dos arquivos .int
+    bool ini_arq = true;
     TArqMapa * mapa = new TArqMapa(""); // Arquivo intmud.int
     mapa->Existe = true;
 
@@ -422,62 +384,79 @@ void Inicializa(const char * arg)
             }
         }
 
-    // Verifica linha MAPAGRANDE, que indica vários arquivos
-        if (comparaZ(mens, "MAPAGRANDE")==0)
+    // Configuração
+        if (ini_arq)
         {
-            if (TArqMapa::MapaGrande) // Se já obteve a lista de arquivos
-            {
-                fprintf(log, "%s:%d: Instrução repetida - MAPAGRANDE\n",
-                            arqinicio, linhanum);
-                erro=true;
+            if (*mens=='#') // Comentário
                 continue;
-            }
-            if (TClasse::RBfirst()) // Se já criou alguma classe
+            char * valor = mens;
+            while (*valor && *valor!='=') // Procura um igual
+                valor++;
+            if (*valor=='=')
             {
-                fprintf(log, "%s:%d: Instrução MAPAGRANDE não pode "
-                             "pertencer a uma classe\n", arqinicio, linhanum);
-                erro=true;
-                continue;
+                char * p = valor;
+                for (; p>mens; p--) // Retira espaços antes do igual
+                    if (p[-1]!=' ')
+                        break;
+                *p=0;
+                for (valor++; *valor==' '; valor++);
             }
+            //printf("[%s] [%s]\n", mens, valor);
 
-        // Abre diretório
-            TArqMapa::MapaGrande = true;
-            DIR * dir=opendir(".");
-            dirent * sdir;
-            if (dir==0)
-            {
-                fprintf(log, "Procurando arquivos: %s\n", strerror(errno));
-                exit(EXIT_FAILURE);
-            }
+        // Verifica opções
+            if (comparaZ(mens, "exec")==0)
+                Instr::VarExecIni = atoi(valor);
+            if (comparaZ(mens, "telatxt")==0)
+                if (atoi(valor) && Console==0)
+                    Console = new TConsole;
 
-        // Obtém nomes dos arquivos
-            copiastr(arqext, "-");
-            int tam = strlen(arqinicio);
-            while ( (sdir=readdir(dir))!=0 )
+        // Verifica opção MAPAGRANDE, que indica vários arquivos
+            if (comparaZ(mens, "mapagrande")==0 && atoi(valor))
             {
-                char * pont=sdir->d_name;
-                if (strlen(pont)<=4 || memcmp(arqinicio, pont, tam)!=0)
+                if (TArqMapa::MapaGrande) // Se já obteve a lista de arquivos
                     continue;
-                for (; *pont; pont++);
-                pont-=4;
-                if ( pont[0]!='.' || (pont[1]|0x20)!='m' ||
-                     (pont[2]|0x20)!='a' || (pont[3]|0x20)!='p' )
-                    continue;
-                copiastr(mens, sdir->d_name+tam, sizeof(mens));
-                for (pont=mens; *pont; pont++);
-                if (pont<mens+4)
-                    continue;
-                pont[-4]=0;
-                if (TArqMapa::NomeValido(mens))
+
+            // Abre diretório
+                TArqMapa::MapaGrande = true;
+                DIR * dir=opendir(".");
+                dirent * sdir;
+                if (dir==0)
                 {
-                    TArqMapa * m = new TArqMapa(mens);
-                    m->Existe = true;
+                    fprintf(log, "Procurando arquivos: %s\n", strerror(errno));
+                    exit(EXIT_FAILURE);
                 }
-                //printf("%s\n", sdir->d_name); fflush(stdout);
+
+            // Obtém nomes dos arquivos
+                copiastr(arqext, "-");
+                int tam = strlen(arqinicio);
+                int ext = strlen(INT_EXT) + 1;
+                while ( (sdir=readdir(dir))!=0 )
+                {
+                    char * pont=sdir->d_name;
+                    if (strlen(pont)<=4 || memcmp(arqinicio, pont, tam)!=0)
+                        continue;
+                    for (; *pont; pont++);
+                    pont-=ext;
+                    if ( pont[0]!='.' || comparaZ(pont+1, INT_EXT)!=0)
+                        continue;
+                    copiastr(mens, sdir->d_name+tam, sizeof(mens));
+                    for (pont=mens; *pont; pont++);
+                    if (pont<mens+4)
+                        continue;
+                    pont[-4]=0;
+                    if (TArqMapa::NomeValido(mens))
+                    {
+                        TArqMapa * m = new TArqMapa(mens);
+                        m->Existe = true;
+                    }
+                    //printf("%s\n", sdir->d_name); fflush(stdout);
+                }
+
+            // Fecha diretório
+                closedir(dir);
+                copiastr(arqext, "." INT_EXT);
+                continue;
             }
-            closedir(dir);
-            copiastr(arqext, "." INT_EXT);
-            continue;
         }
 
     // Verifica se é início de classe
@@ -491,6 +470,7 @@ void Inicializa(const char * arg)
             continue;
         for (p--; p[-1]==' '; p--);
         *p=0;
+        ini_arq = false;
 
     // Verifica se classe é válida ou já existe
         if (TClasse::NomeValido(mens+1)==false)
@@ -544,6 +524,7 @@ void Inicializa(const char * arg)
     Instr::ChecaLinha checalinha;
     char comando[65000];
     unsigned int pcomando=0;
+    ini_arq = true;
 
     // Abre intmud.int
     strcpy(arqext, "." INT_EXT);
@@ -572,6 +553,7 @@ void Inicializa(const char * arg)
         }
         if (linhanum==0 || pclasse) // Fim do arquivo ou próxima classe
         {
+            ini_arq = false;
             if (classeatual) // Anota instruções da classe
             {
                 comando[pcomando]=0;    // Marca fim da lista de comandos
@@ -601,7 +583,7 @@ void Inicializa(const char * arg)
             continue;
         }
     // Verifica linha MAPAGRANDE
-        if (comparaZ(mens, "MAPAGRANDE")==0)
+        if (ini_arq)
             continue;
     // Verifica classe
         if (pclasse)
