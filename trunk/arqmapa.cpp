@@ -17,6 +17,7 @@
 #include <assert.h>
 #include "classe.h"
 #include "arqmapa.h"
+#include "console.h"
 #include "instr.h"
 #include "misc.h"
 
@@ -121,8 +122,18 @@ void TArqMapa::SalvarArq(bool tudo)
             arqmapa = arqmapa->Anterior;
             continue;
         }
-        if (*arqmapa->Arquivo==0 && MapaGrande)
-            fprintf(arq, "mapagrande\n\n");
+        if (*arqmapa->Arquivo==0)
+        {
+            fprintf(arq,
+                "# Se deve usar vários arquivos\n"
+                "mapagrande = %d\n\n"
+                "# Quantas instruções uma função chamada pelo programa pode\n"
+                "# executar antes do controle retornar ao programa\n"
+                "exec = %d\n\n"
+                "# Se deve abrir uma janela de texto - variável telatxt\n"
+                "telatxt = %d\n\n",
+                MapaGrande, Instr::VarExecIni, Console!=0);
+        }
         for (TClasse * cl = arqmapa->ClInicio; cl; cl=cl->ArqDepois)
         {
             int indent = 0;
