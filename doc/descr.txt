@@ -1061,10 +1061,13 @@ telatxt <nome da variável>
     tecla( <nome da tecla> )
         Processa uma tecla, como se tivesse sido digitada pelo usuário.
         Nota: não gera eventos.
-    linha
+    texto
         Conteúdo da linha sendo digitada pelo usuário. Pode ser mudado.
     total
         Tamanho da linha sendo editada, de 1 a 1023. Pode ser mudado.
+    linha
+        Linha em que o cursor está. 0 é a linha de edição, 1=última linha
+        de texto, 2 = linha anterior, etc.
     bipe
         Gera um bipe.
     limpa
@@ -1381,6 +1384,44 @@ indiceitem <nomedavariável>
 
     Nota: Pode-se passar mais de um texto para as funções que possuem texto.
     Nesse caso, a função procurará por todos os textos.
+
+datahora <nomedavariável>
+    Operações envolvendo data e/ou hora, como obter a data atual e calcular
+    quantidade de dias entre duas datas.
+
+    Funções:
+    novadata(<ano>, <mês>, <dia>)
+        Muda ano, mês e dia.
+    novahora(<hora>, <minuto>, <segundo>)
+        Muda hora, minuto e segundo.
+    antes
+        Muda data para o dia anterior.
+    depois
+        Muda data para o próximo dia.
+    agora
+        Muda para data e hora atuais.
+    diasem
+        Dia da semana, de 0 a 6 (0=domingo).
+    bissexto
+        É 1 se o ano for bissexto, 0 se não for
+
+    Variáveis:
+    ano
+        Ano, de 1 a 9999.
+    mes
+        Mês, de 1 a 12.
+    dia
+        Dia, de 1 a 31. Conforme o mês pode não chegar a 31.
+    hora
+        Hora, de 0 a 23.
+    min
+        Minuto, de 0 a 59.
+    seg
+        Segundo, de 0 a 59.
+    numdias
+        Número de dias desde 1/1/1.
+    numseg
+        Número de segundos desde o início do dia
 
 
 *** Nota - Cores no protocolo Telnet

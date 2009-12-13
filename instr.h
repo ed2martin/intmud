@@ -284,6 +284,7 @@ enum Comando
     cProg,              ///< Extra: Prog
     cIndiceObj,         ///< Extra: IndiceObj
     cIndiceItem,        ///< Extra: IndiceItem
+    cDataHora,          ///< Extra: DataHora
 
 // Usado internamente
     cTxtFixo,           ///< Aponta para um texto fixo

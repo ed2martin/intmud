@@ -22,6 +22,7 @@ class TVarServ;
 class TVarProg;
 class TIndiceObj;
 class TIndiceItem;
+class TVarDataHora;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -144,6 +145,7 @@ public:
         TVarProg     * end_prog;     ///< Instr::cProg
         TIndiceObj   * end_indiceobj; ///< Instr::cIndiceObj
         TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
+        TVarDataHora * end_datahora; ///< Instr::cDataHora
         int  valor_int;              ///< Instr::cVarInt - endvar como int
     };
     int  tamanho;   ///< Quantos bytes está usando na memória

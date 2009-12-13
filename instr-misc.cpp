@@ -545,6 +545,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cProg:             return "prog";
     case cIndiceObj:        return "indiceobj";
     case cIndiceItem:       return "indiceitem";
+    case cDataHora:         return "datahora";
 
     case cTxtFixo:
     case cVarNome:
@@ -618,6 +619,7 @@ const char * Instr::NomeComando(int valor)
     case cProg:             return "cProg";
     case cIndiceObj:        return "cIndiceObj";
     case cIndiceItem:       return "cIndiceItem";
+    case cDataHora:         return "cDataHora";
 
     case cTxtFixo:          return "cTxtFixo";
     case cVarNome:          return "cVarNome";
