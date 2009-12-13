@@ -31,6 +31,7 @@
 #include "var-serv.h"
 #include "var-prog.h"
 #include "var-indiceobj.h"
+#include "var-datahora.h"
 #include "var-outros.h"
 #include "misc.h"
 
@@ -125,6 +126,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cProg:      return sizeof(TVarProg);
     case Instr::cIndiceObj: return sizeof(TIndiceObj);
     case Instr::cIndiceItem: return sizeof(TIndiceItem);
+    case Instr::cDataHora:  return sizeof(TVarDataHora);
 
     case Instr::cVarNome:   return VAR_NOME_TAM;
     case Instr::cVarInicio:
@@ -196,6 +198,10 @@ TVarTipo TVariavel::Tipo()
     case Instr::cProg:      return varOutros;
     case Instr::cIndiceObj: return varTxt;
     case Instr::cIndiceItem: return varOutros;
+    case Instr::cDataHora:
+            if (defvar[Instr::endNome]=='=')
+                return varInt;
+            return varOutros;
 
     case Instr::cTxtFixo:
     case Instr::cVarNome:
@@ -374,6 +380,9 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         for (; depois<antes; depois++)
             end_indiceitem[depois].Apagar();
         break;
+    case Instr::cDataHora:
+        for (; antes<depois; antes++)
+            end_datahora[antes].Criar();
     }
 }
 
@@ -528,6 +537,8 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         }
     case Instr::cIndiceItem:
         MOVER_SIMPLES( TIndiceItem )
+    case Instr::cDataHora:
+        MOVER_SIMPLES( TVarDataHora )
 
 // Outras variáveis
     case Instr::cTxt1:
@@ -659,6 +670,8 @@ bool TVariavel::getBool()
         return end_indiceobj[indice].getNome()[0] != 0;
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
+    case Instr::cDataHora:
+        return end_datahora[indice].getValor(defvar);
 
     case Instr::cRef:
         return end_varref[indice].Pont != 0;
@@ -812,6 +825,8 @@ int TVariavel::getInt()
         }
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
+    case Instr::cDataHora:
+        return end_datahora[indice].getValor(defvar);
 
     case Instr::cRef:
         return end_varref[indice].Pont != 0;
@@ -960,6 +975,8 @@ double TVariavel::getDouble()
         }
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
+    case Instr::cDataHora:
+        return end_datahora[indice].getValor(defvar);
 
     case Instr::cRef:
         return end_varref[indice].Pont != 0;
@@ -1005,6 +1022,7 @@ const char * TVariavel::getTxt()
     case Instr::cTextoPos:
     case Instr::cNomeObj:
     case Instr::cIndiceItem:
+    case Instr::cDataHora:
         sprintf(txtnum, "%d", getInt());
         return txtnum;
     case Instr::cUInt32:
@@ -1286,6 +1304,9 @@ void TVariavel::setInt(int valor)
             end_indiceobj[indice].setNome(mens);
             break;
         }
+    case Instr::cDataHora:
+        end_datahora[indice].setValor(defvar, valor);
+        break;
     case Instr::cRef:
         end_varref[indice].MudarPont(0);
         break;
@@ -1364,7 +1385,9 @@ void TVariavel::setDouble(double valor)
     case Instr::cProg:
     case Instr::cIndiceItem:
         break;
-
+    case Instr::cDataHora:
+        end_datahora[indice].setValor(defvar, (int)valor);
+        break;
     case Instr::cRef:
         end_varref[indice].MudarPont(0);
         break;
@@ -1404,6 +1427,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cIntTempo:
     case Instr::cVarInt:
     case Instr::cSocket:
+    case Instr::cDataHora:
         {
             long num;
             errno=0, num=strtol(txt, 0, 10);
@@ -1546,6 +1570,8 @@ int TVariavel::Compara(TVariavel * v)
             var1 = end_indiceitem[indice].getIndiceObj();
             var2 =v->end_indiceitem[v->indice].getIndiceObj();
             break;
+        case Instr::cDataHora:
+            return end_datahora[indice].Compara(v->end_datahora + v->indice);
         }
     return (var1 == var2 ? 0 : var1 < var2 ? -1 : 1);
 }
@@ -1569,6 +1595,8 @@ void TVariavel::Igual(TVariavel * v)
     case Instr::cIndiceItem:
         end_indiceitem[indice].Igual(v->end_indiceitem + v->indice);
         break;
+    case Instr::cDataHora:
+        end_datahora[indice].Igual(v->end_datahora + v->indice);
     }
 }
 
@@ -1626,6 +1654,8 @@ bool TVariavel::Func(const char * nome)
         return end_prog[indice].Func(this, nome);
     case Instr::cIndiceItem:
         return end_indiceitem[indice].Func(this, nome);
+    case Instr::cDataHora:
+        return end_datahora[indice].Func(this, nome);
     }
     return false;
 }

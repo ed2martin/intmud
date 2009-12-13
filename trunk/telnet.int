@@ -38,6 +38,9 @@ func inic_exec # Mensagem de abertura
   msg("F4 encerra o programa\n")
 func tela_tecla # Usuário pressionou uma tecla
   prog p
+  se arg0 != "UP" & arg0 != "DOWN"
+    tela.linha = 0
+  fimse
   se arg0 = "F4"
     terminar
   senao arg0 = "F2"

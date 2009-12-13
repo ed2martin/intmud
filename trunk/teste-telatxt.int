@@ -14,15 +14,21 @@ func tela_tecla
   senao arg0 = "F2"
     tela.limpa
   senao arg0 = "F3"
-    tela.msg("Linha " + tela.linha + " Máximo " + tela.total + "\n")
+    tela.msg("Linha " + tela.texto + " Máximo " + tela.total + "\n")
   senao arg0 = "F4"
-    tela.linha = "Teste de alteração do texto na linha de edição"
+    tela.texto = "Teste de alteração do texto na linha de edição"
   senao arg0 = "F5"
-    tela.linha += "_*"
+    tela.texto += "_*"
   senao arg0 = "F6"
     tela.total -= 1
   senao arg0 = "F7"
     tela.total += 1
+  senao arg0 = "F8"
+    tela.msg("[" + tela.linha + "]")
+    #tela.linha = 1
+  senao arg0 = "F9"
+#tela.msg("[" + tela.linha + "]")
+    tela.linha += 1
   senao
     tela.msg(" " + arg0)
     ret 0

@@ -166,6 +166,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cProg:      strcpy(nome, "prog"); break;
     case cIndiceObj: strcpy(nome, "indiceobj"); break;
     case cIndiceItem: strcpy(nome, "indiceitem"); break;
+    case cDataHora:  strcpy(nome, "datahora"); break;
 
 // Variáveis usadas internamente
     case cTxtFixo:   strcpy(nome, "[TxtFixo]"); break;
