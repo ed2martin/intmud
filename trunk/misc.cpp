@@ -83,7 +83,6 @@ void tabASCinic(void)
 //------------------------------------------------------------------------------
 // Semelhante a sprintf(), exceto que:
 // Só processa caracteres %%, %c, %d, %u e %s
-// %t = mensagem de tamanho TAM_NOME (nome de sala ou usuário)
 // %S = mensagem como em %s, mas sem espaços finais
 // tamanho é o tamanho máximo do buffer destino
 char * mprintf(char * destino, int tamanho, const char * mens, ...)

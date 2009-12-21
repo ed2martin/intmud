@@ -24,6 +24,8 @@
 //#define DEBUG
 
 //------------------------------------------------------------------------------
+extern int err_tipo;
+
 TArqMapa * TArqMapa::Inicio=0;
 TArqMapa * TArqMapa::Fim=0;
 bool TArqMapa::MapaGrande=false;
@@ -131,8 +133,10 @@ void TArqMapa::SalvarArq(bool tudo)
                 "# executar antes do controle retornar ao programa\n"
                 "exec = %d\n\n"
                 "# Se deve abrir uma janela de texto - variável telatxt\n"
-                "telatxt = %d\n\n",
-                MapaGrande, Instr::VarExecIni, Console!=0);
+                "telatxt = %d\n\n"
+                "# Aonde apresentar mensagens de erro no programa\n"
+                "log = %d\n\n",
+                MapaGrande, Instr::VarExecIni, Console!=0, err_tipo);
         }
         for (TClasse * cl = arqmapa->ClInicio; cl; cl=cl->ArqDepois)
         {

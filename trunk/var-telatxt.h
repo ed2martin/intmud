@@ -33,6 +33,8 @@ private:
         ///< Em que linha o usuário colocou o cursor, 0=no editor
     static unsigned int ColEscreve;
         ///< Coluna do texto sendo inserido na tela
+        /**< O caracter \\n faz ColEscreve=0xFFFF para inserir
+         *   nova linha quando chegar o próximo caracter */
     static unsigned int ColEditor;
         ///< Coluna do cursor na tela (texto sendo editado)
 

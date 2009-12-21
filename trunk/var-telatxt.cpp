@@ -696,7 +696,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "posx")==0)
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(ColEscreve);
+        return Instr::CriarVarInt(ColEscreve>=0xFFFF ? 0 : ColEscreve);
     }
 // Processa tecla
     if (comparaZ(nome, "tecla")==0)
