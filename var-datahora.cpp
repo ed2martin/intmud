@@ -198,21 +198,18 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
     case 10: // NovaData
         if (Instr::VarAtual - v >= 1)
         {
-            Ano = v[1].getInt();
-            if (Ano<1) Ano=1;
-            if (Ano>9999) Ano=9999;
+            int x = v[1].getInt();
+            Ano = (x<1 ? 1 : x>9999 ? 9999 : x);
         }
         if (Instr::VarAtual - v >= 2)
         {
-            Mes = v[2].getInt();
-            if (Mes<1) Mes=1;
-            if (Mes>12) Mes=12;
+            int x = v[2].getInt();
+            Mes = (x<1 ? 1 : x>12 ? 12 : x);
         }
         if (Instr::VarAtual - v >= 3)
         {
-            Dia = v[3].getInt();
-            if (Dia<1) Dia=1;
-            if (Dia>31) Dia=31;
+            int x = v[3].getInt();
+            Dia = (x<1 ? 1 : x>31 ? 31 : x);
         }
         ini = DiasMes();
         if (Dia > ini)
@@ -221,21 +218,18 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
     case 11: // NovaHora
         if (Instr::VarAtual - v >= 1)
         {
-            Hora = v[1].getInt();
-            if (Hora<0) Hora=0;
-            if (Hora>23) Hora=23;
+            int x = v[1].getInt();
+            Hora = (x<0 ? 0 : x>23 ? 23 : x);
         }
         if (Instr::VarAtual - v >= 2)
         {
-            Min = v[2].getInt();
-            if (Min<0) Min=0;
-            if (Min>59) Min=59;
+            int x = v[2].getInt();
+            Min = (x<0 ? 0 : x>59 ? 59 : x);
         }
         if (Instr::VarAtual - v >= 3)
         {
-            Seg = v[3].getInt();
-            if (Seg<0) Seg=0;
-            if (Seg>59) Seg=59;
+            int x = v[3].getInt();
+            Seg = (x<0 ? 0 : x>59 ? 59 : x);
         }
         return false;
     case 12: // NumDia
@@ -354,7 +348,7 @@ int TVarDataHora::DataNum()
 // Obtém dias conforme anos decorridos
     int a = Ano - 1;
     valor += a*1461/4 - a/100 + a/400;
-    // ou:  valor += a*365+ano/4-a/100+a/400;
+    // ou:  valor += a*365 + a/4 - a/100 + a/400;
     // ou:  valor += a*1461/4 - (a/100*3+3)/4;
     return valor;
 }

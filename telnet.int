@@ -23,6 +23,7 @@ const turf = "turf.org 4000"
 telatxt tela
 socket sock
 inttempo inic
+int1 eco
 const msg = tela.msg(arg0)
 func iniclasse
   criar(arg0)
@@ -34,25 +35,17 @@ func ini
 func inic_exec # Mensagem de abertura
   msg("Digite o endereço seguido de espaço e a porta\n")
   msg("F1 mostra os endereços predefinidos\n")
-  msg("F2 desconecta\n")
+  msg("F2 ativa/desativa eco das mensagens enviadas\n")
+  msg("F3 desconecta\n")
   msg("F4 encerra o programa\n")
 func tela_tecla # Usuário pressionou uma tecla
-  prog p
   se arg0 != "UP" & arg0 != "DOWN"
     tela.linha = 0
   fimse
-  se arg0 = "F4"
-    terminar
-  senao arg0 = "F2"
-    se sock.proto
-      sock.fechar
-      msg("\d1Desconectado\b\n")
-      inic = 2
-    senao
-      msg("\d1Já está desconectado\b\n")
-    fimse
-    ret 1
-  senão arg0 = "F1" & sock.proto = 0
+  ret tecla_[arg0]
+func tecla_F1
+  prog p
+  se sock.proto = 0
     msg("Atalhos:\n")
     p.inifunc("_serv")
     enquanto p.lin
@@ -61,10 +54,34 @@ func tela_tecla # Usuário pressionou uma tecla
     efim
     msg("Digite um atalho ou o endereço seguido de espaço e porta\n")
     ret 1
+func tecla_F2
+  eco = 1 - eco
+  se tela.posx
+    msg("\n")
   fimse
+  se eco
+    msg("\d1Eco ativado\b\n")
+  senao
+    msg("\d1Eco desativado\b\n")
+  fimse
+  ret 1
+func tecla_F3
+  se sock.proto
+    sock.fechar
+    msg("\d1Desconectado\b\n")
+    inic = 2
+  senao
+    msg("\d1Já está desconectado\b\n")
+  fimse
+  ret 1
+func tecla_F4
+  terminar
 func tela_msg # Usuário digitou alguma coisa
   txt80 linha
   se sock.proto = 0 # Desconectado
+    se arg0 = ""
+      ret
+    fimse
     linha = _serv:[arg0]
     se linha = ""
       linha = txtremove(arg0, 5)
@@ -79,16 +96,16 @@ func tela_msg # Usuário digitou alguma coisa
   senao proto = 1 # Conectando
     msg("\d1Conexão em progresso\b\n")
   senao # Conectado
-    se txt(arg0,0,1) = "+" # Começa com "+", não ecoa na tela
-      sock.msg(txt(arg0,1) + "\n")
-    senao # Mensagem que ecoa na tela
-      sock.msg(arg0 + "\n")
-      msg("\d1>>" + arg0 + "\b\n")
+    sock.msg(arg0 + "\n")
+    se eco
+      msg("\d4>>" + arg0 + "\b\n")
 func sock_err # Erro ao conectar
   msg("\d1Erro: " + arg0 + "\b\n")
 func sock_con # Conectou
   msg("\d1Conectado\b\n")
   sock.cores = 1 # Cores somente ao receber
+  sock.colmin = 1024
+  sock.colmax = 1024
 func sock_fechou # Conexão foi encerrada
   msg("\d1Conexão foi encerrada\b\n")
   inic = 5

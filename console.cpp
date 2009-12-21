@@ -37,10 +37,10 @@ int TConsole::Stdout(void) { return STDOUT_FILENO; } ///< Saída padrão
 #endif
 
 //---------------------------------------------------------------------------
-bool TConsole::Inic()
+bool TConsole::Inic(bool completo)
 {
 // Verifica se já está aberto
-    if (Aberto)
+    if (Aberto >= 2)
         return true;
 
 // Inicializa variáveis
@@ -151,6 +151,29 @@ bool TConsole::Inic()
         LinTotal = w.ws_row;
     }
 
+// Obtém código de caracteres, se é UTF-8 ou não
+// Se ausente, assume ISO8859-1
+    const char * lang = getenv("LANG");
+    ConvUTF8 = 0x100;
+    if (lang)
+    {
+        int x = strlen(lang);
+        if (x>=5 && strcmp(lang+x-5, "UTF-8")==0)
+            ConvUTF8 = 0x80;
+    }
+
+// Acerta variáveis
+    LerPont = 0;
+    LerTexto[0] = 0;
+    ini_linha = false;
+
+// Verifica se configuração completa
+    if (!completo)
+    {
+        Aberto = 1;
+        return true;
+    }
+
 // Verifica se é um terminal
     if (!isatty(STDIN_FILENO))
         return false;
@@ -171,23 +194,19 @@ bool TConsole::Inic()
     terminal.c_cc[VTIME]=0;        // Não retornar após algum tempo
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminal);
     fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
-
-// Acerta variáveis
-    LerPont = 0;
-    LerTexto[0] = 0;
-    ini_linha = false;
 #endif
 
-    Aberto = true;
+    Aberto = 2;
     return true;
 }
 
 //---------------------------------------------------------------------------
 void TConsole::Fim()
 {
-    if (!Aberto)
+    int antes = Aberto;
+    Aberto = 0;
+    if (antes < 2)
         return;
-    Aberto = false;
 #ifdef __WIN32__
     FreeConsole();
 #else
@@ -323,7 +342,26 @@ const char * TConsole::LerTecla()
     // Lê próxima tecla
         int ch;
         if (LerTexto[0]==0)
+        {
             ch = getc(stdin);
+            if (ch >= ConvUTF8)
+            {
+                if (ch >= 0xC0) // Primeiro byte do caracter
+                {
+                    if (ch < 0xE0)
+                        LerUTF8 = ch & 0x1F;
+                    else
+                        LerUTF8 = 0;
+                    continue;
+                }
+                if (LerUTF8 == 0) // Ignorando
+                    continue;
+                ch = LerUTF8 * 0x40 + (ch & 0x3F); // Obtém caracter
+                LerUTF8 = 0;
+                if (ch >= 0x100) // Ignora caracteres não ISO8859-1
+                    continue;
+            }
+        }
         else
             ch = (unsigned char)LerTexto[0], LerTexto[0] = 0;
         if (ch <= 0)
@@ -530,10 +568,16 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
         WriteFile(con_out, mens, dest-mens, &cCharsWritten, NULL);
     }
 #else
-    fwrite(texto, 1, tamanho, stdout);
+    //fwrite(texto, 1, tamanho, stdout);
     for (; tamanho>0; tamanho--,texto++)
     {
-        //putchar(*texto);
+        if (*(unsigned char*)texto < ConvUTF8)
+            putchar(*texto);
+        else
+        {
+            putchar(0xC0 + *(unsigned char*)texto / 0x40);
+            putchar(0x80 + (*texto & 0x3F));
+        }
         if (*texto == '\n')
         {
             if (ini_linha)

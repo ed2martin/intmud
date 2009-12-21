@@ -14,6 +14,7 @@
 #include <stdio.h>      // Entrada/Saída padrão
 #include <stdlib.h>     // Biblioteca padrão
 #include <string.h>     // Funções string
+#include <stdarg.h>
 #include <dirent.h>
 #include <errno.h>
 #include <assert.h>
@@ -60,6 +61,150 @@
 void Inicializa(const char * arg);
 void Termina();
 void TerminaSign(int sig);
+
+static FILE * err_log = 0;
+int err_tipo = 0;
+
+//------------------------------------------------------------------------------
+// Semelhante a sprintf(), exceto que:
+// Só processa caracteres %%, %c, %d, %u e %s
+void err_printf(const char * mens, ...)
+{
+    char txt[512];
+    char * destino = txt;
+    const char * fim = txt + sizeof(txt) - 1;
+    const char * p;
+    char * p2;
+    char numero[20];
+    int tamanho; // Para %d
+    unsigned int utamanho; // Para %u
+    va_list argp;
+
+// Prepara mensagem
+    va_start(argp, mens);
+    for (; *mens; mens++)
+    {
+        if (*mens!='%')
+        {
+            if (destino<fim)
+                *(destino++)=*mens;
+            continue;
+        }
+        mens++;
+        switch (*mens)
+        {
+        case '%':
+            if (destino<fim)
+                *(destino++)='%';
+            break;
+        case 'c':
+            if (destino<fim)
+                *(destino++)=va_arg(argp, int);
+            break;
+        case 's':
+            for (p=va_arg(argp, char *); *p && destino<fim; p++,destino++)
+                *destino=*p;
+            break;
+        case 'd':
+            tamanho=va_arg(argp, int);
+            if (destino>=fim)
+                break;
+            if (tamanho<0)
+            {
+                *destino++='-';
+                tamanho=-tamanho;
+            }
+            for (p2=numero; p2<&numero[sizeof(numero)] && tamanho; tamanho/=10)
+                *p2++=tamanho%10+'0';
+            if (p2==numero)
+                *p2++='0';
+            for (p=p2-1; p>=numero && destino<fim; p--)
+                *destino++=*p;
+            break;
+        case 'u':
+            utamanho=(unsigned int)va_arg(argp, unsigned int);
+            if (destino>=fim)
+                break;
+            for (p2=numero; p2<&numero[sizeof(numero)] && utamanho; utamanho/=10)
+                *p2++=utamanho%10+'0';
+            if (p2==numero)
+                *p2++='0';
+            for (p=p2-1; p>=numero && destino<fim; p--)
+                *destino++=*p;
+            break;
+        default:
+            mens--;
+        }
+    }
+    *destino=0;
+    va_end(argp);
+
+// Envia mensagem
+    const char msg1[] = "IntMUD versão " VERSION " (Interpretador MUD)\n";
+    switch (err_tipo)
+    {
+    case 0:
+        if (Console==0)
+        {
+            Console = new TConsole;
+            if (!Console->Inic(false))
+                exit(EXIT_FAILURE);
+            Console->EnvTxt(msg1, strlen(msg1));
+        }
+        Console->EnvTxt(txt, destino-txt);
+        break;
+    case 1:
+        if (err_log == 0)
+        {
+            strcpy(arqext, ".log");
+            err_log = fopen(arqnome, "w");
+            if (err_log==0)
+                exit(EXIT_FAILURE);
+            fwrite(msg1, 1, strlen(msg1), err_log);
+        }
+        fwrite(txt, 1, destino-txt, err_log);
+        break;
+    default:
+        exit(EXIT_FAILURE);
+    }
+}
+
+//------------------------------------------------------------------------------
+void err_fim()
+{
+#ifdef __WIN32__
+    if (Console==0)
+        exit(EXIT_FAILURE);
+    const char msg1[] = "Pressione ENTER para fechar\n";
+    Console->EnvTxt(msg1, strlen(msg1));
+    Console->CursorLin(-1);
+    int total = Console->LinAtual;
+    while (true)
+    {
+        Console->Flush();
+        const char * tecla = Console->LerTecla();
+        if (tecla==0)
+        {
+            Sleep(100);
+            //struct timeval tselect;
+            //tselect.tv_sec = 0;
+            //tselect.tv_usec = 100000;
+            //select(FD_SETSIZE, 0, 0, 0, &tselect);
+            continue;
+        }
+        if (strcmp(tecla, "ENTER")==0 || strcmp(tecla, "ESC")==0)
+            break;
+        if (strcmp(tecla, "UP")==0 && Console->LinAtual>0)
+            Console->CursorLin(-1);
+        if (strcmp(tecla, "DOWN")==0 && (int)Console->LinAtual<total)
+            Console->CursorLin(1);
+    }
+    Console->CursorLin(total - Console->LinAtual);
+    Console->Flush();
+    Console->Fim();
+#endif
+    exit(EXIT_FAILURE);
+}
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
@@ -227,7 +372,6 @@ void Inicializa(const char * arg)
 // Variáveis
     char mens[2048];
     bool erro = false;
-    FILE * log = stdout; // Para onde enviar as mensagens
     TArqLer arq;
 
 // Gerar arquivos core
@@ -340,15 +484,6 @@ void Inicializa(const char * arg)
         *arqext = 0;
     }
 
-// Obtém arquivo de log
-#ifdef __WIN32__
-    strcpy(arqext, ".log");
-    log=fopen(arqnome, "w");
-    if (log==0)
-        exit(EXIT_FAILURE);
-#endif
-    fprintf(log, "IntMUD versão " VERSION " (Interpretador MUD)\n");
-
 // Cria classes a partir dos arquivos .int
     bool ini_arq = true;
     TArqMapa * mapa = new TArqMapa(""); // Arquivo intmud.int
@@ -358,8 +493,8 @@ void Inicializa(const char * arg)
     strcpy(arqext, "." INT_EXT);
     if (!arq.Abrir(arqnome))
     {
-        fprintf(log, "Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
-        exit(EXIT_FAILURE);
+        err_printf("Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
+        err_fim();
     }
     while (true)
     {
@@ -367,8 +502,8 @@ void Inicializa(const char * arg)
         int linhanum = arq.Linha(mens, sizeof(mens));
         if (linhanum<0) // Erro
         {
-            fprintf(log, "Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
-            exit(EXIT_FAILURE);
+            err_printf("Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
+            err_fim();
         }
         if (linhanum==0) // Fim do arquivo
         {
@@ -378,9 +513,9 @@ void Inicializa(const char * arg)
             mprintf(arqext, 60, "-%s." INT_EXT, mapa->Arquivo);
             if (!arq.Abrir(arqnome))
             {
-                fprintf(log, "Abrindo arquivo %s: %s\n",
+                err_printf("Abrindo arquivo %s: %s\n",
                         arqinicio, strerror(errno));
-                exit(EXIT_FAILURE);
+                err_fim();
             }
         }
 
@@ -408,7 +543,16 @@ void Inicializa(const char * arg)
                 Instr::VarExecIni = atoi(valor);
             if (comparaZ(mens, "telatxt")==0)
                 if (atoi(valor) && Console==0)
+                {
                     Console = new TConsole;
+                    if (!Console->Inic())
+                    {
+                        err_printf("Problema iniciando console\n");
+                        err_fim();
+                    }
+                }
+            if (comparaZ(mens, "log")==0)
+                err_tipo = (atoi(valor) != 0);
 
         // Verifica opção MAPAGRANDE, que indica vários arquivos
             if (comparaZ(mens, "mapagrande")==0 && atoi(valor))
@@ -422,8 +566,8 @@ void Inicializa(const char * arg)
                 dirent * sdir;
                 if (dir==0)
                 {
-                    fprintf(log, "Procurando arquivos: %s\n", strerror(errno));
-                    exit(EXIT_FAILURE);
+                    err_printf("Procurando arquivos: %s\n", strerror(errno));
+                    err_fim();
                 }
 
             // Obtém nomes dos arquivos
@@ -475,14 +619,14 @@ void Inicializa(const char * arg)
     // Verifica se classe é válida ou já existe
         if (TClasse::NomeValido(mens+1)==false)
         {
-            fprintf(log, "%s:%d: Classe inválida: [%s]\n",
+            err_printf("%s:%d: Classe inválida: [%s]\n",
                             arqinicio, linhanum, mens+1);
             erro=true;
             continue;
         }
         if (TClasse::Procura(mens+1))
         {
-            fprintf(log, "%s:%d: Classe repetida: [%s]\n",
+            err_printf("%s:%d: Classe repetida: [%s]\n",
                             arqinicio, linhanum, mens+1);
             erro=true;
             continue;
@@ -495,7 +639,7 @@ void Inicializa(const char * arg)
 
 // Verifica se ocorreu erro no mapa
     if (erro)
-        exit(EXIT_FAILURE);
+        err_fim();
 
 // Para testes - mostra arquivos e classes
 #if 0
@@ -530,8 +674,8 @@ void Inicializa(const char * arg)
     strcpy(arqext, "." INT_EXT);
     if (!arq.Abrir(arqnome))
     {
-        fprintf(log, "Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
-        exit(EXIT_FAILURE);
+        err_printf("Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
+        err_fim();
     }
     mapa = TArqMapa::Inicio;
     while (true)
@@ -540,8 +684,8 @@ void Inicializa(const char * arg)
         int linhanum = arq.Linha(mens, sizeof(mens));
         if (linhanum<0) // Erro
         {
-            fprintf(log, "Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
-            exit(EXIT_FAILURE);
+            err_printf("Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
+            err_fim();
         }
         // Verifica se é nome de classe
         char * pclasse = 0;
@@ -576,9 +720,9 @@ void Inicializa(const char * arg)
             mprintf(arqext, 60, "-%s." INT_EXT, mapa->Arquivo);
             if (!arq.Abrir(arqnome))
             {
-                fprintf(log, "Abrindo arquivo %s: %s\n",
+                err_printf("Abrindo arquivo %s: %s\n",
                         arqinicio, strerror(errno));
-                exit(EXIT_FAILURE);
+                err_fim();
             }
             continue;
         }
@@ -593,7 +737,7 @@ void Inicializa(const char * arg)
             classeatual = TClasse::Procura(mens+1);
             if (classeatual==0)
             {
-                fprintf(log, "%s:%d: Classe não encontrada: [%s]\n",
+                err_printf("%s:%d: Classe não encontrada: [%s]\n",
                             arqinicio, linhanum, mens+1);
                 erro=true;
                 break;
@@ -603,16 +747,16 @@ void Inicializa(const char * arg)
     // Instruções antes da definição da classe
         if (classeatual==0)
         {
-            fprintf(log, "%s:%d: Instruções não pertencem a nenhuma classe\n",
+            err_printf("%s:%d: Instruções não pertencem a nenhuma classe\n",
                         arqinicio, linhanum);
             erro=true;
             continue;
         }
     // Codifica instrução
-        //fprintf(log, "= %s\n", mens);
+        //err_printf("= %s\n", mens);
         if (pcomando + sizeof(mens) >= sizeof(comando))
         {
-            fprintf(log, "%s:%d: Espaço insuficiente; classe muito grande\n",
+            err_printf("%s:%d: Espaço insuficiente; classe muito grande\n",
                         arqinicio, linhanum);
             erro=true;
             continue;
@@ -620,7 +764,7 @@ void Inicializa(const char * arg)
         if (!Instr::Codif(comando+pcomando, mens,
                             sizeof(comando)-pcomando))
         {
-            fprintf(log, "%s:%d: %s\n",
+            err_printf("%s:%d: %s\n",
                         arqinicio, linhanum, comando+pcomando);
             erro=true;
             continue;
@@ -631,17 +775,17 @@ void Inicializa(const char * arg)
         if (tam>sizeof(comando)-pcomando)
             tam=sizeof(comando)-pcomando;
         for (unsigned x=0; x<tam; x++)
-            fprintf(log, " %02X", (unsigned char)comando[pcomando+x]);
-        fprintf(log, "\n");
+            err_printf(" %02X", (unsigned char)comando[pcomando+x]);
+        err_printf("\n");
 
         if (Instr::Mostra(mens, comando+pcomando, sizeof(mens)))
-            fprintf(log, "+ %s\n", mens);
+            err_printf("+ %s\n", mens);
         else
-            fprintf(log, "- %s\n", mens);
+            err_printf("- %s\n", mens);
         if (Instr::Decod(mens, comando+pcomando, sizeof(mens)))
-            fprintf(log, "++ %s\n", mens);
+            err_printf("++ %s\n", mens);
         else
-            fprintf(log, "-- %s\n", mens);
+            err_printf("-- %s\n", mens);
 #endif
     // Verifica instrução
         if (comando[pcomando+2]==Instr::cHerda)
@@ -654,7 +798,7 @@ void Inicializa(const char * arg)
                 while (*p++);
                 if (obj!=classeatual)
                     continue;
-                fprintf(log, "%s:%d: Impossível herdar a própria classe\n",
+                err_printf("%s:%d: Impossível herdar a própria classe\n",
                             arqinicio, linhanum);
                 erro=true;
                 continue;
@@ -663,7 +807,7 @@ void Inicializa(const char * arg)
         const char * p = checalinha.Instr(comando+pcomando);
         if (p)
         {
-            fprintf(log, "%s:%d: %s\n", arqinicio, linhanum, p);
+            err_printf("%s:%d: %s\n", arqinicio, linhanum, p);
             erro=true;
             continue;
         }
@@ -672,14 +816,14 @@ void Inicializa(const char * arg)
 
 // Verifica se ocorreu erro no mapa
     if (erro)
-        exit(EXIT_FAILURE);
+        err_fim();
 
 // Verifica se todas as classes foram anotadas
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
         if (cl->Comandos==0)
         {
-            fprintf(log, "Erro de fase; provavelmente algum arquivo mudou\n");
-            exit(EXIT_FAILURE);
+            err_printf("Erro de fase; provavelmente algum arquivo mudou\n");
+            err_fim();
         }
 
 // Acerta lista de classes derivadas
@@ -720,8 +864,8 @@ void Inicializa(const char * arg)
 // Inicializa console
     if (!TVarTelaTxt::Inic())
     {
-        fprintf(log, "Problema iniciando console\n");
-        exit(EXIT_FAILURE);
+        err_printf("Problema iniciando console\n");
+        err_fim();
     }
 #ifndef __WIN32__
     signal(SIGINT, TerminaSign);
@@ -734,10 +878,9 @@ void Inicializa(const char * arg)
     bool xinic=(WSAStartup(MAKELONG(1, 1), &info) != SOCKET_ERROR);
     if (!xinic)
     {
-        fprintf(log, "Problema inicializando WinSock\n");
-        exit(EXIT_FAILURE);
+        err_printf("Problema inicializando WinSock\n");
+        err_fim();
     }
-    fclose(log);
 #else
         // Ignora sinal PIPE
     signal(SIGPIPE, SIG_IGN);

@@ -11,7 +11,7 @@
 class TConsole
 {
 public:
-    TConsole() { Aberto=false; };
+    TConsole() { Aberto=0; };
         ///< Construtor
     ~TConsole() { Fim(); }
         ///< Destrutor
@@ -23,9 +23,10 @@ public:
     int Stdout(void); ///< Saída padrão
 #endif
 
-    bool Inic();
+    bool Inic(bool completo=true);
         ///< Inicia console
-        /**< @return true se conseguiu inicializar */
+        /**< @param completo false=somente para escrita, true=leitura e escrita
+         *   @return true se conseguiu inicializar */
     void Fim();
         ///< Encerra utilização do console
     void MudaTitulo(const char * texto);
@@ -93,8 +94,9 @@ public:
     unsigned int ColAtual;
         ///< Coluna atual na tela; somente leitura
 
-    bool Aberto;
+    unsigned char Aberto;
         ///< Se console foi aberto
+        /**< 0=fechado, 1=aberto para enviar texto, 2=aberto */
     bool ini_linha;
         ///< Se passou para nova linha porque terminou a linha
     char LerTexto[16];  ///< Usado internamente por Ler()
@@ -112,6 +114,8 @@ public:
 #else
     struct termios term_antes; ///< Configuração anterior do terminal
     int LerPont; ///< Para processar ESC em Ler()
+    int ConvUTF8; ///< 0x80 se está usando UTF-8, 0x100 se não está
+    int LerUTF8; ///< Caracter anterior, lendo UTF-8
 #endif
 };
 
