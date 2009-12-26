@@ -26,6 +26,9 @@
 
 //#define DEBUG  // Mostrar e testar vetores de TVarIntTempo
 
+// Valor máximo de IntTempo é INTTEMPO_MAX*INTTEMPO_MAX-1
+#define INTTEMPO_MAX 0x400
+
 TVarIntTempo ** TVarIntTempo::VetMenos = 0;
 TVarIntTempo ** TVarIntTempo::VetMais = 0;
 unsigned int TVarIntTempo::TempoMenos = 0;
@@ -113,29 +116,29 @@ void TVarRef::Mover(TVarRef * destino)
 int TVarIncDec::getInc()
 {
     unsigned int v = TempoIni - valor;
-    return (v>0xFFFF ? 0xFFFF : v);
+    return (v >= INTTEMPO_MAX*INTTEMPO_MAX ? INTTEMPO_MAX*INTTEMPO_MAX-1 : v);
 }
 
 //------------------------------------------------------------------------------
 int TVarIncDec::getDec()
 {
     unsigned int v = valor - TempoIni;
-    return (v>0xFFFF ? 0 : v);
+    return (v >= INTTEMPO_MAX*INTTEMPO_MAX ? 0 : v);
 }
 
 //------------------------------------------------------------------------------
 void TVarIncDec::setInc(int v)
 {
-    if (v<0)  v=0;
-    if (v>0xFFFF)  v=0xFFFF;
+    if (v < 0)  v=0;
+    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)  v = INTTEMPO_MAX*INTTEMPO_MAX-1;
     valor = TempoIni - v;
 }
 
 //------------------------------------------------------------------------------
 void TVarIncDec::setDec(int v)
 {
-    if (v<0)  v=0;
-    if (v>0xFFFF)  v=0xFFFF;
+    if (v < 0)  v=0;
+    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)  v = INTTEMPO_MAX*INTTEMPO_MAX-1;
     valor = TempoIni + v;
 }
 
@@ -144,10 +147,10 @@ void TVarIntTempo::PreparaIni()
 {
     if (TVarIntTempo::VetMenos)
         return;
-    VetMenos = new TVarIntTempo*[0x100];
-    VetMais = new TVarIntTempo*[0x100];
-    memset(VetMenos, 0, sizeof(TVarIntTempo*)*0x100);
-    memset(VetMais, 0, sizeof(TVarIntTempo*)*0x100);
+    VetMenos = new TVarIntTempo*[INTTEMPO_MAX];
+    VetMais = new TVarIntTempo*[INTTEMPO_MAX];
+    memset(VetMenos, 0, sizeof(TVarIntTempo*)*INTTEMPO_MAX);
+    memset(VetMais, 0, sizeof(TVarIntTempo*)*INTTEMPO_MAX);
 }
 
 //------------------------------------------------------------------------------
@@ -158,7 +161,7 @@ int TVarIntTempo::TempoEspera()
 #endif
     int menos = TempoMenos;
     int total = 0;
-    for (; menos<0x100 && total<10; menos++,total++)
+    for (; menos<INTTEMPO_MAX && total<10; menos++,total++)
         if (VetMenos[menos])
             return total;
     return total;
@@ -174,12 +177,12 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
     {
     // Avança TempoMenos
     // Move objetos de VetMais para VetMenos se necessário
-        if (TempoMenos < 0xFF)
+        if (TempoMenos < INTTEMPO_MAX-1)
             TempoMenos++;
         else
         {
             TempoMenos = 0;
-            TempoMais = (TempoMais + 1) & 0xFF;
+            TempoMais = (TempoMais + 1) % INTTEMPO_MAX;
             while (true)
             {
                 TVarIntTempo * obj = VetMais[TempoMais];
@@ -238,7 +241,7 @@ int TVarIntTempo::getValor()
                     VetMais[IndiceMais]!=this)
         return 0;
     return (unsigned short)
-        ((IndiceMais - TempoMais) * 0x100 + IndiceMenos - TempoMenos);
+        ((IndiceMais - TempoMais) * INTTEMPO_MAX + IndiceMenos - TempoMenos);
 }
 
 //------------------------------------------------------------------------------
@@ -263,13 +266,13 @@ void TVarIntTempo::setValor(int valor)
 // Menos que zero: não está em nenhuma lista
     if (valor<=0)
         return;
-// Máximo 0xFFFF
-    if (valor > 0xFFFF)
-        valor = 0xFFFF;
+// Valor máximo
+    if (valor >= INTTEMPO_MAX * INTTEMPO_MAX)
+        valor = INTTEMPO_MAX * INTTEMPO_MAX - 1;
 // Acerta IndiceMenos e IndiceMais
-    valor += TempoMais * 0x100 + TempoMenos;
-    IndiceMenos = valor;
-    IndiceMais = valor / 0x100;
+    valor += TempoMais * INTTEMPO_MAX + TempoMenos;
+    IndiceMenos = valor % INTTEMPO_MAX;
+    IndiceMais = valor / INTTEMPO_MAX;
 // Coloca na lista apropriada
     if (IndiceMais != TempoMais || IndiceMenos <= TempoMenos)
     {
@@ -319,7 +322,7 @@ void TVarIntTempo::DebugVet(bool mostrar)
 {
     if (mostrar)
         printf("VetMenos: ");
-    for (int x=0; x<0x100; x++)
+    for (int x=0; x<INTTEMPO_MAX; x++)
         if (VetMenos[x])
         {
             int y=0;
@@ -334,7 +337,7 @@ void TVarIntTempo::DebugVet(bool mostrar)
         }
     if (mostrar)
         printf("\nVetMais: ");
-    for (int x=0; x<0x100; x++)
+    for (int x=0; x<INTTEMPO_MAX; x++)
         if (VetMais[x])
         {
             int y=0;

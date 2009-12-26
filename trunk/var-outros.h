@@ -54,8 +54,8 @@ public:
 
 private:
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
-    unsigned char IndiceMenos;   ///< Índice em VetMenos
-    unsigned char IndiceMais;    ///< Índice em VetMais
+    unsigned short IndiceMenos;   ///< Índice em VetMenos
+    unsigned short IndiceMais;    ///< Índice em VetMais
     TVarIntTempo * Antes;        ///< Objeto anterior na lista ligada
     TVarIntTempo * Depois;       ///< Próximo objeto na lista ligada
 

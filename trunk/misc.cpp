@@ -21,16 +21,19 @@
 #endif
 //#include "config.h"
 #include "misc.h"
+#include "instr.h"
 #include "shs.h"
 
 unsigned long TempoIni;
 char * arqnome = 0;
 char * arqinicio = 0;
 char * arqext = 0;
-char tabNOMES[256];
-char tabCOMPLETO[256];
-char tabMAI[256];
-char tabMIN[256];
+char * tabNOMES = 0;
+char * tabCOMPLETO = 0;
+char * tabMAI = 0;
+char * tabMIN = 0;
+char * tabTXTCOD = 0;
+char * tabTXTDEC = 0;
 
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
@@ -45,10 +48,21 @@ void tabASCinic(void)
             "ççÇ"; // C cedilha
     const char * cpont;
     int caract;
+// Verifica se deve acertar alguma tabela
+    if (tabNOMES)
+        return;
+// Aloca memória
+    tabNOMES = new char[0x600];
+    tabCOMPLETO = tabNOMES + 0x100;
+    tabMAI = tabNOMES + 0x200;
+    tabMIN = tabNOMES + 0x300;
+    tabTXTCOD = tabNOMES + 0x400;
+    tabTXTDEC = tabNOMES + 0x500;
 // Acerta tabNOMES
     memset(tabNOMES,0,256);
     tabNOMES[(unsigned char)'_'] = '_';
     tabNOMES[(unsigned char)' '] = '_';
+    tabNOMES[(unsigned char)'@'] = '@';
     for (caract='a'; caract<='z'; caract++) // Letras de A a Z
         tabNOMES[caract-0x20] = tabNOMES[caract] = caract;
     for (caract='0'; caract<='9'; caract++) // Números de 0 a 9
@@ -62,9 +76,9 @@ void tabASCinic(void)
     for (caract=0; caract<256; caract++)
         tabCOMPLETO[caract] = (tabNOMES[caract] ? tabNOMES[caract] : caract);
 // Acerta tabMAI e tabMIN
-    memcpy(tabMAI, tabCOMPLETO, sizeof(tabMAI));
+    memcpy(tabMAI, tabCOMPLETO, 0x100);
     tabMAI[(unsigned char)' '] = ' ';
-    memcpy(tabMIN, tabMAI, sizeof(tabMIN));
+    memcpy(tabMIN, tabMAI, 0x100);
     for (caract='A'; caract<='Z'; caract++) // Letras de A a Z
     {
         tabMAI[caract+0x20] = caract;
@@ -78,6 +92,27 @@ void tabASCinic(void)
         tabMIN[(unsigned char)cpont[1]] = cpont[1];
         tabMIN[(unsigned char)cpont[2]] = cpont[1];
     }
+// Acerta tabTXTCOD
+    memset(tabTXTCOD, 0, 0x100);
+    tabTXTCOD[Instr::ex_barra_b] = 'b';
+    tabTXTCOD[Instr::ex_barra_c] = 'c';
+    tabTXTCOD[Instr::ex_barra_d] = 'd';
+    tabTXTCOD[Instr::ex_barra_n] = 'n';
+    tabTXTCOD[0x21] = 'e'; // Exclamação
+    tabTXTCOD[0x22] = 'a'; // Aspas
+    tabTXTCOD[(unsigned char)'@'] = '@';
+    caract = 'f';
+    for (int x=0x23; x<127; x++)
+        if (tabNOMES[x]==0)
+        {
+            tabTXTCOD[x] = caract;
+            caract = (caract=='m' ? 'o' : caract=='z' ? '0' : caract+1);
+        }
+// Acerta tabTXTDEC
+    memset(tabTXTDEC, 0, 0x100);
+    for (int x=0; x<0x100; x++)
+        if (tabTXTCOD[x])
+            tabTXTDEC[(unsigned char)tabTXTCOD[x]] = x;
 }
 
 //------------------------------------------------------------------------------

@@ -1,0 +1,215 @@
+mapagrande = 0
+exec = 5000
+telatxt = 1
+
+[tela]
+telatxt tela
+textotxt t # Texto - arquivo sendo editado
+textopos p # Linha atual no arquivo
+txt20 opcao # Aonde está; menu, abrindo arquivo, editando linha, etc.
+txt512 nomearq # Nome do arquivo aberto
+const msg = tela.msg(arg0)
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  se tela.proto = 0
+    terminar
+  fimse
+  opcao = "menu"
+  p = t.ini
+  msg("Tecla F1 mostra menu de opções\n")
+  menu:mostra
+
+func tela_tecla
+  se arg0 != "UP" & arg0 != "DOWN"
+    tela.linha = 0
+  fimse
+  #msg(opcao + " : tecla_" + txtcod(arg0) + "\n")
+  se [opcao]:tecla_[txtcod(arg0)]
+    ret 1
+  senao arg0 != "UP" & arg0 != "DOWN"
+    ret [opcao]:outro(arg0)
+
+func teste1
+  arqtxt arq
+  se (!arq.abrir("doc/criar_autoconf.txt", 0))
+    msg("Erro ao abrir arquivo\n")
+  fimse
+  msg("Arquivo aberto\n")
+  enquanto !arq.eof
+    t.addini(arq.ler)
+#msg(arq.ler + "\n")
+  efim
+  p = t.ini
+  msg("Linhas=" + t.linhas + "  Bytes=" + t.bytes + "\n")
+  enquanto t.linhas
+    msg(t.remove(1) + "\n")
+  efim
+
+[menu]
+func mostra
+  msg("A Abre um arquivo txt\n")
+  msg("S Salva o arquivo\n")
+  msg("E edita linha atual\n")
+  msg("+ insere linha vazia\n")
+  msg("- apaga linha atual\n")
+  msg("I mostra informações do arquivo e linha atual\n")
+  msg("Setas sobem e descem uma linha no arquivo\n")
+  msg("Espaço mostra o conteúdo da linha atual\n")
+
+func outro
+  msg("Qual sua opção?\n")
+  ret 1
+
+func tecla_F1
+  menu:mostra
+  msg("Qual sua opção?\n")
+  ret 1
+
+func tecla_a # Abrir arquivo
+  msg("Qual o nome do arquivo?\n")
+  tela.texto = ""
+  opcao = "abrir"
+  ret 1
+
+func tecla_s # Salvar arquivo
+  arqtxt arq
+  textopos posic
+  se !arq.abrir(nomearq, 2)
+    msg("Erro ao abrir arquivo\n")
+  senao
+    posic = t.ini
+    enquanto posic.lin
+      arq.msg(posic.texto + "\n")
+      posic.depois
+    efim
+    arq.flush
+    arq.truncar(nomearq, arq.pos)
+    msg("Arquivo foi salvo\n")
+  fimse
+  ret 1
+
+func tecla_e # Edita linha atual
+  msg("Editando\n")
+  tela.texto = p.texto
+  opcao = "editor"
+  ret 1
+
+func tecla_@o # Insere linha vazia
+  p.add("")
+  msg("Linha adicionada\n")
+  ret 1
+
+func tecla_@q # Remove linha atual
+  p.remove
+  msg("Linha removida\n")
+  ret 1
+
+func tecla_i # Informações
+  msg("Linha " + p.linha + " de " + t.linhas)
+  msg(", byte " + p.byte + " de " + t.bytes + "\n")
+  ret 1
+
+func tecla_UP
+  se p.linha = 0
+    msg("\d1Início do arquivo\b\n")
+  senao
+    p.antes
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla_DOWN
+  p.depois
+  se !p.lin
+    msg("\d1Fim do arquivo\b\n")
+  senao
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla_PGUP
+  se p.linha = 0
+    msg("\d1Início do arquivo\b\n")
+  senao
+    p.antes(10)
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla_PGDN
+  p.depois(10)
+  se !p.lin
+    msg("\d1Fim do arquivo\b\n")
+  senao
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla__
+  msg(p.texto + "\n")
+  ret 1
+
+[editor]
+func tecla_F1
+  msg("ENTER salva a linha atual, ESC não salva\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  tela.linha = 0
+  opcao = "menu"
+  ret 1
+
+func tecla_ENTER
+  msg("Feito\n")
+  p.mudar(tela.texto)
+  tela.texto = ""
+  tela.linha = 0
+  opcao = "menu"
+  ret 1
+
+[abrir]
+func tecla_F1
+  msg("Digite o nome do arquivo ou pressione ESC para cancelar\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  tela.linha = 0
+  opcao = "menu"
+  ret 1
+
+func tecla_ENTER
+  arqtxt arq
+  se !arq.abrir(tela.texto, 0)
+    msg("Erro ao abrir arquivo: " + tela.texto + "\n")
+  senao
+    nomearq = tela.texto
+# Lê arquivo
+    t.limpar
+    enquanto !arq.eof
+      t.addfim(arq.ler)
+    efim
+# Apaga última linha se estiver vazia
+    p = t.fim
+    p.antes
+    se p.texto = ""
+      p.remove
+    fimse
+# Arquivo foi lido
+    p = t.ini
+    msg("Arquivo lido; linhas=" + t.linhas + ", bytes=" + t.bytes + "\n")
+  fimse
+  tela.texto = ""
+  tela.linha = 0
+  opcao = "menu"
+  ret 1

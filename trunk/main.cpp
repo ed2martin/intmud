@@ -33,8 +33,6 @@
  #include <unistd.h>     // read e write
  #include <sys/time.h>
  #include <ulimit.h>
- #include <sys/resource.h>
- #include <sys/vtimes.h>
 #endif
 #include <time.h>       // Obter data/hora do sistema
 #include "config.h"
@@ -55,8 +53,15 @@
 #include "random.h"
 #include "misc.h"
 
+// ulimit -S -c 20000
 //#define CORE    // Para gerar arquivos core
 //#define DEBUG   // Para não colocar o programa em segundo plano
+
+//------------------------------------------------------------------------------
+#if defined CORE && !defined __WIN32__
+ #include <sys/resource.h>
+ #include <sys/vtimes.h>
+#endif
 
 void Inicializa(const char * arg);
 void Termina();
@@ -371,7 +376,8 @@ void Inicializa(const char * arg)
 {
 // Variáveis
     char mens[2048];
-    bool erro = false;
+    bool erro = false; // Se ocorreu algum erro
+    bool telatxt = false; // Se deve abrir janela do console
     TArqLer arq;
 
 // Gerar arquivos core
@@ -542,15 +548,7 @@ void Inicializa(const char * arg)
             if (comparaZ(mens, "exec")==0)
                 Instr::VarExecIni = atoi(valor);
             if (comparaZ(mens, "telatxt")==0)
-                if (atoi(valor) && Console==0)
-                {
-                    Console = new TConsole;
-                    if (!Console->Inic())
-                    {
-                        err_printf("Problema iniciando console\n");
-                        err_fim();
-                    }
-                }
+                telatxt = atoi(valor);
             if (comparaZ(mens, "log")==0)
                 err_tipo = (atoi(valor) != 0);
 
@@ -862,6 +860,8 @@ void Inicializa(const char * arg)
         cl->AcertaVar();
 
 // Inicializa console
+    if (telatxt && Console==0)
+        Console = new TConsole;
     if (!TVarTelaTxt::Inic())
     {
         err_printf("Problema iniciando console\n");
