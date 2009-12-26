@@ -450,7 +450,7 @@ void TBlocoPos::MoverPos(int numlinhas)
                 {
                     x++, numlinhas++;
                     LinhaTxt -= lin - numlinhas;
-                    PosicTxt -= PosicBloco - x;
+                    PosicTxt -= Bloco->Bytes - x;
                     PosicBloco = x;
                     return;
                 }
@@ -734,6 +734,8 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         ini->Linhas += linhas;
         proximo->Bytes -= total;
         proximo->Linhas -= linhas;
+    // Passa para o próximo bloco
+        ini = proximo;
     }
 }
 
@@ -1007,6 +1009,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         if (Instr::VarAtual == v+1)
         {
             const char * txt = v[1].getTxt();
+            TextoTxt->IniBloco();
             Mudar(txt, strlen(txt)+1, 0);
             return false;
         }
@@ -1025,6 +1028,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         int total = pos->Bloco->LinhasBytes(pos->PosicBloco, linhas);
         if (total<=0)
             return false;
+        TextoTxt->IniBloco();
         if (total <= 8192)
         {
             char txt[8192];

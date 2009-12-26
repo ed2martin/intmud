@@ -20,10 +20,12 @@ extern char * arqext;    ///< A partir de onde colocar a extensão.
         tabASCinic deve ser chamado no início do programa. */
 void tabASCinic(void);
 
-extern char tabNOMES[];    ///< Apenas caracteres válidos em nomes de classes
-extern char tabCOMPLETO[]; ///< Todos os caracteres
-extern char tabMAI[]; ///< Todos os caracteres em letras maiúsculas
-extern char tabMIN[]; ///< Todos os caracteres em letras minúsculas
+extern char * tabNOMES;    ///< Apenas caracteres válidos em nomes de classes
+extern char * tabCOMPLETO; ///< Todos os caracteres
+extern char * tabMAI;      ///< Todos os caracteres em letras maiúsculas
+extern char * tabMIN;      ///< Todos os caracteres em letras minúsculas
+extern char * tabTXTCOD;   ///< Usado para codificar caracteres: txtcod
+extern char * tabTXTDEC;   ///< Usado para decodificar caracteres: txtdec
 
     /** Monta string.
         Semelhante a sprintf(), exceto que:

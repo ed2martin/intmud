@@ -219,7 +219,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
             return false;
         }
     // Se conseguiu abrir arquivo...
-        if (descr >= 0)
+        if (descr != 0)
         {
             if (arq)
                 fclose(arq);
@@ -235,7 +235,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Fflush
-    if (comparaZ(nome, "fflush")==0)
+    if (comparaZ(nome, "flush")==0)
     {
         if (arq)
             fflush(arq);

@@ -463,6 +463,37 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     case 9: // txtnome
         destino = txtNome(destino, txt, sizeof(mens));
         break;
+    case 10: // txtcod
+        while (*txt && destino<mens+sizeof(mens)-2)
+        {
+            unsigned char ch = tabTXTCOD[*(unsigned char*)txt];
+            if (ch)
+                *destino++='@', *destino++=ch;
+            else
+            {
+                ch = tabNOMES[*(unsigned char*)txt];
+                if (ch)
+                    *destino++=ch;
+            }
+            txt++;
+        }
+        break;
+    case 11: // txtdec
+        while (*txt && destino<mens+sizeof(mens)-1)
+        {
+            if (*txt!='@')
+                *destino++ = *txt++;
+            else if (txt[1])
+            {
+                unsigned char ch = tabTXTDEC[*(unsigned char*)(txt+1)];
+                if (ch)
+                    *destino++ = ch;
+                txt+=2;
+            }
+            else
+                break;
+        }
+        break;
     default:
         return false;
     }

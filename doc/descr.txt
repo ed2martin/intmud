@@ -53,8 +53,12 @@ herda <classe 1>, <classe 2>, ..., <classe N>
 variáveis e constantes do objeto
 funções (func) e constantes (const) do objeto
 
-Nota: Nomes de classe podem ter espaço, mas eles são tratados como o caracter
-"_" no restante do programa.
+Nomes de classes podem ser compostos dos caracteres de A a Z, c cedilha,
+dígitos de 0 a 9, e arroba. Podem conter espaços, mas eles são tratados como
+se fossem o caracter "_" no restante do programa.
+
+Nomes de funções, variáveis e constantes seguem o mesmo padrão, mas não podem
+começar com um dígito de 0 a 9.
 
 Cada função:
 
@@ -183,11 +187,11 @@ uint16 <nomedavariável>
 uint32 <nomedavariável>
     Número inteiro de 0 a 4294967295
 intinc <nomedavariável>
-    Número inteiro de 0 a 65535, que é somado 1 a cada
-    décimo de segundo, até chegar a 65535
+    Número inteiro de 0 a 1048575, que é somado 1 a cada décimo de segundo,
+    até chegar a 1048575 (29 horas, 7 minutos e 37.5 segundos).
 intdec <nomedavariável>
-    Número inteiro de 0 a 65535, que é subtraido 1 a cada
-    décimo de segundo, até chegar a 0
+    Número inteiro de 0 a 1048575, que é subtraido 1 a cada décimo
+    de segundo, até chegar a 0.
 real
     Corresponde ao tipo "double" em C++
 txt1 a txt512 seguido do nome da variável:
@@ -510,6 +514,35 @@ intsenha(<texto>)
     1 = muito pequena (menos de 5 caracteres)
     2 = contém caracteres inválidos
     3 = contém só letras ou só números
+
+txtcod(texto)
+    Codifica um texto de modo que possa ser usado como nome de variável.
+    Caracteres válidos em nomes de variáveis não são alterados, com exceção
+    do espaço, que muda para '_'.
+
+    Os caracteres modificados são:
+    @ /b /c /d /n  mudam para  @@ @b @c @d @n
+    " ! # $ %  mudam para  @a @e @f @g @h
+    & ' ( ) *  mudam para  @i @j @k @l @m
+    + , - . /  mudam para  @o @p @q @r @s
+    : ; < = >  mudam para  @t @u @v @w @x
+    ? [ \ ] ^  mudam para  @y @z @0 @1 @2
+    ` { | } ~  mudam para  @3 @4 @5 @6 @7
+
+    Vide exemplo em txtdec (abaixo).
+
+txtdec(texto)
+    Decodifica um texto. Processo inverso de txtcod.
+
+    Exemplo de como testar txtcod e txtdec:
+    telatxt = 1
+    [tela]
+    telatxt tela
+    func iniclasse
+      criar(arg0)
+    func tela_msg
+      tela.msg("txtcod = \"" + txtcod(arg0) + "\"\n")
+      tela.msg("txtdec = \"" + txtdec(txtcod(arg0)) + "\"\n")
 
 txtremove(<texto>, <valor>)
     Retorna um texto semelhante a <texto>, mas removendo espaços e/ou
@@ -1018,7 +1051,7 @@ arqtxt <nomedavariável>
         Escreve texto no arquivo.
         Se for especificado mais de um texto, serão concatenados no arquivo.
         Exemplo, escr("ab", "\n") é o mesmo que escr("ab\n")
-    fflush
+    flush
         Grava em arquivo as alterações pendentes.
     ler
         Lê uma linha do arquivo; retorna a linha lida sem o \n no final.
@@ -1038,10 +1071,11 @@ arqtxt <nomedavariável>
         1 se chegou no fim do arquivo, 0 se não chegou.
 
 inttempo <nomedavariável>
-    Uma variável inteira de 0 a 65535, subtraída 1 a cada décimo de segundo.
+    Uma variável inteira de 0 a 1048575, subtraída 1 a cada décimo de segundo.
     A diferença de inttempo para intdec é que quando chega a 0, uma função
     do objeto é executada. O nome da função é <nomedavariável>_exec.
     Na função: arg0 = índice da variável vetor, se não for vetor arg0=0
+    Nota: o valor 1048575 corresponde a 29 horas, 7 minutos e 37.5 segundos.
 
     Exemplo:
     [x]
