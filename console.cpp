@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <string.h>
 #ifdef __WIN32__
- #include "windows.h"
+ #include <windows.h>
 #else
  #include <termios.h>
  #include <fcntl.h>
@@ -48,11 +48,95 @@ bool TConsole::Inic(bool completo)
     ColTotal = 80;
     LinAtual = 0;
     CorAtual = 0x100; //0x70;
+    Charset = 0x100;
+    LerUTF8 = 0;
 
 #ifdef __WIN32__
 // Aloca console
     if (!AllocConsole())
         return false;
+
+// Obtém HANDLE de entrada e saída
+    con_in  = GetStdHandle(STD_INPUT_HANDLE);
+    con_out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+// Obtém o conjunto de caracteres
+    switch (GetConsoleOutputCP())
+    {
+    case 28591: // iso8859-1
+        Charset = 0x101;
+        break;
+    case 1252: // cp1252
+        Charset = 0x102;
+        break;
+    case 850:  // ibm850
+        Charset = 0x103;
+        break;
+    case 65001: // utf-8
+        Charset = 0x80;
+        break;
+    }
+
+// Configuração do console
+    if (!SetConsoleMode(con_in, ENABLE_WINDOW_INPUT))
+    {
+        FreeConsole();
+        return false;
+    }
+
+// Tamanho da tela
+    CONSOLE_SCREEN_BUFFER_INFO atrib;
+    if (GetConsoleScreenBufferInfo(con_out, &atrib))
+    {
+        ColTotal = atrib.dwSize.X;
+        LinTotal = atrib.dwSize.Y;
+    }
+
+// Acerta cor e variáveis
+    MoverCursor = false;
+    LerCont = 0;
+    LerTotal = 0;
+
+#else
+// Obtém o tamanho do terminal
+// Nota: pode-se usar 'signal' para ler o sinal SIGWINCH - quando tamanho mudar
+    struct winsize w;
+    memset(&w, 0, sizeof(w));
+    int stat = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    if (stat == 0)
+    {
+        ColTotal = w.ws_col;
+        LinTotal = w.ws_row;
+    }
+
+// Obtém o conjunto de caracteres
+// Nota: para obter os nomes possíveis executar: locale -m
+    const char * lang = getenv("LANG");
+    if (lang)
+    {
+        char mens[0x100];
+        char * d = mens;
+        for (; lang && d<mens+sizeof(mens)-1; lang++)
+            if (*lang>='a' && *lang<='z')
+                *d++ = *lang - 0x20;
+            else if (*lang != '-')
+                *d++ = *lang;
+        *d=0;
+        if (strstr(mens, "UTF8")!=0)
+            Charset = 0x80;
+        else if (strstr(mens, "ISO88591")!=0 && strstr(mens, "ISO885915")==0)
+            Charset = 0x101;
+        else if (strstr(mens, "CP1252")!=0)
+            Charset = 0x102;
+        else if (strstr(mens, "CP850")!=0 || strstr(mens, "IBM850")!=0)
+            Charset = 0x103;
+    }
+
+// Acerta variáveis
+    LerPont = 0;
+    LerTexto[0] = 0;
+    ini_linha = false;
+#endif
 
 // Acerta StrConv[]
     const char StrA0[] = {
@@ -100,72 +184,35 @@ bool TConsole::Inic(bool completo)
           0x97, 0xA3, 0x96, 0x81,
             // FD-FF: y agudo, P, y trema
           0xEC, 0xE8, 0x98 };
+// 0 ~ 0x7F é padronizado
     memset(StrConv, ' ', sizeof(StrConv));
     for (int x=0; x<0x80; x++)
         StrConv[x] = x;
-    memcpy(StrConv+0xA0, StrA0, 0x60);
-    memset(StrLer, ' ', sizeof(StrLer));
+// IBM850
+    if (Charset==0x103)
+    {
+        memcpy(StrConv+0xA0, StrA0, 0x60);
+        memset(StrLer, ' ', sizeof(StrLer));
+    }
+// Desconhecido
+    else if (Charset==0x100)
+    {
+        const char StrNormal[] =
+                "AAAAAA C" "EEEEIIII"  // 0xC0
+                "DNOOOOOx" " UUUUY  "  // 0xD0
+                "aaaaaa c" "eeeeiiii"  // 0xE0
+                " nooooo " " uuuuy y"; // 0xF0
+        memcpy(StrConv+0xC0, StrNormal, 0x40);
+    }
+// ISO8859-1
+    else
+        for (int x=0xA1; x<0x100; x++)
+            StrConv[x] = x;
+
+// Acerta StrLer a partir de StrConv
     for (int x=0xFF; x>=0; x--)
         StrLer[ (unsigned char)StrConv[x] ] = x;
-
-// Obtém HANDLE de entrada e saída
-    con_in  = GetStdHandle(STD_INPUT_HANDLE);
-    con_out = GetStdHandle(STD_OUTPUT_HANDLE);
-
-// Conjunto de caracteres
-    SetConsoleCP(850); // Sets the input code page
-    SetConsoleOutputCP(850); // Sets the output code page
-        // Na prática, SetConsoleOutputCP(28591) não tem efeito.
-        // Por isso, melhor deixar em 850 e acertar os códigos dos
-        // caracteres através de uma tabela (StrA0, StrConv e StrLer)
-
-// Configuração do console
-    if (!SetConsoleMode(con_in, ENABLE_WINDOW_INPUT))
-    {
-        FreeConsole();
-        return false;
-    }
-
-// Tamanho da tela
-    CONSOLE_SCREEN_BUFFER_INFO atrib;
-    if (GetConsoleScreenBufferInfo(con_out, &atrib))
-    {
-        ColTotal = atrib.dwSize.X;
-        LinTotal = atrib.dwSize.Y;
-    }
-
-// Acerta cor e variáveis
-    MoverCursor = false;
-    LerCont = 0;
-    LerTotal = 0;
-
-#else
-// Obtém o tamanho do terminal
-// Nota: pode-se usar 'signal' para ler o sinal SIGWINCH - quando tamanho mudar
-    struct winsize w;
-    memset(&w, 0, sizeof(w));
-    int stat = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    if (stat == 0)
-    {
-        ColTotal = w.ws_col;
-        LinTotal = w.ws_row;
-    }
-
-// Obtém código de caracteres, se é UTF-8 ou não
-// Se ausente, assume ISO8859-1
-    const char * lang = getenv("LANG");
-    ConvUTF8 = 0x100;
-    if (lang)
-    {
-        int x = strlen(lang);
-        if (x>=5 && strcmp(lang+x-5, "UTF-8")==0)
-            ConvUTF8 = 0x80;
-    }
-
-// Acerta variáveis
-    LerPont = 0;
-    LerTexto[0] = 0;
-    ini_linha = false;
+    //printf("Charset = %x\n", Charset); fflush(stdout);
 
 // Verifica se configuração completa
     if (!completo)
@@ -174,6 +221,7 @@ bool TConsole::Inic(bool completo)
         return true;
     }
 
+#ifndef __WIN32__
 // Verifica se é um terminal
     if (!isatty(STDIN_FILENO))
         return false;
@@ -253,24 +301,40 @@ const char * TConsole::LerTecla()
                      sizeof(LerEventos)/sizeof(LerEventos[0]), &LerTotal);
             continue;
         }
-        if (LerEventos[LerCont].EventType != KEY_EVENT ||
-            LerEventos[LerCont].Event.KeyEvent.bKeyDown == 0)
-        {
-            LerCont++;
+        int indice = LerCont++;
+        if (LerEventos[indice].EventType != KEY_EVENT ||
+            LerEventos[indice].Event.KeyEvent.bKeyDown == 0)
             continue;
+        // Nota: nos testes, o Windows não envia a informação correta
+        //       com codepage 65001 (UTF-8)
+        int ch = (unsigned char)LerEventos[indice].Event.KeyEvent.uChar.AsciiChar;
+        if (ch >= Charset)
+        {
+            if (ch >= 0xC0) // Primeiro byte do caracter
+            {
+                if (ch < 0xE0)
+                    LerUTF8 = ch & 0x1F;
+                else
+                    LerUTF8 = 0;
+                continue;
+            }
+            if (LerUTF8 == 0) // Ignorando
+                continue;
+            ch = LerUTF8 * 0x40 + (ch & 0x3F); // Obtém caracter
+            LerUTF8 = 0;
+            if (ch >= 0x100) // Ignora caracteres não ISO8859-1
+                continue;
         }
-        unsigned char ch = LerEventos[LerCont].Event.KeyEvent.uChar.AsciiChar;
-        LerTexto[0] = StrLer[ch];
+        else
+            ch = (unsigned char)StrLer[ch];
+        LerTexto[0] = ch;
         LerTexto[1] = 0;
         if ((unsigned char)LerTexto[0] >= ' ')
-        {
-            LerCont++;
             return LerTexto;
-        }
-        DWORD state = LerEventos[LerCont].Event.KeyEvent.dwControlKeyState;
+        DWORD state = LerEventos[indice].Event.KeyEvent.dwControlKeyState;
         bool shift = state & SHIFT_PRESSED;
         bool ctrl = state & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED);
-        switch (LerEventos[LerCont++].Event.KeyEvent.wVirtualKeyCode)
+        switch (LerEventos[indice].Event.KeyEvent.wVirtualKeyCode)
         {
         case VK_BACK:   return "BACK";
         case VK_TAB:    return (shift ? "S_TAB" : "TAB");
@@ -344,7 +408,7 @@ const char * TConsole::LerTecla()
         if (LerTexto[0]==0)
         {
             ch = getc(stdin);
-            if (ch >= ConvUTF8)
+            if (ch >= Charset)
             {
                 if (ch >= 0xC0) // Primeiro byte do caracter
                 {
@@ -361,6 +425,8 @@ const char * TConsole::LerTecla()
                 if (ch >= 0x100) // Ignora caracteres não ISO8859-1
                     continue;
             }
+            else if (ch >= 0)
+                ch = (unsigned char)StrLer[ch];
         }
         else
             ch = (unsigned char)LerTexto[0], LerTexto[0] = 0;
@@ -540,14 +606,15 @@ void TConsole::Flush()
 //---------------------------------------------------------------------------
 void TConsole::EnvTxt(const char * texto, int tamanho)
 {
-#ifdef __WIN32__
     char mens[1024];
+#ifdef __WIN32__
     DWORD cCharsWritten;
     Flush();
+#endif
     while (tamanho>0)
     {
         char * dest = mens;
-        int total = (tamanho > (int)sizeof(mens) ? sizeof(mens) : tamanho);
+        int total = (tamanho > (int)sizeof(mens)/2 ? sizeof(mens)/2 : tamanho);
         tamanho -= total;
         for (; total>0; total--,texto++)
         {
@@ -557,41 +624,34 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
                 {
                     ini_linha=false;
                     if (ColAtual==0)
+                    {
+#ifndef __WIN32__
+                        *dest++ = '\n';
+#endif
                         continue;
+                    }
                 }
                 LinAtual++, ColAtual = 0;
+                *dest++ = '\n';
+                continue;
             }
-            else if (++ColAtual >= ColTotal)
+            if (++ColAtual >= ColTotal)
                 ColAtual = 0, LinAtual++, ini_linha=true;
-            *dest++ = StrConv[ *(unsigned char*)texto ];
-        }
-        WriteFile(con_out, mens, dest-mens, &cCharsWritten, NULL);
-    }
-#else
-    //fwrite(texto, 1, tamanho, stdout);
-    for (; tamanho>0; tamanho--,texto++)
-    {
-        if (*(unsigned char*)texto < ConvUTF8)
-            putchar(*texto);
-        else
-        {
-            putchar(0xC0 + *(unsigned char*)texto / 0x40);
-            putchar(0x80 + (*texto & 0x3F));
-        }
-        if (*texto == '\n')
-        {
-            if (ini_linha)
+            unsigned char ch = StrConv[ *(unsigned char*)texto ];
+            if (ch < Charset)
+                *dest++ = ch;
+            else
             {
-                ini_linha=false;
-                if (ColAtual==0)
-                    continue;
+                *dest++ = 0xC0 + ch / 0x40;
+                *dest++ = 0x80 + (ch & 0x3F);
             }
-            LinAtual++, ColAtual = 0;
         }
-        else if (++ColAtual >= ColTotal)
-            ColAtual = 0, LinAtual++, ini_linha=true;
-    }
+#ifdef __WIN32__
+        WriteFile(con_out, mens, dest-mens, &cCharsWritten, NULL);
+#else
+        fwrite(mens, 1, dest-mens, stdout);
 #endif
+    }
     if (LinAtual >= LinTotal)
         LinAtual = LinTotal - 1;
 }

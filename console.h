@@ -2,7 +2,7 @@
 #define CONSOLE_H
 
 #ifdef __WIN32__
- #include "windows.h"
+ #include <windows.h>
 #else
  #include <termios.h>
 #endif
@@ -101,9 +101,19 @@ public:
         ///< Se passou para nova linha porque terminou a linha
     char LerTexto[16];  ///< Usado internamente por Ler()
 
-#ifdef __WIN32__
+    int Charset;
+        ///< Conjunto de caracteres usado
+        /**< 0x80 = UTF-8
+         *   0x100 = desconhecido
+         *   0x101 = iso8859-1
+         *   0x102 = cp1252
+         *   0x103 = ibm850
+         */
+    int LerUTF8; ///< Caracter anterior, lendo UTF-8
     char StrConv[0x100]; ///< Para converter códigos ASCII 128 a 255
     char StrLer[0x100];  ///< Para converter teclas lidas
+
+#ifdef __WIN32__
     HANDLE con_in;  ///< Entrada padrão
     HANDLE con_out; ///< Saída padrão
     WORD CorAtributos; ///< Cor selecionada em CorTxt()
@@ -114,8 +124,6 @@ public:
 #else
     struct termios term_antes; ///< Configuração anterior do terminal
     int LerPont; ///< Para processar ESC em Ler()
-    int ConvUTF8; ///< 0x80 se está usando UTF-8, 0x100 se não está
-    int LerUTF8; ///< Caracter anterior, lendo UTF-8
 #endif
 };
 

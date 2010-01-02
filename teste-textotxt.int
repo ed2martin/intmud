@@ -1,11 +1,13 @@
 mapagrande = 0
-exec = 5000
+exec = 20000
 telatxt = 1
 
 [tela]
 telatxt tela
 textotxt t # Texto - arquivo sendo editado
 textopos p # Linha atual no arquivo
+textopos blocoini
+textopos blocofim
 txt20 opcao # Aonde está; menu, abrindo arquivo, editando linha, etc.
 txt512 nomearq # Nome do arquivo aberto
 const msg = tela.msg(arg0)
@@ -17,10 +19,12 @@ func ini
   se tela.proto = 0
     terminar
   fimse
-  opcao = "menu"
   p = t.ini
+  blocoini = t.ini
+  blocofim = t.fim
   msg("Tecla F1 mostra menu de opções\n")
   menu:mostra
+  menu:selec
 
 func tela_tecla
   se arg0 != "UP" & arg0 != "DOWN"
@@ -56,11 +60,18 @@ func mostra
   msg("+ insere linha vazia\n")
   msg("- apaga linha atual\n")
   msg("I mostra informações do arquivo e linha atual\n")
+  msg("B comandos de bloco\n")
   msg("Setas sobem e descem uma linha no arquivo\n")
   msg("Espaço mostra o conteúdo da linha atual\n")
 
 func outro
   msg("Qual sua opção?\n")
+  ret 1
+
+func selec
+  msg("Qual sua opção?\n")
+  opcao = "menu"
+  tela.linha = 0
   ret 1
 
 func tecla_F1
@@ -69,10 +80,12 @@ func tecla_F1
   ret 1
 
 func tecla_a # Abrir arquivo
-  msg("Qual o nome do arquivo?\n")
   tela.texto = ""
-  opcao = "abrir"
-  ret 1
+  ret abrir:selec
+
+func tecla_b # Comandos de bloco
+  tela.texto = ""
+  ret bloco:selec
 
 func tecla_s # Salvar arquivo
   arqtxt arq
@@ -92,10 +105,8 @@ func tecla_s # Salvar arquivo
   ret 1
 
 func tecla_e # Edita linha atual
-  msg("Editando\n")
   tela.texto = p.texto
-  opcao = "editor"
-  ret 1
+  ret editor:selec
 
 func tecla_@o # Insere linha vazia
   p.add("")
@@ -157,6 +168,12 @@ func tecla__
   ret 1
 
 [editor]
+func selec
+  msg("Editando\n")
+  opcao = "editor"
+  tela.linha = 0
+  ret 1
+
 func tecla_F1
   msg("ENTER salva a linha atual, ESC não salva\n")
   ret 1
@@ -164,19 +181,21 @@ func tecla_F1
 func tecla_ESC
   msg("Cancelado\n")
   tela.texto = ""
-  tela.linha = 0
-  opcao = "menu"
-  ret 1
+  ret menu:selec
 
 func tecla_ENTER
   msg("Feito\n")
   p.mudar(tela.texto)
   tela.texto = ""
-  tela.linha = 0
-  opcao = "menu"
-  ret 1
+  ret menu:selec
 
 [abrir]
+func selec
+  msg("Qual o nome do arquivo?\n")
+  opcao = "abrir"
+  tela.linha = 0
+  ret 1
+
 func tecla_F1
   msg("Digite o nome do arquivo ou pressione ESC para cancelar\n")
   ret 1
@@ -184,9 +203,7 @@ func tecla_F1
 func tecla_ESC
   msg("Cancelado\n")
   tela.texto = ""
-  tela.linha = 0
-  opcao = "menu"
-  ret 1
+  ret menu:selec
 
 func tecla_ENTER
   arqtxt arq
@@ -210,6 +227,84 @@ func tecla_ENTER
     msg("Arquivo lido; linhas=" + t.linhas + ", bytes=" + t.bytes + "\n")
   fimse
   tela.texto = ""
+  ret menu:selec
+
+[bloco]
+func selec
+  msg("Qual o comando de bloco?\n")
+  opcao = "bloco"
   tela.linha = 0
-  opcao = "menu"
   ret 1
+
+func outro
+  ret bloco:selec
+
+func tecla_F1
+  msg("I marca o início do bloco\n")
+  msg("F marca o fim do bloco\n")
+  msg("D desmarca o bloco\n")
+  msg("A apaga bloco\n")
+  msg("C copia para o lugar da linha atual\n")
+  msg("M move para o lugar da linha atual\n")
+  msg("L informações\n")
+  ret bloco:selec
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_L # Informações
+  msg("Bloco linhas " + blocoini.linha + " a " + blocofim.linha + "\n")
+  ret menu:selec
+
+func tecla_I # Início
+  blocoini = p
+  msg("Início marcado linha " + blocoini.linha + "\n")
+  ret menu:selec
+
+func tecla_I # Desmarcar
+  blocoini = t.fim
+  blocofim = t.ini
+  ret menu:selec
+
+func tecla_F # Fim
+  blocofim = p
+  msg("Fim marcado linha " + blocofim.linha + "\n")
+  ret menu:selec
+
+func tecla_A # Apagar
+  int32 lin
+  lin = blocofim.linha - blocoini.linha + 1
+  se lin <= 0
+    msg("Nada a ser apagado\n")
+  senao
+    blocoini.remove(lin)
+    msg("Bloco removido\n")
+  fimse
+  ret menu:selec
+
+func tecla_C # Copiar
+  int32 lin
+  lin = blocofim.linha - blocoini.linha + 1
+  se lin <= 0
+    msg("Nada a ser copiado\n")
+  senao
+    p.add(blocoini, lin)
+    msg("Bloco copiado\n")
+  fimse
+  ret menu:selec
+
+func tecla_M # Mover
+  int32 lin
+  lin = blocofim.linha - blocoini.linha + 1
+  se lin <= 0
+    msg("Nada a ser copiado\n")
+  senao p.linha >= blocoini.linha & p.fim <= blocofim.linha
+    msg("Impossível mover bloco para dentro do bloco\n")
+  senao
+    p.add(blocoini, lin)
+    blocoini.remove(lin)
+    msg("Bloco movido\n")
+  fimse
+  ret menu:selec
