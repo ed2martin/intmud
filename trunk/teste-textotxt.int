@@ -8,6 +8,7 @@ textotxt t # Texto - arquivo sendo editado
 textopos p # Linha atual no arquivo
 textopos blocoini
 textopos blocofim
+textopos blocopos
 txt20 opcao # Aonde está; menu, abrindo arquivo, editando linha, etc.
 txt512 nomearq # Nome do arquivo aberto
 const msg = tela.msg(arg0)
@@ -59,7 +60,7 @@ func mostra
   msg("E edita linha atual\n")
   msg("+ insere linha vazia\n")
   msg("- apaga linha atual\n")
-  msg("I mostra informações do arquivo e linha atual\n")
+  msg("Z mostra informações do arquivo e linha atual\n")
   msg("B comandos de bloco\n")
   msg("Setas sobem e descem uma linha no arquivo\n")
   msg("Espaço mostra o conteúdo da linha atual\n")
@@ -79,15 +80,15 @@ func tecla_F1
   msg("Qual sua opção?\n")
   ret 1
 
-func tecla_a # Abrir arquivo
+func tecla_A # Abrir arquivo
   tela.texto = ""
   ret abrir:selec
 
-func tecla_b # Comandos de bloco
+func tecla_B # Comandos de bloco
   tela.texto = ""
   ret bloco:selec
 
-func tecla_s # Salvar arquivo
+func tecla_S # Salvar arquivo
   arqtxt arq
   textopos posic
   se !arq.abrir(nomearq, 2)
@@ -104,21 +105,21 @@ func tecla_s # Salvar arquivo
   fimse
   ret 1
 
-func tecla_e # Edita linha atual
+func tecla_E # Edita linha atual
   tela.texto = p.texto
   ret editor:selec
 
-func tecla_@o # Insere linha vazia
+func tecla_@O # Insere linha vazia
   p.add("")
   msg("Linha adicionada\n")
   ret 1
 
-func tecla_@q # Remove linha atual
+func tecla_@Q # Remove linha atual
   p.remove
   msg("Linha removida\n")
   ret 1
 
-func tecla_i # Informações
+func tecla_z # Informações
   msg("Linha " + p.linha + " de " + t.linhas)
   msg(", byte " + p.byte + " de " + t.bytes + "\n")
   ret 1
@@ -242,11 +243,12 @@ func outro
 func tecla_F1
   msg("I marca o início do bloco\n")
   msg("F marca o fim do bloco\n")
+  msg("P marca uma posição no bloco\n")
   msg("D desmarca o bloco\n")
   msg("A apaga bloco\n")
   msg("C copia para o lugar da linha atual\n")
   msg("M move para o lugar da linha atual\n")
-  msg("L informações\n")
+  msg("Z informações\n")
   ret bloco:selec
 
 func tecla_ESC
@@ -254,8 +256,9 @@ func tecla_ESC
   tela.texto = ""
   ret menu:selec
 
-func tecla_L # Informações
+func tecla_Z # Informações
   msg("Bloco linhas " + blocoini.linha + " a " + blocofim.linha + "\n")
+  msg("Posição linha " + blocopos.linha + " byte " + blocopos.byte + "\n")
   ret menu:selec
 
 func tecla_I # Início
@@ -263,14 +266,20 @@ func tecla_I # Início
   msg("Início marcado linha " + blocoini.linha + "\n")
   ret menu:selec
 
-func tecla_I # Desmarcar
-  blocoini = t.fim
-  blocofim = t.ini
-  ret menu:selec
-
 func tecla_F # Fim
   blocofim = p
   msg("Fim marcado linha " + blocofim.linha + "\n")
+  ret menu:selec
+
+func tecla_P # Posição
+  blocopos = p
+  msg("Posição marcada linha " + blocopos.linha + " byte " + blocopos.byte + "\n")
+  ret menu:selec
+
+func tecla_D # Desmarcar
+  blocoini = t.fim
+  blocofim = t.ini
+  msg("Bloco desmarcado\n")
   ret menu:selec
 
 func tecla_A # Apagar

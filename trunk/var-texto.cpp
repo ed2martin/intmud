@@ -20,11 +20,84 @@
 #include "instr.h"
 #include "misc.h"
 
+//#define DEBUG_TXT // Texto guardado em TTextoTxt
+//#define DEBUG_MSG // Alocação de memória
+
 //----------------------------------------------------------------------------
 TTextoGrupo * TTextoGrupo::Disp = 0;
 TTextoGrupo * TTextoGrupo::Usado = 0;
 unsigned long TTextoGrupo::Tempo = 0;
 const char TextoItem1[] = { 7, 0, Instr::cTextoPos, 0, 0, 0, '+', 0 };
+
+//----------------------------------------------------------------------------
+#ifdef DEBUG_TXT
+static void DebugTextoTxt(TTextoTxt * txt)
+{
+    if (txt==0)
+        return;
+// Checa lista ligada de TTextoPos
+    for (TTextoPos * p = txt->Posic; p; p=p->Depois)
+    {
+        assert(p->Antes ? p->Antes->Depois==p : txt->Posic==p);
+        assert(p->Depois==0 || p->Depois->Antes==p);
+        assert(p->TextoTxt==txt);
+        assert(p->PosicTxt <= txt->Bytes);
+        assert(p->LinhaTxt <= txt->Linhas);
+    }
+// Checa lista ligada de TTextoBloco
+    unsigned int lin_atual = 0;
+    unsigned int byte_atual = 0;
+    assert((txt->Inicio==0) == (txt->Fim==0));
+    for (TTextoBloco * obj = txt->Inicio; obj; obj=obj->Depois)
+    {
+        assert(obj->Antes ? obj->Antes->Depois==obj : txt->Inicio==obj);
+        assert(obj->Depois ? obj->Depois->Antes==obj : txt->Fim==obj);
+        assert(obj->TextoTxt==txt);
+        assert(obj->Bytes != 0);
+        lin_atual += obj->Linhas;
+        byte_atual += obj->Bytes;
+    }
+    assert(lin_atual == txt->Linhas);
+    assert(byte_atual == txt->Bytes);
+// Checa posição de TTextoPos
+    for (TTextoPos * p = txt->Posic; p; p=p->Depois)
+    {
+    // Nenhum texto
+        if (txt->Inicio==0)
+        {
+            assert(p->Bloco==0);
+            continue;
+        }
+    // Obtém dados do bloco
+        unsigned int lin_atual = 0;
+        unsigned int byte_atual = 0;
+        TTextoBloco * obj = txt->Inicio;
+        while (obj != p->Bloco)
+        {
+            lin_atual += obj->Linhas;
+            byte_atual += obj->Bytes;
+            obj=obj->Depois;
+        }
+    // Checa bloco
+        assert(p->PosicBloco <= obj->Bytes);
+        byte_atual += p->PosicBloco;
+        for (unsigned int x=0; x < p->PosicBloco; x++)
+            if (obj->Texto[x]==Instr::ex_barra_n)
+                lin_atual++;
+        assert(byte_atual == p->PosicTxt);
+        assert(lin_atual == p->LinhaTxt);
+    // Checa se é início de linha
+        if (p->LinhaTxt==0) // Início do texto
+            assert(p->PosicBloco==0 && obj==txt->Inicio);
+        else if (p->PosicBloco!=0) // Não está no início do bloco
+            assert(obj->Texto[p->PosicBloco-1]==Instr::ex_barra_n);
+        else // No início do bloco, checa último byte do bloco anterior
+            assert(obj->Antes->Texto[obj->Antes->Bytes-1]==Instr::ex_barra_n);
+    }
+}
+#else
+#define DebugTextoTxt(x)
+#endif
 
 //----------------------------------------------------------------------------
 /// Obtém o número de linhas correspondente a um texto
@@ -742,13 +815,21 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
 //----------------------------------------------------------------------------
 TTextoBloco * TTextoGrupo::Criar()
 {
+#ifdef DEBUG_MSG
+    printf("TTextoBloco::Criar\n"); fflush(stdout);
+#endif
 // Se tem objeto TListaX disponível...
     if (Usado && Usado->Total < TOTAL_TXTGR)
         return (TTextoBloco*)Usado->Lista[Usado->Total++];
 // Se não tem objeto disponível...
     TTextoGrupo * obj;
     if (Disp==0)    // Não tem objeto TTextoGrupo disponível
+    {
         obj=new TTextoGrupo;
+#ifdef DEBUG_MSG
+        printf("  TTextoGrupo::Criar(%p)\n", obj); fflush(stdout);
+#endif
+    }
     else            // Tem objeto TTextoGrupo disponível
         obj=Disp, Disp=Disp->Depois; // Retira da lista Disp
     obj->Total = 1;
@@ -760,6 +841,9 @@ TTextoBloco * TTextoGrupo::Criar()
 //----------------------------------------------------------------------------
 TTextoBloco * TTextoGrupo::Apagar(TTextoBloco * lista)
 {
+#ifdef DEBUG_MSG
+    printf("TTextoBloco::Apagar\n"); fflush(stdout);
+#endif
     TTextoBloco * lfim = (TTextoBloco*)Usado->Lista[Usado->Total - 1];
     if (lista != lfim)
         lfim->Mover(lista);
@@ -783,6 +867,9 @@ void TTextoGrupo::ProcEventos()
     {
         TTextoGrupo * obj = Disp;
         Disp = Disp->Depois; // Retira da lista Disp
+#ifdef DEBUG_MSG
+        printf("  TTextoGrupo::Apagar(%p)\n", obj); fflush(stdout);
+#endif
         delete obj;
         Tempo = TempoIni;
     }
@@ -833,6 +920,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
             pos.LinhaTxt = 0;
             pos.Mudar(texto, strlen(texto)+1, 0);
         }
+        DebugTextoTxt(this);
         return false;
     }
 // Adiciona texto no fim
@@ -843,6 +931,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
             const char * texto = v1->getTxt();
             AddTexto(texto, strlen(texto)+1);
         }
+        DebugTextoTxt(this);
         return false;
     }
 // Remove uma quantidade de linhas
@@ -870,12 +959,14 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         pos.PosicTxt = 0;
         pos.LinhaTxt = 0;
         pos.Mudar(0, 0, total);
+        DebugTextoTxt(this);
         return true;
     }
 // Remove todos os textos
     if (comparaZ(nome, "limpar")==0)
     {
         Limpar();
+        DebugTextoTxt(this);
         return false;
     }
 // Quantidade de linhas
@@ -930,6 +1021,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             total = v[1].getInt();
         if (total>0)
             MoverPos(total);
+        DebugTextoTxt(TextoTxt);
         return false;
     }
 // Recua linhas
@@ -940,6 +1032,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             total = v[1].getInt();
         if (total>0)
             MoverPos(-total);
+        DebugTextoTxt(TextoTxt);
         return false;
     }
 // Informa se linha é válida
@@ -998,6 +1091,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             apagar--, tamtxt--;
     // Altera o texto
         Mudar(txt, tamtxt, apagar);
+        DebugTextoTxt(TextoTxt);
         return false;
     }
 // Adiciona texto
@@ -1011,6 +1105,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             const char * txt = v[1].getTxt();
             TextoTxt->IniBloco();
             Mudar(txt, strlen(txt)+1, 0);
+            DebugTextoTxt(TextoTxt);
             return false;
         }
     // Obtém número de linhas
@@ -1042,6 +1137,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             Mudar(txt, total, 0);
             delete[] txt;
         }
+        DebugTextoTxt(TextoTxt);
         return false;
     }
 // Remove a linha atual
@@ -1054,6 +1150,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             return false;
         int apagar = Bloco->LinhasBytes(PosicBloco, linhas);
         Mudar(0, 0, apagar);
+        DebugTextoTxt(TextoTxt);
         return false;
     }
     return false;
