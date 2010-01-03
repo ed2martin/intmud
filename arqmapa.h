@@ -26,6 +26,8 @@ public:
             ///< Salva classes em arquivo
             /**< @param tudo true=salvar todas as classes,
                              false=salvar só o que foi modificado */
+    static unsigned char ParamLinha;  ///< Caracteres por linha
+    static unsigned char ParamN;      ///< Como dividir em \\n
     static unsigned char ParamIndent; ///< Quantos espaços para indentação
     static unsigned char ParamClasse; ///< Linhas entre classes
     static unsigned char ParamFunc;   ///< Linhas entre funções

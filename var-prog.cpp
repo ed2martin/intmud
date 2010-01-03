@@ -1240,6 +1240,8 @@ bool TVarProg::FuncSalvar(TVariavel * v)
     if (TMudarClasse::Salvar==0)
         TMudarClasse::Salvar=1;
 // Acerta valor padrão das variáveis
+    TArqMapa::ParamLinha = 0;
+    TArqMapa::ParamN = 0;
     TArqMapa::ParamIndent = 2;
     TArqMapa::ParamClasse = 1;
     TArqMapa::ParamFunc = 1;
@@ -1260,6 +1262,12 @@ bool TVarProg::FuncSalvar(TVariavel * v)
         }
         switch (comando | 0x20)
         {
+        case 'l':
+            TArqMapa::ParamLinha = (valor>=1);
+            break;
+        case 'n':
+            TArqMapa::ParamN = (valor>2 ? 2 : valor);
+            break;
         case 'i':
             TArqMapa::ParamIndent = (valor<8 ? valor : 8);
             break;

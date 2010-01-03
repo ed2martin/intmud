@@ -29,6 +29,8 @@ extern int err_tipo;
 TArqMapa * TArqMapa::Inicio=0;
 TArqMapa * TArqMapa::Fim=0;
 bool TArqMapa::MapaGrande=false;
+unsigned char TArqMapa::ParamLinha = 0;
+unsigned char TArqMapa::ParamN = 0;
 unsigned char TArqMapa::ParamIndent=2;
 unsigned char TArqMapa::ParamClasse=1;
 unsigned char TArqMapa::ParamFunc=1;
@@ -181,15 +183,62 @@ void TArqMapa::SalvarArq(bool tudo)
                         fwrite(char_lf, 1, linhas, arq);
                     linhas=tipo;
                 }
-        // Anota instrução
-                char mens[4096];
+        // Obtém texto correspondente à instrução
+                char mens[8192];
                 int espaco = (indent>0 && p[2]!=Instr::cComent ?
                               indent-1 : 0) * ParamIndent;
-                int r = Instr::Decod(mens+espaco, p, sizeof(mens)-espaco);
+                if (espaco>40)
+                    espaco=40;
+                int r = Instr::Decod(mens+4096+espaco, p, 4096-espaco);
                 assert(r!=0);
                 if (espaco)
-                    memset(mens, ' ', espaco);
-                fprintf(arq, "%s\n", mens);
+                    memset(mens+4096, ' ', espaco);
+        // Divide em linhas
+                char barran = 0;
+                if (ParamN>1 || (ParamN==1 && p[2]==Instr::cConstTxt))
+                    barran = 'n';
+                const char * o = mens+4096;
+                char * d = mens;
+                char * dfim = (ParamLinha ? d+70 : mens+sizeof(mens));
+                while (*o)
+                {
+                // Divide em 80 caracteres
+                    while (d >= dfim)
+                    {
+                        int x, total = dfim - d + 8;
+                        if (total>0 && o[-1]!=' ')
+                            break;
+                        for (x=0; x<total; x++)
+                            if (o[x]==' ')
+                                break;
+                        if (x<total)
+                            break;
+                        *d++ = '\\';
+                        *d++ = '\n';
+                        dfim = (ParamLinha ? d+70 : mens+sizeof(mens));
+                        break;
+                    }
+                // Anota caracter se não começa com barra invertida
+                    if (o[0]!='\\' || o[1]==0)
+                    {
+                        *d++ = *o++;
+                        continue;
+                    }
+                // Anota dois caracteres
+                    memcpy(d, o, 2);
+                    d+=2, o+=2;
+                // Verifica se deve dividir em \n
+                    if (o[-1]!=barran || o[0]=='\"' || memcmp(o,"\\n",2)==0)
+                        continue;
+                // Divide
+                    *d++ = '\\';
+                    *d++ = '\n';
+                    dfim = (ParamLinha ? d+70 : mens+sizeof(mens));
+                }
+                *d++ = '\n';
+                *d = 0;
+        // Anota instrução
+                fprintf(arq, "%s", mens);
         // Obtém indentação (depois)
                 switch (p[2])
                 {
