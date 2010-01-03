@@ -1378,13 +1378,17 @@ prog <nomedavariável>
         as alterações pendentes nas classes forem efetuadas.
         O texto é composto de letras seguidas de números, que indicam como
         o arquivo deve ser salvo. As opções são as seguintes:
+        L = se deve dividir linhas em 80 caracteres; 0=não divide, 1=divide
+        N = se deve dividir linhas em caracteres \n
+            0=não divide, 1=somente em const contendo apenas texto, 2=sempre
         I = espaços usados para indentação, de 0 a 8
         C = linhas entre classes, de 0 a 10
         F = linhas vazias entre funções, de 0 a 10
         V = linhas vazias entre variáveis e constantes, de 0 a 10
-        A função salvar sem parâmetros é o mesmo que: salvar("I2C1F1V0")
-        que significa 2 espaços para indentação, 1 linha vazia entre classes
-        e entre funções e nenhuma linha vazia entre variáveis.
+        A função salvar sem parâmetros é o mesmo que: salvar("L0N0I2C1F1V0")
+        Significa não dividir linhas, 2 espaços para indentação,
+        1 linha vazia entre classes e entre funções e nenhuma linha vazia
+        entre variáveis.
     salvartudo
     salvartudo( <texto> )
         Mesmo que a função salvar, porém salva todos os arquivos,

@@ -116,19 +116,20 @@ bool TConsole::Inic(bool completo)
     {
         char mens[0x100];
         char * d = mens;
-        for (; lang && d<mens+sizeof(mens)-1; lang++)
+        for (; *lang && d<mens+sizeof(mens)-2; lang++)
             if (*lang>='a' && *lang<='z')
                 *d++ = *lang - 0x20;
-            else if (*lang != '-')
+            else if (*lang != '-' && *lang != ' ')
                 *d++ = *lang;
-        *d=0;
-        if (strstr(mens, "UTF8")!=0)
+        *d++ = '-';
+        *d = 0;
+        if (strstr(mens, "UTF8-")!=0)
             Charset = 0x80;
-        else if (strstr(mens, "ISO88591")!=0 && strstr(mens, "ISO885915")==0)
+        else if (strstr(mens, "ISO88591-")!=0)
             Charset = 0x101;
-        else if (strstr(mens, "CP1252")!=0)
+        else if (strstr(mens, "CP1252-")!=0)
             Charset = 0x102;
-        else if (strstr(mens, "CP850")!=0 || strstr(mens, "IBM850")!=0)
+        else if (strstr(mens, "CP850-")!=0 || strstr(mens, "IBM850-")!=0)
             Charset = 0x103;
     }
 
