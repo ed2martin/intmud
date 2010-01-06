@@ -61,7 +61,7 @@ void TArqLer::Fechar()
 }
 
 //----------------------------------------------------------------------------
-int TArqLer::Linha(char * destino, int tamanho)
+int TArqLer::Linha(char * destino, int tamanho, bool barra_junta)
 {
     const char * destinoini = destino;
     linhanum++;
@@ -113,7 +113,7 @@ int TArqLer::Linha(char * destino, int tamanho)
     // Fim da linha
         if (destinoini != destino) // Linha não vazia
         {
-            if (destino[-1]!='\\')
+            if (!barra_junta || destino[-1]!='\\')
                 break;
             destino--, tamanho++;
         }

@@ -1108,22 +1108,32 @@ bool TVarProg::FuncApagarLin(TVariavel * v)
 // Apagar uma linha da variável/função
     else
     {
-        int linha = v[3].getInt() - 1;
+        int linha = v[3].getInt();
+        if (linha<1)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Nada foi apagado");
+        }
         texto2 = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
+        if (texto2[0]==0 && texto2[1]==0)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Função inexistente");
+        }
         const char * fim = TMudarAux::AvancaInstr(texto2);
         while (linha>0 && texto2<fim)
             linha--, texto2+=Num16(texto2);
         if (texto2>=fim)
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
+            return Instr::CriarVarTexto("Nada foi apagado");
         }
     }
 // Verifica se alguma linha será apagada
     if (texto2[0]==0 && texto2[1]==0)
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTexto("Nada foi apagado");
     }
 // Verifica se bloco válido
     int linha=1;
@@ -1182,32 +1192,36 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
         return Instr::CriarVarTexto("Classe inexistente");
     }
 // Instruções na classe
-    char * p = 0;
+    char * texto2 = 0;
     if (Instr::VarAtual == v+3)
     {
         int linha = v[2].getInt() - 1;
-        p = texto1;
-        while (linha>0 && (p[0] || p[1]))
-            linha--, p+=Num16(p);
+        texto2 = texto1;
+        while (linha>0 && (texto2[0] || texto2[1]))
+            linha--, texto2 += Num16(texto2);
         nome = v[3].getTxt();
     }
 // Instruções em variável/função
     else
     {
-        int linha = v[3].getInt() - 1;
-        p = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
-        if (p[0]==0 && p[1]==0)
+        int linha = v[3].getInt();
+        if (linha<1) linha=1;
+        texto2 = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
+        if (texto2[0]==0 && texto2[1]==0)
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Variável/função inexistente");
+            return Instr::CriarVarTexto("Função inexistente");
         }
-        const char * fim = TMudarAux::AvancaInstr(p);
-        while (linha>0 && p<fim)
-            linha--, p+=Num16(p);
+        if (texto2[2]!=Instr::cFunc && texto2[2]!=Instr::cVarFunc)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Não é função");
+        }
+        const char * fim = TMudarAux::AvancaInstr(texto2);
+        while (linha>0 && texto2<fim)
+            linha--, texto2 += Num16(texto2);
         nome = v[4].getTxt();
     }
-    mudarcom.AddBloco(texto1, p-texto1);
-    texto1 = p;
 // Codifica as instruções
     char mens[65000];
     int  total = TMudarAux::CodifInstr(mens, nome, sizeof(mens)-2);
@@ -1216,8 +1230,30 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(total==0 ? "" : mens);
     }
+// Instruções em função: não permite definições de constantes e funções
+    if (Instr::VarAtual > v+3)
+    {
+        for (const char * p = mens; p < mens+total; p += Num16(p))
+            switch (p[2])
+            {
+            case Instr::cConstNulo:
+            case Instr::cConstTxt:
+            case Instr::cConstNum:
+            case Instr::cConstExpr:
+                Instr::ApagarVar(v);
+                return Instr::CriarVarTexto(
+                        "Definição de constante de função");
+            case Instr::cFunc:
+            case Instr::cVarFunc:
+                Instr::ApagarVar(v);
+                return Instr::CriarVarTexto(
+                        "Definição de função dentro de função");
+            }
+    }
+// Prepara bloco
+    mudarcom.AddBloco(texto1, texto2-texto1);
     mudarcom.AddBloco(mens, total);
-    mudarcom.AddBloco(texto1, TMudarAux::FimInstr(texto1) - texto1);
+    mudarcom.AddBloco(texto2, TMudarAux::FimInstr(texto2) - texto2);
 // Verifica se bloco válido
     char err[200];
     if (!mudarcom.ChecaBloco(err, sizeof(err)))
@@ -1240,7 +1276,7 @@ bool TVarProg::FuncSalvar(TVariavel * v)
     if (TMudarClasse::Salvar==0)
         TMudarClasse::Salvar=1;
 // Acerta valor padrão das variáveis
-    TArqMapa::ParamLinha = 0;
+    TArqMapa::ParamLinha = 4000;
     TArqMapa::ParamN = 0;
     TArqMapa::ParamIndent = 2;
     TArqMapa::ParamClasse = 1;
@@ -1256,17 +1292,17 @@ bool TVarProg::FuncSalvar(TVariavel * v)
         if (*p>='0' && *p<='9')
         {
             valor = valor * 10 + *p - '0';
-            if (valor>100)
-                valor=100;
+            if (valor>10000)
+                valor=10000;
             continue;
         }
         switch (comando | 0x20)
         {
         case 'l':
-            TArqMapa::ParamLinha = (valor>=1);
+            TArqMapa::ParamLinha = (valor<70 ? 70 : valor>4000 ? 4000 : valor);
             break;
         case 'n':
-            TArqMapa::ParamN = (valor>2 ? 2 : valor);
+            TArqMapa::ParamN = (valor<2 ? valor : 2);
             break;
         case 'i':
             TArqMapa::ParamIndent = (valor<8 ? valor : 8);

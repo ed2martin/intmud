@@ -121,7 +121,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     if (cod >= cVariaveis)
     {
         if (esperando == 3)
-            return "Variável deve ser definidas no início da função";
+            return "Variável deve ser definida no início da função";
         if (esperando > 3)
             return "Variável não pertence a uma classe ou uma função";
         return 0;

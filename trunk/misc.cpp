@@ -299,18 +299,30 @@ int compara(const char * string1, const char * string2, int tam)
 
 //------------------------------------------------------------------------------
 // Verifica se nome de arquivo permitido (está no diretório do programa)
-bool arqvalido(const char * nome)
+bool arqvalido(char * nome)
 {
     if (nome[0]==0)
         return false;
-    const char * p = nome;
+    char * p = nome;
 #ifdef __WIN32__
+// Acerta nome
+    for (; *p; p++)
+        if (*p=='/')
+            *p='\\';
+    p = nome;
+// Checa se nome permitido
     if (nome[0]=='\\' || nome[1]==':')
         return false;
     for (; *p; p++)
         if ((p==nome || p[-1]=='\\') && memcmp(p, "..\\", 3)==0)
             return false;
 #else
+// Acerta nome
+    for (; *p; p++)
+        if (*p=='\\')
+            *p='/';
+    p = nome;
+// Checa se nome permitido
     if (nome[0]=='/')
         return false;
     for (; *p; p++)

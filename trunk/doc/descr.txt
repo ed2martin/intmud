@@ -1368,7 +1368,7 @@ prog <nomedavariável>
         se não conseguiu.
     criarlin(<nome da classe>, <linha inicial>, <texto>)
     criarlin(<nome da classe>, <nome da variável>, <linha inicial>, <texto>)
-        Adiciona linhas na classe ou variável especificada.
+        Adiciona linhas na classe ou função especificada.
         Nota: A primeira linha é a número 1.
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
@@ -1378,14 +1378,15 @@ prog <nomedavariável>
         as alterações pendentes nas classes forem efetuadas.
         O texto é composto de letras seguidas de números, que indicam como
         o arquivo deve ser salvo. As opções são as seguintes:
-        L = se deve dividir linhas em 80 caracteres; 0=não divide, 1=divide
+        L = quantidade máxima de caracteres por linha, de 70 a 4000
         N = se deve dividir linhas em caracteres \n
             0=não divide, 1=somente em const contendo apenas texto, 2=sempre
         I = espaços usados para indentação, de 0 a 8
         C = linhas entre classes, de 0 a 10
         F = linhas vazias entre funções, de 0 a 10
         V = linhas vazias entre variáveis e constantes, de 0 a 10
-        A função salvar sem parâmetros é o mesmo que: salvar("L0N0I2C1F1V0")
+        A função salvar sem parâmetros é o mesmo que:
+        salvar("L4000N0I2C1F1V0")
         Significa não dividir linhas, 2 espaços para indentação,
         1 linha vazia entre classes e entre funções e nenhuma linha vazia
         entre variáveis.
@@ -1466,46 +1467,3 @@ datahora <nomedavariável>
         Número de dias desde 1/1/1.
     numseg
         Número de segundos desde o início do dia
-
-
-*** Nota - Cores no protocolo Telnet
-
-ESC [
-Seguido de números, separados por ';'
-Termina com um m
-    ESC=0x1B
-    0 = cores padrão
-    1 = ativa negrito
-    3x = cor de frente = x
-    4x = cor de fundo = x
-
-
-*** Nota - Cores no protocolo do IRC
-
-Definição de cores:
-    Ctrl-C       (1 byte)  -> Limpa a definição de cores
-    Cltr-C N     (2 bytes)
-    Ctrl-C NN    (3 bytes)
-    Ctrl-C N,M   (4 bytes)
-    Ctrl-C N,MM  (5 bytes)
-    Ctrl-C NN,M  (5 bytes)
-    Ctrl-C NN,MM (6 bytes)
-Onde Ctrl-C é o caracter \x03 e M e N é um dígito de 0 a 9
-N é a cor de frente, M é a cor de fundo (ausente significa padrão)
-As cores padrão são letras pretas sobre um fundo branco.
-Se o texto após a definição começar com um dígito de 0 a 9,
-deve ser usada uma das definições:
-    Ctrl-C N,MM  (5 bytes)
-    Ctrl-C NN,MM (6 bytes)
-Lista de cores:
-    0 white                    8 yellow
-    1 black                    9 lt.green (lime)
-    2 blue     (navy)          10 teal    (a kinda green/blue cyan)
-    3 green                    11 lt.cyan (cyan ?) (aqua)
-    4 red                      12 lt.blue (royal)
-    5 brown    (maroon)        13 pink    (light purple) (fuchsia)
-    6 purple                   14 grey
-    7 orange   (olive)         15 lt.grey (silver)
-Referências:
-    http://www.ircle.com/colorfaq.shtml
-    http://www.mirc.co.uk/help/color.txt
