@@ -14,13 +14,15 @@ public:
                  @return true se conseguiu abrir */
     void Fechar();
             /**< Fecha arquivo */
-    int  Linha(char * destino, int tamanho);
+    int  Linha(char * destino, int tamanho, bool barra_junta=true);
             /**< Lê próxima linha do arquivo; pula linhas vazias
-                 @param  destino Endereço destino
-                 @param  tamanho Tamanho do buffer em destino
-                 @return Número da linha lida,
-                        ou 0 se fim do arquivo,
-                        ou -1 se erro na leitura */
+             *   @param destino Endereço destino
+             *   @param tamanho Tamanho do buffer em destino
+             *   @param barra_junta Se deve juntar linhas quando houver
+             *          barra invertida no final da linha
+             *   @return Número da linha lida,
+             *          ou 0 se fim do arquivo,
+             *          ou -1 se erro na leitura */
 
 private:
     int  arq;           ///< Para acessar o arquivo

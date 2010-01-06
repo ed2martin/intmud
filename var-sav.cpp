@@ -109,7 +109,7 @@ int TVarSav::Tempo(const char * arqnome)
     TArqLer arqler;
     if (!arqler.Abrir(arqnome))
         return -1;
-    while (arqler.Linha(mens, sizeof(mens))>0)
+    while (arqler.Linha(mens, sizeof(mens), false)>0)
     {
         if (strcmp(mens, "+++")==0)
             break;
@@ -200,7 +200,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             Instr::ApagarVar(v);
             return Instr::CriarVarInt(0);
         }
-        while (arqler.Linha(mens, sizeof(mens))>0)
+        while (arqler.Linha(mens, sizeof(mens), false)>0)
         {
             if (strcmp(mens, "+++")==0)
                 break;
@@ -255,12 +255,13 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         if (quantidade > 1024)
             quantidade = 1024;
     // Avança até a lista dos tipos de objetos
-        while (arqler.Linha(mens, sizeof(mens))>0)
+        while (arqler.Linha(mens, sizeof(mens), false)>0)
             if (strcmp(mens, "+++")==0)
                 break;
     // Cria objetos na listaobj se necessário
-        while (arqler.Linha(mens, sizeof(mens))>0)
+        while (arqler.Linha(mens, sizeof(mens), false)>0)
         {
+            //printf("1> %s\n", mens); fflush(stdout);
             if (strcmp(mens, "+++")==0)
                 break;
             if (numobj >= quantidade)
@@ -288,7 +289,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
     // Lê objetos
         quantidade = numobj;
         numobj = 0;
-        while (arqler.Linha(mens, sizeof(mens))>0)
+        while (arqler.Linha(mens, sizeof(mens), false)>0)
         {
         // Próximo objeto
             if (strcmp(mens, "+++")==0)

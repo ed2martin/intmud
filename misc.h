@@ -73,10 +73,12 @@ int compara(const char * string1, const char * string2);
         @retval 1 se string1>string2 */
 int compara(const char * string1, const char * string2, int tam);
 
-    /// Verifica se nome de arquivo permitido (está no diretório do programa)
-    /** @param nome Nome do arquivo
+    /// Verifica se nome de arquivo permitido e acerta barra normal/invertida
+    /** Considera nome inválido se não estiver no diretório do programa
+        @param nome Nome do arquivo
         @return true se nome válido ou false se inválido */
-bool arqvalido(const char * nome);
+
+bool arqvalido(char * nome);
 
     /// Verifica se nome válido para apelido
     /** @param nome1 Texto em ASCIIZ

@@ -1,0 +1,194 @@
+*** Caracteres modificados por txtcod
+
+@ /b /c /d /n  mudam para  @@ @b @c @d @n
+" ! # $ %  mudam para  @a @e @f @g @h
+& ' ( ) *  mudam para  @i @j @k @l @m
++ , - . /  mudam para  @o @p @q @r @s
+: ; < = >  mudam para  @t @u @v @w @x
+? [ \ ] ^  mudam para  @y @z @0 @1 @2
+` { | } ~  mudam para  @3 @4 @5 @6 @7
+
+
+*** Cores no IntMUD
+
+\b define cor dos caracteres: branco com fundo preto
+\c seguido de um dígito: define a cor dos caracteres
+\d seguido de um dígito: define a cor de fundo
+
+O dígito após \c e \d pode ser:
+    0 = preto           4 = azul
+    1 = vermelho        5 = magenta
+    2 = verde           6 = ciano
+    3 = marrom          7 = branco
+
+Somente após \c:
+    8 = cinza               C = azul intenso
+    9 = vermelho intenso    D = magenta intenso
+    A = verde intenso       E = ciano intenso
+    B = amarelo             F = branco intenso
+
+
+*** Cores no protocolo Telnet
+
+ESC [
+Seguido de números, separados por ';'
+Termina com um m
+    ESC=0x1B
+    0 = cores padrão
+    1 = ativa negrito
+    3x = cor de frente = x
+    4x = cor de fundo = x
+
+
+*** Cores no protocolo do IRC
+
+Definição de cores:
+    Ctrl-C       (1 byte)  -> Limpa a definição de cores
+    Cltr-C N     (2 bytes)
+    Ctrl-C NN    (3 bytes)
+    Ctrl-C N,M   (4 bytes)
+    Ctrl-C N,MM  (5 bytes)
+    Ctrl-C NN,M  (5 bytes)
+    Ctrl-C NN,MM (6 bytes)
+Onde Ctrl-C é o caracter \x03 e M e N é um dígito de 0 a 9
+N é a cor de frente, M é a cor de fundo (ausente significa padrão)
+As cores padrão são letras pretas sobre um fundo branco.
+Se o texto após a definição começar com um dígito de 0 a 9,
+deve ser usada uma das definições:
+    Ctrl-C N,MM  (5 bytes)
+    Ctrl-C NN,MM (6 bytes)
+Lista de cores:
+    0 white                    8 yellow
+    1 black                    9 lt.green (lime)
+    2 blue     (navy)          10 teal    (a kinda green/blue cyan)
+    3 green                    11 lt.cyan (cyan ?) (aqua)
+    4 red                      12 lt.blue (royal)
+    5 brown    (maroon)        13 pink    (light purple) (fuchsia)
+    6 purple                   14 grey
+    7 orange   (olive)         15 lt.grey (silver)
+Referências:
+    http://www.ircle.com/colorfaq.shtml
+    http://www.mirc.co.uk/help/color.txt
+
+
+*** Comandos de terminal usados em telatxt
+
+Escape sequences to move the cursor
+
+RETURN
+    Moves to the beginning of the current screen line.
+C-b
+    Moves backwards one column. (Tabs are broken up if needed.)
+Esc [ R ; C H
+    Move to screen row R, screen column C, where (R=1) is the top row,
+    and (C=1) is the leftmost column. Defaults are R=1 and C=1.
+Esc [ N A
+    Move N (default 1) screen lines up.
+Esc [ N B
+    Move N (default 1) screen lines down.
+Esc [ N C
+    Move N (default 1) columns right.
+Esc [ N D
+    Move N (default 1) columns left.
+
+Escape commands for erasing text
+
+Erasing means replacing by white space; it is not the same as deleting.
+The relative screen positions of things that are not erased remain unchanged
+with each other, as does the relative cursor position.
+
+E [ J
+    Erase from cursor to end of screen.
+E [ 0 J
+    Same as E [ J.
+E [ 1 J
+    Erase from home position to point.
+E [ 2 J
+    Erase whole sub-buffer.
+E [ K
+    Erase from point to end of screen line.
+E [ 0 K
+    Same as E [ K.
+E [ 1 K
+    Erase from beginning of screen line to point.
+E [ 2 K
+    Erase whole screen line.
+
+Escape sequences to insert and delete text
+
+Esc [ N L
+    Insert N (default 1) blank lines.
+Esc [ N M
+    Delete N (default 1) lines.
+Esc [ N P
+    Delete N (default 1) characters.
+Esc [ N @
+    Insert N (default 1) spaces.
+
+Referência:
+    http://www.xemacs.org/Documentation/21.5/html/term_1.html
+
+
+*** Mensagens de texto no protocolo Papovox
+
+Caracteres especiais:
+CR, caracter 0x0D, significa "Carriage Return", ou Retorno do carro, faz
+o cursor voltar para o início do texto.
+LF, caracter 0x0A, significa "Line Feed", e faz o cursor ir para a próxima
+linha.
+Portanto, CRLF são os caracteres 0x0D e 0x0A.
+
+É feita uma conexão com o servidor. Este envia uma mensagem que começa com
+o caracter '+' (se OK) ou '-' (se erro) e termina com CRLF. Se a mensagem
+começar com '-', a conexão será encerrada.
+O cliente manda uma mensagem qualquer (não nula) terminada com CRLF
+O servidor manda uma mensagem que começa com o caracter '+' (se OK) ou
+'-' (se erro) e termina com CRLF.
+
+A partir daqui todas as mensagens transmitidas e recebidas tem o seguinte
+formato:
+
+Caracter 1 (indica mensagem)
+Caracter = tamanho da mensagem (byte menos significativo)
+Caracter = tamanho da mensagem (byte mais significativo)
+Mensagem
+Obs.: O tamanho da mensagem é o byte mais significativo vezes 256 (ou 0x100)
+somando ao byte menos significativo.
+
+Exemplo:
+Cliente conecta
+Servidor manda mensagem contendo os caracteres:
+    0x43   '+' (aceitei conexão)
+    0x4F   'O'
+    0x4B   'K;'
+    0x0D   CR
+    0x0A   LF
+Cliente responde:
+    0x4C   'L' (nome do usuário, Léo neste caso)
+    0xE9   'é'
+    0x6F   'o'
+    0x0D   CR
+    0x0A   LF
+Servidor responde:
+    0x43   '+' (aceitei conexão)
+    0x4F   'O'
+    0x4B   'K;'
+    0x0D   CR
+    0x0A   LF
+Servidor espera um tempo e manda mensagens, exemplo:
+    0x01   (tipo de mensagem)
+    0x05   Tamanho (menos significativo)
+    0x00   Tamanho (mais significativo)
+    0x4E   'N'
+    0x6F   'o'
+    0x6D   'm'
+    0x65   'e'
+    0x3F   '?'
+    Obs.: Tamanho desta mensagem é 5, porque 0*256+5=5
+Cliente:
+    0x01   tipo de mensagem
+    0x03   tamanho (menos)
+    0x00   tamanho (mais)
+    0x4C   'L'
+    0xE9   'é'
+    0x6F   'o'

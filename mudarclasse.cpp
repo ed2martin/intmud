@@ -42,6 +42,16 @@ void TMudarAux::AddBloco(char * ender, int tamanho)
     endbloco[numbloco] = ender;
     tambloco[numbloco] = tamanho;
     numbloco++;
+#if 0
+    puts("Bloco");
+    while (tamanho>0)
+    {
+        char mens[4096];
+        Instr::Decod(mens, ender, sizeof(mens));
+        printf(">>>%s\n", mens);
+        tamanho -= Num16(ender), ender += Num16(ender);
+    }
+#endif
 }
 
 //------------------------------------------------------------------------------

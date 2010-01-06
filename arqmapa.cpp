@@ -29,7 +29,7 @@ extern int err_tipo;
 TArqMapa * TArqMapa::Inicio=0;
 TArqMapa * TArqMapa::Fim=0;
 bool TArqMapa::MapaGrande=false;
-unsigned char TArqMapa::ParamLinha = 0;
+unsigned short TArqMapa::ParamLinha = 4000;
 unsigned char TArqMapa::ParamN = 0;
 unsigned char TArqMapa::ParamIndent=2;
 unsigned char TArqMapa::ParamClasse=1;
@@ -187,6 +187,8 @@ void TArqMapa::SalvarArq(bool tudo)
                 char mens[8192];
                 int espaco = (indent>0 && p[2]!=Instr::cComent ?
                               indent-1 : 0) * ParamIndent;
+                if (espaco && (p[2]==Instr::cSenao1 || p[2]==Instr::cSenao2))
+                    espaco -= ParamIndent;
                 if (espaco>40)
                     espaco=40;
                 int r = Instr::Decod(mens+4096+espaco, p, 4096-espaco);
@@ -199,7 +201,7 @@ void TArqMapa::SalvarArq(bool tudo)
                     barran = 'n';
                 const char * o = mens+4096;
                 char * d = mens;
-                char * dfim = (ParamLinha ? d+70 : mens+sizeof(mens));
+                char * dfim = d+ParamLinha-10;
                 while (*o)
                 {
                 // Divide em 80 caracteres
@@ -215,7 +217,7 @@ void TArqMapa::SalvarArq(bool tudo)
                             break;
                         *d++ = '\\';
                         *d++ = '\n';
-                        dfim = (ParamLinha ? d+70 : mens+sizeof(mens));
+                        dfim = d+ParamLinha-10;
                         break;
                     }
                 // Anota caracter se não começa com barra invertida
@@ -233,7 +235,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 // Divide
                     *d++ = '\\';
                     *d++ = '\n';
-                    dfim = (ParamLinha ? d+70 : mens+sizeof(mens));
+                    dfim = d+ParamLinha-10;
                 }
                 *d++ = '\n';
                 *d = 0;
