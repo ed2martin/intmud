@@ -237,9 +237,9 @@ void Instr::ApagarVar(TVariavel * v)
     {
         if (VarAtual->tamanho)
         {
-            VarAtual->Apagar();
             if (VarAtual->endvar)
                 DadosTopo = (char*)VarAtual->endvar;
+            VarAtual->Apagar(); // Pode alterar VarAtual->endvar
         }
         VarAtual--;
     }
@@ -254,10 +254,11 @@ void Instr::ApagarRet(TVariavel * v)
         if (var->tamanho==0)
             continue;
         DadosTopo = (char*)var->endvar;
-        if (var->endvar == VarAtual->endvar)
-            VarAtual->tamanho = var->tamanho;
+        if (var->endvar == VarAtual->endvar) // Se forem a mesma variável
+            VarAtual->tamanho = var->tamanho; // Acerta o tamanho de VarAtual
+                                // porque está com 0 (é cópia de var)
         else
-            var->Apagar();
+            var->Apagar(); // Caso contrário, apaga a variável
     }
     *v = *VarAtual;
     VarAtual = v;
