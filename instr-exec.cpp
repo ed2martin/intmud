@@ -547,6 +547,7 @@ bool Instr::ExecX()
 #ifdef DEBUG_INSTR
             {
                 char mens[512];
+                printf(">>> %d %d\n", DadosFim-DadosTopo, VarFim-VarAtual);
                 if (Instr::Decod(mens, FuncAtual->linha, sizeof(mens)))
                     printf("Exec: %s\n", mens);
                 else
