@@ -1,5 +1,5 @@
 mapagrande = 0
-exec = 20000
+exec = 500000
 telatxt = 1
 
 [tela]
@@ -64,6 +64,9 @@ func mostra
   msg("B comandos de bloco\n")
   msg("Setas sobem e descem uma linha no arquivo\n")
   msg("Espaço mostra o conteúdo da linha atual\n")
+  msg("O ordena linhas em ordem alfabética\n")
+  msg("P ordena somando linhas\n")
+  msg("Q ordena mostrando as quantidades\n")
 
 func outro
   msg("Qual sua opção?\n")
@@ -166,6 +169,21 @@ func tecla_PGDN
 
 func tecla__
   msg(p.texto + "\n")
+  ret 1
+
+func tecla_O
+  t.ordena
+  msg("Ordenado 1\n")
+  ret 1
+
+func tecla_P
+  t.ordenalin
+  msg("Ordenado 2\n")
+  ret 1
+
+func tecla_Q
+  t.ordenalin("(", "x)")
+  msg("Ordenado 3\n")
   ret 1
 
 [editor]

@@ -100,8 +100,8 @@ static void DebugTextoTxt(TTextoTxt * txt)
 #endif
 
 //----------------------------------------------------------------------------
-/// Obtém o número de linhas correspondente a um texto
-static int NumLinhas(const char * texto, int total)
+// Obtém o número de linhas correspondente a um texto
+int TextoNumLin(const char * texto, int total)
 {
     int linhas=0;
     for (; total>0; total--, texto++)
@@ -111,13 +111,8 @@ static int NumLinhas(const char * texto, int total)
 }
 
 //----------------------------------------------------------------------------
-/// Copia texto e retorna número de linhas
-/** @param destino Endereço destino
- *  @param origem Endereço origem
- *  @param total Número de bytes a copiar
- *  @return Número de caracteres Instr::ex_barra_n copiados
- *  @note O caracter 0 é anotado como Instr::ex_barra_n */
-static int AnotaLinhas(char * destino, const char * origem, int total)
+// Copia texto e retorna número de linhas
+int TextoAnotaLin(char * destino, const char * origem, int total)
 {
     int linhas=0;
     for (; total>0; total--, origem++)
@@ -211,7 +206,7 @@ void TTextoTxt::AddTexto(const char * texto, unsigned int tamtexto)
             copiar = tamtexto, tamtexto = 0; // copiar todo o texto
         else
             tamtexto -= copiar; // copiar parte do texto
-        int lin = AnotaLinhas(Fim->Texto + Fim->Bytes, texto, copiar);
+        int lin = TextoAnotaLin(Fim->Texto + Fim->Bytes, texto, copiar);
         Fim->Bytes += copiar;
         Fim->Linhas += lin;
         Linhas += lin;
@@ -401,7 +396,7 @@ int TTextoBloco::CopiarTxt(unsigned int posic, char * buffer, int tambuf)
         memcpy(buffer, obj->Texto+posic, total);
         buffer += total;
         tambuf -= total;
-        obj=Depois, posic=0;
+        obj=obj->Depois, posic=0;
         if (obj==0)
         {
             *buffer=0;
@@ -570,7 +565,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         }
         else
         {
-            int lin = NumLinhas(obj->Texto + posic, obj->Bytes - posic);
+            int lin = TextoNumLin(obj->Texto + posic, obj->Bytes - posic);
             sub_bytes += obj->Bytes - posic;
             dif_linhas -= lin;
             obj->Bytes = posic;
@@ -585,7 +580,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
                 copiar = tamtexto, tamtexto = 0; // copiar todo o texto
             else
                 tamtexto -= copiar; // copiar parte do texto
-            int lin = AnotaLinhas(obj->Texto + posic, texto, copiar);
+            int lin = TextoAnotaLin(obj->Texto + posic, texto, copiar);
             obj->Bytes += copiar;
             obj->Linhas += lin;
             dif_linhas += lin;
@@ -609,7 +604,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
     if (tamapagar)
     {
         char * p = obj->Texto + posic;
-        int lin = NumLinhas(p, tamapagar);
+        int lin = TextoNumLin(p, tamapagar);
         obj->Bytes -= tamapagar;
         obj->Linhas -= lin;
         sub_bytes += tamapagar;
@@ -626,7 +621,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         {
             char * p = obj->Texto + posic;
             move_mem(p + tamtexto, p, obj->Bytes - posic);
-            int lin = AnotaLinhas(p, texto, tamtexto);
+            int lin = TextoAnotaLin(p, texto, tamtexto);
             obj->Bytes += tamtexto;
             obj->Linhas += lin;
             dif_linhas += lin;
@@ -636,7 +631,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
     // Separa final do bloco
         char buffer[0x100];
         unsigned int tambuf = obj->Bytes - posic;
-        int  linhabuf = AnotaLinhas(buffer, obj->Texto + posic, tambuf);
+        int  linhabuf = TextoAnotaLin(buffer, obj->Texto + posic, tambuf);
         obj->Linhas -= linhabuf;
         obj->Bytes = posic;
     // Insere bytes
@@ -647,7 +642,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
                 copiar = tamtexto, tamtexto = 0; // copiar todo o texto
             else
                 tamtexto -= copiar; // copiar parte do texto
-            int lin = AnotaLinhas(obj->Texto + obj->Bytes, texto, copiar);
+            int lin = TextoAnotaLin(obj->Texto + obj->Bytes, texto, copiar);
             obj->Bytes += copiar;
             obj->Linhas += lin;
             dif_linhas += lin;
@@ -800,7 +795,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
                     pos->PosicBloco -= total;
             }
     // Copia parte do bloco
-        int linhas = NumLinhas(proximo->Texto, total);
+        int linhas = TextoNumLin(proximo->Texto, total);
         memcpy(ini->Texto + ini->Bytes, proximo->Texto, total);
         memcpy(proximo->Texto, proximo->Texto + total, proximo->Bytes - total);
         ini->Bytes += total;
@@ -980,6 +975,28 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
     {
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(Bytes);
+    }
+// Ordenar
+    if (comparaZ(nome, "ordena")==0)
+    {
+        Ordena(0, 0);
+        return false;
+    }
+// Ordenar juntando linhas
+    if (comparaZ(nome, "ordenalin")==0)
+    {
+    // Com menos de dois argumentos
+        if (Instr::VarAtual < v+2)
+        {
+            Ordena("", 0);
+            return false;
+        }
+    // Com dois ou mais argumentos
+        char txt1[256],txt2[256];
+        copiastr(txt1, v[1].getTxt(), strlen(txt1));
+        copiastr(txt2, v[2].getTxt(), strlen(txt2));
+        Ordena(txt1, txt2);
+        return false;
     }
     return false;
 }

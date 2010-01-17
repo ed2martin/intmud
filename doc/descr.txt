@@ -864,6 +864,7 @@ textotxt <nomedavariável>
         Organiza as linhas em ordem alfabética, sendo que:
         A primeira palavra de cada linha é a quantidade de textos.
         Da segunda palavra em diante é o texto propriamente dito.
+        As linhas que não começam com um número são apagadas.
         Linhas iguais são somadas.
         Exemplo:
             "1 Carro pequeno\n"
@@ -875,7 +876,7 @@ textotxt <nomedavariável>
     ordenalin( <texto1> , <texto2> )
         Mesmo que ordenalin sem argumentos, exceto que após ordenar altera
         as linhas de acordo com a quantidade (a primeira palavra):
-        Se for menor ou igual a 0 ou não for um número: apaga a linha
+        Se for 0 ou não for um número: apaga a linha
         Se for 1: apaga o número no começo da linha
         Se for 2 ou mais: adiciona <texto1> antes do número e <texto2> depois.
         Exemplo:

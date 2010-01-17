@@ -60,8 +60,8 @@ void tabASCinic(void)
     tabTXTDEC = tabNOMES + 0x500;
 // Acerta tabNOMES
     memset(tabNOMES,0,256);
-    tabNOMES[(unsigned char)'_'] = '_';
-    tabNOMES[(unsigned char)' '] = '_';
+    tabNOMES[(unsigned char)'_'] = ' ';
+    tabNOMES[(unsigned char)' '] = ' ';
     tabNOMES[(unsigned char)'@'] = '@';
     for (caract='a'; caract<='z'; caract++) // Letras de A a Z
         tabNOMES[caract-0x20] = tabNOMES[caract] = caract;

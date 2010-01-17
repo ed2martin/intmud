@@ -473,7 +473,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             {
                 ch = tabNOMES[*(unsigned char*)txt];
                 if (ch)
-                    *destino++=ch;
+                    *destino++ = (ch==' ' ? '_' : ch);
             }
             txt++;
         }
