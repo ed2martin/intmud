@@ -22,6 +22,18 @@ public:
             ///< Adiciona texto no final
             /**< @note É um pouco mais eficiente que TBlocoPos::MudarTxt */
 
+    void TextoIni();
+            ///< Início: limpa texto de TTextoTxt
+            /**< Deve ser chamado antes de adicionar textos com TextoAnota */
+    void TextoAnota(const char * txt, int tam);
+            ///< Acrescenta texto em TTextoTxt
+            /**< @param txt Texto a adicionar
+             *   @param tam Tamanho do texto, em bytes */
+    void TextoFim();
+            ///< Encerra adição de texto com TextoIni() e TextoAnota()
+            /**< Se algum texto foi adicionado (com TextoAnota), o último
+                 byte adicionado deve ser um Instr::ex_barra_n ou 0 */
+
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
 
@@ -30,6 +42,22 @@ public:
     TTextoPos * Posic;      ///< Primeiro objeto da lista
     unsigned int Linhas;    ///< Número de linhas
     unsigned int Bytes;     ///< Número de bytes
+
+    void Ordena(const char *txt1, const char * txt2);
+            ///< Ordena linhas em ordem alfabética
+            /**< @param txt1 Texto antes do primeiro número de cada linha
+             *   @param txt2 Texto depois do número de cada linha
+             *   Modo de ordenação:
+             *   - Se txt1=0: textotxt.ordena
+             *   - Se txt1!=0 e txt2=0: textotxt.ordena sem argumentos
+             *   - Se txt1!=0 e txt2!=0: textotxt.ordena com argumentos */
+private:
+    void OrdenaSub(char * texto, char** linha, const char *txt1, const char * txt2);
+            ///< Chamado por Ordena(), para ordenar linhas
+            /**< @param texto Texto a ser ordenado, começa e termina com um byte 0
+             *   @param linha char*[] contendo o número de linhas vezes 2
+             *   @param txt1 Vide Ordena()
+             *   @param txt2 Vide Ordena() */
 };
 
 //----------------------------------------------------------------------------
@@ -142,6 +170,18 @@ private:
     TTextoGrupo * Depois;       ///< Próximo objeto
     char Lista[TOTAL_TXTGR][TOTAL_TXTOBJ]; ///< Objetos TTextoBloco
 };
+
+//----------------------------------------------------------------------------
+/// Obtém o número de linhas correspondente a um texto
+int TextoNumLin(const char * texto, int total);
+
+/// Copia texto e retorna número de linhas
+/** @param destino Endereço destino
+ *  @param origem Endereço origem
+ *  @param total Número de bytes a copiar
+ *  @return Número de caracteres Instr::ex_barra_n copiados
+ *  @note O caracter 0 é anotado como Instr::ex_barra_n */
+int TextoAnotaLin(char * destino, const char * origem, int total);
 
 //----------------------------------------------------------------------------
 
