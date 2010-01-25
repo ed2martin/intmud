@@ -124,6 +124,10 @@ public:
 #else
     struct termios term_antes; ///< Configuração anterior do terminal
     int LerPont; ///< Para processar ESC em Ler()
+    bool fcntl_block;
+        ///< Para acessar stdin/stdout
+        /**< - Antes de ler: fcntl(STDIN_FILENO, F_SETFL, 0);
+         *   - Antes de escrever: fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK); */
 #endif
 };
 

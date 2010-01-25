@@ -299,7 +299,7 @@ int compara(const char * string1, const char * string2, int tam)
 
 //------------------------------------------------------------------------------
 // Verifica se nome de arquivo permitido (está no diretório do programa)
-bool arqvalido(char * nome)
+bool arqvalido(char * nome, const char * ext)
 {
     if (nome[0]==0)
         return false;
@@ -329,6 +329,16 @@ bool arqvalido(char * nome)
         if ((p==nome || p[-1]=='/') && memcmp(p, "../", 3)==0)
             return false;
 #endif
+// Acerta final do nome do arquivo
+    if (*ext==0)
+        return true;
+    int tam = strlen(ext);
+    if (p+tam < nome)   // Nome muito pequeno: acrescenta extensão
+        strcpy(p, ext);
+    else if (comparaZ(p-tam, ext)!=0) // Extensão incorreta
+        strcpy(p, ext);
+    else // Extensão correta: acerta a extensão
+        strcpy(p-tam, ext);
     return true;
 }
 

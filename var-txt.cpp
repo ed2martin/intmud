@@ -186,16 +186,9 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         while (Instr::VarAtual == v+2)
         {
             char nome[300]; // Nome do arquivo
-            char * p = copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
-            if (!arqvalido(nome))
+            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
+            if (!arqvalido(nome, ".txt"))
                 break;
-    // Acrescenta ".txt" se necessário
-            if (p <= nome+4)
-                strcpy(p, ".txt");
-            else if (comparaZ(p-4, ".txt")!=0)
-                strcpy(p, ".txt");
-            else
-                strcpy(p-3, "txt");
     // Abre arquivo
             switch (v[2].getInt())
             {
@@ -250,17 +243,10 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         while (Instr::VarAtual == v+2)
         {
             char nome[300]; // Nome do arquivo
-            char * p = copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
+            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
             tamanho = v[2].getInt();
-            if (!arqvalido(nome))
+            if (!arqvalido(nome, ".txt"))
                 break;
-    // Acrescenta ".txt" se necessário
-            if (p <= nome+4)
-                strcpy(p, ".txt");
-            else if (comparaZ(p-4, ".txt")!=0)
-                strcpy(p, ".txt");
-            else
-                strcpy(p-3, "txt");
     // Abre arquivo
             descr = open(nome, O_RDWR);
             break;

@@ -144,7 +144,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             strcpy(mens, ".");
         Instr::ApagarVar(v);
     // Se inválido: retorna 0
-        if (memcmp(mens,"..",3)==0 || !arqvalido(mens))
+        if (memcmp(mens,"..",3)==0 || !arqvalido(mens, ""))
             return Instr::CriarVarInt(0);
     // Válido: coloca na lista de pendentes e retorna 1
         TVarSavDir::NovoDir(mens);
@@ -155,20 +155,10 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
     *arqnome=0;
     if (Instr::VarAtual >= v+1)
     {
-        char * p =  copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
     // Verifica se nome permitido
-        if (!arqvalido(arqnome))
+        if (!arqvalido(arqnome, ".sav"))
             *arqnome=0;
-        else
-        {
-    // Acrescenta ".sav" se necessário
-            if (p <= arqnome+4)
-                strcpy(p, ".sav");
-            else if (comparaZ(p-4, ".sav")!=0)
-                strcpy(p, ".sav");
-            else
-                strcpy(p-3, "sav");
-        }
     }
 // Checa se nome de arquivo é válido
     if (comparaZ(nome, "valido")==0)

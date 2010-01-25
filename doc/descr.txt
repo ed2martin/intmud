@@ -220,7 +220,7 @@ comum
     Variável é a mesma para todos os objetos da classe.
     Independente da quantidade de objetos, só existe uma variável.
 sav
-    Variável deve ser salva em arquivo, vide objeto arqsav.
+    Variável deve ser salva em arquivo, vide arqsav.
 
 
 *** Vetores
@@ -891,6 +891,16 @@ textotxt <nomedavariável>
         as colunas <colmin> e <colmax>, preferêncialmente no último espaço
         encontrado. Se <colmin> ou <colmax> for menor que dois, nada essa
         função não tem efeito.
+    ler( <nome do arquivo> )
+        Lê um arquivo de texto e coloca em textotxt.
+        Retorna 1 se conseguiu ou 0 se não conseguiu.
+        Nota 1: O nome do arquivo sempre terminará com ".txt".
+        Nota 2: O arquivo deve pertencer ao diretório atual ou a um
+        subdiretório dele. Não é possível acessar arquivos de outros lugares.
+    salvar( <nome do arquivo> )
+        Salva o conteúdo de textotxt em um arquivo de texto.
+        Retorna 1 se conseguiu ou 0 se não conseguiu.
+        Notas: vide função ler (acima)
 
 textopos <nomedavariável>
     É usado para acessar o texto de textotxt. Representa uma linha.

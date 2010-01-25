@@ -20,7 +20,7 @@
 #include "instr.h"
 #include "misc.h"
 
-//#define DEBUG_TXT // Texto guardado em TTextoTxt
+#define DEBUG_TXT // Texto guardado em TTextoTxt
 //#define DEBUG_MSG // Alocação de memória
 
 //----------------------------------------------------------------------------
@@ -1014,6 +1014,133 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
             DivideLin(min, max);
         DebugTextoTxt(this);
         return false;
+    }
+// Lê arquivo de texto
+    if (comparaZ(nome, "ler")==0)
+    {
+        if (Instr::VarAtual < v+1)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
+        char nome[1024]; // Nome do arquivo / buffer de leitura
+        copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
+        Instr::ApagarVar(v);
+        if (!arqvalido(nome, ".txt"))
+            return Instr::CriarVarInt(0);
+    // Abre arquivo
+        FILE * descr = fopen(nome, "rb");
+        if (descr==0)
+            return Instr::CriarVarInt(0);
+        TextoIni();
+    // Lê arquivo
+        char chfim = 0;  // Último caracter anotado em textotxt
+        char linhaCRLF = 0; // Para detectar fim da linha (CR e LF)
+        while (true)
+        {
+            char buf[8192]; // sizeof(buf) = sizeof(nome)*8
+            char * d = buf;
+            int lido = fread(nome, 1, sizeof(nome), descr);
+            if (lido<=0)
+                break;
+            for (const char * o=nome; o<nome+lido; o++)
+            {
+                unsigned char ch = *o;
+                //putchar(ch);
+                if (ch >= ' ')  // Caracteres visíveis
+                    *d++=ch, linhaCRLF=0;
+                else if (ch==9) // Tabulação
+                {
+                    memset(d, ' ', 8);
+                    d+=8, linhaCRLF=0;
+                }
+                else if (ch!=13 && ch!=10) // Se não é nova linha
+                    linhaCRLF=0;
+                else if (linhaCRLF==0 || linhaCRLF==ch) // Nova linha
+                    linhaCRLF=ch, *d++=Instr::ex_barra_n;
+            }
+            if (d!=buf)
+            {
+                TextoAnota(buf, d-buf);
+                chfim = d[-1];
+            }
+            if (lido!=sizeof(nome))
+                break;
+        }
+    // Garante Instr::ex_barra_n no fim do texto de textotxt
+        if (chfim != Instr::ex_barra_n)
+        {
+            const char barra_n = Instr::ex_barra_n;
+            TextoAnota(&barra_n, 1);
+        }
+    // Fecha arquivo
+        TextoFim();
+        fclose(descr);
+        DebugTextoTxt(this);
+        return Instr::CriarVarInt(1);
+    }
+// Salva em arquivo de texto
+    if (comparaZ(nome, "salvar")==0)
+    {
+        if (Instr::VarAtual < v+1)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
+        char nome[1024]; // Nome do arquivo
+        copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
+        Instr::ApagarVar(v);
+        if (!arqvalido(nome, ".txt"))
+            return Instr::CriarVarInt(0);
+    // Abre arquivo
+        FILE * descr = fopen(nome, "w");
+        if (descr==0)
+            return Instr::CriarVarInt(0);
+    // Salva em arquivo
+        char buf[4096];
+        char * pbuf = buf;
+        int pular = 0; // Para não salvar cores em arquivo
+        for (TTextoBloco * bl = Inicio; bl; bl=bl->Depois)
+        {
+            for (int x=0; x<bl->Bytes; x++)
+            {
+                unsigned char ch = bl->Texto[x];
+                switch (ch)
+                {
+                case Instr::ex_barra_n: pular=0, *pbuf++ = '\n'; break;
+                case Instr::ex_barra_c: pular=1; break;
+                case Instr::ex_barra_d: pular=2; break;
+                default:
+                    switch (pular)
+                    {
+                    case 1:
+                        if ((ch<'0' || ch>'9') && (ch<'A' || ch>'F') &&
+                                (ch<'a' || ch>'f') && ch>=' ')
+                            *pbuf++ = ch;
+                        pular=0;
+                        break;
+                    case 2:
+                        if ((ch<'0' || ch>'7')  && ch>=' ')
+                            *pbuf++ = ch;
+                        pular=0;
+                        break;
+                    default:
+                        if (ch >= ' ')
+                            *pbuf++ = ch;
+                    }
+                }
+            }
+            if (pbuf < buf + sizeof(buf) - 0x100)
+                continue;
+            fwrite(buf, 1, pbuf-buf, descr);
+            pbuf = buf;
+        }
+        if (pbuf != buf)
+            fwrite(buf, 1, pbuf-buf, descr);
+    // Fecha arquivo
+        fclose(descr);
+        DebugTextoTxt(this);
+        return Instr::CriarVarInt(1);
     }
     return false;
 }
