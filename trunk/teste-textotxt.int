@@ -67,6 +67,7 @@ func mostra
   msg("O ordena linhas em ordem alfabética\n")
   msg("P ordena somando linhas\n")
   msg("Q ordena mostrando as quantidades\n")
+  msg("D divide linhas grandes\n")
 
 func outro
   msg("Qual sua opção?\n")
@@ -185,6 +186,10 @@ func tecla_Q
   t.ordenalin("(", "x)")
   msg("Ordenado 3\n")
   ret 1
+
+func tecla_D
+  tela.texto = ""
+  ret divide:selec
 
 [editor]
 func selec
@@ -334,4 +339,39 @@ func tecla_M # Mover
     blocoini.remove(lin)
     msg("Bloco movido\n")
   fimse
+  ret menu:selec
+
+[divide]
+func selec
+  msg("Digite os tamanhos mínimo e máximo das linhas. Exemplo: 70 80\n")
+  opcao = "divide"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  msg("Digite os tamanhos mínimo/máximo das linhas, tecla ESC cancela\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_ENTER
+  int16 min
+  int16 max
+  int32 numlin
+  min=tela.texto, max=txt2(tela.texto)
+  se min<2 | max<2
+    msg("Digite dois números maiores ou iguais a 2, tecla ESC cancela\n")
+    ret 1
+  fimse
+  numlin = t.Linhas
+  t.dividelin(min, max)
+  se t.Linhas = numlin
+    msg("Nenhuma linha foi dividida\n")
+  senao
+    msg("Linhas foram divididas\n")
+  fimse
+  tela.texto = ""
   ret menu:selec
