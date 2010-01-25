@@ -93,10 +93,22 @@ func tecla_B # Comandos de bloco
   ret bloco:selec
 
 func tecla_S # Salvar arquivo
+  #ret menu:tecla_S_antigo
+  ret menu:tecla_S_novo
+
+func tecla_S_novo
+  se !t.salvar(nomearq)
+    msg("Erro ao salvar arquivo\n")
+  senao
+    msg("Arquivo foi salvo\n")
+  fimse
+  ret 1
+
+func tecla_S_antigo
   arqtxt arq
   textopos posic
   se !arq.abrir(nomearq, 2)
-    msg("Erro ao abrir arquivo\n")
+    msg("Erro ao salvar arquivo\n")
   senao
     posic = t.ini
     enquanto posic.lin
@@ -230,6 +242,20 @@ func tecla_ESC
   ret menu:selec
 
 func tecla_ENTER
+  #ret abrir:ler_antigo(arg0)
+  ret abrir:ler_novo(arg0)
+
+func ler_novo
+  se !t.ler(tela.texto)
+    msg("Erro ao abrir arquivo: " + tela.texto + "\n")
+  senao
+    msg("Arquivo lido; linhas=" + t.linhas + ", bytes=" + t.bytes + "\n")
+    nomearq = tela.texto
+  fimse
+  tela.texto = ""
+  ret menu:selec
+
+func ler_antigo
   arqtxt arq
   se !arq.abrir(tela.texto, 0)
     msg("Erro ao abrir arquivo: " + tela.texto + "\n")

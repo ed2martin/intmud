@@ -154,17 +154,10 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
         while (Instr::VarAtual == v+1)
         {
             char nome[300]; // Nome do arquivo
-            char * p = copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
+            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
     // Verifica se nome permitido
-            if (!arqvalido(nome))
+            if (!arqvalido(nome, "log"))
                 break;
-    // Acrescenta ".log" se necessário
-            if (p <= nome+4)
-                strcpy(p, ".log");
-            else if (comparaZ(p-4, ".log")!=0)
-                strcpy(p, ".log");
-            else
-                strcpy(p-3, "log");
     // Abre arquivo
             descr = open(nome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
             break;
