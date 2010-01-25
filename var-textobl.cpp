@@ -226,3 +226,152 @@ void TTextoTxt::OrdenaSub(char * texto, char** linha,
     }
     TextoFim();
 }
+
+//----------------------------------------------------------------------------
+void TTextoTxt::DivideLin(unsigned int min, unsigned int max)
+{
+// Verifica se tem como truncar
+    if (min>max) min=max;
+    if (min<2)   return;
+
+// Verifica se texto está vazio
+    if (Inicio==0)
+        return;
+
+// Cria bloco no início
+    Inicio->CriarAntes();
+
+// Procura menor posição
+    unsigned int bytepos = Bytes;
+    for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+        if (bytepos > pos->PosicTxt)
+            bytepos = pos->PosicTxt;
+
+// Outras variáveis
+    unsigned int col = 0; // Coluna atual
+
+    char * espaco_p = 0; // Aonde encontrou espaço para dividir a linha
+    TTextoBloco * espaco_obj = 0; // Objeto correspondente
+    unsigned int espaco_byte = 0;  // Número do byte a partir do início do texto
+
+    TTextoBloco * dest_obj = Inicio; // Objeto que está escrevendo
+    char * dest_p = dest_obj->Texto; // Posição atual em dest_obj
+    unsigned int dest_byte = 0; // Byte atual em textotxt
+
+    TTextoBloco * ler_obj = Inicio->Depois;  // Objeto que está lendo
+    unsigned int ler_tam = ler_obj->Bytes;
+    unsigned int ler_ind = 0;
+
+// Divide as linhas
+    while (true)
+    {
+    // Lê próximo byte de textotxt
+        if (ler_ind >= ler_tam)
+        {
+            ler_obj = ler_obj->Depois;
+            if (ler_obj==0)
+                break;
+            ler_tam = ler_obj->Bytes;
+            ler_ind = 0;
+        }
+        char ch = ler_obj->Texto[ler_ind++];
+    // Nova linha
+        //putchar(ch==Instr::ex_barra_n ? '\n' : ch); fflush(stdout);
+        if (ch==Instr::ex_barra_n)
+            col=0, dest_obj->Linhas++;
+    // Checa se atingiu o tamanho da linha
+        else if (++col >= min)
+        {
+        // Antes da coluna máxima: procura último espaço
+            if (col < max)
+            {
+                if (ch==' ')
+                {
+                    espaco_p = dest_p;
+                    espaco_byte = dest_byte;
+                    espaco_obj = dest_obj;
+                }
+            }
+        // Encontrou espaço: substitui por ex_barra_n
+            else if (espaco_p)
+            {
+                col = dest_byte - espaco_byte - 1;
+                *espaco_p = Instr::ex_barra_n;
+                espaco_p = 0;
+                for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+                    if (pos->PosicTxt > espaco_byte)
+                        pos->LinhaTxt++;
+                espaco_obj->Linhas++;
+                Linhas++;
+            }
+        // Não encontrou espaço
+            else
+            {
+        // Anota ex_barra_n
+                col=0, dest_obj->Linhas++;
+                *dest_p++ = Instr::ex_barra_n;
+                if (dest_p >= (char*)dest_obj + TOTAL_TXTOBJ)
+                {
+                    dest_obj->Bytes = dest_p - dest_obj->Texto;
+                    if (dest_obj->Depois == ler_obj)
+                        dest_obj = dest_obj->CriarDepois();
+                    else
+                        dest_obj = dest_obj->Depois, dest_obj->Linhas = 0;
+                    dest_p = dest_obj->Texto;
+                }
+        // Adiciona 1 linha e 1 byte
+                dest_byte++, bytepos++;
+                for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+                    if (pos->PosicTxt >= dest_byte)
+                        pos->PosicTxt++, pos->LinhaTxt++;
+                Linhas++, Bytes++;
+            }
+        }
+    // Acerta posição de textopos
+        if (dest_byte == bytepos)
+        {
+            bytepos = Bytes;
+            for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+            {
+                if (pos->PosicTxt == dest_byte)
+                {
+                    pos->Bloco = dest_obj;
+                    pos->PosicBloco = dest_p - dest_obj->Texto;
+                }
+                if (pos->PosicTxt < bytepos && pos->PosicTxt > dest_byte)
+                    bytepos = pos->PosicTxt;
+            }
+        }
+    // Anota caracter
+        dest_byte++;
+        *dest_p++ = ch;
+        if (dest_p >= (char*)dest_obj + TOTAL_TXTOBJ)
+        {
+            dest_obj->Bytes = dest_p - dest_obj->Texto;
+            if (dest_obj->Depois == ler_obj)
+                dest_obj = dest_obj->CriarDepois();
+            else
+                dest_obj = dest_obj->Depois, dest_obj->Linhas = 0;
+            dest_p = dest_obj->Texto;
+        }
+    }
+
+// Acerta tamanho do último bloco
+    dest_obj->Bytes = dest_p - dest_obj->Texto;
+
+// Acerta textopos no final de textotxt
+    for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+        if (pos->PosicTxt >= Bytes)
+        {
+            pos->Bloco = dest_obj;
+            pos->PosicBloco = dest_obj->Bytes;
+            pos->PosicTxt = Bytes;
+            pos->LinhaTxt = Linhas;
+        }
+
+// Apaga blocos após o último
+    while (dest_obj->Depois)
+        dest_obj = dest_obj->Depois, dest_obj->Bytes = dest_obj->Linhas = 0;
+    while (Fim->Bytes==0)
+        Fim->Apagar();
+}

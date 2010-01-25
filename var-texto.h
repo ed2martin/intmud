@@ -43,6 +43,10 @@ public:
     unsigned int Linhas;    ///< Número de linhas
     unsigned int Bytes;     ///< Número de bytes
 
+    void DivideLin(unsigned int min, unsigned int max);
+            ///< Diminui o tamanho das linhas dividindo em duas ou mais
+            /**< @param min Tamanho mínimo de onde a linha será dividida
+             *   @param max Tamanho máximo das linhas */
     void Ordena(const char *txt1, const char * txt2);
             ///< Ordena linhas em ordem alfabética
             /**< @param txt1 Texto antes do primeiro número de cada linha

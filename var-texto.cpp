@@ -980,6 +980,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "ordena")==0)
     {
         Ordena(0, 0);
+        DebugTextoTxt(this);
         return false;
     }
 // Ordenar juntando linhas
@@ -989,6 +990,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         if (Instr::VarAtual < v+2)
         {
             Ordena("", 0);
+            DebugTextoTxt(this);
             return false;
         }
     // Com dois ou mais argumentos
@@ -996,6 +998,21 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         copiastr(txt1, v[1].getTxt(), strlen(txt1));
         copiastr(txt2, v[2].getTxt(), strlen(txt2));
         Ordena(txt1, txt2);
+        DebugTextoTxt(this);
+        return false;
+    }
+// Divide linhas
+    if (comparaZ(nome, "dividelin")==0)
+    {
+        if (Instr::VarAtual < v+2)
+            return false;
+        int min = v[1].getInt();
+        int max = v[2].getInt();
+        if (min>max)
+            min=max;
+        if (min>=2)
+            DivideLin(min, max);
+        DebugTextoTxt(this);
         return false;
     }
     return false;

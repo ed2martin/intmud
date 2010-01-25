@@ -220,7 +220,7 @@ comum
     Variável é a mesma para todos os objetos da classe.
     Independente da quantidade de objetos, só existe uma variável.
 sav
-    Variável deve ser salva em arquivo, vide objeto salvar.
+    Variável deve ser salva em arquivo, vide objeto arqsav.
 
 
 *** Vetores
@@ -886,10 +886,11 @@ textotxt <nomedavariável>
         Após numerolin("(", "x)"), essas linhas mudam para:
             "(5x) Copo\n"
             "Garrafa\n"
-    trunca(<colmin>, <colmax>)
+    dividelin(<colmin>, <colmax>)
         Linhas que tiverem mais que <colmax> colunas são divididas entre
         as colunas <colmin> e <colmax>, preferêncialmente no último espaço
-        encontrado.
+        encontrado. Se <colmin> ou <colmax> for menor que dois, nada essa
+        função não tem efeito.
 
 textopos <nomedavariável>
     É usado para acessar o texto de textotxt. Representa uma linha.
