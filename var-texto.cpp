@@ -1221,16 +1221,54 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 // Texto da linha atual
     if (comparaZ(nome, "texto")==0)
     {
+    // Obtém colunas inicial e final
+        int colini = 0;
+        int coltam = 0x7FFFFFF;
+        if (Instr::VarAtual >= v+1)
+        {
+            colini = v[1].getInt();
+            if (colini < 0)
+                colini = 0;
+            if (Instr::VarAtual >= v+2)
+                coltam = v[2].getInt();
+        }
+        Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
+        if (coltam<=0 || Bloco==0)
+            return Instr::CriarVarTexto("");
+    // Obtém o número de bytes da linha
+        int total = Bloco->LinhasBytes(PosicBloco, 1) - 1;
+        if (colini >= total)
+            return Instr::CriarVarTexto("");
+        if (coltam > total || colini + coltam > total)
+                // Nota: colini+coltam pode ser <0 se ocorrer overflow
+            coltam = total - colini;
+    // Cria variável e aloca memória para o texto
+        if (!Instr::CriarVarTexto(0, coltam))
+            return Instr::CriarVarTexto("");
+    // Obtém tamanho da memória alocada
+        int copiar = Instr::VarAtual->tamanho;
+    // Avança coluna inicial
+        TTextoBloco * bl = Bloco;
+        colini += PosicBloco;
+        while (colini > bl->Bytes)
+            colini -= bl->Bytes, bl=bl->Depois;
+    // Anota o texto
+        bl->CopiarTxt(colini, Instr::VarAtual->end_char, copiar);
+        return true;
+    }
+// Texto de uma ou mais linhas
+    if (comparaZ(nome, "textolin")==0)
+    {
         int linhas = 1;
         if (Instr::VarAtual >= v+1)
             linhas = v[1].getInt();
-        Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será 0
+        Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
         if (linhas<=0 || Bloco==0)
             return Instr::CriarVarTexto("");
     // Obtém o número de bytes
-        int total = Bloco->LinhasBytes(PosicBloco, linhas);
+        int total = Bloco->LinhasBytes(PosicBloco, linhas) - 1;
     // Cria variável e aloca memória para o texto
-        if (!Instr::CriarVarTexto(0, total-1))
+        if (!Instr::CriarVarTexto(0, total))
             return Instr::CriarVarTexto("");
     // Obtém tamanho da memória alocada
         int copiar = Instr::VarAtual->tamanho;
@@ -1244,14 +1282,46 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         if (TextoTxt==0 || Instr::VarAtual < v+1)
             return false;
         TextoTxt->IniBloco();
+    // Obtém colunas inicial e final
+        int colini = 0;
+        int coltam = 0x7FFFFFF;
+        if (Instr::VarAtual >= v+2)
+        {
+            colini = v[2].getInt();
+            if (colini < 0)
+                colini = 0;
+            if (Instr::VarAtual >= v+3)
+                coltam = v[3].getInt();
+            if (coltam < 0)
+                coltam = 0;
+        }
     // Obtém variáveis
+        TBlocoPos bl = *this;
         const char * txt = v[1].getTxt();
         int tamtxt = strlen(txt) + 1;
         int apagar = Bloco->LinhasBytes(PosicBloco, 1);
+    // Se linha não está vazia: obtém posição na linha
         if (apagar>0)
+        {
             apagar--, tamtxt--;
+        // Acerta colini e apagar
+            if (colini >= apagar)
+                colini = apagar, apagar = 0;
+            else
+            {
+                apagar -= colini;
+                if (apagar > coltam)
+                    apagar = coltam;
+            }
+        // Posição no texto
+            bl.PosicTxt += colini;
+            colini += bl.PosicBloco;
+            while (colini > bl.Bloco->Bytes)
+                colini -= bl.Bloco->Bytes, bl.Bloco=bl.Bloco->Depois;
+            bl.PosicBloco = colini;
+        }
     // Altera o texto
-        Mudar(txt, tamtxt, apagar);
+        bl.Mudar(txt, tamtxt, apagar);
         DebugTextoTxt(TextoTxt);
         return false;
     }
