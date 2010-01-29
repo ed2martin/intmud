@@ -924,11 +924,16 @@ textopos <nomedavariável>
         Avança o número de linhas especificado.
         Nada faz se o número for menor ou igual a zero.
     texto
-        Retorna o texto da linha atual.
-    texto( <número de linhas> )
+    texto( <caracter inicial> )
+    texto( <caracter inicial>, <quantidade de caracteres> )
+        Retorna o texto da linha atual ou de parte da linha atual.
+    textolin( <número de linhas> )
         Retorna texto correspondente ao número de linhas especificado.
     mudar( <novo texto> )
-        Muda o texto da linha atual.
+    mudar( <novo texto>, <caracter inicial> )
+    mudar( <novo texto>, <caracter inicial>, <quantidade de caracteres> )
+        Muda o texto da linha atual ou parte do texto da linha atual.
+        Caracter inicial e quantidade de caracteres referem-se à linha atual.
     add( <novo texto> )
         Adiciona linha antes da linha atual.
         Após essa função, textopos corresponde ao texto adicionado.
