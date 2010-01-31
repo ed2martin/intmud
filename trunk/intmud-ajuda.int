@@ -1,4 +1,4 @@
-[ajuda _comandos]
+classe ajuda _comandos
 const posic = 8
 # Comandos de ajuda
 const c_ = $ajuda_ini
@@ -22,7 +22,7 @@ func exec
   efim
   arg0.msg("\c6Comando ou tópico da ajuda desconhecido:\b " + arg1)
 
-[ajuda comum]
+classe ajuda comum
 # Páginas de ajuda
 const iniclasse = criar(arg0)
 func exec
@@ -33,7 +33,7 @@ func exec
     p.depois
   efim
 
-[ajuda ini]
+classe ajuda ini
 herda ajuda comum
 const m1 = "\cbPáginas de ajuda do MUD\b"
 const m2 = "Para ler tecle ajuda seguido do nome de um tópico ou um comando."
@@ -45,7 +45,7 @@ const m7 = "   \c2NOMES\b    Nomes de objetos e personagens"
 const m8 = "   \c2CONFIG\b   Opções de configuração"
 const m9 = "   \c2FIM\b      Sai do MUD"
 
-[ajuda fim]
+classe ajuda fim
 herda ajuda comum
 const m1 = "\cbFim\b"
 const m2 = "Sintaxe: fim"

@@ -523,6 +523,7 @@ void Inicializa(const char * arg)
                         arqinicio, strerror(errno));
                 err_fim();
             }
+            continue;
         }
 
     // Configuração
@@ -601,38 +602,36 @@ void Inicializa(const char * arg)
             }
         }
 
-    // Verifica se é início de classe
-        if (*mens!='[')
+    // Verifica se é definição de classe
+        char * pclasse = TClasse::NomeDef(mens);
+        if (pclasse==0)
             continue;
-
-    // Verifica nova classe
-        char * p = mens+1;
-        while (*p) p++;
-        if (p[-1]!=']')
-            continue;
-        for (p--; p[-1]==' '; p--);
-        *p=0;
         ini_arq = false;
 
     // Verifica se classe é válida ou já existe
-        if (TClasse::NomeValido(mens+1)==false)
+        if (TClasse::NomeValido(pclasse)==false)
         {
-            err_printf("%s:%d: Classe inválida: [%s]\n",
-                            arqinicio, linhanum, mens+1);
+            err_printf("%s:%d: Classe inválida: %s\n",
+                            arqinicio, linhanum, pclasse);
             erro=true;
             continue;
         }
-        if (TClasse::Procura(mens+1))
+        if (TClasse::Procura(pclasse))
         {
-            err_printf("%s:%d: Classe repetida: [%s]\n",
-                            arqinicio, linhanum, mens+1);
+            err_printf("%s:%d: Classe repetida: %s\n",
+                            arqinicio, linhanum, pclasse);
             erro=true;
             continue;
         }
 
     // Cria classe
-        new TClasse(mens+1, mapa);
+        new TClasse(pclasse, mapa);
         mapa->Mudou = false;
+    }
+    if (TClasse::RBfirst()==0)
+    {
+        err_printf("Nenhuma classe foi definida\n");
+        erro=true;
     }
 
 // Verifica se ocorreu erro no mapa
@@ -643,7 +642,7 @@ void Inicializa(const char * arg)
 #if 0
     printf("Classes:");
     for (TClasse * obj = TClasse::RBfirst(); obj; obj=TClasse::RBnext(obj))
-        printf(" [%s]", obj->Nome);
+        printf(" classe %s", obj->Nome);
     putchar('\n');
     if (TArqMapa::Inicio)
     {
@@ -687,12 +686,8 @@ void Inicializa(const char * arg)
         }
         // Verifica se é nome de classe
         char * pclasse = 0;
-        if (linhanum>0 && *mens=='[')
-        {
-            for (pclasse = mens+1; *pclasse; pclasse++);
-            if (pclasse[-1]!=']')
-                pclasse=0;
-        }
+        if (linhanum>0)
+            pclasse = TClasse::NomeDef(mens);
         if (linhanum==0 || pclasse) // Fim do arquivo ou próxima classe
         {
             ini_arq = false;
@@ -730,13 +725,11 @@ void Inicializa(const char * arg)
     // Verifica classe
         if (pclasse)
         {
-            for (pclasse--; pclasse[-1]==' '; pclasse--);
-            *pclasse=0;
-            classeatual = TClasse::Procura(mens+1);
+            classeatual = TClasse::Procura(pclasse);
             if (classeatual==0)
             {
-                err_printf("%s:%d: Classe não encontrada: [%s]\n",
-                            arqinicio, linhanum, mens+1);
+                err_printf("%s:%d: Classe não encontrada: %s\n",
+                            arqinicio, linhanum, pclasse);
                 erro=true;
                 break;
             }
@@ -832,7 +825,7 @@ void Inicializa(const char * arg)
     printf("Classes:\n");
     for (TClasse * obj = TClasse::RBfirst(); obj; obj=TClasse::RBnext(obj))
     {
-        printf("\n[%s]\n", obj->Nome);
+        printf("\nclasse %s\n", obj->Nome);
         if (obj->NumDeriv)
         {
             printf("*** Herdada em:");

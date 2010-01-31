@@ -59,6 +59,10 @@ public:
         /**<
          *  @param nome Nome a pesquisar
          *  @return true se o nome é valido; nome original é alterado */
+    static char * NomeDef(char * texto);
+        ///< Obtém nome de classe a partir da linha que define uma classe
+        /**< @param texto Linha contendo a definição da classe
+         *   @return Nome da classe ou 0 se não for definição de classe */
 
     static TClasse * Procura(const char * nome);
         ///< Procura uma classe a partir do nome

@@ -190,6 +190,17 @@ bool TClasse::NomeValido(char * nome)
 }
 
 //----------------------------------------------------------------------------
+char * TClasse::NomeDef(char * texto)
+{
+    while (*texto==' ') texto++;
+    if (compara(texto, "classe ", 7)!=0)
+        return 0;
+    texto += 6;
+    while (*texto==' ') texto++;
+    return (tabNOMES[*(unsigned char*)texto] ? texto : 0);
+}
+
+//----------------------------------------------------------------------------
 void TClasse::Arquivo(TArqMapa * arquivo)
 {
     if (ArqArquivo == arquivo)

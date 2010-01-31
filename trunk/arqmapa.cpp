@@ -145,7 +145,7 @@ void TArqMapa::SalvarArq(bool tudo)
             int indent = 0;
             int linhas = 0;
         // Nome da classe
-            fprintf(arq, "[%s]\n", cl->Nome);
+            fprintf(arq, "classe %s\n", cl->Nome);
             for (const char * p = cl->Comandos; p[0] || p[1]; p+=Num16(p))
             {
         // Obtém indentação (antes)

@@ -1,4 +1,4 @@
-[A]
+classe A
 herda b,c
 comum serv servidor
 socket conec
@@ -13,7 +13,7 @@ func servidor_socket
 func ini
   conec = arg0
   msg("Digite o nome de uma variável ou:\n")
-  msg("E para encerrar o programa\n")
+  msg("FIM para encerrar o programa\n")
   msg("A, B ou C para selecionar a classe\n")
   msg("0 a 9 para escolher uma função\n")
 func conec_msg
@@ -47,7 +47,7 @@ func conec_msg
     msg("\n")
 const existe0 = " (não existe)"
 const existe1 = " (existe)"
-func pE
+func pFIM
   msg("Programa encerrado\n")
   terminar
 func pA
@@ -107,7 +107,7 @@ func p9
   msg("Lista de classes\n")
   cl.iniclasse
   enquanto cl.lin
-    msg("\n[" + cl.texto + "]\n")
+    msg("\nclasse " + cl.texto + "\n")
     msg("Arquivo: " + p.arquivo(cl.texto) + "\n")
     p.inilinha(cl.texto)
     enquanto p.lin
@@ -138,7 +138,7 @@ func pteste12345teste12345teste12345teste12345teste12345teste12345teste12345
 func pteste12345teste12345teste12345teste12345teste12345teste12345teste12345teste123
   msg("funcionou 8\n")
 
-[B]
+classe B
 int8 var1
 int8 v.10
 sav txt10 teste
@@ -146,15 +146,15 @@ const c1 = 10
 const c2 = "10"
 const x = "\d4bom dia\b\n"
 
-[C]
+classe C
 func xxx
   int8 n
   a=b
 #herda teste
 
-[teste]
+classe teste
 
-[criaclasse]
+classe criaclasse
 func iniclasse
   prog p
 # Teste com criar e apagar
