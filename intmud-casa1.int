@@ -1,8 +1,8 @@
-[casa1 area]
+classe casa1 area
 herda comum_sala
 const s_terreno = 1
 
-[casa1 cozinha]
+classe casa1 cozinha
 herda casa1_area
 const nome = "Cozinha"
 const descr = "Possui geladeira, fogão e pia. A geladeira está vazia.\
@@ -10,7 +10,7 @@ O chão está preto de sujeira."
 const norte = $casa1_sala
 const norte_ini = 3
 
-[casa1 sala]
+classe casa1 sala
 herda casa1_area
 const nome = "Sala"
 const descr = "Há uma mesa no meio e 3 poltronas ao redor."
@@ -20,7 +20,7 @@ const sul_ini = 3
 const oeste = $casa1_entrada
 const oeste_ini = 2
 
-[casa1 quarto]
+classe casa1 quarto
 herda casa1_area
 const nome = "Quarto"
 const descr = "Um pequeno quarto com uma janela e cama."
@@ -31,7 +31,7 @@ func tr_escr # Exemplo de trigger
     arg0.msg("Impossível; há um abismo nessa direção")
     ret 1 # Interrompe a ação
 
-[casa1 entrada]
+classe casa1 entrada
 herda casa1_area
 const nome = "Entrada da casa"
 const descr = "O chão é asfaltado de leste a oeste, até a entrada \

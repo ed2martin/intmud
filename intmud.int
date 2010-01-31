@@ -8,13 +8,13 @@ exec = 5000
 # Se deve abrir uma janela de texto - variável telatxt
 telatxt = 0
 
-[_config]
+classe _config
 # Configuração
 const porta = 1963 # Nota: O Papovox só se conecta na porta 1963
 const salaini = $casa1_sala  # Quando entra no jogo, entra nessa sala
 const papovox = 0 # 0=somente Telnet, 1=Telnet e Papovox
 
-[comum_item]
+classe comum_item
 # Itens do jogo
 const nome = "" # Nome do item; não colocar o sexo
 const nomesala = "" # Descrição na sala
@@ -29,7 +29,7 @@ func mudasala # Muda de sala ou de dono
   sala_item.remove
   sala_item = arg0.dentro.addfim(este)
 
-[comum_perso]
+classe comum_perso
 # Personagens
 const perso = 1 # Indica que é personagem
 const nome = txt(este) # Nome do personagem
@@ -169,7 +169,7 @@ func escr # Escreveu alguma coisa
   senão
     obj.exec(este, txt2(arg0))
 
-[comum_sala]
+classe comum_sala
 listaobj dentro # Itens e personagens dentro da sala
 #
 # int1 semsom # Verdadeiro se não produz som
@@ -236,7 +236,7 @@ func ini_sai # Usado em ini; atualiza saídas
   senão arg1 >= 1
     arg1 -= 1
 
-[entra]
+classe entra
 # Entrando no jogo
 comum serv servidor # Para receber conexões
 socket conec # Usuário conectado
@@ -307,7 +307,7 @@ func conec_msg # Recebeu mensagem do usuário
       apagar(este)
       criar("jog", conec, arg0)
 
-[jog]
+classe jog
 herda comum_perso
 # Personagem do jogador
 socket conec
@@ -343,7 +343,7 @@ const msg = conec.msg(arg0 + "\n") # Envia mensagem para o usuário
 func conec_msg # Recebeu mensagem do usuário
   escr(arg0)
 
-[jog_cores]
+classe jog_cores
 herda comum_sala
 const descr = "Ativar as cores no Telnet? Tecle S ou N"
 func tr_escr
@@ -357,7 +357,7 @@ func tr_escr
   arg0.msg($jog_sexo.descr)
   ret 1
 
-[jog_sexo]
+classe jog_sexo
 herda comum_sala
 const descr = "Você é homem ou mulher? Tecle O ou A"
 func tr_escr
@@ -377,7 +377,7 @@ func tr_escr
   $mens.todos("$p chegou")
   ret 1
 
-[mens]
+classe mens
 # Para enviar mensagens
 # Chamar:
 # $mens.p(personagem, alvo, objeto) -> Define os personagens

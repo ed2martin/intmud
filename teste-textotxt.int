@@ -2,7 +2,7 @@ mapagrande = 0
 exec = 500000
 telatxt = 1
 
-[tela]
+classe tela
 telatxt tela
 textotxt t # Texto - arquivo sendo editado
 textopos p # Linha atual no arquivo
@@ -53,7 +53,7 @@ func teste1
     msg(t.remove(1) + "\n")
   efim
 
-[menu]
+classe menu
 func mostra
   msg("A Abre um arquivo txt\n")
   msg("S Salva o arquivo\n")
@@ -212,7 +212,7 @@ func tecla_D
   tela.texto = ""
   ret divide:selec
 
-[editor]
+classe editor
 func selec
   msg("Editando\n")
   opcao = "editor"
@@ -234,7 +234,7 @@ func tecla_ENTER
   tela.texto = ""
   ret menu:selec
 
-[abrir]
+classe abrir
 func selec
   msg("Qual o nome do arquivo?\n")
   opcao = "abrir"
@@ -288,7 +288,7 @@ func ler_antigo
   tela.texto = ""
   ret menu:selec
 
-[bloco]
+classe bloco
 func selec
   msg("Qual o comando de bloco?\n")
   opcao = "bloco"
@@ -376,7 +376,7 @@ func tecla_M # Mover
   fimse
   ret menu:selec
 
-[divide]
+classe divide
 func selec
   msg("Digite os tamanhos mínimo e máximo das linhas. Exemplo: 70 80\n")
   opcao = "divide"

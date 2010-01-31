@@ -48,7 +48,7 @@ Se ausente, assume 0.
 Após as opções vem as definições de classes (tipos de objetos), que constituem
 o programa interpretado. Segue a sintaxe:
 
-[nome da classe]
+classe nome da classe
 herda <classe 1>, <classe 2>, ..., <classe N>
 variáveis e constantes do objeto
 funções (func) e constantes (const) do objeto
@@ -91,13 +91,13 @@ const y = 10
 A linha "herda", se estiver presente, significa herança.
 A classe contém também as variáveis e funções das classes especificadas.
 Herda também as classes herdadas por essas. Exemplo:
-[A]
+classe A
 herda B
 int8 dia
-[B]
+classe B
 herda C
 int8 mes
-[C]
+classe C
 int8 ano
 
 A classe C contém a variável ano. A classe B contém as variáveis ano e mes.
@@ -105,10 +105,10 @@ A classe A contém mes, dia e ano. Está herdando C através de B.
 
 Quando houver um nome de variável ou função repetido na herança, prevalece
 a primeira encontrada. As demais são ignoradas. Exemplo:
-[A]
+classe A
 herda B
 int8 x
-[B]
+classe B
 txt10 x
 Nesse caso a classe A tem a variável "int8 x", mas não contém a variável
 "txt10 x".
@@ -237,7 +237,7 @@ teste.1
 teste.2
 
 Exemplo de como tratar eventos de um vetor:
-[x]
+classe x
 inttempo n.5
 func n_exec # Evento para as 5 variáveis "n"
 # Aqui arg0 é o índice da variável no vetor (de 0 a 4)
@@ -287,7 +287,7 @@ z = x(2) - x(1)
 Nesse exemplo, fará y=11 e z=1.
 
 Outros exemplos:
-[abc]
+classe abc
 int1 x
 int8 y
 func teste1
@@ -536,7 +536,7 @@ txtdec(<texto>)
 
     Exemplo de como testar txtcod e txtdec:
     telatxt = 1
-    [tela]
+    classe tela
     telatxt tela
     func iniclasse
       criar(arg0)
@@ -1115,7 +1115,7 @@ inttempo <nomedavariável>
     Nota: o valor 1048575 corresponde a 29 horas, 7 minutos e 37.5 segundos.
 
     Exemplo:
-    [x]
+    classe x
     inttempo n
     func n_exec
       # Essa função é executada quando a variável n chegar a zero
@@ -1266,7 +1266,7 @@ serv <nomedavariável>
     arg1 = índice da variável vetor, se não for vetor arg1=0
 
     Exemplo de uso com socket:
-    [x]
+    classe x
     comum serv servidor
     socket conec
     func iniclasse
@@ -1380,7 +1380,7 @@ prog <nomedavariável>
             prog p
             p.criar("abc\n\nint8 x\nconst n = 10")
         Cria a seguinte classe no arquivo intmud.map:
-            [abc]
+            classe abc
             int8 x
             const n = 10
         Para criar a mesma classe, mas no arquivo intmud-x.map:

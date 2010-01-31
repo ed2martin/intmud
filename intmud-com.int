@@ -1,4 +1,4 @@
-[com _ini]
+classe com _ini
 # Contém os objetos que tratam cada comando
 const c_ = $com_vazio # Não digitou nada
 # Direções abreviadas
@@ -26,7 +26,7 @@ const c_fim = $com_fim
 const c_quit = $com_fim
 const c_ver = $com_ver
 
-[com comum]
+classe com comum
 const nivel = 0 # Nível mínimo para usar o comando
 const posic = 8 # Posição mínima para usar o comando; vide [comum_perso]
 const iniclasse = criar(arg0) # Cria um objeto do comando
@@ -35,13 +35,13 @@ func exec # Executa o comando
 # arg1=o que escreveu
   arg0.msg("Você digitou " + arg1)
 
-[com encerrar]
+classe com encerrar
 herda com_comum
 func exec
   msg("Encerrando o MUD")
   terminar
 
-[com falar]
+classe com falar
 herda com_comum
 const posic = 5
 func exec
@@ -76,12 +76,12 @@ func exec
     l.depois
   efim
 
-[com fim]
+classe com fim
 herda com_comum
 func exec
   apagar(arg0)
 
-[com move]
+classe com move
 # Movimenta-se em uma direção
 const nivel = 0
 const posic = 8
@@ -106,21 +106,21 @@ func exec # Executa o comando
     arg0.descrsala(arg0.sala)
     $mens.todos(m_chegar)
 
-[com move_norte]
+classe com move_norte
 herda com_move
 const dir = "norte"
 const m_perso = "norte"
 const m_sair = "$p foi para o norte"
 const m_chegar = "$p chegou do sul"
 
-[com move_sul]
+classe com move_sul
 herda com_move
 const dir = "sul"
 const m_perso = "sul"
 const m_sair = "$p foi para o sul"
 const m_chegar = "$p chegou do norte"
 
-[com move_leste]
+classe com move_leste
 herda com_move
 indiceobj comando3
 const dir = "leste"
@@ -128,7 +128,7 @@ const m_perso = "leste"
 const m_sair = "$p foi para o leste"
 const m_chegar = "$p chegou do oeste"
 
-[com move_oeste]
+classe com move_oeste
 herda com_move
 indiceobj comando3
 const dir = "oeste"
@@ -136,26 +136,26 @@ const m_perso = "oeste"
 const m_sair = "$p foi para o oeste"
 const m_chegar = "$p chegou do leste"
 
-[com move_cima]
+classe com move_cima
 herda com_move
 const dir = "cima"
 const m_perso = "cima"
 const m_sair = "$p subiu"
 const m_chegar = "$p chegou de baixo"
 
-[com move_baixo]
+classe com move_baixo
 herda com_move
 const dir = "baixo"
 const m_perso = "baixo"
 const m_sair = "$p desceu"
 const m_chegar = "$p chegou de cima"
 
-[com vazio]
+classe com vazio
 const nivel = 0
 const posic = 0
 const iniclasse = criar(arg0)
 
-[com ver]
+classe com ver
 herda com_comum
 const posic = 5
 func exec
