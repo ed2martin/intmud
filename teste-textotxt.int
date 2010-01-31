@@ -64,6 +64,7 @@ func mostra
   msg("B comandos de bloco\n")
   msg("Setas sobem e descem uma linha no arquivo\n")
   msg("Espaço mostra o conteúdo da linha atual\n")
+  msg("J junta com a linha anterior\n")
   msg("O ordena linhas em ordem alfabética\n")
   msg("P ordena somando linhas\n")
   msg("Q ordena mostrando as quantidades\n")
@@ -124,6 +125,14 @@ func tecla_S_antigo
 func tecla_E # Edita linha atual
   tela.texto = p.texto
   ret editor:selec
+
+func tecla_J # Junta com a linha anterior
+  se p.juntar
+    msg("Linhas juntadas\n")
+  senao
+    msg("Nenhuma linha foi juntada\n")
+  fimse
+  ret 1
 
 func tecla_@O # Insere linha vazia
   p.add("")

@@ -20,7 +20,7 @@
 #include "instr.h"
 #include "misc.h"
 
-#define DEBUG_TXT // Texto guardado em TTextoTxt
+//#define DEBUG_TXT // Texto guardado em TTextoTxt
 //#define DEBUG_MSG // Alocação de memória
 
 //----------------------------------------------------------------------------
@@ -1383,6 +1383,39 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         Mudar(0, 0, apagar);
         DebugTextoTxt(TextoTxt);
         return false;
+    }
+// Junta com a linha anterior
+    if (comparaZ(nome, "juntar")==0)
+    {
+        Instr::ApagarVar(v);
+        if (TextoTxt==0 || Bloco==0 || PosicTxt==0 ||
+                PosicTxt>=TextoTxt->Bytes)
+            return Instr::CriarVarInt(0);
+    // Vai para o \n no final da linha anterior
+        TBlocoPos bl = *this;
+        bl.PosicTxt--;
+        bl.LinhaTxt--;
+        if (bl.PosicBloco)
+            bl.PosicBloco--;
+        else
+        {
+            bl.Bloco = bl.Bloco->Antes;
+            bl.PosicBloco = bl.Bloco->Bytes - 1;
+        }
+    // Move posição para a linha anterior
+        MoverPos(-1);
+        for (TTextoPos * obj = TextoTxt->Posic; obj; obj=obj->Depois)
+            if (obj->LinhaTxt == LinhaTxt + 1)
+            {
+                obj->Bloco = Bloco;
+                obj->PosicBloco = PosicBloco;
+                obj->PosicTxt = PosicTxt;
+                obj->LinhaTxt = LinhaTxt;
+            }
+    // Junta as duas linha
+        bl.Mudar(0, 0, 1);
+        DebugTextoTxt(TextoTxt);
+        return Instr::CriarVarInt(1);
     }
     return false;
 }

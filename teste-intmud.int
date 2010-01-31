@@ -138,14 +138,30 @@ func escr_7
     msg("0\n")
   fimse
 func escr_8
-  txt20 tt
-  uint8 x
-  tt = " \d4  bom   dia \b  "
+  txt40 tt
+  tt = " \d4  bom   dia  'boa  tarde'  \b  "
   msg("Texto \"" + tt + "\"\n")
-  enquanto x<16
-    msg(txt(x) + "=\"" + txtremove(tt,x) + "\"\n")
-    x += 1
-  efim
+  msg("E =\"" + txtremove(tt,"e") + "\"\n")
+  msg("M =\"" + txtremove(tt,"m") + "\"\n")
+  msg("D =\"" + txtremove(tt,"d") + "\"\n")
+  msg("EM =\"" + txtremove(tt,"em") + "\"\n")
+  msg("MD =\"" + txtremove(tt,"md") + "\"\n")
+  msg("ED =\"" + txtremove(tt,"ed") + "\"\n")
+  msg("EMD =\"" + txtremove(tt,"emd") + "\"\n")
+  msg("C =\"" + txtremove(tt,"c") + "\"\n")
+  msg("EC =\"" + txtremove(tt,"ec") + "\"\n")
+  msg("MC =\"" + txtremove(tt,"mc") + "\"\n")
+  msg("DC =\"" + txtremove(tt,"dc") + "\"\n")
+  msg("EMC =\"" + txtremove(tt,"emc") + "\"\n")
+  msg("MDC =\"" + txtremove(tt,"mdc") + "\"\n")
+  msg("EDC =\"" + txtremove(tt,"edc") + "\"\n")
+  msg("EMDC =\"" + txtremove(tt,"emdc") + "\"\n")
+  msg("S =\"" + txtremove(tt,"s") + "\"\n")
+  msg("A =\"" + txtremove(tt,"a") + "\"\n")
+  msg("SA =\"" + txtremove(tt,"sa") + "\"\n")
+  msg("CSA =\"" + txtremove(tt,"csa") + "\"\n")
+  msg("EMDSA =\"" + txtremove(tt,"emdsa") + "\"\n")
+  msg("EMDCSA =\"" + txtremove(tt,"emdcsa") + "\"\n")
 func escr_9
   msg(vartroca("$A $a $B $b\n", "$", "teste_"))
   msg(vartroca("$1 falou com $2\n", "$", "t_"))
@@ -236,6 +252,9 @@ func escr_14
     indice += 1
   efim
   msg("Juntado = \d4" + x.juntar(":") + "\b\n")
+  msg("txtvis = " + txtvis(arg0) + "\n")
+  msg("txtinvis = " + txtinvis(arg0) + "\b\n")
+  msg("txtinvis+txtvis = " + txtvis(txtinvis(arg0)) + "\n")
 func escr_eco
   se conec.eco
     conec.eco=0

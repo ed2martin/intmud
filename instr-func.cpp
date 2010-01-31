@@ -27,6 +27,8 @@
 // Funções predefinidas do programa interpretado
 // Vide TListaFunc, em instr.h
 
+#define BUF_MENS 16384
+
 //----------------------------------------------------------------------------
 // Usado em bool Instr::FuncTxt2() para copiar caracteres de cores
 #define FUNCTXT_CORES \
@@ -293,7 +295,7 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
     int ini = 0;        // Início
     int tam = 0x10000;  // Tamanho
     const char * txt = "";  // Texto
-    char mens[4096];    // Resultado
+    char mens[BUF_MENS];    // Resultado
     char * destino = mens;
 // Obtém ini, tam e txt conforme os argumentos
     if (VarAtual >= v+3)
@@ -327,7 +329,7 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
 bool Instr::FuncTxt2(TVariavel * v, int valor)
 {
     const char * txt = "";  // Texto
-    char mens[4096];    // Resultado
+    char mens[BUF_MENS];    // Resultado
     char * destino = mens;
 
     if (VarAtual >= v+1)
@@ -494,6 +496,54 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 break;
         }
         break;
+    case 12: // txtvis
+        for (; *txt && destino<mens+sizeof(mens)-2; txt++)
+            switch (*txt)
+            {
+            case Instr::ex_barra_b:
+                destino[0]='\\', destino[1]='b', destino+=2;
+                break;
+            case Instr::ex_barra_c:
+                destino[0]='\\', destino[1]='c', destino+=2;
+                break;
+            case Instr::ex_barra_d:
+                destino[0]='\\', destino[1]='d', destino+=2;
+                break;
+            case Instr::ex_barra_n:
+                destino[0]='\\', destino[1]='n', destino+=2;
+                break;
+            case '\"':
+            case '\\':
+                *destino++='\\';
+            default:
+                *destino++ = *txt;
+            }
+        break;
+    case 13: // txtinvis
+        for (; *txt && destino<mens+sizeof(mens)-1; txt++)
+        {
+            if (*txt != '\\')
+            {
+                *destino++ = *txt;
+                continue;
+            }
+            txt++;
+            if (*txt==0)
+                break;
+            switch (*txt)
+            {
+            case 'B':
+            case 'b': *destino++ = Instr::ex_barra_b; break;
+            case 'C':
+            case 'c': *destino++ = Instr::ex_barra_c; break;
+            case 'D':
+            case 'd': *destino++ = Instr::ex_barra_d; break;
+            case 'N':
+            case 'n': *destino++ = Instr::ex_barra_n; break;
+            default: *destino++ = *txt;
+            }
+        }
+        break;
     default:
         return false;
     }
@@ -556,17 +606,32 @@ bool Instr::FuncInt(TVariavel * v, int valor)
 /// Função txtremove
 bool Instr::FuncTxtRemove(TVariavel * v, int valor)
 {
-    const char * txt;   // Texto
-    char mens[4096];    // Resultado
-    int  remove;        // O que deve remover
+    const char * txt;    // Texto
+    char mens[BUF_MENS]; // Resultado
+    int  remove = 0;     // O que deve remover
     char * destino = mens;
+    char * remove_s = 0; // Para remover aspas simples
+    char * remove_d = 0; // Para remover aspas duplas
 
 // Obtém variáveis
     if (VarAtual < v+2)
         return false;
-    remove = v[2].getInt();
-    if (remove<0 || remove>15)
-        return false;
+    for (txt = v[2].getTxt(); *txt; txt++)
+        switch (*txt | 0x20)
+        {
+        case 'e': remove |= 1; break;
+        case 'm': remove |= 2; break;
+        case 'd': remove |= 4; break;
+        case 'c': remove |= 8; break;
+        case 's': remove |= 16; break;
+        case 'a': remove |= 32; break;
+        }
+    if (remove==0)
+    {
+        ApagarVar(v+2);
+        ApagarRet(v);
+        return true;
+    }
     txt = v[1].getTxt();
 
 // Copia texto conforme variável remove
@@ -602,6 +667,34 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
         case ' ':
             esp++, txt++;
             break;
+        case '\'':
+            if ((remove&16)==0 || remove_d)
+                goto copia;
+            txt++;
+            if (remove_s)
+            {
+                for (; remove_s < destino; remove_s++)
+                    if (*remove_s == ' ')
+                        *remove_s = '_';
+                remove_s = 0;
+                break;
+            }
+            remove_s = destino + (remove & ini ? ini-1 : esp);
+            break;
+        case '\"':
+            if ((remove&32)==0 || remove_s)
+                goto copia;
+            txt++;
+            if (remove_d)
+            {
+                for (; remove_d < destino; remove_d++)
+                    if (*remove_d == ' ')
+                        *remove_d = '_';
+                remove_d = 0;
+                break;
+            }
+            remove_d = destino + (remove & ini ? ini-1 : esp);
+            break;
         default:
         copia:
             if (esp)
@@ -617,9 +710,16 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
             ini=2;
             break;
         }
+
     if ((remove&4)==0)
         while (esp && destino<mens+sizeof(mens))
             *destino++=' ', esp--;
+    if (remove_d)
+        remove_s = remove_d;
+    if (remove_s)
+        for (; remove_s < destino; remove_s++)
+            if (*remove_s == ' ')
+                *remove_s = '_';
 
     ApagarVar(v);
     return CriarVarTexto(mens, destino-mens);
@@ -756,7 +856,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 // Variáveis
     TClasse * c = FuncAtual->este->Classe;
     const char * origem; // Primeiro argumento - texto original
-    char mens[4096]; // Aonde jogar o texto codificado
+    char mens[BUF_MENS]; // Aonde jogar o texto codificado
 
 // Obtém argumento - padrão que deve procurar no texto
     char txtpadrao[40]; // Texto
