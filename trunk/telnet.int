@@ -84,7 +84,7 @@ func tela_msg # Usuário digitou alguma coisa
     fimse
     linha = _serv:[arg0]
     se linha = ""
-      linha = txtremove(arg0, 5)
+      linha = txtremove(arg0, "ED")
     fimse
     se !sock.abrir(txt1(linha), txt2(linha))
       msg("\d1Erro ao conectar em " + linha + "\b\n")

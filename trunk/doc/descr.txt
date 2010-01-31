@@ -437,7 +437,7 @@ ref(a)
     Se for fornecido mais de uma referência (exemplo: ref(a,b,c)),
     retorna a primeira que não for nula.
 
-txtnum(número, formato)
+txtnum(<número>, <formato>)
     Retorna um texto correspondente a um número ou variável numérica.
     Formato é um texto que pode conter:
     Um dígito de 0 a 9 = número de casas após a vírgula
@@ -515,7 +515,7 @@ intsenha(<texto>)
     2 = contém caracteres inválidos
     3 = contém só letras ou só números
 
-txtcod(texto)
+txtcod(<texto>)
     Codifica um texto de modo que possa ser usado como nome de variável.
     Caracteres válidos em nomes de variáveis não são alterados, com exceção
     do espaço, que muda para '_'.
@@ -531,7 +531,7 @@ txtcod(texto)
 
     Vide exemplo em txtdec (abaixo).
 
-txtdec(texto)
+txtdec(<texto>)
     Decodifica um texto. Processo inverso de txtcod.
 
     Exemplo de como testar txtcod e txtdec:
@@ -544,19 +544,35 @@ txtdec(texto)
       tela.msg("txtcod = \"" + txtcod(arg0) + "\"\n")
       tela.msg("txtdec = \"" + txtdec(txtcod(arg0)) + "\"\n")
 
-txtremove(<texto>, <valor>)
-    Retorna um texto semelhante a <texto>, mas removendo espaços e/ou
-    cores, conforme <valor>:
-    1 = remover espaços à esquerda
-    2 = remover espaços extras, exceto à esquerda e à direita
-    4 = remover espaços à direita
-    8 = remover cores (tem o mesmo efeito da função txtcor)
-    Os valores podem ser somados para fazer mais de uma remoção.
-    Exemplo, 5 remove espaços à esquerda e à direita (5 = 4 + 1)
-    Exemplos de uso:
-    txtremove("  bom  dia  ", 7) é o mesmo que "bom dia"
-    txtremove("  bom  dia  ", 5) é o mesmo que "bom  dia"
-    txtremove("\cF\d4Teste\b", 8) é o mesmo que "Teste"
+txtvis(<texto>)
+    Torna visíveis caracteres especiais, como \n e \b.
+    "\b\c\d\n"   mudam para  "\\b\\c\\d\\n"
+    "\"" muda para "\\\""
+    "\\" muda para "\\\\"
+    Exemplo 1:
+    txtvis("\C1 \"Bom dia\" \B") é o mesmo que "\\C1 \\\"Bom dia\\\" \\B".
+    Exemplo 2:
+    txt10 x
+    x = "\b\""
+    msg("A variável x contém \"" + txtvis(x) + "\"\n")
+
+txtinvis(<texto>)
+    Processo inverso da função txtvis.
+
+txtremove(<texto1>, <texto2>)
+    Retorna um texto semelhante a <texto1>, mas removendo espaços e/ou
+    cores, conforme <texto2>. As letras interpretadas em <texto2> são:
+    E = remover espaços à esquerda
+    M = remover espaços extras, exceto à esquerda e à direita
+    D = remover espaços à direita
+    C = remover cores (tem o mesmo efeito da função txtcor)
+    S = remover aspas simples trocando espaços entre duas aspas por sublinhado
+    A = remover aspas duplas trocando espaços entre duas aspas por sublinhado
+    Exemplos:
+    txtremove("  bom  dia  ", "EMD") é o mesmo que "bom dia"
+    txtremove("  bom  dia  ", "ED") é o mesmo que "bom  dia"
+    txtremove("\cF\d4Teste\b", "C") é o mesmo que "Teste"
+    txtremove("tenha um 'bom dia' !", "S") é o mesmo que "tenha um bom_dia !"
 
 txtproc(<texto>, <texto procurado>)
 txtproc(<texto>, <texto procurado>, <caracter inicial>)
@@ -943,6 +959,10 @@ textopos <nomedavariável>
         Remove a linha atual.
     remove( <número de linhas> )
         Remove a quantidade de linhas especificadas, a partir da linha atual.
+    juntar
+        Junta a linha atual com a anterior.
+        Retorna 1 se juntou linhas ou 0 se não juntou.
+        Nota: Para dividir uma linha, adicionar texto "\n" com a função mudar.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário
