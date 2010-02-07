@@ -61,6 +61,7 @@ func mostra
   msg("+ insere linha vazia\n")
   msg("- apaga linha atual\n")
   msg("Z mostra informações do arquivo e linha atual\n")
+  msg("L ir para uma linha\n")
   msg("B comandos de bloco\n")
   msg("Setas sobem e descem uma linha no arquivo\n")
   msg("Espaço mostra o conteúdo da linha atual\n")
@@ -144,10 +145,14 @@ func tecla_@Q # Remove linha atual
   msg("Linha removida\n")
   ret 1
 
-func tecla_z # Informações
+func tecla_Z # Informações
   msg("Linha " + p.linha + " de " + t.linhas)
   msg(", byte " + p.byte + " de " + t.bytes + "\n")
   ret 1
+
+func tecla_L # Ir para uma linha
+  tela.texto = ""
+  ret linha:selec
 
 func tecla_UP
   se p.linha = 0
@@ -408,5 +413,27 @@ func tecla_ENTER
   senao
     msg("Linhas foram divididas\n")
   fimse
+  tela.texto = ""
+  ret menu:selec
+
+classe linha
+func selec
+  msg("Qual o número da linha?\n")
+  opcao = "linha"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  msg("Digite o número da linha ou pressione ESC para cancelar\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_ENTER
+  p.linha = tela.texto
+  msg("Mudando para linha " + p.linha + " byte " + p.byte + "\n")
   tela.texto = ""
   ret menu:selec
