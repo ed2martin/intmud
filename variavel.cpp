@@ -180,28 +180,31 @@ TVarTipo TVariavel::Tipo()
     case Instr::cListaObj:  return varOutros;
     case Instr::cListaItem: return varOutros;
     case Instr::cTextoTxt:  return varOutros;
-    case Instr::cTextoPos:  return varOutros;
+    case Instr::cTextoPos:
+        if (defvar[Instr::endNome]=='=')
+            return varInt;
+        return varOutros;
     case Instr::cNomeObj:   return varOutros;
     case Instr::cArqLog:    return varOutros;
     case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
     case Instr::cIntTempo:  return varInt;
     case Instr::cTelaTxt:
-            if (defvar[Instr::endNome]=='=')
-                return (defvar[Instr::endNome+1]=='0' ? varTxt : varInt);
-            return varOutros;
+        if (defvar[Instr::endNome]=='=')
+            return (defvar[Instr::endNome+1]=='0' ? varTxt : varInt);
+        return varOutros;
     case Instr::cSocket:
-            if (defvar[Instr::endNome]=='=')
-                return varInt;
-            return varOutros;
+        if (defvar[Instr::endNome]=='=')
+            return varInt;
+        return varOutros;
     case Instr::cServ:      return varOutros;
     case Instr::cProg:      return varOutros;
     case Instr::cIndiceObj: return varTxt;
     case Instr::cIndiceItem: return varOutros;
     case Instr::cDataHora:
-            if (defvar[Instr::endNome]=='=')
-                return varInt;
-            return varOutros;
+        if (defvar[Instr::endNome]=='=')
+            return varInt;
+        return varOutros;
 
     case Instr::cTxtFixo:
     case Instr::cVarNome:
@@ -647,7 +650,7 @@ bool TVariavel::getBool()
     case Instr::cTextoTxt:
         return end_textotxt[indice].getValor();
     case Instr::cTextoPos:
-        return end_textopos[indice].getValor();
+        return end_textopos[indice].getValor(defvar);
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
@@ -798,7 +801,7 @@ int TVariavel::getInt()
     case Instr::cTextoTxt:
         return end_textotxt[indice].getValor();
     case Instr::cTextoPos:
-        return end_textopos[indice].getValor();
+        return end_textopos[indice].getValor(defvar);
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
@@ -948,7 +951,7 @@ double TVariavel::getDouble()
     case Instr::cTextoTxt:
         return end_textotxt[indice].getValor();
     case Instr::cTextoPos:
-        return end_textopos[indice].getValor();
+        return end_textopos[indice].getValor(defvar);
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
     case Instr::cArqLog:
@@ -1275,8 +1278,10 @@ void TVariavel::setInt(int valor)
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(0);
         break;
-    case Instr::cTextoTxt:
     case Instr::cTextoPos:
+        end_textopos[indice].setValor(defvar, valor);
+        break;
+    case Instr::cTextoTxt:
     case Instr::cNomeObj:
     case Instr::cArqLog:
     case Instr::cArqSav:
@@ -1366,8 +1371,10 @@ void TVariavel::setDouble(double valor)
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(0);
         break;
-    case Instr::cTextoTxt:
     case Instr::cTextoPos:
+        end_textopos[indice].setValor(defvar, (int)valor);
+        break;
+    case Instr::cTextoTxt:
     case Instr::cNomeObj:
     case Instr::cArqLog:
     case Instr::cArqSav:
@@ -1468,8 +1475,10 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cListaItem:
         end_listaitem[indice].MudarRef(0);
         break;
-    case Instr::cTextoTxt:
     case Instr::cTextoPos:
+        end_textopos[indice].setTxt(defvar, txt);
+        break;
+    case Instr::cTextoTxt:
     case Instr::cNomeObj:
     case Instr::cArqLog:
     case Instr::cArqSav:

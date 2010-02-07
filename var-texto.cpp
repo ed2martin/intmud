@@ -28,6 +28,7 @@ TTextoGrupo * TTextoGrupo::Disp = 0;
 TTextoGrupo * TTextoGrupo::Usado = 0;
 unsigned long TTextoGrupo::Tempo = 0;
 const char TextoItem1[] = { 7, 0, Instr::cTextoPos, 0, 0, 0, '+', 0 };
+const char TextoPosLinha[] = { 8, 0, Instr::cTextoPos, 0, 0, 0, '=', '0', 0 };
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_TXT
@@ -1209,8 +1210,9 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 // Número da linha
     if (comparaZ(nome, "linha")==0)
     {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(LinhaTxt);
+        Instr::ApagarVar(v+1);
+        Instr::VarAtual->defvar = TextoPosLinha;
+        return true;
     }
 // Quantidade de bytes
     if (comparaZ(nome, "byte")==0)
@@ -1421,7 +1423,41 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 }
 
 //----------------------------------------------------------------------------
-int TTextoPos::getValor()
+int TTextoPos::getValor(const char * defvar1)
 {
-    return (TextoTxt && PosicTxt < TextoTxt->Bytes);
+    if (TextoTxt==0)
+        return 0;
+    else if (defvar1[Instr::endNome]!='=')
+        return (PosicTxt < TextoTxt->Bytes);
+    else
+        return LinhaTxt;
+}
+
+//----------------------------------------------------------------------------
+void TTextoPos::setValor(const char * defvar1, int valor)
+{
+    if (TextoTxt==0 || defvar1[Instr::endNome]!='=' || valor==(int)LinhaTxt)
+        return;
+    if (valor <= 0)
+    {
+        Bloco = TextoTxt->Inicio;
+        PosicBloco = 0;
+        PosicTxt = 0;
+        LinhaTxt = 0;
+    }
+    else if (valor >= (int)TextoTxt->Linhas)
+    {
+        Bloco = TextoTxt->Fim;
+        PosicBloco = (TextoTxt->Fim ? TextoTxt->Fim->Bytes : 0);
+        PosicTxt = TextoTxt->Bytes;
+        LinhaTxt = TextoTxt->Linhas;
+    }
+    else
+        MoverPos(valor - LinhaTxt);
+}
+
+//----------------------------------------------------------------------------
+void TTextoPos::setTxt(const char * defvar1, const char * txt)
+{
+    setValor(defvar1, atoi(txt));
 }

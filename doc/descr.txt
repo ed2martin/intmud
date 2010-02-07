@@ -922,9 +922,13 @@ textopos <nomedavariável>
     É usado para acessar o texto de textotxt. Representa uma linha.
     Como valor numérico, é 1 se linha existe ou 0 se está no fim do texto.
 
-    Possui as seguintes funções:
+    Possui a seguinte variável:
     linha
-        Retorna a linha atual; começa em 0.
+        Número da linha atual; começa em 0.
+        Nota 1: prefira usar "linha.depois" ao invés de "linha+=1"
+        Nota 2: Internamente muda de linha chamando as funções antes e depois.
+
+    Possui as seguintes funções:
     byte
         Retorna a quantidade de bytes desde o início do texto; começa no 0.
     lin
