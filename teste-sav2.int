@@ -22,6 +22,7 @@ func ini
   rx.objetos.addfim(ry)
   rx.objetos.addfim(ry)
   rx.objetos.addfim(rx)
+  rx.tempo.agora
 # Variáveis de ry
   ry.bits.0 = 1
   ry.bits.3 = 1
@@ -75,11 +76,14 @@ int8 num
 sav int8 varint
 sav real varreal
 sav listaobj objetos
+sav datahora tempo
 func anota
   listaitem l
   $log.msg("Objeto x")
   $log.msg("  varint = " + varint)
   $log.msg("  varreal = " + varreal)
+  $log.msg("  data = " + tempo.dia + "/" + tempo.mes + "/" + tempo.ano)
+  $log.msg("  hora = " + tempo.hora + ":" + tempo.min + "." + tempo.seg)
   $log.msg("  objetos =")
   l = objetos.ini
   enquanto l

@@ -796,9 +796,11 @@ listaobj <nomedavariável>
         Retira todos os objetos da lista.
     possui( <objeto> )
         Retorna 1 se objeto está na lista ou 0 se não está.
-    apagaobj
+    apagar
         Marca todos os objetos da lista para exclusão, usando a função apagar()
-    objx
+    total
+        Quantidade de itens da lista.
+    objlista
         Objeto que contém a lista; pode ser NULO.
     ini
         Primeiro item da lista (variável listaitem).
@@ -812,9 +814,9 @@ listaitem <nomedavariável>
     Como valor numérico, é 1 se for um objeto ou 0 se não for.
 
     Possui as seguintes funções:
-    add1( <objeto> )
+    addantes( <objeto> )
         Adiciona objeto antes desse.
-    add2( <objeto> )
+    adddepois( <objeto> )
         Adiciona objeto depois desse.
     antes
         Passa para o objeto anterior.
@@ -828,20 +830,24 @@ listaitem <nomedavariável>
         Nada faz se o número for menor ou igual a zero.
     remove
         Remove objeto da lista, listaitem passa a não ser um objeto válido.
-    remove1
+    removeantes
         Remove objeto da lista e passa para o anterior.
-    remove2
+        Nota: não confundir com "remover o objeto anterior".
+    removedepois
         Remove objeto da lista e passa para o próximo.
+        Nota: não confundir com "remover o próximo objeto".
     obj
         Objeto.
-    objx
+    total
+        Quantidade de itens da lista.
+    objlista
         Objeto que contém a lista; pode ser NULO.
 
     Exemplo:
     listaobj l
     listaitem i
-    l.add1( este ) -> Adiciona no topo da lista
-    l.add2( este ) -> Adiciona no final da lista
+    l.addantes( este ) -> Adiciona no topo da lista
+    l.adddepois( este ) -> Adiciona no final da lista
     l.remove( l.ini.obj ) -> remove um objeto da lista
     l.possui( este) -> retorna !=0 se objeto está na lista
     l.ini.obj -> é o primeiro objeto da lista
@@ -925,7 +931,7 @@ textopos <nomedavariável>
     Possui a seguinte variável:
     linha
         Número da linha atual; começa em 0.
-        Nota 1: prefira usar "linha.depois" ao invés de "linha+=1"
+        Nota 1: prefira usar "linha.depois" ao invés de "linha+=1".
         Nota 2: Internamente muda de linha chamando as funções antes e depois.
 
     Possui as seguintes funções:

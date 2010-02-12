@@ -20,6 +20,7 @@
 #include <assert.h>
 #include "var-sav.h"
 #include "var-listaobj.h"
+#include "var-datahora.h"
 #include "variavel.h"
 #include "classe.h"
 #include "objeto.h"
@@ -330,12 +331,15 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         // Anota valor na variável
             switch (var.Tipo())
             {
+        // Variáveis numéricas
             case varInt:
                 var.setInt(atoi(p));
                 break;
+        // Ponto flutuante
             case varDouble:
                 var.setDouble(atof(p));
                 break;
+        // Texto
             case varTxt:
                 {
                     char * d = mens;
@@ -370,6 +374,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                     var.setTxt(mens);
                 }
                 break;
+        // Referência a objetos
             case varObj:
                 indice = (p[0]-0x21) * 0x40 + (p[1]-0x21);
                 if (p[0]<0x21 || p[0]>=0x61 || p[1]<0x21 || p[1]>=0x61 ||
@@ -378,8 +383,10 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                 else
                     var.setObj(bufobj[indice]);
                 break;
+        // Checa outros tipos de variáveis
             default:
-                if (var.defvar[2] == Instr::cListaObj)
+        // ListaObj
+                if (var.defvar[2]==Instr::cListaObj)
                 {
                     TListaObj * lobj = var.end_listaobj + var.indice;
                 // Limpa a lista
@@ -396,6 +403,9 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                             lobj->AddFim(bufobj[valor]);
                     }
                 }
+        // DataHora
+                else if (var.defvar[2]==Instr::cDataHora)
+                    var.end_datahora[var.indice].LerSav(p);
             } // switch
         } // while
     // Retorna o número de objetos lidos
@@ -479,6 +489,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                 posic = (unsigned char)var.defvar[Instr::endVetor];
                 switch (var.Tipo())
                 {
+            // Variáveis numéricas
                 case varInt:
                     do {
                         if (var.indice)
@@ -491,6 +502,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                                     var.getInt());
                     } while (++var.indice < posic);
                     break;
+            // Ponto flutuante
                 case varDouble:
                     do {
                         if (var.indice)
@@ -503,6 +515,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                                     var.getDouble());
                     } while (++var.indice < posic);
                     break;
+            // Texto
                 case varTxt:
                     do {
                         char mens[4096];
@@ -543,6 +556,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                                     mens);
                     } while (++var.indice < posic);
                     break;
+            // Referência a objetos
                 case varObj:
                     do {
                         char mens[3] = "";
@@ -567,9 +581,12 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                                     mens);
                     } while (++var.indice < posic);
                     break;
+            // Checa outros tipos de variáveis
                 default:
-                    if (var.defvar[2] != Instr::cListaObj)
-                        break;
+                  switch (var.defvar[2])
+                  {
+            // ListaObj
+                  case Instr::cListaObj:
                     do {
                         char mens[4096];
                         char * d = mens;
@@ -596,6 +613,21 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
                                     mens);
                     } while (++var.indice < posic);
                     break;
+            // DataHora
+                  case Instr::cDataHora:
+                    do {
+                        char mens[100];
+                        var.end_datahora[var.indice].SalvarSav(mens);
+                        if (var.indice)
+                            fprintf(arq, "%s.%d=%s\n",
+                                    var.defvar+Instr::endNome,
+                                    var.indice, mens);
+                        else
+                            fprintf(arq, "%s=%s\n",
+                                    var.defvar+Instr::endNome, mens);
+                    } while (++var.indice < posic);
+                    break;
+                  }
                 } // switch
             } // for ... variáveis
         } // for ... objetos

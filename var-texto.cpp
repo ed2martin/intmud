@@ -996,8 +996,8 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         }
     // Com dois ou mais argumentos
         char txt1[256],txt2[256];
-        copiastr(txt1, v[1].getTxt(), strlen(txt1));
-        copiastr(txt2, v[2].getTxt(), strlen(txt2));
+        copiastr(txt1, v[1].getTxt(), sizeof(txt1));
+        copiastr(txt2, v[2].getTxt(), sizeof(txt2));
         Ordena(txt1, txt2);
         DebugTextoTxt(this);
         return false;

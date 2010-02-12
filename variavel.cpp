@@ -1122,6 +1122,7 @@ const char * TVariavel::getTxt()
                 digitos--;
                 *destino++ = (&mens[digitos]>=d ? '0' : mens[digitos]);
             }
+            *destino=0;
             return txtnum;
         }
     case Instr::cConstExpr:
