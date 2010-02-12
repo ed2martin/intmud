@@ -26,8 +26,8 @@ func conec_msg
 func escr_l
   listaitem item
   item = lista.ini
-  msg("Lista pertence a " + lista.objx + "/" + item.objx + "\n")
-  msg("Lista contém:\n")
+  msg("Lista pertence a " + lista.objlista + "/" + item.objlista + "\n")
+  msg("Lista contém (" + lista.total + "):\n")
   enquanto item
     msg(txt(item.obj) + "\n")
     item.depois
@@ -60,9 +60,9 @@ func escr_y
   l1.addfim($janela)
   l1.addfim($cadeira)
   l1.addfim($cadeira)
-  msg("Lista local\n")
+  msg("Lista local (" + l1.total + ")\n")
   enquanto l1.ini
-    msg(txt(l1.ini.obj) + "\n")
+    msg(txt(l1.ini.obj) + "   (" + l1.total + ")\n")
     l1.ini.remove
   efim
   ret 1

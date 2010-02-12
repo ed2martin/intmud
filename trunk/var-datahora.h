@@ -20,6 +20,10 @@ public:
             ///< Ler o valor numérico da variável
     void setValor(const char * defvar1, int valor);
             ///< Mudar o valor numérico da variável
+    void LerSav(const char * texto);
+            ///< Atualiza datahora com o valor salvo em arqsav
+    void SalvarSav(char * texto);
+            ///< Prepara um texto com data e hora para arqsav
 
     int DiasMes();          ///< Calcula quantos dias tem no mês
     int DataNum();          ///< Calcula o número de dias desde 1/1/1

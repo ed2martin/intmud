@@ -325,6 +325,49 @@ void TVarDataHora::setValor(const char * defvar1, int valor)
 }
 
 //------------------------------------------------------------------------------
+void TVarDataHora::LerSav(const char * texto)
+{
+    int x, y;
+    for (x=0; x<14; x++)
+        if (texto[x]<'0' || texto[x]>'9')
+            return;
+    x = (texto[0] - '0') * 1000 + (texto[1] - '0') * 100 +
+        (texto[2] - '0') * 10 + texto[3] - '0';
+    Ano = (x<1 ? 1 : x>9999 ? 9999 : x);
+    x = (texto[4] - '0') * 10 + texto[5] - '0';
+    Mes = (x<1 ? 1 : x>12 ? 12 : x);
+    x = (texto[6] - '0') * 10 + texto[7] - '0';
+    y = DiasMes();
+    Dia = (x<1 ? 1 : x>y ? y : x);
+    x = (texto[8] - '0') * 10 + texto[9] - '0';
+    Hora = (x>23 ? 23 : x);
+    x = (texto[10] - '0') * 10 + texto[11] - '0';
+    Min = (x>59 ? 59 : x);
+    x = (texto[12] - '0') * 10 + texto[13] - '0';
+    Seg = (x>59 ? 59 : x);
+}
+
+//------------------------------------------------------------------------------
+void TVarDataHora::SalvarSav(char * texto)
+{
+    texto[0] = Ano/1000+'0';
+    texto[1] = Ano/100%10+'0';
+    texto[2] = Ano/10%10+'0';
+    texto[3] = Ano%10+'0';
+    texto[4] = Mes/10+'0';
+    texto[5] = Mes%10+'0';
+    texto[6] = Dia/10+'0';
+    texto[7] = Dia%10+'0';
+    texto[8] = Hora/10+'0';
+    texto[9] = Hora%10+'0';
+    texto[10] = Min/10+'0';
+    texto[11] = Min%10+'0';
+    texto[12] = Seg/10+'0';
+    texto[13] = Seg%10+'0';
+    texto[14] = 0;
+}
+
+//------------------------------------------------------------------------------
 int TVarDataHora::DataNum()
 {
     const int DiasMesTabela[]={

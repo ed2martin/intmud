@@ -75,6 +75,7 @@ TListaX * TListaObj::AddInicio(TObjeto * obj)
 // Cria objeto
     TListaX * l1 = TListaX::Criar();
 // Acrescenta no topo da lista
+    Total++;
     l1->Lista = this;
     l1->ListaAntes = 0;
     l1->ListaDepois = Inicio;
@@ -103,6 +104,7 @@ TListaX * TListaObj::AddFim(TObjeto * obj)
         return 0;
 // Cria objeto
     TListaX * l1 = TListaX::Criar();
+    Total++;
 // Acrescenta no final da lista
     l1->Lista = this;
     l1->ListaAntes = Fim;
@@ -189,7 +191,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         return true;
     }
 // Objeto em que foi definido
-    if (comparaZ(nome, "objx")==0)
+    if (comparaZ(nome, "objlista")==0)
     {
         if (Objeto==0)
             return false;
@@ -227,7 +229,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Marca todos os objetos para exclusão
-    if (comparaZ(nome, "apagaobj")==0)
+    if (comparaZ(nome, "apagar")==0)
     {
         for (TListaX * obj = Inicio; obj; obj=obj->ListaDepois)
             obj->Objeto->MarcarApagar();
@@ -253,6 +255,13 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         // Retorna 0
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(0);
+    }
+// Quantidade de itens da lista
+    if (comparaZ(nome, "total")==0)
+    {
+        unsigned int x = Total;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(x);
     }
     return false;
 }
@@ -314,6 +323,14 @@ void TListaItem::MudarRef(TListaX * lista)
 //----------------------------------------------------------------------------
 bool TListaItem::Func(TVariavel * v, const char * nome)
 {
+// Quantidade de itens da lista
+    if (comparaZ(nome, "total")==0)
+    {
+        unsigned int x = (ListaX ? ListaX->Lista->Total : 0);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(x);
+    }
+// Verifica se está em alguma lista
     if (ListaX==0)
         return false;
 // Objeto
@@ -331,7 +348,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         return true;
     }
 // Objeto em que a lista foi definida
-    if (comparaZ(nome, "objx")==0)
+    if (comparaZ(nome, "objlista")==0)
     {
         if (ListaX==0)
             return false;
@@ -371,7 +388,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         DEBUG1
         return false;
     }
-    if (comparaZ(nome, "remove1")==0)
+    if (comparaZ(nome, "removeantes")==0)
     {
         TListaX * l = ListaX;
         MudarRef(ListaX->ListaAntes);
@@ -379,7 +396,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         DEBUG1
         return false;
     }
-    if (comparaZ(nome, "remove2")==0)
+    if (comparaZ(nome, "removedepois")==0)
     {
         TListaX * l = ListaX;
         MudarRef(ListaX->ListaDepois);
@@ -388,7 +405,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Adiciona objetos antes
-    if (comparaZ(nome, "add1")==0)
+    if (comparaZ(nome, "addantes")==0)
     {
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
@@ -398,6 +415,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         // Cria objeto
             TListaX * l1 = TListaX::Criar();
         // Acrescenta antes
+            ListaX->Lista->Total++;
             l1->Lista = ListaX->Lista;
             l1->ListaAntes = ListaX->ListaAntes;
             l1->ListaDepois = ListaX;
@@ -418,7 +436,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Adiciona objetos depois
-    if (comparaZ(nome, "add2")==0)
+    if (comparaZ(nome, "adddepois")==0)
     {
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
@@ -428,6 +446,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         // Cria objeto
             TListaX * l1 = TListaX::Criar();
         // Acrescenta depois
+            ListaX->Lista->Total++;
             l1->Lista = ListaX->Lista;
             l1->ListaAntes = ListaX;
             l1->ListaDepois = ListaX->ListaDepois;
@@ -454,6 +473,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
 void TListaX::Apagar()
 {
 // Retira de TListaObj
+    Lista->Total--;
     (ListaAntes ? ListaAntes->ListaDepois : Lista->Inicio) = ListaDepois;
     (ListaDepois ? ListaDepois->ListaAntes : Lista->Fim) = ListaAntes;
 // Retira de TObjeto

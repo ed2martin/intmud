@@ -20,6 +20,7 @@ public:
     TListaX * Inicio;       ///< Primeiro item
     TListaX * Fim;          ///< Último item
     TObjeto * Objeto;       ///< Objeto em que a lista foi definida
+    unsigned int Total;     ///< Quantidade de itens da lista
 };
 
 //----------------------------------------------------------------------------
