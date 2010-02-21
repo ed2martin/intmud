@@ -612,11 +612,13 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
     char * destino = mens;
     char * remove_s = 0; // Para remover aspas simples
     char * remove_d = 0; // Para remover aspas duplas
+    char * tabela = tab8B; // Para filtro de letras acentuadas
 
 // Obtém variáveis
     if (VarAtual < v+2)
         return false;
     for (txt = v[2].getTxt(); *txt; txt++)
+    {
         switch (*txt | 0x20)
         {
         case 'e': remove |= 1; break;
@@ -625,8 +627,11 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
         case 'c': remove |= 8; break;
         case 's': remove |= 16; break;
         case 'a': remove |= 32; break;
+        default:
+            if (*txt=='7') tabela = tab7B;
         }
-    if (remove==0)
+    }
+    if (remove==0 && tabela==tab8B)
     {
         ApagarVar(v+2);
         ApagarRet(v);
@@ -705,7 +710,7 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
                     *destino++=' ', esp--;
             }
             if (destino<mens+sizeof(mens))
-                *destino++ = *txt;
+                *destino++ = tabela[*(unsigned char*)txt];
             txt++;
             ini=2;
             break;

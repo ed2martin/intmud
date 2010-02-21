@@ -35,6 +35,9 @@ public:
     TListaItem * Antes;     ///< Objeto anterior
     TListaItem * Depois;    ///< Próximo objeto
     TListaX * ListaX;       ///< Qual objeto está apontando
+    TObjeto * Objeto;       ///< Objeto em que a listaitem foi definida
+    const char * defvar;    ///< Definição da variável
+    unsigned int indice;    ///< Índice da variável
 };
 
 //----------------------------------------------------------------------------

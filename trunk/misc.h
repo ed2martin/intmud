@@ -26,6 +26,8 @@ extern char * tabMAI;      ///< Todos os caracteres em letras maiúsculas
 extern char * tabMIN;      ///< Todos os caracteres em letras minúsculas
 extern char * tabTXTCOD;   ///< Usado para codificar caracteres: txtcod
 extern char * tabTXTDEC;   ///< Usado para decodificar caracteres: txtdec
+extern char * tab8B;       ///< txtremove sem filtro de letras acentuadas
+extern char * tab7B;       ///< txtremove com filtro de letras acentuadas
 
     /** Monta string.
         Semelhante a sprintf(), exceto que:

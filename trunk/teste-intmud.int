@@ -255,6 +255,8 @@ func escr_14
   msg("txtvis = " + txtvis(arg0) + "\n")
   msg("txtinvis = " + txtinvis(arg0) + "\b\n")
   msg("txtinvis+txtvis = " + txtvis(txtinvis(arg0)) + "\n")
+  msg("txtremove(AS) =\"" + txtremove(arg0,"AS") + "\"\n")
+  msg("txtremove(7) =\"" + txtremove(arg0,"7") + "\"\n")
 func escr_eco
   se conec.eco
     conec.eco=0
@@ -333,7 +335,6 @@ func ini
 func servidor_socket
   arg0.msg("Encerrando o IntMUD (arg1=" + arg1 + ")\n")
   terminar
-
 
 classe teste1
 comum serv servidor

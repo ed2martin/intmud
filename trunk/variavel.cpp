@@ -324,6 +324,12 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
             end_listaobj[depois].Apagar();
         break;
     case Instr::cListaItem:
+        for (; antes<depois; antes++)
+        {
+            end_listaitem[antes].Objeto = o;
+            end_listaitem[antes].defvar = defvar;
+            end_listaitem[antes].indice = antes;
+        }
         for (; depois<antes; depois++)
             end_listaitem[depois].Apagar();
         break;
@@ -489,7 +495,22 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
             return;
         }
     case Instr::cListaItem:
-        MOVER_SIMPLES( TListaItem )
+        {
+            TListaItem * o = (TListaItem *)endvar;
+            TListaItem * d = (TListaItem *)destino;
+            int inc=1;
+            if (destino > endvar)
+                o+=vetor-1, d+=vetor-1, inc=-1;
+            for (; vetor; vetor--,o+=inc,d+=inc)
+            {
+                o->defvar = defvar;
+                o->indice = o - (TListaItem *)endvar;
+                o->Objeto = objeto;
+                o->Mover(d);
+            }
+            endvar = destino;
+            return;
+        }
     case Instr::cTextoTxt:
         MOVER_SIMPLES( TTextoTxt )
     case Instr::cTextoPos:
