@@ -34,6 +34,8 @@ char * tabMAI = 0;
 char * tabMIN = 0;
 char * tabTXTCOD = 0;
 char * tabTXTDEC = 0;
+char * tab8B = 0;
+char * tab7B = 0;
 
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
@@ -52,12 +54,14 @@ void tabASCinic(void)
     if (tabNOMES)
         return;
 // Aloca memória
-    tabNOMES = new char[0x600];
+    tabNOMES = new char[0x800];
     tabCOMPLETO = tabNOMES + 0x100;
     tabMAI = tabNOMES + 0x200;
     tabMIN = tabNOMES + 0x300;
     tabTXTCOD = tabNOMES + 0x400;
     tabTXTDEC = tabNOMES + 0x500;
+    tab8B = tabNOMES + 0x600;
+    tab7B = tabNOMES + 0x700;
 // Acerta tabNOMES
     memset(tabNOMES,0,256);
     tabNOMES[(unsigned char)'_'] = ' ';
@@ -113,6 +117,19 @@ void tabASCinic(void)
     for (int x=0; x<0x100; x++)
         if (tabTXTCOD[x])
             tabTXTDEC[(unsigned char)tabTXTCOD[x]] = x;
+// Acerta tab8B
+    for (int x=0; x<0x100; x++)
+        tab8B[x] = x;
+// Acerta tab7B
+    const char StrNormal[] =
+            "AAAAAA C" "EEEEIIII"  // 0xC0
+            "DNOOOOOx" " UUUUY  "  // 0xD0
+            "aaaaaa c" "eeeeiiii"  // 0xE0
+            " nooooo " " uuuuy y"; // 0xF0
+    for (int x=0; x<0x80; x++)
+        tab7B[x] = x;
+    memset(tab7B+0x80, ' ', 0x40);
+    memcpy(tab7B+0xC0, StrNormal, 0x40);
 }
 
 //------------------------------------------------------------------------------

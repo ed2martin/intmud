@@ -1,21 +1,18 @@
 Especificações - IntMUD (Interpretador MUD)
 
-O programa é um interpretador de comandos, que trabalha com um ou mais
-arquivos no formato de texto:
-- O arquivo terminado com ".int", que contém os comandos (o programa
-  interpretado). Geralmente "intmud.int".
-- Na versão Windows é criado um arquivo com o mesmo nome, mas terminado com
-  ".log", para relatar os erros encontrados ao ler o arquivo de comandos.
+O programa é um interpretador de comandos que trabalha com um ou mais
+arquivos cujos nomes terminam com ".int". São arquivos de texto que contém
+os comandos (o programa interpretado) executados pelo IntMUD.
 
-Para usar outro arquivo ao invés do "intmud.int", basta executar o IntMUD
-seguido do nome do arquivo. Exemplo:
+Via de regra, o arquivo principal chama-se "intmud.int". Mas pode-se usar
+outro arquivo, bastando executar o IntMUD seguido do nome. Exemplo:
 intmud teste.int
 ou apenas:
 intmud teste
-Em ambiente gráfico, basta arrastar o arquivo .int para o executável com
+Em ambiente gráfico, pode-se arrastar o arquivo .int para o executável com
 o botão esquerdo do mouse.
 
-O arquivo ".int" começa com algumas definições no seguinte padrão:
+O arquivo intmud.int começa com algumas definições no seguinte padrão:
 opção = valor
 
 As opções são as seguintes:
@@ -302,13 +299,11 @@ func fatorial
   fimse
   ret arg0 * fatorial(arg0-1)
 
-
 Internamente constantes se comportam como funções. Exemplo:
 func x
   ret arg0 * 10
 Pode ser escrito também como:
 const x = arg0 * 10
-
 
 Existe um outro tipo de função, que se comporta como se fosse uma variável.
 É definida com varfunc ao invés de func.
@@ -331,20 +326,6 @@ func teste
   n = x
 # Vai fazer: este.msg("teste")
   x = "teste"
-
-
-*** Funções chamadas pelo programa:
-
-ini
-    Executada quando o objeto é criado
-fim
-    Executada quando o objeto é apagado
-iniclasse
-    Executada quando a classe é criada
-    Recebe um argumento (arg0), que é o nome da classe
-
-Outras funções podem ser chamadas, por variáveis específicas, que constituem
-uma extensão do programa.
 
 
 *** Operadores
@@ -385,6 +366,28 @@ variável = variável * valor
 variável = variável / valor
 
 
+*** Caracteres especiais em textos
+
+\n significa fim de uma linha de texto (deve passar para a próxima linha).
+
+Para conseguir cores usa-se os caracteres \b, \c e \d nas mensagens:
+    \b define cor dos caracteres: branco com fundo preto
+    \c seguido de um dígito: define a cor dos caracteres
+    \d seguido de um dígito: define a cor de fundo
+
+O dígito após \c e \d pode ser:
+    0 = preto           4 = azul
+    1 = vermelho        5 = magenta
+    2 = verde           6 = ciano
+    3 = marrom          7 = branco
+
+Somente após \c:
+    8 = cinza               C = azul intenso
+    9 = vermelho intenso    D = magenta intenso
+    A = verde intenso       E = ciano intenso
+    B = amarelo             F = branco intenso
+
+
 *** Instruções de controle de fluxo - não podem ser usadas em cálculos
 
 se <expressão>  ... fimse
@@ -408,6 +411,20 @@ continuar
 
 terminar
     Encerra o programa
+
+
+*** Funções chamadas pelo programa
+
+ini
+    Executada quando o objeto é criado
+fim
+    Executada quando o objeto é apagado
+iniclasse
+    Executada quando a classe é criada
+    Recebe um argumento (arg0), que é o nome da classe
+
+Outras funções podem ser chamadas, por variáveis específicas, que constituem
+uma extensão do programa.
 
 
 *** Funções predefinidas
@@ -450,9 +467,9 @@ txtnum(<número>, <formato>)
     são mostrados em notação científica.
     Exemplo: 5.9E+18 significa 59 seguido de 17 zeros.
 
-txt(a)
-    Texto constante (não pode ser alterado) igual a a.
-    Se a não for texto, retorna um texto vazio.
+txt(<texto>)
+    Texto constante (não pode ser alterado) igual a <texto>.
+    Se <texto> não for um texto, retorna um texto vazio.
     Se for objeto, retorna o nome da classe.
 
 txt(<texto>, <caracter inicial>)
@@ -562,12 +579,13 @@ txtinvis(<texto>)
 txtremove(<texto1>, <texto2>)
     Retorna um texto semelhante a <texto1>, mas removendo espaços e/ou
     cores, conforme <texto2>. As letras interpretadas em <texto2> são:
-    E = remover espaços à esquerda
-    M = remover espaços extras, exceto à esquerda e à direita
-    D = remover espaços à direita
-    C = remover cores (tem o mesmo efeito da função txtcor)
-    S = remover aspas simples trocando espaços entre duas aspas por sublinhado
-    A = remover aspas duplas trocando espaços entre duas aspas por sublinhado
+    E = remover espaços à esquerda.
+    M = remover espaços extras, exceto à esquerda e à direita.
+    D = remover espaços à direita.
+    C = remover cores (tem o mesmo efeito da função txtcor).
+    S = remover aspas simples trocando espaços entre duas aspas por sublinhado.
+    A = remover aspas duplas trocando espaços entre duas aspas por sublinhado.
+    7 = usar letras sem acentuação. Exemplo, "ã É ì" vira "a E i".
     Exemplos:
     txtremove("  bom  dia  ", "EMD") é o mesmo que "bom dia"
     txtremove("  bom  dia  ", "ED") é o mesmo que "bom  dia"
@@ -653,7 +671,7 @@ inttotal(<variável>)
     É o mesmo que: inttotal(a) + inttotal(b)
 
 
-*** Funções existentes em vetores de variáveis txt1 a txt512:
+*** Funções existentes em vetores de variáveis txt1 a txt512
 
 limpar
     Limpa todas as variáveis do vetor (faz todas as variáveis = "").
@@ -667,8 +685,8 @@ limpar
     x.2 = ""
 
 texto
-texto( <número da primeira variável> )
-texto( <número da primeira variável> , <número da última variável> )
+texto(<número da primeira variável>)
+texto(<número da primeira variável>, <número da última variável>)
     Retorna um texto que corresponde a todas as variáveis concatenadas
     Exemplo:
     txt10 x.3
@@ -678,8 +696,8 @@ texto( <número da primeira variável> , <número da última variável> )
     msg(x.texto) # É o mesmo que msg("abc")
     msg(x.texto(0,1)) # É o mesmo que msg("ab")
 
-palavras( <texto> )
-palavras( <texto> , <número de palavras> )
+palavras(<texto>)
+palavras(<texto>, <número de palavras>)
     Divide o texto em palavras.
     As palavras são separadas por espaço ou "\n".
     Retorna o número de palavras (pode ser zero).
@@ -691,8 +709,8 @@ palavras( <texto> , <número de palavras> )
     x.0 = "bom"
     x.1 = "dia !"
 
-linhas( <texto> )
-linhas( <texto> , <número de colunas> )
+linhas(<texto>)
+linhas(<texto>, <número de colunas>)
     Preenche as variáveis do vetor com o texto, da seguinte forma:
     Cada variável recebe uma linha do texto (o caracter "\n" indica
     o fim de uma linha).
@@ -701,8 +719,8 @@ linhas( <texto> , <número de colunas> )
     da variável.
     Retorna o número de linhas (pelo menos uma linha).
 
-separar( <texto> , <delimitador> )
-separar( <texto> , <delimitador> , <número de textos> )
+separar(<texto>, <delimitador>)
+separar(<texto>, <delimitador>, <número de textos>)
     Divide o texto com o delimitador especificado.
     Cada variável do vetor recebe um texto.
     A última variável recebe o restante do texto.
@@ -719,35 +737,13 @@ separar( <texto> , <delimitador> , <número de textos> )
     x.2 = ""
     x.3 = "def:20"
 
-juntar( <delimitador> )
-juntar( <delimitador> , <número de variáveis> )
+juntar(<delimitador>)
+juntar(<delimitador>, <número de variáveis>)
     Concatena o número de variáveis do vetor especificadas, acrescentando
     o delimitador entre duas variáveis. Retorna o texto obtido.
     Exemplo:
     x.juntar(",", 3) é o mesmo que:
     x.0 + "," + x.1 + "," + x.2
-
-
-*** Caracteres especiais
-
-\n significa fim de uma linha de texto (deve passar para a próxima linha).
-
-Para conseguir cores usa-se os caracteres \b, \c e \d nas mensagens:
-    \b define cor dos caracteres: branco com fundo preto
-    \c seguido de um dígito: define a cor dos caracteres
-    \d seguido de um dígito: define a cor de fundo
-
-O dígito após \c e \d pode ser:
-    0 = preto           4 = azul
-    1 = vermelho        5 = magenta
-    2 = verde           6 = ciano
-    3 = marrom          7 = branco
-
-Somente após \c:
-    8 = cinza               C = azul intenso
-    9 = vermelho intenso    D = magenta intenso
-    A = verde intenso       E = ciano intenso
-    B = amarelo             F = branco intenso
 
 
 *** Outros tipos de variáveis
@@ -783,18 +779,18 @@ listaobj <nomedavariável>
     Quando um objeto é apagado, é executada a função apagaobj de todas
     as variáveis listaobj do objeto.
 
-    Possui as seguintes funções:
-    addini( <objeto> )
+    Funções:
+    addini(<objeto>)
         Adiciona no topo da lista.
         Retorna o item adicionado da lista (variável listaitem).
-    addfim( <objeto> )
+    addfim(<objeto>)
         Adiciona no final da lista.
         Retorna o item adicionado da lista (variável listaitem).
-    remove( <objeto> )
+    remove(<objeto>)
         Retira primeira ocorrência do objeto da lista.
     limpar
         Retira todos os objetos da lista.
-    possui( <objeto> )
+    possui(<objeto>)
         Retorna 1 se objeto está na lista ou 0 se não está.
     apagar
         Marca todos os objetos da lista para exclusão, usando a função apagar()
@@ -813,19 +809,19 @@ listaitem <nomedavariável>
     É usado para acessar os objetos de listaobj. Representa um objeto.
     Como valor numérico, é 1 se for um objeto ou 0 se não for.
 
-    Possui as seguintes funções:
-    addantes( <objeto> )
+    Funções:
+    addantes(<objeto>)
         Adiciona objeto antes desse.
-    adddepois( <objeto> )
+    adddepois(<objeto>)
         Adiciona objeto depois desse.
     antes
         Passa para o objeto anterior.
-    antes( <número de objetos> )
+    antes(<número de objetos>)
         Recua o número de objetos especificado.
         Nada faz se o número for menor ou igual a zero.
     depois
         Passa para o próximo objeto.
-    depois( <número de objetos> )
+    depois(<número de objetos>)
         Avança o número de objetos especificado.
         Nada faz se o número for menor ou igual a zero.
     remove
@@ -862,7 +858,7 @@ textotxt <nomedavariável>
     Lista de textos. É o equivalente ao texto de um editor de textos.
     Todas as linhas de texto terminam com um caracter \n.
 
-    Possui as seguintes funções:
+    Funções:
     ini
         Primeira linha do texto (variável textopos).
     fim
@@ -873,11 +869,11 @@ textotxt <nomedavariável>
         Retorna a quantidade de bytes de texto.
     limpar
         Limpa o texto
-    addini( <texto ou textotxt> )
+    addini(<texto ou textotxt>)
         Adiciona linhas no início do textotxt.
-    addfim( <texto ou textotxt> )
+    addfim(<texto ou textotxt>)
         Adiciona linhas no fim do textotxt.
-    remove( <quantidade de linhas> )
+    remove(<quantidade de linhas>)
         Retorna um texto que contém uma quantidade de linhas do início do
         textotxt. Retira essas linhas do textotxt.
     ordena
@@ -895,7 +891,7 @@ textotxt <nomedavariável>
         Vira:
             "2 Caminhão\n"
             "4 Carro pequeno\n"
-    ordenalin( <texto1> , <texto2> )
+    ordenalin(<texto1>, <texto2>)
         Mesmo que ordenalin sem argumentos, exceto que após ordenar altera
         as linhas de acordo com a quantidade (a primeira palavra):
         Se for 0 ou não for um número: apaga a linha
@@ -913,13 +909,13 @@ textotxt <nomedavariável>
         as colunas <colmin> e <colmax>, preferêncialmente no último espaço
         encontrado. Se <colmin> ou <colmax> for menor que dois, nada essa
         função não tem efeito.
-    ler( <nome do arquivo> )
+    ler(<nome do arquivo>)
         Lê um arquivo de texto e coloca em textotxt.
         Retorna 1 se conseguiu ou 0 se não conseguiu.
         Nota 1: O nome do arquivo sempre terminará com ".txt".
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível acessar arquivos de outros lugares.
-    salvar( <nome do arquivo> )
+    salvar(<nome do arquivo>)
         Salva o conteúdo de textotxt em um arquivo de texto.
         Retorna 1 se conseguiu ou 0 se não conseguiu.
         Notas: vide função ler (acima)
@@ -928,46 +924,46 @@ textopos <nomedavariável>
     É usado para acessar o texto de textotxt. Representa uma linha.
     Como valor numérico, é 1 se linha existe ou 0 se está no fim do texto.
 
-    Possui a seguinte variável:
+    Variável:
     linha
         Número da linha atual; começa em 0.
         Nota 1: prefira usar "linha.depois" ao invés de "linha+=1".
         Nota 2: Internamente muda de linha chamando as funções antes e depois.
 
-    Possui as seguintes funções:
+    Funções:
     byte
         Retorna a quantidade de bytes desde o início do texto; começa no 0.
     lin
         É 1 se linha válida ou 0 se chegou no fim do texto.
     antes
         Passa para a linha anterior.
-    antes( <número de linhas> )
+    antes(<número de linhas>)
         Recua o número de linhas especificado.
         Nada faz se o número for menor ou igual a zero.
     depois
         Vai para a próxima linha.
-    depois( <número de linhas> )
+    depois(<número de linhas>)
         Avança o número de linhas especificado.
         Nada faz se o número for menor ou igual a zero.
     texto
-    texto( <caracter inicial> )
-    texto( <caracter inicial>, <quantidade de caracteres> )
+    texto(<caracter inicial>)
+    texto(<caracter inicial>, <quantidade de caracteres>)
         Retorna o texto da linha atual ou de parte da linha atual.
-    textolin( <número de linhas> )
+    textolin(<número de linhas>)
         Retorna texto correspondente ao número de linhas especificado.
-    mudar( <novo texto> )
-    mudar( <novo texto>, <caracter inicial> )
-    mudar( <novo texto>, <caracter inicial>, <quantidade de caracteres> )
+    mudar(<novo texto>)
+    mudar(<novo texto>, <caracter inicial>)
+    mudar(<novo texto>, <caracter inicial>, <quantidade de caracteres>)
         Muda o texto da linha atual ou parte do texto da linha atual.
         Caracter inicial e quantidade de caracteres referem-se à linha atual.
-    add( <novo texto> )
+    add(<novo texto>)
         Adiciona linha antes da linha atual.
         Após essa função, textopos corresponde ao texto adicionado.
-    add( <textopos início> , <número de linhas> )
+    add(<textopos início>, <número de linhas>)
         Adiciona as linhas correspondente ao texto especificado.
     remove
         Remove a linha atual.
-    remove( <número de linhas> )
+    remove(<número de linhas>)
         Remove a quantidade de linhas especificadas, a partir da linha atual.
     juntar
         Junta a linha atual com a anterior.
@@ -978,7 +974,7 @@ nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário
     digitou.
     Funções:
-    ini( <texto> , <quantidade> )
+    ini(<texto>, <quantidade>)
         Inicia a busca.
         <texto> é o nome procurado (geralmente o que o usuário digitou).
         Exemplo: "poção"
@@ -989,8 +985,8 @@ nomeobj <nomedavariável>
         <quantidade> é a quantidade máxima de objetos que podem ser
         encontrados. Exemplo, se não for desejável processar mais de 10
         objetos, <quantidade> deve ser o número 10.
-    nome( <texto> )
-    nome( <texto>, <texto2>, ..., <textoN> )
+    nome(<texto>)
+    nome(<texto>, <texto2>, ..., <textoN>)
         <texto> contém um ou mais nomes (separados por espaço) correspondentes
         a um objeto. Exemplo, "chave chave_verde" significa um objeto que
         pode ser referenciado por esses dois nomes: chave e chave_verde.
@@ -1010,13 +1006,13 @@ arqlog <nomedavariável>
     Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
 
     Funções:
-    abrir( <nome do arquivo> )
+    abrir(<nome do arquivo>)
         Abre arquivo, cria se não existir.
         Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
         Nota 1: O nome do arquivo sempre terminará com ".log".
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível criar arquivos em outros lugares.
-    msg( <texto> )
+    msg(<texto>)
         Grava texto em uma nova linha, no final do arquivo.
         Nota 1: Definições de cores e linhas vazias não são gravadas.
         Nota 2: Pode demorar até 2 segundos para o texto ser realmente
@@ -1030,6 +1026,21 @@ arqsav <nomedavariável>
     Nota 2: O arquivo deve pertencer ao diretório atual ou a um
     subdiretório dele. Não é possível criar arquivos em outros lugares.
 
+    Os objetos que serão salvos devem ser colocados em uma listaobj.
+    As variáveis salvas devem ser definidas com a palavra "sav" antes.
+    Exemplo:
+    classe x
+    sav int8 a # Essa variável é salva por arqsav
+    int8 b # Já essa não é salva
+
+    Variáveis que acessam recursos externos nunca são salvas:
+    arqlog, arqsav, arqtxt, telatxt, serv, socket
+    Essas outras também não, por motivos óbvios:
+    nomeobj, prog, indiceitem
+    Referência a outros objetos (ref, listaobj, listaitem, etc.) são salvas
+    quando se referem a outro objeto que também será salvo no mesmo arquivo.
+
+    Funções:
     valido(<nome do arquivo>)
         Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
     existe(<nome do arquivo>)
@@ -1077,7 +1088,7 @@ arqtxt <nomedavariável>
     Nota: A escrita em arquivo não é tão eficiente quanto arqlog.
 
     Funções:
-    abrir( <nome do arquivo>, <modo> )
+    abrir(<nome do arquivo>, <modo>)
         Abre arquivo. Retorna 1 se conseguiu ou 0 se não conseguiu.
         Modo pode ser:
         0 = somente leitura
@@ -1090,11 +1101,11 @@ arqtxt <nomedavariável>
         subdiretório dele. Não é possível acessar arquivos de outros lugares.
     fechar
         Fecha o arquivo.
-    truncar( <arquivo> , <tamanho> )
+    truncar(<arquivo>, <tamanho>)
         Trunca o tamanho de um arquivo no tamanho especificado.
         Retorna 1 se conseguiu ou 0 se não conseguiu.
         Exemplo: truncar("a.txt", 0) limpa o conteúdo do arquivo a.txt
-    msg( <texto> )
+    msg(<texto>)
         Escreve texto no arquivo.
         Se for especificado mais de um texto, serão concatenados no arquivo.
         Exemplo, escr("ab", "\n") é o mesmo que escr("ab\n")
@@ -1103,13 +1114,13 @@ arqtxt <nomedavariável>
     ler
         Lê uma linha do arquivo; retorna a linha lida sem o \n no final.
         Pode ler menos se chegou no fim do arquivo.
-    ler( <tamanho> )
+    ler(<tamanho>)
         Lê um determinado número de caracteres do arquivo.
         Pode ler menos se chegou no fim do arquivo.
         Exemplo: ler(1) lê um caracter.
     pos
         Retorna a posição atual no arquivo (0=está no início do arquivo).
-    pos( <posição> , <modo> )
+    pos(<posição>, <modo>)
         Muda a posição atual no arquivo. Modo pode ser:
         0 = a partir do início do arquivo
         1 = a partir da posição atual
@@ -1143,9 +1154,9 @@ telatxt <nome da variável>
     posx
         Posição do cursor: quantos caracteres enviou após o último \n.
         Caracteres especiais, como definição da cor, não contam
-    msg( <mensagem> )
+    msg(<mensagem>)
         Envia mensagem para telatxt.
-    tecla( <nome da tecla> )
+    tecla(<nome da tecla>)
         Processa uma tecla, como se tivesse sido digitada pelo usuário.
         Nota: não gera eventos.
     texto
@@ -1234,7 +1245,7 @@ socket <nomedavariável>
         em duas ou mais. Isso é feito colocando "\n" no meio da mensagem.
         Colmin e colmax são os tamanhos mínimo e máximo das linhas.
         O programa tenta dividir sempre onde houver um caracter espaço.
-    msg( <mensagem> )
+    msg(<mensagem>)
         Envia mensagem para o socket.
         Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
         Nota: Se o protocolo for Papovox, devido às limitações do Papovox,
@@ -1328,7 +1339,7 @@ prog <nomedavariável>
         É 1 se linha válida ou 0 se chegou no fim da consulta.
     depois
         Vai para a próxima linha.
-    depois( <número de linhas> )
+    depois(<número de linhas>)
         Avança o número de linhas especificado.
         Nada faz se o número for menor ou igual a zero.
     texto
@@ -1420,7 +1431,7 @@ prog <nomedavariável>
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
     salvar
-    salvar( <texto> )
+    salvar(<texto>)
         Salva as alterações nos arquivos correspondentes, depois que todas
         as alterações pendentes nas classes forem efetuadas.
         O texto é composto de letras seguidas de números, que indicam como
@@ -1438,7 +1449,7 @@ prog <nomedavariável>
         1 linha vazia entre classes e entre funções e nenhuma linha vazia
         entre variáveis.
     salvartudo
-    salvartudo( <texto> )
+    salvartudo(<texto>)
         Mesmo que a função salvar, porém salva todos os arquivos,
         independete de terem sido alterados ou não.
 
@@ -1451,26 +1462,26 @@ indiceitem <nomedavariável>
     Permite obter os objetos que contém uma variável indiceobj com um
     determinado texto. Ignora variáveis indiceobj com texto nulo.
 
-    Possui as seguintes funções:
-    ini( <texto> )
+    Funções:
+    ini(<texto>)
         Vai para o primeiro objeto com o texto ou parte dele.
-    fim( <texto> )
+    fim(<texto>)
         Vai para o último objeto com o texto ou parte dele.
     antes
         Passa para o objeto anterior.
-    antes( <número de objetos> )
+    antes(<número de objetos>)
         Recua o número de objetos especificado.
         Nada faz se o número for menor ou igual a zero.
     depois
         Passa para o próximo objeto.
-    depois( <número de objetos> )
+    depois(<número de objetos>)
         Avança o número de objetos especificado.
         Nada faz se o número for menor ou igual a zero.
     obj
         Objeto.
     txt
         Texto associado ao objeto.
-    obj( <texto> )
+    obj(<texto>)
         Objeto que contém o texto exato.
         Essa função funciona independente das demais.
 

@@ -32,6 +32,8 @@
 
 //#define DEBUG // Mostrar diretórios e arquivos acessados pela função LIMPAR
 
+#define MAX_OBJ 1024 // Número de objetos por arquivo
+
 bool TVarSav::InicVar = false;
 int TVarSav::HoraReg = 0;
 int TVarSav::Dia = 0;
@@ -224,418 +226,16 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
 // Ler arquivo
     if (comparaZ(nome, "ler")==0)
     {
-        int quantidade = 0xFFFF; // Número máximo de objetos
-        char mens[8192];
-        TArqLer arqler;
-        if (Instr::VarAtual >= v+3)
-            quantidade = v[2].getInt();
-        if (*arqnome==0 ||  // Arquivo inválido
-                Instr::VarAtual < v+2 || // Menos de dois argumentos
-                quantidade <= 0 ||  // Número de objetos <=0
-                v[2].defvar[2] != Instr::cListaObj || // Não é listaobj
-                !arqler.Abrir(arqnome))  // Não conseguiu abrir arquivo
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-    // Prepara variáveis
-        TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
-        TListaX * listaitem = listaobj->Inicio;
-        TObjeto * bufobj[1024];
-        int numobj=0;
-        if (quantidade > 1024)
-            quantidade = 1024;
-    // Avança até a lista dos tipos de objetos
-        while (arqler.Linha(mens, sizeof(mens), false)>0)
-            if (strcmp(mens, "+++")==0)
-                break;
-    // Cria objetos na listaobj se necessário
-        while (arqler.Linha(mens, sizeof(mens), false)>0)
-        {
-            //printf("1> %s\n", mens); fflush(stdout);
-            if (strcmp(mens, "+++")==0)
-                break;
-            if (numobj >= quantidade)
-                continue;
-        // Objeto está na lista
-            if (listaitem)
-            {
-                bufobj[numobj++] = listaitem->Objeto;
-                listaitem = listaitem->ListaDepois;
-                continue;
-            }
-        // Obtém a classe
-            TClasse * c = TClasse::Procura(mens);
-        // Classe inválida: não cria objeto
-            if (c==0)
-            {
-                bufobj[numobj++] = 0;
-                continue;
-            }
-        // Classe válida: cria objeto e adiciona na lista
-            bufobj[numobj] = TObjeto::Criar(c);
-            listaobj->AddFim(bufobj[numobj]);
-            numobj++;
-        }
-    // Lê objetos
-        quantidade = numobj;
-        numobj = 0;
-        while (arqler.Linha(mens, sizeof(mens), false)>0)
-        {
-        // Próximo objeto
-            if (strcmp(mens, "+++")==0)
-            {
-                numobj++;
-                if (numobj >= quantidade)
-                    break;
-                continue;
-            }
-        // Verifica se objeto válido
-            if (bufobj[numobj]==0)
-                continue;
-        // Separa nome da variável, índice e valor
-            char * p = mens;
-            unsigned int indvar = 0;
-            while (*p && *p!='=' && *p!='.')
-                p++;
-            if (*p=='.')
-                for (*p++=0; *p>='0' && *p<='9'; p++)
-                    indvar = indvar * 10 + *p - '0';
-            if (*p!='=')
-                continue;
-            *p++ = 0;
-        // Procura a variável na classe
-            TClasse * c = bufobj[numobj]->Classe;
-            int indice = c->IndiceNome(mens);
-            if (indice<0)
-                continue;
-        // Prepara objeto TVariavel
-            TVariavel var;
-            var.defvar = c->InstrVar[indice];
-            indice = c->IndiceVar[indice];
-            var.bit = indice >> 24;
-            var.indice = indvar;
-            if (TVariavel::Tamanho(var.defvar)==0 ||
-                    indice & 0x400000) // Variável da classe
-                continue;
-            // Variável do objeto
-            var.endvar = bufobj[numobj]->Vars + (indice & 0x3FFFFF);
-        // Verifica se variável está marcada como "sav"
-            if ((var.defvar[Instr::endProp] & 2) == 0)
-                continue;
-        // Verifica o índice da variável
-            if (indvar && indvar >=
-                    (unsigned char)var.defvar[Instr::endVetor])
-                continue;
-            //printf(" [%s] [%d]\n", mens, indvar); fflush(stdout);
-        // Anota valor na variável
-            switch (var.Tipo())
-            {
-        // Variáveis numéricas
-            case varInt:
-                var.setInt(atoi(p));
-                break;
-        // Ponto flutuante
-            case varDouble:
-                var.setDouble(atof(p));
-                break;
-        // Texto
-            case varTxt:
-                {
-                    char * d = mens;
-                    for (; *p && d<mens+sizeof(mens)-1; p++)
-                    {
-                        if (*p != '\\')
-                            *d++ = *p;
-                        else switch (*++p)
-                        {
-                        case 'n':
-                        case 'N':
-                            *d++ = Instr::ex_barra_n;
-                            break;
-                        case 'b':
-                        case 'B':
-                            *d++ = Instr::ex_barra_b;
-                            break;
-                        case 'c':
-                        case 'C':
-                            *d++ = Instr::ex_barra_c;
-                            break;
-                        case 'd':
-                        case 'D':
-                            *d++ = Instr::ex_barra_d;
-                            break;
-                        case '\\':
-                            *d++ = '\\';
-                            break;
-                        }
-                    }
-                    *d=0;
-                    var.setTxt(mens);
-                }
-                break;
-        // Referência a objetos
-            case varObj:
-                indice = (p[0]-0x21) * 0x40 + (p[1]-0x21);
-                if (p[0]<0x21 || p[0]>=0x61 || p[1]<0x21 || p[1]>=0x61 ||
-                        indice >= quantidade)
-                    var.setObj(0);
-                else
-                    var.setObj(bufobj[indice]);
-                break;
-        // Checa outros tipos de variáveis
-            default:
-        // ListaObj
-                if (var.defvar[2]==Instr::cListaObj)
-                {
-                    TListaObj * lobj = var.end_listaobj + var.indice;
-                // Limpa a lista
-                    while (lobj->Inicio)
-                        lobj->Inicio->Apagar();
-                // Enquanto houver objetos
-                    while (p[0]>=0x21 && p[0]<0x61 && p[1]>=0x21 && p[1]<0x61)
-                    {
-                // Obtém o índice do objeto
-                        int valor = (p[0]-0x21) * 0x40 + (p[1]-0x21);
-                        p += 2;
-                // Anota na lista
-                        if (valor<quantidade && bufobj[valor])
-                            lobj->AddFim(bufobj[valor]);
-                    }
-                }
-        // DataHora
-                else if (var.defvar[2]==Instr::cDataHora)
-                    var.end_datahora[var.indice].LerSav(p);
-            } // switch
-        } // while
-    // Retorna o número de objetos lidos
+        int x = Ler(v, arqnome);
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(quantidade);
+        return Instr::CriarVarInt(x);
     }
 // Salvar arquivo
     if (comparaZ(nome, "salvar")==0)
     {
-        if (*arqnome==0 ||  // Arquivo inválido
-                Instr::VarAtual < v+4 || // Menos de 4 argumentos
-                v[2].defvar[2] != Instr::cListaObj) // Não é listaobj
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-    // Cria arquivo
-        FILE * arq = fopen(arqnome, "w");
-        if (arq==0)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-    // Anota a quantidade de dias para expirar
-        int valor = v[3].getInt();
-        if (valor>=1)
-            fprintf(arq, "data=%d\n", HoraReg + valor * 1440);
-    // Anota a senha
-        const char * senha = v[4].getTxt();
-        if (*senha)
-        {
-            char mens[256];
-            Senha(mens, senha, circle_random() % 90 + 33);
-            fprintf(arq, "senha=%s\n", mens);
-        }
-    // Anota os tipos de objetos
-        TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
-        TObjeto * bufobj[1024];
-        unsigned int numobj=0;
-        fprintf(arq, "+++\n");
-        for (TListaX * litem = listaobj->Inicio; litem && numobj<1024;)
-        {
-            TObjeto * obj = litem->Objeto;
-        // Checa se objeto já está em bufobj
-            unsigned int num = obj->NumeroSav;
-            if (num>=numobj || bufobj[num]!=obj)
-            {
-            // Acerta variáveis
-                obj->NumeroSav = numobj;
-                bufobj[numobj++] = obj;
-            // Anota no arquivo
-                fprintf(arq, "%s\n", obj->Classe->Nome);
-            }
-        // Passa para próximo objeto
-            litem = litem->ListaDepois;
-        }
-    // Anota as variáveis dos objetos
-        unsigned int quantidade = numobj;
-        for (numobj=0; numobj<quantidade; numobj++)
-        {
-            fprintf(arq, "+++\n");
-            TClasse * c = bufobj[numobj]->Classe;
-                // Procura todas as variáveis
-            for (unsigned int x=0; x<c->NumVar; x++)
-            {
-            // Verifica se é "sav" e não é "comum"
-                if ((c->InstrVar[x][Instr::endProp] & 3) != 2)
-                    continue;
-            // Prepara objeto TVariavel
-                TVariavel var;
-                var.defvar = c->InstrVar[x];
-                int posic = c->IndiceVar[x];
-                var.bit = posic >> 24;
-                var.indice = 0;
-                if (TVariavel::Tamanho(var.defvar)==0 ||
-                        (posic & 0x400000)) // Variável da classe
-                    continue;
-                // Variável do objeto
-                var.endvar = bufobj[numobj]->Vars + (posic & 0x3FFFFF);
-            // Anota valor na variável
-                posic = (unsigned char)var.defvar[Instr::endVetor];
-                switch (var.Tipo())
-                {
-            // Variáveis numéricas
-                case varInt:
-                    do {
-                        if (var.indice)
-                            fprintf(arq, "%s.%d=%d\n",
-                                    var.defvar+Instr::endNome,
-                                    var.indice, var.getInt());
-                        else
-                            fprintf(arq, "%s=%d\n",
-                                    var.defvar+Instr::endNome,
-                                    var.getInt());
-                    } while (++var.indice < posic);
-                    break;
-            // Ponto flutuante
-                case varDouble:
-                    do {
-                        if (var.indice)
-                            fprintf(arq, "%s.%d=%f\n",
-                                    var.defvar+Instr::endNome,
-                                    var.indice, var.getDouble());
-                        else
-                            fprintf(arq, "%s=%f\n",
-                                    var.defvar+Instr::endNome,
-                                    var.getDouble());
-                    } while (++var.indice < posic);
-                    break;
-            // Texto
-                case varTxt:
-                    do {
-                        char mens[4096];
-                        const char * o = var.getTxt();
-                        char * d = mens;
-                        for (; *o && d<mens+sizeof(mens)-2; o++)
-                            switch (*o)
-                            {
-                            case Instr::ex_barra_n:
-                                *d++ = '\\';
-                                *d++ = 'n';
-                                break;
-                            case Instr::ex_barra_b:
-                                *d++ = '\\';
-                                *d++ = 'b';
-                                break;
-                            case Instr::ex_barra_c:
-                                *d++ = '\\';
-                                *d++ = 'c';
-                                break;
-                            case Instr::ex_barra_d:
-                                *d++ = '\\';
-                                *d++ = 'd';
-                                break;
-                            case '\\':
-                                *d++ = '\\';
-                            default:
-                                *d++ = *o;
-                            }
-                        *d=0;
-                        if (var.indice)
-                            fprintf(arq, "%s.%d=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    var.indice, mens);
-                        else
-                            fprintf(arq, "%s=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    mens);
-                    } while (++var.indice < posic);
-                    break;
-            // Referência a objetos
-                case varObj:
-                    do {
-                        char mens[3] = "";
-                        TObjeto * obj = var.getObj();
-                        if (obj)
-                        {
-                            unsigned int num = obj->NumeroSav;
-                            if (num<quantidade && bufobj[num]==obj)
-                            {
-                                mens[0] = (num/0x40)+0x21;
-                                mens[1] = (num%0x40)+0x21;
-                                mens[2] = 0;
-                            }
-                        }
-                        if (var.indice)
-                            fprintf(arq, "%s.%d=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    var.indice, mens);
-                        else
-                            fprintf(arq, "%s=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    mens);
-                    } while (++var.indice < posic);
-                    break;
-            // Checa outros tipos de variáveis
-                default:
-                  switch (var.defvar[2])
-                  {
-            // ListaObj
-                  case Instr::cListaObj:
-                    do {
-                        char mens[4096];
-                        char * d = mens;
-                        TListaObj * lobj = var.end_listaobj + var.indice;
-                        TListaX * litem = lobj->Inicio;
-                        while (litem && d<mens+sizeof(mens)-3)
-                        {
-                            unsigned int num = litem->Objeto->NumeroSav;
-                            if (num<quantidade && bufobj[num]==litem->Objeto)
-                            {
-                                *d++ = (num/0x40)+0x21;
-                                *d++ = (num%0x40)+0x21;
-                            }
-                            litem = litem->ListaDepois;
-                        }
-                        *d=0;
-                        if (var.indice)
-                            fprintf(arq, "%s.%d=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    var.indice, mens);
-                        else
-                            fprintf(arq, "%s=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    mens);
-                    } while (++var.indice < posic);
-                    break;
-            // DataHora
-                  case Instr::cDataHora:
-                    do {
-                        char mens[100];
-                        var.end_datahora[var.indice].SalvarSav(mens);
-                        if (var.indice)
-                            fprintf(arq, "%s.%d=%s\n",
-                                    var.defvar+Instr::endNome,
-                                    var.indice, mens);
-                        else
-                            fprintf(arq, "%s=%s\n",
-                                    var.defvar+Instr::endNome, mens);
-                    } while (++var.indice < posic);
-                    break;
-                  }
-                } // switch
-            } // for ... variáveis
-        } // for ... objetos
-    // Fecha arquivo
-        fclose(arq);
-    // Retorna 1
+        int x = Salvar(v, arqnome);
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(1);
+        return Instr::CriarVarInt(x);
     }
 // Apagar arquivo
     if (comparaZ(nome, "apagar")==0)
@@ -653,6 +253,522 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
+{
+    char nome[CLASSE_NOME_TAM+2];
+    char * d = nome;
+    int indvar = 0;
+
+// Separa o nome da variável
+    while (*nomevar && *nomevar!='.')
+        if (d < nome + sizeof(nome) - 1)
+            *d++ = *nomevar++;
+    *d=0;
+
+// Obtém o índice o vetor
+    if (*nomevar=='.')
+        for (nomevar++; *nomevar>='0' && *nomevar<='9'; nomevar++)
+            indvar = indvar * 10 + *nomevar - '0';
+
+// Obtém a posição da variável na classe
+    TClasse * c = obj->Classe;
+    int indice = c->IndiceNome(nome);
+    if (indice<0)
+    {
+        var->defvar = 0;
+        return false;
+    }
+
+// Prepara objeto TVariavel
+    var->defvar = c->InstrVar[indice];
+    indice = c->IndiceVar[indice];
+    var->bit = indice >> 24;
+    var->indice = indvar;
+    if (TVariavel::Tamanho(var->defvar)==0 ||
+            indice & 0x400000) // Variável da classe
+    {
+        var->defvar = 0;
+        return false;
+    }
+    // Variável do objeto
+    var->endvar = obj->Vars + (indice & 0x3FFFFF);
+
+// Verifica se variável está marcada como "sav"
+// Verifica o índice da variável
+    if ((var->defvar[Instr::endProp] & 2) == 0 ||
+            (indvar && indvar >=
+            (unsigned char)var->defvar[Instr::endVetor]))
+    {
+        var->defvar = 0;
+        return false;
+    }
+    //printf(" [%s] [%d]\n", var.defvar+Instr::endNome, indvar); fflush(stdout);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+int TVarSav::Ler(TVariavel * v, const char * arqnome)
+{
+    int quantidade = 0xFFFF; // Número máximo de objetos
+    char mens[8192];
+    TArqLer arqler;
+    if (Instr::VarAtual >= v+3)
+        quantidade = v[2].getInt();
+    if (*arqnome==0 ||  // Arquivo inválido
+            Instr::VarAtual < v+2 || // Menos de dois argumentos
+            quantidade <= 0 ||  // Número de objetos <=0
+            v[2].defvar[2] != Instr::cListaObj || // Não é listaobj
+            !arqler.Abrir(arqnome))  // Não conseguiu abrir arquivo
+        return 0;
+// Prepara variáveis
+    TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
+    TListaX * listaitem = listaobj->Inicio;
+    TObjeto * bufobj[MAX_OBJ];
+    int numobj=0;
+    if (quantidade > MAX_OBJ)
+        quantidade = MAX_OBJ;
+// Avança até a lista dos tipos de objetos
+    while (arqler.Linha(mens, sizeof(mens), false)>0)
+        if (strcmp(mens, "+++")==0)
+            break;
+// Cria objetos na listaobj se necessário
+    while (arqler.Linha(mens, sizeof(mens), false)>0)
+    {
+        //printf("1> %s\n", mens); fflush(stdout);
+        if (strcmp(mens, "+++")==0)
+            break;
+        if (numobj >= quantidade)
+            continue;
+    // Objeto está na lista
+        if (listaitem)
+        {
+            bufobj[numobj++] = listaitem->Objeto;
+            listaitem = listaitem->ListaDepois;
+            continue;
+        }
+    // Obtém a classe
+        TClasse * c = TClasse::Procura(mens);
+    // Classe inválida: não cria objeto
+        if (c==0)
+        {
+            bufobj[numobj++] = 0;
+            continue;
+        }
+    // Classe válida: cria objeto e adiciona na lista
+        bufobj[numobj] = TObjeto::Criar(c);
+        listaobj->AddFim(bufobj[numobj]);
+        numobj++;
+    }
+// Lê objetos
+    TListaX * listaitem_fim = 0;
+    TVariavel var;
+    var.defvar = 0;
+    quantidade = numobj;
+    numobj = 0;
+    while (arqler.Linha(mens, sizeof(mens), false)>0)
+    {
+    // Próximo objeto
+        if (strcmp(mens, "+++")==0)
+        {
+            var.defvar = 0;
+            numobj++;
+            if (numobj >= quantidade)
+                break;
+            continue;
+        }
+    // Verifica se objeto válido
+        if (bufobj[numobj]==0)
+            continue;
+    // Separa nome da variável, índice e valor
+        char * p = mens;
+        while (*p && *p!='=')
+            p++;
+        if (*p!='=')
+            continue;
+        *p++ = 0;
+    // Obtém a variável
+        if (mens[0]!='.' || mens[1]!=0)
+        {
+            ObterVar(&var, bufobj[numobj], mens);
+            listaitem_fim = 0;
+        }
+        if (var.defvar==0)
+            continue;
+    // Anota valor na variável
+        switch (var.Tipo())
+        {
+    // Variáveis numéricas
+        case varInt:
+            var.setInt(atoi(p));
+            break;
+    // Ponto flutuante
+        case varDouble:
+            var.setDouble(atof(p));
+            break;
+    // Texto
+        case varTxt:
+            {
+                char * d = mens;
+                for (; *p && d<mens+sizeof(mens)-1; p++)
+                {
+                    if (*p != '\\')
+                        *d++ = *p;
+                    else switch (*++p)
+                    {
+                    case 'n':
+                    case 'N':
+                        *d++ = Instr::ex_barra_n;
+                        break;
+                    case 'b':
+                    case 'B':
+                        *d++ = Instr::ex_barra_b;
+                        break;
+                    case 'c':
+                    case 'C':
+                        *d++ = Instr::ex_barra_c;
+                        break;
+                    case 'd':
+                    case 'D':
+                        *d++ = Instr::ex_barra_d;
+                        break;
+                    case '\\':
+                        *d++ = '\\';
+                        break;
+                    }
+                }
+                *d=0;
+                var.setTxt(mens);
+            }
+            break;
+    // Referência a objetos
+        case varObj:
+            {
+                int indice = (p[0]-0x21) * 0x40 + (p[1]-0x21);
+                if (p[0]<0x21 || p[0]>=0x61 || p[1]<0x21 || p[1]>=0x61 ||
+                        indice >= quantidade)
+                    var.setObj(0);
+                else
+                    var.setObj(bufobj[indice]);
+                break;
+            }
+    // Checa outros tipos de variáveis
+        default:
+    // ListaObj
+            if (var.defvar[2]==Instr::cListaObj)
+            {
+                TListaObj * lobj = var.end_listaobj + var.indice;
+            // Limpa a lista
+                if (*p=='\'')
+                {
+                    p++;
+                    while (lobj->Inicio)
+                        lobj->Inicio->Apagar();
+                }
+            // Muda a lista
+                while (*p)
+                {
+                // Obtém número do objeto
+                    int subobj=0;
+                    for (; *p>='0' && *p<='9'; p++)
+                        subobj = subobj * 10 + *p - '0';
+                // Verifica se adicionar novo objeto
+                    if (*p!='.')
+                    {
+                        if (subobj < quantidade && bufobj[subobj])
+                            listaitem_fim = lobj->AddFim(bufobj[subobj]);
+                        else
+                            listaitem_fim = 0;
+                        while (*p && *p!='\'') p++;
+                        if (*p) p++;
+                        continue;
+                    }
+                // Adicionar referência a objeto
+                    p++;
+                    char * nomeobj = p;
+                    while (*p && *p!='\'') p++;
+                    char ch = *p;
+                    *p++ = 0;
+                    TVariavel varitem;
+                    if (subobj < quantidade && bufobj[subobj])
+                      if (ObterVar(&varitem, bufobj[subobj], nomeobj))
+                        if (varitem.defvar[2] == Instr::cListaItem)
+                        varitem.end_listaitem[varitem.indice].MudarRef(listaitem_fim);
+                    if (ch==0)
+                        break;
+                }
+            }
+    // DataHora
+            else if (var.defvar[2]==Instr::cDataHora)
+                var.end_datahora[var.indice].LerSav(p);
+        } // switch
+    } // while
+    return quantidade;
+}
+
+//----------------------------------------------------------------------------
+int TVarSav::Salvar(TVariavel * v, const char * arqnome)
+{
+    if (*arqnome==0 ||  // Arquivo inválido
+            Instr::VarAtual < v+4 || // Menos de 4 argumentos
+            v[2].defvar[2] != Instr::cListaObj) // Não é listaobj
+        return 0;
+// Cria arquivo
+    FILE * arq = fopen(arqnome, "w");
+    if (arq==0)
+        return 0;
+// Anota a quantidade de dias para expirar
+    int valor = v[3].getInt();
+    if (valor>=1)
+        fprintf(arq, "data=%d\n", HoraReg + valor * 1440);
+// Anota a senha
+    const char * senha = v[4].getTxt();
+    if (*senha)
+    {
+        char mens[256];
+        Senha(mens, senha, circle_random() % 90 + 33);
+        fprintf(arq, "senha=%s\n", mens);
+    }
+// Anota os tipos de objetos
+    TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
+    TObjeto * bufobj[MAX_OBJ];
+    unsigned int numobj=0;
+    fprintf(arq, "+++\n");
+    for (TListaX * litem = listaobj->Inicio; litem && numobj<MAX_OBJ;)
+    {
+        TObjeto * obj = litem->Objeto;
+    // Checa se objeto já está em bufobj
+        unsigned int num = obj->NumeroSav;
+        if (num>=numobj || bufobj[num]!=obj)
+        {
+        // Acerta variáveis
+            obj->NumeroSav = numobj;
+            bufobj[numobj++] = obj;
+        // Anota no arquivo
+            fprintf(arq, "%s\n", obj->Classe->Nome);
+        }
+    // Passa para próximo objeto
+        litem = litem->ListaDepois;
+    }
+// Anota as variáveis dos objetos
+    unsigned int quantidade = numobj;
+    for (numobj=0; numobj<quantidade; numobj++)
+    {
+        fprintf(arq, "+++\n");
+        TClasse * c = bufobj[numobj]->Classe;
+            // Procura todas as variáveis
+        for (unsigned int x=0; x<c->NumVar; x++)
+        {
+        // Verifica se é "sav" e não é "comum"
+            if ((c->InstrVar[x][Instr::endProp] & 3) != 2)
+                continue;
+        // Prepara objeto TVariavel
+            TVariavel var;
+            var.defvar = c->InstrVar[x];
+            int posic = c->IndiceVar[x];
+            var.bit = posic >> 24;
+            var.indice = 0;
+            if (TVariavel::Tamanho(var.defvar)==0 ||
+                    (posic & 0x400000)) // Variável da classe
+                continue;
+            // Variável do objeto
+            var.endvar = bufobj[numobj]->Vars + (posic & 0x3FFFFF);
+        // Anota valor na variável
+            posic = (unsigned char)var.defvar[Instr::endVetor];
+            switch (var.Tipo())
+            {
+        // Variáveis numéricas
+            case varInt:
+                do {
+                    if (var.indice)
+                        fprintf(arq, "%s.%d=%d\n",
+                                var.defvar+Instr::endNome,
+                                var.indice, var.getInt());
+                    else
+                        fprintf(arq, "%s=%d\n",
+                                var.defvar+Instr::endNome,
+                                var.getInt());
+                } while (++var.indice < posic);
+                break;
+        // Ponto flutuante
+            case varDouble:
+                do {
+                    if (var.indice)
+                        fprintf(arq, "%s.%d=%f\n",
+                                var.defvar+Instr::endNome,
+                                var.indice, var.getDouble());
+                    else
+                        fprintf(arq, "%s=%f\n",
+                                var.defvar+Instr::endNome,
+                                var.getDouble());
+                } while (++var.indice < posic);
+                break;
+        // Texto
+            case varTxt:
+                do {
+                    char mens[4096];
+                    const char * o = var.getTxt();
+                    char * d = mens;
+                    for (; *o && d<mens+sizeof(mens)-2; o++)
+                        switch (*o)
+                        {
+                        case Instr::ex_barra_n:
+                            *d++ = '\\';
+                            *d++ = 'n';
+                            break;
+                        case Instr::ex_barra_b:
+                            *d++ = '\\';
+                            *d++ = 'b';
+                            break;
+                        case Instr::ex_barra_c:
+                            *d++ = '\\';
+                            *d++ = 'c';
+                            break;
+                        case Instr::ex_barra_d:
+                            *d++ = '\\';
+                            *d++ = 'd';
+                            break;
+                        case '\\':
+                            *d++ = '\\';
+                        default:
+                            *d++ = *o;
+                        }
+                    *d=0;
+                    if (var.indice)
+                        fprintf(arq, "%s.%d=%s\n",
+                                var.defvar+Instr::endNome,
+                                var.indice, mens);
+                    else
+                        fprintf(arq, "%s=%s\n",
+                                var.defvar+Instr::endNome,
+                                mens);
+                } while (++var.indice < posic);
+                break;
+        // Referência a objetos
+            case varObj:
+                do {
+                    char mens[3] = "";
+                    TObjeto * obj = var.getObj();
+                    if (obj)
+                    {
+                        unsigned int num = obj->NumeroSav;
+                        if (num<quantidade && bufobj[num]==obj)
+                        {
+                            mens[0] = (num/0x40)+0x21;
+                            mens[1] = (num%0x40)+0x21;
+                            mens[2] = 0;
+                        }
+                    }
+                    if (var.indice)
+                        fprintf(arq, "%s.%d=%s\n",
+                                var.defvar+Instr::endNome,
+                                var.indice, mens);
+                    else
+                        fprintf(arq, "%s=%s\n",
+                                var.defvar+Instr::endNome,
+                                mens);
+                } while (++var.indice < posic);
+                break;
+        // Checa outros tipos de variáveis
+            default:
+              switch (var.defvar[2])
+              {
+        // ListaObj
+              case Instr::cListaObj:
+                do {
+                    char mens[1024];
+                    char * d = mens;
+                    TListaObj * lobj = var.end_listaobj + var.indice;
+                    TListaX * listax = lobj->Inicio;
+                    if (listax==0)
+                        continue;
+                    if (var.indice)
+                        sprintf(d, "%s.%d=",
+                                var.defvar+Instr::endNome, var.indice);
+                    else
+                        sprintf(d, "%s=", var.defvar+Instr::endNome);
+                    while (*d)
+                        d++;
+                    for (; listax; listax=listax->ListaDepois)
+                    {
+                    // Obtém o número do objeto
+                        unsigned int num = listax->Objeto->NumeroSav;
+                        if (num>=quantidade || bufobj[num]!=listax->Objeto)
+                            continue;
+                    // Verifica se tem espaço em mens
+                        if (d >= mens + 256)
+                        {
+                            *d = 0;
+                            fprintf(arq, "%s\n", mens);
+                            d=copiastr(mens, ".=");
+                        }
+                        else
+                            *d++ = '\'';
+                    // Anota o número do objeto
+                        sprintf(d, "%d", num);
+                        while (*d) d++;
+                    // Anota objetos listaitem
+                        TListaItem * listaitem = listax->ListaItem;
+                        for (; listaitem; listaitem = listaitem->Depois)
+                        {
+                        // Verifica se está marcado como sav
+                            if ((listaitem->defvar[Instr::endProp] & 2)==0)
+                                continue;
+                        // Verifica se lista pertence a algum objeto
+                            if (listaitem->Objeto==0)
+                                continue;
+                        // Verifica se objeto da listaitem será salvo
+                            unsigned int nitem = listaitem->Objeto->NumeroSav;
+                            if (nitem>=quantidade ||
+                                    bufobj[nitem]!=listaitem->Objeto)
+                                continue;
+                        // Verifica se tem espaço em mens
+                            if (d >= mens + 256)
+                            {
+                                *d = 0;
+                                fprintf(arq, "%s\n", mens);
+                                d=copiastr(mens, ".=");
+                            }
+                            else
+                                *d++ = '\'';
+                        // Anota dados da listaitem
+                            if (listaitem->indice)
+                                sprintf(d, "%d.%s.%d", nitem,
+                                        listaitem->defvar+Instr::endNome,
+                                        listaitem->indice);
+                            else
+                                sprintf(d, "%d.%s", nitem,
+                                        listaitem->defvar+Instr::endNome);
+                            while (*d) d++;
+                        }
+                    }
+                    *d = 0;
+                    fprintf(arq, "%s\n", mens);
+                } while (++var.indice < posic);
+                break;
+        // DataHora
+              case Instr::cDataHora:
+                do {
+                    char mens[100];
+                    var.end_datahora[var.indice].SalvarSav(mens);
+                    if (var.indice)
+                        fprintf(arq, "%s.%d=%s\n",
+                                var.defvar+Instr::endNome,
+                                var.indice, mens);
+                    else
+                        fprintf(arq, "%s=%s\n",
+                                var.defvar+Instr::endNome, mens);
+                } while (++var.indice < posic);
+                break;
+              }
+            } // switch
+        } // for ... variáveis
+    } // for ... objetos
+// Fecha arquivo
+    fclose(arq);
+    return 1;
 }
 
 //----------------------------------------------------------------------------
