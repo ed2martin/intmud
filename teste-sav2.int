@@ -36,6 +36,26 @@ func ini
   rz.varz.2 = 18
   rz.refx = rx
   rz.teste1 = $teste1
+# Texto de rz
+  rz.t.addfim("bom dia\nboa tarde\nboa noite")
+  rz.t.addfim("txtproc(<texto>, <texto procurado>)")
+  rz.t.addfim("txtproc(<texto>, <texto procurado>, <caracter inicial>)")
+  rz.t.addfim("    Procura <texto procurado> em <texto>")
+  rz.t.addfim("    Retorna -1 se não encontrou ou o número do caracter se encontrou")
+  rz.t.addfim("    <caracter inicial> = a partir de onde procurar no texto")
+  rz.t.addfim("            0 = primeiro caracter, 1 = segundo, etc.")
+  rz.t.addfim("    Para diferenciar letras minúsculas de maiúsculas e acentuadas de")
+  rz.t.addfim("    não acentuadas, escrever txtprocdif ao invés de txtproc.")
+  rz.p1 = rz.t.ini
+  rz.p2 = rz.t.ini
+  rz.p2.depois(4)
+  rz.pos.0 = rz.p2
+  rz.pos.1 = rz.t.ini
+  rz.pos.1.depois(9)
+  rz.pos.2 = rz.t.fim
+  rz.pos.3 = rz.t.fim
+  rz.pos.3.antes
+  rz.pos.4 = rz.t.ini
 # Anota resultado no log
   $log.anota(rx.objetos)
 # Salva arquivo
@@ -121,9 +141,29 @@ sav txt20 texto
 sav int8 varz.3
 sav ref refx
 sav ref teste1
+sav textotxt t
+sav textopos p1
+sav textopos p2
+sav textopos pos.5
 func anota
+  textopos p
+  int32 x
   $log.msg("Objeto z")
   $log.msg("  texto = " + texto)
   $log.msg("  varz = " + varz.0 + " " + varz.1 + " " + varz.2)
   $log.msg("  refx = " + refx)
   $log.msg("  teste1 = " + teste1)
+  p = t.ini
+  enquanto p.lin
+    $log.msg("  t(" + p.linha + ") = " + p.texto + "\n")
+    p.depois
+  efim
+  $log.msg("  p1 lin=" + p1.linha + " byte=" + p1.byte + "\n")
+  $log.msg("  p1 txt=" + p1.texto + "\n")
+  $log.msg("  p2 lin=" + p2.linha + " byte=" + p2.byte + "\n")
+  $log.msg("  p2 txt=" + p2.texto + "\n")
+  enquanto x<5
+    $log.msg("  pos." + x + " lin=" + pos.[x].linha + " byte=" + pos.[x].byte + "\n")
+    $log.msg("  pos." + x + " txt=" + pos.[x].texto + "\n")
+    x += 1
+  efim

@@ -20,6 +20,7 @@
 #include <assert.h>
 #include "var-sav.h"
 #include "var-listaobj.h"
+#include "var-texto.h"
 #include "var-datahora.h"
 #include "variavel.h"
 #include "classe.h"
@@ -364,6 +365,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     }
 // Lê objetos
     TListaX * listaitem_fim = 0;
+    TTextoTxt * textotxt_obj = 0; // textotxt que falta anota \n no final
     TVariavel var;
     var.defvar = 0;
     quantidade = numobj;
@@ -394,6 +396,11 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         {
             ObterVar(&var, bufobj[numobj], mens);
             listaitem_fim = 0;
+            if (textotxt_obj)
+            {
+                textotxt_obj->AddTexto("\n", 1);
+                textotxt_obj=0;
+            }
         }
         if (var.defvar==0)
             continue;
@@ -412,31 +419,21 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         case varTxt:
             {
                 char * d = mens;
-                for (; *p && d<mens+sizeof(mens)-1; p++)
+                for (; *p; p++)
                 {
-                    if (*p != '\\')
+                    if (*p != '\\' || p[1]==0)
                         *d++ = *p;
                     else switch (*++p)
                     {
                     case 'n':
-                    case 'N':
-                        *d++ = Instr::ex_barra_n;
-                        break;
+                    case 'N': *d++ = Instr::ex_barra_n; break;
                     case 'b':
-                    case 'B':
-                        *d++ = Instr::ex_barra_b;
-                        break;
+                    case 'B': *d++ = Instr::ex_barra_b; break;
                     case 'c':
-                    case 'C':
-                        *d++ = Instr::ex_barra_c;
-                        break;
+                    case 'C': *d++ = Instr::ex_barra_c; break;
                     case 'd':
-                    case 'D':
-                        *d++ = Instr::ex_barra_d;
-                        break;
-                    case '\\':
-                        *d++ = '\\';
-                        break;
+                    case 'D': *d++ = Instr::ex_barra_d; break;
+                    case '\\': *d++ = '\\'; break;
                     }
                 }
                 *d=0;
@@ -499,12 +496,92 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     if (ch==0)
                         break;
                 }
+                break;
+            }
+    // TextoTxt
+            if (var.defvar[2]==Instr::cTextoTxt)
+            {
+                TTextoTxt * txtobj = var.end_textotxt + var.indice;
+            // Outro textotxt: anota \n no fim do anterior
+                if (textotxt_obj && textotxt_obj != txtobj)
+                {
+                    textotxt_obj->AddTexto("\n", 1);
+                    textotxt_obj=0;
+                }
+            // Limpar textotxt
+                if ((*p|0x20)=='l')
+                {
+                    p++;
+                    txtobj->Limpar();
+                    textotxt_obj=0;
+                }
+            // Anotar textopos
+                if ((*p|0x20)=='p')
+                {
+                // Obtém número do objeto
+                    TVariavel varitem;
+                    int subobj=0;
+                    for (p++; *p>='0' && *p<='9'; p++)
+                        subobj = subobj * 10 + *p - '0';
+                // Obtém a variável textopos
+                    if (*p!='.' ||
+                        subobj > quantidade || bufobj[subobj]==0 ||
+                        ObterVar(&varitem, bufobj[subobj], p+1)==0 ||
+                        varitem.defvar[2] != Instr::cTextoPos)
+                        break;
+                    TTextoPos * pos = varitem.end_textopos + varitem.indice;
+                // Adicina \n no final de textotxt se necessário
+                    if (textotxt_obj)
+                    {
+                        textotxt_obj->AddTexto("\n", 1);
+                        textotxt_obj=0;
+                    }
+                // Aponta textopos para o final de textotxt
+                    pos->MudarTxt(txtobj);
+                    pos->Bloco = txtobj->Fim;
+                    pos->PosicBloco = (pos->Bloco ? pos->Bloco->Bytes : 0);
+                    pos->PosicTxt = txtobj->Bytes;
+                    pos->LinhaTxt = txtobj->Linhas;
+                    break;
+                }
+            // Anotar texto em textotxt
+                if ((*p|0x20)=='t')
+                {
+                    char * d = mens;
+                    for (p++; *p; p++)
+                    {
+                        if (*p != '\\' || p[1]==0)
+                            *d++ = *p;
+                        else switch (*++p)
+                        {
+                        case 'n':
+                        case 'N': *d++ = Instr::ex_barra_n; break;
+                        case 'b':
+                        case 'B': *d++ = Instr::ex_barra_b; break;
+                        case 'c':
+                        case 'C': *d++ = Instr::ex_barra_c; break;
+                        case 'd':
+                        case 'D': *d++ = Instr::ex_barra_d; break;
+                        case '\\': *d++ = '\\'; break;
+                        }
+                    }
+                    if (d!=mens)
+                    {
+                        textotxt_obj = (d[-1]==Instr::ex_barra_n ?
+                                        0 : txtobj);
+                        txtobj->AddTexto(mens, d-mens);
+                    }
+                    break;
+                }
+                break;
             }
     // DataHora
-            else if (var.defvar[2]==Instr::cDataHora)
+            if (var.defvar[2]==Instr::cDataHora)
                 var.end_datahora[var.indice].LerSav(p);
         } // switch
     } // while
+    if (textotxt_obj)
+        textotxt_obj->AddTexto("\n", 1);
     return quantidade;
 }
 
@@ -614,26 +691,12 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                     for (; *o && d<mens+sizeof(mens)-2; o++)
                         switch (*o)
                         {
-                        case Instr::ex_barra_n:
-                            *d++ = '\\';
-                            *d++ = 'n';
-                            break;
-                        case Instr::ex_barra_b:
-                            *d++ = '\\';
-                            *d++ = 'b';
-                            break;
-                        case Instr::ex_barra_c:
-                            *d++ = '\\';
-                            *d++ = 'c';
-                            break;
-                        case Instr::ex_barra_d:
-                            *d++ = '\\';
-                            *d++ = 'd';
-                            break;
-                        case '\\':
-                            *d++ = '\\';
-                        default:
-                            *d++ = *o;
+                        case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
+                        case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
+                        case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
+                        case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
+                        case '\\': *d++='\\';
+                        default: *d++ = *o;
                         }
                     *d=0;
                     if (var.indice)
@@ -678,12 +741,10 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
         // ListaObj
               case Instr::cListaObj:
                 do {
-                    char mens[1024];
+                    char mens[512];
                     char * d = mens;
                     TListaObj * lobj = var.end_listaobj + var.indice;
                     TListaX * listax = lobj->Inicio;
-                    if (listax==0)
-                        continue;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
                                 var.defvar+Instr::endNome, var.indice);
@@ -691,6 +752,8 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         sprintf(d, "%s=", var.defvar+Instr::endNome);
                     while (*d)
                         d++;
+                    if (listax==0)
+                        *d++ = '\'';
                     for (; listax; listax=listax->ListaDepois)
                     {
                     // Obtém o número do objeto
@@ -698,7 +761,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         if (num>=quantidade || bufobj[num]!=listax->Objeto)
                             continue;
                     // Verifica se tem espaço em mens
-                        if (d >= mens + 256)
+                        if (d >= mens + 150)
                         {
                             *d = 0;
                             fprintf(arq, "%s\n", mens);
@@ -725,7 +788,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                                     bufobj[nitem]!=listaitem->Objeto)
                                 continue;
                         // Verifica se tem espaço em mens
-                            if (d >= mens + 256)
+                            if (d >= mens + 150)
                             {
                                 *d = 0;
                                 fprintf(arq, "%s\n", mens);
@@ -746,6 +809,104 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                     }
                     *d = 0;
                     fprintf(arq, "%s\n", mens);
+                } while (++var.indice < posic);
+                break;
+        // TextoTxt
+              case Instr::cTextoTxt:
+                do {
+                    char mens[512];
+                    char * d = mens;
+                    TTextoTxt * txtobj = var.end_textotxt + var.indice;
+                    if (var.indice)
+                        sprintf(d, "%s.%d=lt",
+                                var.defvar+Instr::endNome, var.indice);
+                    else
+                        sprintf(d, "%s=lt", var.defvar+Instr::endNome);
+                    while (*d)
+                        d++;
+                // Anota texto
+                    TTextoBloco * bl = txtobj->Inicio;
+                    int pos = 0;
+                    int posfim = (bl ? bl->Bytes : 0);
+                    unsigned int pos_atual = 0;
+                    unsigned int pos_proc = 0;
+                    while (true)
+                    {
+                    // Anota variáveis textopos
+                        if (pos_atual == pos_proc)
+                        {
+                            bool textovazio = (pos_atual==0);
+                            pos_proc = txtobj->Bytes + 1;
+                            for (TTextoPos * posobj = txtobj->Posic; posobj;
+                                    posobj=posobj->Depois)
+                            {
+                            // Verifica se está marcado como sav
+                                if ((posobj->defvar[Instr::endProp] & 2)==0)
+                                    continue;
+                            // Verifica se já passou pela posição
+                                if (posobj->PosicTxt < pos_atual)
+                                    continue;
+                            // Verifica se textopos será salvo
+                                unsigned int nitem = posobj->Objeto->NumeroSav;
+                                if (nitem>=quantidade ||
+                                        bufobj[nitem]!=posobj->Objeto)
+                                    continue;
+                            // Acerta lin_proc
+                                if (posobj->PosicTxt != pos_atual)
+                                {
+                                    if (pos_proc > posobj->PosicTxt)
+                                        pos_proc = posobj->PosicTxt;
+                                    continue;
+                                }
+                            // Anota posição
+                                if (textovazio)
+                                    d--;
+                                else
+                                    d=copiastr(d, "\n.=");
+                                textovazio = true;
+                                if (posobj->indice)
+                                    sprintf(d, "p%d.%s.%d\n", nitem,
+                                            posobj->defvar+Instr::endNome,
+                                            posobj->indice);
+                                else
+                                    sprintf(d, "p%d.%s\n", nitem,
+                                            posobj->defvar+Instr::endNome);
+                                fprintf(arq, "%s", mens);
+                                d = copiastr(mens, ".=t");
+                            }
+                        }
+                        pos_atual++;
+                    // Passa para o próximo bloco se necessário
+                        if (pos >= posfim)
+                        {
+                            if (bl==0 || bl->Depois==0)
+                                break;
+                            bl = bl->Depois;
+                            pos = 0;
+                            posfim = bl->Bytes;
+                        }
+                    // Anota texto se buffer cheio
+                        if (d >= mens + 150)
+                        {
+                            *d = 0;
+                            fprintf(arq, "%s\n", mens);
+                            d=copiastr(mens, ".=t");
+                        }
+                    // Anota um byte
+                        switch (bl->Texto[pos])
+                        {
+                        case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
+                        case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
+                        case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
+                        case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
+                        case '\\': *d++='\\';
+                        default: *d++ = bl->Texto[pos];
+                        }
+                        pos++;
+                    }
+                    *d = 0;
+                    if (strcmp(mens, ".=t")!=0)
+                        fprintf(arq, "%s\n", mens);
                 } while (++var.indice < posic);
                 break;
         // DataHora
