@@ -10,6 +10,7 @@ class TVariavel;
 class TBlocoPos;
 class TTextoPos;
 class TTextoBloco;
+class TObjeto;
 
 class TTextoTxt  /// Variáveis TextoTxt
 {
@@ -118,6 +119,10 @@ public:
     TTextoTxt * TextoTxt;   ///< Variável TextoTxt correspondente
     TTextoPos * Antes;      ///< Objeto anterior
     TTextoPos * Depois;     ///< Próximo objeto
+
+    TObjeto * Objeto;       ///< Objeto em que o textopos foi definido
+    const char * defvar;    ///< Definição da variável
+    unsigned int indice;    ///< Índice da variável
 };
 
 //----------------------------------------------------------------------------
