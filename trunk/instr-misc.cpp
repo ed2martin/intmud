@@ -544,6 +544,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cSocket:           return "socket";
     case cServ:             return "serv";
     case cProg:             return "prog";
+    case cDebug:            return "debug";
     case cIndiceObj:        return "indiceobj";
     case cIndiceItem:       return "indiceitem";
     case cDataHora:         return "datahora";
@@ -618,6 +619,7 @@ const char * Instr::NomeComando(int valor)
     case cSocket:           return "cSocket";
     case cServ:             return "cServ";
     case cProg:             return "cProg";
+    case cDebug:            return "cDebug";
     case cIndiceObj:        return "cIndiceObj";
     case cIndiceItem:       return "cIndiceItem";
     case cDataHora:         return "cDataHora";

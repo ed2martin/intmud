@@ -30,6 +30,7 @@
 #include "var-socket.h"
 #include "var-serv.h"
 #include "var-prog.h"
+#include "var-debug.h"
 #include "var-indiceobj.h"
 #include "var-datahora.h"
 #include "var-outros.h"
@@ -124,6 +125,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
     case Instr::cProg:      return sizeof(TVarProg);
+    case Instr::cDebug:     return 0;
     case Instr::cIndiceObj: return sizeof(TIndiceObj);
     case Instr::cIndiceItem: return sizeof(TIndiceItem);
     case Instr::cDataHora:  return sizeof(TVarDataHora);
@@ -199,6 +201,10 @@ TVarTipo TVariavel::Tipo()
         return varOutros;
     case Instr::cServ:      return varOutros;
     case Instr::cProg:      return varOutros;
+    case Instr::cDebug:
+        if (defvar[Instr::endNome]=='=')
+            return varInt;
+        return varOutros;
     case Instr::cIndiceObj: return varTxt;
     case Instr::cIndiceItem: return varOutros;
     case Instr::cDataHora:
@@ -565,6 +571,9 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
         MOVER_COMPLETO( TVarServ )
     case Instr::cProg:
         MOVER_SIMPLES( TVarProg )
+    case Instr::cDebug:
+        endvar = destino;
+        return;
     case Instr::cIndiceObj:
         {
             TIndiceObj * o = (TIndiceObj *)endvar;
@@ -711,13 +720,14 @@ bool TVariavel::getBool()
         return end_serv[indice].getValor();
     case Instr::cProg:
         return end_prog[indice].getValor();
+    case Instr::cDebug:
+        return TVarDebug::getValor(defvar);
     case Instr::cIndiceObj:
         return end_indiceobj[indice].getNome()[0] != 0;
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
     case Instr::cDataHora:
         return end_datahora[indice].getValor(defvar);
-
     case Instr::cRef:
         return end_varref[indice].Pont != 0;
     case Instr::cVarObjeto:
@@ -862,6 +872,8 @@ int TVariavel::getInt()
         return end_serv[indice].getValor();
     case Instr::cProg:
         return end_prog[indice].getValor();
+    case Instr::cDebug:
+        return TVarDebug::getValor(defvar);
     case Instr::cIndiceObj:
         {
             long num;
@@ -1012,6 +1024,8 @@ double TVariavel::getDouble()
         return end_serv[indice].getValor();
     case Instr::cProg:
         return end_prog[indice].getValor();
+    case Instr::cDebug:
+        return TVarDebug::getValor(defvar);
     case Instr::cIndiceObj:
         {
             double num;
@@ -1066,6 +1080,7 @@ const char * TVariavel::getTxt()
     case Instr::cTextoTxt:
     case Instr::cTextoPos:
     case Instr::cNomeObj:
+    case Instr::cDebug:
     case Instr::cIndiceItem:
     case Instr::cDataHora:
         sprintf(txtnum, "%d", getInt());
@@ -1345,6 +1360,9 @@ void TVariavel::setInt(int valor)
     case Instr::cProg:
     case Instr::cIndiceItem:
         break;
+    case Instr::cDebug:
+        TVarDebug::setValor(defvar, valor);
+        break;
     case Instr::cIndiceObj:
         {
             char mens[20];
@@ -1435,6 +1453,9 @@ void TVariavel::setDouble(double valor)
     case Instr::cProg:
     case Instr::cIndiceItem:
         break;
+    case Instr::cDebug:
+        TVarDebug::setValor(defvar, valor);
+        break;
     case Instr::cDataHora:
         end_datahora[indice].setValor(defvar, (int)valor);
         break;
@@ -1477,6 +1498,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cIntTempo:
     case Instr::cVarInt:
     case Instr::cSocket:
+    case Instr::cDebug:
     case Instr::cDataHora:
         {
             long num;
@@ -1704,6 +1726,8 @@ bool TVariavel::Func(const char * nome)
         return end_serv[indice].Func(this, nome);
     case Instr::cProg:
         return end_prog[indice].Func(this, nome);
+    case Instr::cDebug:
+        return TVarDebug::Func(this, nome);
     case Instr::cIndiceItem:
         return end_indiceitem[indice].Func(this, nome);
     case Instr::cDataHora:

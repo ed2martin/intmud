@@ -106,6 +106,11 @@ public:
     unsigned int NumDeriv;
         ///< Número de elementos de TClasse::ListaDeriv
 
+    static void AcertaComandos(char * comandos);
+        ///< Chamado automaticamente por AcertaDeriv
+        /**< Acerta as instruções que contém desvio implícito, como
+             "se", "enquanto", "efim", etc. */
+
 // Variáveis
     int AcertaVar();
         ///< Acerta as variáveis da classe e dos objetos da classe
@@ -184,12 +189,6 @@ private:
     void RBleft_rotate(void);
     void RBright_rotate(void);
     unsigned char RBcolour;
-
-// Outros
-    void AcertaComandos();
-        ///< Usado internamente: acerta dados de Comandos
-        /**< Acerta as instruções que contém desvio implícito, como
-             "se", "enquanto", "efim", etc. */
 };
 
 //----------------------------------------------------------------------------

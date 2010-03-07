@@ -243,6 +243,7 @@ static const TListaInstr ListaInstr[] = {
     { "const",     cConstExpr }, // Qualquer tipo de const
     { "continuar", cContinuar },
     { "datahora",  cDataHora },
+    { "debug",     cDebug },
     { "efim",      cEFim },
     { "enquanto",  cEnquanto },
     { "fimse",     cFimSe },

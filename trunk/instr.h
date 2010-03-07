@@ -282,6 +282,7 @@ enum Comando
     cSocket,            ///< Extra: Socket
     cServ,              ///< Extra: Serv
     cProg,              ///< Extra: Prog
+    cDebug,             ///< Extra: Debug
     cIndiceObj,         ///< Extra: IndiceObj
     cIndiceItem,        ///< Extra: IndiceItem
     cDataHora,          ///< Extra: DataHora

@@ -1524,8 +1524,6 @@ bool Instr::ExecX()
                 // Executa função
                     if (v[1].Func(nome))
                     {
-                        ApagarVar(v+2);
-                        FuncAtual = f;
                         v->setTxt("");
                         f->expr = CopiaVarNome(v, f->expr);
                     }
