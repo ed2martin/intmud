@@ -429,11 +429,6 @@ uma extensão do programa.
 
 *** Funções predefinidas
 
-exec(<texto>)
-    Executa a instrução que está no texto especificado.
-    Exemplo:
-    exec("x = 10")
-
 intpos(a)
     Retorna a se a>=0. Caso contrário retorna 0.
 
@@ -1453,6 +1448,39 @@ prog <nomedavariável>
     salvartudo(<texto>)
         Mesmo que a função salvar, porém salva todos os arquivos,
         independete de terem sido alterados ou não.
+
+debug <nomedavariável>
+    Para auxiliar a detectar erros no programa.
+
+    Variável:
+    exec
+        Contador de instruções - opção "exec" no início do arquivo int.
+        A cada instrução executada essa variável é subtraída de 1.
+        Quando chega a 0, o controle retorna automaticamente ao IntMUD.
+
+    Funções:
+    ini
+        Inicializa exec com o valor definido na opção "exec" no início
+        do arquivo int.
+    cmd(<texto>)
+    cmd(<objeto>, <texto>)
+        Executa a instrução que está no texto especificado.
+        Se for mais de uma instrução, separar com "\n".
+        Retorna mensagem de erro se instrução não for válida.
+        Nota: instruções ret no texto retornam para o cmd (vide abaixo).
+        Exemplos:
+        debug d
+        d.cmd("x = 10")
+        d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
+        d.cmd("ret \"teste\"") # d.cmd retorna "teste"
+    func(<objeto>, <texto>)
+    func()
+        A cada instrução executada chama em seguida a função de <objeto>
+        com o nome especificado em <texto>. Se a função não existir, passa
+        a executar instruções sem chamar nenhuma função.
+        Na função:
+        arg0=objeto "este"
+        arg1=texto contendo a instrução que será executada executada
 
 indiceobj <nomedavariável>
     É semelhante a uma variável txt64, porém o texto é associado ao objeto

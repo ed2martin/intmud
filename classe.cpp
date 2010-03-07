@@ -223,16 +223,16 @@ void TClasse::Arquivo(TArqMapa * arquivo)
 }
 
 //----------------------------------------------------------------------------
-void TClasse::AcertaComandos()
+void TClasse::AcertaComandos(char * comandos)
 {
-    if (Comandos==0)
+    if (comandos==0)
         return;
 
     char * x;
     int nivelse;
 
 // Primeiro zera endereços de desvio
-    for (char * p = Comandos; p[0] || p[1]; p+=Num16(p))
+    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
         switch (p[2])
         {
         case Instr::cSe:
@@ -247,7 +247,7 @@ void TClasse::AcertaComandos()
         }
 
 // Acerta endereços de desvio conforme instruções
-    for (char * p = Comandos; p[0] || p[1]; p+=Num16(p))
+    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
         switch (p[2])
         {
         case Instr::cSe:
@@ -405,7 +405,7 @@ void TClasse::AcertaDeriv()
 // Limpa ListaDeriv e NumDeriv
     for (cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
     {
-        cl->AcertaComandos();
+        AcertaComandos(cl->Comandos);
         cl->NumDeriv = 0;
         if (cl->ListaDeriv==0)
             continue;
@@ -455,7 +455,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
     TClasse * buf2[HERDA_TAM];
     int total1, total2;
 
-    AcertaComandos();
+    AcertaComandos(Comandos);
 
 // Obtém herança antes e depois da mudança
     char * p = Comandos;

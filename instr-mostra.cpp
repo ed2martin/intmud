@@ -129,6 +129,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cSocket:    strcpy(nome, "socket"); break;
     case cServ:      strcpy(nome, "serv"); break;
     case cProg:      strcpy(nome, "prog"); break;
+    case cDebug:     strcpy(nome, "debug"); break;
     case cIndiceObj: strcpy(nome, "indiceobj"); break;
     case cIndiceItem: strcpy(nome, "indiceitem"); break;
     case cDataHora:  strcpy(nome, "datahora"); break;

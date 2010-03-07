@@ -21,8 +21,7 @@ public:
 private:
     static bool ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar);
         ///< Obtém uma variável "sav" a partir do nome e objeto
-        /**< @param bufobj Lista de objetos do arquivo salvo
-         *   @param var Aonde colocar os dados da variável
+        /**< @param var Aonde colocar os dados da variável
          *   @param obj Objeto que contém a variável
          *   @param nomevar Nome da variável
          *   @return verdadeiro se sucesso, falso se falha (var->defvar=0) */

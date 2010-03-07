@@ -1,0 +1,26 @@
+telatxt = 1
+
+classe teste
+telatxt tela
+func iniclasse
+  criar(arg0)
+func ini
+  int8 x
+  txt100 err
+  debug d
+  se tela.proto = 0
+    terminar
+  fimse
+  tela.msg("debug.exec = " + d.exec + "\n")
+  d.ini
+  tela.msg("Após debug.ini: " + d.exec + "\n")
+  d.exec = 2000
+  tela.msg("Mudando para 2000: " + d.exec + "\n")
+  err = d.cmd("x = 10")
+  tela.msg("exec 1 = " + err + "\n")
+  tela.msg("x = " + x + "\n")
+  err = d.cmd("tela.msg(\"teste\\n\")")
+  tela.msg("exec 2 = " + err + "\n")
+  tela.msg("Pressione ENTER para terminar\n")
+func tela_msg
+  terminar
