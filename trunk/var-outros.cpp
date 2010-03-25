@@ -240,8 +240,11 @@ int TVarIntTempo::getValor()
     if (Antes==0 && VetMenos[IndiceMenos]!=this &&
                     VetMais[IndiceMais]!=this)
         return 0;
-    return (unsigned short)
-        ((IndiceMais - TempoMais) * INTTEMPO_MAX + IndiceMenos - TempoMenos);
+    int valor = ((IndiceMais - TempoMais) * INTTEMPO_MAX +
+            IndiceMenos - TempoMenos);
+    if (valor<0)
+        valor += INTTEMPO_MAX * INTTEMPO_MAX;
+    return valor;
 }
 
 //------------------------------------------------------------------------------
@@ -272,7 +275,7 @@ void TVarIntTempo::setValor(int valor)
 // Acerta IndiceMenos e IndiceMais
     valor += TempoMais * INTTEMPO_MAX + TempoMenos;
     IndiceMenos = valor % INTTEMPO_MAX;
-    IndiceMais = valor / INTTEMPO_MAX;
+    IndiceMais = valor / INTTEMPO_MAX % INTTEMPO_MAX;
 // Coloca na lista apropriada
     if (IndiceMais != TempoMais || IndiceMenos <= TempoMenos)
     {
