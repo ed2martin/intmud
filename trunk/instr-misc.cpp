@@ -299,6 +299,13 @@ bool Instr::VarFuncIni(TVariavel * varini)
             FuncAtual->fimvar = VarAtual + 1;
             FuncAtual->numarg = 0;
             FuncAtual->tipo = 1;
+            if (FuncAtual >= FuncPilha)
+            {
+                FuncAtual->objdebug = FuncAtual[-1].objdebug;
+                FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
+            }
+            else
+                FuncAtual->funcdebug = 0;
             return true;
         }
     return false;

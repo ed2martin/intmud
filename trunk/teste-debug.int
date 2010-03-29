@@ -7,20 +7,39 @@ func iniclasse
 func ini
   int8 x
   txt100 err
+  real rr
   debug d
   se tela.proto = 0
     terminar
   fimse
-  tela.msg("debug.exec = " + d.exec + "\n")
+  rr = 1.7
+  tela.msg("r= " + rr + "   " + int(rr) + "\n")
+  tela.msg("debug.exec = " + d.exec + "  debug.func = " + d.func + "\n")
+  d.passo(este, "passo")
   d.ini
   tela.msg("Após debug.ini: " + d.exec + "\n")
   d.exec = 2000
   tela.msg("Mudando para 2000: " + d.exec + "\n")
-  err = d.cmd("x = 10")
-  tela.msg("exec 1 = " + err + "\n")
+  tela.msg("exec 1 = " + d.cmd("x = 10") + "\n")
   tela.msg("x = " + x + "\n")
   err = d.cmd("tela.msg(\"teste\\n\")")
   tela.msg("exec 2 = " + err + "\n")
+
+#enquanto x<13
+#  x += 1
+#efim
+  se x=1
+    tela.msg("x=1\n")
+  senao x=2
+    tela.msg("x=2\n")
+  senao x=3
+    tela.msg("x=3\n")
+  senao
+    tela.msg("x=?\n")
+  fimse
   tela.msg("Pressione ENTER para terminar\n")
+func passo
+  debug d
+  tela.msg("   " + d.func + " : " + arg0 + " : " + arg1 + "\n")
 func tela_msg
   terminar

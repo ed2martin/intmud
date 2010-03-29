@@ -26,95 +26,131 @@ const char DebugExec[] = { 8, 0, Instr::cDebug, 0, 0, 0, '=', '0', 0 };
 //----------------------------------------------------------------------------
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
+    using namespace Instr;
+// Inicializa contador de instruções executadas
     if (comparaZ(nome, "ini")==0)
     {
-        Instr::VarExec = Instr::VarExecIni;
+        VarExec = VarExecIni;
         return false;
     }
+// Contador de instruções executadas
     if (comparaZ(nome, "exec")==0)
     {
-        Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DebugExec;
+        ApagarVar(v+1);
+        VarAtual->defvar = DebugExec;
         return true;
     }
+// Nível da função atual
+    if (comparaZ(nome, "func")==0)
+    {
+        ApagarVar(v);
+        return CriarVarInt(FuncAtual - FuncPilha);
+    }
+// Executar instruções contidas em um texto
     if (comparaZ(nome, "cmd")==0)
     {
-        if (Instr::VarAtual < v+1)
+        if (VarAtual < v+1)
             return false;
-        if (Instr::FuncAtual >= Instr::FuncFim - 2 ||
-                Instr::FuncAtual->este==0)
+        if (FuncAtual >= FuncFim - 2 || FuncAtual->este==0)
             return false;
     // Obtém o objeto "este"
         const char * def_instr = 0;
         TObjeto * obj = 0;
-        if (Instr::VarAtual >= v+2)
+        if (VarAtual >= v+2)
             obj = v[1].getObj(), def_instr = v[2].getTxt();
         else
-            obj = Instr::FuncAtual->este, def_instr = v[1].getTxt();
+            obj = FuncAtual->este, def_instr = v[1].getTxt();
     // Codifica as instruções
         char mens[16384];
         int  total = TMudarAux::CodifInstr(mens, def_instr, sizeof(mens)-2);
         if (total<0) // Erro
         {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(mens);
+            ApagarVar(v);
+            return CriarVarTexto(mens);
         }
         if (total==0) // Nenhuma instrução
         {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
+            ApagarVar(v);
+            return CriarVarTexto("");
         }
         mens[total]=0;  // Marca o fim das instruções
         mens[total+1]=0;
         total += 2;
     // Verifica se bloco válido
-        const char DebugFunc[] = { 7, 0, Instr::cFunc, 0, 0, 0, 'f', 0 };
+        const char DebugFunc[] = { 7, 0, cFunc, 0, 0, 0, 'f', 0 };
         int linha=1;
-        Instr::ChecaLinha checalinha;
+        ChecaLinha checalinha;
         checalinha.Inicio();
         checalinha.Instr(DebugFunc);
         for (char * com = mens; com[0] || com[1]; com+=Num16(com),linha++)
         {
             const char * p = checalinha.Instr(com);
-            if (com[2]==Instr::cHerda)
+            if (com[2]==cHerda)
                 p = "Instrução herda não é suportada por cmd";
             if (p)
             {
                 mprintf(mens, sizeof(mens), "%d: %s", linha, p);
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto(mens);
+                ApagarVar(v);
+                return CriarVarTexto(mens);
             }
         }
     // Acerta o bloco
         TClasse::AcertaComandos(mens);
     // Anota instruções em DadosPilha
-        Instr::ApagarVar(v);
-        if (Instr::CriarVarTexto(mens, total) < 0)
-            return Instr::CriarVarTexto(
+        ApagarVar(v);
+        if (CriarVarTexto(mens, total) < 0)
+            return CriarVarTexto(
                     "Quantidade de instruções muito grande");
     // Acerta função
-        Instr::FuncAtual++;
-        Instr::FuncAtual->linha = Instr::VarAtual->end_char;
-        Instr::FuncAtual->este = obj;
-        Instr::FuncAtual->expr = 0;
-        Instr::FuncAtual->inivar = Instr::VarAtual + 1;
-        //Instr::FuncAtual->fimvar = VarAtual + 1;
-        Instr::FuncAtual->numarg = 0;
-        Instr::FuncAtual->tipo = 0;
+        FuncAtual++;
+        FuncAtual->linha = VarAtual->end_char;
+        FuncAtual->este = obj;
+        FuncAtual->expr = 0;
+        FuncAtual->inivar = VarAtual + 1;
+        //FuncAtual->fimvar = VarAtual + 1;
+        FuncAtual->numarg = 0;
+        FuncAtual->tipo = 0;
+        FuncAtual->objdebug = FuncAtual[-1].objdebug;
+        FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
     // Acerta variáveis
-        int numargs = Instr::FuncAtual[-1].numarg;
-        for (TVariavel * v1=Instr::FuncAtual[-1].inivar; v1<v-1; v1++)
+        int numargs = FuncAtual[-1].numarg;
+        for (TVariavel * v1=FuncAtual[-1].inivar; v1<v-1; v1++)
         {
-            if (Instr::VarAtual >= Instr::VarFim-1)
+            if (VarAtual >= VarFim-1)
                 break;
-            Instr::VarAtual++;
-            *Instr::VarAtual = *v1;
-            Instr::VarAtual->tamanho = 0;
+            VarAtual++;
+            *VarAtual = *v1;
+            VarAtual->tamanho = 0;
             if (numargs)
-                numargs--, Instr::FuncAtual->numarg++;
+                numargs--, FuncAtual->numarg++;
         }
-        Instr::FuncAtual->fimvar = Instr::VarAtual + 1;
+        FuncAtual->fimvar = VarAtual + 1;
         return true;
+    }
+// Execução passo-a-passo
+    if (comparaZ(nome, "passo")==0)
+    {
+        FuncAtual->funcdebug = 0;
+        if (VarAtual < v+2)
+            return false;
+    // Obtém o objeto
+        TObjeto * obj = v[1].getObj();
+        if (obj==0)
+            return false;
+    // Obtém a instrução na classe
+        TClasse * cl = obj->Classe;
+        int indice = cl->IndiceNome(v[2].getTxt());
+        if (indice < 0)
+            return false;
+        char * instr = cl->InstrVar[indice];
+    // Verifica se é função ou constante que possa ser executada
+        if (instr[2]!=cFunc &&
+            instr[2]!=cVarFunc)
+            return false;
+    // Inicia execução passo-a-passo
+        FuncAtual->objdebug = obj;
+        FuncAtual->funcdebug = instr;
+        return false;
     }
     return false;
 }
@@ -132,4 +168,54 @@ void TVarDebug::setValor(const char * defvar1, int valor)
 {
     if (defvar1[Instr::endNome]=='=')
         Instr::VarExec = (valor<1 ? 1 : valor);
+}
+
+//----------------------------------------------------------------------------
+void TVarDebug::Exec()
+{
+    using namespace Instr;
+
+// Verifica se pode criar função
+    const char * linha = FuncAtual->linha;
+    char * exec = FuncAtual->funcdebug;
+    if (exec==0 || FuncAtual+1 >= FuncFim)
+        return;
+    if (linha==0 || (linha[0]==0 && linha[1]==0))
+        return;
+    switch (linha[2])
+    {
+    case cFunc:
+    case cVarFunc:
+    case cConstNulo:
+    case cConstTxt:
+    case cConstNum:
+    case cConstExpr:
+        return;
+    }
+
+// Cria função
+    FuncAtual++;
+    FuncAtual->linha = exec + Num16(exec);
+    FuncAtual->este = FuncAtual[-1].objdebug;
+    FuncAtual->expr = 0;
+    FuncAtual->inivar = VarAtual + 1;
+    FuncAtual->fimvar = VarAtual + 1;
+    FuncAtual->numarg = 0;
+    FuncAtual->tipo = 2;
+    FuncAtual->funcdebug = 0;
+
+// Argumento: objeto
+    if (!CriarVar(InstrVarObjeto))
+        return;
+    FuncAtual->fimvar++;
+    FuncAtual->numarg++;
+    VarAtual->endvar = FuncAtual->este;
+
+// Argumento: linha
+    char mens[4096];
+    Instr::Decod(mens, linha, sizeof(mens));
+    if (!CriarVarTexto(mens))
+        return;
+    FuncAtual->fimvar++;
+    FuncAtual->numarg++;
 }

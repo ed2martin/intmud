@@ -123,6 +123,8 @@ public:
     char  numarg;       ///< Número de argumentos arg0 a arg9
     char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc 3=criar()
     bool  igualcompara; ///< Se o sinal de igual compara ou atribui
+    char * funcdebug;   ///< Função executada a cada instrução, 0 se nenhuma
+    TObjeto * objdebug; ///< Objeto relacionado a funcdebug
 };
 
 //----------------------------------------------------------------------------
