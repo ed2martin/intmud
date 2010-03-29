@@ -15,6 +15,8 @@ public:
         ///< Ler valor numérico da variável
     static void setValor(const char * defvar1, int valor);
         ///< Alterar valor numérico da variável
+    static void Exec();
+        ///< Para executar passo-a-passo
 };
 
 //----------------------------------------------------------------------------

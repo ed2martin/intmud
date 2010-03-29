@@ -21,6 +21,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "var-prog.h"
+#include "var-debug.h"
 #include "mudarclasse.h"
 #include "socket.h"
 #include "misc.h"
@@ -483,11 +484,20 @@ static void VarInvalido(void)
  */
 bool Instr::ExecX()
 {
+    const char * DebugInstr = 0;
+    FuncAtual->funcdebug = 0;
     while (true)
     {
         if (FuncAtual->expr==0)
         {
     // Está processando uma linha
+            if (FuncAtual->funcdebug && DebugInstr != FuncAtual->linha)
+            {
+                const char * l = FuncAtual->linha;
+                if (l && (l[0] || l[1]) && l[2]!=cSenao1 && l[2]!=cSenao2)
+                    TVarDebug::Exec();
+                DebugInstr = FuncAtual->linha;
+            }
             if (--VarExec < 0)
                 return RetornoErro();
 
@@ -508,6 +518,7 @@ bool Instr::ExecX()
                 }
             if (FuncAtual->linha == 0)
             {
+                bool b = (FuncAtual->funcdebug == 0);
                 switch (FuncAtual->tipo)
                 {
                 case 1: // Ler varfunc
@@ -539,7 +550,11 @@ bool Instr::ExecX()
             // Apaga função
                 FuncAtual--;
                 if (FuncAtual>=FuncPilha)
+                {
+                    if (b)
+                        DebugInstr = FuncAtual->linha;
                     continue;
+                }
                 if (VarFuncIni(VarAtual))
                     continue;
                 return true;
@@ -548,7 +563,7 @@ bool Instr::ExecX()
         // Variável da função
 #ifdef DEBUG_INSTR
             {
-                char mens[512];
+                char mens[4096];
                 printf(">>> %d %d\n", DadosFim-DadosTopo, VarFim-VarAtual);
                 if (Instr::Decod(mens, FuncAtual->linha, sizeof(mens)))
                     printf("Exec: %s\n", mens);
@@ -670,7 +685,7 @@ bool Instr::ExecX()
             FuncAtual->expr = 0;
 #ifdef DEBUG_INSTR
             {
-                char mens[512];
+                char mens[4096];
                 if (Instr::Decod(mens, FuncAtual->linha, sizeof(mens)))
                     printf("Exec_arg: %s\n", mens);
                 else
@@ -730,14 +745,30 @@ bool Instr::ExecX()
                     if (FuncAtual->linha[0]==0 && FuncAtual->linha[1]==0)
                         break;
                     if (FuncAtual->linha[2]==cSenao1)
-                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    {
+                        if (FuncAtual->funcdebug==0)
+                            FuncAtual->linha += Num16(FuncAtual->linha);
+                        else
+                        {
+                            // Executa função de debug e volta para
+                            // case cSenao1 (abaixo)
+                            static const char tmp[] = { ex_fim };
+                            FuncAtual->expr = tmp;
+                            TVarDebug::Exec();
+                        }
+                    }
                     else if (FuncAtual->linha[2]==cSenao2)
                     {
                         FuncAtual->expr = FuncAtual->linha + 5;
                         FuncAtual->igualcompara = true;
+                        if (FuncAtual->funcdebug)
+                            TVarDebug::Exec();
                     }
                     break;
                 }
+            case cSenao1: // senão sem argumentos em modo debug
+                FuncAtual->linha += Num16(FuncAtual->linha);
+                break;
             case cEnquanto:
                 {
                     int desvio = 0;
@@ -1112,6 +1143,8 @@ bool Instr::ExecX()
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = 1;
                     FuncAtual->tipo = 2;
+                    FuncAtual->objdebug = FuncAtual[-1].objdebug;
+                    FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                     break;
                 }
                 if (VarFuncIni(VarAtual))
@@ -1561,6 +1594,8 @@ bool Instr::ExecX()
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     FuncAtual->tipo = 0;
+                    FuncAtual->objdebug = FuncAtual[-1].objdebug;
+                    FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                     break;
                 }
             // Função varfunc
@@ -1593,6 +1628,8 @@ bool Instr::ExecX()
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     FuncAtual->tipo = 0;
+                    FuncAtual->objdebug = FuncAtual[-1].objdebug;
+                    FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                     break;
                 }
             // Variável

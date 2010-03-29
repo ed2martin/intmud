@@ -835,7 +835,7 @@ void Inicializa(const char * arg)
         }
         for (const char * p = obj->Comandos; Num16(p); p+=Num16(p))
         {
-            char mens[2048];
+            char mens[4096];
             if (Instr::Decod(mens, p, sizeof(mens)))
                 printf("%s\n", mens);
             else

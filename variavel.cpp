@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <errno.h>
 #include <assert.h>
 #include "variavel.h"
@@ -246,7 +247,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         printf("Variável criada (%d a %d) %p   ", antes, depois-1, endvar);
     else
         printf("Variável apagada (%d a %d) %p   ", depois, antes-1, endvar);
-    char mens[500];
+    char mens[4096];
     if (Instr::Decod(mens, defvar, sizeof(mens)))
         puts(mens);
     else
@@ -418,7 +419,7 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
 #ifdef DEBUG_MOVER
     printf("Variável movida (0 a %d) de %p para %p  ",
            vetor-1, endvar, destino);
-    char mens1[500];
+    char mens1[4096];
     if (Instr::Decod(mens1, defvar, sizeof(mens1)))
         puts(mens1);
     else
@@ -782,7 +783,7 @@ int TVariavel::getInt()
     case Instr::cIntDec:
         return end_incdec[indice].getDec();
     case Instr::cReal:
-        return (int)end_double[indice];
+        return (int)ceil(end_double[indice]);
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
@@ -1402,7 +1403,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cIntDec:
     case Instr::cIntTempo:
     case Instr::cIndiceObj:
-        setInt((int)valor);
+        setInt((int)ceil(valor));
         break;
     case Instr::cUInt32:
         if (valor > 0xFFFFFFFFLL)
@@ -1423,7 +1424,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cVarFunc:
         break;
     case Instr::cVarInt:
-        valor_int = (int)valor;
+        valor_int = (int)ceil(valor);
         break;
 
 // Variáveis extras
@@ -1433,7 +1434,7 @@ void TVariavel::setDouble(double valor)
         end_listaitem[indice].MudarRef(0);
         break;
     case Instr::cTextoPos:
-        end_textopos[indice].setValor(defvar, (int)valor);
+        end_textopos[indice].setValor(defvar, (int)ceil(valor));
         break;
     case Instr::cTextoTxt:
     case Instr::cNomeObj:
@@ -1442,10 +1443,10 @@ void TVariavel::setDouble(double valor)
     case Instr::cArqTxt:
         break;
     case Instr::cTelaTxt:
-        end_telatxt[indice].setValor(defvar, (int)valor);
+        end_telatxt[indice].setValor(defvar, (int)ceil(valor));
         break;
     case Instr::cSocket:
-        end_socket[indice].setValor(defvar, (int)valor);
+        end_socket[indice].setValor(defvar, (int)ceil(valor));
         break;
     case Instr::cServ:
         end_serv[indice].Fechar();
@@ -1457,7 +1458,7 @@ void TVariavel::setDouble(double valor)
         TVarDebug::setValor(defvar, valor);
         break;
     case Instr::cDataHora:
-        end_datahora[indice].setValor(defvar, (int)valor);
+        end_datahora[indice].setValor(defvar, (int)ceil(valor));
         break;
     case Instr::cRef:
         end_varref[indice].MudarPont(0);

@@ -1467,20 +1467,31 @@ debug <nomedavariável>
         Executa a instrução que está no texto especificado.
         Se for mais de uma instrução, separar com "\n".
         Retorna mensagem de erro se instrução não for válida.
-        Nota: instruções ret no texto retornam para o cmd (vide abaixo).
+        Nota 1: instruções ret no texto retornam para o cmd (vide abaixo).
+        Nota 2: variáveis criadas no cmd só existem dentro do cmd.
         Exemplos:
         debug d
         d.cmd("x = 10")
         d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
         d.cmd("ret \"teste\"") # d.cmd retorna "teste"
-    func(<objeto>, <texto>)
-    func()
-        A cada instrução executada chama em seguida a função de <objeto>
+        d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna 3
+    passo(<objeto>, <texto>)
+    passo()
+        Antes de executar cada instrução chama a função de <objeto>
         com o nome especificado em <texto>. Se a função não existir, passa
         a executar instruções sem chamar nenhuma função.
         Na função:
         arg0=objeto "este"
         arg1=texto contendo a instrução que será executada executada
+    func
+        Retorna o nível de funções: quantas funções foram chamadas até chegar
+        na instrução atual. Exemplo:
+        classe x
+        func iniclasse
+          # Aqui debug.func será 0 quando a classe for criada
+          x:teste
+        func teste
+          # Aqui debug.func será 1 porque foi chamado por x:iniclasse
 
 indiceobj <nomedavariável>
     É semelhante a uma variável txt64, porém o texto é associado ao objeto

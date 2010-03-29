@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <assert.h>
 #include "instr.h"
 #include "classe.h"
@@ -104,6 +105,8 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
         FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
         FuncAtual->tipo = 3;
+        FuncAtual->objdebug = FuncAtual[-1].objdebug;
+        FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
         return true;
     }
 // Retorna o endereço do objeto criado
@@ -160,9 +163,9 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         VarAtual->setDouble(numero<0 ? -numero : numero);
         return true;
     case 2: // int()
-        return CriarVarInt((int)numero);
+        return CriarVarInt((int)ceil(numero));
     case 3: // rand()
-        return CriarVarInt(numero<1 ? 0 : circle_random() % (int)numero);
+        return CriarVarInt(numero<1 ? 0 : circle_random() % (int)ceil(numero));
     }
     return false;
 }
@@ -1077,5 +1080,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;
     FuncAtual->tipo = 0;
+    FuncAtual->objdebug = FuncAtual[-1].objdebug;
+    FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
     return true;
 }
