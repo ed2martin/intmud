@@ -1,0 +1,122 @@
+Salas
+
+* const titulo = "texto"
+Nome da sala.
+Ex. const titulo = "Cozinha"
+
+* const descr = "texto"
+Descrição da sala.
+Ex. const descr = "Possui geladeira, fogão e pida. A geladeira está vazia."
+
+* const descr_<algumacoisa> = "texto"
+Descrição de alguma coisa (descrição extra da sala).
+Ex. const descr_parece = "Uma parede de madeira"
+
+* const descrdir = "texto"
+Nome quando o jogador tecla ver seguido da direção.
+Ex. const nomedir = "Cozinha"
+Se ausente: const descrdir = titulo
+
+* listaobj dentro
+Personagens e itens que possui.
+
+* const s_terreno = 0
+Tipo do terreno: afeta o custo do movimento através da sala.
+Alguns tipos de terreno requerem capacidades especiais para entrar.
+0  1mv  dentro (poucos pontos de movimento são necessários)
+1  1mv  rua de uma cidade
+2  2mv  campo    (um campo aberto)
+3  3mv  pântano - itens afundam
+4  3mv  floresta (uma floresta densa)
+5  4mv  colina
+6  6mv  montanha (região excessivamente montanhosa)
+7  4mv  água/pode nadar/pode respirar
+8  1mv  água/não pode nadar - requer barco para passar
+9  5mv  em baixo d'água
+10  1mv  ar - mobs caem
+
+* const s_semmagia = 1
+Não permite o uso de magia.
+
+* const s_sembatalha = 1
+Não permite violência.
+
+* const s_sempkill = 0
+Não permite jogador x jogador sem punir os jogadores.
+
+* const s_silencio = 1
+Não permite som.
+
+* const s_semmob = 1
+Não permite a entrada de MOBs.
+
+* const s_soltar = 0
+Se pode soltar itens:
+0 = pode soltar
+1 = pode soltar mas item é destruído
+2 = não pode soltar
+
+* const s_semrastr = 0
+Se o comando de rastrear não passa por essa sala.
+
+* const norte = $sala
+* const sul = $sala
+* const leste = $sala
+* const oeste = $sala
+* const cima = $sala
+* const baixo = $sala
+* const sair = $sala
+Saídas da sala.
+
+* const norte_i = 0
+* const sul_i = 0
+* const leste_i = 0
+* const oeste_i = 0
+* const cima_i = 0
+* const baixo_i = 0
+* const sair_i = 0
+Estado inicial da direção:
+0 = não há porta
+1 = porta está aberta
+2 = porta está fechada
+3 = porta está trancada
+4 = aberta; se fechada é trancada
+5 = fechada; se fechada é trancada
+6 = trancada; se fechada é trancada
+
+* int8 norte_p
+* int8 sul_p
+* int8 leste_p
+* int8 oeste_p
+* int8 cima_p
+* int8 baixo_p
+* int8 sair_p
+Portas na direção:
+0 = não há porta
+1 = porta está aberta
+2 = porta está fechada
+3 = porta está trancada
+
+* const norte_nome = "a porta ao norte"
+* const sul_nome = "a porta ao sul"
+* const leste_nome = "a porta à leste"
+* const oeste_nome = "a porta à oeste"
+* const cima_nome = "a porta para cima"
+* const baixo_nome = "a porta para baixo"
+* const sair_nome = "a porta de fora"
+Nomes das portas no formato: O ou A seguido do nome
+
+* const norte_cod = ""
+* const sul_cod = ""
+* const leste_cod = ""
+* const oeste_cod = ""
+* const cima_cod = ""
+* const baixo_cod = ""
+* const sair_cod = ""
+Código para trancar/destrancar porta nas direções.
+Se for "" ou falso, não é necessário chave para trancar/destrancar.
+
+* ref _srastr
+* int8 _srdir
+Essas duas variáveis são usadas pela opção rastrear e estão presentes
+em todas as salas.
