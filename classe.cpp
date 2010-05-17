@@ -623,10 +623,42 @@ void TClasse::AcertaVarSub()
         for (unsigned int y=0; y<cl->NumVar; y++)
             if (cl->InstrVar[y] >= ini && cl->InstrVar[y] <= fim)
             {
+                TVariavel v;
                 int ind = IndiceNome(cl->InstrVar[y] + Instr::endNome);
                 assert(ind>=0);
                 cl->InstrVar[y] = InstrVar[ind];
+                ind = cl->IndiceVar[ind];
+                v.defvar = InstrVar[ind];
+                if (ind & 0x400000) // Variável da classe
+                {
+                    v.endvar = cl->Vars + (ind & 0x3FFFFF);
+                    v.MoverDefVar();
+                }
+                else // Variável do objeto
+                    for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+                    {
+                        v.endvar = obj->Vars + (ind & 0x3FFFFF);
+                        v.MoverDefVar();
+                    }
                 //puts(InstrVar[ind] + Instr::endNome); fflush(stdout);
+            }
+    }
+// Acerta variáveis da classe
+    for (unsigned int y=0; y<NumVar; y++)
+    {
+        TVariavel v;
+        int ind = IndiceVar[y];
+        v.defvar = InstrVar[y];
+        if (ind & 0x400000) // Variável da classe
+        {
+            v.endvar = Vars + (ind & 0x3FFFFF);
+            v.MoverDefVar();
+        }
+        else // Variável do objeto
+            for (TObjeto * obj = ObjetoIni; obj; obj=obj->Depois)
+            {
+                v.endvar = obj->Vars + (ind & 0x3FFFFF);
+                v.MoverDefVar();
             }
     }
 }
@@ -1145,7 +1177,9 @@ int TClasse::AcertaVar()
 #endif
 
 // Acerta variáveis da classe
-    if (bitobjeto & 2) // Alguma variável mudou
+    if ((bitobjeto & 2)==0) // Nenhuma variável mudou
+        Vars = antes.Vars, antes.Vars = 0;
+    else // Alguma variável mudou
     {
         if (TamVars)
             Vars = new char[TamVars];

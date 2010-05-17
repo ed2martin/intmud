@@ -89,6 +89,12 @@ public:
              - TVariavel::defvar = definição da variável
              - TVariavel::endvar = endereço atual   */
 
+    void MoverDefVar();
+        ///< Acerta variável porque defvar mudou
+        /**< Usa:
+             - TVariavel::defvar = definição da variável
+             - TVariavel::endvar = endereço atual   */
+
 // Funções get
     bool getBool();         ///< Obtém o valor "bool" da variável
     int getInt();           ///< Obtém o valor "int" da variável
