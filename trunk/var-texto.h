@@ -121,7 +121,7 @@ public:
     TTextoPos * Depois;     ///< Próximo objeto
 
     TObjeto * Objeto;       ///< Objeto em que o textopos foi definido
-    const char * defvar;    ///< Definição da variável
+    const char * defvar;    ///< Definição da variável; usado em var-sav.cpp
     unsigned int indice;    ///< Índice da variável
 };
 

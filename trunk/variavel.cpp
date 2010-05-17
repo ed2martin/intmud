@@ -626,6 +626,42 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
 }
 
 //------------------------------------------------------------------------------
+void TVariavel::MoverDefVar()
+{
+    int vetor = (unsigned char)defvar[Instr::endVetor];
+    if (vetor==0)
+        vetor++;
+    int cont;
+    switch (defvar[2])
+    {
+    case Instr::cIntTempo:
+        for (cont=0; cont<vetor; cont++)
+            end_inttempo[cont].defvar = defvar;
+        break;
+    case Instr::cListaItem:
+        for (cont=0; cont<vetor; cont++)
+            end_listaitem[cont].defvar = defvar;
+        break;
+    case Instr::cTextoPos:
+        for (cont=0; cont<vetor; cont++)
+            end_textopos[cont].defvar = defvar;
+        break;
+    case Instr::cTelaTxt:
+        for (cont=0; cont<vetor; cont++)
+            end_telatxt[cont].defvar = defvar;
+        break;
+    case Instr::cSocket:
+        for (cont=0; cont<vetor; cont++)
+            end_socket[cont].defvar = defvar;
+        break;
+    case Instr::cServ:
+        for (cont=0; cont<vetor; cont++)
+            end_serv[cont].defvar = defvar;
+        break;
+    }
+}
+
+//------------------------------------------------------------------------------
 bool TVariavel::getBool()
 {
     if (indice==0xFF) // Vetor
