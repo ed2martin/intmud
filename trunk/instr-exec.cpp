@@ -1423,6 +1423,7 @@ bool Instr::ExecX()
             }
         case ex_doispontos:
             {
+                FuncAtual->expr++;
                 TVariavel * v = EndVarNome();
                 assert(v!=0);
                 if (v[1].defvar[2] == cVarInicio)
@@ -1434,7 +1435,7 @@ bool Instr::ExecX()
                         v[1].endvar = c;
                         v->setTxt("");
                         FuncAtual->expr = CopiaVarNome(
-                                v, FuncAtual->expr+1);
+                                v, FuncAtual->expr);
                         break;
                     }
                 }

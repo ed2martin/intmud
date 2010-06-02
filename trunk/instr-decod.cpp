@@ -290,7 +290,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             {
                 if (dest_fim - destino < 4)
                     return false;
-                destino = copiastr(destino, " # ");
+                destino = copiastr(destino-1, " # ");
                 for (origem++; *origem; origem++)
                 {
                     if (destino>=dest_fim-2 || *(unsigned char*)origem < ' ')
