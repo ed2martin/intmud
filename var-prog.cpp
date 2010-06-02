@@ -818,11 +818,15 @@ bool TVarProg::FuncApagar(TVariavel * v)
             {
                 if (obj==0)
                     obj = new TMudarClasse(nome);
+                else if (obj->InfoApagar())
+                    break;
                 obj->MudarComandos(0);
                 obj->MarcarApagar();
             }
             else if (obj)
                 delete obj;
+            else
+                break;
             valor = 1;
             break;
         }
