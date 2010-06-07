@@ -1,0 +1,105 @@
+Manual do EditMUD
+
+O objetivo é permitir alterar o MUD sem reiniciar o programa (IntMUD).
+O programa é basicamente um editor de texto para vários arquivos, com
+a possibilidade de ler e enviar arquivos para o MUD. Cada arquivo
+corresponde a uma classe.
+
+No MUD, é necessário incluir a classe edit_mud do arquivo editmud.int.
+Essa classe é responsável pela comunicação com o EditMUD.
+
+Uma forma simples de testar o programa é renomear o arquivo editmud.int
+para intmud.int e executar o IntMUD. Depois, executar o programa EditMUD.
+
+*** Uso
+
+O programa possui um campo de edição (editor de texto) uma lista de itens.
+O campo de edição contém sempre o texto correspondente ao item selecionado.
+Os dois primeiros itens são lista de classes e LOG (mensagens de erro).
+Os próximos, se existirem, são as classes trazidas do MUD.
+Pelo teclado, a tecla TAB alterna entre campo de edição e lista de itens,
+e a tecla ALT acessa o menu.
+
+Primeiro pega-se a lista de classes. Escolha a opção "Lista de classes".
+Depois, opção "Ler" do menu. A lista de classes deve aparecer no campo
+de edição.
+
+As principais opções são:
+1. Trazer uma classe: posicionar o cursor sobre o nome da classe e
+ir na opção "Novo arquivo" do menu.
+2. Alterar a classe (editar no campo de edição).
+3. Enviar o que foi alterado para o MUD, opção "Enviar" do menu (ALT E).
+4. Salvar o MUD em arquivo, opção "Salvar prog" do menu (ALT S).
+5. Para retirar a classe do EditMUD, opção "Apagar arquivo" do menu (ALT P).
+
+Outras opções:
+1. Apagar uma classe do MUD: opção "Apagar" do menu (ALT A).
+2. Ler novamente a classe (exemplo, se alterou a classe no campo de edição
+e quer voltar ao que era antes): opção "Ler" do menu (ALT L).
+3. Configuração: Endereço, porta e senha para acessar o MUD.
+
+A primeira linha da classe no EditMUD é sempre a palavra "ARQ:" seguido
+do sufixo do arquivo em que a classe pertence. No caso da pertencer
+ao arquivo principal, a primeira linha será apenas "ARQ:".
+
+*** Acessando remotamente
+
+O programa do arquivo editmud.int vem configurado para permitir
+apenas acesso local (no mesmo computador). Para acessar remotamente,
+abrir o arquivo editmud.int em um editor de texto.
+
+Alterar a linha:
+const enderadm = "localhost"
+Para:
+const enderadm = ""
+
+Alterar também a senha de acesso. Inicialmente é a palavra modo.
+Está definida na linha:
+const senhaadm = "modo"
+
+Pode-se também alterar a porta de acesso, a linha:
+const portaadm = 2000
+
+No programa EditMUD, ir em configuração e alterar:
+Endereço IP: o endereço onde o MUD está localizado.
+Porta e senha: devem estar igual ao editmud.int.
+
+*** Protocolo de comunicação
+
+Nessa seção é explicado como ocorre a comunicação entre o programa
+EditMUD e o MUD.
+
+Conectar-se ao MUD, por exemplo, através de um programa de Telnet.
+Se o arquivo editmud.int não foi alterado, o endereço é localhost,
+porta 2000.
+
+Para ler um objeto digitar a senha de administração, ler e o nome
+do objeto. Exemplo:
+modo ler jog
+
+Para alterar ou criar um objeto digitar a senha de administração,
+"mudar" e o nome do objeto. nas linhas que seguirem escrever as
+instruções do objeto. Quando terminar, escrever uma linha contendo
+---.
+Exemplo:
+modo mudar jog
+ARQ:
+func escr
+este.msg("Bom dia\n")
+---
+
+Para apagar um objeto digitar a senha de administração, apagar e
+o nome do objeto. Exemplo:
+modo apagar teste
+
+Para salvar o mapa digitar a senha de administração e a palavra salvar.
+Exemplo:
+modo salvar
+
+Para obter a lista de objetos globais digitar a senha de administração
+e a palavra lista.
+Exemplo:
+modo lista
+
+Em caso de erro é sempre retornada uma ou mais linhas começadas com
+hífen.
