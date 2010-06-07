@@ -18,34 +18,9 @@ classe edit_mud
 const senhaadm = "modo"
 const enderadm = "localhost" # Ou "" para permitir conexões externas
 const portaadm = 2000
-#
-# Para ler um objeto digitar a senha de administração, ler e o nome
-# do objeto. Exemplo:
-# modo ler jog
-#
-# Para alterar ou criar um objeto digitar a senha de administração,
-# "mudar" e o nome do objeto. nas linhas que seguirem escrever as
-# instruções do objeto. Quando terminar, escrever uma linha contendo
-# ---.
-# Exemplo:
-# modo mudar jog
-# func escr
-# este.msg("Bom dia\n")
-# ---
-#
-# Para apagar um objeto digitar a senha de administração, apagar e
-# o nome do objeto. Exemplo:
-# modo apagar teste
-#
-# Para salvar o mapa digitar a senha de administração e a palavra salvar.
-# Exemplo:
-# modo salvar
-#
-# Para obter a lista de objetos globais digitar a senha de administração
-# e a palavra lista.
-# Exemplo:
-# modo lista
-#
+const espind = 2 # Quantos espaços usados para indentação
+const funclin = 1 # Se deve colocar linha vazia entre funções: 0=não, 1=sim
+
 comum serv servidor
 socket conec
 inttempo fechar # Para fechar socket após um tempo
@@ -156,10 +131,10 @@ func exec_ler
   fimse
   texto.addfim("ARQ:" + p.arquivo(arg0))
   enquanto p.lin
-    se p.nivel = 0 & txt1(p.texto) = "func"
+    se p.nivel = 0 & funclin & txt1(p.texto) = "func"
       texto.addfim("")
     fimse
-    texto.addfim(txtesp(p.nivel * 2) + p.texto)
+    texto.addfim(txtesp(p.nivel * espind) + p.texto)
     p.depois
   efim
   texto.addfim("---")
