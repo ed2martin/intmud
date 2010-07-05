@@ -89,64 +89,105 @@ void TTextoTxt::TextoFim()
 }
 
 //----------------------------------------------------------------------------
-void TTextoTxt::Ordena(const char *txt1, const char * txt2)
+void TTextoTxt::Ordena(int modo, const char *txt1, const char * txt2)
 {
 // Checa se tem algo para ordenar
     if (Linhas==0)
         return;
+    int totalbytes = Bytes + 1;
+    if (modo >= 1)
+        totalbytes += Linhas*4;
 // Até 8191 bytes: ordena sem alocar memória com new (mais rápido)
-    if (Bytes <= 8191 && Linhas<=512)
+    if (totalbytes <= 8192 && Linhas<=512)
     {
         char txt[8192];
-        char *lin[512*2];
-        Inicio->CopiarTxt(0, txt+1, Bytes);
-        *txt=0;
-        OrdenaSub(txt, lin, txt1, txt2);
+        char *lin[512*4];
+        OrdenaSub(modo, txt, lin, txt1, txt2);
         return;
     }
 // Mais de 8191 bytes: aloca memória com new
-    char * txt = new char[Bytes+1];
+    char * txt = new char[totalbytes];
     char ** lin = new char*[Linhas*2];
-    Inicio->CopiarTxt(0, txt+1, Bytes);
-    *txt=0;
-    OrdenaSub(txt, lin, txt1, txt2);
+    OrdenaSub(modo, txt, lin, txt1, txt2);
     delete[] lin;
     delete[] txt;
 }
 
 //----------------------------------------------------------------------------
-void TTextoTxt::OrdenaSub(char * texto, char** linha,
+void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
         const char *txt1, const char * txt2)
 {
-// Separa as linhas
-    unsigned int numlin = 1;
-    linha[0] = texto+1;
-    for (char * p = texto+1; *p; p++)
-        if (*p == Instr::ex_barra_n)
-            *p=0, linha[numlin++] = p+1;
-    assert(numlin == Linhas);
-
-// Avança número no início da linha
-    if (txt1)
+// Lê as linhas de textotxt
+    TTextoBloco * obj = Inicio;
+    unsigned int indobj=0;
+    unsigned int numlin = 0;
+    unsigned int totallin = Linhas;
+    char * dest = texto;
+    while (numlin < totallin)
     {
-        unsigned int y = 0;
-        for (unsigned int x=0; x<numlin; x++)
+    // Se modo>=1: conta quantos objetos e anota cabeçalho
+        if (modo>=1)
         {
-            char * p = linha[x];
-            if (*p<'0' || *p>'9')
+        // Obtém quantidade de objetos
+            unsigned int valor=0;
+            if (obj->Texto[indobj] < '0' || obj->Texto[indobj] > '9')
+            {
+                totallin--;
                 continue;
-            for (p++; *p>='0' && *p<='9'; p++);
-            if (*p!=' ')
+            }
+            while (true)
+            {
+                char ch = obj->Texto[indobj];
+                if (ch<'0' || ch>'9')
+                    break;
+                valor = valor*10+ch-'0';
+                indobj++;
+                if (indobj >= obj->Bytes)
+                    indobj=0, obj=obj->Depois;
+            }
+        // Checa se é número seguido de espaço
+            if (obj->Texto[indobj] != ' ')
+            {
+                totallin--;
                 continue;
-            for (p++; *p==' '; p++);
-            linha[y++] = p;
+            }
+        // Avança espaços vazios
+            while (true)
+            {
+                indobj++;
+                if (indobj >= obj->Bytes)
+                    indobj=0, obj=obj->Depois;
+                if (obj->Texto[indobj] != ' ')
+                    break;
+            }
+        // Anota cabeçalho
+            dest[0] = valor;
+            dest[1] = valor >> 8;
+            dest[2] = valor >> 16;
+            dest[3] = valor >> 24;
+            dest += 4;
         }
-        if (y==0)
+    // Anota endereço do texto
+        linha[numlin++] = dest;
+    // Anota texto
+        while (true)
         {
-            Limpar();
-            return;
+            char ch = obj->Texto[indobj++];
+            if (indobj >= obj->Bytes)
+                indobj=0, obj=obj->Depois;
+            if (ch == Instr::ex_barra_n)
+                break;
+            *dest++ = ch;
         }
-        numlin = y;
+    // Próxima linha
+        *dest++ = 0;
+    }
+
+// Verifica se sobrou alguma linha
+    if (numlin==0)
+    {
+        Limpar();
+        return;
     }
 
 #if 0
@@ -184,7 +225,7 @@ void TTextoTxt::OrdenaSub(char * texto, char** linha,
     }
 
 // Apenas ordenação
-    if (txt1==0)
+    if (modo <= 0)
     {
         TextoIni();
         for (unsigned int x=0; x<numlin; x++)
@@ -194,24 +235,79 @@ void TTextoTxt::OrdenaSub(char * texto, char** linha,
     }
 
 // Ordenação somando as linhas
-    TextoIni();
+    if (modo <= 2)
+    {
+        TextoIni();
+        for (unsigned int x=0; x<numlin; )
+        {
+            unsigned int soma=0;
+            unsigned int y = x;
+            char * txtcomp = var1[x];
+            do
+            {
+                soma += Num32(var1[y]-4);
+                y++;
+            } while (y<numlin && comparaZ(txtcomp, var1[y])==0);
+            x = y;
+            if (modo==1)
+            {
+                char mens[80];
+                mprintf(mens, sizeof(mens), "%u ", soma);
+                TextoAnota(mens, strlen(mens));
+            }
+            else if (soma==0)
+                continue;
+            else if (soma>1)
+            {
+                char mens[512];
+                if (soma >= 0xFF000000)
+                    soma = 0xFEFFFFFF;
+                mprintf(mens, sizeof(mens), "%s%u%s ", txt1, soma, txt2);
+                TextoAnota(mens, strlen(mens));
+            }
+            TextoAnota(txtcomp, strlen(txtcomp)+1);
+        }
+        TextoFim();
+        return;
+    }
+
+// Obtém as quantidades
     for (unsigned int x=0; x<numlin; )
     {
         unsigned int soma=0;
         unsigned int y = x;
         do
         {
-            char * p = var1[y];
-            while (*p)
-                p--;
-            soma += atoi(p+1);
+            soma += Num32(var1[y]-4);
             y++;
         } while (y<numlin && comparaZ(var1[x], var1[y])==0);
-        x = y;
-        if (txt2==0)
+        if (soma >= 0xFF000000)
+            soma = 0xFEFFFFFF;
+        var1[x][-4] = soma;
+        var1[x][-3] = soma >> 8;
+        var1[x][-2] = soma >> 16;
+        var1[x][-1] = soma >> 24;
+        for (x++; x<y; x++)
+            var1[x][-1] = 0xFF;
+    }
+
+// Resultado na ordem original
+    TextoIni();
+    char * txt = texto;
+    for (unsigned int x=0; x<numlin; x++)
+    {
+        char * txtlin = txt;
+        txt += 4;
+        while (*txt)
+            txt++;
+        txt++;
+        if ((unsigned char)txtlin[3] == 0xFF)
+            continue;
+        unsigned int soma = Num32(txtlin);
+        if (modo==3)
         {
             char mens[80];
-            mprintf(mens, sizeof(mens), "%d ", soma);
+            mprintf(mens, sizeof(mens), "%u ", soma);
             TextoAnota(mens, strlen(mens));
         }
         else if (soma==0)
@@ -219,10 +315,10 @@ void TTextoTxt::OrdenaSub(char * texto, char** linha,
         else if (soma>1)
         {
             char mens[512];
-            mprintf(mens, sizeof(mens), "%s%d%s ", txt1, soma, txt2);
+            mprintf(mens, sizeof(mens), "%s%u%s ", txt1, soma, txt2);
             TextoAnota(mens, strlen(mens));
         }
-        TextoAnota(var1[x-1], strlen(var1[x-1])+1);
+        TextoAnota(txtlin+4, txt-txtlin-4);
     }
     TextoFim();
 }

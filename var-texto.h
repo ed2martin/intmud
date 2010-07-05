@@ -48,18 +48,22 @@ public:
             ///< Diminui o tamanho das linhas dividindo em duas ou mais
             /**< @param min Tamanho mínimo de onde a linha será dividida
              *   @param max Tamanho máximo das linhas */
-    void Ordena(const char *txt1, const char * txt2);
+    void Ordena(int modo, const char *txt1, const char * txt2);
             ///< Ordena linhas em ordem alfabética
-            /**< @param txt1 Texto antes do primeiro número de cada linha
-             *   @param txt2 Texto depois do número de cada linha
-             *   Modo de ordenação:
-             *   - Se txt1=0: textotxt.ordena
-             *   - Se txt1!=0 e txt2=0: textotxt.ordena sem argumentos
-             *   - Se txt1!=0 e txt2!=0: textotxt.ordena com argumentos */
+            /**< @param modo Modo de ordenação:
+             *   - 0 = textotxt.ordena
+             *   - 1 = textotxt.ordenalin sem argumentos
+             *   - 2 = textotxt.ordenalin com argumentos
+             *   - 3 = textotxt.numlin sem argumentos
+             *   - 4 = textotxt.numlin com argumentos
+             *   @param txt1 Texto antes do primeiro número de cada linha
+             *   @param txt2 Texto depois do número de cada linha */
 private:
-    void OrdenaSub(char * texto, char** linha, const char *txt1, const char * txt2);
+    void OrdenaSub(int modo, char * texto, char** linha,
+            const char *txt1, const char * txt2);
             ///< Chamado por Ordena(), para ordenar linhas
-            /**< @param texto Texto a ser ordenado, começa e termina com um byte 0
+            /**< @param modo Modo de ordenação, vide Ordena()
+             *   @param texto Texto a ser ordenado, começa e termina com um byte 0
              *   @param linha char*[] contendo o número de linhas vezes 2
              *   @param txt1 Vide Ordena()
              *   @param txt2 Vide Ordena() */
