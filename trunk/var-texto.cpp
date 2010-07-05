@@ -980,7 +980,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
 // Ordenar
     if (comparaZ(nome, "ordena")==0)
     {
-        Ordena(0, 0);
+        Ordena(0, 0, 0);
         DebugTextoTxt(this);
         return false;
     }
@@ -990,7 +990,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
     // Com menos de dois argumentos
         if (Instr::VarAtual < v+2)
         {
-            Ordena("", 0);
+            Ordena(1, 0, 0);
             DebugTextoTxt(this);
             return false;
         }
@@ -998,7 +998,25 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         char txt1[256],txt2[256];
         copiastr(txt1, v[1].getTxt(), sizeof(txt1));
         copiastr(txt2, v[2].getTxt(), sizeof(txt2));
-        Ordena(txt1, txt2);
+        Ordena(2, txt1, txt2);
+        DebugTextoTxt(this);
+        return false;
+    }
+// Apenas juntar linhas
+    if (comparaZ(nome, "juntalin")==0)
+    {
+    // Com menos de dois argumentos
+        if (Instr::VarAtual < v+2)
+        {
+            Ordena(3, 0, 0);
+            DebugTextoTxt(this);
+            return false;
+        }
+    // Com dois ou mais argumentos
+        char txt1[256],txt2[256];
+        copiastr(txt1, v[1].getTxt(), sizeof(txt1));
+        copiastr(txt2, v[2].getTxt(), sizeof(txt2));
+        Ordena(4, txt1, txt2);
         DebugTextoTxt(this);
         return false;
     }

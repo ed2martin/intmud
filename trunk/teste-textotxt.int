@@ -67,8 +67,10 @@ func mostra
   msg("Espaço mostra o conteúdo da linha atual\n")
   msg("J junta com a linha anterior\n")
   msg("O ordena linhas em ordem alfabética\n")
-  msg("P ordena somando linhas\n")
-  msg("Q ordena mostrando as quantidades\n")
+  msg("V ordena somando linhas\n")
+  msg("W ordena mostrando as quantidades\n")
+  msg("X soma linhas\n")
+  msg("Y soma linhas mostrando as quantidades\n")
   msg("D divide linhas grandes\n")
 
 func outro
@@ -203,14 +205,24 @@ func tecla_O
   msg("Ordenado 1\n")
   ret 1
 
-func tecla_P
+func tecla_V
   t.ordenalin
-  msg("Ordenado 2\n")
+  msg("Ordenado +linhas\n")
   ret 1
 
-func tecla_Q
+func tecla_W
   t.ordenalin("(", "x)")
-  msg("Ordenado 3\n")
+  msg("Ordenado +quantidades\n")
+  ret 1
+
+func tecla_X
+  t.juntalin
+  msg("Juntado +linhas\n")
+  ret 1
+
+func tecla_Y
+  t.juntalin("(", "x)")
+  msg("Juntado +quantidades\n")
   ret 1
 
 func tecla_D
