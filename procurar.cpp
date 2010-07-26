@@ -160,6 +160,82 @@ int TProcurar::Proc(const char * texto, int tamanho)
 }
 
 //----------------------------------------------------------------------------
+/// Procura o padrão em um texto
+/** @param funcler Função que lê próximos caracteres do texto
+ *                 - Recebe endereço e tamanho do buffer (sempre > 0)
+ *                 - Retorna quantidade de bytes lidos ou <=0 se fim do texto
+ *  @param tamanho Tamanho do texto
+ *  @return índice aonde encontrou ou -1 se não encontrou ou TProcurar::dest!=0
+ *  @note  Usa algoritmo Boyer-Moore, mas com uma só tabela
+ *  @note  Não faz substituições (não anota texto em dest)
+ */
+int TProcurar::Proc(int (*funcler)(char * buf, int tambuf))
+{
+    char buftxt[0x4000];
+    unsigned int  buflido=0;
+    unsigned int  bufini=0;
+    if (tampadrao<=1)
+    {
+        if (tampadrao<=0)
+            return -1;
+        if (exato)
+            while (true)
+            {
+                int lido = funcler(buftxt, 1024);
+                if (lido <= 0)
+                    return -1;
+                for (int i=0; i<lido; i++)
+                    if (buftxt[i] == padrao[0])
+                        return i+bufini;
+                bufini += lido;
+            }
+        else
+            while (true)
+            {
+                int lido = funcler(buftxt, 1024);
+                if (lido <= 0)
+                    return -1;
+                for (int i=0; i<lido; i++)
+                    if (tabCOMPLETO[(unsigned char)buftxt[i]] == padrao[0])
+                        return i+bufini;
+                bufini += lido;
+            }
+        return -1;
+    }
+    int i=tampadrao-1, j=0;
+    while (true)
+    {
+        while (i+j >= (int)(bufini+buflido))
+        {
+            int ler = sizeof(buftxt) - buflido;
+            ler = funcler(buftxt+buflido, ler>1024 ? 1024 : ler);
+            if (ler<=0)
+                return -1;
+            buflido += ler;
+            if (buflido >= sizeof(buftxt))
+                buflido=0, bufini+=sizeof(buftxt);
+        }
+        char ch;
+        while (true)
+        {
+            ch = buftxt[(i+j-bufini)&0x3FFF];
+            if (!exato)
+                ch = tabCOMPLETO[(unsigned char)ch];
+            if (padrao[i]!=ch)
+                break;
+            if (i--)    // Passa para próximo caracter
+                continue;
+                    // Encontrou
+            return j;
+        }
+        i -= tabela[(unsigned char)ch]; // Obtém deslocamento
+        j += (i>1 ? i : 1); // Desloca j
+        i = tampadrao-1;    // Inicializa i
+    }
+    return -1;
+}
+
+//----------------------------------------------------------------------------
 /// Anota string em dest
 void TProcurar::AddTroca()
 {
