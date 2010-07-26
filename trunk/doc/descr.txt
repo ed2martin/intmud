@@ -969,6 +969,17 @@ textopos <nomedavariável>
         Junta a linha atual com a anterior.
         Retorna 1 se juntou linhas ou 0 se não juntou.
         Nota: Para dividir uma linha, adicionar texto "\n" com a função mudar.
+    txtproc(<texto procurado>, <caracter inicial>, <quantidade de linhas>)
+        Procura um texto a partir da linha atual.
+        "\n" no começo do texto significa: deve estar no começo de uma linha.
+        "\n" no fim do texto significa: deve estar no fim de uma linha.
+        Se não for especificada uma quantidade de linhas a procurar, procura
+        até o final do texto.
+        Se o caracter inicial não for especificado, assume início da linha.
+        Se não encontrou, retorna -1. Se encontrou, posiciona na linha que
+        contém o texto e retorna o número do caracter (0=início da linha).
+        Para diferenciar letras minúsculas de maiúsculas e acentuadas de
+        não acentuadas, escrever txtprocdif ao invés de txtproc.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário

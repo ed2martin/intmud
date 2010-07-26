@@ -9,12 +9,13 @@ public:
     TProcurar();
     bool Padrao(const char * padrao, bool exato);
     int  Proc(const char * texto, int tamanho);
+    int  Proc(int (*funcler)(char * buf, int tambuf));
 
     char * dest;        ///< Aonde colocar o texto modificado, ou 0
     int  tamdest;       ///< Tamanho do buffer em dest
     char troca[4096];   ///< Texto que deverá substituir o padrão
 
-//private:
+private:
     int  tabela[0x100]; ///< Tabela de deslocamento
     char padrao[4096];  ///< Texto procurado
     int  tampadrao;     ///< Tamanho do padrão
