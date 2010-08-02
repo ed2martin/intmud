@@ -112,8 +112,7 @@ static int ProcLer(char * buf, int tambuf)
     if (ProcPosic<0)
     {
         *buf = Instr::ex_barra_n;
-        ProcPosic++;
-        tambuf--;
+        ProcPosic=0;
         return 1;
     }
 // Fim do texto
@@ -149,7 +148,7 @@ static int ProcLer(char * buf, int tambuf)
     if (ProcLinhas <= 0)
         return tam;
 // Conta linhas
-    for (int x=0; x<tambuf; x++)
+    for (int x=0; x<tam; x++)
         if (buf[x]==Instr::ex_barra_n)
             if (--ProcLinhas==0)
             {
@@ -733,8 +732,11 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         x=2;
     if (x)
     {
-        if (TextoTxt==0 || Instr::VarAtual < v+1)
-            return false;
+        if (TextoTxt==0 || Bloco==0 || Instr::VarAtual < v+1)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(-1);
+        }
         TProcurar proc;
         const char * txtproc = v[1].getTxt();
         int inicio = (txtproc[0]==Instr::ex_barra_n &&
@@ -745,7 +747,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             return Instr::CriarVarInt(-1);
         }
     // Obtém argumentos
-        int chini = 0; // Caracter inicial
+        int chini = 0; // Caracter inicial na linha
         int chtam = -1; // Quantidade de linhas
         if (Instr::VarAtual >= v+2)
         {
@@ -770,13 +772,14 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         }
     // Acerta chini se texto começa com "\n"
         if (inicio)
-            chini--;
+            chini--; // Procurar a partir do caracter anterior
         if (chtam > (int)(TextoTxt->Linhas - LinhaTxt))
             chtam = -1;
     // Acerta bloco e posição inicial
+        ProcLinhas = chtam;
         ProcBloco = Bloco;
         ProcPosic = PosicBloco + chini;
-        while (ProcPosic >= (int)ProcBloco->Bytes)
+        while (ProcBloco && ProcPosic >= (int)ProcBloco->Bytes)
             ProcPosic -= ProcBloco->Bytes, ProcBloco = ProcBloco->Depois;
     // Procura
         proc.Padrao(txtproc, x-1); // Prepara padrão
@@ -786,27 +789,34 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         if (ind<0)
             return Instr::CriarVarInt(-1);
     // Encontrou
-        ind += chini - inicio; // ind = quantos bytes deve avançar
-    // Avança para nova posição
-        unsigned int pos = PosicBloco + ind;
+        ind += chini; // ind = quantos bytes deve avançar
+    // Avança para nova posição - em blocos
+        unsigned int pos = PosicBloco + ind + inicio;
+                        // somado com inicio para pular o "\n"
         while (pos >= Bloco->Bytes)
         {
             if (Bloco->Depois==0)
             {
-                pos = Bloco->Bytes;
+                pos = Bloco->Bytes; // Para avançar até o fim do bloco
                 break;
             }
             if (PosicBloco==0)
+            {
                 LinhaTxt += Bloco->Linhas;
+                PosicTxt += Bloco->Bytes;
+            }
             else
+            {
                 for (int x=PosicBloco; x<Bloco->Bytes; x++)
                     if (Bloco->Texto[x] == Instr::ex_barra_n)
                         LinhaTxt++;
+                PosicTxt += Bloco->Bytes - PosicBloco;
+                PosicBloco = 0;
+            }
             pos -= Bloco->Bytes;
-            PosicTxt += Bloco->Bytes - PosicBloco;
-            PosicBloco = 0;
             Bloco = Bloco->Depois;
         }
+    // Avança para nova posição - no mesmo bloco
         PosicTxt += pos - PosicBloco;
         for (unsigned int x=PosicBloco; x<pos; x++)
             if (Bloco->Texto[x] == Instr::ex_barra_n)
