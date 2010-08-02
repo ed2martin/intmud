@@ -218,7 +218,7 @@ int TProcurar::Proc(int (*funcler)(char * buf, int tambuf))
         char ch;
         while (true)
         {
-            ch = buftxt[(i+j-bufini)&0x3FFF];
+            ch = buftxt[(i+j-bufini) % sizeof(buftxt)];
             if (!exato)
                 ch = tabCOMPLETO[(unsigned char)ch];
             if (padrao[i]!=ch)

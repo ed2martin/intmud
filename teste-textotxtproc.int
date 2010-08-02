@@ -1,0 +1,64 @@
+exec = 5000
+telatxt = 1
+
+classe x
+
+telatxt tela
+textotxt arq
+textopos pos1
+uint16 col1
+int1 dif
+
+func msg # Envia mensagem para o usuário
+tela.msg(arg0)
+#tela.linha = 1
+
+func iniclasse
+criar(arg0)
+
+func ini
+se !tela.proto
+  terminar
+fimse
+arq.ler("doc/descr.txt")
+se pos1.txtproc("a") != -1
+  msg("Falha no programa\n")
+fimse
+msg("Texto contém " + arq.linhas + " linha(s)\n")
+pos1 = arq.ini
+msg("Digite o texto a procurar ou:\n")
+msg("\\i para voltar ao início\n")
+msg("\\d para diferenciar/não diferenciar maiúsculas de minúsculas\n")
+
+func tela_msg
+textopos p1
+int32 i
+se arg0 = "\\i"
+  pos1 = arq.ini, col1 = 0
+  msg("Início do texto\n")
+  ret
+senao arg0 = "\\d"
+  dif = !dif
+  se dif
+    msg("Maiúsculas diferentes de minúsculas\n")
+  senao
+    msg("Maiúsculas iguais a minúsculas\n")
+  fimse
+  ret
+senao dif
+  i = pos1.txtprocdif(txtinvis(arg0), col1)
+senao
+  i = pos1.txtproc(txtinvis(arg0), col1)
+fimse
+se i<0
+  msg("Não encontrou " + arg0 + "\n")
+##msg("linha=" + pos1.linha + " byte=" + pos1.byte + " col=" + col1 + "\n")
+  ret
+fimse
+col1 = i + 1
+p1 = arq.ini, p1.linha = pos1.linha
+msg("Encontrado: " + arg0 + "\n")
+msg("linha=" + pos1.linha + "/" + p1.linha)
+msg("  byte=" + pos1.byte + "/" + p1.byte + " col=" + i + "\n")
+msg("texto=" + txt(pos1.texto, 0, i) + "\d4" + txt(pos1.texto, i, 1))
+msg("\b" + txt(pos1.texto, i+1) + "\n")
