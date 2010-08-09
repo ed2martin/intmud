@@ -113,6 +113,11 @@ static int ProcLer(char * buf, int tambuf)
     {
         *buf = Instr::ex_barra_n;
         ProcPosic=0;
+        if (ProcLinhas <= 0)
+            return 1;
+        ProcLinhas--;
+        if (ProcLinhas==0)
+            ProcBloco=0;
         return 1;
     }
 // Fim do texto
@@ -137,12 +142,13 @@ static int ProcLer(char * buf, int tambuf)
     else
     {
         memcpy(buf, ProcBloco->Texto, tam);
-        ProcBloco = ProcBloco->Depois;
         if (ProcLinhas > 0 && ProcLinhas > ProcBloco->Linhas)
         {
             ProcLinhas -= ProcBloco->Linhas;
+            ProcBloco = ProcBloco->Depois;
             return tam;
         }
+        ProcBloco = ProcBloco->Depois;
     }
 // Verifica se está contando linhas
     if (ProcLinhas <= 0)
@@ -287,6 +293,12 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         copiastr(txt2, v[2].getTxt(), sizeof(txt2));
         Ordena(2, txt1, txt2);
         DebugTextoTxt(this);
+        return false;
+    }
+// Ordenar aleatoriamente
+    if (comparaZ(nome, "rand")==0)
+    {
+        Rand();
         return false;
     }
 // Apenas juntar linhas
@@ -776,7 +788,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         if (chtam > (int)(TextoTxt->Linhas - LinhaTxt))
             chtam = -1;
     // Acerta bloco e posição inicial
-        ProcLinhas = chtam;
+        ProcLinhas = (chtam>0 ? chtam+inicio : -1);
         ProcBloco = Bloco;
         ProcPosic = PosicBloco + chini;
         while (ProcBloco && ProcPosic >= (int)ProcBloco->Bytes)
