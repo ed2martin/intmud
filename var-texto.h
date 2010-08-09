@@ -58,6 +58,8 @@ public:
              *   - 4 = textotxt.numlin com argumentos
              *   @param txt1 Texto antes do primeiro número de cada linha
              *   @param txt2 Texto depois do número de cada linha */
+    void Rand();
+            ///< Ordena linhas aleatoriamente
 private:
     void OrdenaSub(int modo, char * texto, char** linha,
             const char *txt1, const char * txt2);
@@ -67,6 +69,10 @@ private:
              *   @param linha char*[] contendo o número de linhas vezes 2
              *   @param txt1 Vide Ordena()
              *   @param txt2 Vide Ordena() */
+    void RandSub(char * texto, char** linha);
+            ///< Chamado por Rand(), para ordenar linhas aleatoriamente
+            /**< @param texto Texto a ser ordenado, começa e termina com um byte 0
+             *   @param linha char*[] contendo a linha */
 };
 
 //----------------------------------------------------------------------------

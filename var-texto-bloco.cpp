@@ -18,6 +18,7 @@
 #include "var-texto.h"
 #include "variavel.h"
 #include "instr.h"
+#include "random.h"
 #include "misc.h"
 
 //----------------------------------------------------------------------------
@@ -470,4 +471,62 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max)
         dest_obj = dest_obj->Depois, dest_obj->Bytes = dest_obj->Linhas = 0;
     while (Fim->Bytes==0)
         Fim->Apagar();
+}
+
+//----------------------------------------------------------------------------
+void TTextoTxt::Rand()
+{
+// Checa se tem mais de uma linha
+    if (Linhas<=1)
+        return;
+    int totalbytes = Bytes + 1;
+// Até 8191 bytes: ordena sem alocar memória com new (mais rápido)
+    if (totalbytes <= 8192 && Linhas<=512)
+    {
+        char txt[8192];
+        char *lin[512*4];
+        RandSub(txt, lin);
+        return;
+    }
+// Mais de 8191 bytes: aloca memória com new
+    char * txt = new char[totalbytes];
+    char ** lin = new char*[Linhas*2];
+    RandSub(txt, lin);
+    delete[] lin;
+    delete[] txt;
+}
+
+//----------------------------------------------------------------------------
+void TTextoTxt::RandSub(char * texto, char** linha)
+{
+// Lê texto de textotxt
+    char * p = texto;
+    for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
+    {
+        memcpy(p, obj->Texto, obj->Bytes);
+        p += obj->Bytes;
+    }
+    p[-1] = 0;
+    assert((unsigned int)(p-texto) == Bytes);
+
+// Divide o texto em linhas
+    unsigned int numlin = 1;
+    linha[0] = texto;
+    for (p=texto; *p; p++)
+        if (*p==Instr::ex_barra_n)
+            linha[numlin++] = p+1, *p=0;
+    assert(numlin == Linhas);
+
+    //for (unsigned int x=0; x<numlin; x++) puts(linha[x]);
+    //fflush(stdout);
+
+// Altera textotxt
+    TextoIni();
+    for (unsigned int x=0; x<numlin; x++)
+    {
+        unsigned int novalin = circle_random() % (numlin-x) + x;
+        TextoAnota(linha[novalin], strlen(linha[novalin])+1);
+        linha[novalin] = linha[x];
+    }
+    TextoFim();
 }

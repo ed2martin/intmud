@@ -69,6 +69,7 @@ func mostra
   msg("O ordena linhas em ordem alfabética\n")
   msg("V ordena somando linhas\n")
   msg("W ordena mostrando as quantidades\n")
+  msg("R ordena aleatoriamente\n")
   msg("X soma linhas\n")
   msg("Y soma linhas mostrando as quantidades\n")
   msg("D divide linhas grandes\n")
@@ -213,6 +214,11 @@ func tecla_V
 func tecla_W
   t.ordenalin("(", "x)")
   msg("Ordenado +quantidades\n")
+  ret 1
+
+func tecla_R
+  t.rand
+  msg("Ordenado aleatoriamente\n")
   ret 1
 
 func tecla_X

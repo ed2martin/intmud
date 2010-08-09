@@ -164,7 +164,6 @@ int TProcurar::Proc(const char * texto, int tamanho)
 /** @param funcler Função que lê próximos caracteres do texto
  *                 - Recebe endereço e tamanho do buffer (sempre > 0)
  *                 - Retorna quantidade de bytes lidos ou <=0 se fim do texto
- *  @param tamanho Tamanho do texto
  *  @return índice aonde encontrou ou -1 se não encontrou ou TProcurar::dest!=0
  *  @note  Usa algoritmo Boyer-Moore, mas com uma só tabela
  *  @note  Não faz substituições (não anota texto em dest)
