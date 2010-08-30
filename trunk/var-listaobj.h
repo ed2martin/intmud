@@ -15,6 +15,19 @@ public:
     void EndObjeto(TObjeto * obj);
     TListaX * AddInicio(TObjeto * obj); ///< Adiciona objeto no início da lista
     TListaX * AddFim(TObjeto * obj); ///< Adiciona objeto no fim da lista
+    TListaX * AddLista(TVariavel * v, TListaX * litem, int tipo);
+        ///< Adiciona um ou mais objetos na lista
+        /**< @param v De v até Instr::VarAtual = objetos/listas a adicionar
+         *   @param litem Item, no caso de adicionar antes ou depois de objeto
+         *   @param tipo Aonde adicionar
+         *           - 0,4 = no início da lista
+         *           - 1,5 = no fim da lista
+         *           - 2,6 = antes de litem
+         *           - 3,7 = depois de litem
+         *           - 0 a 3 = não verifica se objeto já está na lista
+         *           - 4 a 7 = adiciona apenas se objeto não estiver na lista
+         *   @return Endereço do primeiro objeto adicionado, ou 0 se não houver
+         */
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
     TListaX * Inicio;       ///< Primeiro item
@@ -46,6 +59,9 @@ class TListaX /// Um item de ListaObj
 public:
     static TListaX * Criar(); ///< Cria um objeto
     void Apagar();          ///< Apaga objeto
+                            /**< Importante: ao apagar um objeto TListaX,
+                                 qualquer outro objeto TListaX
+                                 pode ser movido */
     void Mover(TListaX * destino); ///< Move TListaX para outro lugar
     TListaObj * Lista;      ///< A qual lista pertence
     TListaX * ListaAntes;   ///< Objeto anterior da lista
@@ -54,6 +70,7 @@ public:
     TListaX * ObjAntes;     ///< Objeto anterior da lista
     TListaX * ObjDepois;    ///< Próximo objeto da lista
     TListaItem * ListaItem; ///< Primeira listaitem apontando para esse objeto
+    static TListaX * EndMover; ///< Mover() acerta EndMover
 };
 
 //----------------------------------------------------------------------------

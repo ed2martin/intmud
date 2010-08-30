@@ -19,6 +19,7 @@
 #include "variavel.h"
 #include "objeto.h"
 #include "instr.h"
+#include "random.h"
 #include "misc.h"
 
 //#define DEBUG  // Checar listaobj e listaitem
@@ -35,6 +36,7 @@
 TGrupoX * TGrupoX::Disp = 0;
 TGrupoX * TGrupoX::Usado = 0;
 unsigned long TGrupoX::Tempo = 0;
+TListaX * TListaX::EndMover = 0;
 const char ListaItem1[] = { 7, 0, Instr::cListaItem, 0, 0, 0, '+', 0 };
 
 //----------------------------------------------------------------------------
@@ -134,42 +136,138 @@ int TListaObj::getValor()
 }
 
 //----------------------------------------------------------------------------
+TListaX * TListaObj::AddLista(TVariavel * v, TListaX * litem, int tipo)
+{
+    TListaX * retorno = 0;
+    tipo &= 7;
+
+// Verifica adicionar com referência a litem
+    if (tipo&2)
+    {
+        if (litem==0)
+            return 0;
+        assert(litem->Lista == this);
+    }
+
+// Marca objetos que ainda não estão na lista
+    if (tipo >= 4)
+    {
+        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+        {
+            TObjeto * obj = v1->getObj();
+            if (obj)
+                obj->MarcaLista = 1;
+            else if (v1->defvar[2] == Instr::cListaObj)
+                for (TListaX * l1 = v1->end_listaobj->Inicio; l1; l1=l1->ListaDepois)
+                    l1->Objeto->MarcaLista = 1;
+        }
+        for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+            l1->Objeto->MarcaLista = 0;
+    }
+
+// Adiciona objetos
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    {
+        TListaX * lini = 0;
+        TObjeto * obj;
+        if (v1->defvar[2] == Instr::cListaObj)
+        {
+            if (v1->end_listaobj == this) // Mesma lista
+                continue;
+            lini = v1->end_listaobj->Inicio;
+            if (lini == 0)
+                continue;
+            obj = lini->Objeto;
+        }
+        else
+        {
+            obj = v1->getObj();
+            if (obj==0)
+                continue;
+        }
+        while (true)
+        {
+            if (tipo<4 || obj->MarcaLista)
+            {
+                obj->MarcaLista = 0;
+            // Cria objeto
+                TListaX * l1 = TListaX::Criar();
+                l1->Lista = this;
+                l1->ListaItem = 0;
+                Total++;
+            // Acrescenta na lista
+                switch (tipo)
+                {
+                case 0: // Adicionar no início da lista
+                case 4:
+                    l1->ListaAntes = 0;
+                    l1->ListaDepois = Inicio;
+                    if (Inicio)
+                        Inicio->ListaAntes = l1;
+                    Inicio = l1;
+                    if (Fim==0)
+                        Fim = l1;
+                    tipo=(tipo&4)+3;
+                    break;
+                case 1: // Adicionar no fim da lista
+                case 5:
+                    l1->ListaAntes = Fim;
+                    l1->ListaDepois = 0;
+                    if (Fim)
+                        Fim->ListaDepois = l1;
+                    Fim = l1;
+                    if (Inicio==0)
+                        Inicio = l1;
+                    tipo=(tipo&4)+3;
+                    break;
+                case 2: // Adicionar antes de objeto
+                case 6:
+                    l1->ListaAntes = litem->ListaAntes;
+                    l1->ListaDepois = litem;
+                    (l1->ListaAntes ? l1->ListaAntes->ListaDepois :
+                                      l1->Lista->Inicio) = l1;
+                    litem->ListaAntes = l1;
+                    tipo=(tipo&4)+3;
+                    break;
+                case 3: // Adicionar depois de objeto
+                case 7:
+                    l1->ListaAntes = litem;
+                    l1->ListaDepois = litem->ListaDepois;
+                    (l1->ListaDepois ? l1->ListaDepois->ListaAntes :
+                                       l1->Lista->Fim) = l1;
+                    litem->ListaDepois = l1;
+                    break;
+                }
+            // Acrescenta no objeto
+                l1->Objeto = obj;
+                l1->ObjAntes = 0;
+                l1->ObjDepois = obj->VarListaX;
+                if (obj->VarListaX)
+                    obj->VarListaX->ObjAntes = l1;
+                obj->VarListaX = l1;
+            // Acerta litem
+                litem = l1;
+            // Acerta retorno
+                if (retorno==0)
+                    retorno = l1;
+                DEBUG1
+            }
+
+        // Passa para o próximo objeto da lista
+            if (lini==0)
+                break;
+            lini = lini->ListaDepois;
+            if (lini==0)
+                break;
+            obj = lini->Objeto;
+        }
+    }
+    return retorno;
+}
+
+//----------------------------------------------------------------------------
 bool TListaObj::Func(TVariavel * v, const char * nome)
 {
-// Adiciona objetos no topo da lista
-    if (comparaZ(nome, "addini")==0)
-    {
-        TListaX * valor = 0;
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj)
-                valor = AddInicio(obj);
-        }
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(ListaItem1))
-            return false;
-        Instr::VarAtual->end_listaitem->MudarRef(valor);
-        DEBUG1
-        return true;
-    }
-// Adiciona objetos no final da lista
-    if (comparaZ(nome, "addfim")==0)
-    {
-        TListaX * valor = 0;
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj)
-                valor = AddFim(obj);
-        }
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(ListaItem1))
-            return false;
-        Instr::VarAtual->end_listaitem->MudarRef(valor);
-        DEBUG1
-        return true;
-    }
 // Primeiro item da lista
     if (comparaZ(nome, "ini")==0)
     {
@@ -202,29 +300,144 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         Instr::VarAtual->setObj(obj);
         return true;
     }
+// Adiciona objetos na lista
+    int tipo = -1;
+    if (comparaZ(nome, "addini")==0)
+        tipo = 0;
+    else if (comparaZ(nome, "addfim")==0)
+        tipo = 1;
+    else if (comparaZ(nome, "addini1")==0)
+        tipo = 4;
+    else if (comparaZ(nome, "addfim1")==0)
+        tipo = 5;
+    if (tipo >= 0)
+    {
+        TListaX * valor = AddLista(v, 0, tipo);
+        if (valor==0)
+            return false;
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(ListaItem1))
+            return false;
+        Instr::VarAtual->end_listaitem->MudarRef(valor);
+        return true;
+    }
+// Remove objeto da lista
+    if (comparaZ(nome, "remove")==0)
+    {
+    // Nenhum objeto: remove objetos duplicados
+        if (Instr::VarAtual < v+1)
+        {
+            int total=0;
+            for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+                l1->Objeto->MarcaLista = 0;
+            for (TListaX * l1 = Inicio; l1; )
+            {
+                if (l1->Objeto->MarcaLista == 0)
+                {
+                    l1->Objeto->MarcaLista = 1;
+                    l1 = l1->ListaDepois;
+                    continue;
+                }
+                TListaX::EndMover = l1->ListaDepois;
+                l1->Apagar();
+                l1 = TListaX::EndMover, total++;
+            }
+            DEBUG1
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(total);
+        }
+    // Remover um objeto
+        if (Instr::VarAtual == v+1 && v[1].defvar[2] != Instr::cListaObj)
+        {
+            int total=0;
+            TObjeto * obj = v[1].getObj();
+            if (obj)
+                for (TListaX * l1 = Inicio; l1; )
+                {
+                    if (l1->Objeto != obj)
+                    {
+                        l1 = l1->ListaDepois;
+                        continue;
+                    }
+                    TListaX::EndMover = l1->ListaDepois;
+                    l1->Apagar();
+                    l1 = TListaX::EndMover, total++;
+                }
+            DEBUG1
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(total);
+        }
+    // Apagar vários objetos
+            // Desmarca os objetos da lista
+        for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+            l1->Objeto->MarcaLista = 0;
+            // Marca os objetos que serão removidos
+        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+        {
+            TObjeto * obj = v1->getObj();
+            if (obj)
+                obj->MarcaLista = 1;
+            else if (v1->defvar[2] == Instr::cListaObj)
+                for (TListaX * l1 = v1->end_listaobj->Inicio; l1;
+                        l1=l1->ListaDepois)
+                    l1->Objeto->MarcaLista = 1;
+        }
+            // Remove objetos
+        int total=0;
+        for (TListaX * l1 = Inicio; l1; )
+        {
+            if (l1->Objeto->MarcaLista == 0)
+            {
+                l1=l1->ListaDepois;
+                continue;
+            }
+            TListaX::EndMover = l1->ListaDepois;
+            l1->Apagar();
+            l1 = TListaX::EndMover, total++;
+        }
+        DEBUG1
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(total);
+    }
+// Organiza objetos aleatoriamente
+    if (comparaZ(nome, "rand")==0)
+    {
+        if (Total <= 1)
+            return false;
+    // Aloca memória
+        TListaX * lx[256];
+        TListaX ** lista = (Total<=256 ? lx : new TListaX*[Total]);
+    // Anota objetos
+        TListaX * l1 = Inicio;
+        for (unsigned int x=0; x<Total; x++,l1=l1->ListaDepois)
+            lista[x] = l1;
+        assert(l1==0);
+    // Anota aleatoriamente na lista
+        l1 = 0;
+        for (unsigned int x=0; x<Total; x++)
+        {
+            unsigned int novo = circle_random() % (Total-x) + x;
+            lista[novo]->ListaAntes = l1;
+            if (l1==0)
+                Inicio = lista[novo];
+            else
+                l1->ListaDepois = lista[novo];
+            l1 = lista[novo];
+            lista[novo] = lista[x];
+        }
+        l1->ListaDepois = 0;
+        Fim = l1;
+    // Desaloca memória
+        if (lista != lx)
+            delete[] lista;
+        DEBUG1
+        return false;
+    }
 // Remove todos os objetos
     if (comparaZ(nome, "limpar")==0)
     {
         while (Inicio)
             Inicio->Apagar();
-        DEBUG1
-        return false;
-    }
-// Remove objeto da lista
-    if (comparaZ(nome, "remove")==0)
-    {
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj==0)
-                continue;
-            for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
-                if (l1->Objeto==obj)
-                {
-                    l1->Apagar();
-                    break;
-                }
-        }
         DEBUG1
         return false;
     }
@@ -239,22 +452,45 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
 // Verifica se objeto está na lista
     if (comparaZ(nome, "possui")==0)
     {
+    // Nenhum objeto
+        if (Instr::VarAtual < v+1)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
+    // Um objeto
+        if (Instr::VarAtual == v+1 && v[1].defvar[2] != Instr::cListaObj)
+        {
+            int total=0;
+            TObjeto * obj = v[1].getObj();
+            if (obj)
+                for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+                    if (l1->Objeto==obj)
+                        total++;
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(total);
+        }
+    // Vários objetos
+            // Desmarca os objetos da lista
+        for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+            l1->Objeto->MarcaLista = 0;
+            // Marca os objetos
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
         {
             TObjeto * obj = v1->getObj();
-            if (obj==0)
-                continue;
-            for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
-                if (l1->Objeto==obj)
-                {
-                    // Retorna 1
-                    Instr::ApagarVar(v);
-                    return Instr::CriarVarInt(1);
-                }
+            if (obj)
+                obj->MarcaLista = 1;
+            else if (v1->defvar[2] == Instr::cListaObj)
+                for (TListaX * l1 = v1->end_listaobj->Inicio; l1;
+                        l1=l1->ListaDepois)
+                    l1->Objeto->MarcaLista = 1;
         }
-        // Retorna 0
+            // Conta os objetos
+        int total=0;
+        for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+            total += l1->Objeto->MarcaLista;
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(total);
     }
 // Quantidade de itens da lista
     if (comparaZ(nome, "total")==0)
@@ -404,67 +640,26 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         DEBUG1
         return false;
     }
-// Adiciona objetos antes
+// Adiciona objetos na lista
+    int tipo = -1;
     if (comparaZ(nome, "addantes")==0)
+        tipo = 2;
+    else if (comparaZ(nome, "adddepois")==0)
+        tipo = 3;
+    else if (comparaZ(nome, "addantes1")==0)
+        tipo = 6;
+    else if (comparaZ(nome, "adddepois1")==0)
+        tipo = 7;
+    if (tipo >= 0)
     {
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj==0)
-                continue;
-        // Cria objeto
-            TListaX * l1 = TListaX::Criar();
-        // Acrescenta antes
-            ListaX->Lista->Total++;
-            l1->Lista = ListaX->Lista;
-            l1->ListaAntes = ListaX->ListaAntes;
-            l1->ListaDepois = ListaX;
-            (l1->ListaAntes ? l1->ListaAntes->ListaDepois :
-                              l1->Lista->Inicio) = l1;
-            ListaX->ListaAntes = l1;
-        // Acrescenta objeto
-            l1->Objeto = obj;
-            l1->ObjAntes = 0;
-            l1->ObjDepois = obj->VarListaX;
-            if (obj->VarListaX)
-                obj->VarListaX->ObjAntes = l1;
-            obj->VarListaX = l1;
-        // Acerta ListaItem
-            l1->ListaItem = 0;
-            DEBUG1
-        }
-        return false;
-    }
-// Adiciona objetos depois
-    if (comparaZ(nome, "adddepois")==0)
-    {
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj==0)
-                continue;
-        // Cria objeto
-            TListaX * l1 = TListaX::Criar();
-        // Acrescenta depois
-            ListaX->Lista->Total++;
-            l1->Lista = ListaX->Lista;
-            l1->ListaAntes = ListaX;
-            l1->ListaDepois = ListaX->ListaDepois;
-            (l1->ListaDepois ? l1->ListaDepois->ListaAntes :
-                               l1->Lista->Fim) = l1;
-            ListaX->ListaDepois = l1;
-        // Acrescenta objeto
-            l1->Objeto = obj;
-            l1->ObjAntes = 0;
-            l1->ObjDepois = obj->VarListaX;
-            if (obj->VarListaX)
-                obj->VarListaX->ObjAntes = l1;
-            obj->VarListaX = l1;
-        // Acerta ListaItem
-            l1->ListaItem = 0;
-            DEBUG1
-        }
-        return false;
+        TListaX * valor = ListaX->Lista->AddLista(v, ListaX, tipo);
+        if (valor==0)
+            return false;
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(ListaItem1))
+            return false;
+        Instr::VarAtual->end_listaitem->MudarRef(valor);
+        return true;
     }
     return false;
 }
@@ -520,6 +715,9 @@ void TListaX::Mover(TListaX * destino)
 // Acerta ListaItem
     for (TListaItem * obj = ListaItem; obj; obj=obj->Depois)
         obj->ListaX = destino;
+// Acerta EndMover
+    if (EndMover == this)
+        EndMover = destino;
 }
 
 //----------------------------------------------------------------------------

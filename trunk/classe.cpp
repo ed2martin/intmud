@@ -1182,7 +1182,10 @@ int TClasse::AcertaVar()
     else // Alguma variável mudou
     {
         if (TamVars)
+        {
             Vars = new char[TamVars];
+            memset(Vars, 0, TamVars);
+        }
         for (int x=indobjeto; x<indclasse; x++)
         {
             if (al[x].comando >= 3)
