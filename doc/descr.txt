@@ -776,18 +776,26 @@ listaobj <nomedavariável>
     as variáveis listaobj do objeto.
 
     Funções:
-    addini(<objeto>)
+    addini(<objetos e/ou listaobj>)
         Adiciona no topo da lista.
-        Retorna o item adicionado da lista (variável listaitem).
-    addfim(<objeto>)
+        Retorna o primeiro item adicionado da lista (variável listaitem).
+    addfim(<objetos e/ou listaobj>)
         Adiciona no final da lista.
-        Retorna o item adicionado da lista (variável listaitem).
-    remove(<objeto>)
-        Retira primeira ocorrência do objeto da lista.
+        Retorna o primeiro item adicionado da lista (variável listaitem).
+    addini1 e addfim1
+        Mesmo que addini e addfim, exceto que não adiciona objetos
+        se já estiverem na listaobj.
+    remove
+        Remove objetos repetidos na lista.
+        Retorna a quantidade de objetos removidos.
+    remove(<objetos e/ou listaobj>)
+        Retira objetos da lista. Retorna a quantidade de objetos removidos.
+    rand
+        Muda a ordem dos objetos aleatoriamente.
     limpar
         Retira todos os objetos da lista.
-    possui(<objeto>)
-        Retorna 1 se objeto está na lista ou 0 se não está.
+    possui(<objetos e/ou listaobj>)
+        Retorna quantos objetos estão na lista (0=não estão na lista).
     apagar
         Marca todos os objetos da lista para exclusão, usando a função apagar()
     total
@@ -806,10 +814,15 @@ listaitem <nomedavariável>
     Como valor numérico, é 1 se for um objeto ou 0 se não for.
 
     Funções:
-    addantes(<objeto>)
-        Adiciona objeto antes desse.
-    adddepois(<objeto>)
-        Adiciona objeto depois desse.
+    addantes(<objetos e/ou listaobj>)
+        Adiciona objetos antes desse.
+        Retorna o primeiro item adicionado da lista (variável listaitem).
+    adddepois(<objetos e/ou listaobj>)
+        Adiciona objetos depois desse.
+        Retorna o primeiro item adicionado da lista (variável listaitem).
+    addantes1 e adddepois1
+        Mesmo que addantes e adddepois, exceto que não adiciona objetos
+        se já estiverem na listaobj.
     antes
         Passa para o objeto anterior.
     antes(<número de objetos>)

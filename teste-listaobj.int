@@ -1,42 +1,52 @@
+telatxt = 1
+
 classe teste
-comum serv servidor
-socket conec
+telatxt tela1
 listaobj lista
-const msg = conec.msg(arg0)
+const msg = tela1.msg(arg0)
 func iniclasse
-  se ![arg0]:servidor.abrir("", 2000)
-    terminar
-func servidor_socket
-  criar("teste", arg0)
-func ini
-  conec = arg0
+  criar(arg0)
+func mostra_menu
+  msg("Opções:\n")
   msg("l - mostra a lista\n")
   msg("t - mostra os objetos\n")
   msg("x - teste com lista local\n")
   msg("y - teste sem listaitem\n")
+  msg("a - organizar aleatoriamente\n")
+  msg("d - remove objetos duplicados\n")
+  msg("1 a 9 - readiciona primeiro ao nono objeto na lista\n")
   msg("e - encerrar o programa\n")
-  msg("f - fim (apenas fecha conexão)\n")
+func ini
+  listaobj l1
+  mostra_menu
   lista.addfim(criar("porta"))
-  lista.addfim(criar("janela"))
-  lista.addfim(criar("cadeira"))
-  lista.addfim(criar("janela"))
-func conec_msg
+  lista.addfim(criar("janela", 1))
+  lista.addfim(criar("cadeira", 2))
+  lista.addfim(criar("janela", 3))
+  lista.addfim(criar("sofá"))
+  lista.addfim(criar("mesa"))
+func tela1_tecla
   se !escr_[txt1(arg0)](txt2(arg0))
-    msg("O quê?\n")
+    mostra_menu
+  fimse
+  ret 1
 func escr_l
   listaitem item
   item = lista.ini
   msg("Lista pertence a " + lista.objlista + "/" + item.objlista + "\n")
   msg("Lista contém (" + lista.total + "):\n")
   enquanto item
-    msg(txt(item.obj) + "\n")
+    msg(txt(item.obj) + " /" + item.obj.opc + "\n")
     item.depois
   efim
   ret 1
 func escr_t
+  msg("Objetos:\n")
   msg("porta = " + porta:total + "\n")
   msg("janela = " + janela:total + "\n")
   msg("cadeira = " + cadeira:total + "\n")
+  msg("mesa = " + mesa:total + "\n")
+  msg("sofá = " + sofa:total + "\n")
   ret 1
 func escr_x
   listaobj l1
@@ -66,16 +76,49 @@ func escr_y
     l1.ini.remove
   efim
   ret 1
+func escr_a
+  listaitem item
+  lista.rand
+  msg("Organizado:\n")
+  item = lista.ini
+  enquanto item
+    msg(txt(item.obj) + " /" + item.obj.opc + "\n")
+    item.depois
+  efim
+  ret 1
+func escr_d
+  msg("Objetos removidos: " + lista.remove + "\n")
+  ret 1
+const escr_1 = readiciona(1)
+const escr_2 = readiciona(2)
+const escr_3 = readiciona(3)
+const escr_4 = readiciona(4)
+const escr_5 = readiciona(5)
+const escr_6 = readiciona(6)
+const escr_7 = readiciona(7)
+const escr_8 = readiciona(8)
+const escr_9 = readiciona(9)
+func readiciona
+  listaitem l1
+  uint32 num
+  num = lista.total
+  l1 = lista.ini
+  l1.depois(arg0 - 1)
+  se !l1
+    msg("vazio\n")
+  fimse
+  lista.addfim(l1.obj)
+  msg("Objetos adicionados: " + (lista.total - num) + "\n")
+  ret 1
 func escr_e
   terminar
-func escr_f
-  apagar(este)
-  ret 1
 
 classe comum
 comum uint16 total
+uint16 opc
 func ini
   total += 1
+  opc = arg0
 func fim
   total -= 1
 
@@ -86,4 +129,10 @@ classe janela
 herda comum
 
 classe cadeira
+herda comum
+
+classe mesa
+herda comum
+
+classe sofa
 herda comum
