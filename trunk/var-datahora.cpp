@@ -16,6 +16,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include <time.h>
 #include "var-datahora.h"
 #include "variavel.h"
@@ -58,6 +60,7 @@ const char DataHoraMin[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '4', 0 };
 const char DataHoraSeg[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '5', 0 };
 const char DataHoraNumDia[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '6', 0 };
 const char DataHoraNumSeg[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '7', 0 };
+const char DataHoraNumTotal[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '8', 0 };
 
 //------------------------------------------------------------------------------
 void TVarDataHora::Criar()
@@ -115,6 +118,7 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
             "novahora",
             "numdias",
             "numseg",
+            "numtotal",
             "seg" };
 // Procura a função correspondente
     int ini = 0;
@@ -240,7 +244,11 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v+1);
         Instr::VarAtual->defvar = DataHoraNumSeg;
         return true;
-    case 14: // Seg
+    case 14: // NumTotal
+        Instr::ApagarVar(v+1);
+        Instr::VarAtual->defvar = DataHoraNumTotal;
+        return true;
+    case 15: // Seg
         Instr::ApagarVar(v+1);
         Instr::VarAtual->defvar = DataHoraSeg;
         return true;
@@ -249,7 +257,7 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int TVarDataHora::getValor(const char * defvar1)
+int TVarDataHora::getInt(const char * defvar1)
 {
     if (defvar1[Instr::endNome]!='=')
         return 0;
@@ -263,12 +271,21 @@ int TVarDataHora::getValor(const char * defvar1)
     case '5': return Seg;
     case '6': return DataNum(); // NumDia
     case '7': return (Hora*60+Min)*60+Seg; // NumSeg
+    case '8': return DoubleToInt((Hora*60+Min)*60+Seg + DataNum() * 86400.0);
     }
     return 0;
 }
 
 //------------------------------------------------------------------------------
-void TVarDataHora::setValor(const char * defvar1, int valor)
+double TVarDataHora::getDouble(const char * defvar1)
+{
+    if (memcmp(defvar1 + Instr::endNome, "=8", 2)!=0)
+        return getInt(defvar1);
+    return (Hora*60+Min)*60+Seg + DataNum() * 86400.0;
+}
+
+//------------------------------------------------------------------------------
+void TVarDataHora::setInt(const char * defvar1, int valor)
 {
     if (defvar1[Instr::endNome]!='=')
         return;
@@ -311,6 +328,15 @@ void TVarDataHora::setValor(const char * defvar1, int valor)
             valor = 3652058;
         NumData(valor);
         break;
+    case '8':
+        if (valor <= 0)
+        {
+            NumData(0);
+            Seg = 0, Min = 0, Hora = 0;
+            break;
+        }
+        NumData(valor/86400);
+        valor %= 86400;
     case '7': // NumHora
         if (valor < 0)
             valor = 0;
@@ -322,6 +348,20 @@ void TVarDataHora::setValor(const char * defvar1, int valor)
         Hora = valor/60;
         break;
     }
+}
+
+//------------------------------------------------------------------------------
+void TVarDataHora::setDouble(const char * defvar1, double valor)
+{
+    if (memcmp(defvar1 + Instr::endNome, "=8", 2)!=0 || valor<=0)
+    {
+        setInt(defvar1, DoubleToInt(valor));
+        return;
+    }
+    double data = trunc(valor / 86400.0);
+    valor -= data * 86400.0;
+    NumData(DoubleToInt(data));
+    setInt(DataHoraNumSeg, (int)nearbyint(valor));
 }
 
 //------------------------------------------------------------------------------

@@ -126,6 +126,13 @@ unsigned short Num16(const char * x); ///< Lê unsigned short de char[2]
 unsigned int Num24(const char * x); ///< Lê unsigned int de char[3]
 unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]
 
+    /// Passa de double para int arredondando para o valor mais próximo
+    /** - É necessário para passar valores de double para int.
+     *  - Exemplo de conversão que não dá certo apenas com cast para int:
+     *  - double v1 = 63250036212.0;
+     *  - printf("%d\n", (int)v1); */
+int DoubleToInt(double valor);
+
 /** @} */
 
 #endif

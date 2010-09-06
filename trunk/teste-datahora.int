@@ -25,6 +25,7 @@ func menu # Mostra opções válidas
   msg("H hhmmss muda a hora; exemplo: H 124530\n")
   msg("ND xxxx  Muda data conforme número de dias\n")
   msg("NS xxxx  Muda hora conforme número de segundos\n")
+  msg("NT xxxx  Muda hora conforme segundos desde 1/1/1\n")
 func tela_msg # Usuário digitou alguma coisa
   se !escr_[txt1(arg0)](txt2(arg0))
     menu
@@ -45,7 +46,7 @@ func escr_i # Informações
   se d.bissexto
     msg("  bissexto")
   fimse
-  msg("  nd=" + d.numdias + "  ns=" + d.numseg + "\n")
+  msg("  nd=" + d.numdias + "  ns=" + d.numseg + "  nt=" + d.numtotal + "\n")
   ret 1
 func escr_a # Avança
   msg("Avança\n")
@@ -70,4 +71,7 @@ func escr_nd # Mudar data conforme número de dias
   ret escr_i
 func escr_ns # Muda hora conforme número de segundos
   d.numseg = arg0
+  ret escr_i
+func escr_nt # Muda hora conforme segundos desde 1/1/1
+  d.numtotal = arg0
   ret escr_i

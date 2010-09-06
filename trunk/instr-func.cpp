@@ -163,9 +163,17 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         VarAtual->setDouble(numero<0 ? -numero : numero);
         return true;
     case 2: // int()
-        return CriarVarInt((int)ceil(numero));
-    case 3: // rand()
-        return CriarVarInt(numero<1 ? 0 : circle_random() % (int)ceil(numero));
+        return CriarVarInt(DoubleToInt(numero));
+    case 3: // intdiv()
+        numero = trunc(numero);
+        if (numero > 0x7FFFFFFFLL)
+            return CriarVarInt(0x7FFFFFFF);
+        if (numero < -0x80000000LL)
+            return CriarVarInt(-0x80000000);
+        return CriarVarInt((int)numero);
+    case 4: // rand()
+        return CriarVarInt(numero<1 ? 0 :
+                           circle_random() % DoubleToInt(numero));
     }
     return false;
 }
