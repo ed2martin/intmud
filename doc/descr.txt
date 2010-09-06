@@ -437,7 +437,11 @@ intabs(a)
     Exemplo: abs(-1) e abs(1) são iguais a 1
 
 int(a)
-    O valor inteiro de a.
+    O valor inteiro de a (semelhante a variáveis int32).
+
+intdiv(a)
+    O valor inteiro de a (int32), ignorando os dígitos após a vírgula.
+    Por exemplo, intdiv(1.7) resulta em 1, enquanto que int(1.7) resulta em 2.
 
 rand(a)
     Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) gera
@@ -1576,7 +1580,7 @@ datahora <nomedavariável>
     diasem
         Dia da semana, de 0 a 6 (0=domingo).
     bissexto
-        É 1 se o ano for bissexto, 0 se não for
+        É 1 se o ano for bissexto, 0 se não for.
 
     Variáveis:
     ano
@@ -1594,4 +1598,6 @@ datahora <nomedavariável>
     numdias
         Número de dias desde 1/1/1.
     numseg
-        Número de segundos desde o início do dia
+        Número de segundos desde o início do dia.
+    numtotal
+        Número de segundos desde 1/1/1.

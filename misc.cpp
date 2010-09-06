@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <math.h>
 #include <time.h>
 #ifndef __WIN32__
  #include <unistd.h>
@@ -811,4 +812,17 @@ unsigned int Num32(const char * x)
            ((unsigned int)(unsigned char)x[2]<<16)+
            ((unsigned int)(unsigned char)x[1]<<8)+
            (unsigned char)x[0];
+}
+
+//------------------------------------------------------------------------------
+int DoubleToInt(double valor)
+{
+//printf("Antes %f Depois %f\n", valor, nearbyint(valor));
+    valor = nearbyint(valor);
+    if (valor >= (double)0x7FFFFFFFLL)
+        return 0x7FFFFFFF;
+    if (valor <= (double)-0x80000000LL)
+        return -0x80000000;
+//printf("Conv %f para %d\n", valor, (int)valor);
+    return (int)valor;
 }
