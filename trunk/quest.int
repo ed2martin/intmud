@@ -1,0 +1,601 @@
+telatxt = 1
+
+classe config
+# Configuração
+# Modo pode ser:
+# 0 = Jogo local
+# 1 = Ativar em uma porta, somente Telnet
+# 2 = Ativar em uma porta, aceita Telnet e Papovox
+# 3 = Ativar como bot em um chat
+const modo = 0
+# Variáveis dos modos 1 e 2 (ativar em uma porta)
+# Nota: Papovox só se conecta na porta 1963
+const servporta = 1963
+# Variáveis do modo 3 (ativar como bot)
+const serv = "localhost"
+const porta = 1963
+const sala = "sala01"
+const senha = "sala01"
+# Quantos dias um récorde fica salvo, 0=indeterminado
+const diasrecorde = 30
+
+
+classe jogo
+sav textotxt recordes.10 # Cada linha: data + pontos + apelido
+textotxt perguntas.10 # Título + perguntas e alternativas
+textotxt linhas.10 # Cada linha: linha da pergunta + número de alternativas
+
+func iniclasse
+  criar(arg0)
+func ini
+  telatxt tela
+  listaobj lista
+  arqsav sav1
+  debug dbg1
+  int8 lido
+# Lê arquivo de récordes
+  lista.addini(este)
+  se sav1.ler("quest.sav", lista, 1) = 0
+    tela.msg("Nenhum récorde salvo\n")
+  senao
+    tela.msg("Récordes lidos\n")
+  fimse
+# Lê arquivos de questões
+  enquanto lido < 10
+    dbg1.exec = 100000
+    iniler(lido)
+    lido += 1
+  efim
+# Comunicação com os jogadores
+  dbg1.exec = 5000
+  se config:modo = 1
+    lido = jogoserv:inicializa(0)
+  senao config:modo = 2
+    lido = jogoserv:inicializa(1)
+  senao config:modo = 3
+    lido = jogobot:inicializa
+  senao
+    lido = jogolocal:inicializa
+  fimse
+# Encerra se não há como comunicar-se com o jogador
+  se lido = 0 & tela.proto = 0
+    terminar
+  fimse
+
+func iniler # Lê perguntas/respostas de um arquivo
+# arg0 = número do arquivo
+  telatxt tela
+  textopos pos
+  uint32 resp # Número de respostas
+# Lê arquivo
+  perguntas.[arg0].ler("quest" + arg0 + ".txt")
+# Procura primeira pergunta
+  pos = perguntas.[arg0].ini
+  pos.depois
+  enquanto pos.lin & pos.texto(0, 2) != "p "
+    pos.remove
+  efim
+  pos.depois
+# Processa arquivo
+  enquanto pos.lin
+    se pos.texto(0, 1) = " " # Juntar linhas
+      pos.mudar("\b", 0, 0)
+      pos.juntar, pos.depois
+    senao pos.texto(0, 2) = "r " # Reposta
+      se resp < 10
+        pos.depois, resp += 1
+      senao
+        pos.remove
+      fimse
+    senao pos.texto(0, 2) = "p " # Pergunta
+      se resp # Pergunta com pelo menos uma resposta: anota
+        linhas.[arg0].addfim(txt(pos.linha - resp - 1) + " " + resp)
+        pos.depois
+      senao # Somente a pergunta: apaga linha
+        pos.antes, pos.remove
+      fimse
+      resp = 0
+    senao # Qualquer outra coisa: apaga linha
+      pos.remove
+    fimse
+  efim
+  se resp # Pergunta com pelo menos uma resposta: anota
+    linhas.[arg0].addfim(txt(pos.linha - resp - 1) + " " + resp)
+  senao # Somente a pergunta: apaga linha
+    pos.antes, pos.remove
+  fimse
+# Para mostrar perguntas e respostas lidas (retirar o ret)
+  ret
+  pos = perguntas.[arg0].ini
+  tela.msg("Perguntas\n")
+  enquanto pos.lin
+    tela.msg(txt(pos.linha) + "> " + txtvis(pos.texto) + "\n")
+    pos.depois
+  efim
+  pos = linhas.[arg0].ini
+  tela.msg("Linhas\n")
+  enquanto pos.lin
+    tela.msg("> " + txtvis(pos.texto) + "\n")
+    pos.depois
+  efim
+
+
+classe jogolocal
+herda jogador
+# Jogando localmente
+telatxt _tela
+const msg = _tela.msg(arg0)
+func inicializa
+  criar("jogolocal")
+  ret 1
+func ini
+  msg("Jogando localmente; tecla ESC encerra o programa\n")
+  msg("Digite um apelido\n")
+func _tela_msg
+  se nome
+    recebe(arg0)
+  senao arg0=""
+    msg("Apelido inválido, digite outro\n")
+  senao
+    nome = arg0
+    jogador:ini
+func _tela_tecla
+  se arg0 = "ESC"
+    terminar
+
+
+classe jogoserv
+# Entrando no jogo
+comum serv servidor # Para receber conexões
+socket conec # Usuário conectado
+inttempo fechar1 # Para encerrar conexão após um tempo
+inttempo espera1 # Tempo para pedir o apelido
+inttempo sair1   # Para sair se esperou demais
+int1 papovox
+
+func inicializa
+  telatxt tela
+  papovox = arg0
+  se jogoserv:servidor.abrir("", config:servporta)
+    tela.msg("Esperando conexões na porta " + config:servporta + "\n")
+    ret 1
+  senao
+    tela.msg("Não foi possível abrir a porta 1963\n")
+    ret 0
+  fimse
+
+func servidor_socket # Conectado: cria objeto
+  criar("jogoserv", arg0)
+
+func ini # Objeto foi criado
+  conec = arg0
+  conec.proto = 2
+  conec.aflooder = 1
+  se papovox
+    conec.msg("+OK Para Telnet pressione ENTER\n")
+    fechar1 = 100 # 10 segundos depois desconecta
+  senão
+    espera1 = 1
+
+func fechar1_exec
+  conec.msg("-Tempo esgotado\n")
+  apagar(este)
+
+func espera1_exec
+  conec.msg("Digite um apelido ou fim para desistir\n")
+  sair1 = 600 # Para esperar 60 segundos
+
+func sair1_exec
+  conec.msg("Tempo esgotado\n")
+  apagar(este)
+
+func conec_fechou
+  apagar(este)
+
+func conec_msg # Recebeu mensagem do usuário
+# arg0=mensagem
+  indiceitem ind
+  txt16 nome
+  se espera1 # Se deve aguardar, ignora o que recebeu
+    ret
+  senão fechar1 # Se está no primeiro passo
+    fechar1=0
+    espera1=10
+    se arg0 != "" # Papovox sempre fornece um nome
+      conec.msg("+OK Entrando via Papovox\n")
+      conec.proto = 4
+    senão # Nome vazio: é Telnet
+      conec.msg("-OK Entrando via Telnet\n")
+      conec.cores = 2
+    fimse
+  senão arg0 = "fim" # Sai do jogo
+    apagar(este)
+  senão arg0 = "" # Se não digitou um apelido
+    espera1 = 1
+  senão inttotal(arg0) > 16 | intnome(arg0) | txtproc(arg0, " ") >= 0
+    conec.msg("Apelido inválido; digite outro\n")
+  senão
+    nome = txtnome(arg0)
+    se ind.obj("usr_" + nome) # Se apelido está sendo usado
+      conec.msg("Apelido já está sendo usado; digite outro\n")
+    senão # Cria objeto do jogador
+      apagar(este)
+      criar("jogoserv_j", conec, arg0)
+
+
+classe jogoserv_j
+herda jogador
+# Recebeu conexões na porta 1963
+indiceobj usr_apelido # Para não permitir dois jogadores com o mesmo apelido
+socket _conec
+inttempo _fechar
+const msg = _conec.msg(arg0)
+func _conec_msg
+  ref r
+  _fechar = 36000 # Esperar uma hora
+  se arg0 = "fim"
+    msg("Volte sempre\n")
+    apagar(este)
+  senao txt(arg0, 0, 1) = "x"
+    r = $jogoserv_j
+    enquanto r
+      r.msg(nome + " diz: " + arg0 + "\n")
+      r = objdepois(r)
+    efim
+  senao
+    recebe(arg0)
+func ini
+  _fechar = 36000 # Esperar uma hora
+  _conec = arg0
+  usr_apelido = txtnome(arg1)
+  nome = arg1
+  msg("Para encerrar o jogo tecle fim\n")
+  msg("Para escrever para todos tecle X e a mensagem\n")
+  jogador:ini
+func _fechar_exec
+  apagar(este)
+
+
+classe jogobot
+telatxt tela
+socket conec # Conexão com o bate-papo
+inttempo conectando
+func inicializa
+  criar("jogobot")
+  ret $jogobot.ini1
+func ini1
+  conectando = 100
+  se !conec.abrir(config:serv, config:porta)
+    tela.msg("Endereço inválido: " + _config:serv + "\n")
+    ret 1
+  senão
+    tela.msg("Conectando em " + config:serv + "\n")
+    ret 0
+func conectando_exec # 10 segundos tentando conectar
+  se socket
+    tela.msg("Tempo demais esperando resposta OK\n")
+  senão
+    tela.msg("Tempo demais esperando conectar\n")
+func conec_err # Não conseguiu conectar
+  tela.msg("Erro ao conectar: " + arg0 + "\n")
+func conec_con # Conectou
+  conec.msg("#bot " + _config:sala + " " + _config:senha + "\n")
+  tela.msg("Conectado\n")
+func conec_fechou
+  tela.msg("Conexão encerrada\n")
+func conec_msg # Recebeu mensagem
+  indiceitem ind
+  ref obj
+  txt1 comando
+  # tela.msg("<< " + arg0 + "\n")
+  comando = arg0
+  se conectando
+    se comando = "+"
+      conectando = 0
+    senão
+      tela.msg("Erro: " + arg0)
+    fimse
+  senão comando = "S" # Sala
+    comando = txt(arg0, 1, 1)
+    se comando = "+" # Nova sala
+      criar("bot_sala", txt(arg0, 2))
+    senão comando = "-" # Sala fechou
+      apagar(ind.obj("sala_" + txt(arg0, 2)))
+    senão comando = "=" # Fim da lista de usuários da sala
+      ind.obj("sala_" + txt(arg0, 2)).listafim
+    fimse
+  senão comando = "U" # Usuário
+    comando = txt(arg0, 1, 1)
+    se comando = "m" # Escreveu mensagem
+      obj = ind.obj("usr_" + txt1(txt2(arg0)))
+      obj.recebe(txt2(txt2(arg0)))
+    senão comando = "+" # Entrou no bot
+      obj = ind.obj("sala_" + txt(txt1(arg0), 2))
+      se obj
+        criar("bot_usr", txt2(arg0), obj)
+      fimse
+    senão comando = "-" # Saiu do bot
+      apagar(ind.obj("usr_" + txt2(arg0)))
+    senão comando = "a" # Mudou de apelido
+      obj = ind.obj("usr_" + txt1(txt2(arg0)))
+      obj.novonome(txt2(txt2(arg0)))
+
+
+classe bot_sala
+indiceobj sala_nome
+listaobj sala_usr
+int1 aberto
+telatxt _tela
+func ini # Nova sala
+  sala_nome = "sala_" + arg0
+  _tela.msg("S+  " + sala_nome + "\n")
+func fim # Sala fechada
+  _tela.msg("S-  " + sala_nome + "\n")
+func msg
+  txt120 x.10
+  uint8 cont
+  x.separar(arg0, "\n")
+  enquanto cont<9
+    se x.[cont]
+      $jogobot.conec.msg(txt(sala_nome, 5) + " " + x.[cont] + "\n")
+    fimse
+    cont += 1
+  efim
+func listafim # Recebeu toda a lista de usuários da sala
+  aberto = 1
+  #msg(_config:boasvindas)
+
+
+classe bot_usr
+herda jogador
+indiceobj _usrnome
+listaitem _sala
+telatxt _tela
+const sala_chat = txt(_sala.objlista.sala_nome, 5)
+func ini # Entrou na sala
+  nome = arg0
+  _usrnome = "usr_" + arg0
+  _sala = arg1.sala_usr.addfim(este) # Adiciona na sala
+  _tela.msg("U+  " + nome + "  " + sala_chat + "\n")
+  jogador:ini
+func fim # Saiu da sala
+  _tela.msg("U-  " + usr_nome + "\n")
+func novonome # Mudou de apelido
+  _tela.msg("Ua  " + usr_nome + " para " + arg0 + "\n")
+  _nome = arg0
+  _usrnome = "usr_" + arg0
+func sala_msg # Envia mensagem para a sala do usuário
+  _sala.objlista.msg(arg0)
+func msg # Envia mensagem para o usuário
+  txt120 x.10
+  uint8 cont
+  x.separar(arg0, "\n")
+  enquanto cont<9
+    se x.[cont]
+      $jogobot.conec.msg(nome + " " + x.[cont] + "\n")
+    fimse
+    cont += 1
+  efim
+
+
+classe jogador
+txt32 nome # Apelido do jogador
+int8 nivel # Nível que está jogando, de 0 a 9 ou <0 se não estiver jogando
+intinc tempojogo # Quanto tempo de jogo
+uint32 errouperg # Quantas perguntas errou
+textotxt perg # Perguntas; semelhante a jogo:linhas
+textopos atualperg # Pergunta atual
+txt1 letraok # Letra da resposta correta
+
+func ini # Inicialização
+  info_menu
+  # msg("Apelido: " + nome + "\n")
+
+func recebe # Recebeu uma mensagem do usuário
+# arg0 = mensagem
+  textopos pos
+  # msg("Você teclou " + arg0 + "\n")
+# Opções fora do jogo
+  se nivel < 0
+    nivel = arg0
+    se nivel >= 0 & nivel < 10 & arg0 = txt(nivel) # Um número
+      ret inic_jogo
+    senao arg0 = "I" # Níveis existentes
+      info_niveis
+    senao txt(arg0, 0, 1) = "R" # Récordes
+      info_recordes(txt(arg0, 1))
+    senao # Opção inválida
+      msg("Opção inválida\n")
+    fimse
+    info_menu
+    ret
+  fimse
+# Durante o jogo
+# Desistância
+  se arg0 = "z"
+    msg("Desistiu\n")
+    perg.limpar
+    info_menu
+# Reposta incorreta
+  senao arg0 != letraok
+    msg("ERRADO. O certo é:\n")
+    errouperg += 1
+    pos = $jogo.perguntas.[nivel].ini
+    pos.linha = 1 + txt1(atualperg.texto) # Linha inicial
+    msg(letraok + ". " + texto_opc(pos.texto(2)))
+    perg.addfim(atualperg.texto) # Readiciona pergunta
+    prox_perg # Passa para a próxima pergunta
+# Reposta correta; próxima pergunta
+  senao perg.linhas > 1
+    msg("CERTO\n")
+    atualperg.remove # Remove pergunta da lista de perguntas
+    prox_perg # Passa para a próxima pergunta
+# Resposta correta; fim de jogo
+  senao
+    msg("CERTO; fim de jogo\n")
+    fim_jogo
+    perg.limpar
+    info_menu
+
+const letra_opc = txt("ABCDEFGHIJKLMNOPRSTUVWXYZ", arg0, 1)
+# Entrada: número da opção, começa em 0
+# Retorna: letra da opção
+
+const texto_opc = txttroca(arg0, "\b", "\n") + "\n"
+# Entrada: texto de pergunta ou resposta
+# Retorna: texto com "\n" nos lugares certos
+
+func info_menu
+  nivel = -1 # Indica que não está jogando
+  msg("Tecle de 0 a 9 para jogar, R0 a R9 para ver récordes ou I para informações\n")
+
+func info_niveis # Informa os níveis existentes
+  textopos pos
+  int8 cont
+  int1 temnivel
+  msg("Níveis existentes:\n")
+  enquanto cont < 10
+    se $jogo.linhas.[cont].linhas
+      pos = $jogo.perguntas.[cont].ini
+      msg(txt(cont) + " " + pos.texto(0, 60) + "\n")
+      temnivel = 1
+    fimse
+    cont += 1
+  efim
+  se !temnivel
+    msg("Nenhum nível existente\n")
+  fimse
+
+func info_recordes # Informa os récordes de um nível
+# arg0 = nível
+  textopos pos
+  se !$jogo.linhas.[arg0].linhas
+    msg("Nível " + arg0 + " não tem perguntas; escolha outro\n")
+    ret
+  fimse
+  pos = $jogo.recordes.[arg0].ini
+  se !pos.lin
+    msg("Nível " + arg0 + " não tem récorde\n")
+  senao
+    msg("Récordes do nível " + arg0 + ":\n")
+    enquanto pos.lin
+      msg(txt2(pos.texto) + "\n")
+      pos.depois
+    efim
+
+func inic_jogo # Inicia jogo
+  textopos pos
+# Checa se tem perguntas
+  se $jogo.linhas.[nivel].linhas = 0
+    msg("Nível " + nivel + " não tem perguntas; escolha outro\n")
+    info_menu
+    ret
+  fimse
+# Indica que está jogando
+  tempojogo = 0
+  errouperg = 0
+# Obtém perguntas
+  perg.limpar
+  perg.ini.add($jogo.linhas.[nivel].ini, 100000)
+  #msg("Perguntas: " + perg.linhas + "\n")
+  msg("Iniciando jogo; para desistir tecle Z\n")
+  prox_perg
+
+func fim_jogo # Fim de jogo após responder todas as perguntas
+  uint32 pontos # Quantos pontos fez
+  uint32 perg # Quantas perguntas tem
+  textopos pos # Para checar récordes
+  datahora tempo # Para obter data atual
+  arqsav sav1
+  listaobj l1
+# Obtém pontuação
+  perg = $jogo.linhas.[nivel].linhas
+  se tempojogo > perg
+    pontos = perg * 200000 / (tempojogo + errouperg * 5)
+  fimse
+  msg("Parabéns! Você fez " + pontos + " pontos. Errou " + errouperg + ".\n")
+# Checa récordes
+  pos = $jogo.recordes.[nivel].ini
+  enquanto pos.lin
+    se pontos > int(txt2(pos.texto))
+      sair
+    fimse
+    pos.depois
+  efim
+  se pos.linha < 10
+    msg("Recordista na posição " + int(pos.linha + 1) + "\n")
+    tempo.agora
+    pos.add(txt(tempo.numdias) + " " + pontos + " " + nome)
+    pos.linha = 10 # Para manter apenas os 10 primeiros recordistas
+    pos.remove
+    l1.addfim($jogo)
+    sav1.salvar("quest.sav", l1, 0, "") # Salva os récordes
+  fimse
+
+func prox_perg # Passa para a próxima pergunta
+  uint8 numresp # Quantidade de respostas
+  textotxt resp # respostas
+  textopos pos
+# Escolhe a pergunta
+  atualperg = perg.ini
+  atualperg.linha = rand(perg.linhas)
+  pos = $jogo.perguntas.[nivel].ini
+  pos.linha = txt1(atualperg.texto) # Linha inicial
+  numresp = txt2(atualperg.texto) # Número de respostas
+# Mostra a pergunta
+  #msg("Total " + perg.linhas + "\n")
+  msg("(" + perg.linhas + ") " + texto_opc(pos.texto(2)))
+# Coloca respostas em resp
+  pos.depois
+  resp.ini.add(pos, numresp) # Adiciona perguntas
+  pos = resp.ini
+  pos.mudar("C", 0, 1) # Coloca C na resposta correta
+  resp.rand # Organiza aleatoriamente
+# Mostra respostas
+  pos = resp.ini
+  enquanto pos.lin
+    msg(letra_opc(pos.linha) + ". " + texto_opc(pos.texto(2)))
+    se pos.texto(0, 1) = "C"
+      letraok = letra_opc(pos.linha)
+    fimse
+    pos.depois
+  efim
+
+
+classe limpa_recorde
+# Apaga os récordes antigos
+inttempo tempo
+func iniclasse
+  criar(arg0)
+func ini
+  tempo = 1
+func tempo_exec
+  int8 nivel
+  textopos pos
+  datahora dh
+  int1 mudou
+  arqsav sav1
+  listaobj l1
+# Verifica se deve apagar récordes antigos
+  tempo = 36000
+  se config:diasrecorde <= 0
+    ret
+  fimse
+# Apaga récordes antigos
+  dh.agora
+  enquanto nivel < 10
+    pos = $jogo.recordes.[nivel].ini
+    enquanto pos.lin
+      se int(pos.texto) < dh.numdias - config:diasrecorde
+        pos.remove, mudou = 1
+      senao
+        pos.depois
+      fimse
+    efim
+    nivel += 1
+  efim
+# Se récordes mudaram...
+  se mudou
+    l1.addfim($jogo)
+    sav1.salvar("quest.sav", l1, 0, "") # Salva os récordes
+  fimse

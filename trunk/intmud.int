@@ -248,9 +248,9 @@ classe entra
 # Entrando no jogo
 comum serv servidor # Para receber conexões
 socket conec # Usuário conectado
-inttempo fechar # Para encerrar conexão após um tempo
-inttempo espera # Tempo para pedir o apelido
-inttempo sair   # Para sair se esperou demais
+inttempo fechar1 # Para encerrar conexão após um tempo
+inttempo espera  # Tempo para pedir o apelido
+inttempo sair1   # Para sair se esperou demais
 
 func iniclasse
 # Esperar conexões
@@ -264,21 +264,21 @@ func ini # Objeto foi criado
   conec = arg0
   conec.proto = 2
   conec.aflooder = 1
-  se _config.papovox
+  se _config:papovox
     conec.msg("+OK Para Telnet pressione ENTER\n")
-    fechar = 100 # 10 segundos depois desconecta
+    fechar1 = 100 # 10 segundos depois desconecta
   senão
     espera = 1
 
-func fechar_exec
+func fechar1_exec
   conec.msg("-Tempo esgotado\n")
   apagar(este)
 
 func espera_exec
   conec.msg("Digite o nome do seu personagem ou fim para desistir\n")
-  sair=600 # Para esperar 60 segundos
+  sair1=600 # Para esperar 60 segundos
 
-func sair_exec
+func sair1_exec
   conec.msg("Tempo esgotado\n")
   apagar(este)
 
@@ -291,8 +291,8 @@ func conec_msg # Recebeu mensagem do usuário
   txt12 nome
   se espera # Se deve aguardar, ignora o que recebeu
     ret
-  senão fechar # Se está no primeiro passo
-    fechar=0
+  senão fechar1 # Se está no primeiro passo
+    fechar1=0
     espera=10
     se arg0 != "" # Papovox sempre fornece um nome
       conec.msg("+OK Entrando via Papovox\n")
