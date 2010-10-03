@@ -166,9 +166,9 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         return CriarVarInt(DoubleToInt(numero));
     case 3: // intdiv()
         numero = trunc(numero);
-        if (numero > 0x7FFFFFFFLL)
+        if (numero >= 0x7FFFFFFFLL)
             return CriarVarInt(0x7FFFFFFF);
-        if (numero < -0x80000000LL)
+        if (numero <= -0x80000000LL)
             return CriarVarInt(-0x80000000);
         return CriarVarInt((int)numero);
     case 4: // rand()
