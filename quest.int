@@ -125,6 +125,7 @@ herda jogador
 # Jogando localmente
 telatxt _tela
 const msg = _tela.msg(arg0)
+const msgtodos = _tela.msg(arg0)
 func inicializa
   criar("jogolocal")
   ret 1
@@ -151,11 +152,11 @@ socket conec # Usuário conectado
 inttempo fechar1 # Para encerrar conexão após um tempo
 inttempo espera1 # Tempo para pedir o apelido
 inttempo sair1   # Para sair se esperou demais
-int1 papovox
+comum int1 papovox # Se permite entrar via Papovox
 
 func inicializa
   telatxt tela
-  papovox = arg0
+  jogoserv:papovox = arg0
   se jogoserv:servidor.abrir("", config:servporta)
     tela.msg("Esperando conexões na porta " + config:servporta + "\n")
     ret 1
@@ -215,31 +216,38 @@ func conec_msg # Recebeu mensagem do usuário
   senão inttotal(arg0) > 16 | intnome(arg0) | txtproc(arg0, " ") >= 0
     conec.msg("Apelido inválido; digite outro\n")
   senão
-    nome = txtnome(arg0)
-    se ind.obj("usr_" + nome) # Se apelido está sendo usado
+    nome = arg0
+    se ind.obj("usr_" + txtnome(nome)) # Se apelido está sendo usado
       conec.msg("Apelido já está sendo usado; digite outro\n")
     senão # Cria objeto do jogador
       apagar(este)
-      criar("jogoserv_j", conec, arg0)
+      criar("jogoserv_j", conec, nome)
 
 
 classe jogoserv_j
 herda jogador
 # Recebeu conexões na porta 1963
-indiceobj usr_apelido # Para não permitir dois jogadores com o mesmo apelido
+indiceobj _apelido1 # Para não permitir dois jogadores com o mesmo apelido
 socket _conec
 inttempo _fechar
 const msg = _conec.msg(arg0)
+func msgtodos
+  ref r
+  r = $jogoserv_j
+  enquanto r
+    r._conec.msg(arg0)
+    r = objdepois(r)
+  efim
 func _conec_msg
   ref r
   _fechar = 36000 # Esperar uma hora
   se arg0 = "fim"
     msg("Volte sempre\n")
     apagar(este)
-  senao txt(arg0, 0, 1) = "x"
+  senao txt(arg0, 0, 2) = "x "
     r = $jogoserv_j
     enquanto r
-      r.msg(nome + " diz: " + arg0 + "\n")
+      r.msg(nome + " diz: " + txt2(arg0) + "\n")
       r = objdepois(r)
     efim
   senao
@@ -247,7 +255,7 @@ func _conec_msg
 func ini
   _fechar = 36000 # Esperar uma hora
   _conec = arg0
-  usr_apelido = txtnome(arg1)
+  _apelido1 = "usr_" + txtnome(arg1)
   nome = arg1
   msg("Para encerrar o jogo tecle fim\n")
   msg("Para escrever para todos tecle X e a mensagem\n")
@@ -266,7 +274,7 @@ func inicializa
 func ini1
   conectando = 100
   se !conec.abrir(config:serv, config:porta)
-    tela.msg("Endereço inválido: " + _config:serv + "\n")
+    tela.msg("Endereço inválido: " + config:serv + "\n")
     ret 1
   senão
     tela.msg("Conectando em " + config:serv + "\n")
@@ -279,7 +287,7 @@ func conectando_exec # 10 segundos tentando conectar
 func conec_err # Não conseguiu conectar
   tela.msg("Erro ao conectar: " + arg0 + "\n")
 func conec_con # Conectou
-  conec.msg("#bot " + _config:sala + " " + _config:senha + "\n")
+  conec.msg("#bot " + config:sala + " " + config:senha + "\n")
   tela.msg("Conectado\n")
 func conec_fechou
   tela.msg("Conexão encerrada\n")
@@ -343,7 +351,7 @@ func msg
   efim
 func listafim # Recebeu toda a lista de usuários da sala
   aberto = 1
-  #msg(_config:boasvindas)
+  #msg(config:boasvindas)
 
 
 classe bot_usr
@@ -359,7 +367,7 @@ func ini # Entrou na sala
   _tela.msg("U+  " + nome + "  " + sala_chat + "\n")
   jogador:ini
 func fim # Saiu da sala
-  _tela.msg("U-  " + usr_nome + "\n")
+  _tela.msg("U-  " + nome + "\n")
 func novonome # Mudou de apelido
   _tela.msg("Ua  " + usr_nome + " para " + arg0 + "\n")
   _nome = arg0
@@ -376,6 +384,18 @@ func msg # Envia mensagem para o usuário
     fimse
     cont += 1
   efim
+func msgtodos # Envia mensagem para todos da sala
+  txt120 x.10
+  txt30 nomesala
+  uint8 cont
+  nomesala = txt(_sala.objlista.sala_nome, 5) + " "
+  x.separar(arg0, "\n")
+  enquanto cont<9
+    se x.[cont]
+      $jogobot.conec.msg(nomesala + x.[cont] + "\n")
+    fimse
+    cont += 1
+  efim
 
 
 classe jogador
@@ -385,7 +405,8 @@ intinc tempojogo # Quanto tempo de jogo
 uint32 errouperg # Quantas perguntas errou
 textotxt perg # Perguntas; semelhante a jogo:linhas
 textopos atualperg # Pergunta atual
-txt1 letraok # Letra da resposta correta
+txt100 respok # Resposta correta
+int8 respmsg # Para avisar a todos sobre o usuário
 
 func ini # Inicialização
   info_menu
@@ -417,12 +438,16 @@ func recebe # Recebeu uma mensagem do usuário
     perg.limpar
     info_menu
 # Reposta incorreta
-  senao arg0 != letraok
+  senao arg0 != respok
     msg("ERRADO. O certo é:\n")
     errouperg += 1
-    pos = $jogo.perguntas.[nivel].ini
-    pos.linha = 1 + txt1(atualperg.texto) # Linha inicial
-    msg(letraok + ". " + texto_opc(pos.texto(2)))
+    se txt2(atualperg.texto) = "1" # Checa se apenas uma pergunta
+      msg(respok + "\n")
+    senao
+      pos = $jogo.perguntas.[nivel].ini
+      pos.linha = 1 + txt1(atualperg.texto) # Linha inicial
+      msg(respok + ". " + texto_opc(pos.texto(2)))
+    fimse
     perg.addfim(atualperg.texto) # Readiciona pergunta
     prox_perg # Passa para a próxima pergunta
 # Reposta correta; próxima pergunta
@@ -494,6 +519,7 @@ func inic_jogo # Inicia jogo
 # Indica que está jogando
   tempojogo = 0
   errouperg = 0
+  respmsg = 0
 # Obtém perguntas
   perg.limpar
   perg.ini.add($jogo.linhas.[nivel].ini, 100000)
@@ -523,7 +549,8 @@ func fim_jogo # Fim de jogo após responder todas as perguntas
     pos.depois
   efim
   se pos.linha < 10
-    msg("Recordista na posição " + int(pos.linha + 1) + "\n")
+    msgtodos(nome + " é recordista número " + int(pos.linha + 1) + \
+        " do nível " + nivel + " (" + pontos + " pontos)\n")
     tempo.agora
     pos.add(txt(tempo.numdias) + " " + pontos + " " + nome)
     pos.linha = 10 # Para manter apenas os 10 primeiros recordistas
@@ -536,6 +563,12 @@ func prox_perg # Passa para a próxima pergunta
   uint8 numresp # Quantidade de respostas
   textotxt resp # respostas
   textopos pos
+# Mostra situação do usuário
+  respmsg += 1
+  se respmsg >= 10
+    respmsg = 0
+    msgtodos(nome + ", N" + nivel + ", faltam " + perg.linhas + "\n")
+  fimse
 # Escolhe a pergunta
   atualperg = perg.ini
   atualperg.linha = rand(perg.linhas)
@@ -544,9 +577,14 @@ func prox_perg # Passa para a próxima pergunta
   numresp = txt2(atualperg.texto) # Número de respostas
 # Mostra a pergunta
   #msg("Total " + perg.linhas + "\n")
-  msg("(" + perg.linhas + ") " + texto_opc(pos.texto(2)))
-# Coloca respostas em resp
+  msg(txt(perg.linhas) + ". " + texto_opc(pos.texto(2)))
   pos.depois
+# Verifica pergunta de uma só resposta
+  se numresp = 1
+    respok = pos.texto(2)
+    ret
+  fimse
+# Coloca respostas em resp
   resp.ini.add(pos, numresp) # Adiciona perguntas
   pos = resp.ini
   pos.mudar("C", 0, 1) # Coloca C na resposta correta
@@ -556,7 +594,7 @@ func prox_perg # Passa para a próxima pergunta
   enquanto pos.lin
     msg(letra_opc(pos.linha) + ". " + texto_opc(pos.texto(2)))
     se pos.texto(0, 1) = "C"
-      letraok = letra_opc(pos.linha)
+      respok = letra_opc(pos.linha)
     fimse
     pos.depois
   efim
