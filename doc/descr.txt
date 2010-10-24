@@ -1179,7 +1179,7 @@ telatxt <nome da variável>
     Funções e variáveis:
     proto
         0 se a tela de texto não estiver aberta
-        5 se estiver aberta
+        6 se estiver aberta
         O valor de proto depende da opção "telatxt" no arquivo intmud.cfg.
     posx
         Posição do cursor: quantos caracteres enviou após o último \n.
@@ -1240,9 +1240,10 @@ socket <nomedavariável>
         Define o protocolo; um número com o significado:
         0 = não está conectado
         1 = conectando
-        2 = Telnet
-        3 = IRC
-        4 = Papovox (sem cores)
+        2 = Telnet, só recebe mensagens completas
+        3 = Telnet, pode receber mensagens incompletas (sem o \n no fim)
+        4 = IRC
+        5 = Papovox (sem cores)
         Nota: pode-se mudar entre 2 e 4 para socket conectado
     cores
         0 = nenhuma cor
@@ -1264,6 +1265,7 @@ socket <nomedavariável>
         Endereço IP local.
     abrir(<endereço>, <porta>)
         Tenta conectar-se a um endereço.
+        Após conectar, faz proto=3 e chama o evento _con (vide abaixo).
         Retorna 1 se conexão em progresso ou 0 se ocorreu erro
         (0 geralmente significa endereço inválido)
     fechar
@@ -1285,7 +1287,8 @@ socket <nomedavariável>
     <nomedavariável>_msg
         Recebeu mensagem
         arg0 = mensagem recebida
-        arg1 = índice da variável vetor, se não for vetor arg1=0
+        arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
+        arg2 = índice da variável vetor, se não for vetor arg1=0
     <nomedavariável>_env
         Todas as mensagens foram transmitidas (buffer de transmissão
         ficou vazio).
@@ -1313,8 +1316,8 @@ serv <nomedavariável>
 
     Eventos:
     <nomedavariável>_socket
-    arg0 = socket correspondente à conexão
-    arg1 = índice da variável vetor, se não for vetor arg1=0
+        arg0 = socket correspondente à conexão (com proto=2)
+        arg1 = índice da variável vetor, se não for vetor arg1=0
 
     Exemplo de uso com socket:
     classe x

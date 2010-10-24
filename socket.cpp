@@ -95,12 +95,6 @@ static const char desconvirc[] = {
     0 }; // 15
 
 //------------------------------------------------------------------------------
-/// Cria objeto TSocket a partir de endereço e porta
-/**
- @param ender  Endereço a conectar
- @param porta  Porta
- @return Objeto TSocket ou 0 se ocorreu erro (provavelmente endereço inválido)
- */
 TSocket * TSocket::Conectar(const char * ender, int porta)
 {
     struct sockaddr_in conSock;
@@ -159,16 +153,10 @@ TSocket * TSocket::Conectar(const char * ender, int porta)
     TSocket * s = new TSocket(conManip);
     s->proto = 0;
     s->conSock = conSock;
-    s->coneccliente = true;
     return s;
 }
 
 //------------------------------------------------------------------------------
-/// Fornece a descrição de um erro a partir do número
-/** @param erro Número do erro
- *  @return Texto contendo o erro
- *  @note Próximas chamadas a essa função podem alterar a string original
- */
 const char * TSocket::TxtErro(int erro)
 {
 #ifdef __WIN32__
@@ -342,7 +330,6 @@ TSocket::TSocket(int socknum)
     esperatelnet=0;
     eventoenv=false;
     ecotelnet=true;
-    coneccliente=false;
     AFlooder=0;
 }
 
@@ -393,15 +380,15 @@ int TSocket::Variavel(char num, int valor)
         {
             valor--;
             if (valor<1) valor=1;
-            if (valor>3) valor=3;
-            if (proto != valor)
+            if (valor>4) valor=4;
+            if ((proto==2 ? 1 : proto) != (valor==2 ? 1 : valor))
             {
-                proto=valor;
                 dadoRecebido=0;
                 pontRec=0;
                 pontESC=0;
                 pontTelnet=0;
             }
+            proto=valor;
         }
         return proto+1;
     case '1': // cores
@@ -457,15 +444,13 @@ const char * TSocket::Endereco(bool remoto)
 }
 
 //------------------------------------------------------------------------------
-/** @param mensagem Endereço dos bytes a enviar
- *  @return true se conseguiu enviar, false se não conseguiu */
 bool TSocket::EnvMens(const char * mensagem)
 {
     if (sock<0 || proto==0)
         return false;
 
 // Papovox
-    if (proto==3)
+    if (proto==4)
     {
         char mens[SOCKET_ENV];
         char * ini = mens;
@@ -529,7 +514,7 @@ bool TSocket::EnvMens(const char * mensagem)
     }
 
 // Telnet
-    else if (proto==1)
+    else if (proto==1 || proto==2)
     {
         char mens[SOCKET_ENV];
         char * destino = mens;
@@ -604,7 +589,7 @@ bool TSocket::EnvMens(const char * mensagem)
     }
 
 // IRC
-    if (proto==2)
+    if (proto==3)
     {
         char mens[SOCKET_ENV];
         char * destino = mens;
@@ -686,9 +671,6 @@ bool TSocket::EnvMens(const char * mensagem)
 }
 
 //------------------------------------------------------------------------------
-/** @param mensagem Endereço dos bytes a enviar
- *  @param tamanho Tamanho da mensagem
- *  @return true se conseguiu enviar, false se não conseguiu */
 bool TSocket::EnvMens(const char * mensagem, int tamanho)
 {
     if (sock<0)
@@ -820,7 +802,7 @@ int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
 #endif
         if (obj->pontEnv || obj->proto==0)
             FD_SET(obj->sock, set_saida);
-        if (obj->proto==1 && // É telnet
+        if (obj->proto==2 && // É telnet, pode receber mensagens parciais
             obj->pontRec!=0) // Buffer de recepção não está vazio
         {
             int t = TEMPO_TELNET - obj->esperatelnet;
@@ -895,7 +877,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
             if (coderro==0)
             {
                 sockAtual = obj->sDepois;
-                obj->proto = 1;
+                obj->proto = 2;
                 obj->FuncEvento("con", 0);
                 obj = sockAtual;
                 continue;
@@ -913,8 +895,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
     // Verifica se tem dados pendentes para ler
         if (FD_ISSET(obj->sock, set_entrada)==0)
         {
-            if (obj->proto!=1 || // Não é telnet
-                obj->coneccliente==false || // Conectado como servidor
+            if (obj->proto!=2 || // Não recebe mensagens parciais
                 obj->pontRec==0) // Buffer de recepção está vazio
                 obj->esperatelnet=0, obj = obj->sDepois;
             else
@@ -925,7 +906,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
                 else // Tempo demais esperando mensagem
                 {
                     sockAtual = obj->sDepois;
-                    obj->Processa("\n", 1); // Simula chegada de "\n"
+                    obj->Processa("\n", 1, false); // Simula chegada de "\n"
                     obj = sockAtual;
                 }
             }
@@ -966,7 +947,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
             }
         // Processa dados recebidos
             sockAtual = obj;
-            obj->Processa(mens, resposta);
+            obj->Processa(mens, resposta, true);
         // Verifica se objeto socket foi apagado
             if (obj != sockAtual)
             {
@@ -984,16 +965,12 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
 }
 
 //------------------------------------------------------------------------------
-/// Processa dados recebidos em TSocket::ProcEventos
-/** @param buffer Endereço do buffer
- *  @param tamanho Tamanho do buffer
- *  @return Número de bytes recebidos */
-void TSocket::Processa(const char * buffer, int tamanho)
+void TSocket::Processa(const char * buffer, int tamanho, bool completo)
 {
     while (tamanho>0)
     {
     // Protocolo Telnet
-        if (proto==1)
+        if (proto==1 || proto==2)
         {
             bool sair=true;
             char dado;
@@ -1179,7 +1156,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
         }
 
     // Protocolo IRC
-        else if (proto==2)
+        else if (proto==3)
         {
             bool sair=true;
             char dado;
@@ -1265,7 +1242,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
                 return;
         }
     // Protocolo Papovox
-        else if (proto==3)
+        else if (proto==4)
         {
             for (; pontRec<3 && tamanho>0; tamanho--,buffer++) // Cabeçalho
                 bufRec[pontRec++]=*buffer;
@@ -1291,7 +1268,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
         char * fim = texto + sizeof(texto) - 6;
 
     // Prepara - Telnet e IRC
-        if (proto==1 || proto==2)
+        if (proto>=1 && proto<=3)
         {
             if (cores&1) // Com cor
             {
@@ -1334,7 +1311,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
             *dest=0;
         }
     // Prepara - Papovox
-        else if (proto==3)
+        else if (proto==4)
         {
             int mensagem = 3+(unsigned char)bufRec[1] // Tamanho da mensagem
                         +((unsigned char)bufRec[2]<<8);
@@ -1366,7 +1343,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
         }
 
 // Processa a mensagem
-        if (FuncEvento("msg", texto)==false)
+        if (FuncEvento("msg", texto, completo)==false)
             return;
     } // while (tamanho>0)
 }
