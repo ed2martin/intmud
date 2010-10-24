@@ -54,10 +54,11 @@ protected:
     void RetiraVarSocket(); ///< Retira objeto da lista ligada de TVarSocket
     void FuncFechou();  ///< Executa função _fechou
                         /**< @note Pode apagar o próprio objeto */
-    bool FuncEvento(const char * evento, const char * texto);
+    bool FuncEvento(const char * evento, const char * texto, int valor=-1);
                     ///< Executa uma função
                     /**< @param evento Nome do evento (ex. "msg")
                      *   @param texto Texto do primeiro argumento, 0=nenhum texto
+                     *   @param valor Segundo argumento, <0 = nenhum valor
                      *   @return true se não apagou o objeto, false se apagou
                      */
 

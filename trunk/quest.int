@@ -78,8 +78,8 @@ func iniler # Lê perguntas/respostas de um arquivo
   pos.depois
 # Processa arquivo
   enquanto pos.lin
-    se pos.texto(0, 1) = " " # Juntar linhas
-      pos.mudar("\b", 0, 0)
+    se pos.texto(0, 2) = "c " # Juntar linhas
+      pos.mudar("\b", 0, 2)
       pos.juntar, pos.depois
     senao pos.texto(0, 2) = "r " # Reposta
       se resp < 10
@@ -204,7 +204,7 @@ func conec_msg # Recebeu mensagem do usuário
     espera1=10
     se arg0 != "" # Papovox sempre fornece um nome
       conec.msg("+OK Entrando via Papovox\n")
-      conec.proto = 4
+      conec.proto = 5
     senão # Nome vazio: é Telnet
       conec.msg("-OK Entrando via Telnet\n")
       conec.cores = 2
@@ -287,6 +287,8 @@ func conectando_exec # 10 segundos tentando conectar
 func conec_err # Não conseguiu conectar
   tela.msg("Erro ao conectar: " + arg0 + "\n")
 func conec_con # Conectou
+  conec.proto = 2
+  conec.colmin = 500, conec.colmax = 500
   conec.msg("#bot " + config:sala + " " + config:senha + "\n")
   tela.msg("Conectado\n")
 func conec_fechou

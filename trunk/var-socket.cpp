@@ -283,7 +283,7 @@ void TObjSocket::FuncFechou()
 }
 
 //------------------------------------------------------------------------------
-bool TObjSocket::FuncEvento(const char * evento, const char * texto)
+bool TObjSocket::FuncEvento(const char * evento, const char * texto, int valor)
 {
     //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
     sockObj = this;
@@ -310,6 +310,8 @@ bool TObjSocket::FuncEvento(const char * evento, const char * texto)
         {
             if (texto)
                 Instr::ExecArg(texto);
+            if (valor>=0)
+                Instr::ExecArg(valor);
             Instr::ExecArg(vobj->indice);
             Instr::ExecX();
             Instr::ExecFim();

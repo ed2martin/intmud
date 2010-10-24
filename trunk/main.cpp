@@ -269,6 +269,12 @@ int main(int argc, char *argv[])
     FD_ZERO(&set_entrada);
     FD_ZERO(&set_saida);
     FD_ZERO(&set_err);
+#ifdef __WIN32__
+    atual = timeGetTime()/100;
+#else
+    gettimeofday(&tselect,0);
+    atual = (tselect.tv_sec&0xFFFF)*10 + tselect.tv_usec/100000;
+#endif
     while (true)
     {
     // Obtém: espera = tempo decorrido

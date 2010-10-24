@@ -715,7 +715,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "proto")==0)
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(Console ? 5 : 0);
+        return Instr::CriarVarInt(Console ? 6 : 0);
     }
 // Gerar um bipe
     if (comparaZ(nome, "bipe")==0)
