@@ -517,10 +517,11 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 // Informa se linha é válida
     if (comparaZ(nome, "lin")==0)
     {
+        bool valido = (TextoTxt && PosicTxt < TextoTxt->Bytes);
         Instr::ApagarVar(v);
         if (!Instr::CriarVarInt(0))
             return false;
-        if (TextoTxt && PosicTxt < TextoTxt->Bytes)
+        if (valido)
             Instr::VarAtual->setInt(1);
         return true;
     }
@@ -534,8 +535,9 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 // Quantidade de bytes
     if (comparaZ(nome, "byte")==0)
     {
+        int valor = PosicTxt;
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(PosicTxt);
+        return Instr::CriarVarInt(valor);
     }
 // Texto da linha atual
     if (comparaZ(nome, "texto")==0)
@@ -555,19 +557,21 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         if (coltam<=0 || Bloco==0)
             return Instr::CriarVarTexto("");
     // Obtém o número de bytes da linha
-        int total = Bloco->LinhasBytes(PosicBloco, 1) - 1;
+        TTextoBloco * bl = Bloco;
+        int total = bl->LinhasBytes(PosicBloco, 1) - 1;
         if (colini >= total)
             return Instr::CriarVarTexto("");
         if (coltam > total || colini + coltam > total)
                 // Nota: colini+coltam pode ser <0 se ocorrer overflow
             coltam = total - colini;
     // Cria variável e aloca memória para o texto
+    // Nota: a variável Bloco pode ser alterada aqui, porque
+    //       a nova variável pode ocupar o mesmo lugar de TTextoPos
         if (!Instr::CriarVarTexto(0, coltam))
             return Instr::CriarVarTexto("");
     // Obtém tamanho da memória alocada
         int copiar = Instr::VarAtual->tamanho;
     // Avança coluna inicial
-        TTextoBloco * bl = Bloco;
         colini += PosicBloco;
         while (colini > bl->Bytes)
             colini -= bl->Bytes, bl=bl->Depois;
@@ -796,10 +800,12 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
     // Procura
         proc.Padrao(txtproc, x-1); // Prepara padrão
         int ind = proc.Proc(&ProcLer); // Procura
-        Instr::ApagarVar(v);
     // Não encontrou
         if (ind<0)
+        {
+            Instr::ApagarVar(v);
             return Instr::CriarVarInt(-1);
+        }
     // Encontrou
         ind += chini; // ind = quantos bytes deve avançar
     // Avança para nova posição - em blocos
@@ -853,7 +859,9 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
                 PosicTxt -= Bloco->Bytes;
         }
         PosicBloco = pos;
-        return Instr::CriarVarInt(txtfim - PosicTxt);
+        int valor = txtfim - PosicTxt;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(valor);
     }
     return false;
 }

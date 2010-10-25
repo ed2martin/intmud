@@ -63,10 +63,11 @@ func escr_i
   msg("Endereço local: " + remoto.iplocal + "\n")
 const escr_i0 = "Desconectado"
 const escr_i1 = "Conectando"
-const escr_i2 = "Conectado Telnet"
-const escr_i3 = "Conectado IRC"
-const escr_i4 = "Conectado Papovox"
-const escr_i5 = "Conectado Tela"
+const escr_i2 = "Conectado Telnet, linhas inteiras"
+const escr_i3 = "Conectado Telnet, linhas inteiras ou parciais"
+const escr_i4 = "Conectado IRC"
+const escr_i5 = "Conectado Papovox"
+const escr_i6 = "Conectado Tela"
 func escr_t
   int8 x
   int8 y
@@ -94,7 +95,7 @@ func remoto_msg
     remoto.msg("OK\n")
   senao papovox
     papovox = 0
-    remoto.proto = 4
+    remoto.proto = 5
     msg("Conectado via Papovox\n")
 func remoto_env
   msg("Enviou\n")

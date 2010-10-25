@@ -407,7 +407,7 @@ intinc tempojogo # Quanto tempo de jogo
 uint32 errouperg # Quantas perguntas errou
 textotxt perg # Perguntas; semelhante a jogo:linhas
 textopos atualperg # Pergunta atual
-txt100 respok # Resposta correta
+textotxt respok # Resposta correta
 int8 respmsg # Para avisar a todos sobre o usuário
 
 func ini # Inicialização
@@ -440,15 +440,15 @@ func recebe # Recebeu uma mensagem do usuário
     perg.limpar
     info_menu
 # Reposta incorreta
-  senao arg0 != respok
+  senao respok.ini.txtproc("\n" + arg0 + "\n") < 0
     msg("ERRADO. O certo é:\n")
     errouperg += 1
     se txt2(atualperg.texto) = "1" # Checa se apenas uma pergunta
-      msg(respok + "\n")
+      msg(respok.ini.textolin(50) + "\n")
     senao
       pos = $jogo.perguntas.[nivel].ini
       pos.linha = 1 + txt1(atualperg.texto) # Linha inicial
-      msg(respok + ". " + texto_opc(pos.texto(2)))
+      msg(respok.ini.texto + ". " + texto_opc(pos.texto(2)))
     fimse
     perg.addfim(atualperg.texto) # Readiciona pergunta
     prox_perg # Passa para a próxima pergunta
@@ -582,8 +582,9 @@ func prox_perg # Passa para a próxima pergunta
   msg(txt(perg.linhas) + ". " + texto_opc(pos.texto(2)))
   pos.depois
 # Verifica pergunta de uma só resposta
+  respok.limpar
   se numresp = 1
-    respok = pos.texto(2)
+    respok.addfim(txttroca(pos.texto(2), "\b", "\n"))
     ret
   fimse
 # Coloca respostas em resp
@@ -596,7 +597,7 @@ func prox_perg # Passa para a próxima pergunta
   enquanto pos.lin
     msg(letra_opc(pos.linha) + ". " + texto_opc(pos.texto(2)))
     se pos.texto(0, 1) = "C"
-      respok = letra_opc(pos.linha)
+      respok.addfim(letra_opc(pos.linha))
     fimse
     pos.depois
   efim

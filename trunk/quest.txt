@@ -54,6 +54,17 @@ const sala = "sala01"
 const senha = "sala01"
 O jogo vem configurado para executar localmente, em uma janela.
 
+Exemplo de como ativar para acessar via Telnet ou Papovox na porta 1963:
+const modo = 2
+const servporta = 1963
+
+Exemplo de como ativar como bot para um chat:
+const modo = 3
+const serv = "intervox.nce.ufrj.br"
+const porta = 1963
+const sala = "nome-da-sala"
+const senha = "senha-da-sala"
+
 2. Executar:
 intmud quest.int
 
@@ -66,15 +77,44 @@ São os arquivos quest0.txt a quest9.txt (níveis 0 a 9).
 A primeira linha contém sempre o título, que aparece ao escolher
 a opção I (informações) durante o jogo.
 Da segunda em diante são as perguntas e respostas.
-Linhas que começam com a letra P e um espaço contém perguntas.
-Linhas que começam com a letra R e um espaço contém respostas.
-Após cada pergunta deve-se ter de uma a dez respostas.
-Somente uma resposta: o usuário deve digitar a resposta.
-Mais de uma resposta: é uma pergunta de alternativa, sendo a
-primeira correta e as demais incorretas. O jogo encarrega-se
-de exibir as respostas em uma ordem aleatória.
-Quando o texto (pergunta ou resposta) não couber em uma linha,
-pode-se continuar na próxima, começando a próxima linha com
-a letra C e um espaço.
-Qualquer outra linha que não começa com as letras P, R ou C,
-seguidas de um espaço, é ignorada.
+
+As linhas que começam com as letras P, R e C, seguidas de espaço,
+significam perguntas, respostas e continuação da linha anterior,
+respectivamente. Qualquer outra linha é ignorada pelo jogo.
+
+Após cada pergunta escreve-se de uma a dez respostas.
+
+Perguntas de alternativas devem ter duas ou mais respostas.
+Exemplo:
+P O pernilongo
+R pica
+R morde
+R lambe
+
+A resposta correta é sempre a primeira. Entretanto, o jogo encarrega-se
+de exibí-las em uma ordem aleatória.
+
+Se o enunciado ou uma alternativa não couber em uma linha, pode-se
+continuar na linha seguinte, apenas acrescentando a letra C no começo.
+Exemplo:
+P As frutas são guardadas somente nas gavetas de uma determinada geladeira.
+C Sabe-se que a primeira gaveta contém duas maçãs. A segunda contém o dobro
+C da primeira, mas a terceira não se sabe.
+R Se a terceira gaveta possuir a mesma quantidade de maçãs da primeira
+C somada à segunda, a geladeira possui 12 maçãs.
+R Se a terceira gaveta estiver vazia, a geladeira possui 6 maçãs.
+C Por outro lado, se a terceira gaveta tiver a metade das maçãs da segunda,
+C a geladeira possui apenas 10 maçãs.
+
+Se houver somente uma resposta, o usuário deve digitar o conteúdo da
+resposta para acertar. Exemplo:
+P Escreva 15 por extenso
+R quinze
+
+Nessa modalidade, se a resposta tiver mais de uma linha, o usuário
+deve digitar o conteúdo de qualquer linha para acertar. Exemplo:
+P Escreva por extenso um número inteiro de 3 a 6
+R três
+C quatro
+C cinco
+C seis
