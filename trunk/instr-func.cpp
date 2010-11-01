@@ -322,15 +322,40 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
         if (VarAtual >= v+1)
             txt = v[1].getTxt();
     }
-    if (tam>=(int)sizeof(mens))
-        tam = sizeof(mens);
-// Obtém o texto
-        // Avança para início do texto
-    for (const char * fim = txt+ini; *txt && txt<fim; )
-        txt++;
-        // Copia texto
-    for (const char * fim = txt+tam; *txt && txt<fim; )
-        *destino++ = *txt++;
+// Obtém o texto para função txt
+    if (valor==0)
+    {
+        if (tam > (int)sizeof(mens))
+            tam = sizeof(mens);
+            // Avança para início do texto
+        for (const char * fim = txt+ini; *txt && txt<fim; )
+            txt++;
+            // Copia texto
+        for (const char * fim = txt+tam; *txt && txt<fim; )
+            *destino++ = *txt++;
+    }
+// Obtém o texto para função txtsub
+    else
+    {
+        while (*txt==' ') txt++;
+            // Avança para início do texto
+        while (ini>0 && *txt)
+        {
+            while (*txt && *txt!=' ') txt++;
+            while (*txt==' ') txt++;
+            ini--;
+        }
+            // Copia texto
+        while (tam>0 && *txt && destino<mens+sizeof(mens))
+        {
+            while (*txt==' ' && destino<mens+sizeof(mens))
+                *destino++ = *txt++;
+            while (*txt && *txt!=' ' && destino<mens+sizeof(mens))
+                *destino++ = *txt++;
+            tam--;
+        }
+    }
+// Anota o texto
     ApagarVar(v);
     return CriarVarTexto(mens, destino-mens);
 }
