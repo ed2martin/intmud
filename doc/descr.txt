@@ -482,6 +482,16 @@ txt1(<texto>)
 txt2(<texto>)
     Retorna tudo exceto a primeira palavra do texto.
 
+txtsub(<texto>, <palavra inicial>)
+txtsub(<texto>, <palavra inicial>, <quantidade de palavras>)
+    Retorna um texto que é parte do texto especificado.
+    As palavras são sempre separadas por espaço.
+    Palavra inicial é a primeira palavra, 0=início do texto.
+    Se a quantidade de palavras for omitida, assume até o final do texto.
+    Exemplos:
+    txtsub("bom dia boa tarde", 2) é o mesmo que "boa tarde".
+    txtsub("bom dia boa tarde", 1, 1) é o mesmo que "dia".
+
 txtcor(<texto>)
     Retorna o texto sem as definições de cores. Exemplo:
     txtcor("\cF\d4Teste\b") é o mesmo que "Teste".
