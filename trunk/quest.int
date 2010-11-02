@@ -92,7 +92,7 @@ func iniler # Lê perguntas/respostas de um arquivo
         linhas.[arg0].addfim(txt(pos.linha - resp - 1) + " " + resp)
         pos.depois
       senao # Somente a pergunta: apaga linha
-        pos.antes, pos.remove
+        pos.remove
       fimse
       resp = 0
     senao # Qualquer outra coisa: apaga linha
