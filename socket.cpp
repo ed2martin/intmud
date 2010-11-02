@@ -1126,11 +1126,16 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                     pontESC=0;
                 }
             // Próxima linha
-                else if (dado==10)
+                else if (dado==10 || dado==13)
                 {
-                    bufRec[pontRec+1] = CorAtual;
-                    sair=false;
-                    break;
+                    if (dado==13 ? dadoRecebido==10 : dadoRecebido==13)
+                        dadoRecebido=0;
+                    else
+                    {
+                        bufRec[pontRec+1] = CorAtual;
+                        sair=false;
+                        break;
+                    }
                 }
             // BackSpace
                 else if (dado==8 || dado==127)
