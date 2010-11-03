@@ -330,6 +330,8 @@ TSocket::TSocket(int socknum)
     esperatelnet=0;
     eventoenv=false;
     ecotelnet=true;
+    sockenvrec=0;
+    sockerro=0;
     AFlooder=0;
 }
 
@@ -340,7 +342,7 @@ TSocket::~TSocket()
     printf("delete TSocket(%d)\n", sock); fflush(stdout);
 #endif
 // Fecha Socket
-    FecharSock();
+    FecharSock(0, 0);
 // Verifica se apagou objeto sockAtual
     if (sockAtual==this)
         sockAtual=sDepois;
@@ -357,7 +359,7 @@ void TSocket::Fechar()
 }
 
 //------------------------------------------------------------------------------
-void TSocket::FecharSock()
+void TSocket::FecharSock(int erro, bool env)
 {
     if (sock<0)
         return;
@@ -366,6 +368,8 @@ void TSocket::FecharSock()
     sock=-1;
     pontRec = 0;
     pontEnv = 0;
+    sockerro = erro;
+    sockenvrec = env;
 }
 
 //------------------------------------------------------------------------------
@@ -694,7 +698,7 @@ void TSocket::EnvPend()
 {
     if (sock<0 || pontEnv<=0)
         return;
-    int resposta;
+    int resposta, coderro=0;
 #ifdef DEBUG_MSG
     printf(">>> ENV \"");
     for (unsigned int x=0; x<pontEnv; x++)
@@ -703,17 +707,19 @@ void TSocket::EnvPend()
 #endif
 #ifdef __WIN32__
     resposta=send(sock, bufEnv, pontEnv, 0);
-    if (resposta==0)
-        resposta=-1;
-    else if (resposta==SOCKET_ERROR)
+    //if (resposta==0)
+    //    resposta=-1, coderro=0;
+    //else
+    if (resposta==SOCKET_ERROR)
     {
-        resposta=WSAGetLastError();
-        resposta = (resposta==WSAEWOULDBLOCK ? 0 : -1);
+        coderro = WSAGetLastError();
+        resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
     }
 #else
     resposta=send(sock, bufEnv, pontEnv, 0);
     if (resposta<=0)
     {
+        coderro = errno;
         if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
             resposta=0;
         else
@@ -721,7 +727,7 @@ void TSocket::EnvPend()
     }
 #endif
     if (resposta<0)
-        FecharSock();
+        FecharSock(coderro, 1);
     else if (resposta>=(int)pontEnv)
         pontEnv=0;
     else if (resposta>0)
@@ -764,9 +770,15 @@ int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
         // Verifica socket fechou
             if (obj->sock < 0)
             {
+                char mens[100];
+                mprintf(mens, sizeof(mens), "%s %s",
+                    obj->sockenvrec ? "Ao enviar" : "Ao receber",
+                    obj->sockerro<0 ? "protocolo incorreto" :
+                    obj->sockerro==0 ? "" :
+                    TxtErro(obj->sockerro));
                 sockAtual = obj;
             // Gera evento
-                obj->FuncFechou();
+                obj->FuncFechou(mens);
             // Passa para próximo objeto TSocket
                 if (sockAtual==obj) // Se objeto Socket não foi apagado, apaga
                     delete obj; // Faz automaticamente:
@@ -832,15 +844,22 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
         {
             int coderro = 0;
 #ifdef __WIN32__
-            if (FD_ISSET(obj->sock, set_entrada)==0)
+            if (! FD_ISSET(obj->sock, set_saida))
             {
-                if (FD_ISSET(obj->sock, set_err))
+                if (! FD_ISSET(obj->sock, set_err))
                 {
-                    SOCK_SOCKLEN_T len = sizeof(coderro);
-                    getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
-                            (char*)&coderro, &len);
+                    obj = obj->sDepois;
+                    continue;
                 }
-                else
+                SOCK_SOCKLEN_T len = sizeof(coderro);
+                if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
+                            (char*)&coderro, &len) != 0)
+                {
+                    coderro = WSAGetLastError();
+                    if (coderro==0)
+                        coderro=-1;
+                }
+                else if (coderro==0) // Time out no select
                 {
                     obj = obj->sDepois;
                     continue;
@@ -848,7 +867,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
             }
 #else
         // Checa se conexão pendente
-            if (FD_ISSET(obj->sock, set_entrada)==0 &&
+            if (FD_ISSET(obj->sock, set_entrada)==0 ||
                     FD_ISSET(obj->sock, set_saida)==0)
             {
                 obj = obj->sDepois;
@@ -884,8 +903,9 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
             }
         // Erro ao conectar
             sockAtual = obj;
-            char mens[80];
-            copiastr(mens, TxtErro(coderro), sizeof(mens));
+            char mens[80] = "Erro ao conectar";
+            if (coderro != -1)
+                copiastr(mens, TxtErro(coderro), sizeof(mens));
             if (obj->FuncEvento("err", mens))
                 delete obj; // Apaga objeto se não foi apagado
                             // socket é fechado ao apagar objeto
@@ -918,20 +938,21 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
         {
         // Lê do socket
             char mens[4096];
-            int resposta;
+            int resposta, coderro=0;
 #ifdef __WIN32__
             resposta = recv(obj->sock, mens, sizeof(mens), 0);
             if (resposta==0)
                 resposta=-1;
             else if (resposta==SOCKET_ERROR)
             {
-                resposta=WSAGetLastError();
-                resposta = (resposta==WSAEWOULDBLOCK ? 0 : -1);
+                coderro = WSAGetLastError();
+                resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
             }
 #else
             resposta = recv(obj->sock, mens, sizeof(mens), 0);
             if (resposta<=0)
             {
+                coderro = errno;
                 if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
                     resposta=0;
                 else
@@ -941,7 +962,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
         // Verifica se socket fechou
             if (resposta<0)
             {
-                obj->FecharSock();
+                obj->FecharSock(coderro, 0);
                 obj = obj->sDepois;
                 break;
             }
@@ -1132,6 +1153,7 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                         dadoRecebido=0;
                     else
                     {
+                        dadoRecebido = dado;
                         bufRec[pontRec+1] = CorAtual;
                         sair=false;
                         break;
@@ -1257,8 +1279,7 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
             if (mensagem >= SOCKET_REC // Verifica tamanho da mensagem
                     || bufRec[0]!=1) // Verifica tipo de mensagem
             {
-                close(sock);
-                sock=-1;
+                FecharSock(-1, 0);
                 return;
             }
             for (; tamanho>0 && pontRec<mensagem; tamanho--)
