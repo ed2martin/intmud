@@ -52,8 +52,10 @@ protected:
                     ///< Retorna o endereço local ou remoto da conexão
 
     void RetiraVarSocket(); ///< Retira objeto da lista ligada de TVarSocket
-    void FuncFechou();  ///< Executa função _fechou
-                        /**< @note Pode apagar o próprio objeto */
+    void FuncFechou(const char * txt);
+                    ///< Executa função _fechou
+                    /**< @param txt Texto que contém o motivo
+                     *   @note Pode apagar o próprio objeto */
     bool FuncEvento(const char * evento, const char * texto, int valor=-1);
                     ///< Executa uma função
                     /**< @param evento Nome do evento (ex. "msg")

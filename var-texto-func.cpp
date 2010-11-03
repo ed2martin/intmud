@@ -564,6 +564,10 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         if (coltam > total || colini + coltam > total)
                 // Nota: colini+coltam pode ser <0 se ocorrer overflow
             coltam = total - colini;
+    // Avança coluna inicial
+        colini += PosicBloco;
+        while (colini > bl->Bytes)
+            colini -= bl->Bytes, bl=bl->Depois;
     // Cria variável e aloca memória para o texto
     // Nota: a variável Bloco pode ser alterada aqui, porque
     //       a nova variável pode ocupar o mesmo lugar de TTextoPos
@@ -571,10 +575,6 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
             return Instr::CriarVarTexto("");
     // Obtém tamanho da memória alocada
         int copiar = Instr::VarAtual->tamanho;
-    // Avança coluna inicial
-        colini += PosicBloco;
-        while (colini > bl->Bytes)
-            colini -= bl->Bytes, bl=bl->Depois;
     // Anota o texto
         bl->CopiarTxt(colini, Instr::VarAtual->end_char, copiar);
         return true;
@@ -591,12 +591,14 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
     // Obtém o número de bytes
         int total = Bloco->LinhasBytes(PosicBloco, linhas) - 1;
     // Cria variável e aloca memória para o texto
+        TTextoBloco * bl = Bloco;
+        unsigned int pos = PosicBloco;
         if (!Instr::CriarVarTexto(0, total))
             return Instr::CriarVarTexto("");
     // Obtém tamanho da memória alocada
         int copiar = Instr::VarAtual->tamanho;
     // Anota o texto
-        Bloco->CopiarTxt(PosicBloco, Instr::VarAtual->end_char, copiar);
+        bl->CopiarTxt(pos, Instr::VarAtual->end_char, copiar);
         return true;
     }
 // Muda o texto da linha atual

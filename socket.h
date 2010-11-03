@@ -59,8 +59,12 @@ private:
              *   @param tamanho Tamanho da mensagem
              *   @return true se conseguiu enviar, false se não conseguiu */
     void EnvPend();             ///< Envia dados pendentes
-    void FecharSock();          ///< Fecha socket
+    void FecharSock(int erro, bool env);
+            ///< Fecha socket
+            /**< @param erro Código de erro que fechou o socket
+             *   @param env  Se fechou enviando (true) ou recebendo (false) */
     int  sock;                  ///< Socket; menor que 0 se estiver fechado
+    int  sockerro;              ///< Código de erro que fechou o socket
     char proto;
             ///< Protocolo (quando sock>=0)
             /**< - 0 = conectando
@@ -74,6 +78,7 @@ private:
                                 /**< @note Caracteres de controle de Telnet
                                   *  não devem gerar eventos _env */
     char ecotelnet:1;           ///< Variável socket.eco
+    char sockenvrec:1;          ///< 1=socket fechou ao enviar, 0=ao receber
     struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens

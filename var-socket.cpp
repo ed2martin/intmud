@@ -242,7 +242,7 @@ bool TObjSocket::Enviar(const char * mensagem)
 }
 
 //------------------------------------------------------------------------------
-void TObjSocket::FuncFechou()
+void TObjSocket::FuncFechou(const char * txt)
 {
     for (varObj = Inicio; varObj;)
     {
@@ -258,6 +258,7 @@ void TObjSocket::FuncFechou()
                 end->MarcarApagar();
             else
             {
+                Instr::ExecArg(txt);
                 Instr::ExecArg(indice);
                 Instr::ExecX();
             }
