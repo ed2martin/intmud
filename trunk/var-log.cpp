@@ -146,30 +146,48 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
         }
         return false;
     }
+// Fechar arquivo
+    if (comparaZ(nome, "fechar")==0)
+    {
+        Fechar();
+        return false;
+    }
+// Obtém o nome do arquivo
+    char arqnome[300]; // Nome do arquivo; nulo se não for válido
+    *arqnome=0;
+    if (Instr::VarAtual >= v+1)
+    {
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+    // Verifica se nome permitido
+        if (!arqvalido(arqnome, ".log"))
+            *arqnome=0;
+    }
+// Checa se nome de arquivo é válido
+    if (comparaZ(nome, "valido")==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(*arqnome != 0);
+    }
+// Checa se arquivo existe
+    if (comparaZ(nome, "existe")==0)
+    {
+        struct stat buf;
+        Instr::ApagarVar(v);
+        if (*arqnome && stat(arqnome, &buf)<0)
+            *arqnome = 0;
+        return Instr::CriarVarInt(*arqnome != 0);
+    }
 // Abrir arquivo
     if (comparaZ(nome, "abrir")==0)
     {
         int descr = -1;
-    // Obtém nome do arquivo
-        while (Instr::VarAtual == v+1)
-        {
-            char nome[300]; // Nome do arquivo
-            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
-    // Verifica se nome permitido
-            if (!arqvalido(nome, "log"))
-                break;
-    // Abre arquivo
-            descr = open(nome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
-            break;
-        }
     // Variável int no topo da pilha
         Instr::ApagarVar(v);
         if (!Instr::CriarVarInt(0))
-        {
-            if (descr>=0)
-                close(descr);
             return false;
-        }
+    // Abre arquivo
+        if (*arqnome)
+            descr = open(arqnome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
     // Se conseguiu abrir arquivo...
         if (descr >= 0)
         {
@@ -188,12 +206,6 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             Instr::VarAtual->setInt(1);
         }
         return true;
-    }
-// Fechar arquivo
-    if (comparaZ(nome, "fechar")==0)
-    {
-        Fechar();
-        return false;
     }
     return false;
 }

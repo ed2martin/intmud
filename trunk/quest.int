@@ -402,38 +402,84 @@ func msgtodos # Envia mensagem para todos da sala
 
 classe jogador
 txt32 nome # Apelido do jogador
-int8 nivel # Nível que está jogando, de 0 a 9 ou <0 se não estiver jogando
+int8 passo # 0=menu principal, 1=menu de nível, 2=jogando
+int8 nivel # Nível escolhido
+uint16 subnivel # Quantidade de sub níveis no nível atual
+# Durante o jogo, subnivel é o sub nível escolhido, 0=nível completo
 intinc tempojogo # Quanto tempo de jogo
 uint32 errouperg # Quantas perguntas errou
+uint32 numperg # Quantas perguntas tinha inicialmente
 textotxt perg # Perguntas; semelhante a jogo:linhas
 textopos atualperg # Pergunta atual
 textotxt respok # Resposta correta
 int8 respmsg # Para avisar a todos sobre o usuário
+
+const letra_opc = txt("ABCDEFGHIJKLMNOPRSTUVWXYZ", arg0, 1)
+# Entrada: número da opção, começa em 0
+# Retorna: letra da opção
+
+const texto_opc = txttroca(arg0, "\b", "\n") + "\n"
+# Entrada: texto de pergunta ou resposta
+# Retorna: texto com "\n" nos lugares certos
 
 func ini # Inicialização
   info_menu
   # msg("Apelido: " + nome + "\n")
 
 func recebe # Recebeu uma mensagem do usuário
-# arg0 = mensagem
-  textopos pos
   # msg("Você teclou " + arg0 + "\n")
-# Opções fora do jogo
-  se nivel < 0
-    nivel = arg0
-    se nivel >= 0 & nivel < 10 & arg0 = txt(nivel) # Um número
-      ret inic_jogo
-    senao arg0 = "I" # Níveis existentes
-      info_niveis
-    senao txt(arg0, 0, 1) = "R" # Récordes
-      info_recordes(txt(arg0, 1))
-    senao # Opção inválida
-      msg("Opção inválida\n")
+  recebe[passo](arg0)
+
+func info_menu
+  passo = 0 # Indica que não está jogando
+  msg("Tecle de 0 a 9 para jogar, R0 a R9 para ver récordes ou I para informações\n")
+
+func info_submenu
+  passo = 1
+  msg("Nível " + nivel + ", tecle J para jogar, 1 a " + subnivel + " para treino, Z desiste\n")
+
+func recebe0 # Menu principal
+  nivel = arg0
+  se nivel >= 0 & nivel < 10 & arg0 = txt(nivel) # Um número
+    subnivel = $jogo.linhas.[nivel].linhas # Quantidade de perguntas
+    subnivel = intdiv((subnivel + 5) / 15)
+    se subnivel <= 1
+      subnivel = 0
+      ret inic_jogo(0, 100000)
+    senao
+      ret info_submenu
     fimse
-    info_menu
-    ret
+  senao arg0 = "I" # Níveis existentes
+    info_niveis
+  senao txt(arg0, 0, 1) = "R" # Récordes
+    info_recordes(txt(arg0, 1))
+  senao # Opção inválida
+    msg("Opção inválida\n")
   fimse
-# Durante o jogo
+  info_menu
+  ret
+
+func recebe1 # Menu de nível
+  uint16 valor
+  valor = arg0
+  se valor >= 1 & valor <= subnivel & arg0 = txt(valor) # Um número
+    se valor = subnivel
+      ret inic_jogo(valor*15-15, 100000)
+    senao
+      subnivel = valor
+      ret inic_jogo(valor*15-15, 15)
+    fimse
+  senao arg0 = "Z"
+    ret info_menu
+  senao arg0 = "J"
+    subnivel = 0
+    ret inic_jogo(0, 100000)
+  fimse
+  info_submenu
+  ret
+
+func recebe2 # Durante o jogo
+  textopos pos
 # Desistância
   se arg0 = "z"
     msg("Desistiu\n")
@@ -463,18 +509,6 @@ func recebe # Recebeu uma mensagem do usuário
     fim_jogo
     perg.limpar
     info_menu
-
-const letra_opc = txt("ABCDEFGHIJKLMNOPRSTUVWXYZ", arg0, 1)
-# Entrada: número da opção, começa em 0
-# Retorna: letra da opção
-
-const texto_opc = txttroca(arg0, "\b", "\n") + "\n"
-# Entrada: texto de pergunta ou resposta
-# Retorna: texto com "\n" nos lugares certos
-
-func info_menu
-  nivel = -1 # Indica que não está jogando
-  msg("Tecle de 0 a 9 para jogar, R0 a R9 para ver récordes ou I para informações\n")
 
 func info_niveis # Informa os níveis existentes
   textopos pos
@@ -511,37 +545,46 @@ func info_recordes # Informa os récordes de um nível
     efim
 
 func inic_jogo # Inicia jogo
+# arg0 = número da pergunta inicial (começa em 0)
+# arg1 = quantidade de perguntas
   textopos pos
+# Obtém perguntas
+  pos = $jogo.linhas.[nivel].ini
+  pos.linha = arg0
+  perg.limpar
+  perg.ini.add(pos, arg1)
 # Checa se tem perguntas
-  se $jogo.linhas.[nivel].linhas = 0
+  se perg.linhas = 0
     msg("Nível " + nivel + " não tem perguntas; escolha outro\n")
     info_menu
     ret
   fimse
-# Indica que está jogando
-  tempojogo = 0
-  errouperg = 0
-  respmsg = 0
-# Obtém perguntas
-  perg.limpar
-  perg.ini.add($jogo.linhas.[nivel].ini, 100000)
+# Início de jogo
+  tempojogo = 0, errouperg = 0, respmsg = 0
+  numperg = perg.linhas
+  passo = 2
   #msg("Perguntas: " + perg.linhas + "\n")
   msg("Iniciando jogo; para desistir tecle Z\n")
   prox_perg
 
 func fim_jogo # Fim de jogo após responder todas as perguntas
   uint32 pontos # Quantos pontos fez
-  uint32 perg # Quantas perguntas tem
   textopos pos # Para checar récordes
   datahora tempo # Para obter data atual
   arqsav sav1
   listaobj l1
 # Obtém pontuação
-  perg = $jogo.linhas.[nivel].linhas
-  se tempojogo > perg
-    pontos = perg * 200000 / (tempojogo + errouperg * 5)
+  se tempojogo > numperg
+    pontos = numperg * 200000 / (tempojogo + errouperg * 5)
   fimse
-  msg("Parabéns! Você fez " + pontos + " pontos. Errou " + errouperg + ".\n")
+# Mostra pontuação, termina se for treino
+  se subnivel
+    msg("Parabéns! Você fez " + pontos + " pontos no nível " + \
+        nivel + "/" + subnivel + ". Errou " + errouperg + ".\n")
+    ret
+  fimse
+  msg("Parabéns! Você fez " + pontos + " pontos no nível " + \
+      nivel + ". Errou " + errouperg + ".\n")
 # Checa récordes
   pos = $jogo.recordes.[nivel].ini
   enquanto pos.lin
@@ -567,7 +610,7 @@ func prox_perg # Passa para a próxima pergunta
   textopos pos
 # Mostra situação do usuário
   respmsg += 1
-  se respmsg >= 10
+  se respmsg >= 10 & subnivel = 0
     respmsg = 0
     msgtodos(nome + ", N" + nivel + ", faltam " + perg.linhas + "\n")
   fimse

@@ -833,6 +833,105 @@ bool Instr::FuncTxtTroca(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtsepara
+bool Instr::FuncTxtSepara(TVariavel * v, int valor)
+{
+    const char * txt = "";  // Texto
+    char mens[BUF_MENS];    // Resultado
+    char separador[1024];   // Texto usado como separador
+    char * destino = mens;
+    unsigned int mask[64];       // bits 15-8=antes, bits 7-0=depois
+    unsigned int nummask = 0;
+    unsigned int tipoch = 1;  // Tipo de caracter conforme máscara
+// Obtém separador e máscara de bits (opções)
+    separador[0]=' ', separador[1]=0;
+    if (VarAtual >= v+2)
+    {
+        if (VarAtual >= v+3)
+            copiastr(separador, v[3].getTxt(), sizeof(separador));
+        const char * opc = v[2].getTxt();
+        mask[nummask] = 0;
+        int valormask = 0;
+        while (*opc)
+            switch (*opc++)
+            {
+            case 'V':
+            case 'v': valormask |= 0x01; break;
+            case 'N':
+            case 'n': valormask |= 0x02; break;
+            case 'D':
+            case 'd': valormask |= 0x04; break;
+            case 'E':
+            case 'e': valormask |= 0x08; break;
+            case 'L':
+            case 'l': valormask |= 0x10; break;
+            case 'O':
+            case 'o': valormask |= 0x20; break;
+            case '+': valormask <<= 8; break;
+            case ',':
+                if ((valormask&0xFF) && (valormask&0xFF00) &&
+                        nummask < sizeof(mask) / sizeof(mask[0]))
+                    mask[nummask++] = valormask & 0xFFFF;
+                else
+                    valormask = 0;
+                break;
+            }
+        if ((valormask&0xFF) && (valormask&0xFF00) &&
+                nummask < sizeof(mask) / sizeof(mask[0]))
+            mask[nummask++] = valormask;
+    }
+// Texto original
+    if (VarAtual >= v+1)
+        txt = v[1].getTxt();
+// Obtém o texto
+    const char * pnum = txt-1; // Para detectar número
+    while (true)
+    {
+    // Atualiza tipo de caracter
+        tipoch = ((tipoch & ~0x202) << 8) |
+                tabTXTSEPARA[*(unsigned char*)txt];
+    // Checa início/fim de número
+        if (pnum <= txt)
+        {
+            if (pnum == txt)
+                tipoch |= 0x200;
+        // Se for número, avança até o fim do número
+            if ((txt[0]=='-' && txt[1]>='0' && txt[1]<='9') || (tipoch&4))
+            {
+                tipoch |= 2;
+                pnum = txt+1;
+                while (*pnum>='0' && *pnum<='9')
+                    pnum++;
+                if (pnum[0]=='.' && pnum[1]>='0' && pnum[1]<='9')
+                {
+                    pnum+=2;
+                    while (*pnum>='0' && *pnum<='9')
+                        pnum++;
+                }
+            }
+        }
+    // Checa se deve acrescentar separador
+        for (unsigned int x=0; x<nummask; x++)
+        {
+            int valormask = mask[x] & tipoch;
+            if ((valormask&0xFF)==0 || (valormask&0xFF00)==0)
+                continue;
+            const char * p = separador;
+            while (*p && destino<mens+sizeof(mens))
+                *destino++ = *p++;
+            break;
+        }
+    // Anota texto
+        if (*txt==0 || destino >= mens+sizeof(mens))
+            break;
+        *destino++ = *txt++;
+    }
+// Retorna o texto
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino-mens);
+}
+
+//----------------------------------------------------------------------------
 /// Funções objantes e objdepois
 bool Instr::FuncAntesDepois(TVariavel * v, int valor)
 {

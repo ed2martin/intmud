@@ -173,16 +173,11 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
 // Checa se arquivo existe
     if (comparaZ(nome, "existe")==0)
     {
+        struct stat buf;
         Instr::ApagarVar(v);
-        if (!Instr::CriarVarInt(0))
-            return false;
-        if (*arqnome)
-        {
-            struct stat buf;
-            if (stat(arqnome, &buf)>=0)
-                Instr::VarAtual->setInt(1);
-        }
-        return true;
+        if (*arqnome && stat(arqnome, &buf)<0)
+            *arqnome = 0;
+        return Instr::CriarVarInt(*arqnome != 0);
     }
 // Checar senha
     if (comparaZ(nome, "senha")==0)
