@@ -16,6 +16,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include "var-txt.h"
 #include "variavel.h"
 #include "instr.h"
