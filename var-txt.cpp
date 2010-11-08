@@ -178,49 +178,6 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
             Instr::VarAtual->setInt(ftell(arq));
         return true;
     }
-// Abrir arquivo
-    if (comparaZ(nome, "abrir")==0)
-    {
-        FILE * descr = 0;
-    // Obtém nome do arquivo
-        while (Instr::VarAtual == v+2)
-        {
-            char nome[300]; // Nome do arquivo
-            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
-            if (!arqvalido(nome, ".txt"))
-                break;
-    // Abre arquivo
-            switch (v[2].getInt())
-            {
-            case 0: descr = fopen(nome, "r"); break;
-            case 1: descr = fopen(nome, "r+"); break;
-            case 2: descr = fopen(nome, "w"); break;
-            case 3: descr = fopen(nome, "a"); break;
-            }
-#ifdef DEBUG
-            printf("Abrindo [%s] : %s\n", nome, descr ? "OK" : "ERRO");
-            fflush(stdout);
-#endif
-            break;
-        }
-    // Variável int no topo da pilha
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVarInt(0))
-        {
-            if (descr)
-                fclose(descr);
-            return false;
-        }
-    // Se conseguiu abrir arquivo...
-        if (descr != 0)
-        {
-            if (arq)
-                fclose(arq);
-            arq = descr;
-            Instr::VarAtual->setInt(1);
-        }
-        return true;
-    }
 // Fechar arquivo
     if (comparaZ(nome, "fechar")==0)
     {
@@ -234,31 +191,79 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
             fflush(arq);
         return false;
     }
+// Obtém o nome do arquivo
+    char arqnome[300]; // Nome do arquivo; nulo se não for válido
+    *arqnome=0;
+    if (Instr::VarAtual >= v+1)
+    {
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+    // Verifica se nome permitido
+        if (!arqvalido(arqnome, ".txt"))
+            *arqnome=0;
+    }
+// Checa se nome de arquivo é válido
+    if (comparaZ(nome, "valido")==0)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(*arqnome != 0);
+    }
+// Checa se arquivo existe
+    if (comparaZ(nome, "existe")==0)
+    {
+        struct stat buf;
+        Instr::ApagarVar(v);
+        if (*arqnome && stat(arqnome, &buf)<0)
+            *arqnome = 0;
+        return Instr::CriarVarInt(*arqnome != 0);
+    }
+// Abrir arquivo
+    if (comparaZ(nome, "abrir")==0)
+    {
+        FILE * descr = 0;
+        int modo = -1;
+        if (*arqnome && Instr::VarAtual >= v+2)
+            modo = v[2].getInt();
+    // Variável int no topo da pilha
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVarInt(0))
+            return false;
+    // Abre arquivo
+        switch (modo)
+        {
+        case 0: descr = fopen(arqnome, "r"); break;
+        case 1: descr = fopen(arqnome, "r+"); break;
+        case 2: descr = fopen(arqnome, "w"); break;
+        case 3: descr = fopen(arqnome, "a"); break;
+        }
+#ifdef DEBUG
+        printf("Abrindo [%s] : %s\n", nome, descr ? "OK" : "ERRO");
+        fflush(stdout);
+#endif
+    // Se conseguiu abrir arquivo...
+        if (descr != 0)
+        {
+            if (arq)
+                fclose(arq);
+            arq = descr;
+            Instr::VarAtual->setInt(1);
+        }
+        return true;
+    }
 // Truncar
     if (comparaZ(nome, "truncar")==0)
     {
         int descr = -1;
         int tamanho = 0;
-    // Obtém nome e novo tamanho do arquivo
-        while (Instr::VarAtual == v+2)
-        {
-            char nome[300]; // Nome do arquivo
-            copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
+    // Obtém novo tamanho do arquivo
+        if (Instr::VarAtual >= v+2)
             tamanho = v[2].getInt();
-            if (!arqvalido(nome, ".txt"))
-                break;
-    // Abre arquivo
-            descr = open(nome, O_RDWR);
-            break;
-        }
     // Variável int no topo da pilha
         Instr::ApagarVar(v);
         if (!Instr::CriarVarInt(0))
-        {
-            if (descr >= 0)
-                close(descr);
             return false;
-        }
+    // Abre arquivo
+        if (*arqnome)
+            descr = open(arqnome, O_RDWR);
     // Se conseguiu abrir arquivo...
         if (descr >= 0)
         {

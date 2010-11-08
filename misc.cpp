@@ -37,6 +37,7 @@ char * tabTXTCOD = 0;
 char * tabTXTDEC = 0;
 char * tab8B = 0;
 char * tab7B = 0;
+char * tabTXTSEPARA = 0;
 
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
@@ -55,7 +56,7 @@ void tabASCinic(void)
     if (tabNOMES)
         return;
 // Aloca memória
-    tabNOMES = new char[0x800];
+    tabNOMES = new char[0x900];
     tabCOMPLETO = tabNOMES + 0x100;
     tabMAI = tabNOMES + 0x200;
     tabMIN = tabNOMES + 0x300;
@@ -63,6 +64,7 @@ void tabASCinic(void)
     tabTXTDEC = tabNOMES + 0x500;
     tab8B = tabNOMES + 0x600;
     tab7B = tabNOMES + 0x700;
+    tabTXTSEPARA = tabNOMES + 0x800;
 // Acerta tabNOMES
     memset(tabNOMES,0,256);
     tabNOMES[(unsigned char)'_'] = ' ';
@@ -131,6 +133,19 @@ void tabASCinic(void)
         tab7B[x] = x;
     memset(tab7B+0x80, ' ', 0x40);
     memcpy(tab7B+0xC0, StrNormal, 0x40);
+// Acerta tabTXTSEPARA
+    memset(tabTXTSEPARA,0,256);
+    tabTXTSEPARA[0] = 1; // Vazio
+    tabTXTSEPARA[(unsigned char)' '] = 8; // Espaço
+    for (int x='0'; x<='9'; x++) // Dígitos
+        tabTXTSEPARA[x] = 4;
+    for (int x='a'; x<='z'; x++) // Letras de A a Z
+        tabTXTSEPARA[x-0x20] = tabTXTSEPARA[x] = 0x10;
+    for (cpont=especialASCII; *cpont; cpont++) // Letras acentuadas
+        tabTXTSEPARA[*(unsigned char*)cpont] = 0x10;
+    for (int x=0; x<0x100; x++) // Outros
+        if (tabTXTSEPARA[x] == 0)
+            tabTXTSEPARA[x] = 0x20;
 }
 
 //------------------------------------------------------------------------------

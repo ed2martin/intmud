@@ -602,6 +602,32 @@ txtremove(<texto1>, <texto2>)
     txtremove("\cF\d4Teste\b", "C") é o mesmo que "Teste"
     txtremove("tenha um 'bom dia' !", "S") é o mesmo que "tenha um bom_dia !"
 
+txtsepara(<texto>, <opções>, <texto usado como separador>)
+    Separa números e palavras de um texto, acrescentando um texto separador.
+    Se o texto separador for omitido, será usado um espaço.
+
+    Opções é um texto, sendo que cada letra significa um tipo de caracter:
+    D = dígito de 0 a 9
+    N = um número (pode começar com um sinal de menos e ter um ponto)
+    L = letra (de A a Z, acentuada ou não)
+    E = espaço vazio
+    O = outros caracteres
+    V = vazio (antes do início do texto ou depois do fim)
+
+    Para indicar aonde o texto separador deve ser acrescentado, escreve-se
+    uma ou mais letras, que correspondem a um tipo de caracter, seguido do
+    sinal de mais e uma ou mais letras, correspondentes ao caracter seguinte.
+    Exemplo, para separar os números, acrescentando um espaço na frente,
+    o texto de opções é "LNO+N", que significa letra, número ou outros
+    caracteres seguido de número.
+    txtsepara("1,10abc-40", "LNO+N") resulta em: "1, 10abc -40"
+    Exemplo 2: txtsepara("bom dia boa tarde", "L+EV", "!")
+    é o mesmo que: "bom! dia! boa! tarde!"
+
+    Pode-se usar mais de uma condição, separando-as com vírgulas.
+    Exemplo: txtsepara("1,10abc-40", "LON+N,N+LON")
+    é o mesmo que: "1 , 10 abc -40"
+
 txtproc(<texto>, <texto procurado>)
 txtproc(<texto>, <texto procurado>, <caracter inicial>)
     Procura <texto procurado> em <texto>
@@ -1046,19 +1072,23 @@ arqlog <nomedavariável>
     Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
 
     Funções:
+    valido(<nome do arquivo>)
+        Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
+    existe(<nome do arquivo>)
+        Retorna 1 se arquivo existe ou 0 se não existe.
     abrir(<nome do arquivo>)
         Abre arquivo, cria se não existir.
         Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
         Nota 1: O nome do arquivo sempre terminará com ".log".
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível criar arquivos em outros lugares.
+    fechar
+        Fecha o arquivo.
     msg(<texto>)
         Grava texto em uma nova linha, no final do arquivo.
         Nota 1: Definições de cores e linhas vazias não são gravadas.
         Nota 2: Pode demorar até 2 segundos para o texto ser realmente
                 gravado no arquivo.
-    fechar
-        Fecha o arquivo.
 
 arqsav <nomedavariável>
     Para salvar objetos em arquivos e recuperar posteriormente.
@@ -1128,6 +1158,10 @@ arqtxt <nomedavariável>
     Nota: A escrita em arquivo não é tão eficiente quanto arqlog.
 
     Funções:
+    valido(<nome do arquivo>)
+        Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
+    existe(<nome do arquivo>)
+        Retorna 1 se arquivo existe ou 0 se não existe.
     abrir(<nome do arquivo>, <modo>)
         Abre arquivo. Retorna 1 se conseguiu ou 0 se não conseguiu.
         Modo pode ser:
