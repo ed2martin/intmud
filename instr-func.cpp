@@ -361,6 +361,35 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// txtfim
+bool Instr::FuncTxtFim(TVariavel * v, int valor)
+{
+    int tam = 0x10000;  // Tamanho
+    char mens[BUF_MENS];    // Resultado
+// Obtém tam conforme os argumentos
+    if (VarAtual >= v+2)
+        tam = v[2].getInt();
+    if (tam > (int)sizeof(mens))
+        tam = sizeof(mens);
+// Obtém o texto
+    if (tam<=0 || VarAtual < v+1)
+        tam=0;
+    else
+    {
+        const char * txt = v[1].getTxt();
+        int total = strlen(txt);
+        if (tam > total)
+            tam = total;
+        else
+            txt += total - tam;
+        memcpy(mens, txt, tam);
+    }
+// Anota o texto
+    ApagarVar(v);
+    return CriarVarTexto(mens, tam);
+}
+
+//----------------------------------------------------------------------------
 /// Funções de texto: txt1, txt2, txtcor, etc.
 bool Instr::FuncTxt2(TVariavel * v, int valor)
 {

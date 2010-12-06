@@ -41,8 +41,8 @@ public:
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
     bool EnvMens(const char * mensagem);
             ///< Envia mensagem conforme protocolo
-            /** @param mensagem Endereço dos bytes a enviar
-             *  @return true se conseguiu enviar, false se não conseguiu */
+            /**< @param mensagem Endereço dos bytes a enviar
+             *   @return true se conseguiu enviar, false se não conseguiu */
     int  Variavel(char num, int valor);
     const char * Endereco(bool remoto);
             ///< Retorna o endereço local ou remoto da conexão

@@ -681,6 +681,8 @@ bool TVariavel::getBool()
     case Instr::cUInt8:
         return (end_char[indice] != 0);
     case Instr::cInt1:
+        if (numfunc)
+            return GetVetorInt1(this);
         if (indice)
         {
             int valor = (bit + bit * 0x100) << (indice&7);
@@ -799,6 +801,8 @@ int TVariavel::getInt()
             return (errno ? 0 : num);
         }
     case Instr::cInt1:
+        if (numfunc)
+            return GetVetorInt1(this);
         if (indice==0)
             return (end_char[0] & bit) != 0;
         return getBool();
@@ -954,6 +958,8 @@ double TVariavel::getDouble()
             return (errno ? 0 : num);
         }
     case Instr::cInt1:
+        if (numfunc)
+            return GetVetorInt1(this);
         if (indice==0)
             return (end_char[0] & bit) != 0;
         return getBool();
@@ -1086,9 +1092,9 @@ double TVariavel::getDouble()
 //------------------------------------------------------------------------------
 const char * TVariavel::getTxt()
 {
+    static char txtnum[80];
     if (indice==0xFF) // Vetor
         return "";
-    static char txtnum[80];
     switch (defvar[2])
     {
 // Variáveis
@@ -1100,9 +1106,12 @@ const char * TVariavel::getTxt()
     case Instr::cVarNome:
         return end_char;
     case Instr::cInt1:
-        if (indice==0)
-            return (end_char[0] & bit ? "1" : "0");
-        return (getBool() ? "1" : "0");
+        if (numfunc==0)
+        {
+            if (indice==0)
+                return (end_char[0] & bit ? "1" : "0");
+            return (getBool() ? "1" : "0");
+        }
     case Instr::cInt8:
     case Instr::cUInt8:
     case Instr::cInt16:
@@ -1303,16 +1312,17 @@ void TVariavel::setInt(int valor)
             break;
         }
     case Instr::cInt1:
-        if (indice)
+        if (numfunc)
+            SetVetorInt1(this, valor);
+        else if (indice)
         {
             int mask = (bit + bit * 0x100) << (indice&7);
             if (valor)
                 end_char[indice/8] |= (mask>>8);
             else
                 end_char[indice/8] &= ~(mask>>8);
-            break;
         }
-        if (valor)
+        else if (valor)
             end_char[0] |= bit;
         else
             end_char[0] &= ~bit;
@@ -1740,6 +1750,39 @@ bool TVariavel::Func(const char * nome)
         case Instr::cTxt1:
         case Instr::cTxt2:
             return FuncVetorTxt(this, nome);
+        case Instr::cInt1:
+            return FuncVetorInt1(this, nome);
+        case Instr::cInt8:
+        case Instr::cUInt8:
+            if (comparaZ(nome, "limpar")==0)
+                memset(end_char, 0, (unsigned char)defvar[Instr::endVetor]);
+            return false;
+        case Instr::cInt16:
+        case Instr::cUInt16:
+            if (comparaZ(nome, "limpar")==0)
+                memset(end_char, 0, 2*(unsigned char)defvar[Instr::endVetor]);
+            return false;
+        case Instr::cInt32:
+        case Instr::cUInt32:
+            if (comparaZ(nome, "limpar")==0)
+                memset(end_char, 0, 4*(unsigned char)defvar[Instr::endVetor]);
+            return false;
+        case Instr::cIntInc:
+            return end_incdec->FuncVetorInc(this, nome);
+        case Instr::cIntDec:
+            return end_incdec->FuncVetorDec(this, nome);
+        case Instr::cIntTempo:
+            if (comparaZ(nome, "limpar")==0)
+                for (unsigned int x=0;
+                        x<(unsigned char)defvar[Instr::endVetor]; x++)
+                    end_inttempo[x].setValor(0);
+            return false;
+        case Instr::cReal:
+            if (comparaZ(nome, "limpar")==0)
+                for (unsigned int x=0;
+                        x<(unsigned char)defvar[Instr::endVetor]; x++)
+                    end_double[x] = 0;
+            return false;
         }
         return false;
     }

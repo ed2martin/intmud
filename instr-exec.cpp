@@ -260,6 +260,7 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "txtdec",     Instr::FuncTxt2, 11 },
     { "txtesp",     Instr::FuncEsp, 0 },
     { "txtfiltro",  Instr::FuncTxt2, 7 },
+    { "txtfim",     Instr::FuncTxtFim, 0 },
     { "txtinvis",   Instr::FuncTxt2, 13 },
     { "txtmai",     Instr::FuncTxt2, 3 },
     { "txtmaiini",  Instr::FuncTxt2, 4 },
@@ -936,7 +937,7 @@ bool Instr::ExecX()
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
-            if (VarAtual->Tipo() != varInt || VarAtual->tamanho==0)
+            if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
             {
                 bool valor = !VarAtual->getBool();
                 ApagarVar(VarAtual);
@@ -945,6 +946,20 @@ bool Instr::ExecX()
             }
             else
                 VarAtual->setInt(!VarAtual->getInt());
+            break;
+        case exo_b_comp: // Operador: ~a
+            if (VarFuncIni(VarAtual))
+                break;
+            FuncAtual->expr++;
+            if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+            {
+                int valor = ~VarAtual->getInt();
+                ApagarVar(VarAtual);
+                if (!CriarVarInt(valor))
+                    return RetornoErro();
+            }
+            else
+                VarAtual->setInt(~VarAtual->getInt());
             break;
         case exo_mul:        // Operador: a*b
             {
@@ -1127,6 +1142,91 @@ bool Instr::ExecX()
                         return RetornoErro();
                 }
                 VarAtual->setDouble(valor);
+                break;
+            }
+        case exo_b_shl:  // Operador: a << b
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+                int valor = VarAtual[-1].getInt() << VarAtual[0].getInt();
+                ApagarVar(VarAtual);
+                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                {
+                    ApagarVar(VarAtual);
+                    if (!CriarVarInt(valor))
+                        return RetornoErro();
+                }
+                else
+                    VarAtual->setInt(valor);
+                break;
+            }
+        case exo_b_shr:  // Operador: a >> b
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+                int valor = VarAtual[-1].getInt() >> VarAtual[0].getInt();
+                ApagarVar(VarAtual);
+                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                {
+                    ApagarVar(VarAtual);
+                    if (!CriarVarInt(valor))
+                        return RetornoErro();
+                }
+                else
+                    VarAtual->setInt(valor);
+                break;
+            }
+        case exo_b_e:   // Operador: a&b
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+                int valor = VarAtual[-1].getInt() & VarAtual[0].getInt();
+                ApagarVar(VarAtual);
+                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                {
+                    ApagarVar(VarAtual);
+                    if (!CriarVarInt(valor))
+                        return RetornoErro();
+                }
+                else
+                    VarAtual->setInt(valor);
+                break;
+            }
+        case exo_b_ouou: // Operador: a^b
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+                int valor = VarAtual[-1].getInt() ^ VarAtual[0].getInt();
+                ApagarVar(VarAtual);
+                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                {
+                    ApagarVar(VarAtual);
+                    if (!CriarVarInt(valor))
+                        return RetornoErro();
+                }
+                else
+                    VarAtual->setInt(valor);
+                break;
+            }
+        case exo_b_ou:  // Operador: a|b
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+                int valor = VarAtual[-1].getInt() | VarAtual[0].getInt();
+                ApagarVar(VarAtual);
+                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                {
+                    ApagarVar(VarAtual);
+                    if (!CriarVarInt(valor))
+                        return RetornoErro();
+                }
+                else
+                    VarAtual->setInt(valor);
                 break;
             }
         case exo_igual:      // Operador: a=b
@@ -1639,8 +1739,8 @@ bool Instr::ExecX()
             // Variável
                 ApagarVar(v+1);
                 VarAtual++;
+                VarAtual->Limpar();
                 VarAtual->defvar = defvar;
-                VarAtual->tamanho = 0;
                 VarAtual->bit = indvar >> 24;
                 VarAtual->indice = (defvar[endVetor]==0 ? 0 : 0xFF);
                 if (defvar[2]==cConstTxt || // Constante

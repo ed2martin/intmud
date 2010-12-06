@@ -46,6 +46,7 @@ bool FuncNumero(TVariavel * v, int valor);
 bool FuncRef(TVariavel * v, int valor);
 bool FuncTxtNum(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
+bool FuncTxtFim(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);
 bool FuncEsp(TVariavel * v, int valor);
 bool FuncInt(TVariavel * v, int valor);
@@ -370,11 +371,17 @@ enum Expressao
     exo_virgula,    ///< Operador: Vírgula, para separar expressões
     exo_neg,        ///< Operador: -a
     exo_exclamacao, ///< Operador: !a
+    exo_b_comp,     ///< Operador: ~a
     exo_mul,        ///< Operador: a*b
     exo_div,        ///< Operador: a/b
     exo_porcent,    ///< Operador: a%b
     exo_add,        ///< Operador: a+b
     exo_sub,        ///< Operador: a-b
+    exo_b_shl,      ///< Operador: a << b
+    exo_b_shr,      ///< Operador: a >> b
+    exo_b_e,        ///< Operador: a&b
+    exo_b_ouou,     ///< Operador: a^b
+    exo_b_ou,       ///< Operador: a|b
     exo_menor,      ///< Operador: a<b
     exo_menorigual, ///< Operador: a<=b
     exo_maior,      ///< Operador: a>b

@@ -161,6 +161,7 @@ public:
     unsigned char indice;
         ///< Índice no vetor ou 0 se não for vetor ou 0xFF se for o vetor
     unsigned char bit;  ///< Máscara do bit, se for variável de bit
+    unsigned short numfunc; ///< Para uso da variável; inicialmente é zero
 };
 
 //----------------------------------------------------------------------------

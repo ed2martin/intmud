@@ -212,18 +212,12 @@ void err_fim()
 }
 
 //------------------------------------------------------------------------------
-#ifdef __WIN32__
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR lpCmdLine, int)
-#else
 int main(int argc, char *argv[])
-#endif
 {
 // Inicialização
-#ifdef __WIN32__
-    Inicializa(lpCmdLine);
-#else
-    Inicializa(argc<=1 ? "" : argv[1]);
-#endif
+    // Se precisar obter HINSTANCE no Windows:
+    //HINSTANCE hInstance = GetModuleHandle(NULL);
+    Inicializa(argc<=1 ? argv[0] : argv[1]);
 
 // Coloca o programa em segundo plano
 #if !defined DEBUG && !defined __WIN32__
@@ -491,8 +485,12 @@ void Inicializa(const char * arg)
         int tam = strlen(INT_EXT);
         arqext = arqinicio + strlen(arqinicio);
         if (arqext > arqinicio + tam + 1)
+        {
             if (arqext[-tam-1]=='.' && comparaZ(arqext-tam, INT_EXT)==0)
                 arqext -= tam + 1;
+            else if (comparaZ(arqext-4, ".exe")==0)
+                arqext -= 4;
+        }
         *arqext = 0;
     }
 

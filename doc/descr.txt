@@ -4,8 +4,9 @@ O programa é um interpretador de comandos que trabalha com um ou mais
 arquivos cujos nomes terminam com ".int". São arquivos de texto que contém
 os comandos (o programa interpretado) executados pelo IntMUD.
 
-Via de regra, o arquivo principal chama-se "intmud.int". Mas pode-se usar
-outro arquivo, bastando executar o IntMUD seguido do nome. Exemplo:
+Via de regra, o arquivo principal chama-se "intmud.int" (o nome do arquivo
+executável terminado com "int"). Mas pode-se usar outro arquivo, bastando
+renomear o executável ou executar o IntMUD seguido do nome. Exemplo:
 intmud teste.int
 ou apenas:
 intmud teste
@@ -335,11 +336,17 @@ e/ou números:
 
 !a      Se for falso (=0) vira verdadeiro (1)
         Se for verdadeiro (diferente de 0) vira falso (0)
+~a      Complemento de a
 a*b     Multimplica a por b
 a/b     Divide: a/b; pode resultar em um número quebrado (não inteiro)
 a%b     É o resto da divisão de a por b
 a+b     Soma
 a-b     Subtrai
+a<<b    Deslocamento à esquerda, sendo que a=valor e b=quantidade de bits
+a>>b    Deslocamento à direita, sendo que a=valor e b=quantidade de bits
+a|b     Ou para bits entre a e b
+a^b     Ou exclusivo para bits entre a e b
+a&b     E para bits entre a e b
 a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
 a<=b    Verdadeiro se a<=b
 a=b     Verdadeiro se a for igual a b
@@ -348,8 +355,8 @@ a==b    Verdadeiro se a for exatamente igual a b
 a>=b    Verdadeiro se a>=b
 a>b     Verdadeiro se a>b
 a!=b    Verdadeiro se a for diferente de b
-a&b     Verdadeiro (=1) somente se a for verdadeiro e b também for
-a|b     Verdadeiro (=1) se a for verdadeiro ou b for verdadeiro
+a&&b    Verdadeiro (=1) somente se a for verdadeiro e b também for
+a||b    Verdadeiro (=1) se a for verdadeiro ou b for verdadeiro
 Pode-se usar também os parênteses em expressões
 Exemplo:  2*(3+4)
 
@@ -364,6 +371,110 @@ variável = variável + valor
 variável = variável - valor
 variável = variável * valor
 variável = variável / valor
+
+Existe uma ordem de precedência entre os operadores. POor exemplo,
+multiplicações e divisões são calculadas antes de soma e subtração.
+Porém, uma soma entre parênteses é calculada antes, pois os parênteses
+tem precedência sobre a multiplicação e a divisão.
+
+O IntMUD segue a seguinte ordem de precedência:
+! e ~           Não lógico e complemento
+* / %           Multiplicação, divisão e resto
++ -             Soma e subtração
+<< >>           Rotação para esquerda e para direita
+|               Ou para bits
+^               Ou exclusivo para bits
+&               E para bits
+<= < > >=       Comparação
+= !=            Igual a e diferente de
+&&              E lógico
+||              Ou lógico
+*= /= += -=     Formas compactas de atribuição
+
+
+*** Operadores de bit
+
+Variáveis int1 usam um bit para representar um valor numérico, por isso
+só podem ser 0 ou 1. Os operadores de bit com int1 funcionam assim:
+
+~ inverte os bits:
+    ~1=0, ~0=1
+| resulta em um se qualquer um dos dois números for 1:
+    0|0=0, 0|1=1, 1|0=1, 1|1=1
+& resulta em 1 somente se os dois números forem 1:
+    0&0=0, 0&1=0, 1&0=0, 1&1=1
+^ resulta em um se um número for 1 e o outro for 0:
+    0^0=0, 0^1=1, 1^0=1, 1^1=1
+
+Essas operações também são possível com variáveis int8, uint8, int16, etc.,
+Para entender como funcionam, é necessário desmembrar em variáveis int1.
+Os bits são numerados a partir do 0, sendo que cada um representa um
+valor distinto:
+bit 0 = 0 ou 1
+bit 1 = 0 ou 2
+bit 2 = 0 ou 4
+bit 3 = 0 ou 8
+bit 4 = 0 ou 16
+bit 5 = 0 ou 32
+bit 6 = 0 ou 64
+bit 7 = 0 ou 128
+etc.
+Exemplo, o número 5 corresponde a 4+1 (bits 0 e 2).
+
+Usos mais comuns dos operadores de bits:
+uint8 x
+x = 1
+x = x | 4 # Faz o bit 2 = 1
+x = x & ~4 # Fazer o bit 2 = 0
+x = x ^ 4 # Inverte o bit 2
+x = x & 4 # Faz todos os bits de x serem 0, exceto o bit 2
+se x & 8 # Checa se o bit 3 é 0 ou 1
+  msg("bit 3 de x = 1\n")
+senao
+  msg("bit 3 de x = 0\n")
+fimse
+
+Outra forma de trabalhar com bits é usando um vetore de int1. A variável
+bits do vetor contém o valor numérico correspondente. Exemplo:
+int1 x.32
+x.bits = 3 # Faz bits 0 e 1 serem 1 e os demais bits são 0
+x.3 = 1 # Faz o bit 3 ser 1; agora x.bits passa a ser 11
+msg("O resultado é " + x.bits + "\n")
+
+
+Os operadores de deslocamento têm funcionalidade parecida à de multiplicação
+e divisão, porém arredondando para baixo (ex. 9.7 é arredondado para 9):
+x=x<<1  multiplica x por 2
+x=x<<2  multiplica x por 4
+x=x<<3  multiplica x por 8
+etc.
+x=x>>1  divide x por 2
+x=x>>2  divide x por 4
+etc.
+
+Essas operações, no entanto, são feitas copiando o valor de um bit
+(que pode ser 0 ou 1) para o outro.
+Exemplo, x >> 1 significa:
+copiar do bit 1 para o bit 0
+copiar do bit 2 para o bit 1
+copiar do bit 3 para o bit 2
+e assim por diante, até o último bit do número.
+
+Nota 1:
+Internamente todos os valores são convertidos em int32 antes de realizar
+qualquer operação com bit.
+
+Nota 2:
+Nas variáveis int8, int16 e int32, o bit de maior valor é usado para
+indicar se o número é negativo ou não. Porém, para a matemática funcionar
+corretamente, multiplicar uma dessas variáveis por menos um tem o mesmo
+efeito de inverter todos os bits e somar 1.
+
+Exemplo, em uma variável int8:
+0 significa todos os bits em 0.
+1 significa somente o bit 0 em 1
+-1 significa todos os bits em 1
+-2 significa todos os bits em 1 exceto o bit 0
 
 
 *** Caracteres especiais em textos
@@ -475,6 +586,11 @@ txt(<texto>, <caracter inicial>)
 txt(<texto>, <caracter inicial>, <quantidade de caracteres>)
     Retorna um texto que é parte do texto especificado. Exemplo:
     txt("abcdef", 2, 2) é o mesmo que "cd".
+
+txtfim(<texto>, <quantidade de caracteres>)
+    Retorna um texto que contém os últimos caracteres do texto
+    especificado. Exemplo:
+    txtfim("abcdef", 3) é o mesmo que "def".
 
 txt1(<texto>)
     Retorna a primeira palavra do texto.
@@ -705,6 +821,19 @@ inttotal(<variável>)
     Se for fornecido mais de um argumento, é retornada a soma.
     Exemplo: inttotal(a,b)
     É o mesmo que: inttotal(a) + inttotal(b)
+
+
+*** Funções existentes em variáveis numéricas
+
+As variáveis do tipo real e as numéricas começadas com int (int1 a int32,
+uint1 a uint32, intinc, intdec, inttempo) possuem a seguinte função:
+
+limpar
+    Zera todas as variáveis do vetor (faz todas as variáveis = 0).
+
+bits
+    Existente somente em vetores de int1. É uma variável do tipo int32,
+    que corresponde ao valor numérico das variáveis do vetor.
 
 
 *** Funções existentes em vetores de variáveis txt1 a txt512

@@ -58,7 +58,7 @@ func ini
     lido = jogolocal:inicializa
   fimse
 # Encerra se não há como comunicar-se com o jogador
-  se lido = 0 & tela.proto = 0
+  se lido = 0 && tela.proto = 0
     terminar
   fimse
 
@@ -72,7 +72,7 @@ func iniler # Lê perguntas/respostas de um arquivo
 # Procura primeira pergunta
   pos = perguntas.[arg0].ini
   pos.depois
-  enquanto pos.lin & pos.texto(0, 2) != "p "
+  enquanto pos.lin && pos.texto(0, 2) != "p "
     pos.remove
   efim
   pos.depois
@@ -213,7 +213,7 @@ func conec_msg # Recebeu mensagem do usuário
     apagar(este)
   senão arg0 = "" # Se não digitou um apelido
     espera1 = 1
-  senão inttotal(arg0) > 16 | intnome(arg0) | txtproc(arg0, " ") >= 0
+  senão inttotal(arg0) > 16 || intnome(arg0) || txtproc(arg0, " ") >= 0
     conec.msg("Apelido inválido; digite outro\n")
   senão
     nome = arg0
@@ -440,7 +440,7 @@ func info_submenu
 
 func recebe0 # Menu principal
   nivel = arg0
-  se nivel >= 0 & nivel < 10 & arg0 = txt(nivel) # Um número
+  se nivel >= 0 && nivel < 10 && arg0 = txt(nivel) # Um número
     subnivel = $jogo.linhas.[nivel].linhas # Quantidade de perguntas
     subnivel = intdiv((subnivel + 5) / 15)
     se subnivel <= 1
@@ -462,7 +462,7 @@ func recebe0 # Menu principal
 func recebe1 # Menu de nível
   uint16 valor
   valor = arg0
-  se valor >= 1 & valor <= subnivel & arg0 = txt(valor) # Um número
+  se valor >= 1 && valor <= subnivel && arg0 = txt(valor) # Um número
     se valor = subnivel
       ret inic_jogo(valor*15-15, 100000)
     senao
@@ -610,7 +610,7 @@ func prox_perg # Passa para a próxima pergunta
   textopos pos
 # Mostra situação do usuário
   respmsg += 1
-  se respmsg >= 10 & subnivel = 0
+  se respmsg >= 10 && subnivel = 0
     respmsg = 0
     msgtodos(nome + ", N" + nivel + ", faltam " + perg.linhas + "\n")
   fimse

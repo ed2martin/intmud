@@ -28,13 +28,13 @@ func ini
   menu:selec
 
 func tela_tecla
-  se arg0 != "UP" & arg0 != "DOWN"
+  se arg0 != "UP" && arg0 != "DOWN"
     tela.linha = 0
   fimse
   #msg(opcao + " : tecla_" + txtcod(arg0) + "\n")
   se [opcao]:tecla_[txtcod(arg0)]
     ret 1
-  senao arg0 != "UP" & arg0 != "DOWN"
+  senao arg0 != "UP" && arg0 != "DOWN"
     ret [opcao]:outro(arg0)
 
 func teste1
@@ -390,7 +390,7 @@ func tecla_M # Mover
   lin = blocofim.linha - blocoini.linha + 1
   se lin <= 0
     msg("Nada a ser copiado\n")
-  senao p.linha >= blocoini.linha & p.fim <= blocofim.linha
+  senao p.linha >= blocoini.linha && p.fim <= blocofim.linha
     msg("Impossível mover bloco para dentro do bloco\n")
   senao
     p.add(blocoini, lin)
@@ -420,7 +420,7 @@ func tecla_ENTER
   int16 max
   int32 numlin
   min=tela.texto, max=txt2(tela.texto)
-  se min<2 | max<2
+  se min<2 || max<2
     msg("Digite dois números maiores ou iguais a 2, tecla ESC cancela\n")
     ret 1
   fimse
