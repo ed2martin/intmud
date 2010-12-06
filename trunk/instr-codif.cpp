@@ -82,7 +82,7 @@ Se modo = ex_var1 ou modo = ex_var2
     Anota *origem, avança origem
     Vai para (1)
   Se *origem for ':':
-    Se modo ! ex_var1:
+    Se modo != ex_var1:
       Erro na expressão
     Caso contrário:
       Anota ex_doispontos
@@ -1242,6 +1242,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                   else
                       sinal=exo_exclamacao,bsinal=false;
                   break;
+        case '~': sinal=exo_b_comp,bsinal=false;
+                  break;
 
         case '*': sinal=exo_mul;
                   if (origem[1]=='=')
@@ -1271,10 +1273,14 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case '<': sinal=exo_menor;
                   if (origem[1]=='=')
                       sinal=exo_menorigual,origem++;
+                  else if (origem[1]=='<')
+                      sinal=exo_b_shl,origem++;
                   break;
         case '>': sinal=exo_maior;
                   if (origem[1]=='=')
                        sinal=exo_maiorigual,origem++;
+                  else if (origem[1]=='>')
+                      sinal=exo_b_shr,origem++;
                   break;
 
         case '=': sinal=exo_igual;
@@ -1282,8 +1288,15 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                       sinal=exo_igual2,origem++;
                   break;
 
-        case '&': sinal=exo_e; break;
-        case '|': sinal=exo_ou; break;
+        case '&': sinal=exo_b_e;
+                  if (origem[1]=='&')
+                       sinal=exo_e,origem++;
+                  break;
+        case '|': sinal=exo_b_ou;
+                  if (origem[1]=='|')
+                       sinal=exo_ou,origem++;
+                  break;
+        case '^': sinal=exo_b_ouou; break;
 
         default:
             mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);

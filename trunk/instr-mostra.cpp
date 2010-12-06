@@ -362,11 +362,17 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_virgula:      strcpy(nome, " ,"); break;
         case exo_neg:          strcpy(nome, " -(unitário)"); break;
         case exo_exclamacao:   strcpy(nome, " !");  break;
+        case exo_b_comp:       strcpy(nome, " ~");   break;
         case exo_mul:          strcpy(nome, " *");  break;
         case exo_div:          strcpy(nome, " /");  break;
         case exo_porcent:      strcpy(nome, " %");  break;
         case exo_add:          strcpy(nome, " +");  break;
         case exo_sub:          strcpy(nome, " -");  break;
+        case exo_b_shl:        strcpy(nome, " <<"); break;
+        case exo_b_shr:        strcpy(nome, " >>"); break;
+        case exo_b_e:          strcpy(nome, " &");  break;
+        case exo_b_ouou:       strcpy(nome, " ^");  break;
+        case exo_b_ou:         strcpy(nome, " |");  break;
         case exo_menor:        strcpy(nome, " <");  break;
         case exo_menorigual:   strcpy(nome, " <="); break;
         case exo_maior:        strcpy(nome, " >");  break;
@@ -374,8 +380,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_igual:        strcpy(nome, " =");  break;
         case exo_igual2:       strcpy(nome, " =="); break;
         case exo_diferente:    strcpy(nome, " !="); break;
-        case exo_e:            strcpy(nome, " &");  break;
-        case exo_ou:           strcpy(nome, " |");  break;
+        case exo_e:            strcpy(nome, " &&");  break;
+        case exo_ou:           strcpy(nome, " ||");  break;
         case exo_igualmul:     strcpy(nome, " *="); break;
         case exo_igualdiv:     strcpy(nome, " /="); break;
         case exo_igualporcent: strcpy(nome, " %="); break;

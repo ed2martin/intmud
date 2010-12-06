@@ -143,6 +143,24 @@ void TVarIncDec::setDec(int v)
 }
 
 //------------------------------------------------------------------------------
+bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")==0)
+        for (unsigned int x=0; x<(unsigned char)v->defvar[Instr::endVetor]; x++)
+            this[x].valor = TempoIni;
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")==0)
+        for (unsigned int x=0; x<(unsigned char)v->defvar[Instr::endVetor]; x++)
+            this[x].valor = TempoIni;
+    return false;
+}
+
+//------------------------------------------------------------------------------
 void TVarIntTempo::PreparaIni()
 {
     if (TVarIntTempo::VetMenos)
@@ -646,4 +664,128 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         return Instr::CriarVarInt(indice);
     }
     return false;
+}
+
+//const char Int1_Valor[] = { 8, 0, Instr::cInt1, 0, 0, 1, '=', '0', 0 };
+
+//------------------------------------------------------------------------------
+bool FuncVetorInt1(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")==0)
+    {
+        unsigned int total = (unsigned char)v->defvar[Instr::endVetor];
+        unsigned char * p = (unsigned char*)v->end_char;
+        char bitmask = v->bit;
+        if (bitmask > 1)
+        {
+            for (; total>0 && bitmask; total--,bitmask<<=1)
+                *p &= ~bitmask, total--, bitmask<<=1;
+            p++;
+        }
+        while (total>=8)
+            *p++=0, total-=8;
+        for (bitmask=1; total>0; total--,bitmask<<=1)
+            *p &= ~bitmask;
+        return false;
+    }
+    if (comparaZ(nome, "bits")==0)
+    {
+        Instr::ApagarVar(v+1);
+        v->indice = 0;
+        v->numfunc = 1;
+        return true;
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+int GetVetorInt1(TVariavel * v)
+{
+    unsigned int bitmask = v->bit;
+    unsigned int bitnum = 0;
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    unsigned char * p = (unsigned char *)v->end_char;
+    int valor = 0;
+// Obtém o número do bit inicial, de 0 a 7
+    if (bitmask & 0xF0)
+        bitnum+=4, bitmask>>=4;
+    if (bitmask & 12)
+        bitnum+=2, bitmask>>=2;
+    if (bitmask & 2)
+        bitnum++;
+// Primeiro byte
+    if (total>0 && bitnum)
+    {
+        valor = *p++ >> bitnum;
+        bitnum = 8-bitnum;
+        switch (total)
+        {
+        case 1: valor &= 1; break;
+        case 2: valor &= 3; break;
+        case 3: valor &= 7; break;
+        case 4: valor &= 15; break;
+        case 5: valor &= 31; break;
+        case 6: valor &= 63; break;
+        case 7: valor &= 127; break;
+        }
+        total -= bitnum;
+    }
+// Demais bytes
+    for (; total>0 && bitnum<32; total-=8,bitnum+=8)
+        switch (total)
+        {
+        case 1: valor |= (*p & 1) << bitnum; break;
+        case 2: valor |= (*p & 3) << bitnum; break;
+        case 3: valor |= (*p & 7) << bitnum; break;
+        case 4: valor |= (*p & 15) << bitnum; break;
+        case 5: valor |= (*p & 31) << bitnum; break;
+        case 6: valor |= (*p & 63) << bitnum; break;
+        case 7: valor |= (*p & 127) << bitnum; break;
+        default: valor |= *p++ << bitnum;
+        }
+    return valor;
+}
+
+//------------------------------------------------------------------------------
+void SetVetorInt1(TVariavel * v, int valor)
+{
+    unsigned int bitmask = v->bit;
+    int bitnum = 0;
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    unsigned char * p = (unsigned char *)v->end_char;
+// Obtém o número do bit inicial, de 0 a 7
+    if (bitmask & 0xF0)
+        bitnum+=4, bitmask>>=4;
+    if (bitmask & 12)
+        bitnum+=2, bitmask>>=2;
+    if (bitmask & 2)
+        bitnum++;
+// Altera as variáveis
+    while (total > 0)
+    {
+        switch (total)
+        {
+        case 1: bitmask = 1; break;
+        case 2: bitmask = 3; break;
+        case 3: bitmask = 7; break;
+        case 4: bitmask = 15; break;
+        case 5: bitmask = 31; break;
+        case 6: bitmask = 63; break;
+        case 7: bitmask = 127; break;
+        default: bitmask = 255; break;
+        }
+    // Bits já estão alinhados
+        if (bitnum == 0)
+        {
+            *p &= ~bitmask;
+            *p |= (valor & bitmask);
+            p++, total-=8, valor>>=8;
+            continue;
+        }
+    // Bits não estão alinhados
+        *p &= ~(bitmask << bitnum);
+        *p |= (valor & bitmask) << bitnum;
+        p++, total-=8-bitnum, valor>>=8-bitnum;
+        bitnum = 0;
+    }
 }

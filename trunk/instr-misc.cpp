@@ -31,25 +31,31 @@ int Instr::Prioridade(int operador)
     case exo_virgula:    return 20;
     case exo_neg:        return 2;
     case exo_exclamacao: return 2;
+    case exo_b_comp:     return 2;
     case exo_mul:        return 3;
     case exo_div:        return 3;
     case exo_porcent:    return 3;
     case exo_add:        return 4;
     case exo_sub:        return 4;
-    case exo_menor:      return 5;
-    case exo_menorigual: return 5;
-    case exo_maior:      return 5;
-    case exo_maiorigual: return 5;
-    case exo_igual:      return 6;
-    case exo_igual2:     return 6;
-    case exo_diferente:  return 6;
-    case exo_e:          return 7;
-    case exo_ou:         return 8;
-    case exo_igualmul:   return 9;
-    case exo_igualdiv:   return 9;
-    case exo_igualporcent: return 9;
-    case exo_igualadd:   return 9;
-    case exo_igualsub:   return 9;
+    case exo_b_shl:      return 5;
+    case exo_b_shr:      return 5;
+    case exo_b_e:        return 6;
+    case exo_b_ouou:     return 7;
+    case exo_b_ou:       return 8;
+    case exo_menor:      return 9;
+    case exo_menorigual: return 9;
+    case exo_maior:      return 9;
+    case exo_maiorigual: return 9;
+    case exo_igual:      return 10;
+    case exo_igual2:     return 10;
+    case exo_diferente:  return 10;
+    case exo_e:          return 11;
+    case exo_ou:         return 12;
+    case exo_igualmul:   return 13;
+    case exo_igualdiv:   return 13;
+    case exo_igualporcent: return 13;
+    case exo_igualadd:   return 13;
+    case exo_igualsub:   return 13;
     }
     return 0;
 }
@@ -455,11 +461,17 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_virgula:
         case exo_neg:
         case exo_exclamacao:
+        case exo_b_comp:
         case exo_mul:
         case exo_div:
         case exo_porcent:
         case exo_add:
         case exo_sub:
+        case exo_b_shl:
+        case exo_b_shr:
+        case exo_b_e:
+        case exo_b_ouou:
+        case exo_b_ou:
         case exo_menor:
         case exo_menorigual:
         case exo_maior:
@@ -689,11 +701,17 @@ const char * Instr::NomeExpr(int valor)
     case exo_virgula:       return "exo_virgula";
     case exo_neg:           return "exo_neg";
     case exo_exclamacao:    return "exo_exclamacao";
+    case exo_b_comp:        return "exo_b_comp";
     case exo_mul:           return "exo_mul";
     case exo_div:           return "exo_div";
     case exo_porcent:       return "exo_porcent";
     case exo_add:           return "exo_add";
     case exo_sub:           return "exo_sub";
+    case exo_b_shl:         return "exo_b_shl";
+    case exo_b_shr:         return "exo_b_shr";
+    case exo_b_e:           return "exo_b_e";
+    case exo_b_ouou:        return "exo_b_ouou";
+    case exo_b_ou:          return "exo_b_ou";
     case exo_menor:         return "exo_menor";
     case exo_menorigual:    return "exo_menorigual";
     case exo_maior:         return "exo_maior";

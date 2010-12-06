@@ -86,7 +86,7 @@ func descrsala # Mostra descrição de um lugar
   fimse
   l = arg0.dentro.ini
   enquanto l
-    se l.obj != este & l.obj.invisver >= invis
+    se l.obj != este && l.obj.invisver >= invis
       msg("\c2" + l.obj.dnome + "\b")
     fimse
     l.depois
@@ -96,7 +96,7 @@ func ds1 # Usado em descrsala
 # arg0 = nome da direção
 # arg1 = letra da direção
 # arg2 = sala
-  se arg2.[arg0] = nulo | arg2.[arg0]_ini = 1
+  se arg2.[arg0] = nulo || arg2.[arg0]_ini = 1
     ret ""
   senão arg2.[arg0]_agora < 2
     ret " \c6" + arg1 + "\b"
@@ -128,7 +128,7 @@ func escr # Escreveu alguma coisa
   p.inifunc("com _ini", "c_" + txt1(arg0))
   enquanto p.lin
     obj = com__ini:[p.texto]
-    se obj & nivel >= obj.nivel
+    se obj && nivel >= obj.nivel
       sair
     fimse
     p.depois
@@ -141,14 +141,14 @@ func escr # Escreveu alguma coisa
   fimse
   l = dentro.ini # Trigger dos objetos do personagem
   enquanto l
-    se l != este & l.obj.tr_escr2(este, obj, arg0)
+    se l != este && l.obj.tr_escr2(este, obj, arg0)
       ret
     fimse
     l.depois
   efim
   l = sala.dentro.ini # Trigger dos objetos da sala
   enquanto l
-    se l.obj != este & l.obj.tr_escr2(este, obj, arg0)
+    se l.obj != este && l.obj.tr_escr2(este, obj, arg0)
       ret
     fimse
     l.depois
@@ -159,7 +159,7 @@ func escr # Escreveu alguma coisa
   senão posicao < obj.posic
     se posicao = 0 # Morto
       msg("\c9Você está morto!!!\b")
-    senão posicao = 1 | posicao = 2 # Incapacitado
+    senão posicao = 1 || posicao = 2 # Incapacitado
       msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
     senão posicao = 3 # Fraco
       msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
@@ -305,7 +305,7 @@ func conec_msg # Recebeu mensagem do usuário
     apagar(este)
   senão arg0 = "" # Se não digitou um apelido
     espera = 1
-  senão inttotal(arg0) > 12 | intnome(arg0)
+  senão inttotal(arg0) > 12 || intnome(arg0)
     conec.msg("Apelido inválido; digite outro\n")
   senão
     nome = txtnome(arg0)
@@ -416,7 +416,7 @@ func todos
     l = _p.sala.dentro.ini
     enquanto l
       r = l.obj
-      se r.perso & r != _p & r != _a
+      se r.perso && r != _p && r != _a
         r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
       fimse
       l.depois
@@ -428,7 +428,7 @@ func todos2
     l = _p.sala.dentro.ini
     enquanto l
       r = l.obj
-      se r.perso & r != _p & r != _a & r.invisver >= _p.invis
+      se r.perso && r != _p && r != _a && r.invisver >= _p.invis
         r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
       fimse
       l.depois
@@ -440,12 +440,12 @@ func perso
     r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 
 func alvo
-  se _p & _a
+  se _p && _a
     r = _a
     r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 
 func alvo2
-  se _p & _a & _a.invisver >= _p.invis
+  se _p && _a && _a.invisver >= _p.invis
     r = _a
     r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 

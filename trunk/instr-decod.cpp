@@ -483,11 +483,17 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_virgula:      strcpy(nome, ", ");   indica=16; break;
         case exo_neg:          strcpy(nome, "-");    indica=8;  break;
         case exo_exclamacao:   strcpy(nome, "!");    indica=8;  break;
+        case exo_b_comp:       strcpy(nome, "~");    indica=8;  break;
         case exo_mul:          strcpy(nome, " * ");  indica=16; break;
         case exo_div:          strcpy(nome, " / ");  indica=16; break;
         case exo_porcent:      strcpy(nome, " % ");  indica=16; break;
         case exo_add:          strcpy(nome, " + ");  indica=16; break;
         case exo_sub:          strcpy(nome, " - ");  indica=16; break;
+        case exo_b_shl:        strcpy(nome, " << ");  indica=16; break;
+        case exo_b_shr:        strcpy(nome, " >> ");  indica=16; break;
+        case exo_b_e:          strcpy(nome, " & ");  indica=16; break;
+        case exo_b_ouou:       strcpy(nome, " ^ ");  indica=16; break;
+        case exo_b_ou:         strcpy(nome, " | ");  indica=16; break;
         case exo_menor:        strcpy(nome, " < ");  indica=16; break;
         case exo_menorigual:   strcpy(nome, " <= "); indica=16; break;
         case exo_maior:        strcpy(nome, " > ");  indica=16; break;
@@ -495,8 +501,8 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_igual:        strcpy(nome, " = ");  indica=16; break;
         case exo_igual2:       strcpy(nome, " == "); indica=16; break;
         case exo_diferente:    strcpy(nome, " != "); indica=16; break;
-        case exo_e:            strcpy(nome, " & ");  indica=16; break;
-        case exo_ou:           strcpy(nome, " | ");  indica=16; break;
+        case exo_e:            strcpy(nome, " && ");  indica=16; break;
+        case exo_ou:           strcpy(nome, " || ");  indica=16; break;
         case exo_igualmul:     strcpy(nome, " *= "); indica=16,origem+=2; break;
         case exo_igualdiv:     strcpy(nome, " /= "); indica=16,origem+=2; break;
         case exo_igualporcent: strcpy(nome, " %= "); indica=16,origem+=2; break;
