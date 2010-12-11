@@ -675,11 +675,11 @@ bool FuncVetorInt1(TVariavel * v, const char * nome)
     {
         unsigned int total = (unsigned char)v->defvar[Instr::endVetor];
         unsigned char * p = (unsigned char*)v->end_char;
-        char bitmask = v->bit;
+        unsigned char bitmask = v->bit;
         if (bitmask > 1)
         {
             for (; total>0 && bitmask; total--,bitmask<<=1)
-                *p &= ~bitmask, total--, bitmask<<=1;
+                *p &= ~bitmask;
             p++;
         }
         while (total>=8)
@@ -709,7 +709,7 @@ int GetVetorInt1(TVariavel * v)
 // Obtém o número do bit inicial, de 0 a 7
     if (bitmask & 0xF0)
         bitnum+=4, bitmask>>=4;
-    if (bitmask & 12)
+    if (bitmask & 0x0C)
         bitnum+=2, bitmask>>=2;
     if (bitmask & 2)
         bitnum++;
@@ -756,7 +756,7 @@ void SetVetorInt1(TVariavel * v, int valor)
 // Obtém o número do bit inicial, de 0 a 7
     if (bitmask & 0xF0)
         bitnum+=4, bitmask>>=4;
-    if (bitmask & 12)
+    if (bitmask & 0x0C)
         bitnum+=2, bitmask>>=2;
     if (bitmask & 2)
         bitnum++;

@@ -23,9 +23,11 @@
 #define CONSOLE_MAX 1024
 #define CONSOLE_COR_LINHA 0x74
 
-const char TelaTxtTexto[] = { 8, 0, Instr::cTelaTxt, 0, 0, 0, '=', '0', 0 };
-const char TelaTxtTotal[] = { 8, 0, Instr::cTelaTxt, 0, 0, 0, '=', '1', 0 };
-const char TelaTxtLinha[] = { 8, 0, Instr::cTelaTxt, 0, 0, 0, '=', '2', 0 };
+enum {
+TelaTxtTexto = 1,
+TelaTxtTotal,
+TelaTxtLinha
+};
 
 unsigned int TVarTelaTxt::CorTela = 0x70;
 unsigned int TVarTelaTxt::CorBarraN = 0x70;
@@ -392,37 +394,48 @@ void TVarTelaTxt::EndObjeto(TClasse * c, TObjeto * o)
 }
 
 //------------------------------------------------------------------------------
-int TVarTelaTxt::getValor(const char * defvar1)
+int TVarTelaTxt::getTipo(int numfunc)
 {
-    if (Console==0 || defvar1[Instr::endNome]!='=')
-        return 0;
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0':
+    case 0: return varOutros;
+    case TelaTxtTexto: return varTxt;
+    default: return varInt;
+    }
+}
+
+//------------------------------------------------------------------------------
+int TVarTelaTxt::getValor(int numfunc)
+{
+    if (Console==0)
+        return 0;
+    switch (numfunc)
+    {
+    case TelaTxtTexto:
         return atoi(LerLinha());
-    case '1':
+    case TelaTxtTotal:
         return max_linha;
-    case '2':
+    case TelaTxtLinha:
         return LinhaPosic;
     }
     return 0;
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::setValor(const char * defvar1, int valor)
+void TVarTelaTxt::setValor(int numfunc, int valor)
 {
-    if (Console==0 || defvar1[Instr::endNome]!='=')
+    if (Console==0)
         return;
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0':
+    case TelaTxtTexto:
         {
             char mens[20];
             sprintf(mens, "%d", valor);
-            setTxt(defvar1, mens);
+            setTxt(numfunc, mens);
             break;
         }
-    case '1':
+    case TelaTxtTotal:
         if (valor > CONSOLE_MAX - 1)
             valor = CONSOLE_MAX - 1;
         if (valor < 1)
@@ -444,7 +457,7 @@ void TVarTelaTxt::setValor(const char * defvar1, int valor)
             }
         }
         break;
-    case '2':
+    case TelaTxtLinha:
         if (valor < 0)
             valor = 0;
         if (valor == (int)LinhaPosic)
@@ -458,19 +471,19 @@ void TVarTelaTxt::setValor(const char * defvar1, int valor)
 }
 
 //------------------------------------------------------------------------------
-const char * TVarTelaTxt::getTxt(const char * defvar1)
+const char * TVarTelaTxt::getTxt(int numfunc)
 {
     static char txtnum[20];
-    if (Console==0 || defvar1[Instr::endNome]!='=')
+    if (Console==0)
         return "";
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0':
+    case TelaTxtTexto:
         return LerLinha();
-    case '1':
+    case TelaTxtTotal:
         sprintf(txtnum, "%u", max_linha);
         return txtnum;
-    case '2':
+    case TelaTxtLinha:
         sprintf(txtnum, "%d", LinhaPosic);
         return txtnum;
     }
@@ -478,46 +491,45 @@ const char * TVarTelaTxt::getTxt(const char * defvar1)
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::setTxt(const char * defvar1, const char * txt)
+void TVarTelaTxt::setTxt(int numfunc, const char * txt)
 {
     txt_linha[tam_linha]=0;
-    if (Console==0 || defvar1[Instr::endNome]!='=' ||
-            strcmp(txt_linha, txt)==0)
+    if (Console==0 || strcmp(txt_linha, txt)==0)
         return;
     const char * p;
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0':
+    case TelaTxtTexto:
         p = copiastr(txt_linha, txt, max_linha + 1);
         tam_linha = p - txt_linha;
         col_linha = 0xFFF;
         CursorEditor();     // Cursor na linha de edição
         ProcTeclaCursor(0); // Semelhante à tecla HOME
         break;
-    case '1':
-    case '2':
-        setValor(defvar1, atoi(txt));
+    case TelaTxtTotal:
+    case TelaTxtLinha:
+        setValor(numfunc, atoi(txt));
         break;
     }
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::addTxt(const char * defvar1, const char * txt)
+void TVarTelaTxt::addTxt(int numfunc, const char * txt)
 {
-    if (Console==0 || defvar1[Instr::endNome]!='=' || *txt==0)
+    if (Console==0 || *txt==0)
         return;
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0':
+    case TelaTxtTexto:
         while (tam_linha < max_linha && *txt)
             txt_linha[tam_linha++] = *txt++;
         col_linha = 0xFFF;
         CursorEditor();     // Cursor na linha de edição
         ProcTeclaCursor(0); // Semelhante à tecla HOME
         break;
-    case '1':
-    case '2':
-        setValor(defvar1, atoi(txt));
+    case TelaTxtTotal:
+    case TelaTxtLinha:
+        setValor(numfunc, atoi(txt));
         break;
     }
 }
@@ -745,7 +757,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Variáveis
-    const char * x = 0;
+    int x = 0;
     if (comparaZ(nome, "texto")==0)
         x = TelaTxtTexto;
     else if (comparaZ(nome, "total")==0)
@@ -755,7 +767,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
     if (x)
     {
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = x;
+        Instr::VarAtual->numfunc = x;
         return true;
     }
     return false;

@@ -24,7 +24,6 @@
 //#define DEBUG_TXT // Texto guardado em TTextoTxt
 
 const char TextoItem1[] = { 7, 0, Instr::cTextoPos, 0, 0, 0, '+', 0 };
-const char TextoPosLinha[] = { 8, 0, Instr::cTextoPos, 0, 0, 0, '=', '0', 0 };
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_TXT
@@ -529,7 +528,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "linha")==0)
     {
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = TextoPosLinha;
+        Instr::VarAtual->numfunc = 1;
         return true;
     }
 // Quantidade de bytes
@@ -869,20 +868,26 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 }
 
 //----------------------------------------------------------------------------
-int TTextoPos::getValor(const char * defvar1)
+int TTextoPos::getTipo(int numfunc)
+{
+    return (numfunc ? varInt : varOutros);
+}
+
+//----------------------------------------------------------------------------
+int TTextoPos::getValor(int numfunc)
 {
     if (TextoTxt==0)
         return 0;
-    else if (defvar1[Instr::endNome]!='=')
+    else if (numfunc==0)
         return (PosicTxt < TextoTxt->Bytes);
     else
         return LinhaTxt;
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::setValor(const char * defvar1, int valor)
+void TTextoPos::setValor(int numfunc, int valor)
 {
-    if (TextoTxt==0 || defvar1[Instr::endNome]!='=' || valor==(int)LinhaTxt)
+    if (TextoTxt==0 || numfunc==0 || valor==(int)LinhaTxt)
         return;
     if (valor <= 0)
     {
@@ -903,7 +908,7 @@ void TTextoPos::setValor(const char * defvar1, int valor)
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::setTxt(const char * defvar1, const char * txt)
+void TTextoPos::setTxt(int numfunc, const char * txt)
 {
-    setValor(defvar1, atoi(txt));
+    setValor(numfunc, atoi(txt));
 }
