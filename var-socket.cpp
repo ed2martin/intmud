@@ -25,13 +25,16 @@
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou
 
-const char SocketProto[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '0', 0 };
-const char SocketCores[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '1', 0 };
-const char SocketAFlooder[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '2', 0 };
-const char SocketEco[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', '3', 0 };
-const char SocketColMin[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'A', 0 };
-const char SocketColMax[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'B', 0 };
-const char SocketPosX[] = { 8, 0, Instr::cSocket, 0, 0, 0, '=', 'C', 0 };
+enum {
+SocketProto = 1,
+SocketCores = 2,
+SocketAFlooder = 3,
+SocketEco = 4,
+SocketColMin,
+SocketColMax,
+SocketPosX
+};
+
 TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;
 
@@ -440,7 +443,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         return Instr::CriarVarTexto(mens);
     }
 // Variáveis
-    const char * x = 0;
+    int x = 0;
     if (comparaZ(nome, "proto")==0)
         x = SocketProto;
     else if (comparaZ(nome, "cores")==0)
@@ -458,7 +461,7 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
     if (x)
     {
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = x;
+        Instr::VarAtual->numfunc = x;
         return true;
     }
 // Função ou variável desconhecida
@@ -466,45 +469,45 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int TVarSocket::getValor(const char * defvar_l)
+int TVarSocket::getTipo(int numfunc)
 {
-    if (Socket==0)
-        return 0;
-    if (defvar_l[Instr::endNome]!='=')
-        return 1;
-    switch (defvar_l[Instr::endNome+1])
-    {
-    case 'A': // ColMin
-        return Socket->ColunaMin;
-    case 'B': // ColMax
-        return Socket->ColunaMax;
-    case 'C':
-        return Socket->ColunaEnvia;
-    }
-    return Socket->Variavel(defvar_l[Instr::endNome+1], -1);
+    return (numfunc ? varInt : varOutros);
 }
 
 //------------------------------------------------------------------------------
-void TVarSocket::setValor(const char * defvar_l, int valor)
+int TVarSocket::getValor(int numfunc)
+{
+    if (Socket==0)
+        return 0;
+    switch (numfunc)
+    {
+    case 0:             return 1;
+    case SocketColMin:  return Socket->ColunaMin;
+    case SocketColMax:  return Socket->ColunaMax;
+    case SocketPosX:    return Socket->ColunaEnvia;
+    }
+    return Socket->Variavel(numfunc, -1);
+}
+
+//------------------------------------------------------------------------------
+void TVarSocket::setValor(int numfunc, int valor)
 {
     if (Socket==0)
         return;
-    if (defvar_l[Instr::endNome]!='=')
+    switch (numfunc)
     {
+    case 0:
         MudarSock(0);
-        return;
-    }
-    switch (defvar_l[Instr::endNome+1])
-    {
-    case 'A': // ColMin
+        break;
+    case SocketColMin:
         Socket->ColunaMin = (valor<10 ? 10 : valor>1000 ? 1000 : valor);
         break;
-    case 'B': // ColMax
+    case SocketColMax:
         Socket->ColunaMax = (valor<10 ? 10 : valor>1000 ? 1000 : valor);
         break;
-    case 'C':
+    case SocketPosX:
         break;
     default:
-        Socket->Variavel(defvar_l[Instr::endNome+1], valor<0 ? 0 : valor);
+        Socket->Variavel(numfunc, valor<0 ? 0 : valor);
     }
 }

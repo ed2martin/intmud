@@ -41,10 +41,10 @@ protected:
     virtual int  Variavel(char num, int valor)=0;
                     ///< Lê ou altera uma variável
                     /**< @param num número da variável
-                     *         - '0' = proto
-                     *         - '1' = cores
-                     *         - '2' = aflooder
-                     *         - '3' = eco
+                     *         - 1 = proto
+                     *         - 2 = cores
+                     *         - 3 = aflooder
+                     *         - 4 = eco
                      *  @param valor Novo valor, se for >= 0
                      *  @return valor atual da variável
                      */
@@ -91,9 +91,11 @@ public:
     void EndObjeto(TClasse * c, TObjeto * o);
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    int  getValor(const char * defvar1);
+    static int getTipo(int numfunc);
+                            ///< Retorna o tipo de variável
+    int  getValor(int numfunc);
                             ///< Ler valor numérico da variável
-    void setValor(const char * defvar1, int valor);
+    void setValor(int numfunc, int valor);
                             ///< Mudar o valor numérico da variável
 
     const char * defvar;    ///< Como foi definida a variável

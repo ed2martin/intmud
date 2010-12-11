@@ -11,9 +11,11 @@ class TVarDebug /// Variáveis Debug
 public:
     static bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
-    static int  getValor(const char * defvar1);
+    static int  getTipo(int numfunc);
+        ///< Retorna o tipo de variável
+    static int  getValor(int numfunc);
         ///< Ler valor numérico da variável
-    static void setValor(const char * defvar1, int valor);
+    static void setValor(int numfunc, int valor);
         ///< Alterar valor numérico da variável
     static void Exec();
         ///< Para executar passo-a-passo

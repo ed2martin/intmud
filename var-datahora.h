@@ -16,13 +16,15 @@ public:
             ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
-    int  getInt(const char * defvar1);
+    static int getTipo(int numfunc);
+            ///< Retorna o tipo de variável
+    int  getInt(int numfunc);
             ///< Ler o valor numérico da variável como int
-    double getDouble(const char * defvar1);
+    double getDouble(int numfunc);
             ///< Ler o valor numérico da variável como double
-    void setInt(const char * defvar1, int valor);
+    void setInt(int numfunc, int valor);
             ///< Mudar o valor numérico da variável como int
-    void setDouble(const char * defvar1, double valor);
+    void setDouble(int numfunc, double valor);
             ///< Mudar o valor numérico da variável como double
     void LerSav(const char * texto);
             ///< Atualiza datahora com o valor salvo em arqsav

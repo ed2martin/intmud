@@ -52,15 +52,18 @@ public:
 #endif
 
 //------------------------------------------------------------------------------
-const char DataHoraAno[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '0', 0 };
-const char DataHoraMes[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '1', 0 };
-const char DataHoraDia[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '2', 0 };
-const char DataHoraHora[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '3', 0 };
-const char DataHoraMin[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '4', 0 };
-const char DataHoraSeg[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '5', 0 };
-const char DataHoraNumDia[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '6', 0 };
-const char DataHoraNumSeg[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '7', 0 };
-const char DataHoraNumTotal[] = { 8, 0, Instr::cDataHora, 0, 0, 0, '=', '8', 0 };
+enum DataHoraTipo
+{
+DataHoraAno = 1,
+DataHoraMes,
+DataHoraDia,
+DataHoraHora,
+DataHoraMin,
+DataHoraSeg,
+DataHoraNumDia,
+DataHoraNumSeg,
+DataHoraNumTotal
+};
 
 //------------------------------------------------------------------------------
 void TVarDataHora::Criar()
@@ -157,7 +160,7 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         }
     case 1: // Ano
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraAno;
+        Instr::VarAtual->numfunc = DataHoraAno;
         return true;
     case 2: // Antes
         if (Dia>1)
@@ -181,7 +184,7 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         return false;
     case 5: // Dia
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraDia;
+        Instr::VarAtual->numfunc = DataHoraDia;
         return true;
     case 6: // DiaSem
         ini = (DataNum() + 1) % 7;
@@ -189,15 +192,15 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         return Instr::CriarVarInt(ini);
     case 7: // Hora
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraHora;
+        Instr::VarAtual->numfunc = DataHoraHora;
         return true;
     case 8: // Mes
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraMes;
+        Instr::VarAtual->numfunc = DataHoraMes;
         return true;
     case 9: // Min
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraMin;
+        Instr::VarAtual->numfunc = DataHoraMin;
         return true;
     case 10: // NovaData
         if (Instr::VarAtual - v >= 1)
@@ -238,72 +241,82 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         return false;
     case 12: // NumDia
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraNumDia;
+        Instr::VarAtual->numfunc = DataHoraNumDia;
         return true;
     case 13: // NumSeg
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraNumSeg;
+        Instr::VarAtual->numfunc = DataHoraNumSeg;
         return true;
     case 14: // NumTotal
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraNumTotal;
+        Instr::VarAtual->numfunc = DataHoraNumTotal;
         return true;
     case 15: // Seg
         Instr::ApagarVar(v+1);
-        Instr::VarAtual->defvar = DataHoraSeg;
+        Instr::VarAtual->numfunc = DataHoraSeg;
         return true;
     }
     return false;
 }
 
 //------------------------------------------------------------------------------
-int TVarDataHora::getInt(const char * defvar1)
+int TVarDataHora::getTipo(int numfunc)
 {
-    if (defvar1[Instr::endNome]!='=')
-        return 0;
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0': return Ano;
-    case '1': return Mes;
-    case '2': return Dia;
-    case '3': return Hora;
-    case '4': return Min;
-    case '5': return Seg;
-    case '6': return DataNum(); // NumDia
-    case '7': return (Hora*60+Min)*60+Seg; // NumSeg
-    case '8': return DoubleToInt((Hora*60+Min)*60+Seg + DataNum() * 86400.0);
+    case 0: return varOutros;
+    case DataHoraNumTotal: return varDouble;
+    default: return varInt;
+    }
+}
+
+//------------------------------------------------------------------------------
+int TVarDataHora::getInt(int numfunc)
+{
+    switch (numfunc)
+    {
+    case DataHoraAno: return Ano;
+    case DataHoraMes: return Mes;
+    case DataHoraDia: return Dia;
+    case DataHoraHora: return Hora;
+    case DataHoraMin: return Min;
+    case DataHoraSeg: return Seg;
+    case DataHoraNumDia: return DataNum();
+    case DataHoraNumSeg: return (Hora*60+Min)*60+Seg;
+    case DataHoraNumTotal:
+        return DoubleToInt((Hora*60+Min)*60+Seg + DataNum() * 86400.0);
     }
     return 0;
 }
 
 //------------------------------------------------------------------------------
-double TVarDataHora::getDouble(const char * defvar1)
+double TVarDataHora::getDouble(int numfunc)
 {
-    if (memcmp(defvar1 + Instr::endNome, "=8", 2)!=0)
-        return getInt(defvar1);
+    if (numfunc == 0)
+        return 0;
+    if (numfunc != DataHoraNumTotal)
+        return getInt(numfunc);
     return (Hora*60+Min)*60+Seg + DataNum() * 86400.0;
 }
 
 //------------------------------------------------------------------------------
-void TVarDataHora::setInt(const char * defvar1, int valor)
+void TVarDataHora::setInt(int numfunc, int valor)
 {
-    if (defvar1[Instr::endNome]!='=')
-        return;
     int x;
-    switch (defvar1[Instr::endNome+1])
+    switch (numfunc)
     {
-    case '0':
+    case DataHoraAno:
         Ano = (valor<1 ? 1 : valor>9999 ? 9999 : valor);
         if (Mes==2 && Dia==29 && !BISSEXTO(Ano))
             Dia--;
         break;
-    case '1':
+    case DataHoraMes:
         Mes = (valor<1 ? 1 : valor>12 ? 12 : valor);
         x = DiasMes();
         if (Dia > x)
             Dia = x;
         break;
-    case '2':
+    case DataHoraDia:
         if (valor<1)
             Dia=1;
         else
@@ -312,23 +325,23 @@ void TVarDataHora::setInt(const char * defvar1, int valor)
             Dia = (valor<x ? valor : x);
         }
         break;
-    case '3':
+    case DataHoraHora:
         Hora = (valor<0 ? 0 : valor>23 ? 23 : valor);
         break;
-    case '4':
+    case DataHoraMin:
         Min = (valor<0 ? 0 : valor>59 ? 59 : valor);
         break;
-    case '5':
+    case DataHoraSeg:
         Seg = (valor<0 ? 0 : valor>59 ? 59 : valor);
         break;
-    case '6': // NumDia
+    case DataHoraNumDia:
         if (valor < 0) // 1/1/1
             valor = 0;
         if (valor > 3652058) // 31/12/9999
             valor = 3652058;
         NumData(valor);
         break;
-    case '8':
+    case DataHoraNumTotal:
         if (valor <= 0)
         {
             NumData(0);
@@ -337,7 +350,8 @@ void TVarDataHora::setInt(const char * defvar1, int valor)
         }
         NumData(valor/86400);
         valor %= 86400;
-    case '7': // NumHora
+        // Muda hora/minuto/segundo em seguida
+    case DataHoraNumSeg:
         if (valor < 0)
             valor = 0;
         if (valor > 24*60*60-1)
@@ -351,11 +365,11 @@ void TVarDataHora::setInt(const char * defvar1, int valor)
 }
 
 //------------------------------------------------------------------------------
-void TVarDataHora::setDouble(const char * defvar1, double valor)
+void TVarDataHora::setDouble(int numfunc, double valor)
 {
-    if (memcmp(defvar1 + Instr::endNome, "=8", 2)!=0 || valor<=0)
+    if (numfunc!=DataHoraNumTotal || valor<=0)
     {
-        setInt(defvar1, DoubleToInt(valor));
+        setInt(numfunc, DoubleToInt(valor));
         return;
     }
     double data = trunc(valor / 86400.0);

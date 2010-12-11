@@ -377,7 +377,7 @@ int TSocket::Variavel(char num, int valor)
 {
     switch (num)
     {
-    case '0': // proto
+    case 1: // proto
         if (sock<0)
             return 0;
         if (valor>=0 && proto!=0)
@@ -395,11 +395,11 @@ int TSocket::Variavel(char num, int valor)
             proto=valor;
         }
         return proto+1;
-    case '1': // cores
+    case 2: // cores
         if (valor>=0)
             cores = (valor>3 ? 3 : valor);
         return cores;
-    case '2': // aflooder
+    case 3: // aflooder
         if (valor>=0)
         {
             if (valor==0)
@@ -408,7 +408,7 @@ int TSocket::Variavel(char num, int valor)
                 AFlooder=TempoIni+1;
         }
         return (AFlooder!=0);
-    case '3': // eco
+    case 4: // eco
         if (proto!=1)
             return 1;
         if (valor>=0)

@@ -21,8 +21,6 @@
 #include "instr.h"
 #include "misc.h"
 
-const char DebugExec[] = { 8, 0, Instr::cDebug, 0, 0, 0, '=', '0', 0 };
-
 //----------------------------------------------------------------------------
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
@@ -37,7 +35,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "exec")==0)
     {
         ApagarVar(v+1);
-        VarAtual->defvar = DebugExec;
+        VarAtual->numfunc = 1;
         return true;
     }
 // Nível da função atual
@@ -156,17 +154,21 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
 }
 
 //----------------------------------------------------------------------------
-int TVarDebug::getValor(const char * defvar1)
+int TVarDebug::getTipo(int numfunc)
 {
-    if (defvar1[Instr::endNome]!='=')
-        return 0;
-    return Instr::VarExec;
+    return (numfunc ? varInt : varOutros);
 }
 
 //----------------------------------------------------------------------------
-void TVarDebug::setValor(const char * defvar1, int valor)
+int TVarDebug::getValor(int numfunc)
 {
-    if (defvar1[Instr::endNome]=='=')
+    return (numfunc ? Instr::VarExec : 0);
+}
+
+//----------------------------------------------------------------------------
+void TVarDebug::setValor(int numfunc, int valor)
+{
+    if (numfunc)
         Instr::VarExec = (valor<1 ? 1 : valor);
 }
 

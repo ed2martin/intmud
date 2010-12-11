@@ -52,15 +52,17 @@ public:
     void Mover(TVarTelaTxt * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    int  getValor(const char * defvar1);
+    static int getTipo(int numfunc);
+                            ///< Retorna o tipo de variável
+    int  getValor(int numfunc);
                             ///< Ler o valor numérico da variável
-    void setValor(const char * defvar1, int valor);
+    void setValor(int numfunc, int valor);
                             ///< Mudar o valor numérico da variável
-    const char * getTxt(const char * defvar1);
+    const char * getTxt(int numfunc);
                             ///< Ler o texto
-    void setTxt(const char * defvar1, const char * txt);
+    void setTxt(int numfunc, const char * txt);
                             ///< Mudar o texto
-    void addTxt(const char * defvar1, const char * txt);
+    void addTxt(int numfunc, const char * txt);
                             ///< Adicionar o texto
 
     const char * defvar;    ///< Como foi definida a variável
