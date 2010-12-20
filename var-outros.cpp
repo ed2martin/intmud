@@ -605,12 +605,14 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         return true;
     }
 // Separa texto
-    int valor = 2;
+    int valor = 10;
     if (comparaZ(nome, "separar")==0)
         valor=0;
-    else if (comparaZ(nome, "separardif")==0)
+    else if (comparaZ(nome, "separarmai")==0)
         valor=1;
-    if (valor!=2)
+    else if (comparaZ(nome, "separardif")==0)
+        valor=2;
+    if (valor!=10)
     {
         int indice = 0;
         int indmax = numvar;

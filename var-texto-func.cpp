@@ -745,8 +745,10 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
     int x=0;
     if (comparaZ(nome, "txtproc")==0)
         x=1;
-    else if (comparaZ(nome, "txtprocdif")==0)
+    else if (comparaZ(nome, "txtprocmai")==0)
         x=2;
+    else if (comparaZ(nome, "txtprocdif")==0)
+        x=3;
     if (x)
     {
         if (TextoTxt==0 || Bloco==0 || Instr::VarAtual < v+1)
