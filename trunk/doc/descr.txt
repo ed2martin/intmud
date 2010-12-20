@@ -750,8 +750,11 @@ txtproc(<texto>, <texto procurado>, <caracter inicial>)
     Retorna -1 se não encontrou ou o número do caracter se encontrou
     <caracter inicial> = a partir de onde procurar no texto
             0 = primeiro caracter, 1 = segundo, etc.
-    Para diferenciar letras minúsculas de maiúsculas e acentuadas de
-    não acentuadas, escrever txtprocdif ao invés de txtproc.
+
+    As funções txtprocmai e txtprocdif fazem a mesma coisa, exceto que:
+    txtproc - considera iguais letras minúsculas, maiúsculas e acentuadas.
+    txtprocmai - considera iguais letras maiúsculas e minúsculas.
+    txtprocdif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
 txttroca(<texto>, <valor anterior>, <novo valor>)
     Troca <valor anterior> por <novo valor> no <texto>.
@@ -890,8 +893,12 @@ separar(<texto>, <delimitador>, <número de textos>)
     Cada variável do vetor recebe um texto.
     A última variável recebe o restante do texto.
     Retorna o número de variáveis (pelo menos uma variável).
-    Para diferenciar letras minúsculas de maiúsculas e acentuadas de
-    não acentuadas, escrever separardif ao invés de separar.
+
+    As funções separarmai e separardif fazem a mesma coisa, exceto que:
+    separar - considera iguais letras minúsculas, maiúsculas e acentuadas.
+    separarmai - considera iguais letras maiúsculas e minúsculas.
+    separardif - diferencia letras maiúsculas, minúsculas e acentuadas.
+
     Exemplo:
     txt10 x.4
     x.separar("abc:10::def:20", ":")
@@ -1162,8 +1169,11 @@ textopos <nomedavariável>
         Se o caracter inicial não for especificado, assume início da linha.
         Se não encontrou, retorna -1. Se encontrou, posiciona na linha que
         contém o texto e retorna o número do caracter (0=início da linha).
-        Para diferenciar letras minúsculas de maiúsculas e acentuadas de
-        não acentuadas, escrever txtprocdif ao invés de txtproc.
+
+        As funções txtprocmai e txtprocdif fazem a mesma coisa, exceto que:
+        txtproc - considera iguais letras minúsculas, maiúsculas e acentuadas.
+        txtprocmai - considera iguais letras maiúsculas e minúsculas.
+        txtprocdif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário

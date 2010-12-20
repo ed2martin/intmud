@@ -32,7 +32,7 @@ TProcurar::TProcurar()
  *  @param e Se deve considerar letras maiúsculas e minúsculas diferentes
  *  @return verdadeiro se padrão válido, falso se padrão vazio
  */
-bool TProcurar::Padrao(const char * p, bool e)
+bool TProcurar::Padrao(const char * p, int e)
 {
     TProcurar::exato = e;
 // Obtém tamanho do padrão
@@ -42,26 +42,40 @@ bool TProcurar::Padrao(const char * p, bool e)
 // 0 ou 1 caracteres
     if (tampadrao<2)
     {
-        *padrao = (exato ? *p : tabCOMPLETO[*(unsigned char*)p]);
+        *padrao = (e==0 ? tabCOMPLETO[*(unsigned char*)p] :
+                   e==1 ? tabMAI[*(unsigned char*)p] : *p);
         return tampadrao>=1;
     }
 // Prepara tabela
     for (int x=0; x<0x100; x++)
         tabela[x] = -1;
 // Copia padrão e acerta tabela
-    if (e) // Exato
-        for (int x=0; x<tampadrao; x++,p++)
-        {
-            padrao[x] = *p;
-            tabela[*(unsigned char*)p] = x;
-        }
-    else // Não exato
-        for (int x=0; x<tampadrao; x++,p++)
+    int x;
+    switch (e)
+    {
+    case 0: // Não diferencia
+        for (x=0; x<tampadrao; x++,p++)
         {
             unsigned char ch = tabCOMPLETO[*(unsigned char*)p];
             padrao[x] = ch;
             tabela[ch] = x;
         }
+        break;
+    case 1: // maiúsculas = minúsculas
+        for (x=0; x<tampadrao; x++,p++)
+        {
+            unsigned char ch = tabMAI[*(unsigned char*)p];
+            padrao[x] = ch;
+            tabela[ch] = x;
+        }
+        break;
+    default: // Exato
+        for (x=0; x<tampadrao; x++,p++)
+        {
+            padrao[x] = *p;
+            tabela[*(unsigned char*)p] = x;
+        }
+    }
     return true;
 }
 
@@ -87,16 +101,9 @@ int TProcurar::Proc(const char * texto, int tamanho)
     {
         const char * ini = texto;
         const char * fim = texto+tamanho;
-        if (exato)
-            for (; texto<fim; texto++)
-            {
-                if (*texto != padrao[0])
-                    continue;
-                if (destatual==0)
-                    return texto-ini;
-                AddTroca(texto);
-            }
-        else
+        switch (exato)
+        {
+        case 0: // Não diferencia
             for (; texto<fim; texto++)
             {
                 if (tabCOMPLETO[*(unsigned char*)texto] != padrao[0])
@@ -105,34 +112,34 @@ int TProcurar::Proc(const char * texto, int tamanho)
                     return texto-ini;
                 AddTroca(texto);
             }
+            break;
+        case 1: // maiúsculas = minúsculas
+            for (; texto<fim; texto++)
+            {
+                if (tabMAI[*(unsigned char*)texto] != padrao[0])
+                    continue;
+                if (destatual==0)
+                    return texto-ini;
+                AddTroca(texto);
+            }
+            break;
+        default: // Exato
+            for (; texto<fim; texto++)
+            {
+                if (*texto != padrao[0])
+                    continue;
+                if (destatual==0)
+                    return texto-ini;
+                AddTroca(texto);
+            }
+        }
         AddTroca();
         return -1;
     }
     int i=tampadrao-1, j=0;
-    if (exato)
-        while (true)
-        {
-            char ch = texto[i+j];
-            if (padrao[i]==ch)
-            {
-                if (i--)    // Passa para próximo caracter
-                    continue;
-                        // Encontrou
-                if (destatual==0)
-                    return j;
-                AddTroca(texto+j);
-                j+=tampadrao;
-            }
-            else
-            {
-                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
-                j += (i>1 ? i : 1); // Desloca j
-            }
-            i = tampadrao-1;    // Inicializa i
-            if (i+j >= tamanho) // Verifica fim da string
-                break;
-        }
-    else
+    switch (exato)
+    {
+    case 0: // Não diferencia
         while (true)
         {
             char ch = tabCOMPLETO[(unsigned char)texto[i+j]];
@@ -155,6 +162,55 @@ int TProcurar::Proc(const char * texto, int tamanho)
             if (i+j >= tamanho) // Verifica fim da string
                 break;
         }
+        break;
+    case 1: // maiúsculas = minúsculas
+        while (true)
+        {
+            char ch = tabMAI[(unsigned char)texto[i+j]];
+            if (padrao[i]==ch)
+            {
+                if (i--)    // Passa para próximo caracter
+                    continue;
+                        // Encontrou
+                if (destatual==0)
+                    return j;
+                AddTroca(texto+j);
+                j+=tampadrao;
+            }
+            else
+            {
+                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
+                j += (i>1 ? i : 1); // Desloca j
+            }
+            i = tampadrao-1;    // Inicializa i
+            if (i+j >= tamanho) // Verifica fim da string
+                break;
+        }
+        break;
+    default: // Exato
+        while (true)
+        {
+            char ch = texto[i+j];
+            if (padrao[i]==ch)
+            {
+                if (i--)    // Passa para próximo caracter
+                    continue;
+                        // Encontrou
+                if (destatual==0)
+                    return j;
+                AddTroca(texto+j);
+                j+=tampadrao;
+            }
+            else
+            {
+                i -= tabela[(unsigned char)ch]; // Obtém deslocamento
+                j += (i>1 ? i : 1); // Desloca j
+            }
+            i = tampadrao-1;    // Inicializa i
+            if (i+j >= tamanho) // Verifica fim da string
+                break;
+        }
+    }
     AddTroca();
     return -1;
 }
@@ -177,18 +233,9 @@ int TProcurar::Proc(int (*funcler)(char * buf, int tambuf))
     {
         if (tampadrao<=0)
             return -1;
-        if (exato)
-            while (true)
-            {
-                int lido = funcler(buftxt, 1024);
-                if (lido <= 0)
-                    return -1;
-                for (int i=0; i<lido; i++)
-                    if (buftxt[i] == padrao[0])
-                        return i+bufini;
-                bufini += lido;
-            }
-        else
+        switch (exato)
+        {
+        case 0: // Não diferencia
             while (true)
             {
                 int lido = funcler(buftxt, 1024);
@@ -199,6 +246,31 @@ int TProcurar::Proc(int (*funcler)(char * buf, int tambuf))
                         return i+bufini;
                 bufini += lido;
             }
+            break;
+        case 1: // maiúsculas = minúsculas
+            while (true)
+            {
+                int lido = funcler(buftxt, 1024);
+                if (lido <= 0)
+                    return -1;
+                for (int i=0; i<lido; i++)
+                    if (tabMAI[(unsigned char)buftxt[i]] == padrao[0])
+                        return i+bufini;
+                bufini += lido;
+            }
+            break;
+        default: // Exato
+            while (true)
+            {
+                int lido = funcler(buftxt, 1024);
+                if (lido <= 0)
+                    return -1;
+                for (int i=0; i<lido; i++)
+                    if (buftxt[i] == padrao[0])
+                        return i+bufini;
+                bufini += lido;
+            }
+        }
         return -1;
     }
     int i=tampadrao-1, j=0;
@@ -218,8 +290,10 @@ int TProcurar::Proc(int (*funcler)(char * buf, int tambuf))
         while (true)
         {
             ch = buftxt[(i+j-bufini) % sizeof(buftxt)];
-            if (!exato)
+            if (exato==0) // Não diferencia
                 ch = tabCOMPLETO[(unsigned char)ch];
+            else if (exato==1) // maiúsculas = minúsculas
+                ch = tabMAI[(unsigned char)ch];
             if (padrao[i]!=ch)
                 break;
             if (i--)    // Passa para próximo caracter

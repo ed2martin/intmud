@@ -7,7 +7,7 @@ class TProcurar /// Procura texto
 {
 public:
     TProcurar();
-    bool Padrao(const char * padrao, bool exato);
+    bool Padrao(const char * padrao, int exato);
     int  Proc(const char * texto, int tamanho);
     int  Proc(int (*funcler)(char * buf, int tambuf));
 
@@ -19,7 +19,10 @@ private:
     int  tabela[0x100]; ///< Tabela de deslocamento
     char padrao[4096];  ///< Texto procurado
     int  tampadrao;     ///< Tamanho do padrão
-    bool exato;         ///< Se diferencia minúsculas de maiúsculas
+    int  exato;         ///< Se diferencia minúsculas de maiúsculas
+                        /**< - 0 = não diferencia
+                         *   - 1 = considera maiúsculas = minúsculas
+                         *   - outro valor = diferencia tudo */
     void AddTroca(const char * texto);
     void AddTroca();
     const char * lidoatual; ///< Até aonde já anotou o texto lido
