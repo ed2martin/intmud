@@ -31,10 +31,13 @@ TelaTxtLinha
 
 unsigned int TVarTelaTxt::CorTela = 0x70;
 unsigned int TVarTelaTxt::CorBarraN = 0x70;
-unsigned char TVarTelaTxt::EditorPosic = 0;
+unsigned int TVarTelaTxt::LinhaFinal = 1;
 unsigned int TVarTelaTxt::LinhaPosic = 0;
+unsigned int TVarTelaTxt::ColPosic = 0;
 unsigned int TVarTelaTxt::ColEscreve = 0;
 unsigned int TVarTelaTxt::ColEditor = 0;
+char * TVarTelaTxt::TelaBuf = 0;
+unsigned int TVarTelaTxt::TelaLin = 0;
 unsigned int TVarTelaTxt::col_linha = 0;
 unsigned int TVarTelaTxt::tam_linha = 0;
 unsigned int TVarTelaTxt::max_linha = CONSOLE_MAX - 1;
@@ -45,39 +48,54 @@ TVarTelaTxt * TVarTelaTxt::ObjAtual = 0;
 //---------------------------------------------------------------------------
 void TVarTelaTxt::Escrever(const char * texto, int tamanho)
 {
-    if (EditorPosic != 1)
-    {
-        if (EditorPosic==0)
-            Console->CursorLin(-1);      // Cursor sobe uma linha
-        else
-            Console->CursorLin(LinhaPosic-1);
-        EditorPosic = 1;
-        Console->CursorIni();        // Cursor no início da linha
-        if (ColEscreve && ColEscreve < Console->ColTotal)
-            Console->CursorCol(ColEscreve); // Move o cursor para a direita
-    }
+    Console->CursorLin(LinhaFinal - 1 - Console->LinAtual);
+    if (ColEscreve && ColEscreve < 0xFFFF)
+        Console->CursorCol(ColEscreve - Console->ColAtual);
+    else
+        Console->CursorIni();
     Console->CorTxt(CorTela);
+// Tamanho do texto
     if (tamanho<0)
         tamanho = strlen(texto);
+// Envia texto
+    char * pbuf = TelaBuf + TelaLin * Console->ColTotal + ColEscreve;
     for (; tamanho>0; texto++,tamanho--)
     {
         if (ColEscreve >= Console->ColTotal)
         {
-            Console->EnvTxt("\n\n", 2);  // Dois '\n' para criar uma linha no final
+            Console->EnvTxt("\n\n", 2); // Dois '\n' para criar uma linha no final
             Console->CursorLin(-1);      // Cursor sobe uma linha
             Console->CorTxt(CorBarraN);
             Console->InsereLin(1);       // Insere uma linha
             Console->CorTxt(CorTela);
-            ColEscreve = 0;
+        // Atualiza LinhaPosic
             if (LinhaPosic > 0 && LinhaPosic < Console->LinTotal - 1)
                 LinhaPosic++;
+        // Atualiza LinhaFinal
+            LinhaFinal++;
+            if (LinhaFinal >= Console->LinTotal)
+                LinhaFinal = Console->LinTotal - 1;
+        // Atualiza buffer com conteúdo da tela
+            TelaLin = (TelaLin + 1) % Console->LinTotal;
+            pbuf = TelaBuf + TelaLin * Console->ColTotal;
+            memset(pbuf, ' ', Console->ColTotal);
+        // Atualiza ColEscreve
+            if (ColEscreve != 0xFFFF && *texto=='\n')
+                texto++,tamanho--;
+            ColEscreve = 0;
+            if (tamanho==0)
+                break;
         }
+        //printf("[%c]", *texto);
         if (*texto=='\n')
             ColEscreve = 0xFFFF;
         else
         {
             Console->EnvTxt(texto, 1);
             ColEscreve++;
+            *pbuf++ = *texto;
+            if (ColEscreve >= Console->ColTotal)
+                Console->CursorLin(-1);
         }
         CorBarraN = CorTela;
     }
@@ -86,16 +104,12 @@ void TVarTelaTxt::Escrever(const char * texto, int tamanho)
 //---------------------------------------------------------------------------
 void TVarTelaTxt::CursorEditor()
 {
-    if (EditorPosic != 0)
-    {
-        if (EditorPosic == 1)
-            Console->EnvTxt("\n", 1);
-        else
-            Console->CursorLin(LinhaPosic);
-        EditorPosic = 0;
-        Console->CorTxt(CONSOLE_COR_LINHA);
-    }
+    if (LinhaFinal == Console->LinAtual+1)
+        Console->EnvTxt("\n", 1);
+    else
+        Console->CursorLin(LinhaFinal - Console->LinAtual);
     Console->CursorCol(ColEditor - Console->ColAtual);
+    Console->CorTxt(CONSOLE_COR_LINHA);
 }
 
 //---------------------------------------------------------------------------
@@ -103,11 +117,10 @@ void TVarTelaTxt::ProcTecla(const char * texto)
 {
     if (texto==0)
         return;
-// Cursor na linha de edição
-    CursorEditor();
 // Tecla normal (texto)
     if (texto[0] && texto[1]==0)
     {
+        CursorEditor();
     // Verifica se tem espaço na linha
         if (tam_linha >= max_linha)
             return;
@@ -138,57 +151,77 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         Console->EnvTxt(txt_linha + col_linha + ColEditor - 1, 1); // Mostra caracter
         return;
     }
+// Passa para letras maiúsculas
+    char texto1[10];
+    for (unsigned int x=0; x<sizeof(texto1)-1; x++)
+        texto1[x] = tabMAI[*(unsigned char *)(texto + x)];
+    texto1[sizeof(texto1)-1] = 0;
 // Cima
-    if (strcmp(texto, "UP")==0)
+    if (strcmp(texto1, "UP")==0)
     {
-        if (LinhaPosic < Console->LinTotal-1)
+        if (LinhaPosic < LinhaFinal)
             LinhaPosic++;
+        ColPosic = 0;
         return;
     }
 // Baixo
-    if (strcmp(texto, "DOWN")==0)
+    if (strcmp(texto1, "DOWN")==0)
     {
         if (LinhaPosic > 0)
             LinhaPosic--;
+        ColPosic = 0;
+        return;
+    }
+// Esquerda
+    if (strcmp(texto1, "LEFT")==0)
+    {
+        if (LinhaPosic==0)
+        {
+            CursorEditor();
+            ProcTeclaCursor(ColEditor + col_linha - 1);
+        }
+        else if (ColPosic)
+            ColPosic--;
+        return;
+    }
+// Direita
+    if (strcmp(texto1, "RIGHT")==0)
+    {
+        if (LinhaPosic==0)
+        {
+            ProcTeclaCursor(ColEditor + col_linha + 1);
+            CursorEditor();
+        }
+        else if (ColPosic < Console->ColTotal - 1)
+            ColPosic++;
         return;
     }
 // ENTER
-    if (strcmp(texto, "ENTER")==0)
+    if (strcmp(texto1, "ENTER")==0)
     {
         col_linha = 0;
         tam_linha = 0;
         ColEditor = 0;
+        CursorEditor();        // Cursor na linha de edição
         Console->CursorIni();  // Posicina o cursor no início da linha
         Console->LimpaFim();   // Limpa a linha
         return;
     }
-// Esquerda
-    if (strcmp(texto, "LEFT")==0)
-    {
-        ProcTeclaCursor(ColEditor + col_linha - 1);
-        return;
-    }
-// Direita
-    if (strcmp(texto, "RIGHT")==0)
-    {
-        ProcTeclaCursor(ColEditor + col_linha + 1);
-        return;
-    }
-// Home
-    if (strcmp(texto, "HOME")==0)
-    {
-        ProcTeclaCursor(0);
-        return;
-    }
-// End
-    if (strcmp(texto, "END")==0)
-    {
-        ProcTeclaCursor(tam_linha);
-        return;
-    }
 // Control + esquerda
-    if (strcmp(texto, "C_LEFT")==0)
+    if (strcmp(texto1, "C LEFT")==0)
     {
+        if (LinhaPosic)
+        {
+            int linnum = TelaLin + 1 - LinhaPosic + Console->LinTotal;
+            linnum %= Console->LinTotal;
+            const char * pbuf = TelaBuf + linnum * Console->ColTotal;
+            while (ColPosic > 0 && pbuf[ColPosic-1]==' ')
+                ColPosic--;
+            while (ColPosic > 0 && pbuf[ColPosic-1]!=' ')
+                ColPosic--;
+            return;
+        }
+        CursorEditor();
         int col = ColEditor + col_linha - 1;
         for (; col>=0; col--)
             if (txt_linha[col] >= '0')
@@ -200,8 +233,21 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Control + direita
-    if (strcmp(texto, "C_RIGHT")==0)
+    if (strcmp(texto1, "C RIGHT")==0)
     {
+        if (LinhaPosic)
+        {
+            int linnum = TelaLin + 1 - LinhaPosic + Console->LinTotal;
+            linnum %= Console->LinTotal;
+            const char * pbuf = TelaBuf + linnum * Console->ColTotal;
+            const unsigned int colmax = Console->ColTotal;
+            while (ColPosic+1 < colmax && pbuf[ColPosic]!=' ')
+                ColPosic++;
+            while (ColPosic+1 < colmax && pbuf[ColPosic]==' ')
+                ColPosic++;
+            return;
+        }
+        CursorEditor();
         int col = ColEditor + col_linha + 1;
         for (; col<(int)tam_linha; col++)
             if (txt_linha[col] < '0')
@@ -212,8 +258,26 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         ProcTeclaCursor(col);
         return;
     }
+// Home
+    if (strcmp(texto1, "HOME")==0)
+    {
+        if (LinhaPosic)
+            ColPosic = 0;
+        else
+            ProcTeclaCursor(0);
+        return;
+    }
+// End
+    if (strcmp(texto1, "END")==0)
+    {
+        if (LinhaPosic)
+            ColPosic = Console->ColTotal - 1;
+        else
+            ProcTeclaCursor(tam_linha);
+        return;
+    }
 // DEL
-    if (strcmp(texto, "DEL")==0)
+    if (strcmp(texto1, "DEL")==0)
     {
         if (col_linha + ColEditor >= tam_linha)
             return;
@@ -222,6 +286,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         for (unsigned int x=col_linha + ColEditor; x<tam_linha; x++)
             txt_linha[x] = txt_linha[x+1];
     // Resultado na tela
+        CursorEditor();        // Cursor na linha de edição
         Console->ApagaCol(1); // Apaga 1 caracter
         if (col_linha + Console->ColTotal - 2 >= tam_linha)
             return;
@@ -233,7 +298,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Backspace
-    if (strcmp(texto, "BACK")==0)
+    if (strcmp(texto1, "BACK")==0)
     {
         if (col_linha + ColEditor <= 0)
             return;
@@ -248,7 +313,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
             return;
         }
         ColEditor--;
-        Console->CursorCol(-1);  // Recua cursor
+        CursorEditor();        // Cursor na linha de edição
         Console->ApagaCol(1); // Apaga 1 caracter
         if (col_linha + Console->ColTotal - 2 >= tam_linha)
             return;
@@ -332,25 +397,13 @@ void TVarTelaTxt::ProcFim()
     if (LinhaPosic == 0)
         CursorEditor();
 // Posicionar na linha escolhida pelo usuário
-    else if (EditorPosic != 2)
+    else
     {
-    // Cursor na primeira coluna
-        if (Console->ColAtual)
+        Console->CursorLin(LinhaFinal - LinhaPosic - Console->LinAtual);
+        if (ColPosic==0 && Console->ColAtual)
             Console->CursorIni();
-    // Obtém número de linhas antes da linha de edição
-        unsigned int lintexto = Console->LinAtual;
-        if (EditorPosic==1)
-            lintexto++;
-    // Não sobe antes da primeira linha de texto
-        if (LinhaPosic > lintexto)
-            LinhaPosic = lintexto;
-    // Obtém quantas linhas subir
-        int sobe = LinhaPosic;
-        if (EditorPosic==1)
-            sobe--;
-    // Sobe cursor
-        Console->CursorLin(-sobe);
-        EditorPosic = 2;
+        else
+            Console->CursorCol(ColPosic - Console->ColAtual);
     }
     Console->Flush();
 }
@@ -545,6 +598,12 @@ bool TVarTelaTxt::Inic()
     Console->EnvTxt("\n", 1);    // Adiciona uma linha
     Console->CorTxt(CONSOLE_COR_LINHA); // Define frente branca e fundo azul
     Console->LimpaFim();         // Preenche do cursor até o fim da linha
+// Acerta buffer com cópia da tela
+    if (TelaBuf)
+        delete[] TelaBuf;
+    TelaBuf = new char[Console->LinTotal * Console->ColTotal];
+    memset(TelaBuf, ' ', Console->LinTotal * Console->ColTotal);
+    TelaLin = 0;
 // Acerta o título da janela
     int total = arqext - arqinicio;
     if (total>0)
@@ -564,13 +623,13 @@ void TVarTelaTxt::Fim()
 {
     if (Console==0)
         return;
-    if (EditorPosic)
+    if (TelaBuf)
     {
-        if (EditorPosic != 1)
-            for (int x=0; x<(int)LinhaPosic; x++)
-                putchar('\n');
-        putchar('\n');
+        delete[] TelaBuf;
+        TelaBuf = 0;
     }
+    for (; LinhaPosic>0; LinhaPosic--)
+        putchar('\n');
     Console->Fim();
 }
 
@@ -590,7 +649,7 @@ void TVarTelaTxt::Processa()
         if (FuncEvento("tecla", p))
             continue;
     // Processa teclas exceto ENTER
-        if (strcmp(p, "ENTER")!=0)
+        if (comparaZ(p, "ENTER")!=0)
         {
             ProcTecla(p);
             continue;
@@ -746,14 +805,16 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
         Console->CursorPosic(1,0);
         Console->CorTxt(CONSOLE_COR_LINHA);
         Console->LimpaFim();  // Preenche do cursor até o fim da linha
-        EditorPosic = 0;
+        LinhaFinal = 0;
         LinhaPosic = 0;
+        ColPosic = 0;
         ColEscreve = 0;
         int total = tam_linha - col_linha;
         if (total > 0)
             Console->EnvTxt(txt_linha + col_linha,
                             total<(int)Console->ColTotal-1 ? total : Console->ColTotal-1);
         Console->CursorCol(ColEditor - Console->ColAtual);
+        memset(TelaBuf, ' ', Console->LinTotal * Console->ColTotal);
         return false;
     }
 // Variáveis
