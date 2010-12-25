@@ -94,11 +94,10 @@ public:
     unsigned int ColAtual;
         ///< Coluna atual na tela; somente leitura
 
+private:
     unsigned char Aberto;
         ///< Se console foi aberto
         /**< 0=fechado, 1=aberto para enviar texto, 2=aberto */
-    bool ini_linha;
-        ///< Se passou para nova linha porque terminou a linha
     char LerTexto[16];  ///< Usado internamente por Ler()
 
     int Charset;

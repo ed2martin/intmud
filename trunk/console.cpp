@@ -136,7 +136,6 @@ bool TConsole::Inic(bool completo)
 // Acerta variáveis
     LerPont = 0;
     LerTexto[0] = 0;
-    ini_linha = false;
 #endif
 
 // Acerta StrConv[]
@@ -630,23 +629,10 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
         {
             if (*texto == '\n')
             {
-                if (ini_linha)
-                {
-                    ini_linha=false;
-                    if (ColAtual==0)
-                    {
-#ifndef __WIN32__
-                        *dest++ = '\n';
-#endif
-                        continue;
-                    }
-                }
                 LinAtual++, ColAtual = 0;
                 *dest++ = '\n';
                 continue;
             }
-            if (++ColAtual >= ColTotal)
-                ColAtual = 0, LinAtual++, ini_linha=true;
             unsigned char ch = StrConv[ *(unsigned char*)texto ];
             if (ch < Charset)
                 *dest++ = ch;
@@ -654,6 +640,13 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
             {
                 *dest++ = 0xC0 + ch / 0x40;
                 *dest++ = 0x80 + (ch & 0x3F);
+            }
+            if (++ColAtual >= ColTotal)
+            {
+                ColAtual = 0, LinAtual++;
+#ifndef __WIN32__
+                *dest++ = '\n';
+#endif
             }
         }
 #ifdef __WIN32__
@@ -741,7 +734,6 @@ void TConsole::CursorIni()
     putchar('\r');
 #endif
     ColAtual = 0;
-    ini_linha = false;
 }
 
 //---------------------------------------------------------------------------
@@ -764,7 +756,6 @@ void TConsole::CursorLin(int valor)
         LinAtual = 0;
     if (LinAtual >= LinTotal)
         LinAtual = LinTotal-1;
-    ini_linha = false;
 }
 
 //---------------------------------------------------------------------------
@@ -787,7 +778,6 @@ void TConsole::CursorCol(int valor)
         ColAtual = 0;
     if (ColAtual >= ColTotal)
         ColAtual = ColTotal-1;
-    ini_linha = false;
 }
 
 //---------------------------------------------------------------------------
@@ -802,7 +792,6 @@ void TConsole::CursorPosic(int lin, int col)
         { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
     printf("\x1B[%d;%dH", LinAtual+1, ColAtual+1);
 #endif
-    ini_linha = false;
 }
 
 //---------------------------------------------------------------------------

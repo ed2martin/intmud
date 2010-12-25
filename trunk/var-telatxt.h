@@ -27,16 +27,23 @@ private:
          *   - Bit 7 = negrito, 0=desativado */
     static unsigned int CorBarraN;
         ///< Cor, ao processar \\n em Escrever()
-    static unsigned char EditorPosic;
-        ///< 0=cursor no editor, 1=cursor no texto, 2=na linha selecionada
+
+    static unsigned int LinhaFinal;
+        ///< Linha na tela correspondente ao campo de edição
     static unsigned int LinhaPosic;
         ///< Em que linha o usuário colocou o cursor, 0=no editor
+    static unsigned int ColPosic;
+        ///< Em que coluna o usuário colocou o cursor, se LinhaPosic!=0
     static unsigned int ColEscreve;
         ///< Coluna do texto sendo inserido na tela
         /**< O caracter \\n faz ColEscreve=0xFFFF para inserir
          *   nova linha quando chegar o próximo caracter */
     static unsigned int ColEditor;
         ///< Coluna do cursor na tela (texto sendo editado)
+    static char * TelaBuf;
+        ///< Buffer com cópia do conteúdo da tela
+    static unsigned int TelaLin;
+        ///< Número da linha em TelaBuf que é a última linha de texto na tela
 
     static const char * LerLinha() { txt_linha[tam_linha]=0; return txt_linha; }
         ///< Retorna o conteúdo da linha sendo editada

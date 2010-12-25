@@ -39,10 +39,18 @@ func inic_exec # Mensagem de abertura
   msg("F3 desconecta\n")
   msg("F4 encerra o programa\n")
 func tela_tecla # Usuário pressionou uma tecla
-  se arg0 != "UP" && arg0 != "DOWN"
+  se !cursor_[arg0]
     tela.linha = 0
   fimse
   ret tecla_[arg0]
+const cursor_UP = 1
+const cursor_DOWN = 1
+const cursor_LEFT = 1
+const cursor_RIGHT = 1
+const cursor_C_LEFT = 1
+const cursor_C_RIGHT = 1
+const cursor_HOME = 1
+const cursor_END = 1
 func tecla_F1
   prog p
   se sock.proto = 0
