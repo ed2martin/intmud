@@ -65,8 +65,6 @@
                 o+=vetor-1, d+=vetor-1, inc=-1;       \
             for (; vetor; vetor--,o+=inc,d+=inc)      \
             {                                         \
-                o->defvar = defvar;                   \
-                o->indice = o - (classenome *)endvar; \
                 o->EndObjeto(classe, objeto);         \
                 o->Mover(d);                          \
             }                                         \
@@ -398,7 +396,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
 }
 
 //------------------------------------------------------------------------------
-void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
+void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
 {
     if (destino==endvar)
         return;
@@ -505,8 +503,6 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
                 o+=vetor-1, d+=vetor-1, inc=-1;
             for (; vetor; vetor--,o+=inc,d+=inc)
             {
-                o->defvar = defvar;
-                o->indice = o - (TListaItem *)endvar;
                 o->Objeto = objeto;
                 o->Mover(d);
             }
@@ -524,8 +520,6 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
                 o+=vetor-1, d+=vetor-1, inc=-1;
             for (; vetor; vetor--,o+=inc,d+=inc)
             {
-                o->defvar = defvar;
-                o->indice = o - (TTextoPos *)endvar;
                 o->Objeto = objeto;
                 o->Mover(d);
             }
@@ -615,7 +609,7 @@ void TVariavel::Mover(void * destino, TClasse * classe, TObjeto * objeto)
 }
 
 //------------------------------------------------------------------------------
-void TVariavel::MoverDefVar()
+void TVariavel::MoverDef()
 {
     int vetor = (unsigned char)defvar[Instr::endVetor];
     if (vetor==0)

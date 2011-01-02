@@ -632,13 +632,13 @@ void TClasse::AcertaVarSub()
                 if (ind & 0x400000) // Variável da classe
                 {
                     v.endvar = cl->Vars + (ind & 0x3FFFFF);
-                    v.MoverDefVar();
+                    v.MoverDef();
                 }
                 else // Variável do objeto
                     for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
                     {
                         v.endvar = obj->Vars + (ind & 0x3FFFFF);
-                        v.MoverDefVar();
+                        v.MoverDef();
                     }
                 //puts(InstrVar[ind] + Instr::endNome); fflush(stdout);
             }
@@ -652,13 +652,13 @@ void TClasse::AcertaVarSub()
         if (ind & 0x400000) // Variável da classe
         {
             v.endvar = Vars + (ind & 0x3FFFFF);
-            v.MoverDefVar();
+            v.MoverDef();
         }
         else // Variável do objeto
             for (TObjeto * obj = ObjetoIni; obj; obj=obj->Depois)
             {
                 v.endvar = obj->Vars + (ind & 0x3FFFFF);
-                v.MoverDefVar();
+                v.MoverDef();
             }
     }
 }
@@ -1178,7 +1178,16 @@ int TClasse::AcertaVar()
 
 // Acerta variáveis da classe
     if ((bitobjeto & 2)==0) // Nenhuma variável mudou
+    {
         Vars = antes.Vars, antes.Vars = 0;
+        for (int x=indobjeto; x<indclasse; x++)
+            if (al[x].comando == 3) // Mover
+            {
+                x++; // Porque o novo endereço está em al[x+1]
+                al[x].endvar = Vars + (al[x].indvar & 0x3FFFFF);
+                al[x].MoverDef();
+            }
+    }
     else // Alguma variável mudou
     {
         if (TamVars)
@@ -1205,20 +1214,21 @@ int TClasse::AcertaVar()
                 break;
             case 3: // Mover; variável não mudou
                 if (al[x].tam == al[x+1].tam)
-                    al[x].Mover(al[x+1].endvar, this, 0);
+                    al[x].MoverEnd(al[x+1].endvar, this, 0);
                 else if (al[x].tam > al[x+1].tam)
                 {
                     const char * def = al[x].defvar;
                     al[x].Redim(0, 0, al[x].tam, al[x+1].tam);
                     al[x].defvar = al[x+1].defvar;
-                    al[x].Mover(al[x+1].endvar, this, 0);
+                    al[x].MoverEnd(al[x+1].endvar, this, 0);
                     al[x].defvar = def;
                 }
                 else
                 {
-                    al[x].Mover(al[x+1].endvar, this, 0);
+                    al[x].MoverEnd(al[x+1].endvar, this, 0);
                     al[x+1].Redim(this, 0, al[x].tam, al[x+1].tam);
                 }
+                al[x+1].MoverDef();
                 x++;
                 break;
             case 4:
@@ -1270,7 +1280,18 @@ int TClasse::AcertaVar()
     } // if
 
 // Acerta variáveis dos objetos
-    if (bitobjeto & 4) // Alguma variável mudou
+    if ((bitobjeto & 4)==0) // Nenhuma variável mudou
+    {
+        for (TObjeto * obj = ObjetoIni; obj; obj=obj->Depois)
+            for (int x=0; x<indobjeto; x++)
+                if (al[x].comando == 3) // Mover
+                {
+                    x++; // Porque o novo endereço está em al[x+1]
+                    al[x].endvar = obj->Vars + (al[x].indvar & 0x3FFFFF);
+                    al[x].MoverDef();
+                }
+    }
+    else // Alguma variável mudou
     {
         for (int nobj=NumObj; nobj>0; nobj--)
         {
@@ -1296,20 +1317,21 @@ int TClasse::AcertaVar()
                     break;
                 case 3: // Mover; variável não mudou
                     if (al[x].tam == al[x+1].tam)
-                        al[x].Mover(al[x+1].endvar, this, obj);
+                        al[x].MoverEnd(al[x+1].endvar, this, obj);
                     else if (al[x].tam > al[x+1].tam)
                     {
                         const char * def = al[x].defvar;
                         al[x].Redim(0, 0, al[x].tam, al[x+1].tam);
                         al[x].defvar = al[x+1].defvar;
-                        al[x].Mover(al[x+1].endvar, this, obj);
+                        al[x].MoverEnd(al[x+1].endvar, this, obj);
                         al[x].defvar = def;
                     }
                     else
                     {
-                        al[x].Mover(al[x+1].endvar, this, obj);
+                        al[x].MoverEnd(al[x+1].endvar, this, obj);
                         al[x+1].Redim(this, obj, al[x].tam, al[x+1].tam);
                     }
+                    al[x+1].MoverDef();
                     x++;
                     break;
                 case 4:
@@ -1362,6 +1384,7 @@ int TClasse::AcertaVar()
             ObjetoIni->Apagar(obj);
         }
     }
+
     return (bitobjeto==0 ? 0 : (bitobjeto&15)==0 ? 1 : 2);
 }
 

@@ -279,7 +279,7 @@ void Instr::ApagarRet(TVariavel * v)
                 p += ((p-Instr::DadosPilha)&2);
         }
         if (p < VarAtual->endvar)
-            VarAtual->Mover(p, 0, 0);
+            VarAtual->MoverEnd(p, 0, 0);
         DadosTopo = (char*)VarAtual->endvar + VarAtual->tamanho;
     }
 }
@@ -365,7 +365,7 @@ bool Instr::VarFuncFim()
                 DadosTopo = origem;
             if (DadosTopo > destino)
                 return false;
-            v->Mover(destino, 0, 0);
+            v->MoverEnd(destino, 0, 0);
             for (TVariavel * vtemp = VarAtual; vtemp>vfunc; vtemp--)
                 if (vtemp->endvar == origem)
                     vtemp->endvar = destino;
@@ -387,7 +387,7 @@ bool Instr::VarFuncFim()
                     endini += ((endini-Instr::DadosPilha)&2);
             }
             char * origem = (char*)v->endvar;
-            v->Mover(endini, 0, 0);
+            v->MoverEnd(endini, 0, 0);
             for (TVariavel * vtemp = vfunc; vtemp<=VarAtual; vtemp++)
                 if (vtemp->endvar == origem)
                     vtemp->endvar = endini;
