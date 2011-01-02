@@ -83,13 +83,13 @@ public:
              @note Para diminuir o tamanho do vetor, c e o podem ser 0
              @note Não libera memória alocada (não executa delete) */
 
-    void Mover(void * destino, TClasse * c, TObjeto * o);
-        ///< Move a variável para outra região da memória
+    void MoverEnd(void * destino, TClasse * c, TObjeto * o);
+        ///< Move a variável para outra região da memória, mas não acerta defvar
         /**< Usa:
              - TVariavel::defvar = definição da variável
              - TVariavel::endvar = endereço atual   */
 
-    void MoverDefVar();
+    void MoverDef();
         ///< Acerta variável porque defvar mudou
         /**< Usa:
              - TVariavel::defvar = definição da variável

@@ -1105,7 +1105,7 @@ bool Instr::ExecX()
                 else if (VarAtual->defvar[2]==cTxtFixo)
                 {
                     total = VarAtual->tamanho;
-                    VarAtual->Mover(destino, 0, 0);
+                    VarAtual->MoverEnd(destino, 0, 0);
                     VarAtual--;
                 }
             // Caso 6: Segunda variável é local
@@ -1518,7 +1518,7 @@ bool Instr::ExecX()
                 DadosTopo = (char*)v->endvar;
                 if (VarAtual->tamanho)
                 {
-                    VarAtual->Mover(v->endvar, 0, 0);
+                    VarAtual->MoverEnd(v->endvar, 0, 0);
                     DadosTopo += VarAtual->tamanho;
                 }
                 *v = *VarAtual;
