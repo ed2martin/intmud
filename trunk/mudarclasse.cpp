@@ -362,10 +362,11 @@ bool TMudarClasse::ExecPasso()
 #ifdef DEBUG
         printf("new %s\n", cl->Nome); fflush(stdout);
 #endif
-    // Indica que precisa executar sinal iniclasse
-        if (TClasse::ClInic)
-            if (TClasse::RBcomp(cl, TClasse::ClInic) < 0)
-                mudar->RBcolour |= 4;
+    // Indica que precisa executar função iniclasse
+        if (TClasse::ClInic == 0)
+            mudar->RBcolour |= 4;
+        else if (TClasse::RBcomp(cl, TClasse::ClInic) < 0)
+            mudar->RBcolour |= 4;
     }
 // Altera instruções das classes
     for (TMudarClasse * mudar = Inicio; mudar; mudar=mudar->Depois)
