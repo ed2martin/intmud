@@ -48,8 +48,8 @@ TObjSocket::TObjSocket()
     CorInic=-1;
     CorEnvia=0x70;
     ColunaEnvia=0;
-    ColunaMin=70;
-    ColunaMax=80;
+    ColunaMin=1000;
+    ColunaMax=1000;
     Inicio=0;
 }
 

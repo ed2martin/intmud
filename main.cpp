@@ -414,21 +414,7 @@ void Inicializa(const char * arg)
 
     // Obtém primeiro argumento em nome[]
     // Obtém: pnome = endereço do 0 no final
-#ifdef __WIN32__
-        bool aspas = false;
-        for (; *arg && pnome<endfim; arg++)
-        {
-            if (*arg=='\"')
-                aspas = !aspas;
-            else if (*arg==' ' && !aspas)
-                break;
-            else
-                *pnome++ = *arg;
-        }
-        *pnome = 0;
-#else
         pnome = copiastr(nome, arg, sizeof(nome));
-#endif
 
     // Muda para o diretório do nome
     // Obtém: pnome = endereço do nome do arquivo sem o diretório
