@@ -627,8 +627,8 @@ void TClasse::AcertaVarSub()
                 int ind = IndiceNome(cl->InstrVar[y] + Instr::endNome);
                 assert(ind>=0);
                 cl->InstrVar[y] = InstrVar[ind];
-                ind = cl->IndiceVar[ind];
                 v.defvar = InstrVar[ind];
+                ind = cl->IndiceVar[ind];
                 if (ind & 0x400000) // Variável da classe
                 {
                     v.endvar = cl->Vars + (ind & 0x3FFFFF);
