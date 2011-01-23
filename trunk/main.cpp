@@ -840,7 +840,7 @@ void Inicializa(const char * arg)
 
 // Acerta variáveis das classes
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-        cl->AcertaVar();
+        cl->AcertaVar(false);
 
 // Inicializa console
     if (telatxt && Console==0)

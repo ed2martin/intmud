@@ -231,14 +231,14 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
 // Mostra o que vai fazer
 #ifdef DEBUG_CRIAR
     if (depois>antes)
-        printf("Variável criada (%d a %d) %p   ", antes, depois-1, endvar);
+        printf("Variável criada  (%d a %d) end=%p", antes, depois-1, endvar);
     else
-        printf("Variável apagada (%d a %d) %p   ", depois, antes-1, endvar);
+        printf("Variável apagada (%d a %d) end=%p", depois, antes-1, endvar);
     char mens[4096];
     if (Instr::Decod(mens, defvar, sizeof(mens)))
-        puts(mens);
+        printf(" def=%p %s\n", defvar, mens);
     else
-        printf("ERRO: %s\n", mens);
+        printf(" ERRO: %s\n", mens);
     fflush(stdout);
 #endif
 // Vetor de bits
@@ -404,13 +404,13 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     if (vetor==0)
         vetor++;
 #ifdef DEBUG_MOVER
-    printf("Variável movida (0 a %d) de %p para %p  ",
+    printf("Variável movida (0 a %d) de %p para %p",
            vetor-1, endvar, destino);
     char mens1[4096];
     if (Instr::Decod(mens1, defvar, sizeof(mens1)))
-        puts(mens1);
+        printf(" def=%p %s\n", defvar, mens1);
     else
-        printf("ERRO: %s\n", mens1);
+        printf(" ERRO: %s\n", mens1);
     fflush(stdout);
 #endif
     switch (defvar[2])
@@ -614,6 +614,15 @@ void TVariavel::MoverDef()
     int vetor = (unsigned char)defvar[Instr::endVetor];
     if (vetor==0)
         vetor++;
+#ifdef DEBUG_MOVER
+    printf("Variável mudou def (0 a %d) end=%p", vetor-1, endvar);
+    char mens1[4096];
+    if (Instr::Decod(mens1, defvar, sizeof(mens1)))
+        printf(" def=%p %s\n", defvar, mens1);
+    else
+        printf(" ERRO: %s\n", mens1);
+    fflush(stdout);
+#endif
     int cont;
     switch (defvar[2])
     {

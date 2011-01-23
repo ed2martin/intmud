@@ -517,7 +517,7 @@ void TClasse::LimpaInstr()
     Comandos = new char[2];
     memset(Comandos, 0, 2);
     AcertaDeriv(antigo_com);
-    AcertaVarSub();
+    AcertaVar(true);
     delete[] antigo_com;
 // Acerta herança das outras classes - retira essa classe
     for (unsigned int numcl=0; numcl < NumDeriv; numcl++)
@@ -589,82 +589,7 @@ void TClasse::LimpaInstr()
 }
 
 //----------------------------------------------------------------------------
-void TClasse::AcertaVarSub()
-{
-// Indica que o arquivo foi alterado
-    if (ArqArquivo)
-        ArqArquivo->Mudou = true;
-// Obtém faixa de endereço das variáveis
-    const char * ini=0;
-    const char * fim=0;
-    for (unsigned int x=0; x<NumVar; x++)
-        if (IndiceVar[x] & 0x800000)
-        {
-            if (ini==0)
-                ini = fim = InstrVar[x];
-            else if (ini > InstrVar[x])
-                ini = InstrVar[x];
-            else if (fim < InstrVar[x])
-                fim = InstrVar[x];
-        }
-// Acerta variáveis
-    int mudou = AcertaVar();
-// Lista de variáveis mudou: acerta classes derivadas
-    if (mudou)
-    {
-        for (unsigned int x=0; x<NumDeriv; x++)
-            ListaDeriv[x]->AcertaVar();
-        return;
-    }
-// Lista não mudou: apenas acerta os endereços das variáveis
-    for (unsigned int x=0; x<NumDeriv; x++)
-    {
-        TClasse * cl = ListaDeriv[x];
-        for (unsigned int y=0; y<cl->NumVar; y++)
-            if (cl->InstrVar[y] >= ini && cl->InstrVar[y] <= fim)
-            {
-                TVariavel v;
-                int ind = IndiceNome(cl->InstrVar[y] + Instr::endNome);
-                assert(ind>=0);
-                cl->InstrVar[y] = InstrVar[ind];
-                v.defvar = InstrVar[ind];
-                ind = cl->IndiceVar[ind];
-                if (ind & 0x400000) // Variável da classe
-                {
-                    v.endvar = cl->Vars + (ind & 0x3FFFFF);
-                    v.MoverDef();
-                }
-                else // Variável do objeto
-                    for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
-                    {
-                        v.endvar = obj->Vars + (ind & 0x3FFFFF);
-                        v.MoverDef();
-                    }
-                //puts(InstrVar[ind] + Instr::endNome); fflush(stdout);
-            }
-    }
-// Acerta variáveis da classe
-    for (unsigned int y=0; y<NumVar; y++)
-    {
-        TVariavel v;
-        int ind = IndiceVar[y];
-        v.defvar = InstrVar[y];
-        if (ind & 0x400000) // Variável da classe
-        {
-            v.endvar = Vars + (ind & 0x3FFFFF);
-            v.MoverDef();
-        }
-        else // Variável do objeto
-            for (TObjeto * obj = ObjetoIni; obj; obj=obj->Depois)
-            {
-                v.endvar = obj->Vars + (ind & 0x3FFFFF);
-                v.MoverDef();
-            }
-    }
-}
-
-//----------------------------------------------------------------------------
-int TClasse::AcertaVar()
+int TClasse::AcertaVar(bool acertaderiv)
 {
     TClasseVar antes;
     antes.InstrVar = InstrVar;
@@ -1383,6 +1308,66 @@ int TClasse::AcertaVar()
         // Apaga objeto mudando as referências do objeto
             ObjetoIni->Apagar(obj);
         }
+    }
+
+// Acerta classes derivadas
+    while (acertaderiv)
+    {
+    // Indica que o arquivo foi alterado
+        if (ArqArquivo)
+            ArqArquivo->Mudou = true;
+    // Se lista de variáveis mudou: acerta classes derivadas
+        if (bitobjeto)
+        {
+            for (unsigned int x=0; x<NumDeriv; x++)
+                ListaDeriv[x]->AcertaVar(false);
+            break;
+        }
+    // Obtém faixa de endereço das variáveis
+        const char * ini=0;
+        const char * fim=0;
+        for (unsigned int x=0; x<antes.NumVar; x++)
+            if (antes.IndiceVar[x] & 0x800000)
+            {
+                if (ini==0)
+                    ini = fim = antes.InstrVar[x];
+                else if (ini > antes.InstrVar[x])
+                    ini = antes.InstrVar[x];
+                else if (fim < antes.InstrVar[x])
+                    fim = antes.InstrVar[x];
+            }
+    // Lista não mudou: apenas acerta os endereços das variáveis
+        for (unsigned int x=0; x<NumDeriv; x++)
+        {
+            TClasse * cl = ListaDeriv[x];
+            for (unsigned int y=0; y<cl->NumVar; y++)
+                if (cl->InstrVar[y] >= ini && cl->InstrVar[y] <= fim)
+                {
+                    TVariavel v;
+                    int ind = IndiceNome(cl->InstrVar[y] + Instr::endNome);
+                    assert(ind>=0);
+                    //printf("[%s]:%p -> [%s]:%p\n",
+                    //       cl->InstrVar[y] + Instr::endNome, cl->InstrVar[y],
+                    //       InstrVar[ind] + Instr::endNome, InstrVar[ind]);
+                    //fflush(stdout);
+                    cl->InstrVar[y] = InstrVar[ind];
+                    v.defvar = InstrVar[ind];
+                    ind = cl->IndiceVar[ind];
+                    if (ind & 0x400000) // Variável da classe
+                    {
+                        v.endvar = cl->Vars + (ind & 0x3FFFFF);
+                        v.MoverDef();
+                    }
+                    else // Variável do objeto
+                        for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+                        {
+                            v.endvar = obj->Vars + (ind & 0x3FFFFF);
+                            v.MoverDef();
+                        }
+                    //puts(InstrVar[ind] + Instr::endNome); fflush(stdout);
+                }
+        }
+        break;
     }
 
     return (bitobjeto==0 ? 0 : (bitobjeto&15)==0 ? 1 : 2);
