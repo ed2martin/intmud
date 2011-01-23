@@ -20,7 +20,7 @@ Na inicialização do programa:
 
 Para alterar uma classe:
 -# Criar um novo TClasse::Comandos, mas ainda não apagar o antigo
--# Chamar AcertaDeriv() e AcertaVarSub(), nessa ordem
+-# Chamar AcertaDeriv() e AcertaVar(true), nessa ordem
 -# Apagar o antigo TClasse::Comandos
 .
 
@@ -29,7 +29,7 @@ Para criar uma classe:
 -# Criar objeto TClasse
 -# Acertar TClasse::Comandos
 -# AcertaDeriv("\0\0")
--# AcertaVarSub()
+-# AcertaVar(true)
 .
 
 Para apagar uma classe:
@@ -112,22 +112,17 @@ public:
              "se", "enquanto", "efim", etc. */
 
 // Variáveis
-    int AcertaVar();
+    int AcertaVar(bool acertaderiv);
         ///< Acerta as variáveis da classe e dos objetos da classe
-        /**< @retval 0 Variáveis não mudaram
+        /**< @param acertaderiv Se deve acertar classes derivadas e indicar
+         *                que o arquivo (que possui a classe) foi alterado
+         *   @retval 0 Variáveis não mudaram
          *   @retval 1 Lista de variáveis mudou
          *   @retval 2 Lista de variáveis mudou e foi necessário
          *             criar/apagar variáveis na classe e/ou no objeto
          *   @note Acerta InstrVar, IndiceVar, NumVar, TamObj e TamVars.
          *   @note Acerta variáveis e objetos da classe, se necessário.
          *   @note Não acerta as classes derivadas. */
-
-    void AcertaVarSub();
-        ///< Acerta variáveis da classe e objetos e classes derivadas
-        /**< Mesmo que chamar AcertaVar() para a classe e para cada
-         *   classe derivada. Entretanto, há otimizações quando a lista
-         *   de variáveis não mudou.
-         *   @note Indica que o arquivo da classe foi alterado */
 
     int IndiceNome(const char * nome);
         ///< Obtém o índice de uma variável a partir do nome

@@ -430,7 +430,7 @@ bool TMudarClasse::ExecPasso()
         cl->Comandos = instr;
         mudar->Comandos = 0;
         cl->AcertaDeriv();
-        cl->AcertaVarSub();
+        cl->AcertaVar(true);
         delete[] antigo_com;
     }
 // Executa funções iniclasse das classes que foram criadas
