@@ -215,21 +215,26 @@ bool Instr::CriarVar(const char * def)
         VarAtual->bit = 1;
         return true;
     }
-// Verifica se memória suficiente
+// Acerta alinhamento do endereço da variável
     char * p = Instr::DadosTopo;
     if ((tam&1)==0)
         p += ((p-Instr::DadosPilha)&1);
     if ((tam&3)==0)
         p += ((p-Instr::DadosPilha)&2);
-    if (p + tam > Instr::DadosFim)
-        return false;
-// Cria variável
+// Prepara variável
     VarAtual++;
     VarAtual->endvar = p;
     VarAtual->defvar = def;
     VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
     VarAtual->bit = 1;
     VarAtual->tamanho = VarAtual->Tamanho();
+// Verifica se memória suficiente
+    if (p + VarAtual->tamanho > Instr::DadosFim)
+    {
+        VarAtual--;
+        return false;
+    }
+// Cria variável
     Instr::DadosTopo = p + VarAtual->tamanho;
     VarAtual->Criar(0, 0);
     return true;

@@ -37,7 +37,7 @@ TGrupoX * TGrupoX::Disp = 0;
 TGrupoX * TGrupoX::Usado = 0;
 unsigned long TGrupoX::Tempo = 0;
 TListaX * TListaX::EndMover = 0;
-const char ListaItem1[] = { 7, 0, Instr::cListaItem, 0, 0, 0, '+', 0 };
+const char ListaItem1[] = { 8, 0, Instr::cListaItem, 0, 0, 0, '+', 0 };
 
 //----------------------------------------------------------------------------
 void TListaObj::Apagar()
