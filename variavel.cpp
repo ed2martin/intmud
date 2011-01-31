@@ -752,7 +752,7 @@ bool TVariavel::getBool()
     case Instr::cProg:
         return end_prog[indice].getValor();
     case Instr::cDebug:
-        return TVarDebug::getValor(numfunc);
+        return TVarDebug::getInt(numfunc);
     case Instr::cIndiceObj:
         return end_indiceobj[indice].getNome()[0] != 0;
     case Instr::cIndiceItem:
@@ -906,7 +906,7 @@ int TVariavel::getInt()
     case Instr::cProg:
         return end_prog[indice].getValor();
     case Instr::cDebug:
-        return TVarDebug::getValor(numfunc);
+        return TVarDebug::getInt(numfunc);
     case Instr::cIndiceObj:
         {
             long num;
@@ -1060,7 +1060,7 @@ double TVariavel::getDouble()
     case Instr::cProg:
         return end_prog[indice].getValor();
     case Instr::cDebug:
-        return TVarDebug::getValor(numfunc);
+        return TVarDebug::getDouble(numfunc);
     case Instr::cIndiceObj:
         {
             double num;

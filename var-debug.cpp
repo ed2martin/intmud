@@ -14,6 +14,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __WIN32__
+#include <windows.h>
+#else
+#include <sys/resource.h>
+#endif
 #include "var-debug.h"
 #include "mudarclasse.h"
 #include "objeto.h"
@@ -36,6 +41,13 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
     {
         ApagarVar(v+1);
         VarAtual->numfunc = 1;
+        return true;
+    }
+// Quanto tempo usou do processador
+    if (comparaZ(nome, "tempo")==0)
+    {
+        ApagarVar(v+1);
+        VarAtual->numfunc = 2;
         return true;
     }
 // Nível da função atual
@@ -156,13 +168,54 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
 //----------------------------------------------------------------------------
 int TVarDebug::getTipo(int numfunc)
 {
-    return (numfunc ? varInt : varOutros);
+    switch (numfunc)
+    {
+    case 1: return varInt;
+    case 2: return varDouble;
+    }
+    return varOutros;
 }
 
 //----------------------------------------------------------------------------
-int TVarDebug::getValor(int numfunc)
+int TVarDebug::getInt(int numfunc)
 {
-    return (numfunc ? Instr::VarExec : 0);
+    if (numfunc==1)
+        return Instr::VarExec;
+    else if (numfunc==2)
+        return DoubleToInt(getDouble(numfunc));
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+double TVarDebug::getDouble(int numfunc)
+{
+    if (numfunc==1)
+        return Instr::VarExec;
+    else if (numfunc==2)
+    {
+#ifdef __WIN32__
+        FILETIME CreationTime;
+        FILETIME ExitTime;
+        FILETIME KernelTime; // 1 = 100nanossegundos
+        FILETIME UserTime;   // 1 = 100nanossegundos
+        if (GetProcessTimes(GetCurrentProcess(),
+            &CreationTime, &ExitTime, &KernelTime, &UserTime)==0)
+            return -1;
+        return KernelTime.dwLowDateTime  * 0.0001 +
+               KernelTime.dwHighDateTime * 0.0002 * 0x80000000 +
+               UserTime.dwLowDateTime  * 0.0001 +
+               UserTime.dwHighDateTime * 0.0002 * 0x80000000;
+#else
+        struct rusage uso;
+        if (getrusage(RUSAGE_SELF, &uso)<0)
+            return -1;
+        return uso.ru_utime.tv_sec * 1000.0 +
+               uso.ru_utime.tv_usec / 1000.0 +
+               uso.ru_stime.tv_sec * 1000.0 +
+               uso.ru_stime.tv_usec / 1000.0;
+#endif
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------
