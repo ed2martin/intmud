@@ -133,6 +133,7 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
             unsigned int valor=0;
             if (obj->Texto[indobj] < '0' || obj->Texto[indobj] > '9')
             {
+                while (obj->Texto[indobj++] != Instr::ex_barra_n);
                 totallin--;
                 continue;
             }
@@ -149,6 +150,7 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
         // Checa se é número seguido de espaço
             if (obj->Texto[indobj] != ' ')
             {
+                while (obj->Texto[indobj++] != Instr::ex_barra_n);
                 totallin--;
                 continue;
             }

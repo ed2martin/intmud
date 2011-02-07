@@ -54,8 +54,8 @@ public:
              *   - 0 = textotxt.ordena
              *   - 1 = textotxt.ordenalin sem argumentos
              *   - 2 = textotxt.ordenalin com argumentos
-             *   - 3 = textotxt.numlin sem argumentos
-             *   - 4 = textotxt.numlin com argumentos
+             *   - 3 = textotxt.juntalin sem argumentos
+             *   - 4 = textotxt.juntalin com argumentos
              *   @param txt1 Texto antes do primeiro número de cada linha
              *   @param txt2 Texto depois do número de cada linha */
     void Rand();
