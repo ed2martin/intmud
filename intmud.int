@@ -75,15 +75,20 @@ func descrsala # Mostra descrição de um lugar
 # arg0 = sala
   txt100 saidas
   listaitem l
-  msg("\cb" + arg0.nome + "\b") # Título
-  msg(arg0.descr) # Descrição
+  textotxt t
+  t.addfim("\cb" + arg0.nome + "\b") # Título
+  t.addfim(arg0.descr) # Descrição
   saidas = ds1("norte", "n", arg0) + ds1("sul", "s", arg0) + ds1("leste", "l", arg0)
   saidas += ds1("oeste", "o", arg0) + ds1("cima", "c", arg0) + ds1("baixo", "b", arg0)
   se saidas
-    msg("\c6Saídas\b:" + saidas)
+    t.addfim("\c6Saídas\b:" + saidas)
   senão
-    msg("\c9Nenhuma saída\b")
+    t.addfim("\c9Saídas: Nenhuma\b")
   fimse
+  t.dividelincor(74, 78)
+  enquanto t.linhas
+    msg(t.remove)
+  efim
   l = arg0.dentro.ini
   enquanto l
     se l.obj != este && l.obj.invisver >= invis

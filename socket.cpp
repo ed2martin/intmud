@@ -46,7 +46,7 @@
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou e recebeu
 
-#define TEMPO_TELNET 5
+#define TEMPO_TELNET 2
 
 TSocket * TSocket::sockAtual = 0;
 TSocket * TSocket::sInicio = 0;

@@ -327,7 +327,7 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
 }
 
 //----------------------------------------------------------------------------
-void TTextoTxt::DivideLin(unsigned int min, unsigned int max)
+void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
 {
 // Verifica se tem como truncar
     if (min>max) min=max;
@@ -348,6 +348,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max)
 
 // Outras variáveis
     unsigned int col = 0; // Coluna atual
+    char charcor = 0;   // Para lidar com definições de cores
 
     char * espaco_p = 0; // Aonde encontrou espaço para dividir a linha
     TTextoBloco * espaco_obj = 0; // Objeto correspondente
@@ -376,11 +377,46 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max)
         char ch = ler_obj->Texto[ler_ind++];
     // Nova linha
         //putchar(ch==Instr::ex_barra_n ? '\n' : ch); fflush(stdout);
-        if (ch==Instr::ex_barra_n)
-            col=0, dest_obj->Linhas++;
-    // Checa se atingiu o tamanho da linha
-        else if (++col >= min)
+        switch (ch)
         {
+        case Instr::ex_barra_n:
+            charcor=0;
+            col=0, dest_obj->Linhas++;
+            break;
+        case Instr::ex_barra_b:
+            if (cores)
+            {
+                charcor=0;
+                break;
+            }
+        case Instr::ex_barra_c:
+        case Instr::ex_barra_d:
+            if (cores)
+            {
+                charcor=ch;
+                break;
+            }
+        default:
+            if (charcor)
+            {
+                if (ch>='0' && ch<='7')
+                {
+                    charcor=0;
+                    break;
+                }
+                if (charcor==Instr::ex_barra_d && (
+                        (ch>='0' && ch<='9') ||
+                        (ch>='A' && ch<='F') ||
+                        (ch>='a' && ch<='f')))
+                {
+                    charcor=0;
+                    break;
+                }
+                charcor=0;
+            }
+        // Checa se atingiu o tamanho da linha
+            if (++col < min)
+                break;
         // Antes da coluna máxima: procura último espaço
             if (col < max)
             {

@@ -17,8 +17,6 @@ func servidor_socket
   criar("teste", arg0)
 func ini
   conec = arg0
-#conec.colmin = 20
-#conec.colmax = 30
   msg("Comandos:\n")
   msg("c=conectar Telnet\n")
   msg("p=conectar Papovox\n")
@@ -57,8 +55,6 @@ func escr_s
   msg(">>> " + ultimamens)
 func escr_i
   msg(escr_i[remoto.proto] + "\n")
-  msg("Colunas remoto: " + remoto.colmin + " e " + remoto.colmax + "\n")
-  msg("Colunas local: " + conec.colmin + " e " + conec.colmax + "\n")
   msg("Endereço remoto: " + remoto.ip + "\n")
   msg("Endereço local: " + remoto.iplocal + "\n")
 const escr_i0 = "Desconectado"

@@ -225,9 +225,9 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
 // Remove uma quantidade de linhas
     if (comparaZ(nome, "remove")==0)
     {
-        if (Instr::VarAtual < v+1)
-            return false;
-        int linhas = v[1].getInt();
+        int linhas = 1;
+        if (Instr::VarAtual >= v+1)
+            linhas = v[1].getInt();
         Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será 0
         if (linhas<=0 || Inicio==0)
             return Instr::CriarVarTexto("");
@@ -325,10 +325,20 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
             return false;
         int min = v[1].getInt();
         int max = v[2].getInt();
-        if (min>max)
-            min=max;
-        if (min>=2)
-            DivideLin(min, max);
+        if (min>max) min=max;
+        if (min>=2)  DivideLin(min, max, false);
+        DebugTextoTxt(this);
+        return false;
+    }
+// Divide linhas desconsiderando definição de cores
+    if (comparaZ(nome, "dividelincor")==0)
+    {
+        if (Instr::VarAtual < v+2)
+            return false;
+        int min = v[1].getInt();
+        int max = v[2].getInt();
+        if (min>max) min=max;
+        if (min>=2)  DivideLin(min, max, true);
         DebugTextoTxt(this);
         return false;
     }
@@ -343,7 +353,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         char nome[1024]; // Nome do arquivo / buffer de leitura
         copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
         Instr::ApagarVar(v);
-        if (!arqvalido(nome, ".txt"))
+        if (!arqvalido(nome))
             return Instr::CriarVarInt(0);
     // Abre arquivo
         FILE * descr = fopen(nome, "rb");
@@ -407,7 +417,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         char nome[1024]; // Nome do arquivo
         copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
         Instr::ApagarVar(v);
-        if (!arqvalido(nome, ".txt"))
+        if (!arqvalido(nome))
             return Instr::CriarVarInt(0);
     // Abre arquivo
         FILE * descr = fopen(nome, "w");
