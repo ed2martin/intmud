@@ -18,6 +18,7 @@
 #include <math.h>
 #include <time.h>
 #ifndef __WIN32__
+ #include <sys/stat.h>
  #include <unistd.h>
 #endif
 //#include "config.h"
@@ -372,6 +373,39 @@ bool arqvalido(char * nome, const char * ext)
         strcpy(p, ext);
     else // Extensão correta: acerta a extensão
         strcpy(p-tam, ext);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool arqvalido(char * nome)
+{
+    if (!arqvalido(nome, ""))
+        return false;
+// Checa extensão
+    char ext[3];
+    char * p = nome;
+    while (*p)
+        p++;
+    if (p >= nome+4 && p[-4]=='.')
+    {
+        ext[0] = p[-3] | 0x20;
+        ext[1] = p[-2] | 0x20;
+        ext[2] = p[-1] | 0x20;
+    // Checa extensão
+        if (memcmp(ext, "com", 3)==0 || memcmp(ext, "exe", 3)==0 ||
+            memcmp(ext, "bat", 3)==0 || memcmp(ext, "pif", 3)==0 ||
+            memcmp(ext, "log", 3)==0)
+            return false;
+    }
+// Checa se é executável
+#ifndef __WIN32__
+    struct stat buf;
+    if (stat(nome, &buf) < 0) // Obtém dados do arquivo
+        return true;
+    if (!S_ISDIR(buf.st_mode) && // Não é diretório
+         (buf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))) // É executável
+        return false;
+#endif
     return true;
 }
 

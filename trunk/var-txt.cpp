@@ -199,7 +199,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     {
         copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
     // Verifica se nome permitido
-        if (!arqvalido(arqnome, ".txt"))
+        if (!arqvalido(arqnome))
             *arqnome=0;
     }
 // Checa se nome de arquivo é válido

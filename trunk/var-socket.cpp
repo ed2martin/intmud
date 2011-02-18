@@ -30,8 +30,6 @@ SocketProto = 1,
 SocketCores = 2,
 SocketAFlooder = 3,
 SocketEco = 4,
-SocketColMin,
-SocketColMax,
 SocketPosX
 };
 
@@ -48,8 +46,6 @@ TObjSocket::TObjSocket()
     CorInic=-1;
     CorEnvia=0x70;
     ColunaEnvia=0;
-    ColunaMin=1000;
-    ColunaMax=1000;
     Inicio=0;
 }
 
@@ -95,7 +91,6 @@ const char * TObjSocket::Endereco(bool remoto)
  *  @return true se conseguiu enviar, false se não conseguiu */
 bool TObjSocket::Enviar(const char * mensagem)
 {
-    char * charesp = 0;   // Aonde encontrou espaço, para dividir mensagem
     int coluna = ColunaEnvia; // Coluna atual
     int agora = CorEnvia;
     int antes = CorEnvia;
@@ -176,41 +171,7 @@ bool TObjSocket::Enviar(const char * mensagem)
             if (destino+2 > fim)
                 return false;
             coluna++;
-                // Antes de ColunaMin
-            if (coluna < ColunaMin)
-                *destino++ = *mensagem;
-                // Antes de ColunaMax
-            else if (coluna < ColunaMax)
-            {
-                if (*mensagem==' ')
-                    charesp = destino;
-                *destino++ = *mensagem;
-            }
-                // Divide; não encontrou espaço
-            else if (charesp==0)
-            {
-                *destino++ = '\n';
-                coluna=0;
-                if (*mensagem!=' ')
-                {
-                    if (destino+2 > fim)
-                        return false;
-                    *destino++ = *mensagem;
-                }
-            }
-                // Divide; encontrou espaço
-            else
-            {
-                *destino++ = *mensagem;
-                *charesp = '\n';
-                coluna = 0;
-                for (char * p = charesp+1; p<destino; p++)
-                    if (*p==1)
-                        p++;
-                    else
-                        coluna++;
-                charesp = 0;
-            }
+            *destino++ = *mensagem;
             break;
         }
 // Acrescenta cor e 0 no final
@@ -452,10 +413,6 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         x = SocketAFlooder;
     else if (comparaZ(nome, "eco")==0)
         x = SocketEco;
-    else if (comparaZ(nome, "colmin")==0)
-        x = SocketColMin;
-    else if (comparaZ(nome, "colmax")==0)
-        x = SocketColMax;
     else if (comparaZ(nome, "posx")==0)
         x = SocketPosX;
     if (x)
@@ -482,8 +439,6 @@ int TVarSocket::getValor(int numfunc)
     switch (numfunc)
     {
     case 0:             return 1;
-    case SocketColMin:  return Socket->ColunaMin;
-    case SocketColMax:  return Socket->ColunaMax;
     case SocketPosX:    return Socket->ColunaEnvia;
     }
     return Socket->Variavel(numfunc, -1);
@@ -498,12 +453,6 @@ void TVarSocket::setValor(int numfunc, int valor)
     {
     case 0:
         MudarSock(0);
-        break;
-    case SocketColMin:
-        Socket->ColunaMin = (valor<10 ? 10 : valor>1000 ? 1000 : valor);
-        break;
-    case SocketColMax:
-        Socket->ColunaMax = (valor<10 ? 10 : valor>1000 ? 1000 : valor);
         break;
     case SocketPosX:
         break;

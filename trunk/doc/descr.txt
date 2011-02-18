@@ -1061,6 +1061,7 @@ textotxt <nomedavariável>
     remove(<quantidade de linhas>)
         Retorna um texto que contém uma quantidade de linhas do início do
         textotxt. Retira essas linhas do textotxt.
+        Se a quantidade de linhas for omitida, remove uma linha apenas.
     ordena
         Organiza as linhas em ordem alfabética.
     ordenalin
@@ -1096,14 +1097,18 @@ textotxt <nomedavariável>
     dividelin(<colmin>, <colmax>)
         Linhas que tiverem mais que <colmax> colunas são divididas entre
         as colunas <colmin> e <colmax>, preferêncialmente no último espaço
-        encontrado. Se <colmin> ou <colmax> for menor que dois, nada essa
+        encontrado. Se <colmin> ou <colmax> for menor que dois, essa
         função não tem efeito.
+    dividelincor(<colmin>, <colmax>)
+        Mesmo que dividelin, porém não considera definições de cores na
+        contagem de caracteres por linha.
     rand
         Muda a ordem das linhas aleatoriamente.
     ler(<nome do arquivo>)
         Lê um arquivo de texto e coloca em textotxt.
         Retorna 1 se conseguiu ou 0 se não conseguiu.
-        Nota 1: O nome do arquivo sempre terminará com ".txt".
+        Nota 1: Não acessa arquivos executáveis ou terminados em:
+                .exe, .com, .bat, .pif ou .log
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível acessar arquivos de outros lugares.
     salvar(<nome do arquivo>)
@@ -1231,7 +1236,8 @@ arqlog <nomedavariável>
 
 arqsav <nomedavariável>
     Para salvar objetos em arquivos e recuperar posteriormente.
-    Nota 1: O nome do arquivo sempre terminará com ".sav".
+    Nota 1: Não acessa arquivos executáveis ou terminados em:
+            .exe, .com, .bat, .pif ou .log
     Nota 2: O arquivo deve pertencer ao diretório atual ou a um
     subdiretório dele. Não é possível criar arquivos em outros lugares.
 
@@ -1309,7 +1315,8 @@ arqtxt <nomedavariável>
         2 = somente escrita; o tamanho do arquivo é truncado para 0 bytes
         3 = para escrever no final do arquivo
         Os modos 0 e 1 não criam um novo arquivo, caso ele não exista.
-        Nota 1: O nome do arquivo sempre terminará com ".txt".
+        Nota 1: Não acessa arquivos executáveis ou terminados em:
+                .exe, .com, .bat, .pif ou .log
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível acessar arquivos de outros lugares.
     fechar
@@ -1451,14 +1458,6 @@ socket <nomedavariável>
         (0 geralmente significa endereço inválido)
     fechar
         Encerra a conexão; não gera o evento fechou.
-    colmin
-    colmax
-        Essas duas variáveis são números de 10 a 1000. Se não forem
-        alterados no programa, o valor dessas variáveis será 1000.
-        Atuam nas mensagens enviadas ao socket, dividindo linhas grandes
-        em duas ou mais. Isso é feito colocando "\n" no meio da mensagem.
-        Colmin e colmax são os tamanhos mínimo e máximo das linhas.
-        O programa tenta dividir sempre onde houver um caracter espaço.
     msg(<mensagem>)
         Envia mensagem para o socket.
         Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
