@@ -1,0 +1,32 @@
+telatxt = 1
+
+classe x
+telatxt tela
+func iniclasse
+  criar(arg0)
+func ini
+  uint16 x
+  uint16 y
+  y = 32
+  enquanto y < 256
+    tela.msg(txtfim("00" + txt(x+y), 3))
+    enquanto x < 10
+      tela.msg("  " + txtchr(x+y))
+      x += 1
+    efim
+    x=0, y+=10
+    tela.msg("\n")
+  efim
+  tela.msg("Digite um texto ou um número\n")
+
+func tela_msg
+  uint16 x
+  txt100 t
+  tela.msg("txtchr(\"" + arg0 + "\")=" + txtvis(txtchr(arg0)) + "\n")
+  tela.msg("intchr")
+  t = txtinvis(arg0)
+  enquanto x < 20 && txt(t,x,1)
+    tela.msg(" " + txtvis(txt(t,x,1)) + "=" + intchr(t,x))
+    x += 1
+  efim
+  tela.msg("\n")

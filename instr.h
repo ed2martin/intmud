@@ -51,6 +51,8 @@ bool FuncTxt2(TVariavel * v, int valor);
 bool FuncEsp(TVariavel * v, int valor);
 bool FuncInt(TVariavel * v, int valor);
 bool FuncTxtRemove(TVariavel * v, int valor);
+bool FuncTxtChr(TVariavel * v, int valor);
+bool FuncIntChr(TVariavel * v, int valor);
 bool FuncTxtProc(TVariavel * v, int valor);
 bool FuncTxtTroca(TVariavel * v, int valor);
 bool FuncTxtSepara(TVariavel * v, int valor);
@@ -278,6 +280,7 @@ enum Comando
     cTextoTxt,          ///< Extra: TextoTxt
     cTextoPos,          ///< Extra: TextoPos
     cNomeObj,           ///< Extra: NomeObj
+    cArqDir,            ///< Extra: ArqDir
     cArqLog,            ///< Extra: ArqLog
     cArqSav,            ///< Extra: Salvar
     cArqTxt,            ///< Extra: ArqTxt

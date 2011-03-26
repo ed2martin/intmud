@@ -142,20 +142,20 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             TVarSavDir::ChecaTudo();
             return false;
         }
-        char mens[300];
+        char mens[512];
         copiastr(mens, v[1].getTxt(), sizeof(mens));
         if (*mens==0)
             strcpy(mens, ".");
         Instr::ApagarVar(v);
     // Se inválido: retorna 0
-        if (memcmp(mens,"..",3)==0 || !arqvalido(mens, ""))
+        if (!arqvalido(mens, ""))
             return Instr::CriarVarInt(0);
     // Válido: coloca na lista de pendentes e retorna 1
         TVarSavDir::NovoDir(mens);
         return Instr::CriarVarInt(1);
     }
 // Obtém o nome do arquivo
-    char arqnome[300]; // Nome do arquivo; nulo se não for válido
+    char arqnome[512]; // Nome do arquivo; nulo se não for válido
     *arqnome=0;
     if (Instr::VarAtual >= v+1)
     {
@@ -182,7 +182,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
 // Checar senha
     if (comparaZ(nome, "senha")==0)
     {
-        char mens[300];
+        char mens[512];
         TArqLer arqler;
         if (*arqnome==0 || Instr::VarAtual < v+2 || !arqler.Abrir(arqnome))
         {

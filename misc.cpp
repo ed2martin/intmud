@@ -348,7 +348,8 @@ bool arqvalido(char * nome, const char * ext)
     if (nome[0]=='\\' || nome[1]==':')
         return false;
     for (; *p; p++)
-        if ((p==nome || p[-1]=='\\') && memcmp(p, "..\\", 3)==0)
+        if ((p==nome || p[-1]=='\\') &&
+            p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='\\'))
             return false;
 #else
 // Acerta nome
@@ -360,7 +361,8 @@ bool arqvalido(char * nome, const char * ext)
     if (nome[0]=='/')
         return false;
     for (; *p; p++)
-        if ((p==nome || p[-1]=='/') && memcmp(p, "../", 3)==0)
+        if ((p==nome || p[-1]=='/') &&
+            p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='/'))
             return false;
 #endif
 // Acerta final do nome do arquivo
@@ -394,7 +396,7 @@ bool arqvalido(char * nome)
     // Checa extensão
         if (memcmp(ext, "com", 3)==0 || memcmp(ext, "exe", 3)==0 ||
             memcmp(ext, "bat", 3)==0 || memcmp(ext, "pif", 3)==0 ||
-            memcmp(ext, "log", 3)==0)
+            memcmp(ext, "scr", 3)==0 || memcmp(ext, "log", 3)==0)
             return false;
     }
 // Checa se é executável

@@ -154,7 +154,7 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Obtém o nome do arquivo
-    char arqnome[300]; // Nome do arquivo; nulo se não for válido
+    char arqnome[512]; // Nome do arquivo; nulo se não for válido
     *arqnome=0;
     if (Instr::VarAtual >= v+1)
     {

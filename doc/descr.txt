@@ -701,6 +701,19 @@ txtvis(<texto>)
 txtinvis(<texto>)
     Processo inverso da função txtvis.
 
+intchr(<texto>)
+intchr(<texto>, <número do caracter>)
+    Retorna o código ASCII de um caracter, de 32 a 255, ou um dos
+    seguintes códigos usados no IntMUD:
+    0=não é um caracter (ex. texto vazio)
+    1=\b,   2=\c,   3=\d,   10=\n
+    Se a posição do caracter no texto for omitida, é considerado como
+    se fosse 0 (o primeiro caracter do texto).
+
+txtchr(<valor numérico>)
+    Retorna o caracter correspondente a um código ASCII, ou um texto
+    vazio se não for um código ASCII válido.
+
 txtremove(<texto1>, <texto2>)
     Retorna um texto semelhante a <texto1>, mas removendo espaços e/ou
     cores, conforme <texto2>. As letras interpretadas em <texto2> são:
@@ -1210,6 +1223,46 @@ nomeobj <nomedavariável>
     x.nome("chave_azul")  # Retorna 0; não é o segundo item que começa com ch
     x.nome("chave_verde") # Retorna 1
     x.nome("chave_azul")  # Retorna 0 porque já encontrou o item
+
+arqdir <nomedavariável>
+    Acesso a diretórios.
+
+    Funções:
+    abrir(<nome do diretório>)
+        Inicia a busca de arquivos/diretórios em um diretório.
+        Retorna "" se sucesso ou um texto contendo o erro.
+    fechar
+        Encerra a busca em um diretório
+    lin
+        É 1 se entrada válida ou 0 se chegou no fim do diretório.
+    texto
+        Nome da entrada.
+    depois
+        Passa para a próxima entrada.
+        Fecha o diretório se não houver próxima entrada.
+    tipo
+    tipo(<nome da entrada>)
+        Sem argumentos, retorna o tipo da entrada encontrada em abrir()
+        Retorna o tipo:
+        "A" = arquivo, "D" = diretório, "O" = outro tipo de entrada
+        "?" = não existe
+    tamanho(<nome da entrada>)
+        Retorna o tamanho do arquivo.
+    atempo(<nome da entrada>)
+        Retorna quando o arquivo foi acessado; um texto no formato:
+        ano mês dia hora minuto segundo milhonésimos de segundo
+        Exemplo: "2010 1 20 14 30 02 1500"
+        Retorna um texto vazio se o arquivo não existir ou não permitido.
+    mtempo(<nome da entrada>)
+        Retorna quando o arquivo foi modificado, da mesma forma que atempo.
+    criardir(<nome do diretório>)
+        Cria um diretório.
+    apagardir(<nome do diretório>)
+        Apaga um diretório, exceto se não estiver vazio.
+    apagar(<nome do arquivo>)
+        Apaga um arquivo.
+    renomear(<antigo nome>, <novo nome>)
+        Renomeia uma entrada.
 
 arqlog <nomedavariável>
     Para gravar mensagens em arquivos de texto.
