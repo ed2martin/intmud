@@ -552,7 +552,7 @@ void Inicializa(const char * arg)
             // Abre diretório
                 TArqMapa::MapaGrande = true;
                 DIR * dir=opendir(".");
-                dirent * sdir;
+                struct dirent * sdir;
                 if (dir==0)
                 {
                     err_printf("Procurando arquivos: %s\n", strerror(errno));

@@ -237,6 +237,7 @@ public:
 // Lista de instruções, exceto cExpr
 // Deve obrigatoriamente estar em ordem alfabética
 static const TListaInstr ListaInstr[] = {
+    { "arqdir",    cArqDir },
     { "arqlog",    cArqLog },
     { "arqsav",    cArqSav },
     { "arqtxt",    cArqTxt },

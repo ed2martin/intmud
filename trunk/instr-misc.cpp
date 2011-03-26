@@ -560,6 +560,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cTextoTxt:         return "textotxt";
     case cTextoPos:         return "textopos";
     case cNomeObj:          return "nomeobj";
+    case cArqDir:           return "arqdir";
     case cArqLog:           return "arqlog";
     case cArqSav:           return "arqsav";
     case cArqTxt:           return "arqtxt";
@@ -635,6 +636,7 @@ const char * Instr::NomeComando(int valor)
     case cTextoTxt:         return "cTextoTxt";
     case cTextoPos:         return "cTextoPos";
     case cNomeObj:          return "cNomeObj";
+    case cArqDir:           return "cArqDir";
     case cArqLog:           return "cArqLog";
     case cArqSav:           return "cArqSav";
     case cArqTxt:           return "cArqTxt";

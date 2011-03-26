@@ -796,6 +796,59 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtchr
+bool Instr::FuncTxtChr(TVariavel * v, int valor)
+{
+    char mens[2];
+    valor=0;
+    if (VarAtual >= v+1)
+        valor=v[1].getInt();
+    if (valor>=32 && valor<=255)
+        mens[0] = valor;
+    else
+    {
+        switch (valor)
+        {
+        case 1: mens[0] = ex_barra_b; break;
+        case 2: mens[0] = ex_barra_c; break;
+        case 3: mens[0] = ex_barra_d; break;
+        case 10: mens[0] = ex_barra_n; break;
+        default: mens[0] = 0;
+        }
+    }
+    mens[1]=0;
+    ApagarVar(v);
+    return CriarVarTexto(mens);
+}
+
+//----------------------------------------------------------------------------
+/// Função intchr
+bool Instr::FuncIntChr(TVariavel * v, int valor)
+{
+    const char * p = "";
+    if (VarAtual >= v+1)
+    {
+        p = v[1].getTxt();
+        if (VarAtual >= v+2)
+        {
+            int cont = v[2].getInt();
+            while (cont>0 && *p)
+                p++,cont--;
+        }
+    }
+    switch (*p)
+    {
+    case ex_barra_b: valor=1; break;
+    case ex_barra_c: valor=2; break;
+    case ex_barra_d: valor=3; break;
+    case ex_barra_n: valor=10; break;
+    default: valor = *(unsigned char*)p;
+    }
+    ApagarVar(v);
+    return CriarVarInt(valor);
+}
+
+//----------------------------------------------------------------------------
 /// Procura texto (txtproc)
 bool Instr::FuncTxtProc(TVariavel * v, int valor)
 {

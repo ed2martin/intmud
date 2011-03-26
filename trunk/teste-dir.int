@@ -1,0 +1,91 @@
+telatxt = 1
+classe teste
+telatxt tela
+
+const msg = tela.msg(arg0 + "\n")
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  manual
+  msg("Exemplo:")
+  msg("p .")
+
+func manual
+  msg("Tecle:")
+  msg("p arquivo/diretório = pesquisar arquivo ou diretório")
+  msg("c diretório = criar diretório")
+  msg("d diretório = apagar diretório")
+  msg("a arquivo = apagar arquivo")
+  msg("r nome_antigo nome_novo = renomear arquivo ou diretório")
+
+func tela_msg
+  se !opc_[txt1(arg0)](txt2(arg0))
+    msg("Opção inválida: " + txt1(arg0))
+    manual
+
+func opc_p # Pesquisar arquivos e diretórios
+  arqdir d
+  se d.tipo(arg0) = "?"
+    msg("Não existe")
+    ret 1
+  fimse
+  msg("Nome: " + arg0)
+  msg("Tipo: " + d.tipo(arg0))
+  msg("Tamanho: " + d.tamanho(arg0))
+  msg("Acessado em: " + d.atempo(arg0))
+  msg("Alterado em: " + d.mtempo(arg0))
+  se d.tipo(arg0) != "D"
+    ret 1
+  fimse
+  d.abrir(arg0)
+  enquanto d.lin
+    msg(" " + d.tipo + " " + d.texto)
+    d.depois
+  efim
+  ret 1
+
+func opc_c # Criar diretório
+  arqdir d
+  txt100 t
+  t = d.criardir(arg0)
+  se t = ""
+    msg("Diretório criado com sucesso: " + arg0)
+  senao
+    msg("Erro: " + t)
+  fimse
+  ret 1
+
+func opc_d # Apagar diretório
+  arqdir d
+  txt100 t
+  t = d.apagardir(arg0)
+  se t = ""
+    msg("Diretório apagado com sucesso: " + arg0)
+  senao
+    msg("Erro: " + t)
+  fimse
+  ret 1
+
+func opc_a # Apagar arquivo
+  arqdir d
+  txt100 t
+  t = d.apagar(arg0)
+  se t = ""
+    msg("Arquivo apagado com sucesso: " + arg0)
+  senao
+    msg("Erro: " + t)
+  fimse
+  ret 1
+
+func opc_r # Renomear arquivo
+  arqdir d
+  txt100 t
+  t = d.renomear(txt1(arg0), txt2(arg0))
+  se t = ""
+    msg("Arquivo renomeado com sucesso: " + txt2(arg0))
+  senao
+    msg("Erro: " + t)
+  fimse
+  ret 1

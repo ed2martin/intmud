@@ -13,6 +13,7 @@ class TListaObj;
 class TListaItem;
 class TTextoTxt;
 class TTextoPos;
+class TVarDir;
 class TVarLog;
 class TVarTxt;
 class TVarNomeObj;
@@ -137,6 +138,7 @@ public:
         unsigned int * end_uint;     ///< Instr::cUInt32
         TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
         double       * end_double;   ///< Instr::cReal
+        TVarDir      * end_dir;      ///< Instr::cArqDir
         TVarLog      * end_log;      ///< Instr::cArqLog
         TVarTxt      * end_txt;      ///< Instr::cArqTxt
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
