@@ -363,7 +363,8 @@ void TSocket::FecharSock(int erro, bool env)
 {
     if (sock<0)
         return;
-    EnvPend();
+    if (!env)
+        EnvPend();
     close(sock);
     sock=-1;
     pontRec = 0;
