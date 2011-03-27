@@ -686,6 +686,31 @@ txtdec(<texto>)
       tela.msg("txtcod = \"" + txtcod(arg0) + "\"\n")
       tela.msg("txtdec = \"" + txtdec(txtcod(arg0)) + "\"\n")
 
+txturlcod(<texto>)
+    Codifica um texto formando uma URL válida.
+    Atua da seguinte forma:
+    O primeiro \n é substituído por interrogação.
+    Os próximos \n são substituídos pelo caracter &.
+    O espaço é substituído pelo um sinal de soma.
+    Letras A a Z maiúsculas e minúsculas, dígitos de 0 a 9, hífen, ponto,
+    sinal de igual e "/" não são alterados.
+    Qualquer outro caracter é substituído por um "%" seguido de dois
+    dígitos, que são código ASCII do caracter, em hexadecimal.
+
+    Exemplo:
+    txturlcod("/x.html\na=1\nb=bom dia!")
+    Resulta em "/x.html?a=1&b=bom+dia%21"
+    Em um servidor HTTP, isso geralmente significa acessar a página "/x.html"
+    passando as variáveis a="1" e b="bom dia!".
+
+txturldec(<texto>)
+    Decodifica uma URL formando um texto.
+    Processo inverso de txturlcod.
+
+    Exemplo:
+    txturldec("/x.html?a=1&b=bom+dia%21")
+    Resulta em "/x.html\na=1\nb=bom dia!"
+
 txtvis(<texto>)
     Torna visíveis caracteres especiais, como \n e \b.
     "\b\c\d\n"   mudam para  "\\b\\c\\d\\n"
