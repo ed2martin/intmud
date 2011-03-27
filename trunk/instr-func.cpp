@@ -609,6 +609,97 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             }
         }
         break;
+    case 14: // txturlcod
+      {
+        bool ini = true;
+        while (*txt && destino<mens+sizeof(mens)-3)
+        {
+            char ch = *txt++;
+            if (ch==ex_barra_n)
+            {
+                *destino++ = (ini ? '?' : '&');
+                ini = false;
+            }
+            else if (ch==' ')
+                *destino++ = '+';
+            else if ((ch>='0' && ch<='9') || (ch>='A' && ch<='Z') ||
+                    (ch>='a' && ch<='z') ||
+                    ch=='=' || ch=='-' || ch=='/' || ch=='.')
+                *destino++ = ch;
+            else
+            {
+                switch (ch)
+                {
+                case ex_barra_b: ch=1; break;
+                case ex_barra_c: ch=2; break;
+                case ex_barra_d: ch=3; break;
+                }
+                int parte = (ch >> 4) & 15;
+                destino[0] = '%';
+                destino[1] = (parte<10 ? parte+'0' : parte+'7');
+                parte = ch & 15;
+                destino[2] = (parte<10 ? parte+'0' : parte+'7');
+                destino += 3;
+            }
+        }
+        break;
+      }
+    case 15: // txturldec
+      {
+        bool ini = true;
+        while (*txt && destino<mens+sizeof(mens)-1)
+        {
+            char ch = *txt++;
+            if (ch=='+')
+                *destino++ = ' ';
+            else if (ch=='?')
+            {
+                *destino++ = (ini ? ex_barra_n : '?');
+                ini = false;
+            }
+            else if (ch=='&')
+                *destino++ = (ini ? '&' : ex_barra_n);
+            else if (ch!='%')
+                *destino++ = ch;
+            else
+            {
+                int cod;
+            // Primeiro dígito
+                if (txt[0]>='0' && txt[0]<='9')
+                    cod = (txt[0]-'0') * 16;
+                else if ((txt[0]|0x20)>='a' && (txt[0]|0x20)<='f')
+                    cod = ((txt[0]|0x20) - 'W') * 16;
+                else
+                {
+                    *destino++ = ch;
+                    continue;
+                }
+            // Segundo dígito
+                if (txt[1]>='0' && txt[1]<='9')
+                    cod += txt[1]-'0';
+                else if ((txt[1]|0x20)>='a' && (txt[1]|0x20)<='f')
+                    cod += (txt[1]|0x20)-'W';
+                else
+                {
+                    *destino++ = ch;
+                    continue;
+                }
+            // Obtém e anota caracter
+                if (cod >= 32)
+                    *destino++ = cod;
+                else
+                    switch (cod)
+                    {
+                    case 1: *destino++ = ex_barra_b; break;
+                    case 2: *destino++ = ex_barra_c; break;
+                    case 3: *destino++ = ex_barra_d; break;
+                    case 10: *destino++ = ex_barra_n; break;
+                    }
+                txt+=2;
+            }
+        } // for
+        break;
+      }
     default:
         return false;
     }
