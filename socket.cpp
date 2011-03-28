@@ -388,7 +388,6 @@ int TSocket::Variavel(char num, int valor)
             if (valor>4) valor=4;
             if ((proto==2 ? 1 : proto) != (valor==2 ? 1 : valor))
             {
-                dadoRecebido=0;
                 pontRec=0;
                 pontESC=0;
                 pontTelnet=0;
@@ -991,6 +990,14 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
 {
     while (tamanho>0)
     {
+    // Ignora CR/LF, quando estiver mudando de protocolo
+        if (tamanho>0)
+        {
+            if ((*buffer==10 && dadoRecebido==13) ||
+                (*buffer==13 && dadoRecebido==10))
+                buffer++, tamanho--;
+            dadoRecebido=0;
+        }
     // Protocolo Telnet
         if (proto==1 || proto==2)
         {
@@ -1272,13 +1279,20 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
     // Protocolo Papovox
         else if (proto==4)
         {
+            dadoRecebido=0;
             for (; pontRec<3 && tamanho>0; tamanho--,buffer++) // Cabeçalho
                 bufRec[pontRec++]=*buffer;
+            if (pontRec && bufRec[0]!=1) // Verifica tipo de mensagem
+            {
+                FecharSock(-1, 0);
+                return;
+            }
+            if (pontRec < 3) // Verifica se o cabeçalho já chegou
+                return;
             unsigned int mensagem =      // Tamanho da mensagem
                             3 + (unsigned char)bufRec[1]
                             + ((unsigned char)bufRec[2]<<8);
-            if (mensagem >= SOCKET_REC // Verifica tamanho da mensagem
-                    || bufRec[0]!=1) // Verifica tipo de mensagem
+            if (mensagem >= SOCKET_REC) // Verifica tamanho da mensagem
             {
                 FecharSock(-1, 0);
                 return;
