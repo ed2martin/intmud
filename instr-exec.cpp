@@ -1261,8 +1261,11 @@ bool Instr::ExecX()
                 switch (VarAtual[-1].Tipo())
                 {
                 case varOutros:
+                    // Chama função Igual() se forem variáveis diferentes,
+                    // mas do mesmo tipo
                     if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
-                            VarAtual[-1].endvar != VarAtual[0].endvar)
+                            (VarAtual[-1].endvar != VarAtual[0].endvar ||
+                             VarAtual[-1].indice != VarAtual[0].indice) )
                         VarAtual[-1].Igual(VarAtual);
                     break;
                 case varInt:
