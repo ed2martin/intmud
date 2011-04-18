@@ -71,44 +71,45 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         else
             obj = FuncAtual->este, def_instr = v[1].getTxt();
     // Codifica as instruções
-        char mens[16384];
-        int  total = TMudarAux::CodifInstr(mens, def_instr, sizeof(mens)-2);
-        if (total<0) // Erro
+        TAddBuffer mens;
+        if (!TMudarAux::CodifInstr(&mens, def_instr)) // Checa se erro
         {
-            ApagarVar(v);
-            return CriarVarTexto(mens);
+            mens.Add("\x00", 1); // Zero no fim da mensagem
+            mens.AnotarBuf();    // Anota resultado em mens.Buf
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens.Buf);
         }
-        if (total==0) // Nenhuma instrução
+        if (mens.Total==0) // Nenhuma instrução
         {
-            ApagarVar(v);
-            return CriarVarTexto("");
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("");
         }
-        mens[total]=0;  // Marca o fim das instruções
-        mens[total+1]=0;
-        total += 2;
+        mens.Add("\x00", 1); // Zero no fim da mensagem
+        mens.AnotarBuf();    // Anota resultado em mens.Buf
     // Verifica se bloco válido
         const char DebugFunc[] = { 7, 0, cFunc, 0, 0, 0, 'f', 0 };
         int linha=1;
         ChecaLinha checalinha;
         checalinha.Inicio();
         checalinha.Instr(DebugFunc);
-        for (char * com = mens; com[0] || com[1]; com+=Num16(com),linha++)
+        for (char * com = mens.Buf; com[0] || com[1]; com+=Num16(com),linha++)
         {
             const char * p = checalinha.Instr(com);
             if (com[2]==cHerda)
                 p = "Instrução herda não é suportada por cmd";
             if (p)
             {
-                mprintf(mens, sizeof(mens), "%d: %s", linha, p);
+                char txt1[1024];
+                mprintf(txt1, sizeof(txt1), "%d: %s", linha, p);
                 ApagarVar(v);
-                return CriarVarTexto(mens);
+                return CriarVarTexto(txt1);
             }
         }
     // Acerta o bloco
-        TClasse::AcertaComandos(mens);
+        TClasse::AcertaComandos(mens.Buf);
     // Anota instruções em DadosPilha
         ApagarVar(v);
-        if (CriarVarTexto(mens, total) < 0)
+        if (CriarVarTexto(mens.Buf, mens.Total) < 0)
             return CriarVarTexto(
                     "Quantidade de instruções muito grande");
     // Acerta função

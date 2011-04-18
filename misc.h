@@ -140,6 +140,37 @@ unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]
      *  - printf("%d\n", (int)v1); */
 int DoubleToInt(double valor);
 
+//------------------------------------------------------------------------------
+class TAddBufferBloco /// Usado em AddBuffer
+{
+public:
+    TAddBufferBloco * Proximo; ///< Próximo bloco
+    char buf[4080]; ///< Bytes de instruções
+};
+
+//------------------------------------------------------------------------------
+class TAddBuffer /// Buffer expansível na memória
+{
+public:
+    TAddBuffer();
+    ~TAddBuffer();
+    void Add(const char * origem, int tamanho);
+        ///< Adiciona bytes no buffer
+    int Anotar(char * destino, int tamanho);
+        ///< Anota dados adicionados no buffer
+    void AnotarBuf();
+        ///< Aloca memória e coloca resultado em Buf
+        /**< @note Quando o objeto for apagado, a memória em Buf é desalocada */
+    void Limpar();
+        ///< Limpa bytes adicionados no buffer
+    unsigned int Total; ///< Quantos bytes adicionados
+    char * Buf;         ///< Buffer gerado por AlocaMem()
+private:
+    unsigned int PosAtual;  ///< Quantos bytes usados do bloco atual
+    TAddBufferBloco * Inicio; ///< Primeiro bloco
+    TAddBufferBloco * Atual;  ///< Bloco atual
+};
+
 /** @} */
 
 #endif

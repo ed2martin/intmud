@@ -269,6 +269,8 @@ void TClasse::AcertaComandos(char * comandos)
                     else
                         break;
                 }
+            if (x-p >= 0x10000)
+                x = p+Num16(p);
             p[3] = (x-p);
             p[4] = (x-p)>>8;
             break;
@@ -281,8 +283,10 @@ void TClasse::AcertaComandos(char * comandos)
                     nivelse++;
                 else if (x[2]==Instr::cContinuar)
                 {
-                    x[3] = (x-p);
-                    x[4] = (x-p) >> 8;
+                    int valor = x-p;
+                    if (valor>0x10000) valor=0;
+                    x[3] = valor;
+                    x[4] = valor >> 8;
                 }
                 else if (x[2]==Instr::cEFim)
                 {
@@ -290,12 +294,16 @@ void TClasse::AcertaComandos(char * comandos)
                         nivelse--;
                     else
                     {
-                        x[3] = (x-p);
-                        x[4] = (x-p) >> 8;
+                        int valor = x-p;
+                        if (valor>0x10000) valor=0;
+                        x[3] = valor;
+                        x[4] = valor >> 8;
                         x+=Num16(x);
                         break;
                     }
                 }
+            if (x-p >= 0x10000)
+                x = p+Num16(p);
             p[3] = (x-p);
             p[4] = (x-p)>>8;
             break;
@@ -316,6 +324,8 @@ void TClasse::AcertaComandos(char * comandos)
                         break;
                     }
                 }
+            if (x-p >= 0x10000)
+                x = p+Num16(p);
             p[3] = (x-p);
             p[4] = (x-p)>>8;
             break;
@@ -1350,9 +1360,8 @@ int TClasse::AcertaVar(bool acertaderiv)
                     //       cl->InstrVar[y] + Instr::endNome, cl->InstrVar[y],
                     //       InstrVar[ind] + Instr::endNome, InstrVar[ind]);
                     //fflush(stdout);
-                    cl->InstrVar[y] = InstrVar[ind];
-                    v.defvar = InstrVar[ind];
-                    ind = cl->IndiceVar[ind];
+                    v.defvar = cl->InstrVar[y] = InstrVar[ind];
+                    ind = cl->IndiceVar[y];
                     if (ind & 0x400000) // Variável da classe
                     {
                         v.endvar = cl->Vars + (ind & 0x3FFFFF);

@@ -877,3 +877,109 @@ int DoubleToInt(double valor)
 //printf("Conv %f para %d\n", valor, (int)valor);
     return (int)valor;
 }
+
+//------------------------------------------------------------------------------
+TAddBuffer::TAddBuffer()
+{
+    PosAtual=0;
+    Total=0;
+    Inicio = Atual = 0;
+    Buf = 0;
+}
+
+//------------------------------------------------------------------------------
+TAddBuffer::~TAddBuffer()
+{
+    if (Buf)
+        delete[] Buf;
+    while (Inicio)
+    {
+        TAddBufferBloco * p = Inicio->Proximo;
+        delete Inicio;
+        Inicio = p;
+    }
+}
+
+//------------------------------------------------------------------------------
+void TAddBuffer::Limpar()
+{
+    Atual = Inicio;
+    PosAtual=0;
+    Total=0;
+}
+
+//------------------------------------------------------------------------------
+void TAddBuffer::Add(const char * origem, int tamanho)
+{
+    if (tamanho <= 0)
+        return;
+    if (Inicio==0)
+    {
+        Inicio = Atual = new TAddBufferBloco;
+        Inicio->Proximo = 0;
+    }
+    Total += tamanho;
+    while (tamanho > 0)
+    {
+        int copiar = (int)sizeof(Atual->buf) - PosAtual;
+        if (copiar <= 0) // Se o bloco está cheio
+        {
+            copiar = sizeof(Atual->buf);
+            PosAtual = 0;
+            if (Atual->Proximo==0)
+            {
+                Atual->Proximo = new TAddBufferBloco;
+                Atual->Proximo->Proximo = 0;
+            }
+            Atual = Atual->Proximo;
+        }
+        if (copiar > tamanho) // Acerta quantos bytes anotar no bloco
+            copiar = tamanho;
+        memcpy(Atual->buf + PosAtual, origem, copiar);
+        PosAtual += copiar;
+        origem += copiar;
+        tamanho -= copiar;
+    }
+}
+
+//------------------------------------------------------------------------------
+int TAddBuffer::Anotar(char * destino, int tamanho)
+{
+    if (tamanho <= 0)
+        return 0;
+    TAddBufferBloco * bl = Inicio;
+    int total = 0;
+    while (bl != Atual)
+    {
+        if (tamanho < (int)sizeof(bl->buf))
+        {
+            memcpy(destino, bl->buf, tamanho);
+            return total + tamanho;
+        }
+        memcpy(destino, bl->buf, sizeof(bl->buf));
+        tamanho -= sizeof(bl->buf);
+        total += sizeof(bl->buf);
+        destino += sizeof(bl->buf);
+        bl = bl->Proximo;
+    }
+    if (tamanho > (int)PosAtual)
+        tamanho = PosAtual;
+    if (tamanho > 0)
+        memcpy(destino, bl->buf, tamanho);
+    return total + tamanho;
+}
+
+//------------------------------------------------------------------------------
+void TAddBuffer::AnotarBuf()
+{
+    if (Buf)
+    {
+        delete[] Buf;
+        Buf = 0;
+    }
+    if (Total)
+    {
+        Buf = new char[Total];
+        Anotar(Buf, Total);
+    }
+}

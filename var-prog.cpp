@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "var-prog.h"
 #include "variavel.h"
 #include "classe.h"
@@ -886,42 +887,40 @@ bool TVarProg::FuncCriar(TVariavel * v)
             return Instr::CriarVarTexto("Classe não existe");
         }
     // Codifica as instruções
-        char mens[65000];
-        int  total = TMudarAux::CodifInstr(mens, v[2].getTxt(), sizeof(mens)-2);
-        if (total<0) // Erro
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(mens);
-        }
-        if (total==0) // Nenhuma alteração
+        TAddBuffer mens;
+        bool codifok = TMudarAux::CodifInstr(&mens, v[2].getTxt());
+        if (mens.Total==0) // Nenhuma alteração
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("");
         }
-    // Obtém bloco de instruções
-        mens[total]=0;  // Marca o fim das instruções
-        mens[total+1]=0;
-        char * p = TMudarAux::AvancaInstr(mens); // Passa para próxima função/variável
+        mens.Add("\x00\x00", 2); // Marca o fim das instruções
+        mens.AnotarBuf();        // Anota resultado em mens.Buf
+        if (!codifok) // Erro
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens.Buf);
+        }
+        char * p = TMudarAux::AvancaInstr(mens.Buf); // Passa para próxima função/variável
         if (p[0] || p[1])
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto(
                     "Definição de mais de uma função/variável/herda");
         }
-        if (mens[2]==Instr::cHerda)
+        if (mens.Buf[2]==Instr::cHerda)
         {
-            mudarcom.AddBloco(mens, total);
+            mudarcom.AddBloco(mens.Buf, mens.Total-2);
             if ((texto1[0] || texto1[1]) && texto1[2]==Instr::cHerda)
                 texto1 += Num16(texto1);
-            mudarcom.AddBloco(texto1,
-                                   TMudarAux::FimInstr(texto1) - texto1);
+            mudarcom.AddBloco(texto1, TMudarAux::FimInstr(texto1) - texto1);
         }
-        else if (mens[2] > Instr::cVariaveis)
+        else if (mens.Buf[2] > Instr::cVariaveis)
         {
         // Obtém o lugar ideal:
         // 1=no início, 2=nas definições de função, 3=em qualquer lugar
             int lugar = 1;
-            switch (mens[2])
+            switch (mens.Buf[2])
             {
             case Instr::cFunc:
             case Instr::cVarFunc:
@@ -954,19 +953,19 @@ bool TVarProg::FuncCriar(TVariavel * v)
                                     // Anota o bloco atual
                         mudarcom.AddBloco(texto1, p-texto1);
                                     // Anota a variável
-                        mudarcom.AddBloco(mens, total);
+                        mudarcom.AddBloco(mens.Buf, mens.Total-2);
                         lugar=0; // Indica que já anotou a variável
                         texto1 = p;
                     }
                 }
             // Verifica se é a instrução procurada
                 if (comparaZ(p + Instr::endNome,
-                                    mens + Instr::endNome)==0)
+                                    mens.Buf + Instr::endNome)==0)
                 {
                     mudarcom.AddBloco(texto1, p-texto1);// Anota bloco atual
                     if ((l & lugar)!=0) // Anota variável se está no lugar certo
                     {
-                        mudarcom.AddBloco(mens, total);
+                        mudarcom.AddBloco(mens.Buf, mens.Total-2);
                         lugar = 0; // Indica que já anotou a variável
                     }
                     texto1 = p = TMudarAux::AvancaInstr(p); // Avança p, acerta texto1
@@ -977,7 +976,7 @@ bool TVarProg::FuncCriar(TVariavel * v)
             } // while (p[0] || p[1])
             mudarcom.AddBloco(texto1, p-texto1);// Anota bloco atual
             if (lugar) // Anota variável
-                mudarcom.AddBloco(mens, total);
+                mudarcom.AddBloco(mens.Buf, mens.Total-2);
         }
         else
         {
@@ -1033,18 +1032,18 @@ bool TVarProg::FuncCriar(TVariavel * v)
             return Instr::CriarVarTexto("Nome de classe inválido");
         }
     // Codifica as instruções
-        char mens[65000];
-        int  total = TMudarAux::CodifInstr(mens, nome, sizeof(mens)-2);
-        if (total<0)
+        TAddBuffer mens;
+        bool codifok = TMudarAux::CodifInstr(&mens, nome);
+        mens.Add("\x00\x00", 2); // Marca o fim das instruções
+        mens.AnotarBuf();        // Anota resultado em mens.Buf
+        if (!codifok) // Erro
         {
             Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(mens);
+            return Instr::CriarVarTexto(mens.Buf);
         }
-        mens[total++] = 0;
-        mens[total++] = 0;
     // Verifica se bloco válido
         int linha=1;
-        char * com = mens;
+        char * com = mens.Buf;
         Instr::ChecaLinha checalinha;
         checalinha.Inicio();
         while (com[0] || com[1])
@@ -1052,9 +1051,10 @@ bool TVarProg::FuncCriar(TVariavel * v)
             const char * p = checalinha.Instr(com);
             if (p)
             {
-                sprintf(mens, "%d: %s\n", linha, p);
+                char txt1[1024];
+                mprintf(txt1, sizeof(txt1), "%d: %s\n", linha, p);
                 Instr::ApagarVar(v);
-                return Instr::CriarVarTexto(mens);
+                return Instr::CriarVarTexto(txt1);
             }
             com+=Num16(com), linha++;
         }
@@ -1062,9 +1062,8 @@ bool TVarProg::FuncCriar(TVariavel * v)
         TMudarClasse * obj = TMudarClasse::Procurar(nomeclasse);
         if (obj==0)
             obj = new TMudarClasse(nomeclasse);
-        com = new char[total];
-        memcpy(com, mens, total);
-        obj->MudarComandos(com);
+        obj->MudarComandos(mens.Buf);  // Transfere a memória alocada
+        mens.Buf = 0; // Para não desalocar memória em mens.Buf
     // Anota o arquivo correspondente à classe
         TArqMapa * arq = TArqMapa::Procura(nomearq);
         if (arq==0)
@@ -1227,17 +1226,24 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
         nome = v[4].getTxt();
     }
 // Codifica as instruções
-    char mens[65000];
-    int  total = TMudarAux::CodifInstr(mens, nome, sizeof(mens)-2);
-    if (total<=0) // 0 se nenhuma instrução, <0 se erro
+    TAddBuffer mens;
+    if (!TMudarAux::CodifInstr(&mens, nome)) // Checa se erro
+    {
+        mens.Add("\x00", 1); // Zero no fim da mensagem
+        mens.AnotarBuf();    // Anota resultado em mens.Buf
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens.Buf);
+    }
+    if (mens.Total==0) // Nenhuma instrução
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(total==0 ? "" : mens);
+        return Instr::CriarVarTexto("");
     }
+    mens.AnotarBuf();  // Anota resultado em mens.Buf
 // Instruções em função: não permite definições de constantes e funções
     if (Instr::VarAtual > v+3)
     {
-        for (const char * p = mens; p < mens+total; p += Num16(p))
+        for (const char * p = mens.Buf; p < mens.Buf+mens.Total; p += Num16(p))
             switch (p[2])
             {
             case Instr::cConstNulo:
@@ -1256,7 +1262,7 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
     }
 // Prepara bloco
     mudarcom.AddBloco(texto1, texto2-texto1);
-    mudarcom.AddBloco(mens, total);
+    mudarcom.AddBloco(mens.Buf, mens.Total);
     mudarcom.AddBloco(texto2, TMudarAux::FimInstr(texto2) - texto2);
 // Verifica se bloco válido
     char err[200];

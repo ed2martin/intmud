@@ -61,11 +61,6 @@ bool TMudarAux::ChecaBloco(char * mensagem, int tamanho)
     int total=0;
     for (unsigned int bloco=0; bloco<numbloco; bloco++)
         total += tambloco[bloco];
-    if (total > 65000)
-    {
-        copiastr(mensagem, "Classe muito grande", tamanho);
-        return false;
-    }
 // Verifica se bloco válido
     int linha=1;
     Instr::ChecaLinha checalinha;
@@ -170,14 +165,15 @@ char * TMudarAux::FimInstr(char * comando)
 }
 
 //------------------------------------------------------------------------------
-int TMudarAux::CodifInstr(char * destino, const char * origem, int tamanho)
+bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
 {
-    char mens[2048];
+    char mens[4096];
+    char menscod[4096];
     int linhanum = 1;
     char * linhaend = mens;
-    int pdestino = 0;
-    bool erro = false;
+    bool codifok = true;
 
+    destino->Limpar();
     while (true)
     {
     // Lê uma linha
@@ -188,8 +184,10 @@ int TMudarAux::CodifInstr(char * destino, const char * origem, int tamanho)
                 continue;
             if (linhaend >= mens+sizeof(mens)-1)
             {
-                sprintf(destino, "%d: Instrução muito grande", linhanum);
-                return -1;
+                sprintf(mens, "%d: Instrução muito grande", linhanum);
+                destino->Limpar();
+                destino->Add(mens, strlen(mens));
+                return false;
             }
             *linhaend++ = ch;
             continue;
@@ -212,30 +210,25 @@ int TMudarAux::CodifInstr(char * destino, const char * origem, int tamanho)
     // Processa instrução
         *linhaend=0;
         linhaend=mens;
-        if (!Instr::Codif(destino+pdestino, mens, tamanho-pdestino))
+        if (Instr::Codif(menscod, mens, sizeof(menscod)))
+            destino->Add(menscod, Num16(menscod));
+        else
         {
-            sprintf(mens, "%c%d: %s",
-                    Instr::ex_barra_n, linhanum, destino+pdestino);
-            if (erro==false)
+            sprintf(mens, "%c%d: %s", Instr::ex_barra_n, linhanum, menscod);
+            if (codifok)
             {
-                pdestino = copiastr(destino, mens+1, tamanho) - destino;
-                erro=true;
+                destino->Limpar();
+                destino->Add(mens+1, strlen(mens+1));
+                codifok=false;
             }
             else
-            {
-                pdestino = copiastr(destino+pdestino, mens,
-                                    tamanho-pdestino) - destino;
-                if (pdestino < 10)
-                    return -1;
-            }
+                destino->Add(mens, strlen(mens));
         }
-        if (!erro)
-            pdestino += Num16(destino+pdestino);
         if (ch==0)
             break;
         linhanum++;
     }
-    return (erro ? -1 : pdestino);
+    return codifok;
 }
 
 //----------------------------------------------------------------------------
