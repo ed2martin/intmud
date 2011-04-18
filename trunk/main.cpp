@@ -653,8 +653,8 @@ void Inicializa(const char * arg)
 // Acerta TClasse::Comandos
     TClasse * classeatual = 0;
     Instr::ChecaLinha checalinha;
-    char comando[65000];
-    unsigned int pcomando=0;
+    TAddBuffer classecom;
+    char comando[2048];
     ini_arq = true;
 
     // Abre intmud.int
@@ -683,13 +683,11 @@ void Inicializa(const char * arg)
             ini_arq = false;
             if (classeatual) // Anota instruções da classe
             {
-                comando[pcomando]=0;    // Marca fim da lista de comandos
-                comando[pcomando+1]=0;
-                pcomando += 2;
-                classeatual->Comandos = new char[pcomando]; // Anota comandos
-                memcpy(classeatual->Comandos, comando, pcomando);
+                classecom.Add("\x00\x00", 2); // Marca fim da lista de comandos
+                classeatual->Comandos = new char[classecom.Total]; // Anota comandos
+                classecom.Anotar(classeatual->Comandos, classecom.Total);
             }
-            pcomando = 0;
+            classecom.Limpar();
             classeatual = 0;
             checalinha.Inicio();
         }
@@ -735,44 +733,35 @@ void Inicializa(const char * arg)
         }
     // Codifica instrução
         //err_printf("= %s\n", mens);
-        if (pcomando + sizeof(mens) >= sizeof(comando))
+        if (!Instr::Codif(comando, mens, sizeof(comando)))
         {
-            err_printf("%s:%d: Espaço insuficiente; classe muito grande\n",
-                        arqinicio, linhanum);
-            erro=true;
-            continue;
-        }
-        if (!Instr::Codif(comando+pcomando, mens,
-                            sizeof(comando)-pcomando))
-        {
-            err_printf("%s:%d: %s\n",
-                        arqinicio, linhanum, comando+pcomando);
+            err_printf("%s:%d: %s\n", arqinicio, linhanum, comando);
             erro=true;
             continue;
         }
     // Informações sobre o que codificou
 #if 0
-        unsigned tam = Num16(comando+pcomando);
-        if (tam>sizeof(comando)-pcomando)
-            tam=sizeof(comando)-pcomando;
+        unsigned tam = Num16(comando);
+        if (tam>sizeof(comando))
+            tam=sizeof(comando);
         for (unsigned x=0; x<tam; x++)
-            err_printf(" %02X", (unsigned char)comando[pcomando+x]);
+            err_printf(" %d", (unsigned char)comando[x]);
         err_printf("\n");
 
-        if (Instr::Mostra(mens, comando+pcomando, sizeof(mens)))
+        if (Instr::Mostra(mens, comando, sizeof(mens)))
             err_printf("+ %s\n", mens);
         else
             err_printf("- %s\n", mens);
-        if (Instr::Decod(mens, comando+pcomando, sizeof(mens)))
+        if (Instr::Decod(mens, comando, sizeof(mens)))
             err_printf("++ %s\n", mens);
         else
             err_printf("-- %s\n", mens);
 #endif
     // Verifica instrução
-        if (comando[pcomando+2]==Instr::cHerda)
+        if (comando[2]==Instr::cHerda)
         {
-            const char * p = comando+pcomando+4;
-            for (unsigned char x = comando[pcomando+3]; x; x--)
+            const char * p = comando+4;
+            for (unsigned char x = comando[3]; x; x--)
             {
                 TClasse * obj = TClasse::Procura(p);
                 assert(obj!=0);
@@ -785,14 +774,14 @@ void Inicializa(const char * arg)
                 continue;
             }
         }
-        const char * p = checalinha.Instr(comando+pcomando);
+        const char * p = checalinha.Instr(comando);
         if (p)
         {
             err_printf("%s:%d: %s\n", arqinicio, linhanum, p);
             erro=true;
             continue;
         }
-        pcomando += Num16(comando+pcomando);
+        classecom.Add(comando, Num16(comando));
     }
 
 // Verifica se ocorreu erro no mapa
@@ -819,7 +808,7 @@ void Inicializa(const char * arg)
         if (obj->NumDeriv)
         {
             printf("*** Herdada em:");
-            for (int x=0; x<obj->NumDeriv; x++)
+            for (unsigned int x=0; x<obj->NumDeriv; x++)
                 printf("%s%s", x==0 ? " " : ", ", obj->ListaDeriv[x]->Nome);
             putchar('\n');
         }

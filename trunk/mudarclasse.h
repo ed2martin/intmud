@@ -3,6 +3,8 @@
 
 #include "classe.h"
 
+class TAddBuffer;
+
 //----------------------------------------------------------------------------
 /** Contém a lista de modificações que devem ser feitas nas classes
     do programa interpretado */
@@ -81,14 +83,12 @@ public:
         ///< Avança para próxima variável/função em lista de instruções
     static char * FimInstr(char * comando);
         ///< Avança para o fim da lista de instruções (dois bytes =0)
-    static int CodifInstr(char * destino, const char * origem, int tamanho);
+    static bool CodifInstr(TAddBuffer * destino, const char * origem);
         ///< Codifica instruções
-        /**< @param destino Endereço destino (instruções codificadas)
+        /**< @param destino Aonde anotar as instruções codificadas
              @param origem Endereço origem (texto)
-             @param tamanho Tamanho do buffer em destino
-             @return Número de bytes de instruções em destino
-                 ou -1 se ocorreu erro (destino contém a mensagem de erro) */
-
+             @retval true Sucesso; destino contém as instruções codificadas
+             @retval false Falha; destino contém as mensagens de erro */
     void AddBloco(char * ender, int tamanho);
         ///< Adiciona um bloco de instruções na lista
         /**< @param ender Endereço inicial do bloco

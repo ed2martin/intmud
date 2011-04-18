@@ -1,22 +1,19 @@
+telatxt = 1
+
 classe A
 herda b,c
-comum serv servidor
-socket conec
+telatxt tela
 txt16 nomeclasse
 
-const msg = conec.msg(arg0)
+const msg = tela.msg(arg0)
 func iniclasse
-  se ![arg0]:servidor.abrir("localhost", 2000)
-    terminar
-func servidor_socket
-  criar("a", arg0)
+  criar(arg0)
 func ini
-  conec = arg0
   msg("Digite o nome de uma variável ou:\n")
   msg("FIM para encerrar o programa\n")
   msg("A, B ou C para selecionar a classe\n")
   msg("0 a 9 para escolher uma função\n")
-func conec_msg
+func tela_msg
   prog p
   int16 i
   se p.existe(este, "p" + txt1(arg0))
