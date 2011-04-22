@@ -33,11 +33,11 @@ msg("\\d para diferenciar/não diferenciar maiúsculas de minúsculas\n")
 func tela_msg
 textopos p1
 int32 i
-se arg0 = "\\i"
+se arg0 == "\\i"
   pos1 = arq.ini, col1 = 0
   msg("Início do texto\n")
   ret
-senao arg0 = "\\d"
+senao arg0 == "\\d"
   dif = !dif
   se dif
     msg("Maiúsculas diferentes de minúsculas\n")

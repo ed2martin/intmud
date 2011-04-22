@@ -101,7 +101,7 @@ func ds1 # Usado em descrsala
 # arg0 = nome da direção
 # arg1 = letra da direção
 # arg2 = sala
-  se arg2.[arg0] = nulo || arg2.[arg0]_ini = 1
+  se arg2.[arg0] == nulo || arg2.[arg0]_ini == 1
     ret ""
   senão arg2.[arg0]_agora < 2
     ret " \c6" + arg1 + "\b"
@@ -109,7 +109,7 @@ func ds1 # Usado em descrsala
     ret " \c9!" + arg1 + "\b"
 
 func dnome # Descrição do personagem na sala
-  se posicao = pospadrao
+  se posicao == pospadrao
     ret dpos
   senão
     ret descr_[posicao]
@@ -159,22 +159,22 @@ func escr # Escreveu alguma coisa
     l.depois
   efim
 ### Processa comando
-  se obj = nulo
+  se obj == nulo
     msg("O quê?")
   senão posicao < obj.posic
-    se posicao = 0 # Morto
+    se posicao == 0 # Morto
       msg("\c9Você está morto!!!\b")
-    senão posicao = 1 || posicao = 2 # Incapacitado
+    senão posicao == 1 || posicao == 2 # Incapacitado
       msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
-    senão posicao = 3 # Fraco
+    senão posicao == 3 # Fraco
       msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
-    senão posicao = 4 # Dormindo
+    senão posicao == 4 # Dormindo
       msg("\c9Nos seus sonhos...\b")
-    senão posicao = 5 # Descansando
+    senão posicao == 5 # Descansando
       msg("\c9Você se sente relaxado demais para fazer isso.\b")
-    senão posicao = 6 # Sentado
+    senão posicao == 6 # Sentado
       msg("\c9Talvez você deva ficar em pé primeiro.\b")
-    senão posicao = 7 # Lutando
+    senão posicao == 7 # Lutando
       msg("\c9Sem chance! Você está lutando pela sua vida.\b")
     senão
       msg("\c9Você tenta, mas não consegue.\b")
@@ -306,9 +306,9 @@ func conec_msg # Recebeu mensagem do usuário
       conec.msg("-OK Entrando via Telnet\n")
       conec.cores = 2
     fimse
-  senão arg0 = "fim" # Sai do MUD
+  senão arg0 == "fim" # Sai do MUD
     apagar(este)
-  senão arg0 = "" # Se não digitou um apelido
+  senão arg0 == "" # Se não digitou um apelido
     espera = 1
   senão inttotal(arg0) > 12 || intnome(arg0)
     conec.msg("Apelido inválido; digite outro\n")
@@ -336,7 +336,7 @@ func ini # Objeto criado
   usr_nome = "usr_" + txtnome(arg1)
   nome = txtmaimin(arg1)
   comum_perso:ini
-  se conec.proto = 2
+  se conec.proto == 2
     mudasala($jog_cores)
   senão
     mudasala($jog_sexo)
@@ -360,7 +360,7 @@ classe jog_cores
 herda comum_sala
 const descr = "Ativar as cores no Telnet? Tecle S ou N"
 func tr_escr
-  se arg2 = "S"
+  se arg2 == "S"
     arg0.conec.cores = 2
   senão arg2 != "N"
     arg0.msg(descr)
@@ -374,9 +374,9 @@ classe jog_sexo
 herda comum_sala
 const descr = "Você é homem ou mulher? Tecle O ou A"
 func tr_escr
-  se arg2 = "O"
+  se arg2 == "O"
     arg0.sexo = "o"
-  senão arg2 = "A"
+  senão arg2 == "A"
     arg0.sexo = "a"
   senão
     arg0.msg(descr)
@@ -455,7 +455,7 @@ func alvo2
     r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
 
 func param_p # $p = personagem origem
-  se r = _p
+  se r == _p
     ret "você"
   senão r.invisver >= _p.invis
     ret _p.nome
@@ -465,7 +465,7 @@ func param_p # $p = personagem origem
     ret "alguma coisa"
 
 func param_a # $a = personagem alvo
-  se r = _a
+  se r == _a
     ret "você"
   senão r.invisver >= _a.invis
     ret _a.nome
@@ -475,7 +475,7 @@ func param_a # $a = personagem alvo
     ret "alguma coisa"
 
 func param_o # $o = objeto
-  se r = _o
+  se r == _o
     ret "você"
   senão r.invisver >= _o.invis
     ret _o.nome

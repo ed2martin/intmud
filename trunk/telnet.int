@@ -30,7 +30,7 @@ func iniclasse
 func ini
   inic = 2
   msg("Telnet\n")
-  se tela.proto = 0
+  se tela.proto == 0
     terminar
 func inic_exec # Mensagem de abertura
   msg("Digite o endereço seguido de espaço e a porta\n")
@@ -53,7 +53,7 @@ const cursor_HOME = 1
 const cursor_END = 1
 func tecla_F1
   prog p
-  se sock.proto = 0
+  se sock.proto == 0
     msg("Atalhos:\n")
     p.inifunc("_serv")
     enquanto p.lin
@@ -86,12 +86,12 @@ func tecla_F4
   terminar
 func tela_msg # Usuário digitou alguma coisa
   txt80 linha
-  se sock.proto = 0 # Desconectado
-    se arg0 = ""
+  se sock.proto == 0 # Desconectado
+    se arg0 == ""
       ret
     fimse
     linha = _serv:[arg0]
-    se linha = ""
+    se linha == ""
       linha = txtremove(arg0, "ED")
     fimse
     se !sock.abrir(txt1(linha), txt2(linha))
@@ -101,7 +101,7 @@ func tela_msg # Usuário digitou alguma coisa
     fimse
     msg("\d1Conectando em " + linha + "\b\n")
     ret
-  senao proto = 1 # Conectando
+  senao proto == 1 # Conectando
     msg("\d1Conexão em progresso\b\n")
   senao # Conectado
     sock.msg(arg0 + "\n")

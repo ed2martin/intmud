@@ -378,11 +378,12 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_menorigual:   strcpy(nome, " <="); break;
         case exo_maior:        strcpy(nome, " >");  break;
         case exo_maiorigual:   strcpy(nome, " >="); break;
-        case exo_igual:        strcpy(nome, " =");  break;
-        case exo_igual2:       strcpy(nome, " =="); break;
+        case exo_igual:        strcpy(nome, " =="); break;
+        case exo_igual2:       strcpy(nome, " ==="); break;
         case exo_diferente:    strcpy(nome, " !="); break;
-        case exo_e:            strcpy(nome, " &&");  break;
-        case exo_ou:           strcpy(nome, " ||");  break;
+        case exo_e:            strcpy(nome, " &&"); break;
+        case exo_ou:           strcpy(nome, " ||"); break;
+        case exo_atrib:        strcpy(nome, " =");  break;
         case exo_igualmul:     strcpy(nome, " *="); break;
         case exo_igualdiv:     strcpy(nome, " /="); break;
         case exo_igualporcent: strcpy(nome, " %="); break;

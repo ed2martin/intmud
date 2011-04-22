@@ -78,7 +78,7 @@ func escr_t
 func escr_e
   terminar
 func remoto_con
-  se papovox=0
+  se papovox==0
     msg("Conectado\n")
   senao
     msg("Conectado; esperando mensagem\n")
@@ -86,7 +86,7 @@ func remoto_err
   msg("Erro ao conectar: " + arg0 + "\n")
 func remoto_msg
   msg("< " + arg0 + "\n")
-  se papovox = 1
+  se papovox == 1
     papovox = 2
     remoto.msg("OK\n")
   senao papovox

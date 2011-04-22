@@ -23,14 +23,14 @@ func ini
   msg("1 termina fechando log, 2 termina sem fechar, 3 fecha conexão\n")
   msg("Qualquer outra coisa digitada é gravada no log\n")
 func conec_msg
-  se arg0 = "1"
+  se arg0 == "1"
     log1.msg("Programa encerrado\n")
     log1.fechar
     terminar
-  senao arg0 = "2"
+  senao arg0 == "2"
     log1.msg("Programa encerrado\n")
     terminar
-  senao arg0 = "3"
+  senao arg0 == "3"
     apagar(este)
   senao
     conec.msg("Você escreveu " + arg0 + "\n")

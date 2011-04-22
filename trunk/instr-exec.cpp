@@ -113,7 +113,7 @@ Se FuncAtual->expr != 0:
      Vai para (início)
   Se for um operador:
      Processa operador conforme as variáveis do topo da pilha
-     Os operadores & e | podem avançar na expressão numérica
+     Os operadores && e || podem avançar na expressão numérica
      Avança FuncAtual->expr
      Vai para (início)
   *** A partir daqui processa funções e variáveis
@@ -596,15 +596,12 @@ bool Instr::ExecX()
             case cSe:   // Processa expressão numérica
             case cEnquanto:
                 FuncAtual->expr = FuncAtual->linha + 5;
-                FuncAtual->igualcompara = true;
                 break;
             case cRet2: // Processa expressão numérica
                 FuncAtual->expr = FuncAtual->linha + 3;
-                FuncAtual->igualcompara = true;
                 break;
             case cExpr:
                 FuncAtual->expr = FuncAtual->linha + 3;
-                FuncAtual->igualcompara = false;
                 break;
             case cComent: // Comentário
                 VarExec++;
@@ -769,7 +766,6 @@ bool Instr::ExecX()
                     else if (FuncAtual->linha[2]==cSenao2)
                     {
                         FuncAtual->expr = FuncAtual->linha + 5;
-                        FuncAtual->igualcompara = true;
                         if (FuncAtual->funcdebug)
                             TVarDebug::Exec();
                     }
@@ -1234,60 +1230,58 @@ bool Instr::ExecX()
                     VarAtual->setInt(valor);
                 break;
             }
-        case exo_igual:      // Operador: a=b
-            if (FuncAtual->igualcompara==false)
+        case exo_atrib:      // Operador de atribuição: a=b
+            if (VarAtual[-1].defvar[2] == cVarFunc)
             {
-                if (VarAtual[-1].defvar[2] == cVarFunc)
-                {
-                    if (FuncAtual+1 >= FuncFim)
-                        return RetornoErro();
-                    FuncAtual->expr++;
-                    FuncAtual++;
-                    FuncAtual->linha = VarAtual[-1].defvar +
-                            Num16(VarAtual[-1].defvar);
-                    FuncAtual->este = (TObjeto*)VarAtual[-1].endvar;
-                    FuncAtual->expr = 0;
-                    FuncAtual->inivar = VarAtual;
-                    FuncAtual->fimvar = VarAtual + 1;
-                    FuncAtual->numarg = 1;
-                    FuncAtual->tipo = 2;
-                    FuncAtual->objdebug = FuncAtual[-1].objdebug;
-                    FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
-                    break;
-                }
-                if (VarFuncIni(VarAtual))
-                    break;
+                if (FuncAtual+1 >= FuncFim)
+                    return RetornoErro();
                 FuncAtual->expr++;
-                switch (VarAtual[-1].Tipo())
-                {
-                case varOutros:
-                    // Chama função Igual() se forem variáveis diferentes,
-                    // mas do mesmo tipo
-                    if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
-                            (VarAtual[-1].endvar != VarAtual[0].endvar ||
-                             VarAtual[-1].indice != VarAtual[0].indice) )
-                        VarAtual[-1].Igual(VarAtual);
-                    break;
-                case varInt:
-                    VarAtual[-1].setInt( VarAtual->getInt() );
-                    break;
-                case varDouble:
-                    VarAtual[-1].setDouble( VarAtual->getDouble() );
-                    break;
-                case varTxt:
-                    VarAtual[-1].setTxt( VarAtual->getTxt() );
-                    break;
-                case varObj:
-                    VarAtual[-1].setObj( VarAtual->getObj() );
-                    break;
-                }
-                ApagarVar(VarAtual);
+                FuncAtual++;
+                FuncAtual->linha = VarAtual[-1].defvar +
+                        Num16(VarAtual[-1].defvar);
+                FuncAtual->este = (TObjeto*)VarAtual[-1].endvar;
+                FuncAtual->expr = 0;
+                FuncAtual->inivar = VarAtual;
+                FuncAtual->fimvar = VarAtual + 1;
+                FuncAtual->numarg = 1;
+                FuncAtual->tipo = 2;
+                FuncAtual->objdebug = FuncAtual[-1].objdebug;
+                FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                 break;
             }
+            if (VarFuncIni(VarAtual))
+                break;
+            FuncAtual->expr++;
+            switch (VarAtual[-1].Tipo())
+            {
+            case varOutros:
+                // Chama função Igual() se forem variáveis diferentes,
+                // mas do mesmo tipo
+                if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
+                        (VarAtual[-1].endvar != VarAtual[0].endvar ||
+                            VarAtual[-1].indice != VarAtual[0].indice) )
+                    VarAtual[-1].Igual(VarAtual);
+                break;
+            case varInt:
+                VarAtual[-1].setInt( VarAtual->getInt() );
+                break;
+            case varDouble:
+                VarAtual[-1].setDouble( VarAtual->getDouble() );
+                break;
+            case varTxt:
+                VarAtual[-1].setTxt( VarAtual->getTxt() );
+                break;
+            case varObj:
+                VarAtual[-1].setObj( VarAtual->getObj() );
+                break;
+            }
+            ApagarVar(VarAtual);
+            break;
         case exo_menor:      // Operador: a<b
         case exo_menorigual: // Operador: a<=b
         case exo_maior:      // Operador: a>b
         case exo_maiorigual: // Operador: a>=b
+        case exo_igual:      // Operador: a==b
         case exo_diferente:  // Operador: a!=b
             {
                 if (VarFuncIni(VarAtual-1))
@@ -1353,7 +1347,7 @@ bool Instr::ExecX()
                 }
                 break;
             }
-        case exo_igual2:     // Operador: a==b
+        case exo_igual2:     // Operador: a===b
             {
                 if (VarFuncIni(VarAtual-1))
                     break;

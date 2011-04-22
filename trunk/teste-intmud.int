@@ -35,7 +35,7 @@ comum int1 n1
 comum uint8 n2
 func f
 x=1
-se x=0
+se x==0
   bom_dia:n(1)
   n("teste")
   $teste.n1("abc" "def")
@@ -127,12 +127,12 @@ func escr_6
   msg("Encerrando o IntMUD\n")
   terminar
 func escr_7
-  se("A"="a")
+  se("A"=="a")
     msg("1\n")
   senão
     msg("0\n")
   fimse
-  se("A"=="a")
+  se("A"==="a")
     msg("1\n")
   senão
     msg("0\n")
@@ -168,7 +168,7 @@ func escr_9
   msg(vartroca("bom $da $de $di $do $du dia\n", "$", "var_"))
   msg(vartroca("total %t %T valor %r% %var %\n", "%", "x"))
 func teste_a
-  se arg0 == "A"
+  se arg0 === "A"
     ret "A maiúsculo"
   senão
     ret "A minúsculo"

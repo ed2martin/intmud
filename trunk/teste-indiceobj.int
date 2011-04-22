@@ -27,12 +27,12 @@ func porta_socket
 func sock_msg
   indiceitem ind
   ref obj
-  se arg0 = "fim"
+  se arg0 == "fim"
     terminar
   fimse
 # Procura objeto com o nome exato
   obj = ind.obj(arg0)
-  se obj=nulo
+  se obj == nulo
     msg("Objeto nulo\n")
   senao
     msg("Objeto " + obj + "\n")
