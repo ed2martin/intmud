@@ -121,7 +121,7 @@ x("teste")
 
 3. Uma instrução de controle de fluxo do programa: se, fimse, enquanto, etc.
 Exemplo:
-se x=10
+se x==10
 ...
 fimse
 
@@ -131,11 +131,14 @@ São ignorados pelo programa. Exemplo:
 
 As linhas de instruções são interpretadas da esquerda para a direita,
 verificando:
-1. Operadores, como + - * / = < > | &
+1. Operadores, como + - * / == < > | &
 2. Números: começam com um dígito de 0 a 9 e podem ter sinal de menos na frente
 3. Textos: começam e terminam com aspas dupla (").
    Apenas aspas dupla dentro do texto deve ser escrito assim: \"
 4. Variáveis e funções: começam com uma letra ou colchetes ([).
+A única exceção são os operadores de atribuição (=, =+, =-, etc.), que são
+processados da direita para esquerda. Exemplo:
+a=b=c # Primeiro faz b=c, depois faz a=b
 
 O programa interpreta variáveis e funções da seguinte forma:
 A. Se houver um ponto separando duas palavras, liga a segunda ao retorno da
@@ -349,14 +352,15 @@ a^b     Ou exclusivo para bits entre a e b
 a&b     E para bits entre a e b
 a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
 a<=b    Verdadeiro se a<=b
-a=b     Verdadeiro se a for igual a b
-a==b    Verdadeiro se a for exatamente igual a b
+a==b    Verdadeiro se a for igual a b
+a===b   Verdadeiro se a for exatamente igual a b
         Em textos: diferencia letras minúsculas de letras maiúsculas
 a>=b    Verdadeiro se a>=b
 a>b     Verdadeiro se a>b
 a!=b    Verdadeiro se a for diferente de b
 a&&b    Verdadeiro (=1) somente se a for verdadeiro e b também for
 a||b    Verdadeiro (=1) se a for verdadeiro ou b for verdadeiro
+a=b     Operador de atribuição: faz a = b
 Pode-se usar também os parênteses em expressões
 Exemplo:  2*(3+4)
 
@@ -386,10 +390,16 @@ O IntMUD segue a seguinte ordem de precedência:
 ^               Ou exclusivo para bits
 &               E para bits
 <= < > >=       Comparação
-= !=            Igual a e diferente de
+== === !=       Igual a, exatamente igual a e diferente de
 &&              E lógico
 ||              Ou lógico
-*= /= += -=     Formas compactas de atribuição
+= *= /= += -=   Atribuição e formas compactas de atribuição
+
+Todos os operadores são processados da esquerda para a direita, com exceção
+dos operadores de atribuição, que são processados da direita para esquerda.
+Exemplo:
+x=a+b+c # Soma a com b, e depois soma com c; coloca em x o resultado
+a=b=c # Faz b=c, depois faz a=b
 
 
 *** Operadores de bit
@@ -815,7 +825,7 @@ vartroca(<texto>, <texto2>, <variável>)
     Quando vartroca chama uma função, coloca em arg0 o texto encontrado.
     Exemplo de como diferenciar letras maiúsculas de minúsculas:
       func teste_a
-        se arg0 == "A" # Se for exatamente igual
+        se arg0 === "A" # Se for exatamente igual
           ret "A maiúsculo"
         senão
           ret "A minúsculo"

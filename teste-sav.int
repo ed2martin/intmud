@@ -33,7 +33,7 @@ func escr_i
   msg("Senha = " + sav.senha(txt1(arg0), txt2(arg0)) + "\n")
 func escr_s
   arqsav sav
-  se(sav.salvar(txt1(arg0), lista1, 10, txt2(arg0)))
+  se sav.salvar(txt1(arg0), lista1, 10, txt2(arg0))
     msg("Sucesso\n")
   senão
     msg("Falha\n")
@@ -62,7 +62,7 @@ func escr_o
   prog p
   int16 num
 # Mostrar objetos e variáveis de lista1
-  se arg0=""
+  se arg0 == ""
     l = lista1.ini # Início da lista
     se !l
       msg("Nenhum objeto\n")
@@ -90,7 +90,7 @@ func escr_o
     ret
   fimse
 # Apagar objeto
-  se txt2(arg0) = ""
+  se txt2(arg0) == ""
     apagar(l.obj)
     msg("Objeto número " + num + " apagado\n")
     ret

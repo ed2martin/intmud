@@ -6,27 +6,27 @@ func iniclasse
   criar(arg0)
 func ini
   tela.total = 20
-  se tela.proto = 0
+  se tela.proto == 0
     terminar
 func tela_tecla
-  se arg0 = "F1"
+  se arg0 == "F1"
     tela.bipe
-  senao arg0 = "F2"
+  senao arg0 == "F2"
     tela.limpa
-  senao arg0 = "F3"
+  senao arg0 == "F3"
     tela.msg("Linha " + tela.texto + " Máximo " + tela.total + "\n")
-  senao arg0 = "F4"
+  senao arg0 == "F4"
     tela.texto = "Teste de alteração do texto na linha de edição"
-  senao arg0 = "F5"
+  senao arg0 == "F5"
     tela.texto += "_*"
-  senao arg0 = "F6"
+  senao arg0 == "F6"
     tela.total -= 1
-  senao arg0 = "F7"
+  senao arg0 == "F7"
     tela.total += 1
-  senao arg0 = "F8"
+  senao arg0 == "F8"
     tela.msg("[" + tela.linha + "]")
     #tela.linha = 1
-  senao arg0 = "F9"
+  senao arg0 == "F9"
 #tela.msg("[" + tela.linha + "]")
     tela.linha += 1
   senao

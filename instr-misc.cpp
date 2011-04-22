@@ -22,13 +22,14 @@
 //------------------------------------------------------------------------------
 /// Retorna um número que corresponde à prioridade do operador
 /** @param operador Operador em Instr::Expressao
-    @retval 2-0x2F Número que corresponde à prioridade do operador
+    @retval 2-0x2F Número que corresponde à prioridade do operador;
+            20 é atribuição (procesado da direita para a esquerda)
     @retval 0 Operador inválido */
 int Instr::Prioridade(int operador)
 {
     switch (operador)
     {
-    case exo_virgula:    return 20;
+    case exo_virgula:    return 22;
     case exo_neg:        return 2;
     case exo_exclamacao: return 2;
     case exo_b_comp:     return 2;
@@ -51,11 +52,12 @@ int Instr::Prioridade(int operador)
     case exo_diferente:  return 10;
     case exo_e:          return 11;
     case exo_ou:         return 12;
-    case exo_igualmul:   return 13;
-    case exo_igualdiv:   return 13;
-    case exo_igualporcent: return 13;
-    case exo_igualadd:   return 13;
-    case exo_igualsub:   return 13;
+    case exo_atrib:      return 20;
+    case exo_igualmul:   return 20;
+    case exo_igualdiv:   return 20;
+    case exo_igualporcent: return 10;
+    case exo_igualadd:   return 20;
+    case exo_igualsub:   return 20;
     }
     return 0;
 }
@@ -484,6 +486,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_igual:
         case exo_igual2:
         case exo_diferente:
+        case exo_atrib:
         case exo_igualmul:
         case exo_igualdiv:
         case exo_igualporcent:
@@ -728,6 +731,7 @@ const char * Instr::NomeExpr(int valor)
     case exo_diferente:     return "exo_diferente";
     case exo_e:             return "exo_e";
     case exo_ou:            return "exo_ou";
+    case exo_atrib:         return "exo_atrib";
     case exo_igualmul:      return "exo_igualmul";
     case exo_igualdiv:      return "exo_igualdiv";
     case exo_igualporcent:  return "exo_igualporcent";

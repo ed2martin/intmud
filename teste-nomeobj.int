@@ -19,7 +19,7 @@ func teste
     msg(arg0 + "\n")
     encontrou = 1
 func sock_msg
-  se arg0 = "fim"
+  se arg0 == "fim"
     terminar
   fimse
   encontrou = 0
@@ -37,7 +37,7 @@ func sock_msg
   teste("porta")
   teste("5")
   teste("5")
-  se encontrou = 0
+  se encontrou == 0
     msg("Nada encontrado\n")
 func iniclasse
   se ![arg0]:porta.abrir("",2000)

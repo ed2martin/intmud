@@ -499,11 +499,12 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_menorigual:   strcpy(nome, " <= "); indica=16; break;
         case exo_maior:        strcpy(nome, " > ");  indica=16; break;
         case exo_maiorigual:   strcpy(nome, " >= "); indica=16; break;
-        case exo_igual:        strcpy(nome, " = ");  indica=16; break;
-        case exo_igual2:       strcpy(nome, " == "); indica=16; break;
+        case exo_igual:        strcpy(nome, " == "); indica=16; break;
+        case exo_igual2:       strcpy(nome, " === "); indica=16; break;
         case exo_diferente:    strcpy(nome, " != "); indica=16; break;
-        case exo_e:            strcpy(nome, " && ");  indica=16; break;
-        case exo_ou:           strcpy(nome, " || ");  indica=16; break;
+        case exo_e:            strcpy(nome, " && "); indica=16; break;
+        case exo_ou:           strcpy(nome, " || "); indica=16; break;
+        case exo_atrib:        strcpy(nome, " = ");  indica=16; break;
         case exo_igualmul:     strcpy(nome, " *= "); indica=16,origem+=2; break;
         case exo_igualdiv:     strcpy(nome, " /= "); indica=16,origem+=2; break;
         case exo_igualporcent: strcpy(nome, " %= "); indica=16,origem+=2; break;
@@ -607,7 +608,9 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         {
             //printf("binário: %s\n", nome); fflush(stdout);
             const char * txtprimeiro = "";
-            int op = Instr::Prioridade(origem[-1]);
+            int op = Instr::Prioridade(origem[-1]); // Prioridade do operador
+            bool dir_esq = (op==20);
+                    // Se processa operador da direita para a esquerda
             assert(op!=0);
         // Recua p2 até operando anterior
             char * p2 = destino-1;
@@ -618,13 +621,13 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             for (; *(unsigned char*)p1>=' '; p1--)
                 assert(p1>dest_ini);
         // Decide se deve colocar p1 entre parênteses
-            if (op < *p1)
+            if (dir_esq ? op <= *p1 : op < *p1)
             {
                 copiaini(nome, ")");
                 txtprimeiro = "(";
             }
         // Decide se deve colocar p2 entre parênteses
-            if (op <= *p2)
+            if (dir_esq ? op < *p2 : op <= *p2)
             {
                 strcat(nome, "(");
                 *destino++=')';

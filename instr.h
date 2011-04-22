@@ -126,7 +126,6 @@ public:
     TVariavel * fimvar; ///< Primeira variável após variáveis locais da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
     char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc 3=criar()
-    bool  igualcompara; ///< Se o sinal de igual compara ou atribui
     char * funcdebug;   ///< Função executada a cada instrução, 0 se nenhuma
     TObjeto * objdebug; ///< Objeto relacionado a funcdebug
 };
@@ -389,11 +388,12 @@ enum Expressao
     exo_menorigual, ///< Operador: a<=b
     exo_maior,      ///< Operador: a>b
     exo_maiorigual, ///< Operador: a>=b
-    exo_igual,      ///< Operador: a=b
-    exo_igual2,     ///< Operador: a==b
+    exo_igual,      ///< Operador: a==b
+    exo_igual2,     ///< Operador: a===b
     exo_diferente,  ///< Operador: a!=b
     exo_e,          ///< Operador: a&b
     exo_ou,         ///< Operador: a|b
+    exo_atrib,      ///< Operador: a=b
     exo_igualmul,   ///< Operador: a*=b   (segue exo_mul, exo_igual)
     exo_igualdiv,   ///< Operador: a/=b   (segue exo_div, exo_igual)
     exo_igualporcent,///< Operador: a%=b  (segue exo_porcent, exo_igual)

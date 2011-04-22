@@ -27,7 +27,7 @@ const descr = "Um pequeno quarto com uma janela e cama."
 const sul = $casa1_sala
 const leste = este # Para aparecer na lista de saídas válidas
 func tr_escr # Exemplo de trigger
-  se(arg1 = $com_move_leste) # Se for o comando leste...
+  se arg1 == $com_move_leste # Se for o comando leste...
     arg0.msg("Impossível; há um abismo nessa direção")
     ret 1 # Interrompe a ação
 

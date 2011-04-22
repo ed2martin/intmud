@@ -304,23 +304,23 @@ static char * anotaModo(char * destino, int modo)
     {
     case exo_igualmul:
         *destino++ = exo_mul;
-        *destino++ = exo_igual;
+        *destino++ = exo_atrib;
         break;
     case exo_igualdiv:
         *destino++ = exo_div;
-        *destino++ = exo_igual;
+        *destino++ = exo_atrib;
         break;
     case exo_igualporcent:
         *destino++ = exo_porcent;
-        *destino++ = exo_igual;
+        *destino++ = exo_atrib;
         break;
     case exo_igualadd:
         *destino++ = exo_add;
-        *destino++ = exo_igual;
+        *destino++ = exo_atrib;
         break;
     case exo_igualsub:
         *destino++ = exo_sub;
-        *destino++ = exo_igual;
+        *destino++ = exo_atrib;
         break;
     }
     return destino;
@@ -1284,9 +1284,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                       sinal=exo_b_shr,origem++;
                   break;
 
-        case '=': sinal=exo_igual;
+        case '=': sinal=exo_atrib;
                   if (origem[1]=='=')
-                      sinal=exo_igual2,origem++;
+                  {
+                      sinal=exo_igual,origem++;
+                      if (origem[1]=='=')
+                          sinal=exo_igual2,origem++;
+                  }
                   break;
 
         case '&': sinal=exo_b_e;
@@ -1314,6 +1318,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 
     // Anota operadores que têm mais prioridade sobre o operador encontrado
         int pri_sinal = Instr::Prioridade(sinal);
+        if (pri_sinal == 20)
+            pri_sinal--;
         while (modo>exo_ini && modo<exo_fim &&
                pri_sinal >= Instr::Prioridade(modo) &&
                destino < dest_fim-3)

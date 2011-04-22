@@ -27,7 +27,7 @@ func tela_msg
 
 func opc_p # Pesquisar arquivos e diretórios
   arqdir d
-  se d.tipo(arg0) = "?"
+  se d.tipo(arg0) == "?"
     msg("Não existe")
     ret 1
   fimse
@@ -50,7 +50,7 @@ func opc_c # Criar diretório
   arqdir d
   txt100 t
   t = d.criardir(arg0)
-  se t = ""
+  se t == ""
     msg("Diretório criado com sucesso: " + arg0)
   senao
     msg("Erro: " + t)
@@ -61,7 +61,7 @@ func opc_d # Apagar diretório
   arqdir d
   txt100 t
   t = d.apagardir(arg0)
-  se t = ""
+  se t == ""
     msg("Diretório apagado com sucesso: " + arg0)
   senao
     msg("Erro: " + t)
@@ -72,7 +72,7 @@ func opc_a # Apagar arquivo
   arqdir d
   txt100 t
   t = d.apagar(arg0)
-  se t = ""
+  se t == ""
     msg("Arquivo apagado com sucesso: " + arg0)
   senao
     msg("Erro: " + t)
@@ -83,7 +83,7 @@ func opc_r # Renomear arquivo
   arqdir d
   txt100 t
   t = d.renomear(txt1(arg0), txt2(arg0))
-  se t = ""
+  se t == ""
     msg("Arquivo renomeado com sucesso: " + txt2(arg0))
   senao
     msg("Erro: " + t)

@@ -1,0 +1,1027 @@
+telatxt = 1
+exec = 30000
+
+classe indiceobj
+# indiceobj é usado da seguinte forma:
+#
+# classe http
+# "h " + identificação do usuário; usado ao enviar mensagens
+#
+# classe maq
+# "mq " + endereço IP = objeto maq usado para banir usuários
+#
+# classe usuario
+# "ac " + apelido codificado por txtnome()
+# "an " + sala + " " + apelido digitado pelo usuário
+# "i " + endereço IP
+#
+# classe sala
+# "sc " + nome codificado por txtnome()
+# "sn " + nome da sala
+#
+# classe bot
+# "bn " + nome do bot = identificação do bot
+# "bs " + nome do bot = sala vai entrar no bot
+# "bu " + nome do bot = usuário vai entrar no bot
+# "bz " + nome do bot = deve avisar que enviou a lista de usuários
+# "b0 " + nome do bot = usuário já entrou no bot
+# "b1 " + nome do bot = sala já entrou no bot
+
+
+classe http
+herda usuario
+comum serv servidor
+socket h_sock # Para comunicação com o navegador
+uint8 h_passo # Passo atual na comunicação; vide funções h_tempo0 a h_tempo4
+textotxt h_txt # Mensagem sendo recebida ou enviada
+inttempo h_tempo # Para não manter conexão aberta por muito tempo
+indiceobj h_cod # Para identificar conexões diferentes via navegador
+uint8 h_digito # Para evitar mesma mensagem repetida
+
+func iniclasse
+  se ![arg0]:servidor.abrir("", 1965)
+    terminar
+
+func servidor_socket # Conectou
+  criar("http", arg0)
+
+func ini # Objeto foi criado
+  h_sock = arg0
+  h_tempo = 100
+
+func fim # Objeto está sendo apagado
+  se h_passo == 4
+    usuario:fim
+
+func h_tempo_exec
+  h_tempo[h_passo]
+
+func h_sock_msg # Recebeu texto do navegador
+  int16 ind
+  se h_passo # Se está respondendo
+    ret
+  senao arg0 == "" # Fim do cabeçalho
+    tempo = 100
+    h_passo = 1
+    h_responde
+    h_sock.msg(h_txt.remove(10) + "\n")
+  senao h_txt.linhas # Após a primeira linha do cabeçalho
+    ret
+  senao txt(arg0, 0, 5) != "GET /" # Só aceita o método GET
+    apagar(este)
+  senao
+    h_txt.addfim(txturldec(txtsub(arg0, 1, 1)))
+
+func h_sock_env # Envia linhas pendentes
+  se h_passo < 2
+    h_sock.msg(h_txt.remove(10) + "\n")
+    se h_txt.linhas == 0
+      apagar(este)
+
+func h_cabehttp # Prepara cabeçalho HTTP
+  h_txt.limpar
+  h_txt.addfim("HTTP/1.0 200 OK")
+  h_txt.addfim("Server: Mini servidor de bate-papo V 1.00")
+  h_txt.addfim("Pragma: no-cache")
+  h_txt.addfim("Cache-Control: max-age=0")
+  h_txt.addfim("Expires: Thu, 01 Jan 1970 00:00:00 GMT")
+  h_txt.addfim("Content-Type: text/html; charset=iso-8859-1")
+  h_txt.addfim("")
+  h_txt.addfim("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">")
+
+func h_responde # Responde a uma requisição HTTP
+# h_txt linha 0 = página
+# h_txt linha 1 em diante = variáveis no formato nome=valor
+# Deve colocar em h_txt o texto que será enviado como resposta
+  txt1 pag
+#telatxt tela
+#tela.msg("Página: " + h_txt.ini.textolin(100) + "\n")
+  pag = h_txt.ini.texto(1, 1)
+  se pag == "c"
+    h_respchat
+  senao pag == "m"
+    h_respmens
+  senao
+    h_respframe
+
+# Primeira página, com dois frames
+func h_respframe
+  txt20 cod
+  datahora dh0
+# Gera um código para a conexão
+  enquanto txt(cod,6) == ""
+    cod += txtchr(rand(26) + 65)
+  efim
+  dh0.agora
+  cod += dh0.numseg
+# Envia página
+  h_cabehttp
+  h_txt.addfim("<html><head><title>Bate-papo</title></head>")
+  h_txt.addfim("<frameset rows=\"*,70\" border=3>")
+  h_txt.addfim("<frame name=chat src=c" + cod + ".html scrolling=auto marginwidth=0")
+  h_txt.addfim("marginheight=0 frameborder=0>")
+  h_txt.addfim("<frame name=mens src=m" + cod + ".html scrolling=no marginwidth=0")
+  h_txt.addfim("marginheight=0 frameborder=0>")
+  h_txt.addfim("</frameset></html>")
+
+# Página para enviar mensagens
+func h_respmens
+  indiceitem ind
+  textopos pos
+  ref r
+  txt30 cod # Identificação da conexão
+  txt20 rolagem # Se tem rolagem automática
+  uint8 digito # Para mesma mensagem várias vezes
+  cod = h_txt.ini.texto(2)
+# Obtém o dígito
+  pos = h_txt.ini, digito = 100
+  se pos.txtproc("\nr=") >= 0
+    digito = pos.texto(2)
+  fimse
+# Mensagem para o usuário
+  pos = h_txt.ini
+  se pos.txtproc("\ntxt=") >= 0
+    r = ind.obj("h " + cod)
+    se r && r.h_digito != digito
+      r.recebeu(pos.texto(4))
+      r.h_digito = digito
+    fimse
+    digito = (digito + 1) % 100
+  fimse
+# Checa se caixa de rolagem automática está ativa
+  pos = h_txt.ini
+  se pos.txtproc("\nrolagem=") >= 0
+    rolagem = "checked"
+  fimse
+# Resposta ao navegador
+  h_cabehttp
+  h_txt.addfim("<html>")
+  h_txt.addfim("<script type=\"text/javascript\" language=\"JavaScript\"><!---")
+  h_txt.addfim("function rolar() {")
+  h_txt.addfim("  return document.forms[0].rolagem.checked;")
+  h_txt.addfim("}")
+  h_txt.addfim("function outros() {")
+  h_txt.addfim("  if (\"0\"==document.forms[0].usr.value.charAt(0))")
+  h_txt.addfim("    document.forms[0].submit();")
+  h_txt.addfim("} //--></script>")
+  h_txt.addfim("<body bgcolor=\"#B0D0E0\" text=\"#000000\"")
+  h_txt.addfim("   OnLoad=\"document.forms[0].txt.focus()\">")
+  h_txt.addfim("<center><form METHOD=get ACTION=m" + cod + ">")
+  h_txt.addfim("<input type=hidden name=r value=" + digito + ">")
+  h_txt.addfim("<table><tr><td>Mensagem </td>")
+  h_txt.addfim("<td><input TYPE=text NAME=txt VALUE=\"\"")
+  h_txt.addfim("   SIZE=60 MAXLENGTH=134563067></td>")
+  h_txt.addfim("<td><input TYPE=submit name=env value=\"Enviar\"></td>")
+  h_txt.addfim("</tr></table><table><tr><td>")
+  h_txt.addfim("<input TYPE=checkbox " + rolagem)
+  h_txt.addfim(" NAME=rolagem value=\"OK\">Rolagem automática")
+  h_txt.addfim("</td></tr></table></form></center></body></html>")
+
+# Página para receber mensagens
+func h_respchat
+  h_cod = "h " + h_txt.ini.texto(2)
+  h_cabehttp
+  h_passo = 2
+  h_tempo = 4
+
+const h_tempo0 = apagar(este) # Passo 0: recebendo mensagem; h_txt=url
+const h_tempo1 = apagar(este) # Passo 1: enviando mensagem; h_txt=mensagem
+
+func h_tempo2 # Passo 2: entrando no bate-papo
+  h_passo += 1
+  h_tempo = 4
+  h_txt.limpar
+  h_txt.addfim("<html><head><meta http-equiv")
+  h_txt.addfim("=\"Pragma\" content=\"no-cache\">")
+  h_txt.addfim("<title>Mensagens</title>")
+  h_txt.addfim("<style TYPE=\"text/css\"><!--")
+  h_txt.addfim("td {")
+  h_txt.addfim(" font-weight: normal;")
+  h_txt.addfim(" padding: 0 4px 0 4px;")
+  h_txt.addfim(" vertical-align: top;")
+  h_txt.addfim(" }")
+  h_txt.addfim("th {")
+  h_txt.addfim(" font-weight: normal;")
+  h_txt.addfim(" font-size: 75%;")
+  h_txt.addfim(" padding: 4px 4px 0 0;")
+  h_txt.addfim(" vertical-align: top;")
+  h_txt.addfim(" }")
+  h_txt.addfim(".pvt {")
+  h_txt.addfim(" background:#B8B8D0;")
+  h_txt.addfim(" border: #404040 solid 1px;")
+  h_txt.addfim(" }")
+  h_txt.addfim(".srv {")
+  h_txt.addfim(" background:#C8D8C8;")
+  h_txt.addfim(" border: #808080 solid 1px;")
+  h_txt.addfim(" }")
+  h_txt.addfim("--></style>")
+  h_txt.addfim("<script type=\"text/javascript\" language=\"JavaScript\"> <!--")
+  h_txt.addfim("function rolagem( ) {")
+  h_txt.addfim(" setTimeout(\"rolagem()\",250);")
+  h_txt.addfim(" if (parent.mens.rolar())")
+  h_txt.addfim("  this.scrollBy(0,15);")
+  h_txt.addfim("}")
+  h_txt.addfim("rolagem();")
+  h_txt.addfim("  // --> </script>")
+  h_txt.addfim("</head>")
+  h_txt.addfim("<body bgcolor=\"#E8E8E8\" text=\"#000000\">")
+  h_sock.msg(h_txt.remove(100) + "\n")
+
+func h_tempo3 # Passo 3: mensagem de entrada no bate-papo
+  h_passo = 4
+  h_tempo = 3000
+  ender_ip = "i " + h_sock.ip
+  usuario:ini
+
+func h_tempo4 # Passo 4: no bate-papo
+  h_sock.msg("\n") # Envia mensagem vazia de tempos em tempos
+  h_tempo = 3000
+
+func msg # Envia mensagem para o usuário
+# arg0 = mensagem
+# arg1 = cor: 0=normal 1=pvt 2=servidor
+  txt512 lin
+  uint16 lido
+  datahora dh0 # Usada para a data e hora
+  dh0.agora
+  h_sock.msg("<table cellspacing=0><tr><th>[")
+  h_sock.msg(txtfim("0" + dh0.hora, 2) + ":" + txtfim("0" + dh0.min, 2))
+  h_sock.msg("]</th>")
+  se arg1 == 1
+    h_sock.msg("<td class=pvt>")
+  senao arg1 == 2
+    h_sock.msg("<td class=srv>")
+  senao
+    h_sock.msg("<td>")
+  fimse
+  enquanto lido < inttotal(arg0)
+    lin = txttroca(txt(arg0, lido, 150), "&", "&amp;")
+    lin = txttroca(lin, "\"", "&quot;")
+    lin = txttroca(lin, "<", "&lt;")
+    lin = txttroca(lin, ">", "&gt;")
+    lin = txttroca(lin, "\n", "<br>")
+    h_sock.msg(lin)
+    lido += 150
+  efim
+  h_sock.msg("</td></tr></table>\n")
+  h_tempo = 3000
+
+func proc_modo
+  msg("Opção não disponível via navegador")
+
+classe telnet
+herda usuario
+comum serv servidor
+socket t_sock # Para comunicação com o navegador
+uint8 t_passo
+inttempo t_tempo # Para não manter conexão aberta por muito tempo
+inttempo t_msgtmp # Tempo para mensagens antigas - Telnet
+textotxt t_msgtxt # Mensagens antigas
+textopos t_msgpos.4 # Posições das mensagens antigas
+int1 t_modo # =0 volta últimas mensagens (telnet) ou 80 colunas (papovox)
+
+func iniclasse
+  se ![arg0]:servidor.abrir("", 1963)
+    terminar
+
+func servidor_socket # Conectou
+  criar("telnet", arg0)
+
+func ini # Objeto foi criado
+  t_sock = arg0
+  t_tempo = 100
+  t_sock.aflooder = 1 # Anti-flooder fraco
+  t_sock.msg("+OK Para Telnet pressione ENTER\n")
+
+func fim # Objeto está sendo apagado
+  se t_passo >= 3
+    usuario:fim
+
+func proc_modo
+  se arg0 == "0"
+    t_modo = 0
+    se t_passo % 2
+      msg("*.Modo 0: Volta últimas mensagens ao pressionar Enter")
+    senao
+      msg("*.Modo 0: Cortando texto em 80 colunas")
+    fimse
+  senao arg0 == "1"
+    t_modo = 1
+    se t_passo % 2
+      msg("*.Modo 1: Não volta últimas mensagens ao pressionar Enter")
+    senao
+      msg("*.Modo 1: Cortando texto em 240 colunas")
+    fimse
+  senao
+    msg("Tecle 0 ou 1 após /modo")
+
+const msg = msg[t_passo](arg0)
+
+func msg3 # Enviar mensagem para Telnet
+  t_sock.msg(arg0 + "\n")
+  se t_modo
+    t_msgtxt.limpar
+  senao
+    t_msgtxt.addfim(arg0)
+    se t_msgtmp == 0
+      t_msgtmp = 10
+      t_msgpos.3 = t_msgtxt.ini
+
+func msg4 # Enviar mensagem para Papovox
+  textotxt t1
+  textotxt t2
+  t1.addfim(arg0)
+  enquanto t1.linhas
+    t2.addfim(t1.remove(1))
+    se t_modo
+      t2.dividelin(233, 238)
+    senao
+      t2.dividelin(73, 78)
+    fimse
+    t_sock.msg(t2.remove(1) + "\n")
+    enquanto t2.linhas
+      t_sock.msg("/ " + t2.remove(1) + "\n")
+    efim
+  efim
+
+func msg5 # Enviar mensagem para Telnet em pausa
+  t_msgtxt.addfim(arg0)
+  se t_msgtxt.bytes >= 4096 # Limite de mensagens pendentes
+    t_sock.msg(t_msgtxt.remove(1000) + "\n")
+    t_passo = 3
+    t_msgtmp = 0
+
+func t_msgtmp_exec # Telnet: apaga mensagens antigas da lista
+  t_msgtxt.remove(t_msgpos.0.linha)
+  t_msgpos.0 = t_msgpos.1
+  t_msgpos.1 = t_msgpos.2
+  t_msgpos.2 = t_msgpos.3
+  t_msgpos.3 = t_msgtxt.fim
+  se t_msgtxt.linhas != 0
+    t_msgtmp = 10
+
+func t_sock_msg
+  t_msg[t_passo](arg0)
+
+func t_msg0 # Esperando definição do protocolo
+  t_tempo = 10
+  se txt1(arg0) == "#bot"
+    bot:novobot(t_sock, txtsub(arg0, 1, 1), txtsub(arg0, 2, 1))
+    t_sock = nulo
+    apagar(este)
+  senao arg0 == ""
+    t_sock.msg("-OK Entrando via Telnet; para sair tecle /sair ou /quit\n")
+    t_passo = 1
+  senao
+    t_sock.msg("+OK Entrando via Papovox\n")
+    t_sock.proto = 5
+    t_passo = 2
+
+func t_msg1 # Entrando via Telnet
+  t_tempo = 3000
+  t_passo = 3
+  ender_ip = "i " + t_sock.ip
+  usuario:ini
+  recebeu(arg0)
+
+func t_msg2 # Entrando via Papovox
+  t_tempo = 3000
+  t_passo = 4
+  ender_ip = "i " + t_sock.ip
+  usuario:ini
+  recebeu(arg0)
+
+func t_msg3 # Conectado via Telnet
+  t_tempo = 3000
+  se arg0 != ""
+    recebeu(arg0)
+  senao
+    t_sock.msg("Tecle\n")
+    t_passo = 5
+    t_msgtmp = 0
+
+func t_msg4 # Conectado via Papovox
+  t_tempo = 3000
+  recebeu(arg0)
+
+func t_msg5 # Conectado via Telnet com pausa nas mensagens
+  se t_msgtxt.linhas != 0
+    t_sock.msg(t_msgtxt.remove(1000) + "\n")
+    t_tempo = 3000
+  fimse
+  t_passo = 3
+  recebeu(arg0)
+
+func t_tempo_exec
+  t_tempo[t_passo]
+
+func t_tempo0 # Esperando definição do protocolo
+  t_sock.msg("-Tempo esgotado\n")
+  apagar(este)
+
+func t_tempo1 # Entrando via Telnet
+  t_tempo = 3000
+  t_passo = 3
+  ender_ip = "i " + t_sock.ip
+  usuario:ini
+
+func t_tempo2 # Entrando via Papovox
+  t_tempo = 3000
+  t_passo = 4
+  ender_ip = "i " + t_sock.ip
+  usuario:ini
+
+func t_tempo3 # Conectado via Telnet
+  t_tempo = 3000
+  t_sock.msg("\n")
+
+const t_tempo4 = t_tempo3 # Conectado via Papovox
+const t_tempo5 = t_tempo3 # Enviando mensagens via Telnet
+
+classe usuario
+comum uint16 usrtotal # Quantidade de usuários
+inttempo aflooder # Contador de anti-flooder
+uint8 pflooder # Passo do anti-flooder; 0=não está na condição de flooder
+indiceobj apelcod # "ac " seguido do apelido codificado por txtnome() ou "" se nenhum
+indiceobj apelsala # "an " seguido da sala, espaço e o apelido digitado pelo usuário
+indiceobj ender_ip # "i " seguido do endereço IP
+indiceobj id_bot # Identificação de bot
+const apelido = txtsub(apelsala, 2) # Apelido digitado pelo usuário
+const sala = txtsub(apelsala, 1, 1) # Sala em que está
+
+func objsala # Retorna objeto sala do usuário
+  indiceitem item
+  ret item.obj("sn " + txtsub(apelsala, 1, 1))
+
+func objbot # Retorna objeto bot do usuário
+  indiceitem item
+  ret item.obj("bn " + txt2(id_bot))
+
+func ini # Usuário entrou
+  indiceitem item
+  ref r
+  txt120 m
+# Checa usuários por máquina
+  item.ini(ender_ip)
+  item.depois(2)
+  se item.txt == ender_ip
+    msg("*.Atingido o limite de usuários por máquina", 2)
+    apagar(este)
+    ret
+  fimse
+# Checa anti-flooder para entrar e se está banido
+  r = item.obj("mq " + txt2(ender_ip))
+  se r == nulo
+    criar("maq", txt2(ender_ip))
+  senao
+    msg(r.msg)
+    apagar(este)
+    ret
+  fimse
+# Mensagem de boas vindas
+  m = "Ao todo: "
+  se usrtotal == 0
+    m += "ninguém"
+  senao usrtotal == 1
+    m += "uma pessoa"
+  senao usrtotal == 2
+    m += "duas pessoas"
+  senao
+    m += txt(usrtotal) + " pessoas"
+  fimse
+  m += ", para detalhes tecle ?quem"
+  se $chat.chattitulo
+    msg($chat.chattitulo + "\n" + m, 2)
+  senao
+    msg(m, 2)
+  fimse
+  msg("Digite seu apelido ou ? para ajuda", 2)
+
+func fim # Usuário saiu
+  se apelcod
+    msg_todos("." + apelido + " Sai da conversação", 2)
+    retirausr
+
+func retirausr # Indica que usuário saiu do chat, mas não envia mensagem
+  se apelcod
+    se txt1(id_bot) == "b0"
+      objbot.msg_saiu("U-" + txt2(apelsala))
+    fimse
+    id_bot = ""
+    apelcod = "", apelsala = "", usrtotal -= 1
+
+func msg_todos # Envia mensagem para todos da mesma sala
+  indiceitem item
+  item.ini(txtsub(apelsala, 0, 2))
+  enquanto item
+    item.obj.msg(arg0, arg1)
+    item.depois
+  efim
+
+func msg_admin # Mensagem da administração (para todos os usuários)
+  indiceitem item
+  item.ini(txt1(apelsala))
+  enquanto item
+    item.obj.msg(arg0, arg1)
+    item.depois
+  efim
+
+func msg_flooder # Acerta anti-flooder conforme mensagem
+# arg0 = tamanho da mensagem
+# Retorna verdadeiro se estiver em condição de flooder
+  se pflooder # Está em flooder
+    pflooder += 1
+    aflooder += 20
+  senao # Não está em flooder
+    aflooder += intpos(arg0 / 2 - 10) + 20
+    se aflooder < 150
+      aflooder = 150
+      ret 0
+    senao aflooder <= 250 # Se não entrou em flooder
+      ret 0
+    fimse
+    pflooder = 1 # Entrou em flooder
+    aflooder = 80
+  fimse
+  se pflooder % 4 == 1
+    msg("*.Anti-flooder: aguarde sem digitar", 2)
+  senao pflooder >= 15
+    banir_flooder
+  fimse
+  ret 1
+
+func banir_flooder # Bane usuário pelo endereço IP
+  txt100 nomes
+  indiceitem item
+  ref r
+  se ender_ip == ""
+    ret
+  fimse
+# Acrescenta na lista de banidos
+  r = item.obj("mq " + txt2(ender_ip))
+  se r == nulo
+    r = criar("maq", txt2(ender_ip))
+  fimse
+  r.banido = 1
+  se r.tempo
+    r.tempo = 6000 # 10 minutos
+  fimse
+# Bane usuários e envia mensagem
+  item.ini(ender_ip)
+  enquanto item.obj.ender_ip == ender_ip
+    r = item.obj, item.depois
+    r.msg("*.Anti-flooder: Você está banido por 10 minutos", 2)
+    apagar(r)
+    se nomes
+      nomes += ", "
+    fimse
+    nomes += r.apelido
+    retirausr
+  efim
+  msg_todos("*.Usuário banido devido a flooder: " + nomes)
+
+func aflooder_exec # Avisa sobre o término do anti-flooder
+  se pflooder
+    pflooder = 0
+    aflooder = 150
+    msg("*.Anti-flooder: pode continuar", 2)
+
+func recebeu # Recebeu mensagem do usuário
+  indiceitem ind
+  txt300 texto # O que o usuário escreveu
+  txt1 id # Identificação de comando
+  texto = txtfiltro(arg0)
+  id = texto
+  se msg_flooder(txttotal(texto)) # Checa anti-flooder
+    ret
+  senao texto == "" # Mensagem vazia
+    ret
+  senao id == "?" # Textos de ajuda
+    se !ajuda_[txt(texto, 1)]
+      msg("> Opção inexistente: " + texto, 2)
+    fimse
+  senao texto == "/sair" || texto == "/quit" # Sair do chat
+    apagar(este)
+  senao apelcod == "" # Entrando com o apelido
+    opcapelido(texto)
+  senao id == "/" # Opções
+    se !opc_[txt1(txt(texto, 1))](txt2(texto))
+      opcpvt(txt(texto,1))
+    fimse
+  senao objbot # Mensagem para bot se há um bot ativo
+    se txt1(id_bot) == "b0"
+      objbot.b_sock.msg("Um" + txt2(apelsala) + " " + arg0 + "\n")
+    fimse
+  senao # Mensagem para todos
+    msg_todos(" " + apelido + ". " + texto)
+
+func ajuda_
+  textotxt t
+  t.addfim("Tecle normalmente para escrever para todos")
+  t.addfim("Para escrever em PVT tecle / ou + seguido do apelido, espaço e")
+  t.addfim("a mensagem. Exemplo:   /joão bom dia")
+  t.addfim("As outras opções são:")
+  t.addfim("?sobre  Para saber sobre o Minichat (versão, autor, etc.)")
+  t.addfim("?b      Comandos para ignorar outros usuários")
+  t.addfim("?admin  Mostra opções da administração")
+  t.addfim("?quem   Informa sobre quem está no bate-papo")
+  t.addfim("?bot    Informa se há bot ativo ou não")
+  t.addfim("/sair ou /quit  Sai do bate-papo")
+  t.addfim("/nome ou /nick seguido de espaço e o apelido você muda de apelido")
+  t.addfim("/modo seguido de espaço e um número, 0 ou 1")
+  t.addfim("Via Papovox 0 divide as mensagens em 80 caracteres e 1 divide em 240.")
+  t.addfim("Os Papovox's antigos têm problemas com mensagens grandes.")
+  t.addfim("Via Telnet 0 repete as últimas mensagens após pressionar ENTER")
+  t.addfim("e 1 não repete. Via navegador não tem significado.")
+  t.addfim("Fim da ajuda")
+  msg(t.remove(100), 2)
+  ret 1
+
+func ajuda_sobre
+  textotxt t
+  t.addfim("Minichat em IntMUD Versão 1.0")
+  t.addfim("Autor: Edward Martin Suli Manias")
+  t.addfim("Principal finalidade do programa")
+  t.addfim("Rodar bots fora do bate-papo da rede SACI (em rede local, por exemplo)")
+  t.addfim("Características")
+  t.addfim("Acesso via navegador, telnet e Papovox; suporte a bots; anti-flooder")
+  t.addfim("Página: http://intervox.nce.ufrj.br/~e2mar/")
+  t.addfim("Veja também:")
+  t.addfim("Bate-papo SACI na Intervox - http://intervox.nce.ufrj.br:1965/")
+  t.addfim("Rede SACI - http://www.saci.org.br")
+  t.addfim("Projeto DOSVOX (onde está o Papovox) - http://intervox.nce.ufrj.br/dosvox/")
+  t.addfim("Fim da ajuda")
+  msg(t.remove(100), 2)
+  ret 1
+
+func ajuda_b
+  textotxt t
+  t.addfim("Para não receber mensagens de alguém, escreva o sinal de +")
+  t.addfim("e o número 0 em pvt para a pessoa. Exemplo:")
+  t.addfim("/fulano+0")
+  t.addfim("Para não receber pvt escreva +1. Exemplo:")
+  t.addfim("/fulano+1")
+  t.addfim("Para voltar a receber mensagens escreva +2. Exemplo:")
+  t.addfim("/fulano+2")
+  t.addfim("Ao bloquear mensagens de alguém a pessoa nunca é notificada, mas")
+  t.addfim("você não poderá escrever em pvt até desbloquear.")
+  t.addfim("A pessoa deixará de ser ignorada se sair da Internet e voltar ou")
+  t.addfim("se você sair do bate-papo.")
+  t.addfim("Tecle ?c para continuar.")
+  msg(t.remove(100), 2)
+  ret 1
+
+func ajuda_c
+  textotxt t
+  t.addfim("Para saber quem você está ignorando (sua lista negra) tecle ?negra")
+  t.addfim("Para saber quem entrou no bate-papo tecle ?entrou")
+  t.addfim("Para saber quem saiu do bate-papo tecle ?saiu")
+  t.addfim("Para saber quem escreveu em pvt para você tecle ?pvt")
+  t.addfim("Para saber quem escreveu para todos tecle ?msg")
+  t.addfim("Para saber quem mudou de apelido tecle ?nome")
+  t.addfim("É apresentada uma lista de pessoas, começando pela letra A. Exemplo:")
+  t.addfim("A Joaquim")
+  t.addfim("B Alex")
+  t.addfim("Assim, é possível não receber mensagens de pessoas que entram e saem")
+  t.addfim("constantemente. Para isso use a letra ao invés do apelido. Exemplo:")
+  t.addfim("/A+0")
+  t.addfim("Neste caso você não receberá mais mensagens de Joaquim. Teclando")
+  t.addfim("/A+2")
+  t.addfim("Você volta a receber mensagens.")
+  t.addfim("Obs. Não é possível enviar mensagens pela letra do usuário.")
+  t.addfim("Fim da ajuda")
+  msg(t.remove(100), 2)
+  ret 1
+
+func ajuda_admin
+  textotxt t
+  t.addfim("As opções de administração só estão disponíveis se você entrar")
+  t.addfim("pelo endereço localhost ou 127.0.0.1 e isso só pode ser feito")
+  t.addfim("na máquina em que este servidor de bate-papo foi executado.")
+  t.addfim("Seguem abaixo as opções")
+  t.addfim("Para mudar a mensagem de entrada tecle /titulo seguido de espaço")
+  t.addfim("e a mensagem.")
+  t.addfim("Para encerrar um bot tecle /bot")
+  t.addfim("Para encerrar o servidor de bate-papo tecle /terminar")
+  t.addfim("Para chutar ou banir um usuário tecle / seguido do apelido e +chutar")
+  t.addfim("ou +banir. Exemplo, para banir fulano tecle /fulano+banir")
+  t.addfim("Pode-se também banir pela letra (das opções ?b e ?c).")
+  t.addfim("Para desbanir primeiro tecle ?banido")
+  t.addfim("Será apresentada uma lista de usuários banidos. Tecle / seguido")
+  t.addfim("da letra do usuário e +desbanir. Exemplo, se aparecer:")
+  t.addfim("A Joaquim")
+  t.addfim("B Alex")
+  t.addfim("Para desbanir Joaquim tecle /a+desbanir")
+  t.addfim("Fim da ajuda")
+  msg(t.remove(100), 2)
+  ret 1
+
+func ajuda_quem
+  indiceitem item
+  textotxt t
+  item.ini("an ")
+  enquanto item
+    t.addfim(item.obj.apelido)
+    item.depois
+  efim
+  se t.linhas
+    t.addini("*.Usuários no bate-papo")
+  senao
+    t.addini("*.Nenhum usuário no bate-papo")
+  fimse
+  msg(t.remove(1000))
+  ret 1
+
+func ajuda_bot
+  se objbot
+    msg("*.Há bot ativo", 2)
+  senao
+    msg("*.Não há bot ativo", 2)
+  fimse
+  ret 1
+
+func opc_modo # Opção /modo
+  proc_modo(arg0)
+  ret 1
+
+func opc_terminar # Encerrar o chat
+  se txt2(ender_ip) != "127.0.0.1"
+    msg("> Você não administra o bate-papo", 2)
+    ret 1
+  fimse
+  msg_admin("*.Bate-papo saindo do ar", 2)
+  terminar
+
+const opc_nick = opc_nome(arg0) # Mudar de apelido
+
+func opc_nome # Mudar de apelido
+  opcapelido(arg0)
+  ret 1
+
+func opc_titulo
+  se txt2(ender_ip) != "127.0.0.1"
+    msg("> Você não administra o bate-papo", 2)
+    ret 1
+  fimse
+  $chat.chattitulo = arg0
+  se $chat.chattitulo
+    msg_admin("*.Título do chat é: " + $chat.chattitulo + " (por " + apelido + ")", 2)
+  senao
+    msg_admin("*.Chat não tem título (por " + apelido + ")", 2)
+  fimse
+  ret 1
+
+func opc_bot
+  se txt2(ender_ip) != "127.0.0.1"
+    msg("> Você não administra o bate-papo", 2)
+  senao !objbot
+    msg("> Não há bot ativo", 2)
+  senao
+    apagar(objbot)
+  fimse
+  ret 1
+
+func opcpvt # Enviar PVT para alguém
+  msg("Enviar pvt: " + arg0)
+  ret 1
+
+func opcapelido # Muda de apelido
+  txt20 texto
+  textopos p
+  texto = txtnome(arg0)
+  p = $chat.comandos.ini
+  se inttotal(arg0) < 3 || inttotal(arg0) > 16
+    msg("> O apelido deve ter de 3 a 16 caracteres; digite outro", 2)
+  senao intnome(arg0) || txtproc(arg0, " ") >= 0
+    msg("> Apelido inválido; digite outro", 2)
+  senao ind.obj("ac " + texto)
+    msg("> Apelido já está sendo usado; digite outro", 2)
+  senao ind.obj("sc " + texto)
+    msg("> Apelido é nome de sala; digite outro", 2)
+  senao p.txtproc("\n" + texto + "\n") >= 0
+    msg("> Apelido é um comando do chat; digite outro", 2)
+  senao apelcod == ""
+    apelcod = "ac " + texto
+    apelsala = "an " + $sala.nome + " " + arg0
+    se $sala.id_bot
+      id_bot = "bu " + txt2($sala.id_bot)
+      objbot.msg_saiu
+    fimse
+    msg_todos("." + arg0 + " Entra na conversação", 2)
+    usrtotal += 1
+  senao
+    se txt1(id_bot) == "b0"
+      objbot.msg_saiu("Ua" + txt2(apelsala) + " " + arg0)
+    fimse
+    apelcod = "ac " + texto
+    texto = txtsub(apelsala, 2)
+    apelsala = txtsub(apelsala, 0, 2) + " " + arg0
+    msg_todos("*.Usuário " + texto + " é conhecido como " + arg0, 2)
+  fimse
+
+
+classe maq
+# Para bloquear por IP e anti-flooder por IP
+indiceobj ender_ip # "mq " seguido do endereço IP
+inttempo tempo # Quanto tempo bloqueado
+func ini
+  tempo = 50
+  ender_ip = "mq " + arg0
+func tempo_exec
+  apagar(este)
+
+func msg # Retorna mensagem que indica porque não pode entrar
+  se tempo == 0
+    ret "*.Você está banido"
+  senao tempo < 60
+    ret "*.Entre daqui a pouco"
+  senao
+    ret "*.Você está banido temporariamente; tente mais tarde"
+
+func criarmaq # Cria objeto maq se necessário
+# arg0 = endereço IP
+# Retorna: objeto maq
+  indiceitem ind
+  ref r
+  r = ind.obj("mq " + arg0)
+  se r == nulo
+    r = criar("maq", arg0)
+  fimse
+  ret r
+
+classe sala
+indiceobj salacod # "sc " seguido do nome codificado por txtnome() ou "" se nenhum
+indiceobj salanome # "sn " seguido do nome da sala
+indiceobj id_bot # Identificação de bot
+const nome = txt2(salanome)
+
+func objbot # Retorna objeto bot da sala
+  indiceitem item
+  ret item.obj("bn " + txt2(id_bot))
+
+func iniclasse
+# Cria uma sala com um nome aleatório
+  txt8 cod
+  cod = "-"
+  enquanto txt(cod,7) == ""
+    cod += txtchr(rand(26) + 65)
+  efim
+  criar(arg0, cod)
+
+func ini
+  salacod = "sc " + txtnome(arg0)
+  salanome = "sn " + arg0
+
+func fim
+  indiceitem item
+  se txt2(id_bot) == nome
+    apagar(objbot)
+  senao txt1(id_bot) == "b1"
+    objbot.saiu("S-" + nome)
+  fimse
+  id_bot = ""
+  item.ini("un " + nome + " ")
+  enquanto item
+    item.obj.id_bot = ""
+  efim
+
+
+classe bot
+socket b_sock
+textotxt msgsai # Mensagens pendentes de saída do bot (salas e usuários)
+indiceobj botnome
+const nome = txt2(botnome)
+
+func novobot # Cria novo bot
+# arg0 = socket
+# arg1 = nome do bot
+# arg2 = senha
+  se arg0.ip != "127.0.0.1"
+    arg0.msg("Só é permitido bots a partir do endereço 127.0.0.1\n")
+  senao
+    $bot.fim # Para avisar que bot foi desativado
+    apagar($bot) # Desativa se houver algum bot ativo
+    criar("bot", arg0, $sala.nome)
+
+func ini # Bot foi criado
+# arg0 = variável socket
+# arg1 = nome do bot
+  indiceitem item
+  ref r
+  b_sock = arg0 # Acerta o socket
+  b_sock.aflooder = 0 # Sem anti-flooder
+  botnome = "bn " + arg1 # Acerta o nome do bot
+  se (r = item.obj("sn " + arg1)) != nulo # Checa se tem uma sala com esse nome
+    r.id_bot = "bs " + arg1 # Ativar bot na sala
+    b_sock_env # Para enviar mensagens pendentes
+
+func fim # Bot desativado
+  indiceitem item
+  ref r
+# Avisa usuários que bot foi desativado
+  enquanto (r = item.obj("b0 " + nome)) != nulo
+    r.id_bot = ""
+    r.msg("*.Bot desativado", 2)
+  efim
+# Desmarca bot das listas
+  fim2("bn " + nome)
+  fim2("bs " + nome)
+  fim2("bu " + nome)
+  fim2("bz " + nome)
+  fim2("b1 " + nome)
+
+func fim2
+  indiceitem item
+  enquanto item.obj(arg0)
+    item.obj(arg0).id_bot = ""
+  efim
+
+func msg_saiu # Adiciona mensagem de usuário ou sala que saiu
+  arg0 && msgsai.addfim(arg0) # Se arg0!="" adiciona mensagem na lista
+  b_sock_env
+
+func b_sock_env # Envia mensagens pendentes
+  indiceitem item
+  ref r
+# Mensagens de saída do bot
+  enquanto msgsai.linhas
+    se !b_sock.msg(msgsai.ini.textolin(10) + "\n")
+      ret
+    fimse
+    msgsai.remove(10)
+  efim
+# Próxima sala entrando no bot
+  se (r = item.obj("bs " + nome)) != nulo
+    se !b_sock.msg("S+" + r.nome + "\n")
+      ret
+    fimse
+    r.id_bot = "bz " + nome
+    item.ini("an " + r.nome + " ") # Usuários da sala
+    enquanto item
+      item.obj.id_bot = "bu " + nome
+      item.depois
+    efim
+  fimse
+# Usuários entrando no bot
+  enquanto (r = item.obj("bu " + nome)) != nulo
+    se !b_sock.msg("U+" + txt2(r.apelsala) + "\n")
+      ret
+    fimse
+    r.id_bot = "b0 " + nome
+    r.msg("*.Bot ativado, quando for desativado tecle ?bot para conferir", 2)
+  efim
+# Salas que entraram no bot (a lista de usuários já foi enviada)
+  enquanto (r = item.obj("bz " + nome)) != nulo
+    se !b_sock.msg("S=" + r.nome + "\n")
+      ret
+    fimse
+    r.id_bot = "b1 " + nome
+  efim
+
+func b_sock_msg # Recebeu mensagem do bot
+  indiceitem item
+  ref r
+  txt20 apelido
+  apelido = txtnome(txt1(arg0))
+  se (r = item.obj("ac " + apelido)) != nulo
+    r.msg(txt2(arg0))
+  senao (r = item.obj("sc " + apelido)) != nulo
+    item.ini("an " + r.nome + " ")
+    enquanto item
+      se txt1(item.obj.id_bot) == "b0"
+        item.obj.msg(txt2(arg0))
+      fimse
+      item.depois
+    efim
+  fimse
+
+
+classe chat
+# Opções comuns do chat
+txt60 chattitulo # Título do chat
+textotxt comandos # Apelidos inválidos porque são comandos do chat
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  prog p
+  chattitulo = "Bem vindo ao Minichat"
+  p.inifunc("usuario", "opc_")
+  enquanto p.lin
+    comandos.addfim(txtnome(txt(p.texto, 4)))
+    p.depois
+  efim
+
+#Falta:
+#anti-flooder para bots
+#comandos de listas de pessoas
+#enviar pvt
+#comandos de ignorar/designorar/banir/desbanir
+
+#>>?entrou
+#*.Entraram no bate-papo
+#A abc
+#>>?saiu
+#*.Saíram do bate-papo
+#Nenhum usuário

@@ -17,7 +17,7 @@ func iniclasse
   criar(arg0)
 
 func ini
-  se tela.proto = 0
+  se tela.proto == 0
     terminar
   fimse
   p = t.ini
@@ -39,7 +39,7 @@ func tela_tecla
 
 func teste1
   arqtxt arq
-  se (!arq.abrir("doc/criar_autoconf.txt", 0))
+  se !arq.abrir("doc/criar_autoconf.txt", 0)
     msg("Erro ao abrir arquivo\n")
   fimse
   msg("Arquivo aberto\n")
@@ -158,7 +158,7 @@ func tecla_L # Ir para uma linha
   ret linha:selec
 
 func tecla_UP
-  se p.linha = 0
+  se p.linha == 0
     msg("\d1Início do arquivo\b\n")
   senao
     p.antes
@@ -178,7 +178,7 @@ func tecla_DOWN
   ret 1
 
 func tecla_PGUP
-  se p.linha = 0
+  se p.linha == 0
     msg("\d1Início do arquivo\b\n")
   senao
     p.antes(10)
@@ -301,7 +301,7 @@ func ler_antigo
 # Apaga última linha se estiver vazia
     p = t.fim
     p.antes
-    se p.texto = ""
+    se p.texto == ""
       p.remove
     fimse
 # Arquivo foi lido
@@ -426,7 +426,7 @@ func tecla_ENTER
   fimse
   numlin = t.Linhas
   t.dividelin(min, max)
-  se t.Linhas = numlin
+  se t.Linhas == numlin
     msg("Nenhuma linha foi dividida\n")
   senao
     msg("Linhas foram divididas\n")
