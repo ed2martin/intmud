@@ -527,6 +527,10 @@ const char * Instr::NomeInstr(const char * instr)
     case cFimSe:            return "fimse";
     case cEnquanto:         return "enquanto";
     case cEFim:             return "efim";
+    case cCasoVar:          return "casovar";
+    case cCasoSe:           return "casose";
+    case cCasoSePadrao:     return "casosepadrao";
+    case cCasoFim:          return "casofim";
     case cRet1:             return "ret";
     case cRet2:             return "ret";
     case cSair:             return "sair";
@@ -607,6 +611,10 @@ const char * Instr::NomeComando(int valor)
     case cFimSe:            return "cFimSe";
     case cEnquanto:         return "cEnquanto";
     case cEFim:             return "cEFim";
+    case cCasoVar:          return "cCasoVar";
+    case cCasoSe:           return "cCasoSe";
+    case cCasoSePadrao:     return "cCasoSePadrao";
+    case cCasoFim:          return "cCasoFim";
     case cRet1:             return "cRet1";
     case cRet2:             return "cRet2";
     case cSair:             return "cSair";

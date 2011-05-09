@@ -230,6 +230,10 @@ void TClasse::AcertaComandos(char * comandos)
 
     char * x;
     int nivelse;
+    char * casopadrao;
+    char * caso1[1024];
+    char * caso2[1024];
+    unsigned int casonum; // Quantidade de variáveis usadas em caso1
 
 // Primeiro zera endereços de desvio
     for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
@@ -240,10 +244,14 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao2:
         case Instr::cEnquanto:
         case Instr::cEFim:
+        case Instr::cCasoVar:
         case Instr::cSair:
         case Instr::cContinuar:
             p[3] = 0;
             p[4] = 0;
+            break;
+        case Instr::cCasoSe:
+            memset(p+3, 0, 4);
         }
 
 // Acerta endereços de desvio conforme instruções
@@ -255,20 +263,21 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao2:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            {
                 if (x[2] >= Instr::cVariaveis)
                     break;
-                else if (x[2]==Instr::cSe)
+                if (x[2]==Instr::cSe)
                     nivelse++;
                 else if (nivelse==0 && (x[2]==Instr::cSenao1 ||
                                         x[2]==Instr::cSenao2))
                     break;
                 else if (x[2]==Instr::cFimSe)
                 {
-                    if (nivelse)
-                        nivelse--;
-                    else
+                    if (nivelse==0)
                         break;
+                    nivelse--;
                 }
+            }
             if (x-p >= 0x10000)
                 x = p+Num16(p);
             p[3] = (x-p);
@@ -277,9 +286,10 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cEnquanto:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            {
                 if (x[2] >= Instr::cVariaveis)
                     break;
-                else if (x[2]==Instr::cEnquanto)
+                if (x[2]==Instr::cEnquanto)
                     nivelse++;
                 else if (x[2]==Instr::cContinuar)
                 {
@@ -291,30 +301,145 @@ void TClasse::AcertaComandos(char * comandos)
                 else if (x[2]==Instr::cEFim)
                 {
                     if (nivelse)
-                        nivelse--;
-                    else
                     {
-                        int valor = x-p;
-                        if (valor>0x10000) valor=0;
-                        x[3] = valor;
-                        x[4] = valor >> 8;
-                        x+=Num16(x);
-                        break;
+                        nivelse--;
+                        continue;
                     }
+                    int valor = x-p;
+                    if (valor>0x10000) valor=0;
+                    x[3] = valor;
+                    x[4] = valor >> 8;
+                    x+=Num16(x);
+                    break;
                 }
+            }
             if (x-p >= 0x10000)
                 x = p+Num16(p);
             p[3] = (x-p);
             p[4] = (x-p)>>8;
+            break;
+        case Instr::cCasoVar:
+            nivelse=0;
+            casopadrao=0;
+            casonum=0;
+            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            {
+                if (x[2] >= Instr::cVariaveis)
+                    break;
+                if (x[2]==Instr::cCasoVar)
+                    nivelse++;
+                else if (x[2]==Instr::cCasoSePadrao)
+                {
+                    if (nivelse==0)
+                        casopadrao=x;
+                }
+                else if (x[2]==Instr::cCasoSe)
+                {
+                    if (nivelse==0 && casonum<sizeof(caso1)/sizeof(caso1[0]))
+                        caso1[casonum++]=x;
+                }
+                else if (x[2]==Instr::cCasoFim)
+                {
+                    if (nivelse)
+                    {
+                        nivelse--;
+                        continue;
+                    }
+                // Acerta casopadrao
+                    if (casopadrao==0)
+                        casopadrao=x;
+                // Verifica se existe algum casose
+                    if (casonum==0)
+                    {
+                        p[3] = (casopadrao-p);
+                        p[4] = (casopadrao-p) >> 8;
+                        break;
+                    }
+                // Organiza caso1 em ordem alfabética; resultado em var1
+                    char ** var1 = caso1;
+                    char ** var2 = caso2;
+                    for (unsigned int a=1; a<casonum; a+=a)
+                    {
+                        char ** pont = var2;
+                        var2 = var1;
+                        var1 = pont;
+                        int lido=0;
+                        for (unsigned int b=0; b<casonum; )
+                        {
+                            unsigned int b1=b, b2=b+a;
+                            b = b2;
+                            while (b1<b && b2<b+a && b2<casonum)
+                            {
+                                if (strcmp(var2[b1] + 7,
+                                        var2[b2] + 7) > 0)
+                                    var1[lido++] = var2[b2++];
+                                else
+                                    var1[lido++] = var2[b1++];
+                            }
+                            while (b1<b && b1<casonum)
+                                var1[lido++] = var2[b1++];
+                            b += a;
+                            while (b2<b && b2<casonum)
+                                var1[lido++] = var2[b2++];
+                        }
+                    }
+                // Obtém e anota a ordem de busca
+                    int meio = casonum/2;
+                    p[3] = (var1[meio]-p);
+                    p[4] = (var1[meio]-p)>>8;
+                    int pont[20][3]; // variável + mínimo + máximo
+                    int total=1;     // Quantidade de variáveis em pont
+                    pont[0][0] = meio; // Aonde anotar
+                    pont[0][1] = 0;     // Menor índice
+                    pont[0][2] = casonum-1; // Maior índice
+                    while (total>0)
+                    {
+                        total--;
+                        int var = pont[total][0];
+                        int min = pont[total][1];
+                        int max = pont[total][2];
+                        int soma;
+                    // Checa antes (valor mínimo)
+                        if (min >= var)
+                            soma = casopadrao - var1[var];
+                        else
+                        {
+                            pont[total][0] = (min+var)/2;
+                            pont[total][1] = min;
+                            pont[total][2] = var-1;
+                            soma = var1[pont[total][0]] - var1[var];
+                            total++;
+                        }
+                        var1[var][3] = soma;
+                        var1[var][4] = soma >> 8;
+                    // Checa depois (valor máximo)
+                        if (var >= max)
+                            soma = casopadrao - var1[var];
+                        else
+                        {
+                            pont[total][0] = (var+max+1)/2;
+                            pont[total][1] = var+1;
+                            pont[total][2] = max;
+                            soma = var1[pont[total][0]] - var1[var];
+                            total++;
+                        }
+                        var1[var][5] = soma;
+                        var1[var][6] = soma >> 8;
+                    }
+                    break;
+                }
+            }
             break;
         case Instr::cSair:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
                 if (x[2] >= Instr::cVariaveis)
                     break;
-                else if (x[2]==Instr::cEnquanto)
+                else if (x[2]==Instr::cEnquanto ||
+                         x[2]==Instr::cCasoVar)
                     nivelse++;
-                else if (x[2]==Instr::cEFim)
+                else if (x[2]==Instr::cEFim ||
+                         x[2]==Instr::cCasoFim)
                 {
                     if (nivelse)
                         nivelse--;
@@ -330,6 +455,41 @@ void TClasse::AcertaComandos(char * comandos)
             p[4] = (x-p)>>8;
             break;
         }
+
+#if 0
+// Mostra instruções com os endereços de desvio
+    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
+    {
+        int pos = p-comandos;
+        char mens[4096];
+        if (Instr::Decod(mens, p, sizeof(mens)))
+            printf("%d  %s", pos, mens);
+        else
+            printf("ERRO  %s", mens);
+        switch (p[2])
+        {
+        case Instr::cSe:
+        case Instr::cSenao1:
+        case Instr::cSenao2:
+        case Instr::cEnquanto:
+        case Instr::cSair:
+            printf("  *** %d", pos+Num16(p+3)); // Para frente
+            break;
+        case Instr::cEFim:
+        case Instr::cContinuar:
+            printf("  *** %d", pos-Num16(p+3)); // Para trás
+            break;
+        case Instr::cCasoVar: // Para frente ou para trás
+            printf("  *** %d", pos+(signed short)Num16(p+3));
+            break;
+        case Instr::cCasoSe:
+            printf("  *** %d  %d", pos+(signed short)Num16(p+3),
+                                   pos+(signed short)Num16(p+5));
+        }
+        putchar('\n');
+    }
+    fflush(stdout);
+#endif
 }
 
 //----------------------------------------------------------------------------

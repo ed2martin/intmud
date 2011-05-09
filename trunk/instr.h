@@ -245,6 +245,10 @@ enum Comando
     cFimSe,         ///< Fluxo:                    fimse
     cEnquanto,      ///< Fluxo: ushort,expressão   enquanto(expressão)
     cEFim,          ///< Fluxo: ushort             efim
+    cCasoVar,       ///< Fluxo: ushort,expressão   casovar
+    cCasoSe,        ///< Fluxo: ushort[2],texto    casose com texto
+    cCasoSePadrao,  ///< Fluxo:                    casose sem texto
+    cCasoFim,       ///< Fluxo:                    casofim
     cRet1,          ///< Fluxo: ret sem argumentos
     cRet2,          ///< Fluxo: ret com expressão numérica
     cSair,          ///< Fluxo: ushort             sair

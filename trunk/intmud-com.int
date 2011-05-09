@@ -96,7 +96,7 @@ func exec # Executa o comando
     arg0.msg("Impossível seguir nessa direção")
   senão arg0.sala.[dir]_agora >= 2
     arg0.msg("A porta está trancada")
-  senão destino = arg0.sala
+  senão destino == arg0.sala
     arg0.msg("Você tenta, mas acaba voltando no mesmo lugar")
   senão
     $mens.p(arg0)

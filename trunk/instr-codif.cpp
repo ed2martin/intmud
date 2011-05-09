@@ -241,6 +241,9 @@ static const TListaInstr ListaInstr[] = {
     { "arqlog",    cArqLog },
     { "arqsav",    cArqSav },
     { "arqtxt",    cArqTxt },
+    { "casofim",   cCasoFim },
+    { "casose",    cCasoSe },
+    { "casovar",   cCasoVar },
     { "const",     cConstExpr }, // Qualquer tipo de const
     { "continuar", cContinuar },
     { "datahora",  cDataHora },
@@ -720,6 +723,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     {
     case cSe:       // Requerem expressão numérica
     case cEnquanto:
+    case cCasoVar:
         destino += 5;
         proc_expr=true;
         break;
@@ -749,14 +753,68 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino += 5;
         break;
     case cFimSe:    // Nenhum byte de dados
+    case cCasoFim:
     case cTerminar:
         destino += 3;
         break;
-    case cExpr:  // Expressão numérica pura
+    case cExpr:     // Expressão numérica pura
         destino += 3;
         proc_expr=true;
         break;
     case cConstExpr: // Variável Const - já foi verificado acima
+        break;
+    case cCasoSe:
+        if (*origem==0 || *origem=='#')
+        {
+            dest_ini[2] = cCasoSePadrao;
+            destino += 3;
+            break;
+        }
+        if (*origem!='\"')
+        {
+            copiastr(dest_ini, "Opção inválida após CASOSE", tamanho);
+            return false;
+        }
+        memset(destino+3, 0, 4);
+        destino += 7;
+        for (origem++; *origem!='\"'; origem++)
+        {
+            if (*origem==0)
+            {
+                copiastr(dest_ini, "Faltou fechar aspas", tamanho);
+                return false;
+            }
+            if (destino >= dest_fim - 2)
+            {
+                copiastr(dest_ini, "Instrução muito grande", tamanho);
+                return false;
+            }
+            if (*origem=='\\')
+            {
+                origem++;
+                switch (*origem)
+                {
+                case 0:
+                    copiastr(dest_ini, "Faltou fechar aspas", tamanho);
+                    return false;
+                case 'N':
+                case 'n': *destino++ = ex_barra_n; break;
+                case 'B':
+                case 'b': *destino++ = ex_barra_b; break;
+                case 'C':
+                case 'c': *destino++ = ex_barra_c; break;
+                case 'D':
+                case 'd': *destino++ = ex_barra_d; break;
+                default:  *destino++ = *origem;
+                }
+                continue;
+            }
+            *destino++ = *origem;
+        }
+        *destino++ = 0;
+        origem++;
+        while (*origem==' ')
+            origem++;
         break;
     default: // Nenhum dos anteriores
         if (dest_ini[2] > cVariaveis)
