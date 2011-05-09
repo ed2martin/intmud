@@ -523,12 +523,62 @@ enquanto <expressão>  ... efim
     a <expressão> novamente.
 
 sair
-    Sai de um laço enquanto.
+    Sai de um laço enquanto ou um laço casovar.
 
 continuar
     Fecha um ciclo de um laço enquanto, como se tivesse chegado na instrução
     efim. A diferença entre continuar e efim é que efim define aonde termina
     o laço.
+
+casovar <expressão> ... casofim
+casose
+casose "texto"
+    Avalia a expressão e transforma em texto. Em seguida, vai para a instrução
+    casose que contém o texto correspondente (letras maiúsculas e minúsculas
+    são consideradas diferentes). Se não encontrar o texto, vai para
+    a instrução casose sem argumentos ou, se essa instrução não existir,
+    vai para o casofim.
+    A instrução sair sai do laço casovar, indo direto para o casofim.
+    Nota: um casovar com vários casose é mais eficiente que várias instruções
+    se e senão.
+
+    Exemplo 1:
+    casovar x
+    casose "abc"
+    msg("x é abc")
+    sair
+    casose "def"
+    msg("x é def")
+    sair
+    casose
+    msg("x não é abc nem def")
+    casofim
+
+    É o mesmo que:
+    se txt(x)==="abc"
+    msg("x é abc")
+    senao txt(x)==="def"
+    msg("x é def")
+    senao
+    msg("x não é abc nem def")
+    fimse
+
+    Exemplo 2:
+    casovar n+2
+    casose "1"
+    casose "2"
+    msg("a")
+    casose "3"
+    msg("b")
+    casofim
+
+    É o mesmo que:
+    se txt(n+2)==="1" || txt(n+2)==="2"
+    msg("a")
+    msg("b")
+    senao txt(n+2)==="3"
+    msg("b")
+    fimse
 
 terminar
     Encerra o programa

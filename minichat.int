@@ -729,7 +729,7 @@ func ajuda_quem
   senao
     t.addini("*.Nenhum usuário no bate-papo")
   fimse
-  msg(t.remove(1000))
+  msg(t.remove(1000), 2)
   ret 1
 
 func ajuda_bot
@@ -787,6 +787,7 @@ func opcpvt # Enviar PVT para alguém
 
 func opcapelido # Muda de apelido
   txt20 texto
+  indiceitem ind
   textopos p
   texto = txtnome(arg0)
   p = $chat.comandos.ini

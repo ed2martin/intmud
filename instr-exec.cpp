@@ -595,6 +595,7 @@ bool Instr::ExecX()
             {
             case cSe:   // Processa expressão numérica
             case cEnquanto:
+            case cCasoVar:
                 FuncAtual->expr = FuncAtual->linha + 5;
                 break;
             case cRet2: // Processa expressão numérica
@@ -629,6 +630,9 @@ bool Instr::ExecX()
                     break;
                 }
             case cFimSe: // Passa para próxima instrução
+            case cCasoSe:
+            case cCasoSePadrao:
+            case cCasoFim:
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 break;
             case cTerminar: // Encerra o programa
@@ -788,6 +792,42 @@ bool Instr::ExecX()
                         FuncAtual->linha += Num16(FuncAtual->linha);
                     else
                         FuncAtual->linha += desvio;
+                    break;
+                }
+            case cCasoVar:
+                {
+                    if (FuncAtual->linha[3]==0 && FuncAtual->linha[4]==0)
+                    {
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                        break;
+                    }
+                    char texto[512];
+                    copiastr(texto, FuncAtual->fimvar->getTxt(), sizeof(texto));
+                    FuncAtual->linha += Num16(FuncAtual->linha + 3);
+                    while (true)
+                    {
+                        if (FuncAtual->linha[0]==0 && FuncAtual->linha[1]==0)
+                            break;
+                        if (FuncAtual->linha[2]==cCasoSePadrao ||
+                            FuncAtual->linha[2]==cCasoFim)
+                        {
+                            FuncAtual->linha += Num16(FuncAtual->linha);
+                            break;
+                        }
+                        if (FuncAtual->linha[2]!=cCasoSe)
+                            break;
+                        int cmp = strcmp(texto, FuncAtual->linha+7);
+                        if (cmp==0)
+                        {
+                            FuncAtual->linha += Num16(FuncAtual->linha);
+                            break;
+                        }
+                        const char * p = FuncAtual->linha+3;
+                        if (cmp>0)
+                            p+=2;
+                        FuncAtual->linha += ((signed char)p[1] * 0x100)
+                                            | (unsigned char)p[0];
+                    }
                     break;
                 }
             default:

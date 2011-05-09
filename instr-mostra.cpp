@@ -35,7 +35,9 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     int  expr=0;   // Índice da expressão numérica, 0=não há
     int  coment=0; // Índice do comentário, 0=não há
     char nome[40]; // Nome da instrução
+    char * perro = destino;
     *nome=0;
+    *destino=0;
 
 // Comentário em variáveis
     if (origem[2] >= cVariaveis)
@@ -54,7 +56,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 while (*p++);
             if (p-origem+10 > tamanho)
             {
-                copiastr(destino, "Espaço insuficiente", tamanho);
+                copiastr(perro, "Espaço insuficiente");
                 return false;
             }
             destino = copiastr(destino, "herda ");
@@ -70,7 +72,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cComent: // Comentário
         if ((int)strlen(origem+3) + 3 > tamanho)
         {
-            copiastr(destino, "Espaço insuficiente", tamanho);
+            copiastr(perro, "Espaço insuficiente");
             return false;
         }
         sprintf(destino, "# %s", origem+3);
@@ -83,6 +85,57 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cFimSe:     strcpy(nome, "fimse"); coment=3; break;
     case cEnquanto:  strcpy(nome, "enquanto"); expr=5; break;
     case cEFim:      strcpy(nome, "efim"); coment=5; break;
+    case cCasoVar:   strcpy(nome, "casovar "); expr=5; break;
+    case cCasoSe:
+        if (tamanho<11)
+        {
+            copiastr(perro, "Espaço insuficiente");
+            return false;
+        }
+        strcpy(destino, "casose \"");
+        tamanho-=8, destino+=8;
+        for (coment=7; origem[coment]; coment++)
+        {
+            if (tamanho<3)
+            {
+                copiastr(perro, "Espaço insuficiente");
+                return false;
+            }
+            switch (origem[coment])
+            {
+            case ex_barra_n:
+                destino[0] = '\\';
+                destino[1] = 'n';
+                destino+=2, tamanho-=2;
+                break;
+            case ex_barra_b:
+                destino[0] = '\\';
+                destino[1] = 'b';
+                destino+=2, tamanho-=2;
+                break;
+            case ex_barra_c:
+                destino[0] = '\\';
+                destino[1] = 'c';
+                destino+=2, tamanho-=2;
+                break;
+            case ex_barra_d:
+                destino[0] = '\\';
+                destino[1] = 'd';
+                destino+=2, tamanho-=2;
+                break;
+            case '\"':
+            case '\\':
+                *destino++='\\', tamanho--;
+            default:
+                *destino++=origem[coment], tamanho--;
+            }
+        }
+        *destino++ = '\"';
+        *destino = 0;
+        coment++;
+        break;
+    case cCasoSePadrao: strcpy(nome, "casose"); coment=3; break;
+    case cCasoFim:   strcpy(nome, "casofim"); coment=3; break;
     case cRet1:      strcpy(nome, "ret"); coment=3; break;
     case cRet2:      strcpy(nome, "ret"); expr=3; break;
     case cSair:      strcpy(nome, "sair"); coment=5; break;
@@ -135,7 +188,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cIndiceItem: strcpy(nome, "indiceitem"); break;
     case cDataHora:  strcpy(nome, "datahora"); break;
     default:
-        copiastr(destino, "Instrução não existe", tamanho);
+        copiastr(perro, "Instrução não existe");
         return false;
     }
 
@@ -144,16 +197,16 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     {
         if ((int)strlen(nome) + (int)strlen(origem+endNome) + 2 > tamanho)
         {
-            copiastr(destino, "Espaço insuficiente", tamanho);
+            copiastr(perro, "Espaço insuficiente");
             return false;
         }
         sprintf(destino, "%s %s", nome, origem+endNome);
     }
-    else
+    else if (*nome)
     {
         if ((int)strlen(nome) + 1 > tamanho)
         {
-            copiastr(destino, "Espaço insuficiente", tamanho);
+            copiastr(perro, "Espaço insuficiente");
             return false;
         }
         strcpy(destino, nome);
@@ -169,7 +222,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         while (origem[expr++]);
         if (tamanho<3)
         {
-            copiastr(destino, "Espaço insuficiente", tamanho);
+            copiastr(perro, "Espaço insuficiente");
             return false;
         }
         strcpy(destino, " =");
@@ -186,7 +239,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         {
             if (total + 5 > tamanho)
             {
-                copiastr(destino, "Espaço insuficiente", tamanho);
+                copiastr(perro, "Espaço insuficiente");
                 return false;
             }
             destino[0] = ' ';
