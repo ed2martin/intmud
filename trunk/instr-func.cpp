@@ -143,7 +143,7 @@ bool Instr::FuncEste(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções que lidam com números (intpos, intabs, int e rand)
+/// Funções que lidam com números (intpos, intabs e int)
 bool Instr::FuncNumero(TVariavel * v, int valor)
 {
     double numero=0;
@@ -171,11 +171,30 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         if (numero <= -0x80000000LL)
             return CriarVarInt(-0x80000000);
         return CriarVarInt((int)numero);
-    case 4: // rand()
-        return CriarVarInt(numero<1 ? 0 :
-                           circle_random() % DoubleToInt(numero));
     }
     return false;
+}
+
+//----------------------------------------------------------------------------
+/// Função rand
+bool Instr::FuncRand(TVariavel * v, int valor)
+{
+    int result = 0;
+    if (VarAtual == v+1)
+    {
+        int max = v[1].getInt();
+        if (max>0)
+            result = circle_random() % max;
+    }
+    else if (VarAtual > v+1)
+    {
+        int min = v[1].getInt();
+        int max = v[2].getInt();
+        if (min < max)
+            result = circle_random() % (max-min+1) + min;
+    }
+    ApagarVar(v);
+    return CriarVarInt(result);
 }
 
 //----------------------------------------------------------------------------
