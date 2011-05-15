@@ -618,6 +618,10 @@ rand(a)
     Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) gera
     um número aleatório de 0 a 9.
 
+rand(a, b)
+    Um número aleatório inteiro, de a a b. Exemplo, rand(2,4) gera
+    um número aleatório de 2 a 4.
+
 ref(a)
     Referência constante; retorna o mesmo objeto que a.
     Se a não for um objeto, retorna nulo.
@@ -1708,8 +1712,8 @@ prog <nomedavariável>
         Retorna 1 se a variável ou função existe ou 0 se não existe.
     arquivo(<nome da classe>)
         Retorna o sufixo do nome do arquivo que contém a classe.
-        Exemplo, "abc" corresponde ao arquivo "intmud-abc.map".
-        Um texto vazio significa arquivo "intmud.map".
+        Exemplo, "abc" corresponde ao arquivo "intmud-abc.int".
+        Um texto vazio significa arquivo "intmud.int".
     vartipo(<nome da classe>, <nome da variável>)
         Retorna o tipo de variável ou "" se a variável não existe.
     varnum(<nome da classe>, <nome da variável>)
@@ -1745,19 +1749,19 @@ prog <nomedavariável>
         Cria uma classe. Se já existia, altera ao invés de criar.
         A primeira linha é o nome da classe.
         A segunda linha de <texto> é o sufixo do nome do arquivo.
-            Exemplo, "abc" corresponde ao arquivo "intmud-abc.map".
-            Um texto vazio corresponde ao arquivo "intmud.map".
+            Exemplo, "abc" corresponde ao arquivo "intmud-abc.int".
+            Um texto vazio corresponde ao arquivo "intmud.int".
         Da terceira linha em diante são as instruções (o contéudo da classe).
         Retorna um texto vazio se conseguiu criar ou a mensagem de erro
         se não conseguiu.
         Exemplo:
             prog p
             p.criar("abc\n\nint8 x\nconst n = 10")
-        Cria a seguinte classe no arquivo intmud.map:
+        Cria a seguinte classe no arquivo intmud.int:
             classe abc
             int8 x
             const n = 10
-        Para criar a mesma classe, mas no arquivo intmud-x.map:
+        Para criar a mesma classe, mas no arquivo intmud-x.int:
             p.criar("abc\nx\nint8 x\nconst n = 10")
     criar(<nome da classe>, <texto>)
         Cria uma função ou variável de uma classe.
