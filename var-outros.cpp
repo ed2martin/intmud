@@ -113,33 +113,115 @@ void TVarRef::Mover(TVarRef * destino)
 }
 
 //------------------------------------------------------------------------------
-int TVarIncDec::getInc()
+int TVarIncDec::getInc(int numfunc)
 {
-    unsigned int v = TempoIni - valor;
+    if (valor < 0)
+        return (numfunc ? -valor : valor);
+    unsigned int v = TempoIni + INTTEMPO_MAX*INTTEMPO_MAX - valor;
     return (v >= INTTEMPO_MAX*INTTEMPO_MAX ? INTTEMPO_MAX*INTTEMPO_MAX-1 : v);
 }
 
 //------------------------------------------------------------------------------
-int TVarIncDec::getDec()
+int TVarIncDec::getDec(int numfunc)
 {
+    if (valor < 0)
+        return (numfunc ? -valor : valor);
     unsigned int v = valor - TempoIni;
     return (v >= INTTEMPO_MAX*INTTEMPO_MAX ? 0 : v);
 }
 
 //------------------------------------------------------------------------------
-void TVarIncDec::setInc(int v)
+void TVarIncDec::setInc(int numfunc, int v)
 {
-    if (v < 0)  v=0;
-    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)  v = INTTEMPO_MAX*INTTEMPO_MAX-1;
-    valor = TempoIni - v;
+// Acerta o sinal se for função abs
+    if (numfunc &&  (getInc(0)<0) != (v<0))
+        v = -v;
+// Contagem parada
+    if (v < 0)
+    {
+        if (v <= -INTTEMPO_MAX*INTTEMPO_MAX)
+            valor = -INTTEMPO_MAX*INTTEMPO_MAX+1;
+        else
+            valor = v;
+        return;
+    }
+// Contagem andando
+    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)
+        v = INTTEMPO_MAX*INTTEMPO_MAX-1;
+    valor = TempoIni + INTTEMPO_MAX*INTTEMPO_MAX - v;
 }
 
 //------------------------------------------------------------------------------
-void TVarIncDec::setDec(int v)
+void TVarIncDec::setDec(int numfunc, int v)
 {
-    if (v < 0)  v=0;
-    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)  v = INTTEMPO_MAX*INTTEMPO_MAX-1;
+// Acerta o sinal se for função abs
+    if (numfunc && (getDec(0)<0) != (v<0))
+        v = -v;
+// Contagem parada
+    if (v < 0)
+    {
+        if (v <= -INTTEMPO_MAX*INTTEMPO_MAX)
+            valor = -INTTEMPO_MAX*INTTEMPO_MAX+1;
+        else
+            valor = v;
+        return;
+    }
+// Contagem andando
+    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)
+        v = INTTEMPO_MAX*INTTEMPO_MAX-1;
     valor = TempoIni + v;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncInc(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "abs")==0)
+    {
+        Instr::ApagarVar(v+1);
+        Instr::VarAtual->numfunc = 1;
+        return true;
+    }
+    if (comparaZ(nome, "pos")==0)
+    {
+        int valor = getInc(0);
+        if (valor<0)
+            setInc(0, -valor);
+        return false;
+    }
+    if (comparaZ(nome, "neg")==0)
+    {
+        int valor = getInc(0);
+        if (valor>0)
+            setInc(0, -valor);
+        return false;
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncDec(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "abs")==0)
+    {
+        Instr::ApagarVar(v+1);
+        Instr::VarAtual->numfunc = 1;
+        return true;
+    }
+    if (comparaZ(nome, "pos")==0)
+    {
+        int valor = getDec(0);
+        if (valor<0)
+            setDec(0, -valor);
+        return false;
+    }
+    if (comparaZ(nome, "neg")==0)
+    {
+        int valor = getDec(0);
+        if (valor>0)
+            setDec(0, -valor);
+        return false;
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -159,7 +241,6 @@ bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
             this[x].valor = TempoIni;
     return false;
 }
-
 //------------------------------------------------------------------------------
 void TVarIntTempo::PreparaIni()
 {
@@ -253,8 +334,10 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
 }
 
 //------------------------------------------------------------------------------
-int TVarIntTempo::getValor()
+int TVarIntTempo::getValor(int numfunc)
 {
+    if (parado)
+        return (numfunc ? -ValorParado : ValorParado);
     if (Antes==0 && VetMenos[IndiceMenos]!=this &&
                     VetMais[IndiceMais]!=this)
         return 0;
@@ -266,27 +349,43 @@ int TVarIntTempo::getValor()
 }
 
 //------------------------------------------------------------------------------
-void TVarIntTempo::setValor(int valor)
+void TVarIntTempo::setValor(int numfunc, int valor)
 {
 // Tira objeto das listas ligadas
 #ifdef DEBUG
     DebugVet(false);
 #endif
-    if (Antes)
-        Antes->Depois = Depois;
-    else if (VetMenos[IndiceMenos]==this)
-        VetMenos[IndiceMenos] = Depois;
-    else if (VetMais[IndiceMais]==this)
-        VetMais[IndiceMais] = Depois;
-    if (Depois)
-        Depois->Antes = Antes, Depois=0;
+// Acerta o sinal se for função abs
+    if (numfunc && (getValor(0)<0) != (valor<0))
+        valor = -valor;
+// Retira da lista
+    if (!parado)
+    {
+        if (Antes)
+            Antes->Depois = Depois;
+        else if (VetMenos[IndiceMenos]==this)
+            VetMenos[IndiceMenos] = Depois;
+        else if (VetMais[IndiceMais]==this)
+            VetMais[IndiceMais] = Depois;
+        if (Depois)
+            Depois->Antes = Antes, Depois=0;
+    }
     Antes = 0;
 #ifdef DEBUG
     DebugVet(false);
 #endif
-// Menos que zero: não está em nenhuma lista
-    if (valor<=0)
+    parado = false;
+// Valores negativos
+    if (valor <= 0)
+    {
+        if (valor==0)
+            return;
+        parado = true;
+        if (valor <= -INTTEMPO_MAX * INTTEMPO_MAX)
+            valor = -INTTEMPO_MAX * INTTEMPO_MAX + 1;
+        ValorParado = valor;
         return;
+    }
 // Valor máximo
     if (valor >= INTTEMPO_MAX * INTTEMPO_MAX)
         valor = INTTEMPO_MAX * INTTEMPO_MAX - 1;
@@ -315,17 +414,20 @@ void TVarIntTempo::setValor(int valor)
 //------------------------------------------------------------------------------
 void TVarIntTempo::Mover(TVarIntTempo * destino)
 {
-    if (Depois)
-        Depois->Antes = destino;
-    if (Antes)
-        Antes->Depois = destino;
-    else if (VetMenos[IndiceMenos]==this)
-        VetMenos[IndiceMenos] = destino;
-    else if (VetMais[IndiceMais]==this)
-        VetMais[IndiceMais] = destino;
+    if (!parado)
+    {
+        if (Depois)
+            Depois->Antes = destino;
+        if (Antes)
+            Antes->Depois = destino;
+        else if (VetMenos[IndiceMenos]==this)
+            VetMenos[IndiceMenos] = destino;
+        else if (VetMais[IndiceMais]==this)
+            VetMais[IndiceMais] = destino;
 #ifdef DEBUG
-    DebugVet(false);
+        DebugVet(false);
 #endif
+    }
     move_mem(destino, this, sizeof(TVarIntTempo));
 }
 
@@ -336,6 +438,32 @@ void TVarIntTempo::EndObjeto(TClasse * c, TObjeto * o)
         endobjeto=o, b_objeto=true;
     else
         endclasse=c, b_objeto=false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::Func(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "abs")==0)
+    {
+        Instr::ApagarVar(v+1);
+        Instr::VarAtual->numfunc = 1;
+        return true;
+    }
+    if (comparaZ(nome, "pos")==0)
+    {
+        int valor = getValor(0);
+        if (valor<0)
+            setValor(0, -valor);
+        return false;
+    }
+    if (comparaZ(nome, "neg")==0)
+    {
+        int valor = getValor(0);
+        if (valor>0)
+            setValor(0, -valor);
+        return false;
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------
