@@ -286,11 +286,11 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         break;
     case Instr::cIntInc:
         for (; antes<depois; antes++)
-            end_incdec[antes].setInc(0);
+            end_incdec[antes].setInc(0, 0);
         break;
     case Instr::cIntDec:
         for (; antes<depois; antes++)
-            end_incdec[antes].setDec(0);
+            end_incdec[antes].setDec(0, 0);
         break;
     case Instr::cArqDir:
         for (; antes<depois; antes++)
@@ -318,7 +318,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
             end_inttempo[antes].EndObjeto(c, o);
         }
         for (; depois<antes; depois++)
-            end_inttempo[depois].setValor(0);
+            end_inttempo[depois].setValor(0, 0);
         break;
     case Instr::cListaObj:
         for (; antes<depois; antes++)
@@ -688,9 +688,9 @@ bool TVariavel::getBool()
     case Instr::cUInt32:
         return end_int[indice];
     case Instr::cIntInc:
-        return end_incdec[indice].getInc();
+        return end_incdec[indice].getInc(numfunc);
     case Instr::cIntDec:
-        return end_incdec[indice].getDec();
+        return end_incdec[indice].getDec(numfunc);
     case Instr::cReal:
         return (end_double[indice] != 0);
     case Instr::cConstNulo:
@@ -745,7 +745,7 @@ bool TVariavel::getBool()
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
-        return end_inttempo[indice].getValor();
+        return end_inttempo[indice].getValor(numfunc);
     case Instr::cTelaTxt:
         return end_telatxt[indice].getValor(numfunc);
     case Instr::cSocket:
@@ -814,9 +814,9 @@ int TVariavel::getInt()
         return (end_uint[indice] > 0x7FFFFFFF ?
                 0x7FFFFFFF : end_uint[indice]);
     case Instr::cIntInc:
-        return end_incdec[indice].getInc();
+        return end_incdec[indice].getInc(numfunc);
     case Instr::cIntDec:
-        return end_incdec[indice].getDec();
+        return end_incdec[indice].getDec(numfunc);
     case Instr::cReal:
         return DoubleToInt(end_double[indice]);
     case Instr::cConstNulo:
@@ -901,7 +901,7 @@ int TVariavel::getInt()
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
-        return end_inttempo[indice].getValor();
+        return end_inttempo[indice].getValor(numfunc);
     case Instr::cTelaTxt:
         return end_telatxt[indice].getValor(numfunc);
     case Instr::cSocket:
@@ -972,9 +972,9 @@ double TVariavel::getDouble()
     case Instr::cUInt32:
         return end_uint[indice];
     case Instr::cIntInc:
-        return end_incdec[indice].getInc();
+        return end_incdec[indice].getInc(numfunc);
     case Instr::cIntDec:
-        return end_incdec[indice].getDec();
+        return end_incdec[indice].getDec(numfunc);
     case Instr::cReal:
         return end_double[indice];
     case Instr::cConstNulo:
@@ -1057,7 +1057,7 @@ double TVariavel::getDouble()
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
-        return end_inttempo[indice].getValor();
+        return end_inttempo[indice].getValor(numfunc);
     case Instr::cTelaTxt:
         return end_telatxt[indice].getValor(numfunc);
     case Instr::cSocket:
@@ -1363,10 +1363,10 @@ void TVariavel::setInt(int valor)
         end_int[indice] = valor;
         break;
     case Instr::cIntInc:
-        end_incdec[indice].setInc(valor);
+        end_incdec[indice].setInc(numfunc, valor);
         break;
     case Instr::cIntDec:
-        end_incdec[indice].setDec(valor);
+        end_incdec[indice].setDec(numfunc, valor);
         break;
     case Instr::cReal:
         end_double[indice] = valor;
@@ -1399,7 +1399,7 @@ void TVariavel::setInt(int valor)
     case Instr::cArqTxt:
         break;
     case Instr::cIntTempo:
-        end_inttempo[indice].setValor(valor);
+        end_inttempo[indice].setValor(numfunc, valor);
         break;
     case Instr::cTelaTxt:
         end_telatxt[indice].setValor(numfunc, valor);
@@ -1777,7 +1777,7 @@ bool TVariavel::Func(const char * nome)
             if (comparaZ(nome, "limpar")==0)
                 for (unsigned int x=0;
                         x<(unsigned char)defvar[Instr::endVetor]; x++)
-                    end_inttempo[x].setValor(0);
+                    end_inttempo[x].setValor(0, 0);
             return false;
         case Instr::cReal:
             if (comparaZ(nome, "limpar")==0)
@@ -1790,6 +1790,12 @@ bool TVariavel::Func(const char * nome)
     }
     switch (defvar[2])
     {
+    case Instr::cIntInc:
+        return end_incdec->FuncInc(this, nome);
+    case Instr::cIntDec:
+        return end_incdec->FuncDec(this, nome);
+    case Instr::cIntTempo:
+        return end_inttempo->Func(this, nome);
     case Instr::cListaObj:
         return end_listaobj[indice].Func(this, nome);
     case Instr::cListaItem:

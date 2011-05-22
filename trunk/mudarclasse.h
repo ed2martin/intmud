@@ -48,7 +48,7 @@ public:
     static TMudarClasse * Inicio; ///< Primeiro item
     static TMudarClasse * Fim;    ///< Último item
 
-// Árvore organizada por TClasse::Nome
+// Árvore organizada por TMudarClasse::Nome
 public:
     void RBinsert(void);        ///< Insere objeto na RBT
     void RBremove(void);        ///< Remove objeto da RBT

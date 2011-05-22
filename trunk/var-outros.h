@@ -23,16 +23,20 @@ public:
 class TVarIncDec /// Variáveis intinc e intdec
 {
 public:
-    int getInc(); ///< Obtém o valor de intinc
-    int getDec(); ///< Obtém o valor de intdec
-    void setInc(int valor); ///< Muda o valor de intinc
-    void setDec(int valor); ///< Muda o valor de intdec
+    int getInc(int numfunc); ///< Obtém o valor de intinc
+    int getDec(int numfunc); ///< Obtém o valor de intdec
+    void setInc(int numfunc, int valor); ///< Muda o valor de intinc
+    void setDec(int numfunc, int valor); ///< Muda o valor de intdec
+    bool FuncInc(TVariavel * v, const char * nome);
+        ///< Funções de intinc
+    bool FuncDec(TVariavel * v, const char * nome);
+        ///< Funções de intdec
     bool FuncVetorInc(TVariavel * v, const char * nome);
         ///< Funções de vetores de intinc
     bool FuncVetorDec(TVariavel * v, const char * nome);
         ///< Funções de vetores de intdec
 private:
-    unsigned int valor; ///< Tempo, usando tanto em intinc quanto em intdec
+    int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };
 
 //----------------------------------------------------------------------------
@@ -43,10 +47,11 @@ public:
     static void PreparaIni();
     static int TempoEspera();
     static void ProcEventos(int TempoDecorrido);
-    int  getValor(); ///< Ler valor da variável
-    void setValor(int valor); ///< Mudar valor da variável
+    int  getValor(int numfunc); ///< Ler valor da variável
+    void setValor(int numfunc, int valor); ///< Mudar valor da variável
     void Mover(TVarIntTempo * destino); ///< Move para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
+    bool Func(TVariavel * v, const char * nome); ///< Funções de inttempo
 
     const char * defvar;///< Como foi definida a variável
     union {
@@ -55,13 +60,17 @@ public:
     };
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
     unsigned char indice;   ///< Índice no vetor
+    bool parado;            ///< Se o contador está parado
 
 private:
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
     unsigned short IndiceMenos;   ///< Índice em VetMenos
     unsigned short IndiceMais;    ///< Índice em VetMais
-    TVarIntTempo * Antes;        ///< Objeto anterior na lista ligada
-    TVarIntTempo * Depois;       ///< Próximo objeto na lista ligada
+    union {
+        TVarIntTempo * Antes;     ///< Objeto anterior na lista ligada
+        int ValorParado;          ///< Valor quando contador está parado
+    };
+    TVarIntTempo * Depois;        ///< Próximo objeto na lista ligada
 
     static unsigned int TempoMenos;  ///< Contagem de tempo com VetMenos
     static unsigned int TempoMais;   ///< Contagem de tempo com VetMais

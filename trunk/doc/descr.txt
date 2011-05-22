@@ -187,12 +187,26 @@ uint16 <nomedavariável>
     Número inteiro de 0 a 65535
 uint32 <nomedavariável>
     Número inteiro de 0 a 4294967295
-intinc <nomedavariável>
-    Número inteiro de 0 a 1048575, que é somado 1 a cada décimo de segundo,
-    até chegar a 1048575 (29 horas, 7 minutos e 37.5 segundos).
 intdec <nomedavariável>
     Número inteiro de 0 a 1048575, que é subtraido 1 a cada décimo
     de segundo, até chegar a 0.
+    intdec aceita valores negativos, mas nesse caso a contagem fica parada.
+    Possui as funções e variáveis:
+    neg = Faz a variável ser menor que zero, multiplicando por -1 se necessário
+    pos = Faz a variável ser maior que zero, multiplicando por -1 se necessário
+    abs = Valor de intdec sem o sinal
+    Exemplo:
+    intdec x
+    x = 10
+    x.neg # Faz x ser negativo; nesse caso faz x=-10
+    n = x.abs # x.abs = 10
+    x.pos # Faz x ser positivo; nesse caso, 10
+    x.abs = 5
+intinc <nomedavariável>
+    Número inteiro de 0 a 1048575, que é somado 1 a cada décimo de segundo,
+    até chegar a 1048575 (29 horas, 7 minutos e 37.5 segundos).
+    intinc aceita valores negativos, mas nesse caso a contagem fica parada.
+    Possui as funções neg, pos e abs, exatamente como intdec (vide acima).
 real
     Corresponde ao tipo "double" em C++
 txt1 a txt512 seguido do nome da variável:
@@ -1496,12 +1510,23 @@ inttempo <nomedavariável>
     do objeto é executada. O nome da função é <nomedavariável>_exec.
     Na função: arg0 = índice da variável vetor, se não for vetor arg0=0
     Nota: o valor 1048575 corresponde a 29 horas, 7 minutos e 37.5 segundos.
+    inttempo aceita valores negativos, mas nesse caso a contagem fica parada.
+    Possui as funções e variáveis:
+    neg = Faz a variável ser menor que zero, multiplicando por -1 se necessário
+    pos = Faz a variável ser maior que zero, multiplicando por -1 se necessário
+    abs = Valor de inttempo sem o sinal
 
     Exemplo:
     classe x
     inttempo n
     func n_exec
       # Essa função é executada quando a variável n chegar a zero
+    func s
+    n = 20 # 20 segundos
+    n.neg # Pára a contagem (n=-20)
+    n.abs = 4 # n passa a ser -4
+    n.pos # Volta a contar (n=4)
+    teste = n.abs # Mesmo que teste=4
 
 telatxt <nome da variável>
     Semelhante a socket, mas trabalha com uma tela de texto, chamada console.
