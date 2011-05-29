@@ -22,7 +22,6 @@ private:
     bool FuncExiste(TVariavel * v); ///< Processa função existe
     bool FuncArquivo(TVariavel * v); ///< Processa função arquivo
     bool FuncVarComum(TVariavel * v); ///< Processa função varcomum
-    bool FuncVarLocal(TVariavel * v); ///< Processa função varlocal
     bool FuncVarSav(TVariavel * v); ///< Processa função varsav
     bool FuncVarNum(TVariavel * v); ///< Processa função varnum
     bool FuncVarTexto(TVariavel * v); ///< Processa função vartexto
