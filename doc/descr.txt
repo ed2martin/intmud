@@ -1734,7 +1734,8 @@ prog <nomedavariável>
     existe(<nome da classe>)
         Retorna 1 se a classe existe ou 0 se não existe.
     existe(<nome da classe>, <nome da variável>)
-        Retorna 1 se a variável ou função existe ou 0 se não existe.
+        Retorna 0 se a variável ou função não existe, 1 se estiver
+        definido na própria classe ou 2 se foi herdada.
     arquivo(<nome da classe>)
         Retorna o sufixo do nome do arquivo que contém a classe.
         Exemplo, "abc" corresponde ao arquivo "intmud-abc.int".
@@ -1755,9 +1756,6 @@ prog <nomedavariável>
         Retorna 1 se variável for sav ou 0 se não for.
     varvetor(<nome da classe>, <nome da variável>)
         Retorna a quantidade de variáveis do vetor ou 0 se não for vetor.
-    varlocal(<nome da classe>, <nome da variável>)
-        Retorna 1 se variável estiver definida na própria classe
-        (não foi herdada) ou 0 se não estiver.
     const(<nome da classe>, <nome da variável>)
         Retorna o texto de uma variável constante do tipo:
         const variável = valor    (nesse caso retorna valor)

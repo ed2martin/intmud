@@ -20,15 +20,12 @@ func tela_msg
     p[txt1(arg0)](txt2(arg0))
   senao
     msg("Classe " + nomeclasse + existe[p.existe(nomeclasse)])
-    msg(" Variável " + arg0 + existe[p.existe(nomeclasse, arg0)] + "\n")
+    msg(" Variável " + arg0 + existe[p.existe(nomeclasse, arg0)+2] + "\n")
     se p.varnum(nomeclasse, arg0)
       msg("constante numérica\n")
     fimse
     se p.vartexto(nomeclasse, arg0)
       msg("constante de texto\n")
-    fimse
-    se p.varlocal(nomeclasse, arg0)
-      msg("(local) ")
     fimse
     se p.varcomum(nomeclasse, arg0)
       msg("(comum) ")
@@ -44,6 +41,9 @@ func tela_msg
     msg("\n")
 const existe0 = " (não existe)"
 const existe1 = " (existe)"
+const existe2 = " (não existe)"
+const existe3 = " (definido na classe)"
+const existe4 = " (herdado)"
 func pFIM
   msg("Programa encerrado\n")
   terminar

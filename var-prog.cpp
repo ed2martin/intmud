@@ -104,7 +104,6 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "salvartudo",   &TVarProg::FuncSalvarTudo },
         { "texto",        &TVarProg::FuncTexto },
         { "varcomum",     &TVarProg::FuncVarComum },
-        { "varlocal",     &TVarProg::FuncVarLocal },
         { "varnum",       &TVarProg::FuncVarNum },
         { "varsav",       &TVarProg::FuncVarSav },
         { "vartexto",     &TVarProg::FuncVarTexto },
@@ -131,16 +130,20 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncExiste(TVariavel * v)
 {
-    bool existe = false;
+    int existe = 0;
     if (Instr::VarAtual >= v+1)
     {
         TClasse * cl = TClasse::Procura(v[1].getTxt());
         if (cl)
         {
             if (Instr::VarAtual == v+1)
-                existe = true;
-            else if (cl->IndiceNome(v[2].getTxt())>=0)
-                existe = true;
+                existe = 1;
+            else
+            {
+                int x = cl->IndiceNome(v[2].getTxt());
+                if (x >= 0)
+                    existe = (cl->IndiceVar[x] & 0x800000 ? 1 : 2);
+            }
         }
     }
     Instr::ApagarVar(v);
@@ -178,26 +181,6 @@ bool TVarProg::FuncVarComum(TVariavel * v)
         int indice = cl->IndiceNome(v[2].getTxt());
         if (indice>=0)
             valor = cl->InstrVar[indice][Instr::endProp] & 1;
-        break;
-    }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
-}
-
-//------------------------------------------------------------------------------
-bool TVarProg::FuncVarLocal(TVariavel * v)
-{
-    bool valor=false;
-    while (true)
-    {
-        if (Instr::VarAtual < v+2)
-            break;
-        TClasse * cl = TClasse::Procura(v[1].getTxt());
-        if (cl==0)
-            break;
-        int indice = cl->IndiceNome(v[2].getTxt());
-        if (indice>=0)
-            valor = cl->IndiceVar[indice] & 0x800000;
         break;
     }
     Instr::ApagarVar(v);
