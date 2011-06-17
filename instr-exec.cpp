@@ -799,10 +799,12 @@ bool Instr::ExecX()
                     if (FuncAtual->linha[3]==0 && FuncAtual->linha[4]==0)
                     {
                         FuncAtual->linha += Num16(FuncAtual->linha);
+                        ApagarVar(FuncAtual->fimvar);
                         break;
                     }
                     char texto[512];
                     copiastr(texto, FuncAtual->fimvar->getTxt(), sizeof(texto));
+                    ApagarVar(FuncAtual->fimvar);
                     FuncAtual->linha += Num16(FuncAtual->linha + 3);
                     while (true)
                     {

@@ -267,7 +267,7 @@ void TArqMapa::SalvarArq(bool tudo)
 #ifdef DEBUG
         printf("TArqMapa::Salvar( %s )\n", arqnome); fflush(stdout);
 #endif
-        if (rename("intmud-temp.txt", arqnome))
+        if (rename("intmud-temp.txt", arqnome) >= 0)
         {
             arqmapa->Existe = true;
             arqmapa->Mudou = false;
