@@ -1786,6 +1786,7 @@ bool Instr::ExecX()
                 VarAtual->Limpar();
                 VarAtual->defvar = defvar;
                 VarAtual->bit = indvar >> 24;
+                VarAtual->numfunc = 0;
                 VarAtual->indice = (defvar[endVetor]==0 ? 0 : 0xFF);
                 if (defvar[2]==cConstTxt || // Constante
                         defvar[2]==cConstNum)

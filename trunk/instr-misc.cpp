@@ -215,6 +215,7 @@ bool Instr::CriarVar(const char * def)
         VarAtual->tamanho = 0;
         VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
         VarAtual->bit = 1;
+        VarAtual->numfunc = 0;
         return true;
     }
 // Acerta alinhamento do endereço da variável
@@ -229,6 +230,7 @@ bool Instr::CriarVar(const char * def)
     VarAtual->defvar = def;
     VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
     VarAtual->bit = 1;
+    VarAtual->numfunc = 0;
     VarAtual->tamanho = VarAtual->Tamanho();
 // Verifica se memória suficiente
     if (p + VarAtual->tamanho > Instr::DadosFim)
