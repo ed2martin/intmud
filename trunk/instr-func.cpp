@@ -357,6 +357,18 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
     else
     {
         while (*txt==' ') txt++;
+        if (VarAtual == v+1) // Um argumento: retorna quantidade de palavras
+        {
+            int total = 0;
+            while (*txt)
+            {
+                while (*txt && *txt!=' ') txt++;
+                while (*txt==' ') txt++;
+                total++;
+            }
+            ApagarVar(v);
+            return CriarVarInt(total);
+        }
             // Avança para início do texto
         while (ini>0 && *txt)
         {
@@ -956,6 +968,69 @@ bool Instr::FuncIntChr(TVariavel * v, int valor)
     }
     ApagarVar(v);
     return CriarVarInt(valor);
+}
+
+//----------------------------------------------------------------------------
+/// intdist - Calcula a distância Levenshtein entre dois textos
+bool Instr::FuncIntDist(TVariavel * v, int valor)
+{
+// Checa quantidade de argumentos
+    if (VarAtual < v+2)
+    {
+        int result = 0;
+        if (VarAtual >= v+1)
+            result = strlen(v[1].getTxt());
+        ApagarVar(v);
+        return CriarVarInt(result);
+    }
+// Variáveis
+    char texto1[1024];
+    char texto2[1024];
+    int  dist[1024];
+    int  tam1,tam2;
+// Obtém os textos
+    texto1[0] = 0;
+    texto2[0] = 0;
+    tam1 = copiastr(texto1+1, v[1].getTxt(), sizeof(texto1)-1) - texto1;
+    tam2 = copiastr(texto2+1, v[2].getTxt(), sizeof(texto2)-1) - texto2;
+    if (valor==0)
+    {
+        for (char * p = texto1+1; *p; p++)
+            *p = tabCOMPLETO[*(unsigned char*)p];
+        for (char * p = texto2+1; *p; p++)
+            *p = tabCOMPLETO[*(unsigned char*)p];
+    }
+    if (valor==1)
+    {
+        for (char * p = texto1+1; *p; p++)
+            *p = tabMAI[*(unsigned char*)p];
+        for (char * p = texto2+1; *p; p++)
+            *p = tabMAI[*(unsigned char*)p];
+    }
+// Obtém a distância
+    for (int x=0; x<tam1; x++)
+        dist[x] = x;
+    for (int c2=1; c2<tam2; c2++)
+    {
+        int antes = dist[0];
+        dist[0] = c2;
+        for (int c1=1; c1<tam1; c1++)
+        {
+            int atual = antes;
+            if (texto1[c1] != texto2[c2])
+            {
+                if (atual > dist[c1-1])
+                    atual = dist[c1-1];
+                if (atual > dist[c1])
+                    atual = dist[c1];
+                atual++;
+            }
+            antes = dist[c1];
+            dist[c1] = atual;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarInt(dist[tam1-1]);
 }
 
 //----------------------------------------------------------------------------
