@@ -676,6 +676,9 @@ txt1(<texto>)
 txt2(<texto>)
     Retorna tudo exceto a primeira palavra do texto.
 
+txtsub(<texto>)
+    Retorna a quantidade de palavras contidas no texto.
+
 txtsub(<texto>, <palavra inicial>)
 txtsub(<texto>, <palavra inicial>, <quantidade de palavras>)
     Retorna um texto que é parte do texto especificado.
@@ -816,6 +819,16 @@ intchr(<texto>, <número do caracter>)
 txtchr(<valor numérico>)
     Retorna o caracter correspondente a um código ASCII, ou um texto
     vazio se não for um código ASCII válido.
+
+intdist(<texto1>, <texto2>)
+    Calcula a distância "Levenshtein" entre os dois textos.
+    Em outras palavras, calcula o quanto os dois textos são diferentes.
+    Retorna a quantidade de mudanças necessárias; 0=textos iguais.
+
+    As funções intdistmai e intdistdif fazem a mesma coisa, exceto que:
+    intdist - considera iguais letras minúsculas, maiúsculas e acentuadas.
+    intdistmai - considera iguais letras maiúsculas e minúsculas.
+    intdistdif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
 txtremove(<texto1>, <texto2>)
     Retorna um texto semelhante a <texto1>, mas removendo espaços e/ou
