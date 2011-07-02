@@ -85,6 +85,10 @@ extern const char InstrVarClasse[];
 extern const char InstrVarObjeto[];
 /// TVariavel::defvar para Instr::cVarInt
 extern const char InstrVarInt[];
+/// TVariavel::defvar para Instr::cListaItem
+extern const char InstrVarListaItem[];
+/// TVariavel::defvar para Instr::cTextoPos
+extern const char InstrVarTextoPos[];
 /// Quantas instruções pode executar antes que o controle retorne ao programa
 extern int VarExec;
 /// Valor inicial de Instr::VarExec quando Instr::ExecIni é executado
@@ -108,10 +112,9 @@ private:
     char esperando;
             /**< O que está esperando:
                 - 0=início do arquivo; pode receber "herda"
-                - 1=nenhuma função definida
-                - 2=instruções e variáveis de uma função
-                - 3=instruções de uma função
-                - 4=após definição de função + definição de constante */
+                - 1=função ou variável (pertencente à classe)
+                - 2=instruções de uma função
+                - 3=após definição de função + definição de constante */
 };
 
 //----------------------------------------------------------------------------
@@ -128,6 +131,7 @@ public:
     TVariavel * fimvar; ///< Primeira variável após variáveis locais da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
     char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc 3=criar()
+    unsigned char indent;///< Para apagar variáveis que saíram do escopo
     char * funcdebug;   ///< Função executada a cada instrução, 0 se nenhuma
     TObjeto * objdebug; ///< Objeto relacionado a funcdebug
 };
@@ -183,10 +187,12 @@ extern ExecFunc * FuncAtual;
 
 enum EndVar
 {
-    endProp=3,
-    endIndice=4,
-    endVetor=5,
-    endNome=6
+    endAlin=3,
+    endProp=4,
+    endIndice=5,
+    endVetor=6,
+    endNome=7,
+    endVar=4
 };
 
 //----------------------------------------------------------------------------
@@ -195,19 +201,20 @@ enum EndVar
     Cada linha de comando é codificada assim:
     - bytes 0,1 = tamanho em bytes; 0 significa fim da lista de comandos
     - byte 2 = comando (vide TComando)
-    - X bytes = dados do comando (depende do comando)
+    - byte 3 (Instr::endAlin) = alinhamento (nível de identação)
+    - X bytes (Instr::endVar) = dados do comando (depende do comando)
     .
 
     A partir de cVariaveis vem as definições de variáveis:
-    - byte 3 (Instr::endProp) = propriedades:
+    - byte 4 (Instr::endProp) = propriedades:
       - bit 0=1 se comum
       - bit 1=1 se sav
       .
-    - byte 4 (Instr::endIndice)
+    - byte 5 (Instr::endIndice)
       - tamanho do texto em cTxt1 e cTxt2
       - índice para os dados extras das variáveis Const
       .
-    - byte 5 (Instr::endVetor)
+    - byte 6 (Instr::endVetor)
       - número de elementos do vetor ou 0 se não for vetor
       .
     - X bytes (Instr::endNome) = nome da variável em ASCIIZ

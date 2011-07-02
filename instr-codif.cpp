@@ -359,8 +359,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     if (*origem=='#')
     {
         destino[2] = cComent;
+        destino[3] = 0;
         for (origem++; *origem==' '; origem++);
-        destino+=3;
+        destino += endVar;
         while (true)
         {
             if (destino >= dest_fim-1)
@@ -380,11 +381,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         return true;
     }
 
-// Obtém a variável/instrução em destino[2] a destino[5]
+// Obtém a variável/instrução em destino[2] a destino[6]
     destino[2] = cExpr;
     destino[3]=0;
     destino[4]=0;
     destino[5]=0;
+    destino[6]=0;
     bool testar_def = true; // Se deve testar se é definição de variável
     {
         const char * p = origem;
@@ -505,8 +507,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 // Instrução Herda
     if (destino[2] == cHerda)
     {
-        destino[3] = 0;
-        destino+=4;
+        destino[endVar] = 0;
+        destino += endVar+1;
     // Obtém as classes
         const char * classes[20]; // nomes das classes
         unsigned int total = 0;
@@ -585,7 +587,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
             destino = copiastr(destino, obj);
             destino++;
-            dest_ini[3]++; // Aumenta o número de classes
+            dest_ini[endVar]++; // Aumenta o número de classes
         // Pula a vírgula
             if (*origem==',')
                 origem++;
@@ -724,41 +726,41 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     case cSe:       // Requerem expressão numérica
     case cEnquanto:
     case cCasoVar:
-        destino += 5;
+        destino += endVar+2;
         proc_expr=true;
         break;
     case cSenao1:   // Pode ter ou não expressão numérica
         if (*origem==0 || *origem=='#')
         {
-            destino+=5;
+            destino+=endVar+2;
             break;
         }
         destino[2] = cSenao2;
-        destino += 5;
+        destino += endVar+2;
         proc_expr=true;
         break;
     case cRet1:     // Pode ter ou não expressão numérica
         if (*origem==0)
         {
-            destino += 3;
+            destino += endVar;
             break;
         }
         destino[2] = cRet2;
-        destino += 3;
+        destino += endVar;
         proc_expr=true;
         break;
     case cEFim:     // Dois bytes de dados
     case cSair:
     case cContinuar:
-        destino += 5;
+        destino += endVar+2;
         break;
     case cFimSe:    // Nenhum byte de dados
     case cCasoFim:
     case cTerminar:
-        destino += 3;
+        destino += endVar;
         break;
     case cExpr:     // Expressão numérica pura
-        destino += 3;
+        destino += endVar;
         proc_expr=true;
         break;
     case cConstExpr: // Variável Const - já foi verificado acima
@@ -767,7 +769,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         if (*origem==0 || *origem=='#')
         {
             dest_ini[2] = cCasoSePadrao;
-            destino += 3;
+            destino += endVar;
             break;
         }
         if (*origem!='\"')
@@ -775,8 +777,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             copiastr(dest_ini, "Opção inválida após CASOSE", tamanho);
             return false;
         }
-        memset(destino+3, 0, 4);
-        destino += 7;
+        memset(destino+endVar, 0, 4);
+        destino += endVar+4;
         for (origem++; *origem!='\"'; origem++)
         {
             if (*origem==0)

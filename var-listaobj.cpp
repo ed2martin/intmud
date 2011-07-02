@@ -37,7 +37,6 @@ TGrupoX * TGrupoX::Disp = 0;
 TGrupoX * TGrupoX::Usado = 0;
 unsigned long TGrupoX::Tempo = 0;
 TListaX * TListaX::EndMover = 0;
-const char ListaItem1[] = { 8, 0, Instr::cListaItem, 0, 0, 0, '+', 0 };
 
 //----------------------------------------------------------------------------
 void TListaObj::Apagar()
@@ -272,7 +271,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "ini")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(ListaItem1))
+        if (!Instr::CriarVar(Instr::InstrVarListaItem))
             return false;
         Instr::VarAtual->end_listaitem->MudarRef(Inicio);
         DEBUG1
@@ -282,7 +281,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "fim")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(ListaItem1))
+        if (!Instr::CriarVar(Instr::InstrVarListaItem))
             return false;
         Instr::VarAtual->end_listaitem->MudarRef(Fim);
         DEBUG1
@@ -316,7 +315,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         if (valor==0)
             return false;
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(ListaItem1))
+        if (!Instr::CriarVar(Instr::InstrVarListaItem))
             return false;
         Instr::VarAtual->end_listaitem->MudarRef(valor);
         return true;
@@ -656,7 +655,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         if (valor==0)
             return false;
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(ListaItem1))
+        if (!Instr::CriarVar(Instr::InstrVarListaItem))
             return false;
         Instr::VarAtual->end_listaitem->MudarRef(valor);
         return true;

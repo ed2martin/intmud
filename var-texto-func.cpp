@@ -23,8 +23,6 @@
 
 //#define DEBUG_TXT // Texto guardado em TTextoTxt
 
-const char TextoItem1[] = { 7, 0, Instr::cTextoPos, 0, 0, 0, '+', 0 };
-
 //----------------------------------------------------------------------------
 #ifdef DEBUG_TXT
 static void DebugTextoTxt(TTextoTxt * txt)
@@ -170,7 +168,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "ini")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(TextoItem1))
+        if (!Instr::CriarVar(Instr::InstrVarTextoPos))
             return false;
         TTextoPos * obj = Instr::VarAtual->end_textopos;
         obj->MudarTxt(this);
@@ -184,7 +182,7 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "fim")==0)
     {
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(TextoItem1))
+        if (!Instr::CriarVar(Instr::InstrVarTextoPos))
             return false;
         TTextoPos * obj = Instr::VarAtual->end_textopos;
         obj->MudarTxt(this);

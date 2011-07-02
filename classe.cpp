@@ -223,6 +223,22 @@ void TClasse::Arquivo(TArqMapa * arquivo)
 }
 
 //----------------------------------------------------------------------------
+bool TClasse::AcertaComandosFim(int valor)
+{
+    switch (valor)
+    {
+    case Instr::cConstNulo:
+    case Instr::cConstTxt:
+    case Instr::cConstNum:
+    case Instr::cConstExpr:
+    case Instr::cFunc:
+    case Instr::cVarFunc:
+        return 1;
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------------------
 void TClasse::AcertaComandos(char * comandos)
 {
     if (comandos==0)
@@ -235,9 +251,48 @@ void TClasse::AcertaComandos(char * comandos)
     char * caso2[1024];
     unsigned int casonum; // Quantidade de variáveis usadas em caso1
 
-// Primeiro zera endereços de desvio
+// Primeiro zera endereços de desvio e alinhamento
+    int indent = 0;
     for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
-        switch (p[2])
+    {
+        switch (p[2]) // Alinhamento
+        {
+        case Instr::cConstNulo:
+        case Instr::cConstTxt:
+        case Instr::cConstNum:
+        case Instr::cConstExpr:
+            p[Instr::endAlin] = 0;
+            indent = 0;
+            break;
+        case Instr::cFunc:
+        case Instr::cVarFunc:
+            p[Instr::endAlin] = 0;
+            indent = 1;
+            break;
+        case Instr::cFimSe:
+        case Instr::cEFim:
+        case Instr::cCasoFim:
+            if (indent > 1)
+                indent--;
+            p[Instr::endAlin] = indent;
+            break;
+        case Instr::cSe:
+        case Instr::cEnquanto:
+        case Instr::cCasoVar:
+            p[Instr::endAlin] = indent;
+            if (indent < 0xFF)
+                indent++;
+            break;
+        case Instr::cSenao1:
+        case Instr::cSenao2:
+        case Instr::cCasoSe:
+        case Instr::cCasoSePadrao:
+            p[Instr::endAlin] = (indent<2 ? 1 : indent-1);
+            break;
+        default:
+            p[Instr::endAlin] = indent;
+        }
+        switch (p[2]) // Endereços de desvio
         {
         case Instr::cSe:
         case Instr::cSenao1:
@@ -247,12 +302,12 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cCasoVar:
         case Instr::cSair:
         case Instr::cContinuar:
-            p[3] = 0;
-            p[4] = 0;
+            memset(p+Instr::endVar, 0, 2);
             break;
         case Instr::cCasoSe:
-            memset(p+3, 0, 4);
+            memset(p+Instr::endVar, 0, 4);
         }
+    }
 
 // Acerta endereços de desvio conforme instruções
     for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
@@ -264,7 +319,7 @@ void TClasse::AcertaComandos(char * comandos)
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
             {
-                if (x[2] >= Instr::cVariaveis)
+                if (AcertaComandosFim(x[2]))
                     break;
                 if (x[2]==Instr::cSe)
                     nivelse++;
@@ -280,14 +335,14 @@ void TClasse::AcertaComandos(char * comandos)
             }
             if (x-p >= 0x10000)
                 x = p+Num16(p);
-            p[3] = (x-p);
-            p[4] = (x-p)>>8;
+            p[Instr::endVar]   = (x-p);
+            p[Instr::endVar+1] = (x-p)>>8;
             break;
         case Instr::cEnquanto:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
             {
-                if (x[2] >= Instr::cVariaveis)
+                if (AcertaComandosFim(x[2]))
                     break;
                 if (x[2]==Instr::cEnquanto)
                     nivelse++;
@@ -295,8 +350,8 @@ void TClasse::AcertaComandos(char * comandos)
                 {
                     int valor = x-p;
                     if (valor>0x10000) valor=0;
-                    x[3] = valor;
-                    x[4] = valor >> 8;
+                    x[Instr::endVar]   = valor;
+                    x[Instr::endVar+1] = valor >> 8;
                 }
                 else if (x[2]==Instr::cEFim)
                 {
@@ -307,16 +362,16 @@ void TClasse::AcertaComandos(char * comandos)
                     }
                     int valor = x-p;
                     if (valor>0x10000) valor=0;
-                    x[3] = valor;
-                    x[4] = valor >> 8;
+                    x[Instr::endVar]   = valor;
+                    x[Instr::endVar+1] = valor >> 8;
                     x+=Num16(x);
                     break;
                 }
             }
             if (x-p >= 0x10000)
                 x = p+Num16(p);
-            p[3] = (x-p);
-            p[4] = (x-p)>>8;
+            p[Instr::endVar]   = (x-p);
+            p[Instr::endVar+1] = (x-p)>>8;
             break;
         case Instr::cCasoVar:
             nivelse=0;
@@ -324,7 +379,7 @@ void TClasse::AcertaComandos(char * comandos)
             casonum=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
             {
-                if (x[2] >= Instr::cVariaveis)
+                if (AcertaComandosFim(x[2]))
                     break;
                 if (x[2]==Instr::cCasoVar)
                     nivelse++;
@@ -351,8 +406,8 @@ void TClasse::AcertaComandos(char * comandos)
                 // Verifica se existe algum casose
                     if (casonum==0)
                     {
-                        p[3] = (casopadrao-p);
-                        p[4] = (casopadrao-p) >> 8;
+                        p[Instr::endVar]   = (casopadrao-p);
+                        p[Instr::endVar+1] = (casopadrao-p) >> 8;
                         break;
                     }
                 // Organiza caso1 em ordem alfabética; resultado em var1
@@ -385,8 +440,8 @@ void TClasse::AcertaComandos(char * comandos)
                     }
                 // Obtém e anota a ordem de busca
                     int meio = casonum/2;
-                    p[3] = (var1[meio]-p);
-                    p[4] = (var1[meio]-p)>>8;
+                    p[Instr::endVar]   = (var1[meio]-p);
+                    p[Instr::endVar+1] = (var1[meio]-p)>>8;
                     int pont[20][3]; // variável + mínimo + máximo
                     int total=1;     // Quantidade de variáveis em pont
                     pont[0][0] = meio; // Aonde anotar
@@ -410,8 +465,8 @@ void TClasse::AcertaComandos(char * comandos)
                             soma = var1[pont[total][0]] - var1[var];
                             total++;
                         }
-                        var1[var][3] = soma;
-                        var1[var][4] = soma >> 8;
+                        var1[var][Instr::endVar]   = soma;
+                        var1[var][Instr::endVar+1] = soma >> 8;
                     // Checa depois (valor máximo)
                         if (var >= max)
                             soma = casopadrao - var1[var];
@@ -423,8 +478,8 @@ void TClasse::AcertaComandos(char * comandos)
                             soma = var1[pont[total][0]] - var1[var];
                             total++;
                         }
-                        var1[var][5] = soma;
-                        var1[var][6] = soma >> 8;
+                        var1[var][Instr::endVar+2] = soma;
+                        var1[var][Instr::endVar+3] = soma >> 8;
                     }
                     break;
                 }
@@ -433,7 +488,7 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSair:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
-                if (x[2] >= Instr::cVariaveis)
+                if (AcertaComandosFim(x[2]))
                     break;
                 else if (x[2]==Instr::cEnquanto ||
                          x[2]==Instr::cCasoVar)
@@ -451,8 +506,8 @@ void TClasse::AcertaComandos(char * comandos)
                 }
             if (x-p >= 0x10000)
                 x = p+Num16(p);
-            p[3] = (x-p);
-            p[4] = (x-p)>>8;
+            p[Instr::endVar]   = (x-p);
+            p[Instr::endVar+1] = (x-p)>>8;
             break;
         }
 
@@ -473,18 +528,18 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao2:
         case Instr::cEnquanto:
         case Instr::cSair:
-            printf("  *** %d", pos+Num16(p+3)); // Para frente
+            printf("  *** %d", pos+Num16(p+Instr::endVar)); // Para frente
             break;
         case Instr::cEFim:
         case Instr::cContinuar:
-            printf("  *** %d", pos-Num16(p+3)); // Para trás
+            printf("  *** %d", pos-Num16(p+Instr::endVar)); // Para trás
             break;
         case Instr::cCasoVar: // Para frente ou para trás
-            printf("  *** %d", pos+(signed short)Num16(p+3));
+            printf("  *** %d", pos+(signed short)Num16(p+Instr::endVar));
             break;
         case Instr::cCasoSe:
-            printf("  *** %d  %d", pos+(signed short)Num16(p+3),
-                                   pos+(signed short)Num16(p+5));
+            printf("  *** %d  %d", pos+(signed short)Num16(p+Instr::endVar),
+                                   pos+(signed short)Num16(p+Instr::endVar+2));
         }
         putchar('\n');
     }
@@ -506,8 +561,8 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
         if ((atual->Comandos[0] || atual->Comandos[1]) &&
              atual->Comandos[2]==Instr::cHerda)
         {
-            const char * p = atual->Comandos+4;
-            int x = (unsigned char)atual->Comandos[3];
+            const char * p = atual->Comandos + Instr::endVar + 1;
+            int x = (unsigned char)atual->Comandos[Instr::endVar];
             for (; x; x--)
             {
             // Obtém a classe herdada
@@ -699,8 +754,8 @@ void TClasse::LimpaInstr()
         assert(cl->Comandos[0] || cl->Comandos[1]);
         assert(cl->Comandos[2] == Instr::cHerda);
     // Obtém o nome dessa classe na instrução herda
-        char * p = cl->Comandos+4;
-        int x = (unsigned char)cl->Comandos[3];
+        char * p = cl->Comandos + Instr::endVar + 1;
+        int x = (unsigned char)cl->Comandos[Instr::endVar];
         for (; x; x--)
         {
             TClasse * c = Procura(p);
@@ -720,8 +775,8 @@ void TClasse::LimpaInstr()
         fim += 2;
     // Retira nome da classe na instrução herda
         int tam_herda;
-        cl->Comandos[3]--;
-        if (cl->Comandos[3])
+        cl->Comandos[Instr::endVar]--;
+        if (cl->Comandos[Instr::endVar])
         {
             tam_herda = strlen(p)+1;
             x = Num16(cl->Comandos) - tam_herda;
@@ -803,8 +858,8 @@ int TClasse::AcertaVar(bool acertaderiv)
             case Instr::cSe:
             case Instr::cSenao1:
             case Instr::cSenao2:
-                assert(p[3] || p[4]);
-                p += Num16(p+3);
+                assert(p[Instr::endVar] || p[Instr::endVar+1]);
+                p += Num16(p+Instr::endVar);
                 break;
             case Instr::cFimSe:
             default:
@@ -847,7 +902,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             case Instr::cSe:
             case Instr::cSenao1:
             case Instr::cSenao2:
-                p += Num16(p+3);
+                p += Num16(p+Instr::endVar);
                 break;
             case Instr::cFimSe:
             default:

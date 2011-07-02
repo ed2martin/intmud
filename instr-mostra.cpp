@@ -51,8 +51,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     {
     case cHerda:         // 1 byte = número de classes
         {
-            const char * p = origem+4;
-            for (int total=(unsigned char)origem[3]; total; total--)
+            const char * p = origem+endVar+1;
+            for (int total=(unsigned char)origem[endVar]; total; total--)
                 while (*p++);
             if (p-origem+10 > tamanho)
             {
@@ -60,32 +60,32 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 return false;
             }
             destino = copiastr(destino, "herda ");
-            for (origem+=4; origem<p; origem++,destino++)
+            for (origem+=endVar+1; origem<p; origem++,destino++)
                 *destino = (*origem==0 ? ',' : *origem);
             destino[-1]=0;
         }
         return true;
     case cExpr:  // Expressão numérica pura
         strcpy(nome, "=");
-        expr=3;
+        expr=endVar;
         break;
     case cComent: // Comentário
-        if ((int)strlen(origem+3) + 3 > tamanho)
+        if ((int)strlen(origem+endVar) + endVar > tamanho)
         {
             copiastr(perro, "Espaço insuficiente");
             return false;
         }
-        sprintf(destino, "# %s", origem+3);
+        sprintf(destino, "# %s", origem + endVar);
         return true;
 
 // Constrole de fluxo
-    case cSe:        strcpy(nome, "se"); expr=5; break;
-    case cSenao1:    strcpy(nome, "senao"); coment=5; break;
-    case cSenao2:    strcpy(nome, "senao"); expr=5; break;
-    case cFimSe:     strcpy(nome, "fimse"); coment=3; break;
-    case cEnquanto:  strcpy(nome, "enquanto"); expr=5; break;
-    case cEFim:      strcpy(nome, "efim"); coment=5; break;
-    case cCasoVar:   strcpy(nome, "casovar "); expr=5; break;
+    case cSe:        strcpy(nome, "se");        expr=endVar+2; break;
+    case cSenao1:    strcpy(nome, "senao");     coment=endVar+2; break;
+    case cSenao2:    strcpy(nome, "senao");     expr=endVar+2; break;
+    case cFimSe:     strcpy(nome, "fimse");     coment=endVar; break;
+    case cEnquanto:  strcpy(nome, "enquanto");  expr=endVar+2; break;
+    case cEFim:      strcpy(nome, "efim");      coment=endVar+2; break;
+    case cCasoVar:   strcpy(nome, "casovar ");  expr=endVar+2; break;
     case cCasoSe:
         if (tamanho<11)
         {
@@ -94,7 +94,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         }
         strcpy(destino, "casose \"");
         tamanho-=8, destino+=8;
-        for (coment=7; origem[coment]; coment++)
+        for (coment=endVar+4; origem[coment]; coment++)
         {
             if (tamanho<3)
             {
@@ -134,13 +134,13 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         *destino = 0;
         coment++;
         break;
-    case cCasoSePadrao: strcpy(nome, "casose"); coment=3; break;
-    case cCasoFim:   strcpy(nome, "casofim"); coment=3; break;
-    case cRet1:      strcpy(nome, "ret"); coment=3; break;
-    case cRet2:      strcpy(nome, "ret"); expr=3; break;
-    case cSair:      strcpy(nome, "sair"); coment=5; break;
-    case cContinuar: strcpy(nome, "continuar"); coment=5; break;
-    case cTerminar:  strcpy(nome, "terminar"); coment=3; break;
+    case cCasoSePadrao: strcpy(nome, "casose"); coment=endVar; break;
+    case cCasoFim:   strcpy(nome, "casofim");   coment=endVar; break;
+    case cRet1:      strcpy(nome, "ret");       coment=endVar; break;
+    case cRet2:      strcpy(nome, "ret");       expr=endVar; break;
+    case cSair:      strcpy(nome, "sair");      coment=endVar+2; break;
+    case cContinuar: strcpy(nome, "continuar"); coment=endVar+2; break;
+    case cTerminar:  strcpy(nome, "terminar");  coment=endVar; break;
 
 // Variáveis
     case cVariaveis: break;
