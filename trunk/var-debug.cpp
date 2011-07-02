@@ -121,6 +121,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         //FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = 0;
         FuncAtual->tipo = 0;
+        FuncAtual->indent = 0;
         FuncAtual->objdebug = FuncAtual[-1].objdebug;
         FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
     // Acerta variáveis
@@ -258,6 +259,7 @@ void TVarDebug::Exec()
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;
     FuncAtual->tipo = 2;
+    FuncAtual->indent = 0;
     FuncAtual->funcdebug = 0;
 
 // Argumento: objeto

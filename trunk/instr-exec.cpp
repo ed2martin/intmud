@@ -213,16 +213,17 @@ Instr::ExecFunc * const Instr::FuncFim = Instr::FuncPilha + 40;
 Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
-const char Instr::InstrNulo[] = { 8, 0, Instr::cConstNulo, 0, 0, 0, '+', 0 };
-const char Instr::InstrDouble[] = { 8, 0, Instr::cReal, 0, 0, 0, '+', 0 };
-const char Instr::InstrSocket[] = { 8, 0, Instr::cSocket, 0, 0, 0, '+', 0 };
-const char Instr::InstrTxtFixo[] = { 8, 0, Instr::cTxtFixo, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarNome[] = { 8, 0, Instr::cVarNome, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarInicio[] = { 8, 0, Instr::cVarInicio, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarClasse[] = { 8, 0, Instr::cVarClasse, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarObjeto[] = { 8, 0, Instr::cVarObjeto, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarInt[] = { 8, 0, Instr::cVarInt, 0, 0, 0, '+', 0 };
-
+const char Instr::InstrNulo[] = { 9, 0, Instr::cConstNulo, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrDouble[] = { 9, 0, Instr::cReal, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrSocket[] = { 9, 0, Instr::cSocket, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrTxtFixo[] = { 9, 0, Instr::cTxtFixo, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarNome[] = { 9, 0, Instr::cVarNome, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarInicio[] = { 9, 0, Instr::cVarInicio, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarClasse[] = { 9, 0, Instr::cVarClasse, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarObjeto[] = { 9, 0, Instr::cVarObjeto, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, 0xFF, 0, 0, 0, '+', 0 };
 //------------------------------------------------------------------------------
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
@@ -346,6 +347,7 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;  // Número de argumentos da função
     FuncAtual->tipo = 0;
+    FuncAtual->indent = 0;
     return true;
 }
 
@@ -572,11 +574,13 @@ bool Instr::ExecX()
                 return true;
             }
 
-        // Variável da função
+        // Apaga variáveis que saíram do escopo
 #ifdef DEBUG_INSTR
             {
                 char mens[4096];
-                printf(">>> %d %d\n", DadosFim-DadosTopo, VarFim-VarAtual);
+                printf(">>> %d %d  ", DadosFim-DadosTopo, VarFim-VarAtual);
+                printf(" %d %d\n", (unsigned char)FuncAtual->linha[endAlin],
+                                FuncAtual->indent);
                 if (Instr::Decod(mens, FuncAtual->linha, sizeof(mens)))
                     printf("Exec: %s\n", mens);
                 else
@@ -584,12 +588,26 @@ bool Instr::ExecX()
                 fflush(stdout);
             }
 #endif
+            while ((unsigned char)FuncAtual->linha[endAlin] < FuncAtual->indent)
+            {
+                //printf("APAGOU %d\n", VarAtual-VarPilha); fflush(stdout);
+                ApagarVar(VarAtual);
+                FuncAtual->fimvar--;
+                if (VarAtual <= FuncAtual->inivar + FuncAtual->numarg)
+                    FuncAtual->indent = 0;
+                else
+                    FuncAtual->indent = VarAtual->defvar[endAlin];
+            }
+
+        // Variável da função
             if (FuncAtual->linha[2] > cVariaveis)
             {
                 if (!CriarVar(FuncAtual->linha))
                     return RetornoErro();
                 FuncAtual->fimvar++;
+                FuncAtual->indent = VarAtual->defvar[endAlin];
                 FuncAtual->linha += Num16(FuncAtual->linha);
+                //printf("CRIOU %d\n", VarAtual-VarPilha); fflush(stdout);
                 continue;
             }
 
@@ -599,13 +617,13 @@ bool Instr::ExecX()
             case cSe:   // Processa expressão numérica
             case cEnquanto:
             case cCasoVar:
-                FuncAtual->expr = FuncAtual->linha + 5;
+                FuncAtual->expr = FuncAtual->linha + endVar + 2;
                 break;
             case cRet2: // Processa expressão numérica
-                FuncAtual->expr = FuncAtual->linha + 3;
+                FuncAtual->expr = FuncAtual->linha + endVar;
                 break;
             case cExpr:
-                FuncAtual->expr = FuncAtual->linha + 3;
+                FuncAtual->expr = FuncAtual->linha + endVar;
                 break;
             case cComent: // Comentário
                 VarExec++;
@@ -615,7 +633,7 @@ bool Instr::ExecX()
             case cSenao2:
             case cSair:
                 {
-                    int desvio = Num16(FuncAtual->linha+3);
+                    int desvio = Num16(FuncAtual->linha + endVar);
                     if (desvio==0)
                         FuncAtual->linha += Num16(FuncAtual->linha);
                     else
@@ -625,7 +643,7 @@ bool Instr::ExecX()
             case cEFim:  // Recua
             case cContinuar:
                 {
-                    int desvio = Num16(FuncAtual->linha+3);
+                    int desvio = Num16(FuncAtual->linha + endVar);
                     if (desvio==0)
                         FuncAtual->linha += Num16(FuncAtual->linha);
                     else
@@ -745,7 +763,7 @@ bool Instr::ExecX()
                     for (TVariavel * v=FuncAtual->fimvar; v<=VarAtual; v++)
                         if (v->getBool()==false)
                         {
-                            desvio = Num16(FuncAtual->linha+3);
+                            desvio = Num16(FuncAtual->linha + endVar);
                             break;
                         }
                     ApagarVar(FuncAtual->fimvar);
@@ -772,7 +790,7 @@ bool Instr::ExecX()
                     }
                     else if (FuncAtual->linha[2]==cSenao2)
                     {
-                        FuncAtual->expr = FuncAtual->linha + 5;
+                        FuncAtual->expr = FuncAtual->linha + endVar + 2;
                         if (FuncAtual->funcdebug)
                             TVarDebug::Exec();
                     }
@@ -787,7 +805,7 @@ bool Instr::ExecX()
                     for (TVariavel * v=FuncAtual->fimvar; v<=VarAtual; v++)
                         if (v->getBool()==false)
                         {
-                            desvio = Num16(FuncAtual->linha+3);
+                            desvio = Num16(FuncAtual->linha + endVar);
                             break;
                         }
                     ApagarVar(FuncAtual->fimvar);
@@ -799,7 +817,8 @@ bool Instr::ExecX()
                 }
             case cCasoVar:
                 {
-                    if (FuncAtual->linha[3]==0 && FuncAtual->linha[4]==0)
+                    if (FuncAtual->linha[endVar]==0 &&
+                        FuncAtual->linha[endVar+1]==0)
                     {
                         FuncAtual->linha += Num16(FuncAtual->linha);
                         ApagarVar(FuncAtual->fimvar);
@@ -808,7 +827,7 @@ bool Instr::ExecX()
                     char texto[512];
                     copiastr(texto, FuncAtual->fimvar->getTxt(), sizeof(texto));
                     ApagarVar(FuncAtual->fimvar);
-                    FuncAtual->linha += Num16(FuncAtual->linha + 3);
+                    FuncAtual->linha += Num16(FuncAtual->linha + endVar);
                     while (true)
                     {
                         if (FuncAtual->linha[0]==0 && FuncAtual->linha[1]==0)
@@ -821,13 +840,13 @@ bool Instr::ExecX()
                         }
                         if (FuncAtual->linha[2]!=cCasoSe)
                             break;
-                        int cmp = strcmp(texto, FuncAtual->linha+7);
+                        int cmp = strcmp(texto, FuncAtual->linha + endVar + 4);
                         if (cmp==0)
                         {
                             FuncAtual->linha += Num16(FuncAtual->linha);
                             break;
                         }
-                        const char * p = FuncAtual->linha+3;
+                        const char * p = FuncAtual->linha + endVar;
                         if (cmp>0)
                             p+=2;
                         FuncAtual->linha += ((signed char)p[1] * 0x100)
@@ -1290,6 +1309,7 @@ bool Instr::ExecX()
                 FuncAtual->fimvar = VarAtual + 1;
                 FuncAtual->numarg = 1;
                 FuncAtual->tipo = 2;
+                FuncAtual->indent = 0;
                 FuncAtual->objdebug = FuncAtual[-1].objdebug;
                 FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                 break;
@@ -1745,6 +1765,7 @@ bool Instr::ExecX()
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     FuncAtual->tipo = 0;
+                    FuncAtual->indent = 0;
                     FuncAtual->objdebug = FuncAtual[-1].objdebug;
                     FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                     break;
@@ -1779,6 +1800,7 @@ bool Instr::ExecX()
                     FuncAtual->fimvar = VarAtual + 1;
                     FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
                     FuncAtual->tipo = 0;
+                    FuncAtual->indent = 0;
                     FuncAtual->objdebug = FuncAtual[-1].objdebug;
                     FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                     break;

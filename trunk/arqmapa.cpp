@@ -142,13 +142,13 @@ void TArqMapa::SalvarArq(bool tudo)
         }
         for (TClasse * cl = arqmapa->ClInicio; cl; cl=cl->ArqDepois)
         {
-            int indent = 0;
             int linhas = 0;
         // Nome da classe
             fprintf(arq, "classe %s\n", cl->Nome);
             for (const char * p = cl->Comandos; p[0] || p[1]; p+=Num16(p))
             {
-        // Obtém indentação (antes)
+        // Obtém tipo de espaçamento de linhas
+                int indent = (unsigned char)p[Instr::endAlin];
                 int tipo=-1;
                 switch (p[2])
                 {
@@ -156,19 +156,11 @@ void TArqMapa::SalvarArq(bool tudo)
                 case Instr::cConstTxt:
                 case Instr::cConstNum:
                 case Instr::cConstExpr:
-                    if (indent>1)
-                        indent=1;
                     tipo=ParamVar;
                     break;
                 case Instr::cFunc:
                 case Instr::cVarFunc:
-                    indent=1;
                     tipo=ParamFunc;
-                    break;
-                case Instr::cFimSe:
-                case Instr::cEFim:
-                    if (indent>1)
-                        indent--;
                     break;
                 default:
                     if (indent==0 && p[2] >= Instr::cVariaveis)
@@ -185,10 +177,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 }
         // Obtém texto correspondente à instrução
                 char mens[8192];
-                int espaco = (indent>0 && p[2]!=Instr::cComent ?
-                              indent-1 : 0) * ParamIndent;
-                if (espaco && (p[2]==Instr::cSenao1 || p[2]==Instr::cSenao2))
-                    espaco -= ParamIndent;
+                int espaco = (p[2]!=Instr::cComent ? indent : 0) * ParamIndent;
                 if (espaco>40)
                     espaco=40;
                 int r = Instr::Decod(mens+4096+espaco, p, 4096-espaco);
@@ -241,19 +230,6 @@ void TArqMapa::SalvarArq(bool tudo)
                 *d = 0;
         // Anota instrução
                 fprintf(arq, "%s", mens);
-        // Obtém indentação (depois)
-                switch (p[2])
-                {
-                case Instr::cFunc:
-                case Instr::cVarFunc:
-                    indent=2;
-                    break;
-                case Instr::cSe:
-                case Instr::cEnquanto:
-                    if (indent)
-                        indent++;
-                    break;
-                }
             }
         // Linhas entre classes
             if (cl->ArqDepois && ParamClasse)

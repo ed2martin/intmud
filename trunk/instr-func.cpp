@@ -105,6 +105,7 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
         FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
         FuncAtual->tipo = 3;
+        FuncAtual->indent = 0;
         FuncAtual->objdebug = FuncAtual[-1].objdebug;
         FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
         return true;
@@ -1305,6 +1306,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 
 // Cabeçalho da instrução
     mens[2] = cConstExpr; // Tipo de instrução
+    mens[Instr::endAlin] = 0;
     mens[Instr::endProp] = 0;
     mens[Instr::endIndice] = Instr::endNome+2; // Aonde começam os dados da constante
     mens[Instr::endVetor] = 0; // Não é vetor
@@ -1479,6 +1481,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;
     FuncAtual->tipo = 0;
+    FuncAtual->indent = 0;
     FuncAtual->objdebug = FuncAtual[-1].objdebug;
     FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
     return true;

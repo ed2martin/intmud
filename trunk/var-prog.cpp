@@ -663,18 +663,6 @@ bool TVarProg::FuncDepois(TVariavel * v)
     case 8:  // inilinha com função
         for (; total>0 && consulta; total--)
         {
-            switch (TextoAtual[2])
-            {
-            case Instr::cFunc:
-            case Instr::cVarFunc:
-                ValorFim=2;
-                break;
-            case Instr::cSe:
-            case Instr::cEnquanto:
-                if (ValorFim)
-                    ValorFim++;
-                break;
-            }
             TextoAtual += Num16(TextoAtual);
             if (TextoAtual[0]==0 && TextoAtual[1]==0)
                 MudaConsulta(0);
@@ -684,23 +672,10 @@ bool TVarProg::FuncDepois(TVariavel * v)
             case Instr::cConstTxt:
             case Instr::cConstNum:
             case Instr::cConstExpr:
-                if (consulta==8)
-                    MudaConsulta(0);
-                else if (ValorFim>1)
-                    ValorFim=1;
-                break;
             case Instr::cFunc:
             case Instr::cVarFunc:
                 if (consulta==8)
                     MudaConsulta(0);
-                else
-                    ValorFim = 1;
-                break;
-            case Instr::cFimSe:
-            case Instr::cEFim:
-                if (ValorFim>1)
-                    ValorFim--;
-                break;
             }
         }
         break;
@@ -775,14 +750,8 @@ bool TVarProg::FuncNivel(TVariavel * v)
     Instr::ApagarVar(v);
     if (!Instr::CriarVarInt(0))
         return false;
-    if ((consulta==7 || consulta==8) && ValorFim>=2)
-    {
-        int valor = ValorFim-1;
-        if (TextoAtual[2]==Instr::cSenao1 || TextoAtual[2]==Instr::cSenao2)
-            valor--;
-        if (valor>0)
-            Instr::VarAtual->setInt(valor);
-    }
+    if (consulta==7 || consulta==8)
+        Instr::VarAtual->setInt((unsigned char)TextoAtual[Instr::endAlin]);
     return true;
 }
 

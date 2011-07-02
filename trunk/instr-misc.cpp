@@ -122,22 +122,19 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
         cod==cConstNum  || cod==cConstExpr)
     {
         if (esperando!=1)
-            esperando=4;
+            esperando=3;
         return 0;
     }
 // Variável
     if (cod >= cVariaveis)
     {
         if (esperando == 3)
-            return "Variável deve ser definida no início da função";
-        if (esperando > 3)
             return "Variável não pertence a uma classe ou uma função";
         return 0;
     }
 // Instrução
-    if (esperando<2 || esperando>3)
+    if (esperando != 2)
         return "Instrução não pertence a uma função";
-    esperando=3;
     return 0;
 }
 
@@ -314,6 +311,7 @@ bool Instr::VarFuncIni(TVariavel * varini)
             FuncAtual->fimvar = VarAtual + 1;
             FuncAtual->numarg = 0;
             FuncAtual->tipo = 1;
+            FuncAtual->indent = 0;
             if (FuncAtual >= FuncPilha)
             {
                 FuncAtual->objdebug = FuncAtual[-1].objdebug;

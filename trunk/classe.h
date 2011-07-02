@@ -111,6 +111,9 @@ public:
         /**< Acerta as instruções que contém desvio implícito, como
              "se", "enquanto", "efim", etc. */
 
+    static bool AcertaComandosFim(int valor);
+        ///< Usado internamente em AcertaComandos() para detectar fim da função
+
 // Variáveis
     int AcertaVar(bool acertaderiv);
         ///< Acerta as variáveis da classe e dos objetos da classe
