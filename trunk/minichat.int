@@ -448,6 +448,9 @@ indiceobj ender_ip # "i " seguido do endereço IP
 indiceobj id_bot # Identificação de bot
 const apelido = txtsub(apelsala, 2) # Apelido digitado pelo usuário
 const sala = txtsub(apelsala, 1, 1) # Sala em que está
+textotxt l_negra # Lista de ?negra
+textotxt l_pvt # Lista de ?pvt
+textotxt l_agora # Lista mostrada ao usuário
 
 func objsala # Retorna objeto sala do usuário
   indiceitem item
@@ -499,6 +502,7 @@ func ini # Usuário entrou
 
 func fim # Usuário saiu
   se apelcod
+    lista_add(objsala.l_saiu)
     msg_todos("." + apelido + " Sai da conversação", 2)
     retirausr
 
@@ -510,11 +514,25 @@ func retirausr # Indica que usuário saiu do chat, mas não envia mensagem
     id_bot = ""
     apelcod = "", apelsala = "", usrtotal -= 1
 
-func msg_todos # Envia mensagem para todos da mesma sala
+func msg_sala # Envia mensagem para todos da mesma sala sem checar lista negra
+# arg0=texto, arg1=tipo de mensagem
   indiceitem item
   item.ini(txtsub(apelsala, 0, 2))
   enquanto item
     item.obj.msg(arg0, arg1)
+    item.depois
+  efim
+
+func msg_todos # Envia mensagem para todos da mesma sala
+# arg0=texto, arg1=tipo de mensagem
+  textopos pos
+  indiceitem item
+  item.ini(txtsub(apelsala, 0, 2))
+  enquanto item
+    pos = item.obj.l_negra.ini
+    se pos.txtproc("\n" + txt(ender_ip, 2) + " ") < 0 || intsub(pos.texto) > 2
+      item.obj.msg(arg0, arg1)
+    fimse
     item.depois
   efim
 
@@ -550,6 +568,14 @@ func msg_flooder # Acerta anti-flooder conforme mensagem
   fimse
   ret 1
 
+func lista_add # Adiciona usuário na lista; arg0=lista
+  textopos pos
+  pos = arg0.ini
+  pos.txtproc("\n" + txt(ender_ip, 2) + " " + apelido + " ") >= 0 && pos.remove
+  pos.txtproc("\n" + txt(ender_ip, 2) + " " + apelido + "\n") >= 0 && pos.remove
+  arg0.addini(txt(ender_ip, 2) + " " + apelido)
+  pos.linha=15, pos.remove
+
 func banir_flooder # Bane usuário pelo endereço IP
   txt100 nomes
   indiceitem item
@@ -578,7 +604,7 @@ func banir_flooder # Bane usuário pelo endereço IP
     nomes += r.apelido
     retirausr
   efim
-  msg_todos("*.Usuário banido devido a flooder: " + nomes)
+  msg_sala("*.Usuário banido devido a flooder: " + nomes, 2)
 
 func aflooder_exec # Avisa sobre o término do anti-flooder
   se pflooder
@@ -587,7 +613,6 @@ func aflooder_exec # Avisa sobre o término do anti-flooder
     msg("*.Anti-flooder: pode continuar", 2)
 
 func recebeu # Recebeu mensagem do usuário
-  indiceitem ind
   txt300 texto # O que o usuário escreveu
   txt1 id # Identificação de comando
   texto = txtfiltro(arg0)
@@ -605,15 +630,113 @@ func recebeu # Recebeu mensagem do usuário
   senao apelcod == "" # Entrando com o apelido
     opcapelido(texto)
   senao id == "/" # Opções
-    se !opc_[txt1(txt(texto, 1))](txt2(texto))
-      opcpvt(txt(texto,1))
+    int16 mais
+    mais = txtproc(texto, "+")
+    se mais >= 1 && (mais < txtproc(texto, " ") || txt2(texto) == "")
+      opcpvt(txt(texto, 1, mais-1), txt(texto, mais))
+    senao
+      opcpvt(txt(txt1(texto), 1), txt2(texto))
     fimse
+    esp = txtproc(texto, " ")
   senao objbot # Mensagem para bot se há um bot ativo
     se txt1(id_bot) == "b0"
       objbot.b_sock.msg("Um" + txt2(apelsala) + " " + arg0 + "\n")
     fimse
   senao # Mensagem para todos
+    lista_add(objsala.l_msg)
     msg_todos(" " + apelido + ". " + texto)
+
+func opcpvt # Comandos começados com barra
+  indiceitem ind
+  textopos pos
+  txt100 texto
+  ref r
+# opc_[comando] = /comando texto (ex. /modo)
+  se opc_[arg0](arg1)
+    ret
+  fimse
+# Letra A-Z: usuário em uma lista
+  se inttotal(arg0) == 1 && arg0 >= "A" && arg0 <= "Z"
+    pos = l_agora.ini
+    pos.depois(intchr(txtmai(arg0)) - 65)
+    se !pos.lin
+      msg("> Usuário inexistente na lista: " + arg0, 2)
+      ret
+    fimse
+    texto = pos.texto
+    casovar txtmin(arg1)
+    casose "+2"
+      pos = l_negra.ini
+      pos.txtproc("\n" + txt1(texto) + " ") >= 0 && pos.remove
+      msg("*.Você recebe mensagens de " + txtsub(texto, 1, 1), 2)
+      ret
+    casose "+1"
+      pos = l_negra.ini
+      pos.txtproc("\n" + txt1(texto) + " ") >= 0 && pos.remove
+      l_negra.addini(txtsub(texto, 0, 2) + " (pvt)")
+      pos.linha = 15, pos.remove
+      msg("*.Você não recebe PVT de " + txtsub(texto, 1, 1), 2)
+      ret
+    casose "+0"
+      pos = l_negra.ini
+      pos.txtproc("\n" + txt1(texto) + " ") >= 0 && pos.remove
+      l_negra.addini(txtsub(texto, 0, 2))
+      pos.linha = 15, pos.remove
+      msg("*.Você não recebe mensagens de " + txtsub(texto, 1, 1), 2)
+      ret
+    casose
+      msg("Opção inexistente: /" + arg0 + " " + arg1)
+    casofim
+    ret
+  fimse
+# Usuários
+  texto = txtnome(arg0)
+  se (r = ind.obj("ac " + texto)) != nulo
+# usr_[comando](usuário) = /usuário +comando
+    se txt(arg1, 0, 1) == "+" && usr_[txt(txt(arg1), 1)](r, txt2(arg1))
+      ret
+    fimse
+# Checa se está ignorando usuário
+    pos = l_negra.ini
+    se pos.txtproc("\n" + txt(r.ender_ip, 2) + " ") >= 0
+      msg("> Usuário está sendo ignorado por você", 2)
+      ret
+    fimse
+# Checa se pode enviar PVT e envia
+    pos = r.l_negra.ini
+    se pos.txtproc("\n" + txt(ender_ip, 2) + " ") < 0
+      r.msg(" " + apelido + "(pvt). " + arg1)
+      lista_add(r.l_pvt)
+    fimse
+    ret
+  fimse
+# Inexistente
+  msg("> Usuário ou sala inexistente: " + arg0)
+
+func usr_2 # /usuário +2
+  textopos pos
+  pos = l_negra.ini
+  pos.txtproc("\n" + txt(arg0.ender_ip, 2) + " ") >= 0 && pos.remove
+  msg("*.Você recebe mensagens de " + arg0.apelido, 2)
+  ret 1
+
+func usr_1 # /usuário +1
+  textopos pos
+  pos = l_negra.ini
+  pos.txtproc("\n" + txt(arg0.ender_ip, 2) + " ") >= 0 && pos.remove
+  l_negra.addini(txt(arg0.ender_ip, 2) + " " + arg0.apelido + " (pvt)")
+  pos.linha = 15, pos.remove
+  msg("*.Você não recebe PVT de " + arg0.apelido, 2)
+  ret 1
+
+func usr_0 # /usuário +0
+  textopos pos
+  pos = l_negra.ini
+  pos.txtproc("\n" + txt(arg0.ender_ip, 2) + " ") >= 0 && pos.remove
+  l_negra.addini(txt(arg0.ender_ip, 2) + " " + arg0.apelido)
+  pos.linha = 15, pos.remove
+  msg("*.Você não recebe mensagens de " + arg0.apelido, 2)
+  ret 1
 
 func ajuda_
   textotxt t
@@ -740,6 +863,33 @@ func ajuda_bot
   fimse
   ret 1
 
+const ajuda_negra = l_mostra(l_negra, "*.Usuários ignorados")
+const ajuda_pvt = l_mostra(l_pvt, "*.Escreveram em pvt")
+const ajuda_entrou = l_mostra(objsala.l_entrou, "*.Entraram no bate-papo")
+const ajuda_saiu = l_mostra(objsala.l_saiu, "*.Saídam do bate-papo")
+const ajuda_msg = l_mostra(objsala.l_msg, "*.Escreveram para todos")
+const ajuda_nome = l_mostra(objsala.l_nome, "*.Mudaram de apelido")
+const ajuda_banido = l_mostra(objsala.l_banido, "*.Banidos do bate-papo")
+
+func l_mostra # Mostra lista ao usuário
+# arg0=lista, arg1=mensagem
+  textopos pos
+  textotxt t
+  uint8 letra
+  l_agora.limpar
+  t.addini(arg1)
+  pos = arg0.ini, letra = 65
+  enquanto pos.lin
+    l_agora.addfim(pos.texto)
+    t.addfim(txtchr(letra) + " " + txt2(pos.texto))
+    letra += 1, pos.depois
+  efim
+  se l_agora.linhas == 0
+    t.addfim("Nenhum usuário")
+  fimse
+  msg(t.remove(100), 2)
+  ret 1
+
 func opc_modo # Opção /modo
   proc_modo(arg0)
   ret 1
@@ -781,10 +931,6 @@ func opc_bot
   fimse
   ret 1
 
-func opcpvt # Enviar PVT para alguém
-  msg("Enviar pvt: " + arg0)
-  ret 1
-
 func opcapelido # Muda de apelido
   txt20 texto
   indiceitem ind
@@ -808,6 +954,7 @@ func opcapelido # Muda de apelido
       id_bot = "bu " + txt2($sala.id_bot)
       objbot.msg_saiu
     fimse
+    lista_add(objsala.l_entrou)
     msg_todos("." + arg0 + " Entra na conversação", 2)
     usrtotal += 1
   senao
@@ -817,6 +964,7 @@ func opcapelido # Muda de apelido
     apelcod = "ac " + texto
     texto = txtsub(apelsala, 2)
     apelsala = txtsub(apelsala, 0, 2) + " " + arg0
+    lista_add(objsala.l_nome)
     msg_todos("*.Usuário " + texto + " é conhecido como " + arg0, 2)
   fimse
 
@@ -854,6 +1002,11 @@ classe sala
 indiceobj salacod # "sc " seguido do nome codificado por txtnome() ou "" se nenhum
 indiceobj salanome # "sn " seguido do nome da sala
 indiceobj id_bot # Identificação de bot
+textotxt l_entrou # Lista de ?entrou
+textotxt l_saiu # Lista de ?saiu
+textotxt l_msg # Lista de ?msg
+textotxt l_nome # Lista de ?nome
+textotxt l_banido # Lista de ?banido
 const nome = txt2(salanome)
 
 func objbot # Retorna objeto bot da sala
@@ -1006,6 +1159,7 @@ func iniclasse
   criar(arg0)
 
 func ini
+# Acerta lista de apelidos inválidos
   prog p
   chattitulo = "Bem vindo ao Minichat"
   p.inifunc("usuario", "opc_")
@@ -1016,13 +1170,6 @@ func ini
 
 #Falta:
 #anti-flooder para bots
-#comandos de listas de pessoas
-#enviar pvt
-#comandos de ignorar/designorar/banir/desbanir
-
-#>>?entrou
-#*.Entraram no bate-papo
-#A abc
-#>>?saiu
-#*.Saíram do bate-papo
-#Nenhum usuário
+#comandos de banir/desbanir
+#se banir usuário: não deixar entrar
+#não permitir auto banir

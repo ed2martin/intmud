@@ -425,8 +425,8 @@ void TClasse::AcertaComandos(char * comandos)
                             b = b2;
                             while (b1<b && b2<b+a && b2<casonum)
                             {
-                                if (strcmp(var2[b1] + 7,
-                                        var2[b2] + 7) > 0)
+                                if (strcmp(var2[b1] + Instr::endVar + 4,
+                                           var2[b2] + Instr::endVar + 4) > 0)
                                     var1[lido++] = var2[b2++];
                                 else
                                     var1[lido++] = var2[b1++];
