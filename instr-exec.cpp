@@ -252,6 +252,7 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "intnome",    Instr::FuncInt, 0 },
     { "intpos",     Instr::FuncNumero, 0 },
     { "intsenha",   Instr::FuncInt, 1 },
+    { "intsub",     Instr::FuncIntSub, 0 },
     { "inttotal",   Instr::FuncTotal, 0 },
     { "objantes",   Instr::FuncAntesDepois, 0 },
     { "objdepois",  Instr::FuncAntesDepois, 1 },

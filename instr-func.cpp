@@ -320,6 +320,26 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função intsub
+bool Instr::FuncIntSub(TVariavel * v, int valor)
+{
+    int total = 0;
+    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    {
+        const char * txt = var->getTxt();
+        while (*txt==' ') txt++;
+        while (*txt)
+        {
+            while (*txt && *txt!=' ') txt++;
+            while (*txt==' ') txt++;
+            total++;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarInt(total);
+}
+
+//----------------------------------------------------------------------------
 /// Texto (txt)
 bool Instr::FuncTxt(TVariavel * v, int valor)
 {
@@ -358,18 +378,6 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
     else
     {
         while (*txt==' ') txt++;
-        if (VarAtual == v+1) // Um argumento: retorna quantidade de palavras
-        {
-            int total = 0;
-            while (*txt)
-            {
-                while (*txt && *txt!=' ') txt++;
-                while (*txt==' ') txt++;
-                total++;
-            }
-            ApagarVar(v);
-            return CriarVarInt(total);
-        }
             // Avança para início do texto
         while (ini>0 && *txt)
         {
