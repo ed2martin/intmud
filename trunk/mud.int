@@ -1,0 +1,487 @@
+# Se deve usar vários arquivos
+mapagrande = 1
+
+# Quantas instruções uma função chamada pelo programa pode
+# executar antes do controle retornar ao programa
+exec = 5000
+
+# Se deve abrir uma janela de texto - variável telatxt
+telatxt = 1
+
+classe _config
+# Configuração
+const porta = 1963 # Nota: O Papovox só se conecta na porta 1963
+const salaini = $casa1_sala  # Quando entra no jogo, entra nessa sala
+const papovox = 0 # 0=somente Telnet, 1=Telnet e Papovox
+
+func iniclasse
+  telatxt t
+  se t.proto
+    t.msg("MUD ativo na porta " + _config:porta + "\n")
+    t.msg("-\n")
+    t.msg("Se quiser que essa janela não abra, edite o arquivo\n")
+    t.msg("intmud.int e mude a linha telatxt=1 para telatxt=0\n")
+
+classe comum_item
+# Itens do jogo
+const nome = "" # Nome do item; não colocar o sexo
+const nomesala = "" # Descrição na sala
+const alias = "" # Nomes que o usuário digita para acessar o personagem
+const sala = sala_item.objlista # Sala do personagem
+listaitem sala_item # Referência à sala do personagem
+int1 invis # Se está invisível
+const sexo = "o" # "o" ou "a"
+
+func mudasala # Muda de sala ou de dono
+# arg0=nova sala
+  sala_item.remove
+  sala_item = arg0.dentro.addfim(este)
+
+classe comum_perso
+# Personagens
+const perso = 1 # Indica que é personagem
+const nome = txt(este) # Nome do personagem
+const dpos = descr_[posicao] # Descrição quando na posição padrão
+const dver = dpos # Descrição para o comando ver
+const alias = nome # Nomes que o usuário digita para acessar o personagem
+uint8 posicao  # Posição atual
+const pospadrao = 8 # Posição padrão
+# Posições válidas:
+# 0=morto
+# 1=mortalmente ferido
+# 2=incapacitado
+# 3=fraco
+# 4=dormindo
+# 5=descansando
+# 6=sentado
+# 7=lutando
+# 8=em pé
+const sala = sala_item.objlista # Sala do personagem
+listaitem sala_item # Referência à sala do personagem
+listaobj dentro # Itens que pertencem ao personagem
+int1 invis # Se está invisível
+int1 invisver # Se pode ver personagens invisíveis
+const sexo = "o" # "o" ou "a"
+
+func ini # Objeto foi criado: atualiza posição atual
+  posicao = pospadrao
+
+func mudasala # Muda de sala
+# arg0=nova sala
+  sala_item.remove
+  sala_item = arg0.dentro.addfim(este)
+
+func descrsala # Mostra descrição de um lugar
+# arg0 = sala
+  txt100 saidas
+  listaitem l
+  textotxt t
+  t.addfim("\cb" + arg0.nome + "\b") # Título
+  t.addfim(arg0.descr) # Descrição
+  saidas = ds1("norte", "n", arg0) + ds1("sul", "s", arg0) + ds1("leste", "l", arg0)
+  saidas += ds1("oeste", "o", arg0) + ds1("cima", "c", arg0) + ds1("baixo", "b", arg0)
+  se saidas
+    t.addfim("\c6Saídas\b:" + saidas)
+  senão
+    t.addfim("\c9Saídas: Nenhuma\b")
+  fimse
+  t.dividelincor(74, 78)
+  enquanto t.linhas
+    msg(t.remove)
+  efim
+  l = arg0.dentro.ini
+  enquanto l
+    se l.obj != este && l.obj.invisver >= invis
+      msg("\c2" + l.obj.dnome + "\b")
+    fimse
+    l.depois
+  efim
+
+func ds1 # Usado em descrsala
+# arg0 = nome da direção
+# arg1 = letra da direção
+# arg2 = sala
+  se arg2.[arg0] == nulo || arg2.[arg0]_ini == 1
+    ret ""
+  senão arg2.[arg0]_agora < 2
+    ret " \c6" + arg1 + "\b"
+  senao
+    ret " \c9!" + arg1 + "\b"
+
+func dnome # Descrição do personagem na sala
+  se posicao == pospadrao
+    ret dpos
+  senão
+    ret descr_[posicao]
+
+const descr_0 = nome + " jás aqui"
+const descr_1 = nome + " está aqui mortalmente ferido"
+const descr_2 = nome + " está aqui incapacitado"
+const descr_3 = nome + " está aqui, muito fraco"
+const descr_4 = nome + " dorme aqui"
+const descr_5 = nome + " descansa aqui"
+const descr_6 = nome + " está sentado"
+const descr_7 = nome + " está lutando"
+const descr_8 = nome + " está em pé"
+
+func escr # Escreveu alguma coisa
+# arg0=o que escreveu
+  ref obj # Objeto que vai processar o comando
+  prog p # Para procurar o objeto
+  listaitem l
+### Procura objeto
+  p.inifunc("com _ini", "c_" + txt1(arg0))
+  enquanto p.lin
+    obj = com__ini:[p.texto]
+    se obj && nivel >= obj.nivel
+      sair
+    fimse
+    p.depois
+  efim
+#### Triggers
+  se(este.tr_escr(este, obj, arg0)) # Trigger do personagem
+    ret
+  senão(sala.tr_escr(este, obj, arg0)) # Trigger da sala
+    ret
+  fimse
+  l = dentro.ini # Trigger dos objetos do personagem
+  enquanto l
+    se l != este && l.obj.tr_escr2(este, obj, arg0)
+      ret
+    fimse
+    l.depois
+  efim
+  l = sala.dentro.ini # Trigger dos objetos da sala
+  enquanto l
+    se l.obj != este && l.obj.tr_escr2(este, obj, arg0)
+      ret
+    fimse
+    l.depois
+  efim
+### Processa comando
+  se obj == nulo
+    msg("O quê?")
+  senão posicao < obj.posic
+    se posicao == 0 # Morto
+      msg("\c9Você está morto!!!\b")
+    senão posicao == 1 || posicao == 2 # Incapacitado
+      msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
+    senão posicao == 3 # Fraco
+      msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
+    senão posicao == 4 # Dormindo
+      msg("\c9Nos seus sonhos...\b")
+    senão posicao == 5 # Descansando
+      msg("\c9Você se sente relaxado demais para fazer isso.\b")
+    senão posicao == 6 # Sentado
+      msg("\c9Talvez você deva ficar em pé primeiro.\b")
+    senão posicao == 7 # Lutando
+      msg("\c9Sem chance! Você está lutando pela sua vida.\b")
+    senão
+      msg("\c9Você tenta, mas não consegue.\b")
+    fimse
+  senão
+    obj.exec(este, txt2(arg0))
+
+classe comum_sala
+listaobj dentro # Itens e personagens dentro da sala
+#
+# int1 semsom # Verdadeiro se não produz som
+#
+# *** Saídas
+# ref norte
+# ref sul
+# ref leste
+# ref oeste
+# ref cima
+# ref baixo
+#
+# *** Estado inicial das saídas:
+# 0=nenhuma porta
+# 1=nenhuma porta/invisível
+# 2=aberta
+# 3=fechada
+# 4=trancada
+# 5=trancada; se fechada é trancada
+# uint8 norte_ini
+# uint8 sul_ini
+# uint8 leste_ini
+# uint8 oeste_ini
+# uint8 cima_ini
+# uint8 baixo_ini
+#
+# *** Estado atual das saídas
+# 0=nenhuma porta
+# 1=aberta
+# 2=fechada
+# 3=trancada
+uint8 norte_agora
+uint8 sul_agora
+uint8 leste_agora
+uint8 oeste_agora
+uint8 cima_agora
+uint8 baixo_agora
+#
+# *** Número da chave para trancar e destrancar a porta
+# uint8 norte_chave
+# uint8 sul_chave
+# uint8 leste_chave
+# uint8 oeste_chave
+# uint8 cima_chave
+# uint8 baixo_chave
+
+func iniclasse # Para criar um objeto quando a classe for criada
+  criar(arg0)
+
+func ini # Objeto criado: atualiza saídas
+  ini_sai(norte_ini, norte_agora)
+  ini_sai(sul_ini, sul_agora)
+  ini_sai(leste_ini, leste_agora)
+  ini_sai(oeste_ini, oeste_agora)
+  ini_sai(cima_ini, cima_agora)
+  ini_sai(baixo_ini, baixo_agora)
+
+func ini_sai # Usado em ini; atualiza saídas
+# arg0=valor inicial da saída
+# arg1=valor atual da saída
+  arg1 = arg0
+  se arg1 >= 4
+    arg1 = 3
+  senão arg1 >= 1
+    arg1 -= 1
+
+classe entra
+# Entrando no jogo
+comum serv servidor # Para receber conexões
+socket conec # Usuário conectado
+inttempo fechar1 # Para encerrar conexão após um tempo
+inttempo espera  # Tempo para pedir o apelido
+inttempo sair1   # Para sair se esperou demais
+
+func iniclasse
+# Esperar conexões
+  se ![arg0]:servidor.abrir("", _config:porta)
+    terminar
+
+func servidor_socket # Conectado: cria objeto
+  criar("entra", arg0)
+
+func ini # Objeto foi criado
+  conec = arg0
+  conec.proto = 2
+  conec.aflooder = 1
+  se _config:papovox
+    conec.msg("+OK Para Telnet pressione ENTER\n")
+    fechar1 = 100 # 10 segundos depois desconecta
+  senão
+    espera = 1
+
+func fechar1_exec
+  conec.msg("-Tempo esgotado\n")
+  apagar(este)
+
+func espera_exec
+  conec.msg("Digite o nome do seu personagem ou fim para desistir\n")
+  sair1=600 # Para esperar 60 segundos
+
+func sair1_exec
+  conec.msg("Tempo esgotado\n")
+  apagar(este)
+
+func conec_fechou
+  apagar(este)
+
+func conec_msg # Recebeu mensagem do usuário
+# arg0=mensagem
+  indiceitem ind
+  txt12 nome
+  se espera # Se deve aguardar, ignora o que recebeu
+    ret
+  senão fechar1 # Se está no primeiro passo
+    fechar1=0
+    espera=10
+    se arg0 != "" # Papovox sempre fornece um nome
+      conec.msg("+OK Entrando via Papovox\n")
+      conec.proto = 5
+    senão # Nome vazio: é Telnet
+      conec.msg("-OK Entrando via Telnet\n")
+      conec.cores = 2
+    fimse
+  senão arg0 == "fim" # Sai do MUD
+    apagar(este)
+  senão arg0 == "" # Se não digitou um apelido
+    espera = 1
+  senão inttotal(arg0) > 12 || intnome(arg0)
+    conec.msg("Apelido inválido; digite outro\n")
+  senão
+    nome = txtnome(arg0)
+    se ind.obj("usr_" + nome) # Se apelido está sendo usado
+      conec.msg("Apelido já está sendo usado; digite outro\n")
+    senão # Cria objeto do jogador
+      apagar(este)
+      criar("jog", conec, arg0)
+
+classe jog
+herda comum_perso
+# Personagem do jogador
+socket conec
+indiceobj usr_nome # Para não permitir dois jogadores com o mesmo apelido
+txt12 nome # Apelido que o jogador está usando
+const alias = nome
+txt1 sexo
+
+func ini # Objeto criado
+# arg0=conec
+# arg1=apelido
+  conec = arg0
+  usr_nome = "usr_" + txtnome(arg1)
+  nome = txtmaimin(arg1)
+  comum_perso:ini
+  se conec.proto == 2
+    mudasala($jog_cores)
+  senão
+    mudasala($jog_sexo)
+  fimse
+  msg(sala.descr)
+
+func fim
+  se sexo != ""
+    $mens.p(este)
+    $mens.todos("$p saiu")
+
+func conec_fechou # Conexão encerrada
+  apagar(este)
+
+const msg = conec.msg(arg0 + "\n") # Envia mensagem para o usuário
+
+func conec_msg # Recebeu mensagem do usuário
+  escr(arg0)
+
+classe jog_cores
+herda comum_sala
+const descr = "Ativar as cores no Telnet? Tecle S ou N"
+func tr_escr
+  se arg2 == "S"
+    arg0.conec.cores = 2
+  senão arg2 != "N"
+    arg0.msg(descr)
+    ret 1
+  fimse
+  arg0.mudasala($jog_sexo)
+  arg0.msg($jog_sexo.descr)
+  ret 1
+
+classe jog_sexo
+herda comum_sala
+const descr = "Você é homem ou mulher? Tecle O ou A"
+func tr_escr
+  se arg2 == "O"
+    arg0.sexo = "o"
+  senão arg2 == "A"
+    arg0.sexo = "a"
+  senão
+    arg0.msg(descr)
+    ret 1
+  fimse
+  arg0.msg("NOTA: Para encerrar o MUD tecle ENCERRAR")
+  arg0.msg("NOTA: Consulte a ajuda online, se você não conhece os comandos, teclando ajuda")
+  arg0.mudasala(_config:salaini)
+  arg0.descrsala(arg0.sala)
+  $mens.p(arg0)
+  $mens.todos("$p chegou")
+  ret 1
+
+classe mens
+# Para enviar mensagens
+# Chamar:
+# $mens.p(personagem, alvo, objeto) -> Define os personagens
+# $mens.todos -> Mensagem para todos na sala exceto perso e alvo
+# $mens.todos2 -> Para todos na sala exceto perso, alvo e quem não vê perso
+# $mens.perso -> Mensagem para perso
+# $mens.alvo -> Mensagem para alvo
+# $mens.alvo2 -> Mensagem para alvo se alvo pode ver perso
+# O primeiro argumento é a mensagem. São feitas as substituições:
+# $p=perso, $a=alvo, $o=obj, $x=símbolo $
+#
+ref _p # Personagem que está enviando a mensagem
+ref _a # Personagem ou objeto alvo da ação
+ref _o # Objeto secundário
+ref r # Usado nas funções m_*
+
+func iniclasse
+  criar(arg0)
+
+func p # Define os personagens
+  _p = arg0
+  _a = arg1
+  _o = arg2
+
+func todos
+  listaitem l
+  se _p
+    l = _p.sala.dentro.ini
+    enquanto l
+      r = l.obj
+      se r.perso && r != _p && r != _a
+        r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
+      fimse
+      l.depois
+    efim
+
+func todos2
+  listaitem l
+  se _p
+    l = _p.sala.dentro.ini
+    enquanto l
+      r = l.obj
+      se r.perso && r != _p && r != _a && r.invisver >= _p.invis
+        r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
+      fimse
+      l.depois
+    efim
+
+func perso
+  se _p
+    r = _p
+    r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
+
+func alvo
+  se _p && _a
+    r = _a
+    r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
+
+func alvo2
+  se _p && _a && _a.invisver >= _p.invis
+    r = _a
+    r.msg(txtmaiini(vartroca(arg0, "$", "param_")))
+
+func param_p # $p = personagem origem
+  se r == _p
+    ret "você"
+  senão r.invisver >= _p.invis
+    ret _p.nome
+  senão _p.perso
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+
+func param_a # $a = personagem alvo
+  se r == _a
+    ret "você"
+  senão r.invisver >= _a.invis
+    ret _a.nome
+  senão _a.perso
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+
+func param_o # $o = objeto
+  se r == _o
+    ret "você"
+  senão r.invisver >= _o.invis
+    ret _o.nome
+  senão _o.perso
+    ret "alguém"
+  senão
+    ret "alguma coisa"
+
+const param_x = "$"
