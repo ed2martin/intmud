@@ -393,6 +393,15 @@ variável = variável - valor
 variável = variável * valor
 variável = variável / valor
 
+Via de regra, os operadores binários convertem o segundo operando para
+o mesmo tipo do primeiro. Exemplos:
+10 < 2 # Verdadeiro; está comparando números
+10 < "2" # Verdadeiro; o texto "2" é transformado em número antes da comparação
+"10" < "2" # Falso; está comparando dois textos; o "1" vem antes do "2"
+"10" < 2 # Falso; o número 2 é transformado em texto antes da comparação
+"1" + 2 # É o mesmo que "1" + "2", portanto resulta em "12"
+1 + "2" # É o mesmo que 1 + 2, portanto resulta em 3
+
 Existe uma ordem de precedência entre os operadores. POor exemplo,
 multiplicações e divisões são calculadas antes de soma e subtração.
 Porém, uma soma entre parênteses é calculada antes, pois os parênteses
