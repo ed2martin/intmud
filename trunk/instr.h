@@ -292,6 +292,7 @@ enum Comando
     cListaItem,         ///< Extra: ListaItem
     cTextoTxt,          ///< Extra: TextoTxt
     cTextoPos,          ///< Extra: TextoPos
+    cTextoVar,          ///< Extra: TextoVar
     cNomeObj,           ///< Extra: NomeObj
     cArqDir,            ///< Extra: ArqDir
     cArqLog,            ///< Extra: ArqLog

@@ -21,6 +21,7 @@
 #include "var-sav.h"
 #include "var-listaobj.h"
 #include "var-texto.h"
+#include "var-textovar.h"
 #include "var-datahora.h"
 #include "variavel.h"
 #include "classe.h"
@@ -361,6 +362,9 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
 // Lê objetos
     TListaX * listaitem_fim = 0;
     TTextoTxt * textotxt_obj = 0; // textotxt que falta anota \n no final
+    TTextoVar * textovar_obj = 0; // Para anotar texto em textovar
+    char mensvar[65100];       // Texto que será anotado
+    char * pmensvar = mensvar; // Aonde adicionar texto
     TVariavel var;
     var.defvar = 0;
     quantidade = numobj;
@@ -570,6 +574,48 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 }
                 break;
             }
+    // TextoVar
+            if (var.defvar[2]==Instr::cTextoVar)
+            {
+                TTextoVar * txtvar = var.end_textovar + var.indice;
+            // Outro textovar: anota texto e inicializa textovar
+                if (txtvar != textovar_obj)
+                {
+                    if (pmensvar != mensvar)
+                    {
+                        *pmensvar=0;
+                        textovar_obj->Mudar(mensvar);
+                    }
+                    txtvar->Limpar();
+                    textovar_obj = txtvar;
+                    pmensvar = mensvar;
+                }
+            // Acrescenta texto
+                for (; *p; p++)
+                {
+                    if (*p != '\\' || p[1]==0)
+                        *pmensvar++ = *p;
+                    else switch (*++p)
+                    {
+                    case 'n':
+                    case 'N': *pmensvar++ = Instr::ex_barra_n; break;
+                    case 'b':
+                    case 'B': *pmensvar++ = Instr::ex_barra_b; break;
+                    case 'c':
+                    case 'C': *pmensvar++ = Instr::ex_barra_c; break;
+                    case 'd':
+                    case 'D': *pmensvar++ = Instr::ex_barra_d; break;
+                    case '\\': *pmensvar++ = '\\'; break;
+                    case '0':
+                        *pmensvar=0;
+                        txtvar->Mudar(mensvar);
+                        pmensvar = mensvar;
+                    }
+                    if (pmensvar >= mensvar + sizeof(mensvar))
+                        pmensvar--;
+                }
+                break;
+            }
     // DataHora
             if (var.defvar[2]==Instr::cDataHora)
                 var.end_datahora[var.indice].LerSav(p);
@@ -577,6 +623,13 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     } // while
     if (textotxt_obj)
         textotxt_obj->AddTexto("\n", 1);
+
+    if (pmensvar != mensvar)
+    {
+        *pmensvar=0;
+        textovar_obj->Mudar(mensvar);
+    }
+
     return quantidade;
 }
 
@@ -901,6 +954,56 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                     }
                     *d = 0;
                     if (strcmp(mens, ".=t")!=0)
+                        fprintf(arq, "%s\n", mens);
+                } while (++var.indice < posic);
+                break;
+        // TextoVar
+              case Instr::cTextoVar:
+                do {
+                    char mens[512];
+                    char * d = mens;
+                    TTextoVar * txtvar = var.end_textovar + var.indice;
+                    if (var.indice)
+                        sprintf(d, "%s.%d=",
+                                var.defvar+Instr::endNome, var.indice);
+                    else
+                        sprintf(d, "%s=", var.defvar+Instr::endNome);
+                    while (*d)
+                        d++;
+                    TBlocoVar * bl = txtvar->RBroot;
+                    if (bl)
+                        bl = bl->RBfirst();
+                    for (; bl; bl=TBlocoVar::RBnext(bl))
+                    {
+                        int cont=1;
+                        const char * p = bl->Texto;
+                        while (true)
+                        {
+                            if (*p==0)
+                                if (cont--==0)
+                                    break;
+                            switch (*p)
+                            {
+                            case 0: *d++='='; break;
+                            case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
+                            case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
+                            case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
+                            case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
+                            case '\\': *d++='\\';
+                            default: *d++ = *p;
+                            }
+                            p++;
+                            if (d-mens < 150)
+                                continue;
+                            *d=0;
+                            fprintf(arq, "%s\n", mens);
+                            d = copiastr(mens, ".=");
+                        }
+                        *d++ = '\\';
+                        *d++ = '0';
+                    }
+                    *d=0;
+                    if (strcmp(mens, ".=\\0")!=0)
                         fprintf(arq, "%s\n", mens);
                 } while (++var.indice < posic);
                 break;

@@ -208,6 +208,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cListaItem: strcpy(nome, "listaitem"); break;
     case cTextoTxt:  strcpy(nome, "textotxt"); break;
     case cTextoPos:  strcpy(nome, "textopos"); break;
+    case cTextoVar:  strcpy(nome, "textovar"); break;
     case cNomeObj:   strcpy(nome, "nomeobj"); break;
     case cArqDir:    strcpy(nome, "arqdir"); break;
     case cArqLog:    strcpy(nome, "arqlog"); break;
