@@ -278,6 +278,7 @@ static const TListaInstr ListaInstr[] = {
     { "terminar",  cTerminar },
     { "textopos",  cTextoPos },
     { "textotxt",  cTextoTxt },
+    { "textovar",  cTextoVar },
     { "uint16",    cUInt16 },
     { "uint32",    cUInt32 },
     { "uint8",     cUInt8 },

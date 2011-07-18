@@ -13,6 +13,7 @@ class TListaObj;
 class TListaItem;
 class TTextoTxt;
 class TTextoPos;
+class TTextoVar;
 class TVarDir;
 class TVarLog;
 class TVarTxt;
@@ -146,6 +147,7 @@ public:
         TListaItem   * end_listaitem;///< Instr::cListaItem
         TTextoTxt    * end_textotxt; ///< Instr::cTextoTxt
         TTextoPos    * end_textopos; ///< Instr::cTextoPos
+        TTextoVar    * end_textovar; ///< Instr::cTextoVar
         TVarTelaTxt  * end_telatxt;  ///< Instr::cTelaTxt
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ

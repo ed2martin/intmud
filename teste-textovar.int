@@ -1,0 +1,87 @@
+telatxt = 1
+
+classe teste
+telatxt tela # Tela do usuário
+sav textovar var
+
+func msg
+tela.msg(arg0 + "\n")
+
+func iniclasse
+criar(arg0)
+
+func ini
+  msg("Teste de textovar")
+  msg("Opções:")
+  msg("a variável=valor  Adiciona ou altera variável")
+  msg("a variável        Apaga variável")
+  msg("c      Lista variáveis em ordem crescente")
+  msg("d      Lista variáveis em ordem decrescente")
+  msg("l texto  Lista variáveis começadas com o texto")
+  msg("v texto  Mostra uma variável")
+  msg("e      Exclui todas as variáveis")
+  msg("s      Salva variáveis em arquivo")
+  msg("f      Sai do programa")
+  var.add("x0=10")
+  var.add("y=20")
+  var.add("z=30")
+  var.add("x1=bom dia")
+  var.add("x2=boa tarde")
+  var.add("x3=boa noite")
+  arqsav sav1
+  listaobj lista
+  lista.addfim(este)
+  sav1.ler("teste-textovar.sav", lista, 1)
+
+func tela_msg
+  txt200 nome
+  casovar txt1(arg0)
+  casose "a"
+    var.add(txt2(arg0))
+    msg("Feito")
+    sair
+  casose "c"
+    msg("Variáveis:")
+    nome = var.ini
+    enquanto nome
+      msg(nome + "=" + var.txt(nome))
+      nome = var.depois(nome)
+    efim
+    sair
+  casose "d"
+    msg("Variáveis:")
+    nome = var.fim
+    enquanto nome
+      msg(nome + "=" + var.txt(nome))
+      nome = var.antes(nome)
+    efim
+    sair
+  casose "l"
+    uint16 total
+    total = inttotal(txt2(arg0))
+    nome = var.ini(txt2(arg0))
+    msg("Variáveis começadas com " + txt2(arg0) + ":")
+    enquanto nome && txt(nome, 0, total) == txt2(arg0)
+      msg(nome + "=" + var.txt(nome))
+      nome = var.depois(nome)
+    efim
+    sair
+  casose "v"
+    msg("Variável " + txt1(arg0) + "=" + var.txt(txt2(arg0)))
+    sair
+  casose "e"
+    msg("Variáveis excluídas")
+    var.limpar
+    sair
+  casose "s"
+    arqsav sav1
+    listaobj lista
+    lista.addfim(este)
+    sav1.salvar("teste-textovar.sav", lista, 0, "")
+    msg("Salvo em arquivo")
+    sair
+  casose "f"
+    terminar
+  casose
+    msg("Opção inexistente: " + txt2(arg0))
+  casofim

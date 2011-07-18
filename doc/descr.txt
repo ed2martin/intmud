@@ -1249,7 +1249,7 @@ textotxt <nomedavariável>
         Lê um arquivo de texto e coloca em textotxt.
         Retorna 1 se conseguiu ou 0 se não conseguiu.
         Nota 1: Não acessa arquivos executáveis ou terminados em:
-                .exe, .com, .bat, .pif ou .log
+                .exe, .com, .bat, .pif, .scr ou .log
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível acessar arquivos de outros lugares.
     salvar(<nome do arquivo>)
@@ -1320,6 +1320,39 @@ textopos <nomedavariável>
         txtproc - considera iguais letras minúsculas, maiúsculas e acentuadas.
         txtprocmai - considera iguais letras maiúsculas e minúsculas.
         txtprocdif - diferencia letras maiúsculas, minúsculas e acentuadas.
+
+textovar <nomedavariável>
+    Lista de variáveis organizadas em ordem alfabética.
+    Semelhante a textotxt, porém as linhas contém variáveis de texto
+    no formato "nome da variável=valor", organizadas em ordem alfabética.
+    Cada variável pode conter qualquer texto, inclusive caracteres como
+    "\b", "\n" e "=".
+
+    Funções:
+    ini
+        Retorna nome da primeira variável.
+    fim
+        Retorna nome da última variável.
+    ini(<texto>)
+        Retorna nome da primeira variável que começa com o texto.
+    fim(<texto>)
+        Retorna nome da última variável que começa com o texto.
+    antes(<nome da variável>)
+        Retorna nome da variável anterior ou "" se não existe.
+    depois(<nome da variável>)
+        Retorna nome da próxima variável ou "" se não existe.
+    txt(<nome da variável>)
+        Retorna o conteúdo da variável como texto ou "" se não existe.
+    int(<nome da variável>)
+        Retorna o conteúdo da variável como número. Se não existe retorna 0.
+    var(<nome da variável>)
+        Retorna o nome da variável ou "" se não existe.
+    add("variável=valor")
+        Cria uma variável ou muda se já existir.
+        Para apagar variável, basta atribuir um texto vazio.
+        Exemplo, mudar("x=") ou mudar("x") apaga a variável x.
+    limpar
+        Apaga todas as variáveis do textovar.
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário
@@ -1418,7 +1451,7 @@ arqlog <nomedavariável>
 arqsav <nomedavariável>
     Para salvar objetos em arquivos e recuperar posteriormente.
     Nota 1: Não acessa arquivos executáveis ou terminados em:
-            .exe, .com, .bat, .pif ou .log
+            .exe, .com, .bat, .pif, .scr ou .log
     Nota 2: O arquivo deve pertencer ao diretório atual ou a um
     subdiretório dele. Não é possível criar arquivos em outros lugares.
 
@@ -1497,7 +1530,7 @@ arqtxt <nomedavariável>
         3 = para escrever no final do arquivo
         Os modos 0 e 1 não criam um novo arquivo, caso ele não exista.
         Nota 1: Não acessa arquivos executáveis ou terminados em:
-                .exe, .com, .bat, .pif ou .log
+                .exe, .com, .bat, .pif, .scr ou .log
         Nota 2: O arquivo deve pertencer ao diretório atual ou a um
         subdiretório dele. Não é possível acessar arquivos de outros lugares.
     fechar
