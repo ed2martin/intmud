@@ -187,13 +187,14 @@ void TArqMapa::SalvarArq(bool tudo)
         // Divide em linhas
                 char barran = 0;
                 if (ParamN>1 || (ParamN==1 && p[2]==Instr::cConstTxt))
-                    barran = 'n';
+                    if ((int)strlen(mens+4096) >= ParamLinha-10)
+                        barran = 'n';
                 const char * o = mens+4096;
                 char * d = mens;
                 char * dfim = d+ParamLinha-10;
                 while (*o)
                 {
-                // Divide em 80 caracteres
+                // Divide linha
                     while (d >= dfim)
                     {
                         int x, total = dfim - d + 8;
@@ -220,6 +221,17 @@ void TArqMapa::SalvarArq(bool tudo)
                     d+=2, o+=2;
                 // Verifica se deve dividir em \n
                     if (o[-1]!=barran || o[0]=='\"' || memcmp(o,"\\n",2)==0)
+                        continue;
+                // Checa se está no final da linha
+                    int x;
+                    for (x=0; x<8; x++)
+                    {
+                        if (o[x]==0 || o[x]=='\"')
+                            break;
+                        else if (o[x]=='\\' && o[x+1])
+                            x++;
+                    }
+                    if (x<8 && d+x+2 < dfim)
                         continue;
                 // Divide
                     *d++ = '\\';
