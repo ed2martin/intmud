@@ -47,12 +47,15 @@ public:
     const char * Endereco(bool remoto);
             ///< Retorna o endereço local ou remoto da conexão
 private:
-    void Processa(const char * buffer, int tamanho, bool completo);
+    void Processa(const char * buffer, int tamanho);
             ///< Processa dados recebidos em TSocket::ProcEventos
             /**< @param buffer Endereço do buffer
-             *   @param tamanho Tamanho do buffer
-             *   @param completo Se recebeu a mensagem completa
-             *                  (arg1 do evento _msg) */
+             *   @param tamanho Tamanho do buffer */
+    bool EventoMens(bool completo);
+            ///< Gera evento de acordo com a mensagem recebida
+            /**< @param completo Se recebeu a mensagem completa
+             *                  (arg1 do evento _msg)
+             *   @return true se não apagou o objeto, false se apagou */
     bool EnvMens(const char * mensagem, int tamanho);
             ///< Envia mensagem pura
             /**< @param mensagem Endereço dos bytes a enviar

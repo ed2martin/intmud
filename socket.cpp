@@ -926,7 +926,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
                 else // Tempo demais esperando mensagem
                 {
                     sockAtual = obj->sDepois;
-                    obj->Processa("\n", 1, false); // Simula chegada de "\n"
+                    obj->EventoMens(false); // Envia mensagem
                     obj = sockAtual;
                 }
             }
@@ -968,7 +968,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
             }
         // Processa dados recebidos
             sockAtual = obj;
-            obj->Processa(mens, resposta, true);
+            obj->Processa(mens, resposta);
         // Verifica se objeto socket foi apagado
             if (obj != sockAtual)
             {
@@ -986,22 +986,18 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
 }
 
 //------------------------------------------------------------------------------
-void TSocket::Processa(const char * buffer, int tamanho, bool completo)
+void TSocket::Processa(const char * buffer, int tamanho)
 {
     while (tamanho>0)
     {
     // Ignora CR/LF, quando estiver mudando de protocolo
-        if (tamanho>0)
-        {
-            if ((*buffer==10 && dadoRecebido==13) ||
-                (*buffer==13 && dadoRecebido==10))
-                buffer++, tamanho--;
-            dadoRecebido=0;
-        }
+        if ((*buffer==10 && dadoRecebido==13) ||
+            (*buffer==13 && dadoRecebido==10))
+            buffer++, tamanho--;
+        dadoRecebido=0;
     // Protocolo Telnet
         if (proto==1 || proto==2)
         {
-            bool sair=true;
             char dado;
             while (tamanho)
             {
@@ -1163,7 +1159,9 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                     {
                         dadoRecebido = dado;
                         bufRec[pontRec+1] = CorAtual;
-                        sair=false;
+                    // Envia mensagem
+                        if (!EventoMens(true))
+                            return;
                         break;
                     }
                 }
@@ -1186,14 +1184,11 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                     }
                 }
             } // while (tamanho)
-            if (sair)
-                return;
         }
 
     // Protocolo IRC
         else if (proto==3)
         {
-            bool sair=true;
             char dado;
             while (tamanho)
             {
@@ -1251,8 +1246,9 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                 else if (dado==10)
                 {
                     bufRec[pontRec+1] = CorAtual;
-                    sair=false;
-                    break;
+                // Envia mensagem
+                    if (!EventoMens(true))
+                        return;
                 }
             // BackSpace
                 else if (dado==8 || dado==127)
@@ -1273,8 +1269,6 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                     }
                 }
             }
-            if (sair)
-                return;
         }
     // Protocolo Papovox
         else if (proto==4)
@@ -1301,90 +1295,98 @@ void TSocket::Processa(const char * buffer, int tamanho, bool completo)
                 bufRec[pontRec++] = *buffer++;
             if (pontRec<mensagem)
                 return;
+        // Envia mensagem
+            if (!EventoMens(true))
+                return;
         }
-
-// Prepara mensagem
-        char texto[2048];
-        char * dest = texto;
-        char * fim = texto + sizeof(texto) - 6;
-
-    // Prepara - Telnet e IRC
-        if (proto>=1 && proto<=3)
-        {
-            if (cores&1) // Com cor
-            {
-                int cor = CorAnterior;
-                for (unsigned int x=0; dest<fim; x+=2)
-                {
-                    if (cor!=bufRec[x+1])
-                    {
-                        if (bufRec[x+1]==0x70)
-                            *dest++ = Instr::ex_barra_b;
-                        else
-                        {
-                            cor ^= bufRec[x+1];
-                            if (cor & 0xF0)
-                            {
-                                *dest++ = Instr::ex_barra_c;
-                                *dest = ((bufRec[x+1] >> 4) & 15) + '0';
-                                if (*dest > '9')
-                                    (*dest) += 7;
-                                dest++;
-                            }
-                            if (cor & 7)
-                            {
-                                *dest++ = Instr::ex_barra_d;
-                                *dest++ = (bufRec[x+1] & 7) + '0';
-                            }
-                        }
-                        cor=bufRec[x+1];
-                    }
-                    if (x>=pontRec)
-                        break;
-                    *dest++ = bufRec[x];
-                }
-            }
-            else // Sem cor
-                for (unsigned int x=0; x<pontRec && dest<fim; x+=2)
-                    *dest++ = bufRec[x];
-            if (proto==2) // IRC
-                CorAtual = 0x70;
-            *dest=0;
-        }
-    // Prepara - Papovox
-        else if (proto==4)
-        {
-            int mensagem = 3+(unsigned char)bufRec[1] // Tamanho da mensagem
-                        +((unsigned char)bufRec[2]<<8);
-            assert(mensagem < SOCKET_REC);
-            for (int x=3; x<mensagem && dest<fim; x++)
-                if ((unsigned char)bufRec[x] >= ' ')
-                    *dest++ = bufRec[x];
-            *dest=0;
-        }
-    // Protocolo desconhecido
         else
             assert(0);
+    } // while (tamanho>0)
+}
 
-    // Acerta variáveis
-        pontRec=0;
-        CorAtual = CorAnterior;
+//------------------------------------------------------------------------------
+bool TSocket::EventoMens(bool completo)
+{
+// Prepara mensagem
+    char texto[2048];
+    char * dest = texto;
+    char * fim = texto + sizeof(texto) - 6;
+
+// Prepara - Telnet e IRC
+    if (proto>=1 && proto<=3)
+    {
+        if (cores&1) // Com cor
+        {
+            int cor = CorAnterior;
+            for (unsigned int x=0; dest<fim; x+=2)
+            {
+                if (cor!=bufRec[x+1])
+                {
+                    if (bufRec[x+1]==0x70)
+                        *dest++ = Instr::ex_barra_b;
+                    else
+                    {
+                        cor ^= bufRec[x+1];
+                        if (cor & 0xF0)
+                        {
+                            *dest++ = Instr::ex_barra_c;
+                            *dest = ((bufRec[x+1] >> 4) & 15) + '0';
+                            if (*dest > '9')
+                                (*dest) += 7;
+                            dest++;
+                        }
+                        if (cor & 7)
+                        {
+                            *dest++ = Instr::ex_barra_d;
+                            *dest++ = (bufRec[x+1] & 7) + '0';
+                        }
+                    }
+                    cor=bufRec[x+1];
+                }
+                if (x>=pontRec)
+                    break;
+                *dest++ = bufRec[x];
+            }
+        }
+        else // Sem cor
+            for (unsigned int x=0; x<pontRec && dest<fim; x+=2)
+                *dest++ = bufRec[x];
+        if (proto==2) // IRC
+            CorAtual = 0x70;
+        *dest=0;
+    }
+// Prepara - Papovox
+    else if (proto==4)
+    {
+        int mensagem = 3+(unsigned char)bufRec[1] // Tamanho da mensagem
+                    +((unsigned char)bufRec[2]<<8);
+        assert(mensagem < SOCKET_REC);
+        for (int x=3; x<mensagem && dest<fim; x++)
+            if ((unsigned char)bufRec[x] >= ' ')
+                *dest++ = bufRec[x];
+        *dest=0;
+    }
+// Protocolo desconhecido
+    else
+        assert(0);
+
+// Acerta variáveis
+    pontRec=0;
+    CorAtual = CorAnterior;
 #ifdef DEBUG_MSG
-        printf(">>>>>>> Recebeu %s\n", texto);
+    printf(">>>>>>> Recebeu %s\n", texto);
 #endif
 
 // Anti-flooder
-        if (AFlooder) // Verifica se anti-flooder ativado
-        {
-            if (AFlooder >= TempoIni + 60) // Condição de flooder
-                continue;
-            AFlooder += strlen(texto)/8+5; // Acerta AFlooder
-            if (AFlooder <= TempoIni)  // Acerta valor mínimo de AFlooder
-                AFlooder = TempoIni + 1;
-        }
+    if (AFlooder) // Verifica se anti-flooder ativado
+    {
+        if (AFlooder >= TempoIni + 60) // Condição de flooder
+            return true;
+        AFlooder += strlen(texto)/8+5; // Acerta AFlooder
+        if (AFlooder <= TempoIni)  // Acerta valor mínimo de AFlooder
+            AFlooder = TempoIni + 1;
+    }
 
 // Processa a mensagem
-        if (FuncEvento("msg", texto, completo)==false)
-            return;
-    } // while (tamanho>0)
+    return FuncEvento("msg", texto, completo);
 }
