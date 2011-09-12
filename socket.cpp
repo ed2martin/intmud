@@ -993,8 +993,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
     // Ignora CR/LF, quando estiver mudando de protocolo
         if ((*buffer==10 && dadoRecebido==13) ||
             (*buffer==13 && dadoRecebido==10))
-            buffer++, tamanho--;
-        dadoRecebido=0;
+            buffer++, tamanho--, dadoRecebido=0;
     // Protocolo Telnet
         if (proto==1 || proto==2)
         {
@@ -1006,9 +1005,9 @@ void TSocket::Processa(const char * buffer, int tamanho)
                 tamanho--;
     //------- Para mostrar o que chegou
     //printf("[%d;%d] ",(unsigned char)dado,dadoRecebido); fflush(stdout);
-    //printf(" %d ", (unsigned char)dado);
     //if ((unsigned char)dado>=32 || dado=='\n')
-    //   putchar(dado); else printf("\\%02d", dado); fflush(stdout);
+    //   putchar(dado); else printf("\\%02x", dado); fflush(stdout);
+    //printf(": %d %02x\n", dadoRecebido, CorAtual); fflush(stdout);
             // Protocolo do Telnet
 
             // Primeiro caracter  - IAC
@@ -1318,6 +1317,9 @@ bool TSocket::EventoMens(bool completo)
         if (cores&1) // Com cor
         {
             int cor = CorAnterior;
+            bufRec[pontRec+1] = CorAtual;
+            if ((CorAtual & 15) == (CorAtual>>4))
+                bufRec[pontRec+1] ^= 0x80;
             for (unsigned int x=0; dest<fim; x+=2)
             {
                 if (cor!=bufRec[x+1])
@@ -1347,11 +1349,12 @@ bool TSocket::EventoMens(bool completo)
                     break;
                 *dest++ = bufRec[x];
             }
+            CorAnterior = cor;
         }
         else // Sem cor
             for (unsigned int x=0; x<pontRec && dest<fim; x+=2)
                 *dest++ = bufRec[x];
-        if (proto==2) // IRC
+        if (proto==3) // IRC
             CorAtual = 0x70;
         *dest=0;
     }
@@ -1372,7 +1375,6 @@ bool TSocket::EventoMens(bool completo)
 
 // Acerta variáveis
     pontRec=0;
-    CorAtual = CorAnterior;
 #ifdef DEBUG_MSG
     printf(">>>>>>> Recebeu %s\n", texto);
 #endif

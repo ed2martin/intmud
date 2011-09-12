@@ -116,4 +116,6 @@ func sock_fechou # Conexão foi encerrada
   msg("\d1Conexão foi encerrada\b\n")
   inic = 5
 func sock_msg # Recebeu uma mensagem
-  msg(arg0 + "\n")
+  msg(arg0)
+  se arg1
+    msg("\n")
