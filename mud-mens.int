@@ -1,0 +1,232 @@
+classe mens
+ref perso # Personagem que está enviando a mensagem
+ref alvo # Personagem ou objeto alvo da ação
+ref obj # Objeto secundário
+ref r # Objeto que vai receber a mensagem
+uint8 inv # Variável bitinv de perso
+
+func iniclasse
+  criar(arg0)
+
+func p # Define os personagens
+  perso=arg0, alvo=arg1, obj=arg2
+
+func mtodos1 # Mensagem só para quem estiver acordado
+# arg0 = mensagem para todos
+  se arg0
+    listaobj l0
+    l0.addfim(perso.dono.dentro)
+    enquanto l0
+      l0.ini.obj.jog && proc(arg0, l0.ini.obj)
+      l0.ini.remove
+    efim
+
+func mtodos2 # Mensagem só para quem estiver acordado
+# arg0 = mensagem para personagem, arg1 = mensagem para outros
+  arg0 && perso.jog && proc(arg0, perso)
+  se arg1
+    listaobj l0
+    l0.addfim(perso.dono.dentro)
+    l0.remove(perso)
+    enquanto l0
+      l0.ini.obj.jog && proc(arg1, l0.ini.obj)
+      l0.ini.remove
+    efim
+
+func mtodos3 # Mensagem só para quem estiver acordado
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+  arg0 && perso.jog && proc(arg0, perso)
+  arg1 && alvo.jog && proc(arg1, alvo)
+  se arg2
+    listaobj l0
+    l0.addfim(perso.dono.dentro)
+    l0.remove(perso, alvo)
+    enquanto l0
+      l0.ini.obj.jog && proc(arg2, l0.ini.jog)
+      l0.ini.remove
+    efim
+
+func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0 = mensagem para todos
+  se arg0
+    inv = perso.bitinv
+    perso.jog && proc(arg0, perso)
+    listaobj l0
+    l0.addfim(perso.dono.dentro)
+    l0.remove(perso)
+    enquanto l0
+      l0.ini.obj.jog && !(~l0.ini.obj.bitver & inv) && proc(arg0, l0.ini.obj)
+      l0.ini.remove
+    efim
+
+func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0 = mensagem para personagem, arg1 = mensagem para outros
+  inv = perso.bitinv
+  arg0 && perso.jog && proc(arg0, perso)
+  se arg1
+    listaobj l0
+    l0.addfim(perso.dono.dentro)
+    l0.remove(perso)
+    enquanto l0
+      l0.ini.obj.jog && !(~l0.ini.obj.bitver & inv) && proc(arg1, l0.ini.obj)
+      l0.ini.remove
+    efim
+
+func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+  inv = perso.bitinv
+  arg0 && perso.jog && proc(arg0, perso)
+  arg1 && alvo.jog && !(~alvo.bitver & inv) && proc(arg1, alvo)
+  se arg2
+    listaobj l0
+    l0.addfim(perso.dono.dentro)
+    l0.remove(perso, alvo)
+    enquanto l0
+      l0.ini.obj.jog && !(~l0.ini.obj.bitver & inv) && proc(arg2, l0.ini.jog)
+      l0.ini.remove
+    efim
+
+func proc # Prepara e envia mensagem
+# arg0=mensagem, arg1=objeto
+  se arg1.posic <= 4 # Se não estiver acordado
+    ret
+  fimse
+  textotxt t0
+  textopos p0
+  int16 i # Posição em p0
+  txt1 opc # Opção
+  txt100 lin
+  t0.addfim(arg0)
+  p0 = t0.ini, i = 0, r = arg1
+  enquanto (i = p0.txtproc("$", i)) >= 0
+    opc = p0.texto(i+1, 1)
+    se opc === "$"
+      p0.mudar("", i, 1)
+      i += 1
+    senao opc === txtmai(opc)
+      lin = p0.texto(i+2)
+      p0.mudar(opcmai_[opc](lin), i, inttotal(lin)+2)
+    senao opc === txtmin(opc)
+      lin = p0.texto(i+2)
+      p0.mudar(opcmin_[opc](lin), i, inttotal(lin)+2)
+    senao
+      p0.mudar("", i, 2)
+    fimse
+  efim
+  arg1.msg(t0.remove(1000))
+
+func opcmai_p # Nome do personagem
+  se r == perso
+    ret "Você" + arg0
+  senao !(~r.bitver & perso.bitinv)
+    ret txtmaimin(perso.nome) + arg0
+  senao perso.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_p # Nome do personagem
+  se r == perso
+    ret "você" + arg0
+  senao !(~r.bitver & perso.bitinv)
+    ret txtmin(perso.nome) + arg0
+  senao perso.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_a # Nome do alvo
+  se r == alvo
+    ret "Você" + arg0
+  senao !(~r.bitver & alvo.bitinv)
+    ret txtmaimin(alvo.nome) + arg0
+  senao alvo.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_a # Nome do alvo
+  se r == alvo
+    ret "você" + arg0
+  senao !(~r.bitver & alvo.bitinv)
+    ret txtmin(alvo.nome) + arg0
+  senao alvo.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmai_o # Nome do objeto
+  se r == obj
+    ret "Você" + arg0
+  senao !(~r.bitver & obj.bitinv)
+    ret txtmaimin(obj.nome) + arg0
+  senao obj.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_o # Nome do objeto
+  se r == obj
+    ret "você" + arg0
+  senao !(~r.bitver & obj.bitinv)
+    ret txtmin(obj.nome) + arg0
+  senao obj.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_q # Gênero do personagem
+  se perso.perso
+    ret txtmai(perso.sexo) + arg0
+  senao perso.sexo == "O"
+    ret "Um" + arg0
+  senao
+    ret "Uma" + arg0
+
+func opcmin_q # Gênero do personagem
+  se perso.perso
+    ret txtmin(perso.sexo) + arg0
+  senao perso.sexo == "O"
+    ret "um" + arg0
+  senao
+    ret "uma" + arg0
+
+func opcmai_r # Gênero do alvo
+  se alvo.perso
+    ret txtmai(alvo.sexo) + arg0
+  senao alvo.sexo == "O"
+    ret "Um" + arg0
+  senao
+    ret "Uma" + arg0
+
+func opcmin_r # Gênero do alvo
+  se alvo.perso
+    ret txtmin(alvo.sexo) + arg0
+  senao alvo.sexo == "O"
+    ret "um" + arg0
+  senao
+    ret "uma" + arg0
+
+func opcmai_s # Gênero do objeto
+  se obj.perso
+    ret txtmai(obj.sexo) + arg0
+  senao obj.sexo == "O"
+    ret "Um" + arg0
+  senao
+    ret "Uma" + arg0
+
+func opcmin_s # Gênero do objeto
+  se obj.perso
+    ret txtmin(obj.sexo) + arg0
+  senao obj.sexo == "O"
+    ret "um" + arg0
+  senao
+    ret "uma" + arg0
+
+#func opcmai_a
+## arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
+#ret "teste" + arg0 # Substitui "$a" por "teste"
+
+#func opcmin_a
+#ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
+## Ou assim: ret txttroca("R$", "$", "$$") + arg0

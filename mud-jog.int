@@ -1,0 +1,279 @@
+classe jogsock
+# Comunicação com o jogador
+# Funções predefinidas:
+# ini = objeto foi criado
+# fim = objeto está sendo apagado
+# info = tipo (l=local, t=telnet, p=papovox, b=bot) + espaço + extra
+# sendo que extra pode ser o endereço IP ou o nome da sala
+# msg(texto) = envia mensagem para jogador
+# msgsala(texto) = envia mensagem para todos da sala
+# msgtodos(texto) = envia mensagem para todos os jogadores
+# recebe(texto) = executado sempre que receber mensagem do jogador
+ref p # Personagem do jogador
+const ini = p = criar("jogador", este)
+const fim = p.fechou
+const recebe = p.recebe(arg0)
+
+
+classe jogador_int
+# Variáveis internas do jogador, geralmente comunicação
+const msg = sock.msg(arg0) # Mensagem para o jogador
+ref sock # Para comunicação com o jogador
+indiceobj u_nome # "uc " + nome do personagem codificado
+sav txt16 nome # Nome do personagem
+txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
+sav txt40 salanome # Nome da sala
+inttempo vazio # Tempo sem comunicação para desconectar do MUD
+uint8 vazio2 # 0=vazio envia mensagem de aviso, 1=vazio sai do MUD
+inttempo salvarev # Para salvar o jogo de tempos em tempos
+sav uint8 canais # Canais: +1 se recebe pvt, +2 se recebe chat
+
+classe jogador_passo
+# Funções que processam a variável passo
+txt20 passo # Passo atual; "" se estiver jogando
+txt100 tpasso # Texto usado no passo atual
+textotxt teditor # Texto usado no editor
+
+const m_perso = msg("Digite o nome do seu personagem")
+const m_sexo = msg("Você é homem ou mulher? Tecle O ou A")
+const m_senha = msg("Personagem está registrado; digite a senha ou z para desistir")
+const m_senha1 = msg("Digite a senha atual ou z para desistir")
+const m_senha2 = msg("Digite a nova senha do jogo ou z para desistir")
+const m_senha3 = msg("Digite novamente a senha")
+
+func mudasenha # Para mudar a senha
+  se senha
+    passo = "senha1", m_senha1
+  senao
+    passo = "senha2", m_senha2
+
+func p_perso # Digitar o nome do personagem
+  indiceitem ind
+  txt20 texto
+  arqsav sav1
+  texto = txtnome(arg0)
+  se inttotal(arg0) < 3 || inttotal(arg0) > 16
+    msg("O nome deve ter de 3 a 16 caracteres; digite outro")
+  senao intnome(arg0) || txtproc(arg0, " ") >= 0
+    msg("Nome inválido; digite outro")
+  senao ind.obj("uc " + texto).sock
+    msg("Nome já está sendo usado; digite outro")
+  senao !sav1.existe("jog-" + texto + ".sav") # Novo personagem
+    nome = txtmaimin(arg0)
+    u_nome = "uc " + texto
+    msg("Criando personagem " + nome)
+    passo = "sexo", m_sexo
+  senao
+    tpasso = txtmaimin(arg0)
+    passo = "senha", m_senha
+  fimse
+  ret 1
+
+func p_sexo # Digitar O ou A
+  se arg0 != "O" && arg0 != "A"
+    m_sexo
+    ret 1
+  fimse
+  sexo = txtmin(arg0)
+  passo = ""
+  nivel = 1
+  posicao = 8
+  bitver = 3
+  canais = 255 # Habilita todos os canais
+  msg("Iniciando jogo; para ajuda tecle AJUDA")
+  mudasala(config:salaini)
+  ret 1
+
+func p_senha # Entrar com a senha para carregar jogo salvo
+  indiceitem ind
+  txt20 texto
+  arqsav sav1
+  ref r
+  texto = txtnome(tpasso)
+#msg(texto + " , " + arg0)
+  r = ind.obj("uc " + texto)
+  se arg0 == "z"
+    nome = ""
+    passo = "perso", m_perso
+  senao r.sock
+    msg("Outro usuário começou a usar esse personagem")
+    nome = ""
+    passo = "perso", m_perso
+  senao !sav1.senha("jog-" + texto + ".sav", txtmin(arg0))
+    msg("Senha incorreta; digite outra ou z para desistir")
+  senao r
+    r.sock = sock # Liga "jogsock" a "jogador"
+    r.sock.p = r # Liga "jogador" a "jogsock"
+    sock = nulo # Apaga objeto "jogador"
+    apagar(este)
+    r.msg("Reconectado")
+    r.recebe("ver")
+  senao
+    listaobj l1
+    l1.addfim(este)
+    sav1.ler("jog-" + texto + ".sav", l1)
+    passo = ""
+    nome = tpasso
+    u_nome = "uc " + texto
+    senha = txtmin(arg0)
+    mudasala($[arg0.salanome])
+    nivel==0 && (nivel = 1)
+    msg("Continuando jogo salvo.")
+    !sala && mudasala(config:salaini)
+    $mens.p(arg0)
+    $mens.mvis2("", "$P chegou.")
+    salvarev = 3000 # 5 minutos
+  fimse
+  ret 1
+
+func p_senha1 # Digitar a senha atual para mudar a senha
+  se arg0 == "z"
+    passo = ""
+    msg("Cancelado")
+  senao arg0 != senha
+    msg("Senha incorreta; cancelado")
+    passo = ""
+  senao
+    passo = "senha2", m_senha2
+  fimse
+  ret 1
+
+func p_senha2 # Digitar a nova senha
+  se arg0 == "z"
+    passo = ""
+    msg("Cancelado")
+  senao inttotal(arg0) < 5 || inttotal(arg0) > 16
+    msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+  senao intsenha(arg0) == 3
+    msg("Senha deve ter letras e números, digite outra")
+  senao intsenha(arg0)
+    msg("Senha inválida, digite outras")
+  senao
+    tpasso = arg0
+    passo = "senha3", m_senha3
+  fimse
+  ret 1
+
+func p_senha3 # Repetir a senha digitada
+  se tpasso != arg0
+    msg("As senhas são diferentes; cancelado")
+    passo = "", tpasso = ""
+    ret 1
+  senao
+    senha = txtmin(arg0)
+    se salvar
+      msg("Jogo salvo")
+    senao
+      msg("Não foi possível salvar")
+    fimse
+    passo = "", tpasso = ""
+    ret 1
+
+
+classe jogador
+herda jogador_int, jogador_passo, jogador_adm, perso
+# Personagem no jogo
+const jog = 1 # Para identificar que é jogador
+const ident = nome
+sav uint16 nivel # Nível atual do jogador; 0 se estiver entrando no jogo
+sav uint8 bitver # O que o personagem pode ver
+sav uint8 bitinv # Grau de invisibilidade do personagem
+inttempo salaev # Para gerar eventos "entrou" na sala
+uint32 salaev2 # salaev2-salaev = Quanto tempo faz que entrou na sala
+textovar lvar # Lista de variáveis não salvas no jogo
+sav textovar svar # Lista de variáveis que são salvas no jogo
+textotxt txtmais # Texto do tecle M para mais
+const admin = 1 # Se é administrador
+
+func ini # Objeto foi criado
+# arg0 = objeto que comunica com o jogador
+  sock = arg0
+  passo = "perso", m_perso
+
+func fim # Objeto foi apagado
+  salvar
+  se posic
+    $mens.p(este)
+    $mens.mvis2("", "$P foi embora.")
+  fimse
+  casovar txt1(sock.info)
+  casose "t" # Conectado via Papovox
+  casose "p" # Conectado via Telnet
+    apagar(sock)
+    sair
+  casose "l" # Jogando localmente
+    terminar
+  casose "b" # Como bot
+    sock && (sock.p = criar("jogador", sock))
+  casofim
+
+func fechou
+  vazio2 = 0, vazio = 1800 # 3 minutos
+  se senha == ""
+    apagar(este)
+
+func mudasala # Coloca usuário em outra sala (arg0 = sala)
+  mudadono(arg0)
+  salanome = dono, salaev = salaev2 = 1
+  dono.entrou(este)
+
+func txtmostra # Mostra próximo bloco de txtmais
+  se txtmais.linhas <= 10
+    msg(txtmais.remove(10))
+  senao
+    msg(txtmais.remove(9))
+    msg("Tecle M para mais")
+
+func recebe
+# Checa tempo para sair
+  vazio2 = 0
+  casovar txt1(sock.info)
+  casose "t" # Conectado via Papovox
+  casose "p" # Conectado via Telnet
+    vazio = 3000 # 5 minutos
+    sair
+  casose # Rodando como bot ou independente
+    vazio = 0 # Não desconectar
+  casofim
+# Teclar M para mais
+  se arg0 == "m" && txtmais.linhas
+    txtmostra
+# Passo atual / executa comando
+  senao !p_[passo](arg0)
+    teclou(arg0)
+
+func salaev_exec # Executa eventos entrou
+  prog p
+  uint32 x
+  uint32 v
+  x = 1000000, p.inifunc(dono, "entrou")
+  enquanto p.lin
+    v = txt(p.texto, 6)
+    v > salaev2 && v < x && (x = v)
+    p.depois
+  efim
+  v = salaev2
+  salaev = x - salaev2
+  salaev2 = x
+  dono.entrou[v](este)
+
+func vazio_exec # Sair do MUD automaticamente
+  se vazio2
+    apagar(este)
+  senao
+    vazio2 = 1, vazio = 200
+    $mens.p(este)
+    $mens.mvis2("Você caminha em direção ao vazio.", "$P caminha em direção ao vazio.")
+
+func salvar # Salva o jogo, desde que a senha não seja nula
+# Retorna verdadeiro se conseguiu salvar
+  se senha
+    arqsav sav1
+    listaobj l0
+    l0.addfim(este)
+    salvarev = 3000 # 5 minutos
+  msg(txt2(u_nome) + " , " + senha)
+    ret sav1.salvar("jog-" + txt2(u_nome) + ".sav", l0, 30, senha)
+
+func salvarev_exec
+  salvar

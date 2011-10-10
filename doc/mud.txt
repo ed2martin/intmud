@@ -1,0 +1,202 @@
+Editor do MUD
+
+l  Exibe todo o texto
+l <início> <fim>  Exibe o intervalo de linhas de início a fim
+c  Apaga todo o texto, deixando uma linha em branco
+d <linha> Exclui a linha indicada
+i <linha> Insere uma linha em branco antes da indicada
+r <texto antigo> <texto novo>  Troca
+a Cancela a edição cancelando as alterações
+p Exibe informações sobre a sessão de edição atual
+s Finaliza o editor e salva as alterações
+f <intervalo> <largura> Formata o texto em parágrafos e elimina
+     espaços duplicados exceto no começo da primeira linha.
+
+----------------------------------------
+Caracteres especiais em mensagens (mud-mens.inv)
+
+$ + letra maiúscula = primeira letra do texto em maiúscula
+$ + letra minúscula = texto em letras minúsculas
+$$ = Símbolo $
+$P = Nome do personagem
+$A = Nome do alvo
+$O = Nome do objeto
+$Q = Depende do personagem: "o", "a", "um" ou "uma"
+$R = Depende do alvo: "o", "a", "um" ou "uma"
+$S = Depende do objeto: "o", "a", "um" ou "uma"
+
+----------------------------------------
+Eventos
+
+São processados eventos na seguinte ordem:
+jogador, sala, listaobj eventos do jogador, listaobj eventos da sala
+
+Existem dois tipos de eventos:
+1. Retornam verdadeiro se deve parar de processar o comando.
+2. O comando será processado independente de retornar verdadeiro.
+
+Eventos existentes:
+evescr(personagem, texto) Jogador escreveu alguma coisa
+evfalar(personagem, texto) Jogador "falou" alguma coisa
+evmover(personagem, direção) Vai para a sala na direção especificada
+
+----------------------------------------
+Salas (mud-sala.int)
+
+*listaobj dentro
+Lista de personagens e itens na sala
+Jogadores estão sempre no começo da lista
+
+*listaobj evento
+Objetos que recebem eventos da sala
+
+*ref dir_[direção]
+Sala na direção especificada.
+Geralmente definido dessa forma: const dir_s = $sala1
+As direções válidas são: n s l o ne no se so c b
+Se estiver ausente, não há sala nessa direção
+
+*uint8 tipo_[direção]
+*const tipoini_[direção]
+Especifica o tipo de saída em determinada direção.
+Tipo é o valor atual, geralmente definido dessa forma: uint8 tipo_s
+TipoIni é o valor inicial, geralmente definido dessa forma: const tipo_s = 2
+0 = não há porta
+1 = está aberto
+2 = está fechado
+3 = está trancado
+Somar 4 se for invisível (não aparece na lista de saídas)
+Somar 8 se porta é trancada quando for fechada
+Se estiver ausente, assume 0
+
+*func txtsai
+Retorna as saídas existentes (texto)
+
+*func descsala( jogador, modo )
+Adiciona texto com a descrição da sala
+Se modo=0, mostra o mais curto possível
+Somar 1 para mostrar descrição completa
+Somar 2 para mostrar saídas
+
+*func descitens( jogador )
+Adiciona texto com descrição dos itens para um jogador
+
+*func entrou
+Executado logo que o personagem entra na sala. arg0=objeto que entrou.
+Geralmente o que essa função faz é mostrar a descrição da sala,
+bem como as saídas existentes.
+
+*func entrou[tempo em décimos de segundo]
+Executado depois do jogador entrar na sala, após o tempo especificado
+no nome da função (em décimos de segundo).
+Na função: arg0=objeto do jogador.
+Exemplo:
+func entrou10 # Executado 1 segundo após entrar na sala
+msg("Alguém disse bom dia.") # Envia mensagem para o jogador
+
+*func escr
+Executado quando um jogador digita alguma coisa na sala.
+Na função: arg0=objeto do jogador, arg1=o que digitou.
+Deve retornar verdadeiro se o comando já foi processado.
+
+----------------------------------------
+Personagens e itens (mud-perso.int)
+
+*listaitem idono
+Item da sala que contém o personagem
+
+*dono
+Retorna a sala (o objeto) aonde o personagem está
+
+*func mudadono( novo dono )
+Muda o dono do personagem/item, mas não gera nenhum evento
+
+*listaitem idono
+Usado internamente por dono e mudadono
+
+*listaobj dentro
+Lista de itens que possui, carrega ou veste
+
+*listaobj evento
+Objetos que recebem eventos do personagem/item
+
+*varfunc bitev
+Semelhante a int1; indica se deve receber eventos do personagem
+
+*listaitem ibitev
+Usado internamente por bitev
+
+*uint8 bitinv
+Grau de invisibilidade do personagem ou objeto; geralmente é 3
+0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
+somar 1 se invisível a quem estiver cego
+somar 2 se invisível no escuro
+somar 4 se está invisível
+somar 8 se está oculto
+somar 16 se é administrador invisível
+Para saber se um objeto está invisível ao personagem, a fórmula é:
+~este.bitver & objeto.bitinv
+
+*uint8 bitver
+O que está visível ao personagem ou objeto; geralmente é 1 ou 3
+0 = nada (está cego)
+somar 1 se não está cego
+somar 2 se não está escuro (tem luz suficiente para enxergar)
+somar 4 se pode ver invisível
+somar 8 se pode ver oculto
+somar 16 se pode ver administradores invisíveis
+
+*texto ident
+Nomes que o jogador digita para ações com o personagem ou item
+Exemplo: ao pegar um item ou atacar um personagem
+
+*txt16 nome
+Nome do personagem ou item, usado em ações com o objeto
+
+*txt1 sexo
+"O" ou "A", se é usado como masculino ou feminino
+
+*texto descpos
+Descrição quando está na sala; arg0=quem quer ver
+
+*texto descver
+Descrição, quando olha para o objeto; arg0=quem quer ver
+
+*func itemnome( lista , texto )
+Procura um item pelo nome
+Lista é uma variável listaobj com os possíveis candidados
+Texto é o texto procurado, exemplos:
+"banana" -> procura um item chamado banana
+"2.banana" -> procura a segunda banana
+"10 banana" -> procura 10 itens chamados banana
+Essa função altera a lista mantendo apenas os itens que correspondem
+
+----------------------------------------
+Personagens (mud-perso.int)
+
+*const perso = 1
+Para identificar que é personagem
+
+*sav txt1 sexo
+Sexo: "O" ou "A"
+
+*sav uint32 moedas
+Quantas moedas está carregando
+
+*sav uint8 posicao
+Posição do personagem:
+0 = morto
+1 = mortalmente ferido
+2 = incapacitado
+3 = fraco
+4 = dormindo
+5 = descansando
+6 = sentado
+7 = lutando
+8 = em pé
+
+*const pospadr = 8
+Posição padrão do personagem
+
+----------------------------------------
+Itens
