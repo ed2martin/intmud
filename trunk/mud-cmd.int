@@ -1,0 +1,414 @@
+classe com_exec
+# Contém os objetos que tratam cada comando
+# Vide classe com_comum, abaixo
+const c_ = $com_vazio # Não digitou nada
+#const c_m = $com_mais
+# Direções
+const c_n = $com_move_norte
+const c_s = $com_move_sul
+const c_l = $com_move_leste
+const c_o = $com_move_oeste
+const c_c = $com_move_cima
+const c_b = $com_move_baixo
+const c_e = $com_move_leste
+const c_w = $com_move_oeste
+const c_u = $com_move_cima
+const c_d = $com_move_baixo
+const c_ne = $com_move_nordeste
+const c_no = $com_move_noroeste
+const c_se = $com_move_sudeste
+const c_so = $com_move_sudoeste
+const c_nw = $com_move_noroeste
+const c_sw = $com_move_sudoeste
+# Administração
+const c_adm = $com_adm
+const c_echo = $com_echo
+const c_larea = $com_larea
+const c_carea = $com_carea
+const c_aarea = $com_aarea
+const c_earea = $com_earea
+# Outros
+const c_abrir = $com_abrir
+const c_ajuda = $com_ajuda
+const c_chat = $com_chat
+const c_falar = $com_falar
+const c_fechar = $com_fechar
+const c_inv = $com_inv
+const c_pegar = $com_pegar
+const c_quem = $com_quem
+const c_quit = $com_sair
+const c_sair = $com_sair
+const c_soltar = $com_soltar
+const c_ver = $com_ver
+const c_db = $com_debug
+
+classe comdir
+# Direções
+const dn = "n"
+const ds = "s"
+const dl = "l"
+const do = "o"
+const dc = "c"
+const db = "b"
+const de = "l"
+const dw = "o"
+const du = "c"
+const dd = "b"
+const dne = "ne"
+const dno = "no"
+const dse = "se"
+const dso = "so"
+const dnw = "no"
+const dsw = "so"
+# Direções opostas
+const on = "s"
+const os = "n"
+const ol = "o"
+const oo = "l"
+const oc = "b"
+const ob = "c"
+const oe = "o"
+const ow = "l"
+const ou = "b"
+const od = "c"
+const one = "no"
+const ono = "ne"
+const ose = "so"
+const oso = "se"
+const onw = "ne"
+const osw = "se"
+
+classe com_comum
+const nivel = 1 # Nível mínimo para usar o comando
+const posic = 8 # Posição mínima para usar o comando
+const pode = 1 # Se comando existe para o personagem (arg0=personagem, arg1=texto)
+const iniclasse = criar(arg0) # Cria um objeto do comando
+func exec # Executa o comando
+# arg0=personagem
+# arg1=comando que escreveu
+# arg2=texto após o comando
+  arg0.msg("Você digitou " + arg1 + " " + arg2)
+
+classe com_vazio
+const nivel = 0
+const posic = 0
+const pode = 1
+const iniclasse = criar(arg0) # Cria um objeto do comando
+func exec # Executa o comando
+  arg0.msg("O que?")
+
+classe com_move
+herda com_comum
+# Movimenta-se em uma direção
+const iniclasse = criar(arg0)
+
+func exec1 # Executa o comando
+# arg0 = personagem
+# arg1 = direção
+# arg2 = mensagem de saída
+# arg3 = mensagem de chegada
+  ref s1
+  s1 = arg0.dono
+  listaobj l0
+  l0.addfim(arg0, arg0.dono, arg0.eventos, arg0.dono.eventos)
+  enquanto l0 && !l0.ini.obj.evmover(arg0, arg1)
+    l0.ini.remove
+  efim
+  se l0 # Retorna se lista não estiver vazia
+  senao ref(s1.dir_[arg1]) == nulo
+    arg0.msg("Impossível seguir nessa direção.")
+  senão s1.tipo_[arg1] & 3 >= 2
+    arg0.msg("A porta está fechada.")
+  senão
+    $mens.p(arg0)
+    $mens.mvis2("", "$P foi " + arg2)
+    arg0.mudasala(s1.dir_[arg1])
+    $mens.mvis2("", "$P chegou " + arg3)
+
+classe com_move_norte
+herda com_move
+const exec = exec1(arg0, "n", "para o norte.", "do sul.")
+
+classe com_move_sul
+herda com_move
+const exec = exec1(arg0, "s", "para o sul.", "do norte.")
+
+classe com_move_leste
+herda com_move
+const exec = exec1(arg0, "l", "para o leste.", "do oeste.")
+
+classe com_move_oeste
+herda com_move
+const exec = exec1(arg0, "o", "para o oeste.", "do leste.")
+
+classe com_move_cima
+herda com_move
+const exec = exec1(arg0, "c", "para cima.", "de baixo.")
+
+classe com_move_baixo
+herda com_move
+const exec = exec1(arg0, "b", "para baixo.", "de cima.")
+
+classe com_move_nordeste
+herda com_move
+const exec = exec1(arg0, "ne", "para o nordeste.", "do noroeste.")
+
+classe com_move_noroeste
+herda com_move
+const exec = exec1(arg0, "no", "para o noroeste.", "do nordeste.")
+
+classe com_move_sudeste
+herda com_move
+const exec = exec1(arg0, "se", "para o sudeste.", "do sudoeste.")
+
+classe com_move_sudoeste
+herda com_move
+const exec = exec1(arg0, "so", "para o sudoeste.", "do sudeste.")
+
+classe com_abrir
+herda com_comum
+func exec
+  txt10 dir
+  dir = comdir:d[arg2]
+  se arg0 == ""
+    arg0.msg("Abrir o que?")
+  senao dir
+    se !arg0.dono.dir_[dir]
+      arg0.msg("Não há porta nessa direção.")
+      ret
+    fimse
+    casovar 3 & arg0.dono.tipo_[dir]
+    casose "0"
+      arg0.msg("Não há porta nessa direção.")
+      ret
+    casose "1"
+      arg0.msg("Porta já está aberta.")
+      ret
+    casose "2"
+      arg0.dono.mudatipo(dir, arg0.dono.tipo_[dir] - 1) # Abre a porta
+      $mens.p(arg0)
+      $mens.mtodos1("$P abriu uma porta.")
+      ret
+    casose "3"
+      arg0.msg("Porta está trancada.")
+      ret
+    casofim
+  senao
+    arg0.msg("Não foi possível abrir " + arg2 + ".")
+
+classe com_fechar
+herda com_comum
+func exec
+  txt10 dir
+  dir = comdir:d[arg2]
+  se arg0 == ""
+    msg("Abrir o que?")
+  senao dir
+    se !arg0.dono.dir_[dir]
+      arg0.msg("Não há porta nessa direção.")
+      ret
+    fimse
+    casovar 3 & arg0.dono.tipo_[dir]
+    casose "0"
+      arg0.msg("Não há porta nessa direção.")
+      ret
+    casose "1"
+      arg0.dono.mudatipo(dir, arg0.dono.tipo_[dir] + 1) # Fecha a porta
+      $mens.p(arg0)
+      $mens.mtodos1("$P fechou uma porta.")
+      ret
+    casose "2"
+    casose "3"
+      arg0.msg("Porta já está fechada.")
+      ret
+    casofim
+  senao
+    arg0.msg("Não foi possível fechar " + arg2 + ".")
+
+classe com_falar
+herda com_comum
+const posic = 5
+func exec
+  $mens.p(arg0)
+  se txt(arg2, 0, 3) == "..."
+    $mens.mtodos1("$P continuou: " + txttroca(arg2, "$", "$$"))
+  senao txtfim(arg2, 1) == "?"
+    $mens.mtodos1("$P perguntou: " + txttroca(arg2, "$", "$$"))
+  senao txtfim(arg2, 1) == "!"
+    $mens.mtodos1("$P exclamou: " + txttroca(arg2, "$", "$$"))
+  senao txtfim(arg2, 3) == "..."
+    $mens.mtodos1("$P ponderou: " + txttroca(arg2, "$", "$$"))
+  senao
+    $mens.mtodos1("$P disse: " + txttroca(arg2, "$", "$$"))
+  fimse
+# Executa eventos
+  listaobj l0
+  l0.addfim(arg0, arg0.dono, arg0.eventos, arg0.dono.eventos)
+  enquanto l0 && l0.ini.obj.evfalar(este, arg0)
+    l0.ini.remove
+  efim
+
+classe com_chat
+herda com_comum
+const posic = 0
+func exec
+  $mens.p(arg0)
+  se !arg2
+    arg0.canais = arg0.canais ^ 2
+    se arg0.canais & 2
+      arg0.msg("Canal chat habilitado.")
+    senao
+      arg0.msg("Canal chat desabilitado")
+    fimse
+  senao !(arg0.canais & 2)
+    arg0.msg("Canal chat está desabilitado.")
+  senao
+    ref obj
+    obj = $jogador
+    enquanto obj
+      (obj.canais & 2) && obj.msg("(chat) " + arg0.nome + ": " + arg2)
+      obj = objdepois(obj)
+    efim
+
+classe com_quem
+herda com_comum
+const posic = 0
+func exec
+  ref r
+  textotxt t0
+  txt100 t1
+# Obtém lista de jogadores
+  r = $jogador
+  enquanto r
+    se r.nivel
+      t1 = txt(99999 * 99999 - r.nivel) + " "
+      t1 += txtfim("      " + r.nivel, 6) + "  " + r.nome
+      r.sock == nulo && (t1 += "  [Desconectado]")
+      t0.addfim(t1)
+    fimse
+    r = objdepois(r)
+  efim
+# Ordena
+  t0.ordena
+# Mostra para o jogador
+  arg0.msg("Personagens online: " + t0.linhas)
+ enquanto t0.linhas
+    arg0.msg("N" + txt2(t0.remove))
+  efim
+
+classe com_sair
+herda com_comum
+const posic = 0
+func exec
+  arg0.msg("Até mais. Aguardamos o seu retorno.")
+  apagar(arg0)
+
+classe com_ver
+herda com_comum
+const posic = 5
+func exec
+  se !arg2
+    ref r
+    r = arg0.dono
+    arg0.txtmais.limpar
+    r.descsala(arg0, 3)
+    r.descitens(arg0)
+    arg0.txtmostra
+    ret
+  fimse
+  listaobj l
+  l.addfim(arg0.dono.dentro)
+  arg0.itemnome(l, "1 " + arg2)
+  se l.ini
+    arg0.msg(txtmaimin(l.ini.obj.nome) + ".")
+    arg0.msg(l.ini.obj.descver)
+    ret
+  fimse
+  arg0.msg("Você não vê isso.")
+  ret
+
+classe com_pegar
+herda com_comum
+func exec
+  se !arg2
+    arg0.msg("Pegar o que?")
+    ret
+  fimse
+  listaobj l
+  l.addfim(arg0.dono.dentro)
+  arg0.itemnome(l, arg2)
+  se !l.ini
+    arg0.msg("Você não vê isso.")
+    ret
+  fimse
+  enquanto l
+    se l.ini.obj.perso
+      arg0.msg("Você não pode pegar " + l.ini.obj.nome)
+    senao
+      l.ini.obj.mudadono(arg0)
+      $mens.p(arg0, l.ini.obj)
+      $mens.mvis1("$P pega $r $a.")
+    fimse
+    l.ini.remove
+  efim
+
+classe com_soltar
+herda com_comum
+func exec
+  se !arg2
+    arg0.msg("Soltar o que?")
+    ret
+  fimse
+  listaobj l
+  l.addfim(arg0.dentro)
+  arg0.itemnome(l, arg2)
+  se !l.ini
+    arg0.msg("Você não vê isso.")
+    ret
+  fimse
+  enquanto l
+    se l.ini.obj.perso
+      arg0.msg("Você não pode pegar " + l.ini.obj.nome)
+    senao
+      l.ini.obj.mudadono(arg0.dono)
+      $mens.p(arg0, l.ini.obj)
+      $mens.mvis1("$P solta $r $a.")
+    fimse
+    l.ini.remove
+  efim
+
+classe com_inv
+herda com_comum
+const posic = 5
+func exec
+  textotxt t
+  listaobj l
+  l.addfim(arg0.dentro)
+  enquanto l
+    !(~arg0.bitver & l.ini.obj.bitinv) && t.addfim("1 " + l.ini.obj.nome)
+    l.ini.remove
+  efim
+  t.juntalin("(", "x) ")
+  se t.linhas
+    t.addini("Você carrega:")
+  senao
+    t.addini("Você não está carregando nada.")
+  fimse
+  arg0.txtmais.limpar
+  arg0.txtmais.fim.add(t.ini, t.linhas)
+  arg0.txtmostra
+
+classe com_debug
+herda com_comum
+const posic = 0
+func exec
+  arg0.msg("Sala: " + arg0.dono)
+  listaobj l0
+  l0.addfim(arg0.dono.dentro)
+  l0.remove(arg0)
+  enquanto l0
+    arg0.msg(" usr: " + l0.ini.obj + "/" + l0.ini.obj.jog)
+    l0.ini.remove
+  efim
+  arg0.msg("ver=" + arg0.bitver + " inv=" + arg0.bitinv)
+  arg0.msg("visível? " + !(~bitver & bitinv))

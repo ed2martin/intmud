@@ -1,0 +1,477 @@
+classe com_adm
+herda com_comum
+const posic = 0
+const pode = arg0.admin && txt1(arg1) == "adm"
+func exec
+  se !arg2
+    arg0.msg(admini:txt(arg0))
+    ret
+  fimse
+  prog p
+  p.iniclasse("adm_" + arg2)
+  enquanto p.lin
+    se !(~arg0.bitvis & [p.texto]:bitinv)
+      arg0.txtmais.limpar
+      arg0.txtmais.addfim([p.texto]:txt(arg0))
+      arg0.txtmostra
+      ret
+    fimse
+  efim
+  arg0.msg("\bTópico de administração desconhecido: " + arg2)
+
+classe admini
+const txt = "\b\c3Páginas de administração\b\n\
+Para ler tecle adm seguido do nome de um tópico.\n\
+Os tópicos são:\n\
+  \c2AREA\b     Áreas\n\
+  \c2SALA\b     Salas\n\
+  \c2SAI\b      Saídas das salas\n\
+  \c2ITEM\b     Itens\n\
+  \c2MOB\b      MOBs (personagens não jogadores)\n\
+  \c2OUTROS\b   Outros comandos"
+#  \c2INFO\b     Informações sobre o MUD\n\
+#  \c2CONFIG\b   Configuração do MUD"
+
+classe adm_area
+const txt = "\b\c3Comandos de áreas\b\n\
+\c2LAREA\b [nome]\n\
+  Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
+\c2CAREA\b <nome>\n\
+  Cria área. Nomes de área devem ter de 2 a 16 letras de A a Z.\n\
+\c2EAREA\b [nome]\n\
+  Edita área. Se o nome for omitido, edita a área em que você está.\n\
+\c2AAREA\b <nome>\n\
+  Apaga área, desde que não tenha nenhuma sala."
+
+classe adm_sala
+const txt = "\b\c3Comandos de salas\b\n\
+\c2LSALA\b <nome>\n\
+  Lista salas que começam com o nome especificado.\n\
+\c2ISALA\b <nome>\n\
+  Vai para a sala especificada.\n\
+\c2CSALA\b <nome>\n\
+  Cria sala com o nome especificado. Nomes de sala devem ser o nome\n\
+  da área seguido de um número de 001 a 999 (três dígitos).\n\
+\c2CSALA\b <direção>\n\
+  Cria sala na direção especificada. Cria automaticamente uma saída\n\
+  com a sala em que você está. Exemplo: csala ne\n\
+\c2ESALA\b [nome]\n\
+  Edita sala. Se o nome for omitido, edita a sala em que você está.\n\
+\c2ASALA\b <nome>\n\
+  Apaga sala."
+
+classe adm_sai
+const txt = "\b\c3Comandos de saídas das sala\b\n\
+\c2SAI\b\n\
+  Mostra saídas da sala em que você está.\n\
+\c2SAI\b <direção>\n\
+  Apaga saída na direção especificada.\n\
+\c2SAI\b <direção> <sala>\n\
+  Cria saída na direção especificada.\n\
+\c2SAI\b <direção> <modo> [código da chave]\n\
+  Edita tipo de saída na direção especificada.\n\
+\c2FSAI\b <direção>\n\
+  Edita saída na direção especificada como função."
+
+classe adm_item
+const txt = "\b\c3Comandos de itens\b\n\
+\c2LITEM\b <nome>\n\
+  Lista itens que começam com o nome especificado.\n\
+\c2CITEM\b <nome>\n\
+  Cria item. Nome pode conter letras e números.\n\
+\c2EITEM\b <nome>\n\
+  Edita item.\n\
+\c2AITEM\b <nome>\n\
+  Apaga item."
+
+classe adm_mob
+const txt = "\b\c3Comandos de MOBs\b\n\
+\c2LMOB\b <nome>\n\
+  Lista mobs que começam com o nome especificado.\n\
+\c2CMOB\b <nome>\n\
+  Cria mob. Nome pode conter letras e números.\n\
+\c2EMOB\b <nome>\n\
+  Edita mob.\n\
+\c2AMOB\b <nome>\n\
+  Apaga mob."
+
+classe adm_outros
+const txt = "\c3Outros comandos\b\n\
+\c2ECHO\b <texto>\n\
+  Envia texto para todos os jogadores."
+
+classe com_echo
+herda com_comum
+const posic = 0
+const pode = arg0.admin && txt1(arg1) == "echo"
+func exec
+  se !arg2
+    arg0.msg("\bDigite a mensagem após ECHO")
+  senao
+    ref obj
+    obj = $jogador
+    enquanto obj
+      obj.msg("\b\cB*ADM: " + arg2 + "\b")
+      obj = objdepois(obj)
+    efim
+
+classe com_larea
+herda com_comum
+const posic = 0
+const pode = arg0.admin && txt1(arg1) == "larea"
+func exec
+  prog p
+  se !p.iniclasse("a_" + arg2)
+    arg0.msg("\bNenhuma área encontrada.")
+  senao
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("\bÁreas (prefixo, nome, autor):")
+    enquanto p.lin
+      arg0.txtmais.addfim(txt(p.texto, 2) + ", " + [p.texto]:a_nome + ", " + [p.texto]:a_autor)
+      p.depois
+    efim
+    arg0.txtmostra
+
+classe com_carea
+herda com_comum
+const posic = 0
+const pode = arg0.admin && txt1(arg1) == "carea"
+func exec
+  txt100 prefixo
+  prefixo = txtmin(arg2)
+  se $a_[prefixo]
+    arg0.msg("\bÁrea já existe: " + prefixo)
+  senao inttotal(prefixo) < 2 || inttotal(prefixo) > 10
+    arg0.msg("\bNome de área deve ter de 2 a 10 caracteres")
+  senao
+    uint8 pos
+    enquanto pos < inttotal(prefixo)
+      se txt(prefixo, pos, 1) < "a" || txt(prefixo, pos, 1) > "z"
+        arg0.msg("\bNome de área deve ter apenas letras de a a z.")
+        ret
+      fimse
+      pos += 1
+    efim
+    prog p
+    p.criar("a_" + prefixo + "\n" + "aa" + prefixo + "\nherda area")
+    p.salvar(config:progsalvar)
+    arg0.msg("\bÁrea criada: " + prefixo)
+
+classe com_aarea
+herda com_comum
+const posic = 0
+const pode = arg0.admin && txt1(arg1) == "aarea"
+func exec
+  txt100 prefixo
+  prog p
+  prefixo = txtmin(arg2)
+  se !$a_[prefixo]
+    arg0.msg("\bÁrea não existe: " + prefixo)
+  senao
+    p.iniclasse("s_" + prefixo)
+    enquanto p.lin
+      se p.texto == "s_" + prefixo + txt(int(txtfim(p.texto, 3)))
+        arg0.msg("\bÁrea contém pelo menos uma sala: " + txt2(p.texto))
+        ret
+      fimse
+    efim
+    p.apagar("a_" + prefixo)
+    p.salvar(config:progsalvar)
+    arg0.msg("\bÁrea apagada: " + prefixo)
+
+classe com_earea
+herda com_comum
+const posic = 0
+const pode = arg0.admin && txt1(arg1) == "earea"
+func exec
+  txt100 prefixo
+  prog p
+  prefixo = txtmin(arg2)
+  se prefixo == ""
+    prefixo = txt(arg0.dono, 2, inttotal(txt(arg0.dono)) - 5)
+  fimse
+  se !$a_[prefixo]
+    arg0.msg("\bÁrea não existe: " + prefixo)
+  senao
+    arg0.msg("Área " + prefixo + ", tecle O para saber as opções")
+    arg0.passo = "area"
+    arg0.tpasso = "a_" + prefixo
+
+
+classe jogador_adm
+
+const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
+
+func p_area # Editando área
+  casovar txtmin(arg0)
+  casose "o"
+    txtmais.limpar
+    txtmais.addfim("\bÁrea " + txt(tpasso, 2))
+    txtmais.addfim("1. Nome:           " + m_texto("a_nome"))
+    txtmais.addfim("2. Autor:          " + m_texto("a_autor"))
+    txtmais.addfim("3. Tempo de reset: " + m_numero("a_tempo"))
+    txtmais.addfim("4. Modo de reset:  " + m_opcao("a_reset", txt_reset))
+    #txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+    txtmais.addfim("Z. Sair")
+    txtmostra
+    ret 1
+  casose "z"
+    msg("Retornando ao jogo")
+    passo = ""
+    ret 1
+  casose "1"
+    tpasso = tpasso + " a_nome area o nome"
+    p_texto("")
+    ret 1
+  casose "2"
+    tpasso = tpasso + " a_autor area o autor"
+    p_texto("")
+    ret 1
+  casose "3"
+    teditor.limpar
+    tpasso = tpasso + " a_tempo area o tempo de reset"
+    p_numero("")
+    ret 1
+  casose "4"
+    teditor.limpar
+    teditor.addfim(txt_reset)
+    tpasso = tpasso + " a_reset area o modo de reset"
+    p_opcao("")
+    ret 1
+  casose
+    msg("Opção inválida: " + arg0)
+  casose ""
+    passo = "area"
+    tpasso = txt1(tpasso)
+    msg("Área " + txt(tpasso, 2) + ":")
+    ret 1
+  casofim
+  ret 1
+
+func p_texto # Altera um texto de uma linha
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o prompt, exemplos: o autor, a descrição, o texto de entrada
+  prog p
+  se arg0 == ""
+    passo = "texto"
+    msg("Entre com " + txtsub(tpasso, 3) + ", N nenhum, Z cancela")
+    ret 1
+  senao arg0 == "n"
+    p.apagar(txtsub(tpasso, 0, 1), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg(txtmaimin(txtsub(tpasso, 4)) + " apagad" + txtsub(tpasso, 3, 1))
+  senao arg0 != "z"
+    txt200 t
+    t = "const " + txtsub(tpasso, 1, 1) + "=\"" + txtvis(arg0) + "\""
+    p.criar(txtsub(tpasso, 0, 1), t)
+    p.salvar(config:progsalvar)
+    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_numero # Altera um texto de uma linha
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o prompt, exemplos: o nome, a opção, o texto de entrada
+# A primeira linha da variável teditor, se não for nula, contém
+# os valores mínimo e máximo da variável
+  prog p
+  se arg0 == ""
+    passo = "numero"
+    msg("Entre com " + txtsub(tpasso, 3) + ", N nenhum, Z cancela")
+    ret 1
+  senao arg0 == "n"
+    p.apagar(txtsub(tpasso, 0, 1), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg(txtmaimin(txtsub(tpasso, 4)) + " apagad" + txtsub(tpasso, 3, 1))
+  senao arg0 != "z"
+    txt100 lin
+    real valor
+    valor = arg0
+    lin = teditor.ini.texto
+    se arg0 != valor # Checa se é número
+      msg("Entre com um número.")
+      ret 1
+    senao lin # Checa limites mínimo e máximo
+      se valor < txt1(lin) || valor > txt2(lin)
+        msg("Entre com um número de " + txt1(lin) + " a " + txt2(lin) + ".")
+        ret 1
+      fimse
+    fimse
+    lin = "const " + txtsub(tpasso, 1, 1) + "=" + valor
+    p.criar(txtsub(tpasso, 0, 1), lin)
+    p.salvar(config:progsalvar)
+    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_opcao # Altera uma opção de uma lista de opções
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o prompt, exemplos: o nome, a opção, o texto de entrada
+# teditor contém as opções
+  prog p
+  se arg0 == ""
+    passo = "opcao"
+    msg("Entre com " + txtsub(tpasso, 3) + ", O opções, Z cancela")
+    ret 1
+  senao arg0 == "o"
+    txtmais.limpar
+    txtmais.addfim("\bOpções:")
+    textopos pos
+    pos = teditor.ini
+    enquanto pos.lin
+      txtmais.addfim(txt(pos.linha) + ". " + pos.texto)
+      pos.depois
+    efim
+    txtmais.addfim("N. Nenhuma")
+    txtmostra
+    ret 1
+  senao arg0 == "n"
+    p.apagar(txtsub(tpasso, 0, 1), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg(txtmaimin(txtsub(tpasso, 4)) + " apagad" + txtsub(tpasso, 3, 1))
+  senao arg0 != "z"
+    textopos pos
+    txt100 lin
+    pos = teditor.ini
+    pos.linha = int(arg0)
+    se arg0 != pos.linha || pos.texto == ""
+      msg("Entre com uma opção de 0 a " + (teditor.linhas - 1))
+      ret 1
+    fimse
+    lin = "const " + txtsub(tpasso, 1, 1) + "=" + pos.linha
+    p.criar(txtsub(tpasso, 0, 1), lin)
+    p.salvar(config:progsalvar)
+    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0 + " " + pos.texto)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func m_texto # Mostra texto de uma linha, do tipo "const x = \"abc\""
+# arg0=nome da variável, tpasso=nome da classe
+  prog p
+  casovar p.existe(tpasso, arg0)
+  casose "1" # Na própria classe
+    se p.vartexto(tpasso, arg0)
+      ret txtvis([tpasso]:[arg0])
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<" + txt1(p.texto) + ">"
+    fimse
+  casose "2" # Em uma classe herdada
+    se p.vartexto(tpasso, arg0)
+      ret "<herda> " + txtvis([tpasso]:[arg0])
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<herda " + txt1(p.texto) + ">"
+    fimse
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func m_numero # Mostra número, do tipo "const x = 10"
+# arg0=nome da variável, tpasso=nome da classe
+  prog p
+  casovar p.existe(tpasso, arg0)
+  casose "1" # Na própria classe
+    se p.varnum(tpasso, arg0)
+      ret txt([tpasso]:[arg0])
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<" + txt1(p.texto) + ">"
+    fimse
+  casose "2" # Em uma classe herdada
+    se p.varnum(tpasso, arg0)
+      ret "<herda> " + txt([tpasso]:[arg0])
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<herda " + txt1(p.texto) + ">"
+    fimse
+  casose # Não foi definido
+    ret "<nulo> 0"
+  casofim
+
+func m_opcao # Mostra uma opção baseado numa lista de opções
+# arg0=nome da variável, arg1=nomes das opções, tpasso=nome da classe
+  prog p
+  casovar p.existe(tpasso, arg0)
+  casose "1" # Na própria classe
+    se p.varnum(tpasso, arg0)
+      ret m_opcao2([tpasso]:[arg0], arg1)
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<" + txt1(p.texto) + ">"
+    fimse
+  casose "2" # Em uma classe herdada
+    se p.varnum(tpasso, arg0)
+      ret "<herda> " + m_opcao2([tpasso]:[arg0], arg1)
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<herda " + txt1(p.texto) + ">"
+    fimse
+  casose # Não foi definido
+    ret "<nulo> " + m_opcao2(0, arg1)
+  casofim
+
+func m_opcao2 # Usado em m_opcao para obter o nome da opção
+  uint16 valor
+  textotxt t
+  valor = arg0
+  t.addfim(arg1)
+  t.remove(valor)
+  se t.linhas
+    ret txt(valor) + " " + t.remove(1)
+  senao
+    ret txt(valor) + " <inválido>"
+
+func m_sala # Informa valor de variável do tipo "const x = $s_abc"
+# arg0=nome da variável, tpasso=nome da classe
+  casovar p.existe(tpasso, arg0)
+  casose "1" # Na própria classe
+    p.inilinha(tpasso, arg0)
+    se txt1(p.texto) != "const"
+      ret "<" + txt1(p.texto) + ">"
+    senao txt(p.texto, 6, inttotal(arg0) + 6) != arg0 + " = $s_"
+      ret "<const>"
+    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
+      ret "<const>"
+    senao
+      ret txt(p.texto, inttotal(arg0) + 10)
+    fimse
+  casose "2" # Em uma classe herdada
+    p.inilinha(tpasso, arg0)
+    se txt1(p.texto) != "const"
+      ret "<herda " + txt1(p.texto) + ">"
+    senao txt(p.texto, 6, inttotal(arg0) + 6) != arg0 + " = $s_"
+      ret "<herda const>"
+    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
+      ret "<herda const>"
+    senao
+      ret "<herda> " + txt(p.texto, inttotal(arg0) + 10)
+    fimse
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_abc"
+# arg0=nome da variável, tpasso=nome da classe
+  se p.existe(tpasso, arg0) != 1 || !p.inilinha(tpasso, arg0)
+    ret 1
+  senao txt1(p.texto) != "const"
+    ret 0
+  senao txt(p.texto, 6, inttotal(arg0) + 6) != arg0 + " = $s_"
+    ret 0
+  senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
+    ret 0
+  senao
+    ret 1

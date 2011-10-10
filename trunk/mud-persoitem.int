@@ -1,0 +1,164 @@
+classe persoitem
+# Personagens e itens
+
+sav uint8 bitver # O que o personagem/item pode ver
+const bitinv = 3 # Grau de invisibilidade do personagem/item
+
+listaitem idono # Aonde o personagem ou item está
+listaitem ibitev # Para receber eventos
+const dono = idono.objlista # Retorna objeto que contém o personagem ou item
+listaobj dentro # Lista de itens que possui, carrega ou veste
+listaobj evento # Objetos que recebem eventos do personagem/item
+
+func ini
+  bitver = 3
+
+func mudadono # Muda o dono do personagem/item (arg0 = novo dono)
+  idono.remove
+  se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
+    ibitev.remove, ibitev = arg0.evento.addfim(este)
+  fimse
+  se !jog || !arg0.dentro # Não jogador ou lista está vazia
+    idono = arg0.dentro.addfim(este)
+  senao
+    idono = arg0.dentro # Procura primeiro item após os jogadores
+    enquanto idono.obj.jog
+      idono.depois
+    efim
+    se idono # Encontrou: adiciona antes
+      idono = idono.addantes(este)
+    senao # Não encontrou: adiciona no fim
+      idono = arg0.dentro.addfim(este)
+
+varfunc bitev
+  se !args # Nenhum argumento: leitura
+    ret int(ibitev)
+  senao # Um argumento: altera valor
+    ibitev.remove
+    arg0 && (ibitev = dono.evento.addfim(este))
+
+func itemnome # Procura um item pelo nome
+# arg0 = listaobj com os possíveis candidatos
+# arg1 = texto digitado, exemplos: "banana", "2.banana", "10 banana"
+# Deixa na lista (em arg0) somente os itens correspondentes
+  nomeobj n # Texto procurado
+  uint16 total # Quantidade de itens
+  total = txt1(arg1)
+  se total == 0 || txt(total) != txt1(arg1)
+    n.ini(arg1, 1)
+  senao total <= 10
+    n.ini(txt2(arg1), total)
+  senao
+    n.ini(txt2(arg1), 10)
+  fimse
+  listaitem i # Para procurar os itens
+  i = arg0.ini
+  enquanto i
+    se !(~bitver & i.obj.bitinv) && n.nome(i.obj.ident)
+      i.depois
+    senao
+      i.removedepois
+    fimse
+  efim
+
+
+classe perso
+herda persoitem
+# Personagens
+
+const perso = 1 # Para identificar que é personagem
+sav txt1 sexo # Sexo: "O" ou "A"
+sav uint32 moedas # Quantas moedas está carregando
+sav uint8 posicao # Posição do personagem
+const pospadr = 8 # Posição padrão do personagem
+const descpos = txtmaimin(nome) + " está aqui."
+const sexo = "o" # Sexo: "o" ou "a"
+
+func ini
+  bitver = 3
+  posic = pospadrao
+
+func descpos
+  casovar posic
+  casose "0"
+    ret txtmaimin(nome) + " jás aqui."
+  casose "1"
+    ret txtmaimin(nome) + " está aqui mortalmente ferid" + txtmin(sexo) + "."
+  casose "2"
+    ret txtmaimin(nome) + " está aqui incapacitad" + txtmin(sexo) + "."
+  casose "3"
+    ret txtmaimin(nome) + " está aqui, muito frac" + txtmin(sexo) + "."
+  casose "4"
+    ret txtmaimin(nome) + " dorme aqui."
+  casose "5"
+    ret txtmaimin(nome) + " descansa aqui."
+  casose "6"
+    ret txtmaimin(nome) + " está sentad" + txtmin(sexo) + "."
+  casose "7"
+    ret txtmaimin(nome) + " está lutando."
+  casose "8"
+    ret txtmaimin(nome) + " está em pé."
+  casofim
+  ret txtmaimin(nome) + " está aqui."
+
+func teclou # Personagem teclou algum comando
+# Executa eventos
+  listaobj l0
+  l0.addfim(este, dono, este.eventos, dono.eventos)
+  enquanto l0 && !l0.ini.obj.evescr(este, arg0)
+    l0.ini.remove
+  efim
+  se l0
+    ret
+  fimse
+# Procura objeto que contém o comando
+  ref obj # Objeto que vai processar o comando
+  prog p # Para procurar o objeto
+  p.inifunc("com_exec", "c_" + txt1(arg0))
+  enquanto p.lin
+    obj = com_exec:[p.texto]
+    se obj.pode(este, arg0) && nivel >= obj.nivel
+      sair
+    fimse
+    p.depois
+  efim
+# Executa comando
+  se !p.lin
+    msg("O quê?")
+  senão posic >= obj.posic
+    obj.exec(este, txt1(arg0), txt2(arg0))
+  senão
+    casovar posic
+    casose "0" Morto
+      msg("\c9Você está morto!!!\b")
+      sair
+    casose "1" # Mortalmente ferido
+    casose "2" # Incapacitado
+      msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
+      sair
+    casose "3" # Fraco
+      msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
+      sair
+    casose "4" # Dormindo
+      msg("\c9Nos seus sonhos...\b")
+      sair
+    casose "5" # Descansando
+      msg("\c9Você se sente relaxado demais para fazer isso.\b")
+      sair
+    casose "6" # Sentado
+      msg("\c9Talvez você deva ficar em pé primeiro.\b")
+      sair
+    casose "7" # Lutando
+      msg("\c9Sem chance! Você está lutando pela sua vida.\b")
+      sair
+    casose
+      msg("\c9Você tenta, mas não consegue.\b")
+    casofim
+
+classe i_borracha
+herda persoitem
+const nome = "borracha"
+const ident = "borracha"
+const sexo = "a"
+const descpos = "Uma borracha está jogada aqui."
+const descver = "Você não vê nada de especial."

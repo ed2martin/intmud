@@ -1,53 +1,78 @@
-classe ajuda _comandos
-const posic = 8
-# Comandos de ajuda
-const c_ = $ajuda_ini
-const c_fim = $ajuda_fim
-const c_quit = $ajuda_fim
-# Processa os comandos de ajuda
-func iniclasse
- criar(arg0)
+classe com_ajuda
+herda com_comum
+const posic = 0
 func exec
-  ref obj # Objeto que vai processar o comando
-  prog p # Para procurar o objeto
-  p.inifunc(este, "c_" + txt1(arg1))
+  se !arg2
+    arg0.msg(ajudaini:txt(arg0))
+    ret
+  fimse
+  prog p
+  p.iniclasse("ajuda_" + arg2)
   enquanto p.lin
-    obj = este.[p.texto]
-    se obj && nivel >= obj.nivel
-      obj.exec(arg0)
-      arg0.msg("\c6Fim da ajuda\b")
+    se !(~arg0.bitvis & [p.texto]:bitinv)
+      arg0.txtmais.limpar
+      arg0.txtmais.addfim([p.texto]:txt(arg0))
+      arg0.txtmostra
       ret
     fimse
-    ind.depois
   efim
-  arg0.msg("\c6Comando ou tópico da ajuda desconhecido:\b " + arg1)
+  arg0.msg("Comando ou tópico de ajuda desconhecido: " + arg2)
 
-classe ajuda comum
-# Páginas de ajuda
-const iniclasse = criar(arg0)
-func exec
-  prog p
-  p.inifunc(este, "m")
-  enquanto p.lin
-    arg0.msg([p.texto])
-    p.depois
-  efim
+classe ajudaini
+const txt = "\b\c3Páginas de ajuda\b\n\
+Para ler tecle ajuda seguido do nome de um tópico ou um comando.\n\
+Os tópicos são:\n\
+  \c2MOVER\b    Como movimentar-se no jogo\n\
+  \c2COMUNICA\b Comunicação com outros jogadores\n\
+  \c2INFO\b     Informações sobre o seu personagem\n\
+  \c2OBJETOS\b  Manuseio de objetos\n\
+  \c2NOMES\b    Nomes de objetos e personagens\n\
+  \c2CONFIG\b   Opções de configuração\n" + ajudaini:adm(arg0) + "\
+  \c2SAIR\b     Sai do MUD"
+func adm
+  se arg0.admin
+    ret "  \c2ADM\b      Comandos de administração\n"
 
-classe ajuda ini
-herda ajuda comum
-const m1 = "\cbPáginas de ajuda do MUD\b"
-const m2 = "Para ler tecle ajuda seguido do nome de um tópico ou um comando."
-const m3 = "Os tópicos são:"
-const m4 = "   \c2MOVER\b    Como movimentar-se no jogo"
-const m5 = "   \c2INFO\b     Informações sobre o seu personagem"
-const m6 = "   \c2OBJETOS\b  Manuseio de objetos"
-const m7 = "   \c2NOMES\b    Nomes de objetos e personagens"
-const m8 = "   \c2CONFIG\b   Opções de configuração"
-const m9 = "   \c2FIM\b      Sai do MUD"
+classe ajuda_mover
+const txt = "\b\c3Movimentação\b\n\
+Você pode mover seu personagem para as seguintes direções:\n\
+N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo),\n\
+NE (nordeste), NO ou NW (noroeste), SE (sudeste) e SO ou SW (sudoeste).\n\
+Você poderá encontrar portas fechadas no caminho. Nesse caso, será\n\
+necessário abrir antes de prosseguir naquela direção. Veja os comandos\n\
+ABRIR e FECHAR."
 
-classe ajuda fim
-herda ajuda comum
-const m1 = "\cbFim\b"
-const m2 = "Sintaxe: fim"
-const m3 = "Sintaxe: quit"
-const m4 = "Sai do jogo."
+classe ajuda_comunica
+const txt = "\b\c3Comunicação\b\n\
+   \c2CHAT\b     Envia mensagem para os jogadores com o canal chat habilitado.\n\
+                 Permite também habilitar ou desabilitar este canal.\n\
+   \c2FALAR\b    Envia mensagem para os personagens na mesma sala."
+
+classe ajuda_chat
+const txt = "\b\c3Canal chat\b\n\
+Sintaxe: chat <mensagem>\n\
+Envia mensagem para os jogadores que estiverem com esse canal habilitado.\n\
+Sintaxe: chat\n\
+Habilita ou desabilita esse canal."
+
+classe ajuda_falar
+const txt = "\b\c3Falar\b\n\
+Sintaxe: falar <mensagem>\n\
+Envia mensagem para todos os personagens que estiverem na mesma sala."
+
+classe ajuda_info
+const txt = "\b\c3Esse comando não está pronto\b"
+
+classe ajuda_objetos
+const txt = "\b\c3Esse comando não está pronto\b"
+
+classe ajuda_nomes
+const txt = "\b\c3Esse comando não está pronto\b"
+
+classe ajuda_config
+const txt = "\b\c3Esse comando não está pronto\b"
+
+classe ajuda_sair
+const txt = "\b\c3Sair\b\n\
+Sintaxe: Sair\n\
+Sai do jogo."
