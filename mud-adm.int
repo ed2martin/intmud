@@ -154,6 +154,7 @@ func exec
     efim
     prog p
     p.criar("a_" + prefixo + "\n" + "aa" + prefixo + "\nherda area")
+    p.criar("s_" + prefixo + "\n" + "aa" + prefixo + "\nherda sala")
     p.salvar(config:progsalvar)
     arg0.msg("\bÁrea criada: " + prefixo)
 
@@ -168,14 +169,12 @@ func exec
   se !$a_[prefixo]
     arg0.msg("\bÁrea não existe: " + prefixo)
   senao
-    p.iniclasse("s_" + prefixo)
-    enquanto p.lin
-      se p.texto == "s_" + prefixo + txt(int(txtfim(p.texto, 3)))
-        arg0.msg("\bÁrea contém pelo menos uma sala: " + txt2(p.texto))
-        ret
-      fimse
-    efim
+    se p.iniherdainv("s_" + prefixo)
+      arg0.msg("\bÁrea contém pelo menos uma sala: " + p.texto)
+      ret
+    fimse
     p.apagar("a_" + prefixo)
+    p.apagar("s_" + prefixo)
     p.salvar(config:progsalvar)
     arg0.msg("\bÁrea apagada: " + prefixo)
 
@@ -202,15 +201,40 @@ classe jogador_adm
 
 const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
 
+const txt_terreno = "Dentro, lugar fechado - 1mv\n\
+Rua de uma cidade - 1mv\n\
+Campo, um campo aberto - 2mv\n\
+Pântano, itens afundam - 3mv\n\
+Floresta densa - 3mv\n\
+Colina - 4mv\n\
+Montanha, excessivamente montanhoso - 6mv\n\
+Água, pode nadar - 4mv\n\
+Água, requer barco para passar - 1mv\n\
+Em baixo d'água - 5mv\n\
+Ar - itens e mobs caem - 1mv"
+
+const txt_luz = "Totalmente claro\nLuz do sol\nEscuro"
+
 func p_area # Editando área
+  teditor.limpar
   casovar txtmin(arg0)
   casose "o"
     txtmais.limpar
     txtmais.addfim("\bÁrea " + txt(tpasso, 2))
-    txtmais.addfim("1. Nome:           " + m_texto("a_nome"))
-    txtmais.addfim("2. Autor:          " + m_texto("a_autor"))
-    txtmais.addfim("3. Tempo de reset: " + m_numero("a_tempo"))
-    txtmais.addfim("4. Modo de reset:  " + m_opcao("a_reset", txt_reset))
+    txtmais.addfim("1. Nome            : " + m_texto("a_nome"))
+    txtmais.addfim("2. Autor           : " + m_texto("a_autor"))
+    txtmais.addfim("3. Tempo de reset  : " + m_numero("a_tempo"))
+    txtmais.addfim("4. Modo de reset   : " + m_opcao("a_reset", txt_reset))
+    tpasso = "s_" + txt(tpasso, 2)
+    txtmais.addfim("Salas:")
+    txtmais.addfim("5. Terreno         : " + m_opcao("s_terreno", txt_terreno))
+    txtmais.addfim("6. Luminosidade    : " + m_opcao("s_luz", txt_luz))
+    txtmais.addfim("7. Morre ao entrar : " + m_simnao("s_morre"))
+    txtmais.addfim("8. Silencioso      : " + m_simnao("s_silencio"))
+    txtmais.addfim("9. Sem violência   : " + m_simnao("s_sembatalha"))
+    txtmais.addfim("10.Sem magia       : " + m_simnao("s_semmagia"))
+    txtmais.addfim("11.MOBs não entram : " + m_simnao("s_semmob"))
+    tpasso = "a_" + txt(tpasso, 2)
     #txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
     txtmais.addfim("Z. Sair")
     txtmostra
@@ -220,30 +244,47 @@ func p_area # Editando área
     passo = ""
     ret 1
   casose "1"
-    tpasso = tpasso + " a_nome area o nome"
-    p_texto("")
-    ret 1
+    tpasso = tpasso + " a_nome area nome"
+    ret p_texto("")
   casose "2"
-    tpasso = tpasso + " a_autor area o autor"
-    p_texto("")
-    ret 1
+    tpasso = tpasso + " a_autor area autor"
+    ret p_texto("")
   casose "3"
-    teditor.limpar
-    tpasso = tpasso + " a_tempo area o tempo de reset"
-    p_numero("")
-    ret 1
+    tpasso = tpasso + " a_tempo area tempo de reset"
+    ret p_numero("")
   casose "4"
-    teditor.limpar
     teditor.addfim(txt_reset)
-    tpasso = tpasso + " a_reset area o modo de reset"
-    p_opcao("")
-    ret 1
+    tpasso = tpasso + " a_reset area modo de reset"
+    ret p_opcao("")
+  casose "5"
+    teditor.addfim(txt_terreno)
+    tpasso = "s_" + txt(tpasso, 2) + " s_terreno area tipo de terreno"
+    ret p_opcao("")
+  casose "6"
+    teditor.addfim(txt_luz)
+    tpasso = "s_" + txt(tpasso, 2) + " s_luz area quantidade de luz"
+    ret p_opcao("")
+  casose "7"
+    tpasso = "s_" + txt(tpasso, 2) + " s_morre area se morre"
+    ret p_simnao("")
+  casose "8"
+    tpasso = "s_" + txt(tpasso, 2) + " s_silencio area se é silencioso"
+    ret p_simnao("")
+  casose "9"
+    tpasso = "s_" + txt(tpasso, 2) + " s_sembatalha area se não permite batalha"
+    ret p_simnao("")
+  casose "10"
+    tpasso = "s_" + txt(tpasso, 2) + " s_semmagia area se não permite magia"
+    ret p_simnao("")
+  casose "11"
+    tpasso = "s_" + txt(tpasso, 2) + " s_semmob area se não permite mob"
+    ret p_simnao("")
   casose
     msg("Opção inválida: " + arg0)
   casose ""
     passo = "area"
-    tpasso = txt1(tpasso)
-    msg("Área " + txt(tpasso, 2) + ":")
+    tpasso = "s_" + txt(txt1(tpasso), 2)
+    msg("Área " + txt(tpasso, 2) + ", O opções, Z sair")
     ret 1
   casofim
   ret 1
@@ -252,20 +293,20 @@ func p_texto # Altera um texto de uma linha
 # Variável tpasso contém: "classe variável passo nome"
 # classe e variável são os nomes da classe e da variável
 # passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: o autor, a descrição, o texto de entrada
+# nome é o prompt, exemplos: autor, descrição, texto de entrada
   prog p
   se arg0 == ""
     passo = "texto"
     msg("Entre com " + txtsub(tpasso, 3) + ", N nenhum, Z cancela")
     ret 1
   senao arg0 == "n"
-    p.apagar(txtsub(tpasso, 0, 1), txtsub(tpasso, 1, 1))
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
     p.salvar(config:progsalvar)
-    msg(txtmaimin(txtsub(tpasso, 4)) + " apagad" + txtsub(tpasso, 3, 1))
+    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
   senao arg0 != "z"
     txt200 t
     t = "const " + txtsub(tpasso, 1, 1) + "=\"" + txtvis(arg0) + "\""
-    p.criar(txtsub(tpasso, 0, 1), t)
+    p.criar(txt1(tpasso), t)
     p.salvar(config:progsalvar)
     msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0)
   fimse
@@ -277,7 +318,7 @@ func p_numero # Altera um texto de uma linha
 # Variável tpasso contém: "classe variável passo nome"
 # classe e variável são os nomes da classe e da variável
 # passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: o nome, a opção, o texto de entrada
+# nome é o prompt, exemplos: autor, descrição, texto de entrada
 # A primeira linha da variável teditor, se não for nula, contém
 # os valores mínimo e máximo da variável
   prog p
@@ -286,9 +327,9 @@ func p_numero # Altera um texto de uma linha
     msg("Entre com " + txtsub(tpasso, 3) + ", N nenhum, Z cancela")
     ret 1
   senao arg0 == "n"
-    p.apagar(txtsub(tpasso, 0, 1), txtsub(tpasso, 1, 1))
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
     p.salvar(config:progsalvar)
-    msg(txtmaimin(txtsub(tpasso, 4)) + " apagad" + txtsub(tpasso, 3, 1))
+    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
   senao arg0 != "z"
     txt100 lin
     real valor
@@ -304,7 +345,7 @@ func p_numero # Altera um texto de uma linha
       fimse
     fimse
     lin = "const " + txtsub(tpasso, 1, 1) + "=" + valor
-    p.criar(txtsub(tpasso, 0, 1), lin)
+    p.criar(txt1(tpasso), lin)
     p.salvar(config:progsalvar)
     msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0)
   fimse
@@ -316,7 +357,7 @@ func p_opcao # Altera uma opção de uma lista de opções
 # Variável tpasso contém: "classe variável passo nome"
 # classe e variável são os nomes da classe e da variável
 # passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: o nome, a opção, o texto de entrada
+# nome é o prompt, exemplos: autor, descrição, texto de entrada
 # teditor contém as opções
   prog p
   se arg0 == ""
@@ -336,9 +377,9 @@ func p_opcao # Altera uma opção de uma lista de opções
     txtmostra
     ret 1
   senao arg0 == "n"
-    p.apagar(txtsub(tpasso, 0, 1), txtsub(tpasso, 1, 1))
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
     p.salvar(config:progsalvar)
-    msg(txtmaimin(txtsub(tpasso, 4)) + " apagad" + txtsub(tpasso, 3, 1))
+    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
   senao arg0 != "z"
     textopos pos
     txt100 lin
@@ -349,9 +390,36 @@ func p_opcao # Altera uma opção de uma lista de opções
       ret 1
     fimse
     lin = "const " + txtsub(tpasso, 1, 1) + "=" + pos.linha
-    p.criar(txtsub(tpasso, 0, 1), lin)
+    p.criar(txt1(tpasso), lin)
     p.salvar(config:progsalvar)
     msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0 + " " + pos.texto)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_simnao # Altera uma opção que pode ser "SIM" ou "NÃO"
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o prompt, exemplos: autor, descrição, texto de entrada
+  prog p
+  se arg0 == "0" || arg0 == "1"
+    txt100 lin
+    lin = "const " + txtsub(tpasso, 1, 1) + "=" + arg0
+    p.criar(txt1(tpasso), lin)
+    p.salvar(config:progsalvar)
+    lin = "0 não"
+    arg0 == 1 && (lin = "1 sim")
+    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + lin)
+  senao arg0 == "n"
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
+  senao arg0 != "z"
+    passo = "simnao"
+    msg("Entre com " + txtsub(tpasso, 3) + ", 0 não, 1 sim, N nenhum, Z cancela")
+    ret 1
   fimse
   passo = txtsub(tpasso, 2, 1)
   p_[passo]("")
@@ -433,6 +501,32 @@ func m_opcao2 # Usado em m_opcao para obter o nome da opção
     ret txt(valor) + " " + t.remove(1)
   senao
     ret txt(valor) + " <inválido>"
+
+func m_simnao # Mostra opção que pode ser 0 (não) ou 1 (sim)
+# arg0=nome da variável, tpasso=nome da classe
+  prog p
+  casovar p.existe(tpasso, arg0)
+  casose "1" # Na própria classe
+    se !p.varnum(tpasso, arg0)
+      p.inilinha(tpasso, arg0)
+      ret "<" + txt1(p.texto) + ">"
+    senao [tpasso]:[arg0]
+      ret txt([tpasso]:[arg0]) + " sim"
+    senao
+      ret txt([tpasso]:[arg0]) + " não"
+    fimse
+  casose "2" # Em uma classe herdada
+    se !p.varnum(tpasso, arg0)
+      p.inilinha(tpasso, arg0)
+      ret "<herda " + txt1(p.texto) + ">"
+    senao [tpasso]:[arg0]
+      ret "<herda> " + txt([tpasso]:[arg0]) + " sim"
+    senao
+      ret "<herda> " + txt([tpasso]:[arg0]) + " não"
+    fimse
+  casose # Não foi definido
+    ret "<nulo> 0 não"
+  casofim
 
 func m_sala # Informa valor de variável do tipo "const x = $s_abc"
 # arg0=nome da variável, tpasso=nome da classe
