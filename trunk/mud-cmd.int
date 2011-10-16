@@ -254,45 +254,44 @@ const posic = 0
 func exec
   $mens.p(arg0)
   se !arg2
-    arg0.canais = arg0.canais ^ 2
-    se arg0.canais & 2
+    arg0.sock.canais = arg0.sock.canais ^ 2
+    se arg0.sock.canais & 2
       arg0.msg("Canal chat habilitado.")
     senao
       arg0.msg("Canal chat desabilitado")
     fimse
-  senao !(arg0.canais & 2)
+  senao !(arg0.sock.canais & 2)
     arg0.msg("Canal chat está desabilitado.")
   senao
-    ref obj
-    obj = $jogador
-    enquanto obj
-      (obj.canais & 2) && obj.msg("(chat) " + arg0.nome + ": " + arg2)
-      obj = objdepois(obj)
+    listaitem item
+    item = $jogcomum.jog.ini
+    enquanto item
+      (item.obj.canais & 2) && item.obj.msg("(chat) " + arg0.sock.nome + ": " + arg2)
+      item.depois
     efim
 
 classe com_quem
 herda com_comum
 const posic = 0
 func exec
-  ref r
+  listaitem item
   textotxt t0
   txt100 t1
 # Obtém lista de jogadores
+  ref r
   r = $jogador
   enquanto r
-    se r.nivel
-      t1 = txt(99999 * 99999 - r.nivel) + " "
-      t1 += txtfim("      " + r.nivel, 6) + "  " + r.nome
-      r.sock == nulo && (t1 += "  [Desconectado]")
-      t0.addfim(t1)
-    fimse
+    t1 = txt(99999 * 99999 - r.nivel) + " "
+    t1 += txtfim("      " + r.nivel, 6) + "  " + r.nome
+    r.sock == nulo && (t1 += "  [Desconectado]")
+    t0.addfim(t1)
     r = objdepois(r)
   efim
 # Ordena
   t0.ordena
 # Mostra para o jogador
   arg0.msg("Personagens online: " + t0.linhas)
- enquanto t0.linhas
+  enquanto t0.linhas
     arg0.msg("N" + txt2(t0.remove))
   efim
 
@@ -308,12 +307,7 @@ herda com_comum
 const posic = 5
 func exec
   se !arg2
-    ref r
-    r = arg0.dono
-    arg0.txtmais.limpar
-    r.descsala(arg0, 3)
-    r.descitens(arg0)
-    arg0.txtmostra
+    arg0.msg2(arg0.dono.descsala(arg0, 7))
     ret
   fimse
   listaobj l
@@ -390,13 +384,10 @@ func exec
   efim
   t.juntalin("(", "x) ")
   se t.linhas
-    t.addini("Você carrega:")
+    arg0.msg2("Você carrega:\n" + t.remove(1000))
   senao
-    t.addini("Você não está carregando nada.")
+    arg0.msg("Você não está carregando nada.")
   fimse
-  arg0.txtmais.limpar
-  arg0.txtmais.fim.add(t.ini, t.linhas)
-  arg0.txtmostra
 
 classe com_debug
 herda com_comum
@@ -412,3 +403,20 @@ func exec
   efim
   arg0.msg("ver=" + arg0.bitver + " inv=" + arg0.bitinv)
   arg0.msg("visível? " + !(~bitver & bitinv))
+  arg0.msg("JOGADORES:")
+  listaitem item
+  item = $jogcomum.jog.ini
+  enquanto item
+    arg0.msg("> " + item.obj.nome + " (" + item.obj.perso.nome + ")")
+    item.depois
+  efim
+  listar("jogolocal", arg0)
+  listar("jogoserv", arg0)
+  listar("jogobot_usr", arg0)
+  arg0.msg("PERSONAGENS:")
+  ref r
+  r = $jogador
+  enquanto r
+    arg0.msg("> " + r.nome + " (" + r.sock.nome + ")")
+    r = objdepois(r)
+  efim

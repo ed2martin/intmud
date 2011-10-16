@@ -43,46 +43,42 @@ func ini # Inicializa variáveis
 
 func entrou # Entrou na sala; arg0=objeto do jogador
   se arg0.jog
-    arg0.txtmais.limpar
-    descsala(arg0, 3)
-    descitens(arg0)
-    arg0.txtmostra
+    arg0.msg2(descsala(arg0, 7))
 
-func descsala # Adiciona descrição exceto itens
+func descsala # Retorna descrição da sala
 # arg0 = objeto do jogador
-# arg1: +1 se mostra descrição completa, +2 se mostra saídas
+# arg1: +1 se mostra descrição completa, +2 se mostra saídas, +4 se mostra itens
+  textotxt t
   casovar 3 & arg0.bitver
   casose "0"
   casose "2"
-    arg0.txtmais.addfim("Você está ceg" + txtmin(arg0.sexo) + ".")
-    ret
+    t.addfim("Você está ceg" + txtmin(arg0.sexo) + ".")
   casose "1"
-    arg0.txtmais.addfim("Está escuro...")
-    ret
+    t.addfim("Está escuro...")
+  casose
+    #t.addfim("\b\c6" + txt(este, 2) + " " + descr0 + "\b")
+    t.addfim("\b\c6" + descr0 + "\b")
+    se arg1 & 1
+      uint16 x
+      enquanto descr[x += 1]
+        t.addfim(descr[x])
+      efim
+    fimse
+    (arg1 & 2) && t.addfim(txtsai)
   casofim
-  #arg0.txtmais.addfim("\b\c6" + txt(este, 2) + " " + descr0 + "\b")
-  arg0.txtmais.addfim("\b\c6" + descr0 + "\b")
-  se arg1 & 1
-    uint16 x
-    enquanto descr[x += 1]
-      arg0.txtmais.addfim(descr[x])
+  se arg1 & 4
+    textotxt t2
+    listaobj l
+    l.addfim(dentro)
+    l.remove(arg0)
+    enquanto l
+      !(~arg0.bitver & l.ini.obj.bitinv) && t2.addfim("1 " + l.ini.obj.descpos)
+      l.ini.remove
     efim
+    t2.juntalin("(", "x) ")
+    t.fim.add(t2.ini, t2.linhas)
   fimse
-  (arg1 & 2) && arg0.txtmais.addfim(txtsai)
-
-func descitens # Adiciona descrição dos itens para um jogador
-# arg0 = objeto do jogador
-  textotxt t
-  listaobj l
-  l.addfim(dentro)
-  l.remove(arg0)
-  enquanto l
-    !(~arg0.bitver & l.ini.obj.bitinv) && t.addfim("1 " + l.ini.obj.descpos)
-    l.ini.remove
-  efim
-  t.juntalin("(", "x) ")
-# Adiciona descrição da sala
-  arg0.txtmais.fim.add(t.ini, t.linhas)
+  ret t.remove(1000)
 
 func txtsai # Retorna as saídas existentes
   txt40 sai

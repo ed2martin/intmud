@@ -67,6 +67,9 @@ herda persoitem
 # Personagens
 
 const perso = 1 # Para identificar que é personagem
+const msg = sock.msg(arg0) # Mensagem pequena para o jogador
+const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
+ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 sav txt1 sexo # Sexo: "O" ou "A"
 sav uint32 moedas # Quantas moedas está carregando
 sav uint8 posicao # Posição do personagem
@@ -74,9 +77,21 @@ const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
 const sexo = "o" # Sexo: "o" ou "a"
 
-func ini
+func ini # Objeto foi criado
   bitver = 3
   posic = pospadrao
+
+func fim # Objeto foi apagado
+  casovar txt1(sock.info)
+  casose "t" # Conectado via Papovox
+  casose "p" # Conectado via Telnet
+    apagar(sock)
+    sair
+  casose "l" # Jogando localmente
+    terminar
+  casose "b" # Como bot
+    sock.reinicia
+  casofim
 
 func descpos
   casovar posic
