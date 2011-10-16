@@ -10,9 +10,7 @@ func exec
   p.iniclasse("ajuda_" + arg2)
   enquanto p.lin
     se !(~arg0.bitvis & [p.texto]:bitinv)
-      arg0.txtmais.limpar
-      arg0.txtmais.addfim([p.texto]:txt(arg0))
-      arg0.txtmostra
+      arg0.msg2([p.texto]:txt(arg0))
       ret
     fimse
   efim
@@ -30,7 +28,7 @@ Os tópicos são:\n\
   \c2CONFIG\b   Opções de configuração\n" + ajudaini:adm(arg0) + "\
   \c2SAIR\b     Sai do MUD"
 func adm
-  se arg0.admin
+  se arg0.sock.admin
     ret "  \c2ADM\b      Comandos de administração\n"
 
 classe ajuda_mover
