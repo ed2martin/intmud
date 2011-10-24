@@ -211,7 +211,10 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
         *linhaend=0;
         linhaend=mens;
         if (Instr::Codif(menscod, mens, sizeof(menscod)))
-            destino->Add(menscod, Num16(menscod));
+        {
+            if (codifok)
+                destino->Add(menscod, Num16(menscod));
+        }
         else
         {
             sprintf(mens, "%c%d: %s", Instr::ex_barra_n, linhanum, menscod);

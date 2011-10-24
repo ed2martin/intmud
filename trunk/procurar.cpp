@@ -29,7 +29,7 @@ TProcurar::TProcurar()
 //----------------------------------------------------------------------------
 /// Define o padrão que se quer procurar
 /** @param p Padrão a procurar
- *  @param e Se deve considerar letras maiúsculas e minúsculas diferentes
+ *  @param e Vide TProcurar::exato
  *  @return verdadeiro se padrão válido, falso se padrão vazio
  */
 bool TProcurar::Padrao(const char * p, int e)
