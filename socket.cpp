@@ -722,8 +722,8 @@ void TSocket::EnvPend()
         coderro = errno;
         if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
             resposta=0;
-        else
-            resposta=-1;
+        else if (resposta==0)
+            resposta=-1,coderro=ECONNRESET;
     }
 #endif
     if (resposta<0)

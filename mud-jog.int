@@ -42,8 +42,11 @@ func recebe # Recebeu mensagem do jogador
 # Teclar M para mais
   se arg0 == "m" && txtmais.linhas
     txtmostra
+    ret
+  fimse
 # Passo atual / executa comando
-  senao !p_[passo](arg0) # Se não for uma função do passo
+  txtmais.limpar
+  se !p_[passo](arg0) # Se não for uma função do passo
     se !admin || !com_[txt1(arg0)](txt2(arg0)) # Se não for comando de administração
       perso.teclou(arg0) # Personagem processa comando
 
@@ -81,6 +84,10 @@ classe jog_passo
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
 textotxt teditor # Texto usado no editor
+textotxt transf # Área de transferência do editor
+textopos leditor1 # Início de bloco
+textopos leditor2 # Fim de bloco
+textopos leditor # Linha atual no editor
 
 func p_perso # Digitar o nome do personagem
   indiceitem ind

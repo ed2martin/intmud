@@ -900,11 +900,14 @@ txtproc(<texto>, <texto procurado>, <caracter inicial>)
 txttroca(<texto>, <valor anterior>, <novo valor>)
     Troca <valor anterior> por <novo valor> no <texto>.
     Retorna o texto modificado ao invés de alterar o texto original.
-    Para diferenciar letras minúsculas de maiúsculas e acentuadas de
-    não acentuadas, escrever txttrocadif ao invés de txttroca.
     Nota: Se <valor anterior> for um texto vazio, retorna <texto>.
     Exemplo:
     txttroca("possibilidade", "i", "e") é o mesmo que "possebeledade".
+
+    As funções txttrocamai e txttrocadif fazem a mesma coisa, exceto que:
+    txttroca - considera iguais letras minúsculas, maiúsculas e acentuadas.
+    txttrocamai - considera iguais letras maiúsculas e minúsculas.
+    txttrocadif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
 vartroca(<texto>, <texto2>, <variável>)
     Procura nomes de variáveis do objeto "este" que começam com <variável>.

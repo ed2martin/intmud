@@ -203,7 +203,7 @@ func p_area # Editando área
     txtmais.addfim("10.Sem magia       : " + m_simnao("s_semmagia"))
     txtmais.addfim("11.MOBs não entram : " + m_simnao("s_semmob"))
     tpasso = "a_" + txt(tpasso, 2)
-    #txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
     txtmais.addfim("Z. Sair")
     txtmostra
     ret 1
@@ -212,185 +212,100 @@ func p_area # Editando área
     passo = ""
     ret 1
   casose "1"
-    tpasso = tpasso + " a_nome area nome"
+    msg("Nome: " + m_texto("a_nome"))
+    tpasso += " a_nome area Nome"
     ret p_texto("")
   casose "2"
-    tpasso = tpasso + " a_autor area autor"
+    msg("Autor: " + m_texto("a_autor"))
+    tpasso += " a_autor area Autor"
     ret p_texto("")
   casose "3"
-    tpasso = tpasso + " a_tempo area tempo de reset"
+    msg("Tempo de reset: " + m_numero("a_tempo"))
+    tpasso += " a_tempo area Tempo de reset"
     ret p_numero("")
   casose "4"
+    msg("Modo de reset: " + m_opcao("a_reset", txt_reset))
     teditor.addfim(txt_reset)
-    tpasso = tpasso + " a_reset area modo de reset"
+    tpasso += " a_reset area Modo de reset"
     ret p_opcao("")
   casose "5"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("Terreno: " + m_opcao("s_terreno", txt_terreno))
     teditor.addfim(txt_terreno)
-    tpasso = "s_" + txt(tpasso, 2) + " s_terreno area tipo de terreno"
+    tpasso += " s_terreno area Tipo de terreno"
     ret p_opcao("")
   casose "6"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("Luminosidade: " + m_opcao("s_luz", txt_luz))
     teditor.addfim(txt_luz)
-    tpasso = "s_" + txt(tpasso, 2) + " s_luz area quantidade de luz"
+    tpasso += " s_luz area Quantidade de luz"
     ret p_opcao("")
   casose "7"
-    tpasso = "s_" + txt(tpasso, 2) + " s_morre area se morre"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("Morre ao entrar: " + m_simnao("s_morre"))
+    tpasso += " s_morre area Morre ao entrar"
     ret p_simnao("")
   casose "8"
-    tpasso = "s_" + txt(tpasso, 2) + " s_silencio area se é silencioso"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("Silencioso: " + m_simnao("s_silencio"))
+    tpasso += " s_silencio area Silencioso"
     ret p_simnao("")
   casose "9"
-    tpasso = "s_" + txt(tpasso, 2) + " s_sembatalha area se não permite batalha"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("Sem violência: " + m_simnao("s_sembatalha"))
+    tpasso += " s_sembatalha area Sem violência"
     ret p_simnao("")
   casose "10"
-    tpasso = "s_" + txt(tpasso, 2) + " s_semmagia area se não permite magia"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("Sem magia: " + m_simnao("s_semmagia"))
+    tpasso += " s_semmagia area Sem magia"
     ret p_simnao("")
   casose "11"
-    tpasso = "s_" + txt(tpasso, 2) + " s_semmob area se não permite mob"
+    tpasso = "s_" + txt(tpasso, 2)
+    msg("MOBs não entram: " + m_simnao("s_semmob"))
+    tpasso += " s_semmob area se MOBs não entram"
     ret p_simnao("")
+  casose "f1"
+    tpasso += " a_nome area Nome"
+    ret p_func("\n")
+  casose "f2"
+    tpasso += " a_autor area Autor"
+    ret p_func("\n")
+  casose "f3"
+    tpasso += " a_tempo area Tempo de reset"
+    ret p_func("\n")
+  casose "f4"
+    tpasso += " a_reset area Modo de reset"
+    ret p_func("\n")
+  casose "f5"
+    tpasso = "s_" + txt(tpasso, 2) + " s_terreno area Tipo de terreno"
+    ret p_func("\n")
+  casose "f6"
+    tpasso = "s_" + txt(tpasso, 2) + " s_luz area Quantidade de luz"
+    ret p_func("\n")
+  casose "f7"
+    tpasso = "s_" + txt(tpasso, 2) + " s_morre area Morre ao entrar"
+    ret p_func("\n")
+  casose "f8"
+    tpasso = "s_" + txt(tpasso, 2) + " s_silencio area Silencioso"
+    ret p_func("\n")
+  casose "f9"
+    tpasso = "s_" + txt(tpasso, 2) + " s_sembatalha area Sem violência"
+    ret p_func("\n")
+  casose "f10"
+    tpasso = "s_" + txt(tpasso, 2) + " s_semmagia area Sem magia"
+    ret p_func("\n")
+  casose "f11"
+    tpasso = "s_" + txt(tpasso, 2) + " s_semmob area se MOBs não entram"
+    ret p_func("\n")
   casose
     msg("Opção inválida: " + arg0)
   casose ""
     passo = "area"
-    tpasso = "s_" + txt(txt1(tpasso), 2)
+    tpasso = "a_" + txt(txt1(tpasso), 2)
     msg("Área " + txt(tpasso, 2) + ", O opções, Z sair")
     ret 1
   casofim
-  ret 1
-
-func p_texto # Altera um texto de uma linha
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: autor, descrição, texto de entrada
-  prog p
-  se arg0 == ""
-    passo = "texto"
-    msg("Entre com " + txtsub(tpasso, 3) + ", N nenhum, Z cancela")
-    ret 1
-  senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
-    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
-  senao arg0 != "z"
-    txt200 t
-    t = "const " + txtsub(tpasso, 1, 1) + "=\"" + txtvis(arg0) + "\""
-    p.criar(txt1(tpasso), t)
-    p.salvar(config:progsalvar)
-    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0)
-  fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
-  ret 1
-
-func p_numero # Altera um texto de uma linha
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: autor, descrição, texto de entrada
-# A primeira linha da variável teditor, se não for nula, contém
-# os valores mínimo e máximo da variável
-  prog p
-  se arg0 == ""
-    passo = "numero"
-    msg("Entre com " + txtsub(tpasso, 3) + ", N nenhum, Z cancela")
-    ret 1
-  senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
-    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
-  senao arg0 != "z"
-    txt100 lin
-    real valor
-    valor = arg0
-    lin = teditor.ini.texto
-    se arg0 != valor # Checa se é número
-      msg("Entre com um número.")
-      ret 1
-    senao lin # Checa limites mínimo e máximo
-      se valor < txt1(lin) || valor > txt2(lin)
-        msg("Entre com um número de " + txt1(lin) + " a " + txt2(lin) + ".")
-        ret 1
-      fimse
-    fimse
-    lin = "const " + txtsub(tpasso, 1, 1) + "=" + valor
-    p.criar(txt1(tpasso), lin)
-    p.salvar(config:progsalvar)
-    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0)
-  fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
-  ret 1
-
-func p_opcao # Altera uma opção de uma lista de opções
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: autor, descrição, texto de entrada
-# teditor contém as opções
-  prog p
-  se arg0 == ""
-    passo = "opcao"
-    msg("Entre com " + txtsub(tpasso, 3) + ", O opções, Z cancela")
-    ret 1
-  senao arg0 == "o"
-    txtmais.limpar
-    txtmais.addfim("\bOpções:")
-    textopos pos
-    pos = teditor.ini
-    enquanto pos.lin
-      txtmais.addfim(txt(pos.linha) + ". " + pos.texto)
-      pos.depois
-    efim
-    txtmais.addfim("N. Nenhuma")
-    txtmostra
-    ret 1
-  senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
-    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
-  senao arg0 != "z"
-    textopos pos
-    txt100 lin
-    pos = teditor.ini
-    pos.linha = int(arg0)
-    se arg0 != pos.linha || pos.texto == ""
-      msg("Entre com uma opção de 0 a " + (teditor.linhas - 1))
-      ret 1
-    fimse
-    lin = "const " + txtsub(tpasso, 1, 1) + "=" + pos.linha
-    p.criar(txt1(tpasso), lin)
-    p.salvar(config:progsalvar)
-    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + arg0 + " " + pos.texto)
-  fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
-  ret 1
-
-func p_simnao # Altera uma opção que pode ser "SIM" ou "NÃO"
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o prompt, exemplos: autor, descrição, texto de entrada
-  prog p
-  se arg0 == "0" || arg0 == "1"
-    txt100 lin
-    lin = "const " + txtsub(tpasso, 1, 1) + "=" + arg0
-    p.criar(txt1(tpasso), lin)
-    p.salvar(config:progsalvar)
-    lin = "0 não"
-    arg0 == 1 && (lin = "1 sim")
-    msg(txtmaimin(txtsub(tpasso, 4)) + " mudou para: " + lin)
-  senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
-    msg("Apagado: " + txtmaimin(txtsub(tpasso, 3)))
-  senao arg0 != "z"
-    passo = "simnao"
-    msg("Entre com " + txtsub(tpasso, 3) + ", 0 não, 1 sim, N nenhum, Z cancela")
-    ret 1
-  fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
   ret 1
 
 func m_texto # Mostra texto de uma linha, do tipo "const x = \"abc\""
@@ -524,6 +439,459 @@ func m_sala # Informa valor de variável do tipo "const x = $s_abc"
   casose # Não foi definido
     ret "<nulo>"
   casofim
+
+func p_texto # Altera um texto de uma linha
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o nome da opção
+  prog p
+  se arg0 == ""
+    passo = "texto"
+    msg("Entre com um texto, N nenhum, Z cancela")
+    ret 1
+  senao arg0 == "n"
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg("Apagado: " + txtsub(tpasso, 3))
+  senao arg0 != "z"
+    txt200 t
+    t = "const " + txtsub(tpasso, 1, 1) + "=\"" + txtvis(arg0) + "\""
+    p.criar(txt1(tpasso), t)
+    p.salvar(config:progsalvar)
+    msg(txtsub(tpasso, 3) + " mudou para: " + arg0)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_numero # Altera um texto de uma linha
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o nome da opção
+# A primeira linha da variável teditor, se não for nula, contém
+# os valores mínimo e máximo da variável
+  prog p
+  se arg0 == ""
+    passo = "numero"
+    msg("Entre com um número, N nenhum, Z cancela")
+    ret 1
+  senao arg0 == "n"
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg("Apagado: " + txtsub(tpasso, 3))
+  senao arg0 != "z"
+    txt100 lin
+    real valor
+    valor = arg0
+    lin = teditor.ini.texto
+    se arg0 != valor # Checa se é número
+      msg("Entre com um número.")
+      ret 1
+    senao lin # Checa limites mínimo e máximo
+      se valor < txt1(lin) || valor > txt2(lin)
+        msg("Entre com um número de " + txt1(lin) + " a " + txt2(lin) + ".")
+        ret 1
+      fimse
+    fimse
+    lin = "const " + txtsub(tpasso, 1, 1) + "=" + valor
+    p.criar(txt1(tpasso), lin)
+    p.salvar(config:progsalvar)
+    msg(txtsub(tpasso, 3) + " mudou para: " + arg0)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_opcao # Altera uma opção de uma lista de opções
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o nome da opção
+# teditor contém as opções
+  prog p
+  se arg0 == ""
+    passo = "opcao"
+    msg("Entre com uma opção, O mostra as opções, Z cancela")
+    ret 1
+  senao arg0 == "o"
+    txtmais.limpar
+    txtmais.addfim("\bOpções:")
+    textopos pos
+    pos = teditor.ini
+    enquanto pos.lin
+      txtmais.addfim(txt(pos.linha) + ". " + pos.texto)
+      pos.depois
+    efim
+    txtmais.addfim("N. Nenhuma, Z. Cancela")
+    txtmostra
+    ret 1
+  senao arg0 == "n"
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg("Apagado: " + txtsub(tpasso, 3))
+  senao arg0 != "z"
+    textopos pos
+    txt100 lin
+    pos = teditor.ini
+    pos.linha = int(arg0)
+    se arg0 != pos.linha || pos.texto == ""
+      msg("Entre com uma opção de 0 a " + (teditor.linhas - 1))
+      ret 1
+    fimse
+    lin = "const " + txtsub(tpasso, 1, 1) + "=" + pos.linha
+    p.criar(txt1(tpasso), lin)
+    p.salvar(config:progsalvar)
+    msg(txtsub(tpasso, 3) + " mudou para: " + arg0 + " " + pos.texto)
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_simnao # Altera uma opção que pode ser "SIM" ou "NÃO"
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o nome da opção
+  prog p
+  se arg0 == "0" || arg0 == "1"
+    txt100 lin
+    lin = "const " + txtsub(tpasso, 1, 1) + "=" + arg0
+    p.criar(txt1(tpasso), lin)
+    p.salvar(config:progsalvar)
+    lin = "0 não"
+    arg0 == 1 && (lin = "1 sim")
+    msg(txtsub(tpasso, 3) + " mudou para: " + lin)
+  senao arg0 == "n"
+    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.salvar(config:progsalvar)
+    msg("Apagado: " + txtsub(tpasso, 3))
+  senao arg0 != "z"
+    passo = "simnao"
+    msg("Escolha: 0 não, 1 sim, N nenhum, Z cancela")
+    ret 1
+  fimse
+  passo = txtsub(tpasso, 2, 1)
+  p_[passo]("")
+  ret 1
+
+func p_func
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o nome da opção
+  casovar txtmin(txt(arg0, 0, 1))
+  casose "\n"
+    teditor.limpar
+    prog p
+    txt100 lin
+    textotxt t1
+    passo = "func"
+    lin = txt1(tpasso) + ":" + txtsub(tpasso, 1, 1) + ", O opções, Z sair"
+    se !p.inilinha(txt1(tpasso), txtsub(tpasso, 1, 1))
+      msg(txtsub(tpasso, 3) + "; criando " + lin)
+      teditor.addfim("const " + txtsub(tpasso, 1, 1) + " = nulo")
+    senao txt1(p.texto) == "const" && inttotal(p.texto) > 75
+      msg(txtsub(tpasso, 3) + "; editando " + lin)
+      teditor.addfim(txttroca(p.texto, "\\n", "\\n\\\n"))
+    senao
+      msg(txtsub(tpasso, 3) + "; editando " + lin)
+      enquanto p.lin
+        t1.limpar
+        t1.addfim(p.texto)
+        t1.dividelin(35, 75)
+        enquanto t1.linhas > 1
+          teditor.addfim(t1.remove + "\\")
+        efim
+        teditor.addfim(t1.remove)
+        p.depois
+      efim
+    fimse
+    leditor = teditor.ini
+    ret 1
+  casose "z" # Sair do editor
+    msg("Fechando editor")
+    passo = txtsub(tpasso, 2, 1)
+    p_[passo]("")
+    ret 1
+  casose "x" # Salvar o texto
+    p_funcsalvar
+    ret 1
+  casofim
+  ret p_editor(arg0, 16384, txtsub(tpasso, 3))
+
+func p_funcsalvar # Opçao salvar de p_func
+  textotxt t1
+  textopos p1
+  txt512 lin
+# Junta linhas e coloca em t1
+  t1.ini.add(teditor.ini, teditor.linhas)
+  p1 = t1.ini
+  enquanto p1.txtproc("\\\n") >= 0
+    p1.mudar("", inttotal(p1.texto)-1, 1) # Tira a "\" no final
+    p1.depois, p1.juntar # Junta as duas linhas
+  efim
+# Obtém o nome da constante / função
+  lin = t1.ini.texto
+  enquanto txt1(lin) == "sav" || txt1(lin) == "comum"
+    lin = txt2(lin)
+  efim
+  se t1.linhas > 1 && txt1(lin) != "func" && txt1(lin) != "varfunc"
+    msg("Erro: somente FUNC e VARFUNC podem ter várias linhas")
+    ret 1
+  fimse
+  lin = txt1(txttroca(txt2(lin), "#", " "))
+# Checa se o nome mudou
+  se lin != txtsub(tpasso, 1, 1)
+    lin += " para " + txtsub(tpasso, 1, 1)
+    msg("Erro: mude o nome da variável de " + lin)
+    ret
+  fimse
+# Checa existência de outra função ou constante dentro
+  p1 = t1.ini.texto
+  p1.depois
+  enquanto p1.lin
+    casovar txtmin(txt1(p1.texto))
+    casose "func"
+    casose "varfunc"
+      msg("Erro: definido uma função dentro de outra")
+      ret
+    casose "const"
+      msg("Erro: definido uma constante dentro de uma função")
+      ret
+    casofim
+    p1.depois
+  efim
+# Tenta salvar
+  prog p
+  t1.addfim(p.criar(txt1(tpasso), t1.remove(10000)))
+  se t1.ini.texto == ""
+    p.salvar(config:progsalvar)
+    msg("Salvo com sucesso")
+    ret
+  fimse
+# Informa erros, corrigindo os números das linhas
+  msg("Erro ao salvar:")
+  p1 = t1.ini
+  p1.depois(5), p1.remove(1000)
+  uint16 x
+  enquanto t1.linhas
+    x = lin = t1.remove
+    se txt(x) == txt(lin, 0, inttotal(txt(x)))
+      p1 = teditor.ini
+      enquanto p1.txtproc("\\\n") >= 0 && p1.linha < x
+        p1.depois, x+=1
+      efim
+      lin = txt(x) + txt(lin, inttotal(txt(x)))
+    fimse
+    msg(lin)
+  efim
+
+func p_editor
+# Processamento de qualquer editor
+# arg0 = texto digitado
+# arg1 = quantidade máxima de bytes
+# arg2 = nome da opção
+# teditor contém o texto, leditor é a linha atual
+# Retorna sempre 1
+  casovar txtmin(txt(arg0, 0, 1))
+  casose "\n"
+    leditor = teditor.ini
+  casose "" # Entrou na opção ou apenas pressionou ENTER
+    msg("Editando " + arg2 + ", O opções, Z sair")
+    ret 1
+  casose "." # Insere linha removendo espaços
+    se teditor.bytes + inttotal(arg0) > arg1
+      msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    leditor.add(txtremove(txt(arg0, 1), "ED"))
+    leditor.depois
+    msg("Texto inserido")
+    ret 1
+  casose "," # Insere linha
+    se teditor.bytes + inttotal(arg0) > arg1
+      msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    leditor.add(txt(arg0, 1))
+    leditor.depois
+    msg("Texto inserido")
+    ret 1
+  casose "a" # Apaga a linha atual
+    se !leditor.lin
+      msg("Está no fim do texto")
+      ret 1
+    fimse
+    leditor.remove
+    se leditor.lin
+      msg("Linha apagada")
+    senao
+      msg("Linha apagada; fim do texto")
+    fimse
+    ret 1
+  casose "i" # Informações sobre a linha atual
+    txt100 t
+    t = "Linha " + (leditor.linha + 1) + "/" + teditor.linhas
+    t += ", " + inttotal(leditor.texto)
+    t += " caracteres, " + teditor.bytes + "/" + arg1 + " bytes"
+    msg(t)
+    ret 1
+  casose "l" # Mostra a linha atual
+    msg(txt(leditor.linha + 1) + " " + leditor.texto)
+    ret 1
+  casose "m" # Executa comando do MUD
+    perso.teclou(txtremove(txt(arg0, 1), "E"))
+    ret 1
+  casose "o" # Mostra opções do editor
+    txtmais.limpar
+    txtmais.addfim(m_editor)
+    txtmostra
+    ret 1
+  casose "s" # Sobe uma ou mais linhas
+    leditor.linha == 0 && msg("Início do texto")
+    uint8 x
+    x = txtremove(txt(arg0, 1), "E")
+    x > 8 && (x = 8)
+    x < 1 && (x = 1)
+    enquanto x > 0
+      leditor.antes, x-=1
+      msg(leditor.texto)
+      se !editor.linha
+        ret 1
+      fimse
+    efim
+    ret 1
+  casose "d" Desce uma ou mais linhas
+    uint8 x
+    x = txtremove(txt(arg0, 1), "E")
+    x > 8 && (x = 8)
+    x < 1 && (x = 1)
+    enquanto x > 0
+      leditor.depois, x-=1
+      se !leditor.lin
+        msg("Fim do texto")
+        ret 1
+      fimse
+      msg(leditor.texto)
+    efim
+    ret 1
+  casofim
+# Comandos de dois caracteres
+  casovar txtmin(arg0)
+  casose "bi"
+    leditor1 = leditor
+    msg("Início de bloco")
+    ret 1
+  casose "bf"
+    leditor2 = leditor
+    msg("Fim de bloco")
+    ret 1
+  casose "ba"
+    int32 total
+    total = leditor2.linha - leditor1.linha
+    se total <= 0
+      msg("Nada para ser apagado")
+    senao
+      leditor1.remove(total)
+      msg("Bloco apagado " + total + " linhas")
+    fimse
+    ret 1
+  casose "bc"
+    int32 total
+    total = leditor2.linha - leditor1.linha
+    transf.limpar
+    total > 0 && transf.ini.add(leditor1, total)
+    msg(txt(transf.total) + " linhas guardadas")
+    ret 1
+  casose "bx"
+    int32 total
+    total = leditor2.linha - leditor1.linha
+    transf.limpar
+    se total > 0
+      leditor1.remove(total)
+      transf.ini.add(leditor1, total)
+    fimse
+    msg(txt(transf.total) + " linhas movidas")
+    ret 1
+  casose "bv"
+    se teditor.bytes + transf.bytes > arg1
+      msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    leditor1.add(teditor.ini, teditor.linhas)
+    msg(txt(transf.total) + " linhas coladas")
+  casofim
+# Checa número de linha
+  uint16 lin
+  lin = arg0
+  se arg0 == lin
+    leditor.linha = lin - 1
+    msg(txt(leditor.linha + 1) + " " + leditor.texto)
+    ret 1
+  fimse
+# Opção desconhecida
+  msg("Opção desconhecida: " + txt(arg0, 0, 1))
+  msg("Editando " + arg2 + ", O opções, Z sair")
+  ret 1
+
+
+#Falta no editor:
+#P procura
+#E embeleza
+#C mostra com cores
+
+const m_editor = "\b\c3Comandos do editor\b\n\
+\c2I\b\n\
+  Informações sobre a linha atual, quantidade de linhas, etc.\n\
+\c2L\b\n\
+  Mostra a linha atual\n\
+\c2S seguido ou não de um número\b\n\
+  Sobe uma ou mais linhas no texto\n\
+\c2D seguido ou não de um número\b\n\
+  Desce uma ou mais linhas no texto\n\
+\c2Um número qualquer\b\n\
+  Vai para a linha correspondente; as linhas começam em 1, e se\n\
+  digitar um número bem grande, vai para o fim do texto\n\
+\c2Um ponto seguido de um texto\b\n\
+  Insere um texto entre a linha atual e a anterior\n\
+  A linha atual avança automaticamente\n\
+\c2Uma vírgula seguido de um texto\b\n\
+  Insere um texto entre a linha atual e a anterior, sem remover espaços\n\
+  Exemplo: vírgula seguido de dois espaços e a letra A insere uma linha\n\
+  que contém dois espaços e a letra A\n\
+\c2A\b\n\
+  Apaga atual\n\
+\c2P seguido de um texto\b\n\
+  Procura um texto a partir da próxima atual\n\
+\c2P\b\n\
+  Procura o texto novamente\n\
+\c2E\b\n\
+  Embeleza o texto, formatando em até 77 caracteres por linha\n\
+\c2C\b\n\
+  Mostra o texto com as definições de cores\n\
+\c2M seguido de um texto\b\n\
+  Executa um comando do MUD sem sair da edição\n\
+\c2X\b\n\
+  Salva o texto\n\
+\c2Z\b\n\
+  Encerra a edição\n\
+\c2BI\b\n\
+  Marca início do bloco na linha atual\n\
+\c2BF\b\n\
+  Marca fim de bloco na linha atual\n\
+\c2BA\b\n\
+  Apaga bloco marcado\n\
+\c2BC\b\n\
+  Copia bloco para a área de transferência\n\
+\c2BX\b\n\
+  Move bloco para a área de transferência\n\
+\c2BV\b\n\
+  Insere texto da área de transferência a partir da linha atual\n\
+\c2BL\b\n\
+  Apaga todo o texto sendo editado"
+
 
 func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_abc"
 # arg0=nome da variável, tpasso=nome da classe
