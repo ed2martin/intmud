@@ -4,7 +4,7 @@ func iniclasse
   criar(arg0)
 
 classe jogsock
-herda jog_passo, jog_adm
+herda jog_entra, jog_adm, jog_admsala
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -23,6 +23,15 @@ inttempo vazio # Tempo sem comunicação para desconectar do MUD
 textotxt txtmais # Texto do tecle M para mais
 const admin = 1 # Se é administrador
 uint8 canais # Canais: +1 se recebe pvt, +2 se recebe chat
+#
+txt20 passo # Passo atual; "" se estiver jogando
+txt100 tpasso # Texto usado no passo atual
+textotxt teditor # Texto usado no editor
+textotxt transf # Área de transferência do editor
+textopos leditor1 # Início de bloco
+textopos leditor2 # Fim de bloco
+textopos leditor # Linha atual no editor
+txt512 peditor # Texto sendo procurado, opção P do editor
 
 func ini
   reinicia
@@ -79,15 +88,8 @@ func vazio_exec
   apagar(este)
 
 
-classe jog_passo
-# Funções que processam a variável passo
-txt20 passo # Passo atual; "" se estiver jogando
-txt100 tpasso # Texto usado no passo atual
-textotxt teditor # Texto usado no editor
-textotxt transf # Área de transferência do editor
-textopos leditor1 # Início de bloco
-textopos leditor2 # Fim de bloco
-textopos leditor # Linha atual no editor
+classe jog_entra
+# Entrando no jogo
 
 func p_perso # Digitar o nome do personagem
   indiceitem ind

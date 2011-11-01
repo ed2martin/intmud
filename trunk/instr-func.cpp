@@ -553,7 +553,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             shsFinal(&shsInfo);
             for (int x=0; x<5; x++)
             {
-                unsigned long codif = shsInfo.digest[x];
+                LONG1 codif = shsInfo.digest[x];
                 for (int y=0; y<5; y++)
                 {
                     *destino++ = (codif & 0x3F) + 0x21;
