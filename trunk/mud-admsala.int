@@ -1,0 +1,269 @@
+classe jog_admsala
+# Comandos de sala e de área
+
+const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
+
+const txt_terreno = "Dentro, lugar fechado - 1mv\n\
+Rua de uma cidade - 1mv\n\
+Campo, um campo aberto - 2mv\n\
+Pântano, itens afundam - 3mv\n\
+Floresta densa - 3mv\n\
+Colina - 4mv\n\
+Montanha, excessivamente montanhoso - 6mv\n\
+Água, pode nadar - 4mv\n\
+Água, requer barco para passar - 1mv\n\
+Em baixo d'água - 5mv\n\
+Ar, itens e mobs caem - 1mv"
+
+const txt_luz = "Totalmente claro\nLuz do sol\nEscuro"
+
+const adm_area = "\b\c3Comandos de áreas\b\n\
+\c2LAREA\b [nome]\n\
+  Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
+\c2CAREA\b <nome>\n\
+  Cria área. Nomes de área devem ter de 2 a 16 letras de A a Z.\n\
+\c2EAREA\b [nome]\n\
+  Edita área. Se o nome for omitido, edita a área em que você está.\n\
+\c2AAREA\b <nome>\n\
+  Apaga área, desde que não tenha nenhuma sala."
+
+const adm_sala = "\b\c3Comandos de salas\b\n\
+\c2LSALA\b <nome>\n\
+  Lista salas que começam com o nome especificado.\n\
+\c2ISALA\b <nome>\n\
+  Vai para a sala especificada.\n\
+\c2CSALA\b <nome>\n\
+  Cria sala com o nome especificado. Nomes de sala devem ser o nome\n\
+  da área seguido de um número de 001 a 999 (três dígitos).\n\
+\c2CSALA\b <direção>\n\
+  Cria sala na direção especificada. Cria automaticamente uma saída\n\
+  com a sala em que você está. Exemplo: csala ne\n\
+\c2ESALA\b [nome]\n\
+  Edita sala. Se o nome for omitido, edita a sala em que você está.\n\
+\c2ASALA\b <nome>\n\
+  Apaga sala. Atenção: não apaga as saídas das outras salas para esta."
+
+func com_larea # Listar áreas
+  prog p
+  se !p.iniclasse("a_" + arg0)
+    msg("\bNenhuma área encontrada.")
+  senao
+    textotxt t
+    t.addfim("\bÁreas (prefixo, nome, autor):")
+    enquanto p.lin
+      t.addfim(txt(p.texto, 2) + ", " + [p.texto]:a_nome + ", " + [p.texto]:a_autor)
+      p.depois
+    efim
+    msg2(t.remove(1000))
+  fimse
+  ret 1
+
+func com_carea # Criar área
+  txt100 prefixo
+  prefixo = txtmin(arg0)
+  se $a_[prefixo]
+    msg("\bÁrea já existe: " + prefixo)
+  senao inttotal(prefixo) < 2 || inttotal(prefixo) > 10
+    msg("\bNome de área deve ter de 2 a 10 caracteres")
+  senao
+    uint8 pos
+    enquanto pos < inttotal(prefixo)
+      se txt(prefixo, pos, 1) < "a" || txt(prefixo, pos, 1) > "z"
+        msg("\bNome de área deve ter apenas letras de a a z.")
+        ret 1
+      fimse
+      pos += 1
+    efim
+    prog p
+    p.criar("a_" + prefixo + "\n" + "aa" + prefixo + "\nherda area")
+    p.criar("b_" + prefixo + "\n" + "aa" + prefixo + "\nherda sala")
+    p.salvar(config:progsalvar)
+    msg("\bÁrea criada: " + prefixo)
+  fimse
+  ret 1
+
+func com_aarea # Apagar área
+  txt100 prefixo
+  prog p
+  prefixo = txtmin(arg0)
+  se !$a_[prefixo]
+    msg("\bÁrea não existe: " + prefixo)
+  senao p.iniherdainv("b_" + prefixo)
+    msg("\bÁrea contém pelo menos uma sala: " + txt(p.texto, 2))
+  senao
+    p.apagar("a_" + prefixo)
+    p.apagar("b_" + prefixo)
+    p.salvar(config:progsalvar)
+    msg("\bÁrea apagada: " + prefixo)
+  fimse
+  ret 1
+
+func com_earea # Editar área
+  txt100 prefixo
+  prog p
+  prefixo = txtmin(arg0)
+  se prefixo == ""
+    prefixo = txt(perso.dono, 2, inttotal(txt(perso.dono)) - 5)
+  fimse
+  se !$a_[prefixo]
+    msg("\bÁrea não existe: " + prefixo)
+  senao
+    msg("Área " + prefixo + ", tecle O para saber as opções")
+    passo = "area"
+    tpasso = "a_" + prefixo
+  fimse
+  ret 1
+
+func p_area # Editando área
+  teditor.limpar
+  casovar txtmin(arg0)
+  casose "o"
+    txtmais.limpar
+    txtmais.addfim("\bÁrea " + txt(tpasso, 2))
+    txtmais.addfim("1. Nome            : " + m_texto("a_nome"))
+    txtmais.addfim("2. Autor           : " + m_texto("a_autor"))
+    txtmais.addfim("3. Tempo de reset  : " + m_numero("a_tempo"))
+    txtmais.addfim("4. Modo de reset   : " + m_opcao("a_reset", txt_reset))
+    tpasso = "b_" + txt(tpasso, 2)
+    txtmais.addfim("5. Terreno         : " + m_opcao("s_terreno", txt_terreno))
+    txtmais.addfim("6. Luminosidade    : " + m_opcao("s_luz", txt_luz))
+    txtmais.addfim("7. Morre ao entrar : " + m_simnao("s_morre"))
+    txtmais.addfim("8. Silencioso      : " + m_simnao("s_silencio"))
+    txtmais.addfim("9. Sem violência   : " + m_simnao("s_sembatalha"))
+    txtmais.addfim("10.Sem magia       : " + m_simnao("s_semmagia"))
+    txtmais.addfim("11.MOBs não entram : " + m_simnao("s_semmob"))
+    tpasso = "a_" + txt(tpasso, 2)
+    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+    txtmais.addfim("L. Legenda")
+    txtmais.addfim("Z. Sair")
+    txtmostra
+    ret 1
+  casose "z"
+    msg("Retornando ao jogo")
+    passo = ""
+    ret 1
+  casose "l"
+    msg(txt_legenda)
+    ret 1
+  casose "1"
+    msg("Nome: " + m_texto("a_nome"))
+    tpasso += " a_nome area Nome"
+    ret p_texto("")
+  casose "2"
+    msg("Autor: " + m_texto("a_autor"))
+    tpasso += " a_autor area Autor"
+    ret p_texto("")
+  casose "3"
+    msg("Tempo de reset: " + m_numero("a_tempo"))
+    tpasso += " a_tempo area Tempo de reset"
+    ret p_numero("")
+  casose "4"
+    msg("Modo de reset: " + m_opcao("a_reset", txt_reset))
+    teditor.addfim(txt_reset)
+    tpasso += " a_reset area Modo de reset"
+    ret p_opcao("")
+  casose "5"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("Terreno: " + m_opcao("s_terreno", txt_terreno))
+    teditor.addfim(txt_terreno)
+    tpasso += " s_terreno area Tipo de terreno"
+    ret p_opcao("")
+  casose "6"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("Luminosidade: " + m_opcao("s_luz", txt_luz))
+    teditor.addfim(txt_luz)
+    tpasso += " s_luz area Quantidade de luz"
+    ret p_opcao("")
+  casose "7"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("Morre ao entrar: " + m_simnao("s_morre"))
+    tpasso += " s_morre area Morre ao entrar"
+    ret p_simnao("")
+  casose "8"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("Silencioso: " + m_simnao("s_silencio"))
+    tpasso += " s_silencio area Silencioso"
+    ret p_simnao("")
+  casose "9"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("Sem violência: " + m_simnao("s_sembatalha"))
+    tpasso += " s_sembatalha area Sem violência"
+    ret p_simnao("")
+  casose "10"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("Sem magia: " + m_simnao("s_semmagia"))
+    tpasso += " s_semmagia area Sem magia"
+    ret p_simnao("")
+  casose "11"
+    tpasso = "b_" + txt(tpasso, 2)
+    msg("MOBs não entram: " + m_simnao("s_semmob"))
+    tpasso += " s_semmob area se MOBs não entram"
+    ret p_simnao("")
+  casose "f1"
+    tpasso += " a_nome area Nome"
+    ret p_func("\n")
+  casose "f2"
+    tpasso += " a_autor area Autor"
+    ret p_func("\n")
+  casose "f3"
+    tpasso += " a_tempo area Tempo de reset"
+    ret p_func("\n")
+  casose "f4"
+    tpasso += " a_reset area Modo de reset"
+    ret p_func("\n")
+  casose "f5"
+    tpasso = "b_" + txt(tpasso, 2) + " s_terreno area Tipo de terreno"
+    ret p_func("\n")
+  casose "f6"
+    tpasso = "b_" + txt(tpasso, 2) + " s_luz area Quantidade de luz"
+    ret p_func("\n")
+  casose "f7"
+    tpasso = "b_" + txt(tpasso, 2) + " s_morre area Morre ao entrar"
+    ret p_func("\n")
+  casose "f8"
+    tpasso = "b_" + txt(tpasso, 2) + " s_silencio area Silencioso"
+    ret p_func("\n")
+  casose "f9"
+    tpasso = "b_" + txt(tpasso, 2) + " s_sembatalha area Sem violência"
+    ret p_func("\n")
+  casose "f10"
+    tpasso = "b_" + txt(tpasso, 2) + " s_semmagia area Sem magia"
+    ret p_func("\n")
+  casose "f11"
+    tpasso = "b_" + txt(tpasso, 2) + " s_semmob area se MOBs não entram"
+    ret p_func("\n")
+  casose
+    msg("Opção inválida: " + arg0)
+  casose ""
+    passo = "area"
+    tpasso = "a_" + txt(txt1(tpasso), 2)
+    msg("Área " + txt(tpasso, 2) + ", O opções, Z sair")
+    ret 1
+  casofim
+  ret 1
+
+func com_lsala # Listar salas
+  prog p
+  se !p.iniclasse("s_" + arg0)
+    msg("\bNenhuma sala encontrada.")
+  senao
+    textotxt t
+    t.addfim("\bSalas:")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].titulo)
+      p.depois
+    efim
+    msg2(t.remove(500))
+  fimse
+  ret 1
+
+func com_isala # Ir para uma sala específica
+  prog p
+  se !$s_[arg0]
+    msg("\bSala não existe: " + arg0)
+  senao !perso
+    msg("Você deve estar controlando um personagem para isso")
+  senao
+    perso.mudasala($s_[arg0])
+  fimse
+  ret 1
