@@ -100,7 +100,7 @@ void TVarSav::Senha(char * senhacodif, const char * senha, char fator)
 // Anota na string
     for (int a=0; a<5; a++)
     {
-        unsigned long result = shsInfo.digest[a];
+        LONG1 result = shsInfo.digest[a];
         for (int b=0; b<5; result/=90,b++)
             *senhacodif++ = (char)(result%90+33);
     }

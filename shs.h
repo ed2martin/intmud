@@ -16,7 +16,7 @@
 #define SHS_H
 
 typedef unsigned char BYTE1;
-typedef unsigned long LONG1;
+typedef unsigned int LONG1;
 
 /* The SHS block size and message digest sizes, in bytes */
 

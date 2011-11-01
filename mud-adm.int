@@ -1,4 +1,5 @@
 classe jog_adm
+# Funções necessárias para os comandos de administração
 
 func com_adm
   prog p
@@ -20,32 +21,6 @@ Os tópicos são:\n\
   \c2OUTROS\b   Outros comandos"
 #  \c2INFO\b     Informações sobre o MUD\n\
 #  \c2CONFIG\b   Configuração do MUD"
-
-const adm_area = "\b\c3Comandos de áreas\b\n\
-\c2LAREA\b [nome]\n\
-  Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
-\c2CAREA\b <nome>\n\
-  Cria área. Nomes de área devem ter de 2 a 16 letras de A a Z.\n\
-\c2EAREA\b [nome]\n\
-  Edita área. Se o nome for omitido, edita a área em que você está.\n\
-\c2AAREA\b <nome>\n\
-  Apaga área, desde que não tenha nenhuma sala."
-
-const adm_sala = "\b\c3Comandos de salas\b\n\
-\c2LSALA\b <nome>\n\
-  Lista salas que começam com o nome especificado.\n\
-\c2ISALA\b <nome>\n\
-  Vai para a sala especificada.\n\
-\c2CSALA\b <nome>\n\
-  Cria sala com o nome especificado. Nomes de sala devem ser o nome\n\
-  da área seguido de um número de 001 a 999 (três dígitos).\n\
-\c2CSALA\b <direção>\n\
-  Cria sala na direção especificada. Cria automaticamente uma saída\n\
-  com a sala em que você está. Exemplo: csala ne\n\
-\c2ESALA\b [nome]\n\
-  Edita sala. Se o nome for omitido, edita a sala em que você está.\n\
-\c2ASALA\b <nome>\n\
-  Apaga sala."
 
 const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
 \c2SAI\b\n\
@@ -96,217 +71,12 @@ func com_echo
   fimse
   ret 1
 
-func com_larea
-  prog p
-  se !p.iniclasse("a_" + arg0)
-    msg("\bNenhuma área encontrada.")
-  senao
-    textotxt t
-    t.addfim("\bÁreas (prefixo, nome, autor):")
-    enquanto p.lin
-      t.addfim(txt(p.texto, 2) + ", " + [p.texto]:a_nome + ", " + [p.texto]:a_autor)
-      p.depois
-    efim
-    msg2(t.remove(1000))
-  fimse
-  ret 1
-
-func com_carea
-  txt100 prefixo
-  prefixo = txtmin(arg0)
-  se $a_[prefixo]
-    msg("\bÁrea já existe: " + prefixo)
-  senao inttotal(prefixo) < 2 || inttotal(prefixo) > 10
-    msg("\bNome de área deve ter de 2 a 10 caracteres")
-  senao
-    uint8 pos
-    enquanto pos < inttotal(prefixo)
-      se txt(prefixo, pos, 1) < "a" || txt(prefixo, pos, 1) > "z"
-        msg("\bNome de área deve ter apenas letras de a a z.")
-        ret 1
-      fimse
-      pos += 1
-    efim
-    prog p
-    p.criar("a_" + prefixo + "\n" + "aa" + prefixo + "\nherda area")
-    p.criar("s_" + prefixo + "\n" + "aa" + prefixo + "\nherda sala")
-    p.salvar(config:progsalvar)
-    msg("\bÁrea criada: " + prefixo)
-  fimse
-  ret 1
-
-func com_aarea
-  txt100 prefixo
-  prog p
-  prefixo = txtmin(arg0)
-  se !$a_[prefixo]
-    msg("\bÁrea não existe: " + prefixo)
-  senao p.iniherdainv("s_" + prefixo)
-    msg("\bÁrea contém pelo menos uma sala: " + p.texto)
-  senao
-    p.apagar("a_" + prefixo)
-    p.apagar("s_" + prefixo)
-    p.salvar(config:progsalvar)
-    msg("\bÁrea apagada: " + prefixo)
-  fimse
-  ret 1
-
-func com_earea
-  txt100 prefixo
-  prog p
-  prefixo = txtmin(arg0)
-  se prefixo == ""
-    prefixo = txt(perso.dono, 2, inttotal(txt(perso.dono)) - 5)
-  fimse
-  se !$a_[prefixo]
-    msg("\bÁrea não existe: " + prefixo)
-  senao
-    msg("Área " + prefixo + ", tecle O para saber as opções")
-    passo = "area"
-    tpasso = "a_" + prefixo
-  fimse
-  ret 1
-
-const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
-
-const txt_terreno = "Dentro, lugar fechado - 1mv\n\
-Rua de uma cidade - 1mv\n\
-Campo, um campo aberto - 2mv\n\
-Pântano, itens afundam - 3mv\n\
-Floresta densa - 3mv\n\
-Colina - 4mv\n\
-Montanha, excessivamente montanhoso - 6mv\n\
-Água, pode nadar - 4mv\n\
-Água, requer barco para passar - 1mv\n\
-Em baixo d'água - 5mv\n\
-Ar, itens e mobs caem - 1mv"
-
-const txt_luz = "Totalmente claro\nLuz do sol\nEscuro"
-
-func p_area # Editando área
-  teditor.limpar
-  casovar txtmin(arg0)
-  casose "o"
-    txtmais.limpar
-    txtmais.addfim("\bÁrea " + txt(tpasso, 2))
-    txtmais.addfim("1. Nome            : " + m_texto("a_nome"))
-    txtmais.addfim("2. Autor           : " + m_texto("a_autor"))
-    txtmais.addfim("3. Tempo de reset  : " + m_numero("a_tempo"))
-    txtmais.addfim("4. Modo de reset   : " + m_opcao("a_reset", txt_reset))
-    tpasso = "s_" + txt(tpasso, 2)
-    txtmais.addfim("Salas:")
-    txtmais.addfim("5. Terreno         : " + m_opcao("s_terreno", txt_terreno))
-    txtmais.addfim("6. Luminosidade    : " + m_opcao("s_luz", txt_luz))
-    txtmais.addfim("7. Morre ao entrar : " + m_simnao("s_morre"))
-    txtmais.addfim("8. Silencioso      : " + m_simnao("s_silencio"))
-    txtmais.addfim("9. Sem violência   : " + m_simnao("s_sembatalha"))
-    txtmais.addfim("10.Sem magia       : " + m_simnao("s_semmagia"))
-    txtmais.addfim("11.MOBs não entram : " + m_simnao("s_semmob"))
-    tpasso = "a_" + txt(tpasso, 2)
-    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
-    txtmais.addfim("Z. Sair")
-    txtmostra
-    ret 1
-  casose "z"
-    msg("Retornando ao jogo")
-    passo = ""
-    ret 1
-  casose "1"
-    msg("Nome: " + m_texto("a_nome"))
-    tpasso += " a_nome area Nome"
-    ret p_texto("")
-  casose "2"
-    msg("Autor: " + m_texto("a_autor"))
-    tpasso += " a_autor area Autor"
-    ret p_texto("")
-  casose "3"
-    msg("Tempo de reset: " + m_numero("a_tempo"))
-    tpasso += " a_tempo area Tempo de reset"
-    ret p_numero("")
-  casose "4"
-    msg("Modo de reset: " + m_opcao("a_reset", txt_reset))
-    teditor.addfim(txt_reset)
-    tpasso += " a_reset area Modo de reset"
-    ret p_opcao("")
-  casose "5"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("Terreno: " + m_opcao("s_terreno", txt_terreno))
-    teditor.addfim(txt_terreno)
-    tpasso += " s_terreno area Tipo de terreno"
-    ret p_opcao("")
-  casose "6"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("Luminosidade: " + m_opcao("s_luz", txt_luz))
-    teditor.addfim(txt_luz)
-    tpasso += " s_luz area Quantidade de luz"
-    ret p_opcao("")
-  casose "7"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("Morre ao entrar: " + m_simnao("s_morre"))
-    tpasso += " s_morre area Morre ao entrar"
-    ret p_simnao("")
-  casose "8"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("Silencioso: " + m_simnao("s_silencio"))
-    tpasso += " s_silencio area Silencioso"
-    ret p_simnao("")
-  casose "9"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("Sem violência: " + m_simnao("s_sembatalha"))
-    tpasso += " s_sembatalha area Sem violência"
-    ret p_simnao("")
-  casose "10"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("Sem magia: " + m_simnao("s_semmagia"))
-    tpasso += " s_semmagia area Sem magia"
-    ret p_simnao("")
-  casose "11"
-    tpasso = "s_" + txt(tpasso, 2)
-    msg("MOBs não entram: " + m_simnao("s_semmob"))
-    tpasso += " s_semmob area se MOBs não entram"
-    ret p_simnao("")
-  casose "f1"
-    tpasso += " a_nome area Nome"
-    ret p_func("\n")
-  casose "f2"
-    tpasso += " a_autor area Autor"
-    ret p_func("\n")
-  casose "f3"
-    tpasso += " a_tempo area Tempo de reset"
-    ret p_func("\n")
-  casose "f4"
-    tpasso += " a_reset area Modo de reset"
-    ret p_func("\n")
-  casose "f5"
-    tpasso = "s_" + txt(tpasso, 2) + " s_terreno area Tipo de terreno"
-    ret p_func("\n")
-  casose "f6"
-    tpasso = "s_" + txt(tpasso, 2) + " s_luz area Quantidade de luz"
-    ret p_func("\n")
-  casose "f7"
-    tpasso = "s_" + txt(tpasso, 2) + " s_morre area Morre ao entrar"
-    ret p_func("\n")
-  casose "f8"
-    tpasso = "s_" + txt(tpasso, 2) + " s_silencio area Silencioso"
-    ret p_func("\n")
-  casose "f9"
-    tpasso = "s_" + txt(tpasso, 2) + " s_sembatalha area Sem violência"
-    ret p_func("\n")
-  casose "f10"
-    tpasso = "s_" + txt(tpasso, 2) + " s_semmagia area Sem magia"
-    ret p_func("\n")
-  casose "f11"
-    tpasso = "s_" + txt(tpasso, 2) + " s_semmob area se MOBs não entram"
-    ret p_func("\n")
-  casose
-    msg("Opção inválida: " + arg0)
-  casose ""
-    passo = "area"
-    tpasso = "a_" + txt(txt1(tpasso), 2)
-    msg("Área " + txt(tpasso, 2) + ", O opções, Z sair")
-    ret 1
-  casofim
-  ret 1
+const txt_legenda = "Legenda:\n\
+<nulo> Significa que a opção não foi definida.\n\
+<herda> É herdado de outra classe.\n\
+Exemplo, as salas herdam as propriedades das nas áreas.\n\
+Outro texto entre os sinais de menor e maior indicam o modo\n\
+como a opção foi definida. Exemplo, <func> significa função."
 
 func m_texto # Mostra texto de uma linha, do tipo "const x = \"abc\""
 # arg0=nome da variável, tpasso=nome da classe
@@ -609,6 +379,9 @@ func p_func
       efim
     fimse
     leditor = teditor.ini
+    leditor1 = teditor.ini
+    leditor2 = teditor.fim
+    leditor2.antes
     ret 1
   casose "z" # Sair do editor
     msg("Fechando editor")
@@ -689,7 +462,7 @@ func p_funcsalvar # Opçao salvar de p_func
   efim
 
 func p_editor
-# Processamento de qualquer editor
+# Processamento de qualquer editor de texto
 # arg0 = texto digitado
 # arg1 = quantidade máxima de bytes
 # arg2 = nome da opção
@@ -698,6 +471,8 @@ func p_editor
   casovar txtmin(txt(arg0, 0, 1))
   casose "\n"
     leditor = teditor.ini
+    leditor1 = teditor.ini
+    leditor2 = teditor.fim
   casose "" # Entrou na opção ou apenas pressionou ENTER
     msg("Editando " + arg2 + ", O opções, Z sair")
     ret 1
@@ -777,51 +552,137 @@ func p_editor
       msg(leditor.texto)
     efim
     ret 1
+  casose "t" # Informações sobre a área de transferência
+    se transf.linhas == 0
+      msg("Área de transferência vazia")
+    senao transf.linhas == 1
+      msg("Área de transferência: 1 linha " + transf.bytes + " bytes")
+    senao
+      msg("Área de transferência: " + transf.linhas + " linhas " + transf.bytes + " bytes")
+    fimse
+    msg("Bloco linhas " + (leditor1.linha + 1) + " a " + (leditor2.linha + 1))
+    ret 1
+  casose "p" # Procurar
+    txt512 t # Texto após o comando P
+    int16 col # Coluna aonde encontrou
+    textopos pos # Posição aonde encontrou
+    t = txtremove(txt(arg0, 1), "ED")
+    se t # Procura texto
+      peditor = t, pos = leditor
+      col = pos.txtproc(t, 0)
+    senao peditor # Procura novamente
+      pos = leditor, pos.depois
+      col = pos.txtproc(peditor, 0)
+    senao # Nada para procurar
+      col = -1
+    fimse
+    se col >= 0
+      leditor = pos
+      msg("Encontrado linha " + (leditor.linha + 1) + " coluna " + (col+1))
+      msg(leditor.texto)
+    senao
+      msg("Nada encontrado")
+    fimse
+    ret 1
+  casose "e" # Embelezar o texto
+    teditor.addini(txttroca(teditor.remove(10000), "\n", " "))
+    teditor.dividelin(57, 77)
+    msg("Texto embelezado; voltando à linha 1")
+    ret 1
+  casose "c" # Mostrar texto com as definições de cores
+    textopos pos
+    txtmais.limpar
+    txtmais.addfim("\bTexto com cores:")
+    pos = teditor.ini
+    enquanto pos.lin
+      txtmais.addfim(txtinvis(pos.texto))
+      pos.depois
+    efim
+    txtmostra
+    ret 1
   casofim
 # Comandos de dois caracteres
   casovar txtmin(arg0)
   casose "bi"
     leditor1 = leditor
-    msg("Início de bloco")
+    msg("Início de bloco linha " + (leditor1.linha + 1))
     ret 1
   casose "bf"
     leditor2 = leditor
-    msg("Fim de bloco")
+    msg("Fim de bloco linha " + (leditor2.linha + 1))
     ret 1
   casose "ba"
     int32 total
-    total = leditor2.linha - leditor1.linha
+    total = leditor2.linha - leditor1.linha + 1
     se total <= 0
       msg("Nada para ser apagado")
     senao
       leditor1.remove(total)
-      msg("Bloco apagado " + total + " linhas")
+      se total == 1
+        msg("Uma linha apagada")
+      senao
+        msg(txt(total) + " linhas apagadas")
+      fimse
     fimse
     ret 1
   casose "bc"
     int32 total
-    total = leditor2.linha - leditor1.linha
+    total = leditor2.linha - leditor1.linha + 1
     transf.limpar
-    total > 0 && transf.ini.add(leditor1, total)
-    msg(txt(transf.total) + " linhas guardadas")
+    transf.ini.add(leditor1, total)
+    se transf.linhas == 1
+      msg("1 linha guardada")
+    senao
+      msg(txt(transf.linhas) + " linhas guardadas")
+    fimse
     ret 1
   casose "bx"
     int32 total
-    total = leditor2.linha - leditor1.linha
+    total = leditor2.linha - leditor1.linha + 1
     transf.limpar
-    se total > 0
-      leditor1.remove(total)
-      transf.ini.add(leditor1, total)
+    transf.ini.add(leditor1, total)
+    leditor1.remove(total)
+    se transf.linhas == 1
+      msg("1 linha movida")
+    senao
+      msg(txt(transf.linhas) + " linhas movidas")
     fimse
-    msg(txt(transf.total) + " linhas movidas")
     ret 1
   casose "bv"
     se teditor.bytes + transf.bytes > arg1
       msg("Editor não suporta tantos caracteres")
       ret 1
     fimse
-    leditor1.add(teditor.ini, teditor.linhas)
-    msg(txt(transf.total) + " linhas coladas")
+    leditor1.add(transf.ini, transf.linhas)
+    se transf.linhas == 1
+      msg("1 linha colada")
+    senao
+      msg(txt(transf.linhas) + " linhas coladas")
+    fimse
+    ret 1
+  casose "be" # Embelezar o bloco
+    int32 total
+    total = leditor2.linha - leditor1.linha + 1
+    se total <= 0
+      msg("Nada para ser embelezado")
+    senao
+      textotxt t
+      t.addfim(txttroca(leditor1.textolin(total), "\n", " "))
+      t.dividelin(57, 77)
+      leditor1.remove(total)
+      leditor1.add(t.ini, t.linhas)
+      leditor2.linha = leditor1.linha + t.linhas - 1
+      se total == 1
+        msg("Uma linha embelezada")
+      senao
+        msg(txt(total) + " linhas embelezadas")
+      fimse
+    fimse
+    ret 1
+  casose "bl" # Limpar o texto
+    teditor.limpar
+    msg("Texto apagado")
+    ret 1
   casofim
 # Checa número de linha
   uint16 lin
@@ -836,61 +697,37 @@ func p_editor
   msg("Editando " + arg2 + ", O opções, Z sair")
   ret 1
 
-
-#Falta no editor:
-#P procura
-#E embeleza
-#C mostra com cores
-
 const m_editor = "\b\c3Comandos do editor\b\n\
-\c2I\b\n\
-  Informações sobre a linha atual, quantidade de linhas, etc.\n\
-\c2L\b\n\
-  Mostra a linha atual\n\
-\c2S seguido ou não de um número\b\n\
-  Sobe uma ou mais linhas no texto\n\
-\c2D seguido ou não de um número\b\n\
-  Desce uma ou mais linhas no texto\n\
-\c2Um número qualquer\b\n\
-  Vai para a linha correspondente; as linhas começam em 1, e se\n\
-  digitar um número bem grande, vai para o fim do texto\n\
-\c2Um ponto seguido de um texto\b\n\
-  Insere um texto entre a linha atual e a anterior\n\
-  A linha atual avança automaticamente\n\
-\c2Uma vírgula seguido de um texto\b\n\
-  Insere um texto entre a linha atual e a anterior, sem remover espaços\n\
-  Exemplo: vírgula seguido de dois espaços e a letra A insere uma linha\n\
-  que contém dois espaços e a letra A\n\
-\c2A\b\n\
-  Apaga atual\n\
-\c2P seguido de um texto\b\n\
-  Procura um texto a partir da próxima atual\n\
-\c2P\b\n\
-  Procura o texto novamente\n\
-\c2E\b\n\
-  Embeleza o texto, formatando em até 77 caracteres por linha\n\
-\c2C\b\n\
-  Mostra o texto com as definições de cores\n\
-\c2M seguido de um texto\b\n\
-  Executa um comando do MUD sem sair da edição\n\
-\c2X\b\n\
-  Salva o texto\n\
-\c2Z\b\n\
-  Encerra a edição\n\
-\c2BI\b\n\
-  Marca início do bloco na linha atual\n\
-\c2BF\b\n\
-  Marca fim de bloco na linha atual\n\
-\c2BA\b\n\
-  Apaga bloco marcado\n\
-\c2BC\b\n\
-  Copia bloco para a área de transferência\n\
-\c2BX\b\n\
-  Move bloco para a área de transferência\n\
-\c2BV\b\n\
-  Insere texto da área de transferência a partir da linha atual\n\
-\c2BL\b\n\
-  Apaga todo o texto sendo editado"
+\c2I\b  Informações sobre a linha atual, quantidade de linhas, etc.\n\
+\c2T\b  Informações sobre a área de transferência e o bloco marcado\n\
+\c2L\b  Mostra a linha atual\n\
+\c2S\b  seguido ou não de um número: Sobe uma ou mais linhas no texto\n\
+\c2D\b  seguido ou não de um número: Desce uma ou mais linhas no texto\n\
+\c2Um número qualquer:\b  Vai para a linha correspondente\n\
+As linhas começam em 1; um número bem grande, vai para o fim do texto\n\
+\c2Um ponto seguido de um texto:\b\n\
+Insere um texto entre a linha atual e a anterior\n\
+A linha atual avança automaticamente\n\
+\c2Uma vírgula seguido de um texto:\b\n\
+Insere um texto entre a linha atual e a anterior, sem remover espaços\n\
+Exemplo: vírgula seguido de dois espaços e a letra A insere uma linha\n\
+que contém dois espaços e a letra A\n\
+\c2A\b  Apaga a linha atual\n\
+\c2P\b  seguido de um texto: Procura um texto a partir da linha atual\n\
+\c2P\b  Procura a próxima linha que contém o texto\n\
+\c2E\b  Embeleza o texto, formatando em até 77 caracteres por linha\n\
+\c2C\b  Mostra o texto com as definições de cores\n\
+\c2M\b  seguido de um texto: Executa um comando do MUD sem sair da edição\n\
+\c2X\b  Salva o texto\n\
+\c2Z\b  Encerra a edição\n\
+\c2BI\b  Marca início do bloco na linha atual\n\
+\c2BF\b  Marca fim de bloco na linha atual\n\
+\c2BA\b  Apaga bloco marcado\n\
+\c2BC\b  Copia bloco para a área de transferência\n\
+\c2BX\b  Move bloco para a área de transferência\n\
+\c2BV\b  Insere texto da área de transferência entre a linha atual e a anterior\n\
+\c2BE\b  Embeleza o bloco marcado\n\
+\c2BL\b  Apaga todo o texto sendo editado"
 
 
 func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_abc"
