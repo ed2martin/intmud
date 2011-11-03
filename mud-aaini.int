@@ -5,16 +5,15 @@ const a_nome = "Área inicial"
 
 classe b_ini
 herda sala
+const s_terreno = 1
 
 
 classe s_ini001
 herda b_ini
-const descr0 = "Sala ampla"
-const descr1 = "Você está em uma sala bastante ampla de uma casa, dizem ser \
-mal assombrada."
-const descr2 = "Há janelas mas é alto demais para pular. Há também um \
-corredor a leste"
-const descr3 = "e uma passagem ao norte."
+const s_titulo = "Sala ampla"
+const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal assombrada.\n\
+Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
+e uma passagem ao norte."
 const dir_l = $s_ini003
 const dir_n = $s_ini002
 const tipoini_n = 2
@@ -22,23 +21,19 @@ const tipoini_n = 2
 
 classe s_ini002
 herda b_ini
-const descr0 = "Passagem"
-const descr1 = "Um pequeno quarto escuro, que deveria levar a algum lugar, \
-mas você não vê"
-const descr2 = "nenhuma saída. As paredes estão cinzas de sujeira e há teias \
-de aranha"
-const descr3 = "por toda parte. Nota-se que ninguém vem aqui há anos."
+const s_titulo = "Passagem"
+const s_desc = "Um pequeno quarto escuro, que deveria levar a algum lugar, mas você não vê\n\
+nenhuma saída. As paredes estão cinzas de sujeira e há teias de aranha\n\
+por toda parte. Nota-se que ninguém vem aqui há anos."
 const dir_s = $s_ini001
 const tipoini_s = 2
 
 
 classe s_ini003
 herda b_ini
-const descr0 = "Corredor"
-const descr1 = "Você está em um corredor que se estende a oeste. Mais adiante \
-há uma"
-const descr2 = "sala bastante ampla. À leste há uma escada para o andar de \
-baixo."
+const s_titulo = "Corredor"
+const s_desc = "Você está em um corredor que se estende a oeste. Mais adiante há uma\n\
+sala bastante ampla. À leste há uma escada para o andar de baixo."
 const dir_s = $s_ini004
 const dir_o = $s_ini001
 
@@ -49,18 +44,15 @@ func ini
   sala:ini
   ref r
   r = criar("i_borracha")
-  r.mudadono(este)
+  r.dono = este
 
 
 classe s_ini004
 herda b_ini
-const descr0 = "Sala de estar"
-const descr1 = "Você está em uma pequena sala com mesa, poltronas e uma \
-televisão. Pode"
-const descr2 = "ir para a cozinha à oeste ou a sala de jantar ao norte. Há \
-também um"
-const descr3 = "corredor estreito para leste e uma escada para o andar de \
-cima, ao sul."
+const s_titulo = "Sala de estar"
+const s_desc = "Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
+ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
+corredor estreito para leste e uma escada para o andar de cima, ao sul."
 const dir_n = $s_ini003
 
 func entrou2

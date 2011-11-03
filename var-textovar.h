@@ -14,7 +14,7 @@ public:
         ///< Move objeto para outro lugar
     TBlocoVar * Procura(const char * texto);
         ///< Procura um objeto TIndiceObj a partir do nome
-        /**< @param nome Nome a pesquisar
+        /**< @param texto Nome a pesquisar
          *   @return Endereço do objeto, ou 0 se não foi encontrado */
     TBlocoVar * ProcIni(const char * nome);
         ///< Semelhante a Procura(), mas procura o primeiro texto
