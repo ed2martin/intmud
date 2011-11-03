@@ -19,7 +19,7 @@ Os tópicos são:\n\
   \c2ITEM\b     Itens\n\
   \c2MOB\b      MOBs (personagens não jogadores)\n\
   \c2OUTROS\b   Outros comandos"
-#  \c2INFO\b     Informações sobre o MUD\n\
+#  \c2INFO\b     Informações sobre o MUD\n
 #  \c2CONFIG\b   Configuração do MUD"
 
 const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
@@ -78,7 +78,7 @@ Exemplo, as salas herdam as propriedades das nas áreas.\n\
 Outro texto entre os sinais de menor e maior indicam o modo\n\
 como a opção foi definida. Exemplo, <func> significa função."
 
-func m_texto # Mostra texto de uma linha, do tipo "const x = \"abc\""
+func m_linha # Mostra texto de uma linha, do tipo "const x = \"abc\""
 # arg0=nome da variável, tpasso=nome da classe
   prog p
   casovar p.existe(tpasso, arg0)
@@ -99,6 +99,35 @@ func m_texto # Mostra texto de uma linha, do tipo "const x = \"abc\""
   casose # Não foi definido
     ret "<nulo>"
   casofim
+
+func m_texto # Mostra quantidade de linhas de texto de várias linhas
+  prog p
+  casovar p.existe(tpasso, arg0)
+  casose "1" # Na própria classe
+    se p.vartexto(tpasso, arg0)
+      ret m_texto2([tpasso]:[arg0])
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<" + txt1(p.texto) + ">"
+    fimse
+  casose "2" # Em uma classe herdada
+    se p.vartexto(tpasso, arg0)
+      ret "<herda> " + m_texto2([tpasso]:[arg0])
+    senao
+      p.inilinha(tpasso, arg0)
+      ret "<herda " + txt1(p.texto) + ">"
+    fimse
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func m_texto2 # Usado por m_texto
+  uint16 x
+  x = inttotal(arg0) - inttotal(txttroca(arg0, "\n", ""))
+  se x
+    ret txt(x + 1) + " linhas"
+  fimse
+  ret "Uma linha"
 
 func m_numero # Mostra número, do tipo "const x = 10"
 # arg0=nome da variável, tpasso=nome da classe
@@ -210,14 +239,14 @@ func m_sala # Informa valor de variável do tipo "const x = $s_abc"
     ret "<nulo>"
   casofim
 
-func p_texto # Altera um texto de uma linha
+func p_linha # Altera um texto de uma linha
 # Variável tpasso contém: "classe variável passo nome"
 # classe e variável são os nomes da classe e da variável
 # passo é o valor da variável passo para a opção sair
 # nome é o nome da opção
   prog p
   se arg0 == ""
-    passo = "texto"
+    passo = "linha"
     msg("Entre com um texto, N nenhum, Z cancela")
     ret 1
   senao arg0 == "n"
@@ -234,6 +263,50 @@ func p_texto # Altera um texto de uma linha
   passo = txtsub(tpasso, 2, 1)
   p_[passo]("")
   ret 1
+
+func p_texto # Altera um texto de várias linhas
+# Variável tpasso contém: "classe variável passo nome"
+# classe e variável são os nomes da classe e da variável
+# passo é o valor da variável passo para a opção sair
+# nome é o nome da opção
+  casovar txtmin(txt(arg0, 0, 1))
+  casose "\n"
+    textopos p1
+    teditor.limpar
+    teditor.addfim([txt1(tpasso)]:[txtsub(tpasso, 1, 1)])
+    p1 = teditor.ini
+    enquanto p1.lin
+      p1.mudar(txtvis(p1.texto)), p1.depois
+    efim
+    teditor.bytes == 1 && teditor.limpar
+    leditor = teditor.ini
+    leditor1 = teditor.ini
+    leditor2 = teditor.fim
+    leditor2.antes
+    passo = "texto"
+    msg("Editando " + txtsub(tpasso, 3) + ", O opções, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    msg("Fechando editor")
+    passo = txtsub(tpasso, 2, 1)
+    p_[passo]("")
+    ret 1
+  casose "x" # Salvar o texto
+    prog p
+    textopos p1
+    textotxt t1
+    p1 = teditor.ini
+    enquanto p1.lin
+      t1.addfim(txtinvis(p1.texto)), p1.depois
+    efim
+    txt200 t
+    t = "const " + txtsub(tpasso, 1, 1) + "=\""
+    p.criar(txt1(tpasso), t + txtvis(t1.remove(1000)) + "\"")
+    p.salvar(config:progsalvar)
+    msg("Salvou " + txtsub(tpasso, 3))
+    ret 1
+  casofim
+  ret p_editor(arg0, 2000, txtsub(tpasso, 3))
 
 func p_numero # Altera um texto de uma linha
 # Variável tpasso contém: "classe variável passo nome"

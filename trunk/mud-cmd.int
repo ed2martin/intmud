@@ -71,12 +71,12 @@ const oe = "o"
 const ow = "l"
 const ou = "b"
 const od = "c"
-const one = "no"
-const ono = "ne"
-const ose = "so"
-const oso = "se"
-const onw = "ne"
-const osw = "se"
+const one = "so"
+const ono = "se"
+const ose = "no"
+const oso = "ne"
+const onw = "se"
+const osw = "ne"
 
 classe com_comum
 const nivel = 1 # Nível mínimo para usar o comando
@@ -339,7 +339,7 @@ func exec
     se l.ini.obj.perso
       arg0.msg("Você não pode pegar " + l.ini.obj.nome)
     senao
-      l.ini.obj.mudadono(arg0)
+      l.ini.obj.dono = arg0
       $mens.p(arg0, l.ini.obj)
       $mens.mvis1("$P pega $r $a.")
     fimse
@@ -364,7 +364,7 @@ func exec
     se l.ini.obj.perso
       arg0.msg("Você não pode pegar " + l.ini.obj.nome)
     senao
-      l.ini.obj.mudadono(arg0.dono)
+      l.ini.obj.dono = arg0.dono
       $mens.p(arg0, l.ini.obj)
       $mens.mvis1("$P solta $r $a.")
     fimse

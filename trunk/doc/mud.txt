@@ -1,16 +1,15 @@
-Editor do MUD
+Organização
 
-l  Exibe todo o texto
-l <início> <fim>  Exibe o intervalo de linhas de início a fim
-c  Apaga todo o texto, deixando uma linha em branco
-d <linha> Exclui a linha indicada
-i <linha> Insere uma linha em branco antes da indicada
-r <texto antigo> <texto novo>  Troca
-a Cancela a edição cancelando as alterações
-p Exibe informações sobre a sessão de edição atual
-s Finaliza o editor e salva as alterações
-f <intervalo> <largura> Formata o texto em parágrafos e elimina
-     espaços duplicados exceto no começo da primeira linha.
+Classes:
+a_<nome da área>  Definições das áreas
+b_<nome da área>  Contém as propriedades herdadas pelas salas da área
+s_<nome da sala>  Uma sala
+
+Classe jogsock:
+É responsável pela comunicação com o usuário
+Funções cmd_<nome do comando>   Comandos de administração
+Funções adm_<nome do tópico>    Tópicos de ajuda da administração
+Funções p_<texto>               São executadas conforme a variável passo
 
 ----------------------------------------
 Caracteres especiais em mensagens (mud-mens.inv)
@@ -102,17 +101,11 @@ Deve retornar verdadeiro se o comando já foi processado.
 ----------------------------------------
 Personagens e itens (mud-perso.int)
 
-*listaitem idono
-Item da sala que contém o personagem
-
-*dono
-Retorna a sala (o objeto) aonde o personagem está
-
-*func mudadono( novo dono )
-Muda o dono do personagem/item, mas não gera nenhum evento
+*varfunc dono
+A sala (o objeto) aonde o personagem está
 
 *listaitem idono
-Usado internamente por dono e mudadono
+Usado internamente por dono; item da sala que contém o personagem
 
 *listaobj dentro
 Lista de itens que possui, carrega ou veste

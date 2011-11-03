@@ -6,14 +6,16 @@ const bitinv = 3 # Grau de invisibilidade do personagem/item
 
 listaitem idono # Aonde o personagem ou item está
 listaitem ibitev # Para receber eventos
-const dono = idono.objlista # Retorna objeto que contém o personagem ou item
 listaobj dentro # Lista de itens que possui, carrega ou veste
 listaobj evento # Objetos que recebem eventos do personagem/item
 
 func ini
   bitver = 3
 
-func mudadono # Muda o dono do personagem/item (arg0 = novo dono)
+varfunc dono # O dono do personagem/item
+  se !args # Nenhum argumento: leitura
+    ret idono.objlista # Retorna objeto que contém o personagem ou item
+  fimse
   idono.remove
   se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
     ibitev.remove, ibitev = arg0.evento.addfim(este)

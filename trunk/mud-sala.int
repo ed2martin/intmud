@@ -56,14 +56,9 @@ func descsala # Retorna descrição da sala
   casose "1"
     t.addfim("Está escuro...")
   casose
-    #t.addfim("\b\c6" + txt(este, 2) + " " + descr0 + "\b")
-    t.addfim("\b\c6" + descr0 + "\b")
-    se arg1 & 1
-      uint16 x
-      enquanto descr[x += 1]
-        t.addfim(descr[x])
-      efim
-    fimse
+    #t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo + "\b")
+    t.addfim("\b\c6" + s_titulo + "\b")
+    (arg1 & 1) && t.addfim(s_desc)
     (arg1 & 2) && t.addfim(txtsai)
   casofim
   se arg1 & 4
@@ -122,4 +117,12 @@ func mudatipo # Muda estado de uma saída; variável tipo_[arg0]
   tipo_[arg0] = arg1
   ret 1
 
-const titulo = descr0
+const s_titulo = descr0
+
+func s_desc
+  textotxt t
+  uint16 x
+  enquanto descr[x += 1]
+    t.addfim(descr[x])
+  efim
+  ret t.remove(1000)
