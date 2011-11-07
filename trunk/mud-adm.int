@@ -22,18 +22,6 @@ Os tópicos são:\n\
 #  \c2INFO\b     Informações sobre o MUD\n
 #  \c2CONFIG\b   Configuração do MUD"
 
-const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
-\c2SAI\b\n\
-  Mostra saídas da sala em que você está.\n\
-\c2SAI\b <direção>\n\
-  Apaga saída na direção especificada.\n\
-\c2SAI\b <direção> <sala>\n\
-  Cria saída na direção especificada.\n\
-\c2SAI\b <direção> <modo> [código da chave]\n\
-  Edita tipo de saída na direção especificada.\n\
-\c2FSAI\b <direção>\n\
-  Edita saída na direção especificada como função."
-
 const adm_item = "\b\c3Comandos de itens\b\n\
 \c2LITEM\b <nome>\n\
   Lista itens que começam com o nome especificado.\n\
@@ -59,13 +47,13 @@ const adm_outros = "\c3Outros comandos\b\n\
   Envia texto para todos os jogadores."
 
 func com_echo
-  se !arg2
-    arg0.msg("\bDigite a mensagem após ECHO")
+  se !arg0
+    msg("\bDigite a mensagem após ECHO")
   senao
     listaitem item
     item = $jogcomum.jog.ini
     enquanto item
-      item.obj.msg("\b\cB*ADM: " + arg2 + "\b")
+      item.obj.msg("\b\cB*ADM: " + arg0 + "\b")
       item.depois
     efim
   fimse
@@ -157,23 +145,26 @@ func m_opcao # Mostra uma opção baseado numa lista de opções
   casovar p.existe(tpasso, arg0)
   casose "1" # Na própria classe
     se p.varnum(tpasso, arg0)
-      ret m_opcao2([tpasso]:[arg0], arg1)
+      ret m_opcaomostra([tpasso]:[arg0], arg1)
     senao
       p.inilinha(tpasso, arg0)
       ret "<" + txt1(p.texto) + ">"
     fimse
   casose "2" # Em uma classe herdada
     se p.varnum(tpasso, arg0)
-      ret "<herda> " + m_opcao2([tpasso]:[arg0], arg1)
+      ret "<herda> " + m_opcaomostra([tpasso]:[arg0], arg1)
     senao
       p.inilinha(tpasso, arg0)
       ret "<herda " + txt1(p.texto) + ">"
     fimse
   casose # Não foi definido
-    ret "<nulo> " + m_opcao2(0, arg1)
+    ret "<nulo> " + m_opcaomostra(0, arg1)
   casofim
 
-func m_opcao2 # Usado em m_opcao para obter o nome da opção
+func m_opcaomostra # Retorna o texto correspondente a uma opção
+# arg0 = número da opção atual
+# arg1 = texto com lista de opções separadas por "\n"
+# Retorna: Um texto contendo a opção atual
   uint16 valor
   textotxt t
   valor = arg0
@@ -193,25 +184,26 @@ func m_simnao # Mostra opção que pode ser 0 (não) ou 1 (sim)
       p.inilinha(tpasso, arg0)
       ret "<" + txt1(p.texto) + ">"
     senao [tpasso]:[arg0]
-      ret txt([tpasso]:[arg0]) + " sim"
+      ret txt([tpasso]:[arg0]) + " Sim"
     senao
-      ret txt([tpasso]:[arg0]) + " não"
+      ret txt([tpasso]:[arg0]) + " Não"
     fimse
   casose "2" # Em uma classe herdada
     se !p.varnum(tpasso, arg0)
       p.inilinha(tpasso, arg0)
       ret "<herda " + txt1(p.texto) + ">"
     senao [tpasso]:[arg0]
-      ret "<herda> " + txt([tpasso]:[arg0]) + " sim"
+      ret "<herda> " + txt([tpasso]:[arg0]) + " Sim"
     senao
-      ret "<herda> " + txt([tpasso]:[arg0]) + " não"
+      ret "<herda> " + txt([tpasso]:[arg0]) + " Não"
     fimse
   casose # Não foi definido
-    ret "<nulo> 0 não"
+    ret "<nulo> 0 Não"
   casofim
 
 func m_sala # Informa valor de variável do tipo "const x = $s_abc"
 # arg0=nome da variável, tpasso=nome da classe
+  prog p
   casovar p.existe(tpasso, arg0)
   casose "1" # Na própria classe
     p.inilinha(tpasso, arg0)
@@ -222,7 +214,7 @@ func m_sala # Informa valor de variável do tipo "const x = $s_abc"
     senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
       ret "<const>"
     senao
-      ret txt(p.texto, inttotal(arg0) + 10)
+      ret txt(p.texto, inttotal(arg0) + 12)
     fimse
   casose "2" # Em uma classe herdada
     p.inilinha(tpasso, arg0)
@@ -233,7 +225,7 @@ func m_sala # Informa valor de variável do tipo "const x = $s_abc"
     senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
       ret "<herda const>"
     senao
-      ret "<herda> " + txt(p.texto, inttotal(arg0) + 10)
+      ret "<herda> " + txt(p.texto, inttotal(arg0) + 12)
     fimse
   casose # Não foi definido
     ret "<nulo>"

@@ -8,13 +8,6 @@ classe sala
 listaobj dentro # Lista de itens e personagens na sala
 listaobj evento # Objetos que recebem eventos da sala
 
-const dir_l = dir_e
-const dir_o = dir_w
-const dir_c = dir_u
-const dir_b = dir_d
-const dir_so = dir_sw
-const dir_no = dir_nw
-
 uint8 tipo_n # Tipo de saída
 uint8 tipo_s # Tipo de saída
 uint8 tipo_l # Tipo de saída
@@ -86,13 +79,12 @@ func txtsai # Retorna as saídas existentes
     ret "\bSaídas: Nenhuma"
 
 func tsai2 # Para mostrar as saídas existentes
-  se dir_[arg0]
-    casovar int(tipo_[arg0]) & 7
+  se dir_[arg0] && !inv_[arg0]
+    casovar int(tipo_[arg0])
     casose "0"
     casose "1"
       ret " " + arg0
-    casose "2"
-    casose "3"
+    casose
       ret " !" + arg0
     casofim
 
@@ -117,12 +109,17 @@ func mudatipo # Muda estado de uma saída; variável tipo_[arg0]
   tipo_[arg0] = arg1
   ret 1
 
-const s_titulo = descr0
-
-func s_desc
-  textotxt t
-  uint16 x
-  enquanto descr[x += 1]
-    t.addfim(descr[x])
-  efim
-  ret t.remove(1000)
+#const s_titulo = descr0
+#const dir_l = dir_e
+#onst dir_o = dir_w
+#const dir_c = dir_u
+#const dir_b = dir_d
+#const dir_so = dir_sw
+#const dir_no = dir_nw
+#func s_desc
+#  textotxt t
+#  uint16 x
+#  enquanto descr[x += 1]
+#    t.addfim(descr[x])
+#  efim
+#  ret t.remove(1000)

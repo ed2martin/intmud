@@ -20,14 +20,8 @@ const c_se = $com_move_sudeste
 const c_so = $com_move_sudoeste
 const c_nw = $com_move_noroeste
 const c_sw = $com_move_sudoeste
-# Administração
-const c_adm = $com_adm
-const c_echo = $com_echo
-const c_larea = $com_larea
-const c_carea = $com_carea
-const c_aarea = $com_aarea
-const c_earea = $com_earea
 # Outros
+const c_a = $com_ajuda
 const c_abrir = $com_abrir
 const c_ajuda = $com_ajuda
 const c_chat = $com_chat
@@ -40,7 +34,9 @@ const c_quit = $com_sair
 const c_sair = $com_sair
 const c_soltar = $com_soltar
 const c_ver = $com_ver
-const c_db = $com_debug
+const c_data = $com_hora
+const c_hora = $com_hora
+#const c_db = $com_debug
 
 classe comdir
 # Direções
@@ -388,6 +384,16 @@ func exec
   senao
     arg0.msg("Você não está carregando nada.")
   fimse
+
+classe com_hora
+herda com_comum
+const posic = 0
+func exec
+  datahora d
+  d.agora
+  arg0.msg("Hora atual MUD:      " + $jogcomum.hora + ":" + $jogcomum.min)
+  arg0.msg("Hora atual servidor: " + d.hora + ":" + d.min)
+
 
 classe com_debug
 herda com_comum

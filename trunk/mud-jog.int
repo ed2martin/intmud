@@ -1,7 +1,27 @@
 classe jogcomum
 listaobj jog # Lista de jogadores conectados (objetos jogsock e derivados)
+int1 luz # Se tem luz do dia
+int8 hora # Hora MUD (1 dia MUD = 2 horas)
+inttempo imin # Quantos segundos faltam para completar 1 hora MUD
+
 func iniclasse
   criar(arg0)
+
+func ini
+  hora = 23
+  imin_exec
+
+func imin_exec
+  imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
+  hora = (hora + 1) % 24
+  luz = (t_hora >= 6 && t_hora < 18)
+
+func min # Retorna os minutos no horário MUD
+  uint8 num
+  num = 60 - imin / 50
+  num >= 60 && (num = 59)
+  ret num
+
 
 classe jogsock
 herda jog_entra, jog_adm, jog_admsala
@@ -26,6 +46,7 @@ uint8 canais # Canais: +1 se recebe pvt, +2 se recebe chat
 #
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
+txt100 opasso # Outras opções usadas no passo atual
 textotxt teditor # Texto usado no editor
 textotxt transf # Área de transferência do editor
 textopos leditor1 # Início de bloco
