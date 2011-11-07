@@ -28,10 +28,10 @@ const adm_area = "\b\c3Comandos de áreas\b\n\
   Apaga área, desde que não tenha nenhuma sala."
 
 const adm_sala = "\b\c3Comandos de salas\b\n\
-\c2LSALA\b <nome>\n\
-  Lista salas que começam com o nome especificado.\n\
 \c2ISALA\b <nome>\n\
   Vai para a sala especificada.\n\
+\c2LSALA\b <nome>\n\
+  Lista salas que começam com o nome especificado.\n\
 \c2CSALA\b <nome>\n\
   Cria sala com o nome especificado. Nomes de sala devem ser o nome\n\
   da área seguido de um número de 001 a 999 (três dígitos).\n\
@@ -43,6 +43,18 @@ const adm_sala = "\b\c3Comandos de salas\b\n\
 \c2ASALA\b <um ou mais nomes>\n\
   Apaga uma ou mais salas. Atenção: não apaga as saídas das outras salas\n\
   para as que forem apagadas."
+
+const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
+\c2LSAI\b\n\
+  Mostra saídas da sala em que você está.\n\
+\c2CSAI\b <direção> <sala>\n\
+  Cria saída na direção especificada.\n\
+\c2CSAI2\b <direção> <sala>\n\
+  Mesmo que CSAI, mas cria também uma saída no sentido contrário.\n\
+\c2ESAI\b <direção>\n\
+  Edita tipo de saída na direção especificada.\n\
+\c2ASAI\b <direção>\n\
+  Apaga saída na direção especificada."
 
 func com_larea # Listar áreas
   prog p
@@ -254,7 +266,7 @@ func com_lsala # Listar salas
     textotxt t
     t.addfim("\bSalas:")
     enquanto p.lin && t.linhas < 500
-      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].titulo)
+      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo)
       p.depois
     efim
     msg2(t.remove(500))
@@ -388,7 +400,7 @@ func com_esala # Editar sala
   fimse
   ret 1
 
-func p_sala # Editando área
+func p_sala # Editando sala
   teditor.limpar
   se txt(arg0, 0, 1) == "m" # Executa comando do MUD
     perso.teclou(txtremove(txt(arg0, 1), "E"))
@@ -490,4 +502,210 @@ func p_sala # Editando área
     msg("Sala " + txt(tpasso, 2) + ", O opções, Z sair")
     ret 1
   casofim
+  ret 1
+
+func com_lsai # Listar saídas
+  se !perso.dono
+    msg("\bVocê não está em uma sala")
+    ret 1
+  fimse
+  prog p
+  txt80 dir
+  txt80 lin
+  dir = "n s l o ne no se so c b"
+  tpasso = perso.dono
+  msg("\bSaídas de " + txt(tpasso, 2) + ":")
+  enquanto dir
+    se p.existe(tpasso, "dir_" + txt1(dir))
+      lin = txtmai(txt1(dir)) + "  "
+      lin += m_sala("dir_" + txt1(dir))
+      msg(lin)
+    fimse
+    dir = txt2(dir)
+  efim
+  !lin && msg("Nenhuma")
+  ret 1
+
+func com_asai # Apagar saída
+  prog p
+  txt10 dir
+  dir = comdir:d[txt1(arg0)]
+  se !perso.dono
+    msg("\bVocê não está em uma sala")
+  senao !arg0
+    msg("\bDigite a direção após ASAI")
+  senao !dir
+    msg("\bSaída não existe: " + arg0)
+  senao
+    p.apagar(perso.dono, "dir_" + dir)
+    p.apagar(perso.dono, "tipoini_" + dir)
+    p.apagar(perso.dono, "inv_" + dir)
+    p.apagar(perso.dono, "tranc_" + dir)
+    p.apagar(perso.dono, "chave_" + dir)
+    p.salvar(config:progsalvar)
+    msg("\bSaída apagada: " + dir)
+  fimse
+  ret 1
+
+func com_csai # Criar saída
+  prog p
+  txt10 dir
+  dir = comdir:d[txt1(arg0)]
+  se !perso.dono
+    msg("\bVocê não está em uma sala")
+  senao !arg0
+    msg("\bDigite a direção após CSAI" + arg1)
+  senao !dir
+    msg("\bSaída não existe: " + txt1(arg0))
+  senao !txt2(arg0)
+    msg("\bDigite a sala após CSAI" + arg1 + " " + arg0)
+  senao !p.existe("s_" + txt2(arg0))
+    msg("\bSala não existe: " + txt2(arg0))
+  senao
+    p.criar(perso.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg0)))
+    se arg1
+      p.criar("s_" + txt2(arg0), "const dir_" + comdir:o[dir] + "=$" + perso.dono)
+      msg("\bSaída completa criada: " + dir + " para " + txtmin(txt2(arg0)))
+    senao
+      msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg0)))
+    fimse
+    p.salvar(config:progsalvar)
+  fimse
+  ret 1
+
+const com_csai2 = com_csai(arg0, "2") # Criar saída completa
+
+func com_esai # Editar saída
+  prog p
+  txt10 dir
+  dir = comdir:d[txt1(arg0)]
+  se !perso.dono
+    msg("\bVocê não está em uma sala")
+  senao !arg0
+    msg("\bDigite a direção após ESAI")
+  senao !dir
+    msg("\bSaída não existe: " + arg0)
+  senao !p.existe(perso.dono, "dir_" + dir)
+    msg("Não existe saída na direção " + txtmai(dir))
+  senao
+    passo = "sai"
+    opasso = dir
+    tpasso = txt(perso.dono)
+    dir = txtmai(dir)
+    msg("Saída " + dir + " de " + txt(tpasso, 2) + ", tecle O para saber as opções")
+  fimse
+  ret 1
+
+const txt_tipo = "Não há porta\nPorta aberta\nPorta fechada\nPorta trancada"
+const txt_tipo2 = "Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela"
+const txt_tranc = "Normal\nFecha ao passar\nTranca ao fechar\nTranca ao fechar ou passar"
+
+func p_sai # Editando saída
+  txt10 dir
+  teditor.limpar
+  se txt(arg0, 0, 1) == "m" # Executa comando do MUD
+    perso.teclou(txtremove(txt(arg0, 1), "E"))
+    ret 1
+  fimse
+  casovar txtmin(arg0)
+  casose "o"
+    uint16 agora
+    agora = $[txt1(tpasso)].tipo_[opasso]
+    txtmais.limpar
+    txtmais.addfim("\bSaída " + txtmai(opasso) + " de " + txt(tpasso, 2))
+    txtmais.addfim("1. Estado inicial  : " + m_opcao("tipoini_" + opasso, txt_tipo))
+    txtmais.addfim("2. Estado atual    : " + m_opcaomostra(agora, txt_tipo))
+    txtmais.addfim("3. Invisível       : " + m_simnao("inv_" + opasso))
+    txtmais.addfim("4. Trancar         : " + m_opcao("tranc_" + opasso, txt_tranc))
+    txtmais.addfim("5. Chave           : " + m_linha("chave_" + opasso))
+    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+    txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
+    txtmostra
+    ret 1
+  casose "z"
+    msg("Retornando ao jogo")
+    passo = ""
+    ret 1
+  casose "l"
+    msg(txt_legenda)
+    ret 1
+  casose "1"
+    msg("Estado inicial: " + m_opcao("tipoini_" + opasso, txt_tipo))
+    teditor.addfim(txt_tipo)
+    tpasso += " tipoini_" + opasso + " saitipo Estado inicial"
+    ret p_opcao("")
+  casose "2"
+    uint16 agora
+    agora = $[tpasso].tipo_[opasso]
+    msg("Estado atual: " + m_opcaomostra(agora, txt_tipo))
+    ret p_saiagora("")
+  casose "3"
+    msg("Invisível: " + m_simnao("inv_" + opasso))
+    tpasso += " inv_" + opasso + " sai Invisível"
+    ret p_simnao("")
+  casose "4"
+    msg("Trancar: " + m_opcao("tranc_" + opasso, txt_tipo))
+    teditor.addfim(txt_tranc)
+    tpasso += " tranc_" + opasso + " sai Tracar"
+    ret p_opcao("")
+  casose "5"
+    msg("Chave: " + m_linha("chave_" + opasso))
+    tpasso += " chave_" + opasso + " sai Chave"
+    ret p_linha("")
+  casose "f1"
+    tpasso += " tipoini_" + opasso + " saitipo Estado inicial"
+    ret p_func("\n")
+  casose "f2"
+    tpasso += " tipo_" + opasso + " saitipo Estado atual"
+    ret p_func("\n")
+  casose "f3"
+    tpasso += " inv_" + opasso + " sai Invisível"
+    ret p_func("\n")
+  casose "f4"
+    tpasso += " tranc_" + opasso + " sai Tracar"
+    ret p_func("\n")
+  casose "f5"
+    tpasso += " chave_" + opasso + " sai Chave"
+    ret p_func("\n")
+  casose
+    msg("Opção inválida: " + arg0)
+  casose ""
+    passo = "sai"
+    tpasso = txt1(tpasso)
+    msg("\bSaída " + txtmai(opasso) + " de " + txt(tpasso, 2) + ", O opções, Z sair")
+    ret 1
+  casofim
+  ret 1
+
+func p_saitipo # Acerta a saída após mudar o tipo de saída
+  ref r
+  r = $[txt1(tpasso)]
+  se r && (r.tipo == 0) != (r.tipoini == 0)
+    r.tipo = r.tipoini
+  fimse
+  ret p_sai("")
+
+func p_saiagora # Mudar o estado atual
+  textotxt t
+  uint16 num
+  t.addfim(txt_tipo), num = arg0
+  se arg0 == ""
+    passo = "saiagora"
+    msg(txt_tipo2)
+  senao arg0 == "z"
+    passo = "sai"
+    p_sai("")
+  senao arg0 != txt(num) || num < 0 || num >= t.linhas
+    msg("Entre com um número de 0 a " + (t.linhas - 1))
+  senao
+    $[tpasso].mudatipo(opasso, num)
+    #$[tpasso].tipo_[opasso] = num
+    t.remove(num)
+    se t.linhas
+      msg("Saída mudou para: " + num + " " + t.remove(1))
+    senao
+      msg("Saída mudou para: " + num + " <inválido>")
+    fimse
+    p_sai("")
+  fimse
   ret 1

@@ -64,9 +64,18 @@ TipoIni é o valor inicial, geralmente definido dessa forma: const tipo_s = 2
 1 = está aberto
 2 = está fechado
 3 = está trancado
-Somar 4 se for invisível (não aparece na lista de saídas)
-Somar 8 se porta é trancada quando for fechada
-Se estiver ausente, assume 0
+
+*const inv_[direção]
+Verdadeiro se for invisível (não aparece na lista de saídas)
+
+*const tranc_[direção]
+0 = porta normal
+1 = fechado quando alguém passar pela porta
+2 = trancado quando for fechado
+3 = trancado quando for fechado ou alguém passar pela porta
+
+*const chave_[direção]
+Texto que contém o código da chave que destranca a porta
 
 *func txtsai
 Retorna as saídas existentes (texto)
