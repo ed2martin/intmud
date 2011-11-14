@@ -374,8 +374,8 @@ bool TMudarClasse::ExecPasso()
         char * const instr = mudar->Comandos;
         if ((instr[0] || instr[1]) && instr[2]==Instr::cHerda)
         {
-            char * o = instr+4, * d = instr+4;
-            for (int x = (unsigned char)instr[3]; x; x--)
+            char * o = instr+Instr::endVar+1, * d = instr+Instr::endVar+1;
+            for (int x = (unsigned char)instr[Instr::endVar]; x; x--)
             {
                 TClasse * c = TClasse::Procura(o);
                 if (c)
@@ -388,7 +388,7 @@ bool TMudarClasse::ExecPasso()
 #ifdef DEBUG
                 printf("Retirando herda %s\n", o); fflush(stdout);
 #endif
-                instr[3]--;
+                instr[Instr::endVar]--;
                 while (*o++);
             }
             if (o != d)
@@ -397,7 +397,7 @@ bool TMudarClasse::ExecPasso()
                 while (fim[0] || fim[1])
                     fim += Num16(fim);
                 fim += 2;
-                if (instr[3])
+                if (instr[Instr::endVar])
                 {
                     memcpy(d, o, fim-o);
                     int x = Num16(instr) + d - o;

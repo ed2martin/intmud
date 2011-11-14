@@ -17,80 +17,71 @@ func mtodos1 # Mensagem só para quem estiver acordado
     listaobj l0
     l0.addfim(perso.dono.dentro)
     enquanto l0
-      l0.ini.obj.jog && proc(arg0, l0.ini.obj)
-      l0.ini.remove
+      l0.ini.obj.msginv(arg0), l0.ini.remove
     efim
 
 func mtodos2 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  arg0 && perso.jog && proc(arg0, perso)
+  arg0 && perso.msginv(arg0)
   se arg1
     listaobj l0
     l0.addfim(perso.dono.dentro)
     l0.remove(perso)
     enquanto l0
-      l0.ini.obj.jog && proc(arg1, l0.ini.obj)
-      l0.ini.remove
+      l0.ini.obj.msginv(arg1), l0.ini.remove
     efim
 
 func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  arg0 && perso.jog && proc(arg0, perso)
-  arg1 && alvo.jog && proc(arg1, alvo)
+  arg0 && perso.msginv(arg0)
+  arg1 && alvo.msginv(arg1)
   se arg2
     listaobj l0
     l0.addfim(perso.dono.dentro)
     l0.remove(perso, alvo)
     enquanto l0
-      l0.ini.obj.jog && proc(arg2, l0.ini.jog)
-      l0.ini.remove
+      l0.ini.obj.msginv(arg2), l0.ini.remove
     efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para todos
   se arg0
     inv = perso.bitinv
-    perso.jog && proc(arg0, perso)
+    perso.msginv(arg0)
     listaobj l0
     l0.addfim(perso.dono.dentro)
     l0.remove(perso)
     enquanto l0
-      l0.ini.obj.jog && !(~l0.ini.obj.bitver & inv) && proc(arg0, l0.ini.obj)
-      l0.ini.remove
+      l0.ini.obj.msgvis(arg0), l0.ini.remove
     efim
 
 func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
   inv = perso.bitinv
-  arg0 && perso.jog && proc(arg0, perso)
+  arg0 && perso.msginv(arg0)
   se arg1
     listaobj l0
     l0.addfim(perso.dono.dentro)
     l0.remove(perso)
     enquanto l0
-      l0.ini.obj.jog && !(~l0.ini.obj.bitver & inv) && proc(arg1, l0.ini.obj)
-      l0.ini.remove
+      l0.ini.obj.msgvis(arg1), l0.ini.remove
     efim
 
 func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   inv = perso.bitinv
-  arg0 && perso.jog && proc(arg0, perso)
-  arg1 && alvo.jog && !(~alvo.bitver & inv) && proc(arg1, alvo)
+  arg0 && perso.msginv(arg0)
+  arg1 && alvo.msgvis(arg1)
   se arg2
     listaobj l0
     l0.addfim(perso.dono.dentro)
     l0.remove(perso, alvo)
     enquanto l0
-      l0.ini.obj.jog && !(~l0.ini.obj.bitver & inv) && proc(arg2, l0.ini.jog)
-      l0.ini.remove
+      l0.ini.obj.msgvis(arg2), l0.ini.remove
     efim
 
 func proc # Prepara e envia mensagem
 # arg0=mensagem, arg1=objeto
-  se arg1.posic <= 4 # Se não estiver acordado
-    ret
-  fimse
   textotxt t0
   textopos p0
   int16 i # Posição em p0
@@ -118,7 +109,7 @@ func proc # Prepara e envia mensagem
 func opcmai_p # Nome do personagem
   se r == perso
     ret "Você" + arg0
-  senao !(~r.bitver & perso.bitinv)
+  senao r.visivel(perso)
     ret txtmaimin(perso.nome) + arg0
   senao perso.perso
     ret "Alguém" + arg0
@@ -128,7 +119,7 @@ func opcmai_p # Nome do personagem
 func opcmin_p # Nome do personagem
   se r == perso
     ret "você" + arg0
-  senao !(~r.bitver & perso.bitinv)
+  senao r.visivel(perso)
     ret txtmin(perso.nome) + arg0
   senao perso.perso
     ret "alguém" + arg0
@@ -138,7 +129,7 @@ func opcmin_p # Nome do personagem
 func opcmai_a # Nome do alvo
   se r == alvo
     ret "Você" + arg0
-  senao !(~r.bitver & alvo.bitinv)
+  senao r.visivel(alvo)
     ret txtmaimin(alvo.nome) + arg0
   senao alvo.perso
     ret "Alguém" + arg0
@@ -148,7 +139,7 @@ func opcmai_a # Nome do alvo
 func opcmin_a # Nome do alvo
   se r == alvo
     ret "você" + arg0
-  senao !(~r.bitver & alvo.bitinv)
+  senao r.visivel(alvo)
     ret txtmin(alvo.nome) + arg0
   senao alvo.perso
     ret "Alguém" + arg0
@@ -158,7 +149,7 @@ func opcmin_a # Nome do alvo
 func opcmai_o # Nome do objeto
   se r == obj
     ret "Você" + arg0
-  senao !(~r.bitver & obj.bitinv)
+  senao r.visivel(obj)
     ret txtmaimin(obj.nome) + arg0
   senao obj.perso
     ret "Alguém" + arg0
@@ -168,7 +159,7 @@ func opcmai_o # Nome do objeto
 func opcmin_o # Nome do objeto
   se r == obj
     ret "você" + arg0
-  senao !(~r.bitver & obj.bitinv)
+  senao r.visivel(obj)
     ret txtmin(obj.nome) + arg0
   senao obj.perso
     ret "alguém" + arg0
@@ -177,51 +168,39 @@ func opcmin_o # Nome do objeto
 
 func opcmai_q # Gênero do personagem
   se perso.perso
-    ret txtmai(perso.sexo) + arg0
-  senao perso.sexo == "O"
-    ret "Um" + arg0
+    ret sexoB[perso.sexo] + arg0
   senao
-    ret "Uma" + arg0
+    ret sexoD[perso.sexo] + arg0
 
 func opcmin_q # Gênero do personagem
   se perso.perso
-    ret txtmin(perso.sexo) + arg0
-  senao perso.sexo == "O"
-    ret "um" + arg0
+    ret sexoA[perso.sexo] + arg0
   senao
-    ret "uma" + arg0
+    ret sexoC[perso.sexo] + arg0
 
 func opcmai_r # Gênero do alvo
-  se alvo.perso
-    ret txtmai(alvo.sexo) + arg0
-  senao alvo.sexo == "O"
-    ret "Um" + arg0
+  se perso.perso
+    ret sexoB[alvo.sexo] + arg0
   senao
-    ret "Uma" + arg0
+    ret sexoD[alvo.sexo] + arg0
 
 func opcmin_r # Gênero do alvo
-  se alvo.perso
-    ret txtmin(alvo.sexo) + arg0
-  senao alvo.sexo == "O"
-    ret "um" + arg0
+  se perso.perso
+    ret sexoA[alvo.sexo] + arg0
   senao
-    ret "uma" + arg0
+    ret sexoC[alvo.sexo] + arg0
 
 func opcmai_s # Gênero do objeto
-  se obj.perso
-    ret txtmai(obj.sexo) + arg0
-  senao obj.sexo == "O"
-    ret "Um" + arg0
+  se perso.perso
+    ret sexoB[obj.sexo] + arg0
   senao
-    ret "Uma" + arg0
+    ret sexoD[obj.sexo] + arg0
 
 func opcmin_s # Gênero do objeto
-  se obj.perso
-    ret txtmin(obj.sexo) + arg0
-  senao obj.sexo == "O"
-    ret "um" + arg0
+  se perso.perso
+    ret sexoA[obj.sexo] + arg0
   senao
-    ret "uma" + arg0
+    ret sexoC[obj.sexo] + arg0
 
 #func opcmai_a
 ## arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
@@ -230,3 +209,12 @@ func opcmin_s # Gênero do objeto
 #func opcmin_a
 #ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
 ## Ou assim: ret txttroca("R$", "$", "$$") + arg0
+
+const sexoA0 = "a"
+const sexoA1 = "o"
+const sexoB0 = "A"
+const sexoB1 = "O"
+const sexoC0 = "uma"
+const sexoC1 = "um"
+const sexoD0 = "Uma"
+const sexoD1 = "Um"

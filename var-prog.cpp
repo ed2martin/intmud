@@ -500,10 +500,10 @@ bool TVarProg::FuncIniHerda(TVariavel * v)
         const char * txt = Classe->Comandos;
         if (txt[0]==0 && txt[1]==0)
             break;
-        if (txt[2]!=Instr::cHerda || txt[3]==0)
+        if (txt[2]!=Instr::cHerda || txt[Instr::endVar]==0)
             break;
-        TextoAtual = txt + 4;
-        ValorFim = (unsigned char)txt[3];
+        TextoAtual = txt + Instr::endVar + 1;
+        ValorFim = (unsigned char)txt[Instr::endVar];
         valor = 4;
         break;
     }

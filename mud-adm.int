@@ -1,6 +1,27 @@
 classe jog_adm
 # Funções necessárias para os comandos de administração
 
+func com_info
+  se !arg0
+    ref r
+    r = perso
+    msg("Você: peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
+    r = perso.dono
+    msg("Sala: peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
+    ret 1
+  fimse
+  listaobj l
+  l.addfim(perso.dono.dentro)
+  perso.itemnome(l, arg0)
+  !l && msg("Você não vê isso.")
+  enquanto l.ini
+    ref r
+    r = l.ini.obj, l.ini.remove
+    msg(txt(r.nome) + ": peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
+  efim
+  ret 1
+
+
 func com_adm
   prog p
   se p.inifunctudo(este, "adm_" + arg0)
@@ -18,6 +39,7 @@ Os tópicos são:\n\
   \c2SAI\b      Saídas das salas\n\
   \c2ITEM\b     Itens\n\
   \c2MOB\b      MOBs (personagens não jogadores)\n\
+  \c2COD\b      Edição do código fonte\n\
   \c2OUTROS\b   Outros comandos"
 #  \c2INFO\b     Informações sobre o MUD\n
 #  \c2CONFIG\b   Configuração do MUD"
@@ -421,17 +443,20 @@ func p_func
     teditor.limpar
     prog p
     txt100 lin
+    txt20 lin2
     textotxt t1
     passo = "func"
     lin = txt1(tpasso) + ":" + txtsub(tpasso, 1, 1) + ", O opções, Z sair"
+    lin2 = txtsub(tpasso, 3)
+    lin2 && (lin2 += "; ")
     se !p.inilinha(txt1(tpasso), txtsub(tpasso, 1, 1))
-      msg(txtsub(tpasso, 3) + "; criando " + lin)
+      msg(lin2 + "Criando " + lin)
       teditor.addfim("const " + txtsub(tpasso, 1, 1) + " = nulo")
     senao txt1(p.texto) == "const" && inttotal(p.texto) > 75
-      msg(txtsub(tpasso, 3) + "; editando " + lin)
+      msg(lin2 + "Editando " + lin)
       teditor.addfim(txttroca(p.texto, "\\n", "\\n\\\n"))
     senao
-      msg(txtsub(tpasso, 3) + "; editando " + lin)
+      msg(lin2 + "Editando " + lin)
       enquanto p.lin
         t1.limpar
         t1.addfim(p.texto)

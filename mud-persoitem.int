@@ -1,36 +1,81 @@
-classe persoitem
-# Personagens e itens
+classe comum_dentro
+# Todos os objetos que podem ter outro dentro
+#
+sav listaobj dentro # Lista de objetos que possui
+sav listaobj evento # Objetos que recebem eventos desse
+#
+const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
+uint32 pesoden # Peso do que tem dentro
+const pesotot = pesoobj + pesoden # Peso total do objeto
+sav int1 ipesovoa # Uso interno: se está voando (peso total é zero)
+#
+const volobj = 1 # Volume do objeto quando estiver vazio
+const volmax = 1000000 # Volume máximo do que pode ter dentro
+uint32 volden # Volume do que tem dentro
+const volexp = 0 # 0=não expande, 1=expande com os itens que tem dentro
+const voltot = volobj + volexp * volden # Volume total
 
-sav uint8 bitver # O que o personagem/item pode ver
-const bitinv = 3 # Grau de invisibilidade do personagem/item
+func mudapeso # Deve ser chamado para mudar pesoden; arg0=o quanto mudou
+  ref r
+  pesoden += arg0, r = este
+  enquanto r && !r.ipesovoa
+    r = r.idono.objlista, r.pesoden += arg0
+  efim
 
-listaitem idono # Aonde o personagem ou item está
-listaitem ibitev # Para receber eventos
-listaobj dentro # Lista de itens que possui, carrega ou veste
-listaobj evento # Objetos que recebem eventos do personagem/item
+func mudavol # Muda volden; arg0=o quanto mudou
+  ref r
+  volden += arg0, r = este
+  enquanto r.volexp
+    r = r.idono.objlista, r.volden += arg0
+  efim
 
-func ini
-  bitver = 3
+func ajustapeso # Ajuda peso e volume
+  listaitem item
+  uint32 soma1
+  uint32 soma2
+  item = dentro.ini
+  soma = peso
+  enquanto item
+    soma1 += item.obj.pesotot, soma2 += item.obj.voltot, item.depois
+  efim
+  mudapeso(soma1 - pesotot)
+  mudavol(soma2 - volden)
+
+
+classe comum_fora
+# Todos os objetos que podem pertencer a outro
+# IMPORTANTE: Se herdar também comum_dentro,
+# colocar comum_dentro antes de comum_fora na instrução herda
+#
+sav listaobj evento # Objetos que recebem eventos desse
+sav listaitem idono # Uso interno: aonde o personagem ou item está
+sav listaitem ibitev # Uso interno: para receber eventos
+#
+const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
+const pesotot = pesoobj # Peso total
+sav int1 ipesovoa # Uso interno: se está voando (peso total é zero)
+#
+const volobj = 1 # Volume do objeto
+const voltot = volobj # Volume total
+#
+const sletra0 = "a" # sletra[sexo] = "o" ou "a"
+const sletra1 = "o"
+const sum0 = "uma" # sum[sexo] = "um" ou "uma"
+const sum1 = "um"
 
 varfunc dono # O dono do personagem/item
   se !args # Nenhum argumento: leitura
     ret idono.objlista # Retorna objeto que contém o personagem ou item
   fimse
+  !ipesovoa && idono.objlista.mudapeso(-pesotot) # Retira peso do objeto
+  idono.objlista.mudavol(-voltot) # Retira o volume
   idono.remove
   se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
     ibitev.remove, ibitev = arg0.evento.addfim(este)
   fimse
-  se !jog || !arg0.dentro # Não jogador ou lista está vazia
-    idono = arg0.dentro.addfim(este)
-  senao
-    idono = arg0.dentro # Procura primeiro item após os jogadores
-    enquanto idono.obj.jog
-      idono.depois
-    efim
-    se idono # Encontrou: adiciona antes
-      idono = idono.addantes(este)
-    senao # Não encontrou: adiciona no fim
-      idono = arg0.dentro.addfim(este)
+  idono = arg0.dentro.addfim(este) # Adiciona na sala
+  !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
+  idono.objlista.mudavol(voltot) # Coloca o volume
 
 varfunc bitev
   se !args # Nenhum argumento: leitura
@@ -38,6 +83,19 @@ varfunc bitev
   senao # Um argumento: altera valor
     ibitev.remove
     arg0 && (ibitev = dono.evento.addfim(este))
+
+varfunc pesovoa
+  se !args # Nenhum argumento: leitura
+    ret ipesovoa != 0
+  senao # Um argumento: altera valor
+    int32 total
+    !ipesovoa && (total -= pesotot)
+    ipesovoa = arg0
+    !ipesovoa && (total += pesotot)
+    total && dono.mudapeso(total)
+
+func visivel # Checa se um objeto está visível (arg0=objeto)
+  ret !(~bitver & arg0.inv)
 
 func itemnome # Procura um item pelo nome
 # arg0 = listaobj com os possíveis candidatos
@@ -65,19 +123,23 @@ func itemnome # Procura um item pelo nome
 
 
 classe perso
-herda persoitem
+herda comum_dentro, comum_fora
 # Personagens
+
+sav uint8 bitver # O que o personagem/item pode ver
+const bitinv = 3 # Grau de invisibilidade do personagem/item
 
 const perso = 1 # Para identificar que é personagem
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
-sav txt1 sexo # Sexo: "O" ou "A"
+const sexo = 0 # Sexo: 0=feminino, 1=masculino
+#sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint32 moedas # Quantas moedas está carregando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
-const sexo = "o" # Sexo: "o" ou "a"
+sav listaobj veste # Lista de objetos que está vestindo ou de magias afetando
 
 func ini # Objeto foi criado
   bitver = 3
@@ -100,17 +162,17 @@ func descpos
   casose "0"
     ret txtmaimin(nome) + " jás aqui."
   casose "1"
-    ret txtmaimin(nome) + " está aqui mortalmente ferid" + txtmin(sexo) + "."
+    ret txtmaimin(nome) + " está aqui mortalmente ferid" + sletra[sexo] + "."
   casose "2"
-    ret txtmaimin(nome) + " está aqui incapacitad" + txtmin(sexo) + "."
+    ret txtmaimin(nome) + " está aqui incapacitad" + sletra[sexo] + "."
   casose "3"
-    ret txtmaimin(nome) + " está aqui, muito frac" + txtmin(sexo) + "."
+    ret txtmaimin(nome) + " está aqui, muito frac" + sletra[sexo] + "."
   casose "4"
     ret txtmaimin(nome) + " dorme aqui."
   casose "5"
     ret txtmaimin(nome) + " descansa aqui."
   casose "6"
-    ret txtmaimin(nome) + " está sentad" + txtmin(sexo) + "."
+    ret txtmaimin(nome) + " está sentad" + sletra[sexo] + "."
   casose "7"
     ret txtmaimin(nome) + " está lutando."
   casose "8"
@@ -173,9 +235,9 @@ func teclou # Personagem teclou algum comando
     casofim
 
 classe i_borracha
-herda persoitem
+herda comum_fora
 const nome = "borracha"
 const ident = "borracha"
-const sexo = "a"
+const sexo = 0
 const descpos = "Uma borracha está jogada aqui."
 const descver = "Você não vê nada de especial."

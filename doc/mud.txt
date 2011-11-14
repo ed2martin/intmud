@@ -136,8 +136,6 @@ somar 2 se invisível no escuro
 somar 4 se está invisível
 somar 8 se está oculto
 somar 16 se é administrador invisível
-Para saber se um objeto está invisível ao personagem, a fórmula é:
-~este.bitver & objeto.bitinv
 
 *uint8 bitver
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
@@ -148,6 +146,9 @@ somar 4 se pode ver invisível
 somar 8 se pode ver oculto
 somar 16 se pode ver administradores invisíveis
 
+*func visivel( objeto ou personagem )
+Retorna verdadeiro se o objeto ou personagem estiver visível
+
 *texto ident
 Nomes que o jogador digita para ações com o personagem ou item
 Exemplo: ao pegar um item ou atacar um personagem
@@ -155,8 +156,8 @@ Exemplo: ao pegar um item ou atacar um personagem
 *txt16 nome
 Nome do personagem ou item, usado em ações com o objeto
 
-*txt1 sexo
-"O" ou "A", se é usado como masculino ou feminino
+*int1 sexo
+0=feminino, 1=masculino
 
 *texto descpos
 Descrição quando está na sala; arg0=quem quer ver
@@ -179,8 +180,8 @@ Personagens (mud-perso.int)
 *const perso = 1
 Para identificar que é personagem
 
-*sav txt1 sexo
-Sexo: "O" ou "A"
+*sav int1 sexo
+Sexo: 0=feminino, 1=masculino
 
 *sav uint32 moedas
 Quantas moedas está carregando
