@@ -24,7 +24,7 @@ func min # Retorna os minutos no horário MUD
 
 
 classe jogsock
-herda jog_entra, jog_adm, jog_admsala
+herda jog_entra, jog_adm, jog_admcod, jog_admsala
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -47,6 +47,7 @@ uint8 canais # Canais: +1 se recebe pvt, +2 se recebe chat
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
 txt100 opasso # Outras opções usadas no passo atual
+txt100 tclasse # Nome da classe escolhida para editar o código
 textotxt teditor # Texto usado no editor
 textotxt transf # Área de transferência do editor
 textopos leditor1 # Início de bloco
@@ -149,7 +150,7 @@ func p_sexo # Digitar O ou A
   perso = criar("jogador", este)
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
-  perso.sexo = txtmin(arg0)
+  arg0 == "O" && (perso.sexo = 1)
   perso.canais = canais
   perso.mudasala(config:salaini)
   temposair # Acerta tempo para sair do MUD
@@ -190,7 +191,6 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     perso.cnome = "pn " + texto
     perso.nome = nome
     perso.senha = txtmin(arg0)
-    perso.sexo = txtmin("o")
     # Carrega personagem
     listaobj l1
     l1.addfim(perso)
@@ -274,6 +274,7 @@ const ident = nome
 indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
+sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint16 nivel # Nível atual do jogador; 0 se estiver entrando no jogo
 sav uint8 bitver # O que o personagem pode ver
 sav uint8 bitinv # Grau de invisibilidade do personagem
@@ -354,3 +355,12 @@ func vazio1_exec # Próximo de sair do MUD
 
 func vazio2_exec # Sair do MUD automaticamente
   apagar(este)
+
+func msgvis # Mensagem se o jogador estiver vendo o alvo
+  se arg1.posic > 4 # Se estiver acordado
+    se !(~l0.ini.obj.bitver & $mens.inv) # Se estiver visível
+      $mens.proc(arg0, este)
+
+func msginv # Mensagem mesmo se o alvo estiver invisível
+  se arg1.posic > 4 # Se estiver acordado
+    $mens.proc(arg0, este)
