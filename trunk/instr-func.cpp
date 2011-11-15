@@ -802,128 +802,19 @@ bool Instr::FuncInt(TVariavel * v, int valor)
 /// Função txtremove
 bool Instr::FuncTxtRemove(TVariavel * v, int valor)
 {
-    const char * txt;    // Texto
     char mens[BUF_MENS]; // Resultado
-    int  remove = 0;     // O que deve remover
-    char * destino = mens;
-    char * remove_s = 0; // Para remover aspas simples
-    char * remove_d = 0; // Para remover aspas duplas
-    char * tabela = tab8B; // Para filtro de letras acentuadas
-
-// Obtém variáveis
     if (VarAtual < v+2)
         return false;
-    for (txt = v[2].getTxt(); *txt; txt++)
-    {
-        switch (*txt | 0x20)
-        {
-        case 'e': remove |= 1; break;
-        case 'm': remove |= 2; break;
-        case 'd': remove |= 4; break;
-        case 'c': remove |= 8; break;
-        case 's': remove |= 16; break;
-        case 'a': remove |= 32; break;
-        default:
-            if (*txt=='7') tabela = tab7B;
-        }
-    }
-    if (remove==0 && tabela==tab8B)
+    int remove = txtRemove(v[2].getTxt()); // O que deve remover
+    if (remove==0)
     {
         ApagarVar(v+2);
         ApagarRet(v);
         return true;
     }
-    txt = v[1].getTxt();
-
-// Copia texto conforme variável remove
-    int ini = 1; // quando encontra algo diferente de espaço vai para 2
-    int esp = 0; // quantos espaços acumulados
-
-    while (*txt)
-        switch (*txt)
-        {
-        case ex_barra_b:
-            if ((remove&8)==0)
-                goto copia;
-            txt++;
-            break;
-        case ex_barra_c:
-            if ((remove&8)==0)
-                goto copia;
-            if ((txt[1]>='0' && txt[1]<='9') ||
-                    (txt[1]>='A' && txt[1]<='F') ||
-                    (txt[1]>='a' && txt[1]<='f'))
-                txt += 2;
-            else
-                txt++;
-            break;
-        case ex_barra_d:
-            if ((remove&8)==0)
-                goto copia;
-            if (txt[1]>='0' && txt[1]<='7')
-                txt += 2;
-            else
-                txt++;
-            break;
-        case ' ':
-            esp++, txt++;
-            break;
-        case '\'':
-            if ((remove&16)==0 || remove_d)
-                goto copia;
-            txt++;
-            if (remove_s)
-            {
-                for (; remove_s < destino; remove_s++)
-                    if (*remove_s == ' ')
-                        *remove_s = '_';
-                remove_s = 0;
-                break;
-            }
-            remove_s = destino + (remove & ini ? ini-1 : esp);
-            break;
-        case '\"':
-            if ((remove&32)==0 || remove_s)
-                goto copia;
-            txt++;
-            if (remove_d)
-            {
-                for (; remove_d < destino; remove_d++)
-                    if (*remove_d == ' ')
-                        *remove_d = '_';
-                remove_d = 0;
-                break;
-            }
-            remove_d = destino + (remove & ini ? ini-1 : esp);
-            break;
-        default:
-        copia:
-            if (esp)
-            {
-                if (remove & ini)
-                    esp = ini-1;
-                while (esp && destino<mens+sizeof(mens))
-                    *destino++=' ', esp--;
-            }
-            if (destino<mens+sizeof(mens))
-                *destino++ = tabela[*(unsigned char*)txt];
-            txt++;
-            ini=2;
-            break;
-        }
-
-    if ((remove&4)==0)
-        while (esp && destino<mens+sizeof(mens))
-            *destino++=' ', esp--;
-    if (remove_d)
-        remove_s = remove_d;
-    if (remove_s)
-        for (; remove_s < destino; remove_s++)
-            if (*remove_s == ' ')
-                *remove_s = '_';
-
+    char * fim = txtRemove(mens, v[1].getTxt(), sizeof(mens), remove);
     ApagarVar(v);
-    return CriarVarTexto(mens, destino-mens);
+    return CriarVarTexto(mens, fim-mens);
 }
 
 //----------------------------------------------------------------------------

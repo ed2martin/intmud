@@ -793,6 +793,19 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(indice);
     }
+// TxtRemove
+    if (comparaZ(nome, "txtremove")==0)
+    {
+        if (Instr::VarAtual < v+1)
+            return false;
+        int remove = txtRemove(v[1].getTxt()); // O que deve remover
+        if (remove==0)
+            return false;
+        char * destino = v->end_char;
+        for (; numvar>0; numvar--, destino+=tamvar)
+            txtRemove(destino, destino, tamvar, remove);
+        return false;
+    }
     return false;
 }
 

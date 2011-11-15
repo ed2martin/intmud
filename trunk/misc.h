@@ -126,6 +126,19 @@ char * txtNomeLetras(char * nome, int tamanho);
         @param tamanho Tamanho do buffer em destino */
 char * txtFiltro(char * destino, const char * origem, int tamanho);
 
+    /// Obtém as opções para txtRemove abaixo
+    /** @param opcoes Texto com as opções
+        @return Número que corresponde às opções escolhidas */
+int txtRemove(const char * opcoes);
+
+    /// Converte texto conforme as opções
+    /** @param destino Aonde colocar o texto convertido
+        @param origem Texto em ASCIIZ que será convertido
+        @param tam Tamanho do buffer em destino
+        @param opcoes Opções obtidas com TxtRemove(text0)
+        @return Ponteiro para o 0 no final do texto convertido */
+char * txtRemove(char * destino, const char * origem, int tam, int opcoes);
+
     /// Calcula o número do dia a partir de uma data */
 long numdata(const char *);
 

@@ -298,6 +298,18 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         Rand();
         return false;
     }
+// Acertar texto
+    if (comparaZ(nome, "txtremove")==0)
+    {
+        if (Instr::VarAtual < v+1)
+            return false;
+        int remove = txtRemove(v[1].getTxt()); // O que deve remover
+        if (remove==0)
+            return false;
+        TxtRemove(remove);
+        DebugTextoTxt(this);
+        return false;
+    }
 // Apenas juntar linhas
     if (comparaZ(nome, "juntalin")==0)
     {

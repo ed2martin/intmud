@@ -61,9 +61,19 @@ func ini
 
 func fim
   perso.fechou
+  mudaperso(nulo)
+
+func mudaperso # Muda o personagem, arg0=novo personagem
+  se perso != arg0
+    perso.mudajog(-1)
+    perso.sock = nulo
+    perso = nulo
+    perso = arg0
+    perso.mudajog(1)
+    perso.sock = este
 
 func reinicia # Volta ao início: pede o nome do personagem
-  perso = nulo
+  mudaperso(nulo)
   cnome = "", nome = "", senha = ""
   p_perso
 
@@ -147,7 +157,7 @@ func p_sexo # Digitar O ou A
   passo = ""
   canais = 255 # Habilita todos os canais
   msg("Iniciando jogo; para ajuda tecle AJUDA")
-  perso = criar("jogador", este)
+  mudaperso(criar("jogador"))
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
   arg0 == "O" && (perso.sexo = 1)
@@ -177,8 +187,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     cnome = "un " + texto
     nome = tpasso
     passo = ""
-    perso = ind.obj("pn " + texto)
-    perso.sock = este
+    mudaperso(ind.obj("pn " + texto))
     msg("Reconectado")
     perso.teclou("ver")
     temposair # Acerta tempo para sair do MUD
@@ -187,7 +196,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     cnome = "un " + texto
     nome = tpasso
     passo = ""
-    perso = criar("jogador", este)
+    mudaperso(criar("jogador"))
     perso.cnome = "pn " + texto
     perso.nome = nome
     perso.senha = txtmin(arg0)
@@ -289,8 +298,6 @@ txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 inttempo salvarev # Para salvar o jogo de tempos em tempos
 
 func ini # Objeto foi criado
-# arg0 = objeto que comunica com o jogador
-  sock = arg0
   nivel = 1
   posicao = 8
   bitver = 3

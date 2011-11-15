@@ -61,6 +61,10 @@ public:
              *   @param txt2 Texto depois do número de cada linha */
     void Rand();
             ///< Ordena linhas aleatoriamente
+    void TxtRemove(int opcoes);
+            ///< Remove espaços, instrução txtremove
+            /**< @param opcoes Opções de remoção, obtidas com ::txtRemove() */
+
 private:
     void OrdenaSub(int modo, char * texto, char** linha,
             const char *txt1, const char * txt2);
@@ -74,6 +78,10 @@ private:
             ///< Chamado por Rand(), para ordenar linhas aleatoriamente
             /**< @param texto Texto a ser ordenado, começa e termina com um byte 0
              *   @param linha char*[] contendo a linha */
+    void TxtRemoveSub(char * texto, int opcoes);
+            ///< Chamado por TxtRemove
+            /**< @param texto Texto a ser trabalhado
+             *   @param opcoes Opções de remoção, obtidas com ::txtRemove() */
 };
 
 //----------------------------------------------------------------------------

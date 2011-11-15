@@ -800,6 +800,127 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
 }
 
 //------------------------------------------------------------------------------
+// Obtém as opções para txtRemove
+int txtRemove(const char * opcoes)
+{
+    int remove = 0;
+    for (; *opcoes; opcoes++)
+    {
+        switch (*opcoes | 0x20)
+        {
+        case 'e': remove |= 1; break;
+        case 'm': remove |= 2; break;
+        case 'd': remove |= 4; break;
+        case 'c': remove |= 8; break;
+        case 's': remove |= 16; break;
+        case 'a': remove |= 32; break;
+        default:
+            if (*opcoes=='7') remove |= 64;
+        }
+    }
+    return remove;
+}
+
+//------------------------------------------------------------------------------
+// Converte texto conforme as opções
+char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
+{
+    char * remove_s = 0; // Para remover aspas simples
+    char * remove_d = 0; // Para remover aspas duplas
+    const char * tabela = (opcoes&64 ? tab7B : tab8B); // Filtro de letras acentuadas
+    const char * fim = destino + tam - 1;
+
+// Copia texto conforme variável opcoes
+    int ini = 1; // quando encontra algo diferente de espaço vai para 2
+    int esp = 0; // quantos espaços acumulados
+
+    while (*origem)
+        switch (*origem)
+        {
+        case Instr::ex_barra_b:
+            if ((opcoes & 8)==0)
+                goto copia;
+            origem++;
+            break;
+        case Instr::ex_barra_c:
+            if ((opcoes & 8)==0)
+                goto copia;
+            if ((origem[1]>='0' && origem[1]<='9') ||
+                    (origem[1]>='A' && origem[1]<='F') ||
+                    (origem[1]>='a' && origem[1]<='f'))
+                origem += 2;
+            else
+                origem++;
+            break;
+        case Instr::ex_barra_d:
+            if ((opcoes & 8)==0)
+                goto copia;
+            if (origem[1]>='0' && origem[1]<='7')
+                origem += 2;
+            else
+                origem++;
+            break;
+        case ' ':
+            esp++, origem++;
+            break;
+        case '\'':
+            if ((opcoes & 16)==0 || remove_d)
+                goto copia;
+            origem++;
+            if (remove_s)
+            {
+                for (; remove_s < destino; remove_s++)
+                    if (*remove_s == ' ')
+                        *remove_s = '_';
+                remove_s = 0;
+                break;
+            }
+            remove_s = destino + (opcoes & ini ? ini-1 : esp);
+            break;
+        case '\"':
+            if ((opcoes & 32)==0 || remove_s)
+                goto copia;
+            origem++;
+            if (remove_d)
+            {
+                for (; remove_d < destino; remove_d++)
+                    if (*remove_d == ' ')
+                        *remove_d = '_';
+                remove_d = 0;
+                break;
+            }
+            remove_d = destino + (opcoes & ini ? ini-1 : esp);
+            break;
+        default:
+        copia:
+            if (esp)
+            {
+                if (opcoes & ini)
+                    esp = ini-1;
+                while (esp && destino < fim)
+                    *destino++=' ', esp--;
+            }
+            if (destino < fim)
+                *destino++ = tabela[*(unsigned char*)origem];
+            origem++;
+            ini=2;
+            break;
+        }
+
+    if ((opcoes & 4)==0)
+        while (esp && destino < fim)
+            *destino++=' ', esp--;
+    if (remove_d)
+        remove_s = remove_d;
+    if (remove_s)
+        for (; remove_s < destino; remove_s++)
+            if (*remove_s == ' ')
+                *remove_s = '_';
+    *destino = 0;
+    return destino;
+}
+
+//------------------------------------------------------------------------------
 // Calcula o número do dia a partir de uma data
 // Entrada: string contendo dia, mês, ano no formato: aaaammdd
 // Retorna o número de dias, ou 0 se data inválida
