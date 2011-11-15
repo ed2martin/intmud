@@ -3,7 +3,6 @@ ref perso # Personagem que está enviando a mensagem
 ref alvo # Personagem ou objeto alvo da ação
 ref obj # Objeto secundário
 ref r # Objeto que vai receber a mensagem
-uint8 inv # Variável bitinv de perso
 
 func iniclasse
   criar(arg0)
@@ -13,7 +12,7 @@ func p # Define os personagens
 
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
-  se arg0
+  se perso.dono.jogtot && arg0
     listaobj l0
     l0.addfim(perso.dono.dentro)
     enquanto l0
@@ -22,31 +21,32 @@ func mtodos1 # Mensagem só para quem estiver acordado
 
 func mtodos2 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  arg0 && perso.msginv(arg0)
-  se arg1
-    listaobj l0
-    l0.addfim(perso.dono.dentro)
-    l0.remove(perso)
-    enquanto l0
-      l0.ini.obj.msginv(arg1), l0.ini.remove
-    efim
+  se perso.dono.jogtot
+    arg0 && perso.msginv(arg0)
+    se arg1
+      listaobj l0
+      l0.addfim(perso.dono.dentro)
+      l0.remove(perso)
+      enquanto l0
+        l0.ini.obj.msginv(arg1), l0.ini.remove
+      efim
 
 func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  arg0 && perso.msginv(arg0)
-  arg1 && alvo.msginv(arg1)
-  se arg2
-    listaobj l0
-    l0.addfim(perso.dono.dentro)
-    l0.remove(perso, alvo)
-    enquanto l0
-      l0.ini.obj.msginv(arg2), l0.ini.remove
-    efim
+  se perso.dono.jogtot
+    arg0 && perso.msginv(arg0)
+    arg1 && alvo.msginv(arg1)
+    se arg2
+      listaobj l0
+      l0.addfim(perso.dono.dentro)
+      l0.remove(perso, alvo)
+      enquanto l0
+        l0.ini.obj.msginv(arg2), l0.ini.remove
+      efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para todos
-  se arg0
-    inv = perso.bitinv
+  se perso.dono.jogtot && arg0
     perso.msginv(arg0)
     listaobj l0
     l0.addfim(perso.dono.dentro)
@@ -57,28 +57,28 @@ func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 
 func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  inv = perso.bitinv
-  arg0 && perso.msginv(arg0)
-  se arg1
-    listaobj l0
-    l0.addfim(perso.dono.dentro)
-    l0.remove(perso)
-    enquanto l0
-      l0.ini.obj.msgvis(arg1), l0.ini.remove
-    efim
+  se perso.dono.jogtot
+    arg0 && perso.msginv(arg0)
+    se arg1
+      listaobj l0
+      l0.addfim(perso.dono.dentro)
+      l0.remove(perso)
+      enquanto l0
+        l0.ini.obj.msgvis(arg1), l0.ini.remove
+      efim
 
 func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  inv = perso.bitinv
-  arg0 && perso.msginv(arg0)
-  arg1 && alvo.msgvis(arg1)
-  se arg2
-    listaobj l0
-    l0.addfim(perso.dono.dentro)
-    l0.remove(perso, alvo)
-    enquanto l0
-      l0.ini.obj.msgvis(arg2), l0.ini.remove
-    efim
+  se perso.dono.jogtot
+    arg0 && perso.msginv(arg0)
+    arg1 && alvo.msgvis(arg1)
+    se arg2
+      listaobj l0
+      l0.addfim(perso.dono.dentro)
+      l0.remove(perso, alvo)
+      enquanto l0
+        l0.ini.obj.msgvis(arg2), l0.ini.remove
+      efim
 
 func proc # Prepara e envia mensagem
 # arg0=mensagem, arg1=objeto

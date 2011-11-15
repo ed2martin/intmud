@@ -1061,6 +1061,15 @@ juntar(<delimitador>, <número de variáveis>)
     x.juntar(",", 3) é o mesmo que:
     x.0 + "," + x.1 + "," + x.2
 
+txtremove(<texto>)
+    Altera todos os textos do vetor com a função txtremove.
+    Exemplo:
+    txt10 x.2
+    x.0 = txtremove(x.0, "C")
+    x.1 = txtremove(x.1, "C")
+    É o mesmo que:
+    txt10 x.2
+    x.txtremove("C")
 
 *** Outros tipos de variáveis
 
@@ -1171,16 +1180,16 @@ listaitem <nomedavariável>
     Exemplo:
     listaobj l
     listaitem i
-    l.addantes( este ) -> Adiciona no topo da lista
-    l.adddepois( este ) -> Adiciona no final da lista
-    l.remove( l.ini.obj ) -> remove um objeto da lista
-    l.possui( este) -> retorna !=0 se objeto está na lista
-    l.ini.obj -> é o primeiro objeto da lista
-    l.fim.obj -> é o último objeto da lista
-    i = l.ini  -> i é o primeiro item da lista
-    enquanto i    -> Enquanto i for um objeto (não acabou a lista)
-      i.obj.l = 1   -> Faz a variável l do objeto = 1
-      i.depois      -> Passa para o próximo objeto
+    l.addantes( este ) # Adiciona no topo da lista
+    l.adddepois( este ) # Adiciona no final da lista
+    l.remove( l.ini.obj ) # remove um objeto da lista
+    l.possui( este) # retorna !=0 se objeto está na lista
+    l.ini.obj # é o primeiro objeto da lista
+    l.fim.obj # é o último objeto da lista
+    i = l.ini  # i é o primeiro item da lista
+    enquanto i    # Enquanto i for um objeto (não acabou a lista)
+      i.obj.l = 1   # Faz a variável l do objeto = 1
+      i.depois      # Passa para o próximo objeto
     efim
 
 textotxt <nomedavariável>
@@ -1248,6 +1257,17 @@ textotxt <nomedavariável>
         contagem de caracteres por linha.
     rand
         Muda a ordem das linhas aleatoriamente.
+    txtremove(<texto>)
+        Altera todas as linhas do textotxt com a função txtremove.
+        Exemplo:
+        textotxt t
+        t.addfim(txtremove("  bom  dia  ", "MC"))
+        t.addfim(txtremove("\cF\d4Teste\b", "MC"))
+        É o mesmo que:
+        textotxt t
+        t.addfim("  bom  dia  ")
+        t.addfim("\cF\d4Teste\b")
+        t.txtremove("MC")
     ler(<nome do arquivo>)
         Lê um arquivo de texto e coloca em textotxt.
         Retorna 1 se conseguiu ou 0 se não conseguiu.

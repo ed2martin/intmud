@@ -3,6 +3,7 @@ classe comum_dentro
 #
 sav listaobj dentro # Lista de objetos que possui
 sav listaobj evento # Objetos que recebem eventos desse
+uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 #
 const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
 uint32 pesoden # Peso do que tem dentro
@@ -29,6 +30,13 @@ func mudavol # Muda volden; arg0=o quanto mudou
     r = r.idono.objlista, r.volden += arg0
   efim
 
+func mudajog # Muda jogtot; arg0=o quanto mudou
+  ref r
+  jogtot += arg0, r = dono
+  enquanto r
+    r.jogtot += arg0, r = r.dono
+  efim
+
 func ajustapeso # Ajuda peso e volume
   listaitem item
   uint32 soma1
@@ -50,6 +58,7 @@ classe comum_fora
 sav listaobj evento # Objetos que recebem eventos desse
 sav listaitem idono # Uso interno: aonde o personagem ou item está
 sav listaitem ibitev # Uso interno: para receber eventos
+uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 #
 const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
 const pesotot = pesoobj # Peso total
@@ -69,6 +78,7 @@ varfunc dono # O dono do personagem/item
   fimse
   !ipesovoa && idono.objlista.mudapeso(-pesotot) # Retira peso do objeto
   idono.objlista.mudavol(-voltot) # Retira o volume
+  jogtot && idono.objlista.mudajog(-jogtot) # Retira os jogadores
   idono.remove
   se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
     ibitev.remove, ibitev = arg0.evento.addfim(este)
@@ -76,6 +86,7 @@ varfunc dono # O dono do personagem/item
   idono = arg0.dentro.addfim(este) # Adiciona na sala
   !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
   idono.objlista.mudavol(voltot) # Coloca o volume
+  jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
 
 varfunc bitev
   se !args # Nenhum argumento: leitura
@@ -93,6 +104,13 @@ varfunc pesovoa
     ipesovoa = arg0
     !ipesovoa && (total += pesotot)
     total && dono.mudapeso(total)
+
+func mudajog # Muda jogtot; arg0=o quanto mudou
+  ref r
+  jogtot += arg0, r = dono
+  enquanto r
+    r.jogtot += arg0, r = r.dono
+  efim
 
 func visivel # Checa se um objeto está visível (arg0=objeto)
   ret !(~bitver & arg0.inv)
@@ -146,15 +164,18 @@ func ini # Objeto foi criado
   posic = pospadrao
 
 func fim # Objeto foi apagado
-  casovar txt1(sock.info)
+  ref r
+  r = sock, r.mudaperso(nulo)
+  dono = nulo
+  casovar txt1(r.info)
   casose "t" # Conectado via Papovox
   casose "p" # Conectado via Telnet
-    apagar(sock)
+    apagar(r)
     sair
   casose "l" # Jogando localmente
     terminar
   casose "b" # Como bot
-    sock.reinicia
+    r.reinicia
   casofim
 
 func descpos

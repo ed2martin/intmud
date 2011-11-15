@@ -568,3 +568,57 @@ void TTextoTxt::RandSub(char * texto, char** linha)
     }
     TextoFim();
 }
+
+//----------------------------------------------------------------------------
+void TTextoTxt::TxtRemove(int opcoes)
+{
+// Checa se tem alguma linha
+    if (Linhas<1)
+        return;
+    int totalbytes = Bytes + 1;
+// Até 8191 bytes: ordena sem alocar memória com new (mais rápido)
+    if (totalbytes <= 8192)
+    {
+        char txt[8192];
+        TxtRemoveSub(txt, opcoes);
+        return;
+    }
+// Mais de 8191 bytes: aloca memória com new
+    char * txt = new char[totalbytes];
+    TxtRemoveSub(txt, opcoes);
+    delete[] txt;
+}
+
+//----------------------------------------------------------------------------
+void TTextoTxt::TxtRemoveSub(char * texto, int opcoes)
+{
+// Lê texto de textotxt
+    char * p = texto;
+    for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
+    {
+        memcpy(p, obj->Texto, obj->Bytes);
+        p += obj->Bytes;
+    }
+    p[-1] = 0;
+    assert((unsigned int)(p-texto) == Bytes);
+
+// Converte
+    char * o = texto, * d = texto;
+    while (*o)
+    {
+        char * p = o;
+        while (*p && *p!=Instr::ex_barra_n)
+            p++;
+        char ch = *p;
+        *p++ = 0; // Zero no fim da linha
+        d = txtRemove(d, o, p-o, opcoes) + 1; // Converte e anota
+        o = p; // Avança origem para próxima linha
+        if (ch==0) // Checa se é fim do texto
+            break;
+    }
+
+// Altera textotxt
+    TextoIni();
+    TextoAnota(texto, d-texto);
+    TextoFim();
+}
