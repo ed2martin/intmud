@@ -67,8 +67,7 @@ func mudaperso # Muda o personagem, arg0=novo personagem
   se perso != arg0
     perso.mudajog(-1)
     perso.sock = nulo
-    perso = nulo
-    perso = arg0
+    perso = ref(arg0)
     perso.mudajog(1)
     perso.sock = este
 
@@ -163,6 +162,8 @@ func p_sexo # Digitar O ou A
   arg0 == "O" && (perso.sexo = 1)
   perso.canais = canais
   perso.mudasala(config:salaini)
+  $mens.p(perso)
+  $mens.mvis2("", "$P chegou.")
   temposair # Acerta tempo para sair do MUD
   ret 1
 
@@ -304,7 +305,7 @@ func ini # Objeto foi criado
 
 func fim # Objeto foi apagado
   salvar
-  se posic
+  se posicao
     $mens.p(este)
     $mens.mvis2("", "$P foi embora.")
   fimse
@@ -328,14 +329,16 @@ func salvar # Salva o jogo, desde que a senha não seja nula
     arqsav sav1
     listaobj l0
     l0.addfim(este)
+    salanome = dono
     sock && (canais = sock.canais)
     salvarev = 3000 # 5 minutos
   #msg(txt2(cnome) + " , " + senha)
     ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
 
-func mudasala # Coloca usuário em outra sala (arg0 = sala)
+func mudasala # Coloca personagem em outra sala (arg0 = sala)
   dono = arg0
-  salanome = dono, salaev = salaev2 = 1
+  salaev = salaev2 = 1
+  sock && msg2(dono.descsala(este, 7))
   dono.entrou(este)
 
 func salaev_exec # Executa eventos entrou
@@ -362,12 +365,3 @@ func vazio1_exec # Próximo de sair do MUD
 
 func vazio2_exec # Sair do MUD automaticamente
   apagar(este)
-
-func msgvis # Mensagem se o jogador estiver vendo o alvo
-  se arg1.posic > 4 # Se estiver acordado
-    se !(~l0.ini.obj.bitver & $mens.inv) # Se estiver visível
-      $mens.proc(arg0, este)
-
-func msginv # Mensagem mesmo se o alvo estiver invisível
-  se arg1.posic > 4 # Se estiver acordado
-    $mens.proc(arg0, este)

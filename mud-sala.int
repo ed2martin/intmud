@@ -5,7 +5,10 @@ func iniclasse
 classe sala
 herda comum_dentro
 # Estrutura de uma sala
-
+#
+const s_item = 5 # Quantos minutos para começar a apagar itens
+inttempo t_item # Tempo para começar a apagar itens da sala
+#
 uint8 tipo_n # Tipo de saída
 uint8 tipo_s # Tipo de saída
 uint8 tipo_l # Tipo de saída
@@ -32,18 +35,29 @@ func ini # Inicializa variáveis
   tipo_se = tipoini_se
   tipo_so = tipoini_so
 
+func t_item_exec # Começar a apagar objetos
+  se !jogtot && s_item # Se pode apagar itens
+    listaitem item
+    item = dentro.fim
+    enquanto item
+      se item.obj.item # Checa se é um item que pode apagar
+        apagar(item.obj)
+        t_item = 300 # 30 segundos para apagar o próximo
+        ret
+      fimse
+      item.antes
+    efim
+
 func entrou # Entrou na sala; arg0=objeto do jogador
-  se arg0.jog
-    arg0.msg2(descsala(arg0, 7))
 
 func descsala # Retorna descrição da sala
-# arg0 = objeto do jogador
+# arg0 = objeto que está vendo a descrição
 # arg1: +1 se mostra descrição completa, +2 se mostra saídas, +4 se mostra itens
   textotxt t
   casovar 3 & arg0.bitver
   casose "0"
   casose "2"
-    t.addfim("Você está ceg" + txtmin(arg0.sexo) + ".")
+    t.addfim("Você está ceg" + $mens.sexoA[arg0.sexo] + ".")
   casose "1"
     t.addfim("Está escuro...")
   casose

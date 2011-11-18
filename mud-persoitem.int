@@ -32,9 +32,9 @@ func mudavol # Muda volden; arg0=o quanto mudou
 
 func mudajog # Muda jogtot; arg0=o quanto mudou
   ref r
-  jogtot += arg0, r = dono
+  jogtot += arg0, t_item = s_item * 600, r = dono
   enquanto r
-    r.jogtot += arg0, r = r.dono
+    r.jogtot += arg0, r.t_item = r.s_item * 600, r = r.dono
   efim
 
 func ajustapeso # Ajuda peso e volume
@@ -83,7 +83,7 @@ varfunc dono # O dono do personagem/item
   se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
     ibitev.remove, ibitev = arg0.evento.addfim(este)
   fimse
-  idono = arg0.dentro.addfim(este) # Adiciona na sala
+  idono = arg0.dentro.addini(este) # Adiciona na sala
   !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
   idono.objlista.mudavol(voltot) # Coloca o volume
   jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
@@ -107,9 +107,9 @@ varfunc pesovoa
 
 func mudajog # Muda jogtot; arg0=o quanto mudou
   ref r
-  jogtot += arg0, r = dono
+  jogtot += arg0, t_item = s_item * 600, r = dono
   enquanto r
-    r.jogtot += arg0, r = r.dono
+    r.jogtot += arg0, r.t_item = r.s_item * 600, r = r.dono
   efim
 
 func visivel # Checa se um objeto está visível (arg0=objeto)
@@ -158,6 +158,8 @@ sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
 sav listaobj veste # Lista de objetos que está vestindo ou de magias afetando
+textotxt p_comandos # Comandos em espera para serem processados
+inttempo p_espera # Tempo de espera para o próximo comando
 
 func ini # Objeto foi criado
   bitver = 3
@@ -201,7 +203,21 @@ func descpos
   casofim
   ret txtmaimin(nome) + " está aqui."
 
-func teclou # Personagem teclou algum comando
+func teclou # Personagem teclou algum comando (arg0=comando)
+  se !p_espera
+    p_espera = 2
+    teclouproc(arg0)
+  senao p_comandos.bytes < 1024
+    p_comandos.addfim(arg0)
+  senao
+    msg("Aguarde")
+
+func p_espera_exec # Pega o próximo comando
+  se p_comandos.linhas
+    p_espera = 2
+    teclouproc(p_comandos.remove)
+
+func teclouproc # Processa comando (arg0=comando)
 # Executa eventos
   listaobj l0
   l0.addfim(este, dono, este.eventos, dono.eventos)
@@ -255,8 +271,23 @@ func teclou # Personagem teclou algum comando
       msg("\c9Você tenta, mas não consegue.\b")
     casofim
 
+func mudasala # Coloca personagem em outra sala (arg0 = sala)
+  dono = arg0
+  sock && msg2(dono.descsala(este, 7))
+  dono.entrou(este)
+
+func msgvis # Mensagem se o jogador estiver vendo o alvo
+  se sock && posic > 4 && visivel($mens.perso) # Se tem jogador e está acordado
+      $mens.proc(arg0, este)
+
+func msginv # Mensagem mesmo se o alvo estiver invisível
+  se sock && posic > 4 && visivel($mens.perso) # Se tem jogador e está acordado
+    $mens.proc(arg0, este)
+
+
 classe i_borracha
 herda comum_fora
+const item = 1 # Para identificar que é item
 const nome = "borracha"
 const ident = "borracha"
 const sexo = 0
