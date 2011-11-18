@@ -352,6 +352,37 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
         DebugTextoTxt(this);
         return false;
     }
+// Junta linhas
+    if (comparaZ(nome, "juntar")==0)
+    {
+    // Junta linhas eliminando "\n"
+        for (TTextoBloco * bl = Inicio; bl; bl=bl->Depois)
+            if (bl->Linhas)
+            {
+                bl->Linhas = 0;
+                for (int x=0; x<bl->Bytes; x++)
+                    if (bl->Texto[x] == Instr::ex_barra_n)
+                        bl->Texto[x] = ' ';
+            }
+    // Coloca "\n" no fim
+        Linhas = 0;
+        if (Fim)
+        {
+            Fim->Texto[Fim->Bytes-1] = Instr::ex_barra_n;
+            Fim->Linhas = 1;
+            Linhas = 1;
+        }
+    // Acerta TextoPos
+        for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+        {
+            pos->Bloco = Inicio;
+            pos->PosicBloco = 0;
+            pos->PosicTxt = 0;
+            pos->LinhaTxt = 0;
+        }
+        DebugTextoTxt(this);
+        return false;
+    }
 // Lê arquivo de texto
     if (comparaZ(nome, "ler")==0)
     {
