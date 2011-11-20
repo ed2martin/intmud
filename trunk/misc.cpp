@@ -86,6 +86,7 @@ void tabASCinic(void)
 // Acerta tabMAI e tabMIN
     memcpy(tabMAI, tabCOMPLETO, 0x100);
     tabMAI[(unsigned char)' '] = ' ';
+    tabMAI[(unsigned char)'_'] = '_';
     memcpy(tabMIN, tabMAI, 0x100);
     for (caract='A'; caract<='Z'; caract++) // Letras de A a Z
     {
