@@ -269,11 +269,12 @@ int TTextoBloco::LinhasBytes(unsigned int posic, int numlinhas)
     {
         if (posic<Bytes)
         {
-            for (int x=posic; x<obj->Bytes; x++)
+            const int max = obj->Bytes;
+            for (int x=posic; x<max; x++)
                 if (obj->Texto[x] == Instr::ex_barra_n)
                     if (--numlinhas==0)
                         return x+1-posic;
-            total = obj->Bytes - posic;
+            total = max - posic;
         }
         obj=Depois;
         if (obj==0)
@@ -289,11 +290,12 @@ int TTextoBloco::LinhasBytes(unsigned int posic, int numlinhas)
             return total;
     }
 // Avança em um bloco
-    for (int x=0; x<obj->Bytes; x++)
+    int max = obj->Bytes;
+    for (int x=0; x<max; x++)
         if (obj->Texto[x] == Instr::ex_barra_n)
             if (--numlinhas==0)
                 return total+x+1;
-    return total + obj->Bytes;
+    return total + max;
 }
 
 //----------------------------------------------------------------------------
@@ -356,7 +358,8 @@ void TBlocoPos::MoverPos(int numlinhas)
             {
                 int x = PosicBloco;
                 int lin = numlinhas;
-                while (x<Bloco->Bytes)
+                const int max = Bloco->Bytes;
+                while (x<max)
                     if (Bloco->Texto[x++] == Instr::ex_barra_n)
                         if (--numlinhas==0)
                             break;
@@ -369,10 +372,13 @@ void TBlocoPos::MoverPos(int numlinhas)
             Bloco = Bloco->Depois;
         }
     // Avança blocos inteiros
-        while (numlinhas > Bloco->Linhas)
+        while (true)
         {
-            numlinhas -= Bloco->Linhas;
-            LinhaTxt += Bloco->Linhas;
+            const int lin = Bloco->Linhas;
+            if (numlinhas <= lin)
+                break;
+            numlinhas -= lin;
+            LinhaTxt += lin;
             PosicTxt += Bloco->Bytes;
             if (Bloco->Depois)
                 Bloco = Bloco->Depois;
@@ -385,7 +391,8 @@ void TBlocoPos::MoverPos(int numlinhas)
     // Avança em um bloco
         int x = 0;
         int lin = numlinhas;
-        while (x<Bloco->Bytes)
+        const int max = Bloco->Bytes;
+        while (x<max)
             if (Bloco->Texto[x++] == Instr::ex_barra_n)
                 if (--numlinhas==0)
                     break;
@@ -424,10 +431,13 @@ void TBlocoPos::MoverPos(int numlinhas)
             Bloco = Bloco->Antes;
         }
     // Recua blocos inteiros
-        while (numlinhas > Bloco->Linhas)
+        while (true)
         {
-            numlinhas -= Bloco->Linhas;
-            LinhaTxt -= Bloco->Linhas;
+            const int lin = Bloco->Linhas;
+            if (numlinhas <= lin)
+                break;
+            numlinhas -= lin;
+            LinhaTxt += lin;
             PosicTxt -= Bloco->Bytes;
             if (Bloco->Antes)
                 Bloco = Bloco->Antes;
@@ -481,20 +491,23 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
     obj = Bloco;
 
 // Limpa blocos; preenche com texto se possível
-    while (tamapagar + posic >= obj->Bytes)
+    while (true)
     {
+        const unsigned int max = obj->Bytes;
+        if (tamapagar + posic < max)
+            break;
     // Apaga bytes do bloco a partir de posic
-        tamapagar -= obj->Bytes - posic;
+        tamapagar -= max - posic;
         if (posic==0)
         {
-            sub_bytes += obj->Bytes;
+            sub_bytes += max;
             dif_linhas -= obj->Linhas;
             obj->Bytes=0, obj->Linhas=0;
         }
         else
         {
-            int lin = TextoNumLin(obj->Texto + posic, obj->Bytes - posic);
-            sub_bytes += obj->Bytes - posic;
+            int lin = TextoNumLin(obj->Texto + posic, max - posic);
+            sub_bytes += max - posic;
             dif_linhas -= lin;
             obj->Bytes = posic;
             obj->Linhas -= lin;
