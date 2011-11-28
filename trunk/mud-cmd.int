@@ -29,10 +29,13 @@ const c_falar = $com_falar
 const c_fechar = $com_fechar
 const c_inv = $com_inv
 const c_pegar = $com_pegar
-const c_quem = $com_quem
-const c_quit = $com_sair
-const c_sair = $com_sair
 const c_soltar = $com_soltar
+const c_quem = $com_quem
+const c_quit = $com_fim
+const c_equip = $com_equip
+const c_vestir = $com_vestir
+const c_remover = $com_remover
+const c_fim = $com_fim
 const c_ver = $com_ver
 const c_data = $com_hora
 const c_hora = $com_hora
@@ -291,7 +294,7 @@ func exec
     arg0.msg("N" + txt2(t0.remove))
   efim
 
-classe com_sair
+classe com_fim
 herda com_comum
 const posic = 0
 func exec
@@ -307,7 +310,7 @@ func exec
     ret
   fimse
   listaobj l
-  l.addfim(arg0.dono.dentro)
+  l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
   arg0.itemnome(l, "1 " + arg2)
   se l.ini
     arg0.msg(txtmaimin(l.ini.obj.nome) + ".")
@@ -317,6 +320,85 @@ func exec
   arg0.msg("Você não vê isso.")
   ret
 
+classe com_inv
+herda com_comum
+const posic = 5
+func exec
+  textotxt t
+  listaitem item
+  item = arg0.dentro1.ini
+  enquanto item
+    arg0.visivel(item.obj) && t.addfim("1 " + item.obj.nome)
+    item.depois
+  efim
+  t.juntalin("(", "x) ")
+  se t.linhas
+    arg0.msg2("Você carrega:\n" + t.remove(1000))
+  senao
+    arg0.msg("Você não está carregando nada.")
+  fimse
+
+classe com_equip
+herda com_comum
+const posic = 5
+func exec
+  textotxt t
+  listaitem item
+  item = arg0.dentro2.ini
+  enquanto item
+    se arg0.visivel(item.obj)
+      t.addfim("1 (" + equip(item.obj.vestpos) + ") " + item.obj.nome)
+    fimse
+    item.depois
+  efim
+  t.juntalin("(", "x) ")
+  se t.linhas
+    arg0.msg2("Equipado com:\n" + t.remove(1000))
+  senao
+    arg0.msg("Não está vestindo/usando nada.")
+  fimse
+func equip
+  casovar arg0
+  casose "1"
+    ret "como luz"
+  casose "2"
+    ret "empunhando"
+  casose "3"
+    ret "escudo"
+  casose "4"
+    ret "na cabeça"
+  casose "5"
+    ret "no pescoço"
+  casose "6"
+    ret "no corpo"
+  casose "7"
+    ret "sobre o corpo"
+  casose "8"
+    ret "nas costas"
+  casose "9"
+    ret "na cintura"
+  casose "10"
+    ret "nas pernas"
+  casose "11"
+    ret "calçando"
+  casose "12"
+    ret "nos braços"
+  casose "13"
+    ret "no pulso"
+  casose "14"
+    ret "nas mãos"
+  casose "15"
+    ret "no dedo"
+  casose "16"
+    ret "sobre o rosto"
+  casose "17"
+    ret "nas orelhas"
+  casose "18"
+    ret "nos olhos"
+  casose
+    ret "desconhecido"
+  casofim
+
 classe com_pegar
 herda com_comum
 func exec
@@ -325,20 +407,16 @@ func exec
     ret
   fimse
   listaobj l
-  l.addfim(arg0.dono.dentro)
+  l.addfim(arg0.dono.dentro1)
   arg0.itemnome(l, arg2)
   se !l.ini
     arg0.msg("Você não vê isso.")
     ret
   fimse
   enquanto l
-    se l.ini.obj.perso
-      arg0.msg("Você não pode pegar " + l.ini.obj.nome)
-    senao
-      l.ini.obj.dono = arg0
-      $mens.p(arg0, l.ini.obj)
-      $mens.mvis1("$P pega $r $a.")
-    fimse
+    l.ini.obj.dono = arg0
+    $mens.p(arg0, l.ini.obj)
+    $mens.mvis1("$P pega $r $a.")
     l.ini.remove
   efim
 
@@ -350,40 +428,93 @@ func exec
     ret
   fimse
   listaobj l
-  l.addfim(arg0.dentro)
+  l.addfim(arg0.dentro1)
   arg0.itemnome(l, arg2)
   se !l.ini
     arg0.msg("Você não vê isso.")
     ret
   fimse
   enquanto l
-    se l.ini.obj.perso
-      arg0.msg("Você não pode pegar " + l.ini.obj.nome)
+    l.ini.obj.dono = arg0.dono
+    $mens.p(arg0, l.ini.obj)
+    $mens.mvis1("$P solta $r $a.")
+    l.ini.remove
+  efim
+
+classe com_vestir
+herda com_comum
+func exec
+  se !arg2
+    arg0.msg("Vestir o que?")
+    ret
+  fimse
+  listaobj l
+  listaitem item
+  int32 vest
+# Checa o que quer vestir
+  l.addfim(arg0.dentro1)
+  arg0.itemnome(l, arg2)
+  se !l.ini
+    arg0.msg("Você não vê isso.")
+    ret
+  fimse
+# Preenche vest com o que está vestindo
+  item = arg0.dentro2
+  enquanto item
+    vest = vest | (1 << item.obj.vestpos)
+    item.depois
+  efim
+  vest = ~(vest >> 1)
+# Tenta vestir
+  enquanto l
+    ref r
+    r = l.ini.obj
+    se (vest & r.vestir) == 0
+      arg0.msg("Você não consegue vestir " + r.nome)
     senao
-      l.ini.obj.dono = arg0.dono
-      $mens.p(arg0, l.ini.obj)
-      $mens.mvis1("$P solta $r $a.")
+      uint32 x
+      x = vest & r.vestir
+      r.vestpos = 0
+      !(x & 65535) && (x >> 16) + (r.vestpos += 16)
+      !(x & 255) && (x >> 8) + (r.vestpos += 8)
+      !(x & 15) && (x >> 4) + (r.vestpos += 4)
+      !(x & 3) && (x >> 2) + (r.vestpos += 2)
+      !(x & 1) && (x >> 1) + (r.vestpos += 1)
+      vest = vest | (1 << r.vestpos)
+      r.vestpos += 1
+      r.idono.remove
+      r.idono = arg0.dentro2.addini(r)
+      $mens.p(arg0, r)
+      $mens.mvis1("$P veste $r $a.")
     fimse
     l.ini.remove
   efim
 
-classe com_inv
+classe com_remover
 herda com_comum
-const posic = 5
 func exec
-  textotxt t
+  se !arg2
+    arg0.msg("Remover o que?")
+    ret
+  fimse
   listaobj l
-  l.addfim(arg0.dentro)
+  ref r
+  l.addfim(arg0.dentro2)
+  arg0.itemnome(l, arg2)
+  se !l.ini
+    arg0.msg("Você não está usando isso.")
+    ret
+  fimse
   enquanto l
-    !(~arg0.bitver & l.ini.obj.bitinv) && t.addfim("1 " + l.ini.obj.nome)
+    r = l.ini.obj
+    r.idono.remove
+    r.idono = arg0.dentro1.addini(r)
+    r.vestpos = 0
+    $mens.p(arg0, r)
+    $mens.mvis1("$P remove $r $a.")
     l.ini.remove
   efim
-  t.juntalin("(", "x) ")
-  se t.linhas
-    arg0.msg2("Você carrega:\n" + t.remove(1000))
-  senao
-    arg0.msg("Você não está carregando nada.")
-  fimse
+
 
 classe com_hora
 herda com_comum
@@ -401,7 +532,7 @@ const posic = 0
 func exec
   arg0.msg("Sala: " + arg0.dono)
   listaobj l0
-  l0.addfim(arg0.dono.dentro)
+  l0.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
   l0.remove(arg0)
   enquanto l0
     arg0.msg(" usr: " + l0.ini.obj + "/" + l0.ini.obj.jog)

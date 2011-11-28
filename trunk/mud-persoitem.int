@@ -1,7 +1,8 @@
 classe comum_dentro
 # Todos os objetos que podem ter outro dentro
 #
-sav listaobj dentro # Lista de objetos que possui
+sav listaobj dentro1 # Lista de objetos que possui
+sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
 sav listaobj evento # Objetos que recebem eventos desse
 uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 #
@@ -41,8 +42,12 @@ func ajustapeso # Ajuda peso e volume
   listaitem item
   uint32 soma1
   uint32 soma2
-  item = dentro.ini
   soma = peso
+  item = dentro1.ini
+  enquanto item
+    soma1 += item.obj.pesotot, soma2 += item.obj.voltot, item.depois
+  efim
+  item = dentro2.ini
   enquanto item
     soma1 += item.obj.pesotot, soma2 += item.obj.voltot, item.depois
   efim
@@ -83,7 +88,11 @@ varfunc dono # O dono do personagem/item
   se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
     ibitev.remove, ibitev = arg0.evento.addfim(este)
   fimse
-  idono = arg0.dentro.addini(este) # Adiciona na sala
+  se perso
+    idono = arg0.dentro2.addini(este) # Adiciona personagem
+  senao
+    idono = arg0.dentro1.addini(este) # Adiciona item
+  fimse
   !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
   idono.objlista.mudavol(voltot) # Coloca o volume
   jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
@@ -132,7 +141,7 @@ func itemnome # Procura um item pelo nome
   listaitem i # Para procurar os itens
   i = arg0.ini
   enquanto i
-    se !(~bitver & i.obj.bitinv) && n.nome(i.obj.ident)
+    se visivel(i.obj) && n.nome(i.obj.ident)
       i.depois
     senao
       i.removedepois
@@ -140,7 +149,7 @@ func itemnome # Procura um item pelo nome
   efim
 
 
-classe perso
+classe comum_perso
 herda comum_dentro, comum_fora
 # Personagens
 
@@ -285,11 +294,24 @@ func msginv # Mensagem mesmo se o alvo estiver invisível
     $mens.proc(arg0, este)
 
 
-classe i_borracha
+classe comum_item
 herda comum_fora
+# Itens
+
+const bitinv = 3 # Grau de invisibilidade do personagem/item
 const item = 1 # Para identificar que é item
+const sexo = 0 # Sexo: 0=feminino, 1=masculino
+const nome = "item"
+const descpos = txtmaimin(nome) + " está aqui."
+const descver = "Você não vê nada de especial."
+uint32 vestpos # Em que posição está vestindo, 0=nenhuma
+
+
+classe i_borracha
+herda comum_item
 const nome = "borracha"
 const ident = "borracha"
 const sexo = 0
 const descpos = "Uma borracha está jogada aqui."
 const descver = "Você não vê nada de especial."
+const vestir = 8
