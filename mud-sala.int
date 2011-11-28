@@ -37,16 +37,8 @@ func ini # Inicializa variáveis
 
 func t_item_exec # Começar a apagar objetos
   se !jogtot && s_item # Se pode apagar itens
-    listaitem item
-    item = dentro.fim
-    enquanto item
-      se item.obj.item # Checa se é um item que pode apagar
-        apagar(item.obj)
-        t_item = 300 # 30 segundos para apagar o próximo
-        ret
-      fimse
-      item.antes
-    efim
+    apagar(dentro1.fim)
+    dentro1.ini && t_item = 300 # 30 segundos para apagar o próximo
 
 func entrou # Entrou na sala; arg0=objeto do jogador
 
@@ -69,10 +61,10 @@ func descsala # Retorna descrição da sala
   se arg1 & 4
     textotxt t2
     listaobj l
-    l.addfim(dentro)
+    l.addfim(dentro2, dentro1)
     l.remove(arg0)
     enquanto l
-      !(~arg0.bitver & l.ini.obj.bitinv) && t2.addfim("1 " + l.ini.obj.descpos)
+      arg0.visivel(l.ini.obj) && t2.addfim("1 " + l.ini.obj.descpos)
       l.ini.remove
     efim
     t2.juntalin("(", "x) ")

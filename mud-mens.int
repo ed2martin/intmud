@@ -14,7 +14,7 @@ func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
   se perso.dono.jogtot && arg0
     listaobj l0
-    l0.addfim(perso.dono.dentro)
+    l0.addfim(perso.dono.dentro2)
     enquanto l0
       l0.ini.obj.msginv(arg0), l0.ini.remove
     efim
@@ -25,7 +25,7 @@ func mtodos2 # Mensagem só para quem estiver acordado
     arg0 && perso.msginv(arg0)
     se arg1
       listaobj l0
-      l0.addfim(perso.dono.dentro)
+      l0.addfim(perso.dono.dentro2)
       l0.remove(perso)
       enquanto l0
         l0.ini.obj.msginv(arg1), l0.ini.remove
@@ -38,7 +38,7 @@ func mtodos3 # Mensagem só para quem estiver acordado
     arg1 && alvo.msginv(arg1)
     se arg2
       listaobj l0
-      l0.addfim(perso.dono.dentro)
+      l0.addfim(perso.dono.dentro2)
       l0.remove(perso, alvo)
       enquanto l0
         l0.ini.obj.msginv(arg2), l0.ini.remove
@@ -49,7 +49,7 @@ func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
   se perso.dono.jogtot && arg0
     perso.msginv(arg0)
     listaobj l0
-    l0.addfim(perso.dono.dentro)
+    l0.addfim(perso.dono.dentro2)
     l0.remove(perso)
     enquanto l0
       l0.ini.obj.msgvis(arg0), l0.ini.remove
@@ -61,7 +61,7 @@ func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
     arg0 && perso.msginv(arg0)
     se arg1
       listaobj l0
-      l0.addfim(perso.dono.dentro)
+      l0.addfim(perso.dono.dentro2)
       l0.remove(perso)
       enquanto l0
         l0.ini.obj.msgvis(arg1), l0.ini.remove
@@ -74,7 +74,7 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
     arg1 && alvo.msgvis(arg1)
     se arg2
       listaobj l0
-      l0.addfim(perso.dono.dentro)
+      l0.addfim(perso.dono.dentro2)
       l0.remove(perso, alvo)
       enquanto l0
         l0.ini.obj.msgvis(arg2), l0.ini.remove
