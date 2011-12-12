@@ -300,9 +300,9 @@ func com_csala # Criar sala
     msg("Tecle o nome da sala ou a direção após CSALA")
     ret 1
 # Criar sala em uma direção
-  senao comdir:d[arg0]
+  senao m_tab:d1[arg0]
     txt2 dir
-    dir = comdir:d[arg0]
+    dir = m_tab:d1[arg0]
 # Obtém prefixo da área
     nome = txt(perso.dono, 0, inttotal(txt(perso.dono)) - 3)
     se txt(nome, 0, 2) != "s_"
@@ -328,7 +328,7 @@ func com_csala # Criar sala
     nome2 = nome + txtfim(num, 3) + "\n" # Nome da classe
     nome2 += "aa" + txt(nome, 2) + "\n" # Nome do arquivo
     nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
-    nome2 += "const dir_" + comdir:o[dir] + "=$" + perso.dono # Saída da sala
+    nome2 += "const dir_" + m_tab:d2[dir] + "=$" + perso.dono # Saída da sala
     p.criar(nome2)
     p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
     p.salvar(config:progsalvar)
@@ -546,7 +546,7 @@ func com_lsai # Listar saídas
 func com_asai # Apagar saída
   prog p
   txt10 dir
-  dir = comdir:d[txt1(arg0)]
+  dir = m_tab:d1[txt1(arg0)]
   se !perso.dono
     msg("\bVocê não está em uma sala")
   senao !arg0
@@ -567,7 +567,7 @@ func com_asai # Apagar saída
 func com_csai # Criar saída
   prog p
   txt10 dir
-  dir = comdir:d[txt1(arg0)]
+  dir = m_tab:d1[txt1(arg0)]
   se !perso.dono
     msg("\bVocê não está em uma sala")
   senao !arg0
@@ -581,7 +581,7 @@ func com_csai # Criar saída
   senao
     p.criar(perso.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg0)))
     se arg1
-      p.criar("s_" + txt2(arg0), "const dir_" + comdir:o[dir] + "=$" + perso.dono)
+      p.criar("s_" + txt2(arg0), "const dir_" + m_tab:d2[dir] + "=$" + perso.dono)
       msg("\bSaída completa criada: " + dir + " para " + txtmin(txt2(arg0)))
     senao
       msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg0)))
@@ -595,7 +595,7 @@ const com_csai2 = com_csai(arg0, "2") # Criar saída completa
 func com_esai # Editar saída
   prog p
   txt10 dir
-  dir = comdir:d[txt1(arg0)]
+  dir = m_tab:d1[txt1(arg0)]
   se !perso.dono
     msg("\bVocê não está em uma sala")
   senao !arg0

@@ -1,0 +1,206 @@
+classe m_tab
+# Tabelas
+# Deve ser usado como m_tab:variável ao invés de $m_tab.variável
+#
+# Direções
+const d1n = "n"
+const d1s = "s"
+const d1l = "l"
+const d1o = "o"
+const d1c = "c"
+const d1b = "b"
+const d1e = "l"
+const d1w = "o"
+const d1u = "c"
+const d1d = "b"
+const d1ne = "ne"
+const d1no = "no"
+const d1se = "se"
+const d1so = "so"
+const d1nw = "no"
+const d1sw = "so"
+#
+# Direções opostas
+const d2n = "s"
+const d2s = "n"
+const d2l = "o"
+const d2o = "l"
+const d2c = "b"
+const d2b = "c"
+const d2e = "o"
+const d2w = "l"
+const d2u = "b"
+const d2d = "c"
+const d2ne = "so"
+const d2no = "se"
+const d2se = "no"
+const d2so = "ne"
+const d2nw = "se"
+const d2sw = "ne"
+#
+# Tipos de golpes e personagens
+# arg0 = número do golpe
+# retorna: 0=normal, 1=especial
+# Nota 1: a quantidade de tipos está um pouco exagerada
+# Nota 2: não necessariamente todos os tipos se aplicam a golpes e MOBs
+func atktipo
+  casovar arg0
+  casose "0" # contusão/normal (um golpe de pancada)
+  casose "1" # luta (um golpe de alguma arte marcial)
+  casose "2" # cortante (ex. faca)
+  casose "3" # perfurante (ex. flecha)
+    ret 0
+  casose "4" # fogo
+  casose "5" # água
+  casose "6" # gelo
+    ret 1
+  casose "7" # terra (ex. terremoto)
+  casose "8" # pedra (ex. atirar pedras)
+  casose "9" # ar/vento/aéreo (ex. furacão)
+    ret 0
+  casose "10" # luz
+  casose "11" # trevas
+  casose "12" # elétrico (ex. raio)
+  casose "13" # vegetal (ex. planta carnívora)
+  casose "14" # psíquico (ex. confusão)
+    ret 1
+  casose "15" # inseto
+  casose "16" # fantasma
+  casose "17" # dragão
+    ret 0
+  casofim
+  ret 0 # Tipo desconhecido: golpe normal
+#
+# Ajusta defesa conforme o tipo de personagem
+# somar 2 = dobra defesa
+# subtrair 2 = reduz defesa pela metade
+# 9 ou mais = imune ao tipo de golpe
+func def0 # Contusão/Normal
+  def.1 -= 2 # luta
+  def.2 -= 2 # cortante
+  def.3 -= 2 # perfurante
+  def.16 += 100 # fantasma
+func def1 # Luta
+  def.9 -= 2 # ar
+  def.8 += 2 # pedra
+  def.11 += 2 # trevas
+  def.15 += 2 # inseto
+func def2 # Cortante
+  def.4 -= 2 # fogo
+  def.5 -= 2 # água
+  def.12 -= 2 # eletricidade
+  def.6 += 2 # gelo
+  def.8 += 2 # pedra
+  def.11 += 2 # trevas
+func def3 # Perfurante
+  def.4 -= 2 # fogo
+  def.5 -= 2 # água
+  def.12 -= 2 # eletricidade
+  def.6 += 2 # gelo
+  def.8 += 2 # pedra
+  def.11 += 2 # trevas
+func def4 # Fogo
+  def.5 -= 2 # água
+  def.7 -= 2 # terra
+  def.8 -= 2 # pedra
+  def.4 += 2 # fogo
+  def.6 += 2 # gelo
+  def.13 += 2 # vegetal
+  def.15 += 2 # inseto
+func def5 # Água
+  def.12 -= 2 # elétrico
+  def.13 -= 2 # vegetal
+  def.4 += 2 # fogo
+  def.5 += 2 # água
+  def.6 += 2 # gelo
+func def6 # Gelo
+  def.1 -= 2 # luta
+  def.4 -= 2 # fogo
+  def.8 -= 2 # pedra
+  def.2 += 2 # cortante
+  def.3 += 2 # perfurante
+  def.6 += 2 # gelo
+func def7 # Terra
+  def.4 -= 2 # fogo
+  def.5 -= 2 # água
+  def.6 -= 2 # gelo
+  def.13 -= 2 # vegetal
+  def.8 += 2 # pedra
+  def.12 += 100 # elétrico
+func def8 # Pedra
+  def.1 -= 2 # luta
+  def.5 -= 2 # água
+  def.7 -= 2 # terra
+  def.13 -= 2 # vegetal
+  def.0 += 2 # contusão/normal
+  def.2 += 2 # cortante
+  def.3 += 2 # perfurante
+  def.4 += 2 # fogo
+  def.9 += 2 # ar
+func def9 # Ar
+  def.6 -= 2 # gelo
+  def.8 -= 2 # pedra
+  def.12 -= 2 # elétrico
+  def.1 += 2 # luta
+  def.13 += 2 # vegetal
+  def.15 += 2 # inseto
+  def.7 += 100 # terra
+func def10 # Luz
+  def.13 -= 2 # vegetal
+  def.16 -= 2 # fantasma
+  def.10 += 2 # luz
+  def.11 += 2 # trevas
+  def.14 += 100 # psíquico
+func def11 # Trevas
+  def.10 -= 2 # luz
+  def.11 -= 2 # trevas
+  def.16 -= 2 # fantasma
+  def.1 += 2 # luta
+  def.15 += 2 # inseto
+  def.14 += 100 # psíquico
+func def12 # Elétrico
+  def.7 -= 2 # terra
+  def.9 += 2 # ar
+  def.12 += 2 # elétrico
+func def13 # Vegetal
+  def.2 -= 2 # cortante
+  def.4 -= 2 # fogo
+  def.6 -= 2 # gelo
+  def.9 -= 2 # ar
+  def.15 -= 2 # inseto
+  def.5 += 2 # água
+  def.7 += 2 # terra
+  def.10 += 2 # luz
+  def.12 += 2 # elétrico
+  def.13 += 2 # vegetal
+func def14 # Psíquico
+  def.1 -= 2 # luta
+  def.11 -= 2 # trevas
+  def.14 -= 2 # psíquico
+  def.11 += 2 # trevas
+  def.15 += 2 # inseto
+  def.16 += 2 # fantasma
+func def15 # Inseto
+  def.4 -= 2 # fogo
+  def.9 -= 2 # ar
+  def.8 -= 2 # pedra
+  def.1 += 2 # luta
+  def.7 += 2 # terra
+  def.13 += 2 # vegetal
+func def16 # Fantasma
+  def.16 -= 2 # fantasma
+  def.10 -= 2 # luz
+  def.11 -= 2 # trevas
+  def.15 += 2 # inseto
+  def.0 += 100 # contusão/normal
+  def.1 += 100 # luta
+  def.2 += 100 # cortante
+  def.3 += 100 # perfurante
+func def17 # Dragão
+  def.6 -= 2 # gelo
+  def.17 -= 2 # dragão
+  def.3 += 2 # perfurante
+  def.4 += 2 # fogo
+  def.5 += 2 # água
+  def.12 += 2 # elétrico
+  def.13 += 2 # vegetal

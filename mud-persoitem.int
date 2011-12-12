@@ -64,6 +64,7 @@ sav listaobj evento # Objetos que recebem eventos desse
 sav listaitem idono # Uso interno: aonde o personagem ou item está
 sav listaitem ibitev # Uso interno: para receber eventos
 uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
+const bitinv = 3 # Grau de invisibilidade do personagem/item
 #
 const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
 const pesotot = pesoobj # Peso total
@@ -153,9 +154,9 @@ classe comum_perso
 herda comum_dentro, comum_fora
 # Personagens
 
-sav uint8 bitver # O que o personagem/item pode ver
-const bitinv = 3 # Grau de invisibilidade do personagem/item
-
+uint8 bitver # O que o personagem/item pode ver
+uint8 bitinv # Grau de invisibilidade do personagem/item
+#
 const perso = 1 # Para identificar que é personagem
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
@@ -163,6 +164,32 @@ ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const sexo = 0 # Sexo: 0=feminino, 1=masculino
 #sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint32 moedas # Quantas moedas está carregando
+#
+const expmax = nivel*nivel*nivel+20 # Experiência para subir de nível
+sav uint16 nivel # Nível atual
+sav uint32 exp # Experiência atual
+sav uint16 vida  # Pontos de vida
+sav uint16 mana # Pontos de mana
+sav uint16 move # Pontos de movimento
+uint16 vidamax # Quantidade máxima de vida
+uint16 manamax # Quantidade máxima de mana
+uint16 movemax # Quantidade máxima de movimento
+uint16 veloc # Velocidade do personagem
+uint16 atknorm # Quantidade de ataque normal
+uint16 defnorm # Quantidade de defesa normal
+uint16 atkmag # Quantidade de ataque mágico/especial
+uint16 defmag # Quantidade de defesa mágica/especial
+uint16 evasao # Habilidade de desviar dos golpes (thac0)
+uint16 precisao # Habilidade de acertar os golpes (hitroll)
+const tipo1 = 0 # Tipo de personagem, vide função m_tab:atktipo
+const tipo2 = 18 # Segundo tipo do personagem, ou 18 se nenhum
+int8 deftipo.18
+# Defesa contra os diversos tipos de danos
+# Vide função m_tab:atktipo
+# somar 2 = dobra defesa
+# subtrair 2 = reduz defesa pela metade
+# 9 ou mais = imune ao tipo de golpe
+#
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
@@ -171,8 +198,11 @@ textotxt p_comandos # Comandos em espera para serem processados
 inttempo p_espera # Tempo de espera para o próximo comando
 
 func ini # Objeto foi criado
-  bitver = 3
   posic = pospadrao
+  ajustavar
+  vida = vidamax
+  mana = manamax
+  move = movemax
 
 func fim # Objeto foi apagado
   ref r
@@ -190,7 +220,7 @@ func fim # Objeto foi apagado
   casofim
 
 func descpos
-  casovar posic
+  casovar posicao
   casose "0"
     ret txtmaimin(nome) + " jás aqui."
   casose "1"
@@ -239,9 +269,26 @@ func teclouproc # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
   prog p # Para procurar o objeto
-  p.inifunc("com_exec", "c_" + txt1(arg0))
+  txt512 comando
+  comando = txtremove(arg0, "SA")
+  casovar txtmin(txt1(comando))
+  casose ""
+    msg("O quê?")
+    ret
+  casose "m"
+  casose "ma"
+  casose "mag"
+  casose "magi"
+  casose "magia"
+    p.iniclasse("com_magia_" + txtsub(comando, 1, 1))
+    comando = txtsub(comando, 2)
+    sair
+  casose
+    p.iniclasse("com_" + txt1(comando))
+    comando = txt2(comando)
+  casofim
   enquanto p.lin
-    obj = com_exec:[p.texto]
+    obj = $[p.texto]
     se obj.pode(este, arg0) && nivel >= obj.nivel
       sair
     fimse
@@ -251,7 +298,7 @@ func teclouproc # Processa comando (arg0=comando)
   se !p.lin
     msg("O quê?")
   senão posic >= obj.posic
-    obj.exec(este, txt1(arg0), txt2(arg0))
+    obj.exec(este, arg0, comando)
   senão
     casovar posic
     casose "0" Morto
@@ -285,6 +332,32 @@ func mudasala # Coloca personagem em outra sala (arg0 = sala)
   sock && msg2(dono.descsala(este, 7))
   dono.entrou(este)
 
+func ajustavar # Ajusta variáveis, principalmente batalha
+# Acerta atributos básicos
+  bitver = 1
+  bitinv = 3
+  vidamax = nivel * 2 + 25
+  veloc = nivel + 50
+  manamax = nivel + 30
+  movemax = nivel * 2 + 30
+  atknorm = nivel * 4 + 40
+  defnorm = nivel * 5 + 40
+  atkmag = nivel * 4 + 50
+  defmag = nivel * 5 + 50
+  evasao = nivel * 2 + 30
+  precisao = nivel * 2 + 30
+# Acerta diversos tipos de defesa
+  deftipo.limpar # Todas as defesas em 100%
+  m_tab:def[tipo1] # Acerta defesa conforme o primeiro tipo
+  m_tab:def[tipo2] # Acerta defesa conforme o segundo tipo
+# Atributos do que está vestindo e do que está afetando o personagem
+  listaitem item
+  item = dentro2.ini
+  enquanto item
+    item.obj.ajustaperso(este)
+    item.depois
+  efim
+
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se sock && posic > 4 && visivel($mens.perso) # Se tem jogador e está acordado
       $mens.proc(arg0, este)
@@ -292,7 +365,6 @@ func msgvis # Mensagem se o jogador estiver vendo o alvo
 func msginv # Mensagem mesmo se o alvo estiver invisível
   se sock && posic > 4 && visivel($mens.perso) # Se tem jogador e está acordado
     $mens.proc(arg0, este)
-
 
 classe comum_item
 herda comum_fora

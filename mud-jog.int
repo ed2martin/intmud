@@ -285,9 +285,6 @@ indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 sav int1 sexo # Sexo: 0=feminino, 1=masculino
-sav uint16 nivel # Nível atual do jogador; 0 se estiver entrando no jogo
-sav uint8 bitver # O que o personagem pode ver
-sav uint8 bitinv # Grau de invisibilidade do personagem
 sav uint8 canais # Para salvar sock.canais
 inttempo salaev # Para gerar eventos "entrou" na sala
 uint32 salaev2 # salaev2-salaev = Quanto tempo faz que entrou na sala
@@ -300,8 +297,7 @@ inttempo salvarev # Para salvar o jogo de tempos em tempos
 
 func ini # Objeto foi criado
   nivel = 1
-  posicao = 8
-  bitver = 3
+  perso:ini
 
 func fim # Objeto foi apagado
   salvar
