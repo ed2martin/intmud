@@ -4,6 +4,8 @@ Classes:
 a_<nome da área>  Definições das áreas
 b_<nome da área>  Contém as propriedades herdadas pelas salas da área
 s_<nome da sala>  Uma sala
+com_<nome do comando>  Executa um comando; vide classe com2_comum
+com_magia_<nome da magia>  Executa uma magia
 
 Classe jogsock:
 É responsável pela comunicação com o usuário
@@ -213,29 +215,31 @@ const vestir = 0
 Em que lugar do corpo vai quando é vestido:
 0 = não pode vestir
 somar 1 = usar como luz
-somar 2 = empunhar (arma)
-somar 4 = escudo
-somar 8 = na cabeça
-somar 16 = no pescoço
-somar 32 = no corpo
-somar 64 = sobre o corpo
-somar 128 = nas costas
-somar 256 = na cintura
-somar 512 = nas pernas
-somar 1024 = calçando
-somar 2048 = nos braços
-somar 4096 = no pulso
-somar 8192 = nas mãos
-somar 16384 = no dedo
-somar 32768 = sobre o rosto
-somar 65536 = nas orelhas
-somar 131072 = nos olhos
+somar 2 = na cabeça
+somar 4 = sobre o rosto
+somar 8 = nos olhos
+somar 16 = nas orelhas
+somar 32 = no pescoço
+somar 64 = no corpo
+somar 128 = sobre o corpo
+somar 256 = nas costas
+somar 512 = nos braços
+somar 1024 = nas mãos
+somar 2048 = no pulso direito
+somar 4096 = no pulso esquerdo
+somar 8192 = no dedo direito
+somar 16384 = no dedo esquerdo
+somar 32768 = empunhar (arma)
+somar 65536 = escudo
+somar 131072 = na cintura
+somar 262144 = nas pernas
+somar 524288 = calçando
 
 uint32 vestpos
 Em que posição está vestindo
 0 = não está vestindo
 1 = como luz
-2 = como escudo
-3 = na cabeça
-4 = no pescoço
+2 = na cabeça
+3 = sobre o rosto
+4 = nos olhos
 Etc. Vide vestir (acima)

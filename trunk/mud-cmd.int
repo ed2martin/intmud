@@ -1,83 +1,4 @@
-classe com_exec
-# Contém os objetos que tratam cada comando
-# Vide classe com_comum, abaixo
-const c_ = $com_vazio # Não digitou nada
-#const c_m = $com_mais
-# Direções
-const c_n = $com_move_norte
-const c_s = $com_move_sul
-const c_l = $com_move_leste
-const c_o = $com_move_oeste
-const c_c = $com_move_cima
-const c_b = $com_move_baixo
-const c_e = $com_move_leste
-const c_w = $com_move_oeste
-const c_u = $com_move_cima
-const c_d = $com_move_baixo
-const c_ne = $com_move_nordeste
-const c_no = $com_move_noroeste
-const c_se = $com_move_sudeste
-const c_so = $com_move_sudoeste
-const c_nw = $com_move_noroeste
-const c_sw = $com_move_sudoeste
-# Outros
-const c_a = $com_ajuda
-const c_abrir = $com_abrir
-const c_ajuda = $com_ajuda
-const c_chat = $com_chat
-const c_falar = $com_falar
-const c_fechar = $com_fechar
-const c_inv = $com_inv
-const c_pegar = $com_pegar
-const c_soltar = $com_soltar
-const c_quem = $com_quem
-const c_quit = $com_fim
-const c_equip = $com_equip
-const c_vestir = $com_vestir
-const c_remover = $com_remover
-const c_fim = $com_fim
-const c_ver = $com_ver
-const c_data = $com_hora
-const c_hora = $com_hora
-#const c_db = $com_debug
-
-classe comdir
-# Direções
-const dn = "n"
-const ds = "s"
-const dl = "l"
-const do = "o"
-const dc = "c"
-const db = "b"
-const de = "l"
-const dw = "o"
-const du = "c"
-const dd = "b"
-const dne = "ne"
-const dno = "no"
-const dse = "se"
-const dso = "so"
-const dnw = "no"
-const dsw = "so"
-# Direções opostas
-const on = "s"
-const os = "n"
-const ol = "o"
-const oo = "l"
-const oc = "b"
-const ob = "c"
-const oe = "o"
-const ow = "l"
-const ou = "b"
-const od = "c"
-const one = "so"
-const ono = "se"
-const ose = "no"
-const oso = "ne"
-const onw = "se"
-const osw = "ne"
-
-classe com_comum
+classe com2_comum
 const nivel = 1 # Nível mínimo para usar o comando
 const posic = 8 # Posição mínima para usar o comando
 const pode = 1 # Se comando existe para o personagem (arg0=personagem, arg1=texto)
@@ -88,16 +9,8 @@ func exec # Executa o comando
 # arg2=texto após o comando
   arg0.msg("Você digitou " + arg1 + " " + arg2)
 
-classe com_vazio
-const nivel = 0
-const posic = 0
-const pode = 1
-const iniclasse = criar(arg0) # Cria um objeto do comando
-func exec # Executa o comando
-  arg0.msg("O que?")
-
-classe com_move
-herda com_comum
+classe com2_move
+herda com2_comum
 # Movimenta-se em uma direção
 const iniclasse = criar(arg0)
 
@@ -124,51 +37,66 @@ func exec1 # Executa o comando
     arg0.mudasala(s1.dir_[arg1])
     $mens.mvis2("", "$P chegou " + arg3)
 
-classe com_move_norte
-herda com_move
+classe com_n
+herda com2_move
 const exec = exec1(arg0, "n", "para o norte.", "do sul.")
 
-classe com_move_sul
-herda com_move
+classe com_s
+herda com2_move
 const exec = exec1(arg0, "s", "para o sul.", "do norte.")
 
-classe com_move_leste
-herda com_move
+classe com_l
+herda com2_move
 const exec = exec1(arg0, "l", "para o leste.", "do oeste.")
 
-classe com_move_oeste
-herda com_move
+classe com_o
+herda com2_move
 const exec = exec1(arg0, "o", "para o oeste.", "do leste.")
 
-classe com_move_cima
-herda com_move
+classe com_w
+herda com_o
+
+classe com_c
+herda com2_move
 const exec = exec1(arg0, "c", "para cima.", "de baixo.")
 
-classe com_move_baixo
-herda com_move
+classe com_u
+herda com_c
+
+classe com_b
+herda com2_move
 const exec = exec1(arg0, "b", "para baixo.", "de cima.")
 
-classe com_move_nordeste
-herda com_move
+classe com_d
+herda com_b
+
+classe com_ne
+herda com2_move
 const exec = exec1(arg0, "ne", "para o nordeste.", "do noroeste.")
 
-classe com_move_noroeste
-herda com_move
+classe com_no
+herda com2_move
 const exec = exec1(arg0, "no", "para o noroeste.", "do nordeste.")
 
-classe com_move_sudeste
-herda com_move
+classe com_nw
+herda com_no
+
+classe com_se
+herda com2_move
 const exec = exec1(arg0, "se", "para o sudeste.", "do sudoeste.")
 
-classe com_move_sudoeste
-herda com_move
+classe com_so
+herda com2_move
 const exec = exec1(arg0, "so", "para o sudoeste.", "do sudeste.")
 
+classe com_sw
+herda com_so
+
 classe com_abrir
-herda com_comum
+herda com2_comum
 func exec
   txt10 dir
-  dir = comdir:d[arg2]
+  dir = m_tab:d1[arg2]
   se arg0 == ""
     arg0.msg("Abrir o que?")
   senao dir
@@ -196,10 +124,10 @@ func exec
     arg0.msg("Não foi possível abrir " + arg2 + ".")
 
 classe com_fechar
-herda com_comum
+herda com2_comum
 func exec
   txt10 dir
-  dir = comdir:d[arg2]
+  dir = m_tab:d1[arg2]
   se arg0 == ""
     msg("Abrir o que?")
   senao dir
@@ -225,7 +153,7 @@ func exec
     arg0.msg("Não foi possível fechar " + arg2 + ".")
 
 classe com_falar
-herda com_comum
+herda com2_comum
 const posic = 5
 func exec
   $mens.p(arg0)
@@ -248,7 +176,7 @@ func exec
   efim
 
 classe com_chat
-herda com_comum
+herda com2_comum
 const posic = 0
 func exec
   $mens.p(arg0)
@@ -270,7 +198,7 @@ func exec
     efim
 
 classe com_quem
-herda com_comum
+herda com2_comum
 const posic = 0
 func exec
   listaitem item
@@ -295,14 +223,17 @@ func exec
   efim
 
 classe com_fim
-herda com_comum
+herda com2_comum
 const posic = 0
 func exec
   arg0.msg("Até mais. Aguardamos o seu retorno.")
   apagar(arg0)
 
+classe com_quit
+herda com_fim
+
 classe com_ver
-herda com_comum
+herda com2_comum
 const posic = 5
 func exec
   se !arg2
@@ -321,7 +252,7 @@ func exec
   ret
 
 classe com_inv
-herda com_comum
+herda com2_comum
 const posic = 5
 func exec
   textotxt t
@@ -339,7 +270,7 @@ func exec
   fimse
 
 classe com_equip
-herda com_comum
+herda com2_comum
 const posic = 5
 func exec
   textotxt t
@@ -362,45 +293,49 @@ func equip
   casose "1"
     ret "como luz"
   casose "2"
-    ret "empunhando"
-  casose "3"
-    ret "escudo"
-  casose "4"
     ret "na cabeça"
-  casose "5"
-    ret "no pescoço"
-  casose "6"
-    ret "no corpo"
-  casose "7"
-    ret "sobre o corpo"
-  casose "8"
-    ret "nas costas"
-  casose "9"
-    ret "na cintura"
-  casose "10"
-    ret "nas pernas"
-  casose "11"
-    ret "calçando"
-  casose "12"
-    ret "nos braços"
-  casose "13"
-    ret "no pulso"
-  casose "14"
-    ret "nas mãos"
-  casose "15"
-    ret "no dedo"
-  casose "16"
+  casose "3"
     ret "sobre o rosto"
-  casose "17"
-    ret "nas orelhas"
-  casose "18"
+  casose "4"
     ret "nos olhos"
+  casose "5"
+    ret "nas orelhas"
+  casose "6"
+    ret "no pescoço"
+  casose "7"
+    ret "no corpo"
+  casose "8"
+    ret "sobre o corpo"
+  casose "9"
+    ret "nas costas"
+  casose "10"
+    ret "nos braços"
+  casose "11"
+    ret "nas mãos"
+  casose "12"
+    ret "no pulso direito"
+  casose "13"
+    ret "no pulso esquerdo"
+  casose "14"
+    ret "no dedo direito"
+  casose "15"
+    ret "no dedo esquerdo"
+  casose "16"
+    ret "empunhando"
+  casose "17"
+    ret "escudo"
+  casose "18"
+    ret "na cintura"
+  casose "19"
+    ret "nas pernas"
+  casose "20"
+    ret "calçando"
   casose
     ret "desconhecido"
   casofim
 
 classe com_pegar
-herda com_comum
+herda com2_comum
 func exec
   se !arg2
     arg0.msg("Pegar o que?")
@@ -421,7 +356,7 @@ func exec
   efim
 
 classe com_soltar
-herda com_comum
+herda com2_comum
 func exec
   se !arg2
     arg0.msg("Soltar o que?")
@@ -442,7 +377,7 @@ func exec
   efim
 
 classe com_vestir
-herda com_comum
+herda com2_comum
 func exec
   se !arg2
     arg0.msg("Vestir o que?")
@@ -464,34 +399,38 @@ func exec
     vest = vest | (1 << item.obj.vestpos)
     item.depois
   efim
-  vest = ~(vest >> 1)
+  vest = vest >> 1
 # Tenta vestir
+  int1 ajustar
   enquanto l
     ref r
     r = l.ini.obj
-    se (vest & r.vestir) == 0
+    se (~vest & r.vestir) == 0
       arg0.msg("Você não consegue vestir " + r.nome)
     senao
       uint32 x
-      x = vest & r.vestir
+      x = ~vest & r.vestir
       r.vestpos = 0
-      !(x & 65535) && (x >> 16) + (r.vestpos += 16)
-      !(x & 255) && (x >> 8) + (r.vestpos += 8)
-      !(x & 15) && (x >> 4) + (r.vestpos += 4)
-      !(x & 3) && (x >> 2) + (r.vestpos += 2)
-      !(x & 1) && (x >> 1) + (r.vestpos += 1)
+      !(x & 65535) && (x = x >> 16) + (r.vestpos += 16)
+      !(x & 255) && (x = x >> 8) + (r.vestpos += 8)
+      !(x & 15) && (x = x >> 4) + (r.vestpos += 4)
+      !(x & 3) && (x = x >> 2) + (r.vestpos += 2)
+      !(x & 1) && (x = x >> 1) + (r.vestpos += 1)
       vest = vest | (1 << r.vestpos)
       r.vestpos += 1
       r.idono.remove
       r.idono = arg0.dentro2.addini(r)
       $mens.p(arg0, r)
       $mens.mvis1("$P veste $r $a.")
+      ajustar = 1
     fimse
     l.ini.remove
   efim
+# Ajusta variáveis
+  ajustar && arg0.ajustavar
 
 classe com_remover
-herda com_comum
+herda com2_comum
 func exec
   se !arg2
     arg0.msg("Remover o que?")
@@ -505,19 +444,22 @@ func exec
     arg0.msg("Você não está usando isso.")
     ret
   fimse
+  int1 ajustar
   enquanto l
     r = l.ini.obj
     r.idono.remove
     r.idono = arg0.dentro1.addini(r)
     r.vestpos = 0
     $mens.p(arg0, r)
-    $mens.mvis1("$P remove $r $a.")
+    $mens.mvis1("$P remove $r.")
     l.ini.remove
+    ajustar = 1
   efim
-
+# Ajusta variáveis
+  ajustar && arg0.ajustavar
 
 classe com_hora
-herda com_comum
+herda com2_comum
 const posic = 0
 func exec
   datahora d
@@ -525,9 +467,8 @@ func exec
   arg0.msg("Hora atual MUD:      " + $jogcomum.hora + ":" + $jogcomum.min)
   arg0.msg("Hora atual servidor: " + d.hora + ":" + d.min)
 
-
-classe com_debug
-herda com_comum
+classe com2_debug
+herda com2_comum
 const posic = 0
 func exec
   arg0.msg("Sala: " + arg0.dono)
@@ -557,3 +498,133 @@ func exec
     arg0.msg("> " + r.nome + " (" + r.sock.nome + ")")
     r = objdepois(r)
   efim
+
+classe com2_golpe
+herda com2_comum
+const posic = 7
+#
+const tipo = 0 # Tipo de golpe
+const precisao = 100 # Precisão do golpe, 100 significa 100%
+const forca = 100 # Força do golpe, 100 significa 100%
+const veloc = 100 # Velocidade do golpe, 100 significa 100%
+
+func velgolpe # Acerta o tempo de espera conforme o golpe
+# arg0 = personagem que está atacando
+# arg1 = personagem alvo
+  uint8 tempo
+  tempo = 10 + arg0.veloc * veloc / (arg1.veloc * 30)
+  tempo > 50 && (tempo = 50)
+  arg0.p_espera = tempo
+
+func execgolpe # Realiza um ataque
+# arg0 = personagem que está atacando
+# arg1 = personagem alvo
+# arg2,arg3 = ataque mínimo e máximo da arma usada no golpe
+# Retorna: 0=errou, 1=sem efeito, 2=pouco efetivo, 3=normal, 4=muito efetivo
+  real dano
+# Checa se acertou o alvo
+  dano = rand(1, 20)
+  se dano == 20 || arg1.posicao == 4 # Acertou automaticamente
+  senao dano == 1 # Errou o alvo automaticamente
+    ret 0
+  senao # Checa se acertou
+    dano += precisao * arg0.precisao / 100 - arg1.evasao
+    !arg0.visivel(arg1) && (dano -= 5) # Invisível é mais difícil de acertar
+    se dano <= 0
+      ret 0
+    fimse
+  fimse
+# Calcula dano sem modificadores
+  se m_tab:aktipo(tipo) # Checa se golpe normal ou especial
+    dano = arg0.atkmag * forca / (arg1.defmag * 9000)
+  senao
+    dano = arg0.atknorm * forca / (arg1.defnorm * 9000)
+  fimse
+  dano = pos(dano + arg0.nivel - arg1.nivel) # Adiciona diferença de níveis
+  dano += rand(arg2, arg3) # Adiciona ataque da arma
+# Modificadores de posição
+  casovar arg1.posicao
+  casose "0" # Morto
+  casose "1" # Mortalmente ferido
+  casose "2" # Incapacitado
+    dano *= 2.666
+    sair
+  casose "3" # Muito fraco
+    dano *= 2.333
+    sair
+  casose "4" # dormindo
+    dano *= 2
+    sair
+  casose "5" # descansando
+    dano *= 1.666
+    sair
+  casose "6" # sentado
+    dano *= 1.333
+    sair
+  casofim
+# Modificadores de tipo de golpe
+  int8 rettipo
+  rettipo = arg1.deftipo[tipo]
+  casovar rettipo
+  casose "-8"
+    rettipo = 4, dano *= 16
+    sair
+  casose "-7"
+    rettipo = 4, dano *= 11.2
+    sair
+  casose "-6"
+    rettipo = 4, dano *= 8
+    sair
+  casose "-5"
+    rettipo = 4, dano *= 5.6
+    sair
+  casose "-4"
+    rettipo = 4, dano *= 4
+    sair
+  casose "-3"
+    rettipo = 4, dano *= 2.8
+    sair
+  casose "-2"
+    rettipo = 4, dano *= 2
+    sair
+  casose "-1"
+    rettipo = 3, dano *= 1.4
+    sair
+  casose "0"
+    rettipo = 3
+    sair
+  casose "1"
+    rettipo = 3, dano /= 1.4
+    sair
+  casose "2"
+    rettipo = 3, dano /= 2
+    sair
+  casose "3"
+    rettipo = 2, dano /= 2.8
+    sair
+  casose "4"
+    rettipo = 2, dano /= 4
+    sair
+  casose "5"
+    rettipo = 2, dano /= 5.6
+    sair
+  casose "6"
+    rettipo = 2, dano /= 8
+    sair
+  casose "7"
+    rettipo = 2, dano /= 11.2
+    sair
+  casose "8"
+    rettipo = 2, dano /= 16
+    sair
+  casose
+    se rettipo < 0
+      rettipo = 4, dano *= 16 # Danos demais
+    senao
+      rettipo = 1, dano = 0 # Imune ao ataque
+    fim
+  casofim
+# Atualiza pontos de vida conforme os danos
+  dano < 1 && (dano = 1) # Pelo menos 1 de dano
+  arg1.vida -= dano
+  ret rettipo
