@@ -36,6 +36,9 @@ func exec1 # Executa o comando
     $mens.mvis2("", "$P foi " + arg2)
     arg0.mudasala(s1.dir_[arg1])
     $mens.mvis2("", "$P chegou " + arg3)
+    se arg0.dono.s_morre
+      arg0.morreu
+
 
 classe com_n
 herda com2_move
@@ -499,21 +502,58 @@ func exec
     r = objdepois(r)
   efim
 
+classe com_info
+herda com2_comum
+const posic = 0
+func exec
+  txt100 lin
+  lin = "vida " + arg0.vida + "/" + arg0.vidamax
+  lin += "  mana " + arg0.mana + "/" + arg0.manamax
+  lin += "  vigor " + arg0.move + "/" + arg0.movemax
+  lin += "  nível " + arg0.nivel
+  lin += "  experiência " + arg0.exp + "/" + arg0.expmax
+  arg0.msg(lin)
+
 classe com2_golpe
 herda com2_comum
 const posic = 7
-#
 const tipo = 0 # Tipo de golpe
 const precisao = 100 # Precisão do golpe, 100 significa 100%
 const forca = 100 # Força do golpe, 100 significa 100%
 const veloc = 100 # Velocidade do golpe, 100 significa 100%
+const msgatk = "$P ataca $A"
+
+func exec
+  se arg0.batalhaini(arg2) # Inicia batalha
+    txt200 msg1
+    velgolpe(arg0, arg0.b_alvo) # Tempo do golpe
+    msg1 = execgolpe(arg0, arg0.b_alvo, 1, 3) # Danos do golpe
+    $mens.p(arg0, arg0.b_alvo)
+    $mens.mvis1(msgatk + ", " + arg0.b_alvo.vida + " " + msgefeito(msg1))
+    arg0.batalhadepois # Procedimentos depois que atacou
+
+func msgefeito
+  casovar arg0
+  casose "0"
+    ret " errou"
+  casose "1"
+    ret " nada acontece"
+  casose "2"
+    ret " pouco efeito"
+  casose "3"
+    ret ""
+  casose "4"
+    ret " muito efeito"
+  casofim
 
 func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
   uint8 tempo
-  tempo = 10 + arg0.veloc * veloc / (arg1.veloc * 30)
-  tempo > 50 && (tempo = 50)
+  # Se velocidades dos MOBs iguais e velocidade do golpe=100, tempo=25
+  tempo = 10 + arg1.veloc * 1500 / (arg1.veloc * veloc + 1)
+  tempo < 5 && (tempo = 5)
+  tempo > 60 && (tempo = 60)
   arg0.p_espera = tempo
 
 func execgolpe # Realiza um ataque
@@ -628,3 +668,6 @@ func execgolpe # Realiza um ataque
   dano < 1 && (dano = 1) # Pelo menos 1 de dano
   arg1.vida -= dano
   ret rettipo
+
+classe com_atk
+herda com2_golpe
