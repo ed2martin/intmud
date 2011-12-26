@@ -715,7 +715,6 @@ bool Instr::ExecX()
         {
         case ex_fim:
         case ex_coment:
-            FuncAtual->expr = 0;
 #ifdef DEBUG_INSTR
             {
                 char mens[4096];
@@ -730,6 +729,7 @@ bool Instr::ExecX()
             {
             case cRet2:
             case cConstExpr:
+                FuncAtual->expr = 0;
                 switch (FuncAtual->tipo)
                 {
                 case 1: // Ler varfunc
@@ -761,13 +761,12 @@ bool Instr::ExecX()
             case cSe:
             case cSenao2:
                 {
+                    if (VarFuncIni(VarAtual))
+                        break;
+                    FuncAtual->expr = 0;
                     int desvio = 0;
-                    for (TVariavel * v=FuncAtual->fimvar; v<=VarAtual; v++)
-                        if (v->getBool()==false)
-                        {
-                            desvio = Num16(FuncAtual->linha + endVar);
-                            break;
-                        }
+                    if (VarAtual->getBool()==false)
+                        desvio = Num16(FuncAtual->linha + endVar);
                     ApagarVar(FuncAtual->fimvar);
                     if (desvio==0)
                     {
@@ -799,17 +798,17 @@ bool Instr::ExecX()
                     break;
                 }
             case cSenao1: // senão sem argumentos em modo debug
+                FuncAtual->expr = 0;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 break;
             case cEnquanto:
                 {
+                    if (VarFuncIni(VarAtual))
+                        break;
+                    FuncAtual->expr = 0;
                     int desvio = 0;
-                    for (TVariavel * v=FuncAtual->fimvar; v<=VarAtual; v++)
-                        if (v->getBool()==false)
-                        {
-                            desvio = Num16(FuncAtual->linha + endVar);
-                            break;
-                        }
+                    if (VarAtual->getBool()==false)
+                        desvio = Num16(FuncAtual->linha + endVar);
                     ApagarVar(FuncAtual->fimvar);
                     if (desvio==0)
                         FuncAtual->linha += Num16(FuncAtual->linha);
@@ -819,6 +818,9 @@ bool Instr::ExecX()
                 }
             case cCasoVar:
                 {
+                    if (VarFuncIni(VarAtual))
+                        break;
+                    FuncAtual->expr = 0;
                     if (FuncAtual->linha[endVar]==0 &&
                         FuncAtual->linha[endVar+1]==0)
                     {
@@ -857,6 +859,7 @@ bool Instr::ExecX()
                     break;
                 }
             default:
+                FuncAtual->expr = 0;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 ApagarVar(FuncAtual->fimvar);
             }

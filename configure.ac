@@ -26,7 +26,7 @@ AC_TRY_COMPILE(,[
 AC_MSG_RESULT(no),[
 AC_MSG_RESULT(yes)
 LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -mms-bitfields -mwindows"
-SKSTREAM_EXTRA_LIBS="$SKSTREAM_EXTRA_LIBS -lws2_32 -lwsock32"
+SKSTREAM_EXTRA_LIBS="$SKSTREAM_EXTRA_LIBS -lws2_32 -lwsock32 -static-libgcc -static-libstdc++"
 ])
 
 dnl from: http://fisheye.globus.org/browse/~raw,r=1.5/GlobusToolkit/ogsa-c/tools/libxml25/configure.in

@@ -190,7 +190,9 @@ int8 deftipo.18
 # subtrair 2 = reduz defesa pela metade
 # 9 ou mais = imune ao tipo de golpe
 #
-sav uint8 posicao # Posição do personagem
+inttempo b_tempo # Tempo para terminar a batalha
+ref b_alvo # Personagem alvo da batalha
+sav uint8 iposicao # Posição do personagem; usado internamente
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
 sav listaobj veste # Lista de objetos que está vestindo ou de magias afetando
@@ -198,7 +200,8 @@ textotxt p_comandos # Comandos em espera para serem processados
 inttempo p_espera # Tempo de espera para o próximo comando
 
 func ini # Objeto foi criado
-  posic = pospadrao
+  arg0 && (dono = arg0)
+  posicao = pospadr
   ajustavar
   vida = vidamax
   mana = manamax
@@ -218,6 +221,26 @@ func fim # Objeto foi apagado
   casose "b" # Como bot
     r.reinicia
   casofim
+
+varfunc posicao # Posição do personagem
+  se args # Altera posição
+    iposicao = arg0
+  senao # Lê posição
+    casovar vida * 100 / vidamax
+    casose "0"
+    casose "1"
+      ret vida != 0 # 0=morto, 1=mortalmente ferido
+    casose "2"
+      ret 2 # incapacitado
+    casose "3"
+      ret 3 # fraco
+    casose
+      se b_alvo
+        ret 7
+      senao
+        ret iposicao
+      fimse
+    casofim
 
 func descpos
   casovar posicao
@@ -255,6 +278,8 @@ func p_espera_exec # Pega o próximo comando
   se p_comandos.linhas
     p_espera = 2
     teclouproc(p_comandos.remove)
+  senao !sock
+    mob_exec
 
 func teclouproc # Processa comando (arg0=comando)
 # Executa eventos
@@ -280,6 +305,10 @@ func teclouproc # Processa comando (arg0=comando)
   casose "mag"
   casose "magi"
   casose "magia"
+    se dono.s_semmagia
+      msg("Você não consegue lançar magias aqui.")
+      ret
+    fimse
     p.iniclasse("com_magia_" + txtsub(comando, 1, 1))
     comando = txtsub(comando, 2)
     sair
@@ -297,10 +326,10 @@ func teclouproc # Processa comando (arg0=comando)
 # Executa comando
   se !p.lin
     msg("O quê?")
-  senão posic >= obj.posic
+  senão posicao >= obj.posic
     obj.exec(este, arg0, comando)
   senão
-    casovar posic
+    casovar posicao
     casose "0" Morto
       msg("\c9Você está morto!!!\b")
       sair
@@ -334,7 +363,7 @@ func mudasala # Coloca personagem em outra sala (arg0 = sala)
 
 func ajustavar # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
-  bitver = 1
+  bitver = 3
   bitinv = 3
   vidamax = nivel * 2 + 25
   veloc = nivel + 50
@@ -358,18 +387,92 @@ func ajustavar # Ajusta variáveis, principalmente batalha
     item.depois
   efim
 
+func batalhaini # Inicia batalha com outro personagem
+# arg0 = nome do alvo, ou "" se nenhum
+# retorna: verdadeiro se pode prosseguir com o golpe
+# Checa se é sala pacífica
+  se dono.s_pacifico
+    msg("Aqui é um lugar pacífico.")
+    b_alvo = nulo
+    b_tempo = 0
+    ret
+# Obtém o alvo
+  senao arg0 # Escolheu o alvo
+    listaobj l
+    ref r
+    l.addfim(dono.dentro2)
+    itemnome(l, arg0)
+    r = l.ini.obj
+    se !r
+      msg("Você não vê isso.")
+      ret
+    senao r == este
+      msg("Atacar a si mesmo?")
+      ret
+    senao r.p_pacifico
+      msg(r.nome + " é pacífic" + $mens.sexoA[r.sexo] + ".")
+      ret
+    fimse
+    b_alvo = r
+  senao !b_alvo # Atacar um alvo já definido
+    msg("Atacar quem?")
+    ret
+  senao b_alvo.dono != dono # Alvo está em outra sala
+    msg("Batalha encerrada.")
+    b_alvo = nulo
+    b_tempo = 0
+    ret
+  fimse
+# Indica que estão batalhando
+  b_tempo = 150 # Tempo da luta
+  b_alvo.b_tempo = 150 # Tempo da luta do outro personagem
+  !b_alvo.b_alvo && (b_alvo.b_alvo = este) # Alvo do outro personagem
+  b_alvo.p_espera == 0 && (b_alvo.p_espera = 1) # Para gerar evento de MOBs
+  ret 1
+
+func batalhadepois # Deve ser chamado depois que executou um golpe
+  se b_alvo
+    se b_alvo.vida == 0
+      b_alvo.morreu, b_alvo = nulo, b_tempo = 0
+    fimse
+    vida == 0 && morreu
+
+func b_tempo_exec # Encerra a batalha
+  se b_alvo
+    msg("Batalha encerrada.")
+    b_alvo = nulo, b_tempo = 0
+
+func morreu # Procedimentos quando morre
+  $mens.p(este)
+  $mens.mvis1("$P morreu.")
+  se jog
+    b_alvo = nulo
+    b_tempo = 0
+    vida = pos(vidamax/2 - 20) + 2
+    mana = manamax / 2
+    move = movemax / 2
+    mudasala(config:salafim)
+  senao
+    ref r
+    apagar(este)
+    r = sock, r.mudaperso(nulo)
+    r.reinicia
+
+func mob_exec # Somente MOBs, inteligência artificial do MOB
+  se b_alvo
+    teclou("atk")
+
 func msgvis # Mensagem se o jogador estiver vendo o alvo
-  se sock && posic > 4 && visivel($mens.perso) # Se tem jogador e está acordado
+  se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
       $mens.proc(arg0, este)
 
 func msginv # Mensagem mesmo se o alvo estiver invisível
-  se sock && posic > 4 && visivel($mens.perso) # Se tem jogador e está acordado
+  se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
     $mens.proc(arg0, este)
 
 classe comum_item
 herda comum_fora
 # Itens
-
 const bitinv = 3 # Grau de invisibilidade do personagem/item
 const item = 1 # Para identificar que é item
 const sexo = 0 # Sexo: 0=feminino, 1=masculino
@@ -377,6 +480,8 @@ const nome = "item"
 const descpos = txtmaimin(nome) + " está aqui."
 const descver = "Você não vê nada de especial."
 uint32 vestpos # Em que posição está vestindo, 0=nenhuma
+func ini # Objeto foi criado
+  arg0 && (dono = arg0)
 
 
 classe i_borracha
@@ -387,3 +492,12 @@ const sexo = 0
 const descpos = "Uma borracha está jogada aqui."
 const descver = "Você não vê nada de especial."
 const vestir = 8
+
+
+classe p_anao
+herda comum_perso
+const nome = "anão"
+const ident = "anão"
+const sexo = 1
+const descpos = "Um anão está aqui."
+const descver = "Você não vê nada de especial."

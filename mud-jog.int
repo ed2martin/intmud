@@ -43,6 +43,7 @@ inttempo vazio # Tempo sem comunicação para desconectar do MUD
 textotxt txtmais # Texto do tecle M para mais
 const admin = 1 # Se é administrador
 uint8 canais # Canais: +1 se recebe pvt, +2 se recebe chat
+txt512 ultimocom # Último comando digitado pelo usuário
 #
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -88,7 +89,8 @@ func recebe # Recebeu mensagem do jogador
   txtmais.limpar
   se !p_[passo](arg0) # Se não for uma função do passo
     se !admin || !com_[txt1(arg0)](txt2(arg0)) # Se não for comando de administração
-      perso.teclou(arg0) # Personagem processa comando
+      arg0 != "!" && (ultimocom = arg0)
+      perso.teclou(ultimocom) # Personagem processa comando
 
 func temposair # Acerta variáveis de tempo para sair do MUD
   casovar txt1(info)
@@ -297,7 +299,7 @@ inttempo salvarev # Para salvar o jogo de tempos em tempos
 
 func ini # Objeto foi criado
   nivel = 1
-  perso:ini
+  comum_perso:ini
 
 func fim # Objeto foi apagado
   salvar
