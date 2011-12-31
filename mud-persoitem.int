@@ -72,11 +72,6 @@ sav int1 ipesovoa # Uso interno: se está voando (peso total é zero)
 #
 const volobj = 1 # Volume do objeto
 const voltot = volobj # Volume total
-#
-const sletra0 = "a" # sletra[sexo] = "o" ou "a"
-const sletra1 = "o"
-const sum0 = "uma" # sum[sexo] = "um" ou "uma"
-const sum1 = "um"
 
 varfunc dono # O dono do personagem/item
   se !args # Nenhum argumento: leitura
@@ -168,7 +163,7 @@ sav uint32 moedas # Quantas moedas está carregando
 const expmax = nivel*nivel*nivel+20 # Experiência para subir de nível
 sav uint16 nivel # Nível atual
 sav uint32 exp # Experiência atual
-sav uint16 vida  # Pontos de vida
+sav uint16 ivida  # Pontos de vida; usado internamente (usar vida)
 sav uint16 mana # Pontos de mana
 sav uint16 move # Pontos de movimento
 uint16 vidamax # Quantidade máxima de vida
@@ -192,12 +187,13 @@ int8 deftipo.18
 #
 inttempo b_tempo # Tempo para terminar a batalha
 ref b_alvo # Personagem alvo da batalha
-sav uint8 iposicao # Posição do personagem; usado internamente
+sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
 sav listaobj veste # Lista de objetos que está vestindo ou de magias afetando
 textotxt p_comandos # Comandos em espera para serem processados
 inttempo p_espera # Tempo de espera para o próximo comando
+sav inttempo p_restaura # Para restaurar status de tempos em tempos
 
 func ini # Objeto foi criado
   arg0 && (dono = arg0)
@@ -206,6 +202,7 @@ func ini # Objeto foi criado
   vida = vidamax
   mana = manamax
   move = movemax
+  p_restaura = 100
 
 func fim # Objeto foi apagado
   ref r
@@ -222,24 +219,23 @@ func fim # Objeto foi apagado
     r.reinicia
   casofim
 
-varfunc posicao # Posição do personagem
-  se args # Altera posição
-    iposicao = arg0
-  senao # Lê posição
-    casovar vida * 100 / vidamax
+varfunc vida
+  se !args # Lê vida
+    ret ivida
+  senao # Altera vida
+    casovar (ivida = arg0) * 100 / vidamax
     casose "0"
     casose "1"
-      ret vida != 0 # 0=morto, 1=mortalmente ferido
+      posicao = (vida != 0) # 0=morto, 1=mortalmente ferido
+      ret
     casose "2"
-      ret 2 # incapacitado
+      posicao = 2 # incapacitado
+      ret
     casose "3"
-      ret 3 # fraco
+      posicao = 3 # fraco
+      ret
     casose
-      se b_alvo
-        ret 7
-      senao
-        ret iposicao
-      fimse
+      posicao < 4 && (posicao = pospadr)
     casofim
 
 func descpos
@@ -247,17 +243,17 @@ func descpos
   casose "0"
     ret txtmaimin(nome) + " jás aqui."
   casose "1"
-    ret txtmaimin(nome) + " está aqui mortalmente ferid" + sletra[sexo] + "."
+    ret txtmaimin(nome) + " está aqui mortalmente ferid" + m_tab:sletra[sexo] + "."
   casose "2"
-    ret txtmaimin(nome) + " está aqui incapacitad" + sletra[sexo] + "."
+    ret txtmaimin(nome) + " está aqui incapacitad" + m_tab:sletra[sexo] + "."
   casose "3"
-    ret txtmaimin(nome) + " está aqui, muito frac" + sletra[sexo] + "."
+    ret txtmaimin(nome) + " está aqui, muito frac" + m_tab:sletra[sexo] + "."
   casose "4"
     ret txtmaimin(nome) + " dorme aqui."
   casose "5"
     ret txtmaimin(nome) + " descansa aqui."
   casose "6"
-    ret txtmaimin(nome) + " está sentad" + sletra[sexo] + "."
+    ret txtmaimin(nome) + " está sentad" + m_tab:sletra[sexo] + "."
   casose "7"
     ret txtmaimin(nome) + " está lutando."
   casose "8"
@@ -266,12 +262,16 @@ func descpos
   ret txtmaimin(nome) + " está aqui."
 
 func teclou # Personagem teclou algum comando (arg0=comando)
-  se !p_espera
+  se !p_espera # Nenhum comando pendente
     p_espera = 2
     teclouproc(arg0)
-  senao p_comandos.bytes < 1024
+  senao b_tempo # Está batalhando
+    # p_comandos && msg("Feito, aguarde")
+    p_comandos.limpar
     p_comandos.addfim(arg0)
-  senao
+  senao p_comandos.bytes < 1024 # Não chegou ao limite de comandos
+    p_comandos.addfim(arg0)
+  senao # Chegou ao limite de comandos
     msg("Aguarde")
 
 func p_espera_exec # Pega o próximo comando
@@ -282,6 +282,8 @@ func p_espera_exec # Pega o próximo comando
     mob_exec
 
 func teclouproc # Processa comando (arg0=comando)
+# Encerra batalha se for o caso
+  b_tempo && b_alvo.dono != dono && batalhafim
 # Executa eventos
   listaobj l0
   l0.addfim(este, dono, este.eventos, dono.eventos)
@@ -419,11 +421,12 @@ func batalhaini # Inicia batalha com outro personagem
     ret
   senao b_alvo.dono != dono # Alvo está em outra sala
     msg("Batalha encerrada.")
-    b_alvo = nulo
-    b_tempo = 0
+    batalhafim
     ret
   fimse
 # Indica que estão batalhando
+  posicao >= 4 && (posicao = 7)
+  b_alvo.posicao >= 4 && (b_alvo.posicao = 7)
   b_tempo = 150 # Tempo da luta
   b_alvo.b_tempo = 150 # Tempo da luta do outro personagem
   !b_alvo.b_alvo && (b_alvo.b_alvo = este) # Alvo do outro personagem
@@ -431,32 +434,95 @@ func batalhaini # Inicia batalha com outro personagem
   ret 1
 
 func batalhadepois # Deve ser chamado depois que executou um golpe
-  se b_alvo
-    se b_alvo.vida == 0
-      b_alvo.morreu, b_alvo = nulo, b_tempo = 0
-    fimse
-    vida == 0 && morreu
+  b_alvo.vida == 0 && b_alvo.morreu + batalhafim
+  vida == 0 && b_alvo.batalhafim + morreu
 
-func b_tempo_exec # Encerra a batalha
-  se b_alvo
-    msg("Batalha encerrada.")
-    b_alvo = nulo, b_tempo = 0
+func batalhafim # Encerra a batalha
+  b_tempo && posicao == 7 && (posicao = pospadr)
+  b_alvo = nulo, b_tempo = 0
+
+func b_tempo_exec # Encerra a batalha depois de um tempo
+  b_alvo && msg("Batalha encerrada.")
+  posicao == 7 && (posicao = pospadr)
+  b_alvo = nulo, b_tempo = 0
 
 func morreu # Procedimentos quando morre
   $mens.p(este)
   $mens.mvis1("$P morreu.")
   se jog
-    b_alvo = nulo
-    b_tempo = 0
+    batalhafim
     vida = pos(vidamax/2 - 20) + 2
     mana = manamax / 2
     move = movemax / 2
+    p_restaura = rand(100, 130)
     mudasala(config:salafim)
+    salvar # Salva o jogo
   senao
     ref r
     apagar(este)
     r = sock, r.mudaperso(nulo)
     r.reinicia
+
+func p_restaura_exec # Restaura algumas variáveis
+  p_restaura = rand(100, 130)
+  se vida < vidamax
+    casovar posicao
+    casose "1" # Mortalmente ferido
+    casose "2" # Incapacitado
+      vida += 1
+      sair
+    casose "3" # Fraco
+      vida += 2
+      sair
+    casose "4" # Dormindo
+      vida += vidamax / 5 + 5
+      sair
+    casose "5" # Descansando
+      vida += vidamax / 10 + 3
+      sair
+    casose "6" # Sentado
+      vida += vidamax / 15 + 2
+      sair
+    casose "7" # Lutando
+    casose "8" # Em pé
+      vida += vidamax / 30 + 1
+    casofim
+    vida > vidamax && (vida = vidamax)
+  fimse
+  se mana < manamax
+    casovar posicao
+    casose "4" # Dormindo
+      mana += manamax / 5 + 5
+      sair
+    casose "5" # Descansando
+      mana += manamax / 10 + 3
+      sair
+    casose "6" # Sentado
+      mana += manamax / 15 + 2
+      sair
+    casose "7" # Lutando
+    casose "8" # Em pé
+      mana += manamax / 30 + 1
+    casofim
+    mana > manamax && (mana = manamax)
+  fimse
+  se move < movemax
+    casovar posicao
+    casose "4" # Dormindo
+      move += manamax / 5 + 5
+      sair
+    casose "5" # Descansando
+      move += manamax / 10 + 3
+      sair
+    casose "6" # Sentado
+      move += manamax / 15 + 2
+      sair
+    casose "7" # Lutando
+    casose "8" # Em pé
+      move += manamax / 30 + 1
+    casofim
+    move > movemax && (move = movemax)
+  fimse
 
 func mob_exec # Somente MOBs, inteligência artificial do MOB
   se b_alvo
