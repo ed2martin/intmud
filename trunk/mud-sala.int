@@ -115,6 +115,33 @@ func mudatipo # Muda estado de uma saída; variável tipo_[arg0]
   tipo_[arg0] = arg1
   ret 1
 
+func totalmove # Quantos movimentos consome, conforme o terreno
+  casovar int(s_terreno)
+  casose "0" # Dentro
+    ret 1
+  casose "1" # Rua de uma cidade
+    ret 1
+  casose "2" # Campo
+    ret 2
+  casose "3" # Pântano
+    ret 3
+  casose "4" # Floresta densa
+    ret 3
+  casose "5" # Colina
+    ret 4
+  casose "6" # Montanha
+    ret 6
+  casose "7" # Água pode nadar
+    ret 4
+  casose "8" # Água requer barco
+    ret 1
+  casose "9" # Em baixo d'água
+    ret 5
+  casose "10" # Ar
+    ret 1
+  casofim
+  ret 1
+
 #const s_titulo = descr0
 #const dir_l = dir_e
 #onst dir_o = dir_w

@@ -208,6 +208,43 @@ Posição do personagem:
 *const pospadr = 8
 Posição padrão do personagem
 
+
+*func teclou
+Chamado sempre que o personagem tecla algum comando (arg0=comando)
+
+*func p_espera_exec
+Pega o próximo comando da lista
+
+*func teclouproc
+Processa comando, sem espera (arg0=comando)
+
+*func mudasala
+Coloca personagem em outra sala (arg0 = sala)
+
+*func ajustavar
+Ajusta variáveis, principalmente batalha
+
+*func ajustapos
+Acerta posição do personagem, conforme pontos de vida e batalha
+
+*func batalhaini
+Inicia batalha com outro personagem
+Deve ser chamado para cada golpe ou comando agressivo
+arg0 = nome do alvo, ou "" se nenhum
+Retorna: verdadeiro se pode prosseguir com o golpe
+
+*func batalhadepois
+Deve ser chamado depois que executou um golpe
+
+*func batalhafim
+Encerra a batalha
+
+*func b_tempo_exec
+É chamado após algum tempo sem golpes, para encerrar a batalha
+
+*func morreu
+Executa procedimentos quando o personagem morre
+
 ----------------------------------------
 Itens
 

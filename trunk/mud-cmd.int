@@ -19,22 +19,33 @@ func exec1 # Executa o comando
 # arg1 = direção
 # arg2 = mensagem de saída
 # arg3 = mensagem de chegada
-  ref s1
-  s1 = arg0.dono
+  ref s1 # Sala aonde está
+  ref s2 # Sala para onde vai
   listaobj l0
   l0.addfim(arg0, arg0.dono, arg0.eventos, arg0.dono.eventos)
   enquanto l0 && !l0.ini.obj.evmover(arg0, arg1)
     l0.ini.remove
   efim
+  s1 = arg0.dono
+  s2 = s1.dir_[arg1]
   se l0 # Retorna se lista não estiver vazia
-  senao ref(s1.dir_[arg1]) == nulo
+  senao s2 == nulo
     arg0.msg("Impossível seguir nessa direção.")
   senão s1.tipo_[arg1] & 3 >= 2
     arg0.msg("A porta está fechada.")
-  senão
+  senao
+    uint8 total
+    total = s1.totalmove + s2.totalmove
+    se arg0.move < total
+      arg0.msg("Você está cansado demais.")
+      ret
+    fimse
+    arg0.move -= total / 2
+    total -= 1 # Para garantir pelo menos 2 movimentos (total é uint8)
+    arg0.p_espera = total * 2 + 2
     $mens.p(arg0)
     $mens.mvis2("", "$P foi " + arg2)
-    arg0.mudasala(s1.dir_[arg1])
+    arg0.mudasala(s2)
     $mens.mvis2("", "$P chegou " + arg3)
     se arg0.dono.s_morre
       arg0.morreu
@@ -229,8 +240,11 @@ classe com_fim
 herda com2_comum
 const posic = 0
 func exec
-  arg0.msg("Até mais. Aguardamos o seu retorno.")
-  apagar(arg0)
+  se arg0.b_tempo && arg0.senha
+    arg0.msg("Você está ocupad" + m_tab:sletra[arg0.sexo] + " demais para isso.")
+  senao
+    arg0.msg("Até mais. Aguardamos o seu retorno.")
+    apagar(arg0)
 
 classe com_quit
 herda com_fim

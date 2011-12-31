@@ -1,0 +1,715 @@
+*** Sobre este arquivo
+
+O objetivo deste tutorial é explicar os primeiros passos de como criar
+programas usando o IntMUD.
+
+
+*** Como editar programas
+
+O IntMUD é um interpretador de uma linguagem projetada principalmente
+para a criação de jogos do tipo MUD. Os programas são escritos em um
+editor de texto e salvos com o nome intmud.int. Depois, basta executar
+o arquivo intmud.exe para ver o resultado (o programa funcionando).
+
+É perfeitamente possível usar outros nomes. Por exemplo, se o arquivo
+intmud.exe for renomeado para xyz.exe, programa interpretado deverá estar
+no arquivo xyz.int.
+
+
+*** Editor de texto
+
+Prefira um editor de texto sem formatação (parágrafo, tipo de letra, etc.),
+como o Edivox ou o Bloco de notas. Se for usar um processador de texto,
+como o Wordpad, na hora de salvar escolha somente texto sem formatação.
+Evite o uso do Word, pois seria necessário fechar o arquivo toda vez que
+for executar o jogo, ou o IntMUD não conseguirá ler o arquivo.
+
+Nota: O Window$ por padrão não mostra as extensões dos arquivos, por isso
+ao salvar em programas como o Bloco de notas, poderá salvar com o nome
+intmud.int.txt, e nesse caso não funcionará. Usuários do Edivox não precisam
+se preocupar com isso. No Bloco de notas, em particular, escolha o tipo
+"Todos os arquivos (*.*)" antes de salvar.
+
+
+*** Organização dos programas
+
+Um programa é formado por várias instruções, escritas no arquivo intmud.int.
+No início desse arquivo pode-se colocar algumas definições, conforme
+o padrão: opção = valor
+
+A lista completa de opções está explicada no arquivo descr.txt. Por enquanto
+usaremos apenas a opção telatxt. Se quiser que uma janela, semelhante a do
+"Aviso do MS-DOS", seja aberta quando o programa for executado, escreva:
+telatxt = 1
+Se essa opção estiver ausente ou for 0, nenhuma janela será aberta.
+
+Após a lista de definições vem as classes. Uma classe é, a grosso modo,
+um tipo de dado. Exemplo, em um determinado jogo pode existir uma classe
+chamada anão, que contém todas as definições desse tipo de personagem.
+Já os anões em si são os objetos. Podem ser criados vários no jogo, e podem
+estar em lugares diferentes. Por isso, os objetos não são descritos no
+arquivo intmud.int. Quando um objeto é criado, especifica-se o nome da
+classe.
+
+
+*** Exemplo 1 - edite o arquivo intmud.int e coloque isso:
+
+telatxt = 1
+classe x
+telatxt tela
+func iniclasse
+criar(arg0)
+func tela_msg
+tela.msg("bom dia\n")
+
+O que faz:
+
+Se você digitou tudo certo e salvou como intmud.int, basta executar o programa
+intmud.exe. Deve abrir uma janela sem nenhum texto. Sempre que pressionar
+a tecla ENTER, vem a mensagem: bom dia
+
+Para fechar o programa pelo mouse é bastante simples: clicar no botão X,
+no canto esquerdo superior da janela. Já pelo teclado, pressione ALT esquerdo
+junto com espaço. Depois a tecla F (de fechar) ou desça com a seta para baixo
+até a opção "Fechar" e pressione ENTER.
+
+Se acontecer algum erro no programa (um erro de digitação, por exemplo),
+será listado na janela que o programa abre.
+
+Deficientes visuais devem usar um programa como o Jaws ou o NVDA, para
+ler a tela, pois o programa em si não possui síntese de voz. As setas
+também funcionam: a posição do cursor muda e Jaws e NVDA lêem a tela.
+
+Pode acontecer das letras acentuadas aparecerem sem acentuação na tela.
+Nesse caso, pressione ALT esquerdo + espaço e vá em propriedades, e mude
+a fonte de caracteres. Ocorre que algumas fontes, ou mesmo o tamanho da
+letra, não têm acentuação.
+
+Explicação:
+
+Na primeira linha, telatxt=1 indica que o programa deve abrir uma janela.
+A partir da segunda vem a definição da classe "x". Essa é a estrutura
+mínima para interagir com o usuário.
+
+classe x
+A partir daqui vem a classe chamada "x".
+
+telatxt tela
+É a variável que permite interagir com o usuário. Estamos criando uma
+variável chamada tela, do tipo telatxt.
+
+func iniclasse
+Define uma função. A função iniclasse, em particular, é executada sempre
+que a classe é criada. Isso acontece automaticamente quando o programa
+é executado.
+
+criar(arg0)
+Cria um objeto da classe "x". Arg0, dentro da função iniclasse, é sempre
+o nome da classe. Portanto, isso poderia ser escrito como criar("x"), mas
+mas usando arg0 não precisamos nos preocupar com o nome da classe.
+
+func tela_msg
+É a função executada quando o usuário digita algo e pressiona ENTER.
+O nome da função deve ser o mesmo nome da variável telatxt seguido de
+"_msg". A variável chama-se tela, portanto a função deve ser tela_msg.
+
+tela.msg("bom dia\n")
+Essa é a instrução que coloca "bom dia" na tela.
+Tela é o nome da variável. Msg é a função de tela que estamos chamando.
+A variável tela tem várias funções, essa é uma delas. A lista completa
+de funções e variáveis de telatxt está documentada no arquivo descr.txt.
+O que está entre parênteses é o argumento da função, no caso o texto que
+queremos enviar. Textos devem estar entre aspas, caso contrário o programa
+pensa que é o nome de uma variável. E o "\n" no fim significa passar para
+a próxima linha. Experimente tirar o "\n" e veja o resultado.
+
+Outros testes:
+
+Altere a última linha para:
+tela.msg("Você escreveu " + arg0 + "\n")
+E execute o intmud.exe novamente. Digite alguma coisa e pressione ENTER.
+Arg0 é o primeiro argumento, e dentro da função tela_msg, corresponde
+ao texto que o usuário digitou.
+
+Nota: a mesma linha acima, poderia ser escrita em duas ou mais, exemplo:
+tela.msg("Você "
+tela.msg("escreveu ")
+tela.msg(arg0)
+tela.msg("\n")
+
+Após a linha:
+criar(arg0)
+Acrescente outra igual:
+criar(arg0)
+O resultado é que chegam duas mensagens iguais ao invés de uma. Isso
+acontece porque criamos dois objetos, cada um com uma variável telatxt.
+Em resumo: são executadas duas instruções tela_msg, uma em cada objeto.
+
+Outro teste, acrescente essas duas linhas, pode ser no final do arquivo:
+func ini
+tela.msg("Digite algo e pressione ENTER\n")
+Resultado: ao executar o programa vem essa mensagem. Na verdade, virão
+duas, se você manteve duas instruções criar(arg0), do teste anterior.
+Sempre que um objeto é criado, é executada automaticamente a função ini.
+
+Acrescente a seguinte função (três linhas):
+func tela_tecla
+se arg0 == "esc"
+terminar
+Resultado: se você pressionar a tecla ESC, o programa é encerrado.
+A função tela_tecla é semelhante a tecla_msg, porém é executada quando
+uma tecla é pressionada. O nome da tecla é está sempre em arg0.
+A próxima instrução checa se é a tecla ESC, e se for, o que vem em
+seguida é a instrução terminar, que encerra o programa.
+Nota: o sinal de igual para comparação é escrito como ==. Apenas
+um = significa atribuição. Nesse caso, seria algo como atribuir o texto
+"esc" a arg0 e depois verificar se arg0 é verdadeiro (instrução SE).
+
+
+*** Exemplo 2 - Trabalhando com vários usuários
+
+Quando se trata de um MUD, via de regra os usuários conectam-se no jogo
+usando um programa de Telnet. Segue abaixo o código (arquivo intmud.int):
+
+telatxt = 1
+classe recebe
+serv sock
+func iniclasse
+criar(arg0)
+func ini
+sock.abrir("", 2000)
+func sock_socket
+criar("jogador", arg0)
+classe jogador
+socket sock
+func ini
+sock = arg0
+sock.msg("Tecle algo\n")
+func sock_msg
+sock.msg("Você escreveu " + arg0 + "\n")
+
+O que faz:
+
+Ao executar o programa no Windows, provavelmente abrirá uma janela assim:
+Alerta de segurança do Windows
+Continuar bloquenado este programa?
+Nome: intmud
+Editor: Desconhecido
+Isso acontece porque estamos abrindo uma porta, para os usuários
+se conectarem. Escolha a opção "Desbloquear".
+
+Depois abra um programa de telnet (ex. Telnetvox, Telnet do Windows ou
+mesmo o Telnet do IntMUD) e conecte-se no endereço localhost porta 2000.
+De imediato virá a mensagem:
+Tecle algo
+Cada vez que escrever algo e pressionar ENTER, virá uma mensagem do tipo
+"Você escreveu" seguido de um texto.
+
+Explicação:
+
+telatxt = 1
+Apenas para abrir uma janela. Facilita para fechar o programa depois.
+
+classe recebe
+É a classe para receber conexões.
+
+serv sock
+Sock é uma variável serv (de "servidor"), para receber conexões em uma porta.
+
+func iniclasse
+criar(arg0)
+Cria um objeto quando o programa é executado.
+
+func ini
+Função executada quando um objeto é criado.
+
+sock.abrir("", 2000)
+Abre a porta 2000 (para receber conexões). O texto vazio significa que
+pode receber conexões em todos os endereços. Se quiser receber só conexões
+vindo do próprio computador, mudar essa linha para:
+sock.abrir("localhost", 2000)
+
+func sock_socket
+Função executada quando chegou uma nova conexão. Como pode-se observar,
+o nome da função é o nome da variável seguido de "_socket".
+
+criar("jogador", arg0)
+Cria um objeto do tipo "jogador", e passa arg0 como argumento da função
+ini do objeto. Arg0 dentro de sock_socket é uma variável socket que
+corresponde à conexão, assim como telatxt corresponde à janela aberta.
+
+classe jogador
+Essa é a classe que se comunica com o usuário.
+
+socket sock
+Corresponde à conexão com o usuário.
+
+func ini
+Função executada quando o objeto é criado.
+
+sock = arg0
+Coloca em sock a conexão com o usuário. Arg0 é a variável socket, que
+foi passada para essa função pela instrução criar("jogador", arg0).
+
+sock.msg("Tecle algo\n")
+Semelhante à tela.msg, do exemplo anterior. Envia uma mensagem ao usuário.
+
+func sock_msg
+sock.msg("Você escreveu " + arg0 + "\n")
+Também semelhante à tela_msg, do exemplo anterior. Cada vez que o usuário
+escrever algo e pressionar ENTER, sock_msg será executado e uma mensagem
+será enviada.
+
+Notas:
+1. Não é necessário apagar o objeto quando o jogador se desconecta.
+A variável socket faz esse serviço automaticamente. A exceção seria se
+fosse criada a função sock_fechou. Nesse caso, é responsabilidade dessa
+função apagar o objeto.
+2. Atenção: as variáveis de uma classe são definidas sempre antes das
+funções. Se for definida uma variável depois de uma função, ela pertencerá
+apenas à função. Em outras palavras, só existirá quando a função for chamada
+e deixará de existir quando a função terminar.
+
+
+*** Exemplo 3 - Simplificando
+
+No exemplo anterior foram criadas duas classes, uma para receber conexões
+e outra para a comunicação com os jogadores. Na prática, o mais comum é
+criar uma única classe. Segue o código.
+
+telatxt = 1
+classe jogador
+comum serv servidor
+socket sock
+func iniclasse
+jogador:servidor.abrir("", 2000)
+func servidor_socket
+criar("jogador", arg0)
+func ini
+sock = arg0
+sock.msg("Tecle algo\n")
+func sock_msg
+sock.msg("Você escreveu " + arg0 + "\n")
+
+Explicação:
+
+comum serv servidor
+Define a variável servidor, do tipo sock (para receber conexões), mas
+pertencente à classe. Quando se define uma variável com "comum", significa
+que existe apenas uma, na classe, independente de existir ou não algum
+objeto.
+
+socket sock
+A variável responsável pela conexão com o usuário.
+
+func iniclasse
+jogador:servidor.abrir("", 2000)
+Quando a classe é criada, abre a porta 2000. Nesse caso é necessário
+especificar em que classe a variável pertence (escreve-se o nome da classe
+seguido de dois pontos e o nome da variável).
+
+func servidor_socket
+criar("jogador", arg0)
+Semelhante ao exemplo anterior. Quando alguém se conecta, um objeto é criado.
+
+As próximas instruções (funções ini e sock_msg) são idênticas às do
+exemplo anterior.
+
+Outros testes:
+
+Só nesse exemplo foi usado duas vezes sock.msg, para enviar mensagens
+ao jogadores. Num programa maior, a quantidade de mensagens pode ser
+muito maior. Nesse caso, pode-se criar uma função para enviar mensagens.
+Duas linhas:
+func msg
+sock.msg(arg0 + "\n")
+E então, as duas instruções que usam sock.msg podem ser simplificadas assim:
+msg("Tecle algo")
+msg("Você escreveu " + arg0)
+
+Isso funciona porque msg("Tecle algo") significa chamar a função msg, passando
+como argumento o texto "Tecle algo". Dentro da função, o primeiro argumento
+é conhecido como arg0. Podem ser passados até 10 argumentos, cujos nomes
+vão de arg0 a arg9. A função msg, por sua vez, acrescenta "\n" no final
+do texto e chama sock.msg.
+
+No segundo caso, o programa junta o texto "Você escreveu " com arg0,
+que nesse caso é o que o usuário digitou. O resultado disso vira arg0
+dentro da função msg.
+
+Na prática, é comum criar msg como const ao invés de func. Const significa
+constante, e geralmente é usado como variáveis cujo valor não muda. Isso
+será visto mais adiante. Mas const também se comporta como uma função de
+uma única linha. A sintaxe é sempre a mesma:
+const variável = valor
+A função msg pode ser definida assim:
+const msg = sock.msg(arg0 + "\n")
+
+
+*** Comentários
+
+Quando for necessário escrever alguma explicação (um comentário), para quem
+estiver lendo o programa, coloque # antes. Tudo o que encontrar após #, até
+o final da linha é ignorado. # só não é tratado como comentário dentro de uma
+instrução.
+
+É possível escrever comentários em quase todo lugar, exceto após o nome da
+classe e a instrução herda (será vista adiante). Exemplo:
+func msg # Envia mensagem ao usuário
+# arg0 = mensagem
+sock.msg(arg0 + "\n")
+
+Outra prática interessante é separar as classes com uma linha vazia,
+e muitas vezes, até as funções. Algumas pessoas acrescentam, também, dois
+espaços antes das instruções que pertencem a uma função, mais dois espaços
+se está dentro de um bloco "se", etc. Visualmente fica mais fácil entender
+o que está dentro do que. Isso se chama indentação, mas nem sempre é
+vantagem. Quem usa Display Braille, por exemplo, pode se sentir mais
+confortável sem indentação.
+
+
+*** Exemplo 4 - Com comentários e indentação
+
+# Se deve abrir uma janela de texto - variável telatxt
+telatxt = 1
+
+classe jogador
+comum serv servidor # Para receber conexões
+socket sock # Usuário conectado
+const msg = sock.msg(arg0 + "\n") # Envia mensagem para o usuário
+
+func iniclasse # Classe criada
+  jogador:servidor.abrir("", 2000) # Abre a porta 2000
+
+func servidor_socket # Usuário conectou: cria objeto
+  criar("jogador", arg0)
+
+func ini # Objeto foi criado
+  sock = arg0
+  msg("Tecle algo")
+
+func sock_msg # Usuário escreveu algo
+  msg("Você escreveu " + arg0)
+
+O que faz:
+
+Exatamente a mesma coisa que o exemplo 3. As únicas diferenças são os
+comentários, indentação e a função msg, definida como constante.
+
+
+*** Exemplo 5 - Juntando tudo e herança
+
+telatxt = 1
+
+classe tela
+herda usuario
+# Usuário usando a janela do programa
+telatxt tela
+const msg = tela.msg(arg0 + "\n")
+func iniclasse # Classe criada: cria um objeto para comunicação
+  criar(arg0)
+func tela_msg # Usuário escreveu algo
+  recebe(arg0)
+
+classe telnet
+herda usuario
+# Usuários que conectaram via Telnet
+comum serv servidor # Para receber conexões
+socket sock # Usuário conectado
+const msg = sock.msg(arg0 + "\n")
+func iniclasse # Classe criada
+  telnet:servidor.abrir("", 2000) # Abre porta 2000
+func servidor_socket # Usuário conectou: cria objeto
+  criar("telnet", arg0)
+func ini # Objeto foi criado
+  sock = arg0
+  usuario:ini
+func sock_msg # Usuário escreveu algo
+  recebe(arg0)
+
+classe usuario
+# Trata do usuário, independente de como se conectou
+func ini # Objeto foi criado
+  msg("Tecle algo")
+func recebe # Usuário escreveu algo
+  msg("Você escreveu " + arg0)
+
+O que faz:
+
+Esse exemplo possui todas as funcionalidades dos anteriores. Uma janela
+é aberta, e você recebe uma mensagem para qualquer coisa que escrever
+e pressionar ENTER. Mas também pode se conectar via Telnet na porta 2000,
+e depois disso é como se estivesse na janela do programa.
+
+Explicação:
+
+São três classes ao todo, uma responsável pela janela do programa, outra
+pelas conexões via Telnet e outra pela funcionalidade do programa,
+independente de como o usuário se conectou.
+
+O único conceito novo aqui é a instrução herda, presente nas classes tela
+e telnet. A linha "herda usuario" significa que todas as instruções e
+variáveis da classe usuário estão presentes aqui. É como se você copiasse
+o conteúdo da classe usuário e colasse no final das classes tela e telnet.
+
+Quando houver conflito de variáveis, prevalece o que for definido primeiro.
+Exemplo, a classe telnet herda usuario, mas as duas possuem uma função ini.
+Nesse caso, prevalece a função ini da classe telnet (comentada):
+func ini # Objeto foi criado
+# Primeiro a conexão do usuário vai para a variável socket
+  sock = arg0
+# Por fim, chamamos a função ini da classe usuario,
+# como se estivesse nessa classe
+  usuario:ini
+
+A função tela_msg a classe tela foi definida assim:
+func tela_msg # Usuário escreveu algo
+  recebe(arg0)
+Estamos chamando a função recebe, que foi definida na classe usuario. Mas,
+devido à herança, ela (a função recebe) passa a existir também nas classes
+tela e telnet.
+Nota: o nome "recebe" não tem nenhum significado especial. Poderia ser
+escolhido qualquer outro nome.
+
+A grande vantagem da herança é o nível de abstração. Exemplo, pode-se criar
+uma classe chamada jogador, que herda anão, que por sua vez herda personagem
+e uma outra chasse chamada "dentro". Pelo menos em relação à herança, isso
+seria definido assim:
+classe jogador
+herda anao
+classe anao
+herda personagem, dentro
+classe personagem
+classe dentro
+
+A classe jogador herdaria anao e, como consequência, herdaria também
+personagem e dentro. Repare que quando há mais de uma classe herdada,
+deve-se separá-las com vírgulas.
+
+Outro teste:
+
+Uma simplificação seria usar o mesmo nome de variável para telatxt e socket.
+Telatxt poderia ser definido assim:
+telatxt sock
+Como consequência, a função tela_msg deve mudar de nome para sock_msg.
+E então temos duas funções sock_msg iguais, uma na classe tela e outra
+na classe sock. Pode-se evitar a repetição colocando sock_msg na classe
+usuario. Nesse caso, não é preciso nem a função recebe, pode-se escrever
+tudo em sock_msg.
+
+
+*** Exemplo 6 - simplificando
+
+telatxt = 1
+
+classe tela
+herda usuario
+# Usuário usando a janela do programa
+telatxt sock
+func iniclasse # Classe criada: cria um objeto para comunicação
+  criar(arg0)
+
+classe telnet
+herda usuario
+# Usuários que conectaram via Telnet
+comum serv servidor # Para receber conexões
+socket sock # Usuário conectado
+func iniclasse # Classe criada
+  telnet:servidor.abrir("", 2000) # Abre porta 2000
+func servidor_socket # Usuário conectou: cria objeto
+  criar("telnet", arg0)
+func ini # Objeto foi criado
+  sock = arg0
+  usuario:ini
+
+classe usuario
+# Trata do usuário, independente de como se conectou
+const msg = sock.msg(arg0 + "\n")
+func ini # Objeto foi criado
+  msg("Tecle algo")
+func sock_msg # Usuário escreveu algo
+  msg("Você escreveu " + arg0)
+
+
+Outro teste:
+
+As mensagens estão indo apenas para quem escreve, mas é possível direcionar
+para todos. Basta chamar a função msg de todos os objetos. Altere a função
+sock_msg como abaixo:
+func sock_msg # Usuário escreveu algo
+  $tela.msg("Mensagem " + arg0)
+  ref r
+  r = $telnet
+  enquanto r
+    r.msg("Mensagem " + arg0)
+    r = objdepois(r)
+  efim
+
+Explicação:
+
+$tela.msg("Mensagem " + arg0)
+Chama a função msg do primeiro objeto da classe tela. O símbolo $ seguido de
+um nome é sempre o primeiro objeto da classe.
+
+ref r
+Cria-se uma variável chamada r, do tipo ref. Ref significa referência
+a um objeto. R pode corresponde a um objeto qualquer, ou a nenhum.
+
+r = $telnet
+R passa a ser o primeiro objeto da classe telnet
+
+enquanto r
+efim
+Todas as instruções entre o enquanto e o efim são repetidas até que r
+seja falso (nesse caso, até que não seja um objeto).
+Em outras palavras, checa se r corresponde a um objeto. Se corresponde,
+executa todas as instruções até o efim e volta ao enquanto.
+
+r.msg("Mensagem " + arg0)
+Envia mensagem para um usuário (chama função msg).
+
+r = objdepois(r)
+Passa para o próximo objeto. Objdepois é uma função predefinida que
+retorna o próximo objeto, ou nenhum (nulo) se não houver.
+
+Quando a função termina, a variável r deixa de existir. Já a variável
+sock só é apagada quando o objeto é apagado. Essa é a diferença entre
+variáveis definidas nas funções e variáveis definidas nas classes.
+
+
+*** Exemplo 7 - corredor, quarto, cozinha e banheiro
+
+classe usuario
+telatxt sock # Comunicação com o jogador
+ref sala # Aonde o jogador está
+const msg = sock.msg(arg0 + "\n")
+func iniclasse # Classe criada
+  criar(arg0)
+func ini # Objeto criado
+  msg("Tecle n, s, l, o para ir para norte, sul, leste e oeste")
+  sala = $corredor
+  msg(sala.desc)
+func sock_msg # Usuário escreveu algo
+  se arg0 == "n" && sala.norte
+    sala = sala.norte
+    msg(sala.desc)
+  senao arg0 == "s" && sala.sul
+    sala = sala.sul
+    msg(sala.desc)
+  senao arg0 == "l" && sala.leste
+    sala = sala.leste
+    msg(sala.desc)
+  senao arg0 == "o" && sala.oeste
+    sala = sala.oeste
+    msg(sala.desc)
+  senao
+    msg("Impossível seguir nessa direção")
+  fimse
+
+classe sala
+func iniclasse
+  criar(arg0)
+
+classe corredor
+herda sala
+const desc = "Corredor\nSaídas: n s l"
+const norte = $quarto
+const sul = $cozinha
+const leste = $banheiro
+
+classe quarto
+herda sala
+const desc = "Quarto\nSaída: s"
+const sul = $corredor
+
+classe cozinha
+herda sala
+const desc = "Cozinha\nSaída: n"
+const norte = $corredor
+
+classe banheiro
+herda sala
+const desc = "Banheiro\nSaída: o"
+const oeste = $corredor
+
+
+O que faz:
+
+É aberta a janela do programa, e chegam essas mensagens:
+Tecle n, s, l, o para ir para norte, sul, leste e oeste
+Corredor
+Saídas: n s l
+
+A partir daí pode-se andar pelos aposentos da casa teclando n, s, l e o.
+A cada direção, o jogo diz aonde estamos e para onde podemos ir.
+
+Nota: esse exemplo pode ser adaptado sem grandes dificuldades para os
+jogadores entrarem via Telnet. Basta copiar as classes tela e telnet
+do exemplo 6 e apagar a função iniclasse e a variável sock da classe
+usuario.
+
+Explicação:
+
+ref sala # Aonde o jogador está
+Essa variável corresponde à sala (um objeto) em que o jogador está.
+
+Na função ini:
+sala = $corredor
+Indica que o jogador está na sala corredor. A variável sala passa a ser
+um objeto da classe corredor.
+
+msg(sala.desc)
+Envia uma mensagem que está na função ou variável desc da sala.
+Desc está definido assim na classe corredor:
+const desc = "Corredor\nSaídas: n s l"
+Portanto, msg(sala.desc), aqui, é o mesmo que:
+msg("Corredor\nSaídas: n s l")
+
+A função sock_msg é a responsável por mudar de sala. Foi feita da forma
+mais simples possível.
+se arg0 == "n" && sala.norte
+Verifica se arg0 (o que o usuário digitou) é "n" (um texto) e se a variável
+norte da sala é verdadeira. São usados dois sinais de igual porque estamos
+comparando. Um = apenas significa atribuição (fazer arg0 ser "n").
+O sinal && significa "e", portanto as duas coisas precisam acontecer.
+
+Norte está definido como constante em duas salas:
+const norte = $quarto
+const norte = $corredor
+Portanto, sala.norte pode ser $quarto ou $corredor. E nas salas que não
+possuem essa constante, norte é nulo, ou seja, nenhum objeto. Nulo
+é interpretado como falso.
+
+sala = sala.norte
+msg(sala.desc)
+Supondo que o usuário teclou N e a constante sala.norte existe, essas duas
+instruções são executadas. A sala atual passa a ser a sala ao norte e
+é enviada a descrição da sala.
+
+senao arg0 == "s" && sala.sul
+Se a condição da instrução "SE" for falsa, o programa passa para a próxima
+instrução senao. Agora estamos verificando se teclou S e existe uma
+sala ao sul.
+
+senao
+O mesmo processo se repete, e se nenhuma condição for verdadeira (exemplo,
+se o usuário digitar "abc"), o programa faz o que vem após essa instrução.
+
+msg("Impossível seguir nessa direção")
+Essa é a mensagem que o usuário recebe.
+
+fimse
+Assim como um bloco enquanto termina com um efim, um bloco se deve terminar
+com um fimse. Há apenas um caso em que o fimse é opcional, quando for a
+última instrução da função. Significa que poderíamos omitir esse fimse
+e o programa continuaria funcionando normalmente.
+
+classe sala
+func iniclasse
+criar(arg0)
+É uma função necessária em todas as salas: criar um objeto. Por isso, essa
+classe é herdada em todas as salas.
+
+
+*** Caracteres especiais
+*** Variáveis
