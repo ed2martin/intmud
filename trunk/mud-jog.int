@@ -288,8 +288,6 @@ sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint8 canais # Para salvar sock.canais
-inttempo salaev # Para gerar eventos "entrou" na sala
-uint32 salaev2 # salaev2-salaev = Quanto tempo faz que entrou na sala
 textovar lvar # Lista de variáveis não salvas no jogo
 sav textovar svar # Lista de variáveis que são salvas no jogo
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
@@ -307,7 +305,7 @@ func fim # Objeto foi apagado
     $mens.p(este)
     $mens.mvis2("", "$P foi embora.")
   fimse
-  perso:fim
+  comum_perso:fim
 
 func fechou # Executado quando o objeto sock é apagado
   vazio1 = 1800 # 3 minutos
@@ -332,27 +330,6 @@ func salvar # Salva o jogo, desde que a senha não seja nula
     salvarev = 3000 # 5 minutos
   #msg(txt2(cnome) + " , " + senha)
     ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
-
-func mudasala # Coloca personagem em outra sala (arg0 = sala)
-  dono = arg0
-  salaev = salaev2 = 1
-  sock && msg2(dono.descsala(este, 7))
-  dono.entrou(este)
-
-func salaev_exec # Executa eventos entrou
-  prog p
-  uint32 x
-  uint32 v
-  x = 1000000, p.inifunc(dono, "entrou")
-  enquanto p.lin
-    v = txt(p.texto, 6)
-    v > salaev2 && v < x && (x = v)
-    p.depois
-  efim
-  v = salaev2
-  salaev = x - salaev2
-  salaev2 = x
-  dono.entrou[v](este)
 
 func salvarev_exec
   salvar

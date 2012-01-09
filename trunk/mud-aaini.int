@@ -18,8 +18,9 @@ não há nenhum sol ou algo que produza luz."
 const s_pacifico = 1
 inttempo espera
 
-func entrou
-  espera = 10
+func e_entrou
+  se espera == 0
+    espera = 10
 
 func espera_exec
   listaitem item
@@ -64,8 +65,10 @@ sala bastante ampla. À leste há uma escada para o andar de baixo."
 const dir_s = $s_ini005
 const dir_o = $s_ini002
 
+func e_entrou
+  arg0.jog && evtempo:criar("entrou", arg0)
 func entrou10
-  arg0.msg("Alguém disse bom dia")
+  arg0.msg("Alguém disse olá")
 
 func ini
   sala:ini
@@ -84,10 +87,12 @@ corredor estreito para leste e uma escada para o andar de cima, ao sul."
 const dir_n = $s_ini004
 const dir_l = $s_ini006
 
-func entrou2
-  arg0.msg("Aqui você pode salvar o personagem teclando salvar")
+func e_entrou
+  se arg0.jog
+    arg0.msg("Aqui você pode salvar o personagem teclando salvar")
+    arg0.evento.addfim(este) # Receber eventos do personagem
 
-func evescr
+func e_escr # Personagem escreveu alguma coisa
   se arg1 == "salvar"
     arg0.mudasenha # Muda a senha
     ret 1

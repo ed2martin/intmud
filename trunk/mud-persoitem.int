@@ -3,7 +3,7 @@ classe comum_dentro
 #
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
-sav listaobj evento # Objetos que recebem eventos desse
+listaobj evento # Objetos que recebem eventos desse
 uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 #
 const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
@@ -60,9 +60,8 @@ classe comum_fora
 # IMPORTANTE: Se herdar também comum_dentro,
 # colocar comum_dentro antes de comum_fora na instrução herda
 #
-sav listaobj evento # Objetos que recebem eventos desse
 sav listaitem idono # Uso interno: aonde o personagem ou item está
-sav listaitem ibitev # Uso interno: para receber eventos
+listaobj evento # Objetos que recebem eventos desse
 uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 const bitinv = 3 # Grau de invisibilidade do personagem/item
 #
@@ -81,9 +80,6 @@ varfunc dono # O dono do personagem/item
   idono.objlista.mudavol(-voltot) # Retira o volume
   jogtot && idono.objlista.mudajog(-jogtot) # Retira os jogadores
   idono.remove
-  se ibitev # Se bitev=1, remove do antigo objeto e adiciona no novo
-    ibitev.remove, ibitev = arg0.evento.addfim(este)
-  fimse
   se perso
     idono = arg0.dentro2.addini(este) # Adiciona personagem
   senao
@@ -92,13 +88,6 @@ varfunc dono # O dono do personagem/item
   !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
   idono.objlista.mudavol(voltot) # Coloca o volume
   jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
-
-varfunc bitev
-  se !args # Nenhum argumento: leitura
-    ret int(ibitev)
-  senao # Um argumento: altera valor
-    ibitev.remove
-    arg0 && (ibitev = dono.evento.addfim(este))
 
 varfunc pesovoa
   se !args # Nenhum argumento: leitura
@@ -218,6 +207,12 @@ func fim # Objeto foi apagado
   casose "b" # Como bot
     r.reinicia
   casofim
+# Executa eventos
+  listaobj l0
+  l0.addfim(evento), evento.limpar
+  enquanto l0
+    l0.ini.obj.e_fim(este, arg0), l0.ini.remove
+  efim
 
 varfunc vida
   se !args # Lê vida
@@ -286,8 +281,8 @@ func teclouproc # Processa comando (arg0=comando)
   b_tempo && b_alvo.dono != dono && batalhafim
 # Executa eventos
   listaobj l0
-  l0.addfim(este, dono, este.eventos, dono.eventos)
-  enquanto l0 && !l0.ini.obj.evescr(este, arg0)
+  l0.addfim(este.evento)
+  enquanto l0 && !l0.ini.obj.e_escr(este, arg0)
     l0.ini.remove
   efim
   se l0
@@ -333,7 +328,7 @@ func teclouproc # Processa comando (arg0=comando)
   senão
     casovar posicao
     casose "0" Morto
-      msg("\c9Você está morto!!!\b")
+      msg("\c9Você está mort" + m_tab:sletra[sexo] + "!!!\b")
       sair
     casose "1" # Mortalmente ferido
     casose "2" # Incapacitado
@@ -346,7 +341,7 @@ func teclouproc # Processa comando (arg0=comando)
       msg("\c9Nos seus sonhos...\b")
       sair
     casose "5" # Descansando
-      msg("\c9Você se sente relaxado demais para fazer isso.\b")
+      msg("\c9Você se sente relaxad" + m_tab:sletra[sexo] + " demais para fazer isso.\b")
       sair
     casose "6" # Sentado
       msg("\c9Talvez você deva ficar em pé primeiro.\b")
@@ -359,9 +354,20 @@ func teclouproc # Processa comando (arg0=comando)
     casofim
 
 func mudasala # Coloca personagem em outra sala (arg0 = sala)
+# Executa e limpa eventos
+  listaobj l0
+  l0.addfim(evento), evento.limpar
+  enquanto l0
+    l0.ini.obj.e_saiu(este, arg0), l0.ini.remove
+  efim
+# Muda de sala
   dono = arg0
   sock && msg2(dono.descsala(este, 7))
-  dono.entrou(este)
+# Executa eventos
+  l0.addfim(evento, dono, dono.evento)
+  enquanto l0
+    l0.ini.obj.e_entrou(este, arg0), l0.ini.remove
+  efim
 
 func ajustavar # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
@@ -567,3 +573,70 @@ const ident = "anão"
 const sexo = 1
 const descpos = "Um anão está aqui."
 const descver = "Você não vê nada de especial."
+
+
+classe evtempo
+# Processa eventos de tempo
+#
+# Deve ser criado com:
+# evtempo:criar("nome da função", personagens)
+# É permitido de 1 a 3 personagens, na mesma sala
+#
+# Resultado: são executadas as funções cujo nome é o nome
+# especificado seguido do tempo decorrido, em décimos de segundo
+# A função com o nome especificado seguido de "0" é executada
+# quando o objeto for apagado.
+#
+# Na função:
+# arg0 a arg2 = personagens
+# arg3 = objeto evtempo
+#
+inttempo tempo1 # Para gerar eventos de tempo
+uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
+txt100 func # Nome da função que deve chamar
+uint8 tfunc # Tamanho de func em caracteres
+ref obj # Objeto que contém a função
+ref mob1 # Primeiro personagem
+ref mob2 # Segundo personagem
+ref mob3 # Terceito personagem
+
+func criar # Cria objeto
+  se txt(arg0) && ref(arg1)
+    ref r
+    r = criar("evtempo")
+    r.tempo1 = r.tempo2 = 1
+    r.obj = este
+    r.func = arg0
+    r.tfunc = inttotal(arg0)
+    r.mob1 = arg1, r.mob1.evento.addfim(r)
+    r.mob2 = arg2, r.mob2.evento.addfim(r)
+    r.mob3 = arg3, r.mob3.evento.addfim(r)
+
+func fim # Este objeto foi apagado
+  obj.[func]0(mob1, mob2, mob3, este)
+
+func e_saiu # Personagem saiu da sala
+  apagar(este)
+
+func e_fim # Personagem saiu do jogo
+  apagar(este)
+
+func tempo1_exec # Executa eventos
+  se !obj
+    apagar(este)
+    ret
+  fimse
+  prog p
+  uint32 x
+  uint32 v
+  x = 1000000, p.inifunc(obj, func)
+  enquanto p.lin
+    v = txt(p.texto, tfunc)
+    v > tempo2 && v < x && (x = v)
+    p.depois
+  efim
+  x == 1000000 && apagar(este)
+  v = tempo2
+  tempo1 = x - tempo2
+  tempo2 = x
+  obj.[func + v](mob1, mob2, mob3, este)
