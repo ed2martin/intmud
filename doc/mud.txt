@@ -29,17 +29,22 @@ $S = Depende do objeto: "o", "a", "um" ou "uma"
 ----------------------------------------
 Eventos
 
-São processados eventos na seguinte ordem:
-jogador, sala, listaobj eventos do jogador, listaobj eventos da sala
+Itens e personagens possuem a seguinte variável:
+listaobj evento
+Executar um evento significa chamar uma função de todos os objetos
+dessa lista. Via de regra, o nome das funções começa com "e_".
+A lista é limpada automaciamente toda vez que o personagem muda de sala.
 
-Existem dois tipos de eventos:
-1. Retornam verdadeiro se deve parar de processar o comando.
-2. O comando será processado independente de retornar verdadeiro.
+O evento e_entrou (quando um personagem entra na sala) é um pouco diferente.
+Sendo P o personagem, é executada a função e_entrou de p.evento, p.dono
+e p.dono.evento.
 
 Eventos existentes:
-evescr(personagem, texto) Jogador escreveu alguma coisa
-evfalar(personagem, texto) Jogador "falou" alguma coisa
-evmover(personagem, direção) Vai para a sala na direção especificada
+e_entrou(personagem) Personagem entrou na sala
+e_saiu(personagem) Personagem saiu da sala
+e_fim(personagem) Personagem saiu do jogo
+e_escr(personagem, texto) Personagem escreveu alguma coisa
+    Deve retornar verdadeiro ou 1 se deve cancelar a ação.
 
 ----------------------------------------
 Salas (mud-sala.int)
@@ -129,12 +134,6 @@ Lista de itens que está vestindo
 *listaobj evento
 Objetos que recebem eventos do personagem/item
 
-*varfunc bitev
-Semelhante a int1; indica se deve receber eventos do personagem
-
-*listaitem ibitev
-Usado internamente por bitev
-
 *uint8 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
 0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
@@ -208,7 +207,6 @@ Posição do personagem:
 *const pospadr = 8
 Posição padrão do personagem
 
-
 *func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
@@ -246,6 +244,60 @@ Encerra a batalha
 Executa procedimentos quando o personagem morre
 
 ----------------------------------------
+Personagens não jogador
+
+* const p_pet = 0
+0 = não pode ser animal de estimação
+1 = jogador pode pegar e usar em batalhas
+2 = segue ordens do jogador
+
+* const p_mover = 0
+Aonde pode se movimentar:
+0 = não sai do lugar
+1 = somente na área
+2 = pode sair da área
+
+* const p_fora = 0
+Não entra em lugares fechados
+
+* const p_pegar = 0
+0 = não pega itens do chão
+1 = pega itens
+2 = pega somente itens de valor
+
+* const p_agressivo = 0
+0 = pacífico, não luta
+1 = ataca se for atacado
+2 = ataca quando possível
+
+* const p_foge = 0
+Se foge quando estiver fraco
+
+* const p_nadar = 0
+Pode atravessar lugares em que não se pode nadar.
+
+* const p_silencio = 0
+Se movimenta em silêncio (não é informado na sala).
+
+* const p_imortal = 0
+Se não pode morrer.
+
+* const p_compra = 0
+Porcentagem de lucro quando compra: preço final = valor * (100-p_compra)
+
+* const p_venda = 0
+Porcentagem de lucro quando vende: preço final = valor * (100+p_venda)
+
+* const p_compravenda = 0
+Se está aberto para compra e venda.
+
+come corpos
+mata jogadores que mataram ou roubaram outros
+ataca jogadores que mataram ou roubaram outros
+pega lixo
+patrulha: encerra brigas
+
+----------------------------------------
 Itens
 
 const vestir = 0
@@ -280,3 +332,11 @@ Em que posição está vestindo
 3 = sobre o rosto
 4 = nos olhos
 Etc. Vide vestir (acima)
+
+
+Valor em moedas
+Volume que cabe dentro, ou 0 se não for container
+Quantos litros cabe, ou 0 se não for vasilhame
+Quanto sustenta, ou 0 se não for alimento
+Quanto tempo dura vestindo (exemplo, para produzir luz)
+O que afeta se estiver vestindo
