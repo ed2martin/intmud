@@ -632,7 +632,6 @@ herda sala
 const desc = "Banheiro\nSaída: o"
 const oeste = $corredor
 
-
 O que faz:
 
 É aberta a janela do programa, e chegam essas mensagens:
@@ -709,6 +708,113 @@ func iniclasse
 criar(arg0)
 É uma função necessária em todas as salas: criar um objeto. Por isso, essa
 classe é herdada em todas as salas.
+
+
+*** Funções, argumentos e valor de retorno
+
+Como pode-se perceber, as funções geralmente são compostas de uma ou mais
+instruções, que definem o que elas fazem. Pode-se passar até 10 argumentos
+definidos entre parênteses e separados por vírgula. Exemplos:
+
+teste # Aqui estamos chamando a função teste sem argumentos
+teste(1) # Dentro da função, arg0 será 1
+teste(3, 5) # Nesse caso são dois argumentos, 3 e 5
+teste("a", "b", "c", 10, "d", "e") # Aqui são 6 argumentos
+
+Dentro da função, args é o número de argumentos e arg0 a arg9 são os
+argumentos propriamente ditos. Isso não significa que devemos usar
+obrigatoriamente os argumentos. Exemplo, na prática, são poucas as vezes
+que args é utilizado, e também raramente usa-se arg9 (raramente são
+passados 10 argumentos, arg9 seria o décimo).
+
+Supondo que a função teste seja definida assim:
+func teste
+telatxt t
+t.msg("resultado " + arg0 + "\n")
+Os quatro exemplos acima produziriam o seguinte resultado na janela
+do programa:
+resultado
+resultado 1
+resultado 3
+resultado a
+
+No primeiro exemplo não há nenhum argumento. Assim, "resultado " + arg0 + "\n"
+passa a ser "resultado \n". No segundo, arg0=1. No terceiro e no quarto há
+mais de um argumento, embora usamos apenas um.
+
+Funções podem retornar alguma coisa também. Portanto, pode-se testar se uma
+função retorna um determinado texto, com a instrução SE, ou mesmo jogar
+o resultado em outra função. E se uma função não retornar nada, diz-se que
+ela retornou nulo.
+
+A instrução para retornar alguma coisa é ret. Exemplo:
+func teste
+ret "a" # Estamos retornando um texto que é a letra "a"
+
+Para mostrar o retorno de teste na tela pode ser feito assim:
+telatxt t
+t.msg("A função teste retornou: " + teste + "\n")
+Nesse caso teríamos o texto:
+A função teste retornou: a
+
+Isso torna possível, por exemplo, realizar algumas operações com os argumentos
+e retornar alguma coisa.
+
+
+*** Exemplo 8 - Argumentos e retorno de funções
+
+telatxt = 1
+classe x
+telatxt t
+func iniclasse
+  criar(arg0)
+func ini
+  t.msg("Teste 1: " + teste + "\n")
+  t.msg("Teste 2: " + teste(1) + "\n")
+  t.msg("Teste 3: " + teste(100, 200) + "\n")
+  t.msg("Teste 4: " + teste("bom", " ", "dia") + "\n")
+func teste
+  ret arg0 + arg1 + arg2
+func t_msg
+  terminar
+
+O que faz:
+
+Mostra na janela do programa o resultado da função teste chamada de 4 formas
+diferentes. São os seguintes textos:
+Teste 1: 0
+Teste 2: 1
+Teste 3: 300
+Teste 4: bom dia
+Ao pressionar a tecla ENTER, a janela fecha e o programa termina.
+
+Explicação:
+
+A função teste apenas soma os três primeiros argumentos e retorna o resultado
+disso. É um comportamento bem simples.
+Na função ini, a função teste é chamada quatro vezes, sem argumentos e com
+diferentes argumentos:
+teste
+teste(1)
+teste(100, 200)
+teste("bom", " ", "dia")
+No primeiro caso, como não há argumentos, a soma de arg0 + arg1 + arg2 acaba
+retornando o valor numérico 0.
+No segundo caso, teste(1) é 1. Temos arg0=1, portanto a soma é 1.
+Já em teste(100, 200) resulta em 300, pois a função teste está somando 100
+com 200.
+No último caso, como os argumentos são textos, arg0 + arg1 + arg2 significa
+"bom" + " " + "dia", que resulta em "bom dia".
+
+Outro teste:
+
+Como foi dito anteriormente, constantes também se comportam como funções
+de uma linha. Até agora foi usado para simplificar o envio de mensagens,
+da seguinte forma:
+const msg = t.msg(arg0 + "\n")
+Mas a função teste também poderia ser escrita como uma constante:
+const teste = arg0 + arg1 + arg2
+O resultado, no entanto, é o mesmo.
 
 
 *** Caracteres especiais

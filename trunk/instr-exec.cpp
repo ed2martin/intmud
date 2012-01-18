@@ -1824,7 +1824,11 @@ bool Instr::ExecX()
                 else if (indvar & 0x400000) // Variável da classe
                     VarAtual->endvar = classe->Vars +
                             (indvar & 0x3FFFFF);
-                else if (objeto) // Variável do objeto
+                else if (objeto &&  // Variável do objeto
+                            objeto->Classe == classe)
+                        // Nota: se executar algo como "x:y = nulo",
+                        // a classe vai ser "x", mas o objeto
+                        // pode ser de outra classe
                     VarAtual->endvar = objeto->Vars +
                             (indvar & 0x3FFFFF);
                 else // Objeto inexistente
