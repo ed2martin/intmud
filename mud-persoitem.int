@@ -75,19 +75,19 @@ const voltot = volobj # Volume total
 varfunc dono # O dono do personagem/item
   se !args # Nenhum argumento: leitura
     ret idono.objlista # Retorna objeto que contém o personagem ou item
-  fimse
-  !ipesovoa && idono.objlista.mudapeso(-pesotot) # Retira peso do objeto
-  idono.objlista.mudavol(-voltot) # Retira o volume
-  jogtot && idono.objlista.mudajog(-jogtot) # Retira os jogadores
-  idono.remove
-  se perso
-    idono = arg0.dentro2.addini(este) # Adiciona personagem
-  senao
-    idono = arg0.dentro1.addini(este) # Adiciona item
-  fimse
-  !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
-  idono.objlista.mudavol(voltot) # Coloca o volume
-  jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
+  senao idono.objlista != ref(arg0)
+    !ipesovoa && idono.objlista.mudapeso(-pesotot) # Retira peso do objeto
+    idono.objlista.mudavol(-voltot) # Retira o volume
+    jogtot && idono.objlista.mudajog(-jogtot) # Retira os jogadores
+    idono.remove
+    se perso
+      idono = ref(arg0).dentro2.addini(este) # Adiciona personagem
+    senao
+      idono = ref(arg0).dentro1.addini(este) # Adiciona item
+    fimse
+    !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
+    idono.objlista.mudavol(voltot) # Coloca o volume
+    jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
 
 varfunc pesovoa
   se !args # Nenhum argumento: leitura
@@ -114,15 +114,7 @@ func itemnome # Procura um item pelo nome
 # arg1 = texto digitado, exemplos: "banana", "2.banana", "10 banana"
 # Deixa na lista (em arg0) somente os itens correspondentes
   nomeobj n # Texto procurado
-  uint16 total # Quantidade de itens
-  total = txt1(arg1)
-  se total == 0 || txt(total) != txt1(arg1)
-    n.ini(arg1, 1)
-  senao total <= 10
-    n.ini(txt2(arg1), total)
-  senao
-    n.ini(txt2(arg1), 10)
-  fimse
+  n.ini(arg1, 10)
   listaitem i # Para procurar os itens
   i = arg0.ini
   enquanto i
@@ -165,11 +157,11 @@ uint16 atkmag # Quantidade de ataque mágico/especial
 uint16 defmag # Quantidade de defesa mágica/especial
 uint16 evasao # Habilidade de desviar dos golpes (thac0)
 uint16 precisao # Habilidade de acertar os golpes (hitroll)
-const tipo1 = 0 # Tipo de personagem, vide função m_tab:atktipo
+const tipo1 = 0 # Tipo de personagem, vide função misc:atktipo
 const tipo2 = 18 # Segundo tipo do personagem, ou 18 se nenhum
 int8 deftipo.18
 # Defesa contra os diversos tipos de danos
-# Vide função m_tab:atktipo
+# Vide função misc:atktipo
 # somar 2 = dobra defesa
 # subtrair 2 = reduz defesa pela metade
 # 9 ou mais = imune ao tipo de golpe
@@ -185,7 +177,7 @@ inttempo p_espera # Tempo de espera para o próximo comando
 sav inttempo p_restaura # Para restaurar status de tempos em tempos
 
 func ini # Objeto foi criado
-  arg0 && (dono = arg0)
+  dono = arg0
   posicao = pospadr
   ajustavar
   vida = vidamax
@@ -238,17 +230,17 @@ func descpos
   casose "0"
     ret txtmaimin(nome) + " jás aqui."
   casose "1"
-    ret txtmaimin(nome) + " está aqui mortalmente ferid" + m_tab:sletra[sexo] + "."
+    ret txtmaimin(nome) + " está aqui mortalmente ferid" + misc:sletra[sexo] + "."
   casose "2"
-    ret txtmaimin(nome) + " está aqui incapacitad" + m_tab:sletra[sexo] + "."
+    ret txtmaimin(nome) + " está aqui incapacitad" + misc:sletra[sexo] + "."
   casose "3"
-    ret txtmaimin(nome) + " está aqui, muito frac" + m_tab:sletra[sexo] + "."
+    ret txtmaimin(nome) + " está aqui, muito frac" + misc:sletra[sexo] + "."
   casose "4"
     ret txtmaimin(nome) + " dorme aqui."
   casose "5"
     ret txtmaimin(nome) + " descansa aqui."
   casose "6"
-    ret txtmaimin(nome) + " está sentad" + m_tab:sletra[sexo] + "."
+    ret txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + "."
   casose "7"
     ret txtmaimin(nome) + " está lutando."
   casose "8"
@@ -328,7 +320,7 @@ func teclouproc # Processa comando (arg0=comando)
   senão
     casovar posicao
     casose "0" Morto
-      msg("\c9Você está mort" + m_tab:sletra[sexo] + "!!!\b")
+      msg("\c9Você está mort" + misc:sletra[sexo] + "!!!\b")
       sair
     casose "1" # Mortalmente ferido
     casose "2" # Incapacitado
@@ -341,7 +333,7 @@ func teclouproc # Processa comando (arg0=comando)
       msg("\c9Nos seus sonhos...\b")
       sair
     casose "5" # Descansando
-      msg("\c9Você se sente relaxad" + m_tab:sletra[sexo] + " demais para fazer isso.\b")
+      msg("\c9Você se sente relaxad" + misc:sletra[sexo] + " demais para fazer isso.\b")
       sair
     casose "6" # Sentado
       msg("\c9Talvez você deva ficar em pé primeiro.\b")
@@ -362,9 +354,17 @@ func mudasala # Coloca personagem em outra sala (arg0 = sala)
   efim
 # Muda de sala
   dono = arg0
+# Executa eventos
+  l0.addfim(evento, dono.evento)
+  este.e_sala1(este, arg0)
+  dono.e_sala(este, arg0)
+  enquanto l0
+    l0.ini.obj.e_sala(este, arg0), l0.ini.remove
+  efim
+# Mostra descrição
   sock && msg2(dono.descsala(este, 7))
 # Executa eventos
-  l0.addfim(evento, dono, dono.evento)
+  l0.addfim(evento)
   enquanto l0
     l0.ini.obj.e_entrou(este, arg0), l0.ini.remove
   efim
@@ -385,8 +385,8 @@ func ajustavar # Ajusta variáveis, principalmente batalha
   precisao = nivel * 2 + 30
 # Acerta diversos tipos de defesa
   deftipo.limpar # Todas as defesas em 100%
-  m_tab:def[tipo1] # Acerta defesa conforme o primeiro tipo
-  m_tab:def[tipo2] # Acerta defesa conforme o segundo tipo
+  misc:def[tipo1] # Acerta defesa conforme o primeiro tipo
+  misc:def[tipo2] # Acerta defesa conforme o segundo tipo
 # Atributos do que está vestindo e do que está afetando o personagem
   listaitem item
   item = dentro2.ini
@@ -549,20 +549,21 @@ const bitinv = 3 # Grau de invisibilidade do personagem/item
 const item = 1 # Para identificar que é item
 const sexo = 0 # Sexo: 0=feminino, 1=masculino
 const nome = "item"
+const ident = nome
 const descpos = txtmaimin(nome) + " está aqui."
 const descver = "Você não vê nada de especial."
 uint32 vestpos # Em que posição está vestindo, 0=nenhuma
 func ini # Objeto foi criado
-  arg0 && (dono = arg0)
+  dono = arg0
+func fim
+  evento.limpar
 
 
 classe i_borracha
 herda comum_item
 const nome = "borracha"
-const ident = "borracha"
 const sexo = 0
 const descpos = "Uma borracha está jogada aqui."
-const descver = "Você não vê nada de especial."
 const vestir = 8
 
 
@@ -573,70 +574,3 @@ const ident = "anão"
 const sexo = 1
 const descpos = "Um anão está aqui."
 const descver = "Você não vê nada de especial."
-
-
-classe evtempo
-# Processa eventos de tempo
-#
-# Deve ser criado com:
-# evtempo:criar("nome da função", personagens)
-# É permitido de 1 a 3 personagens, na mesma sala
-#
-# Resultado: são executadas as funções cujo nome é o nome
-# especificado seguido do tempo decorrido, em décimos de segundo
-# A função com o nome especificado seguido de "0" é executada
-# quando o objeto for apagado.
-#
-# Na função:
-# arg0 a arg2 = personagens
-# arg3 = objeto evtempo
-#
-inttempo tempo1 # Para gerar eventos de tempo
-uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
-txt100 func # Nome da função que deve chamar
-uint8 tfunc # Tamanho de func em caracteres
-ref obj # Objeto que contém a função
-ref mob1 # Primeiro personagem
-ref mob2 # Segundo personagem
-ref mob3 # Terceito personagem
-
-func criar # Cria objeto
-  se txt(arg0) && ref(arg1)
-    ref r
-    r = criar("evtempo")
-    r.tempo1 = r.tempo2 = 1
-    r.obj = este
-    r.func = arg0
-    r.tfunc = inttotal(arg0)
-    r.mob1 = arg1, r.mob1.evento.addfim(r)
-    r.mob2 = arg2, r.mob2.evento.addfim(r)
-    r.mob3 = arg3, r.mob3.evento.addfim(r)
-
-func fim # Este objeto foi apagado
-  obj.[func]0(mob1, mob2, mob3, este)
-
-func e_saiu # Personagem saiu da sala
-  apagar(este)
-
-func e_fim # Personagem saiu do jogo
-  apagar(este)
-
-func tempo1_exec # Executa eventos
-  se !obj
-    apagar(este)
-    ret
-  fimse
-  prog p
-  uint32 x
-  uint32 v
-  x = 1000000, p.inifunc(obj, func)
-  enquanto p.lin
-    v = txt(p.texto, tfunc)
-    v > tempo2 && v < x && (x = v)
-    p.depois
-  efim
-  x == 1000000 && apagar(este)
-  v = tempo2
-  tempo1 = x - tempo2
-  tempo2 = x
-  obj.[func + v](mob1, mob2, mob3, este)

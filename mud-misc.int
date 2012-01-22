@@ -1,6 +1,13 @@
-classe m_tab
-# Tabelas
-# Deve ser usado como m_tab:variável ao invés de $m_tab.variável
+classe misc
+# Miscelânea: tabelas (variáveis) e funções
+# Deve ser usado como m:variável ao invés de $m.variável
+#
+# Objeto usado para acessar as saídas das salas
+comum ref obj
+#
+# Objetos usados em misc:separa, misc:sepitem e misc:sepperso
+comum txt100 sep1 # Objeto procurado
+comum txt100 sep2 # Objeto ou personagem destino
 #
 # Mensagem conforme o sexo
 const sletra0 = "a" # sletra[sexo] = "o" ou "a"
@@ -210,3 +217,123 @@ func def17 # Dragão
   def.5 += 2 # água
   def.12 += 2 # elétrico
   def.13 += 2 # vegetal
+
+func tempo # Eventos de tempo (cria objeto), vide classe evtempo
+  se txt(arg0) && ref(arg1)
+    ref r
+    r = criar("evtempo")
+    r.tempo1 = r.tempo2 = 1
+    r.obj = este
+    r.func = arg0
+    r.tfunc = inttotal(arg0)
+    r.mob1 = arg1, r.mob1.evento.addfim(r)
+    r.mob2 = arg2, r.mob2.evento.addfim(r)
+    r.mob3 = arg3, r.mob3.evento.addfim(r)
+
+func separa # Separa o nome do objeto do nome do destino
+# arg0 = texto completo
+# Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo
+  se txt(int(arg0)) == txt1(arg0)
+    misc:sep1 = txtsub(arg0, 0, 2)
+    misc:sep2 = txtsub(arg0, 2)
+  senao
+    misc:sep1 = txt1(arg0)
+    misc:sep2 = txt2(arg0)
+
+func sepitem # Procura o item destino
+# arg0 = personagem, misc:sep2 = nome do alvo
+# Retorna: o alvo ou nulo se não encontrar
+  listaitem i
+  nomeobj n
+  n.ini(misc:sep2, 1)
+  i = arg0.dentro1.ini
+  enquanto i
+    se arg0.visivel(i.obj) && n.nome(i.obj.ident)
+      ret i.obj
+    fimse
+    i.depois
+  efim
+  i = arg0.dono.dentro1.ini
+  enquanto i
+    se arg0.visivel(i.obj) && n.nome(i.obj.ident)
+      ret i.obj
+    fimse
+    i.depois
+  efim
+
+func sepperso # Procura o personagem destino
+# arg0 = personagem, misc:sep2 = nome do alvo
+# Retorna: o alvo ou nulo se não encontrar
+  listaitem i
+  nomeobj n
+  n.ini(misc:sep2, 1)
+  i = arg0.dentro2.ini
+  enquanto i
+    se arg0.visivel(i.obj) && n.nome(i.obj.ident)
+      ret i.obj
+    fimse
+    i.depois
+  efim
+  i = arg0.dono.dentro2.ini
+  enquanto i
+    se arg0.visivel(i.obj) && n.nome(i.obj.ident)
+      ret i.obj
+    fimse
+    i.depois
+  efim
+
+
+classe evtempo
+# Processa eventos de tempo
+#
+# Deve ser criado com:
+# misc:tempo("nome da função", personagens)
+# É permitido até 3 personagens.
+# Se um dos personagens mudar de sala, o evento é encerrado.
+#
+# Resultado: são executadas as funções cujo nome é o nome
+# especificado seguido do tempo decorrido, em décimos de segundo
+# A função com o nome especificado seguido de "0" é executada
+# quando o objeto for apagado.
+#
+# Na função:
+# arg0 a arg2 = personagens
+# arg3 = objeto evtempo
+#
+inttempo tempo1 # Para gerar eventos de tempo
+uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
+txt100 func # Nome da função que deve chamar
+uint8 tfunc # Tamanho de func em caracteres
+ref obj # Objeto que contém a função
+ref mob1 # Primeiro personagem
+ref mob2 # Segundo personagem
+ref mob3 # Terceito personagem
+
+func fim # Este objeto foi apagado
+  obj.[func]0(mob1, mob2, mob3, este)
+
+func e_saiu # Personagem saiu da sala
+  apagar(este)
+
+func e_fim # Personagem saiu do jogo
+  apagar(este)
+
+func tempo1_exec # Executa eventos
+  se !obj
+    apagar(este)
+    ret
+  fimse
+  prog p
+  uint32 x
+  uint32 v
+  x = 1000000, p.inifunc(obj, func)
+  enquanto p.lin
+    v = txt(p.texto, tfunc)
+    v > tempo2 && v < x && (x = v)
+    p.depois
+  efim
+  x == 1000000 && apagar(este)
+  v = tempo2
+  tempo1 = x - tempo2
+  tempo2 = x
+  obj.[func + v](mob1, mob2, mob3, este)

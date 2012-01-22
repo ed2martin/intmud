@@ -22,10 +22,14 @@ func exec1 # Executa o comando
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
   listaobj l0
-  l0.addfim(arg0, arg0.dono, arg0.eventos, arg0.dono.eventos)
-  enquanto l0 && !l0.ini.obj.evmover(arg0, arg1)
+  l0.addfim(arg0.evento)
+  enquanto l0 && !l0.ini.obj.e_mover(arg0, arg1)
     l0.ini.remove
   efim
+  se l0
+    ret
+  fimse
+  misc:obj = arg0
   s1 = arg0.dono
   s2 = s1.dir_[arg1]
   se l0 # Retorna se lista não estiver vazia
@@ -37,7 +41,7 @@ func exec1 # Executa o comando
     uint8 total
     total = s1.totalmove + s2.totalmove
     se arg0.move < total
-      arg0.msg("Você está cansad" + m_tab:sletra[arg0.sexo] + " demais.")
+      arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
       ret
     fimse
     arg0.move -= total / 2
@@ -110,7 +114,7 @@ classe com_abrir
 herda com2_comum
 func exec
   txt10 dir
-  dir = m_tab:d1[arg2]
+  dir = misc:d1[arg2]
   se arg0 == ""
     arg0.msg("Abrir o que?")
   senao dir
@@ -141,7 +145,7 @@ classe com_fechar
 herda com2_comum
 func exec
   txt10 dir
-  dir = m_tab:d1[arg2]
+  dir = misc:d1[arg2]
   se arg0 == ""
     msg("Abrir o que?")
   senao dir
@@ -184,8 +188,8 @@ func exec
   fimse
 # Executa eventos
   listaobj l0
-  l0.addfim(arg0, arg0.dono, arg0.eventos, arg0.dono.eventos)
-  enquanto l0 && l0.ini.obj.evfalar(este, arg0)
+  l0.addfim(arg0.evento)
+  enquanto l0 && l0.ini.obj.e_falar(arg0, arg2)
     l0.ini.remove
   efim
 
@@ -241,7 +245,7 @@ herda com2_comum
 const posic = 0
 func exec
   se arg0.b_tempo && arg0.senha
-    arg0.msg("Você está ocupad" + m_tab:sletra[arg0.sexo] + " demais para isso.")
+    arg0.msg("Você está ocupad" + misc:sletra[arg0.sexo] + " demais para isso.")
   senao
     arg0.msg("Até mais. Aguardamos o seu retorno.")
     apagar(arg0)
@@ -258,15 +262,18 @@ func exec
     ret
   fimse
   listaobj l
+  nomeobj n
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
-  arg0.itemnome(l, "1 " + arg2)
-  se l.ini
-    arg0.msg(txtmaimin(l.ini.obj.nome) + ".")
-    arg0.msg(l.ini.obj.descver)
-    ret
-  fimse
+  n.ini(arg2, 1)
+  enquanto l
+    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
+      arg0.msg(txtmaimin(l.ini.obj.nome) + ".")
+      arg0.msg(l.ini.obj.descver)
+      ret
+    fimse
+    l.ini.remove
+  efim
   arg0.msg("Você não vê isso.")
-  ret
 
 classe com_inv
 herda com2_comum
@@ -353,45 +360,134 @@ func equip
 
 classe com_pegar
 herda com2_comum
+const posic = 5
 func exec
-  se !arg2
-    arg0.msg("Pegar o que?")
-    ret
+  ref r # De onde pegar
+  misc:separa(arg2) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    r = arg0.dono
+  senao
+    r = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !r
+      arg0.msg("Você não vê " + t.1 + ".")
+      ret
+    senao !r.container
+      arg0.msg("Não é possível pegar nada de " + r.nome + ".")
+      ret
+    fimse
   fimse
-  listaobj l
-  l.addfim(arg0.dono.dentro1)
-  arg0.itemnome(l, arg2)
-  se !l.ini
-    arg0.msg("Você não vê isso.")
-    ret
-  fimse
+  nomeobj n # Para reconhecer os itens
+  listaobj l # A lista de itens
+  int1 pegou # Se pegou algum item
+  l.addfim(r.dentro1)
+  n.ini(arg2, 10)
+# Pega os itens
   enquanto l
-    l.ini.obj.dono = arg0
-    $mens.p(arg0, l.ini.obj)
-    $mens.mvis1("$P pega $r $a.")
+    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
+      pegou = 1
+      listaobj e
+      e.addfim(arg0.evento, l.ini.obj.evento, r.evento)
+      enquanto e && !e.ini.obj.e_pegar(arg0, l.ini.obj, r)
+        e.ini.remove
+      efim
+      se !e && t.1
+        l.ini.obj.dono = arg0
+        $mens.p(arg0, r, l.ini.obj)
+        $mens.mvis1("$P pega $s $o de $r $a.")
+      senao !e
+        l.ini.obj.dono = arg0
+        $mens.p(arg0, r, l.ini.obj)
+        $mens.mvis1("$P pega $s $o.")
+      fimse
+    fimse
     l.ini.remove
   efim
+  !pegou && arg0.msg("Você não vê isso.")
 
 classe com_soltar
 herda com2_comum
 func exec
-  se !arg2
-    arg0.msg("Soltar o que?")
-    ret
+  ref r # Aonde soltar
+  misc:separa(arg2) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    r = arg0.dono
+  senao
+    r = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !r
+      arg0.msg("Você não vê " + t.1 + ".")
+      ret
+    senao !r.container
+      arg0.msg("Não é possível colocar nada em " + r.nome + ".")
+      ret
+    fimse
   fimse
-  listaobj l
+  nomeobj n # Para reconhecer os itens
+  listaobj l # A lista de itens
+  int1 soltou # Se soltou algum item
   l.addfim(arg0.dentro1)
-  arg0.itemnome(l, arg2)
-  se !l.ini
-    arg0.msg("Você não vê isso.")
-    ret
-  fimse
+  n.ini(misc:sep1, 10)
   enquanto l
-    l.ini.obj.dono = arg0.dono
-    $mens.p(arg0, l.ini.obj)
-    $mens.mvis1("$P solta $r $a.")
+    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
+      soltou = 1
+      listaobj e
+      e.addfim(arg0.evento, l.ini.obj.evento, r.evento)
+      enquanto e && !e.ini.obj.e_soltar(arg0, l.ini.obj, r)
+        e.ini.remove
+      efim
+      se !e && t.1
+        l.ini.obj.dono = r
+        $mens.p(arg0, r, l.ini.obj)
+        $mens.mvis1("$P coloca $s $o em $r $a.")
+      senao !e
+        l.ini.obj.dono = r
+        $mens.p(arg0, r, l.ini.obj)
+        $mens.mvis1("$P solta $s $o.")
+      fimse
+    fimse
     l.ini.remove
   efim
+  !soltou && arg0.msg("Você não vê " + misc:sep1 + ".")
+
+classe com_dar
+herda com2_comum
+func exec
+  ref r # Para quem dar
+  misc:separa(arg2) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    arg0.msg("Dar itens para quem?")
+    ret
+  senao
+    r = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
+    se !r
+      arg0.msg("Você não vê " + t.1 + ".")
+      ret
+    senao !r.container
+      arg0.msg("Não é possível dar nada para " + r.nome + ".")
+      ret
+    fimse
+  fimse
+  nomeobj n # Para reconhecer os itens
+  listaobj l # A lista de itens
+  int1 soltou # Se deu algum item
+  l.addfim(arg0.dentro1)
+  n.ini(misc:sep1, 10)
+  enquanto l
+    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
+      soltou = 1
+      listaobj e
+      e.addfim(arg0.evento, l.ini.obj.evento, r.evento)
+      enquanto e && !e.ini.obj.e_dar(arg0, l.ini.obj, r)
+        e.ini.remove
+      efim
+      se !e
+        l.ini.obj.dono = r
+        $mens.p(arg0, r, l.ini.obj)
+        $mens.mvis1("$P dá $s $o para $r $a.")
+      fimse
+    fimse
+    l.ini.remove
+  efim
+  !soltou && arg0.msg("Você não vê " + misc:sep1 + ".")
 
 classe com_vestir
 herda com2_comum
@@ -589,7 +685,7 @@ func execgolpe # Realiza um ataque
     fimse
   fimse
 # Calcula dano sem modificadores
-  se m_tab:aktipo(tipo) # Checa se golpe normal ou especial
+  se misc:aktipo(tipo) # Checa se golpe normal ou especial
     dano = arg0.atkmag * forca / (arg1.defmag * 9000)
   senao
     dano = arg0.atknorm * forca / (arg1.defnorm * 9000)
