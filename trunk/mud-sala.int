@@ -40,8 +40,6 @@ func t_item_exec # Começar a apagar objetos
     apagar(dentro1.fim)
     dentro1.ini && t_item = 300 # 30 segundos para apagar o próximo
 
-func entrou # Entrou na sala; arg0=objeto do jogador
-
 func descsala # Retorna descrição da sala
 # arg0 = objeto que está vendo a descrição
 # arg1: +1 se mostra descrição completa, +2 se mostra saídas, +4 se mostra itens
@@ -55,10 +53,10 @@ func descsala # Retorna descrição da sala
     t.addfim("Está escuro...")
     sair
   casose
-    #t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo + "\b")
-    t.addfim("\b\c6" + s_titulo + "\b")
-    (arg1 & 1) && t.addfim(s_desc)
-    (arg1 & 2) && t.addfim(txtsai)
+    #t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo(arg0) + "\b")
+    t.addfim("\b\c6" + s_titulo(arg0) + "\b")
+    (arg1 & 1) && t.addfim(s_desc(arg0))
+    (arg1 & 2) && t.addfim(txtsai(arg0))
   casofim
   se arg1 & 4
     textotxt t2
@@ -76,6 +74,7 @@ func descsala # Retorna descrição da sala
 
 func txtsai # Retorna as saídas existentes
   txt40 sai
+  misc:obj = arg0
   sai = "" + tsai2("n") + tsai2("s") + tsai2("l") + tsai2("o")
   sai = sai + tsai2("ne") + tsai2("no") + tsai2("se")
   sai = sai + tsai2("so") + tsai2("c") + tsai2("b")

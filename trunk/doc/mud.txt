@@ -4,6 +4,8 @@ Classes:
 a_<nome da área>  Definições das áreas
 b_<nome da área>  Contém as propriedades herdadas pelas salas da área
 s_<nome da sala>  Uma sala
+p_<nome do personagem>  Um personagem
+i_<nome do item>  Um item
 com_<nome do comando>  Executa um comando; vide classe com2_comum
 com_magia_<nome da magia>  Executa uma magia
 
@@ -35,16 +37,33 @@ Executar um evento significa chamar uma função de todos os objetos
 dessa lista. Via de regra, o nome das funções começa com "e_".
 A lista é limpada automaciamente toda vez que o personagem muda de sala.
 
-O evento e_entrou (quando um personagem entra na sala) é um pouco diferente.
-Sendo P o personagem, é executada a função e_entrou de p.evento, p.dono
-e p.dono.evento.
+Quando um personagem entra numa sala é um pouco diferente. É executado:
+1. A função e_sala1 do próprio personagem
+3. A função e_sala da sala do personagem (objeto "dono")
+2. A função e_sala dos objetos em "listaobj evento" do personagem
+4. A função e_sala objetos em "listaobj evento" da sala do personagem
+Depois é mostrada a descrição da sala e executado o evento e_entrou
+normalmente (função e_entrou dos objetos na "listaobj evento" do personagem).
 
-Eventos existentes:
+Eventos que não precisam retornar nada:
 e_entrou(personagem) Personagem entrou na sala
 e_saiu(personagem) Personagem saiu da sala
 e_fim(personagem) Personagem saiu do jogo
-e_escr(personagem, texto) Personagem escreveu alguma coisa
-    Deve retornar verdadeiro ou 1 se deve cancelar a ação.
+e_falar(personagem, texto) Personagem disse algo (comando falar)
+
+Eventos que se retornar verdadeiro ou 1, deve cancelar a ação:
+e_escr(personagem, texto)
+    Personagem escreveu alguma coisa
+e_mover(personagem, texto contendo a direção)
+    Quer se movimentar na direção especificada
+e_pegar(personagem, item, de onde quer pegar)
+    Personagem quer pegar um item. Executado para os objetos envolvidos:
+    o personagem, o item e a sala ou container de onde quer pegar.
+    É recomendável enviar uma mensagem ao usuário se for cancelar a ação.
+e_soltar(personagem, item, aonde quer soltar)
+    Personagem quer soltar um item. Semelhante a e_pegar.
+e_dar(personagem, item, personagem que receberá o item)
+    Personagem quer dar um item. Semelhante a e_pegar.
 
 ----------------------------------------
 Salas (mud-sala.int)
@@ -58,7 +77,14 @@ Lista de personagens na sala
 *listaobj evento
 Objetos que recebem eventos da sala
 
+*const s_titulo = "texto"
+Retorna o título da sala. arg0 é quem está requisitanto o título.
+
+*const s_desc = "texto"
+Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
+
 *ref dir_[direção]
+Antes de acssar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
@@ -66,6 +92,7 @@ Se estiver ausente, não há sala nessa direção
 
 *uint8 tipo_[direção]
 *const tipoini_[direção]
+Antes de acssar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
 Tipo é o valor atual, geralmente definido dessa forma: uint8 tipo_s
 TipoIni é o valor inicial, geralmente definido dessa forma: const tipo_s = 2
@@ -75,18 +102,21 @@ TipoIni é o valor inicial, geralmente definido dessa forma: const tipo_s = 2
 3 = está trancado
 
 *const inv_[direção]
+Antes de acssar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
 *const tranc_[direção]
+Antes de acssar fazer misc:obj=personagem
 0 = porta normal
 1 = fechado quando alguém passar pela porta
 2 = trancado quando for fechado
 3 = trancado quando for fechado ou alguém passar pela porta
 
 *const chave_[direção]
+Antes de acssar fazer misc:obj=personagem
 Texto que contém o código da chave que destranca a porta
 
-*func txtsai
+*func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
 *func descsala( jogador, modo )
@@ -98,23 +128,8 @@ Somar 2 para mostrar saídas
 *func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-*func entrou
+*func e_entrou
 Executado logo que o personagem entra na sala. arg0=objeto que entrou.
-Geralmente o que essa função faz é mostrar a descrição da sala,
-bem como as saídas existentes.
-
-*func entrou[tempo em décimos de segundo]
-Executado depois do jogador entrar na sala, após o tempo especificado
-no nome da função (em décimos de segundo).
-Na função: arg0=objeto do jogador.
-Exemplo:
-func entrou10 # Executado 1 segundo após entrar na sala
-msg("Alguém disse bom dia.") # Envia mensagem para o jogador
-
-*func escr
-Executado quando um jogador digita alguma coisa na sala.
-Na função: arg0=objeto do jogador, arg1=o que digitou.
-Deve retornar verdadeiro se o comando já foi processado.
 
 ----------------------------------------
 Personagens e itens (mud-perso.int)
@@ -170,6 +185,9 @@ Descrição quando está na sala; arg0=quem quer ver
 
 *texto descver
 Descrição, quando olha para o objeto; arg0=quem quer ver
+
+*int1 container
+Verdadeiro (=1) se pode receber itens
 
 *func itemnome( lista , texto )
 Procura um item pelo nome

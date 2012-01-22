@@ -18,7 +18,7 @@ não há nenhum sol ou algo que produza luz."
 const s_pacifico = 1
 inttempo espera
 
-func e_entrou
+func e_sala
   se espera == 0
     espera = 10
 
@@ -38,16 +38,139 @@ func espera_exec
 
 classe s_ini002
 herda b_ini
+const s_titulo = "Jardim"
+const s_desc = "Isso é o que restou de um pequeno jardim. Não é grande, mas a grama\n\
+já virou mato, de modo que mal se vê as cercas à sua volta.\n\
+Há uma placa aqui, com os seguintes dizeres:\n\
+Tecle as direções cardeais para ir de um lugar a outro: n s l o\n\
+Há também as direções intermediárias: ne no se so\n\
+Em alguns lugares pode-se ir para cima e para baixo: c b"
+const dir_l = $s_ini003
+
+
+classe s_ini003
+herda b_ini
+const s_titulo = "Centro do jardim"
+const s_desc = "Aqui o mato é ainda mais alto. À oeste o mato é um pouco mais baixo,\n\
+enquanto que ao norte você vê uma pequena trilha. À leste e ao sul não é\n\
+possível saber o que há além do mato."
+const dir_o = $s_ini002
+const dir_s = $s_ini004
+const dir_l = $s_ini005
+const dir_n = $s_ini006
+
+
+classe s_ini004
+herda b_ini
+const s_titulo = "Jardim"
+const s_desc = "Aqui o mato é um pouco mais baixo que ao norte. Há algumas pedras\n\
+espalhadas pelo chão. Você anda com cuidado para não torcer o pé.\n\
+Ao sul nota-se claramente a certa que delimita o jardim."
+const dir_n = $s_ini003
+const dir_ne = $s_ini005
+func ini
+  criar("i_inipedra", este) # Cria uma pedra
+  evento.addfim(este) # Receber eventos da própria sala
+func e_pegar # Pegar alguma coisa
+  se arg1.nome == "pedra"
+    criar("i_inipedra", arg0) # Cria uma pedra para o jogador
+    $mens.p(arg0, arg1)
+    $mens.mvis1("$P pega $r $a.") # Avisa que pegou uma pedra
+    ret 1 # Para não pegar a pedra
+func e_soltar # Soltar alguma coisa
+  se arg1.nome == "pedra"
+    apagar(arg1) # Apagará a pedra
+
+
+classe s_ini005
+herda b_ini
+const s_titulo = "Jardim"
+const s_desc = "O mato termina repentinamente nessa direção. Há uma parede à leste. Algum\n\
+vândalo pixou uma mensagem que mal se entende. Depois de um tempo você lê:\n\
+Se houvesse uma minhoca aqui, e você quisesse pegá-la e depois soltá-la,\n\
+bastaria teclar pegar minhoca, e em seguida, teclar soltar minhoca.\n\
+E se encontrasse um pescador, poderia teclar: dar minhoca pescador\n\
+Pode-se abreviar muita coisa, escrevendo só o começo das palavras. Exemplo,\n\
+peg minho ou mesmo pe mi ao invés de pegar minhoca."
+const dir_o = $s_ini003
+const dir_so = $s_ini004
+const dir_no = $s_ini006
+
+
+classe s_ini006
+herda b_ini
+const s_titulo = "Trilha"
+const s_desc = "O mato chega a um metro aqui, e ao sul crece ainda mais. Na direção norte,\n\
+vai diminuindo gradativamente. É possível seguir também a sudeste.\n\
+Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
+const dir_s = $s_ini003
+const dir_n = $s_ini012
+const dir_se = $s_ini005
+func ini
+  sala:ini
+  criar("p_inijardim", este)
+func e_sala # Alguém entrou
+  arg0.jog && arg0.evento.addfim(este) # Receber eventos do personagem
+func e_mover # Jogador quer se movimentar
+  se arg1 == "n"
+    arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
+    arg0.msg("Então você recua.")
+    ret 1
+
+
+classe p_inijardim
+herda comum_fora
+const perso = 1 # Para identificar que é personagem
+const nome = "Jardineiro"
+const ident = nome
+const descpos = "Um jardineiro está sentado aqui."
+const sexo = 1 # 0=feminino, 1=masculino
+const descver = "Você não vê nada de especial."
+func ini
+  dono = arg0
+  dono.evento.addfim(este) # Receber eventos da sala
+  evento.addfim(este) # Receber eventos do personagem
+func e_sala # Alguém entrou
+  arg0.jog && misc:tempo("aviso", arg0)
+func e_sala1 # Jardineiro mudou de sala: mantém eventos do personagem
+  evento.addfim(este)
+func aviso10
+  arg0.msg("Jardineiro disse: Olá.")
+func aviso20
+  arg0.msg("Jardineiro disse: Preciso de uma pedra.")
+const container = 1 # Para poder receber itens
+func e_dar # Alguém deu algum item
+  se arg2 == este # Dar para o jardineiro
+    se arg1.nome == "pedra"
+      apagar(arg1) # Apaga o item
+      arg0.msg("Você deu uma pedra para o Jardineiro.")
+      arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
+      arg0.evento.remove(dono) # Sala não recebe mais eventos do personagem
+    senao
+      arg0.msg("Jardineiro não aceita " + arg1.nome + ".")
+    fimse
+    ret 1 # Para não receber o item
+
+classe i_inipedra
+herda comum_item
+const nome = "pedra"
+const sexo = 0
+const descpos = "Aqui tem uma pedra."
+
+
+classe s_ini012
+herda b_ini
 const s_titulo = "Sala ampla"
 const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal assombrada.\n\
 Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
 e uma passagem ao norte."
-const dir_l = $s_ini004
-const dir_n = $s_ini003
+const dir_l = $s_ini014
+const dir_n = $s_ini013
+const dir_s = $s_ini006
 const tipoini_n = 2
 
 
-classe s_ini003
+classe s_ini013
 herda b_ini
 const s_titulo = "Passagem"
 const s_desc = "Um pequeno quarto escuro, que deveria levar a algum lugar, mas você não vê\n\
@@ -57,16 +180,16 @@ const dir_s = $s_ini002
 const tipoini_s = 2
 
 
-classe s_ini004
+classe s_ini014
 herda b_ini
 const s_titulo = "Corredor"
 const s_desc = "Você está em um corredor que se estende a oeste. Mais adiante há uma\n\
 sala bastante ampla. À leste há uma escada para o andar de baixo."
-const dir_s = $s_ini005
-const dir_o = $s_ini002
+const dir_s = $s_ini015
+const dir_o = $s_ini012
 
-func e_entrou
-  arg0.jog && evtempo:criar("entrou", arg0)
+func e_sala
+  arg0.jog && misc:tempo("entrou", arg0)
 func entrou10
   arg0.msg("Alguém disse olá")
 
@@ -78,19 +201,20 @@ func ini
   r.nivel = 1
 
 
-classe s_ini005
+classe s_ini015
 herda b_ini
 const s_titulo = "Sala de estar"
 const s_desc = "Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
 ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
 corredor estreito para leste e uma escada para o andar de cima, ao sul."
-const dir_n = $s_ini004
-const dir_l = $s_ini006
+const dir_n = $s_ini014
+const dir_l = $s_ini016
+
+func e_sala
+  arg0.jog && arg0.evento.addfim(este) # Receber eventos do personagem
 
 func e_entrou
-  se arg0.jog
-    arg0.msg("Aqui você pode salvar o personagem teclando salvar")
-    arg0.evento.addfim(este) # Receber eventos do personagem
+  arg0.msg("Aqui você pode salvar o personagem teclando salvar")
 
 func e_escr # Personagem escreveu alguma coisa
   se arg1 == "salvar"
@@ -100,7 +224,7 @@ func e_escr # Personagem escreveu alguma coisa
   ret
 
 
-classe s_ini006
+classe s_ini016
 herda b_ini
 const s_titulo = "Forno microondas"
 const s_desc = "Misteriosamente você acaba de entrar em um forno de microondas.\n\
@@ -108,4 +232,4 @@ Há um copo de leite gigante aqui. A tampa é tão pesada que não é possível\n\
 saber se está fechada ou trancada. De repente apareceu alguém lá fora e\n\
 apertou alguns botões. Está ficando quente, muito quente. Você desmaia."
 const s_morre = 1
-const dir_o = $ini005
+const dir_o = $ini015
