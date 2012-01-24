@@ -461,7 +461,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cUInt32:
         if (vetor <= 1)
         {
-            int x = *(short*)endvar;
+            int x = *(int*)endvar;
             *(int*)destino = x;
         }
         else
