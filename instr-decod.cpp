@@ -558,14 +558,18 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_diferente:    strcpy(nome, " != "); indica=16; break;
         case exo_e:            strcpy(nome, " && "); indica=16; break;
         case exo_ou:           strcpy(nome, " || "); indica=16; break;
+        case exo_int2:         strcpy(nome, " ? "); indica=16; break;
+        case exo_dponto2:      strcpy(nome, " : "); indica=16; break;
         case exo_atrib:        strcpy(nome, " = ");  indica=16; break;
         case exo_igualmul:     strcpy(nome, " *= "); indica=16,origem+=2; break;
         case exo_igualdiv:     strcpy(nome, " /= "); indica=16,origem+=2; break;
         case exo_igualporcent: strcpy(nome, " %= "); indica=16,origem+=2; break;
         case exo_igualadd:     strcpy(nome, " += "); indica=16,origem+=2; break;
         case exo_igualsub:     strcpy(nome, " -= "); indica=16,origem+=2; break;
-        case exo_ee:      indica=0x80; break;
-        case exo_ouou:    indica=0x80; break;
+        case exo_ee:
+        case exo_ouou:
+        case exo_int1:
+        case exo_dponto1:      indica=0x80; break;
         }
         origem++;
 

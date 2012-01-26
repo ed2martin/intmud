@@ -314,10 +314,7 @@ func fechou # Executado quando o objeto sock é apagado
     apagar(este)
 
 func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
-  se senha
-    sock.p_senha1
-  senao
-    sock.p_senha2
+  senha ? sock.p_senha1 : sock.p_senha2
 
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar

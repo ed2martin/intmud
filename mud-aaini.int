@@ -110,7 +110,7 @@ func ini
   sala:ini
   criar("p_inijardim", este)
 func e_sala # Alguém entrou
-  arg0.jog && arg0.evento.addfim(este) # Receber eventos do personagem
+  arg0.jog ? arg0.evento.addfim(este) # Receber eventos do personagem
 func e_mover # Jogador quer se movimentar
   se arg1 == "n"
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
@@ -131,7 +131,7 @@ func ini
   dono.evento.addfim(este) # Receber eventos da sala
   evento.addfim(este) # Receber eventos do personagem
 func e_sala # Alguém entrou
-  arg0.jog && misc:tempo("aviso", arg0)
+  arg0.jog ? misc:tempo("aviso", arg0)
 func e_sala1 # Jardineiro mudou de sala: mantém eventos do personagem
   evento.addfim(este)
 func aviso10
@@ -176,7 +176,7 @@ const s_titulo = "Passagem"
 const s_desc = "Um pequeno quarto escuro, que deveria levar a algum lugar, mas você não vê\n\
 nenhuma saída. As paredes estão cinzas de sujeira e há teias de aranha\n\
 por toda parte. Nota-se que ninguém vem aqui há anos."
-const dir_s = $s_ini002
+const dir_s = $s_ini012
 const tipoini_s = 2
 
 
@@ -189,7 +189,7 @@ const dir_s = $s_ini015
 const dir_o = $s_ini012
 
 func e_sala
-  arg0.jog && misc:tempo("entrou", arg0)
+  arg0.jog ? misc:tempo("entrou", arg0)
 func entrou10
   arg0.msg("Alguém disse olá")
 
@@ -211,7 +211,7 @@ const dir_n = $s_ini014
 const dir_l = $s_ini016
 
 func e_sala
-  arg0.jog && arg0.evento.addfim(este) # Receber eventos do personagem
+  arg0.jog ? arg0.evento.addfim(este) # Receber eventos do personagem
 
 func e_entrou
   arg0.msg("Aqui você pode salvar o personagem teclando salvar")

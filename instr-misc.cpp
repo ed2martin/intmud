@@ -52,6 +52,10 @@ int Instr::Prioridade(int operador)
     case exo_diferente:  return 10;
     case exo_e:          return 11;
     case exo_ou:         return 12;
+    case exo_int1:       return 13;
+    case exo_int2:       return 13;
+    case exo_dponto1:    return 13;
+    case exo_dponto2:    return 13;
     case exo_atrib:      return 20;
     case exo_igualmul:   return 20;
     case exo_igualdiv:   return 20;
@@ -495,10 +499,14 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
             break;
         case exo_e:
         case exo_ou:
+        case exo_int2:
+        case exo_dponto2:
             contagem--;
             break;
         case exo_ee:
         case exo_ouou:
+        case exo_int1:
+        case exo_dponto1:
             contagem++;
             break;
         default:
@@ -750,6 +758,10 @@ const char * Instr::NomeExpr(int valor)
     case exo_fim:           return "exo_fim";
     case exo_ee:            return "exo_ee";
     case exo_ouou:          return "exo_ouou";
+    case exo_int1:          return "exo_int1";
+    case exo_int2:          return "exo_int2";
+    case exo_dponto1:       return "exo_dponto1";
+    case exo_dponto2:       return "exo_dponto2";
 
     case ex_var1:           return "ex_var1";
     case ex_var2:           return "ex_var2";
