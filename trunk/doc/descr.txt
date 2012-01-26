@@ -393,6 +393,22 @@ variável = variável - valor
 variável = variável * valor
 variável = variável / valor
 
+Operadores ? e : são semelhantes às instruções se e senao:
+a ? b : c
+Se a for verdadeiro, o resultado é b. Se for falso, é c.
+a ? b
+Se a for verdadeiro, o resultado é b. Se for falso, é nulo.
+a : b
+Pouco usado. Calcula a e b, mas o resultado é sempre b.
+Pode-se combinar vários ? e : como a seguir:
+a ? b : c ? d : e
+Nesse caso, se a for verdadeiro, o resultado é b.
+Se for falso, checa c. Se c for verdadeiro o resultado é d.
+Caso contrário, é e.
+Importante: deve-se separar os operadores ? e : com espaço. Exemplo:
+a ? b : c # a verdadeiro, o resultado é b, a falso o resultado é c
+a ? b:c # Nesse caso, se a for verdadeiro, chama a função c da classe b
+
 Via de regra, os operadores binários convertem o segundo operando para
 o mesmo tipo do primeiro. Exemplos:
 10 < 2 # Verdadeiro; está comparando números
@@ -402,7 +418,7 @@ o mesmo tipo do primeiro. Exemplos:
 "1" + 2 # É o mesmo que "1" + "2", portanto resulta em "12"
 1 + "2" # É o mesmo que 1 + 2, portanto resulta em 3
 
-Existe uma ordem de precedência entre os operadores. POor exemplo,
+Existe uma ordem de precedência entre os operadores. Por exemplo,
 multiplicações e divisões são calculadas antes de soma e subtração.
 Porém, uma soma entre parênteses é calculada antes, pois os parênteses
 tem precedência sobre a multiplicação e a divisão.
@@ -419,6 +435,7 @@ O IntMUD segue a seguinte ordem de precedência:
 == === !=       Igual a, exatamente igual a e diferente de
 &&              E lógico
 ||              Ou lógico
+? e :           Comparação, semelhante às instruções se e senao
 = *= /= += -=   Atribuição e formas compactas de atribuição
 
 Todos os operadores são processados da esquerda para a direita, com exceção

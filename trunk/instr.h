@@ -414,7 +414,11 @@ enum Expressao
     exo_igualporcent,///< Operador: a%=b  (segue exo_porcent, exo_igual)
     exo_igualadd,   ///< Operador: a+=b   (segue exo_add, exo_igual)
     exo_igualsub,   ///< Operador: a-=b   (segue exo_sub, exo_igual)
+    exo_int2,       ///< Operador: Fim de ?
+    exo_dponto2,    ///< Operador: Fim de :
     exo_fim,        ///< Operador: Marca o fim dos operadores
+    exo_int1,       ///< Operador: Início de ?
+    exo_dponto1,    ///< Operador: Início de :
     exo_ee,         ///< Operador: Início do operador &
     exo_ouou,       ///< Operador: Início do operador |
 

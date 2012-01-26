@@ -444,8 +444,12 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_igualadd:     strcpy(nome, " +="); break;
         case exo_igualsub:     strcpy(nome, " -="); break;
         case exo_fim:        break; // Marca o fim dos operadores
-        case exo_ee:           strcpy(nome, " &início"); break;
-        case exo_ouou:         strcpy(nome, " |início"); break;
+        case exo_ee:           strcpy(nome, " &&início"); break;
+        case exo_ouou:         strcpy(nome, " ||início"); break;
+        case exo_int1:         strcpy(nome, " ?início"); break;
+        case exo_int2:         strcpy(nome, " ?fim"); break;
+        case exo_dponto1:      strcpy(nome, " :início"); break;
+        case exo_dponto2:      strcpy(nome, " :fim"); break;
         }
         origem++;
         if (*nome==0 || (int)strlen(nome)+4 > tamanho)

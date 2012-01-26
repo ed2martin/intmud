@@ -1363,6 +1363,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                        sinal=exo_ou,origem++;
                   break;
         case '^': sinal=exo_b_ouou; break;
+        case '?': sinal=exo_int2; break;
+        case ':': sinal=exo_dponto2; break;
 
         default:
             mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
@@ -1391,10 +1393,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         if (destino >= dest_fim-2)
             continue;
 
-        if (sinal==exo_e)
-            *destino++ = exo_ee;
-        if (sinal==exo_ou)
-            *destino++ = exo_ouou;
+        switch (sinal)
+        {
+        case exo_e: *destino++ = exo_ee; break;
+        case exo_ou: *destino++ = exo_ouou; break;
+        case exo_int2: *destino++ = exo_int1; break;
+        case exo_dponto2: *destino++ = exo_dponto1; break;
+        }
 
         *topo++ = modo;
         modo = sinal;

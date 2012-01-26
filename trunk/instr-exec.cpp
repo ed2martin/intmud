@@ -1533,6 +1533,44 @@ bool Instr::ExecX()
             VarAtual[0].tamanho = 0;
             VarAtual++;
             break;
+        case exo_int1:          // Operador: Início do operador "?"
+            if (VarFuncIni(VarAtual))
+                break;
+            FuncAtual->expr++;
+            if (VarAtual->getBool()==false)
+            {
+                const char * p = ProcuraExpr(FuncAtual->expr, exo_int2);
+                assert(p!=0);
+                FuncAtual->expr = p + 1;
+                ApagarVar(VarAtual);
+                if (!CriarVar(InstrNulo))
+                    return RetornoErro();
+                break;
+            }
+            ApagarVar(VarAtual);
+            break;
+        case exo_int2:          // Operador: Fim do operador "?"
+            FuncAtual->expr++;
+            while (true)
+            {
+                const char * p = FuncAtual->expr;
+                if (*p == exo_int1)
+                    p = ProcuraExpr(p + 1, exo_int2);
+                else if (*p == exo_dponto1)
+                    p = ProcuraExpr(p + 1, exo_dponto2);
+                else
+                    break;
+                assert(p!=0);
+                FuncAtual->expr = p + 1;
+            }
+            break;
+        case exo_dponto1:       // Operador: Início do operador ":"
+            FuncAtual->expr++;
+            ApagarVar(VarAtual);
+            break;
+        case exo_dponto2:       // Operador: Fim do operador ":"
+            FuncAtual->expr++;
+            break;
 
     // A partir daqui processa funções e variáveis
     // Cria-se uma variável cVarNome, que contém parte do nome da variável
