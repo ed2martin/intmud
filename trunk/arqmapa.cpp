@@ -156,6 +156,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 case Instr::cConstTxt:
                 case Instr::cConstNum:
                 case Instr::cConstExpr:
+                case Instr::cConstVar:
                     tipo=ParamVar;
                     break;
                 case Instr::cFunc:

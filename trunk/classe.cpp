@@ -231,6 +231,7 @@ bool TClasse::AcertaComandosFim(int valor)
     case Instr::cConstTxt:
     case Instr::cConstNum:
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 1;
@@ -261,6 +262,7 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cConstTxt:
         case Instr::cConstNum:
         case Instr::cConstExpr:
+        case Instr::cConstVar:
             p[Instr::endAlin] = 0;
             indent = 0;
             break;
@@ -848,6 +850,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             case Instr::cConstTxt:
             case Instr::cConstNum:
             case Instr::cConstExpr:
+            case Instr::cConstVar:
                 total++, p+=Num16(p);
                 break;
             case Instr::cFunc:
@@ -890,6 +893,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             case Instr::cConstTxt:
             case Instr::cConstNum:
             case Instr::cConstExpr:
+            case Instr::cConstVar:
                 var1[total++] = p;
                 p+=Num16(p);
                 break;

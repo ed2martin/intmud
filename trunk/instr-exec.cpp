@@ -324,12 +324,14 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
             case cConstTxt:
             case cConstNum:
             case cConstExpr:
+            case cConstVar:
                 instr = vazio;
             }
         break;
     case cConstTxt:
     case cConstNum:
     case cConstExpr:
+    case cConstVar:
         expr = instr + instr[endIndice];
         break;
     default:
@@ -530,6 +532,7 @@ bool Instr::ExecX()
                 case cConstTxt:
                 case cConstNum:
                 case cConstExpr:
+                case cConstVar:
                     FuncAtual->linha = 0;
                 }
             if (FuncAtual->linha == 0)
@@ -729,6 +732,7 @@ bool Instr::ExecX()
             {
             case cRet2:
             case cConstExpr:
+            case cConstVar:
                 FuncAtual->expr = 0;
                 switch (FuncAtual->tipo)
                 {
@@ -1300,16 +1304,25 @@ bool Instr::ExecX()
                 break;
             }
         case exo_atrib:      // Operador de atribuição: a=b
-            if (VarAtual[-1].defvar[2] == cVarFunc)
+            if (VarAtual[-1].defvar[2] == cVarFunc ||
+                VarAtual[-1].defvar[2] == cConstVar)
             {
                 if (FuncAtual+1 >= FuncFim)
                     return RetornoErro();
                 FuncAtual->expr++;
                 FuncAtual++;
-                FuncAtual->linha = VarAtual[-1].defvar +
-                        Num16(VarAtual[-1].defvar);
+                const char * defvar = VarAtual[-1].defvar;
+                if (defvar[2] == cVarFunc)
+                {
+                    FuncAtual->linha = defvar + Num16(defvar);
+                    FuncAtual->expr = 0;
+                }
+                else
+                {
+                    FuncAtual->linha = defvar;
+                    FuncAtual->expr = defvar + defvar[endIndice];
+                }
                 FuncAtual->este = (TObjeto*)VarAtual[-1].endvar;
-                FuncAtual->expr = 0;
                 FuncAtual->inivar = VarAtual;
                 FuncAtual->fimvar = VarAtual + 1;
                 FuncAtual->numarg = 1;
@@ -1814,7 +1827,7 @@ bool Instr::ExecX()
                     break;
                 }
             // Função varfunc
-                if (defvar[2]==cVarFunc)
+                if (defvar[2]==cVarFunc || defvar[2]==cConstVar)
                 {
                     ApagarVar(v+1);
                   //  if (objeto==0)

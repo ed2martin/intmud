@@ -200,6 +200,11 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         coment=0, expr=endNome;
         while (origem[expr++]);
         break;
+    case cConstVar:
+        strcpy(nome, "varconst");
+        coment=0, expr=endNome;
+        while (origem[expr++]);
+        break;
     case cFunc:      strcpy(nome, "func"); break;
     case cVarFunc:   strcpy(nome, "varfunc"); break;
 

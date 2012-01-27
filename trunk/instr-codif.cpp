@@ -282,6 +282,7 @@ static const TListaInstr ListaInstr[] = {
     { "uint16",    cUInt16 },
     { "uint32",    cUInt32 },
     { "uint8",     cUInt8 },
+    { "varconst",  cConstVar },
     { "varfunc",   cVarFunc }
 };
 
@@ -486,6 +487,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 //    origem++;
                 if (destino[endProp] && (destino[2]<cVariaveis ||
                             destino[2]==cConstExpr ||
+                            destino[2]==cConstVar ||
                             destino[2]==cFunc ||
                             destino[2]==cVarFunc))
                 {
@@ -633,7 +635,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             {
                 if (*origem<'0' || *origem>'9')
                 {
-                    if (dest_ini[2] == cConstExpr)
+                    if (dest_ini[2] == cConstExpr || dest_ini[2] == cConstVar)
                         copiastr(dest_ini, "Constantes não podem ser vetores",
                                  tamanho);
                     else
@@ -699,7 +701,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino = copiastr(destino+endNome, nome);
         destino++;
     // Variável Const
-        if (dest_ini[2] == cConstExpr)
+        if (dest_ini[2] == cConstExpr || dest_ini[2] == cConstVar)
         {
             if (*origem==0 || *origem=='#')
             {
@@ -765,6 +767,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         proc_expr=true;
         break;
     case cConstExpr: // Variável Const - já foi verificado acima
+    case cConstVar: // Variável VarConst - já foi verificado acima
         break;
     case cCasoSe:
         if (*origem==0 || *origem=='#')
