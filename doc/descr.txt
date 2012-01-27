@@ -348,6 +348,18 @@ func teste
 # Vai fazer: este.msg("teste")
   x = "teste"
 
+Varfunc também pode ser escrita na forma de constante. Nesse caso, deve-se
+definir como varconst ao invés de const. Exemplo:
+int16 x1
+varconst x = args ? (x1 = arg0 * 100) : x1 / 100
+É o mesmo que:
+int16 x1
+varfunc x
+  se args
+    x1 = arg0 * 100
+  senao
+    ret x1 / 100
+
 
 *** Operadores
 

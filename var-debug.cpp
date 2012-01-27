@@ -247,6 +247,7 @@ void TVarDebug::Exec()
     case cConstTxt:
     case cConstNum:
     case cConstExpr:
+    case cConstVar:
         return;
     }
 

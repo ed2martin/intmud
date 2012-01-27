@@ -123,7 +123,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     }
 // Constante
     if (cod==cConstNulo || cod==cConstTxt ||
-        cod==cConstNum  || cod==cConstExpr)
+        cod==cConstNum  || cod==cConstExpr || cod==cConstVar)
     {
         if (esperando!=1)
             esperando=3;
@@ -302,29 +302,39 @@ void Instr::ApagarRet(TVariavel * v)
 bool Instr::VarFuncIni(TVariavel * varini)
 {
     for (TVariavel * v=VarAtual; v>=varini; v--)
-        if (v->defvar[2] == cVarFunc)
+    {
+        const char * defvar = v->defvar;
+        if (defvar[2] != cVarFunc && defvar[2] != cConstVar)
+            continue;
+        if (FuncAtual+1 >= FuncFim)
+            return false;
+    // Cria função
+        FuncAtual++;
+        if (defvar[2] == cVarFunc)
         {
-            if (FuncAtual+1 >= FuncFim)
-                return false;
-        // Cria função
-            FuncAtual++;
-            FuncAtual->linha = v->defvar + Num16(v->defvar);
-            FuncAtual->este = (TObjeto*)v->endvar;
+            FuncAtual->linha = defvar + Num16(defvar);
             FuncAtual->expr = 0;
-            FuncAtual->inivar = VarAtual + 1;
-            FuncAtual->fimvar = VarAtual + 1;
-            FuncAtual->numarg = 0;
-            FuncAtual->tipo = 1;
-            FuncAtual->indent = 0;
-            if (FuncAtual >= FuncPilha)
-            {
-                FuncAtual->objdebug = FuncAtual[-1].objdebug;
-                FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
-            }
-            else
-                FuncAtual->funcdebug = 0;
-            return true;
         }
+        else
+        {
+            FuncAtual->linha = defvar;
+            FuncAtual->expr = defvar + defvar[endIndice];
+        }
+        FuncAtual->este = (TObjeto*)v->endvar;
+        FuncAtual->inivar = VarAtual + 1;
+        FuncAtual->fimvar = VarAtual + 1;
+        FuncAtual->numarg = 0;
+        FuncAtual->tipo = 1;
+        FuncAtual->indent = 0;
+        if (FuncAtual >= FuncPilha)
+        {
+            FuncAtual->objdebug = FuncAtual[-1].objdebug;
+            FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
+        }
+        else
+            FuncAtual->funcdebug = 0;
+        return true;
+    }
     return false;
 }
 
@@ -343,7 +353,8 @@ bool Instr::VarFuncFim()
     {
         vfunc--;
         assert(vfunc >= VarPilha);
-        if (vfunc->defvar[2] == cVarFunc) // Se achou varfunc...
+        if (vfunc->defvar[2] == cVarFunc || // Se achou varfunc...
+            vfunc->defvar[2] == cConstVar)
             break;
         if (vfunc->tamanho == 0) // Se está definida em outro lugar...
             continue;
@@ -567,6 +578,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cConstTxt:
     case cConstNum:
     case cConstExpr:        return "const";
+    case cConstVar:         return "varconst";
     case cFunc:             return "func";
     case cVarFunc:          return "varfunc";
 
@@ -648,6 +660,7 @@ const char * Instr::NomeComando(int valor)
     case cConstTxt:         return "cConstTxt";
     case cConstNum:         return "cConstNum";
     case cConstExpr:        return "cConstExpr";
+    case cConstVar:         return "cConstVar";
     case cFunc:             return "cFunc";
     case cVarFunc:          return "cVarFunc";
 

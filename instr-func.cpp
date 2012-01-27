@@ -1277,7 +1277,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         //printf("Variável [%s]\n", defvar+5); fflush(stdout);
     // Se for variável, copia texto
         if (defvar[2]!=cFunc && defvar[2]!=cVarFunc &&
-                defvar[2]!=cConstExpr)
+                defvar[2]!=cConstExpr && defvar[2]!=cConstVar)
         {
             TVariavel v;
             x = c->IndiceVar[x];

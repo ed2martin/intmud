@@ -109,6 +109,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cConstTxt:
     case Instr::cConstNum:
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:   return 0;
 
@@ -178,6 +179,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cConstTxt:  return varTxt;
     case Instr::cConstNum:  return varDouble;
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:   return varOutros;
 
@@ -483,6 +485,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cConstTxt:
     case Instr::cConstNum:
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         endvar = destino;
@@ -730,6 +733,7 @@ bool TVariavel::getBool()
             }
         }
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
@@ -886,6 +890,7 @@ int TVariavel::getInt()
             return (valor<0x7FFFFFFFLL ? valor : 0x7FFFFFFF);
         }
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
@@ -1044,6 +1049,7 @@ double TVariavel::getDouble()
             return (negativo ? -valor : valor);
         }
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
@@ -1242,6 +1248,7 @@ const char * TVariavel::getTxt()
             return txtnum;
         }
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         return "";
@@ -1391,6 +1398,7 @@ void TVariavel::setInt(int valor)
     case Instr::cConstTxt:
     case Instr::cConstNum:
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         break;
@@ -1489,6 +1497,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cConstTxt:
     case Instr::cConstNum:
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         break;
@@ -1602,6 +1611,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cConstTxt:
     case Instr::cConstNum:
     case Instr::cConstExpr:
+    case Instr::cConstVar:
     case Instr::cFunc:
     case Instr::cVarFunc:
         break;

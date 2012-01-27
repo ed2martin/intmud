@@ -278,6 +278,7 @@ enum Comando
     cConstTxt,          ///< Var: Constante = texto
     cConstNum,          ///< Var: Constante = número
     cConstExpr,         ///< Var: Constante = expressão numérica
+    cConstVar,          ///< Var: Constante do tipo constvar
     cFunc,              ///< Var: Função
     cVarFunc,           ///< Var: Função
         /**< @note Para as variáveis após cVarFunc, deve-se

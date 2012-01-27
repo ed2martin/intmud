@@ -117,6 +117,7 @@ char * TMudarAux::ProcuraInstr(char * comando, const char * nomevar)
         case Instr::cConstTxt:
         case Instr::cConstNum:
         case Instr::cConstExpr:
+        case Instr::cConstVar:
             if (comparaZ(comando + Instr::endNome, nomevar)==0)
                 return comando;
             comando += Num16(comando);
@@ -149,6 +150,7 @@ char * TMudarAux::AvancaInstr(char * comando)
         case Instr::cConstTxt:
         case Instr::cConstNum:
         case Instr::cConstExpr:
+        case Instr::cConstVar:
             return comando;
         }
         comando += Num16(comando);

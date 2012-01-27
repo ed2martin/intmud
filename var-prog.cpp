@@ -672,6 +672,7 @@ bool TVarProg::FuncDepois(TVariavel * v)
             case Instr::cConstTxt:
             case Instr::cConstNum:
             case Instr::cConstExpr:
+            case Instr::cConstVar:
             case Instr::cFunc:
             case Instr::cVarFunc:
                 if (consulta==8)
@@ -882,6 +883,7 @@ bool TVarProg::FuncCriar(TVariavel * v)
             case Instr::cConstTxt:
             case Instr::cConstNum:
             case Instr::cConstExpr:
+            case Instr::cConstVar:
                 lugar=3;
                 break;
             }
@@ -1202,6 +1204,7 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
             case Instr::cConstTxt:
             case Instr::cConstNum:
             case Instr::cConstExpr:
+            case Instr::cConstVar:
                 Instr::ApagarVar(v);
                 return Instr::CriarVarTexto(
                         "Definição de constante de função");

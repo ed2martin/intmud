@@ -165,6 +165,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cConstTxt:  strcpy(nome, "const (txt)"); coment=0; break;
     case cConstNum:  strcpy(nome, "const (num)"); coment=0; break;
     case cConstExpr: strcpy(nome, "const"); coment=0; break;
+    case cConstVar:  strcpy(nome, "varconst"); coment=0; break;
     case cFunc:      strcpy(nome, "func"); break;
     case cVarFunc:   strcpy(nome, "varfunc"); break;
 
@@ -217,7 +218,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 
 // Constantes - obtém o índice
     if (origem[2]==cConstNulo || origem[2]==cConstTxt ||
-        origem[2]==cConstNum  || origem[2]==cConstExpr)
+        origem[2]==cConstNum  || origem[2]==cConstExpr ||
+        origem[2]==cConstVar)
     {
         expr=endNome;
         while (origem[expr++]);

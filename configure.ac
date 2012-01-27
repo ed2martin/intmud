@@ -25,7 +25,7 @@ AC_TRY_COMPILE(,[
 ],
 AC_MSG_RESULT(no),[
 AC_MSG_RESULT(yes)
-LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -mms-bitfields -mwindows"
+LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -mms-bitfields -mwindows -static-libgcc -static-libstdc++"
 SKSTREAM_EXTRA_LIBS="$SKSTREAM_EXTRA_LIBS -lws2_32 -lwsock32 -static-libgcc -static-libstdc++"
 ])
 
