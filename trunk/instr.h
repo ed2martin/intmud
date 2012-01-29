@@ -90,6 +90,8 @@ extern const char InstrVarInt[];
 extern const char InstrVarListaItem[];
 /// TVariavel::defvar para Instr::cTextoPos
 extern const char InstrVarTextoPos[];
+/// TVariavel::defvar para Instr::cTextoVarSub
+extern const char InstrVarTextoVarSub[];
 /// Quantas instruções pode executar antes que o controle retorne ao programa
 extern int VarExec;
 /// Valor inicial de Instr::VarExec quando Instr::ExecIni é executado
@@ -316,6 +318,7 @@ enum Comando
     cVarClasse,         ///< TVariavel::endvar = endereço do objeto TClasse
     cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
     cVarInt,            ///< int local; vide TVariavel::valor_int
+    cTextoVarSub,       ///< Variável de TextoVar
 
     cTotalComandos      ///< Número de comandos - não usado
 };

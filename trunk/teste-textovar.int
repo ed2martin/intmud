@@ -22,12 +22,12 @@ func ini
   msg("e      Exclui todas as variáveis")
   msg("s      Salva variáveis em arquivo")
   msg("f      Sai do programa")
-  var.add("x0=10")
-  var.add("y=20")
-  var.add("z=30")
-  var.add("x1=bom dia")
-  var.add("x2=boa tarde")
-  var.add("x3=boa noite")
+  var.mudar("x0=10")
+  var.mudar("y=20")
+  var.mudar("z=30")
+  var.mudar("x1=bom dia")
+  var.mudar("x2=boa tarde")
+  var.mudar("x3=boa noite")
   arqsav sav1
   listaobj lista
   lista.addfim(este)
@@ -37,14 +37,14 @@ func tela_msg
   txt200 nome
   casovar txt1(arg0)
   casose "a"
-    var.add(txt2(arg0))
+    var.mudar(txt2(arg0))
     msg("Feito")
     sair
   casose "c"
     msg("Variáveis:")
     nome = var.ini
     enquanto nome
-      msg(nome + "=" + var.txt(nome))
+      msg(nome + "=" + var.valor(nome))
       nome = var.depois(nome)
     efim
     sair
@@ -52,7 +52,7 @@ func tela_msg
     msg("Variáveis:")
     nome = var.fim
     enquanto nome
-      msg(nome + "=" + var.txt(nome))
+      msg(nome + "=" + var.valor(nome))
       nome = var.antes(nome)
     efim
     sair
@@ -62,12 +62,12 @@ func tela_msg
     nome = var.ini(txt2(arg0))
     msg("Variáveis começadas com " + txt2(arg0) + ":")
     enquanto nome && txt(nome, 0, total) == txt2(arg0)
-      msg(nome + "=" + var.txt(nome))
+      msg(nome + "=" + var.valor(nome))
       nome = var.depois(nome)
     efim
     sair
   casose "v"
-    msg("Variável " + txt2(arg0) + "=" + var.txt(txt2(arg0)))
+    msg("Variável " + txt2(arg0) + "=" + var.valor(txt2(arg0)))
     sair
   casose "e"
     msg("Variáveis excluídas")

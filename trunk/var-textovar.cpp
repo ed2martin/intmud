@@ -13,7 +13,7 @@
 bool TTextoVar::Func(TVariavel * v, const char * nome)
 {
 // Variável como texto
-    if (comparaZ(nome, "txt")==0)
+    if (comparaZ(nome, "valor")==0)
     {
         TBlocoVar * bl = 0;
         if (Instr::VarAtual >= v+1)
@@ -22,12 +22,11 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         if (bl==0)
             return Instr::CriarVarTexto("");
         const char * p = bl->Texto;
-        while (*p)
-            p++;
-        return Instr::CriarVarTexto(p+1);
+        while (*p++);
+        return Instr::CriarVarTexto(p);
     }
 // Variável como valor numérico
-    if (comparaZ(nome, "int")==0)
+  /*  if (comparaZ(nome, "int")==0)
     {
         TBlocoVar * bl = 0;
         if (Instr::VarAtual >= v+1)
@@ -36,17 +35,16 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         if (bl==0)
             return Instr::CriarVarInt(0);
         const char * p = bl->Texto;
-        while (*p)
-            p++;
+        while (*p++);
         if (!Instr::CriarVar(Instr::InstrDouble))
             return false;
         double num;
         errno=0, num=strtod(p+1, 0);
         Instr::VarAtual->setDouble(errno ? 0 : num);
         return true;
-    }
+    } */
 // Nome da variável
-    if (comparaZ(nome, "var")==0)
+    /* if (comparaZ(nome, "var")==0)
     {
         TBlocoVar * bl = 0;
         if (Instr::VarAtual >= v+1)
@@ -55,9 +53,9 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         if (bl==0)
             return Instr::CriarVarTexto("");
         return Instr::CriarVarTexto(bl->Texto);
-    }
+    } */
 // Mudar variável
-    if (comparaZ(nome, "add")==0)
+    if (comparaZ(nome, "mudar")==0)
     {
         for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
             Mudar(v1->getTxt());
@@ -112,10 +110,40 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
 // Limpar
     if (comparaZ(nome, "limpar")==0)
     {
-        Limpar();
+        if (Instr::VarAtual < v+1)
+        {
+            Limpar();
+            return false;
+        }
+        const char * p = v[1].getTxt();
+        TBlocoVar * ini = ProcIni(p);
+        if (ini==0)
+            return false;
+        TBlocoVar * fim = TBlocoVar::RBnext(ProcFim(p));
+        while (ini && ini != fim)
+        {
+            TBlocoVar * bl = TBlocoVar::RBnext(ini);
+            ini->Apagar();
+            ini = bl;
+        }
         return false;
     }
-    return false;
+// Outro nome de variável
+    TTextoVarSub sub1;
+    int tipo = varTxt;
+    sub1.Criar(this);
+    char * p = copiastr(sub1.NomeVar, nome, strlen(sub1.NomeVar));
+    if (*nome && p[-1]=='_')
+        p[-1]=0, tipo=varDouble;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarTextoVarSub))
+    {
+        sub1.Apagar();
+        return false;
+    }
+    Instr::VarAtual->numfunc = tipo;
+    sub1.Mover(Instr::VarAtual->end_textovarsub);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -123,6 +151,8 @@ void TTextoVar::Apagar()
 {
     while (RBroot)
         RBroot->Apagar();
+    while (Inicio)
+        Inicio->Apagar();
 }
 
 //----------------------------------------------------------------------------
@@ -136,6 +166,8 @@ void TTextoVar::Limpar()
 void TTextoVar::Mover(TTextoVar * destino)
 {
     for (TBlocoVar * obj = RBroot->RBfirst(); obj; obj=TBlocoVar::RBnext(obj))
+        obj->TextoVar = destino;
+    for (TTextoVarSub * obj = Inicio; obj; obj=obj->Depois)
         obj->TextoVar = destino;
     move_mem(destino, this, sizeof(TTextoVar));
 }
@@ -285,6 +317,98 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
 #endif
     delete[] bl->Inicio;
     return bl2;
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::Criar(TTextoVar * var)
+{
+    TextoVar = var;
+    Antes = 0;
+    Depois = var->Inicio;
+    if (var->Inicio)
+        var->Inicio->Antes = this;
+    var->Inicio = this;
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::Apagar()
+{
+    if (TextoVar == 0)
+        return;
+    (Antes ? Antes->Depois : TextoVar->Inicio) = Depois;
+    if (Depois)
+        Depois->Antes = Antes;
+    TextoVar = 0;
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::Mover(TTextoVarSub * destino)
+{
+    if (TextoVar)
+    {
+        (Antes ? Antes->Depois : TextoVar->Inicio) = destino;
+        if (Depois)
+            Depois->Antes = destino;
+    }
+    move_mem(destino, this, sizeof(TTextoVarSub));
+}
+
+//----------------------------------------------------------------------------
+bool TTextoVarSub::getBool()
+{
+    if (TextoVar==0) return 0;
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+    if (bl==0) return 0;
+    const char * p = bl->Texto;
+    while (*p++);
+    return (*p != 0);
+}
+
+//----------------------------------------------------------------------------
+int TTextoVarSub::getInt()
+{
+    if (TextoVar==0) return 0;
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+    if (bl==0) return 0;
+    const char * p = bl->Texto;
+    while (*p++);
+    long num;
+    errno=0, num=strtol(p, 0, 10);
+    return (errno ? 0 : num);
+}
+
+//----------------------------------------------------------------------------
+double TTextoVarSub::getDouble()
+{
+    if (TextoVar==0) return 0;
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+    if (bl==0) return 0;
+    const char * p = bl->Texto;
+    while (*p++);
+    double num;
+    errno=0, num=strtod(p, 0);
+    return (errno ? 0 : num);
+}
+
+//----------------------------------------------------------------------------
+const char * TTextoVarSub::getTxt()
+{
+    if (TextoVar==0) return "";
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+    if (bl==0) return "";
+    const char * p = bl->Texto;
+    while (*p++);
+    return p;
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::setTxt(const char * txt)
+{
+    if (TextoVar==0)
+        return;
+    char mens[16384];
+    mprintf(mens, sizeof(mens), "%s=%s", NomeVar, txt);
+    TextoVar->Mudar(mens);
 }
 
 //----------------------------------------------------------------------------

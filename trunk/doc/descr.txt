@@ -423,10 +423,10 @@ a ? b:c # Nesse caso, se a for verdadeiro, chama a função c da classe b
 
 Via de regra, os operadores binários convertem o segundo operando para
 o mesmo tipo do primeiro. Exemplos:
-10 < 2 # Verdadeiro; está comparando números
-10 < "2" # Verdadeiro; o texto "2" é transformado em número antes da comparação
-"10" < "2" # Falso; está comparando dois textos; o "1" vem antes do "2"
-"10" < 2 # Falso; o número 2 é transformado em texto antes da comparação
+10 > 2 # Verdadeiro; está comparando números
+10 > "2" # Verdadeiro; o texto "2" é transformado em número antes da comparação
+"10" > "2" # Falso; está comparando dois textos; o "1" vem antes do "2"
+"10" > 2 # Falso; o número 2 é transformado em texto antes da comparação
 "1" + 2 # É o mesmo que "1" + "2", portanto resulta em "12"
 1 + "2" # É o mesmo que 1 + 2, portanto resulta em 3
 
@@ -1390,25 +1390,44 @@ textovar <nomedavariável>
     fim
         Retorna nome da última variável.
     ini(<texto>)
-        Retorna nome da primeira variável que começa com o texto.
+        Retorna nome da primeira variável cujo nome começa com o texto.
     fim(<texto>)
-        Retorna nome da última variável que começa com o texto.
+        Retorna nome da última variável cujo nome começa com o texto.
     antes(<nome da variável>)
         Retorna nome da variável anterior ou "" se não existe.
     depois(<nome da variável>)
         Retorna nome da próxima variável ou "" se não existe.
-    txt(<nome da variável>)
-        Retorna o conteúdo da variável como texto ou "" se não existe.
-    int(<nome da variável>)
-        Retorna o conteúdo da variável como número. Se não existe retorna 0.
-    var(<nome da variável>)
-        Retorna o nome da variável ou "" se não existe.
-    add("variável=valor")
+    valor(<nome da variável>)
+        Retorna o conteúdo da variável (um texto) ou "" se não existe.
+    mudar("variável=valor")
         Cria uma variável ou muda se já existir.
         Para apagar variável, basta atribuir um texto vazio.
         Exemplo, mudar("x=") ou mudar("x") apaga a variável x.
     limpar
         Apaga todas as variáveis do textovar.
+    limpar(<texto>)
+        Apaga todas as variáveis cujos nomes começam com o texto.
+
+    Outros nomes:
+        Correspondem a uma variável de textovar, do tipo texto.
+        Para a variável ser tratada como numérica, acrescentar sublinhado
+        após o nome da variável.
+
+    Exemplos:
+    textovar v
+    v.mudar("x=teste") # Cria variável x faz ser "teste"
+    v.x = "teste" # Mesma coisa que v.mudar, acima
+    v.mudar("y=10") # Cria variável y = 10
+    v.y_ = 10 # Mesma coisa, porém y é numérico, enquanto que x é texto
+    v.y_ += 2 # Faz a variável y ser 12 (10 + 2)
+    # Exemplo de como mostrar todas as variáveis de um textovar
+    telatxt tela
+    txt80 nome
+    nome = v.ini
+    enquanto nome
+      tela.msg(nome + "=" + v.valor(nome) + "\n")
+      nome = v.depois(nome)
+    efim
 
 nomeobj <nomedavariável>
     Usado para obter um ou mais objetos, correspondente ao que o usuário

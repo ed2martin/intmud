@@ -607,7 +607,8 @@ const char * Instr::NomeInstr(const char * instr)
     case cVarInicio:
     case cVarClasse:
     case cVarObjeto:
-    case cVarInt:           return "";
+    case cVarInt:
+    case cTextoVarSub:      return "";
     case cTotalComandos:    break;
     }
     return "";
@@ -690,6 +691,7 @@ const char * Instr::NomeComando(int valor)
     case cVarClasse:        return "cVarClasse";
     case cVarObjeto:        return "cVarObjeto";
     case cVarInt:           return "cVarInt";
+    case cTextoVarSub:      return "cTextoVarSub";
     case cTotalComandos:    break;
     }
     return 0;

@@ -3,6 +3,7 @@
 
 //----------------------------------------------------------------------------
 class TVariavel;
+class TTextoVarSub;
 class TBlocoVar;
 
 class TTextoVar  /// Variáveis TextoVar
@@ -29,6 +30,26 @@ public:
     bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
+    TTextoVarSub * Inicio; ///< Primeiro objeto TTextoVarSub
+};
+
+//----------------------------------------------------------------------------
+class TTextoVarSub
+{
+public:
+    void Criar(TTextoVar * var); ///< Adiciona objeto em um textovar
+    void Apagar();      ///< Retira objeto de um textovar
+    void Mover(TTextoVarSub * destino);
+        ///< Move bloco para outro lugar
+    bool   getBool();    ///< Retorna valor como bool
+    int    getInt();     ///< Retorna valor como int
+    double getDouble();  ///< Retorna valor como double
+    const char * getTxt(); ///< Retorna valor como texto
+    void   setTxt(const char * txt); ///< Muda valor como texto
+    TTextoVar * TextoVar; ///< A qual textovar pertence
+    TTextoVarSub * Antes; ///< Objeto anterior
+    TTextoVarSub * Depois; ///< Próximo objeto
+    char NomeVar[64];    ///< Nome da variável
 };
 
 //----------------------------------------------------------------------------
