@@ -139,6 +139,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cVarClasse:
     case Instr::cVarObjeto:
     case Instr::cVarInt:    return 0;
+    case Instr::cTextoVarSub: return sizeof(TTextoVarSub);
     }
     return 0;
 }
@@ -213,6 +214,8 @@ TVarTipo TVariavel::Tipo()
     case Instr::cVarClasse: return varTxt;
     case Instr::cVarObjeto: return varObj;
     case Instr::cVarInt:    return varInt;
+    case Instr::cTextoVarSub:
+        return (TVarTipo)numfunc;
     }
     return varOutros;
 }
@@ -410,6 +413,10 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
     case Instr::cDataHora:
         for (; antes<depois; antes++)
             end_datahora[antes].Criar();
+    case Instr::cTextoVarSub:
+        for (; depois<antes; depois++)
+            end_textovarsub[depois].Apagar();
+        break;
     }
 }
 
@@ -617,6 +624,8 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cVarObjeto:
     case Instr::cVarInt:
         return;
+    case Instr::cTextoVarSub:
+        MOVER_SIMPLES( TTextoVarSub )
     }
     assert(0);
 }
@@ -783,6 +792,8 @@ bool TVariavel::getBool()
         return (endvar!=0);
     case Instr::cVarInt:
         return (valor_int!=0);
+    case Instr::cTextoVarSub:
+        return end_textovarsub[indice].getBool();
     }
     return 0;
 }
@@ -945,6 +956,8 @@ int TVariavel::getInt()
         return end_varref[indice].Pont != 0;
     case Instr::cVarObjeto:
         return (endvar!=0);
+    case Instr::cTextoVarSub:
+        return end_textovarsub[indice].getInt();
     }
     return 0;
 }
@@ -1104,6 +1117,8 @@ double TVariavel::getDouble()
         return end_varref[indice].Pont != 0;
     case Instr::cVarObjeto:
         return (endvar!=0);
+    case Instr::cTextoVarSub:
+        return end_textovarsub[indice].getDouble();
     }
     return 0;
 }
@@ -1291,6 +1306,13 @@ const char * TVariavel::getTxt()
     case Instr::cVarInt:
         sprintf(txtnum, "%d", valor_int);
         return txtnum;
+    case Instr::cTextoVarSub:
+        {
+            const char * p = end_textovarsub[indice].getTxt();
+            if (numfunc != varTxt && *p==0)
+                return "0";
+            return p;
+        }
     }
     return "";
 }
@@ -1457,6 +1479,16 @@ void TVariavel::setInt(int valor)
     case Instr::cVarObjeto:
         endvar = 0;
         break;
+    case Instr::cTextoVarSub:
+        if (numfunc != varTxt && valor==0)
+            end_textovarsub[indice].setTxt("");
+        else
+        {
+            char mens[100];
+            sprintf(mens, "%d", valor);
+            end_textovarsub[indice].setTxt(mens);
+        }
+        break;
     }
 }
 
@@ -1468,8 +1500,6 @@ void TVariavel::setDouble(double valor)
     switch (defvar[2])
     {
 // Variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:
     case Instr::cInt1:
     case Instr::cInt8:
     case Instr::cUInt8:
@@ -1546,6 +1576,33 @@ void TVariavel::setDouble(double valor)
     case Instr::cVarObjeto:
         endvar = 0;
         break;
+    case Instr::cTextoVarSub:
+        if (numfunc != varTxt && valor==0)
+        {
+            end_textovarsub[indice].setTxt("");
+            break;
+        }
+    case Instr::cTxt1:
+    case Instr::cTxt2:
+        {
+            char mens[100];
+            if (valor >= DOUBLE_MAX || valor <= -DOUBLE_MAX)
+                sprintf(mens, "%E", valor);
+            else
+            {
+                sprintf(mens, "%.9f", valor);
+                char * p = mens;
+                while (*p)
+                    p++;
+                while (p>mens && p[-1]=='0')
+                    p--;
+                if (p>mens && p[-1]=='.')
+                    p--;
+                *p=0;
+            }
+            setTxt(mens);
+            break;
+        }
     }
 }
 
@@ -1651,6 +1708,8 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cVarObjeto:
         endvar = 0;
         break;
+    case Instr::cTextoVarSub:
+        end_textovarsub[indice].setTxt(txt);
     }
 }
 
@@ -1684,6 +1743,15 @@ void TVariavel::addTxt(const char * txt)
             mprintf(mens, sizeof(mens), "%s%s",
                     end_indiceobj[indice].getNome(), txt);
             end_indiceobj[indice].setNome(mens);
+            break;
+        }
+        break;
+    case Instr::cTextoVarSub:
+        {
+            char mens[500];
+            mprintf(mens, sizeof(mens), "%s%s",
+                    end_textovarsub[indice].getTxt(), txt);
+            end_textovarsub[indice].setTxt(mens);
             break;
         }
         break;

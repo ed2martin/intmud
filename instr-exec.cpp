@@ -224,6 +224,7 @@ const char Instr::InstrVarObjeto[] = { 9, 0, Instr::cVarObjeto, 0xFF, 0, 0, 0, '
 const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, 0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, 0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, 0xFF, 0, 0, 0, '+', 0 };
 //------------------------------------------------------------------------------
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
@@ -1011,7 +1012,7 @@ bool Instr::ExecX()
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
-            if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+            if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
             {
                 bool valor = !VarAtual->getBool();
                 ApagarVar(VarAtual);
@@ -1025,7 +1026,7 @@ bool Instr::ExecX()
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
-            if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+            if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
             {
                 int valor = ~VarAtual->getInt();
                 ApagarVar(VarAtual);
@@ -1043,7 +1044,7 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() *
                                VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varDouble)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrDouble)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrDouble))
@@ -1064,7 +1065,7 @@ bool Instr::ExecX()
                 else
                     valor1 *= 1.0e1000;
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varDouble)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrDouble)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrDouble))
@@ -1105,7 +1106,7 @@ bool Instr::ExecX()
                     double valor = VarAtual[-1].getDouble() +
                                    VarAtual[0].getDouble();
                     ApagarVar(VarAtual);
-                    if (VarAtual->tamanho==0 || tipo!=varDouble)
+                    if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrDouble)
                     {
                         ApagarVar(VarAtual);
                         if (!CriarVar(InstrDouble))
@@ -1209,7 +1210,7 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() -
                                 VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varDouble)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrDouble)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVar(InstrDouble))
@@ -1225,7 +1226,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 int valor = VarAtual[-1].getInt() << VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVarInt(valor))
@@ -1242,7 +1243,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 int valor = VarAtual[-1].getInt() >> VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVarInt(valor))
@@ -1259,7 +1260,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 int valor = VarAtual[-1].getInt() & VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVarInt(valor))
@@ -1276,7 +1277,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 int valor = VarAtual[-1].getInt() ^ VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVarInt(valor))
@@ -1293,7 +1294,7 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 int valor = VarAtual[-1].getInt() | VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo() != varInt)
+                if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
                 {
                     ApagarVar(VarAtual);
                     if (!CriarVarInt(valor))

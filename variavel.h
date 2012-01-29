@@ -25,6 +25,7 @@ class TVarProg;
 class TIndiceObj;
 class TIndiceItem;
 class TVarDataHora;
+class TTextoVarSub;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -157,6 +158,7 @@ public:
         TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
         TVarDataHora * end_datahora; ///< Instr::cDataHora
         int  valor_int;              ///< Instr::cVarInt - endvar como int
+        TTextoVarSub * end_textovarsub; ///< Instr::cTextoVarSub
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
                     /**< 0 significa que não está usando ou a variável está
