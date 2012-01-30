@@ -171,7 +171,7 @@ ref b_alvo # Personagem alvo da batalha
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
-sav listaobj veste # Lista de objetos que está vestindo ou de magias afetando
+sav textovar var # Variáveis criadas sob demanda do personagem
 textotxt p_comandos # Comandos em espera para serem processados
 inttempo p_espera # Tempo de espera para o próximo comando
 sav inttempo p_restaura # Para restaurar status de tempos em tempos
@@ -353,6 +353,7 @@ func mudasala # Coloca personagem em outra sala (arg0 = sala)
     l0.ini.obj.e_saiu(este, arg0), l0.ini.remove
   efim
 # Muda de sala
+  var.limpar("1")
   dono = arg0
 # Executa eventos
   l0.addfim(evento, dono.evento)

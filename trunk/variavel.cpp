@@ -413,6 +413,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
     case Instr::cDataHora:
         for (; antes<depois; antes++)
             end_datahora[antes].Criar();
+        break;
     case Instr::cTextoVarSub:
         for (; depois<antes; depois++)
             end_textovarsub[depois].Apagar();
@@ -1710,6 +1711,7 @@ void TVariavel::setTxt(const char * txt)
         break;
     case Instr::cTextoVarSub:
         end_textovarsub[indice].setTxt(txt);
+        break;
     }
 }
 
@@ -1745,7 +1747,6 @@ void TVariavel::addTxt(const char * txt)
             end_indiceobj[indice].setNome(mens);
             break;
         }
-        break;
     case Instr::cTextoVarSub:
         {
             char mens[500];
@@ -1754,7 +1755,6 @@ void TVariavel::addTxt(const char * txt)
             end_textovarsub[indice].setTxt(mens);
             break;
         }
-        break;
     }
 }
 

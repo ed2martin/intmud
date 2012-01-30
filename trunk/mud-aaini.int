@@ -110,9 +110,11 @@ func ini
   sala:ini
   criar("p_inijardim", este)
 func e_sala # Alguém entrou
-  arg0.jog ? arg0.evento.addfim(este) # Receber eventos do personagem
+  se arg0.jog
+    arg0.evento.addfim(este) # Receber eventos do personagem
+    arg0.var.1planta = 1 # Tem planta carnívora
 func e_mover # Jogador quer se movimentar
-  se arg1 == "n"
+  se arg1 == "n" && arg0.var.1planta # Se tem planta carnívora
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
     arg0.msg("Então você recua.")
     ret 1
@@ -145,7 +147,7 @@ func e_dar # Alguém deu algum item
       apagar(arg1) # Apaga o item
       arg0.msg("Você deu uma pedra para o Jardineiro.")
       arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
-      arg0.evento.remove(dono) # Sala não recebe mais eventos do personagem
+      arg0.var.1planta = "" # Remove a planta carnívora
     senao
       arg0.msg("Jardineiro não aceita " + arg1.nome + ".")
     fimse
