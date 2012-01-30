@@ -214,7 +214,14 @@ func p_senha # Entrar com a senha para carregar jogo salvo
       nome = perso.nome
     fimse
     # Acerta variáveis
+    listaitem item
+    item = l1.ini
+    enquanto item
+      item.obj.var.limpar("1"), item.obj.var.limpar("2")
+      item.depois
+    efim
     canais = perso.canais
+    # Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")
     perso.mudasala($[perso.salanome])
     !perso.dono && perso.mudasala(config:salaini)
@@ -288,8 +295,6 @@ sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint8 canais # Para salvar sock.canais
-textovar lvar # Lista de variáveis não salvas no jogo
-sav textovar svar # Lista de variáveis que são salvas no jogo
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
