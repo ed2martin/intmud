@@ -62,6 +62,8 @@ public:
         ///< Move bloco para outro lugar
         /**< @param destino Endereço destino
          *   @note Usado por TGrupoVar */
+    void MoveTextoVar(TTextoVar * textovar);
+        ///< Usado por TTextoVar::Mover, para mudar TBlocoVar::TextoVar
 
 // Árvore organizada por TBlocoVar::Texto
     void RBinsert(void);        ///< Insere objeto na RBT
