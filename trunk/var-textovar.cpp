@@ -165,11 +165,20 @@ void TTextoVar::Limpar()
 //----------------------------------------------------------------------------
 void TTextoVar::Mover(TTextoVar * destino)
 {
-    for (TBlocoVar * obj = RBroot->RBfirst(); obj; obj=TBlocoVar::RBnext(obj))
-        obj->TextoVar = destino;
+    if (RBroot)
+        RBroot->MoveTextoVar(destino);
     for (TTextoVarSub * obj = Inicio; obj; obj=obj->Depois)
         obj->TextoVar = destino;
     move_mem(destino, this, sizeof(TTextoVar));
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVar::MoveTextoVar(TTextoVar * textovar)
+{
+    if (RBleft)
+        RBleft->MoveTextoVar(textovar);
+    if (RBright)
+        RBright->MoveTextoVar(textovar);
 }
 
 //----------------------------------------------------------------------------
