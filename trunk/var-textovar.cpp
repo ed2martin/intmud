@@ -132,7 +132,7 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
     TTextoVarSub sub1;
     int tipo = varTxt;
     sub1.Criar(this);
-    char * p = copiastr(sub1.NomeVar, nome, strlen(sub1.NomeVar));
+    char * p = copiastr(sub1.NomeVar, nome, sizeof(sub1.NomeVar));
     if (*nome && p[-1]=='_')
         p[-1]=0, tipo=varDouble;
     Instr::ApagarVar(v);
