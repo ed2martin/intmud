@@ -92,6 +92,8 @@ extern const char InstrVarListaItem[];
 extern const char InstrVarTextoPos[];
 /// TVariavel::defvar para Instr::cTextoVarSub
 extern const char InstrVarTextoVarSub[];
+/// TVariavel::func para Instr::cDebug
+extern const char InstrDebugFunc[];
 /// Quantas instruções pode executar antes que o controle retorne ao programa
 extern int VarExec;
 /// Valor inicial de Instr::VarExec quando Instr::ExecIni é executado

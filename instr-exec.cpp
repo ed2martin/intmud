@@ -225,6 +225,7 @@ const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, 0xFF, 0, 0, 0, '+', 0 
 const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, 0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, 0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, 0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, 0xFF, 0, 0, 0, 'f', 0 };
 //------------------------------------------------------------------------------
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
@@ -1915,7 +1916,6 @@ void Instr::ExecFim()
                 TVarProg::LimparVar(); // Apaga referências das variáveis prog
                 ApagarVar(VarPilha); // Apaga variáveis pendentes
             }
-            TObjeto::DesmarcarApagar();
             obj->Apagar();
         }
 

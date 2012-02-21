@@ -26,12 +26,12 @@ public:
          *   É usado por TClasse::AcertaVar()
          *   @param obj Novo objeto */
     void MarcarApagar();        ///< Marca objeto para apagar
-    static void DesmarcarApagar(); ///< Desmarca objeto IniExcluir
 
     TClasse * Classe;           ///< Classe ao qual o objeto pertence
     TObjeto * Antes;            ///< Lista ligada: objeto anterior
     TObjeto * Depois;           ///< Lista ligada: próximo objeto
-    TObjeto * PontApagar;       ///< Próximo objeto marcado para Apagar
+    TObjeto * AntesApagar;      ///< OPjeto anterior marcado para Apagar
+    TObjeto * DepoisApagar;     ///< Próximo objeto marcado para Apagar
     static TObjeto * IniApagar; ///< Primeiro objeto marcado para apagar
     static TObjeto * FimApagar; ///< Último objeto marcado para apagar
     TVarRef * VarRefIni;        ///< Primeira TVarRef apontando para o objeto
