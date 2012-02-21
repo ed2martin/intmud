@@ -74,7 +74,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         TAddBuffer mens;
         if (!TMudarAux::CodifInstr(&mens, def_instr)) // Checa se erro
         {
-            mens.Add("\x00", 1); // Zero no fim da mensagem
+            mens.Add("\x00\x00", 2); // Zero no fim da mensagem
             mens.AnotarBuf();    // Anota resultado em mens.Buf
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto(mens.Buf);
@@ -84,14 +84,13 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("");
         }
-        mens.Add("\x00", 1); // Zero no fim da mensagem
+        mens.Add("\x00\x00", 2); // Zero no fim da mensagem
         mens.AnotarBuf();    // Anota resultado em mens.Buf
     // Verifica se bloco válido
-        const char DebugFunc[] = { 7, 0, cFunc, 0, 0, 0, 'f', 0 };
         int linha=1;
         ChecaLinha checalinha;
         checalinha.Inicio();
-        checalinha.Instr(DebugFunc);
+        checalinha.Instr(InstrDebugFunc);
         for (char * com = mens.Buf; com[0] || com[1]; com+=Num16(com),linha++)
         {
             const char * p = checalinha.Instr(com);

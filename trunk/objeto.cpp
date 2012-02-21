@@ -22,6 +22,8 @@
 #include "var-listaobj.h"
 #include "instr.h"
 
+//#define DEBUG_CRIAR // Mostra objetos criados e apagados
+
 TObjeto * TObjeto::IniApagar = 0;
 TObjeto * TObjeto::FimApagar = 0;
 
@@ -57,13 +59,29 @@ TObjeto * TObjeto::Criar(TClasse * c, bool criavar)
                 v.Criar(c, obj);
             }
     }
+#ifdef DEBUG_CRIAR
+    printf("TObjeto( %p , %p , %s )\n", obj, obj->Classe, obj->Classe->Nome);
+    fflush(stdout);
+#endif
     return obj;
 }
 
 //----------------------------------------------------------------------------
 void TObjeto::Apagar()
 {
+#ifdef DEBUG_CRIAR
+    printf("~TObjeto1( %p", this); fflush(stdout);
+    printf(", %p", Classe); fflush(stdout);
+    printf(", %s )\n", Classe->Nome);
+    fflush(stdout);
+#endif
     Classe->NumObj--;
+// Retira da lista de objetos que serão apagados
+    if (AntesApagar || IniApagar==this)
+    {
+        (AntesApagar ? AntesApagar->DepoisApagar : IniApagar) = DepoisApagar;
+        (DepoisApagar ? DepoisApagar->AntesApagar : FimApagar) = AntesApagar;
+    }
 // Remove variáveis TVarRef que apontam para o objeto
     while (VarRefIni)
         VarRefIni->MudarPont(0);
@@ -91,7 +109,18 @@ void TObjeto::Apagar()
 //----------------------------------------------------------------------------
 void TObjeto::Apagar(TObjeto * obj)
 {
+#ifdef DEBUG_CRIAR
+    printf("~TObjeto2( %p -> %p", this, obj); fflush(stdout);
+    printf(", %p", Classe); fflush(stdout);
+    printf(", %s )\n", Classe->Nome);
+    fflush(stdout);
+#endif
     Classe->NumObj--;
+// Coloca o outro objeto na lista dos que serão apagados
+    obj->AntesApagar = AntesApagar;
+    obj->DepoisApagar = DepoisApagar;
+    if (IniApagar==this) IniApagar=obj;
+    if (FimApagar==this) FimApagar=obj;
 // Acerta variáveis TVarRef que apontam para o objeto
     for (TVarRef * pont = VarRefIni; pont; pont=pont->Depois)
         pont->Pont = obj;
@@ -111,20 +140,10 @@ void TObjeto::Apagar(TObjeto * obj)
 //----------------------------------------------------------------------------
 void TObjeto::MarcarApagar()
 {
-    if (PontApagar || FimApagar == this)
+    if (AntesApagar || IniApagar==this)
         return;
-    (FimApagar ? FimApagar->PontApagar : IniApagar) = this;
+    AntesApagar = FimApagar;
+    DepoisApagar = 0;
+    (AntesApagar ? AntesApagar->DepoisApagar : IniApagar) = this;
     FimApagar = this;
-}
-
-//----------------------------------------------------------------------------
-void TObjeto::DesmarcarApagar()
-{
-    if (IniApagar==0)
-        return;
-    TObjeto * obj = IniApagar;
-    IniApagar = IniApagar->PontApagar;
-    if (IniApagar==0)
-        FimApagar=0;
-    obj->PontApagar = 0;
 }

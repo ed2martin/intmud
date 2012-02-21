@@ -109,7 +109,8 @@ TClasse::TClasse(const char * nome, TArqMapa * arquivo)
     (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
     arquivo->Mudou = true;
 #ifdef DEBUG_CRIAR
-    printf("TClasse( %s , %s )\n", Nome, ArqArquivo->Arquivo); fflush(stdout);
+    printf("TClasse( %s , %s , %p )\n", Nome, ArqArquivo->Arquivo, this);
+    fflush(stdout);
 #endif
 }
 
@@ -117,8 +118,8 @@ TClasse::TClasse(const char * nome, TArqMapa * arquivo)
 TClasse::~TClasse()
 {
 #ifdef DEBUG_CRIAR
-    printf("~TClasse( %s , %s )\n", Nome,
-           ArqArquivo ? ArqArquivo->Arquivo : "???"); fflush(stdout);
+    printf("~TClasse( %s , %s , %p )\n", Nome,
+           ArqArquivo ? ArqArquivo->Arquivo : "???", this); fflush(stdout);
 #endif
     LimpaInstr();
     if (ClInic==this)

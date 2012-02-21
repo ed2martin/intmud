@@ -297,6 +297,21 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
                     obj->Depois->Antes = obj;
             }
         }
+    // Inverte a ordem de VetMenos[TempoMenos]
+    // Dessa forma, variáveis alteradas primeiro geram eventos primeiro
+        TVarIntTempo * obj1 = VetMenos[TempoMenos];
+        if (obj1)
+        {
+            while (true)
+            {
+                TVarIntTempo * x = obj1->Depois;
+                obj1->Depois = obj1->Antes;
+                obj1->Antes = x;
+                if (x==0) break;
+                obj1 = x;
+            }
+            VetMenos[TempoMenos] = obj1;
+        }
     // Chama eventos dos objetos em VetMenos[TempoMenos]
         while (true)
         {
