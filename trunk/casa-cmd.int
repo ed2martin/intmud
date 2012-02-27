@@ -1,0 +1,403 @@
+classe comando_comum
+const obj = este # Objeto que processa o comando, ou nulo se não existe
+
+func escr # Processa o comando
+# arg0 = objeto do personagem
+# arg1 = texto digitado após o nome do comando
+
+func iniclasse
+  criar(arg0)
+
+
+classe comando_mover
+herda comando_comum
+const m_entra = " chegou"
+const m_sai = " foi embora"
+
+func escr
+  ref sala
+  sala = dir(arg0)
+  se !sala
+    arg0.msg("Não é possível seguir nessa direção")
+  senao
+    mudasala(arg0, sala)
+
+func mudasala # Muda de sala
+# arg0=personagem, arg1=nova sala
+  se arg1
+    arg0.msg1(arg0.nome + m_sai)
+    arg0.dono = arg1
+    arg0.msg1(arg0.nome + m_entra)
+    arg0.t_aguarde = dono.terreno
+    arg0.atkrec.remove
+    arg0.animal.0.atkrec.remove
+    arg0.animal.2.atkrec.remove
+    arg0.animal.3.atkrec.remove
+    arg0.animal.4.atkrec.remove
+    arg0.animal.5.atkrec.remove
+    arg0.animal.6.atkrec.remove
+    arg0.animal.7.atkrec.remove
+    arg0.animal.8.atkrec.remove
+    arg0.animal.9.atkrec.remove
+
+
+classe cmd_n
+herda comando_mover
+const m_entra = " chegou do sul"
+const m_sai = " foi para o norte"
+const dir = arg0.dono.dir_n
+
+
+classe cmd_s
+herda comando_mover
+const m_entra = " chegou do norte"
+const m_sai = " foi para o sul"
+const dir = arg0.dono.dir_s
+
+
+classe cmd_l
+herda comando_mover
+const m_entra = " chegou do oeste"
+const m_sai = " foi para leste"
+const dir = arg0.dono.dir_l
+
+
+classe cmd_o
+herda comando_mover
+const m_entra = " chegou do leste"
+const m_sai = " foi para oeste"
+const dir = arg0.dono.dir_o
+
+
+classe cmd_entrar
+herda comando_mover
+const m_entra = " chegou de fora"
+const m_sai = " entrou"
+const dir = arg0.dono.dir_en
+
+
+classe cmd_sair
+herda comando_mover
+const m_entra = " chegou de dentro"
+const m_sai = " saiu"
+const dir = arg0.dono.dir_sa
+
+
+classe cmd_subir
+herda comando_mover
+const m_entra = " chegou de baixo"
+const m_sai = " subiu"
+const dir = arg0.dono.dir_c
+
+
+classe cmd_descer
+herda comando_mover
+const m_entra = " chegou de cima"
+const m_sai = " desceu"
+const dir = arg0.dono.dir_b
+
+
+classe cmd_ajuda
+herda comando_comum
+
+func escr
+# arg0.msg("jogo - mostra quem está jogando")
+  arg0.msg("quem - mostra quem está por perto")
+  arg0.msg("quantos - diz quantos estão jogando")
+  arg0.msg("sala, item, outros - mostram itens")
+  arg0.msg("hab, idioma - mostram habilidades e idiomas")
+  arg0.msg("sobre - mostra versão e autor do programa")
+  arg0.msg("! - repete o que você teclou por último")
+  arg0.msg("!!! - sai do jogo e entra novamente")
+
+
+classe cmd_alvo
+herda comando_comum
+
+func escr
+  arg0.alvo = arg1
+  arg0.msg("Alvo é " + arg0.alvo)
+
+
+classe cmd_ver
+herda comando_comum
+
+func escr
+# Descrição da sala
+  se arg1 == ""
+    arg0.dono.ver(arg0)
+# Ver algum comando
+  senao $cmd_[arg1].ver(arg0)
+# Ver algum MOB
+  senao
+    msg("Você não vê nada de especial")
+
+
+classe comando_var
+herda comando_comum
+
+func lista # Lista de itens, como habilidades, idiomas, etc.
+# arg0 = personagem
+# arg1 = variável textovar
+# arg2 = prefixo que identifica o tipo de variável (duas letras)
+# arg3 = mensagem se nada for encontrado
+# arg4 = mensagem se alguma coisa for encontrada
+  textotxt h
+  txt100 t1
+  txt100 t2
+  t1 = arg1.ini(arg2)
+  enquanto txt(t1, 0, 2) == arg2
+    t2 = txttroca(txt(t1, 2), "_", " ")
+    se arg1.valor(t1) == "1"
+      h.addfim(t2)
+    senao
+      h.addfim(arg1.valor(t1) + "x " + t2)
+    fimse
+    t1 = arg1.depois(t1)
+  efim
+  se h.linhas
+    h.addini(arg4)
+    arg0.msg(h.remove(100))
+  senao
+    arg0.msg(arg3)
+  fimse
+  ret 1
+
+
+classe cmd_hab
+herda comando_var
+const escr = lista(arg0, arg0.var, "h_", "Nenhuma habilidade", "Habilidades")
+
+
+classe cmd_idioma
+herda comando_var
+const escr = lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
+
+
+classe cmd_item
+herda comando_var
+const escr = lista(arg0, arg0.var, "i_", "Não carrega nenhum item", "Itens")
+
+
+classe cmd_outros
+herda comando_var
+const escr = lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
+
+
+classe cmd_sala
+herda comando_var
+const escr = lista(arg0, arg0.dono.var, "i_", "Nenhum item por perto", "Itens por perto")
+
+
+classe cmd_quem
+herda comando_comum
+
+func escr
+  textotxt t
+  listaitem i
+  i = arg0.dono.dentro1.ini
+  enquanto i
+    t.addfim(i.obj.nome), i.depois
+  efim
+  arg0.msg("Personagens\n" + txttroca(t.remove(1000), "\n", ", "))
+
+
+classe cmd_jogo
+# herda comando_comum
+
+func escr
+  textotxt t
+  listaobj l
+  ref r
+  l.addfim($jogolocal)
+  r = $jogoserv
+  enquanto r
+    l.addfim(r), r = objdepois(r)
+  efim
+  r = $jogobot_usr
+  enquanto r
+    l.addfim(r), r = objdepois(r)
+  efim
+  t.addfim("Personagens")
+  enquanto l.ini
+    l.ini.obj.nome && t.addfim(l.ini.obj.nome)
+    l.ini.remove
+  efim
+  arg0.msg(t.remove(1000))
+
+
+classe cmd_falar
+herda comando_comum
+
+func escr
+  arg0.dono.msg(arg0.nome + " falou: " + arg1)
+
+
+classe cmd_dizer
+herda comando_comum
+
+func escr
+  arg0.msgsala(arg0.nome + " disse: " + arg1)
+
+
+classe cmd_pegar
+herda comando_comum
+
+func escr
+  se arg0.dono.var.i_[arg1]_ == 0
+    arg0.msg("Você não vê " + arg1)
+  senao arg0.var.i_[arg1]_ == 99
+    arg0.msg("Não pode carregar mais " + arg1)
+  senao
+    arg0.dono.var.i_[arg1]_ -= 1
+    arg0.var.i_[arg1]_ += 1
+    arg0.dono.msg(arg0.nome + " pega " + arg1)
+  fimse
+
+
+classe cmd_soltar
+herda comando_comum
+
+func escr
+  se arg0.var.i_[arg1]_ == 0
+    arg0.msg("Você não tem " + arg1)
+    ret 1
+  senao arg0.dono.var.i_[arg1]_ != 99
+    arg0.dono.var.i_[arg1]_ += 1
+  fimse
+  arg0.var.i_[arg1]_ -= 1
+  arg0.dono.msg(arg0.nome + " solta " + arg1)
+  fimse
+
+
+classe cmd_desenterrar
+herda comando_comum
+
+func escr
+  prog p
+  se !p.existe(arg0.dono, "ent")
+    arg0.msg("Não consegue desenterrar aqui")
+  senao arg0.dono.ent.i_[arg1] == ""
+    arg0.msg("Você não acha " + arg1)
+  senao arg0.var.i_[arg1]_ == 99
+    arg0.msg("Não pode carregar mais " + arg1)
+  senao
+    arg0.dono.ent.i_[arg1]_ -= 1
+    arg0.var.i_[arg1]_ += 1
+    arg0.dono.msg(arg0.nome + " desenterra " + arg1)
+
+
+classe cmd_enterrar
+herda comando_comum
+
+func escr
+  prog p
+  se !p.existe(arg0.dono, "ent")
+    arg0.msg("Não consegue enterrar aqui")
+  senao arg0.var.i_[arg1]_ == 0
+    arg0.msg("Você não tem " + arg1)
+  senao arg0.dono.ent.i_[arg1]_ != 99
+    arg0.dono.ent.i_[arg1]_ += 1
+    arg0.var.i_[arg1]_ -= 1
+    arg0.dono.msg(arg0.nome + " enterra " + arg1)
+
+
+classe cmd_energia
+herda comando_comum
+
+func escr
+  txt100 lin
+  lin = arg0.nome + " energia " + arg0.energia + " de " + arg0.enermax
+  lin += " nível " + arg0.nivel + ", exp " + arg0.expatual + " de " + arg0.expmax
+  arg0.msg(lin)
+
+
+classe cmd_adm
+herda comando_comum
+const obj = arg0.e_admin ? este
+const txtescr = "Administração:\n\
+cl seguido do nome de uma classe edita ou cria a classe\n\
+il seguido ou não de um nome informa as classes existentes\n\
+al seguido do nome de uma classe apaga a classe\n\
+cmd seguido de um texto executa instruções do IntMUD\n\
+Exemplos:\n\
+cmd 1+2 # retorna 3, que é a soma de 1 com 2\n\
+cmd dono # retorna a variável dono do próprio jogador (a sala em que está)\n\
+cmd dono = $s_dentro003\n\
+Muda a variável dono, coloca o jogador na sala s_dentro003"
+
+func escr
+  arg0.msg(txtescr)
+
+
+classe cmd_cl
+herda comando_comum
+const obj = arg0.e_admin ? este
+
+func escr
+  arg0.passo = "classe"
+  arg0.tpasso = arg1
+  arg0.p_classe("\n")
+
+
+classe cmd_al
+herda comando_comum
+const obj = arg0.e_admin ? este
+
+func escr
+  prog p
+  se !p.existe(arg1)
+    arg0.msg("Classe não existe: " + arg1)
+  senao
+    p.apagar(arg1)
+    p.salvar(config:progsalvar)
+    arg0.msg("Classe apagada: " + arg1)
+
+
+classe cmd_il
+herda comando_comum
+const obj = arg0.e_admin ? este
+
+func escr
+  prog p
+  txt80 lin
+  se !p.iniclasse(arg1)
+    arg0.msg("\bNenhuma classe encontrada.")
+  senao
+    textotxt t
+    t.addfim("\bClasses:")
+    enquanto p.lin
+      se inttotal(lin + p.texto) >= 70
+        t.addfim(lin), lin = p.texto
+      senao lin
+        lin += ", " + p.texto
+      senao
+        lin = p.texto
+      fimse
+      p.depois
+    efim
+    lin && t.addfim(lin)
+    arg0.msg(t.remove(1000))
+  fimse
+
+
+classe cmd_cmd
+herda comando_comum
+const obj = arg0.e_admin ? este
+
+func escr
+  debug d
+  arg0.msg(">" + d.cmd(arg0, "ret " + arg1))
+
+
+classe cmd_nn
+herda comando_comum
+
+func escr
+  arg0.dono = $s_dentro003
+  arg0.msg1(arg0.nome + " chegou")
+  arg0.var.h_socar = 1
+  arg0.var.h_chutar = 1
+  arg0.var.i_corda = 1
+  arg0.nivel = 8
+  ret 1

@@ -1,0 +1,504 @@
+classe jogador
+herda personagem, perso_normal, jogador_passo, jogador_adm
+indiceobj cnome # "un " + nome codificado
+sav txt20 nome # Nome do personagem ou "" se nenhum
+sav int1 sexo # 0=feminino, 1=masculino
+txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
+txt20 passo # Passo atual; "" se estiver jogando
+txt100 tpasso # Texto usado no passo atual
+textotxt teditor # Texto usado no editor
+textotxt transf # Área de transferência do editor
+textopos leditor1 # Início de bloco
+textopos leditor2 # Fim de bloco
+textopos leditor # Linha atual no editor
+txt512 peditor # Texto sendo procurado, opção P do editor
+txt512 ultimocom # Último comando digitado pelo usuário
+uint16 t_sala2 # Contagem de tempo dos eventos da sala
+const jog = 1 # Indica que é jogador
+ref animal.5 # Animais que está usando
+const enermax = nivel * 2 + 60 # Energia máxima
+const expmax = nivel * nivel * 2 + 14
+const ataque = (nivel * 4 + 60) * nivel + 30
+const defesa = nivel * 10 + 20
+const veloc = (nivel * 4 + 60) * nivel + 30
+const avisachegou = ""
+uint16 contleo # Para invocar leopardos assassinos
+inttempo salatempo # Tempo da sala do tempo
+
+func ini # Personagem foi criado
+  personagem:ini
+  p_perso
+  t_proc = 10
+
+func fim # Personagem foi apagado
+
+varfunc dono # O dono do personagem
+  se !args # Nenhum argumento: leitura
+    ret idono.objlista # Retorna objeto que contém o personagem ou item
+  senao idono.objlista != ref(arg0)
+    idono.obj.t_limpar = idono.obj.limpar
+    idono.obj.t_elimpar = idono.obj.elimpar
+    idono.remove
+    idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
+    idono.objlista.t_limpar = 0
+    idono.objlista.t_elimpar = idono.obj.elimpar
+    t_sala2 = t_entrar1 = 0
+    entrou(este)
+    !dono.objlista.perso && dono.entrou(este)
+    idono.objlista.tempojog = misc:tempo + 20
+
+func recebe # Recebeu mensagem do jogador
+  se !p_[passo](arg0) # Se não for uma função do passo
+    se arg0 == "!!!"
+      salvar
+      dentro1.apagar
+      dono = nulo
+      atkrec.remove
+      p_perso
+    senao
+      arg0 != "!" && (ultimocom = arg0)
+      teclou(ultimocom) # Personagem processa comando
+
+func salvar # Salva o jogo, desde que a senha não seja nula
+# Retorna verdadeiro se conseguiu salvar
+  se senha
+    arqsav sav1
+    listaobj l0
+    l0.addfim(este, este.dentro1)
+    ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
+
+func t_proc_exec # Contagem de tempo
+  uint32 v
+  prog p
+  t_sala2 += 1, t_proc = 10
+# Eventos entrou
+  entrou[t_sala2](este)
+  !dono.perso && dono.entrou[t_sala2](este)
+# Eventos segundo
+  p.inifunc(este, "segundo")
+  enquanto p.lin
+    v = txt(p.texto, 7)
+    v && misc:tempo % v == 0 && segundo[v](este)
+    p.depois
+  efim
+  !dono.perso && p.inifunc(dono, "segundo")
+  enquanto p.lin
+    v = txt(p.texto, 7)
+    v && misc:tempo % v == 0 && dono.segundo[v](este)
+    p.depois
+  efim
+# Eventos segsala
+  se dono.tempojog != misc:tempo + 20
+    dono.tempojog = misc:tempo + 20
+    p.inifunc(este, "segsala")
+    enquanto p.lin
+      v = txt(p.texto, 7)
+      v && misc:tempo % v == 0 && segsala[v](este)
+      p.depois
+    efim
+    !dono.perso && p.inifunc(dono, "segsala")
+    enquanto p.lin
+      v = txt(p.texto, 7)
+      v && misc:tempo % v == 0 && dono.segsala[v](este)
+      p.depois
+    efim
+
+
+classe jogador_passo
+
+func p_perso # Digitar o nome do personagem
+  indiceitem ind
+  txt20 texto
+  arqsav sav1
+  passo = "perso", tpasso = ""
+  texto = txtnome(arg0)
+  se !arg0
+    cnome = nome = senha = ultimocom = ""
+    var.limpar
+    var.h_atirar = 1
+    nivel = 1
+    salatempo = 0
+    msg("Digite o nome do seu personagem")
+  senao inttotal(arg0) < 3 || inttotal(arg0) > 16
+    msg("O nome deve ter de 3 a 16 caracteres; digite outro")
+  senao intnome(arg0) || txtproc(arg0, " ") >= 0
+    msg("Nome inválido; digite outro")
+  senao ind.obj("un " + texto)
+    msg("Nome já está sendo usado; digite outro")
+  senao !sav1.existe("jog-" + texto + ".sav") # Novo personagem
+    cnome = "un " + texto
+    nome = txtmaimin(arg0)
+    msg("Criando personagem " + nome)
+    p_sexo
+  senao
+    tpasso = txtmaimin(arg0)
+    p_senha
+  fimse
+  ret 1
+
+func p_sexo # Digitar O ou A
+# passo = "sexo"
+# se arg0 != "O" && arg0 != "A"
+# msg("Você é homem ou mulher? Tecle O ou A")
+# ret 1
+# fimse
+# arg0 == "O" && (perso.sexo = 1)
+  passo = ""
+  dono = config:salaini
+  $mens.p(perso)
+  $mens.mvis2("", "$P chegou.")
+  ret 1
+
+func p_senha # Entrar com a senha para carregar jogo salvo
+  indiceitem ind
+  txt20 texto
+  arqsav sav1
+  ref r
+# msg(texto + " , " + arg0)
+  texto = txtnome(tpasso)
+  passo = "senha"
+  se !arg0
+    msg("Digite a senha do personagem ou z para desistir")
+  senao arg0 == "z"
+    nome = "", p_perso
+  senao ind.obj("un " + texto)
+    msg("Outro usuário começou a usar esse personagem")
+    p_perso
+  senao !sav1.senha("jog-" + texto + ".sav", txtmin(arg0))
+    msg("Senha incorreta; digite outra ou z para desistir")
+  senao
+    cnome = "un " + texto
+    nome = tpasso
+    senha = txtmin(arg0)
+    passo = ""
+    listaobj l1
+    l1.addfim(este)
+    sav1.ler("jog-" + texto + ".sav", l1)
+# Muda de sala e volta ao jogo
+    msg("Continuando jogo salvo.")
+    dono = config:salaini
+    $mens.p(arg0)
+    $mens.mvis2("", "$P chegou.")
+  fimse
+  ret 1
+
+func p_senha1 # Digitar a senha atual para mudar a senha
+  passo = "senha1"
+  se !arg0
+    msg("Digite a senha atual do personagem ou z para desistir")
+  senao arg0 == "z"
+    passo = ""
+    msg("Cancelado")
+  senao arg0 != senha
+    msg("Senha incorreta; cancelado")
+    passo = ""
+  senao
+    p_senha2
+  fimse
+  ret 1
+
+func p_senha2 # Digitar a nova senha
+  passo = "senha2"
+  se !arg0
+    msg("Digite a nova senha do personagem ou z para desistir")
+  senao arg0 == "z"
+    passo = ""
+    msg("Cancelado")
+  senao inttotal(arg0) < 5 || inttotal(arg0) > 16
+    msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+  senao intsenha(arg0) == 3
+    msg("Senha deve ter letras e números, digite outra")
+  senao intsenha(arg0)
+    msg("Senha inválida, digite outras")
+  senao
+    tpasso = arg0
+    p_senha3
+  fimse
+  ret 1
+
+func p_senha3 # Repetir a senha digitada
+  passo = "senha3"
+  se !arg0
+    msg("Digite novamente a senha")
+  senao tpasso != arg0
+    msg("As senhas são diferentes; cancelado")
+    passo = ""
+  senao
+    senha = txtmin(arg0)
+    se salvar
+      msg("Jogo salvo")
+    senao
+      msg("Não foi possível salvar")
+    fimse
+    passo = ""
+  fimse
+  ret 1
+
+
+classe personagem
+# Personagem
+sav listaitem idono # Uso interno: aonde o personagem ou item está
+sav listaobj dentro1 # Lista de personagens que possui
+sav textovar var # Variáveis do personagem
+txt40 alvo # Alvo do personagem
+listaitem atkrec # Quem esse personagem atacou; recebe experiência se vencer
+listaobj atkenv # Quem atacou esse personagem; dá experiência se perder
+inttempo t_aguarde # Tempo para processar próximo comando
+inttempo t_proc # Para processar comportamento do personagem
+txt512 t_aguardetxt # Próximo comando
+const perso = 1 # Indica que é personagem
+uint16 nivel # Nível do personagem
+uint32 energia # Energia atual, quando chega a 0 morre
+uint32 expatual # Experiência atual
+const enermax = nivel * 10 + 30 # Energia máxima
+const agressivo = 0 # Se é agressivo (ataca jogadores)
+const persegue = 0 # Se persegue jogadores
+const avisachegou = nome + " " + nivel + " chegou" # Mensagem quando entra no jogo
+int1 e_admin # Se é administrador
+int1 e_dormindo
+int1 e_confuso
+int1 e_congelado
+int1 e_envenenado
+int1 e_paralisado
+int1 e_queimado
+
+func ini
+# Variáveis
+  t_proc = 10
+  dono = arg0
+  nivel = arg1
+  energia = enermax
+# Mensagem que chegou
+  txt100 avisamsg
+  avisamsg = avisachegou
+  avisamsg && msg1(avisamsg)
+# Habilidades e outras variáveis
+  se arg2
+    textotxt t
+    t.addfim(txttroca(arg2, ",", "\n"))
+    enquanto t.linhas
+      var.mudar(t.remove + "=1")
+    efim
+    recuperar # Recupera status
+
+varfunc dono # O dono do personagem
+# IMPORTANTE: varfunc também está definido na classe jogador
+  se !args # Nenhum argumento: leitura
+    ret idono.objlista # Retorna objeto que contém o personagem ou item
+  senao idono.objlista != ref(arg0)
+    idono.remove
+    idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
+
+func msg1 # Mensagem para todos exceto o próprio personagem
+  listaitem i
+  i = dono.dentro1.ini
+  enquanto i
+    i.obj != este && i.obj.msg(arg0)
+    i.depois
+  efim
+
+func esperar # Personagem espera um tempo até poder agir novamente
+# arg0 = tempo, em décimos de segundo
+  uint32 x
+  x = arg0
+  se x > 0
+    arg1.t_aguarde == 0 && (arg1.t_aguardetxt = "")
+    arg1.t_aguarde < x && (arg1.t_aguarde = x)
+
+func teclou # Personagem escreveu algo
+  ref obj # Objeto que vai processar o comando
+  prog p # Para procurar o objeto
+# Checa se deve aguardar
+  se t_aguarde
+    t_aguardetxt = arg0
+    msg("Aguarde")
+    ret
+  senao arg0 == ""
+    ret
+  senao arg0 == config:senhaadm && config:senhaadm
+    e_admin = !e_admin
+    e_admin && msg("Você virou administrador, tecle adm para saber os comandos")
+    !e_admin && msg("Você deixou de ser administrador")
+    ret
+# Eventos escreveu
+  senao !dono.perso && dono.escr(este, arg0)
+    ret
+  senao escr(este, arg0)
+    ret
+  fimse
+# Obtém o comando
+  p.iniclasse("cmd_" + txt1(arg0))
+  enquanto p.lin
+    obj = $[p.texto].obj(este, arg0)
+    se obj
+      sair
+    fimse
+    p.depois
+  efim
+# Eventos cmd
+  se !obj
+    msg("O quê?")
+  senao !dono.perso && dono.[obj](este, txt2(arg0))
+  senao [obj](este, txt2(arg0))
+# Executa comando
+  senao obj.escr(este, txt2(arg0))
+
+func t_aguarde_exec
+  se t_aguardetxt
+    txt512 lin
+    lin = t_aguardetxt, t_aguardetxt = ""
+    teclou(lin)
+
+func t_proc_exec
+  t_proc = 10
+  se dono.jog # Se dono é jogador
+    ret
+  senao dono.tempojog < misc:tempo # Checa tempo de vida do personagem
+    apagar(este)
+    ret
+  senao t_aguarde # Se deve aguardar
+    ret
+  fimse
+  se agressivo # Se for agressivo
+    txt100 t1
+    ref r
+    t1 = escolhehab, r = escolhejog
+    se t1 && r && ataqueini
+      $cmd_[t1].ataca(este, r)
+      ret
+    fimse
+  fimse
+  se persegue # Se persegue jogador
+    txt100 dir
+    uint32 valor
+    valor = dono.tempojog
+    valor <= dono.dir_n.tempojog && (valor = dono.dir_n.tempojog) + dir = "n"
+    valor <= dono.dir_s.tempojog && (valor = dono.dir_s.tempojog) + dir = "s"
+    valor <= dono.dir_l.tempojog && (valor = dono.dir_l.tempojog) + dir = "l"
+    valor <= dono.dir_o.tempojog && (valor = dono.dir_o.tempojog) + dir = "o"
+    valor <= dono.dir_c.tempojog && (valor = dono.dir_c.tempojog) + dir = "subir"
+    valor <= dono.dir_b.tempojog && (valor = dono.dir_b.tempojog) + dir = "descer"
+    valor <= dono.dir_en.tempojog && (valor = dono.dir_en.tempojog) + dir = "entrar"
+    valor <= dono.dir_sa.tempojog && (valor = dono.dir_sa.tempojog) + dir = "sair"
+    dir && teclou(dir)
+  fimse
+
+func escolhehab # Escolhe e retorna o nome de uma habilidade
+  txt100 t1 # Nome da habilidade
+  uint8 total
+# Obtém a quantidade de habilidades
+  t1 = var.ini("h_")
+  enquanto txt(t1, 0, 2) == "h_"
+    total += 1, t1 = var.depois(t1)
+  efim
+# Checa se tem alguma habilidade
+  se total == 0
+    ret ""
+  fimse
+# Escolhe uma habilidade
+  total = rand(total)
+  t1 = var.ini("h_")
+  enquanto total && t1
+    total -= 1, t1 = var.depois(t1)
+  efim
+  ret txt(t1, 2)
+
+func escolhejog # Escolhe e retorna um jogador
+  listaitem i
+  uint8 total
+# Obtém o alvo
+  i = dono.dentro1.ini
+  enquanto i
+    i.obj.jog && (total += 1)
+    i.depois
+  efim
+# Checa se tem jogador
+  se total == 0
+    ret nulo
+  fimse
+# Escolhe um jogador
+  total = rand(total) + 1
+  i = dono.dentro1.ini
+  enquanto i
+    i.obj.jog && (total -= 1)
+    se total == 0
+      ret i.obj
+    fimse
+    i.depois
+  efim
+
+func persoalvo
+  listaitem i
+  nomeobj nome
+  nome.ini(alvo, 1)
+  i = dono.dentro1.ini
+  enquanto i
+    se visivel(i.obj) && nome.nome(i.obj.nome)
+      ret i.obj
+    fimse
+    i.depois
+  efim
+
+func visivel # Checa se um personagem está visível (arg0=personagem)
+  ret 1
+
+func recuperar # Recupera status do personagem
+  energia = enermax
+  e_dormindo = 0
+  e_confuso = 0
+  e_congelado = 0
+  e_envenenado = 0
+  e_paralisado = 0
+  e_queimado = 0
+
+func ataqueini # Inicia ataque; retorna 1 se pode atacar
+  se energia == 0
+    msg("Você está desmaiado")
+  senao e_congelado
+    msg("Não pode atacar congelado")
+  senao e_dormindo
+    msg("Não pode atacar dormindo")
+  senao dono.sembriga
+    msg("Não é permitido brigas aqui")
+  senao e_paralisado
+    esperar(50)
+    ret 1
+  senao
+    ret 1
+
+func morreu # Personagem morreu
+  energia = 0
+# Jogador: retira toda experiência e transfere para outro lugar
+  se jog
+    enquanto atkenv
+      atkenv.ini.obj.expatual = 0
+      atkenv.ini.remove
+    efim
+    dono.msg(nome + " morreu")
+    dono = $s_dentro001
+# Animal do jogador: não dá experiência
+  senao dono.jog
+    atkenv.limpar
+    dono.msg(nome + " desmaiou")
+# Outro personagem: dá experiência
+  senao
+    real total
+    real v1
+    total = atkenv.total * 16
+    enquanto atkenv
+      v1 = intpos(nivel - atkenv.ini.obj.nivel + 8)
+      v1 > 16 && (v1 = 16)
+      atkenv.ini.obj.ganhaexp(v1 * (nivel * 10 + 50) / total)
+      atkenv.ini.remove
+    efim
+    dono.msg(nome + " morreu")
+    apagar(este)
+  fimse
+
+func ganhaexp # Personagem ganha experiência
+# arg0 = experiência
+  expatual += arg0
+  se expatual > expmax
+    expatual -= expmax
+    nivel += 1
+    dono.msg(nome + " é nível " + nivel)

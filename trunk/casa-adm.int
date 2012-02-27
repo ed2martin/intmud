@@ -1,0 +1,366 @@
+classe jogador_adm
+
+func p_classe
+# Variável tpasso contém o nome da classe
+  casovar txtmin(txt(arg0, 0, 1))
+  casose "\n"
+    teditor.limpar
+    prog p
+    txt100 lin
+    textotxt t1
+    passo = "classe"
+    lin = tpasso + ", O opções, Z sair"
+    se !p.inilinha(tpasso)
+      msg("Criando " + lin)
+      teditor.addfim("Arquivo outros")
+    senao
+      msg("Editando " + lin)
+      teditor.addfim("Arquivo " + p.arquivo(tpasso))
+      enquanto p.lin
+        t1.limpar
+        t1.addfim(p.texto)
+        t1.dividelin(35, 75)
+        enquanto t1.linhas > 1
+          teditor.addfim(t1.remove + "\\")
+        efim
+        teditor.addfim(t1.remove)
+        p.depois
+      efim
+    fimse
+    leditor = teditor.ini
+    leditor1 = teditor.ini
+    leditor2 = teditor.fim
+    leditor2.antes
+    ret 1
+  casose "z" # Sair do editor
+    msg("Fechando editor")
+    passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    p_classesalvar
+    ret 1
+  casofim
+  ret p_editor(arg0, 16384, tpasso)
+
+func p_classesalvar # Opçao salvar de p_classe
+  textotxt t1
+  textopos p1
+  txt512 lin
+# Junta linhas e coloca em t1
+  t1.ini.add(teditor.ini, teditor.linhas)
+  p1 = t1.ini
+  enquanto p1.txtproc("\\\n") >= 0
+    p1.mudar("", inttotal(p1.texto) - 1, 1) # Tira a "\" no final
+    p1.depois, p1.juntar # Junta as duas linhas
+  efim
+# Tenta salvar
+  prog p
+  lin = tpasso + "\n" + txt2(t1.remove)
+  t1.addfim(p.criar(tpasso + "\n" + t1.remove(10000)))
+  se t1.ini.texto == ""
+    p.salvar(config:progsalvar)
+    msg("Salvo com sucesso")
+    ret
+  fimse
+# Informa erros, corrigindo os números das linhas
+  msg("Erro ao salvar:")
+  p1 = t1.ini
+  p1.depois(5), p1.remove(1000)
+  uint16 x
+  enquanto t1.linhas
+    x = lin = t1.remove
+    se txt(x) == txt(lin, 0, inttotal(txt(x)))
+      p1 = teditor.ini
+      enquanto p1.txtproc("\\\n") >= 0 && p1.linha < x
+        p1.depois, x += 1
+      efim
+      lin = txt(x) + txt(lin, inttotal(txt(x)))
+    fimse
+    msg(lin)
+  efim
+
+func p_editor
+# Processamento de qualquer editor de texto
+# arg0 = texto digitado
+# arg1 = quantidade máxima de bytes
+# arg2 = nome da opção
+# teditor contém o texto, leditor é a linha atual
+# Retorna sempre 1
+  casovar txtmin(arg0)
+  casose "o" # Mostra opções do editor
+    msg(m_editor1 + "\nTecle o2 para mais")
+    ret 1
+  casose "o2"
+    msg(m_editor2 + "\nTecle o3 para mais")
+    ret 1
+  casose "o3"
+    msg(m_editor3 + "\nTecle o4 para mais")
+    ret 1
+  casose "o4"
+    msg(m_editor4 + "\nTecle o5 para mais")
+    ret 1
+  casose "o5"
+    msg(m_editor5)
+    ret 1
+  casofim
+  casovar txtmin(txt(arg0, 0, 1))
+  casose "\n"
+    leditor = teditor.ini
+    leditor1 = teditor.ini
+    leditor2 = teditor.fim
+  casose "" # Entrou na opção ou apenas pressionou ENTER
+    msg("Editando " + arg2 + ", O opções, Z sair")
+    ret 1
+  casose "." # Insere linha removendo espaços
+    se teditor.bytes + inttotal(arg0) > arg1
+      msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    leditor.add(txtremove(txt(arg0, 1), "ED"))
+    leditor.depois
+    msg("Texto inserido")
+    ret 1
+  casose "," # Insere linha
+    se teditor.bytes + inttotal(arg0) > arg1
+      msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    leditor.add(txt(arg0, 1))
+    leditor.depois
+    msg("Texto inserido")
+    ret 1
+  casose "a" # Apaga a linha atual
+    se !leditor.lin
+      msg("Está no fim do texto")
+      ret 1
+    fimse
+    leditor.remove
+    se leditor.lin
+      msg("Linha apagada")
+    senao
+      msg("Linha apagada; fim do texto")
+    fimse
+    ret 1
+  casose "i" # Informações sobre a linha atual
+    txt100 t
+    t = "Linha " + (leditor.linha + 1) + "/" + teditor.linhas
+    t += ", " + inttotal(leditor.texto)
+    t += " caracteres, " + teditor.bytes + "/" + arg1 + " bytes"
+    msg(t)
+    ret 1
+  casose "l" # Mostra a linha atual
+    msg(txt(leditor.linha + 1) + " " + leditor.texto)
+    ret 1
+  casose "m" # Executa comando do MUD
+    perso.teclou(txtremove(txt(arg0, 1), "E"))
+    ret 1
+  casose "s" # Sobe uma ou mais linhas
+    leditor.linha == 0 && msg("Início do texto")
+    uint8 x
+    x = txtremove(txt(arg0, 1), "E")
+    x > 8 && (x = 8)
+    x < 1 && (x = 1)
+    enquanto x > 0
+      leditor.antes, x -= 1
+      msg(leditor.texto)
+      se !editor.linha
+        ret 1
+      fimse
+    efim
+    ret 1
+  casose "d"
+    uint8 x
+    x = txtremove(txt(arg0, 1), "E")
+    x > 8 && (x = 8)
+    x < 1 && (x = 1)
+    enquanto x > 0
+      leditor.depois, x -= 1
+      se !leditor.lin
+        msg("Fim do texto")
+        ret 1
+      fimse
+      msg(leditor.texto)
+    efim
+    ret 1
+  casose "t" # Informações sobre a área de transferência
+    se transf.linhas == 0
+      msg("Área de transferência vazia")
+    senao transf.linhas == 1
+      msg("Área de transferência: 1 linha " + transf.bytes + " bytes")
+    senao
+      msg("Área de transferência: " + transf.linhas + " linhas " + transf.bytes + " bytes")
+    fimse
+    msg("Bloco linhas " + (leditor1.linha + 1) + " a " + (leditor2.linha + 1))
+    ret 1
+  casose "p" # Procurar
+    txt512 t # Texto após o comando P
+    int16 col # Coluna aonde encontrou
+    textopos pos # Posição aonde encontrou
+    t = txtremove(txt(arg0, 1), "ED")
+    se t # Procura texto
+      peditor = t, pos = leditor
+      col = pos.txtproc(t, 0)
+    senao peditor # Procura novamente
+      pos = leditor, pos.depois
+      col = pos.txtproc(peditor, 0)
+    senao # Nada para procurar
+      col = -1
+    fimse
+    se col >= 0
+      leditor = pos
+      msg("Encontrado linha " + (leditor.linha + 1) + " coluna " + (col + 1))
+      msg(leditor.texto)
+    senao
+      msg("Nada encontrado")
+    fimse
+    ret 1
+  casose "e" # Embelezar o texto
+    teditor.addini(txttroca(teditor.remove(10000), "\n", " "))
+    teditor.dividelin(57, 77)
+    msg("Texto embelezado; voltando à linha 1")
+    ret 1
+  casose "c" # Mostrar texto com as definições de cores
+    textopos pos
+    txtmais.limpar
+    txtmais.addfim("\bTexto com cores:")
+    pos = teditor.ini
+    enquanto pos.lin
+      txtmais.addfim(txtinvis(pos.texto))
+      pos.depois
+    efim
+    txtmostra
+    ret 1
+  casofim
+# Comandos de dois caracteres
+  casovar txtmin(arg0)
+  casose "bi"
+    leditor1 = leditor
+    msg("Início de bloco linha " + (leditor1.linha + 1))
+    ret 1
+  casose "bf"
+    leditor2 = leditor
+    msg("Fim de bloco linha " + (leditor2.linha + 1))
+    ret 1
+  casose "ba"
+    int32 total
+    total = leditor2.linha - leditor1.linha + 1
+    se total <= 0
+      msg("Nada para ser apagado")
+    senao
+      leditor1.remove(total)
+      se total == 1
+        msg("Uma linha apagada")
+      senao
+        msg(txt(total) + " linhas apagadas")
+      fimse
+    fimse
+    ret 1
+  casose "bc"
+    int32 total
+    total = leditor2.linha - leditor1.linha + 1
+    transf.limpar
+    transf.ini.add(leditor1, total)
+    se transf.linhas == 1
+      msg("1 linha guardada")
+    senao
+      msg(txt(transf.linhas) + " linhas guardadas")
+    fimse
+    ret 1
+  casose "bx"
+    int32 total
+    total = leditor2.linha - leditor1.linha + 1
+    transf.limpar
+    transf.ini.add(leditor1, total)
+    leditor1.remove(total)
+    se transf.linhas == 1
+      msg("1 linha movida")
+    senao
+      msg(txt(transf.linhas) + " linhas movidas")
+    fimse
+    ret 1
+  casose "bv"
+    se teditor.bytes + transf.bytes > arg1
+      msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    leditor1.add(transf.ini, transf.linhas)
+    se transf.linhas == 1
+      msg("1 linha colada")
+    senao
+      msg(txt(transf.linhas) + " linhas coladas")
+    fimse
+    ret 1
+  casose "be" # Embelezar o bloco
+    int32 total
+    total = leditor2.linha - leditor1.linha + 1
+    se total <= 0
+      msg("Nada para ser embelezado")
+    senao
+      textotxt t
+      t.addfim(txttroca(leditor1.textolin(total), "\n", " "))
+      t.dividelin(57, 77)
+      leditor1.remove(total)
+      leditor1.add(t.ini, t.linhas)
+      leditor2.linha = leditor1.linha + t.linhas - 1
+      se total == 1
+        msg("Uma linha embelezada")
+      senao
+        msg(txt(total) + " linhas embelezadas")
+      fimse
+    fimse
+    ret 1
+  casose "bl" # Limpar o texto
+    teditor.limpar
+    msg("Texto apagado")
+    ret 1
+  casofim
+# Checa número de linha
+  uint16 lin
+  lin = arg0
+  se arg0 == lin
+    leditor.linha = lin - 1
+    msg(txt(leditor.linha + 1) + " " + leditor.texto)
+    ret 1
+  fimse
+# Opção desconhecida
+  msg("Opção desconhecida: " + txt(arg0, 0, 1))
+  msg("Editando " + arg2 + ", O opções, Z sair")
+  ret 1
+
+const m_editor1 = "\b\c3Comandos básicos:\b\n\
+Tecle o número da linha para ir a uma linha do texto.\n\
+Tecle A para apagar a linha atual.\n\
+Tecle um ponto seguido de um texto para adicionar uma linha entre\n\
+a atual e a anterior. Tecle S ou D para subir ou descer no texto.\n\
+E para salvar o texto tecle X."
+const m_editor2 = "\b\c3Comandos do editor\b\n\
+\c2I\b  Informações sobre a linha atual, quantidade de linhas, etc.\n\
+\c2T\b  Informações sobre a área de transferência e o bloco marcado\n\
+\c2L\b  Mostra a linha atual\n\
+\c2S\b  seguido ou não de um número: Sobe uma ou mais linhas no texto\n\
+\c2D\b  seguido ou não de um número: Desce uma ou mais linhas no texto\n\
+\c2Um número qualquer:\b  Vai para a linha correspondente\n\
+As linhas começam em 1; um número bem grande, vai para o fim do texto"
+const m_editor3 = "\c2Um ponto seguido de um texto:\b\n\
+Insere um texto entre a linha atual e a anterior\n\
+A linha atual avança automaticamente\n\
+\c2Uma vírgula seguido de um texto:\b\n\
+Insere um texto entre a linha atual e a anterior, sem remover espaços\n\
+Exemplo: vírgula seguido de dois espaços e a letra A insere uma linha\n\
+que contém dois espaços e a letra A"
+const m_editor4 = "\c2A\b  Apaga a linha atual\n\
+\c2P\b  seguido de um texto: Procura um texto a partir da linha atual\n\
+\c2P\b  Procura a próxima linha que contém o texto\n\
+\c2E\b  Embeleza o texto, formatando em até 77 caracteres por linha\n\
+\c2C\b  Mostra o texto com as definições de cores\n\
+\c2M\b  seguido de um texto: Executa um comando do MUD sem sair da edição\n\
+\c2X\b  Salva o texto\n\
+\c2Z\b  Encerra a edição"
+const m_editor5 = "\c2BI\b  Marca início do bloco na linha atual\n\
+\c2BF\b  Marca fim de bloco na linha atual\n\
+\c2BA\b  Apaga bloco marcado\n\
+\c2BC\b  Copia bloco para a área de transferência\n\
+\c2BX\b  Move bloco para a área de transferência\n\
+\c2BV\b  Insere texto da área de transferência entre a linha atual e a anterior\n\
+\c2BE\b  Embeleza o bloco marcado\n\
+\c2BL\b  Apaga todo o texto sendo editado"

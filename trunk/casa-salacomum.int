@@ -1,0 +1,133 @@
+classe misc
+# Miscelânea: tabelas (variáveis) e funções
+# Deve ser usado como misc:variável ao invés de $misc.variável
+#
+# Objeto usado para acessar as saídas das salas
+comum ref obj
+#
+# Contador de tempo a cada segundo
+comum uint32 tempo
+#
+comum inttempo tempox # Para contagem de tempo
+
+func tempox_exec
+  misc:tempox = 10, misc:tempo += 1
+
+func iniclasse
+  misc:tempox = 10
+
+
+classe sala
+# Sala
+listaobj dentro1 # Lista de personagens que possui
+textovar var # Itens da sala
+# textovar ent # Itens enterrados na sala
+inttempo t_limpar # Para limpar os itens da sala depois de um tempo
+inttempo t_elimpar # Para limpar os itens enterrados depois de um tempo
+const e_limpar = 6000 # Quanto tempo para limpar os itens enterrados
+uint32 tempojog # Quando um jogador esteve aqui pela última vez, em segundos
+const mostra_n = dir_n
+const mostra_s = dir_s
+const mostra_l = dir_l
+const mostra_o = dir_o
+const mostra_c = dir_c
+const mostra_b = dir_b
+const mostra_en = dir_en
+const mostra_sa = dir_sa
+
+func iniclasse
+  criar(arg0)
+
+func t_limpar_exec # Limpa itens
+  listaitem i
+  i = dentro1.ini
+  enquanto i && !i.obj.jog
+    i.depois
+  efim
+  i.obj && var.limpar
+
+func t_elimpar_exec # Limpa os itens enterrados
+  ent.limpar
+
+func ver
+  textotxt t
+  misc:obj = arg0
+  se arg0.e_admin
+    t.addfim(txt(este) + " " + descr)
+  senao
+    t.addfim(descr)
+  fimse
+  se t.bytes > 1
+    txt100 lin
+    t.addfim(txtsai)
+    lin = txttotal
+    lin && t.addfim(lin)
+    arg0.msg(t.remove(1000))
+
+func txtsai # Retorna as saídas existentes
+  txt40 sai
+  mostra_n && (sai += " Norte")
+  mostra_s && (sai += " Sul")
+  mostra_l && (sai += " Leste")
+  mostra_o && (sai += " Oeste")
+  mostra_c && (sai += " Subir")
+  mostra_b && (sai += " Descer")
+  mostra_en && (sai += " Entrar")
+  mostra_sa && (sai += " Sair")
+  se sai
+    ret "\bSaídas:" + sai
+  senao
+    ret "\bSaídas: Nenhuma"
+
+func txttotal # Retorna a quantidade de personagens e itens
+  uint16 itens
+  txt100 lin
+  lin = var.ini("i_")
+  enquanto txt(lin, 0, 2) == "i_"
+    itens += 1, lin = var.depois(lin)
+  efim
+  se itens == 0
+    lin = ""
+  senao itens == 1
+    lin = "1 item"
+  senao
+    lin = txt(itens) + " itens"
+  fimse
+  itens = 1
+  listaitem i
+  i = dentro1.ini
+  enquanto i
+    i.obj != misc:obj && misc:obj.visivel(i.obj) && (itens += 1)
+    i.depois
+  efim
+  se itens > 1
+    lin && (lin += ", ")
+    lin += txt(itens) + " pessoas"
+  fimse
+  ret lin
+
+func procperso
+  listaitem i
+  i = dentro1.ini
+  enquanto i && txt(i.obj) != arg0
+    i.depois
+  efim
+  ret i.obj
+
+func numperso # Quantidade de personagens não jogador
+  uint16 total
+  listaitem i
+  i = dentro1.ini
+  enquanto i
+    !i.obj.jog && (total += 1)
+    i.depois
+  efim
+  ret total
+
+func msg # Mensagem para todos que estiverem na sala
+  listaitem i
+  i = dentro1.ini
+  enquanto i
+    i.obj.msg(arg0)
+    i.depois
+  efim
