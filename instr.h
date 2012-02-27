@@ -51,6 +51,7 @@ bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxtFim(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);
 bool FuncEsp(TVariavel * v, int valor);
+bool FuncTxtRepete(TVariavel * v, int valor);
 bool FuncInt(TVariavel * v, int valor);
 bool FuncTxtRemove(TVariavel * v, int valor);
 bool FuncTxtChr(TVariavel * v, int valor);

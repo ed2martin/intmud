@@ -775,6 +775,35 @@ bool Instr::FuncEsp(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtrepete
+bool Instr::FuncTxtRepete(TVariavel * v, int valor)
+{
+    const char * txt = "";  // Texto
+    char mens[BUF_MENS];    // Resultado
+    char * destino = mens;
+    int repete = 0;      // Número de repetições
+    int tamtxt = 0;      // Tamanho do texto em txt
+    if (VarAtual >= v+2)
+    {
+        repete = v[2].getInt();
+        txt = v[1].getTxt();
+        if (*txt==0)
+            repete = 0;
+        else
+            tamtxt = strlen(txt);
+    }
+    for (; repete > 0; repete--)
+    {
+        if (destino + tamtxt > mens + sizeof(mens))
+            break;
+        memcpy(destino, txt, tamtxt);
+        destino += tamtxt;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino-mens);
+}
+
+//----------------------------------------------------------------------------
 /// Funções intnome e intsenha
 bool Instr::FuncInt(TVariavel * v, int valor)
 {

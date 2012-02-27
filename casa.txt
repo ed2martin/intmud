@@ -1,0 +1,150 @@
+*** Variáveis de personagens e salas
+
+textovar var
+Os dois primeiros caracteres das variáveis de var indicam o tipo
+de variável.
+a_ = agenda (1=viu, 2=pegou)
+h_ = habilidade
+i_ = item, pode ser pego
+l_ = língua (idioma)
+o_ = item classificado como "outros"
+v_ = item que está vestindo
+z_ = variável não visível ao jogador
+
+
+*** Personagens funções:
+
+Criar personagem:
+criar("nome da classe do personagem", sala, nível, variáveis)
+Exemplos:
+criar
+criar("p_ini_silva", $s_ini008)
+criar("p_rato", $s_dentro004, 37, "h_roer,h_arranhatox,h_morder")
+Em eventos da sala, pode-se usar a sala "este", exemplo:
+criar("p_ini_silva", este)
+
+func teclou(texto)
+Processa o texto que o personagem escreveu.
+
+func msg(texto)
+Envia mensagem para o personagem.
+
+func msg1(texto)
+Envia mensagem para todos na mesma sala do jogo, exceto o próprio jogador.
+
+func msgtodos(texto)
+Somente jogadores: Envia mensagem para todos os jogadores.
+
+func msgsala(texto)
+Somente jogadores: Envia mensagem para todos que estiverem na
+mesma sala do bate-papo.
+
+func persoalvo
+Retorna o alvo do personagem, um objeto, conforme a variável alvo.
+Retorna nulo se não houver alvo.
+
+
+*** Personagens variáveis:
+
+const nome = "nome do personagem"
+Nome do personagem
+
+const sexo = 0
+Sexo: 0=feminino, 1=masculino
+
+varfunc dono
+A sala ou o personagem que contém esse personagem.
+É semelhante a uma variável ref.
+
+txt100 alvo
+Nome do personagem alvo.
+
+
+*** Personagens eventos
+
+Nessas funções, arg0 é sempre o personagem que está fazendo a ação.
+Elas são chamadas para o a sala, se o personagem não pertencer a outro.
+Depois, é executado para o próprio personagem.
+
+func entrou
+Personagem entrou na sala.
+
+func saiu
+Personagem saiu da sala
+
+func entrou[tempo]
+Eexemplo de função: entrou10
+Executado um tempo após o personagem entrar na sala.
+Exemplo, entrou1 é executado 1 segundo após entrar na sala.
+
+func segundo[tempo]
+Executado a cada X segundos, exemplo, segundo10 é executado
+a cada 10 segundos.
+
+func segsala[tempo]
+Executado a cada X segundos, em cada sala que não estiver vazia.
+
+func escr
+Personagem escreveu algo (arg0=personagem, arg1=texto).
+Retorna 1 se processou o texto (não deve prosseguir).
+
+func cmd_[nome do comando]
+Vai executar um comando do personagem (arg0=objeto do comando, arg1=texto)
+Retorna 1 se processou o texto (não deve prosseguir).
+
+
+*** Salas funções
+
+func ver( personagem )
+Mostra descrição da sala seguido das saídas válidas.
+
+func txtsai
+Retorna a mensagem das saídas existentes (um texto).
+Antes fazer: misc:obj = personagem
+
+func txttotal
+Retorna a quantidade de personagens e itens (um texto).
+Antes fazer: misc:obj = personagem
+
+func msg2(texto)
+Envia mensagem para todos na sala.
+
+func procperso(texto)
+Procura um personagem na sala com o nome da classe especificado.
+Retorna o objeto que corresponde ao personagem.
+Antes fazer: misc:obj = personagem
+
+func numperso
+Retorna a quantidade de personagens não jogador na sala.
+
+
+*** Salas variáveis:
+
+const limpar = 0
+De quanto em quanto tempo limpar os itens, em décimos de segundo.
+
+const terreno = 1
+Tempo de espera ao sair da sala, em décimos de segundo, quando o usuário
+digita uma direção.
+
+const descr = "texto"
+Descrição da sala: título seguido das saídas válidas.
+Antes fazer: misc:obj = personagem
+
+const dir_n = $nome_da_sala
+const dir_s = $nome_da_sala
+const dir_l = $nome_da_sala
+const dir_o = $nome_da_sala
+const dir_e = $nome_da_sala
+const dir_c = $nome_da_sala
+const dir_b = $nome_da_sala
+Salas vizinhas, nas direções norte, sul, leste, oeste, entrar,
+cima (subir), baixo (descer).
+Antes fazer: misc:obj = personagem
+
+const mostra_n = 1
+const mostra_s = 1
+etc.
+Se as saídas devem aparecer na lista de saídas.
+Zero significa invisível, 1 significa visível
+Antes fazer: misc:obj = personagem
