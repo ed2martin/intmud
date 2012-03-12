@@ -327,40 +327,8 @@ func p_editor
   msg("Editando " + arg2 + ", O opções, Z sair")
   ret 1
 
-const m_editor1 = "\b\c3Comandos básicos:\b\n\
-Tecle o número da linha para ir a uma linha do texto.\n\
-Tecle A para apagar a linha atual.\n\
-Tecle um ponto seguido de um texto para adicionar uma linha entre\n\
-a atual e a anterior. Tecle S ou D para subir ou descer no texto.\n\
-E para salvar o texto tecle X."
-const m_editor2 = "\b\c3Comandos do editor\b\n\
-\c2I\b  Informações sobre a linha atual, quantidade de linhas, etc.\n\
-\c2T\b  Informações sobre a área de transferência e o bloco marcado\n\
-\c2L\b  Mostra a linha atual\n\
-\c2S\b  seguido ou não de um número: Sobe uma ou mais linhas no texto\n\
-\c2D\b  seguido ou não de um número: Desce uma ou mais linhas no texto\n\
-\c2Um número qualquer:\b  Vai para a linha correspondente\n\
-As linhas começam em 1; um número bem grande, vai para o fim do texto"
-const m_editor3 = "\c2Um ponto seguido de um texto:\b\n\
-Insere um texto entre a linha atual e a anterior\n\
-A linha atual avança automaticamente\n\
-\c2Uma vírgula seguido de um texto:\b\n\
-Insere um texto entre a linha atual e a anterior, sem remover espaços\n\
-Exemplo: vírgula seguido de dois espaços e a letra A insere uma linha\n\
-que contém dois espaços e a letra A"
-const m_editor4 = "\c2A\b  Apaga a linha atual\n\
-\c2P\b  seguido de um texto: Procura um texto a partir da linha atual\n\
-\c2P\b  Procura a próxima linha que contém o texto\n\
-\c2E\b  Embeleza o texto, formatando em até 77 caracteres por linha\n\
-\c2C\b  Mostra o texto com as definições de cores\n\
-\c2M\b  seguido de um texto: Executa um comando do MUD sem sair da edição\n\
-\c2X\b  Salva o texto\n\
-\c2Z\b  Encerra a edição"
-const m_editor5 = "\c2BI\b  Marca início do bloco na linha atual\n\
-\c2BF\b  Marca fim de bloco na linha atual\n\
-\c2BA\b  Apaga bloco marcado\n\
-\c2BC\b  Copia bloco para a área de transferência\n\
-\c2BX\b  Move bloco para a área de transferência\n\
-\c2BV\b  Insere texto da área de transferência entre a linha atual e a anterior\n\
-\c2BE\b  Embeleza o bloco marcado\n\
-\c2BL\b  Apaga todo o texto sendo editado"
+const m_editor1 = "\b\c3Comandos básicos:\b\nTecle o número da linha para ir a uma linha do texto.\nTecle A para apagar a linha atual.\nTecle um ponto seguido de um texto para adicionar uma linha entre\na atual e a anterior. Tecle S ou D para subir ou descer no texto.\nE para salvar o texto tecle X."
+const m_editor2 = "\b\c3Comandos do editor\b\n\c2I\b  Informações sobre a linha atual, quantidade de linhas, etc.\n\c2T\b  Informações sobre a área de transferência e o bloco marcado\n\c2L\b  Mostra a linha atual\n\c2S\b  seguido ou não de um número: Sobe uma ou mais linhas no texto\n\c2D\b  seguido ou não de um número: Desce uma ou mais linhas no texto\n\c2Um número qualquer:\b  Vai para a linha correspondente\nAs linhas começam em 1; um número bem grande, vai para o fim do texto"
+const m_editor3 = "\c2Um ponto seguido de um texto:\b\nInsere um texto entre a linha atual e a anterior\nA linha atual avança automaticamente\n\c2Uma vírgula seguido de um texto:\b\nInsere um texto entre a linha atual e a anterior, sem remover espaços\nExemplo: vírgula seguido de dois espaços e a letra A insere uma linha\nque contém dois espaços e a letra A"
+const m_editor4 = "\c2A\b  Apaga a linha atual\n\c2P\b  seguido de um texto: Procura um texto a partir da linha atual\n\c2P\b  Procura a próxima linha que contém o texto\n\c2E\b  Embeleza o texto, formatando em até 77 caracteres por linha\n\c2C\b  Mostra o texto com as definições de cores\n\c2M\b  seguido de um texto: Executa um comando do MUD sem sair da edição\n\c2X\b  Salva o texto\n\c2Z\b  Encerra a edição"
+const m_editor5 = "\c2BI\b  Marca início do bloco na linha atual\n\c2BF\b  Marca fim de bloco na linha atual\n\c2BA\b  Apaga bloco marcado\n\c2BC\b  Copia bloco para a área de transferência\n\c2BX\b  Move bloco para a área de transferência\n\c2BV\b  Insere texto da área de transferência entre a linha atual e a anterior\n\c2BE\b  Embeleza o bloco marcado\n\c2BL\b  Apaga todo o texto sendo editado"

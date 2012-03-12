@@ -2,14 +2,12 @@ classe p_dentro_sacerdote
 herda personagem
 const nome = "Sacerdote"
 
-
 classe s_dentro001
 herda sala
 
 func segundo2
   arg0.dono = $s_dentro002
   arg0.energia = 20
-
 
 classe s_dentro002
 herda sala
@@ -48,7 +46,6 @@ func segundo2
 func escr
   arg0.msg("Aguarde, energia em " + arg0.energia + " de " + arg0.enermax)
   ret 1
-
 
 classe s_dentro003
 herda sala
@@ -91,18 +88,28 @@ func cmd_s
 
 func segundo1
 # se arg0.contleo < 700 && contleo < 700
-  se arg0.energia < arg0.enermax
+  recupera(arg0, arg0)
+  recupera(arg0, arg0.animal.0)
+  recupera(arg0, arg0.animal.1)
+  recupera(arg0, arg0.animal.2)
+  recupera(arg0, arg0.animal.3)
+  recupera(arg0, arg0.animal.4)
+  recupera(arg0, arg0.animal.5)
+  recupera(arg0, arg0.animal.6)
+  recupera(arg0, arg0.animal.7)
+  recupera(arg0, arg0.animal.8)
+  recupera(arg0, arg0.animal.9)
+
+func recupera
+  se arg1.energia < arg1.enermax
     arg0.msg("Energia recuperada")
   fimse
-  arg0.recuperar
-
+  arg1.recuperar
 
 classe s_dentro004
 herda sala
 const sembriga = 1
-const descr = "Passagem\n\
-Há uma lápide no centro dizendo 24 de junho de 2005\n\
-Sala ampla ao sul e 3 salas do tempo ao norte"
+const descr = "Passagem\nHá uma lápide no centro dizendo 24 de junho de 2005\nSala ampla ao sul e 3 salas do tempo ao norte"
 const dir_s = $s_dentro003
 const dir_n = $s_dentro005
 
@@ -152,13 +159,10 @@ func escr
       ret 1
     casofim
 
-
 classe s_dentro005
 herda sala
 const sembriga = 1
-const descr = "Sala misteriosa\n\
-Você está em uma sala misteriosa. O chão e o teto parecem ser de pedra,\n\
-mas não dá para ver direito. Tem uma névoa densa em todo lugar."
+const descr = "Sala misteriosa\nVocê está em uma sala misteriosa. O chão e o teto parecem ser de pedra,\nmas não dá para ver direito. Tem uma névoa densa em todo lugar."
 const dir_s = $s_dentro004
 const dir_n = $s_dentro006
 const dir_o = $s_dentro007
@@ -180,7 +184,7 @@ func entrou4
   nivel < arg2.animal.0.nivel && (nivel = arg2.animal.0.nivel)
   nivel < arg3.animal.0.nivel && (nivel = arg3.animal.0.nivel)
   nivel < arg4.animal.0.nivel && (nivel = arg4.animal.0.nivel)
-  se !arg0.l_hebraico
+  se !arg0.var.l_hebraico
     se arg0.nivel < 4
       arg0.msg("Sacerdote: Procure uma sala de jantar, tecle alvo múmia")
       arg0.msg("e quando uma múmia aparecer vai teclando chutar ou socar.")
@@ -201,8 +205,7 @@ func entrou4
     arg0.msg("com pouca energia energia, então tecle pegar")
     arg0.msg("Os animais que você pode pegar aparecem na sua agenda (tecle agenda)")
     arg0.msg("Experimente também agenda e o nome do animal.")
-  senao "p_fantasma" != arg0.animal.0 && "p_fantasma" != arg0.animal.1 && "p_fantasma" != \
-arg0.animal.2 && "p_fantasma" != arg0.animal.3 && "p_fantasma" != arg0.animal.4
+  senao "p_fantasma" != arg0.animal.0 && "p_fantasma" != arg0.animal.1 && "p_fantasma" != arg0.animal.2 && "p_fantasma" != arg0.animal.3 && "p_fantasma" != arg0.animal.4
     arg0.msg("Sacerdote: Tenha sempre um fantasma com você. Ele é imune a socos e chutes.")
     arg0.msg("Se quiser pegar um terá de usar um de seus animais. Vá à oeste do corredor")
     arg0.msg("luxuoso, tecle um número de 1 a 5 e tecle hab para saber q golpes pode usar")
@@ -243,15 +246,12 @@ arg0.animal.2 && "p_fantasma" != arg0.animal.3 && "p_fantasma" != arg0.animal.4
     arg0.msg("Sacerdote: Não precisa mais da minha ajuda.")
   fimse
 
-
 classe s_dentro009
 herda sala
 textovar ent
 const sembriga = 1
 const limpar = 300
-const descr = "Corredor\n\
-Você está em um corredor que se estende a leste. Há uma sala a oeste\n\
-e duas portas, uma ao norte e outra ao sul."
+const descr = "Corredor\nVocê está em um corredor que se estende a leste. Há uma sala a oeste\ne duas portas, uma ao norte e outra ao sul."
 const dir_l = $s_dentro010
 const dir_o = $s_dentro003
 const dir_n = $s_dentro016
@@ -270,7 +270,6 @@ func cmd_l
     arg0.dono = $s_dentro001
     ret 1
 
-
 classe s_dentro010
 herda sala
 const dir_c = $s_dentro009
@@ -281,13 +280,9 @@ func entrou
 func entrou2
   arg0.dono = $s_dentro011
 
-
 classe s_dentro011
 herda sala
-const descr = "Porão\n\
-A claridade mal chega aqui. Algumas teias negras de aranha embelezam\n\
-o lugar. Na verdade não há nenhuma escada para cima, mas você consegue\n\
-subir graças à uma corda."
+const descr = "Porão\nA claridade mal chega aqui. Algumas teias negras de aranha embelezam\no lugar. Na verdade não há nenhuma escada para cima, mas você consegue\nsubir graças à uma corda."
 const dir_n = $s_dentro012
 const dir_l = $s_dentro013
 const dir_s = $s_dentro014
@@ -296,12 +291,9 @@ const dir_c = $s_dentro009
 func entrou
   ver(arg0)
 
-
 classe s_dentro012
 herda sala
-const descr = "Quarto\n\
-Você está em um quarto de despejo. Há muito entulho mas nada\n\
-de valor. Está difícil ver mais alguma coisa nessa escuridão."
+const descr = "Quarto\nVocê está em um quarto de despejo. Há muito entulho mas nada\nde valor. Está difícil ver mais alguma coisa nessa escuridão."
 const dir_s = $s_dentro011
 
 func entrou
@@ -318,12 +310,9 @@ func segsala2
       criar("p_entulho", este, 40, "h_surpreender,h_lançar,h_velocidade")
     casofim
 
-
 classe s_dentro013
 herda sala
-const descr = "Garagem\n\
-É uma pequena e antiga garagem. Há uma carruagem, mas nenhum cavalo.\n\
-A porta à leste está lacrada com concreto."
+const descr = "Garagem\nÉ uma pequena e antiga garagem. Há uma carruagem, mas nenhum cavalo.\nA porta à leste está lacrada com concreto."
 int1 travado # Se a porta à leste está lacrada com concreto
 
 func entrou
@@ -334,7 +323,7 @@ func entrou
 func entrou10
   se !procperso("p_concreto_armado")
     criar("p_concreto_armado", este, 38, "h_surpreender, h_lançar")
-    arg0.msg2("Concreto armado 38 se desprendeu da porta")
+    msg("Concreto armado 38 se desprendeu da porta")
     travado = 0
 
 func segsala15
@@ -352,24 +341,18 @@ func cmd_l
     arg0.msg("A porta está lacrada com concreto")
     ret 1
 
-
 classe s_dentro014
 herda sala
-const descr = "Corredor\n\
-Aqui é bastante alto, porém muito estreito. Você se movimenta devagar.\n\
-Uma pessoa com claustrofobia certamente não passaria por aqui."
+const descr = "Corredor\nAqui é bastante alto, porém muito estreito. Você se movimenta devagar.\nUma pessoa com claustrofobia certamente não passaria por aqui."
 const dir_n = $s_dentro011
 const dir_o = $s_dentro015
 
 func entrou
   ver(arg0)
 
-
 classe s_dentro015
 herda sala
-const descr = "Sala\n\
-Uma sala bastante escura. Parece ser ter sido um quarto de revelação\n\
-de fotografias. Melhor voltar à leste."
+const descr = "Sala\nUma sala bastante escura. Parece ser ter sido um quarto de revelação\nde fotografias. Melhor voltar à leste."
 
 func segsala8
   se numperso < 4
@@ -380,15 +363,12 @@ func entrou
 
 const dir_l = $s_dentro014
 
-
 classe s_dentro016
 herda sala
 textovar ent
 const sembriga = 1
 const limpar = 300
-const descr = "Quarto\n\
-Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
-desarrumada. Há também um ventilador no teto, mas nenhuma janela."
+const descr = "Quarto\nHá um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\ndesarrumada. Há também um ventilador no teto, mas nenhuma janela."
 
 func entrou
   var.i_espingarda = 1
@@ -399,15 +379,11 @@ func entrou
 const dir_s = $s_dentro009
 const dir_o = misc:obj.var.i_oculos ? $s_dentro031
 
-
 classe s_dentro017
 herda sala
 textovar ent
 const limpar = 300
-const descr = "Sala de jantar\n\
-Há muita comida servida na mesa, mas ninguém para comê-la. O aroma\n\
-agradável indica que foi está fresca e foi feita há pouco tempo.\n\
-Vários quadros antigos estão pendurados na parede."
+const descr = "Sala de jantar\nHá muita comida servida na mesa, mas ninguém para comê-la. O aroma\nagradável indica que foi está fresca e foi feita há pouco tempo.\nVários quadros antigos estão pendurados na parede."
 const dir_n = $s_dentro009
 const dir_s = $s_dentro018
 
@@ -429,16 +405,12 @@ func cmd_pegar
     ret 1
   casofim
 
-
 classe s_dentro018
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Sala de estar\n\
-Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
-ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
-corredor estreito para leste e uma escada para o andar de cima, ao sul."
+const descr = "Sala de estar\nVocê está em uma pequena sala com mesa, poltronas e uma televisão. Pode\nir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\ncorredor estreito para leste e uma escada para o andar de cima, ao sul."
 const dir_o = $s_dentro019
 const dir_n = $s_dentro017
 const dir_l = $s_dentro025
@@ -451,21 +423,15 @@ func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 2, "h_socar,h_chutar")
 
-
 classe s_dentro019
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Cozinha\n\
-Aparentemente tudo está no seu devido lugar. Um fogão de 9 bocas,\n\
-uma geladeira e vários armários. O armoma agradável indica que andaram\n\
-limpando esse lugar recentemente. O estranho é não haver comida, nem\n\
-na geladeira, nem nos armários. A sala de estar fica à leste e há também\n\
-um quarto escuro ao sul."
+const descr = "Cozinha\nAparentemente tudo está no seu devido lugar. Um fogão de 9 bocas,\numa geladeira e vários armários. O armoma agradável indica que andaram\nlimpando esse lugar recentemente. O estranho é não haver comida, nem\nna geladeira, nem nos armários. A sala de estar fica à leste e há também\num quarto escuro ao sul."
 const dir_l = $s_dentro018
 const dir_s = $s_dentro020
-const dir_c = misc:obj.var.i_gancho ? $s_duto002
+const dir_c = misc:obj.var.o_gancho ? $s_duto002
 
 func segsala15
   se rand(100) < 65
@@ -478,15 +444,12 @@ func entrou
 func cmd_s
   arg0.msg("Você sentiu tontura por um momento mas passou. Tudo ficou claro.")
 
-
 classe s_dentro020
 herda sala
 textovar ent
 const limpar = 300
 const sembriga = 1
-const descr = "Quarto\n\
-Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
-desarrumada. Há também um ventilador no teto, mas nenhuma janela."
+const descr = "Quarto\nHá um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\ndesarrumada. Há também um ventilador no teto, mas nenhuma janela."
 const dir_s = $s_dentro021
 
 func entrou
@@ -497,15 +460,12 @@ func entrou
   fimse
   ver(arg0)
 
-
 classe s_dentro021
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Corredor\n\
-Você está em um corredor que se estende a leste. Há uma sala a oeste\n\
-e duas portas, uma ao norte e outra ao sul."
+const descr = "Corredor\nVocê está em um corredor que se estende a leste. Há uma sala a oeste\ne duas portas, uma ao norte e outra ao sul."
 const dir_o = $s_dentro003
 const dir_n = $s_dentro020
 const dir_s = $s_dentro022
@@ -522,16 +482,12 @@ func segsala22
 func entrou
   ver(arg0)
 
-
 classe s_dentro022
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Sala de jantar\n\
-Há muita comida servida na mesa, mas ninguém para comê-la. O aroma\n\
-agradável indica que foi está fresca e foi feita há pouco tempo.\n\
-Vários quadros antigos estão pendurados na parede."
+const descr = "Sala de jantar\nHá muita comida servida na mesa, mas ninguém para comê-la. O aroma\nagradável indica que foi está fresca e foi feita há pouco tempo.\nVários quadros antigos estão pendurados na parede."
 const dir_n = $s_dentro021
 const dir_s = $s_dentro018
 
@@ -558,14 +514,12 @@ func cmd_pegar
     ret 1
   casofim
 
-
 classe s_dentro023
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Corredor\n\
-Você está em um corredor que se estende a oeste. Há uma despensa a leste."
+const descr = "Corredor\nVocê está em um corredor que se estende a oeste. Há uma despensa a leste."
 const dir_l = $s_dentro024
 const dir_o = $s_dentro021
 
@@ -576,14 +530,12 @@ func segsala22
   se rand(100) < 50
     criar("p_lula", este, 8, "h_bolha,h_surf,h_cortar")
 
-
 classe s_dentro024
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Pequena despensa\n\
-Aqui está completamente vazio. Não há janelas; apenas uma porta a oeste."
+const descr = "Pequena despensa\nAqui está completamente vazio. Não há janelas; apenas uma porta a oeste."
 const dir_o = $s_dentro023
 
 func entrou
@@ -598,16 +550,12 @@ func segsala22
   se rand(100) < 50
     criar("p_morcego", este, 5, "h_bico,h_ventania,h_velocidade")
 
-
 classe s_dentro025
 herda sala
 textovar ent
 const limpar = 300
 const area_mumia = 1
-const descr = "Corredor\n\
-Você está em um corredor bastante estreito e extenso.\n\
-Há uma sala de estar a oeste e um corredor mais largo ao norte.\n\
-Há uma grande fenda, na parede ao sul."
+const descr = "Corredor\nVocê está em um corredor bastante estreito e extenso.\nHá uma sala de estar a oeste e um corredor mais largo ao norte.\nHá uma grande fenda, na parede ao sul."
 const dir_o = $s_dentro018
 const dir_n = $s_dentro027
 const dir_s = $s_dentro026
@@ -618,3 +566,466 @@ func entrou
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 5, "h_socar,h_chutar")
+
+classe s_dentro026
+herda sala
+textovar ent
+uint8 passo # Passo da batalha
+ref escolhido # Jogador escolhido pelo Catador
+ref animal.3 # Animais do catador de insetos
+const limpar = 300
+const descr = "Caverna\nVocê está em uma caverna sombria e úmida. Goteiras pingam no chão.\nA saída é ao norte, a caverna se estende ao sul."
+const dir_n = $s_dentro025
+const dir_s = $s_lab018
+
+func entrou
+# Se o jogador estiver marcado como escolhido, deixa de ser o escolhido
+  arg0 == escolhido && (escolhido = nulo)
+# Cria o catador de insetos
+  se !procperso("p_catador_de_insetos")
+    criar("p_catador_de_insetos", este, 32)
+    passo = 0, escolhido = nulo
+  fimse
+# Descrição da sala
+  ver(arg0)
+
+func segundo40
+  arg0.energia -= 5
+  arg0.msg("Uma pedra de gelo cai do teto em você, " + arg0.energia + " de " + arg0.enermax)
+
+func segundo3
+# Checa se o Catador de insetos está na sala
+  se !procperso("p_catador_de_insetos")
+    escolhido = nulo
+    passo = 0
+    ret
+# Encerra batalha se jogador não estiver na sala
+  senao escolhido && escolhido.dono != este
+    escolhido = nulo
+    passo = 0
+  fimse
+# Animal do catador acorda
+  listaitem i
+  i = dentro1.ini
+  enquanto i
+    se i.obj.e_dormindo > 100
+      msg("Catador explode uma bomba perto de " + i.obj.nome)
+      i.obj.dormindo = 30
+    fimse
+    i.depois
+  efim
+# Catador de insetos desafia jogador
+  se !escolhido && !arg0.var.l_hebraico
+    escolhido = arg0
+    passo = 1
+    ret
+  fimse
+# Passos da batalha
+  casovar passo
+  casose "1"
+    passo += 1
+    msg("Catador de insetos: Eu desafio " + escolhido.nome + " para uma batalha")
+    ret
+  casose "2"
+    passo += 1
+    msg("Catador de insetos: Vamos ver se " + escolhido.nome + " pode com meus anões")
+    msg("Catador de insetos escolhe Anão 8")
+    criar("p_anao", este, 8, "h_socar,h_chutar,z_atk")
+    ret
+  casose "3"
+    se numperso == 1
+      passo += 1
+      msg("Catador de insetos: Você não é tão mal assim. Até venceu meu anão mais fraco!")
+    fimse
+    ret
+  casose "4"
+    passo += 1
+    msg("Catador de insetos: Mas não vai ganhar deste outro.")
+    msg("Catador de insetos escolhe +Anão 10")
+    criar("p_anao", este, 10, "h_chutar,z_atk")
+    ret
+  casose "5"
+    se numperso == 1
+      passo += 1
+      msg("Catador de insetos: Você venceu meus capangas, desisto.")
+      msg("Vou te ensinar hebráico. É isso que você quer, não é?")
+    fimse
+    ret
+  casose "6"
+    passo += 1
+    msg("Assim poderá trocar itens e animais com quem souber hebráico")
+    msg("bastando teclar dar e o número do animal ou nome do item.")
+    ret
+  casose "7"
+    passo += 1
+    msg("Para escolher para quem quer dar, tecle alvo e o nome da pessoa")
+    msg(arg0.nome + " aprende hebráico")
+    arg0.var.l_hebráico = 1
+    ret
+  casose "8"
+    passo += 1
+    msg("Catador de insetos: cheque seus idiomas teclando idioma")
+    msg("Quando quiser me desafiar novamente tecle catador de insetos")
+    ret
+  casose "9"
+    passo += 1
+    msg("Catador de insetos: Mas agora vá até a biblioteca. Vai te fazer bem.")
+    escolhido = nulo
+    ret
+  casose "11"
+    passo += 1
+    msg("Catador de insetos escolhe +Lula 16 e +Minhocão 14")
+    criar("p_lula", este, 16, "h_bolha,h_tóxico,h_morder", contador)
+    criar("p_minhocao", este, 14, "h_pedrada,h_pedregulho,h_tóxico,z_atk")
+    ret
+  casose "12"
+    se numperso == 1
+      passo += 1
+      msg("Catador de insetos escolhe +Ímã 23")
+      criar("p_ima", este, 23, "h_choque,h_onda trovão,h_arranhar,z_atk")
+    fimse
+    ret
+  casose "13"
+    se numperso == 1
+      passo += 1
+      msg("Catador de insetos escolhe +Lagarchama 29")
+      criar("p_lagarchama", este, 29, "h_chama,h_brasa,h_arranhar,z_atk")
+    fimse
+    ret
+  casose "14"
+    se numperso == 1
+      passo += 1
+      msg("Catador de insetos escolhe +Pinguim 37")
+      criar("p_pinguim", este, 37, "h_arranhar,h_neve,h_aurora,z_atk")
+    fimse
+    ret
+  casose "15"
+    se numperso == 1
+      passo += 1
+      msg("Catador de insetos: Parabéns! Você provou que vale alguma coisa")
+    fimse
+    ret
+  casose "16"
+    passo += 1
+    msg("Catador de insetos: Desta vez não tenho nada a oferecer")
+    msg("Mas pode me desafiar sempre que quiser")
+    ret
+  casose "17"
+    passo += 1
+    msg("Você sabia que a partir do nível 10 você e qualquer outro ser conseguem")
+    msg("se lembrar das habilidades sempre que acordarem naturalmente")
+    ret
+  casose "18"
+    passo += 1
+    msg("Catador de insetos: Não, claro que não sabia!")
+    ret
+  casose "19"
+    passo += 1
+    msg("Mas é uma pena que você não vai sair vivo daqui")
+    ret
+  casose "20"
+    passo += 1
+# passo = 0
+    ret
+  casofim
+
+func segundo1
+  uint16 novonivel
+  ref r
+  r = procperso("p_catador_de_insetos")
+# Checa se tem catador de insetos
+  se !r
+    ret
+# Checa se catador está lutando
+  senao passo < 20
+    r.recuperar
+    ret
+  fimse
+# Catador está lutando
+  r.var.h_toxico = 1
+  r.var.h_onda_trovao = 1
+  se r.nivel < 40 && r.energia < r.enermax * 30 / 100
+    novonivel = r.nivel + 2
+  senao r.e_paralisado || r.e_dormindo || r.e_envenenado
+    novonivel = r.nivel
+  fimse
+  se novonivel
+    msg(r.nome + " usa poção e se cura")
+    r.nivel = novonivel
+    r.morreu(1) # Apenas dar experiência, não apaga o personagem
+    r.recuperar
+    msg(r.nome + " é nível " + r.nivel)
+  fimse
+
+func escr # Jogador desafia Catador de insetos
+  se arg1 == "catador de insetos"
+    se !procperso("p_catador_de_insetos")
+      arg0.msg("Catador de insetos não está aqui")
+    senao escolhido
+      arg0.msg("Catador de insetos: Estou ocupado, espere um pouco até a minha vitória")
+    senao
+      msg("Catador de insetos: Eu aceito seu desafio, " + arg0.nome)
+      msg("Meus animais modificados geneticamente vão te esfolar vivo")
+      escolhido = arg0
+      passo = 11
+    fimse
+    ret 1
+
+func cmd_ataque
+  se arg0.jog && arg1.jog # Jogador não ataca jogador
+# arg0.msg("Catador de insetos: Não pode atacar outros jogadores aqui")
+    ret 1
+  senao !arg0.jog && arg1 != escolhido # Não jogador só ataca jogador escolhido
+    ret 1
+
+func cmd_n
+  se procperso("p_catador_de_insetos")
+    se arg0 == escolhido
+      arg0.msg("Catador de insetos: Não vou deixar você fugir da briga, covarde")
+      ret 1
+    senao !arg0.var.l_hebraico
+      arg0.msg("Catador de insetos: Não pode ir embora antes da nossa batalha")
+      ret 1
+
+func cmd_s
+  se procperso("p_catador_de_insetos")
+    se arg0 == escolhido
+      arg0.msg("Catador de insetos: Não vou deixar você fugir da briga, covarde")
+      ret 1
+    senao arg0.animal.0.nivel >= 40
+      ret 0
+    senao
+      arg0.msg("Catador de insetos: Não vou deixar que entre na caverna. É perigoso.")
+      arg0.msg("Seu primeiro animal precisa ser pelo menos nível 40.")
+      ret 1
+
+classe s_dentro027
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\nO corredor se estende a oeste. Mais adiante há uma sala bastante ampla.\nÀ leste uma escada leva para o andar de baixo."
+const dir_s = $s_dentro025
+const dir_l = $s_dentro028
+const dir_o = $s_dentro010
+const dir_c = misc:obj.var.o_gancho ? $s_duto003
+
+func entrou
+  ver(arg0)
+
+func segsala15
+  casovar rand(4)
+  casose "0"
+    criar("p_mumia", este, 12, "h_socar,h_chutar")
+    sair
+  casose "1"
+    criar("p_anao", este, 10, "h_socar,h_chutar")
+    sair
+  casose "2"
+    criar("p_mumia", este, 8, "h_socar,h_chutar")
+    sair
+  casose "3"
+    criar("p_anao", este, 6, "h_socar,h_chutar")
+  casofim
+
+func segsala22
+  se rand(100) < 50
+    criar("p_lagarchama", este, 8, "h_chama,h_brasa,h_cortar,h_arranhar")
+
+func cmd_o
+  se arg0.var.i_corda
+    arg0.msg("A madeira está podre e você caiu. Felizmente conseguiu jogar uma corda")
+    arg0.msg("a tempo e está descendo devagar. Tecle subir para voltar.")
+  senao
+    arg0.msg("A madeira está podre e desprovido de uma corda você caiu,")
+    arg0.msg("mas não resistiu à queda.")
+    arg0.dono = $s_dentro001
+    ret 1
+
+classe s_dentro028
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Sala de estar\nHá uma escada à oeste e uma porta ao sul. Costuma haver um leopardo\nfaminto aqui."
+const dir_o = $s_dentro027
+const dir_s = $s_dentro029
+
+func entrou
+  ver(arg0)
+
+func entrou1
+  se !procperso("p_leopardo")
+    se arg0.contleo < 700
+      criar("p_leopardo", este, 20, "h_arranhar,h_morder")
+    senao
+      criar("p_leopardo", este, 20, "h_morder,z_sinistro")
+
+func entrou2
+  ref r
+  r = procperso("p_leopardo")
+  se arg0.var.i_comida && r
+    arg0.var.i_comida = ""
+    r.esperar(150)
+    arg0.msg("Você largou a comida na sala e o leopardo está comendo.")
+  fimse
+
+classe s_dentro029
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = misc:obj.var.i_chave ? descr2 : descr1
+const descr1 = "Corredor\nHá um portão no meio, trancado, interrompendo a passagem.\nVocê precisa de uma chave para passar."
+const descr2 = "Corredor\nHá um portão no meio, trancado, interrompendo a passagem.\nFelizmente você tem a chave para abrir, e por isso consegue passsar."
+const dir_n = $s_dentro028
+const dir_s = misc:obj.var.i_chave ? $s_dentro030
+const dir_c = misc:obj.var.i_ganco ? $s_duto008
+
+func entrou
+  ver(arg0)
+
+func segsala22
+  se rand(100) < 50
+    criar("p_kickboxer", este, 8, "h_socar,h_chutar,h_multissoco,h_cortar")
+
+classe s_dentro030
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Despensa\nHá um pouco de entulho aqui, mas nada que se aproveite."
+const dir_n = $s_dentro029
+
+func entrou
+  var.i_óculos = 1
+  ver(arg0)
+
+func segsala22
+  se rand(100) < 50
+    criar("p_pinguim", este, 8, "h_neve,h_aurora,h_cortar,h_arranhar")
+
+func cmd_n
+  se !arg0.var.i_chave
+    arg0.msg("Você precisa da chave para sair.")
+    ret 1
+
+classe s_dentro031
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Despensa\nVocê está em uma despensa secreta. Há apenas uma saída, à leste."
+const dir_l = $s_dentro016
+const dir_c = misc:obj.var.o_gancho ? $s_duto001
+
+func entrou
+  var.i_corda = 1
+  ver(arg0)
+
+func segsala15
+  criar("p_cogumelo", este, 8, "h_dreno,h_onda solar,h_cortar")
+
+classe s_dentro032
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\nAqui é grande e luxuoso. Há uma uma escada para baixo ao norte, uma sala\nde reunião ao sul, uma biblioteca à leste e um corredor menor a oeste."
+const dir_n = $s_dentro018
+const dir_s = $s_dentro033
+const dir_l = $s_dentro035
+const dir_o = $s_lab001
+
+func entrou
+  ver(arg0)
+
+func segsala12
+  se rand(100) < 50
+    criar("p_minhocao", este, 6, "h_pedrada,h_pedregulho,h_explodir,h_cortar")
+
+classe s_dentro033
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Sala de reuniões.\nHá várias janelas, e a vista é bonita. Dá para ver até o monte Chiano.\nMas não dá para sair pela janela. Há uma biblioteca à leste, um escritório\nao sul, e dois corredores ao norte e à oeste."
+const dir_n = $s_dentro032
+const dir_s = $s_dentro034
+const dir_l = $s_dentro035
+const dir_o = $s_lab003
+
+func entrou
+  ver(arg0)
+
+func segsala22
+  se rand(100) < 50
+    criar("p_borboleta", este, 8, "h_picar,h_morder,h_cortar")
+
+classe s_dentro034
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = misc:obj.var.i_oculos ? descr2 : descr1
+const descr1 = "Escritório\nAqui são guardos os temas das últimas reuniões em um quadro de avisos.\nMas não tem nada de importante."
+const descr2 = "Escritório\nAqui são guardos os temas das últimas reuniões em um quadro de avisos.\nHá também uma nota, visível apenas com os óculos que você está usando.\nTecle ler para ler."
+const dir_n = $s_dentro033
+const dir_c = misc:obj.var.o_gancho ? $s_duto007
+
+func entrou
+  ver(arg0)
+
+func segsala22
+  se rand(100) < 50
+    criar("p_balao", este, 10, "h_cantar,h_cortar")
+    escreveu(ler)
+    se arg0.var.i_oculos
+      arg0.msg("O labirinto perto da biblioteca é muito perigoso e também difícil, porque")
+      arg0.msg("todas as salas são iguais. São poucas salas mas você pode andar em círculo")
+      arg0.msg("durante horas. Apesar disso tudo, ele esconde um artefato raro em uma")
+      arg0.msg("despensa. Espero que algum dia alguém faça um mapa...")
+
+classe s_dentro035
+herda sala
+textovar ent
+const limpar = 300
+const sembriga = 1
+const dir_s = $s_dentro033
+const dir_o = $s_dentro032
+const dir_c = misc:obj.var.o_gancho ? $s_duto006
+
+func descr
+  textotxt t
+  t.addfim("Biblioteca")
+  t.addfim("Embora tenha uma placa escrito \"Biblioteca\" aqui, há apenas uma pequena")
+  t.addfim("estante de livros no centro da sala. Aparentemente aqui nunca foi uma")
+  t.addfim("biblioteca. Pode-se pegar qualquer livro pelo assunto. Confira teclando sala")
+  se misc:obj.var.l_hebraico
+    t.addfim("Aqui na biblioteca tecle salvar para salvar o jogo.")
+    t.addfim("Uma vez salvo tecle salvar novamente só quando quiser mudar a senha.")
+  fimse
+  ret t.remove(100)
+
+func entrou
+  cria_livros
+  ver(arg0)
+
+func escr
+  se arg1 == "salvar" && arg0.var.l_hebraico
+    arg0.mudasenha
+    ret 1
+  senao
+    livros
+
+func cria_livros
+  var.i_Livro_História = 5
+  var.i_Livro_Geografia = 5
+  var.i_Livro_Português = 5
+  var.i_Livro_Matemática = 5
+  var.i_Livro_Física = 5
+  var.i_Livro_Química = 5
+  var.i_Livro_Biologia = 5
+  var.i_Livro_Herbologia = 5
+  var.i_Livro_Fenomenologia = 5
+  var.i_Livro_Monstros = 5
