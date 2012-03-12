@@ -1,3 +1,12 @@
+*** Falta
+
+Comando agenda seguido do nome de algum animal que está como "pegou" na agenda
+Trocar itens com animais
+Mudar a ordem dos animais
+Condições que afetam "status" dos personagens
+Fazer os itens funcionarem
+
+
 *** Variáveis de personagens e salas
 
 textovar var
@@ -26,6 +35,9 @@ criar("p_ini_silva", este)
 func teclou(texto)
 Processa o texto que o personagem escreveu.
 
+func esperar(tempo)
+Personagem espera um tempo, em décimos de segundo, até poder agir novamente.
+
 func msg(texto)
 Envia mensagem para o personagem.
 
@@ -42,6 +54,21 @@ mesma sala do bate-papo.
 func persoalvo
 Retorna o alvo do personagem, um objeto, conforme a variável alvo.
 Retorna nulo se não houver alvo.
+
+func escolhehab
+Escolhe uma habilidade que o persomagem possui.
+Retorna o nome da habilidade.
+
+func escolhejog
+Escolhe um jogador que está na mesma sala. Retorna o objeto do jogador.
+
+func recuperar
+Recupera status do personagem:
+Energia completa e sem paralisado, queimando, congelado, dormindo, etc.
+
+func ataqueini
+Checa se o personagem atacar.
+Retorna 1 se pode. Caso contrário retorna 0 e avisa o motivo.
 
 
 *** Personagens variáveis:
@@ -91,6 +118,9 @@ Retorna 1 se processou o texto (não deve prosseguir).
 func cmd_[nome do comando]
 Vai executar um comando do personagem (arg0=objeto do comando, arg1=texto)
 Retorna 1 se processou o texto (não deve prosseguir).
+
+func cmd_ataque(personagem, alvo)
+Deve retornar verdadeiro se personagem não pode atacar o alvo.
 
 
 *** Salas funções

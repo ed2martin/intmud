@@ -8,7 +8,6 @@ func escr # Processa o comando
 func iniclasse
   criar(arg0)
 
-
 classe comando_mover
 herda comando_comum
 const m_entra = " chegou"
@@ -40,13 +39,11 @@ func mudasala # Muda de sala
     arg0.animal.8.atkrec.remove
     arg0.animal.9.atkrec.remove
 
-
 classe cmd_n
 herda comando_mover
 const m_entra = " chegou do sul"
 const m_sai = " foi para o norte"
 const dir = arg0.dono.dir_n
-
 
 classe cmd_s
 herda comando_mover
@@ -54,13 +51,11 @@ const m_entra = " chegou do norte"
 const m_sai = " foi para o sul"
 const dir = arg0.dono.dir_s
 
-
 classe cmd_l
 herda comando_mover
 const m_entra = " chegou do oeste"
 const m_sai = " foi para leste"
 const dir = arg0.dono.dir_l
-
 
 classe cmd_o
 herda comando_mover
@@ -68,13 +63,11 @@ const m_entra = " chegou do leste"
 const m_sai = " foi para oeste"
 const dir = arg0.dono.dir_o
 
-
 classe cmd_entrar
 herda comando_mover
 const m_entra = " chegou de fora"
 const m_sai = " entrou"
 const dir = arg0.dono.dir_en
-
 
 classe cmd_sair
 herda comando_mover
@@ -82,20 +75,17 @@ const m_entra = " chegou de dentro"
 const m_sai = " saiu"
 const dir = arg0.dono.dir_sa
 
-
 classe cmd_subir
 herda comando_mover
 const m_entra = " chegou de baixo"
 const m_sai = " subiu"
 const dir = arg0.dono.dir_c
 
-
 classe cmd_descer
 herda comando_mover
 const m_entra = " chegou de cima"
 const m_sai = " desceu"
 const dir = arg0.dono.dir_b
-
 
 classe cmd_ajuda
 herda comando_comum
@@ -110,14 +100,16 @@ func escr
   arg0.msg("! - repete o que você teclou por último")
   arg0.msg("!!! - sai do jogo e entra novamente")
 
-
 classe cmd_alvo
 herda comando_comum
 
 func escr
-  arg0.alvo = arg1
+  se arg1
+    arg0.alvo = arg1
+  senao
+    arg0.alvo = arg0.alvo2
+  fimse
   arg0.msg("Alvo é " + arg0.alvo)
-
 
 classe cmd_ver
 herda comando_comum
@@ -131,7 +123,6 @@ func escr
 # Ver algum MOB
   senao
     msg("Você não vê nada de especial")
-
 
 classe comando_var
 herda comando_comum
@@ -163,31 +154,33 @@ func lista # Lista de itens, como habilidades, idiomas, etc.
   fimse
   ret 1
 
-
 classe cmd_hab
 herda comando_var
-const escr = lista(arg0, arg0.var, "h_", "Nenhuma habilidade", "Habilidades")
 
+func escr
+  txt100 n
+  arg0.persobat != arg0 && (n = " de " + arg0.persobat.nome)
+  lista(arg0, arg0.persobat.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
 
 classe cmd_idioma
 herda comando_var
 const escr = lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
 
-
 classe cmd_item
 herda comando_var
-const escr = lista(arg0, arg0.var, "i_", "Não carrega nenhum item", "Itens")
 
+func escr
+  txt100 n
+  arg0.persobat != arg0 && (n = " de " + arg0.persobat.nome)
+  lista(arg0, arg0.persobat.var, "i_", "Nenhum item" + n, "Itens" + n)
 
 classe cmd_outros
 herda comando_var
 const escr = lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
 
-
 classe cmd_sala
 herda comando_var
 const escr = lista(arg0, arg0.dono.var, "i_", "Nenhum item por perto", "Itens por perto")
-
 
 classe cmd_quem
 herda comando_comum
@@ -200,7 +193,6 @@ func escr
     t.addfim(i.obj.nome), i.depois
   efim
   arg0.msg("Personagens\n" + txttroca(t.remove(1000), "\n", ", "))
-
 
 classe cmd_jogo
 # herda comando_comum
@@ -225,13 +217,11 @@ func escr
   efim
   arg0.msg(t.remove(1000))
 
-
 classe cmd_falar
 herda comando_comum
 
 func escr
   arg0.dono.msg(arg0.nome + " falou: " + arg1)
-
 
 classe cmd_dizer
 herda comando_comum
@@ -239,11 +229,16 @@ herda comando_comum
 func escr
   arg0.msgsala(arg0.nome + " disse: " + arg1)
 
-
 classe cmd_pegar
 herda comando_comum
 
 func escr
+  se arg1
+    pegar_objeto(arg0, arg1)
+  senao
+    pegar_animal(arg0, arg0.persoalvo)
+
+func pegar_objeto # arg0 pega objeto arg1
   se arg0.dono.var.i_[arg1]_ == 0
     arg0.msg("Você não vê " + arg1)
   senao arg0.var.i_[arg1]_ == 99
@@ -254,12 +249,45 @@ func escr
     arg0.dono.msg(arg0.nome + " pega " + arg1)
   fimse
 
+func pegar_animal # arg0 pega personagem arg1
+  se !arg1
+    arg0.msg("Deve escolher o alvo para poder pegar")
+  senao arg1.jog
+    arg0.msg("Não pode pegar outro jogador")
+  senao !arg1.podepegar
+    arg0.msg("Impossível pegar " + arg1.nome)
+  senao arg1.energia >= arg1.enermax * 0.3
+    arg0.msg(arg1.nome + " escapou")
+    arg0.esperar(3)
+  senao arg1.energia >= arg1.enermax * 0.15 && rand(100) < 65
+    arg0.msg(arg1.nome + " escapou")
+    arg0.esperar(1)
+  senao arg1.energia == 0
+    arg0.msg(arg1.nome + " desmaiou")
+  senao arg0.dentro1.total >= 50
+    arg0.msg("Sem espaço para pegar " + arg1.nome)
+  senao
+    arg1.dono = arg0
+    arg0.dono.msg(arg0.nome + " pega " + arg1.nome)
+    int8 cont
+    enquanto cont < 10 && arg0.animal.[cont]
+      cont += 1
+    efim
+    arg0.animal.[cont] = arg1
+    se arg0.var.a_[arg1.nome] != "2" # Adiciona na agenda
+      arg0.var.a_[arg1.nome] = 2
+      arg0.msg("Adicionado na agenda")
 
 classe cmd_soltar
 herda comando_comum
 
 func escr
-  se arg0.var.i_[arg1]_ == 0
+  se !arg1
+    arg0.msg("Soltar o que?")
+    ret 1
+  senao soltar_[arg1](arg0)
+    ret 1
+  senao arg0.var.i_[arg1]_ == 0
     arg0.msg("Você não tem " + arg1)
     ret 1
   senao arg0.dono.var.i_[arg1]_ != 99
@@ -269,6 +297,23 @@ func escr
   arg0.dono.msg(arg0.nome + " solta " + arg1)
   fimse
 
+const soltar_1 = soltar(arg0, arg0.animal.0, "1")
+const soltar_2 = soltar(arg0, arg0.animal.1, "2")
+const soltar_3 = soltar(arg0, arg0.animal.2, "3")
+const soltar_4 = soltar(arg0, arg0.animal.3, "4")
+const soltar_5 = soltar(arg0, arg0.animal.4, "5")
+const soltar_6 = soltar(arg0, arg0.animal.5, "6")
+const soltar_7 = soltar(arg0, arg0.animal.6, "7")
+const soltar_8 = soltar(arg0, arg0.animal.7, "8")
+const soltar_9 = soltar(arg0, arg0.animal.8, "9")
+
+func soltar # arg0 solta arg1, número do animal é arg2
+  se arg1
+    arg0.dono.msg(arg0.nome + " solta " + arg1.nome)
+    arg0.persobat == arg1 && (arg0.persobat = arg0) # Deixa de escolher o animal
+    arg1.dono = arg0.dono # Muda o dono do animal
+    arg1 = nulo # Retira esse animal da lista
+    ret 1 # Indica que processou o comando
 
 classe cmd_desenterrar
 herda comando_comum
@@ -286,7 +331,6 @@ func escr
     arg0.var.i_[arg1]_ += 1
     arg0.dono.msg(arg0.nome + " desenterra " + arg1)
 
-
 classe cmd_enterrar
 herda comando_comum
 
@@ -301,34 +345,120 @@ func escr
     arg0.var.i_[arg1]_ -= 1
     arg0.dono.msg(arg0.nome + " enterra " + arg1)
 
-
 classe cmd_energia
 herda comando_comum
 
 func escr
   txt100 lin
-  lin = arg0.nome + " energia " + arg0.energia + " de " + arg0.enermax
-  lin += " nível " + arg0.nivel + ", exp " + arg0.expatual + " de " + arg0.expmax
+  ref r
+  r = arg0.persobat
+  lin = arg0.nomebat + " energia " + r.energia + " de " + r.enermax
+  lin += ", nível " + r.nivel + ", exp " + r.expatual + " de " + r.expmax
   arg0.msg(lin)
 
+classe cmd_agenda
+herda comando_comum
+
+func escr
+  textotxt viu
+  textotxt pegou
+  txt80 nome
+  nome = arg0.var.ini("a_")
+  enquanto txt(nome, 0, 2) == "a_"
+    se arg0.var.[nome] == "1"
+      viu.addfim(txt(nome, 2))
+    senao
+      pegou.addfim(txt(nome, 2))
+    fimse
+    nome = arg0.var.depois(nome)
+  efim
+  nome = "Agenda: viu " + viu.total + ", pegou " + pegou.total
+  arg0.msg("Agenda:")
+  arg0.msg("Viu " + viu.linhas + ": " + txttroca(viu.remove(1000), "\n", ", "))
+  arg0.msg("Pegou " + pegou.linhas + ": " + txttroca(pegou.remove(1000), "\n", ", "))
+
+classe cmd_animal
+herda comando_comum
+
+func escr
+  uint8 cont
+  textotxt t
+  txt100 lin
+  ref animal
+  t.addfim(arg0.persobat == arg0 ? "0+ Você" : "0 Você")
+  enquanto cont < 10
+    animal = arg0.animal.[cont]
+    se animal
+      lin = cont + 1
+      animal == arg0.persobat && (lin += "+")
+      lin += " " + animal.nome
+      se animal.energia
+        lin += " " + animal.nivel
+      senao
+        lin += " Desmaiado"
+      fimse
+      t.addfim(lin)
+    fimse
+    cont += 1
+  efim
+  arg0.msg(t.remove(100))
+
+classe comando_escolhe
+herda comando_comum
+
+func escr
+  ref r
+  r = perso(arg0)
+  se !r
+    arg0.msg("Você não possui " + nome)
+  senao arg0.persobat == r
+    arg0.msg("Você já escolheu " + nome)
+  senao r.energia == 0
+    arg0.msg(r.nome + " está desmaiado")
+  senao r == arg0
+    arg0.persobat = arg0
+    arg0.dono.msg(arg0.nome + " não escolheu ninguém")
+  senao
+    arg0.persobat = r
+    arg0.dono.msg(arg0.nome + " escolheu " + r.nome)
+
+classe cmd_0
+herda comando_escolhe
+const nome = "0"
+const perso = arg0
+
+classe cmd_1
+herda comando_escolhe
+const nome = "1"
+const perso = arg0.animal.0
+
+classe cmd_2
+herda comando_escolhe
+const nome = "2"
+const perso = arg0.animal.1
+
+classe cmd_3
+herda comando_escolhe
+const nome = "3"
+const perso = arg0.animal.2
+
+classe cmd_4
+herda comando_escolhe
+const nome = "4"
+const perso = arg0.animal.3
+
+classe cmd_5
+herda comando_escolhe
+const nome = "5"
+const perso = arg0.animal.4
 
 classe cmd_adm
 herda comando_comum
 const obj = arg0.e_admin ? este
-const txtescr = "Administração:\n\
-cl seguido do nome de uma classe edita ou cria a classe\n\
-il seguido ou não de um nome informa as classes existentes\n\
-al seguido do nome de uma classe apaga a classe\n\
-cmd seguido de um texto executa instruções do IntMUD\n\
-Exemplos:\n\
-cmd 1+2 # retorna 3, que é a soma de 1 com 2\n\
-cmd dono # retorna a variável dono do próprio jogador (a sala em que está)\n\
-cmd dono = $s_dentro003\n\
-Muda a variável dono, coloca o jogador na sala s_dentro003"
+const txtescr = "Administração:\ncl seguido do nome de uma classe edita ou cria a classe\nil seguido ou não de um nome informa as classes existentes\nal seguido do nome de uma classe apaga a classe\ncmd seguido de um texto executa instruções do IntMUD\nExemplos:\ncmd 1+2 # retorna 3, que é a soma de 1 com 2\ncmd dono # retorna a variável dono do próprio jogador (a sala em que está)\ncmd dono = $s_dentro003\nMuda a variável dono, coloca o jogador na sala s_dentro003"
 
 func escr
   arg0.msg(txtescr)
-
 
 classe cmd_cl
 herda comando_comum
@@ -338,7 +468,6 @@ func escr
   arg0.passo = "classe"
   arg0.tpasso = arg1
   arg0.p_classe("\n")
-
 
 classe cmd_al
 herda comando_comum
@@ -352,7 +481,6 @@ func escr
     p.apagar(arg1)
     p.salvar(config:progsalvar)
     arg0.msg("Classe apagada: " + arg1)
-
 
 classe cmd_il
 herda comando_comum
@@ -380,7 +508,6 @@ func escr
     arg0.msg(t.remove(1000))
   fimse
 
-
 classe cmd_cmd
 herda comando_comum
 const obj = arg0.e_admin ? este
@@ -389,15 +516,22 @@ func escr
   debug d
   arg0.msg(">" + d.cmd(arg0, "ret " + arg1))
 
-
 classe cmd_nn
 herda comando_comum
 
 func escr
+  se arg1
+    arg0.recuperar
+    ret
+  fimse
   arg0.dono = $s_dentro003
   arg0.msg1(arg0.nome + " chegou")
   arg0.var.h_socar = 1
   arg0.var.h_chutar = 1
   arg0.var.i_corda = 1
-  arg0.nivel = 8
+  arg0.var.l_hebráico = 1
+  arg0.nivel = 40
+  se !arg0.animal.0
+    arg0.animal.0 = criar("p_lula", arg0, 10, "h_bolha,h_morder")
+  fimse
   ret 1

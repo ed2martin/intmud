@@ -1,9 +1,9 @@
 classe comando_ataque
 herda comando_comum
-const obj = arg0.var.h_[nome] ? este
+const obj = arg0.persobat.var.h_[nome] ? este
 
 func escr # Atacar alguém
-  arg0.ataqueini && ataca(arg0, arg0.persoalvo)
+  arg0.persobat.ataqueini && ataca(arg0, arg0.persoalvo)
 
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ataca1(arg0, arg1)
@@ -11,15 +11,15 @@ func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
 func ataca1 # arg0 ataca arg1
   se !arg1
     arg0.msg("Alvo não está por perto")
-    ret
-  fimse
-  uint8 result
-  velgolpe(arg0, arg1, vel) # Tempo do golpe
-  result = execgolpe(arg0, arg1, ataque) # Ataca
-  arg0.dono.msg(texto(arg0, arg1) + msgefeito(result, arg1))
-  arg1.energia == 0 && arg1.morreu
-  arg0.energia == 0 && arg0.morreu
-  ret result
+  senao
+    uint8 result
+    ref r
+    r = arg1.persobat
+    velgolpe(arg0.persobat, r, vel) # Tempo do golpe
+    result = execgolpe(arg0.persobat, r, ataque) # Ataca
+    arg0.dono.msg(texto(arg0, arg1) + msgefeito(result, r))
+    r.energia == 0 && r.morreu
+    arg0.persobat.energia == 0 && arg0.persobat.morreu
 
 func ataca2 # arg0 ataca todos dividindo a força do ataque
 # arg1 é o primeiro alvo
@@ -36,19 +36,22 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
   fimse
   atk = ataque / l.total
 # Ataca
+  ref r
   enquanto l.total > 1
-    velgolpe(arg0, l.fim.obj, vel) # Tempo do golpe
-    result = execgolpe(arg0, l.fim.obj, atk) # Ataca
-    l.fim.obj.msg(texto(arg0, l.fim.obj) + msgefeito(result, l.fim.obj))
-    l.fim.obj.energia == 0 && l.fim.obj.morreu
+    r = l.fim.obj.persobat
+    velgolpe(arg0.persobat, r, vel) # Tempo do golpe
+    result = execgolpe(arg0.persobat, r, atk) # Ataca
+    l.fim.obj.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
+    r.energia == 0 && r.morreu
     l.fim.remove
   efim
 # Ataca o alvo
-  velgolpe(arg0, l.ini.obj, vel) # Tempo do golpe
-  result = execgolpe(arg0, l.ini.obj, atk) # Ataca
-  arg0.dono.msg(texto(arg0, l.ini.obj) + msgefeito(result, l.ini.obj))
-  l.ini.obj.energia == 0 && l.ini.obj.morreu
-  arg0.energia == 0 && arg0.morreu
+  r = l.fim.obj.persobat
+  velgolpe(arg0, r, vel) # Tempo do golpe
+  result = execgolpe(arg0, r, atk) # Ataca
+  arg0.dono.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
+  r.energia == 0 && r.morreu
+  arg0.persobat.energia == 0 && arg0.persobat.morreu
 
 func ataca3 # arg0 ataca todos sem dividir a força do ataque
 # arg1 é o primeiro alvo
@@ -63,19 +66,23 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
     ret
   fimse
 # Ataca
+  ref r
   enquanto l.total > 1
-    velgolpe(arg0, l.fim.obj, vel) # Tempo do golpe
-    result = execgolpe(arg0, l.fim.obj, ataque) # Ataca
-    l.fim.obj.msg(texto(arg0, l.fim.obj) + msgefeito(result, l.fim.obj))
+    r = l.fim.obj.persobat
+    velgolpe(arg0.persobat, r, vel) # Tempo do golpe
+    result = execgolpe(arg0.persobat, r, ataque) # Ataca
+    l.fim.obj.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
     l.fim.obj.energia == 0 && l.fim.obj.morreu
+    r.energia == 0 && r.morreu
     l.fim.remove
   efim
 # Ataca o alvo
-  velgolpe(arg0, l.ini.obj, vel) # Tempo do golpe
-  result = execgolpe(arg0, l.ini.obj, ataque) # Ataca
-  arg0.dono.msg(texto(arg0, l.ini.obj) + msgefeito(result, l.ini.obj))
-  l.ini.obj.energia == 0 && l.ini.obj.morreu
-  arg0.energia == 0 && arg0.morreu
+  r = l.fim.obj.persobat
+  velgolpe(arg0, r, vel) # Tempo do golpe
+  result = execgolpe(arg0, r, atk) # Ataca
+  arg0.dono.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
+  r.energia == 0 && r.morreu
+  arg0.persobat.energia == 0 && arg0.persobat.morreu
 
 func msgefeito # Gera mensagem de como o golpe acertou
 # arg0 = como acertou, vide retorno de execgolpe
@@ -112,9 +119,22 @@ func execgolpe # Realiza um ataque
 # arg2 = força do ataque
 # Retorna: 0=errou, 1=sem efeito, 2=pouco efetivo, 3=normal, 4=muito efetivo
   real dano
+# Checa se pode realmente atacar
+  se arg0.dono.cmd_ataque(arg0, arg1)
+    ret 0
+  senao arg0.cmd_ataque(arg0, arg1)
+    ret 0
+  fimse
 # Indica que atacou, recebe experiência se vencer
   arg0.atkrec.remove
   arg0.atkrec = arg1.atkenv.addfim(arg0)
+  se arg1.dono.perso
+    arg1.dono.alvo2 = arg0.nome # Para comando alvo sem argumento
+    arg0.podepegar && exgolpe_i(arg1.dono.var.a_[arg0.nome]) # Coloca na agenda
+  senao
+    arg1.alvo2 = arg0.nome # Para comando alvo sem argumento
+    arg0.podepegar && exgolpe_i(arg1.var.a_[arg0.nome]) # Coloca na agenda
+  fimse
 # Checa se acertou o alvo
   dano = rand(1, 20)
   se dano == 20 # Acertou automaticamente
@@ -134,7 +154,7 @@ func execgolpe # Realiza um ataque
   se dano == 0
     ret 1
   fimse
-  dano = arg0.ataque * dano / (arg1.defesa * 90) + nivel - arg1.nivel
+  dano = arg0.ataque * dano / (arg1.defesa * 90) + arg0.nivel - arg1.nivel
   dano = intpos(dano) * arg2 / 65
 # Atualiza pontos de vida conforme os danos
   dano < 1 && (dano = 1) # Pelo menos 1 de dano
@@ -147,88 +167,82 @@ func execgolpe # Realiza um ataque
   senao
     ret 4
 
+func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
+  !arg0 && (arg0 = 1)
 
 classe cmd_socar
 herda comando_ataque
 const nome = "Socar"
 const tipo = "Normal"
-const texto = arg0.nome + " soca " + arg1.nome
+const texto = arg0.nomebat + " soca " + arg1.nomebat
 const ataque = 80
 const vel = 150
 const extra = "Golpe físico de força"
-
 
 classe cmd_chutar
 herda comando_ataque
 const nome = "Socar"
 const tipo = "Normal"
-const texto = arg0.nome + " chuta " + arg1.nome
+const texto = arg0.nomebat + " chuta " + arg1.nomebat
 const ataque = 100
 const vel = 100
 const extra = "Golpe físico de força"
-
 
 classe cmd_multissoco
 herda comando_ataque
 const nome = "Multissoco"
 const tipo = "Normal"
-const texto = arg0.nome + " dá um multissoco em todos, " + arg1.nome
+const texto = arg0.nomebat + " dá um multissoco em todos, " + arg1.nomebat
 const ataque = 100
 const vel = 100
 const extra = "Golpe físico de força que acerta todos"
 const ataca = ataca2(arg0, arg1)
 
-
 classe cmd_bolha
 herda comando_ataque
 const nome = "Bolha"
 const tipo = "Água"
-const texto = arg0.nome + " lança bolhas em " + arg1.nome
+const texto = arg0.nomebat + " lança bolhas em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Lança bolhas de água"
-
 
 classe cmd_surf
 herda comando_ataque
 const nome = "Surf"
 const tipo = "Água"
-const texto = arg0.nome + " cria uma onda gigante, " + arg1.nome
+const texto = arg0.nomebat + " cria uma onda gigante, " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Cria uma onda, ideal para surfistas"
 const ataca = ataca2(arg0, arg1)
 
-
 classe cmd_bico
 herda comando_ataque
 const nome = "Bico"
 const tipo = "Ar"
-const texto = arg0.nome + " pica " + arg1.nome + " com o bico"
+const texto = arg0.nomebat + " pica " + arg1.nomebat + " com o bico"
 const ataque = 90
 const vel = 100
 const extra = "Cria uma onda, ideal para surfistas"
-
 
 classe cmd_ventania
 herda comando_ataque
 const nome = "Ventania"
 const tipo = "Ar"
-const texto = arg0.nome + " produz um vento contra " + arg1.nome
+const texto = arg0.nomebat + " produz um vento contra " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Produz um vento forte"
-
 
 classe cmd_choque
 herda comando_ataque
 const nome = "Choque"
 const tipo = "Elétrico"
-const texto = arg0.nome + " eletrocuta " + arg1.nome
+const texto = arg0.nomebat + " eletrocuta " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Dá uma descarga elétrica"
-
 
 classe cmd_onda_trovao
 herda comando_ataque
@@ -242,19 +256,18 @@ func ataca
   se !arg1
     arg0.msg("Alvo não está por perto")
   senao arg1.t_eletrico == 0
-    arg0.dono.msg(arg0.nome + " tenta paralisar " + arg1.nome + ", nada acontece")
+    arg0.dono.msg(arg0.nomebat + " tenta paralisar " + arg1.nomebat + ", nada acontece")
   senao execgolpe(arg0, arg1, 0) == 0
-    arg0.dono.msg(arg0.nome + " tenta paralisar " + arg1.nome + ", errou")
+    arg0.dono.msg(arg0.nomebat + " tenta paralisar " + arg1.nomebat + ", errou")
   senao
     arg1.e_paralisado = 1
-    arg0.dono.msg(arg0.nome + " paralisa " + arg1.nome + " com choque")
-
+    arg0.dono.msg(arg0.nomebat + " paralisa " + arg1.nomebat + " com choque")
 
 classe cmd_chama
 herda comando_ataque
 const nome = "Chama"
 const tipo = "Fogo"
-const texto = arg0.nome + " lança chama em " + arg1.nome
+const texto = arg0.nomebat + " lança chama em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Pode causar queimaduras"
@@ -263,17 +276,16 @@ func ataca
   ataca1(arg0, arg1)
   se arg1.e_congelado
     arg1.e_congelado = 0
-    arg0.dono.msg(arg1.nome + " descongelou")
+    arg0.dono.msg(arg1.nomebat + " descongelou")
   senao rand(100) < 20 && arg1.t_fogo
     arg1.e_queimando = 1
-    arg0.dono.msg(arg1.nome + " está queimando")
-
+    arg0.dono.msg(arg1.nomebat + " está queimando")
 
 classe cmd_brasa
 herda comando_ataque
 const nome = "Brasa"
 const tipo = "Fogo"
-const texto = arg0.nome + " lança brasa em " + arg1.nome
+const texto = arg0.nomebat + " lança brasa em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Pode causar queimaduras"
@@ -282,37 +294,34 @@ func ataca
   ataca1(arg0, arg1)
   se arg1.e_congelado
     arg1.e_congelado = 0
-    arg0.dono.msg(arg1.nome + " descongelou")
+    arg0.dono.msg(arg1.nomebat + " descongelou")
   senao rand(100) < 20 && arg1.t_fogo
     arg1.e_queimando = 1
-    arg0.dono.msg(arg1.nome + " está queimando")
-
+    arg0.dono.msg(arg1.nomebat + " está queimando")
 
 classe cmd_lamber
 herda comando_ataque
 const nome = "Lamber"
 const tipo = "Gás"
-const texto = arg0.nome + " lambe " + arg1.nome
+const texto = arg0.nomebat + " lambe " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Lambe o adversário"
-
 
 classe cmd_surpreender
 herda comando_ataque
 const nome = "Surpreender"
 const tipo = "Gás"
-const texto = arg0.nome + " surpreende " + arg1.nome
+const texto = arg0.nomebat + " surpreende " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Dá uma descarga elétrica"
-
 
 classe cmd_toxico
 herda comando_ataque
 const nome = "Tóxico"
 const tipo = "Gás"
-const texto = arg0.nome + " lança gás tóxico em " + arg1.nome
+const texto = arg0.nomebat + " lança gás tóxico em " + arg1.nomebat
 const ataque = 50
 const vel = 100
 const extra = "Tem grandes chances de envenenar"
@@ -320,14 +329,13 @@ const extra = "Tem grandes chances de envenenar"
 func ataca
   se ataca1(arg0, arg1) && rand(100) < 70 && arg1.t_gas
     arg1.e_envenenado = 1
-    arg0.dono.msg(arg1.nome + " foi envenenado")
-
+    arg0.dono.msg(arg1.nomebat + " foi envenenado")
 
 classe cmd_confusao
 herda comando_ataque
 const nome = "Confusão"
 const tipo = "Gás"
-const texto = arg0.nome + " lança gás tóxico em " + arg1.nome
+const texto = arg0.nomebat + " lança gás tóxico em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Pode causar confusão"
@@ -335,14 +343,13 @@ const extra = "Pode causar confusão"
 func ataca
   se ataca1(arg0, arg1) && rand(100) < 20 && arg1.t_gas
     arg1.e_confuso = 1
-    arg0.dono.msg(arg1.nome + " ficou confuso")
-
+    arg0.dono.msg(arg1.nomebat + " ficou confuso")
 
 classe cmd_neve
 herda comando_ataque
 const nome = "Neve"
 const tipo = "Gelo"
-const texto = arg0.nome + " atira bola de neve em " + arg1.nome
+const texto = arg0.nomebat + " atira bola de neve em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Pode congelar"
@@ -351,14 +358,13 @@ func ataca
   se ataca1(arg0, arg1) && rand(100) < 70 && arg1.t_gelo
     arg1.e_queimado = 0
     arg1.e_congelado = 100
-    arg0.dono.msg(arg1.nome + " congelou")
-
+    arg0.dono.msg(arg1.nomebat + " congelou")
 
 classe cmd_aurora
 herda comando_ataque
 const nome = "Aurora"
 const tipo = "Gelo"
-const texto = arg0.nome + " lança aurora em " + arg1.nome
+const texto = arg0.nomebat + " lança aurora em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Pode congelar"
@@ -367,44 +373,40 @@ func ataca
   se ataca1(arg0, arg1) && rand(100) < 70 && arg1.t_gelo
     arg1.e_queimado = 0
     arg1.e_congelado = 100
-    arg0.dono.msg(arg1.nome + " congelou")
-
+    arg0.dono.msg(arg1.nomebat + " congelou")
 
 classe cmd_pedrada
 herda comando_ataque
 const nome = "Pedrada"
 const tipo = "Pedra"
-const texto = arg0.nome + " joga pedra em " + arg1.nome
+const texto = arg0.nomebat + " joga pedra em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Joga pedra"
-
 
 classe cmd_pedregulho
 herda comando_ataque
 const nome = "Pedregulho"
 const tipo = "Pedra"
-const texto = arg0.nome + " joga vários pedegulhos em " + arg1.nome
+const texto = arg0.nomebat + " joga vários pedegulhos em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Joga pedregulho"
-
 
 classe cmd_onda_solar
 herda comando_ataque
 const nome = "Onda solar"
 const tipo = "Planta"
-const texto = arg0.nome + " lança onda solar em " + arg1.nome
+const texto = arg0.nomebat + " lança onda solar em " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Onda solar"
-
 
 classe cmd_dreno
 herda comando_ataque
 const nome = "Dreno"
 const tipo = "Planta"
-const texto = arg0.nome + " lança onda solar em " + arg1.nome
+const texto = arg0.nomebat + " lança onda solar em " + arg1.nomebat
 const ataque = 60
 const vel = 120
 const extra = "Rouba aproximadamente metade da energia que tira do adversário"
@@ -416,12 +418,11 @@ func ataca
   arg0.energia += pos(total - arg1.energia) / 2
   arg0.energia > arg0.enermax && (arg0.energia = arg0.enermax)
 
-
 classe cmd_lama
 herda comando_ataque
 const nome = "Lama"
 const tipo = "Terra"
-const texto = arg0.nome + " joga lama em " + arg1.nome
+const texto = arg0.nomebat + " joga lama em " + arg1.nomebat
 const ataque = 60
 const vel = 120
 const extra = "Joga lama, imobilizando o adversário por 4 segundos"
@@ -430,53 +431,48 @@ func ataca
   se ataca1(arg0, arg1)
     arg1.esperar(40)
 
-
 classe cmd_terremoto
 herda comando_ataque
 const nome = "Terremoto"
 const tipo = "Terra"
-const texto = arg0.nome + " cria um terremoto, " + arg1.nome
+const texto = arg0.nomebat + " cria um terremoto, " + arg1.nomebat
 const ataque = 80
 const vel = 100
 const extra = "Faz o chão tremer"
 const ataca = ataca3(arg0, arg1)
 
-
 classe cmd_picar
 herda comando_ataque
 const nome = "Picar"
 const tipo = "Verme"
-const texto = arg0.nome + " pica " + arg1.nome
+const texto = arg0.nomebat + " pica " + arg1.nomebat
 const ataque = 80
 const vel = 100
 const extra = "Pica o adversário"
-
 
 classe cmd_morder
 herda comando_ataque
 const nome = "Morder"
 const tipo = "Verme"
-const texto = arg0.nome + " morde " + arg1.nome
+const texto = arg0.nomebat + " morde " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Morde o adversário"
-
 
 classe cmd_arranhar
 herda comando_ataque
 const nome = "Arranhar"
 const tipo = "Normal"
-const texto = arg0.nome + " arranha " + arg1.nome
+const texto = arg0.nomebat + " arranha " + arg1.nomebat
 const ataque = 70
 const vel = 100
 const extra = "Arranha o adversário"
-
 
 classe cmd_cantar
 herda comando_ataque
 const nome = "Cantar"
 const tipo = "Normal"
-const texto = arg0.nome + " cria um terremoto, " + arg1.nome
+const texto = arg0.nomebat + " cria um terremoto, " + arg1.nomebat
 const ataque = 0
 const vel = 100
 const extra = "Canta durante 13 segundos uma canção que dá sono"
@@ -485,38 +481,35 @@ func ataca
   se !arg1
     arg0.msg("Alvo não está por perto")
   senao execgolpe(arg0, arg1, 0) == 0
-    arg0.dono.msg(arg0.nome + " tenta cantar uma canção, mas falhou")
+    arg0.dono.msg(arg0.nomebat + " tenta cantar uma canção, mas falhou")
   senao
     arg1.e_dormindo = 180
     arg0.esperar(130)
-    arg0.dono.msg(arg0.nome + " canta uma canção e " + arg1.nome + " dorme profundamente")
-
+    arg0.dono.msg(arg0.nomebat + " canta uma canção e " + arg1.nomebat + " dorme profundamente")
 
 classe cmd_velocidade
 herda comando_ataque
 const nome = "Velocidade"
 const tipo = "Normal"
-const texto = arg0.nome + " ataca velozmente " + arg1.nome
+const texto = arg0.nomebat + " ataca velozmente " + arg1.nomebat
 const ataque = 50
 const vel = 250
 const extra = "Um golpe extremamente rápido"
-
 
 classe cmd_cortar
 herda comando_ataque
 const nome = "Cortar"
 const tipo = "Normal"
-const texto = arg0.nome + " corta " + arg1.nome
+const texto = arg0.nomebat + " corta " + arg1.nomebat
 const ataque = 70
 const vel = 250
 const extra = "Corta o adversário"
-
 
 classe cmd_explodir
 herda comando_ataque
 const nome = "Explodir"
 const tipo = "Normal"
-const texto = arg0.nome + " explode e se fere, " + arg1.nome
+const texto = arg0.nomebat + " explode e se fere, " + arg1.nomebat
 const ataque = 350
 const vel = 100
 const extra = "Extremamente forte, mas quem aplica esse golpe desmaia"
@@ -525,12 +518,11 @@ func ataca
   ataca3(arg0, arg1)
   arg0.energia = 0
 
-
 classe cmd_descansar
 herda comando_ataque
 const nome = "Descansar"
 const tipo = "Normal"
-const texto = arg0.nome + " Descansa durante 14 segundos"
+const texto = arg0.nomebat + " Descansa durante 14 segundos"
 const ataque = 350
 const vel = 100
 const extra = "Descansa e se recupera"
@@ -539,12 +531,11 @@ func ataca
   arg0.energia = arg0.enermax
   arg0.esperar(140)
 
-
 classe cmd_arranhatox
 herda comando_ataque
 const nome = "Arranhatox"
 const tipo = "Normal"
-const texto = arg0.nome + " arranha " + arg1.nome
+const texto = arg0.nomebat + " arranha " + arg1.nomebat
 const ataque = 70
 const vel = 100
 const extra = "Arranha o adversário com 40% de chances de intoxicar"
@@ -553,14 +544,13 @@ func ataca
   ataca1(arg0, arg1)
   se rand(100) < 40 && arg1.t_gas
     arg1.e_envenenado = 1
-    arg0.dono.msg(arg1.nome + " foi envenenado")
-
+    arg0.dono.msg(arg1.nomebat + " foi envenenado")
 
 classe cmd_roer
 herda comando_ataque
 const nome = "Roer"
 const tipo = "Normal"
-const texto = arg0.nome + " tenta roer " + arg1.nome
+const texto = arg0.nomebat + " tenta roer " + arg1.nomebat
 const ataque = 90
 const vel = 100
 const extra = "Rói o adversário com 40% de chances de intoxicar"
@@ -569,18 +559,16 @@ func ataca
   ataca1(arg0, arg1)
   se rand(100) < 40 && arg1.t_gas
     arg1.e_envenenado = 1
-    arg0.dono.msg(arg1.nome + " foi envenenado")
-
+    arg0.dono.msg(arg1.nomebat + " foi envenenado")
 
 classe cmd_lancar
 herda comando_ataque
 const nome = "Lançar"
 const tipo = "Normal"
-const texto = arg0.nome + " se lança contra " + arg1.nome
+const texto = arg0.nomebat + " se lança contra " + arg1.nomebat
 const ataque = 85
 const vel = 70
 const extra = "Se lança contra o adversário"
-
 
 classe cmd_metronomo
 herda comando_ataque
@@ -596,25 +584,4 @@ func ataca
   t.remove(rand(t.total))
   cmd_[t.remove].ataca(arg0, arg1)
 
-const lista = "bolha\n\
-bico\n\
-choque\n\
-onda trovão\n\
-chama\n\
-chutar\n\
-multissoco\n\
-lamber\n\
-tóxico\n\
-confusão\n\
-neve\n\
-pedrada\n\
-dreno\n\
-onda solar\n\
-lama\n\
-terremoto\n\
-morder\n\
-arranhar\n\
-cantar\n\
-cortar\n\
-explodir\n\
-descansar"
+const lista = "bolha\nbico\nchoque\nonda trovão\nchama\nchutar\nmultissoco\nlamber\ntóxico\nconfusão\nneve\npedrada\ndreno\nonda solar\nlama\nterremoto\nmorder\narranhar\ncantar\ncortar\nexplodir\ndescansar"

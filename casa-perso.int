@@ -12,7 +12,6 @@ const t_terra = 100
 const t_verme = 100
 const t_normal = 100
 
-
 classe perso_ar
 const t_agua = 100
 const t_ar = 100
@@ -26,7 +25,6 @@ const t_planta = 60
 const t_terra = 0
 const t_verme = 60
 const t_normal = 100
-
 
 classe perso_eletrico
 const t_agua = 100
@@ -42,7 +40,6 @@ const t_terra = 180
 const t_verme = 100
 const t_normal = 100
 
-
 classe perso_fogo
 const t_agua = 180
 const t_ar = 100
@@ -56,7 +53,6 @@ const t_planta = 60
 const t_terra = 180
 const t_verme = 100
 const t_normal = 100
-
 
 classe perso_forca
 const t_agua = 100
@@ -72,7 +68,6 @@ const t_terra = 100
 const t_verme = 60
 const t_normal = 100
 
-
 classe perso_gas
 const t_agua = 100
 const t_ar = 100
@@ -86,7 +81,6 @@ const t_planta = 100
 const t_terra = 100
 const t_verme = 60
 const t_normal = 0
-
 
 classe perso_gelo
 const t_agua = 100
@@ -102,7 +96,6 @@ const t_terra = 100
 const t_verme = 100
 const t_normal = 100
 
-
 classe perso_pedra
 const t_agua = 180
 const t_ar = 60
@@ -116,7 +109,6 @@ const t_planta = 180
 const t_terra = 180
 const t_verme = 100
 const t_normal = 60
-
 
 classe perso_planta
 const t_agua = 60
@@ -132,7 +124,6 @@ const t_terra = 60
 const t_verme = 180
 const t_normal = 100
 
-
 classe perso_terra
 const t_agua = 60
 const t_ar = 100
@@ -146,7 +137,6 @@ const t_planta = 180
 const t_terra = 100
 const t_verme = 100
 const t_normal = 100
-
 
 classe perso_verme
 const t_agua = 100
@@ -162,7 +152,6 @@ const t_terra = 180
 const t_verme = 100
 const t_normal = 100
 
-
 classe perso_normal
 const t_agua = 100
 const t_ar = 100
@@ -177,75 +166,75 @@ const t_terra = 100
 const t_verme = 100
 const t_normal = 100
 
-
 classe p_lula
 herda personagem, perso_agua
 const nome = "Lula"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_morcego
 herda personagem, perso_ar
 const nome = "Morcego"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_ima
 herda personagem, perso_eletrico
 const nome = "Ímã"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_lagarchama
 herda personagem, perso_fogo
 const nome = "Lagarchama"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_kickboxer
 herda personagem, perso_forca
 const nome = "Kickboxer"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_fantasma
 herda personagem, perso_gas
 const nome = "Fantasma"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_pinguim
 herda personagem, perso_gelo
 const nome = "Pinguim"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
@@ -253,10 +242,10 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
-
 classe p_minhocao
 herda personagem, perso_pedra
 const nome = "Minhocão"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
@@ -264,54 +253,54 @@ const ataque = (nivel * 5 + 62) * nivel + 30
 const defesa = nivel * 12 + 20
 const veloc = (nivel * 5 + 62) * nivel + 30
 
-
 classe p_cogumelo
 herda personagem, perso_planta
 const nome = "Cogumelo"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_toupeira
 herda personagem, perso_terra
 const nome = "Toupeira"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_borboleta
 herda personagem, perso_verme
 const nome = "Borboleta"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_balao
 herda personagem, perso_normal
 const nome = "Balão"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_preguica
 herda personagem, perso_normal
 const nome = "Preguiça"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
@@ -319,10 +308,10 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
-
 classe p_rato
 herda personagem, perso_normal
 const nome = "Rato"
+const podepegar = 1
 const agressivo = 1
 const persegue = 1
 const enermax = nivel * 2 + 25
@@ -332,7 +321,6 @@ const defesa = nivel * 10 + 20
 const veloc = (nivel * 5 + 70) * nivel + 50
 const t_forca = 1
 const t_gas = 0
-
 
 classe p_catador_de_insetos
 herda personagem, perso_normal
@@ -345,17 +333,16 @@ const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 const avisachegou = ""
 
-
 classe p_mumia
 herda personagem, perso_normal
 const nome = "Múmia"
+const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_anao
 herda personagem, perso_normal
@@ -367,7 +354,6 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
-
 classe p_leopardo
 const enermax = nivel * 3 + 30
 const nome = "Leopardo"
@@ -377,7 +363,6 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
-
 
 classe p_concreto_armado
 const enermax = nivel * 3 + 100
@@ -390,7 +375,6 @@ const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 55) * nivel + 30
 const avisachegou = ""
 
-
 classe p_pedra
 const enermax = nivel * 4 / 3 + 20
 const nome = "Pedra"
@@ -401,7 +385,6 @@ const ataque = (nivel * 3 + 50) * nivel + 25
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 3 + 50) * nivel + 25
 const avisachegou = ""
-
 
 classe p_entulho
 herda personagem, perso_pedra
