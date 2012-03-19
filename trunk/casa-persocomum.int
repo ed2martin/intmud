@@ -17,7 +17,8 @@ txt512 peditor # Texto sendo procurado, opção P do editor
 txt512 ultimocom # Último comando digitado pelo usuário
 uint16 t_sala2 # Contagem de tempo dos eventos da sala
 const jog = 1 # Indica que é jogador
-sav ref animal.5 # Animais que está usando
+textotxt cmd_m # Texto da opção "Tecle M para mais"
+sav ref animal.200 # Animais que possui
 sav ref persobat # Personagem usado na batalha
 const nomebat = persobat == este ? nome : persobat.nome + " de " + nome
 const enermax = nivel * 2 + 60 # Energia máxima
@@ -68,35 +69,46 @@ func recebe # Recebeu mensagem do jogador
       dono = nulo
       atkrec.remove
       p_perso
+      cmd_m.limpar
     senao
       arg0 != "!" && (ultimocom = arg0)
-      teclou(ultimocom) # Personagem processa comando
+      se arg0 == "m" && cmd_m
+        msg(cmd_m.remove(8) + (cmd_m ? "\nTecle M para mais"))
+      senao
+        cmd_m.limpar
+        teclou(ultimocom) # Personagem processa comando
+
+func msg_m
+  cmd_m.limpar
+  cmd_m.addfim(arg0)
+  msg(cmd_m.remove(8) + (cmd_m ? "\nTecle M para mais"))
 
 func escolhebat # Escolhe um personagem em condições de lutar
   se !persobat.energia # Checa se personagem escolhido está em condições
-    se animal.0.energia
+    se animal.0.energia && config:animal1 >= 1
       persobat = animal.0
-    senao animal.1.energia
+    senao animal.1.energia && config:animal1 >= 1
       persobat = animal.1
-    senao animal.2.energia
+    senao animal.2.energia && config:animal1 >= 2
       persobat = animal.2
-    senao animal.3.energia
+    senao animal.3.energia && config:animal1 >= 3
       persobat = animal.3
-    senao animal.4.energia
+    senao animal.4.energia && config:animal1 >= 4
       persobat = animal.4
-    senao animal.5.energia
+    senao animal.5.energia && config:animal1 >= 5
       persobat = animal.5
-    senao animal.6.energia
+    senao animal.6.energia && config:animal1 >= 6
       persobat = animal.6
-    senao animal.7.energia
+    senao animal.7.energia && config:animal1 >= 7
       persobat = animal.7
-    senao animal.8.energia
+    senao animal.8.energia && config:animal1 >= 8
       persobat = animal.8
-    senao animal.9.energia
+    senao animal.9.energia && config:animal1 >= 9
       persobat = animal.9
     senao energia
       persobat = este
       dono.msg(nome + " não escolhe ninguém")
+      ret
     senao
       ret
     fimse
@@ -152,6 +164,7 @@ func t_proc_exec # Contagem de tempo
       v && misc:tempo % v == 0 && dono.segsala[v](este)
       p.depois
     efim
+
 
 classe jogador_passo
 
@@ -283,6 +296,7 @@ func p_senha3 # Repetir a senha digitada
     passo = ""
   fimse
   ret 1
+
 
 classe personagem
 # Personagem

@@ -12,6 +12,7 @@ const t_terra = 100
 const t_verme = 100
 const t_normal = 100
 
+
 classe perso_ar
 const t_agua = 100
 const t_ar = 100
@@ -25,6 +26,7 @@ const t_planta = 60
 const t_terra = 0
 const t_verme = 60
 const t_normal = 100
+
 
 classe perso_eletrico
 const t_agua = 100
@@ -40,6 +42,7 @@ const t_terra = 180
 const t_verme = 100
 const t_normal = 100
 
+
 classe perso_fogo
 const t_agua = 180
 const t_ar = 100
@@ -53,6 +56,7 @@ const t_planta = 60
 const t_terra = 180
 const t_verme = 100
 const t_normal = 100
+
 
 classe perso_forca
 const t_agua = 100
@@ -68,6 +72,7 @@ const t_terra = 100
 const t_verme = 60
 const t_normal = 100
 
+
 classe perso_gas
 const t_agua = 100
 const t_ar = 100
@@ -81,6 +86,7 @@ const t_planta = 100
 const t_terra = 100
 const t_verme = 60
 const t_normal = 0
+
 
 classe perso_gelo
 const t_agua = 100
@@ -96,6 +102,7 @@ const t_terra = 100
 const t_verme = 100
 const t_normal = 100
 
+
 classe perso_pedra
 const t_agua = 180
 const t_ar = 60
@@ -109,6 +116,7 @@ const t_planta = 180
 const t_terra = 180
 const t_verme = 100
 const t_normal = 60
+
 
 classe perso_planta
 const t_agua = 60
@@ -124,6 +132,7 @@ const t_terra = 60
 const t_verme = 180
 const t_normal = 100
 
+
 classe perso_terra
 const t_agua = 60
 const t_ar = 100
@@ -137,6 +146,7 @@ const t_planta = 180
 const t_terra = 100
 const t_verme = 100
 const t_normal = 100
+
 
 classe perso_verme
 const t_agua = 100
@@ -152,6 +162,7 @@ const t_terra = 180
 const t_verme = 100
 const t_normal = 100
 
+
 classe perso_normal
 const t_agua = 100
 const t_ar = 100
@@ -166,9 +177,12 @@ const t_terra = 100
 const t_verme = 100
 const t_normal = 100
 
+
 classe p_lula
 herda personagem, perso_agua
 const nome = "Lula"
+const agenda = "Lula - Vive na água e em lugares com grande umidade\n\
+Algumas conseguem controlar os mares e criar ondas"
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -176,10 +190,13 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_morcego
 herda personagem, perso_ar
 const nome = "Morcego"
+const agenda = "Morcego - Vive em lugares escuros e se alimenta de insetos\n\
+Detesta eletricidade. Alguns são venenosos."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -187,10 +204,13 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_ima
 herda personagem, perso_eletrico
 const nome = "Ímã"
+const agenda = "Ímã - Acumula muita eletricidade nas tempestadesnAssim, consegue paralisar \
+outros animais com choques elétricos"
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -198,20 +218,26 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_lagarchama
 herda personagem, perso_fogo
 const nome = "Lagarchama"
+const agenda = "Lagarchama - Um espécie de lagarto que tem a habilidade de fazer fogo.nPor esse \
+motivo, gosta de lugares quentes e detesta água."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_kickboxer
 herda personagem, perso_forca
 const nome = "Kickboxer"
+const agenda = "Kickboxer - Um animal lutador. Aprende desde criança vários golpes que\n\
+lembram uma pessoa lutando. É muito hábil contra pedras, mas tem medo de fantasmas."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -219,10 +245,14 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_fantasma
 herda personagem, perso_gas
 const nome = "Fantasma"
+const agenda = "Fantasma - Pouco se sabe a respeito. Alguns dizem que é feito de gás,\n\
+outros dizem que não existem, por ser praticamente invencível\n\
+contra golpes físicos normais."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -230,10 +260,13 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_pinguim
 herda personagem, perso_gelo
 const nome = "Pinguim"
+const agenda = "Pinguim - Vive em lugares gelados. Está tão acostumado com o frio\n\
+que consegue até congelar outros animais de quem se alimenta."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -242,9 +275,12 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
+
 classe p_minhocao
 herda personagem, perso_pedra
 const nome = "Minhocão"
+const agenda = "Minhocão - Uma minhoca grande feita de pedra. Geralmente vive em cavernas.\n\
+De dia, enquanto está dormindo, é facilmente confundido com pedras."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -253,8 +289,11 @@ const ataque = (nivel * 5 + 62) * nivel + 30
 const defesa = nivel * 12 + 20
 const veloc = (nivel * 5 + 62) * nivel + 30
 
+
 classe p_cogumelo
 herda personagem, perso_planta
+const agenda = "Cogumelo - Frequentemente confundido com um cogumelo, espera a presa\n\
+chegar perto para atacar. Fica contente quando dão água."
 const nome = "Cogumelo"
 const podepegar = 1
 const agressivo = 1
@@ -264,9 +303,12 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
+
 classe p_toupeira
 herda personagem, perso_terra
 const nome = "Toupeira"
+const agenda = "Toupeira - Vive a maior parte do tempo cavando buracos, à procura\n\
+de comida. Quando a presa tenta fugir cavando, cria um terremoto."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -274,10 +316,13 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_borboleta
 herda personagem, perso_verme
 const nome = "Borboleta"
+const agenda = "Borboleta - come todo tipo de invertebrado de pequeno porte\n\
+que encontra. Quando provocada, reage ferozmente."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -285,10 +330,14 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_balao
 herda personagem, perso_normal
 const nome = "Balão"
+const agenda = "Balão - gosta muito de cantar, mas não gosta de cantar sozinho.\n\
+Quem estiver por perto dorme, e o balão fica nervoso e vai embora.\n\
+Não se sabe o que faz depois, porque ninguém nunca ficou acordado para ver."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -297,9 +346,12 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
+
 classe p_preguica
 herda personagem, perso_normal
 const nome = "Preguiça"
+const agenda = "Preguiça - Pode parecer bastante lento, mas é muito forte.\n\
+Quando está cansado, dorme e recupera todas as suas energias."
 const podepegar = 1
 const agressivo = 1
 const enermax = nivel * 2 + 25
@@ -307,6 +359,7 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_rato
 herda personagem, perso_normal
@@ -322,6 +375,7 @@ const veloc = (nivel * 5 + 70) * nivel + 50
 const t_forca = 1
 const t_gas = 0
 
+
 classe p_catador_de_insetos
 herda personagem, perso_normal
 const nome = "Catador de insetos"
@@ -332,6 +386,7 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 const avisachegou = ""
+
 
 classe p_mumia
 herda personagem, perso_normal
@@ -344,6 +399,7 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
+
 classe p_anao
 herda personagem, perso_normal
 const nome = "Anão"
@@ -354,6 +410,7 @@ const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
 
+
 classe p_leopardo
 const enermax = nivel * 3 + 30
 const nome = "Leopardo"
@@ -363,6 +420,7 @@ const expmax = nivel * nivel * 2 + 14
 const ataque = (nivel * 4 + 60) * nivel + 30
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 60) * nivel + 30
+
 
 classe p_concreto_armado
 const enermax = nivel * 3 + 100
@@ -375,6 +433,7 @@ const defesa = nivel * 10 + 20
 const veloc = (nivel * 4 + 55) * nivel + 30
 const avisachegou = ""
 
+
 classe p_pedra
 const enermax = nivel * 4 / 3 + 20
 const nome = "Pedra"
@@ -385,6 +444,7 @@ const ataque = (nivel * 3 + 50) * nivel + 25
 const defesa = nivel * 10 + 20
 const veloc = (nivel * 3 + 50) * nivel + 25
 const avisachegou = ""
+
 
 classe p_entulho
 herda personagem, perso_pedra
