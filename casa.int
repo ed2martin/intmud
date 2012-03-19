@@ -11,7 +11,6 @@ telatxt = 1
 # Aonde apresentar mensagens de erro no programa
 log = 0
 
-
 classe config
 # Configuração
 #
@@ -34,8 +33,16 @@ const servporta = 1963
 #
 # Sala inicial
 const salaini = $s_ini001
+# Sala inicial, quando carrega jogo salvo e a sala não existe
+const salasav = $s_dentro003
 # Sala quando morre
 const salafim = $s_fim001
+#
+# Quantos animais não reserva pode ter, de 1 a 9
+const animal1 = 5
+#
+# Quantos animais ao todo pode ter, de 1 a 200
+const animal2 = 50
 #
 # Modo de teste: 1=se pode mudar de nível teclando aa e dd, 0=não pode
 const escolhenivel = 0
@@ -45,6 +52,10 @@ const senhaadm = ""
 #
 # Como deve salvar os arquivos .int, vide variável prog do IntMUD
 const progsalvar = "L99N1I2C2F1V0"
+
+#func iniclasse # Para salvar acertando indentação e linhas entre classes e funções
+#  prog p
+#  p.salvartudo([arg0]:progsalvar)
 
 
 classe jogolocal

@@ -1,0 +1,386 @@
+classe p_lab_eremita
+herda personagem
+const nome = "Eremita"
+
+
+classe s_lab001
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = arg0.var.i_oculos ? descr1 : descr2
+const descr1 = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+const descr2 = "Corredor\n\
+Você está em um pequeno corredor cuja única saída é um corredor à leste."
+
+func segsala22
+  se rand(100) < 50
+    criar("p_Fantasma", este, 8, "h_lamber,h_surpreender,h_tóxico,h_confusão,h_cortar")
+  fimse
+  criar("p_preguica", este, 7, "h_explodir,h_velocidade,h_descansar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = misc:obj.var.i_oculos ? $s_lab009
+const dir_s = misc:obj.var.i_oculos ? $s_lab002
+const dir_l = $s_dentro032
+const dir_o = misc:obj.var.i_oculos ? $s_lab004
+const dir_c = misc:obj.var.i_oculos ? $s_duto004
+
+
+classe s_lab002
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 8, "h_socar,h_chutar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab001
+const dir_s = $s_lab003
+const dir_l = $s_dentro009
+const dir_o = $s_lab007
+
+
+classe s_lab003
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = arg0.var.i_oculos ? descr1 : descr2
+const descr1 = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais a este, à norte, sul, leste e oeste."
+const descr2 = "Corredor\n\
+Você está em um pequeno corredor cuja única saída é uma sala\n\
+de reunião à leste."
+
+func segsala22
+  se rand(100) < 50
+    criar("p_fantasma", este, 8, "h_lamber,h_surpreender,h_tóxico,h_confusão,h_cortar")
+  fimse
+  criar("p_preguica", este, 7, "h_explodir,h_velocidade,h_descansar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = misc:obj.var.i_oculos ? $s_lab002
+const dir_s = misc:obj.var.i_oculos ? $s_lab009
+const dir_l = $s_dentro033
+const dir_o = misc:obj.var.i_oculos ? $s_lab006
+const dir_c = misc:obj.var.i_oculos ? $s_duto005
+
+
+classe s_lab004
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 7, "h_socar,h_chutar")
+
+func segsala22
+  se rand(100) < 50
+    criar("p_fantasma", este, 8, "h_lamber,h_surpreender,h_tóxico,h_confusão,h_cortar")
+  fimse
+  criar("p_preguica", este, 7, "h_explodir,h_velocidade,h_descansar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab002
+const dir_s = $s_lab005
+const dir_l = $s_lab001
+const dir_o = $s_lab001
+
+
+classe s_lab005
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 9, "h_socar,h_chutar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab004
+const dir_s = $s_lab012
+const dir_l = $s_lab006
+const dir_o = $s_lab008
+
+
+classe s_lab006
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 8, "h_socar,h_chutar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab009
+const dir_s = $s_lab007
+const dir_l = $s_lab009
+const dir_o = $s_dentro009
+
+
+classe s_lab007
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 7, "h_socar,h_chutar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab006
+const dir_s = $s_lab010
+const dir_l = $s_lab009
+const dir_o = $s_lab011
+
+
+classe s_lab008
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab013
+const dir_s = $s_lab002
+const dir_l = $s_lab005
+const dir_o = $s_lab007
+
+
+classe s_lab009
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala22
+  se rand(100) < 50
+    criar("p_fantasma", este, 8, "h_lamber,h_surpreender,h_tóxico,h_confusão,h_cortar")
+  fimse
+  criar("p_preguica", este, 10, "h_explodir,h_velocidade,h_descansar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab003
+const dir_s = $s_lab001
+const dir_l = $s_lab001
+const dir_o = $s_lab007
+
+
+classe s_lab010
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab007
+const dir_s = $s_lab011
+const dir_l = $s_lab012
+const dir_o = $s_lab012
+
+
+classe s_lab011
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 8, "h_socar,h_chutar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab010
+const dir_s = $s_lab012
+const dir_l = $s_lab007
+const dir_o = $s_lab009
+
+
+classe s_lab012
+herda sala
+textovar ent
+const limpar = 300
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um pequeno corredor que se liga a quatro outros\n\
+corredores exatamente iguais."
+
+func segsala15
+  se rand(100) < 65
+    criar("p_anao", este, 9, "h_socar,h_chutar")
+
+func entrou
+  ver(arg0)
+
+const dir_n = $s_lab011
+const dir_s = $s_lab006
+const dir_l = $s_lab010
+const dir_o = $s_lab010
+
+
+classe s_lab013
+herda sala
+const area_mumia = 1
+const descr = "Despensa\nNão há mantimentos aqui. Há apenas uma porta, ao sul."
+
+func entrou
+  var.i_capa = 1
+  ver(arg0)
+
+const dir_s = $s_lab008
+
+
+classe s_lab014
+herda sala
+const limpar = 300
+const descr = "Entrada da casa\n\
+A porta da frente está trancada, mas pode-se escalar a parede ao norte.\n\
+Há jardins à leste e à oeste."
+
+func entrou
+  ver(arg0)
+
+func entrou35
+  arg0.msg("Os vampiros viram você e sugaram todo o seu sangue")
+  arg0.dono = $s_dentro001
+  ret 1
+
+const dir_n = $s_dentro003
+const dir_l = $s_lab015
+const dir_o = $s_lab016
+
+
+classe s_lab015
+herda sala
+const limpar = 300
+const descr = "Jardim\n\
+Há diversas plantas de até 2 metros de altura. Há muros muito altos\n\
+em todas as direções, exceto à oeste."
+
+func entrou
+  var.i_balde_vazio = 1
+  ver(arg0)
+
+func entrou35
+  arg0.msg("Uma planta carnívora apareceu e engoliu " + arg0.nome + " vivo")
+  arg0.dono = $s_dentro001
+  ret 1
+
+const dir_o = $s_lab014
+
+
+classe s_lab016
+herda sala
+const limpar = 300
+const descr = "Jardim\n\
+Muros muito altos cercam o jardim ao norte e ao sul. Há um pequeno lago\n\
+à oeste e a entrada da casa à leste."
+
+func entrou
+  ver(arg0)
+
+func entrou35
+  arg0.msg("Uma planta carnívora apareceu e engoliu " + arg0.nome + " vivo")
+  arg0.dono = $s_dentro001
+  ret 1
+
+const dir_l = $s_lab014
+const dir_o = $s_lab017
+
+
+classe s_lab017
+herda sala
+const limpar = 300
+const descr = "Lago\n\
+Alguns bichos estranhos olham desconfiados. Há paredes altas por todos\n\
+os cantos, exceto à leste."
+const dir_l = $s_lab016
+
+func entrou
+  ver(arg0)
+  se arg0.var.i_balde_vazio_
+    arg0.var.i_balde_cheio_ += arg0.var.i_balde_vazio_
+    arg0.var.i_balde_vazio_ = 0
+    arg0.msg("Seu balde se encheu de água, mas não parece ser água potável.")
+
+const dir_l = $s_lab016
+
+
+classe s_lab018
+herda sala
+const limpar = 300
+const descr = "Caverna"
+
+func entrou
+  ver(arg0)
+  se arg0.persobat == arg0
+    arg0.msg("O teto caiu na sua cabeça e você não resistiu.")
+    arg0.dono = $s_dentro001
+    ret 1
+
+const dir_n = $s_dentro026
+const dir_s = $s_lab019
+const dir_l = $s_lab019
+const dir_o = $s_lab019

@@ -3,10 +3,12 @@ herda personagem
 const nome = "Sábio"
 const sexo = 1
 
+
 classe p_ini_anao
 herda personagem
 const nome = "Anão"
 const sexo = 1
+
 
 classe p_ini_silva
 herda personagem
@@ -18,6 +20,7 @@ func ver
   arg0.msg("Silva nível 27 energia 150 de 150")
 # func ini
 # perso:ini
+
 
 classe s_ini001
 herda sala
@@ -34,12 +37,15 @@ func entrou1
   arg0.dono = $s_ini002
   arg0.dono.msg1(arg0.nome + " chegou")
 
+
 classe s_ini002
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Centro da ilha\nHá apenas uma palmeira aqui. Ao norte um arbusto.\nAo sul, uma pequena cabana."
+const descr = "Centro da ilha\n\
+Há apenas uma palmeira aqui. Ao norte um arbusto.\n\
+Ao sul, uma pequena cabana."
 const dir_n = $s_ini004
 const dir_s = $s_ini005
 const dir_l = $s_ini006
@@ -49,10 +55,12 @@ func entrou
   ver(arg0)
 
 func entrou1
-  se arg0.var.i_diamante_azul && arg0.var.i_diamante_vermelho && arg0.var.i_diamante_verde && arg0.var.i_diamante_amarelo
+  se arg0.var.i_diamante_azul && arg0.var.i_diamante_vermelho && arg0.var.i_diamante_verde && \
+arg0.var.i_diamante_amarelo
     arg0.msg("Os diamantes estão se fundindo")
     arg0.msg1(arg0.nome + " saiu")
     arg0.dono = $s_ini003
+
 
 classe s_ini003
 herda sala
@@ -81,12 +89,16 @@ func entrou5
   arg0.dono = $s_dentro003
   arg0.msg1(arg0.nome + " chegou")
 
+
 classe s_ini004
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Arbusto\nHá uma entrada para baixo atrás do arbusto. Uma escada bastante comprida.\nAo sul se vê o resto da ilha, mas em outras direções, só o céu e uma névoa\nbranca ao invés do chão."
+const descr = "Arbusto\n\
+Há uma entrada para baixo atrás do arbusto. Uma escada bastante comprida.\n\
+Ao sul se vê o resto da ilha, mas em outras direções, só o céu e uma névoa\n\
+branca ao invés do chão."
 const dir_s = $s_ini002
 const dir_n = $s_ini020
 const dir_l = $s_ini020
@@ -95,6 +107,7 @@ const dir_b = $s_ini009
 
 func entrou
   ver(arg0)
+
 
 classe s_ini005
 herda sala
@@ -110,12 +123,17 @@ const dir_en = $s_ini008
 func entrou
   ver(arg0)
 
+
 classe s_ini006
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Região leste da ilha\nNão há nada aqui, somente o chão de terra que se estende à oeste.\nNas outras direções o chão termina e começa uma neblina branca.\nAcima da neblina só se vê o céu azul. O chão nessa região também é azul.\nParece ter alguma coisa enterrada. Tecle ver"
+const descr = "Região leste da ilha\n\
+Não há nada aqui, somente o chão de terra que se estende à oeste.\n\
+Nas outras direções o chão termina e começa uma neblina branca.\n\
+Acima da neblina só se vê o céu azul. O chão nessa região também é azul.\n\
+Parece ter alguma coisa enterrada. Tecle ver"
 const dir_o = $s_ini002
 const dir_n = $s_ini020
 const dir_s = $s_ini020
@@ -142,12 +160,16 @@ func cmd_desenterrar
     fimse
     ret 1
 
+
 classe s_ini007
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Região oeste da ilha\nHá várias pedras vermelhas no chão. Há também uma placa que pode ser lida\nteclando ver placa. À leste fica o centro da linha. Nas outras direções só\nse vê o céu azul e uma névoa branca no lugar do chão."
+const descr = "Região oeste da ilha\n\
+Há várias pedras vermelhas no chão. Há também uma placa que pode ser lida\n\
+teclando ver placa. À leste fica o centro da linha. Nas outras direções só\n\
+se vê o céu azul e uma névoa branca no lugar do chão."
 const dir_l = $s_ini002
 const dir_n = $s_ini020
 const dir_s = $s_ini020
@@ -184,12 +206,15 @@ func cmd_soltar
     fimse
     ret 1
 
+
 classe s_ini008
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Dentro da cabana\nHá uma janela. A vista é do céu, e no lugar do chão, há uma\nnévoa branca como neve. Há mais uma pessoa aqui."
+const descr = "Dentro da cabana\n\
+Há uma janela. A vista é do céu, e no lugar do chão, há uma\n\
+névoa branca como neve. Há mais uma pessoa aqui."
 const dir_sa = $s_ini005
 
 func entrou
@@ -242,6 +267,7 @@ func cmd_chutar
     arg0.msg("Cheque também sua energia teclando energia. Se chegar a 0 você morre.")
     ret 1
 
+
 classe s_ini009
 herda sala
 const limpar = 20
@@ -258,12 +284,14 @@ func cmd_soltar
   arg0.msg("Impossível soltar itens aqui")
   ret 1
 
+
 classe s_ini010
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Escada\nVocê está em uma escada. Não se vê aonde ela começa nem aonde termina."
+const descr = "Escada\n\
+Você está em uma escada. Não se vê aonde ela começa nem aonde termina."
 const dir_c = $s_ini009
 const dir_b = $s_ini011
 
@@ -273,6 +301,7 @@ func entrou
 func cmd_soltar
   arg0.msg("Impossível soltar itens aqui")
   ret 1
+
 
 classe s_ini011
 herda sala
@@ -290,6 +319,7 @@ func cmd_soltar
   arg0.msg("Impossível soltar itens aqui")
   ret 1
 
+
 classe s_ini012
 herda sala
 const limpar = 20
@@ -303,12 +333,15 @@ const dir_l = $s_ini015
 func entrou
   ver(arg0)
 
+
 classe s_ini013
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Pequena ilha\nVocê está bem embaixo da ilha maior, mas ela não está visível daqui.\nA neblina está forte e a distância é razoável."
+const descr = "Pequena ilha\n\
+Você está bem embaixo da ilha maior, mas ela não está visível daqui.\n\
+A neblina está forte e a distância é razoável."
 const dir_n = $s_ini012
 const dir_s = $s_ini014
 
@@ -340,12 +373,15 @@ func atacou
   fimse
   ret 1
 
+
 classe s_ini014
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Pequena ilha\nA neblina aqui é forte, mas não o suficiente para ocultar uma placa.\nPode-se ler o que está escrito na placa."
+const descr = "Pequena ilha\n\
+A neblina aqui é forte, mas não o suficiente para ocultar uma placa.\n\
+Pode-se ler o que está escrito na placa."
 const dir_n = $s_ini013
 
 func entrou
@@ -379,6 +415,7 @@ func cmd_soltar
     fimse
     ret 1
 
+
 classe s_ini015
 herda sala
 const limpar = 20
@@ -391,12 +428,14 @@ const dir_n = $s_ini016
 func entrou
   ver(arg0)
 
+
 classe s_ini016
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Ponte de cordas\nVocê está em uma extremidade da ponte. Há terra firme ao sul."
+const descr = "Ponte de cordas\n\
+Você está em uma extremidade da ponte. Há terra firme ao sul."
 const dir_s = $s_ini015
 const dir_n = $s_ini017
 
@@ -407,24 +446,28 @@ func cmd_soltar
   arg0.msg("Impossível soltar itens aqui")
   ret 1
 
+
 classe s_ini017
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Ponte de cordas\nHá muita neblina para ver aonde a ponte começa e aonde termina."
+const descr = "Ponte de cordas\n\
+Há muita neblina para ver aonde a ponte começa e aonde termina."
 const dir_s = $s_ini016
 const dir_n = $s_ini018
 
 func entrou
   ver(arg0)
 
+
 classe s_ini018
 herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
-const descr = "Ponte de cordas\nVocê está em uma extremidade da ponte. Há terra firme ao norte."
+const descr = "Ponte de cordas\n\
+Você está em uma extremidade da ponte. Há terra firme ao norte."
 const dir_s = $s_ini017
 const dir_n = $s_ini019
 
@@ -434,6 +477,7 @@ func entrou
 func cmd_soltar
   arg0.msg("Impossível soltar itens aqui")
   ret 1
+
 
 classe s_ini019
 herda sala
@@ -495,6 +539,7 @@ func escr # Checa respostas
     ret 1
   casofim
 
+
 classe s_ini020
 herda sala
 const limpar = 20
@@ -516,7 +561,8 @@ func entrou12
   arg0.msg("A névoa está se dissipando, mas você continua acelerando para baixo")
 
 func entrou15
-  arg0.msg("Você olha para cima e só vê a névoa.\nEm baixo, casas e outras coisas muito pequenas.")
+  arg0.msg("Você olha para cima e só vê a névoa.\nEm baixo, casas e outras coisas muito pequenas.\
+")
 
 func entrou19
   arg0.msg("As casas estão ficando cada vez maiores.")
@@ -531,4 +577,5 @@ func entrou28
   arg0.msg("Para jogar novamente na ilha tecle !!!, ou seja, três exclamações")
 
 func entrou29
-  arg0.msg("Da próxima vez que perceber que está caindo da ilha, já pode teclar !!! antecipadamente.")
+  arg0.msg("Da próxima vez que perceber que está caindo da ilha, já pode teclar !!! antecipadamen\
+te.")
