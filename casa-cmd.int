@@ -191,8 +191,8 @@ herda comando_var
 
 func escr
   txt100 n
-  arg0.persobat != arg0 && (n = " de " + arg0.persobat.nome)
-  lista(arg0, arg0.persobat.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
+  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+  lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
 
 
 classe cmd_idioma
@@ -205,8 +205,8 @@ herda comando_var
 
 func escr
   txt100 n
-  arg0.persobat != arg0 && (n = " de " + arg0.persobat.nome)
-  lista(arg0, arg0.persobat.var, "i_", "Nenhum item" + n, "Itens" + n)
+  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+  lista(arg0, arg0.persoesc.var, "i_", "Nenhum item" + n, "Itens" + n)
 
 
 classe cmd_outros
@@ -326,18 +326,15 @@ herda comando_comum
 func escr
   se !arg1
     arg0.msg("Soltar o que?")
-    ret 1
   senao soltar_[arg1](arg0)
-    ret 1
   senao arg0.var.i_[arg1]_ == 0
     arg0.msg("Você não tem " + arg1)
-    ret 1
-  senao arg0.dono.var.i_[arg1]_ != 99
-    arg0.dono.var.i_[arg1]_ += 1
-  fimse
-  arg0.var.i_[arg1]_ -= 1
-  arg0.dono.msg(arg0.nome + " solta " + arg1)
-  fimse
+  senao
+    se arg0.dono.var.i_[arg1]_ != 99
+      arg0.dono.var.i_[arg1]_ += 1
+    fimse
+    arg0.var.i_[arg1]_ -= 1
+    arg0.dono.msg(arg0.nome + " solta " + arg1)
 
 const soltar_1 = soltar(arg0, arg0.animal.0, 1)
 const soltar_2 = soltar(arg0, arg0.animal.1, 2)
@@ -352,9 +349,87 @@ const soltar_9 = soltar(arg0, arg0.animal.8, 9)
 func soltar # arg0 solta arg1, número do animal é arg2
   se arg1 && arg2 <= config:animal1
     arg0.dono.msg(arg0.nome + " solta " + arg1.nome)
-    arg0.persobat == arg1 && (arg0.persobat = arg0) # Deixa de escolher o animal
+    arg0.persoesc == arg1 && (arg0.persoesc = arg0) # Deixa de escolher o animal
     arg1.dono = arg0.dono # Muda o dono do animal
     arg1 = nulo # Retira esse animal da lista
+    arg0.escolhebat # Atualiza persobat
+    ret 1 # Indica que processou o comando
+
+
+classe cmd_dar
+herda comando_comum
+
+func escr
+  ref r
+  r = arg0.persoalvo # Personagem que receberá o item
+  se !arg1
+    arg0.msg("Dar o que?")
+  senao !r
+    arg0.msg("O alvo não está por perto.")
+  senao r == arg0
+    arg0.msg("Não pode dar coisas a você mesmo.")
+  senao dar_[arg1](arg0, r)
+  senao arg0.var.i_[arg1]_ == 0
+    arg0.msg("Você não possui " + arg1)
+  senao !idiomacomum(arg0, r)
+    arg0.msg("Você e " + r.nome + " não falam um idioma em comum")
+  senao r.arg0.var.i_[arg1]_ == 99
+    arg0.msg(r.nome + " não pode carregar mais " + arg1)
+  senao
+    arg0.var.i_[arg1]_ -= 1
+    r.var.i_[arg1]_ += 1
+    arg0.dono.msg(arg0.nome + " dá " + arg1 + " para " + r.nome)
+  fimse
+
+func idiomacomum # Checa se arg0 e arg1 possuem um idioma em comum
+  txt100 t
+  t = arg0.var.ini("l_")
+  enquanto txt(t, 0, 2) == "l_"
+    se arg1.var.valor(t)
+      ret 1
+    fimse
+    t = arg0.var.depois(t)
+  efim
+
+const dar_1 = dar(arg0, arg0.animal.0, arg1, 1)
+const dar_2 = dar(arg0, arg0.animal.1, arg1, 2)
+const dar_3 = dar(arg0, arg0.animal.2, arg1, 3)
+const dar_4 = dar(arg0, arg0.animal.3, arg1, 4)
+const dar_5 = dar(arg0, arg0.animal.4, arg1, 5)
+const dar_6 = dar(arg0, arg0.animal.5, arg1, 6)
+const dar_7 = dar(arg0, arg0.animal.6, arg1, 7)
+const dar_8 = dar(arg0, arg0.animal.7, arg1, 8)
+const dar_9 = dar(arg0, arg0.animal.8, arg1, 9)
+
+func dar # arg0 dá arg1 para arg2, número do animal é arg3
+  se arg1 && arg3 <= config:animal1
+# Verifica se destino é jogador
+    se !arg2.jog
+      arg0.msg("Não pode dar animais para " + arg2.nome)
+      ret 1
+    fimse
+# Verifica se jogador tem espaço para receber animal
+    uint8 x
+    enquanto x < config:animal1 && arg2.animal.[x]
+      x += 1
+    efim
+# Jogador não tem espaço
+    se x >= config:animal1
+      arg0.msg(arg2.nome + " não tem espaço para receber " + arg1.nome)
+      ret 1
+    fimse
+# Acrescenta na agenda
+    se arg2.var.a_[arg1.nome] != "2" # Adiciona na agenda de quem recebe
+      arg2.var.a_[arg1.nome] = 2
+      arg2.msg("Adicionado na agenda")
+    fimse
+# Animal muda de dono
+    arg0.dono.msg(arg0.nome + " dá " + arg1.nome + " para " + arg2.nome)
+    arg0.persoesc == arg1 && (arg0.persoesc = arg0) # Deixa de escolher o animal
+    arg1.dono = arg2 # Muda o dono do animal
+    arg2.animal.[x] = arg1 # Acrescenta na lista do outro jogador
+    arg1 = nulo # Retira esse animal da lista
+    arg0.escolhebat # Atualiza persobat
     ret 1 # Indica que processou o comando
 
 
@@ -396,8 +471,8 @@ herda comando_comum
 func escr
   txt100 lin
   ref r
-  r = arg0.persobat
-  lin = arg0.nomebat + " energia " + r.energia + " de " + r.enermax
+  r = arg0.persoesc
+  lin = r.nome + " energia " + r.energia + " de " + r.enermax
   lin += ", nível " + r.nivel + ", exp " + r.expatual + " de " + r.expmax
   arg0.msg(lin)
 
@@ -450,7 +525,7 @@ func escr
   ref animal
   int1 reserva
   l.addfim(arg0.dentro1)
-  t.addfim(arg0.persobat == arg0 ? "0+ Você" : "0 Você")
+  t.addfim(arg0.persoesc == arg0 ? "0+ Você" : "0 Você")
   enquanto cont < config:animal2
     animal = arg0.animal.[cont]
     se animal
@@ -459,7 +534,7 @@ func escr
         t.addfim("Reservas:")
       fimse
       lin = cont + 1
-      animal == arg0.persobat && (lin += "+")
+      animal == arg0.persoesc && (lin += "+")
       lin += " " + animal.nome
       se animal.energia
         lin += " " + animal.nivel
@@ -482,16 +557,18 @@ func escr
   r = perso(arg0) # Nota: perso está definido nas classes derivadas dessa
   se !r
     arg0.msg("Você não possui " + nome)
-  senao arg0.persobat == r
+  senao arg0.persoesc == r
     arg0.msg("Você já escolheu " + nome)
-  senao r.energia == 0
-    arg0.msg(r.nome + " está desmaiado")
   senao r == arg0
-    arg0.persobat = arg0
+    arg0.persoesc.energia && arg0.esperar(30) # Espera 3 segundos
+    arg0.persoesc = arg0
     arg0.dono.msg(arg0.nome + " não escolheu ninguém")
+    arg0.escolhebat # Atualiza persobat
   senao
-    arg0.persobat = r
+    arg0.persoesc.energia && arg0.esperar(30) # Espera 3 segundos
+    arg0.persoesc = r
     arg0.dono.msg(arg0.nome + " escolheu " + r.nome)
+    arg0.escolhebat # Atualiza persobat
 
 
 classe cmd_0
@@ -588,11 +665,12 @@ func troca_animal # Trocar dois animais de lugar
   arg0.animal.[num1].atkrec.remove
   arg0.animal.[num2].atkrec.remove
 # Acerta o animal escolhido
-  se num1 >= config:animal1 && arg0.persobat == arg0.animal.[num1]
-    arg0.persobat = arg0
-  senao num2 >= config:animal1 && arg0.persobat == arg0.animal.[num2]
-    arg0.persobat = arg0
+  se num1 >= config:animal1 && arg0.persoesc == arg0.animal.[num1]
+    arg0.persoesc = arg0
+  senao num2 >= config:animal1 && arg0.persoesc == arg0.animal.[num2]
+    arg0.persoesc = arg0
   fimse
+  arg0.escolhebat # Atualiza persobat
   ret 1
 
 func troca_objetos # Dar objetos para animal e pegar de volta
@@ -601,7 +679,7 @@ func troca_objetos # Dar objetos para animal e pegar de volta
   txt100 item # Item que o personagem escolheu
   txt100 anim # Item que o animal possui
   ref r
-  r = arg0.persobat
+  r = arg0.persoesc
   item = arg0.var.ini("i_" + arg1)
   anim = r.var.ini("i_" + arg1)
   se r == arg0
