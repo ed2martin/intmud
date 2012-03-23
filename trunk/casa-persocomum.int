@@ -20,6 +20,7 @@ const jog = 1 # Indica que é jogador
 textotxt cmd_m # Texto da opção "Tecle M para mais"
 sav ref animal.200 # Animais que possui
 sav ref persobat # Personagem usado na batalha
+sav ref persoesc # Personagem escolhido pelo jogador
 const nomebat = persobat == este ? nome : persobat.nome + " de " + nome
 const enermax = nivel * 2 + 60 # Energia máxima
 const expmax = nivel * nivel * 2 + 14
@@ -32,6 +33,7 @@ inttempo salatempo # Tempo da sala do tempo
 
 func ini # Personagem foi criado
   persobat = este
+  persoesc = este
   personagem:ini
   p_perso
   t_proc = 10
@@ -84,35 +86,31 @@ func msg_m
   msg(cmd_m.remove(8) + (cmd_m ? "\nTecle M para mais"))
 
 func escolhebat # Escolhe um personagem em condições de lutar
-  se !persobat.energia # Checa se personagem escolhido está em condições
-    se animal.0.energia && config:animal1 >= 1
-      persobat = animal.0
-    senao animal.1.energia && config:animal1 >= 1
-      persobat = animal.1
-    senao animal.2.energia && config:animal1 >= 2
-      persobat = animal.2
-    senao animal.3.energia && config:animal1 >= 3
-      persobat = animal.3
-    senao animal.4.energia && config:animal1 >= 4
-      persobat = animal.4
-    senao animal.5.energia && config:animal1 >= 5
-      persobat = animal.5
-    senao animal.6.energia && config:animal1 >= 6
-      persobat = animal.6
-    senao animal.7.energia && config:animal1 >= 7
-      persobat = animal.7
-    senao animal.8.energia && config:animal1 >= 8
-      persobat = animal.8
-    senao animal.9.energia && config:animal1 >= 9
-      persobat = animal.9
-    senao energia
-      persobat = este
-      dono.msg(nome + " não escolhe ninguém")
-      ret
-    senao
-      ret
-    fimse
-    dono.msg(nome + " escolhe " + persobat)
+  se persoesc.energia # Checa se personagem escolhido está em condições
+    persobat = persoesc
+  senao animal.0.energia && config:animal1 >= 1
+    persobat = animal.0
+  senao animal.1.energia && config:animal1 >= 1
+    persobat = animal.1
+  senao animal.2.energia && config:animal1 >= 2
+    persobat = animal.2
+  senao animal.3.energia && config:animal1 >= 3
+    persobat = animal.3
+  senao animal.4.energia && config:animal1 >= 4
+    persobat = animal.4
+  senao animal.5.energia && config:animal1 >= 5
+    persobat = animal.5
+  senao animal.6.energia && config:animal1 >= 6
+    persobat = animal.6
+  senao animal.7.energia && config:animal1 >= 7
+    persobat = animal.7
+  senao animal.8.energia && config:animal1 >= 8
+    persobat = animal.8
+  senao animal.9.energia && config:animal1 >= 9
+    persobat = animal.9
+  senao
+    persobat = este
+  fimse
 
 func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
   senha ? p_senha1 : p_senha2
@@ -312,6 +310,7 @@ inttempo t_proc # Para processar comportamento do personagem
 txt512 t_aguardetxt # Próximo comando
 const perso = 1 # Indica que é personagem
 const persobat = este # Personagem usado na batalha
+const persoesc = este # Personagem escolhido
 const nomebat = nome # Nome usado na batalha
 sav uint16 nivel # Nível do personagem
 sav uint32 energia # Energia atual, quando chega a 0 morre
@@ -371,8 +370,8 @@ func esperar # Personagem espera um tempo até poder agir novamente
   uint32 x
   x = arg0
   se x > 0
-    arg1.t_aguarde == 0 && (arg1.t_aguardetxt = "")
-    arg1.t_aguarde < x && (arg1.t_aguarde = x)
+    t_aguarde == 0 && (t_aguardetxt = "")
+    t_aguarde < x && (t_aguarde = x)
     dono.perso && dono.esperar(x)
 
 func teclou # Personagem escreveu algo
@@ -513,13 +512,17 @@ func visivel # Checa se um personagem está visível (arg0=personagem)
   ret 1
 
 func recuperar # Recupera status do personagem
-  energia = enermax
   e_dormindo = 0
   e_confuso = 0
   e_congelado = 0
   e_envenenado = 0
   e_paralisado = 0
   e_queimado = 0
+  se energia == 0 && dono.jog
+    energia = enermax
+    dono.escolhebat # Atualiza persobat
+  senao
+    energia = enermax
 
 func ataqueini # Inicia ataque; retorna 1 se pode atacar
   se energia == 0
@@ -550,7 +553,7 @@ func morreu # Personagem morreu
   senao dono.jog
     atkenv.limpar
     !arg0 && dono.dono.msg(nome + " de " + dono.nome + " desmaiou")
-    !arg0 && dono.escolhebat
+    !arg0 && dono.escolhebat # Atualiza persobat
     ret
   fimse
 # Outro personagem: dá experiência
