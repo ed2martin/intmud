@@ -265,6 +265,7 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "txt2",       Instr::FuncTxt2, 1 },
     { "txtchr",     Instr::FuncTxtChr, 0 },
     { "txtcod",     Instr::FuncTxt2, 10 },
+    { "txtcopiamai",Instr::FuncTxtCopiaMai, 0 },
     { "txtcor",     Instr::FuncTxt2, 2 },
     { "txtdec",     Instr::FuncTxt2, 11 },
     { "txtesp",     Instr::FuncEsp, 0 },
@@ -275,6 +276,7 @@ static const Instr::TListaFunc ListaFunc[] = {
     { "txtmaiini",  Instr::FuncTxt2, 4 },
     { "txtmaimin",  Instr::FuncTxt2, 6 },
     { "txtmin",     Instr::FuncTxt2, 5 },
+    { "txtmudamai", Instr::FuncTxtMudaMai, 0 },
     { "txtnome",    Instr::FuncTxt2, 9 },
     { "txtnum",     Instr::FuncTxtNum, 0 },
     { "txtproc",    Instr::FuncTxtProc, 0 },
@@ -1434,10 +1436,10 @@ bool Instr::ExecX()
                 break;
             }
         case exo_igual2:     // Operador: a===b
+        case exo_diferente2:  // Operador: a!==b
             {
                 if (VarFuncIni(VarAtual-1))
                     break;
-                FuncAtual->expr++;
             // Compara valores
                 int tipo1 = VarAtual[-1].Tipo();
                 int tipo2 = VarAtual[0].Tipo();
@@ -1479,6 +1481,8 @@ bool Instr::ExecX()
                     else
                         tipo1 = 0;
                 }
+                if (*FuncAtual->expr++ == exo_diferente2)
+                    tipo1 = !tipo1;
             // Apaga valores da pilha; cria int32 na pilha
                 ApagarVar(VarAtual-1);
                 if (!CriarVarInt(tipo1!=0))

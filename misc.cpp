@@ -34,6 +34,7 @@ char * tabNOMES = 0;
 char * tabCOMPLETO = 0;
 char * tabMAI = 0;
 char * tabMIN = 0;
+char * tabMAIMIN = 0;
 char * tabTXTCOD = 0;
 char * tabTXTDEC = 0;
 char * tab8B = 0;
@@ -57,15 +58,16 @@ void tabASCinic(void)
     if (tabNOMES)
         return;
 // Aloca memória
-    tabNOMES = new char[0x900];
+    tabNOMES = new char[0xA00];
     tabCOMPLETO = tabNOMES + 0x100;
     tabMAI = tabNOMES + 0x200;
     tabMIN = tabNOMES + 0x300;
-    tabTXTCOD = tabNOMES + 0x400;
-    tabTXTDEC = tabNOMES + 0x500;
-    tab8B = tabNOMES + 0x600;
-    tab7B = tabNOMES + 0x700;
-    tabTXTSEPARA = tabNOMES + 0x800;
+    tabMAIMIN = tabNOMES + 0x400;
+    tabTXTCOD = tabNOMES + 0x500;
+    tabTXTDEC = tabNOMES + 0x600;
+    tab8B = tabNOMES + 0x700;
+    tab7B = tabNOMES + 0x800;
+    tabTXTSEPARA = tabNOMES + 0x900;
 // Acerta tabNOMES
     memset(tabNOMES,0,256);
     tabNOMES[(unsigned char)'_'] = ' ';
@@ -83,16 +85,19 @@ void tabASCinic(void)
 // Acerta tabCOMPLETO
     for (caract=0; caract<256; caract++)
         tabCOMPLETO[caract] = (tabNOMES[caract] ? tabNOMES[caract] : caract);
-// Acerta tabMAI e tabMIN
+// Acerta tabMAI, tabMIN e tabMAIMIN
     memcpy(tabMAI, tabCOMPLETO, 0x100);
     tabMAI[(unsigned char)' '] = ' ';
     tabMAI[(unsigned char)'_'] = '_';
     memcpy(tabMIN, tabMAI, 0x100);
+    memset(tabMAIMIN, 0, 0x100);
     for (caract='A'; caract<='Z'; caract++) // Letras de A a Z
     {
         tabMAI[caract+0x20] = caract;
         tabMAI[caract] = caract;
         tabMIN[caract] = caract+0x20;
+        tabMAIMIN[caract] = 2;
+        tabMAIMIN[caract+0x20] = 1;
     }
     for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
     {
@@ -100,6 +105,8 @@ void tabASCinic(void)
         tabMAI[(unsigned char)cpont[2]] = cpont[2];
         tabMIN[(unsigned char)cpont[1]] = cpont[1];
         tabMIN[(unsigned char)cpont[2]] = cpont[1];
+        tabMAIMIN[(unsigned char)cpont[1]] = 1;
+        tabMAIMIN[(unsigned char)cpont[2]] = 2;
     }
 // Acerta tabTXTCOD
     memset(tabTXTCOD, 0, 0x100);

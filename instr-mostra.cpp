@@ -437,6 +437,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_igual:        strcpy(nome, " =="); break;
         case exo_igual2:       strcpy(nome, " ==="); break;
         case exo_diferente:    strcpy(nome, " !="); break;
+        case exo_diferente2:   strcpy(nome, " !=="); break;
         case exo_e:            strcpy(nome, " &&"); break;
         case exo_ou:           strcpy(nome, " ||"); break;
         case exo_atrib:        strcpy(nome, " =");  break;

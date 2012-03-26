@@ -1302,10 +1302,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         {
         case ',': sinal=exo_virgula; break;
 
-        case '!': if (origem[1]=='=')
+        case '!': if (origem[1]!='=')
+                      sinal=exo_exclamacao,bsinal=false;
+                  else if (origem[2]!='=')
                       sinal=exo_diferente,origem++;
                   else
-                      sinal=exo_exclamacao,bsinal=false;
+                      sinal=exo_diferente2,origem+=2;
                   break;
         case '~': sinal=exo_b_comp,bsinal=false;
                   break;
@@ -1348,13 +1350,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                       sinal=exo_b_shr,origem++;
                   break;
 
-        case '=': sinal=exo_atrib;
-                  if (origem[1]=='=')
-                  {
+        case '=': if (origem[1]!='=')
+                      sinal=exo_atrib;
+                  else if (origem[2]!='=')
                       sinal=exo_igual,origem++;
-                      if (origem[1]=='=')
-                          sinal=exo_igual2,origem++;
-                  }
+                  else
+                      sinal=exo_igual2,origem+=2;
                   break;
 
         case '&': sinal=exo_b_e;

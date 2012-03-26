@@ -561,6 +561,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_igual:        strcpy(nome, " == "); indica=16; break;
         case exo_igual2:       strcpy(nome, " === "); indica=16; break;
         case exo_diferente:    strcpy(nome, " != "); indica=16; break;
+        case exo_diferente2:   strcpy(nome, " !== "); indica=16; break;
         case exo_e:            strcpy(nome, " && "); indica=16; break;
         case exo_ou:           strcpy(nome, " || "); indica=16; break;
         case exo_int2:         strcpy(nome, " ? "); indica=16; break;

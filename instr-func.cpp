@@ -748,6 +748,92 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtmudamai - alterna entre letras maiúsculas e minúsculas
+bool Instr::FuncTxtMudaMai(TVariavel * v, int valor)
+{
+    const char * txt = "";  // Texto
+    char mens[BUF_MENS];    // Resultado
+    char * destino = mens;
+    int porcent = 100;
+
+// Obtém argumentos
+    if (VarAtual >= v+1)
+    {
+        if (VarAtual >= v+2)
+            porcent = v[2].getInt();
+        if (porcent <= 0) // Nenhuma possibilidade de troca
+        {
+            char * p = copiastr(mens, v[1].getTxt(), sizeof(mens));
+            ApagarVar(v);
+            return CriarVarTexto(mens, p-mens);
+        }
+        txt = v[1].getTxt();
+    }
+
+// Copia texto modificando
+    while (destino<mens+sizeof(mens)-1)
+    {
+        unsigned char ch = *txt++;
+        if (ch==0)
+            break;
+        switch (tabMAIMIN[ch])
+        {
+        case 1: // É letra minúscula
+            if (porcent < 100 && circle_random() % 100
+                    >= (unsigned int)porcent)
+                *destino++ = ch;
+            else
+                *destino++ = tabMAI[ch];
+            break;
+        case 2: // É letra maiúscula
+            if (porcent < 100 && circle_random() % 100
+                    >= (unsigned int)porcent)
+                *destino++ = ch;
+            else
+                *destino++ = tabMIN[ch];
+            break;
+        default: // Não é maiúscula nem minúscula
+            *destino++ = ch;
+        }
+    }
+
+// Anota o texto
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino-mens);
+}
+
+//----------------------------------------------------------------------------
+/// Função txtcopiamai - copia tipo de letra entre maiúscula e minúscula
+bool Instr::FuncTxtCopiaMai(TVariavel * v, int valor)
+{
+    char mens[BUF_MENS];    // Resultado
+    char * destino = mens;
+
+    *mens = 0;
+    if (VarAtual >= v+1)
+        destino = copiastr(mens, v[1].getTxt(), sizeof(mens));
+    if (VarAtual >= v+2)
+    {
+        const char * o = v[2].getTxt();
+        char * d = mens;
+        for (; *o && *d; o++,d++)
+            switch (tabMAIMIN[*(unsigned char*)o])
+            {
+            case 1: // É letra minúscula
+                *d = tabMIN[*(unsigned char*)d];
+                break;
+            case 2: // É letra maiúscula
+                *d = tabMAI[*(unsigned char*)d];
+                break;
+            }
+    }
+
+// Anota o texto
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino-mens);
+}
+
+//----------------------------------------------------------------------------
 /// Função txtesp
 bool Instr::FuncEsp(TVariavel * v, int valor)
 {
@@ -1193,6 +1279,26 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     TClasse * c = FuncAtual->este->Classe;
     const char * origem; // Primeiro argumento - texto original
     char mens[BUF_MENS]; // Aonde jogar o texto codificado
+    int porcent=100; // Porcentagem da possibilidade de troca
+    int espaco=0; // Quantas trocas deve ignorar após efetuar uma
+    int espacocont=0; // Contador de espaços entre trocas
+
+// Obtém porcentagem e espaço entre trocas
+    if (VarAtual >= v+4)
+    {
+        porcent = v[4].getInt();
+        if (porcent <= 0) // Nenhuma possibilidade de troca
+        {
+            char * p = copiastr(mens, v[1].getTxt(), sizeof(mens));
+            ApagarVar(v);
+            return CriarVarTexto(mens, p-mens);
+        }
+        if (VarAtual >= v+5)
+        {
+            espaco = v[5].getInt();
+            if (espaco<0) espaco=0;
+        }
+    }
 
 // Obtém argumento - padrão que deve procurar no texto
     char txtpadrao[40]; // Texto
@@ -1228,7 +1334,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 #if 0
     printf("Variáveis(%d): ", tamvar);
     for (int x=indini; x<=indfim; x++)
-        printf("[%s]", c->InstrVar[x]+5);
+        printf("[%s]", c->InstrVar[x]+Instr::endNome);
     putchar('\n'); fflush(stdout);
 #endif
 
@@ -1263,33 +1369,90 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             *destino++ = *origem++;
             continue;
         }
-    // Achou - procura variável
+     // Achou - procura variável
         int ini = indini; // Índice inicial
         int fim = indfim; // Índice final
-        x = -1;
-        while (ini<=fim)
+        x = -1; // Índice da variável ou <0 se não encontrou
+
+        for (int cont=tamvar;;)
         {
-            int meio = (ini+fim)/2;
-            int comp = comparaZ(origem+tampadrao,
-                    c->InstrVar[meio] + tamvar);
-#if 0
-            printf("cmp [%s] [%s] = %d\n", origem+tampadrao,
-                    c->InstrVar[meio] + tamvar, comp); fflush(stdout);
-#endif
-            switch (comp)
+            int xini=-1, xfim=fim;
+        // Obtém o caracter que está procurando
+            const char * p1 = origem + tampadrao + cont - tamvar;
+            unsigned char ch1 = tabCOMPLETO[*(unsigned char*)p1];
+            if (ch1 == 0) // Se for o fim do texto
+                break;
+        // Obtém: xini = primeira palavra com a letra
+            while (ini<=fim)
             {
-            case 2:
-            case 0:
-                x = meio;
-            case 1:
-                ini = meio+1;
-                break;
-            case -1:
-            case -2:
-                fim = meio-1;
-                break;
+                int meio = (ini+fim)/2;
+                unsigned char ch2 = tabCOMPLETO[
+                        (unsigned char)c->InstrVar[meio][cont] ];
+#if 0
+                int comp = (ch1==ch2 ? 0 : ch1<ch2 ? -1 : 1);
+                printf("cmp1 [%s] [%s] = %d\n", origem+tampadrao,
+                        c->InstrVar[meio] + tamvar, comp); fflush(stdout);
+#endif
+                if (ch2 == ch1)
+                    fim = meio - 1, xini = meio;
+                else if (ch2 < ch1)
+                    ini = meio + 1;
+                else
+                    xfim = fim = meio - 1;
             }
+        // Checa se tem alguma palavra com a letra
+            if (xini < 0)
+                break;
+        // Obtém: xfim = última palavra com a letra
+            ini = xini, fim = xfim;
+            while (ini<=fim)
+            {
+                int meio = (ini+fim)/2;
+                unsigned char ch2 = tabCOMPLETO[
+                        (unsigned char)c->InstrVar[meio][cont] ];
+#if  0
+                int comp = (ch1==ch2 ? 0 : ch1<ch2 ? -1 : 1);
+                printf("cmp2 [%s] [%s] = %d\n", origem+tampadrao,
+                        c->InstrVar[meio] + tamvar, comp); fflush(stdout);
+#endif
+                if (ch2 == ch1)
+                    ini = meio + 1, xfim = meio;
+                else if (ch2 < ch1)
+                    ini = meio + 1;
+                else
+                    fim = meio - 1;
+            }
+        // Avança caracteres iguais de xini e xfim
+            const char * p2 = c->InstrVar[xini] + cont;
+            const char * p3 = c->InstrVar[xfim] + cont;
+            while (*p1)
+            {
+                char ch1 = tabCOMPLETO[*(unsigned char*)p1];
+                if (ch1 != tabCOMPLETO[*(unsigned char*)p2] ||
+                    ch1 != tabCOMPLETO[*(unsigned char*)p3])
+                    break;
+                p1++, p2++, p3++;
+                cont++;
+            }
+        // Checa se função em xini é uma possível resposta
+            if (*p2==0)
+                if (porcent >= 100 || circle_random() % 100 <
+                    (unsigned int)porcent)
+                    x = xini;
+#if 0
+            printf("caracteres [%d] faixa de [%s] a [%s] candidato [%s]\n",
+                        cont-tamvar, c->InstrVar[xini] + tamvar,
+                        c->InstrVar[xfim] + tamvar,
+                        x<0 ? "" : c->InstrVar[x] + tamvar); fflush(stdout);
+#endif
+        // Checa se deve continuar procurando
+            if (*p1==0 || *p3==0)
+                break;
+            ini = xini, fim = xfim; // Procurar na faixa de xini a xfim
         }
+    // Checa espaço entre trocas
+        if (x>=0 && espacocont)
+            x=-1,espacocont--;
     // Não achou variável - anota caracter
         if (x<0)
         {
@@ -1299,6 +1462,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             continue;
         }
     // Achou variável
+        espacocont = espaco;
     // Acerta origem
         const char * defvar = c->InstrVar[x];
         int tamtxt = strlen(defvar + tamvar);
