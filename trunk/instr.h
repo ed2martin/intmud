@@ -50,6 +50,8 @@ bool FuncIntSub(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxtFim(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);
+bool FuncTxtMudaMai(TVariavel * v, int valor);
+bool FuncTxtCopiaMai(TVariavel * v, int valor);
 bool FuncEsp(TVariavel * v, int valor);
 bool FuncTxtRepete(TVariavel * v, int valor);
 bool FuncInt(TVariavel * v, int valor);
@@ -413,6 +415,7 @@ enum Expressao
     exo_igual,      ///< Operador: a==b
     exo_igual2,     ///< Operador: a===b
     exo_diferente,  ///< Operador: a!=b
+    exo_diferente2, ///< Operador: a!==b
     exo_e,          ///< Operador: a&b
     exo_ou,         ///< Operador: a|b
     exo_atrib,      ///< Operador: a=b

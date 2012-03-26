@@ -376,14 +376,15 @@ a+b     Soma
 a-b     Subtrai
 a<<b    Deslocamento à esquerda, sendo que a=valor e b=quantidade de bits
 a>>b    Deslocamento à direita, sendo que a=valor e b=quantidade de bits
-a|b     Ou para bits entre a e b
-a^b     Ou exclusivo para bits entre a e b
-a&b     E para bits entre a e b
+a|b     "Ou" para bits entre a e b
+a^b     "Ou exclusivo" para bits entre a e b
+a&b     "E" para bits entre a e b
 a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
 a<=b    Verdadeiro se a<=b
 a==b    Verdadeiro se a for igual a b
 a===b   Verdadeiro se a for exatamente igual a b
         Em textos: diferencia letras minúsculas de letras maiúsculas
+a!==b   Verdadeiro se a não for exatamente igual a b
 a>=b    Verdadeiro se a>=b
 a>b     Verdadeiro se a>b
 a!=b    Verdadeiro se a for diferente de b
@@ -444,7 +445,7 @@ O IntMUD segue a seguinte ordem de precedência:
 ^               Ou exclusivo para bits
 |               Ou para bits
 <= < > >=       Comparação
-== === !=       Igual a, exatamente igual a e diferente de
+== === != !==   Igual a, exatamente igual a, diferente de, não exatamente igual
 &&              E lógico
 ||              Ou lógico
 ? e :           Comparação, semelhante às instruções se e senao
@@ -748,6 +749,19 @@ txtmaimin(<texto>)
     Retorna o texto com a primeira letra maiúscula e as demais minúsculas.
     Se encontrar um ponto, a próxima letra será maiúscula.
 
+txtmudamai(<texto>)
+txtmudamai(<texto>, <porcentagem>)
+    Retorna um texto que é o texto original com letras maiúsculas
+    trocadas com minúsculas.
+    Exemplo: txttrocamai("Bom Dia") é o mesmo que "bOM dIA"
+    A porcentagem, se estiver presente, é a chance de fazer uma troca.
+    Exemplo: 0=não trocar, 100=trocar sempre, 50=50% de chances de trocar
+
+txtcopiamai(<texto1>, <texto2>)
+    Retorna texto1, mas passando letras para maiúscula ou minúscula
+    conforme as letras correspondentes em <texto2>.
+    Exemplo: txtcopiamai("teste", "XYZnn") é o mesmo que "TESte"
+
 txtfiltro(<texto>)
     Filtra mensagens. Retorna o texto filtrado.
 
@@ -945,14 +959,22 @@ txttroca(<texto>, <valor anterior>, <novo valor>)
     txttrocadif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
 vartroca(<texto>, <texto2>, <variável>)
-    Procura nomes de variáveis do objeto "este" que começam com <variável>.
-    Troca <variável> por <texto2> e procura por isso em <texto>.
-    Substitui pelos respectivos valores das variáveis.
+vartroca(<texto>, <texto2>, <variável>, <porcentagem>)
+vartroca(<texto>, <texto2>, <variável>, <porcentagem>, <espaço>)
+    Procura textos em <texto> e substitui variáveis/funções do objeto "este".
+    Os textos procurados são <texto2> seguido de uma palavra qualquer.
+    Os nomes das funções são <variável> seguido da mesma palavra.
     Exemplo:
       const t_1 = "joão"  # $1 = joão
       const t_2 = "maria" # $2 = maria
       vartroca("$1 falou com $2", "$", "t_")
+                  # É o mesmo que: t_1 + " falou com " + t_2
                   # Produz o texto "joão falou com maria"
+    A porcentagem, se estiver presente, é a chance de fazer uma troca.
+    Exemplo: 0=não trocar, 100=trocar sempre, 50=50% de chances de trocar
+    O espaço, se estiver presente, é um número que indica quantas trocas
+    não deve fazer após fazer uma troca com sucesso.
+    Exemplo: 1=cada vez que trocar, ignora a próxima troca
     Quando vartroca chama uma função, coloca em arg0 o texto encontrado.
     Exemplo de como diferenciar letras maiúsculas de minúsculas:
       func teste_a

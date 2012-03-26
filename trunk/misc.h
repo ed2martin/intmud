@@ -24,6 +24,7 @@ extern char * tabNOMES;    ///< Apenas caracteres válidos em nomes de classes
 extern char * tabCOMPLETO; ///< Todos os caracteres
 extern char * tabMAI;      ///< Todos os caracteres em letras maiúsculas
 extern char * tabMIN;      ///< Todos os caracteres em letras minúsculas
+extern char * tabMAIMIN;   ///< 1=letra minúscula, 2=maiúscula, 0=nenhum
 extern char * tabTXTCOD;   ///< Usado para codificar caracteres: txtcod
 extern char * tabTXTDEC;   ///< Usado para decodificar caracteres: txtdec
 extern char * tab8B;       ///< txtremove sem filtro de letras acentuadas
