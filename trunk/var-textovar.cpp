@@ -44,7 +44,7 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         return true;
     } */
 // Nome da variável
-    /* if (comparaZ(nome, "var")==0)
+    if (comparaZ(nome, "nomevar")==0)
     {
         TBlocoVar * bl = 0;
         if (Instr::VarAtual >= v+1)
@@ -53,7 +53,7 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         if (bl==0)
             return Instr::CriarVarTexto("");
         return Instr::CriarVarTexto(bl->Texto);
-    } */
+    }
 // Mudar variável
     if (comparaZ(nome, "mudar")==0)
     {
@@ -175,6 +175,7 @@ void TTextoVar::Mover(TTextoVar * destino)
 //----------------------------------------------------------------------------
 void TBlocoVar::MoveTextoVar(TTextoVar * textovar)
 {
+    TextoVar = textovar;
     if (RBleft)
         RBleft->MoveTextoVar(textovar);
     if (RBright)

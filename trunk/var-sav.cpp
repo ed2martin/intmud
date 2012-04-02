@@ -874,8 +874,8 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         d++;
                 // Anota texto
                     TTextoBloco * bl = txtobj->Inicio;
-                    int pos = 0;
-                    int posfim = (bl ? bl->Bytes : 0);
+                    char * ppos = (bl ? bl->Texto : 0);
+                    int tampos = (bl ? bl->Bytes : 0);
                     unsigned int pos_atual = 0;
                     unsigned int pos_proc = 0;
                     while (true)
@@ -925,13 +925,13 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         }
                         pos_atual++;
                     // Passa para o próximo bloco se necessário
-                        if (pos >= posfim)
+                        if (tampos <= 0)
                         {
                             if (bl==0 || bl->Depois==0)
                                 break;
                             bl = bl->Depois;
-                            pos = 0;
-                            posfim = bl->Bytes;
+                            ppos = bl->Texto;
+                            tampos = bl->Bytes;
                         }
                     // Anota texto se buffer cheio
                         if (d >= mens + 150)
@@ -941,16 +941,16 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                             d=copiastr(mens, ".=t");
                         }
                     // Anota um byte
-                        switch (bl->Texto[pos])
+                        switch (*ppos)
                         {
                         case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
                         case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
                         case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
                         case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
                         case '\\': *d++='\\';
-                        default: *d++ = bl->Texto[pos];
+                        default: *d++ = *ppos;
                         }
-                        pos++;
+                        ppos++, tampos--;
                     }
                     *d = 0;
                     if (strcmp(mens, ".=t")!=0)
