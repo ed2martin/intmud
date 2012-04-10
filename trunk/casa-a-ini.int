@@ -55,8 +55,8 @@ func entrou
   ver(arg0)
 
 func entrou1
-  se arg0.var.i_diamante_azul && arg0.var.i_diamante_vermelho && arg0.var.i_diamante_verde && \
-arg0.var.i_diamante_amarelo
+  se arg0.var.i_Diamante_Azul && arg0.var.i_Diamante_Vermelho && arg0.var.i_Diamante_Verde && \
+arg0.var.i_Diamante_Amarelo
     arg0.msg("Os diamantes estão se fundindo")
     arg0.msg1(arg0.nome + " saiu")
     arg0.dono = $s_ini003
@@ -69,10 +69,10 @@ const sembriga = 1
 const terreno = 3
 
 func entrou
-  arg0.var.i_diamante_azul = ""
-  arg0.var.i_diamante_verde = ""
-  arg0.var.i_diamante_vermelho = ""
-  arg0.var.i_diamante_amarelo = ""
+  arg0.var.i_Diamante_Azul = ""
+  arg0.var.i_Diamante_Verde = ""
+  arg0.var.i_Diamante_Vermelho = ""
+  arg0.var.i_Diamante_Amarelo = ""
   arg0.msg("Os diamantes se fundiram e você está saindo da ilha")
 
 func entrou1
@@ -152,10 +152,10 @@ func cmd_ver
 
 func cmd_desenterrar
   se arg1 == "diamante azul"
-    se arg0.var.i_diamante_azul
+    se arg0.var.i_Diamante_Azul
       arg0.msg("Só pode carregar um diamante azul nesta ilha")
     senao
-      arg0.var.i_diamante_azul = 1
+      arg0.var.i_Diamante_Azul = 1
       msg(arg0.nome + " desenterra diamante azul")
     fimse
     ret 1
@@ -176,7 +176,7 @@ const dir_s = $s_ini020
 const dir_o = $s_ini020
 
 func entrou
-  var.i_diamante_vermelho = 78
+  var.i_Diamante_Vermelho = 78
   ver(arg0)
 
 func cmd_ver
@@ -188,18 +188,18 @@ func cmd_ver
 
 func cmd_pegar
   se arg1 == "diamante vermelho"
-    se arg0.var.i_diamante_vermelho
+    se arg0.var.i_Diamante_Vermelho
       arg0.msg("Só pode carregar um diamante vermelho nessa ilha")
     senao
-      arg0.var.i_diamante_vermelho = 1
+      arg0.var.i_Diamante_Vermelho = 1
       msg(arg0.nome + " pega diamante vermelho")
     fimse
     ret 1
 
 func cmd_soltar
   se arg1 == "diamante vermelho"
-    se arg0.var.i_diamante_vermelho
-      arg0.var.i_diamante_vermelho = ""
+    se arg0.var.i_Diamante_Vermelho
+      arg0.var.i_Diamante_Vermelho = ""
       msg(arg0.nome + " solta diamante vermelho")
     senao
       arg0.msg("Você não tem diamante vermelho")
@@ -385,7 +385,7 @@ Pode-se ler o que está escrito na placa."
 const dir_n = $s_ini013
 
 func entrou
-  var.i_diamante_verde = 45
+  var.i_Diamante_Verde = 45
   ver(arg0)
 
 func cmd_ver
@@ -397,18 +397,18 @@ func cmd_ver
 
 func cmd_pegar
   se arg1 == "diamante verde"
-    se arg0.var.i_diamante_verde
+    se arg0.var.i_Diamante_Verde
       arg0.msg("Só pode carregar um diamante verde nessa ilha")
     senao
-      arg0.var.i_diamante_verde = 1
+      arg0.var.i_Diamante_Verde = 1
       msg(arg0.nome + " pega diamante verde")
     fimse
     ret 1
 
 func cmd_soltar
   se arg1 == "diamante verde"
-    se arg0.var.i_diamante_verde
-      arg0.var.i_diamante_verde = ""
+    se arg0.var.i_Diamante_Verde
+      arg0.var.i_Diamante_Verde = ""
       msg(arg0.nome + " solta diamante verde")
     senao
       arg0.msg("Você não tem diamante verde")
@@ -496,11 +496,11 @@ func entrou6
   arg0.msg("Sábio: Sou um estudioso. Você também gosta de estudar?")
 
 func entrou14
-  se !arg0.var.i_diamante_amarelo
+  se !arg0.var.i_Diamante_Amarelo
     arg0.msg("Sábio: Você parece saber das coisas. Então vou te fazer umas perguntas.")
 
 func entrou20
-  se !arg0.var.i_diamante_amarelo
+  se !arg0.var.i_Diamante_Amarelo
     arg0.msg("Tem um lugar nessas ilhas que tem muitos diamantes vermelhos.")
     arg0.msg("Quantos tem nesse lugar? Tecle um número, de 1 a 100")
     arg0.var.z_ini_resp = 0
@@ -528,7 +528,7 @@ func escr # Checa respostas
       arg0.msg("amarelo. Quando tiver os 4 diamantes vá para o centro da ilha maior.")
       msg("Sábio dá diamante amarelo para " + arg0.nome)
       arg0.msg("Sábio: Cheque seus itens teclando item")
-      arg0.var.i_diamante_amarelo = 1
+      arg0.var.i_Diamante_Amarelo = 1
       arg0.var.z_ini_resp = ""
       ret 1
     fimse

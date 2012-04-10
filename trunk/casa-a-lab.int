@@ -1,8 +1,3 @@
-classe p_lab_eremita
-herda personagem
-const nome = "Eremita"
-
-
 classe s_lab001
 herda sala
 textovar ent
@@ -371,7 +366,11 @@ const dir_l = $s_lab016
 classe s_lab018
 herda sala
 const limpar = 300
-const descr = "Caverna"
+const descr = "Caverna\n\
+As paredes, o teto e o chão são de uma cor escura. Não há nenhuma estrutura\n\
+segurando o teto, de modo que ele pode cair facilmente. Entretanto, os\n\
+animais possuem uma percepçao mais aguçada do ambiente. Dificilmente o teto\n\
+cairia sobre a cabeça de um deles."
 
 func entrou
   ver(arg0)
@@ -384,3 +383,81 @@ const dir_n = $s_dentro026
 const dir_s = $s_lab019
 const dir_l = $s_lab019
 const dir_o = $s_lab019
+
+
+classe s_lab019
+herda sala
+const sembriga = 1
+const limpar = 30
+const descr = "Caverna\n\
+Esse é o fundo da caverna. Você só vê uma saída ao norte e nada mais.\n\
+Aqui o chão, as paredes e o teto são mais firmes, embora a textura seja\n\
+quase idêntica."
+const dir_n = $s_lab018
+
+func entrou
+  !procperso("p_eremita") && criar("p_eremita", este, 30)
+  ver(arg0)
+  arg0.esperar(20)
+
+func entrou7
+  arg0.msg("Eremita: ommmm ammmmm immmmm")
+
+func entrou12
+  se !arg0.var.o_gancho
+    se !arg0.var.i_balde_cheio
+      arg0.msg("Eremita: Nossa, que sede!")
+      arg0.msg("Eremita: Ei " + arg0.nome + ", o que você veio fazer aqui?")
+    senao
+      arg0.msg("Eremita: Esse balde de água que você carrega, é do lago, não é?")
+      arg0.msg("Parece água salobra, mas é só por causa da quantidade de sais.")
+      arg0.msg("É tão boa quanto as outras. Seria um grande favor se você me desse.")
+    fimse
+
+func cmd_dar
+  se arg0.var.i_[arg1] && txt(arg0.persoalvo) == "p_eremita"
+    se arg1 == "balde cheio" && arg0.var.z_eremita_ == 0
+      msg(arg0.nome + " dá balde cheio para Eremita")
+      arg0.msg("Eremita: Preciso também de um livro de química")
+      arg0.var.i_balde_cheio_ -= 1
+      arg0.var.z_eremita_ += 1
+    senao arg1 == "livro química" && arg0.var.z_eremita_ == 1
+      msg(arg0.nome + " dá livro de química para Eremita")
+      arg0.var.i_livro_de_quimica_ -= 1
+      arg0.var.z_eremita_ += 1
+    senao
+      arg0.msg("Pode ficar para você")
+    fimse
+    ret 1
+
+func segundo4
+  casovar arg0.var.z_eremita_
+  casose "2"
+    arg0.msg("Eremita: Minha experiência falhou. Olha como partiu esse metal!")
+    sair
+  casose "3"
+    sair
+  casose "4"
+    arg0.msg("Eremita: A peça maior é esse gancho. Não tem mais utilidade pra mim")
+    sair
+  casose "5"
+    arg0.msg("Eremita: Quer saber? Fica com ele para você")
+    sair
+  casose "6"
+    arg0.msg("Eremita: Com esse livro não vai acontecer isso de novo")
+    sair
+  casose "7"
+    arg0.msg("Eremita: Agora você poderá entrar nos dutos e sair teclando subir e descer.")
+    sair
+  casose "8"
+    arg0.msg("Vai descobrir que algumas salas tem dutos de ar.")
+    sair
+  casose "9"
+    msg("Eremita dá gancho a " + arg0.nome)
+    arg0.msg("Eremita: Você pode ver que tem o gancho teclando outros")
+    arg0.var.o_gancho_ += 1
+    sair
+  casose
+    ret
+  casofim
+  arg0.var.z_eremita_ += 1
