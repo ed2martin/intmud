@@ -163,6 +163,23 @@ func t_proc_exec # Contagem de tempo
       p.depois
     efim
 
+func t_status_exec
+  se energia > 0
+    se e_queimando && e_envenenado
+      ref r
+      r = dono.jog ? dono.dono : dono
+      r.msg("Você está queimando e envenenado")
+    senao e_queimando
+      ref r
+      r = dono.jog ? dono.dono : dono
+      r.msg("Você está queimando")
+    senao e_envenenado
+      ref r
+      r = dono.jog ? dono.dono : dono
+      r.msg("Você está envenenado")
+    fimse
+    personagem:t_status_exec
+
 
 classe jogador_passo
 
@@ -307,6 +324,7 @@ listaitem atkrec # Quem esse personagem atacou; recebe experiência se vencer
 listaobj atkenv # Quem atacou esse personagem; dá experiência se perder
 inttempo t_aguarde # Tempo para processar próximo comando
 inttempo t_proc # Para processar comportamento do personagem
+inttempo t_status # Para processar status
 txt512 t_aguardetxt # Próximo comando
 const perso = 1 # Indica que é personagem
 const persobat = este # Personagem usado na batalha
@@ -320,16 +338,16 @@ const agressivo = 0 # Se é agressivo (ataca jogadores)
 const persegue = 0 # Se persegue jogadores
 const avisachegou = nome + " " + nivel + " chegou" # Mensagem quando entra no jogo
 int1 e_admin # Se é administrador
-sav intdec e_dormindo
-sav int1 e_confuso
-sav int1 e_congelado
+sav inttempo e_dormindo
+sav inttempo e_confuso
+sav inttempo e_congelado
 sav int1 e_envenenado
 sav int1 e_paralisado
 sav int1 e_queimado
 
 func ini # Personagem foi criado
 # Variáveis
-  t_proc = 10
+  t_proc = 10, t_status = 100
   dono = arg0
   nivel = arg1
   energia = enermax
@@ -418,8 +436,23 @@ func t_aguarde_exec
     lin = t_aguardetxt, t_aguardetxt = ""
     teclou(lin)
 
+func t_status_exec
+  t_status = 100
+  se e_energia > 0 && e_confuso >= 300 && rand(100) < 30
+    ref r
+    r = dono.jog ? dono.dono : dono
+    esperar(8)
+    energia -= 10
+    r.msg(nomebat + " está confuso e acabou batendo em si mesmo, " + energia + " de " + enermax)
+    energia <= 0 && morreu
+
 func t_proc_exec
   t_proc = 10
+  se energia > 0 # Status que diminuem a energia
+    e_queimado && (energia -= 1)
+    e_envenenado && (energia -= 1)
+    energia <= 0 && morreu
+  fimse
   se dono.jog # Se dono é jogador
     ret
   senao dono.tempojog < misc:tempo # Checa tempo de vida do personagem
@@ -451,6 +484,21 @@ func t_proc_exec
     valor <= dono.dir_sa.tempojog && (valor = dono.dir_sa.tempojog) + dir = "sair"
     dir && teclou(dir)
   fimse
+
+func e_dormindo_exec
+  ref r
+  r = dono.jog ? dono.dono : dono
+  r.msg(nomebat + " acordou")
+
+func e_confuso_exec
+  ref r
+  r = dono.jog ? dono.dono : dono
+  r.msg(nomebat + " não está mais confuso")
+
+func e_congelado_exec
+  ref r
+  r = dono.jog ? dono.dono : dono
+  r.msg(nomebat + " descongelou")
 
 func escolhehab # Escolhe e retorna o nome de uma habilidade
   txt100 t1 # Nome da habilidade

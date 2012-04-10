@@ -24,6 +24,7 @@ func ataca1 # arg0 ataca arg1
     velgolpe(arg0.persobat, r, vel) # Tempo do golpe
     result = execgolpe(arg0.persobat, r, ataque) # Ataca
     arg0.dono.msg(texto(arg0, arg1) + msgefeito(result, r))
+    r.e_dormindo && (r.e_dormindo = 1 + intpos(r_e_dormindo - 250))
     r.energia == 0 && r.morreu
     arg0.persobat.energia == 0 && arg0.persobat.morreu
 
@@ -48,6 +49,7 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
     velgolpe(arg0.persobat, r, vel) # Tempo do golpe
     result = execgolpe(arg0.persobat, r, atk) # Ataca
     l.fim.obj.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
+    r.e_dormindo && (r.e_dormindo = 1 + intpos(r_e_dormindo - 250))
     r.energia == 0 && r.morreu
     l.fim.remove
   efim
@@ -56,6 +58,7 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
   velgolpe(arg0, r, vel) # Tempo do golpe
   result = execgolpe(arg0, r, atk) # Ataca
   arg0.dono.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
+  r.e_dormindo && (r.e_dormindo = 1 + intpos(r_e_dormindo - 250))
   r.energia == 0 && r.morreu
   arg0.persobat.energia == 0 && arg0.persobat.morreu
 
@@ -79,6 +82,7 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
     result = execgolpe(arg0.persobat, r, ataque) # Ataca
     l.fim.obj.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
     l.fim.obj.energia == 0 && l.fim.obj.morreu
+    r.e_dormindo && (r.e_dormindo = 1 + intpos(r_e_dormindo - 250))
     r.energia == 0 && r.morreu
     l.fim.remove
   efim
@@ -87,6 +91,7 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
   velgolpe(arg0, r, vel) # Tempo do golpe
   result = execgolpe(arg0, r, atk) # Ataca
   arg0.dono.msg(texto(arg0, l.fim.obj) + msgefeito(result, r))
+  r.e_dormindo && (r.e_dormindo = 1 + intpos(r_e_dormindo - 250))
   r.energia == 0 && r.morreu
   arg0.persobat.energia == 0 && arg0.persobat.morreu
 
@@ -175,6 +180,10 @@ func execgolpe # Realiza um ataque
 
 func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
   !arg0 && (arg0 = 1)
+
+
+classe cmd_so
+herda cmd_socar
 
 
 classe cmd_socar
@@ -363,7 +372,7 @@ const extra = "Pode causar confusão"
 
 func ataca
   se ataca1(arg0, arg1) && rand(100) < 20 && arg1.t_gas
-    arg1.e_confuso = 1
+    arg1.e_confuso = 1000
     arg0.dono.msg(arg1.nomebat + " ficou confuso")
 
 
@@ -379,7 +388,7 @@ const extra = "Pode congelar"
 func ataca
   se ataca1(arg0, arg1) && rand(100) < 70 && arg1.t_gelo
     arg1.e_queimado = 0
-    arg1.e_congelado = 100
+    arg1.e_congelado = 1000
     arg0.dono.msg(arg1.nomebat + " congelou")
 
 
@@ -516,7 +525,7 @@ func ataca
   senao execgolpe(arg0, arg1, 0) == 0
     arg0.dono.msg(arg0.nomebat + " tenta cantar uma canção, mas falhou")
   senao
-    arg1.e_dormindo = 180
+    arg1.e_dormindo = 1800
     arg0.esperar(130)
     arg0.dono.msg(arg0.nomebat + " canta uma canção e " + arg1.nomebat + " dorme profundamente")
 

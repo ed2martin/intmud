@@ -178,8 +178,9 @@ func lista # Lista de itens, como habilidades, idiomas, etc.
     t1 = arg1.depois(t1)
   efim
   se h.linhas
+    h.addfim(txttroca(h.remove(1000), "\n", ", "))
     h.addini(arg4)
-    arg0.msg(h.remove(100))
+    arg0.msg(h.remove(1000))
   senao
     arg0.msg(arg3)
   fimse
@@ -280,14 +281,16 @@ func escr
     pegar_animal(arg0, arg0.persoalvo)
 
 func pegar_objeto # arg0 pega objeto arg1
-  se arg0.dono.var.i_[arg1]_ == 0
+  txt100 item
+  item = arg0.dono.var.nomevar("i_" + arg1)
+  se !item
     arg0.msg("Você não vê " + arg1)
-  senao arg0.var.i_[arg1]_ == 99
-    arg0.msg("Não pode carregar mais " + arg1)
+  senao arg0.var.[item]_ == 99
+    arg0.msg("Não pode carregar mais " + txt(item, 2))
   senao
-    arg0.dono.var.i_[arg1]_ -= 1
-    arg0.var.i_[arg1]_ += 1
-    arg0.dono.msg(arg0.nome + " pega " + arg1)
+    arg0.dono.var.[item]_ -= 1
+    arg0.var.[item]_ += 1
+    arg0.dono.msg(arg0.nome + " pega " + txt(item, 2))
   fimse
 
 func pegar_animal # arg0 pega personagem arg1
@@ -330,11 +333,13 @@ func escr
   senao arg0.var.i_[arg1]_ == 0
     arg0.msg("Você não tem " + arg1)
   senao
-    se arg0.dono.var.i_[arg1]_ != 99
-      arg0.dono.var.i_[arg1]_ += 1
+    txt100 item
+    item = arg0.var.nomevar("i_" + arg1)
+    se arg0.dono.var.[item]_ != 99
+      arg0.dono.var.[item]_ += 1
     fimse
-    arg0.var.i_[arg1]_ -= 1
-    arg0.dono.msg(arg0.nome + " solta " + arg1)
+    arg0.var.[item]_ -= 1
+    arg0.dono.msg(arg0.nome + " solta " + txt(item, 2))
 
 const soltar_1 = soltar(arg0, arg0.animal.0, 1)
 const soltar_2 = soltar(arg0, arg0.animal.1, 2)
@@ -360,7 +365,9 @@ classe cmd_dar
 herda comando_comum
 
 func escr
+  txt100 item
   ref r
+  item = arg0.var.nomevar("i_" + arg1)
   r = arg0.persoalvo # Personagem que receberá o item
   se !arg1
     arg0.msg("Dar o que?")
@@ -369,16 +376,16 @@ func escr
   senao r == arg0
     arg0.msg("Não pode dar coisas a você mesmo.")
   senao dar_[arg1](arg0, r)
-  senao arg0.var.i_[arg1]_ == 0
+  senao !item
     arg0.msg("Você não possui " + arg1)
   senao !idiomacomum(arg0, r)
     arg0.msg("Você e " + r.nome + " não falam um idioma em comum")
-  senao r.arg0.var.i_[arg1]_ == 99
-    arg0.msg(r.nome + " não pode carregar mais " + arg1)
+  senao r.arg0.var.[item]_ == 99
+    arg0.msg(r.nome + " não pode carregar mais " + txt(item, 2))
   senao
-    arg0.var.i_[arg1]_ -= 1
-    r.var.i_[arg1]_ += 1
-    arg0.dono.msg(arg0.nome + " dá " + arg1 + " para " + r.nome)
+    arg0.var.[item]_ -= 1
+    r.var.[item]_ += 1
+    arg0.dono.msg(arg0.nome + " dá " + txt(item, 2) + " para " + r.nome)
   fimse
 
 func idiomacomum # Checa se arg0 e arg1 possuem um idioma em comum
@@ -798,7 +805,11 @@ func escr
   arg0.var.i_corda = 1
   arg0.var.l_hebráico = 1
   arg0.var.a_lula = 2
-  arg0.nivel = 40
+  arg0.var.i_balde_cheio = 1
+  arg0.var.i_oculos = 1
+  arg0.var.i_capa = 1
+  arg0.var.o_gancho = 1
+  arg0.nivel = 60
   se !arg0.animal.0
     arg0.animal.0 = criar("p_lula", arg0, 10, "h_bolha,h_morder")
   fimse

@@ -67,7 +67,8 @@ bool TArqMapa::NomeValido(const char * nome)
 {
     const char *o=nome;
     for (; *o; o++)
-        if ((*o<'0' || *o>'9') && (*o<'a' || *o>'z') && *o!=' ')
+        if ((*o<'0' || *o>'9') && (*o<'a' || *o>'z') &&
+                *o!='-' && *o!='.' && *o!='_')
             return false;
     if (o-nome >= INT_NOME_TAM)
         return false;

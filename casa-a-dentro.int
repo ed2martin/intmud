@@ -1,8 +1,3 @@
-classe p_dentro_sacerdote
-herda personagem
-const nome = "Sacerdote"
-
-
 classe s_dentro001
 herda sala
 
@@ -21,7 +16,7 @@ func entrou
   uint8 total
   pocoes = arg0.var.i_pocao
   arg0.var.limpar("i_")
-  arg0.var.i_pocao = pocoes
+  arg0.var.i_Poção = pocoes
   arg0.recuperar
   enquanto total < config:animal1
     arg0.animal.[total].recuperar, total += 1
@@ -116,9 +111,9 @@ const dir_n = $s_dentro005
 
 func entrou
   se config:escolhenivel
-    var.i_capa = 10
-    var.i_óculos = 10
-    var.i_poção = 100
+    var.i_Capa = 10
+    var.i_Óculos = 10
+    var.i_Poção = 100
   fimse
   ver(arg0)
 
@@ -214,7 +209,7 @@ func entrou4
   senao !temfantasma
     arg0.msg("Sacerdote: Tenha sempre um fantasma com você. Ele é imune a socos e chutes.")
     arg0.msg("Se quiser pegar um terá de usar um de seus animais. Vá à oeste do corredor")
-    arg0.msg("luxuoso, tecle um número de 1 a " + config:animal1 + " e tecle hab para saber q \
+    arg0.msg("luxuoso, tecle um número de 1 a " + config:animal1 + " e tecle hab para saber que \
 golpes pode usar")
   senao nivel < 23
     arg0.msg("Sacerdote: Você precisa ficar mais forte. Se desafiar o Catador de insetos")
@@ -401,7 +396,7 @@ Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
 desarrumada. Há também um ventilador no teto, mas nenhuma janela."
 
 func entrou
-  var.i_espingarda = 1
+  var.i_Espingarda = 1
   ver(arg0)
   se arg0.var.i_oculos
     arg0.msg("Há uma passagem à oeste, visível apenas com os óculos especiais.")
@@ -476,13 +471,14 @@ um quarto escuro ao sul."
 const dir_l = $s_dentro018
 const dir_s = $s_dentro020
 const dir_c = misc:obj.var.o_gancho ? $s_duto002
+const mostra_c = 0 # Esconde saída para cima
 
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 3, "h_socar,h_chutar")
 
 func entrou
-  var.i_poção = 1
+  var.i_Poção = 1
   ver(arg0)
 
 func cmd_s
@@ -501,9 +497,9 @@ const dir_s = $s_dentro021
 
 func entrou
   se arg0.var.i_espingarda
-    var.i_espingarda = 1
+    var.i_Espingarda = 1
   senao
-    var.i_espingarda = 0
+    var.i_Espingarda = ""
   fimse
   ver(arg0)
 
@@ -560,7 +556,7 @@ func cmd_pegar
   casovar arg1
   casose "comida"
     msg(arg0.nome + " pegou um pouco de comida.")
-    arg0.var.i_comida = 1
+    arg0.var.i_Comida = 1
     ret 1
   casose "quadro"
   casose "quadros"
@@ -597,7 +593,7 @@ Aqui está completamente vazio. Não há janelas; apenas uma porta a oeste."
 const dir_o = $s_dentro023
 
 func entrou
-  var.i_chave = 1
+  var.i_Chave = 1
   ver(arg0)
 
 func segsala15
@@ -877,6 +873,7 @@ const dir_s = $s_dentro025
 const dir_l = $s_dentro028
 const dir_o = $s_dentro010
 const dir_c = misc:obj.var.o_gancho ? $s_duto003
+const mostra_c = 0 # Esconde saída para cima
 
 func entrou
   ver(arg0)
@@ -957,6 +954,7 @@ Felizmente você tem a chave para abrir, e por isso consegue passsar."
 const dir_n = $s_dentro028
 const dir_s = misc:obj.var.i_chave ? $s_dentro030
 const dir_c = misc:obj.var.i_ganco ? $s_duto008
+const mostra_c = 0 # Esconde saída para cima
 
 func entrou
   ver(arg0)
@@ -975,7 +973,7 @@ const descr = "Despensa\nHá um pouco de entulho aqui, mas nada que se aproveite.
 const dir_n = $s_dentro029
 
 func entrou
-  var.i_óculos = 1
+  var.i_Óculos = 1
   ver(arg0)
 
 func segsala22
@@ -997,9 +995,10 @@ const descr = "Despensa\n\
 Você está em uma despensa secreta. Há apenas uma saída, à leste."
 const dir_l = $s_dentro016
 const dir_c = misc:obj.var.o_gancho ? $s_duto001
+const mostra_c = 0 # Esconde saída para cima
 
 func entrou
-  var.i_corda = 1
+  var.i_Corda = 1
   ver(arg0)
 
 func segsala15
@@ -1064,6 +1063,7 @@ Há também uma nota, visível apenas com os óculos que você está usando.\n\
 Tecle ler para ler."
 const dir_n = $s_dentro033
 const dir_c = misc:obj.var.o_gancho ? $s_duto007
+const mostra_c = 0 # Esconde saída para cima
 
 func entrou
   ver(arg0)
@@ -1071,12 +1071,14 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_balao", este, 10, "h_cantar,h_cortar")
-    escreveu(ler)
-    se arg0.var.i_oculos
-      arg0.msg("O labirinto perto da biblioteca é muito perigoso e também difícil, porque")
-      arg0.msg("todas as salas são iguais. São poucas salas mas você pode andar em círculo")
-      arg0.msg("durante horas. Apesar disso tudo, ele esconde um artefato raro em uma")
-      arg0.msg("despensa. Espero que algum dia alguém faça um mapa...")
+
+func escr
+  se arg1 == "ler" && arg0.var.i_oculos
+    arg0.msg("O labirinto perto da biblioteca é muito perigoso e também difícil, porque")
+    arg0.msg("todas as salas são iguais. São poucas salas mas você pode andar em círculo")
+    arg0.msg("durante horas. Apesar disso tudo, ele esconde um artefato raro em uma")
+    arg0.msg("despensa. Espero que algum dia alguém faça um mapa...")
+    ret 1
 
 
 classe s_dentro035
@@ -1087,6 +1089,7 @@ const sembriga = 1
 const dir_s = $s_dentro033
 const dir_o = $s_dentro032
 const dir_c = misc:obj.var.o_gancho ? $s_duto006
+const mostra_c = 0 # Esconde saída para cima
 
 func descr
   textotxt t
