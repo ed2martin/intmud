@@ -1691,6 +1691,33 @@ inttempo <nomedavariável>
     n.pos # Volta a contar (n=4)
     teste = n.abs # Mesmo que teste=4
 
+intexec <nomedavariável>
+    Pode ser 0 ou 1, exatamente como int1.
+    Assim que o controle retorna ao IntMUD, se essa variável for 1, ela muda
+    para 0 e em seguida é executada uma função dessa variável. O nome da função
+    é <nomedavariável>_exec.
+    Se houver alguma alteração pendente no programa (vide variável prog) ou
+    algum objeto a ser apagado, esses procedimentos serão executados antes
+    da função de intexec.
+    Qualquer outro evento também tem preferência em relação a intexec.
+    Por exemplo, se houver dois eventos de inttempo, um de socket e um de
+    intexec, mesmo os quatro ocorrendo simultaneamente, o evento de intexec
+    será executado por último.
+
+    Exemplo:
+    telatxt = 1
+    classe x
+    intexec n # Para gerar evento
+    prog p # Para alterar o programa
+    func iniclasse # Classe x foi criada
+    criar(arg0) # Cria objeto
+    func ini # Objeto foi criado
+    p.criar("x", "int8 y") # Cria variável y na classe x
+    n = 1 # Gerar evento depois disso
+    func n_exec # Essa função é executada depois da variável y ser criada
+    telatxt t
+    t.msg("Variável y é do tipo: " + p.vartipo("x", "y") + "\n")
+
 telatxt <nome da variável>
     Semelhante a socket, mas trabalha com uma tela de texto, chamada console.
     Essa tela é semelhante ao "prompt de comando", no Windows, ou o próprio

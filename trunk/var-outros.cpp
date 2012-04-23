@@ -33,6 +33,8 @@ TVarIntTempo ** TVarIntTempo::VetMenos = 0;
 TVarIntTempo ** TVarIntTempo::VetMais = 0;
 unsigned int TVarIntTempo::TempoMenos = 0;
 unsigned int TVarIntTempo::TempoMais = 0;
+TVarIntExec * TVarIntExec::Inicio = 0;
+TVarIntExec * TVarIntExec::Fim = 0;
 
 //------------------------------------------------------------------------------
 /*
@@ -516,6 +518,92 @@ void TVarIntTempo::DebugVet(bool mostrar)
         }
     if (mostrar)
         { printf("\n"); fflush(stdout); }
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::ProcEventos()
+{
+    while (true)
+    {
+    // Verifica se tem objeto na lista
+        TVarIntExec * obj = Inicio;
+        if (obj==0)
+            return;
+
+    // Retira objeto da lista
+        Inicio = obj->Depois;
+        if (Inicio)
+            Inicio->Antes = 0;
+        else
+            Fim = 0;
+        obj->Depois = 0;
+
+    // Gera evento
+        if (obj->b_objeto)
+        {
+            char mens[80];
+            sprintf(mens, "%s_exec", obj->defvar + Instr::endNome);
+            if (!Instr::ExecIni(obj->endobjeto, mens))
+                continue;
+        }
+        else if (obj->endclasse)
+        {
+            char mens[80];
+            sprintf(mens, "%s_exec", obj->defvar + Instr::endNome);
+            if (!Instr::ExecIni(obj->endclasse, mens))
+                continue;
+        }
+            // Cria argumento: índice
+        Instr::ExecArg(obj->indice);
+            // Executa
+        Instr::ExecX();
+        Instr::ExecFim();
+    }
+}
+
+//------------------------------------------------------------------------------
+int TVarIntExec::getValor()
+{
+    return (Antes || Inicio==this);
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::setValor(int valor)
+{
+    if (Antes || Inicio==this) // Se a variável for 1
+    {
+        if (valor)
+            return;
+        (Antes ? Antes->Depois : Inicio) = Depois;
+        (Depois ? Depois->Antes : Fim) = Antes;
+    }
+    else if (valor) // Se a variável for 0 e valor não for 0
+    {
+        Antes = Fim;
+        Depois = 0;
+        (Antes ? Antes->Depois : Inicio) = this;
+        Fim = this;
+    }
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::Mover(TVarIntExec * destino)
+{
+    if (Antes || Inicio==this)
+    {
+        (Antes ? Antes->Depois : Inicio) = destino;
+        (Depois ? Depois->Antes : Fim) = destino;
+    }
+    move_mem(destino, this, sizeof(TVarIntExec));
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::EndObjeto(TClasse * c, TObjeto * o)
+{
+    if (o)
+        endobjeto=o, b_objeto=true;
+    else
+        endclasse=c, b_objeto=false;
 }
 
 //------------------------------------------------------------------------------

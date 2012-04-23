@@ -260,6 +260,7 @@ static const TListaInstr ListaInstr[] = {
     { "int32",     cInt32 },
     { "int8",      cInt8 },
     { "intdec",    cIntDec },
+    { "intexec",   cIntExec },
     { "intinc",    cIntInc },
     { "inttempo",  cIntTempo },
     { "listaitem", cListaItem },

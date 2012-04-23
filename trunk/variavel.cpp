@@ -124,7 +124,8 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cArqLog:    return sizeof(TVarLog);
     case Instr::cArqSav:    return 0;
     case Instr::cArqTxt:    return sizeof(TVarTxt);
-    case Instr::cIntTempo:  return sizeof(TVarIntTempo);;
+    case Instr::cIntTempo:  return sizeof(TVarIntTempo);
+    case Instr::cIntExec:   return sizeof(TVarIntExec);
     case Instr::cTelaTxt:   return sizeof(TVarTelaTxt);
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
@@ -197,6 +198,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
     case Instr::cIntTempo:  return varInt;
+    case Instr::cIntExec:   return varInt;
     case Instr::cTelaTxt:
         return (TVarTipo)TVarTelaTxt::getTipo(numfunc);
     case Instr::cSocket:
@@ -327,6 +329,16 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         }
         for (; depois<antes; depois++)
             end_inttempo[depois].setValor(0, 0);
+        break;
+    case Instr::cIntExec:
+        for (; antes<depois; antes++)
+        {
+            end_intexec[antes].defvar = defvar;
+            end_intexec[antes].indice = antes;
+            end_intexec[antes].EndObjeto(c, o);
+        }
+        for (; depois<antes; depois++)
+            end_intexec[depois].setValor(0);
         break;
     case Instr::cListaObj:
         for (; antes<depois; antes++)
@@ -568,6 +580,8 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         return;
     case Instr::cIntTempo:
         MOVER_COMPLETO( TVarIntTempo )
+    case Instr::cIntExec:
+        MOVER_COMPLETO( TVarIntExec )
     case Instr::cTelaTxt:
         MOVER_COMPLETO( TVarTelaTxt )
     case Instr::cSocket:
@@ -652,6 +666,10 @@ void TVariavel::MoverDef()
     case Instr::cIntTempo:
         for (cont=0; cont<vetor; cont++)
             end_inttempo[cont].defvar = defvar;
+        break;
+    case Instr::cIntExec:
+        for (cont=0; cont<vetor; cont++)
+            end_intexec[cont].defvar = defvar;
         break;
     case Instr::cListaItem:
         for (cont=0; cont<vetor; cont++)
@@ -771,6 +789,8 @@ bool TVariavel::getBool()
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor(numfunc);
+    case Instr::cIntExec:
+        return end_intexec[indice].getValor();
     case Instr::cTelaTxt:
         return end_telatxt[indice].getValor(numfunc);
     case Instr::cSocket:
@@ -932,6 +952,8 @@ int TVariavel::getInt()
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor(numfunc);
+    case Instr::cIntExec:
+        return end_intexec[indice].getValor();
     case Instr::cTelaTxt:
         return end_telatxt[indice].getValor(numfunc);
     case Instr::cSocket:
@@ -1093,6 +1115,8 @@ double TVariavel::getDouble()
         return end_txt[indice].getValor();
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor(numfunc);
+    case Instr::cIntExec:
+        return end_intexec[indice].getValor();
     case Instr::cTelaTxt:
         return end_telatxt[indice].getValor(numfunc);
     case Instr::cSocket:
@@ -1155,6 +1179,7 @@ const char * TVariavel::getTxt()
     case Instr::cIntInc:
     case Instr::cIntDec:
     case Instr::cIntTempo:
+    case Instr::cIntExec:
     case Instr::cArqLog:
     case Instr::cArqTxt:
     case Instr::cListaObj:
@@ -1449,6 +1474,9 @@ void TVariavel::setInt(int valor)
     case Instr::cIntTempo:
         end_inttempo[indice].setValor(numfunc, valor);
         break;
+    case Instr::cIntExec:
+        end_intexec[indice].setValor(valor);
+        break;
     case Instr::cTelaTxt:
         end_telatxt[indice].setValor(numfunc, valor);
         break;
@@ -1510,6 +1538,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cIntInc:
     case Instr::cIntDec:
     case Instr::cIntTempo:
+    case Instr::cIntExec:
     case Instr::cIndiceObj:
         setInt(DoubleToInt(valor));
         break;
@@ -1635,6 +1664,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cIntInc:
     case Instr::cIntDec:
     case Instr::cIntTempo:
+    case Instr::cIntExec:
     case Instr::cVarInt:
     case Instr::cSocket:
     case Instr::cDebug:

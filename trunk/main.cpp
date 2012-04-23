@@ -298,6 +298,9 @@ int main(int argc, char *argv[])
     // Chama eventos de arqsav
         TVarSav::ProcEventos(espera);
 
+    // Chama eventos de intexec
+        TVarIntExec::ProcEventos();
+
     // Limpa objetos de listaobj e listaitem
         TGrupoX::ProcEventos();
 

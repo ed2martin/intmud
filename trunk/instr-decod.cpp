@@ -220,6 +220,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cArqSav:    strcpy(nome, "arqsav"); break;
     case cArqTxt:    strcpy(nome, "arqtxt"); break;
     case cIntTempo:  strcpy(nome, "inttempo"); break;
+    case cIntExec:   strcpy(nome, "intexec"); break;
     case cTelaTxt:   strcpy(nome, "telatxt"); break;
     case cSocket:    strcpy(nome, "socket"); break;
     case cServ:      strcpy(nome, "serv"); break;
