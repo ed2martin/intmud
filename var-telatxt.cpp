@@ -152,10 +152,32 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Passa para letras maiúsculas
-    char texto1[10];
+    char texto1[20];
     for (unsigned int x=0; x<sizeof(texto1)-1; x++)
         texto1[x] = tabMAI[*(unsigned char *)(texto + x)];
     texto1[sizeof(texto1)-1] = 0;
+// Mouse
+    if (memcmp(texto1, "MOUSE", 5)==0 && texto1[5]>='1' && texto1[5]<='3')
+    {
+        const char * p = texto1+6;
+        long posx=0, posy=0;
+        while (*p==' ') p++;
+        posx = strtol(p, 0, 10);
+        while (*p && *p!=' ') p++;
+        while (*p==' ') p++;
+        posy = strtol(p, 0, 10);
+        LinhaPosic = posy;
+        if (posy)
+            ColPosic=posx;
+        else
+        {
+            int max = tam_linha - col_linha;
+            if (posx>max) posx=max;
+            if (posx<0) posx=0;
+            ColEditor = posx;
+        }
+        return;
+    }
 // Cima
     if (strcmp(texto1, "UP")==0)
     {
@@ -641,10 +663,27 @@ void TVarTelaTxt::Processa()
     while (true)
     {
     // Lê tecla
+        char mens[2048];
         const char * p = Console->LerTecla();
         if (p==0)
             break;
         //Console->Escrever(p);
+    // Altera posição Y se for evento do mouse
+        if (memcmp(p, "MOUSE", 5)==0 && p[5])
+        {
+            long valor;
+            char * d = mens + 5;
+            copiastr(mens, p, 100);
+            while (*d && *d!=' ') d++;
+            while (*d==' ') d++;
+            while (*d && *d!=' ') d++;
+            while (*d==' ') d++;
+            valor = strtol(d, 0, 10); // Obtém a posição Y
+            valor = LinhaFinal - valor;
+            if (valor<0) valor=0;
+            sprintf(d, "%d", (int)valor); // Anota a posição Y
+            p = mens;
+        }
     // Chama evento que processa tecla
         if (FuncEvento("tecla", p))
             continue;
@@ -655,7 +694,6 @@ void TVarTelaTxt::Processa()
             continue;
         }
     // Processa enter
-        char mens[2048];
         strcpy(mens, LerLinha());
         ProcTecla(p);
         FuncEvento("msg", mens);

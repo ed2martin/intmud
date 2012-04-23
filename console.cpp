@@ -78,7 +78,7 @@ bool TConsole::Inic(bool completo)
     }
 
 // Configuração do console
-    if (!SetConsoleMode(con_in, ENABLE_WINDOW_INPUT))
+    if (!SetConsoleMode(con_in, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT))
     {
         FreeConsole();
         return false;
@@ -303,6 +303,25 @@ const char * TConsole::LerTecla()
             continue;
         }
         int indice = LerCont++;
+        if (LerEventos[indice].EventType == MOUSE_EVENT)
+        {
+            int valor = LerEventos[indice].Event.MouseEvent.dwButtonState;
+            char ch = 0;
+            if (valor & FROM_LEFT_1ST_BUTTON_PRESSED)
+                ch = '1';
+            else if (valor & RIGHTMOST_BUTTON_PRESSED)
+                ch = '2';
+            else if (valor & FROM_LEFT_2ND_BUTTON_PRESSED)
+                ch = '3';
+            if (ch)
+            {
+                static char mens[30];
+                sprintf(mens, "MOUSE%c %d %d", ch,
+                    LerEventos[indice].Event.MouseEvent.dwMousePosition.X,
+                    LerEventos[indice].Event.MouseEvent.dwMousePosition.Y);
+                return mens;
+            }
+        }
         if (LerEventos[indice].EventType != KEY_EVENT ||
             LerEventos[indice].Event.KeyEvent.bKeyDown == 0)
             continue;
@@ -612,18 +631,74 @@ void TConsole::Flush()
 //---------------------------------------------------------------------------
 void TConsole::EnvTxt(const char * texto, int tamanho)
 {
-    char mens[1024];
 #ifdef __WIN32__
-    DWORD cCharsWritten;
-    Flush();
+    MoverCursor = true;
+    while (tamanho>0)
+    {
+        CHAR_INFO mens[1024];
+        PCHAR_INFO dest = mens;
+        COORD mensposic; // Posição no buffer, 0
+        COORD menstam; // Tamanho do buffer
+        SMALL_RECT mensrect; // Retângulo a copiar
+        mensposic.X = 0; // Tamanho do buffer
+        mensposic.Y = 0;
+        menstam.X = 1024; // Posição no buffer
+        menstam.Y = 1;
+        int total = sizeof(mens)/sizeof(mens[0]);
+        if (total>tamanho) total=tamanho;
+        tamanho -= total;
+        for (; total>0; total--,texto++)
+        {
+        // Qualquer caracter exceto nova linha
+            if (*texto != '\n')
+            {
+                unsigned char ch = StrConv[ *(unsigned char*)texto ];
+                dest->Char.AsciiChar = ch;
+                dest->Attributes = CorAtributos;
+                dest++;
+                if (++ColAtual < ColTotal)
+                    continue;
+            }
+        // Envia mensagem
+            mensrect.Top = mensrect.Bottom = LinAtual;
+            mensrect.Left = ColAtual - (dest-mens);
+            mensrect.Right = ColAtual - 1;
+            WriteConsoleOutput(con_out, mens, menstam, mensposic, &mensrect);
+            dest = mens;
+        // Acerta posição do cursor
+            ColAtual = 0;
+            if (++LinAtual < LinTotal)
+                continue;
+        // Rolagem da tela
+            LinAtual = LinTotal - 1;
+            mensrect.Top = 0;      // Região que será movida
+            mensrect.Bottom = LinTotal - 1;
+            mensrect.Left = 0;
+            mensrect.Right = ColTotal - 1;
+            mens[0].Char.AsciiChar = ' '; // Como preencher a região vazia
+            mens[0].Attributes = CorAtributos;
+            COORD mensdest; // Para onde mover
+            mensdest.X = 0;
+            mensdest.Y = -1;
+            ScrollConsoleScreenBuffer(con_out, &mensrect, NULL, mensdest, mens);
+        }
+        if (dest > mens) // Mensagens pendentes
+        {
+            mensrect.Top = mensrect.Bottom = LinAtual;
+            mensrect.Left = ColAtual - (dest-mens);
+            mensrect.Right = ColAtual - 1;
+            WriteConsoleOutput(con_out, mens, menstam, mensposic, &mensrect);
+        }
+    }
 #else
     if (!fcntl_block)
         { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
-#endif
     while (tamanho>0)
     {
+        char mens[1024];
         char * dest = mens;
-        int total = (tamanho > (int)sizeof(mens)/2 ? sizeof(mens)/2 : tamanho);
+        int total = sizeof(mens)/2;
+        if (total>tamanho) total=tamanho;
         tamanho -= total;
         for (; total>0; total--,texto++)
         {
@@ -642,21 +717,13 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
                 *dest++ = 0x80 + (ch & 0x3F);
             }
             if (++ColAtual >= ColTotal)
-            {
-                ColAtual = 0, LinAtual++;
-#ifndef __WIN32__
-                *dest++ = '\n';
-#endif
-            }
+                ColAtual = 0, LinAtual++, *dest++ = '\n';
         }
-#ifdef __WIN32__
-        WriteFile(con_out, mens, dest-mens, &cCharsWritten, NULL);
-#else
         fwrite(mens, 1, dest-mens, stdout);
-#endif
     }
     if (LinAtual >= LinTotal)
         LinAtual = LinTotal - 1;
+#endif
 }
 
 //---------------------------------------------------------------------------

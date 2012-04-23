@@ -9,6 +9,7 @@ class TObjeto;
 class TVarRef;
 class TVarIncDec;
 class TVarIntTempo;
+class TVarIntExec;
 class TListaObj;
 class TListaItem;
 class TTextoTxt;
@@ -144,6 +145,7 @@ public:
         TVarLog      * end_log;      ///< Instr::cArqLog
         TVarTxt      * end_txt;      ///< Instr::cArqTxt
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
+        TVarIntExec  * end_intexec;  ///< Instr::cIntExec
         TListaObj    * end_listaobj; ///< Instr::cListaObj
         TListaItem   * end_listaitem;///< Instr::cListaItem
         TTextoTxt    * end_textotxt; ///< Instr::cTextoTxt
