@@ -1,0 +1,115 @@
+classe efeito
+# Efeitos que afetam os personagens
+sav listaitem idono # Uso interno: personagem afetao pelo efeito
+const dono = idono.objlista
+const sala = idono.objlista.dono.perso ? idono.objlista.dono.dono : idono.objlista.dono
+# func ini1 # Efeito foi criado
+# func ini2 # Efeito foi reforçado
+# func ataqueini # Personagem quer atacar; retornar 1 se não pode prosseguir
+# func ataqueexec # Personagem vai atacar
+# func ataquerec # Personagem recebeu ataque
+# func ataque # Calculando ataque, arg0 = novo valor
+# func defesa # Calculando defesa, arg0 = novo valor
+# func vel # Calculando velocidade, arg0 = novo valor
+
+
+classe e_confuso
+herda efeito
+const nome = " confuso"
+inttempo t1 # Para perder energia
+inttempo t2 # Quanto tempo dura o efeito
+const ini1 = ini2 # Efeito foi criado
+
+func ini1
+  t1 = 10, t2 = 1000
+
+func t1_exec
+  t1 = 10
+
+func t2_exec
+  apagar(este)
+  sala.msg(dono.nomebat + " não está mais confuso")
+
+
+classe e_congelado
+herda efeito
+const nome = " congelado"
+inttempo t1 # Tempo para descongelar
+const ini1 = t1 = 1000
+const ini2 = t1 = 1000
+
+func ataqueini
+  dono.objjog.msg("Não pode atacar congelado")
+  arg0 = 1
+
+func t1_exec
+  apagar(este)
+  sala.msg(dono.nomebat + " não está mais congelado")
+
+
+classe e_dormindo
+herda efeito
+const nome = " dormindo"
+inttempo t1 # Tempo para acordar
+const ini1 = t1 = 1800
+const ini2 = t1 = 1800
+
+func ataqueini
+  dono.objjog.msg("Não pode atacar dormindo")
+  ret 1
+
+func ataquerec # Recebeu ataque: acorda mais rápido
+  t1 = intpos(t1 - 250) + 1
+
+func t1_exec
+  apagar(este)
+  sala.msg(dono.nomebat + " acordou")
+  dono.acordou # Indica que acordou naturalmente
+
+
+classe e_paralisado
+herda efeito
+const nome = " paralisado"
+
+func ataqueexec
+  esperar(50)
+
+
+classe e_envenenado
+herda efeito
+const nome = " envenenado"
+inttempo t1 # Para perder energia
+inttempo t2 # Para avisar que está envenenado
+const ini1 = ini2 # Efeito foi criado
+
+func ini2 # Efeito foi reforçado
+  t1 = 20, t2 = 100
+
+func t1_exec
+  t1 = 20
+  energia -= 1
+  energia <= 0 && morreu
+
+func t2_exec
+  t2 = 100
+  dono.msg("Você está envenenado")
+
+
+classe e_queimando
+herda efeito
+const nome = " queimando"
+inttempo t1 # Para perder energia
+inttempo t2 # Para avisar que está envenenado
+const ini1 = ini2 # Efeito foi criado
+
+func ini2 # Efeito foi reforçado
+  t1 = 20, t2 = 100
+
+func t1_exec
+  t1 = 20
+  energia -= 1
+  energia <= 0 && morreu
+
+func t2_exec
+  t2 = 100
+  dono.msg("Você está queimando")

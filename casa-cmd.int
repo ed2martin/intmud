@@ -152,6 +152,16 @@ func escr
   senao $cmd_[arg1].ver(arg0)
 # Ver algum MOB
   senao
+    listaitem i
+    nomeobj nome
+    nome.ini(arg1, 100)
+    i = dono.dentro1.ini
+    enquanto i
+      se arg0.visivel(i.obj) && nome.nome(i.obj.nome) && i.obj.ver(arg0)
+        ret
+      fimse
+      i.depois
+    efim
     arg0.msg("Você não vê isso")
 
 
@@ -262,6 +272,11 @@ herda comando_comum
 
 func escr
   arg0.dono.msg(arg0.nome + " falou: " + arg1)
+
+
+classe cmd_d
+herda comando_comum
+const obj = txt2(arg1) ? $cmd_dizer : $cmd_descer
 
 
 classe cmd_dizer
@@ -532,7 +547,18 @@ func escr
   ref animal
   int1 reserva
   l.addfim(arg0.dentro1)
-  t.addfim(arg0.persoesc == arg0 ? "0+ Você" : "0 Você")
+  lin = arg0.persoesc == arg0 ? "0+ Você" : "0 Você"
+  t.addfim(lin + " " + arg0.nivel + efeito(arg0))
+  enquanto cont < config:animal1
+    animal = arg0.animal.[cont]
+    se animal
+      lin = cont + 1
+      animal == arg0.persoesc && (lin += "+")
+      lin += " " + animal.nome + " " + animal.nivel + efeito(animal)
+      t.addfim(lin)
+    fimse
+    cont += 1
+  efim
   enquanto cont < config:animal2
     animal = arg0.animal.[cont]
     se animal
@@ -542,17 +568,22 @@ func escr
       fimse
       lin = cont + 1
       animal == arg0.persoesc && (lin += "+")
-      lin += " " + animal.nome
-      se animal.energia
-        lin += " " + animal.nivel
-      senao
-        lin += " Desmaiado"
-      fimse
+      lin += " " + animal.nome + " " + animal.nivel
       t.addfim(lin)
     fimse
     cont += 1
   efim
   arg0.msg_m(t.remove(100))
+
+func efeito
+  listaitem i
+  txt100 lin
+  arg0.energia == 0 && (lin += " desmaiado")
+  i = arg0.dentro2.ini
+  enquanto i
+    lin += i.obj.nome, i.depois
+  efim
+  ret lin ? " (" + txt(lin, 1) + ")"
 
 
 classe comando_escolhe
@@ -798,7 +829,8 @@ func escr
     arg0.recuperar
     ret
   fimse
-  arg0.dono = $s_dentro003
+# arg0.dono = $s_dentro003
+  arg0.dono = $s_dentro009
   arg0.msg1(arg0.nome + " chegou")
   arg0.var.h_socar = 1
   arg0.var.h_chutar = 1
@@ -810,6 +842,8 @@ func escr
   arg0.var.i_capa = 1
   arg0.var.o_gancho = 1
   arg0.nivel = 60
+  arg0.novoefeito("e_dormindo")
+  arg0.recalc = 1
   se !arg0.animal.0
     arg0.animal.0 = criar("p_lula", arg0, 10, "h_bolha,h_morder")
   fimse

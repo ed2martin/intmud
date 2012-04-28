@@ -667,11 +667,15 @@ func segundo3
   fimse
 # Animal do catador acorda
   listaitem i
+  ref r
   i = dentro1.ini
   enquanto i
-    se i.obj.e_dormindo > 100
-      msg("Catador explode uma bomba perto de " + i.obj.nome)
-      i.obj.dormindo = 30
+    se !i.obj.jog
+      r = i.obj.objefeito("e_dormindo")
+      se r
+        msg("Catador explode uma bomba perto de " + i.obj.nome)
+        apagar(r)
+      fimse
     fimse
     i.depois
   efim

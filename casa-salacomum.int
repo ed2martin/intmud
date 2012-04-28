@@ -1,22 +1,3 @@
-classe misc
-# Miscelânea: tabelas (variáveis) e funções
-# Deve ser usado como misc:variável ao invés de $misc.variável
-#
-# Objeto usado para acessar as saídas das salas
-comum ref obj
-#
-# Contador de tempo a cada segundo
-comum uint32 tempo
-#
-comum inttempo tempox # Para contagem de tempo
-
-func tempox_exec
-  misc:tempox = 10, misc:tempo += 1
-
-func iniclasse
-  misc:tempox = 10
-
-
 classe sala
 # Sala
 listaobj dentro1 # Lista de personagens que possui

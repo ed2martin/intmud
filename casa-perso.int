@@ -1,198 +1,22 @@
-classe perso_agua
-const t_agua = 60
-const t_ar = 100
-const t_eletrico = 180
-const t_fogo = 100
-const t_forca = 60
-const t_gas = 100
-const t_gelo = 60
-const t_pedra = 100
-const t_planta = 180
-const t_terra = 100
-const t_verme = 100
-const t_normal = 100
-
-
-classe perso_ar
-const t_agua = 100
-const t_ar = 100
-const t_eletrico = 180
-const t_fogo = 100
-const t_forca = 60
-const t_gas = 100
-const t_gelo = 180
-const t_pedra = 180
-const t_planta = 60
-const t_terra = 0
-const t_verme = 60
-const t_normal = 100
-
-
-classe perso_eletrico
-const t_agua = 100
-const t_ar = 60
-const t_eletrico = 60
-const t_fogo = 100
-const t_forca = 100
-const t_gas = 100
-const t_gelo = 100
-const t_pedra = 100
-const t_planta = 100
-const t_terra = 180
-const t_verme = 100
-const t_normal = 100
-
-
-classe perso_fogo
-const t_agua = 180
-const t_ar = 100
-const t_eletrico = 100
-const t_fogo = 60
-const t_forca = 100
-const t_gas = 100
-const t_gelo = 60
-const t_pedra = 180
-const t_planta = 60
-const t_terra = 180
-const t_verme = 100
-const t_normal = 100
-
-
-classe perso_forca
-const t_agua = 100
-const t_ar = 180
-const t_eletrico = 100
-const t_fogo = 100
-const t_forca = 100
-const t_gas = 100
-const t_gelo = 100
-const t_pedra = 60
-const t_planta = 100
-const t_terra = 100
-const t_verme = 60
-const t_normal = 100
-
-
-classe perso_gas
-const t_agua = 100
-const t_ar = 100
-const t_eletrico = 100
-const t_fogo = 100
-const t_forca = 0
-const t_gas = 180
-const t_gelo = 100
-const t_pedra = 100
-const t_planta = 100
-const t_terra = 100
-const t_verme = 60
-const t_normal = 0
-
-
-classe perso_gelo
-const t_agua = 100
-const t_ar = 60
-const t_eletrico = 100
-const t_fogo = 180
-const t_forca = 180
-const t_gas = 100
-const t_gelo = 60
-const t_pedra = 180
-const t_planta = 100
-const t_terra = 100
-const t_verme = 100
-const t_normal = 100
-
-
-classe perso_pedra
-const t_agua = 180
-const t_ar = 60
-const t_eletrico = 100
-const t_fogo = 60
-const t_forca = 180
-const t_gas = 100
-const t_gelo = 100
-const t_pedra = 100
-const t_planta = 180
-const t_terra = 180
-const t_verme = 100
-const t_normal = 60
-
-
-classe perso_planta
-const t_agua = 60
-const t_ar = 180
-const t_eletrico = 60
-const t_fogo = 180
-const t_forca = 100
-const t_gas = 100
-const t_gelo = 180
-const t_pedra = 100
-const t_planta = 60
-const t_terra = 60
-const t_verme = 180
-const t_normal = 100
-
-
-classe perso_terra
-const t_agua = 60
-const t_ar = 100
-const t_eletrico = 0
-const t_fogo = 100
-const t_forca = 100
-const t_gas = 100
-const t_gelo = 60
-const t_pedra = 180
-const t_planta = 180
-const t_terra = 100
-const t_verme = 100
-const t_normal = 100
-
-
-classe perso_verme
-const t_agua = 100
-const t_ar = 60
-const t_eletrico = 100
-const t_fogo = 60
-const t_forca = 180
-const t_gas = 100
-const t_gelo = 100
-const t_pedra = 60
-const t_planta = 180
-const t_terra = 180
-const t_verme = 100
-const t_normal = 100
-
-
-classe perso_normal
-const t_agua = 100
-const t_ar = 100
-const t_eletrico = 100
-const t_fogo = 100
-const t_forca = 180
-const t_gas = 0
-const t_gelo = 100
-const t_pedra = 100
-const t_planta = 100
-const t_terra = 100
-const t_verme = 100
-const t_normal = 100
-
-
 classe p_lula
-herda personagem, perso_agua
+herda personagem
 const nome = "Lula"
 const agenda = "Lula - Vive na água e em lugares com grande umidade\n\
 Algumas conseguem controlar os mares e criar ondas"
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_agua
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_bolha = 1
     var.h_surf = 1
@@ -200,20 +24,24 @@ func e_dormindo_exec
 
 
 classe p_morcego
-herda personagem, perso_ar
+herda personagem
 const nome = "Morcego"
 const agenda = "Morcego - Vive em lugares escuros e se alimenta de insetos\n\
 Detesta eletricidade. Alguns são venenosos."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_ar
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_velocidade = 1
     var.h_bico = 1
@@ -221,20 +49,24 @@ func e_dormindo_exec
 
 
 classe p_ima
-herda personagem, perso_eletrico
+herda personagem
 const nome = "Ímã"
 const agenda = "Ímã - Acumula muita eletricidade nas tempestadesnAssim, consegue paralisar \
 outros animais com choques elétricos"
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_eletrico
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_velocidade = 1
     var.h_choque = 1
@@ -242,19 +74,24 @@ func e_dormindo_exec
 
 
 classe p_lagarchama
-herda personagem, perso_fogo
+herda personagem
 const nome = "Lagarchama"
 const agenda = "Lagarchama - Um espécie de lagarto que tem a habilidade de fazer fogo.nPor esse \
 motivo, gosta de lugares quentes e detesta água."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_fogo
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_chama = 1
     var.h_brasa = 1
@@ -262,20 +99,24 @@ func e_dormindo_exec
 
 
 classe p_kickboxer
-herda personagem, perso_forca
+herda personagem
 const nome = "Kickboxer"
 const agenda = "Kickboxer - Um animal lutador. Aprende desde criança vários golpes que\n\
 lembram uma pessoa lutando. É muito hábil contra pedras, mas tem medo de fantasmas."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_forca
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_socar = 1
     var.h_chutar = 1
@@ -283,21 +124,25 @@ func e_dormindo_exec
 
 
 classe p_fantasma
-herda personagem, perso_gas
+herda personagem
 const nome = "Fantasma"
 const agenda = "Fantasma - Pouco se sabe a respeito. Alguns dizem que é feito de gás,\n\
 outros dizem que não existem, por ser praticamente invencível\n\
 contra golpes físicos normais."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_gas
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_lamber = 1
     var.h_confusão = 1
@@ -307,20 +152,24 @@ func e_dormindo_exec
 
 
 classe p_pinguim
-herda personagem, perso_gelo
+herda personagem
 const nome = "Pinguim"
 const agenda = "Pinguim - Vive em lugares gelados. Está tão acostumado com o frio\n\
 que consegue até congelar outros animais de quem se alimenta."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_gelo
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_arranhar = 1
     var.h_neve = 1
@@ -329,20 +178,24 @@ func e_dormindo_exec
 
 
 classe p_minhocao
-herda personagem, perso_pedra
+herda personagem
 const nome = "Minhocão"
 const agenda = "Minhocão - Uma minhoca grande feita de pedra. Geralmente vive em cavernas.\n\
 De dia, enquanto está dormindo, é facilmente confundido com pedras."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 5 + 62) * nivel + 30
-const defesa = nivel * 12 + 20
-const veloc = (nivel * 5 + 62) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_pedra
+  ataque = (nivel * 5 + 62) * nivel + 30
+  defesa = nivel * 12 + 20
+  veloc = (nivel * 5 + 62) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_pedrada = 1
     var.h_pedregulho = 1
@@ -351,20 +204,24 @@ func e_dormindo_exec
 
 
 classe p_cogumelo
-herda personagem, perso_planta
+herda personagem
 const agenda = "Cogumelo - Frequentemente confundido com um cogumelo, espera a presa\n\
 chegar perto para atacar. Fica contente quando dão água."
 const nome = "Cogumelo"
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_planta
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_dreno = 1
     var.h_onda_solar = 1
@@ -373,20 +230,24 @@ func e_dormindo_exec
 
 
 classe p_toupeira
-herda personagem, perso_terra
+herda personagem
 const nome = "Toupeira"
 const agenda = "Toupeira - Vive a maior parte do tempo cavando buracos, à procura\n\
 de comida. Quando a presa tenta fugir cavando, cria um terremoto."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_terra
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_lama = 1
     var.h_terremoto = 1
@@ -394,20 +255,24 @@ func e_dormindo_exec
 
 
 classe p_borboleta
-herda personagem, perso_verme
+herda personagem
 const nome = "Borboleta"
 const agenda = "Borboleta - come todo tipo de invertebrado de pequeno porte\n\
 que encontra. Quando provocada, reage ferozmente."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_verme
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_picar = 1
     var.h_morder = 1
@@ -415,41 +280,49 @@ func e_dormindo_exec
 
 
 classe p_balao
-herda personagem, perso_normal
+herda personagem
 const nome = "Balão"
 const agenda = "Balão - gosta muito de cantar, mas não gosta de cantar sozinho.\n\
 Quem estiver por perto dorme, e o balão fica nervoso e vai embora.\n\
 Não se sabe o que faz depois, porque ninguém nunca ficou acordado para ver."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_cantar = 1
     var.h_cortar = 1
 
 
 classe p_preguica
-herda personagem, perso_normal
+herda personagem
 const nome = "Preguiça"
 const agenda = "Preguiça - Pode parecer bastante lento, mas é muito forte.\n\
 Quando está cansado, dorme e recupera todas as suas energias."
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 
-func e_dormindo_exec
-  personagem:e_dormindo_exec
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
+
+func acordou
   se nivel >= 10
     var.h_velocidade = 1
     var.h_descansar = 1
@@ -458,30 +331,38 @@ func e_dormindo_exec
 
 
 classe p_rato
-herda personagem, perso_normal
+herda personagem
 const nome = "Rato"
 const podepegar = 1
 const agressivo = 1
 const persegue = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 5 + 70) * nivel + 50
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 5 + 70) * nivel + 50
-const t_forca = 1
-const t_gas = 0
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 5 + 70) * nivel + 50
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 5 + 70) * nivel + 50
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_catador_de_insetos
-herda personagem, perso_normal
+herda personagem
 const nome = "Catador de insetos"
 const agressivo = 1
-const enermax = nivel * 2 + 60
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
 const avisachegou = ""
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 60
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_eremita
@@ -497,70 +378,100 @@ const avisachegou = ""
 
 
 classe p_mumia
-herda personagem, perso_normal
+herda personagem
 const nome = "Múmia"
 const podepegar = 1
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_anao
-herda personagem, perso_normal
+herda personagem
 const nome = "Anão"
 const agressivo = 1
-const enermax = nivel * 2 + 25
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 2 + 25
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_leopardo
-const enermax = nivel * 3 + 30
+herda personagem
 const nome = "Leopardo"
 const agressivo = 1
-const enermax = nivel * 3 + 30
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 60) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 60) * nivel + 30
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_normal
+  ataque = (nivel * 4 + 60) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 60) * nivel + 30
+  enermax = nivel * 3 + 30
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_concreto_armado
-const enermax = nivel * 3 + 100
+herda personagem
 const nome = "Concreto armado"
 const agressivo = 1
-const enermax = nivel * 3 + 100
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 55) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 55) * nivel + 30
 const avisachegou = ""
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_pedra
+  ataque = (nivel * 4 + 55) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 55) * nivel + 30
+  enermax = nivel * 3 + 100
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_pedra
-const enermax = nivel * 4 / 3 + 20
+herda personagem
 const nome = "Pedra"
 const agressivo = 1
-const enermax = nivel * 4 / 3 + 20
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 3 + 50) * nivel + 25
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 3 + 50) * nivel + 25
 const avisachegou = ""
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_pedra
+  ataque = (nivel * 3 + 50) * nivel + 25
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 3 + 50) * nivel + 25
+  enermax = nivel * 4 / 3 + 20
+  misc:perso_recalc # Bônus conforme efeitos
 
 
 classe p_entulho
-herda personagem, perso_pedra
+herda personagem
 const nome = "Entulho"
 const agressivo = 1
-const enermax = nivel * 2 + 50
 const expmax = nivel * nivel * 2 + 14
-const ataque = (nivel * 4 + 55) * nivel + 30
-const defesa = nivel * 10 + 20
-const veloc = (nivel * 4 + 55) * nivel + 30
 const avisachegou = ""
+
+func recalc_exec
+  deftipo.limpar
+  misc:perso_pedra
+  ataque = (nivel * 4 + 55) * nivel + 30
+  defesa = nivel * 10 + 20
+  veloc = (nivel * 4 + 55) * nivel + 30
+  enermax = nivel * 2 + 50
+  misc:perso_recalc # Bônus conforme efeitos
