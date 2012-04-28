@@ -1,0 +1,756 @@
+classe s_duto_ratos
+# Cria ratos nos dutos de ar
+
+func segsala20
+  uint8 total
+  total = numperso
+  se total >= 5 && rand(100) < 50
+    criar("p_rato", este, 22, "h_Roer,h_Arranhatox")
+  senao total == 0 && rand(100) < 50
+    criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+  fimse
+
+func segsala7
+  se numperso >= 1 && numperso <= 4 & rand(100) < 50
+    criar("p_rato", este, 35, "h_Roer,h_Arranhatox")
+
+func entrou
+  ver(arg0)
+
+
+classe s_duto001
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar da despensa"
+const dir_b = $s_dentro031
+const dir_s = $s_duto011
+
+
+classe s_duto002
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar da cozinha"
+const dir_b = $s_dentro019
+const dir_n = $s_duto011
+
+
+classe s_duto003
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar do corredor"
+const dir_b = $s_dentro027
+const dir_o = $s_duto012
+
+
+classe s_duto004
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar de um pequeno corredor"
+const dir_b = $s_lab001
+const dir_l = $s_duto016
+const dir_s = $s_duto005
+
+
+classe s_duto005
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar de um pequeno corredor"
+const dir_b = $s_lab003
+const dir_n = $s_duto004
+
+
+classe s_duto006
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar da biblioteca"
+const dir_b = $s_dentro035
+const dir_l = $s_duto020
+const dir_n = $s_duto016
+const dir_s = $s_duto017
+
+
+classe s_duto007
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar do escritório"
+const dir_b = $s_dentro034
+const dir_o = $s_duto017
+const dir_n = $s_duto020
+
+
+classe s_duto008
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar de um corredor com portão"
+const dir_b = $s_dentro029
+const dir_l = $s_duto021
+const dir_n = $s_duto019
+
+
+classe s_duto009
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const area_duto = 1
+const descr = "Duto de ar de um corredor"
+const dir_b = $s_duto025
+const dir_o = $s_duto019
+const dir_s = $s_duto021
+
+
+classe s_duto010
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar de um terraço"
+const dir_b = $s_duto034
+const dir_o = $s_duto022
+const dir_s = $s_duto024
+
+
+classe s_duto011
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_l = $s_duto012
+const dir_n = $s_duto001
+const dir_s = $s_duto002
+
+
+classe s_duto012
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_l = $s_duto003
+const dir_o = $s_duto011
+const dir_s = $s_duto015
+const dir_n = $s_duto013
+
+
+classe s_duto013
+herda sala
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar de uma despensa"
+
+func entrou
+  ver(arg0)
+
+const dir_s = $s_duto012
+const dir_b = $s_duto014
+
+
+classe s_duto014
+herda sala
+textovar ent
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const dir_c = $s_duto013
+const descr = "Desepensa de comida\n\
+Os armários estão vazios, mas no chão há muita pele de leopardo."
+
+func entrou
+  ver(arg0)
+
+func entrou3
+  arg0.msg("Uma pele de leopardo começa a se mexer")
+
+func entrou7
+  arg0.msg("Agora parou")
+
+func entrou11
+  arg0.msg("Começou a se mexer de novo")
+
+func entrou16
+  msg("O caixão se abriu do nada")
+
+func entrou19
+  criar("p_leopardo", este, 32, "h_Arranhar,h_Morder")
+
+func entrou22
+  criar("p_leopardo", este, 33, "h_Arranhar,h_Morder")
+
+func entrou25
+  criar("p_leopardo", este, 34, "h_Arranhar,h_Morder")
+
+func entrou28
+  criar("p_leopardo", este, 35, "h_Arranhar,h_Morder")
+
+
+classe s_duto015
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_l = $s_duto019
+const dir_n = $s_duto012
+const dir_s = $s_duto016
+
+
+classe s_duto016
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_o = $s_duto004
+const dir_n = $s_duto015
+const dir_s = $s_duto006
+
+
+classe s_duto017
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_n = $s_duto006
+const dir_l = $s_duto007
+const dir_o = $s_duto018
+
+
+classe s_duto018
+herda sala
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Quarto escuro\n\
+Um pequeno quarto usado para revelar fotografias.\n\
+Aqui leopardos costumam aparecer do nada depois de algum tempo."
+const dir_l = $s_duto017
+uint8 tempo
+
+func entrou
+  ver(arg0)
+
+func segsala11
+  se rand(100) < 20
+    criar("p_leopardo", este, rand(100) + 20, "h_Arranhar,h_Morder")
+
+func segsala4
+  tempo = (tempo + 1) % 130
+  se tempo == 120
+    casovar rand(5)
+    casose "0"
+      criar("p_leopardo", este, rand(500) + 4, "h_Arranhar,h_Morder")
+      sair
+    casose "1"
+      criar("p_balao", este, rand(10, 19), "h_Cantar")
+      criar("p_balao", este, rand(10, 19), "h_Cantar")
+      sair
+    casose "2"
+      criar("p_ima", este, rand(10, 19), "h_Onda_trovão")
+      criar("p_ima", este, rand(10, 19), "h_Onda_trovão")
+      sair
+    casose "3"
+      criar("p_leopardo", este, 34 + rand(5), "h_Arranhar,h_Morder")
+      criar("p_leopardo", este, 34 + rand(5), "h_Arranhar,h_Morder")
+      criar("p_leopardo", este, 34 + rand(5), "h_Arranhar,h_Morder")
+      criar("p_leopardo", este, 34 + rand(5), "h_Arranhar,h_Morder")
+      sair
+    casose "4"
+      criar("p_rato", este, rand(10, 29), "h_Roer,h_Arranhatox")
+      criar("p_rato", este, rand(10, 29), "h_Roer,h_Arranhatox")
+    casofim
+
+func entrou16
+  criar("p_leopardo", este, 39, "h_Arranhar,h_Morder")
+
+func entrou18
+  criar("p_leopardo", este, 41, "h_Arranhar,h_Morder")
+
+func entrou20
+  criar("p_leopardo", este, 42, "h_Arranhar,h_Morder")
+
+func entrou22
+  criar("p_leopardo", este, 44, "h_Arranhar,h_Morder")
+# func segundo10
+# se numperso>1 && rand(100)<4
+# criar("p_anão,este,rand(400,499),"h_chutar,h_confusão")
+
+
+classe s_duto019
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_l = $s_duto009
+const dir_o = $s_duto015
+const dir_s = $s_duto008
+
+
+classe s_duto020
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_o = $s_duto006
+const dir_s = $s_duto007
+
+
+classe s_duto021
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_o = $s_duto008
+const dir_n = $s_duto009
+const dir_s = $s_duto022
+
+
+classe s_duto022
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_l = $s_duto010
+const dir_n = $s_duto021
+const dir_s = $s_duto023
+
+
+classe s_duto023
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_l = $s_duto024
+const dir_n = $s_duto022
+
+
+classe s_duto024
+herda sala, s_duto_ratos
+const limpar = 300
+const area_rato = 1
+const area_duto = 1
+const descr = "Duto de ar"
+const dir_o = $s_duto023
+const dir_n = $s_duto010
+
+
+classe s_duto025
+herda sala
+textovar ent
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Corredor\n\
+Você está em um corredor antigo e empoeirado. Há dois quartos,\n\
+um ao norte e outro à leste."
+
+func segsala20
+  se numperso == 0 && rand(100) < 50
+    criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+
+func entrou
+  ver(arg0)
+
+const dir_c = misc:obj.var.o_gancho ? $s_duto009
+const dir_n = $s_duto026
+const dir_l = $s_duto027
+
+
+classe s_duto026
+herda sala
+textovar ent
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Quarto\n\
+Você está em um quarto antigo e mofado, cuja única saída é uma porta\n\
+ao sul. Há uma gosma verde grudada nas paredes e no teto."
+const dir_s = $s_duto025
+
+func segsala20
+  se numperso == 0 && rand(100) < 50
+    criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+
+func entrou
+  ver(arg0)
+
+func segundo15
+  arg0.energia -= 5
+  arg0.msg("pléc, " + arg0.energia + " de " + arg0.enermax)
+
+
+classe s_duto027
+herda sala
+textovar ent
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Quarto\n\
+Você está em um quarto antigo e mofado, com duas portas, uma à leste\n\
+e outra à oeste. Há somente uma espécie de cama, no centro do quarto,\n\
+mas quando você chega perto, percebe que não é uma cama. É um caixão.\n\
+Está muito bem fechado e você não consegue abrir."
+const dir_o = $s_duto025
+const dir_l = $s_duto028
+
+func entrou
+  ver(arg0)
+
+func entrou20
+  arg0.msg2("O caixão se abriu do nada")
+
+func entrou22
+  criar("p_leopardo", este, 34, "h_Arranhar,h_Morder")
+
+func entrou24
+  criar("p_leopardo", este, 35, "h_Arranhar,h_Morder")
+
+func entrou26
+  criar("p_leopardo", este, 36, "h_Arranhar,h_Morder")
+
+func entrou28
+  criar("p_leopardo", este, 37, "h_Arranhar,h_Morder")
+
+
+classe s_duto028
+herda sala
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Pequeno corredor"
+const dir_o = $s_duto027
+const dir_n = $s_duto029
+
+func entrou
+  ver(arg0)
+
+func segsala10
+  se numperso == 0 && rand(100) < 50
+    criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+
+
+classe s_duto029
+herda sala
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Quarto de empregada\n\
+O espaço aqui é pequeno e apertado. Há pedaços de um animal morto no chão.\n\
+O teto foi todo destruído. É possível subir com uma corda."
+const dir_s = $s_duto028
+const dir_c = $s_duto030
+
+func entrou
+  ver(arg0)
+
+func cmd_c
+  se !arg0.var.corda
+    arg0.msg("Você tenta escalar as paredes mas não consegue")
+  senao
+    arg0.msg2(arg0.nome + " joga uma corda e escala a parede")
+
+func entrou7
+  criar("p_leopardo", este, 30, "h_Arranhar,h_Morder")
+
+func entrou14
+  criar("p_leopardo", este, 32, "h_Arranhar,h_Morder")
+
+func entrou21
+  criar("p_leopardo", este, 34, "h_Arranhar,h_Morder")
+
+func entrou28
+  criar("p_leopardo", este, 36, "h_Arranhar,h_Morder")
+
+func segsala50
+  criar("p_leopardo", este, 50, "h_Morder,h_Arranhar")
+
+func segsala10
+  se numperso >= 5
+    criar("p_leopardo", este, numperso * 2 + 20, "h_Arranhar,h_Morder")
+
+
+classe s_duto030
+herda sala
+const area_rato = 1
+const descr = "Teto\nVocê está aonde seria o teto do quarto de empregada."
+const dir_b = $s_duto029
+const dir_s = $s_duto031
+const dir_l = $s_duto032
+
+func entrou
+  ver(arg0)
+
+func segundo5
+  se rand(10) = 0
+    criar("p_rato", este, rand(10, 59), "h_Roer,h_Arranhatox")
+
+
+classe s_duto031
+herda sala
+const limpar = 3000
+const area_rato = 1
+const descr = "Quarto\n\
+Você está em um quarto escuro totalmente vazio. O chão está úmido.\n\
+Há apenas uma porta, por onde você entrou. Nenhuma janela."
+const dir_n = $s_duto030
+
+func entrou
+  ver(arg0)
+
+func entrou7
+  criar("p_leopardo", este, 32, "h_Arranhar,h_Morder")
+
+func entrou14
+  criar("p_leopardo", este, 33, "h_Arranhar,h_Morder")
+
+func entrou21
+  criar("p_leopardo", este, 34, "h_Arranhar,h_Morder")
+
+func entrou28
+  criar("p_leopardo", este, 35, "h_Arranhar,h_Morder")
+
+func segsala50
+  criar("p_leopardo", este, 40, "h_Morder,h_Arranhar")
+
+func segsala7
+  criar("p_leopardo", este, numperso * 2 + 25, "h_Arranhar,h_Morder")
+
+
+classe s_duto032
+herda sala
+const limpar = 3000
+const area_rato = 1
+const descr = "Telhado\nO teto está arrebentado à oeste. Há um pequeno jardim à leste."
+const dir_o = $s_duto030
+const dir_l = $s_duto033
+
+func entrou
+  ver(arg0)
+
+func segundo5
+  se rand(10) = 0
+    criar("p_rato", este, rand(10, 59), "h_Roer,h_Arranhatox")
+
+
+classe s_duto033
+herda sala
+const limpar = 3000
+const area_rato = 1
+const descr = "Pequeno jardim\n\
+Há algumas poucas plantas e grama. O jardim é todo cercado por paredes.\n\
+Há uma saída à oeste, que dá para o telhado de uma casa."
+const dir_o = $s_duto032
+
+func entrou
+  ver(arg0)
+
+func entrou7
+  criar("p_leopardo", este, 32, "h_Arranhar,h_Morder")
+
+func entrou14
+  criar("p_leopardo", este, 33, "h_Arranhar,h_Morder")
+
+func entrou21
+  criar("p_leopardo", este, 34, "h_Arranhar,h_Morder")
+
+func entrou28
+  criar("p_leopardo", este, 35, "h_Arranhar,h_Morder")
+
+func segsala50
+  criar("p_leopardo", este, 40, "h_Morder,h_Arranhar")
+
+func segsala7
+  se numperso >= 8
+    criar("p_leopardo", este, 20, "h_Arranhar,h_Morder")
+
+func segundo12
+  se numperso > 5
+    criar("p_leopardo", este, 20, "h_Arranhar,h_Morder")
+
+
+classe s_duto034
+herda sala
+textovar ent
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Terraço\nNão é o Terraço Itália, mas há janelas e a vista é bonita."
+const dir_c = $s_duto010
+const dir_l = $s_duto035
+
+func entrou
+  ver(arg0)
+
+
+classe s_duto035
+herda sala
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Terraço\n\
+Você está na área descoberta de um terraço.\n\
+Há uma grande árvore no centro. Dá para escalar."
+
+func entrou
+  ver(arg0)
+
+const dir_o = $s_duto034
+const dir_c = $s_duto036
+
+
+classe s_duto036
+herda sala
+const limpar = 300
+const area_rato = 1
+const descr = "Árvore\nHá um terraço abaixo e uma casa na árvore acima."
+const dir_b = $s_duto035
+const dir_c = $s_duto037
+
+func entrou
+  ver(arg0)
+
+
+classe s_duto037
+herda sala
+const limpar = 300
+const area_rato = 1
+const descr = "Casa na árvore\n\
+Você está em uma frágil casa de madeira, construída na árvore."
+const dir_b = $s_duto036
+const dir_c = $s_duto038
+
+func entrou
+  ver(arg0)
+
+
+classe s_duto038
+herda sala
+const limpar = 300
+const area_rato = 1
+const descr = "Topo da árvore\n\
+Não é possível continuar subindo. Os galhos não comportam seu peso.\n\
+No entando, há uma espécie de elevador que chega aqui a cada 30 segundos."
+const dir_b = $s_duto037
+const dir_entrar = $s_duto039
+
+func entrou
+  ver(arg0)
+
+func cmd_entrar
+  se $s_duto039.elevador != 0
+    arg0.msg("O elevador não está aqui")
+    ret 1
+
+
+classe s_duto039
+herda sala
+const limpar = 300
+const area_rato = 1
+const area_mumia = 1
+const descr = "Elevador"
+const dir_sair = elevador == 0 ? $s_duto038 : $s_duto040
+uint8 elevador # Aonde o elevador está
+inttempo tempo # Para chamar tempo_exec a cada 5 segundos
+
+func entrou
+  ver(arg0)
+
+func cmd_sair
+  se elevador != 0 && elevador != 3
+    arg0.msg("Não pode sair do elevador agora")
+    ret 1
+
+func ini
+  tempo = 50 # Faz o contador funcionar
+  sala:ini # Inicialização da sala, necessário porque existe func ini aqui
+
+func tempo_exec
+  elevador = (elevador + 1) % 6 # Faz o elevador funcionar
+  tempo = 50 # Próximo evento daqui 5 segundos
+  casovar elevador
+  casose "0"
+    msg("Elevador chegou no topo da árvore")
+    $s_duto040.msg("Elevador chegou")
+    sair
+  casose "1"
+    msg("Elevador está subindo")
+    $s_duto040.msg("Elevador saiu")
+    sair
+  casose "3"
+    msg("Elevador chegou no terraço")
+    $s_duto040.msg("Elevador chegou")
+    sair
+  casose "4"
+    msg("Elevador está descendo")
+    $s_duto040.msg("Elevador saiu")
+    sair
+  casofim
+
+func segsala5
+  se elevador == 1 || elevador == 2
+    criar("p_rato", este, rand(30, 79), "h_Roer,h_Arranhatox")
+
+
+classe s_duto040
+herda sala
+const limpar = 300
+const area_mumia = 1
+const descr = "Grande terraço\n\
+Você está em um terraço construído no meio das rochas de uma montanha\n\
+A única saída é para baixo, usando o elevador."
+const dir_entrar = $s_duto039
+uint16 nivel # Nível dos animais que vai criar
+
+func entrou
+  ver(arg0)
+  nivel = 20
+
+func cmd_entrar
+  se $s_duto039.elevador != 3
+    arg0.msg("O elevador não está aqui")
+    ret 1
+
+func segundo3
+  se nivel < 50
+    nivel += 6
+  senao
+    nivel = 6 + nivel * 19 / 18
+  fimse
+  se rand(100) < 50 + nivel / 7
+    criar("p_leopardo", este, nivel + rand(30, 40), "h_Arranhar,h_Morder")
+
+func segsala23
+  casovar rand(6)
+  casose "0"
+    criar("p_balao", este, rand(10, 19), "h_Cantar")
+    sair
+  casose "1"
+    criar("p_balao", este, rand(10, 19), "h_Cantar")
+    sair
+  casose "2"
+    criar("p_ima", este, rand(10, 19), "h_Onda_trovão")
+    sair
+  casofim

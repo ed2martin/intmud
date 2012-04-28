@@ -2,12 +2,14 @@ classe p_ini_sabio
 herda personagem
 const nome = "Sábio"
 const sexo = 1
+const avisachegou = ""
 
 
 classe p_ini_anao
 herda personagem
 const nome = "Anão"
 const sexo = 1
+const avisachegou = ""
 
 
 classe p_ini_silva
@@ -15,11 +17,7 @@ herda personagem
 const nome = "Silva"
 const sexo = 1
 const enermax = 250
-
-func ver
-  arg0.msg("Silva nível 27 energia 150 de 150")
-# func ini
-# perso:ini
+const avisachegou = ""
 
 
 classe s_ini001
@@ -249,7 +247,7 @@ func cmd_socar
     arg0.msg("Silva: Primeiro precisa mirar em mim. Tecle alvo Silva")
     ret 1
   senao
-    msg(arg0.nome + " soca Silva, 150 de 150")
+    msg(arg0.nome + " soca Silva, 250 de 250")
     msg("Silva: Que belo soco! Agora vou te ensinar um golpe um pouco mais forte.")
     msg("Silva ensina " + arg0.nome + " a chutar")
     arg0.var.h_chutar = 1
@@ -261,8 +259,8 @@ func cmd_chutar
     arg0.msg("Silva: Primeiro precisa mirar em mim. Tecle alvo Silva")
     ret 1
   senao
-    msg(arg0.nome + " chuta Silva, 150 de 150")
-    arg0.msg("Silva: Bom chute. Eu só continuo com 150 de energia porque sou mais forte.")
+    msg(arg0.nome + " chuta Silva, 250 de 250")
+    arg0.msg("Silva: Bom chute. Eu só continuo com 250 de energia porque sou mais forte.")
     arg0.msg("Te dou dois conselhos sobre batalhas: Cheque suas habilidades teclando hab")
     arg0.msg("Cheque também sua energia teclando energia. Se chegar a 0 você morre.")
     ret 1

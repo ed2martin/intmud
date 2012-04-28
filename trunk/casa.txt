@@ -68,6 +68,16 @@ func ataqueini
 Checa se o personagem atacar.
 Retorna 1 se pode. Caso contrário retorna 0 e avisa o motivo.
 
+func morreu
+Executa todos os procedimentos para indicar que morreu.
+Deve ser chamado quando energia chegar a 0.
+
+func morreu(1)
+Mesmo que a função morreu, acima, mas não apaga o personagem.
+
+func ganhaexp( quantida de experiência )
+Personagem ganha experiência, geralmente devido à batalha.
+
 
 *** Personagens variáveis
 
@@ -84,11 +94,41 @@ A sala ou o personagem que contém esse personagem.
 txt100 alvo
 Nome do personagem alvo.
 
+sav uint16 nivel
+Nível do personagem
+
+sav uint32 energia
+Energia atual, quando chega a 0 morre
+
+
+*** Personagens constantes (funções)
+
+const podepegar = 1
+Se pode ser pego por jogador
+
+const agressivo = 1
+Se é agressivo, ataca jogadores
+
+const enermax = nivel * 2 + 25
+Quantidade máxima de energia que o personagem pode ter
+
+const expmax = nivel * nivel * 2 + 14
+Quantidade de experiência para subir de nível
+
+const ataque = (nivel * 4 + 60) * nivel + 30
+Ataque do personagem
+
+const defesa = nivel * 10 + 20
+Defesa do personagem
+
+const veloc = (nivel * 4 + 60) * nivel + 30
+Velocidade do personagem
+
 
 *** Personagens eventos
 
 Nessas funções, arg0 é sempre o personagem que está fazendo a ação.
-Elas são chamadas para o a sala, se o personagem não pertencer a outro.
+Elas são chamadas para a sala, se o personagem não pertencer a outro.
 Depois, é executado para o próprio personagem.
 
 func entrou
@@ -119,6 +159,10 @@ Retorna 1 se processou o texto (não deve prosseguir).
 
 func cmd_ataque(personagem, alvo)
 Deve retornar verdadeiro se personagem não pode atacar o alvo.
+
+func ver(personagem origem)
+Quando alguém quer ver esse personagem.
+Para ser visto, deve enviar mensagem para arg0 e retornar 1.
 
 
 *** Salas funções

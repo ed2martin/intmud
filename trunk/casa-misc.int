@@ -1,0 +1,154 @@
+classe misc
+# Miscelânea: tabelas (variáveis) e funções
+# Deve ser usado como misc:variável ao invés de $misc.variável
+#
+# Objeto usado para acessar as saídas das salas
+comum ref obj
+#
+# Contador de tempo a cada segundo
+comum uint32 tempo
+#
+# Para contagem de tempo
+comum inttempo tempox
+#
+# Para calcular bônus conforme o tipo
+comum real defbonus.255
+
+func tempox_exec
+  misc:tempox = 10, misc:tempo += 1
+
+func iniclasse
+  misc:tempox = 10
+  misc:calcbonus
+
+func calcbonus # Obtém os valores de defbonus
+  real r # Valor inicial é 2 elevado a -64
+  uint16 x
+  x = 0, r = 1 / 65536, r = r * r * r * r
+  enquanto x < 256
+    misc:defbonus.[x] = r
+    misc:defbonus.[x + 1] = r * 1.414213562
+    x += 2, r *= 2
+  efim
+
+func nometipo # Retorna o nome a partir do tipo
+  casovar arg0
+  casose "0"
+    ret "água"
+  casose "1"
+    ret "ar"
+  casose "2"
+    ret "elétrico"
+  casose "3"
+    ret "fogo"
+  casose "4"
+    ret "força"
+  casose "5"
+    ret "gas"
+  casose "6"
+    ret "gelo"
+  casose "7"
+    ret "pedra"
+  casose "8"
+    ret "planta"
+  casose "9"
+    ret "terra"
+  casose "10"
+    ret "verme"
+  casose "11"
+    ret "normal"
+  casofim
+  ret ""
+
+func perso_agua # Bônus para tipo água
+  deftipo.0 -= 2 # Água
+  deftipo.2 += 2 # Elétrico
+  deftipo.4 -= 2 # Força
+  deftipo.6 -= 2 # Gelo
+  deftipo.8 -= 2 # Planta
+
+func perso_ar # Bônus para tipo ar
+  deftipo.2 += 2 # Elétrico
+  deftipo.3 = 100 # Fogo
+  deftipo.4 -= 2 # Força
+  deftipo.6 += 2 # Gelo
+  deftipo.7 += 2 # Pedra
+  deftipo.8 -= 2 # Planta
+  deftipo.9 = 255 # Terra
+  deftipo.10 -= 2 # Verme
+
+func perso_eletrico # Bônus para tipo elétrico
+  deftipo.1 -= 2 # Ar
+  deftipo.2 -= 2 # Elétrico
+  deftipo.9 += 2 # Terra
+
+func perso_fogo # Bônus para tipo fogo
+  deftipo.0 += 2 # Água
+  deftipo.3 -= 2 # Fogo
+  deftipo.6 -= 2 # Gelo
+  deftipo.7 += 2 # Pedra
+  deftipo.8 -= 2 # Planta
+  deftipo.9 += 2 # Terra
+
+func perso_forca # Bônus para tipo força
+  deftipo.1 += 2 # Ar
+  deftipo.7 -= 2 # Pedra
+  deftipo.10 -= 2 # Verme
+
+func perso_gas # Bônus para tipo gás
+  deftipo.4 = 0 # Força
+  deftipo.5 += 2 # Gás
+  deftipo.10 -= 2 # Verme
+  deftipo.11 = 255 # Normal
+
+func perso_gelo # Bônus para tipo gelo
+  deftipo.1 -= 2 # Ar
+  deftipo.3 += 2 # Fogo
+  deftipo.4 += 2 # Força
+  deftipo.6 -= 2 # Gelo
+  deftipo.7 += 2 # Pedra
+
+func perso_pedra # Bônus para tipo pedra
+  deftipo.0 += 2 # Água
+  deftipo.1 -= 2 # Ar
+  deftipo.3 -= 2 # Fogo
+  deftipo.4 += 2 # Força
+  deftipo.8 += 2 # Planta
+  deftipo.9 += 2 # Terra
+  deftipo.11 -= 2 # Normal
+
+func perso_planta # Bônus para tipo planta
+  deftipo.0 -= 2 # Água
+  deftipo.1 += 2 # Ar
+  deftipo.2 -= 2 # Elétrico
+  deftipo.3 += 2 # Fogo
+  deftipo.6 += 2 # Gelo
+  deftipo.8 -= 2 # Planta
+  deftipo.9 -= 2 # Terra
+  deftipo.10 += 2 # Verme
+
+func perso_terra # Bônus para tipo terra
+  deftipo.0 -= 2 # Água
+  deftipo.2 = 255 # Elétrico
+  deftipo.6 -= 2 # Gelo
+  deftipo.7 += 2 # Pedra
+  deftipo.8 += 2 # Planta
+
+func perso_verme # Bônus para tipo verme
+  deftipo.1 -= 2 # Ar
+  deftipo.3 -= 2 # Fogo
+  deftipo.4 += 2 # Força
+  deftipo.7 -= 2 # Pedra
+  deftipo.8 += 2 # Planta
+  deftipo.9 += 2 # Terra
+
+func perso_normal # Bônus para tipo normal
+  deftipo.4 += 2 # Força
+  deftipo.5 = 255 # Gás
+
+func perso_recalc # Bônus conforme efeitos
+  listaitem l
+  l = dentro2.ini
+  enquanto l
+    l.obj.recalc(este), l.depois
+  efim
