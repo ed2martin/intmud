@@ -32,9 +32,6 @@ func segundo2
     se arg0.energia >= arg0.enermax
       arg0.energia = arg0.enermax
       arg0.dono = $s_dentro003
-      se arg0.contleo > 700
-        arg0.msg("Resista aos leopardos assassinos por " + (arg0.contleo - 699) + " segundos")
-      fimse
     fimse
   senao
     jog.energia = jog.enermax
@@ -133,8 +130,10 @@ func escr
     casovar txtmin(arg1)
     casose "aa"
       arg0.nível += 9
+      arg0.recalc = 1
     casose "a"
       arg0.nível += 1
+      arg0.recalc = 1
       se arg0.nivel > 80
         arg0.msg("Nível máximo é 80")
         arg0.nível = 80
@@ -144,8 +143,10 @@ func escr
       ret 1
     casose "dd"
       arg0.nível -= 9
+      arg0.recalc = 1
     casose "d"
       arg0.nível -= 1
+      arg0.recalc = 1
       se arg0.nivel < 1
         arg0.msg("Nível mínimo é 1")
         arg0.nível = 1
@@ -177,11 +178,13 @@ func entrou1
 
 func entrou4
   uint16 nivel
+  uint16 n2
   int1 temfantasma
   uint8 total
-  nivel = jog.nivel
+  nivel = arg0.nivel
   enquanto total < config:animal1
-    nivel < arg0.animal.[total].nivel && (nivel = arg0.animal.[total].nivel)
+    n2 = arg0.animal.[total].nivel
+    nivel < n2 && (nivel = n2)
     "p_fantasma" == txt(arg0.animal.[total]) && (temfantasma = 1)
     total += 1
   efim
@@ -189,7 +192,7 @@ func entrou4
     se arg0.nivel < 4
       arg0.msg("Sacerdote: Procure uma sala de jantar, tecle alvo múmia")
       arg0.msg("e quando uma múmia aparecer vai teclando chutar ou socar.")
-      arg0.msg("Melhor não usar a espingarda.")
+      arg0.msg("A espingarda pode ter suas utilidades, mas cuidado com as múmias.")
     senao arg0.nivel < 7
       arg0.msg("Sacerdote: Procure uma cozinha e mate as múmias de lá. Te darão")
       arg0.msg("mais experiência que as múmias da sala de jantar.")
@@ -496,11 +499,7 @@ desarrumada. Há também um ventilador no teto, mas nenhuma janela."
 const dir_s = $s_dentro021
 
 func entrou
-  se arg0.var.i_espingarda
-    var.i_Espingarda = 1
-  senao
-    var.i_Espingarda = ""
-  fimse
+  var.i_Espingarda = ""
   ver(arg0)
 
 

@@ -380,18 +380,34 @@ const avisachegou = ""
 classe p_mumia
 herda personagem
 const nome = "Múmia"
-const podepegar = 1
 const agressivo = 1
 const expmax = nivel * nivel * 2 + 14
+inttempo t1
+ref alvo1
 
 func recalc_exec
   deftipo.limpar
   misc:perso_normal
+  deftipo.12 = 120 # Defesa alta contra armas perfurantes
+  deftipo.13 = 120 # Defesa alta contra armas cortantes
   ataque = (nivel * 4 + 60) * nivel + 30
   defesa = nivel * 10 + 20
   veloc = (nivel * 4 + 60) * nivel + 30
   enermax = nivel * 2 + 25
   misc:perso_recalc # Bônus conforme efeitos
+
+func cmd_ataquerec
+  se arg2 == $cmd_atirar
+    !t1 && (t1 = 10)
+    alvo1 = arg0
+
+func t1_exec
+  se dono == alvo1.dono
+    $cmd_atirar.result = 3
+    alvo1.energia -= 10
+    dono.msg("Múmia lança uma bala de espingarda em " + alvo1.nome + $cmd_atirar.msgefeito(alvo1)\
+)
+    alvo1.energia == 0 && alvo1.morreu
 
 
 classe p_anao

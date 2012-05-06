@@ -24,8 +24,6 @@ sav ref persoesc # Personagem escolhido pelo jogador
 const nomebat = persobat == este ? nome : persobat.nome + " de " + nome
 const expmax = nivel * nivel * 2 + 14
 const avisachegou = ""
-uint16 contleo # Para invocar leopardos assassinos
-inttempo salatempo # Tempo da sala do tempo
 int1 e_admin # Se é administrador
 
 func ini # Personagem foi criado
@@ -87,7 +85,7 @@ func recalc_exec # Recalcula defesa, ataque e velocidade
   misc:perso_normal
   ataque = (nivel * 4 + 60) * nivel + 30
   defesa = nivel * 10 + 20
-  veloc = (nivel * 4 + 60) * nivel + 30
+  veloc = nivel ? (nivel * 4 + 60) * nivel + 30 : 100
   enermax = nivel * 2 + 60
   misc:perso_recalc # Bônus conforme efeitos
 
@@ -255,10 +253,10 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     l1.addfim(este)
     sav1.ler("jog-" + texto + ".sav", l1)
 # Apaga objetos órfãos (que ficaram sem dono)
-    l1.ini.obj.recalc = 1, l1.ini.remove
+    l1.objini.recalc = 1, l1.ini.remove
     enquanto l1
-      !l1.ini.obj.idono && apagar(l1.ini.obj)
-      l1.ini.obj.recalc = 1, l1.ini.remove
+      !l1.objini.idono && apagar(l1.objini)
+      l1.objini.recalc = 1, l1.ini.remove
     efim
 # Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")

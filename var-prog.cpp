@@ -75,14 +75,11 @@ void TVarProg::LimparVar()
 //------------------------------------------------------------------------------
 bool TVarProg::Func(TVariavel * v, const char * nome)
 {
-    typedef class {
-    public:
-        const char * Nome; ///< Nome da função predefinida
-        bool (TVarProg::*Func)(TVariavel * v); ///< Função
-    } TProgFunc;
 // Lista das funções de prog
-// Deve obrigatoriamente estar em ordem alfabética
-    const TProgFunc ProgFunc[] = {
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    const struct {
+        const char * Nome;
+        bool (TVarProg::*Func)(TVariavel * v); } ExecFunc[] = {
         { "apagar",       &TVarProg::FuncApagar },
         { "apagarlin",    &TVarProg::FuncApagarLin },
         { "arquivo",      &TVarProg::FuncArquivo },
@@ -108,21 +105,19 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "varsav",       &TVarProg::FuncVarSav },
         { "vartexto",     &TVarProg::FuncVarTexto },
         { "vartipo",      &TVarProg::FuncVarTipo },
-        { "varvetor",     &TVarProg::FuncVarVetor }
-    };
+        { "varvetor",     &TVarProg::FuncVarVetor }  };
 // Procura a função correspondente e executa
     int ini = 0;
-    int fim = sizeof(ProgFunc) / sizeof(ProgFunc[0]) - 1;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
     while (ini <= fim)
     {
         int meio = (ini+fim)/2;
-        int resultado = comparaZ(nome, ProgFunc[meio].Nome);
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
         if (resultado==0) // Se encontrou...
-            return (this->*ProgFunc[meio].Func)(v);
-        if (resultado<0)
-            fim = meio-1;
-        else
-            ini = meio+1;
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado<0) fim=meio-1; else ini=meio+1;
     }
     return false;
 }

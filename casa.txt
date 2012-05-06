@@ -2,8 +2,11 @@
 
 Condições que afetam "status" dos personagens
 Fazer os itens funcionarem
-Animais aprenderem golpes novos ao dormir e acordar naturalmente
 Vestir itens
+Capa funcionar - para enganar vampiros
+Melhorar o envio de mensagens
+Limitar a quantidade de PNJs por sala
+Evitar PK
 
 
 *** Variáveis de personagens e salas
@@ -64,7 +67,7 @@ func recuperar
 Recupera status do personagem:
 Energia completa e sem paralisado, queimando, congelado, dormindo, etc.
 
-func ataqueini
+func ataqueini(alvo, objeto do tipo de golpe)
 Checa se o personagem atacar.
 Retorna 1 se pode. Caso contrário retorna 0 e avisa o motivo.
 
@@ -157,8 +160,13 @@ func cmd_[nome do comando]
 Vai executar um comando do personagem (arg0=objeto do comando, arg1=texto)
 Retorna 1 se processou o texto (não deve prosseguir).
 
-func cmd_ataque(personagem, alvo)
+func cmd_ataque(personagem, alvo, objeto do tipo de ataque)
 Deve retornar verdadeiro se personagem não pode atacar o alvo.
+
+func cmd_ataquerec(personagem, alvo, objeto do tipo de ataque)
+Personagem está recebendo o ataque de outro.
+Deve retornar verdadeiro se personagem não pode atacar o alvo.
+Esse evento é chamado apenas para o personagem alvo do ataque.
 
 func ver(personagem origem)
 Quando alguém quer ver esse personagem.

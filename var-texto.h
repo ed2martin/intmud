@@ -65,6 +65,25 @@ public:
             ///< Remove espaços, instrução txtremove
             /**< @param opcoes Opções de remoção, obtidas com ::txtRemove() */
 
+    bool FuncIni(TVariavel * v);
+    bool FuncFim(TVariavel * v);
+    bool FuncAddIni(TVariavel * v);
+    bool FuncAddFim(TVariavel * v);
+    bool FuncRemove(TVariavel * v);
+    bool FuncLimpar(TVariavel * v);
+    bool FuncLinhas(TVariavel * v);
+    bool FuncBytes(TVariavel * v);
+    bool FuncOrdena(TVariavel * v);
+    bool FuncOrdenaLin(TVariavel * v);
+    bool FuncRand(TVariavel * v);
+    bool FuncTxtRemove(TVariavel * v);
+    bool FuncJuntaLin(TVariavel * v);
+    bool FuncDivideLin(TVariavel * v);
+    bool FuncDivideLinCor(TVariavel * v);
+    bool FuncJuntar(TVariavel * v);
+    bool FuncLer(TVariavel * v);
+    bool FuncSalvar(TVariavel * v);
+
 private:
     void OrdenaSub(int modo, char * texto, char** linha,
             const char *txt1, const char * txt2);
@@ -144,6 +163,19 @@ public:
     TObjeto * Objeto;       ///< Objeto em que o textopos foi definido
     const char * defvar;    ///< Definição da variável; usado em var-sav.cpp
     unsigned int indice;    ///< Índice da variável
+
+    bool FuncAntes(TVariavel * v, int valor);
+    bool FuncDepois(TVariavel * v, int valor);
+    bool FuncLin(TVariavel * v, int valor);
+    bool FuncLinha(TVariavel * v, int valor);
+    bool FuncByte(TVariavel * v, int valor);
+    bool FuncTexto(TVariavel * v, int valor);
+    bool FuncTextoLin(TVariavel * v, int valor);
+    bool FuncMudar(TVariavel * v, int valor);
+    bool FuncAdd(TVariavel * v, int valor);
+    bool FuncRemove(TVariavel * v, int valor);
+    bool FuncJuntar(TVariavel * v, int valor);
+    bool FuncTxtProc(TVariavel * v, int valor);
 };
 
 //----------------------------------------------------------------------------

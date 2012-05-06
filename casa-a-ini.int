@@ -25,15 +25,31 @@ herda sala
 const limpar = 20
 const sembriga = 1
 const terreno = 3
+const descr = "Beco\n\
+A única saída visível aqui é um barranco à leste. Nas outras direções\n\
+você só vê paredes. Para caminhar à leste, tecle L\n\
+No no entanto, se você for veterano, pode tentar caminhar a oeste, mas\n\
+esteja ciente que veteranos começam no nível 0 ao invés do 1.\n\
+A qualquer momento, tecle ajuda para saber os comandos do jogo."
+const dir_l = $s_ini002
+const dir_o = $s_dentro003
+const mostra_o = 0 # Esconde saída para oeste
 
 func entrou
-  arg0.msg("Tecle ajuda para saber os comandos básicos")
-  arg0.msg("Sua missão é adquirir 4 diamantes e ir até uma palmeira")
-  arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, e")
+  ver(arg0)
 
-func entrou1
-  arg0.dono = $s_ini002
-  arg0.dono.msg1(arg0.nome + " chegou")
+func cmd_l
+  arg0.msg("Sua missão é adquirir 4 diamantes e ir até uma palmeira")
+  arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, c, b")
+  arg0.nivel = 1
+  arg0.recalc_exec
+
+func cmd_o
+  arg0.msg("Milagre! Você acaba de atravessar uma parede que parecia bastante sólida.")
+  arg0.var.h_socar = 1
+  arg0.var.h_chutar = 1
+  arg0.nivel = 0
+  arg0.recalc_exec
 
 
 classe s_ini002

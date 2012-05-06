@@ -1,5 +1,6 @@
 classe comando_comum
 const obj = este # Objeto que processa o comando, ou nulo se não existe
+# const ultimo = 1 # Deve estar definido se comando tem baixa prioridade
 
 func escr # Processa o comando
 # arg0 = objeto do personagem
@@ -83,14 +84,14 @@ const m_sai = " saiu"
 const dir = arg0.dono.dir_sa
 
 
-classe cmd_subir
+classe cmd_cima
 herda comando_mover
 const m_entra = " chegou de baixo"
 const m_sai = " subiu"
 const dir = arg0.dono.dir_c
 
 
-classe cmd_descer
+classe cmd_baixo
 herda comando_mover
 const m_entra = " chegou de cima"
 const m_sai = " desceu"
@@ -99,29 +100,68 @@ const dir = arg0.dono.dir_b
 
 classe cmd_ajuda
 herda comando_comum
-# const texto = "jogo - mostra quem está jogando\n
-const texto = "Ajuda\n\
-! - repete o que você teclou por último\n\
-!!! - sai do jogo e entra novamente\n\
-quem - mostra quem está por perto\n\
-quantos - diz quantos estão jogando\n\
-sala, item, outros - mostram itens\n\
-hab, idioma - mostram habilidades e idiomas\n\
-ver - repete a descrição da sala\n\
-ver seguido de habilidade, item, etc. - mostra informações extras\n\
-agenda - mostra animais que viu e que pegou\n\
-agenda <animal> - mostra informações sobre animal que pegou\n\
-animal - mostra animais que possui\n\
-troca <número> <número> - troca a posição de dois animais\n\
-troca [item] - Dá item para animal ou pega do animal\n\
-sobre - mostra versão e autor do programa"
+const texto = "\b\c3Páginas de ajuda\b\nPara ler tecle ajuda seguido do nome de um tópico ou um \
+habilidade.\nOs tópicos são:\n  \c2BASICO\b   Comandos básicos\n  \c2INFO\b     Informações \
+sobre itens, personagens, etc.\n  \c2ITEM\b     Manuseio de itens\n  \c2ANIMAL\b   Manuseio de \
+animais" + adm(arg0)
+
+func adm
+  se arg0.sock.admin
+    ret "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func escr
-  arg0.msg_m(texto)
+  se arg1 == ""
+    arg0.msg_m(texto(arg0))
+    ret
+  fimse
+  ref obj
+  prog p
+  p.iniclasse("cmd_" + txt1(arg1))
+  enquanto p.lin
+    obj = $[p.texto].objajuda(arg0)
+    se obj
+      arg0.msg_m(obj.txtajuda(arg0))
+      ret
+    fimse
+    p.depois
+  efim
+  arg0.msg("Tópico de ajuda inexistente: " + arg1)
+
+
+classe comando_ajuda
+const objajuda = este
+
+func iniclasse
+  criar(arg0)
+
+
+classe cmd_basico
+herda comando_ajuda
+const txtajuda = "\b\c3Comandos básicos\b\n\
+  \c2!\b        Repete o que você teclou por último\n\
+  \c2!!!\b      Sai do jogo e entra novamente\n\
+  \c2DIZER\b <texto>  Envia mensagem para os jogadores na mesma sala do chat\n\
+  \c2FALAR\b <texto>  Envia mensagem para os personagens no mesmo lugar\n\
+Você pode mover seu personagem para as seguintes direções:\n\
+N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo)."
+
+
+classe cmd_info
+herda comando_ajuda
+const txtajuda = "\b\c3Informações\b\n\
+  \c2ENERGIA\b  Mostra resumidamente como você está no jogo\n\
+  \c2QUEM\b     Mostra quem está por perto\n\
+  \c2QUANTOS\b  Diz quantas pessoas estão jogando\n\
+  \c2IDIOMA\b   Mostra os idiomas que você conhece\n\
+  \c2HAB\b      Mostra as habilidades, sua ou do animal que está usando\n\
+  \c2VER\b      Repete a descrição da sala. Ver seguido de um texto mostra\n\
+                a descrição de um personagem\n\
+  \c2SOBRE\b    Mostra versão e autor do programa"
 
 
 classe cmd_sobre
 herda comando_comum
+const ultimo = 1 # Tem baixa prioridade
 
 func escr
   arg0.msg("IntMUD 0.99 (interpretador MUD)")
@@ -148,14 +188,12 @@ func escr
 # Descrição da sala
   se arg1 == ""
     arg0.dono.ver(arg0)
-# Ver algum comando
-  senao $cmd_[arg1].ver(arg0)
-# Ver algum MOB
+# Ver algum personagem
   senao
     listaitem i
     nomeobj nome
     nome.ini(arg1, 100)
-    i = dono.dentro1.ini
+    i = arg0.dono.dentro1.ini
     enquanto i
       se arg0.visivel(i.obj) && nome.nome(i.obj.nome) && i.obj.ver(arg0)
         ret
@@ -213,6 +251,16 @@ const escr = lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
 
 classe cmd_item
 herda comando_var
+const objajuda = este
+const txtajuda = "\b\c3Itens\b\n\
+  \c2SALA\b     Mostra itens que estão na sala\n\
+  \c2ITEM\b     Mostra itens que você possui\n\
+  \c2OUTROS\b   Mostra itens especiais que você possui\n\
+  \c2PEGAR\b <item>  Pega um item da sala\n\
+  \c2SOLTAR\b <item> Solta na sala um item que você possui\n\
+  \c2SOLTAR\b <item> Solta na sala um item que você possui\n\
+  \c2DAR\b <item>    Dá um item ao seu personagem alvo\n\
+Para escolher o alvo tecle alvo seguido do nome do personagem."
 
 func escr
   txt100 n
@@ -261,7 +309,7 @@ func escr
   efim
   t.addfim("Personagens")
   enquanto l.ini
-    l.ini.obj.nome && t.addfim(l.ini.obj.nome)
+    l.objini.nome && t.addfim(l.objini.nome)
     l.ini.remove
   efim
   arg0.msg(t.remove(1000))
@@ -276,7 +324,7 @@ func escr
 
 classe cmd_d
 herda comando_comum
-const obj = txt2(arg1) ? $cmd_dizer : $cmd_descer
+const obj = $cmd_dizer
 
 
 classe cmd_dizer
@@ -539,6 +587,19 @@ func escr
 
 classe cmd_animal
 herda comando_comum
+const objajuda = este
+const txtajuda = "\b\c3Animais\b\n\
+  \c2AGENDA\b        Mostra animais que viu e que pegou\n\
+  \c2AGENDA\b <animal> Mostra informações sobre animal que pegou\n\
+  \c2ANIMAL\b        Mostra animais que possui\n\
+  \c20\b             Não escolhe nenhum animal\n\
+  \c21 a 5\b         Escolhe um animal seu, de 1 a 5\n\
+  \c2TROCA\b <número> <número> Troca a posição de dois animais\n\
+  \c2TROCA\b <item>  Dá item para um animal seu\n\
+  \c2TROCA\b         Pega item de um animal seu\n\
+  \c2PEGAR\b         Pega o animal que está lutando com você\n\
+Nota: Para poder, tecle alvo seguido do nome do animal. Depois\n\
+enfraqueça o animal primeiro e tente pegar teclando pegar."
 
 func escr
   uint8 cont

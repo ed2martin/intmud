@@ -291,6 +291,23 @@ char * copiastr(char * destino, const char * origem, int tamanho)
 }
 
 //------------------------------------------------------------------------------
+char * copiastrmin(char * destino, const char * origem, int tamanho)
+{
+    if (*origem==0 || tamanho<=1)
+    {
+        if (tamanho>=1)
+            *destino=0;
+        return destino;
+    }
+    *(destino++) = tabCOMPLETO[*(unsigned char*)(origem++)];
+    tamanho-=2;  // -2 por causa do zero no final
+    for (; tamanho && *origem; tamanho--)
+        *(destino++) = tabCOMPLETO[*(unsigned char*)(origem++)];
+    *destino=0;
+    return destino;
+}
+
+//------------------------------------------------------------------------------
 // Compara duas strings ASCIIZ
 int comparaZ(const char * string1, const char * string2)
 {
