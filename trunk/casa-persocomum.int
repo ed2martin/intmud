@@ -19,7 +19,7 @@ sav uint16 nivel # Nível do personagem
 sav uint32 energia # Energia atual, quando chega a 0 morre
 sav uint32 expatual # Experiência atual
 intexec recalc # Se deve recalcular defesa, ataque e velocidade
-int8 deftipo.12 # Bônus de defesa para os diferentes tipos de ataque
+int8 deftipo.14 # Bônus de defesa para os diferentes tipos de ataque
 # deftipo.0 = água
 # deftipo.1 = ar
 # deftipo.2 = elétrico
@@ -32,6 +32,8 @@ int8 deftipo.12 # Bônus de defesa para os diferentes tipos de ataque
 # deftipo.9 = terra
 # deftipo.10 = verme
 # deftipo.11 = normal
+# deftipo.12 = perfurante
+# deftipo.13 = cortante
 # defesa total = defesa base * misc:defbonus.[128 + deftipo]
 uint32 veloc # Velocidade
 uint32 defesa # Defesa base
@@ -94,6 +96,7 @@ func esperar # Personagem espera um tempo até poder agir novamente
 
 func teclou # Personagem escreveu algo
   ref obj # Objeto que vai processar o comando
+  ref obj2 # Objeto com menor prioridade
   prog p # Para procurar o objeto
 # Checa se deve aguardar
   se t_aguarde
@@ -118,11 +121,16 @@ func teclou # Personagem escreveu algo
   enquanto p.lin
     obj = $[p.texto].obj(este, arg0)
     se obj
-      sair
+      se obj.ultimo # Objeto com baixa prioridade
+        obj2 = obj
+      senao # Objeto com prioridade normal
+        sair
+      fimse
     fimse
     p.depois
   efim
 # Eventos cmd
+  !obj && (obj = obj2)
   se !obj
     msg("O quê?")
   senao !dono.perso && dono.[obj](este, txt2(arg0))
@@ -253,7 +261,7 @@ func morreu # Personagem morreu
 # Jogador: retira toda experiência e transfere para outro lugar
   se jog
     enquanto atkenv
-      atkenv.ini.obj.expatual = 0
+      atkenv.objini.expatual = 0
       atkenv.ini.remove
     efim
     !arg0 && dono.msg(nome + " morreu")
@@ -271,9 +279,9 @@ func morreu # Personagem morreu
   real v1 # Para calcular a experiência ganha
   total = atkenv.total * 16
   enquanto atkenv
-    v1 = intpos(nivel - atkenv.ini.obj.nivel + 8)
+    v1 = intpos(nivel - atkenv.objini.nivel + 8)
     v1 > 16 && (v1 = 16)
-    atkenv.ini.obj.ganhaexp(v1 * (nivel * 10 + 50) / total)
+    atkenv.objini.ganhaexp(v1 * (nivel * 10 + 50) / total)
     atkenv.ini.remove
   efim
 # Checa se deve gerar mensagens e apagar objeto

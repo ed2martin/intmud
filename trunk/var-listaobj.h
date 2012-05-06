@@ -34,6 +34,22 @@ public:
     TListaX * Fim;          ///< Último item
     TObjeto * Objeto;       ///< Objeto em que a lista foi definida
     unsigned int Total;     ///< Quantidade de itens da lista
+
+    bool FuncIni(TVariavel * v);
+    bool FuncFim(TVariavel * v);
+    bool FuncObjLista(TVariavel * v);
+    bool FuncObjIni(TVariavel * v);
+    bool FuncObjFim(TVariavel * v);
+    bool FuncAddIni(TVariavel * v);
+    bool FuncAddFim(TVariavel * v);
+    bool FuncAddIni1(TVariavel * v);
+    bool FuncAddFim1(TVariavel * v);
+    bool FuncRemove(TVariavel * v);
+    bool FuncRand(TVariavel * v);
+    bool FuncLimpar(TVariavel * v);
+    bool FuncApagar(TVariavel * v);
+    bool FuncPossui(TVariavel * v);
+    bool FuncTotal(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------
@@ -51,6 +67,19 @@ public:
     TObjeto * Objeto;       ///< Objeto em que a listaitem foi definida
     const char * defvar;    ///< Definição da variável; usado em var-sav.cpp
     unsigned int indice;    ///< Índice da variável
+
+    bool FuncTotal(TVariavel * v);
+    bool FuncObj(TVariavel * v);
+    bool FuncObjLista(TVariavel * v);
+    bool FuncAntes(TVariavel * v);
+    bool FuncDepois(TVariavel * v);
+    bool FuncRemove(TVariavel * v);
+    bool FuncRemoveAntes(TVariavel * v);
+    bool FuncRemoveDepois(TVariavel * v);
+    bool FuncAddAntes(TVariavel * v);
+    bool FuncAddDepois(TVariavel * v);
+    bool FuncAddAntes1(TVariavel * v);
+    bool FuncAddDepois1(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

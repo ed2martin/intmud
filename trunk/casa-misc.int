@@ -57,6 +57,10 @@ func nometipo # Retorna o nome a partir do tipo
     ret "verme"
   casose "11"
     ret "normal"
+  casose "12"
+    ret "perfurante"
+  casose "13"
+    ret "cortante"
   casofim
   ret ""
 
@@ -100,6 +104,8 @@ func perso_gas # Bônus para tipo gás
   deftipo.5 += 2 # Gás
   deftipo.10 -= 2 # Verme
   deftipo.11 = 255 # Normal
+  deftipo.12 = 255 # Perfurante
+  deftipo.13 = 255 # Cortante
 
 func perso_gelo # Bônus para tipo gelo
   deftipo.1 -= 2 # Ar

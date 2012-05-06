@@ -267,127 +267,175 @@ TListaX * TListaObj::AddLista(TVariavel * v, TListaX * litem, int tipo)
 //----------------------------------------------------------------------------
 bool TListaObj::Func(TVariavel * v, const char * nome)
 {
+// Lista das funções de listaobj
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    const struct {
+        const char * Nome;
+        bool (TListaObj::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "addfim",    &TListaObj::FuncAddFim },
+        { "addfim1",   &TListaObj::FuncAddFim1 },
+        { "addini",    &TListaObj::FuncAddIni },
+        { "addini1",   &TListaObj::FuncAddIni1 },
+        { "apagar",    &TListaObj::FuncApagar },
+        { "fim",       &TListaObj::FuncFim },
+        { "ini",       &TListaObj::FuncIni },
+        { "limpar",    &TListaObj::FuncLimpar },
+        { "objfim",    &TListaObj::FuncObjFim },
+        { "objini",    &TListaObj::FuncObjIni },
+        { "objlista",  &TListaObj::FuncObjLista },
+        { "possui",    &TListaObj::FuncPossui },
+        { "rand",      &TListaObj::FuncRand },
+        { "remove",    &TListaObj::FuncRemove },
+        { "total",     &TListaObj::FuncTotal }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
+    {
+        int meio = (ini+fim)/2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado==0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado<0) fim=meio-1; else ini=meio+1;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
 // Primeiro item da lista
-    if (comparaZ(nome, "ini")==0)
-    {
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarListaItem))
-            return false;
-        Instr::VarAtual->end_listaitem->MudarRef(Inicio);
-        DEBUG1
-        return true;
-    }
+bool TListaObj::FuncIni(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(Inicio);
+    DEBUG1
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Último item da lista
-    if (comparaZ(nome, "fim")==0)
-    {
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarListaItem))
-            return false;
-        Instr::VarAtual->end_listaitem->MudarRef(Fim);
-        DEBUG1
-        return true;
-    }
+bool TListaObj::FuncFim(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(Fim);
+    DEBUG1
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Objeto em que foi definido
-    if (comparaZ(nome, "objlista")==0)
-    {
-        if (Objeto==0)
-            return false;
-        TObjeto * obj = Objeto;
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarObjeto))
-            return false;
+bool TListaObj::FuncObjLista(TVariavel * v)
+{
+    if (Objeto==0)
+        return false;
+    TObjeto * obj = Objeto;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarObjeto))
+        return false;
+    Instr::VarAtual->setObj(obj);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+// Primeiro objeto da lista
+bool TListaObj::FuncObjIni(TVariavel * v)
+{
+    TObjeto * obj = (Inicio ? Inicio->Objeto : 0);
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarObjeto))
+        return false;
+    if (obj)
         Instr::VarAtual->setObj(obj);
-        return true;
-    }
+    return true;
+}
+
+//----------------------------------------------------------------------------
+// Último objeto da lista
+bool TListaObj::FuncObjFim(TVariavel * v)
+{
+    TObjeto * obj = (Fim ? Fim->Objeto : 0);
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarObjeto))
+        return false;
+    if (obj)
+        Instr::VarAtual->setObj(obj);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Adiciona objetos na lista
-    int tipo = -1;
-    if (comparaZ(nome, "addini")==0)
-        tipo = 0;
-    else if (comparaZ(nome, "addfim")==0)
-        tipo = 1;
-    else if (comparaZ(nome, "addini1")==0)
-        tipo = 4;
-    else if (comparaZ(nome, "addfim1")==0)
-        tipo = 5;
-    if (tipo >= 0)
-    {
-        TListaX * valor = AddLista(v, 0, tipo);
-        if (valor==0)
-            return false;
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarListaItem))
-            return false;
-        Instr::VarAtual->end_listaitem->MudarRef(valor);
-        return true;
-    }
+bool TListaObj::FuncAddIni(TVariavel * v)
+{
+    TListaX * valor = AddLista(v, 0, 0);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TListaObj::FuncAddFim(TVariavel * v)
+{
+    TListaX * valor = AddLista(v, 0, 1);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TListaObj::FuncAddIni1(TVariavel * v)
+{
+    TListaX * valor = AddLista(v, 0, 4);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TListaObj::FuncAddFim1(TVariavel * v)
+{
+    TListaX * valor = AddLista(v, 0, 5);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Remove objeto da lista
-    if (comparaZ(nome, "remove")==0)
+bool TListaObj::FuncRemove(TVariavel * v)
+{
+// Nenhum objeto: remove objetos duplicados
+    if (Instr::VarAtual < v+1)
     {
-    // Nenhum objeto: remove objetos duplicados
-        if (Instr::VarAtual < v+1)
-        {
-            int total=0;
-            for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
-                l1->Objeto->MarcaLista = 0;
-            for (TListaX * l1 = Inicio; l1; )
-            {
-                if (l1->Objeto->MarcaLista == 0)
-                {
-                    l1->Objeto->MarcaLista = 1;
-                    l1 = l1->ListaDepois;
-                    continue;
-                }
-                TListaX::EndMover = l1->ListaDepois;
-                l1->Apagar();
-                l1 = TListaX::EndMover, total++;
-            }
-            DEBUG1
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(total);
-        }
-    // Remover um objeto
-        if (Instr::VarAtual == v+1 && v[1].defvar[2] != Instr::cListaObj)
-        {
-            int total=0;
-            TObjeto * obj = v[1].getObj();
-            if (obj)
-                for (TListaX * l1 = Inicio; l1; )
-                {
-                    if (l1->Objeto != obj)
-                    {
-                        l1 = l1->ListaDepois;
-                        continue;
-                    }
-                    TListaX::EndMover = l1->ListaDepois;
-                    l1->Apagar();
-                    l1 = TListaX::EndMover, total++;
-                }
-            DEBUG1
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(total);
-        }
-    // Apagar vários objetos
-            // Desmarca os objetos da lista
+        int total=0;
         for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
             l1->Objeto->MarcaLista = 0;
-            // Marca os objetos que serão removidos
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj)
-                obj->MarcaLista = 1;
-            else if (v1->defvar[2] == Instr::cListaObj)
-                for (TListaX * l1 = v1->end_listaobj->Inicio; l1;
-                        l1=l1->ListaDepois)
-                    l1->Objeto->MarcaLista = 1;
-        }
-            // Remove objetos
-        int total=0;
         for (TListaX * l1 = Inicio; l1; )
         {
             if (l1->Objeto->MarcaLista == 0)
             {
-                l1=l1->ListaDepois;
+                l1->Objeto->MarcaLista = 1;
+                l1 = l1->ListaDepois;
                 continue;
             }
             TListaX::EndMover = l1->ListaDepois;
@@ -398,107 +446,168 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(total);
     }
-// Organiza objetos aleatoriamente
-    if (comparaZ(nome, "rand")==0)
+// Remover um objeto
+    if (Instr::VarAtual == v+1 && v[1].defvar[2] != Instr::cListaObj)
     {
-        if (Total <= 1)
-            return false;
-    // Aloca memória
-        TListaX * lx[256];
-        TListaX ** lista = (Total<=256 ? lx : new TListaX*[Total]);
-    // Anota objetos
-        TListaX * l1 = Inicio;
-        for (unsigned int x=0; x<Total; x++,l1=l1->ListaDepois)
-            lista[x] = l1;
-        assert(l1==0);
-    // Anota aleatoriamente na lista
-        l1 = 0;
-        for (unsigned int x=0; x<Total; x++)
-        {
-            unsigned int novo = circle_random() % (Total-x) + x;
-            lista[novo]->ListaAntes = l1;
-            if (l1==0)
-                Inicio = lista[novo];
-            else
-                l1->ListaDepois = lista[novo];
-            l1 = lista[novo];
-            lista[novo] = lista[x];
-        }
-        l1->ListaDepois = 0;
-        Fim = l1;
-    // Desaloca memória
-        if (lista != lx)
-            delete[] lista;
-        DEBUG1
-        return false;
-    }
-// Remove todos os objetos
-    if (comparaZ(nome, "limpar")==0)
-    {
-        while (Inicio)
-            Inicio->Apagar();
-        DEBUG1
-        return false;
-    }
-// Marca todos os objetos para exclusão
-    if (comparaZ(nome, "apagar")==0)
-    {
-        for (TListaX * obj = Inicio; obj; obj=obj->ListaDepois)
-            obj->Objeto->MarcarApagar();
-        DEBUG1
-        return false;
-    }
-// Verifica se objeto está na lista
-    if (comparaZ(nome, "possui")==0)
-    {
-    // Nenhum objeto
-        if (Instr::VarAtual < v+1)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-    // Um objeto
-        if (Instr::VarAtual == v+1 && v[1].defvar[2] != Instr::cListaObj)
-        {
-            int total=0;
-            TObjeto * obj = v[1].getObj();
-            if (obj)
-                for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
-                    if (l1->Objeto==obj)
-                        total++;
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(total);
-        }
-    // Vários objetos
-            // Desmarca os objetos da lista
-        for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
-            l1->Objeto->MarcaLista = 0;
-            // Marca os objetos
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            TObjeto * obj = v1->getObj();
-            if (obj)
-                obj->MarcaLista = 1;
-            else if (v1->defvar[2] == Instr::cListaObj)
-                for (TListaX * l1 = v1->end_listaobj->Inicio; l1;
-                        l1=l1->ListaDepois)
-                    l1->Objeto->MarcaLista = 1;
-        }
-            // Conta os objetos
         int total=0;
-        for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
-            total += l1->Objeto->MarcaLista;
+        TObjeto * obj = v[1].getObj();
+        if (obj)
+            for (TListaX * l1 = Inicio; l1; )
+            {
+                if (l1->Objeto != obj)
+                {
+                    l1 = l1->ListaDepois;
+                    continue;
+                }
+                TListaX::EndMover = l1->ListaDepois;
+                l1->Apagar();
+                l1 = TListaX::EndMover, total++;
+            }
+        DEBUG1
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(total);
     }
-// Quantidade de itens da lista
-    if (comparaZ(nome, "total")==0)
+// Apagar vários objetos
+        // Desmarca os objetos da lista
+    for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+        l1->Objeto->MarcaLista = 0;
+        // Marca os objetos que serão removidos
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
     {
-        unsigned int x = Total;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(x);
+        TObjeto * obj = v1->getObj();
+        if (obj)
+            obj->MarcaLista = 1;
+        else if (v1->defvar[2] == Instr::cListaObj)
+            for (TListaX * l1 = v1->end_listaobj->Inicio; l1;
+                    l1=l1->ListaDepois)
+                l1->Objeto->MarcaLista = 1;
     }
+        // Remove objetos
+    int total=0;
+    for (TListaX * l1 = Inicio; l1; )
+    {
+        if (l1->Objeto->MarcaLista == 0)
+        {
+            l1=l1->ListaDepois;
+            continue;
+        }
+        TListaX::EndMover = l1->ListaDepois;
+        l1->Apagar();
+        l1 = TListaX::EndMover, total++;
+    }
+    DEBUG1
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(total);
+}
+
+//----------------------------------------------------------------------------
+// Organiza objetos aleatoriamente
+bool TListaObj::FuncRand(TVariavel * v)
+{
+    if (Total <= 1)
+        return false;
+// Aloca memória
+    TListaX * lx[256];
+    TListaX ** lista = (Total<=256 ? lx : new TListaX*[Total]);
+// Anota objetos
+    TListaX * l1 = Inicio;
+    for (unsigned int x=0; x<Total; x++,l1=l1->ListaDepois)
+        lista[x] = l1;
+    assert(l1==0);
+// Anota aleatoriamente na lista
+    l1 = 0;
+    for (unsigned int x=0; x<Total; x++)
+    {
+        unsigned int novo = circle_random() % (Total-x) + x;
+        lista[novo]->ListaAntes = l1;
+        if (l1==0)
+            Inicio = lista[novo];
+        else
+            l1->ListaDepois = lista[novo];
+        l1 = lista[novo];
+        lista[novo] = lista[x];
+    }
+    l1->ListaDepois = 0;
+    Fim = l1;
+// Desaloca memória
+    if (lista != lx)
+        delete[] lista;
+    DEBUG1
     return false;
+}
+
+//----------------------------------------------------------------------------
+// Remove todos os objetos
+bool TListaObj::FuncLimpar(TVariavel * v)
+{
+    while (Inicio)
+        Inicio->Apagar();
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Marca todos os objetos para exclusão
+bool TListaObj::FuncApagar(TVariavel * v)
+{
+    for (TListaX * obj = Inicio; obj; obj=obj->ListaDepois)
+        obj->Objeto->MarcarApagar();
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Verifica se objeto está na lista
+bool TListaObj::FuncPossui(TVariavel * v)
+{
+// Nenhum objeto
+    if (Instr::VarAtual < v+1)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(0);
+    }
+// Um objeto
+    if (Instr::VarAtual == v+1 && v[1].defvar[2] != Instr::cListaObj)
+    {
+        int total=0;
+        TObjeto * obj = v[1].getObj();
+        if (obj)
+            for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+                if (l1->Objeto==obj)
+                    total++;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(total);
+    }
+// Vários objetos
+        // Desmarca os objetos da lista
+    for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+        l1->Objeto->MarcaLista = 0;
+        // Marca os objetos
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    {
+        TObjeto * obj = v1->getObj();
+        if (obj)
+            obj->MarcaLista = 1;
+        else if (v1->defvar[2] == Instr::cListaObj)
+            for (TListaX * l1 = v1->end_listaobj->Inicio; l1;
+                    l1=l1->ListaDepois)
+                l1->Objeto->MarcaLista = 1;
+    }
+        // Conta os objetos
+    int total=0;
+    for (TListaX * l1 = Inicio; l1; l1=l1->ListaDepois)
+        total += l1->Objeto->MarcaLista;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(total);
+}
+
+//----------------------------------------------------------------------------
+// Quantidade de itens da lista
+bool TListaObj::FuncTotal(TVariavel * v)
+{
+    unsigned int x = Total;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(x);
 }
 
 //----------------------------------------------------------------------------
@@ -558,109 +667,201 @@ void TListaItem::MudarRef(TListaX * lista)
 //----------------------------------------------------------------------------
 bool TListaItem::Func(TVariavel * v, const char * nome)
 {
-// Quantidade de itens da lista
-    if (comparaZ(nome, "total")==0)
+// Lista das funções de listaitem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    const struct {
+        const char * Nome;
+        bool (TListaItem::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "addantes",     &TListaItem::FuncAddAntes },
+        { "addantes1",    &TListaItem::FuncAddAntes1 },
+        { "adddepois",    &TListaItem::FuncAddDepois },
+        { "adddepois1",   &TListaItem::FuncAddDepois1 },
+        { "antes",        &TListaItem::FuncAntes },
+        { "depois",       &TListaItem::FuncDepois },
+        { "obj",          &TListaItem::FuncObj },
+        { "objlista",     &TListaItem::FuncObjLista },
+        { "remove",       &TListaItem::FuncRemove },
+        { "removeantes",  &TListaItem::FuncRemoveAntes },
+        { "removedepois", &TListaItem::FuncRemoveDepois },
+        { "total",        &TListaItem::FuncTotal }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        unsigned int x = (ListaX ? ListaX->Lista->Total : 0);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(x);
-    }
-// Verifica se está em alguma lista
-    if (ListaX==0)
-        return false;
-// Objeto
-    if (comparaZ(nome, "obj")==0)
-    {
-        if (ListaX==0)
-            return false;
-        TObjeto * obj = ListaX->Objeto;
-        if (obj==0)
-            return false;
-        Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
-        if (!Instr::CriarVar(Instr::InstrVarObjeto))
-            return false;
-        Instr::VarAtual->setObj(obj);
-        return true;
-    }
-// Objeto em que a lista foi definida
-    if (comparaZ(nome, "objlista")==0)
-    {
-        if (ListaX==0)
-            return false;
-        TObjeto * obj = ListaX->Lista->Objeto;
-        if (obj==0)
-            return false;
-        Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
-        if (!Instr::CriarVar(Instr::InstrVarObjeto))
-            return false;
-        Instr::VarAtual->setObj(obj);
-        return true;
-    }
-// Vai para o objeto anterior
-    if (comparaZ(nome, "antes")==0)
-    {
-        if (Instr::VarAtual < v+1)
-            MudarRef(ListaX->ListaAntes);
-        else for (int total=v[1].getInt(); total>0 && ListaX; total--)
-            MudarRef(ListaX->ListaAntes);
-        DEBUG1
-        return false;
-    }
-// Vai para o próximo objeto
-    if (comparaZ(nome, "depois")==0)
-    {
-        if (Instr::VarAtual < v+1)
-            MudarRef(ListaX->ListaDepois);
-        else for (int total=v[1].getInt(); total>0 && ListaX; total--)
-            MudarRef(ListaX->ListaDepois);
-        DEBUG1
-        return false;
-    }
-// Remove objeto da lista
-    if (comparaZ(nome, "remove")==0)
-    {
-        ListaX->Apagar();
-        DEBUG1
-        return false;
-    }
-    if (comparaZ(nome, "removeantes")==0)
-    {
-        TListaX * l = ListaX;
-        MudarRef(ListaX->ListaAntes);
-        l->Apagar();
-        DEBUG1
-        return false;
-    }
-    if (comparaZ(nome, "removedepois")==0)
-    {
-        TListaX * l = ListaX;
-        MudarRef(ListaX->ListaDepois);
-        l->Apagar();
-        DEBUG1
-        return false;
-    }
-// Adiciona objetos na lista
-    int tipo = -1;
-    if (comparaZ(nome, "addantes")==0)
-        tipo = 2;
-    else if (comparaZ(nome, "adddepois")==0)
-        tipo = 3;
-    else if (comparaZ(nome, "addantes1")==0)
-        tipo = 6;
-    else if (comparaZ(nome, "adddepois1")==0)
-        tipo = 7;
-    if (tipo >= 0)
-    {
-        TListaX * valor = ListaX->Lista->AddLista(v, ListaX, tipo);
-        if (valor==0)
-            return false;
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarListaItem))
-            return false;
-        Instr::VarAtual->end_listaitem->MudarRef(valor);
-        return true;
+        int meio = (ini+fim)/2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado==0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado<0) fim=meio-1; else ini=meio+1;
     }
     return false;
+}
+
+//----------------------------------------------------------------------------
+// Quantidade de itens da lista
+bool TListaItem::FuncTotal(TVariavel * v)
+{
+    unsigned int x = (ListaX ? ListaX->Lista->Total : 0);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(x);
+}
+
+//----------------------------------------------------------------------------
+// Objeto
+bool TListaItem::FuncObj(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    TObjeto * obj = ListaX->Objeto;
+    if (obj==0)
+        return false;
+    Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
+    if (!Instr::CriarVar(Instr::InstrVarObjeto))
+        return false;
+    Instr::VarAtual->setObj(obj);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+// Objeto em que a lista foi definida
+bool TListaItem::FuncObjLista(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    TObjeto * obj = ListaX->Lista->Objeto;
+    if (obj==0)
+        return false;
+    Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
+    if (!Instr::CriarVar(Instr::InstrVarObjeto))
+        return false;
+    Instr::VarAtual->setObj(obj);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+// Vai para o objeto anterior
+bool TListaItem::FuncAntes(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    if (Instr::VarAtual < v+1)
+        MudarRef(ListaX->ListaAntes);
+    else for (int total=v[1].getInt(); total>0 && ListaX; total--)
+        MudarRef(ListaX->ListaAntes);
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Vai para o próximo objeto
+bool TListaItem::FuncDepois(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    if (Instr::VarAtual < v+1)
+        MudarRef(ListaX->ListaDepois);
+    else for (int total=v[1].getInt(); total>0 && ListaX; total--)
+        MudarRef(ListaX->ListaDepois);
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Remove objeto da lista
+bool TListaItem::FuncRemove(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    ListaX->Apagar();
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TListaItem::FuncRemoveAntes(TVariavel * v)
+{
+    TListaX * l = ListaX;
+    if (l==0)
+        return false;
+    MudarRef(ListaX->ListaAntes);
+    l->Apagar();
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TListaItem::FuncRemoveDepois(TVariavel * v)
+{
+    TListaX * l = ListaX;
+    if (l==0)
+        return false;
+    MudarRef(ListaX->ListaDepois);
+    l->Apagar();
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TListaItem::FuncAddAntes(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    TListaX * valor = ListaX->Lista->AddLista(v, ListaX, 2);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TListaItem::FuncAddDepois(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    TListaX * valor = ListaX->Lista->AddLista(v, ListaX, 3);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TListaItem::FuncAddAntes1(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    TListaX * valor = ListaX->Lista->AddLista(v, ListaX, 6);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TListaItem::FuncAddDepois1(TVariavel * v)
+{
+    if (ListaX==0)
+        return false;
+    TListaX * valor = ListaX->Lista->AddLista(v, ListaX, 7);
+    if (valor==0)
+        return false;
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrVarListaItem))
+        return false;
+    Instr::VarAtual->end_listaitem->MudarRef(valor);
+    return true;
 }
 
 //----------------------------------------------------------------------------
