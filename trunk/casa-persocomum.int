@@ -14,7 +14,6 @@ txt512 t_aguardetxt # Próximo comando
 const perso = 1 # Indica que é personagem
 const persobat = este # Personagem usado na batalha
 const persoesc = este # Personagem escolhido
-const nomebat = nome # Nome usado na batalha
 sav uint16 nivel # Nível do personagem
 sav uint32 energia # Energia atual, quando chega a 0 morre
 sav uint32 expatual # Experiência atual
@@ -53,7 +52,7 @@ func ini # Personagem foi criado
 # Mensagem que chegou
   txt100 avisamsg
   avisamsg = avisachegou
-  avisamsg && msg1(avisamsg)
+  avisamsg && $mens.p(este) + $mens.mtodos1(avisamsg)
 # Habilidades e outras variáveis
   se arg2
     textotxt t
@@ -73,14 +72,6 @@ varfunc dono # O dono do personagem
   senao idono.objlista != ref(arg0)
     idono.remove
     idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
-
-func msg1 # Mensagem para todos exceto o próprio personagem
-  listaitem i
-  i = dono.dentro1.ini
-  enquanto i
-    i.obj != este && i.obj.msg(arg0)
-    i.depois
-  efim
 
 func objjog # Objeto do jogador
   ret dono.perso ? dono : este
@@ -110,14 +101,9 @@ func teclou # Personagem escreveu algo
     e_admin && msg("Você virou administrador, tecle adm para saber os comandos")
     !e_admin && msg("Você deixou de ser administrador")
     ret
-# Eventos escreveu
-  senao !dono.perso && dono.escr(este, arg0)
-    ret
-  senao escr(este, arg0)
-    ret
   fimse
 # Obtém o comando
-  p.iniclasse("cmd_" + txt1(arg0))
+  p.iniclasse("cmd_" + txttroca(txt1(arg0), "ç", "c"))
   enquanto p.lin
     obj = $[p.texto].obj(este, arg0)
     se obj
@@ -129,14 +115,35 @@ func teclou # Personagem escreveu algo
     fimse
     p.depois
   efim
-# Eventos cmd
   !obj && (obj = obj2)
+# Obtém objetos para gerar eventos
+  listaobj l0
+  listaitem i0
+  !dono.perso && l0.addfim(dono)
+  l0.addfim(este, dentro2)
+# Eventos escreveu
+  i0 = l0.ini
+  enquanto i0
+    se i0.obj.cmd_escr(este, arg0, obj)
+      ret
+    fimse
+    i0.depois
+  efim
+# Checa se comando válido
   se !obj
     msg("O quê?")
-  senao !dono.perso && dono.[obj](este, txt2(arg0))
-  senao [obj](este, txt2(arg0))
+    ret
+  fimse
+# Eventos cmd
+  i0 = l0.ini
+  enquanto i0
+    se i0.obj.[obj](este, txt2(arg0))
+      ret
+    fimse
+    i0.depois
+  efim
 # Executa comando
-  senao obj.escr(este, txt2(arg0))
+  obj.escr(este, txt2(arg0))
 
 func t_aguarde_exec
   se t_aguardetxt
@@ -158,7 +165,7 @@ func t_proc_exec
     txt100 t1
     ref r
     t1 = escolhehab, r = escolhejog
-    se t1 && r && ataqueini
+    se t1 && r && !ataqueini
       $cmd_[t1].ataca(este, r)
       ret
     fimse
@@ -245,15 +252,14 @@ func recuperar # Recupera status do personagem
   senao
     energia = enermax
 
-func ataqueini # Inicia ataque; retorna 1 se pode atacar
-  se energia == 0
-    msg("Você está desmaiado")
+func ataqueini # Testa se pode atacar
+# Retorna "" se pode atacar ou a mensagem com o motivo se não pode
+  se persobat.energia == 0
+    ret "Você está desmaiado"
   senao dono.sembriga
-    msg("Não é permitido brigas aqui")
-  senao ev_cancela("ataqueini")
+    ret "Não é permitido brigas aqui"
   senao
-    ev_exec("ataqueexec", 0)
-    ret 1
+    ret ""
 
 func morreu # Personagem morreu
 # Fazer arg0=1 se não deve apagar o personagem
@@ -306,27 +312,6 @@ func ganhaexp # Personagem ganha experiência
 func ver # Quando alguém tecla ver seguido do nome do personagem
   arg0.msg(nome + " nível " + nivel + " energia " + energia + " de " + enermax)
   ret 1
-
-func ev_exec # Chama algum evento
-# arg0 = nome da função
-  listaitem i # Para percorrer a lista de efeitos
-  i = este.dentro2.ini
-  enquanto i
-    i.obj.[arg0], i.depois
-  efim
-
-func ev_cancela # Checa se algum evento deve cancela uma ação
-# arg0 = nome da ação (nome da função nos objetos dos efeitos)
-# Retorna 1 se deve cancelar
-  listaitem i # Para percorrer a lista de efeitos
-  i = este.dentro2.ini
-  enquanto i
-    se i.obj.[arg0]
-      ret 1
-    fimse
-    i.depois
-  efim
-  ret 0
 
 func novoefeito # Cria novo efeito para o personagem
 # arg0 = nome da classe do efeito

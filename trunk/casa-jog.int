@@ -21,7 +21,6 @@ textotxt cmd_m # Texto da opção "Tecle M para mais"
 sav ref animal.200 # Animais que possui
 sav ref persobat # Personagem usado na batalha
 sav ref persoesc # Personagem escolhido pelo jogador
-const nomebat = persobat == este ? nome : persobat.nome + " de " + nome
 const expmax = nivel * nivel * 2 + 14
 const avisachegou = ""
 int1 e_admin # Se é administrador
@@ -59,21 +58,28 @@ varfunc dono # O dono do personagem
     r && (nomesala = r)
 
 func recebe # Recebeu mensagem do jogador
-  se !p_[passo](arg0) # Se não for uma função do passo
-    se arg0 == "!!!"
-      salvar
-      dentro1.apagar
-      dono = nulo
-      atkrec.remove
-      p_perso
-      cmd_m.limpar
+  se p_[passo](arg0) # Checa se é uma função do passo
+  senao arg0 == "!!!"
+    salvar
+    dentro1.apagar
+    dono = nulo
+    atkrec.remove
+    p_perso
+    cmd_m.limpar
+  senao
+    arg0 != "!" && (ultimocom = arg0)
+    se arg0 == "m" && cmd_m
+      msg(cmd_m.remove(8) + (cmd_m ? "\nTecle M para mais"))
     senao
-      arg0 != "!" && (ultimocom = arg0)
-      se arg0 == "m" && cmd_m
-        msg(cmd_m.remove(8) + (cmd_m ? "\nTecle M para mais"))
-      senao
-        cmd_m.limpar
-        teclou(ultimocom) # Personagem processa comando
+      cmd_m.limpar
+      teclou(ultimocom) # Personagem processa comando
+
+func msgvis # Mensagem se o jogador estiver vendo o alvo
+  se visivel($mens.perso)
+    $mens.proc(arg0, este)
+
+func msginv # Mensagem mesmo se o alvo estiver invisível
+  $mens.proc(arg0, este)
 
 func msg_m
   cmd_m.limpar
@@ -83,6 +89,7 @@ func msg_m
 func recalc_exec # Recalcula defesa, ataque e velocidade
   deftipo.limpar
   misc:perso_normal
+  deftipo.5 = 0 # Golpes do tipo gás tem efeito normal
   ataque = (nivel * 4 + 60) * nivel + 30
   defesa = nivel * 10 + 20
   veloc = nivel ? (nivel * 4 + 60) * nivel + 30 : 100
