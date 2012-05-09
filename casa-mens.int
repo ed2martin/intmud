@@ -1,0 +1,346 @@
+classe mens
+ref perso # Personagem que está enviando a mensagem
+ref alvo # Personagem ou objeto alvo da ação
+ref obj # Objeto secundário
+ref r # Objeto que vai receber a mensagem
+textotxt t0 # Usado em proc: texto que será enviado
+textopos p0 # Usado em proc: linha atual
+int16 i # Posição em p0 # Usado em proc: posição em p0
+txt1 opc # Usado em proc: opção
+txt100 lin # Usado em proc: linha
+txt512 mens # Mensagem usada em $M
+
+func iniclasse
+  criar(arg0)
+
+func p # Define os personagens
+  perso = arg0, alvo = arg1, obj = arg2
+
+func mtodos1 # Mensagem para todos
+# arg0 = mensagem para todos
+  se arg0
+    listaobj l0
+    l0.addfim(perso.dono.dentro1)
+    enquanto l0
+      l0.objini.msginv(arg0), l0.ini.remove
+    efim
+
+func mtodos2 # Mensagem para todos
+# arg0 = mensagem para personagem, arg1 = mensagem para outros
+  arg0 && perso.msginv(arg0)
+  se arg1
+    listaobj l0
+    l0.addfim(perso.dono.dentro1)
+    l0.remove(perso)
+    enquanto l0
+      l0.objini.msginv(arg1), l0.ini.remove
+    efim
+
+func mtodos3 # Mensagem para todos
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+  arg0 && perso.msginv(arg0)
+  arg1 && alvo.msginv(arg1)
+  se arg2
+    listaobj l0
+    l0.addfim(perso.dono.dentro1)
+    l0.remove(perso, alvo)
+    enquanto l0
+      l0.objini.msginv(arg2), l0.ini.remove
+    efim
+
+func mvis1 # Mensagem só para quem pode ver o personagem
+# arg0 = mensagem para todos
+  se arg0
+    perso.msginv(arg0)
+    listaobj l0
+    l0.addfim(perso.dono.dentro1)
+    l0.remove(perso)
+    enquanto l0
+      l0.objini.msgvis(arg0), l0.ini.remove
+    efim
+
+func mvis2 # Mensagem só para quem pode ver o personagem
+# arg0 = mensagem para personagem, arg1 = mensagem para outros
+  arg0 && perso.msginv(arg0)
+  se arg1
+    listaobj l0
+    l0.addfim(perso.dono.dentro1)
+    l0.remove(perso)
+    enquanto l0
+      l0.objini.msgvis(arg1), l0.ini.remove
+    efim
+
+func mvis3 # Mensagem só para quem pode ver o personagem
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+  arg0 && perso.msginv(arg0)
+  arg1 && alvo.msgvis(arg1)
+  se arg2
+    listaobj l0
+    l0.addfim(perso.dono.dentro1)
+    l0.remove(perso, alvo)
+    enquanto l0
+      l0.objini.msgvis(arg2), l0.ini.remove
+    efim
+
+func proc # Prepara e envia mensagem
+# arg0=mensagem, arg1=objeto
+  t0.limpar
+  t0.addfim(arg0)
+  p0 = t0.ini, i = 0, r = arg1
+  enquanto (i = p0.txtproc("$", i)) >= 0
+    opc = p0.texto(i + 1, 1)
+    se opc === "$"
+      p0.mudar("", i, 1)
+      i += 1
+    senao opc === txtmai(opc)
+      lin = p0.texto(i + 2)
+      p0.mudar(opcmai_[opc](lin), i, inttotal(lin) + 2)
+    senao opc === txtmin(opc)
+      lin = p0.texto(i + 2)
+      p0.mudar(opcmin_[opc](lin), i, inttotal(lin) + 2)
+    senao
+      p0.mudar("", i, 2)
+    fimse
+  efim
+  arg1.msg(t0.remove(1000))
+
+func opcmai_p # Nome do personagem
+  se r == perso
+    ret "Você" + arg0
+  senao r.visivel(perso)
+    ret txtmaimin(perso.nome) + arg0
+  senao perso.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_p # Nome do personagem
+  se r == perso
+    ret "você" + arg0
+  senao r.visivel(perso)
+    ret perso.nome + arg0
+  senao perso.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_q # Nome do personagem escolhido
+  se r == perso.persoesc
+    ret "Você" + arg0
+  senao r.visivel(perso)
+    ret txtmaimin(perso.persoesc.nome) + arg0
+  senao perso.persoesc.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_q # Nome do personagem escolhido
+  se r == perso.persoesc
+    ret "você" + arg0
+  senao r.visivel(perso)
+    ret perso.persoesc.nome + arg0
+  senao perso.persoesc.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_r # Nome do personagem em batalha
+  se r == perso.persobat
+    ret "Você" + arg0
+  senao r.visivel(perso)
+    se perso.persobat == perso
+      ret txtmaimin(perso.persobat.nome) + arg0
+    senao
+      ret txtmaimin(perso.persobat.nome) + " de " + perso.nome + arg0
+    fimse
+  senao perso.persoesc.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_r # Nome do personagem em batalha
+  se r == perso.persobat
+    ret "você" + arg0
+  senao r.visivel(perso)
+    se perso.persobat == perso
+      ret perso.persobat.nome + arg0
+    senao
+      ret perso.persobat.nome + " de " + perso.nome + arg0
+    fimse
+  senao perso.persoesc.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_a # Nome do alvo
+  se r == alvo
+    ret "Você" + arg0
+  senao r.visivel(alvo)
+    ret txtmaimin(alvo.nome) + arg0
+  senao alvo.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_a # Nome do alvo
+  se r == alvo
+    ret "você" + arg0
+  senao r.visivel(alvo)
+    ret alvo.nome + arg0
+  senao alvo.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_b # Nome do alvo escolhido
+  se r == alvo.persoesc
+    ret "Você" + arg0
+  senao r.visivel(alvo)
+    ret txtmaimin(alvo.persoesc.nome) + arg0
+  senao alvo.persoesc.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_b # Nome do alvo escolhido
+  se r == alvo.persoesc
+    ret "você" + arg0
+  senao r.visivel(alvo)
+    ret alvo.persoesc.nome + arg0
+  senao alvo.persoesc.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_c # Nome do alvo em batalha
+  se r == alvo.persobat
+    ret "Você" + arg0
+  senao r.visivel(alvo)
+    se alvo.persobat == alvo
+      ret txtmaimin(alvo.persobat.nome) + arg0
+    senao
+      ret txtmaimin(alvo.persobat.nome) + " de " + alvo.nome + arg0
+    fimse
+  senao alvo.persoesc.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_c # Nome do alvo em batalha
+  se r == alvo.persobat
+    ret "você" + arg0
+  senao r.visivel(alvo)
+    se alvo.persobat == alvo
+      ret alvo.persobat.nome + arg0
+    senao
+      ret alvo.persobat.nome + " de " + alvo.nome + arg0
+    fimse
+  senao alvo.persoesc.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_d # Nome do alvo
+  se r == alvo
+    ret "Você" + arg0
+  senao r.visivel(alvo)
+    se alvo.dono.perso
+      ret txtmaimin(alvo.nome) + " de " + alvo.dono.nome + arg0
+    senao
+      ret txtmaimin(alvo.nome) + arg0
+    fimse
+  senao alvo.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_d # Nome do alvo
+  se r == alvo
+    ret "você" + arg0
+  senao r.visivel(alvo)
+    se alvo.dono.perso
+      ret alvo.nome + " de " + alvo.dono.nome + arg0
+    senao
+      ret alvo.nome + arg0
+    fimse
+  senao alvo.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_o # Nome do objeto
+  se r == obj
+    ret "Você" + arg0
+  senao r.visivel(obj)
+    ret txtmaimin(obj.nome) + arg0
+  senao obj.perso
+    ret "Alguém" + arg0
+  senao
+    ret "Alguma coisa" + arg0
+
+func opcmin_o # Nome do objeto
+  se r == obj
+    ret "você" + arg0
+  senao r.visivel(obj)
+    ret obj.nome + arg0
+  senao obj.perso
+    ret "alguém" + arg0
+  senao
+    ret "alguma coisa" + arg0
+
+func opcmai_s # Gênero do personagem
+  se perso.perso
+    ret sexoB[perso.sexo] + arg0
+  senao
+    ret sexoD[perso.sexo] + arg0
+
+func opcmin_s # Gênero do personagem
+  se perso.perso
+    ret sexoA[perso.sexo] + arg0
+  senao
+    ret sexoC[perso.sexo] + arg0
+
+func opcmai_t # Gênero do alvo
+  se perso.perso
+    ret sexoB[alvo.sexo] + arg0
+  senao
+    ret sexoD[alvo.sexo] + arg0
+
+func opcmin_t # Gênero do alvo
+  se perso.perso
+    ret sexoA[alvo.sexo] + arg0
+  senao
+    ret sexoC[alvo.sexo] + arg0
+
+func opcmai_u # Gênero do objeto
+  se perso.perso
+    ret sexoB[obj.sexo] + arg0
+  senao
+    ret sexoD[obj.sexo] + arg0
+
+func opcmin_u # Gênero do objeto
+  se perso.perso
+    ret sexoA[obj.sexo] + arg0
+  senao
+    ret sexoC[obj.sexo] + arg0
+
+func opcmai_m # Mensagem
+  ret txttroca(txtmaimin(mens), "$", "$$") + arg0
+
+func opcmin_m # Mensagem
+  ret txttroca(mens, "$", "$$") + arg0
+# func opcmai_a
+# # arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
+# ret "teste" + arg0 # Substitui "$a" por "teste"
+# func opcmin_a
+# ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
+# # Ou assim: ret txttroca("R$", "$", "$$") + arg0
+
+const sexoA0 = "a"
+const sexoA1 = "o"
+const sexoB0 = "A"
+const sexoB1 = "O"
+const sexoC0 = "uma"
+const sexoC1 = "um"
+const sexoD0 = "Uma"
+const sexoD1 = "Um"

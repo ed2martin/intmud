@@ -36,9 +36,10 @@ func segundo2
   senao
     jog.energia = jog.enermax
 
-func escr
-  arg0.msg("Aguarde, energia em " + arg0.energia + " de " + arg0.enermax)
-  ret 1
+func cmd_escr
+  se txt1(arg0) != "d"
+    arg0.msg("Aguarde, energia em " + arg0.energia + " de " + arg0.enermax)
+    ret 1
 
 
 classe s_dentro003
@@ -73,7 +74,8 @@ func cmd_s
     se jog.var.v_capa
       arg0.msg("Você amarrou a corda e começou a descer, mas apareceram vários vampiros")
       arg0.msg("e sugaram todo o seu sangue. Você não resistiu.")
-      arg0.msg1(nome + " foi para o sul")
+      $mens.p(arg0)
+      $mens.mvis2("", "$P foi para o sul")
       arg0.dono = $s_dentro001
       ret 1
     senao
@@ -125,7 +127,7 @@ func entrou2
     arg0.msg("AA para aumentar 10 níveis")
     arg0.msg("DD para diminuir 10 níveis")
 
-func escr
+func cmd_escr
   se config:escolhenivel
     casovar txtmin(arg1)
     casose "aa"
@@ -394,18 +396,17 @@ herda sala
 textovar ent
 const sembriga = 1
 const limpar = 300
-const descr = "Quarto\n\
+const descr = misc:obj.var.i_chave ? descr1 + "\n" + descr2 : descr1
+const descr1 = "Quarto\n\
 Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
 desarrumada. Há também um ventilador no teto, mas nenhuma janela."
+const descr2 = "Há uma passagem à oeste, visível apenas com os óculos especiais."
+const dir_s = $s_dentro009
+const dir_o = misc:obj.var.i_oculos ? $s_dentro031
 
 func entrou
   var.i_Espingarda = 1
   ver(arg0)
-  se arg0.var.i_oculos
-    arg0.msg("Há uma passagem à oeste, visível apenas com os óculos especiais.")
-
-const dir_s = $s_dentro009
-const dir_o = misc:obj.var.i_oculos ? $s_dentro031
 
 
 classe s_dentro017
@@ -414,7 +415,7 @@ textovar ent
 const limpar = 300
 const descr = "Sala de jantar\n\
 Há muita comida servida na mesa, mas ninguém para comê-la. O aroma\n\
-agradável indica que foi está fresca e foi feita há pouco tempo.\n\
+agradável indica que está fresca e foi feita há pouco tempo.\n\
 Vários quadros antigos estão pendurados na parede."
 const dir_n = $s_dentro009
 const dir_s = $s_dentro018
@@ -535,7 +536,7 @@ const limpar = 300
 const area_mumia = 1
 const descr = "Sala de jantar\n\
 Há muita comida servida na mesa, mas ninguém para comê-la. O aroma\n\
-agradável indica que foi está fresca e foi feita há pouco tempo.\n\
+agradável indica que está fresca e foi feita há pouco tempo.\n\
 Vários quadros antigos estão pendurados na parede."
 const dir_n = $s_dentro021
 const dir_s = $s_dentro018
@@ -821,7 +822,7 @@ func segundo1
     msg(r.nome + " é nível " + r.nivel)
   fimse
 
-func escr # Jogador desafia Catador de insetos
+func cmd_escr # Jogador desafia Catador de insetos
   se arg1 == "catador de insetos"
     se !procperso("p_catador_de_insetos")
       arg0.msg("Catador de insetos não está aqui")
@@ -1075,7 +1076,7 @@ func segsala22
   se rand(100) < 50
     criar("p_balao", este, 10, "h_cantar,h_cortar")
 
-func escr
+func cmd_escr
   se arg1 == "ler" && arg0.var.i_oculos
     arg0.msg("O labirinto perto da biblioteca é muito perigoso e também difícil, porque")
     arg0.msg("todas as salas são iguais. São poucas salas mas você pode andar em círculo")
@@ -1110,7 +1111,7 @@ func entrou
   cria_livros
   ver(arg0)
 
-func escr
+func cmd_escr
   se arg1 == "salvar" && arg0.var.l_hebraico
     arg0.mudasenha
     ret 1

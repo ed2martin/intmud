@@ -5,12 +5,19 @@ const dono = idono.objlista
 const sala = idono.objlista.dono.perso ? idono.objlista.dono.dono : idono.objlista.dono
 # func ini1 # Efeito foi criado
 # func ini2 # Efeito foi reforçado
-# func ataqueini # Personagem quer atacar; retornar 1 se não pode prosseguir
-# func ataqueexec # Personagem vai atacar
 # func ataquerec # Personagem recebeu ataque
-# func ataque # Calculando ataque, arg0 = novo valor
-# func defesa # Calculando defesa, arg0 = novo valor
-# func vel # Calculando velocidade, arg0 = novo valor
+# func recalc # Atualizando status (ataque, defesa, velocidade, etc).
+
+func mens # Evia mensagem
+# arg0 = mensagem; na mensagem $D=nome completo do personagem
+  ref r
+  r = idono.objlista.dono
+  se r.perso # Se pertence a alguém
+    $mens.p(r.dono, r)
+  senao # Se não pertence a ninguém
+    $mens.p(r, r)
+  fimse
+  $mens.mvis1(arg0)
 
 
 classe e_confuso
@@ -28,7 +35,7 @@ func t1_exec
 
 func t2_exec
   apagar(este)
-  sala.msg(dono.nomebat + " não está mais confuso")
+  mens("$D não está mais confuso")
 
 
 classe e_congelado
@@ -38,13 +45,18 @@ inttempo t1 # Tempo para descongelar
 const ini1 = t1 = 1000
 const ini2 = t1 = 1000
 
-func ataqueini
-  dono.objjog.msg("Não pode atacar congelado")
-  arg0 = 1
+func cmd_escr
+  se arg2.comando_mover
+    arg0.msg("Você está congelado!")
+    ret 1
+
+func cmd_ataque
+  arg0.msg("Não pode atacar congelado")
+  ret 1
 
 func t1_exec
   apagar(este)
-  sala.msg(dono.nomebat + " não está mais congelado")
+  mens("$D não está mais congelado")
 
 
 classe e_dormindo
@@ -54,8 +66,13 @@ inttempo t1 # Tempo para acordar
 const ini1 = t1 = 1800
 const ini2 = t1 = 1800
 
-func ataqueini
-  dono.objjog.msg("Não pode atacar dormindo")
+func cmd_escr
+  se arg2.comando_mover
+    arg0.msg("Você está dormindo")
+    ret 1
+
+func cmd_ataque
+  arg0.msg("Não pode atacar dormindo")
   ret 1
 
 func ataquerec # Recebeu ataque: acorda mais rápido
@@ -63,8 +80,8 @@ func ataquerec # Recebeu ataque: acorda mais rápido
 
 func t1_exec
   apagar(este)
-  sala.msg(dono.nomebat + " acordou")
   dono.acordou # Indica que acordou naturalmente
+  mens("$D acordou")
 
 
 classe e_paralisado
@@ -92,7 +109,7 @@ func t1_exec
 
 func t2_exec
   t2 = 100
-  dono.msg("Você está envenenado")
+  mens("$D está envenenado")
 
 
 classe e_queimando

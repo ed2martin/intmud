@@ -72,7 +72,8 @@ func entrou1
   se arg0.var.i_Diamante_Azul && arg0.var.i_Diamante_Vermelho && arg0.var.i_Diamante_Verde && \
 arg0.var.i_Diamante_Amarelo
     arg0.msg("Os diamantes estão se fundindo")
-    arg0.msg1(arg0.nome + " saiu")
+    $mens.p(arg0)
+    $mens.mvis2("", "$P saiu")
     arg0.dono = $s_ini003
 
 
@@ -101,7 +102,8 @@ func entrou3
 
 func entrou5
   arg0.dono = $s_dentro003
-  arg0.msg1(arg0.nome + " chegou")
+  $mens.p(arg0)
+  $mens.mvis2("", "$P chegou")
 
 
 classe s_ini004
@@ -228,11 +230,11 @@ const sembriga = 1
 const terreno = 3
 const descr = "Dentro da cabana\n\
 Há uma janela. A vista é do céu, e no lugar do chão, há uma\n\
-névoa branca como neve. Há mais uma pessoa aqui."
+névoa branca como neve. Há uma pessoa esquisita aqui."
 const dir_sa = $s_ini005
 
 func entrou
-  !procperso("p_ini_silva") && criar("p_ini_silva", este)
+  !procperso("p_ini_silva") && criar("p_ini_silva", este, 27)
   ver(arg0)
 
 func entrou1
@@ -519,7 +521,7 @@ func entrou20
     arg0.msg("Quantos tem nesse lugar? Tecle um número, de 1 a 100")
     arg0.var.z_ini_resp = 0
 
-func escr # Checa respostas
+func cmd_escr # Checa respostas
   casovar arg0.var.z_ini_resp
   casose "0"
     arg1 != "78" && (arg0.var.z_ini_resp = 10)

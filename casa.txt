@@ -1,12 +1,14 @@
 *** Falta
 
-Condições que afetam "status" dos personagens
+Testar mensagens de batalha
+Testar condições que afetam "status" dos personagens
 Fazer os itens funcionarem
 Vestir itens
 Capa funcionar - para enganar vampiros
-Melhorar o envio de mensagens
 Limitar a quantidade de PNJs por sala
 Evitar PK
+Tirar comando alvo
+Lista de personagens na descrição
 
 
 *** Variáveis de personagens e salas
@@ -21,6 +23,24 @@ l_ = língua (idioma)
 o_ = item classificado como "outros"
 v_ = item que está vestindo
 z_ = variável não visível ao jogador
+
+
+*** Caracteres especiais em mensagens (mud-mens.inv)
+
+$ + letra maiúscula = primeira letra do texto em maiúscula
+$ + letra minúscula = texto em letras minúsculas
+$$ = Símbolo $
+$P = Nome do personagem
+$Q = Nome do personagem escolhido, ex. "Lula"
+$R = Nome do personagem em batalha, ex. "Lula de fulano"
+$A = Nome do alvo
+$B = Nome do alvo escolhido, ex. "Lula"
+$C = Nome do alvo em batalha, ex. "Lula de fulano"
+$D = Nome do alvo, sendo que pode ser "Animal X de fulano"
+$O = Nome do objeto
+$S = Depende do personagem: "o", "a", "um" ou "uma"
+$T = Depende do alvo: "o", "a", "um" ou "uma"
+$U = Depende do objeto: "o", "a", "um" ou "uma"
 
 
 *** Personagens funções
@@ -41,9 +61,6 @@ Personagem espera um tempo, em décimos de segundo, até poder agir novamente.
 
 func msg(texto)
 Envia mensagem para o personagem.
-
-func msg1(texto)
-Envia mensagem para todos na mesma sala do jogo, exceto o próprio jogador.
 
 func msgtodos(texto)
 Somente jogadores: Envia mensagem para todos os jogadores.
@@ -67,9 +84,9 @@ func recuperar
 Recupera status do personagem:
 Energia completa e sem paralisado, queimando, congelado, dormindo, etc.
 
-func ataqueini(alvo, objeto do tipo de golpe)
-Checa se o personagem atacar.
-Retorna 1 se pode. Caso contrário retorna 0 e avisa o motivo.
+func ataqueini
+Testa se pode atacar
+Retorna "" se pode atacar ou a mensagem com o motivo se não pode.
 
 func morreu
 Executa todos os procedimentos para indicar que morreu.
@@ -152,8 +169,8 @@ a cada 10 segundos.
 func segsala[tempo]
 Executado a cada X segundos, em cada sala que não estiver vazia.
 
-func escr
-Personagem escreveu algo (arg0=personagem, arg1=texto).
+func cmd_escr
+Personagem escreveu algo (arg0=personagem, arg1=texto, arg2=objeto do comando).
 Retorna 1 se processou o texto (não deve prosseguir).
 
 func cmd_[nome do comando]
