@@ -7,8 +7,7 @@ Vestir itens
 Capa funcionar - para enganar vampiros
 Limitar a quantidade de PNJs por sala
 Evitar PK
-Tirar comando alvo
-Lista de personagens na descrição
+Fazer animais perseguirem
 
 
 *** Variáveis de personagens e salas
@@ -169,13 +168,20 @@ a cada 10 segundos.
 func segsala[tempo]
 Executado a cada X segundos, em cada sala que não estiver vazia.
 
-func cmd_escr
-Personagem escreveu algo (arg0=personagem, arg1=texto, arg2=objeto do comando).
-Retorna 1 se processou o texto (não deve prosseguir).
+func cmd_[nome do comando](personagem, texto)
+A maioria dos comandos; retorna verdadeiro se não deve prosseguir.
 
-func cmd_[nome do comando]
-Vai executar um comando do personagem (arg0=objeto do comando, arg1=texto)
-Retorna 1 se processou o texto (não deve prosseguir).
+func cmd_[nome do comando](personagem, alvo)
+Somente comandos de ataque; retorna verdadeiro se não deve prosseguir.
+
+func cmd_escr(personagem, texto, objeto do comando)
+Personagem escreveu algo; retorna verdadeiro se não deve prosseguir.
+
+func cmd_pegar(personagem, nome do item digitado, nome do item encontrado)
+Pegar algum item ou animal; retorna verdadeiro se não deve pegar.
+
+func cmd_dar(personagem, alvo, nome do item digitado, nome do item encontrado)
+Dar algo a outro personagem; retorna verdadeiro se não deve dar.
 
 func cmd_ataque(personagem, alvo, objeto do tipo de ataque)
 Deve retornar verdadeiro se personagem não pode atacar o alvo.

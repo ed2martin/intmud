@@ -415,18 +415,18 @@ func entrou12
     fimse
 
 func cmd_dar
-  se arg0.var.i_[arg1] && txt(arg0.persoalvo) == "p_eremita"
-    se arg1 == "balde cheio" && arg0.var.z_eremita_ == 0
+  se arg0.var.i_[arg2] && "p_eremita" == arg1
+    se arg2 == "balde cheio" && arg0.var.z_eremita_ == 0
       msg(arg0.nome + " dá balde cheio para Eremita")
       arg0.msg("Eremita: Preciso também de um livro de química")
       arg0.var.i_balde_cheio_ -= 1
       arg0.var.z_eremita_ += 1
-    senao arg1 == "livro química" && arg0.var.z_eremita_ == 1
+    senao arg2 == "livro química" && arg0.var.z_eremita_ == 1
       msg(arg0.nome + " dá livro de química para Eremita")
       arg0.var.i_livro_de_quimica_ -= 1
       arg0.var.z_eremita_ += 1
     senao
-      arg0.msg("Pode ficar para você")
+      arg0.msg("Eremita: Isso não me interessa, pode ficar para você")
     fimse
     ret 1
 

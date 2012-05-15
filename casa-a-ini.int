@@ -28,7 +28,7 @@ const terreno = 3
 const descr = "Beco\n\
 A única saída visível aqui é um barranco à leste. Nas outras direções\n\
 você só vê paredes. Para caminhar à leste, tecle L\n\
-No no entanto, se você for veterano, pode tentar caminhar a oeste, mas\n\
+No entanto, se você for veterano, pode tentar caminhar a oeste, mas\n\
 esteja ciente que veteranos começam no nível 0 ao invés do 1.\n\
 A qualquer momento, tecle ajuda para saber os comandos do jogo."
 const dir_l = $s_ini002
@@ -172,7 +172,8 @@ func cmd_desenterrar
       arg0.msg("Só pode carregar um diamante azul nesta ilha")
     senao
       arg0.var.i_Diamante_Azul = 1
-      msg(arg0.nome + " desenterra diamante azul")
+      $mens.p(arg0)
+      $mens.mtodos1("$P desenterra Diamante Azul")
     fimse
     ret 1
 
@@ -203,30 +204,27 @@ func cmd_ver
     ret 1
 
 func cmd_pegar
-  se arg1 == "diamante vermelho"
+  se arg2 == "i_diamante_vermelho"
     se arg0.var.i_Diamante_Vermelho
       arg0.msg("Só pode carregar um diamante vermelho nessa ilha")
     senao
       arg0.var.i_Diamante_Vermelho = 1
-      msg(arg0.nome + " pega diamante vermelho")
+      $mens.p(arg0)
+      $mens.mtodos1("$P pega Diamante Vermelho")
     fimse
     ret 1
 
 func cmd_soltar
-  se arg1 == "diamante vermelho"
-    se arg0.var.i_Diamante_Vermelho
-      arg0.var.i_Diamante_Vermelho = ""
-      msg(arg0.nome + " solta diamante vermelho")
-    senao
-      arg0.msg("Você não tem diamante vermelho")
-    fimse
+  se arg2 == "i_diamante_vermelho"
+    arg0.var.i_Diamante_Vermelho = ""
+    $mens.p(arg0)
+    $mens.mtodos1("$P solta Diamante Vermelho")
     ret 1
 
 
 classe s_ini008
 herda sala
 const limpar = 20
-const sembriga = 1
 const terreno = 3
 const descr = "Dentro da cabana\n\
 Há uma janela. A vista é do céu, e no lugar do chão, há uma\n\
@@ -254,31 +252,30 @@ func entrou5
 
 func entrou7
   se !arg0.var.h_chutar
-    arg0.msg("Silva: Agora tente me socar. Primeiro mire em mim teclando alvo Silva")
-
-func entrou9
-  se !arg0.var.h_chutar
-    arg0.msg("Silva: Depois tecle socar")
+    arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
 
 func cmd_socar
-  se arg0.persoalvo.nome != "silva"
-    arg0.msg("Silva: Primeiro precisa mirar em mim. Tecle alvo Silva")
+  se "p_ini_silva" != arg1
+    arg0.msg("Silva: Tecle socar silva")
     ret 1
   senao
-    msg(arg0.nome + " soca Silva, 250 de 250")
+    $mens.p(arg0)
+    $mens.mvis1("$P soca Silva, 250 de 250")
     msg("Silva: Que belo soco! Agora vou te ensinar um golpe um pouco mais forte.")
     msg("Silva ensina " + arg0.nome + " a chutar")
     arg0.var.h_chutar = 1
-    arg0.msg("Tecle chutar ou, se estiver com preguiça, tecle ch. Não precisa mirar novamente.")
+    arg0.msg("Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
     ret 1
 
 func cmd_chutar
-  se arg0.persoalvo.nome != "silva"
-    arg0.msg("Silva: Primeiro precisa mirar em mim. Tecle alvo Silva")
+  se "p_ini_silva" != arg1
+    arg0.msg("Silva: Tecle chutar Silva")
     ret 1
   senao
-    msg(arg0.nome + " chuta Silva, 250 de 250")
+    $mens.p(arg0)
+    $mens.mvis1("$P chuta Silva, 250 de 250")
     arg0.msg("Silva: Bom chute. Eu só continuo com 250 de energia porque sou mais forte.")
+    arg0.msg("Durante uma briga você pode teclar apenas chutar.")
     arg0.msg("Te dou dois conselhos sobre batalhas: Cheque suas habilidades teclando hab")
     arg0.msg("Cheque também sua energia teclando energia. Se chegar a 0 você morre.")
     ret 1
@@ -353,7 +350,6 @@ func entrou
 classe s_ini013
 herda sala
 const limpar = 20
-const sembriga = 1
 const terreno = 3
 const descr = "Pequena ilha\n\
 Você está bem embaixo da ilha maior, mas ela não está visível daqui.\n\
@@ -372,20 +368,17 @@ func cmd_s
     arg0.msg("Você não me mete medo. Eu sei brigar muito bem.")
     ret 1
 
-const cmd_socar = arg0.var.h_socar ? atacou(arg0, "soca")
-const cmd_chutar = arg0.var.h_chutar ? atacou(arg0, "chuta")
+const cmd_socar = arg0.var.h_socar ? atacou(arg0, arg1, "soca")
+const cmd_chutar = arg0.var.h_chutar ? atacou(arg0, arg1, "chuta")
 
 func atacou
-  ref r # Alvo é um objeto
-  r = arg0.persoalvo # Alvo do personagem
-  se r.nome == "anao"
-    msg(arg0.nome + " " + arg1 + " Anão, 27 de 27")
+  se "p_ini_anao" == arg1
+    $mens.p(arg0)
+    $mens.mtodos1("$P soca Anão, 27 de 27")
     arg0.msg("Anão: Tudo bem, você venceu, pode passar")
     arg0.var.z_atacou_anao = 1
-  senao r
-    arg0.msg("Não pode atacar " + r.nome)
   senao
-    arg0.msg("Alvo não está por perto")
+    arg0.msg("Não pode atacar " + arg1.nome)
   fimse
   ret 1
 
@@ -412,23 +405,21 @@ func cmd_ver
     ret 1
 
 func cmd_pegar
-  se arg1 == "diamante verde"
+  se arg2 == "i_diamante_verde"
     se arg0.var.i_Diamante_Verde
       arg0.msg("Só pode carregar um diamante verde nessa ilha")
     senao
       arg0.var.i_Diamante_Verde = 1
-      msg(arg0.nome + " pega diamante verde")
+      $mens.p(arg0)
+      $mens.mtodos1("$P pega Diamante Verde")
     fimse
     ret 1
 
 func cmd_soltar
-  se arg1 == "diamante verde"
-    se arg0.var.i_Diamante_Verde
-      arg0.var.i_Diamante_Verde = ""
-      msg(arg0.nome + " solta diamante verde")
-    senao
-      arg0.msg("Você não tem diamante verde")
-    fimse
+  se arg2 == "i_diamante_verde"
+    arg0.var.i_Diamante_Verde = ""
+    $mens.p(arg0)
+    $mens.mtodos1("$P solta Diamante Verde")
     ret 1
 
 
