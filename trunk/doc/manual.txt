@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em abril de 2012, por Paulo Santos Ramos.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.1.
 
 
 1. SOBRE O INTMUD
@@ -450,10 +450,13 @@ a 32767, a varfunc x vai de -327,68 a 327,67.
 
 8. HERANÇA
 
-Herança nada mais é do que uma classe herdar todo o conteúdo de outra classe.
-É como se todo o conteúdo de uma classe fosse acrescentada em outra. Portanto,
-esse mecanismo permite que duas ou mais classes compartilharem as mesmas
-variáveis, funções, constantes, etc.
+É um mecanismo que possibilita o compartilhamento de variáveis, funções,
+constantes e etc. entre duas ou mais classes. Através da instrução herda,
+uma classe passa a incorporar todo o conteúdo de outra.
+
+ - A classe que tem o conteúdo herdado é chamada de classe base ou
+   superclasse.
+ - A classe que herda é chamada de classe derivada ou subclasse.
 
 A herança é definida no início da classe, conforme a sintaxe:
 herda <classe 1>, <classe 2>, <classe 3> ... <classe n>
@@ -476,6 +479,9 @@ Nestes dois exemplos a classe "y" sempre possui a variável "int8 teste0":
  - No primeiro exemplo, porque herdou da classe "x";
  - No segundo, porque foi definida na própria classe "y".
 
+Uma classe derivada pode adquirir o conteúdo de maneira indireta, ou seja,
+através da herança de outras classes. Veja o exemplo abaixo.
+
 Exemplo 3:
 
 classe A
@@ -487,17 +493,23 @@ classe C
 herda B
 int8 dia
 
-A classe A contém a variável ano. A classe B contém as variáveis ano e mes.
-A classe C contém mes, dia e ano. Está herdando C através de B.
+ - A classe A contém a variável ano;
+ - A classe B contém as variáveis ANO e MES; pois herdou a variável ANO
+   da classe A com a instrução herda;
+ - A classe C contém as variáveis DIA, MES (pois C herdou B) e ANO
+   (pois C também herdou A, por ser herança de B).
 
 Quando houver um nome de variável ou função repetido na herança, prevalece
-a primeira encontrada. As demais são ignoradas. Exemplo:
+a primeira encontrada. As demais são ignoradas. Veja o exemplo abaixo.
+
+Exemplo 4:
 classe A
 txt10 x
 classe B
 herda A
 int8 x
-Nesse caso a classe B tem a variável "int8 x", mas não tem a variável
+
+Nesse caso a classe B possui a variável "int8 x", mas não possui a variável
 "txt10 x".
 
 
@@ -509,18 +521,19 @@ funções. Esta sessão trata do que pode-se escrever em cada linha.
 9.1. Comentários
 
 Quando for necessário escrever uma explicação (um comentário) para quem
-estiver lendo o programa, acrescente o símbolo # (number) seguido de um
+estiver lendo o código, acrescente o símbolo # (number) seguido de um
 texto qualquer. É possível escrever comentários em praticamente qualquer
 lugar da classe, exceto nas instruções classe e herda.
 
 Exemplo:
 
-x=10 # Faz x ser 10
-se x==10 # Verifica se x é 10
+x = 10 # Faz x ser 10
+se x == 10 # Verifica se x é 10
+# Se x for 10, executa algo aqui
 fimse
 
 Nota: Os comentários não alteram de nenhuma forma a execução do programa,
-      nem o deixam mais lento.
+      e praticamente não o deixam mais lento.
 
 9.2. Textos
 

@@ -9,6 +9,42 @@ func escr # Processa o comando
 func iniclasse
   criar(arg0)
 
+func exevento # Gera evento de dois a cinco argumentos
+# arg0 = nome do evento
+# arg1 = objeto do personagem
+# arg2 a arg5 = segundo ao quinto argumentos, opcionais
+# Retorna 1 se evento foi cancelado
+  listaobj l
+  !arg1.dono.perso && l.addfim(arg1.dono)
+  l.addfim(arg1, arg1.dentro2)
+  casovar args
+  casose "2" # Evento de 1 argumento
+    enquanto l && !l.objini.[arg0](arg1)
+      l.ini.remove
+    efim
+    ret int(l)
+  casose "3" # Evento de 2 argumentos
+    enquanto l && !l.objini.[arg0](arg1, arg2)
+      l.ini.remove
+    efim
+    ret int(l)
+  casose "4" # Evento de 3 argumentos
+    enquanto l && !l.objini.[arg0](arg1, arg2, arg3)
+      l.ini.remove
+    efim
+    ret int(l)
+  casose "5" # Evento de 4 argumentos
+    enquanto l && !l.objini.[arg0](arg1, arg2, arg3, arg4)
+      l.ini.remove
+    efim
+    ret int(l)
+  casose "6" # Evento de 5 argumentos
+    enquanto l && !l.objini.[arg0](arg1, arg2, arg3, arg4, arg5)
+      l.ini.remove
+    efim
+    ret int(l)
+  casofim
+
 
 classe comando_mover
 herda comando_comum
@@ -18,8 +54,8 @@ const comando_mover = 1 # Para indicar que é comando de movimentação do jogador
 
 func escr
   ref sala
-  sala = dir(arg0)
-  se !sala
+  se exevento(este, arg0, arg1)
+  senao (sala = dir(arg0)) == nulo
     arg0.msg("Não é possível seguir nessa direção")
   senao
     mudasala(arg0, sala)
@@ -27,8 +63,9 @@ func escr
 func mudasala # Muda de sala
 # arg0=personagem, arg1=nova sala
   se arg1
-    $mens.p(arg1)
+    $mens.p(arg0)
     $mens.mvis2("", m_sai)
+    arg0.alvo = nulo
     arg0.dono = arg1
     $mens.mvis2("", m_entra)
     arg0.t_aguarde = dono.terreno
@@ -72,6 +109,14 @@ const m_sai = "$P foi para oeste"
 const dir = arg0.dono.dir_o
 
 
+classe cmd_e
+const obj = $cmd_l.obj(arg0, arg1)
+
+
+classe cmd_w
+const obj = $cmd_o.obj(arg0, arg1)
+
+
 classe cmd_entrar
 herda comando_mover
 const m_entra = "$P chegou de fora"
@@ -102,17 +147,23 @@ const dir = arg0.dono.dir_b
 
 classe cmd_ajuda
 herda comando_comum
-const texto = "\b\c3Páginas de ajuda\b\nPara ler tecle ajuda seguido do nome de um tópico ou um \
-habilidade.\nOs tópicos são:\n  \c2BASICO\b   Comandos básicos\n  \c2INFO\b     Informações \
-sobre itens, personagens, etc.\n  \c2ITEM\b     Manuseio de itens\n  \c2ANIMAL\b   Manuseio de \
-animais" + adm(arg0)
+const texto = texto1 + adm(arg0)
+const texto1 = "\b\c3Páginas de ajuda\b\n\
+Para ler tecle ajuda seguido do nome de um tópico ou um habilidade.\n\
+Os tópicos são:\n\
+  \c2BASICO\b   Comandos básicos\n\
+  \c2INFO\b     Informações sobre itens, personagens, etc.\n\
+  \c2ITEM\b     Manuseio de itens\n\
+  \c2ANIMAL\b   Manuseio de animais"
 
 func adm
   se arg0.sock.admin
     ret "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func escr
-  se arg1 == ""
+  se exevento(este, arg0, arg1)
+    ret
+  senao arg1 == ""
     arg0.msg_m(texto(arg0))
     ret
   fimse
@@ -152,10 +203,9 @@ classe cmd_info
 herda comando_ajuda
 const txtajuda = "\b\c3Informações\b\n\
   \c2ENERGIA\b  Mostra resumidamente como você está no jogo\n\
-  \c2QUEM\b     Mostra quem está por perto\n\
-  \c2QUANTOS\b  Diz quantas pessoas estão jogando\n\
+  \c2QUEM\b     Mostra quem está jogando\n\
   \c2IDIOMA\b   Mostra os idiomas que você conhece\n\
-  \c2HAB\b      Mostra as habilidades, sua ou do animal que está usando\n\
+  \c2HAB\b      Mostra as habilidades, sua ou do animal que você escolheu\n\
   \c2VER\b      Repete a descrição da sala. Ver seguido de um texto mostra\n\
                 a descrição de um personagem\n\
   \c2SOBRE\b    Mostra versão e autor do programa"
@@ -166,29 +216,19 @@ herda comando_comum
 const ultimo = 1 # Tem baixa prioridade
 
 func escr
-  arg0.msg("IntMUD 0.99 (interpretador MUD)")
-  arg0.msg("Autor: Edward Martin")
-  arg0.msg("Programa da casa feito pela mesma pessoa")
-
-
-classe cmd_alvo
-herda comando_comum
-
-func escr
-  se arg1
-    arg0.alvo = arg1
-  senao
-    arg0.alvo = arg0.alvo2
-  fimse
-  arg0.msg("Alvo é " + arg0.alvo)
+  se !exevento(este, arg0, arg1)
+    arg0.msg("IntMUD 0.99 (interpretador MUD)")
+    arg0.msg("Autor: Edward Martin")
+    arg0.msg("Programa da casa feito pela mesma pessoa")
 
 
 classe cmd_ver
 herda comando_comum
 
 func escr
+  se exevento(este, arg0, arg1)
 # Descrição da sala
-  se arg1 == ""
+  senao arg1 == ""
     arg0.dono.ver(arg0)
 # Ver algum personagem
   senao
@@ -241,62 +281,52 @@ classe cmd_hab
 herda comando_var
 
 func escr
-  txt100 n
-  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
-  lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
+  se !exevento(este, arg0, arg1)
+    txt100 n
+    arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+    lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
 
 
 classe cmd_idioma
 herda comando_var
-const escr = lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
+
+func escr
+  se !exevento(este, arg0, arg1)
+    lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
 
 
 classe cmd_item
 herda comando_var
 const objajuda = este
 const txtajuda = "\b\c3Itens\b\n\
-  \c2SALA\b     Mostra itens que estão na sala\n\
   \c2ITEM\b     Mostra itens que você possui\n\
   \c2OUTROS\b   Mostra itens especiais que você possui\n\
   \c2PEGAR\b <item>  Pega um item da sala\n\
   \c2SOLTAR\b <item> Solta na sala um item que você possui\n\
-  \c2SOLTAR\b <item> Solta na sala um item que você possui\n\
-  \c2DAR\b <item>    Dá um item ao seu personagem alvo\n\
-Para escolher o alvo tecle alvo seguido do nome do personagem."
+  \c2DAR\b <item> <personagem>  Dá um item a alguém"
 
 func escr
-  txt100 n
-  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
-  lista(arg0, arg0.persoesc.var, "i_", "Nenhum item" + n, "Itens" + n)
+  se !exevento(este, arg0, arg1)
+    txt100 n
+    arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+    lista(arg0, arg0.persoesc.var, "i_", "Nenhum item" + n, "Itens" + n)
 
 
 classe cmd_outros
 herda comando_var
-const escr = lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
 
-
-classe cmd_sala
-herda comando_var
-const escr = lista(arg0, arg0.dono.var, "i_", "Nenhum item por perto", "Itens por perto")
+func escr
+  se !exevento(este, arg0, arg1)
+    lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
 
 
 classe cmd_quem
 herda comando_comum
 
 func escr
-  textotxt t
-  listaitem i
-  i = arg0.dono.dentro1.ini
-  enquanto i
-    t.addfim(i.obj.nome), i.depois
-  efim
-  arg0.msg("Personagens\n" + txttroca(t.remove(1000), "\n", ", "))
-
-
-classe cmd_jogo
-# herda comando_comum
-
-func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   textotxt t
   listaobj l
   ref r
@@ -314,13 +344,16 @@ func escr
     l.objini.nome && t.addfim(l.objini.nome)
     l.ini.remove
   efim
-  arg0.msg(t.remove(1000))
+  arg0.msg_m(t.remove(1000))
 
 
 classe cmd_falar
 herda comando_comum
 
 func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   txt512 lin
   lin = txttroca(arg1, "$", "$$")
   $mens.p(arg0)
@@ -345,7 +378,10 @@ classe cmd_dizer
 herda comando_comum
 
 func escr
-  arg0.msgsala(arg0.nome + " disse: " + arg1)
+  se !arg1
+    arg0.msg("Dizer o que?")
+  senao !exevento(este, arg0, arg1)
+    arg0.msgsala(arg0.nome + " disse: " + arg1)
 
 
 classe cmd_pegar
@@ -355,50 +391,54 @@ func escr
   se arg1
     pegar_objeto(arg0, arg1)
   senao
-    pegar_animal(arg0, arg0.persoalvo)
+    pegar_animal(arg0)
 
 func pegar_objeto # arg0 pega objeto arg1
   txt100 item
-  item = arg0.dono.var.nomevar("i_" + arg1)
-  se !item
+  item = arg0.dono.var.ini("i_" + arg1)
+  se exevento(este, arg0, arg1, item)
+  senao !item
     arg0.msg("Você não vê " + arg1)
   senao arg0.var.[item]_ == 99
-    arg0.msg("Não pode carregar mais " + txt(item, 2))
+    arg0.msg("Não pode carregar mais " + txt2(txttroca(item, "_", " ")))
   senao
     arg0.dono.var.[item]_ -= 1
     arg0.var.[item]_ += 1
     $mens.p(arg0)
-    $mens.mtodos1("$P pega " + txt(item, 2))
+    $mens.mtodos1("$P pega " + txt2(txttroca(item, "_", " ")))
   fimse
 
 func pegar_animal # arg0 pega personagem arg1
-  se !arg1
+  ref r
+  r = arg0.alvo
+  se exevento(este, arg0, "", "")
+  senao !r || r.dono != arg0.dono
     arg0.msg("Deve escolher o alvo para poder pegar")
-  senao arg1.jog
+  senao r.jog
     arg0.msg("Não pode pegar outro jogador")
-  senao !arg1.podepegar
+  senao !r.podepegar
     arg0.msg("Impossível pegar " + arg1.nome)
-  senao arg1.energia >= arg1.enermax * 0.3
-    arg0.msg(arg1.nome + " escapou")
+  senao r.energia >= r.enermax * 0.3
+    arg0.msg(r.nome + " escapou")
     arg0.esperar(3)
-  senao arg1.energia >= arg1.enermax * 0.15 && rand(100) < 65
-    arg0.msg(arg1.nome + " escapou")
+  senao r.energia >= r.enermax * 0.15 && rand(100) < 65
+    arg0.msg(r.nome + " escapou")
     arg0.esperar(1)
-  senao arg1.energia == 0
-    arg0.msg(arg1.nome + " desmaiou")
+  senao r.energia == 0
+    arg0.msg(r.nome + " desmaiou")
   senao arg0.dentro1.total >= config:total2
     arg0.msg("Sem espaço para pegar " + arg1.nome)
   senao
-    arg1.dono = arg0
-    $mens.p(arg0)
-    $mens.mtodos1("$P pega " + arg1.nome)
+    $mens.p(arg0, r)
+    $mens.mtodos1("$P pega $A")
+    r.dono = arg0
     int8 cont
     enquanto cont < config:animal2 && arg0.animal.[cont]
       cont += 1
     efim
-    arg0.animal.[cont] = arg1
-    se arg0.var.a_[arg1.nome] != "2" # Adiciona na agenda
-      arg0.var.a_[arg1.nome] = 2
+    arg0.animal.[cont] = r
+    se arg0.var.a_[r.nome] != "2" # Adiciona na agenda
+      arg0.var.a_[r.nome] = 2
       arg0.msg("Adicionado na agenda")
 
 
@@ -406,20 +446,21 @@ classe cmd_soltar
 herda comando_comum
 
 func escr
+  txt100 item
+  item = arg0.var.ini("i_" + arg1)
   se !arg1
     arg0.msg("Soltar o que?")
+  senao exevento(este, arg0, arg1, item)
   senao soltar_[arg1](arg0)
-  senao arg0.var.i_[arg1]_ == 0
-    arg0.msg("Você não tem " + arg1)
+  senao !item
+    arg0.msg("Você não possui " + arg1)
   senao
-    txt100 item
-    item = arg0.var.nomevar("i_" + arg1)
     se arg0.dono.var.[item]_ != 99
       arg0.dono.var.[item]_ += 1
     fimse
     arg0.var.[item]_ -= 1
     $mens.p(arg0)
-    $mens.mtodos1("$P solta " + txt(item, 2))
+    $mens.mtodos1("$P solta " + txt2(txttroca(item, "_", " ")))
 
 const soltar_1 = soltar(arg0, arg0.animal.0, 1)
 const soltar_2 = soltar(arg0, arg0.animal.1, 2)
@@ -445,28 +486,33 @@ classe cmd_dar
 herda comando_comum
 
 func escr
-  txt100 item
-  ref r
-  item = arg0.var.nomevar("i_" + arg1)
-  r = arg0.persoalvo # Personagem que receberá o item
-  se !arg1
-    arg0.msg("Dar o que?")
+  txt100 item # Nome do item digitado
+  txt100 item2 # Nome do item encontrado
+  txt100 alvo # Nome do alvo digitado
+  ref r # Objeto do alvo encontrado
+  alvo = txtsub(arg1, intsub(arg1) - 1)
+  item = txtsub(arg1, 0, intsub(arg1) - 1)
+  item2 = arg0.var.ini("i_" + item)
+  r = arg0.persoalvo(txt2(arg1))
+  se !item
+    arg0.msg(alvo ? "Dar para quem?" : "Dar o que?")
   senao !r
-    arg0.msg("O alvo não está por perto.")
+    arg0.msg(txtmaimin(alvo) + " não está por perto.")
   senao r == arg0
     arg0.msg("Não pode dar coisas a você mesmo.")
-  senao dar_[arg1](arg0, r)
-  senao !item
-    arg0.msg("Você não possui " + arg1)
+  senao exevento(este, arg0, r, item, item2)
+  senao dar_[item](arg0, r)
+  senao !item2
+    arg0.msg("Você não possui " + item)
   senao !idiomacomum(arg0, r)
     arg0.msg("Você e " + r.nome + " não falam um idioma em comum")
-  senao r.arg0.var.[item]_ == 99
-    arg0.msg(r.nome + " não pode carregar mais " + txt(item, 2))
+  senao r.arg0.var.[item2]_ == 99
+    arg0.msg(r.nome + " não pode carregar mais " + txt(item2, 2))
   senao
-    arg0.var.[item]_ -= 1
-    r.var.[item]_ += 1
+    arg0.var.[item2]_ -= 1
+    r.var.[item2]_ += 1
     $mens.p(arg0, r)
-    $mens.mtodos1("$P dá " + txt(item, 2) + " para $A")
+    $mens.mtodos1("$P dá " + txttroca(txt(item2, 2), "_", " ") + " para $A")
   fimse
 
 func idiomacomum # Checa se arg0 e arg1 possuem um idioma em comum
@@ -527,7 +573,8 @@ herda comando_comum
 
 func escr
   prog p
-  se !p.existe(arg0.dono, "ent")
+  se exevento(este, arg0, arg1)
+  senao !p.existe(arg0.dono, "ent")
     arg0.msg("Não consegue desenterrar aqui")
   senao arg0.dono.ent.i_[arg1] == ""
     arg0.msg("Você não acha " + arg1)
@@ -545,7 +592,8 @@ herda comando_comum
 
 func escr
   prog p
-  se !p.existe(arg0.dono, "ent")
+  se exevento(este, arg0, arg1)
+  senao !p.existe(arg0.dono, "ent")
     arg0.msg("Não consegue enterrar aqui")
   senao arg0.var.i_[arg1]_ == 0
     arg0.msg("Você não tem " + arg1)
@@ -560,6 +608,9 @@ classe cmd_energia
 herda comando_comum
 
 func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   txt100 lin
   ref r
   r = arg0.persoesc
@@ -572,6 +623,9 @@ classe cmd_agenda
 herda comando_comum
 
 func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   txt80 nome
 # Consultar um animal (digitou agenda seguido de algum nome)
   se arg1
@@ -619,10 +673,12 @@ const txtajuda = "\b\c3Animais\b\n\
   \c2TROCA\b <item>  Dá item para um animal seu\n\
   \c2TROCA\b         Pega item de um animal seu\n\
   \c2PEGAR\b         Pega o animal que está lutando com você\n\
-Nota: Para poder, tecle alvo seguido do nome do animal. Depois\n\
-enfraqueça o animal primeiro e tente pegar teclando pegar."
+Nota: Antes de tentar pegar, enfraqueça o animal atacando-o."
 
 func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   uint8 cont
   textotxt t
   txt100 lin
@@ -673,6 +729,9 @@ herda comando_comum
 const obj = int(nome) <= config:animal1 ? este
 
 func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   ref r
   r = perso(arg0) # Nota: perso está definido nas classes derivadas dessa
   se !r
@@ -757,7 +816,8 @@ classe cmd_trocar
 herda comando_comum
 
 func escr
-  se !troca_animal(arg0, txt1(arg1), txt2(arg1))
+  se exevento(este, arg0, arg1)
+  senao !troca_animal(arg0, txt1(arg1), txt2(arg1))
     troca_objetos(arg0, arg1)
 
 func troca_animal # Trocar dois animais de lugar
@@ -940,6 +1000,9 @@ herda comando_comum
 const obj = arg0.var.i_poção ? este
 
 func escr
+  se exevento(este, arg0, arg1)
+    ret
+  fimse
   ref r
   r = arg0.persoesc # Personagem escolhido
   r.energia += 20

@@ -33,17 +33,37 @@ func t_elimpar_exec # Limpa os itens enterrados
 func ver
   textotxt t
   misc:obj = arg0
-  se arg0.e_admin
-    t.addfim(txt(este) + " " + descr)
-  senao
-    t.addfim(descr)
+# Adiciona a descrição, retorna se estiver vazia
+  t.addfim(arg0.e_admin ? txt(este) + " " + descr : descr)
+  se t.bytes <= 1
+    ret
   fimse
-  se t.bytes > 1
-    txt100 lin
-    t.addfim(txtsai)
-    lin = txttotal
-    lin && t.addfim(lin)
-    arg0.msg(t.remove(1000))
+# Adiciona a lista de saídas
+  t.addfim(txtsai)
+# Adiciona a lista de personagens
+  textotxt t2
+  listaitem i
+  i = dentro1.ini
+  enquanto i
+    i.obj != arg0 && arg0.visivel(i.obj) && t2.addfim(i.obj.nome)
+    i.depois
+  efim
+  t2 && t.addfim("Aqui: " + txttroca(t2.remove(1000), "\n", ", "))
+# Adiciona a lista de itens
+  txt100 lin
+  t2.limpar
+  lin = var.ini("i_")
+  enquanto txt(lin, 0, 2) == "i_"
+    se var.valor(lin) == "1"
+      t2.addfim(txt2(txttroca(lin, "_", " ")))
+    senao
+      t2.addfim(var.valor(lin) + "x " + txt2(txttroca(lin, "_", " ")))
+    fimse
+    lin = var.depois(lin)
+  efim
+  t2 && t.addfim("Itens: " + txttroca(t2.remove(1000), "\n", ", "))
+# Mostra o texto completo
+  arg0.msg_m(t.remove(1000))
 
 func txtsai # Retorna as saídas existentes
   txt40 sai

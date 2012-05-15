@@ -4,8 +4,7 @@ sav listaitem idono # Uso interno: aonde o personagem
 sav listaobj dentro1 # Lista de personagens que possui
 sav listaobj dentro2 # Efeitos que estão afetando o personagem
 sav textovar var # Variáveis do personagem
-txt40 alvo # Alvo do personagem
-txt40 alvo2 # Quem atacou o personagem por último
+ref alvo # Quem o personagem está atacando
 listaitem atkrec # Quem esse personagem atacou; recebe experiência se vencer
 listaobj atkenv # Quem atacou esse personagem; dá experiência se perder
 inttempo t_aguarde # Tempo para processar próximo comando
@@ -117,31 +116,20 @@ func teclou # Personagem escreveu algo
   efim
   !obj && (obj = obj2)
 # Obtém objetos para gerar eventos
-  listaobj l0
-  listaitem i0
-  !dono.perso && l0.addfim(dono)
-  l0.addfim(este, dentro2)
+  listaobj l
+  !dono.perso && l.addfim(dono)
+  l.addfim(este, dentro2)
 # Eventos escreveu
-  i0 = l0.ini
-  enquanto i0
-    se i0.obj.cmd_escr(este, arg0, obj)
-      ret
-    fimse
-    i0.depois
+  enquanto l && !l.objini.cmd_escr(este, arg0, obj)
+    l.ini.remove
   efim
 # Checa se comando válido
-  se !obj
+  se l # Se processou algum evento escreveu, retorna
+    ret
+  senao !obj # Se nenhum objeto, avisa comando desconhecido
     msg("O quê?")
     ret
   fimse
-# Eventos cmd
-  i0 = l0.ini
-  enquanto i0
-    se i0.obj.[obj](este, txt2(arg0))
-      ret
-    fimse
-    i0.depois
-  efim
 # Executa comando
   obj.escr(este, txt2(arg0))
 
@@ -229,10 +217,11 @@ func escolhejog # Escolhe e retorna um jogador
     i.depois
   efim
 
-func persoalvo
+func persoalvo # Obtém o personagem a partir do nome
+# arg0 = nome do personagem
   listaitem i
   nomeobj nome
-  nome.ini(alvo, 1)
+  nome.ini(arg0, 1)
   i = dono.dentro1.ini
   enquanto i
     se visivel(i.obj) && nome.nome(i.obj.nome)

@@ -14,31 +14,45 @@ vel
 
 func escr # Atacar alguém
   ref r
-  se (r = arg0.persoalvo) == nulo
-    arg0.msg("Alvo não está por perto")
-  senao arg0.ataqueini
+  se arg0.ataqueini
     arg0.msg(arg0.ataqueini)
+    ret
+  senao arg1
+    r = arg0.persoalvo(arg1)
+    se !r
+      arg0.msg("Você não vê isso.")
+      ret
+    senao r == arg0
+      arg0.msg("Atacar a si mesmo?")
+      ret
+    fimse
+    arg0.alvo = r
   senao
+    r = arg0.alvo
+    se !r || r.dono != arg0.dono
+      arg0.msg("Atacar quem?")
+      ret
+    fimse
+  fimse
+  se r.pacifico
+    arg0.msg(r.nome + " não quer brigar.")
+    ret
+  senao !exevento(este, arg0, r)
     listaobj l
     l.addfim(arg0.persobat.dentro2, arg0.dono, arg0.persobat)
-    enquanto l.ini
-      se l.objini.cmd_ataque(arg0, r, este)
-        ret
-      fimse
+    enquanto l && !l.objini.cmd_ataque(arg0, r, este)
       l.ini.remove
     efim
-    ataca(arg0, r)
+    !l && ataca(arg0, r)
 
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ataca1(arg0, arg1)
 
 func ataca1 # arg0 ataca arg1
-  ref r
-  r = arg1.persobat
-  velgolpe(arg0.persobat, r) # Tempo do golpe
-  execgolpe(arg0.persobat, r, ataque) # Ataca
-  result && $mens.p(arg0, arg1) + $mens.mtodos1(texto + msgefeito(r))
-  r.energia == 0 && r.morreu
+  velgolpe(arg0, arg1) # Tempo do golpe
+  execgolpe(arg0, arg1, ataque) # Ataca
+  result && $mens.p(arg0, arg1) + $mens.mtodos1(texto + msgefeito(arg1))
+  arg1.persobat.energia == 0 && arg1.persobat.morreu
   arg0.persobat.energia == 0 && arg0.persobat.morreu
 
 func ataca2 # arg0 ataca todos dividindo a força do ataque
@@ -53,21 +67,20 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
 # Ataca
   ref r
   enquanto l.total > 1
-    r = l.objfim.persobat
+    r = l.objfim
     se !r.jog
-      velgolpe(arg0.persobat, r) # Tempo do golpe
-      execgolpe(arg0.persobat, r, atk) # Ataca
-      result && $mens.p(arg0, l.objfim) + arg0.msginv(texto + msgefeito(r))
+      velgolpe(arg0, r) # Tempo do golpe
+      execgolpe(arg0, r, atk) # Ataca
+      result && $mens.p(arg0, r) + arg0.msginv(texto + msgefeito(r))
       r.energia == 0 && r.morreu
     fimse
     l.fim.remove
   efim
 # Ataca o alvo
-  r = l.objfim.persobat
+  r = l.objfim
   velgolpe(arg0, r) # Tempo do golpe
   execgolpe(arg0, r, atk) # Ataca
-# result && arg0.dono.msg(texto(arg0, l.fim.obj) + msgefeito(r))
-  result && $mens.p(arg0, l.objfim) + $mens.mtodos1(texto + msgefeito(r))
+  result && $mens.p(arg0, r) + $mens.mtodos1(texto + msgefeito(r))
   r.energia == 0 && r.morreu
   arg0.persobat.energia == 0 && arg0.persobat.morreu
 
@@ -81,22 +94,20 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
 # Ataca
   ref r
   enquanto l.total > 1
-    r = l.objfim.persobat
+    r = l.objfim
     se !r.jog
-      velgolpe(arg0.persobat, r) # Tempo do golpe
-      execgolpe(arg0.persobat, r, ataque) # Ataca
-      result && $mens.p(arg0, l.objfim) + arg0.msginv(texto + msgefeito(r))
-      l.fim.obj.energia == 0 && l.fim.obj.morreu
+      velgolpe(arg0, r) # Tempo do golpe
+      execgolpe(arg0, r, ataque) # Ataca
+      result && $mens.p(arg0, r) + arg0.msginv(texto + msgefeito(r))
       r.energia == 0 && r.morreu
     fimse
     l.fim.remove
   efim
 # Ataca o alvo
-  r = l.objfim.persobat
+  r = l.objfim
   velgolpe(arg0, r) # Tempo do golpe
   execgolpe(arg0, r, atk) # Ataca
-# result && arg0.dono.msg(texto(arg0, l.fim.obj) + msgefeito(r))
-  result && $mens.p(arg0, l.objfim) + $mens.mtodos1(texto + msgefeito(r))
+  result && $mens.p(arg0, r) + $mens.mtodos1(texto + msgefeito(r))
   r.energia == 0 && r.morreu
   arg0.persobat.energia == 0 && arg0.persobat.morreu
 
@@ -110,13 +121,13 @@ func msgefeito # Gera mensagem de como o golpe acertou
   casose "2"
     ret ", nada acontece"
   casose "3"
-    arg0 && (msg1 = " " + arg0.energia + " de " + arg0.enermax)
+    arg0 && (msg1 = " " + arg0.persobat.energia + " de " + arg0.persobat.enermax)
     ret ", pouco efeito" + msg1
   casose "4"
-    arg0 && (msg1 = ", " + arg0.energia + " de " + arg0.enermax)
+    arg0 && (msg1 = ", " + arg0.persobat.energia + " de " + arg0.persobat.enermax)
     ret msg1
   casose "5"
-    arg0 && (msg1 = " " + arg0.energia + " de " + arg0.enermax)
+    arg0 && (msg1 = " " + arg0.persobat.energia + " de " + arg0.persobat.enermax)
     ret ", muito efeito" + msg1
   casofim
   ret ""
@@ -127,7 +138,7 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # vel = velocidade do golpe
   uint8 tempo
 # Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
-  tempo = 10 + arg1.veloc * 2000 / (arg0.veloc * vel + 1)
+  tempo = 10 + arg1.persobat.veloc * 2000 / (arg0.persobat.veloc * vel + 1)
   tempo < 5 && (tempo = 5)
   tempo > 60 && (tempo = 60)
   arg0.t_aguarde < tempo && (arg0.t_aguarde = tempo)
@@ -138,24 +149,22 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 # arg2 = força do ataque, 0=não calcular danos
 # tipo = tipo de ataque
   real dano
+  ref r
+  ref s
 # Checa se pode realmente atacar
-  result = 1
+  r = arg0.persobat, s = arg1.persobat, result = 1
   se arg0.dono.cmd_ataque(arg0, arg1, este)
     ret
-  senao arg0.cmd_ataque(arg0, arg1, este)
+  senao arg0.persobat.cmd_ataque(arg0, arg1, este)
     ret
-  senao arg1.cmd_ataquerec(arg0, arg1, este)
+  senao arg1.persobat.cmd_ataquerec(arg0, arg1, este)
     ret
   fimse
 # Indica que atacou, recebe experiência se vencer
-  arg0.atkrec.remove
-  arg0.atkrec = arg1.atkenv.addfim(arg0)
-  se arg1.dono.perso
-    arg1.dono.alvo2 = arg0.nome # Para comando alvo sem argumento
-    arg0.podepegar && exgolpe_i(arg1.dono.var.a_[arg0.nome]) # Coloca na agenda
-  senao
-    arg1.alvo2 = arg0.nome # Para comando alvo sem argumento
-    arg0.podepegar && exgolpe_i(arg1.var.a_[arg0.nome]) # Coloca na agenda
+  r.atkrec.remove
+  r.atkrec = s.atkenv.addfim(r)
+  (!arg1.alvo || arg1.alvo.dono != arg1.dono) && (arg1.alvo = arg0)
+  r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
   fimse
 # Checa se acertou o alvo
   dano = rand(1, 20)
@@ -163,14 +172,14 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   senao dano == 1 # Errou o alvo automaticamente
     ret
   senao # Checa se acertou
-# dano += precisao * arg0.precisao / 100 - arg1.evasao
+# dano += precisao * r.precisao / 100 - arg1.evasao
 # !arg0.visivel(arg1) && (dano -= 5) # Invisível é mais difícil de acertar
 # se dano <= 0
 # ret 0
 # fimse
   fimse
 # Calcula dano
-  dano = arg1.deftipo.[tipo]
+  dano = s.deftipo.[tipo]
   se dano >= 80 # Defesa muito alta
     result = 2
     ret
@@ -179,12 +188,12 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     ret
   fimse
   result = dano <= -2 ? 5 : dano >= 2 ? 3 : 4
-  dano = arg1.defesa * misc:defbonus.[128 + dano]
-  dano = arg0.ataque / dano + arg0.nivel - arg1.nivel
+  dano = s.defesa * misc:defbonus.[128 + dano]
+  dano = r.ataque / dano + r.nivel - s.nivel
   dano = intpos(dano) * arg2 / 65
 # Atualiza pontos de vida conforme os danos
   dano < 1 && (dano = 1) # Pelo menos 1 de dano
-  arg1.energia -= dano
+  s.energia -= dano
 
 func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
   !arg0 && (arg0 = 1)
