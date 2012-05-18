@@ -8,7 +8,7 @@ func iniclasse
   criar(arg0)
 
 func p # Define os personagens
-  perso=arg0, alvo=arg1, obj=arg2
+  perso = arg0, alvo = arg1, obj = arg2
 
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
@@ -90,16 +90,16 @@ func proc # Prepara e envia mensagem
   t0.addfim(arg0)
   p0 = t0.ini, i = 0, r = arg1
   enquanto (i = p0.txtproc("$", i)) >= 0
-    opc = p0.texto(i+1, 1)
+    opc = p0.texto(i + 1, 1)
     se opc === "$"
       p0.mudar("", i, 1)
       i += 1
     senao opc === txtmai(opc)
-      lin = p0.texto(i+2)
-      p0.mudar(opcmai_[opc](lin), i, inttotal(lin)+2)
+      lin = p0.texto(i + 2)
+      p0.mudar(opcmai_[opc](lin), i, inttotal(lin) + 2)
     senao opc === txtmin(opc)
-      lin = p0.texto(i+2)
-      p0.mudar(opcmin_[opc](lin), i, inttotal(lin)+2)
+      lin = p0.texto(i + 2)
+      p0.mudar(opcmin_[opc](lin), i, inttotal(lin) + 2)
     senao
       p0.mudar("", i, 2)
     fimse
@@ -201,14 +201,12 @@ func opcmin_s # Gênero do objeto
     ret sexoA[obj.sexo] + arg0
   senao
     ret sexoC[obj.sexo] + arg0
-
-#func opcmai_a
-## arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
-#ret "teste" + arg0 # Substitui "$a" por "teste"
-
-#func opcmin_a
-#ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
-## Ou assim: ret txttroca("R$", "$", "$$") + arg0
+# func opcmai_a
+# # arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
+# ret "teste" + arg0 # Substitui "$a" por "teste"
+# func opcmin_a
+# ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
+# # Ou assim: ret txttroca("R$", "$", "$$") + arg0
 
 const sexoA0 = "a"
 const sexoA1 = "o"

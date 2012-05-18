@@ -14,7 +14,7 @@ func ini
 func imin_exec
   imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
   hora = (hora + 1) % 24
-  luz = (t_hora >= 6 && t_hora < 18)
+  luz = t_hora >= 6 && t_hora < 18
 
 func min # Retorna os minutos no horário MUD
   uint8 num
@@ -174,7 +174,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
   txt20 texto
   arqsav sav1
   ref r
-#msg(texto + " , " + arg0)
+# msg(texto + " , " + arg0)
   texto = txtnome(tpasso)
   passo = "senha"
   se !arg0
@@ -195,7 +195,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     perso.teclou("ver")
     temposair # Acerta tempo para sair do MUD
   senao
-    # Primeiro cria personagem
+# Primeiro cria personagem
     cnome = "un " + texto
     nome = tpasso
     passo = ""
@@ -203,17 +203,17 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     perso.cnome = "pn " + texto
     perso.nome = nome
     perso.senha = txtmin(arg0)
-    # Carrega personagem
+# Carrega personagem
     listaobj l1
     l1.addfim(perso)
     sav1.ler("jog-" + texto + ".sav", l1)
-    # Acerta nome, checa se nome codificado bate
+# Acerta nome, checa se nome codificado bate
     se txtnome(perso.nome) != texto
       perso.nome = nome
     senao
       nome = perso.nome
     fimse
-    # Acerta variáveis
+# Acerta variáveis
     listaitem item
     item = l1.ini
     enquanto item
@@ -221,7 +221,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
       item.depois
     efim
     canais = perso.canais
-    # Muda de sala e volta ao jogo
+# Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")
     perso.mudasala($[perso.salanome])
     !perso.dono && perso.mudasala(config:salaini)
@@ -315,8 +315,7 @@ func fim # Objeto foi apagado
 func fechou # Executado quando o objeto sock é apagado
   vazio1 = 1800 # 3 minutos
   vazio2 = 2400 # 4 minutos
-  se senha == ""
-    apagar(este)
+  senha == "" && apagar(este)
 
 func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
   senha ? sock.p_senha1 : sock.p_senha2
@@ -330,7 +329,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
     salanome = dono
     sock && (canais = sock.canais)
     salvarev = 3000 # 5 minutos
-  #msg(txt2(cnome) + " , " + senha)
+# msg(txt2(cnome) + " , " + senha)
     ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
 
 func salvarev_exec

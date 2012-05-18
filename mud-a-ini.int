@@ -68,15 +68,18 @@ espalhadas pelo chão. Você anda com cuidado para não torcer o pé.\n\
 Ao sul nota-se claramente a certa que delimita o jardim."
 const dir_n = $s_ini003
 const dir_ne = $s_ini005
+
 func ini
   criar("i_inipedra", este) # Cria uma pedra
   evento.addfim(este) # Receber eventos da própria sala
+
 func e_pegar # Pegar alguma coisa
   se arg1.nome == "pedra"
     criar("i_inipedra", arg0) # Cria uma pedra para o jogador
     $mens.p(arg0, arg1)
     $mens.mvis1("$P pega $r $a.") # Avisa que pegou uma pedra
     ret 1 # Para não pegar a pedra
+
 func e_soltar # Soltar alguma coisa
   se arg1.nome == "pedra"
     apagar(arg1) # Apagará a pedra
@@ -106,13 +109,16 @@ Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
 const dir_s = $s_ini003
 const dir_n = $s_ini012
 const dir_se = $s_ini005
+
 func ini
   sala:ini
   criar("p_inijardim", este)
+
 func e_sala # Alguém entrou
   se arg0.jog
     arg0.evento.addfim(este) # Receber eventos do personagem
     arg0.var.1planta = 1 # Tem planta carnívora
+
 func e_mover # Jogador quer se movimentar
   se arg1 == "n" && arg0.var.1planta # Se tem planta carnívora
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
@@ -128,19 +134,26 @@ const ident = nome
 const descpos = "Um jardineiro está sentado aqui."
 const sexo = 1 # 0=feminino, 1=masculino
 const descver = "Você não vê nada de especial."
+
 func ini
   dono = arg0
   dono.evento.addfim(este) # Receber eventos da sala
   evento.addfim(este) # Receber eventos do personagem
+
 func e_sala # Alguém entrou
   arg0.jog ? misc:tempo("aviso", arg0)
+
 func e_sala1 # Jardineiro mudou de sala: mantém eventos do personagem
   evento.addfim(este)
+
 func aviso10
   arg0.msg("Jardineiro disse: Olá.")
+
 func aviso20
   arg0.msg("Jardineiro disse: Preciso de uma pedra.")
+
 const container = 1 # Para poder receber itens
+
 func e_dar # Alguém deu algum item
   se arg2 == este # Dar para o jardineiro
     se arg1.nome == "pedra"
@@ -152,6 +165,7 @@ func e_dar # Alguém deu algum item
       arg0.msg("Jardineiro não aceita " + arg1.nome + ".")
     fimse
     ret 1 # Para não receber o item
+
 
 classe i_inipedra
 herda comum_item
@@ -192,6 +206,7 @@ const dir_o = $s_ini012
 
 func e_sala
   arg0.jog ? misc:tempo("entrou", arg0)
+
 func entrou10
   arg0.msg("Alguém disse olá")
 

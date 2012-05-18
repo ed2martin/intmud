@@ -4,7 +4,7 @@ IntMUD (Interpretador MUD)
 
 0. Créditos
 1. Sobre o IntMUD
-2. Opções dos arquivos "*.INT"
+2. Opções dos arquivos '*.INT'
 2.1. Opção MAPAGRANDE
 2.2. Opção EXEC
 2.3. Opção TELATXT
@@ -67,38 +67,38 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.1.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.3.
 
 
 1. SOBRE O INTMUD
 
 O IntMUD é um interpretador de comandos que trabalha com um ou mais
-arquivos textuais de extensão ".int", cujo o conteúdo deverá ser puramente
+arquivos textuais de extensão '.int', cujo o conteúdo deverá ser puramente
 oriundo da linguagem de maneira coerente às regras da mesma, para sua
 eficaz interpretação.
 
-Por padrão, o arquivo principal chama-se "intmud.int". É possível mudar
+Por padrão, o arquivo principal chama-se 'intmud.int'. É possível mudar
 esse padrão, das seguintes formas:
 
  - Renomeando o executável e o arquivo principal assumirá o nome alterado
-   matendo a extensão ".int", como dito anteriormente;
+   matendo a extensão '.int', como dito anteriormente;
 
-Exemplo: Se mudar o nome do executável para "teste.exe" o arquivo
-         principal passará a ser "teste.int".
+Exemplo: Se mudar o nome do executável para 'teste.exe' o arquivo
+         principal passará a ser 'teste.int'.
 
  - Seguindo as sintaxes:
    <nome do executável> <nome do arquivo>.int
    <nome do executável> <nome do arquivo>
 
 Exemplos:
- - INTMUD TESTE.INT                  - Interpreta o arquivo "teste.int"
+ - INTMUD TESTE.INT                  - Interpreta o arquivo 'teste.int'
                                        com o executável denominado
-                                       "intmud.exe";
- - INTMUD TESTE                      - O mesmo que "intmud teste.int", já
+                                       'intmud.exe';
+ - INTMUD TESTE                      - O mesmo que 'intmud teste.int', já
                                        visto acima.
 
 OBS.1: Observe que executando o programa em IntMUD da maneira anterior,
-       não faz diferença omitir ou não a extensão ".int" do arquivo
+       não faz diferença omitir ou não a extensão '.int' do arquivo
        desejado;
 OBS.2: Note também que o primeiro arquivo é o executável e o segundo é o
        que contém a linguagem.
@@ -110,7 +110,7 @@ Em tópicos posteriores a este, conheceremos mais detalhadamente a
 estrutura completa do IntMUD.
 
 
-2. OPÇÕES DOS ARQUIVOS "*.INT"
+2. OPÇÕES DOS ARQUIVOS '*.INT'
 
 O arquivo principal do IntMUD possui algumas definições padrão inseridas
 no início, conforme a seguinte sintaxe:
@@ -142,7 +142,7 @@ Exemplo: Suponha em dividir um programa em um arquivo com o código
          salas; outro contendo classes herdadas exclusivamente para
          objetos e outro ainda contendo classes restritas para
          personagens. Levando em conta que o nome do executável seja
-         "intmud.exe", os demais arquivos ficariam assim:
+         'intmud.exe', os demais arquivos ficariam assim:
 
 INTMUD.INT                     - Contém o código principal;
 INTMUD-SALAS.INT               - Contém classes apenas herdadas por salas;
@@ -154,7 +154,7 @@ OBS.: Caso o nome do executável mude, será diferente apenas o prefixo dos
       arquivos membros, que assumirá o nome modificado.
 
 Veja abaixo a mesma lista de arquivos, porém, com um executável
-denominado "teste.exe":
+denominado 'teste.exe':
 
 TESTE.INT
 TESTE-SALAS.INT
@@ -171,7 +171,7 @@ Se essa opção estiver ausente, assume 5000.
 Essa opção indica quantas linhas do programa podem ser executadas antes
 do controle retornar automaticamente ao IntMUD. Notar que em algumas
 situações, duas ou mais linhas podem ser consideradas como apenas uma.
-Exemplo, quando é o usado o caracter "\" no final da linha para dividí-la.
+Exemplo, quando é o usado o caracter '\' no final da linha para dividí-la.
 
 É muito importante definir um número não muito grande. Quando há algum bug
 no programa, de modo que algumas instruções são executadas indefinidamente,
@@ -185,7 +185,7 @@ quantidade de linhas definidas em EXEC.
 
 Se uma função específica necessitar de um valor maior de EXEC, pode-se mudar
 temporariamente esse número em tempo de execução, através da variável DEBUG
-(vide em "Outros tipos de variáveis").
+(vide em 'Outros tipos de variáveis').
 
 Exemplo: Para executar 10 mil linhas antes do controle retornar
          automaticamente ao programa, basta adicionar uma linha assim:
@@ -217,7 +217,7 @@ Em ambientes Unix e Linux, quando TELATXT for 1, deve-se executar o programa
 em um terminal.
 
 A comunicação com o usuário se dá sempre através da variável telatxt (vide
-"Outros tipos de variáveis").
+'Outros tipos de variáveis').
 
 
 2.4. OPÇÃO LOG
@@ -235,9 +235,9 @@ que o identifica resumidamente.
 Essa opção define para onde vão as linhas de erros. O valor 0 apresenta
 as linhas na janela do programa; o valor 1 coloca em um arquivo de LOG.
 
-O nome do arquivo é o mesmo do executável, mas terminado em ".log".
-Por exemplo, se o executável chamar-se "teste.exe" o arquivo de LOG será
-"teste.log".
+O nome do arquivo é o mesmo do executável, mas terminado em '.log'.
+Por exemplo, se o executável chamar-se 'teste.exe' o arquivo de LOG será
+'teste.log'.
 
 
 3. CLASSES
@@ -245,7 +245,7 @@ Por exemplo, se o executável chamar-se "teste.exe" o arquivo de LOG será
 Após as opções vem as definições de classes, que constituem as instruções
 da linguagem. Durante a execução do programa, todos os objetos criados
 sempre serão derivados do conteúdo delas. Com isso, pode-se afirmar que
-uma classe é o "alicerce principal" de um objeto, pois ela contém todas
+uma classe é o 'alicerce principal' de um objeto, pois ela contém todas
 as instruções que caracterizam a funcionalidade do mesmo. Mais ainda,
 quando uma classe é alterada, todos os objetos derivados dela também são.
 
@@ -262,9 +262,9 @@ herda <classe 1>, <classe 2>, <classe 3> ... <classe n>
 Os nomes de classes, funções e variáveis podem conter os seguintes caracteres:
  - Letras de A a Z;
  - Números de 0 a 9, exceto no início do nome;
- - Um "ç" (c cedilha);
- - Um sinal de "@" (arroba);
- - Se conter espaço, o IntMUD o considera como um sinal de "_"
+ - Um 'ç' (c cedilha);
+ - Um sinal de '@' (arroba);
+ - Se conter espaço, o IntMUD o considera como um sinal de '_'
    (sublinhado);
 
 
@@ -313,11 +313,11 @@ a instrução RET seguido da informação.
 
 Exemplo:
 
-func x # Função denominada "x"
-# Retorna o valor "3" ao ser chamada
+func x # Função denominada 'x'
+# Retorna o valor '3' ao ser chamada
 ret 3
 
-func y # Função denominada "y"
+func y # Função denominada 'y'
 # Retorna o texto "bom dia"
 ret "bom dia"
 
@@ -340,10 +340,10 @@ sejam nulos.
 Exemplo:
 
 uint8 x # Variável que vai de 0 a 255
-# Faz x ser o retorno da função denominada "teste"
+# Faz x ser o retorno da função denominada 'teste'
 x = teste(10, 3)
 
-func teste # Função denominada "teste"
+func teste # Função denominada 'teste'
 # Argumentos dessa função:
 # ARG0: Nesse caso é o valor numérico 10
 # ARG1: Nesse caso é o valor numérico 3
@@ -351,20 +351,20 @@ func teste # Função denominada "teste"
 # Soma arg0 com arg1 e retorna via instrução RET
 ret arg0 + arg1
 
-O retorno da funçao "teste" será 13 e colocado na variável uint8 x.
+O retorno da funçao 'teste' será 13 e colocado na variável uint8 x.
 
 Outros exemplos de funções:
 
 classe abc
 int1 x # Variável que vai de 0 a 1
 int8 y # Variável de valor inteiro que vai de -128 a 127
-func teste1 # Função denominada "teste1"
+func teste1 # Função denominada 'teste1'
 # Retorna o texto "bom dia" (sem as aspas)
   ret "bom dia"
-func teste2 # Função denominada "teste2"
+func teste2 # Função denominada 'teste2'
 # Retorna a soma de x + y
   ret x + y
-func teste3 # Função denominada "teste3"
+func teste3 # Função denominada 'teste3'
 # Soma arg0 e arg1 e coloca em y ao chamar essa função
   y = arg0 + arg1
 
@@ -373,29 +373,29 @@ func teste3 # Função denominada "teste3"
 
 Em princípio, são semelhantes a variáveis, porém possuem uma informação que
 não pode ser alterada. E é justamente essa imutabilidade de alteração
-que dá origem ao nome "constante" para as tais.
+que dá origem ao nome 'constante' para as tais.
 
 Sintaxe da definição:
 const <nome da constante> = <valor da constante>
 
 Exemplos:
 
-# Constante denominada "teste0" equivale ao número 10
+# Constante denominada 'teste0' equivale ao número 10
 const teste0 = 10
 
-# Constante denominada "teste1" equivale ao texto "bom dia"
+# Constante denominada 'teste1' equivale ao texto "bom dia"
 const teste1 = "bom dia"
 
 Internamente, constantes são semelhantes a funções contendo apenas uma
 instrução RET, nada além disso. Por exemplo, considere a seguinte função:
 
-func x # Função denominada "x"
+func x # Função denominada 'x'
 # Retorna um valor numérico multiplicado por 10
 ret arg0 * 10
 
 Pode ser reescrita na forma de constante, da seguinte forma:
 
-# Constante denominada "x" que retorna o resultado da expressão arg0 * 10
+# Constante denominada 'x' que retorna o resultado da expressão arg0 * 10
 const x = arg0 * 10
 
 
@@ -412,7 +412,7 @@ varfunc <nome da função>
 
 Exemplo:
 
-varfunc x # Varfunc denominada "x"
+varfunc x # Varfunc denominada 'x'
   se args==0
 # Leitura da variável: retorna "bom dia"
     ret "bom dia"
@@ -437,7 +437,7 @@ varconst x = args ? (x1 = arg0 * 100) : x1 / 100
 Tem o mesmo efeito da função:
 
 int16 x1
-varfunc x # Função "x" que se comporta como se fosse uma variável
+varfunc x # Função 'x' que se comporta como se fosse uma variável
 se args # Se for alteração
 x1 = arg0 * 100 # Coloca em x1 o novo valor multiplicado por 100
 senao # Se for leitura
@@ -475,9 +475,9 @@ classe y
 int8 teste0
 txt8 teste1
 
-Nestes dois exemplos a classe "y" sempre possui a variável "int8 teste0":
- - No primeiro exemplo, porque herdou da classe "x";
- - No segundo, porque foi definida na própria classe "y".
+Nestes dois exemplos a classe 'y' sempre possui a variável 'int8 teste0':
+ - No primeiro exemplo, porque herdou da classe 'x';
+ - No segundo, porque foi definida na própria classe 'y'.
 
 Uma classe derivada pode adquirir o conteúdo de maneira indireta, ou seja,
 através da herança de outras classes. Veja o exemplo abaixo.
@@ -509,8 +509,8 @@ classe B
 herda A
 int8 x
 
-Nesse caso a classe B possui a variável "int8 x", mas não possui a variável
-"txt10 x".
+Nesse caso a classe B possui a variável 'int8 x', mas não possui a variável
+'txt10 x'.
 
 
 9. CONTEÚDO DAS FUNÇÕES
@@ -532,27 +532,49 @@ se x == 10 # Verifica se x é 10
 # Se x for 10, executa algo aqui
 fimse
 
-Nota: Os comentários não alteram de nenhuma forma a execução do programa,
-      e praticamente não o deixam mais lento.
+Nota: Os comentários não interferem no período de tempo da interpretação
+      quando estão na frente de uma instrução. No caso de linhas iniciadas
+      por '#', há um consumo de tempo, porém desprezível.
 
 9.2. Textos
 
-Qualquer sequência de caracteres começada e terminada com aspas duplas é
-tratada como um texto. Exemplo, para atribuir o texto bom dia a uma variável
-chamada x, basta escrever:
+Qualquer sequência de texto que esteja entre aspas duplas (") é
+interpretada como um texto.
 
+Exemplo 1:
+
+# A linha abaixo atribui o texto 'bom dia' à variável 'x'
 x = "bom dia"
 
-É possível representar caracteres como aspas duplas e definição de cores
-em textos. Vide caracteres especiais em textos.
+Nota: É possível representar caracteres como aspas duplas e definição de
+      cores em textos através do caracter '\' (raíz). Para mais detalhes
+      vide 'Caracteres especiais em textos'.
 
 9.3. Números
 
-Qualquer sequência de dígitos de 0 a 9, precedidos ou não de um sinal
-de menos. Pode-se ainda colocar um ponto decimal. Exemplo, para atribuir
-o valor numérico -3.4 a uma variável chamada x, basta escrever:
+Qualquer digito de 0 a 9, que pode ter as seguintes características
+matemáticas, específicas ou simultâneas:
 
-x = -3.4
+ - Não precedente a um sinal de '-' (menos) será um número positivo;
+ - Precedente a um sinal de '-' (menos) será um número negativo;
+ - Precedendo a um '.' (ponto) que precede um dígito também de 0 a 9 será
+   um número decimal.
+
+Exemplo 1: Atribuição de números em variáveis
+
+func valor
+real w # Variável usada para valores positivos, negativos e decimais
+uint8 x # Usada apenas para valore positivos
+int8 y # Usada para valores positivos e negativos
+real z # Usada para valores positivos, negativos e decimais
+# Atribui o valor decimal '1.5' em 'w'
+w = 1.5
+# Atribui o valor positivo '10' em 'x'
+x = 10
+# Atribui o valor negativo '-10' em 'y'
+y = -10
+# Atribui o valor negativo e decimal '-1.5' em 'z'
+z = -1.5
 
 9.4. Definição de uma variável
 
@@ -625,7 +647,7 @@ se estivesse definida na própria classe.
 Exemplo:
 item:luminosidade(10)
 Executa função luminosidade da classe item, como se não pertencesse a outra
-classe. Em outras palavras, quando a função é chamada, o objeto "este"
+classe. Em outras palavras, quando a função é chamada, o objeto 'este'
 permanece o mesmo.
 
 9.10. Um ponto
@@ -654,7 +676,7 @@ z1 = x + y, z2 = x - y
 
 São instruções que ocupam uma linha inteira e mudam a sequência como as
 instruções são executadas. Geralmente é executada linha por linha, até a
-última, quando a função retorna. Mas com uma instrução "se", é possível
+última, quando a função retorna. Mas com uma instrução 'se', é possível
 executar algumas linhas sob determinada condição. Já uma instrução enquanto
 permite repetir várias vezes uma ou mais linhas.
 
@@ -767,7 +789,7 @@ intinc aceita valores negativos, mas nesse caso a contagem fica parada.
 Possui as funções neg, pos e abs, exatamente como intdec (vide acima).
 
 11.10. real <nomedavariável>
-Corresponde ao tipo "double" em C++. É capaz de representar números muito
+Corresponde ao tipo 'double' em C++. É capaz de representar números muito
 grandes e números muito pequenos.
 
 11.11. txt1 a txt512 seguido do nome da variável:
@@ -779,9 +801,9 @@ x = "bom dia" # Faz essa variável ter o texto "bom dia"
 
 11.12. ref <nomedavariável>
 Referência para um objeto; corresponde a um objeto qualquer.
-A palavra "nulo" é usada para indicar que a referência
+A palavra 'nulo' é usada para indicar que a referência
 não corresponde a nenhum objeto. Quando o objeto é apagado,
-automaticamente a referência passa a ser "nulo".
+automaticamente a referência passa a ser 'nulo'.
 Exemplo:
 ref ref1
 # Cria objeto
@@ -821,7 +843,7 @@ teste.2
 Exemplo de como tratar eventos de um vetor:
 classe x
 inttempo n.5
-func n_exec # Evento para as 5 variáveis "n"
+func n_exec # Evento para as 5 variáveis 'n'
 # Aqui arg0 é o índice da variável no vetor (de 0 a 4)
 # n.[arg0] corresponde à variável que gerou o evento
 
@@ -861,9 +883,9 @@ a+b     Soma
 a-b     Subtrai
 a<<b    Deslocamento à esquerda, sendo que a=valor e b=quantidade de bits
 a>>b    Deslocamento à direita, sendo que a=valor e b=quantidade de bits
-a|b     "Ou" para bits entre a e b
-a^b     "Ou exclusivo" para bits entre a e b
-a&b     "E" para bits entre a e b
+a|b     'Ou' para bits entre a e b
+a^b     'Ou exclusivo' para bits entre a e b
+a&b     'E' para bits entre a e b
 a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
 a<=b    Verdadeiro se a<=b
 a==b    Verdadeiro se a for igual a b
@@ -1064,37 +1086,39 @@ Exemplo, em uma variável int8:
 
 15. INSTRUÇÕES DE CONTROLE DE FLUXO
 
-15.1. se <expressão>  ... fimse
-   se <expressão>  ... senão ... fimse
-   se <expressão>  ... senão <expressão>  ... fimse
+15.1. se [argumento]  ... fimse
+   se [argumento]  ... senão ... fimse
+   se [argumento]  ... senão [argumento]  ... fimse
 São instruções de decisão. Se uma condição for verdadeira, executa
 algumas instruções. Se for falsa, executa outras.
 
-15.2. enquanto <expressão>  ... efim
+15.2. enquanto [argumento]  ... efim
 Laço de repetição
-Se a expressão for verdadeira, executa as instruções que estiverem entre
+Se o argumento for verdadeiro, executa as instruções que estiverem entre
 o enquanto e o efim e volta para a instrução enquanto, para testar
-a <expressão> novamente.
+o argumento novamente.
 
-15.3. sair
+15.3. sair [argumento]
 Sai de um laço enquanto ou um laço casovar.
+A instrução SAIR com um argumento só sai se o argumento for verdadeiro.
 
 15.4. continuar
-Fecha um ciclo de um laço enquanto, como se tivesse chegado na instrução
-efim. A diferença entre continuar e efim é que efim define aonde termina
-o laço.
+Fecha um ciclo de um laço enquanto, como se tivesse chegado na instrução efim.
+A diferença entre continuar e efim é que efim define aonde termina o laço.
+A instrução CONTINUAR com um argumento só continua se o argumento for
+verdadeiro.
 
-15.5. casovar <expressão> ... casofim
+15.5. casovar [argumento] ... casofim
       casose
       casose "texto"
-Avalia a expressão e transforma em texto. Em seguida, vai para a instrução
+Avalia o argumento e transforma em texto. Em seguida, vai para a instrução
 casose que contém o texto correspondente (letras maiúsculas e minúsculas
 são consideradas diferentes). Se não encontrar o texto, vai para
 a instrução casose sem argumentos ou, se essa instrução não existir,
 vai para o casofim.
-A instrução sair sai do laço casovar, indo direto para o casofim.
-Nota: um casovar com vários casose é mais eficiente que várias instruções
-se e senão.
+A instrução SAIR sai do laço casovar, indo direto para o casofim.
+Nota: um CASOVAR com vários CASOSE é mais eficiente que várias instruções
+SE e SENÃO.
 
 Exemplo 1:
 
@@ -1138,7 +1162,14 @@ senao txt(n+2)==="3"
 msg("b")
 fimse
 
-*. terminar
+15.6. ret [argumento 1], [argumento 2]
+Retorna de uma função.
+RET sem argumentos retorna NULO.
+RET com um argumento retorna o próprio argumento.
+RET com dois argumentos retorna o segundo argumento se o primeiro resultar
+em verdadeiro. Se resultar em falso, não retorna (passa para a próxima linha).
+
+15.7. terminar
 Encerra o programa
 
 
@@ -1290,16 +1321,24 @@ V = vazio (antes do início do texto ou depois do fim)
 Para indicar aonde o texto separador deve ser acrescentado, escreve-se
 uma ou mais letras, que correspondem a um tipo de caracter, seguido do
 sinal de mais e uma ou mais letras, correspondentes ao caracter seguinte.
-Exemplo, para separar os números, acrescentando um espaço na frente,
-o texto de opções é "LNO+N", que significa letra, número ou outros
-caracteres seguido de número.
+
+Exemplo: para separar os números, acrescentando um espaço na frente, o texto
+         de opções é "LNO+N", que significa letra, número ou outros caracteres
+         seguido de número.
+
 txtsepara("1,10abc-40", "LNO+N") resulta em: "1, 10abc -40"
-Exemplo 2: txtsepara("bom dia boa tarde", "L+EV", "!")
-é o mesmo que: "bom! dia! boa! tarde!"
+
+Exemplo 2:
+
+txtsepara("bom dia boa tarde", "L+EV", "!")
+# É o mesmo que: "bom! dia! boa! tarde!"
 
 Pode-se usar mais de uma condição, separando-as com vírgulas.
-Exemplo: txtsepara("1,10abc-40", "LON+N,N+LON")
-é o mesmo que: "1 , 10 abc -40"
+
+Exemplo 3:
+
+txtsepara("1,10abc-40", "LON+N,N+LON")
+# É o mesmo que: "1 , 10 abc -40"
 
 16.3.20. txtremove(<texto1>, <texto2>)
 Retorna um texto semelhante a <texto1>, mas removendo espaços e/ou
@@ -1312,14 +1351,16 @@ S = remover aspas simples trocando espaços entre duas aspas por sublinhado.
 A = remover aspas duplas trocando espaços entre duas aspas por sublinhado.
 7 = usar letras sem acentuação (caracteres em 7 bits).
     Exemplo, "ã É ì" vira "a E i".
+
 Exemplos:
-txtremove("  bom  dia  ", "EMD") é o mesmo que "bom dia"
-txtremove("  bom  dia  ", "ED") é o mesmo que "bom  dia"
-txtremove("\cF\d4Teste\b", "C") é o mesmo que "Teste"
-txtremove("tenha um 'bom dia' !", "S") é o mesmo que "tenha um bom_dia !"
+
+txtremove("  bom  dia  ", "EMD") # É o mesmo que "bom dia"
+txtremove("  bom  dia  ", "ED") # É o mesmo que "bom  dia"
+txtremove("\cF\d4Teste\b", "C") # É o mesmo que "Teste"
+txtremove("tenha um 'bom dia' !", "S") # É o mesmo que "tenha um bom_dia !"
 
 16.3.21. intdist(<texto1>, <texto2>)
-Calcula a distância "Levenshtein" entre os dois textos.
+Calcula a distância 'Levenshtein' entre os dois textos.
 Em outras palavras, calcula o quanto os dois textos são diferentes.
 Retorna a quantidade de mudanças necessárias; 0=textos iguais.
 
@@ -1347,7 +1388,9 @@ Vide exemplo em txtdec (abaixo).
 
 16.4.2. txtdec(<texto>)
 Decodifica um texto. Processo inverso de txtcod.
+
 Exemplo de como testar txtcod e txtdec:
+
 telatxt = 1
 classe tela
 telatxt tela
@@ -1362,9 +1405,13 @@ Torna visíveis caracteres especiais, como \n e \b.
 "\b\c\d\n"   mudam para  "\\b\\c\\d\\n"
 "\"" muda para "\\\""
 "\\" muda para "\\\\"
+
 Exemplo 1:
-txtvis("\C1 \"Bom dia\" \B") é o mesmo que "\\C1 \\\"Bom dia\\\" \\B".
+
+txtvis("\C1 \"Bom dia\" \B") # É o mesmo que "\\C1 \\\"Bom dia\\\" \\B".
+
 Exemplo 2:
+
 txt10 x
 x = "\b\""
 msg("A variável x contém \"" + txtvis(x) + "\"\n")
@@ -1396,34 +1443,40 @@ txttrocamai - considera iguais letras maiúsculas e minúsculas.
 txttrocadif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
 16.4.7. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
-Procura textos em <texto> e substitui variáveis/funções do objeto "este".
+Procura textos em <texto> e substitui variáveis/funções do objeto 'este'.
 Os textos procurados são <texto2> seguido de uma palavra qualquer.
 Os nomes das funções são <variável> seguido da mesma palavra.
+
 Exemplo:
-  const t_1 = "joão"  # $1 = joão
-  const t_2 = "maria" # $2 = maria
-  vartroca("$1 falou com $2", "$", "t_")
-              # É o mesmo que: t_1 + " falou com " + t_2
-              # Produz o texto "joão falou com maria"
+
+const t_1 = "joão"  # $1 = joão
+const t_2 = "maria" # $2 = maria
+vartroca("$1 falou com $2", "$", "t_")
+# É o mesmo que: t_1 + " falou com " + t_2
+# Que por sua vez, resulta no texto "joão falou com maria"
+
 A porcentagem, se estiver presente, é a chance de fazer uma troca.
 Exemplo: 0=não trocar, 100=trocar sempre, 50=50% de chances de trocar
 O espaço, se estiver presente, é um número que indica quantas trocas
 não deve fazer após fazer uma troca com sucesso.
 Exemplo: 1=cada vez que trocar, ignora a próxima troca
 Quando vartroca chama uma função, coloca em arg0 o texto encontrado.
+
 Exemplo de como diferenciar letras maiúsculas de minúsculas:
-  func teste_a
-    se arg0 === "A" # Se for exatamente igual
-      ret "A maiúsculo"
-    senão
-      ret "A minúsculo"
-  vartroca("$A $a", "$", "teste_")
-              # Produz o texto "A maiúsculo A minúsculo"
+
+func teste_a
+  se arg0 === "A" # Se for exatamente igual
+    ret "A maiúsculo"
+  senão
+    ret "A minúsculo"
+vartroca("$A $a", "$", "teste_") # Produz o texto "A maiúsculo A minúsculo"
+
 Outra forma de escrever:
-  const teste_a = t_a[arg0=="A"]
-  const t_a0 = "A maiúsculo"
-  const t_a1 = "A minúsculo"
-  vartroca("$A $a", "$", "teste_")
+
+const teste_a = t_a[arg0=="A"]
+const t_a0 = "A maiúsculo"
+const t_a1 = "A minúsculo"
+vartroca("$A $a", "$", "teste_")
 
 
 16.5. FUNÇÕES PARA APELIDO E SENHA
@@ -1498,8 +1551,8 @@ O primeiro \n é substituído por interrogação.
 Os próximos \n são substituídos pelo caracter &.
 O espaço é substituído pelo um sinal de soma.
 Letras A a Z maiúsculas e minúsculas, dígitos de 0 a 9, hífen, ponto,
-sinal de igual e "/" não são alterados.
-Qualquer outro caracter é substituído por um "%" seguido de dois
+sinal de igual e '/' não são alterados.
+Qualquer outro caracter é substituído por um '%' seguido de dois
 dígitos, que são código ASCII do caracter, em hexadecimal.
 
 Exemplo:
@@ -1511,9 +1564,11 @@ passando as variáveis a="1" e b="bom dia!".
 16.7.2. txturldec(<texto>)
 Decodifica uma URL formando um texto.
 Processo inverso de txturlcod.
+
 Exemplo:
+
 txturldec("/x.html?a=1&b=bom+dia%21")
-Resulta em "/x.html\na=1\nb=bom dia!"
+# Resulta em "/x.html\na=1\nb=bom dia!"
 
 16.7.3. intchr(<texto>, [número do caracter])
 Retorna o código ASCII de um caracter, de 32 a 255, ou um dos
@@ -1553,10 +1608,14 @@ que corresponde ao valor numérico das variáveis do vetor.
 
 16.9.1. limpar
 Limpa todas as variáveis do vetor (faz todas as variáveis = "").
+
 Exemplo:
+
 txt10 x.3
 x.limpar
+
 É o mesmo que:
+
 txt10 x.3
 x.0 = ""
 x.1 = ""
@@ -1564,7 +1623,9 @@ x.2 = ""
 
 16.9.2. texto([número da primeira variável], [número da última variável])
 Retorna um texto que corresponde a todas as variáveis concatenadas
+
 Exemplo:
+
 txt10 x.3
 x.0 = "a"
 x.1 = "b"
@@ -1574,7 +1635,7 @@ msg(x.texto(0,1)) # É o mesmo que msg("ab")
 
 16.9.3. palavras(<texto>, [número de palavras])
 Divide o texto em palavras.
-As palavras são separadas por espaço ou "\n".
+As palavras são separadas por espaço ou '\n'.
 Retorna o número de palavras (pode ser zero).
 Exemplo:
 txt10 x.2
@@ -1586,7 +1647,7 @@ x.1 = "dia !"
 
 16.9.4. linhas(<texto>, [número de colunas])
 Preenche as variáveis do vetor com o texto, da seguinte forma:
-Cada variável recebe uma linha do texto (o caracter "\n" indica
+Cada variável recebe uma linha do texto (o caracter '\n' indica
 o fim de uma linha).
 Linhas que não cabem em uma variável são divididas automaticamente,
 de preferência no último espaço entre <número de colunas> e o tamanho
@@ -1617,9 +1678,10 @@ x.3 = "def:20"
 16.9.6. juntar(<delimitador>, [número de variáveis])
 Concatena o número de variáveis do vetor especificadas, acrescentando
 o delimitador entre duas variáveis. Retorna o texto obtido.
+
 Exemplo:
-x.juntar(",", 3) é o mesmo que:
-x.0 + "," + x.1 + "," + x.2
+
+x.juntar(",", 3) # É o mesmo que: x.0 + "," + x.1 + "," + x.2
 
 16.9.7. txtremove(<texto>)
 Altera todos os textos do vetor com a função txtremove.
@@ -1755,11 +1817,11 @@ Remove objeto da lista, listaitem passa a não ser um objeto válido.
 
 19.9. removeantes
 Remove objeto da lista e passa para o anterior.
-Nota: não confundir com "remover o objeto anterior".
+Nota: não confundir com 'remover o objeto anterior'.
 
 19.10. removedepois
 Remove objeto da lista e passa para o próximo.
-Nota: não confundir com "remover o próximo objeto".
+Nota: não confundir com 'remover o próximo objeto'.
 
 19.11. obj
 Objeto.
@@ -1928,7 +1990,7 @@ Funções:
 21.1. linha
 Número da linha atual; começa em 0.
 Pode ser lido e alterado, como uma variável.
-Nota 1: prefira usar "linha.depois" ao invés de "linha+=1".
+Nota 1: prefira usar 'linha.depois' ao invés de 'linha+=1'.
 Nota 2: Internamente muda de linha chamando as funções antes e depois.
 
 21.2. byte
@@ -1977,14 +2039,14 @@ Remove a quantidade de linhas especificadas, a partir da linha atual.
 21.14. juntar
 Junta a linha atual com a anterior.
 Retorna 1 se juntou linhas ou 0 se não juntou.
-Nota: Para dividir uma linha, adicionar texto "\n" com a função mudar.
+Nota: Para dividir uma linha, adicionar texto '\n' com a função mudar.
 
 21.15. txtproc(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Procura um texto a partir da linha atual, sem diferenciar letras maiúsculas,
 minúsculas e acentuadas.
-Se o texto procurado começar com "\n", significa que ele deve estar no
+Se o texto procurado começar com '\n', significa que ele deve estar no
 começo de uma linha.
-Se o texto procurado terminar com "\n", significa que ele deve estar no
+Se o texto procurado terminar com '\n', significa que ele deve estar no
 fim de uma linha.
 Se não for especificado o número de linhas a procurar, procura até o final
 do texto de textotxt.
@@ -1994,12 +2056,12 @@ contém o texto e retorna o número do caracter (0=início da linha).
 
 21.16. txtprocmai(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Mesmo que txtproc (acima), exceto que diferencia letras acentuadas e não
-acentuadas (exemplo, "a" e "á"). Mas não diferencia letras maiúsculas
+acentuadas (exemplo, 'a' e 'á'). Mas não diferencia letras maiúsculas
 de minúsculas.
 
 21.17. txtprocdif(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Mesmo que txtproc (acima), exceto que diferencia letras maiúsculas,
-acentuadas e sem acento. Exemplo, "a", "A" e "Á" são consideradas três
+acentuadas e sem acento. Exemplo, 'a', 'A' e 'Á' são consideradas três
 letras diferentes em txtprocdif.
 
 
@@ -2007,9 +2069,9 @@ letras diferentes em txtprocdif.
 
 Lista de variáveis organizadas em ordem alfabética.
 Semelhante a textotxt, porém as linhas contém variáveis de texto
-no formato "nome da variável=valor", organizadas em ordem alfabética.
+no formato 'nome da variável=valor', organizadas em ordem alfabética.
 Cada variável pode conter qualquer texto, inclusive caracteres como
-"\b", "\n" e "=".
+'\b', '\n' e '='.
 
 Funções:
 
@@ -2079,18 +2141,19 @@ Funções:
 
 23.1. ini(<texto>, <quantidade>)
 Inicia a busca.
-<texto> é o nome procurado (geralmente o que o usuário digitou).
-Exemplo: "poção"
+<quantidade> é a quantidade máxima de objetos que podem ser encontrados.
+Por exemplo, se não for desejável processar mais de 10 objetos, a quantidade
+deve ser o número 10.
+<texto> é o nome procurado, geralmente o que o usuário digitou.
 Pode-se digitar o número do objeto, escrevendo um número seguido
-de ponto e um nome. Exemplo: "2.poção" corresponde à segunda poção.
-Pode-se digitar também a quantidade, se for mais de um.
-Exemplo: "10 poção"
-<quantidade> é a quantidade máxima de objetos que podem ser
-encontrados. Exemplo, se não for desejável processar mais de 10
-objetos, <quantidade> deve ser o número 10.
+de ponto e um nome. Por exemplo, "2.poção" corresponde à segunda poção.
+Pode-se digitar também a quantidade, se for mais de um. Por exemplo,
+"10 poção". Repare que nesse caso é a quantidade seguida de um nome.
+
+Vide também exemplo de código no tópico 23.2 (abaixo).
 
 23.2. nome(<texto>)
-        nome(<texto>, <texto2>, ..., <textoN>)
+      nome(<texto>, <texto2>, ..., <textoN>)
 <texto> contém um ou mais nomes (separados por espaço) correspondentes
 a um objeto. Exemplo, "chave chave_verde" significa um objeto que
 pode ser referenciado por esses dois nomes: chave e chave_verde.
@@ -2175,7 +2238,7 @@ Retorna 1 se arquivo existe ou 0 se não existe.
 25.3. abrir(<nome do arquivo>)
 Abre arquivo, cria se não existir.
 Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
-Nota 1: O nome do arquivo sempre terminará com ".log".
+Nota 1: O nome do arquivo sempre terminará com '.log'.
 Nota 2: O arquivo deve pertencer ao diretório atual ou a um
 subdiretório dele. Não é possível criar arquivos em outros lugares.
 
@@ -2198,7 +2261,7 @@ Nota 2: O arquivo deve pertencer ao diretório atual ou a um
 subdiretório dele. Não é possível criar arquivos em outros lugares.
 
 Os objetos que serão salvos devem ser colocados em uma listaobj.
-As variáveis salvas devem ser definidas com a palavra "sav" antes.
+As variáveis salvas devem ser definidas com a palavra 'sav' antes.
 Exemplo:
 classe x
 sav int8 a # Essa variável é salva por arqsav
@@ -2297,7 +2360,10 @@ Fecha o arquivo.
 27.5. truncar(<arquivo>, <tamanho>)
 Trunca o tamanho de um arquivo no tamanho especificado.
 Retorna 1 se conseguiu ou 0 se não conseguiu.
-Exemplo: truncar("a.txt", 0) limpa o conteúdo do arquivo a.txt
+
+Exemplo:
+
+truncar("a.txt", 0) # Limpa o conteúdo do arquivo a.txt
 
 27.6. msg(<texto>)
 Escreve texto no arquivo.
@@ -2393,7 +2459,7 @@ t.msg("Variável y é do tipo: " + p.vartipo("x", "y") + "\n")
 30. TELATXT - ACESSAR A JANELA DO PROGRAMA
 
 Semelhante a socket, mas trabalha com uma tela de texto, chamada console.
-Essa tela é semelhante ao "prompt de comando", no Windows, ou o próprio
+Essa tela é semelhante ao 'prompt de comando', no Windows, ou o próprio
 terminal, em Unix.
 
 Funções e variáveis:
@@ -2401,7 +2467,7 @@ Funções e variáveis:
 30.1. proto
 0 se a tela de texto não estiver aberta
 6 se estiver aberta
-O valor de proto depende da opção "telatxt" no arquivo intmud.cfg.
+O valor de proto depende da opção 'telatxt' no arquivo intmud.cfg.
 
 30.2. posx
 Posição do cursor: quantos caracteres enviou após o último \n.
@@ -2604,7 +2670,7 @@ Em ordem alfabética.
 Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
 
 33.1.4. iniherda(<nome da classe>)
-Obter os nomes das classes definidas na instrução "herda".
+Obter os nomes das classes definidas na instrução 'herda'.
 Na ordem definida na classe.
 
 33.1.5. iniherdatudo(<nome da classe>)
@@ -2657,8 +2723,8 @@ definido na própria classe ou 2 se foi herdada.
 
 33.3.3. arquivo(<nome da classe>)
 Retorna o sufixo do nome do arquivo que contém a classe.
-Exemplo, "abc" corresponde ao arquivo "intmud-abc.int".
-Um texto vazio significa arquivo "intmud.int".
+Exemplo, "abc" corresponde ao arquivo 'intmud-abc.int'.
+Um texto vazio significa arquivo 'intmud.int'.
 
 33.3.4. vartipo(<nome da classe>, <nome da variável>)
 Retorna o tipo de variável ou "" se a variável não existe.
@@ -2702,8 +2768,8 @@ Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
 Cria uma classe. Se já existia, altera ao invés de criar.
 A primeira linha é o nome da classe.
 A segunda linha de <texto> é o sufixo do nome do arquivo.
-    Exemplo, "abc" corresponde ao arquivo "intmud-abc.int".
-    Um texto vazio corresponde ao arquivo "intmud.int".
+    Exemplo, "abc" corresponde ao arquivo 'intmud-abc.int'.
+    Um texto vazio corresponde ao arquivo 'intmud.int'.
 Da terceira linha em diante são as instruções (o contéudo da classe).
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
@@ -2772,18 +2838,18 @@ independete de terem sido alterados ou não.
 Funções:
 
 34.1. exec
-Contador de instruções - opção "exec" no início do arquivo int.
+Contador de instruções - opção 'exec' no início do arquivo int.
 A cada instrução executada essa variável é subtraída de 1.
 Quando chega a 0, o controle retorna automaticamente ao IntMUD.
 Pode ser lido e alterado, como uma variável.
 
 34.2. ini
-Inicializa exec com o valor definido na opção "exec" no início
+Inicializa exec com o valor definido na opção 'exec' no início
 do arquivo int.
 
 34.3. cmd(<texto>, [texto])
 Executa a instrução que está no texto especificado.
-Se for mais de uma instrução, separar com "\n".
+Se for mais de uma instrução, separar com '\n'.
 Retorna mensagem de erro se instrução não for válida.
 Nota 1: instruções ret no texto retornam para o cmd (vide abaixo).
 Nota 2: variáveis criadas no cmd só existem dentro do cmd.
@@ -2800,8 +2866,8 @@ Antes de executar cada instrução chama a função de <objeto>
 com o nome especificado em <texto>. Se a função não existir, passa
 a executar instruções sem chamar nenhuma função.
 Na função:
-arg0=objeto "este"
-arg1=texto contendo a instrução que será executada executada
+arg0 é oobjeto 'este'
+arg1 é o texto contendo a instrução que será executada executada
 
 34.5. func
 Retorna o nível de funções: quantas funções foram chamadas até chegar

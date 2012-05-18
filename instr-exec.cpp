@@ -627,11 +627,11 @@ bool Instr::ExecX()
             case cSe:   // Processa expressão numérica
             case cEnquanto:
             case cCasoVar:
+            case cSair2:
+            case cContinuar2:
                 FuncAtual->expr = FuncAtual->linha + endVar + 2;
                 break;
             case cRet2: // Processa expressão numérica
-                FuncAtual->expr = FuncAtual->linha + endVar;
-                break;
             case cExpr:
                 FuncAtual->expr = FuncAtual->linha + endVar;
                 break;
@@ -641,7 +641,7 @@ bool Instr::ExecX()
                 break;
             case cSenao1: // Avança
             case cSenao2:
-            case cSair:
+            case cSair1:
                 {
                     int desvio = Num16(FuncAtual->linha + endVar);
                     if (desvio==0)
@@ -651,7 +651,7 @@ bool Instr::ExecX()
                     break;
                 }
             case cEFim:  // Recua
-            case cContinuar:
+            case cContinuar1:
                 {
                     int desvio = Num16(FuncAtual->linha + endVar);
                     if (desvio==0)
@@ -769,9 +769,8 @@ bool Instr::ExecX()
                 return true;
             case cSe:
             case cSenao2:
+                if (!VarFuncIni(VarAtual))
                 {
-                    if (VarFuncIni(VarAtual))
-                        break;
                     FuncAtual->expr = 0;
                     int desvio = 0;
                     if (VarAtual->getBool()==false)
@@ -804,16 +803,41 @@ bool Instr::ExecX()
                         if (FuncAtual->funcdebug)
                             TVarDebug::Exec();
                     }
-                    break;
                 }
+                break;
+            case cSair2:
+                if (!VarFuncIni(VarAtual))
+                {
+                    FuncAtual->expr = 0;
+                    int desvio = 0;
+                    if (VarAtual->getBool())
+                        desvio = Num16(FuncAtual->linha + endVar);
+                    if (desvio==0)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else
+                        FuncAtual->linha += desvio;
+                }
+                break;
+            case cContinuar2:
+                if (!VarFuncIni(VarAtual))
+                {
+                    FuncAtual->expr = 0;
+                    int desvio = 0;
+                    if (VarAtual->getBool())
+                        desvio = Num16(FuncAtual->linha + endVar);
+                    if (desvio==0)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else
+                        FuncAtual->linha -= desvio;
+                }
+                break;
             case cSenao1: // senão sem argumentos em modo debug
                 FuncAtual->expr = 0;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 break;
             case cEnquanto:
+                if (!VarFuncIni(VarAtual))
                 {
-                    if (VarFuncIni(VarAtual))
-                        break;
                     FuncAtual->expr = 0;
                     int desvio = 0;
                     if (VarAtual->getBool()==false)
@@ -823,12 +847,11 @@ bool Instr::ExecX()
                         FuncAtual->linha += Num16(FuncAtual->linha);
                     else
                         FuncAtual->linha += desvio;
-                    break;
                 }
+                break;
             case cCasoVar:
+                if (!VarFuncIni(VarAtual))
                 {
-                    if (VarFuncIni(VarAtual))
-                        break;
                     FuncAtual->expr = 0;
                     if (FuncAtual->linha[endVar]==0 &&
                         FuncAtual->linha[endVar+1]==0)
@@ -865,8 +888,8 @@ bool Instr::ExecX()
                         FuncAtual->linha += ((signed char)p[1] * 0x100)
                                             | (unsigned char)p[0];
                     }
-                    break;
                 }
+                break;
             default:
                 FuncAtual->expr = 0;
                 FuncAtual->linha += Num16(FuncAtual->linha);
@@ -971,9 +994,28 @@ bool Instr::ExecX()
                 VarAtual->setDouble(valor);
                 break;
             }
+        case exo_virg_expr:  // Operador: Vírgula, para separar expressões
+            if (FuncAtual->linha[2] == cRet2)
+            {
+                if (VarFuncIni(VarAtual))
+                    break;
+                if (VarAtual->getBool())
+                {
+                    //ApagarVar(FuncAtual->fimvar);
+                    ApagarVar(VarAtual);
+                    FuncAtual->expr++;
+                    break;
+                }
+                ApagarVar(FuncAtual->fimvar);
+                FuncAtual->linha += Num16(FuncAtual->linha);
+                FuncAtual->expr = 0;
+                break;
+            }
+            FuncAtual->expr++;
+            break;
+        case exo_virgula:    // Operador: Vírgula, para separar argumentos
         case exo_ini:        // Operador: Marca o início dos operadores
         case exo_fim:        // Operador: Marca o fim dos operadores
-        case exo_virgula:    // Operador: Vírgula, para separar expressões
             FuncAtual->expr++;
             break;
         case exo_neg:        // Operador: -a

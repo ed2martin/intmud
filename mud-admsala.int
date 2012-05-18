@@ -1,8 +1,6 @@
 classe jog_admsala
 # Comandos de sala e de área
-
 const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
-
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
 Rua de uma cidade - 1mv\n\
 Campo, um campo aberto - 2mv\n\
@@ -14,9 +12,9 @@ Montanha, excessivamente montanhoso - 6mv\n\
 Água, requer barco para passar - 1mv\n\
 Em baixo d'água - 5mv\n\
 Ar, itens e mobs caem - 1mv"
-
-const txt_luz = "Claro com eventos de tempo\nClaro sem eventos de tempo\nLuz do sol\nEscuro"
-
+const txt_luz = "Claro com eventos de tempo\n\
+Claro sem eventos de tempo\n\
+Luz do sol\nEscuro"
 const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2LAREA\b [nome]\n\
   Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
@@ -26,7 +24,6 @@ const adm_area = "\b\c3Comandos de áreas\b\n\
   Edita área. Se o nome for omitido, edita a área em que você está.\n\
 \c2AAREA\b <nome>\n\
   Apaga área, desde que não tenha nenhuma sala."
-
 const adm_sala = "\b\c3Comandos de salas\b\n\
 \c2ISALA\b <nome>\n\
   Vai para a sala especificada.\n\
@@ -43,7 +40,6 @@ const adm_sala = "\b\c3Comandos de salas\b\n\
 \c2ASALA\b <um ou mais nomes>\n\
   Apaga uma ou mais salas. Atenção: não apaga as saídas das outras salas\n\
   para as que forem apagadas."
-
 const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
 \c2LSAI\b\n\
   Mostra saídas da sala em que você está.\n\
@@ -88,8 +84,8 @@ func com_carea # Criar área
       pos += 1
     efim
     prog p
-    p.criar("a_" + prefixo + "\n" + "aa" + prefixo + "\nherda area")
-    p.criar("b_" + prefixo + "\n" + "aa" + prefixo + "\nherda sala")
+    p.criar("a_" + prefixo + "\na-" + prefixo + "\nherda area")
+    p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala")
     p.salvar(config:progsalvar)
     msg("\bÁrea criada: " + prefixo)
   fimse
@@ -326,7 +322,7 @@ func com_csala # Criar sala
 # Cria sala
     txt300 nome2
     nome2 = nome + txtfim(num, 3) + "\n" # Nome da classe
-    nome2 += "aa" + txt(nome, 2) + "\n" # Nome do arquivo
+    nome2 += "a-" + txt(nome, 2) + "\n" # Nome do arquivo
     nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
     nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # Saída da sala
     p.criar(nome2)
@@ -347,7 +343,7 @@ func com_csala # Criar sala
   senao
     p.iniclasse("b_" + nome)
     nome = txt(p.texto, 2)
-    p.criar("s_" + nome + txtfim(num, 3) + "\naa" + nome + "\nherda b_" + nome)
+    p.criar("s_" + nome + txtfim(num, 3) + "\na-" + nome + "\nherda b_" + nome)
     p.salvar(config:progsalvar)
     msg("\bSala criada: " + nome + txtfim(num, 3))
   fimse
@@ -382,7 +378,7 @@ func p_asala # Confirmar que quer apagar sala
       x += 1
     efim
     p.salvar(config:progsalvar)
-    se x<2
+    se x < 2
       msg("Sala apagada: " + tpasso)
     senao
       msg("Salas apagadas: " + tpasso)
@@ -615,7 +611,10 @@ func com_esai # Editar saída
 
 const txt_tipo = "Não há porta\nPorta aberta\nPorta fechada\nPorta trancada"
 const txt_tipo2 = "Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela"
-const txt_tranc = "Normal\nFecha ao passar\nTranca ao fechar\nTranca ao fechar ou passar"
+const txt_tranc = "Normal\n\
+Fecha ao passar\n\
+Tranca ao fechar\n\
+Tranca ao fechar ou passar"
 
 func p_sai # Editando saída
   txt10 dir
@@ -697,7 +696,7 @@ func p_sai # Editando saída
 func p_saitipo # Acerta a saída após mudar o tipo de saída
   ref r
   r = $[txt1(tpasso)]
-  se r && (r.tipo == 0) != (r.tipoini == 0)
+  se r && r.tipo == 0 != (r.tipoini == 0)
     r.tipo = r.tipoini
   fimse
   ret p_sai("")
@@ -716,7 +715,7 @@ func p_saiagora # Mudar o estado atual
     msg("Entre com um número de 0 a " + (t.linhas - 1))
   senao
     $[tpasso].mudatipo(opasso, num)
-    #$[tpasso].tipo_[opasso] = num
+# $[tpasso].tipo_[opasso] = num
     t.remove(num)
     se t.linhas
       msg("Saída mudou para: " + num + " " + t.remove(1))

@@ -66,11 +66,9 @@ func fim # Personagem foi apagado
 
 varfunc dono # O dono do personagem
 # IMPORTANTE: varfunc também está definido na classe jogador
-  se !args # Nenhum argumento: leitura
-    ret idono.objlista # Retorna objeto que contém o personagem ou item
-  senao idono.objlista != ref(arg0)
-    idono.remove
-    idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
+  ret !args, idono.objlista # Nenhum argumento: retorna objeto que contém este
+  idono.remove
+  idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
 
 func objjog # Objeto do jogador
   ret dono.perso ? dono : este
@@ -106,11 +104,8 @@ func teclou # Personagem escreveu algo
   enquanto p.lin
     obj = $[p.texto].obj(este, arg0)
     se obj
-      se obj.ultimo # Objeto com baixa prioridade
-        obj2 = obj
-      senao # Objeto com prioridade normal
-        sair
-      fimse
+      sair !obj.ultimo # Sai se não for objeto com baixa prioridade
+      obj2 = obj
     fimse
     p.depois
   efim
@@ -203,17 +198,13 @@ func escolhejog # Escolhe e retorna um jogador
     i.depois
   efim
 # Checa se tem jogador
-  se total == 0
-    ret nulo
-  fimse
+  ret total == 0, nulo
 # Escolhe um jogador
   total = rand(total) + 1
   i = dono.dentro1.ini
   enquanto i
     i.obj.jog && (total -= 1)
-    se total == 0
-      ret i.obj
-    fimse
+    ret total == 0, i.obj
     i.depois
   efim
 
@@ -224,9 +215,7 @@ func persoalvo # Obtém o personagem a partir do nome
   nome.ini(arg0, 1)
   i = dono.dentro1.ini
   enquanto i
-    se visivel(i.obj) && nome.nome(i.obj.nome)
-      ret i.obj
-    fimse
+    ret visivel(i.obj) && nome.nome(i.obj.nome), i.obj
     i.depois
   efim
 
@@ -333,7 +322,6 @@ func objefeito # Retorna o objeto do efeito ou nulo se não existir
   listaitem i
   i = dentro2.ini
   enquanto i
-    se arg0 == i.obj
-      ret i.obj
-    fimse
+    ret arg0 == i.obj, i.obj
+    i.depois
   efim

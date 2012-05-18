@@ -166,12 +166,14 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         coment++;
         break;
     case cCasoSePadrao: strcpy(nome, "casose"); coment=endVar; break;
-    case cCasoFim:   strcpy(nome, "casofim");   coment=endVar; break;
-    case cRet1:      strcpy(nome, "ret");       coment=endVar; break;
-    case cRet2:      strcpy(nome, "ret ");      expr=endVar; break;
-    case cSair:      strcpy(nome, "sair");      coment=endVar+2; break;
-    case cContinuar: strcpy(nome, "continuar"); coment=endVar+2; break;
-    case cTerminar:  strcpy(nome, "terminar");  coment=endVar; break;
+    case cCasoFim:      strcpy(nome, "casofim");   coment=endVar; break;
+    case cRet1:         strcpy(nome, "ret");       coment=endVar; break;
+    case cRet2:         strcpy(nome, "ret ");      expr=endVar; break;
+    case cSair1:        strcpy(nome, "sair");      coment=endVar+2; break;
+    case cSair2:        strcpy(nome, "sair ");     expr=endVar+2; break;
+    case cContinuar1:   strcpy(nome, "continuar"); coment=endVar+2; break;
+    case cContinuar2:   strcpy(nome, "continuar "); expr=endVar+2; break;
+    case cTerminar:     strcpy(nome, "terminar");  coment=endVar; break;
 
 // Variáveis
     case cVariaveis: break;
@@ -573,6 +575,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_igualporcent: strcpy(nome, " %= "); indica=16,origem+=2; break;
         case exo_igualadd:     strcpy(nome, " += "); indica=16,origem+=2; break;
         case exo_igualsub:     strcpy(nome, " -= "); indica=16,origem+=2; break;
+        case exo_virg_expr:
         case exo_ee:
         case exo_ouou:
         case exo_int1:
