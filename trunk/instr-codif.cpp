@@ -245,7 +245,7 @@ static const TListaInstr ListaInstr[] = {
     { "casose",    cCasoSe },
     { "casovar",   cCasoVar },
     { "const",     cConstExpr }, // Qualquer tipo de const
-    { "continuar", cContinuar },
+    { "continuar", cContinuar1 }, // Pode ser cContinuar1 ou cContinuar2
     { "datahora",  cDataHora },
     { "debug",     cDebug },
     { "efim",      cEFim },
@@ -270,7 +270,7 @@ static const TListaInstr ListaInstr[] = {
     { "real",      cReal },
     { "ref",       cRef },
     { "ret",       cRet1 }, // Pode ser cRet1 ou cRet2
-    { "sair",      cSair },
+    { "sair",      cSair1 }, // Pode ser cSair1 ou cSair2
     { "se",        cSe },
     { "senao",     cSenao1 }, // Pode ser cSenao1 ou cSenao2
     { "serv",      cServ },
@@ -744,7 +744,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         proc_expr=true;
         break;
     case cRet1:     // Pode ter ou não expressão numérica
-        if (*origem==0)
+        if (*origem==0 || *origem=='#')
         {
             destino += endVar;
             break;
@@ -753,9 +753,27 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino += endVar;
         proc_expr=true;
         break;
+    case cSair1:    // Pode ter ou não expressão numérica
+        if (*origem==0 || *origem=='#')
+        {
+            destino += endVar+2;
+            break;
+        }
+        destino[2] = cSair2;
+        destino += endVar+2;
+        proc_expr=true;
+        break;
+    case cContinuar1:  // Pode ter ou não expressão numérica
+        if (*origem==0 || *origem=='#')
+        {
+            destino += endVar+2;
+            break;
+        }
+        destino[2] = cContinuar2;
+        destino += endVar+2;
+        proc_expr=true;
+        break;
     case cEFim:     // Dois bytes de dados
-    case cSair:
-    case cContinuar:
         destino += endVar+2;
         break;
     case cFimSe:    // Nenhum byte de dados
@@ -1404,6 +1422,10 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case exo_ou: *destino++ = exo_ouou; break;
         case exo_int2: *destino++ = exo_int1; break;
         case exo_dponto2: *destino++ = exo_dponto1; break;
+        case exo_virgula:
+            if (topo == pilha + 1)
+                *destino++ = exo_virg_expr;
+            break;
         }
 
         *topo++ = modo;

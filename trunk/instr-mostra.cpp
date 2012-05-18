@@ -135,12 +135,14 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         coment++;
         break;
     case cCasoSePadrao: strcpy(nome, "casose"); coment=endVar; break;
-    case cCasoFim:   strcpy(nome, "casofim");   coment=endVar; break;
-    case cRet1:      strcpy(nome, "ret");       coment=endVar; break;
-    case cRet2:      strcpy(nome, "ret");       expr=endVar; break;
-    case cSair:      strcpy(nome, "sair");      coment=endVar+2; break;
-    case cContinuar: strcpy(nome, "continuar"); coment=endVar+2; break;
-    case cTerminar:  strcpy(nome, "terminar");  coment=endVar; break;
+    case cCasoFim:      strcpy(nome, "casofim");   coment=endVar; break;
+    case cRet1:         strcpy(nome, "ret");       coment=endVar; break;
+    case cRet2:         strcpy(nome, "ret");       expr=endVar; break;
+    case cSair1:        strcpy(nome, "sair");      coment=endVar+2; break;
+    case cSair2:        strcpy(nome, "sair");      expr=endVar+2; break;
+    case cContinuar1:   strcpy(nome, "continuar"); coment=endVar+2; break;
+    case cContinuar2:   strcpy(nome, "continuar"); expr=endVar+2; break;
+    case cTerminar:     strcpy(nome, "terminar");  coment=endVar; break;
 
 // Variáveis
     case cVariaveis: break;
@@ -418,6 +420,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         // Operadores numéricos
         case exo_ini:        break; // Marca o início dos operadores
         case exo_virgula:      strcpy(nome, " ,"); break;
+        case exo_virg_expr:    strcpy(nome, " ,(expr)"); break;
         case exo_neg:          strcpy(nome, " -(unitário)"); break;
         case exo_exclamacao:   strcpy(nome, " !");  break;
         case exo_b_comp:       strcpy(nome, " ~");   break;

@@ -303,8 +303,10 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cEnquanto:
         case Instr::cEFim:
         case Instr::cCasoVar:
-        case Instr::cSair:
-        case Instr::cContinuar:
+        case Instr::cSair1:
+        case Instr::cSair2:
+        case Instr::cContinuar1:
+        case Instr::cContinuar2:
             memset(p+Instr::endVar, 0, 2);
             break;
         case Instr::cCasoSe:
@@ -349,7 +351,8 @@ void TClasse::AcertaComandos(char * comandos)
                     break;
                 if (x[2]==Instr::cEnquanto)
                     nivelse++;
-                else if (x[2]==Instr::cContinuar)
+                else if (x[2]==Instr::cContinuar1 ||
+                         x[2]==Instr::cContinuar2)
                 {
                     int valor = x-p;
                     if (valor>0x10000) valor=0;
@@ -488,7 +491,8 @@ void TClasse::AcertaComandos(char * comandos)
                 }
             }
             break;
-        case Instr::cSair:
+        case Instr::cSair1:
+        case Instr::cSair2:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
                 if (AcertaComandosFim(x[2]))

@@ -37,25 +37,23 @@ func fim # Personagem foi apagado
   personagem:fim
 
 varfunc dono # O dono do personagem
-  se !args # Nenhum argumento: leitura
-    ret idono.objlista # Retorna objeto que contém o personagem ou item
-  senao idono.objlista != ref(arg0)
-    idono.obj.t_limpar = idono.obj.limpar
-    idono.obj.t_elimpar = idono.obj.elimpar
-    idono.remove
-    idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
-    idono.objlista.t_limpar = 0
-    idono.objlista.t_elimpar = idono.obj.elimpar
-    t_sala2 = t_entrar1 = 0
-    entrou(este)
-    !dono.objlista.perso && dono.entrou(este)
-    idono.objlista.tempojog = misc:tempo + 20
-    ref r
-    r = idono.objlista
-    enquanto r.dono
-      r = r.dono
-    efim
-    r && (nomesala = r)
+  ret !args, idono.objlista # Nenhum argumento: retorna objeto que contém este
+  idono.obj.t_limpar = idono.obj.limpar
+  idono.obj.t_elimpar = idono.obj.elimpar
+  idono.remove
+  idono = ref(arg0).dentro1.addfim(este) # Adiciona personagem
+  idono.objlista.t_limpar = 0
+  idono.objlista.t_elimpar = idono.obj.elimpar
+  t_sala2 = t_entrar1 = 0
+  entrou(este)
+  !dono.objlista.perso && dono.entrou(este)
+  idono.objlista.tempojog = misc:tempo + 20
+  ref r
+  r = idono.objlista
+  enquanto r.dono
+    r = r.dono
+  efim
+  r && (nomesala = r)
 
 func recebe # Recebeu mensagem do jogador
   se p_[passo](arg0) # Checa se é uma função do passo
@@ -317,11 +315,7 @@ func p_senha3 # Repetir a senha digitada
     passo = ""
   senao
     senha = txtmin(arg0)
-    se salvar
-      msg("Jogo salvo")
-    senao
-      msg("Não foi possível salvar")
-    fimse
+    msg(salvar ? "Jogo salvo" : "Não foi possível salvar")
     passo = ""
   fimse
   ret 1
@@ -492,9 +486,7 @@ func p_editor
     enquanto x > 0
       leditor.antes, x -= 1
       msg(leditor.texto)
-      se !editor.linha
-        ret 1
-      fimse
+      ret !editor.linha, 1
     efim
     ret 1
   casose "d"

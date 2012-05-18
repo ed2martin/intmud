@@ -67,14 +67,12 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
 # Ataca
   ref r
   enquanto l.total > 1
-    r = l.objfim
-    se !r.jog
-      velgolpe(arg0, r) # Tempo do golpe
-      execgolpe(arg0, r, atk) # Ataca
-      result && $mens.p(arg0, r) + arg0.msginv(texto + msgefeito(r))
-      r.energia == 0 && r.morreu
-    fimse
-    l.fim.remove
+    r = l.objfim, l.fim.remove
+    continuar r.jog # Não prossegue se for jogador
+    velgolpe(arg0, r) # Tempo do golpe
+    execgolpe(arg0, r, atk) # Ataca
+    result && $mens.p(arg0, r) + arg0.msginv(texto + msgefeito(r))
+    r.energia == 0 && r.morreu
   efim
 # Ataca o alvo
   r = l.objfim
@@ -94,14 +92,12 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
 # Ataca
   ref r
   enquanto l.total > 1
-    r = l.objfim
-    se !r.jog
-      velgolpe(arg0, r) # Tempo do golpe
-      execgolpe(arg0, r, ataque) # Ataca
-      result && $mens.p(arg0, r) + arg0.msginv(texto + msgefeito(r))
-      r.energia == 0 && r.morreu
-    fimse
-    l.fim.remove
+    r = l.objfim, l.fim.remove
+    continuar r.jog # Não prossegue se for jogador
+    velgolpe(arg0, r) # Tempo do golpe
+    execgolpe(arg0, r, ataque) # Ataca
+    result && $mens.p(arg0, r) + arg0.msginv(texto + msgefeito(r))
+    r.energia == 0 && r.morreu
   efim
 # Ataca o alvo
   r = l.objfim

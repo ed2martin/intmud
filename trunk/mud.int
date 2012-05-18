@@ -1,5 +1,15 @@
-telatxt = 1
+# Se deve usar vários arquivos
 mapagrande = 1
+
+# Quantas instruções uma função chamada pelo programa pode
+# executar antes do controle retornar ao programa
+exec = 5000
+
+# Se deve abrir uma janela de texto - variável telatxt
+telatxt = 1
+
+# Aonde apresentar mensagens de erro no programa
+log = 0
 
 classe config
 # Configuração
@@ -29,6 +39,10 @@ const salafim = $s_ini001
 # Como deve salvar os arquivos .int, vide variável prog do IntMUD
 const progsalvar = "L99N1I2C2F1V0"
 
+#func iniclasse # Para salvar acertando indentação e linhas entre classes e funções
+#  prog p
+#  p.salvartudo([arg0]:progsalvar)
+
 
 classe jogolocal
 herda jogsock
@@ -38,15 +52,19 @@ const msg = j_tela.msg(arg0 + "\n")
 const msgsala = j_tela.msg(arg0 + "\n")
 const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
+
 func iniclasse
   se config:modo & 3 == 0
     criar(arg0)
+
 func ini
   msg("Jogando localmente; tecla ESC encerra o programa")
   jogsock:ini
+
 func j_tela_msg
   j_tela.linha = 0
   recebe(txtremove(arg0, "ED"))
+
 func j_tela_tecla
   se arg0 == "ESC"
     jogsock:fim
@@ -60,9 +78,9 @@ comum serv j_serv # Para receber conexões
 socket j_conec # Usuário conectado
 inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
 uint8 j_passo # 0=definindo se Papovox, 1=entrando Papovox, 2=dentro
-
 const msg = j_conec.msg(arg0 + "\n")
 const msgsala = j_conec.msg(arg0 + "\n")
+
 func info
   se j_conec.proto == 5
     ret "p " + j_conec.ip
@@ -131,7 +149,7 @@ func j_conec_msg # Recebeu mensagem do usuário
     se arg0 != "" # Papovox sempre fornece um nome
       j_conec.msg("+OK Entrando via Papovox\n")
       j_conec.proto = 5
-    senão # Nome vazio: é Telnet
+    senao # Nome vazio: é Telnet
       j_conec.msg("-OK Entrando via Telnet\n")
 
 
@@ -139,42 +157,49 @@ classe jogobot
 telatxt tela
 socket conec # Conexão com o bate-papo
 inttempo conectando
+
 func iniclasse
   se config:modo & 3 == 3
     criar(arg0)
+
 func ini
   conectando = 100
   se !conec.abrir(config:serv, config:porta)
     apagar(este)
     tela.msg("Endereço inválido: " + config:serv + "\n")
-  senão
+  senao
     tela.msg("Conectando em " + config:serv + "\n")
+
 func conectando_exec # 10 segundos tentando conectar
   apagar(este)
   se conec.proto < 2
     tela.msg("Tempo demais esperando resposta OK\n")
-  senão
+  senao
     tela.msg("Tempo demais esperando conectar\n")
+
 func conec_err # Não conseguiu conectar
   apagar(este)
   tela.msg("Erro ao conectar: " + arg0 + "\n")
+
 func conec_con # Conectou
   conec.proto = 2
-  #conectando = 0
-  #conec.msg("#bot " + config:sala + " " + config:senha + "\n")
+# conectando = 0
+# conec.msg("#bot " + config:sala + " " + config:senha + "\n")
   tela.msg("Conectado\n")
+
 func conec_fechou
   apagar(este)
   tela.msg("Conexão encerrada: " + arg0 + "\n")
+
 func conec_msg # Recebeu mensagem
   indiceitem ind
   ref obj
-  #tela.msg("<< " + arg0 + "\n")
+# tela.msg("<< " + arg0 + "\n")
   se conectando
     se txt(arg0, 0, 1) == "+"
       conectando = 0
       conec.msg("#bot " + config:sala + " " + config:senha + "\n")
-    senão
+    senao
       tela.msg("Erro: " + arg0)
       apagar(este)
     fimse
@@ -208,25 +233,30 @@ func conec_msg # Recebeu mensagem
     tela.msg(arg0 + "\n")
   casofim
 
+
 classe jogobot_sala
 indiceobj sala_nome
 listaobj sala_usr
 int1 aberto
 telatxt _tela
+
 func ini # Nova sala
   sala_nome = "bs " + arg0
   _tela.msg("S+  " + txt2(sala_nome) + "\n")
+
 func fim # Sala fechada
   _tela.msg("S-  " + txt2(sala_nome) + "\n")
+
 func msg
   textotxt t1
   t1.addfim(arg0)
   enquanto t1.linhas
     $jogobot.conec.msg(txt2(sala_nome) + " " + t1.remove + "\n")
   efim
+
 func listafim # Recebeu toda a lista de usuários da sala
   aberto = 1
-  #msg(config:boasvindas)
+# msg(config:boasvindas)
 
 
 classe jogobot_usr
@@ -235,26 +265,33 @@ indiceobj j_nome
 listaitem j_sala
 telatxt j_tela
 const info = "b " + txt2(j_sala.objlista.sala_nome)
+
 func ini # Entrou na sala
   j_nome = "bu " + arg0
   j_sala = arg1.sala_usr.addfim(este) # Adiciona na sala
   j_tela.msg("U+  " + txt2(j_nome) + "  " + txt2(j_sala.objlista.sala_nome) + "\n")
   jogsock:ini
+
 func fim # Saiu da sala
   j_tela.msg("U-  " + txt2(j_nome) + "\n")
+
 func novonome # Mudou de apelido
   j_tela.msg("Ua  " + txt2(j_nome) + " para " + arg0 + "\n")
   j_nome = "bu " + arg0
+
 func sala_msg # Envia mensagem para a sala do usuário
   j_sala.objlista.msg(arg0)
+
 func msg # Envia mensagem para o usuário
   textotxt t1
   t1.addfim(arg0)
   enquanto t1.linhas
     $jogobot.conec.msg(txt2(j_nome) + " " + t1.remove + "\n")
   efim
+
 func msgsala # Envia mensagem para todos da sala
   j_sala.objlista.msg(arg0)
+
 func msgtodos # Envia mensagem para todos os jogadores
   ref r
   r = $jogobot_sala

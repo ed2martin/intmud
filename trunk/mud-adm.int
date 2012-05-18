@@ -22,7 +22,6 @@ func com_info5
   efim
   ret 1
 
-
 func com_adm
   prog p
   se p.inifunctudo(este, "adm_" + arg0)
@@ -42,9 +41,8 @@ Os tópicos são:\n\
   \c2MOB\b      MOBs (personagens não jogadores)\n\
   \c2COD\b      Edição do código fonte\n\
   \c2OUTROS\b   Outros comandos"
-#  \c2INFO\b     Informações sobre o MUD\n
-#  \c2CONFIG\b   Configuração do MUD"
-
+# \c2INFO\b     Informações sobre o MUD\n
+# \c2CONFIG\b   Configuração do MUD"
 const adm_item = "\b\c3Comandos de itens\b\n\
 \c2LITEM\b <nome>\n\
   Lista itens que começam com o nome especificado.\n\
@@ -54,7 +52,6 @@ const adm_item = "\b\c3Comandos de itens\b\n\
   Edita item.\n\
 \c2AITEM\b <nome>\n\
   Apaga item."
-
 const adm_mob = "\b\c3Comandos de MOBs\b\n\
 \c2LMOB\b <nome>\n\
   Lista mobs que começam com o nome especificado.\n\
@@ -64,7 +61,6 @@ const adm_mob = "\b\c3Comandos de MOBs\b\n\
   Edita mob.\n\
 \c2AMOB\b <nome>\n\
   Apaga mob."
-
 const adm_outros = "\c3Outros comandos\b\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores."
@@ -493,7 +489,7 @@ func p_funcsalvar # Opçao salvar de p_func
   t1.ini.add(teditor.ini, teditor.linhas)
   p1 = t1.ini
   enquanto p1.txtproc("\\\n") >= 0
-    p1.mudar("", inttotal(p1.texto)-1, 1) # Tira a "\" no final
+    p1.mudar("", inttotal(p1.texto) - 1, 1) # Tira a "\" no final
     p1.depois, p1.juntar # Junta as duas linhas
   efim
 # Obtém o nome da constante / função
@@ -545,7 +541,7 @@ func p_funcsalvar # Opçao salvar de p_func
     se txt(x) == txt(lin, 0, inttotal(txt(x)))
       p1 = teditor.ini
       enquanto p1.txtproc("\\\n") >= 0 && p1.linha < x
-        p1.depois, x+=1
+        p1.depois, x += 1
       efim
       lin = txt(x) + txt(lin, inttotal(txt(x)))
     fimse
@@ -591,11 +587,7 @@ func p_editor
       ret 1
     fimse
     leditor.remove
-    se leditor.lin
-      msg("Linha apagada")
-    senao
-      msg("Linha apagada; fim do texto")
-    fimse
+    msg(leditor.lin ? "Linha apagada" : "Linha apagada; fim do texto")
     ret 1
   casose "i" # Informações sobre a linha atual
     txt100 t
@@ -622,20 +614,18 @@ func p_editor
     x > 8 && (x = 8)
     x < 1 && (x = 1)
     enquanto x > 0
-      leditor.antes, x-=1
+      leditor.antes, x -= 1
       msg(leditor.texto)
-      se !editor.linha
-        ret 1
-      fimse
+      ret !editor.linha, 1
     efim
     ret 1
-  casose "d" Desce uma ou mais linhas
+  casose "d"
     uint8 x
     x = txtremove(txt(arg0, 1), "E")
     x > 8 && (x = 8)
     x < 1 && (x = 1)
     enquanto x > 0
-      leditor.depois, x-=1
+      leditor.depois, x -= 1
       se !leditor.lin
         msg("Fim do texto")
         ret 1
@@ -669,7 +659,7 @@ func p_editor
     fimse
     se col >= 0
       leditor = pos
-      msg("Encontrado linha " + (leditor.linha + 1) + " coluna " + (col+1))
+      msg("Encontrado linha " + (leditor.linha + 1) + " coluna " + (col + 1))
       msg(leditor.texto)
     senao
       msg("Nada encontrado")
@@ -819,7 +809,6 @@ que contém dois espaços e a letra A\n\
 \c2BV\b  Insere texto da área de transferência entre a linha atual e a anterior\n\
 \c2BE\b  Embeleza o bloco marcado\n\
 \c2BL\b  Apaga todo o texto sendo editado"
-
 
 func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_abc"
 # arg0=nome da variável, tpasso=nome da classe

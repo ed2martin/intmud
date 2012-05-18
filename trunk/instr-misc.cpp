@@ -30,6 +30,7 @@ int Instr::Prioridade(int operador)
     switch (operador)
     {
     case exo_virgula:    return 22;
+    case exo_virg_expr:  return 22;
     case exo_neg:        return 2;
     case exo_exclamacao: return 2;
     case exo_b_comp:     return 2;
@@ -482,6 +483,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
             break;
 
         case exo_virgula:
+        case exo_virg_expr:
         case exo_neg:
         case exo_exclamacao:
         case exo_b_comp:
@@ -554,8 +556,10 @@ const char * Instr::NomeInstr(const char * instr)
     case cCasoFim:          return "casofim";
     case cRet1:             return "ret";
     case cRet2:             return "ret";
-    case cSair:             return "sair";
-    case cContinuar:        return "continuar";
+    case cSair1:            return "sair1";
+    case cSair2:            return "sair2";
+    case cContinuar1:       return "continuar1";
+    case cContinuar2:       return "continuar2";
     case cTerminar:         return "terminar";
 
     case cVariaveis:        return "";
@@ -642,8 +646,10 @@ const char * Instr::NomeComando(int valor)
     case cCasoFim:          return "cCasoFim";
     case cRet1:             return "cRet1";
     case cRet2:             return "cRet2";
-    case cSair:             return "cSair";
-    case cContinuar:        return "cContinuar";
+    case cSair1:            return "cSair1";
+    case cSair2:            return "cSair2";
+    case cContinuar1:       return "cContinuar1";
+    case cContinuar2:       return "cContinuar2";
     case cTerminar:         return "cTerminar";
 
     case cVariaveis:        return "cVariaveis";
@@ -746,6 +752,7 @@ const char * Instr::NomeExpr(int valor)
 
     case exo_ini:           return "exo_ini";
     case exo_virgula:       return "exo_virgula";
+    case exo_virg_expr:     return "exo_virg_expr";
     case exo_neg:           return "exo_neg";
     case exo_exclamacao:    return "exo_exclamacao";
     case exo_b_comp:        return "exo_b_comp";

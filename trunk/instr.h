@@ -268,8 +268,10 @@ enum Comando
     cCasoFim,       ///< Fluxo:                    casofim
     cRet1,          ///< Fluxo: ret sem argumentos
     cRet2,          ///< Fluxo: ret com expressão numérica
-    cSair,          ///< Fluxo: ushort             sair
-    cContinuar,     ///< Fluxo: ushort             continuar
+    cSair1,         ///< Fluxo: ushort             sair
+    cSair2,         ///< Fluxo: ushort,expressão   sair
+    cContinuar1,    ///< Fluxo: ushort             continuar
+    cContinuar2,    ///< Fluxo: ushort,expressão   continuar
     cTerminar,      ///< Fluxo:                    terminar
 
 // Definições de variáveis
@@ -395,7 +397,8 @@ enum Expressao
 
 // Operadores numéricos
     exo_ini,        ///< Operador: Marca o início dos operadores
-    exo_virgula,    ///< Operador: Vírgula, para separar expressões
+    exo_virgula,    ///< Operador: Vírgula
+    exo_virg_expr,  ///< Operador: Vírgula, separando expressões
     exo_neg,        ///< Operador: -a
     exo_exclamacao, ///< Operador: !a
     exo_b_comp,     ///< Operador: ~a

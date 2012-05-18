@@ -35,9 +35,7 @@ func ver
   misc:obj = arg0
 # Adiciona a descrição, retorna se estiver vazia
   t.addfim(arg0.e_admin ? txt(este) + " " + descr : descr)
-  se t.bytes <= 1
-    ret
-  fimse
+  ret t.bytes <= 1, nulo
 # Adiciona a lista de saídas
   t.addfim(txtsai)
 # Adiciona a lista de personagens
@@ -75,10 +73,7 @@ func txtsai # Retorna as saídas existentes
   mostra_b && (sai += " Baixo")
   mostra_en && (sai += " Entrar")
   mostra_sa && (sai += " Sair")
-  se sai
-    ret "\bSaídas:" + sai
-  senao
-    ret "\bSaídas: Nenhuma"
+  ret sai ? "\bSaídas:" + sai : "\bSaídas: Nenhuma"
 
 func txttotal # Retorna a quantidade de personagens e itens
   uint16 itens
@@ -129,6 +124,5 @@ func msg # Mensagem para todos que estiverem na sala
   listaitem i
   i = dentro1.ini
   enquanto i
-    i.obj.msg(arg0)
-    i.depois
+    i.obj.msg(arg0), i.depois
   efim

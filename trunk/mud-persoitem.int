@@ -129,7 +129,6 @@ func itemnome # Procura um item pelo nome
 classe comum_perso
 herda comum_dentro, comum_fora
 # Personagens
-
 uint8 bitver # O que o personagem/item pode ver
 uint8 bitinv # Grau de invisibilidade do personagem/item
 #
@@ -138,13 +137,13 @@ const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const sexo = 0 # Sexo: 0=feminino, 1=masculino
-#sav int1 sexo # Sexo: 0=feminino, 1=masculino
+# sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint32 moedas # Quantas moedas está carregando
 #
-const expmax = nivel*nivel*nivel+20 # Experiência para subir de nível
+const expmax = nivel * nivel * nivel + 20 # Experiência para subir de nível
 sav uint16 nivel # Nível atual
 sav uint32 exp # Experiência atual
-sav uint16 ivida  # Pontos de vida; usado internamente (usar vida)
+sav uint16 ivida # Pontos de vida; usado internamente (usar vida)
 sav uint16 mana # Pontos de mana
 sav uint16 move # Pontos de movimento
 uint16 vidamax # Quantidade máxima de vida
@@ -213,7 +212,7 @@ varfunc vida
     casovar (ivida = arg0) * 100 / vidamax
     casose "0"
     casose "1"
-      posicao = (vida != 0) # 0=morto, 1=mortalmente ferido
+      posicao = vida != 0 # 0=morto, 1=mortalmente ferido
       ret
     casose "2"
       posicao = 2 # incapacitado
@@ -253,7 +252,7 @@ func teclou # Personagem teclou algum comando (arg0=comando)
     p_espera = 2
     teclouproc(arg0)
   senao b_tempo # Está batalhando
-    # p_comandos && msg("Feito, aguarde")
+# p_comandos && msg("Feito, aguarde")
     p_comandos.limpar
     p_comandos.addfim(arg0)
   senao p_comandos.bytes < 1024 # Não chegou ao limite de comandos
@@ -277,9 +276,7 @@ func teclouproc # Processa comando (arg0=comando)
   enquanto l0 && !l0.ini.obj.e_escr(este, arg0)
     l0.ini.remove
   efim
-  se l0
-    ret
-  fimse
+  ret l0, nulo
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
   prog p # Para procurar o objeto
@@ -307,19 +304,17 @@ func teclouproc # Processa comando (arg0=comando)
   casofim
   enquanto p.lin
     obj = $[p.texto]
-    se obj.pode(este, arg0) && nivel >= obj.nivel
-      sair
-    fimse
+    sair obj.pode(este, arg0) && nivel >= obj.nivel
     p.depois
   efim
 # Executa comando
   se !p.lin
     msg("O quê?")
-  senão posicao >= obj.posic
+  senao posicao >= obj.posic
     obj.exec(este, arg0, comando)
-  senão
+  senao
     casovar posicao
-    casose "0" Morto
+    casose "0"
       msg("\c9Você está mort" + misc:sletra[sexo] + "!!!\b")
       sair
     casose "1" # Mortalmente ferido
@@ -458,7 +453,7 @@ func morreu # Procedimentos quando morre
   $mens.mvis1("$P morreu.")
   se jog
     batalhafim
-    vida = pos(vidamax/2 - 20) + 2
+    vida = pos(vidamax / 2 - 20) + 2
     mana = manamax / 2
     move = movemax / 2
     p_restaura = rand(100, 130)
@@ -537,11 +532,12 @@ func mob_exec # Somente MOBs, inteligência artificial do MOB
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
-      $mens.proc(arg0, este)
+    $mens.proc(arg0, este)
 
 func msginv # Mensagem mesmo se o alvo estiver invisível
   se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
     $mens.proc(arg0, este)
+
 
 classe comum_item
 herda comum_fora
@@ -554,8 +550,10 @@ const ident = nome
 const descpos = txtmaimin(nome) + " está aqui."
 const descver = "Você não vê nada de especial."
 uint32 vestpos # Em que posição está vestindo, 0=nenhuma
+
 func ini # Objeto foi criado
   dono = arg0
+
 func fim
   evento.limpar
 

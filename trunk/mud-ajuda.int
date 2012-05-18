@@ -1,6 +1,7 @@
 classe com_ajuda
 herda com2_comum
 const posic = 0
+
 func exec
   se !arg2
     arg0.msg(ajudaini:txt(arg0))
@@ -16,11 +17,14 @@ func exec
   efim
   arg0.msg("Comando ou tópico de ajuda desconhecido: " + arg2)
 
+
 classe com_a
 herda com_ajuda
 
+
 classe ajudaini
-const txt = "\b\c3Páginas de ajuda\b\n\
+const txt = txt1 + ajudaini:adm(arg0)
+const txt1 = "\b\c3Páginas de ajuda\b\n\
 Para ler tecle ajuda seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
   \c2MOVER\b    Como movimentar-se no jogo\n\
@@ -29,10 +33,12 @@ Os tópicos são:\n\
   \c2OBJETOS\b  Manuseio de objetos\n\
   \c2NOMES\b    Nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
-  \c2FIM\b      Sai do MUD" + ajudaini:adm(arg0)
+  \c2FIM\b      Sai do MUD"
+
 func adm
   se arg0.sock.admin
     ret "\nPara ler as páginas de administração tecle \c2ADM\b"
+
 
 classe ajuda_mover
 const txt = "\b\c3Movimentação\b\n\
@@ -43,11 +49,13 @@ Você poderá encontrar portas fechadas no caminho. Nesse caso, será\n\
 necessário abrir antes de prosseguir naquela direção. Veja os comandos\n\
 ABRIR e FECHAR."
 
+
 classe ajuda_comunica
 const txt = "\b\c3Comunicação\b\n\
    \c2CHAT\b     Envia mensagem para os jogadores com o canal chat habilitado.\n\
                  Permite também habilitar ou desabilitar este canal.\n\
    \c2FALAR\b    Envia mensagem para os personagens na mesma sala."
+
 
 classe ajuda_chat
 const txt = "\b\c3Canal chat\b\n\
@@ -56,24 +64,28 @@ Envia mensagem para os jogadores que estiverem com esse canal habilitado.\n\
 Sintaxe: chat\n\
 Habilita ou desabilita esse canal."
 
+
 classe ajuda_falar
 const txt = "\b\c3Falar\b\n\
 Sintaxe: falar <mensagem>\n\
 Envia mensagem para todos os personagens que estiverem na mesma sala."
 
+
 classe ajuda_info
 const txt = "\b\c3Esse comando não está pronto\b"
+
 
 classe ajuda_objetos
 const txt = "\b\c3Esse comando não está pronto\b"
 
+
 classe ajuda_nomes
 const txt = "\b\c3Esse comando não está pronto\b"
+
 
 classe ajuda_config
 const txt = "\b\c3Esse comando não está pronto\b"
 
+
 classe ajuda_sair
-const txt = "\b\c3Sair\b\n\
-Sintaxe: Sair\n\
-Sai do jogo."
+const txt = "\b\c3Sair\b\nSintaxe: Sair\nSai do jogo."
