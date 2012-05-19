@@ -49,9 +49,7 @@ varfunc dono # O dono do personagem
   !dono.objlista.perso && dono.entrou(este)
   idono.objlista.tempojog = misc:tempo + 20
   ref r
-  r = idono.objlista
-  enquanto r.dono
-    r = r.dono
+  epara r = idono.objlista, r.dono, r = r.dono
   efim
   r && (nomesala = r)
 
@@ -91,7 +89,7 @@ func recalc_exec # Recalcula defesa, ataque e velocidade
   ataque = (nivel * 4 + 60) * nivel + 30
   defesa = nivel * 10 + 20
   veloc = nivel ? (nivel * 4 + 60) * nivel + 30 : 100
-  enermax = nivel * 2 + 60
+  pvidamax = nivel * 2 + 60
   misc:perso_recalc # Bônus conforme efeitos
 
 func ver
@@ -104,27 +102,27 @@ func ver
   ret 1
 
 func escolhebat # Escolhe um personagem em condições de lutar
-  se persoesc.energia # Checa se personagem escolhido está em condições
+  se persoesc.pvida # Checa se personagem escolhido está em condições
     persobat = persoesc
-  senao animal.0.energia && config:animal1 >= 1
+  senao animal.0.pvida && config:animal1 >= 1
     persobat = animal.0
-  senao animal.1.energia && config:animal1 >= 1
+  senao animal.1.pvida && config:animal1 >= 1
     persobat = animal.1
-  senao animal.2.energia && config:animal1 >= 2
+  senao animal.2.pvida && config:animal1 >= 2
     persobat = animal.2
-  senao animal.3.energia && config:animal1 >= 3
+  senao animal.3.pvida && config:animal1 >= 3
     persobat = animal.3
-  senao animal.4.energia && config:animal1 >= 4
+  senao animal.4.pvida && config:animal1 >= 4
     persobat = animal.4
-  senao animal.5.energia && config:animal1 >= 5
+  senao animal.5.pvida && config:animal1 >= 5
     persobat = animal.5
-  senao animal.6.energia && config:animal1 >= 6
+  senao animal.6.pvida && config:animal1 >= 6
     persobat = animal.6
-  senao animal.7.energia && config:animal1 >= 7
+  senao animal.7.pvida && config:animal1 >= 7
     persobat = animal.7
-  senao animal.8.energia && config:animal1 >= 8
+  senao animal.8.pvida && config:animal1 >= 8
     persobat = animal.8
-  senao animal.9.energia && config:animal1 >= 9
+  senao animal.9.pvida && config:animal1 >= 9
     persobat = animal.9
   senao
     persobat = este
@@ -141,9 +139,8 @@ func salvar # Salva o jogo, desde que a senha não seja nula
     listaobj l0
     listaitem i0
     l0.addfim(este, este.dentro1)
-    i0 = l0.fim
-    enquanto i0
-      l0.addfim(i0.obj.dentro2), i0.antes
+    epara i0 = l0.fim, i0, i0.antes
+      l0.addfim(i0.obj.dentro2)
     efim
     ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
 
@@ -158,11 +155,9 @@ func t_proc_exec # Contagem de tempo
   entrou[t_sala2](este)
   !dono.perso && dono.entrou[t_sala2](este)
 # Eventos segundo
-  p.inifunc(este, "segundo")
-  enquanto p.lin
+  epara p.inifunc(este, "segundo"), p.lin, p.depois
     v = txt(p.texto, 7)
     v && misc:tempo % v == 0 && segundo[v](este)
-    p.depois
   efim
   !dono.perso && p.inifunc(dono, "segundo")
   enquanto p.lin
@@ -173,11 +168,9 @@ func t_proc_exec # Contagem de tempo
 # Eventos segsala
   se dono.tempojog != misc:tempo + 20
     dono.tempojog = misc:tempo + 20
-    p.inifunc(este, "segsala")
-    enquanto p.lin
+    epara p.inifunc(este, "segsala"), p.lin, p.depois
       v = txt(p.texto, 7)
       v && misc:tempo % v == 0 && segsala[v](este)
-      p.depois
     efim
     !dono.perso && p.inifunc(dono, "segsala")
     enquanto p.lin
@@ -544,10 +537,8 @@ func p_editor
     textopos pos
     txtmais.limpar
     txtmais.addfim("\bTexto com cores:")
-    pos = teditor.ini
-    enquanto pos.lin
+    epara pos = teditor.ini, pos.lin, pos.depois
       txtmais.addfim(txtinvis(pos.texto))
-      pos.depois
     efim
     txtmostra
     ret 1

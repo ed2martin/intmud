@@ -48,7 +48,7 @@ const animal2 = 50
 const escolhenivel = 0
 #
 # Senha para se tornar administrador, ou "" se não puder
-const senhaadm = ""
+const senhaadm = "ff"
 #
 # Como deve salvar os arquivos .int, vide variável prog do IntMUD
 const progsalvar = "L99N1I2C2F1V0"
@@ -68,7 +68,7 @@ const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
 
 func iniclasse
-  se config:modo & 3 == 0
+  se config:modo == 0
     criar(arg0)
 
 func ini
@@ -103,14 +103,12 @@ func info
 
 func msgtodos
   ref r
-  r = $jogoserv
-  enquanto r
+  epara r = $jogoserv, r, r = objdepois(r)
     r.j_conec.msg(arg0 + "\n")
-    r = objdepois(r)
   efim
 
 func iniclasse
-  se config:modo & 3 == 1 || config:modo & 3 == 2
+  se config:modo == 1 || config:modo == 2
     telatxt tela
     se [arg0]:j_serv.abrir("", config:servporta)
       tela.msg("Esperando conexões na porta " + config:servporta + "\n")
@@ -126,7 +124,7 @@ func ini # Objeto foi criado
   j_conec.proto = 2
   j_conec.aflooder = 1
   j_conec.cores = 2
-  se config:modo & 3 == 2
+  se config:modo == 2
     j_conec.msg("+OK Para Telnet pressione ENTER\n")
     j_tempo = 100 # 10 segundos depois desconecta
   senao
@@ -173,7 +171,7 @@ socket conec # Conexão com o bate-papo
 inttempo conectando
 
 func iniclasse
-  se config:modo & 3 == 3
+  se config:modo == 3
     criar(arg0)
 
 func ini
@@ -308,8 +306,6 @@ func msgsala # Envia mensagem para todos da sala
 
 func msgtodos # Envia mensagem para todos os jogadores
   ref r
-  r = $jogobot_sala
-  enquanto r
+  epara r = $jogobot_sala, r, r = objdepois(r)
     r.msg(arg0)
-    r = objdepois(r)
   efim

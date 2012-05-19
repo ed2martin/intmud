@@ -115,6 +115,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cSenao2:    strcpy(nome, "senao ");    expr=endVar+2; break;
     case cFimSe:     strcpy(nome, "fimse");     coment=endVar; break;
     case cEnquanto:  strcpy(nome, "enquanto "); expr=endVar+2; break;
+    case cEPara:     strcpy(nome, "epara ");    expr=endVar+6; break;
     case cEFim:      strcpy(nome, "efim");      coment=endVar+2; break;
     case cCasoVar:   strcpy(nome, "casovar ");  expr=endVar+2; break;
     case cCasoSe:

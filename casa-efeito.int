@@ -22,7 +22,7 @@ func mens # Evia mensagem
 classe e_confuso
 herda efeito
 const nome = " confuso"
-inttempo t1 # Para perder energia
+inttempo t1 # Para perder pontos de vida
 inttempo t2 # Quanto tempo dura o efeito
 const ini1 = ini2 # Efeito foi criado
 
@@ -94,7 +94,7 @@ func ataqueexec
 classe e_envenenado
 herda efeito
 const nome = " envenenado"
-inttempo t1 # Para perder energia
+inttempo t1 # Para perder pontos de vida
 inttempo t2 # Para avisar que está envenenado
 const ini1 = ini2 # Efeito foi criado
 
@@ -103,8 +103,8 @@ func ini2 # Efeito foi reforçado
 
 func t1_exec
   t1 = 20
-  energia -= 1
-  energia <= 0 && morreu
+  pvida -= 1
+  pvida <= 0 && morreu
 
 func t2_exec
   t2 = 100
@@ -114,7 +114,7 @@ func t2_exec
 classe e_queimando
 herda efeito
 const nome = " queimando"
-inttempo t1 # Para perder energia
+inttempo t1 # Para perder pontos de vida
 inttempo t2 # Para avisar que está envenenado
 const ini1 = ini2 # Efeito foi criado
 
@@ -123,8 +123,8 @@ func ini2 # Efeito foi reforçado
 
 func t1_exec
   t1 = 20
-  energia -= 1
-  energia <= 0 && morreu
+  pvida -= 1
+  pvida <= 0 && morreu
 
 func t2_exec
   t2 = 100

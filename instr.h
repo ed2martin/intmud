@@ -261,6 +261,7 @@ enum Comando
     cSenao2,        ///< Fluxo: ushort,expressão   senão(expressão)
     cFimSe,         ///< Fluxo:                    fimse
     cEnquanto,      ///< Fluxo: ushort,expressão   enquanto(expressão)
+    cEPara,         ///< Fluxo: ushort[3],expressão
     cEFim,          ///< Fluxo: ushort             efim
     cCasoVar,       ///< Fluxo: ushort,expressão   casovar
     cCasoSe,        ///< Fluxo: ushort[2],texto    casose com texto

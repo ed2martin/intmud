@@ -8,12 +8,10 @@ func exec
     ret
   fimse
   prog p
-  p.iniclasse("ajuda_" + arg2)
-  enquanto p.lin
-    se !(~arg0.bitvis & [p.texto]:bitinv)
-      arg0.msg2([p.texto]:txt(arg0))
-      ret
-    fimse
+  epara p.iniclasse("ajuda_" + arg2), p.lin, p.depois
+    continuar ~arg0.bitvis & [p.texto]:bitinv
+    arg0.msg2([p.texto]:txt(arg0))
+    ret
   efim
   arg0.msg("Comando ou tópico de ajuda desconhecido: " + arg2)
 

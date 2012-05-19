@@ -3,7 +3,7 @@ herda sala
 
 func segundo2
   arg0.dono = $s_dentro002
-  arg0.energia = 20
+  arg0.pvida = 20
 
 
 classe s_dentro002
@@ -21,24 +21,24 @@ func entrou
   enquanto total < config:animal1
     arg0.animal.[total].recuperar, total += 1
   efim
-  arg0.energia = 55
-  arg0.msg("Aguarde, restaurando energia " + arg0.energia + " de " + arg0.enermax)
+  arg0.pvida = 55
+  arg0.msg("Aguarde, restaurando pontos de vida " + arg0.pvida + " de " + arg0.pvidamax)
 # func segundo1
 # arg0.contleo += 1
 
 func segundo2
   se arg0.jog # Se for jogador
-    arg0.energia += 5
-    se arg0.energia >= arg0.enermax
-      arg0.energia = arg0.enermax
+    arg0.pvida += 5
+    se arg0.pvida >= arg0.pvidamax
+      arg0.pvida = arg0.pvidamax
       arg0.dono = $s_dentro003
     fimse
   senao
-    jog.energia = jog.enermax
+    jog.pvida = jog.pvidamax
 
 func cmd_escr
   se txt1(arg0) != "d"
-    arg0.msg("Aguarde, energia em " + arg0.energia + " de " + arg0.enermax)
+    arg0.msg("Aguarde, pontos de vida em " + arg0.pvida + " de " + arg0.pvidamax)
     ret 1
 
 
@@ -93,9 +93,7 @@ func segundo1
   efim
 
 func recupera
-  se arg1.energia < arg1.enermax
-    arg0.msg("Energia recuperada")
-  fimse
+  arg1.pvida < arg1.pvidamax && arg0.msg("Recuperado")
   arg1.recuperar
 
 
@@ -200,7 +198,7 @@ func entrou4
       arg0.msg("mais experiência que as múmias da sala de jantar.")
     senao arg0.nivel < 10
       arg0.msg("Sacerdote: Pegue algumas poções. Vai te fazer bem. Quando estiver com")
-      arg0.msg("pouca energia e não quiser ir até a sala ampla, tecle poção.")
+      arg0.msg("poucos pontos de vida e não quiser ir até a sala ampla, tecle poção.")
       arg0.msg("Tem poção na cozinha. Vá até lá e tecle pegar poção")
     senao
       arg0.msg("Sacerdote: Procure pelo Catador de insetos. Você já tem capacidade")
@@ -208,7 +206,7 @@ func entrou4
     fimse
   senao !arg0.dentro1
     arg0.msg("Sacerdote: Capture pelo menos um animal. Ataque um animal até ele ficar")
-    arg0.msg("com pouca energia energia, então tecle pegar")
+    arg0.msg("com poucos pontos de vida, então tecle pegar")
     arg0.msg("Os animais que você pode pegar aparecem na sua agenda (tecle agenda)")
     arg0.msg("Experimente também agenda e o nome do animal.")
   senao !temfantasma
@@ -651,8 +649,8 @@ func entrou
   ver(arg0)
 
 func segundo40
-  arg0.energia -= 5
-  arg0.msg("Uma pedra de gelo cai do teto em você, " + arg0.energia + " de " + arg0.enermax)
+  arg0.pvida -= 5
+  arg0.msg("Uma pedra de gelo cai do teto em você, " + arg0.pvida + " de " + arg0.pvidamax)
 
 func segundo3
 # Checa se o Catador de insetos está na sala
@@ -668,16 +666,12 @@ func segundo3
 # Animal do catador acorda
   listaitem i
   ref r
-  i = dentro1.ini
-  enquanto i
-    se !i.obj.jog
-      r = i.obj.objefeito("e_dormindo")
-      se r
-        msg("Catador explode uma bomba perto de " + i.obj.nome)
-        apagar(r)
-      fimse
-    fimse
-    i.depois
+  epara i = dentro1.ini, i, i.depois
+    continuar i.obj.jog
+    r = i.obj.objefeito("e_dormindo")
+    continuar !r
+    msg("Catador explode uma bomba perto de " + i.obj.nome)
+    apagar(r)
   efim
 # Catador de insetos desafia jogador
   se !escolhido && !arg0.var.l_hebraico
@@ -809,7 +803,7 @@ func segundo1
 # Catador está lutando
   r.var.h_toxico = 1
   r.var.h_onda_trovao = 1
-  se r.nivel < 40 && r.energia < r.enermax * 30 / 100
+  se r.nivel < 40 && r.pvida < r.pvidamax * 30 / 100
     novonivel = r.nivel + 2
   senao r.e_paralisado || r.e_dormindo || r.e_envenenado
     novonivel = r.nivel

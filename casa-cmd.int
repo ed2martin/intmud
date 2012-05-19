@@ -169,11 +169,9 @@ func escr
   fimse
   ref obj
   prog p
-  p.iniclasse("cmd_" + txt1(arg1))
-  enquanto p.lin
+  epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
     obj = $[p.texto].objajuda(arg0)
     sair obj
-    p.depois
   efim
   se obj
     arg0.msg_m(obj.txtajuda(arg0))
@@ -202,7 +200,7 @@ N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo)."
 classe cmd_info
 herda comando_ajuda
 const txtajuda = "\b\c3Informações\b\n\
-  \c2ENERGIA\b  Mostra resumidamente como você está no jogo\n\
+  \c2VIDA\b     Mostra resumidamente como você está no jogo\n\
   \c2QUEM\b     Mostra quem está jogando\n\
   \c2IDIOMA\b   Mostra os idiomas que você conhece\n\
   \c2HAB\b      Mostra as habilidades, sua ou do animal que você escolheu\n\
@@ -235,10 +233,8 @@ func escr
     listaitem i
     nomeobj nome
     nome.ini(arg1, 100)
-    i = arg0.dono.dentro1.ini
-    enquanto i
+    epara i = arg0.dono.dentro1.ini, i, i.depois
       ret arg0.visivel(i.obj) && nome.nome(i.obj.nome) && i.obj.ver(arg0), nulo
-      i.depois
     efim
     arg0.msg("Você não vê isso")
 
@@ -327,13 +323,11 @@ func escr
   listaobj l
   ref r
   l.addfim($jogolocal)
-  r = $jogoserv
-  enquanto r
-    l.addfim(r), r = objdepois(r)
+  epara r = $jogoserv, r, r = objdepois(r)
+    l.addfim(r)
   efim
-  r = $jogobot_usr
-  enquanto r
-    l.addfim(r), r = objdepois(r)
+  epara r = $jogobot_usr, r, r = objdepois(r)
+    l.addfim(r)
   efim
   t.addfim("Personagens")
   enquanto l.ini
@@ -412,13 +406,13 @@ func pegar_animal # arg0 pega personagem arg1
     arg0.msg("Não pode pegar outro jogador")
   senao !r.podepegar
     arg0.msg("Impossível pegar " + arg1.nome)
-  senao r.energia >= r.enermax * 0.3
+  senao r.pvida >= r.pvidamax * 0.3
     arg0.msg(r.nome + " escapou")
     arg0.esperar(3)
-  senao r.energia >= r.enermax * 0.15 && rand(100) < 65
+  senao r.pvida >= r.pvidamax * 0.15 && rand(100) < 65
     arg0.msg(r.nome + " escapou")
     arg0.esperar(1)
-  senao r.energia == 0
+  senao r.pvida == 0
     arg0.msg(r.nome + " desmaiou")
   senao arg0.dentro1.total >= config:total2
     arg0.msg("Sem espaço para pegar " + arg1.nome)
@@ -596,7 +590,7 @@ func escr
     $mens.mtodos1("$P senterra " + arg1)
 
 
-classe cmd_energia
+classe cmd_vida
 herda comando_comum
 
 func escr
@@ -604,7 +598,7 @@ func escr
   txt100 lin
   ref r
   r = arg0.persoesc
-  lin = r.nome + " energia " + r.energia + " de " + r.enermax
+  lin = r.nome + " vida " + r.pvida + " de " + r.pvidamax
   lin += ", nível " + r.nivel + ", exp " + r.expatual + " de " + r.expmax
   arg0.msg(lin)
 
@@ -673,39 +667,34 @@ func escr
   l.addfim(arg0.dentro1)
   lin = arg0.persoesc == arg0 ? "0+ Você" : "0 Você"
   t.addfim(lin + " " + arg0.nivel + efeito(arg0))
-  enquanto cont < config:animal1
+  epara nulo, cont < config:animal1, cont += 1
     animal = arg0.animal.[cont]
-    se animal
-      lin = cont + 1
-      animal == arg0.persoesc && (lin += "+")
-      lin += " " + animal.nome + " " + animal.nivel + efeito(animal)
-      t.addfim(lin)
-    fimse
-    cont += 1
+    continuar !animal
+    lin = cont + 1
+    animal == arg0.persoesc && (lin += "+")
+    lin += " " + animal.nome + " " + animal.nivel + efeito(animal)
+    t.addfim(lin)
   efim
-  enquanto cont < config:animal2
+  epara nulo, cont < config:animal2, cont += 1
     animal = arg0.animal.[cont]
-    se animal
-      se !reserva && cont >= config:animal1
-        reserva = 1
-        t.addfim("Reservas:")
-      fimse
-      lin = cont + 1
-      animal == arg0.persoesc && (lin += "+")
-      lin += " " + animal.nome + " " + animal.nivel
-      t.addfim(lin)
+    continuar !animal
+    se !reserva && cont >= config:animal1
+      reserva = 1
+      t.addfim("Reservas:")
     fimse
-    cont += 1
+    lin = cont + 1
+    animal == arg0.persoesc && (lin += "+")
+    lin += " " + animal.nome + " " + animal.nivel
+    t.addfim(lin)
   efim
   arg0.msg_m(t.remove(100))
 
 func efeito
   listaitem i
   txt100 lin
-  arg0.energia == 0 && (lin += " desmaiado")
-  i = arg0.dentro2.ini
-  enquanto i
-    lin += i.obj.nome, i.depois
+  arg0.pvida == 0 && (lin += " desmaiado")
+  epara i = arg0.dentro2.ini, i, i.depois
+    lin += i.obj.nome
   efim
   ret lin ? " (" + txt(lin, 1) + ")"
 
@@ -723,13 +712,13 @@ func escr
   senao arg0.persoesc == r
     arg0.msg("Você já escolheu " + nome)
   senao r == arg0
-    arg0.persoesc.energia && arg0.esperar(30) # Espera 3 segundos
+    arg0.persoesc.pvida && arg0.esperar(30) # Espera 3 segundos
     arg0.persoesc = arg0
     $mens.p(arg0)
     $mens.mvis1("$P não escolheu ninguém")
     arg0.escolhebat # Atualiza persobat
   senao
-    arg0.persoesc.energia && arg0.esperar(30) # Espera 3 segundos
+    arg0.persoesc.pvida && arg0.esperar(30) # Espera 3 segundos
     arg0.persoesc = r
     arg0.escolhebat # Atualiza persobat
     $mens.p(arg0, r)
@@ -987,7 +976,7 @@ func escr
   ret exevento(este, arg0, arg1), nulo
   ref r
   r = arg0.persoesc # Personagem escolhido
-  r.energia += 20
-  r.energia > r.enermax && (r.energia = r.enermax)
-  arg0.dono.msg(arg0.nome + " cura " + r.nome + ", " + r.energia + " de " + r.enermax)
+  r.pvida += 20
+  r.pvida > r.pvidamax && (r.pvida = r.pvidamax)
+  arg0.dono.msg(arg0.nome + " cura " + r.nome + ", " + r.pvida + " de " + r.pvidamax)
   arg0.var.i_poção_ -= 1

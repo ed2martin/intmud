@@ -265,15 +265,11 @@ func sepitem # Procura o item destino
   listaitem i
   nomeobj n
   n.ini(misc:sep2, 1)
-  i = arg0.dentro1.ini
-  enquanto i
+  epara i = arg0.dentro1.ini, i, i.depois
     ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
-    i.depois
   efim
-  i = arg0.dono.dentro1.ini
-  enquanto i
+  epara i = arg0.dono.dentro1.ini, i, i.depois
     ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
-    i.depois
   efim
 
 func sepperso # Procura o personagem destino
@@ -282,15 +278,11 @@ func sepperso # Procura o personagem destino
   listaitem i
   nomeobj n
   n.ini(misc:sep2, 1)
-  i = arg0.dentro2.ini
-  enquanto i
+  epara i = arg0.dentro2.ini, i, i.depois
     ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
-    i.depois
   efim
-  i = arg0.dono.dentro2.ini
-  enquanto i
+  epara i = arg0.dono.dentro2.ini, i, i.depois
     ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
-    i.depois
   efim
 
 
@@ -337,11 +329,10 @@ func tempo1_exec # Executa eventos
   prog p
   uint32 x
   uint32 v
-  x = 1000000, p.inifunc(obj, func)
-  enquanto p.lin
+  x = 1000000
+  epara p.inifunc(obj, func), p.lin, p.depois
     v = txt(p.texto, tfunc)
     v > tempo2 && v < x && (x = v)
-    p.depois
   efim
   x == 1000000 && apagar(este)
   v = tempo2

@@ -20,12 +20,7 @@ func iniclasse
   criar(arg0)
 
 func t_limpar_exec # Limpa itens
-  listaitem i
-  i = dentro1.ini
-  enquanto i && !i.obj.jog
-    i.depois
-  efim
-  i.obj && var.limpar
+  var.limpar
 
 func t_elimpar_exec # Limpa os itens enterrados
   ent.limpar
@@ -41,10 +36,8 @@ func ver
 # Adiciona a lista de personagens
   textotxt t2
   listaitem i
-  i = dentro1.ini
-  enquanto i
+  epara i = dentro1.ini, i, i.depois
     i.obj != arg0 && arg0.visivel(i.obj) && t2.addfim(i.obj.nome)
-    i.depois
   efim
   t2 && t.addfim("Aqui: " + txttroca(t2.remove(1000), "\n", ", "))
 # Adiciona a lista de itens
@@ -91,10 +84,8 @@ func txttotal # Retorna a quantidade de personagens e itens
   fimse
   itens = 1
   listaitem i
-  i = dentro1.ini
-  enquanto i
+  epara i = dentro1.ini, i, i.depois
     i.obj != misc:obj && misc:obj.visivel(i.obj) && (itens += 1)
-    i.depois
   efim
   se itens > 1
     lin && (lin += ", ")
@@ -113,16 +104,13 @@ func procperso
 func numperso # Quantidade de personagens não jogador
   uint16 total
   listaitem i
-  i = dentro1.ini
-  enquanto i
+  epara i = dentro1.ini, i, i.depois
     !i.obj.jog && (total += 1)
-    i.depois
   efim
   ret total
 
 func msg # Mensagem para todos que estiverem na sala
   listaitem i
-  i = dentro1.ini
-  enquanto i
-    i.obj.msg(arg0), i.depois
+  epara i = dentro1.ini, i, i.depois
+    i.obj.msg(arg0)
   efim

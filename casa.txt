@@ -1,33 +1,102 @@
-*** Falta
+Índice
 
-Testar mensagens de batalha
-Testar condições que afetam "status" dos personagens
-Fazer os itens funcionarem
-Vestir itens
-Capa funcionar - para enganar vampiros
-Limitar a quantidade de PNJs por sala
-Evitar PK
-Fazer animais perseguirem
-
-
-*** Variáveis de personagens e salas
-
-textovar var
-Os dois primeiros caracteres das variáveis de var indicam o tipo
-de variável.
-a_ = agenda (1=viu, 2=pegou)
-h_ = habilidade
-i_ = item, pode ser pego
-l_ = língua (idioma)
-o_ = item classificado como "outros"
-v_ = item que está vestindo
-z_ = variável não visível ao jogador
+1. Organização dos arquivos e classes
+2. Envio de mensagens formatadas (casa-mens.int)
+3. Variáveis de personagens e salas
+4. Salas
+4.1. Salas funções
+4.2. Salas variáveis
+5. Personagens
+5.1. Personagens funções
+5.2. Personagens variáveis
+5.3. Personagens constantes (funções)
+5.4. Personagens eventos
+6. Lista de itens pendentes
 
 
-*** Caracteres especiais em mensagens (mud-mens.inv)
+1. Organização dos arquivos e classes
 
-$ + letra maiúscula = primeira letra do texto em maiúscula
-$ + letra minúscula = texto em letras minúsculas
+casa.int
+Contém a configuração do jogo (classe 'config'), como por exemplo, se vai
+rodar em uma janela ou abrindo uma porta, a sala inicial, etc.
+As outras classes são responsáveis pela comunicação entre o jogo e
+os jogadores.
+
+casa-a-*.int
+Contém as salas, classes cujo nome começa com 's_'.
+Geralmente cada área é um arquivo, com classes cujo nome é 's_'
+seguido do prefixo da área e um número de '001' a '999'.
+Exemplo, a classe 's_ini001' é a primeira sala do arquivo casa-a-ini.int.
+
+casa-salacomum.int
+Contém a classe 'sala', que é herdada por todas as salas.
+
+casa-perso.int
+Contém a maioria dos personagens, classes cujo nome começa com 'p_'.
+
+casa-jog.int
+Contém a classe 'jogador', que é o personagem do jogador.
+
+casa-persomum.int
+Contém a classe 'personagem', que é herdada por todos os personagens.
+
+casa-efeito.int
+Contém os efeitos que afetam os personagens.
+Todos os efeitos são classes cujo nome começa com 'e_', e são derivados
+da classe 'efeito', também definida nesse arquivo.
+
+casa-cmd.int
+Contém os comandos que os personagens podem digitar, exceto ataques.
+Todo comando é uma classe cujo nome é 'cmd_' seguido do nome do comando.
+A classe 'comando_comum' é herdada por todos os comandos.
+Quando é necessário uma única classe herdada por dois ou mais comandos,
+geralmente o nome dessa classe começa com 'comando_'.
+
+casa-ataque.int
+Contém os comandos de ataque. Todo comando é derivado da classe
+'comando_atque'.
+Via de regra, a função 'escr' checa se está em condições de atacar e obtém
+o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
+No caso dos personagens agressivos, é a função 't_proc_exec' do personagem
+que toma a iniciativa de atacar. Ela chama a função 'ataca' de um golpe
+escolhido aleatoriamente e fornecendo o personagem alvo, também escolhido
+aleatoriamente.
+
+casa-mens.int
+Contém a classe 'mens', especializada no envio de mensagens para personagens.
+
+casa-misc.int
+Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
+Diferentemente das outras classes, as funções de misc devem ser chamadas
+com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
+
+
+2. Envio de mensagens formatadas (casa-mens.int)
+
+Para enviar uma mensagem formatada a um ou mais personagens, usa-se
+a classe 'mens', contida no arquivo 'casa-mens.int'.
+
+Primeiro define-se de um a três personagens com a seguinte função:
+$mens.p(<personagem>, [alvo], [obj])
+
+Depois, envia-se uma mensagem com uma das funções:
+$mens.mvis1("texto")
+$mens.mvis2("texto", "texto")
+$mens.mvis3("texto", "texto", "texto")
+$mens.mtodos1("texto")
+$mens.mtodos2("texto", "texto")
+$mens.mtodos3("texto", "texto", "texto")
+
+Onde:
+mvis - envia para todos que podem ver o personagem
+mtodos - envia para todos, mesmo os que não podem ver
+O número após o nome da função indica a quantidade de mensagens:
+1 - mesma mensagem para todos
+2 - uma mensagem para o personagem e outra para os demais
+3 - uma mensagem para o personagem, outra para o alvo e outra para os demais
+
+O texto pode conter os seguintes caracteres especiais:
+
 $$ = Símbolo $
 $P = Nome do personagem
 $Q = Nome do personagem escolhido, ex. "Lula"
@@ -41,8 +110,89 @@ $S = Depende do personagem: "o", "a", "um" ou "uma"
 $T = Depende do alvo: "o", "a", "um" ou "uma"
 $U = Depende do objeto: "o", "a", "um" ou "uma"
 
+Em qualquer dessas opções:
+$ + letra maiúscula = primeira letra do texto em maiúscula
+$ + letra minúscula = texto sem alterar a primeira letra
 
-*** Personagens funções
+
+3. Variáveis de personagens e salas
+
+Todos os personagens e salas têm uma lista de variáveis dinâmicas
+(podem ser criadas e apagadas) contidas na seguinte variável:
+textovar var
+
+Os dois primeiros caracteres das variáveis de var indicam o tipo:
+a_ = agenda (1=viu, 2=pegou)
+h_ = habilidade
+i_ = item, pode ser pego
+l_ = língua (idioma)
+o_ = item classificado como "outros"
+v_ = item que está vestindo
+z_ = variável não visível ao jogador
+
+
+4. Salas
+
+4.1. Salas funções
+
+func ver( personagem )
+Mostra descrição da sala seguido das saídas válidas.
+
+func txtsai
+Retorna a mensagem das saídas existentes (um texto).
+Antes fazer: misc:obj = personagem
+
+func txttotal
+Retorna a quantidade de personagens e itens (um texto).
+Antes fazer: misc:obj = personagem
+
+func msg2(texto)
+Envia mensagem para todos na sala.
+
+func procperso(texto)
+Procura um personagem na sala com o nome da classe especificado.
+Retorna o objeto que corresponde ao personagem.
+Antes fazer: misc:obj = personagem
+
+func numperso
+Retorna a quantidade de personagens não jogador na sala.
+
+
+4.2. Salas variáveis
+
+const limpar = 0
+De quanto em quanto tempo limpar os itens, em décimos de segundo.
+
+const terreno = 1
+Tempo de espera ao sair da sala, em décimos de segundo, quando o usuário
+digita uma direção.
+
+const descr = "texto"
+Descrição da sala: título seguido das saídas válidas.
+Antes fazer: misc:obj = personagem
+
+const dir_n = $nome_da_sala
+const dir_s = $nome_da_sala
+const dir_l = $nome_da_sala
+const dir_o = $nome_da_sala
+const dir_e = $nome_da_sala
+const dir_c = $nome_da_sala
+const dir_b = $nome_da_sala
+Salas vizinhas, nas direções norte, sul, leste, oeste, entrar,
+cima (subir), baixo (descer).
+Antes fazer: misc:obj = personagem
+
+const mostra_n = 1
+const mostra_s = 1
+etc.
+Se as saídas devem aparecer na lista de saídas.
+Zero significa invisível, 1 significa visível
+Antes fazer: misc:obj = personagem
+
+
+5. Personagens
+
+5.1. Personagens funções
 
 Criar personagem:
 criar("nome da classe do personagem", sala, nível, variáveis)
@@ -81,7 +231,7 @@ Escolhe um jogador que está na mesma sala. Retorna o objeto do jogador.
 
 func recuperar
 Recupera status do personagem:
-Energia completa e sem paralisado, queimando, congelado, dormindo, etc.
+Pontos de vida completos e sem paralisado, queimando, congelado, dormindo,etc.
 
 func ataqueini
 Testa se pode atacar
@@ -89,7 +239,7 @@ Retorna "" se pode atacar ou a mensagem com o motivo se não pode.
 
 func morreu
 Executa todos os procedimentos para indicar que morreu.
-Deve ser chamado quando energia chegar a 0.
+Deve ser chamado quando pvida (pontos de vida) chegar a 0.
 
 func morreu(1)
 Mesmo que a função morreu, acima, mas não apaga o personagem.
@@ -98,7 +248,7 @@ func ganhaexp( quantida de experiência )
 Personagem ganha experiência, geralmente devido à batalha.
 
 
-*** Personagens variáveis
+5.2. Personagens variáveis
 
 const nome = "nome do personagem"
 Nome do personagem
@@ -116,11 +266,11 @@ Nome do personagem alvo.
 sav uint16 nivel
 Nível do personagem
 
-sav uint32 energia
-Energia atual, quando chega a 0 morre
+sav uint32 pvida
+Pontos de vida atuais, quando chega a 0 morre
 
 
-*** Personagens constantes (funções)
+5.3. Personagens constantes (funções)
 
 const podepegar = 1
 Se pode ser pego por jogador
@@ -128,8 +278,8 @@ Se pode ser pego por jogador
 const agressivo = 1
 Se é agressivo, ataca jogadores
 
-const enermax = nivel * 2 + 25
-Quantidade máxima de energia que o personagem pode ter
+const pvidamax = nivel * 2 + 25
+Quantidade máxima de pontos de vida que o personagem pode ter
 
 const expmax = nivel * nivel * 2 + 14
 Quantidade de experiência para subir de nível
@@ -144,7 +294,7 @@ const veloc = (nivel * 4 + 60) * nivel + 30
 Velocidade do personagem
 
 
-*** Personagens eventos
+5.4. Personagens eventos
 
 Nessas funções, arg0 é sempre o personagem que está fazendo a ação.
 Elas são chamadas para a sala, se o personagem não pertencer a outro.
@@ -196,58 +346,11 @@ Quando alguém quer ver esse personagem.
 Para ser visto, deve enviar mensagem para arg0 e retornar 1.
 
 
-*** Salas funções
+6. Lista de itens pendentes
 
-func ver( personagem )
-Mostra descrição da sala seguido das saídas válidas.
-
-func txtsai
-Retorna a mensagem das saídas existentes (um texto).
-Antes fazer: misc:obj = personagem
-
-func txttotal
-Retorna a quantidade de personagens e itens (um texto).
-Antes fazer: misc:obj = personagem
-
-func msg2(texto)
-Envia mensagem para todos na sala.
-
-func procperso(texto)
-Procura um personagem na sala com o nome da classe especificado.
-Retorna o objeto que corresponde ao personagem.
-Antes fazer: misc:obj = personagem
-
-func numperso
-Retorna a quantidade de personagens não jogador na sala.
-
-
-*** Salas variáveis
-
-const limpar = 0
-De quanto em quanto tempo limpar os itens, em décimos de segundo.
-
-const terreno = 1
-Tempo de espera ao sair da sala, em décimos de segundo, quando o usuário
-digita uma direção.
-
-const descr = "texto"
-Descrição da sala: título seguido das saídas válidas.
-Antes fazer: misc:obj = personagem
-
-const dir_n = $nome_da_sala
-const dir_s = $nome_da_sala
-const dir_l = $nome_da_sala
-const dir_o = $nome_da_sala
-const dir_e = $nome_da_sala
-const dir_c = $nome_da_sala
-const dir_b = $nome_da_sala
-Salas vizinhas, nas direções norte, sul, leste, oeste, entrar,
-cima (subir), baixo (descer).
-Antes fazer: misc:obj = personagem
-
-const mostra_n = 1
-const mostra_s = 1
-etc.
-Se as saídas devem aparecer na lista de saídas.
-Zero significa invisível, 1 significa visível
-Antes fazer: misc:obj = personagem
+Testar mensagens de batalha
+Testar condições que afetam "status" dos personagens
+Fazer os itens funcionarem
+Vestir itens
+Capa funcionar - para enganar vampiros
+Evitar PK

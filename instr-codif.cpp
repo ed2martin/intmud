@@ -250,6 +250,7 @@ static const TListaInstr ListaInstr[] = {
     { "debug",     cDebug },
     { "efim",      cEFim },
     { "enquanto",  cEnquanto },
+    { "epara",     cEPara },
     { "fimse",     cFimSe },
     { "func",      cFunc },
     { "herda",     cHerda },
@@ -731,6 +732,11 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     case cEnquanto:
     case cCasoVar:
         destino += endVar+2;
+        proc_expr=true;
+        break;
+    case cEPara:    // Requer expressão numérica
+        memset(destino+endVar, 0, 6);
+        destino += endVar+6;
         proc_expr=true;
         break;
     case cSenao1:   // Pode ter ou não expressão numérica
@@ -1235,6 +1241,13 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 copiastr(dest_ini, "Erro na instrução", tamanho);
                 return false;
             }
+        // EPARA: verifica se tem 3 argumentos
+            if (dest_ini[2] == cEPara && dest_ini[endVar+4]==0 &&
+                    dest_ini[endVar+5]==0)
+            {
+                copiastr(dest_ini, "EPARA requer 3 argumentos", tamanho);
+                return false;
+            }
         // Verifica se tem comentário
             if (*origem=='#')
             {
@@ -1423,8 +1436,28 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case exo_int2: *destino++ = exo_int1; break;
         case exo_dponto2: *destino++ = exo_dponto1; break;
         case exo_virgula:
-            if (topo == pilha + 1)
-                *destino++ = exo_virg_expr;
+            if (topo != pilha + 1)
+                break;
+            *destino++ = exo_virg_expr;
+            if (dest_ini[2] == cEPara)
+            {
+                if (dest_ini[endVar+2]==0 && dest_ini[endVar+3]==0)
+                {
+                    dest_ini[endVar+2] = (destino - dest_ini);
+                    dest_ini[endVar+3] = (destino - dest_ini) >> 8;
+                }
+                else if (dest_ini[endVar+4]==0 && dest_ini[endVar+5]==0)
+                {
+                    dest_ini[endVar+4] = (destino - dest_ini);
+                    dest_ini[endVar+5] = (destino - dest_ini) >> 8;
+                }
+                else
+                {
+                    copiastr(dest_ini, "EPARA requer apenas 3 argumentos",
+                             tamanho);
+                    return false;
+                }
+            }
             break;
         }
 

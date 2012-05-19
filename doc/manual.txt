@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.3.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.4.
 
 
 1. SOBRE O INTMUD
@@ -581,16 +581,39 @@ z = -1.5
 Segue a mesma sintaxe vista anteriormente:
 <tipo de variável> <nome da variável>
 
-As variáveis definidas antes das funções pertencem ao objeto, e podem ser
-acessadas normalmente pelas funções do objeto.
+As variáveis são sempre definidas dentro de classes, mas dependendo
+de onde, possuem um tempo de existência diferente.
 
-As que forem definidas em uma função pertencem à ela. São criadas quando
-a função é chamada e deixam de existir quando a função ela retorna.
+Antecedente às funções, pertencem à classe.
+Cada objeto criado possui a variável (vide instruções 'criar' e 'apagar').
+Portanto, se existirem 10 objetos de uma mesma classe, existirão 10
+variáveis com o mesmo nome e tipo, porém em objetos diferentes.
 
-Variáveis definidas dentro de um bloco se ~ fimse, enquanto ~ efim, etc.
-só existem dentro dele. Em outras palavras, deixam de existir quando
-saem do escopo. No caso de um bloco enquanto ~ efim, também deixam de
-existir quando volta para a instrução enquanto.
+Dentro de uma função, existem apenas na própria função.
+É criada quando a função é chamada e o interpretador encontra a
+definição da variável, e apagada quando a função retorna.
+
+Dentro de um bloco de controle, em uma função, o tempo de existência da
+variável é ainda menor. É apagada quando o bloco termina. Em blocos de
+repetição (vide instruções 'enquanto' e 'efim'), a cada repetição
+a variável também é apagada.
+
+Exemplo:
+
+classe a
+uint8 x # Essa variável existe em cada objeto da classe 'a'
+func f1
+# Aqui a variável 'w' ainda não existe
+ref w # Essa variável existe em qualquer lugar de 'f1', até 'f1' retornar
+se !args # Aqui começa um bloco 'se'
+int8 y # Essa variável só existe dentro desse bloco 'se'
+senao
+txt10 y # Essa é outra variável 'y', independente da 'y' acima
+fimse # Marca o fim do bloco 'se'
+# Aqui a variável 'y' já não existe mais, porém 'w' ainda existe
+
+Nota: O exemplo acima não produz nenhum resultado prático.
+      O único objetivo é demonstrar o tempo de existência das variáveis.
 
 9.5. Acessar variáveis e chamar funções
 
@@ -1086,41 +1109,72 @@ Exemplo, em uma variável int8:
 
 15. INSTRUÇÕES DE CONTROLE DE FLUXO
 
-15.1. se [argumento]  ... fimse
-   se [argumento]  ... senão ... fimse
-   se [argumento]  ... senão [argumento]  ... fimse
-São instruções de decisão. Se uma condição for verdadeira, executa
-algumas instruções. Se for falsa, executa outras.
+15.1. se <argumento>  ... fimse
 
-15.2. enquanto [argumento]  ... efim
-Laço de repetição
-Se o argumento for verdadeiro, executa as instruções que estiverem entre
-o enquanto e o efim e volta para a instrução enquanto, para testar
-o argumento novamente.
+São instruções de decisão. Se o argumento for verdadeiro, executa as
+instruções entre 'se' e 'fimse'. Se for falso, vai direto para o 'fimse'.
 
-15.3. sair [argumento]
-Sai de um laço enquanto ou um laço casovar.
-A instrução SAIR com um argumento só sai se o argumento for verdadeiro.
+int8 x
+se x == 0
+y = 0 # Essa instrução só é executada se x for 0
+senao
 
-15.4. continuar
-Fecha um ciclo de um laço enquanto, como se tivesse chegado na instrução efim.
-A diferença entre continuar e efim é que efim define aonde termina o laço.
-A instrução CONTINUAR com um argumento só continua se o argumento for
-verdadeiro.
+15.2. senao
 
-15.5. casovar [argumento] ... casofim
-      casose
+Só tem utilidade dentro de um bloco 'se' (entre as instruções 'se' e
+'fimse'). O que vem após essa instrução só é executado se a condição
+do 'se' for falsa.
+
+Exemplo:
+
+int8 x
+se x == 0
+# Passa por esse comentário se x for 0
+senao
+# Passa por esse comentário se x não for 0
+fimse
+
+15.3. senao <argumento>
+
+Funciona da mesma forma que a instrução 'senao' sem argumentos, porém
+testa se o argumento é verdadeiro, como uma instrução 'se'.
+É bastante utilizado em alguns casos, para evitar blocos 'se' aninhados,
+um dentro do outro.
+
+Exemplo 1:
+
+se txt(x)==="abc"
+msg("x é abc")
+senao txt(x)==="def"
+msg("x é def")
+senao
+msg("x não é abc nem def")
+fimse
+
+Exemplo 2:
+
+se txt(n+2)==="1" || txt(n+2)==="2"
+msg("a")
+msg("b")
+senao txt(n+2)==="3"
+msg("b")
+fimse
+
+15.4. casovar <argumento> ... casofim
       casose "texto"
+      casose
+
 Avalia o argumento e transforma em texto. Em seguida, vai para a instrução
 casose que contém o texto correspondente (letras maiúsculas e minúsculas
 são consideradas diferentes). Se não encontrar o texto, vai para
-a instrução casose sem argumentos ou, se essa instrução não existir,
-vai para o casofim.
-A instrução SAIR sai do laço casovar, indo direto para o casofim.
-Nota: um CASOVAR com vários CASOSE é mais eficiente que várias instruções
-SE e SENÃO.
+a instrução 'casose' sem argumentos ou, se essa instrução não existir,
+vai para o 'casofim'.
 
-Exemplo 1:
+A instrução 'sair' sai do laço casovar, indo direto para o 'casofim'.
+Nota: um 'casovar' com vários 'casose' é mais eficiente que várias instruções
+'se' e 'senao'.
+
+Exemplo 1: Mesma funcionalidade do exemplo 1 do bloco 'se'
 
 casovar x
 casose "abc"
@@ -1133,17 +1187,7 @@ casose
 msg("x não é abc nem def")
 casofim
 
-Exemplo 1 usando SE, SENAO e FIMSE:
-
-se txt(x)==="abc"
-msg("x é abc")
-senao txt(x)==="def"
-msg("x é def")
-senao
-msg("x não é abc nem def")
-fimse
-
-Exemplo 2:
+Exemplo 2: Mesma funcionalidade do exemplo 2 do bloco 'se'
 
 casovar n+2
 casose "1"
@@ -1153,24 +1197,79 @@ casose "3"
 msg("b")
 casofim
 
-Exemplo 2 usando SE, SENAO e FIMSE:
+15.5. enquanto <argumento>  ... efim
 
-se txt(n+2)==="1" || txt(n+2)==="2"
-msg("a")
-msg("b")
-senao txt(n+2)==="3"
-msg("b")
+É um laço de repetição.
+Se o argumento for verdadeiro, executa as instruções que estiverem entre
+o 'enquanto' e o 'efim' e volta para a instrução 'enquanto', para testar
+o argumento novamente.
+Se for falso, vai para a primeira instrução após o 'efim'
+
+Exemplo:
+
+telatxt t
+int8 x
+x = 2
+enquanto x < 5
+t.msg("x é " + x + "\n")
+x += 1
+efim
+
+Produz o seguinte resultado:
+x é 2
+x é 3
+x é 4
+
+15.6. epara <inicialização>, <condição>, <incremento> ... efim
+
+É um laço de repetição.
+Primeiro, executa as instruções da <inicialização>.
+Depois funciona como um 'enquanto', testando a <condição>.
+A diferença é que após o bloco de instruções (quando chega na instrução
+'efim'), o <incremento> é executado.
+
+Exemplo: Mesma funcionalidade do exemplo do bloco 'enquanto'
+
+telatxt t
+int8 x
+epara x = 2, x < 5, x += 1
+t.msg("x é " + x + "\n")
+efim
+
+15.7. sair [argumento]
+
+Sai de um bloco 'enquanto' ou 'epara', indo para a primeira instrução após
+o 'efim'. Também sai de um bloco 'casose', indo para a primeira instrução
+após o 'casofim'.
+
+A instrução 'sair' com um argumento só sai se o argumento for verdadeiro.
+
+15.8. continuar [argumento]
+
+Fecha um ciclo de um laço 'enquanto' ou 'epara', como se tivesse chegado
+na instrução efim. Em outras palavras, qualquer instrução entre o 'continuar'
+e o 'efim' é ignorada.
+
+A instrução 'continuar' com um argumento só continua se o argumento for
+verdadeiro.
+
+15.9. ret [argumento]
+      ret <condição>, <argumento>
+
+Como visto anteriormente, a instrução 'ret' retorna de uma função.
+
+Sem argumentos, retorna nulo. Tem o mesmo efeito de:
+ret nulo
+
+Com dois argumentos, avalia o primeiro, e se for verdadeiro, retorna
+o segundo. Uma instrução do tipo 'ret x,y' tem o mesmo efeito de:
+se x
+ret y
 fimse
 
-15.6. ret [argumento 1], [argumento 2]
-Retorna de uma função.
-RET sem argumentos retorna NULO.
-RET com um argumento retorna o próprio argumento.
-RET com dois argumentos retorna o segundo argumento se o primeiro resultar
-em verdadeiro. Se resultar em falso, não retorna (passa para a próxima linha).
+15.10. terminar
 
-15.7. terminar
-Encerra o programa
+Encerra o programa.
 
 
 16. LISTA DE FUNÇÕES

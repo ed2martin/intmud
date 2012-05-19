@@ -281,6 +281,7 @@ void TClasse::AcertaComandos(char * comandos)
             break;
         case Instr::cSe:
         case Instr::cEnquanto:
+        case Instr::cEPara:
         case Instr::cCasoVar:
             p[Instr::endAlin] = indent;
             if (indent < 0xFF)
@@ -301,6 +302,7 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao1:
         case Instr::cSenao2:
         case Instr::cEnquanto:
+        case Instr::cEPara:
         case Instr::cEFim:
         case Instr::cCasoVar:
         case Instr::cSair1:
@@ -344,12 +346,13 @@ void TClasse::AcertaComandos(char * comandos)
             p[Instr::endVar+1] = (x-p)>>8;
             break;
         case Instr::cEnquanto:
+        case Instr::cEPara:
             nivelse=0;
             for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
             {
                 if (AcertaComandosFim(x[2]))
                     break;
-                if (x[2]==Instr::cEnquanto)
+                if (x[2]==Instr::cEnquanto || x[2]==Instr::cEPara)
                     nivelse++;
                 else if (x[2]==Instr::cContinuar1 ||
                          x[2]==Instr::cContinuar2)
@@ -498,6 +501,7 @@ void TClasse::AcertaComandos(char * comandos)
                 if (AcertaComandosFim(x[2]))
                     break;
                 else if (x[2]==Instr::cEnquanto ||
+                         x[2]==Instr::cEPara ||
                          x[2]==Instr::cCasoVar)
                     nivelse++;
                 else if (x[2]==Instr::cEFim ||
@@ -534,6 +538,7 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao1:
         case Instr::cSenao2:
         case Instr::cEnquanto:
+        case Instr::cEPara:
         case Instr::cSair:
             printf("  *** %d", pos+Num16(p+Instr::endVar)); // Para frente
             break;
@@ -863,6 +868,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 total++, p+=Num16(p), inifunc=true;
                 break;
             case Instr::cEnquanto:
+            case Instr::cEPara:
             case Instr::cSe:
             case Instr::cSenao1:
             case Instr::cSenao2:
@@ -908,6 +914,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 p+=Num16(p), inifunc=true;
                 break;
             case Instr::cEnquanto:
+            case Instr::cEPara:
             case Instr::cSe:
             case Instr::cSenao1:
             case Instr::cSenao2:

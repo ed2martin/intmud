@@ -14,7 +14,7 @@ const perso = 1 # Indica que é personagem
 const persobat = este # Personagem usado na batalha
 const persoesc = este # Personagem escolhido
 sav uint16 nivel # Nível do personagem
-sav uint32 energia # Energia atual, quando chega a 0 morre
+sav uint32 pvida # Pontos de vida atuais, quando chega a 0 morre
 sav uint32 expatual # Experiência atual
 intexec recalc # Se deve recalcular defesa, ataque e velocidade
 int8 deftipo.14 # Bônus de defesa para os diferentes tipos de ataque
@@ -36,7 +36,7 @@ int8 deftipo.14 # Bônus de defesa para os diferentes tipos de ataque
 uint32 veloc # Velocidade
 uint32 defesa # Defesa base
 uint32 ataque # Ataque base
-uint32 enermax # Energia máxima
+uint32 pvidamax # Quantidade máxima de pontos de vida
 # const agressivo = 0 # Se é agressivo (ataca jogadores)
 # const persegue = 0 # Se persegue jogadores
 const avisachegou = nome + " " + nivel + " chegou" # Mensagem quando entra no jogo
@@ -47,7 +47,7 @@ func ini # Personagem foi criado
   dono = arg0
   nivel = arg1
   recalc_exec
-  energia = enermax
+  pvida = pvidamax
 # Mensagem que chegou
   txt100 avisamsg
   avisamsg = avisachegou
@@ -100,14 +100,11 @@ func teclou # Personagem escreveu algo
     ret
   fimse
 # Obtém o comando
-  p.iniclasse("cmd_" + txttroca(txt1(arg0), "ç", "c"))
-  enquanto p.lin
+  epara p.iniclasse("cmd_" + txttroca(txt1(arg0), "ç", "c")), p.lin, p.depois
     obj = $[p.texto].obj(este, arg0)
-    se obj
-      sair !obj.ultimo # Sai se não for objeto com baixa prioridade
-      obj2 = obj
-    fimse
-    p.depois
+    continuar !obj # Continua se não encontrou um objeto
+    sair !obj.ultimo # Sai se não for objeto com baixa prioridade
+    obj2 = obj
   efim
   !obj && (obj = obj2)
 # Obtém objetos para gerar eventos
@@ -136,37 +133,50 @@ func t_aguarde_exec
 
 func t_proc_exec
   t_proc = 10
-  se dono.jog # Se dono é jogador
-    ret
-  senao dono.tempojog < misc:tempo # Checa tempo de vida do personagem
+  ret dono.perso, nulo # Retorna se pertence a outro personagem
+  ret dono.tempojog < misc:tempo, apagar(este) # Checa tempo de vida
+  ret t_aguarde, nulo # Retorna se deve aguardar
+  se dono.dentro1.total >= 12 && !rand(5) # Muitos personagens, pode explodir
     apagar(este)
-    ret
-  senao t_aguarde # Se deve aguardar
+    listaitem i
+    ref r
+    epara i = dono.dentro1.ini, i, i.depois
+      r = i.obj.persobat
+      se i.obj.jog # Se for jogador, perde alguns pontos de vida
+        r.pvida -= 5
+        i.obj.msg(nome + " se desintegrou, " + r.pvida + " de " + r.pvidamax)
+        r.pvida <= 0 && r.morreu
+      senao # Se não for jogador, recupera os pontos de vida
+        r.pvida = r.pvidamax
+      fimse
+    efim
     ret
   fimse
   se agressivo # Se for agressivo
     txt100 t1
     ref r
     t1 = escolhehab, r = escolhejog
-    se t1 && r && !ataqueini
-      $cmd_[t1].ataca(este, r)
-      ret
-    fimse
+    ret t1 && r && !ataqueini, $cmd_[t1].ataca(este, r)
   fimse
   se persegue # Se persegue jogador
     txt100 dir
     uint32 valor
     valor = dono.tempojog
-    valor <= dono.dir_n.tempojog && (valor = dono.dir_n.tempojog) + dir = "n"
-    valor <= dono.dir_s.tempojog && (valor = dono.dir_s.tempojog) + dir = "s"
-    valor <= dono.dir_l.tempojog && (valor = dono.dir_l.tempojog) + dir = "l"
-    valor <= dono.dir_o.tempojog && (valor = dono.dir_o.tempojog) + dir = "o"
-    valor <= dono.dir_c.tempojog && (valor = dono.dir_c.tempojog) + dir = "subir"
-    valor <= dono.dir_b.tempojog && (valor = dono.dir_b.tempojog) + dir = "descer"
-    valor <= dono.dir_en.tempojog && (valor = dono.dir_en.tempojog) + dir = "entrar"
-    valor <= dono.dir_sa.tempojog && (valor = dono.dir_sa.tempojog) + dir = "sair"
+    t_proc2(valor, dono.dir_n) && (dir = "n")
+    t_proc2(valor, dono.dir_s) && (dir = "s")
+    t_proc2(valor, dono.dir_l) && (dir = "l")
+    t_proc2(valor, dono.dir_o) && (dir = "o")
+    t_proc2(valor, dono.dir_c) && (dir = "c")
+    t_proc2(valor, dono.dir_b) && (dir = "b")
+    t_proc2(valor, dono.dir_en) && (dir = "entrar")
+    t_proc2(valor, dono.dir_sa) && (dir = "sair")
     dir && teclou(dir)
   fimse
+
+func t_proc2
+  se arg0 <= arg1.tempojog && movesala(arg1)
+    arg0 = arg1.tempojog
+    ret 1
 
 func escolhehab # Escolhe e retorna o nome de uma habilidade
   txt100 t1 # Nome da habilidade
@@ -192,20 +202,16 @@ func escolhejog # Escolhe e retorna um jogador
   listaitem i
   uint8 total
 # Obtém o alvo
-  i = dono.dentro1.ini
-  enquanto i
+  epara i = dono.dentro1.ini, i, i.depois
     i.obj.jog && (total += 1)
-    i.depois
   efim
 # Checa se tem jogador
   ret total == 0, nulo
 # Escolhe um jogador
   total = rand(total) + 1
-  i = dono.dentro1.ini
-  enquanto i
+  epara i = dono.dentro1.ini, i, i.depois
     i.obj.jog && (total -= 1)
     ret total == 0, i.obj
-    i.depois
   efim
 
 func persoalvo # Obtém o personagem a partir do nome
@@ -213,10 +219,8 @@ func persoalvo # Obtém o personagem a partir do nome
   listaitem i
   nomeobj nome
   nome.ini(arg0, 1)
-  i = dono.dentro1.ini
-  enquanto i
+  epara i = dono.dentro1.ini, i, i.depois
     ret visivel(i.obj) && nome.nome(i.obj.nome), i.obj
-    i.depois
   efim
 
 func visivel # Checa se um personagem está visível (arg0=personagem)
@@ -224,15 +228,15 @@ func visivel # Checa se um personagem está visível (arg0=personagem)
 
 func recuperar # Recupera status do personagem
   dentro2.apagar # Apaga todos os stats
-  se energia == 0 && dono.jog
-    energia = enermax
+  se pvida == 0 && dono.jog
+    pvida = pvidamax
     dono.escolhebat # Atualiza persobat
   senao
-    energia = enermax
+    pvida = pvidamax
 
 func ataqueini # Testa se pode atacar
 # Retorna "" se pode atacar ou a mensagem com o motivo se não pode
-  se persobat.energia == 0
+  se persobat.pvida == 0
     ret "Você está desmaiado"
   senao dono.sembriga
     ret "Não é permitido brigas aqui"
@@ -241,7 +245,7 @@ func ataqueini # Testa se pode atacar
 
 func morreu # Personagem morreu
 # Fazer arg0=1 se não deve apagar o personagem
-  energia = 0
+  pvida = 0
 # Jogador: retira toda experiência e transfere para outro lugar
   se jog
     enquanto atkenv
@@ -288,19 +292,16 @@ func ganhaexp # Personagem ganha experiência
     recalc = 1 # Recalcular atributos do personagem
 
 func ver # Quando alguém tecla ver seguido do nome do personagem
-  arg0.msg(nome + " nível " + nivel + " energia " + energia + " de " + enermax)
+  arg0.msg(nome + " nível " + nivel + " vida " + pvida + " de " + pvidamax)
   ret 1
 
 func novoefeito # Cria novo efeito para o personagem
 # arg0 = nome da classe do efeito
   listaitem i
-  i = dentro2.ini
-  enquanto i
-    se arg0 == i.obj # Se o personagem já possui o efeito
-      i.obj.ini2 # Reforça o efeito
-      ret
-    fimse
-    i.depois
+  epara i = dentro2.ini, i, i.depois
+    continuar arg0 != i.obj # Se não encontrou o efeito
+    i.obj.ini2 # Encontrou: reforça o efeito
+    ret
   efim
   ref r
   r = criar(arg0) # Cria objeto do efeito
@@ -311,17 +312,13 @@ func novoefeito # Cria novo efeito para o personagem
 func apagarefeito # Apaga efeito do personagem
 # arg0 = nome da classe do efeito
   listaitem i
-  i = dentro2.ini
-  enquanto i
+  epara i = dentro2.ini, i, i.depois
     arg0 == i.obj && apagar(i.obj)
-    i.depois
   efim
 
 func objefeito # Retorna o objeto do efeito ou nulo se não existir
 # arg0 = nome da classe do efeito
   listaitem i
-  i = dentro2.ini
-  enquanto i
+  epara i = dentro2.ini, i, i.depois
     ret arg0 == i.obj, i.obj
-    i.depois
   efim
