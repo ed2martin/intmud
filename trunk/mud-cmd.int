@@ -25,7 +25,7 @@ func exec1 # Executa o comando
   ref s2 # Sala para onde vai
   listaobj l0
   l0.addfim(arg0.evento)
-  enquanto l0 && !l0.ini.obj.e_mover(arg0, arg1)
+  enquanto l0 && !l0.objini.e_mover(arg0, arg1)
     l0.ini.remove
   efim
   se l0
@@ -210,7 +210,7 @@ func exec
 # Executa eventos
   listaobj l0
   l0.addfim(arg0.evento)
-  enquanto l0 && l0.ini.obj.e_falar(arg0, arg2)
+  enquanto l0 && l0.objini.e_falar(arg0, arg2)
     l0.ini.remove
   efim
 
@@ -232,10 +232,8 @@ func exec
     arg0.msg("Canal chat está desabilitado.")
   senao
     listaitem item
-    item = $jogcomum.jog.ini
-    enquanto item
+    epara item = $jogcomum.jog.ini, item, item.depois
       item.obj.canais & 2 && item.obj.msg("(chat) " + arg0.sock.nome + ": " + arg2)
-      item.depois
     efim
 
 
@@ -249,13 +247,11 @@ func exec
   txt100 t1
 # Obtém lista de jogadores
   ref r
-  r = $jogador
-  enquanto r
+  epara r = $jogador, r, r = objdepois(r)
     t1 = txt(99999 * 99999 - r.nivel) + " "
     t1 += txtfim("      " + r.nivel, 6) + "  " + r.nome
     r.sock == nulo && (t1 += "  [Desconectado]")
     t0.addfim(t1)
-    r = objdepois(r)
   efim
 # Ordena
   t0.ordena
@@ -295,13 +291,12 @@ func exec
   nomeobj n
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
   n.ini(arg2, 1)
-  enquanto l
-    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
-      arg0.msg(txtmaimin(l.ini.obj.nome) + ".")
-      arg0.msg(l.ini.obj.descver)
+  epara nulo, l, l.ini.remove
+    se arg0.visivel(l.objini) && n.nome(l.objini.ident)
+      arg0.msg(txtmaimin(l.objini.nome) + ".")
+      arg0.msg(l.objini.descver)
       ret
     fimse
-    l.ini.remove
   efim
   arg0.msg("Você não vê isso.")
 
@@ -313,10 +308,8 @@ const posic = 5
 func exec
   textotxt t
   listaitem item
-  item = arg0.dentro1.ini
-  enquanto item
+  epara item = arg0.dentro1.ini, item, item.depois
     arg0.visivel(item.obj) && t.addfim("1 " + item.obj.nome)
-    item.depois
   efim
   t.juntalin("(", "x) ")
   se t.linhas
@@ -333,12 +326,9 @@ const posic = 5
 func exec
   textotxt t
   listaitem item
-  item = arg0.dentro2.ini
-  enquanto item
-    se arg0.visivel(item.obj)
-      t.addfim("1 (" + equip(item.obj.vestpos) + ") " + item.obj.nome)
-    fimse
-    item.depois
+  epara item = arg0.dentro2.ini, item, item.depois
+    continuar !arg0.visivel(item.obj)
+    t.addfim("1 (" + equip(item.obj.vestpos) + ") " + item.obj.nome)
   efim
   t.juntalin("(", "x) ")
   se t.linhas
@@ -419,25 +409,23 @@ func exec
   l.addfim(r.dentro1)
   n.ini(arg2, 10)
 # Pega os itens
-  enquanto l
-    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
-      pegou = 1
-      listaobj e
-      e.addfim(arg0.evento, l.ini.obj.evento, r.evento)
-      enquanto e && !e.ini.obj.e_pegar(arg0, l.ini.obj, r)
-        e.ini.remove
-      efim
-      se !e && t.1
-        l.ini.obj.dono = arg0
-        $mens.p(arg0, r, l.ini.obj)
-        $mens.mvis1("$P pega $s $o de $r $a.")
-      senao !e
-        l.ini.obj.dono = arg0
-        $mens.p(arg0, r, l.ini.obj)
-        $mens.mvis1("$P pega $s $o.")
-      fimse
+  epara nulo, l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident)
+    pegou = 1
+    listaobj e
+    e.addfim(arg0.evento, l.objini.evento, r.evento)
+    enquanto e && !e.objini.e_pegar(arg0, l.objini, r)
+      e.ini.remove
+    efim
+    se !e && t.1
+      l.objini.dono = arg0
+      $mens.p(arg0, r, l.objini)
+      $mens.mvis1("$P pega $s $o de $r $a.")
+    senao !e
+      l.objini.dono = arg0
+      $mens.p(arg0, r, l.objini)
+      $mens.mvis1("$P pega $s $o.")
     fimse
-    l.ini.remove
   efim
   !pegou && arg0.msg("Você não vê isso.")
 
@@ -465,25 +453,23 @@ func exec
   int1 soltou # Se soltou algum item
   l.addfim(arg0.dentro1)
   n.ini(misc:sep1, 10)
-  enquanto l
-    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
-      soltou = 1
-      listaobj e
-      e.addfim(arg0.evento, l.ini.obj.evento, r.evento)
-      enquanto e && !e.ini.obj.e_soltar(arg0, l.ini.obj, r)
-        e.ini.remove
-      efim
-      se !e && t.1
-        l.ini.obj.dono = r
-        $mens.p(arg0, r, l.ini.obj)
-        $mens.mvis1("$P coloca $s $o em $r $a.")
-      senao !e
-        l.ini.obj.dono = r
-        $mens.p(arg0, r, l.ini.obj)
-        $mens.mvis1("$P solta $s $o.")
-      fimse
+  epara nulo, l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident)
+    soltou = 1
+    listaobj e
+    e.addfim(arg0.evento, l.objini.evento, r.evento)
+    enquanto e && !e.objini.e_soltar(arg0, l.objini, r)
+      e.ini.remove
+    efim
+    se !e && t.1
+      l.objini.dono = r
+      $mens.p(arg0, r, l.objini)
+      $mens.mvis1("$P coloca $s $o em $r $a.")
+    senao !e
+      l.objini.dono = r
+      $mens.p(arg0, r, l.objini)
+      $mens.mvis1("$P solta $s $o.")
     fimse
-    l.ini.remove
   efim
   !soltou && arg0.msg("Você não vê " + misc:sep1 + ".")
 
@@ -512,21 +498,18 @@ func exec
   int1 soltou # Se deu algum item
   l.addfim(arg0.dentro1)
   n.ini(misc:sep1, 10)
-  enquanto l
-    se arg0.visivel(l.ini.obj) && n.nome(l.ini.obj.ident)
-      soltou = 1
-      listaobj e
-      e.addfim(arg0.evento, l.ini.obj.evento, r.evento)
-      enquanto e && !e.ini.obj.e_dar(arg0, l.ini.obj, r)
-        e.ini.remove
-      efim
-      se !e
-        l.ini.obj.dono = r
-        $mens.p(arg0, r, l.ini.obj)
-        $mens.mvis1("$P dá $s $o para $r $a.")
-      fimse
-    fimse
-    l.ini.remove
+  epara nulo, l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident)
+    soltou = 1
+    listaobj e
+    e.addfim(arg0.evento, l.objini.evento, r.evento)
+    enquanto e && !e.objini.e_dar(arg0, l.objini, r)
+      e.ini.remove
+    efim
+    continuar e
+    l.objini.dono = r
+    $mens.p(arg0, r, l.objini)
+    $mens.mvis1("$P dá $s $o para $r $a.")
   efim
   !soltou && arg0.msg("Você não vê " + misc:sep1 + ".")
 
@@ -550,17 +533,15 @@ func exec
     ret
   fimse
 # Preenche vest com o que está vestindo
-  item = arg0.dentro2
-  enquanto item
+  epara item = arg0.dentro2, item, item.depois
     vest = vest | 1 << item.obj.vestpos
-    item.depois
   efim
   vest = vest >> 1
 # Tenta vestir
   int1 ajustar
   enquanto l
     ref r
-    r = l.ini.obj
+    r = l.objini
     se ~vest & r.vestir == 0
       arg0.msg("Você não consegue vestir " + r.nome)
     senao
@@ -604,7 +585,7 @@ func exec
   fimse
   int1 ajustar
   enquanto l
-    r = l.ini.obj
+    r = l.objini
     r.idono.remove
     r.idono = arg0.dentro1.addini(r)
     r.vestpos = 0
@@ -638,27 +619,23 @@ func exec
   l0.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
   l0.remove(arg0)
   enquanto l0
-    arg0.msg(" usr: " + l0.ini.obj + "/" + l0.ini.obj.jog)
+    arg0.msg(" usr: " + l0.objini + "/" + l0.objini.jog)
     l0.ini.remove
   efim
   arg0.msg("ver=" + arg0.bitver + " inv=" + arg0.bitinv)
   arg0.msg("visível? " + !(~bitver & bitinv))
   arg0.msg("JOGADORES:")
   listaitem item
-  item = $jogcomum.jog.ini
-  enquanto item
+  epara item = $jogcomum.jog.ini, item, item.depois
     arg0.msg("> " + item.obj.nome + " (" + item.obj.perso.nome + ")")
-    item.depois
   efim
   listar("jogolocal", arg0)
   listar("jogoserv", arg0)
   listar("jogobot_usr", arg0)
   arg0.msg("PERSONAGENS:")
   ref r
-  r = $jogador
-  enquanto r
+  epara r = $jogador, r, r = objdepois(r)
     arg0.msg("> " + r.nome + " (" + r.sock.nome + ")")
-    r = objdepois(r)
   efim
 
 
@@ -825,11 +802,12 @@ func execgolpe # Realiza um ataque
     senao
       rettipo = 1, dano = 0 # Imune ao ataque
       ret
-    casofim
+    fimse
+  casofim
 # Atualiza pontos de vida conforme os danos
-    dano < 1 && (dano = 1) # Pelo menos 1 de dano
-    arg1.vida -= dano
-    ret rettipo
+  dano < 1 && (dano = 1) # Pelo menos 1 de dano
+  arg1.vida -= dano
+  ret rettipo
 
 
 classe com_atk

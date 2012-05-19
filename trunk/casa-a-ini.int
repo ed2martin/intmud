@@ -16,7 +16,7 @@ classe p_ini_silva
 herda personagem
 const nome = "Silva"
 const sexo = 1
-const enermax = 250
+const pvidamax = 250
 const avisachegou = ""
 
 
@@ -274,10 +274,10 @@ func cmd_chutar
   senao
     $mens.p(arg0)
     $mens.mvis1("$P chuta Silva, 250 de 250")
-    arg0.msg("Silva: Bom chute. Eu só continuo com 250 de energia porque sou mais forte.")
+    arg0.msg("Silva: Bom chute. Eu só continuo com 250 de vida porque sou mais forte.")
     arg0.msg("Durante uma briga você pode teclar apenas chutar.")
     arg0.msg("Te dou dois conselhos sobre batalhas: Cheque suas habilidades teclando hab")
-    arg0.msg("Cheque também sua energia teclando energia. Se chegar a 0 você morre.")
+    arg0.msg("Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
     ret 1
 
 
@@ -518,7 +518,7 @@ func cmd_escr # Checa respostas
     arg1 != "78" && (arg0.var.z_ini_resp = 10)
   casose "10"
     arg0.var.z_ini_resp = int(arg0.var.z_ini_resp) + 1
-    arg0.msg("O Sr. Silva tem 250 de energia, mas qual o nível dele?")
+    arg0.msg("O Sr. Silva tem 250 de vida, mas qual o nível dele?")
     arg0.msg("É outro número de 1 a 100")
     ret 1
   casose "1"

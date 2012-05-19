@@ -218,9 +218,8 @@ func p_herda
   casose "\n"
     prog p
     teditor.limpar
-    p.iniherda(tclasse)
-    enquanto p.lin
-      teditor.addfim(p.texto), p.depois
+    epara p.iniherda(tclasse), p.lin, p.depois
+      teditor.addfim(p.texto)
     efim
     teditor.bytes == 1 && teditor.limpar
     leditor = teditor.ini

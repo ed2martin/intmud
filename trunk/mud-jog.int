@@ -215,10 +215,8 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     fimse
 # Acerta variáveis
     listaitem item
-    item = l1.ini
-    enquanto item
+    epara item = l1.ini, item, item.depois
       item.obj.var.limpar("1"), item.obj.var.limpar("2")
-      item.depois
     efim
     canais = perso.canais
 # Muda de sala e volta ao jogo

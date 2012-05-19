@@ -15,9 +15,9 @@ func com_info5
   l.addfim(perso.dono.dentro1, perso.dono.dentro2)
   perso.itemnome(l, arg0)
   !l && msg("Você não vê isso.")
+  ref r
   enquanto l.ini
-    ref r
-    r = l.ini.obj, l.ini.remove
+    r = l.objini, l.ini.remove
     msg(txt(r.nome) + ": peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
   efim
   ret 1
@@ -70,10 +70,8 @@ func com_echo
     msg("\bDigite a mensagem após ECHO")
   senao
     listaitem item
-    item = $jogcomum.jog.ini
-    enquanto item
+    epara item = $jogcomum.jog.ini, item, item.depois
       item.obj.msg("\b\cB*ADM: " + arg0 + "\b")
-      item.depois
     efim
   fimse
   ret 1
@@ -285,9 +283,8 @@ func p_texto # Altera um texto de várias linhas
     textopos p1
     teditor.limpar
     teditor.addfim([txt1(tpasso)]:[txtsub(tpasso, 1, 1)])
-    p1 = teditor.ini
-    enquanto p1.lin
-      p1.mudar(txtvis(p1.texto)), p1.depois
+    epara p1 = teditor.ini, p1.lin, p1.depois
+      p1.mudar(txtvis(p1.texto))
     efim
     teditor.bytes == 1 && teditor.limpar
     leditor = teditor.ini
@@ -306,9 +303,8 @@ func p_texto # Altera um texto de várias linhas
     prog p
     textopos p1
     textotxt t1
-    p1 = teditor.ini
-    enquanto p1.lin
-      t1.addfim(txtinvis(p1.texto)), p1.depois
+    epara p1 = teditor.ini, p1.lin, p1.depois
+      t1.addfim(txtinvis(p1.texto))
     efim
     txt200 t
     t = "const " + txtsub(tpasso, 1, 1) + "=\""
@@ -373,10 +369,8 @@ func p_opcao # Altera uma opção de uma lista de opções
     txtmais.limpar
     txtmais.addfim("\bOpções:")
     textopos pos
-    pos = teditor.ini
-    enquanto pos.lin
+    epara pos = teditor.ini, pos.lin, pos.depois
       txtmais.addfim(txt(pos.linha) + ". " + pos.texto)
-      pos.depois
     efim
     txtmais.addfim("N. Nenhuma, Z. Cancela")
     txtmostra
@@ -674,10 +668,8 @@ func p_editor
     textopos pos
     txtmais.limpar
     txtmais.addfim("\bTexto com cores:")
-    pos = teditor.ini
-    enquanto pos.lin
+    epara pos = teditor.ini, pos.lin, pos.depois
       txtmais.addfim(txtinvis(pos.texto))
-      pos.depois
     efim
     txtmostra
     ret 1

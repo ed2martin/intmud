@@ -24,7 +24,7 @@ func iniclasse
 func calcbonus # Obtém os valores de defbonus
   real r # Valor inicial é 2 elevado a -64
   uint16 x
-  x = 0, r = 1 / 65536, r = r * r * r * r
+  r = 1 / 65536, r = r * r * r * r
   enquanto x < 256
     misc:defbonus.[x] = r
     misc:defbonus.[x + 1] = r * 1.414213562
@@ -154,7 +154,6 @@ func perso_normal # Bônus para tipo normal
 
 func perso_recalc # Bônus conforme efeitos
   listaitem l
-  l = dentro2.ini
-  enquanto l
-    l.obj.recalc(este), l.depois
+  epara l = dentro2.ini, l, l.depois
+    l.obj.recalc(este)
   efim

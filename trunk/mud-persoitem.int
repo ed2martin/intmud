@@ -43,13 +43,11 @@ func ajustapeso # Ajuda peso e volume
   uint32 soma1
   uint32 soma2
   soma = peso
-  item = dentro1.ini
-  enquanto item
-    soma1 += item.obj.pesotot, soma2 += item.obj.voltot, item.depois
+  epara item = dentro1.ini, item, item.depois
+    soma1 += item.obj.pesotot, soma2 += item.obj.voltot
   efim
-  item = dentro2.ini
-  enquanto item
-    soma1 += item.obj.pesotot, soma2 += item.obj.voltot, item.depois
+  epara item = dentro2.ini, item, item.depois
+    soma1 += item.obj.pesotot, soma2 += item.obj.voltot
   efim
   mudapeso(soma1 - pesotot)
   mudavol(soma2 - volden)
@@ -101,9 +99,9 @@ varfunc pesovoa
 
 func mudajog # Muda jogtot; arg0=o quanto mudou
   ref r
-  jogtot += arg0, t_item = s_item * 600, r = dono
-  enquanto r
-    r.jogtot += arg0, r.t_item = r.s_item * 600, r = r.dono
+  jogtot += arg0, t_item = s_item * 600
+  epara r = dono, r, r = r.dono
+    r.jogtot += arg0, r.t_item = r.s_item * 600
   efim
 
 func visivel # Checa se um objeto está visível (arg0=objeto)
@@ -202,7 +200,7 @@ func fim # Objeto foi apagado
   listaobj l0
   l0.addfim(evento), evento.limpar
   enquanto l0
-    l0.ini.obj.e_fim(este, arg0), l0.ini.remove
+    l0.objini.e_fim(este, arg0), l0.ini.remove
   efim
 
 varfunc vida
@@ -273,7 +271,7 @@ func teclouproc # Processa comando (arg0=comando)
 # Executa eventos
   listaobj l0
   l0.addfim(este.evento)
-  enquanto l0 && !l0.ini.obj.e_escr(este, arg0)
+  enquanto l0 && !l0.objini.e_escr(este, arg0)
     l0.ini.remove
   efim
   ret l0, nulo
@@ -345,7 +343,7 @@ func mudasala # Coloca personagem em outra sala (arg0 = sala)
   listaobj l0
   l0.addfim(evento), evento.limpar
   enquanto l0
-    l0.ini.obj.e_saiu(este, arg0), l0.ini.remove
+    l0.objini.e_saiu(este, arg0), l0.ini.remove
   efim
 # Muda de sala
   var.limpar("1")
@@ -355,14 +353,14 @@ func mudasala # Coloca personagem em outra sala (arg0 = sala)
   este.e_sala1(este, arg0)
   dono.e_sala(este, arg0)
   enquanto l0
-    l0.ini.obj.e_sala(este, arg0), l0.ini.remove
+    l0.objini.e_sala(este, arg0), l0.ini.remove
   efim
 # Mostra descrição
   sock && msg2(dono.descsala(este, 7))
 # Executa eventos
   l0.addfim(evento)
   enquanto l0
-    l0.ini.obj.e_entrou(este, arg0), l0.ini.remove
+    l0.objini.e_entrou(este, arg0), l0.ini.remove
   efim
 
 func ajustavar # Ajusta variáveis, principalmente batalha
@@ -385,10 +383,8 @@ func ajustavar # Ajusta variáveis, principalmente batalha
   misc:def[tipo2] # Acerta defesa conforme o segundo tipo
 # Atributos do que está vestindo e do que está afetando o personagem
   listaitem item
-  item = dentro2.ini
-  enquanto item
+  epara item = dentro2.ini, item, item.depois
     item.obj.ajustaperso(este)
-    item.depois
   efim
 
 func batalhaini # Inicia batalha com outro personagem
@@ -406,7 +402,7 @@ func batalhaini # Inicia batalha com outro personagem
     ref r
     l.addfim(dono.dentro2)
     itemnome(l, arg0)
-    r = l.ini.obj
+    r = l.objini
     se !r
       msg("Você não vê isso.")
       ret

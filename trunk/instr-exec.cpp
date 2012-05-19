@@ -631,6 +631,9 @@ bool Instr::ExecX()
             case cContinuar2:
                 FuncAtual->expr = FuncAtual->linha + endVar + 2;
                 break;
+            case cEPara:
+                FuncAtual->expr = FuncAtual->linha + endVar + 6;
+                break;
             case cRet2: // Processa expressão numérica
             case cExpr:
                 FuncAtual->expr = FuncAtual->linha + endVar;
@@ -653,11 +656,17 @@ bool Instr::ExecX()
             case cEFim:  // Recua
             case cContinuar1:
                 {
-                    int desvio = Num16(FuncAtual->linha + endVar);
+                    const char * p = FuncAtual->linha;
+                    int desvio = Num16(p + endVar);
                     if (desvio==0)
-                        FuncAtual->linha += Num16(FuncAtual->linha);
+                        p += Num16(p);
                     else
-                        FuncAtual->linha -= desvio;
+                    {
+                        p -= desvio;
+                        if (p[2] == cEPara)
+                            FuncAtual->expr = p + Num16(p + endVar + 4);
+                    }
+                    FuncAtual->linha = p;
                     break;
                 }
             case cFimSe: // Passa para próxima instrução
@@ -821,14 +830,19 @@ bool Instr::ExecX()
             case cContinuar2:
                 if (!VarFuncIni(VarAtual))
                 {
+                    const char * p = FuncAtual->linha;
                     FuncAtual->expr = 0;
-                    int desvio = 0;
-                    if (VarAtual->getBool())
-                        desvio = Num16(FuncAtual->linha + endVar);
-                    if (desvio==0)
-                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    if (!VarAtual->getBool() ||
+                            (p[endVar]==0 && p[endVar+1]==0))
+                        p += Num16(p);
                     else
-                        FuncAtual->linha -= desvio;
+                    {
+                        p -= Num16(p + endVar);
+                        FuncAtual->linha = p;
+                        if (p[2] == cEPara)
+                            FuncAtual->expr = p + Num16(p + endVar + 4);
+                    }
+                    FuncAtual->linha = p;
                 }
                 break;
             case cSenao1: // senão sem argumentos em modo debug
@@ -849,6 +863,12 @@ bool Instr::ExecX()
                         FuncAtual->linha += desvio;
                 }
                 break;
+            case cEPara:
+                {
+                    const char * p = FuncAtual->linha;
+                    FuncAtual->expr = p + Num16(p + endVar + 2);
+                    break;
+                }
             case cCasoVar:
                 if (!VarFuncIni(VarAtual))
                 {
@@ -995,8 +1015,9 @@ bool Instr::ExecX()
                 break;
             }
         case exo_virg_expr:  // Operador: Vírgula, para separar expressões
-            if (FuncAtual->linha[2] == cRet2)
+            switch (FuncAtual->linha[2])
             {
+            case cRet2:
                 if (VarFuncIni(VarAtual))
                     break;
                 if (VarAtual->getBool())
@@ -1010,8 +1031,32 @@ bool Instr::ExecX()
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 FuncAtual->expr = 0;
                 break;
+            case cEPara:
+                // Se completou o primeiro argumento, passa para o segundo
+                if (FuncAtual->fimvar == VarAtual)
+                {
+                    FuncAtual->expr++;
+                    //const char * p = FuncAtual->linha;
+                    //FuncAtual->expr = p + Num16(p + endVar + 2);
+                    break;
+                }
+                // Fecha o laço, exatamente como na instrução "enquanto"
+                if (!VarFuncIni(VarAtual))
+                {
+                    FuncAtual->expr = 0;
+                    int desvio = 0;
+                    if (VarAtual->getBool()==false)
+                        desvio = Num16(FuncAtual->linha + endVar);
+                    ApagarVar(FuncAtual->fimvar);
+                    if (desvio==0)
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    else
+                        FuncAtual->linha += desvio;
+                }
+                break;
+            default:
+                FuncAtual->expr++;
             }
-            FuncAtual->expr++;
             break;
         case exo_virgula:    // Operador: Vírgula, para separar argumentos
         case exo_ini:        // Operador: Marca o início dos operadores

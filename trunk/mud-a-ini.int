@@ -24,10 +24,9 @@ func e_sala
 
 func espera_exec
   listaitem item
-  item = dentro2.ini
-  enquanto item
-    ref r
-    r = item.obj, item.depois
+  ref r
+  epara item = dentro2.ini, item, item.depois
+    r = item.obj
     se r.vida < r.vidamax / 2
       r.vida += 1, espera = 10
     senao
