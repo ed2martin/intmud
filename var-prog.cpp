@@ -908,7 +908,7 @@ bool TVarProg::FuncCriar(TVariavel * v)
                     }
                 }
             // Verifica se é a instrução procurada
-                if (comparaZ(p + Instr::endNome,
+                if (comparaVar(p + Instr::endNome,
                                     mens.Buf + Instr::endNome)==0)
                 {
                     mudarcom.AddBloco(texto1, p-texto1);// Anota bloco atual

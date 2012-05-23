@@ -29,6 +29,17 @@ public:
         ///< Adiciona/muda/apaga texto
     bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
+
+    bool FuncValor(TVariavel * v);
+    // bool FuncInt(TVariavel * v);
+    bool FuncNomeVar(TVariavel * v);
+    bool FuncMudar(TVariavel * v);
+    bool FuncAntes(TVariavel * v);
+    bool FuncDepois(TVariavel * v);
+    bool FuncIni(TVariavel * v);
+    bool FuncFim(TVariavel * v);
+    bool FuncLimpar(TVariavel * v);
+
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
     TTextoVarSub * Inicio; ///< Primeiro objeto TTextoVarSub
 };

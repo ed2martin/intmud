@@ -79,7 +79,7 @@ bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
     int x = (unsigned char)instr[3];
     for (instr+=4; x; x--)
     {
-        if (comparaZ(instr, nomeclasse)==0)
+        if (comparaVar(instr, nomeclasse)==0)
             return true;
         while (*instr++);
     }

@@ -12,121 +12,32 @@
 //----------------------------------------------------------------------------
 bool TTextoVar::Func(TVariavel * v, const char * nome)
 {
-// Variável como texto
-    if (comparaZ(nome, "valor")==0)
+// Lista das funções de indiceitem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    const struct {
+        const char * Nome;
+        bool (TTextoVar::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "antes",        &TTextoVar::FuncAntes },
+        { "depois",       &TTextoVar::FuncDepois },
+        { "fim",          &TTextoVar::FuncFim },
+        { "ini",          &TTextoVar::FuncIni },
+        //{ "int",        &TTextoVar::FuncInt },
+        { "limpar",       &TTextoVar::FuncLimpar },
+        { "mudar",        &TTextoVar::FuncMudar },
+        { "nomevar",      &TTextoVar::FuncNomeVar },
+        { "valor",        &TTextoVar::FuncValor }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        TBlocoVar * bl = 0;
-        if (Instr::VarAtual >= v+1)
-            bl = Procura(v[1].getTxt());
-        Instr::ApagarVar(v);
-        if (bl==0)
-            return Instr::CriarVarTexto("");
-        const char * p = bl->Texto;
-        while (*p++);
-        return Instr::CriarVarTexto(p);
-    }
-// Variável como valor numérico
-  /*  if (comparaZ(nome, "int")==0)
-    {
-        TBlocoVar * bl = 0;
-        if (Instr::VarAtual >= v+1)
-            bl = Procura(v[1].getTxt());
-        Instr::ApagarVar(v);
-        if (bl==0)
-            return Instr::CriarVarInt(0);
-        const char * p = bl->Texto;
-        while (*p++);
-        if (!Instr::CriarVar(Instr::InstrDouble))
-            return false;
-        double num;
-        errno=0, num=strtod(p+1, 0);
-        Instr::VarAtual->setDouble(errno ? 0 : num);
-        return true;
-    } */
-// Nome da variável
-    if (comparaZ(nome, "nomevar")==0)
-    {
-        TBlocoVar * bl = 0;
-        if (Instr::VarAtual >= v+1)
-            bl = Procura(v[1].getTxt());
-        Instr::ApagarVar(v);
-        if (bl==0)
-            return Instr::CriarVarTexto("");
-        return Instr::CriarVarTexto(bl->Texto);
-    }
-// Mudar variável
-    if (comparaZ(nome, "mudar")==0)
-    {
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-            Mudar(v1->getTxt());
-        return false;
-    }
-// Variável anterior
-    if (comparaZ(nome, "antes")==0)
-    {
-        TBlocoVar * bl = 0;
-        if (Instr::VarAtual >= v+1)
-            bl = ProcAntes(v[1].getTxt());
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(bl ? bl->Texto : "");
-    }
-// Próxima variável
-    if (comparaZ(nome, "depois")==0)
-    {
-        TBlocoVar * bl = 0;
-        if (Instr::VarAtual >= v+1)
-            bl = ProcDepois(v[1].getTxt());
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(bl ? bl->Texto : "");
-    }
-// Início
-    if (comparaZ(nome, "ini")==0)
-    {
-        TBlocoVar * bl = 0;
-        if (RBroot)
-        {
-            if (Instr::VarAtual < v+1)
-                bl = RBroot->RBfirst();
-            else
-                bl = ProcIni(v[1].getTxt());
-        }
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(bl ? bl->Texto : "");
-    }
-// Fim
-    if (comparaZ(nome, "fim")==0)
-    {
-        TBlocoVar * bl = 0;
-        if (RBroot)
-        {
-            if (Instr::VarAtual < v+1)
-                bl = RBroot->RBlast();
-            else
-                bl = ProcFim(v[1].getTxt());
-        }
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(bl ? bl->Texto : "");
-    }
-// Limpar
-    if (comparaZ(nome, "limpar")==0)
-    {
-        if (Instr::VarAtual < v+1)
-        {
-            Limpar();
-            return false;
-        }
-        const char * p = v[1].getTxt();
-        TBlocoVar * ini = ProcIni(p);
-        if (ini==0)
-            return false;
-        TBlocoVar * fim = TBlocoVar::RBnext(ProcFim(p));
-        while (ini && ini != fim)
-        {
-            TBlocoVar * bl = TBlocoVar::RBnext(ini);
-            ini->Apagar();
-            ini = bl;
-        }
-        return false;
+        int meio = (ini+fim)/2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado==0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado<0) fim=meio-1; else ini=meio+1;
     }
 // Outro nome de variável
     TTextoVarSub sub1;
@@ -144,6 +55,140 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
     Instr::VarAtual->numfunc = tipo;
     sub1.Mover(Instr::VarAtual->end_textovarsub);
     return true;
+}
+
+//----------------------------------------------------------------------------
+// Variável como texto
+bool TTextoVar::FuncValor(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (Instr::VarAtual >= v+1)
+        bl = Procura(v[1].getTxt());
+    Instr::ApagarVar(v);
+    if (bl==0)
+        return Instr::CriarVarTexto("");
+    const char * p = bl->Texto;
+    while (*p++);
+    return Instr::CriarVarTexto(p);
+}
+
+//----------------------------------------------------------------------------
+// Variável como valor numérico
+/* bool TTextoVar::FuncInt(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (Instr::VarAtual >= v+1)
+        bl = Procura(v[1].getTxt());
+    Instr::ApagarVar(v);
+    if (bl==0)
+        return Instr::CriarVarInt(0);
+    const char * p = bl->Texto;
+    while (*p++);
+    if (!Instr::CriarVar(Instr::InstrDouble))
+        return false;
+    double num;
+    errno=0, num=strtod(p+1, 0);
+    Instr::VarAtual->setDouble(errno ? 0 : num);
+    return true;
+} */
+
+//----------------------------------------------------------------------------
+// Nome da variável
+bool TTextoVar::FuncNomeVar(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (Instr::VarAtual >= v+1)
+        bl = Procura(v[1].getTxt());
+    Instr::ApagarVar(v);
+    if (bl==0)
+        return Instr::CriarVarTexto("");
+    return Instr::CriarVarTexto(bl->Texto);
+}
+
+//----------------------------------------------------------------------------
+// Mudar variável
+bool TTextoVar::FuncMudar(TVariavel * v)
+{
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+        Mudar(v1->getTxt());
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Variável anterior
+bool TTextoVar::FuncAntes(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (Instr::VarAtual >= v+1)
+        bl = ProcAntes(v[1].getTxt());
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+}
+
+//----------------------------------------------------------------------------
+// Próxima variável
+bool TTextoVar::FuncDepois(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (Instr::VarAtual >= v+1)
+        bl = ProcDepois(v[1].getTxt());
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+}
+
+//----------------------------------------------------------------------------
+// Início
+bool TTextoVar::FuncIni(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (RBroot)
+    {
+        if (Instr::VarAtual < v+1)
+            bl = RBroot->RBfirst();
+        else
+            bl = ProcIni(v[1].getTxt());
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+}
+
+//----------------------------------------------------------------------------
+// Fim
+bool TTextoVar::FuncFim(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (RBroot)
+    {
+        if (Instr::VarAtual < v+1)
+            bl = RBroot->RBlast();
+        else
+            bl = ProcFim(v[1].getTxt());
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+}
+
+//----------------------------------------------------------------------------
+// Limpar
+bool TTextoVar::FuncLimpar(TVariavel * v)
+{
+    if (Instr::VarAtual < v+1)
+    {
+        Limpar();
+        return false;
+    }
+    const char * p = v[1].getTxt();
+    TBlocoVar * ini = ProcIni(p);
+    if (ini==0)
+        return false;
+    TBlocoVar * fim = TBlocoVar::RBnext(ProcFim(p));
+    while (ini && ini != fim)
+    {
+        TBlocoVar * bl = TBlocoVar::RBnext(ini);
+        ini->Apagar();
+        ini = bl;
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------
@@ -188,7 +233,7 @@ TBlocoVar * TTextoVar::Procura(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        int i = comparaZ(texto, y->Texto);
+        int i = comparaVar(texto, y->Texto);
         if (i==0)
             return y;
         if (i<0)
@@ -206,7 +251,7 @@ TBlocoVar * TTextoVar::ProcIni(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        switch (comparaZ(texto, y->Texto))
+        switch (comparaVar(texto, y->Texto))
         {
         case -2: // string 2 contém string 1
         case 0:  // encontrou
@@ -228,7 +273,7 @@ TBlocoVar * TTextoVar::ProcFim(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        switch (comparaZ(texto, y->Texto))
+        switch (comparaVar(texto, y->Texto))
         {
         case -2: // string 2 contém string 1
         case 0:  // encontrou
@@ -252,7 +297,7 @@ TBlocoVar * TTextoVar::ProcAntes(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        int i = comparaZ(texto, y->Texto);
+        int i = comparaVar(texto, y->Texto);
         if (i <= 0)
             y = y->RBleft;
         else
@@ -268,7 +313,7 @@ TBlocoVar * TTextoVar::ProcDepois(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        int i = comparaZ(texto, y->Texto);
+        int i = comparaVar(texto, y->Texto);
         if (i >= 0)
             y = y->RBright;
         else
@@ -453,7 +498,7 @@ void TBlocoVar::Apagar()
 //----------------------------------------------------------------------------
 int TBlocoVar::RBcomp(TBlocoVar * x, TBlocoVar * y)
 {
-    return comparaZ(x->Texto, y->Texto);
+    return comparaVar(x->Texto, y->Texto);
 }
 
 //----------------------------------------------------------------------------

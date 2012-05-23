@@ -294,8 +294,8 @@ static int comparaNome(const char * string1, const char * string2)
     for (;; string1++, string2++)
     {
         unsigned char ch1,ch2;
-        ch1=(*string1==' ' ? 0 : tabNOMES[*(unsigned char *)string1]);
-        ch2=(*string2==' ' ? 0 : tabNOMES[*(unsigned char *)string2]);
+        ch1=(*string1==' ' ? 0 : tabNOMES1[*(unsigned char *)string1]);
+        ch2=(*string2==' ' ? 0 : tabNOMES1[*(unsigned char *)string2]);
         if (ch1==0 || ch2==0)
             return (ch1 ? 1 : ch2 ? -1 : 0);
         if (ch1!=ch2)
@@ -395,9 +395,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     {
         const char * p = origem;
         while (*p==' ') p++;
-        while (*p!=' ' && tabNOMES[*(unsigned char*)p]) p++;
+        while (*p!=' ' && tabNOMES1[*(unsigned char*)p]) p++;
         while (*p==' ') p++;
-        if (tabNOMES[*(unsigned char*)p]==0)
+        if (tabNOMES1[*(unsigned char*)p]==0)
             testar_def=false;
         //printf("%d   %s\n", testar_def, origem); fflush(stdout);
     }
@@ -689,7 +689,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             return false;
         }
         for (const char * p=nome; *p; p++)
-            if (tabNOMES[*(unsigned char*)p]==0)
+            if (tabNOMES1[*(unsigned char*)p]==0)
             {
                 copiastr(dest_ini, "Nome de variável inválido", tamanho);
                 return false;
@@ -896,7 +896,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Processando nome de variável
         if (modo==ex_var1 || modo==ex_var2)
         {
-            if (tabNOMES[*(unsigned char*)origem] && *origem!=' ')
+            if (tabNOMES1[*(unsigned char*)origem] && *origem!=' ')
                 *destino++ = *origem++;
             else if (*origem==':')
             {
@@ -1111,7 +1111,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 
     // Início de nome de variável
         if (*origem=='$' || *origem=='[' ||
-                    tabNOMES[*(unsigned char*)origem]!=0)
+                    tabNOMES1[*(unsigned char*)origem]!=0)
         {
             if (arg)
             {
@@ -1122,7 +1122,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         // Verifica "nulo"
             if ((origem[0]|0x20)=='n' && (origem[1]|0x20)=='u' &&
                 (origem[2]|0x20)=='l' && (origem[3]|0x20)=='o' &&
-                 tabNOMES[*(unsigned char*)(origem+4)]==0 && origem[4]!='.')
+                 tabNOMES1[*(unsigned char*)(origem+4)]==0 && origem[4]!='.')
             {
                 *destino++ = ex_nulo;
                 origem += 4;

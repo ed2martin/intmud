@@ -825,6 +825,7 @@ bool Instr::ExecX()
                         FuncAtual->linha += Num16(FuncAtual->linha);
                     else
                         FuncAtual->linha += desvio;
+                    ApagarVar(FuncAtual->fimvar);
                 }
                 break;
             case cContinuar2:
@@ -838,16 +839,17 @@ bool Instr::ExecX()
                     else
                     {
                         p -= Num16(p + endVar);
-                        FuncAtual->linha = p;
                         if (p[2] == cEPara)
                             FuncAtual->expr = p + Num16(p + endVar + 4);
                     }
                     FuncAtual->linha = p;
+                    ApagarVar(FuncAtual->fimvar);
                 }
                 break;
             case cSenao1: // senão sem argumentos em modo debug
                 FuncAtual->expr = 0;
                 FuncAtual->linha += Num16(FuncAtual->linha);
+                ApagarVar(FuncAtual->fimvar);
                 break;
             case cEnquanto:
                 if (!VarFuncIni(VarAtual))
@@ -1805,39 +1807,41 @@ bool Instr::ExecX()
                     while (ini <= fim)
                     {
                         int meio = (ini+fim)/2;
-                        resultado = comparaZ(nome, ListaFunc[meio].Nome);
+                        resultado = comparaVar(nome, ListaFunc[meio].Nome);
                     // Verifica se encontrou
-                        if (resultado==0)  // Se encontrou
+                        if (resultado) // Se não encontrou
                         {
-                                // Ler varfunc primeiro
-                            ExecFunc * f = FuncAtual;
-                            if (VarFuncIni(v+1))
-                            {
-                                f->expr--;
-                                break;
-                            }
-                                // Processa função interna
-                            if (ListaFunc[meio].Func(
-                                    v+1, ListaFunc[meio].valor))
-                            {
-                                v->setTxt("");
-                                f->expr = CopiaVarNome(v, f->expr);
-                            }
+                            if (resultado<0)
+                                fim = meio-1;
                             else
-                                VarInvalido();
+                                ini = meio+1;
+                            continue;
+                        }
+                        // Encontrou
+                            // Ler varfunc primeiro
+                        ExecFunc * f = FuncAtual;
+                        if (VarFuncIni(v+1))
+                        {
+                            f->expr--;
                             break;
                         }
-                        if (resultado<0)
-                            fim = meio-1;
+                            // Processa função interna
+                        if (ListaFunc[meio].Func(
+                                v+1, ListaFunc[meio].valor))
+                        {
+                            v->setTxt("");
+                            f->expr = CopiaVarNome(v, f->expr);
+                        }
                         else
-                            ini = meio+1;
+                            VarInvalido();
+                        break;
                     }
                     if (resultado==0)
                         break;
                 // Verifica se é variável local da função
                     TVariavel * var = FuncAtual->inivar + FuncAtual->numarg;
                     for (; var < FuncAtual->fimvar; var++)
-                        if (comparaZ(nome, var->defvar+endNome)==0)
+                        if (comparaVar(nome, var->defvar+endNome)==0)
                             break;
                     if (var < FuncAtual->fimvar)
                     {

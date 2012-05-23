@@ -90,147 +90,182 @@ void TIndiceItem::Igual(TIndiceItem * v)
 //----------------------------------------------------------------------------
 bool TIndiceItem::Func(TVariavel * v, const char * nome)
 {
-// Objeto
-    if (comparaZ(nome, "obj")==0)
+// Lista das funções de indiceitem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    const struct {
+        const char * Nome;
+        bool (TIndiceItem::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "antes",        &TIndiceItem::FuncAntes },
+        { "depois",       &TIndiceItem::FuncDepois },
+        { "fim",          &TIndiceItem::FuncFim },
+        { "ini",          &TIndiceItem::FuncIni },
+        { "obj",          &TIndiceItem::FuncObj },
+        { "txt",          &TIndiceItem::FuncTxt }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-    // Nenhum argumento
-        if (Instr::VarAtual == v)
-        {
-            if (IndiceObj==0)
-                return false;
-            TObjeto * obj = IndiceObj->Objeto;
-            if (obj==0)
-                return false;
-            Instr::ApagarVar(v);
-            if (!Instr::CriarVar(Instr::InstrVarObjeto))
-                return false;
-            Instr::VarAtual->setObj(obj);
-            return true;
-        }
-    // Pelo menos um argumento
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            const char * txt = v1->getTxt();
-        // Ignora texto vazio
-            if (*txt==0)
-                continue;
-        // Procura indiceobj
-            TIndiceObj * indice = TIndiceObj::Procura(txt);
-            if (indice==0)
-                continue;
-        // Obtém objeto
-            TObjeto * obj = indice->Objeto;
-            if (obj==0)
-                continue;
-        // Retorna o objeto encontrado
-            Instr::ApagarVar(v);
-            if (!Instr::CriarVar(Instr::InstrVarObjeto))
-                return false;
-            Instr::VarAtual->setObj(obj);
-            return true;
-        }
-        return false;
+        int meio = (ini+fim)/2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado==0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado<0) fim=meio-1; else ini=meio+1;
     }
-// Texto
-    if (comparaZ(nome, "txt")==0)
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TIndiceItem::FuncObj(TVariavel * v)
+{
+// Nenhum argumento
+    if (Instr::VarAtual == v)
     {
-    // Obtém o texto e o tamanho do texto
-        char mens[100];
-        *mens=0;
-        if (IndiceObj)
-            copiastr(mens, IndiceObj->Nome, sizeof(mens));
-    // Anota o texto
+        if (IndiceObj==0)
+            return false;
+        TObjeto * obj = IndiceObj->Objeto;
+        if (obj==0)
+            return false;
         Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
+        if (!Instr::CriarVar(Instr::InstrVarObjeto))
+            return false;
+        Instr::VarAtual->setObj(obj);
+        return true;
     }
+// Pelo menos um argumento
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    {
+        const char * txt = v1->getTxt();
+    // Ignora texto vazio
+        if (*txt==0)
+            continue;
+    // Procura indiceobj
+        TIndiceObj * indice = TIndiceObj::Procura(txt);
+        if (indice==0)
+            continue;
+    // Obtém objeto
+        TObjeto * obj = indice->Objeto;
+        if (obj==0)
+            continue;
+    // Retorna o objeto encontrado
+        Instr::ApagarVar(v);
+        if (!Instr::CriarVar(Instr::InstrVarObjeto))
+            return false;
+        Instr::VarAtual->setObj(obj);
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Texto
+bool TIndiceItem::FuncTxt(TVariavel * v)
+{
+// Obtém o texto e o tamanho do texto
+    char mens[100];
+    *mens=0;
+    if (IndiceObj)
+        copiastr(mens, IndiceObj->Nome, sizeof(mens));
+// Anota o texto
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//----------------------------------------------------------------------------
 // Objeto anterior
-    if (comparaZ(nome, "antes")==0)
-    {
-        if (IndiceObj==0)
-            return false;
-        int total = 1;
-        TIndiceObj * obj = IndiceObj;
-        if (Instr::VarAtual >= v+1)
-            total = v[1].getInt();
-        for (; total>0; total--)
-        {
-            obj = TIndiceObj::RBprevious(obj);
-            if (obj==0)
-                break;
-            if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
-            {
-                obj=0;
-                break;
-            }
-        }
-        MudarRef(obj);
+bool TIndiceItem::FuncAntes(TVariavel * v)
+{
+    if (IndiceObj==0)
         return false;
+    int total = 1;
+    TIndiceObj * obj = IndiceObj;
+    if (Instr::VarAtual >= v+1)
+        total = v[1].getInt();
+    for (; total>0; total--)
+    {
+        obj = TIndiceObj::RBprevious(obj);
+        if (obj==0)
+            break;
+        if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
+        {
+            obj=0;
+            break;
+        }
     }
+    MudarRef(obj);
+    return false;
+}
+
+//----------------------------------------------------------------------------
 // Próximo objeto
-    if (comparaZ(nome, "depois")==0)
-    {
-        if (IndiceObj==0)
-            return false;
-        int total = 1;
-        TIndiceObj * obj = IndiceObj;
-        if (Instr::VarAtual >= v+1)
-            total = v[1].getInt();
-        for (; total>0; total--)
-        {
-            obj = TIndiceObj::RBnext(obj);
-            if (obj==0)
-                break;
-            if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
-            {
-                obj=0;
-                break;
-            }
-        }
-        MudarRef(obj);
+bool TIndiceItem::FuncDepois(TVariavel * v)
+{
+    if (IndiceObj==0)
         return false;
+    int total = 1;
+    TIndiceObj * obj = IndiceObj;
+    if (Instr::VarAtual >= v+1)
+        total = v[1].getInt();
+    for (; total>0; total--)
+    {
+        obj = TIndiceObj::RBnext(obj);
+        if (obj==0)
+            break;
+        if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
+        {
+            obj=0;
+            break;
+        }
     }
+    MudarRef(obj);
+    return false;
+}
+
+//----------------------------------------------------------------------------
 // Primeiro objeto
-    if (comparaZ(nome, "ini")==0)
+bool TIndiceItem::FuncIni(TVariavel * v)
+{
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
     {
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            const char * txt = v1->getTxt();
-        // Ignora texto vazio
-            if (*txt==0)
-                continue;
-        // Procura indiceobj
-            TIndiceObj * indice = TIndiceObj::ProcIni(txt);
-            if (indice==0)
-                continue;
-        // Encontrou
-            MudarRef(indice);
-            TamTxt = strlen(txt);
-            return false;
-        }
-        MudarRef(0);
+        const char * txt = v1->getTxt();
+    // Ignora texto vazio
+        if (*txt==0)
+            continue;
+    // Procura indiceobj
+        TIndiceObj * indice = TIndiceObj::ProcIni(txt);
+        if (indice==0)
+            continue;
+    // Encontrou
+        MudarRef(indice);
+        TamTxt = strlen(txt);
         return false;
     }
+    MudarRef(0);
+    return false;
+}
+
+//----------------------------------------------------------------------------
 // Último objeto
-    if (comparaZ(nome, "fim")==0)
+bool TIndiceItem::FuncFim(TVariavel * v)
+{
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
     {
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        {
-            const char * txt = v1->getTxt();
-        // Ignora texto vazio
-            if (*txt==0)
-                continue;
-        // Procura indiceobj
-            TIndiceObj * indice = TIndiceObj::ProcFim(txt);
-            if (indice==0)
-                continue;
-        // Encontrou
-            MudarRef(indice);
-            TamTxt = strlen(txt);
-            return false;
-        }
-        MudarRef(0);
+        const char * txt = v1->getTxt();
+    // Ignora texto vazio
+        if (*txt==0)
+            continue;
+    // Procura indiceobj
+        TIndiceObj * indice = TIndiceObj::ProcFim(txt);
+        if (indice==0)
+            continue;
+    // Encontrou
+        MudarRef(indice);
+        TamTxt = strlen(txt);
         return false;
     }
+    MudarRef(0);
     return false;
 }
 
