@@ -171,7 +171,7 @@ bool TClasse::NomeValido(char * nome)
     char *o,*d;
 // Verifica se tem algum caracter inválido
     for (o=nome; *o; o++)
-        if (tabNOMES[*(unsigned char*)o]==0)
+        if (tabNOMES1[*(unsigned char*)o]==0)
             return false;
 // Avança para início do nome
     for (o=nome; *o==' '; o++);
@@ -198,7 +198,7 @@ char * TClasse::NomeDef(char * texto)
         return 0;
     texto += 6;
     while (*texto==' ') texto++;
-    return (tabNOMES[*(unsigned char*)texto] ? texto : 0);
+    return (tabNOMES1[*(unsigned char*)texto] ? texto : 0);
 }
 
 //----------------------------------------------------------------------------
@@ -945,7 +945,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 b = b2;
                 while (b1<b && b2<b+a && b2<total)
                 {
-                    if (comparaZ(var2[b1] + Instr::endNome,
+                    if (comparaVar(var2[b1] + Instr::endNome,
                             var2[b2] + Instr::endNome) > 0)
                         var1[lido++] = var2[b2++];
                     else
@@ -964,7 +964,7 @@ int TClasse::AcertaVar(bool acertaderiv)
 // Obtém número de variáveis, detectando as repetidas
     NumVar = total;
     for (int x=total-2; x>=0; x--)
-        if (comparaZ(var1[x]+Instr::endNome, var1[x+1]+Instr::endNome)==0)
+        if (comparaVar(var1[x]+Instr::endNome, var1[x+1]+Instr::endNome)==0)
         {
             var1[x+1]=0;
             NumVar--;
@@ -1150,8 +1150,8 @@ int TClasse::AcertaVar(bool acertaderiv)
                 { c2++; continue; }
         // Compara variáveis antes e depois
         // Checa também se herança da variável mudou
-            int cmp = comparaZ(antes.InstrVar[c1] + Instr::endNome,
-                               InstrVar[c2] + Instr::endNome);
+            int cmp = comparaVar(antes.InstrVar[c1] + Instr::endNome,
+                                 InstrVar[c2] + Instr::endNome);
             if (cmp != 0 || antes.IndiceVar[c1] != IndiceVar[c2])
                 bitobjeto |= 0x10;
         // Pula variáveis com tamanho zero
@@ -1619,7 +1619,7 @@ TClasse * TClasse::Procura(const char * nome)
     TClasse * y = RBroot;
     while (y)
     {
-        int i = comparaZ(nome, y->Nome);
+        int i = comparaVar(nome, y->Nome);
         if (i==0)
             return y;
         if (i<0)
@@ -1637,7 +1637,7 @@ TClasse * TClasse::ProcuraIni(const char * nome)
     TClasse * y = RBroot;
     while (y)
     {
-        int i = comparaZ(nome, y->Nome);
+        int i = comparaVar(nome, y->Nome);
         if (i==0)
             return y;
         if (i==-2)
@@ -1657,7 +1657,7 @@ TClasse * TClasse::ProcuraFim(const char * nome)
     TClasse * y = RBroot;
     while (y)
     {
-        int i = comparaZ(nome, y->Nome);
+        int i = comparaVar(nome, y->Nome);
         if (i==0 || i==-2)
             x = y;
         if (i==-1)
@@ -1676,7 +1676,7 @@ int TClasse::IndiceNome(const char * nome)
     while (ini<=fim)
     {
         int meio = (ini+fim)/2;
-        switch (comparaZ(nome, InstrVar[meio] + Instr::endNome))
+        switch (comparaVar(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
@@ -1701,7 +1701,7 @@ int TClasse::IndiceNomeIni(const char * nome)
     while (ini<=fim)
     {
         int meio = (ini+fim)/2;
-        switch (comparaZ(nome, InstrVar[meio] + Instr::endNome))
+        switch (comparaVar(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
@@ -1727,7 +1727,7 @@ int TClasse::IndiceNomeFim(const char * nome)
     while (ini<=fim)
     {
         int meio = (ini+fim)/2;
-        switch (comparaZ(nome, InstrVar[meio] + Instr::endNome))
+        switch (comparaVar(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
@@ -1748,7 +1748,7 @@ int TClasse::IndiceNomeFim(const char * nome)
 //----------------------------------------------------------------------------
 int TClasse::RBcomp(TClasse * x, TClasse * y)
 {
-    return comparaZ(x->Nome, y->Nome);
+    return comparaVar(x->Nome, y->Nome);
 }
 
 //----------------------------------------------------------------------------

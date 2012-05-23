@@ -30,7 +30,8 @@ unsigned long TempoIni;
 char * arqnome = 0;
 char * arqinicio = 0;
 char * arqext = 0;
-char * tabNOMES = 0;
+char * tabNOMES1 = 0;
+char * tabNOMES2 = 0;
 char * tabCOMPLETO = 0;
 char * tabMAI = 0;
 char * tabMIN = 0;
@@ -55,36 +56,42 @@ void tabASCinic(void)
     const char * cpont;
     int caract;
 // Verifica se deve acertar alguma tabela
-    if (tabNOMES)
+    if (tabNOMES1)
         return;
 // Aloca memória
-    tabNOMES = new char[0xA00];
-    tabCOMPLETO = tabNOMES + 0x100;
-    tabMAI = tabNOMES + 0x200;
-    tabMIN = tabNOMES + 0x300;
-    tabMAIMIN = tabNOMES + 0x400;
-    tabTXTCOD = tabNOMES + 0x500;
-    tabTXTDEC = tabNOMES + 0x600;
-    tab8B = tabNOMES + 0x700;
-    tab7B = tabNOMES + 0x800;
-    tabTXTSEPARA = tabNOMES + 0x900;
-// Acerta tabNOMES
-    memset(tabNOMES,0,256);
-    tabNOMES[(unsigned char)'_'] = ' ';
-    tabNOMES[(unsigned char)' '] = ' ';
-    tabNOMES[(unsigned char)'@'] = '@';
+    tabNOMES1 = new char[0xB00];
+    tabNOMES2 = tabNOMES1 + 0x100;
+    tabCOMPLETO = tabNOMES1 + 0x200;
+    tabMAI = tabNOMES1 + 0x300;
+    tabMIN = tabNOMES1 + 0x400;
+    tabMAIMIN = tabNOMES1 + 0x500;
+    tabTXTCOD = tabNOMES1 + 0x600;
+    tabTXTDEC = tabNOMES1 + 0x700;
+    tab8B = tabNOMES1 + 0x800;
+    tab7B = tabNOMES1 + 0x900;
+    tabTXTSEPARA = tabNOMES1 + 0xA00;
+// Acerta tabNOMES1
+    memset(tabNOMES1,0,256);
+    tabNOMES1[(unsigned char)'_'] = ' ';
+    tabNOMES1[(unsigned char)' '] = ' ';
+    tabNOMES1[(unsigned char)'@'] = '@';
     for (caract='a'; caract<='z'; caract++) // Letras de A a Z
-        tabNOMES[caract-0x20] = tabNOMES[caract] = caract;
+        tabNOMES1[caract-0x20] = tabNOMES1[caract] = caract;
     for (caract='0'; caract<='9'; caract++) // Números de 0 a 9
-        tabNOMES[caract] = caract;
+        tabNOMES1[caract] = caract;
     for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
     {
-        tabNOMES[(unsigned char)cpont[1]] = cpont[0];
-        tabNOMES[(unsigned char)cpont[2]] = cpont[0];
+        tabNOMES1[(unsigned char)cpont[1]] = cpont[0];
+        tabNOMES1[(unsigned char)cpont[2]] = cpont[0];
     }
+// Acerta tabNOMES2
+    memcpy(tabNOMES2, tabNOMES1, 0x100);
+    for (caract=1; caract<0x100; caract++)
+        if (tabNOMES2[caract]==0)
+            tabNOMES2[caract]=caract;
 // Acerta tabCOMPLETO
-    for (caract=0; caract<256; caract++)
-        tabCOMPLETO[caract] = (tabNOMES[caract] ? tabNOMES[caract] : caract);
+    memcpy(tabCOMPLETO, tabNOMES2, 0x100);
+    tabCOMPLETO[(unsigned char)'_'] = '_';
 // Acerta tabMAI, tabMIN e tabMAIMIN
     memcpy(tabMAI, tabCOMPLETO, 0x100);
     tabMAI[(unsigned char)' '] = ' ';
@@ -117,9 +124,10 @@ void tabASCinic(void)
     tabTXTCOD[0x21] = 'e'; // Exclamação
     tabTXTCOD[0x22] = 'a'; // Aspas
     tabTXTCOD[(unsigned char)'@'] = '@';
+    tabTXTCOD[(unsigned char)' '] = '_';
     caract = 'f';
     for (int x=0x23; x<127; x++)
-        if (tabNOMES[x]==0)
+        if (tabNOMES1[x]==0)
         {
             tabTXTCOD[x] = caract;
             caract = (caract=='m' ? 'o' : caract=='z' ? '0' : caract+1);
@@ -308,6 +316,22 @@ char * copiastrmin(char * destino, const char * origem, int tamanho)
 }
 
 //------------------------------------------------------------------------------
+// Compara dois nomes de classes, variáveis ou funções (strings ASCIIZ)
+int comparaVar(const char * string1, const char * string2)
+{
+    for (;; string1++, string2++)
+    {
+        unsigned char ch1,ch2;
+        if (*string1==0 || *string2==0)
+            return (*string1 ? 2 : *string2 ? -2 : 0);
+        ch1=tabNOMES2[*(unsigned char *)string1];
+        ch2=tabNOMES2[*(unsigned char *)string2];
+        if (ch1!=ch2)
+            return (ch1<ch2 ? -1 : 1);
+    }
+}
+
+//------------------------------------------------------------------------------
 // Compara duas strings ASCIIZ
 int comparaZ(const char * string1, const char * string2)
 {
@@ -447,7 +471,7 @@ int verifNome(const char * nome1)
     {
         if (*nome1==0)
             return (tamanho<2 ? 1 : 0);
-        char ch = tabNOMES[*(unsigned char *)nome1];
+        char ch = tabNOMES1[*(unsigned char *)nome1];
         if (ch==0 || ch=='_')
             return 2;
         if (ch=='h' && anterior>='a' && anterior<='z' &&
@@ -504,7 +528,7 @@ char * txtNome(char * destino, const char * origem, int tamanho)
     int copiar = 0;
     for (; *origem && destino<fim; origem++)
     {
-        char ch = tabNOMES[*(unsigned char*)origem];
+        char ch = tabNOMES1[*(unsigned char*)origem];
         if (ch=='ç' || (ch>='a' && ch<='z'))
         {
             *destino++ = *origem;
@@ -540,7 +564,7 @@ char * txtNomeLetras(char * nome, int tamanho)
     for (ori=des=nome; ori<fim; ori++)
     {
     // Passa para minúsculas, Y=I, W=U
-        char ch=tabNOMES[*(unsigned char *)ori];
+        char ch=tabNOMES1[*(unsigned char *)ori];
         if (ch==0)
             break;
         ch1=ch;
@@ -745,7 +769,6 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
         char repete[12]={ 0,0,0,0, 0,0,0,0, 0,0,0,0 };
         char *passo=repete;
         int  consoante=0;
-        char conso;
         rep=false;
         tamanho--;
         for (; *origem && tamanho>0; origem++)
@@ -780,9 +803,14 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
             }
             // Ignora muitos caracteres seguidos sem vogais
             // Caracteres ' ' e '0' a '9' não entram na comparaçào
-            conso=tabNOMES[(unsigned char)carac];
-            if (conso=='a' || conso=='e' || conso=='i' || conso=='o' || conso=='u')
-                consoante=0;
+            switch (tabCOMPLETO[(unsigned char)carac])
+            {
+            case 'a':
+            case 'e':
+            case 'i':
+            case 'o':
+            case 'u': consoante=0;
+            }
             if (carac!=' ' && (carac<'0' || carac>'9'))
                 if (consoante++ > 20)
                 {

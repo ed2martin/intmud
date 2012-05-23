@@ -118,13 +118,13 @@ char * TMudarAux::ProcuraInstr(char * comando, const char * nomevar)
         case Instr::cConstNum:
         case Instr::cConstExpr:
         case Instr::cConstVar:
-            if (comparaZ(comando + Instr::endNome, nomevar)==0)
+            if (comparaVar(comando + Instr::endNome, nomevar)==0)
                 return comando;
             comando += Num16(comando);
             break;
         default:
             if (inifunc==false && comando[2] > Instr::cVariaveis)
-                if (comparaZ(comando + Instr::endNome, nomevar)==0)
+                if (comparaVar(comando + Instr::endNome, nomevar)==0)
                     return comando;
             comando += Num16(comando);
         }
@@ -468,7 +468,7 @@ TMudarClasse * TMudarClasse::Procurar(const char * nome)
     TMudarClasse * y = RBroot;
     while (y)
     {
-        int i = comparaZ(nome, y->Nome);
+        int i = comparaVar(nome, y->Nome);
         if (i==0)
             return y;
         if (i<0)
@@ -482,7 +482,7 @@ TMudarClasse * TMudarClasse::Procurar(const char * nome)
 //----------------------------------------------------------------------------
 int TMudarClasse::RBcomp(TMudarClasse * x, TMudarClasse * y)
 {
-    return comparaZ(x->Nome, y->Nome);
+    return comparaVar(x->Nome, y->Nome);
 }
 
 //----------------------------------------------------------------------------

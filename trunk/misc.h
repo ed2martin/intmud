@@ -20,7 +20,8 @@ extern char * arqext;    ///< A partir de onde colocar a extensão.
  *  tabASCinic deve ser chamado no início do programa. */
 void tabASCinic(void);
 
-extern char * tabNOMES;    ///< Apenas caracteres válidos em nomes de classes
+extern char * tabNOMES1;   ///< Apenas caracteres válidos em nomes de classes
+extern char * tabNOMES2;   ///< Para comparar de nomes de classes e funções
 extern char * tabCOMPLETO; ///< Todos os caracteres
 extern char * tabMAI;      ///< Todos os caracteres em letras maiúsculas
 extern char * tabMIN;      ///< Todos os caracteres em letras minúsculas
@@ -60,6 +61,14 @@ char * copiastr(char * destino, const char * origem, int tamanho);
  *  @param origem Endereço origem
  *  @param tamanho Tamanho do buffer em destino */
 char * copiastrmin(char * destino, const char * origem, int tamanho);
+
+/// Compara dois nomes de classes, variáveis ou funções (strings ASCIIZ)
+/** @retval -2 string1<string2; string2 contém string1
+ *  @retval -1 string1<string2
+ *  @retval 0 Strings iguais
+ *  @retval 1 se string1>string2
+ *  @retval 2 se string1>string2; string1 contém string2 */
+int comparaVar(const char * string1, const char * string2);
 
 /// Compara duas strings ASCIIZ
 /** @retval -2 string1<string2; string2 contém string1

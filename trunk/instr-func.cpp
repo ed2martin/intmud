@@ -578,9 +578,9 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 *destino++='@', *destino++=ch;
             else
             {
-                ch = tabNOMES[*(unsigned char*)txt];
+                ch = tabNOMES1[*(unsigned char*)txt];
                 if (ch)
-                    *destino++ = (ch==' ' ? '_' : ch);
+                    *destino++ = ch;
             }
             txt++;
         }

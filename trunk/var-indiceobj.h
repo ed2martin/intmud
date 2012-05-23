@@ -15,6 +15,14 @@ public:
     void MudarRef(TIndiceObj * indice); ///< Muda referência de ListaX
     void Igual(TIndiceItem * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
+
+    bool FuncObj(TVariavel * v);
+    bool FuncTxt(TVariavel * v);
+    bool FuncAntes(TVariavel * v);
+    bool FuncDepois(TVariavel * v);
+    bool FuncIni(TVariavel * v);
+    bool FuncFim(TVariavel * v);
+
 private:
     TIndiceItem * Antes;    ///< Objeto anterior
     TIndiceItem * Depois;   ///< Próximo objeto
