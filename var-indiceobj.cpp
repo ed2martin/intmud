@@ -92,7 +92,7 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de indiceitem
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    const struct {
+    static const struct {
         const char * Nome;
         bool (TIndiceItem::*Func)(TVariavel * v); } ExecFunc[] = {
         { "antes",        &TIndiceItem::FuncAntes },

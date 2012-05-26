@@ -115,12 +115,21 @@ void TTextoTxt::Ordena(int modo, const char *txt1, const char * txt2)
 }
 
 //----------------------------------------------------------------------------
+// Usado em TTextoTxt::OrdenaSub para avançar para o próximo byte
+#define ORDENASUB_AVANCA \
+    if (--totalobj > 0) \
+        pontobj++; \
+    else if ( (obj = obj->Depois) != 0) \
+        pontobj = obj->Texto, totalobj = obj->Bytes;
+
+//----------------------------------------------------------------------------
 void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
         const char *txt1, const char * txt2)
 {
 // Lê as linhas de textotxt
-    TTextoBloco * obj = Inicio;
-    unsigned int indobj=0;
+    TTextoBloco * obj = Inicio; // Objeto atual
+    int totalobj = obj->Bytes; // Quantos bytes aninda faltam no bloco atual
+    char * pontobj = obj->Texto; // Próximo byte no bloco atual
     unsigned int numlin = 0;
     unsigned int totallin = Linhas;
     char * dest = texto;
@@ -131,38 +140,35 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
         {
         // Obtém quantidade de objetos
             unsigned int valor=0;
-            if (obj->Texto[indobj] < '0' || obj->Texto[indobj] > '9')
+            if (*pontobj < '0' || *pontobj > '9')
             {
-                while (obj->Texto[indobj++] != Instr::ex_barra_n);
+                while (*pontobj != Instr::ex_barra_n)
+                    ORDENASUB_AVANCA
+                ORDENASUB_AVANCA
                 totallin--;
                 continue;
             }
             while (true)
             {
-                char ch = obj->Texto[indobj];
+                char ch = *pontobj;
                 if (ch<'0' || ch>'9')
                     break;
                 valor = valor*10+ch-'0';
-                indobj++;
-                if (indobj >= obj->Bytes)
-                    indobj=0, obj=obj->Depois;
+                ORDENASUB_AVANCA
             }
         // Checa se é número seguido de espaço
-            if (obj->Texto[indobj] != ' ')
+            if (*pontobj != ' ')
             {
-                while (obj->Texto[indobj++] != Instr::ex_barra_n);
+                while (*pontobj != Instr::ex_barra_n)
+                    ORDENASUB_AVANCA
+                ORDENASUB_AVANCA
                 totallin--;
                 continue;
             }
         // Avança espaços vazios
-            while (true)
-            {
-                indobj++;
-                if (indobj >= obj->Bytes)
-                    indobj=0, obj=obj->Depois;
-                if (obj->Texto[indobj] != ' ')
-                    break;
-            }
+            do {
+                ORDENASUB_AVANCA
+            } while (*pontobj == ' ');
         // Anota cabeçalho
             dest[0] = valor;
             dest[1] = valor >> 8;
@@ -175,9 +181,8 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
     // Anota texto
         while (true)
         {
-            char ch = obj->Texto[indobj++];
-            if (indobj >= obj->Bytes)
-                indobj=0, obj=obj->Depois;
+            char ch = *pontobj;
+            ORDENASUB_AVANCA
             if (ch == Instr::ex_barra_n)
                 break;
             *dest++ = ch;
@@ -359,22 +364,23 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
     unsigned int dest_byte = 0; // Byte atual em textotxt
 
     TTextoBloco * ler_obj = Inicio->Depois;  // Objeto que está lendo
-    unsigned int ler_tam = ler_obj->Bytes;
-    unsigned int ler_ind = 0;
+    int ler_tam = ler_obj->Bytes;
+    char * ler_pont = ler_obj->Texto;
 
 // Divide as linhas
     while (true)
     {
     // Lê próximo byte de textotxt
-        if (ler_ind >= ler_tam)
+        if (ler_tam <= 0)
         {
             ler_obj = ler_obj->Depois;
             if (ler_obj==0)
                 break;
             ler_tam = ler_obj->Bytes;
-            ler_ind = 0;
+            ler_pont = ler_obj->Texto;
         }
-        char ch = ler_obj->Texto[ler_ind++];
+        char ch = *ler_pont++;
+        ler_tam--;
     // Nova linha
         //putchar(ch==Instr::ex_barra_n ? '\n' : ch); fflush(stdout);
         switch (ch)

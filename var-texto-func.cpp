@@ -166,12 +166,14 @@ bool TTextoTxt::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de textotxt
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    const struct {
+    static const struct {
         const char * Nome;
         bool (TTextoTxt::*Func)(TVariavel * v); } ExecFunc[] = {
         { "addfim",       &TTextoTxt::FuncAddFim },
         { "addini",       &TTextoTxt::FuncAddIni },
         { "bytes",        &TTextoTxt::FuncBytes },
+        { "clipler",      &TTextoTxt::FuncClipLer },
+        { "clipsalvar",   &TTextoTxt::FuncClipSalvar },
         { "dividelin",    &TTextoTxt::FuncDivideLin },
         { "dividelincor", &TTextoTxt::FuncDivideLinCor },
         { "fim",          &TTextoTxt::FuncFim },
@@ -544,9 +546,10 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
     int pular = 0; // Para não salvar cores em arquivo
     for (TTextoBloco * bl = Inicio; bl; bl=bl->Depois)
     {
-        for (int x=0; x<bl->Bytes; x++)
+        char * p = bl->Texto;
+        for (int x=bl->Bytes; x; x--,p++)
         {
-            unsigned char ch = bl->Texto[x];
+            unsigned char ch = *p;
             switch (ch)
             {
             case Instr::ex_barra_n: pular=0, *pbuf++ = '\n'; break;
@@ -586,6 +589,97 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
+bool TTextoTxt::FuncClipLer(TVariavel * v)
+{
+    char * p = ClipboardLer();
+    Instr::ApagarVar(v);
+    if (p==0)
+        return Instr::CriarVarInt(0);
+    char * d = p;
+    for (char * o = p; *o; o++)
+    {
+        if (*o == 0x0D)
+        {
+            *d++ = Instr::ex_barra_n;
+            if (o[1]==0x0A)
+                o++;
+        }
+        else if (*o == 0x0A)
+        {
+            *d++ = Instr::ex_barra_n;
+            if (o[1]==0x0D)
+                o++;
+        }
+        else if (*(unsigned char*)o >= 0x20)
+            *d++ = *o;
+    }
+    *d++ = Instr::ex_barra_n;
+    TextoIni();
+    TextoAnota(p, d-p);
+    TextoFim();
+    delete[] p;
+    return Instr::CriarVarInt(1);
+}
+
+//----------------------------------------------------------------------------
+bool TTextoTxt::FuncClipSalvar(TVariavel * v)
+{
+    char * buf = new char[Bytes + Linhas + 2];
+    char * fim = buf + Linhas + 1;
+
+// Copia texto para buf
+    for (TTextoBloco * bl = Inicio; bl; bl=bl->Depois)
+    {
+        memcpy(fim, bl->Texto, bl->Bytes);
+        fim += bl->Bytes;
+    }
+    *fim++ = 0;
+    assert(fim <= buf + Bytes + Linhas + 2);
+
+// Retira as definições de cores
+    char * txt = buf + Linhas + 1;
+    char * destino = buf;
+    while (*txt)
+        switch (*txt)
+        {
+        case Instr::ex_barra_b:
+            txt++;
+            break;
+        case Instr::ex_barra_c:
+            if ((txt[1]>='0' && txt[1]<='9') ||
+                    (txt[1]>='A' && txt[1]<='F') ||
+                    (txt[1]>='a' && txt[1]<='f'))
+                txt += 2;
+            else
+                txt++;
+            break;
+        case Instr::ex_barra_d:
+            if (txt[1]>='0' && txt[1]<='7')
+                txt += 2;
+            else
+                txt++;
+            break;
+        case Instr::ex_barra_n:
+            txt++;
+            *destino++ = 0x0D;
+            *destino++ = 0x0A;
+            break;
+        default:
+            *destino++ = *txt++;
+        }
+    if (destino > buf)
+        if (destino[-1] == 0x0A)
+            destino -= 2;
+    *destino = 0;
+
+// Envia para a área de transferência
+    Instr::ApagarVar(v);
+    bool b = ClipboardMudar(buf);
+    delete[] buf;
+    return Instr::CriarVarInt(b);
+}
+
+//----------------------------------------------------------------------------
 int TTextoTxt::getValor()
 {
     return Inicio!=0;
@@ -616,7 +710,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de textopos
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    const struct {
+    static const struct {
         const char * Nome;
         int valor;
         bool (TTextoPos::*Func)(TVariavel * v, int valor); } ExecFunc[] = {

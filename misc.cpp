@@ -17,7 +17,9 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-#ifndef __WIN32__
+#ifdef __WIN32__
+ #include <windows.h> // Para acessar o clipboard
+#else
  #include <sys/stat.h>
  #include <unistd.h>
 #endif
@@ -1014,6 +1016,75 @@ long numdata(const char * data)
     ano--;
     dias+=ano*365+ano/4-ano/100+ano/400;
     return dias;
+}
+
+//------------------------------------------------------------------------------
+// Funções do clipboard, fontes:
+// http://stackoverflow.com/questions/342772/convert-lptstr-to-char
+// http://code.google.com/p/agui/source/browse/trunk/src/Agui/Clipboard/WinClipboard.cpp?r=12
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms649016%28v=vs.85%29.aspx
+
+/// Copia texto para Clipboard
+/** @return verdadeiro se conseguiu copiar */
+bool ClipboardMudar(const char * txt)
+{
+#ifdef __WIN32__
+    const int codePage = 1252; // 1252=windows-1252, CP_UTF8=UTF-8
+    if (!OpenClipboard(NULL))
+        return false;
+    EmptyClipboard();
+
+    int sizeNeeded = MultiByteToWideChar(codePage, 0, txt, -1, NULL, 0);
+    wchar_t * decodedStr = new wchar_t[sizeNeeded];
+    MultiByteToWideChar(codePage, 0, txt, -1, decodedStr, sizeNeeded);
+
+    HGLOBAL hMem = GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE,
+         sizeNeeded * sizeof(decodedStr[0]) );
+    LPWSTR ptxt = (LPWSTR)GlobalLock(hMem);
+    memcpy(ptxt, decodedStr, sizeNeeded * sizeof(decodedStr[0]));
+
+    GlobalUnlock(hMem);
+    // set data in clipboard; we are no longer responsible for hMem
+    bool ok = (BOOL)SetClipboardData(CF_UNICODETEXT, hMem);
+    CloseClipboard(); // relinquish it for other windows
+    delete[] decodedStr;
+    return ok;
+#else
+    return false;
+#endif
+}
+
+/// Lê texto do clipboard
+/** @return O texto ou 0 se nao conseguiu ler
+ *  @note É responsabilidade de quem chama desalocar a memória com delete[] */
+char * ClipboardLer()
+{
+#ifdef __WIN32__
+    const int codePage = 1252; // 1252=windows-1252, CP_UTF8=UTF-8
+    if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
+        return 0;
+    if (!OpenClipboard(NULL))
+        return 0;
+    char * buffer = 0;
+    HGLOBAL hMem = GetClipboardData(CF_UNICODETEXT);
+    if (hMem != NULL)
+    {
+        LPWSTR lptstr = (LPWSTR)GlobalLock(hMem);
+        if (lptstr != NULL)
+        {
+            int sizeNeeded = WideCharToMultiByte(codePage, 0, lptstr, -1,
+                        NULL, 0, NULL, NULL);
+            buffer = new char[sizeNeeded];
+            WideCharToMultiByte(codePage, 0, lptstr, -1,
+                        buffer, sizeNeeded, NULL, NULL);
+            GlobalUnlock(hMem);
+        }
+    }
+    CloseClipboard();
+    return buffer;
+#else
+    return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------

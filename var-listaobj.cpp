@@ -269,7 +269,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de listaobj
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    const struct {
+    static const struct {
         const char * Nome;
         bool (TListaObj::*Func)(TVariavel * v); } ExecFunc[] = {
         { "addfim",    &TListaObj::FuncAddFim },
@@ -669,7 +669,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de listaitem
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    const struct {
+    static const struct {
         const char * Nome;
         bool (TListaItem::*Func)(TVariavel * v); } ExecFunc[] = {
         { "addantes",     &TListaItem::FuncAddAntes },

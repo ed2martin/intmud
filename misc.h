@@ -158,6 +158,9 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes);
 /// Calcula o número do dia a partir de uma data */
 long numdata(const char *);
 
+bool ClipboardMudar(const char * txt);
+char * ClipboardLer();
+
 unsigned short Num16(const char * x); ///< Lê unsigned short de char[2]
 unsigned int Num24(const char * x); ///< Lê unsigned int de char[3]
 unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]

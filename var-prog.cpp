@@ -77,7 +77,7 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de prog
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    const struct {
+    static const struct {
         const char * Nome;
         bool (TVarProg::*Func)(TVariavel * v); } ExecFunc[] = {
         { "apagar",       &TVarProg::FuncApagar },

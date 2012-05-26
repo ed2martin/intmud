@@ -740,6 +740,20 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         } // for
         break;
       }
+    case 16: // txte
+        while (*txt && destino<mens+sizeof(mens)-1)
+        {
+            *destino = (*txt != '_' ? *txt : ' ');
+            destino++, txt++;
+        }
+        break;
+    case 17: // txts
+        while (*txt && destino<mens+sizeof(mens)-1)
+        {
+            *destino = (*txt != ' ' ? *txt : '_');
+            destino++, txt++;
+        }
+        break;
     default:
         return false;
     }
