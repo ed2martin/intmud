@@ -1,0 +1,40 @@
+telatxt = 1
+
+classe teste
+telatxt tela # Tela do usuário
+const msg = tela.msg(arg0 + "\n")
+
+func iniclasse
+criar(arg0)
+
+func ini
+  msg("F1 mostra a área de transferência")
+  msg("F2 transfere uma mensagem de 3 linhas para a área de transferência")
+  msg("ENTER transfere o texto digitado para a área de transferência")
+  msg("ESC sai do programa")
+
+func tela_msg
+  textotxt t
+  t.addfim(arg0)
+  msg(t.clipsalvar ? "Salvou" : "Não salvou")
+
+func tela_tecla
+  casovar arg0
+  casose "F1"
+    textotxt t
+    se t.clipler
+      msg("Leu [" + t.remove(100) + "]")
+    senao
+      msg("Erro ao ler")
+    fimse
+    sair
+  casose "F2"
+    textotxt t
+    t.addfim("Bom dia")
+    t.addfim("Boa tarde")
+    t.addfim("")
+    msg(t.clipsalvar ? "Salvou" : "Não salvou")
+    sair
+  casose "ESC"
+    terminar
+  casofim

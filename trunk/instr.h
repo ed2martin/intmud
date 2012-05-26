@@ -174,6 +174,8 @@ public:
     int  valor;
 };
 
+const TListaFunc * InfoFunc(const char * nome);
+
 //----------------------------------------------------------------------------
     /// Pilha de dados (64K)
 extern char * const DadosPilha;

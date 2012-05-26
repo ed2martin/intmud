@@ -1541,7 +1541,15 @@ txttroca - considera iguais letras minúsculas, maiúsculas e acentuadas.
 txttrocamai - considera iguais letras maiúsculas e minúsculas.
 txttrocadif - diferencia letras maiúsculas, minúsculas e acentuadas.
 
-16.4.7. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
+16.4.7. txte(<texto>)
+Retorna o texto substituindo sublinhado '_' por espaço ' '.
+Tem o mesmo efeito de txttroca(<texto>, "_", " ").
+
+16.4.8. txts(<texto>)
+Retorna o texto substituindo espaço ' ' por sublinhado '_'.
+Tem o mesmo efeito de txttroca(<texto>, " ", "_").
+
+16.4.9. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
 Procura textos em <texto> e substitui variáveis/funções do objeto 'este'.
 Os textos procurados são <texto2> seguido de uma palavra qualquer.
 Os nomes das funções são <variável> seguido da mesma palavra.
@@ -1864,18 +1872,16 @@ Quantidade de itens da lista.
 Objeto que contém a lista; pode ser NULO.
 
 18.12. objini
-Primeiro objeto da lista.
+Primeiro objeto da lista, o mesmo que ini.obj.
 
 18.13. objfim
-Último objeto da lista.
+Último objeto da lista, o mesmo que fim.obj.
 
 18.14. ini
 Primeiro item da lista (variável listaitem).
-Nota: ini.obj = primeiro objeto da lista.
 
 18.15. fim
 Último item da lista (variável listaitem).
-Nota: fim.obj = último objeto da lista.
 
 
 19. LISTAITEM - UM ITEM DE LISTAOBJ
@@ -2018,7 +2024,7 @@ textotxt t
 t.addfim("0 Bolsa")
 t.addfim("1 Garrafa")
 t.addfim("5 Copo")
-t.numerolin("(", "x)")
+t.ordenalin("(", "x)")
 
 Tem o mesmo efeito de:
 
@@ -2027,7 +2033,7 @@ t.addfim("(5x) Copo")
 t.addfim("Garrafa")
 
 20.12. juntalin
-         juntalin(<texto1>, <texto2>)
+       juntalin(<texto1>, <texto2>)
 Junta as linhas repetidas exatamente como ordenalin, porém mantém
 a ordem original das linhas.
 
@@ -2077,6 +2083,18 @@ Nota 2: O arquivo deve pertencer ao diretório atual ou a um subdiretório
 Salva o conteúdo de textotxt em um arquivo de texto.
 Retorna 1 se conseguiu ou 0 se não conseguiu.
 Notas: vide função ler (acima)
+
+20.20. clipler
+Lê texto da área de transferência (clipboard).
+Retorna 1 se conseguiu ler ou 0 se não conseguiu. Por exemplo, se a área
+de transferência não tiver um texto, retorna 0. Nesse caso, o texto de
+textotxt não é alterado.
+Nota: Só funciona no Windows.
+
+20.21. clipsalvar
+Copia o texto de textotxt para a área de transferência (clipboard).
+Retorna 1 se conseguiu copiar ou 0 se não conseguiu.
+Nota: Só funciona no Windows.
 
 
 21. TEXTOPOS - ACESSAR LINHA DE TEXTOTXT

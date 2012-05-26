@@ -20,6 +20,95 @@
 #include "misc.h"
 
 //------------------------------------------------------------------------------
+const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
+{
+// Lista de funções predefinidas
+// Deve obrigatoriamente estar em ordem alfabética
+    static const Instr::TListaFunc ListaFunc[] = {
+        { "apagar",     Instr::FuncApagar, 0 },
+        { "arg0",       Instr::FuncArg, 0 },
+        { "arg1",       Instr::FuncArg, 1 },
+        { "arg2",       Instr::FuncArg, 2 },
+        { "arg3",       Instr::FuncArg, 3 },
+        { "arg4",       Instr::FuncArg, 4 },
+        { "arg5",       Instr::FuncArg, 5 },
+        { "arg6",       Instr::FuncArg, 6 },
+        { "arg7",       Instr::FuncArg, 7 },
+        { "arg8",       Instr::FuncArg, 8 },
+        { "arg9",       Instr::FuncArg, 9 },
+        { "args",       Instr::FuncArgs, 0 },
+        { "criar",      Instr::FuncCriar, 0 },
+        { "este",       Instr::FuncEste, 0 },
+        { "int",        Instr::FuncNumero, 2 },
+        { "intabs",     Instr::FuncNumero, 1 },
+        { "intchr",     Instr::FuncIntChr, 0 },
+        { "intdist",    Instr::FuncIntDist, 0 },
+        { "intdistdif", Instr::FuncIntDist, 2 },
+        { "intdistmai", Instr::FuncIntDist, 1 },
+        { "intdiv",     Instr::FuncNumero, 3 },
+        { "intnome",    Instr::FuncInt, 0 },
+        { "intpos",     Instr::FuncNumero, 0 },
+        { "intsenha",   Instr::FuncInt, 1 },
+        { "intsub",     Instr::FuncIntSub, 0 },
+        { "inttotal",   Instr::FuncTotal, 0 },
+        { "objantes",   Instr::FuncAntesDepois, 0 },
+        { "objdepois",  Instr::FuncAntesDepois, 1 },
+        { "rand",       Instr::FuncRand, 0 },
+        { "ref",        Instr::FuncRef, 0 },
+        { "txt",        Instr::FuncTxt, 0 },
+        { "txt1",       Instr::FuncTxt2, 0 },
+        { "txt2",       Instr::FuncTxt2, 1 },
+        { "txtchr",     Instr::FuncTxtChr, 0 },
+        { "txtcod",     Instr::FuncTxt2, 10 },
+        { "txtcopiamai",Instr::FuncTxtCopiaMai, 0 },
+        { "txtcor",     Instr::FuncTxt2, 2 },
+        { "txtdec",     Instr::FuncTxt2, 11 },
+        { "txte",       Instr::FuncTxt2, 16 },
+        { "txtesp",     Instr::FuncEsp, 0 },
+        { "txtfiltro",  Instr::FuncTxt2, 7 },
+        { "txtfim",     Instr::FuncTxtFim, 0 },
+        { "txtinvis",   Instr::FuncTxt2, 13 },
+        { "txtmai",     Instr::FuncTxt2, 3 },
+        { "txtmaiini",  Instr::FuncTxt2, 4 },
+        { "txtmaimin",  Instr::FuncTxt2, 6 },
+        { "txtmin",     Instr::FuncTxt2, 5 },
+        { "txtmudamai", Instr::FuncTxtMudaMai, 0 },
+        { "txtnome",    Instr::FuncTxt2, 9 },
+        { "txtnum",     Instr::FuncTxtNum, 0 },
+        { "txtproc",    Instr::FuncTxtProc, 0 },
+        { "txtprocdif", Instr::FuncTxtProc, 2 },
+        { "txtprocmai", Instr::FuncTxtProc, 1 },
+        { "txtremove",  Instr::FuncTxtRemove, 0 },
+        { "txtrepete",  Instr::FuncTxtRepete, 0 },
+        { "txts",       Instr::FuncTxt2, 17 },
+        { "txtsepara",  Instr::FuncTxtSepara, 0 },
+        { "txtshs",     Instr::FuncTxt2, 8 },
+        { "txtsub",     Instr::FuncTxt, 1 },
+        { "txttroca",   Instr::FuncTxtTroca, 0 },
+        { "txttrocadif",Instr::FuncTxtTroca, 2 },
+        { "txttrocamai",Instr::FuncTxtTroca, 1 },
+        { "txturlcod",  Instr::FuncTxt2, 14 },
+        { "txturldec",  Instr::FuncTxt2, 15 },
+        { "txtvis",     Instr::FuncTxt2, 12 },
+        { "vartroca",   Instr::FuncVarTroca, 0 }
+    };
+// Procura a função correspondente
+    int ini = 0;
+    int fim = sizeof(ListaFunc) / sizeof(ListaFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
+    {
+        int meio = (ini+fim)/2;
+        int resultado = strcmp(mens, ListaFunc[meio].Nome);
+        if (resultado==0) // Se encontrou...
+            return &ListaFunc[meio];
+        if (resultado<0) fim=meio-1; else ini=meio+1;
+    }
+    return 0;
+}
+
+//------------------------------------------------------------------------------
 /// Retorna um número que corresponde à prioridade do operador
 /** @param operador Operador em Instr::Expressao
     @retval 2-0x2F Número que corresponde à prioridade do operador;
@@ -136,6 +225,9 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     {
         if (esperando == 3)
             return "Variável não pertence a uma classe ou uma função";
+        else if (esperando == 2 && InfoFunc(instr + endNome))
+            return "Variável tem o nome de uma função da linguagem, "
+                    "por isso não pode pertencer a uma função";
         return 0;
     }
 // Instrução

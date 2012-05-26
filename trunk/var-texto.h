@@ -83,6 +83,8 @@ public:
     bool FuncJuntar(TVariavel * v);
     bool FuncLer(TVariavel * v);
     bool FuncSalvar(TVariavel * v);
+    bool FuncClipLer(TVariavel * v);
+    bool FuncClipSalvar(TVariavel * v);
 
 private:
     void OrdenaSub(int modo, char * texto, char** linha,
