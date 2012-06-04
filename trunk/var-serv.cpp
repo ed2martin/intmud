@@ -34,6 +34,7 @@
  #include <sys/un.h>     // Contém a estrutura sockaddr_un
  #include <errno.h>
 #endif
+#include <assert.h>
 #include "config.h"
 #include "var-serv.h"
 #include "var-socket.h"
@@ -48,6 +49,47 @@
 
 TVarServ * TVarServ::Inicio = 0;
 TVarServ * TVarServ::varObj = 0;
+
+//------------------------------------------------------------------------------
+TVarServObj::TVarServObj(TVarServ * serv, int s)
+{
+#ifdef DEBUG_CRIAR
+    puts("new TVarServObj"); fflush(stdout);
+#endif
+// Coloca na lista ligada
+    Serv = serv;
+    Antes = Serv->ServFim;
+    Depois = 0;
+    (Antes ? Antes->Depois : Serv->ServInicio) = this;
+    Serv->ServFim = this;
+// Acerta outras variáveis
+    sock = s;
+    acaossl = 0;
+    tempo = 100;
+// Conexão segura
+    sockssl = SslNew(ssl_ctx_servidor);
+    SslSetFd(sockssl, s);
+}
+
+//------------------------------------------------------------------------------
+TVarServObj::~TVarServObj()
+{
+// Tira da lista ligada
+    (Antes ? Antes->Depois : Serv->ServInicio) = Depois;
+    (Depois ? Depois->Antes : Serv->ServFim) = Antes;
+// Apaga objeto SSL e fecha socket
+    if (sockssl)
+    {
+        SslShutdown(sockssl);
+        SslFree(sockssl);
+    }
+    if (sock >= 0)
+        close(sock);
+#ifdef DEBUG_CRIAR
+    printf("delete TVarServObj%s%s\n", sock>=0 ? " socket" : "",
+         sockssl ? " ssl" : ""); fflush(stdout);
+#endif
+}
 
 //------------------------------------------------------------------------------
 void TVarServ::Criar()
@@ -79,6 +121,8 @@ void TVarServ::Fechar()
         Depois->Antes = Antes;
     if (varObj==this)
         varObj=Depois;
+    while (ServInicio)
+        delete ServInicio;
 }
 
 //------------------------------------------------------------------------------
@@ -195,15 +239,26 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 }
 
 //------------------------------------------------------------------------------
-void TVarServ::Fd_Set(fd_set * set_entrada)
+int TVarServ::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
 {
+    int tempo = 1000;
     for (TVarServ * s = Inicio; s; s=s->Depois)
+    {
         FD_SET(s->sock, set_entrada);
+        for (TVarServObj * x = s->ServInicio; x; x = x->Depois)
+        {
+            FD_SET(x->sock, x->acaossl ? set_saida : set_entrada);
+            if (tempo > x->tempo)
+                tempo = x->tempo;
+        }
+    }
+    return tempo;
 }
 
 //------------------------------------------------------------------------------
-void TVarServ::ProcEventos(fd_set * set_entrada)
+void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
 {
+// Recebe conexões
     for (TVarServ * obj = Inicio; obj; )
     {
     // Verifica se tem conexões pendentes
@@ -212,7 +267,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
             obj = obj->Depois;
             continue;
         }
-    // Recebe conexão
+    // Recebe conexões
         varObj = obj;
         while (obj == varObj)
         {
@@ -230,38 +285,12 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
             if (localSocket<0)
                 break;
 #endif
-            TSocket::SockConfig(localSocket);
-        // Gera evento
-            bool prossegue = false;
-            if (obj->b_objeto)
-            {
-                char mens[80];
-                sprintf(mens, "%s_socket", obj->defvar+Instr::endNome);
-                prossegue = Instr::ExecIni(obj->endobjeto, mens);
-            }
-            else if (obj->endclasse)
-            {
-                char mens[80];
-                sprintf(mens, "%s_socket", obj->defvar+Instr::endNome);
-                prossegue = Instr::ExecIni(obj->endclasse, mens);
-            }
-            if (prossegue==false)
-            {
-                close(localSocket);
-                continue;
-            }
-                // Cria argumento: TVarSocket
-            Instr::ExecArgCriar(Instr::InstrSocket);
-            TVariavel * v = Instr::VarAtual;
-                // Cria argumento: índice
-            Instr::ExecArg(obj->indice);
-                // Cria TObjSocket com o socket
-            TSocket * s = new TSocket(localSocket);
-                // Coloca TObjSocket em TVarSocket
-            v->end_socket->MudarSock(s);
-                // Executa
-            Instr::ExecX();
-            Instr::ExecFim();
+            TSocket::SockConfig(localSocket); // Acerta socket
+
+            if (obj->modossl)
+                new TVarServObj(obj, localSocket); // Conexão segura
+            else
+                obj->ExecEvento(localSocket, 0); // Gera evento
         }
     // Fecha o laço
         if (obj == varObj)
@@ -269,6 +298,106 @@ void TVarServ::ProcEventos(fd_set * set_entrada)
         else
             obj = varObj;
     }
+// Negocia conexões SSL
+    for (TVarServ * obj = Inicio; obj; )
+    {
+        varObj = obj;
+        for (TVarServObj * x = obj->ServInicio; x; )
+        {
+        // Checa tempo tentando conectar
+            if (x->tempo <= tempo)
+            {
+                TVarServObj * x2 = x->Depois;
+                delete x;
+                x = x2;
+                continue;
+            }
+            x->tempo -= tempo;
+        // Prossegue com a conexão
+            int resposta = SslAccept(x->sockssl);
+            if (resposta > 0) // Conexão realizada
+            {
+            // Apaga objeto x sem fechar a conexão
+                int local_sock = x->sock;
+                SSL * local_ssl = x->sockssl;
+                TVarServObj * x2 = x->Depois;
+                x->sock = -1;
+                x->sockssl = 0;
+                delete x;
+            // Passa para o próximo objeto
+                x = x2;
+            // Executa evento
+                obj->ExecEvento(local_sock, local_ssl);
+                if (varObj == obj)
+                    continue;
+                break;
+            }
+            switch (SslGetError(x->sockssl, resposta))
+            //switch (SslGetError(x->sockssl, resposta))
+            {
+            case SSL_ERROR_WANT_READ: // Quer ler
+                x->acaossl = 0;
+                x = x->Depois;
+                break;
+            case SSL_ERROR_WANT_WRITE: // Quer enviar
+                x->acaossl = 1;
+                x = x->Depois;
+                break;
+            default: // Ocorreu um erro qualquer
+              {
+                TVarServObj * x2 = x->Depois;
+                delete x;
+                x = x2;
+                continue;
+              }
+            } // switch
+        } // while
+        if (varObj == obj)
+            obj = obj->Depois;
+        else
+            obj = varObj;
+    } // for
+}
+
+//------------------------------------------------------------------------------
+// Gera evento
+void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
+{
+    bool prossegue = false;
+    if (b_objeto)
+    {
+        char mens[80];
+        sprintf(mens, "%s_socket", defvar+Instr::endNome);
+        prossegue = Instr::ExecIni(endobjeto, mens);
+    }
+    else if (endclasse)
+    {
+        char mens[80];
+        sprintf(mens, "%s_socket", defvar+Instr::endNome);
+        prossegue = Instr::ExecIni(endclasse, mens);
+    }
+    if (prossegue==false)
+    {
+        if (sslSocket)
+        {
+            SslShutdown(sslSocket);
+            SslFree(sslSocket);
+        }
+        close(localSocket);
+        return;
+    }
+        // Cria argumento: TVarSocket
+    Instr::ExecArgCriar(Instr::InstrSocket);
+    TVariavel * v = Instr::VarAtual;
+        // Cria argumento: índice
+    Instr::ExecArg(indice);
+        // Cria TObjSocket com o socket
+    TSocket * s = new TSocket(localSocket, sslSocket);
+        // Coloca TObjSocket em TVarSocket
+    v->end_socket->MudarSock(s);
+        // Executa
+    Instr::ExecX();
+    Instr::ExecFim();
 }
 
 //------------------------------------------------------------------------------
@@ -281,20 +410,49 @@ bool TVarServ::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Abre porta
+    int tipoabrir = 0;
     if (comparaZ(nome, "abrir")==0)
+        tipoabrir = 1;
+    else if (comparaZ(nome, "abrirssl")==0)
+        tipoabrir = 2;
+    if (tipoabrir)
     {
         if (Instr::VarAtual - v < 2)
             return false;
         int porta = v[2].getInt();
         const char * ender = v[1].getTxt();
-        if (porta<0 || porta>65535)
-            return false;
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVarInt(0))
-            return false;
-        Instr::VarAtual->setInt(Abrir(ender, porta));
+        if (porta < 0 || porta > 65535 ||
+                (tipoabrir == 2 && ssl_ctx_servidor==0))
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
     //printf("%s %d -> %d\n", ender, porta, Instr::VarAtual->getInt()); fflush(stdout);
-        return true;
+        modossl = (tipoabrir > 1);
+        int valor = Abrir(ender, porta);
+        return Instr::CriarVarInt(valor);
+    }
+// Abre biblioteca SSL
+    if (comparaZ(nome, "inissl")==0)
+    {
+        if (Instr::VarAtual - v < 2)
+            return false;
+        if (ssl_ctx_servidor)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("");
+        }
+        char arq_crt[0x100];
+        char arq_key[0x100];
+        copiastr(arq_crt, v[1].getTxt(), sizeof(arq_crt));
+        copiastr(arq_key, v[2].getTxt(), sizeof(arq_key));
+        if (!arqvalido(arq_crt))
+            return "Nome do arquivo CRT não é permitido";
+        if (!arqvalido(arq_key))
+            return "Nome do arquivo KEY não é permitido";
+        const char * err = AbreServidorSSL(arq_crt, arq_key);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(err ? err : "");
     }
     return false;
 }

@@ -23,7 +23,8 @@
 #include "procurar.h"
 #include "random.h"
 #include "misc.h"
-#include "shs.h"
+#include "sha1.h"
+#include "md5.h"
 
 // Funções predefinidas do programa interpretado
 // Vide TListaFunc, em instr.h
@@ -545,32 +546,68 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     case 7: // txtfiltro
         destino = txtFiltro(destino, txt, sizeof(mens));
         break;
-    case 8: // txtshs
+    case 8: // txtsha1bin
         {
-            SHS_INFO shsInfo;
-            shsInit(&shsInfo);
-            shsUpdate(&shsInfo, (unsigned char *)txt, strlen(txt));
-            shsFinal(&shsInfo);
-            for (int x=0; x<5; x++)
+            unsigned char digest[20];
+            SHA_CTX shaInfo;
+            SHAInit(&shaInfo);
+            SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
+            SHAFinal(digest, &shaInfo);
+            for (int x=0; x<20; x+=4)
             {
-                LONG1 codif = shsInfo.digest[x];
+                unsigned int valor = digest[x]   * 0x1000000+
+                                     digest[x+1] * 0x10000+
+                                     digest[x+2] * 0x100+
+                                     digest[x+3];
                 for (int y=0; y<5; y++)
                 {
-                    *destino++ = (codif & 0x3F) + 0x21;
-                    codif >>= 6;
+                    *destino++ = (valor & 0x3F) + 0x21;
+                    valor >>= 6;
                 }
             }
-            *destino++ = (shsInfo.digest[0]&3) +
-                         (shsInfo.digest[1]&3)*4 +
-                         (shsInfo.digest[2]&3)*16 + 0x21;
-            *destino++ = (shsInfo.digest[3]&3) +
-                         (shsInfo.digest[4]&3)*4 + 0x21;
+            *destino++ = (digest[0]&3) +
+                         (digest[4]&3)*4 +
+                         (digest[8]&3)*16 + 0x21;
+            *destino++ = (digest[12]&3) +
+                         (digest[16]&3)*4 + 0x21;
             break;
         }
-    case 9: // txtnome
+    case 9: // txtsha1
+        {
+            unsigned char digest[20];
+            SHA_CTX shaInfo;
+            SHAInit(&shaInfo);
+            SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
+            SHAFinal(digest, &shaInfo);
+            for (int x=0; x<20; x++)
+            {
+                int valor = digest[x] >> 4;
+                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+                valor = digest[x] & 0x0F;
+                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+            }
+            break;
+        }
+    case 10: // txtmd5
+        {
+            unsigned char digest[16];
+            cvs_MD5Context md5Info;
+            cvs_MD5Init(&md5Info);
+            cvs_MD5Update(&md5Info, (unsigned char *)txt, strlen(txt));
+            cvs_MD5Final(digest, &md5Info);
+            for (int x=0; x<16; x++)
+            {
+                int valor = digest[x] >> 4;
+                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+                valor = digest[x] & 0x0F;
+                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+            }
+            break;
+        }
+    case 11: // txtnome
         destino = txtNome(destino, txt, sizeof(mens));
         break;
-    case 10: // txtcod
+    case 12: // txtcod
         while (*txt && destino<mens+sizeof(mens)-2)
         {
             unsigned char ch = tabTXTCOD[*(unsigned char*)txt];
@@ -585,7 +622,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             txt++;
         }
         break;
-    case 11: // txtdec
+    case 13: // txtdec
         while (*txt && destino<mens+sizeof(mens)-1)
         {
             if (*txt!='@')
@@ -601,7 +638,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 break;
         }
         break;
-    case 12: // txtvis
+    case 14: // txtvis
         for (; *txt && destino<mens+sizeof(mens)-2; txt++)
             switch (*txt)
             {
@@ -624,7 +661,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 *destino++ = *txt;
             }
         break;
-    case 13: // txtinvis
+    case 15: // txtinvis
         for (; *txt && destino<mens+sizeof(mens)-1; txt++)
         {
             if (*txt != '\\')
@@ -649,7 +686,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             }
         }
         break;
-    case 14: // txturlcod
+    case 16: // txturlcod
       {
         bool ini = true;
         while (*txt && destino<mens+sizeof(mens)-3)
@@ -684,7 +721,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         }
         break;
       }
-    case 15: // txturldec
+    case 17: // txturldec
       {
         bool ini = true;
         while (*txt && destino<mens+sizeof(mens)-1)
@@ -740,14 +777,14 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         } // for
         break;
       }
-    case 16: // txte
+    case 18: // txte
         while (*txt && destino<mens+sizeof(mens)-1)
         {
             *destino = (*txt != '_' ? *txt : ' ');
             destino++, txt++;
         }
         break;
-    case 17: // txts
+    case 19: // txts
         while (*txt && destino<mens+sizeof(mens)-1)
         {
             *destino = (*txt != ' ' ? *txt : '_');

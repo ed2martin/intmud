@@ -615,7 +615,11 @@ bool TVarTelaTxt::Inic()
     if (Console==0)
         return true;
     if (!Console->Inic())
+    {
+        delete Console;
+        Console = 0;
         return false;
+    }
 // Acerta linha de edição
     Console->EnvTxt("\n", 1);    // Adiciona uma linha
     Console->CorTxt(CONSOLE_COR_LINHA); // Define frente branca e fundo azul

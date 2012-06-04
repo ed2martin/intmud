@@ -262,7 +262,7 @@ int TVarIntTempo::TempoEspera()
 #endif
     int menos = TempoMenos;
     int total = 0;
-    for (; menos<INTTEMPO_MAX && total<10; menos++,total++)
+    for (; menos<INTTEMPO_MAX && total<600; menos++,total++)
         if (VetMenos[menos])
             return total;
     return total;

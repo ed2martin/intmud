@@ -30,7 +30,7 @@
 #include "instr.h"
 #include "misc.h"
 #include "random.h"
-#include "shs.h"
+#include "sha1.h"
 
 //#define DEBUG // Mostrar diretórios e arquivos acessados pela função LIMPAR
 
@@ -93,16 +93,20 @@ void TVarSav::Senha(char * senhacodif, const char * senha, char fator)
     mens[0] = fator;
     memcpy(mens+1, senha, tam);
 // Codifica
-    SHS_INFO shsInfo;
-    shsInit(&shsInfo);
-    shsUpdate(&shsInfo, mens, tam);
-    shsFinal(&shsInfo);
+    unsigned char digest[20];
+    SHA_CTX shaInfo;
+    SHAInit(&shaInfo);
+    SHAUpdate(&shaInfo, mens, tam);
+    SHAFinal(digest, &shaInfo);
 // Anota na string
-    for (int a=0; a<5; a++)
+    for (int x=0; x<20; x+=4)
     {
-        LONG1 result = shsInfo.digest[a];
-        for (int b=0; b<5; result/=90,b++)
-            *senhacodif++ = (char)(result%90+33);
+        unsigned int valor = digest[x]   * 0x1000000+
+                             digest[x+1] * 0x10000+
+                             digest[x+2] * 0x100+
+                             digest[x+3];
+        for (int b=0; b<5; valor/=90,b++)
+            *senhacodif++ = (char)(valor%90+33);
     }
     *senhacodif = 0;
 }

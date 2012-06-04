@@ -9,6 +9,7 @@
  #include <netinet/in.h>
 #endif
 #include "var-socket.h"
+#include "ssl.h"
 
 #define SOCKET_REC 1024
 #define SOCKET_ENV 2048
@@ -18,12 +19,12 @@
 class TSocket : public TObjSocket /// Socket
 {
 public:
-    TSocket(int socknum);       ///< Construtor
+    TSocket(int socknum, SSL * sslnum); ///< Construtor
     ~TSocket();                 ///< Destrutor
     void Fechar();              ///< Socket fechou
 
     static void SockConfig(int socknum);
-    static TSocket * Conectar(const char * ender, int porta);
+    static TSocket * Conectar(const char * ender, int porta, bool ssl);
             ///< Cria objeto TSocket a partir de endereço e porta
             /**< @param ender  Endereço a conectar
              *   @param porta  Porta
@@ -35,17 +36,20 @@ public:
              *   @return Texto contendo o erro
              *   @note Próximas chamadas a essa função podem alterar
              *         a string original */
-    static int  Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
-    static void ProcEventos(int tempoespera, fd_set * set_entrada,
+    static void Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
+    static void ProcEventos(fd_set * set_entrada,
                                 fd_set * set_saida, fd_set * set_err);
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
+    void CriaSSL();
+            ///< Cria conexão SSL (variável sockssl) a partir do socket
+    bool Conectado();   ///< Retorna verdadeiro se estiver conectado
     bool EnvMens(const char * mensagem);
             ///< Envia mensagem conforme protocolo
             /**< @param mensagem Endereço dos bytes a enviar
              *   @return true se conseguiu enviar, false se não conseguiu */
     int  Variavel(char num, int valor);
-    const char * Endereco(bool remoto);
-            ///< Retorna o endereço local ou remoto da conexão
+    void Endereco(int num, char * mens, int total);
+            ///< Retorna uma informação da conexão, vide TObjSocket:Endereco
 private:
     void Processa(const char * buffer, int tamanho);
             ///< Processa dados recebidos em TSocket::ProcEventos
@@ -68,15 +72,12 @@ private:
              *   @param env  Se fechou enviando (true) ou recebendo (false) */
     int  sock;                  ///< Socket; menor que 0 se estiver fechado
     int  sockerro;              ///< Código de erro que fechou o socket
-    char proto;
-            ///< Protocolo (quando sock>=0)
-            /**< - 0 = conectando
-             *   - 1 = Telnet, só mensagens inteiras
-             *   - 2 = Telnet, recebe mensagens incompletas (sem o \\n)
-             *   - 3 = IRC
-             *   - 4 = Papovox */
+    SSL * sockssl;              ///< Se !=0, é o objeto da conexão segura
+    char proto; ///< Protocolo (quando sock>=0), vide TSocketProto
     char cores;                 ///< 0=sem 1=ao receber, 2=ao enviar, 3=com
-    unsigned char esperatelnet; ///< Para receber mensagens sem "\n"
+    char acaossl:1;             ///< O que fazer na conexão SSL
+            /**<  - 0 esperando dados para recv()
+             *    - 1 esperando dados para send() */
     char eventoenv:1;           ///< Se deve gerar evento _env
                                 /**< @note Caracteres de controle de Telnet
                                   *  não devem gerar eventos _env */

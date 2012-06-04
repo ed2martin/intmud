@@ -29,7 +29,7 @@ private:
     TIndiceObj * IndiceObj; ///< Qual variável está apontando
     int  TamTxt;            ///< Tamanho do texto ao avançar/voltar objeto
 
-friend class TIndiceObj;
+    friend class TIndiceObj;
 };
 
 //----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ private:
     char Nome[65];          ///< Texto da variável
     TIndiceItem * IndiceItem; ///< Primeiro indiceitem apontando para esse objeto
 
-friend class TIndiceItem;
+    friend class TIndiceItem;
 };
 
 //----------------------------------------------------------------------------

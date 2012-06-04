@@ -42,11 +42,12 @@
 #include "objeto.h"
 #include "instr.h"
 #include "misc.h"
+#include "sha1.h"
+#include "md5.h"
 
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou e recebeu
-
-#define TEMPO_TELNET 2
+//#define DEBUG_SSL    // Mostra informações de conexão SSL
 
 TSocket * TSocket::sockAtual = 0;
 TSocket * TSocket::sInicio = 0;
@@ -54,6 +55,19 @@ bool TSocket::boolenvpend = false;
 
 // Conexão de socket, vide também:
 // http://www.muq.org/~cynbe/ref/nonblocking-connects.html
+
+//----------------------------------------------------------------------------
+enum TSocketProto /// Valores de TSocket::proto
+{
+    spConnect1,  ///< Conectando, conexão normal
+    spConnect2,  ///< Conectando, conexão SSL
+    spSslConnect,///< Conectando via SSL - SslConnect
+    spSslAccept, ///< Recebendo conexão via SSL - SslAccept
+    spTelnet1,   ///< Telnet, só mensagens inteiras
+    spTelnet2,   ///< Telnet, recebe mensagens incompletas (sem o \\n)
+    spIRC,       ///< IRC
+    spPapovox    ///< Papovox
+};
 
 //------------------------------------------------------------------------------
 // Converter do IRC para Telnet
@@ -95,7 +109,7 @@ static const char desconvirc[] = {
     0 }; // 15
 
 //------------------------------------------------------------------------------
-TSocket * TSocket::Conectar(const char * ender, int porta)
+TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
 {
     struct sockaddr_in conSock;
     struct hostent *hnome;
@@ -150,9 +164,12 @@ TSocket * TSocket::Conectar(const char * ender, int porta)
         }
     }
 #endif
-    TSocket * s = new TSocket(conManip);
-    s->proto = 0;
+    TSocket * s = new TSocket(conManip, 0);
+    s->proto = (ssl ? spConnect2 : spConnect1);
     s->conSock = conSock;
+#ifdef DEBUG_SSL
+    if (ssl) { puts("CONECTADO"); fflush(stdout); }
+#endif
     return s;
 }
 
@@ -305,7 +322,7 @@ void TSocket::SockConfig(int localSocket)
 }
 
 //------------------------------------------------------------------------------
-TSocket::TSocket(int socknum)
+TSocket::TSocket(int socknum, SSL * sslnum)
 {
 #ifdef DEBUG_CRIAR
     printf("new TSocket(%d)\n", socknum); fflush(stdout);
@@ -318,6 +335,7 @@ TSocket::TSocket(int socknum)
     sInicio = this;
 // Acerta variáveis
     sock=socknum;
+    sockssl=sslnum;
     pontEnv=0;
     pontTelnet=0;
     pontESC=0;
@@ -325,9 +343,8 @@ TSocket::TSocket(int socknum)
     dadoRecebido=0;
     CorAtual=0x70;
     CorAnterior=0x70;
-    proto=1;
+    proto=spTelnet1;
     cores=0;
-    esperatelnet=0;
     eventoenv=false;
     ecotelnet=true;
     sockenvrec=0;
@@ -365,12 +382,50 @@ void TSocket::FecharSock(int erro, bool env)
         return;
     if (!env)
         EnvPend();
+    if (sockssl)
+    {
+#ifdef DEBUG_SSL
+        puts("SSL_SHUTDOWN"); fflush(stdout);
+#endif
+        SslShutdown(sockssl);
+        SslFree(sockssl);
+        sockssl = 0;
+    }
     close(sock);
     sock=-1;
     pontRec = 0;
     pontEnv = 0;
     sockerro = erro;
     sockenvrec = env;
+}
+
+//------------------------------------------------------------------------------
+void TSocket::CriaSSL()
+{
+    if (sockssl || sock<0)
+        return;
+    sockssl = SslNew(ssl_ctx_cliente);
+    SslSetFd(sockssl, sock);
+    acaossl = 0;
+#ifdef DEBUG_SSL
+    puts("SSL_NEW"); fflush(stdout);
+#endif
+}
+
+//------------------------------------------------------------------------------
+bool TSocket::Conectado()
+{
+    if (sock<0)
+        return false;
+    switch (proto)
+    {
+    case spTelnet1:
+    case spTelnet2:
+    case spIRC:
+    case spPapovox:
+        return true;
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -381,20 +436,48 @@ int TSocket::Variavel(char num, int valor)
     case 1: // proto
         if (sock<0)
             return 0;
-        if (valor>=0 && proto!=0)
+        if (valor >= 0)
         {
-            valor--;
-            if (valor<1) valor=1;
-            if (valor>4) valor=4;
-            if ((proto==2 ? 1 : proto) != (valor==2 ? 1 : valor))
+            bool mudar = false;
+            switch (proto)
             {
-                pontRec=0;
-                pontESC=0;
-                pontTelnet=0;
+            case spTelnet1:
+            case spTelnet2:
+            case spIRC:
+            case spPapovox:
+                if (valor<2) valor=2;
+                if (valor>5) valor=5;
+                switch (valor)
+                {
+                case 2:
+                    mudar = (proto!=spTelnet1 && proto!=spTelnet2);
+                    proto = spTelnet1;
+                    break;
+                case 3:
+                    mudar = (proto!=spTelnet1 && proto!=spTelnet2);
+                    proto = spTelnet2;
+                    break;
+                case 4:
+                    mudar = (proto!=spIRC);
+                    proto = spIRC;
+                    break;
+                case 5:
+                    mudar = (proto!=spPapovox);
+                    proto = spPapovox;
+                    break;
+                }
+                if (mudar)
+                    pontRec=0, pontESC=0, pontTelnet=0;
             }
-            proto=valor;
         }
-        return proto+1;
+        switch (proto)
+        {
+        case spTelnet1: return 2;
+        case spTelnet2: return 3;
+        case spIRC:     return 4;
+        case spPapovox: return 5;
+        }
+        return 1;
     case 2: // cores
         if (valor>=0)
             cores = (valor>3 ? 3 : valor);
@@ -409,7 +492,7 @@ int TSocket::Variavel(char num, int valor)
         }
         return (AFlooder!=0);
     case 4: // eco
-        if (proto!=1)
+        if (proto!=spTelnet1 && proto!=spTelnet2)
             return 1;
         if (valor>=0)
         {
@@ -426,35 +509,92 @@ int TSocket::Variavel(char num, int valor)
 }
 
 //------------------------------------------------------------------------------
-const char * TSocket::Endereco(bool remoto)
+void TSocket::Endereco(int num, char * mens, int tam)
 {
+    *mens = 0;
     if (sock<0)
-        return "";
-    struct sockaddr_in conSock;
+        return;
+    if (num < 2)
+    {
+        struct sockaddr_in conSock;
 #ifdef __WIN32__
-    int tam = sizeof(conSock);
+        int tam = sizeof(conSock);
 #else
-    ACCEPT_TYPE_ARG3 tam = sizeof(conSock);
+        ACCEPT_TYPE_ARG3 tam = sizeof(conSock);
 #endif
-    tam = sizeof(struct sockaddr);
-    int r;
-    if (remoto)
-        r = getpeername(sock, (struct sockaddr *)&conSock, &tam);
-    else
-        r = getsockname(sock, (struct sockaddr *)&conSock, &tam);
-    if (r>=0)
-        return inet_ntoa(conSock.sin_addr);
-    return "";
+        tam = sizeof(struct sockaddr);
+        int r;
+        if (num)
+            r = getpeername(sock, (struct sockaddr *)&conSock, &tam);
+        else
+            r = getsockname(sock, (struct sockaddr *)&conSock, &tam);
+        if (r>=0)
+            copiastr(mens, inet_ntoa(conSock.sin_addr), tam);
+        return;
+    }
+    if (num < 4)
+    {
+    // Obtém objeto X509
+        if (sockssl==0 || sock<0)
+            return;
+        X509 * obj509 = SslGetPeerCertificate(sockssl);
+        if (obj509==0)
+            return;
+    // Obtém o tamanho do certificado
+        int total = SslX509i2d(obj509, 0);
+        if (total<=0)
+        {
+            SslX509free(obj509);
+            return;
+        }
+    // Obtém o certificado
+        unsigned char * buf = new unsigned char[total];
+        unsigned char * p = buf;
+        SslX509i2d(obj509, &p);
+    // Obtém o hash
+        char texto[50];
+        unsigned char digest[20];
+        if (num == 2)
+        {
+            cvs_MD5Context md5Info;
+            cvs_MD5Init(&md5Info);
+            cvs_MD5Update(&md5Info, buf, total);
+            cvs_MD5Final(digest, &md5Info);
+            total = 16;
+        }
+        else
+        {
+            SHA_CTX shaInfo;
+            SHAInit(&shaInfo);
+            SHAUpdate(&shaInfo, buf, total);
+            SHAFinal(digest, &shaInfo);
+            total = 20;
+        }
+    // Monta o texto
+        for (int x=0; x<total; x++)
+        {
+            int valor = digest[x] >> 4;
+            texto[x*2] = (valor<10 ? valor+'0' : valor+'a'-10);
+            valor = digest[x] & 0x0F;
+            texto[x*2+1] = (valor<10 ? valor+'0' : valor+'a'-10);
+        }
+        texto[total*2] = 0;
+        copiastr(mens, texto, tam);
+    // Desaloca os recursos
+        delete[] buf;
+        SslX509free(obj509);
+        return;
+    }
 }
 
 //------------------------------------------------------------------------------
 bool TSocket::EnvMens(const char * mensagem)
 {
-    if (sock<0 || proto==0)
+    if (sock<0)
         return false;
 
 // Papovox
-    if (proto==4)
+    if (proto==spPapovox)
     {
         char mens[SOCKET_ENV];
         char * ini = mens;
@@ -493,6 +633,8 @@ bool TSocket::EnvMens(const char * mensagem)
 // Sem cores
     if ((cores&2)==0)
     {
+        if (!Conectado())
+            return false;
         char mens[SOCKET_ENV];
         char * destino = mens;
         for (; *mensagem; mensagem++)
@@ -518,7 +660,7 @@ bool TSocket::EnvMens(const char * mensagem)
     }
 
 // Telnet
-    else if (proto==1 || proto==2)
+    if (proto==spTelnet1 || proto==spTelnet2)
     {
         char mens[SOCKET_ENV];
         char * destino = mens;
@@ -593,7 +735,7 @@ bool TSocket::EnvMens(const char * mensagem)
     }
 
 // IRC
-    if (proto==3)
+    if (proto==spIRC)
     {
         char mens[SOCKET_ENV];
         char * destino = mens;
@@ -705,27 +847,53 @@ void TSocket::EnvPend()
         putchar(bufEnv[x]);
     printf("\"\n");
 #endif
-#ifdef __WIN32__
-    resposta=send(sock, bufEnv, pontEnv, 0);
-    //if (resposta==0)
-    //    resposta=-1, coderro=0;
-    //else
-    if (resposta==SOCKET_ERROR)
+    if (sockssl)
     {
-        coderro = WSAGetLastError();
-        resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
-    }
-#else
-    resposta=send(sock, bufEnv, pontEnv, 0);
-    if (resposta<=0)
-    {
-        coderro = errno;
-        if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
-            resposta=0;
-        else if (resposta==0)
-            resposta=-1,coderro=ECONNRESET;
-    }
+        resposta=SslWrite(sockssl, bufEnv, pontEnv);
+        if (resposta <= 0)
+            switch (SslGetError(sockssl, resposta))
+            {
+            case SSL_ERROR_NONE:
+                resposta = 0;
+                break;
+            case SSL_ERROR_WANT_READ:
+                resposta = 0, acaossl = 0;
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                resposta = 0, acaossl = 1;
+                break;
+            default:
+                resposta = -1;
+            }
+#ifdef DEBUG_SSL
+        printf("SSL_WRITE = %d (acaossl=%d)\n", resposta, acaossl);
+        fflush(stdout);
 #endif
+    }
+    else
+    {
+#ifdef __WIN32__
+        resposta=send(sock, bufEnv, pontEnv, 0);
+        //if (resposta==0)
+        //    resposta=-1, coderro=0;
+        //else
+        if (resposta==SOCKET_ERROR)
+        {
+            coderro = WSAGetLastError();
+            resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
+        }
+#else
+        resposta=send(sock, bufEnv, pontEnv, 0);
+        if (resposta<=0)
+        {
+            coderro = errno;
+            if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
+                resposta=0;
+            else if (resposta==0)
+                resposta=-1,coderro=ECONNRESET;
+        }
+#endif
+    }
     if (resposta<0)
         FecharSock(coderro, 1);
     else if (resposta>=(int)pontEnv)
@@ -745,7 +913,7 @@ void TSocket::SairPend()
 }
 
 //------------------------------------------------------------------------------
-int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
+void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
 {
     while (true)
     {
@@ -754,12 +922,6 @@ int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
     // Verifica se algum socket fechou
         for (TSocket * obj = sInicio; obj;)
         {
-        // Verifica se socket fechado
-            if (obj->proto==0)
-            {
-                obj=obj->sDepois;
-                continue;
-            }
         // Verifica se tem dados pendentes para transmitir
             bool ev_env = false;
             if (obj->pontEnv)
@@ -786,6 +948,12 @@ int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
                 obj=sockAtual;  // Passa para o próximo objeto
                 continue;
             }
+        // Verifica se socket fechado
+            if (!obj->Conectado())
+            {
+                obj=obj->sDepois;
+                continue;
+            }
         // Verifica evento env
             if (ev_env)
             {
@@ -801,36 +969,42 @@ int TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
         if (!boolenvpend)
             break;
     }
-    int tempo = 0x100;
     for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
     {
-#ifdef __WIN32__
-        if (obj->proto)
-            FD_SET(obj->sock, set_entrada);
-        else
-            FD_SET(obj->sock, set_err);
-#else
-        FD_SET(obj->sock, set_entrada);
-#endif
-        if (obj->pontEnv || obj->proto==0)
-            FD_SET(obj->sock, set_saida);
-        if (obj->proto==2 && // É telnet, pode receber mensagens parciais
-            obj->pontRec!=0) // Buffer de recepção não está vazio
+        if (obj->proto == spConnect1 || obj->proto == spConnect2)
         {
-            int t = TEMPO_TELNET - obj->esperatelnet;
-            if (tempo > t)
-                tempo = t;
+#ifdef __WIN32__
+            FD_SET(obj->sock, set_err);
+            FD_SET(obj->sock, set_saida);
+#else
+            FD_SET(obj->sock, set_entrada);
+            FD_SET(obj->sock, set_saida);
+#endif
+        }
+        else if (obj->sockssl)
+        {
+#ifdef DEBUG_SSL
+            printf("SSL_SELECT (acaossl=%d)\n", obj->acaossl);
+            fflush(stdout);
+#endif
+            if (obj->acaossl)
+                FD_SET(obj->sock, set_saida);
+            else
+                FD_SET(obj->sock, set_entrada);
+        }
+        else
+        {
+            FD_SET(obj->sock, set_entrada);
+            if (obj->pontEnv)
+                FD_SET(obj->sock, set_saida);
         }
     }
-    return (tempo>0 ? tempo : 1);
 }
 
 //------------------------------------------------------------------------------
-void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
+void TSocket::ProcEventos(fd_set * set_entrada,
                           fd_set * set_saida, fd_set * set_err)
 {
-    if (tempoespera>100)
-        tempoespera=100;
     for (TSocket * obj = sInicio; obj; )
     {
     // Verifica se socket aberto
@@ -840,7 +1014,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
             continue;
         }
     // Verifica socket conectando
-        if (obj->proto==0)
+        if (obj->proto==spConnect1 || obj->proto==spConnect2)
         {
             int coderro = 0;
 #ifdef __WIN32__
@@ -859,7 +1033,7 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
                     if (coderro==0)
                         coderro=-1;
                 }
-                else if (coderro==0) // Time out no select
+                else if (coderro==0) // Timeout no select
                 {
                     obj = obj->sDepois;
                     continue;
@@ -892,73 +1066,130 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
                     coderro = err;
             }
 #endif
-        // Conseguiu conectar
-            if (coderro==0)
+        // Erro ao conectar
+            if (coderro)
+            {
+                sockAtual = obj;
+                char mens[80] = "Erro ao conectar";
+                if (coderro != -1)
+                    copiastr(mens, TxtErro(coderro), sizeof(mens));
+                if (obj->FuncEvento("err", mens))
+                    delete obj; // Apaga objeto se não foi apagado
+                                // socket é fechado ao apagar objeto
+                obj = sockAtual;
+                continue;
+            }
+        // Conseguiu conectar, checa se é conexão normal (não SSL)
+            if (obj->proto!=spConnect2)
             {
                 sockAtual = obj->sDepois;
-                obj->proto = 2;
+                obj->proto = spTelnet1;
                 obj->FuncEvento("con", 0);
                 obj = sockAtual;
                 continue;
             }
+        // Conexão SSL
+            obj->proto = spSslConnect;
+            obj->CriaSSL();
         // Erro ao conectar
+        }
+    // Verifica conexão SSL
+        if (obj->proto==spSslConnect)
+        {
+            int resposta = SslConnect(obj->sockssl);
+            if (resposta > 0)
+            {
+                sockAtual = obj->sDepois;
+                obj->proto = spTelnet1;
+                obj->FuncEvento("con", 0);
+                obj = sockAtual;
+                continue;
+            }
+            switch (SslGetError(obj->sockssl, resposta))
+            {
+            case SSL_ERROR_WANT_READ:
+                resposta = 0, obj->acaossl = 0;
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                resposta = 0, obj->acaossl = 1;
+                break;
+            default:
+                resposta = -1;
+            }
+#ifdef DEBUG_SSL
+            printf("SSL_CONNECT = %d (acaossl=%d)\n", resposta, obj->acaossl);
+            fflush(stdout);
+#endif
+            if (resposta >= 0) // Conexão pendente
+            {
+                obj = obj->sDepois;
+                continue;
+            }
             sockAtual = obj;
-            char mens[80] = "Erro ao conectar";
-            if (coderro != -1)
-                copiastr(mens, TxtErro(coderro), sizeof(mens));
-            if (obj->FuncEvento("err", mens))
+            if (obj->FuncEvento("err", "Erro ao negociar SSL"))
                 delete obj; // Apaga objeto se não foi apagado
                             // socket é fechado ao apagar objeto
             obj = sockAtual;
             continue;
         }
-    // Verifica se tem dados pendentes para ler
-        if (FD_ISSET(obj->sock, set_entrada)==0)
+    // Lê e processa dados pendentes
+        if (obj->sockssl==0 && FD_ISSET(obj->sock, set_entrada)==0)
         {
-            if (obj->proto!=2 || // Não recebe mensagens parciais
-                obj->pontRec==0) // Buffer de recepção está vazio
-                obj->esperatelnet=0, obj = obj->sDepois;
-            else
-            {
-                obj->esperatelnet += tempoespera;
-                if (obj->esperatelnet < TEMPO_TELNET) // Esperando mensagem
-                    obj = obj->sDepois;
-                else // Tempo demais esperando mensagem
-                {
-                    sockAtual = obj->sDepois;
-                    obj->EventoMens(false); // Envia mensagem
-                    obj = sockAtual;
-                }
-            }
+            obj = obj->sDepois;
             continue;
         }
-        obj->esperatelnet=0; // Zera tempo de espera de Telnet
-    // Lê e processa dados pendentes
         while (true)
         {
         // Lê do socket
             char mens[4096];
             int resposta, coderro=0;
-#ifdef __WIN32__
-            resposta = recv(obj->sock, mens, sizeof(mens), 0);
-            if (resposta==0)
-                resposta=-1;
-            else if (resposta==SOCKET_ERROR)
+            if (obj->sockssl)
             {
-                coderro = WSAGetLastError();
-                resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
-            }
-#else
-            resposta = recv(obj->sock, mens, sizeof(mens), 0);
-            if (resposta<=0)
-            {
-                coderro = errno;
-                if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
-                    resposta=0;
-                else
-                    resposta=-1;
-            }
+                coderro = 0;
+                resposta=SslRead(obj->sockssl, mens, sizeof(mens));
+                if (resposta <= 0)
+                    switch (SslGetError(obj->sockssl, resposta))
+                    {
+                    case SSL_ERROR_NONE:
+                        resposta = 0;
+                        break;
+                    case SSL_ERROR_WANT_READ:
+                        resposta = 0, obj->acaossl = 0;
+                        break;
+                    case SSL_ERROR_WANT_WRITE:
+                        resposta = 0, obj->acaossl = 1;
+                        break;
+                    default:
+                        resposta = -1;
+                    }
+#ifdef DEBUG_SSL
+                printf("SSL_READ = %d (acaossl=%d)\n", resposta, obj->acaossl);
+                fflush(stdout);
 #endif
+            }
+            else
+            {
+#ifdef __WIN32__
+                resposta = recv(obj->sock, mens, sizeof(mens), 0);
+                if (resposta==0)
+                    resposta=-1;
+                else if (resposta==SOCKET_ERROR)
+                {
+                    coderro = WSAGetLastError();
+                    resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
+                }
+#else
+                resposta = recv(obj->sock, mens, sizeof(mens), 0);
+                if (resposta<=0)
+                {
+                    coderro = errno;
+                    if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
+                        resposta=0;
+                    else
+                        resposta=-1;
+                }
+#endif
+            }
         // Verifica se socket fechou
             if (resposta<0)
             {
@@ -967,20 +1198,30 @@ void TSocket::ProcEventos(int tempoespera, fd_set * set_entrada,
                 break;
             }
         // Processa dados recebidos
-            sockAtual = obj;
-            obj->Processa(mens, resposta);
-        // Verifica se objeto socket foi apagado
-            if (obj != sockAtual)
+            if (resposta)
             {
-                obj = sockAtual;
-                break;
+                sockAtual = obj;
+                obj->Processa(mens, resposta);
+                if (obj != sockAtual) // Se objeto socket foi apagado
+                {
+                    obj = sockAtual;
+                    break;
+                }
             }
         // Verifica se fim da leitura
-            if (resposta != sizeof(mens))
+            if (resposta == sizeof(mens))
+                continue;
+            if (obj->proto == spTelnet2 && obj->pontRec)
             {
-                obj = obj->sDepois;
-                break;
+                sockAtual = obj;
+                if (!obj->EventoMens(false))
+                {
+                    obj = sockAtual;
+                    break;
+                }
             }
+            obj = obj->sDepois;
+            break;
         } // while (true)
     } // for
 }
@@ -995,7 +1236,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
             (*buffer==13 && dadoRecebido==10))
             buffer++, tamanho--, dadoRecebido=0;
     // Protocolo Telnet
-        if (proto==1 || proto==2)
+        if (proto==spTelnet1 || proto==spTelnet2)
         {
             char dado;
             while (tamanho)
@@ -1186,7 +1427,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
         }
 
     // Protocolo IRC
-        else if (proto==3)
+        else if (proto==spIRC)
         {
             char dado;
             while (tamanho)
@@ -1270,7 +1511,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
             }
         }
     // Protocolo Papovox
-        else if (proto==4)
+        else if (proto==spPapovox)
         {
             dadoRecebido=0;
             for (; pontRec<3 && tamanho>0; tamanho--,buffer++) // Cabeçalho
@@ -1312,7 +1553,7 @@ bool TSocket::EventoMens(bool completo)
     char * fim = texto + sizeof(texto) - 6;
 
 // Prepara - Telnet e IRC
-    if (proto>=1 && proto<=3)
+    if (proto==spTelnet1 || proto==spTelnet2 || proto==spIRC)
     {
         if (cores&1) // Com cor
         {
@@ -1354,12 +1595,12 @@ bool TSocket::EventoMens(bool completo)
         else // Sem cor
             for (unsigned int x=0; x<pontRec && dest<fim; x+=2)
                 *dest++ = bufRec[x];
-        if (proto==3) // IRC
+        if (proto==spIRC) // IRC
             CorAtual = 0x70;
         *dest=0;
     }
 // Prepara - Papovox
-    else if (proto==4)
+    else if (proto==spPapovox)
     {
         int mensagem = 3+(unsigned char)bufRec[1] // Tamanho da mensagem
                     +((unsigned char)bufRec[2]<<8);
@@ -1369,9 +1610,12 @@ bool TSocket::EventoMens(bool completo)
                 *dest++ = bufRec[x];
         *dest=0;
     }
-// Protocolo desconhecido
+// Protocolo desconhecido ou não está conectado
     else
-        assert(0);
+    {
+        pontRec = 0;
+        return false;
+    }
 
 // Acerta variáveis
     pontRec=0;
@@ -1380,7 +1624,7 @@ bool TSocket::EventoMens(bool completo)
 #endif
 
 // Anti-flooder
-    if (AFlooder) // Verifica se anti-flooder ativado
+    if (AFlooder && completo) // Verifica se anti-flooder ativado
     {
         if (AFlooder >= TempoIni + 60) // Condição de flooder
             return true;
