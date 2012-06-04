@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.8.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.9.
 
 
 1. SOBRE O INTMUD
@@ -691,14 +691,19 @@ x[y] = 20 # É o mesmo que: x_teste = 20
 
 Sintaxe: <nome da classe>:<nome da variável ou função>
 
-São usados para acessar uma variável ou função de uma classe específica, como
-se estivesse definida na classe em que foi chamada.
+São usados para acessar uma variável ou função de uma classe específica,
+como se estivesse definida na classe em que foi chamada.
 
-Exemplo:
-item:luminosidade(10)
-Executa função luminosidade da classe item, como se não pertencesse a outra
-classe. Em outras palavras, quando a função é chamada, o objeto 'este'
-permanece o mesmo.
+classe misc
+func xy
+y = x * 2
+
+classe teste
+const x = 2
+int8 y
+func f1
+y = x * 3 # Aqui 'y' passa a ser 6
+misc:xy # Aqui 'y' passa a ser 4 (faz o mesmo que 'y=x*2')
 
 9.10. Um ponto
 
@@ -2725,7 +2730,7 @@ Endereço IP local.
 
 31.8. abrir(<endereço>, <porta>)
 Tenta conectar-se a um endereço.
-Após conectar, faz proto=3 e chama o evento _con (vide abaixo).
+Após conectar, 'proto' passa a ser 3 e o evento _con é chamado (vide abaixo).
 Retorna 1 se conexão em progresso ou 0 se ocorreu erro
 (0 geralmente significa endereço inválido)
 
@@ -2816,7 +2821,7 @@ que nesse caso serão 'x.key' e 'x.crt'.
 Eventos:
 
 32.5. <nomedavariável>_socket
-arg0 = socket correspondente à conexão (com proto=2)
+arg0 = socket correspondente à conexão (com a variável 'proto' sendo 2)
 arg1 = índice da variável vetor, se não for vetor arg1=0
 
 Exemplo de uso com socket:

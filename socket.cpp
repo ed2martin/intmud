@@ -1083,7 +1083,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             if (obj->proto!=spConnect2)
             {
                 sockAtual = obj->sDepois;
-                obj->proto = spTelnet1;
+                obj->proto = spTelnet2;
                 obj->FuncEvento("con", 0);
                 obj = sockAtual;
                 continue;
@@ -1100,7 +1100,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             if (resposta > 0)
             {
                 sockAtual = obj->sDepois;
-                obj->proto = spTelnet1;
+                obj->proto = spTelnet2;
                 obj->FuncEvento("con", 0);
                 obj = sockAtual;
                 continue;
