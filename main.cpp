@@ -292,8 +292,8 @@ int main(int argc, char *argv[])
         TVarIntTempo::ProcEventos(espera);
 
     // Chama eventos serv e socket
-        TVarServ::ProcEventos(&set_entrada);
-        TSocket::ProcEventos(espera, &set_entrada, &set_saida, &set_err);
+        TVarServ::ProcEventos(&set_entrada, espera);
+        TSocket::ProcEventos(&set_entrada, &set_saida, &set_err);
 
     // Chama eventos de arqsav
         TVarSav::ProcEventos(espera);
@@ -312,14 +312,14 @@ int main(int argc, char *argv[])
         espera = TVarLog::TempoEspera(espera);
 
     // Prepara variáveis para select()
-    // Acerta tempo de espera conforme TSocket
+    // Acerta tempo de espera conforme TVarServ
         FD_ZERO(&set_entrada);
         FD_ZERO(&set_saida);
         FD_ZERO(&set_err);
-        TVarServ::Fd_Set(&set_entrada);
-        int esp = TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
-        if (espera>esp)
-            espera=esp;
+        TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
+        int esp = TVarServ::Fd_Set(&set_entrada, &set_saida);
+        if (espera > esp)
+            espera = esp;
 
     // Processamento pendente no console
         TVarTelaTxt::ProcFim();
@@ -332,8 +332,8 @@ int main(int argc, char *argv[])
 
     // Acerta tempo de espera conforme TVarIntTempo
         esp = TVarIntTempo::TempoEspera();
-        if (espera>esp)
-            espera=esp;
+        if (espera > esp)
+            espera = esp;
 
     // Acerta tempo de espera conforme TVarSavDir
         if (espera>10 && TVarSavDir::ChecaPend())

@@ -26,7 +26,6 @@
 //#include "config.h"
 #include "misc.h"
 #include "instr.h"
-#include "shs.h"
 
 unsigned long TempoIni;
 char * arqnome = 0;

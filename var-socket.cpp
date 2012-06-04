@@ -81,9 +81,9 @@ void TObjSocket::RetiraVarSocket()
 }
 
 //------------------------------------------------------------------------------
-const char * TObjSocket::Endereco(bool remoto)
+void TObjSocket::Endereco(int num, char * mens, int total)
 {
-    return "";
+    *mens = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -354,13 +354,6 @@ void TVarSocket::Igual(TVarSocket * v)
 //------------------------------------------------------------------------------
 bool TVarSocket::Func(TVariavel * v, const char * nome)
 {
-// Fecha Socket
-    if (comparaZ(nome, "fechar")==0)
-    {
-        if (Socket)
-            Socket->Fechar();
-        return false;
-    }
 // Envia mensagem
     if (comparaZ(nome, "msg")==0)
     {
@@ -377,7 +370,12 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         return Instr::CriarVarInt(enviou);
     }
 // Conecta
+    int tipoabrir = 0;
     if (comparaZ(nome, "abrir")==0)
+        tipoabrir = 1;
+    else if (comparaZ(nome, "abrirssl")==0)
+        tipoabrir = 2;
+    if (tipoabrir)
     {
         MudarSock(0);
         if (Instr::VarAtual - v < 2)
@@ -387,24 +385,49 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 #ifdef DEBUG_MSG
         printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
 #endif
-        TSocket * s = TSocket::Conectar(ender, porta);
+        if (tipoabrir == 2)
+        {
+            const char * err = AbreClienteSSL();
+            if (err)
+            {
+                Instr::ApagarVar(v);
+                return Instr::CriarVarInt(0);
+            }
+        }
+        TSocket * s = TSocket::Conectar(ender, porta, tipoabrir==2);
         if (s)
             MudarSock(s);
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(s!=0);
     }
+// Fecha Socket
+    if (comparaZ(nome, "fechar")==0)
+    {
+        if (Socket)
+            Socket->Fechar();
+        return false;
+    }
 // Endereço IP
-    if (comparaZ(nome, "ip")==0 || comparaZ(nome, "iplocal")==0)
+    int x = 0;
+    if (comparaZ(nome, "iplocal")==0)
+        x = 1;
+    else if (comparaZ(nome, "ip")==0)
+        x = 2;
+    else if (comparaZ(nome, "txtmd5")==0)
+        x = 3;
+    else if (comparaZ(nome, "txtsha1")==0)
+        x = 4;
+    if (x)
     {
         char mens[50];
         *mens=0;
         if (Socket)
-            copiastr(mens, Socket->Endereco(nome[2]==0));
+            Socket->Endereco(x-1, mens, sizeof(mens));
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(mens);
     }
 // Variáveis
-    int x = 0;
+    x = 0;
     if (comparaZ(nome, "proto")==0)
         x = SocketProto;
     else if (comparaZ(nome, "cores")==0)
@@ -420,6 +443,13 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v+1);
         Instr::VarAtual->numfunc = x;
         return true;
+    }
+// Abre biblioteca SSL
+    if (comparaZ(nome, "inissl")==0)
+    {
+        const char * err = AbreClienteSSL();
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(err ? err : "");
     }
 // Função ou variável desconhecida
     return false;

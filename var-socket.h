@@ -48,9 +48,15 @@ protected:
                      *  @param valor Novo valor, se for >= 0
                      *  @return valor atual da variável
                      */
-    virtual const char * Endereco(bool remoto);
-                    ///< Retorna o endereço local ou remoto da conexão
-
+    virtual void Endereco(int num, char * mens, int total);
+                    ///< Anota uma informação da conexão
+                    /**< @param num O que informar
+                     *    - 0 = endereço da conexão local
+                     *    - 1 = endereço da conexão remota
+                     *    - 2 = assinatura MD5
+                     *    - 3 = assinatura SHA1
+                     *   @param mens Aonde colocar o texto
+                     *   @param total Tamanho do buffer em mens */
     void RetiraVarSocket(); ///< Retira objeto da lista ligada de TVarSocket
     void FuncFechou(const char * txt);
                     ///< Executa função _fechou

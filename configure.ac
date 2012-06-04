@@ -11,6 +11,26 @@ AM_CONFIG_HEADER([config.h])
 AC_PROG_CXX
 AC_PROG_CC
 
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([sys/types.h sys/socket.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+
+# Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_MEMCMP
+AC_CHECK_FUNCS([dup2 memset strerror getcwd])
+AC_FUNC_CLOSEDIR_VOID
+AC_HEADER_DIRENT
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_ACCEPT_ARGTYPES
+AC_TYPE_SIGNAL
+AC_TYPE_SIZE_T
+
 # Checks for libraries.
 AC_CHECK_LIB(socket, getsockopt)
 
@@ -22,11 +42,15 @@ AC_TRY_COMPILE(,[
 #ifdef __MINGW32__
 #error MingW32 detected, adding -lws2_32 and -lwsock32 to LIBS
 #endif
-],
-AC_MSG_RESULT(no),[
+],[
+AC_MSG_RESULT(no)
+dnl dlopen on libdl
+AC_SEARCH_LIBS([dlopen], [dl dld], [], [
+  AC_MSG_ERROR([unable to find the dlopen() function])
+])
+],[
 AC_MSG_RESULT(yes)
 LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -mms-bitfields -mwindows -static-libgcc -static-libstdc++"
-SKSTREAM_EXTRA_LIBS="$SKSTREAM_EXTRA_LIBS -lws2_32 -lwsock32 -static-libgcc -static-libstdc++"
 ])
 
 dnl from: http://fisheye.globus.org/browse/~raw,r=1.5/GlobusToolkit/ogsa-c/tools/libxml25/configure.in
@@ -59,26 +83,6 @@ AC_TRY_COMPILE2([
 AC_DEFINE_UNQUOTED(SOCK_SOCKLEN_T, $SOCK_SOCKLEN_T, [Determine what socket length
 (socklen_t) data type is])
 
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
-AC_CHECK_HEADERS([sys/types.h sys/socket.h])
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_CONST
-
-# Checks for library functions.
-AC_FUNC_FORK
-AC_FUNC_MEMCMP
-AC_CHECK_FUNCS([dup2 memset strerror getcwd])
-AC_FUNC_CLOSEDIR_VOID
-AC_HEADER_DIRENT
-AC_FUNC_SELECT_ARGTYPES
-AC_FUNC_ACCEPT_ARGTYPES
-AC_TYPE_SIGNAL
-AC_TYPE_SIZE_T
 
 AC_PROG_INSTALL
 AC_CONFIG_FILES([Makefile])

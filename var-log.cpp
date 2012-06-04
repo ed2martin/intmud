@@ -73,14 +73,14 @@ int TVarLog::TempoEspera(int tempodecorrido)
                 obj->pontlog = 0;
             }
         Tempo=20;
-        return 100;
+        return 600;
     }
 // Obtém quanto tempo para gravar dados pendentes
     for (TVarLog * obj = Inicio; obj; obj=obj->Depois)
         if (obj->pontlog)
             return Tempo;
     Tempo=20;
-    return 100;
+    return 600;
 }
 
 //------------------------------------------------------------------------------
