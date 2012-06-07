@@ -58,27 +58,30 @@ func escr
   senao (sala = dir(arg0)) == nulo
     arg0.msg("Não é possível seguir nessa direção")
   senao
-    mudasala(arg0, sala)
+    mudasalatxt(arg0, sala)
+
+func mudasalatxt # Muda de sala avisando que personagem saiu e entrou
+# arg0=personagem, arg1=nova sala
+  $mens.p(arg0)
+  $mens.mvis2("", m_sai)
+  mudasala(arg0, arg1)
+  $mens.mvis2("", m_entra)
 
 func mudasala # Muda de sala
 # arg0=personagem, arg1=nova sala
-  se arg1
-    $mens.p(arg0)
-    $mens.mvis2("", m_sai)
-    arg0.alvo = nulo
-    arg0.dono = arg1
-    $mens.mvis2("", m_entra)
-    arg0.t_aguarde = dono.terreno
-    arg0.atkrec.remove
-    arg0.animal.0.atkrec.remove
-    arg0.animal.2.atkrec.remove
-    arg0.animal.3.atkrec.remove
-    arg0.animal.4.atkrec.remove
-    arg0.animal.5.atkrec.remove
-    arg0.animal.6.atkrec.remove
-    arg0.animal.7.atkrec.remove
-    arg0.animal.8.atkrec.remove
-    arg0.animal.9.atkrec.remove
+  arg0.alvo = nulo
+  arg0.dono = arg1
+  arg0.t_aguarde = arg1.terreno
+  arg0.atkrec.remove
+  arg0.animal.0.atkrec.remove
+  arg0.animal.2.atkrec.remove
+  arg0.animal.3.atkrec.remove
+  arg0.animal.4.atkrec.remove
+  arg0.animal.5.atkrec.remove
+  arg0.animal.6.atkrec.remove
+  arg0.animal.7.atkrec.remove
+  arg0.animal.8.atkrec.remove
+  arg0.animal.9.atkrec.remove
 
 
 classe cmd_n

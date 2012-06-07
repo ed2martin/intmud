@@ -36,7 +36,8 @@ func escr # Atacar alguém
   fimse
   se r.pacifico
     arg0.msg(r.nome + " não quer brigar.")
-    ret
+  senao arg0.jog && r.jog && dono.area_luta == 1
+    arg0.msg(r.nome + " é jogador e aqui não é uma arena.")
   senao !exevento(este, arg0, r)
     listaobj l
     l.addfim(arg0.persobat.dentro2, arg0.dono, arg0.persobat)
