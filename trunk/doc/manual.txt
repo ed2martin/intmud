@@ -21,11 +21,12 @@ IntMUD (Interpretador MUD)
 12. Identificadores comum e sav
 13. Vetores
 14. Operadores
-14.1. Lista de operadores
-14.2. Precedência de operadores
-14.3. Operadores ? e :
-14.4. Conversão de tipos em operadores binários
-14.5. Operadores de bit
+14.1. Verdadeiro e falso
+14.2. Lista de operadores
+14.3. Precedência de operadores
+14.4. Operadores ? e :
+14.5. Conversão de tipos em operadores binários
+14.6. Operadores de bit
 15. Instruções de controle de fluxo
 16. Lista de funções
 16.1. Funções chamadas pelo programa
@@ -67,7 +68,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.9.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.10.
 
 
 1. SOBRE O INTMUD
@@ -709,14 +710,24 @@ misc:xy # Aqui 'y' passa a ser 4 (faz o mesmo que 'y=x*2')
 
 9.10. Um ponto
 
-Sintaxe:
-<nome1>.<nome2>
+Frequentemente variáveis e objetos possuem outras variáveis e funções,
+e para usá-las, deve-se escrever o caminho completo até elas.
+São dois ou mais nomes separados por um ponto. Exemplo, se A possui B,
+que por sua vez possui C, para acessar 'C' escreva 'A.B.C'.
 
-Significa chamar <nome2> de <nome1>. O resultado depende muito do contexto,
-de como está definido <nome1> e <nome2>.
+Outros exemplos:
 
-Exemplo, a palavra este corresponde ao objeto atual. Portanto, este.abs
-significa a função ou variável abs do objeto.
+func teste
+este # É o objeto atual
+este.x # É a variável ou função 'x' do objeto atual
+x # É o mesmo que 'este.x', porque não há uma variável 'x' na função
+ref r # 'r' é um tipo de variável que corresponde a um objeto
+r = este # 'r' é o objeto atual
+r.y # É o mesmo que 'este.y'
+telatxt t # 't' é uma variável do tipo 'telatxt'
+t.msg("oi\n") # Chama a função 'msg' da variável 't'
+r.x.y # Significa 'y', que pertence a 'x', que por sua vez pertence a 'r'
+$teste.x # Variável 'x' do primeiro objeto da classe 'teste'
 
 9.11. Uma expressão
 
@@ -925,7 +936,21 @@ No segundo caso, !a resulta em 0 se a for diferente de 0 ou falso,
 e 1 se a for igual a 0 ou verdadeiro.
 
 
-14.1. LISTA DE OPERADORES
+14.1. VERDADEIRO E FALSO
+
+Alguns operadores e instruções de controle de fluxo checam se uma
+condição é verdadeira. Na maioria dos casos, o resultado é bastante
+óbvio. Por exemplo, 'a==1' resulta em verdadeiro se a for igual a 1.
+Mas quando a condição é uma variável, é um pouco diferente.
+
+- O valor 'nulo' é sempre falso.
+- Números são considerados verdadeiros quando forem diferente de zero.
+- Textos são considerados verdadeiros quando não forem textos vazios.
+- Quando a variável não existe, ou quando é uma função que não
+  retorna nenhum valor, o resultado é 'nulo', portanto falso.
+
+
+14.2. LISTA DE OPERADORES
 
 Podem ser usados os seguintes operadores - sendo a e b duas variáveis
 e/ou números:
@@ -971,7 +996,7 @@ variável = variável * valor
 variável = variável / valor
 
 
-14.2. PRECEDÊNCIA DE OPERADORES
+14.3. PRECEDÊNCIA DE OPERADORES
 
 Existe uma ordem de precedência entre os operadores. Por exemplo,
 multiplicações e divisões são calculadas antes de soma e subtração.
@@ -1000,7 +1025,7 @@ x=a+b+c # Soma a com b, e depois soma com c; coloca em x o resultado
 a=b=c # Faz b=c, depois faz a=b
 
 
-14.3. OPERADORES ? E :
+14.4. OPERADORES ? E :
 
 Operadores ? e : são semelhantes às instruções se e senao:
 a ? b : c
@@ -1019,7 +1044,7 @@ a ? b : c # a verdadeiro, o resultado é b, a falso o resultado é c
 a ? b:c # Nesse caso, se a for verdadeiro, chama a função c da classe b
 
 
-14.4. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
+14.5. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
 
 Via de regra, os operadores binários convertem o segundo operando para
 o mesmo tipo do primeiro. Exemplos:
@@ -1031,7 +1056,7 @@ o mesmo tipo do primeiro. Exemplos:
 1 + "2" # É o mesmo que 1 + 2, portanto resulta em 3
 
 
-14.5. OPERADORES DE BIT
+14.6. OPERADORES DE BIT
 
 Bit é a menor unidade de memória. Pode representar apenas um entre valores
 numéricos: 0 ou 1. Variáveis int1 correspondem a um bit.
@@ -1909,23 +1934,30 @@ Retorna quantos objetos estão na lista (0=não estão na lista).
 18.9. apagar
 Marca todos os objetos da lista para exclusão, usando a função apagar()
 
-18.10. total
+18.10. total([nome da classe])
 Quantidade de itens da lista.
+Se o nome da classe for especificado, considera apenas objetos da classe.
+Nota: Se o objetivo for saber apenas se existe algum objeto, as funções
+'objini' e 'objfim' são mais eficientes.
 
 18.11. objlista
 Objeto que contém a lista; pode ser NULO.
 
-18.12. objini
-Primeiro objeto da lista, o mesmo que ini.obj.
-
-18.13. objfim
-Último objeto da lista, o mesmo que fim.obj.
-
-18.14. ini
+18.12. ini([nome da classe])
 Primeiro item da lista (variável listaitem).
+Se o nome da classe for especificado, considera apenas objetos da classe.
 
-18.15. fim
+18.13. fim([nome da classe])
 Último item da lista (variável listaitem).
+Se o nome da classe for especificado, considera apenas objetos da classe.
+
+18.14. objini([nome da classe])
+Primeiro objeto da lista, o mesmo que ini.obj.
+Se o nome da classe for especificado, considera apenas objetos da classe.
+
+18.15. objfim([nome da classe])
+Último objeto da lista, o mesmo que fim.obj.
+Se o nome da classe for especificado, considera apenas objetos da classe.
 
 
 19. LISTAITEM - UM ITEM DE LISTAOBJ
@@ -1961,24 +1993,30 @@ Passa para o próximo objeto.
 Avança o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-19.8. remove
+19.8. objantes([número de objetos])
+Semelhante à função 'antes', mas considera apenas objetos da mesma classe.
+
+19.9. objdepois([número de objetos])
+Semelhante à função 'depois', mas considera apenas objetos da mesma classe.
+
+19.10. remove
 Remove objeto da lista, listaitem passa a não ser um objeto válido.
 
-19.9. removeantes
+19.11. removeantes
 Remove objeto da lista e passa para o anterior.
 Nota: não confundir com 'remover o objeto anterior'.
 
-19.10. removedepois
+19.12. removedepois
 Remove objeto da lista e passa para o próximo.
 Nota: não confundir com 'remover o próximo objeto'.
 
-19.11. obj
+19.13. obj
 Objeto.
 
-19.12. total
+19.14. total
 Quantidade de itens da lista.
 
-19.13. objlista
+19.15. objlista
 Objeto que contém a lista; pode ser NULO.
 
 Exemplo:
@@ -2296,29 +2334,38 @@ efim
 23. NOMEOBJ - PARA OBTER UM OU MAIS OBJETOS
 
 Usado para obter um ou mais objetos, correspondente ao que o usuário
-digitou.
+digitou. Como valor numérico, é o resultado da última função 'nome'
+da variável nomeobj.
 
 Funções:
 
-23.1. ini(<texto>, <quantidade>)
+23.1. ini(<texto>, [quantidade])
 Inicia a busca.
-<quantidade> é a quantidade máxima de objetos que podem ser encontrados.
-Por exemplo, se não for desejável processar mais de 10 objetos, a quantidade
+
+<texto> é o nome procurado, geralmente é o que o usuário digitou.
+Para escolher o número do item, acrescentar o número seguido de um
+ponto antes do nome. Exemplo, "2.poção" é a segunda poção.
+Para escolher a quantidade de itens, acrescentar um número seguido
+de espaço antes. Exemplo, "10 poção" significa 10 itens 'poção'.
+
+[quantidade] é a quantidade máxima de itens que podem ser encontrados.
+Se for omitido, significa apenas um item.
+Por exemplo, se for desejável processar no máximo 10 objetos, a quantidade
 deve ser o número 10.
-<texto> é o nome procurado, geralmente o que o usuário digitou.
-Pode-se digitar o número do objeto, escrevendo um número seguido
-de ponto e um nome. Por exemplo, "2.poção" corresponde à segunda poção.
-Pode-se digitar também a quantidade, se for mais de um. Por exemplo,
-"10 poção". Repare que nesse caso é a quantidade seguida de um nome.
 
 Vide também exemplo de código no tópico 23.2 (abaixo).
 
-23.2. nome(<texto>)
-      nome(<texto>, <texto2>, ..., <textoN>)
+23.2. nome(<texto>, [quantidade])
+Checa se um objeto corresponde ao item escolhido pelo usuário.
+
 <texto> contém um ou mais nomes (separados por espaço) correspondentes
 a um objeto. Exemplo, "chave chave_verde" significa um objeto que
 pode ser referenciado por esses dois nomes: chave e chave_verde.
-Essa função retorna 1 se for o objeto procurado ou 0 se não for.
+
+[quantidade] é a quantidade de itens com o nome especificado. Se for
+omitido, significa apenas um item.
+
+Essa função retorna a quantidade de itens encontrados.
 
 Exemplo:
 
@@ -3012,7 +3059,11 @@ O texto é composto de letras seguidas de números, que indicam como
 o arquivo deve ser salvo. As opções são as seguintes:
 L = quantidade máxima de caracteres por linha, de 70 a 4000
 N = se deve dividir linhas grandes (conforme opção L) em caracteres \n
-    0=não divide, 1=somente em const contendo apenas texto, 2=sempre
+  As opções são:
+  N0 = não divide
+  N1 = somente em const contendo apenas texto
+  N2 = em qualquer const
+  N3 = sempre
 I = espaços usados para indentação, de 0 a 8
 C = linhas entre classes, de 0 a 10
 F = linhas vazias entre funções, de 0 a 10

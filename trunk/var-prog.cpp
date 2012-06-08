@@ -1262,7 +1262,7 @@ bool TVarProg::FuncSalvar(TVariavel * v)
             TArqMapa::ParamLinha = (valor<70 ? 70 : valor>4000 ? 4000 : valor);
             break;
         case 'n':
-            TArqMapa::ParamN = (valor<2 ? valor : 2);
+            TArqMapa::ParamN = (valor<3 ? valor : 3);
             break;
         case 'i':
             TArqMapa::ParamIndent = (valor<8 ? valor : 8);

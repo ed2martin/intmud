@@ -307,10 +307,22 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
 // Primeiro item da lista
 bool TListaObj::FuncIni(TVariavel * v)
 {
+    bool checacl = false;
+    TClasse * cl = 0;
+    if (Instr::VarAtual >= v+1)
+        cl = TClasse::Procura(v[1].getTxt()), checacl=true;
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarListaItem))
         return false;
-    Instr::VarAtual->end_listaitem->MudarRef(Inicio);
+    TListaX * obj;
+    if (!checacl)
+        obj = Inicio;
+    else if (cl==0)
+        obj = 0;
+    else
+        for (obj=Inicio; obj && obj->Objeto->Classe != cl; )
+            obj = obj->ListaDepois;
+    Instr::VarAtual->end_listaitem->MudarRef(obj);
     DEBUG1
     return true;
 }
@@ -319,10 +331,22 @@ bool TListaObj::FuncIni(TVariavel * v)
 // Último item da lista
 bool TListaObj::FuncFim(TVariavel * v)
 {
+    bool checacl = false;
+    TClasse * cl = 0;
+    if (Instr::VarAtual >= v+1)
+        cl = TClasse::Procura(v[1].getTxt()), checacl=true;
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarListaItem))
         return false;
-    Instr::VarAtual->end_listaitem->MudarRef(Fim);
+    TListaX * obj;
+    if (!checacl)
+        obj = Fim;
+    else if (cl==0)
+        obj = 0;
+    else
+        for (obj=Fim; obj && obj->Objeto->Classe != cl; )
+            obj = obj->ListaAntes;
+    Instr::VarAtual->end_listaitem->MudarRef(obj);
     DEBUG1
     return true;
 }
@@ -345,7 +369,17 @@ bool TListaObj::FuncObjLista(TVariavel * v)
 // Primeiro objeto da lista
 bool TListaObj::FuncObjIni(TVariavel * v)
 {
-    TObjeto * obj = (Inicio ? Inicio->Objeto : 0);
+    TListaX * lista = Inicio;
+    if (Instr::VarAtual >= v+1)
+    {
+        TClasse * cl = TClasse::Procura(v[1].getTxt());
+        if (cl==0)
+            lista = 0;
+        else
+            while (lista && lista->Objeto->Classe != cl)
+                lista = lista->ListaDepois;
+    }
+    TObjeto * obj = (lista ? lista->Objeto : 0);
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarObjeto))
         return false;
@@ -358,7 +392,17 @@ bool TListaObj::FuncObjIni(TVariavel * v)
 // Último objeto da lista
 bool TListaObj::FuncObjFim(TVariavel * v)
 {
-    TObjeto * obj = (Fim ? Fim->Objeto : 0);
+    TListaX * lista = Fim;
+    if (Instr::VarAtual >= v+1)
+    {
+        TClasse * cl = TClasse::Procura(v[1].getTxt());
+        if (cl==0)
+            lista = 0;
+        else
+            while (lista && lista->Objeto->Classe != cl)
+                lista = lista->ListaAntes;
+    }
+    TObjeto * obj = (lista ? lista->Objeto : 0);
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarObjeto))
         return false;
@@ -605,7 +649,18 @@ bool TListaObj::FuncPossui(TVariavel * v)
 // Quantidade de itens da lista
 bool TListaObj::FuncTotal(TVariavel * v)
 {
-    unsigned int x = Total;
+    unsigned int x;
+    if (Instr::VarAtual < v+1)
+        x = Total;
+    else
+    {
+        x = 0;
+        TClasse * cl = TClasse::Procura(v[1].getTxt());
+        if (cl)
+            for (TListaX * obj = Inicio; obj; obj = obj->ListaDepois)
+                if (obj->Objeto->Classe == cl)
+                    x++;
+    }
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(x);
 }
@@ -679,6 +734,8 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
         { "antes",        &TListaItem::FuncAntes },
         { "depois",       &TListaItem::FuncDepois },
         { "obj",          &TListaItem::FuncObj },
+        { "objantes",     &TListaItem::FuncObjAntes },
+        { "objdepois",    &TListaItem::FuncObjDepois },
         { "objlista",     &TListaItem::FuncObjLista },
         { "remove",       &TListaItem::FuncRemove },
         { "removeantes",  &TListaItem::FuncRemoveAntes },
@@ -745,12 +802,14 @@ bool TListaItem::FuncObjLista(TVariavel * v)
 // Vai para o objeto anterior
 bool TListaItem::FuncAntes(TVariavel * v)
 {
-    if (ListaX==0)
+    TListaX * obj = ListaX;
+    if (obj==0)
         return false;
     if (Instr::VarAtual < v+1)
-        MudarRef(ListaX->ListaAntes);
-    else for (int total=v[1].getInt(); total>0 && ListaX; total--)
-        MudarRef(ListaX->ListaAntes);
+        obj = obj->ListaAntes;
+    else for (int total=v[1].getInt(); total>0 && obj; total--)
+        obj = obj->ListaAntes;
+    MudarRef(obj);
     DEBUG1
     return false;
 }
@@ -759,12 +818,58 @@ bool TListaItem::FuncAntes(TVariavel * v)
 // Vai para o próximo objeto
 bool TListaItem::FuncDepois(TVariavel * v)
 {
-    if (ListaX==0)
+    TListaX * obj = ListaX;
+    if (obj==0)
         return false;
     if (Instr::VarAtual < v+1)
-        MudarRef(ListaX->ListaDepois);
-    else for (int total=v[1].getInt(); total>0 && ListaX; total--)
-        MudarRef(ListaX->ListaDepois);
+        obj = obj->ListaDepois;
+    else for (int total=v[1].getInt(); total>0 && obj; total--)
+        obj = obj->ListaDepois;
+    MudarRef(obj);
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Vai para o objeto anterior da mesma classe
+bool TListaItem::FuncObjAntes(TVariavel * v)
+{
+    TListaX * obj = ListaX;
+    if (obj==0)
+        return false;
+    TClasse * cl = obj->Objeto->Classe;
+    int total = (Instr::VarAtual < v+1 ? 1 : v[1].getInt());
+    while (total > 0)
+    {
+        obj = obj->ListaAntes;
+        if (obj == 0)
+            break;
+        if (obj->Objeto->Classe == cl)
+            total--;
+    }
+    MudarRef(obj);
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+// Vai para o próximo objeto da mesma classe
+bool TListaItem::FuncObjDepois(TVariavel * v)
+{
+    TListaX * obj = ListaX;
+    if (obj==0)
+        return false;
+    TClasse * cl = obj->Objeto->Classe;
+    int total = (Instr::VarAtual < v+1 ? 1 : v[1].getInt());
+    while (total > 0)
+    {
+        obj = obj->ListaDepois;
+        if (obj == 0)
+            break;
+        if (obj->Objeto->Classe == cl)
+            total--;
+    }
+    MudarRef(obj);
     DEBUG1
     return false;
 }

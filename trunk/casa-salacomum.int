@@ -95,14 +95,6 @@ func txttotal # Retorna a quantidade de personagens e itens
   fimse
   ret lin
 
-func procperso
-  listaitem i
-  i = dentro1.ini
-  enquanto i && txt(i.obj) != arg0
-    i.depois
-  efim
-  ret i.obj
-
 func numperso # Quantidade de personagens não jogador
   uint16 total
   listaitem i

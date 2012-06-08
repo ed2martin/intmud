@@ -149,11 +149,6 @@ Antes fazer: misc:obj = personagem
 func msg2(texto)
 Envia mensagem para todos na sala.
 
-func procperso(texto)
-Procura um personagem na sala com o nome da classe especificado.
-Retorna o objeto que corresponde ao personagem.
-Antes fazer: misc:obj = personagem
-
 func numperso
 Retorna a quantidade de personagens não jogador na sala.
 
@@ -166,6 +161,11 @@ De quanto em quanto tempo limpar os itens, em décimos de segundo.
 const terreno = 1
 Tempo de espera ao sair da sala, em décimos de segundo, quando o usuário
 digita uma direção.
+
+const area_luta = 1
+# 0 = não permite luta
+# 1 = só não permite luta entre jogadores
+# 2 = arena, permite luta com qualquer personagem
 
 const descr = "texto"
 Descrição da sala: título seguido das saídas válidas.

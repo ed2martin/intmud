@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "var-nomeobj.h"
 #include "variavel.h"
 #include "instr.h"
@@ -24,56 +25,51 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
 // Checa texto
     if (comparaZ(nome, "nome")==0)
     {
-        Achou=false;
-        if (Total <= 0)
+        Achou = 0;
+        if (Total <= 0 || Instr::VarAtual - v < 1)
         {
-            // Retorna 0
             Instr::ApagarVar(v);
             return Instr::CriarVarInt(0);
         }
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    // Prepara variáveis
+        int valor = (Instr::VarAtual - v < 2 ? 1 : v[2].getInt());
+        char mens[4096];
+        const char * txt = v[1].getTxt();
+        while (*txt==' ') txt++;
+        copiastrmin(mens, txt, sizeof(mens));
+        txt = mens;
+    // Verifica se é o nome procurado
+        while (true)
         {
-            const char * txt = v1->getTxt();
-            while (true)
+        // Checa fim do nome
+            if (*txt==0)
             {
-            // Avança espaços em branco
-                while (*txt==' ')
-                    txt++;
-            // Verifica fim do texto
-                if (*txt==0)
-                    break;
-            // Verifica próxima palavra
-                int indice;
-                for (indice=0; indice<NomeTam; indice++,txt++)
-                    if (NomeObj[indice] !=
-                            tabCOMPLETO[*(unsigned char*)txt])
-                        break;
-            // Se palavra não corresponde
-                if (indice<NomeTam)
-                {
-                    while (*txt && *txt!=' ')
-                        txt++;
-                    continue;
-                }
-            // Se não é o item inicial
-                if (Inicio>0)
-                {
-                    Inicio--;
-                    // Retorna 0
-                    Instr::ApagarVar(v);
-                    return Instr::CriarVarInt(0);
-                }
-            // Diminui quantidade de itens
-                Total--;
-            // Retorna 1
-                Achou=true;
                 Instr::ApagarVar(v);
-                return Instr::CriarVarInt(1);
-            } // while (true)
-        } // for
-        // Retorna 0
+                return Instr::CriarVarInt(0);
+            }
+        // Checa se é o nome procurado
+            if (memcmp(txt, NomeObj, NomeTam) == 0)
+                break;
+            while (*txt && *txt!=' ') txt++;
+            while (*txt==' ') txt++;
+        }
+    // Checa se é o item inicial
+        if (Inicio >= valor)
+        {
+            Inicio -= valor;
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
+        valor -= Inicio;
+        Inicio = 0;
+    // Obtém a quantidade de itens
+        if (valor >= Total)
+            valor = Total, Total = 0;
+        else
+            Total -= valor;
+        Achou = valor;
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(valor);
     }
 // Inicialização
     if (comparaZ(nome, "ini")==0)
@@ -81,7 +77,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         Inicio=0;
         Total=0;
     // Checa o número de variáveis
-        if (Instr::VarAtual - v < 2)
+        if (Instr::VarAtual - v < 1)
             return false;
     // Obtém o texto
         Inicio = 0;
@@ -119,7 +115,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         // Obtém Total
         if (Total <= 0)
             Total=1;
-        int x = v[2].getInt();
+        int x = (Instr::VarAtual - v < 2 ? 1 : v[2].getInt());
         if (Total>x)
             Total=x;
         // Copia o texto
