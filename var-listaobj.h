@@ -73,6 +73,8 @@ public:
     bool FuncObjLista(TVariavel * v);
     bool FuncAntes(TVariavel * v);
     bool FuncDepois(TVariavel * v);
+    bool FuncObjAntes(TVariavel * v);
+    bool FuncObjDepois(TVariavel * v);
     bool FuncRemove(TVariavel * v);
     bool FuncRemoveAntes(TVariavel * v);
     bool FuncRemoveDepois(TVariavel * v);

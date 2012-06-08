@@ -169,7 +169,7 @@ const dir_o = $s_dentro007
 const dir_l = $s_dentro008
 
 func entrou
-  !procperso("p_dentro_sacerdote") && criar("p_dentro_sacerdote", este)
+  !dentro1.objini("p_dentro_sacerdote") && criar("p_dentro_sacerdote", este)
   arg0.var.contador_ = 0
   ver(arg0)
 
@@ -340,7 +340,7 @@ func entrou
   travado = 1
 
 func entrou10
-  se !procperso("p_concreto_armado")
+  se !dentro1.objini("p_concreto_armado")
     criar("p_concreto_armado", este, 38, "h_surpreender, h_lançar")
     msg("Concreto armado 38 se desprendeu da porta")
     travado = 0
@@ -641,7 +641,7 @@ func entrou
 # Se o jogador estiver marcado como escolhido, deixa de ser o escolhido
   arg0 == escolhido && (escolhido = nulo)
 # Cria o catador de insetos
-  se !procperso("p_catador_de_insetos")
+  se !dentro1.objini("p_catador_de_insetos")
     criar("p_catador_de_insetos", este, 32)
     passo = 0, escolhido = nulo
   fimse
@@ -654,7 +654,7 @@ func segundo40
 
 func segundo3
 # Checa se o Catador de insetos está na sala
-  se !procperso("p_catador_de_insetos")
+  se !dentro1.objini("p_catador_de_insetos")
     escolhido = nulo
     passo = 0
     ret
@@ -791,7 +791,7 @@ func segundo3
 func segundo1
   uint16 novonivel
   ref r
-  r = procperso("p_catador_de_insetos")
+  r = dentro1.objini("p_catador_de_insetos")
 # Checa se tem catador de insetos
   se !r
     ret
@@ -818,7 +818,7 @@ func segundo1
 
 func cmd_escr # Jogador desafia Catador de insetos
   se arg1 == "catador de insetos"
-    se !procperso("p_catador_de_insetos")
+    se !dentro1.objini("p_catador_de_insetos")
       arg0.msg("Catador de insetos não está aqui")
     senao escolhido
       arg0.msg("Catador de insetos: Estou ocupado, espere um pouco até a minha vitória")
@@ -838,7 +838,7 @@ func cmd_ataque
     ret 1
 
 func cmd_n
-  se procperso("p_catador_de_insetos")
+  se dentro1.objini("p_catador_de_insetos")
     se arg0 == escolhido
       arg0.msg("Catador de insetos: Não vou deixar você fugir da briga, covarde")
       ret 1
@@ -847,7 +847,7 @@ func cmd_n
       ret 1
 
 func cmd_s
-  se procperso("p_catador_de_insetos")
+  se dentro1.objini("p_catador_de_insetos")
     se arg0 == escolhido
       arg0.msg("Catador de insetos: Não vou deixar você fugir da briga, covarde")
       ret 1
@@ -921,7 +921,7 @@ func entrou
   ver(arg0)
 
 func entrou1
-  se !procperso("p_leopardo")
+  se !dentro1.objini("p_leopardo")
     se arg0.contleo < 700
       criar("p_leopardo", este, 20, "h_arranhar,h_morder")
     senao
@@ -929,7 +929,7 @@ func entrou1
 
 func entrou2
   ref r
-  r = procperso("p_leopardo")
+  r = dentro1.objini("p_leopardo")
   se arg0.var.i_comida && r
     arg0.var.i_comida = ""
     r.esperar(150)

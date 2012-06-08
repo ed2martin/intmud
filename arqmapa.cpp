@@ -188,9 +188,17 @@ void TArqMapa::SalvarArq(bool tudo)
                     memset(mens+4096, ' ', espaco);
         // Divide em linhas
                 char barran = 0;
-                if (ParamN>1 || (ParamN==1 && p[2]==Instr::cConstTxt))
+                switch (p[2])
+                {
+                default:                if (ParamN < 3) break;
+                case Instr::cConstNulo:
+                case Instr::cConstNum:
+                case Instr::cConstExpr:
+                case Instr::cConstVar:  if (ParamN < 2) break;
+                case Instr::cConstTxt:  if (ParamN < 1) break;
                     if ((int)strlen(mens+4096) >= ParamLinha-10)
                         barran = 'n';
+                }
                 const char * o = mens+4096;
                 char * d = mens;
                 char * dfim = d+ParamLinha-10;
