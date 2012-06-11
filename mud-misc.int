@@ -1,6 +1,6 @@
 classe misc
 # Miscelânea: tabelas (variáveis) e funções
-# Deve ser usado como m:variável ao invés de $m.variável
+# Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -252,12 +252,31 @@ func tempo # Eventos de tempo (cria objeto), vide classe evtempo
 func separa # Separa o nome do objeto do nome do destino
 # arg0 = texto completo
 # Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo
-  se txt(int(arg0)) == txt1(arg0)
+  casovar intsub(arg0)
+  casose "0"
+  casose "1"
+    misc:sep1 = arg0
+    misc:sep2 = ""
+    ret
+  casose "2"
+    se txt1(arg0) != int(txt1(arg0))
+      misc:sep1 = txt1(arg0)
+      misc:sep2 = txt2(arg0)
+    senao
+      misc:sep1 = arg0
+      misc:sep2 = ""
+    fimse
+    ret
+  casose "3"
     misc:sep1 = txtsub(arg0, 0, 2)
     misc:sep2 = txtsub(arg0, 2)
-  senao
-    misc:sep1 = txt1(arg0)
-    misc:sep2 = txt2(arg0)
+    ret
+  casose
+    uint8 tam
+    tam = intsub(arg0) - 1
+    misc:sep1 = txtsub(arg0, 0, tam)
+    misc:sep2 = txtsub(arg0, tam)
+  casofim
 
 func sepitem # Procura o item destino
 # arg0 = personagem, misc:sep2 = nome do alvo
@@ -315,10 +334,10 @@ ref mob3 # Terceito personagem
 func fim # Este objeto foi apagado
   obj.[func]0(mob1, mob2, mob3, este)
 
-func e_saiu # Personagem saiu da sala
+func cmd_saiu # Personagem saiu da sala
   apagar(este)
 
-func e_fim # Personagem saiu do jogo
+func cmd_fim # Personagem saiu do jogo
   apagar(este)
 
 func tempo1_exec # Executa eventos

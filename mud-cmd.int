@@ -1,200 +1,214 @@
-classe com2_comum
-const nivel = 1 # Nível mínimo para usar o comando
+classe comando_comum
 const posic = 8 # Posição mínima para usar o comando
-const pode = 1 # Se comando existe para o personagem (arg0=personagem, arg1=texto)
-const iniclasse = criar(arg0) # Cria um objeto do comando
+const objcmd = este # Objeto que processa o comando, ou nulo se não existe
+# const ultimo = 1 # Deve estar definido se comando tem baixa prioridade
 
-func exec # Executa o comando
-# arg0=personagem
-# arg1=comando que escreveu
-# arg2=texto após o comando
-  arg0.msg("Você digitou " + arg1 + " " + arg2)
+func escr # Processa o comando
+# arg0 = objeto do personagem
+# arg1 = texto digitado após o nome do comando
+
+func iniclasse
+  criar(arg0)
 
 
-classe com2_move
-herda com2_comum
-# Movimenta-se em uma direção
-const iniclasse = criar(arg0)
+classe comando_mover
+herda comando_comum
+const m_entra = "$P chegou"
+const m_sai = "$P foi embora"
+const dir = ""
+const comando_mover = 1 # Para indicar que é comando de movimentação do jogador
 
-func exec1 # Executa o comando
+func escr # Executa o comando
 # arg0 = personagem
-# arg1 = direção
-# arg2 = mensagem de saída
-# arg3 = mensagem de chegada
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
-  listaobj l0
-  l0.addfim(arg0.evento)
-  enquanto l0 && !l0.objini.e_mover(arg0, arg1)
-    l0.ini.remove
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_[dir](arg0), nulo
   efim
-  se l0
+  misc:obj = arg0
+  s1 = arg0.dono, s2 = s1.dir_[dir]
+  ret s2 == nulo, arg0.msg("Impossível seguir nessa direção.")
+  ret s1.tipo_[dir] & 3 >= 2, arg0.msg("A porta está fechada.")
+  uint8 total
+  total = s1.totalmove + s2.totalmove
+  se arg0.move < total
+    arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
     ret
   fimse
-  misc:obj = arg0
-  s1 = arg0.dono
-  s2 = s1.dir_[arg1]
-  se l0 # Retorna se lista não estiver vazia
-  senao s2 == nulo
-    arg0.msg("Impossível seguir nessa direção.")
-  senao s1.tipo_[arg1] & 3 >= 2
-    arg0.msg("A porta está fechada.")
-  senao
-    uint8 total
-    total = s1.totalmove + s2.totalmove
-    se arg0.move < total
-      arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
-      ret
-    fimse
-    arg0.move -= total / 2
-    total -= 1 # Para garantir pelo menos 2 movimentos (total é uint8)
-    arg0.p_espera = total * 2 + 2
-    $mens.p(arg0)
-    $mens.mvis2("", "$P foi " + arg2)
-    arg0.mudasala(s2)
-    $mens.mvis2("", "$P chegou " + arg3)
-    arg0.dono.s_morre && arg0.morreu
+  arg0.move -= total / 2
+  total -= 1 # Para garantir pelo menos 2 movimentos (total é uint8)
+  arg0.p_espera = total * 2 + 2
+  $mens.p(arg0)
+  $mens.mvis2("", m_sai)
+  arg0.mudasala(s2)
+  $mens.mvis2("", m_entra)
+  arg0.dono.s_morre && arg0.morreu
 
 
-classe com_n
-herda com2_move
-const exec = exec1(arg0, "n", "para o norte.", "do sul.")
+classe cmd_n
+herda comando_mover
+const m_entra = "$P chegou do sul."
+const m_sai = "$P foi para o norte."
+const dir = "n"
 
 
-classe com_s
-herda com2_move
-const exec = exec1(arg0, "s", "para o sul.", "do norte.")
+classe cmd_s
+herda comando_mover
+const m_entra = "$P chegou do norte."
+const m_sai = "$P foi para o sul."
+const dir = "s"
 
 
-classe com_l
-herda com2_move
-const exec = exec1(arg0, "l", "para o leste.", "do oeste.")
+classe cmd_l
+herda comando_mover
+const m_entra = "$P chegou do oeste."
+const m_sai = "$P foi para leste."
+const dir = "l"
 
 
-classe com_o
-herda com2_move
-const exec = exec1(arg0, "o", "para o oeste.", "do leste.")
+classe cmd_e
+const obj = $cmd_l.obj(arg0, arg1)
 
 
-classe com_w
-herda com_o
+classe cmd_o
+herda comando_mover
+const m_entra = "$P chegou do leste."
+const m_sai = "$P foi para oeste."
+const dir = "o"
 
 
-classe com_c
-herda com2_move
-const exec = exec1(arg0, "c", "para cima.", "de baixo.")
+classe cmd_w
+const obj = $cmd_o.obj(arg0, arg1)
 
 
-classe com_u
-herda com_c
+classe cmd_c
+herda comando_mover
+const m_entra = "$P chegou de baixo."
+const m_sai = "$P subiu."
+const dir = "c"
 
 
-classe com_b
-herda com2_move
-const exec = exec1(arg0, "b", "para baixo.", "de cima.")
+classe cmd_u
+const obj = $cmd_c.obj(arg0, arg1)
 
 
-classe com_d
-herda com_b
+classe cmd_b
+herda comando_mover
+const m_entra = "$P chegou de cima."
+const m_sai = "$P desceu."
+const dir = "b"
 
 
-classe com_ne
-herda com2_move
-const exec = exec1(arg0, "ne", "para o nordeste.", "do noroeste.")
+classe cmd_d
+const obj = $cmd_b.obj(arg0, arg1)
 
 
-classe com_no
-herda com2_move
-const exec = exec1(arg0, "no", "para o noroeste.", "do nordeste.")
+classe cmd_ne
+herda comando_mover
+const m_entra = "$P chegou do sudoeste."
+const m_sai = "$P foi para o nordeste."
+const dir = "ne"
 
 
-classe com_nw
-herda com_no
+classe cmd_no
+herda comando_mover
+const m_entra = "$P chegou do sudeste."
+const m_sai = "$P foi para o noroeste."
+const dir = "no"
 
 
-classe com_se
-herda com2_move
-const exec = exec1(arg0, "se", "para o sudeste.", "do sudoeste.")
+classe cmd_nw
+const obj = $cmd_no.obj(arg0, arg1)
 
 
-classe com_so
-herda com2_move
-const exec = exec1(arg0, "so", "para o sudoeste.", "do sudeste.")
+classe cmd_se
+herda comando_mover
+const m_entra = "$P chegou do noroeste."
+const m_sai = "$P foi para o sudeste."
+const dir = "se"
 
 
-classe com_sw
-herda com_so
+classe cmd_so
+herda comando_mover
+const m_entra = "$P chegou do nordeste."
+const m_sai = "$P foi para o sudoeste."
+const dir = "se"
 
 
-classe com_abrir
-herda com2_comum
+classe cmd_sw
+const obj = $cmd_so.obj(arg0, arg1)
 
-func exec
+
+classe cmd_abrir
+herda comando_comum
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_abrir(arg0, arg1), nulo
+  efim
   txt10 dir
-  dir = misc:d1[arg2]
+  dir = misc:d1[arg1]
   se arg0 == ""
     arg0.msg("Abrir o que?")
-  senao dir
-    se !arg0.dono.dir_[dir]
-      arg0.msg("Não há porta nessa direção.")
-      ret
-    fimse
+  senao !dir
+    arg0.msg("Não foi possível abrir " + arg2 + ".")
+  senao !arg0.dono.dir_[dir]
+    arg0.msg("Não há porta nessa direção.")
+  senao
     casovar 3 & arg0.dono.tipo_[dir]
     casose "0"
       arg0.msg("Não há porta nessa direção.")
-      ret
     casose "1"
       arg0.msg("Porta já está aberta.")
-      ret
     casose "2"
       arg0.dono.mudatipo(dir, arg0.dono.tipo_[dir] - 1) # Abre a porta
       $mens.p(arg0)
       $mens.mtodos1("$P abriu uma porta.")
-      ret
     casose "3"
       arg0.msg("Porta está trancada.")
-      ret
     casofim
-  senao
-    arg0.msg("Não foi possível abrir " + arg2 + ".")
 
 
-classe com_fechar
-herda com2_comum
+classe cmd_fechar
+herda comando_comum
 
-func exec
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_fechar(arg0, arg1), nulo
+  efim
   txt10 dir
-  dir = misc:d1[arg2]
+  dir = misc:d1[arg1]
   se arg0 == ""
     msg("Abrir o que?")
-  senao dir
-    se !arg0.dono.dir_[dir]
-      arg0.msg("Não há porta nessa direção.")
-      ret
-    fimse
+  senao !dir
+    arg0.msg("Não foi possível fechar " + arg2 + ".")
+  senao !arg0.dono.dir_[dir]
+    arg0.msg("Não há porta nessa direção.")
+  senao
     casovar 3 & arg0.dono.tipo_[dir]
     casose "0"
       arg0.msg("Não há porta nessa direção.")
-      ret
     casose "1"
       arg0.dono.mudatipo(dir, arg0.dono.tipo_[dir] + 1) # Fecha a porta
       $mens.p(arg0)
       $mens.mtodos1("$P fechou uma porta.")
-      ret
     casose "2"
     casose "3"
       arg0.msg("Porta já está fechada.")
-      ret
     casofim
-  senao
-    arg0.msg("Não foi possível fechar " + arg2 + ".")
 
 
-classe com_falar
-herda com2_comum
+classe cmd_falar
+herda comando_comum, comando_ajuda
 const posic = 5
+const txtajuda = "\b\c3Falar\b\n\
+Sintaxe: falar <mensagem>\n\
+Envia mensagem para todos os personagens que estiverem na mesma sala."
 
-func exec
+func escr
   $mens.p(arg0)
   se txt(arg2, 0, 3) == "..."
     $mens.mtodos1("$P continuou: " + txttroca(arg2, "$", "$$"))
@@ -208,18 +222,22 @@ func exec
     $mens.mtodos1("$P disse: " + txttroca(arg2, "$", "$$"))
   fimse
 # Executa eventos
-  listaobj l0
-  l0.addfim(arg0.evento)
-  enquanto l0 && l0.objini.e_falar(arg0, arg2)
-    l0.ini.remove
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_falou(arg0, arg2)
   efim
 
 
-classe com_chat
-herda com2_comum
+classe cmd_chat
+herda comando_comum, comando_ajuda
 const posic = 0
+const txtajuda = "\b\c3Canal chat\b\n\
+Sintaxe: chat <mensagem>\n\
+Envia mensagem para os jogadores que estiverem com esse canal habilitado.\n\
+Sintaxe: chat\n\
+Habilita ou desabilita esse canal."
 
-func exec
+func escr
   $mens.p(arg0)
   se !arg2
     arg0.sock.canais = arg0.sock.canais ^ 2
@@ -237,11 +255,11 @@ func exec
     efim
 
 
-classe com_quem
-herda com2_comum
+classe cmd_quem
+herda comando_comum
 const posic = 0
 
-func exec
+func escr
   listaitem item
   textotxt t0
   txt100 t1
@@ -262,11 +280,11 @@ func exec
   efim
 
 
-classe com_fim
-herda com2_comum
+classe cmd_fim
+herda comando_comum
 const posic = 0
 
-func exec
+func escr
   se arg0.b_tempo && arg0.senha
     arg0.msg("Você está ocupad" + misc:sletra[arg0.sexo] + " demais para isso.")
   senao
@@ -274,23 +292,23 @@ func exec
     apagar(arg0)
 
 
-classe com_quit
-herda com_fim
+classe cmd_quit
+herda cmd_fim
 
 
-classe com_ver
-herda com2_comum
+classe cmd_ver
+herda comando_comum
 const posic = 5
 
-func exec
-  se !arg2
-    arg0.msg2(arg0.dono.descsala(arg0, 7))
-    ret
-  fimse
+func escr
   listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_ver(arg0, arg1), nulo
+  efim
+  ret !arg2, arg0.msg2(arg0.dono.descsala(arg0, 7))
   nomeobj n
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
-  n.ini(arg2, 1)
+  n.ini(arg1, 1)
   epara nulo, l, l.ini.remove
     se arg0.visivel(l.objini) && n.nome(l.objini.ident)
       arg0.msg(txtmaimin(l.objini.nome) + ".")
@@ -301,15 +319,15 @@ func exec
   arg0.msg("Você não vê isso.")
 
 
-classe com_inv
-herda com2_comum
+classe cmd_inv
+herda comando_comum
 const posic = 5
 
-func exec
+func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro1.ini, item, item.depois
-    arg0.visivel(item.obj) && t.addfim("1 " + item.obj.nome)
+    arg0.visivel(item.obj) && t.addfim(txt(item.obj.objtot) + " " + item.obj.nome)
   efim
   t.juntalin("(", "x) ")
   se t.linhas
@@ -319,11 +337,11 @@ func exec
   fimse
 
 
-classe com_equip
-herda com2_comum
+classe cmd_equip
+herda comando_comum
 const posic = 5
 
-func exec
+func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro2.ini, item, item.depois
@@ -384,140 +402,164 @@ func equip
   casofim
 
 
-classe com_pegar
-herda com2_comum
+classe cmd_pegar
+herda comando_comum
 const posic = 5
+#
+ref sala # De onde pegar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+txt20 mens # Parte da mensagem
 
-func exec
-  ref r # De onde pegar
-  misc:separa(arg2) # Separa nome do objeto do nome do alvo
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_pegar(arg0, arg1), nulo
+  efim
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
-    r = arg0.dono
+    sala = arg0.dono
+    mens = "."
   senao
-    r = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
-    se !r
-      arg0.msg("Você não vê " + t.1 + ".")
-      ret
-    senao !r.container
-      arg0.msg("Não é possível pegar nada de " + r.nome + ".")
-      ret
+    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !sala
+      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao !sala.container
+      ret arg0.msg("Não é possível pegar nada de " + sala.nome + ".")
     fimse
+    mens = " de $r $a."
   fimse
-  nomeobj n # Para reconhecer os itens
-  listaobj l # A lista de itens
-  int1 pegou # Se pegou algum item
-  l.addfim(r.dentro1)
-  n.ini(arg2, 10)
 # Pega os itens
-  epara nulo, l, l.ini.remove
-    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident)
-    pegou = 1
-    listaobj e
-    e.addfim(arg0.evento, l.objini.evento, r.evento)
-    enquanto e && !e.objini.e_pegar(arg0, l.objini, r)
-      e.ini.remove
-    efim
-    se !e && t.1
-      l.objini.dono = arg0
-      $mens.p(arg0, r, l.objini)
-      $mens.mvis1("$P pega $s $o de $r $a.")
-    senao !e
-      l.objini.dono = arg0
-      $mens.p(arg0, r, l.objini)
-      $mens.mvis1("$P pega $s $o.")
-    fimse
-  efim
-  !pegou && arg0.msg("Você não vê isso.")
-
-
-classe com_soltar
-herda com2_comum
-
-func exec
-  ref r # Aonde soltar
-  misc:separa(arg2) # Separa nome do objeto do nome do alvo
-  se !misc:sep2 # Se não tem alvo, o alvo é a sala
-    r = arg0.dono
-  senao
-    r = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
-    se !r
-      arg0.msg("Você não vê " + t.1 + ".")
-      ret
-    senao !r.container
-      arg0.msg("Não é possível colocar nada em " + r.nome + ".")
-      ret
-    fimse
-  fimse
   nomeobj n # Para reconhecer os itens
-  listaobj l # A lista de itens
-  int1 soltou # Se soltou algum item
-  l.addfim(arg0.dentro1)
-  n.ini(misc:sep1, 10)
-  epara nulo, l, l.ini.remove
-    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident)
-    soltou = 1
+  textotxt nomes # Nomes dos itens pegos
+  n.ini(misc:sep1, 1000000)
+  epara l.addfim(sala.dentro1), l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
     listaobj e
-    e.addfim(arg0.evento, l.objini.evento, r.evento)
-    enquanto e && !e.objini.e_soltar(arg0, l.objini, r)
-      e.ini.remove
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, l.objini.evento, sala.evento), e, e.ini.remove
+      sair e.objini.cmd_pegar1(arg0, l.objini, sala, total)
     efim
-    se !e && t.1
-      l.objini.dono = r
-      $mens.p(arg0, r, l.objini)
-      $mens.mvis1("$P coloca $s $o em $r $a.")
-    senao !e
-      l.objini.dono = r
-      $mens.p(arg0, r, l.objini)
-      $mens.mvis1("$P solta $s $o.")
+    se !e
+      l.objini.mudadono(arg0, total)
+      nomes.addfim(txt(total) + " " + l.objini.nome)
     fimse
+    sair nomes.linhas >= 10
   efim
-  !soltou && arg0.msg("Você não vê " + misc:sep1 + ".")
-
-
-classe com_dar
-herda com2_comum
-
-func exec
-  ref r # Para quem dar
-  misc:separa(arg2) # Separa nome do objeto do nome do alvo
-  se !misc:sep2 # Se não tem alvo, o alvo é a sala
-    arg0.msg("Dar itens para quem?")
-    ret
+# Mensagem para o jogador
+  nomes.juntalin("", "x ")
+  se !nomes
+    arg0.msg("Você não vê isso.")
   senao
-    r = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
-    se !r
-      arg0.msg("Você não vê " + t.1 + ".")
-      ret
-    senao !r.container
-      arg0.msg("Não é possível dar nada para " + r.nome + ".")
-      ret
-    fimse
-  fimse
-  nomeobj n # Para reconhecer os itens
-  listaobj l # A lista de itens
-  int1 soltou # Se deu algum item
-  l.addfim(arg0.dentro1)
-  n.ini(misc:sep1, 10)
-  epara nulo, l, l.ini.remove
-    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident)
-    soltou = 1
-    listaobj e
-    e.addfim(arg0.evento, l.objini.evento, r.evento)
-    enquanto e && !e.objini.e_dar(arg0, l.objini, r)
-      e.ini.remove
-    efim
-    continuar e
-    l.objini.dono = r
-    $mens.p(arg0, r, l.objini)
-    $mens.mvis1("$P dá $s $o para $r $a.")
+    $mens.p(arg0, sala)
+    $mens.mvis1("$P pega " + txttroca(nomes.remove(10), "\n", ", ") + mens)
+
+
+classe cmd_soltar
+herda comando_comum
+#
+ref sala # Aonde soltar os itens
+ref sala # De onde pegar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+txt20 mens # Parte da mensagem
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_soltar(arg0, arg1), nulo
   efim
-  !soltou && arg0.msg("Você não vê " + misc:sep1 + ".")
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    sala = arg0.dono
+    mens = "."
+  senao
+    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !sala
+      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao !sala.container
+      ret arg0.msg("Não é possível soltar nada em " + sala.nome + ".")
+    fimse
+    mens = " em $r $a."
+  fimse
+# Solta os itens
+  nomeobj n # Para reconhecer os itens
+  textotxt nomes # Nomes dos itens pegos
+  n.ini(misc:sep1, 1000000)
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    listaobj e
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, l.objini.evento, sala.evento), e, e.ini.remove
+      sair e.objini.cmd_soltar1(arg0, l.objini, sala, total)
+    efim
+    se !e
+      l.objini.mudadono(sala, total)
+      nomes.addfim(txt(total) + " " + l.objini.nome)
+    fimse
+    sair nomes.linhas >= 10
+  efim
+# Mensagem para o jogador
+  nomes.juntalin("", "x")
+  se !nomes
+    arg0.msg("Você não vê isso.")
+  senao
+    $mens.p(arg0, sala)
+    $mens.mvis1("$P solta " + txttroca(nomes.remove(10), "\n", ", ") + mens)
 
 
-classe com_vestir
-herda com2_comum
+classe cmd_dar
+herda comando_comum
+#
+ref sala # Para quem dar os itens
+ref sala # De onde pegar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+txt20 mens # Parte da mensagem
 
-func exec
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_dar(arg0, arg1), nulo
+  efim
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  ret !misc:sep2, arg0.msg("Dar itens para quem?")
+  sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
+  se !sala
+    ret arg0.msg("Você não vê " + misc:sep2 + ".")
+  senao !sala.container
+    ret arg0.msg("Não é possível dar nada para " + sala.nome + ".")
+  fimse
+# Dá os itens
+  nomeobj n # Para reconhecer os itens
+  textotxt nomes # Nomes dos itens pegos
+  n.ini(misc:sep1, 1000000)
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    listaobj e
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, l.objini.evento, sala.evento), e, e.ini.remove
+      sair e.objini.cmd_dar1(arg0, l.objini, sala, total)
+    efim
+    se !e
+      l.objini.mudadono(sala, total)
+      nomes.addfim(txt(total) + " " + l.objini.nome)
+    fimse
+    sair nomes.linhas >= 10
+  efim
+# Mensagem para o jogador
+  nomes.juntalin("", "x ")
+  se !nomes
+    arg0.msg("Você não vê isso.")
+  senao
+    $mens.p(arg0, sala)
+    $mens.mvis1("$P dá " + txttroca(nomes.remove(10), "\n", ", ") + " para $r $a.")
+
+
+classe cmd_vestir
+herda comando_comum
+
+func escr
   se !arg2
     arg0.msg("Vestir o que?")
     ret
@@ -567,10 +609,10 @@ func exec
   ajustar && arg0.ajustavar
 
 
-classe com_remover
-herda com2_comum
+classe cmd_remover
+herda comando_comum
 
-func exec
+func escr
   se !arg2
     arg0.msg("Remover o que?")
     ret
@@ -598,22 +640,22 @@ func exec
   ajustar && arg0.ajustavar
 
 
-classe com_hora
-herda com2_comum
+classe cmd_hora
+herda comando_comum
 const posic = 0
 
-func exec
+func escr
   datahora d
   d.agora
   arg0.msg("Hora atual MUD:      " + $jogcomum.hora + ":" + $jogcomum.min)
   arg0.msg("Hora atual servidor: " + d.hora + ":" + d.min)
 
 
-classe com2_debug
-herda com2_comum
+classe cmd_debug
+herda comando_comum
 const posic = 0
 
-func exec
+func escr
   arg0.msg("Sala: " + arg0.dono)
   listaobj l0
   l0.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
@@ -639,22 +681,22 @@ func exec
   efim
 
 
-classe com_info
-herda com2_comum
+classe cmd_vida
+herda comando_comum, comando_ajuda
 const posic = 0
 
-func exec
+func escr
   txt100 lin
-  lin = "vida " + arg0.vida + "/" + arg0.vidamax
-  lin += "  mana " + arg0.mana + "/" + arg0.manamax
-  lin += "  vigor " + arg0.move + "/" + arg0.movemax
-  lin += "  nível " + arg0.nivel
-  lin += "  experiência " + arg0.exp + "/" + arg0.expmax
+  lin = "Vida " + arg0.vida + "/" + arg0.vidamax
+  lin += "  Mana " + arg0.mana + "/" + arg0.manamax
+  lin += "  Vigor " + arg0.move + "/" + arg0.movemax
+  lin += "  Nível " + arg0.nivel
+  lin += "  Experiência " + arg0.exp + "/" + arg0.expmax
   arg0.msg(lin)
 
 
-classe com2_golpe
-herda com2_comum
+classe comando_golpe
+herda comando_comum
 const posic = 7
 const tipo = 0 # Tipo de golpe
 const precisao = 100 # Precisão do golpe, 100 significa 100%
@@ -662,7 +704,7 @@ const forca = 100 # Força do golpe, 100 significa 100%
 const veloc = 100 # Velocidade do golpe, 100 significa 100%
 const msgatk = "$P ataca $A"
 
-func exec
+func escr
   se arg0.batalhaini(arg2) # Inicia batalha
     txt200 msg1
     velgolpe(arg0, arg0.b_alvo) # Tempo do golpe
@@ -810,5 +852,5 @@ func execgolpe # Realiza um ataque
   ret rettipo
 
 
-classe com_atk
-herda com2_golpe
+classe cmd_atk
+herda comando_golpe

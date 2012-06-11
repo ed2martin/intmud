@@ -5,7 +5,7 @@ func iniclasse
 
 
 classe sala
-herda comum_dentro
+herda comum_obj
 # Estrutura de uma sala
 #
 const s_item = 5 # Quantos minutos para começar a apagar itens
@@ -66,7 +66,7 @@ func descsala # Retorna descrição da sala
     l.addfim(dentro2, dentro1)
     l.remove(arg0)
     enquanto l
-      arg0.visivel(l.objini) && t2.addfim("1 " + l.objini.descpos)
+      arg0.visivel(l.objini) && t2.addfim(txt(l.objini.objtot) + " " + l.objini.descpos)
       l.ini.remove
     efim
     t2.juntalin("(", "x) ")

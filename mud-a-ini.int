@@ -18,11 +18,11 @@ não há nenhum sol ou algo que produza luz."
 const s_pacifico = 1
 inttempo espera
 
-func e_sala
+func cmd_jog # Jogador chegou
   se espera == 0
     espera = 10
 
-func espera_exec
+func espera_exec # Restaura a vida do jogador
   listaitem item
   ref r
   epara item = dentro2.ini, item, item.depois
@@ -68,18 +68,16 @@ Ao sul nota-se claramente a certa que delimita o jardim."
 const dir_n = $s_ini003
 const dir_ne = $s_ini005
 
-func ini
-  criar("i_inipedra", este) # Cria uma pedra
-  evento.addfim(este) # Receber eventos da própria sala
+func cmd_jog # Jogador chegou
+  arg0.evento.addfim(este) # Receber eventos do jogador
+  se !dentro1.objini("i_inipedra") # Cria pedra se ainda não existir
+    criar("i_inipedra", este)
 
-func e_pegar # Pegar alguma coisa
+func cmd_pegar1 # Pegar alguma coisa
   se arg1.nome == "pedra"
-    criar("i_inipedra", arg0) # Cria uma pedra para o jogador
-    $mens.p(arg0, arg1)
-    $mens.mvis1("$P pega $r $a.") # Avisa que pegou uma pedra
-    ret 1 # Para não pegar a pedra
+    criar("i_inipedra", este) # Cria uma pedra na sala
 
-func e_soltar # Soltar alguma coisa
+func cmd_soltar1 # Soltar alguma coisa
   se arg1.nome == "pedra"
     apagar(arg1) # Apagará a pedra
 
@@ -109,61 +107,51 @@ const dir_s = $s_ini003
 const dir_n = $s_ini012
 const dir_se = $s_ini005
 
-func ini
-  sala:ini
-  criar("p_inijardim", este)
+func cmd_jog # Jogador chegou
+  arg0.evento.addfim(este) # Receber eventos do jogador
+  arg0.var.1planta = 1 # Tem planta carnívora
+  se !dentro2.objini("p_inijardim") # Cria personagem se ainda não existir
+    criar("p_inijardim", este)
 
-func e_sala # Alguém entrou
-  se arg0.jog
-    arg0.evento.addfim(este) # Receber eventos do personagem
-    arg0.var.1planta = 1 # Tem planta carnívora
-
-func e_mover # Jogador quer se movimentar
-  se arg1 == "n" && arg0.var.1planta # Se tem planta carnívora
+func cmd_n # Jogador quer ir para o norte
+  se arg0.var.1planta # Se tem planta carnívora
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
     arg0.msg("Então você recua.")
     ret 1
 
 
 classe p_inijardim
-herda comum_fora
-const perso = 1 # Para identificar que é personagem
+herda comum_perso
 const nome = "Jardineiro"
 const ident = nome
 const descpos = "Um jardineiro está sentado aqui."
 const sexo = 1 # 0=feminino, 1=masculino
-const descver = "Você não vê nada de especial."
 
-func ini
-  dono = arg0
-  dono.evento.addfim(este) # Receber eventos da sala
-  evento.addfim(este) # Receber eventos do personagem
+func cmd_jog # Jogador chegou na mesma sala
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
-func e_sala # Alguém entrou
-  arg0.jog ? misc:tempo("aviso", arg0)
-
-func e_sala1 # Jardineiro mudou de sala: mantém eventos do personagem
-  evento.addfim(este)
-
-func aviso10
+func entrou10
   arg0.msg("Jardineiro disse: Olá.")
 
-func aviso20
+func entrou20
   arg0.msg("Jardineiro disse: Preciso de uma pedra.")
 
 const container = 1 # Para poder receber itens
 
-func e_dar # Alguém deu algum item
-  se arg2 == este # Dar para o jardineiro
-    se arg1.nome == "pedra"
-      apagar(arg1) # Apaga o item
-      arg0.msg("Você deu uma pedra para o Jardineiro.")
-      arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
-      arg0.var.1planta = "" # Remove a planta carnívora
-    senao
-      arg0.msg("Jardineiro não aceita " + arg1.nome + ".")
-    fimse
+func cmd_mudasala # Receber eventos do próprio personagem
+  evento.addfim(este)
+
+func cmd_dar1 # Alguém deu algum item
+  se arg1.nome == "pedra"
+    apagar(arg1) # Apaga o item
+    misc:tempo("deupedra", arg0) # Dispara funções 'deupedra'
+  senao
+    arg0.msg("Jardineiro não aceita " + arg1.nome + ".")
     ret 1 # Para não receber o item
+
+func deupedra10
+  arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
+  arg0.var.1planta = "" # Remove a planta carnívora
 
 
 classe i_inipedra
@@ -203,8 +191,8 @@ sala bastante ampla. À leste há uma escada para o andar de baixo."
 const dir_s = $s_ini015
 const dir_o = $s_ini012
 
-func e_sala
-  arg0.jog ? misc:tempo("entrou", arg0)
+func cmd_jog # Jogador chegou na mesma sala
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou10
   arg0.msg("Alguém disse olá")
@@ -222,22 +210,18 @@ herda b_ini
 const s_titulo = "Sala de estar"
 const s_desc = "Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
 ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
-corredor estreito para leste e uma escada para o andar de cima, ao sul."
+corredor estreito para leste e uma escada para o andar de cima, ao sul.\n\
+Aqui você pode salvar o personagem teclando salvar"
 const dir_n = $s_ini014
 const dir_l = $s_ini016
 
-func e_sala
-  arg0.jog ? arg0.evento.addfim(este) # Receber eventos do personagem
+func cmd_jog # Jogador chegou
+  arg0.evento.addfim(este) # Receber eventos do jogador
 
-func e_entrou
-  arg0.msg("Aqui você pode salvar o personagem teclando salvar")
-
-func e_escr # Personagem escreveu alguma coisa
+func cmd_escr # Personagem escreveu alguma coisa
   se arg1 == "salvar"
     arg0.mudasenha # Muda a senha
     ret 1
-  fimse
-  ret
 
 
 classe s_ini016

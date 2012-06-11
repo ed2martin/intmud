@@ -55,6 +55,7 @@ textopos leditor1 # Início de bloco
 textopos leditor2 # Fim de bloco
 textopos leditor # Linha atual no editor
 txt512 peditor # Texto sendo procurado, opção P do editor
+textotxt comandos # Comandos em espera para serem processados
 
 func ini
   reinicia
@@ -65,12 +66,19 @@ func fim
   mudaperso(nulo)
 
 func mudaperso # Muda o personagem, arg0=novo personagem
-  se perso != arg0
-    perso.mudajog(-1)
-    perso.sock = nulo
-    perso = ref(arg0)
-    perso.mudajog(1)
-    perso.sock = este
+  ret perso == arg0 || arg0.sock, nulo
+  ref r
+# Indica que o jogador não controla o antigo personagem
+  epara r = perso, r, r = r.dono
+    r.jogtot -= 1
+  efim
+  perso.sock = nulo
+# Indica que o jogador controla o novo personagem
+  perso = arg0
+  perso.sock = este
+  epara r = perso, r, r = r.dono
+    r.jogtot += 1
+  efim
 
 func reinicia # Volta ao início: pede o nome do personagem
   mudaperso(nulo)
@@ -87,10 +95,27 @@ func recebe # Recebeu mensagem do jogador
   fimse
 # Passo atual / executa comando
   txtmais.limpar
-  se !p_[passo](arg0) # Se não for uma função do passo
-    se !admin || !com_[txt1(arg0)](txt2(arg0)) # Se não for comando de administração
-      arg0 != "!" && (ultimocom = arg0)
-      perso.teclou(ultimocom) # Personagem processa comando
+  se p_[passo](arg0) # Função do passo
+    comandos.limpar
+    ret
+  senao admin && cmd_[txt1(arg0)](txt2(arg0)) # Comando de administração
+    comandos.limpar
+    ret
+  senao arg0 != "!" # Anota o último comando
+    ultimocom = arg0
+  fimse
+# Comando para o jogo
+  se !perso.p_espera # Checa se pode processar o comando
+    perso.p_espera = 2
+    perso.teclou(ultimocom) # Personagem processa comando
+  senao perso.b_tempo # Checa se está batalhando
+# comandos && msg("Feito, aguarde")
+    comandos.limpar
+    comandos.addfim(ultimocom)
+  senao comandos.bytes < 1024 # Não chegou ao limite de comandos
+    comandos.addfim(ultimocom)
+  senao # Chegou ao limite de comandos
+    msg("Aguarde")
 
 func temposair # Acerta variáveis de tempo para sair do MUD
   casovar txt1(info)
@@ -216,13 +241,14 @@ func p_senha # Entrar com a senha para carregar jogo salvo
 # Acerta variáveis
     listaitem item
     epara item = l1.ini, item, item.depois
-      item.obj.var.limpar("1"), item.obj.var.limpar("2")
+      item.obj.var.limpar("1"), item.obj.var.limpar("2"), item.obj.ajustapeso
     efim
     canais = perso.canais
 # Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")
-    perso.mudasala($[perso.salanome])
-    !perso.dono && perso.mudasala(config:salaini)
+    ref r
+    r = $[perso.salanome]
+    perso.mudasala(r ? r : config:salaini)
     $mens.p(arg0)
     $mens.mvis2("", "$P chegou.")
     perso.salvarev = 3000 # 5 minutos
@@ -284,9 +310,10 @@ func p_senha3 # Repetir a senha digitada
 
 
 classe jogador
-herda comum_perso
+herda comum_persobat
 # Personagem no jogo
 const jog = 1 # Para identificar que é jogador
+const perso = 2 # Para identificar que é personagem que pode ter animais
 const ident = nome
 indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
@@ -300,7 +327,7 @@ inttempo salvarev # Para salvar o jogo de tempos em tempos
 
 func ini # Objeto foi criado
   nivel = 1
-  comum_perso:ini
+  comum_persobat:ini
 
 func fim # Objeto foi apagado
   salvar
