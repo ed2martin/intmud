@@ -2793,7 +2793,7 @@ Encerra a conexão; não gera o evento fechou.
 Envia mensagem para o socket.
 Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
 Nota: Se o protocolo for Papovox, devido às limitações do Papovox,
-é acrescentado \n no final da mensagem se já não houver um \n.
+é acrescentado "\n" no final da mensagem se já não houver um "\n".
 
 31.12. inissl
 Apenas carrega biblioteca OpenSSL, usada para conexões seguras.
@@ -2810,28 +2810,28 @@ do servidor.
 
 Eventos:
 
-31.13. <nomedavariável>_msg
+31.15. <nomedavariável>_msg
 Recebeu mensagem
 arg0 = mensagem recebida
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
 arg2 = índice da variável vetor, se não for vetor arg2=0
 
-31.14. <nomedavariável>_env
+31.16. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão
 ficou vazio).
 arg0 = índice da variável vetor, se não for vetor arg0=0
 
-31.15. <nomedavariável>_fechou
+31.17. <nomedavariável>_fechou
 O socket foi fechado remotamente
 arg0 = motivo (texto)
 arg1 = índice da variável vetor, se não for vetor arg1=0
 Se essa função não existir, o objeto que contém o socket é apagado
 
-31.15. <nomedavariável>_con
+31.18. <nomedavariável>_con
 Conseguiu conectar
 arg0 = índice da variável vetor, se não for vetor arg0=0
 
-31.16. <nomedavariável>_err
+31.19. <nomedavariável>_err
 Não conseguiu conectar
 arg0 = mensagem de erro
 arg1 = índice da variável vetor, se não for vetor arg1=0

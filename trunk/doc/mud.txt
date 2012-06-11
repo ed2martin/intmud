@@ -27,43 +27,77 @@ $O = Nome do objeto
 $Q = Depende do personagem: "o", "a", "um" ou "uma"
 $R = Depende do alvo: "o", "a", "um" ou "uma"
 $S = Depende do objeto: "o", "a", "um" ou "uma"
+$M = Texto de $mens.mens
 
 ----------------------------------------
 Eventos
 
-Itens e personagens possuem a seguinte variável:
+Itens, personagens e salas possuem a seguinte variável:
 listaobj evento
-Executar um evento significa chamar uma função de todos os objetos
-dessa lista. Via de regra, o nome das funções começa com "e_".
-A lista é limpada automaciamente toda vez que o personagem muda de sala.
 
-Quando um personagem entra numa sala é um pouco diferente. É executado:
-1. A função e_sala1 do próprio personagem
-3. A função e_sala da sala do personagem (objeto "dono")
-2. A função e_sala dos objetos em "listaobj evento" do personagem
-4. A função e_sala objetos em "listaobj evento" da sala do personagem
-Depois é mostrada a descrição da sala e executado o evento e_entrou
-normalmente (função e_entrou dos objetos na "listaobj evento" do personagem).
+Quando um personagem digita algo, muda de sala ou ocorre qualquer outro
+evento, é executada uma função qualquer de todos os objetos dessa lista.
+Dessa forma é possível personalizar o comportamento de itens, salas, etc.
 
-Eventos que não precisam retornar nada:
-e_entrou(personagem) Personagem entrou na sala
-e_saiu(personagem) Personagem saiu da sala
-e_fim(personagem) Personagem saiu do jogo
-e_falar(personagem, texto) Personagem disse algo (comando falar)
+O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_abrir'
+corresponde ao comando 'abrir'.
 
-Eventos que se retornar verdadeiro ou 1, deve cancelar a ação:
-e_escr(personagem, texto)
-    Personagem escreveu alguma coisa
-e_mover(personagem, texto contendo a direção)
-    Quer se movimentar na direção especificada
-e_pegar(personagem, item, de onde quer pegar)
-    Personagem quer pegar um item. Executado para os objetos envolvidos:
-    o personagem, o item e a sala ou container de onde quer pegar.
-    É recomendável enviar uma mensagem ao usuário se for cancelar a ação.
-e_soltar(personagem, item, aonde quer soltar)
-    Personagem quer soltar um item. Semelhante a e_pegar.
-e_dar(personagem, item, personagem que receberá o item)
-    Personagem quer dar um item. Semelhante a e_pegar.
+Para saber quais são as listas envolvidas, basta verificar os argumentos
+da função, mais especificamente os personagens, os itens e as salas.
+
+A seguir são listados os eventos (as funções).
+
+func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
+Personagem digitou alguma coisa.
+Retorna verdadeiro se não deve processar o comando.
+
+func cmd_fim(personagem ou objeto)
+Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
+do objeto é limpa.
+
+func cmd_[direção](personagem)
+Exemplos: cmd_n(personagem), cmd_s(personagem), etc.
+Personagem quer ir na direção indicada.
+Retorna verdadeiro se cancelar.
+
+func cmd_saiu(personagem)
+Personagem vai sair da sala. Antes desse evento ocorrer, a 'listaobj evento'
+do personagem é limpa.
+
+func cmd_chegou(personagem, sala)
+Personagem entrou na sala. É chamado logo após mudar de sala.
+
+func cmd_jog(personagem, sala)
+Jogador entrou na sala. É chamado logo após 'cmd_chegou', se for jogador.
+Esse evento em particular é executado apenas para a sala e para todos os
+personagens que estiverem na mesma sala.
+
+func cmd_mudasala(nova sala)
+O próprio personagem mudou de sala.
+Esse evento é gerado somente para o personagem, quando a função mudasala
+é executada.
+
+func cmd_falou(personagem, texto)
+Falou alguma coisa.
+
+func cmd_abrir(personagem, texto)
+Quer abrir um objeto ou uma porta. Retornar verdadeiro para cancelar.
+
+func cmd_fechar(personagem, texto)
+Quer fechar um objeto ou uma porta. Retornar verdadeiro para cancelar.
+
+func cmd_ver(personagem, texto)
+Quer ver alguma coisa. Retornar verdadeiro para cancelar.
+
+func cmd_pegar(personagem, texto)
+func cmd_soltar(personagem, texto)
+func cmd_dar(personagem, texto)
+Quer pegar, soltar ou dar alguma coisa. Retornar verdadeiro para cancelar.
+
+func cmd_pegar(personagem, item, de onde pegar, quantidade do item)
+func cmd_soltar(personagem, item, aonde soltar, quantidade do item)
+func cmd_dar(personagem, item, personagem destino, quantidade do item)
+Quer pegar, soltar ou dar algum item. Retornar verdadeiro para cancelar.
 
 ----------------------------------------
 Salas (mud-sala.int)
@@ -202,7 +236,8 @@ Essa função altera a lista mantendo apenas os itens que correspondem
 Personagens (mud-perso.int)
 
 *const perso = 1
-Para identificar que é personagem
+O valor 1 significa um personagem comum
+O valor 2 significa um personagem que pode ter animais
 
 *sav int1 sexo
 Sexo: 0=feminino, 1=masculino
@@ -224,6 +259,13 @@ Posição do personagem:
 
 *const pospadr = 8
 Posição padrão do personagem
+
+sav textovar var
+Variáveis criadas sob demanda do personagem
+As variáveis cujo nome começa com "1" são apagadas quando o personagem
+muda de sala (função mudasala).
+As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
+salvo é recarregado (quando o jogador entra no jogo).
 
 *func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)

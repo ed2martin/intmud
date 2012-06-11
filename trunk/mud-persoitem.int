@@ -1,108 +1,122 @@
-classe comum_dentro
-# Todos os objetos que podem ter outro dentro
+classe comum_obj
+# Comum a todos os personagens, itens e salas
 #
+sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
 listaobj evento # Objetos que recebem eventos desse
 uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
+const objtot = 1 # Quantidade de objetos que esse objeto representa
 #
-const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
-uint32 pesoden # Peso do que tem dentro
-const pesotot = pesoobj + pesoden # Peso total do objeto
-sav int1 ipesovoa # Uso interno: se está voando (peso total é zero)
+uint32 pesoden # Somente leitura: quanto peso tem dentro
+uint32 pesotot # Somente leitura: peso total
+const pesoobj = 1 # Peso do objeto (em gramas)
+# const pesovoa = 0 # Se verdadeiro, está voando/flutuando
 #
+uint32 volden # Somente leitura: volume do que tem dentro
+uint32 voltot # Somente leitura: volume total do objeto
 const volobj = 1 # Volume do objeto quando estiver vazio
 const volmax = 1000000 # Volume máximo do que pode ter dentro
-uint32 volden # Volume do que tem dentro
-const volexp = 0 # 0=não expande, 1=expande com os itens que tem dentro
-const voltot = volobj + volexp * volden # Volume total
+const volexp = 0 # Diferente de 0 se expande com os itens que tem dentro
 
-func mudapeso # Deve ser chamado para mudar pesoden; arg0=o quanto mudou
+func ini # Coloca o objeto dentro de outro
+  arg0 && (dono = arg0)
+
+func fim # Objeto vai sair do jogo: executa eventos cmd_fim
+  listaobj l0
+  l0.addfim(evento), evento.limpar
+  enquanto l0
+    l0.objini.cmd_fim(este), l0.ini.remove
+  efim
+  idono.objlista && (dono = nulo)
+
+func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
+  real x
   ref r
-  pesoden += arg0, r = este
-  enquanto r && !r.ipesovoa
-    r = r.idono.objlista, r.pesoden += arg0
-  efim
-
-func mudavol # Muda volden; arg0=o quanto mudou
-  ref r
-  volden += arg0, r = este
-  enquanto r.volexp
-    r = r.idono.objlista, r.volden += arg0
-  efim
-
-func mudajog # Muda jogtot; arg0=o quanto mudou
-  ref r
-  jogtot += arg0, t_item = s_item * 600, r = dono
-  enquanto r
-    r.jogtot += arg0, r.t_item = r.s_item * 600, r = r.dono
-  efim
-
-func ajustapeso # Ajuda peso e volume
-  listaitem item
-  uint32 soma1
-  uint32 soma2
-  soma = peso
-  epara item = dentro1.ini, item, item.depois
-    soma1 += item.obj.pesotot, soma2 += item.obj.voltot
-  efim
-  epara item = dentro2.ini, item, item.depois
-    soma1 += item.obj.pesotot, soma2 += item.obj.voltot
-  efim
-  mudapeso(soma1 - pesotot)
-  mudavol(soma2 - volden)
-
-
-classe comum_fora
-# Todos os objetos que podem pertencer a outro
-# IMPORTANTE: Se herdar também comum_dentro,
-# colocar comum_dentro antes de comum_fora na instrução herda
-#
-sav listaitem idono # Uso interno: aonde o personagem ou item está
-listaobj evento # Objetos que recebem eventos desse
-uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
-const bitinv = 3 # Grau de invisibilidade do personagem/item
-#
-const pesoobj = 1 # Peso do objeto, 1000 = 1Kg
-const pesotot = pesoobj # Peso total
-sav int1 ipesovoa # Uso interno: se está voando (peso total é zero)
-#
-const volobj = 1 # Volume do objeto
-const voltot = volobj # Volume total
+# Acerta o peso (pesoden e pesotot)
+  x = pesovoa ? -pesotot : pesoden + pesoobj * objtot - pesotot
+  se x
+    pesotot += x, r = idono.objlista, r.pesoden += x
+    enquanto r.pesotot
+      r.pesotot += x, r = r.idono.objlista, r.pesoden += x
+    efim
+  fimse
+# Acerta o volume (volden e voltot)
+  x = volexp ? volden + volobj * objtot - voltot : volobj * objtot - voltot
+  se x
+    voltot += x, r = idono.objlista, r.volden += x
+    enquanto r.volexp
+      r.voltot += x, r = r.idono.objlista, r.volden += x
+    efim
+  fimse
 
 varfunc dono # O dono do personagem/item
-  se !args # Nenhum argumento: leitura
-    ret idono.objlista # Retorna objeto que contém o personagem ou item
-  senao idono.objlista != ref(arg0)
-    !ipesovoa && idono.objlista.mudapeso(-pesotot) # Retira peso do objeto
-    idono.objlista.mudavol(-voltot) # Retira o volume
-    jogtot && idono.objlista.mudajog(-jogtot) # Retira os jogadores
-    idono.remove
-    se perso
-      idono = ref(arg0).dentro2.addini(este) # Adiciona personagem
-    senao
-      idono = ref(arg0).dentro1.addini(este) # Adiciona item
-    fimse
-    !ipesovoa && idono.objlista.mudapeso(pesotot) # Coloca peso do objeto
-    idono.objlista.mudavol(voltot) # Coloca o volume
-    jogtot && idono.objlista.mudajog(jogtot) # Coloca os jogadores
-
-varfunc pesovoa
-  se !args # Nenhum argumento: leitura
-    ret ipesovoa != 0
-  senao # Um argumento: altera valor
-    int32 total
-    !ipesovoa && (total -= pesotot)
-    ipesovoa = arg0
-    !ipesovoa && (total += pesotot)
-    total && dono.mudapeso(total)
-
-func mudajog # Muda jogtot; arg0=o quanto mudou
+  ret !args, idono.objlista # Checa se é leitura
+  ret idono.objlista == ref(arg0), nulo # Retorna se o dono não vai mudar
   ref r
-  jogtot += arg0, t_item = s_item * 600
-  epara r = dono, r, r = r.dono
-    r.jogtot += arg0, r.t_item = r.s_item * 600
+# Se tiver algum peso (não está voando): retira o peso total
+  se pesotot
+    r = idono.objlista, r.pesoden -= pesotot
+    enquanto r.pesotot
+      r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
+    efim
+  fimse
+# Retira o volume
+  r = idono.objlista, r.volden -= voltot
+  enquanto r.volexp
+    r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
   efim
+# Acerta se tem jogador dentro
+  se jogtot
+    epara r = idono.objlista, r, r = r.idono.objlista
+      r.jogtot -= jogtot
+    efim
+  fimse
+# Objeto deixa de receber eventos dele e do dono
+  idono.objlista.evento.remove(este)
+  evento.remove(este)
+# Objeto muda de dono
+  idono.remove # Retira do dono atual
+  se perso
+    idono = ref(arg0).dentro2.addini(este) # Adiciona personagem
+  senao
+    idono = ref(arg0).dentro1.addini(este) # Adiciona item
+  fimse
+# Se tiver algum peso (não está voando): acrescenta o peso total
+  se pesotot
+    r = idono.objlista, r.pesoden += pesotot
+    enquanto r.pesotot
+      r.pesotot += pesotot, r = r.idono.objlista, r.pesoden += pesotot
+    efim
+  fimse
+# Acrescenta o volume
+  r = idono.objlista, r.volden += voltot
+  enquanto r.volexp
+    r.voltot += voltot, r = r.idono.objlista, r.volden += voltot
+  efim
+# Acerta se tem jogador dentro
+  se jogtot
+    epara r = idono.objlista, r, r = r.idono.objlista
+      r.jogtot += jogtot
+    efim
+  fimse
+# Limpa variáveis se for personagem
+  casovar perso
+  casose "2"
+    arg0.animal.0.atkrec.remove
+    arg0.animal.2.atkrec.remove
+    arg0.animal.3.atkrec.remove
+    arg0.animal.4.atkrec.remove
+    arg0.animal.5.atkrec.remove
+    arg0.animal.6.atkrec.remove
+    arg0.animal.7.atkrec.remove
+    arg0.animal.8.atkrec.remove
+    arg0.animal.9.atkrec.remove
+  casose "1"
+    arg0.alvo = nulo
+    arg0.atkrec.remove
+    arg0.var.limpar("1")
+  casofim
 
 func visivel # Checa se um objeto está visível (arg0=objeto)
   ret !(~bitver & arg0.inv)
@@ -125,8 +139,44 @@ func itemnome # Procura um item pelo nome
 
 
 classe comum_perso
-herda comum_dentro, comum_fora
-# Personagens
+herda comum_obj
+# Personagem sem estrutura de batalha
+const perso = 1 # Para identificar que é personagem
+const msg = sock.msg(arg0) # Mensagem pequena para o jogador
+const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
+ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
+const descver = "Você não vê nada de especial."
+
+func ini # Coloca o objeto dentro de outro
+  arg0 && mudasala(arg0)
+
+func mudasala # Coloca personagem em outra sala (arg0 = nova sala)
+# Eventos cmd_saiu
+  listaobj l
+  l.addfim(evento)
+  epara evento.limpar, l, l.ini.remove
+    l.objini.cmd_saiu(este)
+  efim
+# Muda de sala
+  dono = arg0
+# Eventos cmd_chegou
+  epara l.addfim(evento, arg0.evento), l, l.ini.remove
+    l.objini.cmd_chegou(este, arg0)
+  efim
+  cmd_mudasala
+# Se for jogador, executa eventos cmd_jog
+  se jog
+    epara l.addfim(arg0, arg0.dentro2), l, l.ini.remove
+      l.objini.cmd_jog(este, arg0)
+    efim
+  fimse
+# Mostra descrição
+  sock && msg2(dono.descsala(este, 7))
+
+
+classe comum_persobat
+herda comum_perso
+# Personagm que pode batalhar
 uint8 bitver # O que o personagem/item pode ver
 uint8 bitinv # Grau de invisibilidade do personagem/item
 #
@@ -169,58 +219,51 @@ sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 const descpos = txtmaimin(nome) + " está aqui."
 sav textovar var # Variáveis criadas sob demanda do personagem
-textotxt p_comandos # Comandos em espera para serem processados
 inttempo p_espera # Tempo de espera para o próximo comando
 sav inttempo p_restaura # Para restaurar status de tempos em tempos
 
 func ini # Objeto foi criado
-  dono = arg0
   posicao = pospadr
   ajustavar
   vida = vidamax
   mana = manamax
   move = movemax
   p_restaura = 100
+  arg0 && mudasala(arg0)
 
 func fim # Objeto foi apagado
-  ref r
-  r = sock, r.mudaperso(nulo)
-  dono = nulo
-  casovar txt1(r.info)
-  casose "t" # Conectado via Papovox
-  casose "p" # Conectado via Telnet
-    apagar(r)
-    sair
-  casose "l" # Jogando localmente
-    terminar
-  casose "b" # Como bot
-    r.reinicia
-  casofim
-# Executa eventos
-  listaobj l0
-  l0.addfim(evento), evento.limpar
-  enquanto l0
-    l0.objini.e_fim(este, arg0), l0.ini.remove
-  efim
+  se sock # Se estiver ligado a um jogador
+    casovar txt1(sock.info)
+    casose "t" # Conectado via Papovox
+    casose "p" # Conectado via Telnet
+      apagar(sock)
+      sair
+    casose "l" # Jogando localmente
+      terminar
+    casose "b" # Como bot
+      sock.reinicia
+    casofim
+    sock.perso = nulo # Desliga-se do jogador
+    sock = nulo
+  fimse
+  comum_obj:fim
 
 varfunc vida
-  se !args # Lê vida
-    ret ivida
-  senao # Altera vida
-    casovar (ivida = arg0) * 100 / vidamax
-    casose "0"
-    casose "1"
-      posicao = vida != 0 # 0=morto, 1=mortalmente ferido
-      ret
-    casose "2"
-      posicao = 2 # incapacitado
-      ret
-    casose "3"
-      posicao = 3 # fraco
-      ret
-    casose
-      posicao < 4 && (posicao = pospadr)
-    casofim
+  ret !args, ivida # Lê vida
+  casovar (ivida = arg0) * 100 / vidamax
+  casose "0"
+  casose "1"
+    posicao = vida != 0 # 0=morto, 1=mortalmente ferido
+    ret
+  casose "2"
+    posicao = 2 # incapacitado
+    ret
+  casose "3"
+    posicao = 3 # fraco
+    ret
+  casose
+    posicao < 4 && (posicao = pospadr)
+  casofim
 
 func descpos
   casovar posicao
@@ -245,19 +288,6 @@ func descpos
   casofim
   ret txtmaimin(nome) + " está aqui."
 
-func teclou # Personagem teclou algum comando (arg0=comando)
-  se !p_espera # Nenhum comando pendente
-    p_espera = 2
-    teclouproc(arg0)
-  senao b_tempo # Está batalhando
-# p_comandos && msg("Feito, aguarde")
-    p_comandos.limpar
-    p_comandos.addfim(arg0)
-  senao p_comandos.bytes < 1024 # Não chegou ao limite de comandos
-    p_comandos.addfim(arg0)
-  senao # Chegou ao limite de comandos
-    msg("Aguarde")
-
 func p_espera_exec # Pega o próximo comando
   se p_comandos.linhas
     p_espera = 2
@@ -265,52 +295,44 @@ func p_espera_exec # Pega o próximo comando
   senao !sock
     mob_exec
 
-func teclouproc # Processa comando (arg0=comando)
+func teclou # Processa comando (arg0=comando)
 # Encerra batalha se for o caso
   b_tempo && b_alvo.dono != dono && batalhafim
-# Executa eventos
-  listaobj l0
-  l0.addfim(este.evento)
-  enquanto l0 && !l0.objini.e_escr(este, arg0)
-    l0.ini.remove
-  efim
-  ret l0, nulo
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
+  ref obj2 # Objeto com menor prioridade
   prog p # Para procurar o objeto
-  txt512 comando
-  comando = txtremove(arg0, "SA")
-  casovar txtmin(txt1(comando))
+  casovar txtmin(txt1(arg0))
   casose ""
-    msg("O quê?")
     ret
   casose "m"
   casose "ma"
   casose "mag"
   casose "magi"
   casose "magia"
-    se dono.s_semmagia
-      msg("Você não consegue lançar magias aqui.")
-      ret
-    fimse
-    p.iniclasse("com_magia_" + txtsub(comando, 1, 1))
-    comando = txtsub(comando, 2)
+    ret dono.s_semmagia, msg("Você não consegue lançar magias aqui.")
+    p.iniclasse("cmd_magia_" + txtsub(arg0, 1, 1))
     sair
   casose
-    p.iniclasse("com_" + txt1(comando))
+    p.iniclasse("cmd_" + txt1(arg0))
     comando = txt2(comando)
   casofim
-  enquanto p.lin
-    obj = $[p.texto]
-    sair obj.pode(este, arg0) && nivel >= obj.nivel
-    p.depois
+  epara nulo, p.lin, p.depois
+    obj = $[p.texto].objcmd(este, arg0)
+    continuar !obj # Continua se não encontrou um objeto
+    sair !obj.ultimo # Sai se não for objeto com baixa prioridade
+    obj2 = obj
+  efim
+  !obj && (obj = obj2)
+# Gera eventos
+  listaobj l
+  epara l.addfim(este.evento), l, l.ini.remove
+    ret l.objini.cmd_escr(este, arg0, obj), nulo
   efim
 # Executa comando
-  se !p.lin
+  se !obj
     msg("O quê?")
-  senao posicao >= obj.posic
-    obj.exec(este, arg0, comando)
-  senao
+  senao posicao < obj.posic
     casovar posicao
     casose "0"
       msg("\c9Você está mort" + misc:sletra[sexo] + "!!!\b")
@@ -337,31 +359,10 @@ func teclouproc # Processa comando (arg0=comando)
     casose
       msg("\c9Você tenta, mas não consegue.\b")
     casofim
-
-func mudasala # Coloca personagem em outra sala (arg0 = sala)
-# Executa e limpa eventos
-  listaobj l0
-  l0.addfim(evento), evento.limpar
-  enquanto l0
-    l0.objini.e_saiu(este, arg0), l0.ini.remove
-  efim
-# Muda de sala
-  var.limpar("1")
-  dono = arg0
-# Executa eventos
-  l0.addfim(evento, dono.evento)
-  este.e_sala1(este, arg0)
-  dono.e_sala(este, arg0)
-  enquanto l0
-    l0.objini.e_sala(este, arg0), l0.ini.remove
-  efim
-# Mostra descrição
-  sock && msg2(dono.descsala(este, 7))
-# Executa eventos
-  l0.addfim(evento)
-  enquanto l0
-    l0.objini.e_entrou(este, arg0), l0.ini.remove
-  efim
+  senao txt(obj, 0, 10) == "cmd_magia_"
+    obj.escr(este, txtsub(arg0, 2))
+  senao
+    obj.escr(este, txt2(arg0))
 
 func ajustavar # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
@@ -536,7 +537,7 @@ func msginv # Mensagem mesmo se o alvo estiver invisível
 
 
 classe comum_item
-herda comum_fora
+herda comum_obj
 # Itens
 const bitinv = 3 # Grau de invisibilidade do personagem/item
 const item = 1 # Para identificar que é item
@@ -553,6 +554,9 @@ func ini # Objeto foi criado
 func fim
   evento.limpar
 
+func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
+  dono = arg0
+
 
 classe i_borracha
 herda comum_item
@@ -563,7 +567,7 @@ const vestir = 8
 
 
 classe p_anao
-herda comum_perso
+herda comum_persobat
 const nome = "anão"
 const ident = "anão"
 const sexo = 1
