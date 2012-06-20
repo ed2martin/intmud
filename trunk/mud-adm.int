@@ -1,28 +1,40 @@
 classe jog_adm
 # Funções necessárias para os comandos de administração
 
-func com_info5
+
+func cmd2_info # Usado por cmd_info
+  txt200 lin
+  lin = "Peso:   obj=" + arg0.pesoobj + "  dentro=" + arg0.pesoden
+  lin += "  total=" + arg0.pesotot + "  voando=" + (arg0.pesoadd ? "N" : "S")
+  lin += "\nVolume: obj=" + arg0.volobj + "  dentro=" + arg0.volden
+  lin += "  total=" + arg0.voltot + "  expande=" + (arg0.volexp ? "S" : "N")
+  lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.jogtot
+  lin += "  Itens dentro=" + arg0.dentro1.total + "  Outros dentro=" + arg0.dentro2.total
+  ret lin
+
+func cmd_info
   se !arg0
-    ref r
-    r = perso
-    msg("Você: peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
-    r = perso.dono
-    msg("Sala: peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
-    msg("jogtot: " + perso.jogtot + " " + r.jogtot)
+    msg("\b\c2Você:\b\n" + cmd2_info(perso))
+    msg("\c2Sala:\b\n" + cmd2_info(perso.dono))
     ret 1
   fimse
+  int1 achou
   listaobj l
-  l.addfim(perso.dono.dentro1, perso.dono.dentro2)
-  perso.itemnome(l, arg0)
-  !l && msg("Você não vê isso.")
   ref r
-  enquanto l.ini
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg0, 1000000)
+  r = perso
+  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1)
+  enquanto l
     r = l.objini, l.ini.remove
-    msg(txt(r.nome) + ": peso=" + r.pesotot + " vol=" + r.voltot + " expande=" + r.volexp)
+    continuar !perso.visivel(r) || !n.nome(r.ident, r.objtot)
+    msg("\b\c2" + r.nome + ": " + r + "\b\n" + cmd2_info(r))
+    achou = 1
   efim
+  !achou && msg("Não há nenhum personagem ou item chamado " + arg0)
   ret 1
 
-func com_adm
+func cmd_adm
   prog p
   se p.inifunctudo(este, "adm_" + arg0)
     msg2([p.texto])
@@ -38,7 +50,7 @@ Os tópicos são:\n\
   \c2SALA\b     Salas\n\
   \c2SAI\b      Saídas das salas\n\
   \c2ITEM\b     Itens\n\
-  \c2MOB\b      MOBs (personagens não jogadores)\n\
+  \c2PNJ\b      PNJs (personagens não jogadores)\n\
   \c2COD\b      Edição do código fonte\n\
   \c2OUTROS\b   Outros comandos"
 # \c2INFO\b     Informações sobre o MUD\n
@@ -52,20 +64,20 @@ const adm_item = "\b\c3Comandos de itens\b\n\
   Edita item.\n\
 \c2AITEM\b <nome>\n\
   Apaga item."
-const adm_mob = "\b\c3Comandos de MOBs\b\n\
-\c2LMOB\b <nome>\n\
-  Lista mobs que começam com o nome especificado.\n\
-\c2CMOB\b <nome>\n\
-  Cria mob. Nome pode conter letras e números.\n\
-\c2EMOB\b <nome>\n\
-  Edita mob.\n\
-\c2AMOB\b <nome>\n\
-  Apaga mob."
+const adm_pnj = "\b\c3Comandos de PNJs\b\n\
+\c2LPNJ\b <nome>\n\
+  Lista PNJs que começam com o nome especificado.\n\
+\c2CPNJ\b <nome>\n\
+  Cria PNJ. Nome pode conter letras e números.\n\
+\c2EPNJ\b <nome>\n\
+  Edita PNJ.\n\
+\c2APNJ\b <nome>\n\
+  Apaga PNJ."
 const adm_outros = "\c3Outros comandos\b\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores."
 
-func com_echo
+func cmd_echo
   se !arg0
     msg("\bDigite a mensagem após ECHO")
   senao

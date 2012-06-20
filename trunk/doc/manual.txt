@@ -732,13 +732,15 @@ $teste.x # Variável 'x' do primeiro objeto da classe 'teste'
 9.11. Uma expressão
 
 Qualquer combinação de operandos e operadores. É muito comum atribuir um
-valor a uma variável.
+valor a uma variável dessa forma.
 
 Exemplos:
 
-x = 10
-y = x + intabs(z) * 3
-z1 = x + y, z2 = x - y
+x = 10 # Faz 'x' ser 10
+y = x * 0.5 # O mesmo que '10 / 0.5' pois x = 10
+z = intabs(-3) # Faz 'z=3', pois intabs retorna o número sem sinal de menos
+z1 = 10, z2 = 10 + z1 # 'z2 = 10 + z1' é o mesmo que 'z2 = 10 + 10' pois z1=10 
+a = b = c = 4 # Primeiro faz c=4, depois b=c e por último a=b
 
 9.12. Controle de fluxo
 

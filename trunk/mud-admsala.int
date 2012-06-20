@@ -11,7 +11,7 @@ Montanha, excessivamente montanhoso - 6mv\n\
 Água, pode nadar - 4mv\n\
 Água, requer barco para passar - 1mv\n\
 Em baixo d'água - 5mv\n\
-Ar, itens e mobs caem - 1mv"
+Ar, itens e personagens caem - 1mv"
 const txt_luz = "Claro com eventos de tempo\n\
 Claro sem eventos de tempo\n\
 Luz do sol\nEscuro"
@@ -52,7 +52,7 @@ const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
 \c2ASAI\b <direção>\n\
   Apaga saída na direção especificada."
 
-func com_larea # Listar áreas
+func cmd_larea # Listar áreas
   prog p
   se !p.iniclasse("a_" + arg0)
     msg("\bNenhuma área encontrada.")
@@ -67,7 +67,7 @@ func com_larea # Listar áreas
   fimse
   ret 1
 
-func com_carea # Criar área
+func cmd_carea # Criar área
   txt100 prefixo
   prefixo = txtmin(arg0)
   se $a_[prefixo]
@@ -91,7 +91,7 @@ func com_carea # Criar área
   fimse
   ret 1
 
-func com_aarea # Apagar área
+func cmd_aarea # Apagar área
   txt100 prefixo
   prog p
   prefixo = txtmin(arg0)
@@ -107,7 +107,7 @@ func com_aarea # Apagar área
   fimse
   ret 1
 
-func com_earea # Editar área
+func cmd_earea # Editar área
   txt100 prefixo
   prog p
   prefixo = txtmin(arg0)
@@ -145,7 +145,7 @@ func p_area # Editando área
     txtmais.addfim("9. Silencioso      : " + m_simnao("s_silencio"))
     txtmais.addfim("10.Sem violência   : " + m_simnao("s_pacifico"))
     txtmais.addfim("11.Sem magia       : " + m_simnao("s_semmagia"))
-    txtmais.addfim("12.MOBs não entram : " + m_simnao("s_semmob"))
+    txtmais.addfim("12.PNJs não entram : " + m_simnao("s_sempnj"))
     tpasso = "a_" + txt(tpasso, 2)
     txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
     txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
@@ -214,8 +214,8 @@ func p_area # Editando área
     ret p_simnao("")
   casose "12"
     tpasso = "b_" + txt(tpasso, 2)
-    msg("MOBs não entram: " + m_simnao("s_semmob"))
-    tpasso += " s_semmob area Se MOBs não entram"
+    msg("PNJs não entram: " + m_simnao("s_sempnj"))
+    tpasso += " s_sempnj area Se PNJs não entram"
     ret p_simnao("")
   casose "f1"
     tpasso += " a_nome area Nome"
@@ -251,7 +251,7 @@ func p_area # Editando área
     tpasso = "b_" + txt(tpasso, 2) + " s_semmagia area Sem magia"
     ret p_func("\n")
   casose "f12"
-    tpasso = "b_" + txt(tpasso, 2) + " s_semmob area Se MOBs não entram"
+    tpasso = "b_" + txt(tpasso, 2) + " s_sempnj area Se PNJs não entram"
     ret p_func("\n")
   casose
     msg("Opção inválida: " + arg0)
@@ -263,7 +263,7 @@ func p_area # Editando área
   casofim
   ret 1
 
-func com_lsala # Listar salas
+func cmd_lsala # Listar salas
   prog p
   se !p.iniclasse("s_" + arg0)
     msg("\bNenhuma sala encontrada.")
@@ -278,17 +278,17 @@ func com_lsala # Listar salas
   fimse
   ret 1
 
-func com_isala # Ir para uma sala específica
+func cmd_isala # Ir para uma sala específica
   se !$s_[arg0]
     msg("\bSala não existe: " + arg0)
   senao !perso
     msg("Você deve estar controlando um personagem para isso")
   senao
-    perso.mudasala($s_[arg0])
+    perso.mudadono($s_[arg0])
   fimse
   ret 1
 
-func com_csala # Criar sala
+func cmd_csala # Criar sala
   prog p
   txt40 nome
   uint16 num
@@ -349,7 +349,7 @@ func com_csala # Criar sala
   fimse
   ret 1
 
-func com_asala # Apagar sala
+func cmd_asala # Apagar sala
   prog p
   se arg0 == ""
     msg("Tecle um ou mais nomes da sala após ASALA")
@@ -391,7 +391,7 @@ func p_asala # Confirmar que quer apagar sala
   fimse
   ret 1
 
-func com_esala # Editar sala
+func cmd_esala # Editar sala
   txt100 nome
   prog p
   nome = txtmin(arg0)
@@ -424,7 +424,7 @@ func p_sala # Editando sala
     txtmais.addfim("7. Silencioso      : " + m_simnao("s_silencio"))
     txtmais.addfim("8. Sem violência   : " + m_simnao("s_pacifico"))
     txtmais.addfim("9. Sem magia       : " + m_simnao("s_semmagia"))
-    txtmais.addfim("10.MOBs não entram : " + m_simnao("s_semmob"))
+    txtmais.addfim("10.PNJs não entram : " + m_simnao("s_sempnj"))
     txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
     txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
     txtmostra
@@ -474,8 +474,8 @@ func p_sala # Editando sala
     tpasso += " s_semmagia sala Sem magia"
     ret p_simnao("")
   casose "10"
-    msg("MOBs não entram: " + m_simnao("s_semmob"))
-    tpasso += " s_semmob sala Se MOBs não entram"
+    msg("PNJs não entram: " + m_simnao("s_sempnj"))
+    tpasso += " s_sempnj sala Se PNJs não entram"
     ret p_simnao("")
   casose "f1"
     tpasso += " s_titulo sala Título"
@@ -505,7 +505,7 @@ func p_sala # Editando sala
     tpasso += " s_semmagia sala Sem magia"
     ret p_func("\n")
   casose "f10"
-    tpasso += " s_semmob sala Se MOBs não entram"
+    tpasso += " s_sempnj sala Se PNJs não entram"
     ret p_func("\n")
   casose
     msg("Opção inválida: " + arg0)
@@ -517,7 +517,7 @@ func p_sala # Editando sala
   casofim
   ret 1
 
-func com_lsai # Listar saídas
+func cmd_lsai # Listar saídas
   se !perso.dono
     msg("\bVocê não está em uma sala")
     ret 1
@@ -539,7 +539,7 @@ func com_lsai # Listar saídas
   !lin && msg("Nenhuma")
   ret 1
 
-func com_asai # Apagar saída
+func cmd_asai # Apagar saída
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg0)]
@@ -560,7 +560,7 @@ func com_asai # Apagar saída
   fimse
   ret 1
 
-func com_csai # Criar saída
+func cmd_csai # Criar saída
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg0)]
@@ -586,9 +586,9 @@ func com_csai # Criar saída
   fimse
   ret 1
 
-const com_csai2 = com_csai(arg0, "2") # Criar saída completa
+const cmd_csai2 = cmd_csai(arg0, "2") # Criar saída completa
 
-func com_esai # Editar saída
+func cmd_esai # Editar saída
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg0)]
@@ -696,7 +696,7 @@ func p_sai # Editando saída
 func p_saitipo # Acerta a saída após mudar o tipo de saída
   ref r
   r = $[txt1(tpasso)]
-  se r && r.tipo == 0 != (r.tipoini == 0)
+  se r && (r.tipo == 0) != (r.tipoini == 0)
     r.tipo = r.tipoini
   fimse
   ret p_sai("")

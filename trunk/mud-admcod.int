@@ -21,7 +21,7 @@ const adm_cod = "\b\c3Comandos de edição do código\b\n\
 \c2afunc\b <função>\n\
   Apaga função."
 
-func com_lcl # Listar classes
+func cmd_lcl # Listar classes
   prog p
   txt80 lin
   se !p.iniclasse(arg0)
@@ -44,7 +44,7 @@ func com_lcl # Listar classes
   fimse
   ret 1
 
-func com_ccl # Cria classe
+func cmd_ccl # Cria classe
   prog p
   se !arg0
     msg("\bDigite o nome da classe após CCL")
@@ -76,7 +76,7 @@ func p_ccl
   fimse
   ret 1
 
-func com_acl # Apaga classe
+func cmd_acl # Apaga classe
   prog p
   se !arg0
     msg("\bDigite o nome da classe após ACL")
@@ -106,7 +106,7 @@ func p_acl
   fimse
   ret 1
 
-func com_ecl # Escolhe classe para editar
+func cmd_ecl # Escolhe classe para editar
   prog p
   txt100 lin
   lin = txttroca(arg0, " ", "_")
@@ -119,7 +119,7 @@ func com_ecl # Escolhe classe para editar
   fimse
   ret 1
 
-func com_lfunc # Listar funções
+func cmd_lfunc # Listar funções
   prog p
   se !p.inifunc(tclasse, arg0)
     msg("\bNenhuma função encontrada.")
@@ -135,7 +135,7 @@ func com_lfunc # Listar funções
   fimse
   ret 1
 
-func com_lfunc2 # Listar funções inclusive as herdadas
+func cmd_lfunc2 # Listar funções inclusive as herdadas
   prog p
   se !p.inifunctudo(tclasse, arg0)
     msg("\bNenhuma função encontrada.")
@@ -151,7 +151,7 @@ func com_lfunc2 # Listar funções inclusive as herdadas
   fimse
   ret 1
 
-func com_afunc # Apaga classe
+func cmd_afunc # Apaga classe
   prog p
   se !arg0
     msg("\bDigite o nome da classe após AFUNC")
@@ -181,7 +181,7 @@ func p_afunc
   fimse
   ret 1
 
-func com_efunc # Edita função
+func cmd_efunc # Edita função
   prog p
   se !tclasse
     msg("\bEscolha uma classe com ECL")
@@ -202,7 +202,7 @@ func efunc2
   passo = ""
   ret 1
 
-func com_herda
+func cmd_herda
   prog p
   se !tclasse
     msg("\bEscolha uma classe com ECL")

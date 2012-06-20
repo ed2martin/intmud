@@ -690,7 +690,14 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             for (; *(unsigned char*)p1>=' '; p1--)
                 assert(p1>dest_ini);
         // Decide se deve colocar p1 entre parênteses
-            if (dir_esq ? op <= *p1 : op < *p1)
+            int op2 = *p1;
+            if (dir_esq ? op <= op2 : op < op2)
+            {
+                copiaini(nome, ")");
+                txtprimeiro = "(";
+            }
+            // Manter parênteses em situações como: (a==0) != (b==0)
+            else if ((op==9 || op==10) && (op2==9 || op2==10))
             {
                 copiaini(nome, ")");
                 txtprimeiro = "(";

@@ -1,0 +1,40 @@
+classe comum_item
+herda comum_obj
+# Itens
+const bitinv = 3 # Grau de invisibilidade do personagem/item
+const item = 1 # Para identificar que é item
+const sexo = 0 # Sexo: 0=feminino, 1=masculino
+const nome = "item"
+const ident = nome
+const descpos = txtmaimin(nome) + " está aqui."
+const descver = "Você não vê nada de especial."
+uint32 vestpos # Em que posição está vestindo, 0=nenhuma
+# const abertoini = 0 # Valor inicial de aberto
+# uint8 aberto # 0=não é container, 1=está sempre aberto
+# 2=está aberto, 3=está fechado, 4=está trancado
+
+func ini # Objeto foi criado
+  comum_obj:ini(arg0)
+
+func fim # Objeto foi apagado
+  comum_obj:fim
+
+func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
+  dono = arg0
+
+
+classe i_borracha
+herda comum_item
+const nome = "borracha"
+const sexo = 0
+const descpos = "Uma borracha está jogada aqui."
+const vestir = 8
+
+
+classe p_anao
+herda comum_persobat
+const nome = "anão"
+const ident = "anão"
+const sexo = 1
+const descpos = "Um anão está aqui."
+const descver = "Você não vê nada de especial."

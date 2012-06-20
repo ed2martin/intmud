@@ -6,7 +6,6 @@ const iniclasse = criar(arg0)
 classe cmd_ajuda
 herda comando_comum
 const posic = 0
-const texto = texto1 + texto2
 const texto1 = "\b\c3Páginas de ajuda\b\n\
 Para ler tecle ajuda seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
@@ -25,9 +24,9 @@ func texto2
 func escr
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, arg1), nulo
+    ret l.objini.cmd_ajuda(arg0, arg1), nulo
   efim
-  ret arg1 == "", arg0.msg2(texto)
+  ret arg1 == "", arg0.msg2(texto1 + texto2(arg0))
   ref obj
   prog p
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois

@@ -1,0 +1,146 @@
+classe comum_obj
+# Comum a todos os personagens, itens e salas
+#
+sav listaitem idono # Uso interno: aonde o objeto está
+sav listaobj dentro1 # Lista de objetos que possui
+sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
+listaobj evento # Objetos que recebem eventos desse
+uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
+const objtot = 1 # Quantidade de objetos que esse objeto representa
+#
+uint32 pesoden # Somente leitura: quanto peso tem dentro
+uint32 pesotot # Somente leitura: peso total
+const pesoobj = 1 # Peso do objeto (em gramas)
+const pesoadd = 1 # Se falso, está voando/flutuando (pesotot será 0)
+#
+uint32 volden # Somente leitura: volume do que tem dentro
+uint32 voltot # Somente leitura: volume total do objeto
+const volobj = 1 # Volume do objeto quando estiver vazio
+const volmax = 1000000 # Volume máximo do que pode ter dentro
+const volexp = 0 # Diferente de 0 se expande com os itens que tem dentro
+
+func ini # Coloca o objeto dentro de outro
+  ajustapeso
+  arg0 && (dono = arg0)
+
+func fim # Objeto vai sair do jogo
+  listaobj l
+  ref r
+# Executa eventos cmd_fim
+  epara l.addfim(evento), l, l.ini.remove
+    l0.objini.cmd_fim(este)
+  efim
+# Limpa variáveis
+  evento.limpar
+  atkrec.limpar
+  var.limpar("1")
+  ret !idono, nulo
+# Se não está voando: retira o peso total
+  se pesoadd
+    r = idono.objlista, r.pesoden -= pesotot
+    enquanto r.pesoadd
+      r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
+    efim
+  fimse
+# Retira o volume
+  r = idono.objlista, r.volden -= voltot
+  enquanto r.volexp
+    r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
+  efim
+# Acerta se tem jogador dentro
+  se jogtot
+    epara r = idono.objlista, r, r = r.idono.objlista
+      r.jogtot -= jogtot
+    efim
+  fimse
+
+func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
+  real x
+  ref r
+# Acerta o peso (pesoden e pesotot)
+  x = pesoadd ? pesoden + pesoobj * objtot - pesotot : -pesotot
+  se x
+    pesotot += x, r = idono.objlista, r.pesoden += x
+    enquanto r.pesoadd
+      r.pesotot += x, r = r.idono.objlista, r.pesoden += x
+    efim
+  fimse
+# Acerta o volume (volden e voltot)
+  x = volexp ? volden + volobj * objtot - voltot : volobj * objtot - voltot
+  se x
+    voltot += x, r = idono.objlista, r.volden += x
+    enquanto r.volexp
+      r.voltot += x, r = r.idono.objlista, r.volden += x
+    efim
+  fimse
+
+varfunc dono # O dono do personagem/item
+  ret !args, idono.objlista # Checa se é leitura
+  ret idono.objlista == ref(arg0), nulo # Retorna se o dono não vai mudar
+  ref r
+# Se não está voando: retira o peso total
+  se pesoadd
+    r = idono.objlista, r.pesoden -= pesotot
+    enquanto r.pesoadd
+      r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
+    efim
+  fimse
+# Retira o volume
+  r = idono.objlista, r.volden -= voltot
+  enquanto r.volexp
+    r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
+  efim
+# Acerta se tem jogador dentro
+  se jogtot
+    epara r = idono.objlista, r, r = r.idono.objlista
+      r.jogtot -= jogtot
+    efim
+  fimse
+# Objeto deixa de receber eventos dele e do dono
+  idono.objlista.evento.remove(este)
+  evento.remove(este)
+# Objeto muda de dono
+  idono.remove # Retira do dono atual
+  se perso
+    idono = ref(arg0).dentro2.addini(este) # Adiciona personagem
+  senao
+    idono = ref(arg0).dentro1.addini(este) # Adiciona item
+  fimse
+# Se não está voando: acrescenta o peso total
+  se pesoadd
+    r = idono.objlista, r.pesoden += pesotot
+    enquanto r.pesoadd
+      r.pesotot += pesotot, r = r.idono.objlista, r.pesoden += pesotot
+    efim
+  fimse
+# Acrescenta o volume
+  r = idono.objlista, r.volden += voltot
+  enquanto r.volexp
+    r.voltot += voltot, r = r.idono.objlista, r.volden += voltot
+  efim
+# Acerta se tem jogador dentro
+  se jogtot
+    epara r = idono.objlista, r, r = r.idono.objlista
+      r.jogtot += jogtot
+    efim
+  fimse
+# Limpa variáveis se for personagem
+  casovar perso
+  casose "2"
+    arg0.animal.0.atkrec.limpar
+    arg0.animal.2.atkrec.limpar
+    arg0.animal.3.atkrec.limpar
+    arg0.animal.4.atkrec.limpar
+    arg0.animal.5.atkrec.limpar
+    arg0.animal.6.atkrec.limpar
+    arg0.animal.7.atkrec.limpar
+    arg0.animal.8.atkrec.limpar
+    arg0.animal.9.atkrec.limpar
+  casose "1"
+    arg0.alvo = nulo
+    arg0.atkrec.limpar
+    arg0.var.limpar("1")
+  casofim
+
+func visivel # Checa se um objeto está visível (arg0=objeto)
+  ret !(~bitver & arg0.inv)

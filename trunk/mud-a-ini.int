@@ -30,7 +30,7 @@ func espera_exec # Restaura a vida do jogador
     se r.vida < r.vidamax / 2
       r.vida += 1, espera = 10
     senao
-      r.mudasala(config:salaini)
+      r.mudadono(config:salaini)
     fimse
   efim
 
@@ -138,15 +138,15 @@ func entrou20
 
 const container = 1 # Para poder receber itens
 
-func cmd_mudasala # Receber eventos do próprio personagem
+func cmd_mudadono # Receber eventos do próprio personagem
   evento.addfim(este)
 
 func cmd_dar1 # Alguém deu algum item
-  se arg1.nome == "pedra"
-    apagar(arg1) # Apaga o item
-    misc:tempo("deupedra", arg0) # Dispara funções 'deupedra'
+  se arg2.nome == "pedra"
+    apagar(arg2) # Apaga o item
+    misc:tempo("deupedra", arg0) # Dispara 'deupedra'
   senao
-    arg0.msg("Jardineiro não aceita " + arg1.nome + ".")
+    arg0.msg("Jardineiro não aceita " + arg2.nome + ".")
     ret 1 # Para não receber o item
 
 func deupedra10
@@ -159,6 +159,7 @@ herda comum_item
 const nome = "pedra"
 const sexo = 0
 const descpos = "Aqui tem uma pedra."
+const pesoobj = 200
 
 
 classe s_ini012
