@@ -4,6 +4,8 @@ int1 luz # Se tem luz do dia
 int8 hora # Hora MUD (1 dia MUD = 2 horas)
 inttempo imin # Quantos segundos faltam para completar 1 hora MUD
 
+const admin = 1 # Verdadeiro se for administrador
+
 func iniclasse
   criar(arg0)
 
@@ -106,8 +108,8 @@ func recebe # Recebeu mensagem do jogador
   fimse
 # Comando para o jogo
   se !perso.p_espera # Checa se pode processar o comando
-    perso.p_espera = 2
     perso.teclou(ultimocom) # Personagem processa comando
+    perso.p_espera < 2 && (perso.p_espera = 2)
   senao perso.b_tempo # Checa se está batalhando
 # comandos && msg("Feito, aguarde")
     comandos.limpar
@@ -116,6 +118,11 @@ func recebe # Recebeu mensagem do jogador
     comandos.addfim(ultimocom)
   senao # Chegou ao limite de comandos
     msg("Aguarde")
+
+func espera_exec # Chamado por p_espera do personagem
+  se comandos
+    perso.teclou(comandos.remove(1)) # Personagem processa comando
+    perso.p_espera < 2 && (perso.p_espera = 2)
 
 func temposair # Acerta variáveis de tempo para sair do MUD
   casovar txt1(info)
@@ -188,7 +195,7 @@ func p_sexo # Digitar O ou A
   perso.nome = nome
   arg0 == "O" && (perso.sexo = 1)
   perso.canais = canais
-  perso.mudasala(config:salaini)
+  perso.mudadono(config:salaini)
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
   temposair # Acerta tempo para sair do MUD
@@ -248,7 +255,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     msg("Continuando jogo salvo.")
     ref r
     r = $[perso.salanome]
-    perso.mudasala(r ? r : config:salaini)
+    perso.mudadono(r ? r : config:salaini)
     $mens.p(arg0)
     $mens.mvis2("", "$P chegou.")
     perso.salvarev = 3000 # 5 minutos
@@ -324,6 +331,7 @@ inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 inttempo salvarev # Para salvar o jogo de tempos em tempos
+const pesoobj = 65000
 
 func ini # Objeto foi criado
   nivel = 1
@@ -335,7 +343,7 @@ func fim # Objeto foi apagado
     $mens.p(este)
     $mens.mvis2("", "$P foi embora.")
   fimse
-  comum_perso:fim
+  comum_persobat:fim
 
 func fechou # Executado quando o objeto sock é apagado
   vazio1 = 1800 # 3 minutos

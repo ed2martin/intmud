@@ -55,7 +55,7 @@ const d2sw = "ne"
 # arg0 = número do golpe
 # retorna: 0=normal, 1=especial
 # Nota 1: a quantidade de tipos está um pouco exagerada
-# Nota 2: não necessariamente todos os tipos se aplicam a golpes e MOBs
+# Nota 2: não necessariamente todos os tipos se aplicam a golpes e PNJs
 
 func atktipo
   casovar arg0
@@ -245,9 +245,9 @@ func tempo # Eventos de tempo (cria objeto), vide classe evtempo
     r.obj = este
     r.func = arg0
     r.tfunc = inttotal(arg0)
-    r.mob1 = arg1, r.mob1.evento.addfim(r)
-    r.mob2 = arg2, r.mob2.evento.addfim(r)
-    r.mob3 = arg3, r.mob3.evento.addfim(r)
+    r.perso1 = arg1, r.perso1.evento.addfim(r)
+    r.perso2 = arg2, r.perso2.evento.addfim(r)
+    r.perso3 = arg3, r.perso3.evento.addfim(r)
 
 func separa # Separa o nome do objeto do nome do destino
 # arg0 = texto completo
@@ -327,12 +327,12 @@ uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
 txt100 func # Nome da função que deve chamar
 uint8 tfunc # Tamanho de func em caracteres
 ref obj # Objeto que contém a função
-ref mob1 # Primeiro personagem
-ref mob2 # Segundo personagem
-ref mob3 # Terceito personagem
+ref perso1 # Primeiro personagem
+ref perso2 # Segundo personagem
+ref perso3 # Terceito personagem
 
 func fim # Este objeto foi apagado
-  obj.[func]0(mob1, mob2, mob3, este)
+  obj.[func]0(perso1, perso2, perso3, este)
 
 func cmd_saiu # Personagem saiu da sala
   apagar(este)
@@ -357,4 +357,4 @@ func tempo1_exec # Executa eventos
   v = tempo2
   tempo1 = x - tempo2
   tempo2 = x
-  obj.[func + v](mob1, mob2, mob3, este)
+  obj.[func + v](perso1, perso2, perso3, este)

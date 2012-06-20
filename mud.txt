@@ -39,26 +39,71 @@ Quando um personagem digita algo, muda de sala ou ocorre qualquer outro
 evento, é executada uma função qualquer de todos os objetos dessa lista.
 Dessa forma é possível personalizar o comportamento de itens, salas, etc.
 
-O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_abrir'
-corresponde ao comando 'abrir'.
+O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_falar'
+corresponde ao comando 'falar'.
 
 Para saber quais são as listas envolvidas, basta verificar os argumentos
 da função, mais especificamente os personagens, os itens e as salas.
+
+----------------------------------------
+Eventos condicionais
+
+São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
+a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
+usuário informando o motivo.
 
 A seguir são listados os eventos (as funções).
 
 func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
 Personagem digitou alguma coisa.
-Retorna verdadeiro se não deve processar o comando.
 
-func cmd_fim(personagem ou objeto)
-Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
-do objeto é limpa.
+func cmd_ajuda(personagem ou objeto, texto)
+Teclou ajuda seguido de um texto.
 
 func cmd_[direção](personagem)
 Exemplos: cmd_n(personagem), cmd_s(personagem), etc.
 Personagem quer ir na direção indicada.
-Retorna verdadeiro se cancelar.
+
+func cmd_abrir(personagem, texto)
+Quer abrir um objeto ou uma porta.
+
+func cmd_fechar(personagem, texto)
+Quer fechar um objeto ou uma porta.
+
+func cmd_ver(personagem, texto)
+Quer ver alguma coisa.
+
+func cmd_pegar(personagem, texto)
+func cmd_soltar(personagem, texto)
+func cmd_dar(personagem, texto)
+Quer pegar, soltar ou dar alguma coisa.
+
+func cmd_pegar1(personagem, origem, item, quantidade do item)
+func cmd_soltar1(personagem, destino, item, quantidade do item)
+func cmd_dar1(personagem, destino, item, quantidade do item)
+Quer pegar, soltar ou dar algum item.
+
+func cmd_abrirdir(personagem, texto)
+func cmd_fechardir(personagem, texto)
+Quer abrir ou fechar porta na direção especificada.
+
+func cmd_abrirobj(personagem, item, texto)
+func cmd_fecharobj(personagem, item, texto)
+Quer abrir ou fechar um item. Se o objeto 'item' for nulo, significa
+que não encontrou o item.
+
+
+----------------------------------------
+Eventos incondicionais
+
+São funções chamadas como resultado de uma ação que aconteceu ou vai
+acontecer. A função não tem a opção de cancelar a ação.
+
+A seguir são listados os eventos (as funções).
+
+func cmd_fim(personagem ou objeto)
+Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
+do objeto é limpa.
 
 func cmd_saiu(personagem)
 Personagem vai sair da sala. Antes desse evento ocorrer, a 'listaobj evento'
@@ -72,44 +117,29 @@ Jogador entrou na sala. É chamado logo após 'cmd_chegou', se for jogador.
 Esse evento em particular é executado apenas para a sala e para todos os
 personagens que estiverem na mesma sala.
 
-func cmd_mudasala(nova sala)
+func cmd_mudadono
 O próprio personagem mudou de sala.
-Esse evento é gerado somente para o personagem, quando a função mudasala
+Esse evento é gerado somente para o personagem, quando a função mudadono
 é executada.
 
 func cmd_falou(personagem, texto)
 Falou alguma coisa.
 
-func cmd_abrir(personagem, texto)
-Quer abrir um objeto ou uma porta. Retornar verdadeiro para cancelar.
 
-func cmd_fechar(personagem, texto)
-Quer fechar um objeto ou uma porta. Retornar verdadeiro para cancelar.
+----------------------------------------
+Comum a salas, personagens e itens
 
-func cmd_ver(personagem, texto)
-Quer ver alguma coisa. Retornar verdadeiro para cancelar.
+*listaobj dentro1
+Lista de itens, exceto vestindo
 
-func cmd_pegar(personagem, texto)
-func cmd_soltar(personagem, texto)
-func cmd_dar(personagem, texto)
-Quer pegar, soltar ou dar alguma coisa. Retornar verdadeiro para cancelar.
+*listaobj dentro2
+Lista de personagens na sala e de itens vestindo
 
-func cmd_pegar(personagem, item, de onde pegar, quantidade do item)
-func cmd_soltar(personagem, item, aonde soltar, quantidade do item)
-func cmd_dar(personagem, item, personagem destino, quantidade do item)
-Quer pegar, soltar ou dar algum item. Retornar verdadeiro para cancelar.
+*listaobj evento
+Objetos que recebem eventos desse objeto
 
 ----------------------------------------
 Salas (mud-sala.int)
-
-*listaobj dentro1
-Lista de itens na sala
-
-*listaobj dentro2
-Lista de personagens na sala
-
-*listaobj evento
-Objetos que recebem eventos da sala
 
 *const s_titulo = "texto"
 Retorna o título da sala. arg0 é quem está requisitanto o título.
@@ -140,7 +170,7 @@ Antes de acssar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
 *const tranc_[direção]
-Antes de acssar fazer misc:obj=personagem
+Antes de acessar fazer misc:obj=personagem
 0 = porta normal
 1 = fechado quando alguém passar pela porta
 2 = trancado quando for fechado
@@ -223,15 +253,6 @@ Descrição, quando olha para o objeto; arg0=quem quer ver
 *int1 container
 Verdadeiro (=1) se pode receber itens
 
-*func itemnome( lista , texto )
-Procura um item pelo nome
-Lista é uma variável listaobj com os possíveis candidados
-Texto é o texto procurado, exemplos:
-"banana" -> procura um item chamado banana
-"2.banana" -> procura a segunda banana
-"10 banana" -> procura 10 itens chamados banana
-Essa função altera a lista mantendo apenas os itens que correspondem
-
 ----------------------------------------
 Personagens (mud-perso.int)
 
@@ -263,7 +284,7 @@ Posição padrão do personagem
 sav textovar var
 Variáveis criadas sob demanda do personagem
 As variáveis cujo nome começa com "1" são apagadas quando o personagem
-muda de sala (função mudasala).
+muda de sala (função mudadono).
 As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
 salvo é recarregado (quando o jogador entra no jogo).
 
@@ -276,7 +297,7 @@ Pega o próximo comando da lista
 *func teclouproc
 Processa comando, sem espera (arg0=comando)
 
-*func mudasala
+*func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
 *func ajustavar
