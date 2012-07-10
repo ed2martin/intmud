@@ -72,14 +72,14 @@ func mudaperso # Muda o personagem, arg0=novo personagem
   ref r
 # Indica que o jogador não controla o antigo personagem
   epara r = perso, r, r = r.dono
-    r.jogtot -= 1
+    r.socktot -= 1
   efim
   perso.sock = nulo
 # Indica que o jogador controla o novo personagem
   perso = arg0
   perso.sock = este
   epara r = perso, r, r = r.dono
-    r.jogtot += 1
+    r.socktot += 1
   efim
 
 func reinicia # Volta ao início: pede o nome do personagem
@@ -110,7 +110,7 @@ func recebe # Recebeu mensagem do jogador
   se !perso.p_espera # Checa se pode processar o comando
     perso.teclou(ultimocom) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
-  senao perso.b_tempo # Checa se está batalhando
+  senao perso.atktempo # Checa se está batalhando
 # comandos && msg("Feito, aguarde")
     comandos.limpar
     comandos.addfim(ultimocom)
@@ -246,9 +246,14 @@ func p_senha # Entrar com a senha para carregar jogo salvo
       nome = perso.nome
     fimse
 # Acerta variáveis
+    debug d
     listaitem item
     epara item = l1.ini, item, item.depois
-      item.obj.var.limpar("1"), item.obj.var.limpar("2"), item.obj.ajustapeso
+      d.exec = 5000
+      !item.obj.dono && !item.obj.jog && apagar(item.obj)
+      item.obj.var.limpar("1"), item.obj.var.limpar("2")
+      item.obj.ajustapeso
+      item.obj.recalc = 1
     efim
     canais = perso.canais
 # Muda de sala e volta ao jogo
@@ -317,10 +322,9 @@ func p_senha3 # Repetir a senha digitada
 
 
 classe jogador
-herda comum_persobat
+herda comum_persoanimal
 # Personagem no jogo
 const jog = 1 # Para identificar que é jogador
-const perso = 2 # Para identificar que é personagem que pode ter animais
 const ident = nome
 indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
@@ -335,7 +339,7 @@ const pesoobj = 65000
 
 func ini # Objeto foi criado
   nivel = 1
-  comum_persobat:ini
+  comum_persoanimal:ini
 
 func fim # Objeto foi apagado
   salvar
@@ -343,7 +347,7 @@ func fim # Objeto foi apagado
     $mens.p(este)
     $mens.mvis2("", "$P foi embora.")
   fimse
-  comum_persobat:fim
+  comum_persoanimal:fim
 
 func fechou # Executado quando o objeto sock é apagado
   vazio1 = 1800 # 3 minutos
@@ -374,3 +378,7 @@ func vazio1_exec # Próximo de sair do MUD
 
 func vazio2_exec # Sair do MUD automaticamente
   apagar(este)
+
+func cmd_recalc1 # Personagem do jogador tem mais pontos de vida
+  pvidamax += 40
+  atknorm *= 5

@@ -15,6 +15,9 @@ const sletra1 = "o"
 const sum0 = "uma" # sum[sexo] = "um" ou "uma"
 const sum1 = "um"
 #
+# Para calcular bônus conforme o tipo
+comum real defbonus.255
+#
 # Direções
 const d1n = "n"
 const d1s = "s"
@@ -51,13 +54,10 @@ const d2so = "ne"
 const d2nw = "se"
 const d2sw = "ne"
 #
-# Tipos de golpes e personagens
+func atktipo # Tipos de golpes
 # arg0 = número do golpe
-# retorna: 0=normal, 1=especial
-# Nota 1: a quantidade de tipos está um pouco exagerada
-# Nota 2: não necessariamente todos os tipos se aplicam a golpes e PNJs
-
-func atktipo
+# Retorna: 0=normal, 1=especial
+# Nota: a quantidade de tipos está um pouco exagerada
   casovar arg0
   casose "0" # contusão/normal (um golpe de pancada)
   casose "1" # luta (um golpe de alguma arte marcial)
@@ -84,158 +84,153 @@ func atktipo
     ret 0
   casofim
   ret 0 # Tipo desconhecido: golpe normal
-#
-# Ajusta defesa conforme o tipo de personagem
-# somar 2 = dobra defesa
-# subtrair 2 = reduz defesa pela metade
-# 9 ou mais = imune ao tipo de golpe
 
-func def0 # Contusão/Normal
-  def.1 -= 2 # luta
-  def.2 -= 2 # cortante
-  def.3 -= 2 # perfurante
-  def.16 += 100 # fantasma
+func tipo_normal # Contusão/Normal
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 100 # fantasma
 
-func def1 # Luta
-  def.9 -= 2 # ar
-  def.8 += 2 # pedra
-  def.11 += 2 # trevas
-  def.15 += 2 # inseto
+func tipo_luta
+  deftipo.9 -= 2 # ar
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+  deftipo.15 += 2 # inseto
 
-func def2 # Cortante
-  def.4 -= 2 # fogo
-  def.5 -= 2 # água
-  def.12 -= 2 # eletricidade
-  def.6 += 2 # gelo
-  def.8 += 2 # pedra
-  def.11 += 2 # trevas
+func tipo_cortante
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.12 -= 2 # eletricidade
+  deftipo.6 += 2 # gelo
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
 
-func def3 # Perfurante
-  def.4 -= 2 # fogo
-  def.5 -= 2 # água
-  def.12 -= 2 # eletricidade
-  def.6 += 2 # gelo
-  def.8 += 2 # pedra
-  def.11 += 2 # trevas
+func tipo_perfurante
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.12 -= 2 # eletricidade
+  deftipo.6 += 2 # gelo
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
 
-func def4 # Fogo
-  def.5 -= 2 # água
-  def.7 -= 2 # terra
-  def.8 -= 2 # pedra
-  def.4 += 2 # fogo
-  def.6 += 2 # gelo
-  def.13 += 2 # vegetal
-  def.15 += 2 # inseto
+func tipo_fogo
+  deftipo.5 -= 2 # água
+  deftipo.7 -= 2 # terra
+  deftipo.8 -= 2 # pedra
+  deftipo.4 += 2 # fogo
+  deftipo.6 += 2 # gelo
+  deftipo.13 += 2 # vegetal
+  deftipo.15 += 2 # inseto
 
-func def5 # Água
-  def.12 -= 2 # elétrico
-  def.13 -= 2 # vegetal
-  def.4 += 2 # fogo
-  def.5 += 2 # água
-  def.6 += 2 # gelo
+func tipo_agua
+  deftipo.12 -= 2 # elétrico
+  deftipo.13 -= 2 # vegetal
+  deftipo.4 += 2 # fogo
+  deftipo.5 += 2 # água
+  deftipo.6 += 2 # gelo
 
-func def6 # Gelo
-  def.1 -= 2 # luta
-  def.4 -= 2 # fogo
-  def.8 -= 2 # pedra
-  def.2 += 2 # cortante
-  def.3 += 2 # perfurante
-  def.6 += 2 # gelo
+func tipo_gelo
+  deftipo.1 -= 2 # luta
+  deftipo.4 -= 2 # fogo
+  deftipo.8 -= 2 # pedra
+  deftipo.2 += 2 # cortante
+  deftipo.3 += 2 # perfurante
+  deftipo.6 += 2 # gelo
 
-func def7 # Terra
-  def.4 -= 2 # fogo
-  def.5 -= 2 # água
-  def.6 -= 2 # gelo
-  def.13 -= 2 # vegetal
-  def.8 += 2 # pedra
-  def.12 += 100 # elétrico
+func tipo_terra
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.6 -= 2 # gelo
+  deftipo.13 -= 2 # vegetal
+  deftipo.8 += 2 # pedra
+  deftipo.12 += 100 # elétrico
 
-func def8 # Pedra
-  def.1 -= 2 # luta
-  def.5 -= 2 # água
-  def.7 -= 2 # terra
-  def.13 -= 2 # vegetal
-  def.0 += 2 # contusão/normal
-  def.2 += 2 # cortante
-  def.3 += 2 # perfurante
-  def.4 += 2 # fogo
-  def.9 += 2 # ar
+func tipo_pedra
+  deftipo.1 -= 2 # luta
+  deftipo.5 -= 2 # água
+  deftipo.7 -= 2 # terra
+  deftipo.13 -= 2 # vegetal
+  deftipo.0 += 2 # contusão/normal
+  deftipo.2 += 2 # cortante
+  deftipo.3 += 2 # perfurante
+  deftipo.4 += 2 # fogo
+  deftipo.9 += 2 # ar
 
-func def9 # Ar
-  def.6 -= 2 # gelo
-  def.8 -= 2 # pedra
-  def.12 -= 2 # elétrico
-  def.1 += 2 # luta
-  def.13 += 2 # vegetal
-  def.15 += 2 # inseto
-  def.7 += 100 # terra
+func tipo_ar
+  deftipo.6 -= 2 # gelo
+  deftipo.8 -= 2 # pedra
+  deftipo.12 -= 2 # elétrico
+  deftipo.1 += 2 # luta
+  deftipo.13 += 2 # vegetal
+  deftipo.15 += 2 # inseto
+  deftipo.7 += 100 # terra
 
-func def10 # Luz
-  def.13 -= 2 # vegetal
-  def.16 -= 2 # fantasma
-  def.10 += 2 # luz
-  def.11 += 2 # trevas
-  def.14 += 100 # psíquico
+func tipo_luz
+  deftipo.13 -= 2 # vegetal
+  deftipo.16 -= 2 # fantasma
+  deftipo.10 += 2 # luz
+  deftipo.11 += 2 # trevas
+  deftipo.14 += 100 # psíquico
 
-func def11 # Trevas
-  def.10 -= 2 # luz
-  def.11 -= 2 # trevas
-  def.16 -= 2 # fantasma
-  def.1 += 2 # luta
-  def.15 += 2 # inseto
-  def.14 += 100 # psíquico
+func tipo_trevas
+  deftipo.10 -= 2 # luz
+  deftipo.11 -= 2 # trevas
+  deftipo.16 -= 2 # fantasma
+  deftipo.1 += 2 # luta
+  deftipo.15 += 2 # inseto
+  deftipo.14 += 100 # psíquico
 
-func def12 # Elétrico
-  def.7 -= 2 # terra
-  def.9 += 2 # ar
-  def.12 += 2 # elétrico
+func tipo_eletrico
+  deftipo.7 -= 2 # terra
+  deftipo.9 += 2 # ar
+  deftipo.12 += 2 # elétrico
 
-func def13 # Vegetal
-  def.2 -= 2 # cortante
-  def.4 -= 2 # fogo
-  def.6 -= 2 # gelo
-  def.9 -= 2 # ar
-  def.15 -= 2 # inseto
-  def.5 += 2 # água
-  def.7 += 2 # terra
-  def.10 += 2 # luz
-  def.12 += 2 # elétrico
-  def.13 += 2 # vegetal
+func tipo_vegetal
+  deftipo.2 -= 2 # cortante
+  deftipo.4 -= 2 # fogo
+  deftipo.6 -= 2 # gelo
+  deftipo.9 -= 2 # ar
+  deftipo.15 -= 2 # inseto
+  deftipo.5 += 2 # água
+  deftipo.7 += 2 # terra
+  deftipo.10 += 2 # luz
+  deftipo.12 += 2 # elétrico
+  deftipo.13 += 2 # vegetal
 
-func def14 # Psíquico
-  def.1 -= 2 # luta
-  def.11 -= 2 # trevas
-  def.14 -= 2 # psíquico
-  def.11 += 2 # trevas
-  def.15 += 2 # inseto
-  def.16 += 2 # fantasma
+func tipo_psiquico
+  deftipo.1 -= 2 # luta
+  deftipo.11 -= 2 # trevas
+  deftipo.14 -= 2 # psíquico
+  deftipo.11 += 2 # trevas
+  deftipo.15 += 2 # inseto
+  deftipo.16 += 2 # fantasma
 
-func def15 # Inseto
-  def.4 -= 2 # fogo
-  def.9 -= 2 # ar
-  def.8 -= 2 # pedra
-  def.1 += 2 # luta
-  def.7 += 2 # terra
-  def.13 += 2 # vegetal
+func tipo_inseto
+  deftipo.4 -= 2 # fogo
+  deftipo.9 -= 2 # ar
+  deftipo.8 -= 2 # pedra
+  deftipo.1 += 2 # luta
+  deftipo.7 += 2 # terra
+  deftipo.13 += 2 # vegetal
 
-func def16 # Fantasma
-  def.16 -= 2 # fantasma
-  def.10 -= 2 # luz
-  def.11 -= 2 # trevas
-  def.15 += 2 # inseto
-  def.0 += 100 # contusão/normal
-  def.1 += 100 # luta
-  def.2 += 100 # cortante
-  def.3 += 100 # perfurante
+func tipo_fantasma
+  deftipo.16 -= 2 # fantasma
+  deftipo.10 -= 2 # luz
+  deftipo.11 -= 2 # trevas
+  deftipo.15 += 2 # inseto
+  deftipo.0 += 100 # contusão/normal
+  deftipo.1 += 100 # luta
+  deftipo.2 += 100 # cortante
+  deftipo.3 += 100 # perfurante
 
-func def17 # Dragão
-  def.6 -= 2 # gelo
-  def.17 -= 2 # dragão
-  def.3 += 2 # perfurante
-  def.4 += 2 # fogo
-  def.5 += 2 # água
-  def.12 += 2 # elétrico
-  def.13 += 2 # vegetal
+func tipo_dragao
+  deftipo.6 -= 2 # gelo
+  deftipo.17 -= 2 # dragão
+  deftipo.3 += 2 # perfurante
+  deftipo.4 += 2 # fogo
+  deftipo.5 += 2 # água
+  deftipo.12 += 2 # elétrico
+  deftipo.13 += 2 # vegetal
 
 func tempo # Eventos de tempo (cria objeto), vide classe evtempo
   se txt(arg0) && ref(arg1)
@@ -297,11 +292,22 @@ func sepperso # Procura o personagem destino
   listaitem i
   nomeobj n
   n.ini(misc:sep2, 1)
-  epara i = arg0.dentro2.ini, i, i.depois
-    ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
-  efim
+  #epara i = arg0.dentro2.ini, i, i.depois
+  #  ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+  #efim
   epara i = arg0.dono.dentro2.ini, i, i.depois
     ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+  efim
+
+func iniclasse # Inicialização
+# Obtém os valores de defbonus
+  real r # Valor inicial é 2 elevado a -64
+  uint16 x
+  r = 1 / 65536, r = r * r * r * r
+  enquanto x < 256
+    misc:defbonus.[x] = r
+    misc:defbonus.[x + 1] = r * 1.414213562
+    x += 2, r *= 2
   efim
 
 

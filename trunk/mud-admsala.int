@@ -1,6 +1,7 @@
 classe jog_admsala
 # Comandos de sala e de área
 const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
+#
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
 Rua de uma cidade - 1mv\n\
 Campo, um campo aberto - 2mv\n\
@@ -12,9 +13,13 @@ Montanha, excessivamente montanhoso - 6mv\n\
 Água, requer barco para passar - 1mv\n\
 Em baixo d'água - 5mv\n\
 Ar, itens e personagens caem - 1mv"
+#
+const txt_luta = "Pacífico\nExceto entre jogadores\nQualquer luta"
+#
 const txt_luz = "Claro com eventos de tempo\n\
 Claro sem eventos de tempo\n\
 Luz do sol\nEscuro"
+#
 const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2LAREA\b [nome]\n\
   Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
@@ -143,7 +148,7 @@ func p_area # Editando área
     txtmais.addfim("7. Apagar itens em : " + m_numero("s_item") + " min")
     txtmais.addfim("8. Morre ao entrar : " + m_simnao("s_morre"))
     txtmais.addfim("9. Silencioso      : " + m_simnao("s_silencio"))
-    txtmais.addfim("10.Sem violência   : " + m_simnao("s_pacifico"))
+    txtmais.addfim("10.Batalha         : " + m_opcao("s_luta", txt_luta))
     txtmais.addfim("11.Sem magia       : " + m_simnao("s_semmagia"))
     txtmais.addfim("12.PNJs não entram : " + m_simnao("s_sempnj"))
     tpasso = "a_" + txt(tpasso, 2)
@@ -204,9 +209,10 @@ func p_area # Editando área
     ret p_simnao("")
   casose "10"
     tpasso = "b_" + txt(tpasso, 2)
-    msg("Sem violência: " + m_simnao("s_pacifico"))
-    tpasso += " s_pacifico area Sem violência"
-    ret p_simnao("")
+    msg("Batalha: " + m_opcao("s_luta", txt_luta))
+    teditor.addfim(txt_luta)
+    tpasso += " s_luta area Batalha"
+    ret p_opcao("")
   casose "11"
     tpasso = "b_" + txt(tpasso, 2)
     msg("Sem magia: " + m_simnao("s_semmagia"))
@@ -245,7 +251,7 @@ func p_area # Editando área
     tpasso = "b_" + txt(tpasso, 2) + " s_silencio area Silencioso"
     ret p_func("\n")
   casose "f10"
-    tpasso = "b_" + txt(tpasso, 2) + " s_pacifico area Sem violência"
+    tpasso = "b_" + txt(tpasso, 2) + " s_luta area Batalha"
     ret p_func("\n")
   casose "f11"
     tpasso = "b_" + txt(tpasso, 2) + " s_semmagia area Sem magia"
@@ -422,7 +428,7 @@ func p_sala # Editando sala
     txtmais.addfim("5. Apagar itens em : " + m_numero("s_item") + " min")
     txtmais.addfim("6. Morre ao entrar : " + m_simnao("s_morre"))
     txtmais.addfim("7. Silencioso      : " + m_simnao("s_silencio"))
-    txtmais.addfim("8. Sem violência   : " + m_simnao("s_pacifico"))
+    txtmais.addfim("8. Sem violência   : " + m_simnao("s_luta"))
     txtmais.addfim("9. Sem magia       : " + m_simnao("s_semmagia"))
     txtmais.addfim("10.PNJs não entram : " + m_simnao("s_sempnj"))
     txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
@@ -466,9 +472,9 @@ func p_sala # Editando sala
     tpasso += " s_silencio sala Silencioso"
     ret p_simnao("")
   casose "8"
-    msg("Sem violência: " + m_simnao("s_pacifico"))
-    tpasso += " s_pacifico sala Sem violência"
-    ret p_simnao("")
+    msg("Batalha: " + m_opcao("s_luta", txt_luta))
+    tpasso += " s_luta sala Batalha"
+    ret p_opcao("")
   casose "9"
     msg("Sem magia: " + m_simnao("s_semmagia"))
     tpasso += " s_semmagia sala Sem magia"
@@ -499,7 +505,7 @@ func p_sala # Editando sala
     tpasso += " s_silencio sala Silencioso"
     ret p_func("\n")
   casose "f8"
-    tpasso += " s_pacifico sala Sem violência"
+    tpasso += " s_luta sala Batalha"
     ret p_func("\n")
   casose "f9"
     tpasso += " s_semmagia sala Sem magia"
@@ -551,7 +557,7 @@ func cmd_asai # Apagar saída
     msg("\bSaída não existe: " + arg0)
   senao
     p.apagar(perso.dono, "dir_" + dir)
-    p.apagar(perso.dono, "tipoini_" + dir)
+    p.apagar(perso.dono, "portaini_" + dir)
     p.apagar(perso.dono, "inv_" + dir)
     p.apagar(perso.dono, "tranc_" + dir)
     p.apagar(perso.dono, "chave_" + dir)
@@ -626,10 +632,10 @@ func p_sai # Editando saída
   casovar txtmin(arg0)
   casose "o"
     uint16 agora
-    agora = $[txt1(tpasso)].tipo_[opasso]
+    agora = $[txt1(tpasso)].porta_[opasso]
     txtmais.limpar
     txtmais.addfim("\bSaída " + txtmai(opasso) + " de " + txt(tpasso, 2))
-    txtmais.addfim("1. Estado inicial  : " + m_opcao("tipoini_" + opasso, txt_tipo))
+    txtmais.addfim("1. Estado inicial  : " + m_opcao("portaini_" + opasso, txt_tipo))
     txtmais.addfim("2. Estado atual    : " + m_opcaomostra(agora, txt_tipo))
     txtmais.addfim("3. Invisível       : " + m_simnao("inv_" + opasso))
     txtmais.addfim("4. Trancar         : " + m_opcao("tranc_" + opasso, txt_tranc))
@@ -646,13 +652,13 @@ func p_sai # Editando saída
     msg(txt_legenda)
     ret 1
   casose "1"
-    msg("Estado inicial: " + m_opcao("tipoini_" + opasso, txt_tipo))
+    msg("Estado inicial: " + m_opcao("portaini_" + opasso, txt_tipo))
     teditor.addfim(txt_tipo)
-    tpasso += " tipoini_" + opasso + " saitipo Estado inicial"
+    tpasso += " portaini_" + opasso + " saitipo Estado inicial"
     ret p_opcao("")
   casose "2"
     uint16 agora
-    agora = $[tpasso].tipo_[opasso]
+    agora = $[tpasso].porta_[opasso]
     msg("Estado atual: " + m_opcaomostra(agora, txt_tipo))
     ret p_saiagora("")
   casose "3"
@@ -669,10 +675,10 @@ func p_sai # Editando saída
     tpasso += " chave_" + opasso + " sai Chave"
     ret p_linha("")
   casose "f1"
-    tpasso += " tipoini_" + opasso + " saitipo Estado inicial"
+    tpasso += " portaini_" + opasso + " saitipo Estado inicial"
     ret p_func("\n")
   casose "f2"
-    tpasso += " tipo_" + opasso + " saitipo Estado atual"
+    tpasso += " porta_" + opasso + " saitipo Estado atual"
     ret p_func("\n")
   casose "f3"
     tpasso += " inv_" + opasso + " sai Invisível"
@@ -714,8 +720,8 @@ func p_saiagora # Mudar o estado atual
   senao arg0 != txt(num) || num < 0 || num >= t.linhas
     msg("Entre com um número de 0 a " + (t.linhas - 1))
   senao
-    $[tpasso].mudatipo(opasso, num)
-# $[tpasso].tipo_[opasso] = num
+    $[tpasso].mudaporta(opasso, num)
+# $[tpasso].porta_[opasso] = num
     t.remove(num)
     se t.linhas
       msg("Saída mudou para: " + num + " " + t.remove(1))

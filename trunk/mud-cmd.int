@@ -29,7 +29,7 @@ func escr # Executa o comando
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
   ret s2 == nulo, arg0.msg("Impossível seguir nessa direção.")
-  ret s1.tipo_[dir] & 3 >= 2, arg0.msg("A porta está fechada.")
+  ret s1.porta_[dir] & 3 >= 2, arg0.msg("A porta está fechada.")
   uint8 total
   total = s1.totalmove + s2.totalmove
   se arg0.move < total
@@ -182,6 +182,9 @@ func escrobj # Abrir um item
       r.abrir = 2
       $mens.p(arg0, r)
       $mens.mtodos1("$P abriu $A.")
+      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+        l.objini.cmd_abriuobj(arg0, r, arg1)
+      efim
       sair
     casose "4"
       arg0.msg(txtmaimin(r.nome) + " está trancado.")
@@ -193,11 +196,11 @@ func escrobj # Abrir um item
 
 func escrdir # Abrir uma porta
   listaobj l
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_abrirdir(arg0, arg1), nulo
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_abrirdir(arg0, arg0.dono, arg1), nulo
   efim
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
-  casovar 3 & arg0.dono.tipo_[arg1]
+  casovar 3 & arg0.dono.porta_[arg1]
   casose
     arg0.msg("Não há porta nessa direção.")
     sair
@@ -205,9 +208,12 @@ func escrdir # Abrir uma porta
     arg0.msg("Porta já está aberta.")
     sair
   casose "2"
-    arg0.dono.mudatipo(dir, arg0.dono.tipo_[arg1] - 1) # Abre a porta
+    arg0.dono.mudaporta(arg1, 1) # Abre a porta
     $mens.p(arg0)
     $mens.mtodos1("$P abriu uma porta.")
+    epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+      l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
+    efim
     sair
   casose "3"
     arg0.msg("Porta está trancada.")
@@ -258,6 +264,9 @@ func escrobj # Fechar um item
       r.abrir = 3
       $mens.p(arg0, r)
       $mens.mtodos1("$P fechou $A.")
+      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+        l.objini.cmd_fechouobj(arg0, r, arg1)
+      efim
       sair
     casose
       arg0.msg("Não foi possível fechar " + r.nome + ".")
@@ -266,18 +275,21 @@ func escrobj # Fechar um item
 
 func escrdir # Fechar uma porta
   listaobj l
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_fechardir(arg0, arg1), nulo
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1), nulo
   efim
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
-  casovar 3 & arg0.dono.tipo_[arg1]
+  casovar 3 & arg0.dono.porta_[arg1]
   casose
     arg0.msg("Não há porta nessa direção.")
     sair
   casose "1"
-    arg0.dono.mudatipo(dir, arg0.dono.tipo_[dir] + 1) # Fecha a porta
+    arg0.dono.mudaporta(arg1, 2) # Fecha a porta
     $mens.p(arg0)
     $mens.mtodos1("$P fechou uma porta.")
+    epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+      l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
+    efim
     sair
   casose "2"
   casose "3"
@@ -316,6 +328,7 @@ func escr
 classe cmd_chat
 herda comando_comum, comando_ajuda
 const posic = 0
+const ultimo = 1 # Tem baixa prioridade
 const txtajuda = "\b\c3Canal chat\b\n\
 Sintaxe: chat <mensagem>\n\
 Envia mensagem para os jogadores que estiverem com esse canal habilitado.\n\
@@ -370,7 +383,7 @@ herda comando_comum
 const posic = 0
 
 func escr
-  se arg0.b_tempo && arg0.senha
+  se arg0.atkenv && arg0.senha
     arg0.msg("Você está ocupad" + misc:sletra[arg0.sexo] + " demais para isso.")
   senao
     arg0.msg("Até mais. Aguardamos o seu retorno.")
@@ -390,7 +403,8 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_ver(arg0, arg1), nulo
   efim
-  ret !arg2, arg0.msg2(arg0.dono.descsala(arg0, 7))
+  ret !arg1, arg0.msg2(arg0.dono.descsala(arg0, 7))
+  ret arg0.dono.ver_[arg1](arg0), nulo
   nomeobj n
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
   n.ini(arg1, 1)
@@ -404,6 +418,62 @@ func escr
   arg0.msg("Você não vê isso.")
 
 
+classe comando_var
+herda comando_comum
+
+func lista # Lista de itens, como habilidades, idiomas, etc.
+# arg0 = personagem
+# arg1 = variável textovar
+# arg2 = prefixo que identifica o tipo de variável (duas letras)
+# arg3 = mensagem se nada for encontrado
+# arg4 = mensagem se alguma coisa for encontrada
+  textotxt h
+  txt100 t1
+  txt100 t2
+  t1 = arg1.ini(arg2)
+  enquanto txt(t1, 0, 2) == arg2
+    t2 = txttroca(txt(t1, 2), "_", " ")
+    se arg1.valor(t1) == "1"
+      h.addfim(t2)
+    senao
+      h.addfim(arg1.valor(t1) + "x " + t2)
+    fimse
+    t1 = arg1.depois(t1)
+  efim
+  se h.linhas
+    h.addfim(txttroca(h.remove(1000), "\n", ", "))
+    h.addini(arg4)
+    arg0.msg(h.remove(1000))
+  senao
+    arg0.msg(arg3)
+  fimse
+  ret 1
+
+
+classe cmd_hab
+herda comando_var
+
+func escr
+  txt100 n
+  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+  lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
+
+
+classe cmd_idioma
+herda comando_var
+
+func escr
+  lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
+
+
+classe cmd_outros
+herda comando_var
+
+func escr
+  se !exevento(este, arg0, arg1)
+    lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
+
+
 classe cmd_inv
 herda comando_comum
 const posic = 5
@@ -414,8 +484,8 @@ func escr
   epara item = arg0.dentro1.ini, item, item.depois
     arg0.visivel(item.obj) && t.addfim(txt(item.obj.objtot) + " " + item.obj.nome)
   efim
-  t.juntalin("(", "x) ")
-  se t.linhas
+  t.juntalin("(", "x)")
+  se t
     arg0.msg2("Você carrega:\n" + t.remove(1000))
   senao
     arg0.msg("Você não está carregando nada.")
@@ -433,7 +503,7 @@ func escr
     continuar !arg0.visivel(item.obj)
     t.addfim("1 (" + equip(item.obj.vestpos) + ") " + item.obj.nome)
   efim
-  t.juntalin("(", "x) ")
+  t.juntalin("(", "x)")
   se t.linhas
     arg0.msg2("Equipado com:\n" + t.remove(1000))
   senao
@@ -513,7 +583,7 @@ func escr
     senao !sala.container
       ret arg0.msg("Não é possível pegar nada de " + sala.nome + ".")
     fimse
-    mens = " de $r $a."
+    mens = " de $t $a."
   fimse
 # Pega os itens
   nomeobj n # Para reconhecer os itens
@@ -525,17 +595,20 @@ func escr
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_pegar1(arg0, sala, l.objini, total)
+      sair e.objini.cmd_pegarobj(arg0, sala, l.objini, total)
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
-      se total == 1
+      se total <= 1
         $mens.mvis1("$P pega $O" + mens)
       senao
-        $mens.mvis1("$P pega " + total + " $O" + mens)
+        $mens.mvis1("$P pega " + total + "x $O" + mens)
       fimse
       l.objini.mudadono(arg0, total)
     fimse
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_pegouobj(arg0, sala, l.objini, total)
+    efim
     sair (achou += 1) >= 10
   efim
   !achou && arg0.msg("Você não vê isso.")
@@ -566,7 +639,7 @@ func escr
     senao !sala.container
       ret arg0.msg("Não é possível soltar nada em " + sala.nome + ".")
     fimse
-    mens = " em $r $a."
+    mens = " em $t $a."
   fimse
 # Solta os itens
   nomeobj n # Para reconhecer os itens
@@ -577,17 +650,20 @@ func escr
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_soltar1(arg0, sala, l.objini, total)
+      sair e.objini.cmd_soltarobj(arg0, sala, l.objini, total)
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
-      se total == 1
+      se total <= 1
         $mens.mvis1("$P solta $O" + mens)
       senao
-        $mens.mvis1("$P solta " + total + " $O" + mens)
+        $mens.mvis1("$P solta " + total + "x $O" + mens)
       fimse
       l.objini.mudadono(sala, total)
     fimse
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
+    efim
     sair (achou += 1) >= 10
   efim
   !achou && arg0.msg("Você não vê isso.")
@@ -624,17 +700,20 @@ func escr
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_dar1(arg0, sala, l.objini, total)
+      sair e.objini.cmd_darobj(arg0, sala, l.objini, total)
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
-      se total == 1
-        $mens.mvis1("$P dá $O para $r $a.")
+      se total <= 1
+        $mens.mvis1("$P dá $O para $t $a.")
       senao
-        $mens.mvis1("$P dá " + total + " $O para $r $a.")
+        $mens.mvis1("$P dá " + total + "x $O para $t $a.")
       fimse
       l.objini.mudadono(sala, total)
     fimse
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_deuobj(arg0, sala, l.objini, total)
+    efim
     sair (achou += 1) >= 10
   efim
   !achou && arg0.msg("Você não vê isso.")
@@ -645,14 +724,15 @@ herda comando_comum
 
 func escr
   ret !arg1, arg0.msg("Vestir o que?")
-# Preenche vest com o que está vestindo
-  int32 vest
-  epara item = arg0.dentro2, item, item.depois
-    vest = vest | 1 << item.obj.vestpos
+# Preenche a variável vest com o que está vestindo
+  listaitem item
+  int1 vest.32
+  vest.0 = 1
+  epara item = arg0.dentro2.ini, item, item.depois
+    vest.[item.obj.vestpos] = 1
   efim
-  vest = vest >> 1
 # Veste
-  int1 ajustar
+  int8 total # Quantidade de itens encontrados
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
@@ -660,31 +740,29 @@ func escr
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
     continuar !arg0.visivel(r) || !n.nome(r.ident, r.objtot)
-    se ~vest & r.vestir == 0
-      arg0.msg("Você não consegue vestir " + r.nome)
-      continuar
-    fimse
-    uint32 x
-    x = ~vest & r.vestir
-    r.vestpos = 0
-    !(x & 65535) && (x = x >> 16) + (r.vestpos += 16)
-    !(x & 255) && (x = x >> 8) + (r.vestpos += 8)
-    !(x & 15) && (x = x >> 4) + (r.vestpos += 4)
-    !(x & 3) && (x = x >> 2) + (r.vestpos += 2)
-    !(x & 1) && (x = x >> 1) + (r.vestpos += 1)
-    vest = vest | 1 << r.vestpos
-    r.vestpos += 1
-    r.idono.remove
-    r.idono = arg0.dentro2.addini(r)
-    $mens.p(arg0, r)
-    $mens.mvis1("$P veste $r $a.")
-    ajustar = 1
+    uint8 x
+    epara x = n, x, x -= 1
+      total += 1
+      se !vest.[r.vestir1]
+        r.vestir(r.vestir1)
+      senao !vest.[r.vestir2]
+        r.vestir(r.vestir2)
+      senao !vest.[r.vestir3]
+        r.vestir(r.vestir3)
+      senao r.vestir1 || r.vestir2 || r.vestir3
+        arg0.msg("Já está vestindo algo em cima.")
+        sair
+      senao
+        arg0.msg("Você não consegue vestir " + r.nome + ".")
+        sair
+      fimse
+      vest.[r.vestpos] = 1
+      $mens.p(arg0, r)
+      $mens.mvis1("$P veste $t $a.")
+    efim
   efim
 # Ajusta variáveis
-  se ajustar
-    arg0.ajustavar
-  senao
-    arg0.msg("Você não vê isso.")
+  !total && arg0.msg("Você não vê isso.")
 
 
 classe cmd_remover
@@ -693,7 +771,7 @@ herda comando_comum
 func escr
   ret !arg1, arg0.msg("Remover o que?")
 # Remove
-  int1 ajustar
+  uint8 total
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
@@ -701,20 +779,16 @@ func escr
   epara l.addfim(arg0.dentro2), l, l.ini.remove
     r = l.objini
     continuar !arg0.visivel(r) || !n.nome(r.ident, r.objtot)
-    r = l.objini
-    r.idono.remove
-    r.idono = arg0.dentro1.addini(r)
-    r.vestpos = 0
-    $mens.p(arg0, r)
-    $mens.mvis1("$P remove $r.")
-    l.ini.remove
-    ajustar = 1
+    uint8 x
+    epara x = n, x, x -= 1
+      total += 1
+      r.vestir(0)
+      $mens.p(arg0, r)
+      $mens.mvis1("$P remove $t $a.")
+    efim
   efim
 # Ajusta variáveis
-  se ajustar
-    arg0.ajustavar
-  senao
-    arg0.msg("Você não está usando isso.")
+  !total && arg0.msg("Você não está usando isso.")
 
 
 classe cmd_hora
@@ -764,170 +838,9 @@ const posic = 0
 
 func escr
   txt100 lin
-  lin = "Vida " + arg0.vida + "/" + arg0.vidamax
-  lin += "  Mana " + arg0.mana + "/" + arg0.manamax
-  lin += "  Vigor " + arg0.move + "/" + arg0.movemax
-  lin += "  Nível " + arg0.nivel
-  lin += "  Experiência " + arg0.exp + "/" + arg0.expmax
+  lin = "Vida " + arg0.pvida + "/" + arg0.pvidamax
+  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
+  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
+  lin += "  Nível " + arg0.pnivel
+  lin += "  Experiência " + arg0.expatual + "/" + arg0.expmax
   arg0.msg(lin)
-
-
-classe comando_golpe
-herda comando_comum
-const posic = 7
-const tipo = 0 # Tipo de golpe
-const precisao = 100 # Precisão do golpe, 100 significa 100%
-const forca = 100 # Força do golpe, 100 significa 100%
-const veloc = 100 # Velocidade do golpe, 100 significa 100%
-const msgatk = "$P ataca $A"
-
-func escr
-  se arg0.batalhaini(arg2) # Inicia batalha
-    txt200 msg1
-    velgolpe(arg0, arg0.b_alvo) # Tempo do golpe
-    msg1 = execgolpe(arg0, arg0.b_alvo, 1, 3) # Danos do golpe
-    $mens.p(arg0, arg0.b_alvo)
-    $mens.mvis1(msgatk + ", " + arg0.b_alvo.vida + " " + msgefeito(msg1))
-    arg0.batalhadepois # Procedimentos depois que atacou
-
-func msgefeito
-  casovar arg0
-  casose "0"
-    ret " errou"
-  casose "1"
-    ret " nada acontece"
-  casose "2"
-    ret " pouco efeito"
-  casose "3"
-    ret ""
-  casose "4"
-    ret " muito efeito"
-  casofim
-
-func velgolpe # Acerta o tempo de espera conforme o golpe
-# arg0 = personagem que está atacando
-# arg1 = personagem alvo
-  uint8 tempo
-# Se velocidades dos personagens iguais e velocidade do golpe=100, tempo=25
-  tempo = 10 + arg1.veloc * 1500 / (arg1.veloc * veloc + 1)
-  tempo < 5 && (tempo = 5)
-  tempo > 60 && (tempo = 60)
-  arg0.p_espera = tempo
-
-func execgolpe # Realiza um ataque
-# arg0 = personagem que está atacando
-# arg1 = personagem alvo
-# arg2,arg3 = ataque mínimo e máximo da arma usada no golpe
-# Retorna: 0=errou, 1=sem efeito, 2=pouco efetivo, 3=normal, 4=muito efetivo
-  real dano
-# Checa se acertou o alvo
-  dano = rand(1, 20)
-  se dano == 20 || arg1.posicao == 4 # Acertou automaticamente
-  senao dano == 1 # Errou o alvo automaticamente
-    ret 0
-  senao # Checa se acertou
-    dano += precisao * arg0.precisao / 100 - arg1.evasao
-    !arg0.visivel(arg1) && (dano -= 5) # Invisível é mais difícil de acertar
-    se dano <= 0
-      ret 0
-    fimse
-  fimse
-# Calcula dano sem modificadores
-  se misc:aktipo(tipo) # Checa se golpe normal ou especial
-    dano = arg0.atkmag * forca / (arg1.defmag * 9000)
-  senao
-    dano = arg0.atknorm * forca / (arg1.defnorm * 9000)
-  fimse
-  dano = pos(dano + arg0.nivel - arg1.nivel) # Adiciona diferença de níveis
-  dano += rand(arg2, arg3) # Adiciona ataque da arma
-# Modificadores de posição
-  casovar arg1.posicao
-  casose "0" # Morto
-  casose "1" # Mortalmente ferido
-  casose "2" # Incapacitado
-    dano *= 2.666
-    sair
-  casose "3" # Muito fraco
-    dano *= 2.333
-    sair
-  casose "4" # dormindo
-    dano *= 2
-    sair
-  casose "5" # descansando
-    dano *= 1.666
-    sair
-  casose "6" # sentado
-    dano *= 1.333
-    sair
-  casofim
-# Modificadores de tipo de golpe
-  int8 rettipo
-  rettipo = arg1.deftipo[tipo]
-  casovar rettipo
-  casose "-8"
-    rettipo = 4, dano *= 16
-    sair
-  casose "-7"
-    rettipo = 4, dano *= 11.2
-    sair
-  casose "-6"
-    rettipo = 4, dano *= 8
-    sair
-  casose "-5"
-    rettipo = 4, dano *= 5.6
-    sair
-  casose "-4"
-    rettipo = 4, dano *= 4
-    sair
-  casose "-3"
-    rettipo = 4, dano *= 2.8
-    sair
-  casose "-2"
-    rettipo = 4, dano *= 2
-    sair
-  casose "-1"
-    rettipo = 3, dano *= 1.4
-    sair
-  casose "0"
-    rettipo = 3
-    sair
-  casose "1"
-    rettipo = 3, dano /= 1.4
-    sair
-  casose "2"
-    rettipo = 3, dano /= 2
-    sair
-  casose "3"
-    rettipo = 2, dano /= 2.8
-    sair
-  casose "4"
-    rettipo = 2, dano /= 4
-    sair
-  casose "5"
-    rettipo = 2, dano /= 5.6
-    sair
-  casose "6"
-    rettipo = 2, dano /= 8
-    sair
-  casose "7"
-    rettipo = 2, dano /= 11.2
-    sair
-  casose "8"
-    rettipo = 2, dano /= 16
-    sair
-  casose
-    se rettipo < 0
-      rettipo = 4, dano *= 16 # Danos demais
-    senao
-      rettipo = 1, dano = 0 # Imune ao ataque
-      ret
-    fimse
-  casofim
-# Atualiza pontos de vida conforme os danos
-  dano < 1 && (dano = 1) # Pelo menos 1 de dano
-  arg1.vida -= dano
-  ret rettipo
-
-
-classe cmd_atk
-herda comando_golpe
