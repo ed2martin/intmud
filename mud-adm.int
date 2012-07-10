@@ -8,13 +8,13 @@ func cmd2_info # Usado por cmd_info
   lin += "  total=" + arg0.pesotot + "  voando=" + (arg0.pesoadd ? "N" : "S")
   lin += "\nVolume: obj=" + arg0.volobj + "  dentro=" + arg0.volden
   lin += "  total=" + arg0.voltot + "  expande=" + (arg0.volexp ? "S" : "N")
-  lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.jogtot
-  lin += "  Itens dentro=" + arg0.dentro1.total + "  Outros dentro=" + arg0.dentro2.total
+  lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.socktot
+  lin += "  Itens dentro=" + arg0.dentro1.total + "  Personagens dentro=" + arg0.dentro2.total
   ret lin
 
 func cmd_info
   se !arg0
-    msg("\b\c2Você:\b\n" + cmd2_info(perso))
+    #msg("\b\c2Você:\b\n" + cmd2_info(perso))
     msg("\c2Sala:\b\n" + cmd2_info(perso.dono))
     ret 1
   fimse
@@ -32,6 +32,11 @@ func cmd_info
     achou = 1
   efim
   !achou && msg("Não há nenhum personagem ou item chamado " + arg0)
+  ret 1
+
+func cmd_cmd
+  debug d
+  msg(">" + d.cmd(este, "ret " + arg0))
   ret 1
 
 func cmd_adm
@@ -75,7 +80,13 @@ const adm_pnj = "\b\c3Comandos de PNJs\b\n\
   Apaga PNJ."
 const adm_outros = "\c3Outros comandos\b\n\
 \c2ECHO\b <texto>\n\
-  Envia texto para todos os jogadores."
+  Envia texto para todos os jogadores.\n\
+\c2INFO\b\n\
+  Informações sobre a sala.\n\
+\c2INFO\b <personagem ou item>\n\
+  Informações sobre personagem ou item.\n\
+\c2CMD\b <comando>\n\
+  Executa comando na linguagem do IntMUD e mostra o resultado."
 
 func cmd_echo
   se !arg0

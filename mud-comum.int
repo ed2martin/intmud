@@ -4,8 +4,8 @@ classe comum_obj
 sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
-listaobj evento # Objetos que recebem eventos desse
-uint8 jogtot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
+sav listaobj evento # Objetos que recebem eventos desse
+uint8 socktot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 const objtot = 1 # Quantidade de objetos que esse objeto representa
 #
 uint32 pesoden # Somente leitura: quanto peso tem dentro
@@ -25,18 +25,15 @@ func ini # Coloca o objeto dentro de outro
 
 func fim # Objeto vai sair do jogo
   listaobj l
-  ref r
 # Executa eventos cmd_fim
-  epara l.addfim(evento), l, l.ini.remove
-    l0.objini.cmd_fim(este)
+  l.addfim(evento), evento.limpar, atkrec.limpar
+  enquanto l
+    l0.objini.cmd_fim(este), l.ini.remove
   efim
-# Limpa variáveis
-  evento.limpar
-  atkrec.limpar
-  var.limpar("1")
   ret !idono, nulo
+  ref r
 # Se não está voando: retira o peso total
-  se pesoadd
+  se pesotot
     r = idono.objlista, r.pesoden -= pesotot
     enquanto r.pesoadd
       r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
@@ -48,9 +45,9 @@ func fim # Objeto vai sair do jogo
     r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
   efim
 # Acerta se tem jogador dentro
-  se jogtot
+  se socktot
     epara r = idono.objlista, r, r = r.idono.objlista
-      r.jogtot -= jogtot
+      r.socktot -= socktot
     efim
   fimse
 
@@ -91,9 +88,9 @@ varfunc dono # O dono do personagem/item
     r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
   efim
 # Acerta se tem jogador dentro
-  se jogtot
+  se socktot
     epara r = idono.objlista, r, r = r.idono.objlista
-      r.jogtot -= jogtot
+      r.socktot -= socktot
     efim
   fimse
 # Objeto deixa de receber eventos dele e do dono
@@ -119,28 +116,16 @@ varfunc dono # O dono do personagem/item
     r.voltot += voltot, r = r.idono.objlista, r.volden += voltot
   efim
 # Acerta se tem jogador dentro
-  se jogtot
+  se socktot
     epara r = idono.objlista, r, r = r.idono.objlista
-      r.jogtot += jogtot
+      r.socktot += socktot
     efim
   fimse
 # Limpa variáveis se for personagem
-  casovar perso
-  casose "2"
-    arg0.animal.0.atkrec.limpar
-    arg0.animal.2.atkrec.limpar
-    arg0.animal.3.atkrec.limpar
-    arg0.animal.4.atkrec.limpar
-    arg0.animal.5.atkrec.limpar
-    arg0.animal.6.atkrec.limpar
-    arg0.animal.7.atkrec.limpar
-    arg0.animal.8.atkrec.limpar
-    arg0.animal.9.atkrec.limpar
-  casose "1"
-    arg0.alvo = nulo
-    arg0.atkrec.limpar
-    arg0.var.limpar("1")
-  casofim
+  se perso
+    atkenv.remove, atkrec.limpar
+    var.limpar("1")
+  fimse
 
 func visivel # Checa se um objeto está visível (arg0=objeto)
   ret !(~bitver & arg0.inv)

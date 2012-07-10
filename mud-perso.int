@@ -2,15 +2,22 @@ classe comum_perso
 herda comum_obj
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
+const sexo = 0 # Sexo: 0=feminino, 1=masculino
+const nome = "item"
+const ident = nome
+const volexp = 1 # Volume expande se tiver itens dentro
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const descver = "Você não vê nada de especial."
 sav textovar var # Variáveis criadas sob demanda do personagem
 inttempo p_espera # Tempo de espera para o próximo comando
+sav uint8 posicao # Posição do personagem
+const pospadr = 8 # Posição padrão do personagem
 
 func ini # Coloca o objeto dentro de outro
   comum_obj:ini
+  posicao = pospadr
   arg0 && mudadono(arg0)
 
 func fim # Objeto foi apagado
@@ -39,6 +46,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   efim
 # Muda de sala
   dono = arg0
+  atkrec.limpar
 # Eventos cmd_chegou
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
@@ -46,16 +54,15 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   cmd_mudadono
 # Se for jogador, executa eventos cmd_jog
   se jog
-    epara l.addfim(arg0, arg0.dentro2), l, l.ini.remove
+    arg0.cmd_jog(este, arg0)
+    epara l.addfim(arg0.dentro2), l, l.ini.remove
       l.objini.cmd_jog(este, arg0)
     efim
   fimse
 # Mostra descrição
-  sock && msg2(dono.descsala(este, 7))
+  sock && dono.s_titulo && msg2(dono.descsala(este, 7))
 
 func teclou # Processa comando (arg0=comando)
-# Encerra batalha se for o caso
-  b_tempo && b_alvo.dono != dono && batalhafim
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
   ref obj2 # Objeto com menor prioridade
@@ -126,88 +133,8 @@ func p_espera_exec # Pega o próximo comando
   ret sock, sock.espera_exec
   pnj_exec
 
-func msgvis # Mensagem se o jogador estiver vendo o alvo
-  se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
-    $mens.proc(arg0, este)
-
-func msginv # Mensagem mesmo se o alvo estiver invisível
-  se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
-    $mens.proc(arg0, este)
-
-
-classe comum_persobat
-herda comum_perso
-# Personagm que pode batalhar
-uint8 bitver # O que o personagem/item pode ver
-uint8 bitinv # Grau de invisibilidade do personagem/item
-#
-const sexo = 0 # Sexo: 0=feminino, 1=masculino
-# sav int1 sexo # Sexo: 0=feminino, 1=masculino
-sav uint32 moedas # Quantas moedas está carregando
-#
-const expmax = nivel * nivel * nivel + 20 # Experiência para subir de nível
-sav uint16 nivel # Nível atual
-sav uint32 exp # Experiência atual
-sav uint16 ivida # Pontos de vida; usado internamente (usar vida)
-sav uint16 mana # Pontos de mana
-sav uint16 move # Pontos de movimento
-uint16 vidamax # Quantidade máxima de vida
-uint16 manamax # Quantidade máxima de mana
-uint16 movemax # Quantidade máxima de movimento
-uint16 veloc # Velocidade do personagem
-uint16 atknorm # Quantidade de ataque normal
-uint16 defnorm # Quantidade de defesa normal
-uint16 atkmag # Quantidade de ataque mágico/especial
-uint16 defmag # Quantidade de defesa mágica/especial
-uint16 evasao # Habilidade de desviar dos golpes (thac0)
-uint16 precisao # Habilidade de acertar os golpes (hitroll)
-const tipo1 = 0 # Tipo de personagem, vide função misc:atktipo
-const tipo2 = 18 # Segundo tipo do personagem, ou 18 se nenhum
-int8 deftipo.18
-# Defesa contra os diversos tipos de danos
-# Vide função misc:atktipo
-# somar 2 = dobra defesa
-# subtrair 2 = reduz defesa pela metade
-# 9 ou mais = imune ao tipo de golpe
-#
-inttempo b_tempo # Tempo para terminar a batalha
-ref b_alvo # Personagem alvo da batalha
-sav uint8 posicao # Posição do personagem
-const pospadr = 8 # Posição padrão do personagem
-const descpos = txtmaimin(nome) + " está aqui."
-sav inttempo p_restaura # Para restaurar status de tempos em tempos
-
-func ini # Objeto foi criado
-  comum_perso:ini
-  posicao = pospadr
-  ajustavar
-  vida = vidamax
-  mana = manamax
-  move = movemax
-  p_restaura = 100
-  arg0 && mudadono(arg0)
-
-func fim # Objeto foi apagado
-  comum_perso:fim
-
-varfunc vida
-  ret !args, ivida # Lê vida
-  casovar (ivida = arg0) * 100 / vidamax
-  casose "0"
-  casose "1"
-    posicao = vida != 0 # 0=morto, 1=mortalmente ferido
-    ret
-  casose "2"
-    posicao = 2 # incapacitado
-    ret
-  casose "3"
-    posicao = 3 # fraco
-    ret
-  casose
-    posicao < 4 && (posicao = pospadr)
-  casofim
-
 func descpos
+  ret posicao == pospadr && descpadr, descpadr
   casovar posicao
   casose "0"
     ret txtmaimin(nome) + " jás aqui."
@@ -230,106 +157,214 @@ func descpos
   casofim
   ret txtmaimin(nome) + " está aqui."
 
-func ajustavar # Ajusta variáveis, principalmente batalha
+func msgvis # Mensagem se o jogador estiver vendo o alvo
+  se sock && posicao > 4 && visivel($mens.perso) # Se tem jogador e está acordado
+    $mens.proc(arg0, este)
+
+func msginv # Mensagem mesmo se o alvo estiver invisível
+  se sock && posicao > 4 # Se tem jogador e está acordado
+    $mens.proc(arg0, este)
+
+
+classe comum_persobat
+herda comum_perso
+# Personagem que pode batalhar
+const perso = 2 # Para identificar o tipo de personagem
+uint8 bitver # O que o personagem/item pode ver
+uint8 bitinv # Grau de invisibilidade do personagem/item
+#
+const sexo = 0 # Sexo: 0=feminino, 1=masculino
+# sav int1 sexo # Sexo: 0=feminino, 1=masculino
+sav uint32 moedas # Quantas moedas está carregando
+#
+const expmax = nivel * nivel * nivel + 20 # Experiência para subir de nível
+sav uint32 expatual # Experiência atual
+sav uint16 pnivel # Nível atual
+sav uint32 pvida # Pontos de vida
+sav uint32 pmana # Pontos de mana
+sav uint32 pmove # Pontos de movimento
+uint32 pvidamax # Quantidade máxima de vida
+uint32 pmanamax # Quantidade máxima de mana
+uint32 pmovemax # Quantidade máxima de movimento
+uint16 pveloc # Velocidade do personagem
+uint32 atknorm # Quantidade de ataque normal
+uint32 defnorm # Quantidade de defesa normal
+uint32 atkmag # Quantidade de ataque mágico/especial
+uint32 defmag # Quantidade de defesa mágica/especial
+uint16 evasao # Habilidade de desviar dos golpes (thac0)
+uint16 precisao # Habilidade de acertar os golpes (hitroll)
+const tipo1 = "normal" # Tipo de personagem
+const tipo2 = "" # Segundo tipo do personagem
+int8 deftipo.18
+# Defesa contra os diversos tipos de danos
+# Vide função misc:atktipo
+# somar 2 = dobra defesa
+# subtrair 2 = reduz defesa pela metade
+# 80 ou mais = imune ao tipo de golpe
+#
+sav inttempo p_restaura # Para restaurar status de tempos em tempos
+intexec recalc # Se deve recalcular defesa, ataque e velocidade
+const persobat = este # Personagem usado na batalha
+const persoesc = este # Personagem escolhido
+listaobj atkrec # Quem atacou esse personagem; dá experiência se perder
+listaitem atkenv # Item de atkrec; atkenv.objlista = alvo do personagem
+listaobj atkdiv # Para dividir experiência entre personagens que atacaram
+inttempo atktempo # Tempo para terminar a batalha
+
+func ini # Objeto foi criado
+  comum_perso:ini
+  p_restaura = 100
+  pnivel = arg1
+  recalc_exec
+  pvida = pvidamax
+  pmana = pmanamax
+  pmove = pmovemax
+  arg0 && mudadono(arg0)
+
+func fim # Objeto foi apagado
+  comum_perso:fim
+  atkrec.limpar, atkdiv.limpar
+
+func ataqueini # Testa se pode atacar
+# Retorna "" se pode atacar ou a mensagem com o motivo se não pode
+  se persobat.pvida == 0
+    ret "Você está desmaiado"
+  senao dono.s_luta == 0
+    ret "Não é permitido brigas aqui"
+  senao
+    ret ""
+
+#varfunc vida
+#  ret !args, ivida # Lê vida
+#  casovar (ivida = arg0) * 100 / vidamax
+#  casose "0"
+#  casose "1"
+#    posicao = vida != 0 # 0=morto, 1=mortalmente ferido
+#    ret
+#  casose "2"
+#    posicao = 2 # incapacitado
+#    ret
+#  casose "3"
+#    posicao = 3 # fraco
+#    ret
+#  casose
+#    posicao < 4 && (posicao = pospadr)
+#  casofim
+
+func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
-  bitver = 3
-  bitinv = 3
-  vidamax = nivel * 2 + 25
-  veloc = nivel + 50
-  manamax = nivel + 30
-  movemax = nivel * 2 + 30
-  atknorm = nivel * 4 + 40
-  defnorm = nivel * 5 + 40
-  atkmag = nivel * 4 + 50
-  defmag = nivel * 5 + 50
+  bitver = bitinv = 3
+  atknorm = (nivel * 4 + 60) * nivel + 30
+  defnorm = nivel * 5 + 10
+  atkmag = (nivel * 5 + 70) * nivel + 30
+  defmag = nivel * 6 + 11
+  pvidamax = nivel * 2 + 25
+  #pveloc = (nivel * 4 + 60) * nivel + 30
+  pveloc = nivel + 50
+  pmanamax = nivel + 30
+  pmovemax = nivel * 2 + 30
   evasao = nivel * 2 + 30
   precisao = nivel * 2 + 30
-# Acerta diversos tipos de defesa
   deftipo.limpar # Todas as defesas em 100%
-  misc:def[tipo1] # Acerta defesa conforme o primeiro tipo
-  misc:def[tipo2] # Acerta defesa conforme o segundo tipo
-# Atributos do que está vestindo e do que está afetando o personagem
-  listaitem item
-  epara item = dentro2.ini, item, item.depois
-    item.obj.ajustaperso(este)
+# Acerta atributos conforme o tipo de personagem
+  misc:tipo_[tipo1]
+  misc:tipo_[tipo2]
+# Bônus do próprio personagem
+  cmd_recalc1(este)
+# Bônus conforme o que está vestindo e os efeitos
+  listaitem l
+  epara l = dentro2.ini, l, l.depois
+    l.obj.cmd_recalc2(este)
+  efim
+  epara l = evento.ini, l, l.depois
+    l.obj.cmd_recalc2(este)
   efim
 
-func batalhaini # Inicia batalha com outro personagem
-# arg0 = nome do alvo, ou "" se nenhum
-# retorna: verdadeiro se pode prosseguir com o golpe
-# Checa se é sala pacífica
-  se dono.s_pacifico
-    msg("Aqui é um lugar pacífico.")
-    b_alvo = nulo
-    b_tempo = 0
-    ret
-# Obtém o alvo
-  senao arg0 # Escolheu o alvo
-    ref r
-    listaitem item
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg0, 1)
-    epara i = dono.dentro2.ini, i, i.depois
-      sair visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
-    efim
-    r = i.obj
-    se !r
-      msg("Você não vê isso.")
-      ret
-    senao r == este
-      msg("Atacar a si mesmo?")
-      ret
-    senao r.p_pacifico
-      msg(r.nome + " é pacífic" + $mens.sexoA[r.sexo] + ".")
-      ret
-    fimse
-    b_alvo = r
-  senao !b_alvo # Atacar um alvo já definido
-    msg("Atacar quem?")
-    ret
-  senao b_alvo.dono != dono # Alvo está em outra sala
-    msg("Batalha encerrada.")
-    batalhafim
-    ret
-  fimse
-# Indica que estão batalhando
-  posicao >= 4 && (posicao = 7)
-  b_alvo.posicao >= 4 && (b_alvo.posicao = 7)
-  b_tempo = 150 # Tempo da luta
-  b_alvo.b_tempo = 150 # Tempo da luta do outro personagem
-  !b_alvo.b_alvo && (b_alvo.b_alvo = este) # Alvo do outro personagem
-  b_alvo.p_espera == 0 && (b_alvo.p_espera = 1) # Para gerar evento de PNJs
-  ret 1
-
-func batalhadepois # Deve ser chamado depois que executou um golpe
-  b_alvo.vida == 0 && b_alvo.morreu + batalhafim
-  vida == 0 && b_alvo.batalhafim + morreu
-
 func batalhafim # Encerra a batalha
-  b_tempo && posicao == 7 && (posicao = pospadr)
-  b_alvo = nulo, b_tempo = 0
-
-func b_tempo_exec # Encerra a batalha depois de um tempo
-  b_alvo && msg("Batalha encerrada.")
+  atkenv.remove, atkrec.limpar, atktempo = 0
   posicao == 7 && (posicao = pospadr)
-  b_alvo = nulo, b_tempo = 0
+
+func atktempo_exec # Encerra a batalha depois de um tempo
+  atkenv && msg("Batalha encerrada.")
+  atkenv.remove, atkrec.limpar
+  posicao == 7 && (posicao = pospadr)
 
 func morreu # Procedimentos quando morre
-  $mens.p(este)
-  $mens.mvis1("$P morreu.")
+  pvida = 0
+# Jogador: retira toda experiência e transfere jogador para outro lugar
   se jog
+    ref r
+    enquanto atkrec
+      r = atkrec.objini, atkrec.ini.remove
+      enquanto r.atkdiv
+        r.atkdiv.objini.expatual = 0
+        r.atkdiv.ini.remove
+      efim
+      r.batalhafim
+    efim
     batalhafim
+    $mens.p(este)
+    $mens.mtodos1("$P morreu.")
     vida = pos(vidamax / 2 - 20) + 2
     mana = manamax / 2
     move = movemax / 2
     p_restaura = rand(100, 130)
     mudadono(config:salafim)
     salvar # Salva o jogo
+    ret
+# Animal do jogador: não dá experiência
+  senao dono.jog
+    enquanto atkrec
+      atkrec.objini.batalhafim, atkrec.ini.remove
+    efim
+    $mens.p(dono, este)
+    $mens.mtodos1("$A de $P desmaiou.")
+    dono.escolhebat # Atualiza persobat
+    ret
+  fimse
+# Outro personagem: dá experiência
+  real total1 # Para saber a quantidade de personagens
+  real total2
+  real v1 # Para calcular a experiência ganha
+  ref r
+  total1 = atkrec.total
+  enquanto atkrec
+    r = atkrec.objini, atkrec.ini.remove
+    total2 = total1 * r.atkdiv.total
+    enquanto r.atkdiv
+      r.atkdiv.objini.persoexp(este, total2)
+      r.atkdiv.ini.remove
+    efim
+    r.batalhafim
+  efim
+  batalhafim
+# Acerta personagem
+  se dono.perso
+    $mens.p(dono, este)
+    $mens.mtodos1("$A de $P desmaiou.")
+    dono.escolhebat # Atualiza persobat
   senao
-    ref r
+    $mens.p(este)
+    $mens.mtodos1("$P morreu.")
     apagar(este)
     r = sock, r.mudaperso(nulo)
     r.reinicia
+
+func persoexp # Ganha experiência por ter vencido um personagem
+# arg0 = personagem, arg1 = em quantos personagens dividiu
+  real v1
+  v1 = intpos(arg0.pnivel - pnivel + 8) / 16
+  v1 > 1 && (v1 = 1)
+  ganhaexp(v1 * (arg0.pnivel * 10 + 50) / arg1)
+
+func ganhaexp # Personagem ganha experiência
+# arg0 = experiência
+  expatual += arg0
+  se expatual > expmax
+    expatual -= expmax
+    pnivel += 1
+    dono.msg(nome + " foi para nível " + pnivel)
+    recalc = 1 # Recalcular atributos do personagem
 
 func p_restaura_exec # Restaura algumas variáveis
   p_restaura = rand(100, 130)
@@ -393,5 +428,44 @@ func p_restaura_exec # Restaura algumas variáveis
   fimse
 
 func pnj_exec # Somente PNJs, inteligência artificial do PNJ
-  se b_alvo
+  se atkenv
     teclou("atk")
+
+
+classe comum_persoanimal
+herda comum_persobat
+# Personagem que pode batalhar e carregar animais
+const perso = 3 # Para identificar o tipo de personagem
+sav ref animal.8 # Animais que possui
+sav ref persobat # Personagem usado na batalha
+sav ref persoesc # Personagem escolhido pelo jogador
+
+func ini # Objeto foi criado
+  comum_persobat:ini
+  persobat = este
+  persoesc = este
+
+const fim = comum_persobat:fim
+
+func escolhebat # Escolhe um personagem em condições de lutar
+  se persoesc.pvida # Checa se personagem escolhido está em condições
+    persobat = persoesc
+  senao animal.0.pvida && config:animal1 >= 1
+    persobat = animal.0
+  senao animal.1.pvida && config:animal1 >= 1
+    persobat = animal.1
+  senao animal.2.pvida && config:animal1 >= 2
+    persobat = animal.2
+  senao animal.3.pvida && config:animal1 >= 3
+    persobat = animal.3
+  senao animal.4.pvida && config:animal1 >= 4
+    persobat = animal.4
+  senao animal.5.pvida && config:animal1 >= 5
+    persobat = animal.5
+  senao animal.6.pvida && config:animal1 >= 6
+    persobat = animal.6
+  senao animal.7.pvida && config:animal1 >= 7
+    persobat = animal.7
+  senao
+    persobat = este
+  fimse

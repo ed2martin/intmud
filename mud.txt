@@ -1,219 +1,230 @@
-Organização
+Índice
 
-Classes:
-a_<nome da área>  Definições das áreas
-b_<nome da área>  Contém as propriedades herdadas pelas salas da área
-s_<nome da sala>  Uma sala
-p_<nome do personagem>  Um personagem
-i_<nome do item>  Um item
-com_<nome do comando>  Executa um comando; vide classe com2_comum
-com_magia_<nome da magia>  Executa uma magia
+1. Organização dos arquivos e classes
+2. Envio de mensagens formatadas (casa-mens.int)
+3. Variáveis dinâmicas de personagens, salas e itens
+4. Comum a salas, personagens e itens (mud-comum.int)
+5. Salas (mud-sala.int)
+6. Personagens e itens
+7. Personagens (mud-perso.int)
+8. Personagens não jogador (mud-perso.int)
+9. Itens (mud-item.int)
+10. Eventos
+11. Eventos incondicionais
+12. Eventos condicionais
+13. Lista de itens pendentes
 
-Classe jogsock:
-É responsável pela comunicação com o usuário
+
+1. Organização dos arquivos e classes
+
+1.1. mud.int
+Contém a configuração do jogo (classe 'config'), como por exemplo, se vai
+rodar em uma janela ou abrindo uma porta, a sala inicial, etc.
+As outras classes são responsáveis pela comunicação entre o jogo e
+os jogadores.
+
+1.2. mud-comum.int
+Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
+Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
+um objeto possui), peso e volume.
+
+1.3. mud-a-*.int
+Contém as classes que compõem uma área.
+Geralmente são:
+Definições da área: classe de nome 'a_' + prefixo da área
+Propriedades herdadas pelas salas: classe de nome 'b_' + prefixo da área
+Salas: classes de nome 's_' + prefixo da área + número de '001' a '999'
+
+1.4. mud-sala.int
+Classes 'area' e 'sala', herdadas por todas as áreas e salas.
+
+1.5. mud-item.int
+Classe 'comum_item', herdada por todos os itens.
+Classe 'comum_itemgrupo', herdada pelos itens que podem ser agrupados
+em um único objeto.
+Os itens são classes cujo nome começa com 'i_'.
+
+1.6. mud-perso.int
+Classe 'comum_perso', herdada por todos os personagens.
+Classe 'comum_persobat', herdada por personagens que podem batalhar.
+Os personagens não jogadores são classes cujo nome começa com 'p_'.
+
+1.7. mud-jog.int
+Classes responsáveis pelos jogadores.
+A classe 'jogador' é o personagem dos jogadores.
+A classe 'jogsock' é responsável pela comunicação com o usuário:
 Funções cmd_<nome do comando>   Comandos de administração
 Funções adm_<nome do tópico>    Tópicos de ajuda da administração
 Funções p_<texto>               São executadas conforme a variável passo
 
-----------------------------------------
-Caracteres especiais em mensagens (mud-mens.int)
+1.8. mud-cmd.int
+Contém os comandos que os personagens podem digitar, exceto ataques.
+Todo comando é uma classe cujo nome é 'cmd_' seguido do nome do comando.
+As magias são classes cujo nome é 'cmd_magia_' seguido do nome da magia.
+A classe 'comando_comum' é herdada por todos os comandos.
+Quando é necessário uma única classe herdada por dois ou mais comandos,
+geralmente o nome dessa classe começa com 'comando_'.
 
-$ + letra maiúscula = primeira letra do texto em maiúscula
-$ + letra minúscula = texto em letras minúsculas
+1.9. mud-ataque.int
+Contém os comandos de ataque. Todo comando é derivado da classe
+'comando_ataque'.
+Via de regra, a função 'escr' checa se está em condições de atacar e obtém
+o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
+
+1.10. mud-mens.int
+Contém a classe 'mens', especializada no envio de mensagens para personagens.
+
+1.11. mud-misc.int
+Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
+Diferentemente das outras classes, as funções de misc devem ser chamadas
+com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
+
+
+2. Envio de mensagens formatadas (casa-mens.int)
+
+Para enviar uma mensagem formatada a um ou mais personagens, usa-se
+a classe 'mens', contida no arquivo 'mud-mens.int'.
+
+Primeiro define-se de um a três objetos, com a seguinte função:
+$mens.p(<personagem>, [alvo], [objeto])
+
+Depois, envia-se uma mensagem com uma das seguintes funções:
+
+$mens.mtodos1(texto para todos)
+$mens.mtodos2(texto para personagem, texto para outros)
+$mens.mtodos3(texto para personagem, texto para alvo, texto para outros)
+Enviar mensagem para todos que estiverem acordados.
+
+$mens.mvis1(texto para todos)
+$mens.mvis2(texto para personagem, texto para outros)
+$mens.mvis3(texto para personagem, texto para alvo, texto para outros)
+Enviar mensagem para todos que estiverem acordados e puderem ver
+o personagem.
+
+<personagem>.msginv(texto)
+Envia mensagem para o personagem se ele estiver acordado.
+
+<personagem>.msgvis(texto)
+Envia mensagem para o personagem se ele estiver acordado e vendo
+o personagem definido em $mens.p.
+
+O texto pode conter os seguintes caracteres especiais:
+
 $$ = Símbolo $
 $P = Nome do personagem
+$Q = Nome do personagem escolhido, ex. "Lula"
+$R = Nome do personagem em batalha, ex. "Lula de fulano"
 $A = Nome do alvo
+$B = Nome do alvo escolhido, ex. "Lula"
+$C = Nome do alvo em batalha, ex. "Lula de fulano"
+$D = Nome do alvo, sendo que pode ser "Animal X de fulano"
 $O = Nome do objeto
-$Q = Depende do personagem: "o", "a", "um" ou "uma"
-$R = Depende do alvo: "o", "a", "um" ou "uma"
-$S = Depende do objeto: "o", "a", "um" ou "uma"
+$S = Depende do personagem: "o", "a", "um" ou "uma"
+$T = Depende do alvo: "o", "a", "um" ou "uma"
+$U = Depende do objeto: "o", "a", "um" ou "uma"
 $M = Texto de $mens.mens
 
-----------------------------------------
-Eventos
-
-Itens, personagens e salas possuem a seguinte variável:
-listaobj evento
-
-Quando um personagem digita algo, muda de sala ou ocorre qualquer outro
-evento, é executada uma função qualquer de todos os objetos dessa lista.
-Dessa forma é possível personalizar o comportamento de itens, salas, etc.
-
-O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_falar'
-corresponde ao comando 'falar'.
-
-Para saber quais são as listas envolvidas, basta verificar os argumentos
-da função, mais especificamente os personagens, os itens e as salas.
-
-----------------------------------------
-Eventos condicionais
-
-São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
-a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
-usuário informando o motivo.
-
-A seguir são listados os eventos (as funções).
-
-func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
-Personagem digitou alguma coisa.
-
-func cmd_ajuda(personagem ou objeto, texto)
-Teclou ajuda seguido de um texto.
-
-func cmd_[direção](personagem)
-Exemplos: cmd_n(personagem), cmd_s(personagem), etc.
-Personagem quer ir na direção indicada.
-
-func cmd_abrir(personagem, texto)
-Quer abrir um objeto ou uma porta.
-
-func cmd_fechar(personagem, texto)
-Quer fechar um objeto ou uma porta.
-
-func cmd_ver(personagem, texto)
-Quer ver alguma coisa.
-
-func cmd_pegar(personagem, texto)
-func cmd_soltar(personagem, texto)
-func cmd_dar(personagem, texto)
-Quer pegar, soltar ou dar alguma coisa.
-
-func cmd_pegar1(personagem, origem, item, quantidade do item)
-func cmd_soltar1(personagem, destino, item, quantidade do item)
-func cmd_dar1(personagem, destino, item, quantidade do item)
-Quer pegar, soltar ou dar algum item.
-
-func cmd_abrirdir(personagem, texto)
-func cmd_fechardir(personagem, texto)
-Quer abrir ou fechar porta na direção especificada.
-
-func cmd_abrirobj(personagem, item, texto)
-func cmd_fecharobj(personagem, item, texto)
-Quer abrir ou fechar um item. Se o objeto 'item' for nulo, significa
-que não encontrou o item.
+Em qualquer dessas opções:
+$ + letra maiúscula = primeira letra do texto em maiúscula
+$ + letra minúscula = texto em letras minúsculas
 
 
-----------------------------------------
-Eventos incondicionais
+3. Variáveis dinâmicas de personagens, salas e itens
 
-São funções chamadas como resultado de uma ação que aconteceu ou vai
-acontecer. A função não tem a opção de cancelar a ação.
+Todos os personagens e salas têm uma lista de variáveis dinâmicas
+(podem ser criadas e apagadas) contidas na seguinte variável:
+textovar var
 
-A seguir são listados os eventos (as funções).
-
-func cmd_fim(personagem ou objeto)
-Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
-do objeto é limpa.
-
-func cmd_saiu(personagem)
-Personagem vai sair da sala. Antes desse evento ocorrer, a 'listaobj evento'
-do personagem é limpa.
-
-func cmd_chegou(personagem, sala)
-Personagem entrou na sala. É chamado logo após mudar de sala.
-
-func cmd_jog(personagem, sala)
-Jogador entrou na sala. É chamado logo após 'cmd_chegou', se for jogador.
-Esse evento em particular é executado apenas para a sala e para todos os
-personagens que estiverem na mesma sala.
-
-func cmd_mudadono
-O próprio personagem mudou de sala.
-Esse evento é gerado somente para o personagem, quando a função mudadono
-é executada.
-
-func cmd_falou(personagem, texto)
-Falou alguma coisa.
+Os dois primeiros caracteres das variáveis de var indicam o tipo:
+a_ = agenda (1=viu, 2=pegou)
+h_ = habilidade
+l_ = língua (idioma)
+o_ = item classificado como "outros"
+z_ = variável não visível ao jogador
 
 
-----------------------------------------
-Comum a salas, personagens e itens
+4. Comum a salas, personagens e itens (mud-comum.int)
 
-*listaobj dentro1
+4.1. varfunc dono
+Quem possui esse objeto.
+No caso do personagem, é a sala aonde o personagem está.
+
+4.2. listaobj dentro1
 Lista de itens, exceto vestindo
 
-*listaobj dentro2
-Lista de personagens na sala e de itens vestindo
+4.3. listaobj dentro2
+Se for sala: lista de personagens
+Se for personagem: lista de itens que está vestindo
 
-*listaobj evento
+4.4. listaobj evento
 Objetos que recebem eventos desse objeto
 
-----------------------------------------
-Salas (mud-sala.int)
 
-*const s_titulo = "texto"
+5. Salas (mud-sala.int)
+
+5.1. const s_titulo = "texto"
 Retorna o título da sala. arg0 é quem está requisitanto o título.
 
-*const s_desc = "texto"
+5.2. const s_desc = "texto"
 Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
 
-*ref dir_[direção]
+5.3. const s_luta = 0
+Tipo de luta permitido: 0=nenhuma, 1=exceto entre jogador, 2=qualquer luta.
+
+5.4. ref dir_[direção]
 Antes de acssar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
 Se estiver ausente, não há sala nessa direção
 
-*uint8 tipo_[direção]
-*const tipoini_[direção]
-Antes de acssar fazer misc:obj=personagem
+5.5. uint8 porta_[direção]
+     const portaini_[direção]
+Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
-Tipo é o valor atual, geralmente definido dessa forma: uint8 tipo_s
-TipoIni é o valor inicial, geralmente definido dessa forma: const tipo_s = 2
+Porta é o valor atual, geralmente definido dessa forma: uint8 porta_s
+PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
 0 = não há porta
 1 = está aberto
 2 = está fechado
 3 = está trancado
 
-*const inv_[direção]
+5.6. const inv_[direção]
 Antes de acssar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
-*const tranc_[direção]
+5.7. const tranc_[direção]
 Antes de acessar fazer misc:obj=personagem
 0 = porta normal
 1 = fechado quando alguém passar pela porta
 2 = trancado quando for fechado
 3 = trancado quando for fechado ou alguém passar pela porta
 
-*const chave_[direção]
+5.8. const chave_[direção]
 Antes de acssar fazer misc:obj=personagem
 Texto que contém o código da chave que destranca a porta
 
-*func txtsai( jogador )
+5.9. func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
-*func descsala( jogador, modo )
+5.10. func descsala( jogador, modo )
 Adiciona texto com a descrição da sala
 Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
 
-*func descitens( jogador )
+5.11. func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-*func e_entrou
-Executado logo que o personagem entra na sala. arg0=objeto que entrou.
+5.12. func ver_[nome do a descrição]( jogador )
+É executada quando um personagem tecla ver seguido de um nome qualquer.
+Para mostrar a descrição, enviar mensagens para arg0 com
+arg0.msg("texto") e retornar 1 (com ret 1)
 
-----------------------------------------
-Personagens e itens (mud-perso.int)
 
-*varfunc dono
-A sala (o objeto) aonde o personagem está
+6. Personagens e itens
 
-*listaitem idono
-Usado internamente por dono; item da sala que contém o personagem
-
-*listaobj dentro1
-Lista de itens que está carregando
-
-*listaobj dentro2
-Lista de itens que está vestindo
-
-*listaobj evento
-Objetos que recebem eventos do personagem/item
-
-*uint8 bitinv
+6.1. uint8 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
 0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
 somar 1 se invisível a quem estiver cego
@@ -222,7 +233,7 @@ somar 4 se está invisível
 somar 8 se está oculto
 somar 16 se é administrador invisível
 
-*uint8 bitver
+6.2. uint8 bitver
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
 0 = nada (está cego)
 somar 1 se não está cego
@@ -231,42 +242,39 @@ somar 4 se pode ver invisível
 somar 8 se pode ver oculto
 somar 16 se pode ver administradores invisíveis
 
-*func visivel( objeto ou personagem )
+6.3. func visivel( objeto ou personagem )
 Retorna verdadeiro se o objeto ou personagem estiver visível
 
-*texto ident
+6.4. texto ident
 Nomes que o jogador digita para ações com o personagem ou item
 Exemplo: ao pegar um item ou atacar um personagem
 
-*txt16 nome
+6.5. txt16 nome
 Nome do personagem ou item, usado em ações com o objeto
 
-*int1 sexo
+6.6. int1 sexo
 0=feminino, 1=masculino
 
-*texto descpos
+6.7. texto descpos
 Descrição quando está na sala; arg0=quem quer ver
 
-*texto descver
+6.8. texto descver
 Descrição, quando olha para o objeto; arg0=quem quer ver
 
-*int1 container
+6.9. int1 container
 Verdadeiro (=1) se pode receber itens
 
-----------------------------------------
-Personagens (mud-perso.int)
 
-*const perso = 1
-O valor 1 significa um personagem comum
-O valor 2 significa um personagem que pode ter animais
+7. Personagens (mud-perso.int)
 
-*sav int1 sexo
-Sexo: 0=feminino, 1=masculino
+7.1. const perso = 1
+O valor 1 significa um personagem que não pode batalhar
+O valor 2 significa um personagem que pode batalhar
 
-*sav uint32 moedas
+7.2. sav uint32 moedas
 Quantas moedas está carregando
 
-*sav uint8 posicao
+7.3. sav uint8 posicao
 Posição do personagem:
 0 = morto
 1 = mortalmente ferido
@@ -278,54 +286,48 @@ Posição do personagem:
 7 = lutando
 8 = em pé
 
-*const pospadr = 8
+7.4. const pospadr = 8
 Posição padrão do personagem
 
-sav textovar var
+7.5. sav textovar var
 Variáveis criadas sob demanda do personagem
 As variáveis cujo nome começa com "1" são apagadas quando o personagem
 muda de sala (função mudadono).
 As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
 salvo é recarregado (quando o jogador entra no jogo).
 
-*func teclou
+7.6. func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
-*func p_espera_exec
+7.7. func p_espera_exec
 Pega o próximo comando da lista
 
-*func teclouproc
+7.8. func teclouproc
 Processa comando, sem espera (arg0=comando)
 
-*func mudadono
+7.9. func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
-*func ajustavar
+7.10. intexec recalc
+Para chamar recalc_exec quando necessário
+
+7.11. func recalc_exec
 Ajusta variáveis, principalmente batalha
 
-*func ajustapos
+7.12. func ajustapos
 Acerta posição do personagem, conforme pontos de vida e batalha
 
-*func batalhaini
-Inicia batalha com outro personagem
-Deve ser chamado para cada golpe ou comando agressivo
-arg0 = nome do alvo, ou "" se nenhum
-Retorna: verdadeiro se pode prosseguir com o golpe
-
-*func batalhadepois
-Deve ser chamado depois que executou um golpe
-
-*func batalhafim
+7.13. func batalhafim
 Encerra a batalha
 
-*func b_tempo_exec
+7.14. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
 
-*func morreu
+7.15. func morreu
 Executa procedimentos quando o personagem morre
 
-----------------------------------------
-Personagens não jogador
+
+8. Personagens não jogador (mud-perso.int)
 
 * const p_pet = 0
 0 = não pode ser animal de estimação
@@ -378,42 +380,161 @@ ataca jogadores que mataram ou roubaram outros
 pega lixo
 patrulha: encerra brigas
 
-----------------------------------------
-Itens
 
-const vestir = 0
-Em que lugar do corpo vai quando é vestido:
-0 = não pode vestir
-somar 1 = usar como luz
-somar 2 = na cabeça
-somar 4 = sobre o rosto
-somar 8 = nos olhos
-somar 16 = nas orelhas
-somar 32 = no pescoço
-somar 64 = no corpo
-somar 128 = sobre o corpo
-somar 256 = nas costas
-somar 512 = nos braços
-somar 1024 = nas mãos
-somar 2048 = no pulso direito
-somar 4096 = no pulso esquerdo
-somar 8192 = no dedo direito
-somar 16384 = no dedo esquerdo
-somar 32768 = empunhar (arma)
-somar 65536 = escudo
-somar 131072 = na cintura
-somar 262144 = nas pernas
-somar 524288 = calçando
+9. Itens (mud-item.int)
 
-uint32 vestpos
-Em que posição está vestindo
-0 = não está vestindo
+9.1. const vestir1 = 0
+     const vestir2 = 0
+     const vestir3 = 0
+Em que lugares do corpo pode ir quando é vestido:
+0 = em nenhum lugar/não pode vestir
 1 = como luz
 2 = na cabeça
 3 = sobre o rosto
 4 = nos olhos
-Etc. Vide vestir (acima)
+5 = nas orelhas
+6 = no pescoço
+7 = no corpo
+8 = sobre o corpo
+9 = nas costas
+10 = nos braços
+11 = nas mãos
+12 = no pulso direito
+13 = no pulso esquerdo
+14 = no dedo direito
+15 = no dedo esquerdo
+16 = empunhar (arma)
+17 = escudo
+18 = na cintura
+19 = nas pernas
+20 = calçando
 
+9.2. uint32 vestpos
+Em que posição está vestindo.
+0 = não está vestindo
+Outros valores, vide vestir1, acima.
+Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
+
+9.3. func vestir( posição )
+Veste um item apenas, não verifica se a posição já está ocupada.
+Se posição for 0, deixa de vestir.
+
+9.4. func mudadono(novo dono, quantidade)
+Item muda de dono. Quando a quantidade for omitida ou o tipo de item
+não puder ser agrupado em um objeto, a quantidade será sempre 1.
+
+
+10. Eventos
+
+Itens, personagens e salas possuem a seguinte variável:
+listaobj evento
+
+Quando um personagem digita algo, muda de sala ou ocorre qualquer outro
+evento, é executada uma função qualquer de todos os objetos dessa lista.
+Dessa forma é possível personalizar o comportamento de itens, salas, etc.
+
+O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_falar'
+corresponde ao comando 'falar'.
+
+Para saber quais são as listas envolvidas, basta verificar os argumentos
+da função, mais especificamente os personagens, os itens e as salas.
+
+
+11. Eventos incondicionais
+
+São funções chamadas como resultado de uma ação que aconteceu ou vai
+acontecer. A função não tem a opção de cancelar a ação.
+
+A seguir são listados os eventos (as funções).
+
+func cmd_fim(personagem ou objeto)
+Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
+do objeto é limpa.
+
+func cmd_saiu(personagem)
+Personagem vai sair da sala. Antes desse evento ocorrer, a 'listaobj evento'
+do personagem é limpa.
+
+func cmd_chegou(personagem, sala)
+Personagem entrou na sala. É chamado logo após mudar de sala.
+
+func cmd_jog(personagem, sala)
+Jogador entrou na sala. É chamado logo após 'cmd_chegou', se for jogador.
+Esse evento em particular é executado apenas para a sala e para todos os
+personagens que estiverem na mesma sala.
+
+func cmd_mudadono
+O próprio personagem ou um item mudou de dono. Esse evento é gerado somente
+para o próprio objeto, quando a função mudadono é executada.
+
+func cmd_falou(personagem, texto)
+Falou alguma coisa.
+
+func cmd_pegouobj(personagem, origem, item, quantidade do item)
+func cmd_soltouobj(personagem, destino, item, quantidade do item)
+func cmd_deuobj(personagem, destino, item, quantidade do item)
+Pegou, soltou ou deu algum item.
+
+func cmd_abriudir(personagem, sala, texto)
+func cmd_fechoudir(personagem, sala, texto)
+Abriu ou fechou porta na direção especificada.
+
+func cmd_abriuobj(personagem, item, texto)
+func cmd_fechouobj(personagem, item, texto)
+Abriu ou fechou um item.
+
+
+12. Eventos condicionais
+
+São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
+a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
+usuário informando o motivo.
+
+A seguir são listados os eventos (as funções).
+
+func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
+Personagem digitou alguma coisa.
+
+func cmd_ajuda(personagem ou objeto, texto)
+Teclou ajuda seguido de um texto.
+
+func cmd_[direção](personagem)
+Exemplos: cmd_n(personagem), cmd_s(personagem), etc.
+Personagem quer ir na direção indicada.
+
+func cmd_abrir(personagem, texto)
+Quer abrir um objeto ou uma porta.
+
+func cmd_fechar(personagem, texto)
+Quer fechar um objeto ou uma porta.
+
+func cmd_ver(personagem, texto)
+Quer ver alguma coisa.
+
+func cmd_pegar(personagem, texto)
+func cmd_soltar(personagem, texto)
+func cmd_dar(personagem, texto)
+Quer pegar, soltar ou dar alguma coisa.
+
+func cmd_pegarobj(personagem, origem, item, quantidade do item)
+func cmd_soltarobj(personagem, destino, item, quantidade do item)
+func cmd_darobj(personagem, destino, item, quantidade do item)
+Quer pegar, soltar ou dar algum item.
+
+func cmd_abrirdir(personagem, sala, texto)
+func cmd_fechardir(personagem, sala, texto)
+Quer abrir ou fechar porta na direção especificada.
+
+func cmd_abrirobj(personagem, item, texto)
+func cmd_fecharobj(personagem, item, texto)
+Quer abrir ou fechar um item. Se o objeto 'item' for nulo, significa
+que não encontrou o item.
+
+func cmd_atacar(objeto que processa o ataque, personagem, alvo)
+Quer atacar algum personagem.
+
+
+13. Lista de itens pendentes
 
 Valor em moedas
 Volume que cabe dentro, ou 0 se não for container

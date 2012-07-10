@@ -1,0 +1,254 @@
+classe comando_ataque
+herda comando_comum
+const objcmd = arg0.persobat.var.h_[nome] ? este
+const objajuda = arg0.persobat.var.h_[nome] ? este
+const posic = 7
+const nome = "" # Nome do golpe
+const tipo = 0 # Tipo de golpe
+const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
+const ataque = 100 # Força de ataque, 100 significa 100%
+const veloc = 100 # Velocidade do golpe, 100 significa 100%
+const msgatk = "$R ataca $c"
+uint8 result # Resultado do ataque, usado em execgolpe e msgefeito
+# 0=cancelar ataque (não gera nenhuma mensagem), 1=errou o alvo
+# 2=não teve efeito, 3=pouco efetivo, 4=normal, 5=muito efetivo
+
+func txtajuda
+  txt100 lin
+  lin = "\c2" + txtmaimin(nome) + "\b\n"
+  lin += "Ataque " + misc:nometipo(tipo) + " Força " + ataque + " velocidade " + vel
+  ret extra ? lin + "\n" + extra : lin
+
+func escr # Atacar alguém
+  ref r
+  se arg0.ataqueini
+    arg0.msg(arg0.ataqueini)
+    ret
+  senao arg1
+    listaitem i
+    nomeobj nome
+    nome.ini(arg1, 1)
+    epara i = arg0.dono.dentro2.ini, i, i.depois
+      sair arg0.visivel(i.obj) && nome.nome(i.obj.nome)
+    efim
+    r = i.obj
+    ret !r, arg0.msg("Você não vê isso.")
+    ret r == arg0, arg0.msg("Atacar a si mesmo?")
+  senao
+    r = arg0.atkenv.objlista
+    se !r || r.dono != arg0.dono
+      arg0.msg("Atacar quem?")
+      ret
+    fimse
+  fimse
+  se r.perso != 2
+    arg0.msg(r.nome + " não quer brigar.")
+  senao arg0.jog && r.jog && dono.s_luta == 1
+    arg0.msg(r.nome + " é jogador e aqui não é uma arena.")
+  senao
+    listaobj l
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_atacar(este, arg0, r), nulo
+    efim
+    ataca(arg0, r)
+
+func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
+  ataca1(arg0, arg1)
+
+func ataca1 # arg0 ataca arg1
+  velgolpe(arg0, arg1) # Tempo do golpe
+  execgolpe(arg0, arg1, ataque) # Ataca
+  result && $mens.p(arg0, arg1) + $mens.mtodos1(msgatk + msgefeito(arg1))
+  arg1.persobat.pvida == 0 && arg1.persobat.morreu
+  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+
+func ataca2 # arg0 ataca todos dividindo a força do ataque
+# arg1 é o primeiro alvo
+  real atk
+  listaobj l
+# Obtém ataque e lista de personagens
+  l.addfim(arg0.dono.dentro1)
+  l.remove(arg0, arg1)
+  l.addini(arg1)
+  atk = ataque / l.total
+# Ataca
+  ref r
+  enquanto l.total > 1
+    r = l.objfim, l.fim.remove
+    continuar r.jog # Não prossegue se for jogador
+    velgolpe(arg0, r) # Tempo do golpe
+    execgolpe(arg0, r, atk) # Ataca
+    result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
+    r.pvida == 0 && r.morreu
+  efim
+# Ataca o alvo
+  r = l.objfim
+  velgolpe(arg0, r) # Tempo do golpe
+  execgolpe(arg0, r, atk) # Ataca
+  result && $mens.p(arg0, r) + $mens.mtodos1(msgatk + msgefeito(r))
+  r.pvida == 0 && r.morreu
+  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+
+func ataca3 # arg0 ataca todos sem dividir a força do ataque
+# arg1 é o primeiro alvo
+  listaobj l
+# Obtém ataque e lista de personagens
+  l.addfim(arg0.dono.dentro1)
+  l.remove(arg0, arg1)
+  l.addini(arg1)
+# Ataca
+  ref r
+  enquanto l.total > 1
+    r = l.objfim, l.fim.remove
+    continuar r.jog # Não prossegue se for jogador
+    velgolpe(arg0, r) # Tempo do golpe
+    execgolpe(arg0, r, ataque) # Ataca
+    result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
+    r.pvida == 0 && r.morreu
+  efim
+# Ataca o alvo
+  r = l.objfim
+  velgolpe(arg0, r) # Tempo do golpe
+  execgolpe(arg0, r, atk) # Ataca
+  result && $mens.p(arg0, r) + $mens.mtodos1(msgatk + msgefeito(r))
+  r.pvida == 0 && r.morreu
+  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+
+func msgefeito # Gera mensagem de como o golpe acertou
+# arg0 = personagem alvo, se houver
+# result = como acertou
+  casovar result
+  casose "1"
+    ret ", errou"
+  casose "2"
+    ret ", nada acontece"
+  casose "3"
+    ret ", pouco efeito" + (arg0 ? " " + arg0.persobat.pvida)
+  casose "4"
+    ret arg0 ? ", " + arg0.persobat.pvida : ""
+  casose "5"
+    ret ", muito efeito" + (arg0 ? " " + arg0.persobat.pvida)
+  casofim
+  ret ""
+
+func velgolpe # Acerta o tempo de espera conforme o golpe
+# arg0 = personagem que está atacando
+# arg1 = personagem alvo
+# vel = velocidade do golpe
+  uint8 tempo
+# Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
+  tempo = 10 + arg1.persobat.pveloc * 2000 / (arg0.persobat.pveloc * veloc + 1)
+  tempo < 5 && (tempo = 5)
+  tempo > 60 && (tempo = 60)
+  arg0.p_espera < tempo && (arg0.p_espera = tempo)
+
+func execgolpe # Realiza um ataque e coloca resultado em result
+# arg0 = personagem que está atacando
+# arg1 = personagem alvo
+# arg2 = força do ataque, 0=não calcular danos
+# tipo = tipo de ataque
+  real dano
+  ref r # Personagem que ataca
+  ref s # Personagem que recebe o ataque
+# Checa se pode realmente atacar
+  r = arg0.persobat, s = arg1.persobat, result = 1
+  se arg0.dono.cmd_ataque(arg0, arg1, este)
+    ret
+  senao r.cmd_ataque(arg0, arg1, este)
+    ret
+  senao s.cmd_ataquerec(arg0, arg1, este)
+    ret
+  fimse
+# Indica que atacou, recebe experiência se vencer
+  se arg0.atkenv.obj != arg1 # Se o alvo do ataque mudou...
+    arg0.atkenv.remove
+    arg0.atkenv = arg1.atkrec.addfim(arg0)
+    arg0.atkdiv.limpar
+  fimse
+  arg0.atkdiv.addfim1(r) # Adiciona personagem para ganhar experiência
+  se !arg1.atkenv # Se o alvo não está batalhando...
+    arg1.atkenv = arg0.atkrec.addfim(arg1)
+    arg1.atkdiv.limpar
+    arg1.atkdiv.addfim(s)
+  fimse
+  arg0.posicao >= 4 && (arg0.posicao = 7), arg0.atktempo = 100
+  arg1.posicao >= 4 && (arg1.posicao = 7), arg1.atktempo = 100
+  arg1.p_espera == 0 && (arg1.p_espera = 1) # Para gerar evento de PNJs
+  r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
+
+# Checa se acertou o alvo
+  se precisao <= 100
+    dano = rand(1, 20)
+    se dano == 20 || arg1.posicao == 4 # Acertou automaticamente
+    senao dano == 1 # Errou o alvo automaticamente
+      ret
+    senao # Checa se acertou
+      dano += precisao * arg0.precisao / 100 - arg1.evasao
+      !arg0.visivel(arg1) && (dano -= 5) # Invisível é mais difícil de acertar
+      ret dano <= 0, nulo
+    fimse
+  fimse
+# Checa bônus do tipo de defesa
+  dano = s.deftipo.[tipo]
+  se dano >= 80 # Defesa muito alta
+    result = 2
+    ret
+  senao arg2 == 0 # Nenhum valor de ataque, apenas indica que atacou
+    result = 4
+    ret
+  fimse
+  result = dano <= -2 ? 5 : dano >= 2 ? 3 : 4
+  dano = misc:defbonus.[128 - dano]
+# Calcula dano
+  se misc:aktipo(tipo) # Checa se golpe normal ou especial
+    dano *= r.atkmag * arg2 / (s.defmag * 100)
+  senao
+    dano *= r.atknorm * arg2 / (s.defnorm * 100)
+  fimse
+  dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
+# Modificadores de posição
+  casovar s.posicao
+  casose "0" # Morto
+  casose "1" # Mortalmente ferido
+  casose "2" # Incapacitado
+    dano *= 2.666
+    sair
+  casose "3" # Muito fraco
+    dano *= 2.333
+    sair
+  casose "4" # dormindo
+    dano *= 2
+    sair
+  casose "5" # descansando
+    dano *= 1.666
+    sair
+  casose "6" # sentado
+    dano *= 1.333
+    sair
+  casofim
+# Atualiza pontos de vida conforme os danos
+  dano < 1 && (dano = 1) # Pelo menos 1 de dano
+  s.pvida -= dano
+
+func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
+  !arg0 && (arg0 = 1)
+
+
+classe cmd_socar
+herda comando_ataque
+const nome = "Socar"
+const msgatk = "$R soca $c"
+const tipo = 0 # Normal
+const ataque = 80
+const vel = 150
+const extra = "Golpe físico de força"
+
+
+classe cmd_chutar
+herda comando_ataque
+const nome = "Socar"
+const msgatk = "$R chuta $c"
+const tipo = 0 # Normal
+const ataque = 100
+const vel = 100
+const extra = "Golpe físico de força"

@@ -1,16 +1,243 @@
 classe a_teste
 herda area
-const a_nome = "abc"
-const a_autor = "eu"
-const a_tempo = 10
+const a_nome = "Área inicial"
 
 
 classe b_teste
 herda sala
-const s_luz = 2
+const s_terreno = 1
+const s_luta = 1
+
+
+classe i_teste_pedra
+herda comum_item
+const nome = "pedra"
+const sexo = 0
+const descpos = "Aqui tem uma pedra."
+const pesoobj = 200
+
+
+classe p_teste_jardim
+herda comum_perso
+const nome = "Jardineiro"
+const ident = nome
+const descpos = "Um jardineiro está sentado aqui."
+const sexo = 1 # 0=feminino, 1=masculino
+
+func cmd_jog # Jogador chegou na mesma sala
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Jardineiro disse: Olá.")
+
+func entrou20
+  arg0.msg("Jardineiro disse: Preciso de uma pedra.")
+
+const container = 1 # Para poder receber itens
+
+func cmd_mudadono # Receber eventos do próprio personagem
+  evento.addfim(este)
+
+func cmd_darobj # Alguém deu algum item
+  se arg2.nome == "pedra"
+    apagar(arg2) # Apaga o item
+    misc:tempo("deupedra", arg0) # Dispara 'deupedra'
+  senao
+    arg0.msg("Jardineiro não aceita " + arg2.nome + ".")
+    ret 1 # Para não receber o item
+
+func deupedra15
+  arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
+  arg0.var.1planta = "" # Remove a planta carnívora
 
 
 classe s_teste001
+herda b_teste
+const s_titulo = "Salão de espera"
+const s_desc = "O chão está coberto por uma nuvem branca, de modo que você não consegue\n\
+ver onde pisa. Para todos os outros lugares que você olha, só vê o azul\n\
+celeste do céu. Há bastante luz, como se fosse 5 horas da tarde, porém\n\
+não há nenhum sol ou algo que produza luz."
+const s_luta = 0
+inttempo espera
+
+func cmd_jog # Jogador chegou
+  se espera == 0
+    espera = 10
+
+func espera_exec # Restaura a vida do jogador
+  listaitem item
+  ref r
+  epara item = dentro2.ini, item, item.depois
+    r = item.obj
+    se r.vida < r.vidamax / 2
+      r.vida += 1, espera = 10
+    senao
+      r.mudadono(config:salaini)
+    fimse
+  efim
+
+
+classe s_teste002
+herda b_teste
+const s_titulo = "Jardim"
+const s_desc = "Isso é o que restou de um pequeno jardim. Não é grande, mas a grama\n\
+já virou mato, de modo que mal se vê as cercas à sua volta.\n\
+Há uma placa aqui, com os seguintes dizeres:\n\
+Tecle as direções cardeais para ir de um lugar a outro: n s l o\n\
+Há também as direções intermediárias: ne no se so\n\
+Em alguns lugares pode-se ir para cima e para baixo: c b"
+const dir_l = $s_teste003
+
+
+classe s_teste003
+herda b_teste
+const s_titulo = "Centro do jardim"
+const s_desc = "Aqui o mato é ainda mais alto. À oeste o mato é um pouco mais baixo,\n\
+enquanto que ao norte você vê uma pequena trilha. À leste e ao sul não é\n\
+possível saber o que há além do mato."
+const dir_o = $s_teste002
+const dir_s = $s_teste004
+const dir_l = $s_teste005
+const dir_n = $s_teste006
+
+
+classe s_teste004
+herda b_teste
+const s_titulo = "Jardim"
+const s_desc = "Aqui o mato é um pouco mais baixo que ao norte. Há algumas pedras\n\
+espalhadas pelo chão. Você anda com cuidado para não torcer o pé.\n\
+Ao sul nota-se claramente a certa que delimita o jardim."
+const dir_n = $s_teste003
+const dir_ne = $s_teste005
+
+func cmd_jog # Jogador chegou
+  arg0.evento.addfim(este) # Receber eventos do jogador
+  se !dentro1.objini("i_teste_pedra") # Cria pedra se ainda não existir
+    criar("i_teste_pedra", este)
+
+func cmd_pegarobj # Pegar alguma coisa
+  se arg2.nome == "pedra"
+    criar("i_teste_pedra", este) # Cria uma pedra na sala
+
+func cmd_soltarobj # Soltar alguma coisa
+  se arg2.nome == "pedra"
+    apagar(arg2) # Apagará a pedra
+
+
+classe s_teste005
+herda b_teste
+const s_titulo = "Jardim"
+const s_desc = "O mato termina repentinamente nessa direção. Há uma parede à leste. Algum\n\
+vândalo pixou uma mensagem que mal se entende. Depois de um tempo você lê:\n\
+Se houvesse uma minhoca aqui, e você quisesse pegá-la e depois soltá-la,\n\
+bastaria teclar pegar minhoca, e em seguida, teclar soltar minhoca.\n\
+E se encontrasse um pescador, poderia teclar: dar minhoca pescador\n\
+Pode-se abreviar muita coisa, escrevendo só o começo das palavras. Exemplo,\n\
+peg minho ou mesmo pe mi ao invés de pegar minhoca."
+const dir_o = $s_teste003
+const dir_so = $s_teste004
+const dir_no = $s_teste006
+
+
+classe s_teste006
+herda b_teste
+const s_titulo = "Trilha"
+const s_desc = "O mato chega a um metro aqui, e ao sul crece ainda mais. Na direção norte,\n\
+vai diminuindo gradativamente. É possível seguir também a sudeste.\n\
+Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
+const dir_s = $s_teste003
+const dir_n = $s_teste012
+const dir_se = $s_teste005
+
+func cmd_jog # Jogador chegou
+  arg0.evento.addfim(este) # Receber eventos do jogador
+  arg0.var.1planta = 1 # Tem planta carnívora
+  se !dentro2.objini("p_teste_jardim") # Cria personagem se ainda não existir
+    criar("p_teste_jardim", este)
+
+func cmd_n # Jogador quer ir para o norte
+  se arg0.var.1planta # Se tem planta carnívora
+    arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
+    arg0.msg("Então você recua.")
+    ret 1
+
+
+classe s_teste012
+herda b_teste
+const s_titulo = "Sala ampla"
+const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal assombrada.\n\
+Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
+e uma passagem ao norte."
+const dir_l = $s_teste014
+const dir_n = $s_teste013
+const dir_s = $s_teste006
+const portaini_n = 2
+
+
+classe s_teste013
+herda b_teste
+const s_titulo = "Passagem"
+const s_desc = "Um pequeno quarto escuro, que deveria levar a algum lugar, mas você não vê\n\
+nenhuma saída. As paredes estão cinzas de sujeira e há teias de aranha\n\
+por toda parte. Nota-se que ninguém vem aqui há anos."
+const dir_s = $s_teste012
+const portaini_s = 2
+
+
+classe s_teste014
+herda b_teste
+const s_titulo = "Corredor"
+const s_desc = "Você está em um corredor que se estende a oeste. Mais adiante há uma\n\
+sala bastante ampla. À leste há uma escada para o andar de baixo."
+const dir_s = $s_teste015
+const dir_o = $s_teste012
+
+func cmd_jog # Jogador chegou na mesma sala
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Alguém disse olá")
+
+func ini
+  sala:ini
+  criar("i_borracha", este)
+  ref r
+  r = criar("p_anao", este)
+  r.nivel = 1
+
+
+classe s_teste015
+herda b_teste
+const s_titulo = "Sala de estar"
+const s_desc = "Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
+ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
+corredor estreito para leste e uma escada para o andar de cima, ao sul.\n\
+Aqui você pode salvar o personagem teclando salvar"
+const dir_n = $s_teste014
+const dir_l = $s_teste016
+
+func cmd_jog # Jogador chegou
+  arg0.evento.addfim(este) # Receber eventos do jogador
+
+func cmd_escr # Personagem escreveu alguma coisa
+  se arg1 == "salvar"
+    arg0.mudasenha # Muda a senha
+    ret 1
+
+
+classe s_teste016
+herda b_teste
+const s_titulo = "Forno microondas"
+const s_desc = "Misteriosamente você acaba de entrar em um forno de microondas.\n\
+Há um copo de leite gigante aqui. A tampa é tão pesada que não é possível\n\
+saber se está fechada ou trancada. De repente apareceu alguém lá fora e\n\
+apertou alguns botões. Está ficando quente, muito quente. Você desmaia."
+const s_morre = 1
+const dir_o = $ini015
+
+
+classe s_teste007
 herda b_teste
 const s_titulo = "Dentro de um armário"
 const s_desc = "Esse lugar está completamente abandonado há alguns anos. Há teias de aranha\n\
