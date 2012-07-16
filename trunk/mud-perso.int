@@ -14,6 +14,7 @@ sav textovar var # Variáveis criadas sob demanda do personagem
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
+sav int1 jogconfig.32 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
   comum_obj:ini
@@ -54,13 +55,17 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   cmd_mudadono
 # Se for jogador, executa eventos cmd_jog
   se jog
-    arg0.cmd_jog(este, arg0)
+    !arg0.perso && arg0.cmd_jog(este, arg0)
     epara l.addfim(arg0.dentro2), l, l.ini.remove
       l.objini.cmd_jog(este, arg0)
     efim
   fimse
 # Mostra descrição
-  sock && dono.s_titulo && msg2(dono.descsala(este, 7))
+  se sock && dono.s_titulo
+    se jogconfig.16
+      msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
+    senao
+      msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
 
 func teclou # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
@@ -233,23 +238,22 @@ func ataqueini # Testa se pode atacar
     ret "Não é permitido brigas aqui"
   senao
     ret ""
-
-#varfunc vida
-#  ret !args, ivida # Lê vida
-#  casovar (ivida = arg0) * 100 / vidamax
-#  casose "0"
-#  casose "1"
-#    posicao = vida != 0 # 0=morto, 1=mortalmente ferido
-#    ret
-#  casose "2"
-#    posicao = 2 # incapacitado
-#    ret
-#  casose "3"
-#    posicao = 3 # fraco
-#    ret
-#  casose
-#    posicao < 4 && (posicao = pospadr)
-#  casofim
+# varfunc vida
+# ret !args, ivida # Lê vida
+# casovar (ivida = arg0) * 100 / vidamax
+# casose "0"
+# casose "1"
+# posicao = vida != 0 # 0=morto, 1=mortalmente ferido
+# ret
+# casose "2"
+# posicao = 2 # incapacitado
+# ret
+# casose "3"
+# posicao = 3 # fraco
+# ret
+# casose
+# posicao < 4 && (posicao = pospadr)
+# casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
@@ -259,7 +263,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   atkmag = (nivel * 5 + 70) * nivel + 30
   defmag = nivel * 6 + 11
   pvidamax = nivel * 2 + 25
-  #pveloc = (nivel * 4 + 60) * nivel + 30
+# pveloc = (nivel * 4 + 60) * nivel + 30
   pveloc = nivel + 50
   pmanamax = nivel + 30
   pmovemax = nivel * 2 + 30

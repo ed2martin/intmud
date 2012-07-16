@@ -467,6 +467,14 @@ func cmd_mudadono
 O próprio personagem ou um item mudou de dono. Esse evento é gerado somente
 para o próprio objeto, quando a função mudadono é executada.
 
+func cmd_recalc1(personagem)
+Chamado para o próprio personagem, por func recalc_exec, para ajustar
+as variáveis (pontos de vida, mana, etc.)
+
+func cmd_recalc2(personagem)
+Chamado para os objetos em personagem.dentro2 e personagem.evento, por
+func recalc_exec, para ajustar as variáveis (pontos de vida, mana, etc.)
+
 func cmd_falou(personagem, texto)
 Falou alguma coisa.
 
@@ -530,8 +538,14 @@ func cmd_fecharobj(personagem, item, texto)
 Quer abrir ou fechar um item. Se o objeto 'item' for nulo, significa
 que não encontrou o item.
 
-func cmd_atacar(objeto que processa o ataque, personagem, alvo)
+func cmd_atacar(personagem, alvo, objeto que processa o ataque)
 Quer atacar algum personagem.
+
+func cmd_atkenv(quem ataca, quem recebe, objeto que processa o ataque)
+func cmd_atkrec(quem ataca, quem recebe, objeto que processa o ataque)
+Chamado quando um personagem vai realizar um ataque a outro.
+Use cmd_atkenv quando for o personagem atacando e cmd_atkrec quando for
+o personagem que recebe o ataque.
 
 
 13. Lista de itens pendentes
@@ -541,4 +555,3 @@ Volume que cabe dentro, ou 0 se não for container
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
 Quanto tempo dura vestindo (exemplo, para produzir luz)
-O que afeta se estiver vestindo

@@ -412,8 +412,8 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
                 }
                 if (charcor==Instr::ex_barra_d && (
                         (ch>='0' && ch<='9') ||
-                        (ch>='A' && ch<='F') ||
-                        (ch>='a' && ch<='f')))
+                        (ch>='A' && ch<='J') ||
+                        (ch>='a' && ch<='j')))
                 {
                     charcor=0;
                     break;

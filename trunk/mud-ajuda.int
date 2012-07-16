@@ -7,7 +7,7 @@ classe cmd_ajuda
 herda comando_comum
 const posic = 0
 const texto1 = "\b\c3Páginas de ajuda\b\n\
-Para ler tecle ajuda seguido do nome de um tópico ou um comando.\n\
+Para ler tecle AJUDA seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
   \c2MOVER\b    Como movimentar-se no jogo\n\
   \c2COMUNICA\b Comunicação com outros jogadores\n\
@@ -15,7 +15,7 @@ Os tópicos são:\n\
   \c2OBJETOS\b  Manuseio de objetos\n\
   \c2NOMES\b    Nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
-  \c2FIM\b      Sai do MUD"
+Para sair do MUD tecle \c2FIM\b"
 
 func texto2
   se arg0.sock.admin
@@ -53,9 +53,8 @@ ABRIR e FECHAR."
 classe cmd_comunica
 herda comando_ajuda
 const txtajuda = "\b\c3Comunicação\b\n\
-   \c2CHAT\b     Envia mensagem para os jogadores com o canal chat habilitado.\n\
-                 Permite também habilitar ou desabilitar este canal.\n\
-   \c2FALAR\b    Envia mensagem para os personagens na mesma sala."
+  \c2CHAT\b     Envia mensagem para os jogadores com o canal CHAT habilitado.\n\
+  \c2FALAR\b    Envia mensagem para os personagens na mesma sala."
 
 
 classe cmd_objetos
@@ -64,11 +63,6 @@ const txtajuda = "\b\c3Esse comando não está pronto\b"
 
 
 classe cmd_nomes
-herda comando_ajuda
-const txtajuda = "\b\c3Esse comando não está pronto\b"
-
-
-classe cmd_config
 herda comando_ajuda
 const txtajuda = "\b\c3Esse comando não está pronto\b"
 

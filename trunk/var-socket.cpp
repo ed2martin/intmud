@@ -29,7 +29,7 @@ enum {
 SocketProto = 1,
 SocketCores = 2,
 SocketAFlooder = 3,
-SocketEco = 4,
+SocketOpcTelnet = 4,
 SocketPosX
 };
 
@@ -96,7 +96,7 @@ bool TObjSocket::Enviar(const char * mensagem)
     int antes = CorEnvia;
     char mens[4096]; // Mensagem decodificada
     char * destino = mens; // Aonde colocar a mensagem
-    const char * fim = mens + sizeof(mens); // Aonde termina
+    const char * fim = mens + sizeof(mens) - 6; // Aonde termina
 
 // Mostra o que está enviando
 #ifdef DEBUG_MSG
@@ -122,16 +122,36 @@ bool TObjSocket::Enviar(const char * mensagem)
             agora = 0x70;
             break;
         case Instr::ex_barra_c: // Cor dos caracteres
-            mensagem++;
-            if (*mensagem>='0' && *mensagem<='9')
-                agora = (agora & 15) | (*mensagem-'0') * 16;
-            else if (*mensagem>='A' && *mensagem<='F')
-                agora = (agora & 15) | (*mensagem-'A'+10) * 16;
-            else if (*mensagem>='a' && *mensagem<='f')
-                agora = (agora & 15) | (*mensagem-'a'+10) * 16;
-            else
-                mensagem--;
-            break;
+            {
+                unsigned char ch = *(++mensagem);
+                if (ch>='0' && ch<='9')
+                {
+                    agora = (agora & 15) | (ch-'0') * 16;
+                    break;
+                }
+                ch |= 0x20;
+                if (ch < 'a' || ch > 'j')
+                {
+                    mensagem--;
+                    break;
+                }
+                if (ch <= 'f')
+                {
+                    agora = (agora & 15) | (ch-'a'+10) * 16;
+                    break;
+                }
+                if (agora != antes)
+                {
+                    destino[0] = 1;
+                    destino[1] = agora;
+                    destino+=2;
+                    antes = agora;
+                }
+                if (destino > fim)
+                    return false;
+                *destino++ = ch + 2 - 'g';
+                break;
+            }
         case Instr::ex_barra_d: // Cor de fundo
             if (mensagem[1]>='0' && mensagem[1]<='7')
             {
@@ -142,14 +162,12 @@ bool TObjSocket::Enviar(const char * mensagem)
         case Instr::ex_barra_n: // Próxima linha
             if (agora != antes)
             {
-                if (destino+4 > fim)
-                    return false;
                 destino[0] = 1;
                 destino[1] = agora;
                 destino+=2;
                 antes = agora;
             }
-            if (destino+2 > fim)
+            if (destino > fim)
                 return false;
             *destino++ = '\n';
             coluna=0;
@@ -161,14 +179,12 @@ bool TObjSocket::Enviar(const char * mensagem)
                 break;
             if (agora != antes)
             {
-                if (destino+4 > fim)
-                    return false;
                 destino[0] = 1;
                 destino[1] = agora;
                 destino+=2;
                 antes = agora;
             }
-            if (destino+2 > fim)
+            if (destino > fim)
                 return false;
             coluna++;
             *destino++ = *mensagem;
@@ -177,7 +193,7 @@ bool TObjSocket::Enviar(const char * mensagem)
 // Acrescenta cor e 0 no final
     if (agora != antes)
     {
-        if (destino+3 > fim)
+        if (destino > fim)
             return false;
         destino[0] = 1;
         destino[1] = agora;
@@ -434,8 +450,8 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         x = SocketCores;
     else if (comparaZ(nome, "aflooder")==0)
         x = SocketAFlooder;
-    else if (comparaZ(nome, "eco")==0)
-        x = SocketEco;
+    else if (comparaZ(nome, "opctelnet")==0)
+        x = SocketOpcTelnet;
     else if (comparaZ(nome, "posx")==0)
         x = SocketPosX;
     if (x)

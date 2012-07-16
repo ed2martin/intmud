@@ -48,7 +48,7 @@ func escr # Atacar alguém
   senao
     listaobj l
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_atacar(este, arg0, r), nulo
+      ret l.objini.cmd_atacar(arg0, r, este), nulo
     efim
     ataca(arg0, r)
 
@@ -75,7 +75,7 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
   ref r
   enquanto l.total > 1
     r = l.objfim, l.fim.remove
-    continuar r.jog # Não prossegue se for jogador
+    continuar r.jog || r.perso < 3 # Não prossegue se for jogador
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
@@ -100,7 +100,7 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
   ref r
   enquanto l.total > 1
     r = l.objfim, l.fim.remove
-    continuar r.jog # Não prossegue se for jogador
+    continuar r.jog || r.perso < 3 # Não prossegue se for jogador
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, ataque) # Ataca
     result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
@@ -151,14 +151,14 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   ref r # Personagem que ataca
   ref s # Personagem que recebe o ataque
 # Checa se pode realmente atacar
-  r = arg0.persobat, s = arg1.persobat, result = 1
-  se arg0.dono.cmd_ataque(arg0, arg1, este)
-    ret
-  senao r.cmd_ataque(arg0, arg1, este)
-    ret
-  senao s.cmd_ataquerec(arg0, arg1, este)
-    ret
-  fimse
+  r = arg0.persobat, s = arg1.persobat, result = 0
+  listaobj l
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_atkenv(arg0, arg1, este), nulo
+  efim
+  epara l.addfim(s.evento), l, l.ini.remove
+    ret l.objini.cmd_atkrec(arg0, arg1, este), nulo
+  efim
 # Indica que atacou, recebe experiência se vencer
   se arg0.atkenv.obj != arg1 # Se o alvo do ataque mudou...
     arg0.atkenv.remove
@@ -175,8 +175,8 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   arg1.posicao >= 4 && (arg1.posicao = 7), arg1.atktempo = 100
   arg1.p_espera == 0 && (arg1.p_espera = 1) # Para gerar evento de PNJs
   r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
-
 # Checa se acertou o alvo
+  result = 1
   se precisao <= 100
     dano = rand(1, 20)
     se dano == 20 || arg1.posicao == 4 # Acertou automaticamente

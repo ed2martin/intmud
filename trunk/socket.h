@@ -81,7 +81,7 @@ private:
     char eventoenv:1;           ///< Se deve gerar evento _env
                                 /**< @note Caracteres de controle de Telnet
                                   *  não devem gerar eventos _env */
-    char ecotelnet:1;           ///< Variável socket.eco
+    char usaropctelnet:1;       ///< Variável socket.opctelnet
     char sockenvrec:1;          ///< 1=socket fechou ao enviar, 0=ao receber
     struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
@@ -109,10 +109,12 @@ private:
              *   - 24=recebeu Ctrl-C XX,
              *   - 25=recebeu Ctrl-C XX,X
              *   - 26=recebeu Ctrl-C XX,XX; esperando Ctrl+C */
-    char bufTelnet[8];          ///< Para interpretar o protocolo Telnet
-    char bufESC[20];            ///< Para interpretar seqüências de ESC
+    unsigned char bufTelnet[8]; ///< Para interpretar o protocolo Telnet
+    unsigned char bufESC[20];   ///< Para interpretar seqüências de ESC
     unsigned short pontESC;     ///< Ponteiro em bufESC
     unsigned short pontTelnet;  ///< Ponteiro em bufTelnet
+    unsigned char telnetopc[10];///< Para responder algumas opções do telnet
+    int telnetecho;             ///< Para lidar com envio de caracteres ECHO
 
     unsigned char CorAtual;
             ///< Para controle da cor

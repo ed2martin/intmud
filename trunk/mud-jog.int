@@ -4,8 +4,6 @@ int1 luz # Se tem luz do dia
 int8 hora # Hora MUD (1 dia MUD = 2 horas)
 inttempo imin # Quantos segundos faltam para completar 1 hora MUD
 
-const admin = 1 # Verdadeiro se for administrador
-
 func iniclasse
   criar(arg0)
 
@@ -33,7 +31,7 @@ herda jog_entra, jog_adm, jog_admcod, jog_admsala
 # fim = objeto está sendo apagado
 # info = tipo (l=local, t=telnet, p=papovox, b=bot) + espaço + extra
 # sendo que extra pode ser o endereço IP ou o nome da sala
-# msg(texto) = envia mensagem para jogador
+# msgsock(texto) = envia mensagem para jogador
 # msgsala(texto) = envia mensagem para todos da sala
 # msgtodos(texto) = envia mensagem para todos os jogadores
 # recebe(texto) = executado sempre que receber mensagem do jogador
@@ -43,8 +41,8 @@ indiceobj cnome # "un " + nome codificado
 txt20 nome # Nome do personagem
 inttempo vazio # Tempo sem comunicação para desconectar do MUD
 textotxt txtmais # Texto do tecle M para mais
-const admin = 1 # Se é administrador
-uint8 canais # Canais: +1 se recebe pvt, +2 se recebe chat
+int1 admin # Se é administrador
+int1 jogconfig.32 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 #
 txt20 passo # Passo atual; "" se estiver jogando
@@ -100,6 +98,16 @@ func recebe # Recebeu mensagem do jogador
   se p_[passo](arg0) # Função do passo
     comandos.limpar
     ret
+  senao arg0 && arg0 == config:senhaadm # Administração
+    admin = !admin
+    se admin
+      msg("Você virou administrador, tecle ADM para saber os comandos.")
+      jogconfig.19 = 1
+      perso.jogconfig.19 = 1
+    senao
+      msg("Você deixou de ser administrador")
+    fimse
+    ret
   senao admin && cmd_[txt1(arg0)](txt2(arg0)) # Comando de administração
     comandos.limpar
     ret
@@ -145,8 +153,19 @@ func txtmostra # Mostra próximo bloco de txtmais
   se txtmais.linhas <= 10
     msg(txtmais.remove(10))
   senao
-    msg(txtmais.remove(9))
-    msg("Tecle M para mais")
+    msg(txtmais.remove(9) + "\nTecle M para mais")
+
+func msg
+  casovar jogconfig.bits & 12
+  casose "0" # -CORES -ACENTO
+    ret msgsock("\b" + txtremove(arg0, "C7"))
+  casose "4" # +CORES -ACENTO
+    ret msgsock(txtremove(arg0, "7"))
+  casose "8" # -CORES +ACENTO
+    ret msgsock("\b" + txtremove(arg0, "C"))
+  casose "12" # +CORES +ACENTO
+    ret msgsock(arg0)
+  casofim
 
 func vazio_exec
   msg("Muito tempo sem comunicação")
@@ -161,6 +180,7 @@ func p_perso # Digitar o nome do personagem
   txt20 texto
   arqsav sav1
   passo = "perso", tpasso = ""
+  jogconfig.bits = 31 # Configurações iniciais
   texto = txtnome(arg0)
   se !arg0
     msg("Digite o nome do seu personagem")
@@ -188,13 +208,12 @@ func p_sexo # Digitar O ou A
     ret 1
   fimse
   passo = ""
-  canais = 255 # Habilita todos os canais
   msg("Iniciando jogo; para ajuda tecle AJUDA")
   mudaperso(criar("jogador"))
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
+  perso.jogconfig.bits = jogconfig.bits
   arg0 == "O" && (perso.sexo = 1)
-  perso.canais = canais
   perso.mudadono(config:salaini)
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
@@ -239,6 +258,7 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     listaobj l1
     l1.addfim(perso)
     sav1.ler("jog-" + texto + ".sav", l1)
+    jogconfig.bits = perso.jogconfig.bits
 # Acerta nome, checa se nome codificado bate
     se txtnome(perso.nome) != texto
       perso.nome = nome
@@ -255,7 +275,6 @@ func p_senha # Entrar com a senha para carregar jogo salvo
       item.obj.ajustapeso
       item.obj.recalc = 1
     efim
-    canais = perso.canais
 # Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")
     ref r
@@ -330,7 +349,6 @@ indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 sav int1 sexo # Sexo: 0=feminino, 1=masculino
-sav uint8 canais # Para salvar sock.canais
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
@@ -364,7 +382,6 @@ func salvar # Salva o jogo, desde que a senha não seja nula
     listaobj l0
     l0.addfim(este)
     salanome = dono
-    sock && (canais = sock.canais)
     salvarev = 3000 # 5 minutos
 # msg(txt2(cnome) + " , " + senha)
     ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)

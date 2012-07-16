@@ -779,20 +779,26 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
                     CorTela = 0x70;
                     break;
                 case Instr::ex_barra_c:
-                    if (*texto>='0' && *texto<='9')
                     {
-                        CorTela = (CorTela & 0x0F) +
-                                  (*texto - '0') * 0x10;
+                        char ch = *texto;
+                        if (ch>='0' && ch<='9')
+                        {
+                            CorTela = (CorTela & 0x0F) +
+                                    (ch - '0') * 0x10;
+                            texto++;
+                            break;
+                        }
+                        ch |= 0x20;
+                        if (ch<'a' || ch>'j')
+                            break;
+                        if (ch<='f')
+                            CorTela = (CorTela & 0x0F) +
+                                    (ch - '7') * 0x10;
+                        else if (ch=='j')
+                            Console->Beep();
                         texto++;
+                        break;
                     }
-                    else if ((*texto>='A' && *texto<='F') ||
-                        (*texto>='a' && *texto<='f'))
-                    {
-                        CorTela = (CorTela & 0x0F) +
-                                  ((*texto|0x20) - '7') * 0x10;
-                        texto++;
-                    }
-                    break;
                 case Instr::ex_barra_d:
                     if (*texto>='0' && *texto<='7')
                     {
@@ -829,13 +835,6 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
     {
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(Console ? 6 : 0);
-    }
-// Gerar um bipe
-    if (comparaZ(nome, "bipe")==0)
-    {
-        if (Console)
-            Console->Beep();
-        return false;
     }
 // Limpa a tela
     if (comparaZ(nome, "limpa")==0)

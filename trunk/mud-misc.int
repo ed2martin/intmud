@@ -54,6 +54,7 @@ const d2so = "ne"
 const d2nw = "se"
 const d2sw = "ne"
 #
+
 func atktipo # Tipos de golpes
 # arg0 = número do golpe
 # Retorna: 0=normal, 1=especial
@@ -292,9 +293,9 @@ func sepperso # Procura o personagem destino
   listaitem i
   nomeobj n
   n.ini(misc:sep2, 1)
-  #epara i = arg0.dentro2.ini, i, i.depois
-  #  ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
-  #efim
+# epara i = arg0.dentro2.ini, i, i.depois
+# ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+# efim
   epara i = arg0.dono.dentro2.ini, i, i.depois
     ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
   efim

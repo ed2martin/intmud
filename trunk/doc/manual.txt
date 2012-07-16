@@ -578,6 +578,10 @@ C = azul intenso
 D = magenta intenso
 E = ciano intenso
 F = branco intenso
+G = echo off (não deve ecoar na tela o que o usuário digita)
+H = echo on (deve ecoar na tela o que o usuário digita)
+I = go ahead (usado por alguns clientes de MUD para identificar o prompt)
+J = bipe
 
 Exemplo 2:
 
@@ -1417,7 +1421,8 @@ txtsub("bom dia boa tarde", 2) é o mesmo que "boa tarde".
 txtsub("bom dia boa tarde", 1, 1) é o mesmo que "dia".
 
 15.3.9. txtcor(<texto>)
-Retorna o texto sem as definições de cores. Exemplo:
+Retorna o texto sem as definições de cores e opções do telnet
+(eco, "go ahead" e bipe: de "\cg" até "\cj"). Exemplo:
 txtcor("\cF\d4Teste\b") é o mesmo que "Teste".
 
 15.3.10. txtmai(<texto>)
@@ -1499,11 +1504,14 @@ cores, conforme <texto2>. As letras interpretadas em <texto2> são:
 E = remover espaços à esquerda.
 M = remover espaços extras, exceto à esquerda e à direita.
 D = remover espaços à direita.
-C = remover cores (tem o mesmo efeito da função txtcor).
+C = remover cores.
+T = remover eco, "go ahead" e bipe (de "\cg" até "\cj").
 S = remover aspas simples trocando espaços entre duas aspas por sublinhado.
 A = remover aspas duplas trocando espaços entre duas aspas por sublinhado.
 7 = usar letras sem acentuação (caracteres em 7 bits).
     Exemplo, "ã É ì" vira "a E i".
+
+Vide também txtcor.
 
 Exemplos:
 
@@ -2693,10 +2701,7 @@ Tamanho da linha sendo editada, de 1 a 1023. Pode ser mudado.
 Linha em que o cursor está. 0 é a linha de edição, 1=última linha
 de texto, 2 = linha anterior, etc.
 
-29.8. bipe
-Gera um bipe.
-
-29.9. limpa
+29.8. limpa
 Limpa a tela.
 
 Eventos:
@@ -2758,9 +2763,10 @@ Nota: pode-se mudar entre 2 e 4 para socket conectado
 O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
 0 desativa o anti flooder, outro valor ativa.
 
-30.4. eco
-Define se o que o usuário digitar deve ser ecoado na tela.
-0 não ecoa, 1 ecoa. Não tem efeito em IRC e Papovox.
+30.4. opctelnet
+Define se pode receber caracteres especiais do protocolo Telnet:
+Eco desligado "\cg", eco ligado "\ch", caracteres go ahead "\ci"
+e bipe "\cj". Não tem efeito em IRC e Papovox.
 
 30.5. posx
 Posição do cursor: quantos caracteres enviou após o último \n.

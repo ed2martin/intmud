@@ -1,7 +1,6 @@
 classe jog_adm
 # Funções necessárias para os comandos de administração
 
-
 func cmd2_info # Usado por cmd_info
   txt200 lin
   lin = "Peso:   obj=" + arg0.pesoobj + "  dentro=" + arg0.pesoden
@@ -14,7 +13,7 @@ func cmd2_info # Usado por cmd_info
 
 func cmd_info
   se !arg0
-    #msg("\b\c2Você:\b\n" + cmd2_info(perso))
+# msg("\b\c2Você:\b\n" + cmd2_info(perso))
     msg("\c2Sala:\b\n" + cmd2_info(perso.dono))
     ret 1
   fimse
@@ -49,7 +48,7 @@ func cmd_adm
   ret 1
 
 const adm_ = "\b\c3Páginas de administração\b\n\
-Para ler tecle adm seguido do nome de um tópico.\n\
+Para ler tecle ADM seguido do nome de um tópico.\n\
 Os tópicos são:\n\
   \c2AREA\b     Áreas\n\
   \c2SALA\b     Salas\n\
@@ -79,6 +78,8 @@ const adm_pnj = "\b\c3Comandos de PNJs\b\n\
 \c2APNJ\b <nome>\n\
   Apaga PNJ."
 const adm_outros = "\c3Outros comandos\b\n\
+\c2AC\b <texto>\n\
+  Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores.\n\
 \c2INFO\b\n\
@@ -88,9 +89,22 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2CMD\b <comando>\n\
   Executa comando na linguagem do IntMUD e mostra o resultado."
 
+func cmd_ac
+  se !jogconfig.19
+    msg("Canal AC está desabilitado.")
+  senao !arg0
+    msg("Tecle a mensagem após AC.")
+  senao
+    listaitem item
+    epara item = $jogcomum.jog.ini, item, item.depois
+      item.obj.jogconfig.19 && item.obj.msg("(ac) " + nome + ": " + arg0)
+    efim
+  fimse
+  ret 1
+
 func cmd_echo
   se !arg0
-    msg("\bDigite a mensagem após ECHO")
+    msg("\bTecle a mensagem após ECHO.")
   senao
     listaitem item
     epara item = $jogcomum.jog.ini, item, item.depois
