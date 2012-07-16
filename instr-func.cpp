@@ -39,8 +39,8 @@
         break;                \
     case ex_barra_c:          \
         if ((txt[1]>='0' && txt[1]<='9') ||      \
-                (txt[1]>='A' && txt[1]<='F') ||  \
-                (txt[1]>='a' && txt[1]<='f'))    \
+                (txt[1]>='A' && txt[1]<='J') ||  \
+                (txt[1]>='a' && txt[1]<='j'))    \
             *destino++ = *txt++; \
         *destino++ = *txt++;     \
         break;        \
@@ -466,8 +466,8 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 break;
             case ex_barra_c:
                 if ((txt[1]>='0' && txt[1]<='9') ||
-                        (txt[1]>='A' && txt[1]<='F') ||
-                        (txt[1]>='a' && txt[1]<='f'))
+                        (txt[1]>='A' && txt[1]<='J') ||
+                        (txt[1]>='a' && txt[1]<='j'))
                     txt += 2;
                 else
                     txt++;

@@ -559,8 +559,8 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
                 switch (pular)
                 {
                 case 1:
-                    if ((ch<'0' || ch>'9') && (ch<'A' || ch>'F') &&
-                            (ch<'a' || ch>'f') && ch>=' ')
+                    if ((ch<'0' || ch>'9') && (ch<'A' || ch>'J') &&
+                            (ch<'a' || ch>'j') && ch>=' ')
                         *pbuf++ = ch;
                     pular=0;
                     break;
@@ -647,8 +647,8 @@ bool TTextoTxt::FuncClipSalvar(TVariavel * v)
             break;
         case Instr::ex_barra_c:
             if ((txt[1]>='0' && txt[1]<='9') ||
-                    (txt[1]>='A' && txt[1]<='F') ||
-                    (txt[1]>='a' && txt[1]<='f'))
+                    (txt[1]>='A' && txt[1]<='J') ||
+                    (txt[1]>='a' && txt[1]<='j'))
                 txt += 2;
             else
                 txt++;

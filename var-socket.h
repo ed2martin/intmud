@@ -35,6 +35,10 @@ protected:
                      *     - Bits 4-6 = cor das letras
                      *     - Bit 7 =1 se negrito (cor das letras mais forte)
                      *     .
+                     *  - Byte =2 -> echo off
+                     *  - Byte =3 -> echo on
+                     *  - Byte =4 -> go ahead
+                     *  - Byte =5 -> beep
                      *  - Byte ='\n' -> passar para próxima linha
                      */
     virtual void Fechar(void)=0; ///< Fecha socket, pode apagar socket

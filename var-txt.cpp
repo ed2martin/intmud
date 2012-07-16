@@ -117,8 +117,8 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
                     break;
                 case Instr::ex_barra_c:
                     if ((txt[1]>='0' && txt[1]<='9') ||
-                            (txt[1]>='A' && txt[1]<='F') ||
-                            (txt[1]>='a' && txt[1]<='f'))
+                            (txt[1]>='A' && txt[1]<='J') ||
+                            (txt[1]>='a' && txt[1]<='j'))
                         txt += 2;
                     else
                         txt++;

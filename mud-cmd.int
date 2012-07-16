@@ -307,21 +307,21 @@ Envia mensagem para todos os personagens que estiverem na mesma sala."
 
 func escr
   $mens.p(arg0)
-  se txt(arg2, 0, 3) == "..."
-    $mens.mtodos1("$P continuou: " + txttroca(arg2, "$", "$$"))
-  senao txtfim(arg2, 1) == "?"
-    $mens.mtodos1("$P perguntou: " + txttroca(arg2, "$", "$$"))
-  senao txtfim(arg2, 1) == "!"
-    $mens.mtodos1("$P exclamou: " + txttroca(arg2, "$", "$$"))
-  senao txtfim(arg2, 3) == "..."
-    $mens.mtodos1("$P ponderou: " + txttroca(arg2, "$", "$$"))
+  se txt(arg1, 0, 3) == "..."
+    $mens.mtodos1("$P continuou: " + txttroca(arg1, "$", "$$"))
+  senao txtfim(arg1, 1) == "?"
+    $mens.mtodos1("$P perguntou: " + txttroca(arg1, "$", "$$"))
+  senao txtfim(arg1, 1) == "!"
+    $mens.mtodos1("$P exclamou: " + txttroca(arg1, "$", "$$"))
+  senao txtfim(arg1, 3) == "..."
+    $mens.mtodos1("$P ponderou: " + txttroca(arg1, "$", "$$"))
   senao
-    $mens.mtodos1("$P disse: " + txttroca(arg2, "$", "$$"))
+    $mens.mtodos1("$P disse: " + txttroca(arg1, "$", "$$"))
   fimse
 # Executa eventos
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_falou(arg0, arg2)
+    l.objini.cmd_falou(arg0, arg1)
   efim
 
 
@@ -331,25 +331,19 @@ const posic = 0
 const ultimo = 1 # Tem baixa prioridade
 const txtajuda = "\b\c3Canal chat\b\n\
 Sintaxe: chat <mensagem>\n\
-Envia mensagem para os jogadores que estiverem com esse canal habilitado.\n\
-Sintaxe: chat\n\
-Habilita ou desabilita esse canal."
+Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
+Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 
 func escr
   $mens.p(arg0)
-  se !arg2
-    arg0.sock.canais = arg0.sock.canais ^ 2
-    se arg0.sock.canais & 2
-      arg0.msg("Canal chat habilitado.")
-    senao
-      arg0.msg("Canal chat desabilitado")
-    fimse
-  senao !(arg0.sock.canais & 2)
-    arg0.msg("Canal chat está desabilitado.")
+  se !arg0.jogconfig.4
+    arg0.msg("Canal CHAT está desabilitado.")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após CHAT.")
   senao
     listaitem item
     epara item = $jogcomum.jog.ini, item, item.depois
-      item.obj.canais & 2 && item.obj.msg("(chat) " + arg0.sock.nome + ": " + arg2)
+      item.obj.jogconfig.4 && item.obj.msg("(chat) " + arg0.sock.nome + ": " + arg1)
     efim
 
 
@@ -364,9 +358,11 @@ func escr
 # Obtém lista de jogadores
   ref r
   epara r = $jogador, r, r = objdepois(r)
-    t1 = txt(99999 * 99999 - r.nivel) + " "
-    t1 += txtfim("      " + r.nivel, 6) + "  " + r.nome
+    continuar r.jogconfig.17 && !arg0.jogconfig.17
+    t1 = txt(99999 * 99999 - r.pnivel) + " "
+    t1 += txtfim("      " + r.pnivel, 6) + "  " + r.nome
     r.sock == nulo && (t1 += "  [Desconectado]")
+    r.jogconfig.17 && (t1 += "  [Invis]")
     t0.addfim(t1)
   efim
 # Ordena
@@ -403,7 +399,14 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_ver(arg0, arg1), nulo
   efim
-  ret !arg1, arg0.msg2(arg0.dono.descsala(arg0, 7))
+  se !arg1
+    se arg0.jogconfig.16
+      arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, 7))
+    senao
+      arg0.msg2(arg0.dono.descsala(arg0, 7))
+    fimse
+    ret
+  fimse
   ret arg0.dono.ver_[arg1](arg0), nulo
   nomeobj n
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
@@ -555,6 +558,86 @@ func equip
   casose
     ret "desconhecido"
   casofim
+
+
+classe cmd_config
+herda comando_comum, comando_ajuda
+const posic = 0
+const txtajuda = arg0.sock.admin ? txtajuda1 + txtajuda2 : txtajuda1
+const txtajuda1 = "\b\c3Config\b\n\
+Sintaxe: config +<opção>\n\
+         config -<opção>\n\
+Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
+seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
+preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
+As opções são:\n\
+  \c2DESC\b     Mostra descrições completas (como ao digitar VER)\n\
+  \c2SAIDAS\b   Mostra as saídas visíveis após a descrição da sala\n\
+  \c2CORES\b    Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
+  \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
+  \c2CHAT\b     Participa do canal de comunicação CHAT"
+const txtajuda2 = "\n\
+  \c2SALA\b     Mostra o nome da sala cadastrada antes do título\n\
+  \c2QUEM\b     Ocultar a presença no comando quem\n\
+  \c2INVIS\b    Invisível a não administradores\n\
+  \c2AC\b       Participa do canal de comunicação AC (administração)"
+# As próximas constantes são as opções do comando CONFIG
+# Cada constante contém o índice da variável de jogconfig
+# As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
+# Números de 0 a 15 são as opções disponíveis a todos
+# Números de 16 a 31 são as opções disponíveis aos administradores
+const opc_desc = 0
+const opc_saidas = 1
+const opc_cores = 2
+const opc_acento = 3
+const opc_chat = 4
+const opc_sala = 16
+const opc_quem = 17
+const opc_invis = 18
+const opc_ac = 19
+
+func escr
+  prog p
+  txt512 x
+  txt512 y
+  int1 opc.32
+  opc.bits = arg0.jogconfig.bits
+  se !arg1
+    epara p.inifunc(este, "opc_"), p.lin, p.depois
+      se opc.[[p.texto]]
+        x += " +" + txtmai(txt(p.texto, 4))
+      senao [p.texto] < 16 || arg0.sock.admin
+        y += " -" + txtmai(txt(p.texto, 4))
+      fimse
+    efim
+    arg0.msg("CONFIG" + x + y)
+    ret
+  fimse
+  x = txttroca(arg1, "+", " +")
+  x = txttroca(x, "-", " -")
+  x = txtremove(x, "EMD")
+  txt512 mudou
+  enquanto x
+    epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
+      sair [p.texto] < 16 || arg0.sock.admin
+    efim
+    se !p.lin
+      y += " " + txt1(x)
+    senao txt(x, 0, 1) == "+"
+      opc.[[p.texto]] = 1
+      mudou += " +" + txtmai(txt(p.texto, 4))
+    senao txt(x, 0, 1) == "-"
+      opc.[[p.texto]] = 0
+      mudou += " -" + txtmai(txt(p.texto, 4))
+    senao
+      y += " " + txt1(x)
+    fimse
+    x = txt2(x)
+  efim
+  ret y, arg0.msg("Opção inexistente:" + y)
+  arg0.jogconfig.bits = opc.bits
+  arg0.sock.jogconfig.bits = opc.bits
+  arg0.msg("Configuração alterada:" + mudou)
 
 
 classe cmd_pegar

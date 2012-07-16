@@ -868,8 +868,9 @@ int txtRemove(const char * opcoes)
         case 'c': remove |= 8; break;
         case 's': remove |= 16; break;
         case 'a': remove |= 32; break;
+        case 't': remove |= 64; break;
         default:
-            if (*opcoes=='7') remove |= 64;
+            if (*opcoes=='7') remove |= 128;
         }
     }
     return remove;
@@ -881,7 +882,7 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
 {
     char * remove_s = 0; // Para remover aspas simples
     char * remove_d = 0; // Para remover aspas duplas
-    const char * tabela = (opcoes&64 ? tab7B : tab8B); // Filtro de letras acentuadas
+    const char * tabela = (opcoes&128 ? tab7B : tab8B); // Filtro de letras acentuadas
     const char * fim = destino + tam - 1;
 
 // Copia texto conforme variável opcoes
@@ -897,15 +898,29 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
             origem++;
             break;
         case Instr::ex_barra_c:
-            if ((opcoes & 8)==0)
-                goto copia;
-            if ((origem[1]>='0' && origem[1]<='9') ||
-                    (origem[1]>='A' && origem[1]<='F') ||
-                    (origem[1]>='a' && origem[1]<='f'))
-                origem += 2;
-            else
-                origem++;
-            break;
+            if (opcoes & (8+64))
+            {
+                char ch = origem[1];
+                if (ch>='0' && ch<='9')
+                {
+                    if ((opcoes & 8)==0)
+                        goto copia;
+                    origem += 2;
+                    break;
+                }
+                ch |= 0x20;
+                if (ch<'a' || ch>'j')
+                {
+                    origem++;
+                    break;
+                }
+                if (ch & (ch<='f' ? 8 : 64))
+                    origem += 2;
+                else
+                    origem++;
+                break;
+            }
+            goto copia;
         case Instr::ex_barra_d:
             if ((opcoes & 8)==0)
                 goto copia;

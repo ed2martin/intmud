@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #ifdef __WIN32__
  #include <windows.h>
@@ -26,7 +27,6 @@
  #include <fcntl.h>
  #include <netdb.h>
  #include <netinet/in.h> // Contém a estrutura sockaddr_in
- #include <string.h>
  #include <sys/time.h>
  #include <sys/types.h>
  #include <sys/socket.h> // Comunicação
@@ -339,6 +339,8 @@ TSocket::TSocket(int socknum, SSL * sslnum)
     pontEnv=0;
     pontTelnet=0;
     pontESC=0;
+    memset(telnetopc, 0, sizeof(telnetopc));
+    telnetecho=0;
     pontRec=0;
     dadoRecebido=0;
     CorAtual=0x70;
@@ -346,7 +348,7 @@ TSocket::TSocket(int socknum, SSL * sslnum)
     proto=spTelnet1;
     cores=0;
     eventoenv=false;
-    ecotelnet=true;
+    usaropctelnet=false;
     sockenvrec=0;
     sockerro=0;
     AFlooder=0;
@@ -491,19 +493,12 @@ int TSocket::Variavel(char num, int valor)
                 AFlooder=TempoIni+1;
         }
         return (AFlooder!=0);
-    case 4: // eco
+    case 4: // opctelnet
         if (proto!=spTelnet1 && proto!=spTelnet2)
             return 1;
         if (valor>=0)
-        {
-            if (valor==0 && ecotelnet) // Desliga ECO
-                if (EnvMens("\xFF\xFB\x01", 3)) // IAC + WILL + TELOPT_ECHO
-                    ecotelnet=0;
-            if (valor && ecotelnet==0) // Liga ECO
-                if (EnvMens("\xFF\xFC\x01", 3)) // IAC + WONT + TELOPT_ECHO
-                    ecotelnet=1;
-        }
-        return ecotelnet;
+            usaropctelnet = valor;
+        return usaropctelnet;
     }
     return 0;
 }
@@ -603,18 +598,25 @@ bool TSocket::EnvMens(const char * mensagem)
         {
             if (destino >= mens + sizeof(mens) - 4)
                 return false;
-            if (*mensagem==1)
-                mensagem++;
-            else if (*mensagem=='\n')
+            switch (*mensagem)
             {
+            case 1:
+                mensagem++;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                break;
+            case '\n':
                 ini[0] = 1;
                 ini[1] = (destino - ini - 3);
                 ini[2] = (destino - ini - 3) >> 8;
                 ini = destino;
                 destino += 3;
-            }
-            else
+                break;
+            default:
                 *destino++ = *mensagem;
+            }
         }
         int total = destino - ini - 3;
         if (total>0)
@@ -641,14 +643,33 @@ bool TSocket::EnvMens(const char * mensagem)
         {
             if (destino >= mens + sizeof(mens)-2)
                 return false;
-            switch (*mensagem)
+            switch (*(unsigned char*)mensagem)
             {
             case 1:
                 mensagem++;
                 break;
+            case 2: // echo off
+                memcpy(destino, "\xFF\xFB\x01", 3);
+                destino += 3;
+                break;
+            case 3: // echo on
+                memcpy(destino, "\xFF\xFC\x01", 3);
+                destino += 3;
+                break;
+            case 4: // go ahead
+                memcpy(destino, "\xFF\xF9", 2);
+                destino += 2;
+                break;
+            case 5: // bipe
+                *destino++ = 7;
+                break;
             case '\n':
                 *destino++ = 13;
                 *destino++ = 10;
+                break;
+            case 255:
+                memcpy(destino, "\xFF\xFF", 2);
+                destino += 2;
                 break;
             default:
                 *destino++ = *mensagem;
@@ -665,22 +686,45 @@ bool TSocket::EnvMens(const char * mensagem)
         char mens[SOCKET_ENV];
         char * destino = mens;
         int cor = CorEnvia;
+        int ecototal = 0; // Quantidade de comandos ECHO na mensagem
         for (; *mensagem; mensagem++)
         {
         // Verifica se espaço suficiente
             if (destino >= mens + sizeof(mens)-15)
                 return false;
-        // Próxima linha
-            if (*mensagem=='\n')
-            {
-                *destino++ = 13;
-                *destino++ = 10;
-                continue;
-            }
         // Caracter normal
             if (*mensagem!=1)
             {
-                *destino++ = *mensagem;
+                switch (*(unsigned char*)mensagem)
+                {
+                case 2: // echo off
+                    ecototal++;
+                    memcpy(destino, "\xFF\xFB\x01", 3);
+                    destino += 3;
+                    break;
+                case 3: // echo on
+                    ecototal++;
+                    memcpy(destino, "\xFF\xFC\x01", 3);
+                    destino += 3;
+                    break;
+                case 4: // go ahead
+                    memcpy(destino, "\xFF\xF9", 2);
+                    destino += 2;
+                    break;
+                case 5: // bipe
+                    *destino++ = 7;
+                    break;
+                case '\n':
+                    *destino++ = 13;
+                    *destino++ = 10;
+                    break;
+                case 255:
+                    memcpy(destino, "\xFF\xFF", 2);
+                    destino += 2;
+                    break;
+                default:
+                    *destino++ = *mensagem;
+                }
                 continue;
             }
         // Definição de cor
@@ -731,7 +775,10 @@ bool TSocket::EnvMens(const char * mensagem)
         }
         if (destino != mens)
             eventoenv = true;
-        return EnvMens(mens, destino - mens);
+        if (!EnvMens(mens, destino - mens))
+            return false;
+        telnetecho += ecototal;
+        return true;
     }
 
 // IRC
@@ -755,7 +802,8 @@ bool TSocket::EnvMens(const char * mensagem)
         // Caracter normal
             if (*mensagem!=1)
             {
-                *destino++ = *mensagem;
+                if (*(unsigned char*)mensagem >= ' ')
+                    *destino++ = *mensagem;
                 continue;
             }
         // Definição de cor
@@ -1238,105 +1286,164 @@ void TSocket::Processa(const char * buffer, int tamanho)
     // Protocolo Telnet
         if (proto==spTelnet1 || proto==spTelnet2)
         {
-            char dado;
+            unsigned char dado;
             while (tamanho)
             {
             // Obtém próximo caracter
                 dado=*buffer++;
                 tamanho--;
     //------- Para mostrar o que chegou
-    //printf("[%d;%d] ",(unsigned char)dado,dadoRecebido); fflush(stdout);
-    //if ((unsigned char)dado>=32 || dado=='\n')
+    //printf("[%d;%d] ",dado,dadoRecebido); fflush(stdout);
+    //if (dado>=32 || dado=='\n')
     //   putchar(dado); else printf("\\%02x", dado); fflush(stdout);
     //printf(": %d %02x\n", dadoRecebido, CorAtual); fflush(stdout);
+    //printf(": %d %02x\n", dado, pontTelnet); fflush(stdout);
             // Protocolo do Telnet
 
             // Primeiro caracter  - IAC
                 if (pontTelnet==0)
                 {
-                    if (dado==0)
+                    if (dado<7)
                         continue;
-                    if (dado==(char)255)
+                    if (dado==255)
                     {
                         bufTelnet[pontTelnet++]=dado;
                         continue;
                     }
+                    goto telnet_cor;
                 }
-            // Mensagem comprida (SB + SE)
+            // Telnet: Mensagem comprida (SB + SE)
             // 255 250 ... 255 240 = mensagem
-                if (pontTelnet>=3)
-                    if (bufTelnet[pontTelnet-1]==(char)255 && dado==(char)240)
+                if (pontTelnet>=3 && dado==240 &&
+                        bufTelnet[pontTelnet-1]==255)
+                {
+                    if (bufTelnet[3]==1)
+                        switch (bufTelnet[2])
+                        {
+                        case 24: // Quer saber o terminal
+                            EnvMens("\xFF\xFA\x18\x00" // Comando
+                                "INTMUD" // Nome
+                                "\xFF\xF0", 12); // Fim do comando
+                            break;
+                        case 32: // Quer saber velocidade do terminal
+                            EnvMens("\xFF\xFA\x20\x00"
+                                "38400,38400\xFF\xF0", 17);
+                            break;
+                        case 35: // Quer saber display X
+                            EnvMens("\xFF\xFA\x23\x00"
+                                "x.y\xFF\xF0", 9);
+                            break;
+                        case 39: // Quer saber variáveis de ambiente
+                            EnvMens("\xFF\xFA\x27\x00\xFF\xF0", 6);
+                            break;
+                        }
+                    pontTelnet=0;
+                    continue;
+                }
+            // Telnet: Mensagem de 2 bytes
+            // 255 255 = caracter 255
+            // 255 240 = mensagem 240
+            // 255 249 = go ahead
+                if (pontTelnet==1)
+                {
+                    if (dado==255)
                     {
-                        if (bufTelnet[3]==1)
-                            switch (bufTelnet[2])
-                            {
-                            case 24: // Quer saber o terminal
-                                EnvMens("\xFF\xFA\x18\x00" // Comando
-                                    "TERM" // Nome
-                                    "\xFF\xF0", 10); // Fim do comando
-                                break;
-                            case 32: // Quer saber velocidade do terminal
-                                EnvMens("\xFF\xFA\x20\x00"
-                                    "38400,38400\xFF\xF0", 17);
-                                break;
-                            case 35: // Quer saber display X
-                                EnvMens("\xFF\xFA\x23\x00"
-                                    "x.y\xFF\xF0", 9);
-                                break;
-                            case 39: // Quer saber variáveis de ambiente
-                                EnvMens("\xFF\xFA\x27\x00\xFF\xF0", 6);
-                                break;
-                            }
+                        pontTelnet=0;
+                        goto telnet_cor;
+                    }
+                    if (dado==249)
+                    {
+                        pontTelnet=0, dado=6;
+                        goto telnet_cor;
+                    }
+                    if (dado==240)
+                    {
                         pontTelnet=0;
                         continue;
                     }
-            // Anota caracter no buffer
+                }
+            // Telnet: Anota caracter no buffer
                 if (pontTelnet>=(int)sizeof(bufTelnet))
                     pontTelnet--;
-                if (pontTelnet)
-                    bufTelnet[pontTelnet++]=dado;
-            // Mensagem de 2 bytes
-            // 255 255 = caracter 255
-            // 255 240 = mensagem 240
-                if (pontTelnet==2)
-                {
-                    if (dado==(char)255 || dado==(char)240)
-                        pontTelnet=0;
-                    continue;
-                }
-            // Mensagem de 3 bytes
+                bufTelnet[pontTelnet++]=dado;
+            // Telnet: Mensagem de 3 bytes
             // 255 x y = mensagem x y
-                if (pontTelnet==3 && bufTelnet[1]!=(char)250)
+                if (pontTelnet!=3 || bufTelnet[1]==250)
+                    continue;
+                pontTelnet=0;
+                if (bufTelnet[1]>=251 && bufTelnet[1]<=254)
                 {
-                    if (bufTelnet[1]==(char)251 || bufTelnet[1]==(char)253)
+                    int ind = -1;
+                    switch (bufTelnet[2])
                     {
-                        bufTelnet[1]^=6;
-                        switch (bufTelnet[2])
-                        {
-                        case 1:
-                        case 3:
-                        case 5:
-                        case 6:
-                        case 24:
-                        case 31:
-                        case 32:
-                        case 33:
-                        case 34:
-                        case 36:
-                            break;
-                        default: bufTelnet[1]++;
-                        }
-                        EnvMens(bufTelnet, 3);
+                    case 1: ind=0; break; // Echo
+                    case 3: ind=1; break; // Supress Go Ahead
+                    case 5: ind=2; break; // Status
+                    case 6: ind=3; break; // Timing Mark
+                    case 24: ind=4; break; // Terminal Type
+                    case 31: ind=5; break; // Window Size
+                    case 32: ind=6; break; // Terminal Speed
+                    case 33: ind=7; break; // Remote Flow Control
+                    case 34: ind=8; break; // Linemode
+                    case 36: ind=9; break; // Environment Variables
+                    default:
+                        bufTelnet[1] = (bufTelnet[1]<243 ? 254 : 252);
                     }
+                    if (ind>=0) switch (bufTelnet[1])
+                    {
+                    case 251: // WILL -> responde DO
+                        if ((telnetopc[ind] & 3) == 2)
+                            ind = -1;
+                        else
+                            telnetopc[ind] = (telnetopc[ind] & 0xF0) | 2;
+                        bufTelnet[1] = 253;
+                        break;
+                    case 252: // WONT -> responde DONT
+                        if ((telnetopc[ind] & 3) == 3)
+                            ind = -1;
+                        else
+                            telnetopc[ind] = (telnetopc[ind] & 0xF0) | 3;
+                        bufTelnet[1] = 254;
+                        break;
+                    case 253: // DO -> responde WILL
+                        if (telnetecho)
+                            telnetecho--, ind=-1;
+                        else if ((telnetopc[ind] & 0x30) == 0x20)
+                            ind = -1;
+                        else
+                            telnetopc[ind] = (telnetopc[ind] & 15) | 0x20;
+                        bufTelnet[1] = 251;
+                        break;
+                    case 254: // DONT -> responde WONT
+                        if (telnetecho)
+                            telnetecho--, ind=-1;
+                        else if ((telnetopc[ind] & 0x30) == 0x30)
+                            ind = -1;
+                        else
+                            telnetopc[ind] = (telnetopc[ind] & 15) | 0x30;
+                        bufTelnet[1] = 252;
+                        break;
+                    }
+                    if (ind < 0)
+                        continue;
+                    EnvMens((char*)bufTelnet, 3);
                     if (bufTelnet[2]==31) // Quer saber o tamanho da janela
                         EnvMens("\xFF\xFA\x1F" // Comando
                             "\x00\x50\x00\x18" // Tamanho
                             "\xFF\xF0", 9); // Fim do comando
-                    pontTelnet=0;
-                    continue;
+                    if (bufTelnet[1]==253 && dado==1) // 255 251 1 = echo off
+                    {
+                        dado=4;
+                        goto telnet_cor;
+                    }
+                    if (bufTelnet[1]==254 && dado==1) // 255 252 1 = echo on
+                    {
+                        dado=5;
+                        goto telnet_cor;
+                    }
                 }
-                if (pontTelnet)
-                    continue;
+                continue;
+telnet_cor:
             // Filtra cores do Telnet
                 if (dadoRecebido==2)
                 {
@@ -1351,7 +1458,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
                         continue;
                     bufESC[pontESC]=';';
                     bufESC[pontESC+1]=0;
-                    char * x = bufESC+1;
+                    unsigned char * x = bufESC+1;
                     while (*x)
                     {
                         if (memcmp(x, "0;", 2)==0)
@@ -1412,7 +1519,7 @@ void TSocket::Processa(const char * buffer, int tamanho)
                         pontRec-=2;
                 }
             // Caracteres imprimíveis
-                else if ((unsigned char)dado>=' ')
+                else if (dado>=' ' || (usaropctelnet && dado>=4 && dado<=7))
                 {
                     if (pontRec<sizeof(bufRec)-4)
                     {
@@ -1550,7 +1657,7 @@ bool TSocket::EventoMens(bool completo)
 // Prepara mensagem
     char texto[2048];
     char * dest = texto;
-    char * fim = texto + sizeof(texto) - 6;
+    char * fim = texto + sizeof(texto) - 7;
 
 // Prepara - Telnet e IRC
     if (proto==spTelnet1 || proto==spTelnet2 || proto==spIRC)
@@ -1588,13 +1695,24 @@ bool TSocket::EventoMens(bool completo)
                 }
                 if (x>=pontRec)
                     break;
-                *dest++ = bufRec[x];
+                unsigned char ch = bufRec[x];
+                if (ch>=4 && ch<=7)
+                {
+                    *dest++ = Instr::ex_barra_c;
+                    *dest++ = ch + 'C';
+                }
+                else
+                    *dest++ = ch;
             }
             CorAnterior = cor;
         }
         else // Sem cor
             for (unsigned int x=0; x<pontRec && dest<fim; x+=2)
-                *dest++ = bufRec[x];
+            {
+                unsigned char ch = bufRec[x];
+                if (ch>=' ')
+                    *dest++=ch;
+            }
         if (proto==spIRC) // IRC
             CorAtual = 0x70;
         *dest=0;

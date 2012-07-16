@@ -128,4 +128,4 @@ varfunc dono # O dono do personagem/item
   fimse
 
 func visivel # Checa se um objeto está visível (arg0=objeto)
-  ret !(~bitver & arg0.inv)
+  ret !(~bitver & arg0.inv) && (!arg0.sock.jogconfig.18 || sock.admin)

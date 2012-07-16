@@ -39,6 +39,9 @@ const salafim = $s_ini001
 # Quantos animais pode ter numa batalha, de 1 a 8
 const animal1 = 5
 #
+# Senha para se tornar administrador, ou "" se não puder
+const senhaadm = ""
+#
 # Como deve salvar os arquivos .int, vide variável prog do IntMUD
 const progsalvar = "L99N1I2C2F1V0"
 
@@ -51,7 +54,7 @@ classe jogolocal
 herda jogsock
 # Jogando localmente
 telatxt j_tela
-const msg = j_tela.msg(arg0 + "\n")
+const msgsock = j_tela.msg(arg0 + "\n")
 const msgsala = j_tela.msg(arg0 + "\n")
 const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
@@ -61,7 +64,7 @@ func iniclasse
     criar(arg0)
 
 func ini
-  msg("Jogando localmente; tecla ESC encerra o programa")
+  msgsock("Jogando localmente; tecla ESC encerra o programa")
   jogsock:ini
 
 func j_tela_msg
@@ -81,7 +84,7 @@ comum serv j_serv # Para receber conexões
 socket j_conec # Usuário conectado
 inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
 uint8 j_passo # 0=definindo se Papovox, 1=entrando Papovox, 2=dentro
-const msg = j_conec.msg(arg0 + "\n")
+const msgsock = j_conec.msg(arg0 + "\n")
 const msgsala = j_conec.msg(arg0 + "\n")
 
 func info
@@ -283,7 +286,7 @@ func novonome # Mudou de apelido
 func sala_msg # Envia mensagem para a sala do usuário
   j_sala.objlista.msg(arg0)
 
-func msg # Envia mensagem para o usuário
+func msgsock # Envia mensagem para o usuário
   textotxt t1
   t1.addfim(arg0)
   enquanto t1.linhas
