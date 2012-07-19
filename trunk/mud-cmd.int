@@ -141,7 +141,10 @@ const obj = $cmd_so.obj(arg0, arg1)
 
 
 classe cmd_abrir
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Abrir\b\n\
+Sintaxe: ABRIR <objeto ou direção>\n\
+Abre um objeto ou uma porta."
 
 func escr
   txt10 dir
@@ -222,7 +225,10 @@ func escrdir # Abrir uma porta
 
 
 classe cmd_fechar
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Fechar\b\n\
+Sintaxe: FECHAR <objeto ou direção>\n\
+Fecha um objeto ou uma porta."
 
 func escr
   txt10 dir
@@ -302,8 +308,10 @@ classe cmd_falar
 herda comando_comum, comando_ajuda
 const posic = 5
 const txtajuda = "\b\c3Falar\b\n\
-Sintaxe: falar <mensagem>\n\
-Envia mensagem para todos os personagens que estiverem na mesma sala."
+Sintaxe: FALAR <mensagem>\n\
+Envia mensagem para todos os personagens que estiverem na mesma sala.\n\
+A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
+terminada com reticências, interrogação ou exclamação."
 
 func escr
   $mens.p(arg0)
@@ -330,7 +338,7 @@ herda comando_comum, comando_ajuda
 const posic = 0
 const ultimo = 1 # Tem baixa prioridade
 const txtajuda = "\b\c3Canal chat\b\n\
-Sintaxe: chat <mensagem>\n\
+Sintaxe: CHAT <mensagem>\n\
 Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 
@@ -348,7 +356,10 @@ func escr
 
 
 classe cmd_quem
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Quem\b\n\
+Sintaxe: QUEM\n\
+Mostra quem está conectado no MUD e jogando."
 const posic = 0
 
 func escr
@@ -391,7 +402,12 @@ herda cmd_fim
 
 
 classe cmd_ver
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Ver\b\n\
+Sintaxe: VER\n\
+         VER <personagem ou objeto>\n\
+Mostra a descrição completa do lugar aonde você está ou informações\n\
+sobre um personagem ou um objeto."
 const posic = 5
 
 func escr
@@ -454,7 +470,10 @@ func lista # Lista de itens, como habilidades, idiomas, etc.
 
 
 classe cmd_hab
-herda comando_var
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Hab\b\n\
+Sintaxe: HAB\n\
+Mostra as habilidades do seu personagem. Muitas delas são usadas em lutas."
 
 func escr
   txt100 n
@@ -463,14 +482,21 @@ func escr
 
 
 classe cmd_idioma
-herda comando_var
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Idioma\b\n\
+Sintaxe: IDIOMA\n\
+Mostra os idiomas que o seu personagem conhece."
 
 func escr
   lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
 
 
-classe cmd_outros
-herda comando_var
+classe cmd_extra
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Extra\b\n\
+Sintaxe: EXTRA\n\
+Mostra os itens extras que o seu personagem possui. Geralmente são itens\n\
+permanentes (não se pode pode-se pegar, soltar, dar e vestir)."
 
 func escr
   se !exevento(este, arg0, arg1)
@@ -478,7 +504,10 @@ func escr
 
 
 classe cmd_inv
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Inv\b\n\
+Sintaxe: INV\n\
+Mostra os itens que o seu personagem está carregando."
 const posic = 5
 
 func escr
@@ -496,7 +525,11 @@ func escr
 
 
 classe cmd_equip
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Equip\b\n\
+Sintaxe: EQUIP\n\
+Mostra os itens que o seu personagem está vestindo ou usando."
+
 const posic = 5
 
 func escr
@@ -641,7 +674,13 @@ func escr
 
 
 classe cmd_pegar
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Pegar\b\n\
+Sintaxe: PEGAR <objeto>\n\
+         PEGAR <quantidade> <objeto>\n\
+         PEGAR <objeto> <container>\n\
+         PEGAR <quantidade> <objeto> <container>\n\
+Pega um objeto do chão ou de outro objeto (um container)."
 const posic = 5
 #
 ref sala # De onde pegar os itens
@@ -698,7 +737,14 @@ func escr
 
 
 classe cmd_soltar
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Soltar\b\n\
+Sintaxe: SOLTAR <objeto>\n\
+         SOLTAR <quantidade> <objeto>\n\
+         SOLTAR <objeto> <container>\n\
+         SOLTAR <quantidade> <objeto> <container>\n\
+Solta um objeto no chão ou em outro objeto (um container)."
+const posic = 5
 #
 ref sala # Aonde soltar os itens
 uint32 total # Quantidade de itens do mesmo tipo
@@ -753,7 +799,11 @@ func escr
 
 
 classe cmd_dar
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Dar\b\n\
+Sintaxe: DAR <objeto> <personagem>\n\
+Dá um objeto para outro personagem."
+const posic = 5
 #
 ref sala # Para quem dar os itens
 uint32 total # Quantidade de itens do mesmo tipo
@@ -803,7 +853,12 @@ func escr
 
 
 classe cmd_vestir
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Vestir\b\n\
+Sintaxe: VESTIR <objeto>\n\
+         VESTIR <quantidade> <objeto>\n\
+Veste ou usa um objeto que você está carregando."
+const posic = 5
 
 func escr
   ret !arg1, arg0.msg("Vestir o que?")
@@ -849,7 +904,12 @@ func escr
 
 
 classe cmd_remover
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Remover\b\n\
+Sintaxe: REMOVER <objeto>\n\
+         REMOVER <quantidade> <objeto>\n\
+Deixa de usar um objeto que você está vestindo ou usando."
+const posic = 5
 
 func escr
   ret !arg1, arg0.msg("Remover o que?")
@@ -875,7 +935,10 @@ func escr
 
 
 classe cmd_hora
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Hora\b\n\
+Sintaxe: HORA\n\
+Mostra a hora atual, no calendário do MUD e no servidor."
 const posic = 0
 
 func escr
@@ -917,6 +980,10 @@ func escr
 
 classe cmd_vida
 herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Vida\b\n\
+Sintaxe: VIDA\n\
+Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
+
 const posic = 0
 
 func escr

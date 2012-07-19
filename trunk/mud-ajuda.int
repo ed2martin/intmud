@@ -13,7 +13,7 @@ Os tópicos são:\n\
   \c2COMUNICA\b Comunicação com outros jogadores\n\
   \c2INFO\b     Informações sobre o seu personagem\n\
   \c2OBJETOS\b  Manuseio de objetos\n\
-  \c2NOMES\b    Nomes de objetos e personagens\n\
+  \c2NOMES\b    Digitando nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
 Para sair do MUD tecle \c2FIM\b"
 
@@ -57,14 +57,53 @@ const txtajuda = "\b\c3Comunicação\b\n\
   \c2FALAR\b    Envia mensagem para os personagens na mesma sala."
 
 
+classe cmd_info
+herda comando_ajuda
+const txtajuda = "\b\c3Informações\b\n\
+  \c2VIDA\b     Pontos de vida, mana, vigor, nível e experiência.\n\
+  \C2VER\b      Descrição de onde você está ou de um objeto.\n\
+  \C2HORA\b     A hora atual, real e no MUD.\n\
+  \C2INV\b      Os objetos que você está carregando.\n\
+  \C2EQUIP\b    Os objetos equipando você ou que você está vestindo.\n\
+  \C2QUEM\b     Os usuários que estão jogando no momento.\n\
+  \C2HAB\b      As habilidades do seu personagem.\n\
+  \C2IDIOMA\b   Idiomas que o seu personagem conhece.\n\
+  \C2EXTRA\b    Itens extras que o seu personagem possui."
+# \C2EFEITO\b   Os efeitos que estão afetando o seu personagem."
+
+
 classe cmd_objetos
 herda comando_ajuda
-const txtajuda = "\b\c3Esse comando não está pronto\b"
+const txtajuda = "\b\c3Objetos\b\n\
+  \c2PEGAR\b    Pega um objeto, do chão ou de dentro de outro objeto.\n\
+  \c2SOLTAR\b   Solta um objeto no chão ou coloca dentro de outro.\n\
+  \c2DAR\b      Dá um objeto a outro personagem.\n\
+  \c2VESTIR\b   Veste um objeto, ou usa como arma (se for arma).\n\
+  \c2REMOVER\b  Deixa de vestir ou usar um objeto.\n\
+  \c2ABRIR\b    Abre um objeto (exemplo, uma bolsa ou baú).\n\
+  \c2FECHAR\b   Fecha um objeto."
 
 
 classe cmd_nomes
 herda comando_ajuda
-const txtajuda = "\b\c3Esse comando não está pronto\b"
+const txtajuda = "\b\c3Nomes\b\n\
+Diversos comandos requerem que digite o nome de um personagem ou objeto.\n\
+Exemplo: PEGAR CHAVE\n\
+Quando há vários objetos com o mesmo nome, o comando acima pegaria apenas\n\
+o primeiro. Se for desejáve pegar outro, é necessário digitar um número\n\
+(começa no 1) seguido de um ponto e o nome do objeto.\n\
+Exemplo, para pegar a segunda chave: PEGAR 2.CHAVE\n\
+Vários comandos permitem especificar a quantidade. Nesse caso, acrescente\n\
+o número seguido de espaço antes do nome do objeto.\n\
+Exemplo: PEGAR 10 CHAVE\n\
+Quando o nome de um objeto contém espaço no meio, é necessário escrever\n\
+entre aspas duplas, ou então usar o sublinhado ao invés do espaço.\n\
+Exemplo 1: PEGAR \"CHAVE BRANCA\"\n\
+Exemplo 2: PEGAR CHAVE_BRANCA\n\
+Para poupar digitação, pode-se abreviar os nomes dos objetos digitando\n\
+apenas o começo do nome. Isso também funciona com a maioria dos comandos.\n\
+Exemplo: PE CH\n\
+Nesse caso, CH refere-se a qualquer objeto cujo nome começa com CH."
 
 
 classe cmd_sair
