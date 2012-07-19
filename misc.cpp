@@ -914,10 +914,9 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
                     origem++;
                     break;
                 }
-                if (ch & (ch<='f' ? 8 : 64))
-                    origem += 2;
-                else
-                    origem++;
+                if ((opcoes & (ch<='f' ? 8 : 64))==0)
+                    goto copia;
+                origem += 2;
                 break;
             }
             goto copia;
