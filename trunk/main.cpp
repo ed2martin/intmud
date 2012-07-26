@@ -338,6 +338,7 @@ int main(int argc, char *argv[])
     // Acerta tempo de espera conforme TVarSavDir
         if (espera>10 && TVarSavDir::ChecaPend())
             espera=10;
+        if (espera>TESPERA_MAX) espera=TESPERA_MAX;
 
 #ifdef __WIN32__
         tempo = timeGetTime()/100;

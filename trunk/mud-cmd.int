@@ -349,8 +349,8 @@ func escr
   senao !arg1
     arg0.msg("Tecle a mensagem após CHAT.")
   senao
-    listaitem item
-    epara item = $jogcomum.jog.ini, item, item.depois
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
       item.obj.jogconfig.4 && item.obj.msg("(chat) " + arg0.sock.nome + ": " + arg1)
     efim
 
@@ -363,26 +363,33 @@ Mostra quem está conectado no MUD e jogando."
 const posic = 0
 
 func escr
-  listaitem item
   textotxt t0
   txt100 t1
-# Obtém lista de jogadores
-  ref r
-  epara r = $jogador, r, r = objdepois(r)
-    continuar r.jogconfig.17 && !arg0.jogconfig.17
-    t1 = txt(99999 * 99999 - r.pnivel) + " "
-    t1 += txtfim("      " + r.pnivel, 6) + "  " + r.nome
-    r.sock == nulo && (t1 += "  [Desconectado]")
-    r.jogconfig.17 && (t1 += "  [Invis]")
+# Lista de personagens dos jogadores
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    continuar item.obj.jogconfig.17 && !arg0.jogconfig.17
+    t1 = txt(999000 - item.obj.pnivel) + " N"
+    t1 += txt(txt(item.obj.pnivel) + "      ", 0, 6) + item.obj.nome
+    item.obj.sock == nulo && (t1 += "  [Desconectado]")
+    item.obj.jogconfig.17 && (t1 += "  [Invis]")
     t0.addfim(t1)
   efim
-# Ordena
-  t0.ordena
-# Mostra para o jogador
-  arg0.msg("Personagens online: " + t0.linhas)
-  enquanto t0.linhas
-    arg0.msg("N" + txt2(t0.remove))
+# Lista de jogadores sem personagem
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    continuar item.obj.perso.jog # Continuar se personagem é jogador
+    continuar item.obj.jogconfig.17 && !arg0.jogconfig.17
+    t1 = "999001 NX     " + item.obj.nome
+    item.obj.jogconfig.17 && (t1 += "  [Invis]")
+    t0.addfim(t1)
   efim
+# Ordena e mostra para o jogador
+  t0.ordena
+  textopos pos
+  epara pos = t0.ini, pos, pos.depois
+    pos.mudar("", 0, 7)
+  efim
+  arg0.msg2("Personagens online: " + t0.linhas + "\n" + t0.remove(1000))
 
 
 classe cmd_fim
@@ -429,8 +436,24 @@ func escr
   n.ini(arg1, 1)
   epara nulo, l, l.ini.remove
     se arg0.visivel(l.objini) && n.nome(l.objini.ident)
-      arg0.msg(txtmaimin(l.objini.nome) + ".")
-      arg0.msg(l.objini.descver)
+      se arg0 == l.objini
+        arg0.msg("Olhar para você mesmo?")
+        ret
+      fimse
+      textotxt t
+      listaitem item
+      epara item = l.objini.dentro2.ini, item, item.depois
+        continuar !item.obj.vestpos || !arg0.visivel(item.obj)
+        t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
+      efim
+      t.linhas && t.addini("Equipado com:")
+      t.addini(l.objini.descver)
+      se l.objini.jog
+        t.addini(txtmaimin(l.objini.nome) + ", jogador nível " + l.objini.pnivel + ".")
+      senao
+        t.addini(txtmaimin(l.objini.nome) + ", nível " + l.objini.pnivel + ".")
+      fimse
+      arg0.msg2(t.remove(1000))
       ret
     fimse
   efim
@@ -470,7 +493,7 @@ func lista # Lista de itens, como habilidades, idiomas, etc.
 
 
 classe cmd_hab
-herda comando_comum, comando_ajuda
+herda comando_var, comando_ajuda
 const txtajuda = "\b\c3Hab\b\n\
 Sintaxe: HAB\n\
 Mostra as habilidades do seu personagem. Muitas delas são usadas em lutas."
@@ -482,7 +505,7 @@ func escr
 
 
 classe cmd_idioma
-herda comando_comum, comando_ajuda
+herda comando_var, comando_ajuda
 const txtajuda = "\b\c3Idioma\b\n\
 Sintaxe: IDIOMA\n\
 Mostra os idiomas que o seu personagem conhece."
@@ -492,7 +515,7 @@ func escr
 
 
 classe cmd_extra
-herda comando_comum, comando_ajuda
+herda comando_var, comando_ajuda
 const txtajuda = "\b\c3Extra\b\n\
 Sintaxe: EXTRA\n\
 Mostra os itens extras que o seu personagem possui. Geralmente são itens\n\
@@ -529,68 +552,20 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Equip\b\n\
 Sintaxe: EQUIP\n\
 Mostra os itens que o seu personagem está vestindo ou usando."
-
 const posic = 5
 
 func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro2.ini, item, item.depois
-    continuar !arg0.visivel(item.obj)
-    t.addfim("1 (" + equip(item.obj.vestpos) + ") " + item.obj.nome)
+    continuar !item.obj.vestpos || !arg0.visivel(item.obj)
+    t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
   efim
-  t.juntalin("(", "x)")
   se t.linhas
     arg0.msg2("Equipado com:\n" + t.remove(1000))
   senao
     arg0.msg("Não está vestindo/usando nada.")
   fimse
-
-func equip
-  casovar arg0
-  casose "1"
-    ret "como luz"
-  casose "2"
-    ret "na cabeça"
-  casose "3"
-    ret "sobre o rosto"
-  casose "4"
-    ret "nos olhos"
-  casose "5"
-    ret "nas orelhas"
-  casose "6"
-    ret "no pescoço"
-  casose "7"
-    ret "no corpo"
-  casose "8"
-    ret "sobre o corpo"
-  casose "9"
-    ret "nas costas"
-  casose "10"
-    ret "nos braços"
-  casose "11"
-    ret "nas mãos"
-  casose "12"
-    ret "no pulso direito"
-  casose "13"
-    ret "no pulso esquerdo"
-  casose "14"
-    ret "no dedo direito"
-  casose "15"
-    ret "no dedo esquerdo"
-  casose "16"
-    ret "empunhando"
-  casose "17"
-    ret "escudo"
-  casose "18"
-    ret "na cintura"
-  casose "19"
-    ret "nas pernas"
-  casose "20"
-    ret "calçando"
-  casose
-    ret "desconhecido"
-  casofim
 
 
 classe cmd_config
@@ -618,7 +593,7 @@ const txtajuda2 = "\n\
 # Cada constante contém o índice da variável de jogconfig
 # As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
 # Números de 0 a 15 são as opções disponíveis a todos
-# Números de 16 a 31 são as opções disponíveis aos administradores
+# Números de 16 a 23 são as opções disponíveis aos administradores
 const opc_desc = 0
 const opc_saidas = 1
 const opc_cores = 2
@@ -944,7 +919,7 @@ const posic = 0
 func escr
   datahora d
   d.agora
-  arg0.msg("Hora atual MUD:      " + $jogcomum.hora + ":" + $jogcomum.min)
+  arg0.msg("Hora atual MUD:      " + misc:hora + ":" + misc:min)
   arg0.msg("Hora atual servidor: " + d.hora + ":" + d.min)
 
 
@@ -964,17 +939,16 @@ func escr
   arg0.msg("ver=" + arg0.bitver + " inv=" + arg0.bitinv)
   arg0.msg("visível? " + !(~bitver & bitinv))
   arg0.msg("JOGADORES:")
-  listaitem item
-  epara item = $jogcomum.jog.ini, item, item.depois
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
     arg0.msg("> " + item.obj.nome + " (" + item.obj.perso.nome + ")")
   efim
   listar("jogolocal", arg0)
   listar("jogoserv", arg0)
   listar("jogobot_usr", arg0)
   arg0.msg("PERSONAGENS:")
-  ref r
-  epara r = $jogador, r, r = objdepois(r)
-    arg0.msg("> " + r.nome + " (" + r.sock.nome + ")")
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    arg0.msg("> " + item.obj.nome + " (" + item.obj.sock.nome + ")")
   efim
 
 
@@ -983,7 +957,6 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Vida\b\n\
 Sintaxe: VIDA\n\
 Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
-
 const posic = 0
 
 func escr

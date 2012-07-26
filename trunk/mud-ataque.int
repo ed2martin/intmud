@@ -165,15 +165,17 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     arg0.atkenv = arg1.atkrec.addfim(arg0)
     arg0.atkdiv.limpar
   fimse
+  arg0.atktempo = config:atktempo, arg0.atkturno = 0
+  arg0.posicao >= 4 && (arg0.posicao = 7)
   arg0.atkdiv.addfim1(r) # Adiciona personagem para ganhar experiência
   se !arg1.atkenv # Se o alvo não está batalhando...
     arg1.atkenv = arg0.atkrec.addfim(arg1)
     arg1.atkdiv.limpar
     arg1.atkdiv.addfim(s)
+    arg1.atktempo = config:atktempo, arg1.atkturno = 0
+    arg1.posicao >= 4 && (arg1.posicao = 7)
   fimse
-  arg0.posicao >= 4 && (arg0.posicao = 7), arg0.atktempo = 100
-  arg1.posicao >= 4 && (arg1.posicao = 7), arg1.atktempo = 100
-  arg1.p_espera == 0 && (arg1.p_espera = 1) # Para gerar evento de PNJs
+  !arg1.p_espera && (arg1.p_espera = 1) # Para gerar evento de PNJs
   r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
 # Checa se acertou o alvo
   result = 1
@@ -252,3 +254,22 @@ const tipo = 0 # Normal
 const ataque = 100
 const vel = 100
 const extra = "Golpe físico de força"
+
+
+classe cmd_atkauto
+herda comando_ataque
+# Para realizar ataques automáticos
+const objcmd = nulo
+const objajuda = nulo
+const nome = "Ataque automático"
+const msgatk = "$R dá um golpe em $c"
+const tipo = 0 # Normal
+const ataque = 20
+const vel = 100
+const extra = "Ataque automático"
+
+func ataca # arg0 ataca arg1
+  execgolpe(arg0, arg1, ataque) # Ataca
+  result && $mens.p(arg0, arg1) + $mens.mtodos1(msgatk + msgefeito(arg1))
+  arg1.persobat.pvida == 0 && arg1.persobat.morreu
+  arg0.persobat.pvida == 0 && arg0.persobat.morreu

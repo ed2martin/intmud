@@ -1,7 +1,7 @@
 #ifndef VAR_OUTROS_H
 #define VAR_OUTROS_H
 
-#define TESPERA_MAX 10  // Tempo máximo que pode esperar (10 = 1 segundo)
+#define TESPERA_MAX 100  // Tempo máximo que pode esperar (10 = 1 segundo)
 
 class TVariavel;
 class TObjeto;

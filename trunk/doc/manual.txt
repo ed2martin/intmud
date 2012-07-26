@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 9.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 10.9.
 
 
 1. SOBRE O INTMUD
@@ -809,53 +809,62 @@ Nota: o sinal de igual para comparação é sempre escrito com == (dois iguais).
 
 10. VARIÁVEIS BÁSICAS
 
-10.1. int1 <nomedavariável>
+10.1. int1 <nome da variável>
 Pode ser 0 ou 1.
 
-10.2. int8 <nomedavariável>
+10.2. int8 <nome da variável>
 Número inteiro de -128 a 127.
 
 10.3. int16 <nomedavariável>
 Número inteiro de -32768 a 32767.
 
-10.4. int32 <nomedavariável>
+10.4. int32 <nome da variável>
 Número inteiro de -2147483648 a 2147483647.
 
 10.5. uint8 <nomedavariável>
 Número inteiro de 0 a 255.
 
-10.6. uint16 <nomedavariável>
+10.6. uint16 <nome da variável>
 Número inteiro de 0 a 65535.
 
-10.7. uint32 <nomedavariável>
+10.7. uint32 <nome da variável>
 Número inteiro de 0 a 4294967295.
 
-10.8. intdec <nomedavariável>
-Número inteiro de 0 a 1048575, que é subtraido 1 a cada décimo
-de segundo, até chegar a 0.
-intdec aceita valores negativos, mas nesse caso a contagem fica parada.
+10.8. intdec <nome da variável>
+Número inteiro de -1.048.575 a 1.048.575. Quando o valor numérico
+dessa variável for maior que zero, é subtraído uma unidade a cada
+décimo de segundo.
 
-Possui as funções e variáveis:
-neg = Faz a variável ser menor que zero, multiplicando por -1 se necessário
-pos = Faz a variável ser maior que zero, multiplicando por -1 se necessário
-abs = Valor de intdec sem o sinal
+Possui as seguintes funções e variáveis:
+ - NEG: Interrompe a contagem se estiver contando.
+   Isso é feito multiplicando a variável por -1 caso seja maior que zero.
+ - POS: Faz a contagem voltar se estiver parada.
+   Isso é feito multiplicando a variável por -1 caso seja menor que zero.
+ - ABS: Um número de 0 a 1.048.575, que corresponde à contagem atual.
+   É o valor da variável sem o sinal.
 
 Exemplo:
+
 intdec x
-x = 10
-x.neg # Faz x ser negativo; nesse caso faz x=-10
-n = x.abs # x.abs = 10
-x.pos # Faz x ser positivo; nesse caso, 10
-x.abs = 5
+x = 10 # Esse valor equivale a um segundo
+x.neg # Faz 'x' ser negativo, interrompendo a contagem; faz 'x = - 10'
+n = x.abs # Mesmo que 'n = 10'
+x.abs = 5 # Muda a contagem para 5, mas mantém parada; faz 'x = -5'
+x.pos # Faz 'x' ser positivo, voltando a contagem; faz 'x = 5'
+x.abs = 3 # Faz 'x = 3'
 
-10.9. intinc <nomedavariável>
-Número inteiro de 0 a 1048575, que é somado 1 a cada décimo de segundo,
-até chegar a 1048575 (29 horas, 7 minutos e 37.5 segundos).
-intinc aceita valores negativos, mas nesse caso a contagem fica parada.
+Nota: se não houver interesse em interromper a contagem, não há
+necessidade de usar essas funções e variáveis.
 
-Possui as funções neg, pos e abs, exatamente como intdec (vide acima).
+10.9. intinc <nome da variável>
+Número inteiro de -1.048.575 a 1.048.575. Quando o valor numérico dessa
+variável for maior ou igual a zero zero, é somado uma unidade a cada
+décimo de segundo.
 
-10.10. real <nomedavariável>
+Possui as funções 'neg', 'pos' e 'abs', exatamente como intdec (vide
+acima).
+
+10.10. real <nome da variável>
 Corresponde ao tipo 'double' em C++. É capaz de representar números muito
 grandes e números muito pequenos.
 
@@ -866,7 +875,7 @@ Exemplo:
 vartxt10 x # Define uma variável de texto de até 10 caracteres
 x = "bom dia" # Faz essa variável ter o texto "bom dia"
 
-10.12. ref <nomedavariável>
+10.12. ref <nome da variável>
 Referência para um objeto; corresponde a um objeto qualquer.
 A palavra 'nulo' é usada para indicar que a referência
 não corresponde a nenhum objeto. Quando o objeto é apagado,
@@ -2211,39 +2220,39 @@ Nada faz se o número for menor ou igual a zero.
 20.6. depois
 Vai para a próxima linha.
 
-*. depois(<número de linhas>)
+20.7. depois(<número de linhas>)
 Avança o número de linhas especificado.
 Nada faz se o número for menor ou igual a zero.
 
-20.7. texto([caracter inicial], [quantidade de caracteres])
+20.8. texto([caracter inicial], [quantidade de caracteres])
 Retorna o texto da linha atual ou de parte da linha atual.
 
-20.8. textolin(<número de linhas>)
+20.9. textolin(<número de linhas>)
 Retorna texto correspondente ao número de linhas especificado.
 
-20.9. mudar(<novo texto>, [caracter inicial], [quantidade de caracteres])
+20.10. mudar(<novo texto>, [caracter inicial], [quantidade de caracteres])
 Muda o texto da linha atual ou parte do texto da linha atual.
 Caracter inicial e quantidade de caracteres referem-se à linha atual.
 
-20.10. add(<novo texto>)
+20.11. add(<novo texto>)
 Adiciona linha antes da linha atual.
 Após essa função, textopos corresponde ao texto adicionado.
 
-20.11. add(<textopos início>, <número de linhas>)
+20.12. add(<textopos início>, <número de linhas>)
 Adiciona as linhas correspondente ao texto especificado.
 
-20.12. remove
+20.13. remove
 Remove a linha atual.
 
-20.13. remove(<número de linhas>)
+20.14. remove(<número de linhas>)
 Remove a quantidade de linhas especificadas, a partir da linha atual.
 
-20.14. juntar
+20.15. juntar
 Junta a linha atual com a anterior.
 Retorna 1 se juntou linhas ou 0 se não juntou.
 Nota: Para dividir uma linha, adicionar texto '\n' com a função mudar.
 
-20.15. txtproc(<texto procurado>, <caracter inicial>, [núm. de linhas])
+20.16. txtproc(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Procura um texto a partir da linha atual, sem diferenciar letras maiúsculas,
 minúsculas e acentuadas.
 Se o texto procurado começar com '\n', significa que ele deve estar no
@@ -2256,12 +2265,12 @@ Se o caracter inicial não for especificado, assume início da linha.
 Se não encontrou, retorna -1. Se encontrou, posiciona na linha que
 contém o texto e retorna o número do caracter (0=início da linha).
 
-20.16. txtprocmai(<texto procurado>, <caracter inicial>, [núm. de linhas])
+20.17. txtprocmai(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Mesmo que txtproc (acima), exceto que diferencia letras acentuadas e não
 acentuadas (exemplo, 'a' e 'á'). Mas não diferencia letras maiúsculas
 de minúsculas.
 
-20.17. txtprocdif(<texto procurado>, <caracter inicial>, [núm. de linhas])
+20.18. txtprocdif(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Mesmo que txtproc (acima), exceto que diferencia letras maiúsculas,
 acentuadas e sem acento. Exemplo, 'a', 'A' e 'Á' são consideradas três
 letras diferentes em txtprocdif.

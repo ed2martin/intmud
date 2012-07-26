@@ -95,8 +95,8 @@ func cmd_ac
   senao !arg0
     msg("Tecle a mensagem após AC.")
   senao
-    listaitem item
-    epara item = $jogcomum.jog.ini, item, item.depois
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
       item.obj.jogconfig.19 && item.obj.msg("(ac) " + nome + ": " + arg0)
     efim
   fimse
@@ -106,8 +106,8 @@ func cmd_echo
   se !arg0
     msg("\bTecle a mensagem após ECHO.")
   senao
-    listaitem item
-    epara item = $jogcomum.jog.ini, item, item.depois
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
       item.obj.msg("\b\cB*ADM: " + arg0 + "\b")
     efim
   fimse

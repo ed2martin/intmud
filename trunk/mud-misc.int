@@ -18,6 +18,12 @@ const sum1 = "um"
 # Para calcular bônus conforme o tipo
 comum real defbonus.255
 #
+# Hora MUD
+comum int1 luz # Se tem luz do dia
+comum uint8 hora # Hora MUD (1 dia MUD = 2 horas)
+const min = intdiv((3000 - misc:imin) / 50) # Minuto MUD
+comum inttempo imin # Usado internamente: quanto tempo para completar 1 hora MUD
+#
 # Direções
 const d1n = "n"
 const d1s = "s"
@@ -54,6 +60,52 @@ const d2so = "ne"
 const d2nw = "se"
 const d2sw = "ne"
 #
+
+func equip # Traduz número para lugar aonde está vestindo um item
+  casovar arg0
+  casose "1"
+    ret "como luz"
+  casose "2"
+    ret "na cabeça"
+  casose "3"
+    ret "sobre o rosto"
+  casose "4"
+    ret "nos olhos"
+  casose "5"
+    ret "nas orelhas"
+  casose "6"
+    ret "no pescoço"
+  casose "7"
+    ret "no corpo"
+  casose "8"
+    ret "sobre o corpo"
+  casose "9"
+    ret "nas costas"
+  casose "10"
+    ret "nos braços"
+  casose "11"
+    ret "nas mãos"
+  casose "12"
+    ret "no pulso direito"
+  casose "13"
+    ret "no pulso esquerdo"
+  casose "14"
+    ret "no dedo direito"
+  casose "15"
+    ret "no dedo esquerdo"
+  casose "16"
+    ret "empunhando"
+  casose "17"
+    ret "escudo"
+  casose "18"
+    ret "na cintura"
+  casose "19"
+    ret "nas pernas"
+  casose "20"
+    ret "calçando"
+  casose
+    ret "desconhecido"
+  casofim
 
 func atktipo # Tipos de golpes
 # arg0 = número do golpe
@@ -301,6 +353,8 @@ func sepperso # Procura o personagem destino
   efim
 
 func iniclasse # Inicialização
+# Inicia contagem de tempo hora MUD
+  misc:imin = 3000
 # Obtém os valores de defbonus
   real r # Valor inicial é 2 elevado a -64
   uint16 x
@@ -310,6 +364,13 @@ func iniclasse # Inicialização
     misc:defbonus.[x + 1] = r * 1.414213562
     x += 2, r *= 2
   efim
+
+func imin_exec # Atualiza hora MUD
+  misc:imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
+  misc:hora = (misc:hora + 1) % 24
+  misc:luz = misc:hora >= 6 && misc:hora < 18
+  arqsav sav
+  misc:hora == 0 && sav.limpar(".") # Limpa jogos antigos
 
 
 classe evtempo

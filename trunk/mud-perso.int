@@ -10,11 +10,13 @@ const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const descver = "Você não vê nada de especial."
+const jogsav = 1 # Se deve salvar o personagem ao salvar personagem do jogador
+const pnivel = 1 # Para mostrar nível 1 ao ver personagem
 sav textovar var # Variáveis criadas sob demanda do personagem
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
-sav int1 jogconfig.32 # Para salvar sock.jogconfig
+sav int1 jogconfig.24 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
   comum_obj:ini
@@ -214,7 +216,8 @@ const persoesc = este # Personagem escolhido
 listaobj atkrec # Quem atacou esse personagem; dá experiência se perder
 listaitem atkenv # Item de atkrec; atkenv.objlista = alvo do personagem
 listaobj atkdiv # Para dividir experiência entre personagens que atacaram
-inttempo atktempo # Tempo para terminar a batalha
+inttempo atktempo # Tempo para completar um turno da batalha
+uint8 atkturno # Turno da batalha, usado para decidir se encerra
 
 func ini # Objeto foi criado
   comum_perso:ini
@@ -289,9 +292,25 @@ func batalhafim # Encerra a batalha
   posicao == 7 && (posicao = pospadr)
 
 func atktempo_exec # Encerra a batalha depois de um tempo
-  atkenv && msg("Batalha encerrada.")
-  atkenv.remove, atkrec.limpar
-  posicao == 7 && (posicao = pospadr)
+  se !atkenv # Se não tem um alvo
+    batalhafim
+  senao config:atktipo # Se for ataque automático
+    $cmd_atkauto.ataca(este, atkenv.objlista)
+    atktempo = config:atktempo
+  senao atkturno < 3 # Se não passou tempo suficiente
+    atkturno += 1, atktempo = 30
+    ret p_espera, nulo
+    $mens.p(este, atkenv.objlista)
+    se atkturno == 1
+      $mens.mvis1("$P se prepara.")
+    senao atkturno == 2
+      $mens.mvis1("$P procura uma brecha.")
+    senao
+      $mens.mvis1("$P encara $A.")
+    fimse
+  senao # Tempo suficiente: encerra a luta
+    batalhafim
+    msg("Batalha encerrada.")
 
 func morreu # Procedimentos quando morre
   pvida = 0
@@ -318,9 +337,7 @@ func morreu # Procedimentos quando morre
     ret
 # Animal do jogador: não dá experiência
   senao dono.jog
-    enquanto atkrec
-      atkrec.objini.batalhafim, atkrec.ini.remove
-    efim
+    batalhafim
     $mens.p(dono, este)
     $mens.mtodos1("$A de $P desmaiou.")
     dono.escolhebat # Atualiza persobat
