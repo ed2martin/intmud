@@ -33,6 +33,8 @@ const senha = "sala01"
 #
 # Sala inicial
 const salaini = $s_ini002
+# Sala para continuar jogo salvo (se estava numa sala que não existe mais)
+const salasav = $s_ini002
 # Sala quando morre
 const salafim = $s_ini001
 #
@@ -41,6 +43,16 @@ const animal1 = 5
 #
 # Senha para se tornar administrador, ou "" se não puder
 const senhaadm = ""
+#
+# Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
+const salvacria = 0
+#
+# Tipo de ataque: 0=manual, 1=automático (realizado pela classe cmd_atkauto)
+const atktipo = 0
+#
+# Ataque automático: tempo de um turno (em décimos de segundo)
+# Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
+const atktempo = 50
 #
 # Como deve salvar os arquivos .int, vide variável prog do IntMUD
 const progsalvar = "L99N1I2C2F1V0"

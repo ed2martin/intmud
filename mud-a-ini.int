@@ -71,6 +71,7 @@ const nome = "Silva"
 const sexo = 1
 const perso = 2 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 80000
+const pnivel = 31
 
 func cmd_jog # Jogador chegou na mesma sala
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
@@ -110,7 +111,7 @@ func cmd_socar
     msg("Silva: Agora vou te ensinar um golpe um pouco mais forte.")
     $mens.mvis1("Silva ensina $P a chutar.")
     arg0.var.h_chutar = 1
-    arg0.msg("Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
+    arg0.msg("Silva: Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
     ret 1
 
 func cmd_chutar
@@ -121,7 +122,7 @@ func cmd_chutar
     $mens.p(arg0)
     $mens.mvis1("$P chuta Silva, 250 de 250")
     arg0.msg("Silva: Bom chute. Eu só continuo com 250 de vida porque sou mais forte.")
-    arg0.msg("Silva: Durante uma briga, você pode teclar apenas chutar.")
+    arg0.msg("Silva: Durante uma briga, você pode teclar apenas chutar ou socar.")
     arg0.msg("Silva: Te dou dois conselhos: Cheque suas habilidades teclando hab")
     arg0.msg("Silva: Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
     ret 1
@@ -160,8 +161,7 @@ const s_titulo = "Beco"
 const s_desc = "A única saída visível aqui é um barranco à leste. Nas outras direções\n\
 você só vê paredes. Para caminhar à leste, tecle L\n\
 No entanto, se você for veterano, pode tentar caminhar a oeste, mas\n\
-esteja ciente que veteranos começam no nível 0 ao invés do 1.\n\
-A qualquer momento, tecle ajuda para saber os comandos do jogo."
+esteja ciente que veteranos começam no nível 0 ao invés do 1."
 const dir_l = $s_ini003
 const dir_o = $s_teste002
 const inv_o = 1 # Esconde saída para oeste
@@ -171,7 +171,7 @@ func cmd_jog
 
 func cmd_l
   arg0.msg("\c3Sua missão é adquirir 4 diamantes e ir até uma palmeira.")
-  arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, c, b e para ajuda tecle ajuda\b")
+  arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, c, b\b")
   arg0.pnivel = 1
   arg0.recalc = 1
   ref r
@@ -298,7 +298,7 @@ func entrou
 
 func cmd_jog
   arg0.evento.addfim(este) # Receber eventos dos jogadores
-  !dentro2.objini("p_anao") && criar("p_anao", este, 1)
+  !dentro2.objini("p_anao") && criar("p_anao", este, 2)
 
 func cmd_ver
   se arg1 == "desenho"
@@ -380,7 +380,7 @@ inttempo fechaporta # Para fazer o vento bater a porta
 
 func ver_placa
   arg0.msg("A placa diz:")
-  arg0.msg("Para abrir a porta, tecle abrir porta")
+  arg0.msg("Para abrir a porta ao sul, tecle abrir s")
   ret 1
 
 func ini

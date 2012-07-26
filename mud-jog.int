@@ -1,28 +1,3 @@
-classe jogcomum
-listaobj jog # Lista de jogadores conectados (objetos jogsock e derivados)
-int1 luz # Se tem luz do dia
-int8 hora # Hora MUD (1 dia MUD = 2 horas)
-inttempo imin # Quantos segundos faltam para completar 1 hora MUD
-
-func iniclasse
-  criar(arg0)
-
-func ini
-  hora = 23
-  imin_exec
-
-func imin_exec
-  imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
-  hora = (hora + 1) % 24
-  luz = t_hora >= 6 && t_hora < 18
-
-func min # Retorna os minutos no horário MUD
-  uint8 num
-  num = 60 - imin / 50
-  num >= 60 && (num = 59)
-  ret num
-
-
 classe jogsock
 herda jog_entra, jog_adm, jog_admcod, jog_admsala
 # Comunicação com o jogador
@@ -42,7 +17,7 @@ txt20 nome # Nome do personagem
 inttempo vazio # Tempo sem comunicação para desconectar do MUD
 textotxt txtmais # Texto do tecle M para mais
 int1 admin # Se é administrador
-int1 jogconfig.32 # Configurações do personagem
+int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 #
 txt20 passo # Passo atual; "" se estiver jogando
@@ -59,7 +34,7 @@ textotxt comandos # Comandos em espera para serem processados
 
 func ini
   reinicia
-  $jogcomum.jog.addfim1(este)
+  cnome = "un"
 
 func fim
   perso.fechou
@@ -82,7 +57,7 @@ func mudaperso # Muda o personagem, arg0=novo personagem
 
 func reinicia # Volta ao início: pede o nome do personagem
   mudaperso(nulo)
-  cnome = "", nome = "", senha = ""
+  cnome = "un", nome = ""
   p_perso
 
 func recebe # Recebeu mensagem do jogador
@@ -180,7 +155,6 @@ func p_perso # Digitar o nome do personagem
   txt20 texto
   arqsav sav1
   passo = "perso", tpasso = ""
-  jogconfig.bits = 31 # Configurações iniciais
   texto = txtnome(arg0)
   se !arg0
     msg("Digite o nome do seu personagem")
@@ -196,8 +170,9 @@ func p_perso # Digitar o nome do personagem
     msg("Criando personagem " + nome)
     p_sexo
   senao
+    msg("Personagem '" + txtmaimin(arg0) + "' já existe")
     tpasso = txtmaimin(arg0)
-    p_senha
+    p_entrasenha
   fimse
   ret 1
 
@@ -207,49 +182,89 @@ func p_sexo # Digitar O ou A
     msg("Você é homem ou mulher? Tecle O ou A")
     ret 1
   fimse
+  tpasso = arg0 == "O"
+  config:salvacria ? p_criasenha1 : p_entrajogo
+  ret 1
+
+func p_criasenha1 # Digitar a senha ao criar personagem
+  passo = "criasenha1"
+  tpasso = txt1(tpasso)
+  se !arg0
+    msg("Digite uma senha para o personagem")
+  senao inttotal(arg0) < 5 || inttotal(arg0) > 16
+    msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+  senao intsenha(arg0) == 3
+    msg("Senha deve ter letras e números, digite outra")
+  senao intsenha(arg0)
+    msg("Senha inválida, digite outras")
+  senao
+    tpasso += " " + arg0
+    p_criasenha2
+  fimse
+  ret 1
+
+func p_criasenha2 # Repetir a senha ao criar personagem
+  passo = "criasenha2"
+  se !arg0
+    msg("Digite novamente a senha")
+  senao txt2(tpasso) != arg0
+    msg("As senhas são diferentes")
+    p_criasenha1
+  senao
+    p_entrajogo
+  fimse
+  ret 1
+
+func p_entrajogo # Entrar no jogo: cria personagem
   passo = ""
+  jogconfig.bits = 31 # Configurações iniciais
   msg("Iniciando jogo; para ajuda tecle AJUDA")
   mudaperso(criar("jogador"))
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
   perso.jogconfig.bits = jogconfig.bits
-  arg0 == "O" && (perso.sexo = 1)
+  perso.sexo = txt1(tpasso)
+  perso.senha = txtmin(txt2(tpasso))
   perso.mudadono(config:salaini)
+  se perso.senha
+    !perso.salvar && msg("Não foi possível salvar o personagem")
+  fimse
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
   temposair # Acerta tempo para sair do MUD
   ret 1
 
-func p_senha # Entrar com a senha para carregar jogo salvo
+func p_entrasenha # Entrar com a senha para carregar jogo salvo
   indiceitem ind
   txt20 texto
   arqsav sav1
   ref r
 # msg(texto + " , " + arg0)
   texto = txtnome(tpasso)
-  passo = "senha"
+  passo = "entrasenha"
   se !arg0
-    msg("Digite a senha do personagem ou z para desistir")
+    msg("Digite a senha ou, se o personagem não for seu, tecle Z")
   senao arg0 == "z"
     nome = "", p_perso
   senao ind.obj("un " + texto)
-    msg("Outro usuário começou a usar esse personagem")
+    msg("Outro jogador começou a usar esse personagem")
     p_perso
   senao !sav1.senha("jog-" + texto + ".sav", txtmin(arg0))
-    msg("Senha incorreta; digite outra ou z para desistir")
+    msg("Senha incorreta")
+    p_perso
   senao ind.obj("pn " + texto)
-    cnome = "un " + texto
-    nome = tpasso
     passo = ""
     mudaperso(ind.obj("pn " + texto))
+    nome = perso.nome
+    cnome = "un " + texto
     msg("Reconectado")
     perso.teclou("ver")
     temposair # Acerta tempo para sair do MUD
   senao
 # Primeiro cria personagem
-    cnome = "un " + texto
-    nome = tpasso
     passo = ""
+    nome = tpasso
+    cnome = "un " + texto
     mudaperso(criar("jogador"))
     perso.cnome = "pn " + texto
     perso.nome = nome
@@ -258,16 +273,11 @@ func p_senha # Entrar com a senha para carregar jogo salvo
     listaobj l1
     l1.addfim(perso)
     sav1.ler("jog-" + texto + ".sav", l1)
+    nome = perso.nome
     jogconfig.bits = perso.jogconfig.bits
-# Acerta nome, checa se nome codificado bate
-    se txtnome(perso.nome) != texto
-      perso.nome = nome
-    senao
-      nome = perso.nome
-    fimse
 # Acerta variáveis
-    debug d
     listaitem item
+    debug d
     epara item = l1.ini, item, item.depois
       d.exec = 5000
       !item.obj.dono && !item.obj.jog && apagar(item.obj)
@@ -276,10 +286,10 @@ func p_senha # Entrar com a senha para carregar jogo salvo
       item.obj.recalc = 1
     efim
 # Muda de sala e volta ao jogo
-    msg("Continuando jogo salvo.")
     ref r
     r = $[perso.salanome]
-    perso.mudadono(r ? r : config:salaini)
+    perso.mudadono(r ? r : config:salasav)
+    msg("Continuando jogo salvo.")
     $mens.p(arg0)
     $mens.mvis2("", "$P chegou.")
     perso.salvarev = 3000 # 5 minutos
@@ -287,25 +297,25 @@ func p_senha # Entrar com a senha para carregar jogo salvo
   fimse
   ret 1
 
-func p_senha1 # Digitar a senha atual para mudar a senha
-  passo = "senha1"
+func p_mudasenha1 # Digitar a senha atual para mudar a senha
+  passo = "mudasenha1"
   se !arg0
     msg("Digite a senha atual do personagem ou z para desistir")
   senao arg0 == "z"
     passo = ""
     msg("Cancelado")
-  senao arg0 != senha
+  senao arg0 != perso.senha
     msg("Senha incorreta; cancelado")
     passo = ""
   senao
-    p_senha2
+    p_mudasenha2
   fimse
   ret 1
 
-func p_senha2 # Digitar a nova senha
-  passo = "senha2"
+func p_mudasenha2 # Digitar a nova senha
+  passo = "mudasenha2"
   se !arg0
-    msg("Digite a nova senha do personagem ou z para desistir")
+    msg("Digite a nova senha do personagem ou Z para desistir")
   senao arg0 == "z"
     passo = ""
     msg("Cancelado")
@@ -317,12 +327,12 @@ func p_senha2 # Digitar a nova senha
     msg("Senha inválida, digite outras")
   senao
     tpasso = arg0
-    p_senha3
+    p_mudasenha3
   fimse
   ret 1
 
-func p_senha3 # Repetir a senha digitada
-  passo = "senha3"
+func p_mudasenha3 # Repetir a senha digitada
+  passo = "mudasenha3"
   se !arg0
     msg("Digite novamente a senha")
   senao tpasso != arg0
@@ -352,6 +362,7 @@ sav int1 sexo # Sexo: 0=feminino, 1=masculino
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
+const jogsav = 1 # Necessário para salvar o personagem do jogador
 inttempo salvarev # Para salvar o jogo de tempos em tempos
 const pesoobj = 65000
 
@@ -373,18 +384,33 @@ func fechou # Executado quando o objeto sock é apagado
   senha == "" && apagar(este)
 
 func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
-  senha ? sock.p_senha1 : sock.p_senha2
+  senha ? sock.p_mudasenha1 : sock.p_mudasenha2
 
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar
-  se senha
-    arqsav sav1
-    listaobj l0
-    l0.addfim(este)
-    salanome = dono
-    salvarev = 3000 # 5 minutos
+  ret !senha, 0
+  listaitem item
+  listaobj lista
+  arqsav sav1
+  debug dbg
+  lista.addfim(este)
+  dbg.exec = 20000
+  item = lista.ini
+  enquanto item
+    se !item.obj.jogsav
+      item.removedepois
+    senao lista.total < 1000
+      lista.addfim(item.obj.dentro1, item.obj.dentro2), item.depois
+    senao
+      item.depois
+    fimse
+  efim
+  salanome = dono
+  salvarev = 3000 # 5 minutos
 # msg(txt2(cnome) + " , " + senha)
-    ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
+  dbg.exec = 2000
+  ret !lista.total, 0
+  ret sav1.salvar("jog-" + txt2(cnome) + ".sav", lista, 30, senha)
 
 func salvarev_exec
   salvar
