@@ -437,7 +437,7 @@ void TBlocoPos::MoverPos(int numlinhas)
             if (numlinhas <= lin)
                 break;
             numlinhas -= lin;
-            LinhaTxt += lin;
+            LinhaTxt -= lin;
             PosicTxt -= Bloco->Bytes;
             if (Bloco->Antes)
                 Bloco = Bloco->Antes;

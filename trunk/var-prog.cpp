@@ -29,26 +29,26 @@ TVarProg * TVarProg::Inicio = 0;
 //------------------------------------------------------------------------------
 void TVarProg::Criar()
 {
-    consulta = 0;
+    consulta = prNada;
 }
 
 //------------------------------------------------------------------------------
 void TVarProg::Apagar()
 {
-    if (consulta==0)
+    if (consulta == prNada)
         return;
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
         Depois->Antes = Antes;
-    consulta=0;
+    consulta = prNada;
 }
 
 //------------------------------------------------------------------------------
 void TVarProg::Mover(TVarProg * destino)
 {
-    if (consulta==0)
+    if (consulta == prNada)
     {
-        destino->consulta=0;
+        destino->consulta = prNada;
         return;
     }
     (Antes ? Antes->Depois : Inicio) = destino;
@@ -68,7 +68,7 @@ void TVarProg::LimparVar()
 {
 // Retira todos os objetos da lista ligada
     for (TVarProg * obj = Inicio; obj; obj=obj->Depois)
-        obj->consulta=0;
+        obj->consulta = prNada;
     Inicio=0;
 }
 
@@ -82,12 +82,15 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         bool (TVarProg::*Func)(TVariavel * v); } ExecFunc[] = {
         { "apagar",       &TVarProg::FuncApagar },
         { "apagarlin",    &TVarProg::FuncApagarLin },
+        { "arqnome",      &TVarProg::FuncArqNome },
         { "arquivo",      &TVarProg::FuncArquivo },
+        { "classe",       &TVarProg::FuncClasse },
         { "const",        &TVarProg::FuncConst },
         { "criar",        &TVarProg::FuncCriar },
         { "criarlin",     &TVarProg::FuncCriarLin },
         { "depois",       &TVarProg::FuncDepois },
         { "existe",       &TVarProg::FuncExiste },
+        { "iniarq",       &TVarProg::FuncIniArq },
         { "iniclasse",    &TVarProg::FuncIniClasse },
         { "inifunc",      &TVarProg::FuncIniFunc },
         { "inifunctudo",  &TVarProg::FuncIniFuncTudo },
@@ -160,6 +163,20 @@ bool TVarProg::FuncArquivo(TVariavel * v)
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncArqNome(TVariavel * v)
+{
+    const char * p = "";
+    if (Instr::VarAtual >= v+1)
+        p = v[1].getTxt();
+    if (*p)
+        mprintf(arqext, 60, "-%s." INT_EXT, p);
+    else
+        strcpy(arqext, "." INT_EXT);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(arqinicio);
 }
 
 //------------------------------------------------------------------------------
@@ -368,19 +385,67 @@ bool TVarProg::FuncConst(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarProg::MudaConsulta(int valor)
+bool TVarProg::FuncClasse(TVariavel * v)
 {
-    if (valor==0)
+    if (Instr::VarAtual < v+2)
+        return false;
+    TClasse * cl = TClasse::Procura(v[1].getTxt());
+
+// Codifica as instruções
+    TAddBuffer mens;
+    bool codifok = TMudarAux::CodifInstr(&mens, v[2].getTxt());
+    Instr::ApagarVar(v);
+    mens.Add("\x00\x00", 2); // Marca o fim das instruções
+    mens.AnotarBuf();        // Anota resultado em mens.Buf
+    if (!codifok) // Erro
+        return Instr::CriarVarTexto(mens.Buf);
+
+// Verifica se bloco válido
+    int linha=1;
+    char * com = mens.Buf;
+    Instr::ChecaLinha checalinha;
+    checalinha.Inicio();
+    while (com[0] || com[1])
     {
-        if (consulta==0)
+        const char * p = checalinha.Instr(com);
+        if (p)
+        {
+            char txt1[1024];
+            mprintf(txt1, sizeof(txt1), "%d: %s\n", linha, p);
+            return Instr::CriarVarTexto(txt1);
+        }
+        com+=Num16(com), linha++;
+    }
+
+// Checa se está igual à classe
+    if (!cl)
+        return Instr::CriarVarTexto("0");
+    const char * p1 = mens.Buf;
+    const char * p2 = cl->Comandos;
+    while (p1[0] || p1[1])
+    {
+        if (!Instr::ComparaInstr(p1, p2))
+            return Instr::CriarVarTexto("0");
+        int total = Num16(p1);
+        p1 += total, p2 += total;
+    }
+    return Instr::CriarVarTexto(p2[0] || p2[1] ? "0" : "1");
+}
+
+//------------------------------------------------------------------------------
+void TVarProg::MudaConsulta(TProgConsulta valor)
+{
+    if (valor == prNada)
+    {
+        if (consulta == prNada)
             return;
-        consulta = 0;
+        consulta = prNada;
         (Antes ? Antes->Depois : Inicio) = Depois;
         if (Depois)
             Depois->Antes = Antes;
         return;
     }
-    if (consulta==0)
+    if (consulta == prNada)
     {
         Antes = 0;
         Depois = Inicio;
@@ -392,9 +457,38 @@ void TVarProg::MudaConsulta(int valor)
 }
 
 //------------------------------------------------------------------------------
+bool TVarProg::FuncIniArq(TVariavel * v)
+{
+    TProgConsulta valor = prNada;
+    if (Instr::VarAtual < v+1)
+    {
+        ArqAtual = TArqMapa::Inicio;
+        if (ArqAtual)
+            valor = prArquivo;
+    }
+    else
+    {
+        const char * texto = v[1].getTxt();
+        TArqMapa * arq = TArqMapa::Inicio;
+        ClasseAtual = 0;
+        for (; arq; arq = arq->Proximo)
+            if (comparaZ(texto, arq->Arquivo) == 0)
+            {
+                ClasseAtual = arq->ClInicio;
+                if (ClasseAtual)
+                    valor = prArqCl;
+                break;
+            }
+    }
+    MudaConsulta(valor);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor != prNada);
+}
+
+//------------------------------------------------------------------------------
 bool TVarProg::FuncIniClasse(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     const char * texto = "";
     if (Instr::VarAtual >= v+1)
         texto = v[1].getTxt();
@@ -403,23 +497,23 @@ bool TVarProg::FuncIniClasse(TVariavel * v)
         ClasseAtual = TClasse::RBfirst();
         ClasseFim = TClasse::RBlast();
         if (ClasseAtual)
-            valor=1;
+            valor = prClasse;
     }
     else
     {
         ClasseAtual = TClasse::ProcuraIni(texto);
         if (ClasseAtual)
-            valor=1, ClasseFim = TClasse::ProcuraFim(texto);
+            valor = prClasse, ClasseFim = TClasse::ProcuraFim(texto);
     }
     MudaConsulta(valor);
     Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor != 0);
+    return Instr::CriarVarInt(valor != prNada);
 }
 
 //------------------------------------------------------------------------------
 bool TVarProg::FuncIniFunc(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
@@ -448,7 +542,7 @@ bool TVarProg::FuncIniFunc(TVariavel * v)
             if (--ValorFim < ValorAtual)
                 break;
         if (ValorAtual <= ValorFim)
-            valor = 2;
+            valor = prFunc;
         break;
     }
     MudaConsulta(valor);
@@ -459,7 +553,7 @@ bool TVarProg::FuncIniFunc(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncIniFuncTudo(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
@@ -472,10 +566,10 @@ bool TVarProg::FuncIniFuncTudo(TVariavel * v)
         {
             ValorAtual = Classe->IndiceNomeIni(texto);
             if (ValorAtual>=0)
-                valor=3, ValorFim = Classe->IndiceNomeFim(texto);
+                valor=prFuncTudo, ValorFim = Classe->IndiceNomeFim(texto);
         }
         else if (Classe->NumVar)
-            valor=3, ValorAtual=0, ValorFim=Classe->NumVar-1;
+            valor=prFuncTudo, ValorAtual=0, ValorFim=Classe->NumVar-1;
         break;
     }
     MudaConsulta(valor);
@@ -486,7 +580,7 @@ bool TVarProg::FuncIniFuncTudo(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncIniHerda(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
@@ -499,7 +593,7 @@ bool TVarProg::FuncIniHerda(TVariavel * v)
             break;
         TextoAtual = txt + Instr::endVar + 1;
         ValorFim = (unsigned char)txt[Instr::endVar];
-        valor = 4;
+        valor = prHerda;
         break;
     }
     MudaConsulta(valor);
@@ -510,7 +604,7 @@ bool TVarProg::FuncIniHerda(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncIniHerdaTudo(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
@@ -522,7 +616,7 @@ bool TVarProg::FuncIniHerdaTudo(TVariavel * v)
         if (total<HERDA_TAM)
             ClasseHerda[total]=0;
         ValorAtual = 0;
-        valor = 5;
+        valor = prHerdaTudo;
         break;
     }
     MudaConsulta(valor);
@@ -533,7 +627,7 @@ bool TVarProg::FuncIniHerdaTudo(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncIniHerdaInv(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
@@ -543,7 +637,7 @@ bool TVarProg::FuncIniHerdaInv(TVariavel * v)
             break;
         PontAtual = Classe->ListaDeriv;
         PontFim = PontAtual + Classe->NumDeriv;
-        valor = 6;
+        valor = prHerdaInv;
         break;
     }
     MudaConsulta(valor);
@@ -554,7 +648,7 @@ bool TVarProg::FuncIniHerdaInv(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarProg::FuncIniLinha(TVariavel * v)
 {
-    int valor = 0;
+    TProgConsulta valor = prNada;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
@@ -567,7 +661,7 @@ bool TVarProg::FuncIniLinha(TVariavel * v)
             if (TextoAtual[0]==0 && TextoAtual[1]==0)
                 break;
             ValorFim = 0;
-            valor = 7;
+            valor = prLinhaCl;
             break;
         }
     // Linhas de uma função ou variável
@@ -576,9 +670,9 @@ bool TVarProg::FuncIniLinha(TVariavel * v)
             break;
         TextoAtual = Classe->InstrVar[indice];
         if (TextoAtual[2]==Instr::cFunc || TextoAtual[2]==Instr::cVarFunc)
-            valor = 8;
+            valor = prLinhaFunc;
         else
-            valor = 9;
+            valor = prLinhaVar;
         ValorFim = 1;
         break;
     }
@@ -595,72 +689,99 @@ bool TVarProg::FuncDepois(TVariavel * v)
         total = v[1].getInt();
     switch (consulta)
     {
-    case 1:  // iniclasse
+    case prNada:
+        break;
+    case prArquivo: // iniarq com nome de arquivo
+        for (; total>0; total--)
+        {
+            ArqAtual = ArqAtual->Proximo;
+            if (ArqAtual == 0)
+            {
+                MudaConsulta(prNada);
+                break;
+            }
+        }
+        break;
+    case prArqCl:   // iniarq com nome de classe
+        for (; total>0; total--)
+        {
+            ClasseAtual = ClasseAtual->ArqDepois;
+            if (ClasseAtual == 0)
+            {
+                MudaConsulta(prNada);
+                break;
+            }
+        }
+        break;
+    case prClasse:  // iniclasse
         for (; total>0; total--)
         {
             if (ClasseAtual == ClasseFim)
             {
-                MudaConsulta(0);
+                MudaConsulta(prNada);
                 break;
             }
             ClasseAtual = TClasse::RBnext(ClasseAtual);
-            if (ClasseAtual==0)
-                MudaConsulta(0);
+            if (ClasseAtual == 0)
+            {
+                MudaConsulta(prNada);
+                break;
+            }
         }
         break;
-    case 2:  // inifunc
+    case prFunc:  // inifunc
         while (total>0)
         {
             ValorAtual++;
             if (ValorAtual > ValorFim)
             {
-                MudaConsulta(0);
+                MudaConsulta(prNada);
                 break;
             }
             if (Classe->IndiceVar[ValorAtual] & 0x800000)
                 total--;
         }
         break;
-    case 3:  // inifunctudo
+    case prFuncTudo:  // inifunctudo
         if (total <= 0)
             break;
         if (total >= 0xFFFF || ValorAtual + total > ValorFim)
-            MudaConsulta(0);
+            MudaConsulta(prNada);
         else
             ValorAtual += total;
         break;
-    case 4:  // iniherda
+    case prHerda:  // iniherda
         if (ValorFim<=total)
-            MudaConsulta(0);
+            MudaConsulta(prNada);
         else for (; total>0; total--)
         {
             ValorFim--;
             while (*TextoAtual++);
         }
         break;
-    case 5:  // iniherdatudo
+    case prHerdaTudo:  // iniherdatudo
         if (total <= 0)
             break;
         ValorAtual+=total;
         if (total>=HERDA_TAM || ValorAtual>=HERDA_TAM)
-            MudaConsulta(0);
+            MudaConsulta(prNada);
         else if (ClasseHerda[ValorAtual]==0)
-            MudaConsulta(0);
+            MudaConsulta(prNada);
         break;
-    case 6:  // iniherdainv
+    case prHerdaInv:  // iniherdainv
         if (total <= 0)
             break;
         PontAtual+=total;
         if (total>=0xFFFFFF || PontAtual>=PontFim)
-            MudaConsulta(0);
+            MudaConsulta(prNada);
         break;
-    case 7:  // inilinha com classe
-    case 8:  // inilinha com função
-        for (; total>0 && consulta; total--)
+    case prLinhaCl:     // inilinha com classe
+    case prLinhaFunc:   // inilinha com função
+        for (; total>0 && consulta != prNada; total--)
         {
             TextoAtual += Num16(TextoAtual);
             if (TextoAtual[0]==0 && TextoAtual[1]==0)
-                MudaConsulta(0);
+                MudaConsulta(prNada);
             else switch (TextoAtual[2])
             {
             case Instr::cConstNulo:
@@ -670,13 +791,13 @@ bool TVarProg::FuncDepois(TVariavel * v)
             case Instr::cConstVar:
             case Instr::cFunc:
             case Instr::cVarFunc:
-                if (consulta==8)
-                    MudaConsulta(0);
+                if (consulta == prLinhaFunc)
+                    MudaConsulta(prNada);
             }
         }
         break;
-    case 9:  // inilinha com variável
-        MudaConsulta(0);
+    case prLinhaVar:  // inilinha com variável
+        MudaConsulta(prNada);
         break;
     }
     return false;
@@ -688,25 +809,31 @@ bool TVarProg::FuncTexto(TVariavel * v)
     const char * p = "";
     switch (consulta)
     {
-    case 1:  // iniclasse
+    case prNada:
+        break;
+    case prArquivo: // iniarq com nome de arquivo
+        p = ArqAtual->Arquivo;
+        break;
+    case prArqCl:   // iniarq com nome de classe
+    case prClasse:  // iniclasse
         p = ClasseAtual->Nome;
         break;
-    case 2:  // inifunc
-    case 3:  // inifunctudo
+    case prFunc:     // inifunc
+    case prFuncTudo: // inifunctudo
         p = Classe->InstrVar[ValorAtual] + Instr::endNome;
         break;
-    case 4:  // iniherda
+    case prHerda:  // iniherda
         p = TextoAtual;
         break;
-    case 5:  // iniherdatudo
+    case prHerdaTudo:  // iniherdatudo
         p = ClasseHerda[ValorAtual]->Nome;
         break;
-    case 6:  // iniherdainv
+    case prHerdaInv:  // iniherdainv
         p = PontAtual[0]->Nome;
         break;
-    case 7:  // inilinha com classe
-    case 8:  // inilinha com função
-    case 9:  // inilinha com variável
+    case prLinhaCl:   // inilinha com classe
+    case prLinhaFunc: // inilinha com função
+    case prLinhaVar:  // inilinha com variável
         {
         // Cria variável
             const char * instr = TextoAtual;
@@ -737,16 +864,16 @@ bool TVarProg::FuncTexto(TVariavel * v)
 bool TVarProg::FuncLin(TVariavel * v)
 {
     Instr::ApagarVar(v);
-    return Instr::CriarVarInt(consulta != 0);
+    return Instr::CriarVarInt(consulta != prNada);
 }
 
 //------------------------------------------------------------------------------
 bool TVarProg::FuncNivel(TVariavel * v)
 {
     Instr::ApagarVar(v);
-    if (!Instr::CriarVarInt(0))
+    if (!Instr::CriarVarInt(prNada))
         return false;
-    if (consulta==7 || consulta==8)
+    if (consulta == prLinhaCl || consulta == prLinhaFunc)
         Instr::VarAtual->setInt((unsigned char)TextoAtual[Instr::endAlin]);
     return true;
 }

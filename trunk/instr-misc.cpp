@@ -160,6 +160,43 @@ int Instr::Prioridade(int operador)
 }
 
 //------------------------------------------------------------------------------
+/// Verifica se duas instruções codificadas são iguais
+/** @return true se são iguais, false se são diferentes */
+bool Instr::ComparaInstr(const char * instr1, const char * instr2)
+{
+    int total = Num16(instr1);
+    int inicio = Instr::endVar;
+    if (total==0)
+        return (instr2[0]==0 && instr2[1]==0);
+    if (memcmp(instr1, instr2, 3) != 0)
+        return false;
+    switch (instr1[2])
+    {
+    case cSe:           inicio = endVar+2; break;
+    case cSenao1:       inicio = endVar+2; break;
+    case cSenao2:       inicio = endVar+2; break;
+    case cFimSe:        inicio = endVar;   break;
+    case cEnquanto:     inicio = endVar+2; break;
+    case cEPara:        inicio = endVar+6; break;
+    case cEFim:         inicio = endVar+2; break;
+    case cCasoVar:      inicio = endVar+2; break;
+    case cCasoSe:       inicio = endVar+4; break;
+    case cCasoSePadrao: inicio = endVar;   break;
+    case cCasoFim:      inicio = endVar;   break;
+    case cRet1:         inicio = endVar;   break;
+    case cRet2:         inicio = endVar;   break;
+    case cSair1:        inicio = endVar+2; break;
+    case cSair2:        inicio = endVar+2; break;
+    case cContinuar1:   inicio = endVar+2; break;
+    case cContinuar2:   inicio = endVar+2; break;
+    case cTerminar:     inicio = endVar;   break;
+    }
+    if (inicio >= total)
+        return true;
+    return (memcmp(instr1+inicio, instr2+inicio, total-inicio) == 0);
+}
+
+//------------------------------------------------------------------------------
 /// Verifica se instrução codificada é herda e contém a classe especificada
 bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
 {
