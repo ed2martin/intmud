@@ -66,6 +66,7 @@ bool FuncAntesDepois(TVariavel * v, int valor);
 bool FuncTotal(TVariavel * v, int valor);
 bool FuncVarTroca(TVariavel * v, int valor);
 
+bool ComparaInstr(const char * instr1, const char * instr2);
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 int  Prioridade(int operador);
 

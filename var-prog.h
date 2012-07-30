@@ -4,7 +4,26 @@
 //----------------------------------------------------------------------------
 #include "classe.h"
 class TVariavel;
+class TClasse;
 class TObjeto;
+class TArqMapa;
+
+//----------------------------------------------------------------------------
+enum TProgConsulta ///< O que consultar, TVarProg::consulta
+{
+    prNada,     ///< Não está consultando nada
+    prArquivo,  ///< iniarq() para arquivos
+    prArqCl,    ///< iniarq() para classes de um arquivo
+    prClasse,   ///< iniclasse()
+    prFunc,     ///< inifunc()
+    prFuncTudo, ///< inifunctudo()
+    prHerda,    ///< iniherda()
+    prHerdaTudo,///< iniherdatudo()
+    prHerdaInv, ///< iniherdainv()
+    prLinhaCl,  ///< inilinha() - linhas de uma classe
+    prLinhaFunc,///< inilinha() - linhas de uma função
+    prLinhaVar  ///< inilinha() - uma variável (uma única linha)
+};
 
 //----------------------------------------------------------------------------
 /** Trata das variáveis do tipo Prog */
@@ -21,6 +40,7 @@ public:
 private:
     bool FuncExiste(TVariavel * v); ///< Processa função existe
     bool FuncArquivo(TVariavel * v); ///< Processa função arquivo
+    bool FuncArqNome(TVariavel * v); ///< Processa função arqnome
     bool FuncVarComum(TVariavel * v); ///< Processa função varcomum
     bool FuncVarSav(TVariavel * v); ///< Processa função varsav
     bool FuncVarNum(TVariavel * v); ///< Processa função varnum
@@ -28,7 +48,9 @@ private:
     bool FuncVarTipo(TVariavel * v); ///< Processa função vartipo
     bool FuncVarVetor(TVariavel * v); ///< Processa função varvetor
     bool FuncConst(TVariavel * v); ///< Processa função const
+    bool FuncClasse(TVariavel * v); ///< Processa função classe
 
+    bool FuncIniArq(TVariavel * v); ///< Processa função iniarq
     bool FuncIniClasse(TVariavel * v); ///< Processa função iniclasse
     bool FuncIniFunc(TVariavel * v); ///< Processa função inifunc
     bool FuncIniFuncTudo(TVariavel * v); ///< Processa função inifunctudo
@@ -49,10 +71,12 @@ private:
     bool FuncSalvar(TVariavel * v);
     bool FuncSalvarTudo(TVariavel * v);
 
-    void MudaConsulta(int valor); ///< Muda o valor da variável consulta
-    unsigned char consulta; ///< O que consultar, 0=não está consultando nada
+    void MudaConsulta(TProgConsulta valor);
+        ///< Muda o valor da variável consulta
+    TProgConsulta consulta;      ///< O que consultar
     TClasse * Classe;   ///< A classe que está sendo consultada
     union {
+        TArqMapa * ArqAtual; ///< Valor atual da busca como arquivo
         TClasse ** PontAtual;  ///< Valor atual da busca
         TClasse * ClasseAtual; ///< Valor atual da busca como classe
         const char * TextoAtual;  ///< Valor atual da busca como texto

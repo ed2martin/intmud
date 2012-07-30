@@ -865,14 +865,15 @@ Possui as funções 'neg', 'pos' e 'abs', exatamente como intdec (vide
 acima).
 
 10.10. real <nome da variável>
-Corresponde ao tipo 'double' em C++. É capaz de representar números muito
-grandes e números muito pequenos.
+Corresponde ao tipo 'double' em C++.
+Pode representar números na faixa de 10 elevado a -308 (menor que isso
+é considerado zero) até 10 elevado a 308 (maior que isso é considerado
+infinito), tanto positivos quanto negativos. A precisão é de 15 dígitos.
 
-10.11. txt1 a txt512 seguido do nome da variável:
-Define uma variável que contém um texto, de até 1 a 512 caracteres,
-respectivamente.
+10.11. txt<quantidade de caracteres> <nome da variável>
+Define uma variável que contém um texto, de até 1 a 512 caracteres.
 Exemplo:
-vartxt10 x # Define uma variável de texto de até 10 caracteres
+txt10 x # Define uma variável de texto de até 10 caracteres
 x = "bom dia" # Faz essa variável ter o texto "bom dia"
 
 10.12. ref <nome da variável>
@@ -2336,10 +2337,8 @@ v.y_ += 2 # Faz a variável y ser 12 (10 + 2)
 # Exemplo de como mostrar todas as variáveis de um textovar
 telatxt tela
 txt80 nome
-nome = v.ini
-enquanto nome
-  tela.msg(nome + "=" + v.valor(nome) + "\n")
-  nome = v.depois(nome)
+epara nome = v.ini, nome, nome = v.depois(nome)
+tela.msg(nome + "=" + v.valor(nome) + "\n")
 efim
 
 
@@ -2909,35 +2908,43 @@ Nota: pode ser usado um objeto no lugar do nome de uma classe.
 Retornam 1 se há algum resultado resultado (pelo menos uma linha)
 para a consulta ou 0 se não há.
 
-32.1.1. iniclasse([texto])
+32.1.1. iniarq
+Obter os sufixos dos nomes dos arquivos que compõem o programa.
+Não necessariamente em ordem alfabética.
+
+32.1.2. iniarq(<sufixo do arquivo>)
+Obter as classes que pertencem ao arquivo.
+Na ordem definida no arquivo.
+
+32.1.3. iniclasse([texto])
 Obter os nomes das classes que começam com o texto especificado.
 Em ordem alfabética.
 
-32.1.2. inifunc(<nome da classe>, [texto])
+32.1.4. inifunc(<nome da classe>, [texto])
 Obter os nomes das funções e variáveis definidas em uma classe.
 Somente as variáveis e funções que começam com o texto especificado.
 Em ordem alfabética.
 
-32.1.3. inifunctudo(<nome da classe>, [texto])
+32.1.5. inifunctudo(<nome da classe>, [texto])
 Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
 
-32.1.4. iniherda(<nome da classe>)
+32.1.6. iniherda(<nome da classe>)
 Obter os nomes das classes definidas na instrução 'herda'.
 Na ordem definida na classe.
 
-32.1.5. iniherdatudo(<nome da classe>)
+32.1.7. iniherdatudo(<nome da classe>)
 Obter a lista de classes herdadas por uma classe.
 Inclui também as classes herdadas indiretamente.
 Na ordem em que as classes são herdadas.
 
-32.1.6. iniherdainv(<nome da classe>)
+32.1.8. iniherdainv(<nome da classe>)
 Herança inversa: obter os nomes das classes que herdam uma classe.
 A ordem em que as classes são listadas é imprevisível.
 
-32.1.7. inilinha(<nome da classe>)
+32.1.9. inilinha(<nome da classe>)
 Obter as linhas correspondentes a uma classe.
 
-32.1.8. inilinha(<nome da classe>, <nome da função>)
+32.1.10. inilinha(<nome da classe>, <nome da função>)
 Obter as linhas correspondentes a uma variável ou função da classe
 (definida na classe ou herdada).
 
@@ -2978,33 +2985,45 @@ Retorna o sufixo do nome do arquivo que contém a classe.
 Exemplo, "abc" corresponde ao arquivo 'intmud-abc.int'.
 Um texto vazio significa arquivo 'intmud.int'.
 
-32.3.4. vartipo(<nome da classe>, <nome da variável>)
+32.3.4. arqnome(<sufixo do nome do arquivo>)
+Retorna o nome do arquivo a partir dosufixo do nome.
+Exemplo:
+prog p
+p.arqnome("abc") # Retorna algo como 'intmud-abc.int'.
+
+32.3.5. vartipo(<nome da classe>, <nome da variável>)
 Retorna o tipo de variável ou "" se a variável não existe.
 
-32.3.5. varnum(<nome da classe>, <nome da variável>)
+32.3.6. varnum(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante numérica do tipo:
 const variável = valor numérico
 ou 0 se não for.
 
-32.3.6. vartexto(<nome da classe>, <nome da variável>)
+32.3.7. vartexto(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante de texto do tipo:
 const variável = "texto"
 ou 0 se não for.
 
-32.3.7. varcomum(<nome da classe>, <nome da variável>)
+32.3.8. varcomum(<nome da classe>, <nome da variável>)
 Retorna 1 se variável for comum ou 0 se não for.
 
-32.3.8. varsav(<nome da classe>, <nome da variável>)
+32.3.9. varsav(<nome da classe>, <nome da variável>)
 Retorna 1 se variável for sav ou 0 se não for.
 
-32.3.9. varvetor(<nome da classe>, <nome da variável>)
+32.3.10. varvetor(<nome da classe>, <nome da variável>)
 Retorna a quantidade de variáveis do vetor ou 0 se não for vetor.
 
-32.3.10. const(<nome da classe>, <nome da variável>)
+32.3.11. const(<nome da classe>, <nome da variável>)
 Retorna o texto de uma variável constante do tipo:
 const variável = valor    (nesse caso retorna valor)
 const variável = "texto"  (nesse caso retorna texto)
 Retorna um texto vazio para outros tipos de variáveis.
+
+32.3.12. classe(<nome da classe>, <texto>)
+Primeiro checa se <texto> pode ser o conteúdo de uma classe (se não tem
+nenhum erro). Depois checa se está igual à classe especificada.
+Retorna a lista de erros em <texto>. Se não houver nenhum erro,
+retorna "1" se estiver igual ou "0" se estiver diferente.
 
 
 32.4. Funções para alterar o programa
@@ -3117,7 +3136,7 @@ d.cmd("ret \"teste\"") # d.cmd retorna "teste"
 d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna 3
 
 33.4. passo(<objeto>, <texto>)
-         passo()
+      passo()
 Antes de executar cada instrução chama a função de <objeto>
 com o nome especificado em <texto>. Se a função não existir, passa
 a executar instruções sem chamar nenhuma função.
