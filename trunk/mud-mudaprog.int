@@ -26,8 +26,12 @@ func exec # Recarrega arquivos
 # msg("[" + datamudou + "]")
 
 func msg
-  telatxt tela
-  tela.msg(arg0 + "\n")
+# telatxt tela
+# tela.msg(arg0 + "\n")
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.19 && item.obj.msg("(mudler) " + arg0)
+  efim
 
 func passofunc_exec # Próximo passo para alterar programa
   se passo[passonum]

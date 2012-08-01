@@ -160,13 +160,13 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     ret l.objini.cmd_atkrec(arg0, arg1, este), nulo
   efim
 # Indica que atacou, recebe experiência se vencer
-  se arg0.atkenv.obj != arg1 # Se o alvo do ataque mudou...
+  se arg0.atkenv.objlista != arg1 # Se o alvo do ataque mudou...
     arg0.atkenv.remove
     arg0.atkenv = arg1.atkrec.addfim(arg0)
     arg0.atkdiv.limpar
+    arg0.atktempo = config:atktempo, arg0.atkturno = 0
+    arg0.posicao >= 4 && (arg0.posicao = 7)
   fimse
-  arg0.atktempo = config:atktempo, arg0.atkturno = 0
-  arg0.posicao >= 4 && (arg0.posicao = 7)
   arg0.atkdiv.addfim1(r) # Adiciona personagem para ganhar experiência
   se !arg1.atkenv # Se o alvo não está batalhando...
     arg1.atkenv = arg0.atkrec.addfim(arg1)
@@ -175,7 +175,11 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     arg1.atktempo = config:atktempo, arg1.atkturno = 0
     arg1.posicao >= 4 && (arg1.posicao = 7)
   fimse
-  !arg1.p_espera && (arg1.p_espera = 1) # Para gerar evento de PNJs
+  se !config:atktipo # Se for batalha manual
+    arg0.atktempo = config:atktempo, arg0.atkturno = 0
+    arg1.atktempo = config:atktempo, arg1.atkturno = 0
+  fimse
+  arg1.p_proc = 1 # Para gerar evento de PNJs
   r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
 # Checa se acertou o alvo
   result = 1

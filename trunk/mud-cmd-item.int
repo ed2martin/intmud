@@ -1,0 +1,259 @@
+classe cmd_pegar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Pegar\b\n\
+Sintaxe: PEGAR <objeto>\n\
+         PEGAR <quantidade> <objeto>\n\
+         PEGAR <objeto> <container>\n\
+         PEGAR <quantidade> <objeto> <container>\n\
+Pega um objeto do chão ou de outro objeto (um container)."
+const posic = 5
+#
+ref sala # De onde pegar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+txt20 mens # Parte da mensagem
+int1 achou # Se achou algum item
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_pegar(arg0, arg1), nulo
+  efim
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    sala = arg0.dono
+    mens = "."
+  senao
+    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !sala
+      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao !sala.container
+      ret arg0.msg("Não é possível pegar nada de " + sala.nome + ".")
+    fimse
+    mens = " de $t $a."
+  fimse
+# Pega os itens
+  nomeobj n # Para reconhecer os itens
+  textotxt nomes # Nomes dos itens pegos
+  n.ini(misc:sep1, 1000000)
+  achou = 0
+  epara l.addfim(sala.dentro1), l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    listaobj e
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_pegarobj(arg0, sala, l.objini, total)
+    efim
+    se !e
+      $mens.p(arg0, sala, l.objini)
+      se total <= 1
+        $mens.mvis1("$P pega $O" + mens)
+      senao
+        $mens.mvis1("$P pega " + total + "x $O" + mens)
+      fimse
+      l.objini.mudadono(arg0, total)
+    fimse
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_pegouobj(arg0, sala, l.objini, total)
+    efim
+    sair (achou += 1) >= 10
+  efim
+  !achou && arg0.msg("Você não vê isso.")
+
+
+classe cmd_soltar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Soltar\b\n\
+Sintaxe: SOLTAR <objeto>\n\
+         SOLTAR <quantidade> <objeto>\n\
+         SOLTAR <objeto> <container>\n\
+         SOLTAR <quantidade> <objeto> <container>\n\
+Solta um objeto no chão ou em outro objeto (um container)."
+const posic = 5
+#
+ref sala # Aonde soltar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+txt20 mens # Parte da mensagem
+int1 achou # Se achou algum item
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_soltar(arg0, arg1), nulo
+  efim
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    sala = arg0.dono
+    mens = "."
+  senao
+    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !sala
+      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao !sala.container
+      ret arg0.msg("Não é possível soltar nada em " + sala.nome + ".")
+    fimse
+    mens = " em $t $a."
+  fimse
+# Solta os itens
+  nomeobj n # Para reconhecer os itens
+  n.ini(misc:sep1, 1000000)
+  achou = 0
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    listaobj e
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_soltarobj(arg0, sala, l.objini, total)
+    efim
+    se !e
+      $mens.p(arg0, sala, l.objini)
+      se total <= 1
+        $mens.mvis1("$P solta $O" + mens)
+      senao
+        $mens.mvis1("$P solta " + total + "x $O" + mens)
+      fimse
+      l.objini.mudadono(sala, total)
+    fimse
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
+    efim
+    sair (achou += 1) >= 10
+  efim
+  !achou && arg0.msg("Você não vê isso.")
+
+
+classe cmd_dar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Dar\b\n\
+Sintaxe: DAR <objeto> <personagem>\n\
+Dá um objeto para outro personagem."
+const posic = 5
+#
+ref sala # Para quem dar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+txt20 mens # Parte da mensagem
+int1 achou # Se achou algum item
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_dar(arg0, arg1), nulo
+  efim
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  ret !misc:sep2, arg0.msg("Dar itens para quem?")
+  sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
+  se !sala
+    ret arg0.msg("Você não vê " + misc:sep2 + ".")
+  senao !sala.container
+    ret arg0.msg("Não é possível dar nada para " + sala.nome + ".")
+  fimse
+# Dá os itens
+  nomeobj n # Para reconhecer os itens
+  n.ini(misc:sep1, 1000000)
+  achou = 0
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    listaobj e
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_darobj(arg0, sala, l.objini, total)
+    efim
+    se !e
+      $mens.p(arg0, sala, l.objini)
+      se total <= 1
+        $mens.mvis1("$P dá $O para $t $a.")
+      senao
+        $mens.mvis1("$P dá " + total + "x $O para $t $a.")
+      fimse
+      l.objini.mudadono(sala, total)
+    fimse
+    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_deuobj(arg0, sala, l.objini, total)
+    efim
+    sair (achou += 1) >= 10
+  efim
+  !achou && arg0.msg("Você não vê isso.")
+
+
+classe cmd_vestir
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Vestir\b\n\
+Sintaxe: VESTIR <objeto>\n\
+         VESTIR <quantidade> <objeto>\n\
+Veste ou usa um objeto que você está carregando."
+const posic = 5
+
+func escr
+  ret !arg1, arg0.msg("Vestir o que?")
+# Preenche a variável vest com o que está vestindo
+  listaitem item
+  int1 vest.32
+  vest.0 = 1
+  epara item = arg0.dentro2.ini, item, item.depois
+    vest.[item.obj.vestpos] = 1
+  efim
+# Veste
+  int8 total # Quantidade de itens encontrados
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    r = l.objini
+    continuar !arg0.visivel(r) || !n.nome(r.ident, r.objtot)
+    uint8 x
+    epara x = n, x, x -= 1
+      total += 1
+      se !vest.[r.vestir1]
+        r.vestir(r.vestir1)
+      senao !vest.[r.vestir2]
+        r.vestir(r.vestir2)
+      senao !vest.[r.vestir3]
+        r.vestir(r.vestir3)
+      senao r.vestir1 || r.vestir2 || r.vestir3
+        arg0.msg("Já está vestindo algo em cima.")
+        sair
+      senao
+        arg0.msg("Você não consegue vestir " + r.nome + ".")
+        sair
+      fimse
+      vest.[r.vestpos] = 1
+      $mens.p(arg0, r)
+      $mens.mvis1("$P veste $t $a.")
+    efim
+  efim
+# Ajusta variáveis
+  !total && arg0.msg("Você não vê isso.")
+
+
+classe cmd_remover
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Remover\b\n\
+Sintaxe: REMOVER <objeto>\n\
+         REMOVER <quantidade> <objeto>\n\
+Deixa de usar um objeto que você está vestindo ou usando."
+const posic = 5
+
+func escr
+  ret !arg1, arg0.msg("Remover o que?")
+# Remove
+  uint8 total
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  epara l.addfim(arg0.dentro2), l, l.ini.remove
+    r = l.objini
+    continuar !arg0.visivel(r) || !n.nome(r.ident, r.objtot)
+    uint8 x
+    epara x = n, x, x -= 1
+      total += 1
+      r.vestir(0)
+      $mens.p(arg0, r)
+      $mens.mvis1("$P remove $t $a.")
+    efim
+  efim
+# Ajusta variáveis
+  !total && arg0.msg("Você não está usando isso.")

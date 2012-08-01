@@ -20,8 +20,8 @@
 1.1. mud.int
 Contém a configuração do jogo (classe 'config'), como por exemplo, se vai
 rodar em uma janela ou abrindo uma porta, a sala inicial, etc.
-As outras classes são responsáveis pela comunicação entre o jogo e
-os jogadores.
+As outras classes desse arquivo são responsáveis pela comunicação entre
+o jogo e os jogadores.
 
 1.2. mud-comum.int
 Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
@@ -45,8 +45,10 @@ em um único objeto.
 Os itens são classes cujo nome começa com 'i_'.
 
 1.6. mud-perso.int
-Classe 'comum_perso', herdada por todos os personagens.
-Classe 'comum_persobat', herdada por personagens que podem batalhar.
+Classe 'comum_perso' - herdada por todos os personagens.
+Classe 'comum_persobat' - personagens que podem batalhar.
+Classe 'comum_persoanimal' - personagens que podem batalhar e carregar animais.
+Classe 'perso_restaurar' - restaurar status de personagens que podem batalhar.
 Os personagens não jogadores são classes cujo nome começa com 'p_'.
 
 1.7. mud-jog.int
@@ -57,24 +59,33 @@ Funções cmd_<nome do comando>   Comandos de administração
 Funções adm_<nome do tópico>    Tópicos de ajuda da administração
 Funções p_<texto>               São executadas conforme a variável passo
 
-1.8. mud-cmd.int
-Contém os comandos que os personagens podem digitar, exceto ataques.
-Todo comando é uma classe cujo nome é 'cmd_' seguido do nome do comando.
+1.8. mud-cmd*.int
+Contém os comandos que os personagens podem digitar. Todo comando é uma
+classe cujo nome é 'cmd_' seguido do nome do comando.
 As magias são classes cujo nome é 'cmd_magia_' seguido do nome da magia.
 A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
-1.9. mud-ataque.int
-Contém os comandos de ataque. Todo comando é derivado da classe
-'comando_ataque'.
+1.9. mud-cmd.int
+Comandos de informação.
+Contém também a classe 'comando_ataque', que é herdada por todos os comandos.
+
+1.10. mud-cmd-item.int
+Comandos de manuseio de objetos.
+
+1.11. mud-cmd-mover.int
+Comandos de movimentação.
+
+1.12. mud-cmd-ataque.int
+Comandos de ataque.
 Via de regra, a função 'escr' checa se está em condições de atacar e obtém
 o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
 
-1.10. mud-mens.int
+1.13. mud-mens.int
 Contém a classe 'mens', especializada no envio de mensagens para personagens.
 
-1.11. mud-misc.int
+1.14. mud-misc.int
 Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
 Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
@@ -267,14 +278,22 @@ Verdadeiro (=1) se pode receber itens
 
 7. Personagens (mud-perso.int)
 
-7.1. const perso = 1
-O valor 1 significa um personagem que não pode batalhar
-O valor 2 significa um personagem que pode batalhar
+7.1. Para criar um personagem
+criar("nome da classe", nível do personagem, "variáveis")
+Se o nível for omitido, será 0.
+Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
+variável, separar por vírgula (exemplo, "v1=10,v2=20").
+São criadas as variáveis correspondentes em 'textovar var' do personagem.
 
-7.2. sav uint32 moedas
+7.2. const perso = 1
+1 = personagem que não batalha (classe comum_perso)
+2 = personagem que batalha (classe comum_persobat)
+3 = personagem que batalha e carrega animais (classe comum_persoanimal)
+
+7.3. sav uint32 moedas
 Quantas moedas está carregando
 
-7.3. sav uint8 posicao
+7.4. sav uint8 posicao
 Posição do personagem:
 0 = morto
 1 = mortalmente ferido
@@ -286,44 +305,45 @@ Posição do personagem:
 7 = lutando
 8 = em pé
 
-7.4. const pospadr = 8
+7.5. const pospadr = 8
 Posição padrão do personagem
 
-7.5. sav textovar var
+7.6. sav textovar var
 Variáveis criadas sob demanda do personagem
 As variáveis cujo nome começa com "1" são apagadas quando o personagem
 muda de sala (função mudadono).
 As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
 salvo é recarregado (quando o jogador entra no jogo).
 
-7.6. func teclou
+7.7. func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
-7.7. func p_espera_exec
+7.8. func p_espera_exec
 Pega o próximo comando da lista
 
-7.8. func teclouproc
+7.9. func teclouproc
 Processa comando, sem espera (arg0=comando)
 
-7.9. func mudadono
+7.10. func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
-7.10. intexec recalc
+7.11. intexec recalc
 Para chamar recalc_exec quando necessário
 
-7.11. func recalc_exec
+7.12. func recalc_exec
 Ajusta variáveis, principalmente batalha
 
-7.12. func ajustapos
+7.13. func acertaposic
 Acerta posição do personagem, conforme pontos de vida e batalha
+Chamando com acertaposic(1), chama a função morreu se pvida=0
 
-7.13. func batalhafim
+7.14. func batalhafim
 Encerra a batalha
 
-7.14. func atktempo
+7.15. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
 
-7.15. func morreu
+7.16. func morreu
 Executa procedimentos quando o personagem morre
 
 
@@ -550,6 +570,7 @@ o personagem que recebe o ataque.
 
 13. Lista de itens pendentes
 
+Sentar-se, deitar-se e levantar-se
 Valor em moedas
 Volume que cabe dentro, ou 0 se não for container
 Quantos litros cabe, ou 0 se não for vasilhame
