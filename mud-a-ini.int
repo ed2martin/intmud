@@ -16,6 +16,7 @@ const ident = "anão"
 const sexo = 1
 const descpos = "Um anão está aqui."
 const descver = "Você não vê nada de especial."
+# const p_agressivo = 1
 
 
 classe i_diamante_azul
@@ -71,7 +72,6 @@ const nome = "Silva"
 const sexo = 1
 const perso = 2 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 80000
-const pnivel = 31
 
 func cmd_jog # Jogador chegou na mesma sala
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
@@ -298,7 +298,7 @@ func entrou
 
 func cmd_jog
   arg0.evento.addfim(este) # Receber eventos dos jogadores
-  !dentro2.objini("p_anao") && criar("p_anao", este, 2)
+  !dentro2.objini("p_anao") && criar("p_anao", este, 2, "h_chutar=1,h_socar=1")
 
 func cmd_ver
   se arg1 == "desenho"
@@ -415,4 +415,4 @@ func cmd_abriudir
     $s_ini008.fechaporta = 50
 
 func cmd_jog
-  !dentro2.objini("p_ini_silva") && criar("p_ini_silva", este)
+  !dentro2.objini("p_ini_silva") && criar("p_ini_silva", este, 31)

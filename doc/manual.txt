@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 10.9.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 10.11.
 
 
 1. SOBRE O INTMUD
@@ -872,9 +872,16 @@ infinito), tanto positivos quanto negativos. A precisão é de 15 dígitos.
 
 10.11. txt<quantidade de caracteres> <nome da variável>
 Define uma variável que contém um texto, de até 1 a 512 caracteres.
+
 Exemplo:
-txt10 x # Define uma variável de texto de até 10 caracteres
-x = "bom dia" # Faz essa variável ter o texto "bom dia"
+txt10 x # Define a variável 'x', de até 10 caracteres
+
+Nota: Se for atribuído um texto que ultrapassa a quantidade de caracteres
+      da variável, ele será truncado.
+
+Exemplo:
+txt3 y # Quantidade máxima de caracteres de 'y' é 3
+y = "bom dia" # Tem o mesmo efeito que y="bom"
 
 10.12. ref <nome da variável>
 Referência para um objeto; corresponde a um objeto qualquer.

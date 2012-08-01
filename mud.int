@@ -15,17 +15,19 @@ classe config
 # Configuração
 #
 # Modo pode ser:
-# 0 = Jogo local
-# 1 = Ativar em uma porta, somente Telnet
-# 2 = Ativar em uma porta, aceita Telnet e Papovox
-# 3 = Ativar como bot em um chat
-const modo = 0
+# 1 = Jogo local
+# 2 = Ativar em uma porta, aceita Telnet
+# 4 = Ativar em uma porta, aceita Telnet e Papovox
+# 8 = Ativar como bot em um chat
+# É possível escolher mais de uma opção, bastando somar os números.
+# Exemplo, 10 significa 8 (bot em chat) + 2 (acesso via telnet)
+const modo = 1
 #
-# Variáveis dos modos 1 e 2 (ativar em uma porta)
+# Variáveis dos modos 2 e 4 (ativar em uma porta)
 # Nota: Papovox só se conecta na porta 1963
 const servporta = 1963
 #
-# Variáveis do modo 3 (ativar como bot)
+# Variáveis do modo 8 (ativar como bot)
 const serv = "localhost"
 const porta = 1963
 const sala = "sala01"
@@ -53,13 +55,15 @@ const atktipo = 0
 # Ataque automático: tempo de um turno (em décimos de segundo)
 # Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
 const atktempo = 50
-#
-# Como deve salvar os arquivos .int, vide variável prog do IntMUD
-const progsalvar = "L99N1I2C2F1V0"
+
+func salvar # Salva o programa
+  prog p
+  p.salvar("L99N1I2C2F1V0")
+  $mudaprog.ini # Para indicar que nenhum arquivo foi mudado
 
 #func iniclasse # Para salvar acertando indentação e linhas entre classes e funções
 #  prog p
-#  p.salvartudo([arg0]:progsalvar)
+#  p.salvartudo("L99N1I2C2F1V0")
 
 
 classe jogolocal
@@ -72,7 +76,7 @@ const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
 
 func iniclasse
-  se config:modo == 0
+  se config:modo & 1
     criar(arg0)
 
 func ini
@@ -112,7 +116,7 @@ func msgtodos
   efim
 
 func iniclasse
-  se config:modo == 1 || config:modo == 2
+  se config:modo & 6
     telatxt tela
     se [arg0]:j_serv.abrir("", config:servporta)
       tela.msg("Esperando conexões na porta " + config:servporta + "\n")
@@ -128,7 +132,7 @@ func ini # Objeto foi criado
   j_conec.proto = 2
   j_conec.aflooder = 1
   j_conec.cores = 2
-  se config:modo == 2
+  se config:modo & 4
     j_conec.msg("+OK Para Telnet pressione ENTER\n")
     j_tempo = 100 # 10 segundos depois desconecta
   senao
@@ -175,7 +179,7 @@ socket conec # Conexão com o bate-papo
 inttempo conectando
 
 func iniclasse
-  se config:modo == 3
+  se config:modo & 8
     criar(arg0)
 
 func ini
@@ -258,10 +262,10 @@ telatxt _tela
 
 func ini # Nova sala
   sala_nome = "bs " + arg0
-  _tela.msg("S+  " + txt2(sala_nome) + "\n")
+  !(config:modo & 1) && _tela.msg("S+  " + txt2(sala_nome) + "\n")
 
 func fim # Sala fechada
-  _tela.msg("S-  " + txt2(sala_nome) + "\n")
+  !(config:modo & 1) && _tela.msg("S-  " + txt2(sala_nome) + "\n")
 
 func msg
   textotxt t1
@@ -285,14 +289,18 @@ const info = "b " + txt2(j_sala.objlista.sala_nome)
 func ini # Entrou na sala
   j_nome = "bu " + arg0
   j_sala = arg1.sala_usr.addfim(este) # Adiciona na sala
-  j_tela.msg("U+  " + txt2(j_nome) + "  " + txt2(j_sala.objlista.sala_nome) + "\n")
+  se !(config:modo & 1)
+    j_tela.msg("U+  " + txt2(j_nome) + "  " + txt2(j_sala.objlista.sala_nome) + "\n")
+  fimse
   jogsock:ini
 
 func fim # Saiu da sala
-  j_tela.msg("U-  " + txt2(j_nome) + "\n")
+  !(config:modo & 1) && j_tela.msg("U-  " + txt2(j_nome) + "\n")
 
 func novonome # Mudou de apelido
-  j_tela.msg("Ua  " + txt2(j_nome) + " para " + arg0 + "\n")
+  se !(config:modo & 1)
+    j_tela.msg("Ua  " + txt2(j_nome) + " para " + arg0 + "\n")
+  fimse
   j_nome = "bu " + arg0
 
 func sala_msg # Envia mensagem para a sala do usuário

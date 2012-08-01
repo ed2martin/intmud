@@ -91,8 +91,7 @@ func cmd_carea # Criar ·rea
     prog p
     p.criar("a_" + prefixo + "\na-" + prefixo + "\nherda area")
     p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala")
-    p.salvar(config:progsalvar)
-    msg("\b¡rea criada: " + prefixo)
+    config:salvar, msg("\b¡rea criada: " + prefixo)
   fimse
   ret 1
 
@@ -107,8 +106,7 @@ func cmd_aarea # Apagar ·rea
   senao
     p.apagar("a_" + prefixo)
     p.apagar("b_" + prefixo)
-    p.salvar(config:progsalvar)
-    msg("\b¡rea apagada: " + prefixo)
+    config:salvar, msg("\b¡rea apagada: " + prefixo)
   fimse
   ret 1
 
@@ -333,7 +331,7 @@ func cmd_csala # Criar sala
     nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # SaÌda da sala
     p.criar(nome2)
     p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
     ret 1
   fimse
@@ -350,7 +348,7 @@ func cmd_csala # Criar sala
     p.iniclasse("b_" + nome)
     nome = txt(p.texto, 2)
     p.criar("s_" + nome + txtfim(num, 3) + "\na-" + nome + "\nherda b_" + nome)
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("\bSala criada: " + nome + txtfim(num, 3))
   fimse
   ret 1
@@ -383,7 +381,7 @@ func p_asala # Confirmar que quer apagar sala
       p.apagar("s_" + txtsub(tpasso, x, 1))
       x += 1
     efim
-    p.salvar(config:progsalvar)
+    config:salvar
     se x < 2
       msg("Sala apagada: " + tpasso)
     senao
@@ -561,8 +559,7 @@ func cmd_asai # Apagar saÌda
     p.apagar(perso.dono, "inv_" + dir)
     p.apagar(perso.dono, "tranc_" + dir)
     p.apagar(perso.dono, "chave_" + dir)
-    p.salvar(config:progsalvar)
-    msg("\bSaÌda apagada: " + dir)
+    config:salvar, msg("\bSaÌda apagada: " + dir)
   fimse
   ret 1
 
@@ -588,7 +585,7 @@ func cmd_csai # Criar saÌda
     senao
       msg("\bSaÌda criada: " + dir + " para " + txtmin(txt2(arg0)))
     fimse
-    p.salvar(config:progsalvar)
+    config:salvar
   fimse
   ret 1
 

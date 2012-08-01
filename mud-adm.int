@@ -87,7 +87,9 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2INFO\b <personagem ou item>\n\
   Informações sobre personagem ou item.\n\
 \c2CMD\b <comando>\n\
-  Executa comando na linguagem do IntMUD e mostra o resultado."
+  Executa comando na linguagem do IntMUD e mostra o resultado.\n\
+\c2MUDLER\b\n\
+  Recarrega arquivos do MUD que foram alterados."
 
 func cmd_ac
   se !jogconfig.19
@@ -111,6 +113,10 @@ func cmd_echo
       item.obj.msg("\b\cB*ADM: " + arg0 + "\b")
     efim
   fimse
+  ret 1
+
+func cmd_mudler
+  $mudaprog.exec
   ret 1
 
 const txt_legenda = "Legenda:\n\
@@ -297,13 +303,13 @@ func p_linha # Altera um texto de uma linha
     ret 1
   senao arg0 == "n"
     p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("Apagado: " + txtsub(tpasso, 3))
   senao arg0 != "z"
     txt200 t
     t = "const " + txtsub(tpasso, 1, 1) + "=\"" + txtvis(arg0) + "\""
     p.criar(txt1(tpasso), t)
-    p.salvar(config:progsalvar)
+    config:salvar
     msg(txtsub(tpasso, 3) + " mudou para: " + arg0)
   fimse
   passo = txtsub(tpasso, 2, 1)
@@ -346,7 +352,7 @@ func p_texto # Altera um texto de várias linhas
     txt200 t
     t = "const " + txtsub(tpasso, 1, 1) + "=\""
     p.criar(txt1(tpasso), t + txtvis(t1.remove(1000)) + "\"")
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("Salvou " + txtsub(tpasso, 3))
     ret 1
   casofim
@@ -366,7 +372,7 @@ func p_numero # Altera um texto de uma linha
     ret 1
   senao arg0 == "n"
     p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("Apagado: " + txtsub(tpasso, 3))
   senao arg0 != "z"
     txt100 lin
@@ -384,7 +390,7 @@ func p_numero # Altera um texto de uma linha
     fimse
     lin = "const " + txtsub(tpasso, 1, 1) + "=" + valor
     p.criar(txt1(tpasso), lin)
-    p.salvar(config:progsalvar)
+    config:salvar
     msg(txtsub(tpasso, 3) + " mudou para: " + arg0)
   fimse
   passo = txtsub(tpasso, 2, 1)
@@ -414,7 +420,7 @@ func p_opcao # Altera uma opção de uma lista de opções
     ret 1
   senao arg0 == "n"
     p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("Apagado: " + txtsub(tpasso, 3))
   senao arg0 != "z"
     textopos pos
@@ -427,7 +433,7 @@ func p_opcao # Altera uma opção de uma lista de opções
     fimse
     lin = "const " + txtsub(tpasso, 1, 1) + "=" + pos.linha
     p.criar(txt1(tpasso), lin)
-    p.salvar(config:progsalvar)
+    config:salvar
     msg(txtsub(tpasso, 3) + " mudou para: " + arg0 + " " + pos.texto)
   fimse
   passo = txtsub(tpasso, 2, 1)
@@ -444,13 +450,13 @@ func p_simnao # Altera uma opção que pode ser "SIM" ou "NÃO"
     txt100 lin
     lin = "const " + txtsub(tpasso, 1, 1) + "=" + arg0
     p.criar(txt1(tpasso), lin)
-    p.salvar(config:progsalvar)
+    config:salvar
     lin = "0 não"
     arg0 == 1 && (lin = "1 sim")
     msg(txtsub(tpasso, 3) + " mudou para: " + lin)
   senao arg0 == "n"
     p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("Apagado: " + txtsub(tpasso, 3))
   senao arg0 != "z"
     passo = "simnao"
@@ -558,7 +564,7 @@ func p_funcsalvar # Opçao salvar de p_func
   prog p
   t1.addfim(p.criar(txt1(tpasso), t1.remove(10000)))
   se t1.ini.texto == ""
-    p.salvar(config:progsalvar)
+    config:salvar
     msg("Salvo com sucesso")
     ret
   fimse

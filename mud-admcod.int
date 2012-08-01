@@ -68,7 +68,7 @@ func p_ccl
       msg2("Erro ao criar:\n" + t.remove(1000))
     senao
       msg("Classe criada: " + txt1(tpasso))
-      p.salvar(config:progsalvar)
+      config:salvar
     fimse
   senao
     msg("Criar classe " + txt1(tpasso) + " ? Tecle S ou N")
@@ -98,7 +98,7 @@ func p_acl
       msg("Erro ao apagar " + tpasso)
     senao
       msg("Classe apagada " + tpasso)
-      p.salvar(config:progsalvar)
+      config:salvar
     fimse
   senao
     msg("Apagar classe " + tpasso + " ? Tecle S ou N")
@@ -173,7 +173,7 @@ func p_afunc
       msg("\bErro ao apagar " + tpasso)
     senao
       msg("\bFunção apagada " + tpasso)
-      p.salvar(config:progsalvar)
+      config:salvar
     fimse
   senao
     msg("\bApagar função " + tpasso + " ? Tecle S ou N")
@@ -241,8 +241,7 @@ func p_herda
     se !p1.lin # Nenhum texto significa apagar herança
       p.inilinha(tclasse)
       txt1(p.texto) == "herda" && p.apagarlin(tclasse, 1)
-      p.salvar(config:progsalvar)
-      msg("Salvou: nenhuma herança")
+      config:salvar, msg("Salvou: nenhuma herança")
       ret 1
     fimse
     enquanto p1.lin
@@ -252,8 +251,7 @@ func p_herda
     se t1.bytes > 1
       msg2("Erro ao salvar herança:\n" + t1.remove(1000))
     senao
-      msg("Salvou herança")
-      p.salvar(config:progsalvar)
+      config:salvar, msg("Salvou herança")
     fimse
     ret 1
   casofim
