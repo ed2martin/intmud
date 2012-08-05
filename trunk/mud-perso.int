@@ -16,6 +16,7 @@ sav textovar var # Variáveis criadas sob demanda do personagem
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
+listaitem poslugar # Em qual móvel está sentado ou deitado
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
@@ -55,13 +56,12 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     l.objini.cmd_saiu(este)
   efim
 # Muda de sala
-  dono = arg0
-  atkrec.limpar
+  cmd_mudadono(arg0), dono = arg0
+  atkrec.limpar, poslugar.remove
 # Eventos cmd_chegou
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
   efim
-  cmd_mudadono
 # Se for jogador, executa eventos cmd_jog
   se jog
     !arg0.perso && arg0.cmd_jog(este, arg0)
@@ -115,32 +115,7 @@ func teclou # Processa comando (arg0=comando)
   se !obj
     msg("O quê?")
   senao posicao < obj.posic
-    casovar posicao
-    casose "0"
-      msg("\c9Você está mort" + misc:sletra[sexo] + "!!!\b")
-      sair
-    casose "1" # Mortalmente ferido
-    casose "2" # Incapacitado
-      msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
-      sair
-    casose "3" # Fraco
-      msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
-      sair
-    casose "4" # Dormindo
-      msg("\c9Nos seus sonhos...\b")
-      sair
-    casose "5" # Descansando
-      msg("\c9Você se sente relaxad" + misc:sletra[sexo] + " demais para fazer isso.\b")
-      sair
-    casose "6" # Sentado
-      msg("\c9Talvez você deva ficar em pé primeiro.\b")
-      sair
-    casose "7" # Lutando
-      msg("\c9Sem chance! Você está lutando pela sua vida.\b")
-      sair
-    casose
-      msg("\c9Você tenta, mas não consegue.\b")
-    casofim
+    msg(erropos)
   senao txt(obj, 0, 10) == "cmd_magia_"
     obj.escr(este, txtsub(arg0, 2))
   senao
@@ -148,6 +123,27 @@ func teclou # Processa comando (arg0=comando)
 
 func p_espera_exec # Pega o próximo comando
   sock ? sock.espera_exec : p_proc_exec
+
+func erropos # Retorna uma mensagem conforme a posição
+  casovar posicao
+  casose "0"
+    ret "\c9Você está mort" + misc:sletra[sexo] + "!!!\b"
+  casose "1" # Mortalmente ferido
+  casose "2" # Incapacitado
+    ret "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
+  casose "3" # Fraco
+    ret "\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b"
+  casose "4" # Dormindo
+    ret "\c9Nos seus sonhos...\b"
+  casose "5" # Descansando
+    ret "\c9Você se sente relaxad" + misc:sletra[sexo] + " demais para fazer isso.\b"
+  casose "6" # Sentado
+    ret "\c9Talvez você deva ficar em pé primeiro.\b"
+  casose "7" # Lutando
+    ret "\c9Sem chance! Você está lutando pela sua vida.\b"
+  casose
+    ret "\c9Você tenta, mas não consegue.\b"
+  casofim
 
 func descpos
   ret posicao == pospadr && descpadr, descpadr
@@ -161,11 +157,21 @@ func descpos
   casose "3"
     ret txtmaimin(nome) + " está aqui, muito frac" + misc:sletra[sexo] + "."
   casose "4"
-    ret txtmaimin(nome) + " dorme aqui."
+    ret !poslugar, txtmaimin(nome) + " dorme aqui."
+    ref r
+    r = poslugar.objlista
+    ret txtmaimin(nome) + " dorme em " + misc:sum[r.sexo] + " " + r.nome + "."
   casose "5"
-    ret txtmaimin(nome) + " descansa aqui."
+    ret !poslugar, txtmaimin(nome) + " descansa aqui."
+    ref r
+    r = poslugar.objlista
+    ret txtmaimin(nome) + " descansa em " + misc:sum[r.sexo] + " " + r.nome + "."
   casose "6"
-    ret txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + "."
+    ret !poslugar, txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + "."
+    ref r
+    r = poslugar.objlista
+    ret txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] + " " + \
+r.nome + "."
   casose "7"
     ret txtmaimin(nome) + " está lutando."
   casose "8"
@@ -193,7 +199,7 @@ const sexo = 0 # Sexo: 0=feminino, 1=masculino
 # sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint32 moedas # Quantas moedas está carregando
 #
-const expmax = nivel * nivel * nivel + 20 # Experiência para subir de nível
+const expmax = pnivel * pnivel + 20 # Experiência para subir de nível
 sav uint32 expatual # Experiência atual
 sav uint16 pnivel # Nível atual
 sav uint32 pvida # Pontos de vida
@@ -257,38 +263,45 @@ func ataqueini # Testa se pode atacar
   senao
     ret ""
 
-func acertaposic # Acerta posição
+func acertapos # Acerta posição
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
   casovar pvida * 100 / pvidamax
   casose "0"
   casose "1"
-    posicao = pvida != 0 # 0=morto, 1=mortalmente ferido
-    arg0 && !pvida && morreu
+    se pvida
+      poslugar.remove, posicao = 1 # mortalmente ferido
+    senao
+      poslugar.remove, posicao = 0, arg0 && morreu # morto
+    fimse
     ret
   casose "2"
-    posicao = 2 # incapacitado
+    poslugar.remove, posicao = 2 # incapacitado
     ret
   casose "3"
-    posicao = 3 # fraco
+    poslugar.remove, posicao = 3 # fraco
     ret
   casose
-    atkenv ? (posicao = 7) : posicao < 4 || posicao == 7 ? (posicao = pospadr)
+    se atkenv
+      poslugar.remove, posicao = 7 # lutando
+    senao posicao < 4 || posicao == 7
+      poslugar.remove, posicao = pospadr # posição padrão
+    fimse
   casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
   bitver = bitinv = 3
-  atknorm = (nivel * 4 + 60) * nivel + 30
-  defnorm = nivel * 3 + 6
-  atkmag = (nivel * 4 + 60) * nivel + 30
-  defmag = nivel * 3 + 6
-  pvidamax = nivel * 2 + 25
-# pveloc = (nivel * 4 + 60) * nivel + 30
-  pveloc = nivel + 50
-  pmanamax = nivel + 30
-  pmovemax = nivel * 2 + 30
-  evasao = nivel * 2 + 30
-  precisao = nivel * 2 + 30
+  atknorm = (pnivel * 4 + 60) * pnivel + 30
+  defnorm = pnivel * 3 + 6
+  atkmag = (pnivel * 4 + 60) * pnivel + 30
+  defmag = pnivel * 3 + 6
+  pvidamax = pnivel * 2 + 25
+# pveloc = (pnivel * 4 + 60) * pnivel + 30
+  pveloc = pnivel + 50
+  pmanamax = pnivel + 30
+  pmovemax = pnivel * 2 + 30
+  evasao = pnivel * 2 + 30
+  precisao = pnivel * 2 + 30
   deftipo.limpar # Todas as defesas em 100%
 # Acerta atributos conforme o tipo de personagem
   misc:tipo_[tipo1]
@@ -305,11 +318,12 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   efim
 
 func batalhafim # Encerra a batalha
-  atkenv.remove, atkrec.limpar, atktempo = 0, acertaposic(1)
+# Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
+  atkenv.remove, atkrec.limpar, atktempo = 0, acertapos(arg0)
 
 func atktempo_exec # Encerra a batalha depois de um tempo
   se !atkenv # Se não tem um alvo
-    batalhafim
+    batalhafim(1)
   senao config:atktipo # Se for ataque automático
     $cmd_atkauto.ataca(este, atkenv.objlista)
     atktempo = config:atktempo
@@ -327,13 +341,12 @@ func atktempo_exec # Encerra a batalha depois de um tempo
   senao # Tempo suficiente: encerra a luta
     atkenv.objlista.msg("Batalha encerrada.")
     msg("Batalha encerrada.")
-    batalhafim
+    batalhafim(1)
 
 func morreu # Procedimentos quando morre
-  pvida = 100, batalhafim, pvida = 0
+  ref r
 # Jogador: retira toda experiência e transfere jogador para outro lugar
   se jog
-    ref r
     enquanto atkrec
       r = atkrec.objini, atkrec.ini.remove
       enquanto r.atkdiv
@@ -348,6 +361,7 @@ func morreu # Procedimentos quando morre
     pmana = pmanamax / 2
     pmove = pmovemax / 2
     p_restaura = rand(100, 130)
+    batalhafim
     mudadono(config:salafim)
     salvar # Salva o jogo
     ret
@@ -355,26 +369,29 @@ func morreu # Procedimentos quando morre
   senao dono.jog
     $mens.p(dono, este)
     $mens.mtodos1("$A de $P desmaiou.")
+    pvida = 0, batalhafim
     dono.escolhebat # Atualiza persobat
     ret
   fimse
 # Outro personagem: dá experiência
-  pvida = 0
-  real total1 # Para saber a quantidade de personagens
-  real total2
+  real total1 # Para saber a fatia de experiência que cada personagem ganha
   real v1 # Para calcular a experiência ganha
-  ref r
-  total1 = atkrec.total
-  enquanto atkrec
-    r = atkrec.objini, atkrec.ini.remove
-    total2 = total1 * r.atkdiv.total
-    enquanto r.atkdiv
-      r.atkdiv.objini.persoexp(este, total2)
-      r.atkdiv.ini.remove
+  listaitem i1 # Para verificar os personagens
+  listaitem i2 # Para verificar os animais de um personagem
+  r = dono.perso ? dono : este
+  epara i1 = r.atkrec.ini, i1, i1.depois
+    i2 = i1.obj.atkdiv.ini
+    enquanto i2
+      i2.obj.pvida ? i2.depois : i2.removedepois
     efim
-    r.batalhafim
+    total1 = r.atkrec.total * i1.obj.atkdiv.total
+    epara i2 = i1.obj.atkdiv.ini, i2, i2.depois
+      i2.obj.persoexp(este, total1)
+    efim
+    i1.obj.atkdiv.limpar
   efim
 # Acerta personagem
+  pvida = 0, batalhafim
   se dono.perso
     $mens.p(dono, este)
     $mens.mtodos1("$A de $P desmaiou.")
@@ -383,6 +400,7 @@ func morreu # Procedimentos quando morre
     $mens.p(este)
     $mens.mtodos1("$P morreu.")
     apagar(este)
+    ref r
     r = sock, r.mudaperso(nulo)
     r.reinicia
 

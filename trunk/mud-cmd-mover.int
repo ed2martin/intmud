@@ -143,7 +143,7 @@ func escrobj # Abrir um item
   nomeobj n # Para reconhecer os itens
 # Procura o item
   n.ini(arg1, 1)
-  epara i = arg0.dono.dentro1, i, i.depois
+  epara i = arg0.dono.dentro1.ini, i, i.depois
     sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
@@ -159,30 +159,27 @@ func escrobj # Abrir um item
     ret l.objini.cmd_abrirobj(arg0, r, arg1), nulo
   efim
 # Tenta abrir o item
-  se arg1 == ""
-    arg0.msg("Abrir o que?")
-  senao !r
-    arg0.msg("Você não vê " + arg1 + ".")
-  senao
-    casovar r.abrir
-    casose "2"
-      arg0.msg(txtmaimin(arg0) + " já está aberto.")
-      sair
-    casose "3"
-      r.abrir = 2
-      $mens.p(arg0, r)
-      $mens.mtodos1("$P abriu $A.")
-      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-        l.objini.cmd_abriuobj(arg0, r, arg1)
-      efim
-      sair
-    casose "4"
-      arg0.msg(txtmaimin(r.nome) + " está trancado.")
-      sair
-    casose
-      arg0.msg("Não foi possível abrir " + r.nome + ".")
-      sair
-    casofim
+  ret !arg1, arg0.msg("Abrir o que?")
+  ret !r, arg0.msg("Você não vê " + arg1 + ".")
+  casovar r.abrir
+  casose "2"
+    arg0.msg(txtmaimin(arg0) + " já está aberto.")
+    sair
+  casose "3"
+    r.abrir = 2
+    $mens.p(arg0, r)
+    $mens.mtodos1("$P abriu $A.")
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      l.objini.cmd_abriuobj(arg0, r, arg1)
+    efim
+    sair
+  casose "4"
+    arg0.msg(txtmaimin(r.nome) + " está trancado.")
+    sair
+  casose
+    arg0.msg("Não foi possível abrir " + r.nome + ".")
+    sair
+  casofim
 
 func escrdir # Abrir uma porta
   listaobj l
@@ -227,7 +224,7 @@ func escrobj # Fechar um item
   nomeobj n # Para reconhecer os itens
 # Procura o item
   n.ini(arg1, 1)
-  epara i = arg0.dono.dentro1, i, i.depois
+  epara i = arg0.dono.dentro1.ini, i, i.depois
     sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
@@ -243,28 +240,25 @@ func escrobj # Fechar um item
     ret l.objini.cmd_fecharobj(arg0, r, arg1), nulo
   efim
 # Tenta fechar o item
-  se arg1 == ""
-    arg0.msg("Fechar o que?")
-  senao !r
-    arg0.msg("Você não vê " + arg1 + ".")
-  senao
-    casovar r.abrir
-    casose "3"
-    casose "4"
-      arg0.msg(txtmaimin(r.nome) + " já está fechado.")
-      sair
-    casose "2"
-      r.abrir = 3
-      $mens.p(arg0, r)
-      $mens.mtodos1("$P fechou $A.")
-      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-        l.objini.cmd_fechouobj(arg0, r, arg1)
-      efim
-      sair
-    casose
-      arg0.msg("Não foi possível fechar " + r.nome + ".")
-      sair
-    casofim
+  ret !arg1, arg0.msg("Fechar o que?")
+  ret !r, arg0.msg("Você não vê " + arg1 + ".")
+  casovar r.abrir
+  casose "3"
+  casose "4"
+    arg0.msg(txtmaimin(r.nome) + " já está fechado.")
+    sair
+  casose "2"
+    r.abrir = 3
+    $mens.p(arg0, r)
+    $mens.mtodos1("$P fechou $A.")
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      l.objini.cmd_fechouobj(arg0, r, arg1)
+    efim
+    sair
+  casose
+    arg0.msg("Não foi possível fechar " + r.nome + ".")
+    sair
+  casofim
 
 func escrdir # Fechar uma porta
   listaobj l
@@ -289,3 +283,175 @@ func escrdir # Fechar uma porta
     arg0.msg("Porta já está fechada.")
     sair
   casofim
+
+
+classe cmd_levantar
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Sentar\b\nSintaxe: LEVANTAR\nFica em pé."
+
+func escr
+# Checa posição
+  casovar arg0.posicao
+  casose "5" # Descansando
+  casose "6" # Sentado
+    sair
+  casose "8" # Em pé
+    ret arg0.msg("\c9Você já está em pé.\b")
+  casose # Outras posições
+    ret arg0.msg(arg0.erropos)
+  casofim
+# Ficar em pé
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_levantar(arg0), nulo
+  efim
+  arg0.poslugar.remove
+  arg0.posicao = 8
+  $mens.p(arg0)
+  $mens.mtodos1("$P levantou-se.")
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_levantou(arg0)
+  efim
+
+
+classe cmd_sentar
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Sentar\b\n\
+Sintaxe: SENTAR [objeto]\n\
+Senta-se no chão. Com o nome de um objeto, tenta sentar no objeto."
+
+func escr
+  ref r
+# Checa posição
+  casovar arg0.posicao
+  casose "5" # Descansando
+    r = arg0.poslugar.objlista
+    sair !arg1
+    ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+  casose "6" # Sentado
+    ret arg0.msg("\c9Você já está sentad" + misc:sletra[arg0.sexo] + ".\b")
+  casose "8" # Em pé
+    sair
+  casose # Outras posições
+    ret arg0.msg(arg0.erropos)
+  casofim
+# Obtém aonde quer se sentar
+  se arg1
+    listaitem i # Para procurar o item
+    nomeobj n # Para reconhecer os itens
+    n.ini(arg1, 1)
+    epara i = arg0.dono.dentro1.ini, i, i.depois
+      sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    r = i.obj
+  fimse
+  listaobj l
+# Sentar em algum objeto
+  se r
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_sentarobj(arg0, r, arg1), nulo
+    efim
+    txt100 nome
+    nome = misc:sum[r.sexo] + " " + r.nome + "."
+    ret !r.i_perso, arg0.msg("Não é possível sentar-se em " + nome)
+    ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
+    arg0.poslugar.remove
+    arg0.poslugar = r.persolugar.addfim(arg0)
+    arg0.posicao = 6
+    $mens.p(arg0, nulo, r)
+    $mens.mtodos1("$P sentou-se em $u $o.")
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      l.objini.cmd_sentouobj(arg0, r, arg1)
+    efim
+# Sentar-se num objeto que não existe
+  senao arg1
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_sentarobj(arg0, nulo, arg1), nulo
+    efim
+    arg0.msg("Você não vê " + arg1 + ".")
+    ret
+# Sentar-se no chão
+  senao
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_sentarchao(arg0), nulo
+    efim
+    arg0.poslugar.remove
+    arg0.posicao = 6
+    $mens.p(arg0)
+    $mens.mtodos1("$P sentou-se.")
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_sentouchao(arg0)
+    efim
+
+
+classe cmd_descansar
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Sentar\b\n\
+Sintaxe: DESCANSAR [objeto]\n\
+Descansa no chão. Com o nome de um objeto, tenta descansar no objeto."
+
+func escr
+  ref r
+# Checa posição
+  casovar arg0.posicao
+  casose "5" # Descansando
+    ret arg0.msg("\c9Você já está descansando.\b")
+  casose "6" # Sentado
+    r = arg0.poslugar.objlista
+    sair !arg1
+    ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+  casose "8" # Em pé
+    sair
+  casose # Outras posições
+    ret arg0.msg(arg0.erropos)
+  casofim
+# Obtém aonde quer descansar
+  se arg1
+    listaitem i # Para procurar o item
+    nomeobj n # Para reconhecer os itens
+    n.ini(arg1, 1)
+    epara i = arg0.dono.dentro1.ini, i, i.depois
+      sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    r = i.obj
+  fimse
+  listaobj l
+# Descansar em algum objeto
+  se r
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_descansarobj(arg0, r, arg1), nulo
+    efim
+    txt100 nome
+    nome = misc:sum[r.sexo] + " " + r.nome + "."
+    ret !r.i_perso, arg0.msg("Não é possível descansar em " + nome)
+    ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
+    arg0.poslugar.remove
+    arg0.poslugar = r.persolugar.addfim(arg0)
+    arg0.posicao = 5
+    $mens.p(arg0, nulo, r)
+    $mens.mtodos1("$P descansa em $u $o.")
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      l.objini.cmd_descansouobj(arg0, r, arg1)
+    efim
+# Descansar num objeto que não existe
+  senao arg1
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_descansarobj(arg0, nulo, arg1), nulo
+    efim
+    arg0.msg("Você não vê " + arg1 + ".")
+    ret
+# Descansar no chão
+  senao
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_descansarchao(arg0), nulo
+    efim
+    arg0.poslugar.remove
+    arg0.posicao = 5
+    $mens.p(arg0)
+    $mens.mtodos1("$P descansa.")
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_descansouchao(arg0)
+    efim

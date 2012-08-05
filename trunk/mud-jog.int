@@ -364,9 +364,12 @@ inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 const jogsav = 1 # Necessário para salvar o personagem do jogador
 inttempo salvarev # Para salvar o jogo de tempos em tempos
+sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
+sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
 
 func ini # Objeto foi criado
+  tempojogo1 = 864000
   nivel = 1
   comum_persoanimal:ini
 
@@ -385,6 +388,9 @@ func fechou # Executado quando o objeto sock é apagado
 
 func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
   senha ? sock.p_mudasenha1 : sock.p_mudasenha2
+
+func tempojogo1_exec
+  tempojogo1 = 864000, tempojogo2 += 1
 
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar

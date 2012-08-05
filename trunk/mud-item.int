@@ -22,9 +22,7 @@ func fim # Objeto foi apagado
   comum_obj:fim
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
-  evento.limpar
-  dono = arg0
-  cmd_mudadono
+  evento.limpar, cmd_mudadono(arg0), dono = arg0
 
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
@@ -70,9 +68,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
     r.objtot += arg1, r.ajustapeso
     apagar(este)
   senao # Senão, apenas muda o dono
-    evento.limpar
-    dono = arg0
-    cmd_mudadono
+    evento.limpar, cmd_mudadono(arg0), dono = arg0
   fimse
 
 func vestir # Veste o item, arg0=posição
@@ -104,6 +100,25 @@ func vestir # Veste o item, arg0=posição
     r.dono = dono, r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
   fimse
+
+
+classe comum_itemperso
+herda comum_item
+# Itens em que personagens podem sentar-se e deitar-se
+listaobj persolugar # Quem está sentado ou deitado
+const i_perso = 1 # 1=pode sentar, 2=pode sentar e deitar
+const i_lugar = 1 # Quantos personagens podem sentar
+# Cada personagem deitado ocupa três vagas de i_lugar
+
+func ini # Objeto foi criado (arg1 = quantidade)
+  comum_obj:ini
+  arg0 && mudadono(arg0)
+
+func fim # Objeto foi apagado
+  persolugar.limpar, comum_obj:fim
+
+func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
+  persolugar.limpar, evento.limpar, cmd_mudadono(arg0), dono = arg0
 
 
 classe i_borracha
