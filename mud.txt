@@ -1,7 +1,7 @@
 Índice
 
 1. Organização dos arquivos e classes
-2. Envio de mensagens formatadas (casa-mens.int)
+2. Envio de mensagens formatadas (mud-mens.int)
 3. Variáveis dinâmicas de personagens, salas e itens
 4. Comum a salas, personagens e itens (mud-comum.int)
 5. Salas (mud-sala.int)
@@ -91,7 +91,7 @@ Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
 
 
-2. Envio de mensagens formatadas (casa-mens.int)
+2. Envio de mensagens formatadas (mud-mens.int)
 
 Para enviar uma mensagem formatada a um ou mais personagens, usa-se
 a classe 'mens', contida no arquivo 'mud-mens.int'.
@@ -229,8 +229,10 @@ Adiciona texto com descrição dos itens para um jogador
 
 5.12. func ver_[nome do a descrição]( jogador )
 É executada quando um personagem tecla ver seguido de um nome qualquer.
-Para mostrar a descrição, enviar mensagens para arg0 com
-arg0.msg("texto") e retornar 1 (com ret 1)
+Exemplo de como enviar uma descrição:
+func ver_placa # Chamado quando o jogador tecla: ver placa
+arg0.msg("Você olha para uma placa vazia.")
+ret 1 # Indica que processou o comando
 
 
 6. Personagens e itens
@@ -333,12 +335,13 @@ Para chamar recalc_exec quando necessário
 7.12. func recalc_exec
 Ajusta variáveis, principalmente batalha
 
-7.13. func acertaposic
+7.13. func acertapos
 Acerta posição do personagem, conforme pontos de vida e batalha
-Chamando com acertaposic(1), chama a função morreu se pvida=0
+Para checar se morreu, chamar com: acertapos(1)
 
 7.14. func batalhafim
 Encerra a batalha
+Para checar se morreu, chamar com: batalhafim(1)
 
 7.15. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
@@ -453,8 +456,8 @@ Quando um personagem digita algo, muda de sala ou ocorre qualquer outro
 evento, é executada uma função qualquer de todos os objetos dessa lista.
 Dessa forma é possível personalizar o comportamento de itens, salas, etc.
 
-O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_falar'
-corresponde ao comando 'falar'.
+O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_pegar'
+corresponde ao comando 'pegar'.
 
 Para saber quais são as listas envolvidas, basta verificar os argumentos
 da função, mais especificamente os personagens, os itens e as salas.
@@ -483,9 +486,9 @@ Jogador entrou na sala. É chamado logo após 'cmd_chegou', se for jogador.
 Esse evento em particular é executado apenas para a sala e para todos os
 personagens que estiverem na mesma sala.
 
-func cmd_mudadono
-O próprio personagem ou um item mudou de dono. Esse evento é gerado somente
-para o próprio objeto, quando a função mudadono é executada.
+func cmd_mudadono(novo dono)
+O próprio personagem ou um item está mudando de dono. Esse evento é gerado
+somente para o próprio objeto, quando a função mudadono é executada.
 
 func cmd_recalc1(personagem)
 Chamado para o próprio personagem, por func recalc_exec, para ajustar
@@ -510,6 +513,13 @@ Abriu ou fechou porta na direção especificada.
 func cmd_abriuobj(personagem, item, texto)
 func cmd_fechouobj(personagem, item, texto)
 Abriu ou fechou um item.
+
+func cmd_levantou(personagem)
+func cmd_sentouchao(personagem)
+func cmd_descansouchao(personagem)
+func cmd_sentouobj(personagem, item, texto)
+func cmd_descansouobj(personagem, item, texto)
+Ficou em pé, começou a descansar ou sentou-se.
 
 
 12. Eventos condicionais
@@ -567,10 +577,17 @@ Chamado quando um personagem vai realizar um ataque a outro.
 Use cmd_atkenv quando for o personagem atacando e cmd_atkrec quando for
 o personagem que recebe o ataque.
 
+func cmd_levantar(personagem)
+func cmd_sentarchao(personagem)
+func cmd_descansarchao(personagem)
+func cmd_sentarobj(personagem, item, texto)
+func cmd_descansarobj(personagem, item, texto)
+Quer ficar em pé, descansar ou sentar-se.
+
 
 13. Lista de itens pendentes
 
-Sentar-se, deitar-se e levantar-se
+Opção na sala para não permitir soltar itens ou para virarem pó
 Valor em moedas
 Volume que cabe dentro, ou 0 se não for container
 Quantos litros cabe, ou 0 se não for vasilhame

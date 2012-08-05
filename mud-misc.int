@@ -137,6 +137,47 @@ func atktipo # Tipos de golpes
   casofim
   ret 0 # Tipo desconhecido: golpe normal
 
+func atknome # Retorna o nome do ataque a partir do tipo
+  casovar arg0
+  casose "0"
+    ret "contusão"
+  casose "1"
+    ret "luta"
+  casose "2"
+    ret "cortante"
+  casose "3"
+    ret "perfurante"
+  casose "4"
+    ret "fogo"
+  casose "5"
+    ret "água"
+  casose "6"
+    ret "gelo"
+  casose "7"
+    ret "terra"
+  casose "8"
+    ret "pedra"
+  casose "9"
+    ret "aéreo/vento"
+  casose "10"
+    ret "luz"
+  casose "11"
+    ret "trevas"
+  casose "12"
+    ret "elétrico"
+  casose "13"
+    ret "vegetal"
+  casose "14"
+    ret "psíquico"
+  casose "15"
+    ret "inseto"
+  casose "16"
+    ret "fantasma"
+  casose "17"
+    ret "dragão"
+  casofim
+  ret "desconhecido"
+
 func tipo_normal # Contusão/Normal
   deftipo.1 -= 2 # luta
   deftipo.2 -= 2 # cortante
@@ -299,30 +340,32 @@ func tempo # Eventos de tempo (cria objeto), vide classe evtempo
 func separa # Separa o nome do objeto do nome do destino
 # arg0 = texto completo
 # Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo
-  casovar intsub(arg0)
+  txt200 x
+  x = txtremove(arg0, "EMDSA")
+  casovar intsub(x)
   casose "0"
   casose "1"
-    misc:sep1 = arg0
+    misc:sep1 = txttroca(x, "_", " ")
     misc:sep2 = ""
     ret
   casose "2"
-    se txt1(arg0) != int(txt1(arg0))
-      misc:sep1 = txt1(arg0)
-      misc:sep2 = txt2(arg0)
+    se txt1(x) != int(txt1(x))
+      misc:sep1 = txttroca(txt1(x), "_", " ")
+      misc:sep2 = txttroca(txt2(x), "_", " ")
     senao
-      misc:sep1 = arg0
+      misc:sep1 = txttroca(x, "_", " ")
       misc:sep2 = ""
     fimse
     ret
   casose "3"
-    misc:sep1 = txtsub(arg0, 0, 2)
-    misc:sep2 = txtsub(arg0, 2)
+    misc:sep1 = txttroca(txtsub(x, 0, 2), "_", " ")
+    misc:sep2 = txttroca(txtsub(x, 2), "_", " ")
     ret
   casose
     uint8 tam
     tam = intsub(arg0) - 1
-    misc:sep1 = txtsub(arg0, 0, tam)
-    misc:sep2 = txtsub(arg0, tam)
+    misc:sep1 = txttroca(txtsub(x, 0, tam), "_", " ")
+    misc:sep2 = txttroca(txtsub(x, tam), "_", " ")
   casofim
 
 func sepitem # Procura o item destino
@@ -408,10 +451,7 @@ func cmd_fim # Personagem saiu do jogo
   apagar(este)
 
 func tempo1_exec # Executa eventos
-  se !obj
-    apagar(este)
-    ret
-  fimse
+  ret !obj, apagar(este)
   prog p
   uint32 x
   uint32 v

@@ -30,7 +30,7 @@ func msg
 # tela.msg(arg0 + "\n")
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    item.obj.jogconfig.19 && item.obj.msg("(mudler) " + arg0)
+    item.obj.jogconfig.19 && item.obj.msg("(mudler)\n" + arg0)
   efim
 
 func passofunc_exec # Próximo passo para alterar programa
@@ -198,10 +198,7 @@ func passo5 # Apaga as classes pendentes e inicializa outras classes
 # Mensagem na tela
   mudarcl.limpar
   apagarcl.limpar
-  se t1
-    msg("MUDANÇAS:\n" + t1.remove(1000))
-  senao
-    msg("MUDANÇAS:\nNada mudou")
+  msg(t1 ? t1.remove(1000) : "Nada mudou")
   fimse
   ret 1
 

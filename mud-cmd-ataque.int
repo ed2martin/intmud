@@ -16,7 +16,7 @@ uint8 result # Resultado do ataque, usado em execgolpe e msgefeito
 func txtajuda
   txt100 lin
   lin = "\c2" + txtmaimin(nome) + "\b\n"
-  lin += "Ataque " + misc:nometipo(tipo) + " Força " + ataque + " velocidade " + vel
+  lin += "Ataque \"" + misc:atknome(tipo) + "\", força " + ataque + ", velocidade " + vel
   ret extra ? lin + "\n" + extra : lin
 
 func escr # Atacar alguém
@@ -59,8 +59,8 @@ func ataca1 # arg0 ataca arg1
   velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, ataque) # Ataca
   result && $mens.p(arg0, arg1) + $mens.mtodos1(msgatk + msgefeito(arg1))
-  arg1.persobat.pvida == 0 && arg1.persobat.morreu
-  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+  arg1.persobat.acertapos(1)
+  arg0.persobat.acertapos(1)
 
 func ataca2 # arg0 ataca todos dividindo a força do ataque
 # arg1 é o primeiro alvo
@@ -79,15 +79,15 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
-    r.pvida == 0 && r.morreu
+    r.acertapos(1)
   efim
 # Ataca o alvo
   r = l.objfim
   velgolpe(arg0, r) # Tempo do golpe
   execgolpe(arg0, r, atk) # Ataca
   result && $mens.p(arg0, r) + $mens.mtodos1(msgatk + msgefeito(r))
-  r.pvida == 0 && r.morreu
-  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+  r.acertapos(1)
+  arg0.persobat.acertapos(1)
 
 func ataca3 # arg0 ataca todos sem dividir a força do ataque
 # arg1 é o primeiro alvo
@@ -104,15 +104,15 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, ataque) # Ataca
     result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
-    r.pvida == 0 && r.morreu
+    r.acertapos(1)
   efim
 # Ataca o alvo
   r = l.objfim
   velgolpe(arg0, r) # Tempo do golpe
   execgolpe(arg0, r, atk) # Ataca
   result && $mens.p(arg0, r) + $mens.mtodos1(msgatk + msgefeito(r))
-  r.pvida == 0 && r.morreu
-  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+  r.acertapos(1)
+  arg0.persobat.acertapos(1)
 
 func msgefeito # Gera mensagem de como o golpe acertou
 # arg0 = personagem alvo, se houver
@@ -252,7 +252,7 @@ const extra = "Golpe físico de força"
 
 classe cmd_chutar
 herda comando_ataque
-const nome = "Socar"
+const nome = "Chutar"
 const msgatk = "$R chuta $c"
 const tipo = 0 # Normal
 const ataque = 100
@@ -275,5 +275,4 @@ const extra = "Ataque automático"
 func ataca # arg0 ataca arg1
   execgolpe(arg0, arg1, ataque) # Ataca
   result && $mens.p(arg0, arg1) + $mens.mtodos1(msgatk + msgefeito(arg1))
-  arg1.persobat.pvida == 0 && arg1.persobat.morreu
-  arg0.persobat.pvida == 0 && arg0.persobat.morreu
+  arg1.acertapos(1), arg0.acertapos(1)

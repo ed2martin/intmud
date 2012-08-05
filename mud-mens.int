@@ -304,25 +304,25 @@ func opcmin_s # Gênero do personagem
     ret sexoC[perso.sexo] + arg0
 
 func opcmai_t # Gênero do alvo
-  se perso.perso
+  se alvo.perso
     ret sexoB[alvo.sexo] + arg0
   senao
     ret sexoD[alvo.sexo] + arg0
 
 func opcmin_t # Gênero do alvo
-  se perso.perso
+  se alvo.perso
     ret sexoA[alvo.sexo] + arg0
   senao
     ret sexoC[alvo.sexo] + arg0
 
 func opcmai_u # Gênero do objeto
-  se perso.perso
+  se obj.perso
     ret sexoB[obj.sexo] + arg0
   senao
     ret sexoD[obj.sexo] + arg0
 
 func opcmin_u # Gênero do objeto
-  se perso.perso
+  se obj.perso
     ret sexoA[obj.sexo] + arg0
   senao
     ret sexoC[obj.sexo] + arg0
