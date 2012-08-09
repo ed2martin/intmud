@@ -345,27 +345,27 @@ func separa # Separa o nome do objeto do nome do destino
   casovar intsub(x)
   casose "0"
   casose "1"
-    misc:sep1 = txttroca(x, "_", " ")
+    misc:sep1 = x
     misc:sep2 = ""
     ret
   casose "2"
     se txt1(x) != int(txt1(x))
-      misc:sep1 = txttroca(txt1(x), "_", " ")
-      misc:sep2 = txttroca(txt2(x), "_", " ")
+      misc:sep1 = txt1(x)
+      misc:sep2 = txt2(x)
     senao
-      misc:sep1 = txttroca(x, "_", " ")
+      misc:sep1 = x
       misc:sep2 = ""
     fimse
     ret
   casose "3"
-    misc:sep1 = txttroca(txtsub(x, 0, 2), "_", " ")
-    misc:sep2 = txttroca(txtsub(x, 2), "_", " ")
+    misc:sep1 = txtsub(x, 0, 2)
+    misc:sep2 = txtsub(x, 2)
     ret
   casose
     uint8 tam
     tam = intsub(arg0) - 1
-    misc:sep1 = txttroca(txtsub(x, 0, tam), "_", " ")
-    misc:sep2 = txttroca(txtsub(x, tam), "_", " ")
+    misc:sep1 = txtsub(x, 0, tam)
+    misc:sep2 = txtsub(x, tam)
   casofim
 
 func sepitem # Procura o item destino

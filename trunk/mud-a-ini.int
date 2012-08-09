@@ -8,15 +8,13 @@ herda sala
 const s_terreno = 1
 const s_luta = 1
 const s_item = 1
-
-
-classe p_anao
-herda comum_persobat
-const nome = "anão"
-const ident = "anão"
-const sexo = 1
-const descpos = "Um anão está aqui."
-const descver = "Você não vê nada de especial."
+# classe p_anao
+# herda comum_persobat
+# const nome = "anão"
+# const ident = "anão"
+# const sexo = 1
+# const descpos = "Um anão está aqui."
+# const descver = "Você não vê nada de especial."
 # const p_agressivo = 1
 
 
@@ -28,7 +26,7 @@ const descpos = "Aqui tem um diamante azul."
 const pesoobj = 200
 
 func cmd_mudadono # Objeto mudou de dono
-  se dono && dono.perso == arg0.perso
+  se dono.perso
     apagar(este)
     $mens.p(dono)
     $mens.mvis1("Diamante azul vira pó.")
@@ -97,20 +95,21 @@ const nome = "anão"
 const sexo = 1
 const perso = 2 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 70000
+const persobat = este # Personagem usado na batalha
 
 func cmd_jog # Jogador chegou na mesma sala
   arg0.evento.addfim(este) # Receber eventos dos jogadores
 
 func cmd_atacar
   se "p_ini_anao" == arg1
-    $mens.p(arg0)
-    $mens.mtodos1("$P soca Anão, 27 de 27")
+    $mens.p(arg0, arg1)
+    $mens.mtodos1(arg2.msgatk + ", 27")
     arg0.msg("Anão: Tudo bem, você venceu, pode passar.")
-    arg0.var.z_atacou_anao = 1
+    arg0.var.j_atacou_anao = 1
     ret 1
 
 func cmd_s
-  se !arg0.var.z_atacou_anao
+  se !arg0.var.j_atacou_anao
     arg0.msg("Anão: Se quiser passar por mim terá de me pagar 10 galões de ouro.")
     arg0.msg("Aí eu vou tirar na sorte se deixo ou não você passar.")
     arg0.msg("Você não me mete medo. Eu sei brigar muito bem.")
@@ -275,23 +274,26 @@ const s_titulo = "Região leste da ilha"
 const s_desc = "Não há nada aqui, somente o chão de terra que se estende à oeste.\n\
 Nas outras direções o chão termina e começa uma neblina branca.\n\
 Acima da neblina só se vê o céu azul. O chão nessa região também é azul,\n\
-mas há um [desenho] apagado. Para ver tecle ver desenho."
+mas há um [desenho] apagado (você pode ver teclando ver desenho)."
 const dir_o = $s_ini003
 const dir_n = $s_ini005
 const dir_s = $s_ini005
 const dir_l = $s_ini005
+const dir_b = $s_ini022
+const inv_b = 1
 
 func entrou
   ver(arg0)
 
 func cmd_jog
   arg0.evento.addfim(este) # Receber eventos dos jogadores
-  !dentro2.objini("p_anao") && criar("p_anao", este, 2, "h_chutar=1,h_socar=1")
+# !dentro2.objini("p_anao") && criar("p_anao", este, 2, "h_chutar=1,h_socar=1")
 
 func ver_desenho
-  arg0.msg("Um diamante azul está enterrado. Para desenterrar tecle desenterrar")
-  arg0.msg("Nos lugares em que se pode enterrar você pode enterrar teclando enterrar")
-  arg0.msg("seguido do nome do objeto.")
+  arg0.msg("O desenho é o mapa de uma pequena ilha, com uma palmeira seca no meio,")
+  arg0.msg("um arbusto no norte, uma cabana ao sul e uma placa à oeste.")
+  arg0.msg("Curiosamenente, há uma escada para baixo colada na borda leste da ilha,")
+  arg0.msg("praticamente na altura do chão.")
   ret 1
 
 func cmd_desenterrar
@@ -354,13 +356,14 @@ classe s_ini008
 herda b_ini
 const s_titulo = "Região sul da ilha"
 const s_desc = "Afastando-se do centro da ilha, em direção ao sul, há uma velha cabana.\n\
-Nota-se uma pequena [placa] em cima da porta (para ver o que está escrido\n\
+Nota-se uma pequena [placa] em cima da porta (para ver o que está escrito\n\
 na placa tecle ver placa)."
 const dir_n = $s_ini003
 const dir_s = $s_ini009
 const dir_l = $s_ini005
 const dir_o = $s_ini005
 const portaini_s = 2 # Inicialmente fechado
+const portanome_s = "a porta da cabana"
 inttempo fechaporta # Para fazer o vento bater a porta
 
 func ver_placa
@@ -379,8 +382,8 @@ func cmd_abriudir
 func fechaporta_exec
   se porta_s == 1
     mudaporta("s", 2)
-    msg("O vento bateu a porta.")
-    $s_ini009.msg("O vento bateu a porta.")
+    msg("O vento bateu a porta da cabana.")
+    $s_ini009.msg("O vento bateu a porta da cabana.")
 
 
 classe s_ini009
@@ -390,6 +393,7 @@ const s_desc = "Há uma janela. A vista é do céu, e no lugar do chão, há uma\n\
 névoa branca como neve. Há uma pessoa esquisita aqui."
 const dir_n = $s_ini008
 const portaini_n = 2 # Inicialmente fechado
+const portanome_n = "a porta da cabana"
 
 func ini
   sala:ini, evento.addfim(este) # Receber eventos da sala
@@ -442,7 +446,7 @@ func cmd_socar
     ret 1
   senao
     $mens.p(arg0)
-    $mens.mvis1("$P soca Silva, 250 de 250")
+    $mens.mvis1("$P soca Silva, 250")
     msg("Silva: Nada mal para quem está começando!")
     msg("Silva: Agora vou te ensinar um golpe um pouco mais forte.")
     $mens.mvis1("Silva ensina $P a chutar.")
@@ -466,7 +470,7 @@ func cmd_chutar
 
 classe s_ini010
 herda b_ini
-const s_titulo = "Região sul da ilha"
+const s_titulo = "Região norte da ilha"
 const s_desc = "Há um pequeno arbusto aqui. Olhando mais atentamente, você nota uma\n\
 escada para baixo escondida pelo arbusto. É uma escada comprida, de modo\n\
 que ela desaparece na névoa. Nas outras direções você só vê uma névoa\n\
@@ -579,7 +583,7 @@ classe s_ini017
 herda b_ini
 const s_titulo = "Pequena ilha"
 const s_desc = "Ao norte há uma ponte de cordas, que não parece muito segura. A madeira\n\
-que compõe o chão da ponte está bastante gasta, e as cortas não estão\n\
+que compõe o chão da ponte está bastante gasta, e as cordas não estão\n\
 em muito melhor estado."
 const dir_o = $s_ini014
 const dir_n = $s_ini018
@@ -645,7 +649,6 @@ const pesoobj = 80000
 func cmd_jog # Jogador chegou na mesma sala
   se !arg0.dentro1.objini("i_diamante_amarelo") # Se não tem diamante amarelo
     arg0.evento.addfim(este) # Receber eventos do jogador
-    arg0.var.z_ini_resp_ = 0 # Limpa variável para checar perguntas
     misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou10
@@ -655,12 +658,12 @@ func entrou10
 func cmd_sentouchao
   arg0.msg("Joaquim: No chão não! Sente-se nesse tronco de árvore.")
   arg0.msg("Primeiro tecle LEVANTAR para ficar em pé.")
-  arg0.var.z_ini_chao_ = 1
+  arg0.var.d_sentouchao_ = 1
 
 func cmd_levantou
-  se arg0.var.z_ini_chao_ == 1
+  se arg0.var.d_sentouchao_ == 1
     arg0.msg("Joaquim: Isso. Agora sente-se no tronco. Tecle SENTAR TRONCO")
-    arg0.var.z_ini_chao_ = 0
+    arg0.var.d_sentouchao_ = 0
 
 func cmd_descansouchao
   arg0.msg("Joaquim: Descansar no tronco é muito melhor.")
@@ -681,25 +684,25 @@ func pergunta55
   arg0.msg("Joaquim: Você parece saber das coisas. Então vou fazer umas perguntas.")
 
 func pergunta80
-  arg0.var.z_ini_resp_ = 1
+  arg0.var.d_resposta_ = 1
   arg0.msg("Joaquim: Tem um lugar nessas ilhas que tem muitos diamantes vermelhos.")
   arg0.msg("Quantos tem nesse lugar? Tecle falar seguido de um número de 1 a 100.")
 
 func cmd_falou
-  casovar arg0.var.z_ini_resp_
+  casovar arg0.var.d_resposta_
   casose "0" # 0 = ainda não está fazendo perguntas
     ret
   casose "1"
-    arg1 != "78" && (arg0.var.z_ini_resp_ = 11)
+    arg1 != "78" && (arg0.var.d_resposta_ = 11)
   casose "11"
-    arg0.var.z_ini_resp_ += 1
+    arg0.var.d_resposta_ += 1
     arg0.msg("Joaquim: O Sr. Silva tem 250 de vida, mas qual o nível dele?")
     arg0.msg("É outro número de 1 a 100")
     ret
   casose "2"
-    arg1 != "27" && (arg0.var.z_ini_resp_ = 12)
+    arg1 != "27" && (arg0.var.d_resposta_ = 12)
   casose "12"
-    arg0.var.z_ini_resp_ += 1
+    arg0.var.d_resposta_ += 1
     arg0.msg("Joaquim: Quando você chegou na ilha, que habilidade você já conhecia?")
     ret
   casose "3"
@@ -716,8 +719,41 @@ func cmd_falou
     arg0.msg("Volte aqui quando souber todas as respostas.")
     misc:tempo("errou", arg0) # Dispara funções 'errou'
   casofim
-  arg0.var.z_ini_resp_ = 0
   arg0.evento.remove(este) # Deixa de receber eventos do jogador
 
 func errou80
   arg0.msg("Joaquim: O que está esperando? Vá atrás das respostas.")
+
+
+classe s_ini022
+herda b_ini
+const s_titulo = "Escada"
+const s_desc = "A escada está bem firme, presa na rocha à leste. Mas infelizmente,\n\
+é menor que parecia à primeira vista. Depois de 3 metros, a escada\n\
+simplesmente acaba no nada. O vento aqui é um pouco forte, e não seria\n\
+surpresa se alguma coisa caísse de cima."
+const dir_c = $s_ini006
+
+func cmd_jog # Jogador chegou na mesma sala
+# se !arg0.dentro1.objini("i_diamante_azul") # Se não tem diamante azul
+  arg0.evento.addfim(este) # Receber eventos do jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou100
+  $mens.p(arg0)
+  $mens.mtodos1("Você vê um diamante azul caindo.")
+  criar("i_diamante_azul", este)
+
+func entrou130
+  se dentro1.objini("i_diamante_azul")
+    $mens.p(arg0)
+    $mens.mtodos1("Diamante azul desaparece ao longe enquanto cai.")
+    apagar(dentro1.objini("i_diamante_azul"))
+
+func entrou0 # Fim dos eventos 'entrou'
+  apagar(dentro1.objini("i_diamante_azul"))
+
+func cmd_pegarobj
+  se "i_diamante_azul" == arg2 && arg0.dentro1.objini("i_diamante_azul")
+    arg0.msg("Você tenta pegar, mas não consegue. O diamante está um pouco longe.")
+    ret 1

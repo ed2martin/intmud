@@ -2321,28 +2321,33 @@ Retorna o nome da variável (um texto) ou "" se não existe.
 21.9. mudar("variável=valor")
 Cria uma variável ou muda se já existir.
 Para apagar variável, basta atribuir um texto vazio.
-Exemplo, mudar("x=") ou mudar("x") apaga a variável x.
+Nota: é possível fornecer mais de uma variável (vários argumentos).
 
 21.10. limpar
 Apaga todas as variáveis do textovar.
 
-21.11. limpar(<texto>)
+21.11. limpar([texto])
 Apaga todas as variáveis cujos nomes começam com o texto.
+Nota: pode ser fornecido vários textos (vários argumentos).
 
-Outros nomes:
+2.12. Outros nomes:
 Correspondem a uma variável de textovar, do tipo texto.
 Para a variável ser tratada como numérica, acrescentar sublinhado
 após o nome da variável.
 
-Exemplos:
+2.13. Exemplos
+
 textovar v
 v.mudar("x=teste") # Cria variável x faz ser "teste"
-v.x = "teste" # Mesma coisa que v.mudar, acima
+v.x = "teste" # Mesma coisa, faz x ser "teste"
+v.mudar("x=") # Apaga a variável x
+v.mudar("x") # Mesma coisa, apaga a variável x
 v.mudar("y=10") # Cria variável y = 10
 v.y_ = 10 # Mesma coisa, porém y é numérico, enquanto que x é texto
 v.y_ += 2 # Faz a variável y ser 12 (10 + 2)
-# Exemplo de como mostrar todas as variáveis de um textovar
-telatxt tela
+v.mudar("y=teste", "z=12") # Faz a variável y ser "teste" e z ser "12"
+# As próximas instruções mostram todas as variáveis do textovar v
+telatxt tela # Para mostrar o resultado na tela
 txt80 nome
 epara nome = v.ini, nome, nome = v.depois(nome)
 tela.msg(nome + "=" + v.valor(nome) + "\n")
@@ -2365,6 +2370,8 @@ Para escolher o número do item, acrescentar o número seguido de um
 ponto antes do nome. Exemplo, "2.poção" é a segunda poção.
 Para escolher a quantidade de itens, acrescentar um número seguido
 de espaço antes. Exemplo, "10 poção" significa 10 itens 'poção'.
+São aceitos nomes de itens que possuem espaço no meio, mas nesse caso,
+o espaço é considerado como se fosse um '_' (sublinhado).
 
 [quantidade] é a quantidade máxima de itens que podem ser encontrados.
 Se for omitido, significa apenas um item.

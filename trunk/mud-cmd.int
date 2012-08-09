@@ -29,6 +29,7 @@ func escr
     t1 += txt(txt(item.obj.pnivel) + "      ", 0, 6) + item.obj.nome
     item.obj.sock == nulo && (t1 += "  [Desconectado]")
     item.obj.jogconfig.17 && (t1 += "  [Invis]")
+    arg0.jogconfig.20 && (t1 += "  " + txt(item.obj.dono, 2))
     t0.addfim(t1)
   efim
 # Lista de jogadores sem personagem
@@ -115,7 +116,7 @@ Sintaxe: IDIOMA\n\
 Mostra os idiomas que o seu personagem conhece."
 
 func escr
-  lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
+  lista(arg0, arg0.var, "i_", "Nenhum idioma", "Idiomas")
 
 
 classe cmd_extra
@@ -230,6 +231,7 @@ As opções são:\n\
 const txtajuda2 = "\n\
   \c2SALA\b     Mostra o nome da sala cadastrada antes do título\n\
   \c2QUEM\b     Ocultar a presença no comando quem\n\
+  \c2ONDE\b     O comando QUEM mostra onde cada jogador está no MUD\n\
   \c2INVIS\b    Invisível a não administradores\n\
   \c2AC\b       Participa do canal de comunicação AC (administração)"
 # As próximas constantes são as opções do comando CONFIG
@@ -246,6 +248,7 @@ const opc_sala = 16
 const opc_quem = 17
 const opc_invis = 18
 const opc_ac = 19
+const opc_onde = 20
 
 func escr
   prog p
@@ -315,7 +318,7 @@ func escr
   fimse
   ret arg0.dono.ver_[arg1](arg0), nulo
   nomeobj n
-  l.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
+  l.addfim(arg0.dono.dentro1, arg0.dono.dentro2, arg0.dentro1)
   n.ini(arg1, 1)
   epara nulo, l, l.ini.remove
     se arg0.visivel(l.objini) && n.nome(l.objini.ident)

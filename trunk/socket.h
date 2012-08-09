@@ -28,6 +28,7 @@ public:
             ///< Cria objeto TSocket a partir de endereço e porta
             /**< @param ender  Endereço a conectar
              *   @param porta  Porta
+             *   @param ssl    Se deve usar conexão segura (SSL)
              *   @return Objeto TSocket ou 0 se ocorreu erro
                     (provavelmente endereço inválido) */
     static const char * TxtErro(int erro);

@@ -35,6 +35,7 @@ textotxt comandos # Comandos em espera para serem processados
 func ini
   reinicia
   cnome = "un"
+  jogconfig.bits = 12 # Cores + acentuação
 
 func fim
   perso.fechou
@@ -281,7 +282,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     epara item = l1.ini, item, item.depois
       d.exec = 5000
       !item.obj.dono && !item.obj.jog && apagar(item.obj)
-      item.obj.var.limpar("1"), item.obj.var.limpar("2")
+      item.obj.var.limpar("d_", "j_")
       item.obj.ajustapeso
       item.obj.recalc = 1
     efim
