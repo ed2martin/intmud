@@ -37,6 +37,7 @@ classe cmd_n
 herda comando_mover
 const m_entra = "$P chegou do sul."
 const m_sai = "$P foi para o norte."
+const m_porta = "a porta norte"
 const dir = "n"
 
 
@@ -44,6 +45,7 @@ classe cmd_s
 herda comando_mover
 const m_entra = "$P chegou do norte."
 const m_sai = "$P foi para o sul."
+const m_porta = "a porta sul"
 const dir = "s"
 
 
@@ -51,6 +53,7 @@ classe cmd_l
 herda comando_mover
 const m_entra = "$P chegou do oeste."
 const m_sai = "$P foi para leste."
+const m_porta = "a porta leste"
 const dir = "l"
 
 
@@ -62,6 +65,7 @@ classe cmd_o
 herda comando_mover
 const m_entra = "$P chegou do leste."
 const m_sai = "$P foi para oeste."
+const m_porta = "a porta oeste"
 const dir = "o"
 
 
@@ -73,6 +77,7 @@ classe cmd_c
 herda comando_mover
 const m_entra = "$P chegou de baixo."
 const m_sai = "$P subiu."
+const m_porta = "a passagem para cima"
 const dir = "c"
 
 
@@ -84,6 +89,7 @@ classe cmd_b
 herda comando_mover
 const m_entra = "$P chegou de cima."
 const m_sai = "$P desceu."
+const m_porta = "a passagem para baixo"
 const dir = "b"
 
 
@@ -95,6 +101,7 @@ classe cmd_ne
 herda comando_mover
 const m_entra = "$P chegou do sudoeste."
 const m_sai = "$P foi para o nordeste."
+const m_porta = "a porta nordeste"
 const dir = "ne"
 
 
@@ -102,6 +109,7 @@ classe cmd_no
 herda comando_mover
 const m_entra = "$P chegou do sudeste."
 const m_sai = "$P foi para o noroeste."
+const m_porta = "a porta noroeste"
 const dir = "no"
 
 
@@ -113,6 +121,7 @@ classe cmd_se
 herda comando_mover
 const m_entra = "$P chegou do noroeste."
 const m_sai = "$P foi para o sudeste."
+const m_porta = "a porta sudeste"
 const dir = "se"
 
 
@@ -120,7 +129,8 @@ classe cmd_so
 herda comando_mover
 const m_entra = "$P chegou do nordeste."
 const m_sai = "$P foi para o sudoeste."
-const dir = "se"
+const m_porta = "a porta sudoeste"
+const dir = "so"
 
 
 classe cmd_sw
@@ -196,8 +206,12 @@ func escrdir # Abrir uma porta
     sair
   casose "2"
     arg0.dono.mudaporta(arg1, 1) # Abre a porta
+    txt100 mporta
+    mporta = arg0.dono.portanome_[arg1]
+    !mporta && (mporta = $cmd_[arg1].m_porta)
+    !mporta && (mporta = "uma porta")
     $mens.p(arg0)
-    $mens.mtodos1("$P abriu uma porta.")
+    $mens.mtodos1("$P abriu " + mporta + ".")
     epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
       l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
     efim
@@ -272,8 +286,12 @@ func escrdir # Fechar uma porta
     sair
   casose "1"
     arg0.dono.mudaporta(arg1, 2) # Fecha a porta
+    txt100 mporta
+    mporta = arg0.dono.portanome_[arg1]
+    !mporta && (mporta = $cmd_[arg1].m_porta)
+    !mporta && (mporta = "uma porta")
     $mens.p(arg0)
-    $mens.mtodos1("$P fechou uma porta.")
+    $mens.mtodos1("$P fechou " + mporta + ".")
     epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
       l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
     efim

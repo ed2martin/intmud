@@ -25,6 +25,7 @@ const descpos = "Um jardineiro está sentado aqui."
 const sexo = 1 # 0=feminino, 1=masculino
 
 func cmd_jog # Jogador chegou na mesma sala
+  arg0.evento.addfim(este) # Receber eventos dos jogadores
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou10
@@ -39,6 +40,8 @@ func cmd_mudadono # Receber eventos do próprio personagem
   evento.addfim(este)
 
 func cmd_darobj # Alguém deu algum item
+  telatxt t
+  t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
   se arg2.nome == "pedra"
     apagar(arg2) # Apaga o item
     misc:tempo("deupedra", arg0) # Dispara 'deupedra'
@@ -85,7 +88,7 @@ const s_desc = "Isso é o que restou de um pequeno jardim. Não é grande, mas a gr
 já virou mato, de modo que mal se vê as cercas à sua volta.\n\
 Há uma placa aqui, com os seguintes dizeres:\n\
 Tecle as direções cardeais para ir de um lugar a outro: n s l o\n\
-Há também as direções intermediárias: ne no se so\n\
+Há também as direções colaterais: ne no se so\n\
 Em alguns lugares pode-se ir para cima e para baixo: c b"
 const dir_l = $s_teste003
 

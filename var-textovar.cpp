@@ -177,16 +177,19 @@ bool TTextoVar::FuncLimpar(TVariavel * v)
         Limpar();
         return false;
     }
-    const char * p = v[1].getTxt();
-    TBlocoVar * ini = ProcIni(p);
-    if (ini==0)
-        return false;
-    TBlocoVar * fim = TBlocoVar::RBnext(ProcFim(p));
-    while (ini && ini != fim)
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
     {
-        TBlocoVar * bl = TBlocoVar::RBnext(ini);
-        ini->Apagar();
-        ini = bl;
+        const char * p = v1->getTxt();
+        TBlocoVar * ini = ProcIni(p);
+        if (ini==0)
+            continue;
+        TBlocoVar * fim = TBlocoVar::RBnext(ProcFim(p));
+        while (ini && ini != fim)
+        {
+            TBlocoVar * bl = TBlocoVar::RBnext(ini);
+            ini->Apagar();
+            ini = bl;
+        }
     }
     return false;
 }

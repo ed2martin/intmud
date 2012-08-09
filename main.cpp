@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
     atual = timeGetTime()/100;
 #else
     gettimeofday(&tselect,0);
-    atual = (tselect.tv_sec&0xFFFF)*10 + tselect.tv_usec/100000;
+    atual = tselect.tv_sec*10 + tselect.tv_usec/100000;
 #endif
     while (true)
     {
@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
         tempo = timeGetTime()/100;
 #else
         gettimeofday(&tselect,0);
-        tempo = (tselect.tv_sec&0xFFFF)*10 + tselect.tv_usec/100000;
+        tempo = tselect.tv_sec*10 + tselect.tv_usec/100000;
 #endif
         tempo-=atual;
         if (espera<tempo)

@@ -121,17 +121,21 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         // Copia o texto
         while (*txt==' ')
             txt++;
-        for (x=0; x<(int)sizeof(NomeObj) && *txt; x++,txt++)
-            NomeObj[x] = tabCOMPLETO[*(unsigned char*)txt];
-        while (x>0)
+        for (x=0; x<(int)sizeof(NomeObj) && *txt; x++)
         {
-            if (NomeObj[x-1]!=' ')
-                break;
-            x--;
+            NomeObj[x] = tabCOMPLETO[*(unsigned char*)txt];
+            if (*txt++==' ')
+                while (*txt==' ')
+                    txt++;
         }
+        if (x>0 && NomeObj[x-1]==' ')
+            x--;
         NomeTam = x;
-        if (NomeTam==0)
+        if (x==0)
             Total=0;
+        for (; x>=0; x--)
+            if (NomeObj[x]==' ')
+                NomeObj[x]='_';
         return false;
     }
     return false;
