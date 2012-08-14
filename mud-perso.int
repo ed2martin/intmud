@@ -21,8 +21,7 @@ sav int1 jogconfig.24 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
   comum_obj:ini
-  posicao = pospadr
-  pnivel = arg1
+  posicao = pospadr, pnivel = arg1, p_proc = 1
   arg0 && mudadono(arg0)
   se arg2
     textotxt t
@@ -343,6 +342,14 @@ func atktempo_exec # Encerra a batalha depois de um tempo
     msg("Batalha encerrada.")
     batalhafim(1)
 
+func restaurar # Restaura personagem (HP, mana, etc.)
+  pmana = pmanamax, pmove = pmovemax
+  se !pvida && dono.perso
+    pvida = pvidamax
+    dono.escolhebat # Atualiza persobat
+  senao
+    pvida = pvidamax
+
 func morreu # Procedimentos quando morre
   ref r
 # Jogador: retira toda experiência e transfere jogador para outro lugar
@@ -355,13 +362,16 @@ func morreu # Procedimentos quando morre
       efim
       r.batalhafim
     efim
-    $mens.p(este)
-    $mens.mtodos1("$P morreu.")
-    pvida = pos(pvidamax / 2 - 20) + 2
+    expatual = 0, animal.0.expatual = 0, animal.1.expatual = 0
+    animal.2.expatual = 0, animal.3.expatual = 0, animal.4.expatual = 0
+    animal.5.expatual = 0, animal.6.expatual = 0, animal.7.expatual = 0
+    pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
     pmove = pmovemax / 2
     p_restaura = rand(100, 130)
     batalhafim
+    $mens.p(este)
+    $mens.mtodos1("$P morreu.")
     mudadono(config:salafim)
     salvar # Salva o jogo
     ret
@@ -409,7 +419,7 @@ func persoexp # Ganha experiência por ter vencido um personagem
   real v1
   v1 = intpos(arg0.pnivel - pnivel + 8) / 16
   v1 > 1 && (v1 = 1)
-  ganhaexp(v1 * (arg0.pnivel * 10 + 50) / arg1)
+  ganhaexp(v1 * (arg0.pnivel * 5 + 30) / arg1)
 
 func ganhaexp # Personagem ganha experiência
 # arg0 = experiência
@@ -542,14 +552,14 @@ func p_restaura_exec
     ret
   casofim
   se pvida < pvidamax
-    pvida += pvidamax / recup + 7
+    pvida += pvidamax / recup + 5
     pvida > pvidamax && (pvida = pvidamax)
   fimse
   se pmana < pmanamax
-    pmana += pmanamax / recup + 7
+    pmana += pmanamax / recup + 5
     pmana > pmanamax && (pmana = pmanamax)
   fimse
   se pmove < pmovemax
-    pmove += pmovemax / recup + 12
+    pmove += pmovemax / recup + (pnivel ? 5 : 20)
     pmove > pmovemax && (pmove = pmovemax)
   fimse

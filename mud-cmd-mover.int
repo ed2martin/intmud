@@ -473,3 +473,68 @@ func escr
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouchao(arg0)
     efim
+
+
+classe cmd_fugir
+herda comando_comum, comando_ajuda
+const posic = 7
+const txtajuda = "\b\c3Fugir\b\nSintaxe: FUGIR\nTenta fugir de uma batalha."
+
+func escr
+# Checa posição
+  ret arg0.posicao != 7, arg0.msg("Você não está lutando.")
+  ret arg0.pmove < 5, arg0.msg("Você está sem fôlego.")
+  arg0.p_espera = 5
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_fugir(arg0), nulo
+  efim
+# Checa se consegue fugir
+  real valor
+  listaitem i
+  epara i = arg0.atkrec.ini, i, i.depois
+    valor += i.obj.persobat.precisao
+  efim
+  valor = valor * rand(70, 130) - arg0.persobat.evasao * 100
+  se valor > 0
+    $mens.p(arg0)
+    $mens.mtodos1("$P tenta fugir, mas não consegue.")
+    ret
+  fimse
+# Obtém direção para onde fugir
+  txt10 dir
+  ref r
+  dir = fugirdir(arg0)
+  r = arg0.dono.dir_[dir]
+  se !r || !dir
+    $mens.p(arg0)
+    $mens.mtodos1("$P tenta fugir mas não vê para onde.")
+    ret
+  fimse
+# Foge
+  arg0.pmove -= 5
+  arg0.batalhafim
+  $mens.p(arg0)
+  $mens.mtodos1(txttroca($cmd_[dir].m_sai, " foi ", " fugiu "))
+  arg0.mudadono(r)
+  $mens.mvis2("", $cmd_[dir].m_entra)
+
+func fugirdir # Obtém direção para onde pode fugir
+# Entrada: arg0 = personagem
+# Retorna: direção ou "" se não há para onde fugir
+  txt100 t
+  ref r
+  misc:obj = arg0
+  r = arg0.dono
+  r.dir_n && int(r.porta_n) < 2 && (t += "n ")
+  r.dir_s && int(r.porta_s) < 2 && (t += "s ")
+  r.dir_l && int(r.porta_l) < 2 && (t += "l ")
+  r.dir_o && int(r.porta_o) < 2 && (t += "o ")
+  r.dir_c && int(r.porta_c) < 2 && (t += "c ")
+  r.dir_b && int(r.porta_b) < 2 && (t += "b ")
+  r.dir_ne && int(r.porta_ne) < 2 && (t += "ne ")
+  r.dir_no && int(r.porta_no) < 2 && (t += "no ")
+  r.dir_se && int(r.porta_se) < 2 && (t += "se ")
+  r.dir_so && int(r.porta_so) < 2 && (t += "so ")
+  ret t ? txtsub(t, rand(intsub(t)), 1) : ""
