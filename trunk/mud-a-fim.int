@@ -1,0 +1,47 @@
+classe a_fim
+herda area
+const a_nome = "Quando morre"
+
+
+classe b_fim
+herda sala
+const s_terreno = 1
+const s_luta = 1
+const s_item = 1
+
+
+classe s_fim001
+herda b_fim
+# Altera completamente a descrição da sala
+const descsala = arg0.sexo ? "Você está morto." : "Você está morta."
+
+func cmd_jog
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou50
+  arg0.mudadono($s_fim002)
+
+
+classe s_fim002
+herda b_fim
+const s_titulo = "Salão de espera"
+const s_desc = "O chão está coberto por uma nuvem branca, de modo que você não consegue\n\
+ver onde pisa. Para todos os outros lugares que você olha, só vê o azul\n\
+celeste do céu. Há claridade, mas não é possível saber de onde vem."
+inttempo espera
+
+func cmd_jog # Jogador chegou
+  se espera == 0
+    espera = 10
+
+func espera_exec # Restaura a vida do jogador
+  listaitem item
+  ref r
+  epara item = dentro2.ini, item, item.depois
+    r = item.obj
+    se r.pvida < r.pvidamax / 2
+      r.pvida += 2, espera = 10
+    senao
+      r.mudadono($s_casa001)
+    fimse
+  efim

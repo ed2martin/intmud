@@ -13,6 +13,7 @@ Os tópicos são:\n\
   \c2COMUNICA\b Comunicação com outros jogadores\n\
   \c2INFO\b     Informações sobre o seu personagem\n\
   \c2OBJETOS\b  Manuseio de objetos\n\
+  \c2COMBATE\b  Lutas com outros personagens\n\
   \c2NOMES\b    Digitando nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
 Para sair do MUD tecle \c2FIM\b"
@@ -113,3 +114,15 @@ Nesse caso, CH refere-se a qualquer objeto cujo nome começa com CH."
 classe cmd_sair
 herda comando_ajuda
 const txtajuda = "\b\c3Sair\b\nSintaxe: Sair\nSai do jogo."
+
+
+classe cmd_combate
+herda comando_ajuda
+const txtajuda = "\b\c3Combate\b\n\
+Antes de começar uma luta, você pode checar ter uma ideia da dificuldade\n\
+teclando VER seguido do nome do personagem. Se for muito maior que o seu\n\
+nível, provavelmente é melhor não começar a luta.\n\
+Você pode checar a qualquer momento seus pontos de vida, teclando VIDA.\n\
+Quando esses pontos chegarem a 0, você morre. Assim, se a luta estiver\n\
+desfavorável, pode tentar fugir teclando FUGIR. Mas saiba que algumas\n\
+criaturas podem procurar por você e perseguir."

@@ -322,7 +322,7 @@ func escr
   n.ini(arg1, 1)
   epara nulo, l, l.ini.remove
     se arg0.visivel(l.objini) && n.nome(l.objini.ident)
-      ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
+# ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
       se l.objini.perso
         $mens.p(arg0, l.objini)
         $mens.msgvis2("", "$P olha para $a.")
@@ -335,6 +335,40 @@ func escr
       efim
       t.linhas && t.addini("Equipado com:")
       t.addini(l.objini.descver)
+      txt100 t2
+      t2 = txtmaimin(l.objini.nome)
+      se l.objini.jog
+        t2 += ", jogador nível " + l.objini.pnivel
+      senao txt(l.objini.pnivel)
+        t2 += ", nível " + l.objini.pnivel
+      senao
+        ret arg0.msg2(t2 + ".\n" + t.remove(1000))
+      fimse
+      se txt(l.objini.pvida)
+        casovar intdiv(l.objini.pvida * 6 / l.objini.pvidamax)
+        casose "0"
+          t2 += ", à beira da morte"
+          sair
+        casose "1"
+          t2 += ", sangrando bastante"
+          sair
+        casose "2"
+          t2 += ", muito machucad" + misc:sletra[l.objini.sexo]
+          sair
+        casose "3"
+          t2 += ", bastante machucad" + misc:sletra[l.objini.sexo]
+          sair
+        casose "4"
+          t2 += ", um pouco machucad" + misc:sletra[l.objini.sexo]
+          sair
+        casose "5"
+          t2 += ", possui algumas escoriações"
+          sair
+        casose
+          t2 += ", perfeitamente saudável"
+        casofim
+      fimse
+      ret arg0.msg2(t2 + ".\n" + t.remove(1000))
       se l.objini.jog
         t.addini(txtmaimin(l.objini.nome) + ", jogador nível " + l.objini.pnivel + ".")
       senao txt(l.objini.pnivel)

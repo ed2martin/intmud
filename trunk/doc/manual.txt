@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 10.11.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 10.12.
 
 
 1. SOBRE O INTMUD
@@ -884,19 +884,21 @@ txt3 y # Quantidade máxima de caracteres de 'y' é 3
 y = "bom dia" # Tem o mesmo efeito que y="bom"
 
 10.12. ref <nome da variável>
-Referência para um objeto; corresponde a um objeto qualquer.
-A palavra 'nulo' é usada para indicar que a referência
-não corresponde a nenhum objeto. Quando o objeto é apagado,
-automaticamente a referência passa a ser 'nulo'.
+Referência a um objeto, ou seja, corresponde a um objeto qualquer.
+
+Essa variável passa a ter o valor 'nulo' quando:
+ - É criada;
+ - É atribuído o valor 'nulo';
+ - O objeto correspondente a ela é apagado.
+
 Exemplo:
-ref ref1
-# Cria objeto
-ref1 = criar("teste")
-# Muda variável x do objeto
-ref1.x = 2
-# Faz a referência não corresponder a nenhum objeto
-# mas não apaga o objeto criado
-ref1 = nulo
+ref r0
+# Cria um objeto da classe 'teste' e faz 'r0' corresponder a esse objeto
+r0 = criar("teste")
+# Altera variável 'x' do objeto criado
+r0.x = 2
+# Anula a referência, sem apagar o objeto criado
+r0 = nulo
 
 
 11. IDENTIFICADORES COMUM E SAV
