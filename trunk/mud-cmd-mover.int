@@ -10,8 +10,8 @@ func escr # Executa o comando
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
   listaobj l
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_[dir](arg0), nulo
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_[dir](arg0, arg0.dono), nulo
   efim
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
@@ -142,6 +142,7 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Abrir\b\n\
 Sintaxe: ABRIR <objeto ou direção>\n\
 Abre um objeto ou uma porta."
+const posic = 5
 
 func escr
   txt10 dir
@@ -154,11 +155,11 @@ func escrobj # Abrir um item
 # Procura o item
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
-    sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
     epara i = arg0.dentro1, i, i.depois
-      sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
   fimse
 # Gera eventos
@@ -227,6 +228,7 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Fechar\b\n\
 Sintaxe: FECHAR <objeto ou direção>\n\
 Fecha um objeto ou uma porta."
+const posic = 5
 
 func escr
   txt10 dir
@@ -239,11 +241,11 @@ func escrobj # Fechar um item
 # Procura o item
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
-    sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
     epara i = arg0.dentro1, i, i.depois
-      sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
   fimse
 # Gera eventos
@@ -361,7 +363,7 @@ func escr
     nomeobj n # Para reconhecer os itens
     n.ini(arg1, 1)
     epara i = arg0.dono.dentro1.ini, i, i.depois
-      sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     r = i.obj
   fimse
@@ -432,7 +434,7 @@ func escr
     nomeobj n # Para reconhecer os itens
     n.ini(arg1, 1)
     epara i = arg0.dono.dentro1.ini, i, i.depois
-      sair arg0.visivel(i.obj) && n.nome(i.obj.ident, i.obj.objtot)
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     r = i.obj
   fimse

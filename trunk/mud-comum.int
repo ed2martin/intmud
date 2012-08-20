@@ -4,7 +4,8 @@ classe comum_obj
 sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
-sav listaobj evento # Objetos que recebem eventos desse
+listaobj evento # Objetos que recebem eventos desse
+listaitem evrec.2 # Usado internamente, para receber eventos
 uint8 socktot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 const objtot = 1 # Quantidade de objetos que esse objeto representa
 #
@@ -18,10 +19,15 @@ uint32 voltot # Somente leitura: volume total do objeto
 const volobj = 1 # Volume do objeto quando estiver vazio
 const volmax = 1000000 # Volume máximo do que pode ter dentro
 const volexp = 0 # Diferente de 0 se expande com os itens que tem dentro
+#
+# const eveste = 1 # Receber eventos do próprio objeto
+# const evperso = 1 # Receber eventos do dono se o dono for personagem
+# const evitem = 1 # Receber eventos do dono se o dono for item
+# const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func ini # Coloca o objeto dentro de outro
   ajustapeso
-  arg0 && (dono = arg0)
+  arg0 ? (dono = arg0) : eveste && (evrec.0 = evento.addfim(este))
 
 func fim # Objeto vai sair do jogo
   listaobj l
@@ -71,6 +77,10 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
     efim
   fimse
 
+func ajustaev # Acerta eventos
+  evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
+  (dono.perso ? evperso : dono.item ? evitem : evsala) && (evrec.1 = dono.addfim(este))
+
 varfunc dono # O dono do personagem/item
   ret !args, idono.objlista # Checa se é leitura
   ret idono.objlista == ref(arg0), nulo # Retorna se o dono não vai mudar
@@ -93,9 +103,6 @@ varfunc dono # O dono do personagem/item
       r.socktot -= socktot
     efim
   fimse
-# Objeto deixa de receber eventos dele e do dono
-  idono.objlista.evento.remove(este)
-  evento.remove(este)
 # Objeto muda de dono
   idono.remove # Retira do dono atual
   se perso
@@ -103,6 +110,10 @@ varfunc dono # O dono do personagem/item
   senao
     idono = ref(arg0).dentro1.addini(este) # Adiciona item
   fimse
+# Acerta eventos
+  evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
+  (idono.objlista.perso ? evperso : idono.objlista.item ? evitem : evsala) && (evrec.1 = \
+idono.objlista.evento.addfim(este))
 # Se não está voando: acrescenta o peso total
   se pesoadd
     r = idono.objlista, r.pesoden += pesotot
@@ -125,5 +136,5 @@ varfunc dono # O dono do personagem/item
   perso && atkenv.remove + atkrec.limpar
   var.limpar("d_")
 
-func visivel # Checa se um objeto está visível (arg0=objeto)
-  ret !(~bitver & arg0.inv) && (!arg0.sock.jogconfig.18 || sock.admin)
+func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
+  ret !(~arg0.bitver & inv)

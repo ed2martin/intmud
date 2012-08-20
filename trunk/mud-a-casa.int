@@ -51,6 +51,95 @@ const descver = "Parece ser muito frágil, pois é feito de papel."
 const p_agressivo = 1
 
 
+classe p_boneco_menina
+herda comum_persobat
+const nome = "Boneco de papel"
+const sexo = 1
+const descpos = "Um boneco de papel está se mexendo."
+const descver = "Parece ser muito frágil, pois é feito de papel."
+const p_agressivo = 1
+intinc tempo # Para não sair do jogo logo de cara
+
+func cmd_recalc1 # Aumenta pontos de vida e precisão
+  pvidamax = pvidamax * 2 + 50
+  precisao += 10
+
+func cmd_pnj_proc
+  se tempo && !atkenv # Se passou um tempo e não está batalhando
+    apagar(este)
+    dono.msg("Boneco de papel caiu do telhado.")
+    ret 1
+
+
+classe p_boneco_salvar
+herda comum_persobat
+const nome = "Boneco de papelão"
+const sexo = 1
+const descpos = "Um boneco de papelão está se mexendo."
+const descver = "Parece frágil, pois é feito de papelão."
+const p_agressivo = 1
+intinc tempo # Para não sair do jogo logo de cara
+
+func cmd_recalc1 # Aumenta pontos de vida
+  pvidamax = pvidamax * 2 + 50
+
+func cmd_pnj_proc
+  se tempo && !atkenv # Se passou um tempo e não está batalhando
+    apagar(este)
+    dono.msg("Boneco de papel caiu do telhado.")
+    ret 1
+
+
+classe p_casa_menina
+herda comum_persobat
+const nome = "Menina"
+const sexo = 0
+const descpos = "Uma menina está sentada aqui, dobrando papéis."
+const descver = "Debaixo do braço carrega diversas artes feitas dobrando-se papéis."
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+inttempo tempo
+
+func cmd_mudadono
+  tempo = 70
+
+func cmd_chegou # Chegou na sala
+  dono.dentro2.objini("jogador") ? tempo.pos : tempo.neg
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func cmd_saiu # Chegou da sala
+  dono.dentro2.objini("jogador") ? tempo.pos : tempo.neg
+
+func entrou20
+  arg0.msg("Menina: olá!")
+
+func entrou40
+  arg0.msg("Menina: Ao leste tem uns bonecos fortes. Se perceber que vai perder,")
+  arg0.msg("Menina: tecle fugir. Depois vá ao quarto e tecle DEITAR.")
+
+func tempo_exec
+  tempo = rand(80, 200)
+  dono.msg("Menina joga um boneco de papel pelo telhado.")
+
+func cmd_atacar
+  se arg1 == este # Atacar a menina
+# Obtém o personagem de nível mais alto
+    uint16 nivel
+    listaitem i
+    epara i = dono.dentro2.ini, i, i.depois
+      nivel < i.obj.pnivel && (nivel = i.obj.pnivel)
+    efim
+# Cria bonecos de papel de nível um pouco abaixo
+    nivel -= 2
+    dono.msg("Menina acabou derrubando dois bonecos de papel.")
+    ref r
+    r = criar("p_boneco_menina", dono, nivel, "h_socar=1,h_chutar=1")
+    r.batalhaini(arg0)
+    r = criar("p_boneco_menina", dono, nivel, "h_socar=1,h_chutar=1")
+    r.batalhaini(arg0)
+
+
 classe s_casa001
 herda b_casa
 const s_luta = 0 # Sem luta
@@ -61,8 +150,8 @@ o espaço. O espaço de um metro entre eles segue à leste.\n\
 Você pode descansar mais um pouco teclando DEITAR"
 const dir_l = $s_casa002
 
-func cmd_jog
-  arg0.evento.addfim(este) # Receber eventos dos jogadores
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
 # Para teste: muda o nível do personagem
 # arg0.pnivel = 2, arg0.recalc = 1
 
@@ -90,15 +179,15 @@ const dir_n = $s_casa003
 const dir_l = $s_casa008
 inttempo tempomax
 
-func cmd_jog
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
   tempomax = rand(10, 50)
-  arg0.evento.addfim(este) # Receber eventos dos jogadores
+  misc:evento(arg0) # Receber eventos do jogador
 
 func tempomax_exec
   ret !dentro2.objini("jogador"), nulo
   tempomax = rand(50, 80)
-  se !dentro2.objini("p_boneco_de_papel")
-    criar("p_boneco_de_papel", este, 1, "h_socar=1,h_chutar=1")
+  se misc:salacriar("p_boneco_de_papel", 1, "h_socar=1,h_chutar=1")
     msg("Um boneco de papel entrou pela janela.")
 
 func cmd_fugir
@@ -121,9 +210,9 @@ const dir_s = $s_casa002
 const dir_n = $s_casa004
 const dir_l = $s_casa006
 
-func cmd_jog
-  se config:escolhenivel
-    arg0.evento.addfim(este) # Receber eventos dos jogadores
+func cmd_salaperso # Personagem chegou
+  se arg0.jog && config:escolhenivel
+    misc:evento(arg0) # Receber eventos do jogador
     misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou2
@@ -135,7 +224,7 @@ func ver_quadro
   arg0.msg("Quadro")
   arg0.msg("Você vê o desenho de uma antiga mansão, num belo dia de sol.")
   arg0.msg("A assinatura você não consegue ler, está muito apagada.")
-  arg0.msg("Mas há uma data aqui, 13/8/2012.")
+  arg0.msg("Mas há uma data aqui, 19/8/2012.")
   ret 1
 
 func cmd_escr
@@ -193,8 +282,9 @@ func ver_batalha
   arg0.msg("Tem um botão esquisito, para apertá-lo tecle APERTAR")
   ret 1
 
-func cmd_jog
-  arg0.evento.addfim(este) # Receber eventos dos jogadores
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_escr
   se arg1 == "apertar"
@@ -213,9 +303,7 @@ comandada por uma pessoa que mais parece um gigante daqui de dentro.\n\
 Há uma saída para cima, porém fica lacrada quando há mais de um boneco."
 const s_luta = 2 # Permite luta entre jogadores
 const dir_c = $s_casa004
-
-func cmd_jog
-  arg0.evento.addfim(este) # Receber eventos dos jogadores
+const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_c
   se dentro2.total > 1
@@ -241,8 +329,13 @@ classe s_casa007
 herda b_casa
 const s_titulo = "Banheiro"
 const s_desc = "Um pequeno banheiro, ou pelo menos o que restou dele. Ainda tem um\n\
-chuveiro, mas aonde tinha a privada agora só resta o cano."
+chuveiro, mas aonde tinha a privada agora só resta o [cano]."
 const dir_o = $s_casa006
+
+func ver_cano
+  arg0.msg("Um papel está preso na parte de dentro do cano.")
+  arg0.msg("Basicamente diz \"Para repetir a descrição da sala tecle VER\".")
+  ret 1
 
 
 classe s_casa008
@@ -253,9 +346,7 @@ Um grande lustre ilumina o local. Nota-se uma pequena saída ao sul."
 const dir_l = este
 const dir_o = $s_casa002
 const dir_s = $s_casa009
-
-func cmd_jog
-  arg0.evento.addfim(este) # Receber eventos dos jogadores
+const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_l
   arg0.msg("A madeira está podre e você caiu, mas não resistiu à queda.")
@@ -288,11 +379,67 @@ const dir_l = $s_casa009
 classe s_casa011
 herda b_casa
 const s_titulo = "Quarto"
-const s_desc = "Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
-de baixo do beliche desarrumada. Há um alçapão no teto, sabe-se lá o que\n\
-tem dentro. Mas mesmo subindo em cima do beliche, ainda fica um pouco alto."
 const dir_o = $s_casa009
-const dir_c = $s_casa012
+const dir_c = misc:obj.var.d_escada_ ? $s_casa012
+const s_desc0 = "Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
+de baixo do beliche desarrumada. Há um alçapão no teto, sabe-se lá o que\n\
+tem dentro."
+const s_desc1 = " Mas mesmo subindo em cima do beliche, ainda fica um pouco alto."
+const s_desc2 = "\n\
+Tem também alguma coisa em baixo do beliche, mas em pé não dá para ver\n\
+o que é."
+
+func s_desc
+  se arg0.var.d_escada_ # Escada aberta
+    ret s_desc0
+  senao arg0.posicao < 7 # Escada fechada, jogador sentado ou deitado
+    ret s_desc0 + s_desc1
+  senao # Escada fechada, jogador em pé
+    ret s_desc0 + s_desc1 + s_desc2
+
+func cmd_salaperso # Personagem chegou
+  misc:salacriar("i_casa_escada")
+
+
+classe i_casa_escada
+herda comum_item
+const nome = "escada"
+const sexo = 0
+const pesoobj = 10200
+const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
+const visivel = arg0.posicao < 7 || arg0.var.d_escada_
+const eveste = 1 # Receber eventos do próprio objeto
+
+func descpos
+  se misc:obj.var.d_escada_
+    ret "Uma grande escada está aberta aqui."
+  senao
+    ret "Uma escada está em baixo do beliche."
+
+func cmd_pegarobj
+  se arg2 == este
+    arg0.msg("A escada é grande demais para você pegar.")
+    ret 1
+
+func cmd_abrirobj
+  se arg1 == este
+    se arg0.var.d_escada_
+      arg0.msg("A escada já está aberta.")
+    senao
+      arg0.msg("Você abre a escada.")
+      arg0.var.d_escada_ = 1
+    fimse
+    ret 1
+
+func cmd_fecharobj
+  se arg1 == este
+    se arg0.var.d_escada_
+      arg0.msg("Você fecha a escada.")
+      arg0.var.d_escada_ = 0
+    senao
+      arg0.msg("A escada já está fechada.")
+    fimse
+    ret 1
 
 
 classe s_casa012
@@ -302,4 +449,60 @@ const s_desc = "Um lugar bastante apertado, entre o teto e o telhado. Como pode-
 imaginar, está bastante sujo, pois a casa é antiga. Há aqui uma pequena\n\
 janela para leste, cuja vista dá para o telhado."
 const dir_b = $s_casa011
-# const dir_l = $s_casa013
+const dir_l = $s_casa013
+
+
+classe s_casa013
+herda b_casa
+const s_titulo = "No telhado"
+const s_desc = "Você anda com cuidado, pois as telhas são de cerâmica, e já estão bastante\n\
+gastas. Aqui é bastante alto, e o vento bate forte."
+const dir_o = $s_casa012
+const dir_s = $s_casa014
+
+
+classe s_casa014
+herda b_casa
+const s_titulo = "Laje"
+const s_desc = "Aqui o chão é firme, e você consegue andar com segurança. Toda essa\n\
+área foi impermeabilizada. Nota-se um revestimento preto sobre o chão.\n\
+Talvez quisessem fazer um jardim aqui. Ao norte, começa o telhado."
+const dir_n = $s_casa013
+const dir_o = $s_casa015
+const dir_l = $s_casa016
+
+func cmd_salaperso # Personagem chegou
+  misc:salacriar("p_casa_menina", 10, "h_chutar=1")
+
+
+classe s_casa015
+herda b_casa
+const s_titulo = "Telhado"
+const s_desc = "À leste começa uma laje. À oeste, o telhado continua, mas você não sente.\n\
+segurança para caminhar."
+const dir_l = $s_casa014
+
+
+classe s_casa016
+herda b_casa
+const s_titulo = "Laje"
+const s_desc = "Essa parte da laje bem que poderia ser um jardim. Há um pequeno muro à leste,\n\
+que se estende ao sul. Não é possível caminhar no telhado ao norte,\n\
+devido ao forte vento."
+const dir_o = $s_casa014
+
+func cmd_salaperso # Personagem chegou
+  se arg0.jog && !arg0.senha # Jogador que ainda não salvou o jogo
+    ref r
+    r = criar("p_boneco_salvar", este, 10, "h_socar=1,h_chutar=1")
+    r.batalhaini(arg0)
+    misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_fugir
+  arg0.pmove -= 5
+  arg0.batalhafim
+  $mens.p(arg0)
+  $mens.mtodos1("$P fugiu para oeste.")
+  arg0.mudadono($s_casa001)
+  $mens.mvis2("", "$P chegou do leste.")
+  ret 1

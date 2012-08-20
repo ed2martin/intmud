@@ -38,7 +38,7 @@ func escr
   n.ini(misc:sep1, 1000000)
   achou = 0
   epara l.addfim(sala.dentro1), l, l.ini.remove
-    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
@@ -100,7 +100,7 @@ func escr
   n.ini(misc:sep1, 1000000)
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
@@ -154,7 +154,7 @@ func escr
   n.ini(misc:sep1, 1000000)
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !arg0.visivel(l.objini) || !n.nome(l.objini.ident, l.objini.objtot)
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
@@ -202,7 +202,7 @@ func escr
   n.ini(arg1, 1000000)
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
-    continuar !arg0.visivel(r) || !n.nome(r.ident, r.objtot)
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     uint8 x
     epara x = n, x, x -= 1
       total += 1
@@ -246,7 +246,7 @@ func escr
   n.ini(arg1, 1000000)
   epara l.addfim(arg0.dentro2), l, l.ini.remove
     r = l.objini
-    continuar !arg0.visivel(r) || !n.nome(r.ident, r.objtot)
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     uint8 x
     epara x = n, x, x -= 1
       total += 1

@@ -15,7 +15,7 @@ herda b_fim
 # Altera completamente a descrição da sala
 const descsala = arg0.sexo ? "Você está morto." : "Você está morta."
 
-func cmd_jog
+func cmd_salaperso # Personagem chegou
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou50
@@ -30,7 +30,7 @@ ver onde pisa. Para todos os outros lugares que você olha, só vê o azul\n\
 celeste do céu. Há claridade, mas não é possível saber de onde vem."
 inttempo espera
 
-func cmd_jog # Jogador chegou
+func cmd_salaperso # Personagem chegou
   se espera == 0
     espera = 10
 

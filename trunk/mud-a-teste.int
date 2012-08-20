@@ -9,6 +9,14 @@ const s_terreno = 1
 const s_luta = 1
 
 
+classe i_teste_borracha
+herda comum_item
+const nome = "borracha"
+const sexo = 0
+const descpos = "Uma borracha está jogada aqui."
+const vestir = 8
+
+
 classe i_teste_pedra
 herda comum_item
 const nome = "pedra"
@@ -23,9 +31,11 @@ const nome = "Jardineiro"
 const ident = nome
 const descpos = "Um jardineiro está sentado aqui."
 const sexo = 1 # 0=feminino, 1=masculino
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
 
-func cmd_jog # Jogador chegou na mesma sala
-  arg0.evento.addfim(este) # Receber eventos dos jogadores
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou10
@@ -35,9 +45,6 @@ func entrou20
   arg0.msg("Jardineiro disse: Preciso de uma pedra.")
 
 const container = 1 # Para poder receber itens
-
-func cmd_mudadono # Receber eventos do próprio personagem
-  evento.addfim(este)
 
 func cmd_darobj # Alguém deu algum item
   telatxt t
@@ -51,7 +58,7 @@ func cmd_darobj # Alguém deu algum item
 
 func deupedra15
   arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
-  arg0.var.1planta = "" # Remove a planta carnívora
+  arg0.var.j_planta = 1 # Indica que já passou pela planta
 
 
 classe s_teste001
@@ -64,7 +71,7 @@ não há nenhum sol ou algo que produza luz."
 const s_luta = 0
 inttempo espera
 
-func cmd_jog # Jogador chegou
+func cmd_salaperso # Personagem chegou
   se espera == 0
     espera = 10
 
@@ -76,7 +83,7 @@ func espera_exec # Restaura a vida do jogador
     se r.vida < r.vidamax / 2
       r.vida += 1, espera = 10
     senao
-      r.mudadono(config:salaini)
+      r.mudadono($s_teste002)
     fimse
   efim
 
@@ -114,10 +121,10 @@ Ao sul nota-se claramente a certa que delimita o jardim."
 const dir_n = $s_teste003
 const dir_ne = $s_teste005
 
-func cmd_jog # Jogador chegou
-  arg0.evento.addfim(este) # Receber eventos do jogador
-  se !dentro1.objini("i_teste_pedra") # Cria pedra se ainda não existir
-    criar("i_teste_pedra", este)
+func cmd_salaperso # Personagem chegou
+  misc:salacriar("i_teste_pedra")
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_pegarobj # Pegar alguma coisa
   se arg2.nome == "pedra"
@@ -153,14 +160,11 @@ const dir_s = $s_teste003
 const dir_n = $s_teste012
 const dir_se = $s_teste005
 
-func cmd_jog # Jogador chegou
-  arg0.evento.addfim(este) # Receber eventos do jogador
-  arg0.var.1planta = 1 # Tem planta carnívora
-  se !dentro2.objini("p_teste_jardim") # Cria personagem se ainda não existir
-    criar("p_teste_jardim", este)
+func cmd_salaperso # Personagem chegou
+  misc:salacriar("p_teste_jardim")
 
 func cmd_n # Jogador quer ir para o norte
-  se arg0.var.1planta # Se tem planta carnívora
+  se !arg0.var.j_planta # Se ainda não passou pela planta carnívora
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
     arg0.msg("Então você recua.")
     ret 1
@@ -196,7 +200,8 @@ sala bastante ampla. À leste há uma escada para o andar de baixo."
 const dir_s = $s_teste015
 const dir_o = $s_teste012
 
-func cmd_jog # Jogador chegou na mesma sala
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou10
@@ -204,10 +209,8 @@ func entrou10
 
 func ini
   sala:ini
-  criar("i_borracha", este)
-  ref r
-  r = criar("p_anao", este)
-  r.nivel = 1
+  criar("i_teste_borracha", este)
+  criar("p_anao", este, 1)
 
 
 classe s_teste015
@@ -220,8 +223,9 @@ Aqui você pode salvar o personagem teclando salvar"
 const dir_n = $s_teste014
 const dir_l = $s_teste016
 
-func cmd_jog # Jogador chegou
-  arg0.evento.addfim(este) # Receber eventos do jogador
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_escr # Personagem escreveu alguma coisa
   se arg1 == "salvar"

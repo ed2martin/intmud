@@ -22,7 +22,7 @@ func fim # Objeto foi apagado
   comum_obj:fim
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
-  evento.limpar, cmd_mudadono(arg0), dono = arg0
+  cmd_mudadono(arg0), dono = arg0
 
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
@@ -68,7 +68,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
     r.objtot += arg1, r.ajustapeso
     apagar(este)
   senao # Senão, apenas muda o dono
-    evento.limpar, cmd_mudadono(arg0), dono = arg0
+    cmd_mudadono(arg0), dono = arg0
   fimse
 
 func vestir # Veste o item, arg0=posição
@@ -118,12 +118,4 @@ func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
-  persolugar.limpar, evento.limpar, cmd_mudadono(arg0), dono = arg0
-
-
-classe i_borracha
-herda comum_item
-const nome = "borracha"
-const sexo = 0
-const descpos = "Uma borracha está jogada aqui."
-const vestir = 8
+  persolugar.limpar, cmd_mudadono(arg0), dono = arg0

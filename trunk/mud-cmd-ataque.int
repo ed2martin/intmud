@@ -29,7 +29,7 @@ func escr # Atacar alguém
     nomeobj nome
     nome.ini(arg1, 1)
     epara i = arg0.dono.dentro2.ini, i, i.depois
-      sair arg0.visivel(i.obj) && nome.nome(i.obj.nome)
+      sair i.obj.visivel(arg0) && nome.nome(i.obj.nome)
     efim
     r = i.obj
     ret !r, arg0.msg("Você não vê isso.")
@@ -41,10 +41,12 @@ func escr # Atacar alguém
       ret
     fimse
   fimse
-  se r.perso != 2
-    arg0.msg(r.nome + " não quer brigar.")
-  senao arg0.jog && r.jog && dono.s_luta == 1
+  se !arg0.dono.s_luta
+    arg0.msg("Aqui é um lugar pacífico.")
+  senao arg0.jog && r.jog && arg0.dono.s_luta < 2
     arg0.msg(r.nome + " é jogador e aqui não é uma arena.")
+  senao r.perso < 2
+    arg0.msg(r.nome + " não quer brigar.")
   senao
     listaobj l
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
@@ -160,26 +162,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     ret l.objini.cmd_atkrec(arg0, arg1, este), nulo
   efim
 # Indica que atacou, recebe experiência se vencer
-  se arg0.atkenv.objlista != arg1 # Se o alvo do ataque mudou...
-    arg0.atkenv.remove
-    arg0.atkenv = arg1.atkrec.addfim(arg0)
-    arg0.atkdiv.limpar
-    arg0.atktempo = config:atktempo, arg0.atkturno = 0
-    arg0.posicao >= 4 && (arg0.posicao = 7)
-  fimse
-  arg0.atkdiv.addfim1(r) # Adiciona personagem para ganhar experiência
-  se !arg1.atkenv # Se o alvo não está batalhando...
-    arg1.atkenv = arg0.atkrec.addfim(arg1)
-    arg1.atkdiv.limpar
-    arg1.atkdiv.addfim(s)
-    arg1.atktempo = config:atktempo, arg1.atkturno = 0
-    arg1.posicao >= 4 && (arg1.posicao = 7)
-  fimse
-  se !config:atktipo # Se for batalha manual
-    arg0.atktempo = config:atktempo, arg0.atkturno = 0
-    arg1.atktempo = config:atktempo, arg1.atkturno = 0
-  fimse
-  arg1.p_proc = 1 # Para gerar evento de PNJs
+  arg0.batalhaini(arg1)
   r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
 # Checa se acertou o alvo
   result = 1
@@ -190,7 +173,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
       ret
     senao # Checa se acertou
       dano += precisao * arg0.precisao / 100 - arg1.evasao
-      !arg0.visivel(arg1) && (dano -= 5) # Invisível é mais difícil de acertar
+      !arg1.visivel(arg0) && (dano -= 5) # Invisível é mais difícil de acertar
       ret dano <= 0, nulo
     fimse
   fimse
@@ -207,9 +190,9 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   dano = misc:defbonus.[128 - dano]
 # Calcula dano
   se misc:aktipo(tipo) # Checa se golpe normal ou especial
-    dano *= r.atkmag * arg2 / (s.defmag * 100)
+    dano *= r.atkmag * arg2 / (s.defmag * rand(80, 120))
   senao
-    dano *= r.atknorm * arg2 / (s.defnorm * 100)
+    dano *= r.atknorm * arg2 / (s.defnorm * rand(80, 120))
   fimse
   dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
 # Modificadores de posição
@@ -232,9 +215,8 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     dano *= 1.333
     sair
   casofim
-# Atualiza pontos de vida conforme os danos
-  dano < 1 && (dano = 1) # Pelo menos 1 de dano
-  s.pvida -= dano
+# Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
+  dano < 1 ? (s.pvida -= 1) : (s.pvida -= dano)
 
 func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
   !arg0 && (arg0 = 1)

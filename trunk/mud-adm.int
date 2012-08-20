@@ -2,19 +2,26 @@ classe jog_adm
 # Funções necessárias para os comandos de administração
 
 func cmd2_info # Usado por cmd_info
-  txt200 lin
+  txt512 lin
   lin = "Peso:   obj=" + arg0.pesoobj + "  dentro=" + arg0.pesoden
   lin += "  total=" + arg0.pesotot + "  voando=" + (arg0.pesoadd ? "N" : "S")
   lin += "\nVolume: obj=" + arg0.volobj + "  dentro=" + arg0.volden
   lin += "  total=" + arg0.voltot + "  expande=" + (arg0.volexp ? "S" : "N")
   lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.socktot
   lin += "  Itens dentro=" + arg0.dentro1.total + "  Personagens dentro=" + arg0.dentro2.total
+  lin += "\nevento="
+  listaitem i
+  epara i = arg0.evento.ini, i, i.depois
+    lin += txt(i.obj) + " "
+  efim
+  lin += "\nevrec.0=" + arg0.evrec.0.objlista
+  lin += "  evrec.1=" + arg0.evrec.1.objlista
   ret lin
 
 func cmd_info
   se !arg0
 # msg("\b\c2Você:\b\n" + cmd2_info(perso))
-    msg("\c2Sala:\b\n" + cmd2_info(perso.dono))
+    msg("\c2Sala " + perso.dono + ":\b\n" + cmd2_info(perso.dono))
     ret 1
   fimse
   int1 achou
@@ -26,11 +33,42 @@ func cmd_info
   l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1)
   enquanto l
     r = l.objini, l.ini.remove
-    continuar !perso.visivel(r) || !n.nome(r.ident, r.objtot)
+    continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
     msg("\b\c2" + r.nome + ": " + r + "\b\n" + cmd2_info(r))
     achou = 1
   efim
   !achou && msg("Não há nenhum personagem ou item chamado " + arg0)
+  ret 1
+
+func cmd_matar1
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg0, 1000000)
+  r = perso
+  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1)
+  enquanto l
+    r = l.objini, l.ini.remove
+    continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
+    msg("Apagando " + r.nome), apagar(r)
+    ret 1
+  efim
+  msg("Não há nenhum personagem ou item chamado " + arg0)
+  ret 1
+
+func cmd_matar2
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg0, 1000000)
+  l.addfim(perso.dono.dentro2)
+  enquanto l
+    r = l.objini, l.ini.remove
+    continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
+    msg("Matando " + r.nome), r.morreu
+    ret 1
+  efim
+  msg("Não há nenhum personagem ou item chamado " + arg0)
   ret 1
 
 func cmd_cmd
@@ -86,6 +124,10 @@ const adm_outros = "\c3Outros comandos\b\n\
   Informações sobre a sala.\n\
 \c2INFO\b <personagem ou item>\n\
   Informações sobre personagem ou item.\n\
+\c2MATAR1\b <personagem ou item>\n\
+  Apaga personagem ou item.\n\
+\c2MATAR2\b <personagem ou item>\n\
+  Mata instantaneamente personagem.\n\
 \c2CMD\b <comando>\n\
   Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 \c2MUDLER\b\n\
