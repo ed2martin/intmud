@@ -325,18 +325,6 @@ func tipo_dragao
   deftipo.12 += 2 # elétrico
   deftipo.13 += 2 # vegetal
 
-func tempo # Eventos de tempo (cria objeto), vide classe evtempo
-  se txt(arg0) && ref(arg1)
-    ref r
-    r = criar("evtempo")
-    r.tempo1 = r.tempo2 = 1
-    r.obj = este
-    r.func = arg0
-    r.tfunc = inttotal(arg0)
-    r.perso1 = arg1, r.perso1.evento.addfim(r)
-    r.perso2 = arg2, r.perso2.evento.addfim(r)
-    r.perso3 = arg3, r.perso3.evento.addfim(r)
-
 func separa # Separa o nome do objeto do nome do destino
 # arg0 = texto completo
 # Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo
@@ -375,10 +363,10 @@ func sepitem # Procura o item destino
   nomeobj n
   n.ini(misc:sep2, 1)
   epara i = arg0.dentro1.ini, i, i.depois
-    ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
   efim
   epara i = arg0.dono.dentro1.ini, i, i.depois
-    ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
   efim
 
 func sepperso # Procura o personagem destino
@@ -388,10 +376,10 @@ func sepperso # Procura o personagem destino
   nomeobj n
   n.ini(misc:sep2, 1)
 # epara i = arg0.dentro2.ini, i, i.depois
-# ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+# ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
 # efim
   epara i = arg0.dono.dentro2.ini, i, i.depois
-    ret arg0.visivel(i.obj) && n.nome(i.obj.ident), i.obj
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
   efim
 
 func iniclasse # Inicialização
@@ -413,6 +401,56 @@ func imin_exec # Atualiza hora MUD
   misc:luz = misc:hora >= 6 && misc:hora < 18
   arqsav sav
   misc:hora == 0 && sav.limpar(".") # Limpa jogos antigos
+
+func salacriar # Cria um objeto na sala se não houver outro igual
+# arg0 a arg3 = argumentos do personagem, sem incluir o dono do personagem
+# Retorna: objeto criado, ou nulo se não foi criado
+  se txt(arg0)
+    ref r
+    epara r = este, r.dono, r = r.dono
+    efim
+    ret r.dentro1.objini(arg0) || r.dentro2.objini(arg0), nulo
+    ret criar(arg0, r, arg1, arg2, arg3)
+
+func evento # Objeto passa a receber eventos até um objeto mudar de sala
+# arg0 a arg2 = objetos cujos eventos serão recebidos
+  se ref(arg0)
+    ref r
+    r = criar("evrecebe")
+    evento.addfim(r)
+    r.perso1 = arg0.evento.addfim(este, r)
+    r.perso2 = arg1.evento.addfim(este, r)
+    r.perso3 = arg2.evento.addfim(este, r)
+
+func tempo # Eventos de tempo (cria objeto), vide classe evtempo
+  se txt(arg0) && ref(arg1)
+    ref r
+    r = criar("evtempo")
+    r.tempo1 = r.tempo2 = 1
+    r.obj = este
+    r.func = arg0
+    r.tfunc = inttotal(arg0)
+    r.perso1 = arg1, r.perso1.evento.addfim(r)
+    r.perso2 = arg2, r.perso2.evento.addfim(r)
+    r.perso3 = arg3, r.perso3.evento.addfim(r)
+
+
+classe evrecebe
+listaitem perso1 # Primeiro personagem
+listaitem perso2 # Segundo personagem
+listaitem perso3 # Terceiro personagem
+
+func fim # Este objeto foi apagado
+# Só para garantir, também chama aqui perso.remove
+  perso0.remove, perso1.remove, perso2.remove, perso3.remove
+
+func cmd_saiu # Personagem saiu da sala
+  perso0.remove, perso1.remove, perso2.remove, perso3.remove
+  apagar(este)
+
+func cmd_fim # Personagem saiu do jogo
+  perso0.remove, perso1.remove, perso2.remove, perso3.remove
+  apagar(este)
 
 
 classe evtempo
@@ -440,15 +478,11 @@ ref obj # Objeto que contém a função
 ref perso1 # Primeiro personagem
 ref perso2 # Segundo personagem
 ref perso3 # Terceito personagem
+const cmd_saiu = apagar(este) # Personagem saiu da sala
+const cmd_fim = apagar(este) # Personagem saiu do jogo
 
 func fim # Este objeto foi apagado
   obj.[func]0(perso1, perso2, perso3, este)
-
-func cmd_saiu # Personagem saiu da sala
-  apagar(este)
-
-func cmd_fim # Personagem saiu do jogo
-  apagar(este)
 
 func tempo1_exec # Executa eventos
   ret !obj, apagar(este)

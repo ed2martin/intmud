@@ -283,7 +283,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
       d.exec = 5000
       !item.obj.dono && !item.obj.jog && apagar(item.obj)
       item.obj.var.limpar("d_", "j_")
-      item.obj.ajustapeso
+      item.obj.ajustapeso, item.obj.ajustaev
       item.obj.recalc = 1
     efim
 # Muda de sala e volta ao jogo
@@ -431,3 +431,6 @@ func vazio2_exec # Sair do MUD automaticamente
 
 func cmd_recalc1 # Personagem do jogador tem mais pontos de vida
   pvidamax += 40
+
+func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
+  ret !(~arg0.bitver & inv) && (!sock.jogconfig.18 || arg0.sock.admin)

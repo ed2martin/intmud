@@ -67,6 +67,7 @@ herda cmd_fim
 
 classe comando_var
 herda comando_comum
+const posic = 5
 
 func lista # Lista de itens, como habilidades, idiomas, etc.
 # arg0 = personagem
@@ -106,7 +107,7 @@ Mostra as habilidades do seu personagem. Muitas delas são usadas em lutas."
 func escr
   txt100 n
   arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
-  lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
+  lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n + ".", "Habilidades" + n)
 
 
 classe cmd_idioma
@@ -116,7 +117,7 @@ Sintaxe: IDIOMA\n\
 Mostra os idiomas que o seu personagem conhece."
 
 func escr
-  lista(arg0, arg0.var, "i_", "Nenhum idioma", "Idiomas")
+  lista(arg0, arg0.var, "i_", "Nenhum idioma.", "Idiomas")
 
 
 classe cmd_extra
@@ -128,7 +129,7 @@ permanentes (não se pode pode-se pegar, soltar, dar e vestir)."
 
 func escr
   se !exevento(este, arg0, arg1)
-    lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
+    lista(arg0, arg0.var, "o_", "Nenhum item extra.", "Itens extra")
 
 
 classe cmd_inv
@@ -142,7 +143,7 @@ func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro1.ini, item, item.depois
-    arg0.visivel(item.obj) && t.addfim(txt(item.obj.objtot) + " " + item.obj.nome)
+    item.obj.visivel(arg0) && t.addfim(txt(item.obj.objtot) + " " + item.obj.nome)
   efim
   t.juntalin("(", "x)")
   se t
@@ -163,7 +164,7 @@ func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro2.ini, item, item.depois
-    continuar !item.obj.vestpos || !arg0.visivel(item.obj)
+    continuar !item.obj.vestpos || !item.obj.visivel(arg0)
     t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
   efim
   se t.linhas
@@ -321,8 +322,8 @@ func escr
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2, arg0.dentro1)
   n.ini(arg1, 1)
   epara nulo, l, l.ini.remove
-    se arg0.visivel(l.objini) && n.nome(l.objini.ident)
-# ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
+    se l.objini.visivel(arg0) && n.nome(l.objini.ident)
+      ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
       se l.objini.perso
         $mens.p(arg0, l.objini)
         $mens.msgvis2("", "$P olha para $a.")
@@ -330,11 +331,11 @@ func escr
       textotxt t
       listaitem item
       epara item = l.objini.dentro2.ini, item, item.depois
-        continuar !item.obj.vestpos || !arg0.visivel(item.obj)
+        continuar !item.obj.vestpos || !item.obj.visivel(arg0)
         t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
       efim
       t.linhas && t.addini("Equipado com:")
-      t.addini(l.objini.descver)
+      t.addini(l.objini.descver(arg0))
       txt100 t2
       t2 = txtmaimin(l.objini.nome)
       se l.objini.jog
@@ -440,6 +441,7 @@ func escr
 classe cmd_debug
 herda comando_comum
 const posic = 0
+const objcmd = nulo # Comentar essa linha para o esse comando funcionar
 
 func escr
   arg0.msg("Sala: " + arg0.dono)

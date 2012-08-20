@@ -110,7 +110,7 @@ func proc # Prepara e envia mensagem
 func opcmai_p # Nome do personagem
   se r == perso
     ret "Você" + arg0
-  senao r.visivel(perso)
+  senao perso.visivel(r)
     ret txtmaimin(perso.nome) + arg0
   senao perso.perso
     ret "Alguém" + arg0
@@ -120,7 +120,7 @@ func opcmai_p # Nome do personagem
 func opcmin_p # Nome do personagem
   se r == perso
     ret "você" + arg0
-  senao r.visivel(perso)
+  senao perso.visivel(r)
     ret perso.nome + arg0
   senao perso.perso
     ret "alguém" + arg0
@@ -130,7 +130,7 @@ func opcmin_p # Nome do personagem
 func opcmai_q # Nome do personagem escolhido
   se r == perso.persoesc
     ret "Você" + arg0
-  senao r.visivel(perso)
+  senao perso.visivel(r)
     ret txtmaimin(perso.persoesc.nome) + arg0
   senao perso.persoesc.perso
     ret "Alguém" + arg0
@@ -140,7 +140,7 @@ func opcmai_q # Nome do personagem escolhido
 func opcmin_q # Nome do personagem escolhido
   se r == perso.persoesc
     ret "você" + arg0
-  senao r.visivel(perso)
+  senao perso.visivel(r)
     ret perso.persoesc.nome + arg0
   senao perso.persoesc.perso
     ret "alguém" + arg0
@@ -150,7 +150,7 @@ func opcmin_q # Nome do personagem escolhido
 func opcmai_r # Nome do personagem em batalha
   se r == perso.persobat
     ret "Você" + arg0
-  senao r.visivel(perso)
+  senao perso.visivel(r)
     se perso.persobat == perso
       ret txtmaimin(perso.persobat.nome) + arg0
     senao
@@ -164,7 +164,7 @@ func opcmai_r # Nome do personagem em batalha
 func opcmin_r # Nome do personagem em batalha
   se r == perso.persobat
     ret "você" + arg0
-  senao r.visivel(perso)
+  senao perso.visivel(r)
     se perso.persobat == perso
       ret perso.persobat.nome + arg0
     senao
@@ -178,7 +178,7 @@ func opcmin_r # Nome do personagem em batalha
 func opcmai_a # Nome do alvo
   se r == alvo
     ret "Você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     ret txtmaimin(alvo.nome) + arg0
   senao alvo.perso
     ret "Alguém" + arg0
@@ -188,7 +188,7 @@ func opcmai_a # Nome do alvo
 func opcmin_a # Nome do alvo
   se r == alvo
     ret "você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     ret alvo.nome + arg0
   senao alvo.perso
     ret "alguém" + arg0
@@ -198,7 +198,7 @@ func opcmin_a # Nome do alvo
 func opcmai_b # Nome do alvo escolhido
   se r == alvo.persoesc
     ret "Você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     ret txtmaimin(alvo.persoesc.nome) + arg0
   senao alvo.persoesc.perso
     ret "Alguém" + arg0
@@ -208,7 +208,7 @@ func opcmai_b # Nome do alvo escolhido
 func opcmin_b # Nome do alvo escolhido
   se r == alvo.persoesc
     ret "você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     ret alvo.persoesc.nome + arg0
   senao alvo.persoesc.perso
     ret "alguém" + arg0
@@ -218,7 +218,7 @@ func opcmin_b # Nome do alvo escolhido
 func opcmai_c # Nome do alvo em batalha
   se r == alvo.persobat
     ret "Você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     se alvo.persobat == alvo
       ret txtmaimin(alvo.persobat.nome) + arg0
     senao
@@ -232,7 +232,7 @@ func opcmai_c # Nome do alvo em batalha
 func opcmin_c # Nome do alvo em batalha
   se r == alvo.persobat
     ret "você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     se alvo.persobat == alvo
       ret alvo.persobat.nome + arg0
     senao
@@ -246,7 +246,7 @@ func opcmin_c # Nome do alvo em batalha
 func opcmai_d # Nome do alvo
   se r == alvo
     ret "Você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     se alvo.dono.perso
       ret txtmaimin(alvo.nome) + " de " + alvo.dono.nome + arg0
     senao
@@ -260,7 +260,7 @@ func opcmai_d # Nome do alvo
 func opcmin_d # Nome do alvo
   se r == alvo
     ret "você" + arg0
-  senao r.visivel(alvo)
+  senao alvo.visivel(r)
     se alvo.dono.perso
       ret alvo.nome + " de " + alvo.dono.nome + arg0
     senao
@@ -274,7 +274,7 @@ func opcmin_d # Nome do alvo
 func opcmai_o # Nome do objeto
   se r == obj
     ret "Você" + arg0
-  senao r.visivel(obj)
+  senao obj.visivel(r)
     ret txtmaimin(obj.nome) + arg0
   senao obj.perso
     ret "Alguém" + arg0
@@ -284,7 +284,7 @@ func opcmai_o # Nome do objeto
 func opcmin_o # Nome do objeto
   se r == obj
     ret "você" + arg0
-  senao r.visivel(obj)
+  senao obj.visivel(r)
     ret obj.nome + arg0
   senao obj.perso
     ret "alguém" + arg0
