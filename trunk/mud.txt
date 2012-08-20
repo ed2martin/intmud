@@ -264,8 +264,8 @@ somar 4 se pode ver invisível
 somar 8 se pode ver oculto
 somar 16 se pode ver administradores invisíveis
 
-6.3. func visivel( objeto ou personagem )
-Retorna verdadeiro se o objeto ou personagem estiver visível
+6.3. func visivel( personagem )
+Retorna verdadeiro se está visível para o persoangem
 
 6.4. texto ident
 Nomes que o jogador digita para ações com o personagem ou item
@@ -458,18 +458,35 @@ não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
 10. Eventos
 
-Itens, personagens e salas possuem a seguinte variável:
+São funções executadas quando um personagem digita algo, muda de sala
+ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar eventos.
+
+Um item, personagem ou sala pode receber diversos tipos de eventos,
+bastando acrescentar uma ou mais das seguintes variáveis:
+
+const eveste = 1 # Receber eventos do próprio objeto
+const evperso = 1 # Receber eventos do dono se o dono for personagem
+const evitem = 1 # Receber eventos do dono se o dono for item
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+Essas constantes têm efeito sempre que o objeto muda de dono ou é criado.
+Se for preciso atualizar em outras situações, chamar a função ajustaev.
+
+Internamente, itens, personagens e salas possuem a seguinte variável:
 listaobj evento
 
-Quando um personagem digita algo, muda de sala ou ocorre qualquer outro
-evento, é executada uma função qualquer de todos os objetos dessa lista.
-Dessa forma é possível personalizar o comportamento de itens, salas, etc.
-
-O nome da função está relacionado ao tipo de evento. Exemplo, 'cmd_pegar'
-corresponde ao comando 'pegar'.
+Gerar um evento significa executar uma função qualquer de todos os objetos
+dessa lista. O nome da função está relacionado ao tipo de evento. Exemplo,
+'cmd_pegar' corresponde ao comando 'pegar' (quando um personagem tenta pegar
+algo, é executada a função 'cmd_pegar').
 
 Para saber quais são as listas envolvidas, basta verificar os argumentos
-da função, mais especificamente os personagens, os itens e as salas.
+da função.
+
+Exemplo, o evento correspondente a abrir uma porta está definido assim:
+func cmd_abrirdir(personagem, sala, texto)
+Significa que quando o personagem tentar abrir uma porta, será executada
+a função cmd_abrirdir das listas do personagem e da sala.
 
 
 11. Eventos incondicionais
@@ -483,20 +500,19 @@ func cmd_fim(personagem ou objeto)
 Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
 do objeto é limpa.
 
-func cmd_saiu(personagem)
+func cmd_saiu(personagem, sala)
 Personagem vai sair da sala. Antes desse evento ocorrer, a 'listaobj evento'
 do personagem é limpa.
 
 func cmd_chegou(personagem, sala)
 Personagem entrou na sala. É chamado logo após mudar de sala.
 
-func cmd_jog(personagem, sala)
-Jogador entrou na sala. É chamado logo após 'cmd_chegou', se for jogador.
-Esse evento em particular é executado apenas para a sala e para todos os
-personagens que estiverem na mesma sala.
+func cmd_salaperso(personagem)
+Esssa função é chamada somente para a própria sala, quando um personagem
+entra na sala.
 
 func cmd_mudadono(novo dono)
-O próprio personagem ou um item está mudando de dono. Esse evento é gerado
+O próprio personagem ou um item está mudando de dono. Essa função é chamada
 somente para o próprio objeto, quando a função mudadono é executada.
 
 func cmd_recalc1(personagem)
@@ -539,13 +555,18 @@ usuário informando o motivo.
 
 A seguir são listados os eventos (as funções).
 
+func cmd_pnj_proc
+É chamado apenas para o próprio PNJ, cada vez que o personagem decidir
+fazer alguma coisa. Não é chamado se estiver sendo controlado por um
+jogador ou pertencer a outro personagem.
+
 func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
 Personagem digitou alguma coisa.
 
 func cmd_ajuda(personagem ou objeto, texto)
 Teclou ajuda seguido de um texto.
 
-func cmd_[direção](personagem)
+func cmd_[direção](personagem, sala)
 Exemplos: cmd_n(personagem), cmd_s(personagem), etc.
 Personagem quer ir na direção indicada.
 
