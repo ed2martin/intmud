@@ -1,6 +1,5 @@
 classe jog_admsala
 # Comandos de sala e de área
-const txt_reset = "Nunca\nQuando não há jogadores\nNormal"
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
 Rua de uma cidade - 1mv\n\
@@ -19,6 +18,13 @@ const txt_luta = "Pacífico\nExceto entre jogadores\nQualquer luta"
 const txt_luz = "Claro com eventos de tempo\n\
 Claro sem eventos de tempo\n\
 Luz do sol\nEscuro"
+#
+const txt_porta = "Sem porta\nPorta aberta\nPorta fechada\nPorta trancada"
+#
+const txt_tranc = "Normal\n\
+Fecha ao passar\n\
+Tranca ao fechar\n\
+Tranca ao fechar ou passar"
 #
 const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2LAREA\b [nome]\n\
@@ -120,151 +126,10 @@ func cmd_earea # Editar área
   se !$a_[prefixo]
     msg("\bÁrea não existe: " + prefixo)
   senao
-    msg("Área " + prefixo + ", tecle O para saber as opções")
-    passo = "area"
-    tpasso = "a_" + prefixo
+    var.classe1 = "a_" + prefixo
+    var.classe2 = "b_" + prefixo
+    m_menu("adm_area")
   fimse
-  ret 1
-
-func p_area # Editando área
-  teditor.limpar
-  se txt(arg0, 0, 1) == "m" # Executa comando do MUD
-    perso.teclou(txtremove(txt(arg0, 1), "E"))
-    ret 1
-  fimse
-  casovar txtmin(arg0)
-  casose "o"
-    txtmais.limpar
-    txtmais.addfim("\bÁrea " + txt(tpasso, 2))
-    txtmais.addfim("1. Nome            : " + m_linha("a_nome"))
-    txtmais.addfim("2. Autor           : " + m_linha("a_autor"))
-    txtmais.addfim("3. Tempo de reset  : " + m_numero("a_tempo"))
-    txtmais.addfim("4. Modo de reset   : " + m_opcao("a_reset", txt_reset))
-    tpasso = "b_" + txt(tpasso, 2)
-    txtmais.addfim("5. Terreno         : " + m_opcao("s_terreno", txt_terreno))
-    txtmais.addfim("6. Luz             : " + m_opcao("s_luz", txt_luz))
-    txtmais.addfim("7. Apagar itens em : " + m_numero("s_item") + " min")
-    txtmais.addfim("8. Morre ao entrar : " + m_simnao("s_morre"))
-    txtmais.addfim("9. Silencioso      : " + m_simnao("s_silencio"))
-    txtmais.addfim("10.Batalha         : " + m_opcao("s_luta", txt_luta))
-    txtmais.addfim("11.Sem magia       : " + m_simnao("s_semmagia"))
-    txtmais.addfim("12.PNJs não entram : " + m_simnao("s_sempnj"))
-    tpasso = "a_" + txt(tpasso, 2)
-    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
-    txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
-    txtmostra
-    ret 1
-  casose "z"
-    msg("Retornando ao jogo")
-    passo = ""
-    ret 1
-  casose "l"
-    msg(txt_legenda)
-    ret 1
-  casose "1"
-    msg("Nome: " + m_linha("a_nome"))
-    tpasso += " a_nome area Nome"
-    ret p_linha("")
-  casose "2"
-    msg("Autor: " + m_linha("a_autor"))
-    tpasso += " a_autor area Autor"
-    ret p_linha("")
-  casose "3"
-    msg("Tempo de reset: " + m_numero("a_tempo"))
-    tpasso += " a_tempo area Tempo de reset"
-    ret p_numero("")
-  casose "4"
-    msg("Modo de reset: " + m_opcao("a_reset", txt_reset))
-    teditor.addfim(txt_reset)
-    tpasso += " a_reset area Modo de reset"
-    ret p_opcao("")
-  casose "5"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Terreno: " + m_opcao("s_terreno", txt_terreno))
-    teditor.addfim(txt_terreno)
-    tpasso += " s_terreno area Tipo de terreno"
-    ret p_opcao("")
-  casose "6"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Luz: " + m_opcao("s_luz", txt_luz))
-    teditor.addfim(txt_luz)
-    tpasso += " s_luz area Quantidade de luz"
-    ret p_opcao("")
-  casose "7"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Sem jogador na sala apaga itens após: " + m_numero("s_item") + " min")
-    tpasso += " s_item area Apagar itens em"
-    ret p_numero("")
-  casose "8"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Morre ao entrar: " + m_simnao("s_morre"))
-    tpasso += " s_morre area Morre ao entrar"
-    ret p_simnao("")
-  casose "9"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Silencioso: " + m_simnao("s_silencio"))
-    tpasso += " s_silencio area Silencioso"
-    ret p_simnao("")
-  casose "10"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Batalha: " + m_opcao("s_luta", txt_luta))
-    teditor.addfim(txt_luta)
-    tpasso += " s_luta area Batalha"
-    ret p_opcao("")
-  casose "11"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("Sem magia: " + m_simnao("s_semmagia"))
-    tpasso += " s_semmagia area Sem magia"
-    ret p_simnao("")
-  casose "12"
-    tpasso = "b_" + txt(tpasso, 2)
-    msg("PNJs não entram: " + m_simnao("s_sempnj"))
-    tpasso += " s_sempnj area Se PNJs não entram"
-    ret p_simnao("")
-  casose "f1"
-    tpasso += " a_nome area Nome"
-    ret p_func("\n")
-  casose "f2"
-    tpasso += " a_autor area Autor"
-    ret p_func("\n")
-  casose "f3"
-    tpasso += " a_tempo area Tempo de reset"
-    ret p_func("\n")
-  casose "f4"
-    tpasso += " a_reset area Modo de reset"
-    ret p_func("\n")
-  casose "f5"
-    tpasso = "b_" + txt(tpasso, 2) + " s_terreno area Tipo de terreno"
-    ret p_func("\n")
-  casose "f6"
-    tpasso = "b_" + txt(tpasso, 2) + " s_luz area Quantidade de luz"
-    ret p_func("\n")
-  casose "f7"
-    tpasso = "b_" + txt(tpasso, 2) + " s_item area Apagar itens em"
-    ret p_func("\n")
-  casose "f8"
-    tpasso = "b_" + txt(tpasso, 2) + " s_morre area Morre ao entrar"
-    ret p_func("\n")
-  casose "f9"
-    tpasso = "b_" + txt(tpasso, 2) + " s_silencio area Silencioso"
-    ret p_func("\n")
-  casose "f10"
-    tpasso = "b_" + txt(tpasso, 2) + " s_luta area Batalha"
-    ret p_func("\n")
-  casose "f11"
-    tpasso = "b_" + txt(tpasso, 2) + " s_semmagia area Sem magia"
-    ret p_func("\n")
-  casose "f12"
-    tpasso = "b_" + txt(tpasso, 2) + " s_sempnj area Se PNJs não entram"
-    ret p_func("\n")
-  casose
-    msg("Opção inválida: " + arg0)
-  casose ""
-    passo = "area"
-    tpasso = "a_" + txt(txt1(tpasso), 2)
-    msg("Área " + txt(tpasso, 2) + ", O opções, Z sair")
-    ret 1
-  casofim
   ret 1
 
 func cmd_lsala # Listar salas
@@ -403,122 +268,9 @@ func cmd_esala # Editar sala
   se !$s_[nome]
     msg("\bSala não existe: " + nome)
   senao
-    passo = "sala"
-    tpasso = $s_[nome]
-    msg("Sala " + txt(tpasso, 2) + ", tecle O para saber as opções")
+    var.classe1 = "s_" + nome
+    m_menu("adm_sala")
   fimse
-  ret 1
-
-func p_sala # Editando sala
-  teditor.limpar
-  se txt(arg0, 0, 1) == "m" # Executa comando do MUD
-    perso.teclou(txtremove(txt(arg0, 1), "E"))
-    ret 1
-  fimse
-  casovar txtmin(arg0)
-  casose "o"
-    txtmais.limpar
-    txtmais.addfim("\bSala " + txt(tpasso, 2))
-    txtmais.addfim("1. Título          : " + m_linha("s_titulo"))
-    txtmais.addfim("2. Descrição       : " + m_texto("s_desc"))
-    txtmais.addfim("3. Terreno         : " + m_opcao("s_terreno", txt_terreno))
-    txtmais.addfim("4. Luz             : " + m_opcao("s_luz", txt_luz))
-    txtmais.addfim("5. Apagar itens em : " + m_numero("s_item") + " min")
-    txtmais.addfim("6. Morre ao entrar : " + m_simnao("s_morre"))
-    txtmais.addfim("7. Silencioso      : " + m_simnao("s_silencio"))
-    txtmais.addfim("8. Sem violência   : " + m_simnao("s_luta"))
-    txtmais.addfim("9. Sem magia       : " + m_simnao("s_semmagia"))
-    txtmais.addfim("10.PNJs não entram : " + m_simnao("s_sempnj"))
-    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
-    txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
-    txtmostra
-    ret 1
-  casose "z"
-    msg("Retornando ao jogo")
-    passo = ""
-    ret 1
-  casose "l"
-    msg(txt_legenda)
-    ret 1
-  casose "1"
-    msg("Nome: " + m_linha("s_titulo"))
-    tpasso += " s_titulo sala Título"
-    ret p_linha("")
-  casose "2"
-    tpasso += " s_desc sala Descrição"
-    ret p_texto("\n")
-  casose "3"
-    msg("Terreno: " + m_opcao("s_terreno", txt_terreno))
-    teditor.addfim(txt_terreno)
-    tpasso += " s_terreno sala Tipo de terreno"
-    ret p_opcao("")
-  casose "4"
-    msg("Luz: " + m_opcao("s_luz", txt_luz))
-    teditor.addfim(txt_luz)
-    tpasso += " s_luz sala Quantidade de luz"
-    ret p_opcao("")
-  casose "5"
-    msg("Sem jogador na sala apaga itens após: " + m_numero("s_item") + " min")
-    tpasso += " s_item area Apagar itens em"
-    ret p_numero("")
-  casose "6"
-    msg("Morre ao entrar: " + m_simnao("s_morre"))
-    tpasso += " s_morre sala Morre ao entrar"
-    ret p_simnao("")
-  casose "7"
-    msg("Silencioso: " + m_simnao("s_silencio"))
-    tpasso += " s_silencio sala Silencioso"
-    ret p_simnao("")
-  casose "8"
-    msg("Batalha: " + m_opcao("s_luta", txt_luta))
-    tpasso += " s_luta sala Batalha"
-    ret p_opcao("")
-  casose "9"
-    msg("Sem magia: " + m_simnao("s_semmagia"))
-    tpasso += " s_semmagia sala Sem magia"
-    ret p_simnao("")
-  casose "10"
-    msg("PNJs não entram: " + m_simnao("s_sempnj"))
-    tpasso += " s_sempnj sala Se PNJs não entram"
-    ret p_simnao("")
-  casose "f1"
-    tpasso += " s_titulo sala Título"
-    ret p_func("\n")
-  casose "f2"
-    tpasso += " s_desc sala Título"
-    ret p_func("\n")
-  casose "f3"
-    tpasso += " s_terreno sala Tipo de terreno"
-    ret p_func("\n")
-  casose "f4"
-    tpasso += " s_luz sala Quantidade de luz"
-    ret p_func("\n")
-  casose "f5"
-    tpasso += " s_item area Apagar itens em"
-    ret p_func("\n")
-  casose "f6"
-    tpasso += " s_morre sala Morre ao entrar"
-    ret p_func("\n")
-  casose "f7"
-    tpasso += " s_silencio sala Silencioso"
-    ret p_func("\n")
-  casose "f8"
-    tpasso += " s_luta sala Batalha"
-    ret p_func("\n")
-  casose "f9"
-    tpasso += " s_semmagia sala Sem magia"
-    ret p_func("\n")
-  casose "f10"
-    tpasso += " s_sempnj sala Se PNJs não entram"
-    ret p_func("\n")
-  casose
-    msg("Opção inválida: " + arg0)
-  casose ""
-    passo = "sala"
-    tpasso = txt1(tpasso)
-    msg("Sala " + txt(tpasso, 2) + ", O opções, Z sair")
-    ret 1
-  casofim
   ret 1
 
 func cmd_lsai # Listar saídas
@@ -529,16 +281,13 @@ func cmd_lsai # Listar saídas
   prog p
   txt80 dir
   txt80 lin
-  dir = "n s l o ne no se so c b"
   tpasso = perso.dono
   msg("\bSaídas de " + txt(tpasso, 2) + ":")
-  enquanto dir
-    se p.existe(tpasso, "dir_" + txt1(dir))
-      lin = txtmai(txt1(dir)) + "  "
-      lin += m_sala("dir_" + txt1(dir))
-      msg(lin)
-    fimse
-    dir = txt2(dir)
+  epara dir = "n s l o ne no se so c b", dir, dir = txt2(dir)
+    continuar !p.existe(tpasso, "dir_" + txt1(dir))
+    lin = txtmai(txt1(dir)) + "  "
+    lin += m_sala(tpasso, "dir_" + txt1(dir))
+    msg(lin)
   efim
   !lin && msg("Nenhuma")
   ret 1
@@ -604,127 +353,202 @@ func cmd_esai # Editar saída
   senao !p.existe(perso.dono, "dir_" + dir)
     msg("Não existe saída na direção " + txtmai(dir))
   senao
-    passo = "sai"
-    opasso = dir
-    tpasso = txt(perso.dono)
-    dir = txtmai(dir)
-    msg("Saída " + dir + " de " + txt(tpasso, 2) + ", tecle O para saber as opções")
+    var.classe1 = perso.dono
+    var.saida1 = txtmin(dir)
+    m_menu("adm_saida")
   fimse
   ret 1
 
-const txt_tipo = "Não há porta\nPorta aberta\nPorta fechada\nPorta trancada"
-const txt_tipo2 = "Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela"
-const txt_tranc = "Normal\n\
-Fecha ao passar\n\
-Tranca ao fechar\n\
-Tranca ao fechar ou passar"
+const t_saiinicio = t_opcao(arg0, arg1, arg2)
 
-func p_sai # Editando saída
-  txt10 dir
-  teditor.limpar
-  se txt(arg0, 0, 1) == "m" # Executa comando do MUD
-    perso.teclou(txtremove(txt(arg0, 1), "E"))
-    ret 1
+func p_saiinicio
+  p_opcao(arg0)
+  se passo == "opcao"
+    passo = "saiinicio"
+  senao arg0 != "z" && passo != "saiinicio"
+    $[var.classe1].mudaporta(var.saida1, arg0)
   fimse
-  casovar txtmin(arg0)
-  casose "o"
-    uint16 agora
-    agora = $[txt1(tpasso)].porta_[opasso]
-    txtmais.limpar
-    txtmais.addfim("\bSaída " + txtmai(opasso) + " de " + txt(tpasso, 2))
-    txtmais.addfim("1. Estado inicial  : " + m_opcao("portaini_" + opasso, txt_tipo))
-    txtmais.addfim("2. Estado atual    : " + m_opcaomostra(agora, txt_tipo))
-    txtmais.addfim("3. Invisível       : " + m_simnao("inv_" + opasso))
-    txtmais.addfim("4. Trancar         : " + m_opcao("tranc_" + opasso, txt_tranc))
-    txtmais.addfim("5. Chave           : " + m_linha("chave_" + opasso))
-    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
-    txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
-    txtmostra
-    ret 1
-  casose "z"
-    msg("Retornando ao jogo")
-    passo = ""
-    ret 1
-  casose "l"
-    msg(txt_legenda)
-    ret 1
-  casose "1"
-    msg("Estado inicial: " + m_opcao("portaini_" + opasso, txt_tipo))
-    teditor.addfim(txt_tipo)
-    tpasso += " portaini_" + opasso + " saitipo Estado inicial"
-    ret p_opcao("")
-  casose "2"
-    uint16 agora
-    agora = $[tpasso].porta_[opasso]
-    msg("Estado atual: " + m_opcaomostra(agora, txt_tipo))
-    ret p_saiagora("")
-  casose "3"
-    msg("Invisível: " + m_simnao("inv_" + opasso))
-    tpasso += " inv_" + opasso + " sai Invisível"
-    ret p_simnao("")
-  casose "4"
-    msg("Trancar: " + m_opcao("tranc_" + opasso, txt_tipo))
-    teditor.addfim(txt_tranc)
-    tpasso += " tranc_" + opasso + " sai Tracar"
-    ret p_opcao("")
-  casose "5"
-    msg("Chave: " + m_linha("chave_" + opasso))
-    tpasso += " chave_" + opasso + " sai Chave"
-    ret p_linha("")
-  casose "f1"
-    tpasso += " portaini_" + opasso + " saitipo Estado inicial"
-    ret p_func("\n")
-  casose "f2"
-    tpasso += " porta_" + opasso + " saitipo Estado atual"
-    ret p_func("\n")
-  casose "f3"
-    tpasso += " inv_" + opasso + " sai Invisível"
-    ret p_func("\n")
-  casose "f4"
-    tpasso += " tranc_" + opasso + " sai Tracar"
-    ret p_func("\n")
-  casose "f5"
-    tpasso += " chave_" + opasso + " sai Chave"
-    ret p_func("\n")
-  casose
-    msg("Opção inválida: " + arg0)
-  casose ""
-    passo = "sai"
-    tpasso = txt1(tpasso)
-    msg("\bSaída " + txtmai(opasso) + " de " + txt(tpasso, 2) + ", O opções, Z sair")
-    ret 1
-  casofim
   ret 1
 
-func p_saitipo # Acerta a saída após mudar o tipo de saída
-  ref r
-  r = $[txt1(tpasso)]
-  se r && (r.tipo == 0) != (r.tipoini == 0)
-    r.tipo = r.tipoini
-  fimse
-  ret p_sai("")
+const t_saiagora = t_opcaomostra($[arg0].[arg1], txt_porta)
 
 func p_saiagora # Mudar o estado atual
-  textotxt t
-  uint16 num
-  t.addfim(txt_tipo), num = arg0
-  se arg0 == ""
-    passo = "saiagora"
-    msg(txt_tipo2)
-  senao arg0 == "z"
-    passo = "sai"
-    p_sai("")
-  senao arg0 != txt(num) || num < 0 || num >= t.linhas
-    msg("Entre com um número de 0 a " + (t.linhas - 1))
-  senao
-    $[tpasso].mudaporta(opasso, num)
-# $[tpasso].porta_[opasso] = num
-    t.remove(num)
-    se t.linhas
-      msg("Saída mudou para: " + num + " " + t.remove(1))
+  casovar arg0
+  casose "z"
+    sair
+  casose "0"
+  casose "1"
+  casose "2"
+  casose "3"
+    se $[var.classe1].mudaporta(var.saida1, arg0)
+      textotxt t
+      t.addfim(txt_porta) #, t.remove(arg0)
+      msg("Saída mudou para: " + arg0 + " " + t.remove)
     senao
-      msg("Saída mudou para: " + num + " <inválido>")
+      msg("Não foi possível mudar a saída")
     fimse
-    p_sai("")
-  fimse
+    sair
+  casose
+    passo = "saiagora"
+    msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
+    ret 1
+  casofim
+  passo = var.opcpasso, p_[passo]("\b")
   ret 1
+
+
+classe adm_area
+# Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
+const titulo = "Área " + txt(var.classe1, 2)
+#
+const nome1 = "Nome"
+const tipo1 = "linha"
+const classe1 = var.classe1
+const var1 = "a_nome"
+#
+const nome2 = "Autor"
+const tipo2 = "linha"
+const classe2 = var.classe1
+const var2 = "a_autor"
+#
+const nome3 = "Tempo de reset"
+const tipo3 = "numero+"
+const classe3 = var.classe1
+const var3 = "a_tempo"
+#
+const nome4 = "Modo de reset"
+const tipo4 = "opcao+"
+const classe4 = var.classe1
+const var4 = "a_reset"
+const extra4 = "Nunca\nQuando não há jogadores\nNormal"
+#
+const nome5 = "Terreno"
+const tipo5 = "opcao+"
+const classe5 = var.classe2
+const var5 = "s_terreno"
+const extra5 = txt_terreno
+#
+const nome6 = "Luz"
+const tipo6 = "opcao+"
+const classe6 = var.classe2
+const var6 = "s_luz"
+const extra6 = txt_luz
+#
+const nome7 = "Apagar itens (min)"
+const tipo7 = "numero+"
+const classe7 = var.classe2
+const var7 = "s_item"
+#
+const nome8 = "Morre ao entrar"
+const tipo8 = "simnao+"
+const classe8 = var.classe2
+const var8 = "s_morre"
+#
+const nome9 = "Silencioso"
+const tipo9 = "simnao+"
+const classe9 = var.classe2
+const var9 = "s_silencio"
+#
+const nome10 = "Batalha"
+const tipo10 = "opcao+"
+const classe10 = var.classe2
+const var10 = "s_luta"
+const extra10 = txt_luta
+#
+const nome11 = "Sem magia"
+const tipo11 = "simnao+"
+const classe11 = var.classe2
+const var11 = "s_semmagia"
+#
+const nome12 = "PNJs não entram"
+const tipo12 = "simnao+"
+const classe12 = var.classe2
+const var12 = "s_sempnj"
+
+
+classe adm_sala
+const titulo = "Sala " + txt(var.classe1, 2)
+#
+const nome1 = "Título"
+const tipo1 = "linha+"
+const classe1 = var.classe1
+const var1 = "s_titulo"
+#
+const nome2 = "Descrição"
+const tipo2 = "texto+"
+const classe2 = var.classe1
+const var2 = "s_desc"
+#
+const nome3 = "Terreno"
+const tipo3 = "opcao+"
+const classe3 = var.classe1
+const var3 = "s_terreno"
+const extra3 = txt_terreno
+#
+const nome4 = "Luz"
+const tipo4 = "opcao+"
+const classe4 = var.classe1
+const var4 = "s_luz"
+const extra4 = txt_luz
+#
+const nome5 = "Apagar itens (min)"
+const tipo5 = "numero+"
+const classe5 = var.classe1
+const var5 = "s_item"
+#
+const nome6 = "Morre ao entrar"
+const tipo6 = "simnao+"
+const classe6 = var.classe1
+const var6 = "s_morre"
+#
+const nome7 = "Silencioso"
+const tipo7 = "simnao+"
+const classe7 = var.classe1
+const var7 = "s_silencio"
+#
+const nome8 = "Batalha"
+const tipo8 = "opcao+"
+const classe8 = var.classe1
+const var8 = "s_luta"
+const extra8 = txt_luta
+#
+const nome9 = "Sem magia"
+const tipo9 = "simnao+"
+const classe9 = var.classe1
+const var9 = "s_semmagia"
+#
+const nome10 = "PNJs não entram"
+const tipo10 = "simnao+"
+const classe10 = var.classe1
+const var10 = "s_sempnj"
+
+
+classe adm_saida
+const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
+#
+const nome1 = "Estado inicial"
+const tipo1 = "saiinicio+"
+const classe1 = var.classe1
+const var1 = "portaini_" + var.saida1
+const extra1 = txt_porta
+#
+const nome2 = "Estado atual"
+const tipo2 = "saiagora"
+const classe2 = var.classe1
+const var2 = "porta_" + var.saida1
+#
+const nome3 = "Invisível"
+const tipo3 = "simnao+"
+const classe3 = var.classe1
+const var3 = "inv_" + var.saida1
+#
+const nome4 = "Trancar"
+const tipo4 = "opcao+"
+const classe4 = var.classe1
+const var4 = "tranc_" + var.saida1
+const extra4 = txt_tranc
+#
+const nome5 = "Chave"
+const tipo5 = "linha+"
+const classe5 = var.classe1
+const var5 = "chave_" + var.saida1

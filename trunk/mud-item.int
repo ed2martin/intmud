@@ -15,11 +15,12 @@ sav uint32 vestpos # Em que posição está vestindo, 0=nenhuma
 # 2=está aberto, 3=está fechado, 4=está trancado
 
 func ini # Objeto foi criado (arg1 = quantidade)
-  comum_obj:ini
+  comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
 
 func fim # Objeto foi apagado
-  comum_obj:fim
+  ref r
+  r = dono, comum_obj:fim, cmd_fim(r)
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   cmd_mudadono(arg0), dono = arg0
@@ -50,7 +51,7 @@ func objproc # Procura um objeto do mesmo tipo em uma listaobj
 func ini # Objeto foi criado (arg0=dono, arg1=quantidade)
   objtot = arg1
   !objtot && (objtot = 1) # Garante pelo menos um item
-  comum_obj:ini
+  comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0, objtot)
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
@@ -111,11 +112,12 @@ const i_lugar = 1 # Quantos personagens podem sentar
 # Cada personagem deitado ocupa três vagas de i_lugar
 
 func ini # Objeto foi criado (arg1 = quantidade)
-  comum_obj:ini
+  comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
 
 func fim # Objeto foi apagado
-  persolugar.limpar, comum_obj:fim
+  ref r
+  persolugar.limpar, r = dono, comum_obj:fim, cmd_fim(r)
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   persolugar.limpar, cmd_mudadono(arg0), dono = arg0

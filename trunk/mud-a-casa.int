@@ -4,7 +4,7 @@ const a_nome = "Dentro da casa"
 #
 # Tarefas:
 # 1. upar na sala ampla
-# 2. levar banquinho no quarto para subir no sótão
+# 2. abrir a escada no quarto para subir no sótão
 # 3. desafiar um PNJ para poder salvar o jogo
 # 4. pegar comida na sala de jantar (tem duas com a mesma descrição)
 # 5. soltar comida para passar pelo cão de guarda
@@ -57,15 +57,19 @@ const nome = "Boneco de papel"
 const sexo = 1
 const descpos = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
-const p_agressivo = 1
-intinc tempo # Para não sair do jogo logo de cara
+ref alvo # Quem esse personagem deve atacar
 
 func cmd_recalc1 # Aumenta pontos de vida e precisão
   pvidamax = pvidamax * 2 + 50
   precisao += 10
 
+func cmd_ini # Personagem criado: anota o alvo
+  alvo = arg3
+
 func cmd_pnj_proc
-  se tempo && !atkenv # Se passou um tempo e não está batalhando
+  se alvo.dono == dono # Se alvo está na mesma sala: ataca
+    batalhaini(alvo)
+  senao # Alvo em outra sala: boneco vai embora
     apagar(este)
     dono.msg("Boneco de papel caiu do telhado.")
     ret 1
@@ -77,16 +81,31 @@ const nome = "Boneco de papelão"
 const sexo = 1
 const descpos = "Um boneco de papelão está se mexendo."
 const descver = "Parece frágil, pois é feito de papelão."
-const p_agressivo = 1
-intinc tempo # Para não sair do jogo logo de cara
+const eveste = 1 # Receber eventos do próprio objeto
+ref alvo # Quem esse personagem deve atacar
+
+func cmd_ini # Personagem criado: anota o alvo
+  alvo = arg3
 
 func cmd_recalc1 # Aumenta pontos de vida
   pvidamax = pvidamax * 2 + 50
 
 func cmd_pnj_proc
-  se tempo && !atkenv # Se passou um tempo e não está batalhando
+  se alvo.dono == dono # Se alvo está na mesma sala: ataca
+    batalhaini(alvo)
+  senao # Alvo em outra sala: boneco vai embora
     apagar(este)
-    dono.msg("Boneco de papel caiu do telhado.")
+    dono.msg("Boneco de papelão caiu do telhado.")
+    ret 1
+
+func cmd_fim # Personagem foi apagado
+  se pvida == 0 && alvo # Se morreu e o alvo ainda existe
+    alvo.var.j_salvar = 1 # Altera uma variável do alvo
+
+func cmd_atkrec # Somente o jogador alvo pode atacar o boneco
+  se arg0 != alvo
+    $mens.p(arg0, este)
+    $mens.mtodos2("$A impede o seu ataque.", "$A impede o ataque de $P.")
     ret 1
 
 
@@ -108,52 +127,69 @@ func cmd_chegou # Chegou na sala
   ret !arg0.jog, nulo # Retorna se não for jogador
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
-func cmd_saiu # Chegou da sala
+func cmd_saiu # Saiu da sala
   dono.dentro2.objini("jogador") ? tempo.pos : tempo.neg
 
 func entrou20
-  arg0.msg("Menina: olá!")
+  se arg0.var.j_salvar
+    arg0.msg("Menina: Você destruiu meu boneco de papelão!!!")
+  senao !arg0.senha
+    arg0.msg("Menina: Olá!")
 
 func entrou40
-  arg0.msg("Menina: Ao leste tem uns bonecos fortes. Se perceber que vai perder,")
-  arg0.msg("Menina: tecle fugir. Depois vá ao quarto e tecle DEITAR.")
+  se arg0.var.j_salvar
+    arg0.msg("Menina: Agora vá até o quarto. Poderá salvar o jogo lá.")
+  senao !arg0.senha
+    arg0.msg("Menina: Ao leste tem uns bonecos fortes. Se perceber que vai perder,")
+    arg0.msg("Menina: tecle fugir. Depois vá ao quarto e tecle DEITAR.")
 
 func tempo_exec
   tempo = rand(80, 200)
   dono.msg("Menina joga um boneco de papel pelo telhado.")
 
+func cmd_recalc1 # Faz a menina ser praticamente imune a ataques
+  uint8 x
+  enquanto x < 30
+    deftipo.[x] = 200, x += 1
+  efim
+  evasao = 0
+
+func desaparece2
+  dono.msg("Menina ficou transparente por um instante")
+  batalhafim
+
 func cmd_atacar
   se arg1 == este # Atacar a menina
-# Obtém o personagem de nível mais alto
+    misc:tempo("desaparece", este) # Dispara funções 'desaparece'
+    ret
+# Para teste:
+# Obtém o personagem de nível mais alto e cria bonecos 2 níveis abaixo
     uint16 nivel
     listaitem i
     epara i = dono.dentro2.ini, i, i.depois
       nivel < i.obj.pnivel && (nivel = i.obj.pnivel)
     efim
-# Cria bonecos de papel de nível um pouco abaixo
-    nivel -= 2
     dono.msg("Menina acabou derrubando dois bonecos de papel.")
-    ref r
-    r = criar("p_boneco_menina", dono, nivel, "h_socar=1,h_chutar=1")
-    r.batalhaini(arg0)
-    r = criar("p_boneco_menina", dono, nivel, "h_socar=1,h_chutar=1")
-    r.batalhaini(arg0)
+    criar("p_boneco_menina", dono, nivel - 2, "h_socar=1", arg0)
+    criar("p_boneco_menina", dono, nivel - 2, "h_socar=1", arg0)
 
 
 classe s_casa001
 herda b_casa
 const s_luta = 0 # Sem luta
 const s_titulo = "Quarto"
-const s_desc = "Enquanto os outros cômodos são de um tamanho desproporcinal, esse\n\
+const s_desc = misc:obj.var.j_salvar ? s_desc1 + s_desc2 : s_desc1
+const s_desc1 = "Enquanto os outros cômodos são de um tamanho desproporcinal, esse\n\
 quarto se destaca por ser pequeno. Dois beliches ocupam quase todo\n\
 o espaço. O espaço de um metro entre eles segue à leste.\n\
 Você pode descansar mais um pouco teclando DEITAR"
+const s_desc2 = "\nPode também salvar o jogo ou mudar a senha teclando SALVAR"
 const dir_l = $s_casa002
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
 # Para teste: muda o nível do personagem
-# arg0.pnivel = 2, arg0.recalc = 1
+# arg0.pnivel = 18, arg0.recalc = 1
 
 func cmd_escr # Descansar
   se arg1 == "deitar"
@@ -164,6 +200,9 @@ func cmd_escr # Descansar
     arg0.restaurar
     $mens.p(arg0)
     $mens.mtodos1("$P descansa e se recupera.")
+    ret 1
+  senao arg1 == "salvar" && (arg0.var.j_salvar || arg0.senha)
+    arg0.mudasenha
     ret 1
 
 
@@ -472,7 +511,7 @@ const dir_o = $s_casa015
 const dir_l = $s_casa016
 
 func cmd_salaperso # Personagem chegou
-  misc:salacriar("p_casa_menina", 10, "h_chutar=1")
+  misc:salacriar("p_casa_menina", 10)
 
 
 classe s_casa015
@@ -492,10 +531,8 @@ devido ao forte vento."
 const dir_o = $s_casa014
 
 func cmd_salaperso # Personagem chegou
-  se arg0.jog && !arg0.senha # Jogador que ainda não salvou o jogo
-    ref r
-    r = criar("p_boneco_salvar", este, 10, "h_socar=1,h_chutar=1")
-    r.batalhaini(arg0)
+  se arg0.jog && !arg0.senha && !arg0.var.j_salvar # Jogador que ainda não salvou o jogo
+    criar("p_boneco_salvar", este, 10, "h_socar=1,h_chutar=1", arg0)
     misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_fugir
@@ -503,6 +540,6 @@ func cmd_fugir
   arg0.batalhafim
   $mens.p(arg0)
   $mens.mtodos1("$P fugiu para oeste.")
-  arg0.mudadono($s_casa001)
+  arg0.mudadono($s_casa014)
   $mens.mvis2("", "$P chegou do leste.")
   ret 1

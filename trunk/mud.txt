@@ -9,10 +9,12 @@
 7. Personagens (mud-perso.int)
 8. Personagens não jogador (mud-perso.int)
 9. Itens (mud-item.int)
-10. Eventos
-11. Eventos incondicionais
-12. Eventos condicionais
-13. Lista de itens pendentes
+10. Funções chamadas somente para o póprio objeto
+11. Eventos
+12. Eventos incondicionais
+13. Eventos condicionais
+14. Criando menus de edição (administração)
+15. Lista de itens pendentes
 
 
 1. Organização dos arquivos e classes
@@ -290,7 +292,7 @@ Verdadeiro (=1) se pode receber itens
 7. Personagens (mud-perso.int)
 
 7.1. Para criar um personagem
-criar("nome da classe", nível do personagem, "variáveis")
+criar("nome da classe", aonde está, nível do personagem, "variáveis")
 Se o nível for omitido, será 0.
 Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
 variável, separar por vírgula (exemplo, "v1=10,v2=20").
@@ -456,7 +458,33 @@ Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
 
-10. Eventos
+10. Funções chamadas somente para o póprio objeto
+
+func cmd_ini(arg0, arg1, arg2, arg3, arg4)
+Chamado quando o objeto é criado. Arg0 a arg5 são os 5 primeiros argumentos
+da função ini do objeto.
+
+func cmd_fim(dono)
+Chamado quando o objeto é apagado. Dono é o dono anterior do objeto.
+
+func cmd_salaperso(personagem)
+Chamado para a própria sala, quando um personagem controlado por um jogador
+entra na sala.
+
+func cmd_mudadono(novo dono)
+Chamado por mudadono, quando o personagem está mudando de dono.
+
+func cmd_recalc1(personagem)
+Chamado por func recalc_exec, para ajustar as variáveis do personagem
+(pontos de vida, mana, etc.)
+
+func cmd_pnj_proc
+É chamado apenas para o próprio PNJ, cada vez que o personagem decidir
+fazer alguma coisa. Não é chamado se estiver sendo controlado por um
+jogador ou pertencer a outro personagem.
+
+
+11. Eventos
 
 São funções executadas quando um personagem digita algo, muda de sala
 ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar eventos.
@@ -489,7 +517,7 @@ Significa que quando o personagem tentar abrir uma porta, será executada
 a função cmd_abrirdir das listas do personagem e da sala.
 
 
-11. Eventos incondicionais
+12. Eventos incondicionais
 
 São funções chamadas como resultado de uma ação que aconteceu ou vai
 acontecer. A função não tem a opção de cancelar a ação.
@@ -506,18 +534,6 @@ do personagem é limpa.
 
 func cmd_chegou(personagem, sala)
 Personagem entrou na sala. É chamado logo após mudar de sala.
-
-func cmd_salaperso(personagem)
-Esssa função é chamada somente para a própria sala, quando um personagem
-entra na sala.
-
-func cmd_mudadono(novo dono)
-O próprio personagem ou um item está mudando de dono. Essa função é chamada
-somente para o próprio objeto, quando a função mudadono é executada.
-
-func cmd_recalc1(personagem)
-Chamado para o próprio personagem, por func recalc_exec, para ajustar
-as variáveis (pontos de vida, mana, etc.)
 
 func cmd_recalc2(personagem)
 Chamado para os objetos em personagem.dentro2 e personagem.evento, por
@@ -547,18 +563,13 @@ func cmd_descansouobj(personagem, item, texto)
 Ficou em pé, começou a descansar ou sentou-se.
 
 
-12. Eventos condicionais
+13. Eventos condicionais
 
 São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
 a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
 usuário informando o motivo.
 
 A seguir são listados os eventos (as funções).
-
-func cmd_pnj_proc
-É chamado apenas para o próprio PNJ, cada vez que o personagem decidir
-fazer alguma coisa. Não é chamado se estiver sendo controlado por um
-jogador ou pertencer a outro personagem.
 
 func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
 Personagem digitou alguma coisa.
@@ -618,7 +629,59 @@ func cmd_fugir(personagem)
 Quer fugir de uma batalha.
 
 
-13. Lista de itens pendentes
+14. Criando menus de edição (administração)
+
+Primeiro criar uma classe como a seguinte:
+
+classe adm_config
+# Título é o nome do menu (aparece antes da lista de opções)
+const titulo = "Configuração do MUD"
+
+# Primeira opção do menu:
+
+const nome1 = "Quantidade de animais"
+# Nome é o nome da opção
+
+const classe1 = "config"
+# Nome da classe
+
+const var1 = "animal"
+# Nome da variável
+
+const tipo1 = "numero+"
+# Tipo é o tipo de dado sendo editado:
+# "linha" = texto de uma linha (exemplo: título das salas)
+# "texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
+# "numero" = valor numérico
+# "opcao" = um valor numérico baseado numa lista de opções
+# "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
+# Se for possível editar como função, acrescente um sinal de '+' no nome
+
+const extra1 = "1 8"
+# Opções extras. Nem todos os tipos têm opções extras.
+# Nesse caso (tipo "numero"), o número deve ser de 1 a 8
+# No tipo "opcao", é a lista de opções
+
+# As outras opções seguem o mesmo padrão, apenas mudando o número
+# da variável. Exemplo:
+
+const nome2 = "Senha de administração" # Nome da opção
+const tipo2 = "linha+" # Tipo de variável
+const classe2 = "config"
+const var2 = "senhaadm"
+
+const nome3 = "Tipo de ataque"
+const tipo3 = "opcao"
+const classe3 = "config"
+const var3 = "atktempo"
+const extra3 = "manual\nautomático" # 0=manual, 1=automático
+
+Para chamar o menu, basta executar a função m_menu do jogador (classe
+jogsock), passando como argumento o nome da classe.
+Exemplo: m_menu("adm_config")
+
+
+15. Lista de itens pendentes
 
 Opção na sala para não permitir soltar itens ou para virarem pó
 Valor em moedas

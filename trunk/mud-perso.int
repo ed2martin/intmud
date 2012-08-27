@@ -20,15 +20,14 @@ listaitem poslugar # Em qual móvel está sentado ou deitado
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
-  comum_obj:ini
   posicao = pospadr, pnivel = arg1, p_proc = 1
-  arg0 && mudadono(arg0)
   se arg2
     textotxt t
-    t.addfim(txttroca(arg2, ",", "\n"))
-    enquanto t.linhas
-      var.mudar(t.remove)
+    epara t.addfim(txttroca(arg2, ",", "\n")), t.linhas, var.mudar(t.remove)
     efim
+  fimse
+  comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
+  arg0 && mudadono(arg0)
 
 func fim # Objeto foi apagado
   se sock # Se estiver ligado a um jogador
@@ -45,19 +44,22 @@ func fim # Objeto foi apagado
     sock.perso = nulo # Desliga-se do jogador
     sock = nulo
   fimse
-  comum_obj:fim
+  ref r
+  batalhafim, r = dono, comum_obj:fim, cmd_fim(r)
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Eventos cmd_saiu
   listaobj l
-  epara l.addfim(evento, dono.evento), l, l.ini.remove
-    l.objini.cmd_saiu(este, dono)
-  efim
+  se dono
+    epara l.addfim(evento, dono.evento), l, l.ini.remove
+      l.objini.cmd_saiu(este, dono)
+    efim
+  fimse
 # Muda de sala
   cmd_mudadono(arg0), dono = arg0
   atkrec.limpar, poslugar.remove
 # Eventos cmd_chegou
-  dono.cmd_salaperso(este)
+  (sock || jog) && dono.cmd_salaperso(este)
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
   efim
@@ -69,7 +71,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   fimse
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock
-    p_proc_exec
+    p_proc = 1
   senao dono.s_titulo
     se jogconfig.16
       msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
@@ -233,23 +235,18 @@ inttempo p_proc # Para processar comportamento do personagem
 
 func ini # Objeto foi criado
   comum_perso:ini
+  se arg2
+    textotxt t
+    epara t.addfim(txttroca(arg2, ",", "\n")), t.linhas, var.mudar(t.remove)
+    efim
+  fimse
   p_restaura = 100
   pnivel = arg1
   recalc_exec
-  pvida = pvidamax
-  pmana = pmanamax
-  pmove = pmovemax
+  pvida = pvidamax, pmana = pmanamax, pmove = pmovemax
+  persobat = este, persoesc = este
+  cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
-  se arg2
-    textotxt t
-    t.addfim(txttroca(arg2, ",", "\n"))
-    enquanto t.linhas
-      var.mudar(t.remove)
-    efim
-
-func fim # Objeto foi apagado
-  comum_perso:fim
-  atkrec.limpar, atkdiv.limpar
 
 func ataqueini # Testa se pode atacar
 # Retorna "" se pode atacar ou a mensagem com o motivo se não pode
@@ -346,6 +343,40 @@ func batalhafim # Encerra a batalha
     r = atkrec.objini, atkrec.ini.remove, r.atktempo = 0, r.acertapos(arg0)
   efim
 
+func batalhaexp # Dá experiência a quem estiver atacando o personagem
+# arg0 = fator do ganho de experiência; se 0 retira toda experiência
+  listaitem i
+  listaobj l
+# Preenche lista com os personagens
+  epara i = dono.perso ? dono.atkrec.ini : atkrec.ini, i, i.depois
+    l.addfim(i.obj.atkdiv)
+  efim
+  epara i = l.ini, i, i.obj.pvida ? i.depois : i.removedepois
+  efim
+# Retira experiência
+  se !arg0
+    epara i = l.ini, i, i.depois
+      i.obj.expatual = 0
+    efim
+    ret
+  fimse
+# Ganha experiência
+  real v1
+  epara i = l.ini, i, i.depois
+    v1 = intpos(pnivel - i.obj.pnivel + 8) / 16
+    v1 > 1 && (v1 = 1)
+    i.obj.ganhaexp(v1 * arg0 * (pnivel * 5 + 30) / l.total)
+  efim
+
+func ganhaexp # Personagem ganha experiência
+# arg0 = experiência
+  expatual += arg0
+  se expatual > expmax
+    expatual -= expmax
+    pnivel += 1
+    dono.msg(nome + " foi para nível " + pnivel)
+    recalc = 1 # Recalcular atributos do personagem
+
 func atktempo_exec # Encerra a batalha depois de um tempo
   se !atkenv # Se não tem um alvo
     batalhafim(1)
@@ -416,40 +447,6 @@ func morreu # Procedimentos quando morre
     r = sock, r.mudaperso(nulo)
     r.reinicia
 
-func batalhaexp # Dá experiência a quem estiver atacando o personagem
-# arg0 = fator do ganho de experiência; se 0 retira toda experiência
-  listaitem i
-  listaobj l
-# Preenche lista com os personagens
-  epara i = dono.perso ? dono.atkrec.ini : atkrec.ini, i, i.depois
-    l.addfim(i.obj.atkdiv)
-  efim
-  epara i = l.ini, i, i.obj.pvida ? i.depois : i.removedepois
-  efim
-# Retira experiência
-  se !arg0
-    epara i = l.ini, i, i.depois
-      i.obj.expatual = 0
-    efim
-    ret
-  fimse
-# Ganha experiência
-  real v1
-  epara i = l.ini, i, i.depois
-    v1 = intpos(pnivel - i.obj.pnivel + 8) / 16
-    v1 > 1 && (v1 = 1)
-    i.obj.ganhaexp(v1 * arg0 * (pnivel * 5 + 30) / l.total)
-  efim
-
-func ganhaexp # Personagem ganha experiência
-# arg0 = experiência
-  expatual += arg0
-  se expatual > expmax
-    expatual -= expmax
-    pnivel += 1
-    dono.msg(nome + " foi para nível " + pnivel)
-    recalc = 1 # Recalcular atributos do personagem
-
 func escolhehab # Escolhe e retorna o nome de uma habilidade
   txt100 t1 # Nome da habilidade
   uint8 total
@@ -509,13 +506,6 @@ const perso = 3 # Para identificar o tipo de personagem
 sav ref animal.8 # Animais que possui
 sav ref persobat # Personagem usado na batalha
 sav ref persoesc # Personagem escolhido pelo jogador
-
-func ini # Objeto foi criado
-  comum_persobat:ini
-  persobat = este
-  persoesc = este
-
-const fim = comum_persobat:fim
 
 func escolhebat # Escolhe um personagem em condições de lutar
   se persoesc.pvida # Checa se personagem escolhido está em condições
