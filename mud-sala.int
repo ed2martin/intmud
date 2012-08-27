@@ -25,7 +25,7 @@ uint8 porta_so # Tipo de saída
 func iniclasse
   criar(arg0)
 
-func ini # Inicializa variáveis
+func ini # Objeto foi criado: inicializa variáveis
   porta_n = portaini_n
   porta_s = portaini_s
   porta_l = portaini_l
@@ -36,7 +36,11 @@ func ini # Inicializa variáveis
   porta_no = portaini_no
   porta_se = portaini_se
   porta_so = portaini_so
-  comum_obj:ini
+  comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
+
+func fim # Objeto foi apagado
+  ref r
+  r = dono, comum_obj:fim, cmd_fim(r)
 
 func msg # Mensagem para todos da sala
   se socktot

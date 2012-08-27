@@ -68,12 +68,27 @@ func cmd_matar2
     msg("Matando " + r.nome), r.morreu
     ret 1
   efim
-  msg("Não há nenhum personagem ou item chamado " + arg0)
+  msg("Não há nenhum personagem chamado " + arg0)
   ret 1
 
 func cmd_cmd
-  debug d
-  msg(">" + d.cmd(este, "ret " + arg0))
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  se !txt1(arg0)
+    msg("Digite o nome do personagem e o comando após CMD")
+    ret 1
+  fimse
+  n.ini(txt1(arg0), 1000000)
+  l.addfim(perso.dono.dentro2)
+  enquanto l
+    r = l.objini, l.ini.remove
+    continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
+    debug d
+    msg(">" + d.cmd(r, "ret " + txt2(arg0)))
+    ret 1
+  efim
+  msg("Não há nenhum personagem chamado " + txt1(arg0))
   ret 1
 
 func cmd_adm
@@ -126,9 +141,9 @@ const adm_outros = "\c3Outros comandos\b\n\
   Informações sobre personagem ou item.\n\
 \c2MATAR1\b <personagem ou item>\n\
   Apaga personagem ou item.\n\
-\c2MATAR2\b <personagem ou item>\n\
+\c2MATAR2\b <personagem>\n\
   Mata instantaneamente personagem.\n\
-\c2CMD\b <comando>\n\
+\c2CMD\b <personagem> <comando>\n\
   Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 \c2MUDLER\b\n\
   Recarrega arquivos do MUD que foram alterados."
@@ -168,206 +183,139 @@ Exemplo, as salas herdam as propriedades das nas áreas.\n\
 Outro texto entre os sinais de menor e maior indicam o modo\n\
 como a opção foi definida. Exemplo, <func> significa função."
 
-func m_linha # Mostra texto de uma linha, do tipo "const x = \"abc\""
-# arg0=nome da variável, tpasso=nome da classe
-  prog p
-  casovar p.existe(tpasso, arg0)
-  casose "1" # Na própria classe
-    se p.vartexto(tpasso, arg0)
-      ret txtvis([tpasso]:[arg0])
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<" + txt1(p.texto) + ">"
-    fimse
-  casose "2" # Em uma classe herdada
-    se p.vartexto(tpasso, arg0)
-      ret "<herda> " + txtvis([tpasso]:[arg0])
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<herda " + txt1(p.texto) + ">"
-    fimse
-  casose # Não foi definido
-    ret "<nulo>"
-  casofim
+func m_menu
+  tpasso = arg0, p_menu("")
+  ret
 
-func m_texto # Mostra quantidade de linhas de texto de várias linhas
-  prog p
-  casovar p.existe(tpasso, arg0)
-  casose "1" # Na própria classe
-    se p.vartexto(tpasso, arg0)
-      ret m_texto2([tpasso]:[arg0])
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<" + txt1(p.texto) + ">"
-    fimse
-  casose "2" # Em uma classe herdada
-    se p.vartexto(tpasso, arg0)
-      ret "<herda> " + m_texto2([tpasso]:[arg0])
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<herda " + txt1(p.texto) + ">"
-    fimse
-  casose # Não foi definido
-    ret "<nulo>"
+func p_menu
+  casovar txtmin(arg0)
+  casose ""
+  casose "\b"
+    var.opcnome = "", var.opcclasse = "", var.opcvar = ""
+    var.opcpasso = "", var.opcextra = ""
+    passo = "menu"
+    msg([tpasso]:titulo + ", tecle O para saber as opções")
+    ret 1
+  casose "o"
+    txtmais.limpar
+    txtmais.addfim([tpasso]:titulo)
+    prog p
+    epara p.inifunc(tpasso, "nome"), p.lin, p.depois # Opções de um dígito
+      continuar inttotal(p.texto) > 5
+      txtmais.addfim(m_menu2(tpasso, txt(p.texto, 4)))
+    efim
+    epara p.inifunc(tpasso, "nome"), p.lin, p.depois # Outras opções
+      continuar inttotal(p.texto) == 5
+      txtmais.addfim(m_menu2(tpasso, txt(p.texto, 4)))
+    efim
+    txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+    txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
+    txtmostra
+    ret 1
+  casose "z"
+    msg("Retornando ao jogo")
+    passo = ""
+    ret 1
+  casose "l"
+    msg(txt_legenda)
+    ret 1
   casofim
-
-func m_texto2 # Usado por m_texto
-  uint16 x
-  x = inttotal(arg0) - inttotal(txttroca(arg0, "\n", ""))
-  se x
-    ret txt(x + 1) + " linhas"
+  se txt(arg0, 0, 1) == "m" # Executa comando do MUD
+    perso.teclou(txtremove(txt(arg0, 1), "E"))
+  senao [tpasso]:nome[arg0] # Editar opção do menu
+    var.opcnome = [tpasso]:nome[arg0]
+    var.opcclasse = [tpasso]:classe[arg0]
+    var.opcvar = [tpasso]:var[arg0]
+    var.opcextra = [tpasso]:extra[arg0]
+    var.opcpasso = passo
+    msg(m_menu2(tpasso, arg0))
+    p_[txttroca([tpasso]:tipo[arg0], "+", "")]("\b")
+  senao txt(arg0, 0, 1) == "f" && [tpasso]:nome[txt(arg0, 1)] # Editar função
+    txt20 opc
+    opc = txt(arg0, 1)
+    var.opcnome = [tpasso]:nome[opc]
+    var.opcclasse = [tpasso]:classe[opc]
+    var.opcvar = [tpasso]:var[opc]
+    var.opcextra = [tpasso]:extra[opc]
+    var.opcpasso = passo
+    p_func("\b")
+  senao # Nenhuma das anteriores
+    msg("Opção inválida: " + arg0)
   fimse
-  ret "Uma linha"
+  ret 1
 
-func m_numero # Mostra número, do tipo "const x = 10"
-# arg0=nome da variável, tpasso=nome da classe
+func m_menu2 # Usado em m_menu para obter o texto de uma opção do menu
+# arg0 = nome da classe que contém o menu
+# arg1 = número da opção
+  txt100 lin
+  txt80 func1 # Função que mostra o conteúdo da variável
+  lin = arg1 + (txt(arg1, 1) ? "." : ". ") + [arg0]:nome[arg1]
+  inttotal(lin) < 20 && (lin = txt(lin + txtesp(18), 0, 20))
+  func1 = "t_" + txttroca([arg0]:tipo[arg1], "+", "") # Nome da função
+  ret lin + ": " + [func1]([arg0]:classe[arg1], [arg0]:var[arg1], [arg0]:extra[arg1])
+
+func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
+# arg0=nome da classe, arg1=nome da variável
   prog p
-  casovar p.existe(tpasso, arg0)
+  casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    se p.varnum(tpasso, arg0)
-      ret txt([tpasso]:[arg0])
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<" + txt1(p.texto) + ">"
-    fimse
+    ret p.vartexto(arg0, arg1), txtvis([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    se p.varnum(tpasso, arg0)
-      ret "<herda> " + txt([tpasso]:[arg0])
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<herda " + txt1(p.texto) + ">"
-    fimse
-  casose # Não foi definido
-    ret "<nulo> 0"
-  casofim
-
-func m_opcao # Mostra uma opção baseado numa lista de opções
-# arg0=nome da variável, arg1=nomes das opções, tpasso=nome da classe
-  prog p
-  casovar p.existe(tpasso, arg0)
-  casose "1" # Na própria classe
-    se p.varnum(tpasso, arg0)
-      ret m_opcaomostra([tpasso]:[arg0], arg1)
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<" + txt1(p.texto) + ">"
-    fimse
-  casose "2" # Em uma classe herdada
-    se p.varnum(tpasso, arg0)
-      ret "<herda> " + m_opcaomostra([tpasso]:[arg0], arg1)
-    senao
-      p.inilinha(tpasso, arg0)
-      ret "<herda " + txt1(p.texto) + ">"
-    fimse
-  casose # Não foi definido
-    ret "<nulo> " + m_opcaomostra(0, arg1)
-  casofim
-
-func m_opcaomostra # Retorna o texto correspondente a uma opção
-# arg0 = número da opção atual
-# arg1 = texto com lista de opções separadas por "\n"
-# Retorna: Um texto contendo a opção atual
-  uint16 valor
-  textotxt t
-  valor = arg0
-  t.addfim(arg1)
-  t.remove(valor)
-  se t.linhas
-    ret txt(valor) + " " + t.remove(1)
-  senao
-    ret txt(valor) + " <inválido>"
-
-func m_simnao # Mostra opção que pode ser 0 (não) ou 1 (sim)
-# arg0=nome da variável, tpasso=nome da classe
-  prog p
-  casovar p.existe(tpasso, arg0)
-  casose "1" # Na própria classe
-    se !p.varnum(tpasso, arg0)
-      p.inilinha(tpasso, arg0)
-      ret "<" + txt1(p.texto) + ">"
-    senao [tpasso]:[arg0]
-      ret txt([tpasso]:[arg0]) + " Sim"
-    senao
-      ret txt([tpasso]:[arg0]) + " Não"
-    fimse
-  casose "2" # Em uma classe herdada
-    se !p.varnum(tpasso, arg0)
-      p.inilinha(tpasso, arg0)
-      ret "<herda " + txt1(p.texto) + ">"
-    senao [tpasso]:[arg0]
-      ret "<herda> " + txt([tpasso]:[arg0]) + " Sim"
-    senao
-      ret "<herda> " + txt([tpasso]:[arg0]) + " Não"
-    fimse
-  casose # Não foi definido
-    ret "<nulo> 0 Não"
-  casofim
-
-func m_sala # Informa valor de variável do tipo "const x = $s_abc"
-# arg0=nome da variável, tpasso=nome da classe
-  prog p
-  casovar p.existe(tpasso, arg0)
-  casose "1" # Na própria classe
-    p.inilinha(tpasso, arg0)
-    se txt1(p.texto) != "const"
-      ret "<" + txt1(p.texto) + ">"
-    senao txt(p.texto, 6, inttotal(arg0) + 6) != arg0 + " = $s_"
-      ret "<const>"
-    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
-      ret "<const>"
-    senao
-      ret txt(p.texto, inttotal(arg0) + 12)
-    fimse
-  casose "2" # Em uma classe herdada
-    p.inilinha(tpasso, arg0)
-    se txt1(p.texto) != "const"
-      ret "<herda " + txt1(p.texto) + ">"
-    senao txt(p.texto, 6, inttotal(arg0) + 6) != arg0 + " = $s_"
-      ret "<herda const>"
-    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
-      ret "<herda const>"
-    senao
-      ret "<herda> " + txt(p.texto, inttotal(arg0) + 12)
-    fimse
+    ret p.vartexto(arg0, arg1), "<herda> " + txtvis([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
     ret "<nulo>"
   casofim
 
-func p_linha # Altera um texto de uma linha
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o nome da opção
+func p_linha # Alterando um texto de uma linha
   prog p
-  se arg0 == ""
+  se arg0 == "" || arg0 == "\b"
     passo = "linha"
     msg("Entre com um texto, N nenhum, Z cancela")
     ret 1
   senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    msg("Apagado: " + txtsub(tpasso, 3))
+    msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
-    txt200 t
-    t = "const " + txtsub(tpasso, 1, 1) + "=\"" + txtvis(arg0) + "\""
-    p.criar(txt1(tpasso), t)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txtvis(arg0) + "\"")
     config:salvar
-    msg(txtsub(tpasso, 3) + " mudou para: " + arg0)
+    msg(var.opcnome + " mudou para: " + arg0)
   fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
+  passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
-func p_texto # Altera um texto de várias linhas
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o nome da opção
+func t_texto # Retorna quantidade de linhas de texto de várias linhas
+# arg0=nome da classe, arg1=nome da variável
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.vartexto(arg0, arg1), t_texto2([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.vartexto(arg0, arg1), "<herda> " + t_texto2([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+    fimse
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func t_texto2 # Usado por t_texto
+  uint16 x
+  x = inttotal(arg0) - inttotal(txttroca(arg0, "\n", ""))
+  ret x ? txt(x + 1) + " linhas" : "Uma linha"
+
+func p_texto # Alterando um texto de várias linhas
   casovar txtmin(txt(arg0, 0, 1))
-  casose "\n"
+  casose "\b"
     textopos p1
     teditor.limpar
-    teditor.addfim([txt1(tpasso)]:[txtsub(tpasso, 1, 1)])
+    teditor.addfim([var.opcclasse]:[var.opcvar])
     epara p1 = teditor.ini, p1.lin, p1.depois
       p1.mudar(txtvis(p1.texto))
     efim
@@ -377,12 +325,11 @@ func p_texto # Altera um texto de várias linhas
     leditor2 = teditor.fim
     leditor2.antes
     passo = "texto"
-    msg("Editando " + txtsub(tpasso, 3) + ", O opções, Z sair")
+    msg("Editando " + var.opcnome + ", O opções, Z sair")
     ret 1
   casose "z" # Sair do editor
     msg("Fechando editor")
-    passo = txtsub(tpasso, 2, 1)
-    p_[passo]("")
+    passo = var.opcpasso, p_[passo]("\b")
     ret 1
   casose "x" # Salvar o texto
     prog p
@@ -392,173 +339,281 @@ func p_texto # Altera um texto de várias linhas
       t1.addfim(txtinvis(p1.texto))
     efim
     txt200 t
-    t = "const " + txtsub(tpasso, 1, 1) + "=\""
-    p.criar(txt1(tpasso), t + txtvis(t1.remove(1000)) + "\"")
+    t = "const " + var.opcvar + "=\""
+    p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
     config:salvar
-    msg("Salvou " + txtsub(tpasso, 3))
+    msg("Salvou " + var.opcnome)
     ret 1
   casofim
-  ret p_editor(arg0, 2000, txtsub(tpasso, 3))
+  ret p_editor(arg0, 2000, var.opcvar)
 
-func p_numero # Altera um texto de uma linha
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o nome da opção
-# A primeira linha da variável teditor, se não for nula, contém
-# os valores mínimo e máximo da variável
+func t_numero # Retorna número, do tipo "const x = 10"
+# arg0=nome da classe, arg1=nome da variável
   prog p
-  se arg0 == ""
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.varnum(arg0, arg1), txt([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.varnum(arg0, arg1), "<herda> " + txt([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo> 0"
+  casofim
+
+func p_numero # Alterando um número
+  prog p
+  se arg0 == "" || arg0 == "\b"
     passo = "numero"
     msg("Entre com um número, N nenhum, Z cancela")
     ret 1
   senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    msg("Apagado: " + txtsub(tpasso, 3))
+    msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
-    txt100 lin
     real valor
     valor = arg0
-    lin = teditor.ini.texto
     se arg0 != valor # Checa se é número
       msg("Entre com um número.")
       ret 1
-    senao lin # Checa limites mínimo e máximo
-      se valor < txt1(lin) || valor > txt2(lin)
-        msg("Entre com um número de " + txt1(lin) + " a " + txt2(lin) + ".")
+    senao var.opcextra # Checa limites mínimo e máximo
+      se valor < txt1(var.opcextra) || valor > txt2(var.opcextra)
+        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
         ret 1
       fimse
     fimse
-    lin = "const " + txtsub(tpasso, 1, 1) + "=" + valor
-    p.criar(txt1(tpasso), lin)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + valor)
     config:salvar
-    msg(txtsub(tpasso, 3) + " mudou para: " + arg0)
+    msg(var.opcnome + " mudou para: " + valor)
   fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
+  passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
-func p_opcao # Altera uma opção de uma lista de opções
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o nome da opção
-# teditor contém as opções
+func t_opcao # Retorna uma opção baseado numa lista de opções
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções
   prog p
-  se arg0 == ""
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.varnum(arg0, arg1), t_opcaomostra([arg0]:[arg1], arg2)
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.varnum(arg0, arg1), "<herda> " + t_opcaomostra([arg0]:[arg1], arg2)
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo> " + t_opcaomostra(0, arg2)
+  casofim
+
+func t_opcaomostra # Retorna o texto correspondente a uma opção
+# arg0 = número da opção atual
+# arg1 = texto com lista de opções separadas por "\n"
+# Retorna: Um texto contendo a opção atual
+  uint16 valor
+  textotxt t
+  valor = arg0
+  t.addfim(arg1)
+  t.remove(valor)
+  ret txt(valor) + (t.linhas ? " " + t.remove(1) : " <inválido>")
+
+func p_opcao # Alterando uma opção de uma lista de opções
+  prog p
+  se arg0 == "" || arg0 == "\b"
     passo = "opcao"
-    msg("Entre com uma opção, O mostra as opções, Z cancela")
+    msg("Entre com uma opção, O mostra as opções, N nenhuma, Z cancela")
     ret 1
   senao arg0 == "o"
     txtmais.limpar
-    txtmais.addfim("\bOpções:")
+    txtmais.addfim("\bOpções:\n" + var.opcextra)
     textopos pos
-    epara pos = teditor.ini, pos.lin, pos.depois
-      txtmais.addfim(txt(pos.linha) + ". " + pos.texto)
+    pos = txtmais.ini
+    epara pos.depois, pos, pos.depois
+      pos.mudar(txt(pos.linha - 1) + " ", 0, 0)
     efim
-    txtmais.addfim("N. Nenhuma, Z. Cancela")
     txtmostra
     ret 1
   senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    msg("Apagado: " + txtsub(tpasso, 3))
+    msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
-    textopos pos
-    txt100 lin
-    pos = teditor.ini
-    pos.linha = int(arg0)
-    se arg0 != pos.linha || pos.texto == ""
-      msg("Entre com uma opção de 0 a " + (teditor.linhas - 1))
+    textotxt t
+    int16 x
+    x = arg0, t.addfim(var.opcextra)
+    se arg0 != x || x < 0 || x >= t.linhas
+      msg("Entre com uma opção de 0 a " + (t.linhas - 1))
       ret 1
     fimse
-    lin = "const " + txtsub(tpasso, 1, 1) + "=" + pos.linha
-    p.criar(txt1(tpasso), lin)
+    t.remove(x)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x)
     config:salvar
-    msg(txtsub(tpasso, 3) + " mudou para: " + arg0 + " " + pos.texto)
+    msg(var.opcnome + " mudou para: " + x + " " + t.remove)
   fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
+  passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
-func p_simnao # Altera uma opção que pode ser "SIM" ou "NÃO"
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o nome da opção
+func t_simnao # Retorna opção que pode ser 0 (não) ou 1 (sim)
+# arg0=nome da classe, arg1=nome da variável
   prog p
-  se arg0 == "0" || arg0 == "1"
-    txt100 lin
-    lin = "const " + txtsub(tpasso, 1, 1) + "=" + arg0
-    p.criar(txt1(tpasso), lin)
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    se !p.varnum(arg0, arg1)
+      p.inilinha(arg0, arg1)
+      ret "<" + txt1(p.texto) + ">"
+    senao [arg0]:[arg1]
+      ret txt([arg0]:[arg1]) + " Sim"
+    senao
+      ret txt([arg0]:[arg1]) + " Não"
+    fimse
+  casose "2" # Em uma classe herdada
+    se !p.varnum(arg0, arg1)
+      p.inilinha(arg0, arg1)
+      ret "<herda " + txt1(p.texto) + ">"
+    senao [arg0]:[arg1]
+      ret "<herda> " + txt([arg0]:[arg1]) + " Sim"
+    senao
+      ret "<herda> " + txt([arg0]:[arg1]) + " Não"
+    fimse
+  casose # Não foi definido
+    ret "<nulo> 0 Não"
+  casofim
+
+func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
+  prog p
+  casovar arg0
+  casose "0"
+  casose "1"
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + arg0)
     config:salvar
-    lin = "0 não"
-    arg0 == 1 && (lin = "1 sim")
-    msg(txtsub(tpasso, 3) + " mudou para: " + lin)
-  senao arg0 == "n"
-    p.apagar(txt1(tpasso), txtsub(tpasso, 1, 1))
+    msg(var.opcnome + " mudou para: " + (arg0 == 1 ? "1 sim" : "0 não"))
+    sair
+  casose "n"
+    p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    msg("Apagado: " + txtsub(tpasso, 3))
-  senao arg0 != "z"
+    msg("Apagado: " + var.opcnome)
+  casose "z"
+    sair
+  casose
     passo = "simnao"
     msg("Escolha: 0 não, 1 sim, N nenhum, Z cancela")
     ret 1
-  fimse
-  passo = txtsub(tpasso, 2, 1)
-  p_[passo]("")
+  casofim
+  passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
-func p_func
-# Variável tpasso contém: "classe variável passo nome"
-# classe e variável são os nomes da classe e da variável
-# passo é o valor da variável passo para a opção sair
-# nome é o nome da opção
+func m_sala # Retorna valor de variável do tipo "const x = $s_abc"
+# arg0=nome da classe, arg1=nome da variável
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    p.inilinha(arg0, arg1)
+    se txt1(p.texto) != "const"
+      ret "<" + txt1(p.texto) + ">"
+    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg0 + " = $s_"
+      ret "<const>"
+    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
+      ret "<const>"
+    senao
+      ret txt(p.texto, inttotal(arg1) + 12)
+    fimse
+  casose "2" # Em uma classe herdada
+    p.inilinha(arg0, arg1)
+    se txt1(p.texto) != "const"
+      ret "<herda " + txt1(p.texto) + ">"
+    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg0 + " = $s_"
+      ret "<herda const>"
+    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
+      ret "<herda const>"
+    senao
+      ret "<herda> " + txt(p.texto, inttotal(arg1) + 12)
+    fimse
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func p_func # Editar função
+  se arg0 == "z" # Sair do editor
+    msg("Fechando editor")
+    passo = var.opcpasso, p_[passo]("\b")
+  senao
+    p_codcomum(arg0, 0)
+    passo == "codcomum" && (passo = "func")
+  fimse
+  ret 1
+
+func p_classe # Editar classe
+  var.opcnome = "classe " + var.opcclasse
+  se arg0 == "z" # Sair do editor
+    msg("Fechando editor")
+    passo = ""
+  senao
+    p_codcomum(arg0, 1)
+    passo == "codcomum" && (passo = "classe")
+  fimse
+  ret 1
+
+func p_codcomum
   casovar txtmin(txt(arg0, 0, 1))
-  casose "\n"
+  casose "\b"
     teditor.limpar
     prog p
     txt100 lin
-    txt20 lin2
-    textotxt t1
-    passo = "func"
-    lin = txt1(tpasso) + ":" + txtsub(tpasso, 1, 1) + ", O opções, Z sair"
-    lin2 = txtsub(tpasso, 3)
-    lin2 && (lin2 += "; ")
-    se !p.inilinha(txt1(tpasso), txtsub(tpasso, 1, 1))
-      msg(lin2 + "Criando " + lin)
-      teditor.addfim("const " + txtsub(tpasso, 1, 1) + " = nulo")
+    passo = "codcomum"
+    lin = var.opcclasse + ":" + var.opcvar + ", O opções, Z sair"
+# Classe
+    se arg1
+      msg("Editando classe " + var.opcclasse + ", O opções, Z sair")
+      p.inilinha(var.opcclasse)
+      teditor.addfim("ARQ:" + p.arquivo(var.opcclasse))
+# Variável que não existe
+    senao !p.inilinha(var.opcclasse, var.opcvar)
+      msg(var.opcnome + ", criando " + lin)
+      teditor.addfim("const " + var.opcvar + " = nulo")
+# Constante
     senao txt1(p.texto) == "const" && inttotal(p.texto) > 75
-      msg(lin2 + "Editando " + lin)
+      msg(var.opcnome + ", editando " + lin)
       teditor.addfim(txttroca(p.texto, "\\n", "\\n\\\n"))
+      p.depois
+# Qualquer outra coisa
     senao
-      msg(lin2 + "Editando " + lin)
-      enquanto p.lin
-        t1.limpar
-        t1.addfim(p.texto)
-        t1.dividelin(35, 75)
-        enquanto t1.linhas > 1
-          teditor.addfim(t1.remove + "\\")
-        efim
-        teditor.addfim(t1.remove)
-        p.depois
-      efim
+      msg(var.opcnome + ", editando " + lin)
     fimse
+# Copia o texto para o editor
+    enquanto p.lin
+      teditor.addfim(txtesp(p.nivel) + p.texto), p.depois
+    efim
+# Divide linhas grandes acrescentando barra invertida no final
+    textopos pos
+    int16 n
+    int16 x
+    epara pos = teditor.ini, pos, pos.depois
+      enquanto pos.texto(100, 1)
+        n = pos.txtproc("\\n", 60, 1) + 2
+        se n < 60 || n > 98
+          x = 60
+          enquanto x && x < 100
+            n = x, x = pos.txtproc(" ", x, 1) + 1
+          efim
+          n == 60 && (n = 100)
+        fimse
+        pos.mudar("\\\n", n, 0)
+        pos.depois
+      efim
+    efim
+# Acerta variáveis
     leditor = teditor.ini
     leditor1 = teditor.ini
     leditor2 = teditor.fim
     leditor2.antes
     ret 1
-  casose "z" # Sair do editor
-    msg("Fechando editor")
-    passo = txtsub(tpasso, 2, 1)
-    p_[passo]("")
-    ret 1
   casose "x" # Salvar o texto
-    p_funcsalvar
+    p_funcsalvar(arg1)
     ret 1
   casofim
-  ret p_editor(arg0, 16384, txtsub(tpasso, 3))
+  ret p_editor(arg0, 16384, var.opcnome)
 
 func p_funcsalvar # Opçao salvar de p_func
   textotxt t1
@@ -571,40 +626,51 @@ func p_funcsalvar # Opçao salvar de p_func
     p1.mudar("", inttotal(p1.texto) - 1, 1) # Tira a "\" no final
     p1.depois, p1.juntar # Junta as duas linhas
   efim
+# SOMENTE FUNÇÕES
+  se !arg0
 # Obtém o nome da constante / função
-  lin = t1.ini.texto
-  enquanto txt1(lin) == "sav" || txt1(lin) == "comum"
-    lin = txt2(lin)
-  efim
-  se t1.linhas > 1 && txt1(lin) != "func" && txt1(lin) != "varfunc"
-    msg("Erro: somente FUNC e VARFUNC podem ter várias linhas")
-    ret 1
-  fimse
-  lin = txt1(txttroca(txt2(lin), "#", " "))
+    lin = t1.ini.texto
+    enquanto txt1(lin) == "sav" || txt1(lin) == "comum"
+      lin = txt2(lin)
+    efim
+    se t1.linhas > 1 && txt1(lin) != "func" && txt1(lin) != "varfunc"
+      msg("Erro: somente FUNC e VARFUNC podem ter várias linhas")
+      ret 1
+    fimse
+    lin = txt1(txttroca(txt2(lin), "#", " "))
 # Checa se o nome mudou
-  se lin != txtsub(tpasso, 1, 1)
-    lin += " para " + txtsub(tpasso, 1, 1)
-    msg("Erro: mude o nome da variável de " + lin)
-    ret
-  fimse
+    se lin != var.opcvar
+      msg("Erro: mude o nome da variável de " + lin + " para " + var.opcvar)
+      ret
+    fimse
 # Checa existência de outra função ou constante dentro
-  p1 = t1.ini.texto
-  p1.depois
-  enquanto p1.lin
-    casovar txtmin(txt1(p1.texto))
-    casose "func"
-    casose "varfunc"
-      msg("Erro: definido uma função dentro de outra")
-      ret
-    casose "const"
-      msg("Erro: definido uma constante dentro de uma função")
-      ret
-    casofim
-    p1.depois
-  efim
+    p1 = t1.ini.texto
+    epara p1.depois, p1.lin, p1.depois
+      casovar txtmin(txt1(p1.texto))
+      casose "func"
+      casose "varfunc"
+        msg("Erro: definido uma função dentro de outra")
+        ret
+      casose "const"
+      casose "varconst"
+        msg("Erro: definido uma constante dentro de uma função")
+        ret
+      casofim
+    efim
 # Tenta salvar
-  prog p
-  t1.addfim(p.criar(txt1(tpasso), t1.remove(10000)))
+    prog p
+    t1.addfim(p.criar(var.opcclasse, t1.remove(10000)))
+  senao
+# SOMENTE CLASSES
+# Tenta salvar
+    prog p
+    se t1.ini.texto(0, 4) != "ARQ:"
+      msg("Primeira linha deve conter o texto \"ARQ:\" seguido do nome do arquivo")
+      ret 1
+    fimse
+    t1.addfim(p.criar(var.opcclasse + "\n" + txt(t1.remove(10000), 4)))
+  fimse
+# Informa se conseguiu salvar
   se t1.ini.texto == ""
     config:salvar
     msg("Salvo com sucesso")
@@ -613,7 +679,7 @@ func p_funcsalvar # Opçao salvar de p_func
 # Informa erros, corrigindo os números das linhas
   msg("Erro ao salvar:")
   p1 = t1.ini
-  p1.depois(5), p1.remove(1000)
+  p1.depois(8), p1.remove(1000) # Mantém somente as primeiras mensagens
   uint16 x
   enquanto t1.linhas
     x = lin = t1.remove
@@ -649,7 +715,7 @@ func p_editor
     fimse
     leditor.add(txtremove(txt(arg0, 1), "ED"))
     leditor.depois
-    msg("Texto inserido")
+    msg("Adicionada linha " + leditor.linha)
     ret 1
   casose "," # Insere linha
     se teditor.bytes + inttotal(arg0) > arg1
@@ -658,7 +724,7 @@ func p_editor
     fimse
     leditor.add(txt(arg0, 1))
     leditor.depois
-    msg("Texto inserido")
+    msg("Adicionada linha " + leditor.linha)
     ret 1
   casose "a" # Apaga a linha atual
     se !leditor.lin
@@ -694,8 +760,8 @@ func p_editor
     x < 1 && (x = 1)
     enquanto x > 0
       leditor.antes, x -= 1
-      msg(leditor.texto)
-      ret !editor.linha, 1
+      msg(txt(leditor.linha + 1) + " " + leditor.texto)
+      ret !leditor.linha, 1
     efim
     ret 1
   casose "d"
@@ -709,7 +775,7 @@ func p_editor
         msg("Fim do texto")
         ret 1
       fimse
-      msg(leditor.texto)
+      msg(txt(leditor.linha + 1) + " " + leditor.texto)
     efim
     ret 1
   casose "t" # Informações sobre a área de transferência
@@ -888,12 +954,13 @@ que contém dois espaços e a letra A\n\
 \c2BL\b  Apaga todo o texto sendo editado"
 
 func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_abc"
-# arg0=nome da variável, tpasso=nome da classe
-  se p.existe(tpasso, arg0) != 1 || !p.inilinha(tpasso, arg0)
+# arg0=nome da classe, arg1=nome da variável
+  prog p
+  se p.existe(arg0, arg1) != 1 || !p.inilinha(arg0, arg1)
     ret 1
   senao txt1(p.texto) != "const"
     ret 0
-  senao txt(p.texto, 6, inttotal(arg0) + 6) != arg0 + " = $s_"
+  senao txt(p.texto, 6, inttotal(arg1) + 6) != arg0 + " = $s_"
     ret 0
   senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
     ret 0

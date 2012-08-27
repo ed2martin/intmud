@@ -9,17 +9,13 @@ const adm_cod = "\b\c3Comandos de edição do código\b\n\
 \c2acl\b <nome>\n\
   Apaga classe.\n\
 \c2ecl\b [nome]\n\
-  Escolhe classe para editar. Se o nome for omitido, edita a sala atual.\n\
-\c2herda\b\n\
-  Edita herança da classe (uma classe herdada por linha).\n\
-\c2lfunc\b [nome]\n\
-  Lista funções da classe.\n\
-\c2lfunc2\b [nome]\n\
-  Lista todas funções da classe, inclusive as herdadas.\n\
-\c2efunc\b <função>\n\
-  Edita ou cria função no editor de texto.\n\
-\c2afunc\b <função>\n\
-  Apaga função."
+  Edita uma classe.\n\
+\c2herda\b <nome>\n\
+  Edita herança de uma classe (uma classe herdada por linha).\n\
+\c2lfunc\b <nome>\n\
+  Lista funções de uma classe.\n\
+\c2lfunc2\b <nome>\n\
+  Lista todas funções de uma classe, inclusive as herdadas."
 
 func cmd_lcl # Listar classes
   prog p
@@ -106,28 +102,32 @@ func p_acl
   fimse
   ret 1
 
-func cmd_ecl # Escolhe classe para editar
+func cmd_ecl # Edita uma classe
   prog p
-  txt100 lin
-  lin = txttroca(arg0, " ", "_")
-  !lin && (lin = dono)
-  se !p.existe(lin)
-    msg("\bClasse não existe: " + lin)
+  se !arg0
+    msg("\bDigite o nome da classe após ECL")
+  senao !p.existe(arg0)
+    msg("\bClasse não existe: " + arg0)
   senao
-    msg("\bClasse: " + lin)
-    tclasse = lin
+    var.opcnome = ""
+    var.opcclasse = txts(arg0)
+    p_classe("\b")
   fimse
   ret 1
 
 func cmd_lfunc # Listar funções
   prog p
-  se !p.inifunc(tclasse, arg0)
+  se !arg0
+    msg("\bDigite o nome da classe após LFUNC")
+  senao !p.existe(arg0)
+    msg("\bClasse não existe: " + arg0)
+  senao !p.inifunc(arg0)
     msg("\bNenhuma função encontrada.")
   senao
     textotxt t
-    t.addfim("\bFunções de " + tclasse + ":")
+    t.addfim("\bFunções de " + arg0 + ":")
     enquanto p.lin
-      t.addfim(p.vartipo(tclasse, p.texto) + " " + p.texto)
+      t.addfim(p.vartipo(arg0, p.texto) + " " + p.texto)
       p.depois
     efim
     lin && t.addfim(lin)
@@ -137,13 +137,17 @@ func cmd_lfunc # Listar funções
 
 func cmd_lfunc2 # Listar funções inclusive as herdadas
   prog p
-  se !p.inifunctudo(tclasse, arg0)
+  se !arg0
+    msg("\bDigite o nome da classe após LFUNC2")
+  senao !p.existe(arg0)
+    msg("\bClasse não existe: " + arg0)
+  senao !p.inifunctudo(arg0)
     msg("\bNenhuma função encontrada.")
   senao
     textotxt t
-    t.addfim("\bFunções de " + tclasse + ":")
+    t.addfim("\bFunções de " + arg0 + ":")
     enquanto p.lin
-      t.addfim(p.vartipo(tclasse, p.texto) + " " + p.texto)
+      t.addfim(p.vartipo(arg0, p.texto) + " " + p.texto)
       p.depois
     efim
     lin && t.addfim(lin)
@@ -151,74 +155,24 @@ func cmd_lfunc2 # Listar funções inclusive as herdadas
   fimse
   ret 1
 
-func cmd_afunc # Apaga classe
-  prog p
-  se !arg0
-    msg("\bDigite o nome da classe após AFUNC")
-  senao !p.existe(tclasse, arg0)
-    msg("\bFunção não existe: " + arg0)
-  senao
-    tpasso = arg0
-    p_afunc("")
-  fimse
-  ret 1
-
-func p_afunc
-  passo = ""
-  se arg0 == "n"
-    msg("\bCancelado")
-  senao arg0 == "s"
-    prog p
-    se !p.apagar(tclasse, tpasso)
-      msg("\bErro ao apagar " + tpasso)
-    senao
-      msg("\bFunção apagada " + tpasso)
-      config:salvar
-    fimse
-  senao
-    msg("\bApagar função " + tpasso + " ? Tecle S ou N")
-    passo = "afunc"
-  fimse
-  ret 1
-
-func cmd_efunc # Edita função
-  prog p
-  se !tclasse
-    msg("\bEscolha uma classe com ECL")
-  senao !arg0
-    msg("\bDigite o nome da função após EFUNC")
-  senao !p.existe(tclasse)
-    msg("\bClasse não existe: " + tclasse)
-  senao
-    txt100 tfunc
-    tfunc = txttroca(arg0, " ", "_")
-    tpasso = tclasse + " " + tfunc + " efunc"
-    ret p_func("\n")
-  fimse
-  ret 1
-
-func efunc2
-  msg("\bRetornando ao jogo")
-  passo = ""
-  ret 1
-
 func cmd_herda
   prog p
-  se !tclasse
-    msg("\bEscolha uma classe com ECL")
-  senao !p.existe(tclasse)
-    msg("\bClasse não existe: " + tclasse)
+  se !arg0
+    msg("\bDigite o nome da classe após HERDA")
+  senao !p.existe(arg0)
+    msg("\bClasse não existe: " + arg0)
   senao
-    p_herda("\n")
+    tpasso = arg0
+    p_herda("\b")
   fimse
   ret 1
 
 func p_herda
   casovar txtmin(txt(arg0, 0, 1))
-  casose "\n"
+  casose "\b"
     prog p
     teditor.limpar
-    epara p.iniherda(tclasse), p.lin, p.depois
+    epara p.iniherda(tpasso), p.lin, p.depois
       teditor.addfim(p.texto)
     efim
     teditor.bytes == 1 && teditor.limpar
@@ -227,7 +181,7 @@ func p_herda
     leditor2 = teditor.fim
     leditor2.antes
     passo = "herda"
-    msg("Editando herança de " + tclasse + ", O opções, Z sair")
+    msg("Editando herança de " + tpasso + ", O opções, Z sair")
     ret 1
   casose "z" # Sair do editor
     msg("Fechando editor")
@@ -239,15 +193,15 @@ func p_herda
     textotxt t1
     p1 = teditor.ini
     se !p1.lin # Nenhum texto significa apagar herança
-      p.inilinha(tclasse)
-      txt1(p.texto) == "herda" && p.apagarlin(tclasse, 1)
+      p.inilinha(tpasso)
+      txt1(p.texto) == "herda" && p.apagarlin(tpasso, 1)
       config:salvar, msg("Salvou: nenhuma herança")
       ret 1
     fimse
     enquanto p1.lin
       t1.addfim(p1.texto), p1.depois
     efim
-    t1.addfim(p.criar(tclasse, "herda " + txttroca(t1.remove(100), "\n", ",")))
+    t1.addfim(p.criar(tpasso, "herda " + txttroca(t1.remove(100), "\n", ",")))
     se t1.bytes > 1
       msg2("Erro ao salvar herança:\n" + t1.remove(1000))
     senao
