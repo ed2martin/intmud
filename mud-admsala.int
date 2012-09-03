@@ -286,7 +286,7 @@ func cmd_lsai # Listar saídas
   epara dir = "n s l o ne no se so c b", dir, dir = txt2(dir)
     continuar !p.existe(tpasso, "dir_" + txt1(dir))
     lin = txtmai(txt1(dir)) + "  "
-    lin += m_sala(tpasso, "dir_" + txt1(dir))
+    lin += t_sala(tpasso, "dir_" + txt1(dir))
     msg(lin)
   efim
   !lin && msg("Nenhuma")
@@ -382,7 +382,7 @@ func p_saiagora # Mudar o estado atual
   casose "3"
     se $[var.classe1].mudaporta(var.saida1, arg0)
       textotxt t
-      t.addfim(txt_porta) #, t.remove(arg0)
+      t.addfim(txt_porta), t.remove(arg0)
       msg("Saída mudou para: " + arg0 + " " + t.remove)
     senao
       msg("Não foi possível mudar a saída")
@@ -402,66 +402,66 @@ classe adm_area
 const titulo = "Área " + txt(var.classe1, 2)
 #
 const nome1 = "Nome"
-const tipo1 = "linha"
+const tipo1 = "linha-"
 const classe1 = var.classe1
 const var1 = "a_nome"
 #
 const nome2 = "Autor"
-const tipo2 = "linha"
+const tipo2 = "linha-"
 const classe2 = var.classe1
 const var2 = "a_autor"
 #
 const nome3 = "Tempo de reset"
-const tipo3 = "numero+"
+const tipo3 = "numero"
 const classe3 = var.classe1
 const var3 = "a_tempo"
 #
 const nome4 = "Modo de reset"
-const tipo4 = "opcao+"
+const tipo4 = "opcao"
 const classe4 = var.classe1
 const var4 = "a_reset"
 const extra4 = "Nunca\nQuando não há jogadores\nNormal"
 #
 const nome5 = "Terreno"
-const tipo5 = "opcao+"
+const tipo5 = "opcao"
 const classe5 = var.classe2
 const var5 = "s_terreno"
 const extra5 = txt_terreno
 #
 const nome6 = "Luz"
-const tipo6 = "opcao+"
+const tipo6 = "opcao"
 const classe6 = var.classe2
 const var6 = "s_luz"
 const extra6 = txt_luz
 #
 const nome7 = "Apagar itens (min)"
-const tipo7 = "numero+"
+const tipo7 = "numero"
 const classe7 = var.classe2
 const var7 = "s_item"
 #
 const nome8 = "Morre ao entrar"
-const tipo8 = "simnao+"
+const tipo8 = "simnao"
 const classe8 = var.classe2
 const var8 = "s_morre"
 #
 const nome9 = "Silencioso"
-const tipo9 = "simnao+"
+const tipo9 = "simnao"
 const classe9 = var.classe2
 const var9 = "s_silencio"
 #
 const nome10 = "Batalha"
-const tipo10 = "opcao+"
+const tipo10 = "opcao"
 const classe10 = var.classe2
 const var10 = "s_luta"
 const extra10 = txt_luta
 #
 const nome11 = "Sem magia"
-const tipo11 = "simnao+"
+const tipo11 = "simnao"
 const classe11 = var.classe2
 const var11 = "s_semmagia"
 #
 const nome12 = "PNJs não entram"
-const tipo12 = "simnao+"
+const tipo12 = "simnao"
 const classe12 = var.classe2
 const var12 = "s_sempnj"
 
@@ -470,55 +470,56 @@ classe adm_sala
 const titulo = "Sala " + txt(var.classe1, 2)
 #
 const nome1 = "Título"
-const tipo1 = "linha+"
+const tipo1 = "linha"
 const classe1 = var.classe1
 const var1 = "s_titulo"
 #
 const nome2 = "Descrição"
-const tipo2 = "texto+"
+const tipo2 = "texto"
 const classe2 = var.classe1
 const var2 = "s_desc"
 #
 const nome3 = "Terreno"
-const tipo3 = "opcao+"
+const tipo3 = "opcao"
 const classe3 = var.classe1
 const var3 = "s_terreno"
 const extra3 = txt_terreno
 #
 const nome4 = "Luz"
-const tipo4 = "opcao+"
+const tipo4 = "opcao"
 const classe4 = var.classe1
 const var4 = "s_luz"
 const extra4 = txt_luz
 #
-const nome5 = "Apagar itens (min)"
-const tipo5 = "numero+"
+const nome5 = "Apagar itens"
+const info5 = "Tempo em minutos"
+const tipo5 = "numero"
 const classe5 = var.classe1
 const var5 = "s_item"
 #
 const nome6 = "Morre ao entrar"
-const tipo6 = "simnao+"
+const tipo6 = "simnao"
 const classe6 = var.classe1
 const var6 = "s_morre"
 #
 const nome7 = "Silencioso"
-const tipo7 = "simnao+"
+const tipo7 = "simnao"
 const classe7 = var.classe1
 const var7 = "s_silencio"
 #
 const nome8 = "Batalha"
-const tipo8 = "opcao+"
+const tipo8 = "opcao"
 const classe8 = var.classe1
 const var8 = "s_luta"
 const extra8 = txt_luta
 #
 const nome9 = "Sem magia"
-const tipo9 = "simnao+"
+const tipo9 = "simnao"
 const classe9 = var.classe1
 const var9 = "s_semmagia"
 #
 const nome10 = "PNJs não entram"
-const tipo10 = "simnao+"
+const tipo10 = "simnao"
 const classe10 = var.classe1
 const var10 = "s_sempnj"
 
@@ -527,28 +528,28 @@ classe adm_saida
 const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
 #
 const nome1 = "Estado inicial"
-const tipo1 = "saiinicio+"
+const tipo1 = "saiinicio"
 const classe1 = var.classe1
 const var1 = "portaini_" + var.saida1
 const extra1 = txt_porta
 #
 const nome2 = "Estado atual"
-const tipo2 = "saiagora"
+const tipo2 = "saiagora--"
 const classe2 = var.classe1
 const var2 = "porta_" + var.saida1
 #
 const nome3 = "Invisível"
-const tipo3 = "simnao+"
+const tipo3 = "simnao"
 const classe3 = var.classe1
 const var3 = "inv_" + var.saida1
 #
 const nome4 = "Trancar"
-const tipo4 = "opcao+"
+const tipo4 = "opcao"
 const classe4 = var.classe1
 const var4 = "tranc_" + var.saida1
 const extra4 = txt_tranc
 #
 const nome5 = "Chave"
-const tipo5 = "linha+"
+const tipo5 = "linha"
 const classe5 = var.classe1
 const var5 = "chave_" + var.saida1

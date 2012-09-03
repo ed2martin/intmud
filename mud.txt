@@ -1,59 +1,85 @@
 Índice
 
-1. Organização dos arquivos e classes
-2. Envio de mensagens formatadas (mud-mens.int)
-3. Variáveis dinâmicas de personagens, salas e itens
-4. Comum a salas, personagens e itens (mud-comum.int)
-5. Salas (mud-sala.int)
-6. Personagens e itens
-7. Personagens (mud-perso.int)
-8. Personagens não jogador (mud-perso.int)
-9. Itens (mud-item.int)
-10. Funções chamadas somente para o póprio objeto
-11. Eventos
-12. Eventos incondicionais
-13. Eventos condicionais
-14. Criando menus de edição (administração)
-15. Lista de itens pendentes
+1. Rodando o MUD
+2. Organização dos arquivos e classes
+3. Envio de mensagens formatadas (mud-mens.int)
+4. Variáveis dinâmicas de personagens, salas e itens
+5. Comum a salas, personagens e itens (mud-comum.int)
+6. Salas (mud-sala.int)
+7. Personagens e itens
+8. Personagens (mud-perso.int)
+9. Personagens não jogador (mud-perso.int)
+10. Itens (mud-item.int)
+11. Funções chamadas somente para o póprio objeto
+12. Eventos
+13. Eventos incondicionais
+14. Eventos condicionais
+15. Criando menus de edição (administração)
+16. Lista de itens pendentes
 
 
-1. Organização dos arquivos e classes
+1. Rodando o MUD
 
-1.1. mud.int
+Para rodar o MUD há três formas:
+A. Renomear o arquivo intmud.exe para mud.exe e executar
+B. Arrastar o arquivo mud.int para o intmud.exe
+C. Usando o prompt de comando do Windows ou a opção X do Dosvox (executar),
+digitar: intmud mud
+
+Após rodar o programa, digite um nome qualquer para o seu personagem
+e tecle x2. Deverá vir uma mensagem assim:
+Você virou administrador, tecle ADM para saber os comandos.
+Tecle ECONFIG para mudar as configurações do MUD, principalmente a senha
+de administração, que inicialmente é x2. Para outros jogadores
+conectarem-se ao MUD, será necessário ativar pelo menos uma das opções:
+jogar em uma porta ou jogar em um chat.
+
+O programa em si não produz som, portanto deficientes visuais deverão
+usar um leitor de telas, como o NVDA ou o JAWS. Se isso não for possível,
+antes de rodar o MUD, altere as configurações abrindo o arquivo mud.int
+em um editor de texto. As opções estão definidas a partir da linha 15
+desse arquivo.
+
+Os próximos tópicos referem-se à organização do programa do MUD.
+
+
+2. Organização dos arquivos e classes
+
+2.1. mud.int
 Contém a configuração do jogo (classe 'config'), como por exemplo, se vai
 rodar em uma janela ou abrindo uma porta, a sala inicial, etc.
 As outras classes desse arquivo são responsáveis pela comunicação entre
 o jogo e os jogadores.
 
-1.2. mud-comum.int
+2.2. mud-comum.int
 Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
 Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
 um objeto possui), peso e volume.
 
-1.3. mud-a-*.int
+2.3. mud-a-*.int
 Contém as classes que compõem uma área.
 Geralmente são:
 Definições da área: classe de nome 'a_' + prefixo da área
 Propriedades herdadas pelas salas: classe de nome 'b_' + prefixo da área
 Salas: classes de nome 's_' + prefixo da área + número de '001' a '999'
 
-1.4. mud-sala.int
+2.4. mud-sala.int
 Classes 'area' e 'sala', herdadas por todas as áreas e salas.
 
-1.5. mud-item.int
+2.5. mud-item.int
 Classe 'comum_item', herdada por todos os itens.
 Classe 'comum_itemgrupo', herdada pelos itens que podem ser agrupados
 em um único objeto.
 Os itens são classes cujo nome começa com 'i_'.
 
-1.6. mud-perso.int
+2.6. mud-perso.int
 Classe 'comum_perso' - herdada por todos os personagens.
 Classe 'comum_persobat' - personagens que podem batalhar.
 Classe 'comum_persoanimal' - personagens que podem batalhar e carregar animais.
 Classe 'perso_restaurar' - restaurar status de personagens que podem batalhar.
 Os personagens não jogadores são classes cujo nome começa com 'p_'.
 
-1.7. mud-jog.int
+2.7. mud-jog.int
 Classes responsáveis pelos jogadores.
 A classe 'jogador' é o personagem dos jogadores.
 A classe 'jogsock' é responsável pela comunicação com o usuário:
@@ -61,7 +87,7 @@ Funções cmd_<nome do comando>   Comandos de administração
 Funções adm_<nome do tópico>    Tópicos de ajuda da administração
 Funções p_<texto>               São executadas conforme a variável passo
 
-1.8. mud-cmd*.int
+2.8. mud-cmd*.int
 Contém os comandos que os personagens podem digitar. Todo comando é uma
 classe cujo nome é 'cmd_' seguido do nome do comando.
 As magias são classes cujo nome é 'cmd_magia_' seguido do nome da magia.
@@ -69,31 +95,31 @@ A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
-1.9. mud-cmd.int
+2.9. mud-cmd.int
 Comandos de informação.
 Contém também a classe 'comando_ataque', que é herdada por todos os comandos.
 
-1.10. mud-cmd-item.int
+2.10. mud-cmd-item.int
 Comandos de manuseio de objetos.
 
-1.11. mud-cmd-mover.int
+2.11. mud-cmd-mover.int
 Comandos de movimentação.
 
-1.12. mud-cmd-ataque.int
+2.12. mud-cmd-ataque.int
 Comandos de ataque.
 Via de regra, a função 'escr' checa se está em condições de atacar e obtém
 o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
 
-1.13. mud-mens.int
+2.13. mud-mens.int
 Contém a classe 'mens', especializada no envio de mensagens para personagens.
 
-1.14. mud-misc.int
+2.14. mud-misc.int
 Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
 Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
 
 
-2. Envio de mensagens formatadas (mud-mens.int)
+3. Envio de mensagens formatadas (mud-mens.int)
 
 Para enviar uma mensagem formatada a um ou mais personagens, usa-se
 a classe 'mens', contida no arquivo 'mud-mens.int'.
@@ -142,7 +168,7 @@ $ + letra maiúscula = primeira letra do texto em maiúscula
 $ + letra minúscula = texto em letras minúsculas
 
 
-3. Variáveis dinâmicas de personagens, salas e itens
+4. Variáveis dinâmicas de personagens, salas e itens
 
 Todos os personagens e salas têm uma lista de variáveis dinâmicas
 (podem ser criadas e apagadas) contidas na seguinte variável:
@@ -158,42 +184,42 @@ o_ = item classificado como "outros"
 z_ = variável não visível ao jogador
 
 
-4. Comum a salas, personagens e itens (mud-comum.int)
+5. Comum a salas, personagens e itens (mud-comum.int)
 
-4.1. varfunc dono
+5.1. varfunc dono
 Quem possui esse objeto.
 No caso do personagem, é a sala aonde o personagem está.
 
-4.2. listaobj dentro1
+5.2. listaobj dentro1
 Lista de itens, exceto vestindo
 
-4.3. listaobj dentro2
+5.3. listaobj dentro2
 Se for sala: lista de personagens
 Se for personagem: lista de itens que está vestindo
 
-4.4. listaobj evento
+5.4. listaobj evento
 Objetos que recebem eventos desse objeto
 
 
-5. Salas (mud-sala.int)
+6. Salas (mud-sala.int)
 
-5.1. const s_titulo = "texto"
+6.1. const s_titulo = "texto"
 Retorna o título da sala. arg0 é quem está requisitanto o título.
 
-5.2. const s_desc = "texto"
+6.2. const s_desc = "texto"
 Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
 
-5.3. const s_luta = 0
+6.3. const s_luta = 0
 Tipo de luta permitido: 0=nenhuma, 1=exceto entre jogador, 2=qualquer luta.
 
-5.4. ref dir_[direção]
+6.4. ref dir_[direção]
 Antes de acssar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
 Se estiver ausente, não há sala nessa direção
 
-5.5. uint8 porta_[direção]
+6.5. uint8 porta_[direção]
      const portaini_[direção]
 Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
@@ -204,41 +230,41 @@ PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
 2 = está fechado
 3 = está trancado
 
-5.6. const inv_[direção]
+6.6. const inv_[direção]
 Antes de acessar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
-5.7. const tranc_[direção]
+6.7. const tranc_[direção]
 Antes de acessar fazer misc:obj=personagem
 0 = porta normal
 1 = fechado quando alguém passar pela porta
 2 = trancado quando for fechado
 3 = trancado quando for fechado ou alguém passar pela porta
 
-5.8. const chave_[direção]
+6.8. const chave_[direção]
 Antes de acssar fazer misc:obj=personagem
 Texto que contém o código da chave que destranca a porta
 
-5.9. const portanome_[direção]
+6.9. const portanome_[direção]
 Nome da porta na direção especificada. Se estiver ausente ou for um
 texto vazio, será usada a mensagem padrão, que depende da porta.
 Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
 Exemplo:
 const portanome_n = "a porta da casa"
 
-5.10. func txtsai( jogador )
+6.10. func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
-5.11. func descsala( jogador, modo )
+6.11. func descsala( jogador, modo )
 Adiciona texto com a descrição da sala
 Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
 
-5.12. func descitens( jogador )
+6.12. func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-5.12. func ver_[nome do a descrição]( jogador )
+6.12. func ver_[nome do a descrição]( jogador )
 É executada quando um personagem tecla ver seguido de um nome qualquer.
 Exemplo de como enviar uma descrição:
 func ver_placa # Chamado quando o jogador tecla: ver placa
@@ -246,9 +272,9 @@ arg0.msg("Você olha para uma placa vazia.")
 ret 1 # Indica que processou o comando
 
 
-6. Personagens e itens
+7. Personagens e itens
 
-6.1. uint8 bitinv
+7.1. uint8 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
 0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
 somar 1 se invisível a quem estiver cego
@@ -257,7 +283,7 @@ somar 4 se está invisível
 somar 8 se está oculto
 somar 16 se é administrador invisível
 
-6.2. uint8 bitver
+7.2. uint8 bitver
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
 0 = nada (está cego)
 somar 1 se não está cego
@@ -266,47 +292,47 @@ somar 4 se pode ver invisível
 somar 8 se pode ver oculto
 somar 16 se pode ver administradores invisíveis
 
-6.3. func visivel( personagem )
+7.3. func visivel( personagem )
 Retorna verdadeiro se está visível para o persoangem
 
-6.4. texto ident
+7.4. texto ident
 Nomes que o jogador digita para ações com o personagem ou item
 Exemplo: ao pegar um item ou atacar um personagem
 
-6.5. txt16 nome
+7.5. txt16 nome
 Nome do personagem ou item, usado em ações com o objeto
 
-6.6. int1 sexo
+7.6. int1 sexo
 0=feminino, 1=masculino
 
-6.7. texto descpos
+7.7. texto descpos
 Descrição quando está na sala; arg0=quem quer ver
 
-6.8. texto descver
+7.8. texto descver
 Descrição, quando olha para o objeto; arg0=quem quer ver
 
-6.9. int1 container
+7.9. int1 container
 Verdadeiro (=1) se pode receber itens
 
 
-7. Personagens (mud-perso.int)
+8. Personagens (mud-perso.int)
 
-7.1. Para criar um personagem
+8.1. Para criar um personagem
 criar("nome da classe", aonde está, nível do personagem, "variáveis")
 Se o nível for omitido, será 0.
 Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
 variável, separar por vírgula (exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do personagem.
 
-7.2. const perso = 1
+8.2. const perso = 1
 1 = personagem que não batalha (classe comum_perso)
 2 = personagem que batalha (classe comum_persobat)
 3 = personagem que batalha e carrega animais (classe comum_persoanimal)
 
-7.3. sav uint32 moedas
+8.3. sav uint32 moedas
 Quantas moedas está carregando
 
-7.4. sav uint8 posicao
+8.4. sav uint8 posicao
 Posição do personagem:
 0 = morto
 1 = mortalmente ferido
@@ -318,50 +344,50 @@ Posição do personagem:
 7 = lutando
 8 = em pé
 
-7.5. const pospadr = 8
+8.5. const pospadr = 8
 Posição padrão do personagem
 
-7.6. sav textovar var
+8.6. sav textovar var
 Variáveis criadas sob demanda do personagem
 As variáveis cujo nome começa com "1" são apagadas quando o personagem
 muda de sala (função mudadono).
 As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
 salvo é recarregado (quando o jogador entra no jogo).
 
-7.7. func teclou
+8.7. func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
-7.8. func p_espera_exec
+8.8. func p_espera_exec
 Pega o próximo comando da lista
 
-7.9. func teclouproc
+8.9. func teclouproc
 Processa comando, sem espera (arg0=comando)
 
-7.10. func mudadono
+8.10. func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
-7.11. intexec recalc
+8.11. intexec recalc
 Para chamar recalc_exec quando necessário
 
-7.12. func recalc_exec
+8.12. func recalc_exec
 Ajusta variáveis, principalmente batalha
 
-7.13. func acertapos
+8.13. func acertapos
 Acerta posição do personagem, conforme pontos de vida e batalha
 Para checar se morreu, chamar com: acertapos(1)
 
-7.14. func batalhafim
+8.14. func batalhafim
 Encerra a batalha
 Para checar se morreu, chamar com: batalhafim(1)
 
-7.15. func atktempo
+8.15. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
 
-7.16. func morreu
+8.16. func morreu
 Executa procedimentos quando o personagem morre
 
 
-8. Personagens não jogador (mud-perso.int)
+9. Personagens não jogador (mud-perso.int)
 
 * const p_pet = 0
 0 = não pode ser animal de estimação
@@ -415,9 +441,9 @@ pega lixo
 patrulha: encerra brigas
 
 
-9. Itens (mud-item.int)
+10. Itens (mud-item.int)
 
-9.1. const vestir1 = 0
+10.1. const vestir1 = 0
      const vestir2 = 0
      const vestir3 = 0
 Em que lugares do corpo pode ir quando é vestido:
@@ -443,22 +469,22 @@ Em que lugares do corpo pode ir quando é vestido:
 19 = nas pernas
 20 = calçando
 
-9.2. uint32 vestpos
+10.2. uint32 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
 Outros valores, vide vestir1, acima.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
-9.3. func vestir( posição )
+10.3. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-9.4. func mudadono(novo dono, quantidade)
+10.4. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
 
-10. Funções chamadas somente para o póprio objeto
+11. Funções chamadas somente para o póprio objeto
 
 func cmd_ini(arg0, arg1, arg2, arg3, arg4)
 Chamado quando o objeto é criado. Arg0 a arg5 são os 5 primeiros argumentos
@@ -484,7 +510,7 @@ fazer alguma coisa. Não é chamado se estiver sendo controlado por um
 jogador ou pertencer a outro personagem.
 
 
-11. Eventos
+12. Eventos
 
 São funções executadas quando um personagem digita algo, muda de sala
 ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar eventos.
@@ -517,7 +543,7 @@ Significa que quando o personagem tentar abrir uma porta, será executada
 a função cmd_abrirdir das listas do personagem e da sala.
 
 
-12. Eventos incondicionais
+13. Eventos incondicionais
 
 São funções chamadas como resultado de uma ação que aconteceu ou vai
 acontecer. A função não tem a opção de cancelar a ação.
@@ -563,7 +589,7 @@ func cmd_descansouobj(personagem, item, texto)
 Ficou em pé, começou a descansar ou sentou-se.
 
 
-13. Eventos condicionais
+14. Eventos condicionais
 
 São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
 a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
@@ -629,7 +655,7 @@ func cmd_fugir(personagem)
 Quer fugir de uma batalha.
 
 
-14. Criando menus de edição (administração)
+15. Criando menus de edição (administração)
 
 Primeiro criar uma classe como a seguinte:
 
@@ -642,20 +668,26 @@ const titulo = "Configuração do MUD"
 const nome1 = "Quantidade de animais"
 # Nome é o nome da opção
 
+const info1 = "Quantos animais um jogador pode usar em batalha"
+# Texto de informações, mostrado quando a opção é escolhida
+# Se estiver ausente, não é mostrado nenhum texto
+
 const classe1 = "config"
 # Nome da classe
 
 const var1 = "animal"
 # Nome da variável
 
-const tipo1 = "numero+"
+const tipo1 = "numero--"
 # Tipo é o tipo de dado sendo editado:
 # "linha" = texto de uma linha (exemplo: título das salas)
 # "texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
-# "numero" = valor numérico
+# "numero" = valor numérico inteiro
 # "opcao" = um valor numérico baseado numa lista de opções
 # "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
-# Se for possível editar como função, acrescente um sinal de '+' no nome
+# "sala" = uma sala
+# Se não for possível editar como função, acrescente um sinal de '-' no nome
+# Se não for possível apagar, acrescente mais um sinal de '-' no nome
 
 const extra1 = "1 8"
 # Opções extras. Nem todos os tipos têm opções extras.
@@ -663,10 +695,10 @@ const extra1 = "1 8"
 # No tipo "opcao", é a lista de opções
 
 # As outras opções seguem o mesmo padrão, apenas mudando o número
-# da variável. Exemplo:
+# no nome da variável. Exemplo:
 
 const nome2 = "Senha de administração" # Nome da opção
-const tipo2 = "linha+" # Tipo de variável
+const tipo2 = "linha" # Tipo de variável
 const classe2 = "config"
 const var2 = "senhaadm"
 
@@ -681,8 +713,9 @@ jogsock), passando como argumento o nome da classe.
 Exemplo: m_menu("adm_config")
 
 
-15. Lista de itens pendentes
+16. Lista de itens pendentes
 
+Limite de usuários por endereço IP e anti-flooder
 Opção na sala para não permitir soltar itens ou para virarem pó
 Valor em moedas
 Volume que cabe dentro, ou 0 se não for container

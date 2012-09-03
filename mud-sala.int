@@ -111,16 +111,9 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # Retorna: 0=saída inexistente, 1=saída foi alterada
   ref r
   ret !(r = dir_[arg0]), 0
-  r.dir_n == este && r.porta_n == porta_[arg0] && (r.porta_n = arg1)
-  r.dir_s == este && r.porta_s == porta_[arg0] && (r.porta_s = arg1)
-  r.dir_l == este && r.porta_l == porta_[arg0] && (r.porta_l = arg1)
-  r.dir_o == este && r.porta_o == porta_[arg0] && (r.porta_o = arg1)
-  r.dir_c == este && r.porta_c == porta_[arg0] && (r.porta_c = arg1)
-  r.dir_b == este && r.porta_b == porta_[arg0] && (r.porta_b = arg1)
-  r.dir_ne == este && r.porta_ne == porta_[arg0] && (r.porta_ne = arg1)
-  r.dir_no == este && r.porta_no == porta_[arg0] && (r.porta_no = arg1)
-  r.dir_se == este && r.porta_se == porta_[arg0] && (r.porta_se = arg1)
-  r.dir_so == este && r.porta_so == porta_[arg0] && (r.porta_so = arg1)
+  txt10 nome
+  nome = misc:d2[arg0]
+  r.dir_[nome] == este && r.porta_[nome] == porta_[arg0] && (r.porta_[nome] = arg1)
   porta_[arg0] = arg1
   ret 1
 
