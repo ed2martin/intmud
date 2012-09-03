@@ -14,23 +14,26 @@ log = 0
 classe config
 # Configuração
 #
-# Modo é um texto que pode ter uma ou mais letras:
-# L = Jogo local
-# T = Ativar em uma porta, aceita Telnet
-# P = Ativar em uma porta, aceita Telnet e Papovox
-# B = Ativar como bot em um chat
-# É possível usar mais de uma letra. Exemplo, "LT" significa local e telnet.
-const modo = "L"
+# Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
+const modolocal = 1
 #
-# Variáveis dos modos 2 e 4 (ativar em uma porta)
-# Nota: Papovox só se conecta na porta 1963
+# Ativar em uma porta? 0=não, 1=Telnet, 2=Telnet e Papovox
+const modoserv = 0
+#
+# Ativar como bot em um chat? 0=não, 1=sim
+const modobot = 0
+#
+# Porta, se modoserv > 0 (nota: Papovox só se conecta na porta 1963)
 const servporta = 1963
 #
-# Variáveis do modo 8 (ativar como bot)
+# Variáveis se ativar como bot
 const serv = "localhost"
 const porta = 1963
 const sala = "sala01"
-const senha = "sala01"
+const senha = ""
+#
+# Senha para se tornar administrador, ou "" se não puder
+const senhaadm = "x2"
 #
 # Sala inicial
 const salaini = $s_ini001
@@ -41,9 +44,6 @@ const salafim = $s_fim001
 #
 # Quantos animais pode ter numa batalha, de 1 a 8
 const animal1 = 5
-#
-# Senha para se tornar administrador, ou "" se não puder
-const senhaadm = ""
 #
 # Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
 const salvacria = 0
@@ -57,7 +57,7 @@ const atktempo = 50
 #
 # Opção de escolher o nível (para testes) na área 'casa'
 # 0=não pode escolher o nível, 1=pode escolher o nível
-# const escolhenivel = 1
+const escolhenivel = 0
 
 func salvar # Salva o programa
   prog p
@@ -69,6 +69,55 @@ func salvar # Salva o programa
 #  p.salvartudo("L99N1I2C2F1V0")
 
 
+classe jogoini
+# Inicializa as seguintes classes:
+# jogoserv - jogar em uma porta
+# jogolocal - jogar localmente
+# jogobot - jogar em um chat
+telatxt tela
+int1 entrasenha # Se está digitando a senha do bot
+txt100 txtsenha # A senha que está digitando
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  se !config:modobot # Se não vai ativar como bot
+    jogobotfim # Inicializa servidor e jogo local
+  senao config:senha # Se senha está na configuração
+    jogobot:inicio(config:senha) # Inicializa bot
+  senao
+    entrasenha = 1
+    txtsenha = ""
+    tela.msg("Bot: Digite a senha de administração da sala; tecla ESC cancela\n")
+    tela.linha = 1
+
+func jogobotfim
+  config:modoserv && jogoserv:inicio
+  config:modolocal && jogolocal:inicio
+
+func tela_tecla
+  se !entrasenha # Não está entrando com a senha
+    ret $jogolocal || arg0 != "ESC", 0
+    terminar
+  senao inttotal(arg0) == 1 # Um caracter qualquer: adiciona na senha
+    txtsenha += arg0
+    tela.tecla("*")
+  senao arg0 == "BACK" || arg0 == "LEFT" # Apagar último caracter da senha
+    txtsenha = txt(txtsenha, 0, inttotal(txtsenha) - 1)
+    tela.tecla("BACK")
+  senao arg0 == "ENTER" # Aceitar a senha
+    tela.linha = 0, tela.texto = ""
+    jogobot:inicio(txtsenha)
+    entrasenha = 0, txtsenha = ""
+  senao arg0 == "ESC" # Cancelar a conexão
+    tela.linha = 0, tela.texto = ""
+    entrasenha = 0, txtsenha = ""
+    jogobotfim
+  fimse
+  ret 1
+
+
 classe jogolocal
 herda jogsock
 # Jogando localmente
@@ -78,9 +127,8 @@ const msgsala = j_tela.msg(arg0 + "\n")
 const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
 
-func iniclasse
-  se txtproc(config:modo, "L") >= 0
-    criar(arg0)
+func inicio
+  criar("jogolocal")
 
 func ini
   msgsock("Jogando localmente; tecla ESC encerra o programa")
@@ -118,14 +166,13 @@ func msgtodos
     r.j_conec.msg(arg0 + "\n")
   efim
 
-func iniclasse
-  se txtproc(config:modo, "T") >= 0 || txtproc(config:modo, "P") >= 0
-    telatxt tela
-    se [arg0]:j_serv.abrir("", config:servporta)
-      tela.msg("Esperando conexões na porta " + config:servporta + "\n")
-    senao
-      tela.msg("Não foi possível abrir a porta " + config:servporta + "\n")
-    fimse
+func inicio
+  telatxt tela
+  se jogoserv:j_serv.abrir("", config:servporta)
+    tela.msg("Esperando conexões na porta " + config:servporta + "\n")
+  senao
+    tela.msg("Não foi possível abrir a porta " + config:servporta + "\n")
+  fimse
 
 func j_serv_socket # Conectado: cria objeto
   criar("jogoserv", arg0)
@@ -135,7 +182,7 @@ func ini # Objeto foi criado
   j_conec.proto = 2
   j_conec.aflooder = 1
   j_conec.cores = 2
-  se txtproc(config:modo, "P") >= 0
+  se config:modoserv == 2
     j_conec.msg("+OK Para Telnet pressione ENTER\n")
     j_tempo = 100 # 10 segundos depois desconecta
   senao
@@ -180,39 +227,44 @@ classe jogobot
 telatxt tela
 socket conec # Conexão com o bate-papo
 inttempo conectando
+int1 conecfim # É verdadeiro se já acabou de conectar
+txt100 senha # Senha para conectar-se como bot
 
-func iniclasse
-  se txtproc(config:modo, "B") >= 0
-    criar(arg0)
+func inicio # arg0 = senha para conectar-se
+  criar("jogobot", arg0)
 
 func ini
-  conectando = 100
+  conecfim = 0, conectando = 100, senha = arg0
   se !conec.abrir(config:serv, config:porta)
     apagar(este)
-    tela.msg("Endereço inválido: " + config:serv + "\n")
+    tela.msg("Bot: Endereço inválido: " + config:serv + "\n")
   senao
-    tela.msg("Conectando em " + config:serv + "\n")
+    tela.msg("Bot: Conectando em " + config:serv + " porta " + config:porta + "\n")
+
+func fim
+  !conecfim && $jogoini.jogobotfim
 
 func conectando_exec # 10 segundos tentando conectar
   apagar(este)
   se conec.proto < 2
-    tela.msg("Tempo demais esperando resposta OK\n")
+    tela.msg("Bot: Tempo demais esperando resposta OK\n")
   senao
-    tela.msg("Tempo demais esperando conectar\n")
+    tela.msg("Bot: Tempo demais esperando conectar\n")
+  fimse
 
 func conec_err # Não conseguiu conectar
   apagar(este)
-  tela.msg("Erro ao conectar: " + arg0 + "\n")
+  tela.msg("Bot: Erro ao conectar: " + arg0 + "\n")
 
 func conec_con # Conectou
   conec.proto = 2
 # conectando = 0
-# conec.msg("#bot " + config:sala + " " + config:senha + "\n")
-  tela.msg("Conectado\n")
+# conec.msg("#bot " + config:sala + " " + senha + "\n")
+  tela.msg("Bot: Conectado\n")
 
 func conec_fechou
   apagar(este)
-  tela.msg("Conexão encerrada: " + arg0 + "\n")
+  tela.msg("Bot: Conexão encerrada: " + arg0 + "\n")
 
 func conec_msg # Recebeu mensagem
   indiceitem ind
@@ -221,9 +273,9 @@ func conec_msg # Recebeu mensagem
   se conectando
     se txt(arg0, 0, 1) == "+"
       conectando = 0
-      conec.msg("#bot " + config:sala + " " + config:senha + "\n")
+      conec.msg("#bot " + config:sala + " " + senha + "\n")
     senao
-      tela.msg("Erro: " + arg0)
+      tela.msg("Bot: Erro " + arg0)
       apagar(este)
     fimse
   fimse
@@ -253,8 +305,11 @@ func conec_msg # Recebeu mensagem
     obj.novonome(txtsub(arg0, 2, 1))
     sair
   casose
-    tela.msg(arg0 + "\n")
+    tela.msg("Bot: " + arg0 + "\n")
+    ret
   casofim
+  se !conecfim
+    senha = "", conecfim = 1, $jogoini.jogobotfim
 
 
 classe jogobot_sala
@@ -265,10 +320,10 @@ telatxt _tela
 
 func ini # Nova sala
   sala_nome = "bs " + arg0
-  txtproc(config:modo, "L") < 0 && _tela.msg("S+  " + txt2(sala_nome) + "\n")
+  !config:modolocal && _tela.msg("S+  " + txt2(sala_nome) + "\n")
 
 func fim # Sala fechada
-  txtproc(config:modo, "L") < 0 && _tela.msg("S-  " + txt2(sala_nome) + "\n")
+  !config:modolocal && _tela.msg("S-  " + txt2(sala_nome) + "\n")
 
 func msg
   textotxt t1
@@ -292,17 +347,17 @@ const info = "b " + txt2(j_sala.objlista.sala_nome)
 func ini # Entrou na sala
   j_nome = "bu " + arg0
   j_sala = arg1.sala_usr.addfim(este) # Adiciona na sala
-  se txtproc(config:modo, "L") < 0
+  se !config:modolocal
     j_tela.msg("U+  " + txt2(j_nome) + "  " + txt2(j_sala.objlista.sala_nome) + "\n")
   fimse
   jogsock:ini
 
 func fim # Saiu da sala
-  txtproc(config:modo, "L") < 0 && j_tela.msg("U-  " + txt2(j_nome) + "\n")
+  !config:modolocal && j_tela.msg("U-  " + txt2(j_nome) + "\n")
   jogsock:fim
 
 func novonome # Mudou de apelido
-  se txtproc(config:modo, "L") < 0
+  se !config:modolocal
     j_tela.msg("Ua  " + txt2(j_nome) + " para " + arg0 + "\n")
   fimse
   j_nome = "bu " + arg0

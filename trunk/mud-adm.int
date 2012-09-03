@@ -131,6 +131,8 @@ const adm_pnj = "\b\c3Comandos de PNJs\b\n\
 \c2APNJ\b <nome>\n\
   Apaga PNJ."
 const adm_outros = "\c3Outros comandos\b\n\
+\c2ECONFIG\b\n\
+  Edita as configurações do MUD.\n\
 \c2AC\b <texto>\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
@@ -161,13 +163,17 @@ func cmd_ac
   fimse
   ret 1
 
+func cmd_econfig
+  m_menu("adm_econfig")
+  ret 1
+
 func cmd_echo
   se !arg0
     msg("\bTecle a mensagem após ECHO.")
   senao
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.msg("\b\cB*ADM: " + arg0 + "\b")
+      item.obj.msg("\b\cB(ADM) " + arg0 + "\b")
     efim
   fimse
   ret 1
@@ -223,17 +229,23 @@ func p_menu
   se txt(arg0, 0, 1) == "m" # Executa comando do MUD
     perso.teclou(txtremove(txt(arg0, 1), "E"))
   senao [tpasso]:nome[arg0] # Editar opção do menu
-    var.opcnome = [tpasso]:nome[arg0]
+    var.opcnome = txtremove([tpasso]:nome[arg0], "ED")
     var.opcclasse = [tpasso]:classe[arg0]
     var.opcvar = [tpasso]:var[arg0]
     var.opcextra = [tpasso]:extra[arg0]
     var.opcpasso = passo
+    var.opcvalido_ = txtproc([tpasso]:tipo[arg0], "--") >= 0
     msg(m_menu2(tpasso, arg0))
-    p_[txttroca([tpasso]:tipo[arg0], "+", "")]("\b")
+    [tpasso]:info[arg0] && msg([tpasso]:info[arg0])
+    p_[txttroca([tpasso]:tipo[arg0], "-", "")]("\b")
   senao txt(arg0, 0, 1) == "f" && [tpasso]:nome[txt(arg0, 1)] # Editar função
+    se txtproc([tpasso]:tipo[txt(arg0, 1)], "-") >= 0
+      msg("Essa opção não pode ser editada como função; escolha outra")
+      ret 1
+    fimse
     txt20 opc
     opc = txt(arg0, 1)
-    var.opcnome = [tpasso]:nome[opc]
+    var.opcnome = txtremove([tpasso]:nome[opc], "ED")
     var.opcclasse = [tpasso]:classe[opc]
     var.opcvar = [tpasso]:var[opc]
     var.opcextra = [tpasso]:extra[opc]
@@ -251,7 +263,7 @@ func m_menu2 # Usado em m_menu para obter o texto de uma opção do menu
   txt80 func1 # Função que mostra o conteúdo da variável
   lin = arg1 + (txt(arg1, 1) ? "." : ". ") + [arg0]:nome[arg1]
   inttotal(lin) < 20 && (lin = txt(lin + txtesp(18), 0, 20))
-  func1 = "t_" + txttroca([arg0]:tipo[arg1], "+", "") # Nome da função
+  func1 = "t_" + txttroca([arg0]:tipo[arg1], "-", "") # Nome da função
   ret lin + ": " + [func1]([arg0]:classe[arg1], [arg0]:var[arg1], [arg0]:extra[arg1])
 
 func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
@@ -277,9 +289,15 @@ func p_linha # Alterando um texto de uma linha
     msg("Entre com um texto, N nenhum, Z cancela")
     ret 1
   senao arg0 == "n"
-    p.apagar(var.opcclasse, var.opcvar)
-    config:salvar
-    msg("Apagado: " + var.opcnome)
+    se !var.opcvalido
+      p.apagar(var.opcclasse, var.opcvar)
+      config:salvar
+      msg("Apagado: " + var.opcnome)
+    senao
+      p.criar(var.opcclasse, "const " + var.opcvar + "=\"\"")
+      config:salvar
+      msg(var.opcnome + " mudou para um texto vazio")
+    fimse
   senao arg0 != "z"
     p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txtvis(arg0) + "\"")
     config:salvar
@@ -300,9 +318,9 @@ func t_texto # Retorna quantidade de linhas de texto de várias linhas
     ret p.vartexto(arg0, arg1), "<herda> " + t_texto2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
-    fimse
+  fimse
   casose # Não foi definido
-    ret "<nulo>"
+  ret "<nulo>"
   casofim
 
 func t_texto2 # Usado por t_texto
@@ -367,20 +385,23 @@ func p_numero # Alterando um número
   prog p
   se arg0 == "" || arg0 == "\b"
     passo = "numero"
-    msg("Entre com um número, N nenhum, Z cancela")
+    se var.opcvalido
+      msg("Entre com um número, Z cancela")
+    senao
+      msg("Entre com um número, N nenhum, Z cancela")
+    fimse
     ret 1
-  senao arg0 == "n"
+  senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
     msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
-    real valor
+    int32 valor
     valor = arg0
     se arg0 != valor # Checa se é número
-      msg("Entre com um número.")
-      ret 1
+      ret p_numero("\b")
     senao var.opcextra # Checa limites mínimo e máximo
-      se valor < txt1(var.opcextra) || valor > txt2(var.opcextra)
+      se valor < int(txt1(var.opcextra)) || valor > int(txt2(var.opcextra))
         msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
         ret 1
       fimse
@@ -423,7 +444,11 @@ func p_opcao # Alterando uma opção de uma lista de opções
   prog p
   se arg0 == "" || arg0 == "\b"
     passo = "opcao"
-    msg("Entre com uma opção, O mostra as opções, N nenhuma, Z cancela")
+    se var.opcvalido
+      msg("Entre com uma opção, O mostra as opções, Z cancela")
+    senao
+      msg("Entre com uma opção, O mostra as opções, N nenhuma, Z cancela")
+    fimse
     ret 1
   senao arg0 == "o"
     txtmais.limpar
@@ -435,7 +460,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
     efim
     txtmostra
     ret 1
-  senao arg0 == "n"
+  senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
     msg("Apagado: " + var.opcnome)
@@ -444,8 +469,8 @@ func p_opcao # Alterando uma opção de uma lista de opções
     int16 x
     x = arg0, t.addfim(var.opcextra)
     se arg0 != x || x < 0 || x >= t.linhas
-      msg("Entre com uma opção de 0 a " + (t.linhas - 1))
-      ret 1
+      msg("Opção inválida")
+      ret p_opcao("\b")
     fimse
     t.remove(x)
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + x)
@@ -489,22 +514,28 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + arg0)
     config:salvar
     msg(var.opcnome + " mudou para: " + (arg0 == 1 ? "1 sim" : "0 não"))
-    sair
-  casose "n"
-    p.apagar(var.opcclasse, var.opcvar)
-    config:salvar
-    msg("Apagado: " + var.opcnome)
   casose "z"
     sair
+  casose "n"
+    se !var.opcvalido
+      p.apagar(var.opcclasse, var.opcvar)
+      config:salvar
+      msg("Apagado: " + var.opcnome)
+      sair
+    fimse
   casose
     passo = "simnao"
-    msg("Escolha: 0 não, 1 sim, N nenhum, Z cancela")
+    se var.opcvalido
+      msg("Escolha: 0 não, 1 sim, Z cancela")
+    senao
+      msg("Escolha: 0 não, 1 sim, N nenhum, Z cancela")
+    fimse
     ret 1
   casofim
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
-func m_sala # Retorna valor de variável do tipo "const x = $s_abc"
+func t_sala # Retorna sala (constante do tipo "const x = $s_abc")
 # arg0=nome da classe, arg1=nome da variável
   prog p
   casovar p.existe(arg0, arg1)
@@ -512,7 +543,7 @@ func m_sala # Retorna valor de variável do tipo "const x = $s_abc"
     p.inilinha(arg0, arg1)
     se txt1(p.texto) != "const"
       ret "<" + txt1(p.texto) + ">"
-    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg0 + " = $s_"
+    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg1 + " = $s_"
       ret "<const>"
     senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
       ret "<const>"
@@ -523,7 +554,7 @@ func m_sala # Retorna valor de variável do tipo "const x = $s_abc"
     p.inilinha(arg0, arg1)
     se txt1(p.texto) != "const"
       ret "<herda " + txt1(p.texto) + ">"
-    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg0 + " = $s_"
+    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg1 + " = $s_"
       ret "<herda const>"
     senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
       ret "<herda const>"
@@ -533,6 +564,34 @@ func m_sala # Retorna valor de variável do tipo "const x = $s_abc"
   casose # Não foi definido
     ret "<nulo>"
   casofim
+
+func p_sala # Alterando a sala
+  prog p
+  se arg0 == "" || arg0 == "\b"
+    passo = "sala"
+    se var.opcvalido
+      msg("Entre com o nome da sala, Z cancela")
+    senao
+      msg("Entre com o nome da sala, N nenhuma, Z cancela")
+    fimse
+    ret 1
+  senao arg0 == "n" && !var.opcvalido
+    p.apagar(var.opcclasse, var.opcvar)
+    config:salvar
+    msg("Apagado: " + var.opcnome)
+  senao arg0 != "z"
+    txt100 nome
+    nome = txtmin(txts(arg0))
+    se !p.existe("s_" + nome)
+      msg("\bSala \"" + nome + "\" não existe, escolha outra.")
+      ret 1
+    fimse
+    p.criar(var.opcclasse, "const " + var.opcvar + "=$s_" + nome)
+    config:salvar
+    msg(var.opcnome + " mudou para " + nome)
+  fimse
+  passo = var.opcpasso, p_[passo]("\b")
+  ret 1
 
 func p_func # Editar função
   se arg0 == "z" # Sair do editor
@@ -966,3 +1025,119 @@ func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_a
     ret 0
   senao
     ret 1
+
+
+classe adm_econfig
+# Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
+const titulo = "Configurações do MUD"
+#
+const nome1 = "Jogar localmente            "
+const info1 = "Jogar na própria janela que o IntMUD abre"
+const tipo1 = "simnao--"
+const classe1 = "config"
+const var1 = "modolocal"
+#
+const nome2 = "Jogar em uma porta          "
+const tipo2 = "opcao--"
+const classe2 = "config"
+const var2 = "modoserv"
+const extra2 = "Não\nTelnet\nTelnet e Papovox"
+#
+const nome3 = "Porta do MUD                "
+const info3 = "Nota: o programa Papovox só se conecta na porta 1963"
+const tipo3 = "numero--"
+const classe3 = "config"
+const var3 = "servporta"
+#
+const nome4 = "Jogar em um chat            "
+const info4 = "Somente em chats que suportam bots"
+const tipo4 = "simnao--"
+const classe4 = "config"
+const var4 = "modobot"
+#
+const nome5 = "Endereço do chat            "
+const tipo5 = "linha--"
+const classe5 = "config"
+const var5 = "serv"
+#
+const nome6 = "Porta do chat               "
+const tipo6 = "numero--"
+const classe6 = "config"
+const var6 = "porta"
+#
+const nome7 = "Sala do chat                "
+const tipo7 = "linha--"
+const classe7 = "config"
+const var7 = "sala"
+#
+const nome8 = "Senha da sala do chat       "
+const info8 = "Se for vazia, o programa pede a senha antes de conectar\n\
+Se não for vazia, outros administradores poderão ver a senha"
+const tipo8 = "linha--"
+const classe8 = "config"
+const var8 = "senha"
+#
+const nome9 = "Senha de administração      "
+const info9 = "Se vazia, ninguém poderá ser administrador do MUD"
+const tipo9 = "linha--"
+const classe9 = "config"
+const var9 = "senhaadm"
+#
+const nome10 = "Sala inicial                "
+const info10 = "Sala onde os jogadores vão após criar o personagem"
+const tipo10 = "sala--"
+const classe10 = "config"
+const var10 = "salaini"
+#
+const nome11 = "Sala quando morre           "
+const tipo11 = "sala--"
+const classe11 = "config"
+const var11 = "salafim"
+#
+const nome12 = "Sala para continuar jogo salvo"
+const info12 = "Se acontecer do jogador cair em uma sala inexistente"
+const tipo12 = "sala--"
+const classe12 = "config"
+const var12 = "salasav"
+#
+const nome13 = "Animais para batalhar       "
+const info13 = "Quantos animais pode usar em batalha"
+const tipo13 = "numero--"
+const classe13 = "config"
+const var13 = "animal1"
+const extra13 = "1 8"
+#
+const nome14 = "Salvar personagem ao criar  "
+const tipo14 = "simnao--"
+const classe14 = "config"
+const var14 = "salvacria"
+#
+const nome15 = "Tipo de ataque              "
+const tipo15 = "opcao--"
+const classe15 = "config"
+const var15 = "atktipo"
+const extra15 = "Manual\nAutomático com a classe cmd_atkauto"
+#
+
+func nome16
+  se config:atktipo
+    ret "Tempo para finalizar batalha"
+  senao
+    ret "Tempo de um turno           "
+
+func info16
+  se config:atktipo
+    ret "Em décimos de segundo; tempo para chegar a primeira mensagem"
+  senao
+    ret "Em décimos de segundo"
+
+const tipo16 = "numero--"
+const classe16 = "config"
+const var16 = "atktempo"
+const extra16 = "10 200"
+#
+const nome17 = "Escolher nível na área 'casa'"
+const info17 = "É uma opção que fica na sala casa003, \"Passagem\""
+const tipo17 = "simnao--"
+const classe17 = "config"
+const var17 = "escolhenivel"
