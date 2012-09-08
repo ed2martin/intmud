@@ -1032,112 +1032,127 @@ classe adm_econfig
 const titulo = "Configurações do MUD"
 #
 const nome1 = "Jogar localmente            "
-const info1 = "Jogar na própria janela que o IntMUD abre"
+const info1 = "Jogar na própria janela que o IntMUD abre\n\
+Terá efeito na próxima vez que o MUD for ativado"
 const tipo1 = "simnao--"
 const classe1 = "config"
 const var1 = "modolocal"
 #
 const nome2 = "Jogar em uma porta          "
+const info2 = "Terá efeito na próxima vez que o MUD for ativado"
 const tipo2 = "opcao--"
 const classe2 = "config"
 const var2 = "modoserv"
 const extra2 = "Não\nTelnet\nTelnet e Papovox"
 #
 const nome3 = "Porta do MUD                "
-const info3 = "Nota: o programa Papovox só se conecta na porta 1963"
+const info3 = "Nota: o programa Papovox só se conecta na porta 1963\n\
+Terá efeito na próxima vez que o MUD for ativado"
 const tipo3 = "numero--"
 const classe3 = "config"
 const var3 = "servporta"
 #
-const nome4 = "Jogar em um chat            "
-const info4 = "Somente em chats que suportam bots"
-const tipo4 = "simnao--"
+const nome4 = "Limite de conexões por IP   "
+const tipo4 = "numero--"
 const classe4 = "config"
-const var4 = "modobot"
+const var4 = "servusr"
 #
-const nome5 = "Endereço do chat            "
-const tipo5 = "linha--"
+const nome5 = "Tempo entre duas conexões   "
+const info5 = "Quantos décimos de segundo para poder conectar-se novamente pelo mesmo IP"
+const tipo5 = "numero--"
 const classe5 = "config"
-const var5 = "serv"
+const var5 = "servtempo"
 #
-const nome6 = "Porta do chat               "
-const tipo6 = "numero--"
+const nome6 = "Jogar em um chat            "
+const info6 = "Somente em chats que suportam bots\n\
+Terá efeito na próxima vez que o MUD for ativado"
+const tipo6 = "simnao--"
 const classe6 = "config"
-const var6 = "porta"
+const var6 = "modobot"
 #
-const nome7 = "Sala do chat                "
+const nome7 = "Endereço do chat            "
 const tipo7 = "linha--"
 const classe7 = "config"
-const var7 = "sala"
+const var7 = "serv"
 #
-const nome8 = "Senha da sala do chat       "
-const info8 = "Se for vazia, o programa pede a senha antes de conectar\n\
-Se não for vazia, outros administradores poderão ver a senha"
-const tipo8 = "linha--"
+const nome8 = "Porta do chat               "
+const tipo8 = "numero--"
 const classe8 = "config"
-const var8 = "senha"
+const var8 = "porta"
 #
-const nome9 = "Senha de administração      "
-const info9 = "Se vazia, ninguém poderá ser administrador do MUD"
+const nome9 = "Sala do chat                "
 const tipo9 = "linha--"
 const classe9 = "config"
-const var9 = "senhaadm"
+const var9 = "sala"
 #
-const nome10 = "Sala inicial                "
-const info10 = "Sala onde os jogadores vão após criar o personagem"
-const tipo10 = "sala--"
+const nome10 = "Senha da sala do chat       "
+const info10 = "Se for vazia, o programa pede a senha antes de conectar\n\
+Se não for vazia, outros administradores poderão ver a senha"
+const tipo10 = "linha--"
 const classe10 = "config"
-const var10 = "salaini"
+const var10 = "senha"
 #
-const nome11 = "Sala quando morre           "
-const tipo11 = "sala--"
+const nome11 = "Senha de administração      "
+const info11 = "Se vazia, ninguém poderá ser administrador do MUD"
+const tipo11 = "linha--"
 const classe11 = "config"
-const var11 = "salafim"
+const var11 = "senhaadm"
 #
-const nome12 = "Sala para continuar jogo salvo"
-const info12 = "Se acontecer do jogador cair em uma sala inexistente"
+const nome12 = "Sala inicial                "
+const info12 = "Sala onde os jogadores vão após criar o personagem"
 const tipo12 = "sala--"
 const classe12 = "config"
-const var12 = "salasav"
+const var12 = "salaini"
 #
-const nome13 = "Animais para batalhar       "
-const info13 = "Quantos animais pode usar em batalha"
-const tipo13 = "numero--"
+const nome13 = "Sala quando morre           "
+const tipo13 = "sala--"
 const classe13 = "config"
-const var13 = "animal1"
-const extra13 = "1 8"
+const var13 = "salafim"
 #
-const nome14 = "Salvar personagem ao criar  "
-const tipo14 = "simnao--"
+const nome14 = "Sala para continuar jogo salvo"
+const info14 = "Se acontecer do jogador cair em uma sala inexistente"
+const tipo14 = "sala--"
 const classe14 = "config"
-const var14 = "salvacria"
+const var14 = "salasav"
 #
-const nome15 = "Tipo de ataque              "
-const tipo15 = "opcao--"
+const nome15 = "Animais para batalhar       "
+const info15 = "Quantos animais pode usar em batalha"
+const tipo15 = "numero--"
 const classe15 = "config"
-const var15 = "atktipo"
-const extra15 = "Manual\nAutomático com a classe cmd_atkauto"
+const var15 = "animal1"
+const extra15 = "1 8"
+#
+const nome16 = "Salvar personagem ao criar  "
+const tipo16 = "simnao--"
+const classe16 = "config"
+const var16 = "salvacria"
+#
+const nome17 = "Tipo de ataque              "
+const tipo17 = "opcao--"
+const classe17 = "config"
+const var17 = "atktipo"
+const extra17 = "Manual\nAutomático com a classe cmd_atkauto"
 #
 
-func nome16
+func nome18
   se config:atktipo
     ret "Tempo para finalizar batalha"
   senao
     ret "Tempo de um turno           "
 
-func info16
+func info17
   se config:atktipo
     ret "Em décimos de segundo; tempo para chegar a primeira mensagem"
   senao
     ret "Em décimos de segundo"
 
-const tipo16 = "numero--"
-const classe16 = "config"
-const var16 = "atktempo"
-const extra16 = "10 200"
+const tipo18 = "numero--"
+const classe18 = "config"
+const var18 = "atktempo"
+const extra18 = "10 200"
 #
-const nome17 = "Escolher nível na área 'casa'"
-const info17 = "É uma opção que fica na sala casa003, \"Passagem\""
-const tipo17 = "simnao--"
-const classe17 = "config"
-const var17 = "escolhenivel"
+const nome19 = "Escolher nível na área 'casa'"
+const info19 = "É uma opção que fica na sala casa003, \"Passagem\""
+const tipo19 = "simnao--"
+const classe19 = "config"
+const var19 = "escolhenivel"

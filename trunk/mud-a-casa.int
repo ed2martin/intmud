@@ -248,6 +248,10 @@ Há um antigo [quadro] preso na parede."
 const dir_s = $s_casa002
 const dir_n = $s_casa004
 const dir_l = $s_casa006
+const ver_quadro = "Quadro\n\
+Você vê o desenho de uma antiga mansão, num belo dia de sol.\n\
+A assinatura você não consegue ler, está muito apagada.\n\
+Mas há uma data aqui, 8/9/2012."
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog && config:escolhenivel
@@ -258,13 +262,6 @@ func entrou2
   arg0.msg("Nesta versão de teste do jogo tecle aqui:")
   arg0.msg("A ou AA para aumentar 1 ou 10 níveis")
   arg0.msg("D ou DD para diminuir 1 ou 10 níveis")
-
-func ver_quadro
-  arg0.msg("Quadro")
-  arg0.msg("Você vê o desenho de uma antiga mansão, num belo dia de sol.")
-  arg0.msg("A assinatura você não consegue ler, está muito apagada.")
-  arg0.msg("Mas há uma data aqui, 19/8/2012.")
-  ret 1
 
 func cmd_escr
   casovar txtmin(arg1)
@@ -300,8 +297,10 @@ Você se pergunta se o dono da casa pratica atividades ilegais com essas\n\
 máquinas. Entretanto, há um jogo diferente, que não requer eletricidade.\n\
 Chama-se [batalha], são pequenos bonecos que lutam entre si."
 const dir_s = $s_casa003
+const botao = "\nTem um botão esquisito, para apertá-lo tecle APERTAR"
 
 func ver_batalha
+  ret !arg1, 1 # Indica que existe descrição extra
   listaitem i
   textotxt t
   epara i = $s_casa005.dentro2.ini, i, i.depois
@@ -310,16 +309,11 @@ func ver_batalha
   arg0.msg("Jogo Batalha")
   casovar t.linhas
   casose "0"
-    arg0.msg("Você não vê nenhum boneco nesse jogo. Que esquisito!")
-    sair
+    ret "Você não vê nenhum boneco nesse jogo." + botao
   casose "1"
-    arg0.msg("Você vê um boneco chamado " + t.remove)
-    sair
-  casose
-    arg0.msg("Você vê os seguintes bonecos: " + txttroca(t.remove(1000), "\n", ", "))
+    ret "Você vê um boneco chamado " + t.remove + botao
   casofim
-  arg0.msg("Tem um botão esquisito, para apertá-lo tecle APERTAR")
-  ret 1
+  ret "Você vê os seguintes bonecos: " + txttroca(t.remove(1000), "\n", ", ") + botao
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -371,10 +365,8 @@ const s_desc = "Um pequeno banheiro, ou pelo menos o que restou dele. Ainda tem 
 chuveiro, mas aonde tinha a privada agora só resta o [cano]."
 const dir_o = $s_casa006
 
-func ver_cano
-  arg0.msg("Um papel está preso na parte de dentro do cano.")
-  arg0.msg("Basicamente diz \"Para repetir a descrição da sala tecle VER\".")
-  ret 1
+const ver_cano = "Um papel está preso na parte de dentro do cano.\n\
+Basicamente diz \"Para repetir a descrição da sala tecle VER\"."
 
 
 classe s_casa008
