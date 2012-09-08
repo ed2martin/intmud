@@ -144,8 +144,8 @@ herda b_ini
 const s_luta = 0
 const s_titulo = "Centro da ilha"
 const s_desc = "Há uma palmeira um pouco seca aqui. Ao norte há um pequeno arbusto,\n\
-e ao sul, uma antiga cabana de palha. Nas outras direções, o chão\n\
-se confunde com uma névoa."
+e ao sul, uma antiga cabana de palha. A ilha continua nas outras direções,\n\
+mas você vê apenas o chão."
 const dir_l = $s_ini005
 const dir_o = $s_ini007
 const dir_s = $s_ini008
@@ -254,13 +254,10 @@ const dir_s = $s_ini004
 const dir_l = $s_ini004
 const dir_b = $s_ini006
 const inv_b = 1
-
-func ver_desenho
-  arg0.msg("O desenho é o mapa de uma pequena ilha, com uma palmeira seca no meio,")
-  arg0.msg("um arbusto e uma escada para baixo no norte, uma cabana ao sul e uma")
-  arg0.msg("placa à oeste. Curiosamenente, há uma escada para baixo colada na borda")
-  arg0.msg("leste da ilha, praticamente na altura do chão.")
-  ret 1
+const ver_desenho = "O desenho é o mapa de uma pequena ilha, com uma palmeira seca no meio,\n\
+um arbusto e uma escada para baixo no norte, uma cabana ao sul e uma\n\
+placa à oeste. Curiosamenente, há uma escada para baixo colada na borda\n\
+leste da ilha, praticamente na altura do chão."
 
 
 classe s_ini006
@@ -308,17 +305,14 @@ const dir_n = $s_ini004
 const dir_s = $s_ini004
 const dir_o = $s_ini004
 const eveste = 1 # Receber eventos do próprio objeto
+const ver_placa = "A placa diz: Depósito de diamantes vermelhos\n\
+Para pegar tecle pegar diamante_vermelho\n\
+Para soltar tecle soltar diamante_vermelho\n\
+Muitas vezes pode-se abreviar os comandos.\n\
+Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\"."
 
 func cmd_salaperso # Personagem chegou
   misc:salacriar("i_diamante_vermelho", 78)
-
-func ver_placa
-  arg0.msg("A placa diz: Depósito de diamantes vermelhos")
-  arg0.msg("Para pegar tecle pegar diamante_vermelho")
-  arg0.msg("Para soltar tecle soltar diamante_vermelho")
-  arg0.msg("Muitas vezes pode-se abreviar os comandos.")
-  arg0.msg("Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\".")
-  ret 1
 
 func cmd_pegarobj
   se arg2 == "i_diamante_vermelho"
@@ -343,8 +337,9 @@ classe s_ini008
 herda b_ini
 const s_titulo = "Região sul da ilha"
 const s_desc = "Afastando-se do centro da ilha, em direção ao sul, há uma velha cabana.\n\
-Nota-se uma pequena [placa] em cima da porta (para ver o que está escrito\n\
-na placa tecle ver placa)."
+Ao norte a ilha continua, mas tanto no leste quanto no oeste, vê-se apenas\n\
+uma névoa. Nota-se uma pequena [placa] em cima da porta (para ver o que\n\
+está escrito na placa tecle ver placa)."
 const dir_n = $s_ini002
 const dir_s = $s_ini009
 const dir_l = $s_ini004
@@ -353,11 +348,8 @@ const portaini_s = 2 # Inicialmente fechado
 const portanome_s = "a porta da cabana"
 inttempo fechaporta # Para fazer o vento bater a porta
 const eveste = 1 # Receber eventos do próprio objeto
-
-func ver_placa
-  arg0.msg("A placa diz:")
-  arg0.msg("Para abrir a porta ao sul, tecle abrir s")
-  ret 1
+const ver_placa = "A placa diz:\n\
+Para abrir a porta ao sul, tecle abrir s"
 
 func cmd_abriudir
   se arg2 == "s"
@@ -444,7 +436,7 @@ func cmd_chutar
     ret 1
   senao
     $mens.p(arg0)
-    $mens.mvis1("$P chuta Silva, 250 de 250")
+    $mens.mvis1("$P chuta Silva, 250")
     arg0.msg("Silva: Bom chute. Eu só continuo com 250 de vida porque sou mais forte.")
     arg0.msg("Silva: Durante uma briga, você pode teclar apenas chutar ou socar.")
     arg0.msg("Silva: Te dou dois conselhos: Cheque suas habilidades teclando hab")
@@ -530,12 +522,9 @@ const s_desc = "A neblina aqui é forte, mas não o suficiente para ocultar uma pl
 Pode-se ler o que está escrito na [placa]."
 const dir_n = $s_ini015
 const eveste = 1 # Receber eventos do próprio objeto
-
-func ver_placa
-  arg0.msg("A placa diz: você pode saber o que está carregando e vestindo teclando")
-  arg0.msg("inv e equip, respectivamente. Talvez você queira remover ou vestir")
-  arg0.msg("alguma coisa (comandos são remover e vestir seguido do nome do item).")
-  ret 1
+const ver_placa = "A placa diz: você pode saber o que está carregando e vestindo teclando\n\
+inv e equip, respectivamente. Talvez você queira remover ou vestir\n\
+alguma coisa (comandos são remover e vestir seguido do nome do item)."
 
 func cmd_salaperso # Personagem chegou
   misc:salacriar("i_diamante_verde", 45)
@@ -687,15 +676,15 @@ func cmd_falou
     arg0.msg("É outro número de 1 a 100")
     ret
   casose "3"
-    arg1 != "27" && (arg0.var.d_resposta_ = 14)
+    arg1 != "27" && (arg0.var.d_resposta_ = 13)
   casose "13"
     arg0.var.d_resposta_ += 1
     arg0.msg("Joaquim: Quando você chegou na ilha, que habilidade você já conhecia?")
     ret
   casose "4"
     se arg1 == "atirar" # Acertou todas as perguntas
-      arg0.msg("Joaquim: Você acertou as 3 perguntas. Como recompensa fique com este diamante.")
-      arg0.msg("Joaquim: Quando tiver os 4 diamantes vá para o centro da ilha maior.")
+      arg0.msg("Joaquim: Você acertou as perguntas. Como recompensa fique com este diamante.")
+      arg0.msg("Joaquim: Quando tiver os quatro diamantes vá para o centro da ilha maior.")
       $mens.p(este, arg0)
       $mens.mvis1("$P dá diamante amarelo para $A.")
       criar("i_diamante_amarelo", arg0)

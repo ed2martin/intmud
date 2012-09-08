@@ -264,12 +264,14 @@ Somar 2 para mostrar saídas
 6.12. func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-6.12. func ver_[nome do a descrição]( jogador )
-É executada quando um personagem tecla ver seguido de um nome qualquer.
-Exemplo de como enviar uma descrição:
-func ver_placa # Chamado quando o jogador tecla: ver placa
-arg0.msg("Você olha para uma placa vazia.")
-ret 1 # Indica que processou o comando
+6.13. func ver_[nome do a descrição]( jogador, 0 )
+Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
+existir ou falso (ou um texto não vazio) se não existir.
+
+6.14. func ver_[nome do a descrição]( jogador, 1 )
+Deve retornar um texto que é a descrição extra.
+Exemplo de como criar uma descrição:
+const ver_placa = "Você olha para uma placa vazia."
 
 
 7. Personagens e itens
@@ -715,7 +717,6 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
-Limite de usuários por endereço IP e anti-flooder
 Opção na sala para não permitir soltar itens ou para virarem pó
 Valor em moedas
 Volume que cabe dentro, ou 0 se não for container

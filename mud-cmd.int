@@ -317,10 +317,17 @@ func escr
     fimse
     ret
   fimse
-  ret arg0.dono.ver_[arg1](arg0), nulo
   nomeobj n
-  l.addfim(arg0.dono.dentro1, arg0.dono.dentro2, arg0.dentro1)
+  prog p
+  ref r
   n.ini(arg1, 1)
+  r = arg0.dono
+  epara p.inifunc(r, "ver_"), p.lin, p.depois
+    continuar !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4))
+    arg0.msg(r.[p.texto](arg0, 1))
+    ret
+  efim
+  l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
     se l.objini.visivel(arg0) && n.nome(l.objini.ident)
       ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
