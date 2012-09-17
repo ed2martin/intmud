@@ -1,7 +1,6 @@
 classe comando_comum
 const posic = 8 # Posição mínima para usar o comando
 const objcmd = este # Objeto que processa o comando, ou nulo se não existe
-# const ultimo = 1 # Deve estar definido se comando tem baixa prioridade
 
 func escr # Processa o comando
 # arg0 = objeto do personagem
@@ -329,64 +328,63 @@ func escr
   efim
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
-    se l.objini.visivel(arg0) && n.nome(l.objini.ident)
-      ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
-      se l.objini.perso
-        $mens.p(arg0, l.objini)
-        $mens.msgvis2("", "$P olha para $a.")
-      fimse
-      textotxt t
-      listaitem item
-      epara item = l.objini.dentro2.ini, item, item.depois
-        continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-        t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
-      efim
-      t.linhas && t.addini("Equipado com:")
-      t.addini(l.objini.descver(arg0))
-      txt100 t2
-      t2 = txtmaimin(l.objini.nome)
-      se l.objini.jog
-        t2 += ", jogador nível " + l.objini.pnivel
-      senao txt(l.objini.pnivel)
-        t2 += ", nível " + l.objini.pnivel
-      senao
-        ret arg0.msg2(t2 + ".\n" + t.remove(1000))
-      fimse
-      se txt(l.objini.pvida)
-        casovar intdiv(l.objini.pvida * 6 / l.objini.pvidamax)
-        casose "0"
-          t2 += ", à beira da morte"
-          sair
-        casose "1"
-          t2 += ", sangrando bastante"
-          sair
-        casose "2"
-          t2 += ", muito machucad" + misc:sletra[l.objini.sexo]
-          sair
-        casose "3"
-          t2 += ", bastante machucad" + misc:sletra[l.objini.sexo]
-          sair
-        casose "4"
-          t2 += ", um pouco machucad" + misc:sletra[l.objini.sexo]
-          sair
-        casose "5"
-          t2 += ", possui algumas escoriações"
-          sair
-        casose
-          t2 += ", perfeitamente saudável"
-        casofim
-      fimse
-      ret arg0.msg2(t2 + ".\n" + t.remove(1000))
-      se l.objini.jog
-        t.addini(txtmaimin(l.objini.nome) + ", jogador nível " + l.objini.pnivel + ".")
-      senao txt(l.objini.pnivel)
-        t.addini(txtmaimin(l.objini.nome) + ", nível " + l.objini.pnivel + ".")
-      senao
-        t.addini(txtmaimin(l.objini.nome) + ".")
-      fimse
-      arg0.msg2(t.remove(1000))
-      ret
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
+    ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
+    se l.objini.perso
+      $mens.p(arg0, l.objini)
+      $mens.msgvis2("", "$P olha para $a.")
     fimse
+    textotxt t
+    listaitem item
+    epara item = l.objini.dentro2.ini, item, item.depois
+      continuar !item.obj.vestpos || !item.obj.visivel(arg0)
+      t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
+    efim
+    t.linhas && t.addini("Equipado com:")
+    t.addini(l.objini.descver(arg0))
+    txt100 t2
+    t2 = txtmaimin(l.objini.nome)
+    se l.objini.jog
+      t2 += ", jogador nível " + l.objini.pnivel
+    senao txt(l.objini.pnivel)
+      t2 += ", nível " + l.objini.pnivel
+    senao
+      ret arg0.msg2(t2 + ".\n" + t.remove(1000))
+    fimse
+    se txt(l.objini.pvida)
+      casovar intdiv(l.objini.pvida * 6 / l.objini.pvidamax)
+      casose "0"
+        t2 += ", à beira da morte"
+        sair
+      casose "1"
+        t2 += ", sangrando bastante"
+        sair
+      casose "2"
+        t2 += ", muito machucad" + misc:sletra[l.objini.sexo]
+        sair
+      casose "3"
+        t2 += ", bastante machucad" + misc:sletra[l.objini.sexo]
+        sair
+      casose "4"
+        t2 += ", um pouco machucad" + misc:sletra[l.objini.sexo]
+        sair
+      casose "5"
+        t2 += ", possui algumas escoriações"
+        sair
+      casose
+        t2 += ", perfeitamente saudável"
+      casofim
+    fimse
+    ret arg0.msg2(t2 + ".\n" + t.remove(1000))
+    se l.objini.jog
+      t.addini(txtmaimin(l.objini.nome) + ", jogador nível " + l.objini.pnivel + ".")
+    senao txt(l.objini.pnivel)
+      t.addini(txtmaimin(l.objini.nome) + ", nível " + l.objini.pnivel + ".")
+    senao
+      t.addini(txtmaimin(l.objini.nome) + ".")
+    fimse
+    arg0.msg2(t.remove(1000))
+    ret
   efim
   arg0.msg("Você não vê isso.")
 
@@ -423,10 +421,9 @@ func escr
   efim
 
 
-classe cmd_chat
+classe cmdfim_chat
 herda comando_comum, comando_ajuda
 const posic = 0
-const ultimo = 1 # Tem baixa prioridade
 const txtajuda = "\b\c3Canal chat\b\n\
 Sintaxe: CHAT <mensagem>\n\
 Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\

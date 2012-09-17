@@ -26,12 +26,12 @@ B. Arrastar o arquivo mud.int para o intmud.exe
 C. Usando o prompt de comando do Windows ou a opção X do Dosvox (executar),
 digitar: intmud mud
 
-Após rodar o programa, digite um nome qualquer para o seu personagem
-e tecle x2. Deverá vir uma mensagem assim:
+Após rodar o programa, crie um personagem e tecle x2. Deverá vir uma
+mensagem assim:
 Você virou administrador, tecle ADM para saber os comandos.
-Tecle ECONFIG para mudar as configurações do MUD, principalmente a senha
-de administração, que inicialmente é x2. Para outros jogadores
-conectarem-se ao MUD, será necessário ativar pelo menos uma das opções:
+Depois tecle ECONFIG para mudar as configurações do MUD, principalmente
+a senha de administração, que inicialmente é x2. Para outros jogadores
+conectarem-se ao MUD, é necessário ativar pelo menos uma das opções:
 jogar em uma porta ou jogar em um chat.
 
 O programa em si não produz som, portanto deficientes visuais deverão
@@ -89,31 +89,39 @@ Funções p_<texto>               São executadas conforme a variável passo
 
 2.8. mud-cmd*.int
 Contém os comandos que os personagens podem digitar. Todo comando é uma
-classe cujo nome é 'cmd_' seguido do nome do comando.
-As magias são classes cujo nome é 'cmd_magia_' seguido do nome da magia.
+classe cujo nome é 'cmd_' (comandos normais), 'cmd_magia_' (magias) ou
+'cmdfim_' (comandos de baixa prioridade) seguido do nome do comando.
+Quando o jogador digita algo, são verificadas as classes 'cmd_magia_',
+'cmd_' e depois as classes 'cmdfim_'.
 A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
-2.9. mud-cmd.int
+2.9. mud-social.int
+Contém os comandos sociais. Todo comando é uma classe cujo nome é "soc_"
+seguido do nome do comando. Quando o jogador digita algo, os sociais são
+verificados após as classes 'cmd_' e 'cmd_magia_' e antes das classes
+'cmdfim_'.
+
+2.10. mud-cmd.int
 Comandos de informação.
 Contém também a classe 'comando_ataque', que é herdada por todos os comandos.
 
-2.10. mud-cmd-item.int
+2.11. mud-cmd-item.int
 Comandos de manuseio de objetos.
 
-2.11. mud-cmd-mover.int
+2.12. mud-cmd-mover.int
 Comandos de movimentação.
 
-2.12. mud-cmd-ataque.int
+2.13. mud-cmd-ataque.int
 Comandos de ataque.
 Via de regra, a função 'escr' checa se está em condições de atacar e obtém
 o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
 
-2.13. mud-mens.int
+2.15. mud-mens.int
 Contém a classe 'mens', especializada no envio de mensagens para personagens.
 
-2.14. mud-misc.int
+2.16. mud-misc.int
 Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
 Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
@@ -569,6 +577,12 @@ func recalc_exec, para ajustar as variáveis (pontos de vida, mana, etc.)
 
 func cmd_falou(personagem, texto)
 Falou alguma coisa.
+
+cmd_social1(personagem, alvo, objeto do comando)
+Personagem executou algum comando social.
+
+cmd_social2(personagem, alvo, objeto do comando)
+Personagem ou item foi algo de algum comando social.
 
 func cmd_pegouobj(personagem, origem, item, quantidade do item)
 func cmd_soltouobj(personagem, destino, item, quantidade do item)

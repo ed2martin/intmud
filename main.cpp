@@ -264,32 +264,34 @@ int main(int argc, char *argv[])
     FD_ZERO(&set_saida);
     FD_ZERO(&set_err);
 #ifdef __WIN32__
-    atual = timeGetTime()/100;
+    atual = timeGetTime();
 #else
     gettimeofday(&tselect,0);
-    atual = tselect.tv_sec*10 + tselect.tv_usec/100000;
+    atual = tselect.tv_sec*1000LL + tselect.tv_usec/1000;
 #endif
     while (true)
     {
     // Obtém: espera = tempo decorrido
         espera = atual;
 #ifdef __WIN32__
-        atual = timeGetTime()/100;
+        atual = timeGetTime(); // Tempo atual
 #else
         gettimeofday(&tselect,0);
-        atual = (tselect.tv_sec&0xFFFF)*10 + tselect.tv_usec/100000;
+        atual = tselect.tv_sec*1000LL + tselect.tv_usec/1000;
 #endif
-        espera = atual - espera;
+        espera = atual - espera;// Quanto tempo se passou em milissegundos
+        atual -= espera%100;    // Para passar para décimos de segundo
+        espera /= 100;          // Arredonda para décimos de segundo
         if (espera>0x800) espera=0;
         if (espera>TESPERA_MAX) espera=TESPERA_MAX;
-
-    // Eventos do console
-        TVarTelaTxt::Processa();
 
     // Eventos de IntTempo
         if (espera>0)
             TempoIni += espera;
         TVarIntTempo::ProcEventos(espera);
+
+    // Eventos do console
+        TVarTelaTxt::Processa();
 
     // Chama eventos serv e socket
         TVarServ::ProcEventos(&set_entrada, espera);
@@ -341,20 +343,21 @@ int main(int argc, char *argv[])
         if (espera>TESPERA_MAX) espera=TESPERA_MAX;
 
 #ifdef __WIN32__
-        tempo = timeGetTime()/100;
+        tempo = timeGetTime();
 #else
         gettimeofday(&tselect,0);
-        tempo = tselect.tv_sec*10 + tselect.tv_usec/100000;
+        tempo = tselect.tv_sec*1000LL + tselect.tv_usec/1000;
 #endif
-        tempo-=atual;
-        if (espera<tempo)
-            espera=0;
+        tempo -= atual;
+        espera *= 100;
+        if (espera < tempo)
+            espera = 0;
         else
-            espera-=tempo;
+            espera -= tempo;
 
     // Espera
-        tselect.tv_sec = espera/10;
-        tselect.tv_usec = espera%10*100000;
+        tselect.tv_sec = espera/1000;
+        tselect.tv_usec = espera%1000*1000;
 #ifdef __WIN32__
         // Nota:
         // Se não especificar nenhum socket, o Windows retorna SOCKET_ERROR

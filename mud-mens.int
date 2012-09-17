@@ -86,7 +86,7 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
         l0.objini.msgvis(arg2), l0.ini.remove
       efim
 
-func proc # Prepara e envia mensagem
+func proc # Prepara e retorna mensagem
 # arg0=mensagem, arg1=objeto
   t0.limpar, t0.addfim(arg0)
   p0 = t0.ini, i = 0, r = arg1
@@ -105,7 +105,7 @@ func proc # Prepara e envia mensagem
       p0.mudar("", i, 2)
     fimse
   efim
-  arg1.msg(t0.remove(1000))
+  ret t0.remove(1000)
 
 func opcmai_p # Nome do personagem
   se r == perso
