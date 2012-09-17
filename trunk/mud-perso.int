@@ -81,7 +81,6 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 func teclou # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
-  ref obj2 # Objeto com menor prioridade
   prog p # Para procurar o objeto
   casovar txtmin(txt1(arg0))
   casose ""
@@ -92,19 +91,27 @@ func teclou # Processa comando (arg0=comando)
   casose "magi"
   casose "magia"
     ret dono.s_semmagia, msg("Você não consegue lançar magias aqui.")
-    p.iniclasse("cmd_magia_" + txtsub(arg0, 1, 1))
+    epara p.iniclasse("cmd_magia_" + txtsub(arg0, 1, 1)), p.lin, p.depois
+      sair obj = $[p.texto].objcmd(este, arg0) # Acerta obj e verifica se obj!=nulo
+    efim
     sair
   casose
-    p.iniclasse("cmd_" + txt1(arg0))
-    comando = txt2(comando)
+    sair obj = $cmd_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
+    sair obj = $soc_[txt1(arg0)].objcmd(este, arg0) # Checa social exato
+    sair obj = $cmdfim_[txt1(arg0)].objcmdfim(este, arg0) # Checa comando exato
+    epara p.iniclasse("cmd_" + txt1(arg0)), p.lin, p.depois
+      sair obj = $[p.texto].objcmd(este, arg0)
+    efim
+    sair obj
+    epara p.iniclasse("soc_" + txt1(arg0)), p.lin, p.depois
+      sair obj = $[p.texto].objcmd(este, arg0)
+    efim
+    sair obj
+    epara p.iniclasse("cmdfim_" + txt1(arg0)), p.lin, p.depois
+      sair obj = $[p.texto].objcmd(este, arg0)
+    efim
+    sair
   casofim
-  epara nulo, p.lin, p.depois
-    obj = $[p.texto].objcmd(este, arg0)
-    continuar !obj # Continua se não encontrou um objeto
-    sair !obj.ultimo # Sai se não for objeto com baixa prioridade
-    obj2 = obj
-  efim
-  !obj && (obj = obj2)
 # Gera eventos
   listaobj l
   epara l.addfim(este.evento), l, l.ini.remove
@@ -180,11 +187,11 @@ r.nome + "."
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se sock && posicao > 4 && $mens.perso.visivel(este) # Se tem jogador e está acordado
-    $mens.proc(arg0, este)
+    msg($mens.proc(arg0, este))
 
 func msginv # Mensagem mesmo se o alvo estiver invisível
   se sock && posicao > 4 # Se tem jogador e está acordado
-    $mens.proc(arg0, este)
+    msg($mens.proc(arg0, este))
 
 
 classe comum_persobat

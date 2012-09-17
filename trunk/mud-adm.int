@@ -108,12 +108,13 @@ Os tópicos são:\n\
   \c2SAI\b      Saídas das salas\n\
   \c2ITEM\b     Itens\n\
   \c2PNJ\b      PNJs (personagens não jogadores)\n\
+  \c2SOCIAL\b   Comandos sociais\n\
   \c2COD\b      Edição do código fonte\n\
   \c2OUTROS\b   Outros comandos"
 # \c2INFO\b     Informações sobre o MUD\n
 # \c2CONFIG\b   Configuração do MUD"
 const adm_item = "\b\c3Comandos de itens\b\n\
-\c2LITEM\b <nome>\n\
+\c2LITEM\b [nome]\n\
   Lista itens que começam com o nome especificado.\n\
 \c2CITEM\b <nome>\n\
   Cria item. Nome pode conter letras e números.\n\
@@ -122,7 +123,7 @@ const adm_item = "\b\c3Comandos de itens\b\n\
 \c2AITEM\b <nome>\n\
   Apaga item."
 const adm_pnj = "\b\c3Comandos de PNJs\b\n\
-\c2LPNJ\b <nome>\n\
+\c2LPNJ\b [nome]\n\
   Lista PNJs que começam com o nome especificado.\n\
 \c2CPNJ\b <nome>\n\
   Cria PNJ. Nome pode conter letras e números.\n\
@@ -235,6 +236,10 @@ func p_menu
     var.opcextra = [tpasso]:extra[arg0]
     var.opcpasso = passo
     var.opcvalido_ = txtproc([tpasso]:tipo[arg0], "--") >= 0
+    se !var.opcvar
+      msg2(var.opcextra)
+      ret 1
+    fimse
     msg(m_menu2(tpasso, arg0))
     [tpasso]:info[arg0] && msg([tpasso]:info[arg0])
     p_[txttroca([tpasso]:tipo[arg0], "-", "")]("\b")
@@ -250,6 +255,10 @@ func p_menu
     var.opcvar = [tpasso]:var[opc]
     var.opcextra = [tpasso]:extra[opc]
     var.opcpasso = passo
+    se !var.opcvar
+      msg2(var.opcextra)
+      ret 1
+    fimse
     p_func("\b")
   senao # Nenhuma das anteriores
     msg("Opção inválida: " + arg0)

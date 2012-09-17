@@ -1,0 +1,206 @@
+classe jog_admsocial
+# Comandos sociais
+#
+const txt_social = "Neutro\nAgradecer\nOfender"
+#
+const adm_social = "\b\c3Comandos sociais\b\n\
+\c2LSOC\b [nome]\n\
+  Lista sociais que começam com o nome especificado.\n\
+\c2CSOC\b <nome>\n\
+  Cria social. Nome pode conter letras e números.\n\
+\c2ESOC\b <nome>\n\
+  Edita social.\n\
+\c2ASOC\b <nome>\n\
+  Apaga social."
+const txt_posicao = "morto\n\
+mortalmente ferido\n\
+incapacitado\n\
+fraco\n\
+dormindo\n\
+descansando\n\
+sentado\n\
+lutando\nem pé"
+
+func cmd_lsoc # Listar sociais
+  prog p
+  se !p.iniclasse("soc_" + arg0)
+    msg("\bNenhum social encontrado.")
+  senao
+    textotxt t
+    txt200 n
+    ref r
+    t.addfim("\bComando (nome, nível, alvo):")
+    enquanto p.lin
+      r = $[p.texto], n = txt(r, 4) + ", " + r.nivel + ","
+      r.sem1 && r.sem2 && (n += " sem_args")
+      r.perso1 && r.perso2 && r.perso3 && (n += " perso")
+      r.item1 && r.item2 && (n += " item")
+      t.addfim(n), p.depois
+    efim
+    msg2(t.remove(1000))
+  fimse
+  ret 1
+
+func cmd_csoc # Criar social
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome do social após CSOC")
+  senao p.existe("soc_" + arg0)
+    msg("Social já existe: " + arg0)
+  senao
+    p.criar("soc_" + txtmin(arg0) + "\nsocial\nherda soccomum")
+    config:salvar
+    msg("\bSocial criado: " + txtmin(arg0))
+  fimse
+  ret 1
+
+func cmd_esoc # Editar social
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome do social após ESOC")
+  senao !p.existe("soc_" + arg0)
+    msg("Social não existe: " + arg0)
+  senao
+    var.classe1 = "soc_" + arg0
+    m_menu("adm_social")
+  fimse
+  ret 1
+
+func cmd_asoc # Apagar social
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome do social após ASOC")
+  senao !p.existe("soc_" + arg0)
+    msg("Social não existe: " + arg0)
+  senao
+    tpasso = arg0, p_asoc
+  fimse
+  ret 1
+
+func p_asoc # Confirmar que quer apagar social
+  passo = ""
+  se arg0 == "n"
+    msg("Cancelado")
+  senao arg0 == "s"
+    prog p
+    p.apagar("soc_" + tpasso)
+    msg("Social apagado: " + tpasso)
+  senao
+    passo = "asoc"
+    msg("Apagar social " + tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_social
+const titulo = "Social " + txt(var.classe1, 4)
+#
+const nome1 = "Tipo de comando"
+const tipo1 = "opcao"
+const classe1 = var.classe1
+const var1 = "tipo"
+const extra1 = txt_social
+#
+const nome2 = "Editar tipos"
+const info2 = "Os tipos existentes na opção 1"
+const tipo2 = "texto--"
+const classe2 = "jog_admsocial"
+const var2 = "txt_social"
+#
+const nome3 = "Nível mínimo"
+const tipo3 = "numero"
+const classe3 = var.classe1
+const var3 = "nivel"
+#
+const nome4 = "Posição mínima"
+const tipo4 = "opcao"
+const classe4 = var.classe1
+const var4 = "posic"
+const extra4 = txt_posicao
+#
+const nome5 = "Alvo posição mínima"
+const tipo5 = "opcao"
+const classe5 = var.classe1
+const var5 = "alvopos"
+const extra5 = txt_posicao
+#
+const nome6 = "Mostrar invisível"
+const info6 = "Se o social aparece para quem não puder ver o personagem"
+const tipo6 = "simnao"
+const classe6 = var.classe1
+const var6 = "mvis"
+#
+const nome7 = "Sem args; perso"
+const info7 = "Mensagem para o personagem"
+const tipo7 = "linha"
+const classe7 = var.classe1
+const var7 = "sem1"
+#
+const nome8 = "Sem args; outros"
+const info8 = "Mensagem para os outros"
+const tipo8 = "linha"
+const classe8 = var.classe1
+const var8 = "sem2"
+#
+const nome9 = "Argumento não existe"
+const info9 = "Quando o objeto ou personagem não existe"
+const tipo9 = "linha"
+const classe9 = var.classe1
+const var9 = "invalido"
+#
+const nome10 = "Com ele mesmo; perso"
+const info10 = "Mensagem para o personagem"
+const tipo10 = "linha"
+const classe10 = var.classe1
+const var10 = "auto1"
+#
+const nome11 = "Com ele mesmo; outros"
+const info11 = "Mensagem para os outros"
+const tipo11 = "linha"
+const classe11 = var.classe1
+const var11 = "auto2"
+#
+const nome12 = "personagem; perso"
+const info12 = "Mensagem para o personagem"
+const tipo12 = "linha"
+const classe12 = var.classe1
+const var12 = "perso1"
+#
+const nome13 = "Com personagem; alvo"
+const info13 = "Mensagem para o alvo"
+const tipo13 = "linha"
+const classe13 = var.classe1
+const var13 = "perso2"
+#
+const nome14 = "Com personagem; outros"
+const info14 = "Mensagem para os outros"
+const tipo14 = "linha"
+const classe14 = var.classe1
+const var14 = "perso3"
+#
+const nome15 = "Com objeto; perso"
+const info15 = "Mensagem para o personagem"
+const tipo15 = "linha"
+const classe15 = var.classe1
+const var15 = "item1"
+#
+const nome16 = "Com objeto; outros"
+const info16 = "Mensagem para os outros"
+const tipo16 = "linha"
+const classe16 = var.classe1
+const var16 = "item2"
+#
+const nome17 = "Caracteres especiais nas mensagens"
+const extra17 = "As mensagens podem conter os seguintes caracteres especiais:\n\
+$$ Símbolo $\n\
+$P Nome do personagem\n\
+$Q Nome do personagem escolhido, ex. Lula\n\
+$R Nome do personagem em batalha, ex. Lula de fulano\n\
+$A Nome do alvo\n\
+$B Nome do alvo escolhido, ex. Lula\n\
+$C Nome do alvo em batalha, ex. Lula de fulano\n\
+$D Nome do alvo, sendo que pode ser Animal X de fulano\n\
+$O Nome do objeto\n\
+$S Depende do personagem: o, a, um ou uma\n\
+$T Depende do alvo: o, a, um ou uma\n\
+$U Depende do objeto: o, a, um ou uma"

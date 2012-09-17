@@ -348,8 +348,7 @@ const portaini_s = 2 # Inicialmente fechado
 const portanome_s = "a porta da cabana"
 inttempo fechaporta # Para fazer o vento bater a porta
 const eveste = 1 # Receber eventos do próprio objeto
-const ver_placa = "A placa diz:\n\
-Para abrir a porta ao sul, tecle abrir s"
+const ver_placa = "A placa diz:\nPara abrir a porta ao sul, tecle abrir s"
 
 func cmd_abriudir
   se arg2 == "s"
@@ -650,7 +649,7 @@ func cmd_sentouobj
     misc:tempo("pergunta", arg0) # Dispara funções 'pergunta'
 
 func pergunta10
-  arg0.msg("Joaquim: Pois é. Também me perdi e acabei chegando nessa ilha.")
+  arg0.msg("Joaquim: Esse arquipélago já foi maior. Agora pouca gente vem aqui.")
 
 func pergunta30
   arg0.msg("Joaquim: Sou um estudioso e curioso. Você também gosta de estudar?")
@@ -672,7 +671,7 @@ func cmd_falou
     arg1 != "78" && (arg0.var.d_resposta_ = 12)
   casose "12"
     arg0.var.d_resposta_ += 1
-    arg0.msg("Joaquim: O Sr. Silva tem 250 de vida, mas qual o nível dele?")
+    arg0.msg("Joaquim: O meu amigo Silva tem 250 de vida, mas qual o nível dele?")
     arg0.msg("É outro número de 1 a 100")
     ret
   casose "3"

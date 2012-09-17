@@ -1,5 +1,5 @@
 classe jogsock
-herda jog_entra, jog_adm, jog_admcod, jog_admsala
+herda jog_entra, jog_adm, jog_admcod, jog_admsala, jog_admsocial
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -251,6 +251,12 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     p_perso
   senao !sav1.senha("jog-" + texto + ".sav", txtmin(arg0))
     msg("Senha incorreta")
+    casovar txt1(info)
+    casose "t" # Conectado via Papovox
+    casose "p" # Conectado via Telnet
+      apagar(este)
+      ret
+    casofim
     p_perso
   senao ind.obj("pn " + texto)
     passo = ""
