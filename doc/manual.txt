@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 11.1.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 12.
 
 
 1. SOBRE O INTMUD
@@ -914,30 +914,37 @@ Exemplo:
 comum int8 x
 
 11.2. sav
-Indica que a variável deve ser salva em arquivo. Vide arqsav.
+Indica que a variável deve ser salva em arquivo quando o objeto
+for salvo por arqsav. Vide também o tópico da variável arqsav.
 
 
 12. VETORES
 
-São conjuntos de variáveis do mesmo tipo.
-Define-se um vetor acrescentando-se após o nome da variável um ponto
-e a quantidade de variáveis, de 1 a 255.
+São conjuntos de variáveis de mesmo tipo.
+
+Sintaxe da definição de vetores:
+<tipo da variável> <nome do vetor>.<número de variáveis de 1 a 255>
+
 Exemplo:
-int8 teste.3
+int8 v.3
 
-Nesse caso existem 3 variáveis:
-teste.0
-teste.1
-teste.2
+Nesse caso existem 3 variáveis do tipo 'int8':
+v.0
+v.1
+v.2
 
-Exemplo de como tratar eventos de um vetor:
+Quando uma variável de um vetor gera um evento, o índice da variável
+é passado como um argumento.
+
+Exemplo:
+
 classe x
 inttempo n.5
 func n_exec # Evento para as 5 variáveis 'n'
-# Aqui arg0 é o índice da variável no vetor (de 0 a 4)
+# No caso desse evento, ARG0 é o índice do vetor
 # n.[arg0] corresponde à variável que gerou o evento
 
-Nota: Funções e constantes não podem ser definidos como vetor.
+Nota: Funções e constantes não podem ser tratados como vetores.
 
 
 13. OPERADORES

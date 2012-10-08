@@ -34,6 +34,8 @@ func vestir # Veste o item, arg0=posição
   senao
     idono = r.dentro1.addfim(este)
 
+const apagar = apagar(este) # Apaga o item (arg0 = quantidade)
+
 
 classe comum_itemgrupo
 herda comum_item
@@ -101,6 +103,9 @@ func vestir # Veste o item, arg0=posição
     r.dono = dono, r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
   fimse
+
+func apagar # Apaga o item (arg0 = quantidade)
+  objtot -= arg0, !objtot && apagar(este)
 
 
 classe comum_itemperso

@@ -39,6 +39,11 @@ func escr
   achou = 0
   epara l.addfim(sala.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    se arg0.dentro1.total >= arg0.objmax
+      ret arg0.msg("Você não consegue carregar mais nada.")
+    senao arg0.volden + l.objini.voltot > arg0.volmax
+      ret arg0.msg("Você não consegue carregar isso.")
+    fimse
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
@@ -74,7 +79,9 @@ const posic = 5
 ref sala # Aonde soltar os itens
 uint32 total # Quantidade de itens do mesmo tipo
 txt20 mens # Parte da mensagem
+txt80 mens2 # Outra parte da mensagem
 int1 achou # Se achou algum item
+int8 soltar # Se pode soltar itens
 
 func escr
   listaobj l
@@ -85,15 +92,18 @@ func escr
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
     sala = arg0.dono
-    mens = "."
+    soltar = sala.s_soltar
+    mens = ""
+    ret soltar == 1, arg0.msg("Você não consegue soltar itens aqui.")
   senao
+    soltar = 0
     sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.container
       ret arg0.msg("Não é possível soltar nada em " + sala.nome + ".")
     fimse
-    mens = " em $t $a."
+    mens = " em $t $a"
   fimse
 # Solta os itens
   nomeobj n # Para reconhecer os itens
@@ -101,6 +111,12 @@ func escr
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    se sala.dentro1.total >= sala.objmax
+      ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.nome + ".")
+      ret arg0.msg("Não consegue soltar nada aqui.")
+    senao sala.volden + l.objini.voltot > sala.volmax
+      ret arg0.msg("Não há espaço suficiente para soltar isso.")
+    fimse
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
@@ -108,12 +124,24 @@ func escr
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
-      se total <= 1
-        $mens.mvis1("$P solta $O" + mens)
-      senao
-        $mens.mvis1("$P solta " + total + "x $O" + mens)
-      fimse
-      l.objini.mudadono(sala, total)
+      mens2 = total <= 1 ? "$P solta $O" : "$P solta " + total + "x $O"
+      casovar soltar
+      casose "2"
+        $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
+        l.objini.apagar(total)
+        sair
+      casose "3"
+        $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
+        l.objini.apagar(total)
+        sair
+      casose "4"
+        $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
+        l.objini.apagar(total)
+        sair
+      casose
+        $mens.mvis1(mens2 + mens + ".")
+        l.objini.mudadono(sala, total)
+      casofim
     fimse
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
       sair e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
@@ -155,6 +183,11 @@ func escr
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    se sala.dentro1.total >= sala.objmax
+      ret arg0.msg(txtmaimin(sala.nome) + " não consegue carregar mais nada.")
+    senao sala.volden + l.objini.voltot > sala.volmax
+      ret arg0.msg(txtmaimin(sala.nome) + " não consegue carregar isso.")
+    fimse
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
