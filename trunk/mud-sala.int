@@ -1,13 +1,39 @@
 classe area
+inttempo resetini # Para executar reset quando a área é criada
+inttempo resetcont # Tempo para o próximo reset
+intexec resetcheca # Para acertar tempo do próximo reset, após mudar a área
 
 func iniclasse
-  criar(arg0)
+  arg0 != "area" && criar(arg0)
+
+func ini
+  resetini = 1
+
+func resetini_exec
+  resetcont = rand(a_tempo * 500, a_tempo * 700)
+  $reset.area(txt(este, 2))
+
+func resetcont_exec
+  resetcont = rand(a_tempo * 500, a_tempo * 700)
+  ret !a_reset, nulo # Retorna se modo de reset é nunca
+  se a_reset == 1 # Checa reset quando não há jogadores
+    prog p
+    epara p.iniherdainv("b_" + txt(este, 2)), p.lin, p.depois
+      ret $[p.texto].socktot, nulo
+    efim
+  fimse
+  $reset.area(txt(este, 2))
+
+func resetcheca_exec
+  se resetcont <= 0 || resetcont >= a_tempo * 700
+    resetcont = a_tempo * 700
 
 
 classe sala
 herda comum_obj
 # Estrutura de uma sala
 #
+const s_titulo = "Sem nome"
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
 #

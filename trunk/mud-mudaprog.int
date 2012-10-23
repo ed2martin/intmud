@@ -6,7 +6,7 @@ classe mudaprog
 #
 prog p
 debug d
-real datamudou # Quando os arquivos foram atualizados pela última vez
+textovar arqlista # Data e hora dos arquivos, para detectar quando mudaram
 textotxt arqmudou # Sufixo dos arquivos que mudaram
 textovar apagarcl # Classes que serão apagadas
 textovar mudarcl # Novo conteúdo das classes
@@ -18,12 +18,17 @@ func iniclasse
   criar(arg0)
 
 func ini
-  datahora dh
-  dh.agora, datamudou = dh.numtotal
+  acertalista
+
+func acertalista # Acerta variável arqlista
+  arqlista.limpar
+  arqdir dir
+  epara p.iniarq, p.lin, p.depois
+    arqlista.x[p.texto] = dir.mtempo(p.arqnome(p.texto))
+  efim
 
 func exec # Recarrega arquivos
   passonum = 1, passofunc = 1
-# msg("[" + datamudou + "]")
 
 func msg
 # telatxt tela
@@ -39,12 +44,11 @@ func passofunc_exec # Próximo passo para alterar programa
 
 func passo1 # Atualiza lista de arquivos que mudaram
 # Acerta variável: textotxt arqmudou
-  datahora dh
   arqdir dir
   txt100 nomeint
   txt100 t1
   arqmudou.limpar
-  epara p.iniarq, p, p.depois
+  epara p.iniarq, p.lin, p.depois
     dir.tipo(p.arqnome(p.texto)) != "A" && arqmudou.addfim(p.texto + "=1")
   efim
   nomeint = p.arqnome("")
@@ -52,19 +56,12 @@ func passo1 # Atualiza lista de arquivos que mudaram
   epara dir.abrir("."), dir.lin, dir.depois
     continuar txtfim(dir.texto, 4) != ".int"
     continuar txt(dir.texto, 0, inttotal(nomeint)) != nomeint
-    t1 = dir.mtempo(dir.texto)
-    dh.ano = txt1(t1)
-    dh.mes = txtsub(t1, 1, 1)
-    dh.dia = txtsub(t1, 2, 1)
-    dh.hora = txtsub(t1, 3, 1)
-    dh.min = txtsub(t1, 4, 1)
-    dh.seg = txtsub(t1, 5, 1)
-    continuar dh.numtotal < datamudou
     t1 = txt(dir.texto, inttotal(nomeint))
     se t1 == ".int"
-      arqmudou.addfim("")
+      arqlista.x != dir.mtempo(dir.texto) && arqmudou.addfim("")
     senao txt(t1, 0, 1) == "-"
-      arqmudou.addfim(txt(t1, 1, inttotal(t1) - 5))
+      t1 = txt(t1, 1, inttotal(t1) - 5)
+      arqlista.x[t1] != dir.mtempo(dir.texto) && arqmudou.addfim(t1)
     fimse
   efim
   ret 1
@@ -178,8 +175,7 @@ func passo5 # Apaga as classes pendentes e inicializa outras classes
     !p.apagar(nome) && t1.addfim("Erro ao apagar classe: " + nome + "\n")
   efim
 # Acerta tempo da última alteração
-  datahora dh
-  dh.agora, datamudou = dh.numtotal + 1
+  acertalista
 # Classes criadas
   epara nome = inicl.ini, nome, nome = inicl.depois(nome)
     t2.addfim(nome)

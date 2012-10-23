@@ -1,0 +1,129 @@
+classe jog_admitem
+# Comandos de itens
+#
+const adm_item = "\b\c3Comandos de itens\b\n\
+\c2LITEM\b [nome]\n\
+  Lista itens que começam com o nome especificado.\n\
+\c2CITEM\b <tipo> <nome>\n\
+  Cria item. Tipo é uma letra entre S, G ou M:\n\
+  S simples, G agrupa em um objeto, M mobília\n\
+  Nome deve ser o nome de uma área ou do item\n\
+  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
+\c2EITEM\b <nome>\n\
+  Edita item.\n\
+\c2AITEM\b <nome>\n\
+  Apaga item."
+
+func cmd_litem # Listar itens
+  prog p
+  se !p.iniclasse("i_" + arg0)
+    msg("\bNenhum item encontrado.")
+  senao
+    textotxt t
+    t.addfim("\bItens:")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txt(p.texto, 2) + "  " + [p.texto]:nome)
+      p.depois
+    efim
+    msg2(t.remove(500))
+  fimse
+  ret 1
+
+func cmd_citem # Criar item
+  prog p
+  uint16 num
+  txt40 deriv
+  txt40 nome
+# Obtém a classe base conforme o tipo de item
+  casovar txtmin(txt1(arg0))
+  casose "s"
+    deriv = "comum_item"
+    sair
+  casose "g"
+    deriv = "comum_itemgrupo"
+    sair
+  casose "m"
+    deriv = "comum_itemperso"
+    sair
+  casose
+    msg("Tecle o tipo e o nome após CITEM; os tipos válidos são:")
+    msg("S simples, G agrupa em um objeto, M mobília")
+    ret 1
+  casofim
+# Checa se digitou nome do item
+  nome = txt2(arg0)
+  se nome == ""
+    msg("Tecle o nome do item após CITEM e o tipo")
+    ret 1
+  fimse
+# Checa nome completo
+  num = int(txtfim(nome, 3)) + 1000
+  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+    se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
+      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+      ret 1
+    senao p.existe("i_" + nome)
+      msg("Item já existe: " + nome)
+      ret 1
+    fimse
+# Checa nome de área
+  senao !p.existe("a_" + nome)
+    msg("Área não existe: " + nome)
+    ret 1
+  senao
+    epara num = 1001, p.existe("i_" + nome + txtfim(num, 3)), num += 1
+      continuar num < 2000
+      msg("Atingido limite de itens na área " + nome)
+      ret 1
+    efim
+    nome += txtfim(num, 3)
+  fimse
+# Cria item
+  txt100 area
+  area = txt(nome, 0, inttotal(nome) - 3)
+  p.criar("i_" + nome + "\na-" + area + "\nherda " + deriv)
+  config:salvar
+  msg("\bItem criado: " + nome)
+  ret 1
+
+func cmd_aitem # Apagar item
+  prog p
+  se arg0 == ""
+    msg("Tecle um ou mais nomes do item após AITEM")
+    ret 1
+  fimse
+  uint16 x
+  enquanto txtsub(arg0, x, 1)
+    se !p.existe("i_" + txtsub(arg0, x, 1))
+      msg("Item não existe: " + txtsub(arg0, x, 1))
+      ret 1
+    fimse
+    x += 1
+  efim
+  tpasso = arg0, p_aitem
+  ret 1
+
+func p_aitem # Confirmar que quer apagar item
+  passo = ""
+  se arg0 == "n"
+    msg("Cancelado")
+  senao arg0 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(tpasso, x, 1)
+      p.apagar("i_" + txtsub(tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      msg("Item apagado: " + tpasso)
+    senao
+      msg("Itens apagados: " + tpasso)
+    fimse
+  senao
+    txt20 m1
+    passo = "aitem"
+    m1 = txt2(tpasso) ? "itens" : "item"
+    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+  fimse
+  ret 1

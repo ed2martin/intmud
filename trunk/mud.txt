@@ -217,17 +217,23 @@ Retorna o título da sala. arg0 é quem está requisitanto o título.
 6.2. const s_desc = "texto"
 Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
 
-6.3. const s_luta = 0
-Tipo de luta permitido: 0=nenhuma, 1=exceto entre jogador, 2=qualquer luta.
+6.3. const s_ocultar = 0
+Verdadeiro (geralmente 1) deve ocultar a descrição da sala ao entrar.
 
-6.4. ref dir_[direção]
+6.4. const s_luta = 0
+Tipo de luta permitido:
+0=nenhuma
+1=exceto entre jogador
+2=qualquer luta
+
+6.5. ref dir_[direção]
 Antes de acssar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
 Se estiver ausente, não há sala nessa direção
 
-6.5. uint8 porta_[direção]
+6.6. uint8 porta_[direção]
      const portaini_[direção]
 Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
@@ -238,45 +244,46 @@ PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
 2 = está fechado
 3 = está trancado
 
-6.6. const inv_[direção]
+6.7. const inv_[direção]
 Antes de acessar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
-6.7. const tranc_[direção]
+6.8. const tranc_[direção]
 Antes de acessar fazer misc:obj=personagem
 0 = porta normal
 1 = fechado quando alguém passar pela porta
 2 = trancado quando for fechado
 3 = trancado quando for fechado ou alguém passar pela porta
 
-6.8. const chave_[direção]
+6.9. const chave_[direção]
 Antes de acssar fazer misc:obj=personagem
 Texto que contém o código da chave que destranca a porta
 
-6.9. const portanome_[direção]
+6.10. const portanome_[direção]
 Nome da porta na direção especificada. Se estiver ausente ou for um
 texto vazio, será usada a mensagem padrão, que depende da porta.
 Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
 Exemplo:
 const portanome_n = "a porta da casa"
 
-6.10. func txtsai( jogador )
+6.11. func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
-6.11. func descsala( jogador, modo )
+6.12. func descsala( jogador, modo )
 Adiciona texto com a descrição da sala
 Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
+Somar 4 para mostrar os personagens e itens
 
-6.12. func descitens( jogador )
+6.13. func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-6.13. func ver_[nome do a descrição]( jogador, 0 )
+6.14. func ver_[nome do a descrição]( jogador, 0 )
 Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
 existir ou falso (ou um texto não vazio) se não existir.
 
-6.14. func ver_[nome do a descrição]( jogador, 1 )
+6.15. func ver_[nome do a descrição]( jogador, 1 )
 Deve retornar um texto que é a descrição extra.
 Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
@@ -312,16 +319,19 @@ Exemplo: ao pegar um item ou atacar um personagem
 7.5. txt16 nome
 Nome do personagem ou item, usado em ações com o objeto
 
-7.6. int1 sexo
-0=feminino, 1=masculino
+7.6. int1 sexoini
+Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 
-7.7. texto descpos
+7.7. int1 sexo
+Sexo atual: 0=feminino, 1=masculino
+
+7.8. texto descpos
 Descrição quando está na sala; arg0=quem quer ver
 
-7.8. texto descver
+7.9. texto descver
 Descrição, quando olha para o objeto; arg0=quem quer ver
 
-7.9. int1 container
+7.10. int1 container
 Verdadeiro (=1) se pode receber itens
 
 
@@ -453,9 +463,16 @@ patrulha: encerra brigas
 
 10. Itens (mud-item.int)
 
-10.1. const vestir1 = 0
-     const vestir2 = 0
-     const vestir3 = 0
+10.1. Para criar um item
+criar("nome da classe", aonde está, quantidade, nível do item, "variáveis")
+Se o nível for omitido, será 0.
+Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
+variável, separar por vírgula (exemplo, "v1=10,v2=20").
+São criadas as variáveis correspondentes em 'textovar var' do item.
+
+10.2. const vestir1 = 0
+      const vestir2 = 0
+      const vestir3 = 0
 Em que lugares do corpo pode ir quando é vestido:
 0 = em nenhum lugar/não pode vestir
 1 = como luz
@@ -479,17 +496,17 @@ Em que lugares do corpo pode ir quando é vestido:
 19 = nas pernas
 20 = calçando
 
-10.2. uint32 vestpos
+10.3. uint32 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
 Outros valores, vide vestir1, acima.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
-10.3. func vestir( posição )
+10.4. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.4. func mudadono(novo dono, quantidade)
+10.5. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 

@@ -5,11 +5,12 @@ const a_nome = "Área inicial"
 
 classe b_teste
 herda sala
+const s_area = "teste"
 const s_terreno = 1
 const s_luta = 1
 
 
-classe i_teste_borracha
+classe i_teste001
 herda comum_item
 const nome = "borracha"
 const sexo = 0
@@ -17,7 +18,7 @@ const descpos = "Uma borracha está jogada aqui."
 const vestir = 8
 
 
-classe i_teste_pedra
+classe i_teste002
 herda comum_item
 const nome = "pedra"
 const sexo = 0
@@ -25,7 +26,7 @@ const descpos = "Aqui tem uma pedra."
 const pesoobj = 200
 
 
-classe p_teste_jardim
+classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
 const ident = nome
@@ -122,13 +123,13 @@ const dir_n = $s_teste003
 const dir_ne = $s_teste005
 
 func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_teste_pedra")
+  misc:salacriar("i_teste002")
   ret !arg0.jog, nulo # Retorna se não for jogador
   misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_pegarobj # Pegar alguma coisa
   se arg2.nome == "pedra"
-    criar("i_teste_pedra", este) # Cria uma pedra na sala
+    criar("i_teste002", este) # Cria uma pedra na sala
 
 func cmd_soltarobj # Soltar alguma coisa
   se arg2.nome == "pedra"
@@ -161,7 +162,7 @@ const dir_n = $s_teste012
 const dir_se = $s_teste005
 
 func cmd_salaperso # Personagem chegou
-  misc:salacriar("p_teste_jardim")
+  misc:salacriar("p_teste001")
 
 func cmd_n # Jogador quer ir para o norte
   se !arg0.var.j_planta # Se ainda não passou pela planta carnívora
@@ -209,8 +210,7 @@ func entrou10
 
 func ini
   sala:ini
-  criar("i_teste_borracha", este)
-  criar("p_anao", este, 1)
+  criar("i_teste001", este)
 
 
 classe s_teste015

@@ -9,13 +9,19 @@ const ident = txts(nome)
 const descpos = txtmaimin(nome) + " está aqui."
 const descver = "Você não vê nada de especial."
 const jogsav = 1 # Se deve salvar o item ao salvar personagem do jogador
+sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
 sav uint32 vestpos # Em que posição está vestindo, 0=nenhuma
 # const abertoini = 0 # Valor inicial de aberto
 # uint8 aberto # 0=não é container, 1=está sempre aberto
 # 2=está aberto, 3=está fechado, 4=está trancado
 
 func ini # Objeto foi criado (arg1 = quantidade)
-  comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
+  se arg2
+    textotxt t
+    epara t.addfim(txttroca(arg3, ",", "\n")), t.linhas, var.mudar(t.remove)
+    efim
+  fimse
+  pnivel = arg2, comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
 
 func fim # Objeto foi apagado
