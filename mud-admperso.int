@@ -1,0 +1,129 @@
+classe jog_admperso
+# Comandos de personagem
+#
+const adm_perso = "\b\c3Comandos de personagens não jogador\b\n\
+\c2LPERSO\b [nome]\n\
+  Lista personagens que começam com o nome especificado.\n\
+\c2CPERSO\b <tipo> <nome>\n\
+  Cria personagem. Tipo é uma letra entre P, B ou A:\n\
+  P pacífico, B pode batalhar, A pode usar animais\n\
+  Nome deve ser o nome de uma área ou do personagem\n\
+  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
+\c2EPERSO\b <nome>\n\
+  Edita personagem.\n\
+\c2APERSO\b <nome>\n\
+  Apaga personagem."
+
+func cmd_lperso # Listar personagens
+  prog p
+  se !p.iniclasse("p_" + arg0)
+    msg("\bNenhum personagem encontrado.")
+  senao
+    textotxt t
+    t.addfim("\bPersonagens:")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txt(p.texto, 2) + "  " + [p.texto]:nome)
+      p.depois
+    efim
+    msg2(t.remove(500))
+  fimse
+  ret 1
+
+func cmd_cperso # Criar personagem
+  prog p
+  uint16 num
+  txt40 deriv
+  txt40 nome
+# Obtém a classe base conforme o tipo de personagem
+  casovar txtmin(txt1(arg0))
+  casose "p"
+    deriv = "comum_perso"
+    sair
+  casose "b"
+    deriv = "comum_persobat"
+    sair
+  casose "a"
+    deriv = "comum_persoanimal"
+    sair
+  casose
+    msg("Tecle o tipo e o nome após CPERSO; os tipos válidos são:")
+    msg("P pacífico, B pode batalhar, A pode usar animais")
+    ret 1
+  casofim
+# Checa se digitou nome do personagem
+  nome = txt2(arg0)
+  se nome == ""
+    msg("Tecle o nome do personagem após CPERSO e o tipo")
+    ret 1
+  fimse
+# Checa nome completo
+  num = int(txtfim(nome, 3)) + 1000
+  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+    se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
+      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+      ret 1
+    senao p.existe("p_" + nome)
+      msg("Personagem já existe: " + nome)
+      ret 1
+    fimse
+# Checa nome de área
+  senao !p.existe("a_" + nome)
+    msg("Área não existe: " + nome)
+    ret 1
+  senao
+    epara num = 1001, p.existe("p_" + nome + txtfim(num, 3)), num += 1
+      continuar num < 2000
+      msg("Atingido limite de personagens na área " + nome)
+      ret 1
+    efim
+    nome += txtfim(num, 3)
+  fimse
+# Cria personagem
+  txt100 area
+  area = txt(nome, 0, inttotal(nome) - 3)
+  p.criar("p_" + nome + "\na-" + area + "\nherda " + deriv)
+  config:salvar
+  msg("\bPersonagem criado: " + nome)
+  ret 1
+
+func cmd_aperso # Apagar personagem
+  prog p
+  se arg0 == ""
+    msg("Tecle um ou mais nomes do personagem após APERSO")
+    ret 1
+  fimse
+  uint16 x
+  enquanto txtsub(arg0, x, 1)
+    se !p.existe("p_" + txtsub(arg0, x, 1))
+      msg("Personagem não existe: " + txtsub(arg0, x, 1))
+      ret 1
+    fimse
+    x += 1
+  efim
+  tpasso = arg0, p_aperso
+  ret 1
+
+func p_aperso # Confirmar que quer apagar personagem
+  passo = ""
+  se arg0 == "n"
+    msg("Cancelado")
+  senao arg0 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(tpasso, x, 1)
+      p.apagar("p_" + txtsub(tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      msg("Personagem apagado: " + tpasso)
+    senao
+      msg("Personagens apagados: " + tpasso)
+    fimse
+  senao
+    txt20 m1
+    passo = "aperso"
+    m1 = txt2(tpasso) ? "personagens" : "personagem"
+    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+  fimse
+  ret 1

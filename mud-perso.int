@@ -2,7 +2,8 @@ classe comum_perso
 herda comum_obj
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
-const sexo = 0 # Sexo: 0=feminino, 1=masculino
+sav int1 sexo # Sexo: 0=feminino, 1=masculino
+const sexoini = 2 # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 const nome = "perso"
 const ident = txts(nome)
 const volexp = 1 # Volume expande se tiver itens dentro
@@ -12,7 +13,6 @@ ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const descver = "Você não vê nada de especial."
 const jogsav = 1 # Se deve salvar o personagem ao salvar personagem do jogador
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
-sav textovar var # Variáveis criadas sob demanda do personagem
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
@@ -21,6 +21,7 @@ sav int1 jogconfig.24 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, pnivel = arg1, p_proc = 1
+  sexo = sexoini == 2 ? rand(2) : sexoini
   se arg2
     textotxt t
     epara t.addfim(txttroca(arg2, ",", "\n")), t.linhas, var.mudar(t.remove)
@@ -59,7 +60,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   cmd_mudadono(arg0), dono = arg0
   atkrec.limpar, poslugar.remove
 # Eventos cmd_chegou
-  (sock || jog) && dono.cmd_salaperso(este)
+  (sock || jog) && $reset.sala(dono, dono.s_entrou) + dono.cmd_salaperso(este)
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
   efim
@@ -72,7 +73,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock
     p_proc = 1
-  senao dono.s_titulo
+  senao !dono.s_ocultar
     se jogconfig.16
       msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
     senao
@@ -200,9 +201,6 @@ herda comum_perso
 const perso = 2 # Para identificar o tipo de personagem
 uint8 bitver # O que o personagem/item pode ver
 uint8 bitinv # Grau de invisibilidade do personagem/item
-#
-const sexo = 0 # Sexo: 0=feminino, 1=masculino
-# sav int1 sexo # Sexo: 0=feminino, 1=masculino
 sav uint32 moedas # Quantas moedas está carregando
 #
 const expmax = pnivel * pnivel + 20 # Experiência para subir de nível
@@ -241,19 +239,12 @@ uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_proc # Para processar comportamento do personagem
 
 func ini # Objeto foi criado
-  comum_perso:ini
-  se arg2
-    textotxt t
-    epara t.addfim(txttroca(arg2, ",", "\n")), t.linhas, var.mudar(t.remove)
-    efim
-  fimse
+  comum_perso:ini(arg0, arg1, arg2)
   p_restaura = 100
-  pnivel = arg1
   recalc_exec
   pvida = pvidamax, pmana = pmanamax, pmove = pmovemax
   persobat = este, persoesc = este
   cmd_ini(arg0, arg1, arg2, arg3, arg4)
-  arg0 && mudadono(arg0)
 
 func ataqueini # Testa se pode atacar
 # Retorna "" se pode atacar ou a mensagem com o motivo se não pode
@@ -536,6 +527,19 @@ func escolhebat # Escolhe um personagem em condições de lutar
   senao
     persobat = este
   fimse
+
+func animalnum # Retorna o número do próximo lugar disponível para animal
+# A variável animal.[animalnum-1] é o próximo lugar disponível
+# Se retornar 0, significa que não há mais espaço
+  ret !animal.0, config.animal >= 1 ? 1 : -1
+  ret !animal.1, config.animal >= 2 ? 2 : -1
+  ret !animal.2, config.animal >= 3 ? 3 : -1
+  ret !animal.3, config.animal >= 4 ? 4 : -1
+  ret !animal.4, config.animal >= 5 ? 5 : -1
+  ret !animal.5, config.animal >= 6 ? 6 : -1
+  ret !animal.6, config.animal >= 7 ? 7 : -1
+  ret !animal.7, config.animal >= 8 ? 8 : -1
+  ret 0
 
 
 classe perso_restaurar

@@ -1,5 +1,6 @@
 classe jogsock
-herda jog_entra, jog_adm, jog_admcod, jog_admsala, jog_admsocial
+herda jog_entra, jog_adm, jog_admcod, jog_admsala, jog_admperso, jog_admitem, jog_admsocial, \
+jog_reset
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -346,11 +347,7 @@ func p_mudasenha3 # Repetir a senha digitada
     passo = ""
   senao
     perso.senha = txtmin(arg0)
-    se perso.salvar
-      msg("Jogo salvo")
-    senao
-      msg("Não foi possível salvar")
-    fimse
+    msg(perso.salvar ? "Jogo salvo" : "Não foi possível salvar")
     passo = ""
   fimse
   ret 1
@@ -364,7 +361,6 @@ const ident = nome
 indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
-sav int1 sexo # Sexo: 0=feminino, 1=masculino
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo

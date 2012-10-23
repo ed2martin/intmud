@@ -5,15 +5,16 @@ const a_nome = "Ilha - área inicial"
 
 classe b_ini
 herda sala
+const s_area = "ini"
 const s_terreno = 1
 const s_luta = 1
 const s_item = 1
 
 
-classe i_diamante_azul
+classe i_ini001
 herda comum_itemgrupo
 const nome = "diamante azul"
-const sexo = 0
+const sexoini = 1
 const descpos = "Aqui tem um diamante azul."
 const pesoobj = 200
 
@@ -24,10 +25,10 @@ func cmd_mudadono # Objeto mudou de dono
     $mens.mvis1("Diamante azul vira pó.")
 
 
-classe i_diamante_amarelo
+classe i_ini002
 herda comum_itemgrupo
 const nome = "diamante amarelo"
-const sexo = 0
+const sexoini = 1
 const descpos = "Aqui tem um diamante amarelo."
 const pesoobj = 200
 
@@ -38,10 +39,10 @@ func cmd_mudadono # Objeto mudou de dono
     $mens.mvis1("Diamante amarelo vira pó.")
 
 
-classe i_diamante_vermelho
+classe i_ini003
 herda comum_itemgrupo
 const nome = "diamante vermelho"
-const sexo = 0
+const sexoini = 1
 const descpos = "Aqui tem um diamante vermelho."
 const pesoobj = 200
 
@@ -52,10 +53,10 @@ func cmd_mudadono # Objeto mudou de dono
     $mens.mvis1("Diamante vermelho vira pó.")
 
 
-classe i_diamante_verde
+classe i_ini004
 herda comum_itemgrupo
 const nome = "diamante verde"
-const sexo = 0
+const sexoini = 1
 const descpos = "Aqui tem um diamante verde."
 const pesoobj = 200
 
@@ -66,10 +67,10 @@ func cmd_mudadono # Objeto mudou de dono
     $mens.mvis1("Diamante verde vira pó.")
 
 
-classe i_manto_ini
+classe i_ini005
 herda comum_item
 const nome = "manto escuro"
-const sexo = 0
+const sexoini = 1
 const descpos = "Um manto escuro relativamente pesado está aqui."
 const pesoobj = 30000
 const vestir1 = 8
@@ -81,10 +82,10 @@ func cmd_mudadono # Objeto mudou de dono
     $mens.mvis1("O manto escuro se desintegra.")
 
 
-classe p_ini_anao
+classe p_ini001
 herda comum_perso
-const nome = "anão"
-const sexo = 1
+const nome = "Anão"
+const sexoini = 1
 const perso = 2 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 70000
 const persobat = este # Personagem usado na batalha
@@ -92,7 +93,7 @@ const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func cmd_atacar
-  se "p_ini_anao" == arg1
+  se "p_ini001" == arg1
     $mens.p(arg0, arg1)
     $mens.mtodos1(arg2.msgatk + ", 27")
     arg0.msg("Anão: Tudo bem, você venceu, pode passar.")
@@ -128,7 +129,7 @@ func cmd_l
   arg0.msg("\c3Sua missão é adquirir 4 diamantes e ir até uma palmeira.")
   arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, c, b\b")
   ref r
-  r = criar("i_manto_ini", arg0)
+  r = criar("i_ini005", arg0)
   r.vestir(8)
   arg0.recalc = 1
 
@@ -156,10 +157,10 @@ func cmd_salaperso # Personagem chegou
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou20
-  se !arg0.dentro1.objini("i_diamante_azul")
-  senao !arg0.dentro1.objini("i_diamante_amarelo")
-  senao !arg0.dentro1.objini("i_diamante_vermelho")
-  senao !arg0.dentro1.objini("i_diamante_verde")
+  se !arg0.dentro1.objini("i_ini001")
+  senao !arg0.dentro1.objini("i_ini002")
+  senao !arg0.dentro1.objini("i_ini003")
+  senao !arg0.dentro1.objini("i_ini004")
   senao
     arg0.msg("Os diamantes estão se fundindo")
     $mens.p(arg0)
@@ -175,10 +176,10 @@ func cmd_salaperso # Personagem chegou
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou20
-  apagar(arg0.dentro1.objini("i_diamante_azul"))
-  apagar(arg0.dentro1.objini("i_diamante_amarelo"))
-  apagar(arg0.dentro1.objini("i_diamante_vermelho"))
-  apagar(arg0.dentro1.objini("i_diamante_verde"))
+  apagar(arg0.dentro1.objini("i_ini001"))
+  apagar(arg0.dentro1.objini("i_ini002"))
+  apagar(arg0.dentro1.objini("i_ini003"))
+  apagar(arg0.dentro1.objini("i_ini004"))
   arg0.msg("Os diamantes se fundiram e você está saindo da ilha.")
 
 func entrou50
@@ -198,8 +199,9 @@ func entrou110
 classe s_ini004
 herda b_ini
 # Altera a descrição da sala
+const s_titulo = "Na névoa branca"
 const descsala = "Você está caindo!"
-const s_desc = "Na névoa branca"
+const s_ocultar = 1
 
 func cmd_salaperso # Personagem chegou
   se !arg0.jog # Apaga se não for jogador
@@ -277,19 +279,19 @@ func cmd_salaperso # Personagem chegou
 func entrou100
   $mens.p(arg0)
   $mens.mtodos1("Você vê um diamante azul caindo.")
-  misc:salacriar("i_diamante_azul")
+  misc:salacriar("i_ini001")
 
 func entrou130
-  se dentro1.objini("i_diamante_azul")
+  se dentro1.objini("i_ini001")
     $mens.p(arg0)
     $mens.mtodos1("Diamante azul desaparece ao longe enquanto cai.")
-    apagar(dentro1.objini("i_diamante_azul"))
+    apagar(dentro1.objini("i_ini001"))
 
 func entrou0 # Fim dos eventos 'entrou'
-  apagar(dentro1.objini("i_diamante_azul"))
+  apagar(dentro1.objini("i_ini001"))
 
 func cmd_pegarobj
-  se "i_diamante_azul" == arg2 && arg0.dentro1.objini("i_diamante_azul")
+  se "i_ini001" == arg2 && arg0.dentro1.objini("i_ini001")
     arg0.msg("Você tenta pegar, mas não consegue. O diamante está um pouco longe.")
     ret 1
 
@@ -312,21 +314,21 @@ Muitas vezes pode-se abreviar os comandos.\n\
 Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\"."
 
 func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_diamante_vermelho", 78)
+  misc:salacriar("i_ini003", 78)
 
 func cmd_pegarobj
-  se arg2 == "i_diamante_vermelho"
-    se arg0.dentro1.objini("i_diamante_vermelho")
+  se arg2 == "i_ini003"
+    se arg0.dentro1.objini("i_ini003")
       arg0.msg("Só pode carregar um diamante vermelho nessa ilha.")
     senao
-      criar("i_diamante_vermelho", arg0)
+      criar("i_ini003", arg0)
       $mens.p(arg0)
       $mens.mtodos1("$P pega Diamante Vermelho.")
     fimse
     ret 1
 
 func cmd_soltarobj
-  se arg2 == "i_diamante_vermelho"
+  se arg2 == "i_ini003"
     apagar(arg2)
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Vermelho.")
@@ -370,19 +372,17 @@ const dir_n = $s_ini008
 const portaini_n = 2 # Inicialmente fechado
 const portanome_n = "a porta da cabana"
 const eveste = 1 # Receber eventos do próprio objeto
+const s_entrou = "P 100 ini002 27 27 1"
 
 func cmd_abriudir
   se arg2 == "n"
     $s_ini008.fechaporta = 50
 
-func cmd_salaperso # Personagem chegou
-  misc:salacriar("p_ini_silva", 27)
 
-
-classe p_ini_silva
+classe p_ini002
 herda comum_perso
 const nome = "Silva"
-const sexo = 1
+const sexoini = 1
 const perso = 2 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 80000
 const eveste = 1 # Receber eventos do próprio objeto
@@ -493,10 +493,10 @@ const dir_l = $s_ini017
 const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_c
-  se arg0.dentro2.objini("i_manto_ini")
+  se arg0.dentro2.objini("i_ini005")
     arg0.msg("Você está vestindo algo muito pesado, e por isso não consegue subir.")
     ret 1
-  senao arg0.dentro1.objini("i_manto_ini")
+  senao arg0.dentro1.objini("i_ini005")
     arg0.msg("Você está segurando algo muito pesado, e por isso não consegue subir.")
     ret 1
 
@@ -509,9 +509,7 @@ A neblina está forte e a distância é razoável. Tudo que você vê é\n\
 a continuação da ilha ao norte e ao sul."
 const dir_n = $s_ini014
 const dir_s = $s_ini016
-
-func cmd_salaperso # Personagem chegou
-  misc:salacriar("p_ini_anao", 1)
+const s_entrou = "P 100 ini001 1 1 1"
 
 
 classe s_ini016
@@ -526,21 +524,21 @@ inv e equip, respectivamente. Talvez você queira remover ou vestir\n\
 alguma coisa (comandos são remover e vestir seguido do nome do item)."
 
 func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_diamante_verde", 45)
+  misc:salacriar("i_ini004", 45)
 
 func cmd_pegarobj
-  se arg2 == "i_diamante_verde"
-    se arg0.dentro1.objini("i_diamante_verde")
+  se arg2 == "i_ini004"
+    se arg0.dentro1.objini("i_ini004")
       arg0.msg("Só pode carregar um diamante verde nessa ilha.")
     senao
-      criar("i_diamante_verde", arg0)
+      criar("i_ini004", arg0)
       $mens.p(arg0)
       $mens.mtodos1("$P pega Diamante Verde.")
     fimse
     ret 1
 
 func cmd_soltarobj
-  se arg2 == "i_diamante_verde"
+  se arg2 == "i_ini004"
     apagar(arg2)
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Verde.")
@@ -593,32 +591,29 @@ herda b_ini
 const s_titulo = "Pequena ilha"
 const s_desc = "Aqui se vê uma ponte de cordas bem gasta ao sul."
 const dir_s = $s_ini020
-
-func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_ini_tronco")
-  misc:salacriar("p_ini_joaquim", 31)
+const s_entrou = "S 100 ini006 1 s\nP 100 ini003 31 31 1"
 
 
-classe i_ini_tronco
+classe i_ini006
 herda comum_itemperso
 const nome = "tronco"
-const sexo = 1
+const sexoini = 1
 const descpos = "Um pedaço grande de tronco está aqui no centro."
 const pesoobj = 1000000
 const i_lugar = 100 # Quantos personagens podem sentar
 
 
-classe p_ini_joaquim
+classe p_ini003
 herda comum_perso
 const nome = "Joaquim"
-const sexo = 1
+const sexoini = 1
 const pesoobj = 80000
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func cmd_chegou # Chegou na sala
   ret !arg0.jog, nulo # Retorna se não for jogador
   misc:evento(arg0) # Receber eventos do jogador
-  se arg0.dentro1.objini("i_diamante_amarelo") # Se tem diamante amarelo
+  se arg0.dentro1.objini("i_ini002") # Se tem diamante amarelo
     arg0.var.d_resposta_ = 20 # Já fez todas as perguntas
   senao
     misc:tempo("entrou", arg0) # Se não tem, dispara funções 'entrou'
@@ -686,7 +681,7 @@ func cmd_falou
       arg0.msg("Joaquim: Quando tiver os quatro diamantes vá para o centro da ilha maior.")
       $mens.p(este, arg0)
       $mens.mvis1("$P dá diamante amarelo para $A.")
-      criar("i_diamante_amarelo", arg0)
+      criar("i_ini002", arg0)
       sair
     fimse
   casose "14"

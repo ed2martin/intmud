@@ -41,11 +41,11 @@ const adm_sala = "\b\c3Comandos de salas\b\n\
 \c2LSALA\b [nome]\n\
   Lista salas que começam com o nome especificado.\n\
 \c2CSALA\b <nome>\n\
-  Cria sala com o nome especificado. Nomes de sala devem ser o nome\n\
-  da área seguido de um número de 001 a 999 (três dígitos).\n\
-\c2CSALA\b <direção>\n\
+  Cria sala. Nome deve ser o nome de uma área ou da sala\n\
+  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
+\c2CDIR\b <direção>\n\
   Cria sala na direção especificada. Cria automaticamente uma saída\n\
-  com a sala em que você está. Exemplo: csala ne\n\
+  com a sala em que você está. Exemplo: cdir ne\n\
 \c2ESALA\b [nome]\n\
   Edita sala. Se o nome for omitido, edita a sala em que você está.\n\
 \c2ASALA\b <um ou mais nomes>\n\
@@ -96,7 +96,8 @@ func cmd_carea # Criar área
     efim
     prog p
     p.criar("a_" + prefixo + "\na-" + prefixo + "\nherda area")
-    p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala")
+    p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala\nconst s_area=\"" + prefixo + \
+"\"")
     config:salvar, msg("\bÁrea criada: " + prefixo)
   fimse
   ret 1
@@ -107,9 +108,26 @@ func cmd_aarea # Apagar área
   prefixo = txtmin(arg0)
   se !$a_[prefixo]
     msg("\bÁrea não existe: " + prefixo)
-  senao p.iniherdainv("b_" + prefixo)
-    msg("\bÁrea contém pelo menos uma sala: " + txt(p.texto, 2))
+# senao p.iniherdainv("b_" + prefixo)
+# msg("\bÁrea contém pelo menos uma sala: " + txt(p.texto, 2))
   senao
+    epara p.iniarq("a-" + prefixo), p.lin, p.depois
+      se p.texto != "a_" + prefixo && p.texto != "b_" + prefixo
+        casovar txt(p.texto, 0, 2)
+        casose "s_"
+          msg("\bÁrea " + prefixo + " contém pelo menos uma sala")
+          ret 1
+        casose "p_"
+          msg("\bÁrea " + prefixo + " contém pelo menos um personagem")
+          ret 1
+        casose "i_"
+          msg("\bÁrea " + prefixo + " contém pelo menos um item")
+          ret 1
+        casofim
+        msg("\bÁrea " + prefixo + " contém pelo menos uma classe do IntMUD")
+        ret 1
+      fimse
+    efim
     p.apagar("a_" + prefixo)
     p.apagar("b_" + prefixo)
     config:salvar, msg("\bÁrea apagada: " + prefixo)
@@ -157,65 +175,86 @@ func cmd_isala # Ir para uma sala específica
   fimse
   ret 1
 
+func cmd_cdir # Criar sala na direção especificada
+  se arg0 == ""
+    msg("Tecle o nome da sala ou a direção após CDIR")
+    ret 1
+  senao !misc:d1[arg0]
+    msg("Direção inválida: " + arg0)
+    ret 1
+  fimse
+  prog p
+  uint16 num
+  txt40 nome
+  txt2 dir
+  dir = misc:d1[arg0]
+# Obtém prefixo da área
+  nome = txt(perso.dono, 0, inttotal(txt(perso.dono)) - 3)
+  se txt(nome, 0, 2) != "s_"
+    msg("Você não está em uma sala")
+    ret 1
+  fimse
+# Checa se já existe sala nessa direção
+  se p.existe(perso.dono, "dir_" + dir) == 1
+    msg("Já existe sala na direção " + dir)
+    ret 1
+  fimse
+# Obtém número da sala
+  epara num = 1001, p.existe(nome + txtfim(num, 3)), num += 1
+    continuar num < 2000
+    msg("Atingido limite de salas na área " + txt(nome, 2))
+    ret 1
+  efim
+# Cria sala
+  txt300 nome2
+  nome2 = nome + txtfim(num, 3) + "\n" # Nome da classe
+  nome2 += "a-" + txt(nome, 2) + "\n" # Nome do arquivo
+  nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
+  nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # Saída da sala
+  p.criar(nome2)
+  p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
+  config:salvar
+  msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
+  ret 1
+
 func cmd_csala # Criar sala
   prog p
   txt40 nome
   uint16 num
+# Checa se digitou nome da sala
   se arg0 == ""
-    msg("Tecle o nome da sala ou a direção após CSALA")
-    ret 1
-# Criar sala em uma direção
-  senao misc:d1[arg0]
-    txt2 dir
-    dir = misc:d1[arg0]
-# Obtém prefixo da área
-    nome = txt(perso.dono, 0, inttotal(txt(perso.dono)) - 3)
-    se txt(nome, 0, 2) != "s_"
-      msg("Você não está em uma sala")
-      ret 1
-    fimse
-# Checa se já existe sala nessa direção
-    se p.existe(perso.dono, "dir_" + dir) == 1
-      msg("Já existe sala na direção " + dir)
-      ret 1
-    fimse
-# Obtém número da sala
-    num = 1001
-    enquanto num < 2000 && p.existe(nome + txtfim(num, 3))
-      num += 1
-    efim
-    se num >= 2000
-      msg("Sem espaço para criar sala na área " + txt(nome, 2))
-      ret 1
-    fimse
-# Cria sala
-    txt300 nome2
-    nome2 = nome + txtfim(num, 3) + "\n" # Nome da classe
-    nome2 += "a-" + txt(nome, 2) + "\n" # Nome do arquivo
-    nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
-    nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # Saída da sala
-    p.criar(nome2)
-    p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
-    config:salvar
-    msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
+    msg("Tecle o nome da sala ou área após CSALA")
     ret 1
   fimse
-# Tenta criar sala com o nome especificado
-  num = int(txtfim(arg0, 3)) + 1000
-  nome = txt(arg0, 0, inttotal(txt(arg0)) - 3)
-  se num <= 1000 || txtfim(num, 3) != txtfim(arg0, 3)
-    msg("Nome de sala ou direção inválida: " + arg0)
-  senao p.existe("s_" + nome + txtfim(num, 3))
-    msg("Sala já existe: " + arg0)
-  senao !p.existe("b_" + nome)
+# Checa nome completo
+  nome = arg0
+  num = int(txtfim(nome, 3)) + 1000
+  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+    se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
+      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+      ret 1
+    senao p.existe("s_" + nome)
+      msg("Sala já existe: " + nome)
+      ret 1
+    fimse
+# Checa nome de área
+  senao !p.existe("a_" + nome)
     msg("Área não existe: " + nome)
+    ret 1
   senao
-    p.iniclasse("b_" + nome)
-    nome = txt(p.texto, 2)
-    p.criar("s_" + nome + txtfim(num, 3) + "\na-" + nome + "\nherda b_" + nome)
-    config:salvar
-    msg("\bSala criada: " + nome + txtfim(num, 3))
+    epara num = 1001, p.existe("s_" + nome + txtfim(num, 3)), num += 1
+      continuar num < 2000
+      msg("Atingido limite de salas na área " + nome)
+      ret 1
+    efim
+    nome += txtfim(num, 3)
   fimse
+# Cria sala
+  txt100 area
+  area = txt(nome, 0, inttotal(nome) - 3)
+  p.criar("s_" + nome + "\na-" + area + "\nherda b_" + area)
+  config:salvar
+  msg("\bSala criada: " + nome)
   ret 1
 
 func cmd_asala # Apagar sala
@@ -396,6 +435,14 @@ func p_saiagora # Mudar o estado atual
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
+const t_resettempo = t_numero(arg0, arg1)
+
+func p_resettempo # Mudar o estado atual
+  $[var.opcclasse].resetcheca = 1
+  p_numero(arg0)
+  passo == "numero" && (passo = "resettempo")
+  ret 1
+
 
 classe adm_area
 # Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
@@ -412,7 +459,7 @@ const classe2 = var.classe1
 const var2 = "a_autor"
 #
 const nome3 = "Tempo de reset"
-const tipo3 = "numero"
+const tipo3 = "resettempo"
 const classe3 = var.classe1
 const var3 = "a_tempo"
 #
@@ -469,7 +516,11 @@ const nome13 = "Soltar itens"
 const tipo13 = "opcao"
 const classe13 = var.classe1
 const var13 = "s_soltar"
-const extra13 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
+const extra13 = "Permitido\n\
+Não permitido\n\
+Destrói afundando\n\
+Destrói caindo\n\
+Desintegra"
 
 
 classe adm_sala
@@ -485,55 +536,65 @@ const tipo2 = "texto"
 const classe2 = var.classe1
 const var2 = "s_desc"
 #
-const nome3 = "Terreno"
-const tipo3 = "opcao"
+const nome3 = "Ocultar desc"
+const info3 = "Se não deve mostrar descrição ao entrar na sala"
+const tipo3 = "simnao"
 const classe3 = var.classe1
-const var3 = "s_terreno"
-const extra3 = txt_terreno
+const var3 = "s_ocultar"
 #
-const nome4 = "Luz"
+const nome4 = "Terreno"
 const tipo4 = "opcao"
 const classe4 = var.classe1
-const var4 = "s_luz"
-const extra4 = txt_luz
+const var4 = "s_terreno"
+const extra4 = txt_terreno
 #
-const nome5 = "Apagar itens"
-const info5 = "Tempo em minutos"
-const tipo5 = "numero"
+const nome5 = "Luz"
+const tipo5 = "opcao"
 const classe5 = var.classe1
-const var5 = "s_item"
+const var5 = "s_luz"
+const extra5 = txt_luz
 #
-const nome6 = "Morre ao entrar"
-const tipo6 = "simnao"
+const nome6 = "Apagar itens"
+const info6 = "Tempo em minutos"
+const tipo6 = "numero"
 const classe6 = var.classe1
-const var6 = "s_morre"
+const var6 = "s_item"
 #
-const nome7 = "Silencioso"
+const nome7 = "Morre ao entrar"
 const tipo7 = "simnao"
 const classe7 = var.classe1
-const var7 = "s_silencio"
+const var7 = "s_morre"
 #
-const nome8 = "Batalha"
-const tipo8 = "opcao"
+const nome8 = "Silencioso"
+const tipo8 = "simnao"
 const classe8 = var.classe1
-const var8 = "s_luta"
-const extra8 = txt_luta
+const var8 = "s_silencio"
 #
-const nome9 = "Sem magia"
-const tipo9 = "simnao"
+const nome9 = "Batalha"
+const tipo9 = "opcao"
 const classe9 = var.classe1
-const var9 = "s_semmagia"
+const var9 = "s_luta"
+const extra9 = txt_luta
 #
-const nome10 = "PNJs não entram"
+const nome10 = "Sem magia"
 const tipo10 = "simnao"
 const classe10 = var.classe1
-const var10 = "s_sempnj"
+const var10 = "s_semmagia"
 #
-const nome11 = "Soltar itens"
-const tipo11 = "opcao"
+const nome11 = "PNJs não entram"
+const tipo11 = "simnao"
 const classe11 = var.classe1
-const var11 = "s_soltar"
-const extra11 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
+const var11 = "s_sempnj"
+#
+const nome12 = "Soltar itens"
+const tipo12 = "opcao"
+const classe12 = var.classe1
+const var12 = "s_soltar"
+const extra12 = "Permitido\n\
+Não permitido\n\
+Destrói afundando\n\
+Destrói caindo\n\
+Desintegra"
 
 
 classe adm_saida

@@ -1,0 +1,142 @@
+classe jog_reset
+# Comandos de reset
+#
+# Formato do texto do reset:
+# Uma linha por comando, entre:
+# P <porcentagem> <personagem> <nível min> <nível max> <limite> [variáveis]
+# A <porcentagem> <personagem> <nível min> <nível max> [variáveis]
+# I <porcentagem> <item> <nível> [variáveis]
+# E <porcentagem> <item> <nível> <lugar> [variáveis]
+# S <porcentagem> <item> <nível> <destino ou s se sala> [variáveis]
+# R <porcentagem> <item>
+# D <porcentagem> <direção> <novo estado>
+# F <porcentagem>
+#
+const adm_reset = "\b\c3Reset da área\b\n\
+\c2RESET\b [nome da sala]\n\
+  Edita os comandos executados quando ocorre reset da área.\n\
+  Se o nome for omitido, será a sala em que você está.\n\
+\c2ENTROU\b [nome da sala]\n\
+  Edita os comandos executados quando um jogador entra na sala.\n\
+  Se o nome for omitido, será a sala em que você está.\n\
+\c2ARESET\b [nome da sala ou área]\n\
+  Executa o reset na sala ou área.\n\
+  Se o nome for omitido, será a sala em que você está.\n\n\
+O reset consiste em uma lista de comandos, que podem ser:\n\
+P Criar personagem\n\
+A Criar animal no personagem\n\
+Nota: depende do último personagem (comando P) ser criado com sucesso.\n\
+I Criar item em animal ou personagem\n\
+Nota: depende do último personagem ou animal ser criado com sucesso.\n\
+E Equipar animal ou personagem com item\n\
+Nota: depende do último personagem ou animal ser criado com sucesso.\n\
+S Criar item na sala ou em um item da sala\n\
+Nota: não cria se o item já existir.\n\
+R Remover item da sala\n\
+D Mudar porta em uma direção\n\
+F Fim (encerra o reset)\n\
+Nota: depende do último animal ou personagem ser criado com sucesso."
+
+func cmd_areset # Executa reset
+  se !arg0
+    ref r
+    epara r = perso, r.dono, r = r.dono
+    efim
+    $reset.sala(r, r.s_reset)
+    msg("Reset efetuado sala " + txt(r, 2))
+  senao $b_[arg0]
+    $reset.area(arg0)
+    msg("Reset efetuado área " + arg0)
+  senao $s_[arg0]
+    $reset.sala($s_[arg0], $s_[arg0].s_reset)
+    msg("Reset efetuado sala " + arg0)
+  senao
+    msg("Área ou sala inexistente: " + arg0)
+  fimse
+  ret 1
+
+
+classe reset
+# Executa as instruções do reset
+# Deve ser chamado com uma das funções:
+# $reset.area(<prefixo da área>)
+# $reset.sala(<objeto da sala>, <texto do reset>)
+#
+prog p
+debug dbg
+uint8 dbgexec
+ref perso # Último personagem criado
+ref ultimo # Último personagem ou animal criado
+ref r
+int8 x
+textotxt t # Texto do reset
+txt100 l.8 # Linha do texto
+
+func iniclasse
+  criar(arg0)
+
+func area # Executa comandos de reset de uma área
+# arg0 = prefixo da área
+  dbgexec = dbg.exec
+  epara p.iniherdainv("b_" + arg0), p.lin, p.depois
+    $[p.texto].s_reset && sala($[p.texto], $[p.texto].s_reset)
+  efim
+
+func sala # Executa comandos de reset de uma sala
+# arg0 = objeto da sala, arg1 = texto do reset
+  dbgexec = dbg.exec, perso = ultimo = nulo, t.limpar, t.addfim(arg1)
+  enquanto t.linhas
+    l.separar(txtremove(t.remove, "EMD"), " ") # Pega próxima linha e separa
+    casovar txtmai(l.0)
+    casose "P" # <personagem> <nível min> <nível max> <limite> <variáveis>
+      perso = ultimo = nulo
+      sair int(l.1) < 100 && rand(100) < l.1 || int(l.5) <= inttotal($p_[l.2])
+      se l.3 != l.4
+        ultimo = perso = criar("p_" + l.2, arg0, rand(l.3, l.4), l.6)
+      senao
+        ultimo = perso = criar("p_" + l.2, arg0, l.3, l.6)
+      fimse
+      sair
+    casose "A" # <animal> <nível min> <nível max> <variáveis>
+      ultimo = nulo
+      sair perso.tipo != 3 || int(l.1) < 100 && rand(100) < l.1
+      x = perso.animalnum # Obtém o número do próximo animal
+      sair x == 0
+      se l.3 != l.4
+        ultimo = criar("p_" + l.2, perso, rand(l.3, l.4), l.6)
+      senao
+        ultimo = criar("p_" + l.2, perso, l.3, l.6)
+      fimse
+      perso.animal.[x] = ultimo
+      sair
+    casose "I" # Dar item: <item> <nível> <variáveis>
+      sair !ultimo || int(l.1) < 100 && rand(100) < l.1
+      criar("i_" + l.2, ultimo, 1, l.3, l.4)
+      sair
+    casose "E" # Equipar: <item> <nível> <lugar> <variáveis>
+      sair !ultimo || int(l.1) < 100 && rand(100) < l.1
+      r = criar("i_" + l.2, ultimo, 1, l.3, l.5)
+      r.vestir(l.4), r.recalc = 1
+      sair
+    casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
+      sair int(l.1) < 100 && rand(100) < l.1
+      r = l.4 == "s" ? arg0 : arg0.dentro1.objini("i_" + l.3)
+      sair !r || r.dentro1.objini("i_" + l.2)
+      criar("i_" + l.2, r, 1, l.3, l.4)
+      sair
+    casose "R" # Remover da sala: <item>
+      sair int(l.1) < 100 && rand(100) < l.1
+      r = arg0.dentro1.objini("i_" + l.2)
+      r.apagar
+      sair
+    casose "D" # Porta em uma direção
+      sair int(l.1) < 100 && rand(100) < l.1
+      arg0.mudaport(l.2, l.3) # l.2=direção, l.3=novo valor
+      sair
+    casose "F" # Fim
+      sair !ultimo || int(l.1) < 100 && rand(100) < l.1
+      t.limpar
+      sair
+    casofim
+  efim
+  dbg.exec = dbgexec
