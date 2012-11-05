@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 13.1.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 13.4 e o 14.1.
 
 
 1. SOBRE O INTMUD
@@ -988,96 +988,141 @@ Mas quando a condição é uma variável, é um pouco diferente.
 
 13.2. LISTA DE OPERADORES
 
-Podem ser usados os seguintes operadores - sendo a e b duas variáveis
-e/ou números:
+Segue a lista de operadores existentes. Nas explicações abaixo,
+A e B são dois operandos (podem ser variáveis, textos, números, etc.).
 
-!a      Se for falso (=0) vira verdadeiro (1)
-        Se for verdadeiro (diferente de 0) vira falso (0)
-~a      Complemento de a
-a*b     Multimplica a por b
-a/b     Divide: a/b; pode resultar em um número quebrado (não inteiro)
-a%b     É o resto da divisão de a por b
-a+b     Soma
-a-b     Subtrai
-a<<b    Deslocamento à esquerda, sendo que a=valor e b=quantidade de bits
-a>>b    Deslocamento à direita, sendo que a=valor e b=quantidade de bits
-a|b     'Ou' para bits entre a e b
-a^b     'Ou exclusivo' para bits entre a e b
-a&b     'E' para bits entre a e b
-a<b     Verdadeiro (=1) se a<b; Falso (=0) se a>=b
-a<=b    Verdadeiro se a<=b
-a==b    Verdadeiro se a for igual a b
-a===b   Verdadeiro se a for exatamente igual a b
-        Em textos: diferencia letras minúsculas de letras maiúsculas
-a!==b   Verdadeiro se a não for exatamente igual a b
-a>=b    Verdadeiro se a>=b
-a>b     Verdadeiro se a>b
-a!=b    Verdadeiro se a for diferente de b
-a&&b    Verdadeiro (=1) somente se a for verdadeiro e b também for
-a||b    Verdadeiro (=1) se a for verdadeiro ou b for verdadeiro
-a=b     Operador de atribuição: faz a = b
-Pode-se usar também os parênteses em expressões
-Exemplo:  2*(3+4)
+OPERADORES BÁSICOS
+A*B        - Multiplicação de A por B;
+A/B        - Divisão de A por B. Pode resultar em número não inteiro;
+A+B        - Soma de A com B;
+A-B        - Subtração de A por B;
+A%B        - O resto da divisão de A por B;
 
-Os operadores +=, -=, *= e /= são formas compactas:
-variável += valor
-variável -= valor
-variável *= valor
-variável /= valor
+OPERADORES PARA BITS
+~A         - Complemento de A, será explicado em operadores de bit;
+A<<B       - Deslocamento à esquerda, sendo que A é o valor numérico e B
+             é a quantidade de bits;
+A>>B       - Deslocamento à direita, sendo que A é o valor numérico e B é
+             a quantidade de bits;
+A|B        - Operação 'OU' para bits entre A e B;
+A^B        - Operação 'OU exclusivo' para bits entre A e B;
+A&B        - Operação 'E' para bits entre A e B;
 
-São o mesmo que:
-variável = variável + valor
-variável = variável - valor
-variável = variável * valor
-variável = variável / valor
+OPERADORES DE COMPARAÇÃO E ATRIBUIÇÃO
+!A         - Se A for falso, o resultado será 1 (verdadeiro); Se A for
+             verdadeiro, o resultado será 0 (falso);
+A<B        - Verdadeiro se A for menor que B;
+A<=B       - Verdadeiro se A for menor ou igual a B;
+A>B        - Verdadeiro se A for maior que B;
+A>=B       - Verdadeiro se A for maior ou igual a B;
+A==B       - Verdadeiro se A for igual a B;
+A===B      - Verdadeiro se A for exatamente igual a B;
+A!==B      - Verdadeiro se A não for exatamente igual a B;
+A!=B       - Verdadeiro se A for diferente de B;
+A&&B       - Verdadeiro se A for verdadeiro e B também for;
+A||B       - Verdadeiro se A for verdadeiro e/ou B for verdadeiro;
+A=B        - Operador de atribuição, faz A igual a B.
+
+Alguns operadores podem ter uma forma compacta:
+A*=B       - O mesmo que: A = A * B;
+A/=B       - O mesmo que: A = A / B;
+A+=B       - O mesmo que: A = A + B;
+A-=B       - O mesmo que: A = A - B;
+
+Pode-se usar também os parênteses em expressões.
+
+Exemplo: 2*(3+4)
+
+Nota: Duas variáveis são consideradas exatamente iguais se forem do mesmo
+      tipo (dois números, dois textos, etc.) e possuírem o mesmo valor. Em
+      textos, letras maiúsculas e minúsculas não são exatamente iguais.
 
 
 13.3. PRECEDÊNCIA DE OPERADORES
 
-Existe uma ordem de precedência entre os operadores. Por exemplo,
-multiplicações e divisões são calculadas antes de soma e subtração.
-Porém, uma soma entre parênteses é calculada antes, pois os parênteses
-tem precedência sobre a multiplicação e a divisão.
+Há uma precedência de operadores nos cálculos que, se não for levada
+em conta, poderá produzir resultados indesejáveis.
 
-O IntMUD segue a seguinte ordem de precedência:
-! e ~           Não lógico e complemento
-* / %           Multiplicação, divisão e resto
-+ -             Soma e subtração
-<< >>           Rotação para esquerda e para direita
-&               E para bits
-^               Ou exclusivo para bits
-|               Ou para bits
-<= < > >=       Comparação
-== === != !==   Igual a, exatamente igual a, diferente de, não exatamente igual
-&&              E lógico
-||              Ou lógico
-? e :           Comparação, semelhante às instruções se e senao
-= *= /= += -=   Atribuição e formas compactas de atribuição
+Por exemplo, multiplicações e divisões são calculadas antes de soma e
+subtração. Porém, uma soma entre parênteses é calculada antes, pois os
+parênteses tem precedência sobre a multiplicação e a divisão.
 
-Todos os operadores são processados da esquerda para a direita, com exceção
-dos operadores de atribuição, que são processados da direita para esquerda.
-Exemplo:
-x=a+b+c # Soma a com b, e depois soma com c; coloca em x o resultado
-a=b=c # Faz b=c, depois faz a=b
+Os operadores são avaliados na seguinte ordem:
+! ~             - 'NÃO' lógico e complemento;
+* / %           - Multiplicação, divisão e resto;
++ -             - Soma e subtração;
+<< >>           - Rotação para esquerda e para direita;
+&               - 'E' para bits;
+^               - 'OU exclusivo' para bits;
+|               - 'OU' para bits;
+<= < > >=       - Comparação;
+== === != !==   - Igual a, exatamente igual a, diferente de, não
+                  exatamente igual a;
+&&              - 'E' lógico;
+||              - 'OU' lógico;
+? :             - Comparação similar a 'se' e 'senao';
+= *= /= += -=   - Atribuição e formas compactas de atribuição.
+
+Todos os operadores são processados da esquerda para a direita, com
+exceção dos operadores de atribuição, que são processados da direita para
+esquerda.
+
+Exemplo 1:
+X = 1 + 2 + 7
+
+Soma 1 com 2, que resulta em 3; depois soma 3 com 7 que resulta em 10.
+O resultado total será atribuído a 'x' então x = 10;
+
+Exemplo 2:
+W = X = 10
+
+Faz 'X=10', depois faz 'W=X'. Os dois sinais de igual têm a mesma
+precedência, mas o segundo (o que está mais à direita) é processado primeiro,
+porque operadores de atribuição são processados da direita para a esquerda.
+
+Exemplo 3:
+y = (10+3)/2 <= 7 || (3>=3)*4 >= 2
+
+Nesse caso, primeiro é avaliado o que está entre parênteses, resultando em:
+y = 13/2 <= 7 || 1*4 >= 2
+Depois multiplicação e divisão:
+y = 7.5 <= 7 || 4 >= 2
+Depois os operadores <= e >=:
+y = 0 || 1
+Depois 'OU' lógico, resultando em:
+y = 1
 
 
 13.4. OPERADORES ? E :
 
-Operadores ? e : são semelhantes às instruções se e senao:
+Os operadores '?' e ':' funcionam como as instruções 'se' e 'senao', com
+algumas limitações, por serem operadores. Nas explicações abaixo, A e B
+são dois operandos (podem ser variáveis, textos, números, etc).
+
 a ? b : c
-Se a for verdadeiro, o resultado é b. Se for falso, é c.
+Se 'a' for verdadeiro, resulta em 'b'; se falso, resulta em 'c'.
+
 a ? b
-Se a for verdadeiro, o resultado é b. Se for falso, é nulo.
+Se 'a' for verdadeiro, resulta em 'b'; se falso, resulta em 'nulo'.
+
 a : b
-Pouco usado. Calcula a e b, mas o resultado é sempre b.
-Pode-se combinar vários ? e : como a seguir:
+Pouco usado. Calcula 'a' e 'b', porém resulta sempre em 'b'.
+
+É possível combinar diversos desses operadores, alternando entre
+interrogação e dois pontos.
+
+Exemplo:
 a ? b : c ? d : e
-Nesse caso, se a for verdadeiro, o resultado é b.
-Se for falso, checa c. Se c for verdadeiro o resultado é d.
-Caso contrário, é e.
-Importante: deve-se separar os operadores ? e : com espaço. Exemplo:
-a ? b : c # a verdadeiro, o resultado é b, a falso o resultado é c
-a ? b:c # Nesse caso, se a for verdadeiro, chama a função c da classe b
+
+Nesse caso, temos o seguinte:
+ - Se 'a' for verdadeiro resulta em 'b';
+ - Se 'a' for falso checa 'c';
+ - Se na segunda checagem 'c' for verdadeiro resulta em 'd';
+ - Se 'c' for falso resulta em 'e'.
+
+O operador ':' sempre deve estar separado por espaços, caso contrário
+terá outro significado. Por exemplo, 'a : b' funciona como explicado acima.
+Já 'a:b' significa a função ou variável b da classe a.
 
 
 13.5. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
@@ -1204,58 +1249,53 @@ Exemplo, em uma variável int8:
 
 14. INSTRUÇÕES DE CONTROLE DE FLUXO
 
-14.1. se <argumento>  ... fimse
+14.1. Bloco 'se'
 
-São instruções de decisão. Se o argumento for verdadeiro, executa as
-instruções entre 'se' e 'fimse'. Se for falso, vai direto para o 'fimse'.
+Permite executar ou não instruções baseando-se em uma ou mais condições.
 
-int8 x
-se x == 0
-y = 0 # Essa instrução só é executada se x for 0
+Sintaxe mais simples:
+
+se <condição>
+<comandos>
+fimse
+
+Se a condição for verdadeira, os comandos que vierem abaixo são
+executados. Se for falsa, vai direto para o 'fimse'.
+
+Sintaxe completa:
+
+se <condição>
+<comandos>
+senao <condição>
+<comandos>
 senao
+<comandos>
+fimse
 
-14.2. senao
+Permitem testar várias condições, na sequência, até que uma seja
+verdadeira, e assim executar os comandos correspondentes a ela.
 
-Só tem utilidade dentro de um bloco 'se' (entre as instruções 'se' e
-'fimse'). O que vem após essa instrução só é executado se a condição
-do 'se' for falsa.
+- A instrução 'se' contém a primeira condição, e marca o início do bloco;
+- As instruções 'senao' são opcionais. Elas contém as próximas condições;
+- Um 'senao' sem condição significa executar o que vier abaixo, tendo em
+  vista todas as condições anteriores falsas;
+- Um 'fimse' marca o fim do bloco. É opcional se for a última instrução
+  da função (se for omitido, subentende-se que lá existe um fimse).
 
 Exemplo:
 
-int8 x
-se x == 0
-# Passa por esse comentário se x for 0
+func x
+uint8 n
+n = rand(1, 4) # Faz n ser um número aleatório de 1 a 4
+se n == 1
+msg("n é 1")
+senao n == 2
+msg("n é 2")
 senao
-# Passa por esse comentário se x não for 0
-fimse
+msg("n não é 1 e nem 2")
+fimse # Nota: esse 'fimse' aqui é opcional
 
-14.3. senao <argumento>
-
-Funciona da mesma forma que a instrução 'senao' sem argumentos, porém
-testa se o argumento é verdadeiro, como uma instrução 'se'.
-É bastante utilizado em alguns casos, para evitar blocos 'se' aninhados,
-um dentro do outro.
-
-Exemplo 1:
-
-se txt(x)==="abc"
-msg("x é abc")
-senao txt(x)==="def"
-msg("x é def")
-senao
-msg("x não é abc nem def")
-fimse
-
-Exemplo 2:
-
-se txt(n+2)==="1" || txt(n+2)==="2"
-msg("a")
-msg("b")
-senao txt(n+2)==="3"
-msg("b")
-fimse
-
-14.4. casovar <argumento> ... casofim
+14.2. casovar <argumento> ... casofim
       casose "texto"
       casose
 
@@ -1292,7 +1332,7 @@ casose "3"
 msg("b")
 casofim
 
-14.5. enquanto <argumento>  ... efim
+14.3. enquanto <argumento>  ... efim
 
 É um laço de repetição.
 Se o argumento for verdadeiro, executa as instruções que estiverem entre
@@ -1315,7 +1355,7 @@ x é 2
 x é 3
 x é 4
 
-14.6. epara <inicialização>, <condição>, <incremento> ... efim
+14.4. epara <inicialização>, <condição>, <incremento> ... efim
 
 É um laço de repetição.
 Primeiro, executa as instruções da <inicialização>.
@@ -1331,7 +1371,7 @@ epara x = 2, x < 5, x += 1
 t.msg("x é " + x + "\n")
 efim
 
-14.7. sair [argumento]
+14.5. sair [argumento]
 
 Sai de um bloco 'enquanto' ou 'epara', indo para a primeira instrução após
 o 'efim'. Também sai de um bloco 'casose', indo para a primeira instrução
@@ -1339,7 +1379,7 @@ após o 'casofim'.
 
 A instrução 'sair' com um argumento só sai se o argumento for verdadeiro.
 
-14.8. continuar [argumento]
+14.6. continuar [argumento]
 
 Fecha um ciclo de um laço 'enquanto' ou 'epara', como se tivesse chegado
 na instrução efim. Em outras palavras, qualquer instrução entre o 'continuar'
@@ -1348,7 +1388,7 @@ e o 'efim' é ignorada.
 A instrução 'continuar' com um argumento só continua se o argumento for
 verdadeiro.
 
-14.9. ret [argumento]
+14.7. ret [argumento]
       ret <condição>, <argumento>
 
 Como visto anteriormente, a instrução 'ret' retorna de uma função.
@@ -1362,7 +1402,7 @@ se x
 ret y
 fimse
 
-14.10. terminar
+14.8. terminar
 
 Encerra o programa.
 

@@ -60,7 +60,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   cmd_mudadono(arg0), dono = arg0
   atkrec.limpar, poslugar.remove
 # Eventos cmd_chegou
-  (sock || jog) && $reset.sala(dono, dono.s_entrou) + dono.cmd_salaperso(este)
+  (sock || jog) && $reset.sala(dono, dono.s_reset) + dono.cmd_salaperso(este)
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
   efim

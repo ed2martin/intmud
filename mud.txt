@@ -266,24 +266,34 @@ Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
 Exemplo:
 const portanome_n = "a porta da casa"
 
-6.11. func txtsai( jogador )
+6.11. const s_reset
+Reset de sala:
+Um texto que contém os executados quando algum jogador entra na sala.
+O significado do texto está explicado no início do arquivo mud-reset.int.
+
+6.12. const a_reset
+Reset de área:
+Um texto que contém os executados quando ocorre reset da área.
+O significado do texto está explicado no início do arquivo mud-reset.int.
+
+6.13. func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
-6.12. func descsala( jogador, modo )
+6.14. func descsala( jogador, modo )
 Adiciona texto com a descrição da sala
 Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
 Somar 4 para mostrar os personagens e itens
 
-6.13. func descitens( jogador )
+6.15. func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-6.14. func ver_[nome do a descrição]( jogador, 0 )
+6.16. func ver_[nome do a descrição]( jogador, 0 )
 Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
 existir ou falso (ou um texto não vazio) se não existir.
 
-6.15. func ver_[nome do a descrição]( jogador, 1 )
+6.17. func ver_[nome do a descrição]( jogador, 1 )
 Deve retornar um texto que é a descrição extra.
 Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
@@ -464,11 +474,21 @@ patrulha: encerra brigas
 10. Itens (mud-item.int)
 
 10.1. Para criar um item
-criar("nome da classe", aonde está, quantidade, nível do item, "variáveis")
+Itens que podem ser agrupados:
+criar("nome da classe", aonde está, quantidade de itens)
+Se a quantidade for omitida ou for menor que 1, será 1.
+
+Outros itens:
+criar("nome da classe", aonde está, nível do item, "variáveis")
 Se o nível for omitido, será 0.
 Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
 variável, separar por vírgula (exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do item.
+
+10.2. const item = 1
+1 = item comum (classe comum_item)
+2 = pode agrupar (classe comum_itemgrupo)
+3 = pode sentar-se e/ou deixar (classe comum_itemperso)
 
 10.2. const vestir1 = 0
       const vestir2 = 0
