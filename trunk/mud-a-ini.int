@@ -1,6 +1,8 @@
 classe a_ini
 herda area
 const a_nome = "Ilha - área inicial"
+const a_tempo = 0
+const a_reset = 0
 
 
 classe b_ini
@@ -312,9 +314,7 @@ Para pegar tecle pegar diamante_vermelho\n\
 Para soltar tecle soltar diamante_vermelho\n\
 Muitas vezes pode-se abreviar os comandos.\n\
 Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\"."
-
-func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_ini003", 78)
+const s_reset = "S 100 ini003 78 s"
 
 func cmd_pegarobj
   se arg2 == "i_ini003"
@@ -372,7 +372,7 @@ const dir_n = $s_ini008
 const portaini_n = 2 # Inicialmente fechado
 const portanome_n = "a porta da cabana"
 const eveste = 1 # Receber eventos do próprio objeto
-const s_entrou = "P 100 ini002 27 27 1"
+const s_reset = "P 100 ini002 27 27 1"
 
 func cmd_abriudir
   se arg2 == "n"
@@ -509,7 +509,7 @@ A neblina está forte e a distância é razoável. Tudo que você vê é\n\
 a continuação da ilha ao norte e ao sul."
 const dir_n = $s_ini014
 const dir_s = $s_ini016
-const s_entrou = "P 100 ini001 1 1 1"
+const s_reset = "P 100 ini001 1 1 1"
 
 
 classe s_ini016
@@ -522,9 +522,7 @@ const eveste = 1 # Receber eventos do próprio objeto
 const ver_placa = "A placa diz: você pode saber o que está carregando e vestindo teclando\n\
 inv e equip, respectivamente. Talvez você queira remover ou vestir\n\
 alguma coisa (comandos são remover e vestir seguido do nome do item)."
-
-func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_ini004", 45)
+const s_reset = "S 100 ini004 45 s"
 
 func cmd_pegarobj
   se arg2 == "i_ini004"
@@ -591,7 +589,7 @@ herda b_ini
 const s_titulo = "Pequena ilha"
 const s_desc = "Aqui se vê uma ponte de cordas bem gasta ao sul."
 const dir_s = $s_ini020
-const s_entrou = "S 100 ini006 1 s\nP 100 ini003 31 31 1"
+const s_reset = "S 100 ini006 1 s\nP 100 ini003 31 31 1"
 
 
 classe i_ini006
