@@ -1,0 +1,56 @@
+classe efeito
+# Efeitos que afetam os personagens
+sav listaitem idono # Uso interno: aonde o objeto está
+listaitem evrec # Usado internamente, para receber eventos
+intexec recalc # Se deve acertar os eventos que recebe
+const dono = idono.objlista # Personagem que contém esse efeito
+const jogsav = 1 # Se deve salvar o efeito ao salvar personagem do jogador
+#
+# const evperso = 1 # Receber eventos do personagem
+
+func ini # Cria efeito
+# arg0 = personagem que receberá o efeito
+  idono = ref(arg0).dentro2.addini(este) # Adiciona como personagem
+  !dono && apagar(este) # Apaga se não tiver dono
+  evperso && (evrec = dono.evento.addfim(este))
+
+func recalc_exec # Acerta eventos
+  evrec.remove, evperso && (evrec = dono.evento.addfim(este))
+
+
+classe e_apagar
+# Efeito: Apaga o personagem depois de um tempo sem jogador por perto
+# Se o personagem for capturado, esse efeito desaparece
+#
+sav listaitem idono # Uso interno: aonde o objeto está
+listaitem evrec.2 # Usado internamente, para receber eventos
+const dono = idono.objlista # Personagem que contém esse efeito
+# const jogsav = 0 # Não salvar o efeito ao salvar o personagem
+inttempo tatual # Contagem de tempo para apagar o personagem
+uint16 tapaga # Tempo para apagar o personagem
+intexec recalc # Se deve acertar os eventos que recebe
+# func fim
+# telatxt t
+# t.msg("Efeito apagado\n")
+
+func ini # Cria efeito
+# arg0 = personagem que receberá o efeito
+# arg1 = quanto tempo para apagar o personagem, em décimos de segundo
+  idono = ref(arg0).dentro2.addini(este) # Adiciona como personagem
+  !dono && apagar(este) # Apaga se não tiver dono
+  evrec.0 = dono.evento.addfim(este)
+  evrec.1 = dono.dono.evento.addfim(este)
+  tapaga = arg1, !dono.dono.socktot && (tatual = tapaga) # Acerta tempo
+
+const cmd_saiu = recalc = 1 # Alguém saiu da sala
+
+func recalc_exec # Acerta eventos
+  dono.dono.socktot ? (tatual = 0) : !tatual && (tatual = tapaga)
+
+func cmd_chegou # Alguém mudou de sala: acerta eventos do dono do personagem
+  ret dono.dono.perso, apagar(este) # Apaga se pertence a jogador
+  evrec.1.remove, evrec.1 = dono.dono.evento.addfim(este) # Acerta eventos
+  dono.dono.socktot ? (tatual = 0) : !tatual && (tatual = tapaga)
+
+func tatual_exec # Apaga personagem
+  apagar(este), apagar(dono)

@@ -189,11 +189,11 @@ func p_menu
     txtmais.limpar
     txtmais.addfim([tpasso]:titulo)
     prog p
-    epara p.inifunc(tpasso, "nome"), p.lin, p.depois # Opções de um dígito
+    epara p.inifunctudo(tpasso, "nome"), p.lin, p.depois # Opções de um dígito
       continuar inttotal(p.texto) > 5
       txtmais.addfim(m_menu2(tpasso, txt(p.texto, 4)))
     efim
-    epara p.inifunc(tpasso, "nome"), p.lin, p.depois # Outras opções
+    epara p.inifunctudo(tpasso, "nome"), p.lin, p.depois # Outras opções
       continuar inttotal(p.texto) == 5
       txtmais.addfim(m_menu2(tpasso, txt(p.texto, 4)))
     efim

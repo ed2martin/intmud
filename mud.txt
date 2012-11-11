@@ -118,6 +118,10 @@ Comandos de ataque.
 Via de regra, a função 'escr' checa se está em condições de atacar e obtém
 o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
 
+2.14. mud-efeito.int
+Efeitos que podem afetar personagens e itens.
+Cada efeito é uma classe cujo nome começa com 'e_'.
+
 2.15. mud-mens.int
 Contém a classe 'mens', especializada no envio de mensagens para personagens.
 
@@ -185,6 +189,8 @@ textovar var
 Os dois primeiros caracteres das variáveis de var indicam o tipo:
 a_ = agenda (1=viu, 2=pegou)
 d_ = variável que é apagada quando o objeto muda de dono
+e_ = nome da classe que contém o efeito
+     tem efeito somente quando o item ou personagem é criado
 j_ = variável que é apagada quando é carregado um jogo salvo
 h_ = habilidade
 i_ = idioma
@@ -227,7 +233,7 @@ Tipo de luta permitido:
 2=qualquer luta
 
 6.5. ref dir_[direção]
-Antes de acssar fazer misc:obj=personagem
+Antes de acessar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
@@ -488,7 +494,7 @@ São criadas as variáveis correspondentes em 'textovar var' do item.
 10.2. const item = 1
 1 = item comum (classe comum_item)
 2 = pode agrupar (classe comum_itemgrupo)
-3 = pode sentar-se e/ou deixar (classe comum_itemperso)
+3 = completo (classe comum_itemperso)
 
 10.2. const vestir1 = 0
       const vestir2 = 0
@@ -522,11 +528,20 @@ Em que posição está vestindo.
 Outros valores, vide vestir1, acima.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
-10.4. func vestir( posição )
+10.4. const i_movel = 0
+Tipo de móvel:
+0 = não é móvel
+1 = pode sentar
+2 = pode sentar e deitar
+
+10.5. const i_lugar = 0
+Quantos personagens podem sentar-se.
+
+10.6. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.5. func mudadono(novo dono, quantidade)
+10.7. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
@@ -602,15 +617,18 @@ Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
 do objeto é limpa.
 
 func cmd_saiu(personagem, sala)
-Personagem vai sair da sala. Antes desse evento ocorrer, a 'listaobj evento'
-do personagem é limpa.
+Personagem vai sair da sala.
 
 func cmd_chegou(personagem, sala)
 Personagem entrou na sala. É chamado logo após mudar de sala.
 
 func cmd_recalc2(personagem)
-Chamado para os objetos em personagem.dentro2 e personagem.evento, por
-func recalc_exec, para ajustar as variáveis (pontos de vida, mana, etc.)
+Chamado para os objetos em personagem.dentro2, por func recalc_exec,
+para ajustar as variáveis (pontos de vida, mana, etc.)
+
+func cmd_recalc3(personagem)
+Chamado para os objetos em personagem.evento, por func recalc_exec,
+para ajustar as variáveis (pontos de vida, mana, etc.)
 
 func cmd_falou(personagem, texto)
 Falou alguma coisa.

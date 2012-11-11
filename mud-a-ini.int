@@ -1,8 +1,6 @@
 classe a_ini
 herda area
 const a_nome = "Ilha - área inicial"
-const a_tempo = 0
-const a_reset = 0
 
 
 classe b_ini
@@ -16,7 +14,7 @@ const s_item = 1
 classe i_ini001
 herda comum_itemgrupo
 const nome = "diamante azul"
-const sexoini = 1
+const sexo = 1
 const descpos = "Aqui tem um diamante azul."
 const pesoobj = 200
 
@@ -30,7 +28,7 @@ func cmd_mudadono # Objeto mudou de dono
 classe i_ini002
 herda comum_itemgrupo
 const nome = "diamante amarelo"
-const sexoini = 1
+const sexo = 1
 const descpos = "Aqui tem um diamante amarelo."
 const pesoobj = 200
 
@@ -44,7 +42,7 @@ func cmd_mudadono # Objeto mudou de dono
 classe i_ini003
 herda comum_itemgrupo
 const nome = "diamante vermelho"
-const sexoini = 1
+const sexo = 1
 const descpos = "Aqui tem um diamante vermelho."
 const pesoobj = 200
 
@@ -58,7 +56,7 @@ func cmd_mudadono # Objeto mudou de dono
 classe i_ini004
 herda comum_itemgrupo
 const nome = "diamante verde"
-const sexoini = 1
+const sexo = 1
 const descpos = "Aqui tem um diamante verde."
 const pesoobj = 200
 
@@ -72,7 +70,7 @@ func cmd_mudadono # Objeto mudou de dono
 classe i_ini005
 herda comum_item
 const nome = "manto escuro"
-const sexoini = 1
+const sexo = 1
 const descpos = "Um manto escuro relativamente pesado está aqui."
 const pesoobj = 30000
 const vestir1 = 8
@@ -88,7 +86,7 @@ classe p_ini001
 herda comum_perso
 const nome = "Anão"
 const sexoini = 1
-const perso = 2 # Para poder receber ataques (não participará de batalha)
+const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 70000
 const persobat = este # Personagem usado na batalha
 const eveste = 1 # Receber eventos do próprio objeto
@@ -172,6 +170,8 @@ func entrou20
 
 classe s_ini003
 herda b_ini
+const descsala = "Nas nuvens"
+const s_ocultar = 1
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -314,7 +314,7 @@ Para pegar tecle pegar diamante_vermelho\n\
 Para soltar tecle soltar diamante_vermelho\n\
 Muitas vezes pode-se abreviar os comandos.\n\
 Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\"."
-const s_reset = "S 100 ini003 78 s"
+const s_reset = "S 100 ini003 78 s\nS 100 ini007 1 S"
 
 func cmd_pegarobj
   se arg2 == "i_ini003"
@@ -333,6 +333,11 @@ func cmd_soltarobj
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Vermelho.")
     ret 1
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_ini003") && criar("i_ini003", este, 78)
+  !dentro1.objini("i_ini007") && criar("i_ini007", este, 1)
 
 
 classe s_ini008
@@ -378,12 +383,20 @@ func cmd_abriudir
   se arg2 == "n"
     $s_ini008.fechaporta = 50
 
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se inttotal($p_ini002) < 1
+    p = u = criar("p_ini002", este, 27)
+  fimse
+
 
 classe p_ini002
 herda comum_perso
 const nome = "Silva"
 const sexoini = 1
-const perso = 2 # Para poder receber ataques (não participará de batalha)
+const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 80000
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -511,6 +524,14 @@ const dir_n = $s_ini014
 const dir_s = $s_ini016
 const s_reset = "P 100 ini001 1 1 1"
 
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se inttotal($p_ini001) < 1
+    p = u = criar("p_ini001", este, 1)
+  fimse
+
 
 classe s_ini016
 herda b_ini
@@ -541,6 +562,10 @@ func cmd_soltarobj
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Verde.")
     ret 1
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_ini004") && criar("i_ini004", este, 45)
 
 
 classe s_ini017
@@ -591,13 +616,23 @@ const s_desc = "Aqui se vê uma ponte de cordas bem gasta ao sul."
 const dir_s = $s_ini020
 const s_reset = "S 100 ini006 1 s\nP 100 ini003 31 31 1"
 
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  !dentro1.objini("i_ini006") && criar("i_ini006", este, 1)
+  se inttotal($p_ini003) < 1
+    p = u = criar("p_ini003", este, 31)
+  fimse
+
 
 classe i_ini006
 herda comum_itemperso
 const nome = "tronco"
-const sexoini = 1
+const sexo = 1
 const descpos = "Um pedaço grande de tronco está aqui no centro."
 const pesoobj = 1000000
+const i_movel = 1 # 1=pode sentar, 2=pode sentar e deitar
 const i_lugar = 100 # Quantos personagens podem sentar
 
 
@@ -691,3 +726,13 @@ func cmd_falou
 
 func errou80
   arg0.msg("Joaquim: O que está esperando? Vá atrás das respostas.")
+
+
+classe i_ini007
+herda comum_itemperso
+const nome = "Lapis"
+const ident = "lapis"
+const sexo = 1
+const descpos = "Algo parecido com um lápis retorcido está rolando pelo chão."
+const nivel = 1
+const vestir1 = 16

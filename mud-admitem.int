@@ -5,8 +5,8 @@ const adm_item = "\b\c3Comandos de itens\b\n\
 \c2LITEM\b [nome]\n\
   Lista itens que começam com o nome especificado.\n\
 \c2CITEM\b <tipo> <nome>\n\
-  Cria item. Tipo é uma letra entre S, G ou M:\n\
-  S simples, G agrupa em um objeto, M mobília\n\
+  Cria item. Tipo é uma letra entre S, G ou C:\n\
+  S simples, G agrupa em um objeto, C completo\n\
   Nome deve ser o nome de uma área ou do item\n\
   (nome da área seguido de um número de três dígitos de 001 a 999).\n\
 \c2EITEM\b <nome>\n\
@@ -42,12 +42,12 @@ func cmd_citem # Criar item
   casose "g"
     deriv = "comum_itemgrupo"
     sair
-  casose "m"
+  casose "c"
     deriv = "comum_itemperso"
     sair
   casose
     msg("Tecle o tipo e o nome após CITEM; os tipos válidos são:")
-    msg("S simples, G agrupa em um objeto, M mobília")
+    msg("S simples, G agrupa em um objeto, C completo")
     ret 1
   casofim
 # Checa se digitou nome do item
@@ -127,3 +127,208 @@ func p_aitem # Confirmar que quer apagar item
     msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
   fimse
   ret 1
+
+func cmd_eitem # Editar item
+  prog p
+  uint8 num
+  se !p.existe("i_" + arg0)
+    msg("\bItem não existe: " + arg0)
+  senao !p.existe("adm_item" + (num = i_[arg0]:item))
+    msg("\bItem não pode ser editado: " + arg0)
+  senao
+    var.classe1 = "i_" + txtmin(arg0)
+    m_menu("adm_item" + num)
+  fimse
+  ret 1
+
+
+classe adm_icomum
+const nome1 = "Nome"
+const tipo1 = "linha"
+const classe1 = var.classe1
+const var1 = "nome"
+#
+const nome2 = "Palavras chave"
+const info2 = "Palavras que os jogadores digitam para se referir ao item"
+const tipo2 = "linha"
+const classe2 = var.classe1
+const var2 = "ident"
+#
+const nome3 = "Sexo"
+const tipo3 = "opcao"
+const classe3 = var.classe1
+const var3 = "sexo"
+const extra3 = "feminino\nmasculino"
+#
+const nome4 = "Descrição padrão"
+const info4 = "Descrição quando está na sala"
+const tipo4 = "linha"
+const classe4 = var.classe1
+const var4 = "descpos"
+#
+const nome5 = "Descrição ao ver"
+const tipo5 = "texto"
+const classe5 = var.classe1
+const var5 = "descver"
+#
+const nome41 = "Variáveis"
+const tipo41 = "linha"
+const classe41 = var.classe1
+const var41 = "inivar"
+#
+const nome42 = "Eventos item"
+const info42 = "Receber eventos do próprio item"
+const tipo42 = "simnao"
+const classe42 = var.classe1
+const var42 = "eveste"
+#
+const nome43 = "Eventos em perso"
+const info43 = "Se recebe eventos do dono se for personagem"
+const tipo43 = "simnao"
+const classe43 = var.classe1
+const var43 = "evperso"
+#
+const nome44 = "Eventos em item"
+const info44 = "Se recebe eventos do dono se for item"
+const tipo44 = "simnao"
+const classe44 = var.classe1
+const var44 = "evitem"
+#
+const nome45 = "Eventos em sala"
+const info45 = "Se recebe eventos da sala se estiver em uma sala"
+const tipo45 = "simnao"
+const classe45 = var.classe1
+const var45 = "evsala"
+
+
+classe adm_item1
+herda adm_icomum
+const titulo = "Item simples " + txt(var.classe1, 2)
+#
+const nome6 = "Nível"
+const tipo6 = "numero"
+const classe6 = var.classe1
+const var6 = "nivel"
+#
+const nome7 = "Quanto vale"
+const tipo7 = "numero"
+const classe7 = var.classe1
+const var7 = "valor"
+#
+const nome8 = "Vestir posição 1"
+const tipo8 = "opcao"
+const classe8 = var.classe1
+const var8 = "vestir1"
+const extra8 = adm_item1:equip
+#
+const nome9 = "Vestir posição 2"
+const tipo9 = "opcao"
+const classe9 = var.classe1
+const var9 = "vestir2"
+const extra9 = adm_item1:equip
+#
+const nome10 = "Vestir posição 3"
+const tipo10 = "opcao"
+const classe10 = var.classe1
+const var10 = "vestir3"
+const extra10 = adm_item1:equip
+#
+const nome11 = "Peso"
+const info11 = "Em gramas"
+const tipo11 = "numero"
+const classe11 = var.classe1
+const var11 = "pesoobj"
+const extra11 = "1 1000000000"
+#
+const nome12 = "Volume"
+const tipo12 = "numero"
+const extra12 = "1 1000000000"
+const var12 = "volobj"
+#
+const nome13 = "Volume máximo"
+const tipo13 = "numero"
+const classe13 = var.classe1
+const var13 = "volmax"
+#
+const nome14 = "Objetos máximo"
+const tipo14 = "numero"
+const classe14 = var.classe1
+const var14 = "objmax"
+#
+const nome15 = "Expande"
+const info15 = "Volume aumenta se tiver itens dentro"
+const tipo15 = "simnao"
+const classe15 = var.classe1
+const var15 = "volexp"
+#
+comum textotxt t # Lista das posições aonde pode vestir
+const equip = adm_item1:t.ini.textolin(100) # Texto da variável t
+
+func iniclasse
+  uint8 n
+  [arg0]:t.addfim("Não")
+  epara n = 1, misc:equip(n) != "desconhecido", n += 1
+    [arg0]:t.addfim(txtmaimin(misc:equip(n)))
+  efim
+
+
+classe adm_item2
+herda adm_icomum
+const titulo = "Item grupo " + txt(var.classe1, 2)
+#
+const nome6 = "Nível"
+const info6 = "Todos os itens " + txt(var.classe1, 2) + " possuem o mesmo nível"
+const tipo6 = "numero"
+const classe6 = var.classe1
+const var6 = "pnivel"
+#
+const nome7 = "Quanto vale"
+const tipo7 = "numero"
+const classe7 = var.classe1
+const var7 = "valor"
+#
+const nome8 = "Vestir posição 1"
+const tipo8 = "opcao"
+const classe8 = var.classe1
+const var8 = "vestir1"
+const extra8 = adm_item1:equip
+#
+const nome9 = "Vestir posição 2"
+const tipo9 = "opcao"
+const classe9 = var.classe1
+const var9 = "vestir2"
+const extra9 = adm_item1:equip
+#
+const nome10 = "Vestir posição 3"
+const tipo10 = "opcao"
+const classe10 = var.classe1
+const var10 = "vestir3"
+const extra10 = adm_item1:equip
+#
+const nome11 = "Peso"
+const info11 = "Em gramas"
+const tipo11 = "numero"
+const classe11 = var.classe1
+const var11 = "pesoobj"
+const extra11 = "1 1000000000"
+#
+const nome12 = "Volume"
+const tipo12 = "numero"
+const extra12 = "1 1000000000"
+const var12 = "volobj"
+
+
+classe adm_item3
+herda adm_item1
+const titulo = "Item " + txt(var.classe1, 2)
+#
+const nome17 = "Mobília"
+const tipo17 = "opcao"
+const classe17 = var.classe1
+const var17 = "i_movel"
+const extra17 = "Não\nPodem sentar\nPodem sentar e deitar"
+#
+const nome18 = "Lugares"
+const tipo18 = "numero"
+const classe18 = var.classe1
+const var18 = "i_lugar"
