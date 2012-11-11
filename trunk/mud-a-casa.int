@@ -34,6 +34,7 @@ const a_nome = "Dentro da casa"
 # .                       |
 # .                     baixo
 const a_reset = 1
+const a_txtreset = "teste"
 
 
 classe b_casa
@@ -50,7 +51,7 @@ const nome = "Boneco de papel"
 const sexoini = 1
 const descpos = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
-const p_agressivo = 1
+const p_agressivo = 2
 
 
 classe p_casa002
@@ -86,13 +87,15 @@ const descver = "Parece frágil, pois é feito de papelão."
 const eveste = 1 # Receber eventos do próprio objeto
 ref alvo # Quem esse personagem deve atacar
 
-func cmd_ini # Personagem criado: anota o alvo
+func cmd_ini # Personagem foi criado: anota o alvo
+# Nota: o alvo foi passado como arg3 pela função criar()
   alvo = arg3
 
 func cmd_recalc1 # Aumenta pontos de vida
   pvidamax = pvidamax * 2 + 50
 
-func cmd_pnj_proc
+func cmd_pnj_proc # Processamento do PNJ
+# Deve retornar 1 se não deve prosseguir com as ações do PNJ
   se alvo.dono == dono # Se alvo está na mesma sala: ataca
     batalhaini(alvo)
   senao # Alvo em outra sala: boneco vai embora
@@ -207,6 +210,8 @@ func cmd_escr # Descansar
     arg0.mudasenha
     ret 1
 
+const s_pnj = 0
+
 
 classe s_casa002
 herda b_casa
@@ -228,7 +233,7 @@ func cmd_salaperso # Personagem chegou
 func tempomax_exec
   ret !dentro2.objini("jogador"), nulo
   tempomax = rand(50, 80)
-  se misc:salacriar("p_casa001", 1, "h_socar=1,h_chutar=1")
+  se misc:salacriar("p_casa001", 1, "h_socar=1,h_chutar=1,e_apagar=100")
     msg("Um boneco de papel entrou pela janela.")
 
 func cmd_fugir
@@ -432,11 +437,15 @@ func s_desc
 
 const s_reset = "S 100 casa001 0 s"
 
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_casa001") && criar("i_casa001", este, 0)
+
 
 classe i_casa001
 herda comum_item
 const nome = "escada"
-const sexoini = 0
+const sexo = 0
 const pesoobj = 10200
 const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
 const visivel = arg0.posicao < 7 || arg0.var.d_escada_
@@ -503,6 +512,15 @@ const dir_n = $s_casa013
 const dir_o = $s_casa015
 const dir_l = $s_casa016
 const s_reset = "P 100 casa004 10 10 1"
+const s_pnj = 0
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se inttotal($p_casa004) < 1
+    p = u = criar("p_casa004", este, 10)
+  fimse
 
 
 classe s_casa015

@@ -24,8 +24,16 @@ const adm_reset = "\b\c3Reset\b\n\
   na sala. Se o nome for omitido, será a sala em que você está.\n\
 \c2RESET\b [nome da sala ou área]\n\
   Executa o reset de área em uma área ou sala.\n\
-  Se o nome for omitido, será a sala em que você está.\n\n\
-O reset consiste em uma lista de comandos, que podem ser:\n\
+  Se o nome for omitido, será a sala em que você está.\n\
+\c2CRES\b [nome da sala ou área]\n\
+  Refaz as funções de reset a partir da constantes a_reset e s_reset.\n\
+  Isso é útil se o reset for mudado sem usar os comandos ARES e SRES.\n\n\
+Internamente, o reset são duas constantes da sala: a_reset e s_reset\n\
+Cada uma contém um texto, sendo um comando por linha.\n\
+A partir dessas constantes são criadas as funções a_reset1 e s_reset1,\n\
+que realizam o reset com instruções da linguagem do IntMUD.\n\
+O comando CRES recria essas funções.\n\n\
+O reset em si é uma sequência de comandos, entre esses:\n\
 P Criar personagem\n\
 A Criar animal no personagem\n\
 Nota: depende do último personagem (comando P) ser criado com sucesso.\n\
@@ -61,13 +69,15 @@ func cmd_reset # Executa reset
     ref r
     epara r = perso, r.dono, r = r.dono
     efim
-    $reset.sala(r, r.a_reset)
+# $reset.sala(r, r.a_reset)
+    r.a_reset1
     msg("Reset efetuado sala " + txt(r, 2))
-  senao $b_[arg0]
-    $reset.area(arg0)
+  senao $a_[arg0]
+    $a_[arg0].reset_exec
     msg("Reset efetuado área " + arg0)
   senao $s_[arg0]
-    $reset.sala($s_[arg0], $s_[arg0].a_reset)
+# $reset.sala($s_[arg0], $s_[arg0].a_reset)
+    $s_[arg0].a_reset1
     msg("Reset efetuado sala " + arg0)
   senao
     msg("Área ou sala inexistente: " + arg0)
@@ -105,6 +115,31 @@ func cmd_sres
   fimse
   var.opcnome = "Ao entrar ", var.opcvar = "s_reset"
   ret p_reset("\b")
+
+func cmd_cres
+  prog p
+  se !arg0
+    ref r
+    epara r = perso, r.dono, r = r.dono
+    efim
+    $reset.atualiza(r, "a_reset", $r.a_reset)
+    $reset.atualiza(r, "s_reset", $r.s_reset)
+    msg("Reset atualizado sala " + txt(r, 2))
+  senao $b_[arg0]
+    prog p
+    epara p.iniclasse("s_" + arg0), p.lin, p.depois
+      $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
+      $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
+    efim
+    msg("Reset atualizado área " + arg0)
+  senao $s_[arg0]
+    $reset.atualiza($s_[arg0], "a_reset", $s_[arg0].a_reset)
+    $reset.atualiza($s_[arg0], "s_reset", $s_[arg0].s_reset)
+    msg("Reset atualizado sala " + arg0)
+  senao
+    msg("Área ou sala inexistente: " + arg0)
+  fimse
+  ret 1
 
 func p_reset # Menu de reset
   casovar txtmin(txt(arg0, 0, 1))
@@ -177,9 +212,11 @@ func p_reset_z
     prog p
     se teditor.bytes < 2
       p.apagar(var.opcclasse, var.opcvar)
+      p.apagar(var.opcclasse, var.opcvar + "1")
     senao
       var.opcvar = "const " + var.opcvar + "=\""
-      p.criar(var.opcclasse, var.opcvar + txtvis(teditor.remove(1000)) + "\"")
+      p.criar(var.opcclasse, var.opcvar + txtvis(teditor.ini.texto(1000)) + "\"")
+      $reset.atualiza(var.opcclasse, var.opcvar, teditor.ini.texto(1000))
     fimse
     config:salvar
     msg("Alterações salvas")
@@ -627,10 +664,7 @@ func t_resetlin # Obtém um texto a partir de uma linha do reset
 
 
 classe reset
-# Executa as instruções do reset
-# Deve ser chamado com uma das funções:
-# $reset.area(<prefixo da área>)
-# $reset.sala(<objeto da sala>, <texto do reset>)
+# Permite executar instruções do reset e criar funções que realizam o reset
 #
 prog p
 debug dbg
@@ -645,24 +679,9 @@ txt100 l.8 # Linha do texto
 func iniclasse
   criar(arg0)
 
-func area # Executa comandos de reset de uma área
-# arg0 = prefixo da área
-  epara p.iniherdainv("b_" + arg0), p.lin, p.depois
-    $[p.texto].a_reset && sala($[p.texto], $[p.texto].a_reset)
-  efim
-  txt100 mres
-  mres = $a_[arg0].a_txtreset
-  se mres
-    indiceitem i
-    ref r
-    epara i.ini("un "), txt1(i.txt) == "un", i.depois
-      epara r = i.obj.perso.dono, r.dono, r = r.dono
-      efim
-      r.s_area == arg0 && r.msg(mres)
-    efim
-
 func sala # Executa comandos de reset de uma sala
 # arg0 = objeto da sala, arg1 = texto do reset
+# Nota: é mais eficiente criar o reset com a função atualiza
   dbgexec = dbg.exec, perso = ultimo = nulo, t.limpar, t.addfim(arg1)
   enquanto t.linhas
     l.separar(txtremove(t.remove, "EMD"), " ") # Pega próxima linha e separa
@@ -686,7 +705,7 @@ func sala # Executa comandos de reset de uma sala
       senao
         ultimo = criar("p_" + l.2, perso, l.3, l.6)
       fimse
-      perso.animal.[x] = ultimo
+      perso.animal.[x - 1] = ultimo
       sair
     casose "I" # Dar item: <item> <nível> <variáveis>
       sair !ultimo || int(l.1) < 100 && rand(100) < l.1
@@ -695,13 +714,13 @@ func sala # Executa comandos de reset de uma sala
     casose "E" # Equipar: <item> <nível> <lugar> <variáveis>
       sair !ultimo || int(l.1) < 100 && rand(100) < l.1
       r = criar("i_" + l.2, ultimo, l.3, l.5)
-      r.vestir(l.4), r.recalc = 1
+      r.vestir(l.4), u.recalc = 1
       sair
     casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
       sair int(l.1) < 100 && rand(100) < l.1
       r = l.4 == "s" ? arg0 : arg0.dentro1.objini("i_" + l.3)
       sair !r || r.dentro1.objini("i_" + l.2)
-      criar("i_" + l.2, r, l.3, l.4)
+      criar("i_" + l.2, r, l.3, l.5)
       sair
     casose "R" # Remover da sala: <item>
       sair int(l.1) < 100 && rand(100) < l.1
@@ -710,7 +729,7 @@ func sala # Executa comandos de reset de uma sala
       sair
     casose "D" # Porta em uma direção
       sair int(l.1) < 100 && rand(100) < l.1
-      arg0.mudaport(l.2, l.3) # l.2=direção, l.3=novo valor
+      arg0.mudaporta(l.2, l.3) # l.2=direção, l.3=novo valor
       sair
     casose "F" # Fim
       sair !ultimo || int(l.1) < 100 && rand(100) < l.1
@@ -719,3 +738,150 @@ func sala # Executa comandos de reset de uma sala
     casofim
   efim
   dbg.exec = dbgexec
+
+func atualiza # Atualiza reset de sala
+# arg0 = nome da sala
+# arg1 = nome da constante
+# arg2 = texto do reset
+  ret !arg2, p.apagar(arg0, arg1 + "1")
+  txt512 t
+  t = "func " + arg1 + "1 # Realiza o reset\n"
+  t += "# Não alterar; função criada automaticamente a partir de " + arg1 + "\n"
+  t = p.criar(arg0, t + cmdsala(txt(arg2)))
+  se !t
+    config:salvar
+  senao
+    t = "(ERRO) ao criar função " + arg0 + ":" + arg1 + "1:\n" + t
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.19 && item.obj.msg(t)
+    efim
+
+func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
+# arg0 = texto do reset
+# Retorna: texto que contém o conteúdo da função, exceto "func xxxx"
+  textotxt t1 # Texto recebido
+  textotxt t2 # Texto sendo criado
+  txt100 l.8 # Linha do texto
+  txt512 lin
+  int1 mudou # Que variáveis criar: +1 se p/u, +2 se r, +4 se x
+  t1.addfim(arg0)
+  enquanto t1.linhas
+# t2.addfim("# " + txtremove(t1.ini.texto, "EMD"))
+    l.separar(txtremove(t1.remove, "EMD"), " ") # Pega próxima linha e separa
+    casovar txtmai(l.0)
+    casose "P" # <personagem> <nível min> <nível max> <limite> <variáveis>
+      mudou & 1 ? t2.addfim("p=u=nulo") : (mudou = mudou | 1)
+      sair int(l.1) <= 0
+      lin = "se inttotal($p_" + txtvis(l.2) + ") < " + int(l.5)
+      int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
+      t2.addfim(lin)
+      lin = "  p=u=criar(\"p_" + txtvis(l.2) + "\", este, "
+      lin += l.3 == l.4 ? int(l.3) : "rand(" + int(l.3) + ", " + int(l.4) + ")"
+      lin += l.6 ? ", \"" + txtvis(l.6) + "\")" : ")"
+      t2.addfim(lin)
+      t2.addfim("fimse")
+      sair
+    casose "A" # <animal> <nível min> <nível max> <variáveis>
+      sair !(mudou & 1) # Sai se não criou nenhum personagem
+      t2.addfim("u=nulo")
+      sair int(l.1) <= 0
+      mudou = mudou | 4 # Usa a variável x
+      lin = "se (x=p.animalnum) > 0"
+      int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
+      t2.addfim(lin)
+      lin = "  p.animal.[x-1]=u=criar(\"p_" + txtvis(l.2) + "\", p, "
+      lin += l.3 == l.4 ? int(l.3) : "rand(" + int(l.3) + ", " + int(l.4) + ")"
+      lin += l.5 ? ", \"" + txtvis(l.5) + "\")" : ")"
+      t2.addfim(lin)
+      t2.addfim("fimse")
+      sair
+    casose "I" # Dar item: <item> <nível> <variáveis>
+      sair !(mudou & 1) # Sai se não criou nenhum personagem
+      sair int(l.1) <= 0
+      lin = "u && "
+      int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
+      lin += "criar(\"i_" + txtvis(l.2) + "\", u, " + txtvis(l.3)
+      lin += l.4 ? ", \"" + txtvis(l.4) + "\")" : ")"
+      t2.addfim(lin)
+      sair
+    casose "E" # Equipar: <item> <nível> <lugar> <variáveis>
+      sair !(mudou & 1) # Sai se não criou nenhum personagem
+      sair int(l.1) <= 0
+      mudou = mudou | 2 # Usa a variável r
+      lin = "se u"
+      int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
+      t2.addfim(lin)
+      lin = "  r=criar(\"i_" + txtvis(l.2) + "\", u, " + int(l.3)
+      lin += l.5 ? ", \"" + txtvis(l.5) + "\")" : ")"
+      lin += ", r.vestir(" + int(l.4) + "), u.recalc=1"
+      t2.addfim(lin)
+      t2.addfim("fimse")
+      sair
+    casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
+      sair int(l.1) <= 0
+      se l.4 == "s"
+        lin = "!dentro1.objini(\"i_" + txtvis(l.2) + "\") && "
+        lin += "criar(\"i_" + txtvis(l.2) + "\", este"
+      senao
+        lin = "$" + txtvis(l.4) + " && !$" + txtvis(l.4)
+        lin += ".dentro1.objini(\"i_" + txtvis(l.2) + "\") && "
+        lin += "criar(\"i_" + txtvis(l.2) + "\", $" + txtvis(l.4)
+      fimse
+      lin += ", " + int(l.3)
+      lin += l.5 ? ", \"" + txtvis(l.5) + "\")" : ")"
+      t2.addfim(lin)
+      sair
+    casose "R" # Remover da sala: <item>
+      sair int(l.1) <= 0
+      mudou = mudou | 2 # Usa a variável r
+      lin = ""
+      int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
+      sair int(l.1) < 100 && rand(100) < l.1
+      lin += "(r = arg0.dentro1.objini(\"i_" + txtvis(l.2) + "\")) + r.apagar"
+      t2.addfim(lin)
+      sair
+    casose "D" # Porta em uma direção
+      sair int(l.1) <= 0
+      lin = ""
+      int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
+      lin += "mudaporta(\"" + txtvis(l.2) + "\", " + int(l.3) + ")"
+      t2.addfim(lin)
+      sair
+    casose "F" # Fim
+      sair int(l.1) <= 0
+      lin = "ret u"
+      int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
+      lin += ", nulo"
+      t2.addfim(lin)
+      sair
+    casofim
+  efim
+  mudou & 4 ? t2.addini("int8 x # Usado como rascunho")
+  mudou & 2 ? t2.addini("ref r # Usado como rascunho")
+  mudou & 1 ? t2.addini("ref u # Último personagem ou animal criado")
+  mudou & 1 ? t2.addini("ref p # Último personagem criado")
+  ret t2.remove(10000)
+
+const reset1 = "S 100 ini006 1 s\n\
+S 30 ini006 10 s abc=1\n\
+S 30 ini006 12 ini004 abc=1\n\
+R 10 ini002\n\
+R 100 ini001\n\
+P 100 ini003 31 31 1\n\
+I 100 ini001 10\n\
+I 90 ini001 10\n\
+I 80 ini001 15 abc=d\n\
+I 0 ini001 10\n\
+P 45 ini003 11 20 1 h_chutar=1\n\
+E 80 ini001 15 2\n\
+E 80 ini001 15 3 abc=d\n\
+A 40 ini002 15 20 h_socar=1\n\
+D 100 N 2\n\
+D 10 SE 0"
+# Exemplo de como testar a função cmdsala
+# func ini
+# telatxt t1
+# t1.msg("func: \n" + cmdsala(reset1))
+# prog p
+# t1.msg("\n\n>" + p.classe("x", "func n\n" + cmdsala(reset1)) + "\n")

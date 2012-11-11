@@ -45,7 +45,7 @@ func escr # Atacar alguém
     arg0.msg("Aqui é um lugar pacífico.")
   senao arg0.jog && r.jog && arg0.dono.s_luta < 2
     arg0.msg(r.nome + " é jogador e aqui não é uma arena.")
-  senao r.perso < 2
+  senao !r.p_agressivo
     arg0.msg(r.nome + " não quer brigar.")
   senao
     listaobj l

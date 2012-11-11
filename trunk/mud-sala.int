@@ -1,5 +1,5 @@
 classe area
-inttempo resetini # Para executar reset quando a área é criada
+inttempo reset # Para executar reset quando a área é criada
 inttempo resetcont # Tempo para o próximo reset
 intexec resetcheca # Para acertar tempo do próximo reset, após mudar a área
 
@@ -7,11 +7,30 @@ func iniclasse
   arg0 != "area" && criar(arg0)
 
 func ini
-  resetini = 1
+  reset = 1
 
-func resetini_exec
+func reset_exec # Executa o reset da área
   resetcont = rand(a_tempo * 500, a_tempo * 700)
-  $reset.area(txt(este, 2))
+  prog p
+  uint16 x
+  debug d
+# Reset da área
+  x = d.exec
+  epara p.iniherdainv("b_" + arg0), p.lin, p.depois
+    $[p.texto].a_reset1, d.exec = x
+# $[p.texto].a_reset && $reset.sala($[p.texto], $[p.texto].a_reset)
+  efim
+# Avisa jogadores
+  txt100 mres
+  mres = a_txtreset
+  se mres
+    indiceitem i
+    ref r
+    epara i.ini("un "), txt1(i.txt) == "un", i.depois
+      epara r = i.obj.perso.dono, r.dono, r = r.dono
+      efim
+      "a_" + r.s_area == este && r.msg(mres)
+    efim
 
 func resetcont_exec
   resetcont = rand(a_tempo * 500, a_tempo * 700)
@@ -22,7 +41,7 @@ func resetcont_exec
       ret $[p.texto].socktot, nulo
     efim
   fimse
-  $reset.area(txt(este, 2))
+  reset_exec # Realiza o reset
 
 func resetcheca_exec
   se resetcont <= 0 || resetcont >= a_tempo * 700
@@ -36,6 +55,7 @@ herda comum_obj
 const s_titulo = "Sem nome"
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
+const s_pnj = 1 # PNJs podem entrar
 #
 uint8 porta_n # Tipo de saída
 uint8 porta_s # Tipo de saída

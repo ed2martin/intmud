@@ -16,13 +16,17 @@ sav uint32 vestpos # Em que posição está vestindo, 0=nenhuma
 # 2=está aberto, 3=está fechado, 4=está trancado
 
 func ini # Objeto foi criado (arg0=dono, arg1=nível)
-  se arg2
+  se arg2 || inivar
     textotxt t
-    epara t.addfim(txttroca(arg2, ",", "\n")), t.linhas, var.mudar(t.remove)
+    epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
     efim
   fimse
-  pnivel = arg1, comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
+  pnivel = arg1 ? arg1 : nivel, comum_obj:ini
+  cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
+  epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
+    criar(var.ini("e_"), este, var.valor(var.ini("e_")))
+  efim
 
 func fim # Objeto foi apagado
   ref r
@@ -49,6 +53,7 @@ herda comum_item
 # Quando houver mais de um em um mesmo lugar, eles são agrupados em um
 # único objeto. A única exceção é quando forem vestidos (não são agrupados).
 const item = 2 # Para identificar que é item
+const pnivel = 0
 sav uint8 objtot # Quantidade de itens
 
 func objproc # Procura um objeto do mesmo tipo em uma listaobj
@@ -117,12 +122,9 @@ func apagar # Apaga o item (arg0 = quantidade)
 
 classe comum_itemperso
 herda comum_item
-# Itens em que personagens podem sentar-se e deitar-se
+# Itens completos
 const item = 3 # Para identificar que é item
 listaobj persolugar # Quem está sentado ou deitado
-const i_perso = 1 # 1=pode sentar, 2=pode sentar e deitar
-const i_lugar = 1 # Quantos personagens podem sentar
-# Cada personagem deitado ocupa três vagas de i_lugar
 
 func fim # Objeto foi apagado
   ref r

@@ -20,15 +20,18 @@ listaitem poslugar # Em qual móvel está sentado ou deitado
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
 
 func ini # Coloca o objeto dentro de outro
-  posicao = pospadr, pnivel = arg1, p_proc = 1
+  posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
   sexo = sexoini == 2 ? rand(2) : sexoini
-  se arg2
+  se arg2 || inivar
     textotxt t
-    epara t.addfim(txttroca(arg2, ",", "\n")), t.linhas, var.mudar(t.remove)
+    epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
     efim
   fimse
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
+  epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
+    criar(var.ini("e_"), este, var.valor(var.ini("e_")))
+  efim
 
 func fim # Objeto foi apagado
   se sock # Se estiver ligado a um jogador
@@ -60,14 +63,15 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   cmd_mudadono(arg0), dono = arg0
   atkrec.limpar, poslugar.remove
 # Eventos cmd_chegou
-  (sock || jog) && $reset.sala(dono, dono.s_reset) + dono.cmd_salaperso(este)
+# (sock || jog) && $reset.sala(dono, dono.s_reset) + dono.cmd_salaperso(este)
+  (sock || jog) && dono.s_reset1 + dono.cmd_salaperso(este)
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
   efim
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
     epara l.addfim(arg0.dentro2), l, l.ini.remove
-      l.objini.p_agressivo && (l.objini.p_proc = 1)
+      l.objini.p_agressivo == 2 && (l.objini.p_proc = 1)
     efim
   fimse
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
@@ -202,6 +206,7 @@ const perso = 2 # Para identificar o tipo de personagem
 uint8 bitver # O que o personagem/item pode ver
 uint8 bitinv # Grau de invisibilidade do personagem/item
 sav uint32 moedas # Quantas moedas está carregando
+const p_agressivo = 1 # Ataca se atacarem
 #
 const expmax = pnivel * pnivel + 20 # Experiência para subir de nível
 sav uint32 expatual # Experiência atual
@@ -237,19 +242,19 @@ listaobj atkdiv # Para dividir experiência entre personagens que atacaram
 inttempo atktempo # Tempo para completar um turno da batalha
 uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_proc # Para processar comportamento do personagem
+intdec p_tmove # Quanto para se mover novamente
 
 func ini # Objeto foi criado
-  comum_perso:ini(arg0, arg1, arg2)
+  comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
   p_restaura = 100
   recalc_exec
   pvida = pvidamax, pmana = pmanamax, pmove = pmovemax
   persobat = este, persoesc = este
-  cmd_ini(arg0, arg1, arg2, arg3, arg4)
 
 func ataqueini # Testa se pode atacar
 # Retorna "" se pode atacar ou a mensagem com o motivo se não pode
   se persobat.pvida == 0
-    ret "Você está desmaiado"
+    ret "Você está desmaiad" + misc:sletra[sexo]
   senao dono.s_luta == 0
     ret "Não é permitido brigas aqui"
   senao
@@ -306,7 +311,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
     l.obj.cmd_recalc2(este)
   efim
   epara l = evento.ini, l, l.depois
-    l.obj.cmd_recalc2(este)
+    l.obj.cmd_recalc3(este)
   efim
 
 func batalhaini # Indica que atacou outro personagem (está batalhando)
@@ -486,7 +491,7 @@ func p_proc_exec # Processar comportamento do personagem
   ref alvo
   se atkenv
     alvo = atkenv.objlista
-  senao p_agressivo
+  senao p_agressivo == 2
     alvo = escolhejog
   fimse
 # Realiza um ataque
@@ -495,6 +500,22 @@ func p_proc_exec # Processar comportamento do personagem
     t1 = escolhehab
     ret t1 && !ataqueini, $cmd_[t1].ataca(este, alvo)
   fimse
+# Movimenta-se
+  se p_mover
+    ret p_tmove, p_proc = p_tmove + 1
+    ref r
+    textotxt t
+    misc:obj = este, r = dono
+    r.dir_n.s_pnj && t.addfim("n"), r.dir_ne.s_pnj && t.addfim("ne")
+    r.dir_s.s_pnj && t.addfim("s"), r.dir_no.s_pnj && t.addfim("no")
+    r.dir_l.s_pnj && t.addfim("l"), r.dir_se.s_pnj && t.addfim("se")
+    r.dir_o.s_pnj && t.addfim("o"), r.dir_so.s_pnj && t.addfim("so")
+    r.dir_c.s_pnj && t.addfim("c"), r.dir_b.s_pnj && t.addfim("b")
+    t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
+    txt10 dir
+    dir = t.ini.texto # Direção escolhida
+    ret !dir || p_mover == 1 && r.dir_[dir].s_area != r.s_area, p_proc = 50
+    $cmd_[dir].escr(este), p_tmove = rand(70, 100), p_proc = p_tmove + 1
 
 
 classe comum_persoanimal
@@ -531,14 +552,14 @@ func escolhebat # Escolhe um personagem em condições de lutar
 func animalnum # Retorna o número do próximo lugar disponível para animal
 # A variável animal.[animalnum-1] é o próximo lugar disponível
 # Se retornar 0, significa que não há mais espaço
-  ret !animal.0, config.animal >= 1 ? 1 : -1
-  ret !animal.1, config.animal >= 2 ? 2 : -1
-  ret !animal.2, config.animal >= 3 ? 3 : -1
-  ret !animal.3, config.animal >= 4 ? 4 : -1
-  ret !animal.4, config.animal >= 5 ? 5 : -1
-  ret !animal.5, config.animal >= 6 ? 6 : -1
-  ret !animal.6, config.animal >= 7 ? 7 : -1
-  ret !animal.7, config.animal >= 8 ? 8 : -1
+  ret !animal.0, config.animal >= 1 ? 1 : 0
+  ret !animal.1, config.animal >= 2 ? 2 : 0
+  ret !animal.2, config.animal >= 3 ? 3 : 0
+  ret !animal.3, config.animal >= 4 ? 4 : 0
+  ret !animal.4, config.animal >= 5 ? 5 : 0
+  ret !animal.5, config.animal >= 6 ? 6 : 0
+  ret !animal.6, config.animal >= 7 ? 7 : 0
+  ret !animal.7, config.animal >= 8 ? 8 : 0
   ret 0
 
 

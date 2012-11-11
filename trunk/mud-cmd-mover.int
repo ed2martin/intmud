@@ -375,7 +375,7 @@ func escr
     efim
     txt100 nome
     nome = misc:sum[r.sexo] + " " + r.nome + "."
-    ret !r.i_perso, arg0.msg("Não é possível sentar-se em " + nome)
+    ret !r.i_movel, arg0.msg("Não é possível sentar-se em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
@@ -446,7 +446,7 @@ func escr
     efim
     txt100 nome
     nome = misc:sum[r.sexo] + " " + r.nome + "."
-    ret !r.i_perso, arg0.msg("Não é possível descansar em " + nome)
+    ret !r.i_movel, arg0.msg("Não é possível descansar em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
