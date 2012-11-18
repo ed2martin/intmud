@@ -36,20 +36,37 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         char mens[4096];
         const char * txt = v[1].getTxt();
         while (*txt==' ') txt++;
-        copiastrmin(mens, txt, sizeof(mens));
-        txt = mens;
-    // Verifica se é o nome procurado
-        while (true)
-        {
+        char * p = mens;
+        for (; *txt && p<mens+sizeof(mens)-1; p++,txt++)
+            *p = tabNOMEOBJ[*(unsigned char*)(txt)];
+        *p=0;
         // Checa fim do nome
-            if (*txt==0)
+        if (*mens==0)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
+    // Verifica se é o nome procurado
+    // Todas as palavras de NomeObj devem estar em mens
+        txt = NomeObj;
+        while (*txt)
+        {
+            const char * lista = mens;
+            while (true)
             {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarInt(0);
+                const char * str = txt;
+                while (*str && *str!=' ' && *str==*lista)
+                    str++, lista++;
+                if (*str==0 || *str==' ') // Encontrou
+                    break;
+                while (*lista && *lista!=' ') lista++;
+                while (*lista==' ') lista++;
+                if (*lista==0) // Fim da lista: não encontrou
+                {
+                    Instr::ApagarVar(v);
+                    return Instr::CriarVarInt(0);
+                }
             }
-        // Checa se é o nome procurado
-            if (memcmp(txt, NomeObj, NomeTam) == 0)
-                break;
             while (*txt && *txt!=' ') txt++;
             while (*txt==' ') txt++;
         }
@@ -112,30 +129,21 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         // É o nome do item
             break;
         }
+        // Copia o texto
+        while (*txt==' ')
+            txt++;
+        char * p = NomeObj;
+        for (; *txt && p<NomeObj+sizeof(NomeObj)-1; p++,txt++)
+            *p = tabNOMEOBJ[*(unsigned char*)(txt)];
+        *p=0;
         // Obtém Total
         if (Total <= 0)
             Total=1;
         int x = (Instr::VarAtual - v < 2 ? 1 : v[2].getInt());
         if (Total>x)
             Total=x;
-        // Copia o texto
-        while (*txt==' ')
-            txt++;
-        for (x=0; x<(int)sizeof(NomeObj) && *txt; x++)
-        {
-            NomeObj[x] = tabCOMPLETO[*(unsigned char*)txt];
-            if (*txt++==' ')
-                while (*txt==' ')
-                    txt++;
-        }
-        if (x>0 && NomeObj[x-1]==' ')
-            x--;
-        NomeTam = x;
-        if (x==0)
+        if (*NomeObj==0)
             Total=0;
-        for (; x>=0; x--)
-            if (NomeObj[x]==' ')
-                NomeObj[x]='_';
         return false;
     }
     return false;

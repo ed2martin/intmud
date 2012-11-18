@@ -4,16 +4,13 @@ herda comum_obj
 const item = 1 # Para identificar que é item
 const bitinv = 3 # Grau de invisibilidade do personagem/item
 const sexo = 0 # Sexo: 0=feminino, 1=masculino
-const nome = "item"
-const ident = txts(nome)
+const nome = "sem nome"
+const ident = nome
 const descpos = txtmaimin(nome) + " está aqui."
 const descver = "Você não vê nada de especial."
 const jogsav = 1 # Se deve salvar o item ao salvar personagem do jogador
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
-sav uint32 vestpos # Em que posição está vestindo, 0=nenhuma
-# const abertoini = 0 # Valor inicial de aberto
-# uint8 aberto # 0=não é container, 1=está sempre aberto
-# 2=está aberto, 3=está fechado, 4=está trancado
+sav uint8 vestpos # Em que posição está vestindo, 0=nenhuma
 
 func ini # Objeto foi criado (arg0=dono, arg1=nível)
   se arg2 || inivar
@@ -21,7 +18,7 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
     epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
     efim
   fimse
-  pnivel = arg1 ? arg1 : nivel, comum_obj:ini
+  pnivel = arg1 ? arg1 : nivel, comum_obj:ini, i_aberto = i_abertoini
   cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
@@ -31,6 +28,8 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
 func fim # Objeto foi apagado
   ref r
   r = dono, comum_obj:fim, cmd_fim(r)
+  telatxt t
+  t.msg("APAGAOU " + este + "\n")
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   cmd_mudadono(arg0), dono = arg0
@@ -124,7 +123,10 @@ classe comum_itemperso
 herda comum_item
 # Itens completos
 const item = 3 # Para identificar que é item
+intexec recalc # Se deve acertar variáveis do item
 listaobj persolugar # Quem está sentado ou deitado
+# const i_abertoini = 0 # Valor inicial de aberto
+sav uint8 i_aberto # Situação atual do container, ou 0 se não for container
 
 func fim # Objeto foi apagado
   ref r
@@ -132,3 +134,7 @@ func fim # Objeto foi apagado
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   persolugar.limpar, cmd_mudadono(arg0), dono = arg0
+
+func recalc_exec # Acerta variáveis do item
+  se int(i_abertoini) < 2 || i_aberto < 2
+    i_aberto = i_abertoini

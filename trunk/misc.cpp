@@ -42,6 +42,7 @@ char * tabTXTDEC = 0;
 char * tab8B = 0;
 char * tab7B = 0;
 char * tabTXTSEPARA = 0;
+char * tabNOMEOBJ = 0;
 
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
@@ -60,7 +61,7 @@ void tabASCinic(void)
     if (tabNOMES1)
         return;
 // Aloca memória
-    tabNOMES1 = new char[0xB00];
+    tabNOMES1 = new char[0xC00];
     tabNOMES2 = tabNOMES1 + 0x100;
     tabCOMPLETO = tabNOMES1 + 0x200;
     tabMAI = tabNOMES1 + 0x300;
@@ -71,11 +72,9 @@ void tabASCinic(void)
     tab8B = tabNOMES1 + 0x800;
     tab7B = tabNOMES1 + 0x900;
     tabTXTSEPARA = tabNOMES1 + 0xA00;
-// Acerta tabNOMES1
+    tabNOMEOBJ = tabNOMES1 + 0xB00;
+// Acerta tabNOMES1 e tabNOMEOBJ
     memset(tabNOMES1,0,256);
-    tabNOMES1[(unsigned char)'_'] = ' ';
-    tabNOMES1[(unsigned char)' '] = ' ';
-    tabNOMES1[(unsigned char)'@'] = '@';
     for (caract='a'; caract<='z'; caract++) // Letras de A a Z
         tabNOMES1[caract-0x20] = tabNOMES1[caract] = caract;
     for (caract='0'; caract<='9'; caract++) // Números de 0 a 9
@@ -85,6 +84,13 @@ void tabASCinic(void)
         tabNOMES1[(unsigned char)cpont[1]] = cpont[0];
         tabNOMES1[(unsigned char)cpont[2]] = cpont[0];
     }
+    memcpy(tabNOMEOBJ, tabNOMES1, 256);
+    tabNOMES1[(unsigned char)'_'] = ' ';
+    tabNOMES1[(unsigned char)' '] = ' ';
+    tabNOMES1[(unsigned char)'@'] = '@';
+    for (caract=1; caract<0x100; caract++)
+        if (tabNOMEOBJ[caract]==0)
+            tabNOMEOBJ[caract]=' ';
 // Acerta tabNOMES2
     memcpy(tabNOMES2, tabNOMES1, 0x100);
     for (caract=1; caract<0x100; caract++)

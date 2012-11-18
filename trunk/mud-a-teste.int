@@ -32,6 +32,7 @@ const nome = "Jardineiro"
 const ident = nome
 const descpos = "Um jardineiro está sentado aqui."
 const sexoini = 1 # 0=feminino, 1=masculino
+const p_recebe = 1 # Se pode receber itens de outros personagens
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
@@ -44,8 +45,6 @@ func entrou10
 
 func entrou20
   arg0.msg("Jardineiro disse: Preciso de uma pedra.")
-
-const container = 1 # Para poder receber itens
 
 func cmd_darobj # Alguém deu algum item
   telatxt t

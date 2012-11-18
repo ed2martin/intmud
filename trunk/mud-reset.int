@@ -127,9 +127,13 @@ func cmd_cres
     msg("Reset atualizado sala " + txt(r, 2))
   senao $b_[arg0]
     prog p
+    debug d
+    uint16 x
+    x = d.exec
     epara p.iniclasse("s_" + arg0), p.lin, p.depois
       $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
       $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
+      d.exec = x
     efim
     msg("Reset atualizado área " + arg0)
   senao $s_[arg0]
@@ -214,9 +218,10 @@ func p_reset_z
       p.apagar(var.opcclasse, var.opcvar)
       p.apagar(var.opcclasse, var.opcvar + "1")
     senao
-      var.opcvar = "const " + var.opcvar + "=\""
-      p.criar(var.opcclasse, var.opcvar + txtvis(teditor.ini.texto(1000)) + "\"")
-      $reset.atualiza(var.opcclasse, var.opcvar, teditor.ini.texto(1000))
+      txt100 t1
+      t1 = "const " + var.opcvar + "=\""
+      p.criar(var.opcclasse, t1 + txtvis(teditor.ini.textolin(1000)) + "\"")
+      $reset.atualiza(var.opcclasse, var.opcvar, teditor.ini.textolin(1000))
     fimse
     config:salvar
     msg("Alterações salvas")
@@ -764,19 +769,34 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
   textotxt t2 # Texto sendo criado
   txt100 l.8 # Linha do texto
   txt512 lin
-  int1 mudou # Que variáveis criar: +1 se p/u, +2 se r, +4 se x
+  uint8 mudou # Que variáveis criar: +1 se p/u, +2 se r, +4 se x
   t1.addfim(arg0)
   enquanto t1.linhas
 # t2.addfim("# " + txtremove(t1.ini.texto, "EMD"))
     l.separar(txtremove(t1.remove, "EMD"), " ") # Pega próxima linha e separa
     casovar txtmai(l.0)
     casose "P" # <personagem> <nível min> <nível max> <limite> <variáveis>
-      mudou & 1 ? t2.addfim("p=u=nulo") : (mudou = mudou | 1)
+      textopos pos
+      uint8 m1 # Será =2 se o personagem terá alguma coisa dentro
+      epara pos = t1.ini, pos && !m1, pos.depois
+        casovar txtmin(pos.texto(0, 1))
+        casose "p"
+          m1 = 1
+          sair
+        casose "a"
+        casose "i"
+        casose "e"
+          m1 = 2
+          mudou & 1 ? t2.addfim("p=u=nulo") : (mudou = mudou | 1)
+          sair
+        casofim
+      efim
       sair int(l.1) <= 0
       lin = "se inttotal($p_" + txtvis(l.2) + ") < " + int(l.5)
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
-      lin = "  p=u=criar(\"p_" + txtvis(l.2) + "\", este, "
+      lin = m1 == 2 ? "  p=u=" : "  "
+      lin += "criar(\"p_" + txtvis(l.2) + "\", este, "
       lin += l.3 == l.4 ? int(l.3) : "rand(" + int(l.3) + ", " + int(l.4) + ")"
       lin += l.6 ? ", \"" + txtvis(l.6) + "\")" : ")"
       t2.addfim(lin)
@@ -784,13 +804,28 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       sair
     casose "A" # <animal> <nível min> <nível max> <variáveis>
       sair !(mudou & 1) # Sai se não criou nenhum personagem
-      t2.addfim("u=nulo")
+      textopos pos
+      uint8 m1 # Será =2 se o personagem terá alguma coisa dentro
+      epara pos = t1.ini, pos && !m1, pos.depois
+        casovar txtmin(pos.texto(0, 1))
+        casose "p"
+        casose "a"
+          m1 = 1
+          sair
+        casose "i"
+        casose "e"
+          m1 = 2, t2.addfim("u=nulo")
+          sair
+        casofim
+      efim
       sair int(l.1) <= 0
       mudou = mudou | 4 # Usa a variável x
       lin = "se (x=p.animalnum) > 0"
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
-      lin = "  p.animal.[x-1]=u=criar(\"p_" + txtvis(l.2) + "\", p, "
+      lin = "  p.animal.[x-1]"
+      m1 == 2 && (lin += "u=")
+      lin += "criar(\"p_" + txtvis(l.2) + "\", p, "
       lin += l.3 == l.4 ? int(l.3) : "rand(" + int(l.3) + ", " + int(l.4) + ")"
       lin += l.5 ? ", \"" + txtvis(l.5) + "\")" : ")"
       t2.addfim(lin)

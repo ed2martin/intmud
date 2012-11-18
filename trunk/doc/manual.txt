@@ -1128,7 +1128,10 @@ Já 'a:b' significa a função ou variável b da classe a.
 13.5. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
 
 Via de regra, os operadores binários convertem o segundo operando para
-o mesmo tipo do primeiro. Exemplos:
+o mesmo tipo do primeiro.
+
+Exemplos:
+
 10 > 2 # Verdadeiro; está comparando números
 10 > "2" # Verdadeiro; o texto "2" é transformado em número antes da comparação
 "10" > "2" # Falso; está comparando dois textos; o "1" vem antes do "2"
@@ -1139,60 +1142,76 @@ o mesmo tipo do primeiro. Exemplos:
 
 13.6. OPERADORES DE BIT
 
-Bit é a menor unidade de memória. Pode representar apenas um entre valores
-numéricos: 0 ou 1. Variáveis int1 correspondem a um bit.
-Nesse manual, chamaremos ativo quando um bit estiver em 1.
+Bit é a menor unidade de informação e pode assumir apenas dois valores,
+0 ou 1. Variáveis int1 correspondem a um bit.
+
+Nesse manual, chamaremos "ativo" quando um bit estiver em 1 e "desativo"
+quando um bit for 0.
 
 Operações com bits funcionam assim:
 
-~ (til) inverte o bit:
-~1=0, ~0=1
+'~' (til) é um operador unitário que inverte o bit:
+~0 resulta em 1
+~1 resulta em 0
 
-& (e comercial) resulta em ativo somente se os dois bits estiverem ativos:
-0&0=0, 0&1=0, 1&0=0, 1&1=1
+'&' (e comercial) resulta em ativo somente se os dois bits estiverem ativos:
+0&0, 0&1 e 1&0 resultam em 0
+1&1 resulta em 1
 
-| (traço vertical) resulta em ativo se qualquer um dos bits estiver ativo:
-0&0=0, 0&1=0, 1&0=0, 1&1=1
+'|' (traço vertical) resulta em ativo se qualquer um dos bits estiver ativo:
+0&0 resulta em 0
+0&1, 1&0 e 1&1 resultam em 1
 
-^ (acento circunflexo) resulta em ativo se apenas um dos bits estiver ativo:
-0^0=0, 0^1=1, 1^0=1, 1^1=0
+'^' (acento circunflexo) resulta em ativo se apenas um dos bits estiver ativo:
+0&0 e 1&1 resultam em 0
+0&1 e 1&0 resultam em 1
 
-Essas operações também são possíveis com variáveis int8, uint8, int16, etc.
-Para entender como funcionam, é necessário desmembrar em variáveis int1.
-Os bits são numerados a partir do 0, sendo que cada um representa um
-valor distinto quando estiver ativo:
-bit 0 = 1
-bit 1 = 2
-bit 2 = 4
-bit 3 = 8
-bit 4 = 16
-bit 5 = 32
-bit 6 = 64
-bit 7 = 128
+Essas operações também são possíveis com variáveis int8, uint8, int16,
+etc. Para entender como funcionam, é necessário desmembrar em variáveis
+int1. Os bits são numerados de 0 até 7 (em int8 e uint8), 15 (em int16 e
+uint16) ou 31 (em int32 e uint32).
+
+Cada bit ativo representa um valor, que é sempre a 2 elevado ao número
+do bit, conforme a seguinte tabela:
+
+bit 0 ativo = 1
+bit 1 ativo = 2
+bit 2 ativo = 4
+bit 3 ativo = 8
+bit 4 ativo = 16
+bit 5 ativo = 32
 etc.
-Exemplo, o número 5 corresponde aos bits 2 e 0 ativos, pois 5 significa
-somar 4 (bit 2) com 1 (bit 0).
-O número 0 significa nenhum bit ativo.
+
+O valor numérico da variável é a soma desses valores, ou zero, se nenhum
+bit estiver ativo. Exemplo, o número 5 corresponde aos bits 2 e 0 ativos,
+pois 5 significa somar 4 (bit 2) com 1 (bit 0). Não é possível formar o
+número 5 com outra combinação de bits.
 
 Os operadores de bit trabalham com cada bit individualmente.
 
-Exemplo 1:
-7 & 12 = 4
-7 significa 4+2+1, bits 2, 1 e 0 ativos
-12 significa 8+4, bits 3 e 2 ativos
-O resultado é 4 (apenas o bit 2 ativo), pois é o único bit ativo
-simultaneamente nos dois números, 7 e 12.
+Exemplo, considere os seguintes números:
+7 = 4+2+1, portanto somente os bits 2, 1 e 0 estão ativos
+12 = 8+4, portanto somente os bits 3 e 2 estão ativos
 
-Exemplo 2:
-7 | 12 = 15 (8+4+2+1 = bits 3 a 0 ativos)
+Assim, conclui-se que:
 
-Exemplo 3:
-7 ^ 12 = 11 (8+2+1 = bits 3, 1 e 0 ativos)
+7 & 12          - O resultado é 4 (apenas o bit 2 ativo), pois é o único
+                  bit ativo simultaneamente nos dois números, 7 e 12.
+7 | 12          - O resultado é 15 pois os bits 0, 1, 2 e 3 estão ativos
+                  em pelo menos um dos dois números, 7 ou 12.
+7 ^ 12          - Resulta em 11, pois apenas os bits 3, 1 e 0 estão
+                  ativos em um dos dois números e desativos no outro.
 
-A grande vantagem dos operadores de bit em relação a vetores é poder testar
-e/ou alterar vários bits simultaneamente.
+A grande vantagem dos operadores de bit em relação a vetores é poder
+testar e/ou alterar vários bits simultaneamente:
 
-Usos mais comuns:
+'|' (ou) permite ativar um ou mais bits;
+'&' (e) junto com '~' (inverter) permite desativar;
+'^' (ou exclusivo) permite inverter;
+'&' sozinho permite testar se um ou mais bits estão ativos.
+
+Exemplo:
+
 uint8 x
 x = 1
 x = x | 4 # Ativa o bit 2 de x
@@ -1205,12 +1224,14 @@ senao
   msg("bit 3 de x não está ativo\n")
 fimse
 
-Outra forma de trabalhar com bits é usando um vetores de int1. A variável
-bits do vetor é o valor numérico correspondente. Exemplo:
+Outra forma de trabalhar com bits é usando vetores de int1. A variável
+'bits' do vetor é o valor numérico correspondente.
+
+Exemplo:
+
 int1 x.32
-x.bits = 3 # Ativa os bits 0 e 1 e desativa os demais
-x.3 = 1 # Ativa o bit 3; agora x.bits passa a ser 11
-msg("O resultado é " + x.bits + "\n")
+x.bits = 3 # Ativa os bits 0 e 1 e desativa os demais;
+x.3 = 1 # Ativa o bit 3; agora x.bits = 11.
 
 Os operadores de deslocamento têm funcionalidade parecida à de multiplicação
 e divisão, porém arredondando para baixo (ex. 9.7 é arredondado para 9):
@@ -1442,11 +1463,11 @@ O valor inteiro de a (int32), ignorando os dígitos após a vírgula.
 Por exemplo, intdiv(1.7) resulta em 1, enquanto que int(1.7) resulta em 2.
 
 15.2.5. rand(a)
-Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) gera
+Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) retorna
 um número aleatório de 0 a 9.
 
 15.2.6. rand(a, b)
-Um número aleatório inteiro, de a a b. Exemplo, rand(2,4) gera
+Um número aleatório inteiro, de a a b. Exemplo, rand(2,4) retorna
 um número aleatório de 2 a 4.
 
 
@@ -2426,41 +2447,47 @@ Funções:
 Inicia a busca.
 
 <texto> é o nome procurado, geralmente é o que o usuário digitou.
-Para escolher o número do item, acrescentar o número seguido de um
+
+O usuário só precisa digitar uma ou mais palavras que que fazem parte
+do nome do objeto, e ainda pode abreviar (escrever só o começo).
+Exemplo, se o nome do objeto for "chave pequena", pode-se digitar
+"chave", "pequena", "ch peq" ou mesmo "pequena cha".
+
+Qualquer caracter que não for letra pode ser usado para separar
+as palavras. Exemplo, "ch_peq" e "ch+*-peq" têm o mesmo efeito que
+"ch peq".
+
+Para escolher o número do objeto, acrescente o número seguido de um
 ponto antes do nome. Exemplo, "2.poção" é a segunda poção.
-Para escolher a quantidade de itens, acrescentar um número seguido
+
+Para escolher a quantidade de objetos, acrescente um número seguido
 de espaço antes. Exemplo, "10 poção" significa 10 itens 'poção'.
-São aceitos nomes de itens que possuem espaço no meio, mas nesse caso,
-o espaço é considerado como se fosse um '_' (sublinhado).
 
-[quantidade] é a quantidade máxima de itens que podem ser encontrados.
-Se for omitido, significa apenas um item.
-Por exemplo, se for desejável processar no máximo 10 objetos, a quantidade
-deve ser o número 10.
+[quantidade] é a quantidade máxima de objetos que podem ser encontrados.
+Se for omitido, significa apenas um. Por exemplo, se for desejável processar
+no máximo 10 itens, a quantidade deve ser o número 10.
 
-Vide também exemplo de código no tópico 23.2 (abaixo).
+Vide também exemplo de código no tópico 22.3 (abaixo).
 
 22.2. nome(<texto>, [quantidade])
 Checa se um objeto corresponde ao item escolhido pelo usuário.
 
-<texto> contém um ou mais nomes (separados por espaço) correspondentes
-a um objeto. Exemplo, "chave chave_verde" significa um objeto que
-pode ser referenciado por esses dois nomes: chave e chave_verde.
+<texto> contém as palavras que se referem ao objeto.
 
 [quantidade] é a quantidade de itens com o nome especificado. Se for
 omitido, significa apenas um item.
 
 Essa função retorna a quantidade de itens encontrados.
 
-Exemplo:
+22.3. Exemplo
 
 nomeobj x
 x.ini("2.ch", 5)# Achar no máximo 5 itens que começam com "ch"
                 # No entanto, como o texto é "2.ch", procurará só o segundo
 x.nome("bolsa") # Retorna 0 porque não é o item procurado
-x.nome("chave_azul")  # Retorna 0; não é o segundo item que começa com ch
-x.nome("chave_verde") # Retorna 1
-x.nome("chave_azul")  # Retorna 0 porque já encontrou o item
+x.nome("chave azul")  # Retorna 0; o nome confere, mas esse é o primeiro item
+x.nome("chave verde") # Retorna 1
+x.nome("chave azul")  # Retorna 0 porque já encontrou o item
 
 
 23. ARQDIR - ACESSAR DIRETÓRIOS

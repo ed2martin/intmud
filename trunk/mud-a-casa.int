@@ -516,10 +516,8 @@ const s_pnj = 0
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  ref p # Último personagem criado
-  ref u # Último personagem ou animal criado
   se inttotal($p_casa004) < 1
-    p = u = criar("p_casa004", este, 10)
+    criar("p_casa004", este, 10)
   fimse
 
 
