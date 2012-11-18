@@ -27,8 +27,9 @@ func escr
     sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
-    senao !sala.container
-      ret arg0.msg("Não é possível pegar nada de " + sala.nome + ".")
+    senao sala.i_aberto <= 2
+      ret !sala.i_aberto, arg0.msg(txtmaimin(sala.nome) + " não é container.")
+      ret arg0.msg(txtmaimin(sala.nome) + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
     mens = " de $t $a."
   fimse
@@ -100,8 +101,9 @@ func escr
     sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
-    senao !sala.container
-      ret arg0.msg("Não é possível soltar nada em " + sala.nome + ".")
+    senao sala.i_aberto <= 2
+      ret !sala.i_aberto, arg0.msg(txtmaimin(sala.nome) + " não é container.")
+      ret arg0.msg(txtmaimin(sala.nome) + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
     mens = " em $t $a"
   fimse
@@ -174,7 +176,7 @@ func escr
   sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
   se !sala
     ret arg0.msg("Você não vê " + misc:sep2 + ".")
-  senao !sala.container
+  senao !sala.p_recebe
     ret arg0.msg("Não é possível dar nada para " + sala.nome + ".")
   fimse
 # Dá os itens

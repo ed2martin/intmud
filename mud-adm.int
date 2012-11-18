@@ -181,7 +181,7 @@ func p_menu
   casose ""
   casose "\b"
     var.opcnome = "", var.opcclasse = "", var.opcvar = ""
-    var.opcpasso = "", var.opcextra = ""
+    var.opcpasso = "", var.opcextra = "", var.opcmudou = ""
     passo = "menu"
     msg([tpasso]:titulo + ", tecle O para saber as opções")
     ret 1
@@ -198,7 +198,22 @@ func p_menu
       txtmais.addfim(m_menu2(tpasso, txt(p.texto, 4)))
     efim
     txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+    txtmais.addfim("V mostra as variáveis alteradas em cada opção (classe:variável)")
     txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
+    txtmostra
+    ret 1
+  casose "v"
+    txtmais.limpar
+    txt100 lin
+    prog p
+    epara p.inifunctudo(tpasso, "nome"), p.lin, p.depois # Opções de um dígito
+      continuar inttotal(p.texto) > 5
+      txtmais.addfim(m_menu3(tpasso, txt(p.texto, 4)))
+    efim
+    epara p.inifunctudo(tpasso, "nome"), p.lin, p.depois # Outras opções
+      continuar inttotal(p.texto) == 5
+      txtmais.addfim(m_menu3(tpasso, txt(p.texto, 4)))
+    efim
     txtmostra
     ret 1
   casose "z"
@@ -218,6 +233,7 @@ func p_menu
     var.opcextra = [tpasso]:extra[arg0]
     var.opcpasso = passo
     var.opcvalido_ = txtproc([tpasso]:tipo[arg0], "--") >= 0
+    var.opcmudou = [tpasso]:mudou[arg0]
     se !var.opcvar
       msg2(var.opcextra)
       ret 1
@@ -237,6 +253,7 @@ func p_menu
     var.opcvar = [tpasso]:var[opc]
     var.opcextra = [tpasso]:extra[opc]
     var.opcpasso = passo
+    var.opcmudou = [tpasso]:mudou[arg0]
     se !var.opcvar
       msg2(var.opcextra)
       ret 1
@@ -256,6 +273,14 @@ func m_menu2 # Usado em m_menu para obter o texto de uma opção do menu
   inttotal(lin) < 20 && (lin = txt(lin + txtesp(18), 0, 20))
   func1 = "t_" + txttroca([arg0]:tipo[arg1], "-", "") # Nome da função
   ret lin + ": " + [func1]([arg0]:classe[arg1], [arg0]:var[arg1], [arg0]:extra[arg1])
+
+func m_menu3 # Usado em m_menu para obter o nome da variável
+# arg0 = nome da classe que contém o menu
+# arg1 = número da opção
+  txt100 lin
+  lin = arg1 + (txt(arg1, 1) ? "." : ". ") + [arg0]:nome[arg1]
+  inttotal(lin) < 20 && (lin = txt(lin + txtesp(18), 0, 20))
+  ret lin + ": " + [arg0]:classe[arg1] + ":" + [arg0]:var[arg1]
 
 func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
 # arg0=nome da classe, arg1=nome da variável
@@ -283,15 +308,18 @@ func p_linha # Alterando um texto de uma linha
     se !var.opcvalido
       p.apagar(var.opcclasse, var.opcvar)
       config:salvar
+      var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
       msg("Apagado: " + var.opcnome)
     senao
       p.criar(var.opcclasse, "const " + var.opcvar + "=\"\"")
       config:salvar
+      var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
       msg(var.opcnome + " mudou para um texto vazio")
     fimse
   senao arg0 != "z"
     p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txtvis(arg0) + "\"")
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + arg0)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
@@ -351,6 +379,7 @@ func p_texto # Alterando um texto de várias linhas
     t = "const " + var.opcvar + "=\""
     p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Salvou " + var.opcnome)
     ret 1
   casofim
@@ -385,6 +414,7 @@ func p_numero # Alterando um número
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
     int32 valor
@@ -399,6 +429,7 @@ func p_numero # Alterando um número
     fimse
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + valor)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + valor)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
@@ -454,6 +485,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
     textotxt t
@@ -466,6 +498,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
     t.remove(x)
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + x)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + x + " " + t.remove)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
@@ -504,6 +537,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
   casose "1"
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + arg0)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + (arg0 == 1 ? "1 sim" : "0 não"))
   casose "z"
     sair
@@ -511,6 +545,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
     se !var.opcvalido
       p.apagar(var.opcclasse, var.opcvar)
       config:salvar
+      var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
       msg("Apagado: " + var.opcnome)
       sair
     fimse
@@ -569,6 +604,7 @@ func p_sala # Alterando a sala
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Apagado: " + var.opcnome)
   senao arg0 != "z"
     txt100 nome
@@ -579,6 +615,7 @@ func p_sala # Alterando a sala
     fimse
     p.criar(var.opcclasse, "const " + var.opcvar + "=$s_" + nome)
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para " + nome)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
@@ -723,6 +760,7 @@ func p_funcsalvar # Opçao salvar de p_func
 # Informa se conseguiu salvar
   se t1.ini.texto == ""
     config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Salvo com sucesso")
     ret
   fimse
@@ -1016,6 +1054,26 @@ func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_a
     ret 0
   senao
     ret 1
+
+
+classe admmudou
+# Chama uma função de todos os objetos de uma determinada classe
+# Modo de usar:
+# criar("admmudou", <nome da classe>, <nome da função>)
+intexec repete
+txt100 nomefunc
+listaobj l
+ref r
+
+func ini
+  repete = 1, nomefunc = arg1
+  epara r = $[arg0], r, r = objdepois(r)
+    l.addfim(r)
+  efim
+
+func repete_exec
+  ret !l, apagar(este)
+  repete = 1, r = l.objini, l.ini.remove, r.[nomefunc]
 
 
 classe adm_econfig

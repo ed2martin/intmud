@@ -347,9 +347,6 @@ Descrição quando está na sala; arg0=quem quer ver
 7.9. texto descver
 Descrição, quando olha para o objeto; arg0=quem quer ver
 
-7.10. int1 container
-Verdadeiro (=1) se pode receber itens
-
 
 8. Personagens (mud-perso.int)
 
@@ -383,43 +380,46 @@ Posição do personagem:
 8.5. const pospadr = 8
 Posição padrão do personagem
 
-8.6. sav textovar var
+8.6. const p_recebe = 0
+Verdadeiro (=1) se pode receber itens
+
+8.7. sav textovar var
 Variáveis criadas sob demanda do personagem
 As variáveis cujo nome começa com "1" são apagadas quando o personagem
 muda de sala (função mudadono).
 As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
 salvo é recarregado (quando o jogador entra no jogo).
 
-8.7. func teclou
+8.8. func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
-8.8. func p_espera_exec
+8.9. func p_espera_exec
 Pega o próximo comando da lista
 
-8.9. func teclouproc
+8.10. func teclouproc
 Processa comando, sem espera (arg0=comando)
 
-8.10. func mudadono
+8.11. func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
-8.11. intexec recalc
+8.12. intexec recalc
 Para chamar recalc_exec quando necessário
 
-8.12. func recalc_exec
+8.13. func recalc_exec
 Ajusta variáveis, principalmente batalha
 
-8.13. func acertapos
+8.14. func acertapos
 Acerta posição do personagem, conforme pontos de vida e batalha
 Para checar se morreu, chamar com: acertapos(1)
 
-8.14. func batalhafim
+8.15. func batalhafim
 Encerra a batalha
 Para checar se morreu, chamar com: batalhafim(1)
 
-8.15. func atktempo
+8.16. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
 
-8.16. func morreu
+8.17. func morreu
 Executa procedimentos quando o personagem morre
 
 
@@ -537,11 +537,22 @@ Tipo de móvel:
 10.5. const i_lugar = 0
 Quantos personagens podem sentar-se.
 
-10.6. func vestir( posição )
+10.6. const i_abertoini = 0
+Valor inicial de aberto
+
+10.7. uint8 i_aberto
+Tipo de container:
+0 = não é container
+1 = está sempre aberto
+2 = está aberto
+3 = está fechado
+4 = está trancado
+
+10.8. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.7. func mudadono(novo dono, quantidade)
+10.9. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
@@ -760,6 +771,10 @@ const tipo1 = "numero--"
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
 # Se não for possível apagar, acrescente mais um sinal de '-' no nome
 
+const mudou = "atualiza"
+# Se não for nulo, quando o usuário muda a opção, é executada a função
+# com esse nome de todos os objetos que foram mudados
+
 const extra1 = "1 8"
 # Opções extras. Nem todos os tipos têm opções extras.
 # Nesse caso (tipo "numero"), o número deve ser de 1 a 8
@@ -787,6 +802,7 @@ Exemplo: m_menu("adm_config")
 16. Lista de itens pendentes
 
 (testar) Volume que cabe dentro, ou 0 se não for container
+(testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas
 Valor em moedas
 Quantos litros cabe, ou 0 se não for vasilhame

@@ -395,13 +395,16 @@ func iniclasse # Inicialização
     misc:defbonus.[x + 1] = r * 1.414213562
     x += 2, r *= 2
   efim
+# Cria diretório de jogos salvos, se não existir
+  arqdir d
+  d.criardir("sav")
 
 func imin_exec # Atualiza hora MUD
   misc:imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
   misc:hora = (misc:hora + 1) % 24
   misc:luz = misc:hora >= 6 && misc:hora < 18
   arqsav sav
-  misc:hora == 0 && sav.limpar(".") # Limpa jogos antigos
+  misc:hora == 0 && sav.limpar("sav") # Limpa jogos antigos
 
 func salacriar # Cria um objeto na sala se não houver outro igual
 # arg0 a arg3 = argumentos do personagem, sem incluir o dono do personagem

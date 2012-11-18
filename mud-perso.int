@@ -4,8 +4,8 @@ herda comum_obj
 const perso = 1 # Para identificar que é personagem
 sav int1 sexo # Sexo: 0=feminino, 1=masculino
 const sexoini = 2 # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
-const nome = "perso"
-const ident = txts(nome)
+const nome = "sem nome"
+const ident = nome
 const volexp = 1 # Volume expande se tiver itens dentro
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
@@ -52,16 +52,21 @@ func fim # Objeto foi apagado
   batalhafim, r = dono, comum_obj:fim, cmd_fim(r)
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
-# Eventos cmd_saiu
+# Eventos cmd_saiu e variável dono.s_item
   listaobj l
   se dono
     epara l.addfim(evento, dono.evento), l, l.ini.remove
       l.objini.cmd_saiu(este, dono)
     efim
+    se !sock
+    senao dono.dentro1.total && dono.socktot == 1
+      dono.t_item = dono.s_item * 600
+    senao
+      dono.t_item = 0
+    fimse
   fimse
 # Muda de sala
-  cmd_mudadono(arg0), dono = arg0
-  atkrec.limpar, poslugar.remove
+  cmd_mudadono(arg0), dono = arg0, atkrec.limpar, poslugar.remove
 # Eventos cmd_chegou
 # (sock || jog) && $reset.sala(dono, dono.s_reset) + dono.cmd_salaperso(este)
   (sock || jog) && dono.s_reset1 + dono.cmd_salaperso(este)
@@ -77,7 +82,10 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock
     p_proc = 1
-  senao !dono.s_ocultar
+  senao dono.s_ocultar
+    dono.t_item = 0
+  senao
+    dono.t_item = 0
     se jogconfig.16
       msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
     senao
@@ -225,7 +233,8 @@ uint32 defmag # Quantidade de defesa mágica/especial
 uint16 evasao # Habilidade de desviar dos golpes (thac0)
 uint16 precisao # Habilidade de acertar os golpes (hitroll)
 const tipo1 = "normal" # Tipo de personagem
-const tipo2 = "" # Segundo tipo do personagem
+# const tipo2 = "" # Segundo tipo do personagem
+# const tipo3 = "" # Terceiro tipo do personagem
 int8 deftipo.18
 # Defesa contra os diversos tipos de danos
 # Vide função misc:atktipo
@@ -301,8 +310,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   precisao = pnivel * 2 + 30
   deftipo.limpar # Todas as defesas em 100%
 # Acerta atributos conforme o tipo de personagem
-  misc:tipo_[tipo1]
-  misc:tipo_[tipo2]
+  misc:tipo_[tipo1], misc:tipo_[tipo2], misc:tipo_[tipo3]
 # Bônus do próprio personagem
   cmd_recalc1(este)
 # Bônus conforme o que está vestindo e os efeitos
@@ -487,6 +495,8 @@ func p_proc_exec # Processar comportamento do personagem
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
 # Evento do personagem
   ret cmd_pnj_proc, nulo
+# Acerta condição do personagem
+  pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
 # Obtém o alvo para realizar um ataque
   ref alvo
   se atkenv

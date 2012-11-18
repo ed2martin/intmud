@@ -314,7 +314,7 @@ Para pegar tecle pegar diamante_vermelho\n\
 Para soltar tecle soltar diamante_vermelho\n\
 Muitas vezes pode-se abreviar os comandos.\n\
 Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\"."
-const s_reset = "S 100 ini003 78 s\nS 100 ini007 1 S"
+const s_reset = "S 100 ini003 78 s"
 
 func cmd_pegarobj
   se arg2 == "i_ini003"
@@ -337,7 +337,6 @@ func cmd_soltarobj
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_ini003") && criar("i_ini003", este, 78)
-  !dentro1.objini("i_ini007") && criar("i_ini007", este, 1)
 
 
 classe s_ini008
@@ -385,10 +384,8 @@ func cmd_abriudir
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  ref p # Último personagem criado
-  ref u # Último personagem ou animal criado
   se inttotal($p_ini002) < 1
-    p = u = criar("p_ini002", este, 27)
+    criar("p_ini002", este, 27)
   fimse
 
 
@@ -526,10 +523,8 @@ const s_reset = "P 100 ini001 1 1 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  ref p # Último personagem criado
-  ref u # Último personagem ou animal criado
   se inttotal($p_ini001) < 1
-    p = u = criar("p_ini001", este, 1)
+    criar("p_ini001", este, 1)
   fimse
 
 
@@ -618,11 +613,9 @@ const s_reset = "S 100 ini006 1 s\nP 100 ini003 31 31 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  ref p # Último personagem criado
-  ref u # Último personagem ou animal criado
   !dentro1.objini("i_ini006") && criar("i_ini006", este, 1)
   se inttotal($p_ini003) < 1
-    p = u = criar("p_ini003", este, 31)
+    criar("p_ini003", este, 31)
   fimse
 
 
@@ -726,13 +719,3 @@ func cmd_falou
 
 func errou80
   arg0.msg("Joaquim: O que está esperando? Vá atrás das respostas.")
-
-
-classe i_ini007
-herda comum_itemperso
-const nome = "Lapis"
-const ident = "lapis"
-const sexo = 1
-const descpos = "Algo parecido com um lápis retorcido está rolando pelo chão."
-const nivel = 1
-const vestir1 = 16

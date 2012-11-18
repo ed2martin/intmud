@@ -165,7 +165,7 @@ func p_perso # Digitar o nome do personagem
     msg("Nome inválido; digite outro")
   senao ind.obj("un " + texto)
     msg("Nome já está sendo usado; digite outro")
-  senao !sav1.existe("jog-" + texto + ".sav") # Novo personagem
+  senao !sav1.existe("sav/" + texto + ".sav") # Novo personagem
     cnome = "un " + texto
     nome = txtmaimin(arg0)
     msg("Criando personagem " + nome)
@@ -250,7 +250,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
   senao ind.obj("un " + texto)
     msg("Outro jogador começou a usar esse personagem")
     p_perso
-  senao !sav1.senha("jog-" + texto + ".sav", txtmin(arg0))
+  senao !sav1.senha("sav/" + texto + ".sav", txtmin(arg0))
     msg("Senha incorreta")
     casovar txt1(info)
     casose "t" # Conectado via Papovox
@@ -279,7 +279,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
 # Carrega personagem
     listaobj l1
     l1.addfim(perso)
-    sav1.ler("jog-" + texto + ".sav", l1)
+    sav1.ler("sav/" + texto + ".sav", l1)
     nome = perso.nome
     jogconfig.bits = perso.jogconfig.bits
 # Acerta variáveis
@@ -418,7 +418,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
 # msg(txt2(cnome) + " , " + senha)
   dbg.exec = 2000
   ret !lista.total, 0
-  ret sav1.salvar("jog-" + txt2(cnome) + ".sav", lista, 30, senha)
+  ret sav1.salvar("sav/" + txt2(cnome) + ".sav", lista, 30, senha)
 
 func salvarev_exec
   salvar

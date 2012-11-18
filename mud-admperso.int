@@ -4,10 +4,8 @@ classe jog_admperso
 const adm_perso = "\b\c3Comandos de personagens não jogador\b\n\
 \c2LPERSO\b [nome]\n\
   Lista personagens que começam com o nome especificado.\n\
-\c2CPERSO\b <tipo> <nome>\n\
-  Cria personagem. Tipo é uma letra entre P, B ou A:\n\
-  P pacífico, B pode batalhar, A pode usar animais\n\
-  Nome deve ser o nome de uma área ou do personagem\n\
+\c2CPERSO\b <nome>\n\
+  Cria personagem. Nome deve ser o nome de uma área ou do personagem\n\
   (nome da área seguido de um número de três dígitos de 001 a 999).\n\
 \c2EPERSO\b <nome>\n\
   Edita personagem.\n\
@@ -22,7 +20,7 @@ func cmd_lperso # Listar personagens
     textotxt t
     t.addfim("\bPersonagens:")
     enquanto p.lin && t.linhas < 500
-      t.addfim(txt(p.texto, 2) + "  " + [p.texto]:nome)
+      t.addfim(txt(p.texto, 2) + "  " + txt(" SBA", [p.texto]:perso, 1) + "  " + [p.texto]:nome)
       p.depois
     efim
     msg2(t.remove(500))
@@ -31,32 +29,15 @@ func cmd_lperso # Listar personagens
 
 func cmd_cperso # Criar personagem
   prog p
-  uint16 num
-  txt40 deriv
   txt40 nome
-# Obtém a classe base conforme o tipo de personagem
-  casovar txtmin(txt1(arg0))
-  casose "p"
-    deriv = "comum_perso"
-    sair
-  casose "b"
-    deriv = "comum_persobat"
-    sair
-  casose "a"
-    deriv = "comum_persoanimal"
-    sair
-  casose
-    msg("Tecle o tipo e o nome após CPERSO; os tipos válidos são:")
-    msg("P pacífico, B pode batalhar, A pode usar animais")
-    ret 1
-  casofim
-# Checa se digitou nome do personagem
-  nome = txt2(arg0)
-  se nome == ""
-    msg("Tecle o nome do personagem após CPERSO e o tipo")
+  uint16 num
+# Checa se digitou nome da sala
+  se arg0 == ""
+    msg("Tecle o nome do item ou da área após CPERSO")
     ret 1
   fimse
 # Checa nome completo
+  nome = arg0
   num = int(txtfim(nome, 3)) + 1000
   se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
@@ -78,18 +59,55 @@ func cmd_cperso # Criar personagem
     efim
     nome += txtfim(num, 3)
   fimse
-# Cria personagem
+# Pergunta que tipo de personagem criar
+  var.opcclasse = nome
+  ret p_cperso("\b")
+
+func p_cperso # Escolher o tipo de personagem ao criar
+  txt40 deriv
+  casovar txtmin(arg0)
+  casose
+    msg("Opção inválida")
+  casose "\b"
+  casose ""
+    passo = "cperso"
+    msg("Entre com o tipo de personagem, O mostra as opções, Z cancela")
+    ret 1
+  casose "z"
+    msg("Retornando ao jogo")
+    passo = "", var.opcclasse = ""
+    ret 1
+  casose "o"
+    txtmais.limpar
+    txtmais.addfim("S Simples/pacífico")
+    txtmais.addfim("B Pode batalhar")
+    txtmais.addfim("A Pode usar animais")
+    txtmostra
+    ret 1
+  casose "s"
+    deriv = "comum_perso"
+    sair
+  casose "b"
+    deriv = "comum_persobat"
+    sair
+  casose "a"
+    deriv = "comum_persoanimal"
+    sair
+  casofim
+# Cria item
+  prog p
   txt100 area
-  area = txt(nome, 0, inttotal(nome) - 3)
-  p.criar("p_" + nome + "\na-" + area + "\nherda " + deriv)
+  area = txt(var.opcclasse, 0, inttotal(var.opcclasse) - 3)
+  p.criar("p_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
   config:salvar
-  msg("\bPersonagem criado: " + nome)
+  msg("\bPersonagem criado: " + var.opcclasse)
+  passo = "", var.opcclasse = ""
   ret 1
 
 func cmd_aperso # Apagar personagem
   prog p
   se arg0 == ""
-    msg("Tecle um ou mais nomes do personagem após APERSO")
+    msg("Tecle um ou mais nomes de personagens após APERSO")
     ret 1
   fimse
   uint16 x
@@ -131,7 +149,9 @@ func p_aperso # Confirmar que quer apagar personagem
 func cmd_eperso # Editar personagem
   prog p
   uint8 num
-  se !p.existe("p_" + arg0)
+  se arg0 == ""
+    msg("Tecle o nome do personagem após EPERSO")
+  senao !p.existe("p_" + arg0)
     msg("\bPersonagem não existe: " + arg0)
   senao !p.existe("adm_perso" + (num = p_[arg0]:perso))
     msg("\bPersonagem não pode ser editado: " + arg0)
@@ -159,7 +179,7 @@ const info3 = "Aleatório escolhe um quando o personagem é criado"
 const tipo3 = "opcao"
 const classe3 = var.classe1
 const var3 = "sexoini"
-const extra3 = "feminino\nmasculino\naleatório"
+const extra3 = "Feminino\nMasculino\nAleatório"
 #
 const nome4 = "Descrição padrão"
 const info4 = "Descrição quando está na sala"
@@ -172,58 +192,79 @@ const tipo5 = "texto"
 const classe5 = var.classe1
 const var5 = "descver"
 #
-const nome6 = "Posição padrão"
-const tipo6 = "opcao"
+const nome6 = "Peso"
+const info6 = "Em gramas"
+const tipo6 = "numero"
 const classe6 = var.classe1
-const var6 = "pospadr"
-const extra6 = "morto (não usar essa opção)\n\
-mortalmente ferido\n\
-incapacitado\n\
-fraco\n\
-dormindo\n\
-descansando\n\
-sentado\n\
-lutando (não usar essa opção)\nem pé"
+const var6 = "pesoobj"
+const extra6 = "1 1000000000"
+const mudou6 = "ajustapeso"
 #
-const nome7 = "Tipo 1"
-const info7 = "Os tipos são as funções misc:tipo_ do arquivo misc.int"
-const tipo7 = "linha"
+const nome7 = "Volume"
+const tipo7 = "numero"
+const extra7 = "1 1000000000"
 const classe7 = var.classe1
-const var7 = "tipo1"
+const var7 = "volobj"
+const mudou7 = "ajustapeso"
 #
-const nome8 = "Tipo 2"
-const info8 = "Os tipos são as funções misc:tipo_ do arquivo misc.int"
-const tipo8 = "linha"
+const nome8 = "Volume dentro"
+const tipo8 = "numero"
 const classe8 = var.classe1
-const var8 = "tipo2"
+const var8 = "volmax"
 #
-const nome9 = "Peso"
-const info9 = "Em gramas"
-const tipo9 = "numero"
+const nome9 = "Expande"
+const info9 = "Volume aumenta se tiver itens dentro"
+const tipo9 = "simnao"
 const classe9 = var.classe1
-const var9 = "pesoobj"
-const extra9 = "1 1000000000"
+const var9 = "volexp"
+const mudou9 = "ajustapeso"
 #
-const nome12 = "Volume"
-const tipo12 = "numero"
-const extra12 = "1 1000000000"
-const var12 = "volobj"
-#
-const nome10 = "Volume máximo"
+const nome10 = "Objetos máximo"
 const tipo10 = "numero"
 const classe10 = var.classe1
-const var10 = "volmax"
+const var10 = "objmax"
 #
-const nome11 = "Objetos máximo"
+const nome11 = "Nível"
 const tipo11 = "numero"
 const classe11 = var.classe1
-const var11 = "objmax"
+const var11 = "nivel"
 #
-const nome12 = "Expande"
-const info12 = "Volume aumenta se tiver itens dentro"
-const tipo12 = "simnao"
+const nome12 = "Posição padrão"
+const tipo12 = "opcao"
 const classe12 = var.classe1
-const var12 = "volexp"
+const var12 = "pospadr"
+const extra12 = "Morto (não usar essa opção)\n\
+Mortalmente ferido\n\
+Incapacitado\n\
+Fraco\n\
+Dormindo\n\
+Descansando\n\
+Sentado\n\
+Lutando (não usar essa opção)\nEm pé"
+#
+const nome13 = "Tipo 1"
+const info13 = "Os tipos são as funções misc:tipo_ do arquivo misc.int"
+const tipo13 = "linha"
+const classe13 = var.classe1
+const var13 = "tipo1"
+#
+const nome14 = "Tipo 2"
+const info14 = "Os tipos são as funções misc:tipo_ do arquivo misc.int"
+const tipo14 = "linha"
+const classe14 = var.classe1
+const var14 = "tipo2"
+#
+const nome15 = "Tipo 3"
+const info15 = "Os tipos são as funções misc:tipo_ do arquivo misc.int"
+const tipo15 = "linha"
+const classe15 = var.classe1
+const var15 = "tipo3"
+#
+const nome16 = "Recebe itens"
+const info16 = "Se outros personagens podem dar itens para este"
+const tipo16 = "simnao"
+const classe16 = var.classe1
+const var16 = "p_recebe"
 #
 const nome41 = "Variáveis"
 const tipo41 = "linha"
@@ -235,24 +276,28 @@ const info42 = "Receber eventos do próprio personagem"
 const tipo42 = "simnao"
 const classe42 = var.classe1
 const var42 = "eveste"
+const mudou42 = "ajustaev"
 #
 const nome43 = "Eventos em perso"
 const info43 = "Se recebe eventos do dono se for personagem"
 const tipo43 = "simnao"
 const classe43 = var.classe1
 const var43 = "evperso"
+const mudou43 = "ajustaev"
 #
 const nome44 = "Eventos em item"
 const info44 = "Se recebe eventos do dono se for item"
 const tipo44 = "simnao"
 const classe44 = var.classe1
 const var44 = "evitem"
+const mudou44 = "ajustaev"
 #
 const nome45 = "Eventos em sala"
 const info45 = "Se recebe eventos da sala se estiver em uma sala"
 const tipo45 = "simnao"
 const classe45 = var.classe1
 const var45 = "evsala"
+const mudou45 = "ajustaev"
 
 
 classe adm_perso1
@@ -264,17 +309,17 @@ classe adm_perso2
 herda adm_pcomum
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 #
-const nome13 = "Movimento"
-const tipo13 = "opcao"
-const classe13 = var.classe1
-const var13 = "p_mover"
-const extra13 = "não sai do lugar\nsomente na área\nqualquer lugar"
+const nome17 = "Movimentar"
+const tipo17 = "opcao"
+const classe17 = var.classe1
+const var17 = "p_mover"
+const extra17 = "Não sai do lugar\nSomente na área\nQualquer lugar"
 #
-const nome14 = "Agressivo"
-const tipo14 = "opcao"
-const classe14 = var.classe1
-const var14 = "p_agressivo"
-const extra14 = "pacífico\nse atacarem\nsim"
+const nome18 = "Agressivo"
+const tipo18 = "opcao"
+const classe18 = var.classe1
+const var18 = "p_agressivo"
+const extra18 = "Pacífico\nSe atacarem\nSim"
 
 
 classe adm_perso3

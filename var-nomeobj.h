@@ -12,7 +12,6 @@ public:
     int  getValor();    ///< Ler valor numérico da variável
 private:
     char NomeObj[64];   ///< Nome do item que está procurando
-    int  NomeTam;       ///< Tamanho do nome, em caracteres
     int  Achou;         ///< Quantos itens achou na última busca
     int  Inicio;        ///< Número de itens antes
     int  Total;         ///< Número máximo de itens

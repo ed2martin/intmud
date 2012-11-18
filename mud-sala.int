@@ -97,8 +97,17 @@ func msg # Mensagem para todos da sala
 
 func t_item_exec # Começar a apagar objetos
   se !socktot && s_item # Se pode apagar itens
-    apagar(dentro1.fim)
-    dentro1.ini && (t_item = 300) # 30 segundos para apagar o próximo
+    telatxt t
+    t.msg("APAGAR\n")
+    listaitem i
+    epara i = dentro1.fim, i, i.antes
+      continuar i.obj.mantersala
+      apagar(i.obj)
+      epara i.antes, i, i.antes
+        ret !i.obj.mantersala, t_item = 300 # 30 segundos para apagar o próximo
+      efim
+      ret
+    efim
 
 func descsala # Retorna descrição da sala
 # arg0 = objeto que está vendo a descrição
