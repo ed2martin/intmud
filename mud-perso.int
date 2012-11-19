@@ -501,7 +501,7 @@ func p_proc_exec # Processar comportamento do personagem
   ref alvo
   se atkenv
     alvo = atkenv.objlista
-  senao p_agressivo == 2
+  senao dono.socktot && p_agressivo == 2
     alvo = escolhejog
   fimse
 # Realiza um ataque
@@ -525,7 +525,7 @@ func p_proc_exec # Processar comportamento do personagem
     txt10 dir
     dir = t.ini.texto # Direção escolhida
     ret !dir || p_mover == 1 && r.dir_[dir].s_area != r.s_area, p_proc = 50
-    $cmd_[dir].escr(este), p_tmove = rand(70, 100), p_proc = p_tmove + 1
+    $cmd_[dir].escr(este), p_tmove = rand(80, 150), p_proc = p_tmove + 1
 
 
 classe comum_persoanimal

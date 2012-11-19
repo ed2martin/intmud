@@ -16,7 +16,7 @@ func reset_exec # Executa o reset da área
   debug d
 # Reset da área
   x = d.exec
-  epara p.iniherdainv("b_" + arg0), p.lin, p.depois
+  epara p.iniherdainv("b_" + txt(este, 2)), p.lin, p.depois
     $[p.texto].a_reset1, d.exec = x
 # $[p.texto].a_reset && $reset.sala($[p.texto], $[p.texto].a_reset)
   efim
@@ -97,8 +97,6 @@ func msg # Mensagem para todos da sala
 
 func t_item_exec # Começar a apagar objetos
   se !socktot && s_item # Se pode apagar itens
-    telatxt t
-    t.msg("APAGAR\n")
     listaitem i
     epara i = dentro1.fim, i, i.antes
       continuar i.obj.mantersala

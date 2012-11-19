@@ -45,7 +45,7 @@ S Criar item na sala ou em um item da sala\n\
 Nota: não cria se o item já existir.\n\
 R Remover item da sala\n\
 D Mudar porta em uma direção\n\
-F Fim (encerra o reset)\n\
+F Fim (encerra o reset se criou animal ou personagem)\n\
 Nota: depende do último animal ou personagem ser criado com sucesso."
 
 func cmd_lres # Listar salas com reset
@@ -295,7 +295,7 @@ func p_reset2 # Tipo
     txtmais.addfim("S Criar item na sala ou em um item da sala")
     txtmais.addfim("R Remover item da sala")
     txtmais.addfim("D Mudar porta em uma direção")
-    txtmais.addfim("F Fim (encerra o reset)")
+    txtmais.addfim("F Fim (encerra o reset se criou animal ou personagem)")
     txtmostra
     ret 1
   casose "p"
@@ -786,6 +786,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
         casose "a"
         casose "i"
         casose "e"
+        casose "f"
           m1 = 2
           mudou & 1 ? t2.addfim("p=u=nulo") : (mudou = mudou | 1)
           sair
@@ -814,6 +815,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
           sair
         casose "i"
         casose "e"
+        casose "f"
           m1 = 2, t2.addfim("u=nulo")
           sair
         casofim
