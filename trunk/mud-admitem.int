@@ -18,9 +18,11 @@ func cmd_litem # Listar itens
     msg("\bNenhum item encontrado.")
   senao
     textotxt t
-    t.addfim("\bItens:")
+    txt100 lin
+    t.addfim("\bItem Tipo Quantidade Nome")
     enquanto p.lin && t.linhas < 500
-      t.addfim(txt(p.texto, 2) + "  " + txt(" SGC", [p.texto]:item, 1) + "  " + [p.texto]:nome)
+      lin = txt(p.texto, 2) + "  " + txt(" SGC", [p.texto]:item, 1)
+      t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
       p.depois
     efim
     msg2(t.remove(500))

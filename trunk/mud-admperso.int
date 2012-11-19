@@ -18,9 +18,11 @@ func cmd_lperso # Listar personagens
     msg("\bNenhum personagem encontrado.")
   senao
     textotxt t
-    t.addfim("\bPersonagens:")
+    txt100 lin
+    t.addfim("\bPersonagem Tipo Quantidade Nome")
     enquanto p.lin && t.linhas < 500
-      t.addfim(txt(p.texto, 2) + "  " + txt(" SBA", [p.texto]:perso, 1) + "  " + [p.texto]:nome)
+      lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
+      t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
       p.depois
     efim
     msg2(t.remove(500))
