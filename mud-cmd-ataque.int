@@ -45,7 +45,7 @@ func escr # Atacar alguém
     arg0.msg("Aqui é um lugar pacífico.")
   senao arg0.jog && r.jog && arg0.dono.s_luta < 2
     arg0.msg(r.nome + " é jogador e aqui não é uma arena.")
-  senao !r.p_agressivo
+  senao !r.p_agressivo(arg0)
     arg0.msg(r.nome + " não quer brigar.")
   senao
     listaobj l
@@ -246,6 +246,16 @@ classe cmd_arremessar
 herda comando_ataque
 const nome = "Arremessar"
 const msgatk = "$R se joga contra $c"
+const tipo = 0 # Normal
+const ataque = 100
+const vel = 100
+const extra = "Golpe físico de força"
+
+
+classe cmd_morder
+herda comando_ataque
+const nome = "Arremessar"
+const msgatk = "$R morde $c"
 const tipo = 0 # Normal
 const ataque = 100
 const vel = 100

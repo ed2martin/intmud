@@ -18,6 +18,8 @@ sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 listaitem poslugar # Em qual móvel está sentado ou deitado
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
+listaitem iseguir # Quem o personagem está segundo
+listaobj lseguir # Quem está seguindo o personagem
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
@@ -50,6 +52,9 @@ func fim # Objeto foi apagado
   fimse
   ref r
   batalhafim, r = dono, comum_obj:fim, cmd_fim(r)
+  epara nulo, lseguir, lseguir.ini.remove
+    lseguir.objini.msg("Você pára de seguir " + nome + ".")
+  efim
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Eventos cmd_saiu e variável dono.s_item
@@ -76,7 +81,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
     epara l.addfim(arg0.dentro2), l, l.ini.remove
-      l.objini.p_agressivo == 2 && (l.objini.p_proc = 1)
+      l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
     efim
   fimse
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
@@ -252,6 +257,8 @@ inttempo atktempo # Tempo para completar um turno da batalha
 uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
+const p_morreu1 = "$P morreu."
+const p_morreu2 = "$P de $A desmaiou."
 
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
@@ -419,7 +426,11 @@ func restaurar # Restaura personagem (HP, mana, etc.)
     pvida = pvidamax
 
 func morreu # Procedimentos quando morre
-  ref r
+# Checa se pode morrer
+  listaobj l
+  epara l.addfim(evento), l, l.ini.remove
+    ret l.objini.cmd_morrer(este), nulo
+  efim
 # Jogador: retira toda experiência e transfere jogador para outro lugar
   se jog
     expatual = 0, animal.0.expatual = 0, animal.1.expatual = 0
@@ -430,33 +441,30 @@ func morreu # Procedimentos quando morre
     pmove = pmovemax / 2
     p_restaura = rand(100, 130)
     batalhaexp(0), batalhafim # Retira toda experiência de quem atacou
-    $mens.p(este)
-    $mens.mtodos1("$P morreu.")
+    p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     mudadono(config:salafim)
     salvar # Salva o jogo
-    ret
 # Animal do jogador: não dá experiência
   senao dono.jog
-    $mens.p(dono, este)
-    $mens.mtodos1("$A de $P desmaiou.")
+    p_morreu2 && $mens.p(este, dono) + $mens.mtodos2(p_morreu2)
     pvida = 0, batalhafim
     dono.escolhebat # Atualiza persobat
-    ret
-  fimse
 # Outro personagem: dá experiência
-  se dono.perso
+  senao dono.perso
     pvida = 0, batalhaexp(1.5), batalhafim
-    $mens.p(dono, este)
-    $mens.mtodos1("$A de $P desmaiou.")
+    p_morreu2 && $mens.p(este, dono) + $mens.mtodos2(p_morreu2)
     dono.escolhebat # Atualiza persobat
   senao
     pvida = 0, batalhaexp(1), batalhafim
-    $mens.p(este)
-    $mens.mtodos1("$P morreu.")
+    p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     apagar(este)
     ref r
-    r = sock, r.mudaperso(nulo)
-    r.reinicia
+    r = sock, r.mudaperso(nulo), r.reinicia
+  fimse
+# Gera eventos
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_morreu(este)
+  efim
 
 func escolhehab # Escolhe e retorna o nome de uma habilidade
   txt100 t1 # Nome da habilidade
@@ -483,11 +491,8 @@ func escolhejog # Escolhe e retorna um jogador
   efim
   ret !l.objini, nulo # Retorna se não tem jogador
 # Escolhe um jogador
-  uint8 total
-  epara total = rand(total), total, total -= 1
-    l.ini.remove
-  efim
-  ret l.objini
+  i = l.ini, i.depois(rand(l.total))
+  ret i.obj
 
 func p_proc_exec # Processar comportamento do personagem
   ret sock, nulo # Retorna se está sendo controlado por jogador
@@ -495,14 +500,19 @@ func p_proc_exec # Processar comportamento do personagem
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
 # Evento do personagem
   ret cmd_pnj_proc, nulo
-# Acerta condição do personagem
-  pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
 # Obtém o alvo para realizar um ataque
   ref alvo
-  se atkenv
+  se atkenv # Alvo durante a batalha
     alvo = atkenv.objlista
-  senao dono.socktot && p_agressivo == 2
-    alvo = escolhejog
+  senao dono.socktot # Escolhe um jogador como alvo
+    listaitem i
+    listaobj l
+    epara i = dono.dentro2.ini, i, i.depois
+      i.obj.jog && p_agressivo(i.obj) == 2 && i.obj.visivel(este) && l.addfim(i.obj)
+    efim
+    se l.total
+      i = l.ini, i.depois(rand(l.total)), alvo = i.obj
+    fimse
   fimse
 # Realiza um ataque
   se alvo
@@ -510,6 +520,8 @@ func p_proc_exec # Processar comportamento do personagem
     t1 = escolhehab
     ret t1 && !ataqueini, $cmd_[t1].ataca(este, alvo)
   fimse
+# Acerta condição do personagem
+  pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
 # Movimenta-se
   se p_mover
     ret p_tmove, p_proc = p_tmove + 1

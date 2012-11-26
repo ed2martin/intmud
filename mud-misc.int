@@ -20,6 +20,7 @@ comum real defbonus.255
 #
 # Hora MUD
 comum int1 luz # Se tem luz do dia
+comum uint8 dia # Dia MUD, de 0 (domingo) a 6 (sábado)
 comum uint8 hora # Hora MUD (1 dia MUD = 2 horas)
 const min = intdiv((3000 - misc:imin) / 50) # Minuto MUD
 comum inttempo imin # Usado internamente: quanto tempo para completar 1 hora MUD
@@ -384,8 +385,6 @@ func sepperso # Procura o personagem destino
   efim
 
 func iniclasse # Inicialização
-# Inicia contagem de tempo hora MUD
-  misc:imin = 3000
 # Obtém os valores de defbonus
   real r # Valor inicial é 2 elevado a -64
   uint16 x
@@ -398,13 +397,54 @@ func iniclasse # Inicialização
 # Cria diretório de jogos salvos, se não existir
   arqdir d
   d.criardir("sav")
+# Inicia contagem de tempo hora MUD
+# Nota: o tempo MUD é 12 vezes mais rápido que o tempo real
+# um dia MUD = 2 horas (7200 segundos), uma hora MUD = 300 segundos
+  datahora dh
+  dh.agora
+  misc:imin = 3000 - dh.numseg * 10 % 3000
+  misc:hora = intdiv(dh.numseg % 7200 / 300)
+  misc:dia = dh.numdias % 7 * 12 + intdiv(dh.numseg / 7200)
+  misc:dia = misc:dia % 7
 
 func imin_exec # Atualiza hora MUD
+# Acerta minuto, hora e luz
   misc:imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
   misc:hora = (misc:hora + 1) % 24
   misc:luz = misc:hora >= 6 && misc:hora < 18
+# Acerta dia e limpa jogos antigos
   arqsav sav
-  misc:hora == 0 && sav.limpar("sav") # Limpa jogos antigos
+  se misc:hora == 0
+    sav.limpar("sav") # Limpa jogos antigos
+    misc:dia = (misc:dia + 1) % 7 # Atualiza o dia
+  fimse
+# Checa mensagem para os jogadores
+  txt100 lin
+  casovar misc:hora
+  casose "5"
+    lin = "Começa a amanhecer."
+    sair
+  casose "6"
+    lin = "O sol surge no leste."
+    sair
+  casose "17"
+    lin = "O sol começa a se por no oeste."
+    sair
+  casose "18"
+    lin = "A noite chega."
+    sair
+  casose
+    ret
+  casofim
+# Envia mensagem para os jogadores
+  indiceitem i
+  ref r
+  epara i.ini("un "), txt1(i.txt) == "un", i.depois
+    epara r = i.obj.perso.dono, r.dono, r = r.dono
+    efim
+    continuar r.s_luz && r.s_luz != 2
+    r.msg(lin)
+  efim
 
 func salacriar # Cria um objeto na sala se não houver outro igual
 # arg0 a arg3 = argumentos do personagem, sem incluir o dono do personagem
