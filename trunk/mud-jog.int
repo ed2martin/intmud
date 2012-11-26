@@ -84,14 +84,24 @@ func recebe # Recebeu mensagem do jogador
       msg("Você deixou de ser administrador")
     fimse
     ret
-  senao admin && cmd_[txt1(arg0)](txt2(arg0)) # Comando de administração
+  senao arg0 != "!" # Anota o último comando
+    casovar txt(arg0, 0, 1)
+    casose "."
+      ultimocom = "chat " + txt(arg0, 1)
+      sair
+    casose "'"
+      ultimocom = "falar " + txt(arg0, 1)
+      sair
+    casose
+      ultimocom = arg0
+    casofim
+  fimse
+# Comando de administração
+  se admin && cmd_[txt1(ultimocom)](txt2(ultimocom))
     comandos.limpar
     ret
-  senao arg0 != "!" # Anota o último comando
-    ultimocom = arg0
-  fimse
 # Comando para o jogo
-  se !perso.p_espera # Checa se pode processar o comando
+  senao !perso.p_espera # Checa se pode processar o comando
     perso.teclou(ultimocom) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
   senao perso.atktempo # Checa se está batalhando

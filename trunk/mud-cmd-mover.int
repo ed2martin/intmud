@@ -7,6 +7,7 @@ const comando_mover = 1 # Para indicar que é comando de movimentação do jogador
 
 func escr # Executa o comando
 # arg0 = personagem
+# arg1 = o que digitou, é "\n" se ninguém deve seguir o personagem
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
   listaobj l
@@ -27,10 +28,18 @@ func escr # Executa o comando
   total -= 1 # Para garantir pelo menos 2 movimentos (total é uint8)
   arg0.p_espera = total * 2 + 2
   $mens.p(arg0)
-  $mens.mvis2("", m_sai)
+  !arg0.p_silencio && $mens.mvis2("", m_sai)
   arg0.mudadono(s2)
-  $mens.mvis2("", m_entra)
+  !arg0.p_silencio && $mens.mvis2("", m_entra)
   arg0.dono.s_morre && arg0.morreu
+  ret arg1 == "\n", nulo
+  listaobj l
+  epara l.addfim(arg0.lseguir), l, l.ini.remove
+    continuar l.objini.posicao < 8 || l.objini.dono != s1
+    continuar !arg0.visivel(l.objini) || arg0.p_naoseguir(l.objini)
+    l.objini.msg("Você segue " + arg0.nome + ".")
+    escr(l.objini, "\n")
+  efim
 
 
 classe cmd_n
@@ -141,6 +150,58 @@ const dir = "so"
 classe cmd_sw
 herda comando_comum
 const objcmd = $cmd_so.objcmd(arg0, arg1)
+
+
+classe cmd_seguir
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Seguir\b\n\
+Sintaxe: SEGUIR [personagem]\n\
+Segue um personagem.\n\
+Para não seguir ninguém, tecle SEGUIR seguido do nome do seu personagem.\n\
+Para outros personagens deixarem de seguir você, tecle apenas SEGUIR.\n\
+Veja também a opção SEGUIR do comando CONFIG."
+const posic = 5
+
+func escr
+# Sem argumentos; deixam de seguir
+  se !arg1
+    se arg0.lseguir.total == 0
+      arg0.msg("Ninguém está seguindo você.")
+    senao arg0.lseguir.total == 1
+      arg0.msg(txtmaimin(arg0.lseguir.objini.nome) + " pára de seguir você.")
+      arg0.lseguir.objini.msg("Você pára de seguir " + arg0.nome + ".")
+      arg0.lseguir.limpar
+    senao
+      textotxt t
+      epara nulo, arg0.lseguir, arg0.lseguir.ini.remove
+        t.addfim(txtmaimin(arg0.lseguir.objini.nome))
+        arg0.lseguir.objini.msg("Você pára de seguir " + arg0.nome + ".")
+      efim
+      textopos pos
+      pos = t.fim, pos.antes, pos.mudar(" e ", 0, 0), pos.juntar
+      arg0.lseguir.limpar
+      arg0.msg(txttroca(t.remove(1000), "\n", ", ") + " param de seguir você.")
+    fimse
+    ret
+  fimse
+# Procura o personagem
+  nomeobj n # Para reconhecer os personagens
+  listaitem i
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+  efim
+  ret !i, arg0.msg("Você não vê " + arg1 + ".")
+# Segue o personagem
+  se i.obj == arg0
+    arg0.iseguir.remove
+    arg0.msg("Você não segue ninguém.")
+  senao i.obj.jogconfig.5 || i.obj.p_naoseguir(arg0)
+    arg0.msg("Você não consegue seguir " + txtmaimin(i.obj.nome) + ".")
+  senao
+    arg0.iseguir.remove
+    arg0.iseguir = i.obj.lseguir.addfim(arg0)
+    arg0.msg("Você segue " + i.obj.nome + ".")
 
 
 classe cmd_abrir
@@ -524,9 +585,9 @@ func escr
   arg0.pmove -= 5
   arg0.batalhafim
   $mens.p(arg0)
-  $mens.mtodos1(txttroca($cmd_[dir].m_sai, " foi ", " fugiu "))
+  !arg0.p_silencio && $mens.mtodos1(txttroca($cmd_[dir].m_sai, " foi ", " fugiu "))
   arg0.mudadono(r)
-  $mens.mvis2("", $cmd_[dir].m_entra)
+  !arg0.p_silencio && $mens.mvis2("", $cmd_[dir].m_entra)
 
 func fugirdir # Obtém direção para onde pode fugir
 # Entrada: arg0 = personagem

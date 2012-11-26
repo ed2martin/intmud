@@ -201,7 +201,8 @@ func escr
   txt100 t1
   datahora d
   d.agora
-  arg0.msg("Hora atual MUD:      " + misc:hora + ":" + misc:min)
+  t1 = "  (" + semanamud(misc:dia) + ")"
+  arg0.msg("Hora atual MUD:      " + misc:hora + ":" + misc:min + t1)
   arg0.msg("Hora atual servidor: " + d.hora + ":" + d.min)
   t1 = "Tempo total de jogo: "
   arg0.tempojogo2 == 1 && (t1 += "1 dia ")
@@ -210,6 +211,24 @@ func escr
   t1 += ":"
   t1 += intdiv((864000 - arg0.tempojogo1) / 600) % 60
   arg0.msg(t1 + " min")
+
+func semanamud
+  casovar arg0
+  casose "0"
+    ret "Domingo"
+  casose "1"
+    ret "Segunda-feira"
+  casose "2"
+    ret "Terça-feira"
+  casose "3"
+    ret "Quarta-feira"
+  casose "4"
+    ret "Quinta-feira"
+  casose "5"
+    ret "Sexta-feira"
+  casose "6"
+    ret "Sábado"
+  casofim
 
 
 classe cmd_config
@@ -227,7 +246,8 @@ As opções são:\n\
   \c2SAIDAS\b   Mostra as saídas visíveis após a descrição da sala\n\
   \c2CORES\b    Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
   \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
-  \c2CHAT\b     Participa do canal de comunicação CHAT"
+  \c2CHAT\b     Participa do canal de comunicação CHAT\n\
+  \c2SEGUIR\b   Se outros personagens podem escolher seguir você"
 const txtajuda2 = "\n\
   \c2SALA\b     Mostra o nome da sala cadastrada antes do título\n\
   \c2QUEM\b     Ocultar a presença no comando quem\n\
@@ -244,6 +264,7 @@ const opc_saidas = 1
 const opc_cores = 2
 const opc_acento = 3
 const opc_chat = 4
+const opc_seguir = 5
 const opc_sala = 16
 const opc_quem = 17
 const opc_invis = 18
@@ -394,6 +415,7 @@ herda comando_comum, comando_ajuda
 const posic = 5
 const txtajuda = "\b\c3Falar\b\n\
 Sintaxe: FALAR <mensagem>\n\
+         '<mensagem>\n\
 Envia mensagem para todos os personagens que estiverem na mesma sala.\n\
 A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
 terminada com reticências, interrogação ou exclamação."
@@ -404,15 +426,15 @@ func escr
     arg0.msg("Tecle a mensagem após FALAR.")
     ret
   senao txt(arg1, 0, 3) == "..."
-    $mens.mtodos1("$P continuou: " + txttroca(arg1, "$", "$$"))
+    $mens.mtodos1("$P continuou '" + txttroca(arg1, "$", "$$") + "'")
   senao txtfim(arg1, 1) == "?"
-    $mens.mtodos1("$P perguntou: " + txttroca(arg1, "$", "$$"))
+    $mens.mtodos1("$P perguntou '" + txttroca(arg1, "$", "$$") + "'")
   senao txtfim(arg1, 1) == "!"
-    $mens.mtodos1("$P exclamou: " + txttroca(arg1, "$", "$$"))
+    $mens.mtodos1("$P exclamou '" + txttroca(arg1, "$", "$$") + "'")
   senao txtfim(arg1, 3) == "..."
-    $mens.mtodos1("$P ponderou: " + txttroca(arg1, "$", "$$"))
+    $mens.mtodos1("$P ponderou '" + txttroca(arg1, "$", "$$") + "'")
   senao
-    $mens.mtodos1("$P disse: " + txttroca(arg1, "$", "$$"))
+    $mens.mtodos1("$P falou '" + txttroca(arg1, "$", "$$") + "'")
   fimse
 # Executa eventos
   listaobj l
@@ -426,6 +448,7 @@ herda comando_comum, comando_ajuda
 const posic = 0
 const txtajuda = "\b\c3Canal chat\b\n\
 Sintaxe: CHAT <mensagem>\n\
+         .<mensagem>\n\
 Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 
