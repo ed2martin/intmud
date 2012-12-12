@@ -600,12 +600,18 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
             break;
         case ex_num32p:
         case ex_num32n:
+        case ex_num32hexp:
+        case ex_num32hexn:
             expr+=2;
         case ex_num16p:
         case ex_num16n:
+        case ex_num16hexp:
+        case ex_num16hexn:
             expr++;
         case ex_num8p:
         case ex_num8n:
+        case ex_num8hexp:
+        case ex_num8hexn:
             expr++;
         case ex_num0:
         case ex_num1:
@@ -876,6 +882,12 @@ const char * Instr::NomeExpr(int valor)
     case ex_num8n:          return "ex_num8n";
     case ex_num16n:         return "ex_num16n";
     case ex_num32n:         return "ex_num32n";
+    case ex_num8hexp:       return "ex_num8hexp";
+    case ex_num16hexp:      return "ex_num16hexp";
+    case ex_num32hexp:      return "ex_num32hexp";
+    case ex_num8hexn:       return "ex_num8hexn";
+    case ex_num16hexn:      return "ex_num16hexn";
+    case ex_num32hexn:      return "ex_num32hexn";
     case ex_div1:           return "ex_div1";
     case ex_div2:           return "ex_div2";
     case ex_div3:           return "ex_div3";

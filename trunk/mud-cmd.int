@@ -234,7 +234,7 @@ func semanamud
 classe cmd_config
 herda comando_comum, comando_ajuda
 const posic = 0
-const txtajuda = arg0.sock.admin ? txtajuda1 + txtajuda2 : txtajuda1
+const txtajuda = arg0.jogconfig.19 ? txtajuda1 + txtajuda2 : txtajuda1
 const txtajuda1 = "\b\c3Config\b\n\
 Sintaxe: config +<opção>\n\
          config -<opção>\n\
@@ -281,7 +281,7 @@ func escr
     epara p.inifunc(este, "opc_"), p.lin, p.depois
       se opc.[[p.texto]]
         x += " +" + txtmai(txt(p.texto, 4))
-      senao [p.texto] < 16 || arg0.sock.admin
+      senao [p.texto] < 16 || arg0.jogconfig.19
         y += " -" + txtmai(txt(p.texto, 4))
       fimse
     efim
@@ -294,7 +294,7 @@ func escr
   txt512 mudou
   enquanto x
     epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
-      sair [p.texto] < 16 || arg0.sock.admin
+      sair [p.texto] < 16 || arg0.jogconfig.19
     efim
     se !p.lin
       y += " " + txt1(x)
@@ -310,6 +310,17 @@ func escr
     x = txt2(x)
   efim
   ret y, arg0.msg("Opção inexistente:" + y)
+# Checa a propriedade INVIS
+  se arg0.jogconfig.18 != opc.18 # Se a propriedade INVIS mudou
+    arg0.recalc = 1 # Deverá atualizar bitinv
+  fimse
+# Checa a propriedade SEGUIR
+  se !opc.5 # Se não pode ser seguido
+    epara nulo, arg0.lseguir, arg0.lseguir.ini.remove
+      arg0.lseguir.objini.msg("Você pára de seguir " + arg0.nome + ".")
+    efim
+  fimse
+# Atualiza a configuração
   arg0.jogconfig.bits = opc.bits
   arg0.sock.jogconfig.bits = opc.bits
   arg0.msg("Configuração alterada:" + mudou)
@@ -353,7 +364,7 @@ func escr
     ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
     se l.objini.perso
       $mens.p(arg0, l.objini)
-      $mens.msgvis2("", "$P olha para $a.")
+      $mens.mvis2("", "$P olha para $a.")
     fimse
     textotxt t
     listaitem item
@@ -425,6 +436,9 @@ func escr
   se !arg1
     arg0.msg("Tecle a mensagem após FALAR.")
     ret
+  senao arg0.dono.s_falar
+    arg0.msg(arg0.dono.s_falar)
+    ret
   senao txt(arg1, 0, 3) == "..."
     $mens.mtodos1("$P continuou '" + txttroca(arg1, "$", "$$") + "'")
   senao txtfim(arg1, 1) == "?"
@@ -461,7 +475,7 @@ func escr
   senao
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.4 && item.obj.msg("(chat) " + arg0.sock.nome + ": " + arg1)
+      item.obj.jogconfig.4 && item.obj.msg("(chat) " + arg0.sock.nome + " '" + arg1 + "'")
     efim
 
 

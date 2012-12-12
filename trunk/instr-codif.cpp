@@ -1021,9 +1021,82 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             bool negativo=false; // Se é negativo
             int  virgula=0;      // Casas após a vírgula
             long long valor=0;   // Valor lido
-        // Obtém o número (negativo, virgula, valor)
+        // Obtém o sinal
             if (*origem=='-')
                 negativo=true, origem++;
+        // Checa número em hexadecimal
+            if (origem[0]=='0' && origem[1]=='x')
+            {
+                origem += 2;
+            // Primeiro dígito
+                if (*origem>='0' && *origem<='9')
+                    valor = *origem - '0';
+                else if (*origem>='A' && *origem<='F')
+                    valor = *origem - 'A' + 10;
+                else if (*origem>='a' && *origem<='f')
+                    valor = *origem - 'a' + 10;
+                else
+                {
+                    mprintf(dest_ini, tamanho,
+                            "Número inválido a partir de: %s", origem-2);
+                    return false;
+                }
+            // Outros dígitos
+                while (true)
+                {
+                    origem++;
+                    if (*origem>='0' && *origem<='9')
+                        valor = valor * 16 + *origem - '0';
+                    else if (*origem>='A' && *origem<='F')
+                        valor = valor * 16 + *origem - 'A' + 10;
+                    else if (*origem>='a' && *origem<='f')
+                        valor = valor * 16 + *origem - 'a' + 10;
+                    else
+                        break;
+                    if (valor > 0xFFFFFFFFLL)
+                    {
+                        copiastr(dest_ini, "Número muito grande", tamanho);
+                        return false;
+                    }
+                }
+            // Anota o número
+                if (valor<0x100) // Número de 8 bits
+                {
+                    if (destino >= dest_fim-2)
+                    {
+                        destino = dest_fim;
+                        continue;
+                    }
+                    *destino++ = (negativo ? ex_num8hexn : ex_num8hexp);
+                    *destino++ = valor;
+                }
+                else if (valor<0x10000) // Número de 16 bits
+                {
+                    if (destino >= dest_fim-3)
+                    {
+                        destino = dest_fim;
+                        continue;
+                    }
+                    *destino++ = (negativo ? ex_num16hexn : ex_num16hexp);
+                    *destino++ = valor;
+                    *destino++ = valor >> 8;
+                }
+                else // Número de 32 bits
+                {
+                    if (destino >= dest_fim-5)
+                    {
+                        destino = dest_fim;
+                        continue;
+                    }
+                    *destino++ = (negativo ? ex_num32hexn : ex_num32hexp);
+                    *destino++ = valor;
+                    *destino++ = valor >> 8;
+                    *destino++ = valor >> 16;
+                    *destino++ = valor >> 24;
+                }
+                continue;
+            }
+        // Obtém o número (negativo, virgula, valor)
             for (;; origem++)
             {
                 if (*origem=='.')
@@ -1031,7 +1104,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     if (virgula)
                     {
                         copiastr(dest_ini,
-                             "Números não podem ter mais de um ponto", tamanho);
+                            "Números não podem ter mais de um ponto", tamanho);
                         return false;
                     }
                     virgula=1;
@@ -1054,7 +1127,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             if (valor==0) // zero é zero
             {
                 *destino++ = ex_num0;
-                continue;
+                continue; // Porque não tem casas decimais
             }
             if (valor==1 && negativo==false) // Um
                 *destino++ = ex_num1;

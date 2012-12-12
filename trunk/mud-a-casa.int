@@ -112,7 +112,7 @@ func cmd_pnj_proc # Processamento do PNJ
     dono.msg("Boneco de papelão caiu do telhado.")
     ret 1
 
-func cmd_fim # Personagem foi apagado
+func cmd_objfim # Personagem foi apagado
   se pvida == 0 && alvo # Se morreu e o alvo ainda existe
     alvo.var.j_salvar = 1 # Altera uma variável do alvo
 
@@ -349,6 +349,7 @@ lá fora, conforme o vento."
 const dir_o = $s_casa001
 const dir_n = $s_casa003
 const dir_l = $s_casa008
+const eveste = 1 # Receber eventos do próprio objeto
 inttempo tempomax
 
 func cmd_salaperso # Personagem chegou
@@ -359,8 +360,14 @@ func cmd_salaperso # Personagem chegou
 func tempomax_exec
   ret !dentro2.objini("jogador"), nulo
   tempomax = rand(50, 80)
-  se misc:salacriar("p_casa001", 1, "h_socar=1,h_chutar=1,e_apagar=100")
+  se !dentro2.objini("p_casa001")
+    criar("p_casa001", este, 1, "h_socar=1,h_chutar=1,e_apagar=100")
     msg("Um boneco de papel entrou pela janela.")
+
+func cmd_l
+  se arg0.pnivel == 0
+    arg0.msg("Você tem medo de ir para o leste, estando no nível 0.")
+    ret 1
 
 func cmd_fugir
   arg0.pmove -= 5
@@ -671,6 +678,7 @@ const s_desc = "Essa parte da laje bem que poderia ser um jardim. Há um pequeno 
 que se estende ao sul. Não é possível caminhar no telhado ao norte,\n\
 devido ao forte vento."
 const dir_o = $s_casa014
+const s_naoresg = 1 # Não permite resgatar jogador
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog && !arg0.senha && !arg0.var.j_salvar # Jogador que ainda não salvou o jogo

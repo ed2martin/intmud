@@ -22,23 +22,24 @@ const volobj = 1 # Volume do objeto quando estiver vazio
 const volmax = 1000000 # Volume máximo do que pode ter dentro
 const volexp = 0 # Diferente de 0 se expande com os itens que tem dentro
 #
+const bitver = 1 # O que o personagem/item pode ver
+const bitinv = 3 # Grau de invisibilidade do personagem/item
+uint16 luzden # Somente leitura: quantas fontes de luz dentro
+uint16 luztot # Somente leitura: quantidade total de fontes de luz
+# const luztipo = 0 # 0=não repassa a luz, 1=não é fonte de luz, 2=é fonte de luz
+#
 # const eveste = 1 # Receber eventos do próprio objeto
 # const evperso = 1 # Receber eventos do dono se o dono for personagem
 # const evitem = 1 # Receber eventos do dono se o dono for item
 # const evsala = 1 # Receber eventos do dono se o dono for sala
 
-func ini # Coloca o objeto dentro de outro
-  ajustapeso
+func ini # Objeto é criado, acerta eventos, peso, volume e luz
   arg0 ? (dono = arg0) : eveste && (evrec.0 = evento.addfim(este))
+  pesoadd && (pesotot = pesoobj * objtot) # Acerta o peso
+  voltot = volobj * objtot # Acerta o volume
+  luztipo > 1 && (luztot = 1) # Acerta a luz
 
 func fim # Objeto vai sair do jogo
-  listaobj l
-# Executa eventos cmd_fim
-  l.addfim(evento), evento.limpar, atkrec.limpar
-  enquanto l
-    l0.objini.cmd_fim(este), l.ini.remove
-  efim
-  ret !idono, nulo
   ref r
 # Se não está voando: retira o peso total
   se pesotot
@@ -52,12 +53,28 @@ func fim # Objeto vai sair do jogo
   enquanto r.volexp
     r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
   efim
+# Retira a luz
+  se luztot
+    r = idono.objlista, r.luzden -= luztot
+    enquanto r.luztipo
+      r.luztot -= luztot, r = r.idono.objlista, r.luzden -= luztot
+    efim
+  fimse
 # Acerta se tem jogador dentro
   se socktot
     epara r = idono.objlista, r, r = r.idono.objlista
       r.socktot -= socktot
     efim
   fimse
+# Executa eventos cmd_fim
+  listaobj l
+  ref r
+  r = idono.objlista, idono.remove
+  l.addfim(evento), evento.limpar, atkrec.limpar
+  enquanto l
+    l0.objini.cmd_fim(este, r), l.ini.remove
+  efim
+  cmd_objfim(r)
 
 func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   real x
@@ -78,6 +95,15 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
       r.voltot += x, r = r.idono.objlista, r.volden += x
     efim
   fimse
+# Acerta a luz (luzden e luztot)
+  x = !luztipo ? -luztot : (luztipo > 1) + luzden - luztot
+  se x
+    luztot += x
+    pesotot += x, r = idono.objlista, r.luzden += x
+    enquanto r.luztipo
+      r.luztot += x, r = r.idono.objlista, r.luzden += x
+    efim
+  fimse
 
 func ajustaev # Acerta eventos
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
@@ -88,7 +114,7 @@ varfunc dono # O dono do personagem/item
   ret idono.objlista == ref(arg0), nulo # Retorna se o dono não vai mudar
   ref r
 # Se não está voando: retira o peso total
-  se pesoadd
+  se pesotot
     r = idono.objlista, r.pesoden -= pesotot
     enquanto r.pesoadd
       r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
@@ -99,6 +125,13 @@ varfunc dono # O dono do personagem/item
   enquanto r.volexp
     r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
   efim
+# Retira a luz
+  se luztot
+    r = idono.objlista, r.luzden -= luztot
+    enquanto r.luztipo
+      r.luztot -= luztot, r = r.idono.objlista, r.luzden -= luztot
+    efim
+  fimse
 # Acerta se tem jogador dentro
   se socktot
     epara r = idono.objlista, r, r = r.idono.objlista
@@ -117,7 +150,7 @@ varfunc dono # O dono do personagem/item
   (idono.objlista.perso ? evperso : idono.objlista.item ? evitem : evsala) && (evrec.1 = \
 idono.objlista.evento.addfim(este))
 # Se não está voando: acrescenta o peso total
-  se pesoadd
+  se pesotot
     r = idono.objlista, r.pesoden += pesotot
     enquanto r.pesoadd
       r.pesotot += pesotot, r = r.idono.objlista, r.pesoden += pesotot
@@ -128,6 +161,13 @@ idono.objlista.evento.addfim(este))
   enquanto r.volexp
     r.voltot += voltot, r = r.idono.objlista, r.volden += voltot
   efim
+# Acrescenta a luz
+  se luztot
+    r = idono.objlista, r.luzden += luztot
+    enquanto r.luztipo
+      r.luztot += luztot, r = r.idono.objlista, r.luzden += luztot
+    efim
+  fimse
 # Acerta se tem jogador dentro
   se socktot
     epara r = idono.objlista, r, r = r.idono.objlista
@@ -139,4 +179,12 @@ idono.objlista.evento.addfim(este))
   var.limpar("d_")
 
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
-  ret !(~arg0.bitver & inv)
+  ret arg0.idono.objlista.luzden, !(~(arg0.bitver | 2) & bitinv)
+  casovar arg0.idono.objlista.s_luz
+  casose "2" # Pode estar escuro
+    ret !(~(misc:luz ? arg0.bitver | 2 : arg0.bitver) & bitinv)
+  casose "3" # Escuro
+    ret !(~arg0.bitver & bitinv)
+  casose # Claro
+    ret !(~(arg0.bitver | 2) & bitinv)
+  casofim

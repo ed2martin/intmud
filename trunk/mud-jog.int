@@ -17,7 +17,6 @@ indiceobj cnome # "un " + nome codificado
 txt20 nome # Nome do personagem
 inttempo vazio # Tempo sem comunicação para desconectar do MUD
 textotxt txtmais # Texto do tecle M para mais
-int1 admin # Se é administrador
 int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
@@ -35,7 +34,7 @@ textotxt transf # Área de transferência do editor
 func ini
   reinicia
   cnome = "un"
-  jogconfig.bits = 12 # Cores + acentuação
+  jogconfig.bits = 12 # Cores(8) + acentuação(4)
 
 func fim
   perso.fechou
@@ -75,11 +74,11 @@ func recebe # Recebeu mensagem do jogador
     comandos.limpar
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
-    admin = !admin
-    se admin
+    jogconfig.19 = !jogconfig.19
+    perso.jogconfig.19 = jogconfig.19
+    perso.recalc = 1 # Para atualizar perso.bitver
+    se jogconfig.19
       msg("Você virou administrador, tecle ADM para saber os comandos.")
-      jogconfig.19 = 1
-      perso.jogconfig.19 = 1
     senao
       msg("Você deixou de ser administrador")
     fimse
@@ -97,7 +96,7 @@ func recebe # Recebeu mensagem do jogador
     casofim
   fimse
 # Comando de administração
-  se admin && cmd_[txt1(ultimocom)](txt2(ultimocom))
+  se jogconfig.19 && cmd_[txt1(ultimocom)](txt2(ultimocom))
     comandos.limpar
     ret
 # Comando para o jogo
@@ -228,7 +227,7 @@ func p_criasenha2 # Repetir a senha ao criar personagem
 
 func p_entrajogo # Entrar no jogo: cria personagem
   passo = ""
-  jogconfig.bits = 31 # Configurações iniciais
+  jogconfig.bits = 63 # Configurações iniciais
   msg("Iniciando jogo; para ajuda tecle AJUDA")
   mudaperso(criar("jogador"))
   perso.cnome = "pn " + txt2(cnome)
@@ -440,8 +439,7 @@ func vazio1_exec # Próximo de sair do MUD
 func vazio2_exec # Sair do MUD automaticamente
   apagar(este)
 
-func cmd_recalc1 # Personagem do jogador tem mais pontos de vida
-  pvidamax += 40
-
-func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
-  ret !(~arg0.bitver & inv) && (!sock.jogconfig.18 || arg0.sock.admin)
+func cmd_recalc1 # Recalcula variáveis do personagem
+  pvidamax += 40 # Personagem do jogador tem mais pontos de vida
+  jogconfig.18 && (bitinv = bitinv | 16) # Propriedade config +invis
+  jogconfig.19 && (bitver = bitver | 16) # Se é administrador

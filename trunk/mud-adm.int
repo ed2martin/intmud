@@ -496,7 +496,9 @@ func p_opcao # Alterando uma opção de uma lista de opções
       ret p_opcao("\b")
     fimse
     t.remove(x)
-    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x)
+    txt100 lin
+    lin = " # " + var.opcnome + ": " + x + " " + t.ini.texto
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + lin)
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + x + " " + t.remove)
@@ -535,7 +537,9 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
   casovar arg0
   casose "0"
   casose "1"
-    p.criar(var.opcclasse, "const " + var.opcvar + "=" + arg0)
+    txt100 lin
+    lin = " # " + var.opcnome + ": " + (arg0 == 1 ? "Sim" : "Não")
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + arg0 + lin)
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + (arg0 == 1 ? "1 sim" : "0 não"))

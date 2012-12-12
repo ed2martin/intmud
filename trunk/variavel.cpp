@@ -748,12 +748,18 @@ bool TVariavel::getBool()
                 return false;
             case Instr::ex_num8n:
             case Instr::ex_num8p:
+            case Instr::ex_num8hexn:
+            case Instr::ex_num8hexp:
                 return origem[1]!=0;
             case Instr::ex_num16n:
             case Instr::ex_num16p:
+            case Instr::ex_num16hexn:
+            case Instr::ex_num16hexp:
                 return origem[1]!=0 || origem[2]!=0;
             case Instr::ex_num32n:
             case Instr::ex_num32p:
+            case Instr::ex_num32hexn:
+            case Instr::ex_num32hexp:
                 return origem[1]!=0 || origem[2]!=0 ||
                        origem[3]!=0 || origem[4]!=0;
             default:
@@ -887,20 +893,26 @@ int TVariavel::getInt()
                 origem++;
                 break;
             case Instr::ex_num8n:
+            case Instr::ex_num8hexn:
                 negativo=true;
             case Instr::ex_num8p:
+            case Instr::ex_num8hexp:
                 valor=(unsigned char)origem[1];
                 origem+=2;
                 break;
             case Instr::ex_num16n:
+            case Instr::ex_num16hexn:
                 negativo=true;
             case Instr::ex_num16p:
+            case Instr::ex_num16hexp:
                 valor=Num16(origem+1);
                 origem+=3;
                 break;
             case Instr::ex_num32n:
+            case Instr::ex_num32hexn:
                 negativo=true;
             case Instr::ex_num32p:
+            case Instr::ex_num32hexp:
                 valor=Num32(origem+1);
                 origem+=5;
                 break;
@@ -1052,20 +1064,26 @@ double TVariavel::getDouble()
                 origem++;
                 break;
             case Instr::ex_num8n:
+            case Instr::ex_num8hexn:
                 negativo=true;
             case Instr::ex_num8p:
+            case Instr::ex_num8hexp:
                 valor=(unsigned char)origem[1];
                 origem+=2;
                 break;
             case Instr::ex_num16n:
+            case Instr::ex_num16hexn:
                 negativo=true;
             case Instr::ex_num16p:
+            case Instr::ex_num16hexp:
                 valor=Num16(origem+1);
                 origem+=3;
                 break;
             case Instr::ex_num32n:
+            case Instr::ex_num32hexn:
                 negativo=true;
             case Instr::ex_num32p:
+            case Instr::ex_num32hexp:
                 valor=Num32(origem+1);
                 origem+=5;
                 break;
@@ -1232,20 +1250,26 @@ const char * TVariavel::getTxt()
                 origem++;
                 break;
             case Instr::ex_num8n:
+            case Instr::ex_num8hexn:
                 negativo=true;
             case Instr::ex_num8p:
+            case Instr::ex_num8hexp:
                 valor=(unsigned char)origem[1];
                 origem+=2;
                 break;
             case Instr::ex_num16n:
+            case Instr::ex_num16hexn:
                 negativo=true;
             case Instr::ex_num16p:
+            case Instr::ex_num16hexp:
                 valor=Num16(origem+1);
                 origem+=3;
                 break;
             case Instr::ex_num32n:
+            case Instr::ex_num32hexn:
                 negativo=true;
             case Instr::ex_num32p:
+            case Instr::ex_num32hexp:
                 valor=Num32(origem+1);
                 origem+=5;
                 break;

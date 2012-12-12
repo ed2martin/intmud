@@ -222,6 +222,50 @@ func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
   !arg0 && (arg0 = 1)
 
 
+classe cmd_resgatar
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Resgatar\b\n\
+Sintaxe: RESGATAR <personagem>\n\
+Resgata um jogador em uma batalha. É como se você se colocasse entre\n\
+o jogador e quem está atacando ele."
+
+func escr
+  ret arg0.dono.s_naoresg, arg0.msg("Aqui não é possível resgatar.")
+  ret !arg1, arg0.msg("Resgatar quem?")
+  nomeobj n
+  listaitem i
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    continuar !i.obj.visivel(arg0) || !n.nome(i.obj.ident)
+    ref r
+    r = i.obj
+# Checa se é possível resgatar
+    ret arg0 == r, arg0.msg("Resgatar você mesmo?")
+    ret !r.jog, arg0.msg(i.obj.nome + " não é jogador.")
+    ret !r.atkrec.objini, arg0.msg(i.obj.nome + " não está lutando.")
+    ret r.atkenv.objlista == arg0, arg0.msg(i.obj.nome + " está lutando com você.")
+# Checa se personagens permitem resgate
+    epara i = r.atkrec.ini, i, i.depois
+      ret i.obj.p_naoresg, arg0.msg("Não é possível resgatar " + r.nome + " de " + i.obj.nome + \
+".")
+    efim
+# Eventos
+    listaobj l
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_resgatar(arg0, r), nulo
+    efim
+# Resgata
+    enquanto r.atkrec.objini
+      r.atkrec.objini.batalhaini(arg0)
+    efim
+    $mens.p(arg0, r)
+    $mens.mvis1("$P resgata $a.")
+    ret
+  efim
+  arg0.msg("Você não vê " + arg1 + ".")
+
+
 classe cmd_socar
 herda comando_ataque
 const nome = "Socar"

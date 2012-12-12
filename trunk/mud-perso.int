@@ -50,8 +50,7 @@ func fim # Objeto foi apagado
     sock.perso = nulo # Desliga-se do jogador
     sock = nulo
   fimse
-  ref r
-  batalhafim, r = dono, comum_obj:fim, cmd_fim(r)
+  batalhafim, comum_obj:fim
   epara nulo, lseguir, lseguir.ini.remove
     lseguir.objini.msg("Você pára de seguir " + nome + ".")
   efim
@@ -303,7 +302,7 @@ func acertapos # Acerta posição
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
-  bitver = bitinv = 3
+  bitver = 1, bitinv = 3
   atknorm = (pnivel * 4 + 60) * pnivel + 30
   defnorm = pnivel * 3 + 6
   atkmag = (pnivel * 4 + 60) * pnivel + 30

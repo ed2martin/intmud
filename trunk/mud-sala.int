@@ -84,10 +84,6 @@ func ini # Objeto foi criado: inicializa variáveis
   porta_so = portaini_so
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
 
-func fim # Objeto foi apagado
-  ref r
-  r = dono, comum_obj:fim, cmd_fim(r)
-
 func msg # Mensagem para todos da sala
   se socktot
     listaitem i
@@ -107,25 +103,42 @@ func t_item_exec # Começar a apagar objetos
       ret
     efim
 
+func visivel # Informa se a sala está visível (arg0=quem quer ver)
+# Se retornar 0, significa que não está visível. Nesse caso, para saber
+# se o motivo é estar cego, checar: !(1 & arg0.bitver)
+  casovar 3 & arg0.bitver
+  casose "0" # Está cego
+  casose "2" # Está cego
+    ret 0
+  casose "1" # Não enxerga no escuro
+    casovar s_luz
+    casose "2" # Pode estar escuro
+      ret misc:luz || luzden
+    casose "3" # Está escuro
+      ret luzden != 0
+    casose # Está claro
+      ret 1
+    casofim
+  casose # Enxerga no escuro
+    ret 1
+  casofim
+
 func descsala # Retorna descrição da sala
 # arg0 = objeto que está vendo a descrição
 # arg1: +1 se mostra descrição completa, +2 se mostra saídas, +4 se mostra itens
   textotxt t
-  casovar 3 & arg0.bitver
-  casose "0"
-  casose "2"
-    t.addfim("Você está ceg" + $mens.sexoA[arg0.sexo] + ".")
-    sair
-  casose "1"
-    t.addfim("Está escuro...")
-    sair
-  casose
+  se visivel(arg0)
 # t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo(arg0) + "\b")
     t.addfim("\b\c6" + s_titulo(arg0) + "\b")
     t.bytes <= 5 && t.limpar
+    misc:obj = arg0
     arg1 & 1 && t.addfim(s_desc(arg0))
     arg1 & 2 && t.addfim(txtsai(arg0))
-  casofim
+  senao 1 & arg0.bitver
+    t.addfim("Está escuro...")
+  senao
+    t.addfim("Você está ceg" + $mens.sexoA[arg0.sexo] + ".")
+  fimse
   se arg1 & 4
     textotxt t2
     listaobj l

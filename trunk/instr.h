@@ -392,6 +392,12 @@ enum Expressao
     ex_num8n,       ///< Fixo: + 1 byte = número 8 bits negativo
     ex_num16n,      ///< Fixo: + 2 bytes = número 16 bits negativo
     ex_num32n,      ///< Fixo: + 4 bytes = número 32 bits negativo
+    ex_num8hexp,    ///< Fixo: + 1 byte = número hexadecimal 8 bits sem sinal
+    ex_num16hexp,   ///< Fixo: + 2 bytes = número hexadecimal 16 bits sem sinal
+    ex_num32hexp,   ///< Fixo: + 4 bytes = número hexadecimal 32 bits sem sinal
+    ex_num8hexn,    ///< Fixo: + 1 byte = número hexadecimal 8 bits negativo
+    ex_num16hexn,   ///< Fixo: + 2 bytes = número hexadecimal 16 bits negativo
+    ex_num32hexn,   ///< Fixo: + 4 bytes = número hexadecimal 32 bits negativo
     ex_div1,        ///< Fixo: Divide por 10
     ex_div2,        ///< Fixo: Divide por 100
     ex_div3,        ///< Fixo: Divide por 1000
