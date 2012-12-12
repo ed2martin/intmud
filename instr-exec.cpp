@@ -878,16 +878,19 @@ bool Instr::ExecX()
             FuncAtual->expr++;
             break;
         case ex_num8p:
+        case ex_num8hexp:
             if (!CriarVarInt((unsigned char)FuncAtual->expr[1]))
                 return RetornoErro();
             FuncAtual->expr += 2;
             break;
         case ex_num16p:
+        case ex_num16hexp:
             if (!CriarVarInt(Num16(FuncAtual->expr+1)))
                 return RetornoErro();
             FuncAtual->expr += 3;
             break;
         case ex_num32p:
+        case ex_num32hexp:
             {
                 unsigned int x = Num32(FuncAtual->expr + 1);
                 if (x & 0x80000000)
@@ -902,16 +905,19 @@ bool Instr::ExecX()
                 break;
             }
         case ex_num8n:
+        case ex_num8hexn:
             if (!CriarVarInt( -(int)(unsigned char)FuncAtual->expr[1] ))
                 return RetornoErro();
             FuncAtual->expr += 2;
             break;
         case ex_num16n:
+        case ex_num16hexn:
             if (!CriarVarInt( -(int)Num16(FuncAtual->expr+1) ))
                 return RetornoErro();
             FuncAtual->expr += 3;
             break;
         case ex_num32n:
+        case ex_num32hexn:
             if (*((unsigned char*)FuncAtual->expr+4) & 0x80)
             {
                 if (!CriarVar(InstrDouble))

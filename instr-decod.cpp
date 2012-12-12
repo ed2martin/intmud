@@ -543,6 +543,43 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                 break;
             }
 
+        case ex_num8hexp:
+        case ex_num16hexp:
+        case ex_num32hexp:
+        case ex_num8hexn:
+        case ex_num16hexn:
+        case ex_num32hexn:
+            {
+                unsigned int valor = 0; // Valor numérico sem sinal
+                bool negativo = false; // Se é negativo
+            // Acerta variáveis valor e negativo
+                switch (*origem)
+                {
+                case ex_num8hexn:
+                    negativo=true;
+                case ex_num8hexp:
+                    valor=(unsigned char)origem[1];
+                    origem+=1; // Compensa origem++, logo após o switch
+                    break;
+                case ex_num16hexn:
+                    negativo=true;
+                case ex_num16hexp:
+                    valor=Num16(origem+1);
+                    origem+=2; // Compensa origem++, logo após o switch
+                    break;
+                case ex_num32hexn:
+                    negativo=true;
+                case ex_num32hexp:
+                    valor=Num32(origem+1);
+                    origem+=4; // Compensa origem++, logo após o switch
+                    break;
+                }
+            // Anota o número
+                sprintf(nome, "\x01" "%s0x%X", negativo ? "-" : "", valor);
+                indica=2;
+                break;
+            }
+
         // Operadores
         case exo_virgula:      strcpy(nome, ", ");   indica=16; break;
         case exo_neg:          strcpy(nome, "-");    indica=8;  break;

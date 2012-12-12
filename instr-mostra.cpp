@@ -411,6 +411,30 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             sprintf(nome, " -%u", Num32(origem+1));
             origem+=4;
             break;
+        case ex_num8hexp:
+            sprintf(nome, " 0x%X", (unsigned char)origem[1]);
+            origem++;
+            break;
+        case ex_num16hexp:
+            sprintf(nome, " 0x%X", Num16(origem+1));
+            origem+=2;
+            break;
+        case ex_num32hexp:
+            sprintf(nome, " 0x%X", Num32(origem+1));
+            origem+=4;
+            break;
+        case ex_num8hexn:
+            sprintf(nome, " -0x%X", (unsigned char)origem[1]);
+            origem++;
+            break;
+        case ex_num16hexn:
+            sprintf(nome, " -0x%X", Num16(origem+1));
+            origem+=2;
+            break;
+        case ex_num32hexn:
+            sprintf(nome, " -0x%X", Num32(origem+1));
+            origem+=4;
+            break;
         case ex_div1:        strcpy(nome, " /10"); break;
         case ex_div2:        strcpy(nome, " /100"); break;
         case ex_div3:        strcpy(nome, " /1K"); break;

@@ -47,8 +47,8 @@ func entrou20
   arg0.msg("Jardineiro disse: Preciso de uma pedra.")
 
 func cmd_darobj # Alguém deu algum item
-  telatxt t
-  t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
+# telatxt t
+# t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
   se arg2.nome == "pedra"
     apagar(arg2) # Apaga o item
     misc:tempo("deupedra", arg0) # Dispara 'deupedra'
@@ -122,7 +122,6 @@ const dir_n = $s_teste003
 const dir_ne = $s_teste005
 
 func cmd_salaperso # Personagem chegou
-  misc:salacriar("i_teste002")
   ret !arg0.jog, nulo # Retorna se não for jogador
   misc:evento(arg0) # Receber eventos do jogador
 
@@ -133,6 +132,12 @@ func cmd_pegarobj # Pegar alguma coisa
 func cmd_soltarobj # Soltar alguma coisa
   se arg2.nome == "pedra"
     apagar(arg2) # Apagará a pedra
+
+const s_reset = "S 100 teste002 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste002") && criar("i_teste002", este, 0)
 
 
 classe s_teste005
@@ -159,15 +164,21 @@ Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
 const dir_s = $s_teste003
 const dir_n = $s_teste012
 const dir_se = $s_teste005
-
-func cmd_salaperso # Personagem chegou
-  misc:salacriar("p_teste001")
+const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_n # Jogador quer ir para o norte
   se !arg0.var.j_planta # Se ainda não passou pela planta carnívora
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
     arg0.msg("Então você recua.")
     ret 1
+
+const s_reset = "P 100 teste001 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se inttotal($p_teste001) < 1
+    criar("p_teste001", este, 0)
+  fimse
 
 
 classe s_teste012

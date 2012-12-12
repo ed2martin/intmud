@@ -406,6 +406,7 @@ func iniclasse # Inicialização
   misc:hora = intdiv(dh.numseg % 7200 / 300)
   misc:dia = dh.numdias % 7 * 12 + intdiv(dh.numseg / 7200)
   misc:dia = misc:dia % 7
+  misc:luz = misc:hora >= 6 && misc:hora < 18
 
 func imin_exec # Atualiza hora MUD
 # Acerta minuto, hora e luz
@@ -443,18 +444,8 @@ func imin_exec # Atualiza hora MUD
     epara r = i.obj.perso.dono, r.dono, r = r.dono
     efim
     continuar r.s_luz && r.s_luz != 2
-    r.msg(lin)
+    i.obj.perso.msg(lin)
   efim
-
-func salacriar # Cria um objeto na sala se não houver outro igual
-# arg0 a arg3 = argumentos do personagem, sem incluir o dono do personagem
-# Retorna: objeto criado, ou nulo se não foi criado
-  se txt(arg0)
-    ref r
-    epara r = este, r.dono, r = r.dono
-    efim
-    ret r.dentro1.objini(arg0) || r.dentro2.objini(arg0), nulo
-    ret criar(arg0, r, arg1, arg2, arg3)
 
 func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
@@ -482,18 +473,11 @@ classe evrecebe
 listaitem perso1 # Primeiro personagem
 listaitem perso2 # Segundo personagem
 listaitem perso3 # Terceiro personagem
+const cmd_saiu = fim + apagar(este) # Personagem saiu da sala
+const cmd_fim = fim + apagar(este) # Personagem saiu do jogo
 
 func fim # Este objeto foi apagado
-# Só para garantir, também chama aqui perso.remove
-  perso0.remove, perso1.remove, perso2.remove, perso3.remove
-
-func cmd_saiu # Personagem saiu da sala
-  perso0.remove, perso1.remove, perso2.remove, perso3.remove
-  apagar(este)
-
-func cmd_fim # Personagem saiu do jogo
-  perso0.remove, perso1.remove, perso2.remove, perso3.remove
-  apagar(este)
+  perso1.remove, perso2.remove, perso3.remove
 
 
 classe evtempo

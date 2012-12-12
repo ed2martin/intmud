@@ -4,12 +4,16 @@ const m_entra = "$P chegou"
 const m_sai = "$P foi embora"
 const dir = ""
 const comando_mover = 1 # Para indicar que é comando de movimentação do jogador
+listaobj lseg # Para não seguir ciclicamente
+debug dbg
 
 func escr # Executa o comando
 # arg0 = personagem
-# arg1 = o que digitou, é "\n" se ninguém deve seguir o personagem
+# arg1 = o que digitou ou "\n" se está seguindo alguém
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
+  dbg.exec = 5000
+  arg1 != "\n" && lseg.limpar, lseg.addfim(arg0)
   listaobj l
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_[dir](arg0, arg0.dono), nulo
@@ -20,23 +24,22 @@ func escr # Executa o comando
   ret s1.porta_[dir] & 3 >= 2, arg0.msg("A porta está fechada.")
   uint8 total
   total = s1.totalmove + s2.totalmove
+  !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
   se arg0.pmove < total
     arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
     ret
   fimse
   arg0.pmove -= total / 2
-  total -= 1 # Para garantir pelo menos 2 movimentos (total é uint8)
-  arg0.p_espera = total * 2 + 2
+  arg0.p_espera = total ? total * 2 : 2
   $mens.p(arg0)
   !arg0.p_silencio && $mens.mvis2("", m_sai)
   arg0.mudadono(s2)
   !arg0.p_silencio && $mens.mvis2("", m_entra)
   arg0.dono.s_morre && arg0.morreu
-  ret arg1 == "\n", nulo
-  listaobj l
+# Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
-    continuar l.objini.posicao < 8 || l.objini.dono != s1
-    continuar !arg0.visivel(l.objini) || arg0.p_naoseguir(l.objini)
+    continuar l.objini.posicao < 8 || l.objini.dono != s1 || lseg.possui(l.objini)
+    continuar !arg0.visivel(l.objini) || !s1.visivel(l.objini)
     l.objini.msg("Você segue " + arg0.nome + ".")
     escr(l.objini, "\n")
   efim
@@ -157,31 +160,16 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Seguir\b\n\
 Sintaxe: SEGUIR [personagem]\n\
 Segue um personagem.\n\
-Para não seguir ninguém, tecle SEGUIR seguido do nome do seu personagem.\n\
-Para outros personagens deixarem de seguir você, tecle apenas SEGUIR.\n\
-Veja também a opção SEGUIR do comando CONFIG."
+Se o personagem for omitido ou for você mesmo, você passa a não seguir\n\
+ninguém. Para outros personagens não seguirem você, veja a opção SEGUIR\n\
+do comando CONFIG."
 const posic = 5
 
 func escr
-# Sem argumentos; deixam de seguir
+# Sem argumentos: deixa de seguir
   se !arg1
-    se arg0.lseguir.total == 0
-      arg0.msg("Ninguém está seguindo você.")
-    senao arg0.lseguir.total == 1
-      arg0.msg(txtmaimin(arg0.lseguir.objini.nome) + " pára de seguir você.")
-      arg0.lseguir.objini.msg("Você pára de seguir " + arg0.nome + ".")
-      arg0.lseguir.limpar
-    senao
-      textotxt t
-      epara nulo, arg0.lseguir, arg0.lseguir.ini.remove
-        t.addfim(txtmaimin(arg0.lseguir.objini.nome))
-        arg0.lseguir.objini.msg("Você pára de seguir " + arg0.nome + ".")
-      efim
-      textopos pos
-      pos = t.fim, pos.antes, pos.mudar(" e ", 0, 0), pos.juntar
-      arg0.lseguir.limpar
-      arg0.msg(txttroca(t.remove(1000), "\n", ", ") + " param de seguir você.")
-    fimse
+    arg0.iseguir.remove
+    arg0.msg("Você não segue ninguém.")
     ret
   fimse
 # Procura o personagem
@@ -196,7 +184,7 @@ func escr
   se i.obj == arg0
     arg0.iseguir.remove
     arg0.msg("Você não segue ninguém.")
-  senao i.obj.jogconfig.5 || i.obj.p_naoseguir(arg0)
+  senao i.obj.jog ? !i.obj.jogconfig.5 : i.obj.p_naoseguir(arg0)
     arg0.msg("Você não consegue seguir " + txtmaimin(i.obj.nome) + ".")
   senao
     arg0.iseguir.remove

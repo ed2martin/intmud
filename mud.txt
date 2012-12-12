@@ -320,7 +320,7 @@ somar 16 se é administrador invisível
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
 0 = nada (está cego)
 somar 1 se não está cego
-somar 2 se não está escuro (tem luz suficiente para enxergar)
+somar 2 se enxega no escuro
 somar 4 se pode ver invisível
 somar 8 se pode ver oculto
 somar 16 se pode ver administradores invisíveis
@@ -426,6 +426,7 @@ Executa procedimentos quando o personagem morre
 9. Personagens não jogador (mud-perso.int)
 
 * const p_pet = 0
+NÃO ESTÁ PRONTO
 0 = não pode ser animal de estimação
 1 = jogador pode pegar e usar em batalhas
 2 = segue ordens do jogador
@@ -437,37 +438,54 @@ Aonde pode se movimentar:
 2 = pode sair da área
 
 * const p_fora = 0
+NÃO ESTÁ PRONTO
 Não entra em lugares fechados
 
 * const p_pegar = 0
+NÃO ESTÁ PRONTO
 0 = não pega itens do chão
 1 = pega itens
 2 = pega somente itens de valor
 
+* func p_agressivo(personagem alvo)
 * const p_agressivo = 0
+Se é agressivo a um determinado personagem
 0 = pacífico, não luta
 1 = ataca se for atacado
 2 = ataca quando possível
 
-* const p_foge = 0
-Se foge quando estiver fraco
-
-* const p_nadar = 0
-Pode atravessar lugares em que não se pode nadar.
+* func p_naoseguir(personagem que quer seguir)
+* const p_naoseguir = 0
+Se não pode ser seguido.
+0 = pode ser seguido
+1 = não pode ser seguido
 
 * const p_silencio = 0
 Se movimenta em silêncio (não é informado na sala).
 
+* const p_foge = 0
+NÃO ESTÁ PRONTO
+Se foge quando estiver fraco
+Não agressivo: foge se for atacado
+
+* const p_nadar = 0
+NÃO ESTÁ PRONTO
+Pode atravessar lugares em que não se pode nadar.
+
 * const p_imortal = 0
+NÃO ESTÁ PRONTO
 Se não pode morrer.
 
 * const p_compra = 0
+NÃO ESTÁ PRONTO
 Porcentagem de lucro quando compra: preço final = valor * (100-p_compra)
 
 * const p_venda = 0
+NÃO ESTÁ PRONTO
 Porcentagem de lucro quando vende: preço final = valor * (100+p_venda)
 
 * const p_compravenda = 0
+NÃO ESTÁ PRONTO
 Se está aberto para compra e venda.
 
 come corpos
@@ -563,7 +581,7 @@ func cmd_ini(arg0, arg1, arg2, arg3, arg4)
 Chamado quando o objeto é criado. Arg0 a arg5 são os 5 primeiros argumentos
 da função ini do objeto.
 
-func cmd_fim(dono)
+func cmd_objfim(dono)
 Chamado quando o objeto é apagado. Dono é o dono anterior do objeto.
 
 func cmd_salaperso(personagem)
@@ -623,9 +641,10 @@ acontecer. A função não tem a opção de cancelar a ação.
 
 A seguir são listados os eventos (as funções).
 
-func cmd_fim(personagem ou objeto)
-Objeto vai sair do jogo. Antes desse evento ocorrer, a 'listaobj evento'
-do objeto é limpa.
+func cmd_fim(personagem ou objeto, sala em que estava)
+Objeto vai sair do jogo. É chamado para os eventos do personagem apenas.
+Antes desse evento ocorrer, o objeto sai da sala a 'listaobj evento' do
+objeto é limpa.
 
 func cmd_saiu(personagem, sala)
 Personagem vai sair da sala.
@@ -640,6 +659,10 @@ para ajustar as variáveis (pontos de vida, mana, etc.)
 func cmd_recalc3(personagem)
 Chamado para os objetos em personagem.evento, por func recalc_exec,
 para ajustar as variáveis (pontos de vida, mana, etc.)
+
+func cmd_[direção](personagem, sala)
+São as funções cmd_n, cmd_s, cmd_l, etc.
+Personagem quer ir em uma direção.
 
 func cmd_falou(personagem, texto)
 Falou alguma coisa.
@@ -669,6 +692,9 @@ func cmd_descansouchao(personagem)
 func cmd_sentouobj(personagem, item, texto)
 func cmd_descansouobj(personagem, item, texto)
 Ficou em pé, começou a descansar ou sentou-se.
+
+func cmd_morreu(personagem)
+Personagem morreu.
 
 
 14. Eventos condicionais
@@ -736,6 +762,12 @@ Quer ficar em pé, descansar ou sentar-se.
 func cmd_fugir(personagem)
 Quer fugir de uma batalha.
 
+func cmd_resgatar(personagem, quem será resgatado)
+Quer resgatar alguém de uma batalha.
+
+func cmd_morrer(personagem)
+Vai morrer porque os pontos de vida chegaram a zero.
+
 
 15. Criando menus de edição (administração)
 
@@ -801,6 +833,7 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
+Prompt
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas
@@ -808,3 +841,11 @@ Valor em moedas
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
 Quanto tempo dura vestindo (exemplo, para produzir luz)
+Propriedade de salas:
+* const s_semrastr = 0 # Se o comando de rastrear não passa por essa sala
+Propriedades de personagens:
+* inttempo tempocair # Quanto tempo leva para cair ou afundar
+* uint32 p_banco # Quantas moedas possui no banco
+* const p_ajuda = 0 # Ajuda outros PNJs sendo atacados por jogadores
+Propriedade de itens:
+* inttempo tempocair # Quanto tempo leva para cair ou afundar

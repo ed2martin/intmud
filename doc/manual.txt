@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 13.4 e o 14.1.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 14.1.
 
 
 1. SOBRE O INTMUD
@@ -307,65 +307,42 @@ Sintaxe para chamar com argumentos:
 Tudo que estiver após a definição do nome da função pertence a ela até
 iniciar a próxima classe, constante ou função.
 
-Algumas vezes é necessário retornar uma informação. Isso é feito com
-a instrução RET seguido da informação.
+Os argumentos são informações enviadas para a função, como variáveis, textos
+e números. Quando uma função é chamada, tudo que estiver separado por vírgula
+entre parênteses após o seu nome, são os argumentos enviados para ela.
+
+Exemplos:
+
+teste # Nesse caso a função teste é chamada sem nenhum argumento
+ganhaexp(10) # Um argumento, o valor numérico 10
+teste2(1, 2, "x") # Três argumentos: 1, 2 e "x"
+
+Dentro da função, esses argumentos são as variáveis de 'arg0' a 'arg9', e
+a quantidade de argumentos recebidos é sempre 'args'. Se um argumento não
+existir, será NULO, que significa simplesmente um valor nulo, sem qualquer
+efeito prático. Exemplo, se não passou nenhum argumento, 'arg0' a 'arg9'
+terão o valor 'nulo'.
+
+Há casos em que é interessante a função retornar uma informação a quem a
+chamou. Isso é feito com a instrução 'ret', com a seguinte sintaxe:
+
+ret <valor de retorno>
+
+Essa instrução será vista mais detalhadamente em tópicos posteriores,
+mas o que ela faz é retornar de uma função.
 
 Exemplo:
 
-func x # Função denominada 'x'
-# Retorna o valor '3' ao ser chamada
-ret 3
-
-func y # Função denominada 'y'
-# Retorna o texto "bom dia"
-ret "bom dia"
-
-OBS.: Note que textos sempre devem ser escritos entre aspas duplas (").
-      Caso contrário, será interpretado como um número, um nome de variável
-      ou qualquer outra coisa, exceto texto. Esse e outros caracteres serão
-      explicados mais adiante.
-
-Quando não houver um valor de retorno definido, o valor retornado será
-sempre NULO, que significa simplesmente um valor nulo, sem qualquer efeito
-prático.
-
-Os argumentos citados em uma das sintaxes acima são informações enviadas
-para a função, como por exemplo, variáveis, textos e números. É possível o
-envio de até 10. Eles são designados de ARG0 (o primeiro argumento); ARG1
-(segundo); ARG2 (terceiro) até ARG9 (décimo), mas só dentro da mesma. A
-instrução ARGS retorna a quantidade de argumentos recebidos, ainda que
-sejam nulos.
-
-Exemplo:
-
-uint8 x # Variável que vai de 0 a 255
-# Faz x ser o retorno da função denominada 'teste'
-x = teste(10, 3)
-
-func teste # Função denominada 'teste'
-# Argumentos dessa função:
-# ARG0: Nesse caso é o valor numérico 10
-# ARG1: Nesse caso é o valor numérico 3
-#
-# Soma arg0 com arg1 e retorna via instrução RET
+func soma # Retorna a soma dos dois primeiros argumentos
 ret arg0 + arg1
 
-O retorno da funçao 'teste' será 13 e colocado na variável uint8 x.
+func y
+int8 x
+x = soma(1, 2) # Atribui o valor 3 à variável 'x'
 
-Outros exemplos de funções:
-
-classe abc
-int1 x # Variável que vai de 0 a 1
-int8 y # Variável de valor inteiro que vai de -128 a 127
-func teste1 # Função denominada 'teste1'
-# Retorna o texto "bom dia" (sem as aspas)
-  ret "bom dia"
-func teste2 # Função denominada 'teste2'
-# Retorna a soma de x + y
-  ret x + y
-func teste3 # Função denominada 'teste3'
-# Soma arg0 e arg1 e coloca em y ao chamar essa função
-  y = arg0 + arg1
+Portanto, pode-se dizer que a instrução 'ret' faz o caminho inverso dos
+argumentos. E, da mesma forma, se o valor de retorno for omitido ou se a
+função retornar porque chegou no final, é retornado o valor 'nulo'.
 
 
 6. CONSTANTES
@@ -623,7 +600,24 @@ y = -10
 # Atribui o valor negativo e decimal '-1.5' em 'z'
 z = -1.5
 
-9.4. Definição de uma variável
+9.4. Números em hexadecimal
+
+Qualquer número que começar com '0x' está em hexadecimal. Não é permitido
+o ponto decimal, mas pode haver um sinal de '-' (menos) para indicar
+quando o número for negativo.
+
+Exemplos de números em hexadecimal:
+
+0x10
+-0x48a
+0xfc3d5
+
+O sistema de numeração hexadecimal utiliza 16 símbolos, de '0' a '9' e
+de 'a' a 'f', para representar qualquer número, enquanto que o sistema
+decimal usa somente os dígitos de '0' a '9'. Uma explicação mais detalhada
+está mais adiante, no tópico 13.6, que trata de operadores de bit.
+
+9.5. Definição de uma variável
 
 Segue a mesma sintaxe vista anteriormente:
 <tipo de variável> <nome da variável>
@@ -662,7 +656,7 @@ fimse # Marca o fim do bloco 'se'
 Nota: O exemplo acima não produz nenhum resultado prático.
       O único objetivo é demonstrar o tempo de existência das variáveis.
 
-9.5. Acessar variáveis e chamar funções
+9.6. Acessar variáveis e chamar funções
 
 Sintaxe: <nome da variável>
 
@@ -703,7 +697,7 @@ tela.msg("A=" + a + "\n") # Mostra 'A=func1'
 tela.msg("intabs=" + intabs(-10) + "\n") # Mostra 'intabs=10'
 tela.msg("este.intabs=" + este.intabs(-10) + "\n") # Mostra 'intabs=classe3'
 
-9.6. Palavras predefinidas
+9.7. Palavras predefinidas
 
  - 'ARG0' a 'ARG9'             - argumentos passados para a função, sendo
                                  'arg0' o primeiro argumento;
@@ -713,7 +707,7 @@ tela.msg("este.intabs=" + este.intabs(-10) + "\n") # Mostra 'intabs=classe3'
                                  numérico ou objeto);
  - 'ESTE'                      - refere-se ao objeto atual.
 
-9.7. Símbolo cifrão ($)
+9.8. Símbolo cifrão ($)
 
 Sintaxe: $<nome da classe>
 
@@ -723,7 +717,7 @@ criação e remoção de objetos, vide funções CRIAR() e APAGAR().
 
 Exemplo: '$teste' corresponde ao primeiro objeto da classe 'teste'.
 
-9.8. Colchetes
+9.9. Colchetes
 
 Qualquer coisa entre colchetes é transformado em um texto, que fará parte
 do nome de uma variável ou função.
@@ -735,7 +729,7 @@ x["1"] = 10 # É o mesmo que: x1 = 10
 y = "_teste"
 x[y] = 20 # É o mesmo que: x_teste = 20
 
-9.9. Dois pontos
+9.10. Dois pontos
 
 Sintaxe: <nome da classe>:<nome da variável ou função>
 
@@ -755,7 +749,7 @@ func f1
 y = x * 3 # Aqui 'y' passa a ser 6
 misc:xy # Aqui 'y' passa a ser 4 (faz o mesmo que 'y=x*2')
 
-9.10. Um ponto
+9.11. Um ponto
 
 Frequentemente variáveis e objetos possuem outras variáveis e funções,
 e para usá-las, deve-se escrever o caminho completo até elas.
@@ -776,7 +770,7 @@ t.msg("oi\n") # Chama a função 'msg' da variável 't'
 r.x.y # Significa 'y', que pertence a 'x', que por sua vez pertence a 'r'
 $teste.x # Variável 'x' do primeiro objeto da classe 'teste'
 
-9.11. Uma expressão
+9.12. Uma expressão
 
 Qualquer combinação de operandos e operadores. É muito comum atribuir um
 valor a uma variável dessa forma.
@@ -789,7 +783,7 @@ z = intabs(-3) # Faz 'z=3', pois intabs retorna o número sem sinal de menos
 z1 = 10, z2 = 10 + z1 # 'z2 = 10 + z1' é o mesmo que 'z2 = 10 + 10' pois z1=10
 a = b = c = 4 # Primeiro faz c=4, depois b=c e por último a=b
 
-9.12. Controle de fluxo
+9.13. Controle de fluxo
 
 São instruções que ocupam uma linha inteira e mudam a sequência como as
 instruções são executadas. Geralmente é executada linha por linha, até a
@@ -1233,39 +1227,155 @@ int1 x.32
 x.bits = 3 # Ativa os bits 0 e 1 e desativa os demais;
 x.3 = 1 # Ativa o bit 3; agora x.bits = 11.
 
-Os operadores de deslocamento têm funcionalidade parecida à de multiplicação
-e divisão, porém arredondando para baixo (ex. 9.7 é arredondado para 9):
-x=x<<1  multiplica x por 2
-x=x<<2  multiplica x por 4
-x=x<<3  multiplica x por 8
-etc.
-x=x>>1  divide x por 2
-x=x>>2  divide x por 4
-etc.
+Para simplificar as operações com bits, é usado o sistema de numeração binário,
+que utiliza apenas os algarismos 0 e 1 na representação de qualquer número,
+ao contrário do sistema decimal, que usa os algarismos de 0 a 9 para isso.
 
-Essas operações, no entanto, são feitas copiando o valor de um bit
-para o outro.
-Exemplo, x >> 1 significa:
-copiar do bit 1 para o bit 0
-copiar do bit 2 para o bit 1
-copiar do bit 3 para o bit 2
-e assim por diante, até o último bit do número.
+Vale lembrar que em uma contagem no sistema decimal, quando se esgotam
+todas as possibilidades com o último dígito, que é o 9, passamos a
+acrescentar mais um. Por essa razão após o 9 vem o 10; após o 99 vem o 100
+e assim por diante. No sistema binário acontece a mesma coisa. Após o 1 vem
+o 10 (2 em decimal), depois o 11 (3 em decimal), 100 (4 em decimal), etc.
+Por isso diz-se que em binário 1+1=10.
 
-Nota 1:
-Internamente todos os valores são convertidos em int32 antes de realizar
-qualquer operação com bit.
+Se os oito bits de uma variável uint8 forem escritos lado a lado, do bit 7
+ao 0, o resultado será um número no sistema de numeração binário.
 
-Nota 2:
-Nas variáveis int8, int16 e int32, o bit de maior valor é usado para
-indicar se o número é negativo ou não. Porém, para a matemática funcionar
-corretamente, multiplicar uma dessas variáveis por menos um tem o mesmo
-efeito de inverter todos os bits e somar 1.
+Exemplos:
 
-Exemplo, em uma variável int8:
-0 significa todos os bits em 0.
-1 significa somente o bit 0 em 1
--1 significa todos os bits em 1
--2 significa todos os bits em 1 exceto o bit 0
+00000000 em binário = 0 em decimal
+00000001 em binário = 1 em decimal
+00000010 em binário = 2 em decimal
+10000000 em binário = 128 em decimal
+11111111 em binário = 255 em decimal
+
+As variáveis int8, int16 e int32, que permitem números negativos, possuem
+a mesma quantidade de bits de uint8, uint16 e uint32, respectivamente. A
+diferença está apenas na faixa de valores. Exemplo, um uint8 vai de 0 a 255,
+enquanto que um int8 vai de -128 a 127. Nas variáveis que permitem números
+negativos, o resultado depende de um cálculo:
+
+ - Em int8, se o valor numérico passar de 127 (o bit 7 está ativo),
+   subtraia 256;
+ - Em int16, se o valor numérico passar de 32767 (o bit 15 está ativo),
+   subtraia 65536;
+ - Em int32, se o valor numérico passar de 2147483647 (o bit 31 está ativo),
+   subtraia 4294967296.
+
+Por exemplo, em um uint8, se todos os bits estiverem ativos, o valor
+numérico será 255, como visto anteriormente. Em um int8, como passou
+de 127, subtraia 256. Portanto, todos os bits ativos formam o número -1.
+Já o número 10 é o mesmo, tanto em um int8 quanto em um uint8, porque
+não passou de 127.
+
+Na prática, quando qualquer operação com bits é realizada, todos
+os números são transformados em int32. Porém, usamos int8 nas explicações
+porque a quantidade de bits é bem menor.
+
+Existem dois operadores, '>>' e '<<', chamados de deslocamento de bits.
+O primeiro desloca os bits para a direita, em binário, sem alterar o último
+bit. Já o segundo, desloca para a esquerda e desativa o bit 0.
+
+Por exemplo, considere o número 00001100 em binário.
+Um deslocamento para a esquerda resulta em: 00011000.
+Dois deslocamentos para a esquerda resultam em: 00110000.
+Um deslocamento para a direita resulta em: 00000110.
+Dois deslocamentos para a direita resulta em: 00000011.
+
+Esses operadores são usados conforme a sintaxe:
+<valor numérico> >> <quantidade de deslocamentos>
+<valor numérico> << <quantidade de deslocamentos>
+
+Exemplos:
+
+2 << 1 # Resulta em 4, pois o que estava no bit 1 passa para o bit 2
+2 << 2 # Resulta em 8 (dois deslocamento)
+2 << 3 # Resulta em 16 (três deslocamentos)
+5 << 1 # Resulta em 10 (um deslocamento para os bits 0 e 2)
+4 >> 1 # Resulta em 2
+4 >> 2 # Resulta em 1
+4 >> 3 # Resulta em 0
+3 >> 1 # Resulta em 1
+-3 >> 1 # Resulta em -2
+
+No penúltimo exemplo, 3 >> 1 resulta em 1.
+O número 3, em binário é 00000011. Após uma rotação para a direita,
+o resultado é 00000001, que corresponde a 1.
+
+O último exemplo é o mais complicado. Em um int8, o número -3
+é 11111101 em binário. Após uma rotação para a direita, o resultado
+será 11111110 em binário, que corresponde ao número -2.
+
+Como pode-se observar, o operador '>>' divide por potências de 2 arredondando
+para baixo e o operador '<<' multiplica por potências de 2. Mas cuidado!
+Se o resultado da multiplicação não couber em um int32, o valor de alguns
+bits perde-se. Dois exemplos demonstram claramente esse problema:
+
+1 << 31 # Resulta em -2147483648, pois o conteúdo do bit 0 vai para o bit 31
+1 << 32 # Resulta em 0, pois o conteúdo do bit 0 iria para o bit 32
+
+Na prática, só é interessante usar esses operadores quando estiver lidando
+com bits. Para multiplicação e divisão, é melhor usar '*' e '/'.
+
+O IntMUD não permite escrever diretamente em binário, e em decimal muitas
+vezes envolve vários cálculos. Por isso, é possível usar o sistema de
+numeração hexadecimal. Os números são compostos da sequência '0x' seguido
+de um ou mais caracteres, entre os dígitos de '0' a '9' e letras de 'a' a 'f'.
+As letras correspondem aos valores de 10 a 15 em decimal. Também é possível
+o sinal de '-' (menos) na frente, mas não é permitido o ponto decimal.
+
+Exemplos de números em hexadecimal e o valor correspondente em decimal:
+
+0x09 = 9
+0x0a = 10
+0x10 = 16
+-0x10 = -16
+0xff = 255
+
+Nota: É fácil saber o sistema de numeração usado. Todos os números em
+hexadecimal começam com '0x'.
+
+A conversão entre decimal e hexadecimal baseia-se em potências de 16.
+Por exemplo, para converter o número 0x2f8 (hexadecimal) em 760 (decimal),
+o cálculo é:
+
+2 * 256 + 15 * 16 + 8
+
+O número 256 é 16 elevado ao quadrado, e o número 15 corresponde ao dígito
+'f' em hexadecimal.
+
+Para converter em decimal, deve-se fazer sucessivas divisões por 16.
+Nesse caso:
+
+760 / 16 = 47 (resto 8)
+47 / 16 = 2 (resto 15)
+
+O resultado da última divisão e os restos (2, 15, 8) formam o número 0x2f8.
+
+A conversão entre binário e hexadecimal é direta. Cada 4 dígitos em
+binário formam um dígito em hexadecimal:
+
+0000 = 0
+0001 = 1
+0010 = 2
+0011 = 3
+0100 = 4
+0101 = 5
+0110 = 6
+0111 = 7
+1000 = 8
+1001 = 9
+1010 = a
+1011 = b
+1100 = c
+1101 = d
+1110 = e
+1111 = f
+
+Exemplo, para converter o número 0x2f8 em binário, basta substituir cada
+dígito hexadecimal pelos quatro dígitos correspondente em binário:
+
+001011111000
 
 
 14. INSTRUÇÕES DE CONTROLE DE FLUXO
