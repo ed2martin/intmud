@@ -33,46 +33,11 @@ const servusr = 3
 const servtempo = 80
 #
 # Variáveis se ativar como bot
+# Se a senha for vazia, o programa pede ao usuário
 const serv = "localhost"
 const porta = 1963
 const sala = "sala01"
 const senha = ""
-#
-# Senha para se tornar administrador, ou "" se não puder
-const senhaadm = "x2"
-#
-# Sala inicial
-const salaini = $s_teste001
-# Sala para continuar jogo salvo (se estava numa sala que não existe mais)
-const salasav = $s_casa001
-# Sala quando morre
-const salafim = $s_fim001
-#
-# Quantos animais pode ter numa batalha, de 1 a 8
-const animal1 = 5
-#
-# Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
-const salvacria = 0
-#
-# Tipo de ataque: 0=manual, 1=automático (realizado pela classe cmd_atkauto)
-const atktipo = 0
-#
-# Ataque automático: tempo de um turno (em décimos de segundo)
-# Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
-const atktempo = 60
-#
-# Opção de escolher o nível (para testes) na área 'casa'
-# 0=não pode escolher o nível, 1=pode escolher o nível
-const escolhenivel = 0
-
-func salvar # Salva o programa
-  prog p
-  p.salvar("L99N1I2C2F1V0")
-  $mudaprog.ini # Para indicar que nenhum arquivo foi mudado
-
-#func iniclasse # Para salvar acertando indentação e linhas entre classes e funções
-#  prog p
-#  p.salvartudo("L99N1I2C2F1V0")
 
 
 classe jogoini
@@ -419,3 +384,39 @@ func msgtodos # Envia mensagem para todos os jogadores
   epara r = $jogobot_sala, r, r = objdepois(r)
     r.msg(arg0)
   efim
+
+
+classe jogsock
+# Comunicação com o jogador
+# Funções predefinidas:
+# ini = objeto foi criado
+# fim = objeto está sendo apagado
+# info = tipo (l=local, t=telnet, p=papovox, b=bot) + espaço + extra
+# sendo que extra pode ser o endereço IP ou o nome da sala
+# msgsock(texto) = envia mensagem para jogador
+# msgsala(texto) = envia mensagem para todos da sala
+# msgtodos(texto) = envia mensagem para todos os jogadores
+# recebe(texto) = executado sempre que receber mensagem do jogador
+
+const msg = msgsock(arg0) # Para a função msg chamar msgsock
+
+func ini
+  msg("Bem-vindo.")
+# A função info informa como está conectado
+  casovar txt1(info)
+  casose "l"
+    msg("Entrou localmente. Endereço: " + txt2(info))
+    sair
+  casose "t"
+    msg("Entrou via Telnet. Endereço: " + txt2(info))
+    sair
+  casose "p"
+    msg("Entrou via Papovox. Endereço: " + txt2(info))
+    sair
+  casose "p"
+    msg("Entrou por um chat, via bot. Sala: " + txt2(info))
+    sair
+  casofim
+
+func recebe
+  msg("Você teclou: " + arg0)

@@ -2,6 +2,7 @@ classe comum_perso
 herda comum_obj
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
+comum listaobj objsolto # Lista de personagens soltos (não pertencem a outros)
 sav int1 sexo # Sexo: 0=feminino, 1=masculino
 const sexoini = 2 # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 const nome = "sem nome"
@@ -12,7 +13,9 @@ const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const descver = "Você não vê nada de especial."
 const jogsav = 1 # Se deve salvar o personagem ao salvar personagem do jogador
+const objmax = 15 # Quantos itens pode carregar
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
+sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
@@ -31,6 +34,7 @@ func ini # Coloca o objeto dentro de outro
   fimse
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
+  dono && !dono.perso && objsolto.addfim(este)
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
     criar(var.ini("e_"), este, var.valor(var.ini("e_")))
   efim
@@ -58,7 +62,7 @@ func fim # Objeto foi apagado
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Eventos cmd_saiu e variável dono.s_item
   listaobj l
-  se dono
+  se dono && !dono.perso
     epara l.addfim(evento, dono.evento), l, l.ini.remove
       l.objini.cmd_saiu(este, dono)
     efim
@@ -70,7 +74,12 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     fimse
   fimse
 # Muda de sala
-  cmd_mudadono(arg0), dono = arg0, atkrec.limpar, poslugar.remove
+  cmd_mudadono(arg0), atkrec.limpar, poslugar.remove, dono = arg0
+# Checa se novo dono é sala
+  se dono.perso
+    p_proc = 1
+    ret
+  fimse
 # Eventos cmd_chegou
 # (sock || jog) && $reset.sala(dono, dono.s_reset) + dono.cmd_salaperso(este)
   (sock || jog) && dono.s_reset1 + dono.cmd_salaperso(este)
@@ -210,6 +219,9 @@ func msginv # Mensagem mesmo se o alvo estiver invisível
   se sock && posicao > 4 # Se tem jogador e está acordado
     msg($mens.proc(arg0, este))
 
+func morreu # Procedimentos quando morre
+  mortes += 1
+
 
 classe comum_persobat
 herda comum_perso
@@ -303,13 +315,12 @@ func acertapos # Acerta posição
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
   bitver = 1, bitinv = 3
-  atknorm = (pnivel * 4 + 60) * pnivel + 30
-  defnorm = pnivel * 3 + 6
-  atkmag = (pnivel * 4 + 60) * pnivel + 30
-  defmag = pnivel * 3 + 6
-  pvidamax = pnivel * 2 + 25
-# pveloc = (pnivel * 4 + 60) * pnivel + 30
-  pveloc = pnivel + 50
+  atknorm = pnivel * 13 + 26
+  defnorm = pnivel * 10 + 20
+  atkmag = pnivel * 13 + 26
+  defmag = pnivel * 10 + 20
+  pvidamax = pnivel * 20 + 40 # Equilibrado seria atknorm*atknorm/defnorm
+  pveloc = pnivel * 5 + 20
   pmanamax = pnivel + 30
   pmovemax = pnivel * 2 + 30
   evasao = pnivel * 2 + 30
@@ -379,16 +390,19 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   fimse
 # Ganha experiência
   real v1
+  ref r
   epara i = l.ini, i, i.depois
     v1 = intpos(pnivel - i.obj.pnivel + 8) / 16
     v1 > 1 && (v1 = 1)
+    r = i.obj.dono
+    r.perso && i.obj.var.z_dono != r.nome && (v1 *= 1.5)
     i.obj.ganhaexp(v1 * arg0 * (pnivel * 5 + 30) / l.total)
   efim
 
 func ganhaexp # Personagem ganha experiência
 # arg0 = experiência
   expatual += arg0
-  se expatual > expmax
+  se expatual >= expmax
     expatual -= expmax
     pnivel += 1
     dono.msg(nome + " foi para nível " + pnivel)
@@ -430,6 +444,7 @@ func morreu # Procedimentos quando morre
   epara l.addfim(evento), l, l.ini.remove
     ret l.objini.cmd_morrer(este), nulo
   efim
+  mortes += 1
 # Jogador: retira toda experiência e transfere jogador para outro lugar
   se jog
     expatual = 0, animal.0.expatual = 0, animal.1.expatual = 0
@@ -573,14 +588,14 @@ func escolhebat # Escolhe um personagem em condições de lutar
 func animalnum # Retorna o número do próximo lugar disponível para animal
 # A variável animal.[animalnum-1] é o próximo lugar disponível
 # Se retornar 0, significa que não há mais espaço
-  ret !animal.0, config.animal >= 1 ? 1 : 0
-  ret !animal.1, config.animal >= 2 ? 2 : 0
-  ret !animal.2, config.animal >= 3 ? 3 : 0
-  ret !animal.3, config.animal >= 4 ? 4 : 0
-  ret !animal.4, config.animal >= 5 ? 5 : 0
-  ret !animal.5, config.animal >= 6 ? 6 : 0
-  ret !animal.6, config.animal >= 7 ? 7 : 0
-  ret !animal.7, config.animal >= 8 ? 8 : 0
+  ret !animal.0, config:animal1 >= 1 ? 1 : 0
+  ret !animal.1, config:animal1 >= 2 ? 2 : 0
+  ret !animal.2, config:animal1 >= 3 ? 3 : 0
+  ret !animal.3, config:animal1 >= 4 ? 4 : 0
+  ret !animal.4, config:animal1 >= 5 ? 5 : 0
+  ret !animal.5, config:animal1 >= 6 ? 6 : 0
+  ret !animal.6, config:animal1 >= 7 ? 7 : 0
+  ret !animal.7, config:animal1 >= 8 ? 8 : 0
   ret 0
 
 

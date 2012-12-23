@@ -164,7 +164,7 @@ func p_perso # Digitar o nome do personagem
   indiceitem ind
   txt20 texto
   arqsav sav1
-  passo = "perso", tpasso = ""
+  passo = "perso", tpasso = nome = cnome = ""
   texto = txtnome(arg0)
   se !arg0
     msg("Digite o nome do seu personagem")
@@ -178,22 +178,13 @@ func p_perso # Digitar o nome do personagem
     cnome = "un " + texto
     nome = txtmaimin(arg0)
     msg("Criando personagem " + nome)
+    config:salvacria ? p_criasenha1 : p_sexo1
     p_sexo
   senao
     msg("Personagem '" + txtmaimin(arg0) + "' já existe")
     tpasso = txtmaimin(arg0)
     p_entrasenha
   fimse
-  ret 1
-
-func p_sexo # Digitar O ou A
-  passo = "sexo"
-  se arg0 != "O" && arg0 != "A"
-    msg("Você é homem ou mulher? Tecle O ou A")
-    ret 1
-  fimse
-  tpasso = arg0 == "O"
-  config:salvacria ? p_criasenha1 : p_entrajogo
   ret 1
 
 func p_criasenha1 # Digitar a senha ao criar personagem
@@ -208,7 +199,7 @@ func p_criasenha1 # Digitar a senha ao criar personagem
   senao intsenha(arg0)
     msg("Senha inválida, digite outras")
   senao
-    tpasso += " " + arg0
+    var.j_senha = arg0
     p_criasenha2
   fimse
   ret 1
@@ -217,13 +208,49 @@ func p_criasenha2 # Repetir a senha ao criar personagem
   passo = "criasenha2"
   se !arg0
     msg("Digite novamente a senha")
-  senao txt2(tpasso) != arg0
+  senao arg0 != var.j_senha
     msg("As senhas são diferentes")
-    p_criasenha1
+    var.limpar("j_")
+    p_perso
   senao
-    p_entrajogo
+    p_sexo1
   fimse
   ret 1
+
+func p_sexo1 # Digitar O ou A
+  passo = "sexo1"
+  se arg0 != "O" && arg0 != "A"
+    msg("Você é homem ou mulher? Tecle O ou A")
+    ret 1
+  fimse
+  var.j_sexo = arg0 == "O" # 0=feminino, 1=masculino
+  ret p_raca1
+
+func p_raca1 # Digitar a raça
+  passo = "raca1"
+  casovar arg0
+  casose "1"
+    var.j_tipo1 = "Anão"
+    sair
+  casose "2"
+    var.j_tipo1 = "Humano"
+    sair
+  casose "3"
+    var.j_tipo1 = "Elfo"
+    sair
+  casose "4"
+    msg("Anões, além da estatura pequena, são mais fortes fisicamentes, porém")
+    msg("mais fracos quando se trata de magia.")
+    msg("Já os elfos lidam melhor com magia e são mais rápidos, porém mais")
+    msg("fracos fisicamente.")
+    msg("Os humanos constituem uma raça mais equilibrada.")
+    ret 1
+  casose
+    msg("Escolha a raça digitando um número de 1 a 4:")
+    msg("1. Anão\n2. Humano\n3. Elfo\n4. Mais informações")
+    ret 1
+  casofim
+  ret p_entrajogo
 
 func p_entrajogo # Entrar no jogo: cria personagem
   passo = ""
@@ -233,8 +260,10 @@ func p_entrajogo # Entrar no jogo: cria personagem
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
   perso.jogconfig.bits = jogconfig.bits
-  perso.sexo = txt1(tpasso)
-  perso.senha = txtmin(txt2(tpasso))
+  perso.sexo = var.j_sexo
+  perso.senha = var.j_senha
+  perso.tipo1 = var.j_tipo1
+  var.limpar("j_")
   perso.mudadono(config:salaini)
   se perso.senha
     !perso.salvar && msg("Não foi possível salvar o personagem")
@@ -378,6 +407,7 @@ inttempo salvarev # Para salvar o jogo de tempos em tempos
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
+txt16 tipo1 # Raça do jogador; vide misc:tipo_* em mud-misc.int
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
@@ -440,6 +470,6 @@ func vazio2_exec # Sair do MUD automaticamente
   apagar(este)
 
 func cmd_recalc1 # Recalcula variáveis do personagem
-  pvidamax += 40 # Personagem do jogador tem mais pontos de vida
+  pnivel < 10 && (pvidamax += 50 - pnivel * 5)
   jogconfig.18 && (bitinv = bitinv | 16) # Propriedade config +invis
   jogconfig.19 && (bitver = bitver | 16) # Se é administrador

@@ -69,12 +69,15 @@ func escr
 
 classe cmd_soltar
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Soltar\b\n\
+const txtajuda = config:animal1 ? ta1 + ta2 + ta3 + ta4 : ta1 + ta3
+const ta1 = "\b\c3Soltar\b\n\
 Sintaxe: SOLTAR <objeto>\n\
          SOLTAR <quantidade> <objeto>\n\
          SOLTAR <objeto> <container>\n\
-         SOLTAR <quantidade> <objeto> <container>\n\
-Solta um objeto no chão ou em outro objeto (um container)."
+         SOLTAR <quantidade> <objeto> <container>\n"
+const ta2 = "         SOLTAR <número do animal>\n"
+const ta3 = "Solta um objeto no chão ou em outro objeto (um container)."
+const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
 #
 ref sala # Aonde soltar os itens
@@ -89,6 +92,41 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_soltar(arg0, arg1), nulo
   efim
+# Checa soltar animal
+  casovar arg1
+  casose "1"
+  casose "2"
+  casose "3"
+  casose "4"
+  casose "5"
+  casose "6"
+  casose "7"
+  casose "8"
+    uint8 num
+    num = int(arg1) - 1
+    sair num >= config:animal1
+    ref r
+    r = arg0.animal.[num]
+    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    ret r.p_soltar == 2, arg0.msg("Não é possível soltar esse animal.")
+    listaobj e
+    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+      sair e.objini.cmd_soltaranim(arg0, r, arg0.dono)
+    efim
+    r = arg0.animal.[num]
+    ret !r, nulo # Retorna se não possui mais o animal
+    $mens.p(arg0, r)
+    $mens.mvis1("$P se despede de $a e $a vai embora.")
+    apagar(r) # Apaga animal
+    arg0.recalc = 1 # Acerta personagem
+    arg0.animal.[num] = 0 # Indica que não tem o animal
+    arg0.escolhebat # Escolhe um animal em condições de batalhar
+    arg0.persoesc == r && (arg0.persoesc = arg0.persobat)
+    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+      sair e.objini.cmd_soltouanim(arg0, r, arg0.dono)
+    efim
+    ret
+  casofim
 # Obtém o objeto de onde pegar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
@@ -155,9 +193,14 @@ func escr
 
 classe cmd_dar
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Dar\b\n\
+const txtajuda = config:animal1 ? ta2 : ta1
+const ta1 = "\b\c3Dar\b\n\
 Sintaxe: DAR <objeto> <personagem>\n\
 Dá um objeto para outro personagem."
+const ta2 = "\b\c3Dar\b\n\
+Sintaxe: DAR <objeto> <personagem>\n\
+         DAR <número do animal> <personagem>\n\
+Dá um objeto ou animal para outro personagem."
 const posic = 5
 #
 ref sala # Para quem dar os itens
@@ -170,6 +213,57 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_dar(arg0, arg1), nulo
   efim
+# Dar animal a outro personagem
+  casovar txt1(arg1)
+  casose "1"
+  casose "2"
+  casose "3"
+  casose "4"
+  casose "5"
+  casose "6"
+  casose "7"
+  casose "8"
+    uint8 num
+    num = int(arg1) - 1
+    sair num >= config:animal1 || intsub(arg1) > 2
+    ref r
+    r = arg0.animal.[num]
+    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    ret r.p_soltar, arg0.msg("Não é possível dar esse animal.")
+    ret !txt2(arg1), arg0.msg("Dar " + arg1 + " para quem?")
+    listaobj l
+    nomeobj n
+    n.ini(txt2(arg1), 1)
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
+      se i.obj == arg0
+        ret arg0.msg("Dar para você mesmo?")
+      senao !l.objini.jog
+        ret arg0.msg(txtmaimin(l.objini.nome) + " não é jogador.")
+      senao !l.objini.animalnum
+        ret arg0.msg(txtmaimin(l.objini.nome) + " não tem espaço para receber animal.")
+      fimse
+      listaobj e
+      epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
+        sair e.objini.cmd_daranim(arg0, r, l.objini)
+      efim
+      r = arg0.animal.[num]
+      ret !r, nulo # Retorna se não possui mais o animal
+      uint8 num2
+      ret !(num2 = l.objini.animalnum), nulo
+      arg0.animal.[num] = 0, arg0.recalc = 1
+      l.objini.animal.[num2 - 1] = r, l.objini.recalc = 1
+      r.dono = l.objini
+      arg0.escolhebat
+      $mens.p(arg0, l.objini)
+      $mens.mvis1("$P dá " + r.nome + " para $a.")
+      epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
+        sair e.objini.cmd_deunim(arg0, r, l.objini)
+      efim
+      ret
+    efim
+    ret arg0.msg("Você não vê " + txt2(arg1) + ".")
+  casofim
 # Obtém o objeto de onde pegar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   ret !misc:sep2, arg0.msg("Dar itens para quem?")
@@ -292,3 +386,224 @@ func escr
   efim
 # Ajusta variáveis
   !total && arg0.msg("Você não está usando isso.")
+
+
+classe cmd_capturar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Capturar\b\n\
+Sintaxe: CAPTURAR\n\
+         CAPTURAR <objeto>\n\
+Usa um objeto para tentar capturar o animal que está lutando com você.\n\
+Se o nome do objeto for omitido, usa o último que você escolheu.\n\
+Nota: a captura pode falhar se o animal não gostar do item e/ou achar\n\
+que você não é digno. Por isso, é sempre bom enfraquecê-lo antes."
+const posic = 5
+
+func escr
+  ref r
+  ref item # Item usado para capturar
+# Checa se sabe o nome do item
+  ret !arg1 && !arg0.var.j_captura, arg0.msg("Capturar com o quê?")
+# Obtém o item
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1 ? arg1 : arg0.var.j_captura, 1000000)
+  listaobj l
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    r = l.objini
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    ret !r.i_captura, arg0.msg(r.nome + " não serve para capturar animais.")
+    item = r
+    sair
+  efim
+# Checa se pode capturar
+  ret !item, arg0.msg(arg1 ? "Você não vê isso." : "Capturar com o quê?")
+  arg1 && (arg0.var.j_captura = arg1)
+  r = arg0.atkenv.objlista # Alvo do personagem
+  se !r
+    se arg1
+      arg0.msg("Você escolhe " + arg1 + " (" + item.nome + ") para capturar animais.")
+    senao
+      arg0.msg("Não está lutando com nenhum animal.")
+    fimse
+    ret
+  senao !r.p_captura || r.perso != 2 || arg0.perso != 3
+    $mens.p(arg0, r)
+    $mens.mvis2("Não é possível capturar $a.", "")
+    ret
+  fimse
+  uint8 lugar
+  lugar = arg0.animalnum
+  ret lugar == 0, arg0.msg("Sem espaço para guardar animal.")
+# Decide se consegue capturar
+  real valor
+  valor = r.pvida * 100 / r.pvidamax
+  se valor < 10 # 0% a 10% de vida: valor=10
+    valor = 10
+  senao valor < 46 # 10% a 46% de vida: valor= 10 a 1
+    valor = (50 - valor) / 4
+  senao
+    valor = 1
+  fimse
+  casovar r.p_captura
+  casose "1" # Muito fácil
+    valor *= 2
+    sair
+  casose "2" # Fácil
+    valor *= 1.5
+    sair
+  casose "3" # Normal
+    sair
+  casose "4" # Difícil
+    valor /= 1.5
+    sair
+  casose "5" # Muito difícil
+    valor /= 2
+    sair
+  casofim
+  $mens.p(arg0, r)
+  se valor * item.i_captura(r) < r.pnivel * rand(5, 20)
+    $mens.mvis1("$P joga " + item.nome + " para $a, mas $a recusa.")
+    item.apagar(1)
+    ret
+  fimse
+  $mens.mvis1("$P joga " + item.nome + " para $a.")
+  item.apagar(1)
+# Captura
+  listaobj e
+  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+    sair e.objini.cmd_pegaranim(arg0, r, arg0.dono)
+  efim
+  ret arg0.animal.[lugar - 1] || !item, nulo # Retorna se o espaço foi ocupado
+  r.mudadono(arg0)
+  r.var.z_dono = arg0.nome
+  r.var.z_pnivel = r.pnivel
+  r.objsolto.remove(r)
+  arg0.animal.[lugar - 1] = r
+  arg0.recalc = 1
+  $mens.p(arg0, r)
+  $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
+  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, r, arg0.dono)
+  efim
+
+
+classe cmd_animal
+herda comando_comum, comando_ajuda
+const objcmd = config:animal1 ? este
+const objajuda = config:animal1 ? este
+const txtajuda = txttroca(txtajuda1, "$$", config:animal1)
+const txtajuda1 = "\b\c3Animais\b\n\
+  \c2CAPTURAR\b Pega o animal que está lutando com você.\n\
+  \c2SOLTAR\b   Solta um animal (você se desfaz dele).\n\
+  \c2DAR\b      Dá animal a outro personagem.\n\
+  \c2ANIMAL\b   Mostra animais que você possui.\n\
+  \c20\b        Não escolhe nenhum animal para batalha.\n\
+  \c21\b a \c2$$\b    Escolhe um animal seu, de 1 a $$."
+const posic = 0
+
+func escr
+  textotxt t
+  txt100 lin
+  uint8 num
+  ref animal
+  t.addfim((arg0.persobat == arg0 ? "0* Você  N" : "0  Você  N") + arg0.pnivel)
+  epara nulo, num < 8, num += 1
+    animal = arg0.animal.[num]
+    continuar !animal
+    lin = num + 1
+    lin += arg0.persobat == animal ? "*" : " "
+    se animal.pvida
+      lin += " " + animal.nome + "  N" + animal.pnivel
+    senao
+      lin += " (" + animal.nome + ")  N" + animal.pnivel
+    fimse
+    t.addfim(lin)
+  efim
+  se t.linhas == 1
+    arg0.msg("Não possui nenhum animal.")
+  senao
+    arg0.msg2("Animais:\n" + t.remove(1000))
+
+
+classe comando_escolhe
+herda comando_comum
+const objcmd = config:animal1 && int(nome) <= config:animal1 ? este
+const posic = 5
+
+func escr
+  ref r
+  r = perso(arg0) # Nota: perso está definido nas classes derivadas dessa
+  se !r
+    arg0.msg("Você não possui " + nome + ".")
+  senao arg0.persoesc == r
+    arg0.msg("Você já escolheu " + nome + ".")
+  senao r == arg0
+    se arg0.persoesc.pvida && arg0.atkenv # Animal está bom e está lutando
+      arg0.p_espera = 40 # Espera 4 segundos
+    fimse
+    arg0.persoesc = arg0
+    $mens.p(arg0)
+    $mens.mvis1("$P não escolhe ninguém.")
+    arg0.escolhebat # Atualiza persobat
+  senao
+    se arg0.persoesc.pvida && arg0.atkenv # Animal está bom e está lutando
+      arg0.p_espera = 40 # Espera 4 segundos
+    fimse
+    arg0.persoesc = r
+    arg0.escolhebat # Atualiza persobat
+    $mens.p(arg0, r)
+    $mens.mvis1("$P escolhe $A.")
+
+
+classe cmd_0
+herda comando_escolhe
+const nome = "0"
+const perso = arg0
+
+
+classe cmd_1
+herda comando_escolhe
+const nome = "1"
+const perso = arg0.animal.0
+
+
+classe cmd_2
+herda comando_escolhe
+const nome = "2"
+const perso = arg0.animal.1
+
+
+classe cmd_3
+herda comando_escolhe
+const nome = "3"
+const perso = arg0.animal.2
+
+
+classe cmd_4
+herda comando_escolhe
+const nome = "4"
+const perso = arg0.animal.3
+
+
+classe cmd_5
+herda comando_escolhe
+const nome = "5"
+const perso = arg0.animal.4
+
+
+classe cmd_6
+herda comando_escolhe
+const nome = "6"
+const perso = arg0.animal.5
+
+
+classe cmd_7
+herda comando_escolhe
+const nome = "7"
+const perso = arg0.animal.6
+
+
+classe cmd_8
+herda comando_escolhe
+const nome = "8"
+const perso = arg0.animal.7

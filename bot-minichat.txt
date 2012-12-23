@@ -1,0 +1,136 @@
+Minichat - Bot
+
+1. Sobre este manual
+2. Colocando um bot no bate-papo
+3. Escrevendo para os usuários
+4. Mensagens recebidas
+5. Anti-flooder
+
+
+1. SOBRE ESTE MANUAL
+
+
+Esse manual contém informações para criar bot para o Minichat e outros
+bate-papos com esse recurso.
+
+A palavra "bot" vem de "robot", e significa programas que entram em um
+bate-papo (ou qualquer outro lugar), como se fossem um usuário qualquer.
+Mas no caso do Minichat, é possível fazer com que todas as mensagens escritas
+pelos usuários, exceto as privativas, sejam direcionadas para o bot, e este,
+por sua vez, pode enviar mensagens para um ou mais usuários.
+
+Esse tipo de bot permite a criação de jogos, que podem ser ativados e
+desativados no bate-papo, sem que os usuários precisem sair.
+
+
+2. COLOCANDO UM BOT NO BATE-PAPO
+
+Colocar um bot no bate-papo é semelhante a entrar via Telnet. Apenas
+os comandos mudam. Ao entrar no bate-papo você recebe a mensagem:
++OK Para Telnet pressione ENTER
+
+Antes de pressionar ENTER escreva #bot (a palavra bot em letras
+minúsculas) seguido de espaço, o nome da sala, espaço e a senha de
+administração da sala. Por exemplo, se o nome da sala for morango, e a
+senha for mamão2, tecle:
+#bot morango mamão2
+
+Alguns servidores de bate-papo permitem bots globais. Tais bots, depois
+de ativados no bate-papo, podem ser ativados e desativados, em uma ou
+mais salas ao mesmo tempo.
+
+Para o bot, procedimento é exatamente o mesmo, bastando apenas escrever
+o nome do bot e a senha (fornecidos pela administração do bate-papo) ao
+invés da sala e a senha. Por exemplo, se estiver cadastrado um bot global
+chamado +paciência com a senha moeda5, tecle:
+#bot +paciência moeda5
+
+
+3. ESCREVENDO PARA OS USUÁRIOS
+
+Como explicado no tópico anterior, colocar um bot no bate-papo é semelhante
+a entrar via Telnet. Continuando...
+Para enviar uma mensagem tecle o nome do usuário ou da sala seguido
+de espaço e a mensagem.
+Por exemplo, teclando
+joão Bom dia
+Se joão for uma pessoa, somente joão receberá a seguinte mensagem:
+- Bom dia
+Se joão for uma sala, todos que estiverem na sala receberão essa
+mensagem.
+
+
+4. MENSAGENS RECEBIDAS
+
+O bate-papo envia uma mensagem vazia a cada 5 minutos sem comunicação
+com o bot (como ocorre via Telnet).
+
+As outras mensagens são para informar que o bot foi ativo ou desativo
+em uma sala, usuários entraram na sala ou saíram, mudaram de apelido
+ou escreveram para o bot.
+
+S+ seguido do nome da sala indica que o bot entrou na sala.
+S- seguido do nome da sala indica que o bot saiu da sala. Significa
+também que todos que estavam na sala perderam contato com o bot.
+S= seguido do nome da sala indica que a lista inicial de usuários foi
+enviada.
+U+ seguido do nome da sala, espaço e o apelido indica que um usuário
+entrou na sala.
+U- seguido do nome da sala, espaço e o apelido indica que um usuário
+saiu da sala.
+Um seguido do nome da sala, espaço, o apelido e uma mensagem indica que
+o usuário escreveu para o bot.
+Ua seguido do nome da sala, espaço, apelido atual, espaço e o novo
+apelido indica que um usuário mudou de apelido.
+
+Notas:
+
+A. Quando um bot é ativado em uma sala chega uma mensagem S+, a lista de
+usuários (mensagens U+) e uma mensagem S= indicando que a lista acabou.
+O que normalmente se faz é esperar uma mensagem S= para enviar uma
+mensagem de boas vindas dirigida a todos, e outra para cada um que entrar
+na sala a partir desse momento.
+B. O bot pode ser desativado antes de receber a lista completa de usuários.
+C. Quando é desativado chega apenas uma mensagem S- informando a sala.
+
+Exemplo comentado de mensagens enviadas ao bot:
+
+S+teste
+- O bot foi ativo na sala teste.
+U+teste João
+U+teste maria
+- Os usuários João e maria estão na sala.
+S=teste
+- Acabou de receber a lista de usuários.
+Umteste João Bom dia
+- João escreveu Bom Dia.
+Uateste maria Regina
+- maria mudou de apelido para Regina.
+U-teste Regina
+- Regina saiu da sala teste.
+S-teste
+- O bot saiu da sala teste. João, que estava na sala, perdeu contato
+com o bot como se tivesse saído da sala.
+
+
+5. ANTI-FLOODER
+
+O anti-flooder para bots evita que cada usuário receba muitas
+mensagens de uma só vez. Por exemplo, se um bot enviar 30 mensagens
+de 75 caracteres de uma só vez para alguém, somente as 5 primeiras
+chegarão. As demais serão ignoradas.
+
+Para isso não acontecer, o bot deve esperar 1 ou 2 segundos entre
+uma mensagem e outra, conforme o tamanho da mensagem.
+
+Basicamente, o que o anti-flooder faz é garantir que nenhum usuário
+receberá mais de 10 segundos em mensagens.
+
+Mensagens de 1 a 38 caracteres (aproximadamente) valem 1 segundo;
+de 39 a 76 valem 2; de 77 a 114 valem 3, e assim por diante.
+
+A cada segundo que se passa a contagem diminui 1 até chegar a 0.
+Quando o usuário escreve para o bot a contagem também é zerada.
+
+Há também um controle de banda. Por exemplo, o bate-papo nunca vai
+receber 10 Kbytes do bot por segundo.

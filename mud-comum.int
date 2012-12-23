@@ -34,7 +34,7 @@ uint16 luztot # Somente leitura: quantidade total de fontes de luz
 # const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func ini # Objeto é criado, acerta eventos, peso, volume e luz
-  arg0 ? (dono = arg0) : eveste && (evrec.0 = evento.addfim(este))
+  eveste && (evrec.0 = evento.addfim(este))
   pesoadd && (pesotot = pesoobj * objtot) # Acerta o peso
   voltot = volobj * objtot # Acerta o volume
   luztipo > 1 && (luztot = 1) # Acerta a luz

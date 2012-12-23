@@ -6,28 +6,26 @@ const iniclasse = criar(arg0)
 classe cmd_ajuda
 herda comando_comum
 const posic = 0
-const texto1 = "\b\c3Páginas de ajuda\b\n\
+const ta1 = "\b\c3Páginas de ajuda\b\n\
 Para ler tecle AJUDA seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
   \c2MOVER\b    Como movimentar-se no jogo\n\
   \c2COMUNICA\b Comunicação com outros jogadores\n\
   \c2INFO\b     Informações sobre o seu personagem\n\
-  \c2OBJETOS\b  Manuseio de objetos\n\
-  \c2COMBATE\b  Lutas com outros personagens\n\
+  \c2OBJETO\b   Manuseio de objetos\n"
+const ta2 = config:animal1 ? "  \c2ANIMAL\b   Manuseio de animais\n"
+const ta3 = "  \c2COMBATE\b  Lutas com outros personagens\n\
   \c2NOMES\b    Digitando nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
 Para sair do MUD tecle \c2FIM\b"
-
-func texto2
-  se arg0.jogconfig.19
-    ret "\nPara ler as páginas de administração tecle \c2ADM\b"
+const ta4 = arg0.jogconfig.19 ? "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func escr
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_ajuda(arg0, arg1), nulo
   efim
-  ret arg1 == "", arg0.msg2(texto1 + texto2(arg0))
+  ret arg1 == "", arg0.msg2(ta1(arg0) + ta2(arg0) + ta3(arg0) + ta4(arg0))
   ref obj
   prog p
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
@@ -73,13 +71,14 @@ const txtajuda = "\b\c3Informações\b\n\
   \c2INV\b      Os objetos que você está carregando.\n\
   \c2EQUIP\b    Os objetos equipando você ou que você está vestindo.\n\
   \c2QUEM\b     Os usuários que estão jogando no momento.\n\
+  \c2ONDE\b     A área em que está e os jogadores visíveis na mesma área.\n\
   \c2HAB\b      As habilidades do seu personagem.\n\
   \c2IDIOMA\b   Idiomas que o seu personagem conhece.\n\
-  \c2EXTRA\b    Itens extras que o seu personagem possui."
+  \c2EXTRA\b    Informações extras do seu personagem."
 # \C2EFEITO\b   Os efeitos que estão afetando o seu personagem."
 
 
-classe cmd_objetos
+classe cmd_objeto
 herda comando_ajuda
 const txtajuda = "\b\c3Objetos\b\n\
   \c2PEGAR\b    Pega um objeto, do chão ou de dentro de outro objeto.\n\
@@ -87,7 +86,7 @@ const txtajuda = "\b\c3Objetos\b\n\
   \c2DAR\b      Dá um objeto a outro personagem.\n\
   \c2VESTIR\b   Veste um objeto, ou usa como arma (se for arma).\n\
   \c2REMOVER\b  Deixa de vestir ou usar um objeto.\n\
-  \c2ABRIR\b    Abre um objeto (exemplo, uma bolsa ou baú).\n\
+  \c2ABRIR\b    Abre um objeto (exemplo, uma bolsa ou um baú).\n\
   \c2FECHAR\b   Fecha um objeto."
 
 
