@@ -1,6 +1,6 @@
 classe a_ini
 herda area
-const a_nome = "Ilha - área inicial"
+const a_nome = "Ilha (início)"
 
 
 classe b_ini
@@ -384,7 +384,7 @@ func cmd_abriudir
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se inttotal($p_ini002) < 1
+  se p_ini002:objsolto.total < 1
     criar("p_ini002", este, 27)
   fimse
 
@@ -523,7 +523,7 @@ const s_reset = "P 100 ini001 1 1 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se inttotal($p_ini001) < 1
+  se p_ini001:objsolto.total < 1
     criar("p_ini001", este, 1)
   fimse
 
@@ -614,7 +614,7 @@ const s_reset = "S 100 ini006 1 s\nP 100 ini003 31 31 1"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_ini006") && criar("i_ini006", este, 1)
-  se inttotal($p_ini003) < 1
+  se p_ini003:objsolto.total < 1
     criar("p_ini003", este, 31)
   fimse
 

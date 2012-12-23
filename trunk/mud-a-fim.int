@@ -1,6 +1,6 @@
 classe a_fim
 herda area
-const a_nome = "Quando morre"
+const a_nome = "Reino da morte"
 
 
 classe b_fim
@@ -44,6 +44,6 @@ func espera_exec # Restaura a vida do jogador
     se r.pvida < r.pvidamax / 2
       r.pvida += 2, espera = 10
     senao
-      r.mudadono($s_casa001)
+      r.mudadono($[r.var.z_salafim] ? $[r.var.z_salafim] : $s_casa001)
     fimse
   efim

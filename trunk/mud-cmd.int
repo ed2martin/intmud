@@ -79,7 +79,7 @@ func lista # Lista de itens, como habilidades, idiomas, etc.
   txt100 t2
   t1 = arg1.ini(arg2)
   enquanto txt(t1, 0, 2) == arg2
-    t2 = txttroca(txt(t1, 2), "_", " ")
+    t2 = txte(txt(t1, 2))
     se arg1.valor(t1) == "1"
       h.addfim(t2)
     senao
@@ -94,7 +94,6 @@ func lista # Lista de itens, como habilidades, idiomas, etc.
   senao
     arg0.msg(arg3)
   fimse
-  ret 1
 
 
 classe cmd_hab
@@ -117,18 +116,6 @@ Mostra os idiomas que o seu personagem conhece."
 
 func escr
   lista(arg0, arg0.var, "i_", "Nenhum idioma.", "Idiomas")
-
-
-classe cmd_extra
-herda comando_var, comando_ajuda
-const txtajuda = "\b\c3Extra\b\n\
-Sintaxe: EXTRA\n\
-Mostra os itens extras que o seu personagem possui. Geralmente são itens\n\
-permanentes (não se pode pode-se pegar, soltar, dar e vestir)."
-
-func escr
-  se !exevento(este, arg0, arg1)
-    lista(arg0, arg0.var, "o_", "Nenhum item extra.", "Itens extra")
 
 
 classe cmd_inv
@@ -181,13 +168,19 @@ Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
 const posic = 0
 
 func escr
+  se arg0.persoesc == arg0
+    arg0.msg(vidalin(arg0))
+  senao
+    arg0.msg(txtmaimin(arg0.persoesc.nome) + ": " + vidalin(arg0.persoesc))
+
+func vidalin
   txt100 lin
   lin = "Vida " + arg0.pvida + "/" + arg0.pvidamax
   lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
   lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
   lin += "  Nível " + arg0.pnivel
   lin += "  Experiência " + arg0.expatual + "/" + arg0.expmax
-  arg0.msg(lin)
+  ret lin
 
 
 classe cmd_hora
@@ -362,63 +355,54 @@ func escr
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
     ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
-    se l.objini.perso
-      $mens.p(arg0, l.objini)
+    r = l.objini
+    se r.perso
+      $mens.p(arg0, r)
       $mens.mvis2("", "$P olha para $a.")
     fimse
     textotxt t
     listaitem item
-    epara item = l.objini.dentro2.ini, item, item.depois
+    epara item = r.dentro2.ini, item, item.depois
       continuar !item.obj.vestpos || !item.obj.visivel(arg0)
       t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
     efim
     t.linhas && t.addini("Equipado com:")
-    t.addini(l.objini.descver(arg0))
-    txt100 t2
-    t2 = txtmaimin(l.objini.nome)
-    se l.objini.jog
-      t2 += ", jogador nível " + l.objini.pnivel
-    senao txt(l.objini.pnivel)
-      t2 += ", nível " + l.objini.pnivel
+    t.addini(r.descver(arg0))
+    txt200 t2
+    t2 = txtmaimin(r.nome)
+    se r.jog
+      t2 += ", jogador nível " + r.pnivel
+    senao txt(r.pnivel)
+      t2 += ", nível " + r.pnivel
     senao
       ret arg0.msg2(t2 + ".\n" + t.remove(1000))
     fimse
-    se txt(l.objini.pvida)
-      casovar intdiv(l.objini.pvida * 6 / l.objini.pvidamax)
-      casose "0"
-        t2 += ", à beira da morte"
-        sair
-      casose "1"
-        t2 += ", sangrando bastante"
-        sair
-      casose "2"
-        t2 += ", muito machucad" + misc:sletra[l.objini.sexo]
-        sair
-      casose "3"
-        t2 += ", bastante machucad" + misc:sletra[l.objini.sexo]
-        sair
-      casose "4"
-        t2 += ", um pouco machucad" + misc:sletra[l.objini.sexo]
-        sair
-      casose "5"
-        t2 += ", possui algumas escoriações"
-        sair
-      casose
-        t2 += ", perfeitamente saudável"
-      casofim
+    txt(r.pvida) && (t2 += ", " + estado(r))
+    se r.persobat && r.persobat != r
+      t2 += "\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
+      t2 += ", " + estado(r.persobat)
     fimse
     ret arg0.msg2(t2 + ".\n" + t.remove(1000))
-    se l.objini.jog
-      t.addini(txtmaimin(l.objini.nome) + ", jogador nível " + l.objini.pnivel + ".")
-    senao txt(l.objini.pnivel)
-      t.addini(txtmaimin(l.objini.nome) + ", nível " + l.objini.pnivel + ".")
-    senao
-      t.addini(txtmaimin(l.objini.nome) + ".")
-    fimse
-    arg0.msg2(t.remove(1000))
-    ret
   efim
   arg0.msg("Você não vê isso.")
+
+func estado # Retorna texto que contém o estado atual do personagem
+  casovar intdiv(arg0.pvida * 6 / arg0.pvidamax)
+  casose "0"
+    ret arg0.pvida ? "à beira da morte" : "demaiad" + misc:sletra[arg0.sexo]
+  casose "1"
+    ret "sangrando bastante"
+  casose "2"
+    ret "muito machucad" + misc:sletra[arg0.sexo]
+  casose "3"
+    ret "bastante machucad" + misc:sletra[arg0.sexo]
+  casose "4"
+    ret "um pouco machucad" + misc:sletra[arg0.sexo]
+  casose "5"
+    ret "possui algumas escoriações"
+  casose
+    ret "perfeitamente saudável"
+  casofim
 
 
 classe cmd_falar
@@ -507,3 +491,112 @@ func escr
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     arg0.msg("> " + item.obj.nome + " (" + item.obj.sock.nome + ")")
   efim
+
+
+classe cmd_onde
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Onde\b\n\
+Sintaxe: ONDE\n\
+Mostra a área em que você está e os jogadores que estiverem por perto."
+const posic = 0
+
+func escr
+  textotxt t0
+  txt100 area
+  ref r
+  epara r = arg0.dono, r.dono, r = r.dono
+  efim
+  area = r.s_area
+# Checa se pode ver a sala
+  se !r.visivel(arg0)
+    se 1 & arg0.bitver
+      arg0.msg("Está escuro...")
+    senao
+      arg0.msg("Você está ceg" + $mens.sexoA[arg0.sexo] + ".")
+    fimse
+    ret
+  fimse
+# Dados da área
+  t0.addfim("Área " + $a_[area].a_nome)
+# Lista de personagens dos jogadores
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+# continuar item.obj.jogconfig.18 && !arg0.jogconfig.18
+    continuar !item.obj.visivel(arg0)
+    epara r = item.obj.dono, r.dono, r = r.dono
+    efim
+    continuar area != r.s_area
+    misc:obj = arg0
+    t0.addfim(item.obj.nome + "    " + item.obj.dono.s_titulo)
+  efim
+  t0.txtmostra
+  arg0.msg2(t0.remove(1000))
+
+
+classe cmd_extra
+herda comando_var, comando_ajuda
+const txtajuda = config:animal1 ? ta1 : ta2
+const ta1 = "\b\c3Extra\b\n\
+Sintaxe: EXTRA\n\
+Mostra informações extras do seu personagem ou do animal que você\n\
+escolheu. Se houver algum item extra, geralmente é permanentes (não\n\
+pode-se pegar, soltar, dar e vestir)."
+const ta2 = "\b\c3Extra\b\n\
+Sintaxe: EXTRA\n\
+Mostra informações extras do seu personagem. Se houver algum item extra,\n\
+geralmente é permanentes (não pode-se pegar, soltar, dar e vestir)."
+
+func escr
+  textotxt t
+  textotxt h
+  txt100 t1
+  txt100 t2
+  ref r
+  r = arg0.persoesc
+  t.addfim("\b\c2Informações de \"" + r.nome + "\"\b")
+# Vida, mana e vigor
+  t1 = "Vida " + r.pvida + "/" + r.pvidamax
+  t1 += "  Mana " + r.pmana + "/" + r.pmanamax
+  t1 += "  Vigor " + r.pmove + "/" + r.pmovemax
+  t.addfim(t1)
+# Tipo
+  r.tipo1 && h.addfim(txtmaimin(r.tipo1))
+  r.tipo2 && h.addfim(txtmaimin(r.tipo1))
+  r.tipo3 && h.addfim(txtmaimin(r.tipo1))
+  h.linhas && t.addfim("Tipo/raça/classe: " + txttroca(h.remove(10), "\n", ", "))
+  t.addfim("Sexo:             " + (r.sexo ? "Masculino" : "Feminino"))
+# Quem pegou
+  se r != arg0
+    t.addfim("Pego por:         " + r.var.z_dono + " (no nível " + r.var.z_pnivel + ")")
+  fimse
+# Nível
+  t.addfim("Nível atual:      " + r.pnivel)
+  t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)
+# Batalha
+  t.addfim("Ataque/defesa:    " + r.atknorm + "/" + r.defnorm)
+  t.addfim("Atq/def mágica:   " + r.atkmag + "/" + r.defmag)
+  t.addfim("Precisão/evasão:  " + r.precisao + "/" + r.evasao)
+  t.addfim("Velocidade:       " + r.pveloc)
+# Mortes
+  se r == arg0
+    t.addfim("Mortes:           " + r.mortes)
+  senao
+    t.addfim("Desmaios:         " + r.mortes)
+  fimse
+# Itens extras
+  t1 = r.var.ini("o_")
+  enquanto txt(t1, 0, 2) == "o_"
+    t2 = txte(txt(t1, 2))
+    se r.var.valor(t1) == "1"
+      h.addfim(t2)
+    senao
+      h.addfim(r.var.valor(t1) + "x " + t2)
+    fimse
+    t1 = r.var.depois(t1)
+  efim
+  se h.linhas
+    t.addfim("Itens extras:")
+    t.addfim(txttroca(h.remove(1000), "\n", ", "))
+  fimse
+# Mensagem para o usuário
+  arg0.msg2(t.remove(1000))

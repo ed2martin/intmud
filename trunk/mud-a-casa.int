@@ -101,7 +101,7 @@ func cmd_ini # Personagem foi criado: anota o alvo
   alvo = arg3
 
 func cmd_recalc1 # Aumenta pontos de vida
-  pvidamax = pvidamax * 2
+  #pvidamax = pvidamax * 1.5
 
 func cmd_pnj_proc # Processamento do PNJ
 # Deve retornar 1 se não deve prosseguir com as ações do PNJ
@@ -319,12 +319,13 @@ const dir_l = $s_casa002
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
+  arg0.z_salafim = este
 # Para teste: muda o nível do personagem
-# se arg0.pnivel<10
+# se arg0.pnivel < 2
 # arg0.pnivel = 11, arg0.recalc = 1
 # arg0.var.j_salvar = 1, criar("i_casa002", arg0)
 
-func cmd_escr # Descansar
+func cmd_escr # Escreveu algo
   se arg1 == "deitar"
     uint8 total
     epara nulo, total < config:animal1, total += 1
@@ -658,7 +659,7 @@ const s_pnj = 0
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se inttotal($p_casa004) < 1
+  se p_casa004:objsolto.total < 1
     criar("p_casa004", este, 10)
   fimse
 
@@ -806,10 +807,10 @@ const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 4 6 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se inttotal($p_casa010) < 1 && rand(100) < 50
+  se p_casa010:objsolto.total < 1 && rand(100) < 50
     criar("p_casa010", este, rand(4, 6))
   fimse
-  se inttotal($p_casa011) < 1 && rand(100) < 50
+  se p_casa011:objsolto.total < 1 && rand(100) < 50
     criar("p_casa011", este, rand(4, 6))
   fimse
 
@@ -828,7 +829,7 @@ const s_reset = "P 100 casa006 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se inttotal($p_casa006) < 1
+  se p_casa006:objsolto.total < 1
     criar("p_casa006", este, 0)
   fimse
 
@@ -847,7 +848,7 @@ const s_reset = "P 100 casa005 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se inttotal($p_casa005) < 1
+  se p_casa005:objsolto.total < 1
     criar("p_casa005", este, 0)
   fimse
 
@@ -869,10 +870,10 @@ const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 4 6 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se inttotal($p_casa010) < 1 && rand(100) < 50
+  se p_casa010:objsolto.total < 1 && rand(100) < 50
     criar("p_casa010", este, rand(4, 6))
   fimse
-  se inttotal($p_casa011) < 1 && rand(100) < 50
+  se p_casa011:objsolto.total < 1 && rand(100) < 50
     criar("p_casa011", este, rand(4, 6))
   fimse
 
@@ -924,11 +925,11 @@ func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  se inttotal($p_casa009) < 1 && rand(100) < 50
+  se p_casa009:objsolto.total < 1 && rand(100) < 50
     p = u = criar("p_casa009", este, rand(3, 5))
   fimse
   ret u, nulo
-  se inttotal($p_casa008) < 1
+  se p_casa008:objsolto.total < 1
     criar("p_casa008", este, rand(3, 5))
   fimse
 
@@ -953,11 +954,11 @@ func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  se inttotal($p_casa007) < 2
+  se p_casa007:objsolto.total < 2
     p = u = criar("p_casa007", este, rand(3, 5))
   fimse
   ret u, nulo
-  se inttotal($p_casa008) < 1
+  se p_casa008:objsolto.total < 1
     criar("p_casa008", este, rand(3, 5))
   fimse
 
@@ -1088,7 +1089,7 @@ const a_reset = "P 100 casa013 0 0 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se inttotal($p_casa013) < 1
+  se p_casa013:objsolto.total < 1
     criar("p_casa013", este, 0)
   fimse
 

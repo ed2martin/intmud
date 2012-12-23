@@ -1,6 +1,6 @@
 classe a_teste
 herda area
-const a_nome = "Área inicial"
+const a_nome = "Testes e exemplos"
 
 
 classe b_teste
@@ -24,6 +24,23 @@ const nome = "pedra"
 const sexo = 0
 const descpos = "Aqui tem uma pedra."
 const pesoobj = 200
+
+
+classe i_teste003
+herda comum_itemgrupo
+const nome = "Carne crua"
+const pesoobj = 50
+const i_captura = 4
+const volobj = 4
+const pnivel = 4
+
+
+classe i_teste004
+herda comum_itemgrupo
+const nome = "Carne cozida"
+const pesoobj = 100
+const volobj = 8
+const i_captura = 8
 
 
 classe p_teste001
@@ -63,6 +80,26 @@ func deupedra15
 
 classe s_teste001
 herda b_teste
+const s_titulo = "Entrada"
+const s_desc = "Aqui há duas portas, uma ao norte, que leva ao início do jogo, e uma\n\
+ao sul para uma área de testes e exemplos. Para desabilitar a área de\n\
+testes, digite econfig, como administrador e mude a opção \"Sala inicial\"\n\
+para ini001. Inicialmente a senha de administração é x2."
+const s_luz = 1 # Luz: 1 Claro sem eventos de tempo
+const dir_n = $s_ini001
+const dir_s = $s_teste003
+const eveste = 1 # Receber eventos do próprio objeto
+
+func cmd_s
+  arg0.var.h_socar = 1
+  arg0.var.h_chutar = 1
+  arg0.pnivel = 1
+  arg0.recalc = 1
+  arg0.var.z_salafim = dir_s
+
+
+classe s_teste002
+herda b_teste
 const s_titulo = "Salão de espera"
 const s_desc = "O chão está coberto por uma nuvem branca, de modo que você não consegue\n\
 ver onde pisa. Para todos os outros lugares que você olha, só vê o azul\n\
@@ -83,12 +120,12 @@ func espera_exec # Restaura a vida do jogador
     se r.vida < r.vidamax / 2
       r.vida += 1, espera = 10
     senao
-      r.mudadono($s_teste002)
+      r.mudadono($s_teste003)
     fimse
   efim
 
 
-classe s_teste002
+classe s_teste003
 herda b_teste
 const s_titulo = "Jardim"
 const s_desc = "Isso é o que restou de um pequeno jardim. Não é grande, mas a grama\n\
@@ -97,29 +134,29 @@ Há uma placa aqui, com os seguintes dizeres:\n\
 Tecle as direções cardeais para ir de um lugar a outro: n s l o\n\
 Há também as direções colaterais: ne no se so\n\
 Em alguns lugares pode-se ir para cima e para baixo: c b"
-const dir_l = $s_teste003
+const dir_l = $s_teste004
 
 
-classe s_teste003
+classe s_teste004
 herda b_teste
 const s_titulo = "Centro do jardim"
 const s_desc = "Aqui o mato é ainda mais alto. À oeste o mato é um pouco mais baixo,\n\
 enquanto que ao norte você vê uma pequena trilha. À leste e ao sul não é\n\
 possível saber o que há além do mato."
-const dir_o = $s_teste002
-const dir_s = $s_teste004
-const dir_l = $s_teste005
-const dir_n = $s_teste006
+const dir_o = $s_teste003
+const dir_s = $s_teste005
+const dir_l = $s_teste006
+const dir_n = $s_teste007
 
 
-classe s_teste004
+classe s_teste005
 herda b_teste
 const s_titulo = "Jardim"
 const s_desc = "Aqui o mato é um pouco mais baixo que ao norte. Há algumas pedras\n\
 espalhadas pelo chão. Você anda com cuidado para não torcer o pé.\n\
-Ao sul nota-se claramente a certa que delimita o jardim."
-const dir_n = $s_teste003
-const dir_ne = $s_teste005
+Ao sul, você pode pular a cerca que delimita o jardim."
+const dir_n = $s_teste004
+const dir_ne = $s_teste006
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -139,8 +176,10 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste002") && criar("i_teste002", este, 0)
 
+const dir_s = $s_teste014
 
-classe s_teste005
+
+classe s_teste006
 herda b_teste
 const s_titulo = "Jardim"
 const s_desc = "O mato termina repentinamente nessa direção. Há uma parede à leste. Algum\n\
@@ -150,20 +189,20 @@ bastaria teclar pegar minhoca, e em seguida, teclar soltar minhoca.\n\
 E se encontrasse um pescador, poderia teclar: dar minhoca pescador\n\
 Pode-se abreviar muita coisa, escrevendo só o começo das palavras. Exemplo,\n\
 peg minho ou mesmo pe mi ao invés de pegar minhoca."
-const dir_o = $s_teste003
-const dir_so = $s_teste004
-const dir_no = $s_teste006
+const dir_o = $s_teste004
+const dir_so = $s_teste005
+const dir_no = $s_teste007
 
 
-classe s_teste006
+classe s_teste007
 herda b_teste
 const s_titulo = "Trilha"
 const s_desc = "O mato chega a um metro aqui, e ao sul crece ainda mais. Na direção norte,\n\
 vai diminuindo gradativamente. É possível seguir também a sudeste.\n\
 Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
-const dir_s = $s_teste003
-const dir_n = $s_teste012
-const dir_se = $s_teste005
+const dir_s = $s_teste004
+const dir_n = $s_teste008
+const dir_se = $s_teste006
 const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_n # Jogador quer ir para o norte
@@ -176,40 +215,40 @@ const s_reset = "P 100 teste001 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se inttotal($p_teste001) < 1
+  se p_teste001:objsolto.total < 1
     criar("p_teste001", este, 0)
   fimse
 
 
-classe s_teste012
+classe s_teste008
 herda b_teste
 const s_titulo = "Sala ampla"
 const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal assombrada.\n\
 Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
 e uma passagem ao norte."
-const dir_l = $s_teste014
-const dir_n = $s_teste013
-const dir_s = $s_teste006
+const dir_l = $s_teste010
+const dir_n = $s_teste009
+const dir_s = $s_teste007
 const portaini_n = 2
 
 
-classe s_teste013
+classe s_teste009
 herda b_teste
 const s_titulo = "Passagem"
 const s_desc = "Um pequeno quarto escuro, que deveria levar a algum lugar, mas você não vê\n\
 nenhuma saída. As paredes estão cinzas de sujeira e há teias de aranha\n\
 por toda parte. Nota-se que ninguém vem aqui há anos."
-const dir_s = $s_teste012
+const dir_s = $s_teste008
 const portaini_s = 2
 
 
-classe s_teste014
+classe s_teste010
 herda b_teste
 const s_titulo = "Corredor"
 const s_desc = "Você está em um corredor que se estende a oeste. Mais adiante há uma\n\
 sala bastante ampla. À leste há uma escada para o andar de baixo."
-const dir_s = $s_teste015
-const dir_o = $s_teste012
+const dir_s = $s_teste011
+const dir_o = $s_teste008
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -223,15 +262,15 @@ func ini
   criar("i_teste001", este)
 
 
-classe s_teste015
+classe s_teste011
 herda b_teste
 const s_titulo = "Sala de estar"
 const s_desc = "Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
 ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
 corredor estreito para leste e uma escada para o andar de cima, ao sul.\n\
 Aqui você pode salvar o personagem teclando salvar"
-const dir_n = $s_teste014
-const dir_l = $s_teste016
+const dir_n = $s_teste010
+const dir_l = $s_teste012
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -243,7 +282,7 @@ func cmd_escr # Personagem escreveu alguma coisa
     ret 1
 
 
-classe s_teste016
+classe s_teste012
 herda b_teste
 const s_titulo = "Forno microondas"
 const s_desc = "Misteriosamente você acaba de entrar em um forno de microondas.\n\
@@ -254,9 +293,188 @@ const s_morre = 1
 const dir_o = $ini015
 
 
-classe s_teste007
+classe s_teste013
 herda b_teste
 const s_titulo = "Dentro de um armário"
 const s_desc = "Esse lugar está completamente abandonado há alguns anos. Há teias de aranha\n\
 por todo lado. As paredes de madeira, marrom claro, agora estão pretas de\n\
 sujeira. O simples fato de entrar aqui levanta uma poeira que faz você\ntossir."
+
+
+classe s_teste014
+herda b_teste
+const s_titulo = "Animais e batalha"
+const s_desc = "À leste você pode mudar o seu nível.\n\
+À oeste pode batalhar com animais de níveis diferentes.\n\
+À sudeste há alguns itens, usados para capturar animais."
+const dir_n = $s_teste005
+const dir_l = $s_teste015
+const dir_se = $s_teste016
+const dir_o = $s_teste017
+
+
+classe s_teste015
+herda b_teste
+const s_titulo = "Mudança de nível"
+const s_desc = "Aqui você pode mudar o nível do seu personagem teclando AA ou BB.\n\
+Notar que em um MUD de verdade, essa opção não pode existir."
+const dir_o = $s_teste014
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_salaperso # Personagem chegou
+  se arg0.jog
+    misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  se arg1 == "AA"
+    se arg0.pnivel < 10
+      arg0.pnivel += 1
+      arg0.recalc = 1
+      arg0.msg("Você é nível " + arg0.pnivel + ".")
+    senao
+      arg0.msg("Essa opção não sobe além do 10.")
+    fimse
+    ret 1
+  senao arg1 == "BB"
+    se arg0.pnivel > 1
+      arg0.pnivel -= 1
+      arg0.recalc = 1
+      arg0.msg("Você é nível " + arg0.pnivel + ".")
+    senao
+      arg0.msg("Essa opção não desce baixo do 1.")
+    fimse
+    ret 1
+
+
+classe s_teste016
+herda b_teste
+const s_titulo = "Itens de captura"
+const s_desc = "Você pode capturar animais aproximadamente nível 6 com esses itens\n\
+no chão. Alguns são mais fáceis, outros mais difíceis.\n\
+Pegue alguns, e quando estiver lutando, use o comando capturar. Mas\n\
+antes, enfraqueça o animal, senão é mais dífícil de capturar.\n\
+Pode pegar itens teclando, por exemplo, \"peg 3 car_cru\" e \"peg 5 car_coz\"."
+const dir_no = $s_teste014
+const s_reset = "S 100 teste003 10 S\nS 100 teste004 10 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste003") && criar("i_teste003", este, 10)
+  !dentro1.objini("i_teste004") && criar("i_teste004", este, 10)
+
+
+classe s_teste017
+herda b_teste
+const s_titulo = "Animais"
+const s_desc = "Esta é a praça central de um pequeno zoológico. À leste fica a saída.\n\
+Nas outras direções, você entra na jaula de alguns animais, e poderá\n\
+batalhar com eles. Você pode se recuperar aqui teclando deitar."
+const dir_l = $s_teste014
+const dir_n = $s_teste018
+const dir_o = $s_teste019
+const dir_s = $s_teste020
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  se arg1 == "deitar"
+    uint8 total
+    epara nulo, total < config:animal1, total += 1
+      arg0.animal.[total].restaurar
+    efim
+    arg0.restaurar
+    $mens.p(arg0)
+    $mens.mtodos1("$P descansa e se recupera.")
+    ret 1
+
+
+classe s_teste018
+herda b_teste
+const dir_s = $s_teste017
+const s_titulo = "Macaco"
+const s_desc = "Aqui fica um mamífero quadrúmeno. Se alimentam de frutas e de sementes,\n\
+ma quem sabe algum deles se interesse por uma bisteca. Geralmente são\n\
+inteligentes, sociáveis e muito ágeis, mas esses aqui se sentiram\n\
+ameaçados quando você entrou na jaula."
+const s_reset = "P 100 teste002 3 6 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste002:objsolto.total < 1
+    criar("p_teste002", este, rand(3, 6))
+  fimse
+
+
+classe s_teste019
+herda b_teste
+const dir_l = $s_teste017
+const s_titulo = "Cão"
+const s_desc = "Aqui é a jaula de um mamífero da família dos canídeos. São quadrúpedes,\n\
+mas de vez em quando ficam em pé apoiados em duas patas apenas. Esses\n\
+aqui são um pouco selvagens, pouco acostumados com a presença humana."
+const s_reset = "P 100 teste003 3 6 1 h_socar=1,h_arremessar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste003:objsolto.total < 1
+    criar("p_teste003", este, rand(3, 6), "h_socar=1,h_arremessar=1")
+  fimse
+
+
+classe s_teste020
+herda b_teste
+const dir_n = $s_teste017
+const s_titulo = "Morcego"
+const s_desc = "Esta é a jaula de alguns mamíferos da ordem dos quirópteros. Esses aqui\n\
+são basicamente ratos voadores, mas os membros inferiores possuem patágio,\n\
+por isso podem funcionar como asas, e esses animais podem voar."
+const s_reset = "P 100 teste004 3 6 1 h_arremessar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste004:objsolto.total < 1
+    criar("p_teste004", este, rand(3, 6), "h_arremessar=1")
+  fimse
+
+
+classe p_teste002
+herda comum_persobat
+const nome = "Macaco"
+const descpadr = "Um macaco está fazendo bagunça aqui."
+const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
+const p_captura = 3 # Capturar: 3 Normal
+const p_agressivo = 2 # Agressivo: 2 Sim
+const pesoobj = 30
+const volobj = 500
+const tipo1 = "luta"
+const inivar = "h_socar=1,h_chutar=1"
+
+
+classe p_teste003
+herda comum_persobat
+const nome = "Cão"
+const descpadr = "Um cachorro late para você."
+const descver = "Mamífero da família dos canídeos."
+const p_captura = 2 # Capturar: 2 Fácil
+const p_agressivo = 2 # Agressivo: 2 Sim
+const pesoobj = 30
+const volobj = 500
+const inivar = "h_arremessar=1"
+
+
+classe p_teste004
+herda comum_persobat
+const nome = "Morcego"
+const descpadr = "Um morcego está voando."
+const descver = "Mamífero da ordem dos quirópteros"
+const p_captura = 4 # Capturar: 4 Difícil
+const p_agressivo = 2 # Agressivo: 2 Sim
+const pesoobj = 30
+const volobj = 500
+const tipo1 = "ar"
+const inivar = "h_arremessar=1"
+
+func cmd_recalc1 # Recalcula variáveis do personagem
+  pveloc += pnivel * 2

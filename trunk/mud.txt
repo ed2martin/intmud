@@ -197,6 +197,12 @@ i_ = idioma
 o_ = item classificado como "outros"
 z_ = variável não visível ao jogador
 
+Variáveis mais comuns:
+z_dono = nome do dono original (quem capturou o animal)
+z_pnivel = nível do animal quando foi capturado
+j_captura = nome do item que o jogador escolheu para capturar animais
+z_salafim = sala para onde vai quando retorna da morte
+
 
 5. Comum a salas, personagens e itens (mud-comum.int)
 
@@ -546,19 +552,27 @@ Em que posição está vestindo.
 Outros valores, vide vestir1, acima.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
-10.4. const i_movel = 0
+10.4. func i_captura( animal )
+      const i_captura = 0
+Nível médio dos animais que podem ser capturados com esse item.
+Se for 0, esse item não pode ser usado para capturar animais.
+O argumento dessa função é o animal que o jogador está tentando capturar,
+(uma variável ref), ou nulo se estiver apenas escolhendo esse item para
+capturar.
+
+10.5. const i_movel = 0
 Tipo de móvel:
 0 = não é móvel
 1 = pode sentar
 2 = pode sentar e deitar
 
-10.5. const i_lugar = 0
+10.6. const i_lugar = 0
 Quantos personagens podem sentar-se.
 
-10.6. const i_abertoini = 0
+10.7. const i_abertoini = 0
 Valor inicial de aberto
 
-10.7. uint8 i_aberto
+10.8. uint8 i_aberto
 Tipo de container:
 0 = não é container
 1 = está sempre aberto
@@ -566,11 +580,11 @@ Tipo de container:
 3 = está fechado
 4 = está trancado
 
-10.8. func vestir( posição )
+10.9. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.9. func mudadono(novo dono, quantidade)
+10.10. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
@@ -678,6 +692,11 @@ func cmd_soltouobj(personagem, destino, item, quantidade do item)
 func cmd_deuobj(personagem, destino, item, quantidade do item)
 Pegou, soltou ou deu algum item.
 
+func cmd_pegouanim(personagem, animal, sala)
+func cmd_soltouanim(personagem, animal, sala)
+func cmd_deuanim(personagem, animal, personagem destino)
+Pegou (capturou), soltou ou deu algum animal.
+
 func cmd_abriudir(personagem, sala, texto)
 func cmd_fechoudir(personagem, sala, texto)
 Abriu ou fechou porta na direção especificada.
@@ -733,6 +752,11 @@ func cmd_pegarobj(personagem, origem, item, quantidade do item)
 func cmd_soltarobj(personagem, destino, item, quantidade do item)
 func cmd_darobj(personagem, destino, item, quantidade do item)
 Quer pegar, soltar ou dar algum item.
+
+func cmd_pegaranim(personagem, animal, sala)
+func cmd_soltaranim(personagem, animal, sala)
+func cmd_daranim(personagem, animal, personagem destino)
+Quer pegar (capturar), soltar ou dar algum animal.
 
 func cmd_abrirdir(personagem, sala, texto)
 func cmd_fechardir(personagem, sala, texto)

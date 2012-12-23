@@ -180,6 +180,29 @@ func atknome # Retorna o nome do ataque a partir do tipo
   casofim
   ret "desconhecido"
 
+func tipo_anao # Mais forte fisicamente, mais fraco na magia
+  atknorm += pnivel * 3, defnorm += pnivel * 3
+  atkmag -= pnivel * 4, defmag -= pnivel * 4
+  pvidamax += pnivel * 2
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+func tipo_elfo # Mais fraco fisicamente, mais forte na magia
+  atknorm -= pnivel * 4, defnorm -= pnivel * 4
+  atkmag += pnivel * 3, defmag += pnivel * 3
+  pveloc += pnivel * 3
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+func tipo_humano # Equilibrado
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
 func tipo_normal # Contusão/Normal
   deftipo.1 -= 2 # luta
   deftipo.2 -= 2 # cortante
@@ -377,9 +400,6 @@ func sepperso # Procura o personagem destino
   listaitem i
   nomeobj n
   n.ini(misc:sep2, 1)
-# epara i = arg0.dentro2.ini, i, i.depois
-# ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
-# efim
   epara i = arg0.dono.dentro2.ini, i, i.depois
     ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
   efim

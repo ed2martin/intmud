@@ -1426,42 +1426,64 @@ senao
 msg("n não é 1 e nem 2")
 fimse # Nota: esse 'fimse' aqui é opcional
 
-14.2. casovar <argumento> ... casofim
-      casose "texto"
-      casose
+14.2. Bloco 'casovar'
 
-Avalia o argumento e transforma em texto. Em seguida, vai para a instrução
-casose que contém o texto correspondente (letras maiúsculas e minúsculas
-são consideradas diferentes). Se não encontrar o texto, vai para
-a instrução 'casose' sem argumentos ou, se essa instrução não existir,
-vai para o 'casofim'.
+Sintaxe:
 
-A instrução 'sair' sai do laço casovar, indo direto para o 'casofim'.
-Nota: um 'casovar' com vários 'casose' é mais eficiente que várias instruções
-'se' e 'senao'.
-
-Exemplo 1: Mesma funcionalidade do exemplo 1 do bloco 'se'
-
-casovar x
-casose "abc"
-msg("x é abc")
-sair
-casose "def"
-msg("x é def")
-sair
+casovar <argumento>
+casose "texto"
+<comandos>
 casose
-msg("x não é abc nem def")
+<comandos>
 casofim
 
-Exemplo 2: Mesma funcionalidade do exemplo 2 do bloco 'se'
+Transforma <argumento> em texto e verifica qual instrução casose contém o
+mesmo texto. Nessa comparação, letras maiúsculas e minúsculas são
+consideradas diferentes.
 
-casovar n+2
+Se encontrar, vai para os comandos da instrução casose correspondente.
+Se não encontrar, vai para a instrução casose sem argumentos ou, se essa
+não existir, vai direto para a instrução casofim.
+
+A instrução 'sair', dentro do bloco 'casovar', avança direto para a instrução
+'casofim'. Por isso, é comum terminar os comandos com uma instrução 'sair'.
+Caso contrário, o IntMUD prossegue executando os comandos dos próximos
+casose, na sequência.
+
+Nota: Um 'casovar' com vários casose é mais eficiente que várias
+      instruções 'se' e 'senao'.
+
+Exemplo:
+
+func x
+casovar rand(1, 5)
 casose "1"
+msg("N é 1")
+sair
 casose "2"
-msg("a")
-casose "3"
-msg("b")
+msg("N é 2")
+sair
+casose "5"
+msg("Adivinha só?")
+casose
+msg("N não é nem 1 nem 2")
 casofim
+
+Exemplo correspondente usando um bloco 'se':
+
+func x
+uint8 n
+n = rand(1, 5)
+se n == 1
+msg("N é 1")
+senao n == 2
+msg("N é 2")
+senao n == 5
+msg("Adivinha só?")
+msg("N não é nem 1 nem 2")
+senao
+msg("N não é nem 1 nem 2")
+fimse
 
 14.3. enquanto <argumento>  ... efim
 
@@ -1895,11 +1917,11 @@ Verifica se texto é válido para senha. Retorna:
 
 15.6. FUNÇÕES PARA OBJETOS
 
-15.6.1. ref(a)
-Referência constante; retorna o mesmo objeto que a.
-Se a não for um objeto, retorna nulo.
-Se for fornecido mais de uma referência (exemplo: ref(a,b,c)),
-retorna a primeira que não for nula.
+15.2.6. ref(<objeto 1>, <robjeto 2>, <objeto 3> ..., <objeto N>)
+Checa os argumentos, do primeiro ao último, até encontrar um que seja
+um objeto. Se encontrou, retorna o objeto. Caso contrário retorna nulo.
+Portanto, quando houver apenas um argumento, que retorna o objeto
+correspondente ou nulo se não for objeto.
 
 15.6.2. criar(<nome da classe>, [argumentos da função ini])
 Cria um objeto e chama a função ini do objeto.

@@ -6,8 +6,8 @@ const posic = 7
 const nome = "" # Nome do golpe
 const tipo = 0 # Tipo de golpe
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
-const ataque = 100 # Força de ataque, 100 significa 100%
-const veloc = 100 # Velocidade do golpe, 100 significa 100%
+const ataque = 50 # Força de ataque, 100 significa 100%
+const veloc = 50 # Velocidade do golpe, 100 significa 100%
 const msgatk = "$R ataca $c"
 uint8 result # Resultado do ataque, usado em execgolpe e msgefeito
 # 0=cancelar ataque (não gera nenhuma mensagem), 1=errou o alvo
@@ -137,11 +137,16 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # vel = velocidade do golpe
-  uint8 tempo
+  real tempo
 # Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
-  tempo = 10 + arg1.persobat.pveloc * 2000 / (arg0.persobat.pveloc * veloc + 1)
-  tempo < 5 && (tempo = 5)
-  tempo > 60 && (tempo = 60)
+# Fórmula 1
+# tempo = arg0.persobat.pveloc + arg1.persobat.pveloc # Tempo total
+# tempo = tempo * 1500 / (arg0.persobat.pveloc * veloc + 1)
+# Fórmula 2
+  tempo = arg1.persobat.pveloc * 3000 / (arg0.persobat.pveloc * veloc + 1)
+# Acerta o tempo
+  tempo < 8 && (tempo = 8)
+  tempo > 70 && (tempo = 70)
   arg0.p_espera < tempo && (arg0.p_espera = tempo)
 
 func execgolpe # Realiza um ataque e coloca resultado em result
@@ -172,8 +177,8 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     senao dano == 1 # Errou o alvo automaticamente
       ret
     senao # Checa se acertou
-      dano += precisao * arg0.precisao / 100 - arg1.evasao
-      !arg1.visivel(arg0) && (dano -= 5) # Invisível é mais difícil de acertar
+      dano += precisao * r.precisao / 100 - s.evasao
+      !s.visivel(r) && (dano -= 5) # Invisível é mais difícil de acertar
       ret dano <= 0, nulo
     fimse
   fimse
@@ -188,11 +193,11 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   fimse
   result = dano <= -2 ? 5 : dano >= 2 ? 3 : 4
   dano = misc:defbonus.[128 - dano]
-# Calcula dano
+# Calcula dano; valor do rand é por volta de 300
   se misc:aktipo(tipo) # Checa se golpe normal ou especial
-    dano *= r.atkmag * arg2 / (s.defmag * rand(80, 120))
+    dano *= r.atkmag * (r.atkmag + 25) * arg2 / (s.defmag * rand(280, 340))
   senao
-    dano *= r.atknorm * arg2 / (s.defnorm * rand(80, 120))
+    dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(280, 340))
   fimse
   dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
 # Modificadores de posição
@@ -271,8 +276,8 @@ herda comando_ataque
 const nome = "Socar"
 const msgatk = "$R soca $c"
 const tipo = 0 # Normal
-const ataque = 80
-const vel = 150
+const ataque = 40
+const vel = 80
 const extra = "Golpe físico de força"
 
 
@@ -281,8 +286,8 @@ herda comando_ataque
 const nome = "Chutar"
 const msgatk = "$R chuta $c"
 const tipo = 0 # Normal
-const ataque = 100
-const vel = 100
+const ataque = 70
+const vel = 50
 const extra = "Golpe físico de força"
 
 
@@ -291,8 +296,8 @@ herda comando_ataque
 const nome = "Arremessar"
 const msgatk = "$R se joga contra $c"
 const tipo = 0 # Normal
-const ataque = 100
-const vel = 100
+const ataque = 80
+const vel = 30
 const extra = "Golpe físico de força"
 
 
@@ -301,8 +306,8 @@ herda comando_ataque
 const nome = "Arremessar"
 const msgatk = "$R morde $c"
 const tipo = 0 # Normal
-const ataque = 100
-const vel = 100
+const ataque = 50
+const vel = 60
 const extra = "Golpe físico de força"
 
 
@@ -315,7 +320,7 @@ const nome = "Ataque automático"
 const msgatk = "$R dá um golpe em $c"
 const tipo = 0 # Normal
 const ataque = 20
-const vel = 100
+const vel = 50
 const extra = "Ataque automático"
 
 func ataca # arg0 ataca arg1
