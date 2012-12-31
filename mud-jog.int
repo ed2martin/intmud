@@ -20,6 +20,7 @@ textotxt txtmais # Texto do tecle M para mais
 int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
+intexec msgprompt # Para enviar mensagens do prompt
 #
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -74,14 +75,22 @@ func recebe # Recebeu mensagem do jogador
     comandos.limpar
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
-    jogconfig.19 = !jogconfig.19
-    perso.jogconfig.19 = jogconfig.19
+    jogconfig.23 = !jogconfig.23 # Administração
+    jogconfig.19 = jogconfig.23 # Canal AC
+    perso.jogconfig.bits = jogconfig.bits
     perso.recalc = 1 # Para atualizar perso.bitver
-    se jogconfig.19
-      msg("Você virou administrador, tecle ADM para saber os comandos.")
+    txt100 t1
+    se jogconfig.23
+      msg("Você virou admin, tecle ADM para saber os comandos.")
+      t1 = "*** " + perso.nome + " virou admin."
     senao
-      msg("Você deixou de ser administrador")
+      msg("Você deixou de ser admin.")
+      t1 = "*** " + perso.nome + " deixou de ser admin."
     fimse
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.23 && item.obj != este && item.obj.msg(t1)
+    efim
     ret
   senao arg0 != "!" # Anota o último comando
     casovar txt(arg0, 0, 1)
@@ -96,7 +105,7 @@ func recebe # Recebeu mensagem do jogador
     casofim
   fimse
 # Comando de administração
-  se jogconfig.19 && cmd_[txt1(ultimocom)](txt2(ultimocom))
+  se jogconfig.23 && cmd_[txt1(ultimocom)](txt2(ultimocom))
     comandos.limpar
     ret
 # Comando para o jogo
@@ -143,14 +152,30 @@ func txtmostra # Mostra próximo bloco de txtmais
 func msg
   casovar jogconfig.bits & 12
   casose "0" # -CORES -ACENTO
-    ret msgsock("\b" + txtremove(arg0, "C7"))
+    ret msgsock("\b" + txtremove(arg0, "C7")) + (msgprompt = 1)
   casose "4" # +CORES -ACENTO
-    ret msgsock(txtremove(arg0, "7"))
+    ret msgsock(txtremove(arg0, "7")) + (msgprompt = 1)
   casose "8" # -CORES +ACENTO
-    ret msgsock("\b" + txtremove(arg0, "C"))
+    ret msgsock("\b" + txtremove(arg0, "C")) + (msgprompt = 1)
   casose "12" # +CORES +ACENTO
-    ret msgsock(arg0)
+    ret msgsock(arg0) + (msgprompt = 1)
   casofim
+
+func msgprompt_exec
+  se !perso
+  senao perso.atkenv
+    ret !jogconfig.7, nulo
+    txt150 t1
+    t1 = perso.var.z_bprompt
+    t1 = $mens_prompt.mens(t1, perso)
+    msg(t1), msgprompt = 0
+  senao
+    ret !jogconfig.6, nulo
+    txt150 t1
+    t1 = perso.var.z_prompt
+    t1 = $mens_prompt.mens(t1, perso)
+    t1 = $mens_prompt.mens(perso.var.z_prompt, perso)
+    msg(t1), msgprompt = 0
 
 func vazio_exec
   msg("Muito tempo sem comunicação")
@@ -265,6 +290,7 @@ func p_entrajogo # Entrar no jogo: cria personagem
   perso.tipo1 = var.j_tipo1
   var.limpar("j_")
   perso.mudadono(config:salaini)
+  perso.recalc = 1
   se perso.senha
     !perso.salvar && msg("Não foi possível salvar o personagem")
   fimse
@@ -323,7 +349,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
 # Acerta variáveis
     listaitem item
     debug d
-    epara item = l1.ini, item, item.depois
+    epara item = l1.fim, item, item.antes
       d.exec = 5000
       !item.obj.dono && !item.obj.jog && apagar(item.obj)
       item.obj.var.limpar("d_", "j_")
@@ -412,6 +438,8 @@ txt16 tipo1 # Raça do jogador; vide misc:tipo_* em mud-misc.int
 func ini # Objeto foi criado
   tempojogo1 = 864000
   nivel = 1
+  var.z_prompt = "<%hhp %mmn %vmv> "
+  var.z_bprompt = "<%hhp %mmn %vmv> "
   comum_persoanimal:ini
 
 func fim # Objeto foi apagado
@@ -471,5 +499,5 @@ func vazio2_exec # Sair do MUD automaticamente
 
 func cmd_recalc1 # Recalcula variáveis do personagem
   pnivel < 10 && (pvidamax += 50 - pnivel * 5)
-  jogconfig.18 && (bitinv = bitinv | 16) # Propriedade config +invis
-  jogconfig.19 && (bitver = bitver | 16) # Se é administrador
+  jogconfig.18 && (bitinv = bitinv | 128) # Propriedade config +invis
+  jogconfig.23 && (bitver = bitver | 128) # Se é administrador

@@ -576,6 +576,7 @@ void TVarIntExec::setValor(int valor)
             return;
         (Antes ? Antes->Depois : Inicio) = Depois;
         (Depois ? Depois->Antes : Fim) = Antes;
+        Antes = Depois = 0;
     }
     else if (valor) // Se a variável for 0 e valor não for 0
     {

@@ -1,6 +1,7 @@
 classe comum_obj
 # Comum a todos os personagens, itens e salas
 #
+ref donoantes # Dono anterior
 sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
@@ -40,41 +41,13 @@ func ini # Objeto é criado, acerta eventos, peso, volume e luz
   luztipo > 1 && (luztot = 1) # Acerta a luz
 
 func fim # Objeto vai sair do jogo
-  ref r
-# Se não está voando: retira o peso total
-  se pesotot
-    r = idono.objlista, r.pesoden -= pesotot
-    enquanto r.pesoadd
-      r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
-    efim
-  fimse
-# Retira o volume
-  r = idono.objlista, r.volden -= voltot
-  enquanto r.volexp
-    r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
-  efim
-# Retira a luz
-  se luztot
-    r = idono.objlista, r.luzden -= luztot
-    enquanto r.luztipo
-      r.luztot -= luztot, r = r.idono.objlista, r.luzden -= luztot
-    efim
-  fimse
-# Acerta se tem jogador dentro
-  se socktot
-    epara r = idono.objlista, r, r = r.idono.objlista
-      r.socktot -= socktot
-    efim
-  fimse
-# Executa eventos cmd_fim
+  idono && (dono = nulo)
   listaobj l
-  ref r
-  r = idono.objlista, idono.remove
   l.addfim(evento), evento.limpar, atkrec.limpar
   enquanto l
-    l0.objini.cmd_fim(este, r), l.ini.remove
+    l0.objini.cmd_fim(este), l.ini.remove
   efim
-  cmd_objfim(r)
+  cmd_objfim, idono && (dono = nulo)
 
 func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   real x
@@ -111,47 +84,47 @@ func ajustaev # Acerta eventos
 
 varfunc dono # O dono do personagem/item
   ret !args, idono.objlista # Checa se é leitura
-  ret idono.objlista == ref(arg0), nulo # Retorna se o dono não vai mudar
+  ret (donoantes = idono.objlista) == ref(arg0), nulo # Retorna se o dono não vai mudar
   ref r
 # Se não está voando: retira o peso total
   se pesotot
-    r = idono.objlista, r.pesoden -= pesotot
+    r = donoantes, r.pesoden -= pesotot
     enquanto r.pesoadd
       r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
     efim
   fimse
 # Retira o volume
-  r = idono.objlista, r.volden -= voltot
+  r = donoantes, r.volden -= voltot
   enquanto r.volexp
     r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
   efim
 # Retira a luz
   se luztot
-    r = idono.objlista, r.luzden -= luztot
+    r = donoantes, r.luzden -= luztot
     enquanto r.luztipo
       r.luztot -= luztot, r = r.idono.objlista, r.luzden -= luztot
     efim
   fimse
 # Acerta se tem jogador dentro
   se socktot
-    epara r = idono.objlista, r, r = r.idono.objlista
+    epara r = donoantes, r, r = r.idono.objlista
       r.socktot -= socktot
     efim
   fimse
-# Objeto muda de dono
-  idono.remove # Retira do dono atual
-  se perso
-    idono = ref(arg0).dentro2.addini(este) # Adiciona personagem
-  senao
-    idono = ref(arg0).dentro1.addini(este) # Adiciona item
-  fimse
-# Acerta eventos
+# Muda de dono e acerta eventos
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
-  (idono.objlista.perso ? evperso : idono.objlista.item ? evitem : evsala) && (evrec.1 = \
-idono.objlista.evento.addfim(este))
+  r = arg0, idono.remove # Retira do dono atual
+  se !r
+    ret
+  senao perso
+    idono = r.dentro2.addini(este) # Adiciona personagem
+  senao
+    idono = r.dentro1.addini(este) # Adiciona item
+  fimse
+  (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.1 = r.evento.addfim(este))
 # Se não está voando: acrescenta o peso total
   se pesotot
-    r = idono.objlista, r.pesoden += pesotot
+    r.pesoden += pesotot # Nota: r já é idono.objlista
     enquanto r.pesoadd
       r.pesotot += pesotot, r = r.idono.objlista, r.pesoden += pesotot
     efim

@@ -17,8 +17,9 @@ const ta2 = config:animal1 ? "  \c2ANIMAL\b   Manuseio de animais\n"
 const ta3 = "  \c2COMBATE\b  Lutas com outros personagens\n\
   \c2NOMES\b    Digitando nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
+  \C2PROMPT\b   Mensagens do prompt\n\
 Para sair do MUD tecle \c2FIM\b"
-const ta4 = arg0.jogconfig.19 ? "\nPara ler as páginas de administração tecle \c2ADM\b"
+const ta4 = arg0.jogconfig.23 ? "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func escr
   listaobj l
@@ -46,7 +47,7 @@ N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo),\n\
 NE (nordeste), NO ou NW (noroeste), SE (sudeste) e SO ou SW (sudoeste).\n\
 Você poderá encontrar portas fechadas no caminho. Nesse caso, será\n\
 necessário abrir antes de prosseguir naquela direção. Veja os comandos\n\
-ABRIR e FECHAR.\n\
+ABRIR, FECHAR, TRANCAR e DESTRANCAR.\n\
 É possível também seguir outros personagens. Veja o comando SEGUIR.\n\
 O personagem pode cansar-se (pontos de vigor chegar a zero, vide comando\n\
 VIDA). Nesse caso, o melhor é sentar-se (digitando SENTAR) ou descansar\n\
@@ -67,6 +68,7 @@ herda comando_ajuda
 const txtajuda = "\b\c3Informações\b\n\
   \c2VIDA\b     Pontos de vida, mana, vigor, nível e experiência.\n\
   \c2VER\b      Descrição de onde você está ou de um objeto.\n\
+  \c2OLHAR\b    Descrição resumida de onde você está ou de um objeto.\n\
   \c2HORA\b     A hora atual: real e no MUD.\n\
   \c2INV\b      Os objetos que você está carregando.\n\
   \c2EQUIP\b    Os objetos equipando você ou que você está vestindo.\n\
@@ -87,7 +89,9 @@ const txtajuda = "\b\c3Objetos\b\n\
   \c2VESTIR\b   Veste um objeto, ou usa como arma (se for arma).\n\
   \c2REMOVER\b  Deixa de vestir ou usar um objeto.\n\
   \c2ABRIR\b    Abre um objeto (exemplo, uma bolsa ou um baú).\n\
-  \c2FECHAR\b   Fecha um objeto."
+  \c2FECHAR\b   Fecha um objeto.\n\
+  \c2TRANCAR\b  Tranca um objeto.\n\
+  \c2DESTRANCAR\b Destranca um objeto."
 
 
 classe cmd_nomes
@@ -106,9 +110,11 @@ Quando o nome de um objeto contém espaço no meio, é necessário escrever\n\
 entre aspas duplas, ou então usar o sublinhado ao invés do espaço.\n\
 Exemplo 1: PEGAR \"CHAVE BRANCA\"\n\
 Exemplo 2: PEGAR CHAVE_BRANCA\n\
-Para poupar digitação, pode-se abreviar os nomes dos objetos digitando\n\
-apenas o começo do nome. Isso também funciona com a maioria dos comandos.\n\
-Exemplo: PE CH\n\
+Nesse caso, seu personagem pegará qualquer chave que for branca.\n\
+Para poupar digitação, na maioria dos casos pode-se abreviar, digitando\n\
+apenas o começo das palavras.\n\
+Exemplo 1: PE CH\n\
+Exemplo 2: PE CH_BRA\n\
 Nesse caso, CH refere-se a qualquer objeto cujo nome começa com CH."
 
 

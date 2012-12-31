@@ -11,7 +11,6 @@ const volexp = 1 # Volume expande se tiver itens dentro
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
-const descver = "Você não vê nada de especial."
 const jogsav = 1 # Se deve salvar o personagem ao salvar personagem do jogador
 const objmax = 15 # Quantos itens pode carregar
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
@@ -60,21 +59,21 @@ func fim # Objeto foi apagado
   efim
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
-# Eventos cmd_saiu e variável dono.s_item
+# Muda de sala
+  atkrec.limpar, poslugar.remove, dono = arg0, cmd_mudadono
+# Eventos cmd_saiu e variável donoantes.s_item
   listaobj l
-  se dono && !dono.perso
-    epara l.addfim(evento, dono.evento), l, l.ini.remove
-      l.objini.cmd_saiu(este, dono)
+  se donoantes && !donoantes.perso
+    epara l.addfim(evento, donoantes.evento), l, l.ini.remove
+      l.objini.cmd_saiu(este, donoantes)
     efim
     se !sock
-    senao dono.dentro1.total && dono.socktot == 1
-      dono.t_item = dono.s_item * 600
+    senao donoantes.dentro1.total && !donoantes.socktot
+      donoantes.t_item = donoantes.s_item * 600
     senao
-      dono.t_item = 0
+      donoantes.t_item = 0
     fimse
   fimse
-# Muda de sala
-  cmd_mudadono(arg0), atkrec.limpar, poslugar.remove, dono = arg0
 # Checa se novo dono é sala
   se dono.perso
     p_proc = 1
@@ -199,7 +198,7 @@ func descpos
     r = poslugar.objlista
     ret txtmaimin(nome) + " descansa em " + misc:sum[r.sexo] + " " + r.nome + "."
   casose "6"
-    ret !poslugar, txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + "."
+    ret !poslugar, txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + "aqui."
     ref r
     r = poslugar.objlista
     ret txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] + " " + \
@@ -207,7 +206,7 @@ r.nome + "."
   casose "7"
     ret txtmaimin(nome) + " está lutando."
   casose "8"
-    ret txtmaimin(nome) + " está em pé."
+    ret txtmaimin(nome) + " está em pé aqui."
   casofim
   ret txtmaimin(nome) + " está aqui."
 
@@ -227,8 +226,10 @@ classe comum_persobat
 herda comum_perso
 # Personagem que pode batalhar
 const perso = 2 # Para identificar o tipo de personagem
+const objmax = 1 # Quantos itens pode carregar
 uint8 bitver # O que o personagem/item pode ver
 uint8 bitinv # Grau de invisibilidade do personagem/item
+const pesoadd = !dono.perso && !(bitver & 48) # Se falso, está voando
 sav uint32 moedas # Quantas moedas está carregando
 const p_agressivo = 1 # Ataca se atacarem
 #
@@ -241,13 +242,16 @@ sav uint32 pmove # Pontos de movimento
 uint32 pvidamax # Quantidade máxima de vida
 uint32 pmanamax # Quantidade máxima de mana
 uint32 pmovemax # Quantidade máxima de movimento
-uint16 pveloc # Velocidade do personagem
+uint16 pveloc1 # Velocidade calculada do personagem
+const pveloc = pveloc1 - int((pesoden - pesovest) / 1500)
 uint32 atknorm # Quantidade de ataque normal
 uint32 defnorm # Quantidade de defesa normal
 uint32 atkmag # Quantidade de ataque mágico/especial
 uint32 defmag # Quantidade de defesa mágica/especial
 uint16 evasao # Habilidade de desviar dos golpes (thac0)
 uint16 precisao # Habilidade de acertar os golpes (hitroll)
+uint32 pesoveste # Metade do peso de tudo que está vestindo
+uint32 pesomax # Quanto peso consegue carregar
 const tipo1 = "normal" # Tipo de personagem
 # const tipo2 = "" # Segundo tipo do personagem
 # const tipo3 = "" # Terceiro tipo do personagem
@@ -270,6 +274,7 @@ inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
 const p_morreu1 = "$P morreu."
 const p_morreu2 = "$P de $A desmaiou."
+const p_movervel = 140
 
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
@@ -320,12 +325,14 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   atkmag = pnivel * 13 + 26
   defmag = pnivel * 10 + 20
   pvidamax = pnivel * 20 + 40 # Equilibrado seria atknorm*atknorm/defnorm
-  pveloc = pnivel * 5 + 20
+  pveloc1 = pnivel * 5 + 20
   pmanamax = pnivel + 30
   pmovemax = pnivel * 2 + 30
   evasao = pnivel * 2 + 30
   precisao = pnivel * 2 + 30
   deftipo.limpar # Todas as defesas em 100%
+  pesoveste = 0
+  pesomax = 20000
 # Acerta atributos conforme o tipo de personagem
   misc:tipo_[tipo1], misc:tipo_[tipo2], misc:tipo_[tipo3]
 # Bônus do próprio personagem
@@ -333,8 +340,9 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
 # Bônus conforme o que está vestindo e os efeitos
   listaitem l
   epara l = dentro2.ini, l, l.depois
-    l.obj.cmd_recalc2(este)
+    l.obj.cmd_recalc2(este), pesoveste += l.obj.pesotot
   efim
+  pesoveste /= 2
   epara l = evento.ini, l, l.depois
     l.obj.cmd_recalc3(este)
   efim
@@ -484,15 +492,15 @@ func escolhehab # Escolhe e retorna o nome de uma habilidade
   txt100 t1 # Nome da habilidade
   uint8 total
 # Obtém a quantidade de habilidades
-  t1 = var.ini("h_")
+  t1 = persoesc.var.ini("h_")
   enquanto txt(t1, 0, 2) == "h_"
-    total += 1, t1 = var.depois(t1)
+    total += 1, t1 = persoesc.var.depois(t1)
   efim
   ret !total, "" # Retorna se não tem nenhuma habilidade
 # Escolhe uma habilidade
-  t1 = var.ini("h_")
+  t1 = persoesc.var.ini("h_")
   epara total = rand(total), total, total -= 1
-    t1 = var.depois(t1)
+    t1 = persoesc.var.depois(t1)
   efim
   ret txt(t1, 2)
 
@@ -551,13 +559,15 @@ func p_proc_exec # Processar comportamento do personagem
     txt10 dir
     dir = t.ini.texto # Direção escolhida
     ret !dir || p_mover == 1 && r.dir_[dir].s_area != r.s_area, p_proc = 50
-    $cmd_[dir].escr(este), p_tmove = rand(80, 150), p_proc = p_tmove + 1
+    $cmd_[dir].escr(este)
+    p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
 
 
 classe comum_persoanimal
 herda comum_persobat
 # Personagem que pode batalhar e carregar animais
 const perso = 3 # Para identificar o tipo de personagem
+const objmax = 15 # Quantos itens pode carregar
 sav ref animal.8 # Animais que possui
 sav ref persobat # Personagem usado na batalha
 sav ref persoesc # Personagem escolhido pelo jogador
@@ -567,19 +577,19 @@ func escolhebat # Escolhe um personagem em condições de lutar
     persobat = persoesc
   senao animal.0.pvida && config:animal1 >= 1
     persobat = animal.0
-  senao animal.1.pvida && config:animal1 >= 1
+  senao animal.1.pvida && config:animal1 >= 2
     persobat = animal.1
-  senao animal.2.pvida && config:animal1 >= 2
+  senao animal.2.pvida && config:animal1 >= 3
     persobat = animal.2
-  senao animal.3.pvida && config:animal1 >= 3
+  senao animal.3.pvida && config:animal1 >= 4
     persobat = animal.3
-  senao animal.4.pvida && config:animal1 >= 4
+  senao animal.4.pvida && config:animal1 >= 5
     persobat = animal.4
-  senao animal.5.pvida && config:animal1 >= 5
+  senao animal.5.pvida && config:animal1 >= 6
     persobat = animal.5
-  senao animal.6.pvida && config:animal1 >= 6
+  senao animal.6.pvida && config:animal1 >= 7
     persobat = animal.6
-  senao animal.7.pvida && config:animal1 >= 7
+  senao animal.7.pvida && config:animal1 >= 8
     persobat = animal.7
   senao
     persobat = este
@@ -597,6 +607,23 @@ func animalnum # Retorna o número do próximo lugar disponível para animal
   ret !animal.6, config:animal1 >= 7 ? 7 : 0
   ret !animal.7, config:animal1 >= 8 ? 8 : 0
   ret 0
+
+func p_proc_exec # Processar comportamento do personagem
+  ret sock, nulo # Retorna se está sendo controlado por jogador
+  ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
+# Animal em condições: escolhe
+  se persoesc == este && animal.0.pvida
+    persobat = persoesc = animal.0
+# Animal desmaiado: escolhe outro
+  senao !persoesc.pvida
+    persoesc = persobat, p_proc = 5
+    $mens.p(este, persoesc)
+    ret persobat != este, $mens.mvis1("$P escolhe $a.")
+    $mens.mvis1("$P não escolhe ninguém.")
+    ret
+  fimse
+# Comportamento de PNJ que pode batalhar
+  comum_persobat:p_proc_exec
 
 
 classe perso_restaurar

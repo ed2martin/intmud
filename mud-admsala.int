@@ -2,7 +2,7 @@ classe jog_admsala
 # Comandos de sala e de área
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
-Rua de uma cidade - 1mv\n\
+Rua de uma cidade - 2mv\n\
 Campo, um campo aberto - 2mv\n\
 Pântano, itens afundam - 3mv\n\
 Floresta densa - 3mv\n\
@@ -210,6 +210,7 @@ func cmd_cdir # Criar sala na direção especificada
   nome2 = nome + txtfim(num, 3) + "\n" # Nome da classe
   nome2 += "a-" + txt(nome, 2) + "\n" # Nome do arquivo
   nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
+  nome2 += "const s_titulo=\"Sem nome\"\nconst s_desc=\"\"\n"
   nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # Saída da sala
   p.criar(nome2)
   p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
@@ -250,9 +251,10 @@ func cmd_csala # Criar sala
     nome += txtfim(num, 3)
   fimse
 # Cria sala
-  txt100 area
+  txt200 area
   area = txt(nome, 0, inttotal(nome) - 3)
-  p.criar("s_" + nome + "\na-" + area + "\nherda b_" + area)
+  area = "s_" + nome + "\na-" + area + "\nherda b_" + area
+  p.criar(area + "\nconst s_titulo=\"Sem nome\"\nconst s_desc=\"\"")
   config:salvar
   msg("\bSala criada: " + nome)
   ret 1
@@ -347,6 +349,7 @@ func cmd_asai # Apagar saída
     p.apagar(perso.dono, "inv_" + dir)
     p.apagar(perso.dono, "tranc_" + dir)
     p.apagar(perso.dono, "chave_" + dir)
+    p.apagar(perso.dono, "portanome_" + dir)
     config:salvar, msg("\bSaída apagada: " + dir)
   fimse
   ret 1
@@ -680,3 +683,8 @@ const nome5 = "Chave"
 const tipo5 = "linha"
 const classe5 = var.classe1
 const var5 = "chave_" + var.saida1
+#
+const nome6 = "Nome da porta"
+const tipo6 = "linha"
+const classe6 = var.classe1
+const var6 = "portanome_" + var.saida1

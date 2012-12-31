@@ -28,7 +28,7 @@ const pesoobj = 200
 
 classe i_teste003
 herda comum_itemgrupo
-const nome = "Carne crua"
+const nome = "carne crua"
 const pesoobj = 50
 const i_captura = 4
 const volobj = 4
@@ -37,7 +37,7 @@ const pnivel = 4
 
 classe i_teste004
 herda comum_itemgrupo
-const nome = "Carne cozida"
+const nome = "carne cozida"
 const pesoobj = 100
 const volobj = 8
 const i_captura = 8
@@ -76,6 +76,8 @@ func cmd_darobj # Alguém deu algum item
 func deupedra15
   arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
   arg0.var.j_planta = 1 # Indica que já passou pela planta
+
+const pesoobj = 80000
 
 
 classe s_teste001
@@ -305,12 +307,14 @@ classe s_teste014
 herda b_teste
 const s_titulo = "Animais e batalha"
 const s_desc = "À leste você pode mudar o seu nível.\n\
+À sudeste há alguns itens, usados para capturar animais.\n\
 À oeste pode batalhar com animais de níveis diferentes.\n\
-À sudeste há alguns itens, usados para capturar animais."
+À sudoeste fica um pequeno centro de treinamento de animais."
 const dir_n = $s_teste005
 const dir_l = $s_teste015
 const dir_se = $s_teste016
 const dir_o = $s_teste017
+const dir_so = $s_teste021
 
 
 classe s_teste015
@@ -446,7 +450,7 @@ const descpadr = "Um macaco está fazendo bagunça aqui."
 const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
 const p_captura = 3 # Capturar: 3 Normal
 const p_agressivo = 2 # Agressivo: 2 Sim
-const pesoobj = 30
+const pesoobj = 30500
 const volobj = 500
 const tipo1 = "luta"
 const inivar = "h_socar=1,h_chutar=1"
@@ -459,7 +463,7 @@ const descpadr = "Um cachorro late para você."
 const descver = "Mamífero da família dos canídeos."
 const p_captura = 2 # Capturar: 2 Fácil
 const p_agressivo = 2 # Agressivo: 2 Sim
-const pesoobj = 30
+const pesoobj = 30100
 const volobj = 500
 const inivar = "h_arremessar=1"
 
@@ -471,10 +475,58 @@ const descpadr = "Um morcego está voando."
 const descver = "Mamífero da ordem dos quirópteros"
 const p_captura = 4 # Capturar: 4 Difícil
 const p_agressivo = 2 # Agressivo: 2 Sim
-const pesoobj = 30
+const pesoobj = 30500
 const volobj = 500
 const tipo1 = "ar"
 const inivar = "h_arremessar=1"
 
 func cmd_recalc1 # Recalcula variáveis do personagem
-  pveloc += pnivel * 2
+  pveloc1 += pnivel * 2
+
+
+classe s_teste021
+herda b_teste
+const s_titulo = "Centro de treinamento"
+const s_desc = "Aqui os funcionários do zoológico treinam animais e fazem duelos\n\
+entre si. No momento estão descansando, mas você pode desafiá-los\n\
+indo em qualquer direção, exceto ao nordeste, que é a saída."
+const dir_ne = $s_teste014
+const dir_o = $s_teste022
+
+
+classe s_teste022
+herda b_teste
+const s_titulo = "Sala"
+const s_desc = "Aqui está totalmente vazio. Apenas alguns quadros enfeitam a parede.\n\
+O chão é de concreto, dando a impressão de inacabado. No teto há\n\
+uma lâmpada pendurada. De dia, a luz vem de duas grandes janelas."
+const dir_l = $s_teste021
+const s_reset = "P 100 teste005 0 0 1 h_chutar=1,e_apagar=5\n\
+A 100 teste003 4 4 h_socar=1\n\
+A 100 teste003 5 5 h_socar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  int8 x # Usado como rascunho
+  se p_teste005:objsolto.total < 1
+    p = u = criar("p_teste005", este, 0, "h_chutar=1,e_apagar=5")
+  fimse
+  se (x = p.animalnum) > 0
+    p.animal.[x - 1] = criar("p_teste003", p, 4, "h_socar=1")
+  fimse
+  se (x = p.animalnum) > 0
+    p.animal.[x - 1] = criar("p_teste003", p, 5, "h_socar=1")
+  fimse
+
+
+classe p_teste005
+herda comum_persoanimal
+const nome = "Lixeiro"
+const sexoini = 1 # Sexo: 1 Masculino
+const pesoobj = 75300
+const volobj = 1000
+const p_naoresg = 1 # Sem resgate: Sim
+const nivel = 8
+const p_agressivo = 2 # Agressivo: 2 Sim
