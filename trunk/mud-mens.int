@@ -347,3 +347,86 @@ const sexoC0 = "uma"
 const sexoC1 = "um"
 const sexoD0 = "Uma"
 const sexoD1 = "Um"
+
+
+classe mens_prompt
+# Monta mensagem do prompt a partir do prompt e do personagem
+# Chamar com:
+# $mens_prompt.mens(mensagem, personagem)
+#
+ref p1 # O próprio personagem
+ref p2 # O animal usado por p1
+ref a1 # Quem está batalhando com o personagem
+ref a2 # O animal de quem está batalhando com o personagem
+
+func iniclasse
+  criar(arg0)
+
+func mens
+# arg0 = mensagem
+# arg1 = personagem
+  p1 = ref(arg1), p2 = ref(p1.persoesc)
+  a1 = ref(p1.atkenv.objlista), a2 = ref(a1.persobat)
+  ret vartroca(arg0, "%", "m_")
+
+func m_d
+  se arg0 === "d" # Hora no MUD
+    ret txt(misc:hora) + ":" + misc:min
+  senao # Hora no servidor
+    datahora d
+    d.agora
+    ret txt(d.hora) + ":" + d.min
+
+const m_g = p1.moedas
+const m_h = arg0 === "h" ? p2.pvida : p2.pvidamax
+const m_l = arg0 === "l" ? p2.pnivel : a2.pnivel
+const m_m = arg0 === "m" ? p2.pmana : p2.pmanamax
+
+func m_n
+  se arg0 === "n" # Nome do seu personagem
+    ret p1 == p2 ? p1.nome : p2.nome + " de " + p1.nome
+  senao # Nome do seu oponente
+    ret a1 == a2 ? a1.nome : a2.nome + " de " + a1.nome
+
+func m_o
+  se arg0 === "o" # Pontos de vida do oponente em porcentagem
+    ret int(a2.pvida * 100 / a2.pvidamax)
+  senao # Pontos de vida do oponente em uma barra de 10 caracteres
+    uint8 x
+    x = int(a2.pvida * 10 / a2.pvidamax)
+    ret x >= 10 ? ">>>>>>>>>>" : txtrepete(">", x) + txtrepete(" ", 10 - x)
+
+func m_p
+  se arg0 === "p" # Pontos de vida em porcentagem
+    ret int(p2.pvida * 100 / p2.pvidamax)
+  senao # Pontos de vida em uma barra de 10 caracteres
+    uint8 x
+    x = int(p2.pvida * 10 / p2.pvidamax)
+    ret x >= 10 ? ">>>>>>>>>>" : txtrepete(">", x) + txtrepete(" ", 10 - x)
+
+func m_t # Conforme o sol: amanhecendo, manhã, tarde, anoitecendo, noite
+  ret arg0 === "t", " "
+  casovar misc:hora
+  casose "6"
+    ret "amanhecendo"
+  casose "7"
+  casose "8"
+  casose "9"
+  casose "10"
+  casose "11"
+    ret "manhã"
+  casose "12"
+  casose "13"
+  casose "14"
+  casose "15"
+  casose "16"
+    ret "tarde"
+  casose "17"
+    ret "escurecendo"
+    caseose
+    ret "noite"
+  casofim
+
+const m_v = arg0 === "v" ? p2.pmove : p2.pmovemax
+const m_x = arg0 === "x" ? p2.expatual : p2.expmax - p2.expatual
+const m_z = arg0 === "z" ? "\n" : "%"

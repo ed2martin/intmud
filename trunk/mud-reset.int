@@ -651,10 +651,10 @@ func t_resetlin # Obtém um texto a partir de uma linha do reset
       lin += "  Porta aberta"
       sair
     casose "2"
-      lin += "  Porta fechado"
+      lin += "  Porta fechada"
       sair
     casose "3"
-      lin += "  Porta trancado"
+      lin += "  Porta trancada"
       sair
     casose
       lin += "  Estado desconhecido: " + l.3
@@ -759,7 +759,7 @@ func atualiza # Atualiza reset de sala
     t = "(ERRO) ao criar função " + arg0 + ":" + arg1 + "1:\n" + t
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.19 && item.obj.msg(t)
+      item.obj.jogconfig.23 && item.obj.msg(t)
     efim
 
 func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
@@ -825,7 +825,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       lin = "se (x=p.animalnum) > 0"
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
-      lin = "  p.animal.[x-1]"
+      lin = "  p.animal.[x-1]="
       m1 == 2 && (lin += "u=")
       lin += "criar(\"p_" + txtvis(l.2) + "\", p, "
       lin += l.3 == l.4 ? int(l.3) : "rand(" + int(l.3) + ", " + int(l.4) + ")"

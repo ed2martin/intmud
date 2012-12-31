@@ -5,7 +5,7 @@ Sintaxe: PEGAR <objeto>\n\
          PEGAR <quantidade> <objeto>\n\
          PEGAR <objeto> <container>\n\
          PEGAR <quantidade> <objeto> <container>\n\
-Pega um objeto do chão ou de outro objeto (um container)."
+Pega um objeto do chão ou de um container (uma bolsa, uma estante, etc)."
 const posic = 5
 #
 ref sala # De onde pegar os itens
@@ -27,8 +27,9 @@ func escr
     sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
-    senao sala.i_aberto <= 2
-      ret !sala.i_aberto, arg0.msg(txtmaimin(sala.nome) + " não é container.")
+    senao !sala.i_aberto
+      ret arg0.msg(txtmaimin(sala.nome) + " não é container.")
+    senao sala.i_aberto > 2
       ret arg0.msg(txtmaimin(sala.nome) + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
     mens = " de $t $a."
@@ -44,6 +45,9 @@ func escr
       ret arg0.msg("Você não consegue carregar mais nada.")
     senao arg0.volden + l.objini.voltot > arg0.volmax
       ret arg0.msg("Você não consegue carregar isso.")
+    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot > arg0.pesomax
+      ret l.objini.pesotot > arg0.pesomax * 2, arg0.msg("É pesado demais.")
+      ret arg0.msg("Você não consegue carregar tanto peso.")
     fimse
     listaobj e
     total = n # Quantidade de itens
@@ -53,14 +57,14 @@ func escr
     se !e
       $mens.p(arg0, sala, l.objini)
       se total <= 1
-        $mens.mvis1("$P pega $O" + mens)
+        $mens.mvis1("$P pega $o" + mens)
       senao
-        $mens.mvis1("$P pega " + total + "x $O" + mens)
+        $mens.mvis1("$P pega " + total + "x $o" + mens)
       fimse
       l.objini.mudadono(arg0, total)
     fimse
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_pegouobj(arg0, sala, l.objini, total)
+      e.objini.cmd_pegouobj(arg0, sala, l.objini, total)
     efim
     sair (achou += 1) >= 10
   efim
@@ -76,7 +80,7 @@ Sintaxe: SOLTAR <objeto>\n\
          SOLTAR <objeto> <container>\n\
          SOLTAR <quantidade> <objeto> <container>\n"
 const ta2 = "         SOLTAR <número do animal>\n"
-const ta3 = "Solta um objeto no chão ou em outro objeto (um container)."
+const ta3 = "Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc)."
 const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
 #
@@ -123,7 +127,7 @@ func escr
     arg0.escolhebat # Escolhe um animal em condições de batalhar
     arg0.persoesc == r && (arg0.persoesc = arg0.persobat)
     epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
-      sair e.objini.cmd_soltouanim(arg0, r, arg0.dono)
+      e.objini.cmd_soltouanim(arg0, r, arg0.dono)
     efim
     ret
   casofim
@@ -139,8 +143,9 @@ func escr
     sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
-    senao sala.i_aberto <= 2
-      ret !sala.i_aberto, arg0.msg(txtmaimin(sala.nome) + " não é container.")
+    senao !sala.i_aberto
+      ret arg0.msg(txtmaimin(sala.nome) + " não é container.")
+    senao sala.i_aberto > 2
       ret arg0.msg(txtmaimin(sala.nome) + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
     mens = " em $t $a"
@@ -164,7 +169,7 @@ func escr
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
-      mens2 = total <= 1 ? "$P solta $O" : "$P solta " + total + "x $O"
+      mens2 = total <= 1 ? "$P solta $o" : "$P solta " + total + "x $o"
       casovar soltar
       casose "2"
         $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
@@ -184,7 +189,7 @@ func escr
       casofim
     fimse
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
+      e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
     efim
     sair (achou += 1) >= 10
   efim
@@ -258,7 +263,7 @@ func escr
       $mens.p(arg0, l.objini)
       $mens.mvis1("$P dá " + r.nome + " para $a.")
       epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
-        sair e.objini.cmd_deunim(arg0, r, l.objini)
+        e.objini.cmd_deunim(arg0, r, l.objini)
       efim
       ret
     efim
@@ -292,14 +297,14 @@ func escr
     se !e
       $mens.p(arg0, sala, l.objini)
       se total <= 1
-        $mens.mvis1("$P dá $O para $t $a.")
+        $mens.mvis1("$P dá $o para $t $a.")
       senao
-        $mens.mvis1("$P dá " + total + "x $O para $t $a.")
+        $mens.mvis1("$P dá " + total + "x $o para $t $a.")
       fimse
       l.objini.mudadono(sala, total)
     fimse
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_deuobj(arg0, sala, l.objini, total)
+      e.objini.cmd_deuobj(arg0, sala, l.objini, total)
     efim
     sair (achou += 1) >= 10
   efim
@@ -474,12 +479,13 @@ func escr
     sair e.objini.cmd_pegaranim(arg0, r, arg0.dono)
   efim
   ret arg0.animal.[lugar - 1] || !item, nulo # Retorna se o espaço foi ocupado
-  r.mudadono(arg0)
+  r.mudadono(arg0) # Muda de dono
   r.var.z_dono = arg0.nome
   r.var.z_pnivel = r.pnivel
-  r.objsolto.remove(r)
-  arg0.animal.[lugar - 1] = r
+  r.objsolto.remove(r) # Não conta mais na lista de personagens soltos
+  arg0.animal.[lugar - 1] = r # Número do animal na lista do jogador
   arg0.recalc = 1
+  r.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
   $mens.p(arg0, r)
   $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
   epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove

@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 14.1.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 14.3.
 
 
 1. SOBRE O INTMUD
@@ -1437,20 +1437,20 @@ casose
 <comandos>
 casofim
 
-Transforma <argumento> em texto e verifica qual instrução casose contém o
+Transforma <argumento> em texto e verifica qual instrução 'casose' contém o
 mesmo texto. Nessa comparação, letras maiúsculas e minúsculas são
 consideradas diferentes.
 
-Se encontrar, vai para os comandos da instrução casose correspondente.
-Se não encontrar, vai para a instrução casose sem argumentos ou, se essa
-não existir, vai direto para a instrução casofim.
+Se encontrar, vai para os comandos da instrução 'casose' correspondente.
+Se não encontrar, vai para a instrução 'casose' sem argumentos ou, se essa
+não existir, vai direto para a instrução 'casofim'.
 
 A instrução 'sair', dentro do bloco 'casovar', avança direto para a instrução
 'casofim'. Por isso, é comum terminar os comandos com uma instrução 'sair'.
 Caso contrário, o IntMUD prossegue executando os comandos dos próximos
-casose, na sequência.
+'casose', na sequência.
 
-Nota: Um 'casovar' com vários casose é mais eficiente que várias
+Nota: Um 'casovar' com vários 'casose' é mais eficiente que várias
       instruções 'se' e 'senao'.
 
 Exemplo:
@@ -1485,16 +1485,25 @@ senao
 msg("N não é nem 1 nem 2")
 fimse
 
-14.3. enquanto <argumento>  ... efim
+14.3. Laço 'enquanto'
 
-É um laço de repetição.
-Se o argumento for verdadeiro, executa as instruções que estiverem entre
-o 'enquanto' e o 'efim' e volta para a instrução 'enquanto', para testar
-o argumento novamente.
-Se for falso, vai para a primeira instrução após o 'efim'
+Sintaxe:
+
+enquanto <condição>
+<comandos>
+efim
+
+Repete os comandos enquanto a condição for verdadeira.
+
+Isso é feito da seguinte forma:
+- Avalia a condição;
+- Se for falsa, vai para a instrução após o 'efim';
+- Se for verdadeira, executa os comandos e volta para o 'enquanto',
+  para testar a condição novamente.
 
 Exemplo:
 
+func teste
 telatxt t
 int8 x
 x = 2
@@ -1503,20 +1512,32 @@ t.msg("x é " + x + "\n")
 x += 1
 efim
 
-Produz o seguinte resultado:
-x é 2
-x é 3
-x é 4
+Exemplo correspondente sem usar o 'enquanto':
 
-14.4. epara <inicialização>, <condição>, <incremento> ... efim
+func teste
+telatxt t
+t.msg("x é 2\n")
+t.msg("x é 3\n")
+t.msg("x é 4\n")
 
-É um laço de repetição.
-Primeiro, executa as instruções da <inicialização>.
-Depois funciona como um 'enquanto', testando a <condição>.
-A diferença é que após o bloco de instruções (quando chega na instrução
-'efim'), o <incremento> é executado.
+14.4. Laço 'epara'
 
-Exemplo: Mesma funcionalidade do exemplo do bloco 'enquanto'
+Sintaxe:
+
+epara <inicialização>, <condição>, <incremento>
+<comandos>
+efim
+
+É um laço de repetição mais completo que o 'enquanto'.
+
+Funciona da seguinte forma:
+- Executa a inicialização;
+- Avalia a condição;
+- Se for falsa, vai para a instrução pós o 'efim';
+- Se for verdadeira, executa os comandos e o incremento, e volta para
+  o 'epara', para testar a condição novamente.
+
+Exemplo: Mesma funcionalidade do exemplo do laço 'enquanto'
 
 telatxt t
 int8 x
@@ -1842,7 +1863,8 @@ Retorna o texto substituindo espaço ' ' por sublinhado '_'.
 Tem o mesmo efeito de txttroca(<texto>, " ", "_").
 
 15.4.9. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
-Procura textos em <texto> e substitui variáveis/funções do objeto 'este'.
+Procura alguns textos específicos em <texto> e substitui por variáveis ou
+funções do objeto 'este'.
 Os textos procurados são <texto2> seguido de uma palavra qualquer.
 Os nomes das funções são <variável> seguido da mesma palavra.
 
