@@ -17,7 +17,8 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
     epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
     efim
   fimse
-  pnivel = arg1 ? arg1 : nivel, comum_obj:ini, i_aberto = i_abertoini
+  i_aberto = i_abertoini, luztempo = luzitem ? luzini : -luzini
+  pnivel = arg1 ? arg1 : nivel, comum_obj:ini
   cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
@@ -121,6 +122,12 @@ intexec recalc # Se deve acertar variáveis do item
 listaobj persolugar # Quem está sentado ou deitado
 # const i_abertoini = 0 # Valor inicial de aberto
 sav uint8 i_aberto # Situação atual do container, ou 0 se não for container
+const luztipo = luztempo > 0 ? 2 : 0
+sav inttempo luztempo # Quanto tempo produz luz, <0 se estiver apagado
+# const luzini = 1000 # Duração da luz
+# const luzitem = 0 # 0=sempre aceso, 1=aceso se usado como luz, 2=jogador acende
+# const luztxt = "" # Mensagem quando a luz acaba
+# const luzfim = 0 # Se item some quando a luz acaba
 
 func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
@@ -131,3 +138,21 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
 func recalc_exec # Acerta variáveis do item
   se int(i_abertoini) < 2 || i_aberto < 2
     i_aberto = i_abertoini
+
+func luztempo_exec # A luz apagou
+  se luxtxt
+    ref r
+    epara r = dono, r.perso, r = r.dono
+    efim
+    r.msg(luztxt)
+  fimse
+  se luzfim
+    apagar(este)
+    luzitem && dono.recalc = 1
+  senao
+    ajustapeso
+
+func vestir
+  comum_item:vestir
+  se luztempo && luzitem == 1 && (luztempo > 0) != (vestpos == 1)
+    luztempo = -luztempo, ajustapeso

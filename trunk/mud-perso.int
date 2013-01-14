@@ -13,13 +13,14 @@ const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const jogsav = 1 # Se deve salvar o personagem ao salvar personagem do jogador
 const objmax = 15 # Quantos itens pode carregar
+const luztipo = 1 # 1=não é fonte de luz, mas repassa a luz
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
 sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 listaitem poslugar # Em qual móvel está sentado ou deitado
-sav int1 jogconfig.24 # Para salvar sock.jogconfig
+int1 jogconfig.24 # Mesmo que sock.jogconfig
 listaitem iseguir # Quem o personagem está segundo
 listaobj lseguir # Quem está seguindo o personagem
 
@@ -409,11 +410,23 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
 
 func ganhaexp # Personagem ganha experiência
 # arg0 = experiência
+# arg1 = verdadeiro se não deve mostrar mensagem de ganhar XP para o jogador
+  uint32 exp1
+  ret !(exp1 = arg0), nulo
   expatual += arg0
+  se !arg1
+    se !dono.perso
+      msg(exp1 == 1 ? "Você recebe 1 ponto de experiência." : "Você recebe " + exp1 + " pontos de experiência.")
+    senao exp1 == 1
+      dono.msg(nome + " recebe 1 ponto de experiência.")
+    senao
+      dono.msg(nome + " recebe " + exp1 + " pontos de experiência.")
+    fimse
+  fimse
   se expatual >= expmax
     expatual -= expmax
     pnivel += 1
-    dono.msg(nome + " foi para nível " + pnivel)
+    dono.msg(nome + " avança para o nível " + pnivel)
     recalc = 1 # Recalcular atributos do personagem
 
 func atktempo_exec # Encerra a batalha depois de um tempo

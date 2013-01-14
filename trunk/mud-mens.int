@@ -389,7 +389,8 @@ func m_n
     ret a1 == a2 ? a1.nome : a2.nome + " de " + a1.nome
 
 func m_o
-  se arg0 === "o" # Pontos de vida do oponente em porcentagem
+  se !a2
+  senao arg0 === "o" # Pontos de vida do oponente em porcentagem
     ret int(a2.pvida * 100 / a2.pvidamax)
   senao # Pontos de vida do oponente em uma barra de 10 caracteres
     uint8 x

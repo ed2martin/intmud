@@ -94,8 +94,9 @@ const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func cmd_atacar
   se "p_ini001" == arg1
+    arg2.result = 10
     $mens.p(arg0, arg1)
-    $mens.mtodos1(arg2.msgatk + ", 27")
+    $mens.mtodos1(arg2.mensgolpe)
     arg0.msg("Anão: Tudo bem, você venceu, pode passar.")
     arg0.var.j_atacou_anao = 1
     ret 1
@@ -251,7 +252,8 @@ const s_titulo = "Região leste da ilha"
 const s_desc = "Não há nada aqui, somente o chão de terra que se estende à oeste.\n\
 Nas outras direções o chão termina e começa uma neblina branca.\n\
 Acima da neblina só se vê o céu azul. O chão nessa região também é azul,\n\
-mas há um [desenho] apagado (você pode ver teclando ver desenho)."
+mas há um [desenho] apagado (você pode ver teclando olhar desenho ou\n\
+teclando ver desenho)."
 const dir_o = $s_ini002
 const dir_n = $s_ini004
 const dir_s = $s_ini004
@@ -302,7 +304,7 @@ classe s_ini007
 herda b_ini
 const s_titulo = "Região oeste da ilha"
 const s_desc = "Há várias pedras vermelhas no chão. Há também uma [placa] que pode ser lida\n\
-teclando ver placa. À leste fica o centro da ilha. Nas outras direções só\n\
+teclando olhar placa. À leste fica o centro da ilha. Nas outras direções só\n\
 se vê o céu azul e uma névoa branca no lugar do chão."
 const dir_l = $s_ini002
 const dir_n = $s_ini004
@@ -344,8 +346,8 @@ herda b_ini
 const s_titulo = "Região sul da ilha"
 const s_desc = "Afastando-se do centro da ilha, em direção ao sul, há uma velha cabana.\n\
 Ao norte a ilha continua, mas tanto no leste quanto no oeste, vê-se apenas\n\
-uma névoa. Nota-se uma pequena [placa] em cima da porta (para ver o que\n\
-está escrito na placa tecle ver placa)."
+uma névoa. Nota-se uma pequena [placa] em cima da porta (para ler o que\n\
+está escrito na placa tecle olhar placa)."
 const dir_n = $s_ini002
 const dir_s = $s_ini009
 const dir_l = $s_ini004
@@ -431,7 +433,7 @@ func cmd_socar
     ret 1
   senao
     $mens.p(arg0)
-    $mens.mvis1("$P soca Silva, 250")
+    $mens.mvis1("$P soca Silva, -2")
     msg("Silva: Nada mal para quem está começando!")
     msg("Silva: Agora vou te ensinar um golpe um pouco mais forte.")
     $mens.mvis1("Silva ensina $P a chutar.")
@@ -445,8 +447,8 @@ func cmd_chutar
     ret 1
   senao
     $mens.p(arg0)
-    $mens.mvis1("$P chuta Silva, 250")
-    arg0.msg("Silva: Bom chute. Eu só continuo com 250 de vida porque sou mais forte.")
+    $mens.mvis1("$P chuta Silva, -3")
+    arg0.msg("Silva: Bom chute. Eu só tive 3 pontos de danos porque sou mais forte.")
     arg0.msg("Silva: Durante uma briga, você pode teclar apenas chutar ou socar.")
     arg0.msg("Silva: Te dou dois conselhos: Cheque suas habilidades teclando hab")
     arg0.msg("Silva: Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
@@ -692,8 +694,7 @@ func cmd_falou
     arg1 != "78" && (arg0.var.d_resposta_ = 12)
   casose "12"
     arg0.var.d_resposta_ += 1
-    arg0.msg("Joaquim: O meu amigo Silva tem 250 de vida, mas qual o nível dele?")
-    arg0.msg("É outro número de 1 a 100")
+    arg0.msg("Joaquim: Qual o nível do meu amigo Silva? É outro número de 1 a 100.")
     ret
   casose "3"
     arg1 != "27" && (arg0.var.d_resposta_ = 13)

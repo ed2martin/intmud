@@ -46,7 +46,6 @@ const i_captura = 8
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
-const ident = nome
 const descpadr = "Um jardineiro está sentado aqui."
 const sexoini = 1 # 0=feminino, 1=masculino
 const p_recebe = 1 # Se pode receber itens de outros personagens
@@ -315,6 +314,7 @@ const dir_l = $s_teste015
 const dir_se = $s_teste016
 const dir_o = $s_teste017
 const dir_so = $s_teste021
+const dir_s = $s_teste023
 
 
 classe s_teste015
@@ -530,3 +530,42 @@ const volobj = 1000
 const p_naoresg = 1 # Sem resgate: Sim
 const nivel = 8
 const p_agressivo = 2 # Agressivo: 2 Sim
+
+
+classe s_teste023
+herda b_teste
+const s_titulo = "Luz e itens que iluminam"
+const s_desc = "À leste você pode pegar uma lamparina.\n\
+À oeste há uma sala escura, porém visível se houver uma lamparina."
+const dir_n = $s_teste014
+const dir_l = $s_teste024
+
+
+classe s_teste024
+herda b_teste
+const s_titulo = "Itens que iluminam"
+const s_desc = ""
+const dir_o = $s_teste023
+const s_reset = "S 100 teste006 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste006") && criar("i_teste006", este, 0)
+
+
+classe i_teste005
+herda comum_itemperso
+const nome = "tocha"
+const luzini = 600
+const luztxt = "Uma tocha se apagou"
+
+
+classe i_teste006
+herda comum_itemperso
+const nome = "bolsa"
+const pesoobj = 200
+const volobj = 30
+const volmax = 5000
+const objmax = 20
+const i_abertoini = 2 # Container: 2 Inicialmente aberto
+const i_tranc = 1 # Trancar: 1 Pode ser trancado

@@ -21,11 +21,6 @@ Luz do sol\nEscuro"
 #
 const txt_porta = "Sem porta\nPorta aberta\nPorta fechada\nPorta trancada"
 #
-const txt_tranc = "Normal\n\
-Fecha ao passar\n\
-Tranca ao fechar\n\
-Tranca ao fechar ou passar"
-#
 const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2LAREA\b [nome]\n\
   Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
@@ -99,6 +94,7 @@ func cmd_carea # Criar área
     p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala\nconst s_area=\"" + prefixo + \
 "\"")
     config:salvar, msg("\bÁrea criada: " + prefixo)
+    admlog("criou área " + prefixo)
   fimse
   ret 1
 
@@ -131,6 +127,7 @@ func cmd_aarea # Apagar área
     p.apagar("a_" + prefixo)
     p.apagar("b_" + prefixo)
     config:salvar, msg("\bÁrea apagada: " + prefixo)
+    admlog("apagou área " + prefixo)
   fimse
   ret 1
 
@@ -216,6 +213,7 @@ func cmd_cdir # Criar sala na direção especificada
   p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
   config:salvar
   msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
+  admlog("criou sala " + txt(nome, 2) + txtfim(num, 3))
   ret 1
 
 func cmd_csala # Criar sala
@@ -257,6 +255,7 @@ func cmd_csala # Criar sala
   p.criar(area + "\nconst s_titulo=\"Sem nome\"\nconst s_desc=\"\"")
   config:salvar
   msg("\bSala criada: " + nome)
+  admlog("criou sala " + nome)
   ret 1
 
 func cmd_asala # Apagar sala
@@ -290,8 +289,10 @@ func p_asala # Confirmar que quer apagar sala
     config:salvar
     se x < 2
       msg("Sala apagada: " + tpasso)
+      admlog("apagou sala " + tpasso)
     senao
       msg("Salas apagadas: " + tpasso)
+      admlog("apagou salas " + tpasso)
     fimse
   senao
     txt10 m1
@@ -348,9 +349,10 @@ func cmd_asai # Apagar saída
     p.apagar(perso.dono, "portaini_" + dir)
     p.apagar(perso.dono, "inv_" + dir)
     p.apagar(perso.dono, "tranc_" + dir)
-    p.apagar(perso.dono, "chave_" + dir)
+    p.apagar(perso.dono, "fechadura_" + dir)
     p.apagar(perso.dono, "portanome_" + dir)
     config:salvar, msg("\bSaída apagada: " + dir)
+    admlog("apagou saída " + dir + " de " + txt(perso.dono, 2))
   fimse
   ret 1
 
@@ -377,6 +379,7 @@ func cmd_csai # Criar saída
       msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg0)))
     fimse
     config:salvar
+    admlog("criou saída " + dir + " de " + txt(perso.dono, 2))
   fimse
   ret 1
 
@@ -677,12 +680,15 @@ const nome4 = "Trancar"
 const tipo4 = "opcao"
 const classe4 = var.classe1
 const var4 = "tranc_" + var.saida1
-const extra4 = txt_tranc
+const extra4 = "Não pode ser trancado\n\
+Pode ser trancado\n\
+Tranca ao fechar"
 #
-const nome5 = "Chave"
+const nome5 = "Fechadura"
+const info5 = "Código da chave que tranca e destranca a porta"
 const tipo5 = "linha"
 const classe5 = var.classe1
-const var5 = "chave_" + var.saida1
+const var5 = "fechadura_" + var.saida1
 #
 const nome6 = "Nome da porta"
 const tipo6 = "linha"

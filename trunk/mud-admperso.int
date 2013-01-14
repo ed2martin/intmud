@@ -108,6 +108,7 @@ func p_cperso # Escolher o tipo de personagem ao criar
   p.criar("p_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
   config:salvar
   msg("\bPersonagem criado: " + var.opcclasse)
+  admlog("criou personagem " + var.opcclasse)
   passo = "", var.opcclasse = ""
   ret 1
 
@@ -142,8 +143,10 @@ func p_aperso # Confirmar que quer apagar personagem
     config:salvar
     se x < 2
       msg("Personagem apagado: " + tpasso)
+      admlog("apagou personagem " + tpasso)
     senao
       msg("Personagens apagados: " + tpasso)
+      admlog("apagou personagens " + tpasso)
     fimse
   senao
     txt20 m1

@@ -208,6 +208,7 @@ func escrobj # Abrir um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
+  ret !arg1, arg0.msg("Abrir o que?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -216,66 +217,62 @@ func escrobj # Abrir um item
     epara i = arg0.dentro1, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
   fimse
-# Gera eventos
-  listaobj l
+# Checa se está aberto
   ref r
   r = i.obj
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_abrirobj(arg0, r, arg1), nulo
-  efim
-# Tenta abrir o item
-  ret !arg1, arg0.msg("Abrir o que?")
-  ret !r, arg0.msg("Você não vê " + arg1 + ".")
   casovar r.i_aberto
   casose "2"
-    arg0.msg(txtmaimin(arg0) + " já está aberto.")
-    sair
-  casose "3"
-    r.i_aberto = 2
-    $mens.p(arg0, r)
-    $mens.mtodos1("$P abriu $A.")
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_abriuobj(arg0, r, arg1)
-    efim
-    sair
+    ret arg0.msg(txtmaimin(r.nome) + " já está abert" + misc:sletra[r.sexo] + ".")
   casose "4"
-    arg0.msg(txtmaimin(r.nome) + " está trancado.")
-    sair
+    ret arg0.msg(txtmaimin(r.nome) + " está trancad" + misc:sletra[r.sexo] + ".")
   casose
-    arg0.msg("Não foi possível abrir " + r.nome + ".")
-    sair
+    ret arg0.msg("Não foi possível abrir " + r.nome + ".")
+  casose "3"
   casofim
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_abrirobj(arg0, r), nulo
+  efim
+# Abre o item
+  r.i_aberto = 2
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P abriu $A.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_abriuobj(arg0, r)
+  efim
 
 func escrdir # Abrir uma porta
+# Checa se porta existe
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está aberto
+  casovar 3 & arg0.dono.porta_[arg1]
+  casose
+    ret arg0.msg("Não há porta nessa direção.")
+  casose "1"
+    ret arg0.msg("Porta já está aberta.")
+  casose "3"
+    ret arg0.msg("Porta está trancada.")
+  casose "2"
+  casofim
+# Gera eventos
   listaobj l
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_abrirdir(arg0, arg0.dono, arg1), nulo
   efim
-  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
-  casovar 3 & arg0.dono.porta_[arg1]
-  casose
-    arg0.msg("Não há porta nessa direção.")
-    sair
-  casose "1"
-    arg0.msg("Porta já está aberta.")
-    sair
-  casose "2"
-    arg0.dono.mudaporta(arg1, 1) # Abre a porta
-    txt100 mporta
-    mporta = arg0.dono.portanome_[arg1]
-    !mporta && (mporta = $cmd_[arg1].m_porta)
-    !mporta && (mporta = "uma porta")
-    $mens.p(arg0)
-    $mens.mtodos1("$P abriu " + mporta + ".")
-    epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-      l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
-    efim
-    sair
-  casose "3"
-    arg0.msg("Porta está trancada.")
-    sair
-  casofim
+# Abre a porta
+  arg0.dono.mudaporta(arg1, 1) # Abre a porta
+  txt100 mporta
+  mporta = arg0.dono.portanome_[arg1]
+  !mporta && (mporta = $cmd_[arg1].m_porta)
+  !mporta && (mporta = "uma porta")
+  $mens.p(arg0)
+  $mens.mtodos1("$P abriu " + mporta + ".")
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
+  efim
 
 
 classe cmd_fechar
@@ -294,6 +291,7 @@ func escrobj # Fechar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
+  ret !arg1, arg0.msg("Fechar o que?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -302,62 +300,65 @@ func escrobj # Fechar um item
     epara i = arg0.dentro1, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
   fimse
-# Gera eventos
-  listaobj l
+# Checa se está fechado
   ref r
   r = i.obj
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_fecharobj(arg0, r, arg1), nulo
-  efim
-# Tenta fechar o item
-  ret !arg1, arg0.msg("Fechar o que?")
-  ret !r, arg0.msg("Você não vê " + arg1 + ".")
   casovar r.i_aberto
   casose "3"
   casose "4"
-    arg0.msg(txtmaimin(r.nome) + " já está fechado.")
-    sair
-  casose "2"
-    r.i_aberto = 3
-    $mens.p(arg0, r)
-    $mens.mtodos1("$P fechou $A.")
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_fechouobj(arg0, r, arg1)
-    efim
-    sair
+    ret arg0.msg(txtmaimin(r.nome) + " já está fechad" + misc:sletra[r.sexo] + ".")
   casose
-    arg0.msg("Não foi possível fechar " + r.nome + ".")
-    sair
+    ret arg0.msg("Não foi possível fechar " + r.nome + ".")
+  casose "2"
   casofim
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_fecharobj(arg0, r), nulo
+  efim
+# Fecha o item
+  r.i_aberto = r.i_tranc == 2 ? 4 : 3
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P fechou $A.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_fechouobj(arg0, r)
+  efim
 
 func escrdir # Fechar uma porta
+# Checa se porta existe
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está fechado
+  casovar 3 & arg0.dono.porta_[arg1]
+  casose
+    ret arg0.msg("Não há porta nessa direção.")
+  casose "2"
+  casose "3"
+    ret arg0.msg("Porta já está fechada.")
+  casose "1"
+  casofim
+# Gera eventos
   listaobj l
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1), nulo
   efim
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
-  casovar 3 & arg0.dono.porta_[arg1]
-  casose
-    arg0.msg("Não há porta nessa direção.")
-    sair
-  casose "1"
+# Fecha a porta
+  se arg0.dono.tranc_[arg1] == 2
+    arg0.dono.mudaporta(arg1, 3) # Tranca a porta
+  senao
     arg0.dono.mudaporta(arg1, 2) # Fecha a porta
-    txt100 mporta
-    mporta = arg0.dono.portanome_[arg1]
-    !mporta && (mporta = $cmd_[arg1].m_porta)
-    !mporta && (mporta = "uma porta")
-    $mens.p(arg0)
-    $mens.mtodos1("$P fechou " + mporta + ".")
-    epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-      l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
-    efim
-    sair
-  casose "2"
-  casose "3"
-    arg0.msg("Porta já está fechada.")
-    sair
-  casofim
+  fimse
+  txt100 mporta
+  mporta = arg0.dono.portanome_[arg1]
+  !mporta && (mporta = $cmd_[arg1].m_porta)
+  !mporta && (mporta = "uma porta")
+  $mens.p(arg0)
+  $mens.mtodos1("$P fechou " + mporta + ".")
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
+  efim
 
 
 classe cmd_destrancar
@@ -377,6 +378,7 @@ func escrobj # Destrancar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
+  ret !arg1, arg0.msg("Destrancar o que?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -385,66 +387,86 @@ func escrobj # Destrancar um item
     epara i = arg0.dentro1, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  fimse
+# Checa se está trancado
+  ref r
+  r = i.obj, misc:obj = arg0
+  casovar r.i_aberto
+  casose "2"
+    ret arg0.msg(txtmaimin(r.nome) + " está abert" + misc:sletra[r.sexo] + ".")
+  casose "3"
+    ret !r.i_tranc, arg0.msg(txtmaimin(r.nome) + " não pode ser trancad" + misc:sletra[r.sexo] + \
+".")
+    ret arg0.msg(txtmaimin(r.nome) + " não está trancad" + misc:sletra[r.sexo] + ".")
+  casose
+    ret arg0.msg("Não foi possível destrancar " + r.nome + ".")
+  casose "4"
+  casofim
+# Procura a chave
+  ref chave
+  se r.i_fechadura
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave de " + r.nome + ".")
+    chave = i.obj
   fimse
 # Gera eventos
   listaobj l
-  ref r
-  r = i.obj
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_destrobj(arg0, r, arg1), nulo
+    ret l.objini.cmd_destrancarobj(arg0, r, chave), nulo
   efim
-# Tenta destrancar o item
-  ret !arg1, arg0.msg("Destrancar o que?")
-  ret !r, arg0.msg("Você não vê " + arg1 + ".")
-  casovar r.i_aberto
-  casose "2"
-    arg0.msg(txtmaimin(arg0) + " está aberto.")
-    sair
-  casose "3"
-    arg0.msg(txtmaimin(r.nome) + " não está trancado.")
-    sair
-  casose "4"
-    r.i_aberto = 3
-    $mens.p(arg0, r)
-    $mens.mtodos1("$P destrancou $A.")
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_destrobj(arg0, r, arg1)
-    efim
-    sair
-  casose
-    arg0.msg("Não foi possível destrancar " + r.nome + ".")
-    sair
-  casofim
+# Destranca o item
+  r.i_aberto = 3
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P destrancou $A.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_destrancouobj(arg0, r, chave)
+  efim
 
 func escrdir # Destrancar uma porta
-  listaobj l
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_destrdir(arg0, arg0.dono, arg1), nulo
-  efim
+# Checa se porta existe
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está trancado
   casovar 3 & arg0.dono.porta_[arg1]
   casose
-    arg0.msg("Não há porta nessa direção.")
-    sair
+    ret arg0.msg("Não há porta nessa direção.")
   casose "1"
-    arg0.msg("Porta está aberta.")
-    sair
+    ret arg0.msg("Porta está aberta.")
   casose "2"
-    arg0.msg("Porta não está trancada.")
-    sair
+    ret !arg0.dono.tranc_[arg1], arg0.msg("Essa porta não pode ser trancada.")
+    ret arg0.msg("Porta não está trancada.")
   casose "3"
-    arg0.dono.mudaporta(arg1, 2) # Destranca a porta
-    txt100 mporta
-    mporta = arg0.dono.portanome_[arg1]
-    !mporta && (mporta = $cmd_[arg1].m_porta)
-    !mporta && (mporta = "uma porta")
-    $mens.p(arg0)
-    $mens.mtodos1("$P destrancou " + mporta + ".")
-    epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-      l.objini.cmd_destrdir(arg0, arg0.dono, arg1)
-    efim
-    sair
   casofim
+# Procura a chave
+  txt100 mporta # Nome da porta
+  txt100 cod # Código da fechadura
+  ref chave # Chave que abre a fechadura
+  misc:obj = arg0
+  cod = arg0.dono.fechadura_[arg1], mporta = arg0.dono.portanome_[arg1]
+  !mporta && (mporta = $cmd_[arg1].m_porta)
+  !mporta && (mporta = "uma porta")
+  se cod
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave para destrancar " + mporta + ".")
+    chave = i.obj
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave), nulo
+  efim
+# Destranca a porta
+  arg0.dono.mudaporta(arg1, 2) # Destranca a porta
+  $mens.p(arg0)
+  $mens.mtodos1("$P destrancou " + mporta + ".")
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave)
+  efim
 
 
 classe cmd_trancar
@@ -464,6 +486,7 @@ func escrobj # Trancar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
+  ret !arg1, arg0.msg("Trancar o que?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -472,66 +495,86 @@ func escrobj # Trancar um item
     epara i = arg0.dentro1, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  fimse
+# Checa se está destrancado
+  ref r
+  r = i.obj, misc:obj = arg0
+  casovar r.i_aberto
+  casose "2"
+    ret arg0.msg(txtmaimin(r.nome) + " está abert" + misc:sletra[r.sexo] + ".")
+  casose "4"
+    ret arg0.msg(txtmaimin(r.nome) + " já está trancad" + misc:sletra[r.sexo] + ".")
+  casose
+    ret arg0.msg("Não foi possível trancar " + r.nome + ".")
+  casose "3"
+  casofim
+  ret !r.i_tranc, arg0.msg(txtmaimin(r.nome) + " não pode ser trancad" + misc:sletra[r.sexo] + \
+".")
+# Procura a chave
+  ref chave
+  se r.i_fechadura
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave de " + r.nome + ".")
+    chave = i.obj
   fimse
 # Gera eventos
   listaobj l
-  ref r
-  r = i.obj
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_trancobj(arg0, r, arg1), nulo
+    ret l.objini.cmd_trancarobj(arg0, r, chave), nulo
   efim
-# Tenta trancar o item
-  ret !arg1, arg0.msg("Trancar o que?")
-  ret !r, arg0.msg("Você não vê " + arg1 + ".")
-  casovar r.i_aberto
-  casose "2"
-    arg0.msg(txtmaimin(arg0) + " está aberto.")
-    sair
-  casose "3"
-    r.i_aberto = 4
-    $mens.p(arg0, r)
-    $mens.mtodos1("$P trancou $A.")
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_trancobj(arg0, r, arg1)
-    efim
-    sair
-  casose "4"
-    arg0.msg(txtmaimin(r.nome) + " já está trancado.")
-    sair
-  casose
-    arg0.msg("Não foi possível trancar " + r.nome + ".")
-    sair
-  casofim
+# Tranca o item
+  r.i_aberto = 4
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P trancou $A.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_trancouobj(arg0, r, chave)
+  efim
 
 func escrdir # Trancar uma porta
-  listaobj l
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_trancdir(arg0, arg0.dono, arg1), nulo
-  efim
+# Checa se porta existe
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está trancado
   casovar 3 & arg0.dono.porta_[arg1]
   casose
-    arg0.msg("Não há porta nessa direção.")
-    sair
+    ret arg0.msg("Não há porta nessa direção.")
   casose "1"
-    arg0.msg("Porta está aberta.")
-    sair
-  casose "2"
-    arg0.dono.mudaporta(arg1, 3) # Tranca a porta
-    txt100 mporta
-    mporta = arg0.dono.portanome_[arg1]
-    !mporta && (mporta = $cmd_[arg1].m_porta)
-    !mporta && (mporta = "uma porta")
-    $mens.p(arg0)
-    $mens.mtodos1("$P trancou " + mporta + ".")
-    epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-      l.objini.cmd_trancdir(arg0, arg0.dono, arg1)
-    efim
-    sair
+    ret arg0.msg("Porta está aberta.")
   casose "3"
-    arg0.msg("Porta já está trancada.")
-    sair
+    ret arg0.msg("Porta já está trancada.")
+  casose "2"
   casofim
+  ret !arg0.dono.tranc_[arg1], arg0.msg("Porta não pode ser trancada.")
+# Procura a chave
+  txt100 mporta # Nome da porta
+  txt100 cod # Código da fechadura
+  ref chave # Chave que abre a fechadura
+  misc:obj = arg0
+  cod = arg0.dono.fechadura_[arg1], mporta = arg0.dono.portanome_[arg1]
+  !mporta && (mporta = $cmd_[arg1].m_porta)
+  !mporta && (mporta = "uma porta")
+  se cod
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave para trancar " + mporta + ".")
+    chave = i.obj
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_trancardir(arg0, arg0.dono, arg1, chave), nulo
+  efim
+# Tranca a porta
+  arg0.dono.mudaporta(arg1, 3) # Tranca a porta
+  $mens.p(arg0)
+  $mens.mtodos1("$P trancou " + mporta + ".")
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave)
+  efim
 
 
 classe cmd_levantar

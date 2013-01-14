@@ -206,7 +206,17 @@ func escr
   t1 += intdiv((864000 - arg0.tempojogo1) / 36000)
   t1 += ":"
   t1 += intdiv((864000 - arg0.tempojogo1) / 600) % 60
-  arg0.msg(t1 + " min")
+  arg0.msg(t1 + " horas")
+  se arg0.sock
+    int32 x
+    x = arg0.sock.tempojogo
+    se x >= 24 * 36000
+      t1 = "Mais de 24 horas"
+    senao
+      t1 = intdiv(x / 36000)
+      t1 += ":" + intdiv(x / 600) % 60 + " horas"
+    fimse
+    arg0.msg("Tempo dessa sessão:  " + t1)
 
 func semanamud
   casovar arg0
@@ -251,7 +261,8 @@ const txtajuda2 = "\n\
   \c2QUEM\b     O comando QUEM mostra onde cada jogador está no MUD\n\
   \c2INVQUEM\b  Ocultar a presença no comando quem\n\
   \c2INVSALA\b  Invisível a não administradores\n\
-  \c2AC\b       Participa do canal de comunicação AC (administração)"
+  \c2AC\b       Participa do canal de comunicação AC (administração)\n\
+  \c2ADMLOG\b   Canal ADMLOG - é informado sobre mudanças online no MUD"
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
 # As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
@@ -270,6 +281,7 @@ const opc_invquem = 17
 const opc_invsala = 18
 const opc_ac = 19
 const opc_quem = 20
+const opc_admlog = 21
 # Nota: o bit 23 é reservado para indicar se é administrador
 
 func escr
@@ -396,10 +408,10 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Ver\b\n\
 Sintaxe: VER\n\
          VER <personagem ou objeto>\n\
-Mostra a descrição completa do lugar aonde você está ou informações\n\
-sobre um personagem ou um objeto."
+Olha de relance para o lugar aonde você está ou para um personagem ou\n\
+objeto. É semelhante ao comando olhar, mas dá menos informações."
 const posic = 5
-const completo = 1 # No comando olhar, essa variável é 0
+const completo = 0 # No comando olhar, essa variável é 1
 
 func escr
   listaobj l
@@ -408,7 +420,7 @@ func escr
   efim
   se !arg1
     se arg0.jogconfig.16
-      arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, 7))
+      arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, completo ? 7 : 6))
     senao
       arg0.msg2(arg0.dono.descsala(arg0, completo ? 7 : 6))
     fimse
@@ -426,7 +438,7 @@ func escr
   efim
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
     r = l.objini
     textotxt t
@@ -465,8 +477,7 @@ func escr
     txt200 t2
     t2 = txtmaimin(r.nome)
     se r.pnivel || r.perso
-      t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel
-      txt(r.pvida) && (t2 += ", " + estado(r))
+      t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel + ", " + estado(r)
       se r.persobat && r.persobat != r
         t2 += "\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
         t2 += ", " + estado(r.persobat)
@@ -490,6 +501,7 @@ func escr
   arg0.msg("Você não vê isso.")
 
 func estado # Retorna texto que contém o estado atual do personagem
+  ret !arg0.pvidamax, "perfeitamente saudável"
   casovar intdiv(arg0.pvida * 6 / arg0.pvidamax)
   casose "0"
     ret arg0.pvida ? "à beira da morte" : "demaiad" + misc:sletra[arg0.sexo]
@@ -510,12 +522,12 @@ func estado # Retorna texto que contém o estado atual do personagem
 
 classe cmd_olhar
 herda cmd_ver
-const completo = 0
+const completo = 1
 const txtajuda = "\b\c3Olhar\b\n\
 Sintaxe: OLHAR\n\
          OLHAR <personagem ou objeto>\n\
-Olha de relance para o lugar aonde você está ou para um personagem ou\n\
-objeto. É semelhante ao comando ver, mas dá menos informações."
+Mostra a descrição completa do lugar aonde você está ou informações\n\
+sobre um personagem ou um objeto."
 
 
 classe cmd_falar

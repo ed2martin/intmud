@@ -169,7 +169,8 @@ func escr
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
-      mens2 = total <= 1 ? "$P solta $o" : "$P solta " + total + "x $o"
+      mens2 = mens ? "$P coloca " : "$P solta "
+      mens2 += total <= 1 ? "$o" : txt(total) + "x $o"
       casovar soltar
       casose "2"
         $mens.mvis1(mens2 + mens + ", que afunda em seguida.")

@@ -103,6 +103,7 @@ func p_citem # Escolher o tipo de item ao criar
   p.criar("i_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
   config:salvar
   msg("\bItem criado: " + var.opcclasse)
+  admlog("criou item " + var.opcclasse)
   passo = "", var.opcclasse = ""
   ret 1
 
@@ -137,8 +138,10 @@ func p_aitem # Confirmar que quer apagar item
     config:salvar
     se x < 2
       msg("Item apagado: " + tpasso)
+      admlog("apagou item " + tpasso)
     senao
       msg("Itens apagados: " + tpasso)
+      admlog("apagou itens " + tpasso)
     fimse
   senao
     txt20 m1
@@ -249,6 +252,12 @@ const tipo17 = "numero"
 const classe17 = var.classe1
 const var17 = "i_captura"
 #
+const nome18 = "Chave"
+const info18 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo18 = "linha"
+const classe18 = var.classe1
+const var18 = "i_chave"
+#
 const nome41 = "Variáveis"
 const tipo41 = "linha"
 const classe41 = var.classe1
@@ -330,24 +339,60 @@ classe adm_item3
 herda adm_item1
 const titulo = "Item " + txt(var.classe1, 2)
 #
-const nome18 = "Mobília"
-const tipo18 = "opcao"
-const classe18 = var.classe1
-const var18 = "i_movel"
-const extra18 = "Não\nPodem sentar\nPodem sentar e deitar"
-#
-const nome19 = "Lugares"
-const tipo19 = "numero"
+const nome19 = "Mobília"
+const tipo19 = "opcao"
 const classe19 = var.classe1
-const var19 = "i_lugar"
+const var19 = "i_movel"
+const extra19 = "Não\nPodem sentar\nPodem sentar e deitar"
 #
-const nome20 = "Container"
-const tipo20 = "opcao"
+const nome20 = "Lugares"
+const tipo20 = "numero"
 const classe20 = var.classe1
-const var20 = "i_abertoini"
-const mudou20 = "recalc_exec"
-const extra20 = "Não\n\
+const var20 = "i_lugar"
+#
+const nome21 = "Container"
+const tipo21 = "opcao"
+const classe21 = var.classe1
+const var21 = "i_abertoini"
+const mudou21 = "recalc_exec"
+const extra21 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado"
+#
+const nome22 = "Trancar"
+const tipo22 = "opcao"
+const classe22 = var.classe1
+const var22 = "i_tranc"
+const extra22 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+#
+const nome23 = "Fechadura"
+const info23 = "Código da chave que tranca e destranca o container"
+const tipo23 = "linha"
+const classe23 = var.classe1
+const var23 = "i_fechadura"
+#
+const nome24 = "Duração da luz"
+const info24 = "Por quanto tempo produz luz, em décimos de segundo"
+const tipo24 = "numero"
+const classe24 = var.classe1
+const var24 = "luzini"
+#
+const nome25 = "Tipo de luz"
+const tipo25 = "opcao"
+const classe25 = var.classe1
+const var25 = "luzitem"
+const extra25 = "Sempre aceso\nAceso se usado como luz\nPode ser aceso e apagado"
+#
+const nome26 = "Sem luz mensagem"
+const info26 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo26 = "linha"
+const classe26 = var.classe1
+const var26 = "luztxt"
+#
+const nome27 = "Sem luz item some"
+const info27 = "Se o item some (é apagado) quando a luz acaba"
+const tipo27 = "simnao"
+const classe27 = var.classe1
+const var27 = "luzfim"
