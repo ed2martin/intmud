@@ -120,6 +120,8 @@ const adm_outros = "\c3Outros comandos\b\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores.\n\
+\c2MUDANOME\b <nome atual> <novo nome>\n\
+  Muda o nome do personagem de um jogador.\n\
 \c2INFO\b\n\
   Informações sobre a sala.\n\
 \c2INFO\b <personagem ou item>\n\
@@ -164,6 +166,74 @@ func cmd_echo
 func cmd_mudler
   $mudaprog.exec
   ret 1
+
+func cmd_mudanome
+  se intsub(arg0) != 2
+    msg("Tecle mudanome seguido do nome atual e o novo nome")
+    ret 1
+  fimse
+  indiceitem ind
+  txt20 nome.2 # Nome não codificado
+  txt20 codif.2 # Nome codificado
+  arqsav sav1
+# Obtém os nomes
+  nome.0 = txtmaimin(txt1(arg0))
+  nome.1 = txtmaimin(txt2(arg0))
+  codif.0 = txtnome(nome.0)
+  codif.1 = txtnome(nome.1)
+# Checa se o segundo personagem já existe
+  se nome.0 == nome.1
+    msg("Os dois nomes correspondem ao mesmo personagem.")
+    ret 1
+  senao inttotal(nome.1) < 3 || inttotal(nome.1) > 16
+    msg("O novo nome deve ter de 3 a 16 caracteres.")
+    ret 1
+  senao intnome(nome.1)
+    msg("O novo nome não é válido.")
+    ret 1
+  senao ind.obj("un " + codif.1)
+    msg("Personagem " + nome.1 + " já está sendo usado.")
+    ret 1
+  senao codif.0 != codif.1 && sav1.existe("sav/" + codif.1 + ".sav")
+    msg("Personagem " + nome.1 + " já existe.")
+    ret 1
+  fimse
+# Jogador online
+  uint8 mudou
+  se ind.obj("un " + codif.0)
+    ref r
+    r = ind.obj("un " + codif.0)
+    r.cnome = "un " + codif.1
+    r.nome = nome.1
+    r.perso.cnome = "pn " + codif.1
+    r.perso.nome = nome.1
+    mudou = 1
+  fimse
+# Jogo salvo
+  se sav1.existe("sav/" + codif.0 + ".sav")
+    textotxt t
+    textopos p
+    t.ler("sav/" + codif.0 + ".sav")
+    p = t.ini
+    p.txtproc("\nnome=") >= 0 && p.mudar(nome.1, 5, 100)
+    t.salvar("sav/" + codif.1 + ".sav")
+    codif.0 != codif.1 && sav1.apagar("sav/" + codif.0 + ".sav")
+    mudou = 1
+  fimse
+# Informa se mudou
+  se !mudou
+    msg("Personagem " + nome.0 + " não existe.")
+  senao
+    msg("Personagem " + nome.0 + " mudou para " + nome.1 + ".")
+    admlog("mudou personagem jogador " + nome.0 + " para " + nome.1)
+  fimse
+  ret 1
+
+func admlog # Mensagem para todos com a opção "config +admlog"
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.21 && item.obj.msg("(adm) " + nome + " " + arg0)
+  efim
 
 const txt_legenda = "Legenda:\n\
 <nulo> Significa que a opção não foi definida.\n\
@@ -310,17 +380,20 @@ func p_linha # Alterando um texto de uma linha
       config:salvar
       var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
       msg("Apagado: " + var.opcnome)
+      admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     senao
       p.criar(var.opcclasse, "const " + var.opcvar + "=\"\"")
       config:salvar
       var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
       msg(var.opcnome + " mudou para um texto vazio")
+      admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     fimse
   senao arg0 != "z"
     p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txtvis(arg0) + "\"")
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + arg0)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
@@ -381,6 +454,7 @@ func p_texto # Alterando um texto de várias linhas
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Salvou " + var.opcnome)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     ret 1
   casofim
   ret p_editor(arg0, 2000, var.opcvar)
@@ -416,6 +490,7 @@ func p_numero # Alterando um número
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
     int32 valor
     valor = arg0
@@ -431,6 +506,7 @@ func p_numero # Alterando um número
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + valor)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
@@ -487,6 +563,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
     textotxt t
     int16 x
@@ -502,6 +579,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + x + " " + t.remove)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
@@ -543,6 +621,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + (arg0 == 1 ? "1 sim" : "0 não"))
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   casose "z"
     sair
   casose "n"
@@ -551,6 +630,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
       config:salvar
       var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
       msg("Apagado: " + var.opcnome)
+      admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
       sair
     fimse
   casose
@@ -610,6 +690,7 @@ func p_sala # Alterando a sala
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
     txt100 nome
     nome = txtmin(txts(arg0))
@@ -621,6 +702,7 @@ func p_sala # Alterando a sala
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para " + nome)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
@@ -766,6 +848,7 @@ func p_funcsalvar # Opçao salvar de p_func
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Salvo com sucesso")
+    admlog("editou classe " + var.opcclasse)
     ret
   fimse
 # Informa erros, corrigindo os números das linhas

@@ -21,6 +21,7 @@ int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
 intexec msgprompt # Para enviar mensagens do prompt
+intinc tempojogo # Tempo da sessão
 #
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -357,10 +358,10 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
       item.obj.recalc = 1
     efim
 # Muda de sala e volta ao jogo
+    msg("Continuando jogo salvo.")
     ref r
     r = $[perso.salanome]
     perso.mudadono(r ? r : config:salasav)
-    msg("Continuando jogo salvo.")
     $mens.p(arg0)
     $mens.mvis2("", "$P chegou.")
     perso.salvarev = 3000 # 5 minutos
@@ -425,6 +426,7 @@ const ident = nome
 indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
+sav int1 jogconfig.24 # Para salvar sock.jogconfig
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
@@ -499,5 +501,5 @@ func vazio2_exec # Sair do MUD automaticamente
 
 func cmd_recalc1 # Recalcula variáveis do personagem
   pnivel < 10 && (pvidamax += 50 - pnivel * 5)
-  jogconfig.18 && (bitinv = bitinv | 128) # Propriedade config +invis
+  jogconfig.18 && (bitinv = bitinv | 128) # Propriedade config +invsala
   jogconfig.23 && (bitver = bitver | 128) # Se é administrador

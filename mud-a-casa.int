@@ -40,7 +40,7 @@ const a_tempo = 1
 classe b_casa
 herda sala
 const s_area = "casa"
-const s_terreno = 1
+const s_terreno = 0 # Terreno: 0 Dentro, lugar fechado - 1mv
 const s_luta = 1
 const s_item = 1
 
@@ -1105,19 +1105,20 @@ No centro, um grande lustre está preso há três metros de altura. O chão,\n\
 de granito, está quase todo coberto por tapetes."
 const dir_n = $s_casa035
 const dir_o = $s_casa037
+const dir_s = $s_casa060
 
 
 classe s_casa037
 herda b_casa
 const s_titulo = "Corredor"
 const s_desc = "Esse é um corredor comprido, embora estreito, que liga vários cômodos.\n\
-À leste fica um grande saguão, e à oeste não é possível ver aonde ele\n\
-acaba, pois há zumbis por todo canto. Mas por algum motivo, eles evitam\n\
-vir até aqui."
+À leste fica um grande saguão, e à oeste não se consegue ver aonde acaba,\n\
+pois há zumbis por todo lado. Mas por algum motivo, eles chegam próximo\n\
+daqui e se afastam rapidamente em seguida."
+const s_pnj = 0 # PNJs entram: Não
 const dir_l = $s_casa036
 const dir_n = $s_casa038
 const dir_o = $s_casa039
-const s_pnj = 0 # PNJs entram: Não
 
 
 classe s_casa038
@@ -1130,7 +1131,7 @@ nota algumas curiosas [letras] em um canto da parede, quase ocultas pela\n\
 poeira e pelo tempo. Elas parecem dizer algo importante."
 const dir_s = $s_casa037
 const ver_letras = "Na parede está escrito assim:\n\
-Os objetos dessa estante repelem os zumbis. Se você tiver dificuldade\n\
+Os objetos dessa [estante] repelem os zumbis. Se você tiver dificuldade\n\
 para pegar mais de um objeto de uma só vez, tecle ajuda nomes, depois\n\
 tecle ajuda pegar."
 const s_reset = "S 100 casa003 0 S"
@@ -1259,230 +1260,6 @@ func testafim_exec
   este.apagar, r1.apagar, r2.apagar
 
 
-classe s_casa039
-herda b_casa
-const s_titulo = "Corredor"
-const s_desc = "Um corredor abafado de leste à oeste. Ao norte um cheiro de podridão vem\n\
-de uma suíte de hóspedes, e ao sul, o bafo de um quarto de hóspedes bem\n\
-mais modesto."
-const dir_l = $s_casa037
-const dir_o = $s_casa040
-const dir_s = $s_casa044
-const dir_n = $s_casa045
-
-
-classe s_casa040
-herda b_casa
-const dir_l = $s_casa039
-const s_titulo = "Corredor"
-const s_desc = "Um corredor empoeirado de leste à oeste. No norte há um pequeno e fedido\n\
-banheiro. À sudeste há um pequeno e escuro quarto razoavelmente intacto.\n\
-Uma porta à sudoeste leva até a entrada da piscina."
-const dir_o = $s_casa041
-const dir_n = $s_casa046
-const dir_se = $s_casa047
-const dir_so = $s_casa052
-
-
-classe s_casa041
-herda b_casa
-const s_titulo = "Corredor"
-const s_desc = "Um corredor de leste à oeste. Aqui o mofo produz um cheiro insuportável.\n\
-No norte você vê o que restou de uma suíte de hóspedes. No sul, Um quarto\n\
-de hóspedes um pouco menor."
-const dir_l = $s_casa040
-const dir_o = $s_casa042
-const dir_s = $s_casa048
-const dir_n = $s_casa049
-
-
-classe s_casa042
-herda b_casa
-const s_titulo = "Corredor"
-const s_desc = "Um corredor abafado de leste à oeste. O ar podre vem de três direções,\n\
-um escritório no norte, uma suíte no sul e a entrada da piscina no sudeste."
-const dir_l = $s_casa041
-const dir_o = $s_casa043
-const dir_n = $s_casa051
-const dir_se = $s_casa052
-const dir_s = $s_casa053
-
-
-classe s_casa043
-herda b_casa
-const s_titulo = "Corredor"
-const s_desc = "O começo de um abafado corredor. Aqui uma faca cheia de sangue atravessa\n\
-um antigo quadro preso na parede. No norte era uma grande biblioteca.\n\
-No sul, uma suíte bastante empoeirada."
-const dir_l = $s_casa042
-const dir_n = $s_casa054
-const dir_s = $s_casa055
-
-
-classe s_casa044
-herda b_casa
-const s_titulo = "Quarto de hóspedes"
-const s_desc = "O que restou dos móveis está atrás da porta, também destrúida,\n\
-formando uma espécie de barricada. No outro lado do quarto há\n\
-bastante sangue espalhado."
-const dir_n = $s_casa039
-const a_reset = "P 50 casa014 10 15 5"
-
-func a_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 5 && rand(100) < 50
-    criar("p_casa014", este, rand(10, 15))
-  fimse
-
-
-classe s_casa045
-herda b_casa
-const s_titulo = "Suíte de hóspedes"
-const s_desc = "Você vê uma cama de casal toda revirada e cheia de sangue.\n\
-Os móveis estão destruídos. A porta para o banheiro foi arrancada\n\
-e jogada no chão."
-const dir_s = $s_casa039
-const dir_no = $s_casa050
-
-
-classe s_casa046
-herda b_casa
-const s_titulo = "Banheiro"
-const s_desc = ""
-const dir_s = $s_casa040
-
-
-classe s_casa047
-herda b_casa
-const s_titulo = "Pequeno quarto"
-const s_desc = ""
-const dir_no = $s_casa040
-
-
-classe s_casa048
-herda b_casa
-const s_titulo = "Quarto de hóspedes"
-const s_desc = "A porta está completamente destruída, assim como a maioria dos\n\
-móveis. As paredes estão arranhadas e manchadas de vermelho."
-const dir_n = $s_casa041
-const a_reset = "P 50 casa014 10 15 5"
-
-func a_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 5 && rand(100) < 50
-    criar("p_casa014", este, rand(10, 15))
-  fimse
-
-
-classe s_casa049
-herda b_casa
-const s_titulo = "Suíte de hóspedes"
-const s_desc = ""
-const dir_s = $s_casa041
-const dir_ne = $s_casa050
-
-
-classe s_casa050
-herda b_casa
-const s_titulo = "Banheiro da suíte"
-const s_desc = ""
-const dir_so = $s_casa049
-const dir_se = $s_casa045
-const a_reset = "P 50 casa014 10 15 5"
-
-func a_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 5 && rand(100) < 50
-    criar("p_casa014", este, rand(10, 15))
-  fimse
-
-const s_desc = "Aqui só se vê uma pilha de ossos. A pia e a privada estão no chão,\n\
-quebradas."
-
-
-classe s_casa051
-herda b_casa
-const s_titulo = "Escritório"
-const s_desc = ""
-const dir_s = $s_casa042
-
-
-classe s_casa052
-herda b_casa
-const s_titulo = "Entrada da piscina"
-const s_desc = ""
-const dir_no = $s_casa042
-const dir_ne = $s_casa040
-const a_reset = "P 50 casa014 10 15 5"
-
-func a_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 5 && rand(100) < 50
-    criar("p_casa014", este, rand(10, 15))
-  fimse
-
-
-classe s_casa053
-herda b_casa
-const s_titulo = "Suíte"
-const s_desc = ""
-const dir_n = $s_casa042
-const dir_so = $s_casa056
-const a_reset = "P 50 casa014 10 15 5"
-
-func a_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 5 && rand(100) < 50
-    criar("p_casa014", este, rand(10, 15))
-  fimse
-
-
-classe s_casa054
-herda b_casa
-const s_titulo = "Biblioteca"
-const s_desc = ""
-const dir_s = $s_casa043
-
-
-classe s_casa055
-herda b_casa
-const s_titulo = "Suíte"
-const s_desc = ""
-const dir_n = $s_casa043
-const dir_se = $s_casa056
-const dir_so = $s_casa057
-const a_reset = "P 50 casa014 10 15 5"
-
-func a_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 5 && rand(100) < 50
-    criar("p_casa014", este, rand(10, 15))
-  fimse
-
-const portaini_so = 3 # Estado inicial: 3 Porta trancada
-const chave_so = "casa1"
-const s_reset = "D 100 so 3"
-
-func s_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de s_reset
-  mudaporta("so", 3)
-
-
-classe s_casa056
-herda b_casa
-const s_titulo = "Banheiro da suíte"
-const s_desc = ""
-const dir_no = $s_casa055
-const dir_ne = $s_casa053
-
-
-classe s_casa057
-herda b_casa
-const s_titulo = "Vestiário"
-const s_desc = ""
-const dir_ne = $s_casa055
-
-
 classe p_casa014
 herda comum_persobat
 const pesoobj = 45000
@@ -1531,5 +1308,364 @@ func cmd_morreu
 
 classe i_casa008
 herda comum_itemgrupo
-const nome = "Chave"
+const nome = "bolsa"
+const pesoobj = 1200
+const descpos = "Uma bolsa está jogada aqui."
+const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
+a palavra Beatriz."
+
+
+classe i_casa009
+herda comum_itemgrupo
+const nome = "bolsa"
+const pesoobj = 1200
+const descpos = "Uma bolsa está jogada aqui."
+const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
+a palavra Ivone."
+
+
+classe i_casa010
+herda comum_itemgrupo
+const nome = "chave"
 const pesoobj = 100
+const i_chave = "casa1"
+
+
+classe s_casa039
+herda b_casa
+const s_titulo = "Corredor"
+const s_desc = "O local é abafado. As paredes cinzentas e corroídas pelo tempo, de leste\n\
+a oeste, parecem querer te sufocar. Um ar podre vem da varanda, à sudeste.\n\
+O chão de cerâmica surpreende, tanto pela poeira imunda como por algumas\n\
+manchas ligeiramente avermelhadas."
+const dir_l = $s_casa037
+const dir_o = $s_casa040
+const dir_se = $s_casa057
+const dir_s = $s_casa058
+
+
+classe s_casa040
+herda b_casa
+const s_titulo = "Corredor"
+const s_desc = "Aqui o corredor faz uma pequena curva, de leste à sudoeste, porém mantendo\n\
+o mesmo aspecto. Ao norte, você vê uma suíte totalmente destruída, como\n\
+se alguém estivesse procurando algo e não encontrou."
+const dir_l = $s_casa039
+const dir_so = $s_casa041
+const dir_n = $s_casa043
+
+
+classe s_casa041
+herda b_casa
+const s_titulo = "Corredor"
+const s_desc = "Aqui o corredor faz uma pequena curva, do sul à nordeste, porém mantendo\n\
+o mesmo aspecto. À noroeste há uma suíte bastante danificada, e à oeste\n\
+uma biblioteca, com estantes presas na parede."
+const dir_ne = $s_casa040
+const dir_s = $s_casa042
+const dir_no = $s_casa045
+const dir_o = $s_casa048
+
+
+classe s_casa042
+herda b_casa
+const s_titulo = "Corredor"
+const s_desc = "O corredor, que continua ao norte, aqui se divide em vários cômodos.\n\
+À leste um quarto, à oeste um banheiro, à sudoeste uma sala de estar e\n\
+à sudeste a entrada da piscina. A parede ao sul está toda arranhada, como\n\
+se um animal grande estivesse tentando afiar as unhas."
+const dir_n = $s_casa041
+const dir_so = $s_casa050
+const dir_o = $s_casa053
+const dir_l = $s_casa054
+const dir_se = $s_casa055
+const a_reset = "P 70 casa014 11 15 6"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  se p_casa014:objsolto.total < 6 && rand(100) < 70
+    criar("p_casa014", este, rand(11, 15))
+  fimse
+
+
+classe s_casa043
+herda b_casa
+const s_titulo = "Suíte"
+const s_desc = "O cenário é de destruição. Os restos de uma cama de casal se confundem\n\
+com o que sobrou dos móveis da suíte. O carpete está rasgado em diversos\n\
+lugares. Nas paredes só sobraram os pregos que sustentavam quadros."
+const dir_s = $s_casa040
+const dir_o = $s_casa044
+
+
+classe s_casa044
+herda b_casa
+const s_titulo = "Banheiro"
+const s_desc = "Pedaços do vidro que fechava o box estão espalhados por todo canto.\n\
+A bacia foi arrancada e jogada em um canto, junto com um criado mudo.\n\
+Na pia, sobrou apenas a torneira."
+const dir_l = $s_casa043
+const a_reset = "P 70 casa014 11 15 6"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  se p_casa014:objsolto.total < 6 && rand(100) < 70
+    criar("p_casa014", este, rand(11, 15))
+  fimse
+
+
+classe s_casa045
+herda b_casa
+const s_titulo = "Suíte"
+const s_desc = ""
+const dir_se = $s_casa041
+const dir_n = $s_casa046
+const dir_o = $s_casa047
+const portaini_o = 3 # Estado inicial: 3 Porta trancada
+const s_reset = "D 100 o 3"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  mudaporta("o", 3)
+
+const tranc_o = 2 # Trancar: 2 Tranca ao fechar
+const fechadura_o = "casa1"
+
+
+classe s_casa046
+herda b_casa
+const s_titulo = "Banheiro"
+const s_desc = ""
+const dir_s = $s_casa045
+const a_reset = "P 70 casa014 11 15 6"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  se p_casa014:objsolto.total < 6 && rand(100) < 70
+    criar("p_casa014", este, rand(11, 15))
+  fimse
+
+
+classe s_casa047
+herda b_casa
+const s_titulo = "Vestiário"
+const s_desc = ""
+const dir_l = $s_casa045
+const portaini_l = 3 # Estado inicial: 3 Porta trancada
+const chave_l = "casa1"
+const s_pnj = 0 # PNJs entram: Não
+const tranc_l = 1 # Trancar: 1 Pode ser trancado
+
+
+classe s_casa048
+herda b_casa
+const s_titulo = "Biblioteca"
+const s_desc = "Há um pequeno corredor à leste e à sudoeste uma pequena porta leva ao\n\
+escritório. As estantes são embutidas na parede, e talvez por isso, estão\n\
+praticamente intactas. O mesmo não se pode dizer dos livros, a maioria\n\
+espalhada pelo chão."
+const dir_l = $s_casa041
+const dir_so = $s_casa049
+const a_reset = "P 70 casa014 11 15 6"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  se p_casa014:objsolto.total < 6 && rand(100) < 70
+    criar("p_casa014", este, rand(11, 15))
+  fimse
+
+
+classe s_casa049
+herda b_casa
+const s_titulo = "Escritório"
+const s_desc = ""
+const dir_ne = $s_casa048
+const dir_se = $s_casa050
+const s_reset = "R 100 casa008\nR 100 casa009\nS 100 casa009 1 S\nS 100 casa008 2 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref r # Usado como rascunho
+  (r = dentro1.objini("i_casa008")) + r.apagar(1000)
+  (r = dentro1.objini("i_casa009")) + r.apagar(1000)
+  !dentro1.objini("i_casa009") && criar("i_casa009", este, 1)
+  !dentro1.objini("i_casa008") && criar("i_casa008", este, 2)
+
+
+classe s_casa050
+herda b_casa
+const s_titulo = "Sala de estar"
+const s_desc = ""
+const dir_no = $s_casa049
+const dir_ne = $s_casa042
+const dir_s = $s_casa051
+const dir_o = $s_casa052
+
+
+classe s_casa051
+herda b_casa
+const s_titulo = "Quarto"
+const s_desc = ""
+const dir_n = $s_casa050
+
+
+classe s_casa052
+herda b_casa
+const s_titulo = "Quarto"
+const s_desc = ""
+const dir_l = $s_casa050
+
+
+classe s_casa053
+herda b_casa
+const s_titulo = "Banheiro"
+const s_desc = ""
+const dir_l = $s_casa042
+
+
+classe s_casa054
+herda b_casa
+const s_titulo = "Quarto"
+const s_desc = ""
+const dir_o = $s_casa042
+
+
+classe s_casa055
+herda b_casa
+const s_titulo = "Entrada da piscina"
+const s_desc = ""
+const dir_no = $s_casa042
+const dir_l = $s_casa056
+
+
+classe s_casa056
+herda b_casa
+const s_titulo = "Varanda"
+const s_desc = ""
+const dir_o = $s_casa055
+const dir_n = $s_casa057
+
+
+classe s_casa057
+herda b_casa
+const s_titulo = "Varanda"
+const s_desc = ""
+const dir_s = $s_casa056
+const dir_no = $s_casa039
+
+
+classe s_casa058
+herda b_casa
+const s_titulo = "Suíte"
+const s_desc = ""
+const dir_n = $s_casa039
+const dir_o = $s_casa059
+
+
+classe s_casa059
+herda b_casa
+const s_titulo = "Banheiro"
+const s_desc = ""
+const dir_l = $s_casa058
+const a_reset = "P 70 casa014 11 15 6"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  se p_casa014:objsolto.total < 6 && rand(100) < 70
+    criar("p_casa014", este, rand(11, 15))
+  fimse
+
+
+classe s_casa060
+herda b_casa
+const s_titulo = "Despensa"
+const s_desc = "Vários produtos de limpeza estão dispostos em três caixas. Há também\n\
+vassouras, rodos, feiticeiras e outros utensílios de limpeza. O que\n\
+não se vê aqui são mantimentos."
+const dir_n = $s_casa036
+const s_reset = "P 100 casa015 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_casa015:objsolto.total < 1
+    criar("p_casa015", este, 0)
+  fimse
+
+
+classe p_casa015
+herda comum_perso
+const nome = "Ivone"
+const sexoini = 1
+const nivel = 10
+const pospadr = 5 # Posição padrão: 5 Descansando
+const p_recebe = 1 # Se pode receber itens de outros personagens
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.dentro1.objini("i_casa010") # Se já tem a chave, não faz nada
+  senao arg0.dentro1.objini("i_casa008") || arg0.dentro1.objini("i_casa009")
+    misc:tempo("pedir", arg0) # Dispara funções 'pedir'
+  senao
+    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func pedir30
+  se !arg0.dentro1.objini("i_casa009")
+    arg0.msg("Ivone: Essa bolsa não é minha.")
+  senao
+    arg0.msg("Ivone: Poderia devolver minha bolsa? (tecle dar bolsa ivone)")
+
+func entrou40
+  arg0.msg("Ivone: Esqueci minha bolsa no escritório.")
+
+func entrou80
+  arg0.msg("Ivone: Agora aquela região está infestada de zumbis. Que nojo!")
+
+func entrou120
+  arg0.msg("Ivone: Você poderia trazer minha bolsa? Mas antes ache e pegue...")
+
+func entrou160
+  arg0.msg("Ivone: as esferas pretas. Os zumbis não se aproximam delas.")
+
+func cmd_darobj # Alguém deu algum item
+# telatxt t
+# t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
+  casovar arg2
+  casose "i_casa008"
+    arg0.msg("Ivone: Essa não é a minha bolsa..")
+    ret 1 # Para não receber o item
+  casose "i_casa009"
+    apagar(arg2) # Apaga o item
+    misc:tempo("deubolsa", arg0) # Dispara 'deupedra'
+    ret
+  casose
+    arg0.msg("Ivone não aceita " + arg2.nome + ".")
+    ret 1 # Para não receber o item
+  casofim
+
+func deubolsa20
+  arg0.msg("Ivone olha para uma bolsa.")
+
+func deubolsa50
+  arg0.msg("Ivone destranca uma bolsa.")
+
+func deubolsa90
+  arg0.msg("Ivone olha para uma bolsa.")
+
+func deubolsa130
+  arg0.msg("Ivone pega uma chave de uma bolsa.")
+
+func deubolsa170
+  arg0.msg("Ivone tranca uma bolsa.")
+
+func deubolsa210
+  arg0.msg("Ivone: Essa é a chave do vestiário da minha suíte. Vai lá.")
+
+func deubolsa240
+  arg0.msg("Ivone: Se algum objeto lhe agradar, pode ficar com ele.")
+
+func deubolsa270
+  $mens.p(este, arg0)
+  $mens.mvis1("$P dá chave para $a.")
+  criar("i_casa010", arg0, 0)

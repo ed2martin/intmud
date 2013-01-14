@@ -10,7 +10,7 @@
 8. Personagens (mud-perso.int)
 9. Personagens não jogador (mud-perso.int)
 10. Itens (mud-item.int)
-11. Funções chamadas somente para o póprio objeto
+11. Funções chamadas somente para o próprio objeto
 12. Eventos
 13. Eventos incondicionais
 14. Eventos condicionais
@@ -210,14 +210,17 @@ z_salafim = sala para onde vai quando retorna da morte
 Quem possui esse objeto.
 No caso do personagem, é a sala aonde o personagem está.
 
-5.2. listaobj dentro1
+5.2. ref donoantes
+Dono anterior desse objeto.
+
+5.3. listaobj dentro1
 Lista de itens, exceto vestindo
 
-5.3. listaobj dentro2
+5.4. listaobj dentro2
 Se for sala: lista de personagens
 Se for personagem: lista de itens que está vestindo
 
-5.4. listaobj evento
+5.5. listaobj evento
 Objetos que recebem eventos desse objeto
 
 
@@ -262,14 +265,15 @@ Verdadeiro se for invisível (não aparece na lista de saídas)
 
 6.8. const tranc_[direção]
 Antes de acessar fazer misc:obj=personagem
-0 = porta normal
-1 = fechado quando alguém passar pela porta
-2 = trancado quando for fechado
-3 = trancado quando for fechado ou alguém passar pela porta
+0 = não pode ser trancado
+1 = pode ser trancado
+2 = tranca ao fechar
 
-6.9. const chave_[direção]
+6.9. const fechadura_[direção]
 Antes de acssar fazer misc:obj=personagem
-Texto que contém o código da chave que destranca a porta
+Texto que contém o código da fechadura.
+Somente uma chave com o mesmo código tranca e destranca.
+Se estiver ausente ou for um texto vazio, não requer chave.
 
 6.10. const portanome_[direção]
 Nome da porta na direção especificada. Se estiver ausente ou for um
@@ -320,7 +324,9 @@ somar 1 se invisível a quem estiver cego
 somar 2 se invisível no escuro
 somar 4 se está invisível
 somar 8 se está oculto
-somar 16 se é administrador invisível
+somar 16 se está voando ou flutuando
+somar 32 se está voando alto
+somar 128 se é administrador invisível
 
 7.2. uint8 bitver
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
@@ -329,7 +335,9 @@ somar 1 se não está cego
 somar 2 se enxega no escuro
 somar 4 se pode ver invisível
 somar 8 se pode ver oculto
-somar 16 se pode ver administradores invisíveis
+somar 16 se pode ver voando ou flutuando
+somar 32 se pode ver voando alto
+somar 128 se pode ver administradores invisíveis
 
 7.3. func visivel( personagem )
 Retorna verdadeiro se está visível para o persoangem
@@ -443,6 +451,9 @@ Aonde pode se movimentar:
 1 = somente na área
 2 = pode sair da área
 
+* const p_movervel = 100
+Tempo médio em décimos de segundo para ir para outra sala
+
 * const p_fora = 0
 NÃO ESTÁ PRONTO
 Não entra em lugares fechados
@@ -520,7 +531,7 @@ São criadas as variáveis correspondentes em 'textovar var' do item.
 2 = pode agrupar (classe comum_itemgrupo)
 3 = completo (classe comum_itemperso)
 
-10.2. const vestir1 = 0
+10.3. const vestir1 = 0
       const vestir2 = 0
       const vestir3 = 0
 Em que lugares do corpo pode ir quando é vestido:
@@ -546,33 +557,33 @@ Em que lugares do corpo pode ir quando é vestido:
 19 = nas pernas
 20 = calçando
 
-10.3. uint32 vestpos
+10.4. uint32 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
 Outros valores, vide vestir1, acima.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
-10.4. func i_captura( animal )
-      const i_captura = 0
+10.5. const i_captura = 0
+      func i_captura( animal )
 Nível médio dos animais que podem ser capturados com esse item.
 Se for 0, esse item não pode ser usado para capturar animais.
 O argumento dessa função é o animal que o jogador está tentando capturar,
 (uma variável ref), ou nulo se estiver apenas escolhendo esse item para
 capturar.
 
-10.5. const i_movel = 0
+10.6. const i_movel = 0
 Tipo de móvel:
 0 = não é móvel
 1 = pode sentar
 2 = pode sentar e deitar
 
-10.6. const i_lugar = 0
+10.7. const i_lugar = 0
 Quantos personagens podem sentar-se.
 
-10.7. const i_abertoini = 0
+10.8. const i_abertoini = 0
 Valor inicial de aberto
 
-10.8. uint8 i_aberto
+10.9. uint8 i_aberto
 Tipo de container:
 0 = não é container
 1 = está sempre aberto
@@ -580,11 +591,39 @@ Tipo de container:
 3 = está fechado
 4 = está trancado
 
-10.9. func vestir( posição )
+10.10. const i_tranc = 0
+0 = não pode ser trancado
+1 = pode ser trancado
+2 = tranca ao fechar
+
+10.11. const i_fechadura = ""
+Texto que contém o código da fechadura.
+Somente uma chave com o mesmo código tranca e destranca.
+Se estiver ausente ou for um texto vazio, não requer chave.
+
+10.12. const i_chave = ""
+Texto que contém o código da chave, ou "" se não for chave.
+
+10.13. const luzini = 1000
+Duração da luz, em décimos de segundo
+
+10.14. const luzitem = 0
+Tipo de fonte de luz:
+0 = sempre aceso
+1 = aceso se usado como luz
+2 = pode ser aceso e apagado
+
+10.15. const luztxt = ""
+Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem
+
+10.16. const luzfim = 0
+Se item some quando a luz acaba (0=não, 1=sim)
+
+10.17. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.10. func mudadono(novo dono, quantidade)
+10.18. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
@@ -595,24 +634,24 @@ func cmd_ini(arg0, arg1, arg2, arg3, arg4)
 Chamado quando o objeto é criado. Arg0 a arg5 são os 5 primeiros argumentos
 da função ini do objeto.
 
-func cmd_objfim(dono)
-Chamado quando o objeto é apagado. Dono é o dono anterior do objeto.
+func cmd_objfim
+Chamado quando o objeto é apagado. O antigo dono está na variável donoantes.
 
 func cmd_salaperso(personagem)
 Chamado para a própria sala, quando um personagem controlado por um jogador
 entra na sala.
 
-func cmd_mudadono(novo dono)
-Chamado por mudadono, quando o personagem está mudando de dono.
+func cmd_mudadono
+Chamado por mudadono, logo após o item ou personagem mudar de dono.
 
 func cmd_recalc1(personagem)
 Chamado por func recalc_exec, para ajustar as variáveis do personagem
 (pontos de vida, mana, etc.)
 
 func cmd_pnj_proc
-É chamado apenas para o próprio PNJ, cada vez que o personagem decidir
-fazer alguma coisa. Não é chamado se estiver sendo controlado por um
-jogador ou pertencer a outro personagem.
+Chamado cada vez que o personagem não jogador decidir fazer alguma coisa.
+Não é chamado se estiver sendo controlado por um jogador ou pertencer
+a outro personagem.
 
 
 12. Eventos
@@ -655,13 +694,13 @@ acontecer. A função não tem a opção de cancelar a ação.
 
 A seguir são listados os eventos (as funções).
 
-func cmd_fim(personagem ou objeto, sala em que estava)
+func cmd_fim(personagem ou objeto)
 Objeto vai sair do jogo. É chamado para os eventos do personagem apenas.
 Antes desse evento ocorrer, o objeto sai da sala a 'listaobj evento' do
 objeto é limpa.
 
 func cmd_saiu(personagem, sala)
-Personagem vai sair da sala.
+Personagem saiu da sala.
 
 func cmd_chegou(personagem, sala)
 Personagem entrou na sala. É chamado logo após mudar de sala.
@@ -699,11 +738,15 @@ Pegou (capturou), soltou ou deu algum animal.
 
 func cmd_abriudir(personagem, sala, texto)
 func cmd_fechoudir(personagem, sala, texto)
-Abriu ou fechou porta na direção especificada.
+func cmd_destrancoudir(personagem, sala, texto, chave)
+func cmd_trancoudir(personagem, sala, texto, chave)
+Abriu, fechou, trancou ou destrancou porta na direção especificada.
 
-func cmd_abriuobj(personagem, item, texto)
-func cmd_fechouobj(personagem, item, texto)
-Abriu ou fechou um item.
+func cmd_abriuobj(personagem, item)
+func cmd_fechouobj(personagem, item)
+func cmd_trancouobj(personagem, item, chave)
+func cmd_destrancouobj(personagem, item, chave)
+Abriu, fechou, trancou ou destrancou um item.
 
 func cmd_levantou(personagem)
 func cmd_sentouchao(personagem)
@@ -740,8 +783,10 @@ Quer abrir um objeto ou uma porta.
 func cmd_fechar(personagem, texto)
 Quer fechar um objeto ou uma porta.
 
-func cmd_ver(personagem, texto)
+func cmd_ver(personagem, texto, completo)
 Quer ver alguma coisa.
+Completo pode ser 0 se for descrição resumida (comando olhar) ou 1 se
+for descrição completa (comando ver).
 
 func cmd_pegar(personagem, texto)
 func cmd_soltar(personagem, texto)
@@ -760,12 +805,15 @@ Quer pegar (capturar), soltar ou dar algum animal.
 
 func cmd_abrirdir(personagem, sala, texto)
 func cmd_fechardir(personagem, sala, texto)
-Quer abrir ou fechar porta na direção especificada.
+func cmd_trancardir(personagem, sala, texto, chave)
+func cmd_destrancardir(personagem, sala, texto, chave)
+Quer abrir, fechar, trancar ou destrancar porta na direção especificada.
 
-func cmd_abrirobj(personagem, item, texto)
-func cmd_fecharobj(personagem, item, texto)
-Quer abrir ou fechar um item. Se o objeto 'item' for nulo, significa
-que não encontrou o item.
+func cmd_abrirobj(personagem, item)
+func cmd_fecharobj(personagem, item)
+func cmd_trancarobj(personagem, item, chave)
+func cmd_destrancarobj(personagem, item, chave)
+Quer abrir, fechar, trancar ou destrancar um item.
 
 func cmd_atacar(personagem, alvo, objeto que processa o ataque)
 Quer atacar algum personagem.
@@ -857,14 +905,13 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
-Prompt
+(testar) Itens que produzem luz
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas
 Valor em moedas
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
-Quanto tempo dura vestindo (exemplo, para produzir luz)
 Propriedade de salas:
 * const s_semrastr = 0 # Se o comando de rastrear não passa por essa sala
 Propriedades de personagens:

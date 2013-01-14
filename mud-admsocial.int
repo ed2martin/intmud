@@ -51,6 +51,7 @@ func cmd_csoc # Criar social
     p.criar("soc_" + txtmin(arg0) + "\nsocial\nherda soccomum")
     config:salvar
     msg("\bSocial criado: " + txtmin(arg0))
+    admlog("criou social " + txtmin(arg0))
   fimse
   ret 1
 
@@ -84,7 +85,9 @@ func p_asoc # Confirmar que quer apagar social
   senao arg0 == "s"
     prog p
     p.apagar("soc_" + tpasso)
+    config:salvar
     msg("Social apagado: " + tpasso)
+    admlog("apagou social " + tpasso)
   senao
     passo = "asoc"
     msg("Apagar social " + tpasso + "? Tecle S ou N")

@@ -8,10 +8,10 @@ const tipo = 0 # Tipo de golpe
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
 const ataque = 50 # Força de ataque, 100 significa 100%
 const veloc = 50 # Velocidade do golpe, 100 significa 100%
-const msgatk = "$R ataca $c"
-uint8 result # Resultado do ataque, usado em execgolpe e msgefeito
-# 0=cancelar ataque (não gera nenhuma mensagem), 1=errou o alvo
-# 2=não teve efeito, 3=pouco efetivo, 4=normal, 5=muito efetivo
+const msgacertou = "$R ataca $c"
+const msgerrou = msgacertou + " mas erra"
+const msgnulo = msgacertou + ", nada acontece"
+int32 result # Danos de batalha, ou 0=nenhum -1=errou o alvo -2=cancelar ataque
 
 func txtajuda
   txt100 lin
@@ -57,10 +57,21 @@ func escr # Atacar alguém
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ataca1(arg0, arg1)
 
+func mensgolpe # Retorna mensagem do golpe de acordo com result
+  casovar result
+  casose "-1" # Errou o alvo
+    ret msgerrou
+  casose "0" # O golpe não teve efeito
+    ret msgnulo
+  casose # Acertou o alvo
+    ret msgacertou + ", " + (-result)
+  casose "-2" # Ataque foi cancelado
+  casofim
+
 func ataca1 # arg0 ataca arg1
   velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, ataque) # Ataca
-  result && $mens.p(arg0, arg1) + $mens.mtodos1(msgatk + msgefeito(arg1))
+  result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
   arg1.persobat.acertapos(1)
   arg0.persobat.acertapos(1)
 
@@ -80,14 +91,14 @@ func ataca2 # arg0 ataca todos dividindo a força do ataque
     continuar r.jog || r.perso < 3 # Não prossegue se for jogador
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
-    result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
+    result != -2 && $mens.p(arg0, r) + r.msginv(mensgolpe)
     r.acertapos(1)
   efim
 # Ataca o alvo
   r = l.objfim
   velgolpe(arg0, r) # Tempo do golpe
   execgolpe(arg0, r, atk) # Ataca
-  result && $mens.p(arg0, r) + $mens.mtodos1(msgatk + msgefeito(r))
+  result != -2 && $mens.p(arg0, r) + $mens.mtodos1(mensgolpe)
   r.acertapos(1)
   arg0.persobat.acertapos(1)
 
@@ -105,33 +116,16 @@ func ataca3 # arg0 ataca todos sem dividir a força do ataque
     continuar r.jog || r.perso < 3 # Não prossegue se for jogador
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, ataque) # Ataca
-    result && $mens.p(arg0, r) + arg0.msginv(msgatk + msgefeito(r))
+    result != -2 && $mens.p(arg0, r) + r.msginv(mensgolpe)
     r.acertapos(1)
   efim
 # Ataca o alvo
   r = l.objfim
   velgolpe(arg0, r) # Tempo do golpe
   execgolpe(arg0, r, atk) # Ataca
-  result && $mens.p(arg0, r) + $mens.mtodos1(msgatk + msgefeito(r))
+  result != -2 && $mens.p(arg0, r) + $mens.mtodos1(mensgolpe)
   r.acertapos(1)
   arg0.persobat.acertapos(1)
-
-func msgefeito # Gera mensagem de como o golpe acertou
-# arg0 = personagem alvo, se houver
-# result = como acertou
-  casovar result
-  casose "1"
-    ret ", errou"
-  casose "2"
-    ret ", nada acontece"
-  casose "3"
-    ret ", pouco efeito" + (arg0 ? " " + arg0.persobat.pvida)
-  casose "4"
-    ret arg0 ? ", " + arg0.persobat.pvida : ""
-  casose "5"
-    ret ", muito efeito" + (arg0 ? " " + arg0.persobat.pvida)
-  casofim
-  ret ""
 
 func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
@@ -158,7 +152,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   ref r # Personagem que ataca
   ref s # Personagem que recebe o ataque
 # Checa se pode realmente atacar
-  r = arg0.persobat, s = arg1.persobat, result = 0
+  r = arg0.persobat, s = arg1.persobat, result = -2
   listaobj l
   epara l.addfim(r.evento), l, l.ini.remove
     ret l.objini.cmd_atkenv(arg0, arg1, este), nulo
@@ -170,7 +164,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   arg0.batalhaini(arg1)
   r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
 # Checa se acertou o alvo
-  result = 1
+  result = -1
   se precisao <= 100
     dano = rand(1, 20)
     se dano == 20 || arg1.posicao == 4 # Acertou automaticamente
@@ -185,13 +179,9 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 # Checa bônus do tipo de defesa
   dano = s.deftipo.[tipo]
   se dano >= 80 # Defesa muito alta
-    result = 2
-    ret
-  senao arg2 == 0 # Nenhum valor de ataque, apenas indica que atacou
-    result = 4
+    result = 0
     ret
   fimse
-  result = dano <= -2 ? 5 : dano >= 2 ? 3 : 4
   dano = misc:defbonus.[128 - dano]
 # Calcula dano; valor do rand é por volta de 300
   se misc:aktipo(tipo) # Checa se golpe normal ou especial
@@ -221,7 +211,8 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     sair
   casofim
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
-  dano < 1 ? (s.pvida -= 1) : (s.pvida -= dano)
+  result = dano < 1 ? 1 : dano
+  arg2 && (s.pvida -= result)
 
 func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
   !arg0 && (arg0 = 1)
@@ -274,7 +265,7 @@ func escr
 classe cmd_socar
 herda comando_ataque
 const nome = "Socar"
-const msgatk = "$R soca $c"
+const msgacertou = "$R soca $c"
 const tipo = 0 # Normal
 const ataque = 40
 const vel = 80
@@ -284,7 +275,7 @@ const extra = "Golpe físico de força"
 classe cmd_chutar
 herda comando_ataque
 const nome = "Chutar"
-const msgatk = "$R chuta $c"
+const msgacertou = "$R chuta $c"
 const tipo = 0 # Normal
 const ataque = 70
 const vel = 50
@@ -294,7 +285,7 @@ const extra = "Golpe físico de força"
 classe cmd_arremessar
 herda comando_ataque
 const nome = "Arremessar"
-const msgatk = "$R se joga contra $c"
+const msgacertou = "$R se joga contra $c"
 const tipo = 0 # Normal
 const ataque = 80
 const vel = 30
@@ -304,7 +295,7 @@ const extra = "Golpe físico de força"
 classe cmd_morder
 herda comando_ataque
 const nome = "Morder"
-const msgatk = "$R morde $c"
+const msgacertou = "$R morde $c"
 const tipo = 0 # Normal
 const ataque = 50
 const vel = 60
@@ -317,7 +308,9 @@ herda comando_ataque
 const objcmd = nulo
 const objajuda = nulo
 const nome = "Ataque automático"
-const msgatk = "$R dá um golpe em $c"
+const msgacertou = "$R dá um golpe em $c"
+const msgerrou = "$R tenta dar um golpe em $c mas erra"
+const msgnulo = "R$ dá um golpe em $c mas nada acontece"
 const tipo = 0 # Normal
 const ataque = 20
 const vel = 50
@@ -325,5 +318,5 @@ const extra = "Ataque automático"
 
 func ataca # arg0 ataca arg1
   execgolpe(arg0, arg1, ataque) # Ataca
-  result && $mens.p(arg0, arg1) + $mens.mtodos1(msgatk + msgefeito(arg1))
+  result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
   arg1.acertapos(1), arg0.acertapos(1)

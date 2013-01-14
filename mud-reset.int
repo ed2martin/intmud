@@ -122,8 +122,8 @@ func cmd_cres
     ref r
     epara r = perso, r.dono, r = r.dono
     efim
-    $reset.atualiza(r, "a_reset", $r.a_reset)
-    $reset.atualiza(r, "s_reset", $r.s_reset)
+    $reset.atualiza(r, "a_reset", r.a_reset)
+    $reset.atualiza(r, "s_reset", r.s_reset)
     msg("Reset atualizado sala " + txt(r, 2))
   senao $b_[arg0]
     prog p
@@ -225,6 +225,7 @@ func p_reset_z
     fimse
     config:salvar
     msg("Alterações salvas")
+    admlog("alterou reset classe " + var.opcclasse)
   senao arg0 == "z"
     ret p_reset("")
   senao
@@ -875,7 +876,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       lin = ""
       int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
       sair int(l.1) < 100 && rand(100) < l.1
-      lin += "(r = arg0.dentro1.objini(\"i_" + txtvis(l.2) + "\")) + r.apagar"
+      lin += "(r = dentro1.objini(\"i_" + txtvis(l.2) + "\")) + r.apagar(1000)"
       t2.addfim(lin)
       sair
     casose "D" # Porta em uma direção

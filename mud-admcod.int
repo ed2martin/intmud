@@ -65,6 +65,7 @@ func p_ccl
     senao
       msg("Classe criada: " + txt1(tpasso))
       config:salvar
+      admlog("criou classe " + txt1(passo))
     fimse
   senao
     msg("Criar classe " + txt1(tpasso) + " ? Tecle S ou N")
@@ -95,6 +96,7 @@ func p_acl
     senao
       msg("Classe apagada " + tpasso)
       config:salvar
+      admlog("apagou classe " + tpasso)
     fimse
   senao
     msg("Apagar classe " + tpasso + " ? Tecle S ou N")
@@ -196,6 +198,7 @@ func p_herda
       p.inilinha(tpasso)
       txt1(p.texto) == "herda" && p.apagarlin(tpasso, 1)
       config:salvar, msg("Salvou: nenhuma herança")
+      admlog("alterou herança da classe " + tpasso)
       ret 1
     fimse
     enquanto p1.lin
@@ -206,6 +209,7 @@ func p_herda
       msg2("Erro ao salvar herança:\n" + t1.remove(1000))
     senao
       config:salvar, msg("Salvou herança")
+      admlog("alterou herança da classe " + tpasso)
     fimse
     ret 1
   casofim
