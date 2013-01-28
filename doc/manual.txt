@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 14.3.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 14.8.
 
 
 1. SOBRE O INTMUD
@@ -1545,40 +1545,56 @@ epara x = 2, x < 5, x += 1
 t.msg("x é " + x + "\n")
 efim
 
-14.5. sair [argumento]
+14.5. Instrução 'sair'
 
-Sai de um bloco 'enquanto' ou 'epara', indo para a primeira instrução após
-o 'efim'. Também sai de um bloco 'casose', indo para a primeira instrução
-após o 'casofim'.
+Sintaxe:
+sair [condição]
 
-A instrução 'sair' com um argumento só sai se o argumento for verdadeiro.
+Sai do bloco 'enquanto', 'epara' ou 'casovar', aonde essa instrução foi
+colocada, indo para a primeira instrução após o fim do bloco.
 
-14.6. continuar [argumento]
+Se a condição for definida, ela precisa ser verdadeira para a instrução
+'sair' funcionar. Se for falsa, nada faz.
 
-Fecha um ciclo de um laço 'enquanto' ou 'epara', como se tivesse chegado
-na instrução efim. Em outras palavras, qualquer instrução entre o 'continuar'
-e o 'efim' é ignorada.
+14.6. Instrução 'continuar'
 
-A instrução 'continuar' com um argumento só continua se o argumento for
-verdadeiro.
+Sintaxe:
+continuar [condição]
 
-14.7. ret [argumento]
-      ret <condição>, <argumento>
+Vai para a próxima instrução 'efim'. Portanto, essa instrução só tem
+sentido dentro de um bloco 'enquanto' ou 'epara'.
+
+Se a condição for definida, ela precisa ser verdadeira para a instrução
+'continuar' funcionar. Se for falsa, nada faz.
+
+14.7. Instrução 'ret'
+
+Sintaxe:
+ret
+ret <argumento>
+ret <condição>, <argumento>
 
 Como visto anteriormente, a instrução 'ret' retorna de uma função.
 
-Sem argumentos, retorna nulo. Tem o mesmo efeito de:
-ret nulo
+Ela funciona da seguinte forma:
+- Sem argumento retorna 'nulo'. Tem o mesmo efeito de 'ret nulo';
+- Com um argumento retorna o próprio argumento;
+- Com dois argumentos só retorna se a condição for verdadeira.
+  Se for falsa, nada faz.
 
-Com dois argumentos, avalia o primeiro, e se for verdadeiro, retorna
-o segundo. Uma instrução do tipo 'ret x,y' tem o mesmo efeito de:
-se x
-ret y
+Exemplo:
+
+ret rand(3) == 0, "Bom dia" # Retorna "bom dia" se rand(3) for igual a 0
+
+Tem o mesmo efeito de:
+
+se rand(3) == 0
+ret "bom dia"
 fimse
 
 14.8. terminar
 
-Encerra o programa.
+Encerra o programa (fecha o IntMUD).
 
 
 15. LISTA DE FUNÇÕES
@@ -2939,9 +2955,9 @@ terminal, em Unix.
 Funções e variáveis:
 
 29.1. proto
-0 se a tela de texto não estiver aberta
-6 se estiver aberta
-O valor de proto depende da opção 'telatxt' no arquivo intmud.cfg.
+Retorna 0 se a janela do IntMUD estiver fechada ou 6 se estiver aberta.
+O valor de 'proto' depende da opção 'TELATXT' no início do programa
+(vide tópico 2.3).
 
 29.2. posx
 Posição do cursor: quantos caracteres enviou após o último \n.

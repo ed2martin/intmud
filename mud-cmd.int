@@ -30,6 +30,7 @@ func escr
     se arg0.jogconfig.23
       item.obj.jogconfig.23 && (t1 += "  [ADM]")
       item.obj.jogconfig.17 && (t1 += "  [INVQUEM]")
+      item.obj.sock.imonit && (t1 += "  [MONIT " + item.obj.sock.imonit.objlista.perso.nome + "]")
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(item.obj.dono, 2))
     t0.addfim(t1)
@@ -132,7 +133,7 @@ func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro1.ini, item, item.depois
-    item.obj.visivel(arg0) && t.addfim(txt(item.obj.objtot) + " " + txtmaimin(item.obj.nome))
+    item.obj.visivel(arg0) && t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtmaimin(item.obj.nome))
   efim
   t.juntalin("(", "x)")
   se t
@@ -154,7 +155,7 @@ func escr
   listaitem item
   epara item = arg0.dentro2.ini, item, item.depois
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-    t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
+    t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.atribs + item.obj.nome)
   efim
   se t.linhas
     arg0.msg2("Equipado com:\n" + t.remove(1000))
@@ -482,21 +483,19 @@ func escr
         t2 += "\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
         t2 += ", " + estado(r.persobat)
       fimse
-    senao completo # Item; descrição completa
-      !t.linhas && t.addfim("Você não vê nada de especial.")
-      ret arg0.msg2(t2 + ".\n" + t.remove(1000))
-    senao # Item; descrição parcial
-      ret arg0.msg(t2 + ".")
+    fimse
+# Luz
+    se int(r.luztempo.abs) >= 25
+      int32 tempo
+      tempo = r.luztempo.abs / 50
+      r.luztempo > 0 && (t2 += r.sexo ? ", aceso" : ", acesa")
+      t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
+      #t2 += r.luztempo
     fimse
 # Envia mensagem
-    se !completo
-      arg0.msg(t2 + ".")
-    senao t.linhas
-      arg0.msg2(t2 + ".\n" + t.remove(1000))
-    senao
-      arg0.msg(t2 + ".\nVocê não vê nada de especial.")
-    fimse
-    ret
+    ret !completo, arg0.msg(t2 + ".")
+    ret t.linhas, arg0.msg2(t2 + ".\n" + t.remove(1000))
+    ret arg0.msg(t2 + ".\nVocê não vê nada de especial.")
   efim
   arg0.msg("Você não vê isso.")
 

@@ -812,3 +812,18 @@ func fugirdir # Obtém direção para onde pode fugir
   r.dir_se && int(r.porta_se) < 2 && (t += "se ")
   r.dir_so && int(r.porta_so) < 2 && (t += "so ")
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
+
+
+classe cmd_retorno
+herda comando_comum
+const objcmd = nulo # Comentar essa linha para o comando retorno funcionar
+
+func escr
+  ref r
+  r = $[arg0.var.z_salafim]
+  ret !r, arg0.msg("Você não consegue retornar.")
+  ret r == dono, arg0.msg("Você já está no ponto de retorno.")
+  $mens.p(arg0)
+  !arg0.p_silencio && $mens.mvis2("", "$P sumiu daqui.")
+  arg0.mudadono(r)
+  !arg0.p_silencio && $mens.mvis2("", "$P apareceu do nada.")

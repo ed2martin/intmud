@@ -23,8 +23,6 @@ const volobj = 1 # Volume do objeto quando estiver vazio
 const volmax = 1000000 # Volume máximo do que pode ter dentro
 const volexp = 0 # Diferente de 0 se expande com os itens que tem dentro
 #
-const bitver = 1 # O que o personagem/item pode ver
-const bitinv = 3 # Grau de invisibilidade do personagem/item
 uint16 luzden # Somente leitura: quantas fontes de luz dentro
 uint16 luztot # Somente leitura: quantidade total de fontes de luz
 # const luztipo = 0 # 0=não repassa a luz, 1=não é fonte de luz, 2=é fonte de luz
@@ -151,6 +149,14 @@ varfunc dono # O dono do personagem/item
   perso && atkenv.remove + atkrec.limpar
   var.limpar("d_")
 
+
+classe comum_persoitem
+herda comum_obj
+# Comum a todos os personagens e itens
+uint8 bitver # O que o personagem/item pode ver
+uint8 bitinv # Grau de invisibilidade do personagem/item
+intexec recalc # Se deve recalcular variáveis do personagem/item
+
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   ret arg0.idono.objlista.luzden, !(~(arg0.bitver | 2) & bitinv)
   casovar arg0.idono.objlista.s_luz
@@ -161,3 +167,9 @@ func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   casose # Claro
     ret !(~(arg0.bitver | 2) & bitinv)
   casofim
+
+func recalc_exec # Ajusta variáveis
+  bitver = 1, bitinv = 3, cmd_recalc1(este)
+
+func atribs # Retorna texto com os atributos do item ou personagem
+  ret bitinv & 2 ? "" : "(brilhando) "

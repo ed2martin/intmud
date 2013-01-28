@@ -1,3 +1,91 @@
+classe cmd_acender
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Acender\b\n\
+Sintaxe: ACENDER <objeto>\n\
+Acende um objeto (um fósforo, uma lamparina, etc)."
+const posic = 5
+
+func escr
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+  textotxt nomes # Nomes dos itens pegos
+  ret !arg1, arg0.msg("Acender o quê?")
+  n.ini(arg1, 1)
+  epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ref r
+    r = l.objini
+# Checa se pode acender
+    se !r.luzitem || r.luzitem == 3
+      ret arg0.msg("Você não consegue acender " + r.nome + ".")
+    senao !r.luztempo
+      ret arg0.msg(txtmaimin(r.nome) + " não acende mais.")
+    senao r.luztempo > 0
+      ret arg0.msg(txtmaimin(r.nome) + " já está aces" + (r.sexo ? "o." : "a."))
+    senao r.luzitem == 6 # Se requer fogo para acender
+      l.limpar
+      epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+        sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
+      efim
+      ret !l.objini, arg0.msg("Você precisa de fogo para acender " + r.nome + ".")
+    fimse
+# Eventos
+    l.limpar
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_acender(arg0, r), nulo
+    efim
+# Acende
+    r.luztempo.pos, r.ajustapeso
+    $mens.p(arg0, nulo, r)
+    $mens.mvis1(r.luzliga ? r.luzliga : "$P acende $o.")
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_acendeu(arg0, r), nulo
+    efim
+    ret
+  efim
+  arg0.msg("Você não vê isso.")
+
+
+classe cmd_apagar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Apagar\b\n\
+Sintaxe: APAGAR <objeto>\n\
+Apaga um objeto (um fósforo, uma lamparina, etc)."
+const posic = 5
+
+func escr
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+  textotxt nomes # Nomes dos itens pegos
+  ret !arg1, arg0.msg("Acender o quê?")
+  n.ini(arg1, 1)
+  epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ref r
+    r = l.objini
+# Checa se pode apagar
+    se !r.luzitem || r.luzitem == 3
+      ret arg0.msg("Você não consegue apagar " + r.nome + ".")
+    senao !r.luztempo || r.luztempo < 0
+      ret arg0.msg(txtmaimin(r.nome) + " já está apagad" + (r.sexo ? "o." : "a."))
+    fimse
+# Eventos
+    l.limpar
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_apagar(arg0, r), nulo
+    efim
+# Apaga
+    r.luztipo == 5 ? (r.luztempo = 0) : r.luztempo.neg, r.ajustapeso
+    $mens.p(arg0, nulo, r)
+    $mens.mvis1("$P apaga $o.")
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_apagou(arg0, r), nulo
+    efim
+    ret
+  efim
+  arg0.msg("Você não vê isso.")
+
+
 classe cmd_pegar
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Pegar\b\n\
@@ -41,16 +129,16 @@ func escr
   achou = 0
   epara l.addfim(sala.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    se arg0.dentro1.total >= arg0.objmax
-      ret arg0.msg("Você não consegue carregar mais nada.")
-    senao arg0.volden + l.objini.voltot > arg0.volmax
-      ret arg0.msg("Você não consegue carregar isso.")
-    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot > arg0.pesomax
-      ret l.objini.pesotot > arg0.pesomax * 2, arg0.msg("É pesado demais.")
+    total = n # Quantidade de itens
+    se arg0.dentro1.total + total > arg0.objmax
+      ret arg0.msg("Você não consegue carregar tanta coisa nada.")
+    senao arg0.volden + l.objini.voltot * total > arg0.volmax * l.objini.objtot
+      ret arg0.msg("Você não consegue carregar tanta coisa.")
+    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total > arg0.pesomax * l.objini.objtot
+      ret l.objini.pesotot > l.objini.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
       ret arg0.msg("Você não consegue carregar tanto peso.")
     fimse
     listaobj e
-    total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
       sair e.objini.cmd_pegarobj(arg0, sala, l.objini, total)
     efim
@@ -156,10 +244,11 @@ func escr
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    se sala.dentro1.total >= sala.objmax
+    total = n # Quantidade de itens
+    se sala.dentro1.total + total >= sala.objmax
       ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.nome + ".")
       ret arg0.msg("Não consegue soltar nada aqui.")
-    senao sala.volden + l.objini.voltot > sala.volmax
+    senao sala.volden + l.objini.voltot * total > sala.volmax * l.objini.objtot
       ret arg0.msg("Não há espaço suficiente para soltar isso.")
     fimse
     listaobj e

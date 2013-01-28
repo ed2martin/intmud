@@ -539,28 +539,35 @@ const s_desc = "À leste você pode pegar uma lamparina.\n\
 À oeste há uma sala escura, porém visível se houver uma lamparina."
 const dir_n = $s_teste014
 const dir_l = $s_teste024
+const dir_o = $s_teste025
 
 
 classe s_teste024
 herda b_teste
-const s_titulo = "Itens que iluminam"
-const s_desc = ""
+const s_titulo = "Itens que produzem luz"
+const s_desc = "Aqui há diversos itens que podem ser usados como fonte de luz.\n\
+Você pode acender e apagar usando os comandos acender e apagar.\n\
+Para acender um fósforo da caixa, basta tentar acender a caixa.\n\
+Já a tocha requer algum fogo para ser acesa (fósforo ou lambião)."
 const dir_o = $s_teste023
-const s_reset = "S 100 teste006 0 S"
+const s_reset = "S 100 teste006 0 S\n\
+S 100 teste005 0 S\n\
+S 100 teste007 0 S\n\
+S 100 teste008 0 S\n\
+S 100 teste009 1 S\n\
+S 100 teste011 0 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste006") && criar("i_teste006", este, 0)
+  !dentro1.objini("i_teste005") && criar("i_teste005", este, 0)
+  !dentro1.objini("i_teste007") && criar("i_teste007", este, 0)
+  !dentro1.objini("i_teste008") && criar("i_teste008", este, 0)
+  !dentro1.objini("i_teste009") && criar("i_teste009", este, 1)
+  !dentro1.objini("i_teste011") && criar("i_teste011", este, 0)
 
 
 classe i_teste005
-herda comum_itemperso
-const nome = "tocha"
-const luzini = 600
-const luztxt = "Uma tocha se apagou"
-
-
-classe i_teste006
 herda comum_itemperso
 const nome = "bolsa"
 const pesoobj = 200
@@ -569,3 +576,84 @@ const volmax = 5000
 const objmax = 20
 const i_abertoini = 2 # Container: 2 Inicialmente aberto
 const i_tranc = 1 # Trancar: 1 Pode ser trancado
+
+
+classe i_teste006
+herda comum_itemperso
+const nome = "tocha"
+const luzini = -600
+const luztxt = "Uma tocha se apagou"
+const luzfim = 1 # Sem luz item some: Sim
+const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
+
+
+classe i_teste007
+herda comum_itemperso
+const nome = "lanterna"
+const luzitem = 1 # Tipo de luz: 1 Lanterna (acende/apaga, sem fogo)
+const luzini = -6000
+const luztxt = "Uma lanterna apagou."
+
+
+classe i_teste008
+herda comum_itemperso
+const nome = "lampião"
+const sexo = 1 # Sexo: 1 Masculino
+const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
+const luzini = -3000
+const luztxt = "Um lampião apagou."
+
+
+classe i_teste009
+herda comum_itemgrupo
+const nome = "palito de fósforo"
+const sexo = 1 # Sexo: 1 Masculino
+
+
+classe i_teste010
+herda comum_itemperso
+const nome = "fósforo aceso"
+const sexo = 1 # Sexo: 1 Masculino
+const luzini = 80
+const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
+const luztxt = "Um palito de fósforo acaba de queimar."
+const luzfim = 1 # Sem luz item some: Sim
+
+
+classe i_teste011
+herda comum_itemperso
+const nome = "caixa de fósforo"
+const eveste = 1 # Receber eventos do próprio objeto
+sav uint8 palitos # Quantidade de palitos de fósforo da caixa
+const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
+const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
+
+func cmd_ini
+  palitos = 20
+
+func descver
+  se !palitos
+    ret "Está vazia."
+  senao palitos == 1
+    ret "Contém um palito."
+  senao
+    ret "Contém " + palitos + " palitos."
+
+func cmd_acender
+  se !palitos
+    arg0.msg("Caixa de fósforo está vazia.")
+  senao
+    palitos -= 1
+    criar("i_teste010", arg0, 0) # Cria um palito aceso
+    $mens.p(arg0)
+    $mens.mvis1("$P risca um palito de fósforo.")
+  fimse
+  ret 1
+
+
+classe s_teste025
+herda b_teste
+const s_titulo = "Quarto escuro"
+const s_desc = ""
+const dir_l = $s_teste023
+const s_luz = 3 # Luz: 3 Escuro
