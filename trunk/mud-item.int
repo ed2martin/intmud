@@ -1,8 +1,7 @@
 classe comum_item
-herda comum_obj
+herda comum_persoitem
 # Itens
 const item = 1 # Para identificar que é item
-const bitinv = 3 # Grau de invisibilidade do personagem/item
 const sexo = 0 # Sexo: 0=feminino, 1=masculino
 const nome = "sem nome"
 const ident = nome
@@ -17,7 +16,7 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
     epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
     efim
   fimse
-  i_aberto = i_abertoini, luztempo = luzitem ? luzini : -luzini
+  i_aberto = i_abertoini, luztempo = luzini
   pnivel = arg1 ? arg1 : nivel, comum_obj:ini
   cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
@@ -118,16 +117,16 @@ classe comum_itemperso
 herda comum_item
 # Itens completos
 const item = 3 # Para identificar que é item
-intexec recalc # Se deve acertar variáveis do item
 listaobj persolugar # Quem está sentado ou deitado
 # const i_abertoini = 0 # Valor inicial de aberto
 sav uint8 i_aberto # Situação atual do container, ou 0 se não for container
-const luztipo = luztempo > 0 ? 2 : 0
+const luztipo = intpos(luztempo) ? 2 : 0
 sav inttempo luztempo # Quanto tempo produz luz, <0 se estiver apagado
+# const luzitem = 0 # Tipo de luz
 # const luzini = 1000 # Duração da luz
-# const luzitem = 0 # 0=sempre aceso, 1=aceso se usado como luz, 2=jogador acende
 # const luztxt = "" # Mensagem quando a luz acaba
 # const luzfim = 0 # Se item some quando a luz acaba
+const luzliga = "$P acende $o."
 
 func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
@@ -136,23 +135,18 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   persolugar.limpar, dono = arg0, cmd_mudadono
 
 func recalc_exec # Acerta variáveis do item
+  bitver = 1, bitinv = luztempo ? 1 : 3, cmd_recalc1(este)
   se int(i_abertoini) < 2 || i_aberto < 2
     i_aberto = i_abertoini
 
 func luztempo_exec # A luz apagou
-  se luxtxt
+  se luztxt
     ref r
     epara r = dono, r.perso, r = r.dono
     efim
     r.msg(luztxt)
   fimse
-  se luzfim
-    apagar(este)
-    luzitem && dono.recalc = 1
-  senao
-    ajustapeso
+  luzfim ? apagar(este) : ajustapeso + recalc_exec
 
-func vestir
-  comum_item:vestir
-  se luztempo && luzitem == 1 && (luztempo > 0) != (vestpos == 1)
-    luztempo = -luztempo, ajustapeso
+func atribs # Retorna texto com os atributos do item ou personagem
+  ret intpos(luztempo) ? "(aceso) " : bitinv & 2 ? "" : "(brilhando) "

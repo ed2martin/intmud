@@ -1,5 +1,5 @@
 classe comum_perso
-herda comum_obj
+herda comum_persoitem
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
 comum listaobj objsolto # Lista de personagens soltos (não pertencem a outros)
@@ -228,8 +228,6 @@ herda comum_perso
 # Personagem que pode batalhar
 const perso = 2 # Para identificar o tipo de personagem
 const objmax = 1 # Quantos itens pode carregar
-uint8 bitver # O que o personagem/item pode ver
-uint8 bitinv # Grau de invisibilidade do personagem/item
 const pesoadd = !dono.perso && !(bitver & 48) # Se falso, está voando
 sav uint32 moedas # Quantas moedas está carregando
 const p_agressivo = 1 # Ataca se atacarem
@@ -263,7 +261,6 @@ int8 deftipo.18
 # subtrair 2 = reduz defesa pela metade
 # 80 ou mais = imune ao tipo de golpe
 #
-intexec recalc # Se deve recalcular defesa, ataque e velocidade
 const persobat = este # Personagem usado na batalha
 const persoesc = este # Personagem escolhido
 listaobj atkrec # Quem atacou esse personagem; dá experiência se perder

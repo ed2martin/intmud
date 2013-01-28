@@ -133,7 +133,15 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2CMD\b <personagem> <comando>\n\
   Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 \c2MUDLER\b\n\
-  Recarrega arquivos do MUD que foram alterados."
+  Recarrega arquivos do MUD que foram alterados.\n\
+\c2MONIT\b [jogador]\n\
+  Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
+  Se [jogador] estiver ausente ou for o próprio, deixa de monitorar.\n\
+  O principal objetivo é auxiliar outros usuários, por isso quando\n\
+  esse comando é usado, todos os administradores são informados.\n\
+  O comando QUEM também mostra aos administradores quem está monitorando.\n\
+\c2ESCR\b <comando>\n\
+  Digita um comando no teclado do usuário sendo monitorado."
 
 func cmd_ac
   se !jogconfig.19
@@ -226,6 +234,51 @@ func cmd_mudanome
   senao
     msg("Personagem " + nome.0 + " mudou para " + nome.1 + ".")
     admlog("mudou personagem jogador " + nome.0 + " para " + nome.1)
+  fimse
+  ret 1
+
+func cmd_monit
+  indiceitem item
+  ref r
+  r = item.obj("pn " + txtnome(arg0))
+  se !arg0 || r == perso
+    se imonit
+      txt100 t1
+      t1 = imonit.objlista.perso.nome
+      imonit.remove
+      msg("Deixando de monitorar " + t1)
+      t1 = "*** " + perso.nome + " deixa de monitorar " + t1
+      epara item.ini("un "), txt1(item.txt) == "un", item.depois
+        item.obj.jogconfig.23 && item.obj != este && item.obj.msg(t1)
+      efim
+    senao
+      msg("Não está monitorando ninguém")
+    fimse
+  senao !r
+    msg("Jogador não encontrado: " + arg0)
+  senao r == imonit.objlista.perso
+    msg("Já está monitorando " + r.nome)
+  senao
+    imonit && msg("Deixando de monitorar " + imonit.objlista.perso.nome)
+    imonit.remove
+    txt100 t1
+    t1 = "*** " + perso.nome + " monitora " + r.nome
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.23 && item.obj != este && item.obj.msg(t1)
+    efim
+    imonit = r.sock.lmonit.addini(este)
+    msg("Monitorando " + r.nome)
+  fimse
+  ret 1
+
+func cmd_escr
+  se !imonit
+    msg("Você não está monitorando ninguém")
+  senao !arg0
+    msg("Tecle a mensagem após ESCR")
+  senao
+    imonit.objlista.msg("*** " + perso.nome + " escreve no seu teclado: " + arg0)
+    imonit.objlista.recebe(arg0)
   fimse
   ret 1
 

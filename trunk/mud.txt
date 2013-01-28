@@ -55,6 +55,7 @@ o jogo e os jogadores.
 Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
 Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
 um objeto possui), peso e volume.
+Classe 'comum_persoitem', que é herdada por todos os personagens e itens.
 
 2.3. mud-a-*.int
 Contém as classes que compõem uma área.
@@ -131,7 +132,7 @@ Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
 
 
-3. Envio de mensagens formatadas (mud-mens.int)
+3. Envio de mensagens formatadas (arquivo mud-mens.int)
 
 Para enviar uma mensagem formatada a um ou mais personagens, usa-se
 a classe 'mens', contida no arquivo 'mud-mens.int'.
@@ -204,7 +205,7 @@ j_captura = nome do item que o jogador escolheu para capturar animais
 z_salafim = sala para onde vai quando retorna da morte
 
 
-5. Comum a salas, personagens e itens (mud-comum.int)
+5. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
 
 5.1. varfunc dono
 Quem possui esse objeto.
@@ -224,7 +225,7 @@ Se for personagem: lista de itens que está vestindo
 Objetos que recebem eventos desse objeto
 
 
-6. Salas (mud-sala.int)
+6. Salas (classe sala, em mud-sala.int)
 
 6.1. const s_titulo = "texto"
 Retorna o título da sala. arg0 é quem está requisitanto o título.
@@ -315,7 +316,7 @@ Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
 
 
-7. Personagens e itens
+7. Personagens e itens (classe comum_persoitem, em mud-comum.int)
 
 7.1. uint8 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
@@ -339,30 +340,36 @@ somar 16 se pode ver voando ou flutuando
 somar 32 se pode ver voando alto
 somar 128 se pode ver administradores invisíveis
 
-7.3. func visivel( personagem )
+7.3. intexec recalc
+Para chamar recalc_exec quando necessário
+
+7.4. func recalc_exec
+Ajusta variáveis, principalmente batalha
+
+7.5. func visivel( personagem )
 Retorna verdadeiro se está visível para o persoangem
 
-7.4. texto ident
+7.6. texto ident
 Nomes que o jogador digita para ações com o personagem ou item
 Exemplo: ao pegar um item ou atacar um personagem
 
-7.5. txt16 nome
+7.7. txt16 nome
 Nome do personagem ou item, usado em ações com o objeto
 
-7.6. int1 sexoini
+7.8. int1 sexoini
 Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 
-7.7. int1 sexo
+7.9. int1 sexo
 Sexo atual: 0=feminino, 1=masculino
 
-7.8. texto descpos
+7.10. texto descpos
 Descrição quando está na sala; arg0=quem quer ver
 
-7.9. texto descver
+7.11. texto descver
 Descrição, quando olha para o objeto; arg0=quem quer ver
 
 
-8. Personagens (mud-perso.int)
+8. Personagens (arquivo mud-perso.int)
 
 8.1. Para criar um personagem
 criar("nome da classe", aonde está, nível do personagem, "variáveis")
@@ -416,28 +423,22 @@ Processa comando, sem espera (arg0=comando)
 8.11. func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
-8.12. intexec recalc
-Para chamar recalc_exec quando necessário
-
-8.13. func recalc_exec
-Ajusta variáveis, principalmente batalha
-
-8.14. func acertapos
+8.12. func acertapos
 Acerta posição do personagem, conforme pontos de vida e batalha
 Para checar se morreu, chamar com: acertapos(1)
 
-8.15. func batalhafim
+8.13. func batalhafim
 Encerra a batalha
 Para checar se morreu, chamar com: batalhafim(1)
 
-8.16. func atktempo
+8.14. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
 
-8.17. func morreu
+8.15. func morreu
 Executa procedimentos quando o personagem morre
 
 
-9. Personagens não jogador (mud-perso.int)
+9. Personagens não jogador (arquivo mud-perso.int)
 
 * const p_pet = 0
 NÃO ESTÁ PRONTO
@@ -512,7 +513,7 @@ pega lixo
 patrulha: encerra brigas
 
 
-10. Itens (mud-item.int)
+10. Itens (arquivo mud-item.int)
 
 10.1. Para criar um item
 Itens que podem ser agrupados:
@@ -536,26 +537,25 @@ São criadas as variáveis correspondentes em 'textovar var' do item.
       const vestir3 = 0
 Em que lugares do corpo pode ir quando é vestido:
 0 = em nenhum lugar/não pode vestir
-1 = como luz
-2 = na cabeça
-3 = sobre o rosto
-4 = nos olhos
-5 = nas orelhas
-6 = no pescoço
-7 = no corpo
-8 = sobre o corpo
-9 = nas costas
-10 = nos braços
-11 = nas mãos
-12 = no pulso direito
-13 = no pulso esquerdo
-14 = no dedo direito
-15 = no dedo esquerdo
-16 = empunhar (arma)
-17 = escudo
-18 = na cintura
-19 = nas pernas
-20 = calçando
+1 = na cabeça
+2 = sobre o rosto
+3 = nos olhos
+4 = nas orelhas
+5 = no pescoço
+6 = no corpo
+7 = sobre o corpo
+8 = nas costas
+9 = nos braços
+10 = nas mãos
+11 = no pulso direito
+12 = no pulso esquerdo
+13 = no dedo direito
+14 = no dedo esquerdo
+15 = empunhar (arma)
+16 = escudo
+17 = na cintura
+18 = nas pernas
+19 = calçando
 
 10.4. uint32 vestpos
 Em que posição está vestindo.
@@ -604,26 +604,33 @@ Se estiver ausente ou for um texto vazio, não requer chave.
 10.12. const i_chave = ""
 Texto que contém o código da chave, ou "" se não for chave.
 
-10.13. const luzini = 1000
+10.13. const luzitem = 0
+Tipo de fonte de luz:
+0 = Não aceita acender/apagar, sem fogo
+1 = Lanterna (acende/apaga, sem fogo)
+2 = Lanterna 2 (acende/apaga, inclusive na água)
+3 = Não aceita acender/apagar, produz fogo
+4 = Lampião (acende/apaga, produz fogo)
+5 = Fósforo (acende uma vez, produz fogo)
+6 = Tocha (acende com fogo, produz fogo)
+
+10.14. const luzini = 1000
 Duração da luz, em décimos de segundo
 
-10.14. const luzitem = 0
-Tipo de fonte de luz:
-0 = sempre aceso
-1 = aceso se usado como luz
-2 = pode ser aceso e apagado
+10.15. const luzliga = "$P acende $o."
+Mensagem quando alguém acende a luz
 
-10.15. const luztxt = ""
+10.16. const luztxt = ""
 Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem
 
-10.16. const luzfim = 0
-Se item some quando a luz acaba (0=não, 1=sim)
+10.17. const luzfim = 0
+Se item some (é apagado) quando a luz acaba (0=não, 1=sim)
 
-10.17. func vestir( posição )
+10.18. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.18. func mudadono(novo dono, quantidade)
+10.19. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
@@ -748,6 +755,10 @@ func cmd_trancouobj(personagem, item, chave)
 func cmd_destrancouobj(personagem, item, chave)
 Abriu, fechou, trancou ou destrancou um item.
 
+func cmd_acendeu(personagem, item)
+func cmd_apagou(personagem, item)
+Acendeu ou apagou um item.
+
 func cmd_levantou(personagem)
 func cmd_sentouchao(personagem)
 func cmd_descansouchao(personagem)
@@ -814,6 +825,10 @@ func cmd_fecharobj(personagem, item)
 func cmd_trancarobj(personagem, item, chave)
 func cmd_destrancarobj(personagem, item, chave)
 Quer abrir, fechar, trancar ou destrancar um item.
+
+func cmd_acender(personagem, item)
+func cmd_apagar(personagem, item)
+Quer acender ou apagar um item.
 
 func cmd_atacar(personagem, alvo, objeto que processa o ataque)
 Quer atacar algum personagem.
@@ -905,7 +920,8 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
-(testar) Itens que produzem luz
+Acertar itens que produzem luz
+Criar lojas e possibilidade de empunhar armas
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas

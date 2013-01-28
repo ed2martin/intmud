@@ -30,6 +30,8 @@ textotxt teditor # Texto usado no editor
 textopos leditor # Linha atual no editor
 textopos leditor1 # Início de bloco
 textopos leditor2 # Fim de bloco
+listaobj lmonit # Lista de quem está monitorando esse jogador
+listaitem imonit # Um item de lmonit
 txt512 peditor # Texto sendo procurado, opção P do editor
 textotxt transf # Área de transferência do editor
 
@@ -44,6 +46,7 @@ func fim
 
 func mudaperso # Muda o personagem, arg0=novo personagem
   ret perso == arg0 || arg0.sock, nulo
+  lmonit.limpar, imonit.limpar
   ref r
 # Indica que o jogador não controla o antigo personagem
   epara r = perso, r, r = r.dono
@@ -63,6 +66,22 @@ func reinicia # Volta ao início: pede o nome do personagem
   p_perso
 
 func recebe # Recebeu mensagem do jogador
+# Checa quem está monitorando
+  se lmonit
+    casovar passo
+    casose
+      listaitem i
+      epara i = lmonit.ini, i, i.depois
+        i.obj.msg("<" + arg0, 1), i.obj.msgprompt = 1
+      efim
+    casose "criasenha1"
+    casose "criasenha2"
+    casose "entrasenha"
+    casose "mudasenha1"
+    casose "mudasenha2"
+    casose "mudasenha3"
+    casofim
+  fimse
 # Checa tempo para sair
   temposair
 # Teclar M para mais
@@ -150,16 +169,28 @@ func txtmostra # Mostra próximo bloco de txtmais
   senao
     msg(txtmais.remove(9) + "\nTecle M para mais")
 
-func msg
+func msg # Envia mensagem
+# arg0=mensagem
+# arg1 é verdadeiro se deve apenas enviar a mensagem
+  se arg1
+  senao lmonit
+    msgprompt = 1
+    listaitem i
+    epara i = lmonit.ini, i, i.depois
+      i.obj.msg(">" + arg0, 1), i.obj.msgprompt = 1
+    efim
+  senao
+    msgprompt = 1
+  fimse
   casovar jogconfig.bits & 12
   casose "0" # -CORES -ACENTO
-    ret msgsock("\b" + txtremove(arg0, "C7")) + (msgprompt = 1)
+    ret msgsock("\b" + txtremove(arg0, "C7"))
   casose "4" # +CORES -ACENTO
-    ret msgsock(txtremove(arg0, "7")) + (msgprompt = 1)
+    ret msgsock(txtremove(arg0, "7"))
   casose "8" # -CORES +ACENTO
-    ret msgsock("\b" + txtremove(arg0, "C")) + (msgprompt = 1)
+    ret msgsock("\b" + txtremove(arg0, "C"))
   casose "12" # +CORES +ACENTO
-    ret msgsock(arg0) + (msgprompt = 1)
+    ret msgsock(arg0)
   casofim
 
 func msgprompt_exec
@@ -169,14 +200,14 @@ func msgprompt_exec
     txt150 t1
     t1 = perso.var.z_bprompt
     t1 = $mens_prompt.mens(t1, perso)
-    msg(t1), msgprompt = 0
+    msg(t1, 1)
   senao
     ret !jogconfig.6, nulo
     txt150 t1
     t1 = perso.var.z_prompt
     t1 = $mens_prompt.mens(t1, perso)
     t1 = $mens_prompt.mens(perso.var.z_prompt, perso)
-    msg(t1), msgprompt = 0
+    msg(t1, 1)
 
 func vazio_exec
   msg("Muito tempo sem comunicação")
@@ -329,6 +360,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     mudaperso(ind.obj("pn " + texto))
     nome = perso.nome
     cnome = "un " + texto
+    jogconfig.bits = perso.jogconfig.bits
     msg("Reconectado")
     perso.teclou("ver")
     temposair # Acerta tempo para sair do MUD

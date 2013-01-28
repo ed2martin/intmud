@@ -320,7 +320,7 @@ func iniclasse
   uint8 n
   [arg0]:t.addfim("Não")
   epara n = 1, misc:equip(n) != "desconhecido", n += 1
-    [arg0]:t.addfim(txtmaimin(misc:equip(n)))
+    [arg0]:t.addfim(misc:equip(n))
   efim
 
 
@@ -373,26 +373,37 @@ const tipo23 = "linha"
 const classe23 = var.classe1
 const var23 = "i_fechadura"
 #
-const nome24 = "Duração da luz"
-const info24 = "Por quanto tempo produz luz, em décimos de segundo"
-const tipo24 = "numero"
+const nome24 = "Tipo de luz"
+const tipo24 = "opcao"
 const classe24 = var.classe1
-const var24 = "luzini"
+const var24 = "luzitem"
+const extra24 = "Não aceita acender/apagar, sem fogo\n\
+Lanterna (acende/apaga, sem fogo)\n\
+Lanterna 2 (acende/apaga, inclusive na água)\n\
+Não aceita acender/apagar, produz fogo\n\
+Lampião (acende/apaga, produz fogo)\n\
+Fósforo (acende uma vez, produz fogo)\n\
+Tocha (acende com fogo, produz fogo)"
 #
-const nome25 = "Tipo de luz"
-const tipo25 = "opcao"
+const nome25 = "Duração da luz"
+const info25 = "Em décimos de segundo, se menor que zero começa apagado"
+const tipo25 = "numero"
 const classe25 = var.classe1
-const var25 = "luzitem"
-const extra25 = "Sempre aceso\nAceso se usado como luz\nPode ser aceso e apagado"
+const var25 = "luzini"
 #
-const nome26 = "Sem luz mensagem"
-const info26 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const nome26 = "Acendeu mensagem"
 const tipo26 = "linha"
 const classe26 = var.classe1
-const var26 = "luztxt"
+const var26 = "luzliga"
 #
-const nome27 = "Sem luz item some"
-const info27 = "Se o item some (é apagado) quando a luz acaba"
-const tipo27 = "simnao"
+const nome27 = "Sem luz mensagem"
+const info27 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo27 = "linha"
 const classe27 = var.classe1
-const var27 = "luzfim"
+const var27 = "luztxt"
+#
+const nome28 = "Sem luz item some"
+const info28 = "Se o item some (é apagado) quando a luz acaba"
+const tipo28 = "simnao"
+const classe28 = var.classe1
+const var28 = "luzfim"

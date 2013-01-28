@@ -623,7 +623,7 @@ func t_resetlin # Obtém um texto a partir de uma linha do reset
     lin += "Equipar    "
     lin += txt(l.2 + "(" + i_[l.2]:nome, 0, 30) + ")"
     lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "N" + l.3)
-    lin += "  " + txtmaimin(misc:equip(l.4))
+    lin += "  " + misc:equip(l.4)
     l.5 && (lin += "  Var " + l.5)
     ret lin
   casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
