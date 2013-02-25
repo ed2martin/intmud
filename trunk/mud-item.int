@@ -23,6 +23,7 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
     criar(var.ini("e_"), este, var.valor(var.ini("e_")))
   efim
+  recalc_exec
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   dono = arg0, cmd_mudadono
@@ -33,6 +34,7 @@ func vestir # Veste o item, arg0=posição
   r = dono, idono.remove, vestpos = arg0
   se vestpos
     idono = r.dentro2.addfim(este)
+    vestpos == 30 && (r.iempu.0 ? r.iempu.1 : r.iempu.0 = idono)
   senao
     idono = r.dentro1.addfim(este)
 
@@ -59,6 +61,7 @@ func ini # Objeto foi criado (arg0=dono, arg1=quantidade)
   !objtot && (objtot = 1) # Garante pelo menos um item
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0, objtot)
+  recalc_exec
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   ret !ref(arg0) || 0 >= arg1, nulo
@@ -91,14 +94,12 @@ func vestir # Veste o item, arg0=posição
     senao # Não encontrou: move
       vestpos = 0, r = dono, idono.remove, idono = r.dentro1.addfim(este)
     fimse
-  senao vestpos # Se já está vestindo, muda a posição
-    dono.recalc = 1 # Para recalcular atributos
-    vestpos = pos
-  senao objtot <= 1 # Se tem só um objeto, veste
+  senao vestpos || objtot <= 1 # Se já está vestindo ou só tem um objeto
     dono.recalc = 1 # Para recalcular atributos
     vestpos = pos
     ref r
     r = dono, idono.remove, idono = r.dentro2.addfim(este)
+    vestpos == 30 && (r.iempu.0 ? r.iempu.1 : r.iempu.0 = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
     objtot -= 1, ajustapeso
@@ -106,6 +107,7 @@ func vestir # Veste o item, arg0=posição
     r = criar(este)
     r.dono = dono, r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
+    vestpos == 30 && (r.iempu.0 ? r.iempu.1 : r.iempu.0 = idono)
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)

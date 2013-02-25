@@ -134,7 +134,8 @@ func escr
       ret arg0.msg("Você não consegue carregar tanta coisa nada.")
     senao arg0.volden + l.objini.voltot * total > arg0.volmax * l.objini.objtot
       ret arg0.msg("Você não consegue carregar tanta coisa.")
-    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total > arg0.pesomax * l.objini.objtot
+    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total > arg0.pesomax * l.objini.objt\
+ot
       ret l.objini.pesotot > l.objini.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
       ret arg0.msg("Você não consegue carregar tanto peso.")
     fimse
@@ -401,11 +402,17 @@ func escr
   !achou && arg0.msg("Você não vê isso.")
 
 
+classe cmd_usar
+herda comando_comum
+const objcmd = $cmd_vestir
+const objajuda = $cmd_vestir
+
+
 classe cmd_vestir
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Vestir\b\n\
 Sintaxe: VESTIR <objeto>\n\
-         VESTIR <quantidade> <objeto>\n\
+         USAR <objeto>\n\
 Veste ou usa um objeto que você está carregando."
 const posic = 5
 
@@ -448,8 +455,35 @@ func escr
       $mens.mvis1("$P veste $t $a.")
     efim
   efim
-# Ajusta variáveis
+# Avisa se não encontrou nenhum item
   !total && arg0.msg("Você não vê isso.")
+
+
+classe cmd_empunhar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Empunhar\b\n\
+Sintaxe: EMPUNHAR <objeto>\n\
+Empunha uma arma que você está carregando."
+const posic = 5
+
+func escr
+  ret !arg1, arg0.msg("Empunhar o que?")
+  ret arg0.iempu.0, arg0.msg("Você já está empunhando uma arma.")
+# Empunha
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    r = l.objini
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    ret !r.armatipo, arg0.msg(txtmaimin(r.nome) + " não é arma.")
+    r.vestir(30)
+    $mens.p(arg0, r)
+    $mens.mvis1("$P empunha $t $a.")
+    ret
+  efim
+  arg0.msg("Você não vê isso.")
 
 
 classe cmd_remover

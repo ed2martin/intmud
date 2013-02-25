@@ -109,6 +109,7 @@ Os tópicos são:\n\
   \c2ITEM\b     Itens\n\
   \c2PERSO\b    Personagens não jogador\n\
   \c2RESET\b    Reset de área ou sala\n\
+  \c2ATK\b      Comandos de ataques\n\
   \c2SOCIAL\b   Comandos sociais\n\
   \c2COD\b      Edição do código fonte\n\
   \c2OUTROS\b   Outros comandos"
@@ -633,6 +634,81 @@ func p_opcao # Alterando uma opção de uma lista de opções
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg(var.opcnome + " mudou para: " + x + " " + t.remove)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  fimse
+  passo = var.opcpasso, p_[passo]("\b")
+  ret 1
+
+func t_vetor # Retorna as opções selecionadas de lista de opções
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.varnum(arg0, arg1), t_vetormostra([arg0]:[arg1], arg2)
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.varnum(arg0, arg1), "<herda> " + t_vetormostra([arg0]:[arg1], arg2)
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo> " + t_vetormostra(0, arg2)
+  casofim
+
+func t_vetormostra # Retorna o texto correspondente a uma opção
+# arg0 = valor numérico
+# arg1 = texto com lista de opções separadas por "\n"
+# Retorna: Um texto contendo as opções escolhidas
+  int32 valor
+  textotxt t
+  txt512 lin
+  valor = arg0
+  epara t.addfim(arg1), t.linhas, valor = valor >> 1
+    valor & 1 ? (lin += ", " + t.remove) : t.remove
+  efim
+  ret lin ? txt(lin, 2) : "<vazio>"
+
+func p_vetor # Alterando uma opção de uma lista de opções
+  prog p
+  se arg0 == "" || arg0 == "\b"
+    passo = "vetor"
+    se var.opcvalido
+      msg("Entre com uma opção, O mostra as opções, Z sair")
+    senao
+      msg("Entre com uma opção, O mostra as opções, N nenhuma, Z sair")
+    fimse
+    ret 1
+  senao arg0 == "o"
+    txtmais.limpar
+    txtmais.addfim("\bOpções:\n" + var.opcextra)
+    textopos pos
+    pos = txtmais.ini
+    epara pos.depois, pos, pos.depois
+      pos.mudar(txt(pos.linha - 1) + " ", 0, 0)
+    efim
+    txtmostra
+    ret 1
+  senao arg0 == "n" && !var.opcvalido
+    p.apagar(var.opcclasse, var.opcvar)
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  senao arg0 != "z"
+    int32 x
+    x = arg0
+    se arg0 != x || x < 0 || x >= intsublin(var.opcextra)
+      msg("Opção inválida")
+      ret p_vetor("\b")
+    fimse
+    x = 1 << x ^ [var.opcclasse]:[var.opcvar]
+    txt100 lin
+    lin = t_vetormostra(x, var.opcextra)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + lin)
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Escolheu: " + lin)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    ret p_vetor("\b")
   fimse
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
@@ -1320,7 +1396,7 @@ const nome17 = "Tipo de ataque              "
 const tipo17 = "opcao--"
 const classe17 = "config"
 const var17 = "atktipo"
-const extra17 = "Manual\nAutomático com a classe cmd_atkauto"
+const extra17 = "Manual\nAutomático com a classe comando_atkauto"
 #
 
 func nome18

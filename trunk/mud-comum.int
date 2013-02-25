@@ -115,9 +115,9 @@ varfunc dono # O dono do personagem/item
   se !r
     ret
   senao perso
-    idono = r.dentro2.addini(este) # Adiciona personagem
+    idono = r.dentro2.addfim(este) # Adiciona personagem
   senao
-    idono = r.dentro1.addini(este) # Adiciona item
+    idono = r.dentro1.addfim(este) # Adiciona item
   fimse
   (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.1 = r.evento.addfim(este))
 # Se não está voando: acrescenta o peso total

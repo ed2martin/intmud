@@ -1,27 +1,37 @@
 classe comando_ataque
 herda comando_comum
-const objcmd = arg0.persobat.var.h_[nome] ? este
-const objajuda = arg0.persobat.var.h_[nome] ? este
+const objcmd = arg0.persobat.var.h_[nomehab] ? este
+const objajuda = arg0.persobat.var.h_[nomehab] ? este
 const posic = 7
-const nome = "" # Nome do golpe
-const tipo = 0 # Tipo de golpe
+const atkcom = 1 # Para indicar que o comando é um ataque editável
+const nomehab = "" # Nome do ataque (nome da habilidade)
+const tipoatk = 0 # Tipo de golpe
+const tipoalvo = 0 # Tipo de alvo: 0=um alvo, 1=todos dividindo a força, 2=todos
+const tipoarma = 1 # Requer arma: Nenhuma arma
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
 const ataque = 50 # Força de ataque, 100 significa 100%
 const veloc = 50 # Velocidade do golpe, 100 significa 100%
+const usavida = 0 # Quanto consome de vida
+const usamana = 0 # Quanto consome de mana
+const usamove = 0 # Quanto consome de movimento
 const msgacertou = "$R ataca $c"
 const msgerrou = msgacertou + " mas erra"
 const msgnulo = msgacertou + ", nada acontece"
 int32 result # Danos de batalha, ou 0=nenhum -1=errou o alvo -2=cancelar ataque
+ref arma1 # Arma usada
 
 func txtajuda
   txt100 lin
-  lin = "\c2" + txtmaimin(nome) + "\b\n"
-  lin += "Ataque \"" + misc:atknome(tipo) + "\", força " + ataque + ", velocidade " + vel
+  lin = "\c2" + txtmaimin(nomehab) + "\b\n"
+  lin += "Ataque \"" + txtsublin(misc:atknomes, tipoatk, 1) + "\", força " + ataque + ", \
+velocidade " + vel
   ret extra ? lin + "\n" + extra : lin
 
 func escr # Atacar alguém
   ref r
-  se arg0.ataqueini
+  se !checaatk(arg0)
+    ret
+  senao arg0.ataqueini
     arg0.msg(arg0.ataqueini)
     ret
   senao arg1
@@ -48,83 +58,82 @@ func escr # Atacar alguém
   senao !r.p_agressivo(arg0)
     arg0.msg(r.nome + " não quer brigar.")
   senao
-    listaobj l
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_atacar(arg0, r, este), nulo
-    efim
     ataca(arg0, r)
 
+func checaatk # Checa se personagem (arg0) pode atacar e avisa o personagem
+# Retorna verdadeiro se pode atacar
+  ref r
+  r = arg0.persobat
+  se !(r.iempu.0 || r.iempu.1) # Não está usando uma arma
+    se !(tipoarma & 1)
+      arg0.msg("Não possui a arma necessária.")
+      ret
+    fimse
+  senao r.iempu.0 && tipoarma & 1 << r.iempu.0.obj.armatipo
+  senao r.iempu.1 && tipoarma & 1 << r.iempu.1.obj.armatipo
+  senao tipoarma == 1
+    arg0.msg("Empunhando uma arma?")
+    ret
+  senao
+    arg0.msg("Arma incorreta.")
+    ret
+  fimse
+  se r.pvida <= usavida
+    arg0.msg("Pontos de vida insuficientes")
+    ret
+  senao r.pmana < usamana
+    arg0.msg("Mana insuficiente")
+    ret
+  senao r.pmove < usamove
+    arg0.msg("Vigor insuficiente")
+    ret
+  fimse
+  ret 1
+
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
-  ataca1(arg0, arg1)
-
-func mensgolpe # Retorna mensagem do golpe de acordo com result
-  casovar result
-  casose "-1" # Errou o alvo
-    ret msgerrou
-  casose "0" # O golpe não teve efeito
-    ret msgnulo
-  casose # Acertou o alvo
-    ret msgacertou + ", " + (-result)
-  casose "-2" # Ataque foi cancelado
-  casofim
-
-func ataca1 # arg0 ataca arg1
+  ref r
+  r = arg0.persobat
+# Obtém a arma usada
+  arma1 = ref(r.iempu.0.obj)
+  se !arma1 || !(tipoarma & 1 << arma1.armatipo)
+    arma1 = ref(r.iempu.1.obj)
+  fimse
+# Eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
+    ret l.objini.cmd_atacar(arg0, arg1, este), nulo
+  efim
+# Custo do ataque
+  r.pvida -= usavida, r.pmana -= usamana, r.pmove -= usamove
+# Obtém a força do ataque e os alvos secundários
+  real atk
+  atktipo && l.addfim(arg0.dono.dentro1) + l.remove(arg0, arg1)
+  atk = atktipo == 1 ? ataque / l.total : ataque
+  se arma1
+    real carga
+    carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
+    se carga > 1.2 # Muito pesado
+      atk /= carga < 1.4 ? 10 : 100
+      arg0.msg("É muito peso!")
+    senao carga > 1 # Um pouco pesado
+      atk *= 5 - 4 * carga # se carga=1,atk*=1  se carga=1.2,atk*=0.2
+      arg0.msg("Bastante peso!")
+    fimse
+  fimse
+# Ataca o alvo escolhido
   velgolpe(arg0, arg1) # Tempo do golpe
-  execgolpe(arg0, arg1, ataque) # Ataca
+  execgolpe(arg0, arg1, atk) # Ataca
   result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
   arg1.persobat.acertapos(1)
-  arg0.persobat.acertapos(1)
-
-func ataca2 # arg0 ataca todos dividindo a força do ataque
-# arg1 é o primeiro alvo
-  real atk
-  listaobj l
-# Obtém ataque e lista de personagens
-  l.addfim(arg0.dono.dentro1)
-  l.remove(arg0, arg1)
-  l.addini(arg1)
-  atk = ataque / l.total
-# Ataca
-  ref r
-  enquanto l.total > 1
-    r = l.objfim, l.fim.remove
+# Ataca os alvos secundários
+  enquanto l
+    r = l.objini, l.ini.remove
     continuar r.jog || r.perso < 3 # Não prossegue se for jogador
     velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     result != -2 && $mens.p(arg0, r) + r.msginv(mensgolpe)
     r.acertapos(1)
   efim
-# Ataca o alvo
-  r = l.objfim
-  velgolpe(arg0, r) # Tempo do golpe
-  execgolpe(arg0, r, atk) # Ataca
-  result != -2 && $mens.p(arg0, r) + $mens.mtodos1(mensgolpe)
-  r.acertapos(1)
-  arg0.persobat.acertapos(1)
-
-func ataca3 # arg0 ataca todos sem dividir a força do ataque
-# arg1 é o primeiro alvo
-  listaobj l
-# Obtém ataque e lista de personagens
-  l.addfim(arg0.dono.dentro1)
-  l.remove(arg0, arg1)
-  l.addini(arg1)
-# Ataca
-  ref r
-  enquanto l.total > 1
-    r = l.objfim, l.fim.remove
-    continuar r.jog || r.perso < 3 # Não prossegue se for jogador
-    velgolpe(arg0, r) # Tempo do golpe
-    execgolpe(arg0, r, ataque) # Ataca
-    result != -2 && $mens.p(arg0, r) + r.msginv(mensgolpe)
-    r.acertapos(1)
-  efim
-# Ataca o alvo
-  r = l.objfim
-  velgolpe(arg0, r) # Tempo do golpe
-  execgolpe(arg0, r, atk) # Ataca
-  result != -2 && $mens.p(arg0, r) + $mens.mtodos1(mensgolpe)
-  r.acertapos(1)
   arg0.persobat.acertapos(1)
 
 func velgolpe # Acerta o tempo de espera conforme o golpe
@@ -147,7 +156,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = força do ataque, 0=não calcular danos
-# tipo = tipo de ataque
+# tipoatk = tipo de ataque, arma1 = arma usada
   real dano
   ref r # Personagem que ataca
   ref s # Personagem que recebe o ataque
@@ -172,24 +181,36 @@ func execgolpe # Realiza um ataque e coloca resultado em result
       ret
     senao # Checa se acertou
       dano += precisao * r.precisao / 100 - s.evasao
+      arma1 && (dano *= arma1.armaprecisao / 100) # Precisão da arma
       !s.visivel(r) && (dano -= 5) # Invisível é mais difícil de acertar
       ret dano <= 0, nulo
     fimse
   fimse
 # Checa bônus do tipo de defesa
-  dano = s.deftipo.[tipo]
+  dano = s.deftipo.[tipoatk]
   se dano >= 80 # Defesa muito alta
     result = 0
     ret
   fimse
   dano = misc:defbonus.[128 - dano]
-# Calcula dano; valor do rand é por volta de 300
-  se misc:aktipo(tipo) # Checa se golpe normal ou especial
-    dano *= r.atkmag * (r.atkmag + 25) * arg2 / (s.defmag * rand(280, 340))
+# Calcula dano com arma
+  se arma1
+    dano *= rand(arma1.armamin, arma1.armamax) * arg2
+    dano *= rand(arma1.armamin, arma1.armamax) + 25
+    se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
+      dano /= s.defmag * 300
+    senao
+      dano /= s.defnorm * 300
+    fimse
+# Calcula dano sem arma; valor do rand é por volta de 300
   senao
-    dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(280, 340))
+    se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
+      dano *= r.atkmag * (r.atkmag + 25) * arg2 / (s.defmag * rand(280, 340))
+    senao
+      dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(280, 340))
+    fimse
+    dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
   fimse
-  dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
 # Modificadores de posição
   casovar s.posicao
   casose "0" # Morto
@@ -216,6 +237,38 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 
 func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
   !arg0 && (arg0 = 1)
+
+func mensgolpe # Retorna mensagem do golpe de acordo com result
+  casovar result
+  casose "-1" # Errou o alvo
+    ret msgerrou
+  casose "0" # O golpe não teve efeito
+    ret msgnulo
+  casose # Acertou o alvo
+    ret msgacertou + ", " + -result
+  casose "-2" # Ataque foi cancelado
+  casofim
+
+
+classe comando_atkauto
+herda comando_ataque
+# Para realizar ataques automáticos
+const objcmd = nulo
+const objajuda = nulo
+const nomehab = "Ataque automático"
+const msgacertou = "$R dá um golpe em $c"
+const msgerrou = "$R tenta dar um golpe em $c mas erra"
+const msgnulo = "R$ dá um golpe em $c mas nada acontece"
+const tipoatk = 0 # Normal
+const ataque = 20
+const vel = 50
+const extra = "Ataque automático"
+
+func ataca # arg0 ataca arg1
+  arma1 = ref(arg0.persobat.iempu.0.obj)
+  execgolpe(arg0, arg1, ataque) # Ataca
+  result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
+  arg1.acertapos(1), arg0.acertapos(1)
 
 
 classe cmd_resgatar
@@ -264,9 +317,9 @@ func escr
 
 classe cmd_socar
 herda comando_ataque
-const nome = "Socar"
+const nomehab = "Socar"
 const msgacertou = "$R soca $c"
-const tipo = 0 # Normal
+const tipoatk = 0 # Normal
 const ataque = 40
 const vel = 80
 const extra = "Golpe físico de força"
@@ -274,9 +327,9 @@ const extra = "Golpe físico de força"
 
 classe cmd_chutar
 herda comando_ataque
-const nome = "Chutar"
+const nomehab = "Chutar"
 const msgacertou = "$R chuta $c"
-const tipo = 0 # Normal
+const tipoatk = 0 # Normal
 const ataque = 70
 const vel = 50
 const extra = "Golpe físico de força"
@@ -284,9 +337,9 @@ const extra = "Golpe físico de força"
 
 classe cmd_arremessar
 herda comando_ataque
-const nome = "Arremessar"
+const nomehab = "Arremessar"
 const msgacertou = "$R se joga contra $c"
-const tipo = 0 # Normal
+const tipoatk = 0 # Normal
 const ataque = 80
 const vel = 30
 const extra = "Golpe físico de força"
@@ -294,29 +347,19 @@ const extra = "Golpe físico de força"
 
 classe cmd_morder
 herda comando_ataque
-const nome = "Morder"
+const nomehab = "Morder"
 const msgacertou = "$R morde $c"
-const tipo = 0 # Normal
+const tipoatk = 0 # Normal
 const ataque = 50
 const vel = 60
 const extra = "Golpe físico de força"
 
 
-classe cmd_atkauto
+classe cmd_cortar
 herda comando_ataque
-# Para realizar ataques automáticos
-const objcmd = nulo
-const objajuda = nulo
-const nome = "Ataque automático"
-const msgacertou = "$R dá um golpe em $c"
-const msgerrou = "$R tenta dar um golpe em $c mas erra"
-const msgnulo = "R$ dá um golpe em $c mas nada acontece"
-const tipo = 0 # Normal
-const ataque = 20
-const vel = 50
-const extra = "Ataque automático"
-
-func ataca # arg0 ataca arg1
-  execgolpe(arg0, arg1, ataque) # Ataca
-  result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
-  arg1.acertapos(1), arg0.acertapos(1)
+const nomehab = "Cortar"
+const tipoatk = 2 # Tipo de ataque: 2 Cortante
+const tipoarma = 2 # Requer arma: Lâmina curta
+const usamove = 5
+const msgacertou = "$R corta $c"
+const msgerrou = "$R tenta cortar $c"

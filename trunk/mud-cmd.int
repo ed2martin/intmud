@@ -30,7 +30,8 @@ func escr
     se arg0.jogconfig.23
       item.obj.jogconfig.23 && (t1 += "  [ADM]")
       item.obj.jogconfig.17 && (t1 += "  [INVQUEM]")
-      item.obj.sock.imonit && (t1 += "  [MONIT " + item.obj.sock.imonit.objlista.perso.nome + "]")
+      item.obj.sock.imonit && (t1 += "  [MONIT " + item.obj.sock.imonit.objlista.perso.nome + \
+"]")
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(item.obj.dono, 2))
     t0.addfim(t1)
@@ -132,8 +133,9 @@ const posic = 5
 func escr
   textotxt t
   listaitem item
-  epara item = arg0.dentro1.ini, item, item.depois
-    item.obj.visivel(arg0) && t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtmaimin(item.obj.nome))
+  epara item = arg0.dentro1.fim, item, item.antes
+    item.obj.visivel(arg0) && t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtmaimin(i\
+tem.obj.nome))
   efim
   t.juntalin("(", "x)")
   se t
@@ -153,7 +155,7 @@ const posic = 5
 func escr
   textotxt t
   listaitem item
-  epara item = arg0.dentro2.ini, item, item.depois
+  epara item = arg0.dentro2.fim, item, item.antes
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
     t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.atribs + item.obj.nome)
   efim
@@ -490,7 +492,7 @@ func escr
       tempo = r.luztempo.abs / 50
       r.luztempo > 0 && (t2 += r.sexo ? ", aceso" : ", acesa")
       t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
-      #t2 += r.luztempo
+# t2 += r.luztempo
     fimse
 # Envia mensagem
     ret !completo, arg0.msg(t2 + ".")

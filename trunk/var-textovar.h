@@ -39,9 +39,11 @@ public:
     bool FuncIni(TVariavel * v);
     bool FuncFim(TVariavel * v);
     bool FuncLimpar(TVariavel * v);
+    bool FuncTotal(TVariavel * v);
 
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
     TTextoVarSub * Inicio; ///< Primeiro objeto TTextoVarSub
+    int Total;  ///< Quantidade de variáveis
 };
 
 //----------------------------------------------------------------------------

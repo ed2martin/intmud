@@ -25,6 +25,7 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         { "limpar",       &TTextoVar::FuncLimpar },
         { "mudar",        &TTextoVar::FuncMudar },
         { "nomevar",      &TTextoVar::FuncNomeVar },
+        { "total",        &TTextoVar::FuncTotal },
         { "valor",        &TTextoVar::FuncValor }  };
 // Procura a função correspondente e executa
     int ini = 0;
@@ -195,6 +196,32 @@ bool TTextoVar::FuncLimpar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
+// Total
+bool TTextoVar::FuncTotal(TVariavel * v)
+{
+    const char * txt = "";
+    int total = 0;
+    if (Instr::VarAtual >= v+1)
+        txt = v[1].getTxt();
+    if (*txt==0)
+    {
+        total = Total;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(total);
+    }
+    TBlocoVar * ini = ProcIni(txt);
+    if (ini)
+    {
+        TBlocoVar * fim = ProcFim(txt);
+        total=1;
+        while (ini && ini != fim)
+            total++, ini=TBlocoVar::RBnext(ini);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(total);
+}
+
+//----------------------------------------------------------------------------
 void TTextoVar::Apagar()
 {
     while (RBroot)
@@ -348,6 +375,7 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
         bl = TBlocoVar::AlocarMem(texto);
         bl->TextoVar = this;
         bl->RBinsert();
+        Total++;
         return 0;
     }
 // Apagar texto
@@ -494,6 +522,7 @@ void TBlocoVar::Apagar()
 #ifdef DEBUG_MEM
     printf("Apagar %p: %s\n", Inicio, Texto); fflush(stdout);
 #endif
+    TextoVar->Total--;
     RBremove();
     delete[] Inicio;
 }

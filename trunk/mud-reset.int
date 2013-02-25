@@ -454,14 +454,14 @@ func p_resetE # Equipar personagem
     fimse
     ret 1
   casose "5" # Lugar
-    se misc:equip(x) != "desconhecido"
+    se x > 0 && x < intsublin(misc:equip_txt)
       var.opclin += " " + x, p_resetE("")
     senao arg0 == "o"
       txtmais.limpar
       txtmais.addfim("Opções:")
       uint8 n
-      epara n = 1, misc:equip(n) != "desconhecido", n += 1
-        txtmais.addfim(txt(n) + " " + misc:equip(n))
+      epara n = 1, n < intsublin(misc:equip_txt), n += 1
+        txtmais.addfim(txt(n) + " " + txtsublin(misc:equip_txt, n, 1))
       efim
       txtmostra
     senao
