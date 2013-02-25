@@ -142,11 +142,12 @@ func descsala # Retorna descrição da sala
   se arg1 & 4
     textotxt t2
     listaobj l
-    l.addfim(dentro2, dentro1)
+    l.addfim(dentro1, dentro2)
     l.remove(arg0)
+    ref r
     enquanto l
-      l.objini.visivel(arg0) && t2.addfim(txt(l.objini.objtot) + " " + l.objini.atribs + l.objini.descpos)
-      l.ini.remove
+      r = l.fim.obj, l.fim.remove
+      r.visivel(arg0) && t2.addfim(txt(r.objtot) + " " + r.atribs + r.descpos)
     efim
     t2.juntalin("(", "x)")
     t.fim.add(t2.ini, t2.linhas)
@@ -202,7 +203,7 @@ func totalmove # Quantos movimentos consome, conforme o terreno
   casose "7" # Água pode nadar
     ret 4
   casose "8" # Água requer barco
-    ret 1
+    ret 50
   casose "9" # Em baixo d'água
     ret 5
   casose "10" # Ar

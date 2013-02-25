@@ -194,6 +194,10 @@ bool Instr::FuncRand(TVariavel * v, int valor)
         int max = v[2].getInt();
         if (min < max)
             result = circle_random() % (max-min+1) + min;
+        else if (min > max)
+            result = circle_random() % (min-max+1) + max;
+        else
+            result = min;
     }
     ApagarVar(v);
     return CriarVarInt(result);
@@ -325,15 +329,35 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
 bool Instr::FuncIntSub(TVariavel * v, int valor)
 {
     int total = 0;
-    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    if (VarAtual >= v+1)
     {
-        const char * txt = var->getTxt();
+        const char * txt = v[1].getTxt();
         while (*txt==' ') txt++;
         while (*txt)
         {
             while (*txt && *txt!=' ') txt++;
             while (*txt==' ') txt++;
             total++;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarInt(total);
+}
+
+//----------------------------------------------------------------------------
+/// Função intsublin
+bool Instr::FuncIntSubLin(TVariavel * v, int valor)
+{
+    int total = 0;
+    if (VarAtual >= v+1)
+    {
+        const char * txt = v[1].getTxt();
+        if (*txt)
+        {
+            total++;
+            while (*txt)
+                if (*txt++==ex_barra_n)
+                    total++;
         }
     }
     ApagarVar(v);
@@ -363,9 +387,9 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
         if (VarAtual >= v+1)
             txt = v[1].getTxt();
     }
-// Obtém o texto para função txt
-    if (valor==0)
+    switch (valor)
     {
+    case 0: // Obtém o texto para função txt
         if (tam > (int)sizeof(mens))
             tam = sizeof(mens);
             // Avança para início do texto
@@ -374,10 +398,8 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
             // Copia texto
         for (const char * fim = txt+tam; *txt && txt<fim; )
             *destino++ = *txt++;
-    }
-// Obtém o texto para função txtsub
-    else
-    {
+        break;
+    case 1: // Obtém o texto para função txtsub
         while (*txt==' ') txt++;
             // Avança para início do texto
         while (ini>0 && *txt)
@@ -395,6 +417,24 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
                 *destino++ = *txt++;
             tam--;
         }
+        break;
+    case 2: // Obtém o texto para função txtsublin
+            // Avança para início do texto
+        while (ini>0 && *txt)
+        {
+            while (*txt && *txt!=ex_barra_n) txt++;
+            if (*txt==ex_barra_n) txt++;
+            ini--;
+        }
+            // Copia texto
+        while (tam>0 && *txt && destino<mens+sizeof(mens))
+        {
+            while (*txt && *txt!=ex_barra_n && destino<mens+sizeof(mens))
+                *destino++ = *txt++;
+            if (--tam)
+                *destino++ = *txt++;
+        }
+        break;
     }
 // Anota o texto
     ApagarVar(v);

@@ -28,7 +28,7 @@ IntMUD (Interpretador MUD)
 13.6. Operadores de bit
 14. Instruções de controle de fluxo
 15. Lista de funções
-15.1. Funções chamadas pelo programa
+15.1. Funções chamadas pelo interpretador
 15.2. Funções numéricas
 15.3. Funções de texto
 15.4. Funções para procura e substituição de textos
@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 14.8.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 15.1.
 
 
 1. SOBRE O INTMUD
@@ -1599,20 +1599,40 @@ Encerra o programa (fecha o IntMUD).
 
 15. LISTA DE FUNÇÕES
 
-15.1. FUNÇÕES CHAMADAS PELO PROGRAMA
+15.1. FUNÇÕES CHAMADAS PELO INTERPRETADOR
+
+São funções que você pode criar no programa, e o interpretador chamará
+em determinadas ocasiões.
 
 15.1.1. ini
-É executada quando o objeto é criado.
+
+Sempre que um objeto é criado, logo em seguida é chamada a função 'ini'.
+Portanto, é comum criar uma função 'ini' quando é necessário inicializar
+algumas variáveis.
+
+Veja também a função 'criar()'.
 
 15.1.2. fim
-É executada quando o objeto é apagado.
+
+É executada antes do objeto ser apagado.
+
+Veja também a função 'apagar'.
 
 15.1.3. iniclasse
-É executada quando a classe é criada.
-Recebe um argumento (arg0), que é o nome da classe.
 
-Outras funções podem ser chamadas, por variáveis específicas, que constituem
-uma extensão do programa.
+É executada quando a classe é criada. Dentro dessa função, 'arg0' é sempre
+o nome da classe. Quando o IntMUD é executado, ele chama as funções
+'iniclasse' de todas as classes existentes.
+
+É bastante comum, em diversas classes, uma função 'iniclasse' que cria
+um único objeto. O seguinte código:
+
+func iniclasse
+criar(arg0)
+
+Como esse é o primeiro objeto da classe, para usá-lo basta escrever
+o símbolo '$' seguido do nome da classe. Por exemplo, '$teste.x' seria
+a função ou variável 'x' do primeiro objeto da classe 'teste'.
 
 
 15.2. FUNÇÕES NUMÉRICAS
@@ -1677,61 +1697,73 @@ Retorna tudo exceto a primeira palavra do texto.
 
 15.3.7. intsub(<texto>)
 Retorna a quantidade de palavras contidas no texto.
+As palavras são sempre separadas por um ou mais espaços.
 
 15.3.8. txtsub(<texto>, <palavra inicial>, [quantidade de palavras])
 Retorna um texto que é parte do texto especificado.
-As palavras são sempre separadas por espaço.
+As palavras são sempre separadas por um ou mais espaços.
 Palavra inicial é a primeira palavra, 0=início do texto.
 Se a quantidade de palavras for omitida, assume até o final do texto.
 Exemplos:
 txtsub("bom dia boa tarde", 2) é o mesmo que "boa tarde".
 txtsub("bom dia boa tarde", 1, 1) é o mesmo que "dia".
 
-15.3.9. txtcor(<texto>)
+15.3.9. intsublin(<texto>)
+Retorna a quantidade de linhas contidas no texto.
+As linhas são separadas por '\n'.
+Nota: Se for um texto vazio, essa função retorna 0.
+
+15.3.10. txtsublin(<texto>, <palavra inicial>, [quantidade de linhas])
+Retorna um texto que é parte do texto especificado.
+As linhas são sempre separadas por '\n'.
+Linha inicial é a primeira linha, 0=início do texto.
+Se a quantidade de linhas for omitida, assume até o final do texto.
+
+15.3.11. txtcor(<texto>)
 Retorna o texto sem as definições de cores e opções do telnet
 (eco, "go ahead" e bipe: de "\cg" até "\cj"). Exemplo:
 txtcor("\cF\d4Teste\b") é o mesmo que "Teste".
 
-15.3.10. txtmai(<texto>)
+15.3.12. txtmai(<texto>)
 Retorna o texto em letras maiúsculas.
 
-15.3.11. txtmin(<texto>)
+15.3.13. txtmin(<texto>)
 Retorna o texto em letras minúsculas.
 
-15.3.12. txtmaiini(<texto>)
+15.3.14. txtmaiini(<texto>)
 Retorna o texto passando a primeira letra para maiúscula.
 Se encontrar algum ponto, a próxima letra também será maiúscula.
 
-15.3.13. txtmaimin(<texto>)
+15.3.15. txtmaimin(<texto>)
 Retorna o texto com a primeira letra maiúscula e as demais minúsculas.
 Se encontrar um ponto, a próxima letra será maiúscula.
 
-15.3.14. txtmudamai(<texto>, [porcentagem])
+15.3.16. txtmudamai(<texto>, [porcentagem])
 Retorna um texto que é o texto original com letras maiúsculas
 trocadas com minúsculas.
 Exemplo: txtmudamai("Bom Dia") é o mesmo que "bOM dIA"
 A porcentagem, se estiver presente, é a chance de fazer uma troca.
 Exemplo: 0=não trocar, 100=trocar sempre, 50=50% de chances de trocar
 
-15.3.15. txtcopiamai(<texto1>, <texto2>)
+15.3.17. txtcopiamai(<texto1>, <texto2>)
 Retorna texto1, mas passando letras para maiúscula ou minúscula
 conforme as letras correspondentes em <texto2>.
 Exemplo: txtcopiamai("teste", "XYZnn") é o mesmo que "TESte"
 
-15.3.16. txtfiltro(<texto>)
+15.3.18. txtfiltro(<texto>)
 Filtra mensagens. Retorna o texto filtrado.
 
-15.3.17. txtesp(<quantidade de espaços>)
+15.3.19. txtesp(<quantidade de espaços>)
 Retorna um texto que é a quantidade de espaços requisitada.
 O texto retornado tem de 0 a 100 caracteres.
 
-15.3.18. txtrepete(<texto>, <quantidade de repetições>)
+15.3.20. txtrepete(<texto>, <quantidade de repetições>)
 Retorna um texto que é o texto especificado repetido o número
 especificado. Exemplos:
 txtrepete("a", 3) # é o mesmo que "aaa"
 txtrepete("xyz", 2) # é o mesmo que "xyzxyz"
 
-15.3.19. txtsepara(<texto>, <opções>, [texto usado como separador])
+15.3.21. txtsepara(<texto>, <opções>, [texto usado como separador])
 Separa números e palavras de um texto, acrescentando um texto separador.
 Se o texto separador for omitido, será usado um espaço.
 
@@ -2581,12 +2613,18 @@ Apaga todas as variáveis do textovar.
 Apaga todas as variáveis cujos nomes começam com o texto.
 Nota: pode ser fornecido vários textos (vários argumentos).
 
-2.12. Outros nomes:
+21.12. total([texto])
+Retorna a quantidade de variáveis que começam com o texto especificado.
+A função 'total' sem argumentos tem o mesmo efeito de 'total("")',
+ou seja, retorna a quantidade de variáveis do 'textovar'. Nesse caso,
+essa função é bem mais eficiente.
+
+21.13. Outros nomes:
 Correspondem a uma variável de textovar, do tipo texto.
 Para a variável ser tratada como numérica, acrescentar sublinhado
 após o nome da variável.
 
-2.13. Exemplos
+21.14. Exemplos
 
 textovar v
 v.mudar("x=teste") # Cria variável x faz ser "teste"

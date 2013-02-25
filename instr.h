@@ -47,6 +47,7 @@ bool FuncRand(TVariavel * v, int valor);
 bool FuncRef(TVariavel * v, int valor);
 bool FuncTxtNum(TVariavel * v, int valor);
 bool FuncIntSub(TVariavel * v, int valor);
+bool FuncIntSubLin(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxtFim(TVariavel * v, int valor);
 bool FuncTxt2(TVariavel * v, int valor);

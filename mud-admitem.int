@@ -231,32 +231,54 @@ const nome14 = "Vestir posição 1"
 const tipo14 = "opcao"
 const classe14 = var.classe1
 const var14 = "vestir1"
-const extra14 = adm_item1:equip
+const extra14 = misc:equip_txt
 #
 const nome15 = "Vestir posição 2"
 const tipo15 = "opcao"
 const classe15 = var.classe1
 const var15 = "vestir2"
-const extra15 = adm_item1:equip
+const extra15 = misc:equip_txt
 #
 const nome16 = "Vestir posição 3"
 const tipo16 = "opcao"
 const classe16 = var.classe1
 const var16 = "vestir3"
-const extra16 = adm_item1:equip
+const extra16 = misc:equip_txt
 #
-const nome17 = "Pega animais nível"
-const info17 = "Nível médio dos animais que podem ser capturados com esse item,\n\
-ou 0 se não puder capturar"
-const tipo17 = "numero"
+const nome17 = "Arma tipo"
+const tipo17 = "opcao"
 const classe17 = var.classe1
-const var17 = "i_captura"
+const var17 = "armatipo"
+const extra17 = misc:arma_txt
 #
-const nome18 = "Chave"
-const info18 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo18 = "linha"
+const nome18 = "Arma precisão"
+const info18 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
+const tipo18 = "numero"
 const classe18 = var.classe1
-const var18 = "i_chave"
+const var18 = "armaprecisao"
+#
+const nome19 = "Ataque mín"
+const tipo19 = "numero"
+const classe19 = var.classe1
+const var19 = "armamin"
+#
+const nome20 = "Ataque máx"
+const tipo20 = "numero"
+const classe20 = var.classe1
+const var20 = "armamax"
+#
+const nome21 = "Pega animal nível"
+const info21 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+ou 0 se não puder capturar"
+const tipo21 = "numero"
+const classe21 = var.classe1
+const var21 = "i_captura"
+#
+const nome22 = "Chave"
+const info22 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo22 = "linha"
+const classe22 = var.classe1
+const var22 = "i_chave"
 #
 const nome41 = "Variáveis"
 const tipo41 = "linha"
@@ -312,16 +334,6 @@ const nome10 = "Objetos máximo"
 const tipo10 = "numero"
 const classe10 = var.classe1
 const var10 = "objmax"
-#
-comum textotxt t # Lista das posições aonde pode vestir
-const equip = adm_item1:t.ini.textolin(100) # Texto da variável t
-
-func iniclasse
-  uint8 n
-  [arg0]:t.addfim("Não")
-  epara n = 1, misc:equip(n) != "desconhecido", n += 1
-    [arg0]:t.addfim(misc:equip(n))
-  efim
 
 
 classe adm_item2
@@ -339,45 +351,45 @@ classe adm_item3
 herda adm_item1
 const titulo = "Item " + txt(var.classe1, 2)
 #
-const nome19 = "Mobília"
-const tipo19 = "opcao"
-const classe19 = var.classe1
-const var19 = "i_movel"
-const extra19 = "Não\nPodem sentar\nPodem sentar e deitar"
+const nome23 = "Mobília"
+const tipo23 = "opcao"
+const classe23 = var.classe1
+const var23 = "i_movel"
+const extra23 = "Não\nPodem sentar\nPodem sentar e deitar"
 #
-const nome20 = "Lugares"
-const tipo20 = "numero"
-const classe20 = var.classe1
-const var20 = "i_lugar"
+const nome24 = "Lugares"
+const tipo24 = "numero"
+const classe24 = var.classe1
+const var24 = "i_lugar"
 #
-const nome21 = "Container"
-const tipo21 = "opcao"
-const classe21 = var.classe1
-const var21 = "i_abertoini"
-const mudou21 = "recalc_exec"
-const extra21 = "Não\n\
+const nome25 = "Container"
+const tipo25 = "opcao"
+const classe25 = var.classe1
+const var25 = "i_abertoini"
+const mudou25 = "recalc_exec"
+const extra25 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado"
 #
-const nome22 = "Trancar"
-const tipo22 = "opcao"
-const classe22 = var.classe1
-const var22 = "i_tranc"
-const extra22 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+const nome26 = "Trancar"
+const tipo26 = "opcao"
+const classe26 = var.classe1
+const var26 = "i_tranc"
+const extra26 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome23 = "Fechadura"
-const info23 = "Código da chave que tranca e destranca o container"
-const tipo23 = "linha"
-const classe23 = var.classe1
-const var23 = "i_fechadura"
+const nome27 = "Fechadura"
+const info27 = "Código da chave que tranca e destranca o container"
+const tipo27 = "linha"
+const classe27 = var.classe1
+const var27 = "i_fechadura"
 #
-const nome24 = "Tipo de luz"
-const tipo24 = "opcao"
-const classe24 = var.classe1
-const var24 = "luzitem"
-const extra24 = "Não aceita acender/apagar, sem fogo\n\
+const nome28 = "Tipo de luz"
+const tipo28 = "opcao"
+const classe28 = var.classe1
+const var28 = "luzitem"
+const extra28 = "Não aceita acender/apagar, sem fogo\n\
 Lanterna (acende/apaga, sem fogo)\n\
 Lanterna 2 (acende/apaga, inclusive na água)\n\
 Não aceita acender/apagar, produz fogo\n\
@@ -385,25 +397,25 @@ Lampião (acende/apaga, produz fogo)\n\
 Fósforo (acende uma vez, produz fogo)\n\
 Tocha (acende com fogo, produz fogo)"
 #
-const nome25 = "Duração da luz"
-const info25 = "Em décimos de segundo, se menor que zero começa apagado"
-const tipo25 = "numero"
-const classe25 = var.classe1
-const var25 = "luzini"
+const nome29 = "Duração da luz"
+const info29 = "Em décimos de segundo, se menor que zero começa apagado"
+const tipo29 = "numero"
+const classe29 = var.classe1
+const var29 = "luzini"
 #
-const nome26 = "Acendeu mensagem"
-const tipo26 = "linha"
-const classe26 = var.classe1
-const var26 = "luzliga"
+const nome30 = "Acendeu mensagem"
+const tipo30 = "linha"
+const classe30 = var.classe1
+const var30 = "luzliga"
 #
-const nome27 = "Sem luz mensagem"
-const info27 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
-const tipo27 = "linha"
-const classe27 = var.classe1
-const var27 = "luztxt"
+const nome31 = "Sem luz mensagem"
+const info31 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo31 = "linha"
+const classe31 = var.classe1
+const var31 = "luztxt"
 #
-const nome28 = "Sem luz item some"
-const info28 = "Se o item some (é apagado) quando a luz acaba"
-const tipo28 = "simnao"
-const classe28 = var.classe1
-const var28 = "luzfim"
+const nome32 = "Sem luz item some"
+const info32 = "Se o item some (é apagado) quando a luz acaba"
+const tipo32 = "simnao"
+const classe32 = var.classe1
+const var32 = "luzfim"

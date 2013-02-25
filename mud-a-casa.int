@@ -1249,6 +1249,7 @@ classe p_casa014
 herda comum_persobat
 const pesoobj = 45000
 const nome = "Zumbi" + nomealvo
+const descpadr = "Um fétido zumbi vaga sem rumo por aqui."
 const volobj = 2000
 const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_morreu1 = "$P se partiu em vários pedaços."
@@ -1402,7 +1403,10 @@ func a_reset1 # Realiza o reset
 classe s_casa045
 herda b_casa
 const s_titulo = "Suíte"
-const s_desc = ""
+const s_desc = "Uma bela cama de casal bem no meio do quarto ocupa quase todo espaço.\n\
+Mas há algo estranho, há apenas o colchão, nenhum travesseiro ou cobertor,\n\
+e ele é duro como uma tábua. Na parede, dois armários embutidos estão\n\
+apenas preenchidos com uma gosma espessa."
 const dir_se = $s_casa041
 const dir_n = $s_casa046
 const dir_o = $s_casa047
@@ -1420,7 +1424,9 @@ const fechadura_o = "casa1"
 classe s_casa046
 herda b_casa
 const s_titulo = "Banheiro"
-const s_desc = ""
+const s_desc = "Uma grande banheira e um box ocupam metade do espaço do banheiro. Na outra\n\
+metade fica uma bacia e uma pia. O chão, composto de uma cerâmica\n\
+antiderrapante, permanece intacto, embora coberto com uma fina poeira."
 const dir_s = $s_casa045
 const a_reset = "P 70 casa014 11 15 6"
 
@@ -1434,12 +1440,21 @@ func a_reset1 # Realiza o reset
 classe s_casa047
 herda b_casa
 const s_titulo = "Vestiário"
-const s_desc = ""
+const s_desc = "Uma gosma marrom já se espalhou por todo canto e destruiu a maioria das\n\
+coisas que haviam aqui. Você anda com bastante cuidado para não se\n\
+contaminar. Aparentemente a gosma vem de uma rachadura no teto."
 const dir_l = $s_casa045
 const portaini_l = 3 # Estado inicial: 3 Porta trancada
 const chave_l = "casa1"
 const s_pnj = 0 # PNJs entram: Não
 const tranc_l = 1 # Trancar: 1 Pode ser trancado
+const s_reset = "R 100 casa011\nS 100 casa011 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref r # Usado como rascunho
+  (r = dentro1.objini("i_casa011")) + r.apagar(1000)
+  !dentro1.objini("i_casa011") && criar("i_casa011", este, 1)
 
 
 classe s_casa048
@@ -1463,7 +1478,9 @@ func a_reset1 # Realiza o reset
 classe s_casa049
 herda b_casa
 const s_titulo = "Escritório"
-const s_desc = ""
+const s_desc = "Cinco cadeiras estão tombadas sob o carpete e há papéis por todo canto.\n\
+A poeira é tanta que o simples fato de caminhar aqui levanta uma pequena\n\
+núvem e você tosse um pouco. É impossível caminhar sem pisar em nenhum papel."
 const dir_ne = $s_casa048
 const dir_se = $s_casa050
 const s_reset = "R 100 casa008\nR 100 casa009\nS 100 casa009 1 S\nS 100 casa008 2 S"
@@ -1480,7 +1497,10 @@ func s_reset1 # Realiza o reset
 classe s_casa050
 herda b_casa
 const s_titulo = "Sala de estar"
-const s_desc = ""
+const s_desc = "A primeira coisa que você nota aqui são três poltronas e dois sofás, em\n\
+péssimo estado. Parte da madeira foi comida por cupins, e o que sobrou não\n\
+passa de trapos rasgados. Há também uma estante grudada na parede, com\n\
+antigas obras de arte."
 const dir_no = $s_casa049
 const dir_ne = $s_casa042
 const dir_s = $s_casa051
@@ -1490,35 +1510,48 @@ const dir_o = $s_casa052
 classe s_casa051
 herda b_casa
 const s_titulo = "Quarto"
-const s_desc = ""
+const s_desc = "Uma rede de dormir está estendida de sudeste à noroeste. Más o material é\n\
+tão antigo que rasga com facilidade. A janela à leste está emperrada,\n\
+de modo que você consegue ver do outro lado, apenas sente uma leve brisa."
 const dir_n = $s_casa050
 
 
 classe s_casa052
 herda b_casa
 const s_titulo = "Quarto"
-const s_desc = ""
+const s_desc = "Um esquisito beliche embutido é de longe a coisa mais estranha que você vê\n\
+aqui. São duas tábuas grandes, uma em cima e outra em baixo, presas na\n\
+parede com correntes. Há também uma janela à oeste, mas há grades, pois\n\
+aqui é alto demais."
 const dir_l = $s_casa050
 
 
 classe s_casa053
 herda b_casa
-const s_titulo = "Banheiro"
-const s_desc = ""
+const s_titulo = "Toalete"
+const s_desc = "O aspecto é de um toalete comunitário. O espaço é dividido em quatro\n\
+partes, sendo uma pia e três vasos, com suas respectivas portas. Apesar\n\
+disso, o espaço aqui é bem apertado e precário. Os vasos, se não estão\n\
+quebrados, estão entupidos."
 const dir_l = $s_casa042
 
 
 classe s_casa054
 herda b_casa
 const s_titulo = "Quarto"
-const s_desc = ""
+const s_desc = "A cama e os móveis daqui estão bastante arranhados, como se tivesse sido\n\
+por algum animal grande. Não há lençol, mas o colchão está bastante rasgado.\n\
+É possível ver também a piscina, ao sul, por uma janela não muito grande,\n\
+mas com grades espessas."
 const dir_o = $s_casa042
 
 
 classe s_casa055
 herda b_casa
 const s_titulo = "Entrada da piscina"
-const s_desc = ""
+const s_desc = "Este é um pequeno corredor que separa a piscina do restante da casa.\n\
+Você nota uma grande piscina ao ar livre, rodeada de paredes bastante\n\
+desgastadas pelo tempo. Porém uma grade ao sul lhe impede de prosseguir."
 const dir_no = $s_casa042
 const dir_l = $s_casa056
 
@@ -1526,7 +1559,10 @@ const dir_l = $s_casa056
 classe s_casa056
 herda b_casa
 const s_titulo = "Varanda"
-const s_desc = ""
+const s_desc = "Essa parte da varanda é bastante úmida. Goteiras no chão já estragaram\n\
+boa parte do piso, e um musgo cresce em uma rachadura na parede. O cheiro\n\
+forte vem de uma rede de descanso largada no chão, completamente mofada\n\
+e estragada."
 const dir_o = $s_casa055
 const dir_n = $s_casa057
 
@@ -1534,15 +1570,25 @@ const dir_n = $s_casa057
 classe s_casa057
 herda b_casa
 const s_titulo = "Varanda"
-const s_desc = ""
+const s_desc = "A cerâmica foi arrancada do piso, e agora só resta imundice no chão.\n\
+O local recebe um [vento] frio que salta de duas grandes janelas no topo\n\
+das gastas paredes à leste. A varanda continua ao sul, e à noroeste há\n\
+um corredor."
 const dir_s = $s_casa056
 const dir_no = $s_casa039
+const ver_vento = "Vento\n\
+Ele sopra inconstante, hora forte como o aproximar de um redomoinho; hora\n\
+fraco transformando-se em uma suave brisa. Essa variação é tão frequente\n\
+e contínua, quase como um metrônomo."
 
 
 classe s_casa058
 herda b_casa
 const s_titulo = "Suíte"
-const s_desc = ""
+const s_desc = "Uma poeira espessa toma conta do lugar, interrompida apenas por várias\n\
+pegadas esquisitas no chão, mas não se sabe se são humanas ou de algum\n\
+animal. Uma grande cama está tombada e jogada perto da parede, bem como\n\
+um armário e uma cadeira."
 const dir_n = $s_casa039
 const dir_o = $s_casa059
 
@@ -1550,7 +1596,9 @@ const dir_o = $s_casa059
 classe s_casa059
 herda b_casa
 const s_titulo = "Banheiro"
-const s_desc = ""
+const s_desc = "Com exceção da grande quantidade de pó, da pia e da privada, o banheiro\n\
+está completamente vazio. Ainda há um pequeno chuveiro, mas os vidros\n\
+que faziam parte do box estão faltando."
 const dir_l = $s_casa058
 const a_reset = "P 70 casa014 11 15 6"
 
@@ -1654,3 +1702,13 @@ func deubolsa270
   $mens.p(este, arg0)
   $mens.mvis1("$P dá chave para $a.")
   criar("i_casa010", arg0, 0)
+
+
+classe i_casa011
+herda comum_itemgrupo
+const nome = "faca"
+const pesoobj = 300
+const armatipo = 1 # Arma tipo: 1 Lâmina curta
+const armaprecisao = 100
+const armamin = 70
+const armamax = 120

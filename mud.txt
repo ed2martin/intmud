@@ -626,11 +626,24 @@ Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem
 10.17. const luzfim = 0
 Se item some (é apagado) quando a luz acaba (0=não, 1=sim)
 
-10.18. func vestir( posição )
+10.18. const armatipo = 0
+Tipo de arma; vide misc:arma_txt (0 significa que não é arma)
+
+10.19. const armaprecisao = 0
+Precisão da arma, em porcentagem, 100 significa mesma precisão de
+atacar sem arma
+
+10.20. const armamin = 0
+Ataque mínimo da arma
+
+10.21. const armamax = 0
+Ataque máximo da arma
+
+10.22. func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
-10.19. func mudadono(novo dono, quantidade)
+10.23. func mudadono(novo dono, quantidade)
 Item muda de dono. Quando a quantidade for omitida ou o tipo de item
 não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
@@ -885,6 +898,7 @@ const tipo1 = "numero--"
 # "texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
 # "numero" = valor numérico inteiro
 # "opcao" = um valor numérico baseado numa lista de opções
+# "vetor" = um valor numérico sendo que cada bit é uma opção de uma lista
 # "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
 # "sala" = uma sala
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
@@ -928,6 +942,7 @@ Volume que cabe dentro em salas
 Valor em moedas
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
+Habilidades que só funcionam com alguns itens, e PNJs que ensinam habilidades
 Propriedade de salas:
 * const s_semrastr = 0 # Se o comando de rastrear não passa por essa sala
 Propriedades de personagens:

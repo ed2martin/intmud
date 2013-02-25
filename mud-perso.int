@@ -23,6 +23,7 @@ listaitem poslugar # Em qual móvel está sentado ou deitado
 int1 jogconfig.24 # Mesmo que sock.jogconfig
 listaitem iseguir # Quem o personagem está segundo
 listaobj lseguir # Quem está seguindo o personagem
+sav listaitem iempu.2 # Itens que está empunhando
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
@@ -38,6 +39,7 @@ func ini # Coloca o objeto dentro de outro
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
     criar(var.ini("e_"), este, var.valor(var.ini("e_")))
   efim
+  recalc_exec
 
 func fim # Objeto foi apagado
   se sock # Se estiver ligado a um jogador
@@ -256,7 +258,7 @@ const tipo1 = "normal" # Tipo de personagem
 # const tipo3 = "" # Terceiro tipo do personagem
 int8 deftipo.18
 # Defesa contra os diversos tipos de danos
-# Vide função misc:atktipo
+# Vide função misc:atknomes
 # somar 2 = dobra defesa
 # subtrair 2 = reduz defesa pela metade
 # 80 ou mais = imune ao tipo de golpe
@@ -277,7 +279,6 @@ const p_movervel = 140
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
   p_restaura = 100
-  recalc_exec
   pvida = pvidamax, pmana = pmanamax, pmove = pmovemax
   persobat = este, persoesc = este
 
@@ -413,7 +414,8 @@ func ganhaexp # Personagem ganha experiência
   expatual += arg0
   se !arg1
     se !dono.perso
-      msg(exp1 == 1 ? "Você recebe 1 ponto de experiência." : "Você recebe " + exp1 + " pontos de experiência.")
+      msg(exp1 == 1 ? "Você recebe 1 ponto de experiência." : "Você recebe " + exp1 + " pontos \
+de experiência.")
     senao exp1 == 1
       dono.msg(nome + " recebe 1 ponto de experiência.")
     senao
@@ -430,7 +432,7 @@ func atktempo_exec # Encerra a batalha depois de um tempo
   se !atkenv # Se não tem um alvo
     batalhafim(1)
   senao config:atktipo # Se for ataque automático
-    $cmd_atkauto.ataca(este, atkenv.objlista)
+    $comando_atkauto.ataca(este, atkenv.objlista)
     atktempo = config:atktempo
   senao atkturno < 3 # Se não passou tempo suficiente
     atkturno += 1, atktempo = 30
@@ -550,7 +552,7 @@ func p_proc_exec # Processar comportamento do personagem
   se alvo
     txt100 t1
     t1 = escolhehab
-    ret t1 && !ataqueini, $cmd_[t1].ataca(este, alvo)
+    ret t1 && !ataqueini, $cmd_[t1].checaatk(este) && $cmd_[t1].ataca(este, alvo)
   fimse
 # Acerta condição do personagem
   pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)

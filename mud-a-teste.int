@@ -540,6 +540,7 @@ const s_desc = "À leste você pode pegar uma lamparina.\n\
 const dir_n = $s_teste014
 const dir_l = $s_teste024
 const dir_o = $s_teste025
+const dir_s = $s_teste026
 
 
 classe s_teste024
@@ -657,3 +658,99 @@ const s_titulo = "Quarto escuro"
 const s_desc = ""
 const dir_l = $s_teste023
 const s_luz = 3 # Luz: 3 Escuro
+
+
+classe s_teste026
+herda b_teste
+const s_titulo = "Armas e equipamentos"
+const s_desc = "Para checar seus atributos tecle extra.\n\
+Para aprender a cortar, nessa sala, tecle cortar.\n\
+À leste há duas armas e explicações de como criar equipamentos.\n\
+À oeste há uma geléia, imune a socos e chutes, mas frágil contra\n\
+armas cortantes."
+const dir_n = $s_teste023
+const dir_o = $s_teste027
+const dir_l = $s_teste028
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr # Escreveu algo
+  se arg1 == "cortar"
+    arg0.var.h_cortar = 1
+    arg0.msg("Você aprende a cortar.")
+    ret 1
+
+
+classe s_teste027
+herda b_teste
+const s_titulo = "Poço da geléia"
+const s_desc = "A vegetação já tomou conta de um antigo poço, de modo que agora\n\
+ele é bastante raso, embora bastante largo."
+const dir_l = $s_teste026
+const s_reset = "P 100 teste006 0 0 1 h_socar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste006:objsolto.total < 1
+    criar("p_teste006", este, 0, "h_socar=1")
+  fimse
+
+
+classe p_teste006
+herda comum_persobat
+const nome = "Geléia"
+const sexoini = 0 # Sexo: 0 Feminino
+const pesoobj = 10000
+const nivel = 3
+
+func cmd_recalc1 # Recalcula variáveis do personagem
+  deftipo.0 = 100 # Imune a ataques de contusão
+  deftipo.2 -= 2 # Frágil contra ataques cortantes
+  defnorm *= 1.5 # Mais forte contra ataques normais
+  defmag *= 0.7 # Mais fraco contra ataques mágicos
+  pvidamax += 100 # 100 pontos a mais de vida
+# Veja também a variável deftipo, no arquivo em mud-perso.int
+
+const tipo1 = "água" # Inclui também os atributos na função misc:tipo_agua
+
+
+classe i_teste012
+herda comum_itemgrupo
+const nome = "faca"
+const pesoobj = 300
+const armatipo = 1 # Arma tipo: 1 Lâmina curta
+const armaprecisao = 100
+const armamin = 70
+const armamax = 120
+
+
+classe i_teste013
+herda comum_itemgrupo
+const nome = "colete"
+const sexo = 1 # Sexo: 1 Masculino
+const pesoobj = 1000
+const vestir1 = 6 # Vestir posição 1: 6 No corpo
+
+func cmd_recalc2 # Recalcula variáveis do personagem
+  arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
+# Nota os tipos de ataque são considerados normais ou mágicos conforme
+# a função misc:atkesp, no arquivo mud-misc.int
+
+
+classe s_teste028
+herda b_teste
+const s_titulo = "Criando equipamentos"
+const s_desc = "É possível criar itens que, quando vestidos ou empunhados, mudam\n\
+alguns atributos do personagem, como ataque, defesa, etc.\n\
+É possível também definir atributos específicos para um personagem.\n\
+São as funções cmd_recalc1 no personagem e cmd_recalc2 no item.\n\
+Veja as classes i_teste012 e p_teste006, arquivo mud-a-teste.int"
+const dir_o = $s_teste026
+const s_reset = "S 100 teste012 3 S\nS 100 teste013 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
+  !dentro1.objini("i_teste013") && criar("i_teste013", este, 3)
