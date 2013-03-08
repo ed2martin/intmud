@@ -213,19 +213,19 @@ Instr::ExecFunc * const Instr::FuncFim = Instr::FuncPilha + 40;
 Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
-const char Instr::InstrNulo[] = { 9, 0, Instr::cConstNulo, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrDouble[] = { 9, 0, Instr::cReal, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrSocket[] = { 9, 0, Instr::cSocket, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrTxtFixo[] = { 9, 0, Instr::cTxtFixo, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarNome[] = { 9, 0, Instr::cVarNome, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarInicio[] = { 9, 0, Instr::cVarInicio, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarClasse[] = { 9, 0, Instr::cVarClasse, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarObjeto[] = { 9, 0, Instr::cVarObjeto, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, 0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, 0xFF, 0, 0, 0, 'f', 0 };
+const char Instr::InstrNulo[] = { 9, 0, Instr::cConstNulo, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrDouble[] = { 9, 0, Instr::cReal, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrSocket[] = { 9, 0, Instr::cSocket, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrTxtFixo[] = { 9, 0, Instr::cTxtFixo, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarNome[] = { 9, 0, Instr::cVarNome, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarInicio[] = { 9, 0, Instr::cVarInicio, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarClasse[] = { 9, 0, Instr::cVarClasse, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarObjeto[] = { 9, 0, Instr::cVarObjeto, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, (char)0xFF, 0, 0, 0, 'f', 0 };
 
 //----------------------------------------------------------------------------
 /// Prepara para executar
@@ -1166,7 +1166,7 @@ bool Instr::ExecX()
                 if (VarAtual[-1].tamanho==0 ||
                     VarAtual[-1].defvar[2]!=cTxtFixo)
                 {
-                    char mens[4096];
+                    char mens[BUF_MENS];
                 // Monta texto em mens[]
                     char * destino = mens;
                     const char * origem = VarAtual[-1].getTxt();
@@ -1215,15 +1215,15 @@ bool Instr::ExecX()
             // Caso 6: Segunda variável é local
                 else
                 {
-                    char mens[4096];
+                    char mens[BUF_MENS];
                     const char * origem = VarAtual->getTxt();
                     total = 1 + strlen(origem);
-                    if (total>4096)
-                        total=4096;
+                    if (total>BUF_MENS)
+                        total=BUF_MENS;
                     if (destino + total >= DadosFim)
                         return RetornoErro();
                     memcpy(mens, origem, total);
-                    mens[4095]=0;
+                    mens[BUF_MENS-1]=0;
                     ApagarVar(VarAtual);
                     memcpy(destino, mens, total);
                 }

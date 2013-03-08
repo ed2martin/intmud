@@ -256,27 +256,6 @@ char * mprintf(char * destino, int tamanho, const char * mens, ...)
 }
 
 //------------------------------------------------------------------------------
-void move_mem(void * destino, void * origem, unsigned int tamanho)
-{
-    if (tamanho==0 || origem==destino)
-        return;
-    if (destino >= origem && (char*)destino - tamanho < (char*)origem)
-    {
-        char * o = (char*)origem + tamanho - 1;
-        char * d = (char*)destino + tamanho - 1;
-        while (tamanho--)
-            *d-- = *o--;
-    }
-    else
-    {
-        char * o = (char*)origem;
-        char * d = (char*)destino;
-        while (tamanho--)
-            *d++ = *o++;
-    }
-}
-
-//------------------------------------------------------------------------------
 // Semelhante a strcpy(), mas retorna endereço do byte =0 em destino
 char * copiastr(char * destino, const char * origem)
 {

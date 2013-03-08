@@ -75,7 +75,7 @@ void TVarDataHora::Criar()
 //------------------------------------------------------------------------------
 void TVarDataHora::Mover(TVarDataHora * destino)
 {
-    move_mem(destino, this, sizeof(TVarDataHora));
+    memmove(destino, this, sizeof(TVarDataHora));
 }
 
 //------------------------------------------------------------------------------

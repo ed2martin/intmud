@@ -134,7 +134,7 @@ void TVarServ::Mover(TVarServ * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    move_mem(destino, this, sizeof(TVarServ));
+    memmove(destino, this, sizeof(TVarServ));
 }
 
 //------------------------------------------------------------------------------

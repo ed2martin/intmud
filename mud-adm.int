@@ -72,6 +72,11 @@ func cmd_matar2
   ret 1
 
 func cmd_cmd
+  debug d
+  msg(">" + d.cmd(perso, "ret " + arg0))
+  ret 1
+
+func cmd_cmdp
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
@@ -131,7 +136,8 @@ const adm_outros = "\c3Outros comandos\b\n\
   Apaga personagem ou item.\n\
 \c2MATAR2\b <personagem>\n\
   Mata instantaneamente personagem.\n\
-\c2CMD\b <personagem> <comando>\n\
+\c2CMD\b <comando>\n\
+\c2CMDP\b <personagem> <comando>\n\
   Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 \c2MUDLER\b\n\
   Recarrega arquivos do MUD que foram alterados.\n\

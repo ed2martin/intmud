@@ -41,7 +41,7 @@ func ini
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
 
 func fim
-  perso.fechou
+  perso.fechou(txt1(info) == "b")
   mudaperso(nulo)
 
 func mudaperso # Muda o personagem, arg0=novo personagem
@@ -485,9 +485,16 @@ func fim # Objeto foi apagado
   comum_persoanimal:fim
 
 func fechou # Executado quando o objeto sock é apagado
-  vazio1 = 1800 # 3 minutos
-  vazio2 = 2400 # 4 minutos
-  senha == "" && apagar(este)
+# arg0 é verdadeiro se jogador via bot (deve sair mais rápido do jogo)
+  se arg0
+    vazio1 = 600 # 1 minuto
+    vazio2 = 900 # 1 minuto e meio
+    !atkenv && apagar(arg0) # Apaga personagem se não estiver batalhando
+  senao
+    vazio1 = 1800 # 3 minutos
+    vazio2 = 2400 # 4 minutos
+  fimse
+  senha == "" && apagar(este) # Apaga personagem se não tem jogo salvo
 
 func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
   senha ? sock.p_mudasenha1 : sock.p_mudasenha2

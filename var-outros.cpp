@@ -111,7 +111,7 @@ void TVarRef::Mover(TVarRef * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    move_mem(destino, this, sizeof(TVarRef));
+    memmove(destino, this, sizeof(TVarRef));
 }
 
 //------------------------------------------------------------------------------
@@ -445,7 +445,7 @@ void TVarIntTempo::Mover(TVarIntTempo * destino)
         DebugVet(false);
 #endif
     }
-    move_mem(destino, this, sizeof(TVarIntTempo));
+    memmove(destino, this, sizeof(TVarIntTempo));
 }
 
 //------------------------------------------------------------------------------
@@ -595,7 +595,7 @@ void TVarIntExec::Mover(TVarIntExec * destino)
         (Antes ? Antes->Depois : Inicio) = destino;
         (Depois ? Depois->Antes : Fim) = destino;
     }
-    move_mem(destino, this, sizeof(TVarIntExec));
+    memmove(destino, this, sizeof(TVarIntExec));
 }
 
 //------------------------------------------------------------------------------

@@ -54,7 +54,7 @@ void TVarProg::Mover(TVarProg * destino)
     (Antes ? Antes->Depois : Inicio) = destino;
     if (Depois)
         Depois->Antes = destino;
-    move_mem(destino, this, sizeof(TVarProg));
+    memmove(destino, this, sizeof(TVarProg));
 }
 
 //------------------------------------------------------------------------------

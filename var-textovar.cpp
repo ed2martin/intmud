@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 #include "var-textovar.h"
 #include "variavel.h"
 #include "instr.h"
@@ -70,6 +71,8 @@ bool TTextoVar::FuncValor(TVariavel * v)
         return Instr::CriarVarTexto("");
     const char * p = bl->Texto;
     while (*p++);
+//printf("\nLEU DE: %p\n", p); fflush(stdout);
+//printf("\n%s\n\n\n", p); fflush(stdout);
     return Instr::CriarVarTexto(p);
 }
 
@@ -244,7 +247,7 @@ void TTextoVar::Mover(TTextoVar * destino)
         RBroot->MoveTextoVar(destino);
     for (TTextoVarSub * obj = Inicio; obj; obj=obj->Depois)
         obj->TextoVar = destino;
-    move_mem(destino, this, sizeof(TTextoVar));
+    memmove(destino, this, sizeof(TTextoVar));
 }
 
 //----------------------------------------------------------------------------
@@ -398,10 +401,10 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
     bl2->TextoVar = this;
     bl->RBmove(bl2);
 #ifdef DEBUG_MEM
-    printf("Apagar %p(%s); moveu para %p(%s)\n", bl->Inicio, bl->Texto,
-           bl2->Inicio, bl2->Texto); fflush(stdout);
+    printf("Apagar %p(%s); moveu para %p(%s)\n", bl, bl->Texto,
+           bl2, bl2->Texto); fflush(stdout);
 #endif
-    delete[] bl->Inicio;
+    delete[] (char*)this;
     return bl2;
 }
 
@@ -436,7 +439,7 @@ void TTextoVarSub::Mover(TTextoVarSub * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    move_mem(destino, this, sizeof(TTextoVarSub));
+    memmove(destino, this, sizeof(TTextoVarSub));
 }
 
 //----------------------------------------------------------------------------
@@ -502,16 +505,18 @@ TBlocoVar * TBlocoVar::AlocarMem(const char * texto)
 {
     TBlocoVar * bl = 0;
     int total1 = strlen(texto) + 1; // Tamanho do texto
-    int total2 = total1 + (bl->Texto - bl->Inicio); // Tamanho do bloco
+    int total2 = total1 + (bl->Texto - (char*)bl); // Tamanho do bloco
     int total3 = (total2+7) & ~7;   // Quantidade de bytes alocados
-    bl = reinterpret_cast<TBlocoVar*>(new char*[total3]);
+    bl = reinterpret_cast<TBlocoVar*>(new char[total3]);
     bl->Bytes = total1 + total3 - total2;
     memcpy(bl->Texto, texto, total1);
     char * p = bl->Texto;
     while (*p && *p!='=') p++;
     *p=0;
+//printf("\nANOTOU EM: %p\n", p+1); fflush(stdout);
+//printf("\n%s\n", p+1); fflush(stdout);
 #ifdef DEBUG_MEM
-    printf("Criar %p: %s\n", bl->Inicio, bl->Texto); fflush(stdout);
+    printf("Criar %p: %s\n", bl, bl->Texto); fflush(stdout);
 #endif
     return bl;
 }
@@ -520,11 +525,11 @@ TBlocoVar * TBlocoVar::AlocarMem(const char * texto)
 void TBlocoVar::Apagar()
 {
 #ifdef DEBUG_MEM
-    printf("Apagar %p: %s\n", Inicio, Texto); fflush(stdout);
+    printf("Apagar %p: %s\n", this, Texto); fflush(stdout);
 #endif
     TextoVar->Total--;
     RBremove();
-    delete[] Inicio;
+    delete[] (char*)this;
 }
 
 //----------------------------------------------------------------------------

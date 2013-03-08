@@ -139,7 +139,7 @@ bool TConsole::Inic(bool completo)
 #endif
 
 // Acerta StrConv[]
-    const char StrA0[] = {
+    const unsigned char StrA0[] = {
             // A0-A7: símbolos
           0x20, 0xAD, 0xBD, 0x9C, 0xCF, 0xBE, 0xDD, 0xF5,
             // A8-AF: símbolos

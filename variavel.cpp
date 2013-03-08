@@ -457,7 +457,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         if (vetor <= 8)
             *(char*)destino = *(char*)endvar;
         else
-            move_mem(destino, endvar, Tamanho());
+            memmove(destino, endvar, Tamanho());
         endvar = destino;
         return;
     case Instr::cInt8:
@@ -465,7 +465,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         if (vetor <= 1)
             *(char*)destino = *(char*)endvar;
         else
-            move_mem(destino, endvar, vetor);
+            memmove(destino, endvar, vetor);
         endvar = destino;
         return;
     case Instr::cInt16:
@@ -476,7 +476,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
             *(short*)destino = x;
         }
         else
-            move_mem(destino, endvar, vetor*sizeof(short));
+            memmove(destino, endvar, vetor*sizeof(short));
         endvar = destino;
         return;
     case Instr::cInt32:
@@ -487,16 +487,16 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
             *(int*)destino = x;
         }
         else
-            move_mem(destino, endvar, vetor*sizeof(int));
+            memmove(destino, endvar, vetor*sizeof(int));
         endvar = destino;
         return;
     case Instr::cIntInc:
     case Instr::cIntDec:
-        move_mem(destino, endvar, vetor*sizeof(TVarIncDec));
+        memmove(destino, endvar, vetor*sizeof(TVarIncDec));
         endvar = destino;
         return;
     case Instr::cReal:
-        move_mem(destino, endvar, vetor*sizeof(double));
+        memmove(destino, endvar, vetor*sizeof(double));
         endvar = destino;
         return;
     case Instr::cRef:
@@ -562,11 +562,11 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cTextoVar:
         MOVER_SIMPLES( TTextoVar )
     case Instr::cNomeObj:
-        move_mem(destino, endvar, vetor*sizeof(TVarNomeObj));
+        memmove(destino, endvar, vetor*sizeof(TVarNomeObj));
         endvar = destino;
         return;
     case Instr::cArqDir:
-        move_mem(destino, endvar, vetor*sizeof(TVarDir));
+        memmove(destino, endvar, vetor*sizeof(TVarDir));
         endvar = destino;
         return;
     case Instr::cArqLog:
@@ -575,7 +575,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         endvar = destino;
         return;
     case Instr::cArqTxt:
-        move_mem(destino, endvar, vetor*sizeof(TVarTxt));
+        memmove(destino, endvar, vetor*sizeof(TVarTxt));
         endvar = destino;
         return;
     case Instr::cIntTempo:
@@ -618,19 +618,16 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cTxt2:
         if (vetor>1)
         {
-            move_mem(destino, endvar, Tamanho(defvar)*vetor);
+            memmove(destino, endvar, Tamanho(defvar)*vetor);
             endvar = destino;
             return;
         }
     case Instr::cTxtFixo:
-        if (destino < endvar)
-            strcpy((char*)destino, (char*)endvar);
-        else
-            move_mem(destino, endvar, strlen((char*)endvar) + 1);
+        memmove(destino, endvar, strlen((char*)endvar) + 1);
         endvar = destino;
         return;
     case Instr::cVarNome:
-        move_mem(destino, endvar, VAR_NOME_TAM);
+        memmove(destino, endvar, VAR_NOME_TAM);
         endvar = destino;
         return;
     case Instr::cVarInicio:

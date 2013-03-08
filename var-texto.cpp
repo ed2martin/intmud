@@ -95,7 +95,7 @@ void TTextoTxt::Mover(TTextoTxt * destino)
         obj->TextoTxt = destino;
     for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
         obj->TextoTxt = destino;
-    move_mem(destino, this, sizeof(TTextoTxt));
+    memmove(destino, this, sizeof(TTextoTxt));
 }
 
 //----------------------------------------------------------------------------
@@ -167,7 +167,7 @@ void TTextoPos::Mover(TTextoPos * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    move_mem(destino, this, sizeof(TTextoPos));
+    memmove(destino, this, sizeof(TTextoPos));
 }
 
 //----------------------------------------------------------------------------
@@ -550,7 +550,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         obj->Linhas -= lin;
         sub_bytes += tamapagar;
         dif_linhas -= lin;
-        memcpy(p, p+tamapagar, obj->Bytes-posic);
+        memmove(p, p+tamapagar, obj->Bytes-posic);
         //tamapagar = 0;
     }
 
@@ -561,7 +561,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         if (tamtexto + obj->Bytes <= bloco_tam)
         {
             char * p = obj->Texto + posic;
-            move_mem(p + tamtexto, p, obj->Bytes - posic);
+            memmove(p + tamtexto, p, obj->Bytes - posic);
             int lin = TextoAnotaLin(p, texto, tamtexto);
             obj->Bytes += tamtexto;
             obj->Linhas += lin;
@@ -738,7 +738,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
     // Copia parte do bloco
         int linhas = TextoNumLin(proximo->Texto, total);
         memcpy(ini->Texto + ini->Bytes, proximo->Texto, total);
-        memcpy(proximo->Texto, proximo->Texto + total, proximo->Bytes - total);
+        memmove(proximo->Texto, proximo->Texto + total, proximo->Bytes - total);
         ini->Bytes += total;
         ini->Linhas += linhas;
         proximo->Bytes -= total;

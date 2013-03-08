@@ -192,7 +192,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     result = 0
     ret
   fimse
-  dano = misc:defbonus.[128 - dano]
+  dano = matexp(dano * 0.34657359) # matexp(dano * matlog(2) / 2)
 # Calcula dano com arma
   se arma1
     dano *= rand(arma1.armamin, arma1.armamax) * arg2
