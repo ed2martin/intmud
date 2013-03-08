@@ -67,7 +67,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 15.1.
+em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 15.2.
 
 
 1. SOBRE O INTMUD
@@ -1637,27 +1637,56 @@ a função ou variável 'x' do primeiro objeto da classe 'teste'.
 
 15.2. FUNÇÕES NUMÉRICAS
 
-15.2.1. intpos(a)
-Retorna a se a>=0. Caso contrário retorna 0.
+15.2.1. intpos(<número>)
+Se o número for menor ou igual a zero, retorna 0; se for maior que zero,
+retorna o próprio número.
 
-15.2.2 intabs(a)
-O mesmo que a sem sinal.
-Exemplo: abs(-1) e abs(1) são iguais a 1
+15.2.2 intabs(<número>)
+O módulo do número (o número sem sinal).
+Exemplo: intabs(-1) e intabs(1) são sempre 1.
 
-15.2.3. int(a)
-O valor inteiro de a (semelhante a variáveis int32).
+15.2.3. int(<número>)
+O valor inteiro do número (semelhante a variáveis 'int32').
 
-15.2.4. intdiv(a)
-O valor inteiro de a (int32), ignorando os dígitos após a vírgula.
-Por exemplo, intdiv(1.7) resulta em 1, enquanto que int(1.7) resulta em 2.
+15.2.4. intdiv(<número>)
+O valor inteiro do número (semelhante a variáveis 'int32'), porém sem
+arredondar (os dígitos após a vírgula são ignorados).
+Exemplo, intdiv(1.7) resulta em 1; enquanto que int(1.7) resulta em 2.
 
-15.2.5. rand(a)
-Um número aleatório, inteiro, de 0 a a-1. Exemplo, rand(10) retorna
-um número aleatório de 0 a 9.
+15.2.5. rand(<número>)
+Um número aleatório, inteiro, de 0 a número-1.
+Exemplo: rand(10) retorna um número aleatório de 0 a 9.
 
-15.2.6. rand(a, b)
-Um número aleatório inteiro, de a a b. Exemplo, rand(2,4) retorna
-um número aleatório de 2 a 4.
+15.2.6. rand(<mínimo>, <máximo>)
+Um número inteiro aleatório de <mínimo> a <máximo>.
+Exemplo: rand(2,4) retorna um número aleatório de 2 a 4.
+
+15.2.7. matraiz(<número>)
+Calcula a raiz quadrada de um número.
+
+15.2.8. matsin(<ângulo>)
+Calcula o seno de um ângulo (o ângulo está em radianos).
+
+15.2.9. matcos(<ângulo>)
+Calcula o cosseno de um ângulo (o ângulo está em radianos).
+
+15.2.10. mattan(<ângulo>)
+Calcula a tangente de um ângulo (o ângulo está em radianos).
+
+15.2.11. matasin(<número>)
+Calcula o arco seno, um número de -pi/2 a pi/2.
+
+15.2.12. matacos(<número>)
+Calcula o arco cosseno, um número de 0 a pi.
+
+15.2.13. matatan(<número>)
+Calcula a arco tangente, um número de -pi/2 a pi/2.
+
+15.2.14. matexp(<número>)
+Calcula a função exponencial, usando o logaritmo natural como base.
+
+15.2.15. matlog(<número>)
+Calcula o logaritmo natural.
 
 
 15.3. FUNÇÕES DE TEXTO
@@ -2847,12 +2876,21 @@ arqsav sav
 sav.limpar(".") # Inicia checagem do diretório atual, em segundo plano
 
 25.9. limpar
-Checa todos os diretórios pendentes de uma vez, ao invés de checar
+Checa de uma vez todos os diretórios que estiverem sendo checados
 aos poucos, em segundo plano.
 Exemplo:
 arqsav sav
 sav.limpar(".") # Inicia checagem do diretório atual
 sav.limpar # Checa todos os arquivos de uma vez
+
+25.10. limpou
+Retorna um texto de uma ou mais linhas.
+A primeira linha é o texto "1" se a função 'limpar' estiver verificando
+arquivos em segundo plano, ou "0" se não estiver.
+Da segunda linha em diante são os nomes dos arquivos que foram apagados
+pela função 'limpar' desde a última vez que a função 'limpou' foi chamada.
+Nota: As linhas são separadas por caracteres '\n'.
+Veja também a função 'txtsublin'.
 
 
 26. ARQTXT - ACESSAR ARQUIVOS DE TEXTO

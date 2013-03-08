@@ -45,9 +45,6 @@ extern char * tabNOMEOBJ;  ///< Usado para converter nomes em nomeobj
  *  @note Usar no lugar de snprintf(), que não está presente em alguns UNIXes */
 char * mprintf(char * destino, int tamanho, const char * mens, ...);
 
-/// Semelhante a memcpy()
-void move_mem(void * destino, void * origem, unsigned int tamanho);
-
 /// Semelhante a strcpy(), mas retorna endereço do byte =0 em destino */
 char * copiastr(char * destino, const char * origem);
 

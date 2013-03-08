@@ -49,7 +49,7 @@ void TVarLog::Mover(TVarLog * destino)
     if (Depois)
         Depois->Antes = destino;
     int total = sizeof(TVarLog) - sizeof(buflog) + pontlog;
-    move_mem(destino, this, total);
+    memmove(destino, this, total);
 }
 
 //------------------------------------------------------------------------------

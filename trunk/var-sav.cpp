@@ -42,6 +42,8 @@ int TVarSav::Dia = 0;
 int TVarSav::Hora = 0;
 int TVarSav::Min = 0;
 int TVarSav::TempoSav=0;
+TVarSavArq * TVarSavArq::Inicio = 0;
+TVarSavArq * TVarSavArq::Fim = 0;
 
 //----------------------------------------------------------------------------
 // Acerta variáveis
@@ -158,6 +160,22 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
     // Válido: coloca na lista de pendentes e retorna 1
         TVarSavDir::NovoDir(mens);
         return Instr::CriarVarInt(1);
+    }
+// Checar arquivos que foram apagados
+    if (comparaZ(nome, "limpou")==0)
+    {
+        char mens[BUF_MENS];
+        char * p = mens;
+        *p++ = (TVarSavDir::ChecaPend() ? '1' : '0');
+        *p=0;
+        while (TVarSavArq::Inicio)
+        {
+            p = mprintf(p, mens+sizeof(mens)-p, "%c%s",
+                    Instr::ex_barra_n, TVarSavArq::Inicio->Nome);
+            delete TVarSavArq::Inicio;
+        }
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
     }
 // Obtém o nome do arquivo
     char arqnome[512]; // Nome do arquivo; nulo se não for válido
@@ -1143,7 +1161,10 @@ bool TVarSavDir::Checa()
             fflush(stdout);
 #endif
             if (TVarSav::Tempo(arq) == 0)
+            {
                 remove(arq);
+                new TVarSavArq(arq);
+            }
             break;
         }
     }
@@ -1166,6 +1187,22 @@ bool TVarSavDir::ChecaPend()
 int TVarSavDir::RBcomp(TVarSavDir * x, TVarSavDir * y)
 {
     return strcmp(x->Nome, y->Nome);
+}
+
+//----------------------------------------------------------------------------
+TVarSavArq::TVarSavArq(const char * nome)
+{
+    Antes = Fim;
+    Depois = 0;
+    (Antes ? Antes->Depois : Inicio) = this;
+    Fim = this;
+    copiastr(Nome, nome, sizeof(Nome));
+}
+//----------------------------------------------------------------------------
+TVarSavArq::~TVarSavArq()
+{
+    (Antes ? Antes->Depois : Inicio) = Depois;
+    (Depois ? Depois->Antes : Fim) = Antes;
 }
 
 //----------------------------------------------------------------------------

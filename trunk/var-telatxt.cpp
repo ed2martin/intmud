@@ -456,7 +456,7 @@ void TVarTelaTxt::Mover(TVarTelaTxt * destino)
     (Antes ? Antes->Depois : Inicio) = destino;
     if (Depois)
         Depois->Antes = destino;
-    move_mem(destino, this, sizeof(TVarTelaTxt));
+    memmove(destino, this, sizeof(TVarTelaTxt));
 }
 
 //------------------------------------------------------------------------------

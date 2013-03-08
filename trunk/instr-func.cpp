@@ -29,8 +29,6 @@
 // Funções predefinidas do programa interpretado
 // Vide TListaFunc, em instr.h
 
-#define BUF_MENS 16384
-
 //----------------------------------------------------------------------------
 // Usado em bool Instr::FuncTxt2() para copiar caracteres de cores
 #define FUNCTXT_CORES \
@@ -173,6 +171,51 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         if (numero <= -0x80000000LL)
             return CriarVarInt(-0x80000000);
         return CriarVarInt((int)numero);
+    case 4: // matsin()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(sin(numero));
+        return true;
+    case 5: // matcos()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(cos(numero));
+        return true;
+    case 6: // mattan()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(tan(numero));
+        return true;
+    case 7: // matasin()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(asin(numero));
+        return true;
+    case 8: // matacos()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(acos(numero));
+        return true;
+    case 9: // matatan()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(atan(numero));
+        return true;
+    case 10: // matexp()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(exp(numero));
+        return true;
+    case 11: // matlog()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(log(numero));
+        return true;
+    case 12: // matraiz()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(sqrt(numero));
+        return true;
     }
     return false;
 }

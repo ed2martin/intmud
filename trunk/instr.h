@@ -6,6 +6,7 @@ class TObjeto;
 class TVariavel;
 
 #define VAR_NOME_TAM 80 // Tamanho máximo dos nomes das variáveis + 1
+#define BUF_MENS 16384 // Tamanho do buffer de texto usado nas funções
 
 /// Codificar, decodificar e executar instruções
 /** Codificar, decodificar e executar instruções */

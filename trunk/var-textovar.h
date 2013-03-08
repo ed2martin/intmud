@@ -94,10 +94,7 @@ public:
          *   O novo objeto não deve estar inserido na RBT */
 
     //static TBlocoVar * RBroot;  ///< Objeto raiz
-    union {
-        char Inicio[1];     ///< Marca o início da classe
-        TBlocoVar *RBparent;    ///< Objeto objeto pai
-    };
+    TBlocoVar *RBparent;    ///< Objeto objeto pai
     TBlocoVar *RBleft,*RBright; ///< Objetos filhos
     TTextoVar *TextoVar;    ///< Variável TextoVar que contém o bloco (RBT)
     unsigned short Bytes;   ///< Número de bytes disponíveis em Texto

@@ -40,7 +40,7 @@ void TIndiceItem::Mover(TIndiceItem * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    move_mem(destino, this, sizeof(TIndiceItem));
+    memmove(destino, this, sizeof(TIndiceItem));
 }
 
 //----------------------------------------------------------------------------
@@ -302,7 +302,7 @@ void TIndiceObj::Mover(TIndiceObj * destino)
         }
     }
     // Move
-    move_mem(destino, this, sizeof(TIndiceObj));
+    memmove(destino, this, sizeof(TIndiceObj));
 }
 
 //----------------------------------------------------------------------------

@@ -80,5 +80,18 @@ private:
 };
 
 //----------------------------------------------------------------------------
+class TVarSavArq /// Nomes dos arquivos apagados por arqsav por terem expirado
+{
+public:
+    TVarSavArq(const char * nome); ///< Construtor
+    ~TVarSavArq();              ///< Destrutor
+    TVarSavArq * Antes;         ///< Objeto anterior
+    TVarSavArq * Depois;        ///< Próximo objeto
+    static TVarSavArq * Inicio; ///< Primeiro objeto
+    static TVarSavArq * Fim;    ///< Último objeto
+    char Nome[128];             ///< Nome do arquivo
+};
+
+//----------------------------------------------------------------------------
 
 #endif

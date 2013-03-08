@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "var-socket.h"
 #include "socket.h"
@@ -349,7 +350,7 @@ void TVarSocket::Mover(TVarSocket * destino)
         if (Depois)
             Depois->Antes = destino;
     }
-    move_mem(destino, this, sizeof(TVarSocket));
+    memmove(destino, this, sizeof(TVarSocket));
 }
 
 //------------------------------------------------------------------------------

@@ -219,7 +219,9 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
         }
         else
         {
+            //printf("\nAntes: %s\n", mens);
             sprintf(mens, "%c%d: %s", Instr::ex_barra_n, linhanum, menscod);
+            //printf("Depois: %s\n", mens); fflush(stdout);
             if (codifok)
             {
                 destino->Limpar();
