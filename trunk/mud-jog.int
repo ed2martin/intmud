@@ -227,7 +227,7 @@ func p_perso # Digitar o nome do personagem
     msg("Digite o nome do seu personagem")
   senao inttotal(arg0) < 3 || inttotal(arg0) > 16
     msg("O nome deve ter de 3 a 16 caracteres; digite outro")
-  senao intnome(arg0) || txtproc(arg0, " ") >= 0
+  senao intnome(arg0) || txtproc(txtsepara("a" + arg0, "L+D"), " ") >= 0
     msg("Nome inválido; digite outro")
   senao ind.obj("un " + texto)
     msg("Nome já está sendo usado; digite outro")

@@ -11,8 +11,16 @@
 #include "var-socket.h"
 #include "ssl.h"
 
-#define SOCKET_REC 1024
+#define SOCKET_REC 512
 #define SOCKET_ENV 2048
+
+//----------------------------------------------------------------------------
+class TSocketRec /// Um caracter recebido de socket
+{
+public:
+    unsigned short carac; ///< caracter ASCII
+    unsigned short cor;   ///< cor, conforme TObjSocket::CorAtual
+};
 
 //----------------------------------------------------------------------------
 /** Representa uma conexão, um "socket" */
@@ -92,11 +100,8 @@ private:
     static bool boolenvpend;    ///< Verdadeiro se tem algum dado pendente
 
 // Para receber mensagens
-    char bufRec[SOCKET_REC];
+    TSocketRec bufRec[SOCKET_REC];
             ///< Contém a mensagem recebida
-            /**< Cada caracter ocupa dois bytes:
-             * - 1 byte = caracter ASCII
-             * - 1 byte = cor, conforme TObjSocket::CorAtual */
     unsigned int pontRec;
             ///< Número do byte que está lendo
     char dadoRecebido;
@@ -117,12 +122,9 @@ private:
     unsigned char telnetopc[10];///< Para responder algumas opções do telnet
     int telnetecho;             ///< Para lidar com envio de caracteres ECHO
 
-    unsigned char CorAtual;
-            ///< Para controle da cor
-            /**< - Bits 0-3 = fundo
-             *   - Bits 4-6 = frente
-             *   - Bit  7 = negrito, 0=desativado */
-    unsigned char CorAnterior;  ///< Com que cor iniciou a linha
+    unsigned short CorAtual;
+            ///< Para controle da cor, vide TConsole::CorAtual
+    unsigned short CorAnterior;  ///< Com que cor iniciou a linha
     unsigned char CorIRC1;      ///< Para obter cores do IRC
     unsigned char CorIRC2;      ///< Para obter cores do IRC
 

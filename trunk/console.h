@@ -8,7 +8,7 @@
 #endif
 
 //---------------------------------------------------------------------------
-class TConsole
+class TConsole /// Janela do programa
 {
 public:
     TConsole() { Aberto=0; };
@@ -84,7 +84,10 @@ public:
         ///< Cor selecionada na tela; somente leitura
         /**< - Bits 3-0 = fundo
          *   - Bits 6-4 = frente
-         *   - Bit 7 = negrito, 0=desativado */
+         *   - Bit 7 = negrito, 1=ativado
+         *   - Bit 8 = sublinhado, 1=ativado
+         *   - Bit 9 = trocar frente com fundo, 1=ativado
+         *   - Bit 10 = texto piscante, 1=ativado */
     unsigned int LinTotal;
         ///< Número de linhas na tela; somente leitura
     unsigned int ColTotal;

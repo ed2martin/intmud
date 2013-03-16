@@ -8,9 +8,6 @@
  #include <sys/types.h>
 #endif
 
-#define SOCKET_REC 1024
-#define SOCKET_ENV 2048
-
 //----------------------------------------------------------------------------
 class TVariavel;
 class TVarSocket;
@@ -30,10 +27,11 @@ protected:
     virtual bool EnvMens(const char * mensagem)=0; ///< Envia mensagem
                     /**< A mensagem segue o formato:
                      *  - Byte =0 -> fim da mensagem
-                     *  - Byte =1 -> próximo byte = cor
-                     *     - Bits 0-3 = cor de fundo
-                     *     - Bits 4-6 = cor das letras
-                     *     - Bit 7 =1 se negrito (cor das letras mais forte)
+                     *  - Byte =1 -> próximos dois bytes = cor
+                     *     - Byte 0 Bits 0-3 = cor de fundo
+                     *     - Byte 0 Bits 4-6 = cor das letras
+                     *     - Byte 0 Bit 7 =1 se negrito (cor das letras mais forte)
+                     *     - Byte 1 Bit 0 =1 se sublinhado
                      *     .
                      *  - Byte =2 -> echo off
                      *  - Byte =3 -> echo on
@@ -75,8 +73,7 @@ protected:
                      */
 
 // Variáveis usadas para enviar mensagens
-    unsigned char CorEnvia;     ///< Cor atual, ao enviar
-    short CorInic;      ///< Cor do início da linha, ou -1 se não mudou
+    unsigned short CorEnvia;     ///< Cor atual, ao enviar
     unsigned short ColunaEnvia;  ///< Quantos caracteres já enviou
 
 private:
