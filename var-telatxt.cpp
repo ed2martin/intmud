@@ -456,6 +456,8 @@ void TVarTelaTxt::Mover(TVarTelaTxt * destino)
     (Antes ? Antes->Depois : Inicio) = destino;
     if (Depois)
         Depois->Antes = destino;
+    if (ObjAtual == this)
+        ObjAtual = destino;
     memmove(destino, this, sizeof(TVarTelaTxt));
 }
 
@@ -788,21 +790,31 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
                             texto++;
                             break;
                         }
-                        ch |= 0x20;
-                        if (ch<'a' || ch>'j')
-                            break;
-                        if (ch<='f')
-                            CorTela = (CorTela & 0x0F) +
-                                    (ch - '7') * 0x10;
-                        else if (ch=='j')
-                            Console->Beep();
-                        texto++;
+                        switch (ch | 0x20)
+                        {
+                        case 'a': CorTela=(CorTela|0xF0)-0x50; texto++; break;
+                        case 'b': CorTela=(CorTela|0xF0)-0x40; texto++; break;
+                        case 'c': CorTela=(CorTela|0xF0)-0x30; texto++; break;
+                        case 'd': CorTela=(CorTela|0xF0)-0x20; texto++; break;
+                        case 'e': CorTela=(CorTela|0xF0)-0x10; texto++; break;
+                        case 'f': CorTela=(CorTela|0xF0);      texto++; break;
+                        case 'g': CorTela |=  0x100; texto++; break;
+                        case 'h': CorTela &= ~0x100; texto++; break;
+                        case 'i': CorTela |=  0x200; texto++; break;
+                        case 'j': CorTela &= ~0x200; texto++; break;
+                        case 'k': CorTela |=  0x400; texto++; break;
+                        case 'l': CorTela &= ~0x400; texto++; break;
+                        case 'm':
+                        case 'n':
+                        case 'o': texto++; break;
+                        case 'p': Console->Beep(); texto++; break;
+                        }
                         break;
                     }
                 case Instr::ex_barra_d:
                     if (*texto>='0' && *texto<='7')
                     {
-                        CorTela = (CorTela & 0xF0) +
+                        CorTela = (CorTela & ~15) +
                                   (*texto - '0');
                         texto++;
                     }

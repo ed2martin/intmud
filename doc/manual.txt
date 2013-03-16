@@ -530,7 +530,8 @@ São eles:
 \n - Indica o fim de uma linha e começo de outra logo abaixo;
 \\ - O mesmo que '\' visível no texto;
 \" - Aspas duplas visível no texto;
-\b - Altera a cor dos caracteres para branco com fundo preto;
+\b - Altera cor dos caracteres para branco com fundo preto e sem
+     sublinhado, piscante e reverso;
 \c - Altera apenas a cor dos caracteres (veja abaixo);
 \d - Altera apenas a cor de fundo (veja abaixo)
 
@@ -555,10 +556,19 @@ C = azul intenso
 D = magenta intenso
 E = ciano intenso
 F = branco intenso
-G = echo off (não deve ecoar na tela o que o usuário digita)
-H = echo on (deve ecoar na tela o que o usuário digita)
-I = go ahead (usado por alguns clientes de MUD para identificar o prompt)
-J = bipe
+G = liga o sublinhado (um traço horizontal em baixo)
+H = desliga o sublinhado
+I = liga inversão de frente com fundo (troca cores de frente com fundo)
+J = desliga inversão de frente com fundo
+K = liga texto piscante
+L = desliga texto piscante
+M = echo off (não deve ecoar na tela o que o usuário digita)
+N = echo on (deve ecoar na tela o que o usuário digita)
+O = go ahead (usado por alguns clientes de MUD para identificar o prompt)
+P = bipe
+
+Importante:
+A janela do IntMUD, no Windows, não permite sublinhado e texto piscante.
 
 Exemplo 2:
 
@@ -3120,8 +3130,8 @@ O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
 
 30.4. opctelnet
 Define se pode receber caracteres especiais do protocolo Telnet:
-Eco desligado "\cg", eco ligado "\ch", caracteres go ahead "\ci"
-e bipe "\cj". Não tem efeito em IRC e Papovox.
+Eco desligado "\ci", eco ligado "\cj", caracteres go ahead "\ck"
+e bipe "\cl". Não tem efeito em IRC e Papovox.
 
 30.5. posx
 Posição do cursor: quantos caracteres enviou após o último \n.
@@ -3163,6 +3173,17 @@ do servidor.
 30.14. txtsha1
 Usado somente em conexões SSL. Retorna a assinatura SHA1 do certificado
 do servidor.
+
+30.15. ipnome(<nome ou endereço IP>)
+Retorna o nome da máquina a partir do endereço IP.
+Se o nome não existir, retorna um texto vazio.
+Essa função funciona independente do socket estar conectado.
+Em servidores, não é recomendável usá-la pois enquanto o nome estiver
+sendo resolvido, o IntMUD fica parado.
+
+30.16. nomeip(<nome ou endereço IP>)
+Retorna o nome da máquina a partir do endereço IP.
+Funciona exatamente como a função ipnome acima.
 
 Eventos:
 

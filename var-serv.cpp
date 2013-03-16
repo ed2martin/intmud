@@ -134,6 +134,8 @@ void TVarServ::Mover(TVarServ * destino)
         if (Depois)
             Depois->Antes = destino;
     }
+    if (varObj == this)
+        varObj = destino;
     memmove(destino, this, sizeof(TVarServ));
 }
 
@@ -182,7 +184,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         if (*ender)
         {
             strSock.sin_addr.s_addr=inet_addr(ender);
-            if ( (strSock.sin_addr.s_addr) == (unsigned long)-1 )
+            if ( (strSock.sin_addr.s_addr) == (unsigned int)-1 )
             {
                 if ( (hnome=gethostbyname(ender)) == NULL )
                     break;

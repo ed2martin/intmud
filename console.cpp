@@ -729,11 +729,18 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
 //---------------------------------------------------------------------------
 void TConsole::CorTxt(unsigned int novacor)
 {
-    if (novacor == CorAtual)
-        return;
-#ifdef __WIN32__
-    WORD atributos = 0;
+// Acerta a cor
+    unsigned int antes = CorAtual;
     CorAtual = novacor;
+// Troca frente com fundo
+    if (antes & 0x200)
+        antes = (antes&~0x277) | ((antes>>4)&7) | ((antes<<4)&0x70);
+    if (novacor & 0x200)
+        novacor=(novacor&~0x277) | ((novacor>>4)&7) | ((novacor<<4)&0x70);
+#ifdef __WIN32__
+    if (((antes ^ novacor) & 0xF7) == 0)
+        return;
+    WORD atributos = 0;
     if (novacor&1) atributos |= BACKGROUND_RED;
     if (novacor&2) atributos |= BACKGROUND_GREEN;
     if (novacor&4) atributos |= BACKGROUND_BLUE;
@@ -741,33 +748,45 @@ void TConsole::CorTxt(unsigned int novacor)
     if (novacor&32) atributos |= FOREGROUND_GREEN;
     if (novacor&64) atributos |= FOREGROUND_BLUE;
     if (novacor&128) atributos |= FOREGROUND_INTENSITY;
+    // Nota: a opção de texto sublinhado é ignorada pelo Windows
+    // Vide:
+    // http://blogs.msdn.com/b/michkap/archive/2005/10/10/478911.aspx
+    // http://support.microsoft.com/default.aspx?scid=kb;en-us;145925
+    //if (novacor&256) atributos |= 0x8000; // COMMON_LVB_UNDERSCORE;
     SetConsoleTextAttribute(con_out, atributos);
     CorAtributos = atributos;
 #else
+    if (antes == novacor)
+        return;
     char mens[32];
     char * destino = mens;
     char ini='[';
-    int antes = (CorAtual < 0xFF ? CorAtual : novacor ^ 0xFF);
-    CorAtual = novacor;
     //sprintf(destino, "%02x", cor); destino+=2;
     *destino++ = 0x1B;
-                        // Tirar negrito
-    if ((antes&0x80) && (novacor&0x80)==0)
+                        // Tirar negrito, sublinhado e piscando
+    if (((antes ^ novacor) & antes & 0x580) || novacor == 0x70)
     {
         destino[0] = ini;
         destino[1] = '0';
         destino+=2, ini=';';
-        if ((antes&0x70)!=0x70) // Se frente != branco
-        {                       // Deve acertar frente
-            antes = ((antes&15) | (novacor&0xF0)) ^ 0x70;
-        }
-        if (antes&15)    // Se fundo != preto
-            antes |= 15; // Deve acertar fundo
+        antes = 0x70;
     }
-    else if ((antes&0x80)==0 && (novacor&0x80)) // Negrito
+    if ((antes&0x80)==0 && (novacor&0x80)) // Negrito
     {
         destino[0] = ini;
         destino[1] = '1';
+        destino+=2, ini=';';                    
+    }
+    if ((antes&0x100)==0 && (novacor&0x100)) // Sublinhado
+    {
+        destino[0] = ini;
+        destino[1] = '4';
+        destino+=2, ini=';';
+    }
+    if ((antes&0x400)==0 && (novacor&0x400)) // Texto piscando
+    {
+        destino[0] = ini;
+        destino[1] = '5';
         destino+=2, ini=';';
     }
     if ((antes^novacor)&0x70) // Frente

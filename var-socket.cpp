@@ -15,6 +15,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#ifdef __WIN32__
+ #include <windows.h>
+ #include <winsock.h>
+#else
+ #include <sys/types.h>
+ #include <arpa/inet.h>
+ #include <fcntl.h>
+ #include <netinet/in.h>
+ #include <netdb.h>
+#endif
 #include "var-socket.h"
 #include "socket.h"
 #include "variavel.h"
@@ -44,7 +54,6 @@ TObjSocket::TObjSocket()
     printf("new TObjSocket\n"); fflush(stdout);
 #endif
 // Acerta variáveis
-    CorInic=-1;
     CorEnvia=0x70;
     ColunaEnvia=0;
     Inicio=0;
@@ -127,36 +136,48 @@ bool TObjSocket::Enviar(const char * mensagem)
                 unsigned char ch = *(++mensagem);
                 if (ch>='0' && ch<='9')
                 {
-                    agora = (agora & 15) | (ch-'0') * 16;
+                    agora = (agora & ~0xF0) | (ch-'0') * 16;
                     break;
                 }
-                ch |= 0x20;
-                if (ch < 'a' || ch > 'j')
+                switch (ch | 0x20)
                 {
+                case 'a': agora=(agora|0xF0)-0x50; break;
+                case 'b': agora=(agora|0xF0)-0x40; break;
+                case 'c': agora=(agora|0xF0)-0x30; break;
+                case 'd': agora=(agora|0xF0)-0x20; break;
+                case 'e': agora=(agora|0xF0)-0x10; break;
+                case 'f': agora=(agora|0xF0);      break;
+                case 'g': agora |=  0x100; break;
+                case 'h': agora &= ~0x100; break;
+                case 'i': agora |=  0x200; break;
+                case 'j': agora &= ~0x200; break;
+                case 'k': agora |=  0x400; break;
+                case 'l': agora &= ~0x400; break;
+                case 'm':
+                case 'n':
+                case 'o':
+                case 'p':
+                    if (agora != antes)
+                    {
+                        destino[0] = 1;
+                        destino[1] = agora;
+                        destino[2] = agora >> 8;
+                        destino+=3;
+                        antes = agora;
+                    }
+                    if (destino > fim)
+                        return false;
+                    *destino++ = ch + 2 - 'm';
+                    break;
+                default:
                     mensagem--;
-                    break;
                 }
-                if (ch <= 'f')
-                {
-                    agora = (agora & 15) | (ch-'a'+10) * 16;
-                    break;
-                }
-                if (agora != antes)
-                {
-                    destino[0] = 1;
-                    destino[1] = agora;
-                    destino+=2;
-                    antes = agora;
-                }
-                if (destino > fim)
-                    return false;
-                *destino++ = ch + 2 - 'g';
                 break;
             }
         case Instr::ex_barra_d: // Cor de fundo
             if (mensagem[1]>='0' && mensagem[1]<='7')
             {
-                agora = (agora & 0xF0) | (mensagem[1]-'0');
+                agora = (agora & ~0x0F) | (mensagem[1]-'0');
                 mensagem++;
             }
             break;
@@ -165,15 +186,14 @@ bool TObjSocket::Enviar(const char * mensagem)
             {
                 destino[0] = 1;
                 destino[1] = agora;
-                destino+=2;
+                destino[2] = agora >> 8;
+                destino+=3;
                 antes = agora;
             }
             if (destino > fim)
                 return false;
             *destino++ = '\n';
             coluna=0;
-            if (CorInic>=0)
-                agora = antes = CorInic;
             break;
         default:
             if (*(unsigned char*)mensagem < ' ')
@@ -182,7 +202,8 @@ bool TObjSocket::Enviar(const char * mensagem)
             {
                 destino[0] = 1;
                 destino[1] = agora;
-                destino+=2;
+                destino[2] = agora >> 8;
+                destino+=3;
                 antes = agora;
             }
             if (destino > fim)
@@ -198,7 +219,8 @@ bool TObjSocket::Enviar(const char * mensagem)
             return false;
         destino[0] = 1;
         destino[1] = agora;
-        destino += 2;
+        destino[2] = agora >> 8;
+        destino += 3;
     }
     *destino=0;
 
@@ -287,7 +309,7 @@ bool TObjSocket::FuncEvento(const char * evento, const char * texto, int valor)
             prossegue = Instr::ExecIni(vobj->endclasse, mens);
         }
     // Executa
-        varObj = vobj;
+        varObj = vobj->Depois;
         if (prossegue)
         {
             if (texto)
@@ -298,16 +320,10 @@ bool TObjSocket::FuncEvento(const char * evento, const char * texto, int valor)
             Instr::ExecX();
             Instr::ExecFim();
         }
-    // Verifica se objeto foi apagado
     // Passa para próximo objeto
-        if (vobj == varObj)
-            vobj = vobj->Depois;
-        else if (sockObj)
-            vobj = varObj;
-        else
-            return false;
+        vobj = varObj;
     } // for (TVarSocket ...
-    return true;
+    return (sockObj ? true : false);
 }
 
 //------------------------------------------------------------------------------
@@ -326,7 +342,7 @@ void TVarSocket::MudarSock(TObjSocket * obj)
             Socket->Fechar();
     // Acerta TObjSocket::varObj
         if (TObjSocket::varObj == this)
-            TObjSocket::varObj =Depois;
+            TObjSocket::varObj = Depois;
     }
 // Coloca na lista
     if (obj)
@@ -349,6 +365,9 @@ void TVarSocket::Mover(TVarSocket * destino)
         (Antes ? Antes->Depois : Socket->Inicio) = destino;
         if (Depois)
             Depois->Antes = destino;
+    // Acerta TObjSocket::varObj
+        if (TObjSocket::varObj == this)
+            TObjSocket::varObj = destino;
     }
     memmove(destino, this, sizeof(TVarSocket));
 }
@@ -460,6 +479,70 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v+1);
         Instr::VarAtual->numfunc = x;
         return true;
+    }
+// Endereço IP a partir do nome ou IP
+    if (comparaZ(nome, "nomeip")==0)
+    {
+        if (Instr::VarAtual - v < 1)
+            return false;
+        struct sockaddr_in conSock;
+        struct hostent *hnome;
+        const char * ender = v[1].getTxt();
+#ifdef __WIN32__
+        memset(&conSock,0,sizeof(conSock));
+        conSock.sin_addr.s_addr=inet_addr(ender);
+        if ( conSock.sin_addr.s_addr == INADDR_NONE )
+        {
+            if ( (hnome=gethostbyname(ender)) == NULL )
+            {
+                Instr::ApagarVar(v);
+                return Instr::CriarVarTexto("");
+            }
+            conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+        }
+#else
+        memset(&conSock.sin_zero, 0, 8);
+        conSock.sin_addr.s_addr=inet_addr(ender);
+        if ( (conSock.sin_addr.s_addr) == (unsigned int)-1 )
+        {
+            if ( (hnome=gethostbyname(ender)) == NULL )
+            {
+                Instr::ApagarVar(v);
+                return Instr::CriarVarTexto("");
+            }
+            conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+        }
+#endif
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(inet_ntoa(conSock.sin_addr));
+    }
+// Nome a partir do nome ou IP
+    if (comparaZ(nome, "ipnome")==0)
+    {
+        if (Instr::VarAtual - v < 1)
+            return false;
+        struct sockaddr_in conSock;
+        struct hostent *hnome;
+        const char * ender = v[1].getTxt();
+#ifdef __WIN32__
+        memset(&conSock,0,sizeof(conSock));
+        conSock.sin_addr.s_addr=inet_addr(ender);
+        if ( conSock.sin_addr.s_addr == INADDR_NONE )
+            hnome = gethostbyname(ender);
+        else
+            hnome = gethostbyaddr( (char *) &conSock.sin_addr,
+                                sizeof(conSock.sin_addr), AF_INET );
+#else
+        memset(&conSock.sin_zero, 0, 8);
+        conSock.sin_addr.s_addr=inet_addr(ender);
+        if ( (conSock.sin_addr.s_addr) == (unsigned int)-1 )
+            hnome = gethostbyname(ender);
+        else
+            hnome = gethostbyaddr( (char *) &conSock.sin_addr,
+                                sizeof(conSock.sin_addr), AF_INET );
+#endif
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(hnome == NULL ? "" : hnome->h_name);
     }
 // Abre biblioteca SSL
     if (comparaZ(nome, "inissl")==0)
