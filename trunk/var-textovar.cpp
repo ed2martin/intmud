@@ -404,7 +404,7 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
     printf("Apagar %p(%s); moveu para %p(%s)\n", bl, bl->Texto,
            bl2, bl2->Texto); fflush(stdout);
 #endif
-    delete[] (char*)this;
+    delete[] (char*)bl;
     return bl2;
 }
 
@@ -495,8 +495,18 @@ void TTextoVarSub::setTxt(const char * txt)
 {
     if (TextoVar==0)
         return;
-    char mens[16384];
+    char mens[BUF_MENS];
     mprintf(mens, sizeof(mens), "%s=%s", NomeVar, txt);
+    TextoVar->Mudar(mens);
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::addTxt(const char * txt)
+{
+    if (TextoVar==0)
+        return;
+    char mens[BUF_MENS];
+    mprintf(mens, sizeof(mens), "%s=%s%s", NomeVar, getTxt(), txt);
     TextoVar->Mudar(mens);
 }
 

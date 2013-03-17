@@ -59,6 +59,7 @@ public:
     double getDouble();  ///< Retorna valor como double
     const char * getTxt(); ///< Retorna valor como texto
     void   setTxt(const char * txt); ///< Muda valor como texto
+    void   addTxt(const char * txt); ///< Adiciona texto
     TTextoVar * TextoVar; ///< A qual textovar pertence
     TTextoVarSub * Antes; ///< Objeto anterior
     TTextoVarSub * Depois; ///< Próximo objeto

@@ -1792,20 +1792,15 @@ void TVariavel::addTxt(const char * txt)
         break;
     case Instr::cIndiceObj:
         {
-            char mens[100];
+            char mens[1024];
             mprintf(mens, sizeof(mens), "%s%s",
                     end_indiceobj[indice].getNome(), txt);
             end_indiceobj[indice].setNome(mens);
             break;
         }
     case Instr::cTextoVarSub:
-        {
-            char mens[500];
-            mprintf(mens, sizeof(mens), "%s%s",
-                    end_textovarsub[indice].getTxt(), txt);
-            end_textovarsub[indice].setTxt(mens);
-            break;
-        }
+        end_textovarsub[indice].addTxt(txt);
+        break;
     }
 }
 
