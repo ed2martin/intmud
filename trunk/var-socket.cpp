@@ -19,7 +19,10 @@
  #include <windows.h>
  #include <winsock.h>
 #else
+ #include <errno.h>
  #include <sys/types.h>
+ #include <sys/wait.h>
+ #include <unistd.h>
  #include <arpa/inet.h>
  #include <fcntl.h>
  #include <netinet/in.h>
@@ -46,6 +49,7 @@ SocketPosX
 
 TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;
+TDNSSocket * TDNSSocket::Inicio = 0;
 
 //------------------------------------------------------------------------------
 TObjSocket::TObjSocket()
@@ -327,6 +331,15 @@ bool TObjSocket::FuncEvento(const char * evento, const char * texto, int valor)
 }
 
 //------------------------------------------------------------------------------
+void TVarSocket::Apagar()
+{
+    for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj=obj->Depois)
+        if (obj->Socket == this)
+            obj->Socket = 0;
+    MudarSock(0);
+}
+
+//------------------------------------------------------------------------------
 void TVarSocket::MudarSock(TObjSocket * obj)
 {
 // Verifica se o endereço vai mudar
@@ -369,6 +382,9 @@ void TVarSocket::Mover(TVarSocket * destino)
         if (TObjSocket::varObj == this)
             TObjSocket::varObj = destino;
     }
+    for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj=obj->Depois)
+        if (obj->Socket == this)
+            obj->Socket = destino;
     memmove(destino, this, sizeof(TVarSocket));
 }
 
@@ -390,7 +406,7 @@ void TVarSocket::Igual(TVarSocket * v)
 //------------------------------------------------------------------------------
 bool TVarSocket::Func(TVariavel * v, const char * nome)
 {
-// Envia mensagem
+// Envia mensagem: de longe é a função mais usada
     if (comparaZ(nome, "msg")==0)
     {
         if (Socket==0)
@@ -405,154 +421,213 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(enviou);
     }
-// Conecta
-    int tipoabrir = 0;
-    if (comparaZ(nome, "abrir")==0)
-        tipoabrir = 1;
-    else if (comparaZ(nome, "abrirssl")==0)
-        tipoabrir = 2;
-    if (tipoabrir)
+// Lista das funções de socket
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        int valor;
+        bool (TVarSocket::*Func)(TVariavel * v, int valor); } ExecFunc[] = {
+        { "abrir",        0, &TVarSocket::FuncAbrir },
+        { "abrirssl",     1, &TVarSocket::FuncAbrir },
+        { "aflooder",     SocketAFlooder,  &TVarSocket::FuncVariaveis },
+        { "cores",        SocketCores,     &TVarSocket::FuncVariaveis },
+        { "eventoip",     0, &TVarSocket::FuncEventoIP },
+        { "fechar",       0, &TVarSocket::FuncFechar },
+        { "inissl",       0, &TVarSocket::FuncIniSSL },
+        { "ip",           1, &TVarSocket::FuncEndereco },
+        { "iplocal",      0, &TVarSocket::FuncEndereco },
+        { "ipnome",       0, &TVarSocket::FuncIPNome },
+        { "ipvalido",     0, &TVarSocket::FuncIPValido },
+        { "nomeip",       0, &TVarSocket::FuncNomeIP },
+        { "opctelnet",    SocketOpcTelnet, &TVarSocket::FuncVariaveis },
+        { "posx",         SocketPosX,      &TVarSocket::FuncVariaveis },
+        { "proto",        SocketProto,     &TVarSocket::FuncVariaveis },
+        { "txtmd5",       2, &TVarSocket::FuncEndereco },
+        { "txtsha1",      3, &TVarSocket::FuncEndereco }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        MudarSock(0);
-        if (Instr::VarAtual - v < 2)
-            return false;
-        int porta = v[2].getInt();
-        const char * ender = v[1].getTxt();
-#ifdef DEBUG_MSG
-        printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
-#endif
-        if (tipoabrir == 2)
-        {
-            const char * err = AbreClienteSSL();
-            if (err)
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarInt(0);
-            }
-        }
-        TSocket * s = TSocket::Conectar(ender, porta, tipoabrir==2);
-        if (s)
-            MudarSock(s);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(s!=0);
+        int meio = (ini+fim)/2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado==0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v, ExecFunc[meio].valor);
+        if (resultado<0) fim=meio-1; else ini=meio+1;
     }
-// Fecha Socket
-    if (comparaZ(nome, "fechar")==0)
-    {
-        if (Socket)
-            Socket->Fechar();
+    return false;
+}
+
+//----------------------------------------------------------------------------
+/// Conecta
+bool TVarSocket::FuncAbrir(TVariavel * v, int valor)
+{
+    MudarSock(0);
+    if (Instr::VarAtual - v < 2)
         return false;
-    }
-// Endereço IP
-    int x = 0;
-    if (comparaZ(nome, "iplocal")==0)
-        x = 1;
-    else if (comparaZ(nome, "ip")==0)
-        x = 2;
-    else if (comparaZ(nome, "txtmd5")==0)
-        x = 3;
-    else if (comparaZ(nome, "txtsha1")==0)
-        x = 4;
-    if (x)
-    {
-        char mens[50];
-        *mens=0;
-        if (Socket)
-            Socket->Endereco(x-1, mens, sizeof(mens));
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
-    }
-// Variáveis
-    x = 0;
-    if (comparaZ(nome, "proto")==0)
-        x = SocketProto;
-    else if (comparaZ(nome, "cores")==0)
-        x = SocketCores;
-    else if (comparaZ(nome, "aflooder")==0)
-        x = SocketAFlooder;
-    else if (comparaZ(nome, "opctelnet")==0)
-        x = SocketOpcTelnet;
-    else if (comparaZ(nome, "posx")==0)
-        x = SocketPosX;
-    if (x)
-    {
-        Instr::ApagarVar(v+1);
-        Instr::VarAtual->numfunc = x;
-        return true;
-    }
-// Endereço IP a partir do nome ou IP
-    if (comparaZ(nome, "nomeip")==0)
-    {
-        if (Instr::VarAtual - v < 1)
-            return false;
-        struct sockaddr_in conSock;
-        struct hostent *hnome;
-        const char * ender = v[1].getTxt();
-#ifdef __WIN32__
-        memset(&conSock,0,sizeof(conSock));
-        conSock.sin_addr.s_addr=inet_addr(ender);
-        if ( conSock.sin_addr.s_addr == INADDR_NONE )
-        {
-            if ( (hnome=gethostbyname(ender)) == NULL )
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto("");
-            }
-            conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-        }
-#else
-        memset(&conSock.sin_zero, 0, 8);
-        conSock.sin_addr.s_addr=inet_addr(ender);
-        if ( (conSock.sin_addr.s_addr) == (unsigned int)-1 )
-        {
-            if ( (hnome=gethostbyname(ender)) == NULL )
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto("");
-            }
-            conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-        }
+    int porta = v[2].getInt();
+    const char * ender = v[1].getTxt();
+#ifdef DEBUG_MSG
+    printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
 #endif
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(inet_ntoa(conSock.sin_addr));
-    }
-// Nome a partir do nome ou IP
-    if (comparaZ(nome, "ipnome")==0)
-    {
-        if (Instr::VarAtual - v < 1)
-            return false;
-        struct sockaddr_in conSock;
-        struct hostent *hnome;
-        const char * ender = v[1].getTxt();
-#ifdef __WIN32__
-        memset(&conSock,0,sizeof(conSock));
-        conSock.sin_addr.s_addr=inet_addr(ender);
-        if ( conSock.sin_addr.s_addr == INADDR_NONE )
-            hnome = gethostbyname(ender);
-        else
-            hnome = gethostbyaddr( (char *) &conSock.sin_addr,
-                                sizeof(conSock.sin_addr), AF_INET );
-#else
-        memset(&conSock.sin_zero, 0, 8);
-        conSock.sin_addr.s_addr=inet_addr(ender);
-        if ( (conSock.sin_addr.s_addr) == (unsigned int)-1 )
-            hnome = gethostbyname(ender);
-        else
-            hnome = gethostbyaddr( (char *) &conSock.sin_addr,
-                                sizeof(conSock.sin_addr), AF_INET );
-#endif
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(hnome == NULL ? "" : hnome->h_name);
-    }
-// Abre biblioteca SSL
-    if (comparaZ(nome, "inissl")==0)
+    if (valor == 1)
     {
         const char * err = AbreClienteSSL();
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(err ? err : "");
+        if (err)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(0);
+        }
     }
-// Função ou variável desconhecida
+    TSocket * s = TSocket::Conectar(ender, porta, valor==1);
+    if (s)
+        MudarSock(s);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(s!=0);
+}
+
+//----------------------------------------------------------------------------
+/// Fecha Socket
+bool TVarSocket::FuncFechar(TVariavel * v, int valor)
+{
+    if (Socket)
+        Socket->Fechar();
     return false;
+}
+
+//----------------------------------------------------------------------------
+/// Endereço IP
+bool TVarSocket::FuncEndereco(TVariavel * v, int valor)
+{
+    char mens[50];
+    *mens=0;
+    if (Socket)
+        Socket->Endereco(valor, mens, sizeof(mens));
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//----------------------------------------------------------------------------
+/// Variáveis
+bool TVarSocket::FuncVariaveis(TVariavel * v, int valor)
+{
+    Instr::ApagarVar(v+1);
+    Instr::VarAtual->numfunc = valor;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Obter nome e gerar evento
+bool TVarSocket::FuncEventoIP(TVariavel * v, int valor)
+{
+    if (Instr::VarAtual - v < 1)
+        return false;
+    TDNSSocket * obj = new TDNSSocket(this, v[1].getTxt());
+    Instr::ApagarVar(v);
+    if (*obj->nomeini)
+        return Instr::CriarVarInt(1);
+    else
+    {
+        delete obj;
+        return Instr::CriarVarInt(0);
+    }
+}
+
+//----------------------------------------------------------------------------
+/// Endereço IP a partir do nome ou IP
+bool TVarSocket::FuncNomeIP(TVariavel * v, int valor)
+{
+    if (Instr::VarAtual - v < 1)
+        return false;
+    struct sockaddr_in conSock;
+    struct hostent *hnome;
+    const char * ender = v[1].getTxt();
+#ifdef __WIN32__
+    memset(&conSock,0,sizeof(conSock));
+    conSock.sin_addr.s_addr=inet_addr(ender);
+    if ( conSock.sin_addr.s_addr == INADDR_NONE )
+    {
+        if ( (hnome=gethostbyname(ender)) == NULL )
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("");
+        }
+        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+    }
+#else
+    memset(&conSock.sin_zero, 0, 8);
+    if (inet_aton(ender, &conSock.sin_addr) == 0)
+    {
+        if ( (hnome=gethostbyname(ender)) == NULL )
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("");
+        }
+        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+    }
+#endif
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(inet_ntoa(conSock.sin_addr));
+}
+
+//----------------------------------------------------------------------------
+/// Nome a partir do nome ou IP
+bool TVarSocket::FuncIPNome(TVariavel * v, int valor)
+{
+    if (Instr::VarAtual - v < 1)
+        return false;
+    struct sockaddr_in conSock;
+    struct hostent *hnome;
+    const char * ender = v[1].getTxt();
+#ifdef __WIN32__
+    memset(&conSock,0,sizeof(conSock));
+    conSock.sin_addr.s_addr=inet_addr(ender);
+    if ( conSock.sin_addr.s_addr == INADDR_NONE )
+        hnome = gethostbyname(ender);
+    else
+        hnome = gethostbyaddr( (char *) &conSock.sin_addr,
+                            sizeof(conSock.sin_addr), AF_INET );
+#else
+    memset(&conSock.sin_zero, 0, 8);
+    if (inet_aton(ender, &conSock.sin_addr) == 0)
+        hnome = gethostbyname(ender);
+    else
+        hnome = gethostbyaddr( (char *) &conSock.sin_addr,
+                            sizeof(conSock.sin_addr), AF_INET );
+#endif
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(hnome == NULL ? "" : hnome->h_name);
+}
+
+//----------------------------------------------------------------------------
+/// Checa se é um endereço IP válido
+bool TVarSocket::FuncIPValido(TVariavel * v, int valor)
+{
+    if (Instr::VarAtual - v < 1)
+        return false;
+    int valido = 0;
+    const char * ender = v[1].getTxt();
+#ifdef __WIN32__
+    if ( inet_addr(ender) != INADDR_NONE )
+        valido = 1;
+#else
+    struct sockaddr_in conSock;
+    if (inet_aton(ender, &conSock.sin_addr) != 0)
+        valido = 1;
+#endif
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valido);
+}
+
+//----------------------------------------------------------------------------
+/// Abre biblioteca SSL
+bool TVarSocket::FuncIniSSL(TVariavel * v, int valor)
+{
+    const char * err = AbreClienteSSL();
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(err ? err : "");
 }
 
 //------------------------------------------------------------------------------
@@ -588,5 +663,213 @@ void TVarSocket::setValor(int numfunc, int valor)
         break;
     default:
         Socket->Variavel(numfunc, valor<0 ? 0 : valor);
+    }
+}
+
+//------------------------------------------------------------------------------
+#ifdef __WIN32__
+/// Resolve endereço em segundo plano no Windows
+static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
+{
+    TDNSSocket * obj = static_cast<TDNSSocket *>(lpParam);
+    struct sockaddr_in conSock;
+    struct hostent *hnome;
+    memset(&conSock,0,sizeof(conSock));
+    conSock.sin_addr.s_addr=inet_addr(obj->nomeini);
+    if ( conSock.sin_addr.s_addr == INADDR_NONE )
+    {
+        hnome = gethostbyname(obj->nomeini);
+        if (hnome)
+        {
+            conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+            copiastr(obj->ip, inet_ntoa(conSock.sin_addr));
+        }
+    }
+    else
+    {
+        hnome = gethostbyaddr( (char *) &conSock.sin_addr,
+                            sizeof(conSock.sin_addr), AF_INET );
+        copiastr(obj->ip, inet_ntoa(conSock.sin_addr));
+    }
+    copiastr(obj->nome, hnome==NULL ? "" : hnome->h_name, sizeof(obj->nome));
+    return 0;
+}
+#endif
+
+//------------------------------------------------------------------------------
+#ifndef __WIN32__
+/// Interpreta sinal SIGCHLD
+static void dns_sigchld_handler(int signum)
+{
+    int pid, status, serrno;
+    serrno = errno;
+    while (true)
+    {
+        pid = waitpid(-1, &status, WNOHANG);
+        if (pid<0 && errno!=ECHILD) // -1 significa que ocorreu algum erro
+        {
+            //perror("waitpid");
+            break;
+        }
+        if (pid <= 0)
+            break;
+        //notice_termination(pid, status);
+    }
+    errno = serrno;
+    signal(SIGCHLD,dns_sigchld_handler); // Processar sinal SIGCHLD
+}
+#endif
+
+//------------------------------------------------------------------------------
+TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
+{
+    Socket = var;
+    Antes = 0;
+    Depois = Inicio;
+    if (Depois)
+        Depois->Antes = this;
+    Inicio = this;
+    if (*ender == 0)
+        return;
+    *nomeini = 0;
+    *nome = 0;
+    *ip = 0;
+    copiastr(nomeini, ender, sizeof(nomeini));
+    if (*nomeini == 0)
+        return;
+#ifdef __WIN32__
+    hthread = CreateThread(NULL, 0, &TDNSSocket_Resolve,
+                           reinterpret_cast<DWORD*>(this), 0, NULL);
+    if (hthread == NULL)
+        *nomeini = 0;
+#else
+        // Cria pipes
+    int descrpipe[2];
+    if (pipe(descrpipe) < 0)
+    {
+        *nomeini = 0;
+        return;
+    }
+        // Cria um novo processo
+    pid_t pid = fork();
+    if (pid < 0) // Erro
+    {
+        close(descrpipe[0]);
+        close(descrpipe[1]);
+        *nomeini = 0;
+        return;
+    }
+    if (pid == 0) // Processo filho
+    {
+        close(descrpipe[0]);
+        struct sockaddr_in conSock;
+        struct hostent *hnome;
+        memset(&conSock.sin_zero, 0, 8);
+        if (inet_aton(nomeini, &conSock.sin_addr) == 0)
+        {
+            hnome = gethostbyname(nomeini);
+            if (hnome)
+            {
+                conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+                copiastr(ip, inet_ntoa(conSock.sin_addr));
+            }
+        }
+        else
+        {
+            hnome = gethostbyaddr( (char *) &conSock.sin_addr,
+                                sizeof(conSock.sin_addr), AF_INET );
+            copiastr(ip, inet_ntoa(conSock.sin_addr));
+        }
+        char mens[1024];
+        char * p = mprintf(mens, sizeof(mens), "%s%c%s",
+                hnome==NULL ? "" : hnome->h_name, 0, ip);
+        write(descrpipe[1], mens, p-mens+1);
+        _exit(EXIT_SUCCESS);
+    }
+    close(descrpipe[1]);
+    fcntl(descrpipe[0], F_SETFL, O_NONBLOCK);
+    signal(SIGCHLD,dns_sigchld_handler); // Processar sinal SIGCHLD
+    recdescr = descrpipe[0];
+#endif
+}
+
+//------------------------------------------------------------------------------
+TDNSSocket::~TDNSSocket()
+{
+    (Antes ? Antes->Depois : Inicio) = Depois;
+    if (Depois)
+        Depois->Antes = Antes;
+}
+
+//------------------------------------------------------------------------------
+void TDNSSocket::Fd_Set(fd_set * set_entrada)
+{
+#ifndef __WIN32__
+    for (TDNSSocket * obj = Inicio; obj; obj=obj->Depois)
+        FD_SET(obj->recdescr, set_entrada);
+#endif
+}
+
+//------------------------------------------------------------------------------
+void TDNSSocket::ProcEventos(fd_set * set_entrada)
+{
+    for (TDNSSocket * obj = Inicio; obj;)
+    {
+        bool prossegue = false;
+    // Checa se já tem todas as informações
+#ifdef __WIN32__
+        if (WaitForSingleObject(obj->hthread, 0) == WAIT_TIMEOUT)
+        {
+            obj = obj->Depois;
+            continue;
+        }
+        CloseHandle(obj->hthread);
+#else
+        char mens[1024];
+        int resposta =  read(obj->recdescr, mens, sizeof(mens)-2);
+        if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK))
+        {
+            obj = obj->Depois;
+            continue;
+        }
+        close(obj->recdescr);
+        if (resposta<0)
+            resposta=0;
+        memset(mens + resposta, 0, 2);
+        copiastr(obj->nome, mens, sizeof(obj->nome));
+        copiastr(obj->ip, mens+strlen(mens)+1, sizeof(obj->ip));
+#endif
+    // Checa se pode gerar evento
+        TVarSocket * vobj = obj->Socket;
+        if (vobj == 0)
+            ;
+    // Definido em objeto: prepara para executar
+        if (vobj->b_objeto)
+        {
+            char mens[80];
+            sprintf(mens, "%s_eventoip", vobj->defvar+Instr::endNome);
+            prossegue = Instr::ExecIni(vobj->endobjeto, mens);
+        }
+    // Definido em classe: prepara para executar
+        else if (vobj->endclasse)
+        {
+            char mens[80];
+            sprintf(mens, "%s_eventoip", vobj->defvar+Instr::endNome);
+            prossegue = Instr::ExecIni(vobj->endclasse, mens);
+        }
+    // Executa
+        if (prossegue)
+        {
+            Instr::ExecArg(obj->nomeini);
+            Instr::ExecArg(obj->nome);
+            Instr::ExecArg(obj->ip);
+            Instr::ExecArg(vobj->indice);
+            Instr::ExecX();
+            Instr::ExecFim();
+        }
+    // Passa para o próximo objeto
+        TDNSSocket * obj2 = obj;
+        obj = obj->Depois;
+        delete obj2;            
     }
 }

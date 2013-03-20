@@ -6,6 +6,7 @@
  #include <winsock.h>
 #else
  #include <sys/types.h>
+ #include <netinet/in.h>
 #endif
 
 //----------------------------------------------------------------------------
@@ -87,15 +88,51 @@ private:
 };
 
 //----------------------------------------------------------------------------
+class TDNSSocket /// Resolve DNS em segundo plano
+{
+public:
+    TDNSSocket(TVarSocket * var, const char * ender);
+            ///< Construtor; faz *nomeini=0 se ocorreu algum erro
+    ~TDNSSocket();       ///< Destrutor
+    static void Fd_Set(fd_set * set_entrada);
+    static void ProcEventos(fd_set * set_entrada);
+                         ///< Processa eventos
+    char nomeini[256];   ///< Nome a ser pesquisado
+    char nome[256];      ///< Nome da máquina
+    char ip[256];        ///< Endereço IP
+private:
+    TVarSocket * Socket; ///< Para onde gerar os eventos
+    static TDNSSocket * Inicio; ///< Lista ligada de TDNSSocket
+    TDNSSocket * Antes;  ///< Objeto anterior
+    TDNSSocket * Depois; ///< Próximo objeto
+#ifdef __WIN32__
+    HANDLE hthread;      ///< Para saber quando a Thread terminou
+#else
+    int recdescr;        ///< Para receber informações do outro processo
+#endif
+    friend class TVarSocket;
+};
+
+//----------------------------------------------------------------------------
 /** Trata das variáveis do tipo Socket */
 class TVarSocket /// Variáveis Socket
 {
 public:
+    void Apagar();          ///< Apaga objeto
     void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
+    bool FuncAbrir(TVariavel * v, int valor);
+    bool FuncFechar(TVariavel * v, int valor);
+    bool FuncEndereco(TVariavel * v, int valor);
+    bool FuncVariaveis(TVariavel * v, int valor);
+    bool FuncEventoIP(TVariavel * v, int valor);
+    bool FuncNomeIP(TVariavel * v, int valor);
+    bool FuncIPNome(TVariavel * v, int valor);
+    bool FuncIPValido(TVariavel * v, int valor);
+    bool FuncIniSSL(TVariavel * v, int valor);
     static int getTipo(int numfunc);
                             ///< Retorna o tipo de variável
     int  getValor(int numfunc);
@@ -111,9 +148,9 @@ public:
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
     unsigned char indice;   ///< Índice no vetor
 
-    TObjSocket * Socket;   ///< Conexão atual
-    TVarSocket * Antes; ///< Objeto anterior da mesma conexão
-    TVarSocket * Depois;///< Próximo objeto da mesma conexão
+    TObjSocket * Socket;    ///< Conexão atual
+    TVarSocket * Antes;     ///< Objeto anterior da mesma conexão
+    TVarSocket * Depois;    ///< Próximo objeto da mesma conexão
 };
 
 //----------------------------------------------------------------------------

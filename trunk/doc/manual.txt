@@ -2578,7 +2578,9 @@ Remove a linha atual.
 Remove a quantidade de linhas especificadas, a partir da linha atual.
 
 20.15. juntar
-Junta a linha atual com a anterior.
+Junta a linha atual com a anterior. Não avança textopos para outra linha.
+Exemplo, se textopos estiver na linha 3, a função juntar juntará as linhas
+2 e 3, e o textopos estará na linha 2.
 Retorna 1 se juntou linhas ou 0 se não juntou.
 Nota: Para dividir uma linha, adicionar texto '\n' com a função mudar.
 
@@ -3174,44 +3176,64 @@ do servidor.
 Usado somente em conexões SSL. Retorna a assinatura SHA1 do certificado
 do servidor.
 
-30.15. ipnome(<nome ou endereço IP>)
+30.15. ipvalido(<texto>)
+Retorna 1 se <texto> for um endereço IP, ou 0 se não for.
+
+30.16. ipnome(<nome ou endereço IP>)
 Retorna o nome da máquina a partir do endereço IP.
 Se o nome não existir, retorna um texto vazio.
 Essa função funciona independente do socket estar conectado.
 Em servidores, não é recomendável usá-la pois enquanto o nome estiver
-sendo resolvido, o IntMUD fica parado.
+sendo resolvido, o IntMUD fica parado. Melhor usar eventoip.
 
-30.16. nomeip(<nome ou endereço IP>)
-Retorna o nome da máquina a partir do endereço IP.
+30.17. nomeip(<nome ou endereço IP>)
+Retorna o endereço IP a partir do nome da máquina ou endereço IP.
 Funciona exatamente como a função ipnome acima.
+
+30.18. eventoip(<nome ou endereço IP>)
+Obtém nome e endereço IP a partir de um endereço.
+Não trava o programa até o endereço ser resolvido. Ao invés disso, gera
+um evento '_eventoip' (vide abaixo).
+Retorna 1 se começou a resolver ou 0 se ocorreu algum erro interno
+(não conseguiu usar os recursos necessários; raramente retorna 0).
+Nota: Se essa função for chamada várias vezes, vários eventos serão
+gerados, mas não necessariamente na mesma ordem. Alguns endereços
+podem levar mais tempo para serem resolvidos.
 
 Eventos:
 
-30.15. <nomedavariável>_msg
+30.19. <nomedavariável>_msg
 Recebeu mensagem
 arg0 = mensagem recebida
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
 arg2 = índice da variável vetor, se não for vetor arg2=0
 
-30.16. <nomedavariável>_env
+30.20. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão
 ficou vazio).
 arg0 = índice da variável vetor, se não for vetor arg0=0
 
-30.17. <nomedavariável>_fechou
+30.21. <nomedavariável>_fechou
 O socket foi fechado remotamente
 arg0 = motivo (texto)
 arg1 = índice da variável vetor, se não for vetor arg1=0
 Se essa função não existir, o objeto que contém o socket é apagado
 
-30.18. <nomedavariável>_con
+30.22. <nomedavariável>_con
 Conseguiu conectar
 arg0 = índice da variável vetor, se não for vetor arg0=0
 
-30.19. <nomedavariável>_err
+30.23. <nomedavariável>_err
 Não conseguiu conectar
 arg0 = mensagem de erro
 arg1 = índice da variável vetor, se não for vetor arg1=0
+
+30.24. <nomedavariável>_eventoip
+Resolveu um endereço fornecido pela função eventoip.
+arg0 = texto recebido pela função eventoip
+arg1 = nome da máquina, ou um texto vazio se não encontrou
+arg2 = endereço IP da máquina, ou um texto vazio se não encontrou
+arg3 = índice da variável vetor, se não for vetor arg3=0
 
 
 31. SERV - RECEBER CONEXÕES VIA TCP/IP

@@ -143,8 +143,7 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
     memset(&conSock.sin_zero, 0, 8);
     conSock.sin_family=AF_INET;
     conSock.sin_port=htons(porta);
-    conSock.sin_addr.s_addr=inet_addr(ender);
-    if ( (conSock.sin_addr.s_addr) == (unsigned int)-1 )
+    if (inet_aton(ender, &conSock.sin_addr) == 0)
     {
         if ( (hnome=gethostbyname(ender)) == NULL )
             return 0;

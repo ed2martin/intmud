@@ -159,8 +159,8 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 // Fecha socket
         Fechar();
 
-// Cria socket
 #ifdef __WIN32__
+    // Windows: Cria socket
         if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET )
         {
             sock=-1;
@@ -169,22 +169,15 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         //BOOL iopcoes = 1;
         //int  tamanho = sizeof(iopcoes);
         //setsockopt(Sock, SOL_SOCKET, SO_REUSEADDR, (const char*)(void*)&iopcoes, tamanho);
-#else
-        int  iopcoes = 1;
-        ACCEPT_TYPE_ARG3 tamanho = sizeof(iopcoes);
-        if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) <0 )
-            break;
-        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &iopcoes, tamanho);
-#endif
 
-// Seleciona o endereço
+    // Windows: Seleciona o endereço
         memset(&(strSock.sin_zero), 0, 8);
         strSock.sin_family = AF_INET;
         strSock.sin_addr.s_addr = htonl(INADDR_ANY);
         if (*ender)
         {
             strSock.sin_addr.s_addr=inet_addr(ender);
-            if ( (strSock.sin_addr.s_addr) == (unsigned int)-1 )
+            if ( strSock.sin_addr.s_addr == INADDR_NONE )
             {
                 if ( (hnome=gethostbyname(ender)) == NULL )
                     break;
@@ -192,37 +185,54 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
             }
         }
 
-// Seleciona a porta
-#ifdef __WIN32__
+    // Windows: Seleciona a porta
         strSock.sin_port = htons((u_short)porta);
         if ( bind(sock, (LPSOCKADDR)&strSock, sizeof(strSock)) )
             break;
-#else
-        strSock.sin_port = htons(porta);
-        if ( bind(sock, (struct sockaddr *)&strSock,
-                            sizeof(struct sockaddr))<0)
-            break;
-#endif
 
-// Escuta na porta selecionada
-#ifdef __WIN32__
+    // Windows: Escuta na porta selecionada
         if (listen(sock, 15))
             break;
-#else
-        if (listen(sock, 15)<0)
-            break;
-#endif
 
-// Modo de não bloqueio
-#ifdef __WIN32__
+    // Windows: Modo de não bloqueio
         unsigned long argp=1; // 0=bloquear  1=nao bloquear
         if ( ioctlsocket(sock, FIONBIO, &argp) !=0 )
             break;
 #else
+    // Unix: Cria socket
+        int  iopcoes = 1;
+        ACCEPT_TYPE_ARG3 tamanho = sizeof(iopcoes);
+        if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) <0 )
+            break;
+        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &iopcoes, tamanho);
+
+    // Unix: Seleciona o endereço
+        memset(&(strSock.sin_zero), 0, 8);
+        strSock.sin_family = AF_INET;
+        strSock.sin_addr.s_addr = htonl(INADDR_ANY);
+        if (*ender)
+            if (inet_aton(ender, &strSock.sin_addr) == 0)
+            {
+                if ( (hnome=gethostbyname(ender)) == NULL )
+                    break;
+                strSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
+            }
+            
+    // Unix: Seleciona a porta
+        strSock.sin_port = htons(porta);
+        if ( bind(sock, (struct sockaddr *)&strSock,
+                            sizeof(struct sockaddr))<0)
+            break;
+
+    // Unix: Escuta na porta selecionada
+        if (listen(sock, 15)<0)
+            break;
+
+    // Unix: Modo de não bloqueio
         fcntl(sock, F_SETFL, O_NONBLOCK);
 #endif
 
-// Coloca na lista ligada
+    // Coloca na lista ligada
         Antes = 0;
         Depois = Inicio;
         if (Depois)

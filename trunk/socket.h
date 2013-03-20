@@ -48,6 +48,7 @@ public:
     static void Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err);
     static void ProcEventos(fd_set * set_entrada,
                                 fd_set * set_saida, fd_set * set_err);
+            ///< Processa eventos
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
     void CriaSSL();
             ///< Cria conexão SSL (variável sockssl) a partir do socket
