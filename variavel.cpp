@@ -393,7 +393,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
             end_socket[antes].EndObjeto(c, o);
         }
         for (; depois<antes; depois++)
-            end_socket[depois].MudarSock(0);
+            end_socket[depois].Apagar();
         break;
     case Instr::cServ:
         for (; antes<depois; antes++)

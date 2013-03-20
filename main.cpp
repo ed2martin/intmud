@@ -296,6 +296,7 @@ int main(int argc, char *argv[])
     // Chama eventos serv e socket
         TVarServ::ProcEventos(&set_entrada, espera);
         TSocket::ProcEventos(&set_entrada, &set_saida, &set_err);
+        TDNSSocket::ProcEventos(&set_entrada);
 
     // Chama eventos de arqsav
         TVarSav::ProcEventos(espera);
@@ -322,6 +323,7 @@ int main(int argc, char *argv[])
         int esp = TVarServ::Fd_Set(&set_entrada, &set_saida);
         if (espera > esp)
             espera = esp;
+        TDNSSocket::Fd_Set(&set_entrada);
 
     // Processamento pendente no console
         TVarTelaTxt::ProcFim();
