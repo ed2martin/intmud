@@ -1,0 +1,406 @@
+classe jog_admtipo
+# Tipos de personagens (incluindo raça e classe)
+#
+const adm_tipo = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
+\c2LTIPO\b [nome]\n\
+  Lista tipos de personagens que começam com o nome especificado.\n\
+\c2CTIPO\b <nome>\n\
+  Cria um tipo de personagem. Nome deve ser o nome do tipo, e deve ser\n\
+  composto de letras, mas pode ter espaços no meio.\n\
+\c2ETIPO\b <nome>\n\
+  Edita um tipo de personagem.\n\
+\c2ATIPO\b <nome>\n\
+  Apaga um tipo de personagem."
+
+func cmd_ltipo # Listar tipos
+  prog p
+  textotxt t
+  txt100 lin
+  se !p.iniclasse("tipo_" + arg0)
+    msg("\bNenhum tipo encontrado.")
+    ret 1
+  fimse
+  t.addfim("raça\nclasse")
+  epara nulo, p.lin && t.linhas < 499, p.depois
+    lin = txts([p.texto]:menu)
+    lin = (lin ? lin + " " : "{{{{{{{ ") + txt(p.texto, 5) + ", " + [p.texto]:nome
+    t.addfim(lin)
+  efim
+  t.ordena
+# t.addini("\bTipo de personagem, Menu, Texto do menu")
+  txt100 lin
+  txtmais.limpar
+  textopos pos
+  epara pos = t.ini, pos, pos.depois
+    se lin != txt1(pos.texto)
+      lin = txt1(pos.texto)
+      txtmais.addfim(lin == "{{{{{{{" ? "Não pertencem a menus:" : "Menu " + lin + ":")
+    fimse
+    txt2(pos.texto) && txtmais.addfim("  " + txt2(pos.texto))
+  efim
+  txtmostra
+  ret 1
+
+func cmd_ctipo # Criar tipo
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do ataque
+  se arg0 == ""
+    msg("Tecle o nome do ataque após CTIPO")
+    ret 1
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg0, EMDSA))
+  se txtsepara(nome, "O+DOL,DOL+O") != nome
+    msg("Nome inválido para tipo de personagem: " + nome)
+    ret 1
+  senao p.existe("tipo_" + nome)
+    msg("Já existe o tipo: " + nome)
+    ret 1
+  fimse
+# Cria tipo
+  txt200 lin
+  lin = "tipo_" + txts(nome) + "\ntipo"
+  lin += "\nconst nome = \"" + txtmaimin(txte(nome)) + "\""
+  p.criar(lin)
+  config:salvar
+  msg("\bTipo criado: " + nome)
+  admlog("criou tipo " + nome)
+  ret 1
+
+func cmd_atipo # Apagar tipo
+  prog p
+  se arg0 == ""
+    msg("Tecle um nome após LTIPO")
+  senao !p.existe("tipo_" + arg0)
+    msg("Tipo não existe: " + arg0)
+  senao
+    tpasso = arg0, p_atipo
+  efim
+  ret 1
+
+func p_atipo # Confirmar que quer apagar tipo
+  passo = ""
+  se arg0 == "n"
+    msg("Cancelado")
+  senao arg0 == "s"
+    prog p
+    p.apagar("tipo_" + tpasso)
+    config:salvar
+    msg("Tipo apagado: " + tpasso)
+    admlog("apagou tipo " + tpasso)
+  senao
+    passo = "atipo"
+    msg("Apagar tipo " + tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+func cmd_etipo # Editar tipo
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome do tipo após ETIPO")
+  senao !p.existe("tipo_" + arg0)
+    msg("Tipo não existe: " + arg0)
+  senao
+    var.classe1 = "tipo_" + txts(txtmin(arg0))
+    m_menu("adm_tipo")
+  fimse
+  ret 1
+
+
+classe adm_tipo
+const titulo = "Tipo " + txt(var.classe1, 5)
+#
+const nome1 = "Texto do menu"
+const tipo1 = "linha"
+const classe1 = var.classe1
+const var1 = "nome"
+#
+const nome2 = "Descrição"
+const info2 = "Aparece quando o jogador escolhe raça ou classe"
+const tipo2 = "texto"
+const classe2 = var.classe1
+const var2 = "desc"
+#
+const nome3 = "É uma opção de"
+const info3 = "As palavras raça e classe são os menus de escolha de raça e de classe.\n\
+Outra palavra: esse tipo é uma sub-raça ou sub-classe do tipo especificado.\n\
+Quando o jogador escolher o tipo espeficado aqui, abrirá um segundo menu."
+const tipo3 = "linha"
+const classe3 = var.classe1
+const var3 = "menu"
+#
+const nome4 = "Raças"
+const info4 = "Somente para classes que não existem em todas as raças:\n\
+Nesse caso, escreva aqui as raças válidas (uma raça por linha)."
+const tipo4 = "texto"
+const classe4 = var.classe1
+const var4 = "racas"
+
+
+classe tipo_anao
+const nome = "Anão"
+const menu = "raça"
+const desc = "Anões\n\
+Embora pequenos, são mais fortes fisicamente.\n\
+Porém, não lidam muito bem com magia."
+
+func recalc
+  atknorm += pnivel * 3, defnorm += pnivel * 3
+  atkmag -= pnivel * 4, defmag -= pnivel * 4
+  pvidamax += pnivel * 2
+  pesomax += 10000
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_elfo
+const nome = "Elfo"
+const menu = "raça"
+const desc = "Elfos\n\
+Lidam melhor com magia e são mais rápidos, porém são\n\
+mais fracos fisicamente."
+
+func recalc
+  atknorm -= pnivel * 4, defnorm -= pnivel * 4
+  atkmag += pnivel * 3, defmag += pnivel * 3
+  pveloc1 += pnivel * 3
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_humano
+const nome = "Humano"
+const menu = "raça"
+const desc = "Humanos\n\
+Uma raça equilibrada. Lidam razoavelmente bem com magia e\n\
+são razoavelmente fortes fisicamente."
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_normal
+# Contusão/Normal
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 100 # fantasma
+
+
+classe tipo_luta
+const nome = "Luta"
+
+func recalc
+  deftipo.9 -= 2 # ar
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+  deftipo.15 += 2 # inseto
+
+
+classe tipo_cortante
+const nome = "Cortante"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.12 -= 2 # eletricidade
+  deftipo.6 += 2 # gelo
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+
+
+classe tipo_perfurante
+const nome = "Perfurante"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.12 -= 2 # eletricidade
+  deftipo.6 += 2 # gelo
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+
+
+classe tipo_fogo
+const nome = "Fogo"
+
+func recalc
+  deftipo.5 -= 2 # água
+  deftipo.7 -= 2 # terra
+  deftipo.8 -= 2 # pedra
+  deftipo.4 += 2 # fogo
+  deftipo.6 += 2 # gelo
+  deftipo.13 += 2 # vegetal
+  deftipo.15 += 2 # inseto
+
+
+classe tipo_agua
+const nome = "Água"
+
+func recalc
+  deftipo.12 -= 2 # elétrico
+  deftipo.13 -= 2 # vegetal
+  deftipo.4 += 2 # fogo
+  deftipo.5 += 2 # água
+  deftipo.6 += 2 # gelo
+
+
+classe tipo_gelo
+const nome = "Gelo"
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.4 -= 2 # fogo
+  deftipo.8 -= 2 # pedra
+  deftipo.2 += 2 # cortante
+  deftipo.3 += 2 # perfurante
+  deftipo.6 += 2 # gelo
+
+
+classe tipo_terra
+const nome = "Terra"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.6 -= 2 # gelo
+  deftipo.13 -= 2 # vegetal
+  deftipo.8 += 2 # pedra
+  deftipo.12 += 100 # elétrico
+
+
+classe tipo_pedra
+const nome = "Pedra"
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.5 -= 2 # água
+  deftipo.7 -= 2 # terra
+  deftipo.13 -= 2 # vegetal
+  deftipo.0 += 2 # contusão/normal
+  deftipo.2 += 2 # cortante
+  deftipo.3 += 2 # perfurante
+  deftipo.4 += 2 # fogo
+  deftipo.9 += 2 # ar
+
+
+classe tipo_ar
+const nome = "Ar"
+
+func recalc
+  deftipo.6 -= 2 # gelo
+  deftipo.8 -= 2 # pedra
+  deftipo.12 -= 2 # elétrico
+  deftipo.1 += 2 # luta
+  deftipo.13 += 2 # vegetal
+  deftipo.15 += 2 # inseto
+  deftipo.7 += 100 # terra
+
+
+classe tipo_luz
+const nome = "Luz"
+
+func recalc
+  deftipo.13 -= 2 # vegetal
+  deftipo.16 -= 2 # fantasma
+  deftipo.10 += 2 # luz
+  deftipo.11 += 2 # trevas
+  deftipo.14 += 100 # psíquico
+
+
+classe tipo_trevas
+const nome = "Trevas"
+
+func recalc
+  deftipo.10 -= 2 # luz
+  deftipo.11 -= 2 # trevas
+  deftipo.16 -= 2 # fantasma
+  deftipo.1 += 2 # luta
+  deftipo.15 += 2 # inseto
+  deftipo.14 += 100 # psíquico
+
+
+classe tipo_eletrico
+const nome = "Elétrico"
+
+func recalc
+  deftipo.7 -= 2 # terra
+  deftipo.9 += 2 # ar
+  deftipo.12 += 2 # elétrico
+
+
+classe tipo_vegetal
+const nome = "Vegetal"
+
+func recalc
+  deftipo.2 -= 2 # cortante
+  deftipo.4 -= 2 # fogo
+  deftipo.6 -= 2 # gelo
+  deftipo.9 -= 2 # ar
+  deftipo.15 -= 2 # inseto
+  deftipo.5 += 2 # água
+  deftipo.7 += 2 # terra
+  deftipo.10 += 2 # luz
+  deftipo.12 += 2 # elétrico
+  deftipo.13 += 2 # vegetal
+
+
+classe tipo_psiquico
+const nome = "Psíquico"
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.11 -= 2 # trevas
+  deftipo.14 -= 2 # psíquico
+  deftipo.11 += 2 # trevas
+  deftipo.15 += 2 # inseto
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_inseto
+const nome = "Inseto"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.9 -= 2 # ar
+  deftipo.8 -= 2 # pedra
+  deftipo.1 += 2 # luta
+  deftipo.7 += 2 # terra
+  deftipo.13 += 2 # vegetal
+
+
+classe tipo_fantasma
+const nome = "Fantasma"
+
+func recalc
+  deftipo.16 -= 2 # fantasma
+  deftipo.10 -= 2 # luz
+  deftipo.11 -= 2 # trevas
+  deftipo.15 += 2 # inseto
+  deftipo.0 += 100 # contusão/normal
+  deftipo.1 += 100 # luta
+  deftipo.2 += 100 # cortante
+  deftipo.3 += 100 # perfurante
+
+
+classe tipo_dragao
+const nome = "Dragão"
+
+func recalc
+  deftipo.6 -= 2 # gelo
+  deftipo.17 -= 2 # dragão
+  deftipo.3 += 2 # perfurante
+  deftipo.4 += 2 # fogo
+  deftipo.5 += 2 # água
+  deftipo.12 += 2 # elétrico
+  deftipo.13 += 2 # vegetal
