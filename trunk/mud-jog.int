@@ -1,5 +1,5 @@
 classe jogsock
-herda jog_entra, jog_adm, jog_admatk, jog_admcod, jog_admsala, jog_admperso, jog_admitem, \
+herda jog_adm, jog_admtipo, jog_admatk, jog_admcod, jog_admsala, jog_admperso, jog_admitem, \
 jog_admsocial, jog_reset
 # Comunicação com o jogador
 # Funções predefinidas:
@@ -36,9 +36,10 @@ txt512 peditor # Texto sendo procurado, opção P do editor
 textotxt transf # Área de transferência do editor
 
 func ini
-  reinicia
   cnome = "un"
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
+  config:apres && msg(config:apres)
+  reinicia
 
 func fim
   perso.fechou(txt1(info) == "b")
@@ -213,11 +214,7 @@ func vazio_exec
   msg("Muito tempo sem comunicação")
   apagar(este)
 
-
-classe jog_entra
-# Entrando no jogo
-
-func p_perso # Digitar o nome do personagem
+func p_perso # Entrando no jogo: digitar o nome do personagem
   indiceitem ind
   txt20 texto
   arqsav sav1
@@ -234,15 +231,22 @@ func p_perso # Digitar o nome do personagem
   senao !sav1.existe("sav/" + texto + ".sav") # Novo personagem
     cnome = "un " + texto
     nome = txtmaimin(arg0)
-    msg("Criando personagem " + nome)
-    config:salvacria ? p_criasenha1 : p_sexo1
-    p_sexo
+    p_perso1
   senao
     msg("Personagem '" + txtmaimin(arg0) + "' já existe")
     tpasso = txtmaimin(arg0)
     p_entrasenha
   fimse
   ret 1
+
+func p_perso1
+  se arg0 == "N"
+    p_perso
+  senao arg0 == "S"
+    config:salvacria ? p_criasenha1 : p_sexo1
+  senao
+    passo = "perso1"
+    msg("Deseja criar o personagem '" + nome + "'? (tecle S ou N)")
 
 func p_criasenha1 # Digitar a senha ao criar personagem
   passo = "criasenha1"
@@ -274,40 +278,123 @@ func p_criasenha2 # Repetir a senha ao criar personagem
   fimse
   ret 1
 
-func p_sexo1 # Digitar O ou A
+func p_sexo1 # Digitar H ou M
   passo = "sexo1"
-  se arg0 != "O" && arg0 != "A"
-    msg("Você é homem ou mulher? Tecle O ou A")
+  se arg0 != "H" && arg0 != "M"
+    msg("Você é homem ou mulher? (tecle H ou M)")
     ret 1
   fimse
-  var.j_sexo = arg0 == "O" # 0=feminino, 1=masculino
+  var.j_sexo = arg0 == "H" # 0=feminino, 1=masculino
   ret p_raca1
 
-func p_raca1 # Digitar a raça
-  passo = "raca1"
-  casovar arg0
-  casose "1"
-    var.j_tipo1 = "Anão"
-    sair
-  casose "2"
-    var.j_tipo1 = "Humano"
-    sair
-  casose "3"
-    var.j_tipo1 = "Elfo"
-    sair
-  casose "4"
-    msg("Anões, além da estatura pequena, são mais fortes fisicamentes, porém")
-    msg("mais fracos quando se trata de magia.")
-    msg("Já os elfos lidam melhor com magia e são mais rápidos, porém mais")
-    msg("fracos fisicamente.")
-    msg("Os humanos constituem uma raça mais equilibrada.")
+func p_raca1 # Começa a escolha da raça
+  tpasso = "raça"
+  ret p_raca2
+
+func p_raca2 # Escolhe a raça
+  txt100 lin
+  prog p
+# Obtém a lista de raças e checa se escolheu uma raça
+  txtmais.limpar
+  epara p.iniclasse("tipo_"), p.lin, p.depois
+    continuar [p.texto]:menu != tpasso
+    txtmais.addfim(txt(txtmais.linhas + 1) + ". " + [p.texto]:nome)
+    lin = p.texto
+    continuar txt(arg0) != txt(txtmais.linhas)
+    txtmais.limpar, tpasso = p.texto
+    msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
+    ret p_raca3
+  efim
+# Somente uma raça para escolher: escolhe automaticamente
+  se txtmais.linhas == 1
+    txtmais.limpar
+    var.j_tipo1 = txt(lin, 5)
+    ret p_classe1
+# Nenhuma raça para escolher: passa para o próximo menu
+  senao txtmais.linhas == 0
+    txtmais.limpar
+    tpasso != "raça" && (var.j_tipo1 = tpasso)
+    ret p_classe1
+# Mais de uma raça: apresenta o menu
+  senao
+    passo = "raca2"
+    se arg0
+      txtmais.addini("Raça inválida; escolha uma:")
+    senao tpasso == "raça"
+      txtmais.addini("Escolha uma raça:")
+    senao
+      txtmais.addini("Escolha uma sub-raça:")
+    fimse
+    txtmostra
     ret 1
-  casose
-    msg("Escolha a raça digitando um número de 1 a 4:")
-    msg("1. Anão\n2. Humano\n3. Elfo\n4. Mais informações")
+
+func p_raca3 # Mostra informações da raça e pede confirmação
+  passo = "raca3"
+  se arg0 == "S"
+    tpasso = txt(tpasso, 5)
+    ret p_raca2
+  senao arg0 == "N"
+    tpasso = [tpasso]:menu
+    ret p_raca2
+  senao
+    msg("Você quer essa raça? (tecle S ou N)")
     ret 1
-  casofim
-  ret p_entrajogo
+
+func p_classe1 # Começa a escolha da raça
+  tpasso = "classe"
+  ret p_classe2
+
+func p_classe2 # Escolhe a classe
+  txt100 lin
+  prog p
+# Obtém a lista de classes e checa se escolheu uma classe
+  txtmais.limpar
+  epara p.iniclasse("tipo_"), p.lin, p.depois
+    continuar [p.texto]:menu != tpasso
+    se [p.texto]:racas
+      continuar txtproc("\n" + [p.texto]:racas + "\n", "\n" + var.j_tipo1 + "\n") < 0
+    fimse    
+    txtmais.addfim(txt(txtmais.linhas + 1) + ". " + [p.texto]:nome)
+    lin = p.texto
+    continuar txt(arg0) != txt(txtmais.linhas)
+    txtmais.limpar, tpasso = p.texto
+    msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
+    ret p_classe3
+  efim
+# Somente uma classe para escolher: escolhe automaticamente
+  se txtmais.linhas == 1
+    txtmais.limpar
+    var.j_tipo2 = txt(lin, 5)
+    ret p_entrajogo
+# Nenhuma classe para escolher: passa para o próximo menu
+  senao txtmais.linhas == 0
+    txtmais.limpar
+    tpasso != "classe" && (var.j_tipo2 = tpasso)
+    ret p_entrajogo
+# Mais de uma classe: apresenta o menu
+  senao
+    passo = "classe2"
+    se arg0
+      txtmais.addini("Classe inválida; escolha uma:")
+    senao tpasso == "classe"
+      txtmais.addini("Escolha uma classe:")
+    senao
+      txtmais.addini("Escolha uma sub-classe:")
+    fimse
+    txtmostra
+    ret 1
+
+func p_classe3 # Mostra informações da classe e pede confirmação
+  passo = "classe3"
+  se arg0 == "S"
+    tpasso = txt(tpasso, 5)
+    ret p_classe2
+  senao arg0 == "N"
+    tpasso = [tpasso]:menu
+    ret p_classe2
+  senao
+    msg("Você quer essa classe? (tecle S ou N)")
+    ret 1
 
 func p_entrajogo # Entrar no jogo: cria personagem
   passo = ""
@@ -320,6 +407,7 @@ func p_entrajogo # Entrar no jogo: cria personagem
   perso.sexo = var.j_sexo
   perso.senha = var.j_senha
   perso.tipo1 = var.j_tipo1
+  perso.tipo2 = var.j_tipo2
   var.limpar("j_")
   perso.mudadono(config:salaini)
   perso.recalc = 1
@@ -467,7 +555,8 @@ inttempo salvarev # Para salvar o jogo de tempos em tempos
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
-txt16 tipo1 # Raça do jogador; vide misc:tipo_* em mud-misc.int
+txt32 tipo1 # Raça do jogador; vide classes "tipo_*" em mud-tipo.int
+txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-tipo.int
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
