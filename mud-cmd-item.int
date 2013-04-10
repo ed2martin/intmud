@@ -434,9 +434,13 @@ func escr
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    total += n
+    se r.pnivel > arg0.pnivel
+      arg0.msg(txtmaimin(r.nome) + " é um item do nível " + r.pnivel + ".")
+      continuar
+    fimse
     uint8 x
     epara x = n, x, x -= 1
-      total += 1
       se !vest.[r.vestir1]
         r.vestir(r.vestir1)
       senao !vest.[r.vestir2]
@@ -451,8 +455,7 @@ func escr
         sair
       fimse
       vest.[r.vestpos] = 1
-      $mens.p(arg0, r)
-      $mens.mvis1("$P veste $t $a.")
+      r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P veste $t $a.")
     efim
   efim
 # Avisa se não encontrou nenhum item
@@ -477,10 +480,13 @@ func escr
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    ret !r.armatipo, arg0.msg(txtmaimin(r.nome) + " não é arma.")
+    se !r.armatipo
+      ret arg0.msg(txtmaimin(r.nome) + " não é arma.")
+    senao r.pnivel > arg0.pnivel
+      ret arg0.msg(txtmaimin(r.nome) + " é um item do nível " + r.pnivel + ".")
+    fimse
     r.vestir(30)
-    $mens.p(arg0, r)
-    $mens.mvis1("$P empunha $t $a.")
+    r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P empunha $t $a.")
     ret
   efim
   arg0.msg("Você não vê isso.")

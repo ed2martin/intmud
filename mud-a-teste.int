@@ -739,19 +739,56 @@ func cmd_recalc2 # Recalcula variáveis do personagem
 # a função misc:atkesp, no arquivo mud-misc.int
 
 
+classe i_teste014
+herda comum_itemgrupo
+const nome = "colete dos elfos"
+const sexo = 1 # Sexo: 1 Masculino
+const pesoobj = 1000
+const vestir1 = 6 # Vestir posição 1: 6 No corpo
+const pnivel = 3
+
+func cmd_recalc2 # Recalcula variáveis do personagem
+  arg0.defnorm += 15 # Ganha 15 pontos de defesa contra ataques normais
+
+func cmd_podevestir
+# Essa função é chamada sempre que um personagem tenta vestir um item
+# Se ela retornar um texto, será apresentado o texto ao invés de vestir
+# Nota:
+# dono.tipo1 é a raça
+# dono.tipo2 é a classe
+  se dono.tipo1 != "elfo" # Checa se a raça é "elfo"
+    ret "Somente elfos podem vestir o colete dos elfos."
+
+
 classe s_teste028
 herda b_teste
 const s_titulo = "Criando equipamentos"
 const s_desc = "É possível criar itens que, quando vestidos ou empunhados, mudam\n\
 alguns atributos do personagem, como ataque, defesa, etc.\n\
 É possível também definir atributos específicos para um personagem.\n\
-São as funções cmd_recalc1 no personagem, cmd_recalc2 no item e recalc no.\n\
-tipo de persoangem. Veja as classes i_teste012 e p_teste006 do arquivo\n\
+São as funções cmd_recalc1 no personagem, cmd_recalc2 no item e recalc no\n\
+tipo de personagem. Veja as classes i_teste012 e p_teste006 do arquivo\n\
 mud-a-teste.int e as classes do final do arquivo mud-tipo.int."
 const dir_o = $s_teste026
+const dir_l = $s_teste029
 const s_reset = "S 100 teste012 3 S\nS 100 teste013 3 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
   !dentro1.objini("i_teste013") && criar("i_teste013", este, 3)
+
+
+classe s_teste029
+herda b_teste
+const s_titulo = "Itens restritos"
+const s_desc = "Alguns itens só podem ser vestidos ou empunhados por determinados\n\
+personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
+Quem define isso é a função cmd_podevestir do item. Veja a classe i_teste014\n\
+no arquivo mud-a-teste.int."
+const dir_o = $s_teste028
+const s_reset = "S 100 teste014 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste014") && criar("i_teste014", este, 3)

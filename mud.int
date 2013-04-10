@@ -23,6 +23,9 @@ const modoserv = 0
 # Ativar como bot em um chat? 0=não, 1=sim
 const modobot = 0
 #
+# Endereço, se modoserv > 0
+const servender = ""
+#
 # Porta, se modoserv > 0 (nota: Papovox só se conecta na porta 1963)
 const servporta = 1963
 #
@@ -64,6 +67,10 @@ const atktipo = 0
 # Ataque automático: tempo de um turno (em décimos de segundo)
 # Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
 const atktempo = 60
+#
+# Quem deve ser informado quando um jogador entra ou sai
+# 0=ninguém, 1=administradores, 2=todos
+const entrainfo = 1
 #
 # Opção de escolher o nível (para testes) na área 'casa'
 # 0=não pode escolher o nível, 1=pode escolher o nível
@@ -173,7 +180,7 @@ func msgtodos
 
 func inicio
   telatxt tela
-  se jogoserv:j_serv.abrir("", config:servporta)
+  se jogoserv:j_serv.abrir(config:servender, config:servporta)
     tela.msg("Esperando conexões na porta " + config:servporta + "\n")
   senao
     tela.msg("Não foi possível abrir a porta " + config:servporta + "\n")

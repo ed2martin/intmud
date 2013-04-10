@@ -318,7 +318,7 @@ func p_menu
     ret 1
   casose "o"
     txtmais.limpar
-    txtmais.addfim([tpasso]:titulo)
+    txtmais.addfim("\b" + [tpasso]:titulo)
     prog p
     epara p.inifunctudo(tpasso, "nome"), p.lin, p.depois # Opções de um dígito
       continuar inttotal(p.texto) > 5
@@ -400,8 +400,8 @@ func m_menu2 # Usado em m_menu para obter o texto de uma opção do menu
 # arg1 = número da opção
   txt100 lin
   txt80 func1 # Função que mostra o conteúdo da variável
-  lin = arg1 + (txt(arg1, 1) ? "." : ". ") + [arg0]:nome[arg1]
-  inttotal(lin) < 20 && (lin = txt(lin + txtesp(18), 0, 20))
+  lin = "\b\c2" + arg1 + (txt(arg1, 1) ? "\b." : "\b. ") + [arg0]:nome[arg1]
+  inttotal(lin) < 23 && (lin = txt(lin + txtesp(20), 0, 23))
   func1 = "t_" + txttroca([arg0]:tipo[arg1], "-", "") # Nome da função
   ret lin + ": " + [func1]([arg0]:classe[arg1], [arg0]:var[arg1], [arg0]:extra[arg1])
 
@@ -418,11 +418,11 @@ func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), txtvis([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), "\c3" + txtvis([arg0]:[arg1]) + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + txtvis([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), "<herda> \c3" + txtvis([arg0]:[arg1]) + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -479,7 +479,7 @@ func t_texto # Retorna quantidade de linhas de texto de várias linhas
 func t_texto2 # Usado por t_texto
   uint16 x
   x = inttotal(arg0) - inttotal(txttroca(arg0, "\n", ""))
-  ret x ? txt(x + 1) + " linhas" : "Uma linha"
+  ret x ? "\c6" + txt(x + 1) + " linhas\b" : "\c6Uma linha\b"
 
 func p_texto # Alterando um texto de várias linhas
   casovar txtmin(txt(arg0, 0, 1))
@@ -525,15 +525,15 @@ func t_numero # Retorna número, do tipo "const x = 10"
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.varnum(arg0, arg1), txt([arg0]:[arg1])
+    ret p.varnum(arg0, arg1), "\c6" + [arg0]:[arg1] + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.varnum(arg0, arg1), "<herda> " + txt([arg0]:[arg1])
+    ret p.varnum(arg0, arg1), "<herda> \c6" + [arg0]:[arg1] + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
-    ret "<nulo> 0"
+    ret "<nulo> \c60\b"
   casofim
 
 func p_numero # Alterando um número
@@ -597,7 +597,7 @@ func t_opcaomostra # Retorna o texto correspondente a uma opção
   valor = arg0
   t.addfim(arg1)
   t.remove(valor)
-  ret txt(valor) + (t.linhas ? " " + t.remove(1) : " <inválido>")
+  ret "\c6" + valor + (t.linhas ? " " + t.remove(1) + "\b" : " <inválido>\b")
 
 func p_opcao # Alterando uma opção de uma lista de opções
   prog p
@@ -672,7 +672,7 @@ func t_vetormostra # Retorna o texto correspondente a uma opção
   epara t.addfim(arg1), t.linhas, valor = valor >> 1
     valor & 1 ? (lin += ", " + t.remove) : t.remove
   efim
-  ret lin ? txt(lin, 2) : "<vazio>"
+  ret lin ? "\c6" + txt(lin, 2) + "\b" : "\c6<vazio>\b"
 
 func p_vetor # Alterando uma opção de uma lista de opções
   prog p
@@ -729,21 +729,21 @@ func t_simnao # Retorna opção que pode ser 0 (não) ou 1 (sim)
       p.inilinha(arg0, arg1)
       ret "<" + txt1(p.texto) + ">"
     senao [arg0]:[arg1]
-      ret txt([arg0]:[arg1]) + " Sim"
+      ret "\c6" + [arg0]:[arg1] + " Sim\b"
     senao
-      ret txt([arg0]:[arg1]) + " Não"
+      ret "\c6" + [arg0]:[arg1] + " Não\b"
     fimse
   casose "2" # Em uma classe herdada
     se !p.varnum(arg0, arg1)
       p.inilinha(arg0, arg1)
       ret "<herda " + txt1(p.texto) + ">"
     senao [arg0]:[arg1]
-      ret "<herda> " + txt([arg0]:[arg1]) + " Sim"
+      ret "<herda> \c6" + [arg0]:[arg1] + " Sim\b"
     senao
-      ret "<herda> " + txt([arg0]:[arg1]) + " Não"
+      ret "<herda> \c6" + [arg0]:[arg1] + " Não\b"
     fimse
   casose # Não foi definido
-    ret "<nulo> 0 Não"
+    ret "<nulo> \c60 Não\b"
   casofim
 
 func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
@@ -1317,120 +1317,133 @@ const classe2 = "config"
 const var2 = "modoserv"
 const extra2 = "Não\nTelnet\nTelnet e Papovox"
 #
-const nome3 = "Porta do MUD                "
-const info3 = "Nota: o programa Papovox só se conecta na porta 1963\n\
-Terá efeito na próxima vez que o MUD for ativado"
-const tipo3 = "numero--"
+const nome3 = "Endereço do MUD             "
+const info3 = "Para ativar em um endereço específico"
+const tipo3 = "texto--"
 const classe3 = "config"
-const var3 = "servporta"
+const var3 = "servender"
 #
-const nome4 = "Limite de conexões por IP   "
+const nome4 = "Porta do MUD                "
+const info4 = "Nota: o programa Papovox só se conecta na porta 1963\n\
+Terá efeito na próxima vez que o MUD for ativado"
 const tipo4 = "numero--"
 const classe4 = "config"
-const var4 = "servusr"
+const var4 = "servporta"
 #
-const nome5 = "Tempo entre duas conexões   "
-const info5 = "Quantos décimos de segundo para poder conectar-se novamente pelo mesmo IP"
+const nome5 = "Limite de conexões por IP   "
 const tipo5 = "numero--"
 const classe5 = "config"
-const var5 = "servtempo"
+const var5 = "servusr"
 #
-const nome6 = "Jogar em um chat            "
-const info6 = "Somente em chats que suportam bots\n\
-Terá efeito na próxima vez que o MUD for ativado"
-const tipo6 = "simnao--"
+const nome6 = "Tempo entre duas conexões   "
+const info6 = "Quantos décimos de segundo para poder conectar-se novamente pelo mesmo IP"
+const tipo6 = "numero--"
 const classe6 = "config"
-const var6 = "modobot"
+const var6 = "servtempo"
 #
-const nome7 = "Endereço do chat            "
-const tipo7 = "linha--"
+const nome7 = "Jogar em um chat            "
+const info7 = "Somente em chats que suportam bots\n\
+Terá efeito na próxima vez que o MUD for ativado"
+const tipo7 = "simnao--"
 const classe7 = "config"
-const var7 = "serv"
+const var7 = "modobot"
 #
-const nome8 = "Porta do chat               "
-const tipo8 = "numero--"
+const nome8 = "Endereço do chat            "
+const tipo8 = "linha--"
 const classe8 = "config"
-const var8 = "porta"
+const var8 = "serv"
 #
-const nome9 = "Sala do chat                "
-const tipo9 = "linha--"
+const nome9 = "Porta do chat               "
+const tipo9 = "numero--"
 const classe9 = "config"
-const var9 = "sala"
+const var9 = "porta"
 #
-const nome10 = "Senha da sala do chat       "
-const info10 = "Se for vazia, o programa pede a senha antes de conectar\n\
-Se não for vazia, outros administradores poderão ver a senha"
+const nome10 = "Sala do chat                "
 const tipo10 = "linha--"
 const classe10 = "config"
-const var10 = "senha"
+const var10 = "sala"
 #
-const nome11 = "Senha de administração      "
-const info11 = "Se vazia, ninguém poderá ser administrador do MUD"
+const nome11 = "Senha da sala do chat       "
+const info11 = "Se for vazia, o programa pede a senha antes de conectar\n\
+Se não for vazia, outros administradores poderão ver a senha"
 const tipo11 = "linha--"
 const classe11 = "config"
-const var11 = "senhaadm"
+const var11 = "senha"
 #
-const nome12 = "Mensagem de apresentação    "
-const info12 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
-const tipo12 = "texto--"
+const nome12 = "Senha de administração      "
+const info12 = "Se vazia, ninguém poderá ser administrador do MUD"
+const tipo12 = "linha--"
 const classe12 = "config"
-const var12 = "apres"
+const var12 = "senhaadm"
 #
-const nome13 = "Sala inicial                "
-const info13 = "Sala onde os jogadores vão após criar o personagem"
-const tipo13 = "sala--"
+const nome13 = "Mensagem de apresentação    "
+const info13 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
+const tipo13 = "texto--"
 const classe13 = "config"
-const var13 = "salaini"
+const var13 = "apres"
 #
-const nome14 = "Sala quando morre           "
+const nome14 = "Sala inicial                "
+const info14 = "Sala onde os jogadores vão após criar o personagem"
 const tipo14 = "sala--"
 const classe14 = "config"
-const var14 = "salafim"
+const var14 = "salaini"
 #
-const nome15 = "Sala para continuar jogo salvo"
-const info15 = "Se acontecer do jogador cair em uma sala inexistente"
+const nome15 = "Sala quando morre           "
 const tipo15 = "sala--"
 const classe15 = "config"
-const var15 = "salasav"
+const var15 = "salafim"
 #
-const nome16 = "Animais para batalhar       "
-const info16 = "Quantos animais pode usar em batalha"
-const tipo16 = "numero--"
+const nome16 = "Sala para continuar jogo salvo"
+const info16 = "Se acontecer do jogador cair em uma sala inexistente"
+const tipo16 = "sala--"
 const classe16 = "config"
-const var16 = "animal1"
-const extra16 = "1 8"
+const var16 = "salasav"
 #
-const nome17 = "Salvar personagem ao criar  "
-const tipo17 = "simnao--"
+const nome17 = "Animais para batalhar       "
+const info17 = "Quantos animais pode usar em batalha"
+const tipo17 = "numero--"
 const classe17 = "config"
-const var17 = "salvacria"
+const var17 = "animal1"
+const extra17 = "1 8"
 #
-const nome18 = "Tipo de ataque              "
-const tipo18 = "opcao--"
+const nome18 = "Salvar personagem ao criar  "
+const tipo18 = "simnao--"
 const classe18 = "config"
-const var18 = "atktipo"
-const extra18 = "Manual\nAutomático com a classe comando_atkauto"
+const var18 = "salvacria"
+#
+const nome19 = "Tipo de ataque              "
+const tipo19 = "opcao--"
+const classe19 = "config"
+const var19 = "atktipo"
+const extra19 = "Manual\nAutomático com a classe comando_atkauto"
+#
+const nome20 = "Quando alguém entra avisar  "
+const info20 = "Quem deve ser informado quando um jogador entra ou sai"
+const tipo20 = "opcao--"
+const classe20 = "config"
+const var20 = "entrainfo"
+const extra20 = "Ninguém\nSomente administradores\nTodos"
 #
 
-func nome19
+func nome21
   se config:atktipo
     ret "Tempo para finalizar batalha"
   senao
     ret "Tempo de um turno           "
 
-func info19
+func info21
   se config:atktipo
     ret "Em décimos de segundo; tempo para chegar a primeira mensagem"
   senao
     ret "Em décimos de segundo"
 
-const tipo19 = "numero--"
-const classe19 = "config"
-const var19 = "atktempo"
-const extra19 = "10 200"
+const tipo21 = "numero--"
+const classe21 = "config"
+const var21 = "atktempo"
+const extra21 = "10 200"
 #
-const nome20 = "Escolher nível na área 'casa'"
-const info20 = "É uma opção que fica na sala casa003, \"Passagem\""
-const tipo20 = "simnao--"
-const classe20 = "config"
-const var20 = "escolhenivel"
+const nome22 = "Escolher nível na área 'casa'"
+const info22 = "É uma opção que fica na sala casa003, \"Passagem\""
+const tipo22 = "simnao--"
+const classe22 = "config"
+const var22 = "escolhenivel"

@@ -162,12 +162,12 @@ func p_reset # Menu de reset
     txtmais.addfim(var.opcnome + txt(var.opcclasse, 2))
     textopos pos
     epara pos = teditor.ini, pos, pos.depois
-      txtmais.addfim(txt(txt(pos.linha + 1) + ". ", 0, 3) + t_resetlin(pos.texto))
+      txtmais.addfim("\c2" + txt(pos.linha + 1) + ".\b" + (pos.linha<9 ? " ") + t_resetlin(pos.texto))
     efim
     se pos.linha < 9
-      txtmais.addfim(txt(pos.linha + 1) + ". Linha vazia")
+      txtmais.addfim("\c2" + txt(pos.linha + 1) + ".\b Linha vazia")
     senao
-      txtmais.addfim(txt(pos.linha + 1) + ".Linha vazia")
+      txtmais.addfim("\c2" + txt(pos.linha + 1) + ".\bLinha vazia")
     fimse
     txtmais.addfim("Tecle E editar, I inserir ou A apagar, seguido do número da linha")
     txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
