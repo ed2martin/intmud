@@ -203,6 +203,7 @@ z_dono = nome do dono original (quem capturou o animal)
 z_pnivel = nível do animal quando foi capturado
 j_captura = nome do item que o jogador escolheu para capturar animais
 z_salafim = sala para onde vai quando retorna da morte
+z_moedas = quantas moedas está carregando
 
 
 5. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
@@ -383,10 +384,7 @@ São criadas as variáveis correspondentes em 'textovar var' do personagem.
 2 = personagem que batalha (classe comum_persobat)
 3 = personagem que batalha e carrega animais (classe comum_persoanimal)
 
-8.3. sav uint32 moedas
-Quantas moedas está carregando
-
-8.4. sav uint8 posicao
+8.3. sav uint8 posicao
 Posição do personagem:
 0 = morto
 1 = mortalmente ferido
@@ -398,43 +396,43 @@ Posição do personagem:
 7 = lutando
 8 = em pé
 
-8.5. const pospadr = 8
+8.4. const pospadr = 8
 Posição padrão do personagem
 
-8.6. const p_recebe = 0
+8.5. const p_recebe = 0
 Verdadeiro (=1) se pode receber itens
 
-8.7. sav textovar var
+8.6. sav textovar var
 Variáveis criadas sob demanda do personagem
 As variáveis cujo nome começa com "1" são apagadas quando o personagem
 muda de sala (função mudadono).
 As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
 salvo é recarregado (quando o jogador entra no jogo).
 
-8.8. func teclou
+8.7. func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
-8.9. func p_espera_exec
+8.8. func p_espera_exec
 Pega o próximo comando da lista
 
-8.10. func teclouproc
+8.9. func teclouproc
 Processa comando, sem espera (arg0=comando)
 
-8.11. func mudadono
+8.10. func mudadono
 Coloca personagem em outra sala (arg0 = sala)
 
-8.12. func acertapos
+8.11. func acertapos
 Acerta posição do personagem, conforme pontos de vida e batalha
 Para checar se morreu, chamar com: acertapos(1)
 
-8.13. func batalhafim
+8.12. func batalhafim
 Encerra a batalha
 Para checar se morreu, chamar com: batalhafim(1)
 
-8.14. func atktempo
+8.13. func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha
 
-8.15. func morreu
+8.14. func morreu
 Executa procedimentos quando o personagem morre
 
 
@@ -672,6 +670,11 @@ func cmd_pnj_proc
 Chamado cada vez que o personagem não jogador decidir fazer alguma coisa.
 Não é chamado se estiver sendo controlado por um jogador ou pertencer
 a outro personagem.
+
+func cmd_podevestir
+Chamado para o próprio item, quando um personagem quer vestir (roupa)
+ou empunhar (arma). Se retornar um texto, o personagem não conseguirá
+vestir e será enviado esse texto.
 
 
 12. Eventos
@@ -934,7 +937,6 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
-Definir que alguns itens não podem ser vestidos por algumas raças ou classes
 Acertar itens que produzem luz
 Criar lojas
 Habilidades que só funcionam com alguns itens, e PNJs que ensinam habilidades
@@ -942,14 +944,13 @@ Possibilidade do corpo ficar quando vence um personagem
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas
-Valor em moedas
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
+Banco
 Propriedade de salas:
 * const s_semrastr = 0 # Se o comando de rastrear não passa por essa sala
 Propriedades de personagens:
 * inttempo tempocair # Quanto tempo leva para cair ou afundar
-* uint32 p_banco # Quantas moedas possui no banco
 * const p_ajuda = 0 # Ajuda outros PNJs sendo atacados por jogadores
 Propriedade de itens:
 * inttempo tempocair # Quanto tempo leva para cair ou afundar

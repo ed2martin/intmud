@@ -23,7 +23,7 @@ func escr
 # Lista de personagens dos jogadores
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    continuar item.obj.jogconfig.17 && !arg0.jogconfig.17
+    continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
     t1 = txt(999000 - item.obj.pnivel) + " N"
     t1 += txt(txt(item.obj.pnivel) + "      ", 0, 6) + item.obj.nome
     item.obj.sock == nulo && (t1 += "  [Desconectado]")
@@ -39,7 +39,7 @@ func escr
 # Lista de jogadores sem personagem
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     continuar item.obj.perso.jog # Continuar se personagem é jogador
-    continuar item.obj.jogconfig.17 && !arg0.jogconfig.17
+    continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
     t1 = "999001 N?     " + item.obj.nome
     item.obj.jogconfig.17 && (t1 += "  [Invis]")
     t0.addfim(t1)
@@ -695,6 +695,8 @@ func escr
   se r != arg0
     t.addfim("Pego por:         " + r.var.z_dono + " (no nível " + r.var.z_pnivel + ")")
   fimse
+# Moedas
+  r.var.z_moedas && t.addfim("Moedas:           " + r.var.z_moedas)
 # Nível
   t.addfim("Nível atual:      " + r.pnivel)
   t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)

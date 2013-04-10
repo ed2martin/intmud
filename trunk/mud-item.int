@@ -7,7 +7,7 @@ const nome = "sem nome"
 const ident = nome
 const descpos = txtmaimin(nome) + " está aqui."
 const jogsav = 1 # Se deve salvar o item ao salvar personagem do jogador
-sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
+sav uint16 pnivel # Nível atual (personagens de nível mais baixo não vestem)
 sav uint8 vestpos # Em que posição está vestindo, 0=nenhuma
 
 func ini # Objeto foi criado (arg0=dono, arg1=nível)
@@ -29,6 +29,8 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   dono = arg0, cmd_mudadono
 
 func vestir # Veste o item, arg0=posição
+  txt100 mens # Checa se pode vestir e retorna mensagem
+  ret mens = cmd_podevestir, dono.msg(mens)
   dono.recalc = 1 # Para recalcular atributos
   ref r
   r = dono, idono.remove, vestpos = arg0
@@ -82,6 +84,8 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   fimse
 
 func vestir # Veste o item, arg0=posição
+  txt100 mens # Checa se pode vestir e retorna mensagem
+  ret mens = cmd_podevestir, dono.msg(mens)
   uint8 pos
   pos = arg0
   se !pos # Checa se deve remover
