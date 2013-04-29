@@ -166,8 +166,8 @@ func cmd_atacar
       nivel < i.obj.pnivel && (nivel = i.obj.pnivel)
     efim
     dono.msg("Menina acabou derrubando dois bonecos de papel.")
-    criar("p_casa002", dono, nivel - 2, "h_socar=1", arg0)
-    criar("p_casa002", dono, nivel - 2, "h_socar=1", arg0)
+    criar("p_casa002", dono, nivel - 2, "h_socar=3", arg0)
+    criar("p_casa002", dono, nivel - 2, "h_socar=3", arg0)
 
 
 classe p_casa005
@@ -220,7 +220,7 @@ const descpadr = "Um bife está flutuando aqui."
 const p_morreu1 = "Um bife caiu no chão, imóvel."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=1"
+const inivar = "h_arremessar=3"
 const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_morreu
@@ -234,7 +234,7 @@ const sexoini = 1
 const descpadr = "Um alface está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=1"
+const inivar = "h_arremessar=3"
 const p_morreu1 = "Alface se quebrou em folhas."
 const eveste = 1 # Receber eventos do próprio objeto
 
@@ -250,7 +250,7 @@ const sexoini = 0
 const descpadr = "Uma banana está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=1"
+const inivar = "h_arremessar=3"
 const p_morreu1 = "$P se partiu."
 
 
@@ -261,7 +261,7 @@ const sexoini = 1
 const descpadr = "Um peão está girando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=1"
+const inivar = "h_arremessar=3"
 const p_morreu1 = "$P virou pó de madeira."
 
 
@@ -272,7 +272,7 @@ const sexoini = 0
 const descpadr = "Uma boneca está parada aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=1"
+const inivar = "h_arremessar=3"
 const p_morreu1 = "$P foi vencida e desapareceu."
 
 
@@ -286,7 +286,7 @@ const pesoobj = 50
 const p_mover = 1
 const p_agressivo = 2 # Agressivo: 2 Sim
 const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
-const inivar = "h_arremessar=1,e_apagar=100"
+const inivar = "h_arremessar=3,e_apagar=100"
 
 
 classe s_casa001
@@ -348,7 +348,7 @@ func tempomax_exec
   ret !dentro2.objini("jogador"), nulo
   tempomax = rand(50, 80)
   se !dentro2.objini("p_casa001")
-    criar("p_casa001", este, 1, "h_socar=1,e_apagar=100")
+    criar("p_casa001", este, 1, "h_socar=2,e_apagar=100")
     msg("Um boneco de papel entrou pela janela.")
 
 func cmd_l
@@ -669,7 +669,7 @@ const s_naoresg = 1 # Não permite resgatar jogador
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog && !arg0.senha && !arg0.var.j_salvar # Jogador que ainda não salvou o jogo
-    criar("p_casa003", este, 10, "h_socar=1,h_chutar=1", arg0)
+    criar("p_casa003", este, 10, "h_socar=3,h_chutar=3", arg0)
     misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_fugir
@@ -1031,7 +1031,7 @@ const volobj = 100
 const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
 const p_agressivo = dono == $s_casa035 ? 2 : 1 # Agressivo só no saguão
 const nivel = 20
-const inivar = "h_morder=1"
+const inivar = "h_morder=5"
 const eveste = 1 # Receber eventos do próprio objeto
 inttempo andar # Para fazer o cachorro andar
 
@@ -1254,7 +1254,7 @@ const volobj = 2000
 const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_morreu1 = "$P se partiu em vários pedaços."
 const p_movervel = 250
-const inivar = "h_morder=1"
+const inivar = "h_morder=4"
 const eveste = 1 # Receber eventos do próprio objeto
 txt50 nomealvo
 listaitem alvoitem # Para receber eventos de quem esse personagem atacou

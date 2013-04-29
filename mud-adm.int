@@ -293,7 +293,7 @@ func cmd_escr
 func admlog # Mensagem para todos com a opção "config +admlog"
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    item.obj.jogconfig.21 && item.obj.msg("(adm) " + nome + " " + arg0)
+    item.obj.jogconfig.21 && item.obj.msg("\b\d1(adm) " + nome + " " + arg0 + "\b")
   efim
 
 const txt_legenda = "Legenda:\n\
@@ -471,15 +471,14 @@ func t_texto # Retorna quantidade de linhas de texto de várias linhas
     ret p.vartexto(arg0, arg1), "<herda> " + t_texto2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
-  fimse
   casose # Não foi definido
-  ret "<nulo>"
+    ret "<nulo> " + t_texto2([arg0]:[arg1])
   casofim
 
 func t_texto2 # Usado por t_texto
-  uint16 x
-  x = inttotal(arg0) - inttotal(txttroca(arg0, "\n", ""))
-  ret x ? "\c6" + txt(x + 1) + " linhas\b" : "\c6Uma linha\b"
+  txt10 x
+  x = intsublin(arg0)
+  ret x != "1" ? "\c6" + x + " linhas\b" : "\c6Uma linha\b"
 
 func p_texto # Alterando um texto de várias linhas
   casovar txtmin(txt(arg0, 0, 1))

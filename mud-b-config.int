@@ -1,0 +1,340 @@
+classe config
+# Configuração
+#
+# Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
+const modolocal = 1
+#
+# Ativar em uma porta? 0=não, 1=Telnet, 2=Telnet e Papovox
+const modoserv = 0
+#
+# Ativar como bot em um chat? 0=não, 1=sim
+const modobot = 0
+#
+# Endereço, se modoserv > 0
+const servender = ""
+#
+# Porta, se modoserv > 0 (nota: Papovox só se conecta na porta 1963)
+const servporta = 1963
+#
+# Limite de conexões por IP na porta definida em servporta
+const servusr = 3
+#
+# Tempo entre duas conexões do mesmo endereço IP, em décimos de segundo
+const servtempo = 80
+#
+# Variáveis se ativar como bot
+const serv = "localhost"
+const porta = 1963
+const sala = "sala01"
+const senha = ""
+#
+# Senha para se tornar administrador, ou "" se não puder
+const senhaadm = "x2"
+#
+# Mensagem de apresentação
+# Primeira mensagem que o jogador recebe ao entrar no MUD
+const apres = ""
+#
+# Sala inicial
+const salaini = $s_teste001
+# Sala para continuar jogo salvo (se estava numa sala que não existe mais)
+const salasav = $s_casa001
+# Sala quando morre
+const salafim = $s_fim001
+#
+# Quantos animais pode ter numa batalha, de 1 a 8
+const animal1 = 5
+#
+# Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
+const salvacria = 0
+#
+# Tipo de ataque: 0=manual, 1=automático (realizado pela classe comando_atkauto)
+const atktipo = 0
+#
+# Ataque automático: tempo de um turno (em décimos de segundo)
+# Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
+const atktempo = 60
+#
+# Quem deve ser informado quando um jogador entra ou sai
+# 0=ninguém, 1=administradores, 2=todos
+const entrainfo = 1
+#
+# Opção de escolher o nível (para testes) na área 'casa'
+# 0=não pode escolher o nível, 1=pode escolher o nível
+const escolhenivel = 0
+
+func salvar # Salva o programa
+  prog p
+  p.salvar("L99N1I2C2F1V0")
+  $mudaprog.ini # Para indicar que nenhum arquivo foi mudado
+
+func sav # Para salvar acertando indentação e linhas entre classes e funções
+  prog p
+  p.salvartudo("L99N1I2C2F1V0")
+
+
+classe tipo_anao
+const nome = "Anão"
+const menu = "raça"
+const desc = "Anões\n\
+Embora pequenos, são mais fortes fisicamente.\n\
+Porém, não lidam muito bem com magia."
+
+func recalc
+  atknorm += pnivel * 3, defnorm += pnivel * 3
+  atkmag -= pnivel * 4, defmag -= pnivel * 4
+  pvidamax += pnivel * 2
+  pesomax += 10000
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_elfo
+const nome = "Elfo"
+const menu = "raça"
+const desc = "Elfos\n\
+Lidam melhor com magia e são mais rápidos, porém são\n\
+mais fracos fisicamente."
+
+func recalc
+  atknorm -= pnivel * 4, defnorm -= pnivel * 4
+  atkmag += pnivel * 3, defmag += pnivel * 3
+  pveloc1 += pnivel * 3
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_humano
+const nome = "Humano"
+const menu = "raça"
+const desc = "Humanos\n\
+Uma raça equilibrada. Lidam razoavelmente bem com magia e\n\
+são razoavelmente fortes fisicamente."
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_normal
+# Contusão/Normal
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.2 -= 2 # cortante
+  deftipo.3 -= 2 # perfurante
+  deftipo.16 += 100 # fantasma
+
+
+classe tipo_luta
+const nome = "Luta"
+
+func recalc
+  deftipo.9 -= 2 # ar
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+  deftipo.15 += 2 # inseto
+
+
+classe tipo_cortante
+const nome = "Cortante"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.12 -= 2 # eletricidade
+  deftipo.6 += 2 # gelo
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+
+
+classe tipo_perfurante
+const nome = "Perfurante"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.12 -= 2 # eletricidade
+  deftipo.6 += 2 # gelo
+  deftipo.8 += 2 # pedra
+  deftipo.11 += 2 # trevas
+
+
+classe tipo_fogo
+const nome = "Fogo"
+
+func recalc
+  deftipo.5 -= 2 # água
+  deftipo.7 -= 2 # terra
+  deftipo.8 -= 2 # pedra
+  deftipo.4 += 2 # fogo
+  deftipo.6 += 2 # gelo
+  deftipo.13 += 2 # vegetal
+  deftipo.15 += 2 # inseto
+
+
+classe tipo_agua
+const nome = "Água"
+
+func recalc
+  deftipo.12 -= 2 # elétrico
+  deftipo.13 -= 2 # vegetal
+  deftipo.4 += 2 # fogo
+  deftipo.5 += 2 # água
+  deftipo.6 += 2 # gelo
+
+
+classe tipo_gelo
+const nome = "Gelo"
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.4 -= 2 # fogo
+  deftipo.8 -= 2 # pedra
+  deftipo.2 += 2 # cortante
+  deftipo.3 += 2 # perfurante
+  deftipo.6 += 2 # gelo
+
+
+classe tipo_terra
+const nome = "Terra"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.5 -= 2 # água
+  deftipo.6 -= 2 # gelo
+  deftipo.13 -= 2 # vegetal
+  deftipo.8 += 2 # pedra
+  deftipo.12 += 100 # elétrico
+
+
+classe tipo_pedra
+const nome = "Pedra"
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.5 -= 2 # água
+  deftipo.7 -= 2 # terra
+  deftipo.13 -= 2 # vegetal
+  deftipo.0 += 2 # contusão/normal
+  deftipo.2 += 2 # cortante
+  deftipo.3 += 2 # perfurante
+  deftipo.4 += 2 # fogo
+  deftipo.9 += 2 # ar
+
+
+classe tipo_ar
+const nome = "Ar"
+
+func recalc
+  deftipo.6 -= 2 # gelo
+  deftipo.8 -= 2 # pedra
+  deftipo.12 -= 2 # elétrico
+  deftipo.1 += 2 # luta
+  deftipo.13 += 2 # vegetal
+  deftipo.15 += 2 # inseto
+  deftipo.7 += 100 # terra
+
+
+classe tipo_luz
+const nome = "Luz"
+
+func recalc
+  deftipo.13 -= 2 # vegetal
+  deftipo.16 -= 2 # fantasma
+  deftipo.10 += 2 # luz
+  deftipo.11 += 2 # trevas
+  deftipo.14 += 100 # psíquico
+
+
+classe tipo_trevas
+const nome = "Trevas"
+
+func recalc
+  deftipo.10 -= 2 # luz
+  deftipo.11 -= 2 # trevas
+  deftipo.16 -= 2 # fantasma
+  deftipo.1 += 2 # luta
+  deftipo.15 += 2 # inseto
+  deftipo.14 += 100 # psíquico
+
+
+classe tipo_eletrico
+const nome = "Elétrico"
+
+func recalc
+  deftipo.7 -= 2 # terra
+  deftipo.9 += 2 # ar
+  deftipo.12 += 2 # elétrico
+
+
+classe tipo_vegetal
+const nome = "Vegetal"
+
+func recalc
+  deftipo.2 -= 2 # cortante
+  deftipo.4 -= 2 # fogo
+  deftipo.6 -= 2 # gelo
+  deftipo.9 -= 2 # ar
+  deftipo.15 -= 2 # inseto
+  deftipo.5 += 2 # água
+  deftipo.7 += 2 # terra
+  deftipo.10 += 2 # luz
+  deftipo.12 += 2 # elétrico
+  deftipo.13 += 2 # vegetal
+
+
+classe tipo_psiquico
+const nome = "Psíquico"
+
+func recalc
+  deftipo.1 -= 2 # luta
+  deftipo.11 -= 2 # trevas
+  deftipo.14 -= 2 # psíquico
+  deftipo.11 += 2 # trevas
+  deftipo.15 += 2 # inseto
+  deftipo.16 += 2 # fantasma
+
+
+classe tipo_inseto
+const nome = "Inseto"
+
+func recalc
+  deftipo.4 -= 2 # fogo
+  deftipo.9 -= 2 # ar
+  deftipo.8 -= 2 # pedra
+  deftipo.1 += 2 # luta
+  deftipo.7 += 2 # terra
+  deftipo.13 += 2 # vegetal
+
+
+classe tipo_fantasma
+const nome = "Fantasma"
+
+func recalc
+  deftipo.16 -= 2 # fantasma
+  deftipo.10 -= 2 # luz
+  deftipo.11 -= 2 # trevas
+  deftipo.15 += 2 # inseto
+  deftipo.0 += 100 # contusão/normal
+  deftipo.1 += 100 # luta
+  deftipo.2 += 100 # cortante
+  deftipo.3 += 100 # perfurante
+
+
+classe tipo_dragao
+const nome = "Dragão"
+
+func recalc
+  deftipo.6 -= 2 # gelo
+  deftipo.17 -= 2 # dragão
+  deftipo.3 += 2 # perfurante
+  deftipo.4 += 2 # fogo
+  deftipo.5 += 2 # água
+  deftipo.12 += 2 # elétrico
+  deftipo.13 += 2 # vegetal

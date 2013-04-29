@@ -69,40 +69,9 @@ classe cmd_quit
 herda cmd_fim
 
 
-classe comando_var
-herda comando_comum
-const posic = 5
-
-func lista # Lista de itens, como habilidades, idiomas, etc.
-# arg0 = personagem
-# arg1 = variável textovar
-# arg2 = prefixo que identifica o tipo de variável (duas letras)
-# arg3 = mensagem se nada for encontrado
-# arg4 = mensagem se alguma coisa for encontrada
-  textotxt h
-  txt100 t1
-  txt100 t2
-  t1 = arg1.ini(arg2)
-  enquanto txt(t1, 0, 2) == arg2
-    t2 = txte(txt(t1, 2))
-    se arg1.valor(t1) == "1"
-      h.addfim(t2)
-    senao
-      h.addfim(arg1.valor(t1) + "x " + t2)
-    fimse
-    t1 = arg1.depois(t1)
-  efim
-  se h.linhas
-    h.addfim(txttroca(h.remove(1000), "\n", ", "))
-    h.addini(arg4)
-    arg0.msg(h.remove(1000))
-  senao
-    arg0.msg(arg3)
-  fimse
-
-
 classe cmd_hab
-herda comando_var, comando_ajuda
+herda comando_comum, comando_ajuda
+const posic = 5
 const txtajuda = "\b\c3Hab\b\n\
 Sintaxe: HAB\n\
 Mostra as habilidades do seu personagem. Muitas delas são usadas em lutas."
@@ -110,17 +79,40 @@ Mostra as habilidades do seu personagem. Muitas delas são usadas em lutas."
 func escr
   txt100 n
   arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
-  lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n + ".", "Habilidades" + n)
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = arg0.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = arg0.var.depois(t1)
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, arg0.var.[t1], 1)
+    h.addfim(t2)
+  efim
+  ret !h.linhas, arg0.msg("Nenhuma habilidade.")
+  h.addini("Habilidades" + n + ":")
+  arg0.msg(h.remove(1000))
 
 
 classe cmd_idioma
-herda comando_var, comando_ajuda
+herda comando_comum, comando_ajuda
+const posic = 5
 const txtajuda = "\b\c3Idioma\b\n\
 Sintaxe: IDIOMA\n\
 Mostra os idiomas que o seu personagem conhece."
 
 func escr
-  lista(arg0, arg0.var, "i_", "Nenhum idioma.", "Idiomas")
+  txt100 n
+  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = arg0.var.ini("i_"), txt(t1, 0, 2) == "i_", t1 = arg0.var.depois(t1)
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, arg0.var.[t1], 1)
+    h.addfim(t2)
+  efim
+  ret !h.linhas, arg0.msg("Nenhum idioma.")
+  h.addini("Idiomas" + n + ":")
+  arg0.msg(h.remove(1000))
 
 
 classe cmd_inv
@@ -479,12 +471,14 @@ func escr
     r.descver(arg0) && t.addini(r.descver(arg0))
     txt200 t2
     t2 = txtmaimin(r.nome)
-    se r.pnivel || r.perso
+    se r.perso
       t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel + ", " + estado(r)
       se r.persobat && r.persobat != r
         t2 += "\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
         t2 += ", " + estado(r.persobat)
       fimse
+    senao r.pnivel
+      t2 += ", nível " + r.pnivel
     fimse
 # Luz
     se int(r.luztempo.abs) >= 25
@@ -660,7 +654,7 @@ func escr
 
 
 classe cmd_extra
-herda comando_var, comando_ajuda
+herda comando_comum, comando_ajuda
 const txtajuda = config:animal1 ? ta1 : ta2
 const ta1 = "\b\c3Extra\b\n\
 Sintaxe: EXTRA\n\
@@ -730,7 +724,7 @@ func escr
     t1 = r.var.depois(t1)
   efim
   se h.linhas
-    t.addfim("Itens extras:")
+    t.addfim("Outros:")
     t.addfim(txttroca(h.remove(1000), "\n", ", "))
   fimse
 # Mensagem para o usuário
