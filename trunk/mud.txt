@@ -45,42 +45,56 @@ Os próximos tópicos referem-se à organização do programa do MUD.
 
 2. Organização dos arquivos e classes
 
+De modo geral, o MUD está dividido em três grupos:
+Arquivos mud-a-*.int Contém as áreas (itens, personagens e salas das areas).
+Arquivos mud-b-*.int Contém os comandos e configurações definidos pela
+administração do MUD.
+Os demais arquivos mud*.int formam a base do MUD.
+
 2.1. mud.int
-Contém a configuração do jogo (classe 'config'), como por exemplo, se vai
-rodar em uma janela ou abrindo uma porta, a sala inicial, etc.
-As outras classes desse arquivo são responsáveis pela comunicação entre
-o jogo e os jogadores.
+É responsável pela comunicação entre o jogo e os jogadores.
 
-2.2. mud-comum.int
-Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
-Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
-um objeto possui), peso e volume.
-Classe 'comum_persoitem', que é herdada por todos os personagens e itens.
+2.2. mud-b-config.int
+Configuração do jogo (a classe 'config'), como por exemplo, se vai rodar em
+uma janela ou abrindo uma porta, a sala inicial, etc.
+Contém também as raças e classes definidas no MUD.
 
-2.3. mud-a-*.int
+2.3. mud-b-social.int
+Comandos sociais criados pela administração.
+
+2.4. mud-b-ataque.int
+Ataques criados pela administração.
+
+2.5. mud-a-*.int
 Contém as classes que compõem uma área.
 Geralmente são:
 Definições da área: classe de nome 'a_' + prefixo da área
 Propriedades herdadas pelas salas: classe de nome 'b_' + prefixo da área
 Salas: classes de nome 's_' + prefixo da área + número de '001' a '999'
 
-2.4. mud-sala.int
+2.6. mud-comum.int
+Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
+Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
+um objeto possui), peso e volume.
+Classe 'comum_persoitem', que é herdada por todos os personagens e itens.
+
+2.7. mud-sala.int
 Classes 'area' e 'sala', herdadas por todas as áreas e salas.
 
-2.5. mud-item.int
+2.8. mud-item.int
 Classe 'comum_item', herdada por todos os itens.
 Classe 'comum_itemgrupo', herdada pelos itens que podem ser agrupados
 em um único objeto.
 Os itens são classes cujo nome começa com 'i_'.
 
-2.6. mud-perso.int
+2.9. mud-perso.int
 Classe 'comum_perso' - herdada por todos os personagens.
 Classe 'comum_persobat' - personagens que podem batalhar.
 Classe 'comum_persoanimal' - personagens que podem batalhar e carregar animais.
 Classe 'perso_restaurar' - restaurar status de personagens que podem batalhar.
 Os personagens não jogadores são classes cujo nome começa com 'p_'.
 
-2.7. mud-jog.int
+2.10. mud-jog.int
 Classes responsáveis pelos jogadores.
 A classe 'jogador' é o personagem dos jogadores.
 A classe 'jogsock' é responsável pela comunicação com o usuário:
@@ -88,7 +102,7 @@ Funções cmd_<nome do comando>   Comandos de administração
 Funções adm_<nome do tópico>    Tópicos de ajuda da administração
 Funções p_<texto>               São executadas conforme a variável passo
 
-2.8. mud-cmd*.int
+2.11. mud-cmd*.int
 Contém os comandos que os personagens podem digitar. Todo comando é uma
 classe cujo nome é 'cmd_' (comandos normais), 'cmd_magia_' (magias) ou
 'cmdfim_' (comandos de baixa prioridade) seguido do nome do comando.
@@ -98,35 +112,37 @@ A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
-2.9. mud-social.int
-Contém os comandos sociais. Todo comando é uma classe cujo nome é "soc_"
+2.12. mud-social.int
+Menus para criar e editar comandos sociais e a classe 'soccomum', que serve
+de base para esses comandos. Todo comando é uma classe cujo nome é "soc_"
 seguido do nome do comando. Quando o jogador digita algo, os sociais são
 verificados após as classes 'cmd_' e 'cmd_magia_' e antes das classes
 'cmdfim_'.
 
-2.10. mud-cmd.int
+2.13. mud-cmd.int
 Comandos de informação.
 Contém também a classe 'comando_ataque', que é herdada por todos os comandos.
 
-2.11. mud-cmd-item.int
+2.14. mud-cmd-item.int
 Comandos de manuseio de objetos.
 
-2.12. mud-cmd-mover.int
+2.15. mud-cmd-mover.int
 Comandos de movimentação.
 
-2.13. mud-cmd-ataque.int
-Comandos de ataque.
-Via de regra, a função 'escr' checa se está em condições de atacar e obtém
-o alvo, e chama a função 'ataca', que realiza o ataque propriamente dito.
+2.16. mud-ataque.int
+Menus para criar e editar comandos sociais e a classe 'comando_ataque', que
+serve de base para esses comandos. Via de regra, a função 'escr' checa se
+está em condições de atacar e obtém o alvo, e chama a função 'ataca', que
+realiza o ataque propriamente dito.
 
-2.14. mud-efeito.int
+2.17. mud-efeito.int
 Efeitos que podem afetar personagens e itens.
 Cada efeito é uma classe cujo nome começa com 'e_'.
 
-2.15. mud-mens.int
+2.18. mud-mens.int
 Contém a classe 'mens', especializada no envio de mensagens para personagens.
 
-2.16. mud-misc.int
+2.19. mud-misc.int
 Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
 Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
@@ -937,9 +953,10 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
+Comandos: aprender, comprar, vender, avaliar
+Criar texto de ajuda: LOJAS   Lojas e professores
+Batalha automática: testar armas e criar comando matar
 Acertar itens que produzem luz
-Criar lojas
-Habilidades que só funcionam com alguns itens, e PNJs que ensinam habilidades
 Possibilidade do corpo ficar quando vence um personagem
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto

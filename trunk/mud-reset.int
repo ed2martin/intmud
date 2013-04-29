@@ -146,6 +146,7 @@ func cmd_cres
   ret 1
 
 func p_reset # Menu de reset
+  var.opcinserir = ""
   casovar txtmin(txt(arg0, 0, 1))
   casose "\b"
     teditor.limpar
@@ -162,7 +163,8 @@ func p_reset # Menu de reset
     txtmais.addfim(var.opcnome + txt(var.opcclasse, 2))
     textopos pos
     epara pos = teditor.ini, pos, pos.depois
-      txtmais.addfim("\c2" + txt(pos.linha + 1) + ".\b" + (pos.linha<9 ? " ") + t_resetlin(pos.texto))
+      txtmais.addfim("\c2" + txt(pos.linha + 1) + ".\b" + (pos.linha < 9 ? " ") + t_resetlin(pos.\
+texto))
     efim
     se pos.linha < 9
       txtmais.addfim("\c2" + txt(pos.linha + 1) + ".\b Linha vazia")
@@ -198,7 +200,7 @@ func p_reset # Menu de reset
     lin = txt(arg0, 1)
     se lin > 0 && lin <= teditor.linhas + 1
       var.opclin = lin
-      var.opcinserir = txt(arg0, 0, 1) = "i"
+      var.opcinserir_ = txt(arg0, 0, 1) == "i"
       p_reset1("\b")
     senao teditor.linhas == 0
       msg("Só existe a linha 1")
@@ -248,7 +250,6 @@ func p_reset_a # Apagar uma linha do reset
     msg(txt(var.opclin) + ". " + t_resetlin(pos.texto))
     passo = "reset_a"
     ret 1
-    ret p_reset("")
   casose "s"
     pos.remove, var.opcmudou = 1
     msg("Linha " + var.opclin + " apagada")
@@ -311,6 +312,7 @@ func p_reset2 # Tipo
   casose "f"
     textopos pos
     pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
+    !var.opcinserir && pos.remove
     pos.add("F " + txt2(var.opclin)), var.opcmudou = 1
     ret p_reset("")
   casofim
@@ -531,6 +533,7 @@ func p_resetR # Remover item da sala
   senao
     textopos pos
     pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
+    !var.opcinserir && pos.remove
     pos.add(txt2(var.opclin) + " " + txts(arg0)), var.opcmudou = 1
     ret p_reset("")
   fimse
@@ -565,6 +568,7 @@ func p_resetD # Porta em uma direção
     casose "3"
       textopos pos
       pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
+      !var.opcinserir && pos.remove
       pos.add(txt2(var.opclin) + " " + arg0), var.opcmudou = 1
       ret p_reset("")
     casofim
@@ -583,6 +587,7 @@ func p_resetVar # Entrar com a lista de variáveis
   fimse
   textopos pos
   pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
+  !var.opcinserir && pos.remove
   pos.add(txt2(var.opclin)), var.opcmudou = 1
   ret p_reset("")
 

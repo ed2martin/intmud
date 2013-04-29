@@ -92,8 +92,8 @@ const dir_s = $s_teste003
 const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_s
-  arg0.var.h_socar = 1
-  arg0.var.h_chutar = 1
+  arg0.var.h_socar = 3
+  arg0.var.h_chutar = 3
   arg0.pnivel = 1
   arg0.recalc = 1
   arg0.var.z_salafim = dir_s
@@ -682,6 +682,8 @@ func cmd_escr # Escreveu algo
     arg0.msg("Você aprende a cortar.")
     ret 1
 
+const dir_s = $s_teste030
+
 
 classe s_teste027
 herda b_teste
@@ -724,6 +726,7 @@ const armatipo = 1 # Arma tipo: 1 Lâmina curta
 const armaprecisao = 100
 const armamin = 70
 const armamax = 120
+const valor = 50
 
 
 classe i_teste013
@@ -737,6 +740,9 @@ func cmd_recalc2 # Recalcula variáveis do personagem
   arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
 # Nota os tipos de ataque são considerados normais ou mágicos conforme
 # a função misc:atkesp, no arquivo mud-misc.int
+
+const valor = 300
+const nivel = 1
 
 
 classe i_teste014
@@ -792,3 +798,51 @@ const s_reset = "S 100 teste014 3 S"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste014") && criar("i_teste014", este, 3)
+
+
+classe s_teste030
+herda b_teste
+const s_titulo = "Lojas e professores"
+const s_desc = "À leste há um vendedor e um professor.\n\
+Vai precisar de dinheiro se quiser comprar ou aprender algo.\n\
+Para ficar com mil moedas, tecle AA nessa sala."
+const dir_n = $s_teste026
+const dir_l = $s_teste031
+
+
+classe s_teste031
+herda b_teste
+const s_titulo = "Escola de luta"
+const s_desc = "Aqui pode-se ver o que é vendido, teclando lista seguido ou não de um item.\n\
+Os comandos comprar, vender e avaliar também podem ser usados em lojas.\n\
+Pode-se também saber o que é ensinado teclando aulas, seguido ou não de uma\n\
+habilidade. E para aprender, tecle aprender seguido de um número ou uma\n\
+habilidade mostrada no comando aulas."
+const dir_o = $s_teste030
+const s_reset = "P 100 teste007 0 0 1\nP 100 teste008 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste007:objsolto.total < 1
+    criar("p_teste007", este, 0)
+  fimse
+  se p_teste008:objsolto.total < 1
+    criar("p_teste008", este, 0)
+  fimse
+
+
+classe p_teste007
+herda comum_perso
+const nome = "João o mercenário"
+const sexoini = 1 # Sexo: 1 Masculino
+const lojaitem = "teste012 3\nteste013 0"
+const taxavenda = 20
+const taxacompra = 40
+
+
+classe p_teste008
+herda comum_perso
+const nome = "Faixa preta"
+const sexoini = 1 # Sexo: 1 Masculino
+const lojaaula = "h_Chutar 3\nh_Morder 4\ni_Hebráico 2"
+const taxaaula = 50

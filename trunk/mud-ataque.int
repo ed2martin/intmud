@@ -1,3 +1,232 @@
+classe jog_admatk
+# Comandos de itens
+#
+const adm_atk = "\b\c3Comandos de ataques\b\n\
+\c2LATK\b [nome]\n\
+  Lista ataques que começam com o nome especificado.\n\
+\c2CATK\b <nome>\n\
+  Cria um ataque. Nome deve ser o nome do ataque, e deve ser composto\n\
+  de letras, mas pode ter espaços no meio.\n\
+\c2EATK\b <nome>\n\
+  Edita ataque.\n\
+\c2AATK\b <nome>\n\
+  Apaga ataque."
+
+func cmd_latk # Listar ataques
+  prog p
+  textotxt t
+  txt100 lin
+  epara p.iniclasse("cmd_" + arg0), p.lin && t.linhas < 499, p.depois
+    continuar !$[p.texto].atkcom # Continua se não é um ataque
+    lin = txtmaimin(txt(p.texto, 4)) + ", "
+    lin += txtsublin(misc:atknomes, $[p.texto].tipoatk, 1)
+    casovar $[p.texto].tipoalvo
+    casose "1"
+      lin += ", todos dividindo ataque"
+      sair
+    casose "2"
+      lin += ", todos sem dividir ataque"
+      sair
+    casofim
+    t.addfim(lin)
+  efim
+  se t.linhas
+    t.addini("\bAtaque, Tipo, Alvo")
+    msg2(t.remove(500))
+  senao
+    msg("\bNenhum ataque encontrado.")
+  fimse
+  ret 1
+
+func cmd_catk # Criar ataque
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do ataque
+  se arg0 == ""
+    msg("Tecle o nome do ataque após CATK")
+    ret 1
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg0, EMDSA))
+  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
+    msg("Nome inválido para ataque: " + nome)
+    ret 1
+  senao p.existe("cmd_" + nome)
+    msg("Já existe o comando: " + nome)
+    ret 1
+  senao p.existe("soc_" + nome)
+    msg("Já existe o comando social: " + nome)
+    ret 1
+  fimse
+# Cria ataque
+  txt200 lin
+  lin = "cmd_" + txts(nome) + "\nb-ataque\nherda comando_ataque"
+  lin += "\nconst nomehab = \"" + txtmaimin(txte(nome)) + "\""
+  p.criar(lin)
+  config:salvar
+  msg("\bAtaque criado: " + nome)
+  admlog("criou ataque " + nome)
+  ret 1
+
+func cmd_aatk # Apagar ataque
+  prog p
+  se arg0 == ""
+    msg("Tecle um ou mais nomes de ataques após AATK")
+    ret 1
+  fimse
+  uint16 x
+  enquanto txtsub(arg0, x, 1)
+    se !p.existe("cmd_" + txtsub(arg0, x, 1))
+      msg("Ataque não existe: " + txtsub(arg0, x, 1))
+      ret 1
+    senao !$cmd_[txtsub(arg0, x, 1)].atkcom
+      msg("Comando não é um ataque: " + txtsub(arg0, x, 1))
+      ret 1
+    fimse
+    x += 1
+  efim
+  tpasso = arg0, p_aatk
+  ret 1
+
+func p_aatk # Confirmar que quer apagar ataque
+  passo = ""
+  se arg0 == "n"
+    msg("Cancelado")
+  senao arg0 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(tpasso, x, 1)
+      p.apagar("cmd_" + txtsub(tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      msg("Ataque apagado: " + tpasso)
+      admlog("apagou ataque " + tpasso)
+    senao
+      msg("Ataques apagados: " + tpasso)
+      admlog("apagou ataques " + tpasso)
+    fimse
+  senao
+    txt20 m1
+    passo = "aatk"
+    m1 = txt2(tpasso) ? "ataques" : "ataque"
+    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+func cmd_eatk # Editar ataque
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome do ataque após EATK")
+  senao !p.existe("cmd_" + arg0)
+    msg("Ataque não existe: " + arg0)
+  senao !$cmd_[arg0].atkcom
+    msg("Comando não é um ataque: " + arg0)
+  senao
+    var.classe1 = "cmd_" + txts(txtmin(arg0))
+    m_menu("adm_atk")
+  fimse
+  ret 1
+
+
+classe adm_atk
+const titulo = "Ataque " + txt(var.classe1, 4)
+#
+const nome1 = "Tipo de ataque"
+const tipo1 = "opcao"
+const classe1 = var.classe1
+const var1 = "tipoatk"
+const extra1 = misc:atknomes
+#
+const nome2 = "Alvo"
+const tipo2 = "opcao"
+const classe2 = var.classe1
+const var2 = "tipoalvo"
+const extra2 = "Um alvo\nTodos dividindo o ataque\nTodos sem dividir o ataque"
+#
+const nome3 = "Requer arma"
+const tipo3 = "vetor"
+const classe3 = var.classe1
+const var3 = "tipoarma"
+const extra3 = misc:arma_txt
+#
+const nome4 = "Precisão"
+const info4 = "Em porcentagem, maior que 100 nunca falha"
+const tipo4 = "numero"
+const classe4 = var.classe1
+const var4 = "precisao"
+#
+const nome5 = "Força"
+const info5 = "Em porcentagem"
+const tipo5 = "numero"
+const classe5 = var.classe1
+const var5 = "ataque"
+#
+const nome6 = "Velocidade"
+const info6 = "Em porcentagem"
+const tipo6 = "numero"
+const classe6 = var.classe1
+const var6 = "veloc"
+#
+const nome7 = "Consome vida"
+const info7 = "Quantos pontos de vida consome"
+const tipo7 = "numero"
+const classe7 = var.classe1
+const var7 = "usavida"
+#
+const nome8 = "Consome mana"
+const info8 = "Quantos pontos de mana consome"
+const tipo8 = "numero"
+const classe8 = var.classe1
+const var8 = "usamana"
+#
+const nome9 = "Consome vigor"
+const info9 = "Quantos pontos de vigor consome"
+const tipo9 = "numero"
+const classe9 = var.classe1
+const var9 = "usamove"
+#
+const nome10 = "Msg acertou"
+const info10 = "Mensagem quando quando acertou o alvo"
+const tipo10 = "linha"
+const classe10 = var.classe1
+const var10 = "msgacertou"
+#
+const nome11 = "Msg errou"
+const info11 = "Mensagem quando quando errou o alvo"
+const tipo11 = "linha"
+const classe11 = var.classe1
+const var11 = "msgerrou"
+#
+const nome12 = "Msg sem efeito"
+const info12 = "Mensagem quando quando o golpe não teve efeito"
+const tipo12 = "linha"
+const classe12 = var.classe1
+const var12 = "msgnulo"
+#
+const nome13 = "Preço da aula"
+const info13 = "Quantas moedas os personagens cobram para ensinar"
+const tipo13 = "numero"
+const classe13 = var.classe1
+const var13 = "valor"
+#
+const nome14 = "Depende de"
+const info14 = "Escreva aqui as habilidades necessárias para aprender esse ataque,\n\
+uma habilidade por linha."
+const tipo14 = "texto"
+const classe14 = var.classe1
+const var14 = "depende"
+#
+const nome15 = "Somente classes"
+const info15 = "Se esse ataque não existe em todas as classes, escreva aqui\n\
+em quais classes existe (uma classe por linha)"
+const tipo15 = "texto"
+const classe15 = var.classe1
+const var15 = "classes"
+
+
 classe comando_ataque
 herda comando_comum
 const objcmd = arg0.persobat.var.h_[nomehab] ? este
@@ -22,7 +251,7 @@ ref arma1 # Arma usada
 
 func txtajuda
   txt100 lin
-  lin = "\c2" + txtmaimin(nomehab) + "\b\n"
+  lin = "\c3" + txtmaimin(nomehab) + "\b\n"
   lin += "Ataque \"" + txtsublin(misc:atknomes, tipoatk, 1) + "\", força " + ataque + ", \
 velocidade " + vel
   ret extra ? lin + "\n" + extra : lin
@@ -192,22 +421,23 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     result = 0
     ret
   fimse
-  dano = matexp(dano * 0.34657359) # matexp(dano * matlog(2) / 2)
+  dano = matexp(dano * 0.34657359) # 0.34657359 = matlog(2) / 2
+  dano *= 2 + r.var.h_[nomehab] # Multiplica dano por um número de 2 a 10
 # Calcula dano com arma
   se arma1
     dano *= rand(arma1.armamin, arma1.armamax) * arg2
     dano *= rand(arma1.armamin, arma1.armamax) + 25
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano /= s.defmag * 300
+      dano /= s.defmag * 3000
     senao
-      dano /= s.defnorm * 300
+      dano /= s.defnorm * 3000
     fimse
-# Calcula dano sem arma; valor do rand é por volta de 300
+# Calcula dano sem arma; valor do rand é por volta de 3000
   senao
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= r.atkmag * (r.atkmag + 25) * arg2 / (s.defmag * rand(280, 340))
+      dano *= r.atkmag * (r.atkmag + 25) * arg2 / (s.defmag * rand(2800, 3400))
     senao
-      dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(280, 340))
+      dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(2800, 3400))
     fimse
     dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
   fimse
@@ -313,53 +543,3 @@ func escr
     ret
   efim
   arg0.msg("Você não vê " + arg1 + ".")
-
-
-classe cmd_socar
-herda comando_ataque
-const nomehab = "Socar"
-const msgacertou = "$R soca $c"
-const tipoatk = 0 # Normal
-const ataque = 40
-const vel = 80
-const extra = "Golpe físico de força"
-
-
-classe cmd_chutar
-herda comando_ataque
-const nomehab = "Chutar"
-const msgacertou = "$R chuta $c"
-const tipoatk = 0 # Normal
-const ataque = 70
-const vel = 50
-const extra = "Golpe físico de força"
-
-
-classe cmd_arremessar
-herda comando_ataque
-const nomehab = "Arremessar"
-const msgacertou = "$R se joga contra $c"
-const tipoatk = 0 # Normal
-const ataque = 80
-const vel = 30
-const extra = "Golpe físico de força"
-
-
-classe cmd_morder
-herda comando_ataque
-const nomehab = "Morder"
-const msgacertou = "$R morde $c"
-const tipoatk = 0 # Normal
-const ataque = 50
-const vel = 60
-const extra = "Golpe físico de força"
-
-
-classe cmd_cortar
-herda comando_ataque
-const nomehab = "Cortar"
-const tipoatk = 2 # Tipo de ataque: 2 Cortante
-const tipoarma = 2 # Requer arma: Lâmina curta
-const usamove = 5
-const msgacertou = "$R corta $c"
-const msgerrou = "$R tenta cortar $c"
