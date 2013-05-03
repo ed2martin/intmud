@@ -471,7 +471,7 @@ const posic = 5
 
 func escr
   ret !arg1, arg0.msg("Empunhar o que?")
-  ret arg0.iempu.0, arg0.msg("Você já está empunhando uma arma.")
+  ret arg0.iempu, arg0.msg("Você já está empunhando uma arma.")
 # Empunha
   listaobj l
   ref r
@@ -482,8 +482,10 @@ func escr
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     se !r.armatipo
       ret arg0.msg(txtmaimin(r.nome) + " não é arma.")
-    senao r.pnivel > arg0.pnivel
+    senao int(r.pnivel) > arg0.pnivel
       ret arg0.msg(txtmaimin(r.nome) + " é um item do nível " + r.pnivel + ".")
+    senao config:atktipo && !arg0.var.h_[txtsublin(misc:arma_txt, r.armatipo, 1)]
+      ret arg0.msg("Você não conhece " + txtsublin(misc:arma_txt, r.armatipo, 1) + ".")
     fimse
     r.vestir(30)
     r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P empunha $t $a.")

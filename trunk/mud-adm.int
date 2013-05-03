@@ -708,7 +708,7 @@ func p_vetor # Alterando uma opção de uma lista de opções
     fimse
     x = 1 << x ^ [var.opcclasse]:[var.opcvar]
     txt100 lin
-    lin = t_vetormostra(x, var.opcextra)
+    lin = txtcor(t_vetormostra(x, var.opcextra))
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + lin)
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)

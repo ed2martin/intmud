@@ -268,18 +268,25 @@ const tipo20 = "numero"
 const classe20 = var.classe1
 const var20 = "armamax"
 #
-const nome21 = "Pega animal nível"
-const info21 = "Nível médio dos animais que podem ser capturados com esse item,\n\
-ou 0 se não puder capturar"
-const tipo21 = "numero"
+const nome21 = "Ataque tipo"
+const info21 = "Somente em ataque automático (vide comando ECONFIG)"
+const tipo21 = "opcao"
 const classe21 = var.classe1
-const var21 = "i_captura"
+const var21 = "armatipoatk"
+const extra21 = misc:atknomes
 #
-const nome22 = "Chave"
-const info22 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo22 = "linha"
+const nome22 = "Pega animal nível"
+const info22 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+ou 0 se não puder capturar"
+const tipo22 = "numero"
 const classe22 = var.classe1
-const var22 = "i_chave"
+const var22 = "i_captura"
+#
+const nome23 = "Chave"
+const info23 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo23 = "linha"
+const classe23 = var.classe1
+const var23 = "i_chave"
 #
 const nome41 = "Variáveis"
 const tipo41 = "linha"
@@ -352,45 +359,45 @@ classe adm_item3
 herda adm_item1
 const titulo = "Item " + txt(var.classe1, 2)
 #
-const nome23 = "Mobília"
-const tipo23 = "opcao"
-const classe23 = var.classe1
-const var23 = "i_movel"
-const extra23 = "Não\nPodem sentar\nPodem sentar e deitar"
-#
-const nome24 = "Lugares"
-const tipo24 = "numero"
+const nome24 = "Mobília"
+const tipo24 = "opcao"
 const classe24 = var.classe1
-const var24 = "i_lugar"
+const var24 = "i_movel"
+const extra24 = "Não\nPodem sentar\nPodem sentar e deitar"
 #
-const nome25 = "Container"
-const tipo25 = "opcao"
+const nome25 = "Lugares"
+const tipo25 = "numero"
 const classe25 = var.classe1
-const var25 = "i_abertoini"
-const mudou25 = "recalc_exec"
-const extra25 = "Não\n\
+const var25 = "i_lugar"
+#
+const nome26 = "Container"
+const tipo26 = "opcao"
+const classe26 = var.classe1
+const var26 = "i_abertoini"
+const mudou26 = "recalc_exec"
+const extra26 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado"
 #
-const nome26 = "Trancar"
-const tipo26 = "opcao"
-const classe26 = var.classe1
-const var26 = "i_tranc"
-const extra26 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
-#
-const nome27 = "Fechadura"
-const info27 = "Código da chave que tranca e destranca o container"
-const tipo27 = "linha"
+const nome27 = "Trancar"
+const tipo27 = "opcao"
 const classe27 = var.classe1
-const var27 = "i_fechadura"
+const var27 = "i_tranc"
+const extra27 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome28 = "Tipo de luz"
-const tipo28 = "opcao"
+const nome28 = "Fechadura"
+const info28 = "Código da chave que tranca e destranca o container"
+const tipo28 = "linha"
 const classe28 = var.classe1
-const var28 = "luzitem"
-const extra28 = "Não aceita acender/apagar, sem fogo\n\
+const var28 = "i_fechadura"
+#
+const nome29 = "Tipo de luz"
+const tipo29 = "opcao"
+const classe29 = var.classe1
+const var29 = "luzitem"
+const extra29 = "Não aceita acender/apagar, sem fogo\n\
 Lanterna (acende/apaga, sem fogo)\n\
 Lanterna 2 (acende/apaga, inclusive na água)\n\
 Não aceita acender/apagar, produz fogo\n\
@@ -398,25 +405,25 @@ Lampião (acende/apaga, produz fogo)\n\
 Fósforo (acende uma vez, produz fogo)\n\
 Tocha (acende com fogo, produz fogo)"
 #
-const nome29 = "Duração da luz"
-const info29 = "Em décimos de segundo, se menor que zero começa apagado"
-const tipo29 = "numero"
-const classe29 = var.classe1
-const var29 = "luzini"
-#
-const nome30 = "Acendeu mensagem"
-const tipo30 = "linha"
+const nome30 = "Duração da luz"
+const info30 = "Em décimos de segundo, se menor que zero começa apagado"
+const tipo30 = "numero"
 const classe30 = var.classe1
-const var30 = "luzliga"
+const var30 = "luzini"
 #
-const nome31 = "Sem luz mensagem"
-const info31 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const nome31 = "Acendeu mensagem"
 const tipo31 = "linha"
 const classe31 = var.classe1
-const var31 = "luztxt"
+const var31 = "luzliga"
 #
-const nome32 = "Sem luz item some"
-const info32 = "Se o item some (é apagado) quando a luz acaba"
-const tipo32 = "simnao"
+const nome32 = "Sem luz mensagem"
+const info32 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo32 = "linha"
 const classe32 = var.classe1
-const var32 = "luzfim"
+const var32 = "luztxt"
+#
+const nome33 = "Sem luz item some"
+const info33 = "Se o item some (é apagado) quando a luz acaba"
+const tipo33 = "simnao"
+const classe33 = var.classe1
+const var33 = "luzfim"

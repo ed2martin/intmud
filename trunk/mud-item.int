@@ -36,7 +36,7 @@ func vestir # Veste o item, arg0=posição
   r = dono, idono.remove, vestpos = arg0
   se vestpos
     idono = r.dentro2.addfim(este)
-    vestpos == 30 && (r.iempu.0 ? r.iempu.1 : r.iempu.0 = idono)
+    vestpos == 30 && (r.iempu = idono)
   senao
     idono = r.dentro1.addfim(este)
 
@@ -103,7 +103,7 @@ func vestir # Veste o item, arg0=posição
     vestpos = pos
     ref r
     r = dono, idono.remove, idono = r.dentro2.addfim(este)
-    vestpos == 30 && (r.iempu.0 ? r.iempu.1 : r.iempu.0 = idono)
+    vestpos == 30 && (r.iempu = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
     objtot -= 1, ajustapeso
@@ -111,7 +111,7 @@ func vestir # Veste o item, arg0=posição
     r = criar(este)
     r.dono = dono, r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
-    vestpos == 30 && (r.iempu.0 ? r.iempu.1 : r.iempu.0 = idono)
+    vestpos == 30 && (r.iempu = idono)
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)
