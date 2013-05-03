@@ -727,6 +727,7 @@ const armaprecisao = 100
 const armamin = 70
 const armamax = 120
 const valor = 50
+const armatipoatk = 2 # Ataque tipo: 2 Cortante
 
 
 classe i_teste013
@@ -776,13 +777,14 @@ São as funções cmd_recalc1 no personagem, cmd_recalc2 no item e recalc no\n\
 tipo de personagem. Veja as classes i_teste012 e p_teste006 do arquivo\n\
 mud-a-teste.int e as classes do final do arquivo mud-tipo.int."
 const dir_o = $s_teste026
-const dir_l = $s_teste029
 const s_reset = "S 100 teste012 3 S\nS 100 teste013 3 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
   !dentro1.objini("i_teste013") && criar("i_teste013", este, 3)
+
+const dir_l = $s_teste032
 
 
 classe s_teste029
@@ -792,7 +794,7 @@ const s_desc = "Alguns itens só podem ser vestidos ou empunhados por determinado
 personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
 Quem define isso é a função cmd_podevestir do item. Veja a classe i_teste014\n\
 no arquivo mud-a-teste.int."
-const dir_o = $s_teste028
+const dir_o = $s_teste032
 const s_reset = "S 100 teste014 3 S"
 
 func s_reset1 # Realiza o reset
@@ -808,6 +810,15 @@ Vai precisar de dinheiro se quiser comprar ou aprender algo.\n\
 Para ficar com mil moedas, tecle AA nessa sala."
 const dir_n = $s_teste026
 const dir_l = $s_teste031
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr # Escreveu algo
+  se arg1 == "aa"
+    arg0.var.z_moedas = 1000
+    arg0.msg("Agora você tem 1000 moedas.")
+    ret 1
 
 
 classe s_teste031
@@ -838,11 +849,46 @@ const sexoini = 1 # Sexo: 1 Masculino
 const lojaitem = "teste012 3\nteste013 0"
 const taxavenda = 20
 const taxacompra = 40
+const lojanao = ""
 
 
 classe p_teste008
 herda comum_perso
 const nome = "Faixa preta"
 const sexoini = 1 # Sexo: 1 Masculino
-const lojaaula = "h_Chutar 3\nh_Morder 4\ni_Hebráico 2"
+const lojaaula = "h_Chutar 3\nh_Voadora 7\nh_Morder 4\ni_Hebráico 2"
 const taxaaula = 50
+const lojanao = ""
+
+
+classe s_teste032
+herda b_teste
+const s_titulo = "Ataques manuais e automáticos"
+const s_desc = "Os ataques do MUD podem ser automáticos ou manuais. Isso é definido com\n\
+o comando ECONFIG.\n\
+Se você escolher ataque automático, para empunhar uma arma é necessário\n\
+saber lidar com aquele tipo de arma. Este sujeito aqui ensina essas\n\
+habilidades. Tecle AULAS para saber o que ele ensina e APRENDER seguido\n\
+de um número ou nome para aprender. A cada aula você aprende mais."
+const dir_o = $s_teste028
+const dir_l = $s_teste029
+const s_reset = "P 100 teste009 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste009:objsolto.total < 1
+    criar("p_teste009", este, 0)
+  fimse
+
+
+classe p_teste009
+herda comum_perso
+const nome = "Perito"
+const sexoini = 1 # Sexo: 1 Masculino
+const lojaaula = "h_Lâmina_curta 8\n\
+h_Lâmina_longa 8\n\
+h_Martelo 8\n\
+h_Arma_flexível 8\n\
+h_Arma_exótica 8\nh_Garra 8"
+const taxaaula = 50
+const lojanao = ""

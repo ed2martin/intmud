@@ -328,7 +328,7 @@ func p_menuaula_a # Apagar uma aula
     se t.bytes <= 1
       p.apagar(var.opcclasse, var.opcvar)
     senao
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
     fimse
     config:salvar
@@ -353,7 +353,7 @@ func p_menuprod_a # Apagar um produto
     se t.bytes <= 1
       p.apagar(var.opcclasse, var.opcvar)
     senao
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
     fimse
     config:salvar
@@ -412,7 +412,7 @@ func p_menuaula1 # Inserir ou editar aula
       !var.opcinserir && pos.remove
       pos.add(txtsub(var.opclin, 1, 1) + "_" + txtsub(var.opclin, 2))
       prog p
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
       config:salvar
       admlog("alterou aulas: " + var.opcclasse + ":" + var.opcvar)
@@ -449,7 +449,7 @@ func p_menuprod1 # Inserir ou editar produto
       !var.opcinserir && pos.remove
       pos.add(txt2(var.opclin))
       prog p
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
       config:salvar
       var.opclin = txtsub(var.opclin, 1, 1)

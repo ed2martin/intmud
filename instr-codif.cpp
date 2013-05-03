@@ -375,7 +375,19 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
             if (*origem==0)
                 break;
-            *destino++ = *origem++;
+            switch (*origem)
+            {
+            case ex_barra_n: *destino++ = ' ';
+            case ex_barra_b: origem++; break;
+            case ex_barra_c:
+            case ex_barra_d:
+                origem++;
+                if (origem[0])
+                    origem++;
+                break;
+            default:
+                *destino++ = *origem++;
+            }
         }
         while (destino[-1]==' ')
             destino--;
@@ -869,7 +881,20 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 copiastr(dest_ini, "Instrução muito grande", tamanho);
                 return false;
             }
-            destino = copiastr(destino, origem);
+            while (*origem)
+                switch (*origem)
+                {
+                case ex_barra_n: *destino++ = ' ';
+                case ex_barra_b: origem++; break;
+                case ex_barra_c:
+                case ex_barra_d:
+                    origem++;
+                    if (origem[0])
+                        origem++;
+                    break;
+                default:
+                    *destino++ = *origem++;
+                }
             while (destino>final && destino[-1]==' ')
                 destino--;
         }
@@ -1333,7 +1358,20 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                     copiastr(dest_ini, "Instrução muito grande", tamanho);
                     return false;
                 }
-                destino = copiastr(destino, origem);
+                while (*origem)
+                    switch (*origem)
+                    {
+                    case ex_barra_n: *destino++ = ' ';
+                    case ex_barra_b: origem++; break;
+                    case ex_barra_c:
+                    case ex_barra_d:
+                        origem++;
+                        if (origem[0])
+                            origem++;
+                        break;
+                    default:
+                        *destino++ = *origem++;
+                    }
                 while (destino[-1]==' ')
                     destino--;
             }
