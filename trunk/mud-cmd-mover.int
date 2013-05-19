@@ -185,7 +185,7 @@ func escr
     arg0.iseguir.remove
     arg0.msg("Você não segue ninguém.")
   senao i.obj.jog ? !i.obj.jogconfig.5 : i.obj.p_naoseguir(arg0)
-    arg0.msg("Você não consegue seguir " + txtmaimin(i.obj.nome) + ".")
+    arg0.msg("Você não consegue seguir " + txtcopiamai(i.obj.nome, "A") + ".")
   senao
     arg0.iseguir.remove
     arg0.iseguir = i.obj.lseguir.addfim(arg0)
@@ -224,9 +224,9 @@ func escrobj # Abrir um item
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtmaimin(r.nome) + " já está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está abert" + misc:sletra[r.sexo] + ".")
   casose "4"
-    ret arg0.msg(txtmaimin(r.nome) + " está trancad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " está trancad" + misc:sletra[r.sexo] + ".")
   casose
     ret arg0.msg("Não foi possível abrir " + r.nome + ".")
   casose "3"
@@ -308,7 +308,7 @@ func escrobj # Fechar um item
   casovar r.i_aberto
   casose "3"
   casose "4"
-    ret arg0.msg(txtmaimin(r.nome) + " já está fechad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está fechad" + misc:sletra[r.sexo] + ".")
   casose
     ret arg0.msg("Não foi possível fechar " + r.nome + ".")
   casose "2"
@@ -394,11 +394,11 @@ func escrobj # Destrancar um item
   r = i.obj, misc:obj = arg0
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtmaimin(r.nome) + " está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
   casose "3"
-    ret !r.i_tranc, arg0.msg(txtmaimin(r.nome) + " não pode ser trancad" + misc:sletra[r.sexo] + \
+    ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.sexo] + \
 ".")
-    ret arg0.msg(txtmaimin(r.nome) + " não está trancad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " não está trancad" + misc:sletra[r.sexo] + ".")
   casose
     ret arg0.msg("Não foi possível destrancar " + r.nome + ".")
   casose "4"
@@ -502,14 +502,14 @@ func escrobj # Trancar um item
   r = i.obj, misc:obj = arg0
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtmaimin(r.nome) + " está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
   casose "4"
-    ret arg0.msg(txtmaimin(r.nome) + " já está trancad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está trancad" + misc:sletra[r.sexo] + ".")
   casose
     ret arg0.msg("Não foi possível trancar " + r.nome + ".")
   casose "3"
   casofim
-  ret !r.i_tranc, arg0.msg(txtmaimin(r.nome) + " não pode ser trancad" + misc:sletra[r.sexo] + \
+  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.sexo] + \
 ".")
 # Procura a chave
   ref chave

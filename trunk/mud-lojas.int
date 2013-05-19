@@ -30,24 +30,24 @@ func escr1 # Consultar a lista de itens
     continuar l.objini.atkenv || !l.objini.lojaitem(arg0)
     lin = l.objini.cmd_loja(arg0)
     se lin
-      t.addfim(txtmaimin(l.objini.nome) + ": " + lin)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": " + lin)
       continuar
     senao tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Não negocio com " + arg0.tipo1)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
     senao tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Não negocio com " + arg0.tipo2)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Não negocio com " + arg0.tipo2)
       continuar
     senao tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Não negocio com " + arg0.tipo3)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Não negocio com " + arg0.tipo3)
       continuar
     fimse
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Volte outra hora")
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Volte outra hora")
       continuar
     fimse
-    t.addfim("\b\c6" + txtmaimin(l.objini.nome) + " vende:\b")
+    t.addfim("\b\c6" + txtcopiamai(l.objini.nome, "A") + " vende:\b")
     lucro = (100 + l.objini.taxavenda) / 100
     textotxt t2
     t2.addfim(l.objini.lojaitem(arg0))
@@ -88,7 +88,7 @@ func escr2 # Consultar um item
       nivel == 0 && (nivel = [lin]:nivel)
       valor = lucro * [lin]:valor
       t2.limpar
-      t2.addfim("\b\c6" + txtmaimin(l.objini.nome) + " mostra:\b")
+      t2.addfim("\b\c6" + txtcopiamai(l.objini.nome, "A") + " mostra:\b")
       t2.addfim([lin]:nome + ", nível " + nivel + ", custa $" + valor + ".")
       se [lin]:descver(arg0)
         t2.addfim([lin]:descver(arg0))
@@ -134,24 +134,24 @@ func escr1 # Consultar a lista de aulas
     continuar l.objini.atkenv || !l.objini.lojaaula(arg0)
     lin = l.objini.cmd_ensinar(arg0)
     se lin
-      t.addfim(txtmaimin(l.objini.nome) + ": " + lin)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": " + lin)
       continuar
     senao tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Não negocio com " + arg0.tipo1)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
     senao tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Não negocio com " + arg0.tipo2)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Não negocio com " + arg0.tipo2)
       continuar
     senao tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Não negocio com " + arg0.tipo3)
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Não negocio com " + arg0.tipo3)
       continuar
     fimse
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      t.addfim(txtmaimin(l.objini.nome) + ": Volte outra hora")
+      t.addfim(txtcopiamai(l.objini.nome, "A") + ": Volte outra hora")
       continuar
     fimse
-    t.addfim("\b\c6" + txtmaimin(l.objini.nome) + " ensina:\b")
+    t.addfim("\b\c6" + txtcopiamai(l.objini.nome, "A") + " ensina:\b")
     lucro = l.objini.taxaaula / 100
     textotxt t2
     t2.addfim(l.objini.lojaaula(arg0))
@@ -159,8 +159,7 @@ func escr1 # Consultar a lista de aulas
       continuar !(lin = t2.remove)
       aulas = txt2(lin)
       valor = lucro * $cmd_[txt(txt1(lin), 2)].valor(arg0)
-      lin = (txt(lin, 0, 2) == "i_" ? "Idioma " : "") + txte(txt(txt1(lin), 2))
-      lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + lin
+      lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + misc:nomevar(lin)
       lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
       aulas && (lin += "   (" + txtsublin(misc:aulas, aulas, 1) + ")")
       t.addfim(lin), linha += 1
@@ -169,7 +168,7 @@ func escr1 # Consultar a lista de aulas
   se t.linhas
     arg0.msg2(t.remove(1000))
   senao
-    arg0.msg("Ninguém ensina nada aqui.")
+    arg0.msg("Não há professores aqui.")
 
 func escr2 # Consultar uma aula
   listaobj l
@@ -185,8 +184,7 @@ func escr2 # Consultar uma aula
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
-      lin = (txt(lin, 0, 2) == "i_" ? "Idioma " : "") + txte(txt(txt1(lin), 2))
-      linha += 1
+      lin = misc:nomevar(lin), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
       ref r
       r = $cmd_[txt(txt1(t2.ini.texto), 2)]
@@ -198,7 +196,7 @@ func escr2 # Consultar uma aula
         t2.limpar
         t2.addfim("\b\c3" + lin + "\b")
       fimse
-      t2.addini("\b\c6" + txtmaimin(l.objini.nome) + " explica:\b")
+      t2.addini("\b\c6" + txtcopiamai(l.objini.nome, "A") + " explica:\b")
       lin = "Ensino até o nível " + txtmin(txtsublin(misc:aulas, aulas, 1))
       lin += valor <= 0 ? ", não cobro nada." : ", cobro $" + valor + " por aula."
       t2.addfim(lin)
@@ -242,8 +240,7 @@ func escr
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
-      lin = (txt(lin, 0, 2) == "i_" ? "Idioma " : "") + txte(txt(txt1(lin), 2))
-      linha += 1
+      lin = misc:nomevar(lin), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
 # Obtém variáveis
       ref r
@@ -255,20 +252,43 @@ func escr
       nomevar = txt1(t2.ini.texto)
       se arg0.var.[nomevar]_ >= aulas
         lin = "Não tenho mais o que ensinar sobre " + lin + "."
-        ret arg0.msg(txtmaimin(l.objini.nome) + ": " + lin)
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
+      fimse
+# Checa se está limitado a alguns tipos (raças/classes)
+      se !r.tipoperso
+      senao tipo1 && txtproc("\n" + r.tipoperso + "\n", tipo1) >= 0
+      senao tipo2 && txtproc("\n" + r.tipoperso + "\n", tipo2) >= 0
+      senao tipo3 && txtproc("\n" + r.tipoperso + "\n", tipo3) >= 0
+      senao
+        lin = "Não tem como ensinar " + lin + " para sua raça e classe."
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
+      fimse
+# Checa se possui o nível necessário
+      se arg0.pnivel < int(r.aulaini)
+        lin = "Você não possui o nível necessário."
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
+      senao arg0.pnivel >= int(r.aulafim)
+      senao
+        linha = arg0.pnivel - r.aulaini + 1
+        linha *= inttotal(misc:aulas) / (r.aulafim - r.aulaini + 1)
+        se arg0.var.[nomevar]_ < linha
+          lin = "Você não possui o nível necessário."
+          ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
+        fimse
       fimse
 # Checa se conhece as habilidades necessárias
       t2.limpar
       epara t2.addfim(r.depende), t2.linhas, t2.remove
         continuar !t2.ini.texto
-        continuar arg0.var.h_[t2.ini.texto]_ > arg0.var.[nomevar]_
-        lin = "Você não conhece o suficiente sobre " + t2.ini.texto + "."
-        ret arg0.msg(txtmaimin(l.objini.nome) + ": " + lin)
+        continuar arg0.var.[t2.ini.texto]_ > arg0.var.[nomevar]_
+        lin = misc:nomevar(t2.ini.texto)
+        lin = "Você não conhece o suficiente sobre " + lin + "."
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
       efim
 # Checa se personagem pode pagar
       se valor >= 0 && arg0.var.z_moedas_ < valor
         lin = "Você não tem $" + valor + " e eu não ensino " + lin + " de graça."
-        ret arg0.msg(txtmaimin(l.objini.nome) + ": " + lin)
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
       fimse
 # Ensina
       arg0.var.z_moedas_ -= valor
@@ -285,20 +305,105 @@ func escr
   arg0.msg("Ninguém ensina isso aqui.")
 
 
+classe cmd_comprar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Comprar\b\n\
+Sintaxe: COMPRAR <nome ou número do objeto>\n\
+         COMPRAR <quantidade>  <nome ou número do objeto>\n\
+Compra objetos de um vendedor.\n\
+Para saber o que é vendido em algum lugar, tecle LISTA."
+txt200 lin
+int8 abre # Usado internamente: horário de abertura
+int8 fecha # Usado internamente: horário de fechamento
+uint32 valor # Usado internamente: preço da aula
+uint32 nivel # Usado internamente: nível do item
+real lucro # Para calcular o lucro do vendedor
+int32 linha
+txt100 nomeitem # O nome do item que está procurando
+uint16 total # Quantos itens quer combrar
+txt30 tipo1 # arg0.tipo1
+txt30 tipo2 # arg0.tipo2
+txt30 tipo3 # arg0.tipo3
+
+func escr
+  ret !arg1, arg0.msg("Comprar o quê?")
+  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  listaobj l
+  nomeobj n
+  total = txt1(arg1)
+  se intsub(arg1) < 2 || total == 0 || txt(total) != txt1(arg1)
+    total = 1, nomeitem = arg1
+  senao
+    nomeitem = txt2(arg1)
+  fimse
+  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
+  epara l.remove(arg0), l, l.ini.remove
+    continuar l.objini.atkenv || !l.objini.lojaitem(arg0) || l.objini.cmd_loja(arg0)
+    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
+    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    textotxt t2
+    epara t2.addfim(l.objini.lojaitem(arg0)), t2.linhas, t2.remove
+      continuar !t2.ini.texto
+      lin = "i_" + txt1(t2.ini.texto), linha += 1
+      continuar !n.nome([lin]:nome, 1) && txt(linha) != nomeitem
+# Obtém variáveis
+      lucro = (100 + l.objini.taxavenda) / 100
+      nivel = txt2(t2.ini.texto)
+      nivel == 0 && (nivel = [lin]:nivel)
+      valor = lucro * [lin]:valor
+# Checa a quantidade de itens
+      se [lin]:item == 2
+        total > 100 && (total = 100), linha = 1
+      senao
+        total > 10 && (total = 10), linha = total
+      fimse
+# Checa se pode carregar os itens
+      se arg0.dentro1.total + linha > arg0.objmax
+        ret arg0.msg("Você não consegue carregar tanta coisa nada.")
+      senao arg0.volden + [lin]:volobj * total > [lin]:volmax
+        ret arg0.msg("Você não consegue carregar tanta coisa.")
+      senao arg0.pesoden - arg0.pesoveste + [lin]:pesoobj * total > arg0.pesomax
+        ret arg0.msg("Você não consegue carregar tanto peso.")
+      fimse
+# Checa se tem dinheiro suficiente
+      se arg0.var.z_moedas_ < valor * total
+        lin = "Você não tem $" + valor * total + "."
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + ": " + lin)
+      fimse
+# Cria o item
+      ref r
+      se [lin]:item == 2
+        r = criar(lin, arg0, total)
+      senao
+        epara linha = 0, linha < total, linha += 1
+          r = criar(lin, arg0, nivel)
+        efim
+      fimse
+      arg0.var.z_moedas_ -= valor * total
+# Avisa que comprou o item
+      $mens.p(arg0, l.objini, r)
+      se total == 1
+        $mens.mtodos1("$P compra $o de $A.")
+      senao
+        $mens.mtodos1("$P compra " + total + "x $o de $A.")
+      fimse
+      ret
+    efim
+  efim
+  arg0.msg("Ninguém vende isso aqui.")
+
+
 classe cmd_avaliar
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Avaliar\b\nEsse comando ainda não foi implementado"
 
 func escr
   arg0.msg("Avaliar: Esse comando ainda não foi implementado")
-
-
-classe cmd_comprar
-herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Comprar\b\nEsse comando ainda não foi implementado"
-
-func escr
-  arg0.msg("Comprar: Esse comando ainda não foi implementado")
 
 
 classe cmd_vender

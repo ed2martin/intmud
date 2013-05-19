@@ -81,11 +81,14 @@ Calçando"
 #
 # Tipos de arma
 const arma_txt = "Sem armas\n\
+Varinha\n\
+Cajado\n\
 Lâmina curta\n\
 Lâmina longa\n\
-Martelo\n\
-Arma flexível\n\
-Arma exótica\nGarra"
+Maca e Martelo\n\
+Mangual\n\
+Chicote e Corrente\n\
+Arma exótica"
 #
 # Nomes dos diversos tipos de ataque
 const atknomes = "Contusão\n\
@@ -153,6 +156,19 @@ func atkesp # Tipos de golpes
   casofim
   ret 0 # Tipo desconhecido: golpe normal
 
+func nomevar # Retorna o nome da habilidade/magia/idioma a partir do nome da variável
+# arg0 = nome da variável
+  casovar txt(arg0, 0, 2)
+  casose "i_"
+    ret "Idioma " + txte(txt(txt1(arg0), 2))
+  sair
+  casose "m_"
+    ret "Magia " + txte(txt(txt1(arg0), 2))
+    sair
+  casose
+    ret txte(txt(txt1(arg0), 2))
+  casofim
+  
 func separa # Separa o nome do objeto do nome do destino
 # arg0 = texto completo
 # Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo

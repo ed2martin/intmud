@@ -19,9 +19,9 @@ func escr
     se !r.luzitem || r.luzitem == 3
       ret arg0.msg("Você não consegue acender " + r.nome + ".")
     senao !r.luztempo
-      ret arg0.msg(txtmaimin(r.nome) + " não acende mais.")
+      ret arg0.msg(txtcopiamai(r.nome, "A") + " não acende mais.")
     senao r.luztempo > 0
-      ret arg0.msg(txtmaimin(r.nome) + " já está aces" + (r.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(r.nome, "A") + " já está aces" + (r.sexo ? "o." : "a."))
     senao r.luzitem == 6 # Se requer fogo para acender
       l.limpar
       epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
@@ -67,7 +67,7 @@ func escr
     se !r.luzitem || r.luzitem == 3
       ret arg0.msg("Você não consegue apagar " + r.nome + ".")
     senao !r.luztempo || r.luztempo < 0
-      ret arg0.msg(txtmaimin(r.nome) + " já está apagad" + (r.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(r.nome, "A") + " já está apagad" + (r.sexo ? "o." : "a."))
     fimse
 # Eventos
     l.limpar
@@ -116,9 +116,9 @@ func escr
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
-      ret arg0.msg(txtmaimin(sala.nome) + " não é container.")
+      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não é container.")
     senao sala.i_aberto > 2
-      ret arg0.msg(txtmaimin(sala.nome) + " está fechad" + (sala.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(sala.nome, "A") + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
     mens = " de $t $a."
   fimse
@@ -132,10 +132,9 @@ func escr
     total = n # Quantidade de itens
     se arg0.dentro1.total + total > arg0.objmax
       ret arg0.msg("Você não consegue carregar tanta coisa nada.")
-    senao arg0.volden + l.objini.voltot * total > arg0.volmax * l.objini.objtot
+    senao arg0.volden + l.objini.voltot * total > arg0.volmax
       ret arg0.msg("Você não consegue carregar tanta coisa.")
-    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total > arg0.pesomax * l.objini.objt\
-ot
+    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total > arg0.pesomax
       ret l.objini.pesotot > l.objini.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
       ret arg0.msg("Você não consegue carregar tanto peso.")
     fimse
@@ -233,9 +232,9 @@ func escr
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
-      ret arg0.msg(txtmaimin(sala.nome) + " não é container.")
+      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não é container.")
     senao sala.i_aberto > 2
-      ret arg0.msg(txtmaimin(sala.nome) + " está fechad" + (sala.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(sala.nome, "A") + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
     mens = " em $t $a"
   fimse
@@ -335,9 +334,9 @@ func escr
       se i.obj == arg0
         ret arg0.msg("Dar para você mesmo?")
       senao !l.objini.jog
-        ret arg0.msg(txtmaimin(l.objini.nome) + " não é jogador.")
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + " não é jogador.")
       senao !l.objini.animalnum
-        ret arg0.msg(txtmaimin(l.objini.nome) + " não tem espaço para receber animal.")
+        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + " não tem espaço para receber animal.")
       fimse
       listaobj e
       epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
@@ -375,13 +374,15 @@ func escr
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    se sala.dentro1.total >= sala.objmax
-      ret arg0.msg(txtmaimin(sala.nome) + " não consegue carregar mais nada.")
-    senao sala.volden + l.objini.voltot > sala.volmax
-      ret arg0.msg(txtmaimin(sala.nome) + " não consegue carregar isso.")
+    total = n # Quantidade de itens
+    se sala.dentro1.total + total >= sala.objmax
+      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não consegue carregar mais nada.")
+    senao sala.volden + l.objini.voltot * total > sala.volmax
+      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não consegue carregar isso.")
+    senao sala.pesoden - sala.pesoveste + l.objini.pesotot * total > sala.pesomax
+      ret arg0.msg("É pesado de mais para " + txtcopiamai(sala.nome, "A") + ".")
     fimse
     listaobj e
-    total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
       sair e.objini.cmd_darobj(arg0, sala, l.objini, total)
     efim
@@ -436,7 +437,7 @@ func escr
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     total += n
     se r.pnivel > arg0.pnivel
-      arg0.msg(txtmaimin(r.nome) + " é um item do nível " + r.pnivel + ".")
+      arg0.msg(txtcopiamai(r.nome, "A") + " é um item do nível " + r.pnivel + ".")
       continuar
     fimse
     uint8 x
@@ -481,9 +482,9 @@ func escr
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     se !r.armatipo
-      ret arg0.msg(txtmaimin(r.nome) + " não é arma.")
+      ret arg0.msg(txtcopiamai(r.nome, "A") + " não é arma.")
     senao int(r.pnivel) > arg0.pnivel
-      ret arg0.msg(txtmaimin(r.nome) + " é um item do nível " + r.pnivel + ".")
+      ret arg0.msg(txtcopiamai(r.nome, "A") + " é um item do nível " + r.pnivel + ".")
     senao config:atktipo && !arg0.var.h_[txtsublin(misc:arma_txt, r.armatipo, 1)]
       ret arg0.msg("Você não conhece " + txtsublin(misc:arma_txt, r.armatipo, 1) + ".")
     fimse
@@ -540,10 +541,10 @@ func escr
   ref r
   ref item # Item usado para capturar
 # Checa se sabe o nome do item
-  ret !arg1 && !arg0.var.j_captura, arg0.msg("Capturar com o quê?")
+  ret !arg1 && !arg0.var.z_captura, arg0.msg("Capturar com o quê?")
 # Obtém o item
   nomeobj n # Para reconhecer os itens
-  n.ini(arg1 ? arg1 : arg0.var.j_captura, 1000000)
+  n.ini(arg1 ? arg1 : arg0.var.z_captura, 1000000)
   listaobj l
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
@@ -554,7 +555,7 @@ func escr
   efim
 # Checa se pode capturar
   ret !item, arg0.msg(arg1 ? "Você não vê isso." : "Capturar com o quê?")
-  arg1 && (arg0.var.j_captura = arg1)
+  arg1 && (arg0.var.z_captura = arg1)
   r = arg0.atkenv.objlista # Alvo do personagem
   se !r
     se arg1

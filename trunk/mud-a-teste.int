@@ -88,42 +88,27 @@ testes, digite econfig, como administrador e mude a opção \"Sala inicial\"\n\
 para ini001. Inicialmente a senha de administração é x2."
 const s_luz = 1 # Luz: 1 Claro sem eventos de tempo
 const dir_n = $s_ini001
-const dir_s = $s_teste003
+const dir_s = $s_teste002
 const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_s
-  arg0.var.h_socar = 3
-  arg0.var.h_chutar = 3
-  arg0.pnivel = 1
+  !arg0.var.h_socar && (arg0.var.h_socar = 3)
+  !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
+  !arg0.pnivel && (arg0.pnivel = 1)
   arg0.recalc = 1
   arg0.var.z_salafim = dir_s
 
 
 classe s_teste002
 herda b_teste
-const s_titulo = "Salão de espera"
-const s_desc = "O chão está coberto por uma nuvem branca, de modo que você não consegue\n\
-ver onde pisa. Para todos os outros lugares que você olha, só vê o azul\n\
-celeste do céu. Há bastante luz, como se fosse 5 horas da tarde, porém\n\
-não há nenhum sol ou algo que produza luz."
-const s_luta = 0
-inttempo espera
-
-func cmd_salaperso # Personagem chegou
-  se espera == 0
-    espera = 10
-
-func espera_exec # Restaura a vida do jogador
-  listaitem item
-  ref r
-  epara item = dentro2.ini, item, item.depois
-    r = item.obj
-    se r.vida < r.vidamax / 2
-      r.vida += 1, espera = 10
-    senao
-      r.mudadono($s_teste003)
-    fimse
-  efim
+const s_titulo = "Bifurcação"
+const s_desc = "A leste há um jardim. Dê a pedra ao jardineiro.\n\
+As salas ao sul mostram diversos recursos do MUD.\n\
+A oeste há explicações sobre o comando de administração CMD e derivados."
+const dir_n = $s_teste001
+const dir_l = $s_teste003
+const dir_s = $s_teste014
+const dir_o = $s_teste033
 
 
 classe s_teste003
@@ -136,6 +121,7 @@ Tecle as direções cardeais para ir de um lugar a outro: n s l o\n\
 Há também as direções colaterais: ne no se so\n\
 Em alguns lugares pode-se ir para cima e para baixo: c b"
 const dir_l = $s_teste004
+const dir_o = $s_teste002
 
 
 classe s_teste004
@@ -176,8 +162,6 @@ const s_reset = "S 100 teste002 0 S"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste002") && criar("i_teste002", este, 0)
-
-const dir_s = $s_teste014
 
 
 classe s_teste006
@@ -309,7 +293,7 @@ const s_desc = "À leste você pode mudar o seu nível.\n\
 À sudeste há alguns itens, usados para capturar animais.\n\
 À oeste pode batalhar com animais de níveis diferentes.\n\
 À sudoeste fica um pequeno centro de treinamento de animais."
-const dir_n = $s_teste005
+const dir_n = $s_teste002
 const dir_l = $s_teste015
 const dir_se = $s_teste016
 const dir_o = $s_teste017
@@ -663,7 +647,7 @@ const s_luz = 3 # Luz: 3 Escuro
 classe s_teste026
 herda b_teste
 const s_titulo = "Armas e equipamentos"
-const s_desc = "Para checar seus atributos tecle extra.\n\
+const s_desc = "Para checar seus atributos tecle estat.\n\
 Para aprender a cortar, nessa sala, tecle cortar.\n\
 À leste há duas armas e explicações de como criar equipamentos.\n\
 À oeste há uma geléia, imune a socos e chutes, mas frágil contra\n\
@@ -691,12 +675,12 @@ const s_titulo = "Poço da geléia"
 const s_desc = "A vegetação já tomou conta de um antigo poço, de modo que agora\n\
 ele é bastante raso, embora bastante largo."
 const dir_l = $s_teste026
-const s_reset = "P 100 teste006 0 0 1 h_socar=1"
+const s_reset = "P 100 teste006 0 0 1 h_socar=3"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste006:objsolto.total < 1
-    criar("p_teste006", este, 0, "h_socar=1")
+    criar("p_teste006", este, 0, "h_socar=3")
   fimse
 
 
@@ -706,23 +690,22 @@ const nome = "Geléia"
 const sexoini = 0 # Sexo: 0 Feminino
 const pesoobj = 10000
 const nivel = 3
+const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
 
 func cmd_recalc1 # Recalcula variáveis do personagem
   deftipo.0 = 100 # Imune a ataques de contusão
   deftipo.2 -= 2 # Frágil contra ataques cortantes
   defnorm *= 1.5 # Mais forte contra ataques normais
-  defmag *= 0.7 # Mais fraco contra ataques mágicos
+  defesp *= 0.7 # Mais fraco contra ataques especiais
   pvidamax += 100 # 100 pontos a mais de vida
 # Veja também a variável deftipo, no arquivo em mud-perso.int
-
-const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
 
 
 classe i_teste012
 herda comum_itemgrupo
 const nome = "faca"
 const pesoobj = 300
-const armatipo = 1 # Arma tipo: 1 Lâmina curta
+const armatipo = 3 # Arma tipo: 1 Lâmina curta
 const armaprecisao = 100
 const armamin = 70
 const armamax = 120
@@ -856,7 +839,7 @@ classe p_teste008
 herda comum_perso
 const nome = "Faixa preta"
 const sexoini = 1 # Sexo: 1 Masculino
-const lojaaula = "h_Chutar 3\nh_Voadora 7\nh_Morder 4\ni_Hebráico 2"
+const lojaaula = "h_Chutar 3\nh_Voadora 7\nh_Morder 4\ni_Hebráico 2\nm_Fogo 4"
 const taxaaula = 50
 const lojanao = ""
 
@@ -889,6 +872,219 @@ const lojaaula = "h_Lâmina_curta 8\n\
 h_Lâmina_longa 8\n\
 h_Martelo 8\n\
 h_Arma_flexível 8\n\
-h_Arma_exótica 8\nh_Garra 8"
+h_Arma_exótica 8\n\
+h_Garra 8\n\
+h_Segundo_ataque 8\n\
+h_Terceiro_ataque 8"
 const taxaaula = 50
 const lojanao = ""
+
+
+classe s_teste033
+herda b_teste
+const s_titulo = "Introdução"
+const s_desc = "Os comandos de administração CMD, CMDP e CMDJ permitem executar instruções\n\
+na linguagem do IntMUD. Todo o MUD foi feito nessa linguagem.\n\
+Pode-se carregar itens e personagens em uma sala, ler e alterar algumas\n\
+variáveis, como pontos de vida, mana, e vigor, transportar um jogador\n\
+para uma sala, entre outras coisas."
+const dir_l = $s_teste002
+const dir_o = $s_teste034
+
+
+classe s_teste034
+herda b_teste
+const s_titulo = "Tipos de CMD"
+const s_desc = "Os personagens têm a função morreu, que é chamada quando o personagem\n\
+deve morrer. Assim, se quiser matar seu personagem, basta teclar:\n\
+cmd morreu\n\
+Se quiser matar o personagem de um jogador, chamado Joaquim, tecle:\n\
+cmdj joaquim morreu\n\
+Se Joaquim for um personagem na sala e você quiser matá-lo, tecle:\n\
+cmdp joaquim morreu"
+const dir_l = $s_teste033
+const dir_o = $s_teste035
+
+
+classe s_teste035
+herda b_teste
+const s_titulo = "Corredor"
+const s_desc = "A noroeste, teletransportando personagens.\n\
+Ao norte, restaurando pontos de vida, mana e movimento.\n\
+A sudoeste, mudando o nível.\n\
+Ao sul, mudando as habilidades e magias.\n\
+A sudeste, mudando a quantidade de dinheiro."
+const dir_l = $s_teste034
+const dir_no = $s_teste036
+const dir_n = $s_teste038
+const dir_so = $s_teste039
+const dir_s = $s_teste040
+const dir_se = $s_teste042
+const dir_o = $s_teste043
+
+
+classe s_teste036
+herda b_teste
+const s_titulo = "Teletransportando personagens"
+const s_desc = "Administradores podem se transportar usar o comando isala. Exemplo:\n\
+isala teste002\n\
+E transportar um jogador chamado João para teste002 assim:\n\
+isala João teste002\n\
+Usando o CMD são os seguintes comandos:\n\
+cmd mudadono($s_teste002)\n\
+cmdj João mudadono($s_teste002)\n\
+Mas isala não transporta um personagem da sala. Com CMDP isso é possível."
+const dir_se = $s_teste035
+const dir_n = $s_teste037
+
+
+classe s_teste037
+herda b_teste
+const s_titulo = "Continuação"
+const s_desc = "Cuidado ao transportar usando CMD e similares.\n\
+Se a sala não existir, o personagem é mandado para o nada, ou seja\n\
+não estará em nenhuma sala. Não tem título nem descrição, nem saída.\n\
+Nesse caso, basta transportar o jogador novamente, para alguma sala."
+const dir_s = $s_teste036
+
+
+classe s_teste038
+herda b_teste
+const s_titulo = "Restaurando"
+const s_desc = "A função que restaura pontos de vida, mana e movimento chama-se restaurar.\n\
+Para restauraurar seu personagem tecle:\n\
+cmd restaurar\n\
+Para restaurar um jogador chamado João tecle:\n\
+cmd joão restaurar"
+const dir_s = $s_teste035
+
+
+classe s_teste039
+herda b_teste
+const s_titulo = "Mudando de nível"
+const s_desc = "Em princípio, colocar o seu personagem no nível 10 é algo assim:\n\
+cmd pnivel=10\n\
+Mas só isso não é suficiente, porque os pontos de vida, movimento e mais\n\
+algumas variáveis não são ajustadas. Então tecle em seguida:\n\
+cmd recalc=1\n\
+Pode-se combinar as duas instruções em uma única linha, assim:\n\
+cmd pnivel=10,recalc=1\n\
+Para mudar nível de outro jogador ou personagem, use CMDJ ou CMDP."
+const dir_ne = $s_teste035
+
+
+classe s_teste040
+herda b_teste
+const s_titulo = "Habilidades e magias"
+const s_desc = "Se quiser ter a habilidade socar no nível mais baixo, basta teclar:\n\
+cmd var.h_Socar=1\n\
+E no nível mais alto, o de perito:\n\
+cmd var.h_Socar=8\n\
+No entanto, ao fazer var.h_Socar=0, a habilidade aparece no comando\n\
+hab como \"Não sabe\". Para realmente apagá-la, tecle:\n\
+cmd var.h_socar=\"\""
+const dir_n = $s_teste035
+const dir_s = $s_teste041
+
+
+classe s_teste041
+herda b_teste
+const s_titulo = "Continuação"
+const s_desc = "Se quiser checar o quanto sabe de socar, tecle:\n\
+cmd var.h_Socar\n\
+As habilidade começam com var.h_ e magias começam com var.m_.\n\
+Quando houver espaço no nome, troque por sublinhado. Exemplo, supondo\n\
+que exista uma magia chamada Bola de fogo, e você quiser tê-la no\n\
+nível intermediário, deve teclar:\n\
+cmd var.m_Bola_de_fogo=4"
+const dir_n = $s_teste040
+
+
+classe s_teste042
+herda b_teste
+const s_titulo = "Dinheiro"
+const s_desc = "Dinheiro é a variável var.z_moedas_. O sublinhado no final do nome,\n\
+nesse caso é necessário para a variável ser interpretada com numérica.\n\
+Se quiser ter exatamente 500 moedas, tecle:\n\
+cmd var.z_moedas_=500\n\
+Se quiser ganhar 300 moedas, tecle:\n\
+cmd var.z_moedas_+=300\n\
+Pode-se, por exemplo, criar 400 moedas para um jogador chamado João:\n\
+cmdj João var.z_moedas_+=400"
+const dir_no = $s_teste035
+
+
+classe s_teste043
+herda b_teste
+const s_titulo = "Corredor"
+const s_desc = "A noroeste, uma calculadora.\n\
+Ao norte, carregando personagens.\n\
+A nordeste, carregando itens.\n\
+Ao sul, apagando personagens e itens."
+const dir_l = $s_teste035
+const dir_no = $s_teste044
+const dir_n = $s_teste046
+const dir_ne = $s_teste047
+const dir_s = $s_teste048
+
+
+classe s_teste044
+herda b_teste
+const s_titulo = "Calculadora"
+const s_desc = "Para realizar cálculos basta teclar cmd e o cálculo. Exemplo:\n\
+cmd 1+2\n\
+É possível usar as quatro operações, + - * /, bem como parênteses.\n\
+Exemplo:\n\
+cmd 2.5*(3+4)\n\
+Rand retorna um número aleatório inteiro. Exemplo, um número de 3 a 8:\n\
+cmd rand(3, 8)"
+const dir_se = $s_teste043
+const dir_n = $s_teste045
+
+
+classe s_teste045
+herda b_teste
+const s_titulo = "Continuação"
+const s_desc = "O cálculo de raiz quadrada é realizado com a função matraiz.\n\
+Exemplo, a raiz quadrada de 2:\n\
+cmd matraiz(2)\n\
+Existem também funções trigonométricas, exponencial e logaritmo\n\
+natural. Para detalhes, consulte o tópico Funções numéricas do manual\n\
+do IntMUD."
+const dir_s = $s_teste044
+
+
+classe s_teste046
+herda b_teste
+const s_titulo = "Carregando personagens"
+const s_desc = "O personagem teste002 é um macaco. Para criar um macaco na sala em\n\
+que você está, basta teclar:\n\
+cmd criar(\"p_teste002\", dono)\n\
+Mas cuidado, ele é um personagem agressivo e vai te atacar.\n\
+Pode-se definir o nível do animal, assim (nesse caso é de nível 10):\n\
+cmd criar(\"p_teste002\", dono, 10)"
+const dir_s = $s_teste043
+
+
+classe s_teste047
+herda b_teste
+const s_titulo = "Carregando itens"
+const s_desc = "O item teste002 é uma pedra. Se quiser ter uma pedra tecle:\n\
+cmd criar(\"i_teste002\", este)\n\
+Se quiser uma pedra na sala em que você está, tecle:\n\
+cmd criar(\"i_teste002\", dono)\n\
+Se quiser que um jogador chamado João tenha uma pedra, tecle:\n\
+cmdj joão criar(\"i_teste002\", dono)"
+const dir_so = $s_teste043
+
+
+classe s_teste048
+herda b_teste
+const s_titulo = "Apagando personagens e itens"
+const s_desc = "O comando matar1 é o suficiente para apagar um personagem ou item (tirar\n\
+do jogo). Exemplo, para apagar o jardineiro, vá até ele e tecle:\n\
+matar1 jardineiro\n\
+Com o comando cmdp fica assim:\n\
+cmdp jardineiro apagar(este)\n\
+Entretanto, apagar itens não pode ser feito com CMD e derivados."
+const dir_n = $s_teste043

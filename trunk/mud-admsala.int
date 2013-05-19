@@ -31,19 +31,21 @@ const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2AAREA\b <nome>\n\
   Apaga área, desde que não tenha nenhuma sala."
 const adm_sala = "\b\c3Comandos de salas\b\n\
-\c2ISALA\b <nome>\n\
+\c2ISALA\b <sala>\n\
   Vai para a sala especificada.\n\
-\c2LSALA\b [nome]\n\
+\c2ISALA\b <jogador> <sala>\n\
+  Transporta um jogador para a sala especificada.\n\
+\c2LSALA\b [sala]\n\
   Lista salas que começam com o nome especificado.\n\
-\c2CSALA\b <nome>\n\
+\c2CSALA\b <sala>\n\
   Cria sala. Nome deve ser o nome de uma área ou da sala\n\
   (nome da área seguido de um número de três dígitos de 001 a 999).\n\
 \c2CDIR\b <direção>\n\
   Cria sala na direção especificada. Cria automaticamente uma saída\n\
   com a sala em que você está. Exemplo: cdir ne\n\
-\c2ESALA\b [nome]\n\
+\c2ESALA\b [sala]\n\
   Edita sala. Se o nome for omitido, edita a sala em que você está.\n\
-\c2ASALA\b <um ou mais nomes>\n\
+\c2ASALA\b <um ou mais nomes de sala>\n\
   Apaga uma ou mais salas. Atenção: não apaga as saídas das outras salas\n\
   para as que forem apagadas."
 const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
@@ -163,12 +165,24 @@ func cmd_lsala # Listar salas
   ret 1
 
 func cmd_isala # Ir para uma sala específica
-  se !$s_[arg0]
-    msg("\bSala não existe: " + arg0)
-  senao !perso
-    msg("Você deve estar controlando um personagem para isso")
+  se txt2(arg0)
+    indiceitem item
+    item.ini("pn " + txtnome(txt1(arg0)))
+    se !item.obj
+      msg("Jogador inexistente ou ausente: " + txt1(arg0))
+    senao !$s_[txt2(arg0)]
+      msg("\bSala não existe: " + txt2(arg0))
+    senao
+      perso.mudadono($s_[txt2(arg0)])
+    fimse
   senao
-    perso.mudadono($s_[arg0])
+    se !perso
+      msg("Você deve estar controlando um personagem para isso")
+    senao !$s_[arg0]
+      msg("\bSala não existe: " + arg0)
+    senao
+      perso.mudadono($s_[arg0])
+    fimse
   fimse
   ret 1
 

@@ -1,6 +1,6 @@
-classe cmd_socar
+classe cmd_Socar
 herda comando_ataque
-const nomehab = "Socar"
+const nomevar = "h_Socar"
 const msgacertou = "$R soca $c"
 const tipoatk = 0 # Normal
 const ataque = 40
@@ -8,9 +8,9 @@ const vel = 80
 const extra = "Golpe físico de força"
 
 
-classe cmd_chutar
+classe cmd_Chutar
 herda comando_ataque
-const nomehab = "Chutar"
+const nomevar = "h_Chutar"
 const msgacertou = "$R chuta $c"
 const tipoatk = 0 # Normal
 const ataque = 70
@@ -19,9 +19,9 @@ const extra = "Golpe físico de força"
 const valor = 80
 
 
-classe cmd_arremessar
+classe cmd_Arremessar
 herda comando_ataque
-const nomehab = "Arremessar"
+const nomevar = "h_Arremessar"
 const msgacertou = "$R se joga contra $c"
 const tipoatk = 0 # Normal
 const ataque = 80
@@ -29,9 +29,9 @@ const vel = 30
 const extra = "Golpe físico de força"
 
 
-classe cmd_morder
+classe cmd_Morder
 herda comando_ataque
-const nomehab = "Morder"
+const nomevar = "h_Morder"
 const msgacertou = "$R morde $c"
 const tipoatk = 0 # Normal
 const ataque = 50
@@ -40,11 +40,11 @@ const extra = "Golpe físico de força"
 const valor = 120
 
 
-classe cmd_cortar
+classe cmd_Cortar
 herda comando_ataque
-const nomehab = "Cortar"
+const nomevar = "h_Cortar"
 const tipoatk = 2 # Tipo de ataque: 2 Cortante
-const tipoarma = 2 # Requer arma: Lâmina curta
+const tipoarma = 8 # Requer arma: Lâmina curta
 const usamove = 5
 const msgacertou = "$R corta $c"
 const msgerrou = "$R tenta cortar $c"
@@ -52,8 +52,16 @@ const msgerrou = "$R tenta cortar $c"
 
 classe cmd_Voadora
 herda comando_ataque
-const nomehab = "Voadora"
+const nomevar = "h_Voadora"
 const ataque = 90
 const vel = 40
 const msgacertou = "$R dá uma voadora em $c"
-const depende = "Chutar"
+const depende = "h_chutar"
+
+
+classe magia_Fogo
+herda comando_ataque
+const nomevar = "m_Fogo"
+const tipoatk = 4 # Tipo de ataque: 4 Fogo
+const usamana = 5
+const msgacertou = "$R lança fogo em $c"

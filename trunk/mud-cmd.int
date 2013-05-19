@@ -10,6 +10,14 @@ func iniclasse
   criar(arg0)
 
 
+classe cmd_lancar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Lançar\b\nSintaxe: LANÇAR <nome da magia>\nLança uma magia."
+const posic = 0
+const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
+# Nota: a função escr aqui é desnecessária
+
+
 classe cmd_quem
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Quem\b\n\
@@ -73,22 +81,71 @@ classe cmd_hab
 herda comando_comum, comando_ajuda
 const posic = 5
 const txtajuda = "\b\c3Hab\b\n\
-Sintaxe: HAB\n\
-Mostra as habilidades do seu personagem. Muitas delas são usadas em lutas."
+Sintaxe: HAB  [nome da habilidade]\n\
+Sem argumentos mostra as habilidades do seu personagem.\n\
+Seguido de um nome, mostra informações sobre a habilidade.\n\
+Geralmente pode-se usar uma habilidade teclando-se o nome dela."
 
 func escr
+  ref r
+  r = arg0.persoesc
+  se arg1
+    ref obj
+    prog p
+    epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
+      obj = $[p.texto].atkajuda(r)
+      ret obj, arg0.msg2(obj.txtajuda(r))
+    efim
+    ret arg0.msg("Nenhuma informação sobre a habilidade: " + arg1)
+  fimse
   txt100 n
-  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+  r.persoesc != arg0 && (n = " de " + r.nome)
   textotxt h
   txt100 t1
   txt100 t2
-  epara t1 = arg0.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = arg0.var.depois(t1)
+  epara t1 = r.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = r.var.depois(t1)
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, arg0.var.[t1], 1)
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
     h.addfim(t2)
   efim
   ret !h.linhas, arg0.msg("Nenhuma habilidade.")
   h.addini("Habilidades" + n + ":")
+  arg0.msg(h.remove(1000))
+
+
+classe cmd_magia
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Magia\b\n\
+Sintaxe: MAGIA  [nome da magia]\n\
+Sem argumentos mostra as magias do seu personagem.\n\
+Seguido de um nome, mostra informações sobre a magia.\n\
+Geralmente pode-se usar uma magia teclando-se lançar e o nome dela."
+
+func escr
+  ref r
+  r = arg0.persoesc
+  se arg1
+    ref obj
+    prog p
+    epara p.iniclasse("magia_" + txt1(arg1)), p.lin, p.depois
+      obj = $[p.texto].atkajuda(r)
+      ret obj, arg0.msg2(obj.txtajuda(r))
+    efim
+    ret arg0.msg("Nenhuma informação sobre a magia: " + arg1)
+  fimse
+  txt100 n
+  r.persoesc != arg0 && (n = " de " + r.nome)
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = r.var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = r.var.depois(t1)
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
+    h.addfim(t2)
+  efim
+  ret !h.linhas, arg0.msg("Nenhuma magia.")
+  h.addini("Magias" + n + ":")
   arg0.msg(h.remove(1000))
 
 
@@ -101,13 +158,15 @@ Mostra os idiomas que o seu personagem conhece."
 
 func escr
   txt100 n
-  arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
+  ref r
+  r = arg0.persoesc
+  r.persoesc != arg0 && (n = " de " + r.nome)
   textotxt h
   txt100 t1
   txt100 t2
-  epara t1 = arg0.var.ini("i_"), txt(t1, 0, 2) == "i_", t1 = arg0.var.depois(t1)
+  epara t1 = r.var.ini("i_"), txt(t1, 0, 2) == "i_", t1 = r.var.depois(t1)
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, arg0.var.[t1], 1)
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
     h.addfim(t2)
   efim
   ret !h.linhas, arg0.msg("Nenhum idioma.")
@@ -115,6 +174,36 @@ func escr
   arg0.msg(h.remove(1000))
 
 
+classe cmd_outros
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Outros\b\n\
+Sintaxe: OUTROS\n\
+Mostra itens e habilidades extras. Geralmente são permanentes (não pode-se\n\
+pegar, soltar, dar e vestir)."
+
+func escr
+  txt100 n
+  ref r
+  r = arg0.persoesc
+  r != arg0 && (n = " de " + r.nome)
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = r.var.ini("i_"), txt(t1, 0, 2) == "i_", t1 = r.var.depois(t1)
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    se txt(int(r.var.[t1])) == t.var.[t1]
+      t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
+    senao
+      t2 += " / " + r.var.[t1]
+    fimse  
+    h.addfim(t2)
+  efim
+  ret !h.linhas, arg0.msg("Nenhum item.")
+  h.addini("Outros" + n + ":")
+  arg0.msg(h.remove(1000))
+
+  
 classe cmd_inv
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Inv\b\n\
@@ -126,8 +215,8 @@ func escr
   textotxt t
   listaitem item
   epara item = arg0.dentro1.fim, item, item.antes
-    item.obj.visivel(arg0) && t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtmaimin(i\
-tem.obj.nome))
+    continuar !item.obj.visivel(arg0)
+    t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtcopiamai(item.obj.nome, "A"))
   efim
   t.juntalin("(", "x)")
   se t
@@ -169,7 +258,7 @@ func escr
   se arg0.persoesc == arg0
     arg0.msg(vidalin(arg0))
   senao
-    arg0.msg(txtmaimin(arg0.persoesc.nome) + ": " + vidalin(arg0.persoesc))
+    arg0.msg(txtcopiamai(arg0.persoesc.nome, "A") + ": " + vidalin(arg0.persoesc))
 
 func vidalin
   txt100 lin
@@ -451,12 +540,12 @@ func escr
       fimse
 # O que o container possui
     senao int(r.i_aberto) >= 3
-      t.addfim(txtmaimin(r.nome) + (r.sexo ? " está fechado." : " está fechada."))
+      t.addfim(txtcopiamai(r.nome, "A") + (r.sexo ? " está fechado." : " está fechada."))
     senao r.i_aberto
       listaitem item
       epara item = r.dentro1.ini, item, item.depois
         continuar !item.obj.visivel(arg0)
-        t.addfim(txt(item.obj.objtot) + " " + txtmaimin(item.obj.nome))
+        t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.nome, "A"))
       efim
       se !t.linhas
         t.addfim(r.sexo ? "Está vazio." : "Está vazia.")
@@ -470,7 +559,7 @@ func escr
 # Nome, nível, situação atual e animal que escolheu
     r.descver(arg0) && t.addini(r.descver(arg0))
     txt200 t2
-    t2 = txtmaimin(r.nome)
+    t2 = txtcopiamai(r.nome, "A")
     se r.perso
       t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel + ", " + estado(r)
       se r.persobat && r.persobat != r
@@ -653,18 +742,17 @@ func escr
   arg0.msg2(t0.remove(1000))
 
 
-classe cmd_extra
+classe cmd_estat
 herda comando_comum, comando_ajuda
 const txtajuda = config:animal1 ? ta1 : ta2
-const ta1 = "\b\c3Extra\b\n\
-Sintaxe: EXTRA\n\
-Mostra informações extras do seu personagem ou do animal que você\n\
-escolheu. Se houver algum item extra, geralmente é permanentes (não\n\
-pode-se pegar, soltar, dar e vestir)."
-const ta2 = "\b\c3Extra\b\n\
-Sintaxe: EXTRA\n\
-Mostra informações extras do seu personagem. Se houver algum item extra,\n\
-geralmente é permanentes (não pode-se pegar, soltar, dar e vestir)."
+const posic = 5
+const ta1 = "\b\c3Estat\b\n\
+Sintaxe: ESTAT\n\
+Mostra as estatísticas e diversas informações sobre o seu personagem ou\n\
+o animal você escolheu."
+const ta2 = "\b\c3Estat\b\n\
+Sintaxe: ESTAT\n\
+Mostra as estatísticas e diversas informações sobre o seu personagem."
 
 func escr
   textotxt t
@@ -673,16 +761,16 @@ func escr
   txt100 t2
   ref r
   r = arg0.persoesc
-  t.addfim("\b\c2Informações de \"" + r.nome + "\"\b")
+  t.addfim("\b\c2Estatísticas de \"" + r.nome + "\"\b")
 # Vida, mana e vigor
   t1 = "Vida " + r.pvida + "/" + r.pvidamax
   t1 += "  Mana " + r.pmana + "/" + r.pmanamax
   t1 += "  Vigor " + r.pmove + "/" + r.pmovemax
   t.addfim(t1)
 # Tipo
-  r.tipo1 && h.addfim(txtmaimin(r.tipo1))
-  r.tipo2 && h.addfim(txtmaimin(r.tipo2))
-  r.tipo3 && h.addfim(txtmaimin(r.tipo3))
+  r.tipo1 && h.addfim(txtcopiamai(r.tipo1, "A"))
+  r.tipo2 && h.addfim(txtcopiamai(r.tipo2, "A"))
+  r.tipo3 && h.addfim(txtcopiamai(r.tipo3, "A"))
   h.linhas && t.addfim("Tipo/raça/classe: " + txttroca(h.remove(10), "\n", ", "))
   t.addfim("Sexo:             " + (r.sexo ? "Masculino" : "Feminino"))
 # Quem pegou
@@ -696,7 +784,7 @@ func escr
   t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)
 # Batalha
   t.addfim("Ataque/defesa:    " + r.atknorm + "/" + r.defnorm)
-  t.addfim("Atq/def mágica:   " + r.atkmag + "/" + r.defmag)
+  t.addfim("Atq/def especial: " + r.atkesp + "/" + r.defesp)
   t.addfim("Precisão/evasão:  " + r.precisao + "/" + r.evasao)
   t.addfim("Velocidade:       " + r.pveloc)
 # Mortes
@@ -712,20 +800,5 @@ func escr
   t1 += ", " + txtnum((r.pesoden - r.pesoveste) / 1000, "0")
   t1 += "/" + txtnum(r.pesomax / 1000, "0") + " Kg"
   t.addfim(t1)
-# Itens extras
-  t1 = r.var.ini("o_")
-  enquanto txt(t1, 0, 2) == "o_"
-    t2 = txte(txt(t1, 2))
-    se r.var.valor(t1) == "1"
-      h.addfim(t2)
-    senao
-      h.addfim(r.var.valor(t1) + "x " + t2)
-    fimse
-    t1 = r.var.depois(t1)
-  efim
-  se h.linhas
-    t.addfim("Outros:")
-    t.addfim(txttroca(h.remove(1000), "\n", ", "))
-  fimse
 # Mensagem para o usuário
   arg0.msg2(t.remove(1000))

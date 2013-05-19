@@ -76,12 +76,27 @@ func cmd_cmd
   msg(">" + d.cmd(perso, "ret " + arg0))
   ret 1
 
+func cmd_cmdj
+  se !txt2(arg0)
+    msg("Digite CMDJ seguido do nome do personagem jogador e o comando")
+    ret 1
+  fimse
+  indiceitem item
+  item.ini("pn " + txtnome(txt1(arg0)))
+  se !item.obj
+    msg("Jogador inexistente ou ausente: " + txt1(arg0))
+    ret 1
+  fimse
+  debug d
+  msg(txt(item.obj.nome) + ">" + d.cmd(item.obj, "ret " + txt2(arg0)))
+  ret 1
+
 func cmd_cmdp
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
-  se !txt1(arg0)
-    msg("Digite o nome do personagem e o comando após CMD")
+  se !txt2(arg0)
+    msg("Digite CMDP seguido do nome do personagem e o comando")
     ret 1
   fimse
   n.ini(txt1(arg0), 1000000)
@@ -90,7 +105,7 @@ func cmd_cmdp
     r = l.objini, l.ini.remove
     continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
     debug d
-    msg(">" + d.cmd(r, "ret " + txt2(arg0)))
+    msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg0)))
     ret 1
   efim
   msg("Não há nenhum personagem chamado " + txt1(arg0))
@@ -138,7 +153,8 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2MATAR2\b <personagem>\n\
   Mata instantaneamente personagem.\n\
 \c2CMD\b <comando>\n\
-\c2CMDP\b <personagem> <comando>\n\
+\c2CMDP\b <personagem da sala> <comando>\n\
+\c2CMDJ\b <personagem jogador> <comando>\n\
   Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 \c2MUDLER\b\n\
   Recarrega arquivos do MUD que foram alterados.\n\
@@ -671,7 +687,7 @@ func t_vetormostra # Retorna o texto correspondente a uma opção
   epara t.addfim(arg1), t.linhas, valor = valor >> 1
     valor & 1 ? (lin += ", " + t.remove) : t.remove
   efim
-  ret lin ? "\c6" + txt(lin, 2) + "\b" : "\c6<vazio>\b"
+  ret lin ? "\c6" + txt(lin, 2) + "\b" : ""
 
 func p_vetor # Alterando uma opção de uma lista de opções
   prog p
@@ -715,6 +731,117 @@ func p_vetor # Alterando uma opção de uma lista de opções
     msg("Escolheu: " + lin)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     ret p_vetor("\b")
+  fimse
+  passo = var.opcpasso, p_[passo]("\b")
+  ret 1
+
+const t_tipos = t_vetorfunc(arg0, arg1)
+
+func p_tipos
+  prog p
+  passo = "tipos"
+  se arg0 == "o"
+    txtmais.limpar
+    epara p.iniclasse("tipo_"), p.lin, p.depois
+      txtmais.addfim(txt(p.texto, 5))
+    efim
+  fimse
+  ret p_vetorfunc(arg0, p.existe("tipo_" + txts(arg0)))
+
+const t_tipodep = t_vetorfunc(arg0, arg1)
+
+func p_tipodep
+  prog p
+  passo = "tipodep"
+  se arg0 == "o"
+    txtmais.limpar
+    epara p.iniclasse("cmd_"), p.lin, p.depois
+      $[p.texto].atkcom && txtmais.addfim("h_" + txt(p.texto, 4))
+    efim
+    epara p.iniclasse("magia_"), p.lin, p.depois
+      txtmais.addfim("m_" + txt(p.texto, 6))
+    efim
+    epara p.iniclasse("idioma_"), p.lin, p.depois
+      txtmais.addfim("i_" + txt(p.texto, 7))
+    efim
+  fimse
+  casovar txtmin(txt(arg0, 0, 2))
+  casose "h_"
+    ret p_vetorfunc(arg0, $cmd_[txt(arg0, 2)].atkcom != nulo)
+  casose "m_"
+    ret p_vetorfunc(arg0, $magia_[txt(arg0, 2)] != nulo)
+  casose "i_"
+    ret p_vetorfunc(arg0, $idioma_[txt(arg0, 2)] != nulo)
+  casofim
+  ret p_vetorfunc(arg0, 0)
+
+func t_vetorfunc # Usado intermanente: retorna uma lista de textos
+# arg0=nome da classe, arg1=nome da variável
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.vartexto(arg0, arg1), "\c3" + txttroca([arg0]:[arg1], "\n", " ") + "\b"
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.vartexto(arg0, arg1), "<herda> \c3" + txttroca([arg0]:[arg1], "\n", " ") + "\b"
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func p_vetorfunc # Usado intermanente: alterando um vetor de textos
+# arg0 = texto digitado pelo usuário
+# arg1 = verdadeiro se o texto for a texto válido para o vetor
+# Se arg0=="o", a variável txtmais deve ter a lista de opções válidas, uma por linha
+  prog p
+  se arg0 == "" || arg0 == "\b"
+    se var.opcvalido
+      msg("Entre com uma opção, O mostra as opções, Z sair")
+    senao
+      msg("Entre com uma opção, O mostra as opções, N nenhuma, Z sair")
+    fimse
+    ret 1
+  senao arg0 == "o"
+    se txtmais.bytes <= 1
+      txtmais.limpar, txtmais.add("\bNão há nenhuma opção definida")
+    senao
+      txtmais.addfim(txttroca(txtmais.remove(5000), "\n", ", "))
+      txtmais.juntar, txtmais.dividelin(40, 75)
+      txtmais.addini("\bOpções:")
+    fimse
+    txtmostra
+    ret 1
+  senao arg0 == "n" && !var.opcvalido
+    p.apagar(var.opcclasse, var.opcvar)
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  senao arg0 != "z"
+    txt100 lin
+    lin = txts(arg0)
+    textotxt t
+    t.addfim([var.opcclasse]:[var.opcvar])
+    t.bytes <= 1 && t.limpar
+    textopos pos
+    pos = t.ini
+    se pos.txtproc("\n" + lin + "\n") >= 0
+      pos.remove
+    senao !arg1
+      msg("Opção inválida: " + lin)
+      ret p_vetorfunc("\b")
+    senao
+      t.addfim(lin), t.ordena
+    fimse
+    lin = "const " + var.opcvar + "=\""
+    p.criar(var.opcclasse, lin + txtvis(t.ini.textolin(1000)) + "\"")
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Escolheu: " + txttroca(t.ini.textolin(1000), "\n", " "))
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    ret p_vetorfunc("\b")
   fimse
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
