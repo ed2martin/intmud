@@ -211,13 +211,14 @@ e_ = nome da classe que contém o efeito
 j_ = variável que é apagada quando é carregado um jogo salvo
 h_ = habilidade
 i_ = idioma
+m_ = magia
 o_ = item classificado como "outros"
 z_ = variável não visível ao jogador
 
 Variáveis mais comuns:
 z_dono = nome do dono original (quem capturou o animal)
 z_pnivel = nível do animal quando foi capturado
-j_captura = nome do item que o jogador escolheu para capturar animais
+z_captura = nome do item que o jogador escolheu para capturar animais
 z_salafim = sala para onde vai quando retorna da morte
 z_moedas = quantas moedas está carregando
 
@@ -918,6 +919,8 @@ const tipo1 = "numero--"
 # "numero" = valor numérico inteiro
 # "opcao" = um valor numérico baseado numa lista de opções
 # "vetor" = um valor numérico sendo que cada bit é uma opção de uma lista
+# "tipos" = texto contendo uma lista de tipos (raças e classes)
+# "tipodep" = texto contendo uma lista de habilidades, magias e/ou idiomas
 # "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
 # "sala" = uma sala
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
@@ -953,10 +956,9 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
+Ao criar personagem: e-mail e altura
 APRENDER: Definir em que nível e o quanto pode aprender de cada habilidade
-ATAQUES: Fazer as opção "Somente classes" funcionar
-Comandos: comprar, vender, avaliar
-Batalha automática: testar armas e criar comando matar
+Comandos: vender, avaliar
 Acertar itens que produzem luz
 Possibilidade do corpo ficar quando vence um personagem
 (testar) Volume que cabe dentro, ou 0 se não for container
@@ -964,6 +966,8 @@ Possibilidade do corpo ficar quando vence um personagem
 Volume que cabe dentro em salas
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
+Criar itens genéricos
+Sistema de dicas aleatórias
 Banco
 Propriedade de salas:
 * const s_semrastr = 0 # Se o comando de rastrear não passa por essa sala

@@ -255,6 +255,9 @@ func p_menuprod # Menu de produtos
         casose "i_"
           lin += "I " + txte(txt1(pos.texto(2)))
           sair
+        casose "m_"
+          lin += "M " + txte(txt1(pos.texto(2)))
+          sair
         casose "o_"
           lin += "E " + txte(txt1(pos.texto(2)))
           sair
@@ -368,7 +371,7 @@ func p_menuaula1 # Inserir ou editar aula
   x = arg0, passo = "menuaula1"
   casovar intsub(var.opclin)
   casose "1" # Escolher o tipo de aula
-    se arg0 == "h" || arg0 == "i"
+    se arg0 == "h" || arg0 == "i" || arg0 == "m"
       var.opclin += " " + txtmin(arg0), p_menuaula1("")
     senao arg0 == "e"
       var.opclin += " o", p_menuaula1("")
@@ -376,8 +379,9 @@ func p_menuaula1 # Inserir ou editar aula
       txtmais.limpar
       txtmais.addfim("Opções:")
       txtmais.addfim("H Ensinar habilidade, comando hab")
+      txtmais.addfim("M Ensinar magia, comando magia")
       txtmais.addfim("I Ensinar idioma, comando idioma")
-      txtmais.addfim("E Ensinar algo que aparece no comando extra")
+      txtmais.addfim("E Extra: ensinar algo que aparece no comando outros")
       txtmostra
     senao
       msg("Entre com o tipo, O mostra as opções, Z cancela")
@@ -590,7 +594,7 @@ const var19 = "taxacompra"
 const extra19 = "0 100"
 #
 const nome20 = "Preço da aula"
-const info20 = "Preço da aula em porcentagem; 0=ensina de graça, 100=cobra preço definido"
+const info20 = "Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula)"
 const tipo20 = "numero"
 const classe20 = var.classe1
 const var20 = "taxaaula"
@@ -607,8 +611,7 @@ const classe22 = var.classe1
 const var22 = "lojaaula"
 #
 const nome23 = "Não negocia com"
-const info23 = "Escreva um tipo por linha (o comando ltipo mostra os tipos existentes)"
-const tipo23 = "texto"
+const tipo23 = "tipos"
 const classe23 = var.classe1
 const var23 = "lojanao"
 #

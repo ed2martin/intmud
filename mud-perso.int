@@ -24,6 +24,8 @@ int1 jogconfig.24 # Mesmo que sock.jogconfig
 listaitem iseguir # Quem o personagem está segundo
 listaobj lseguir # Quem está seguindo o personagem
 sav listaitem iempu # Arma que que está empunhando
+const p_morreu1 = "$P morreu."
+const p_morreu2 = "$A de $p desmaiou."
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
@@ -110,20 +112,9 @@ func teclou # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
   prog p # Para procurar o objeto
-  casovar txtmin(txt1(arg0))
-  casose ""
-    ret
-  casose "m"
-  casose "ma"
-  casose "mag"
-  casose "magi"
-  casose "magia"
-    ret dono.s_semmagia, msg("Você não consegue lançar magias aqui.")
-    epara p.iniclasse("cmd_magia_" + txtsub(arg0, 1, 1)), p.lin, p.depois
-      sair obj = $[p.texto].objcmd(este, arg0) # Acerta obj e verifica se obj!=nulo
-    efim
-    sair
-  casose
+  ret !arg0, nulo
+# Obtém o comando
+  enquanto 1
     sair obj = $cmd_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
     sair obj = $soc_[txt1(arg0)].objcmd(este, arg0) # Checa social exato
     sair obj = $cmdfim_[txt1(arg0)].objcmdfim(este, arg0) # Checa comando exato
@@ -139,7 +130,36 @@ func teclou # Processa comando (arg0=comando)
       sair obj = $[p.texto].objcmd(este, arg0)
     efim
     sair
-  casofim
+  efim
+# Checa se é magia
+  se obj.lancamagia
+    txt200 lin
+    lin = txtremove(txt2(arg0), "EMDSA")
+    obj = ref($magia_[txt1(lin)].objcmd(este, arg0))
+    se !obj && lin
+      epara p.iniclasse("magia_" + txt1(lin)), p.lin, p.depois
+        sair obj = $[p.texto].objcmd(este, arg0)
+      efim
+    fimse
+# Magia: Gera eventos
+    listaobj l
+    epara l.addfim(este.evento), l, l.ini.remove
+      ret l.objini.cmd_escr(este, arg0, obj), nulo
+    efim
+# Magia: Executa comando
+    se dono.s_semmagia
+      msg("Você não consegue lançar magias aqui.")
+    senao !lin
+      msg("Lançar que magia?")
+    senao !obj
+      msg("Você não possui a magia " + lin)
+    senao posicao < obj.posic
+      msg(erropos)
+    senao
+      obj.escr(este, txt2(lin))
+    fimse
+    ret
+  fimse
 # Gera eventos
   listaobj l
   epara l.addfim(este.evento), l, l.ini.remove
@@ -150,8 +170,6 @@ func teclou # Processa comando (arg0=comando)
     msg("O quê?")
   senao posicao < obj.posic
     msg(erropos)
-  senao txt(obj, 0, 10) == "cmd_magia_"
-    obj.escr(este, txtsub(arg0, 2))
   senao
     obj.escr(este, txt2(arg0))
 
@@ -183,35 +201,35 @@ func descpos
   ret posicao == pospadr && descpadr, descpadr
   casovar posicao
   casose "0"
-    ret txtmaimin(nome) + " jás aqui."
+    ret txtcopiamai(nome, "A") + " jás aqui."
   casose "1"
-    ret txtmaimin(nome) + " está aqui mortalmente ferid" + misc:sletra[sexo] + "."
+    ret txtcopiamai(nome, "A") + " está aqui mortalmente ferid" + misc:sletra[sexo] + "."
   casose "2"
-    ret txtmaimin(nome) + " está aqui incapacitad" + misc:sletra[sexo] + "."
+    ret txtcopiamai(nome, "A") + " está aqui incapacitad" + misc:sletra[sexo] + "."
   casose "3"
-    ret txtmaimin(nome) + " está aqui, muito frac" + misc:sletra[sexo] + "."
+    ret txtcopiamai(nome, "A") + " está aqui, muito frac" + misc:sletra[sexo] + "."
   casose "4"
-    ret !poslugar, txtmaimin(nome) + " dorme aqui."
+    ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui."
     ref r
     r = poslugar.objlista
-    ret txtmaimin(nome) + " dorme em " + misc:sum[r.sexo] + " " + r.nome + "."
+    ret txtcopiamai(nome, "A") + " dorme em " + misc:sum[r.sexo] + " " + r.nome + "."
   casose "5"
-    ret !poslugar, txtmaimin(nome) + " descansa aqui."
+    ret !poslugar, txtcopiamai(nome, "A") + " descansa aqui."
     ref r
     r = poslugar.objlista
-    ret txtmaimin(nome) + " descansa em " + misc:sum[r.sexo] + " " + r.nome + "."
+    ret txtcopiamai(nome, "A") + " descansa em " + misc:sum[r.sexo] + " " + r.nome + "."
   casose "6"
-    ret !poslugar, txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + "aqui."
+    ret !poslugar, txtcopiamai(nome, "A") + " está sentad" + misc:sletra[sexo] + "aqui."
     ref r
     r = poslugar.objlista
-    ret txtmaimin(nome) + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] + " " + \
+    ret txtcopiamai(nome, "A") + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] + " " + \
 r.nome + "."
   casose "7"
-    ret txtmaimin(nome) + " está lutando."
+    ret txtcopiamai(nome, "A") + " está lutando."
   casose "8"
-    ret txtmaimin(nome) + " está em pé aqui."
+    ret txtcopiamai(nome, "A") + " está em pé aqui."
   casofim
-  ret txtmaimin(nome) + " está aqui."
+  ret txtcopiamai(nome, "A") + " está aqui."
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se sock && posicao > 4 && $mens.perso.visivel(este) # Se tem jogador e está acordado
@@ -222,7 +240,21 @@ func msginv # Mensagem mesmo se o alvo estiver invisível
     msg($mens.proc(arg0, este))
 
 func morreu # Procedimentos quando morre
+# Checa se pode morrer
+  listaobj l
+  epara l.addfim(evento), l, l.ini.remove
+    ret l.objini.cmd_morrer(este), nulo
+  efim
+# Morreu
   mortes += 1
+  p_morreu1 && $mens.p(este, dono) + $mens.mtodos1(p_morreu1)
+  apagar(este)
+  ref r
+  r = sock, r.mudaperso(nulo), r.reinicia
+# Gera eventos
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_morreu(este)
+  efim
 
 
 classe comum_persobat
@@ -246,8 +278,8 @@ uint16 pveloc1 # Velocidade calculada do personagem
 const pveloc = pveloc1 - int((pesoden - pesovest) / 1500)
 uint32 atknorm # Quantidade de ataque normal
 uint32 defnorm # Quantidade de defesa normal
-uint32 atkmag # Quantidade de ataque mágico/especial
-uint32 defmag # Quantidade de defesa mágica/especial
+uint32 atkesp # Quantidade de ataque especial
+uint32 defesp # Quantidade de defesa especial
 uint16 evasao # Habilidade de desviar dos golpes (thac0)
 uint16 precisao # Habilidade de acertar os golpes (hitroll)
 uint32 pesoveste # Metade do peso de tudo que está vestindo
@@ -271,8 +303,6 @@ inttempo atktempo # Tempo para completar um turno da batalha
 uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
-const p_morreu1 = "$P morreu."
-const p_morreu2 = "$P de $A desmaiou."
 const p_movervel = 140
 
 func ini # Objeto foi criado
@@ -320,8 +350,8 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   bitver = 1, bitinv = 3
   atknorm = pnivel * 13 + 26
   defnorm = pnivel * 10 + 20
-  atkmag = pnivel * 13 + 26
-  defmag = pnivel * 10 + 20
+  atkesp = pnivel * 13 + 26
+  defesp = pnivel * 10 + 20
   pvidamax = pnivel * 20 + 40 # Equilibrado seria atknorm*atknorm/defnorm
   pveloc1 = pnivel * 5 + 20
   pmanamax = pnivel + 30
@@ -402,7 +432,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     v1 > 1 && (v1 = 1)
     r = i.obj.dono
     r.perso && i.obj.var.z_dono != r.nome && (v1 *= 1.5)
-    i.obj.ganhaexp(v1 * arg0 * (pnivel * 5 + 30) / l.total)
+    i.obj.ganhaexp(v1 * arg0 * (pnivel * 10 + 60) / (l.total + 1))
   efim
 
 func ganhaexp # Personagem ganha experiência
@@ -410,16 +440,18 @@ func ganhaexp # Personagem ganha experiência
 # arg1 = verdadeiro se não deve mostrar mensagem de ganhar XP para o jogador
   uint32 exp1
   ret !(exp1 = arg0), nulo
-  expatual += arg0
-  se !arg1
-    se !dono.perso
-      msg(exp1 == 1 ? "Você recebe 1 ponto de experiência." : "Você recebe " + exp1 + " pontos \
-de experiência.")
-    senao exp1 == 1
-      dono.msg(nome + " recebe 1 ponto de experiência.")
+  expatual += exp1
+  se arg1
+  senao !dono.perso
+    se exp1 == 1
+      msg("Você recebe 1 ponto de experiência.")
     senao
-      dono.msg(nome + " recebe " + exp1 + " pontos de experiência.")
+      msg("Você recebe " + exp1 + " pontos de experiência.")
     fimse
+  senao exp1 == 1
+    dono.msg(nome + " recebe 1 ponto de experiência.")
+  senao
+    dono.msg(nome + " recebe " + exp1 + " pontos de experiência.")
   fimse
   se expatual >= expmax
     expatual -= expmax
@@ -480,13 +512,13 @@ func morreu # Procedimentos quando morre
     !sock && apagar(este) # Sai do jogo se ninguém está controlando o personagem
 # Animal do jogador: não dá experiência
   senao dono.jog
-    p_morreu2 && $mens.p(este, dono) + $mens.mtodos2(p_morreu2)
+    p_morreu2 && $mens.p(dono, este) + $mens.mtodos2(p_morreu2)
     pvida = 0, batalhafim
     dono.escolhebat # Atualiza persobat
 # Outro personagem: dá experiência
   senao dono.perso
     pvida = 0, batalhaexp(1.5), batalhafim
-    p_morreu2 && $mens.p(este, dono) + $mens.mtodos2(p_morreu2)
+    p_morreu2 && $mens.p(dono, este) + $mens.mtodos2(p_morreu2)
     dono.escolhebat # Atualiza persobat
   senao
     pvida = 0, batalhaexp(1), batalhafim
@@ -500,7 +532,7 @@ func morreu # Procedimentos quando morre
     l.objini.cmd_morreu(este)
   efim
 
-func escolhehab # Escolhe e retorna o nome de uma habilidade
+func escolhehab # Escolhe e retorna o nome da variável de uma habilidade
   txt100 t1 # Nome da habilidade
   uint8 total
 # Obtém a quantidade de habilidades
@@ -514,7 +546,23 @@ func escolhehab # Escolhe e retorna o nome de uma habilidade
   epara total = rand(total), total, total -= 1
     t1 = persoesc.var.depois(t1)
   efim
-  ret txt(t1, 2)
+  ret t1
+
+func escolheatk # Escolhe e retorna o nome da variável de uma habilidade ou magia
+  textotxt t # Lista de habilidades e magias
+  txt100 t1 # Nome da habilidade ou magia
+  t1 = persoesc.var.ini("h_")
+  enquanto txt(t1, 0, 2) == "h_"
+    t.addfim(t1), t1 = persoesc.var.depois(t1)
+  efim
+  se !dono.s_semmagia
+    t1 = persoesc.var.ini("m_")
+    enquanto txt(t1, 0, 2) == "m_"
+      t.addfim(t1), t1 = persoesc.var.depois(t1)
+    efim
+  fimse
+  t.remove(rand(t.linhas - 1))
+  ret t.ini.texto
 
 func escolhejog # Escolhe e retorna um jogador
   listaitem i
@@ -551,8 +599,10 @@ func p_proc_exec # Processar comportamento do personagem
 # Realiza um ataque
   se alvo
     txt100 t1
-    t1 = escolhehab
-    ret t1 && !ataqueini, $cmd_[t1].checaatk(este) && $cmd_[t1].ataca(este, alvo)
+    ref obj
+    t1 = escolheatk
+    obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
+    ret obj && !ataqueini, obj.checaatk(este) && obj.ataca(este, alvo)
   fimse
 # Acerta condição do personagem
   pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)

@@ -111,7 +111,7 @@ func opcmai_p # Nome do personagem
   se r == perso
     ret "Você" + arg0
   senao perso.visivel(r)
-    ret txtmaimin(perso.nome) + arg0
+    ret txtcopiamai(perso.nome, "A") + arg0
   senao perso.perso
     ret "Alguém" + arg0
   senao
@@ -131,7 +131,7 @@ func opcmai_q # Nome do personagem escolhido
   se r == perso.persoesc
     ret "Você" + arg0
   senao perso.visivel(r)
-    ret txtmaimin(perso.persoesc.nome) + arg0
+    ret txtcopiamai(perso.persoesc.nome, "A") + arg0
   senao perso.persoesc.perso
     ret "Alguém" + arg0
   senao
@@ -152,9 +152,9 @@ func opcmai_r # Nome do personagem em batalha
     ret "Você" + arg0
   senao perso.visivel(r)
     se perso.persobat == perso
-      ret txtmaimin(perso.persobat.nome) + arg0
+      ret txtcopiamai(perso.persobat.nome, "A") + arg0
     senao
-      ret txtmaimin(perso.persobat.nome) + " de " + perso.nome + arg0
+      ret txtcopiamai(perso.persobat.nome, "A") + " de " + perso.nome + arg0
     fimse
   senao perso.persoesc.perso
     ret "Alguém" + arg0
@@ -179,7 +179,7 @@ func opcmai_a # Nome do alvo
   se r == alvo
     ret "Você" + arg0
   senao alvo.visivel(r)
-    ret txtmaimin(alvo.nome) + arg0
+    ret txtcopiamai(alvo.nome, "A") + arg0
   senao alvo.perso
     ret "Alguém" + arg0
   senao
@@ -199,7 +199,7 @@ func opcmai_b # Nome do alvo escolhido
   se r == alvo.persoesc
     ret "Você" + arg0
   senao alvo.visivel(r)
-    ret txtmaimin(alvo.persoesc.nome) + arg0
+    ret txtcopiamai(alvo.persoesc.nome, "A") + arg0
   senao alvo.persoesc.perso
     ret "Alguém" + arg0
   senao
@@ -220,9 +220,9 @@ func opcmai_c # Nome do alvo em batalha
     ret "Você" + arg0
   senao alvo.visivel(r)
     se alvo.persobat == alvo
-      ret txtmaimin(alvo.persobat.nome) + arg0
+      ret txtcopiamai(alvo.persobat.nome, "A") + arg0
     senao
-      ret txtmaimin(alvo.persobat.nome) + " de " + alvo.nome + arg0
+      ret txtcopiamai(alvo.persobat.nome, "A") + " de " + alvo.nome + arg0
     fimse
   senao alvo.persoesc.perso
     ret "Alguém" + arg0
@@ -248,9 +248,9 @@ func opcmai_d # Nome do alvo
     ret "Você" + arg0
   senao alvo.visivel(r)
     se alvo.dono.perso
-      ret txtmaimin(alvo.nome) + " de " + alvo.dono.nome + arg0
+      ret txtcopiamai(alvo.nome, "A") + " de " + alvo.dono.nome + arg0
     senao
-      ret txtmaimin(alvo.nome) + arg0
+      ret txtcopiamai(alvo.nome, "A") + arg0
     fimse
   senao alvo.perso
     ret "Alguém" + arg0
@@ -275,7 +275,7 @@ func opcmai_o # Nome do objeto
   se r == obj
     ret "Você" + arg0
   senao obj.visivel(r)
-    ret txtmaimin(obj.nome) + arg0
+    ret txtcopiamai(obj.nome, "A") + arg0
   senao obj.perso
     ret "Alguém" + arg0
   senao
@@ -328,7 +328,7 @@ func opcmin_u # Gênero do objeto
     ret sexoC[obj.sexo] + arg0
 
 func opcmai_m # Mensagem
-  ret txttroca(txtmaimin(mens), "$", "$$") + arg0
+  ret txttroca(txtcopiamai(mens, "A"), "$", "$$") + arg0
 
 func opcmin_m # Mensagem
   ret txttroca(mens, "$", "$$") + arg0

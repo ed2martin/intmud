@@ -32,12 +32,9 @@ func escr
   prog p
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
     obj = $[p.texto].objajuda(arg0)
-    sair obj
+    ret obj, arg0.msg2(obj.txtajuda(arg0))
   efim
-  se obj
-    arg0.msg2(obj.txtajuda(arg0))
-  senao
-    arg0.msg("Comando ou tópico de ajuda desconhecido: " + arg1)
+  arg0.msg("Comando ou tópico de ajuda desconhecido: " + arg1)
 
 
 classe cmd_mover
@@ -68,6 +65,7 @@ classe cmd_info
 herda comando_ajuda
 const txtajuda = "\b\c3Informações\b\n\
   \c2VIDA\b     Pontos de vida, mana, vigor, nível e experiência\n\
+  \c2ESTAT\b    Estatísticas e outras informações do seu personagem\n\
   \c2OLHAR\b    Descrição de onde você está ou de um objeto ou personagem\n\
   \c2VER\b      Descrição resumida de onde você está, objeto ou personagem\n\
   \c2HORA\b     A hora atual: real e no MUD\n\
@@ -76,8 +74,9 @@ const txtajuda = "\b\c3Informações\b\n\
   \c2QUEM\b     Os usuários que estão jogando no momento\n\
   \c2ONDE\b     A área em que está e os jogadores visíveis na mesma área\n\
   \c2HAB\b      As habilidades do seu personagem\n\
+  \c2MAGIA\b    As magias do seu personagem\n\
   \c2IDIOMA\b   Idiomas que o seu personagem conhece\n\
-  \c2EXTRA\b    Informações extras do seu personagem"
+  \c2OUTROS\b   Outras habilidades e itens do seu personagem"
 # \C2EFEITO\b   Os efeitos que estão afetando o seu personagem"
 
 
@@ -106,7 +105,7 @@ const txtajuda = "\b\c3Lojas e professores\b\n\
   \c2AVALIAR\b  Para saber quanto pagam por algum item que você possui\n\
   \c2AULAS\b    Lista de cursos sendo ministrados e informações sobre um curso\n\
   \c2APRENDER\b Aprende alguma coisa que está sendo ensinada\n\
-  \c2EXTRA\b    Informações extras do seu personagem, inclusive moedas"
+  \c2ESTAT\b    Diversas informações, inclusive moedas"
 
 
 classe cmd_nomes
@@ -146,7 +145,8 @@ const aj2 = "Para começar uma luta basta teclar MATAR ou um comando agressivo,\n
 seguido do personagem que você quiser atacar.\n"
 const aj3 = "Para começar uma luta basta teclar um comando agressivo, seguido\n\
 do nome do personagem que você quiser atacar.\n"
-const aj4 = "Antes de começar uma luta, você pode checar ter uma ideia da dificuldade\n\
+const aj4 = "Para lançar magias tecle lançar e o nome da magia, e o alvo, se houver um.\n\
+Antes de começar uma luta, você pode checar ter uma ideia da dificuldade\n\
 teclando VER seguido do nome do personagem. Se for muito maior que o seu\n\
 nível, provavelmente é melhor não começar a luta.\n\
 Você pode checar a qualquer momento seus pontos de vida, teclando VIDA.\n\

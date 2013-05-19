@@ -2,23 +2,33 @@ classe jog_admatk
 # Comandos de itens
 #
 const adm_atk = "\b\c3Comandos de ataques\b\n\
-\c2LATK\b [nome]\n\
-  Lista ataques que começam com o nome especificado.\n\
-\c2CATK\b <nome>\n\
-  Cria um ataque. Nome deve ser o nome do ataque, e deve ser composto\n\
-  de letras, mas pode ter espaços no meio.\n\
-\c2EATK\b <nome>\n\
-  Edita ataque.\n\
-\c2AATK\b <nome>\n\
-  Apaga ataque."
+\c2LHAB\b [nome]\n\
+\c2LMAG\b [nome]\n\
+  Lista habilidades ou magias que começam com o nome especificado.\n\
+\c2CHAB\b <nome>\n\
+\c2CMAG\b <nome>\n\
+  Cria uma habilidade ou magia. Nome deve ser o nome da habilidade ou\n\
+  magia, e deve ser composto de letras, mas pode ter espaços no meio.\n\
+\c2EHAB\b <nome>\n\
+\c2EMAG\b <nome>\n\
+  Edita uma habilidade ou uma magia.\n\
+\c2AHAB\b <nome>\n\
+\c2AMAG\b <nome>\n\
+  Apaga uma habilidade ou uma magia."
 
-func cmd_latk # Listar ataques
+func cmd_lhab # Listar habilidades
+  ret atk_listar("cmd_", "Habilidade, Tipo, Alvo", "Nenhuma habilidade encontrada.")
+
+func cmd_lmag # Listar magias
+  ret atk_listar("magia_", "Magia, Tipo, Alvo", "Nenhuma magia encontrada.")
+
+func atk_listar # Listar habilidades ou magias
   prog p
   textotxt t
   txt100 lin
-  epara p.iniclasse("cmd_" + arg0), p.lin && t.linhas < 499, p.depois
+  epara p.iniclasse(arg0), p.lin && t.linhas < 499, p.depois
     continuar !$[p.texto].atkcom # Continua se não é um ataque
-    lin = txtmaimin(txt(p.texto, 4)) + ", "
+    lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
     lin += txtsublin(misc:atknomes, $[p.texto].tipoatk, 1)
     casovar $[p.texto].tipoalvo
     casose "1"
@@ -31,26 +41,26 @@ func cmd_latk # Listar ataques
     t.addfim(lin)
   efim
   se t.linhas
-    t.addini("\bAtaque, Tipo, Alvo")
+    t.addini("\b" + arg1)
     msg2(t.remove(500))
   senao
-    msg("\bNenhum ataque encontrado.")
+    msg("\b" + arg2)
   fimse
   ret 1
 
-func cmd_catk # Criar ataque
+func cmd_chab # Criar habilidade
   prog p
   txt80 nome
   uint16 num
 # Checa se digitou nome do ataque
   se arg0 == ""
-    msg("Tecle o nome do ataque após CATK")
+    msg("Tecle o nome da habilidade após CHAB")
     ret 1
   fimse
 # Checa se nome válido
   nome = txte(txtremove(arg0, EMDSA))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    msg("Nome inválido para ataque: " + nome)
+    msg("Nome inválido para habilidade: " + nome)
     ret 1
   senao p.existe("cmd_" + nome)
     msg("Já existe o comando: " + nome)
@@ -62,34 +72,62 @@ func cmd_catk # Criar ataque
 # Cria ataque
   txt200 lin
   lin = "cmd_" + txts(nome) + "\nb-ataque\nherda comando_ataque"
-  lin += "\nconst nomehab = \"" + txtmaimin(txte(nome)) + "\""
+  lin += "\nconst nomevar = \"h_" + txtcopiamai(txte(nome), "A") + "\""
   p.criar(lin)
   config:salvar
-  msg("\bAtaque criado: " + nome)
-  admlog("criou ataque " + nome)
+  msg("\bHabilidade criada: " + nome)
+  admlog("criou habilidade " + nome)
   ret 1
 
-func cmd_aatk # Apagar ataque
+func cmd_cmag # Criar magia
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do ataque
+  se arg0 == ""
+    msg("Tecle o nome da magia após CMAG")
+    ret 1
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg0, EMDSA))
+  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
+    msg("Nome inválido para magia: " + nome)
+    ret 1
+  senao p.existe("magia_" + nome)
+    msg("Já existe a magia: " + nome)
+    ret 1
+  fimse
+# Cria ataque
+  txt200 lin
+  lin = "magia_" + txts(nome) + "\nb-ataque\nherda comando_ataque"
+  lin += "\nconst nomevar = \"m_" + txtcopiamai(txte(nome), "A") + "\""
+  p.criar(lin)
+  config:salvar
+  msg("\bMagia criada: " + nome)
+  admlog("criou magia " + nome)
+  ret 1
+
+func cmd_ahab # Apagar habilidade
   prog p
   se arg0 == ""
-    msg("Tecle um ou mais nomes de ataques após AATK")
+    msg("Tecle um ou mais nomes de habilidades após AHAB")
     ret 1
   fimse
   uint16 x
   enquanto txtsub(arg0, x, 1)
     se !p.existe("cmd_" + txtsub(arg0, x, 1))
-      msg("Ataque não existe: " + txtsub(arg0, x, 1))
+      msg("Habilidade não existe: " + txtsub(arg0, x, 1))
       ret 1
     senao !$cmd_[txtsub(arg0, x, 1)].atkcom
-      msg("Comando não é um ataque: " + txtsub(arg0, x, 1))
+      msg("Comando não é uma habilidade: " + txtsub(arg0, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = arg0, p_aatk
+  tpasso = arg0, p_ahab
   ret 1
 
-func p_aatk # Confirmar que quer apagar ataque
+func p_ahab # Confirmar que quer apagar habilidade
   passo = ""
   se arg0 == "n"
     msg("Cancelado")
@@ -102,37 +140,100 @@ func p_aatk # Confirmar que quer apagar ataque
     efim
     config:salvar
     se x < 2
-      msg("Ataque apagado: " + tpasso)
-      admlog("apagou ataque " + tpasso)
+      msg("Habilidade apagada: " + tpasso)
+      admlog("apagou habilidade " + tpasso)
     senao
-      msg("Ataques apagados: " + tpasso)
-      admlog("apagou ataques " + tpasso)
+      msg("Habilidades apagados: " + tpasso)
+      admlog("apagou habilidades " + tpasso)
     fimse
   senao
     txt20 m1
-    passo = "aatk"
-    m1 = txt2(tpasso) ? "ataques" : "ataque"
+    passo = "ahab"
+    m1 = txt2(tpasso) ? "habilidades" : "habilidade"
     msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
-func cmd_eatk # Editar ataque
+func cmd_amag # Apagar magia
   prog p
   se arg0 == ""
-    msg("Tecle o nome do ataque após EATK")
+    msg("Tecle um ou mais nomes de magias após AMAG")
+    ret 1
+  fimse
+  uint16 x
+  enquanto txtsub(arg0, x, 1)
+    se !p.existe("magia_" + txtsub(arg0, x, 1))
+      msg("Magia não existe: " + txtsub(arg0, x, 1))
+      ret 1
+    fimse
+    x += 1
+  efim
+  tpasso = arg0, p_amag
+  ret 1
+
+func p_amag # Confirmar que quer apagar magia
+  passo = ""
+  se arg0 == "n"
+    msg("Cancelado")
+  senao arg0 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(tpasso, x, 1)
+      p.apagar("magia_" + txtsub(tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      msg("Magia apagada: " + tpasso)
+      admlog("apagou magia " + tpasso)
+    senao
+      msg("Magias apagadas: " + tpasso)
+      admlog("apagou magias " + tpasso)
+    fimse
+  senao
+    txt20 m1
+    passo = "amag"
+    m1 = txt2(tpasso) ? "magias" : "magia"
+    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+func cmd_ehab # Editar habilidade
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome da habilidade após EMAG")
   senao !p.existe("cmd_" + arg0)
-    msg("Ataque não existe: " + arg0)
+    msg("Habilidade não existe: " + arg0)
   senao !$cmd_[arg0].atkcom
-    msg("Comando não é um ataque: " + arg0)
+    msg("Comando não é uma habilidade: " + arg0)
   senao
     var.classe1 = "cmd_" + txts(txtmin(arg0))
-    m_menu("adm_atk")
+    m_menu("adm_hab")
+  fimse
+  ret 1
+
+func cmd_emag # Editar magia
+  prog p
+  se arg0 == ""
+    msg("Tecle o nome da magia após EATK")
+  senao !p.existe("magia_" + arg0)
+    msg("Magia não existe: " + arg0)
+  senao !$magia_[arg0].atkcom
+    msg("Comando não é uma magia editável: " + arg0)
+  senao
+    var.classe1 = "magia_" + txts(txtmin(arg0))
+    m_menu("adm_magia")
   fimse
   ret 1
 
 
-classe adm_atk
-const titulo = "Ataque " + txt(var.classe1, 4)
+classe adm_magia
+herda adm_hab
+const titulo = "Magia " + txt(var.classe1, 6)
+
+
+classe adm_hab
+const titulo = "Hab " + txt(var.classe1, 4)
 #
 const nome1 = "Tipo de ataque"
 const tipo1 = "opcao"
@@ -147,7 +248,7 @@ const var2 = "tipoalvo"
 const extra2 = "Um alvo\nTodos dividindo o ataque\nTodos sem dividir o ataque"
 #
 const nome3 = "Requer arma"
-const info3 = "Deixar <vazio> se for um ataque sem arma que funciona mesmo se\n\
+const info3 = "Deixar vazio se for um ataque sem arma que funciona mesmo se\n\
 estiver empunhando uma arma."
 const tipo3 = "vetor"
 const classe3 = var.classe1
@@ -215,36 +316,47 @@ const classe13 = var.classe1
 const var13 = "valor"
 #
 const nome14 = "Depende de"
-const info14 = "Escreva aqui as habilidades necessárias para aprender esse ataque,\n\
-uma habilidade por linha."
-const tipo14 = "texto"
+const info14 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
+const tipo14 = "tipodep"
 const classe14 = var.classe1
 const var14 = "depende"
 #
-const nome15 = "Somente classes"
-const info15 = "Se esse ataque não existe em todas as classes, escreva aqui\n\
-em quais classes existe (uma classe por linha)"
-const tipo15 = "texto"
+const nome15 = "Somente tipos"
+const info15 = "Se estiver vazio, todas as classes e raças podem aprender"
+const tipo15 = "tipos"
 const classe15 = var.classe1
-const var15 = "classes"
+const var15 = "tipoperso"
+#
+const nome16 = "Bônus tipos"
+const info16 = "Quais raças e classes atacam com mais força"
+const tipo16 = "tipos"
+const classe16 = var.classe1
+const var16 = "tipobonus"
+#
+const nome17 = "Iniciante nível"
+const info17 = "A partir de que nível pode ter a primeira aula"
+const tipo17 = "numero"
+const classe17 = var.classe1
+const var17 = "aulaini"
+#
+const nome18 = "Perito nível"
+const info18 = "A partir de que nível pode ter todas as aulas"
+const tipo18 = "numero"
+const classe18 = var.classe1
+const var18 = "aulafim"
 
 
 classe comando_ataque
 herda comando_comum
-const objcmd = arg0.persobat.var.h_[nomehab] ? este
-const objajuda = arg0.persobat.var.h_[nomehab] ? este
+const objcmd = arg0.persobat.var.[nomevar] ? este
+const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 7
 const atkcom = 1 # Para indicar que o comando é um ataque editável
-const nomehab = "" # Nome do ataque (nome da habilidade)
+const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoatk = 0 # Tipo de golpe
-const tipoalvo = 0 # Tipo de alvo: 0=um alvo, 1=todos dividindo a força, 2=todos
-const tipoarma = 0 # Requer arma: <vazio> (não checa a arma)
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
 const ataque = 50 # Força de ataque, 100 significa 100%
 const vel = 50 # Velocidade do golpe, 100 significa 100%
-const usavida = 0 # Quanto consome de vida
-const usamana = 0 # Quanto consome de mana
-const usamove = 0 # Quanto consome de movimento
 const msgacertou = "$R ataca $c"
 const msgerrou = msgacertou + " mas erra"
 const msgnulo = msgacertou + ", nada acontece"
@@ -252,13 +364,25 @@ int32 result # Danos de batalha, ou 0=nenhum -1=errou o alvo -2=cancelar ataque
 ref arma1 # Arma usada
 
 func txtajuda
+  textotxt t
+  se depende
+    t.addfim(depende)
+    textopos pos
+    epara pos = t.ini, pos, pos.depois
+      pos.mudar(misc:nomevar(pos.texto))
+    efim
+    t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
+    t.juntar, t.dividelin(40, 75)
+  fimse
+  extra && t.addini(extra)
   txt100 lin
-  txt200 dep
-  lin = "\c3" + txtmaimin(nomehab) + "\b\n"
-  lin += "Ataque \"" + txtsublin(misc:atknomes, tipoatk, 1) + "\", força " + ataque + ", \
-velocidade " + vel
-  depende && (dep = "\nRequer conhecimentos de: " + txttroca(depende, "\n", ", "))
-  ret extra ? lin + "\n" + extra + dep : lin + dep
+  lin = "\c3" + misc:nomevar(nomevar) + "\b\nAtaque do nível " + int(aulafim)
+  lin += ", " + txtsublin(misc:atknomes, tipoatk, 1)
+  t.addini(lin + ", Força " + ataque + ", Velocidade " + vel)
+  se tipoperso
+    t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
+  fimse
+  ret t.remove(1000)
 
 func escr # Atacar alguém
   ref r
@@ -308,16 +432,16 @@ func checaatk # Checa se personagem (arg0) pode atacar e avisa o personagem
     arg0.msg("Empunhando uma arma?")
     ret
   senao
-    arg0.msg("Arma incorreta.")
+    arg0.msg("Com essa arma?")
     ret
   fimse
-  se r.pvida <= usavida
+  se r.pvida <= int(usavida)
     arg0.msg("Pontos de vida insuficientes")
     ret
-  senao r.pmana < usamana
+  senao r.pmana < int(usamana)
     arg0.msg("Mana insuficiente")
     ret
-  senao r.pmove < usamove
+  senao r.pmove < int(usamove)
     arg0.msg("Vigor insuficiente")
     ret
   fimse
@@ -338,8 +462,8 @@ func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   r.pvida -= usavida, r.pmana -= usamana, r.pmove -= usamove
 # Obtém a força do ataque e os alvos secundários
   real atk
-  atktipo && l.addfim(arg0.dono.dentro1) + l.remove(arg0, arg1)
-  atk = atktipo == 1 ? ataque / l.total : ataque
+  tipoalvo && l.addfim(arg0.dono.dentro1) + l.remove(arg0, arg1)
+  atk = tipoalvo == 1 ? ataque / l.total : ataque
   se arma1
     real carga
     carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
@@ -353,7 +477,7 @@ func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   fimse
 # Ataca o alvo escolhido
   velgolpe(arg0, arg1) # Tempo do golpe
-  execgolpe(arg0, arg1, atk) # Ataca
+  execgolpe(arg0, arg1, atk, 2 + arg0.persobat.var.[nomevar]) # Ataca
   result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
   arg1.persobat.acertapos(1)
 # Ataca os alvos secundários
@@ -361,7 +485,7 @@ func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
     r = l.objini, l.ini.remove
     continuar r.jog || r.perso < 3 # Não prossegue se for jogador
     velgolpe(arg0, r) # Tempo do golpe
-    execgolpe(arg0, r, atk) # Ataca
+    execgolpe(arg0, r, atk, 2 + arg0.persobat.var.[nomevar]) # Ataca
     result != -2 && $mens.p(arg0, r) + r.msginv(mensgolpe)
     r.acertapos(1)
   efim
@@ -387,6 +511,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = força do ataque, 0=não calcular danos
+# arg3 = o quanto sabe do golpe, de 0 a 10
 # tipoatk = tipo de ataque, arma1 = arma usada
   real dano
   ref r # Personagem que ataca
@@ -423,21 +548,29 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     result = 0
     ret
   fimse
-  dano = matexp(dano * 0.34657359) # 0.34657359 = matlog(2) / 2
-  dano *= 2 + r.var.h_[nomehab] # Multiplica dano por um número de 2 a 10
+  dano = matexp(dano * 0.34657359) * arg3 # 0.34657359 = matlog(2) / 2
+# Checa bônus do personagem
+  se !tipobonus
+  senao r.tipo1 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo1 + "\n") >= 0
+    dano *= 1.5
+  senao r.tipo2 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo2 + "\n") >= 0
+    dano *= 1.5
+  senao r.tipo3 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo3 + "\n") >= 0
+    dano *= 1.5
+  fimse
 # Calcula dano com arma
   se arma1
     dano *= rand(arma1.armamin, arma1.armamax) * arg2
     dano *= rand(arma1.armamin, arma1.armamax) + 25
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano /= s.defmag * 3000
+      dano /= s.defesp * 3000
     senao
       dano /= s.defnorm * 3000
     fimse
 # Calcula dano sem arma; valor do rand é por volta de 3000
   senao
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= r.atkmag * (r.atkmag + 25) * arg2 / (s.defmag * rand(2800, 3400))
+      dano *= r.atkesp * (r.atkesp + 25) * arg2 / (s.defesp * rand(2800, 3400))
     senao
       dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(2800, 3400))
     fimse
@@ -487,7 +620,6 @@ herda comando_ataque
 # Para realizar ataques automáticos
 const objcmd = nulo
 const objajuda = nulo
-txt80 nomehab # Nome da habilidade
 const msgacertou = "$R dá um golpe em $c"
 const msgerrou = "$R tenta dar um golpe em $c mas erra"
 const msgnulo = "$R dá um golpe em $c mas nada acontece"
@@ -495,12 +627,26 @@ const ataque = 100
 const vel = 50
 const extra = "Ataque automático"
 uint8 tipoatk # Tipo de ataque
+const atkcom = 1
 
 func ataca # arg0 ataca arg1
+  uint8 aulas # O quanto sabe do golpe, de 0 a 10
   arma1 = ref(arg0.persobat.iempu.obj)
+  arma1.armamanual && (arma1 = nulo)
   tipoatk = arma1.armatipoatk
-  nomehab = txtsublin(misc:arma_txt, arma1.armatipo, 1)
-  execgolpe(arg0, arg1, ataque) # Ataca
+  aulas = 2 + arg0.persobat.var.[txtsublin(misc:arma_txt, arma1.armatipo, 1)]
+# Primeiro ataque
+  execgolpe(arg0, arg1, ataque, aulas) # Ataca
+  result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
+  arg1.acertapos(1), arg0.acertapos(1)
+# Segundo ataque
+  ret !arg0.atkenv || !arg0.persobat.var.h_segundo_ataque, nulo
+  execgolpe(arg0, arg1, ataque, aulas * (2 + arg0.persobat.var.h_segundo_ataque) / 10)
+  result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
+  arg1.acertapos(1), arg0.acertapos(1)
+# Terceiro ataque
+  ret !arg0.atkenv || !arg0.persobat.var.h_terceiro_ataque, nulo
+  execgolpe(arg0, arg1, ataque, aulas * (2 + arg0.persobat.var.h_terceiro_ataque) / 10)
   result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
   arg1.acertapos(1), arg0.acertapos(1)
 
@@ -556,6 +702,7 @@ const objajuda = config:atktipo ? este
 const txtajuda = "\b\c3Matar\b\n\
 Sintaxe: MATAR <personagem>\n\
 Começa uma batalha com um personagem."
+const atkcom = 0
 
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ret arg0.atkenv, msg("Você já está lutando.")
