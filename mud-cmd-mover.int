@@ -230,6 +230,7 @@ func escrobj # Abrir um item
   casose
     ret arg0.msg("Não foi possível abrir " + r.nome + ".")
   casose "3"
+  casose "5"
   casofim
 # Gera eventos
   listaobj l
@@ -312,6 +313,7 @@ func escrobj # Fechar um item
   casose
     ret arg0.msg("Não foi possível fechar " + r.nome + ".")
   casose "2"
+  casose "5"
   casofim
 # Gera eventos
   listaobj l
@@ -396,12 +398,13 @@ func escrobj # Destrancar um item
   casose "2"
     ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
   casose "3"
-    ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.sexo] + \
-".")
+    ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.s\
+exo] + ".")
     ret arg0.msg(txtcopiamai(r.nome, "A") + " não está trancad" + misc:sletra[r.sexo] + ".")
   casose
     ret arg0.msg("Não foi possível destrancar " + r.nome + ".")
   casose "4"
+  casose "5"
   casofim
 # Procura a chave
   ref chave
@@ -508,9 +511,10 @@ func escrobj # Trancar um item
   casose
     ret arg0.msg("Não foi possível trancar " + r.nome + ".")
   casose "3"
+  casose "5"
   casofim
-  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.sexo] + \
-".")
+  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.sex\
+o] + ".")
 # Procura a chave
   ref chave
   se r.i_fechadura
@@ -814,16 +818,43 @@ func fugirdir # Obtém direção para onde pode fugir
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
 
-classe cmd_retorno
+classe comando_retornar
 herda comando_comum
-const objcmd = nulo # Comentar essa linha para o comando retorno funcionar
+# Herdado pela classe magia_retornar
+const objcmd = arg0.persobat.var.[nomevar] ? este
+const atkajuda = arg0.persobat.var.[nomevar] ? este
+const posic = 8
+const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nTeletransporta o seu personagem para o \
+ponto de retorno."
 
 func escr
+  exec(arg0, 2 + arg0.persobat.var.[nomevar])
+
+func exec # Personagem retorna
+# arg0 = personagem
+# arg1 = o quanto sabe da magia, de 0 a 10
   ref r
   r = $[arg0.var.z_salafim]
-  ret !r, arg0.msg("Você não consegue retornar.")
-  ret r == dono, arg0.msg("Você já está no ponto de retorno.")
+  ret !r, arg0.msg("Você não possui ponto de retorno.")
+  ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
+  ret r.s_retornar == 1, arg0.msg("Você não consegue retornar.")
+  ret arg0.pmana < int(usamana), arg0.msg("Mana insuficiente")
+  arg0.pmana -= int(usamana)
+  arg0.p_espera < 15 && (arg0.p_espera = 15)
+  ret rand(10) >= arg1, arg0.msg("Por algum motivo, a magia falhou.")
   $mens.p(arg0)
-  !arg0.p_silencio && $mens.mvis2("", "$P sumiu daqui.")
+  !arg0.p_silencio && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
   arg0.mudadono(r)
-  !arg0.p_silencio && $mens.mvis2("", "$P apareceu do nada.")
+  !arg0.p_silencio && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+
+
+classe cmd_retornar
+herda comando_retornar
+const objcmd = arg0.pnivel <= config:retornar ? este
+const objajuda = config:retornar >= 0 ? este
+const txtajuda = "\b\c3Retornar\b\nSintaxe: RETORNAR\nTeletransporta o seu personagem para o \
+ponto de retorno, geralmente sua\ncidade natal. Esse comando existe para jogadores até o nível " \
++ config:retornar + "."
+
+func escr
+  exec(arg0, 10)

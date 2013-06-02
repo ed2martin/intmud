@@ -161,14 +161,25 @@ func nomevar # Retorna o nome da habilidade/magia/idioma a partir do nome da var
   casovar txt(arg0, 0, 2)
   casose "i_"
     ret "Idioma " + txte(txt(txt1(arg0), 2))
-  sair
   casose "m_"
     ret "Magia " + txte(txt(txt1(arg0), 2))
-    sair
   casose
     ret txte(txt(txt1(arg0), 2))
   casofim
-  
+
+func objvar # Retorna o nome da classe de uma habilidade/magia/idioma
+# arg0 = nome da variável
+  casovar txt(arg0, 0, 2)
+  casose "i_"
+    ret "idioma_" + txt(txt1(arg0), 2)
+  casose "m_"
+    ret "magia_" + txt(txt1(arg0), 2)
+  casose "h_"
+    ret "cmd_" + txt(txt1(arg0), 2)
+  casose
+    ret ""
+  casofim
+
 func separa # Separa o nome do objeto do nome do destino
 # arg0 = texto completo
 # Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo
@@ -222,6 +233,43 @@ func sepperso # Procura o personagem destino
   epara i = arg0.dono.dentro2.ini, i, i.depois
     ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
   efim
+
+func txtmoedas # Retorna texto correspondente à quantidade de moedas
+# arg0 = quantidade de moedas
+  casovar int(arg0)
+  casose "0"
+    ret "nenhuma moeda"
+  casose "1"
+    ret "uma moeda"
+  casose "2"
+    ret "duas moedas"
+  casose "3"
+    ret "três moedas"
+  casose "4"
+    ret "quatro moedas"
+  casose "5"
+    ret "cinco moedas"
+  casose "6"
+    ret "seis moedas"
+  casose "7"
+    ret "sete moedas"
+  casose "8"
+    ret "oito moedas"
+  casose "9"
+    ret "nove moedas"
+  casose "10"
+    ret "dez moedas"
+  casofim
+  uint32 x
+  x = arg0
+  ret x <= 40, "algumas moedas"
+  ret x <= 150, "uma pilha de moedas"
+  ret x <= 500, "poucas pilhas de moedas"
+  ret x <= 2000, "algumas pilhas de moedas"
+  ret x <= 5000, "muitas pilhas de moedas"
+  ret x <= 20000, "um morrinho de moedas"
+  ret x <= 50000, "um pequeno morro de moedas"
+  ret "uma quantidade imensa de moedas"
 
 func iniclasse # Inicialização
 # Cria diretório de jogos salvos, se não existir

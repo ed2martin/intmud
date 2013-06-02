@@ -158,7 +158,7 @@ func escr1 # Consultar a lista de aulas
     enquanto t2.linhas
       continuar !(lin = t2.remove)
       aulas = txt2(lin)
-      valor = lucro * $cmd_[txt(txt1(lin), 2)].valor(arg0)
+      valor = lucro * $[misc:objvar(lin)].valor(arg0)
       lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + misc:nomevar(lin)
       lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
       aulas && (lin += "   (" + txtsublin(misc:aulas, aulas, 1) + ")")
@@ -187,7 +187,7 @@ func escr2 # Consultar uma aula
       lin = misc:nomevar(lin), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
       ref r
-      r = $cmd_[txt(txt1(t2.ini.texto), 2)]
+      r = $[misc:objvar(t2.ini.texto)]
       valor = r.valor(arg0) * l.objini.taxaaula / 100
       aulas = txt2(t2.ini.texto)
       t2.limpar
@@ -244,7 +244,7 @@ func escr
       continuar !n.nome(lin, 1) && txt(linha) != arg1
 # Obtém variáveis
       ref r
-      r = $cmd_[txt(txt1(t2.ini.texto), 2)]
+      r = $[misc:objvar(t2.ini.texto)]
       valor = r.valor(arg0) * l.objini.taxaaula / 100
       aulas = txt2(t2.ini.texto)
 # Checa número de aulas

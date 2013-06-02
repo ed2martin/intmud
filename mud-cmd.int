@@ -18,6 +18,10 @@ const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 # Nota: a função escr aqui é desnecessária
 
 
+classe cmd_lançar
+herda cmd_lancar
+
+
 classe cmd_quem
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Quem\b\n\
@@ -196,14 +200,14 @@ func escr
       t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
     senao
       t2 += " / " + r.var.[t1]
-    fimse  
+    fimse
     h.addfim(t2)
   efim
   ret !h.linhas, arg0.msg("Nenhum item.")
   h.addini("Outros" + n + ":")
   arg0.msg(h.remove(1000))
 
-  
+
 classe cmd_inv
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Inv\b\n\
@@ -346,7 +350,9 @@ const txtajuda2 = "\n\
   \c2INVQUEM\b  Ocultar a presença no comando quem\n\
   \c2INVSALA\b  Invisível a não administradores\n\
   \c2AC\b       Participa do canal de comunicação AC (administração)\n\
-  \c2ADMLOG\b   Canal ADMLOG - é informado sobre mudanças online no MUD"
+  \c2ADMLOG\b   Canal ADMLOG - é informado sobre mudanças online no MUD\n\
+  \c2ADMCMD\b   Canal ADMCMD - é informado quando alguém usar CMD, CMDP\n\
+           ou CMDJs e o comando possuir alguma letra"
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
 # As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
@@ -366,6 +372,7 @@ const opc_invsala = 18
 const opc_ac = 19
 const opc_quem = 20
 const opc_admlog = 21
+const opc_admcmd = 22
 # Nota: o bit 23 é reservado para indicar se é administrador
 
 func escr
@@ -539,9 +546,11 @@ func escr
         t.linhas && t.addini("Equipado com:")
       fimse
 # O que o container possui
+    senao i_aberto == 5
     senao int(r.i_aberto) >= 3
       t.addfim(txtcopiamai(r.nome, "A") + (r.sexo ? " está fechado." : " está fechada."))
     senao r.i_aberto
+      r.z_moedas && t.addfim(txtcopiamai(misc:txtmoedas(r.z_moedas) + ".", "A"))
       listaitem item
       epara item = r.dentro1.ini, item, item.depois
         continuar !item.obj.visivel(arg0)
@@ -567,7 +576,7 @@ func escr
         t2 += ", " + estado(r.persobat)
       fimse
     senao r.pnivel
-      t2 += ", nível " + r.pnivel
+      t2 += ", é um objeto do nível " + r.pnivel
     fimse
 # Luz
     se int(r.luztempo.abs) >= 25

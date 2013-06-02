@@ -72,6 +72,7 @@ func cmd_matar2
   ret 1
 
 func cmd_cmd
+  admcmd("(cmd) " + nome + ": " + arg0, arg0)
   debug d
   msg(">" + d.cmd(perso, "ret " + arg0))
   ret 1
@@ -87,6 +88,7 @@ func cmd_cmdj
     msg("Jogador inexistente ou ausente: " + txt1(arg0))
     ret 1
   fimse
+  admcmd("(cmdj) " + nome + ": " + arg0, txt2(arg0))
   debug d
   msg(txt(item.obj.nome) + ">" + d.cmd(item.obj, "ret " + txt2(arg0)))
   ret 1
@@ -104,6 +106,7 @@ func cmd_cmdp
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
+    admcmd("(cmdp) " + nome + ": " + arg0, txt2(arg0))
     debug d
     msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg0)))
     ret 1
@@ -311,6 +314,15 @@ func admlog # Mensagem para todos com a opção "config +admlog"
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     item.obj.jogconfig.21 && item.obj.msg("\b\d1(adm) " + nome + " " + arg0 + "\b")
   efim
+
+func admcmd # Mensagem para todos com a opção "config +admcmd"
+# arg0 = texto que será enviado aos usuários
+# arg1 = comando (se não tiver nenhuma letra, não envia o texto)
+  se txtproc(txtsepara(txttroca(arg1, " ", ""), "L+DLEOV,DLEOV+L"), " ") >= 0
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.22 && item.obj.msg("\b\d4" + arg0 + "\b")
+    efim
 
 const txt_legenda = "Legenda:\n\
 <nulo> Significa que a opção não foi definida.\n\
@@ -1445,7 +1457,7 @@ const extra2 = "Não\nTelnet\nTelnet e Papovox"
 #
 const nome3 = "Endereço do MUD             "
 const info3 = "Para ativar em um endereço específico"
-const tipo3 = "texto--"
+const tipo3 = "linha--"
 const classe3 = "config"
 const var3 = "servender"
 #
@@ -1568,8 +1580,14 @@ const classe21 = "config"
 const var21 = "atktempo"
 const extra21 = "10 200"
 #
-const nome22 = "Escolher nível na área 'casa'"
-const info22 = "É uma opção que fica na sala casa003, \"Passagem\""
-const tipo22 = "simnao--"
+const nome22 = "Pode retornar até nível      "
+const info22 = "Até que nível pode usar o comando retornar"
+const tipo22 = "numero--"
 const classe22 = "config"
-const var22 = "escolhenivel"
+const var22 = "retornar"
+#
+const nome23 = "Escolher nível na área 'casa'"
+const info23 = "É uma opção que fica na sala casa003, \"Passagem\""
+const tipo23 = "simnao--"
+const classe23 = "config"
+const var23 = "escolhenivel"

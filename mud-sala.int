@@ -56,6 +56,7 @@ const s_titulo = "Sem nome"
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
 const s_pnj = 1 # PNJs podem entrar
+const s_noite = s_desc(arg0) # Inicialmente descrição de noite e de dia são iguais
 #
 uint8 porta_n # Tipo de saída
 uint8 porta_s # Tipo de saída
@@ -97,11 +98,10 @@ func t_item_exec # Começar a apagar objetos
     epara i = dentro1.fim, i, i.antes
       continuar i.obj.mantersala
       apagar(i.obj)
-      epara i.antes, i, i.antes
-        ret !i.obj.mantersala, t_item = 300 # 30 segundos para apagar o próximo
-      efim
+      t_item = 300 # 30 segundos para apagar o próximo
       ret
     efim
+    var.z_moedas = ""
 
 func visivel # Informa se a sala está visível (arg0=quem quer ver)
 # Se retornar 0, significa que não está visível. Nesse caso, para saber
@@ -131,9 +131,9 @@ func descsala # Retorna descrição da sala
 # t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo(arg0) + "\b")
     t.addfim("\b\c6" + s_titulo(arg0) + "\b")
     t.bytes <= 5 && t.limpar
-    misc:obj = arg0
-    arg1 & 1 && t.addfim(s_desc(arg0))
+    arg1 & 1 && t.addfim(misc:luz ? s_desc(arg0) : s_noite(arg0))
     arg1 & 2 && t.addfim(txtsai(arg0))
+    arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")
   senao 1 & arg0.bitver
     t.addfim("Está escuro...")
   senao

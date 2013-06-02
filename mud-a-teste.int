@@ -96,7 +96,6 @@ func cmd_s
   !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
   !arg0.pnivel && (arg0.pnivel = 1)
   arg0.recalc = 1
-  arg0.var.z_salafim = dir_s
 
 
 classe s_teste002
@@ -109,6 +108,7 @@ const dir_n = $s_teste001
 const dir_l = $s_teste003
 const dir_s = $s_teste014
 const dir_o = $s_teste033
+const s_retornar = 2 # Comando retornar: 2 Muda o ponto de retorno para essa sala
 
 
 classe s_teste003
@@ -130,6 +130,9 @@ const s_titulo = "Centro do jardim"
 const s_desc = "Aqui o mato é ainda mais alto. À oeste o mato é um pouco mais baixo,\n\
 enquanto que ao norte você vê uma pequena trilha. À leste e ao sul não é\n\
 possível saber o que há além do mato."
+const s_noite = "Aqui o mato é ainda mais alto, e como está escuro, você não consegue\n\
+ver o que tem em nenuma direção. Mas aqui começa uma pequena trilha\n\
+em direção ao norte."
 const dir_o = $s_teste003
 const dir_s = $s_teste005
 const dir_l = $s_teste006
@@ -140,8 +143,9 @@ classe s_teste005
 herda b_teste
 const s_titulo = "Jardim"
 const s_desc = "Aqui o mato é um pouco mais baixo que ao norte. Há algumas pedras\n\
-espalhadas pelo chão. Você anda com cuidado para não torcer o pé.\n\
-Ao sul, você pode pular a cerca que delimita o jardim."
+espalhadas pelo chão. Se fosse de noite, provavelmente teria torcido o pé."
+const s_noite = "Está escuro, e você acaba pisando em algumas pedras espalhadas pelo chão,\n\
+mesmo andando devagar. Por pouco não torce o pé."
 const dir_n = $s_teste004
 const dir_ne = $s_teste006
 
@@ -185,6 +189,8 @@ const s_titulo = "Trilha"
 const s_desc = "O mato chega a um metro aqui, e ao sul crece ainda mais. Na direção norte,\n\
 vai diminuindo gradativamente. É possível seguir também a sudeste.\n\
 Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
+const s_noite = "O mato chega a um metro aqui. Na direção norte ele parece diminuir um\n\
+pouco. Nas outras direções, você não vê nada além do mato na escuridão."
 const dir_s = $s_teste004
 const dir_n = $s_teste008
 const dir_se = $s_teste006
@@ -711,6 +717,7 @@ const armamin = 70
 const armamax = 120
 const valor = 50
 const armatipoatk = 2 # Ataque tipo: 2 Cortante
+const descpos = "Há uma faca no chão."
 
 
 classe i_teste013
@@ -719,6 +726,7 @@ const nome = "colete"
 const sexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
 const vestir1 = 6 # Vestir posição 1: 6 No corpo
+const descpos = "Um colete está jogado aqui."
 
 func cmd_recalc2 # Recalcula variáveis do personagem
   arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
@@ -787,8 +795,9 @@ func s_reset1 # Realiza o reset
 
 classe s_teste030
 herda b_teste
-const s_titulo = "Lojas e professores"
+const s_titulo = "Loja, professores e ponto de retorno"
 const s_desc = "À leste há um vendedor e um professor.\n\
+À oeste trata-se do ponto de retorno.\n\
 Vai precisar de dinheiro se quiser comprar ou aprender algo.\n\
 Para ficar com mil moedas, tecle AA nessa sala."
 const dir_n = $s_teste026
@@ -802,6 +811,8 @@ func cmd_escr # Escreveu algo
     arg0.var.z_moedas = 1000
     arg0.msg("Agora você tem 1000 moedas.")
     ret 1
+
+const dir_o = $s_teste049
 
 
 classe s_teste031
@@ -839,7 +850,12 @@ classe p_teste008
 herda comum_perso
 const nome = "Faixa preta"
 const sexoini = 1 # Sexo: 1 Masculino
-const lojaaula = "h_Chutar 3\nh_Voadora 7\nh_Morder 4\ni_Hebráico 2\nm_Fogo 4"
+const lojaaula = "h_Chutar 3\n\
+h_Voadora 7\n\
+h_Morder 4\n\
+i_Hebráico 2\n\
+m_Fogo 4\n\
+m_Retornar 8"
 const taxaaula = 50
 const lojanao = ""
 
@@ -868,12 +884,14 @@ classe p_teste009
 herda comum_perso
 const nome = "Perito"
 const sexoini = 1 # Sexo: 1 Masculino
-const lojaaula = "h_Lâmina_curta 8\n\
+const lojaaula = "h_Varinha 8\n\
+h_Cajado 8\n\
+h_Lâmina_curta 8\n\
 h_Lâmina_longa 8\n\
-h_Martelo 8\n\
-h_Arma_flexível 8\n\
+h_Maca_e_Martelo 8\n\
+h_Mangual 8\n\
+h_Chicote_e_Corrente 8\n\
 h_Arma_exótica 8\n\
-h_Garra 8\n\
 h_Segundo_ataque 8\n\
 h_Terceiro_ataque 8"
 const taxaaula = 50
@@ -882,7 +900,7 @@ const lojanao = ""
 
 classe s_teste033
 herda b_teste
-const s_titulo = "Introdução"
+const s_titulo = "CMD - Introdução"
 const s_desc = "Os comandos de administração CMD, CMDP e CMDJ permitem executar instruções\n\
 na linguagem do IntMUD. Todo o MUD foi feito nessa linguagem.\n\
 Pode-se carregar itens e personagens em uma sala, ler e alterar algumas\n\
@@ -926,14 +944,14 @@ const dir_o = $s_teste043
 classe s_teste036
 herda b_teste
 const s_titulo = "Teletransportando personagens"
-const s_desc = "Administradores podem se transportar usar o comando isala. Exemplo:\n\
-isala teste002\n\
+const s_desc = "Administradores podem se transportar usar o comando tele. Exemplo:\n\
+tele teste002\n\
 E transportar um jogador chamado João para teste002 assim:\n\
-isala João teste002\n\
+tele João teste002\n\
 Usando o CMD são os seguintes comandos:\n\
 cmd mudadono($s_teste002)\n\
 cmdj João mudadono($s_teste002)\n\
-Mas isala não transporta um personagem da sala. Com CMDP isso é possível."
+Mas tele não transporta um personagem da sala. Com CMDP isso é possível."
 const dir_se = $s_teste035
 const dir_n = $s_teste037
 
@@ -1088,3 +1106,59 @@ Com o comando cmdp fica assim:\n\
 cmdp jardineiro apagar(este)\n\
 Entretanto, apagar itens não pode ser feito com CMD e derivados."
 const dir_n = $s_teste043
+
+
+classe s_teste049
+herda b_teste
+const s_titulo = "Retornar para níveis baixos"
+const s_desc = "Como administrador, tecle ECONFIG e mude a opção \"Retornar até nível\" para,\n\
+por exemplo, 10. Assim jogadores até nível 10 poderão retornar teclando\n\
+retornar. Depois, vá até o centro de uma cidade, tecle ESALA e mude a opção\n\
+\"Comando retornar\" para 3. Assim, o comando retornar retornará para a primeira\n\
+dessas salas em que o jogador esteve."
+const dir_l = $s_teste030
+const dir_o = $s_teste050
+
+
+classe p_teste010
+herda comum_perso
+const nome = "Prefeito"
+const sexoini = 1 # Sexo: 1 Masculino
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10 # 1 segundo depois do jogador chegar
+  arg0.msg("Prefeito: Olá. Você pode vir morar nessa cidade por míseras 20 moedas.")
+
+func entrou30 # 3 segundos depois do jogador chegar
+  arg0.msg("Prefeito: Basta falar: Desejo morar aqui.")
+
+func cmd_falou
+  se arg1 == "Desejo morar aqui."
+    ret arg0.var.z_salafim == txt(dono), arg0.msg("Prefeito: Mas você já mora aqui.")
+    ret arg0.var.z_moedas_ < 20, arg0.msg("Prefeito: Você não tem 20 moedas")
+    arg0.var.z_moedas_ -= 20
+    arg0.var.z_salafim = dono
+    $mens.p(este, arg0)
+    $mens.mtodos1("Prefeito disse para $a: Agora seu ponto de retorno é aqui.")
+
+
+classe s_teste050
+herda b_teste
+const s_titulo = "Mais sobre retornar"
+const s_desc = "Jogadores de nível mais alto podem retornar usando a magia retornar.\n\
+Faixa preta, indo a leste, ensina essa magia.\n\
+O personagem prefeito é a classe p_teste010 do arquivo mud-a-teste.int.\n\
+Para mudar as mensagens ou o valor que ele cobra, basta mudar essa classe."
+const dir_l = $s_teste049
+const s_reset = "P 100 teste010 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste010:objsolto.total < 1
+    criar("p_teste010", este, 0)
+  fimse

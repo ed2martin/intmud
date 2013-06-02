@@ -577,6 +577,7 @@ inttempo salvarev # Para salvar o jogo de tempos em tempos
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
+const p_recebe = 1 # Para poder receber itens de outros personagens
 sav txt32 tipo1 # Raça do jogador; vide classes "tipo_*" em mud-tipo.int
 sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-tipo.int
 
@@ -600,7 +601,7 @@ func fechou # Executado quando o objeto sock é apagado
   se arg0
     vazio1 = 600 # 1 minuto
     vazio2 = 900 # 1 minuto e meio
-    !atkenv && apagar(arg0) # Apaga personagem se não estiver batalhando
+    !atkenv && apagar(este) # Apaga personagem se não estiver batalhando
   senao
     vazio1 = 1800 # 3 minutos
     vazio2 = 2400 # 4 minutos

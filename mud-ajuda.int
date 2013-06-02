@@ -39,11 +39,14 @@ func escr
 
 classe cmd_mover
 herda comando_ajuda
-const txtajuda = "\b\c3Movimentação\b\n\
+const txtajuda = txtajuda1 + txtajuda2 + txtajuda3
+const txtajuda1 = "\b\c3Movimentação\b\n\
 Você pode mover seu personagem para as seguintes direções:\n\
 N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo),\n\
-NE (nordeste), NO ou NW (noroeste), SE (sudeste) e SO ou SW (sudoeste).\n\
-Você poderá encontrar portas fechadas no caminho. Nesse caso, será\n\
+NE (nordeste), NO ou NW (noroeste), SE (sudeste) e SO ou SW (sudoeste).\n"
+const txtajuda2 = config:retornar >= 0 ? "Se você se perder, até o nível " + config:retornar + \
+", pode retornar teclando RETORNAR.\n"
+const txtajuda3 = "Você poderá encontrar portas fechadas no caminho. Nesse caso, será\n\
 necessário abrir antes de prosseguir naquela direção. Veja os comandos\n\
 ABRIR, FECHAR, TRANCAR e DESTRANCAR.\n\
 É possível também seguir outros personagens. Veja o comando SEGUIR.\n\

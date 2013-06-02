@@ -302,10 +302,10 @@ Você pode descansar rapidamente aqui teclando DEITAR"
 const s_desc2 = "\nPode também salvar o jogo ou mudar a senha teclando SALVAR"
 const dir_l = $s_casa002
 # const dir_s = $s_casa036
+const s_retornar = 2 # Comando retornar: 2 Muda o ponto de retorno para essa sala
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
-  arg0.z_salafim = este
 # Para teste: muda o nível do personagem
 # se arg0.pnivel < 2
 # arg0.pnivel = 12, arg0.recalc = 1
@@ -579,6 +579,7 @@ const pesoobj = 10200
 const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
 const visivel = arg0.posicao < 7 || arg0.var.d_escada_
 const eveste = 1 # Receber eventos do próprio objeto
+const i_aberto = 5 # Para os comandos abrir e fechar não checarem se a escada está aberta
 
 func descpos
   se misc:obj.var.d_escada_
@@ -1670,7 +1671,7 @@ func cmd_darobj # Alguém deu algum item
     ret 1 # Para não receber o item
   casose "i_casa009"
     apagar(arg2) # Apaga o item
-    misc:tempo("deubolsa", arg0) # Dispara 'deupedra'
+    misc:tempo("deubolsa", arg0) # Dispara 'deubolsa'
     ret
   casose
     arg0.msg("Ivone não aceita " + arg2.nome + ".")
