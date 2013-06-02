@@ -31,10 +31,10 @@ const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2AAREA\b <nome>\n\
   Apaga área, desde que não tenha nenhuma sala."
 const adm_sala = "\b\c3Comandos de salas\b\n\
-\c2ISALA\b <sala>\n\
-  Vai para a sala especificada.\n\
-\c2ISALA\b <jogador> <sala>\n\
-  Transporta um jogador para a sala especificada.\n\
+\c2TELE\b <sala ou jogador>\n\
+  Teletransporta para uma sala específica ou para aonde um jogador está.\n\
+\c2TELE\b <jogador> <sala>\n\
+  Transporta um jogador para uma sala.\n\
 \c2LSALA\b [sala]\n\
   Lista salas que começam com o nome especificado.\n\
 \c2CSALA\b <sala>\n\
@@ -164,25 +164,46 @@ func cmd_lsala # Listar salas
   fimse
   ret 1
 
-func cmd_isala # Ir para uma sala específica
+func cmd_tele # Ir para uma sala específica
+  ref p # Personagem
+  ref s # Sala destino
+  indiceitem item
+# Transportar um jogador para uma sala
   se txt2(arg0)
-    indiceitem item
     item.ini("pn " + txtnome(txt1(arg0)))
-    se !item.obj
+    p = item.obj, s = $s_[txt2(arg0)]
+    se !p
       msg("Jogador inexistente ou ausente: " + txt1(arg0))
-    senao !$s_[txt2(arg0)]
+    senao !s
       msg("\bSala não existe: " + txt2(arg0))
-    senao
-      perso.mudadono($s_[txt2(arg0)])
+    senao s == p.dono
+      msg(p.nome + " já está em " + txt(s, 2) + ".")
+      s = nulo
+    fimse
+# Transportar-se para uma sala
+  senao arg0
+    p = perso, s = $s_[arg0]
+    se !p
+      msg("Você deve estar controlando um personagem para isso")
+    senao !s
+      item.ini("pn " + txtnome(arg0))
+      s = item.obj.dono
+      !s && msg("\bSala ou jogador não existe: " + arg0)
+    fimse
+    se s && s == p.dono
+      msg("Você já está em " + txt(s, 2) + ".")
+      s = nulo
     fimse
   senao
-    se !perso
-      msg("Você deve estar controlando um personagem para isso")
-    senao !$s_[arg0]
-      msg("\bSala não existe: " + arg0)
-    senao
-      perso.mudadono($s_[arg0])
-    fimse
+    msg("Teletransportar quem? Para onde?")
+  fimse
+# Realiza o teletransporte
+  se p && s
+    $mens.p(p, perso)
+    p != perso && p.msginv("$A teletransporta você.")
+    !p.p_silencio && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+    p.mudadono(s)
+    !p.p_silencio && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
   fimse
   ret 1
 
@@ -533,7 +554,7 @@ const extra11 = txt_luta
 const nome12 = "Sem resgate"
 const info12 = "Se não é possível resgatar outro jogador"
 const tipo12 = "simnao"
-const classe12 = var.classe1
+const classe12 = var.classe2
 const var12 = "s_naoresg"
 #
 const nome13 = "Sem magia"
@@ -541,30 +562,39 @@ const tipo13 = "simnao"
 const classe13 = var.classe2
 const var13 = "s_semmagia"
 #
-const nome14 = "PNJs entram"
-const tipo14 = "simnao"
+const nome14 = "Comando retornar"
+const tipo14 = "opcao"
 const classe14 = var.classe2
-const var14 = "s_pnj"
+const var14 = "s_retornar"
+const extra14 = "Permitido\n\
+Não permitido\n\
+Muda o ponto de retorno para essa sala\n\
+Muda o ponto de retorno se não possuir"
 #
-const nome15 = "Soltar itens"
-const tipo15 = "opcao"
+const nome15 = "PNJs entram"
+const tipo15 = "simnao"
 const classe15 = var.classe2
-const var15 = "s_soltar"
-const extra15 = "Permitido\n\
+const var15 = "s_pnj"
+#
+const nome16 = "Soltar itens"
+const tipo16 = "opcao"
+const classe16 = var.classe2
+const var16 = "s_soltar"
+const extra16 = "Permitido\n\
 Não permitido\n\
 Destrói afundando\n\
 Destrói caindo\n\
 Desintegra"
 #
-const nome16 = "Volume dentro"
-const tipo16 = "numero"
-const classe16 = var.classe2
-const var16 = "volmax"
-#
-const nome17 = "Objetos máximo"
+const nome17 = "Volume dentro"
 const tipo17 = "numero"
 const classe17 = var.classe2
-const var17 = "objmax"
+const var17 = "volmax"
+#
+const nome18 = "Objetos máximo"
+const tipo18 = "numero"
+const classe18 = var.classe2
+const var18 = "objmax"
 
 
 classe adm_sala
@@ -580,95 +610,110 @@ const tipo2 = "texto"
 const classe2 = var.classe1
 const var2 = "s_desc"
 #
-const nome3 = "Ocultar desc"
-const info3 = "Se não deve mostrar descrição ao entrar na sala"
-const tipo3 = "simnao"
+const nome3 = "Desc de noite"
+const info3 = "Se quiser uma descrição diferentes quando etiver de noite"
+const tipo3 = "texto"
 const classe3 = var.classe1
-const var3 = "s_ocultar"
+const var3 = "s_noite"
 #
 const nome4 = "Desc completa"
-const info4 = "Se quiser substituir a descrição completa, mostrada ao teclar 'ver'"
+const info4 = "Se quiser substituir a descrição completa, mostrada ao teclar 'olhar'"
 const tipo4 = "texto"
 const classe4 = var.classe1
 const var4 = "descsala"
 #
-const nome5 = "Terreno"
-const tipo5 = "opcao"
+const nome5 = "Ocultar desc"
+const info5 = "Se não deve mostrar descrição ao entrar na sala"
+const tipo5 = "simnao"
 const classe5 = var.classe1
-const var5 = "s_terreno"
-const extra5 = txt_terreno
+const var5 = "s_ocultar"
 #
-const nome6 = "Luz"
+const nome6 = "Terreno"
 const tipo6 = "opcao"
 const classe6 = var.classe1
-const var6 = "s_luz"
-const extra6 = txt_luz
+const var6 = "s_terreno"
+const extra6 = txt_terreno
 #
-const nome7 = "Apagar itens"
-const info7 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
-const tipo7 = "numero"
+const nome7 = "Luz"
+const tipo7 = "opcao"
 const classe7 = var.classe1
-const var7 = "s_item"
+const var7 = "s_luz"
+const extra7 = txt_luz
 #
-const nome8 = "Morre ao entrar"
-const tipo8 = "simnao"
+const nome8 = "Apagar itens"
+const info8 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
+const tipo8 = "numero"
 const classe8 = var.classe1
-const var8 = "s_morre"
+const var8 = "s_item"
 #
-const nome9 = "Ao tentar falar"
-const info9 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
-const tipo9 = "linha"
+const nome9 = "Morre ao entrar"
+const tipo9 = "simnao"
 const classe9 = var.classe1
-const var9 = "s_falar"
+const var9 = "s_morre"
 #
-const nome10 = "Batalha"
-const tipo10 = "opcao"
+const nome10 = "Ao tentar falar"
+const info10 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
+const tipo10 = "linha"
 const classe10 = var.classe1
-const var10 = "s_luta"
-const extra10 = txt_luta
+const var10 = "s_falar"
 #
-const nome11 = "Sem resgate"
-const info11 = "Se não é possível resgatar outro jogador"
-const tipo11 = "simnao"
+const nome11 = "Batalha"
+const tipo11 = "opcao"
 const classe11 = var.classe1
-const var11 = "s_naoresg"
+const var11 = "s_luta"
+const extra11 = txt_luta
 #
-const nome12 = "Sem magia"
+const nome12 = "Sem resgate"
+const info12 = "Se não é possível resgatar outro jogador"
 const tipo12 = "simnao"
 const classe12 = var.classe1
-const var12 = "s_semmagia"
+const var12 = "s_naoresg"
 #
-const nome13 = "PNJs entram"
+const nome13 = "Sem magia"
 const tipo13 = "simnao"
 const classe13 = var.classe1
-const var13 = "s_pnj"
+const var13 = "s_semmagia"
 #
-const nome14 = "Soltar itens"
+const nome14 = "Comando retornar"
 const tipo14 = "opcao"
 const classe14 = var.classe1
-const var14 = "s_soltar"
+const var14 = "s_retornar"
 const extra14 = "Permitido\n\
+Não permitido\n\
+Muda o ponto de retorno para essa sala\n\
+Muda o ponto de retorno se não possuir"
+#
+const nome15 = "PNJs entram"
+const tipo15 = "simnao"
+const classe15 = var.classe1
+const var15 = "s_pnj"
+#
+const nome16 = "Soltar itens"
+const tipo16 = "opcao"
+const classe16 = var.classe1
+const var16 = "s_soltar"
+const extra16 = "Permitido\n\
 Não permitido\n\
 Destrói afundando\n\
 Destrói caindo\n\
 Desintegra"
 #
-const nome15 = "Volume dentro"
-const tipo15 = "numero"
-const classe15 = var.classe1
-const var15 = "volmax"
-#
-const nome16 = "Objetos máximo"
-const tipo16 = "numero"
-const classe16 = var.classe1
-const var16 = "objmax"
-#
-const nome17 = "Eventos sala"
-const info17 = "Se recebe eventos da própria sala"
-const tipo17 = "simnao"
+const nome17 = "Volume dentro"
+const tipo17 = "numero"
 const classe17 = var.classe1
-const var17 = "eveste"
-const mudou17 = "ajustaev"
+const var17 = "volmax"
+#
+const nome18 = "Objetos máximo"
+const tipo18 = "numero"
+const classe18 = var.classe1
+const var18 = "objmax"
+#
+const nome19 = "Eventos sala"
+const info19 = "Se recebe eventos da própria sala"
+const tipo19 = "simnao"
+const classe19 = var.classe1
+const var19 = "eveste"
+const mudou19 = "ajustaev"
 
 
 classe adm_saida

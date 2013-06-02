@@ -120,21 +120,21 @@ func escr
     senao sala.i_aberto > 2
       ret arg0.msg(txtcopiamai(sala.nome, "A") + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
-    mens = " de $t $a."
+    mens = " de $a."
   fimse
-# Pega os itens
   nomeobj n # Para reconhecer os itens
-  textotxt nomes # Nomes dos itens pegos
   n.ini(misc:sep1, 1000000)
+# Pega os itens
   achou = 0
   epara l.addfim(sala.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     se arg0.dentro1.total + total > arg0.objmax
       ret arg0.msg("Você não consegue carregar tanta coisa nada.")
-    senao arg0.volden + l.objini.voltot * total > arg0.volmax
+    senao arg0.volden + l.objini.voltot * total / l.objini.objtot > arg0.volmax
       ret arg0.msg("Você não consegue carregar tanta coisa.")
-    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total > arg0.pesomax
+    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total / l.objini.objtot > arg0.pesom\
+ax
       ret l.objini.pesotot > l.objini.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
       ret arg0.msg("Você não consegue carregar tanto peso.")
     fimse
@@ -156,7 +156,30 @@ func escr
     efim
     sair (achou += 1) >= 10
   efim
-  !achou && arg0.msg("Você não vê isso.")
+  ret achou, nulo
+# Pega moedas
+  se sala.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", sala.var.z_moedas_)
+    total = int(misc:sep1) ? n : sala.var.z_moedas
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
+      sair e.objini.cmd_pegarmoedas(arg0, sala, total)
+    efim
+    ret !total, nulo
+    sala.var.z_moedas_ -= total
+    sala.var.z_moedas_ < 0 && sala.var.z_moedas = ""
+    arg0.var.z_moedas_ += total
+    $mens.p(arg0, sala)
+    se total == 1
+      $mens.mvis1("$P pega uma moeda" + mens)
+    senao total == 2
+      $mens.mvis1("$P pega duas moedas" + mens)
+    senao
+      $mens.mvis1("$P pega " + total + " moedas" + mens)
+    fimse
+    ret
+  fimse
+# Não encontrou o item
+  arg0.msg("Você não vê isso.")
 
 
 classe cmd_soltar
@@ -236,11 +259,11 @@ func escr
     senao sala.i_aberto > 2
       ret arg0.msg(txtcopiamai(sala.nome, "A") + " está fechad" + (sala.sexo ? "o." : "a."))
     fimse
-    mens = " em $t $a"
+    mens = " em $a"
   fimse
-# Solta os itens
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, 1000000)
+# Solta os itens
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
@@ -248,7 +271,7 @@ func escr
     se sala.dentro1.total + total >= sala.objmax
       ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.nome + ".")
       ret arg0.msg("Não consegue soltar nada aqui.")
-    senao sala.volden + l.objini.voltot * total > sala.volmax * l.objini.objtot
+    senao sala.volden + l.objini.voltot * total / l.objini.objtot > sala.volmax * l.objini.objtot
       ret arg0.msg("Não há espaço suficiente para soltar isso.")
     fimse
     listaobj e
@@ -283,7 +306,44 @@ func escr
     efim
     sair (achou += 1) >= 10
   efim
-  !achou && arg0.msg("Você não vê isso.")
+  ret achou, nulo
+# Solta moedas
+  se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
+    total = n
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
+      sair e.objini.cmd_soltarmoedas(arg0, sala, total)
+    efim
+    ret !total, nulo
+    arg0.var.z_moedas_ -= total
+    arg0.var.z_moedas_ < 0 && arg0.var.z_moedas = ""
+    $mens.p(arg0, sala)
+    mens2 = mens ? "$P coloca " : "$P solta "
+    se total == 1
+      mens2 += "uma moeda"
+    senao total == 2
+      mens2 += "duas moedas"
+    senao
+      mens2 += txt(total) + " moedas"
+    fimse
+    casovar soltar
+    casose "2"
+      $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
+      sair
+    casose "3"
+      $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
+      sair
+    casose "4"
+      $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
+      sair
+    casose
+      $mens.mvis1(mens2 + mens + ".")
+      sala.var.z_moedas_ += total
+    casofim
+    ret
+  fimse
+# Não encontrou o item
+  arg0.msg("Você não vê isso.")
 
 
 classe cmd_dar
@@ -368,18 +428,19 @@ func escr
   senao !sala.p_recebe
     ret arg0.msg("Não é possível dar nada para " + sala.nome + ".")
   fimse
-# Dá os itens
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, 1000000)
+# Dá os itens
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     se sala.dentro1.total + total >= sala.objmax
       ret arg0.msg(txtcopiamai(sala.nome, "A") + " não consegue carregar mais nada.")
-    senao sala.volden + l.objini.voltot * total > sala.volmax
+    senao sala.volden + l.objini.voltot * total / l.objini.objtot > sala.volmax
       ret arg0.msg(txtcopiamai(sala.nome, "A") + " não consegue carregar isso.")
-    senao sala.pesoden - sala.pesoveste + l.objini.pesotot * total > sala.pesomax
+    senao sala.pesoden - sala.pesoveste + l.objini.pesotot * total / l.objini.objtot > sala.pesom\
+ax
       ret arg0.msg("É pesado de mais para " + txtcopiamai(sala.nome, "A") + ".")
     fimse
     listaobj e
@@ -389,9 +450,9 @@ func escr
     se !e
       $mens.p(arg0, sala, l.objini)
       se total <= 1
-        $mens.mvis1("$P dá $o para $t $a.")
+        $mens.mvis1("$P dá $o para $a.")
       senao
-        $mens.mvis1("$P dá " + total + "x $o para $t $a.")
+        $mens.mvis1("$P dá " + total + "x $o para $a.")
       fimse
       l.objini.mudadono(sala, total)
     fimse
@@ -400,7 +461,30 @@ func escr
     efim
     sair (achou += 1) >= 10
   efim
-  !achou && arg0.msg("Você não vê isso.")
+  ret achou, nulo
+# Dá moedas
+  se arg0.var.z_moedas_ && n.nome("moedas", arg0.var.z_moedas_)
+    total = n
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
+      sair e.objini.cmd_darmoedas(arg0, sala, total)
+    efim
+    ret !total, nulo
+    sala.var.z_moedas_ += total
+    arg0.var.z_moedas_ -= total
+    arg0.var.z_moedas_ < 0 && arg0.var.z_moedas = ""
+    $mens.p(arg0, sala)
+    se total == 1
+      $mens.mvis1("$P dá uma moeda para $a.")
+    senao total == 2
+      $mens.mvis1("$P dá duas moedas para $a.")
+    senao
+      $mens.mvis1("$P dá " + total + " moedas para $a.")
+    fimse
+    ret
+  fimse
+# Não encontrou o item
+  arg0.msg("Você não vê isso.")
 
 
 classe cmd_usar
@@ -436,8 +520,8 @@ func escr
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     total += n
-    se r.pnivel > arg0.pnivel
-      arg0.msg(txtcopiamai(r.nome, "A") + " é um item do nível " + r.pnivel + ".")
+    se int(r.pnivel) > arg0.pnivel
+      arg0.msg("Você precisa estar no nível " + r.pnivel + " para vestir " + r.nome + ".")
       continuar
     fimse
     uint8 x
@@ -456,7 +540,7 @@ func escr
         sair
       fimse
       vest.[r.vestpos] = 1
-      r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P veste $t $a.")
+      r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P veste $a.")
     efim
   efim
 # Avisa se não encontrou nenhum item
@@ -484,12 +568,13 @@ func escr
     se !r.armatipo
       ret arg0.msg(txtcopiamai(r.nome, "A") + " não é arma.")
     senao int(r.pnivel) > arg0.pnivel
-      ret arg0.msg(txtcopiamai(r.nome, "A") + " é um item do nível " + r.pnivel + ".")
+      ret arg0.msg("Você precisa estar no nível " + r.pnivel + " para empunhar " + r.nome + \
+".")
     senao config:atktipo && !arg0.var.h_[txtsublin(misc:arma_txt, r.armatipo, 1)]
       ret arg0.msg("Você não conhece " + txtsublin(misc:arma_txt, r.armatipo, 1) + ".")
     fimse
     r.vestir(30)
-    r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P empunha $t $a.")
+    r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P empunha $a.")
     ret
   efim
   arg0.msg("Você não vê isso.")
@@ -519,7 +604,7 @@ func escr
       total += 1
       r.vestir(0)
       $mens.p(arg0, r)
-      $mens.mvis1("$P remove $t $a.")
+      $mens.mvis1("$P remove $a.")
     efim
   efim
 # Ajusta variáveis

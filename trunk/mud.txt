@@ -220,7 +220,7 @@ z_dono = nome do dono original (quem capturou o animal)
 z_pnivel = nível do animal quando foi capturado
 z_captura = nome do item que o jogador escolheu para capturar animais
 z_salafim = sala para onde vai quando retorna da morte
-z_moedas = quantas moedas está carregando
+z_moedas = quantas moedas o personagem, item ou sala possui
 
 
 5. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
@@ -251,23 +251,27 @@ Retorna o título da sala. arg0 é quem está requisitanto o título.
 6.2. const s_desc = "texto"
 Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
 
-6.3. const s_ocultar = 0
+6.3. const s_noite = "texto"
+Retorna a descrição da sala quando está de noite.
+arg0 é quem está requisitanto a descrição.
+
+6.4. const s_ocultar = 0
 Verdadeiro (geralmente 1) deve ocultar a descrição da sala ao entrar.
 
-6.4. const s_luta = 0
+6.5. const s_luta = 0
 Tipo de luta permitido:
 0=nenhuma
 1=exceto entre jogador
 2=qualquer luta
 
-6.5. ref dir_[direção]
+6.6. ref dir_[direção]
 Antes de acessar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
 Se estiver ausente, não há sala nessa direção
 
-6.6. uint8 porta_[direção]
+6.7. uint8 porta_[direção]
      const portaini_[direção]
 Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
@@ -278,57 +282,57 @@ PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
 2 = está fechado
 3 = está trancado
 
-6.7. const inv_[direção]
+6.8. const inv_[direção]
 Antes de acessar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
-6.8. const tranc_[direção]
+6.9. const tranc_[direção]
 Antes de acessar fazer misc:obj=personagem
 0 = não pode ser trancado
 1 = pode ser trancado
 2 = tranca ao fechar
 
-6.9. const fechadura_[direção]
+6.10. const fechadura_[direção]
 Antes de acssar fazer misc:obj=personagem
 Texto que contém o código da fechadura.
 Somente uma chave com o mesmo código tranca e destranca.
 Se estiver ausente ou for um texto vazio, não requer chave.
 
-6.10. const portanome_[direção]
+6.11. const portanome_[direção]
 Nome da porta na direção especificada. Se estiver ausente ou for um
 texto vazio, será usada a mensagem padrão, que depende da porta.
 Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
 Exemplo:
 const portanome_n = "a porta da casa"
 
-6.11. const s_reset
+6.12. const s_reset
 Reset de sala:
 Um texto que contém os executados quando algum jogador entra na sala.
 O significado do texto está explicado no início do arquivo mud-reset.int.
 
-6.12. const a_reset
+6.13. const a_reset
 Reset de área:
 Um texto que contém os executados quando ocorre reset da área.
 O significado do texto está explicado no início do arquivo mud-reset.int.
 
-6.13. func txtsai( jogador )
+6.14. func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
-6.14. func descsala( jogador, modo )
+6.15. func descsala( jogador, modo )
 Adiciona texto com a descrição da sala
 Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
 Somar 4 para mostrar os personagens e itens
 
-6.15. func descitens( jogador )
+6.16. func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-6.16. func ver_[nome do a descrição]( jogador, 0 )
+6.17. func ver_[nome do a descrição]( jogador, 0 )
 Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
 existir ou falso (ou um texto não vazio) se não existir.
 
-6.17. func ver_[nome do a descrição]( jogador, 1 )
+6.18. func ver_[nome do a descrição]( jogador, 1 )
 Deve retornar um texto que é a descrição extra.
 Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
@@ -837,6 +841,11 @@ func cmd_soltar(personagem, texto)
 func cmd_dar(personagem, texto)
 Quer pegar, soltar ou dar alguma coisa.
 
+func cmd_pegarmoedas(personagem, origem, quantidade de moedas)
+func cmd_soltarmoedas(personagem, destino, quantidade de moedas)
+func cmd_darmoedas(personagem, destino, quantidade de moedas)
+Quer pegar, soltar ou dar moedas.
+
 func cmd_pegarobj(personagem, origem, item, quantidade do item)
 func cmd_soltarobj(personagem, destino, item, quantidade do item)
 func cmd_darobj(personagem, destino, item, quantidade do item)
@@ -956,6 +965,7 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
+Comando para escrever reservadamente
 Ao criar personagem: e-mail e altura
 APRENDER: Definir em que nível e o quanto pode aprender de cada habilidade
 Comandos: vender, avaliar

@@ -92,6 +92,8 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   efim
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
+    dono.s_retornar >= 2 && (!var.z_salafim || dono.s_retornar == 3) && (var.z_salafim = \
+dono)
     epara l.addfim(arg0.dentro2), l, l.ini.remove
       l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
     efim
@@ -222,8 +224,8 @@ func descpos
     ret !poslugar, txtcopiamai(nome, "A") + " está sentad" + misc:sletra[sexo] + "aqui."
     ref r
     r = poslugar.objlista
-    ret txtcopiamai(nome, "A") + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] + " " + \
-r.nome + "."
+    ret txtcopiamai(nome, "A") + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] \
++ " " + r.nome + "."
   casose "7"
     ret txtcopiamai(nome, "A") + " está lutando."
   casose "8"
