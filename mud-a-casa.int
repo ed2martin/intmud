@@ -33,6 +33,7 @@ const s_item = 1
 classe i_casa002
 herda comum_item
 const nome = "bife"
+const descnome = "um bife"
 const descpos = "O que restou de um bife repousa aqui, imóvel."
 const sexo = 1
 const pesoobj = 100
@@ -41,7 +42,8 @@ const inivar = "e_apagar=50"
 
 classe p_casa001
 herda comum_persobat
-const nome = "Boneco de papel"
+const nome = "boneco de papel"
+const descnome = "um boneco de papel"
 const sexoini = 1
 const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
@@ -50,7 +52,8 @@ const p_agressivo = 2
 
 classe p_casa002
 herda comum_persobat
-const nome = "Boneco de papel"
+const nome = "boneco de papel"
+const descnome = "um boneco de papel"
 const sexoini = 1
 const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
@@ -74,7 +77,8 @@ func cmd_pnj_proc
 
 classe p_casa003
 herda comum_persobat
-const nome = "Boneco de papelão"
+const nome = "boneco de papelão"
+const descnome = "um boneco de papelão"
 const sexoini = 1
 const descpadr = "Um boneco de papelão está se mexendo."
 const descver = "Parece frágil, pois é feito de papelão."
@@ -110,7 +114,8 @@ func cmd_atkrec # Somente o jogador alvo pode atacar o boneco
 
 classe p_casa004
 herda comum_persobat
-const nome = "Menina"
+const nome = "menina"
+const descnome = "uma menina"
 const sexoini = 0
 const descpadr = "Uma menina está sentada aqui, dobrando papéis."
 const descver = "Debaixo do braço carrega diversas artes feitas dobrando-se papéis."
@@ -172,7 +177,8 @@ func cmd_atacar
 
 classe p_casa005
 herda comum_perso
-const nome = "Menino"
+const nome = "menino"
+const descnome = "um menino"
 const sexoini = 1
 const nivel = 4
 const descpadr = "Um menino está aqui brincando."
@@ -191,7 +197,8 @@ func entrou100
 
 classe p_casa006
 herda comum_perso
-const nome = "Senhora"
+const nome = "senhora"
+const descnome = "uma senhora"
 const sexoini = 0
 const descpadr = "Uma senhora brinca com cartas, sentada em uma poltrona."
 const nivel = 8
@@ -214,7 +221,8 @@ func entrou160
 
 classe p_casa007
 herda comum_persobat
-const nome = "Bife"
+const nome = "bife"
+const descnome = "um bife"
 const sexoini = 1
 const descpadr = "Um bife está flutuando aqui."
 const p_morreu1 = "Um bife caiu no chão, imóvel."
@@ -229,9 +237,10 @@ func cmd_morreu
 
 classe p_casa008
 herda comum_persobat
-const nome = "Alface"
+const nome = "alface"
+const descnome = "um pé de alface"
 const sexoini = 1
-const descpadr = "Um alface está flutuando aqui."
+const descpadr = "Um pé de alface está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=3"
@@ -245,7 +254,8 @@ func cmd_morreu
 
 classe p_casa009
 herda comum_persobat
-const nome = "Banana"
+const nome = "banana"
+const descnome = "uma banana"
 const sexoini = 0
 const descpadr = "Uma banana está flutuando aqui."
 const p_mover = 1
@@ -256,7 +266,8 @@ const p_morreu1 = "$P se partiu."
 
 classe p_casa010
 herda comum_persobat
-const nome = "Peão"
+const nome = "peão"
+const descnome = "um peão"
 const sexoini = 1
 const descpadr = "Um peão está girando aqui."
 const p_mover = 1
@@ -267,7 +278,8 @@ const p_morreu1 = "$P virou pó de madeira."
 
 classe p_casa011
 herda comum_persobat
-const nome = "Boneca"
+const nome = "boneca"
+const descnome = "uma boneca"
 const sexoini = 0
 const descpadr = "Uma boneca está parada aqui."
 const p_mover = 1
@@ -278,7 +290,9 @@ const p_morreu1 = "$P foi vencida e desapareceu."
 
 classe p_casa012
 herda comum_persobat
-const nome = "Folha de alface"
+const nome = "folha de alface"
+const ident = "folha alface"
+const descnome = "uma folha de alface"
 const ident = "folha alface"
 const sexoini = 0
 const descpadr = "Uma folha de alface balança no ar."
@@ -378,42 +392,7 @@ const dir_l = $s_casa006
 const ver_quadro = "Quadro\n\
 Você vê o desenho de uma antiga mansão, num belo dia de sol.\n\
 A assinatura você não consegue ler, está muito apagada.\n\
-Mas há uma data aqui, 8/9/2012."
-
-func cmd_salaperso # Personagem chegou
-  se arg0.jog && config:escolhenivel
-    misc:evento(arg0) # Receber eventos do jogador
-    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
-
-func entrou2
-  arg0.msg("Nesta versão de teste do jogo tecle aqui:")
-  arg0.msg("A ou AA para aumentar 1 ou 10 níveis")
-  arg0.msg("D ou DD para diminuir 1 ou 10 níveis")
-
-func cmd_escr
-  casovar txtmin(arg1)
-  casose "aa"
-    arg0.pnivel += 9
-    arg0.recalc = 1
-  casose "a"
-    arg0.pnivel += 1
-    arg0.recalc = 1
-    se arg0.pnivel > 80
-      arg0.msg("Nível máximo é 80")
-      arg0.pnivel = 80
-    senao
-      arg0.msg(arg0.nome + " é nível " + arg0.pnivel)
-    fimse
-    ret 1
-  casose "dd"
-    arg0.pnivel -= 9
-    arg0.recalc = 1
-  casose "d"
-    arg0.pnivel -= 1
-    arg0.recalc = 1
-    arg0.msg(arg0.nome + " é nível " + arg0.pnivel)
-    ret 1
-  casofim
+Mas há uma data aqui, 4/6/2013."
 
 
 classe s_casa004
@@ -431,7 +410,7 @@ func ver_batalha
   listaitem i
   textotxt t
   epara i = $s_casa005.dentro2.ini, i, i.depois
-    i.obj.jog && t.addfim(i.obj.nome)
+    i.obj.jog && t.addfim(i.obj.descnome)
   efim
   arg0.msg("Jogo Batalha")
   casovar t.linhas
@@ -574,6 +553,7 @@ func s_reset1 # Realiza o reset
 classe i_casa001
 herda comum_item
 const nome = "escada"
+const descnome = "uma escada"
 const sexo = 0
 const pesoobj = 10200
 const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
@@ -1024,7 +1004,8 @@ func cmd_soltouobj
 
 classe p_casa013
 herda comum_persobat
-const nome = "Cachorro"
+const nome = "cachorro"
+const descnome = "um cachorro"
 const descpadr = "Um cachorro faminto está à procura de comida."
 const sexoini = 1
 const pesoobj = 40000
@@ -1130,6 +1111,7 @@ func s_reset1 # Realiza o reset
 classe i_casa003
 herda comum_itemperso
 const nome = "desgastada estante"
+const descnome = "uma desgastada estante"
 const pesoobj = 900000
 const mantersala = 1 # Mantém na sala: Sim
 const i_abertoini = 1 # Container: 1 Sempre aberto
@@ -1160,6 +1142,7 @@ const descpos = "Uma desgastada estante guarda alguns objetos aqui."
 classe i_casa004
 herda comum_item
 const nome = "esfera preta"
+const descnome = "uma esfera preta"
 const descver = "Extremamente frágil, porém três esferas pretas juntas são bem mais\n\
 resistentes."
 const pesoobj = 5000
@@ -1201,6 +1184,7 @@ func testafim_exec
 classe i_casa006
 herda i_casa004
 const nome = "esfera branca"
+const descnome = "uma esfera branca"
 const descver = "Extremamente frágil, quebra se não for manuseado com cuidado."
 
 func testafim_exec
@@ -1225,6 +1209,7 @@ func testafim_exec
 classe i_casa007
 herda i_casa004
 const nome = "estranha boneca preta"
+const descnome = "uma estranha boneca preta"
 const descver = "Um objeto bastante ágil."
 
 func testafim_exec
@@ -1249,7 +1234,8 @@ func testafim_exec
 classe p_casa014
 herda comum_persobat
 const pesoobj = 45000
-const nome = "Zumbi" + nomealvo
+const nome = "zumbi"
+const descnome = "um zumbi"
 const descpadr = "Um fétido zumbi vaga sem rumo por aqui."
 const volobj = 2000
 const p_mover = 2 # Movimentar: 2 Qualquer lugar
@@ -1289,13 +1275,14 @@ func cmd_morreu
   se arg0 != este # Se quem morreu não é esse personagem
     $mens.p(este, arg0)
     $mens.mvis1("O corpo de $A começa a se mexer com um aspecto cadavérico.")
-    nomealvo = " " + arg0.nome
+    nomealvo = " " + arg0.descnome
     pvida = pvidamax
 
 
 classe i_casa008
 herda comum_itemgrupo
 const nome = "bolsa"
+const descnome = "uma bolsa"
 const pesoobj = 1200
 const descpos = "Uma bolsa está jogada aqui."
 const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
@@ -1305,6 +1292,7 @@ a palavra Beatriz."
 classe i_casa009
 herda comum_itemgrupo
 const nome = "bolsa"
+const descnome = "uma bolsa"
 const pesoobj = 1200
 const descpos = "Uma bolsa está jogada aqui."
 const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
@@ -1314,6 +1302,7 @@ a palavra Ivone."
 classe i_casa010
 herda comum_itemgrupo
 const nome = "chave"
+const descnome = "uma chave"
 const pesoobj = 100
 const i_chave = "casa1"
 
@@ -1674,7 +1663,7 @@ func cmd_darobj # Alguém deu algum item
     misc:tempo("deubolsa", arg0) # Dispara 'deubolsa'
     ret
   casose
-    arg0.msg("Ivone não aceita " + arg2.nome + ".")
+    arg0.msg("Ivone não aceita " + arg2.descnome + ".")
     ret 1 # Para não receber o item
   casofim
 
@@ -1708,6 +1697,7 @@ func deubolsa270
 classe i_casa011
 herda comum_itemgrupo
 const nome = "faca"
+const descnome = "uma faca"
 const pesoobj = 300
 const armatipo = 1 # Arma tipo: 1 Lâmina curta
 const armaprecisao = 100

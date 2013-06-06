@@ -250,27 +250,27 @@ func escr_arg # Com algum argumento
   nome = txt2(txte(r))
   $mens.p(o1)
   se r.sem1 && r.sem2
-    t.addfim($mens.proc("\nSe " + o1.nome + " digitar " + nome + ", receberá:\n" + r.sem1, \
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + ", receberá:\n" + r.sem1, \
 o1))
     t.addfim($mens.proc("E os demais:\n" + r.sem2, o2))
   fimse
   $mens.p(o1, o1)
   se r.auto1 && r.auto2
-    t.addfim($mens.proc("\nSe " + o1.nome + " digitar " + nome + " " + o1.nome + ", receberá:\n" \
-+ r.auto1, o1))
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.descnome + ", \
+receberá:\n" + r.auto1, o1))
     t.addfim($mens.proc("E os demais:\n" + r.auto2, o2))
   fimse
   $mens.p(o1, o2)
   se r.perso1 && r.perso2 && r.perso3
-    t.addfim($mens.proc("\nSe " + o1.nome + " digitar " + nome + " " + o2.nome + ", receberá:\n" \
-+ r.perso1, o1))
-    t.addfim($mens.proc("E " + o2.nome + ":\n" + r.perso2, o2))
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.descnome + ", \
+receberá:\n" + r.perso1, o1))
+    t.addfim($mens.proc("E " + o2.descnome + ":\n" + r.perso2, o2))
     t.addfim($mens.proc("E os demais:\n" + r.perso3, este))
   fimse
   $mens.p(o1, nulo, o3)
   se r.item1 && r.item2
-    t.addfim($mens.proc("\nSe " + o1.nome + " digitar " + nome + " " + o3.nome + ", receberá:\n" \
-+ r.item1, o1))
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.descnome + ", \
+receberá:\n" + r.item1, o1))
     t.addfim($mens.proc("E os demais:\n" + r.item2, este))
   fimse
   se t.linhas

@@ -17,17 +17,17 @@ func escr
     r = l.objini
 # Checa se pode acender
     se !r.luzitem || r.luzitem == 3
-      ret arg0.msg("Você não consegue acender " + r.nome + ".")
+      ret arg0.msg("Você não consegue acender " + r.descnome + ".")
     senao !r.luztempo
-      ret arg0.msg(txtcopiamai(r.nome, "A") + " não acende mais.")
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " não acende mais.")
     senao r.luztempo > 0
-      ret arg0.msg(txtcopiamai(r.nome, "A") + " já está aces" + (r.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está aces" + (r.sexo ? "o." : "a."))
     senao r.luzitem == 6 # Se requer fogo para acender
       l.limpar
       epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
         sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
       efim
-      ret !l.objini, arg0.msg("Você precisa de fogo para acender " + r.nome + ".")
+      ret !l.objini, arg0.msg("Você precisa de fogo para acender " + r.descnome + ".")
     fimse
 # Eventos
     l.limpar
@@ -65,9 +65,9 @@ func escr
     r = l.objini
 # Checa se pode apagar
     se !r.luzitem || r.luzitem == 3
-      ret arg0.msg("Você não consegue apagar " + r.nome + ".")
+      ret arg0.msg("Você não consegue apagar " + r.descnome + ".")
     senao !r.luztempo || r.luztempo < 0
-      ret arg0.msg(txtcopiamai(r.nome, "A") + " já está apagad" + (r.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está apagad" + (r.sexo ? "o." : "a."))
     fimse
 # Eventos
     l.limpar
@@ -116,9 +116,10 @@ func escr
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
-      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não é container.")
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
     senao sala.i_aberto > 2
-      ret arg0.msg(txtcopiamai(sala.nome, "A") + " está fechad" + (sala.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.sexo ? "o." : \
+"a."))
     fimse
     mens = " de $a."
   fimse
@@ -255,9 +256,10 @@ func escr
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
-      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não é container.")
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
     senao sala.i_aberto > 2
-      ret arg0.msg(txtcopiamai(sala.nome, "A") + " está fechad" + (sala.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.sexo ? "o." : \
+"a."))
     fimse
     mens = " em $a"
   fimse
@@ -269,7 +271,7 @@ func escr
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     se sala.dentro1.total + total >= sala.objmax
-      ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.nome + ".")
+      ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.descnome + ".")
       ret arg0.msg("Não consegue soltar nada aqui.")
     senao sala.volden + l.objini.voltot * total / l.objini.objtot > sala.volmax * l.objini.objtot
       ret arg0.msg("Não há espaço suficiente para soltar isso.")
@@ -394,9 +396,10 @@ func escr
       se i.obj == arg0
         ret arg0.msg("Dar para você mesmo?")
       senao !l.objini.jog
-        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + " não é jogador.")
+        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + " não é jogador.")
       senao !l.objini.animalnum
-        ret arg0.msg(txtcopiamai(l.objini.nome, "A") + " não tem espaço para receber animal.")
+        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + " não tem espaço para receber \
+animal.")
       fimse
       listaobj e
       epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
@@ -411,7 +414,7 @@ func escr
       r.dono = l.objini
       arg0.escolhebat
       $mens.p(arg0, l.objini)
-      $mens.mvis1("$P dá " + r.nome + " para $a.")
+      $mens.mvis1("$P dá " + r.descnome + " para $a.")
       epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
         e.objini.cmd_deunim(arg0, r, l.objini)
       efim
@@ -426,7 +429,7 @@ func escr
   se !sala
     ret arg0.msg("Você não vê " + misc:sep2 + ".")
   senao !sala.p_recebe
-    ret arg0.msg("Não é possível dar nada para " + sala.nome + ".")
+    ret arg0.msg("Não é possível dar nada para " + sala.descnome + ".")
   fimse
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, 1000000)
@@ -436,12 +439,12 @@ func escr
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     se sala.dentro1.total + total >= sala.objmax
-      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não consegue carregar mais nada.")
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada.")
     senao sala.volden + l.objini.voltot * total / l.objini.objtot > sala.volmax
-      ret arg0.msg(txtcopiamai(sala.nome, "A") + " não consegue carregar isso.")
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
     senao sala.pesoden - sala.pesoveste + l.objini.pesotot * total / l.objini.objtot > sala.pesom\
 ax
-      ret arg0.msg("É pesado de mais para " + txtcopiamai(sala.nome, "A") + ".")
+      ret arg0.msg("É pesado de mais para " + txtcopiamai(sala.descnome, "A") + ".")
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
@@ -521,7 +524,8 @@ func escr
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     total += n
     se int(r.pnivel) > arg0.pnivel
-      arg0.msg("Você precisa estar no nível " + r.pnivel + " para vestir " + r.nome + ".")
+      arg0.msg("Você precisa estar no nível " + r.pnivel + " para vestir " + r.descnome + \
+".")
       continuar
     fimse
     uint8 x
@@ -536,7 +540,7 @@ func escr
         arg0.msg("Já está vestindo algo em cima.")
         sair
       senao
-        arg0.msg("Você não consegue vestir " + r.nome + ".")
+        arg0.msg("Você não consegue vestir " + r.descnome + ".")
         sair
       fimse
       vest.[r.vestpos] = 1
@@ -566,9 +570,9 @@ func escr
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     se !r.armatipo
-      ret arg0.msg(txtcopiamai(r.nome, "A") + " não é arma.")
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " não é arma.")
     senao int(r.pnivel) > arg0.pnivel
-      ret arg0.msg("Você precisa estar no nível " + r.pnivel + " para empunhar " + r.nome + \
+      ret arg0.msg("Você precisa estar no nível " + r.pnivel + " para empunhar " + r.descnome + \
 ".")
     senao config:atktipo && !arg0.var.h_[txtsublin(misc:arma_txt, r.armatipo, 1)]
       ret arg0.msg("Você não conhece " + txtsublin(misc:arma_txt, r.armatipo, 1) + ".")
@@ -634,7 +638,8 @@ func escr
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    ret !r.i_captura, arg0.msg(r.nome + " não serve para capturar animais.")
+    ret !r.i_captura, arg0.msg(txtcopiamai(r.descnome, "A") + " não serve para capturar animais."\
+)
     item = r
     sair
   efim
@@ -644,7 +649,7 @@ func escr
   r = arg0.atkenv.objlista # Alvo do personagem
   se !r
     se arg1
-      arg0.msg("Você escolhe " + arg1 + " (" + item.nome + ") para capturar animais.")
+      arg0.msg("Você escolhe " + arg1 + " (" + item.descnome + ") para capturar animais.")
     senao
       arg0.msg("Não está lutando com nenhum animal.")
     fimse
@@ -685,11 +690,11 @@ func escr
   casofim
   $mens.p(arg0, r)
   se valor * item.i_captura(r) < r.pnivel * rand(5, 20)
-    $mens.mvis1("$P joga " + item.nome + " para $a, mas $a recusa.")
+    $mens.mvis1("$P joga " + item.descnome + " para $a, mas $a recusa.")
     item.apagar(1)
     ret
   fimse
-  $mens.mvis1("$P joga " + item.nome + " para $a.")
+  $mens.mvis1("$P joga " + item.descnome + " para $a.")
   item.apagar(1)
 # Captura
   listaobj e
