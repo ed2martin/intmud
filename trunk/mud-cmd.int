@@ -220,7 +220,8 @@ func escr
   listaitem item
   epara item = arg0.dentro1.fim, item, item.antes
     continuar !item.obj.visivel(arg0)
-    t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtcopiamai(item.obj.nome, "A"))
+    t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtcopiamai(item.obj.descnome, \
+"A"))
   efim
   t.juntalin("(", "x)")
   se t
@@ -242,7 +243,8 @@ func escr
   listaitem item
   epara item = arg0.dentro2.fim, item, item.antes
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-    t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.atribs + item.obj.nome)
+    t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.atribs + txtcopiamai(item.obj.d\
+escnome, "A"))
   efim
   se t.linhas
     arg0.msg2("Equipado com:\n" + t.remove(1000))
@@ -421,7 +423,7 @@ func escr
 # Checa a propriedade SEGUIR
   se !opc.5 # Se não pode ser seguido
     epara nulo, arg0.lseguir, arg0.lseguir.ini.remove
-      arg0.lseguir.objini.msg("Você pára de seguir " + arg0.nome + ".")
+      arg0.lseguir.objini.msg("Você pára de seguir " + arg0.descnome + ".")
     efim
   fimse
 # Atualiza a configuração
@@ -541,20 +543,20 @@ func escr
         listaitem item
         epara item = r.dentro2.ini, item, item.depois
           continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-          t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.nome)
+          t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.descnome)
         efim
         t.linhas && t.addini("Equipado com:")
       fimse
 # O que o container possui
     senao i_aberto == 5
     senao int(r.i_aberto) >= 3
-      t.addfim(txtcopiamai(r.nome, "A") + (r.sexo ? " está fechado." : " está fechada."))
+      t.addfim(txtcopiamai(r.descnome, "A") + (r.sexo ? " está fechado." : " está fechada."))
     senao r.i_aberto
       r.z_moedas && t.addfim(txtcopiamai(misc:txtmoedas(r.z_moedas) + ".", "A"))
       listaitem item
       epara item = r.dentro1.ini, item, item.depois
         continuar !item.obj.visivel(arg0)
-        t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.nome, "A"))
+        t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
       efim
       se !t.linhas
         t.addfim(r.sexo ? "Está vazio." : "Está vazia.")
@@ -568,7 +570,7 @@ func escr
 # Nome, nível, situação atual e animal que escolheu
     r.descver(arg0) && t.addini(r.descver(arg0))
     txt200 t2
-    t2 = txtcopiamai(r.nome, "A")
+    t2 = txtcopiamai(r.descnome, "A")
     se r.perso
       t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel + ", " + estado(r)
       se r.persobat && r.persobat != r

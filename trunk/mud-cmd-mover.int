@@ -40,7 +40,7 @@ func escr # Executa o comando
   epara l.addfim(arg0.lseguir), l, l.ini.remove
     continuar l.objini.posicao < 8 || l.objini.dono != s1 || lseg.possui(l.objini)
     continuar !arg0.visivel(l.objini) || !s1.visivel(l.objini)
-    l.objini.msg("Você segue " + arg0.nome + ".")
+    l.objini.msg("Você segue " + arg0.descnome + ".")
     escr(l.objini, "\n")
   efim
 
@@ -185,11 +185,11 @@ func escr
     arg0.iseguir.remove
     arg0.msg("Você não segue ninguém.")
   senao i.obj.jog ? !i.obj.jogconfig.5 : i.obj.p_naoseguir(arg0)
-    arg0.msg("Você não consegue seguir " + txtcopiamai(i.obj.nome, "A") + ".")
+    arg0.msg("Você não consegue seguir " + i.obj.descnome + ".")
   senao
     arg0.iseguir.remove
     arg0.iseguir = i.obj.lseguir.addfim(arg0)
-    arg0.msg("Você segue " + i.obj.nome + ".")
+    arg0.msg("Você segue " + i.obj.descnome + ".")
 
 
 classe cmd_abrir
@@ -224,11 +224,12 @@ func escrobj # Abrir um item
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está abert" + misc:sletra[r.sexo] + \
+".")
   casose "4"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " está trancad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está trancad" + misc:sletra[r.sexo] + ".")
   casose
-    ret arg0.msg("Não foi possível abrir " + r.nome + ".")
+    ret arg0.msg("Não foi possível abrir " + r.descnome + ".")
   casose "3"
   casose "5"
   casofim
@@ -309,9 +310,10 @@ func escrobj # Fechar um item
   casovar r.i_aberto
   casose "3"
   casose "4"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está fechad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está fechad" + misc:sletra[r.sexo] + \
+".")
   casose
-    ret arg0.msg("Não foi possível fechar " + r.nome + ".")
+    ret arg0.msg("Não foi possível fechar " + r.descnome + ".")
   casose "2"
   casose "5"
   casofim
@@ -396,13 +398,14 @@ func escrobj # Destrancar um item
   r = i.obj, misc:obj = arg0
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
   casose "3"
-    ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.s\
-exo] + ".")
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " não está trancad" + misc:sletra[r.sexo] + ".")
+    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + misc:sletra\
+[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está trancad" + misc:sletra[r.sexo] + \
+".")
   casose
-    ret arg0.msg("Não foi possível destrancar " + r.nome + ".")
+    ret arg0.msg("Não foi possível destrancar " + r.descnome + ".")
   casose "4"
   casose "5"
   casofim
@@ -412,7 +415,7 @@ exo] + ".")
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave de " + r.nome + ".")
+    ret !i, arg0.msg("Você não possui a chave de " + r.descnome + ".")
     chave = i.obj
   fimse
 # Gera eventos

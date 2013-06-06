@@ -13,6 +13,7 @@ const s_luta = 1
 classe i_teste001
 herda comum_item
 const nome = "borracha"
+const descnome = "uma borracha"
 const sexo = 0
 const descpos = "Uma borracha está jogada aqui."
 const vestir = 8
@@ -21,6 +22,7 @@ const vestir = 8
 classe i_teste002
 herda comum_item
 const nome = "pedra"
+const descnome = "uma pedra"
 const sexo = 0
 const descpos = "Aqui tem uma pedra."
 const pesoobj = 200
@@ -29,6 +31,7 @@ const pesoobj = 200
 classe i_teste003
 herda comum_itemgrupo
 const nome = "carne crua"
+const descnome = "uma carne crua"
 const pesoobj = 50
 const i_captura = 4
 const volobj = 4
@@ -38,6 +41,7 @@ const pnivel = 4
 classe i_teste004
 herda comum_itemgrupo
 const nome = "carne cozida"
+const descnome = "uma carne cozida"
 const pesoobj = 100
 const volobj = 8
 const i_captura = 8
@@ -69,7 +73,7 @@ func cmd_darobj # Alguém deu algum item
     apagar(arg2) # Apaga o item
     misc:tempo("deupedra", arg0) # Dispara 'deupedra'
   senao
-    arg0.msg("Jardineiro não aceita " + arg2.nome + ".")
+    arg0.msg("Jardineiro não aceita " + arg2.descnome + ".")
     ret 1 # Para não receber o item
 
 func deupedra15
@@ -101,7 +105,8 @@ func cmd_s
 classe s_teste002
 herda b_teste
 const s_titulo = "Bifurcação"
-const s_desc = "A leste há um jardim. Dê a pedra ao jardineiro.\n\
+const s_desc = "A leste há um pequeno jardim.\n\
+A sudeste você pode mudar de nível.\n\
 As salas ao sul mostram diversos recursos do MUD.\n\
 A oeste há explicações sobre o comando de administração CMD e derivados."
 const dir_n = $s_teste001
@@ -109,6 +114,7 @@ const dir_l = $s_teste003
 const dir_s = $s_teste014
 const dir_o = $s_teste033
 const s_retornar = 2 # Comando retornar: 2 Muda o ponto de retorno para essa sala
+const dir_se = $s_teste015
 
 
 classe s_teste003
@@ -310,8 +316,9 @@ const dir_s = $s_teste023
 classe s_teste015
 herda b_teste
 const s_titulo = "Mudança de nível"
-const s_desc = "Aqui você pode mudar o nível do seu personagem teclando AA ou BB.\n\
-Notar que em um MUD de verdade, essa opção não pode existir."
+const s_desc = "Aqui você pode mudar o nível do seu personagem.\n\
+Tecle A ou AA para aumentar 1 ou 10 níveis\n\
+Tecle D ou DD para diminuir 1 ou 10 níveis"
 const dir_o = $s_teste014
 const eveste = 1 # Eventos sala: Sim
 
@@ -320,24 +327,31 @@ func cmd_salaperso # Personagem chegou
     misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_escr # Escreveu algo
-  se arg1 == "AA"
-    se arg0.pnivel < 10
-      arg0.pnivel += 1
-      arg0.recalc = 1
-      arg0.msg("Você é nível " + arg0.pnivel + ".")
+  casovar txtmin(arg1)
+  casose "aa"
+    arg0.pnivel += 9
+    arg0.recalc = 1
+  casose "a"
+    arg0.pnivel += 1
+    arg0.recalc = 1
+    se arg0.pnivel > 80
+      arg0.msg("Nível máximo é 80")
+      arg0.pnivel = 80
     senao
-      arg0.msg("Essa opção não sobe além do 10.")
+      arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
     fimse
     ret 1
-  senao arg1 == "BB"
-    se arg0.pnivel > 1
-      arg0.pnivel -= 1
-      arg0.recalc = 1
-      arg0.msg("Você é nível " + arg0.pnivel + ".")
-    senao
-      arg0.msg("Essa opção não desce baixo do 1.")
-    fimse
+  casose "dd"
+    arg0.pnivel -= 9
+    arg0.recalc = 1
+  casose "d"
+    arg0.pnivel -= 1
+    arg0.recalc = 1
+    arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
     ret 1
+  casofim
+
+const dir_no = $s_teste002
 
 
 classe s_teste016
@@ -435,7 +449,8 @@ func s_reset1 # Realiza o reset
 
 classe p_teste002
 herda comum_persobat
-const nome = "Macaco"
+const nome = "macaco"
+const descnome = "um macaco"
 const descpadr = "Um macaco está fazendo bagunça aqui."
 const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
 const p_captura = 3 # Capturar: 3 Normal
@@ -448,7 +463,8 @@ const inivar = "h_socar=1,h_chutar=1"
 
 classe p_teste003
 herda comum_persobat
-const nome = "Cão"
+const nome = "cão"
+const descnome = "um cão"
 const descpadr = "Um cachorro late para você."
 const descver = "Mamífero da família dos canídeos."
 const p_captura = 2 # Capturar: 2 Fácil
@@ -460,7 +476,8 @@ const inivar = "h_arremessar=1"
 
 classe p_teste004
 herda comum_persobat
-const nome = "Morcego"
+const nome = "morcego"
+const descnome = "um morcego"
 const descpadr = "Um morcego está voando."
 const descver = "Mamífero da ordem dos quirópteros"
 const p_captura = 4 # Capturar: 4 Difícil
@@ -561,6 +578,7 @@ func s_reset1 # Realiza o reset
 classe i_teste005
 herda comum_itemperso
 const nome = "bolsa"
+const descnome = "uma bolsa"
 const pesoobj = 200
 const volobj = 30
 const volmax = 5000
@@ -572,6 +590,7 @@ const i_tranc = 1 # Trancar: 1 Pode ser trancado
 classe i_teste006
 herda comum_itemperso
 const nome = "tocha"
+const descnome = "uma tocha"
 const luzini = -600
 const luztxt = "Uma tocha se apagou"
 const luzfim = 1 # Sem luz item some: Sim
@@ -581,6 +600,7 @@ const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
 classe i_teste007
 herda comum_itemperso
 const nome = "lanterna"
+const descnome = "uma lanterna"
 const luzitem = 1 # Tipo de luz: 1 Lanterna (acende/apaga, sem fogo)
 const luzini = -6000
 const luztxt = "Uma lanterna apagou."
@@ -589,6 +609,7 @@ const luztxt = "Uma lanterna apagou."
 classe i_teste008
 herda comum_itemperso
 const nome = "lampião"
+const descnome = "um lampião"
 const sexo = 1 # Sexo: 1 Masculino
 const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
 const luzini = -3000
@@ -598,12 +619,14 @@ const luztxt = "Um lampião apagou."
 classe i_teste009
 herda comum_itemgrupo
 const nome = "palito de fósforo"
+const descnome = "um palito de fósforo"
 const sexo = 1 # Sexo: 1 Masculino
 
 
 classe i_teste010
 herda comum_itemperso
 const nome = "fósforo aceso"
+const descnome = "um fósforo aceso"
 const sexo = 1 # Sexo: 1 Masculino
 const luzini = 80
 const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
@@ -614,6 +637,7 @@ const luzfim = 1 # Sem luz item some: Sim
 classe i_teste011
 herda comum_itemperso
 const nome = "caixa de fósforo"
+const descnome = "uma caixa de fósforo"
 const eveste = 1 # Receber eventos do próprio objeto
 sav uint8 palitos # Quantidade de palitos de fósforo da caixa
 const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
@@ -692,7 +716,8 @@ func s_reset1 # Realiza o reset
 
 classe p_teste006
 herda comum_persobat
-const nome = "Geléia"
+const nome = "geléia"
+const descnome = "uma geléia"
 const sexoini = 0 # Sexo: 0 Feminino
 const pesoobj = 10000
 const nivel = 3
@@ -710,6 +735,7 @@ func cmd_recalc1 # Recalcula variáveis do personagem
 classe i_teste012
 herda comum_itemgrupo
 const nome = "faca"
+const descnome = "uma faca"
 const pesoobj = 300
 const armatipo = 3 # Arma tipo: 1 Lâmina curta
 const armaprecisao = 100
@@ -723,6 +749,7 @@ const descpos = "Há uma faca no chão."
 classe i_teste013
 herda comum_itemgrupo
 const nome = "colete"
+const descnome = "um colete"
 const sexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
 const vestir1 = 6 # Vestir posição 1: 6 No corpo
@@ -740,6 +767,7 @@ const nivel = 1
 classe i_teste014
 herda comum_itemgrupo
 const nome = "colete dos elfos"
+const descnome = "o colete dos elfos"
 const sexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
 const vestir1 = 6 # Vestir posição 1: 6 No corpo

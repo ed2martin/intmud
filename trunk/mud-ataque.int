@@ -437,7 +437,7 @@ func escr # Atacar alguém
     nomeobj nome
     nome.ini(arg1, 1)
     epara i = arg0.dono.dentro2.ini, i, i.depois
-      sair i.obj.visivel(arg0) && nome.nome(i.obj.nome)
+      sair i.obj.visivel(arg0) && nome.nome(i.obj.ident)
     efim
     r = i.obj
     ret !r, arg0.msg("Você não vê isso.")
@@ -452,9 +452,9 @@ func escr # Atacar alguém
   se !arg0.dono.s_luta
     arg0.msg("Aqui é um lugar pacífico.")
   senao arg0.jog && r.jog && arg0.dono.s_luta < 2
-    arg0.msg(r.nome + " é jogador e aqui não é uma arena.")
+    arg0.msg(r.descnome + " é jogador e aqui não é uma arena.")
   senao !r.p_agressivo(arg0)
-    arg0.msg(r.nome + " não quer brigar.")
+    arg0.msg(r.descnome + " não quer brigar.")
   senao
     ataca(arg0, r)
 
@@ -712,13 +712,13 @@ func escr
     r = i.obj
 # Checa se é possível resgatar
     ret arg0 == r, arg0.msg("Resgatar você mesmo?")
-    ret !r.jog, arg0.msg(i.obj.nome + " não é jogador.")
-    ret !r.atkrec.objini, arg0.msg(i.obj.nome + " não está lutando.")
-    ret r.atkenv.objlista == arg0, arg0.msg(i.obj.nome + " está lutando com você.")
+    ret !r.jog, arg0.msg(i.obj.descnome + " não é jogador.")
+    ret !r.atkrec.objini, arg0.msg(i.obj.descnome + " não está lutando.")
+    ret r.atkenv.objlista == arg0, arg0.msg(i.obj.descnome + " está lutando com você.")
 # Checa se personagens permitem resgate
     epara i = r.atkrec.ini, i, i.depois
-      ret i.obj.p_naoresg, arg0.msg("Não é possível resgatar " + r.nome + " de " + i.obj.nome + \
-".")
+      ret i.obj.p_naoresg, arg0.msg("Não é possível resgatar " + r.descnome + " de " + i.obj.desc\
+nome + ".")
     efim
 # Eventos
     listaobj l
