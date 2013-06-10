@@ -206,7 +206,8 @@ func descpos
   casose "0"
     ret txtcopiamai(descnome, "A") + " jás aqui."
   casose "1"
-    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + misc:sletra[sexo] + "."
+    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + misc:sletra[sexo] + \
+"."
   casose "2"
     ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + misc:sletra[sexo] + "."
   casose "3"
@@ -215,7 +216,8 @@ func descpos
     ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui."
     ref r
     r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " dorme em " + misc:sum[r.sexo] + " " + r.descnome + "."
+    ret txtcopiamai(descnome, "A") + " dorme em " + misc:sum[r.sexo] + " " + r.descnome + \
+"."
   casose "5"
     ret !poslugar, txtcopiamai(descnome, "A") + " descansa aqui."
     ref r
@@ -226,8 +228,8 @@ func descpos
     ret !poslugar, txtcopiamai(descnome, "A") + " está sentad" + misc:sletra[sexo] + "aqui."
     ref r
     r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sexo] \
-+ " " + r.descnome + "."
+    ret txtcopiamai(descnome, "A") + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sex\
+o] + " " + r.descnome + "."
   casose "7"
     ret txtcopiamai(descnome, "A") + " está lutando."
   casose "8"

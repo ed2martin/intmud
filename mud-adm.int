@@ -349,6 +349,75 @@ func p_opcao # Alterando uma opção de uma lista de opções
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
+const t_txtopcao = t_texto(arg0, arg1)
+
+func p_txtopcao
+  uint16 linha
+  linha = arg0, passo = "txtopcao"
+  se arg0 == "" || arg0 == "\b"
+    se var.opcvalido
+      msg("Entre com uma opção, O mostra as opções, Z sair")
+    senao
+      msg("Entre com uma opção, O mostra as opções, N nenhuma, Z sair")
+    fimse
+  senao arg0 == "o"
+    textotxt t
+    t.addfim([var.opcclasse]:[var.opcvar])
+    txtmais.limpar
+    txtmais.addfim("\bOpções:")
+    textopos pos
+    epara pos = t.ini, pos, pos.depois
+      txtmais.addfim("\c2" + txtmais.linhas + ".\b" + (pos.linha < 9 ? " ") + pos.texto)
+    efim
+    pos.antes
+    se pos.texto != "" && t.linhas < int(txt2(var.opcextra))
+      txtmais.addfim("\c2" + txtmais.linhas + ".\b")
+    fimse
+    txtmais.addfim("Para alterar, tecle um número de 1 a " + txt2(var.opcextra) + ", seguido ou\
+ não de um texto")
+    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    txtmostra
+  senao arg0 == "z"
+    passo = var.opcpasso, p_[passo]("\b")
+  senao arg0 == "n" && !var.opcvalido
+    prog p
+    p.apagar(var.opcclasse, var.opcvar)
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
+    perso.teclou(txtremove(txt(arg0, 1), "E"))
+  senao linha == 0 || txt(linha) != txt1(arg0)
+    msg("Opção ou linha inexistente: " + txt1(arg0))
+  senao linha > int(txt2(var.opcextra))
+    msg("O número da linha vai até " + txt2(var.opcextra))
+  senao
+    linha -= 1
+    textotxt t1
+    textopos pos
+    t1.addfim([var.opcclasse]:[var.opcvar])
+    t1.linhas < linha && t1.addfim(txtrepete("\n", linha - t.linhas))
+    pos = t1.ini, pos.linha = linha, pos.mudar(txt2(arg0))
+    pos = t1.fim, pos.antes
+    uint16 linhasmin
+    linhasmin = txt1(var.opcextra)
+    enquanto pos.linha > linhasmin && pos.texto == ""
+      pos.remove, pos.antes
+    efim
+    pos.linha == linhasmin && pos.texto == "" && pos.remove
+    prog p
+    txt200 t
+    t = "const " + var.opcvar + "=\""
+    p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Linha " + txt(linha + 1) + " foi alterada")
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    ret 1
+  fimse
+  ret 1
+
 func t_vetor # Retorna as opções selecionadas de lista de opções
 # arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções
   prog p
@@ -414,7 +483,8 @@ func p_vetor # Alterando uma opção de uma lista de opções
     x = 1 << x ^ [var.opcclasse]:[var.opcvar]
     txt100 lin
     lin = txtcor(t_vetormostra(x, var.opcextra))
-    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + lin)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + \
+lin)
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Escolheu: " + lin)

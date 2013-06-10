@@ -47,7 +47,7 @@ bool TConsole::Inic(bool completo)
     LinTotal = 24;
     ColTotal = 80;
     LinAtual = 0;
-    CorAtual = 0x100; //0x70;
+    CorAtual = 0x1F00; //0x70;
     Charset = 0x100;
     LerUTF8 = 0;
 

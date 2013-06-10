@@ -154,6 +154,9 @@ void err_printf(const char * mens, ...)
             Console = new TConsole;
             if (!Console->Inic(false))
                 exit(EXIT_FAILURE);
+#ifdef __WIN32__
+            Console->CorTxt(0x70);
+#endif
             Console->EnvTxt(msg1, strlen(msg1));
         }
         Console->EnvTxt(txt, destino-txt);

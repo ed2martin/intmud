@@ -661,6 +661,54 @@ func escr
   efim
 
 
+classe cmd_sussurrar
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Sussurrar\b\n\
+Sintaxe: SUSSURRAR <personagem> <mensagem>\n\
+Sussurra uma mensagem para um personagem que está na mesma sala.\n\
+A mensagem é enviada reservadamente para o personagem escolhido.\n\
+Os outros apenas ficam sabendo que você sussurrou alguma coisa."
+
+func escr
+  $mens.p(arg0)
+  se !arg1
+    arg0.msg("Sussurrar para quem?")
+    ret
+  senao !txt2(arg1)
+    arg0.msg("Sussurrar o que?")
+    ret
+  senao arg0.dono.s_falar
+    arg0.msg(arg0.dono.s_falar)
+    ret
+  fimse
+  nomeobj n
+  listaobj l
+  n.ini(txt1(arg1), 1)
+  l.addfim(arg0.dono.dentro2)
+  epara nulo, l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    $mens.p(arg0, l.objini)
+    se arg0 == l.objini
+      $mens.mtodos1("$P sussurrou algumas palavras.")
+    senao
+      txt500 m1
+      m1 = "$P sussurou para $a '" + txttroca(txt2(arg1), "$", "$$") + "'"
+      $mens.mtodos3(m1, m1, "$P sussurou algumas palavras para $a.")
+    fimse
+    sair
+  efim
+# Executa eventos
+  ref r
+  r = l.objini
+  l.remove
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_sussurrou(arg0, r, arg1)
+  efim
+# Mensagem se não encontrou o personagem
+  !r && arg0.msg("Você não vê " + txt1(arg1) + ".")
+
+
 classe cmdfim_chat
 herda comando_comum, comando_ajuda
 const posic = 0

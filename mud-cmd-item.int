@@ -141,17 +141,15 @@ ax
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_pegarobj(arg0, sala, l.objini, total)
+      ret e.objini.cmd_pegarobj(arg0, sala, l.objini, total), nulo
     efim
-    se !e
-      $mens.p(arg0, sala, l.objini)
-      se total <= 1
-        $mens.mvis1("$P pega $o" + mens)
-      senao
-        $mens.mvis1("$P pega " + total + "x $o" + mens)
-      fimse
-      l.objini.mudadono(arg0, total)
+    $mens.p(arg0, sala, l.objini)
+    se total <= 1
+      $mens.mvis1("$P pega $o" + mens)
+    senao
+      $mens.mvis1("$P pega " + total + "x $o" + mens)
     fimse
+    l.objini.mudadono(arg0, total)
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
       e.objini.cmd_pegouobj(arg0, sala, l.objini, total)
     efim
@@ -163,7 +161,7 @@ ax
     total = int(misc:sep1) ? n : sala.var.z_moedas
     listaobj e
     epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
-      sair e.objini.cmd_pegarmoedas(arg0, sala, total)
+      ret e.objini.cmd_pegarmoedas(arg0, sala, total), nulo
     efim
     ret !total, nulo
     sala.var.z_moedas_ -= total
@@ -227,7 +225,7 @@ func escr
     ret r.p_soltar == 2, arg0.msg("Não é possível soltar esse animal.")
     listaobj e
     epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
-      sair e.objini.cmd_soltaranim(arg0, r, arg0.dono)
+      ret e.objini.cmd_soltaranim(arg0, r, arg0.dono), nulo
     efim
     r = arg0.animal.[num]
     ret !r, nulo # Retorna se não possui mais o animal
@@ -243,7 +241,7 @@ func escr
     efim
     ret
   casofim
-# Obtém o objeto de onde pegar
+# Obtém o objeto de onde soltar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
     sala = arg0.dono
@@ -279,7 +277,7 @@ func escr
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_soltarobj(arg0, sala, l.objini, total)
+      ret e.objini.cmd_soltarobj(arg0, sala, l.objini, total), nulo
     efim
     se !e
       $mens.p(arg0, sala, l.objini)
@@ -314,7 +312,7 @@ func escr
     total = n
     listaobj e
     epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
-      sair e.objini.cmd_soltarmoedas(arg0, sala, total)
+      ret e.objini.cmd_soltarmoedas(arg0, sala, total), nulo
     efim
     ret !total, nulo
     arg0.var.z_moedas_ -= total
@@ -403,7 +401,7 @@ animal.")
       fimse
       listaobj e
       epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
-        sair e.objini.cmd_daranim(arg0, r, l.objini)
+        ret e.objini.cmd_daranim(arg0, r, l.objini), nulo
       efim
       r = arg0.animal.[num]
       ret !r, nulo # Retorna se não possui mais o animal
@@ -422,7 +420,7 @@ animal.")
     efim
     ret arg0.msg("Você não vê " + txt2(arg1) + ".")
   casofim
-# Obtém o objeto de onde pegar
+# Obtém para quem dar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   ret !misc:sep2, arg0.msg("Dar itens para quem?")
   sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
@@ -448,17 +446,15 @@ ax
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_darobj(arg0, sala, l.objini, total)
+      ret e.objini.cmd_darobj(arg0, sala, l.objini, total), nulo
     efim
-    se !e
-      $mens.p(arg0, sala, l.objini)
-      se total <= 1
-        $mens.mvis1("$P dá $o para $a.")
-      senao
-        $mens.mvis1("$P dá " + total + "x $o para $a.")
-      fimse
-      l.objini.mudadono(sala, total)
+    $mens.p(arg0, sala, l.objini)
+    se total <= 1
+      $mens.mvis1("$P dá $o para $a.")
+    senao
+      $mens.mvis1("$P dá " + total + "x $o para $a.")
     fimse
+    l.objini.mudadono(sala, total)
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
       e.objini.cmd_deuobj(arg0, sala, l.objini, total)
     efim
@@ -470,7 +466,7 @@ ax
     total = n
     listaobj e
     epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
-      sair e.objini.cmd_darmoedas(arg0, sala, total)
+      ret e.objini.cmd_darmoedas(arg0, sala, total), nulo
     efim
     ret !total, nulo
     sala.var.z_moedas_ += total
@@ -699,7 +695,7 @@ func escr
 # Captura
   listaobj e
   epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
-    sair e.objini.cmd_pegaranim(arg0, r, arg0.dono)
+    ret e.objini.cmd_pegaranim(arg0, r, arg0.dono), nulo
   efim
   ret arg0.animal.[lugar - 1] || !item, nulo # Retorna se o espaço foi ocupado
   r.mudadono(arg0) # Muda de dono
