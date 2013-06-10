@@ -19,6 +19,7 @@ classe jogoini
 telatxt tela
 int1 entrasenha # Se está digitando a senha do bot
 txt100 txtsenha # A senha que está digitando
+intexec fimprog # Para fechar o programa
 
 func iniclasse
   criar(arg0)
@@ -40,8 +41,18 @@ func jogobotfim
 
 func tela_tecla
   se !entrasenha # Não está entrando com a senha
-    ret $jogolocal || arg0 != "ESC", 0
-    terminar
+    se arg0 == "F10" # Recarregar o programa
+      $mudaprog.exec
+      ret 1
+    senao arg0 != "ESC" # Encerrar o programa
+      ret 0
+    fimse
+    fimprog = 1
+    indiceitem item
+    epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+      item.obj.salvar
+    efim
+    ret 1
   senao inttotal(arg0) == 1 # Um caracter qualquer: adiciona na senha
     txtsenha += arg0
     tela.tecla("*")
@@ -58,6 +69,9 @@ func tela_tecla
     jogobotfim
   fimse
   ret 1
+
+func fimprog_exec
+  terminar
 
 
 classe jogolocal
@@ -79,11 +93,10 @@ func ini
 func j_tela_msg
   j_tela.linha = 0
   recebe(txtremove(arg0, "ED"))
-
-func j_tela_tecla
-  se arg0 == "ESC"
-    jogsock:fim
-    terminar
+# func j_tela_tecla
+# se arg0 == "ESC"
+# jogsock:fim
+# terminar
 
 
 classe jogoserv

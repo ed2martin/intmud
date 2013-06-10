@@ -46,6 +46,17 @@ func escr1 # Consultar a lista de itens
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Volte outra hora")
       continuar
+    senao
+      txt200 lin
+      listaobj e
+      epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+        lin = e.objini.cmd_negociar(arg0, l.objini, "comprar")
+        sair lin
+      efim
+      se lin
+        t.addfim(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        continuar
+      fimse
     fimse
     t.addfim("\b\c6" + txtcopiamai(l.objini.descnome, "A") + " vende:\b")
     lucro = (100 + l.objini.taxavenda) / 100
@@ -78,6 +89,11 @@ func escr2 # Consultar um item
     continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    listaobj e
+    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, l.objini, "comprar")
+    efim
+    continuar e
     textotxt t2
     epara t2.addfim(l.objini.lojaitem(arg0)), t2.linhas, t2.remove
       continuar !t2.ini.texto
@@ -150,6 +166,17 @@ func escr1 # Consultar a lista de aulas
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Volte outra hora")
       continuar
+    senao
+      txt200 lin
+      listaobj e
+      epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+        lin = e.objini.cmd_negociar(arg0, l.objini, "aprender")
+        sair lin
+      efim
+      se lin
+        t.addfim(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        continuar
+      fimse
     fimse
     t.addfim("\b\c6" + txtcopiamai(l.objini.descnome, "A") + " ensina:\b")
     lucro = l.objini.taxaaula / 100
@@ -181,6 +208,11 @@ func escr2 # Consultar uma aula
     continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    listaobj e
+    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, l.objini, "aprender")
+    efim
+    continuar e
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
@@ -237,6 +269,11 @@ func escr
     continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    listaobj e
+    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, l.objini, "aprender")
+    efim
+    continuar e
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
@@ -346,6 +383,11 @@ func escr
     continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    listaobj e
+    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, l.objini, "comprar")
+    efim
+    continuar e
     textotxt t2
     epara t2.addfim(l.objini.lojaitem(arg0)), t2.linhas, t2.remove
       continuar !t2.ini.texto
@@ -400,15 +442,90 @@ func escr
 
 classe cmd_avaliar
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Avaliar\b\nEsse comando ainda não foi implementado"
+const txtajuda = "\b\c3Avaliar\b\n\
+Sintaxe: AVALIAR <nome do objeto>\n\
+Pergunta a um vendedor quanto ele paga por um item que você está carregando."
+int8 abre # Usado internamente: horário de abertura
+int8 fecha # Usado internamente: horário de fechamento
+txt30 tipo1 # arg0.tipo1
+txt30 tipo2 # arg0.tipo2
+txt30 tipo3 # arg0.tipo3
+const vender = 0
 
 func escr
-  arg0.msg("Avaliar: Esse comando ainda não foi implementado")
+  ret !arg1, arg0.msg(vender ? "Vender o que?" : "Avaliar o que?")
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ret exec(arg0, l.objini, int(n))
+  efim
+# Não encontrou o item
+  arg0.msg("Você não vê isso.")
+
+func exec # Avalia ou vende um item
+# arg0 = personagem
+# arg1 = item
+# arg2 = quantidade de itens
+  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  listaobj l
+  linha = 0, l.addfim(arg0.dono.dentro2)
+  epara l.remove(arg0), l, l.ini.remove
+    continuar (arg1.tipoitem & l.objini.tipoitem) == 0 # Checa se tem interesse
+    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
+    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    listaobj e
+    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, l.objini, "vender")
+    efim
+    continuar e
+    int32 valor # Valor do item
+    valor = intpos(arg1.valor * (100 - l.objini.taxacompra) / 100)
+    txt100 lin
+    se vender
+      valor *= arg2
+      arg1.apagar(arg2)
+      arg0.var.z_moedas_ += valor
+      $mens.p(arg0, l.objini, arg1)
+      se arg2 == 1
+        lin = "$P vende $o para $a"
+      senao
+        lin = "$P vende " + arg2 + "x $o para $a"
+      fimse
+      se valor == 1
+        $mens.mvis2(lin + " por uma moeda.", lin + ".")
+      senao valor == 2
+        $mens.mvis2(lin + " por duas moedas.", lin + ".")
+      senao
+        $mens.mvis2(lin + " por " + valor + " moedas.", lin + ".")
+      fimse
+      ret
+    senao
+      se valor == 0
+        lin = "Não pagaria nenhuma moeda por isso."
+      senao valor == 1
+        lin = "Eu pagaria uma única moeda por isso."
+      senao
+        lin = "Eu pagaria " + valor + " moedas por isso."
+      fimse
+      ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+    fimse
+  efim
+# Ninguém quer comprar
+  arg0.msg("Ninguém quer comprar " + arg1.descnome + ".")
 
 
 classe cmd_vender
-herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Vender\b\nEsse comando ainda não foi implementado"
-
-func escr
-  arg0.msg("Vender: Esse comando ainda não foi implementado")
+herda cmd_avaliar
+const txtajuda = "\b\c3Vender\b\n\
+Sintaxe: VENDER <nome do objeto>\n\
+         VENDER <quantidade> <nome do objeto>\n\
+Vende objetos que você está carregando para um vendedor.\n\
+Somente em alguns casos é possível vender mais de um objeto de uma vez."
+const vender = 1

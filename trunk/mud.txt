@@ -762,7 +762,14 @@ São as funções cmd_n, cmd_s, cmd_l, etc.
 Personagem quer ir em uma direção.
 
 func cmd_falou(personagem, texto)
-Falou alguma coisa.
+Personagem palou alguma coisa.
+
+func cmd_sussurrou(personagem, personagem alvo, texto)
+Personagem sussurrou alguma coisa.
+Texto é o nome do personagem alvo seguido da mensagem.
+Se o personagem alvo não for encontrado esse evento é gerado com personagem
+alvo 'nulo', e em seguida é enviada uma mensagem dizendo que não encontrou
+o personagem.
 
 cmd_social1(personagem, alvo, objeto do comando)
 Personagem executou algum comando social.
@@ -872,6 +879,11 @@ func cmd_acender(personagem, item)
 func cmd_apagar(personagem, item)
 Quer acender ou apagar um item.
 
+func cmd_negociar(personagem, personagem vendedor, tipo)
+Se o personagem negocia com um jogador.
+Se não negocia, deve retornar uma mensagem (um texto) contendo o motivo.
+Tipo pode ser "comprar", "vender" ou "ensinar".
+
 func cmd_atacar(personagem, alvo, objeto que processa o ataque)
 Quer atacar algum personagem.
 
@@ -927,6 +939,8 @@ const tipo1 = "numero--"
 # "texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
 # "numero" = valor numérico inteiro
 # "opcao" = um valor numérico baseado numa lista de opções
+# "txtopcao" = uma lista de opções: texto de várias linhas, sendo que
+#              pode-se mudar uma linha sem mudar as outras
 # "vetor" = um valor numérico sendo que cada bit é uma opção de uma lista
 # "tipos" = texto contendo uma lista de tipos (raças e classes)
 # "tipodep" = texto contendo uma lista de habilidades, magias e/ou idiomas
@@ -940,9 +954,10 @@ const mudou = "atualiza"
 # com esse nome de todos os objetos que foram mudados
 
 const extra1 = "1 8"
-# Opções extras. Nem todos os tipos têm opções extras.
-# Nesse caso (tipo "numero"), o número deve ser de 1 a 8
+# Opções extras. Os tipos que possuem opções extras são:
+# No tipo "numero" são os valores mínimo e máximo (nesse caso, vai de 1 a 8)
 # No tipo "opcao", é a lista de opções
+# No tipo "txtopcao" são a quantidade mínima e a quantidade máxima de linhas
 
 # As outras opções seguem o mesmo padrão, apenas mudando o número
 # no nome da variável. Exemplo:
@@ -968,7 +983,6 @@ Exemplo: m_menu("adm_config")
 Comando para escrever reservadamente
 Ao criar personagem: e-mail e altura
 APRENDER: Definir em que nível e o quanto pode aprender de cada habilidade
-Comandos: vender, avaliar
 Acertar itens que produzem luz
 Possibilidade do corpo ficar quando vence um personagem
 (testar) Volume que cabe dentro, ou 0 se não for container

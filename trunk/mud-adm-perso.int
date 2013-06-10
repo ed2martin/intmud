@@ -611,32 +611,39 @@ const tipo22 = "menuprod"
 const classe22 = var.classe1
 const var22 = "lojaitem"
 #
-const nome23 = "Aulas"
-const tipo23 = "menuaula"
+const nome23 = "Compra produtos"
+const info23 = "Vide tipos de produtos, no comando ECONFIG"
+const tipo23 = "vetor"
 const classe23 = var.classe1
-const var23 = "lojaaula"
+const var23 = "tipoitem"
+const extra23 = config:produtos
 #
-const nome24 = "Não negocia com"
-const tipo24 = "tipos"
+const nome24 = "Aulas"
+const tipo24 = "menuaula"
 const classe24 = var.classe1
-const var24 = "lojanao"
+const var24 = "lojaaula"
 #
-const nome25 = "Recebe itens"
-const info25 = "Se outros personagens podem dar itens para este"
-const tipo25 = "simnao"
+const nome25 = "Não negocia com"
+const tipo25 = "tipos"
 const classe25 = var.classe1
-const var25 = "p_recebe"
+const var25 = "lojanao"
 #
-const nome26 = "Não podem seguir"
+const nome26 = "Recebe itens"
+const info26 = "Se outros personagens podem dar itens para este"
 const tipo26 = "simnao"
 const classe26 = var.classe1
-const var26 = "p_naoseguir"
+const var26 = "p_recebe"
 #
-const nome27 = "Anda em silêncio"
-const info27 = "Não informa outros personagens quando muda de sala"
+const nome27 = "Não podem seguir"
 const tipo27 = "simnao"
 const classe27 = var.classe1
-const var27 = "p_silencio"
+const var27 = "p_naoseguir"
+#
+const nome28 = "Anda em silêncio"
+const info28 = "Não informa outros personagens quando muda de sala"
+const tipo28 = "simnao"
+const classe28 = var.classe1
+const var28 = "p_silencio"
 #
 const nome41 = "Variáveis"
 const tipo41 = "linha"
@@ -673,42 +680,42 @@ const mudou45 = "ajustaev"
 
 
 classe adm_pcomum2
-const nome28 = "Morreu"
-const info28 = "Quando não tem dono"
-const tipo28 = "linha"
-const classe28 = var.classe1
-const var28 = "p_morreu1"
-#
-const nome29 = "Desmaiou"
-const info29 = "Quando pertence a outro personagem"
+const nome29 = "Morreu"
+const info29 = "Quando não tem dono"
 const tipo29 = "linha"
 const classe29 = var.classe1
-const var29 = "p_morreu2"
+const var29 = "p_morreu1"
 #
-const nome30 = "Movimentar"
-const tipo30 = "opcao"
+const nome30 = "Desmaiou"
+const info30 = "Quando pertence a outro personagem"
+const tipo30 = "linha"
 const classe30 = var.classe1
-const var30 = "p_mover"
-const extra30 = "Não sai do lugar\nSomente na área\nQualquer lugar"
+const var30 = "p_morreu2"
 #
-const nome31 = "Tempo move"
-const nome31 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo31 = "numero"
+const nome31 = "Movimentar"
+const tipo31 = "opcao"
 const classe31 = var.classe1
-const var31 = "p_movervel"
-const extra31 = "5 1000"
+const var31 = "p_mover"
+const extra31 = "Não sai do lugar\nSomente na área\nQualquer lugar"
 #
-const nome32 = "Agressivo"
-const tipo32 = "opcao"
+const nome32 = "Tempo move"
+const nome32 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo32 = "numero"
 const classe32 = var.classe1
-const var32 = "p_agressivo"
-const extra32 = "Pacífico\nSe atacarem\nSim"
+const var32 = "p_movervel"
+const extra32 = "5 1000"
 #
-const nome33 = "Sem resgate"
-const info33 = "Se não é possível resgatar jogadores lutando com esse personagem"
-const tipo33 = "simnao"
+const nome33 = "Agressivo"
+const tipo33 = "opcao"
 const classe33 = var.classe1
-const var33 = "p_naoresg"
+const var33 = "p_agressivo"
+const extra33 = "Pacífico\nSe atacarem\nSim"
+#
+const nome34 = "Sem resgate"
+const info34 = "Se não é possível resgatar jogadores lutando com esse personagem"
+const tipo34 = "simnao"
+const classe34 = var.classe1
+const var34 = "p_naoresg"
 
 
 classe adm_perso1
@@ -720,19 +727,19 @@ classe adm_perso2
 herda adm_pcomum1, adm_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 #
-const nome34 = "Capturar"
-const info34 = "Se pode ser capturado"
-const tipo34 = "opcao"
-const classe34 = var.classe1
-const var34 = "p_captura"
-const extra34 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
-#
-const nome35 = "Dar e soltar"
-const info35 = "Se esse personagem pode ser dado ou solto"
+const nome35 = "Capturar"
+const info35 = "Se pode ser capturado"
 const tipo35 = "opcao"
 const classe35 = var.classe1
-const var35 = "p_soltar"
-const extra35 = "Pode-se dar e soltar\n\
+const var35 = "p_captura"
+const extra35 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+#
+const nome36 = "Dar e soltar"
+const info36 = "Se esse personagem pode ser dado ou solto"
+const tipo36 = "opcao"
+const classe36 = var.classe1
+const var36 = "p_soltar"
+const extra36 = "Pode-se dar e soltar\n\
 Pode-se apenas soltar\n\
 Não se pode dar nem soltar"
 

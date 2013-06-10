@@ -234,71 +234,78 @@ const tipo14 = "numero"
 const classe14 = var.classe1
 const var14 = "valor"
 #
-const nome15 = "Vestir posição 1"
-const tipo15 = "opcao"
+const nome15 = "Tipo de produto"
+const info15 = "Para saber se um vendedor pode comprar esse item"
+const tipo15 = "vetor"
 const classe15 = var.classe1
-const var15 = "vestir1"
-const extra15 = misc:equip_txt
+const var15 = "tipoitem"
+const extra15 = config:produtos
 #
-const nome16 = "Vestir posição 2"
+const nome16 = "Vestir posição 1"
 const tipo16 = "opcao"
 const classe16 = var.classe1
-const var16 = "vestir2"
+const var16 = "vestir1"
 const extra16 = misc:equip_txt
 #
-const nome17 = "Vestir posição 3"
+const nome17 = "Vestir posição 2"
 const tipo17 = "opcao"
 const classe17 = var.classe1
-const var17 = "vestir3"
+const var17 = "vestir2"
 const extra17 = misc:equip_txt
 #
-const nome18 = "Arma tipo"
+const nome18 = "Vestir posição 3"
 const tipo18 = "opcao"
 const classe18 = var.classe1
-const var18 = "armatipo"
-const extra18 = misc:arma_txt
+const var18 = "vestir3"
+const extra18 = misc:equip_txt
 #
-const nome19 = "Arma precisão"
-const info19 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
-const tipo19 = "numero"
+const nome19 = "Arma tipo"
+const tipo19 = "opcao"
 const classe19 = var.classe1
-const var19 = "armaprecisao"
+const var19 = "armatipo"
+const extra19 = misc:arma_txt
 #
-const nome20 = "Ataque mín"
+const nome20 = "Arma precisão"
+const info20 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
 const tipo20 = "numero"
 const classe20 = var.classe1
-const var20 = "armamin"
+const var20 = "armaprecisao"
 #
-const nome21 = "Ataque máx"
+const nome21 = "Ataque mín"
 const tipo21 = "numero"
 const classe21 = var.classe1
-const var21 = "armamax"
+const var21 = "armamin"
 #
-const nome22 = "Só ataca manual"
-const info22 = "Se o personagem não usa essa arma em ataques automáticos"
-const tipo22 = "simnao"
+const nome22 = "Ataque máx"
+const tipo22 = "numero"
 const classe22 = var.classe1
-const var22 = "armamanual"
+const var22 = "armamax"
 #
-const nome23 = "Ataque tipo"
-const info23 = "Somente em ataque automático (vide comando ECONFIG)"
-const tipo23 = "opcao"
+const nome23 = "Só ataca manual"
+const info23 = "Se o personagem não usa essa arma em ataques automáticos"
+const tipo23 = "simnao"
 const classe23 = var.classe1
-const var23 = "armatipoatk"
-const extra23 = misc:atknomes
+const var23 = "armamanual"
 #
-const nome24 = "Pega animal nível"
-const info24 = "Nível médio dos animais que podem ser capturados com esse item,\n\
-ou 0 se não puder capturar"
-const tipo24 = "numero"
+const nome24 = "Ataque tipo"
+const info24 = "Somente em ataque automático (vide comando ECONFIG)"
+const tipo24 = "opcao"
 const classe24 = var.classe1
-const var24 = "i_captura"
+const var24 = "armatipoatk"
+const extra24 = misc:atknomes
 #
-const nome25 = "Chave"
-const info25 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo25 = "linha"
+const nome25 = "Pega animal nível"
+const info25 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+ou 0 se não puder capturar"
+const tipo25 = "numero"
 const classe25 = var.classe1
-const var25 = "i_chave"
+const var25 = "i_captura"
+#
+const nome26 = "Chave"
+const info26 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo26 = "linha"
+const classe26 = var.classe1
+const var26 = "i_chave"
 #
 const nome41 = "Variáveis"
 const tipo41 = "linha"
@@ -371,46 +378,46 @@ classe adm_item3
 herda adm_item1
 const titulo = "Item " + txt(var.classe1, 2)
 #
-const nome26 = "Mobília"
-const tipo26 = "opcao"
-const classe26 = var.classe1
-const var26 = "i_movel"
-const extra26 = "Não\nPodem sentar\nPodem sentar e deitar"
-#
-const nome27 = "Lugares"
-const tipo27 = "numero"
+const nome27 = "Mobília"
+const tipo27 = "opcao"
 const classe27 = var.classe1
-const var27 = "i_lugar"
+const var27 = "i_movel"
+const extra27 = "Não\nPodem sentar\nPodem sentar e deitar"
 #
-const nome28 = "Container"
-const tipo28 = "opcao"
+const nome28 = "Lugares"
+const tipo28 = "numero"
 const classe28 = var.classe1
-const var28 = "i_abertoini"
-const mudou28 = "recalc_exec"
-const extra28 = "Não\n\
+const var28 = "i_lugar"
+#
+const nome29 = "Container"
+const tipo29 = "opcao"
+const classe29 = var.classe1
+const var29 = "i_abertoini"
+const mudou29 = "recalc_exec"
+const extra29 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome29 = "Trancar"
-const tipo29 = "opcao"
-const classe29 = var.classe1
-const var29 = "i_tranc"
-const extra29 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
-#
-const nome30 = "Fechadura"
-const info30 = "Código da chave que tranca e destranca o container"
-const tipo30 = "linha"
+const nome30 = "Trancar"
+const tipo30 = "opcao"
 const classe30 = var.classe1
-const var30 = "i_fechadura"
+const var30 = "i_tranc"
+const extra30 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome31 = "Tipo de luz"
-const tipo31 = "opcao"
+const nome31 = "Fechadura"
+const info31 = "Código da chave que tranca e destranca o container"
+const tipo31 = "linha"
 const classe31 = var.classe1
-const var31 = "luzitem"
-const extra31 = "Não aceita acender/apagar, sem fogo\n\
+const var31 = "i_fechadura"
+#
+const nome32 = "Tipo de luz"
+const tipo32 = "opcao"
+const classe32 = var.classe1
+const var32 = "luzitem"
+const extra32 = "Não aceita acender/apagar, sem fogo\n\
 Lanterna (acende/apaga, sem fogo)\n\
 Lanterna 2 (acende/apaga, inclusive na água)\n\
 Não aceita acender/apagar, produz fogo\n\
@@ -418,25 +425,25 @@ Lampião (acende/apaga, produz fogo)\n\
 Fósforo (acende uma vez, produz fogo)\n\
 Tocha (acende com fogo, produz fogo)"
 #
-const nome32 = "Duração da luz"
-const info32 = "Em décimos de segundo, se menor que zero começa apagado"
-const tipo32 = "numero"
-const classe32 = var.classe1
-const var32 = "luzini"
-#
-const nome33 = "Acendeu mensagem"
-const tipo33 = "linha"
+const nome33 = "Duração da luz"
+const info33 = "Em décimos de segundo, se menor que zero começa apagado"
+const tipo33 = "numero"
 const classe33 = var.classe1
-const var33 = "luzliga"
+const var33 = "luzini"
 #
-const nome34 = "Sem luz mensagem"
-const info34 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const nome34 = "Acendeu mensagem"
 const tipo34 = "linha"
 const classe34 = var.classe1
-const var34 = "luztxt"
+const var34 = "luzliga"
 #
-const nome35 = "Sem luz item some"
-const info35 = "Se o item some (é apagado) quando a luz acaba"
-const tipo35 = "simnao"
+const nome35 = "Sem luz mensagem"
+const info35 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo35 = "linha"
 const classe35 = var.classe1
-const var35 = "luzfim"
+const var35 = "luztxt"
+#
+const nome36 = "Sem luz item some"
+const info36 = "Se o item some (é apagado) quando a luz acaba"
+const tipo36 = "simnao"
+const classe36 = var.classe1
+const var36 = "luzfim"
