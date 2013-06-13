@@ -1,8 +1,6 @@
 classe jog_admsocial
 # Comandos sociais
 #
-const txt_social = "Neutro\nAgradecer\nOfender"
-#
 const adm_social = "\b\c3Comandos sociais\b\n\
 \c2LSOC\b [nome]\n\
   Lista sociais que começam com o nome especificado.\n\
@@ -98,78 +96,79 @@ func p_asoc # Confirmar que quer apagar social
 classe adm_social
 const titulo = "Social " + txt(var.classe1, 4)
 #
-const nome1 = "Tipo de comando"
+const nome1 = "Tipo de comando       "
 const tipo1 = "opcao"
 const classe1 = var.classe1
 const var1 = "tipo"
-const extra1 = txt_social
+const extra1 = config:social_txt
 #
-const nome2 = "Editar tipos"
+const nome2 = "Editar tipos          "
 const info2 = "Os tipos existentes na opção 1"
-const tipo2 = "texto--"
-const classe2 = "jog_admsocial"
-const var2 = "txt_social"
+const tipo2 = "txtopcao--"
+const classe2 = "config"
+const var2 = "social_txt"
+const extra2 = "1 30"
 #
-const nome3 = "Nível mínimo"
+const nome3 = "Nível mínimo          "
 const tipo3 = "numero"
 const classe3 = var.classe1
 const var3 = "nivel"
 #
-const nome4 = "Posição mínima"
+const nome4 = "Posição mínima        "
 const tipo4 = "opcao"
 const classe4 = var.classe1
 const var4 = "posic"
 const extra4 = txt_posicao
 #
-const nome5 = "Alvo posição mínima"
+const nome5 = "Alvo posição mínima   "
 const tipo5 = "opcao"
 const classe5 = var.classe1
 const var5 = "alvopos"
 const extra5 = txt_posicao
 #
-const nome6 = "Mostrar invisível"
+const nome6 = "Mostrar invisível     "
 const info6 = "Se o social aparece para quem não puder ver o personagem"
 const tipo6 = "simnao"
 const classe6 = var.classe1
 const var6 = "mvis"
 #
-const nome7 = "Sem args; perso"
+const nome7 = "Sem args; perso       "
 const info7 = "Mensagem para o personagem"
 const tipo7 = "linha"
 const classe7 = var.classe1
 const var7 = "sem1"
 #
-const nome8 = "Sem args; outros"
+const nome8 = "Sem args; outros      "
 const info8 = "Mensagem para os outros"
 const tipo8 = "linha"
 const classe8 = var.classe1
 const var8 = "sem2"
 #
-const nome9 = "Argumento não existe"
+const nome9 = "Argumento não existe  "
 const info9 = "Quando o objeto ou personagem não existe"
 const tipo9 = "linha"
 const classe9 = var.classe1
 const var9 = "invalido"
 #
-const nome10 = "Com ele mesmo; perso"
+const nome10 = "Com ele mesmo; perso  "
 const info10 = "Mensagem para o personagem"
 const tipo10 = "linha"
 const classe10 = var.classe1
 const var10 = "auto1"
 #
-const nome11 = "Com ele mesmo; outros"
+const nome11 = "Com ele mesmo; outros "
 const info11 = "Mensagem para os outros"
 const tipo11 = "linha"
 const classe11 = var.classe1
 const var11 = "auto2"
 #
-const nome12 = "personagem; perso"
+const nome12 = "Com personagem; perso "
 const info12 = "Mensagem para o personagem"
 const tipo12 = "linha"
 const classe12 = var.classe1
 const var12 = "perso1"
 #
-const nome13 = "Com personagem; alvo"
+const nome13 = "Com personagem; alvo  "
 const info13 = "Mensagem para o alvo"
 const tipo13 = "linha"
 const classe13 = var.classe1
@@ -181,13 +180,13 @@ const tipo14 = "linha"
 const classe14 = var.classe1
 const var14 = "perso3"
 #
-const nome15 = "Com objeto; perso"
+const nome15 = "Com objeto; perso     "
 const info15 = "Mensagem para o personagem"
 const tipo15 = "linha"
 const classe15 = var.classe1
 const var15 = "item1"
 #
-const nome16 = "Com objeto; outros"
+const nome16 = "Com objeto; outros    "
 const info16 = "Mensagem para os outros"
 const tipo16 = "linha"
 const classe16 = var.classe1
@@ -256,20 +255,20 @@ o1))
   fimse
   $mens.p(o1, o1)
   se r.auto1 && r.auto2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.descnome + ", \
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", \
 receberá:\n" + r.auto1, o1))
     t.addfim($mens.proc("E os demais:\n" + r.auto2, o2))
   fimse
   $mens.p(o1, o2)
   se r.perso1 && r.perso2 && r.perso3
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.descnome + ", \
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", \
 receberá:\n" + r.perso1, o1))
     t.addfim($mens.proc("E " + o2.descnome + ":\n" + r.perso2, o2))
     t.addfim($mens.proc("E os demais:\n" + r.perso3, este))
   fimse
   $mens.p(o1, nulo, o3)
   se r.item1 && r.item2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.descnome + ", \
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", \
 receberá:\n" + r.item1, o1))
     t.addfim($mens.proc("E os demais:\n" + r.item2, este))
   fimse
@@ -284,6 +283,7 @@ classe cmd2_socialX
 # Pseudo personagem 1 para gerar mensagens do social
 const perso = 1
 const nome = "João"
+const descnome = "João"
 const sexo = 1
 const visivel = 1
 const persobat = este
@@ -297,13 +297,15 @@ classe cmd2_socialY
 herda cmd2_socialX
 # Pseudo personagem 2 para gerar mensagens do social
 const nome = "Maria"
+const descnome = "Maria"
 const sexo = 0
 
 
 classe cmd2_socialZ
 # Pseudo item para gerar mensagens do social
 const item = 1
-const nome = "Bolsa"
+const nome = "bolsa"
+const descnome = "uma bolsa"
 const sexo = 0
 const visivel = 1
 

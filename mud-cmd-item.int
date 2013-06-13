@@ -141,8 +141,12 @@ ax
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      ret e.objini.cmd_pegarobj(arg0, sala, l.objini, total), nulo
+      sair e.objini.cmd_pegarobj(arg0, sala, l.objini, total)
     efim
+    se e
+      sair (achou += 1) >= 10
+      continuar
+    fimse
     $mens.p(arg0, sala, l.objini)
     se total <= 1
       $mens.mvis1("$P pega $o" + mens)
@@ -277,30 +281,32 @@ func escr
     listaobj e
     total = n # Quantidade de itens
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      ret e.objini.cmd_soltarobj(arg0, sala, l.objini, total), nulo
+      sair e.objini.cmd_soltarobj(arg0, sala, l.objini, total)
     efim
-    se !e
-      $mens.p(arg0, sala, l.objini)
-      mens2 = mens ? "$P coloca " : "$P solta "
-      mens2 += total <= 1 ? "$o" : txt(total) + "x $o"
-      casovar soltar
-      casose "2"
-        $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
-        l.objini.apagar(total)
-        sair
-      casose "3"
-        $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
-        l.objini.apagar(total)
-        sair
-      casose "4"
-        $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
-        l.objini.apagar(total)
-        sair
-      casose
-        $mens.mvis1(mens2 + mens + ".")
-        l.objini.mudadono(sala, total)
-      casofim
+    se e
+      sair (achou += 1) >= 10
+      continuar
     fimse
+    $mens.p(arg0, sala, l.objini)
+    mens2 = mens ? "$P coloca " : "$P solta "
+    mens2 += total <= 1 ? "$o" : txt(total) + "x $o"
+    casovar soltar
+    casose "2"
+      $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
+      l.objini.apagar(total)
+      sair
+    casose "3"
+      $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
+      l.objini.apagar(total)
+      sair
+    casose "4"
+      $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
+      l.objini.apagar(total)
+      sair
+    casose
+      $mens.mvis1(mens2 + mens + ".")
+      l.objini.mudadono(sala, total)
+    casofim
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
       e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
     efim
@@ -446,8 +452,12 @@ ax
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      ret e.objini.cmd_darobj(arg0, sala, l.objini, total), nulo
+      sair e.objini.cmd_darobj(arg0, sala, l.objini, total)
     efim
+    se e
+      sair (achou += 1) >= 10
+      continuar
+    fimse
     $mens.p(arg0, sala, l.objini)
     se total <= 1
       $mens.mvis1("$P dá $o para $a.")

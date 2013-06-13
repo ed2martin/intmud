@@ -973,6 +973,13 @@ void TConsole::ApagaCol(int valor)
     if (!fcntl_block)
         { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
     printf("\x1B[%dP", valor);
+
+    printf("\x1B[s" // Salva o cursor
+           "\x1B[500C"); // Vai para o fim da linha
+    if (valor > 1)
+        printf("\x1B[%dD", valor-1); // Retorna um ou mais caracteres
+    printf("\x1B[K" // Apaga até o fim da linha
+           "\x1B[u"); // Restaura o cursor
 #endif
 }
 
