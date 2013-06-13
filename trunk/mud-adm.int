@@ -364,17 +364,21 @@ func p_txtopcao
     textotxt t
     t.addfim([var.opcclasse]:[var.opcvar])
     txtmais.limpar
-    txtmais.addfim("\bOpções:")
     textopos pos
     epara pos = t.ini, pos, pos.depois
-      txtmais.addfim("\c2" + txtmais.linhas + ".\b" + (pos.linha < 9 ? " ") + pos.texto)
+      txtmais.addfim("\c2" + txtmais.linhas + ".\b" + (pos.linha <= 9 ? " ") + pos.texto)
     efim
+    txtmais.addini("\bOpções:")
     pos.antes
     se pos.texto != "" && t.linhas < int(txt2(var.opcextra))
-      txtmais.addfim("\c2" + txtmais.linhas + ".\b")
+      txtmais.addfim("\c2" + txt(txtmais.linhas - 1) + ".\b")
     fimse
-    txtmais.addfim("Para alterar, tecle um número de 1 a " + txt2(var.opcextra) + ", seguido ou\
- não de um texto")
+    linha = txtsub(var.opcextra, 2)
+    pos = txtmais.ini, pos.depois, pos.remove(linha)
+    txt100 lin
+    lin = "Para alterar, tecle um número de " + linha
+    lin += " a " + (txt2(var.opcextra) - 1)
+    txtmais.addfim(lin + ", seguido ou não de um texto")
     txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
     txtmostra
   senao arg0 == "z"
@@ -388,12 +392,13 @@ func p_txtopcao
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
     perso.teclou(txtremove(txt(arg0, 1), "E"))
-  senao linha == 0 || txt(linha) != txt1(arg0)
-    msg("Opção ou linha inexistente: " + txt1(arg0))
-  senao linha > int(txt2(var.opcextra))
-    msg("O número da linha vai até " + txt2(var.opcextra))
+  senao txt(linha) != txt1(arg0)
+    msg("Opção inexistente: " + txt1(arg0))
+  senao linha < int(txtsub(var.opcextra, 2)) || linha >= int(txt2(var.opcextra))
+    txt100 lin
+    lin = "O número da linha vai de " + int(txtsub(var.opcextra, 2))
+    msg(lin + " até " + (txt2(var.opcextra) - 1))
   senao
-    linha -= 1
     textotxt t1
     textopos pos
     t1.addfim([var.opcclasse]:[var.opcvar])
@@ -412,9 +417,8 @@ func p_txtopcao
     p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
-    msg("Linha " + txt(linha + 1) + " foi alterada")
+    msg("Linha " + linha + " foi alterada")
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
-    ret 1
   fimse
   ret 1
 
@@ -483,8 +487,7 @@ func p_vetor # Alterando uma opção de uma lista de opções
     x = 1 << x ^ [var.opcclasse]:[var.opcvar]
     txt100 lin
     lin = txtcor(t_vetormostra(x, var.opcextra))
-    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + \
-lin)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + lin)
     config:salvar
     var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
     msg("Escolheu: " + lin)

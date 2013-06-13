@@ -93,8 +93,8 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   efim
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
-    dono.s_retornar >= 2 && (!var.z_salafim || dono.s_retornar == 3) && (var.z_salafim = \
-dono)
+    int(dono.s_retornar) >= 2 && (!var.z_salafim || int(dono.s_retornar) == 2) && (var.z_salafim \
+= dono)
     epara l.addfim(arg0.dentro2), l, l.ini.remove
       l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
     efim
@@ -206,8 +206,7 @@ func descpos
   casose "0"
     ret txtcopiamai(descnome, "A") + " jás aqui."
   casose "1"
-    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + misc:sletra[sexo] + \
-"."
+    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + misc:sletra[sexo] + "."
   casose "2"
     ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + misc:sletra[sexo] + "."
   casose "3"
@@ -216,8 +215,7 @@ func descpos
     ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui."
     ref r
     r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " dorme em " + misc:sum[r.sexo] + " " + r.descnome + \
-"."
+    ret txtcopiamai(descnome, "A") + " dorme em " + misc:sum[r.sexo] + " " + r.descnome + "."
   casose "5"
     ret !poslugar, txtcopiamai(descnome, "A") + " descansa aqui."
     ref r
