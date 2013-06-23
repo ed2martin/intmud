@@ -259,6 +259,7 @@ enum Comando
                         - Só pode estar no início da lista de comandos */
     cExpr,          ///< Comum: Expressão numérica pura
     cComent,        ///< Comum: Comentário
+    cRefVar,        ///< Comum: refvar (referência a uma variável)
 
 // Instruções de controle de fluxo
     cSe,            ///< Fluxo: ushort,expressão   se(expressão)

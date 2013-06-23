@@ -519,7 +519,9 @@ bool Instr::ExecX()
 #ifdef DEBUG_INSTR
             {
                 char mens[4096];
-                printf(">>> %d %d  ", DadosFim-DadosTopo, VarFim-VarAtual);
+                printf(">>> %d %d  ",
+                       static_cast<int>(DadosFim-DadosTopo),
+                       static_cast<int>(VarFim-VarAtual));
                 printf(" %d %d\n", (unsigned char)FuncAtual->linha[endAlin],
                                 FuncAtual->indent);
                 if (Instr::Decod(mens, FuncAtual->linha, sizeof(mens)))
@@ -555,6 +557,13 @@ bool Instr::ExecX()
         // Processa instrução
             switch (FuncAtual->linha[2])
             {
+            case cRefVar: // Referência a uma variável
+                {
+                    const char * p = FuncAtual->linha + endNome;
+                    while (*p++);
+                    FuncAtual->expr = p;
+                    break;
+                }
             case cSe:   // Processa expressão numérica
             case cEnquanto:
             case cCasoVar:
@@ -632,6 +641,8 @@ bool Instr::ExecX()
                 printf("%s ", p);
             else
                 printf("???_%d ", (unsigned char)v->defvar[2]);
+            if (v->nomevar)
+                printf("[nome=%s] ", v->nomevar + Instr::endNome);
             switch (v->Tipo())
             {
             case varOutros: printf("outros"); break;
@@ -645,8 +656,8 @@ bool Instr::ExecX()
         for (int i=0; i<3; i++)
             printf("   %sf%d %d/%d\n",
                    i==FuncAtual-FuncPilha ? ">>" : "  ", i,
-                   FuncPilha[i].inivar-VarPilha,
-                   FuncPilha[i].fimvar-VarPilha);
+                   static_cast<int>(FuncPilha[i].inivar-VarPilha),
+                   static_cast<int>(FuncPilha[i].fimvar-VarPilha));
         fflush(stdout);
 #endif
 #ifdef DEBUG_EXPR
@@ -707,6 +718,15 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual))
                     break;
                 return true;
+            case cRefVar: // Referência a uma variável
+                FuncAtual->expr = 0;
+                assert(VarAtual >= FuncAtual->fimvar);
+                ApagarVar(FuncAtual->fimvar + 1);
+                VarAtual->nomevar = FuncAtual->linha;
+                FuncAtual->fimvar++;
+                FuncAtual->indent = VarAtual->nomevar[endAlin];
+                FuncAtual->linha += Num16(FuncAtual->linha);
+                break;
             case cSe:
             case cSenao2:
                 if (!VarFuncIni(VarAtual))
@@ -1157,6 +1177,7 @@ bool Instr::ExecX()
                     if (DadosTopo + total > DadosFim)
                         return RetornoErro();
                     VarAtual[-1].defvar = InstrTxtFixo;
+                    VarAtual[-1].nomevar = 0;
                     VarAtual[-1].endvar = DadosTopo;
                     VarAtual[-1].tamanho = total;
                     memcpy(DadosTopo, origem, total);
@@ -1184,6 +1205,7 @@ bool Instr::ExecX()
                 // Cria variável que conterá o texto
                     VarAtual++;
                     VarAtual->defvar = InstrTxtFixo;
+                    VarAtual->nomevar = 0;
                     VarAtual->endvar = DadosTopo;
                     VarAtual->tamanho = total;
                 // Copia texto para variável
@@ -1691,6 +1713,7 @@ bool Instr::ExecX()
                     if (c)
                     {
                         v[1].defvar = InstrVarClasse;
+                        v[1].nomevar = 0;
                         v[1].endvar = c;
                         v->setTxt("");
                         FuncAtual->expr = CopiaVarNome(
@@ -1730,9 +1753,9 @@ bool Instr::ExecX()
                         }
                         ApagarVar(v+1);
                         VarAtual++;
+                        VarAtual->Limpar();
                         VarAtual->defvar = InstrVarObjeto;
                         VarAtual->endvar = c->ObjetoIni;
-                        VarAtual->tamanho = 0;
                         v->setTxt("");
                         FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
                         break;
@@ -1761,7 +1784,8 @@ bool Instr::ExecX()
                 // Verifica se é variável local da função
                     TVariavel * var = FuncAtual->inivar + FuncAtual->numarg;
                     for (; var < FuncAtual->fimvar; var++)
-                        if (comparaVar(nome, var->defvar+endNome)==0)
+                      if (var->nomevar)
+                        if (comparaVar(nome, var->nomevar + Instr::endNome)==0)
                             break;
                     if (var < FuncAtual->fimvar)
                     {
@@ -1855,10 +1879,10 @@ bool Instr::ExecX()
                   //      break;
                   //  }
                     VarAtual++;
+                    VarAtual->Limpar();
                     VarAtual->defvar = defvar;
+                    VarAtual->nomevar = defvar;
                     VarAtual->endvar = objeto;
-                    VarAtual->tamanho = 0;
-                    VarAtual->indice = 0;
                     break;
                 }
             // Expressão numérica
@@ -1884,6 +1908,7 @@ bool Instr::ExecX()
                 VarAtual++;
                 VarAtual->Limpar();
                 VarAtual->defvar = defvar;
+                VarAtual->nomevar = defvar;
                 VarAtual->bit = indvar >> 24;
                 VarAtual->numfunc = 0;
                 VarAtual->indice = (defvar[endVetor]==0 ? 0 : 0xFF);

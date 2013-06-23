@@ -878,12 +878,14 @@ infinito), tanto positivos quanto negativos. A precisão é de 15 dígitos.
 Define uma variável que contém um texto, de até 1 a 512 caracteres.
 
 Exemplo:
+
 txt10 x # Define a variável 'x', de até 10 caracteres
 
 Nota: Se for atribuído um texto que ultrapassa a quantidade de caracteres
       da variável, ele será truncado.
 
 Exemplo:
+
 txt3 y # Quantidade máxima de caracteres de 'y' é 3
 y = "bom dia" # Tem o mesmo efeito que y="bom"
 
@@ -903,6 +905,42 @@ r0 = criar("teste")
 r0.x = 2
 # Anula a referência, sem apagar o objeto criado
 r0 = nulo
+
+10.13. refvar <nome da variável> = <valor>
+Referência a uma variável, ou seja, corresponde a uma variável qualquer.
+A principal utilidade é abreviar nomes extensos de variáveis. Vide
+exemplos abaixo.
+
+Exemplo 1:
+
+arg0.dono.nivel
+refvar niv = arg0.dono.nivel # 'niv' é o memso que 'arg0.dono.nivel'
+
+Exemplo 2:
+
+telatxt t
+t.msg("teste\n") # Mostra a palavra 'teste' na janela do programa
+refvar xyz = t # Faz com que 'xyz' seja a variável 't'
+xyz.msg("teste\n") # Mostra a palavra 'teste' na janela do programa
+
+Nota 1: Essas variáveis só podem ser definidas dentro de funções.
+
+Nota 2: É possível atribuir expressões a uma variável refvar.
+
+Exemplo:
+refvar xyz = 1 + 2 # Efetua soma '1 + 2', portanto 'xyz' passa a ser '3'
+
+Nota 3: Variaveis desse tipo não podem referenciar funções.
+
+Exemplo:
+telatxt t
+refvar xyz = t.msg # 'xyz' passa a ser o valor de retorno da função 't.msg'
+
+Nota 4: Não é possível alterar o valor original após definições anteriores.
+
+Exemplo:
+refvar xyz = 5 # Faz com que 'xyz' seja 5
+refvar xyz = 10 # Não tem efeito, porque a variável 'xyz' já existe
 
 
 11. IDENTIFICADORES COMUM E SAV

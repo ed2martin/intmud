@@ -270,6 +270,7 @@ static const TListaInstr ListaInstr[] = {
     { "prog",      cProg },
     { "real",      cReal },
     { "ref",       cRef },
+    { "refvar",    cRefVar },
     { "ret",       cRet1 }, // Pode ser cRet1 ou cRet2
     { "sair",      cSair1 }, // Pode ser cSair1 ou cSair2
     { "se",        cSe },
@@ -493,13 +494,15 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             if (resultado==0)  // Se encontrou
             {
                 int instr = ListaInstr[meio].Instr;
-                if (!testar_def && (instr>=cVariaveis || instr==cHerda))
+                if (!testar_def && (instr>=cVariaveis || instr==cHerda ||
+                                    instr==cRefVar))
                     break;
                 destino[2] = instr;
                 origem += strlen(ListaInstr[meio].Nome);
                 //while (*origem && *origem!=' ')
                 //    origem++;
                 if (destino[endProp] && (destino[2]<cVariaveis ||
+                            destino[2]==cRefVar ||
                             destino[2]==cConstExpr ||
                             destino[2]==cConstVar ||
                             destino[2]==cFunc ||
@@ -623,7 +626,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 // Processa variáveis
 // Variáveis const: avança origem e destino
 // Outras variáveis: acerta dados em destino e retorna
-    if (destino[2] > cVariaveis)
+    if (destino[2] > cVariaveis || destino[2] == cRefVar)
     {
         char nome[VAR_NOME_TAM];
         char * p = nome;
@@ -651,6 +654,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 {
                     if (dest_ini[2] == cConstExpr || dest_ini[2] == cConstVar)
                         copiastr(dest_ini, "Constantes não podem ser vetores",
+                                 tamanho);
+                    else if (dest_ini[2] == cRefVar)
+                        copiastr(dest_ini, "Refvar não pode ser vetor",
                                  tamanho);
                     else
                         copiastr(dest_ini, "Tamanho inválido do vetor",
@@ -715,12 +721,17 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino = copiastr(destino+endNome, nome);
         destino++;
     // Variável Const
-        if (dest_ini[2] == cConstExpr || dest_ini[2] == cConstVar)
+        if (dest_ini[2] == cConstExpr || dest_ini[2] == cConstVar ||
+            dest_ini[2] == cRefVar)
         {
             if (*origem==0 || *origem=='#')
             {
-                copiastr(dest_ini, "Faltou atribuir um valor à variável const",
-                             tamanho);
+                if (dest_ini[2] == cRefVar)
+                    copiastr(dest_ini, "Faltou atribuir um valor "
+                                       "à variável refvar", tamanho);
+                else
+                    copiastr(dest_ini, "Faltou atribuir um valor "
+                                       "à variável const", tamanho);
                 return false;
             }
             origem++;
@@ -803,6 +814,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino += endVar;
         proc_expr=true;
         break;
+    case cRefVar: // RefVar - já foi verificado acima
     case cConstExpr: // Variável Const - já foi verificado acima
     case cConstVar: // Variável VarConst - já foi verificado acima
         break;

@@ -331,7 +331,8 @@ classe cmd_config
 herda comando_comum, comando_ajuda
 const posic = 0
 const txtajuda = arg0.jogconfig.23 ? txtajuda1 + txtajuda2 : txtajuda1
-const txtajuda1 = "\b\c3Config\b\n\
+const txtajuda1 = config:chattipo ? aj1 + aj2 + aj3 : aj1 + aj3
+const aj1 = "\b\c3Config\b\n\
 Sintaxe: config +<opção>\n\
          config -<opção>\n\
 Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
@@ -341,9 +342,9 @@ As opções são:\n\
   \c2DESC\b     Mostra descrições completas (como ao digitar VER)\n\
   \c2SAIDAS\b   Mostra as saídas visíveis após a descrição da sala\n\
   \c2CORES\b    Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
-  \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
-  \c2CHAT\b     Participa do canal de comunicação CHAT\n\
-  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
+  \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n"
+const aj2 = "  \c2CHAT\b     Participa do canal de comunicação CHAT\n"
+const aj3 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
   \c2PROMPT\b   Ativa o prompt normal\n\
   \c2BROMPT\b   Ativa o prompt de batalha"
 const txtajuda2 = "\n\
@@ -364,7 +365,7 @@ const opc_desc = 0
 const opc_saidas = 1
 const opc_cores = 2
 const opc_acento = 3
-const opc_chat = 4
+const opc_chat = config:chattipo ? 4
 const opc_seguir = 5
 const opc_prompt = 6
 const opc_bprompt = 7
@@ -385,7 +386,8 @@ func escr
   opc.bits = arg0.jogconfig.bits
   se !arg1
     epara p.inifunc(este, "opc_"), p.lin, p.depois
-      se opc.[[p.texto]]
+      se [p.texto] == nulo
+      senao opc.[[p.texto]]
         x += " +" + txtmai(txt(p.texto, 4))
       senao [p.texto] < 16 || arg0.jogconfig.23
         y += " -" + txtmai(txt(p.texto, 4))
@@ -400,7 +402,7 @@ func escr
   txt512 mudou
   enquanto x
     epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
-      sair [p.texto] < 16 || arg0.jogconfig.23
+      sair ([p.texto] < 16 || arg0.jogconfig.23) && [p.texto] != nulo
     efim
     se !p.lin
       y += " " + txt1(x)
@@ -711,23 +713,39 @@ func escr
 
 classe cmdfim_chat
 herda comando_comum, comando_ajuda
+const objcmd = config:chattipo ? este
+const objajuda = config:chattipo ? este
 const posic = 0
-const txtajuda = "\b\c3Canal chat\b\n\
+const txtajuda = config:chattipo == 1 ? aj1 + aj2 : aj1
+const aj1 = "\b\c3Canal chat\b\n\
 Sintaxe: CHAT <mensagem>\n\
          .<mensagem>\n\
 Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
+const aj2 = "\n\
+Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
+não irão para as outras outras salas."
 
 func escr
   $mens.p(arg0)
-  se !arg0.jogconfig.4
+  se arg0.pnivel < config:chatnivel
+    arg0.msg("Para escrever no canal CHAT você precisa estar no nível " + config:chatnivel + \
+".")
+  senao !arg0.jogconfig.4
     arg0.msg("Canal CHAT está desabilitado.")
   senao !arg1
     arg0.msg("Tecle a mensagem após CHAT.")
-  senao
+  senao config:chattipo == 2 # Escrever para todos
     indiceitem item
+    refvar lin = "(chat) " + arg0.sock.nome + " '" + arg1 + "'"
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.4 && item.obj.msg("(chat) " + arg0.sock.nome + " '" + arg1 + "'")
+      item.obj.jogconfig.4 && item.obj.msg(lin)
+    efim
+  senao # Escrever para quem estiver na mesma sala
+    listaobj l
+    refvar lin = "(chat) " + arg0.sock.nome + " '" + arg1 + "'"
+    epara arg0.sock.salaobj(l), l, l.ini.remove
+      l.objini.jogconfig.4 && l.objini.msg(lin)
     efim
 
 

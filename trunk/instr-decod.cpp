@@ -58,7 +58,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     *destino=0;
 
 // Comentário em variáveis
-    if (origem[2] >= cVariaveis)
+    if (origem[2] >= cVariaveis || origem[2] == cRefVar)
     {
         for (coment=endNome; origem[coment]; coment++);
         coment++;
@@ -195,6 +195,11 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cIntDec:    strcpy(nome, "intdec"); break;
     case cReal:      strcpy(nome, "real"); break;
     case cRef:       strcpy(nome, "ref"); break;
+    case cRefVar:
+        strcpy(nome, "refvar");
+        coment=0, expr=endNome;
+        while (origem[expr++]);
+        break;
     case cConstNulo:
     case cConstTxt:
     case cConstNum:
@@ -247,7 +252,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     }
 
 // Copia nome da instrução ou variável
-    if (origem[2]>cVariaveis)
+    if (origem[2]>cVariaveis || origem[2]==cRefVar)
     {
         if ((int)strlen(nome) + (int)strlen(origem+endNome) + 24 > tamanho)
         {

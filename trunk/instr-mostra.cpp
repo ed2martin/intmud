@@ -40,7 +40,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     *destino=0;
 
 // Comentário em variáveis
-    if (origem[2] >= cVariaveis)
+    if (origem[2] >= cVariaveis || origem[2] == cRefVar)
     {
         for (coment=endNome; origem[coment]; coment++);
         coment++;
@@ -164,6 +164,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cIntDec:    strcpy(nome, "intdec"); break;
     case cReal:      strcpy(nome, "real"); break;
     case cRef:       strcpy(nome, "ref"); break;
+    case cRefVar:    strcpy(nome, "refvar"); coment=0; break;
     case cConstNulo: strcpy(nome, "const (nulo)"); coment=0; break;
     case cConstTxt:  strcpy(nome, "const (txt)"); coment=0; break;
     case cConstNum:  strcpy(nome, "const (num)"); coment=0; break;
@@ -199,7 +200,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     }
 
 // Copia nome da instrução ou variável
-    if (origem[2]>cVariaveis)
+    if (origem[2]>cVariaveis || origem[2]==cRefVar)
     {
         if ((int)strlen(nome) + (int)strlen(origem+endNome) + 2 > tamanho)
         {
@@ -223,7 +224,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 // Constantes - obtém o índice
     if (origem[2]==cConstNulo || origem[2]==cConstTxt ||
         origem[2]==cConstNum  || origem[2]==cConstExpr ||
-        origem[2]==cConstVar)
+        origem[2]==cConstVar  || origem[2]==cRefVar)
     {
         expr=endNome;
         while (origem[expr++]);

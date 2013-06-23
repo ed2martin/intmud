@@ -1601,7 +1601,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         const char * defvar = c->InstrVar[x];
         int tamtxt = strlen(defvar + tamvar);
         origem += tampadrao + tamtxt;
-        //printf("Variável [%s]\n", defvar+5); fflush(stdout);
+        //printf("Variável [%s]\n", defvar+Instr::NomeVar); fflush(stdout);
     // Se for variável, copia texto
         if (defvar[2]!=cFunc && defvar[2]!=cVarFunc &&
                 defvar[2]!=cConstExpr && defvar[2]!=cConstVar)

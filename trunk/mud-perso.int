@@ -111,6 +111,9 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     senao
       msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
 
+func recalc_exec # Ajusta variáveis
+  bitver = 1, bitinv = 3, recalc_auto, cmd_recalc1(este)
+
 func teclou # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
   ref obj # Objeto que vai processar o comando
@@ -291,12 +294,10 @@ uint32 pesomax # Quanto peso consegue carregar
 const tipo1 = "normal" # Tipo de personagem
 # const tipo2 = "" # Segundo tipo do personagem
 # const tipo3 = "" # Terceiro tipo do personagem
-int8 deftipo.18
+uint16 deftipo.18
 # Defesa contra os diversos tipos de danos
+# sendo que 1000=danos normais e 0=imune (500=metade dos danos, etc.)
 # Vide função misc:atknomes
-# somar 2 = dobra defesa
-# subtrair 2 = reduz defesa pela metade
-# 80 ou mais = imune ao tipo de golpe
 #
 const persobat = este # Personagem usado na batalha
 const persoesc = este # Personagem escolhido
@@ -352,27 +353,31 @@ func acertapos # Acerta posição
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
   bitver = 1, bitinv = 3
-  atknorm = pnivel * 13 + 26
-  defnorm = pnivel * 10 + 20
-  atkesp = pnivel * 13 + 26
-  defesp = pnivel * 10 + 20
-  pvidamax = pnivel * 20 + 40 # Equilibrado seria atknorm*atknorm/defnorm
+  atknorm = pnivel * 12 + 36
+  defnorm = pnivel * 10 + 30
+  atkesp = pnivel * 12 + 36
+  defesp = pnivel * 10 + 30
+  pvidamax = pnivel * 15 + 45
   pveloc1 = pnivel * 5 + 20
   pmanamax = pnivel + 30
   pmovemax = pnivel * 2 + 30
   evasao = pnivel * 2 + 30
   precisao = pnivel * 2 + 30
-  deftipo.limpar # Todas as defesas em 100%
+  deftipo.4 = deftipo.3 = deftipo.2 = deftipo.1 = deftipo.0 = 1000
+  deftipo.9 = deftipo.8 = deftipo.7 = deftipo.6 = deftipo.5 = 1000
+  deftipo.14 = deftipo.13 = deftipo.12 = deftipo.11 = deftipo.10 = 1000
+  deftipo.19 = deftipo.18 = deftipo.17 = deftipo.16 = deftipo.15 = 1000
   pesoveste = 0
   pesomax = 20000
 # Acerta atributos conforme o tipo de personagem
+  recalc_auto
+  tipo_[tipo1]:recalc_auto, tipo_[tipo2]:recalc_auto, tipo_[tipo3]:recalc_auto
   tipo_[tipo1]:recalc, tipo_[tipo2]:recalc, tipo_[tipo3]:recalc
-# Bônus do próprio personagem
   cmd_recalc1(este)
 # Bônus conforme o que está vestindo e os efeitos
   listaitem l
   epara l = dentro2.ini, l, l.depois
-    l.obj.cmd_recalc2(este), pesoveste += l.obj.pesotot
+    [l.obj]:recalc_auto, l.obj.cmd_recalc2(este), pesoveste += l.obj.pesotot
   efim
   pesoveste /= 2
   epara l = evento.ini, l, l.depois

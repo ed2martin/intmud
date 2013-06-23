@@ -71,14 +71,14 @@ func cmd_reset # Executa reset
     efim
 # $reset.sala(r, r.a_reset)
     r.a_reset1
-    msg("Reset efetuado sala " + txt(r, 2))
+    msg("Reset de área efetuado sala " + txt(r, 2))
   senao $a_[arg0]
     $a_[arg0].reset_exec
-    msg("Reset efetuado área " + arg0)
+    msg("Reset de área efetuado área " + arg0)
   senao $s_[arg0]
 # $reset.sala($s_[arg0], $s_[arg0].a_reset)
     $s_[arg0].a_reset1
-    msg("Reset efetuado sala " + arg0)
+    msg("Reset de área efetuado sala " + arg0)
   senao
     msg("Área ou sala inexistente: " + arg0)
   fimse

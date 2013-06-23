@@ -168,8 +168,5 @@ func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
     ret !(~(arg0.bitver | 2) & bitinv)
   casofim
 
-func recalc_exec # Ajusta variáveis
-  bitver = 1, bitinv = 3, cmd_recalc1(este)
-
 func atribs # Retorna texto com os atributos do item ou personagem
   ret bitinv & 2 ? "" : "(brilhando) "

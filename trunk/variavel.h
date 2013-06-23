@@ -124,8 +124,13 @@ public:
                     @retval false se função inexistente */
 
 // Variáveis
-    const char * defvar; ///< Instrução que define a variável
-                         /**< @sa Instr::Comando */
+    const char * defvar;
+        ///< Instrução que define a variável
+        /**< @sa Instr::Comando */
+    const char * nomevar;
+        ///< Mesmo que defvar, mas só são usados nome da variável e indentação
+        /**< @note Usado para obter a variável a partir do nome, nas funções,
+         *         e para apagar variáveis locais */
     union {
         void * endvar;  ///< Endereço da variável na memória
                         /** - É 0 se não for aplicável

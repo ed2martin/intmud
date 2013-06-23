@@ -297,6 +297,7 @@ bool Instr::CriarVarInt(int valor)
         return false;
     VarAtual++;
     VarAtual->defvar = InstrVarInt;
+    VarAtual->nomevar = InstrVarInt;
     VarAtual->valor_int = valor;
     VarAtual->tamanho = 0;
     VarAtual->indice = 0;
@@ -356,6 +357,7 @@ bool Instr::CriarVar(const char * def)
     {
         VarAtual++;
         VarAtual->defvar = def;
+        VarAtual->nomevar = def;
         VarAtual->endvar = 0;
         VarAtual->tamanho = 0;
         VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
@@ -373,6 +375,7 @@ bool Instr::CriarVar(const char * def)
     VarAtual++;
     VarAtual->endvar = p;
     VarAtual->defvar = def;
+    VarAtual->nomevar = def;
     VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
     VarAtual->bit = 1;
     VarAtual->numfunc = 0;
@@ -691,6 +694,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cHerda:            return "herda";
     case cExpr:             return "";
     case cComent:           return "#";
+    case cRefVar:           return "refvar";
 
     case cSe:               return "se";
     case cSenao1:           return "senao1";
@@ -782,6 +786,7 @@ const char * Instr::NomeComando(int valor)
     case cHerda:            return "cHerda";
     case cExpr:             return "cExpr";
     case cComent:           return "cComent";
+    case cRefVar:           return "cRefVar";
 
     case cSe:               return "cSe";
     case cSenao1:           return "cSenao1";
