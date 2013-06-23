@@ -82,6 +82,7 @@ const msgsock = j_tela.msg(arg0 + "\n")
 const msgsala = j_tela.msg(arg0 + "\n")
 const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
+const salaobj = arg0.addfim(este)
 
 func inicio
   criar("jogolocal")
@@ -115,6 +116,12 @@ func msgtodos
   ref r
   epara r = $jogoserv, r, r = objdepois(r)
     r.j_conec.msg(arg0 + "\n")
+  efim
+
+func salaobj
+  ref r
+  epara r = $jogoserv, r, r = objdepois(r)
+    arg0.addfim(r)
   efim
 
 func inicio
@@ -298,7 +305,7 @@ func conec_msg # Recebeu mensagem
   casofim
   se !conecfim
     senha = "", conecfim = 1, $jogoini.jogobotfim
-
+    
 
 classe jogobot_sala
 indiceobj sala_nome
@@ -331,6 +338,7 @@ indiceobj j_nome
 listaitem j_sala
 telatxt j_tela
 const info = "b " + txt2(j_sala.objlista.sala_nome)
+const salaobj = arg0.addfim(j_sala.objlista.sala_usr)
 
 func ini # Entrou na sala
   j_nome = "bu " + arg0

@@ -59,8 +59,9 @@ const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
 ref alvo # Quem esse personagem deve atacar
 
-func cmd_recalc1 # Aumenta pontos de vida e precisão
-  pvidamax = pvidamax * 2 + 50
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += 2 * pnivel + 50
   precisao += 10
 
 func cmd_ini # Personagem criado: anota o alvo
@@ -88,9 +89,6 @@ ref alvo # Quem esse personagem deve atacar
 func cmd_ini # Personagem foi criado: anota o alvo
 # Nota: o alvo foi passado como arg3 pela função criar()
   alvo = arg3
-
-func cmd_recalc1 # Aumenta pontos de vida
-# pvidamax = pvidamax * 1.5
 
 func cmd_pnj_proc # Processamento do PNJ
 # Deve retornar 1 se não deve prosseguir com as ações do PNJ
@@ -151,7 +149,7 @@ func tempo_exec
 func cmd_recalc1 # Faz a menina ser praticamente imune a ataques
   uint8 x
   enquanto x < 30
-    deftipo.[x] = 200, x += 1
+    deftipo.[x] = 0, x += 1
   efim
   evasao = 0
 
@@ -228,7 +226,7 @@ const descpadr = "Um bife está flutuando aqui."
 const p_morreu1 = "Um bife caiu no chão, imóvel."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=3"
+const inivar = "h_arremessar=2"
 const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_morreu
@@ -243,7 +241,7 @@ const sexoini = 1
 const descpadr = "Um pé de alface está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=3"
+const inivar = "h_arremessar=2"
 const p_morreu1 = "Alface se quebrou em folhas."
 const eveste = 1 # Receber eventos do próprio objeto
 
@@ -260,7 +258,7 @@ const sexoini = 0
 const descpadr = "Uma banana está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=3"
+const inivar = "h_arremessar=2"
 const p_morreu1 = "$P se partiu."
 
 
@@ -272,7 +270,7 @@ const sexoini = 1
 const descpadr = "Um peão está girando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=3"
+const inivar = "h_arremessar=2"
 const p_morreu1 = "$P virou pó de madeira."
 
 
@@ -284,7 +282,7 @@ const sexoini = 0
 const descpadr = "Uma boneca está parada aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=3"
+const inivar = "h_arremessar=2"
 const p_morreu1 = "$P foi vencida e desapareceu."
 
 
@@ -300,7 +298,7 @@ const pesoobj = 50
 const p_mover = 1
 const p_agressivo = 2 # Agressivo: 2 Sim
 const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
-const inivar = "h_arremessar=3,e_apagar=100"
+const inivar = "h_arremessar=2,e_apagar=100"
 
 
 classe s_casa001
@@ -1017,10 +1015,11 @@ const inivar = "h_morder=5"
 const eveste = 1 # Receber eventos do próprio objeto
 inttempo andar # Para fazer o cachorro andar
 
-func cmd_recalc1 # Aumenta pontos de vida, precisão e defesa normal
-  pvidamax = pvidamax * 2 + 50
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax = 2 * pnivel + 50
   precisao += 10
-  defnorm *= 2
+  defnorm += 10 * pnivel + 20
 
 func andar_exec
   pmove = pmovemax, pvida = pvidamax
@@ -1247,10 +1246,10 @@ txt50 nomealvo
 listaitem alvoitem # Para receber eventos de quem esse personagem atacou
 intexec alvoexec # Para checar se o alvo morreu
 
-func cmd_recalc1 # Recalcula variáveis do personagem
-  arknorm *= 1.3 # Ataque normal mais forte
-  defnorm *= 1.2 # Mais forte contra ataques normais
-  defesp *= 0.7 # Mais fraco contra ataques mágicos
+func recalc_auto # Recalcula variáveis do personagem
+  atknorm += 3*pnivel+5 # Ataque normal mais forte
+  defnorm += 2*pnivel+4 # Mais forte contra ataques normais
+  defesp += -3*pnivel-5 # Mais fraco contra ataques mágicos
 
 func cmd_mudadono # Mudou de dono
   pvida += 5 # Ganha pontos de vida

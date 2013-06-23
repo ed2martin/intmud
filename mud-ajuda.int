@@ -30,7 +30,15 @@ func escr
   ret arg1 == "", arg0.msg2(ta1(arg0) + ta2(arg0) + ta3(arg0) + ta4(arg0))
   ref obj
   prog p
+  obj = $cmd_[txt1(arg1)].objajuda(arg0)
+  ret obj, arg0.msg2(obj.txtajuda(arg0))
+  obj = $cmdfim_[txt1(arg1)].objajuda(arg0)
+  ret obj, arg0.msg2(obj.txtajuda(arg0))
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
+    obj = $[p.texto].objajuda(arg0)
+    ret obj, arg0.msg2(obj.txtajuda(arg0))
+  efim
+  epara p.iniclasse("cmdfim_" + txt1(arg1)), p.lin, p.depois
     obj = $[p.texto].objajuda(arg0)
     ret obj, arg0.msg2(obj.txtajuda(arg0))
   efim
@@ -58,9 +66,10 @@ Depois, para voltar a caminhar, deverá ficar em pé (digitando LEVANTAR)."
 
 classe cmd_comunica
 herda comando_ajuda
-const txtajuda = "\b\c3Comunicação\b\n\
-  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n\
-  \c2FALAR\b     Envia mensagem para os personagens na mesma sala\n\
+const txtajuda = aj1 + (config:chattipo ? aj2) + aj3
+const aj1 = "\b\c3Comunicação\b\n"
+const aj2 = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n"
+const aj3 = "  \c2FALAR\b     Envia mensagem para os personagens na mesma sala\n\
   \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala\n\
   \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens"
 

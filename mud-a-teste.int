@@ -486,8 +486,9 @@ const volobj = 500
 const tipo1 = "ar"
 const inivar = "h_arremessar=1"
 
-func cmd_recalc1 # Recalcula variáveis do personagem
-  pveloc1 += pnivel * 2
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += 2 * pnivel
 
 
 classe s_teste021
@@ -674,7 +675,8 @@ func cmd_acender
 classe s_teste025
 herda b_teste
 const s_titulo = "Quarto escuro"
-const s_desc = ""
+const s_desc = "Este é um pequeno quarto para revelar fotografias. Não é à toa que é\n\
+tão escuro aqui."
 const dir_l = $s_teste023
 const s_luz = 3 # Luz: 3 Escuro
 
@@ -729,8 +731,8 @@ const nivel = 3
 const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
 
 func cmd_recalc1 # Recalcula variáveis do personagem
-  deftipo.0 = 100 # Imune a ataques de contusão
-  deftipo.2 -= 2 # Frágil contra ataques cortantes
+  deftipo.0 = 0 # Imune a ataques de contusão
+  deftipo.2 *= 0.5 # Frágil contra ataques cortantes
   defnorm *= 1.5 # Mais forte contra ataques normais
   defesp *= 0.7 # Mais fraco contra ataques especiais
   pvidamax += 100 # 100 pontos a mais de vida
@@ -796,19 +798,22 @@ func cmd_podevestir
 classe s_teste028
 herda b_teste
 const s_titulo = "Criando equipamentos"
-const s_desc = "É possível criar itens que, quando vestidos ou empunhados, mudam\n\
-alguns atributos do personagem, como ataque, defesa, etc.\n\
-É possível também definir atributos específicos para um personagem.\n\
-São as funções cmd_recalc1 no personagem, cmd_recalc2 no item e recalc no\n\
-tipo de personagem. Veja as classes i_teste012 e p_teste006 do arquivo\n\
-mud-a-teste.int e as classes do final do arquivo mud-tipo.int."
+const s_desc = "Personagens podem ter algumas propriedades especiais, e alguns itens\n\
+também podem mudar alguns atributos de um personagem, quando vestidos.\n\
+Veja a opção \"Atributos\" de tipos (raças e classes) e personagens,\n\
+e a opção \"Atributos vestir\" de itens."
 const dir_o = $s_teste026
-const s_reset = "S 100 teste012 3 S\nS 100 teste013 3 S"
+const s_reset = "S 100 teste012 3 S\n\
+S 100 teste013 3 S\n\
+S 100 teste015 1 S\n\
+S 100 teste016 1 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
   !dentro1.objini("i_teste013") && criar("i_teste013", este, 3)
+  !dentro1.objini("i_teste015") && criar("i_teste015", este, 1)
+  !dentro1.objini("i_teste016") && criar("i_teste016", este, 1)
 
 const dir_l = $s_teste032
 
@@ -818,8 +823,9 @@ herda b_teste
 const s_titulo = "Itens restritos"
 const s_desc = "Alguns itens só podem ser vestidos ou empunhados por determinados\n\
 personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
-Quem define isso é a função cmd_podevestir do item. Veja a classe i_teste014\n\
-no arquivo mud-a-teste.int."
+Uma forma de fazer isso é editar a opção \"Não podem vestir\" do item.\n\
+Outra é escrevendo a função cmd_podevestir do item. Nesse caso, veja\n\
+a classe i_teste014 no arquivo mud-a-teste.int."
 const dir_o = $s_teste032
 const s_reset = "S 100 teste014 3 S"
 
@@ -1198,3 +1204,29 @@ func s_reset1 # Realiza o reset
   se p_teste010:objsolto.total < 1
     criar("p_teste010", este, 0)
   fimse
+
+
+classe i_teste015
+herda comum_itemgrupo
+const nome = "capa da invisibilidade"
+const descnome = "uma capa da invisibilidade"
+const descver = "Essa capa é capaz de deixar alguém quase que completamente invisível.\n\
+Há, no entanto, uns óculos que permitem ver através da capa."
+const vestir1 = 7 # Vestir posição 1: 7 Sobre o corpo
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv = 4 | bitinv
+
+
+classe i_teste016
+herda comum_itemgrupo
+const nome = "óculos especiais"
+const descnome = "uns óculos especiais"
+const sexo = 1 # Sexo: 1 Masculino
+const descver = "Esses óculos permitem ver coisas invisíveis."
+const vestir1 = 1 # Vestir posição 1: 1 Na cabeça
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 4 | bitver

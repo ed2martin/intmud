@@ -61,7 +61,7 @@ func cmd_ctipo # Criar tipo
   fimse
 # Cria tipo
   txt200 lin
-  lin = "tipo_" + txts(nome) + "\ntipo"
+  lin = "tipo_" + txts(nome) + "\nb-config\nherda comum_tipo"
   lin += "\nconst nome = \"" + txtcopiamai(txte(nome), "A") + "\""
   p.criar(lin)
   config:salvar
@@ -137,3 +137,34 @@ escreva aqui em quais raças existe (uma raça por linha)"
 const tipo4 = "texto"
 const classe4 = var.classe1
 const var4 = "racas"
+#
+const nome5 = "Atributos"
+const tipo5 = "atrib"
+const classe5 = var.classe1
+const var5 = "recalc_auto"
+const mudou5 = "recalc_ajusta"
+
+
+classe comum_tipo
+func iniclasse
+  criar(arg0)
+
+func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
+  txt100 nome
+  ref r
+  prog p
+  nome = txt(este, 5)
+  recalc_ajusta2(nome, p, r)
+
+func recalc_ajusta2 # Chamado internamente por recalc_ajusta para mais eficiência
+# arg0 = nome do tipo
+# arg1 = variável prog
+# arg2 = variável ref
+  epara arg2 = $jogador, arg2, arg2 = objdepois(arg2)
+    (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+  efim
+  epara arg1.iniclasse("p_"), arg1.lin, arg1.depois
+    epara arg2 = $[arg1.texto], arg2, arg2 = objdepois(arg2)
+      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+    efim
+  efim

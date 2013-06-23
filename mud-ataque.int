@@ -568,7 +568,10 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   efim
 # Indica que atacou, recebe experiência se vencer
   arg0.batalhaini(arg1)
-  r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
+  se r.podepegar && arg1.var.o_agenda # Coloca na agenda
+    refvar v1 = arg1.var.a_[r.nome]
+    !v1 && (v1 = 1)
+  fimse
 # Checa se acertou o alvo
   result = -1
   se precisao <= 100
@@ -584,12 +587,11 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     fimse
   fimse
 # Checa bônus do tipo de defesa
-  dano = s.deftipo.[tipoatk]
-  se dano >= 80 # Defesa muito alta
+  dano = s.deftipo.[tipoatk] / 1000
+  se dano == 0 # Imune
     result = 0
     ret
   fimse
-  dano = matexp(dano * 0.34657359) * arg3 # 0.34657359 = matlog(2) / 2
 # Checa bônus do personagem
   se !tipobonus
   senao r.tipo1 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo1 + "\n") >= 0
@@ -602,18 +604,18 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 # Calcula dano com arma
   se arma1
     dano *= rand(arma1.armamin, arma1.armamax) * arg2
-    dano *= rand(arma1.armamin, arma1.armamax) + 25
+    dano *= rand(arma1.armamin, arma1.armamax)
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano /= s.defesp * 3000
+      dano /= s.defesp * 500
     senao
-      dano /= s.defnorm * 3000
+      dano /= s.defnorm * 500
     fimse
-# Calcula dano sem arma; valor do rand é por volta de 3000
+# Calcula dano sem arma; valor do rand é por volta de 500
   senao
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= r.atkesp * (r.atkesp + 25) * arg2 / (s.defesp * rand(2800, 3400))
+      dano *= r.atkesp * r.atkesp * arg2 / (s.defesp * rand(450, 550))
     senao
-      dano *= r.atknorm * (r.atknorm + 25) * arg2 / (s.defnorm * rand(2800, 3400))
+      dano *= r.atknorm * r.atknorm * arg2 / (s.defnorm * rand(450, 550))
     fimse
     dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
   fimse
@@ -640,9 +642,6 @@ func execgolpe # Realiza um ataque e coloca resultado em result
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
   result = dano < 1 ? 1 : dano
   arg2 && (s.pvida -= result)
-
-func exgolpe_i # Chamado internamente por execgolpe para adicionar na agenda
-  !arg0 && (arg0 = 1)
 
 func mensgolpe # Retorna mensagem do golpe de acordo com result
   casovar result

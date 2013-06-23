@@ -509,9 +509,15 @@ Sintaxe: VESTIR <objeto>\n\
          USAR <objeto>\n\
 Veste ou usa um objeto que você está carregando."
 const posic = 5
+txt30 tipo1 # arg0.tipo1
+txt30 tipo2 # arg0.tipo2
+txt30 tipo3 # arg0.tipo3
 
 func escr
   ret !arg1, arg0.msg("Vestir o que?")
+  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
 # Preenche a variável vest com o que está vestindo
   listaitem item
   int1 vest.32
@@ -536,6 +542,17 @@ func escr
     fimse
     uint8 x
     epara x = n, x, x -= 1
+      se !r.vestirnao
+      senao tipo1 && txtproc("\n" + r.vestirnao + "\n", tipo1) >= 0
+        arg0.msg("Você não consegue vestir " + r.descnome + ".")
+        sair
+      senao tipo2 && txtproc("\n" + r.vestirnao + "\n", tipo2) >= 0
+        arg0.msg("Você não consegue vestir " + r.descnome + ".")
+        sair
+      senao tipo3 && txtproc("\n" + r.vestirnao + "\n", tipo3) >= 0
+        arg0.msg("Você não consegue vestir " + r.descnome + ".")
+        sair
+      fimse
       se !vest.[r.vestir1]
         r.vestir(r.vestir1)
       senao !vest.[r.vestir2]
@@ -563,10 +580,16 @@ const txtajuda = "\b\c3Empunhar\b\n\
 Sintaxe: EMPUNHAR <objeto>\n\
 Empunha uma arma que você está carregando."
 const posic = 5
+txt30 tipo1 # arg0.tipo1
+txt30 tipo2 # arg0.tipo2
+txt30 tipo3 # arg0.tipo3
 
 func escr
   ret !arg1, arg0.msg("Empunhar o que?")
   ret arg0.iempu, arg0.msg("Você já está empunhando uma arma.")
+  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
 # Empunha
   listaobj l
   ref r
@@ -582,6 +605,14 @@ func escr
 ".")
     senao config:atktipo && !arg0.var.h_[txtsublin(misc:arma_txt, r.armatipo, 1)]
       ret arg0.msg("Você não conhece " + txtsublin(misc:arma_txt, r.armatipo, 1) + ".")
+    senao r.vestirnao
+      se tipo1 && txtproc("\n" + r.vestirnao + "\n", tipo1) >= 0
+        ret arg0.msg("Você não consegue empunhar " + r.descnome + ".")
+      senao tipo2 && txtproc("\n" + r.vestirnao + "\n", tipo2) >= 0
+        ret arg0.msg("Você não consegue empunhar " + r.descnome + ".")
+      senao tipo3 && txtproc("\n" + r.vestirnao + "\n", tipo3) >= 0
+        ret arg0.msg("Você não consegue empunhar " + r.descnome + ".")
+      fimse
     fimse
     r.vestir(30)
     r.vestpos && $mens.p(arg0, r) + $mens.mvis1("$P empunha $a.")

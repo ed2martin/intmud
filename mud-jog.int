@@ -11,6 +11,7 @@ jog_admsocial, jog_reset
 # msgsala(texto) = envia mensagem para todos da sala
 # msgtodos(texto) = envia mensagem para todos os jogadores
 # recebe(texto) = executado sempre que receber mensagem do jogador
+# salaobj(listaobj) = adicionar na listaobj com os objetos na mesma sala
 #
 ref perso # Personagem controlado pelo jogador
 indiceobj cnome # "un " + nome codificado
@@ -651,6 +652,6 @@ func vazio2_exec # Sair do MUD automaticamente
   apagar(este)
 
 func cmd_recalc1 # Recalcula variáveis do personagem
-  pnivel < 10 && (pvidamax += 50 - pnivel * 5)
+  #pnivel < 10 && (pvidamax += 50 - pnivel * 5)
   jogconfig.18 && (bitinv = bitinv | 128) # Propriedade config +invsala
   jogconfig.23 && (bitver = bitver | 128) # Se é administrador
