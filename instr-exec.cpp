@@ -279,6 +279,7 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
     VarAtual = VarPilha;    // Limpa pilha de variáveis
     VarAtual->Limpar();     // Variável atual é nulo
     VarAtual->defvar = InstrNulo;
+    VarAtual->nomevar = InstrNulo;
     FuncAtual = FuncPilha;  // Limpa pilha de funções
     FuncAtual->este = 0;    // Nenhum objeto
     FuncAtual->linha = instr;// Primeira instrução da função
@@ -536,10 +537,10 @@ bool Instr::ExecX()
                 //printf("APAGOU %d\n", VarAtual-VarPilha); fflush(stdout);
                 ApagarVar(VarAtual);
                 FuncAtual->fimvar--;
-                if (VarAtual <= FuncAtual->inivar + FuncAtual->numarg)
+                if (VarAtual < FuncAtual->inivar + FuncAtual->numarg)
                     FuncAtual->indent = 0;
                 else
-                    FuncAtual->indent = VarAtual->defvar[endAlin];
+                    FuncAtual->indent = VarAtual->nomevar[endAlin];
             }
 
         // Variável da função
