@@ -201,9 +201,9 @@ func cmd_tele # Ir para uma sala específica
   se p && s
     $mens.p(p, perso)
     p != perso && p.msginv("$A teletransporta você.")
-    !p.p_silencio && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+    !(p.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
-    !p.p_silencio && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+    !(p.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
   fimse
   ret 1
 

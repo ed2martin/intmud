@@ -340,27 +340,28 @@ const ver_placa = "Você olha para uma placa vazia."
 
 7. Personagens e itens (classe comum_persoitem, em mud-comum.int)
 
-7.1. uint8 bitinv
+7.1. int16 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
 0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
 somar 1 se invisível a quem estiver cego
 somar 2 se invisível no escuro
 somar 4 se está invisível
 somar 8 se está oculto
-somar 16 se está voando ou flutuando
-somar 32 se está voando alto
+somar 16 se está voando alto
 somar 128 se é administrador invisível
 
-7.2. uint8 bitver
+7.2. int16 bitver
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
 0 = nada (está cego)
 somar 1 se não está cego
 somar 2 se enxega no escuro
 somar 4 se pode ver invisível
 somar 8 se pode ver oculto
-somar 16 se pode ver voando ou flutuando
-somar 32 se pode ver voando alto
+somar 16 se pode ver voando alto
 somar 128 se pode ver administradores invisíveis
+somar 256 se anda em silêncio
+somar 512 se está voando ou flutuando
+
 
 7.3. intexec recalc
 Para chamar recalc_exec quando necessário
@@ -497,9 +498,6 @@ Se não pode ser seguido.
 0 = pode ser seguido
 1 = não pode ser seguido
 
-* const p_silencio = 0
-Se movimenta em silêncio (não é informado na sala).
-
 * const p_foge = 0
 NÃO ESTÁ PRONTO
 Se foge quando estiver fraco
@@ -513,17 +511,11 @@ Pode atravessar lugares em que não se pode nadar.
 NÃO ESTÁ PRONTO
 Se não pode morrer.
 
-* const p_compra = 0
-NÃO ESTÁ PRONTO
+* const taxacompra = 0
 Porcentagem de lucro quando compra: preço final = valor * (100-p_compra)
 
-* const p_venda = 0
-NÃO ESTÁ PRONTO
+* const taxavenda = 0
 Porcentagem de lucro quando vende: preço final = valor * (100+p_venda)
-
-* const p_compravenda = 0
-NÃO ESTÁ PRONTO
-Se está aberto para compra e venda.
 
 come corpos
 mata jogadores que mataram ou roubaram outros
@@ -576,7 +568,7 @@ Em que lugares do corpo pode ir quando é vestido:
 18 = nas pernas
 19 = calçando
 
-10.4. uint32 vestpos
+10.4. uint8 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
 Outros valores, vide vestir1, acima.
@@ -646,7 +638,7 @@ Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem
 Se item some (é apagado) quando a luz acaba (0=não, 1=sim)
 
 10.18. const armatipo = 0
-Tipo de arma; vide misc:arma_txt (0 significa que não é arma)
+Tipo de arma; vide config:arma_txt (0 significa que não é arma)
 
 10.19. const armaprecisao = 0
 Precisão da arma, em porcentagem, 100 significa mesma precisão de
@@ -946,7 +938,9 @@ const tipo1 = "numero--"
 # "tipodep" = texto contendo uma lista de habilidades, magias e/ou idiomas
 # "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
 # "sala" = uma sala
-# "atrib" = função que altera atributos de um personagem
+# "atribcomum" = função que altera atributos comuns de um personagem
+# "atribatk" = função que altera atributos de ataque de um personagem
+# "atribdef" = função que altera atributos de defesa de um personagem
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
 # Se não for possível apagar, acrescente mais um sinal de '-' no nome
 
@@ -982,14 +976,14 @@ Exemplo: m_menu("adm_config")
 
 16. Lista de itens pendentes
 
-Efeitos para ataques
+Explicar por cima como é feito o cálculo de danos em batalha
 Magia de identificação
+Efeitos para ataques
 Vendedores: poder vender itens que possui no inventário
 Comando para escrever reservadamente
 Ao criar personagem: e-mail e altura
 APRENDER: Definir em que nível e o quanto pode aprender de cada habilidade
 Acertar itens que produzem luz
-Possibilidade do corpo ficar quando vence um personagem
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas

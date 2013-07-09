@@ -163,3 +163,48 @@ func luztempo_exec # A luz apagou
 
 func atribs # Retorna texto com os atributos do item ou personagem
   ret intpos(luztempo) ? "(aceso) " : bitinv & 2 ? "" : "(brilhando) "
+
+
+classe comum_corpo
+herda comum_item
+# Corpo de um personagem que morreu
+const i_aberto = 1 # Para indicar que é container (sempre aberto)
+uint16 pesoobj # Peso do objeto (em gramas)
+uint16 volobj # Volume do objeto quando estiver vazio
+const volmax = 0 # Para não poder colocar nada no corpo
+const sexo = 1 # Sexo: 0=feminino, 1=masculino
+const nome = "corpo"
+txt100 descnome
+txt100 ident
+inttempo tempo
+
+func ini
+# arg0 = personagem que morreu
+# arg1 = verdadeiro se deve transferir os itens do personagem que morreu
+  tempo = 1200, volobj = arg0.volobj, pesoobj = arg0.pesoobj
+  descnome = arg0.nome ? "um corpo de " + arg0.nome : "um corpo"
+  ident = "corpo " + arg0.ident
+  comum_obj:ini
+  arg0.dono && mudadono(arg0.dono)
+  recalc_exec
+  se arg1
+    var.z_moedas = arg0.var.z_moedas
+    listaobj l
+    epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+      l.objini.item && l.objini.mudadono(este, 100000)
+    efim
+    se var.z_moedas
+      $mens.p(arg0)
+      se dentro1.total
+        $mens.mvis2("", "Você nota alguns itens e moedas em " + descnome + ".")
+      senao
+        $mens.mvis2("", "Você nota algumas moedas em " + descnome + ".")
+      fimse
+    senao dentro1.total
+      $mens.p(arg0)
+      $mens.mvis2("Você nota alguns itens em " + descnome + ".")
+    fimse
+
+func tempo_exec
+  dono.msg(txtcopiamai(descnome, "A") + " se decompôs totalmente.")
+  este.apagar(100000)

@@ -530,7 +530,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         destino[endVar] = 0;
         destino += endVar+1;
     // Obtém as classes
-        const char * classes[20]; // nomes das classes
+        const char * classes[HERDA_TAM]; // nomes das classes
         unsigned int total = 0;
         while (*origem)
         {

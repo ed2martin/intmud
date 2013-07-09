@@ -52,6 +52,7 @@ public:
     void Mover(TVarIntTempo * destino); ///< Move para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     bool Func(TVariavel * v, const char * nome); ///< Funções de inttempo
+    bool FuncVetor(TVariavel * v, const char * nome); ///< Funções de vetores
 
     const char * defvar;///< Como foi definida a variável
     union {
@@ -116,6 +117,27 @@ int GetVetorInt1(TVariavel * v);
 
 /// Altera valor numérico de vetor de int1
 void SetVetorInt1(TVariavel * v, int valor);
+
+/// Processa funções de vetores de variáveis int8
+bool FuncVetorInt8(TVariavel * v, const char * nome);
+
+/// Processa funções de vetores de variáveis uint8
+bool FuncVetorUInt8(TVariavel * v, const char * nome);
+
+/// Processa funções de vetores de variáveis int16
+bool FuncVetorInt16(TVariavel * v, const char * nome);
+
+/// Processa funções de vetores de variáveis uint16
+bool FuncVetorUInt16(TVariavel * v, const char * nome);
+
+/// Processa funções de vetores de variáveis int32
+bool FuncVetorInt32(TVariavel * v, const char * nome);
+
+/// Processa funções de vetores de variáveis uint32
+bool FuncVetorUInt32(TVariavel * v, const char * nome);
+
+/// Processa funções de vetores de variáveis real
+bool FuncVetorReal(TVariavel * v, const char * nome);
 
 //----------------------------------------------------------------------------
 
