@@ -322,7 +322,7 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
     // Quantidade fixa de dígitos
         if (digitos >= 0)
         {
-            char mens2[10];
+            char mens2[16];
             sprintf(mens2, "%%.%df", digitos);
             sprintf(mens, mens2, d);
             break;

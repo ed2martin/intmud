@@ -1420,7 +1420,7 @@ void TVariavel::setInt(int valor)
         break;
     case Instr::cInt8:
         if (valor<-0x80)
-            valor=0x80;
+            valor=-0x80;
         else if (valor>0x7F)
             valor=0x7F;
         end_char[indice]=valor;
@@ -1898,36 +1898,25 @@ bool TVariavel::Func(const char * nome)
         case Instr::cInt1:
             return FuncVetorInt1(this, nome);
         case Instr::cInt8:
+            return FuncVetorInt8(this, nome);
         case Instr::cUInt8:
-            if (comparaZ(nome, "limpar")==0)
-                memset(end_char, 0, (unsigned char)defvar[Instr::endVetor]);
-            return false;
+            return FuncVetorUInt8(this, nome);
         case Instr::cInt16:
+            return FuncVetorInt16(this, nome);
         case Instr::cUInt16:
-            if (comparaZ(nome, "limpar")==0)
-                memset(end_char, 0, 2*(unsigned char)defvar[Instr::endVetor]);
-            return false;
+            return FuncVetorUInt16(this, nome);
         case Instr::cInt32:
+            return FuncVetorInt32(this, nome);
         case Instr::cUInt32:
-            if (comparaZ(nome, "limpar")==0)
-                memset(end_char, 0, 4*(unsigned char)defvar[Instr::endVetor]);
-            return false;
+            return FuncVetorUInt32(this, nome);
         case Instr::cIntInc:
             return end_incdec->FuncVetorInc(this, nome);
         case Instr::cIntDec:
             return end_incdec->FuncVetorDec(this, nome);
         case Instr::cIntTempo:
-            if (comparaZ(nome, "limpar")==0)
-                for (unsigned int x=0;
-                        x<(unsigned char)defvar[Instr::endVetor]; x++)
-                    end_inttempo[x].setValor(0, 0);
-            return false;
+            return end_inttempo->FuncVetor(this, nome);
         case Instr::cReal:
-            if (comparaZ(nome, "limpar")==0)
-                for (unsigned int x=0;
-                        x<(unsigned char)defvar[Instr::endVetor]; x++)
-                    end_double[x] = 0;
-            return false;
+            return FuncVetorReal(this, nome);
         }
         return false;
     }

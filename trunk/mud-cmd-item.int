@@ -603,8 +603,8 @@ func escr
     senao int(r.pnivel) > arg0.pnivel
       ret arg0.msg("Você precisa estar no nível " + r.pnivel + " para empunhar " + r.descnome + \
 ".")
-    senao config:atktipo && !arg0.var.h_[txtsublin(misc:arma_txt, r.armatipo, 1)]
-      ret arg0.msg("Você não conhece " + txtsublin(misc:arma_txt, r.armatipo, 1) + ".")
+    senao config:atktipo && !arg0.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
+      ret arg0.msg("Você não conhece " + txtsublin(config:arma_txt, r.armatipo, 1) + ".")
     senao r.vestirnao
       se tipo1 && txtproc("\n" + r.vestirnao + "\n", tipo1) >= 0
         ret arg0.msg("Você não consegue empunhar " + r.descnome + ".")

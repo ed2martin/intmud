@@ -308,7 +308,7 @@ estiver empunhando uma arma."
 const tipo3 = "vetor"
 const classe3 = var.classe1
 const var3 = "tipoarma"
-const extra3 = misc:arma_txt
+const extra3 = config:arma_txt
 #
 const nome4 = "Precisão"
 const info4 = "Em porcentagem, maior que 100 nunca falha"
@@ -580,14 +580,14 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     senao dano == 1 # Errou o alvo automaticamente
       ret
     senao # Checa se acertou
-      dano += precisao * r.precisao / 100 - s.evasao
-      arma1 && (dano *= arma1.armaprecisao / 100) # Precisão da arma
+      dano += precisao * r.precisao * (arma1 ? arma1.armaprecisao : 100) / 10000
+      dano -= s.evasao
       !s.visivel(r) && (dano -= 5) # Invisível é mais difícil de acertar
       ret dano <= 0, nulo
     fimse
   fimse
 # Checa bônus do tipo de defesa
-  dano = s.deftipo.[tipoatk] / 1000
+  dano = r.atktipo.[tipoatk] * s.deftipo.[tipoatk] / 1000000
   se dano == 0 # Imune
     result = 0
     ret
@@ -603,12 +603,11 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   fimse
 # Calcula dano com arma
   se arma1
-    dano *= rand(arma1.armamin, arma1.armamax) * arg2
     dano *= rand(arma1.armamin, arma1.armamax)
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano /= s.defesp * 500
+      dano *= r.atkesp * arg2 / (s.defesp * 500)
     senao
-      dano /= s.defnorm * 500
+      dano *= r.atknorm * arg2 / (s.defnorm * 500)
     fimse
 # Calcula dano sem arma; valor do rand é por volta de 500
   senao
@@ -660,9 +659,9 @@ herda comando_ataque
 # Para realizar ataques automáticos
 const objcmd = nulo
 const objajuda = nulo
-const msgacertou = "$R dá um golpe em $c"
-const msgerrou = "$R tenta dar um golpe em $c mas erra"
-const msgnulo = "$R dá um golpe em $c mas nada acontece"
+txt100 msgacertou
+txt100 msgerrou
+txt100 msgnulo
 const ataque = 100
 const vel = 50
 const extra = "Ataque automático"
@@ -674,7 +673,14 @@ func ataca # arg0 ataca arg1
   arma1 = ref(arg0.persobat.iempu.obj)
   arma1.armamanual && (arma1 = nulo)
   tipoatk = arma1.armatipoatk
-  aulas = 2 + arg0.persobat.var.[txtsublin(misc:arma_txt, arma1.armatipo, 1)]
+  aulas = 2 + arg0.persobat.var.[txtsublin(config:arma_txt, arma1.armatipo, 1)]
+# Acerta mensagens
+  msgacertou = txtsublin(config:arma_acertou, arma1.armatipo, 1)
+  msgerrou = txtsublin(config:arma_errou, arma1.armatipo, 1)
+  msgnulo = txtsublin(config:arma_nulo, arma1.armatipo, 1)
+  !msgacertou && (msgacertou = "$R dá um golpe em $c")
+  !msgerrou && (msgerrou = "$R tenta dar um golpe em $c mas erra")
+  !msgnulo && (msgnulo = "$R dá um golpe em $c mas nada acontece")
 # Primeiro ataque
   execgolpe(arg0, arg1, ataque, aulas) # Ataca
   result != -2 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)

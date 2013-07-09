@@ -49,6 +49,10 @@ const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
 const p_agressivo = 2
 
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += -20
+
 
 classe p_casa002
 herda comum_persobat
@@ -147,10 +151,7 @@ func tempo_exec
   dono.msg("Menina joga um boneco de papel pelo telhado.")
 
 func cmd_recalc1 # Faz a menina ser praticamente imune a ataques
-  uint8 x
-  enquanto x < 30
-    deftipo.[x] = 0, x += 1
-  efim
+  deftipo.limpar
   evasao = 0
 
 func desaparece2
@@ -1247,9 +1248,9 @@ listaitem alvoitem # Para receber eventos de quem esse personagem atacou
 intexec alvoexec # Para checar se o alvo morreu
 
 func recalc_auto # Recalcula variáveis do personagem
-  atknorm += 3*pnivel+5 # Ataque normal mais forte
-  defnorm += 2*pnivel+4 # Mais forte contra ataques normais
-  defesp += -3*pnivel-5 # Mais fraco contra ataques mágicos
+  atknorm += 3 * pnivel + 5 # Ataque normal mais forte
+  defnorm += 2 * pnivel + 4 # Mais forte contra ataques normais
+  defesp += -3 * pnivel - 5 # Mais fraco contra ataques mágicos
 
 func cmd_mudadono # Mudou de dono
   pvida += 5 # Ganha pontos de vida

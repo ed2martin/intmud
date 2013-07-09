@@ -258,6 +258,7 @@ func morreu # Procedimentos quando morre
   apagar(este)
   ref r
   r = sock, r.mudaperso(nulo), r.reinicia
+  p_corpo && criar("comum_corpo", este, p_corpo == 2)
 # Gera eventos
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_morreu(este)
@@ -294,9 +295,9 @@ uint32 pesomax # Quanto peso consegue carregar
 const tipo1 = "normal" # Tipo de personagem
 # const tipo2 = "" # Segundo tipo do personagem
 # const tipo3 = "" # Terceiro tipo do personagem
-uint16 deftipo.18
-# Defesa contra os diversos tipos de danos
-# sendo que 1000=danos normais e 0=imune (500=metade dos danos, etc.)
+uint16 atktipo.18 # Ataque de ataque para diversos tipos de danos
+uint16 deftipo.18 # Defesa contra os diversos tipos de danos
+# 1000=danos normais e 0=nenhum dano (500=metade dos danos, etc.)
 # Vide função misc:atknomes
 #
 const persobat = este # Personagem usado na batalha
@@ -363,10 +364,8 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   pmovemax = pnivel * 2 + 30
   evasao = pnivel * 2 + 30
   precisao = pnivel * 2 + 30
-  deftipo.4 = deftipo.3 = deftipo.2 = deftipo.1 = deftipo.0 = 1000
-  deftipo.9 = deftipo.8 = deftipo.7 = deftipo.6 = deftipo.5 = 1000
-  deftipo.14 = deftipo.13 = deftipo.12 = deftipo.11 = deftipo.10 = 1000
-  deftipo.19 = deftipo.18 = deftipo.17 = deftipo.16 = deftipo.15 = 1000
+  atktipo.limpar(1000)
+  deftipo.limpar(1000)
   pesoveste = 0
   pesomax = 20000
 # Acerta atributos conforme o tipo de personagem
@@ -535,6 +534,7 @@ func morreu # Procedimentos quando morre
     apagar(este)
     ref r
     r = sock, r.mudaperso(nulo), r.reinicia
+    p_corpo && criar("comum_corpo", este, p_corpo == 2)
   fimse
 # Gera eventos
   epara l.addfim(evento), l, l.ini.remove
@@ -618,6 +618,7 @@ func p_proc_exec # Processar comportamento do personagem
 # Movimenta-se
   se p_mover
     ret p_tmove, p_proc = p_tmove + 1
+    ret posicao != 7, p_proc = 30
     ref r
     textotxt t
     misc:obj = este, r = dono
@@ -632,6 +633,7 @@ func p_proc_exec # Processar comportamento do personagem
     ret !dir || p_mover == 1 && r.dir_[dir].s_area != r.s_area, p_proc = 50
     $cmd_[dir].escr(este)
     p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
+  fimse
 
 
 classe comum_persoanimal

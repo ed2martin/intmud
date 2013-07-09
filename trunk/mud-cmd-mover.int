@@ -32,9 +32,9 @@ func escr # Executa o comando
   arg0.pmove -= total / 2
   arg0.p_espera = total ? total * 2 : 2
   $mens.p(arg0)
-  !arg0.p_silencio && $mens.mvis2("", m_sai)
+  !(arg0.bitver & 256) && $mens.mvis2("", m_sai)
   arg0.mudadono(s2)
-  !arg0.p_silencio && $mens.mvis2("", m_entra)
+  !(arg0.bitver & 256) && $mens.mvis2("", m_entra)
   arg0.dono.s_morre && arg0.morreu
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
@@ -797,9 +797,9 @@ func escr
   arg0.pmove -= 5
   arg0.batalhafim
   $mens.p(arg0)
-  !arg0.p_silencio && $mens.mtodos1(txttroca($cmd_[dir].m_sai, " foi ", " fugiu "))
+  !(arg0.bitver & 256) && $mens.mtodos1(txttroca($cmd_[dir].m_sai, " foi ", " fugiu "))
   arg0.mudadono(r)
-  !arg0.p_silencio && $mens.mvis2("", $cmd_[dir].m_entra)
+  !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra)
 
 func fugirdir # Obtém direção para onde pode fugir
 # Entrada: arg0 = personagem
@@ -846,9 +846,9 @@ func exec # Personagem retorna
   arg0.p_espera < 15 && (arg0.p_espera = 15)
   ret rand(10) >= arg1, arg0.msg("Por algum motivo, a magia falhou.")
   $mens.p(arg0)
-  !arg0.p_silencio && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+  !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
   arg0.mudadono(r)
-  !arg0.p_silencio && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+  !(arg0.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
 
 
 classe cmd_retornar

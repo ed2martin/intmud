@@ -136,7 +136,7 @@ int TVarIncDec::getDec(int numfunc)
 void TVarIncDec::setInc(int numfunc, int v)
 {
 // Acerta o sinal se for função abs
-    if (numfunc &&  (getInc(0)<0) != (v<0))
+    if (numfunc && (getInc(0)<0) != (v<0))
         v = -v;
 // Contagem parada
     if (v < 0)
@@ -229,20 +229,41 @@ bool TVarIncDec::FuncDec(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")==0)
-        for (unsigned int x=0; x<(unsigned char)v->defvar[Instr::endVetor]; x++)
-            this[x].valor = TempoIni;
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int numero = 0;
+    if (Instr::VarAtual > v)
+    {
+        numero = v[1].getInt();
+        if (numero >= INTTEMPO_MAX*INTTEMPO_MAX)
+            numero = INTTEMPO_MAX*INTTEMPO_MAX-1;
+    }
+    numero = TempoIni + INTTEMPO_MAX*INTTEMPO_MAX - numero;
+    for (int x=0; x<total; x++)
+        this[x].valor = numero;
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")==0)
-        for (unsigned int x=0; x<(unsigned char)v->defvar[Instr::endVetor]; x++)
-            this[x].valor = TempoIni;
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int numero = 0;
+    if (Instr::VarAtual > v)
+    {
+        numero = v[1].getInt();
+        if (numero >= INTTEMPO_MAX*INTTEMPO_MAX)
+            numero = INTTEMPO_MAX*INTTEMPO_MAX-1;
+    }
+    numero = TempoIni + numero;
+    for (int x=0; x<total; x++)
+        this[x].valor = numero;
     return false;
 }
+
 //------------------------------------------------------------------------------
 void TVarIntTempo::PreparaIni()
 {
@@ -480,6 +501,18 @@ bool TVarIntTempo::Func(TVariavel * v, const char * nome)
             setValor(0, -valor);
         return false;
     }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FuncVetor(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    const int numero = (Instr::VarAtual <= v ? 0 : v[1].getInt());
+    for (int x=0; x<total; x++)
+        this[x].setValor(0, numero);
     return false;
 }
 
@@ -790,8 +823,11 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
     if (comparaZ(nome, "limpar")==0)
     {
         char * destino = v->end_char;
+        const char * texto = "";
+        if (Instr::VarAtual > v)
+            texto = v[1].getTxt();
         for (; numvar>0; numvar--, destino+=tamvar)
-            *destino=0;
+            copiastr(destino, texto, tamvar);
         return false;
     }
 // Junta texto
@@ -923,6 +959,22 @@ bool FuncVetorInt1(TVariavel * v, const char * nome)
         unsigned int total = (unsigned char)v->defvar[Instr::endVetor];
         unsigned char * p = (unsigned char*)v->end_char;
         unsigned char bitmask = v->bit;
+    // Preencher com 1
+        if (Instr::VarAtual > v && v[1].getBool())
+        {
+            if (bitmask > 1)
+            {
+                for (; total>0 && bitmask; total--,bitmask<<=1)
+                    *p |= bitmask;
+                p++;
+            }
+            while (total>=8)
+                *p++=0xFF, total-=8;
+            for (bitmask=1; total>0; total--,bitmask<<=1)
+                *p |= bitmask;
+            return false;
+        }
+    // Preencher com 0
         if (bitmask > 1)
         {
             for (; total>0 && bitmask; total--,bitmask<<=1)
@@ -1035,4 +1087,145 @@ void SetVetorInt1(TVariavel * v, int valor)
         p++, total-=8-bitnum, valor>>=8-bitnum;
         bitnum = 0;
     }
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorInt8(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    char * ender = v->end_char;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int valor = 0;
+    if (Instr::VarAtual > v)
+    {
+        valor = v[1].getInt();
+        if (valor<-0x80)
+            valor = -0x80;
+        else if (valor>0x7F)
+            valor = 0x7F;
+    }
+    memset(ender, valor, total);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorUInt8(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    char * ender = v->end_char;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int valor = 0;
+    if (Instr::VarAtual > v)
+    {
+        valor = v[1].getInt();
+        if (valor<0)
+            valor = 0;
+        else if (valor>0xFF)
+            valor = 0xFF;
+    }
+    memset(ender, valor, total);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorInt16(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    short * ender = v->end_short;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int valor = 0;
+    if (Instr::VarAtual > v)
+    {
+        valor = v[1].getInt();
+        if (valor<-0x8000)
+            valor = -0x8000;
+        else if (valor>0x7FFF)
+            valor = 0x7FFF;
+    }
+    if (valor==0)
+        memset(ender, 0, 2*total);
+    else
+        for (int x=0; x<total; x++)
+            ender[x] = valor;
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorUInt16(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    unsigned short * ender = v->end_ushort;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int valor = 0;
+    if (Instr::VarAtual > v)
+    {
+        valor = v[1].getInt();
+        if (valor<0)
+            valor = 0;
+        else if (valor>0xFFFF)
+            valor = 0xFFFF;
+    }
+    if (valor==0)
+        memset(ender, 0, 2*total);
+    else
+        for (int x=0; x<total; x++)
+            ender[x] = valor;
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorInt32(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    int * ender = v->end_int;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    const int valor = (Instr::VarAtual <= v ? 0 : v[1].getInt());
+    if (valor==0)
+        memset(ender, 0, 4*total);
+    else
+        for (int x=0; x<total; x++)
+            ender[x] = valor;
+    return false;
+} 
+
+//------------------------------------------------------------------------------
+bool FuncVetorUInt32(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    unsigned int * ender = v->end_uint;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    unsigned int valor = 0;
+    if (Instr::VarAtual > v)
+    {
+        const double val_double = v[1].getDouble();
+        if (val_double > 0xFFFFFFFFLL)
+            valor = 0xFFFFFFFFLL;
+        else if (val_double > 0)
+            valor = (unsigned int)val_double;
+    }
+    if (valor==0)
+        memset(ender, 0, 4*total);
+    else
+        for (int x=0; x<total; x++)
+            ender[x] = valor;
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorReal(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    double * ender = v->end_double;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    const double valor = (Instr::VarAtual <= v ? 0 : v[1].getDouble());
+    for (int x=0; x<total; x++)
+        ender[x] = valor;
+    return false;
 }

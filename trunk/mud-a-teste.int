@@ -839,8 +839,8 @@ herda b_teste
 const s_titulo = "Loja, professores e ponto de retorno"
 const s_desc = "À leste há um vendedor e um professor.\n\
 À oeste trata-se do ponto de retorno.\n\
-Vai precisar de dinheiro se quiser comprar ou aprender algo.\n\
-Para ficar com mil moedas, tecle AA nessa sala."
+À sudeste você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
+Ou pode teclar AA nessa sala, para ficar com mil moedas."
 const dir_n = $s_teste026
 const dir_l = $s_teste031
 
@@ -854,6 +854,7 @@ func cmd_escr # Escreveu algo
     ret 1
 
 const dir_o = $s_teste049
+const dir_se = $s_teste051
 
 
 classe s_teste031
@@ -1230,3 +1231,36 @@ const vestir1 = 1 # Vestir posição 1: 1 Na cabeça
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver = 4 | bitver
+
+
+classe s_teste051
+herda b_teste
+const s_titulo = "Pegar itens de PNJs"
+const s_desc = "Esse pequeno camundongo gigante carrega algumas coisas úteis,\n\
+por incrível que possa parecer. Primeiro tecle chutar camundongo.\n\
+Quando ele morrer, tecle pegar moedas corpo, depois tecle olhar corpo,\n\
+e então pode pegar a faca dele teclando pegar faca corpo.\n\
+Obviamente, pode-se usar abreviações. Exemplo, peg fa cor."
+const dir_no = $s_teste030
+const s_reset = "P 100 teste011 0 0 1 z_moedas=200\nI 100 teste012 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se p_teste011:objsolto.total < 1
+    p = u = criar("p_teste011", este, 0, "z_moedas=200")
+  fimse
+  u && criar("i_teste012", u, 1)
+
+
+classe p_teste011
+herda comum_persobat
+const sexoini = 1 # Sexo: 1 Masculino
+const nome = "camundongo gigante"
+const descnome = "um camundongo gigante"
+const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += -40

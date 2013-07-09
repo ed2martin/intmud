@@ -4,7 +4,7 @@
 class TObjeto;
 class TArqMapa;
 
-#define HERDA_TAM 20 // Número máximo de classes herdadas por classe
+#define HERDA_TAM 40 // Número máximo de classes herdadas por classe
 #define CLASSE_NOME_TAM 48 // Tamanho máximo dos nomes das classes + 1
 
 //----------------------------------------------------------------------------
