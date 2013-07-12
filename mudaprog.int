@@ -91,15 +91,16 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
     fimse
     t1.addini("") # Adiciona linha em branco no começo do arquivo
 # Junta linhas
+    d.exec = 100000
     epara p2 = t1.fim, p2.linha, p2.antes
       continuar txtfim(p2.texto, 1) != "\\"
       p2.mudar("", inttotal(p2.texto) - 1, 1)
-      p2.depois, p2.juntar, d.exec = 10000
+      p2.depois, p2.juntar, d.exec = 100000
     efim
 # Obtém as classes
     epara p2 = t1.fim, p2.linha, p2.antes
       continuar txt1(p2.texto) != "classe" || !txt2(p2.texto)
-      d.exec = 10000
+      d.exec = 100000
       txt100 nome
       nome = txt2(p2.texto) # Nome da classe
       apagarcl.mudar(nome + "=") # Retira classe da lista
