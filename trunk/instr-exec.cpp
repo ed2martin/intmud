@@ -227,6 +227,21 @@ const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, (char)0xFF, 0,
 const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, (char)0xFF, 0, 0, 0, 'f', 0 };
 
+static void ApagaVarEscopo()
+{
+    using namespace Instr;
+    while ((unsigned char)FuncAtual->linha[endAlin] < FuncAtual->indent)
+    {
+        //printf("APAGOU %d\n", VarAtual-VarPilha); fflush(stdout);
+        ApagarVar(VarAtual);
+        FuncAtual->fimvar--;
+        if (VarAtual < FuncAtual->inivar + FuncAtual->numarg)
+            FuncAtual->indent = 0;
+        else
+            FuncAtual->indent = VarAtual->nomevar[endAlin];
+    }
+}
+
 //----------------------------------------------------------------------------
 /// Prepara para executar
 /**
@@ -516,7 +531,7 @@ bool Instr::ExecX()
                 return true;
             }
 
-        // Apaga variáveis que saíram do escopo
+        // Mostra o que vai executar
 #ifdef DEBUG_INSTR
             {
                 char mens[4096];
@@ -532,16 +547,9 @@ bool Instr::ExecX()
                 fflush(stdout);
             }
 #endif
-            while ((unsigned char)FuncAtual->linha[endAlin] < FuncAtual->indent)
-            {
-                //printf("APAGOU %d\n", VarAtual-VarPilha); fflush(stdout);
-                ApagarVar(VarAtual);
-                FuncAtual->fimvar--;
-                if (VarAtual < FuncAtual->inivar + FuncAtual->numarg)
-                    FuncAtual->indent = 0;
-                else
-                    FuncAtual->indent = VarAtual->nomevar[endAlin];
-            }
+
+        // Apaga variáveis que saíram do escopo
+            ApagaVarEscopo();
 
         // Variável da função
             if (FuncAtual->linha[2] > cVariaveis)
@@ -608,6 +616,7 @@ bool Instr::ExecX()
                             FuncAtual->expr = p + Num16(p + endVar + 4);
                     }
                     FuncAtual->linha = p;
+                    ApagaVarEscopo();
                     break;
                 }
             case cFimSe: // Passa para próxima instrução
@@ -796,6 +805,7 @@ bool Instr::ExecX()
                     }
                     FuncAtual->linha = p;
                     ApagarVar(FuncAtual->fimvar);
+                    ApagaVarEscopo();
                 }
                 break;
             case cSenao1: // senão sem argumentos em modo debug
