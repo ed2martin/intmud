@@ -255,6 +255,9 @@ txt30 tipo2 # arg0.tipo2
 txt30 tipo3 # arg0.tipo3
 
 func escr
+  se config:aulas && !arg0.var.z_aulas
+    ret arg0.msg("Você não possui pontos de aula.")
+  fimse
   ret !arg1, arg0.msg("Aprender o quê?")
   tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
   tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
@@ -328,6 +331,7 @@ func escr
         ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
       fimse
 # Ensina
+      config:aulas && (arg0.var.z_aulas_ -= 1)
       arg0.var.z_moedas_ -= valor
       arg0.var.[nomevar]_ += 1
       $mens.p(arg0, l.objini)

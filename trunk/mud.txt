@@ -213,6 +213,7 @@ h_ = habilidade
 i_ = idioma
 m_ = magia
 o_ = item classificado como "outros"
+u_ = usuário ignorado
 z_ = variável não visível ao jogador
 
 Variáveis mais comuns:
@@ -221,6 +222,7 @@ z_pnivel = nível do animal quando foi capturado
 z_captura = nome do item que o jogador escolheu para capturar animais
 z_salafim = sala para onde vai quando retorna da morte
 z_moedas = quantas moedas o personagem, item ou sala possui
+z_aulas = pontos de aula (quantas aulas ainda pode fazer)
 
 
 5. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
@@ -901,6 +903,9 @@ Quer resgatar alguém de uma batalha.
 func cmd_morrer(personagem)
 Vai morrer porque os pontos de vida chegaram a zero.
 
+func cmd_ident(personagem, item ou personagem)
+Quer identificar um item ou personagem.
+
 
 15. Criando menus de edição (administração)
 
@@ -977,10 +982,8 @@ Exemplo: m_menu("adm_config")
 16. Lista de itens pendentes
 
 Explicar por cima como é feito o cálculo de danos em batalha
-Magia de identificação
 Efeitos para ataques
 Vendedores: poder vender itens que possui no inventário
-Comando para escrever reservadamente
 Ao criar personagem: e-mail e altura
 APRENDER: Definir em que nível e o quanto pode aprender de cada habilidade
 Acertar itens que produzem luz

@@ -75,16 +75,34 @@ classe i_ini005
 herda comum_item
 const nome = "manto escuro"
 const descnome = "um manto escuro"
+const descver = "Embora extremamente frágil, possui um pequeno foguete preso nele. Há uma\n\
+pequena corda para acionar o foguete, mas antes você deve vestir o manto.\n\
+O comando para puxar a corda é PUXAR."
 const sexo = 1
 const descpos = "Um manto escuro relativamente pesado está aqui."
 const pesoobj = 15000
 const vestir1 = 7
+const evperso = 1 # Eventos em perso: Sim
 
 func cmd_mudadono # Objeto mudou de dono
   se !dono.perso # Se o novo dono não for um personagem
     apagar(este)
     $mens.p(donoantes)
-    $mens.mvis1("O manto escuro se desintegra.")
+    $mens.mvis1("O manto escuro cai no chão e se desintegra.")
+
+func cmd_escr # Escreveu algo
+  se arg1 == "puxar"
+    se !vestpos
+      arg0.msg("Antes de acionar o foguete, você deve vestir o manto.")
+    senao dono.dono != $s_ini004
+      arg0.msg("Melhor não, é perigoso acionar o foguete aqui.")
+    senao
+      $mens.p(arg0)
+      $mens.mtodos1("$P aciona o foguete e sobe rapidamente.")
+      arg0.mudadono($s_ini002)
+      $mens.mtodos2("", "$P pousou aqui.")
+    fimse
+    ret 1
 
 
 classe p_ini001
@@ -220,16 +238,16 @@ func cmd_salaperso # Personagem chegou
     misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou30
-  arg0.msg("Tenta andar mas não consegue sair do lugar")
+  arg0.msg("Tenta andar mas não consegue sair do lugar.")
 
 func entrou60
-  arg0.msg("De repente você começa a descer, cada vez mais rápido")
+  arg0.msg("De repente você começa a descer, cada vez mais rápido.")
 
 func entrou90
-  arg0.msg("Não consegue ver mais nada por causa da névoa branca")
+  arg0.msg("Não consegue ver mais nada por causa da névoa branca.")
 
 func entrou120
-  arg0.msg("A névoa está se dissipando, mas você continua acelerando para baixo")
+  arg0.msg("A névoa está se dissipando, mas você continua acelerando para baixo.")
 
 func entrou150
   arg0.msg("Você olha para cima e só vê a névoa.\nEm baixo, casas e outras coisas muito pequenas.\
@@ -245,11 +263,15 @@ func entrou250
   arg0.msg("Você se espatifou no chão, está morto.")
 
 func entrou280
-  arg0.msg("Para jogar novamente na ilha tecle fim")
+  se arg0.dentro2.objini("i_ini005")
+    arg0.msg("Da próxima vez que estiver caindo, tecle PUXAR para puxar a corda")
+    arg0.msg("que aciona o foguete.")
 
-func entrou290
-  arg0.msg("Da próxima vez que perceber que está caindo da ilha, já pode teclar fim antecipadamen\
-te.")
+func entrou300
+  arg0.mudadono($s_ini002)
+  $mens.p(arg0)
+  $mens.mtodos2("", "$P chegou.")
+  ret 1
 
 
 classe s_ini005

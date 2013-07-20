@@ -782,9 +782,6 @@ const vestir1 = 6 # Vestir posição 1: 6 No corpo
 const pnivel = 3
 const tipoitem = 8 # Tipo de produto: Vestimenta
 
-func cmd_recalc2 # Recalcula variáveis do personagem
-  arg0.defnorm += 15 # Ganha 15 pontos de defesa contra ataques normais
-
 func cmd_podevestir
 # Essa função é chamada sempre que um personagem tenta vestir um item
 # Se ela retornar um texto, será apresentado o texto ao invés de vestir
@@ -793,6 +790,10 @@ func cmd_podevestir
 # dono.tipo2 é a classe
   se dono.tipo1 != "elfo" # Checa se a raça é "elfo"
     ret "Somente elfos podem vestir o colete dos elfos."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  defnorm += 15
 
 
 classe s_teste028
@@ -882,6 +883,7 @@ classe p_teste007
 herda comum_perso
 const nome = "João o mercenário"
 const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Humano"
 const lojaitem = "teste012 3\nteste013 0"
 const taxavenda = 20
 const taxacompra = 30
@@ -893,12 +895,14 @@ classe p_teste008
 herda comum_perso
 const nome = "Faixa preta"
 const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Humano"
 const lojaaula = "h_Chutar 3\n\
 h_Voadora 7\n\
 h_Morder 4\n\
 i_Hebráico 2\n\
 m_Fogo 4\n\
-m_Retornar 8"
+m_Retornar 8\n\
+m_Identificar 8"
 const taxaaula = 50
 const lojanao = ""
 
@@ -927,6 +931,7 @@ classe p_teste009
 herda comum_perso
 const nome = "Perito"
 const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Anão"
 const lojaaula = "h_Varinha 8\n\
 h_Cajado 8\n\
 h_Lâmina_curta 8\n\
@@ -1167,6 +1172,7 @@ classe p_teste010
 herda comum_perso
 const nome = "Prefeito"
 const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Elfo"
 const evsala = 1 # Eventos em sala: Sim
 
 func cmd_chegou # Chegou na sala
