@@ -829,6 +829,8 @@ const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 8
 const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nTeletransporta o seu personagem para o \
 ponto de retorno."
+const cmdmenu = "retornar" # Editável via "adm_hab_retornar" e "adm_magia_retornar"
+const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
 
 func escr
   exec(arg0, 2 + arg0.persobat.var.[nomevar])
@@ -841,14 +843,22 @@ func exec # Personagem retorna
   ret !r, arg0.msg("Você não possui ponto de retorno.")
   ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
   ret r.s_retornar == 1, arg0.msg("Você não consegue retornar.")
+  ret arg0.pvida <= int(usavida), arg0.msg("Pontos de vida insuficientes")
   ret arg0.pmana < int(usamana), arg0.msg("Mana insuficiente")
+  ret arg0.pmove < int(usamove), arg0.msg("Vigor insuficiente")
+  arg0.pvida -= int(usavida)
   arg0.pmana -= int(usamana)
+  arg0.pmove -= int(usamove)
   arg0.p_espera < 15 && (arg0.p_espera = 15)
-  ret rand(10) >= arg1, arg0.msg("Por algum motivo, a magia falhou.")
-  $mens.p(arg0)
-  !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
-  arg0.mudadono(r)
-  !(arg0.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+  se rand(10) >= arg1
+    arg0.msg("Por algum motivo, a magia falhou.")
+  senao
+    $mens.p(arg0)
+    !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+    arg0.mudadono(r)
+    !(arg0.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+  fimse
+  arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
 
 
 classe cmd_retornar
@@ -858,6 +868,17 @@ const objajuda = config:retornar >= 0 ? este
 const txtajuda = "\b\c3Retornar\b\nSintaxe: RETORNAR\nTeletransporta o seu personagem para o \
 ponto de retorno, geralmente sua\ncidade natal. Esse comando existe para jogadores até o nível " \
 + config:retornar + "."
+const cmdmenu = "" # Para não ser editável
 
 func escr
   exec(arg0, 10)
+
+
+classe adm_hab_retornar
+herda adm_magia_retornar
+const titulo = "Hab Retornar"
+
+
+classe adm_magia_retornar
+herda adm_hab_comum
+const titulo = "Magia Retornar"

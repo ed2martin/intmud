@@ -21,9 +21,9 @@ func cmd_lhab # Listar habilidades
   textotxt t
   txt100 lin
   epara p.iniclasse("cmd_"), p.lin && t.linhas < 499, p.depois
-    continuar !$[p.texto].atkcom # Continua se não é uma habilidade
+    continuar !$[p.texto].cmdmenu # Continua se não é uma habilidade
     lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
-    lin += txtsublin(misc:atknomes, $[p.texto].tipoatk, 1)
+    lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
     casovar $[p.texto].tipoalvo
     casose "1"
       lin += ", todos dividindo ataque"
@@ -46,12 +46,9 @@ func cmd_lmag # Listar magias
   textotxt t
   txt100 lin
   epara p.iniclasse("magia_"), p.lin && t.linhas < 499, p.depois
+    continuar !$[p.texto].cmdmenu # Continua se não é uma magia editável
     lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
-    se !$[p.texto].atkcom # Se não for uma magia editável
-      t.addfim(lin + "Nenhum tipo")
-      continuar
-    fimse
-    lin += txtsublin(misc:atknomes, $[p.texto].tipoatk, 1)
+    lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
     casovar $[p.texto].tipoalvo
     casose "1"
       lin += ", todos dividindo ataque"
@@ -90,15 +87,11 @@ func cmd_chab # Criar habilidade
     msg("Já existe o comando social: " + nome)
     ret 1
   fimse
-# Cria ataque
-  txt200 lin
-  lin = "cmd_" + txts(nome) + "\nb-ataque\nherda comando_ataque"
-  lin += "\nconst nomevar = \"h_" + txtcopiamai(txte(nome), "A") + "\""
-  p.criar(lin)
-  config:salvar
-  msg("\bHabilidade criada: " + nome)
-  admlog("criou habilidade " + nome)
-  ret 1
+# Pergunta que tipo de habilidade criar
+  var.opcclasse = "cmd_" + txts(txtmin(nome))
+  var.opcvar = "h_" + txtcopiamai(txte(nome), "A")
+  var.opctipo = "habilidade"
+  ret p_chab("\b")
 
 func cmd_cmag # Criar magia
   prog p
@@ -118,14 +111,53 @@ func cmd_cmag # Criar magia
     msg("Já existe a magia: " + nome)
     ret 1
   fimse
-# Cria ataque
+# Pergunta que tipo de magia criar
+  var.opcclasse = "magia_" + txts(txtmin(nome))
+  var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
+  var.opctipo = "magia"
+  ret p_chab("\b")
+
+func p_chab # Escolher o tipo de habilidade
+  txt40 deriv
+  casovar txtmin(arg0)
+  casose
+    msg("Opção inválida")
+  casose "\b"
+  casose ""
+    passo = "chab"
+    msg("Entre com o tipo de " + var.opctipo + ", O mostra as opções, Z cancela")
+    ret 1
+  casose "z"
+    msg("Retornando ao jogo")
+    passo = "", var.opcclasse = "", var.opcnome = "", var.opctipo = ""
+    ret 1
+  casose "o"
+    txtmais.limpar
+    txtmais.addfim("A Ataque")
+    txtmais.addfim("I Identificar")
+    txtmais.addfim("R Retornar")
+    txtmostra
+    ret 1
+  casose "a"
+    deriv = "comando_ataque"
+    sair
+  casose "i"
+    deriv = "comando_identificar"
+    sair
+  casose "r"
+    deriv = "comando_retornar"
+    sair
+  casofim
+# Cria habilidade ou magia
   txt200 lin
-  lin = "magia_" + txts(nome) + "\nb-ataque\nherda comando_ataque"
-  lin += "\nconst nomevar = \"m_" + txtcopiamai(txte(nome), "A") + "\""
+  lin = var.opcclasse + "\nb-ataque\nherda " + deriv
+  lin += "\nconst nomevar = \"" + var.opcvar + "\""
+  prog p
   p.criar(lin)
   config:salvar
-  msg("\bMagia criada: " + nome)
-  admlog("criou magia " + nome)
+  msg("\bCriou " + var.opctipo + ": " + txt(var.opcvar, 2))
+  admlog("criou " + var.opctipo + " " + txt(var.opcvar, 2))
+  passo = "", var.opcclasse = "", var.opcnome = "", var.opctipo = ""
   ret 1
 
 func cmd_ahab # Apagar habilidade
@@ -139,7 +171,7 @@ func cmd_ahab # Apagar habilidade
     se !p.existe("cmd_" + txtsub(arg0, x, 1))
       msg("Habilidade não existe: " + txtsub(arg0, x, 1))
       ret 1
-    senao !$cmd_[txtsub(arg0, x, 1)].atkcom
+    senao !$cmd_[txtsub(arg0, x, 1)].cmdmenu
       msg("Comando não é uma habilidade: " + txtsub(arg0, x, 1))
       ret 1
     fimse
@@ -186,7 +218,7 @@ func cmd_amag # Apagar magia
     se !p.existe("magia_" + txtsub(arg0, x, 1))
       msg("Magia não existe: " + txtsub(arg0, x, 1))
       ret 1
-    senao !$magia_[txtsub(arg0, x, 1)].atkcom
+    senao !$magia_[txtsub(arg0, x, 1)].cmdmenu
       msg("Magia não pode ser apagada: " + txtsub(arg0, x, 1))
       ret 1
     fimse
@@ -228,11 +260,11 @@ func cmd_ehab # Editar habilidade
     msg("Tecle o nome da habilidade após EHAB")
   senao !p.existe("cmd_" + arg0)
     msg("Habilidade não existe: " + arg0)
-  senao !$cmd_[arg0].atkcom
+  senao !$cmd_[arg0].cmdmenu
     msg("Comando não é uma habilidade: " + arg0)
   senao
     var.classe1 = "cmd_" + txts(txtmin(arg0))
-    m_menu("adm_hab")
+    m_menu("adm_hab_" + $cmd_[arg0].cmdmenu)
   fimse
   ret 1
 
@@ -245,16 +277,34 @@ func cmd_emag # Editar magia
   senao p.existe("adm_magia_" + arg0)
     var.classe1 = "magia_" + txts(txtmin(arg0))
     m_menu("adm_magia_" + arg0)
-  senao !$magia_[arg0].atkcom
+  senao !$magia_[arg0].cmdmenu
     msg("Comando não é uma magia editável: " + arg0)
   senao
     var.classe1 = "magia_" + txts(txtmin(arg0))
-    m_menu("adm_magia")
+    m_menu("adm_magia_" + $magia_[arg0].cmdmenu)
   fimse
   ret 1
 
 
-classe adm_atk_comum
+classe adm_hab_comum
+const nome7 = "Consome vida"
+const info7 = "Quantos pontos de vida consome"
+const tipo7 = "numero"
+const classe7 = var.classe1
+const var7 = "usavida"
+#
+const nome8 = "Consome mana"
+const info8 = "Quantos pontos de mana consome"
+const tipo8 = "numero"
+const classe8 = var.classe1
+const var8 = "usamana"
+#
+const nome9 = "Consome vigor"
+const info9 = "Quantos pontos de vigor consome"
+const tipo9 = "numero"
+const classe9 = var.classe1
+const var9 = "usamove"
+#
 const nome13 = "Preço da aula"
 const info13 = "Quantas moedas os personagens cobram para ensinar"
 const tipo13 = "numero"
@@ -286,15 +336,15 @@ const classe17 = var.classe1
 const var17 = "tipoperso"
 
 
-classe adm_hab
-herda adm_atk_comum
+classe adm_hab_ataque
+herda adm_hab_comum
 const titulo = "Hab " + txt(var.classe1, 4)
 #
 const nome1 = "Tipo de ataque"
 const tipo1 = "opcao"
 const classe1 = var.classe1
 const var1 = "tipoatk"
-const extra1 = misc:atknomes
+const extra1 = config:atknomes
 #
 const nome2 = "Alvo"
 const tipo2 = "opcao"
@@ -328,24 +378,6 @@ const tipo6 = "numero"
 const classe6 = var.classe1
 const var6 = "vel"
 #
-const nome7 = "Consome vida"
-const info7 = "Quantos pontos de vida consome"
-const tipo7 = "numero"
-const classe7 = var.classe1
-const var7 = "usavida"
-#
-const nome8 = "Consome mana"
-const info8 = "Quantos pontos de mana consome"
-const tipo8 = "numero"
-const classe8 = var.classe1
-const var8 = "usamana"
-#
-const nome9 = "Consome vigor"
-const info9 = "Quantos pontos de vigor consome"
-const tipo9 = "numero"
-const classe9 = var.classe1
-const var9 = "usamove"
-#
 const nome10 = "Msg acertou"
 const info10 = "Mensagem quando quando acertou o alvo"
 const tipo10 = "linha"
@@ -371,20 +403,9 @@ const classe18 = var.classe1
 const var18 = "tipobonus"
 
 
-classe adm_magia
-herda adm_hab
+classe adm_magia_ataque
+herda adm_hab_ataque
 const titulo = "Magia " + txt(var.classe1, 6)
-
-
-classe adm_magia_retornar
-herda adm_atk_comum
-const titulo = "Magia Retornar"
-#
-const nome8 = "Consome mana"
-const info8 = "Quantos pontos de mana consome"
-const tipo8 = "numero"
-const classe8 = var.classe1
-const var8 = "usamana"
 
 
 classe comando_ataque
@@ -392,7 +413,7 @@ herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
 const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 7
-const atkcom = 1 # Para indicar que o comando é um ataque editável
+const cmdmenu = "ataque" # Editável via "adm_hab_ataque" e "adm_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoatk = 0 # Tipo de golpe
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
@@ -418,7 +439,7 @@ func txtajuda
   extra && t.addini(extra)
   txt100 lin
   lin = "\c3" + misc:nomevar(nomevar) + "\b\nAtaque do nível " + int(aulafim)
-  lin += ", " + txtsublin(misc:atknomes, tipoatk, 1)
+  lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
   t.addini(lin + ", Força " + ataque + ", Velocidade " + vel)
   se tipoperso
     t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
@@ -616,7 +637,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result
     senao
       dano *= r.atknorm * r.atknorm * arg2 / (s.defnorm * rand(450, 550))
     fimse
-    dano = intpos(dano + r.pnivel - s.pnivel) # Adiciona diferença de níveis
+    dano *= 1 + (r.pnivel - s.pnivel) / (r.pnivel + s.pnivel + 10)
   fimse
 # Modificadores de posição
   casovar s.posicao
@@ -666,7 +687,6 @@ const ataque = 100
 const vel = 50
 const extra = "Ataque automático"
 uint8 tipoatk # Tipo de ataque
-const atkcom = 1
 
 func ataca # arg0 ataca arg1
   uint8 aulas # O quanto sabe do golpe, de 0 a 10
@@ -748,7 +768,7 @@ const objajuda = config:atktipo ? este
 const txtajuda = "\b\c3Matar\b\n\
 Sintaxe: MATAR <personagem>\n\
 Começa uma batalha com um personagem."
-const atkcom = 0
+const cmdmenu = ""
 
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ret arg0.atkenv, msg("Você já está lutando.")

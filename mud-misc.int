@@ -79,25 +79,6 @@ Na cintura\n\
 Nas pernas\n\
 Calçando"
 #
-# Nomes dos diversos tipos de ataque
-const atknomes = "Contusão\n\
-Luta\n\
-Cortante\n\
-Perfurante\n\
-Fogo\n\
-Água\n\
-Gelo\n\
-Terra\n\
-Pedra\n\
-Aéreo/vento\n\
-Luz\n\
-Trevas\n\
-Elétrico\n\
-Vegetal\n\
-Psíquico\n\
-Inseto\n\
-Fantasma\nDragão"
-#
 # A classificação das habilidades de acordo com o número de aulas
 const aulas = "Não sabe\n\
 Iniciante\n\
@@ -117,33 +98,7 @@ func equip # Traduz número para lugar aonde está vestindo um item
 func atkesp # Tipos de golpes
 # arg0 = número do golpe
 # Retorna: 0=normal, 1=especial
-# Nota: a quantidade de tipos está um pouco exagerada
-  casovar arg0
-  casose "0" # contusão/normal (um golpe de pancada)
-  casose "1" # luta (um golpe de alguma arte marcial)
-  casose "2" # cortante (ex. faca)
-  casose "3" # perfurante (ex. flecha)
-    ret 0
-  casose "4" # fogo
-  casose "5" # água
-  casose "6" # gelo
-    ret 1
-  casose "7" # terra (ex. terremoto)
-  casose "8" # pedra (ex. atirar pedras)
-  casose "9" # ar/vento/aéreo (ex. furacão)
-    ret 0
-  casose "10" # luz
-  casose "11" # trevas
-  casose "12" # elétrico (ex. raio)
-  casose "13" # vegetal (ex. planta carnívora)
-  casose "14" # psíquico (ex. confusão)
-    ret 1
-  casose "15" # inseto
-  casose "16" # fantasma
-  casose "17" # dragão
-    ret 0
-  casofim
-  ret 0 # Tipo desconhecido: golpe normal
+  ret (config:atkespecial >> arg0) & 1
 
 func nomevar # Retorna o nome da habilidade/magia/idioma a partir do nome da variável
 # arg0 = nome da variável

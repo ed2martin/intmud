@@ -255,21 +255,21 @@ o1))
   fimse
   $mens.p(o1, o1)
   se r.auto1 && r.auto2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", \
-receberá:\n" + r.auto1, o1))
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", receberá:\
+\n" + r.auto1, o1))
     t.addfim($mens.proc("E os demais:\n" + r.auto2, o2))
   fimse
   $mens.p(o1, o2)
   se r.perso1 && r.perso2 && r.perso3
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", \
-receberá:\n" + r.perso1, o1))
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", receberá:\
+\n" + r.perso1, o1))
     t.addfim($mens.proc("E " + o2.descnome + ":\n" + r.perso2, o2))
     t.addfim($mens.proc("E os demais:\n" + r.perso3, este))
   fimse
   $mens.p(o1, nulo, o3)
   se r.item1 && r.item2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", \
-receberá:\n" + r.item1, o1))
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", receberá:\
+\n" + r.item1, o1))
     t.addfim($mens.proc("E os demais:\n" + r.item2, este))
   fimse
   se t.linhas
@@ -348,7 +348,11 @@ func escr
   epara nulo, l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident)
-    se r == arg0 && auto1
+    se r.var.u_[arg0.nome]
+      ret arg0.msg(r.nome + " ignora suas palavras.")
+    senao arg0.var.u_[r.nome]
+      ret arg0.msg("Você está ignorando " + r.nome + ".")
+    senao r == arg0 && auto1
       ret r.posic < alvopos, arg0.msg("Você não está em condições.")
       $mens.p(arg0)
       mvis ? $mens.mtodos2(auto1, auto2) : $mens.mvis2(auto1, auto2)

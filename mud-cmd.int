@@ -36,16 +36,16 @@ func escr
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
-    t1 = txt(999000 - item.obj.pnivel) + " N"
-    t1 += txt(txt(item.obj.pnivel) + "      ", 0, 6) + item.obj.nome
-    item.obj.sock == nulo && (t1 += "  [Desconectado]")
+    refvar obj = item.obj
+    t1 = txt(999000 - obj.pnivel) + " N"
+    t1 += txt(txt(obj.pnivel) + "      ", 0, 6) + obj.nome
+    obj.sock == nulo && (t1 += "  [Desconectado]")
     se arg0.jogconfig.23
-      item.obj.jogconfig.23 && (t1 += "  [ADM]")
-      item.obj.jogconfig.17 && (t1 += "  [INVQUEM]")
-      item.obj.sock.imonit && (t1 += "  [MONIT " + item.obj.sock.imonit.objlista.perso.nome + \
-"]")
+      obj.jogconfig.23 && (t1 += "  [ADM]")
+      obj.jogconfig.17 && (t1 += "  [INVQUEM]")
+      obj.sock.imonit && (t1 += "  [MONIT " + obj.sock.imonit.objlista.perso.nome + "]")
     fimse
-    arg0.jogconfig.20 && (t1 += "  " + txt(item.obj.dono, 2))
+    arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
     t0.addfim(t1)
   efim
 # Lista de jogadores sem personagem
@@ -373,7 +373,8 @@ As opções são:\n\
   \c2DESC\b     Mostra descrições completas (como ao digitar VER)\n\
   \c2SAIDAS\b   Mostra as saídas visíveis após a descrição da sala\n\
   \c2CORES\b    Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
-  \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n"
+  \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
+  \c2PVT\b      Recebe mensagens com o comando PVT\n"
 const aj2 = "  \c2CHAT\b     Participa do canal de comunicação CHAT\n"
 const aj3 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
   \c2PROMPT\b   Ativa o prompt normal\n\
@@ -400,6 +401,7 @@ const opc_chat = config:chattipo ? 4
 const opc_seguir = 5
 const opc_prompt = 6
 const opc_bprompt = 7
+const opc_pvt = 8
 const opc_sala = 16
 const opc_invquem = 17
 const opc_invsala = 18
@@ -581,7 +583,7 @@ func escr
         t.linhas && t.addini("Equipado com:")
       fimse
 # O que o container possui
-    senao i_aberto == 5
+    senao r.i_aberto == 5
     senao int(r.i_aberto) >= 3
       t.addfim(txtcopiamai(r.descnome, "A") + (r.sexo ? " está fechado." : " está fechada."))
     senao r.i_aberto
@@ -721,12 +723,16 @@ func escr
   l.addfim(arg0.dono.dentro2)
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    $mens.p(arg0, l.objini)
-    se arg0 == l.objini
+    se l.objini.var.u_[arg0.nome]
+      arg0.msg(l.objini.nome + " ignora suas palavras.")
+    senao arg0.var.u_[l.objini.nome]
+      arg0.msg("Você está ignorando " + l.objini.nome)
+    senao arg0 == l.objini
+      $mens.p(arg0, l.objini)
       $mens.mtodos1("$P sussurrou algumas palavras.")
     senao
-      txt500 m1
-      m1 = "$P sussurou para $a '" + txttroca(txt2(arg1), "$", "$$") + "'"
+      refvar m1 = "$P sussurou para $a '" + txttroca(txt2(arg1), "$", "$$") + "'"
+      $mens.p(arg0, l.objini)
       $mens.mtodos3(m1, m1, "$P sussurou algumas palavras para $a.")
     fimse
     sair
@@ -770,14 +776,81 @@ func escr
     indiceitem item
     refvar lin = "(chat) " + arg0.sock.nome + " '" + arg1 + "'"
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.4 && item.obj.msg(lin)
+      item.obj.jogconfig.4 && !item.obj.perso.var.u_[arg0.nome] && item.obj.msg(lin)
     efim
   senao # Escrever para quem estiver na mesma sala
     listaobj l
     refvar lin = "(chat) " + arg0.sock.nome + " '" + arg1 + "'"
     epara arg0.sock.salaobj(l), l, l.ini.remove
-      l.objini.jogconfig.4 && l.objini.msg(lin)
+      l.objini.jogconfig.4 && !l.objini.perso.var.u_[arg0.nome] && l.objini.msg(lin)
     efim
+
+
+classe cmdfim_pvt
+herda comando_comum, comando_ajuda
+const posic = 0
+const txtajuda = "\b\c3PVT\b\n\
+Sintaxe: pvt <personagem> <mensagem>\n\
+Envia uma mensagem privativa a outro jogador, independente da sala em\n\
+que ele estiver.\n\
+Veja também os comandos CONFIG e IGNORAR."
+
+func escr
+  ret !arg0.jogconfig.8, arg0.msg("Canal PVT está desabilitado.")
+  ret !arg1, arg0.msg("Escrever para quem?")
+  indiceitem item
+  item.ini("pn " + txtnome(txt1(arg1)))
+  se !item.obj || item.obj.jogconfig.17 && !arg0.jogconfig.23
+    arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
+  senao item.obj == arg0
+    arg0.msg("Escrever para você mesmo?")
+  senao item.obj.var.u_[arg0.nome]
+    arg0.msg(item.obj.nome + " está ignorando você.")
+  senao arg0.var.u_[item.obj.nome]
+    arg0.msg("Você está ignorando " + item.obj.nome + ".")
+  senao !item.obj.jogconfig.8
+    arg0.msg(item.obj.nome + " desabilitou o canal PVT.")
+  senao arg0.jogconfig.17 && !item.obj.jogconfig.23
+    arg0.msg("Você está invisível para " + item.obj.nome)
+  senao !txt2(arg1)
+    arg0.msg("Escrever o quê?")
+  senao
+    item.obj.msg("(pvt) " + arg0.sock.nome + " '" + txt2(arg1) + "'")
+    arg0.msg("(pvt+) " + item.obj.sock.nome + " '" + txt2(arg1) + "'")
+
+
+classe cmdfim_ignorar
+herda comando_comum, comando_ajuda
+const posic = 0
+const txtajuda = "\b\c3Ignorar\b\n\
+Sintaxe: ignorar [personagem]\n\
+Permite ignorar todas as mensagens do personagem de outro jogador.\n\
+Se o jogador já estiver sendo ignorado, esse comando deixa de ignorar.\n\
+Digitanto apenas ignorar, sem nenhum nome, mostra quem você está ignorando."
+
+func escr
+  se !arg1
+    textotxt t
+    txt100 nome
+    nome = arg0.var.ini("u_")
+    enquanto txt(nome, 0, 2) == "u_"
+      t.addfim(txt(nome, 2)), nome = arg0.var.depois(nome)
+    efim
+    ret t.linhas == 0, arg0.msg("Não está ignorando ninguém.")
+    arg0.msg("Está ignorando: " + txttroca(t.remove(1000), "\n", ", "))
+  senao arg0.var.u_[arg1]
+    arg0.var.u_[arg1] = ""
+    arg0.msg("Você deixa de ignorar " + arg1 + ".")
+  senao
+    int8 total
+    txt100 nome
+    nome = arg0.var.ini("u_")
+    enquanto txt(nome, 0, 2) == "u_" && total < 20
+      nome = arg0.var.depois(nome), total += 1
+    efim
+    ret total >= 20, arg0.msg("Atingido o limite de usuários ignorados.")
+    arg0.var.u_[arg1] = 1
+    arg0.msg("Você ignora " + arg1 + ".")
 
 
 classe cmd_debug
@@ -885,8 +958,9 @@ func escr
   se r != arg0
     t.addfim("Pego por:         " + r.var.z_dono + " (no nível " + r.var.z_pnivel + ")")
   fimse
-# Moedas
+# Moedas e pontos de aulas
   r.var.z_moedas_ && t.addfim("Moedas:           " + txtnum(r.var.z_moedas_, "."))
+  r.var.z_aulas_ && t.addfim("Aulas:            " + txtnum(r.var.z_aulas_, "."))
 # Nível
   t.addfim("Nível atual:      " + r.pnivel)
   t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)

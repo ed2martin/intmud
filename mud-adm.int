@@ -518,7 +518,7 @@ func p_tipodep
   se arg0 == "o"
     txtmais.limpar
     epara p.iniclasse("cmd_"), p.lin, p.depois
-      $[p.texto].atkcom && txtmais.addfim("h_" + txt(p.texto, 4))
+      $[p.texto].cmdmenu && txtmais.addfim("h_" + txt(p.texto, 4))
     efim
     epara p.iniclasse("magia_"), p.lin, p.depois
       txtmais.addfim("m_" + txt(p.texto, 6))
@@ -529,7 +529,7 @@ func p_tipodep
   fimse
   casovar txtmin(txt(arg0, 0, 2))
   casose "h_"
-    ret p_vetorfunc(arg0, $cmd_[txt(arg0, 2)].atkcom != nulo)
+    ret p_vetorfunc(arg0, $cmd_[txt(arg0, 2)].cmdmenu != nulo)
   casose "m_"
     ret p_vetorfunc(arg0, $magia_[txt(arg0, 2)] != nulo)
   casose "i_"
