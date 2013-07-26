@@ -612,7 +612,7 @@ func p_proc_exec # Processar comportamento do personagem
     ref obj
     t1 = escolheatk
     obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
-    ret obj && !ataqueini, obj.checaatk(este) && obj.ataca(este, alvo)
+    ret obj && !ataqueini, obj.checahab(este) && obj.ataca(este, alvo)
   fimse
 # Acerta condição do personagem
   pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)

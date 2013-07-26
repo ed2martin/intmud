@@ -276,6 +276,44 @@ func p_numero # Alterando um número
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
+const t_numreal = t_numero(arg0, arg1) # Retorna número, do tipo "const x = 10"
+
+func p_numreal # Alterando um número
+  prog p
+  se arg0 == "" || arg0 == "\b"
+    passo = "numreal"
+    se var.opcvalido
+      msg("Entre com um número, Z cancela")
+    senao
+      msg("Entre com um número, N nenhum, Z cancela")
+    fimse
+    ret 1
+  senao arg0 == "n" && !var.opcvalido
+    p.apagar(var.opcclasse, var.opcvar)
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  senao arg0 != "z"
+    real valor
+    valor = arg0
+    se arg0 != valor # Checa se é número
+      ret p_numero("\b")
+    senao var.opcextra # Checa limites mínimo e máximo
+      se valor < int(txt1(var.opcextra)) || valor > int(txt2(var.opcextra))
+        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
+        ret 1
+      fimse
+    fimse
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + valor)
+    config:salvar
+    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    msg(var.opcnome + " mudou para: " + valor)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  fimse
+  passo = var.opcpasso, p_[passo]("\b")
+  ret 1
+
 func t_opcao # Retorna uma opção baseado numa lista de opções
 # arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções
   prog p

@@ -410,18 +410,16 @@ Está flutuando"
 
 
 classe comando_identificar
-herda comando_comum, jog_atrib
-# Herdado pela classe magia_identificar
-const objcmd = arg0.persobat.var.[nomevar] ? este
-const atkajuda = arg0.persobat.var.[nomevar] ? este
+herda comando_hab, jog_atrib
 const posic = 8
 const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nIdentifica um objeto."
-const cmdmenu = "identif" # Editável via "adm_hab_identif" e "adm_magia_identif"
+const cmdmenu = "identif" # Editável via "menu_hab_identif" e "menu_magia_identif"
 const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
 textovar var
 
 func escr
   ret !arg1, arg0.msg("Identificar o quê?")
+  ret !checahab(arg0), nulo
   nomeobj n
   listaobj l
   n.ini(arg1, 1)
@@ -436,9 +434,6 @@ func escr
       ret l.objini.cmd_ident(arg0, r), nulo
     efim
 # Checa se pode identificar
-    ret arg0.pvida <= int(usavida), arg0.msg("Pontos de vida insuficientes")
-    ret arg0.pmana < int(usamana), arg0.msg("Mana insuficiente")
-    ret arg0.pmove < int(usamove), arg0.msg("Vigor insuficiente")
     arg0.pvida -= int(usavida)
     arg0.pmana -= int(usamana)
     arg0.pmove -= int(usamove)
@@ -450,7 +445,10 @@ func escr
     textotxt t
     txt100 lin
     se r.perso
-      lin = "Identificado: " + txtcopiamai(r.descnome, "A")
+      lin = "Identificado: " + txtcopiamai(r.persobat.descnome, "A")
+      se r != r.persobat
+        lin += " de " + r.descnome, r = r.persobat
+      fimse
       lin += ", nível " + r.pnivel
       r.tipo1 && (lin += ", " + txtcopiamai(r.tipo1, "A"))
       r.tipo2 && (lin += ", " + txtcopiamai(r.tipo2, "A"))
@@ -549,11 +547,116 @@ func escr
   arg0.msg("Você não vê isso.")
 
 
-classe adm_hab_identif
-herda adm_magia_identif
+classe menu_hab_identif
+herda menu_magia_identif
 const titulo = "Hab Identificar"
 
 
-classe adm_magia_identif
-herda adm_hab_comum
+classe menu_magia_identif
+herda menu_hab_comum
 const titulo = "Magia Identificar"
+
+
+classe comando_curar
+herda comando_hab
+const posic = 7
+const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nCura um personagem."
+const cmdmenu = "curar" # Editável via "menu_hab_curar" e "menu_magia_curar"
+const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
+const msgacertou1 = "$R se cura"
+const msgnulo1 = "$R tenta se curar"
+const msgacertou2 = "$R cura $c"
+const msgnulo2 = "$R tenta curar $c"
+
+func escr
+  ret !checahab(arg0), nulo
+# Obtém o personagem que será curado
+  ref r
+  r = arg0
+  se arg1
+    nomeobj n
+    listaobj l
+    n.ini(arg1, 1)
+    l.addfim(arg0.dono.dentro2)
+    epara nulo, l, l.ini.remove
+      sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+    efim
+    r = l.objini
+  fimse
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_curar(arg0, r), nulo
+  efim
+# Checa se pode curar
+  ret !r, arg0.msg("Você não vê isso.")
+  arg0.pvida -= int(usavida)
+  arg0.pmana -= int(usamana)
+  arg0.pmove -= int(usamove)
+  arg0.p_espera < 15 && (arg0.p_espera = 15)
+# Cura
+  uint32 valor # O quanto vai curar
+  refvar maximo = r.persobat.pvidamax - r.persobat.pvida # Até quanto pode curar
+  se maximo > 0
+    valor = 2 + arg0.persobat.var.[nomevar]
+    valor = (curabase + arg0.pnivel * curanivel) * valor / 10
+    valor < 1 && (valor = 1) # Garante um ponto de cura
+    curamax && valor > curamax && (valor = curamax) # Não pode passar de curamax
+    valor > maximo && (valor = maximo) # Não pode passar dos pontos de vida máximos
+    r.persobat.pvida += valor
+  fimse
+  $mens.p(arg0, r)
+  se r == arg0
+    $mens.mtodos1(valor ? msgacertou1 + ", " + valor : msgnulo1)
+  senao
+    $mens.mtodos1(valor ? msgacertou2 + ", " + valor : msgnulo2)
+  fimse
+  arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+
+
+classe menu_hab_curar
+herda menu_magia_curar
+const titulo = "Hab de cura " + txt(var.classe1, 4)
+
+
+classe menu_magia_curar
+herda menu_hab_comum
+const titulo = "Magia de cura " + txt(var.classe1, 6)
+#
+const nome1 = "Pontos de cura"
+const info1 = "Quantos pontos de vida cura no nível perito"
+const tipo1 = "numero"
+const classe1 = var.classe1
+const var1 = "curabase"
+#
+const nome2 = "Cura por nível"
+const info2 = "Quantos pontos de vida cura no nível perito, para cada nível do personagem"
+const tipo2 = "numreal"
+const classe2 = var.classe1
+const var2 = "curanivel"
+#
+const nome3 = "Cura máxima"
+const info3 = "Até quantos pontos de vida pode curar; ou 0 se não há limite"
+const tipo3 = "numero"
+const classe3 = var.classe1
+const var3 = "curamax"
+#
+const nome10 = "Msg curou perso"
+const tipo10 = "linha"
+const classe10 = var.classe1
+const var10 = "msgacertou2"
+#
+const nome11 = "Msg não curou"
+const tipo11 = "linha"
+const classe11 = var.classe1
+const var11 = "msgnulo2"
+#
+const nome12 = "Msg se curou"
+const tipo12 = "linha"
+const classe12 = var.classe1
+const var12 = "msgacertou1"
+#
+const nome13 = "Msg não se curou"
+const tipo13 = "linha"
+const classe13 = var.classe1
+const var13 = "msgnulo1"

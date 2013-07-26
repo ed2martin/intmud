@@ -703,7 +703,7 @@ func cmd_escr # Escreveu algo
     arg0.msg("Você aprende a cortar.")
     ret 1
 
-const dir_s = $s_teste030
+const dir_s = $s_teste052
 
 
 classe s_teste027
@@ -842,7 +842,7 @@ const s_desc = "À leste há um vendedor e um professor.\n\
 À oeste trata-se do ponto de retorno.\n\
 À sudeste você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
 Ou pode teclar AA nessa sala, para ficar com mil moedas."
-const dir_n = $s_teste026
+const dir_n = $s_teste052
 const dir_l = $s_teste031
 
 func cmd_salaperso # Personagem chegou
@@ -1270,3 +1270,131 @@ const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pvidamax += -40
+
+
+classe s_teste052
+herda b_teste
+const s_titulo = "Fórmulas de batalha"
+const s_desc = "A leste há explicações sobre danos de batalha.\n\
+O principal objetivo é ter uma ideia de como funciona a batalha,\n\
+para balancear melhor os itens e personagens. Esses cálculos são\n\
+realizados pela classe comando_ataque, no arquivo mud-ataque.int."
+const dir_n = $s_teste026
+const dir_s = $s_teste030
+const dir_l = $s_teste053
+
+
+classe s_teste053
+herda b_teste
+const s_titulo = "Acertar o alvo"
+const s_desc = "Quando um personagem ataca, primeiro é necessário saber se acertou o alvo.\n\
+É sorteado um número de 1 a 20. Se for 20 ou o alvo estiver dormindo,\n\
+acertou o golpe. Se for 1, errou o golpe.\n\
+Outros valores, some à precisão do personagem e subtraia à evasão do alvo.\n\
+Alvo invisível, subtraia 5. Se o resultado for maior que 0, acertou o alvo.\n\
+Nota: As precisões do ataque e da arma também são levadas em consideração."
+const dir_o = $s_teste052
+const dir_l = $s_teste054
+
+
+classe s_teste054
+herda b_teste
+const s_titulo = "Danos de batalha"
+const s_desc = "Os danos de um ataque dependem basicamente da seguinte fórmula:\n\
+danos = ataque * ataque / defesa / 5\n\
+Por exemplo, se você possui 50 pontos de ataque, e ataca um personagem com\n\
+30 pontos de defesa, os danos serão 50*50/30/5, que resulta em 17 pontos\n\
+de vida. O valor de 16,666 é arredondado para 17."
+const dir_o = $s_teste053
+const dir_l = $s_teste055
+
+
+classe s_teste055
+herda b_teste
+const s_titulo = "Modificadores de batalha"
+const s_desc = "Diversos fatores podem afetar a batalha:\n\
+Ao norte, tipo de ataque; nordeste, tipo normal ou especial\n\
+A leste, usando uma arma; sudeste, ataque sem armas\n\
+Ao sul, posição do alvo; sudoeste, conhecimento do golpe\n\
+A noroeste, bônus do personagem"
+const dir_o = $s_teste054
+const dir_n = $s_teste056
+const dir_ne = $s_teste057
+const dir_l = $s_teste058
+const dir_se = $s_teste059
+const dir_s = $s_teste060
+const dir_so = $s_teste061
+const dir_no = $s_teste062
+
+
+classe s_teste056
+herda b_teste
+const s_titulo = "Tipo de ataque"
+const s_desc = "Existem diversos tipos de ataque (são definidos com o comando ECONFIG).\n\
+É comum um personagem ser forte contra alguns tipos e fraco contra outros,\n\
+e algumas vezes pode ser até imune. Ao editar um ataque, escolhe-se o tipo.\n\
+Vide também \"Atributos ataque\" e \"Atributos defesa\", ao editar personagens,\n\
+itens e classes/raças."
+const dir_s = $s_teste055
+
+
+classe s_teste057
+herda b_teste
+const s_titulo = "Tipo normal ou especial"
+const s_desc = "Alguns tipos de ataque são considerados normais (contusão, luta, terra,\n\
+etc) e outros são especiais (fogo, água, luz, etc). O que define se é\n\
+normal ou especial é uma opção do comando ECONFIG.\n\
+Os tipos normais usam ataque e defesa normal. Os especiais usam ataque e\n\
+defesa especial."
+const dir_so = $s_teste055
+
+
+classe s_teste058
+herda b_teste
+const s_titulo = "Usando uma arma"
+const s_desc = "Quando está usando uma arma, o cálculo de danos, que é:\n\
+danos = ataque do personagem * ataque do personagem / defesa do alvo / 5\n\
+Passa a ser:\n\
+danos = ataque do personagem * ataque da arma / defesa do alvo / 5\n\
+Portanto, os danos depende tanto do seu ataque quanto da sua arma."
+const dir_o = $s_teste055
+
+
+classe s_teste059
+herda b_teste
+const s_titulo = "Ataque sem armas"
+const s_desc = "Nesse caso, o cálculo de danos depende da fórmula:\n\
+danos = ataque do personagem * ataque do personagem / defesa do alvo / 5\n\
+Os danos podem ter uma variação de 10 por cento, para mais ou para menos.\n\
+A diferença de nível também faz alguma diferença. Um personagem de nível\n\
+mais alto causa mais danos em um personagem de nível menor."
+const dir_no = $s_teste055
+
+
+classe s_teste060
+herda b_teste
+const s_titulo = "Posição do alvo"
+const s_desc = "Dependendo da posição do personagem alvo, os danos causados por um\n\
+golpe podem ser maiores.\n\
+Sentado, 33% a mais. Descansando, 67% a mais. Dormindo, o dano dobra.\n\
+E se estiver incapacitado, 133% a mais."
+const dir_n = $s_teste055
+
+
+classe s_teste061
+herda b_teste
+const s_titulo = "Conhecimento do golpe"
+const s_desc = "Dependendo do quanto o seu personagem conhece um golpe, os danos podem\n\
+ser maiores ou menores. Abaixo do nível perito, o ataque é mais fraco.\n\
+perito=100%, mestre=90%, muito avançado=80%, avançado=70%,\n\
+intermediário=60%, básico=50%, muito básico=40%, iniciante=30%"
+const dir_ne = $s_teste055
+
+
+classe s_teste062
+herda b_teste
+const s_titulo = "Bônus do personagem"
+const s_desc = "Ao editar um ataque, é possível especificar que tipos de personagens\n\
+(ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
+Esse bônus aumenta os danos em cinquenta por cento."
+const dir_se = $s_teste055

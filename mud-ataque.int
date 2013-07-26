@@ -134,12 +134,16 @@ func p_chab # Escolher o tipo de habilidade
   casose "o"
     txtmais.limpar
     txtmais.addfim("A Ataque")
+    txtmais.addfim("C Curar")
     txtmais.addfim("I Identificar")
     txtmais.addfim("R Retornar")
     txtmostra
     ret 1
   casose "a"
     deriv = "comando_ataque"
+    sair
+  casose "c"
+    deriv = "comando_curar"
     sair
   casose "i"
     deriv = "comando_identificar"
@@ -150,7 +154,7 @@ func p_chab # Escolher o tipo de habilidade
   casofim
 # Cria habilidade ou magia
   txt200 lin
-  lin = var.opcclasse + "\nb-ataque\nherda " + deriv
+  lin = var.opcclasse + "\nb-hab\nherda " + deriv
   lin += "\nconst nomevar = \"" + var.opcvar + "\""
   prog p
   p.criar(lin)
@@ -264,7 +268,7 @@ func cmd_ehab # Editar habilidade
     msg("Comando não é uma habilidade: " + arg0)
   senao
     var.classe1 = "cmd_" + txts(txtmin(arg0))
-    m_menu("adm_hab_" + $cmd_[arg0].cmdmenu)
+    m_menu("menu_hab_" + $cmd_[arg0].cmdmenu)
   fimse
   ret 1
 
@@ -274,19 +278,23 @@ func cmd_emag # Editar magia
     msg("Tecle o nome da magia após EMAG")
   senao !p.existe("magia_" + arg0)
     msg("Magia não existe: " + arg0)
-  senao p.existe("adm_magia_" + arg0)
-    var.classe1 = "magia_" + txts(txtmin(arg0))
-    m_menu("adm_magia_" + arg0)
   senao !$magia_[arg0].cmdmenu
     msg("Comando não é uma magia editável: " + arg0)
   senao
     var.classe1 = "magia_" + txts(txtmin(arg0))
-    m_menu("adm_magia_" + $magia_[arg0].cmdmenu)
+    m_menu("menu_magia_" + $magia_[arg0].cmdmenu)
   fimse
   ret 1
 
 
-classe adm_hab_comum
+classe menu_hab_comum
+const nome6 = "Requer arma"
+const info6 = "Deixar vazio se funciona independente da arma usada."
+const tipo6 = "vetor"
+const classe6 = var.classe1
+const var6 = "tipoarma"
+const extra6 = config:arma_txt
+#
 const nome7 = "Consome vida"
 const info7 = "Quantos pontos de vida consome"
 const tipo7 = "numero"
@@ -336,8 +344,8 @@ const classe17 = var.classe1
 const var17 = "tipoperso"
 
 
-classe adm_hab_ataque
-herda adm_hab_comum
+classe menu_hab_ataque
+herda menu_hab_comum
 const titulo = "Hab " + txt(var.classe1, 4)
 #
 const nome1 = "Tipo de ataque"
@@ -352,31 +360,23 @@ const classe2 = var.classe1
 const var2 = "tipoalvo"
 const extra2 = "Um alvo\nTodos dividindo o ataque\nTodos sem dividir o ataque"
 #
-const nome3 = "Requer arma"
-const info3 = "Deixar vazio se for um ataque sem arma que funciona mesmo se\n\
-estiver empunhando uma arma."
-const tipo3 = "vetor"
+const nome3 = "Precisão"
+const info3 = "Em porcentagem, maior que 100 nunca falha"
+const tipo3 = "numero"
 const classe3 = var.classe1
-const var3 = "tipoarma"
-const extra3 = config:arma_txt
+const var3 = "precisao"
 #
-const nome4 = "Precisão"
-const info4 = "Em porcentagem, maior que 100 nunca falha"
+const nome4 = "Força"
+const info4 = "Em porcentagem"
 const tipo4 = "numero"
 const classe4 = var.classe1
-const var4 = "precisao"
+const var4 = "ataque"
 #
-const nome5 = "Força"
+const nome5 = "Velocidade"
 const info5 = "Em porcentagem"
 const tipo5 = "numero"
 const classe5 = var.classe1
-const var5 = "ataque"
-#
-const nome6 = "Velocidade"
-const info6 = "Em porcentagem"
-const tipo6 = "numero"
-const classe6 = var.classe1
-const var6 = "vel"
+const var5 = "vel"
 #
 const nome10 = "Msg acertou"
 const info10 = "Mensagem quando quando acertou o alvo"
@@ -403,17 +403,52 @@ const classe18 = var.classe1
 const var18 = "tipobonus"
 
 
-classe adm_magia_ataque
-herda adm_hab_ataque
+classe menu_magia_ataque
+herda menu_hab_ataque
 const titulo = "Magia " + txt(var.classe1, 6)
 
 
-classe comando_ataque
+classe comando_hab
 herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
 const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 7
-const cmdmenu = "ataque" # Editável via "adm_hab_ataque" e "adm_magia_ataque"
+
+func checahab # Checa se personagem pode usar habilidade/magia e avisa o personagem
+# arg0 = personagem
+# Retorna verdadeiro se pode usar
+  ref r
+  r = arg0.persobat
+  se !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
+  senao !r.iempu # Não está usando uma arma
+    se !(tipoarma & 1)
+      arg0.msg("Não possui a arma necessária.")
+      ret
+    fimse
+  senao r.iempu && tipoarma & 1 << r.iempu.obj.armatipo
+  senao tipoarma == 1
+    arg0.msg("Empunhando uma arma?")
+    ret
+  senao
+    arg0.msg("Com essa arma?")
+    ret
+  fimse
+  se r.pvida <= int(usavida)
+    arg0.msg("Pontos de vida insuficientes")
+    ret
+  senao r.pmana < int(usamana)
+    arg0.msg("Mana insuficiente")
+    ret
+  senao r.pmove < int(usamove)
+    arg0.msg("Vigor insuficiente")
+    ret
+  fimse
+  ret 1
+
+
+classe comando_ataque
+herda comando_hab
+const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoatk = 0 # Tipo de golpe
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
@@ -448,7 +483,7 @@ func txtajuda
 
 func escr # Atacar alguém
   ref r
-  se !checaatk(arg0)
+  se !checahab(arg0)
     ret
   senao arg0.ataqueini
     arg0.msg(arg0.ataqueini)
@@ -478,36 +513,6 @@ func escr # Atacar alguém
     arg0.msg(r.descnome + " não quer brigar.")
   senao
     ataca(arg0, r)
-
-func checaatk # Checa se personagem (arg0) pode atacar e avisa o personagem
-# Retorna verdadeiro se pode atacar
-  ref r
-  r = arg0.persobat
-  se !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
-  senao !r.iempu # Não está usando uma arma
-    se !(tipoarma & 1)
-      arg0.msg("Não possui a arma necessária.")
-      ret
-    fimse
-  senao r.iempu && tipoarma & 1 << r.iempu.obj.armatipo
-  senao tipoarma == 1
-    arg0.msg("Empunhando uma arma?")
-    ret
-  senao
-    arg0.msg("Com essa arma?")
-    ret
-  fimse
-  se r.pvida <= int(usavida)
-    arg0.msg("Pontos de vida insuficientes")
-    ret
-  senao r.pmana < int(usamana)
-    arg0.msg("Mana insuficiente")
-    ret
-  senao r.pmove < int(usamove)
-    arg0.msg("Vigor insuficiente")
-    ret
-  fimse
-  ret 1
 
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ref r

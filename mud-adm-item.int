@@ -158,16 +158,16 @@ func cmd_eitem # Editar item
     msg("Tecle o nome do item após EITEM")
   senao !p.existe("i_" + arg0)
     msg("\bItem não existe: " + arg0)
-  senao !p.existe("adm_item" + (num = i_[arg0]:item))
+  senao !p.existe("menu_item" + (num = i_[arg0]:item))
     msg("\bItem não pode ser editado: " + arg0)
   senao
     var.classe1 = "i_" + txtmin(arg0)
-    m_menu("adm_item" + num)
+    m_menu("menu_item" + num)
   fimse
   ret 1
 
 
-classe adm_icomum
+classe menu_icomum
 const nome1 = "Nome"
 const tipo1 = "linha"
 const classe1 = var.classe1
@@ -373,8 +373,8 @@ const var54 = "evsala"
 const mudou54 = "ajustaev"
 
 
-classe adm_item1
-herda adm_icomum
+classe menu_item1
+herda menu_icomum
 const titulo = "Item simples " + txt(var.classe1, 2)
 #
 const nome10 = "Volume dentro"
@@ -395,8 +395,8 @@ const classe12 = var.classe1
 const var12 = "objmax"
 
 
-classe adm_item2
-herda adm_icomum
+classe menu_item2
+herda menu_icomum
 const titulo = "Item grupo " + txt(var.classe1, 2)
 #
 const nome13 = "Nível"
@@ -406,8 +406,8 @@ const classe13 = var.classe1
 const var13 = "nivel"
 
 
-classe adm_item3
-herda adm_item1
+classe menu_item3
+herda menu_item1
 const titulo = "Item " + txt(var.classe1, 2)
 #
 const nome32 = "Mobília"

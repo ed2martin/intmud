@@ -145,7 +145,7 @@ func cmd_earea # Editar área
   senao
     var.classe1 = "a_" + prefixo
     var.classe2 = "b_" + prefixo
-    m_menu("adm_area")
+    m_menu("menu_area")
   fimse
   ret 1
 
@@ -346,7 +346,7 @@ func cmd_esala # Editar sala
     msg("\bSala não existe: " + nome)
   senao
     var.classe1 = "s_" + nome
-    m_menu("adm_sala")
+    m_menu("menu_sala")
   fimse
   ret 1
 
@@ -435,7 +435,7 @@ func cmd_esai # Editar saída
   senao
     var.classe1 = perso.dono
     var.saida1 = txtmin(dir)
-    m_menu("adm_saida")
+    m_menu("menu_saida")
   fimse
   ret 1
 
@@ -485,7 +485,7 @@ func p_resettempo # Mudar o estado atual
   ret 1
 
 
-classe adm_area
+classe menu_area
 # Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
 const titulo = "Área " + txt(var.classe1, 2)
 #
@@ -597,7 +597,7 @@ const classe18 = var.classe2
 const var18 = "objmax"
 
 
-classe adm_sala
+classe menu_sala
 const titulo = "Sala " + txt(var.classe1, 2)
 #
 const nome1 = "Título"
@@ -716,7 +716,7 @@ const var19 = "eveste"
 const mudou19 = "ajustaev"
 
 
-classe adm_saida
+classe menu_saida
 const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
 #
 const nome1 = "Estado inicial"
