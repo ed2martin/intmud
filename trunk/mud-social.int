@@ -61,7 +61,7 @@ func cmd_esoc # Editar social
     msg("Social não existe: " + arg0)
   senao
     var.classe1 = "soc_" + arg0
-    m_menu("adm_social")
+    m_menu("menu_social")
   fimse
   ret 1
 
@@ -93,7 +93,7 @@ func p_asoc # Confirmar que quer apagar social
   ret 1
 
 
-classe adm_social
+classe menu_social
 const titulo = "Social " + txt(var.classe1, 4)
 #
 const nome1 = "Tipo de comando       "

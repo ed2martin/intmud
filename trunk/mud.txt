@@ -62,8 +62,8 @@ Contém também as raças e classes definidas no MUD.
 2.3. mud-b-social.int
 Comandos sociais criados pela administração.
 
-2.4. mud-b-ataque.int
-Ataques criados pela administração.
+2.4. mud-b-hab.int
+Habilidades e magias criadas pela administração.
 
 2.5. mud-a-*.int
 Contém as classes que compõem uma área.
@@ -906,12 +906,15 @@ Vai morrer porque os pontos de vida chegaram a zero.
 func cmd_ident(personagem, item ou personagem)
 Quer identificar um item ou personagem.
 
+func cmd_curar(personagem, personagem alvo)
+Quer curar um personagem.
+
 
 15. Criando menus de edição (administração)
 
 Primeiro criar uma classe como a seguinte:
 
-classe adm_config
+classe menu_config
 # Título é o nome do menu (aparece antes da lista de opções)
 const titulo = "Configuração do MUD"
 
@@ -935,6 +938,7 @@ const tipo1 = "numero--"
 # "linha" = texto de uma linha (exemplo: título das salas)
 # "texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
 # "numero" = valor numérico inteiro
+# "numreal" = valor numérico que pode ter dígitos após a vírgula
 # "opcao" = um valor numérico baseado numa lista de opções
 # "txtopcao" = uma lista de opções: texto de várias linhas, sendo que
 #              pode-se mudar uma linha sem mudar as outras
@@ -976,12 +980,11 @@ const extra3 = "manual\nautomático" # 0=manual, 1=automático
 
 Para chamar o menu, basta executar a função m_menu do jogador (classe
 jogsock), passando como argumento o nome da classe.
-Exemplo: m_menu("adm_config")
+Exemplo: m_menu("menu_config")
 
 
 16. Lista de itens pendentes
 
-Explicar por cima como é feito o cálculo de danos em batalha
 Efeitos para ataques
 Vendedores: poder vender itens que possui no inventário
 Ao criar personagem: e-mail e altura

@@ -386,7 +386,7 @@ const txtajuda2 = "\n\
   \c2INVSALA\b  Invisível a não administradores\n\
   \c2AC\b       Participa do canal de comunicação AC (administração)\n\
   \c2ADMLOG\b   Canal ADMLOG - é informado sobre mudanças online no MUD\n\
-  \c2ADMCMD\b   Canal ADMCMD - é informado quando alguém usar CMD, CMDP\n\
+  \c2CMDLOG\b   Canal CMDLOG - é informado quando alguém usar CMD, CMDP\n\
            ou CMDJs e o comando possuir alguma letra"
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
@@ -408,7 +408,7 @@ const opc_invsala = 18
 const opc_ac = 19
 const opc_quem = 20
 const opc_admlog = 21
-const opc_admcmd = 22
+const opc_cmdlog = 22
 # Nota: o bit 23 é reservado para indicar se é administrador
 
 func escr
@@ -962,7 +962,7 @@ func escr
   r.var.z_moedas_ && t.addfim("Moedas:           " + txtnum(r.var.z_moedas_, "."))
   r.var.z_aulas_ && t.addfim("Aulas:            " + txtnum(r.var.z_aulas_, "."))
 # Nível
-  t.addfim("Nível atual:      " + r.pnivel)
+  t.addfim("Nível:            " + r.pnivel)
   t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)
 # Batalha
   t.addfim("Ataque/defesa:    " + r.atknorm + "/" + r.defnorm)

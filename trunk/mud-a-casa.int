@@ -47,7 +47,7 @@ const descnome = "um boneco de papel"
 const sexoini = 1
 const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
-const p_agressivo = 2
+const p_agressivo = arg0.pnivel <= 4 ? 2 : 1 # Agressivo para jogadores até nível 4
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -211,10 +211,10 @@ func entrou50
   arg0.msg("Senhora: Minhas cartas dizem...")
 
 func entrou100
-  arg0.msg("Senhora: Para repetir a descrição da sala, tecle a palavra ver.")
+  arg0.msg("Senhora: Para repetir a descrição da sala, tecle a palavra olhar.")
 
 func entrou160
-  arg0.msg("Senhora: Você pode também examinar um item ou personagem teclando ver")
+  arg0.msg("Senhora: Você pode também examinar um item ou personagem teclando olhar")
   arg0.msg("e o nome do que quer ver.")
 
 
@@ -470,7 +470,7 @@ const s_desc = "Um pequeno banheiro, ou pelo menos o que restou dele. Ainda tem 
 chuveiro, mas aonde tinha a privada agora só resta o [cano]."
 const dir_o = $s_casa006
 const ver_cano = "Um papel está preso na parte de dentro do cano.\n\
-Basicamente diz \"Para repetir a descrição da sala tecle VER\"."
+Basicamente diz \"Para repetir a descrição da sala tecle OLHAR\"."
 
 
 classe s_casa008
@@ -649,7 +649,7 @@ const s_naoresg = 1 # Não permite resgatar jogador
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog && !arg0.senha && !arg0.var.j_salvar # Jogador que ainda não salvou o jogo
-    criar("p_casa003", este, 10, "h_socar=3,h_chutar=3", arg0)
+    criar("p_casa003", este, 9, "h_socar=3,h_chutar=3", arg0)
     misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_fugir
@@ -822,7 +822,7 @@ func s_reset1 # Realiza o reset
 classe s_casa026
 herda b_casa
 const s_titulo = "Sala de jantar"
-const s_desc = "Quando há pouca gente na casa, esta sala de estar costuma ser usada.\n\
+const s_desc = "É uma sala de jantar para poucas pessoas, por ser menor que a outra.\n\
 No centro há uma mesa com espaço para quatro pessoas, com relativo\n\
 conforto. Na parede fica uma prateleira, onde ficam pratos e talheres."
 const dir_o = $s_casa025
@@ -1241,16 +1241,17 @@ const volobj = 2000
 const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_morreu1 = "$P se partiu em vários pedaços."
 const p_movervel = 250
-const inivar = "h_morder=4"
+const inivar = "h_morder=6"
 const eveste = 1 # Receber eventos do próprio objeto
 txt50 nomealvo
 listaitem alvoitem # Para receber eventos de quem esse personagem atacou
 intexec alvoexec # Para checar se o alvo morreu
 
-func recalc_auto # Recalcula variáveis do personagem
-  atknorm += 3 * pnivel + 5 # Ataque normal mais forte
-  defnorm += 2 * pnivel + 4 # Mais forte contra ataques normais
-  defesp += -3 * pnivel - 5 # Mais fraco contra ataques mágicos
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atknorm += 2 * pnivel + 4
+  defnorm += 2 * pnivel + 4
+  defesp += -3 * pnivel - 5
 
 func cmd_mudadono # Mudou de dono
   pvida += 5 # Ganha pontos de vida
@@ -1262,8 +1263,8 @@ func p_agressivo # Retorna: 0=pacífico, 1=luta se atacarem, 2=agressivo
 
 func cmd_atkenv
   se arg0 == este # Se esse personagem está atacando
-# Ganha 40 pontos de vida
-    pvida += 40
+# Ganha 15 pontos de vida
+    pvida += 15
     pvida > pvidamax && (pvida = pvidamax)
 # Checará se o alvo morreu
     alvoexec = 1, alvoitem.remove, alvoitem = arg1.evento.addfim(este)

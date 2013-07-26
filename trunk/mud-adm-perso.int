@@ -163,11 +163,11 @@ func cmd_eperso # Editar personagem
     msg("Tecle o nome do personagem após EPERSO")
   senao !p.existe("p_" + arg0)
     msg("\bPersonagem não existe: " + arg0)
-  senao !p.existe("adm_perso" + (num = p_[arg0]:perso))
+  senao !p.existe("menu_perso" + (num = p_[arg0]:perso))
     msg("\bPersonagem não pode ser editado: " + arg0)
   senao
     var.classe1 = "p_" + txtmin(arg0)
-    m_menu("adm_perso" + num)
+    m_menu("menu_perso" + num)
   fimse
   ret 1
 
@@ -466,7 +466,7 @@ func p_menuprod1 # Inserir ou editar produto
   ret p_menuprod("")
 
 
-classe adm_pcomum1
+classe menu_pcomum1
 const nome1 = "Nome"
 const tipo1 = "linha"
 const classe1 = var.classe1
@@ -681,7 +681,7 @@ const var54 = "evsala"
 const mudou54 = "ajustaev"
 
 
-classe adm_pcomum2
+classe menu_pcomum2
 const nome29 = "Atributos comuns"
 const tipo29 = "atribcomum"
 const classe29 = var.classe1
@@ -746,13 +746,13 @@ const classe38 = var.classe1
 const var38 = "p_naoresg"
 
 
-classe adm_perso1
-herda adm_pcomum1
+classe menu_perso1
+herda menu_pcomum1
 const titulo = "Perso simples " + txt(var.classe1, 2)
 
 
-classe adm_perso2
-herda adm_pcomum1, adm_pcomum2
+classe menu_perso2
+herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 #
 const nome39 = "Capturar"
@@ -772,6 +772,6 @@ Pode-se apenas soltar\n\
 Não se pode dar nem soltar"
 
 
-classe adm_perso3
-herda adm_pcomum1, adm_pcomum2
+classe menu_perso3
+herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso completo " + txt(var.classe1, 2)

@@ -148,7 +148,7 @@ func cmd_matar2
   ret 1
 
 func cmd_cmd
-  admcmd("(cmd) " + nome + ": " + arg0, arg0)
+  cmdlog("(cmd) " + nome + ": " + arg0, arg0)
   debug d
   msg(">" + d.cmd(perso, "ret " + arg0))
   ret 1
@@ -164,7 +164,7 @@ func cmd_cmdj
     msg("Jogador inexistente ou ausente: " + txt1(arg0))
     ret 1
   fimse
-  admcmd("(cmdj) " + nome + ": " + arg0, txt2(arg0))
+  cmdlog("(cmdj) " + nome + ": " + arg0, txt2(arg0))
   debug d
   msg(txt(item.obj.nome) + ">" + d.cmd(item.obj, "ret " + txt2(arg0)))
   ret 1
@@ -182,7 +182,7 @@ func cmd_cmdp
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
-    admcmd("(cmdp) " + nome + ": " + arg0, txt2(arg0))
+    cmdlog("(cmdp) " + nome + ": " + arg0, txt2(arg0))
     debug d
     msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg0)))
     ret 1
@@ -204,7 +204,7 @@ func cmd_ac
   ret 1
 
 func cmd_econfig
-  m_menu("adm_econfig")
+  m_menu("menu_econfig")
   ret 1
 
 func cmd_echo
@@ -335,7 +335,7 @@ func admlog # Mensagem para todos com a opção "config +admlog"
     item.obj.jogconfig.21 && item.obj.msg("\b\d1(adm) " + nome + " " + arg0 + "\b")
   efim
 
-func admcmd # Mensagem para todos com a opção "config +admcmd"
+func cmdlog # Mensagem para todos com a opção "config +cmdlog"
 # arg0 = texto que será enviado aos usuários
 # arg1 = comando (se não tiver nenhuma letra, não envia o texto)
   se txtproc(txtsepara(txttroca(arg1, " ", ""), "L+DLEOV,DLEOV+L"), " ") >= 0
@@ -543,7 +543,7 @@ func p_herda
   ret p_editor(arg0, 200, "Herança")
 
 
-classe adm_econfig
+classe menu_econfig
 # Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
 const titulo = "Configurações do MUD"
 #
@@ -661,30 +661,30 @@ const classe19 = "config"
 const var19 = "atktipo"
 const extra19 = "Manual\nAutomático com a classe comando_atkauto"
 #
-const nome20 = "Quando alguém entra avisar  "
-const info20 = "Quem deve ser informado quando um jogador entra ou sai"
-const tipo20 = "opcao--"
-const classe20 = "config"
-const var20 = "entrainfo"
-const extra20 = "Ninguém\nSomente administradores\nTodos"
-#
 
-func nome21
+func nome20
   se config:atktipo
     ret "Tempo para finalizar batalha"
   senao
     ret "Tempo de um turno           "
 
-func info21
+func info20
   se config:atktipo
     ret "Em décimos de segundo; tempo para chegar a primeira mensagem"
   senao
     ret "Em décimos de segundo"
 
-const tipo21 = "numero--"
+const tipo20 = "numero--"
+const classe20 = "config"
+const var20 = "atktempo"
+const extra20 = "10 200"
+#
+const nome21 = "Quando alguém entra avisar  "
+const info21 = "Quem deve ser informado quando um jogador entra ou sai"
+const tipo21 = "opcao--"
 const classe21 = "config"
-const var21 = "atktempo"
-const extra21 = "10 200"
+const var21 = "entrainfo"
+const extra21 = "Ninguém\nSomente administradores\nTodos"
 #
 const nome22 = "Config ao criar personagem  "
 const info22 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
