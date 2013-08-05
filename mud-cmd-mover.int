@@ -3,7 +3,6 @@ herda comando_comum
 const m_entra = "$P chegou"
 const m_sai = "$P foi embora"
 const dir = ""
-const comando_mover = 1 # Para indicar que é comando de movimentação do jogador
 listaobj lseg # Para não seguir ciclicamente
 debug dbg
 
@@ -14,10 +13,6 @@ func escr # Executa o comando
   ref s2 # Sala para onde vai
   dbg.exec = 5000
   arg1 != "\n" && lseg.limpar, lseg.addfim(arg0)
-  listaobj l
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_[dir](arg0, arg0.dono), nulo
-  efim
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
   ret s2 == nulo, arg0.msg("Impossível seguir nessa direção.")
@@ -25,16 +20,24 @@ func escr # Executa o comando
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
-  se arg0.pmove < total
+  se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
     ret
   fimse
-  arg0.pmove -= total / 2
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_mover(arg0, arg0.dono, dir), nulo
+  efim
+  arg0.pmove -= intdiv((total + 1) / 2)
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
   $mens.p(arg0)
   !(arg0.bitver & 256) && $mens.mvis2("", m_sai)
   arg0.mudadono(s2)
   !(arg0.bitver & 256) && $mens.mvis2("", m_entra)
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_moveu(arg0, arg0.dono, dir)
+  efim
   arg0.dono.s_morre && arg0.morreu
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
@@ -153,6 +156,22 @@ const dir = "so"
 classe cmd_sw
 herda comando_comum
 const objcmd = $cmd_so.objcmd(arg0, arg1)
+
+
+classe cmd_entrar
+herda comando_mover
+const m_entra = "$P entrou aqui."
+const m_sai = "$P entrou."
+const m_porta = "dentro"
+const dir = "entrar"
+
+
+classe cmd_sair
+herda comando_mover
+const m_entra = "$P chegou de dentro."
+const m_sai = "$P saiu."
+const m_porta = "fora"
+const dir = "sair"
 
 
 classe cmd_seguir
@@ -878,3 +897,4 @@ const titulo = "Hab Retornar"
 classe menu_magia_retornar
 herda menu_hab_comum
 const titulo = "Magia Retornar"
+const colunas = 23

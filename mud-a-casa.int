@@ -364,8 +364,8 @@ func tempomax_exec
     criar("p_casa001", este, 1, "h_socar=2,e_apagar=100")
     msg("Um boneco de papel entrou pela janela.")
 
-func cmd_l
-  se arg0.pnivel == 0
+func cmd_mover
+  se arg2 == "l" && arg0.pnivel == 0
     arg0.msg("Você tem medo de ir para o leste, estando no nível 0.")
     ret 1
 
@@ -443,15 +443,16 @@ const s_luta = 2 # Permite luta entre jogadores
 const dir_c = $s_casa004
 const eveste = 1 # Receber eventos do próprio objeto
 
-func cmd_c
-  se dentro2.total > 1
-    arg0.msg("A saída para cima está lacrada.")
-  senao
-    arg0.mudadono($s_casa004)
-    $mens.p(arg0)
-    $mens.mtodos2("", "$P acaba de sair de dentro do jogo.")
-  fimse
-  ret 1
+func cmd_mover
+  se arg2 == "c"
+    se dentro2.total > 1
+      arg0.msg("A saída para cima está lacrada.")
+    senao
+      arg0.mudadono($s_casa004)
+      $mens.p(arg0)
+      $mens.mtodos2("", "$P acaba de sair de dentro do jogo.")
+    fimse
+    ret 1
 
 
 classe s_casa006
@@ -483,12 +484,13 @@ const dir_o = $s_casa002
 const dir_s = $s_casa009
 const eveste = 1 # Receber eventos do próprio objeto
 
-func cmd_l
-  arg0.msg("A madeira está podre e você caiu, mas não resistiu à queda.")
-  $mens.p(arg0)
-  $mens.mtodos2("", "$P foi para leste e caiu na madeira podre.")
-  arg0.morreu
-  ret 1
+func cmd_mover
+  se arg2 == "l"
+    arg0.msg("A madeira está podre e você caiu, mas não resistiu à queda.")
+    $mens.p(arg0)
+    $mens.mtodos2("", "$P foi para leste e caiu na madeira podre.")
+    arg0.morreu
+    ret 1
 
 
 classe s_casa009
@@ -537,8 +539,8 @@ func s_desc
   senao # Escada fechada, jogador em pé
     ret s_desc0 + s_desc1 + s_desc2
 
-func cmd_c
-  se !arg0.var.d_escada_
+func cmd_mover
+  se arg2 == "c" && !arg0.var.d_escada_
     arg0.msg("Você não consegue subir, é muito alto.")
     ret 1
 
@@ -688,8 +690,8 @@ const dir_s = $s_casa034
 const eveste = 1 # Receber eventos do próprio objeto
 const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
 
-func cmd_s
-  se !arg0.var.j_salvar && !arg0.senha
+func cmd_mover
+  se arg2 == "s" && !arg0.var.j_salvar && !arg0.senha
     arg0.msg("O medo toma conta de você, ao ver um cachorro andando pelo saguão.")
     ret 1
 
@@ -707,8 +709,8 @@ const dir_s = $s_casa033
 const eveste = 1 # Receber eventos do próprio objeto
 const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
 
-func cmd_s
-  se !arg0.var.j_salvar && !arg0.senha
+func cmd_mover
+  se arg2 == "s" && !arg0.var.j_salvar && !arg0.senha
     arg0.msg("O medo toma conta de você, ao ver um cachorro andando pelo saguão.")
     ret 1
 

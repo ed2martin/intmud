@@ -69,8 +69,7 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
 # Acerta a luz (luzden e luztot)
   x = !luztipo ? -luztot : (luztipo > 1) + luzden - luztot
   se x
-    luztot += x
-    pesotot += x, r = idono.objlista, r.luzden += x
+    luztot += x, r = idono.objlista, r.luzden += x
     enquanto r.luztipo
       r.luztot += x, r = r.idono.objlista, r.luzden += x
     efim

@@ -66,7 +66,8 @@ func escr
 
 
 classe cmd_fim
-herda comando_comum
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Fim\b\nSintaxe: FIM\nSai do jogo."
 const posic = 0
 
 func escr
@@ -225,9 +226,9 @@ func escr
   efim
   t.juntalin("(", "x)")
   se t
-    arg0.msg2("Você carrega:\n" + t.remove(1000))
+    arg0.msg2("\b\c6Você carrega:\b\n" + t.remove(1000))
   senao
-    arg0.msg("Você não está carregando nada.")
+    arg0.msg("\bVocê não está carregando nada.")
   fimse
 
 
@@ -235,21 +236,43 @@ classe cmd_equip
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Equip\b\n\
 Sintaxe: EQUIP\n\
-Mostra os itens que o seu personagem está vestindo ou usando."
+         EQUIP TUDO\n\
+Mostra os itens que o seu personagem está vestindo ou usando.\n\
+Digitando EQUIP TUDO, são mostradas também as posições aonde o seu\n\
+personagem pode vestir algo."
 const posic = 5
 
 func escr
   textotxt t
   listaitem item
+  ref pos.55
+  txt50 nomepos
+# Preenche pos
   epara item = arg0.dentro2.fim, item, item.antes
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-    t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.atribs + txtcopiamai(item.obj.d\
-escnome, "A"))
+    pos.[item.obj.vestpos] = item.obj
   efim
+  pos.0 = pos.50
+# Mostra as posições
+  int8 x
+  epara x = 0, x <= 32, x += 1
+    refvar obj = pos.[x]
+    se obj.vestpos && obj.visivel(arg0)
+      nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
+      nomepos += txtesp(20 - inttotal(nomepos))
+      t.addfim(nomepos + obj.atribs + txtcopiamai(obj.descnome, "A"))
+    senao arg1 == "tudo"
+      nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
+      se nomepos != "(desconhecido) "
+        t.addfim(nomepos + txtesp(20 - inttotal(nomepos)) + "nada")
+      fimse
+    fimse
+  efim
+# Envia mensagem
   se t.linhas
-    arg0.msg2("Equipado com:\n" + t.remove(1000))
+    arg0.msg2("\b\c6Equipado com:\b\n" + t.remove(1000))
   senao
-    arg0.msg("Não está vestindo/usando nada.")
+    arg0.msg("\bNão está vestindo/usando nada.")
   fimse
 
 
@@ -567,7 +590,7 @@ func escr
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
+    #ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
     r = l.objini
     textotxt t
 # O que o personagem está vestindo
@@ -575,10 +598,22 @@ func escr
       $mens.p(arg0, r)
       $mens.mvis2("", "$P olha para $a.")
       se completo
+        int1 vest.32 # Aonde está vestindo
+        ref pos.55
         listaitem item
         epara item = r.dentro2.ini, item, item.depois
-          continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-          t.addfim("(" + misc:equip(item.obj.vestpos) + ") " + item.obj.descnome)
+          vest.[item.obj.vestpos - 1] = 1, pos.[item.obj.vestpos] = item.obj
+        efim
+        pos.0 = pos.50
+        int8 x
+        txt100 nomepos
+        epara x = 0, x <= 32, x += 1
+          refvar obj = pos.[x]
+          continuar !obj.vestpos || !obj.visivel(arg0)
+# continuar vest.bits & config:vestir[obj.vestpos - 1]
+          nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
+          nomepos += txtesp(20 - inttotal(nomepos))
+          t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
         efim
         t.linhas && t.addini("Equipado com:")
       fimse
@@ -605,11 +640,11 @@ func escr
 # Nome, nível, situação atual e animal que escolheu
     r.descver(arg0) && t.addini(r.descver(arg0))
     txt200 t2
-    t2 = txtcopiamai(r.descnome, "A")
+    t2 = (completo ? "\b\c6" : "\b") + txtcopiamai(r.descnome, "A")
     se r.perso
       t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel + ", " + estado(r)
       se r.persobat && r.persobat != r
-        t2 += "\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
+        t2 += ".\b\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
         t2 += ", " + estado(r.persobat)
       fimse
     senao r.pnivel
@@ -624,8 +659,8 @@ func escr
 # t2 += r.luztempo
     fimse
 # Envia mensagem
-    ret !completo, arg0.msg(t2 + ".")
-    ret t.linhas, arg0.msg2(t2 + ".\n" + t.remove(1000))
+    ret !completo, arg0.msg(t2 + ".\b")
+    ret t.linhas, arg0.msg2(t2 + ".\b\n" + t.remove(1000))
     ret arg0.msg(t2 + ".\nVocê não vê nada de especial.")
   efim
   arg0.msg("Você não vê isso.")
@@ -942,7 +977,7 @@ func escr
   txt100 t2
   ref r
   r = arg0.persoesc
-  t.addfim("\b\c2Estatísticas de \"" + r.nome + "\"\b")
+  t.addfim("\b\c6Estatísticas de \"" + r.nome + "\"\b")
 # Vida, mana e vigor
   t1 = "Vida " + r.pvida + "/" + r.pvidamax
   t1 += "  Mana " + r.pmana + "/" + r.pmanamax

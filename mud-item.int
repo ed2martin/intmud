@@ -36,14 +36,12 @@ func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
   dono.perso && (dono.recalc = 1)
 
 func vestir # Veste o item, arg0=posição
-  txt100 mens # Checa se pode vestir e retorna mensagem
-  ret mens = cmd_podevestir, dono.msg(mens)
   dono.recalc = 1 # Para recalcular atributos
   ref r
   r = dono, idono.remove, vestpos = arg0
   se vestpos
     idono = r.dentro2.addfim(este)
-    vestpos == 30 && (r.iempu = idono)
+    vestpos == 50 && (r.iempu = idono)
   senao
     idono = r.dentro1.addfim(este)
 
@@ -91,8 +89,6 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   fimse
 
 func vestir # Veste o item, arg0=posição
-  txt100 mens # Checa se pode vestir e retorna mensagem
-  ret mens = cmd_podevestir, dono.msg(mens)
   uint8 pos
   pos = arg0
   se !pos # Checa se deve remover
@@ -110,7 +106,7 @@ func vestir # Veste o item, arg0=posição
     vestpos = pos
     ref r
     r = dono, idono.remove, idono = r.dentro2.addfim(este)
-    vestpos == 30 && (r.iempu = idono)
+    vestpos == 50 && (r.iempu = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
     objtot -= 1, ajustapeso
@@ -118,7 +114,7 @@ func vestir # Veste o item, arg0=posição
     r = criar(este)
     r.dono = dono, r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
-    vestpos == 30 && (r.iempu = idono)
+    pos == 50 && (r.dono.iempu = r.idono)
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)
