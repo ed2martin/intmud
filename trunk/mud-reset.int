@@ -213,7 +213,7 @@ texto))
   ret 1
 
 func p_reset_z
-  se !var.opcmudou || arg0 == "n"
+  se !var.opcexec || arg0 == "n"
   senao arg0 == "s"
     prog p
     se teditor.bytes < 2
@@ -235,7 +235,7 @@ func p_reset_z
     msg("Salvar as alterações? Tecle S ou N, ou Z para cancelar")
     ret 1
   fimse
-  var.opcmudou = ""
+  var.opcexec = ""
   msg("Retornando ao jogo")
   passo = ""
   var.opcnome = "", var.opcclasse = "", var.opcvar = "", var.opclin = ""
@@ -251,7 +251,7 @@ func p_reset_a # Apagar uma linha do reset
     passo = "reset_a"
     ret 1
   casose "s"
-    pos.remove, var.opcmudou = 1
+    pos.remove, var.opcexec = 1
     msg("Linha " + var.opclin + " apagada")
     ret p_reset("")
   casose "n"
@@ -313,7 +313,7 @@ func p_reset2 # Tipo
     textopos pos
     pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
     !var.opcinserir && pos.remove
-    pos.add("F " + txt2(var.opclin)), var.opcmudou = 1
+    pos.add("F " + txt2(var.opclin)), var.opcexec = 1
     ret p_reset("")
   casofim
 
@@ -456,14 +456,15 @@ func p_resetE # Equipar personagem
     fimse
     ret 1
   casose "5" # Lugar
-    se x > 0 && x < intsublin(misc:equip_txt)
+    refvar total = intsublin(config:equip_txt)
+    se x > 0 && x <= total
       var.opclin += " " + x, p_resetE("")
     senao arg0 == "o"
       txtmais.limpar
       txtmais.addfim("Opções:")
       uint8 n
-      epara n = 1, n < intsublin(misc:equip_txt), n += 1
-        txtmais.addfim(txt(n) + " " + txtsublin(misc:equip_txt, n, 1))
+      epara n = 0, n < total, n += 1
+        txtmais.addfim(txt(n + 1) + " " + txtsublin(config:equip_txt, n, 1))
       efim
       txtmostra
     senao
@@ -534,7 +535,7 @@ func p_resetR # Remover item da sala
     textopos pos
     pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
     !var.opcinserir && pos.remove
-    pos.add(txt2(var.opclin) + " " + txts(arg0)), var.opcmudou = 1
+    pos.add(txt2(var.opclin) + " " + txts(arg0)), var.opcexec = 1
     ret p_reset("")
   fimse
   ret 1
@@ -569,7 +570,7 @@ func p_resetD # Porta em uma direção
       textopos pos
       pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
       !var.opcinserir && pos.remove
-      pos.add(txt2(var.opclin) + " " + arg0), var.opcmudou = 1
+      pos.add(txt2(var.opclin) + " " + arg0), var.opcexec = 1
       ret p_reset("")
     casofim
   casofim
@@ -588,7 +589,7 @@ func p_resetVar # Entrar com a lista de variáveis
   textopos pos
   pos = teditor.ini, pos.linha = txt1(var.opclin) - 1
   !var.opcinserir && pos.remove
-  pos.add(txt2(var.opclin)), var.opcmudou = 1
+  pos.add(txt2(var.opclin)), var.opcexec = 1
   ret p_reset("")
 
 func t_resetlin # Obtém um texto a partir de uma linha do reset

@@ -95,11 +95,12 @@ const dir_n = $s_ini001
 const dir_s = $s_teste002
 const eveste = 1 # Receber eventos do próprio objeto
 
-func cmd_s
-  !arg0.var.h_socar && (arg0.var.h_socar = 3)
-  !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
-  !arg0.pnivel && (arg0.pnivel = 1)
-  arg0.recalc = 1
+func cmd_mover
+  se arg2 == "s"
+    !arg0.var.h_socar && (arg0.var.h_socar = 3)
+    !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
+    !arg0.pnivel && (arg0.pnivel = 1)
+    arg0.recalc = 1
 
 
 classe s_teste002
@@ -200,14 +201,13 @@ const dir_s = $s_teste004
 const dir_n = $s_teste008
 const dir_se = $s_teste006
 const eveste = 1 # Receber eventos do próprio objeto
+const s_reset = "P 100 teste001 0 0 1"
 
-func cmd_n # Jogador quer ir para o norte
-  se !arg0.var.j_planta # Se ainda não passou pela planta carnívora
+func cmd_mover
+  se arg2 == "n" && !arg0.var.j_planta # Se ainda não passou pela planta carnívora
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
     arg0.msg("Então você recua.")
     ret 1
-
-const s_reset = "P 100 teste001 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -760,7 +760,7 @@ const nome = "colete"
 const descnome = "um colete"
 const sexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
-const vestir1 = 6 # Vestir posição 1: 6 No corpo
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 const descpos = "Um colete está jogado aqui."
 const valor = 300
 const nivel = 1
@@ -778,7 +778,7 @@ const nome = "colete dos elfos"
 const descnome = "o colete dos elfos"
 const sexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
-const vestir1 = 6 # Vestir posição 1: 6 No corpo
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 const pnivel = 3
 const tipoitem = 8 # Tipo de produto: Vestimenta
 
@@ -817,6 +817,8 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste016") && criar("i_teste016", este, 1)
 
 const dir_l = $s_teste032
+const dir_ne = $s_teste029
+const dir_se = $s_teste063
 
 
 classe s_teste029
@@ -827,12 +829,14 @@ personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
 Uma forma de fazer isso é editar a opção \"Não podem vestir\" do item.\n\
 Outra é escrevendo a função cmd_podevestir do item. Nesse caso, veja\n\
 a classe i_teste014 no arquivo mud-a-teste.int."
-const dir_o = $s_teste032
-const s_reset = "S 100 teste014 3 S"
+const s_reset = "S 100 teste014 3 S\nS 100 teste017 1 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste014") && criar("i_teste014", este, 3)
+  !dentro1.objini("i_teste017") && criar("i_teste017", este, 1)
+
+const dir_so = $s_teste028
 
 
 classe s_teste030
@@ -844,6 +848,8 @@ const s_desc = "À leste há um vendedor e um professor.\n\
 Ou pode teclar AA nessa sala, para ficar com mil moedas."
 const dir_n = $s_teste052
 const dir_l = $s_teste031
+const dir_o = $s_teste049
+const dir_se = $s_teste051
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
@@ -853,9 +859,6 @@ func cmd_escr # Escreveu algo
     arg0.var.z_moedas = 1000
     arg0.msg("Agora você tem 1000 moedas.")
     ret 1
-
-const dir_o = $s_teste049
-const dir_se = $s_teste051
 
 
 classe s_teste031
@@ -917,11 +920,11 @@ saber lidar com aquele tipo de arma. Este sujeito aqui ensina essas\n\
 habilidades. Tecle AULAS para saber o que ele ensina e APRENDER seguido\n\
 de um número ou nome para aprender. A cada aula você aprende mais."
 const dir_o = $s_teste028
-const dir_l = $s_teste029
-const s_reset = "P 100 teste009 0 0 1"
+const s_reset = "S 100 teste018 2 S\nP 100 teste009 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste018") && criar("i_teste018", este, 2)
   se p_teste009:objsolto.total < 1
     criar("p_teste009", este, 0)
   fimse
@@ -1219,7 +1222,7 @@ const nome = "capa da invisibilidade"
 const descnome = "uma capa da invisibilidade"
 const descver = "Essa capa é capaz de deixar alguém quase que completamente invisível.\n\
 Há, no entanto, uns óculos que permitem ver através da capa."
-const vestir1 = 7 # Vestir posição 1: 7 Sobre o corpo
+const vestir1 = 64 # Aonde vestir: Sobre o corpo
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -1232,7 +1235,7 @@ const nome = "óculos especiais"
 const descnome = "uns óculos especiais"
 const sexo = 1 # Sexo: 1 Masculino
 const descver = "Esses óculos permitem ver coisas invisíveis."
-const vestir1 = 1 # Vestir posição 1: 1 Na cabeça
+const vestir1 = 1 # Aonde vestir: Na cabeça
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -1398,3 +1401,87 @@ const s_desc = "Ao editar um ataque, é possível especificar que tipos de persona
 (ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
 Esse bônus aumenta os danos em cinquenta por cento."
 const dir_se = $s_teste055
+
+
+classe i_teste017
+herda comum_itemgrupo
+const nome = "camisa"
+const descnome = "uma camisa"
+const vestir1 = 32 # Aonde vestir: 5-corpo
+
+
+classe i_teste018
+herda comum_itemgrupo
+const nome = "sapatos"
+const descnome = "um par de sapatos"
+const sexo = 1 # Sexo: 1 Masculino
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pmovemax += 5
+  atknorm += 10
+  precisao += -4
+
+const vestir1 = 262144 # Aonde vestir: 18-pés
+
+
+classe i_teste019
+herda comum_itemgrupo
+const nome = "algemas"
+const descnome = "um par de algemas"
+const pesoobj = 300
+const vestir1 = 131584 # Aonde vestir: 9-mãos, 17-tornozelos
+const evperso = 1 # Eventos em perso: Sim
+const i_fechadura = "algema1"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += -2 * pnivel - 3
+  atknorm += -2 * pnivel - 10
+  evasao += -1 * pnivel - 2
+
+func cmd_mover
+# Nos tornozelos, prejudica os pontos de movimento
+  se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
+    arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
+    ret 1
+
+func cmd_moveu
+  se vestpos == 18 # Usando nos tornozelos
+    arg0.pmove -= arg0.pmovemax * 0.3
+  senao vestpos # Usando em qualquer outro lugar
+    arg0.pmove -= 1
+
+func cmd_remover
+  se i_fechadura # Se tem fechadura: só pode remover se o jogador tiver a chave
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      ret i_fechadura == i.obj.i_chave && i.obj.visivel(arg0), nulo
+    efim
+    arg0.msg("Você não possui a chave de " + descnome + ".")
+    ret 1
+
+
+classe i_teste020
+herda comum_itemgrupo
+const nome = "chave das algemas"
+const descnome = "a chave das algemas"
+const i_chave = "algema1"
+
+
+classe s_teste063
+herda b_teste
+const s_titulo = "Testes"
+const s_desc = "Aqui há dois itens para testes. As algemas podem ser usadas nas mãos ou\n\
+nos tornozelos, teclando usar algemas mãos ou usar algemas tornozelos.\n\
+Quando usado nos tornozelos, perde-se muitos pontos de movimento ao andar.\n\
+Há também outro trigger que não deixa remover se você não tiver a chave.\n\
+Triggers são funções, na linguagem do IntMUD. No caso da algema, é\n\
+a classe i_teste019 do arquivo mud-a-teste.int."
+const dir_no = $s_teste028
+const s_reset = "S 100 teste019 3 S\nS 100 teste020 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste019") && criar("i_teste019", este, 3)
+  !dentro1.objini("i_teste020") && criar("i_teste020", este, 3)

@@ -81,7 +81,7 @@ O comando para puxar a corda é PUXAR."
 const sexo = 1
 const descpos = "Um manto escuro relativamente pesado está aqui."
 const pesoobj = 15000
-const vestir1 = 7
+const vestir1 = 64 # Aonde vestir: Sobre o corpo
 const evperso = 1 # Eventos em perso: Sim
 
 func cmd_mudadono # Objeto mudou de dono
@@ -125,8 +125,8 @@ func cmd_atacar
     arg0.var.j_atacou_anao = 1
     ret 1
 
-func cmd_s
-  se arg0.jog && !arg0.var.j_atacou_anao
+func cmd_mover
+  se arg2 == "s" && arg0.jog && !arg0.var.j_atacou_anao
     arg0.msg("Anão: Se quiser passar por mim terá de me pagar 10 galões de ouro.")
     arg0.msg("Aí eu vou tirar na sorte se deixo ou não você passar.")
     arg0.msg("Você não me mete medo. Eu sei brigar muito bem.")
@@ -150,19 +150,19 @@ func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
   arg0.var.h_atirar = 1 # Jogador deve saber atirar
 
-func cmd_l
-  arg0.msg("\c3Sua missão é adquirir 4 diamantes e ir até uma palmeira.")
-  arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, c, b\b")
-  ref r
-  r = criar("i_ini005", arg0)
-  r.vestir(7)
-  arg0.recalc = 1
-
-func cmd_o
-  arg0.msg("Milagre! Você acaba de atravessar uma parede que parecia bastante sólida.")
-  arg0.var.h_socar = 3
-  arg0.var.h_chutar = 3
-  arg0.recalc = 1
+func cmd_mover
+  se arg2 == "l"
+    arg0.msg("\c3Sua missão é adquirir 4 diamantes e ir até uma palmeira.")
+    arg0.msg("Para ir de um lugar a outro tecle n, s, l, o, c, b\b")
+    ref r
+    r = criar("i_ini005", arg0)
+    r.vestir(7)
+    arg0.recalc = 1
+  senao arg2 == "o"
+    arg0.msg("Milagre! Você acaba de atravessar uma parede que parecia bastante sólida.")
+    arg0.var.h_socar = 3
+    arg0.var.h_chutar = 3
+    arg0.recalc = 1
 
 
 classe s_ini002
@@ -532,13 +532,14 @@ const dir_s = $s_ini015
 const dir_l = $s_ini017
 const eveste = 1 # Receber eventos do próprio objeto
 
-func cmd_c
-  se arg0.dentro2.objini("i_ini005")
-    arg0.msg("Você está vestindo algo muito pesado, e por isso não consegue subir.")
-    ret 1
-  senao arg0.dentro1.objini("i_ini005")
-    arg0.msg("Você está segurando algo muito pesado, e por isso não consegue subir.")
-    ret 1
+func cmd_mover
+  se arg2 == "c"
+    se arg0.dentro2.objini("i_ini005")
+      arg0.msg("Você está vestindo algo muito pesado, e por isso não consegue subir.")
+      ret 1
+    senao arg0.dentro1.objini("i_ini005")
+      arg0.msg("Você está segurando algo muito pesado, e por isso não consegue subir.")
+      ret 1
 
 
 classe s_ini015

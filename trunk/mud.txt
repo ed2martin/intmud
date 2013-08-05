@@ -546,34 +546,16 @@ São criadas as variáveis correspondentes em 'textovar var' do item.
 3 = completo (classe comum_itemperso)
 
 10.3. const vestir1 = 0
-      const vestir2 = 0
-      const vestir3 = 0
-Em que lugares do corpo pode ir quando é vestido:
-0 = em nenhum lugar/não pode vestir
-1 = na cabeça
-2 = sobre o rosto
-3 = nos olhos
-4 = nas orelhas
-5 = no pescoço
-6 = no corpo
-7 = sobre o corpo
-8 = nas costas
-9 = nos braços
-10 = nas mãos
-11 = no pulso direito
-12 = no pulso esquerdo
-13 = no dedo direito
-14 = no dedo esquerdo
-15 = empunhar (arma)
-16 = escudo
-17 = na cintura
-18 = nas pernas
-19 = calçando
+Em que lugares do corpo pode ir quando é vestido.
+Cada bit corresponde a um lugar. Os nomes dos lugares estão definidos na
+constante equip_txt, na classe config, no arquivo mud-b.config.int.
 
 10.4. uint8 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
-Outros valores, vide vestir1, acima.
+50 = está empunhando
+Outros valores, começando pelo número 1, correspondem aos lugares definidos
+na constante equip_txt, na classe config, no arquivo mud-b.config.int.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
 10.5. const i_captura = 0
@@ -751,9 +733,8 @@ func cmd_recalc3(personagem)
 Chamado para os objetos em personagem.evento, por func recalc_exec,
 para ajustar as variáveis (pontos de vida, mana, etc.)
 
-func cmd_[direção](personagem, sala)
-São as funções cmd_n, cmd_s, cmd_l, etc.
-Personagem quer ir em uma direção.
+func cmd_moveu(personagem, sala, direção)
+Personagem foi para uma direção.
 
 func cmd_falou(personagem, texto)
 Personagem palou alguma coisa.
@@ -797,6 +778,15 @@ func cmd_acendeu(personagem, item)
 func cmd_apagou(personagem, item)
 Acendeu ou apagou um item.
 
+func cmd_vestiu(personagem, item, posição)
+Vestiu um item ou empunhou uma arma.
+A posição é um número que indica a posição, conforme a variável vestpos
+do objeto. Começa na posição1, empunhando é a posição 50.
+
+func cmd_removeu(personagem, item, posição)
+Remover um item que está vestindo/usando ou uma arma que está empunhando.
+Posição é a posição em que estava vestindo ou empunhando.
+
 func cmd_levantou(personagem)
 func cmd_sentouchao(personagem)
 func cmd_descansouchao(personagem)
@@ -822,9 +812,8 @@ Personagem digitou alguma coisa.
 func cmd_ajuda(personagem ou objeto, texto)
 Teclou ajuda seguido de um texto.
 
-func cmd_[direção](personagem, sala)
-Exemplos: cmd_n(personagem), cmd_s(personagem), etc.
-Personagem quer ir na direção indicada.
+func cmd_mover(personagem, sala, direção)
+Personagem quer ir em uma direção.
 
 func cmd_abrir(personagem, texto)
 Quer abrir um objeto ou uma porta.
@@ -873,6 +862,15 @@ func cmd_acender(personagem, item)
 func cmd_apagar(personagem, item)
 Quer acender ou apagar um item.
 
+func cmd_vestir(personagem, item, posição)
+Quer vestir um item ou empunhar uma arma.
+A posição é um número que indica a posição, conforme a variável vestpos
+do objeto. Começa na posição1, empunhando é a posição 50.
+
+func cmd_remover(personagem, item, posição)
+Quer remover um item que está vestindo/usando ou uma arma que está empunhando.
+Posição é a posição atual.
+
 func cmd_negociar(personagem, personagem vendedor, tipo)
 Se o personagem negocia com um jogador.
 Se não negocia, deve retornar uma mensagem (um texto) contendo o motivo.
@@ -918,6 +916,14 @@ classe menu_config
 # Título é o nome do menu (aparece antes da lista de opções)
 const titulo = "Configuração do MUD"
 
+# Quantos caracteres deve ter o nome de cada opção do menu
+# Se tiver menos que isso, são acrescentados espaços
+const colunas = 23
+
+# Nome da classe que contém o menu anterior, ou "" se não houver menu anterior
+# Quando o usuário escolhe sair do menu (teclando Z), vai para esse menu
+const menufim = ""
+
 # Primeira opção do menu:
 
 const nome1 = "Quantidade de animais"
@@ -927,10 +933,10 @@ const info1 = "Quantos animais um jogador pode usar em batalha"
 # Texto de informações, mostrado quando a opção é escolhida
 # Se estiver ausente, não é mostrado nenhum texto
 
-const classe1 = "config"
+const clas1 = "config"
 # Nome da classe
 
-const var1 = "animal"
+const vari1 = "animal"
 # Nome da variável
 
 const tipo1 = "numero--"
@@ -950,14 +956,15 @@ const tipo1 = "numero--"
 # "atribcomum" = função que altera atributos comuns de um personagem
 # "atribatk" = função que altera atributos de ataque de um personagem
 # "atribdef" = função que altera atributos de defesa de um personagem
+# "menu" = um submenu; a opção nome da classe é a classe que contém o submenu
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
 # Se não for possível apagar, acrescente mais um sinal de '-' no nome
 
-const mudou = "atualiza"
+const exec = "atualiza"
 # Se não for nulo, quando o usuário muda a opção, é executada a função
 # com esse nome de todos os objetos que foram mudados
 
-const extra1 = "1 8"
+const extr1 = "1 8"
 # Opções extras. Os tipos que possuem opções extras são:
 # No tipo "numero" são os valores mínimo e máximo (nesse caso, vai de 1 a 8)
 # No tipo "opcao", é a lista de opções
@@ -969,14 +976,14 @@ const extra1 = "1 8"
 
 const nome2 = "Senha de administração" # Nome da opção
 const tipo2 = "linha" # Tipo de variável
-const classe2 = "config"
-const var2 = "senhaadm"
+const clas2 = "config"
+const vari2 = "senhaadm"
 
 const nome3 = "Tipo de ataque"
 const tipo3 = "opcao"
-const classe3 = "config"
-const var3 = "atktempo"
-const extra3 = "manual\nautomático" # 0=manual, 1=automático
+const clas3 = "config"
+const vari3 = "atktempo"
+const extr3 = "manual\nautomático" # 0=manual, 1=automático
 
 Para chamar o menu, basta executar a função m_menu do jogador (classe
 jogsock), passando como argumento o nome da classe.
@@ -995,6 +1002,9 @@ Acertar itens que produzem luz
 Volume que cabe dentro em salas
 Quantos litros cabe, ou 0 se não for vasilhame
 Quanto sustenta, ou 0 se não for alimento
+Definir um limite máximo de itens em personagens, para limitar o tamanho dos
+    arquivos de jogos salvos
+Idiomas
 Criar itens genéricos
 Sistema de dicas aleatórias
 Banco

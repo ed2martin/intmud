@@ -366,12 +366,12 @@ func p_atrib_salvar # Salva os atributos em função
   se t.linhas > 2
     p.criar(var.opcclasse, t.remove(10000))
     config:salvar
-    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcmudou && criar("admmudou", var.opcclasse, var.opcmudou)
+    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 const p_atrib_valor = 22 # Quantidade de opções que recebem valor numérico
@@ -462,7 +462,8 @@ func escr
     t.addfim("Identificando " + r.descnome + ":")
     r.nivel && t.addfim("É um objeto do nível " + r.nivel)
 # Peso e valor
-    lin = r.pesotot < 10000 ? txt(r.pesotot) + "g" : txt(r.pesotot / 1000) + "Kg"
+    refvar peso = r.pesoobj + r.pesoden
+    lin = peso < 10000 ? txt(peso) + "g" : txt(peso / 1000) + "Kg"
     se !r.valor
     senao r.valor == 1
       lin += " e vale uma moeda"
@@ -481,12 +482,17 @@ func escr
       t.addfim(lin)
     fimse
 # Aonde pode ser vestido
-    lin = ""
-    r.armatipo && (lin += ", empunhando")
-    r.vestir1 && (lin += ", " + txtsublin(misc:equip_txt, r.vestir1, 1))
-    r.vestir2 && (lin += ", " + txtsublin(misc:equip_txt, r.vestir2, 1))
-    r.vestir3 && (lin += ", " + txtsublin(misc:equip_txt, r.vestir3, 1))
-    lin && t.addfim("Pode ser usado em: " + txtmin(txt(lin, 2)) + ".")
+    se 1
+      uint8 x
+      int32 valor
+      lin = "", valor = r.vestir1
+      r.armatipo && (lin += ", empunhando")
+      enquanto x < 30 && valor
+        valor & 1 && (lin += ", " + txtsublin(config:equip_txt, x, 1))
+        x += 1, valor = valor >> 1
+      efim
+      lin && t.addfim("Pode ser usado em: " + txt(lin, 2) + ".")
+    fimse
 # Quem não pode vestir
     se r.vestirnao
       t.addfim("Não pode ser usado por: " + txttroca(r.vestirnao, "\n", ",") + ".")
@@ -555,6 +561,7 @@ const titulo = "Hab Identificar"
 classe menu_magia_identif
 herda menu_hab_comum
 const titulo = "Magia Identificar"
+const colunas = 23
 
 
 classe comando_curar
@@ -622,41 +629,42 @@ const titulo = "Hab de cura " + txt(var.classe1, 4)
 classe menu_magia_curar
 herda menu_hab_comum
 const titulo = "Magia de cura " + txt(var.classe1, 6)
+const colunas = 23
 #
 const nome1 = "Pontos de cura"
 const info1 = "Quantos pontos de vida cura no nível perito"
 const tipo1 = "numero"
-const classe1 = var.classe1
-const var1 = "curabase"
+const clas1 = var.classe1
+const vari1 = "curabase"
 #
 const nome2 = "Cura por nível"
 const info2 = "Quantos pontos de vida cura no nível perito, para cada nível do personagem"
 const tipo2 = "numreal"
-const classe2 = var.classe1
-const var2 = "curanivel"
+const clas2 = var.classe1
+const vari2 = "curanivel"
 #
 const nome3 = "Cura máxima"
 const info3 = "Até quantos pontos de vida pode curar; ou 0 se não há limite"
 const tipo3 = "numero"
-const classe3 = var.classe1
-const var3 = "curamax"
+const clas3 = var.classe1
+const vari3 = "curamax"
 #
 const nome10 = "Msg curou perso"
 const tipo10 = "linha"
-const classe10 = var.classe1
-const var10 = "msgacertou2"
+const clas10 = var.classe1
+const vari10 = "msgacertou2"
 #
 const nome11 = "Msg não curou"
 const tipo11 = "linha"
-const classe11 = var.classe1
-const var11 = "msgnulo2"
+const clas11 = var.classe1
+const vari11 = "msgnulo2"
 #
 const nome12 = "Msg se curou"
 const tipo12 = "linha"
-const classe12 = var.classe1
-const var12 = "msgacertou1"
+const clas12 = var.classe1
+const vari12 = "msgacertou1"
 #
 const nome13 = "Msg não se curou"
 const tipo13 = "linha"
-const classe13 = var.classe1
-const var13 = "msgnulo1"
+const clas13 = var.classe1
+const vari13 = "msgnulo1"

@@ -39,6 +39,8 @@ const d1se = "se"
 const d1so = "so"
 const d1nw = "no"
 const d1sw = "so"
+const d1entrar = "entrar"
+const d1sair = "sair"
 #
 # Direções opostas
 const d2n = "s"
@@ -57,27 +59,8 @@ const d2se = "no"
 const d2so = "ne"
 const d2nw = "se"
 const d2sw = "ne"
-#
-# Aonde equipar; não contém a posição 30, que é "Empunhando"
-const equip_txt = "Não\n\
-Na cabeça\n\
-Sobre o rosto\n\
-Nos olhos\n\
-Nas orelhas\n\
-No pescoço\n\
-No corpo\n\
-Sobre o corpo\n\
-Nas costas\n\
-Nos braços\n\
-Nas mãos\n\
-No pulso direito\n\
-No pulso esquerdo\n\
-No dedo direito\n\
-No dedo esquerdo\n\
-Escudo\n\
-Na cintura\n\
-Nas pernas\n\
-Calçando"
+const d2entrar = "sair"
+const d2sair = "entrar"
 #
 # A classificação das habilidades de acordo com o número de aulas
 const aulas = "Não sabe\n\
@@ -91,14 +74,14 @@ Mestre\nPerito"
 
 func equip # Traduz número para lugar aonde está vestindo um item
 # Retorna um texto ou "Desconhecido" se não for um lugar válido
-  ret arg0 == 30, "Empunhando"
-  ret int(arg0) < 0 || int(arg0) >= intsublin(misc:equip_txt), "Desconhecido"
-  ret txtsublin(misc:equip_txt, arg0, 1)
+  ret arg0 == 50, "empunhando"
+  refvar valor = txtsublin(config:equip_txt, int(arg0) - 1, 1)
+  ret valor ? valor : "desconhecido"
 
 func atkesp # Tipos de golpes
 # arg0 = número do golpe
 # Retorna: 0=normal, 1=especial
-  ret (config:atkespecial >> arg0) & 1
+  ret config:atkespecial >> arg0 & 1
 
 func nomevar # Retorna o nome da habilidade/magia/idioma a partir do nome da variável
 # arg0 = nome da variável
