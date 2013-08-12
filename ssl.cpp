@@ -110,8 +110,12 @@ const char * AbreSSL()
 #else
     ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
     if (ssl_handle1 == 0)
+        ssl_handle1 = dlopen("libssl.so.1.0.0", RTLD_LAZY);
+    if (ssl_handle1 == 0)
         return "Erro ao carregar libssl.so";
     ssl_handle2 = dlopen("libcrypto.so", RTLD_LAZY);
+    if (ssl_handle2 == 0)
+    ssl_handle2 = dlopen("libcrypto.so.1.0.0", RTLD_LAZY);
     if (ssl_handle2 == 0)
     {
         dlclose(ssl_handle1);
@@ -154,10 +158,9 @@ const char * AbreSSL()
     if (!SslCtxNew)           erro = "SSL_CTX_new não foi encontrado";
     if (!SslCtxFree)          erro = "SSL_CTX_free não foi encontrado";
     if (!SslSetFd)            erro = "SSL_set_fd não foi encontrado";
-    if (!SslMethodV2)         erro = "SSLv2_method não foi encontrado";
-    if (!SslMethodV3)         erro = "SSLv3_method não foi encontrado";
+    if (!SslMethodV2 && !SslMethodV23 && !SslMethodV3)
+        erro = "SSLv2_method/SSLv3_method não foi encontrado";
     if (!SslMethodTLSV1)      erro = "TLSv1_method não foi encontrado";
-    if (!SslMethodV23)        erro = "SSLv23_method não foi encontrado";
     if (!SslNew)              erro = "SSL_new não foi encontrado";
     if (!SslFree)             erro = "SSL_free não foi encontrado";
     if (!SslAccept)           erro = "SSL_accept não foi encontrado";
@@ -192,6 +195,10 @@ const char * AbreSSL()
 
     if (ssl_metodo == 0)
         ssl_metodo = SslMethodV23();
+    if (ssl_metodo == 0)
+        ssl_metodo = SslMethodV3();
+    if (ssl_metodo == 0)
+        ssl_metodo = SslMethodV2();
     return 0;
 }
 

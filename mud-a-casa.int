@@ -30,6 +30,49 @@ const s_luta = 1
 const s_item = 1
 
 
+classe i_casa001
+herda comum_item
+const nome = "escada"
+const descnome = "uma escada"
+const sexo = 0
+const pesoobj = 10200
+const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
+const visivel = arg0.posicao < 7 || arg0.var.d_escada_
+const eveste = 1 # Receber eventos do próprio objeto
+const i_aberto = 5 # Para os comandos abrir e fechar não checarem se a escada está aberta
+
+func descpos
+  se misc:obj.var.d_escada_
+    ret "Uma grande escada está aberta aqui."
+  senao
+    ret "Uma escada está em baixo do beliche."
+
+func cmd_pegarobj
+  se arg2 == este
+    arg0.msg("A escada é grande demais para você pegar.")
+    ret 1
+
+func cmd_abrirobj
+  se arg1 == este
+    se arg0.var.d_escada_
+      arg0.msg("A escada já está aberta.")
+    senao
+      arg0.msg("Você abre a escada.")
+      arg0.var.d_escada_ = 1
+    fimse
+    ret 1
+
+func cmd_fecharobj
+  se arg1 == este
+    se arg0.var.d_escada_
+      arg0.msg("Você fecha a escada.")
+      arg0.var.d_escada_ = 0
+    senao
+      arg0.msg("A escada já está fechada.")
+    fimse
+    ret 1
+
+
 classe i_casa002
 herda comum_item
 const nome = "bife"
@@ -38,6 +81,170 @@ const descpos = "O que restou de um bife repousa aqui, imóvel."
 const sexo = 1
 const pesoobj = 100
 const inivar = "e_apagar=50"
+
+
+classe i_casa003
+herda comum_itemperso
+const nome = "desgastada estante"
+const descnome = "uma desgastada estante"
+const pesoobj = 900000
+const mantersala = 1 # Mantém na sala: Sim
+const i_abertoini = 1 # Container: 1 Sempre aberto
+const volobj = 10000
+const volmax = 6000
+const objmax = 20
+const eveste = 1 # Receber eventos do próprio objeto
+intexec acertar # Se deve acertar os itens dentro
+const cmd_pegouobj = acertar = 1
+const cmd_soltouobj = acertar = 1
+const cmd_ini = acertar = 1
+
+func acertar_exec
+# Apaga tudo que estiver na estante
+  listaobj l
+  epara l.addfim(dentro1), l, l.ini.remove
+    l.objini.apagar(1000)
+  efim
+# Cria quatro itens na estante
+  criar("i_casa004", este, 0) # Esfera preta
+  criar("i_casa006", este, 0) # Esfera branca
+  criar("i_casa007", este, 0) # Boneca preta
+  criar("i_casa005", este, 0) # Esfera preta
+
+const descpos = "Uma desgastada estante guarda alguns objetos aqui."
+
+
+classe i_casa004
+herda comum_item
+const nome = "esfera preta"
+const descnome = "uma esfera preta"
+const descver = "Extremamente frágil, porém três esferas pretas juntas são bem mais\n\
+resistentes."
+const pesoobj = 5000
+const volobj = 500
+const eveste = 1 # Receber eventos do próprio objeto
+intexec testafim # Testa se deve se auto destruir
+
+func cmd_pegouobj
+  testafim = 1
+
+func cmd_soltouobj
+  $mens.p(este)
+  $mens.mvis1("$P virou pó.")
+  este.apagar
+
+func testafim_exec
+  se !dono.dentro1.objini("i_casa005")
+    $mens.p(dono)
+    $mens.mvis1("Ao separar as duas esferas pretas, uma pequena trava quebrou e elas derreteram."\
+)
+    dono.msg("Você pensa:\nO jeito é pegar as duas esferas pretas de uma vez, com um só comando."\
+)
+    este.apagar
+
+
+classe i_casa005
+herda i_casa004
+
+func testafim_exec
+  se !dono.dentro1.objini("i_casa004")
+    $mens.p(dono)
+    $mens.mvis1("Ao separar as duas esferas pretas, uma pequena trava quebrou e elas derreteram."\
+)
+    dono.msg("Você pensa:\nO jeito é pegar as duas esferas pretas de uma vez, com um só comando."\
+)
+    este.apagar
+
+
+classe i_casa006
+herda i_casa004
+const nome = "esfera branca"
+const descnome = "uma esfera branca"
+const descver = "Extremamente frágil, quebra se não for manuseado com cuidado."
+
+func testafim_exec
+  ref r1
+  ref r2
+  r1 = dono.dentro1.objini("i_casa004") # Esfera preta
+  r2 = dono.dentro1.objini("i_casa005") # Esfera preta
+  $mens.p(dono)
+  se r1 && r2
+    $mens.mvis1("Boneca preta engole duas esferas pretas e vai embora.")
+    dono.msg("Você pensa:\nOu eu pego uma esfera branca, ou eu pego uma preta.")
+  senao r1 || r2
+    $mens.mvis1("Esfera branca entra em contato com esfera preta e as duas derretem.")
+    dono.msg("Você pensa:\nOu eu pego uma esfera branca, ou eu pego uma preta.")
+  senao
+    $mens.mvis1("Esfera branca se desintegrou.")
+    dono.msg("Você pensa:\nAcho que vou tentar pegar outra coisa.")
+  fimse
+  este.apagar, r1.apagar, r2.apagar
+
+
+classe i_casa007
+herda i_casa004
+const nome = "estranha boneca preta"
+const descnome = "uma estranha boneca preta"
+const descver = "Um objeto bastante ágil."
+
+func testafim_exec
+  ref r1
+  ref r2
+  r1 = dono.dentro1.objini("i_casa004") # Esfera preta
+  r2 = dono.dentro1.objini("i_casa005") # Esfera preta
+  $mens.p(dono)
+  se r1 && r2
+    $mens.mvis1("Boneca preta engole duas esferas pretas e vai embora.")
+    dono.msg("Você pensa:\nPreciso pegar esferas pretas sem tocar na boneca.")
+  senao r1 || r2
+    $mens.mvis1("Boneca preta engole uma esfera preta e vai embora.")
+    dono.msg("Você pensa:\nPreciso pegar esferas pretas sem tocar na boneca.")
+  senao
+    $mens.mvis1("Boneca preta se assusta e vai embora.")
+    dono.msg("Você pensa:\nAcho que vou tentar pegar outra coisa.")
+  fimse
+  este.apagar, r1.apagar, r2.apagar
+
+
+classe i_casa008
+herda comum_itemgrupo
+const nome = "bolsa"
+const descnome = "uma bolsa"
+const pesoobj = 1200
+const descpos = "Uma bolsa está jogada aqui."
+const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
+a palavra Beatriz."
+
+
+classe i_casa009
+herda comum_itemgrupo
+const nome = "bolsa"
+const descnome = "uma bolsa"
+const pesoobj = 1200
+const descpos = "Uma bolsa está jogada aqui."
+const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
+a palavra Ivone."
+
+
+classe i_casa010
+herda comum_itemgrupo
+const nome = "chave"
+const descnome = "uma chave"
+const pesoobj = 100
+const i_chave = "casa1"
+const tipoitem = 1 # Tipo de produto: Possui metal
+
+
+classe i_casa011
+herda comum_itemgrupo
+const nome = "faca"
+const descnome = "uma faca"
+const pesoobj = 300
+const armatipo = 1 # Arma tipo: 1 Lâmina curta
+const armaprecisao = 100
+const armamin = 70
+const armamax = 120
+const tipoitem = 3 # Tipo de produto: Possui metal, Arma
 
 
 classe p_casa001
@@ -302,6 +509,176 @@ const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
 const inivar = "h_arremessar=2,e_apagar=100"
 
 
+classe p_casa013
+herda comum_persobat
+const nome = "cachorro"
+const descnome = "um cachorro"
+const descpadr = "Um cachorro faminto está à procura de comida."
+const sexoini = 1
+const pesoobj = 40000
+const volobj = 100
+const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
+const p_agressivo = dono == $s_casa035 ? 2 : 1 # Agressivo só no saguão
+const nivel = 20
+const inivar = "h_morder=5"
+const eveste = 1 # Receber eventos do próprio objeto
+inttempo andar # Para fazer o cachorro andar
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax = 2 * pnivel + 50
+  precisao += 10
+  defnorm += 10 * pnivel + 20
+
+func andar_exec
+  pmove = pmovemax, pvida = pvidamax
+  se dono.dentro1.objini("i_casa002") # Carne na própria sala
+    andar = 100, apagar(dono.dentro1.objini("i_casa002"))
+    pvida = pvidamax, pmove = pmovemax # Restaura vida e pontos de movimento
+    $mens.p(este)
+    $mens.mtodos1("$P morde um pedaço de carne.")
+  senao dono.dir_l.dentro1.objini("i_casa002") # Carne à leste
+    andar = 20, $cmd_l.escr(este)
+  senao dono.dir_o.dentro1.objini("i_casa002") # Carne à oeste
+    andar = 20, $cmd_o.escr(este)
+  senao dono != $s_casa035 # Não está no saguão
+    andar = 100, $cmd_s.escr(este)
+  fimse
+
+func cmd_atkenv
+  se !arg1.var.d_cachorro
+    arg1.var.d_cachorro = 1
+    arg1.msg("Cachorro se sente ameaçado com você invadindo o território dele.")
+
+
+classe p_casa014
+herda comum_persobat
+const pesoobj = 45000
+const nome = "zumbi"
+const descnome = "um zumbi"
+const descpadr = "Um fétido zumbi vaga sem rumo por aqui."
+const volobj = 2000
+const p_mover = 2 # Movimentar: 2 Qualquer lugar
+const p_morreu1 = "$P se partiu em vários pedaços."
+const p_movervel = 250
+const inivar = "h_morder=6"
+const eveste = 1 # Receber eventos do próprio objeto
+txt50 nomealvo
+listaitem alvoitem # Para receber eventos de quem esse personagem atacou
+intexec alvoexec # Para checar se o alvo morreu
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atknorm += 2 * pnivel + 4
+  defnorm += 2 * pnivel + 4
+  defesp += -3 * pnivel - 5
+
+func cmd_mudadono # Mudou de dono
+  pvida += 5 # Ganha pontos de vida
+  pvida > pvidamax && (pvida = pvidamax)
+
+func p_agressivo # Retorna: 0=pacífico, 1=luta se atacarem, 2=agressivo
+# É agressivo se o jogador não estiver segurando uma esfera preta
+  ret arg0.dentro1.objini("i_casa004") || arg0.dentro1.objini("i_casa005") ? 1 : 2
+
+func cmd_atkenv
+  se arg0 == este # Se esse personagem está atacando
+# Ganha 15 pontos de vida
+    pvida += 15
+    pvida > pvidamax && (pvida = pvidamax)
+# Checará se o alvo morreu
+    alvoexec = 1, alvoitem.remove, alvoitem = arg1.evento.addfim(este)
+
+func alvoexec_exec
+  alvoitem.remove
+
+func cmd_morreu
+  se arg0 != este # Se quem morreu não é esse personagem
+    $mens.p(este, arg0)
+    $mens.mvis1("O corpo de $A começa a se mexer com um aspecto cadavérico.")
+    nomealvo = " " + arg0.descnome
+    pvida = pvidamax
+
+
+classe p_casa015
+herda comum_perso
+const nome = "Ivone"
+const sexoini = 1
+const nivel = 10
+const pospadr = 5 # Posição padrão: 5 Descansando
+const p_recebe = 1 # Se pode receber itens de outros personagens
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.dentro1.objini("i_casa010") # Se já tem a chave, não faz nada
+  senao arg0.dentro1.objini("i_casa008") || arg0.dentro1.objini("i_casa009")
+    misc:tempo("pedir", arg0) # Dispara funções 'pedir'
+  senao
+    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func pedir30
+  se !arg0.dentro1.objini("i_casa009")
+    arg0.msg("Ivone: Essa bolsa não é minha.")
+  senao
+    arg0.msg("Ivone: Poderia devolver minha bolsa? (tecle dar bolsa ivone)")
+
+func entrou40
+  arg0.msg("Ivone: Esqueci minha bolsa no escritório.")
+
+func entrou80
+  arg0.msg("Ivone: Agora aquela região está infestada de zumbis. Que nojo!")
+
+func entrou120
+  arg0.msg("Ivone: Você poderia trazer minha bolsa? Mas antes ache e pegue...")
+
+func entrou160
+  arg0.msg("Ivone: as esferas pretas. Os zumbis não se aproximam delas.")
+
+func cmd_darobj # Alguém deu algum item
+# telatxt t
+# t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
+  casovar arg2
+  casose "i_casa008"
+    arg0.msg("Ivone: Essa não é a minha bolsa..")
+    ret 1 # Para não receber o item
+  casose "i_casa009"
+    apagar(arg2) # Apaga o item
+    misc:tempo("deubolsa", arg0) # Dispara 'deubolsa'
+    ret
+  casose
+    arg0.msg("Ivone não aceita " + arg2.descnome + ".")
+    ret 1 # Para não receber o item
+  casofim
+
+func deubolsa20
+  arg0.msg("Ivone olha para uma bolsa.")
+
+func deubolsa50
+  arg0.msg("Ivone destranca uma bolsa.")
+
+func deubolsa90
+  arg0.msg("Ivone olha para uma bolsa.")
+
+func deubolsa130
+  arg0.msg("Ivone pega uma chave de uma bolsa.")
+
+func deubolsa170
+  arg0.msg("Ivone tranca uma bolsa.")
+
+func deubolsa210
+  arg0.msg("Ivone: Essa é a chave do vestiário da minha suíte. Vai lá.")
+
+func deubolsa240
+  arg0.msg("Ivone: Se algum objeto lhe agradar, pode ficar com ele.")
+
+func deubolsa270
+  $mens.p(este, arg0)
+  $mens.mvis1("$P dá chave para $a.")
+  criar("i_casa010", arg0, 0)
+
+
 classe s_casa001
 herda b_casa
 const s_luta = 0 # Sem luta
@@ -549,49 +926,6 @@ const s_reset = "S 100 casa001 0 s"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_casa001") && criar("i_casa001", este, 0)
-
-
-classe i_casa001
-herda comum_item
-const nome = "escada"
-const descnome = "uma escada"
-const sexo = 0
-const pesoobj = 10200
-const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
-const visivel = arg0.posicao < 7 || arg0.var.d_escada_
-const eveste = 1 # Receber eventos do próprio objeto
-const i_aberto = 5 # Para os comandos abrir e fechar não checarem se a escada está aberta
-
-func descpos
-  se misc:obj.var.d_escada_
-    ret "Uma grande escada está aberta aqui."
-  senao
-    ret "Uma escada está em baixo do beliche."
-
-func cmd_pegarobj
-  se arg2 == este
-    arg0.msg("A escada é grande demais para você pegar.")
-    ret 1
-
-func cmd_abrirobj
-  se arg1 == este
-    se arg0.var.d_escada_
-      arg0.msg("A escada já está aberta.")
-    senao
-      arg0.msg("Você abre a escada.")
-      arg0.var.d_escada_ = 1
-    fimse
-    ret 1
-
-func cmd_fecharobj
-  se arg1 == este
-    se arg0.var.d_escada_
-      arg0.msg("Você fecha a escada.")
-      arg0.var.d_escada_ = 0
-    senao
-      arg0.msg("A escada já está fechada.")
-    fimse
-    ret 1
 
 
 classe s_casa012
@@ -1003,48 +1337,6 @@ func cmd_soltouobj
     r.andar = 30 # Processamento do cachorro
 
 
-classe p_casa013
-herda comum_persobat
-const nome = "cachorro"
-const descnome = "um cachorro"
-const descpadr = "Um cachorro faminto está à procura de comida."
-const sexoini = 1
-const pesoobj = 40000
-const volobj = 100
-const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
-const p_agressivo = dono == $s_casa035 ? 2 : 1 # Agressivo só no saguão
-const nivel = 20
-const inivar = "h_morder=5"
-const eveste = 1 # Receber eventos do próprio objeto
-inttempo andar # Para fazer o cachorro andar
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  pvidamax = 2 * pnivel + 50
-  precisao += 10
-  defnorm += 10 * pnivel + 20
-
-func andar_exec
-  pmove = pmovemax, pvida = pvidamax
-  se dono.dentro1.objini("i_casa002") # Carne na própria sala
-    andar = 100, apagar(dono.dentro1.objini("i_casa002"))
-    pvida = pvidamax, pmove = pmovemax # Restaura vida e pontos de movimento
-    $mens.p(este)
-    $mens.mtodos1("$P morde um pedaço de carne.")
-  senao dono.dir_l.dentro1.objini("i_casa002") # Carne à leste
-    andar = 20, $cmd_l.escr(este)
-  senao dono.dir_o.dentro1.objini("i_casa002") # Carne à oeste
-    andar = 20, $cmd_o.escr(este)
-  senao dono != $s_casa035 # Não está no saguão
-    andar = 100, $cmd_s.escr(este)
-  fimse
-
-func cmd_atkenv
-  se !arg1.var.d_cachorro
-    arg1.var.d_cachorro = 1
-    arg1.msg("Cachorro se sente ameaçado com você invadindo o território dele.")
-
-
 classe s_casa035
 herda b_casa
 const s_titulo = "Saguão"
@@ -1108,207 +1400,6 @@ const s_reset = "S 100 casa003 0 S"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_casa003") && criar("i_casa003", este, 0)
-
-
-classe i_casa003
-herda comum_itemperso
-const nome = "desgastada estante"
-const descnome = "uma desgastada estante"
-const pesoobj = 900000
-const mantersala = 1 # Mantém na sala: Sim
-const i_abertoini = 1 # Container: 1 Sempre aberto
-const volobj = 10000
-const volmax = 6000
-const objmax = 20
-const eveste = 1 # Receber eventos do próprio objeto
-intexec acertar # Se deve acertar os itens dentro
-const cmd_pegouobj = acertar = 1
-const cmd_soltouobj = acertar = 1
-const cmd_ini = acertar = 1
-
-func acertar_exec
-# Apaga tudo que estiver na estante
-  listaobj l
-  epara l.addfim(dentro1), l, l.ini.remove
-    l.objini.apagar(1000)
-  efim
-# Cria quatro itens na estante
-  criar("i_casa004", este, 0) # Esfera preta
-  criar("i_casa006", este, 0) # Esfera branca
-  criar("i_casa007", este, 0) # Boneca preta
-  criar("i_casa005", este, 0) # Esfera preta
-
-const descpos = "Uma desgastada estante guarda alguns objetos aqui."
-
-
-classe i_casa004
-herda comum_item
-const nome = "esfera preta"
-const descnome = "uma esfera preta"
-const descver = "Extremamente frágil, porém três esferas pretas juntas são bem mais\n\
-resistentes."
-const pesoobj = 5000
-const volobj = 500
-const eveste = 1 # Receber eventos do próprio objeto
-intexec testafim # Testa se deve se auto destruir
-
-func cmd_pegouobj
-  testafim = 1
-
-func cmd_soltouobj
-  $mens.p(este)
-  $mens.mvis1("$P virou pó.")
-  este.apagar
-
-func testafim_exec
-  se !dono.dentro1.objini("i_casa005")
-    $mens.p(dono)
-    $mens.mvis1("Ao separar as duas esferas pretas, uma pequena trava quebrou e elas derreteram."\
-)
-    dono.msg("Você pensa:\nO jeito é pegar as duas esferas pretas de uma vez, com um só comando."\
-)
-    este.apagar
-
-
-classe i_casa005
-herda i_casa004
-
-func testafim_exec
-  se !dono.dentro1.objini("i_casa004")
-    $mens.p(dono)
-    $mens.mvis1("Ao separar as duas esferas pretas, uma pequena trava quebrou e elas derreteram."\
-)
-    dono.msg("Você pensa:\nO jeito é pegar as duas esferas pretas de uma vez, com um só comando."\
-)
-    este.apagar
-
-
-classe i_casa006
-herda i_casa004
-const nome = "esfera branca"
-const descnome = "uma esfera branca"
-const descver = "Extremamente frágil, quebra se não for manuseado com cuidado."
-
-func testafim_exec
-  ref r1
-  ref r2
-  r1 = dono.dentro1.objini("i_casa004") # Esfera preta
-  r2 = dono.dentro1.objini("i_casa005") # Esfera preta
-  $mens.p(dono)
-  se r1 && r2
-    $mens.mvis1("Boneca preta engole duas esferas pretas e vai embora.")
-    dono.msg("Você pensa:\nOu eu pego uma esfera branca, ou eu pego uma preta.")
-  senao r1 || r2
-    $mens.mvis1("Esfera branca entra em contato com esfera preta e as duas derretem.")
-    dono.msg("Você pensa:\nOu eu pego uma esfera branca, ou eu pego uma preta.")
-  senao
-    $mens.mvis1("Esfera branca se desintegrou.")
-    dono.msg("Você pensa:\nAcho que vou tentar pegar outra coisa.")
-  fimse
-  este.apagar, r1.apagar, r2.apagar
-
-
-classe i_casa007
-herda i_casa004
-const nome = "estranha boneca preta"
-const descnome = "uma estranha boneca preta"
-const descver = "Um objeto bastante ágil."
-
-func testafim_exec
-  ref r1
-  ref r2
-  r1 = dono.dentro1.objini("i_casa004") # Esfera preta
-  r2 = dono.dentro1.objini("i_casa005") # Esfera preta
-  $mens.p(dono)
-  se r1 && r2
-    $mens.mvis1("Boneca preta engole duas esferas pretas e vai embora.")
-    dono.msg("Você pensa:\nPreciso pegar esferas pretas sem tocar na boneca.")
-  senao r1 || r2
-    $mens.mvis1("Boneca preta engole uma esfera preta e vai embora.")
-    dono.msg("Você pensa:\nPreciso pegar esferas pretas sem tocar na boneca.")
-  senao
-    $mens.mvis1("Boneca preta se assusta e vai embora.")
-    dono.msg("Você pensa:\nAcho que vou tentar pegar outra coisa.")
-  fimse
-  este.apagar, r1.apagar, r2.apagar
-
-
-classe p_casa014
-herda comum_persobat
-const pesoobj = 45000
-const nome = "zumbi"
-const descnome = "um zumbi"
-const descpadr = "Um fétido zumbi vaga sem rumo por aqui."
-const volobj = 2000
-const p_mover = 2 # Movimentar: 2 Qualquer lugar
-const p_morreu1 = "$P se partiu em vários pedaços."
-const p_movervel = 250
-const inivar = "h_morder=6"
-const eveste = 1 # Receber eventos do próprio objeto
-txt50 nomealvo
-listaitem alvoitem # Para receber eventos de quem esse personagem atacou
-intexec alvoexec # Para checar se o alvo morreu
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  atknorm += 2 * pnivel + 4
-  defnorm += 2 * pnivel + 4
-  defesp += -3 * pnivel - 5
-
-func cmd_mudadono # Mudou de dono
-  pvida += 5 # Ganha pontos de vida
-  pvida > pvidamax && (pvida = pvidamax)
-
-func p_agressivo # Retorna: 0=pacífico, 1=luta se atacarem, 2=agressivo
-# É agressivo se o jogador não estiver segurando uma esfera preta
-  ret arg0.dentro1.objini("i_casa004") || arg0.dentro1.objini("i_casa005") ? 1 : 2
-
-func cmd_atkenv
-  se arg0 == este # Se esse personagem está atacando
-# Ganha 15 pontos de vida
-    pvida += 15
-    pvida > pvidamax && (pvida = pvidamax)
-# Checará se o alvo morreu
-    alvoexec = 1, alvoitem.remove, alvoitem = arg1.evento.addfim(este)
-
-func alvoexec_exec
-  alvoitem.remove
-
-func cmd_morreu
-  se arg0 != este # Se quem morreu não é esse personagem
-    $mens.p(este, arg0)
-    $mens.mvis1("O corpo de $A começa a se mexer com um aspecto cadavérico.")
-    nomealvo = " " + arg0.descnome
-    pvida = pvidamax
-
-
-classe i_casa008
-herda comum_itemgrupo
-const nome = "bolsa"
-const descnome = "uma bolsa"
-const pesoobj = 1200
-const descpos = "Uma bolsa está jogada aqui."
-const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
-a palavra Beatriz."
-
-
-classe i_casa009
-herda comum_itemgrupo
-const nome = "bolsa"
-const descnome = "uma bolsa"
-const pesoobj = 1200
-const descpos = "Uma bolsa está jogada aqui."
-const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
-a palavra Ivone."
-
-
-classe i_casa010
-herda comum_itemgrupo
-const nome = "chave"
-const descnome = "uma chave"
-const pesoobj = 100
-const i_chave = "casa1"
-const tipoitem = 1 # Tipo de produto: Possui metal
 
 
 classe s_casa039
@@ -1617,94 +1708,3 @@ func s_reset1 # Realiza o reset
   se p_casa015:objsolto.total < 1
     criar("p_casa015", este, 0)
   fimse
-
-
-classe p_casa015
-herda comum_perso
-const nome = "Ivone"
-const sexoini = 1
-const nivel = 10
-const pospadr = 5 # Posição padrão: 5 Descansando
-const p_recebe = 1 # Se pode receber itens de outros personagens
-const eveste = 1 # Receber eventos do próprio objeto
-const evsala = 1 # Receber eventos do dono se o dono for sala
-
-func cmd_chegou # Chegou na sala
-  ret !arg0.jog, nulo # Retorna se não for jogador
-  se arg0.dentro1.objini("i_casa010") # Se já tem a chave, não faz nada
-  senao arg0.dentro1.objini("i_casa008") || arg0.dentro1.objini("i_casa009")
-    misc:tempo("pedir", arg0) # Dispara funções 'pedir'
-  senao
-    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
-
-func pedir30
-  se !arg0.dentro1.objini("i_casa009")
-    arg0.msg("Ivone: Essa bolsa não é minha.")
-  senao
-    arg0.msg("Ivone: Poderia devolver minha bolsa? (tecle dar bolsa ivone)")
-
-func entrou40
-  arg0.msg("Ivone: Esqueci minha bolsa no escritório.")
-
-func entrou80
-  arg0.msg("Ivone: Agora aquela região está infestada de zumbis. Que nojo!")
-
-func entrou120
-  arg0.msg("Ivone: Você poderia trazer minha bolsa? Mas antes ache e pegue...")
-
-func entrou160
-  arg0.msg("Ivone: as esferas pretas. Os zumbis não se aproximam delas.")
-
-func cmd_darobj # Alguém deu algum item
-# telatxt t
-# t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
-  casovar arg2
-  casose "i_casa008"
-    arg0.msg("Ivone: Essa não é a minha bolsa..")
-    ret 1 # Para não receber o item
-  casose "i_casa009"
-    apagar(arg2) # Apaga o item
-    misc:tempo("deubolsa", arg0) # Dispara 'deubolsa'
-    ret
-  casose
-    arg0.msg("Ivone não aceita " + arg2.descnome + ".")
-    ret 1 # Para não receber o item
-  casofim
-
-func deubolsa20
-  arg0.msg("Ivone olha para uma bolsa.")
-
-func deubolsa50
-  arg0.msg("Ivone destranca uma bolsa.")
-
-func deubolsa90
-  arg0.msg("Ivone olha para uma bolsa.")
-
-func deubolsa130
-  arg0.msg("Ivone pega uma chave de uma bolsa.")
-
-func deubolsa170
-  arg0.msg("Ivone tranca uma bolsa.")
-
-func deubolsa210
-  arg0.msg("Ivone: Essa é a chave do vestiário da minha suíte. Vai lá.")
-
-func deubolsa240
-  arg0.msg("Ivone: Se algum objeto lhe agradar, pode ficar com ele.")
-
-func deubolsa270
-  $mens.p(este, arg0)
-  $mens.mvis1("$P dá chave para $a.")
-  criar("i_casa010", arg0, 0)
-
-
-classe i_casa011
-herda comum_itemgrupo
-const nome = "faca"
-const descnome = "uma faca"
-const pesoobj = 300
-const armatipo = 1 # Arma tipo: 1 Lâmina curta
-const armaprecisao = 100
-const armamin = 70
-const armamax = 120
-const tipoitem = 3 # Tipo de produto: Possui metal, Arma

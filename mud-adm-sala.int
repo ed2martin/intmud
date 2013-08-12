@@ -246,7 +246,8 @@ func cmd_cdir # Criar sala na direção especificada
   nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # Saída da sala
   p.criar(nome2)
   p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
-  config:salvar
+  criar("admordena", "a-" + txt(nome, 2))
+# config:salvar
   msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
   admlog("criou sala " + txt(nome, 2) + txtfim(num, 3))
   ret 1
@@ -286,9 +287,10 @@ func cmd_csala # Criar sala
 # Cria sala
   txt200 area
   area = txt(nome, 0, inttotal(nome) - 3)
+  criar("admordena", "a-" + area)
   area = "s_" + nome + "\na-" + area + "\nherda b_" + area
   p.criar(area + "\nconst s_titulo=\"Sem nome\"\nconst s_desc=\"\"")
-  config:salvar
+# config:salvar
   msg("\bSala criada: " + nome)
   admlog("criou sala " + nome)
   ret 1
@@ -360,7 +362,7 @@ func cmd_lsai # Listar saídas
   txt80 lin
   tpasso = perso.dono
   msg("\bSaídas de " + txt(tpasso, 2) + ":")
-  epara dir = "n s l o ne no se so c b entrar sair", dir, dir = txt2(dir)
+  epara dir = misc:listadir, dir, dir = txt2(dir)
     continuar !p.existe(tpasso, "dir_" + txt1(dir))
     lin = txtmai(txt1(dir)) + "  "
     lin += t_sala(tpasso, "dir_" + txt1(dir))
@@ -581,11 +583,7 @@ const nome16 = "Soltar itens"
 const tipo16 = "opcao"
 const clas16 = var.classe2
 const vari16 = "s_soltar"
-const extr16 = "Permitido\n\
-Não permitido\n\
-Destrói afundando\n\
-Destrói caindo\n\
-Desintegra"
+const extr16 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
 const nome17 = "Volume dentro"
 const tipo17 = "numero"
@@ -694,11 +692,7 @@ const nome16 = "Soltar itens"
 const tipo16 = "opcao"
 const clas16 = var.classe1
 const vari16 = "s_soltar"
-const extr16 = "Permitido\n\
-Não permitido\n\
-Destrói afundando\n\
-Destrói caindo\n\
-Desintegra"
+const extr16 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
 const nome17 = "Volume dentro"
 const tipo17 = "numero"

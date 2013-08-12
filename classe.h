@@ -164,10 +164,18 @@ public:
         /**< Usado ao chamar funções iniclasse de todas as classes */
 
 // Arquivo
-    void Arquivo(TArqMapa * arquivo);
+    void MoveArquivo(TArqMapa * arquivo);
         ///< Muda a classe de arquivo
         /**< @param arquivo Novo arquivo
              @note Se necessário, indica que o arquivo foi alterado */
+    void MoveArqIni(TArqMapa * arquivo);
+        ///< Move classe para o início de um arquivo
+    void MoveArqFim(TArqMapa * arquivo);
+        ///< Move classe para o fim de um arquivo
+    void MoveArqAntes(TClasse * cl);
+        ///< Move classe no arquivo para antes de outra classe
+    void MoveArqDepois(TClasse * cl);
+        ///< Move classe no arquivo para depois de outra classe
     TClasse * ArqAntes; ///< Classe anterior no mesmo arquivo
     TClasse * ArqDepois; ///< Próxima classe no mesmo arquivo
     TArqMapa * ArqArquivo; ///< Em qual arquivo está

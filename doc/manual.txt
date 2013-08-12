@@ -3538,6 +3538,50 @@ Mesmo que a função salvar, porém salva todos os arquivos,
 independete de terem sido alterados ou não.
 
 
+32.5. Funções para organizar as classes nos arquivos
+
+32.5.1. clini(<sufixo do nome do arquivo>)
+Retorna o nome da primeira classe do arquivo ou "" se não existe.
+
+32.5.2. clfim(<sufixo do nome do arquivo>)
+Retorna o nome da última classe do arquivo ou "" se não existe.
+
+32.5.3. clantes(<nome da classe>)
+Retorna classe anterior do arquivo, ou "" se não houver.
+
+32.5.4. cldepois(<nome da classe>)
+Retorna próxima classe do arquivo, ou "" se não houver.
+
+Para mudar a posição de uma classe no arquivo, acrescentar um argumento,
+que é o nome da classe.
+
+Exemplos:
+
+arqini("", "teste")
+# Define a classe teste como sendo a primeira do arquivo com sufixo "".
+
+cldepois("abc", "teste")
+# A classe 'teste' vai para o mesmo arquivo da classe 'abc', após 'abc'.
+
+Exemplo de função que coloca todas as classes em ordem alfabética:
+
+func organiza
+  prog arquivos
+  epara arquivos.iniarq, arquivos.lin, arquivos.depois
+    prog p
+    textotxt t
+    epara p.iniarq(arquivos.texto), p.lin, p.depois
+      t.addfim(p.texto)
+    efim
+    t.ordena
+    p.clini(arquivos.texto, t.ini.texto)
+    enquanto t.linhas > 1
+      p.cldepois(t.remove, t.ini.texto)
+    efim
+  efim
+  arquivos.salvar # Salva os arquivos que foram alterados
+
+
 33. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
 
 Funções:
@@ -3584,9 +3628,33 @@ func iniclasse
 func teste
     # Aqui debug.func será 1 porque foi chamado por x:iniclasse
 
-33.6. tempo
+33.6. stempo
+33.7. utempo
 Quanto tempo o programa usou do processador, em milésimos de segundos.
+stempo é o tempo usado pelo sistema e utempo é o tempo usado pelo programa.
 Se não for possível obter essa informação, tempo será -1.
+
+Eventos:
+
+33.8. <nomedavariável>_erro
+Ocorreu algum erro ao executar uma função.
+arg0 = mensagem de erro (uma linha) seguido dos detalhes sobre o erro
+arg1 = índice da variável vetor, se não for vetor arg1=0
+Os erros podem ser:
+- A variável exec chegou a 0
+  (exemplo, uma instrução 'enquanto 1' seguido de um 'efim' gera esse erro)
+- Atingido limite de funções
+  (exemplo, quando uma função chama a si própria indefinidamente)
+- Atingido limite de variáveis
+  (exemplo, uma função com uma variável 'txt512 x.255')
+
+Exemplo de classe que mostra os erros na tela:
+
+classe mostra_erro
+comum debug d
+func d_erro
+telatxt tt
+tt.msg("Erro:   " + arg0 + "\n")
 
 
 34. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO

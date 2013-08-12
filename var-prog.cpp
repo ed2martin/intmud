@@ -84,7 +84,11 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "apagarlin",    &TVarProg::FuncApagarLin },
         { "arqnome",      &TVarProg::FuncArqNome },
         { "arquivo",      &TVarProg::FuncArquivo },
+        { "clantes",      &TVarProg::FuncClAntes },
         { "classe",       &TVarProg::FuncClasse },
+        { "cldepois",     &TVarProg::FuncClDepois },
+        { "clfim",        &TVarProg::FuncClFim },
+        { "clini",        &TVarProg::FuncClIni },
         { "const",        &TVarProg::FuncConst },
         { "criar",        &TVarProg::FuncCriar },
         { "criarlin",     &TVarProg::FuncCriarLin },
@@ -1418,4 +1422,88 @@ bool TVarProg::FuncSalvarTudo(TVariavel * v)
     bool ret = FuncSalvar(v);
     TMudarClasse::Salvar=2;
     return ret;
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncClIni(TVariavel * v)
+{
+    if (Instr::VarAtual < v+1)
+        return false;
+    const char * nomearq = v[1].getTxt();
+    TArqMapa * m = TArqMapa::Procura(nomearq);
+    if (Instr::VarAtual > v+1)
+    {
+        if (m==0)
+        {
+            if (!TArqMapa::NomeValido(nomearq))
+                return Instr::CriarVarTexto("");
+            m = new TArqMapa(nomearq);
+        }
+        TClasse * cl = TClasse::Procura(v[2].getTxt());
+        if (cl)
+            cl->MoveArqIni(m);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(m==0 ? "" : m->ClInicio->Nome);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncClFim(TVariavel * v)
+{
+    if (Instr::VarAtual < v+1)
+        return false;
+    const char * nomearq = v[1].getTxt();
+    TArqMapa * m = TArqMapa::Procura(nomearq);
+    if (Instr::VarAtual > v+1)
+    {
+        if (m==0)
+        {
+            if (!TArqMapa::NomeValido(nomearq))
+                return Instr::CriarVarTexto("");
+            m = new TArqMapa(nomearq);
+        }
+        TClasse * cl = TClasse::Procura(v[2].getTxt());
+        if (cl)
+            cl->MoveArqFim(m);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(m==0 ? "" : m->ClFim->Nome);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncClAntes(TVariavel * v)
+{
+    if (Instr::VarAtual < v+1)
+        return false;
+    TClasse * cl = TClasse::Procura(v[1].getTxt());
+    if (cl==0)
+        return Instr::CriarVarTexto("");
+    if (Instr::VarAtual > v+1)
+    {
+        TClasse * cl2 = TClasse::Procura(v[2].getTxt());
+        if (cl2 && cl2 != cl)
+            cl2->MoveArqAntes(cl);
+    }
+    Instr::ApagarVar(v);
+    cl = cl->ArqAntes;
+    return Instr::CriarVarTexto(cl==0 ? "" : cl->Nome);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncClDepois(TVariavel * v)
+{
+    if (Instr::VarAtual < v+1)
+        return false;
+    TClasse * cl = TClasse::Procura(v[1].getTxt());
+    if (cl==0)
+        return Instr::CriarVarTexto("");
+    if (Instr::VarAtual > v+1)
+    {
+        TClasse * cl2 = TClasse::Procura(v[2].getTxt());
+        if (cl2 && cl2 != cl)
+            cl2->MoveArqDepois(cl);
+    }
+    Instr::ApagarVar(v);
+    cl = cl->ArqDepois;
+    return Instr::CriarVarTexto(cl==0 ? "" : cl->Nome);
 }

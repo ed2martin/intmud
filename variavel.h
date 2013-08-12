@@ -23,6 +23,7 @@ class TVarTelaTxt;
 class TVarSocket;
 class TVarServ;
 class TVarProg;
+class TVarDebug;
 class TIndiceObj;
 class TIndiceItem;
 class TVarDataHora;
@@ -161,6 +162,7 @@ public:
         TVarServ     * end_serv;     ///< Instr::cServ
         TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj
         TVarProg     * end_prog;     ///< Instr::cProg
+        TVarDebug    * end_debug;    ///< Instr::cDebug
         TIndiceObj   * end_indiceobj; ///< Instr::cIndiceObj
         TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
         TVarDataHora * end_datahora; ///< Instr::cDataHora

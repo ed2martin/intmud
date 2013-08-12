@@ -202,25 +202,78 @@ char * TClasse::NomeDef(char * texto)
 }
 
 //----------------------------------------------------------------------------
-void TClasse::Arquivo(TArqMapa * arquivo)
+#define REMOVE_ARQ \
+    if (ArqArquivo) \
+    { \
+        (ArqAntes ? ArqAntes->ArqDepois : ArqArquivo->ClInicio) = ArqDepois; \
+        (ArqDepois ? ArqDepois->ArqAntes : ArqArquivo->ClFim) = ArqAntes; \
+        ArqArquivo->Mudou = true; \
+    } \
+    ArqArquivo = arquivo; \
+    if (arquivo==0) \
+        return; \
+    arquivo->Mudou = true;
+
+//----------------------------------------------------------------------------
+void TClasse::MoveArquivo(TArqMapa * arquivo)
 {
     if (ArqArquivo == arquivo)
         return;
-    if (ArqArquivo)
-    {
-        (ArqAntes ? ArqAntes->ArqDepois : ArqArquivo->ClInicio) = ArqDepois;
-        (ArqDepois ? ArqDepois->ArqAntes : ArqArquivo->ClFim) = ArqAntes;
-        ArqArquivo->Mudou = true;
-    }
-    ArqArquivo = arquivo;
-    if (arquivo)
-    {
-        ArqAntes = arquivo->ClFim;
-        ArqDepois = 0;
-        arquivo->ClFim = this;
-        (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
-        arquivo->Mudou = true;
-    }
+    REMOVE_ARQ
+    ArqAntes = arquivo->ClFim;
+    ArqDepois = 0;
+    arquivo->ClFim = this;
+    (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::MoveArqIni(TArqMapa * arquivo)
+{
+    if (arquivo->ClInicio == this)
+        return;
+    REMOVE_ARQ;
+    ArqAntes = arquivo->ClInicio;
+    ArqDepois = 0;
+    arquivo->ClInicio = this;
+    (ArqDepois ? ArqDepois->ArqAntes : arquivo->ClFim) = this;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::MoveArqFim(TArqMapa * arquivo)
+{
+    if (arquivo->ClInicio == this)
+        return;
+    REMOVE_ARQ;
+    ArqAntes = arquivo->ClFim;
+    ArqDepois = 0;
+    arquivo->ClFim = this;
+    (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::MoveArqAntes(TClasse * cl)
+{
+    if (cl==0 || cl==this || cl->ArqAntes==this)
+        return;
+    TArqMapa * arquivo = cl->ArqArquivo;
+    REMOVE_ARQ;
+    ArqAntes = cl->ArqAntes;
+    ArqDepois = cl;
+    cl->ArqAntes = this;
+    (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::MoveArqDepois(TClasse * cl)
+{
+    if (cl==0 || cl==this || cl->ArqDepois==this)
+        return;
+    TArqMapa * arquivo = cl->ArqArquivo;
+    REMOVE_ARQ;
+    ArqDepois = cl->ArqDepois;
+    ArqAntes = cl;
+    cl->ArqDepois = this;
+    (ArqDepois ? ArqDepois->ArqAntes : arquivo->ClFim) = this;
 }
 
 //----------------------------------------------------------------------------

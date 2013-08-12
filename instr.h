@@ -134,6 +134,7 @@ class ExecFunc /// Pilha de funções
 {
 public:
     TObjeto * este;     ///< Objeto ao qual a função pertence
+    const char * nome;  ///< Nome da função; codificado como instrução
     const char * linha; ///< Instrução codificada sendo executada
                         ///< Mesmo formato de TClasse::Comandos
     const char * expr;  ///< Aonde parou na expressão numérica

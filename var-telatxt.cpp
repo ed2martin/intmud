@@ -745,7 +745,7 @@ bool TVarTelaTxt::FuncEvento(const char * evento, const char * texto)
         }
     // Passa para próximo objeto
         vobj = ObjAtual;
-    } // for (TVarSocket ...
+    } // for (TVarTelaTxt ...
     return false;
 }
 

@@ -88,8 +88,7 @@ public:
                     ///< Executa uma função
                     /**< @param evento Nome do evento (ex. "msg")
                      *   @param texto Texto do primeiro argumento, 0=nenhum texto
-                     *   @return true se não apagou o objeto, false se apagou
-                     */
+                     *   @return true se não apagou o objeto, false se apagou */
     static TVarTelaTxt * ObjAtual; ///< Objeto atual, usado em FuncEvento()
 
     static TVarTelaTxt * Inicio; ///< Primeiro objeto

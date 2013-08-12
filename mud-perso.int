@@ -619,16 +619,14 @@ func p_proc_exec # Processar comportamento do personagem
 # Movimenta-se
   se p_mover
     ret p_tmove, p_proc = p_tmove + 1
-    ret posicao != 7, p_proc = 30
+    ret posicao == 7, p_proc = 30
     ref r
     textotxt t
+    prog p
     misc:obj = este, r = dono
-    r.dir_n.s_pnj && t.addfim("n"), r.dir_ne.s_pnj && t.addfim("ne")
-    r.dir_s.s_pnj && t.addfim("s"), r.dir_no.s_pnj && t.addfim("no")
-    r.dir_l.s_pnj && t.addfim("l"), r.dir_se.s_pnj && t.addfim("se")
-    r.dir_o.s_pnj && t.addfim("o"), r.dir_so.s_pnj && t.addfim("so")
-    r.dir_c.s_pnj && t.addfim("c"), r.dir_b.s_pnj && t.addfim("b")
-    r.dir_entrar.s_pnj && t.addfim("entrar"), r.dir_sair.s_pnj && t.addfim("sair")
+    epara p.inifunctudo(r, "dir_"), p.lin, p.depois
+      r.[p.texto].s_pnj && t.addfim(txt(p.texto, 4))
+    efim
     t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
     txt10 dir
     dir = t.ini.texto # Direção escolhida
