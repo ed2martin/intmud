@@ -26,6 +26,85 @@
 #include "instr.h"
 #include "misc.h"
 
+TVarDebug * TVarDebug::Inicio = 0;
+TVarDebug * TVarDebug::ObjAtual = 0;
+
+//------------------------------------------------------------------------------
+void TVarDebug::Criar()
+{
+    Antes = 0;
+    Depois = Inicio;
+    if (Inicio)
+        Inicio->Antes = this;
+    Inicio = this;
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::Apagar()
+{
+    (Antes ? Antes->Depois : Inicio) = Depois;
+    if (Depois)
+        Depois->Antes = Antes;
+    if (ObjAtual==this)
+        ObjAtual=Depois;
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::Mover(TVarDebug * destino)
+{
+    (Antes ? Antes->Depois : Inicio) = destino;
+    if (Depois)
+        Depois->Antes = destino;
+    if (ObjAtual == this)
+        ObjAtual = destino;
+    memmove(destino, this, sizeof(TVarDebug));
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::EndObjeto(TClasse * c, TObjeto * o)
+{
+    if (o)
+        endobjeto=o, b_objeto=true;
+    else
+        endclasse=c, b_objeto=false;
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::FuncEvento(const char * evento, const char * texto)
+{
+    //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
+    for (TVarDebug * vobj = Inicio; vobj;)
+    {
+        bool prossegue = false;
+    // Definido em objeto: prepara para executar
+        if (vobj->b_objeto)
+        {
+            char mens[80];
+            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
+            prossegue = Instr::ExecIni(vobj->endobjeto, mens);
+        }
+    // Definido em classe: prepara para executar
+        else if (vobj->endclasse)
+        {
+            char mens[80];
+            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
+            prossegue = Instr::ExecIni(vobj->endclasse, mens);
+        }
+    // Executa
+        ObjAtual = vobj->Depois;
+        if (prossegue)
+        {
+            if (texto)
+                Instr::ExecArg(texto);
+            Instr::ExecArg(vobj->indice);
+            Instr::ExecX();
+            Instr::ExecFim();
+        }
+    // Passa para próximo objeto
+        vobj = ObjAtual;
+    } // for (TVarDebug ...
+}
+
 //----------------------------------------------------------------------------
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
@@ -44,10 +123,16 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         return true;
     }
 // Quanto tempo usou do processador
-    if (comparaZ(nome, "tempo")==0)
+    if (comparaZ(nome, "utempo")==0)
     {
         ApagarVar(v+1);
         VarAtual->numfunc = 2;
+        return true;
+    }
+    if (comparaZ(nome, "stempo")==0)
+    {
+        ApagarVar(v+1);
+        VarAtual->numfunc = 3;
         return true;
     }
 // Nível da função atual
@@ -113,6 +198,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
                     "Quantidade de instruções muito grande");
     // Acerta função
         FuncAtual++;
+        FuncAtual->nome = VarAtual->end_char;
         FuncAtual->linha = VarAtual->end_char;
         FuncAtual->este = obj;
         FuncAtual->expr = 0;
@@ -192,7 +278,7 @@ double TVarDebug::getDouble(int numfunc)
 {
     if (numfunc==1)
         return Instr::VarExec;
-    else if (numfunc==2)
+    else if (numfunc==2 || numfunc==3)
     {
 #ifdef __WIN32__
         FILETIME CreationTime;
@@ -202,17 +288,19 @@ double TVarDebug::getDouble(int numfunc)
         if (GetProcessTimes(GetCurrentProcess(),
             &CreationTime, &ExitTime, &KernelTime, &UserTime)==0)
             return -1;
+        if (numfunc==2)
+            return UserTime.dwLowDateTime  * 0.0001 +
+                   UserTime.dwHighDateTime * 0.0002 * 0x80000000;
         return KernelTime.dwLowDateTime  * 0.0001 +
-               KernelTime.dwHighDateTime * 0.0002 * 0x80000000 +
-               UserTime.dwLowDateTime  * 0.0001 +
-               UserTime.dwHighDateTime * 0.0002 * 0x80000000;
+               KernelTime.dwHighDateTime * 0.0002 * 0x80000000;
 #else
         struct rusage uso;
         if (getrusage(RUSAGE_SELF, &uso)<0)
             return -1;
-        return uso.ru_utime.tv_sec * 1000.0 +
-               uso.ru_utime.tv_usec / 1000.0 +
-               uso.ru_stime.tv_sec * 1000.0 +
+        if (numfunc==2)
+            return uso.ru_utime.tv_sec * 1000.0 +
+                   uso.ru_utime.tv_usec / 1000.0;
+        return uso.ru_stime.tv_sec * 1000.0 +
                uso.ru_stime.tv_usec / 1000.0;
 #endif
     }
@@ -252,6 +340,7 @@ void TVarDebug::Exec()
 
 // Cria função
     FuncAtual++;
+    FuncAtual->nome = exec;
     FuncAtual->linha = exec + Num16(exec);
     FuncAtual->este = FuncAtual[-1].objdebug;
     FuncAtual->expr = 0;

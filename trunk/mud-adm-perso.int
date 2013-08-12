@@ -106,7 +106,8 @@ func p_cperso # Escolher o tipo de personagem ao criar
   txt100 area
   area = txt(var.opcclasse, 0, inttotal(var.opcclasse) - 3)
   p.criar("p_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
-  config:salvar
+  criar("admordena", "a-" + area)
+# config:salvar
   msg("\bPersonagem criado: " + var.opcclasse)
   admlog("criou personagem " + var.opcclasse)
   passo = "", var.opcclasse = ""
@@ -167,6 +168,7 @@ func cmd_eperso # Editar personagem
     msg("\bPersonagem não pode ser editado: " + arg0)
   senao
     var.classe1 = "p_" + txtmin(arg0)
+    var.menufim = "menu_perso" + num
     m_menu("menu_perso" + num)
   fimse
   ret 1
@@ -578,74 +580,20 @@ const tipo17 = "linha"
 const clas17 = var.classe1
 const vari17 = "tipo3"
 #
-const nome18 = "Loja abre"
-const info18 = "Que horas a loja abre ou o PNJ começa a ensinar"
-const tipo18 = "numero"
-const clas18 = var.classe1
-const vari18 = "lojaini"
-const extr18 = "0 23"
+const nome18 = "Loja e aulas"
+const tipo18 = "menu--"
+const clas18 = "menu_ploja"
 #
-const nome19 = "Loja fecha"
-const info19 = "Que horas a loja abre ou o PNJ pára de ensinar\n\
-Se for igual ao horário de abertura, nunca fecha"
-const tipo19 = "numero"
+const nome19 = "Recebe itens"
+const info19 = "Se outros personagens podem dar itens para este"
+const tipo19 = "simnao"
 const clas19 = var.classe1
-const vari19 = "lojafim"
-const extr19 = "0 23"
+const vari19 = "p_recebe"
 #
-const nome20 = "Lucro na venda"
-const info20 = "Em porcentagem (0=sem lucro; paga o valor do item)"
-const tipo20 = "numero"
+const nome20 = "Não podem seguir"
+const tipo20 = "simnao"
 const clas20 = var.classe1
-const vari20 = "taxavenda"
-const extr20 = "0 10000"
-#
-const nome21 = "Lucro na compra"
-const info21 = "Em porcentagem (0=preço normal e 100=não paga pelo item)"
-const tipo21 = "numero"
-const clas21 = var.classe1
-const vari21 = "taxacompra"
-const extr21 = "0 100"
-#
-const nome22 = "Preço da aula"
-const info22 = "Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula)"
-const tipo22 = "numero"
-const clas22 = var.classe1
-const vari22 = "taxaaula"
-const extr22 = "0 10000"
-#
-const nome23 = "Produtos"
-const tipo23 = "menuprod"
-const clas23 = var.classe1
-const vari23 = "lojaitem"
-#
-const nome24 = "Compra produtos"
-const info24 = "Vide tipos de produtos, no comando ECONFIG"
-const tipo24 = "vetor"
-const clas24 = var.classe1
-const vari24 = "tipoitem"
-const extr24 = config:produtos
-#
-const nome25 = "Aulas"
-const tipo25 = "menuaula"
-const clas25 = var.classe1
-const vari25 = "lojaaula"
-#
-const nome26 = "Não negocia com"
-const tipo26 = "tipos"
-const clas26 = var.classe1
-const vari26 = "lojanao"
-#
-const nome27 = "Recebe itens"
-const info27 = "Se outros personagens podem dar itens para este"
-const tipo27 = "simnao"
-const clas27 = var.classe1
-const vari27 = "p_recebe"
-#
-const nome28 = "Não podem seguir"
-const tipo28 = "simnao"
-const clas28 = var.classe1
-const vari28 = "p_naoseguir"
+const vari20 = "p_naoseguir"
 #
 const nome50 = "Variáveis"
 const tipo50 = "linha"
@@ -682,68 +630,132 @@ const exec54 = "ajustaev"
 
 
 classe menu_pcomum2
-const nome29 = "Atributos comuns"
-const tipo29 = "atribcomum"
+const nome21 = "Atributos comuns"
+const tipo21 = "atribcomum"
+const clas21 = var.classe1
+const vari21 = "recalc_auto"
+const exec21 = "recalc_exec"
+#
+const nome22 = "Atributos ataque"
+const info22 = "Afetam os danos quando o personagem ataca alguém"
+const tipo22 = "atribatk"
+const clas22 = var.classe1
+const vari22 = "recalc_auto"
+const exec22 = "recalc_exec"
+#
+const nome23 = "Atributos defesa"
+const info23 = "Afetam os danos quando alguém ataca o personagem"
+const tipo23 = "atribdef"
+const clas23 = var.classe1
+const vari23 = "recalc_auto"
+const exec23 = "recalc_exec"
+#
+const nome24 = "Quando morre"
+const tipo24 = "opcao"
+const clas24 = var.classe1
+const vari24 = "p_corpo"
+const extr24 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
+#
+const nome25 = "Morreu"
+const info25 = "Quando não tem dono"
+const tipo25 = "linha"
+const clas25 = var.classe1
+const vari25 = "p_morreu1"
+#
+const nome26 = "Desmaiou"
+const info26 = "Quando pertence a outro personagem"
+const tipo26 = "linha"
+const clas26 = var.classe1
+const vari26 = "p_morreu2"
+#
+const nome27 = "Movimentar"
+const tipo27 = "opcao"
+const clas27 = var.classe1
+const vari27 = "p_mover"
+const extr27 = "Não sai do lugar\nSomente na área\nQualquer lugar"
+#
+const nome28 = "Tempo move"
+const nome28 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo28 = "numero"
+const clas28 = var.classe1
+const vari28 = "p_movervel"
+const extr28 = "5 1000"
+#
+const nome29 = "Agressivo"
+const tipo29 = "opcao"
 const clas29 = var.classe1
-const vari29 = "recalc_auto"
-const exec29 = "recalc_exec"
+const vari29 = "p_agressivo"
+const extr29 = "Pacífico\nSe atacarem\nSim"
 #
-const nome30 = "Atributos ataque"
-const info30 = "Afetam os danos quando o personagem ataca alguém"
-const tipo30 = "atribatk"
+const nome30 = "Sem resgate"
+const info30 = "Se não é possível resgatar jogadores lutando com esse personagem"
+const tipo30 = "simnao"
 const clas30 = var.classe1
-const vari30 = "recalc_auto"
-const exec30 = "recalc_exec"
+const vari30 = "p_naoresg"
+
+
+classe menu_ploja
+const titulo = "Loja e aulas"
+const menufim = var.menufim
+const colunas = 23
 #
-const nome31 = "Atributos defesa"
-const info31 = "Afetam os danos quando alguém ataca o personagem"
-const tipo31 = "atribdef"
-const clas31 = var.classe1
-const vari31 = "recalc_auto"
-const exec31 = "recalc_exec"
+const nome1 = "Hora que abre"
+const info1 = "Que horas a loja abre ou o PNJ começa a ensinar"
+const tipo1 = "numero"
+const clas1 = var.classe1
+const vari1 = "lojaini"
+const extr1 = "0 23"
 #
-const nome32 = "Quando morre"
-const tipo32 = "opcao"
-const clas32 = var.classe1
-const vari32 = "p_corpo"
-const extr32 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
+const nome2 = "Hora que fecha"
+const info2 = "Que horas a loja abre ou o PNJ pára de ensinar\n\
+Se for igual ao horário de abertura, nunca fecha"
+const tipo2 = "numero"
+const clas2 = var.classe1
+const vari2 = "lojafim"
+const extr2 = "0 23"
 #
-const nome33 = "Morreu"
-const info33 = "Quando não tem dono"
-const tipo33 = "linha"
-const clas33 = var.classe1
-const vari33 = "p_morreu1"
+const nome3 = "Lucro na venda"
+const info3 = "Em porcentagem (0=sem lucro; paga o valor do item)"
+const tipo3 = "numero"
+const clas3 = var.classe1
+const vari3 = "taxavenda"
+const extr3 = "0 10000"
 #
-const nome34 = "Desmaiou"
-const info34 = "Quando pertence a outro personagem"
-const tipo34 = "linha"
-const clas34 = var.classe1
-const vari34 = "p_morreu2"
+const nome4 = "Lucro na compra"
+const info4 = "Em porcentagem (0=preço normal e 100=não paga pelo item)"
+const tipo4 = "numero"
+const clas4 = var.classe1
+const vari4 = "taxacompra"
+const extr4 = "0 100"
 #
-const nome35 = "Movimentar"
-const tipo35 = "opcao"
-const clas35 = var.classe1
-const vari35 = "p_mover"
-const extr35 = "Não sai do lugar\nSomente na área\nQualquer lugar"
+const nome5 = "Preço da aula"
+const info5 = "Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula)"
+const tipo5 = "numero"
+const clas5 = var.classe1
+const vari5 = "taxaaula"
+const extr5 = "0 10000"
 #
-const nome36 = "Tempo move"
-const nome36 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo36 = "numero"
-const clas36 = var.classe1
-const vari36 = "p_movervel"
-const extr36 = "5 1000"
+const nome6 = "Produtos"
+const tipo6 = "menuprod"
+const clas6 = var.classe1
+const vari6 = "lojaitem"
 #
-const nome37 = "Agressivo"
-const tipo37 = "opcao"
-const clas37 = var.classe1
-const vari37 = "p_agressivo"
-const extr37 = "Pacífico\nSe atacarem\nSim"
+const nome7 = "Compra produtos"
+const info7 = "Vide tipos de produtos, no comando ECONFIG"
+const tipo7 = "vetor"
+const clas7 = var.classe1
+const vari7 = "tipoitem"
+const extr7 = config:produtos
 #
-const nome38 = "Sem resgate"
-const info38 = "Se não é possível resgatar jogadores lutando com esse personagem"
-const tipo38 = "simnao"
-const clas38 = var.classe1
-const vari38 = "p_naoresg"
+const nome8 = "Aulas"
+const tipo8 = "menuaula"
+const clas8 = var.classe1
+const vari8 = "lojaaula"
+#
+const nome9 = "Não negocia com"
+const tipo9 = "tipos"
+const clas9 = var.classe1
+const vari9 = "lojanao"
 
 
 classe menu_perso1
@@ -757,21 +769,19 @@ herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 const colunas = 23
 #
-const nome39 = "Capturar"
-const info39 = "Se pode ser capturado"
-const tipo39 = "opcao"
-const clas39 = var.classe1
-const vari39 = "p_captura"
-const extr39 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+const nome31 = "Capturar"
+const info31 = "Se pode ser capturado"
+const tipo31 = "opcao"
+const clas31 = var.classe1
+const vari31 = "p_captura"
+const extr31 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
 #
-const nome40 = "Dar e soltar"
-const info40 = "Se esse personagem pode ser dado ou solto"
-const tipo40 = "opcao"
-const clas40 = var.classe1
-const vari40 = "p_soltar"
-const extr40 = "Pode-se dar e soltar\n\
-Pode-se apenas soltar\n\
-Não se pode dar nem soltar"
+const nome32 = "Dar e soltar"
+const info32 = "Se esse personagem pode ser dado ou solto"
+const tipo32 = "opcao"
+const clas32 = var.classe1
+const vari32 = "p_soltar"
+const extr32 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3

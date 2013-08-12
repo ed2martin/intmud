@@ -105,6 +105,17 @@ func cmd_escr # Escreveu algo
     ret 1
 
 
+classe i_ini006
+herda comum_itemperso
+const nome = "tronco"
+const descnome = "um tronco de árvore"
+const sexo = 1
+const descpos = "Um pedaço grande de tronco está aqui no centro."
+const pesoobj = 1000000
+const i_movel = 1 # 1=pode sentar, 2=pode sentar e deitar
+const i_lugar = 100 # Quantos personagens podem sentar
+
+
 classe p_ini001
 herda comum_perso
 const nome = "anão"
@@ -131,6 +142,161 @@ func cmd_mover
     arg0.msg("Aí eu vou tirar na sorte se deixo ou não você passar.")
     arg0.msg("Você não me mete medo. Eu sei brigar muito bem.")
     ret 1
+
+
+classe p_ini002
+herda comum_perso
+const nome = "Silva"
+const sexoini = 1
+const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
+const pesoobj = 80000
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Alguém chegou na mesma sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Silva: Oi! Sou o Sr. Silva. Moro nessa ilha.")
+
+func entrou30
+  se !arg0.var.h_chutar
+    arg0.msg("Silva: Se vai sair da ilha, você precisa aprender alguns golpes.")
+  senao
+    arg0.msg("Silva: Já te ensinei o que eu sei sobre combates.")
+
+func entrou50
+  se !arg0.var.h_chutar
+    arg0.msg("Silva: Precisa saber se defender.")
+    $mens.p(arg0)
+    $mens.mvis1("Silva ensina $p a socar.")
+    arg0.var.h_socar = 3
+
+func entrou70
+  se !arg0.var.h_chutar
+    arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
+
+func cmd_atacar
+  ret [arg2](arg0, arg1) # Chama a função que trata do ataque específico
+
+func cmd_socar
+  se arg1 != este
+    arg0.msg("Silva: Tecle socar silva")
+    ret 1
+  senao
+    $mens.p(arg0)
+    $mens.mvis1("$P soca Silva, -2")
+    msg("Silva: Nada mal para quem está começando!")
+    msg("Silva: Agora vou te ensinar um golpe um pouco mais forte.")
+    $mens.mvis1("Silva ensina $P a chutar.")
+    arg0.var.h_chutar = 3
+    arg0.msg("Silva: Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
+    ret 1
+
+func cmd_chutar
+  se arg1 != este
+    arg0.msg("Silva: Tecle chutar silva")
+    ret 1
+  senao
+    $mens.p(arg0)
+    $mens.mvis1("$P chuta Silva, -3")
+    arg0.msg("Silva: Bom chute. Eu só tive 3 pontos de danos porque sou mais forte.")
+    arg0.msg("Silva: Durante uma briga, você pode teclar apenas chutar ou socar.")
+    arg0.msg("Silva: Te dou dois conselhos: Cheque suas habilidades teclando hab")
+    arg0.msg("Silva: Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
+    ret 1
+
+
+classe p_ini003
+herda comum_perso
+const nome = "Joaquim"
+const sexoini = 1
+const pesoobj = 80000
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+  se arg0.dentro1.objini("i_ini002") # Se tem diamante amarelo
+    arg0.var.d_resposta_ = 20 # Já fez todas as perguntas
+  senao
+    misc:tempo("entrou", arg0) # Se não tem, dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Joaquim: Olá. Não quer se sentar um pouco para conversarmos?")
+  arg0.msg("O comando para sentar-se é SENTAR")
+
+func cmd_sentouchao
+  arg0.msg("Joaquim: No chão não! Sente-se nesse tronco de árvore.")
+  arg0.msg("Primeiro tecle LEVANTAR para ficar em pé.")
+  arg0.var.d_sentouchao_ = 1
+
+func cmd_levantou
+  se arg0.var.d_sentouchao_ == 1
+    arg0.msg("Joaquim: Isso. Agora sente-se no tronco. Tecle SENTAR TRONCO")
+    arg0.var.d_sentouchao_ = 0
+
+func cmd_descansouchao
+  arg0.msg("Joaquim: Descansar no tronco é muito melhor.")
+
+func cmd_descansouobj
+  arg0.msg("Joaquim: Vejo que prefere descansar. Então não vou incomodar.")
+
+func cmd_sentouobj
+  se arg0.var.d_resposta_ == 0
+    arg0.var.d_resposta_ = 1
+    misc:tempo("pergunta", arg0) # Dispara funções 'pergunta'
+
+func pergunta10
+  arg0.msg("Joaquim: Esse arquipélago já foi maior. Agora pouca gente vem aqui.")
+
+func pergunta30
+  arg0.msg("Joaquim: Sou um estudioso e curioso. Você também gosta de estudar?")
+
+func pergunta55
+  arg0.msg("Joaquim: Você parece saber das coisas. Então vou fazer umas perguntas.")
+
+func pergunta80
+  arg0.var.d_resposta_ = 2
+  arg0.msg("Joaquim: Tem um lugar nessas ilhas que tem muitos diamantes vermelhos.")
+  arg0.msg("Quantos tem nesse lugar? Tecle falar seguido de um número de 1 a 100.")
+
+func cmd_falou
+  casovar arg0.var.d_resposta_
+  casose "0" # 0 = ainda não está fazendo perguntas
+  casose "1" # 1 = está instruindo o jogador
+    ret
+  casose "2"
+    arg1 != "78" && (arg0.var.d_resposta_ = 12)
+  casose "12"
+    arg0.var.d_resposta_ += 1
+    arg0.msg("Joaquim: Qual o nível do meu amigo Silva? É outro número de 1 a 100.")
+    ret
+  casose "3"
+    arg1 != "27" && (arg0.var.d_resposta_ = 13)
+  casose "13"
+    arg0.var.d_resposta_ += 1
+    arg0.msg("Joaquim: Quando você chegou na ilha, que habilidade você já conhecia?")
+    ret
+  casose "4"
+    se arg1 == "atirar" # Acertou todas as perguntas
+      arg0.msg("Joaquim: Você acertou as perguntas. Como recompensa fique com este diamante.")
+      arg0.msg("Joaquim: Quando tiver os quatro diamantes vá para o centro da ilha maior.")
+      $mens.p(este, arg0)
+      $mens.mvis1("$P dá diamante amarelo para $A.")
+      criar("i_ini002", arg0)
+      sair
+    fimse
+  casose "14"
+    arg0.msg("Joaquim: Você errou pelo menos uma das perguntas que eu fiz.")
+    arg0.msg("Volte aqui quando souber todas as respostas.")
+    misc:tempo("errou", arg0) # Dispara funções 'errou'
+  casofim
+  arg0.var.d_resposta_ = 20 # Não está mais fazendo perguntas
+
+func errou80
+  arg0.msg("Joaquim: O que está esperando? Vá atrás das respostas.")
 
 
 classe s_ini001
@@ -419,70 +585,6 @@ func s_reset1 # Realiza o reset
   fimse
 
 
-classe p_ini002
-herda comum_perso
-const nome = "Silva"
-const sexoini = 1
-const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
-const pesoobj = 80000
-const eveste = 1 # Receber eventos do próprio objeto
-const evsala = 1 # Receber eventos do dono se o dono for sala
-
-func cmd_chegou # Alguém chegou na mesma sala
-  ret !arg0.jog, nulo # Retorna se não for jogador
-  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
-
-func entrou10
-  arg0.msg("Silva: Oi! Sou o Sr. Silva. Moro nessa ilha.")
-
-func entrou30
-  se !arg0.var.h_chutar
-    arg0.msg("Silva: Se vai sair da ilha, você precisa aprender alguns golpes.")
-  senao
-    arg0.msg("Silva: Já te ensinei o que eu sei sobre combates.")
-
-func entrou50
-  se !arg0.var.h_chutar
-    arg0.msg("Silva: Precisa saber se defender.")
-    $mens.p(arg0)
-    $mens.mvis1("Silva ensina $p a socar.")
-    arg0.var.h_socar = 3
-
-func entrou70
-  se !arg0.var.h_chutar
-    arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
-
-func cmd_atacar
-  ret [arg2](arg0, arg1) # Chama a função que trata do ataque específico
-
-func cmd_socar
-  se arg1 != este
-    arg0.msg("Silva: Tecle socar silva")
-    ret 1
-  senao
-    $mens.p(arg0)
-    $mens.mvis1("$P soca Silva, -2")
-    msg("Silva: Nada mal para quem está começando!")
-    msg("Silva: Agora vou te ensinar um golpe um pouco mais forte.")
-    $mens.mvis1("Silva ensina $P a chutar.")
-    arg0.var.h_chutar = 3
-    arg0.msg("Silva: Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
-    ret 1
-
-func cmd_chutar
-  se arg1 != este
-    arg0.msg("Silva: Tecle chutar silva")
-    ret 1
-  senao
-    $mens.p(arg0)
-    $mens.mvis1("$P chuta Silva, -3")
-    arg0.msg("Silva: Bom chute. Eu só tive 3 pontos de danos porque sou mais forte.")
-    arg0.msg("Silva: Durante uma briga, você pode teclar apenas chutar ou socar.")
-    arg0.msg("Silva: Te dou dois conselhos: Cheque suas habilidades teclando hab")
-    arg0.msg("Silva: Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
-    ret 1
-
-
 classe s_ini010
 herda b_ini
 const s_titulo = "Região norte da ilha"
@@ -648,105 +750,3 @@ func s_reset1 # Realiza o reset
   se p_ini003:objsolto.total < 1
     criar("p_ini003", este, 31)
   fimse
-
-
-classe i_ini006
-herda comum_itemperso
-const nome = "tronco"
-const descnome = "um tronco de árvore"
-const sexo = 1
-const descpos = "Um pedaço grande de tronco está aqui no centro."
-const pesoobj = 1000000
-const i_movel = 1 # 1=pode sentar, 2=pode sentar e deitar
-const i_lugar = 100 # Quantos personagens podem sentar
-
-
-classe p_ini003
-herda comum_perso
-const nome = "Joaquim"
-const sexoini = 1
-const pesoobj = 80000
-const evsala = 1 # Receber eventos do dono se o dono for sala
-
-func cmd_chegou # Chegou na sala
-  ret !arg0.jog, nulo # Retorna se não for jogador
-  misc:evento(arg0) # Receber eventos do jogador
-  se arg0.dentro1.objini("i_ini002") # Se tem diamante amarelo
-    arg0.var.d_resposta_ = 20 # Já fez todas as perguntas
-  senao
-    misc:tempo("entrou", arg0) # Se não tem, dispara funções 'entrou'
-
-func entrou10
-  arg0.msg("Joaquim: Olá. Não quer se sentar um pouco para conversarmos?")
-  arg0.msg("O comando para sentar-se é SENTAR")
-
-func cmd_sentouchao
-  arg0.msg("Joaquim: No chão não! Sente-se nesse tronco de árvore.")
-  arg0.msg("Primeiro tecle LEVANTAR para ficar em pé.")
-  arg0.var.d_sentouchao_ = 1
-
-func cmd_levantou
-  se arg0.var.d_sentouchao_ == 1
-    arg0.msg("Joaquim: Isso. Agora sente-se no tronco. Tecle SENTAR TRONCO")
-    arg0.var.d_sentouchao_ = 0
-
-func cmd_descansouchao
-  arg0.msg("Joaquim: Descansar no tronco é muito melhor.")
-
-func cmd_descansouobj
-  arg0.msg("Joaquim: Vejo que prefere descansar. Então não vou incomodar.")
-
-func cmd_sentouobj
-  se arg0.var.d_resposta_ == 0
-    arg0.var.d_resposta_ = 1
-    misc:tempo("pergunta", arg0) # Dispara funções 'pergunta'
-
-func pergunta10
-  arg0.msg("Joaquim: Esse arquipélago já foi maior. Agora pouca gente vem aqui.")
-
-func pergunta30
-  arg0.msg("Joaquim: Sou um estudioso e curioso. Você também gosta de estudar?")
-
-func pergunta55
-  arg0.msg("Joaquim: Você parece saber das coisas. Então vou fazer umas perguntas.")
-
-func pergunta80
-  arg0.var.d_resposta_ = 2
-  arg0.msg("Joaquim: Tem um lugar nessas ilhas que tem muitos diamantes vermelhos.")
-  arg0.msg("Quantos tem nesse lugar? Tecle falar seguido de um número de 1 a 100.")
-
-func cmd_falou
-  casovar arg0.var.d_resposta_
-  casose "0" # 0 = ainda não está fazendo perguntas
-  casose "1" # 1 = está instruindo o jogador
-    ret
-  casose "2"
-    arg1 != "78" && (arg0.var.d_resposta_ = 12)
-  casose "12"
-    arg0.var.d_resposta_ += 1
-    arg0.msg("Joaquim: Qual o nível do meu amigo Silva? É outro número de 1 a 100.")
-    ret
-  casose "3"
-    arg1 != "27" && (arg0.var.d_resposta_ = 13)
-  casose "13"
-    arg0.var.d_resposta_ += 1
-    arg0.msg("Joaquim: Quando você chegou na ilha, que habilidade você já conhecia?")
-    ret
-  casose "4"
-    se arg1 == "atirar" # Acertou todas as perguntas
-      arg0.msg("Joaquim: Você acertou as perguntas. Como recompensa fique com este diamante.")
-      arg0.msg("Joaquim: Quando tiver os quatro diamantes vá para o centro da ilha maior.")
-      $mens.p(este, arg0)
-      $mens.mvis1("$P dá diamante amarelo para $A.")
-      criar("i_ini002", arg0)
-      sair
-    fimse
-  casose "14"
-    arg0.msg("Joaquim: Você errou pelo menos uma das perguntas que eu fiz.")
-    arg0.msg("Volte aqui quando souber todas as respostas.")
-    misc:tempo("errou", arg0) # Dispara funções 'errou'
-  casofim
-  arg0.var.d_resposta_ = 20 # Não está mais fazendo perguntas
-
-func errou80
-  arg0.msg("Joaquim: O que está esperando? Vá atrás das respostas.")

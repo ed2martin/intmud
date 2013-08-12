@@ -262,8 +262,8 @@ func escr
       nomepos += txtesp(20 - inttotal(nomepos))
       t.addfim(nomepos + obj.atribs + txtcopiamai(obj.descnome, "A"))
     senao arg1 == "tudo"
-      nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
-      se nomepos != "(desconhecido) "
+      nomepos = "\c2(" + misc:equip(x ? x : 50) + ")\b "
+      se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(20 - inttotal(nomepos)) + "nada")
       fimse
     fimse
@@ -590,7 +590,7 @@ func escr
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    #ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
+# ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
     r = l.objini
     textotxt t
 # O que o personagem está vestindo

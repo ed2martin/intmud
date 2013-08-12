@@ -130,7 +130,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cSocket:    return sizeof(TVarSocket);
     case Instr::cServ:      return sizeof(TVarServ);
     case Instr::cProg:      return sizeof(TVarProg);
-    case Instr::cDebug:     return 0;
+    case Instr::cDebug:     return sizeof(TVarDebug);
     case Instr::cIndiceObj: return sizeof(TIndiceObj);
     case Instr::cIndiceItem: return sizeof(TIndiceItem);
     case Instr::cDataHora:  return sizeof(TVarDataHora);
@@ -412,6 +412,17 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         for (; depois<antes; depois++)
             end_prog[depois].Apagar();
         break;
+    case Instr::cDebug:
+        for (; antes<depois; antes++)
+        {
+            end_debug[antes].Criar();
+            end_debug[antes].defvar = defvar;
+            end_debug[antes].indice = antes;
+            end_debug[antes].EndObjeto(c, o);
+        }
+        for (; depois<antes; depois++)
+            end_debug[depois].Apagar();
+        break;
     case Instr::cIndiceObj:
         for (; antes<depois; antes++)
             end_indiceobj[antes].Objeto = o;
@@ -591,8 +602,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cProg:
         MOVER_SIMPLES( TVarProg )
     case Instr::cDebug:
-        endvar = destino;
-        return;
+        MOVER_COMPLETO( TVarDebug )
     case Instr::cIndiceObj:
         {
             TIndiceObj * o = (TIndiceObj *)endvar;
@@ -687,6 +697,10 @@ void TVariavel::MoverDef()
     case Instr::cServ:
         for (cont=0; cont<vetor; cont++)
             end_serv[cont].defvar = defvar;
+        break;
+    case Instr::cDebug:
+        for (cont=0; cont<vetor; cont++)
+            end_debug[cont].defvar = defvar;
         break;
     }
 }

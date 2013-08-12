@@ -20,6 +20,7 @@ telatxt tela
 int1 entrasenha # Se está digitando a senha do bot
 txt100 txtsenha # A senha que está digitando
 intexec fimprog # Para fechar o programa
+debug dbg # Para informar sobre erros no programa
 
 func iniclasse
   criar(arg0)
@@ -72,6 +73,9 @@ func tela_tecla
 
 func fimprog_exec
   terminar
+
+func dbg_erro
+  tela.msg("\b\d1Erro:   " + txtsublin(arg0, 0, 1) + "\b\n" + txtsublin(arg0, 1, 10))
 
 
 classe jogolocal
@@ -305,7 +309,7 @@ func conec_msg # Recebeu mensagem
   casofim
   se !conecfim
     senha = "", conecfim = 1, $jogoini.jogobotfim
-    
+
 
 classe jogobot_sala
 indiceobj sala_nome

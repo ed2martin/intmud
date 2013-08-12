@@ -17,39 +17,53 @@ const myth = "mud.mythserver.com 4000"
 const sim = "mud.simauria.org 23"
 const dentin = "dentinmud.org 3010"
 const turf = "turf.org 4000"
+const lo = "localhost 1963"
 
 classe tela
 telatxt tela
 socket sock
 inttempo inic
 int1 eco
+int8 proto # 0=Telnet, 1=Telnet seguro, 2=Papovox
+int8 passo # Passo, ao conectar; depende do protocolo
 const msg = tela.msg(arg0)
+
 func iniclasse
   criar(arg0)
+
 func ini
   inic = 2
   msg("Telnet\n")
   se tela.proto == 0
     terminar
+
 func inic_exec # Mensagem de abertura
   msg("Digite o endereço seguido de espaço e a porta\n")
   msg("F1 mostra os endereços predefinidos\n")
   msg("F2 ativa/desativa eco das mensagens enviadas\n")
   msg("F3 desconecta\n")
   msg("F4 encerra o programa\n")
+  msg("F5 Usar o protocolo Telnet ao conectar\n")
+  msg("F6 Usar o Telnet seguro\n")
+  msg("F7 Usar o Papovox ao conectar\n")
+
 func tela_tecla # Usuário pressionou uma tecla
-  se !cursor_[arg0]
+  casovar arg0
+  casose 
+  casose "UP"
+  casose "DOWN"
+  casose "LEFT"
+  casose "RIGHT"
+  casose "C_LEFT"
+  casose "C_RIGHT"
+  casose "HOME"
+  casose "END"
+    sair
+  casose
     tela.linha = 0
-  fimse
+  casofim
   ret tecla_[arg0]
-const cursor_UP = 1
-const cursor_DOWN = 1
-const cursor_LEFT = 1
-const cursor_RIGHT = 1
-const cursor_C_LEFT = 1
-const cursor_C_RIGHT = 1
-const cursor_HOME = 1
-const cursor_END = 1
+
 func tecla_F1
   prog p
   se sock.proto == 0
@@ -61,6 +75,7 @@ func tecla_F1
     efim
     msg("Digite um atalho ou o endereço seguido de espaço e porta\n")
     ret 1
+
 func tecla_F2
   eco = 1 - eco
   se tela.posx
@@ -72,6 +87,7 @@ func tecla_F2
     msg("\d1Eco desativado\b\n")
   fimse
   ret 1
+
 func tecla_F3
   se sock.proto
     sock.fechar
@@ -81,40 +97,79 @@ func tecla_F3
     msg("\d1Já está desconectado\b\n")
   fimse
   ret 1
+
 func tecla_F4
   terminar
+
+func tecla_F5
+  ret sock.proto, msg("\n\d4Não é possível mudar o protoclo conectado\b\n")
+  proto = 0
+  msg("\nSelecionado Telnet\n")
+
+func tecla_F6
+  ret sock.proto, msg("\n\d4Não é possível mudar o protoclo conectado\b\n")
+  proto = 1
+  msg("\nSelecionado Telnet seguro\n")
+
+func tecla_F7
+  ret sock.proto, msg("\n\d4Não é possível mudar o protoclo conectado\b\n")
+  proto = 2
+  msg("\nSelecionado Papovox\n")
+
 func tela_msg # Usuário digitou alguma coisa
   txt80 linha
-  se sock.proto == 0 # Desconectado
-    se arg0 == ""
-      ret
-    fimse
+  casovar sock.proto
+  casose "0" # Desconectado
+    ret arg0 == "", nulo
+    passo = 0
     linha = _serv:[arg0]
-    se linha == ""
-      linha = txtremove(arg0, "ED")
-    fimse
-    se !sock.abrir(txt1(linha), txt2(linha))
+    !linha && (linha = txtremove(arg0, "ED"))
+    se proto == 1
+      txt100 erro
+      se (erro = sock.inissl) != ""
+        msg("\d4Erro ao carregar biblioteca OpenSSL: " + erro + "\b\n")
+        ret
+      senao !sock.abrirssl(txt1(linha), txt2(linha))
+        msg("\d1Erro ao conectar em " + linha + "\b\n")
+        msg("\d1Endereço inválido?\b\n")
+        ret
+      fimse
+    senao !sock.abrir(txt1(linha), txt2(linha))
       msg("\d1Erro ao conectar em " + linha + "\b\n")
       msg("\d1Endereço inválido?\b\n")
       ret
     fimse
     msg("\d1Conectando em " + linha + "\b\n")
     ret
-  senao proto == 1 # Conectando
+  casose "1" # Conectando
     msg("\d1Conexão em progresso\b\n")
-  senao # Conectado
+    ret
+  casose # Conectado
+    ret proto == 2 && passo != 2, msg("Ativando Papovox; aguarde\n")
     sock.msg(arg0 + "\n")
-    se eco
-      msg("\d4>>" + arg0 + "\b\n")
+    eco && msg("\d4>>" + arg0 + "\b\n")
+    ret
+  casofim
+
 func sock_err # Erro ao conectar
   msg("\d1Erro: " + arg0 + "\b\n")
+
 func sock_con # Conectou
   msg("\d1Conectado\b\n")
   sock.cores = 1 # Cores somente ao receber
+  se proto == 1
+    msg("Assinatura SHA1 = " + sock.txtsha1 + "\n")
+    msg("Assinatura MD5 = " + sock.txtmd5 + "\n")
+
 func sock_fechou # Conexão foi encerrada
   msg("\d1Conexão foi encerrada\b\n")
   inic = 5
+
 func sock_msg # Recebeu uma mensagem
-  msg(arg0)
-  se arg1
-    msg("\n")
+  ret !arg1, msg(arg0)
+  msg(arg0 + "\n")
+  se proto == 2 && passo == 0 # Papovox; recebeu primeira mensagem
+    passo = 1, sock.msg("papovox\n")
+  senao proto == 2 && passo == 1 # Papovox; recebeu segunda mensagem
+    passo = 2, sock.proto = 5
+    msg("\d1Papovox conectado\b\n")

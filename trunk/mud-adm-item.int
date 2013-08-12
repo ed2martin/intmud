@@ -101,7 +101,8 @@ func p_citem # Escolher o tipo de item ao criar
   txt100 area
   area = txt(var.opcclasse, 0, inttotal(var.opcclasse) - 3)
   p.criar("i_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
-  config:salvar
+  criar("admordena", "a-" + area)
+# config:salvar
   msg("\bItem criado: " + var.opcclasse)
   admlog("criou item " + var.opcclasse)
   passo = "", var.opcclasse = ""
@@ -162,9 +163,51 @@ func cmd_eitem # Editar item
     msg("\bItem não pode ser editado: " + arg0)
   senao
     var.classe1 = "i_" + txtmin(arg0)
+    var.menufim = "menu_item" + num
     m_menu("menu_item" + num)
   fimse
   ret 1
+
+
+classe menu_iarma
+const titulo = "Tipo de arma"
+const menufim = var.menufim
+const colunas = 23
+#
+const nome1 = "Arma tipo"
+const tipo1 = "opcao"
+const clas1 = var.classe1
+const vari1 = "armatipo"
+const extr1 = "Não é arma\n" + txtsublin(config:arma_txt, 1)
+#
+const nome2 = "Arma precisão"
+const info2 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
+const tipo2 = "numero"
+const clas2 = var.classe1
+const vari2 = "armaprecisao"
+#
+const nome3 = "Ataque mín"
+const tipo3 = "numero"
+const clas3 = var.classe1
+const vari3 = "armamin"
+#
+const nome4 = "Ataque máx"
+const tipo4 = "numero"
+const clas4 = var.classe1
+const vari4 = "armamax"
+#
+const nome5 = "Só ataca manual"
+const info5 = "Se o personagem não usa essa arma em ataques automáticos"
+const tipo5 = "simnao"
+const clas5 = var.classe1
+const vari5 = "armamanual"
+#
+const nome6 = "Ataque tipo"
+const info6 = "Somente em ataque automático (vide comando ECONFIG)"
+const tipo6 = "opcao"
+const clas6 = var.classe1
+const vari6 = "armatipoatk"
+const extr6 = config:atknomes
 
 
 classe menu_icomum
@@ -279,53 +322,22 @@ const clas21 = var.classe1
 const vari21 = "recalc_auto"
 const exec21 = "recalc_ajusta"
 #
-const nome22 = "Arma tipo"
-const tipo22 = "opcao"
-const clas22 = var.classe1
-const vari22 = "armatipo"
-const extr22 = "Não é arma\n" + txtsublin(config:arma_txt, 1)
+const nome22 = "Tipo de arma"
+const tipo22 = "menu--"
+const clas22 = "menu_iarma"
 #
-const nome23 = "Arma precisão"
-const info23 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
+const nome23 = "Pega animal nível"
+const info23 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+ou 0 se não puder capturar"
 const tipo23 = "numero"
 const clas23 = var.classe1
-const vari23 = "armaprecisao"
+const vari23 = "i_captura"
 #
-const nome24 = "Ataque mín"
-const tipo24 = "numero"
+const nome24 = "Chave"
+const info24 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo24 = "linha"
 const clas24 = var.classe1
-const vari24 = "armamin"
-#
-const nome25 = "Ataque máx"
-const tipo25 = "numero"
-const clas25 = var.classe1
-const vari25 = "armamax"
-#
-const nome26 = "Só ataca manual"
-const info26 = "Se o personagem não usa essa arma em ataques automáticos"
-const tipo26 = "simnao"
-const clas26 = var.classe1
-const vari26 = "armamanual"
-#
-const nome27 = "Ataque tipo"
-const info27 = "Somente em ataque automático (vide comando ECONFIG)"
-const tipo27 = "opcao"
-const clas27 = var.classe1
-const vari27 = "armatipoatk"
-const extr27 = config:atknomes
-#
-const nome28 = "Pega animal nível"
-const info28 = "Nível médio dos animais que podem ser capturados com esse item,\n\
-ou 0 se não puder capturar"
-const tipo28 = "numero"
-const clas28 = var.classe1
-const vari28 = "i_captura"
-#
-const nome29 = "Chave"
-const info29 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo29 = "linha"
-const clas29 = var.classe1
-const vari29 = "i_chave"
+const vari24 = "i_chave"
 #
 const nome50 = "Variáveis"
 const tipo50 = "linha"
@@ -401,46 +413,56 @@ herda menu_item1
 const titulo = "Item " + txt(var.classe1, 2)
 const colunas = 23
 #
-const nome30 = "Mobília"
-const tipo30 = "opcao"
-const clas30 = var.classe1
-const vari30 = "i_movel"
-const extr30 = "Não\nPodem sentar\nPodem sentar e deitar"
+const nome25 = "Mobília"
+const tipo25 = "opcao"
+const clas25 = var.classe1
+const vari25 = "i_movel"
+const extr25 = "Não\nPodem sentar\nPodem sentar e deitar"
 #
-const nome31 = "Lugares"
-const tipo31 = "numero"
-const clas31 = var.classe1
-const vari31 = "i_lugar"
+const nome26 = "Lugares"
+const tipo26 = "numero"
+const clas26 = var.classe1
+const vari26 = "i_lugar"
 #
-const nome32 = "Container"
-const tipo32 = "opcao"
-const clas32 = var.classe1
-const vari32 = "i_abertoini"
-const exec32 = "recalc_exec"
-const extr32 = "Não\n\
+const nome27 = "Container"
+const tipo27 = "opcao"
+const clas27 = var.classe1
+const vari27 = "i_abertoini"
+const exec27 = "recalc_exec"
+const extr27 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome33 = "Trancar"
-const tipo33 = "opcao"
-const clas33 = var.classe1
-const vari33 = "i_tranc"
-const extr33 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+const nome28 = "Trancar"
+const tipo28 = "opcao"
+const clas28 = var.classe1
+const vari28 = "i_tranc"
+const extr28 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome34 = "Fechadura"
-const info34 = "Código da chave que tranca e destranca o container"
-const tipo34 = "linha"
-const clas34 = var.classe1
-const vari34 = "i_fechadura"
+const nome29 = "Fechadura"
+const info29 = "Código da chave que tranca e destranca o container"
+const tipo29 = "linha"
+const clas29 = var.classe1
+const vari29 = "i_fechadura"
 #
-const nome35 = "Tipo de luz"
-const tipo35 = "opcao"
-const clas35 = var.classe1
-const vari35 = "luzitem"
-const extr35 = "Não aceita acender/apagar, sem fogo\n\
+const nome30 = "Fonte de luz"
+const tipo30 = "menu--"
+const clas30 = "menu_iluz"
+
+
+classe menu_iluz
+const titulo = "Fonte de luz"
+const menufim = var.menufim
+const colunas = 23
+#
+const nome1 = "Tipo de luz"
+const tipo1 = "opcao"
+const clas1 = var.classe1
+const vari1 = "luzitem"
+const extr1 = "Não aceita acender/apagar, sem fogo\n\
 Lanterna (acende/apaga, sem fogo)\n\
 Lanterna 2 (acende/apaga, inclusive na água)\n\
 Não aceita acender/apagar, produz fogo\n\
@@ -448,25 +470,25 @@ Lampião (acende/apaga, produz fogo)\n\
 Fósforo (acende uma vez, produz fogo)\n\
 Tocha (acende com fogo, produz fogo)"
 #
-const nome36 = "Duração da luz"
-const info36 = "Em décimos de segundo, se menor que zero começa apagado"
-const tipo36 = "numero"
-const clas36 = var.classe1
-const vari36 = "luzini"
+const nome2 = "Duração da luz"
+const info2 = "Em décimos de segundo, se menor que zero começa apagado"
+const tipo2 = "numero"
+const clas2 = var.classe1
+const vari2 = "luzini"
 #
-const nome37 = "Acendeu mensagem"
-const tipo37 = "linha"
-const clas37 = var.classe1
-const vari37 = "luzliga"
+const nome3 = "Acendeu mensagem"
+const tipo3 = "linha"
+const clas3 = var.classe1
+const vari3 = "luzliga"
 #
-const nome38 = "Sem luz mensagem"
-const info38 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
-const tipo38 = "linha"
-const clas38 = var.classe1
-const vari38 = "luztxt"
+const nome4 = "Sem luz mensagem"
+const info4 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo4 = "linha"
+const clas4 = var.classe1
+const vari4 = "luztxt"
 #
-const nome39 = "Sem luz item some"
-const info39 = "Se o item some (é apagado) quando a luz acaba"
-const tipo39 = "simnao"
-const clas39 = var.classe1
-const vari39 = "luzfim"
+const nome5 = "Sem luz item some"
+const info5 = "Se o item some (é apagado) quando a luz acaba"
+const tipo5 = "simnao"
+const clas5 = var.classe1
+const vari5 = "luzfim"

@@ -47,6 +47,252 @@ const volobj = 8
 const i_captura = 8
 
 
+classe i_teste005
+herda comum_itemperso
+const nome = "bolsa"
+const descnome = "uma bolsa"
+const pesoobj = 200
+const volobj = 30
+const volmax = 5000
+const objmax = 20
+const i_abertoini = 2 # Container: 2 Inicialmente aberto
+const i_tranc = 1 # Trancar: 1 Pode ser trancado
+const tipoitem = 2048 # Tipo de produto: Container
+
+
+classe i_teste006
+herda comum_itemperso
+const nome = "tocha"
+const descnome = "uma tocha"
+const luzini = -600
+const luztxt = "Uma tocha se apagou"
+const luzfim = 1 # Sem luz item some: Sim
+const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste007
+herda comum_itemperso
+const nome = "lanterna"
+const descnome = "uma lanterna"
+const luzitem = 1 # Tipo de luz: 1 Lanterna (acende/apaga, sem fogo)
+const luzini = -6000
+const luztxt = "Uma lanterna apagou."
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste008
+herda comum_itemperso
+const nome = "lampião"
+const descnome = "um lampião"
+const sexo = 1 # Sexo: 1 Masculino
+const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
+const luzini = -3000
+const luztxt = "Um lampião apagou."
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste009
+herda comum_itemgrupo
+const nome = "palito de fósforo"
+const descnome = "um palito de fósforo"
+const sexo = 1 # Sexo: 1 Masculino
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste010
+herda comum_itemperso
+const nome = "fósforo aceso"
+const descnome = "um fósforo aceso"
+const sexo = 1 # Sexo: 1 Masculino
+const luzini = 80
+const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
+const luztxt = "Um palito de fósforo acaba de queimar."
+const luzfim = 1 # Sem luz item some: Sim
+
+
+classe i_teste011
+herda comum_itemperso
+const nome = "caixa de fósforo"
+const descnome = "uma caixa de fósforo"
+const eveste = 1 # Receber eventos do próprio objeto
+sav uint8 palitos # Quantidade de palitos de fósforo da caixa
+const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
+const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+func cmd_ini
+  palitos = 20
+
+func descver
+  se !palitos
+    ret "Está vazia."
+  senao palitos == 1
+    ret "Contém um palito."
+  senao
+    ret "Contém " + palitos + " palitos."
+
+func cmd_acender
+  se !palitos
+    arg0.msg("Caixa de fósforo está vazia.")
+  senao
+    palitos -= 1
+    criar("i_teste010", arg0, 0) # Cria um palito aceso
+    $mens.p(arg0)
+    $mens.mvis1("$P risca um palito de fósforo.")
+  fimse
+  ret 1
+
+
+classe i_teste012
+herda comum_itemgrupo
+const nome = "faca"
+const descnome = "uma faca"
+const pesoobj = 300
+const armatipo = 3 # Arma tipo: 1 Lâmina curta
+const armaprecisao = 100
+const armamin = 70
+const armamax = 120
+const valor = 50
+const armatipoatk = 2 # Ataque tipo: 2 Cortante
+const descpos = "Há uma faca no chão."
+const tipoitem = 3 # Tipo de produto: Possui metal, Arma
+
+
+classe i_teste013
+herda comum_itemgrupo
+const nome = "colete"
+const descnome = "um colete"
+const sexo = 1 # Sexo: 1 Masculino
+const pesoobj = 1000
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
+const descpos = "Um colete está jogado aqui."
+const valor = 300
+const nivel = 1
+const tipoitem = 8 # Tipo de produto: Vestimenta
+
+func cmd_recalc2 # Recalcula variáveis do personagem
+  arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
+# Nota os tipos de ataque são considerados normais ou mágicos conforme
+# a função misc:atkesp, no arquivo mud-misc.int
+
+
+classe i_teste014
+herda comum_itemgrupo
+const nome = "colete dos elfos"
+const descnome = "o colete dos elfos"
+const sexo = 1 # Sexo: 1 Masculino
+const pesoobj = 1000
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
+const pnivel = 3
+const tipoitem = 8 # Tipo de produto: Vestimenta
+
+func cmd_podevestir
+# Essa função é chamada sempre que um personagem tenta vestir um item
+# Se ela retornar um texto, será apresentado o texto ao invés de vestir
+# Nota:
+# dono.tipo1 é a raça
+# dono.tipo2 é a classe
+  se dono.tipo1 != "elfo" # Checa se a raça é "elfo"
+    ret "Somente elfos podem vestir o colete dos elfos."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  defnorm += 15
+
+
+classe i_teste015
+herda comum_itemgrupo
+const nome = "capa da invisibilidade"
+const descnome = "uma capa da invisibilidade"
+const descver = "Essa capa é capaz de deixar alguém quase que completamente invisível.\n\
+Há, no entanto, uns óculos que permitem ver através da capa."
+const vestir1 = 64 # Aonde vestir: Sobre o corpo
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv = 4 | bitinv
+
+
+classe i_teste016
+herda comum_itemgrupo
+const nome = "óculos especiais"
+const descnome = "uns óculos especiais"
+const sexo = 1 # Sexo: 1 Masculino
+const descver = "Esses óculos permitem ver coisas invisíveis."
+const vestir1 = 2 # Aonde vestir: 1-rosto
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 4 | bitver
+
+
+classe i_teste017
+herda comum_itemgrupo
+const nome = "camisa"
+const descnome = "uma camisa"
+const vestir1 = 32 # Aonde vestir: 5-corpo
+
+
+classe i_teste018
+herda comum_itemgrupo
+const nome = "sapatos"
+const descnome = "um par de sapatos"
+const sexo = 1 # Sexo: 1 Masculino
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pmovemax += 5
+  atknorm += 10
+  precisao += -4
+
+const vestir1 = 262144 # Aonde vestir: 18-pés
+
+
+classe i_teste019
+herda comum_itemgrupo
+const nome = "algemas"
+const descnome = "um par de algemas"
+const pesoobj = 300
+const vestir1 = 131584 # Aonde vestir: 9-mãos, 17-tornozelos
+const evperso = 1 # Eventos em perso: Sim
+const i_fechadura = "algema1"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += -2 * pnivel - 3
+  atknorm += -2 * pnivel - 10
+  evasao += -1 * pnivel - 2
+
+func cmd_mover
+# Nos tornozelos, prejudica os pontos de movimento
+  se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
+    arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
+    ret 1
+
+func cmd_moveu
+  se vestpos == 18 # Usando nos tornozelos
+    arg0.pmove -= arg0.pmovemax * 0.3
+  senao vestpos # Usando em qualquer outro lugar
+    arg0.pmove -= 1
+
+func cmd_remover
+  se i_fechadura # Se tem fechadura: só pode remover se o jogador tiver a chave
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      ret i_fechadura == i.obj.i_chave && i.obj.visivel(arg0), nulo
+    efim
+    arg0.msg("Você não possui a chave de " + descnome + ".")
+    ret 1
+
+
+classe i_teste020
+herda comum_itemgrupo
+const nome = "chave das algemas"
+const descnome = "a chave das algemas"
+const i_chave = "algema1"
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -81,6 +327,167 @@ func deupedra15
   arg0.var.j_planta = 1 # Indica que já passou pela planta
 
 const pesoobj = 80000
+
+
+classe p_teste002
+herda comum_persobat
+const nome = "macaco"
+const descnome = "um macaco"
+const descpadr = "Um macaco está fazendo bagunça aqui."
+const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
+const p_captura = 3 # Capturar: 3 Normal
+const p_agressivo = 2 # Agressivo: 2 Sim
+const pesoobj = 30500
+const volobj = 500
+const tipo1 = "luta"
+const inivar = "h_socar=1,h_chutar=1"
+
+
+classe p_teste003
+herda comum_persobat
+const nome = "cão"
+const descnome = "um cão"
+const descpadr = "Um cachorro late para você."
+const descver = "Mamífero da família dos canídeos."
+const p_captura = 2 # Capturar: 2 Fácil
+const p_agressivo = 2 # Agressivo: 2 Sim
+const pesoobj = 30100
+const volobj = 500
+const inivar = "h_arremessar=1"
+
+
+classe p_teste004
+herda comum_persobat
+const nome = "morcego"
+const descnome = "um morcego"
+const descpadr = "Um morcego está voando."
+const descver = "Mamífero da ordem dos quirópteros"
+const p_captura = 4 # Capturar: 4 Difícil
+const p_agressivo = 2 # Agressivo: 2 Sim
+const pesoobj = 30500
+const volobj = 500
+const tipo1 = "ar"
+const inivar = "h_arremessar=1"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += 2 * pnivel
+
+
+classe p_teste005
+herda comum_persoanimal
+const nome = "Lixeiro"
+const sexoini = 1 # Sexo: 1 Masculino
+const pesoobj = 75300
+const volobj = 1000
+const p_naoresg = 1 # Sem resgate: Sim
+const nivel = 8
+const p_agressivo = 2 # Agressivo: 2 Sim
+
+
+classe p_teste006
+herda comum_persobat
+const nome = "geléia"
+const descnome = "uma geléia"
+const sexoini = 0 # Sexo: 0 Feminino
+const pesoobj = 10000
+const nivel = 3
+const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
+
+func cmd_recalc1 # Recalcula variáveis do personagem
+  deftipo.0 = 0 # Imune a ataques de contusão
+  deftipo.2 *= 0.5 # Frágil contra ataques cortantes
+  defnorm *= 1.5 # Mais forte contra ataques normais
+  defesp *= 0.7 # Mais fraco contra ataques especiais
+  pvidamax += 100 # 100 pontos a mais de vida
+# Veja também a variável deftipo, no arquivo em mud-perso.int
+
+
+classe p_teste007
+herda comum_perso
+const nome = "João o mercenário"
+const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Humano"
+const lojaitem = "teste012 3\nteste013 0"
+const taxavenda = 20
+const taxacompra = 30
+const lojanao = ""
+const tipoitem = 3 # Compra produtos: Possui metal, Arma
+
+
+classe p_teste008
+herda comum_perso
+const nome = "Faixa preta"
+const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Humano"
+const lojaaula = "h_Chutar 3\n\
+h_Voadora 7\n\
+h_Morder 4\n\
+i_Hebráico 2\n\
+m_Fogo 4\n\
+m_Retornar 8\n\
+m_Identificar 8"
+const taxaaula = 50
+const lojanao = ""
+
+
+classe p_teste009
+herda comum_perso
+const nome = "Perito"
+const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Anão"
+const lojaaula = "h_Varinha 8\n\
+h_Cajado 8\n\
+h_Lâmina_curta 8\n\
+h_Lâmina_longa 8\n\
+h_Maca_e_Martelo 8\n\
+h_Mangual 8\n\
+h_Chicote_e_Corrente 8\n\
+h_Arma_exótica 8\n\
+h_Segundo_ataque 8\n\
+h_Terceiro_ataque 8"
+const taxaaula = 50
+const lojanao = ""
+
+
+classe p_teste010
+herda comum_perso
+const nome = "Prefeito"
+const sexoini = 1 # Sexo: 1 Masculino
+const tipo1 = "Elfo"
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10 # 1 segundo depois do jogador chegar
+  arg0.msg("Prefeito: Olá. Você pode vir morar nessa cidade por míseras 20 moedas.")
+
+func entrou30 # 3 segundos depois do jogador chegar
+  arg0.msg("Prefeito: Basta falar: Desejo morar aqui.")
+
+func cmd_falou
+  se arg1 == "Desejo morar aqui."
+    ret arg0.var.z_salafim == txt(dono), arg0.msg("Prefeito: Mas você já mora aqui.")
+    ret arg0.var.z_moedas_ < 20, arg0.msg("Prefeito: Você não tem 20 moedas")
+    arg0.var.z_moedas_ -= 20
+    arg0.var.z_salafim = dono
+    $mens.p(este, arg0)
+    $mens.mtodos1("Prefeito disse para $a: Agora seu ponto de retorno é aqui.")
+
+
+classe p_teste011
+herda comum_persobat
+const sexoini = 1 # Sexo: 1 Masculino
+const nome = "camundongo gigante"
+const descnome = "um camundongo gigante"
+const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += -40
 
 
 classe s_teste001
@@ -446,51 +853,6 @@ func s_reset1 # Realiza o reset
   fimse
 
 
-classe p_teste002
-herda comum_persobat
-const nome = "macaco"
-const descnome = "um macaco"
-const descpadr = "Um macaco está fazendo bagunça aqui."
-const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
-const p_captura = 3 # Capturar: 3 Normal
-const p_agressivo = 2 # Agressivo: 2 Sim
-const pesoobj = 30500
-const volobj = 500
-const tipo1 = "luta"
-const inivar = "h_socar=1,h_chutar=1"
-
-
-classe p_teste003
-herda comum_persobat
-const nome = "cão"
-const descnome = "um cão"
-const descpadr = "Um cachorro late para você."
-const descver = "Mamífero da família dos canídeos."
-const p_captura = 2 # Capturar: 2 Fácil
-const p_agressivo = 2 # Agressivo: 2 Sim
-const pesoobj = 30100
-const volobj = 500
-const inivar = "h_arremessar=1"
-
-
-classe p_teste004
-herda comum_persobat
-const nome = "morcego"
-const descnome = "um morcego"
-const descpadr = "Um morcego está voando."
-const descver = "Mamífero da ordem dos quirópteros"
-const p_captura = 4 # Capturar: 4 Difícil
-const p_agressivo = 2 # Agressivo: 2 Sim
-const pesoobj = 30500
-const volobj = 500
-const tipo1 = "ar"
-const inivar = "h_arremessar=1"
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  pveloc1 += 2 * pnivel
-
-
 classe s_teste021
 herda b_teste
 const s_titulo = "Centro de treinamento"
@@ -528,17 +890,6 @@ func s_reset1 # Realiza o reset
   fimse
 
 
-classe p_teste005
-herda comum_persoanimal
-const nome = "Lixeiro"
-const sexoini = 1 # Sexo: 1 Masculino
-const pesoobj = 75300
-const volobj = 1000
-const p_naoresg = 1 # Sem resgate: Sim
-const nivel = 8
-const p_agressivo = 2 # Agressivo: 2 Sim
-
-
 classe s_teste023
 herda b_teste
 const s_titulo = "Luz e itens que iluminam"
@@ -573,103 +924,6 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste008") && criar("i_teste008", este, 0)
   !dentro1.objini("i_teste009") && criar("i_teste009", este, 1)
   !dentro1.objini("i_teste011") && criar("i_teste011", este, 0)
-
-
-classe i_teste005
-herda comum_itemperso
-const nome = "bolsa"
-const descnome = "uma bolsa"
-const pesoobj = 200
-const volobj = 30
-const volmax = 5000
-const objmax = 20
-const i_abertoini = 2 # Container: 2 Inicialmente aberto
-const i_tranc = 1 # Trancar: 1 Pode ser trancado
-const tipoitem = 2048 # Tipo de produto: Container
-
-
-classe i_teste006
-herda comum_itemperso
-const nome = "tocha"
-const descnome = "uma tocha"
-const luzini = -600
-const luztxt = "Uma tocha se apagou"
-const luzfim = 1 # Sem luz item some: Sim
-const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
-const tipoitem = 256 # Tipo de produto: Fonte de luz
-
-
-classe i_teste007
-herda comum_itemperso
-const nome = "lanterna"
-const descnome = "uma lanterna"
-const luzitem = 1 # Tipo de luz: 1 Lanterna (acende/apaga, sem fogo)
-const luzini = -6000
-const luztxt = "Uma lanterna apagou."
-const tipoitem = 256 # Tipo de produto: Fonte de luz
-
-
-classe i_teste008
-herda comum_itemperso
-const nome = "lampião"
-const descnome = "um lampião"
-const sexo = 1 # Sexo: 1 Masculino
-const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
-const luzini = -3000
-const luztxt = "Um lampião apagou."
-const tipoitem = 256 # Tipo de produto: Fonte de luz
-
-
-classe i_teste009
-herda comum_itemgrupo
-const nome = "palito de fósforo"
-const descnome = "um palito de fósforo"
-const sexo = 1 # Sexo: 1 Masculino
-const tipoitem = 256 # Tipo de produto: Fonte de luz
-
-
-classe i_teste010
-herda comum_itemperso
-const nome = "fósforo aceso"
-const descnome = "um fósforo aceso"
-const sexo = 1 # Sexo: 1 Masculino
-const luzini = 80
-const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
-const luztxt = "Um palito de fósforo acaba de queimar."
-const luzfim = 1 # Sem luz item some: Sim
-
-
-classe i_teste011
-herda comum_itemperso
-const nome = "caixa de fósforo"
-const descnome = "uma caixa de fósforo"
-const eveste = 1 # Receber eventos do próprio objeto
-sav uint8 palitos # Quantidade de palitos de fósforo da caixa
-const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
-const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
-const tipoitem = 256 # Tipo de produto: Fonte de luz
-
-func cmd_ini
-  palitos = 20
-
-func descver
-  se !palitos
-    ret "Está vazia."
-  senao palitos == 1
-    ret "Contém um palito."
-  senao
-    ret "Contém " + palitos + " palitos."
-
-func cmd_acender
-  se !palitos
-    arg0.msg("Caixa de fósforo está vazia.")
-  senao
-    palitos -= 1
-    criar("i_teste010", arg0, 0) # Cria um palito aceso
-    $mens.p(arg0)
-    $mens.mvis1("$P risca um palito de fósforo.")
-  fimse
-  ret 1
 
 
 classe s_teste025
@@ -719,81 +973,6 @@ func s_reset1 # Realiza o reset
   se p_teste006:objsolto.total < 1
     criar("p_teste006", este, 0, "h_socar=3")
   fimse
-
-
-classe p_teste006
-herda comum_persobat
-const nome = "geléia"
-const descnome = "uma geléia"
-const sexoini = 0 # Sexo: 0 Feminino
-const pesoobj = 10000
-const nivel = 3
-const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
-
-func cmd_recalc1 # Recalcula variáveis do personagem
-  deftipo.0 = 0 # Imune a ataques de contusão
-  deftipo.2 *= 0.5 # Frágil contra ataques cortantes
-  defnorm *= 1.5 # Mais forte contra ataques normais
-  defesp *= 0.7 # Mais fraco contra ataques especiais
-  pvidamax += 100 # 100 pontos a mais de vida
-# Veja também a variável deftipo, no arquivo em mud-perso.int
-
-
-classe i_teste012
-herda comum_itemgrupo
-const nome = "faca"
-const descnome = "uma faca"
-const pesoobj = 300
-const armatipo = 3 # Arma tipo: 1 Lâmina curta
-const armaprecisao = 100
-const armamin = 70
-const armamax = 120
-const valor = 50
-const armatipoatk = 2 # Ataque tipo: 2 Cortante
-const descpos = "Há uma faca no chão."
-const tipoitem = 3 # Tipo de produto: Possui metal, Arma
-
-
-classe i_teste013
-herda comum_itemgrupo
-const nome = "colete"
-const descnome = "um colete"
-const sexo = 1 # Sexo: 1 Masculino
-const pesoobj = 1000
-const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
-const descpos = "Um colete está jogado aqui."
-const valor = 300
-const nivel = 1
-const tipoitem = 8 # Tipo de produto: Vestimenta
-
-func cmd_recalc2 # Recalcula variáveis do personagem
-  arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
-# Nota os tipos de ataque são considerados normais ou mágicos conforme
-# a função misc:atkesp, no arquivo mud-misc.int
-
-
-classe i_teste014
-herda comum_itemgrupo
-const nome = "colete dos elfos"
-const descnome = "o colete dos elfos"
-const sexo = 1 # Sexo: 1 Masculino
-const pesoobj = 1000
-const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
-const pnivel = 3
-const tipoitem = 8 # Tipo de produto: Vestimenta
-
-func cmd_podevestir
-# Essa função é chamada sempre que um personagem tenta vestir um item
-# Se ela retornar um texto, será apresentado o texto ao invés de vestir
-# Nota:
-# dono.tipo1 é a raça
-# dono.tipo2 é a classe
-  se dono.tipo1 != "elfo" # Checa se a raça é "elfo"
-    ret "Somente elfos podem vestir o colete dos elfos."
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  defnorm += 15
 
 
 classe s_teste028
@@ -882,34 +1061,6 @@ func s_reset1 # Realiza o reset
   fimse
 
 
-classe p_teste007
-herda comum_perso
-const nome = "João o mercenário"
-const sexoini = 1 # Sexo: 1 Masculino
-const tipo1 = "Humano"
-const lojaitem = "teste012 3\nteste013 0"
-const taxavenda = 20
-const taxacompra = 30
-const lojanao = ""
-const tipoitem = 3 # Compra produtos: Possui metal, Arma
-
-
-classe p_teste008
-herda comum_perso
-const nome = "Faixa preta"
-const sexoini = 1 # Sexo: 1 Masculino
-const tipo1 = "Humano"
-const lojaaula = "h_Chutar 3\n\
-h_Voadora 7\n\
-h_Morder 4\n\
-i_Hebráico 2\n\
-m_Fogo 4\n\
-m_Retornar 8\n\
-m_Identificar 8"
-const taxaaula = 50
-const lojanao = ""
-
-
 classe s_teste032
 herda b_teste
 const s_titulo = "Ataques manuais e automáticos"
@@ -928,25 +1079,6 @@ func s_reset1 # Realiza o reset
   se p_teste009:objsolto.total < 1
     criar("p_teste009", este, 0)
   fimse
-
-
-classe p_teste009
-herda comum_perso
-const nome = "Perito"
-const sexoini = 1 # Sexo: 1 Masculino
-const tipo1 = "Anão"
-const lojaaula = "h_Varinha 8\n\
-h_Cajado 8\n\
-h_Lâmina_curta 8\n\
-h_Lâmina_longa 8\n\
-h_Maca_e_Martelo 8\n\
-h_Mangual 8\n\
-h_Chicote_e_Corrente 8\n\
-h_Arma_exótica 8\n\
-h_Segundo_ataque 8\n\
-h_Terceiro_ataque 8"
-const taxaaula = 50
-const lojanao = ""
 
 
 classe s_teste033
@@ -1171,34 +1303,6 @@ const dir_l = $s_teste030
 const dir_o = $s_teste050
 
 
-classe p_teste010
-herda comum_perso
-const nome = "Prefeito"
-const sexoini = 1 # Sexo: 1 Masculino
-const tipo1 = "Elfo"
-const evsala = 1 # Eventos em sala: Sim
-
-func cmd_chegou # Chegou na sala
-  ret !arg0.jog, nulo # Retorna se não for jogador
-  misc:evento(arg0) # Receber eventos do jogador
-  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
-
-func entrou10 # 1 segundo depois do jogador chegar
-  arg0.msg("Prefeito: Olá. Você pode vir morar nessa cidade por míseras 20 moedas.")
-
-func entrou30 # 3 segundos depois do jogador chegar
-  arg0.msg("Prefeito: Basta falar: Desejo morar aqui.")
-
-func cmd_falou
-  se arg1 == "Desejo morar aqui."
-    ret arg0.var.z_salafim == txt(dono), arg0.msg("Prefeito: Mas você já mora aqui.")
-    ret arg0.var.z_moedas_ < 20, arg0.msg("Prefeito: Você não tem 20 moedas")
-    arg0.var.z_moedas_ -= 20
-    arg0.var.z_salafim = dono
-    $mens.p(este, arg0)
-    $mens.mtodos1("Prefeito disse para $a: Agora seu ponto de retorno é aqui.")
-
-
 classe s_teste050
 herda b_teste
 const s_titulo = "Mais sobre retornar"
@@ -1214,32 +1318,6 @@ func s_reset1 # Realiza o reset
   se p_teste010:objsolto.total < 1
     criar("p_teste010", este, 0)
   fimse
-
-
-classe i_teste015
-herda comum_itemgrupo
-const nome = "capa da invisibilidade"
-const descnome = "uma capa da invisibilidade"
-const descver = "Essa capa é capaz de deixar alguém quase que completamente invisível.\n\
-Há, no entanto, uns óculos que permitem ver através da capa."
-const vestir1 = 64 # Aonde vestir: Sobre o corpo
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  bitinv = 4 | bitinv
-
-
-classe i_teste016
-herda comum_itemgrupo
-const nome = "óculos especiais"
-const descnome = "uns óculos especiais"
-const sexo = 1 # Sexo: 1 Masculino
-const descver = "Esses óculos permitem ver coisas invisíveis."
-const vestir1 = 1 # Aonde vestir: Na cabeça
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  bitver = 4 | bitver
 
 
 classe s_teste051
@@ -1261,18 +1339,6 @@ func s_reset1 # Realiza o reset
     p = u = criar("p_teste011", este, 0, "z_moedas=200")
   fimse
   u && criar("i_teste012", u, 1)
-
-
-classe p_teste011
-herda comum_persobat
-const sexoini = 1 # Sexo: 1 Masculino
-const nome = "camundongo gigante"
-const descnome = "um camundongo gigante"
-const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  pvidamax += -40
 
 
 classe s_teste052
@@ -1401,72 +1467,6 @@ const s_desc = "Ao editar um ataque, é possível especificar que tipos de persona
 (ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
 Esse bônus aumenta os danos em cinquenta por cento."
 const dir_se = $s_teste055
-
-
-classe i_teste017
-herda comum_itemgrupo
-const nome = "camisa"
-const descnome = "uma camisa"
-const vestir1 = 32 # Aonde vestir: 5-corpo
-
-
-classe i_teste018
-herda comum_itemgrupo
-const nome = "sapatos"
-const descnome = "um par de sapatos"
-const sexo = 1 # Sexo: 1 Masculino
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  pmovemax += 5
-  atknorm += 10
-  precisao += -4
-
-const vestir1 = 262144 # Aonde vestir: 18-pés
-
-
-classe i_teste019
-herda comum_itemgrupo
-const nome = "algemas"
-const descnome = "um par de algemas"
-const pesoobj = 300
-const vestir1 = 131584 # Aonde vestir: 9-mãos, 17-tornozelos
-const evperso = 1 # Eventos em perso: Sim
-const i_fechadura = "algema1"
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  pveloc1 += -2 * pnivel - 3
-  atknorm += -2 * pnivel - 10
-  evasao += -1 * pnivel - 2
-
-func cmd_mover
-# Nos tornozelos, prejudica os pontos de movimento
-  se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
-    arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
-    ret 1
-
-func cmd_moveu
-  se vestpos == 18 # Usando nos tornozelos
-    arg0.pmove -= arg0.pmovemax * 0.3
-  senao vestpos # Usando em qualquer outro lugar
-    arg0.pmove -= 1
-
-func cmd_remover
-  se i_fechadura # Se tem fechadura: só pode remover se o jogador tiver a chave
-    listaitem i
-    epara i = arg0.dentro1.ini, i, i.depois
-      ret i_fechadura == i.obj.i_chave && i.obj.visivel(arg0), nulo
-    efim
-    arg0.msg("Você não possui a chave de " + descnome + ".")
-    ret 1
-
-
-classe i_teste020
-herda comum_itemgrupo
-const nome = "chave das algemas"
-const descnome = "a chave das algemas"
-const i_chave = "algema1"
 
 
 classe s_teste063

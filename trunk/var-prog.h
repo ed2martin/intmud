@@ -38,55 +38,60 @@ public:
     int  getValor();    ///< Ler valor numérico da variável
 
 private:
-    bool FuncExiste(TVariavel * v); ///< Processa função existe
-    bool FuncArquivo(TVariavel * v); ///< Processa função arquivo
-    bool FuncArqNome(TVariavel * v); ///< Processa função arqnome
-    bool FuncVarComum(TVariavel * v); ///< Processa função varcomum
-    bool FuncVarSav(TVariavel * v); ///< Processa função varsav
-    bool FuncVarNum(TVariavel * v); ///< Processa função varnum
-    bool FuncVarTexto(TVariavel * v); ///< Processa função vartexto
-    bool FuncVarTipo(TVariavel * v); ///< Processa função vartipo
-    bool FuncVarVetor(TVariavel * v); ///< Processa função varvetor
-    bool FuncConst(TVariavel * v); ///< Processa função const
-    bool FuncClasse(TVariavel * v); ///< Processa função classe
+    bool FuncExiste(TVariavel * v);       ///< Processa função Existe
+    bool FuncArquivo(TVariavel * v);      ///< Processa função Arquivo
+    bool FuncArqNome(TVariavel * v);      ///< Processa função ArqNome
+    bool FuncVarComum(TVariavel * v);     ///< Processa função VarComum
+    bool FuncVarSav(TVariavel * v);       ///< Processa função VarSav
+    bool FuncVarNum(TVariavel * v);       ///< Processa função VarNum
+    bool FuncVarTexto(TVariavel * v);     ///< Processa função VarTexto
+    bool FuncVarTipo(TVariavel * v);      ///< Processa função VarTipo
+    bool FuncVarVetor(TVariavel * v);     ///< Processa função VarVetor
+    bool FuncConst(TVariavel * v);        ///< Processa função Const
+    bool FuncClasse(TVariavel * v);       ///< Processa função Classe
 
-    bool FuncIniArq(TVariavel * v); ///< Processa função iniarq
-    bool FuncIniClasse(TVariavel * v); ///< Processa função iniclasse
-    bool FuncIniFunc(TVariavel * v); ///< Processa função inifunc
-    bool FuncIniFuncTudo(TVariavel * v); ///< Processa função inifunctudo
-    bool FuncIniHerda(TVariavel * v); ///< Processa função iniherda
-    bool FuncIniHerdaTudo(TVariavel * v); ///< Processa função iniherdatudo
-    bool FuncIniHerdaInv(TVariavel * v); ///< Processa função iniherdainv
-    bool FuncIniLinha(TVariavel * v); ///< Processa função inilinha
+    bool FuncIniArq(TVariavel * v);       ///< Processa função IniArq
+    bool FuncIniClasse(TVariavel * v);    ///< Processa função IniClasse
+    bool FuncIniFunc(TVariavel * v);      ///< Processa função IniFunc
+    bool FuncIniFuncTudo(TVariavel * v);  ///< Processa função IniFunctudo
+    bool FuncIniHerda(TVariavel * v);     ///< Processa função IniHerda
+    bool FuncIniHerdaTudo(TVariavel * v); ///< Processa função IniHerdatudo
+    bool FuncIniHerdaInv(TVariavel * v);  ///< Processa função IniHerdainv
+    bool FuncIniLinha(TVariavel * v);     ///< Processa função IniLinha
 
-    bool FuncLin(TVariavel * v); ///< Processa função lin
-    bool FuncNivel(TVariavel * v); ///< Processa função nivel
-    bool FuncDepois(TVariavel * v); ///< Processa função depois
-    bool FuncTexto(TVariavel * v); ///< Processa função texto
+    bool FuncLin(TVariavel * v);          ///< Processa função Lin
+    bool FuncNivel(TVariavel * v);        ///< Processa função Nivel
+    bool FuncDepois(TVariavel * v);       ///< Processa função Depois
+    bool FuncTexto(TVariavel * v);        ///< Processa função Texto
 
-    bool FuncApagar(TVariavel * v);
-    bool FuncCriar(TVariavel * v);
-    bool FuncApagarLin(TVariavel * v);
-    bool FuncCriarLin(TVariavel * v);
-    bool FuncSalvar(TVariavel * v);
-    bool FuncSalvarTudo(TVariavel * v);
+    bool FuncApagar(TVariavel * v);       ///< Processa função Apagar
+    bool FuncCriar(TVariavel * v);        ///< Processa função Criar
+    bool FuncApagarLin(TVariavel * v);    ///< Processa função ApagarLin
+    bool FuncCriarLin(TVariavel * v);     ///< Processa função CriarLin
+    bool FuncSalvar(TVariavel * v);       ///< Processa função Salvar
+    bool FuncSalvarTudo(TVariavel * v);   ///< Processa função SalvarTudo
+
+    bool FuncClIni(TVariavel * v);        ///< Processa função ClIni
+    bool FuncClFim(TVariavel * v);        ///< Processa função ClFim
+    bool FuncClAntes(TVariavel * v);      ///< Processa função ClAntes
+    bool FuncClDepois(TVariavel * v);     ///< Processa função ClDepois
 
     void MudaConsulta(TProgConsulta valor);
         ///< Muda o valor da variável consulta
-    TProgConsulta consulta;      ///< O que consultar
-    TClasse * Classe;   ///< A classe que está sendo consultada
+    TProgConsulta consulta;     ///< O que consultar
+    TClasse * Classe;           ///< A classe que está sendo consultada
     union {
-        TArqMapa * ArqAtual; ///< Valor atual da busca como arquivo
-        TClasse ** PontAtual;  ///< Valor atual da busca
-        TClasse * ClasseAtual; ///< Valor atual da busca como classe
-        const char * TextoAtual;  ///< Valor atual da busca como texto
-        int       ValorAtual;  ///< Valor atual da busca como int
+        TArqMapa * ArqAtual;    ///< Valor atual da busca como arquivo
+        TClasse ** PontAtual;   ///< Valor atual da busca
+        TClasse * ClasseAtual;  ///< Valor atual da busca como classe
+        const char * TextoAtual; ///< Valor atual da busca como texto
+        int       ValorAtual;   ///< Valor atual da busca como int
     };
     union {
-        TClasse ** PontFim;  ///< Valor final da busca
-        TClasse * ClasseFim; ///< Valor final da busca como classe
+        TClasse ** PontFim;     ///< Valor final da busca
+        TClasse * ClasseFim;    ///< Valor final da busca como classe
         const char * TextoFim;  ///< Valor final da busca como texto
-        int       ValorFim;  ///< Valor final da busca como int
+        int       ValorFim;     ///< Valor final da busca como int
         TClasse * ClasseHerda[HERDA_TAM]; ///< Usado em IniHerda2
     };
 

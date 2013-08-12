@@ -426,7 +426,7 @@ bool TMudarClasse::ExecPasso()
 #endif
         char * antigo_com = cl->Comandos;
         if (mudar->Arquivo)
-            cl->Arquivo(mudar->Arquivo);
+            cl->MoveArquivo(mudar->Arquivo);
         cl->Comandos = instr;
         mudar->Comandos = 0;
         cl->AcertaDeriv();

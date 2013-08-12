@@ -97,6 +97,7 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
             break;
     // Cria função
         FuncAtual++;
+        FuncAtual->nome = defvar;
         FuncAtual->linha = defvar + Num16(defvar);
         FuncAtual->este = obj;
         FuncAtual->expr = 0;
@@ -1700,6 +1701,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 
 // Acerta função
     FuncAtual++;
+    FuncAtual->nome = VarAtual->defvar;
     FuncAtual->linha = VarAtual->defvar;
     FuncAtual->este = FuncAtual[-1].este;
     FuncAtual->expr = VarAtual->defvar + Instr::endNome + 2;

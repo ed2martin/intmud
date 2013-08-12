@@ -457,6 +457,7 @@ bool Instr::VarFuncIni(TVariavel * varini)
             return false;
     // Cria função
         FuncAtual++;
+        FuncAtual->nome = defvar;
         if (defvar[2] == cVarFunc)
         {
             FuncAtual->linha = defvar + Num16(defvar);
