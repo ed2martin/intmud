@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------
 class TListaItem;
 class TListaX;
+class TClasse;
 class TObjeto;
 class TVariavel;
 
@@ -12,9 +13,10 @@ class TListaObj /// Variáveis ListaObj
 public:
     void Apagar();          ///< Apaga objeto
     void Mover(TListaObj * destino); ///< Move TListaObj para outro lugar
-    void EndObjeto(TObjeto * obj);
-    TListaX * AddInicio(TObjeto * obj); ///< Adiciona objeto no início da lista
-    TListaX * AddFim(TObjeto * obj); ///< Adiciona objeto no fim da lista
+    TListaX * AddInicio(TObjeto * obj);
+        ///< Adiciona objeto no início da lista
+    TListaX * AddFim(TObjeto * obj);
+        ///< Adiciona objeto no fim da lista
     TListaX * AddLista(TVariavel * v, TListaX * litem, int tipo);
         ///< Adiciona um ou mais objetos na lista
         /**< @param v De v até Instr::VarAtual = objetos/listas a adicionar

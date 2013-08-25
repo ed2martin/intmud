@@ -337,10 +337,37 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
 // Acerta variáveis
     VarAtual++;
     VarAtual->defvar = InstrTxtFixo;
+    VarAtual->nomevar = InstrTxtFixo;
     VarAtual->endvar = DadosTopo;
     VarAtual->tamanho = tammens+1;
     VarAtual->indice = 0;
     DadosTopo += tammens+1;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Cria variável ref com um valor definido
+/**
+ *  @param objeto Objeto correspondente à variável
+ *  @return true se conseguiu criar, false se memória insuficiente */
+bool Instr::CriarVarObj(TObjeto * obj)
+{
+    if (VarAtual >= VarFim-1)
+        return false;
+    VarAtual++;
+    if (obj)
+    {
+        VarAtual->defvar = InstrVarObjeto;
+        VarAtual->nomevar = InstrVarObjeto;
+    }
+    else
+    {
+        VarAtual->defvar = InstrNulo;
+        VarAtual->nomevar = InstrNulo;
+    }
+    VarAtual->endvar = obj;
+    VarAtual->tamanho = 0;
+    VarAtual->indice = 0;
     return true;
 }
 
@@ -747,6 +774,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cTextoTxt:         return "textotxt";
     case cTextoPos:         return "textopos";
     case cTextoVar:         return "textovar";
+    case cTextoObj:         return "textoobj";
     case cNomeObj:          return "nomeobj";
     case cArqDir:           return "arqdir";
     case cArqLog:           return "arqlog";
@@ -769,7 +797,8 @@ const char * Instr::NomeInstr(const char * instr)
     case cVarClasse:
     case cVarObjeto:
     case cVarInt:
-    case cTextoVarSub:      return "";
+    case cTextoVarSub:
+    case cTextoObjSub:      return "";
     case cTotalComandos:    break;
     }
     return "";
@@ -835,6 +864,7 @@ const char * Instr::NomeComando(int valor)
     case cTextoTxt:         return "cTextoTxt";
     case cTextoPos:         return "cTextoPos";
     case cTextoVar:         return "cTextoVar";
+    case cTextoObj:         return "cTextoObj";
     case cNomeObj:          return "cNomeObj";
     case cArqDir:           return "cArqDir";
     case cArqLog:           return "cArqLog";
@@ -858,6 +888,7 @@ const char * Instr::NomeComando(int valor)
     case cVarObjeto:        return "cVarObjeto";
     case cVarInt:           return "cVarInt";
     case cTextoVarSub:      return "cTextoVarSub";
+    case cTextoObjSub:      return "cTextoObjSub";
     case cTotalComandos:    break;
     }
     return 0;

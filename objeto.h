@@ -5,6 +5,7 @@
 
 class TVarRef;
 class TListaX;
+class TBlocoObj;
 
 //----------------------------------------------------------------------------
 /** Objetos  */
@@ -36,6 +37,7 @@ public:
     static TObjeto * FimApagar; ///< Último objeto marcado para apagar
     TVarRef * VarRefIni;        ///< Primeira TVarRef apontando para o objeto
     TListaX * VarListaX;        ///< Primeiro TListaX apontando para o objeto
+    TBlocoObj * VarBlocoObj;    ///< Primeiro TBlocoObj apontando para o objeto
     union {
       unsigned short NumeroSav; ///< Número; usado em var-sav.cpp, em "salvar"
       unsigned char MarcaLista; ///< Usado temporariamente em TListaObj

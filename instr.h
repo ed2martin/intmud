@@ -20,6 +20,7 @@ bool Mostra(char * destino, const char * origem, int tamanho);
 
 bool CriarVarInt(int valor);
 bool CriarVarTexto(const char * mens, int tammens=-1);
+bool CriarVarObj(TObjeto * obj);
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);
 void ApagarRet(TVariavel * v);
@@ -98,6 +99,8 @@ extern const char InstrVarListaItem[];
 extern const char InstrVarTextoPos[];
 /// TVariavel::defvar para Instr::cTextoVarSub
 extern const char InstrVarTextoVarSub[];
+/// TVariavel::defvar para Instr::cTextoObjSub
+extern const char InstrVarTextoObjSub[];
 /// TVariavel::func para Instr::cDebug
 extern const char InstrDebugFunc[];
 /// Quantas instruções pode executar antes que o controle retorne ao programa
@@ -311,6 +314,7 @@ enum Comando
     cTextoTxt,          ///< Extra: TextoTxt
     cTextoPos,          ///< Extra: TextoPos
     cTextoVar,          ///< Extra: TextoVar
+    cTextoObj,          ///< Extra: TextoObj
     cNomeObj,           ///< Extra: NomeObj
     cArqDir,            ///< Extra: ArqDir
     cArqLog,            ///< Extra: ArqLog
@@ -335,6 +339,7 @@ enum Comando
     cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
     cVarInt,            ///< int local; vide TVariavel::valor_int
     cTextoVarSub,       ///< Variável de TextoVar
+    cTextoObjSub,       ///< Variável de TextoObj
 
     cTotalComandos      ///< Número de comandos - não usado
 };

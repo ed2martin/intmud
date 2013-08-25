@@ -22,6 +22,7 @@
 #include "var-listaobj.h"
 #include "var-texto.h"
 #include "var-textovar.h"
+#include "var-textoobj.h"
 #include "var-datahora.h"
 #include "variavel.h"
 #include "classe.h"
@@ -331,7 +332,7 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
 //----------------------------------------------------------------------------
 int TVarSav::Ler(TVariavel * v, const char * arqnome)
 {
-    int quantidade = 0xFFFF; // Número máximo de objetos
+    unsigned int quantidade = 0xFFFF; // Número máximo de objetos
     char mens[8192];
     TArqLer arqler;
     if (Instr::VarAtual >= v+3)
@@ -346,7 +347,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
     TListaX * listaitem = listaobj->Inicio;
     TObjeto * bufobj[MAX_OBJ];
-    int numobj=0;
+    unsigned int numobj=0;
     if (quantidade > MAX_OBJ)
         quantidade = MAX_OBJ;
 // Avança até a lista dos tipos de objetos
@@ -385,6 +386,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     TListaX * listaitem_fim = 0;
     TTextoTxt * textotxt_obj = 0; // textotxt que falta anota \n no final
     TTextoVar * textovar_obj = 0; // Para anotar texto em textovar
+    TTextoObj * textoobj_obj = 0; // Para anotar texto em textoobj
     char mensvar[65100];       // Texto que será anotado
     char * pmensvar = mensvar; // Aonde adicionar texto
     TVariavel var;
@@ -464,7 +466,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     // Referência a objetos
         case varObj:
             {
-                int indice = (p[0]-0x21) * 0x40 + (p[1]-0x21);
+                unsigned int indice = (p[0]-0x21) * 0x40 + (p[1]-0x21);
                 if (p[0]<0x21 || p[0]>=0x61 || p[1]<0x21 || p[1]>=0x61 ||
                         indice >= quantidade)
                     var.setObj(0);
@@ -489,7 +491,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 while (*p)
                 {
                 // Obtém número do objeto
-                    int subobj=0;
+                    unsigned int subobj=0;
                     for (; *p>='0' && *p<='9'; p++)
                         subobj = subobj * 10 + *p - '0';
                 // Verifica se adicionar novo objeto
@@ -541,7 +543,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 {
                 // Obtém número do objeto
                     TVariavel varitem;
-                    int subobj=0;
+                    unsigned int subobj=0;
                     for (p++; *p>='0' && *p<='9'; p++)
                         subobj = subobj * 10 + *p - '0';
                 // Obtém a variável textopos
@@ -635,6 +637,40 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     }
                     if (pmensvar >= mensvar + sizeof(mensvar))
                         pmensvar--;
+                }
+                break;
+            }
+    // TextoObj
+            if (var.defvar[2]==Instr::cTextoObj)
+            {
+                TTextoObj * txtobj = var.end_textoobj + var.indice;
+            // Outro textoobj: inicializa textoobj
+                if (txtobj != textoobj_obj)
+                {
+                    txtobj->Limpar();
+                    textoobj_obj = txtobj;
+                }
+            // Acrescenta as variáveis
+                while (*p)
+                {
+                // Procura um sinal de igual
+                    char * nomevar = p;
+                    while (*p && *p!='=')
+                        p++;
+                    if (*p==0)
+                        break;
+                // Marca o fim do nome da variável
+                    *p++ = 0;
+                // Obtém número do objeto
+                    unsigned int subobj=0;
+                    for (; *p>='0' && *p<='9'; p++)
+                        subobj = subobj * 10 + *p - '0';
+                // Adiciona variável
+                    if (*nomevar && subobj < quantidade && bufobj[subobj])
+                        txtobj->Mudar(nomevar, bufobj[subobj]);
+                // Passa para a próxima variável
+                    if (*p=='\'')
+                        p++;
                 }
                 break;
             }
@@ -1026,6 +1062,50 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                     }
                     *d=0;
                     if (strcmp(mens, ".=\\0")!=0)
+                        fprintf(arq, "%s\n", mens);
+                } while (++var.indice < posic);
+                break;
+        // TextoObj
+              case Instr::cTextoObj:
+                do {
+                    char mens[512];
+                    char * d = mens;
+                    TTextoObj * txtobj = var.end_textoobj + var.indice;
+                    if (var.indice)
+                        sprintf(d, "%s.%d=",
+                                var.defvar+Instr::endNome, var.indice);
+                    else
+                        sprintf(d, "%s=", var.defvar+Instr::endNome);
+                    while (*d)
+                        d++;
+                    TBlocoObj * bl = txtobj->RBroot;
+                    if (bl)
+                        bl = bl->RBfirst();
+                    bool inicio = true;
+                    for (; bl; bl=TBlocoObj::RBnext(bl))
+                    {
+                    // Obtém o número do objeto
+                        unsigned int num = bl->Objeto->NumeroSav;
+                        if (num>=quantidade || bufobj[num]!=bl->Objeto)
+                            continue;
+                    // Verifica se tem espaço em mens
+                        if (d >= mens + 150)
+                        {
+                            *d = 0;
+                            fprintf(arq, "%s\n", mens);
+                            d=copiastr(mens, ".=");
+                            inicio = true;
+                        }
+                        if (inicio)
+                            inicio = false;
+                        else
+                            *d++ = '\'';
+                    // Anota o número do objeto
+                        sprintf(d, "%s=%d", bl->NomeVar, num);
+                        while (*d) d++;
+                    }
+                    *d=0;
+                    if (strcmp(mens, ".=")!=0)
                         fprintf(arq, "%s\n", mens);
                 } while (++var.indice < posic);
                 break;

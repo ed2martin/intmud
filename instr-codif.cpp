@@ -279,6 +279,7 @@ static const TListaInstr ListaInstr[] = {
     { "socket",    cSocket },
     { "telatxt",   cTelaTxt },
     { "terminar",  cTerminar },
+    { "textoobj",  cTextoObj },
     { "textopos",  cTextoPos },
     { "textotxt",  cTextoTxt },
     { "textovar",  cTextoVar },
