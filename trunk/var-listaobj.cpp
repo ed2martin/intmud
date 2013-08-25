@@ -63,12 +63,6 @@ void TListaObj::Mover(TListaObj * destino)
 }
 
 //----------------------------------------------------------------------------
-void TListaObj::EndObjeto(TObjeto * obj)
-{
-    Objeto = obj;
-}
-
-//----------------------------------------------------------------------------
 TListaX * TListaObj::AddInicio(TObjeto * obj)
 {
     if (obj==0)

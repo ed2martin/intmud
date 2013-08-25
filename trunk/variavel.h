@@ -15,6 +15,7 @@ class TListaItem;
 class TTextoTxt;
 class TTextoPos;
 class TTextoVar;
+class TTextoObj;
 class TVarDir;
 class TVarLog;
 class TVarTxt;
@@ -28,6 +29,7 @@ class TIndiceObj;
 class TIndiceItem;
 class TVarDataHora;
 class TTextoVarSub;
+class TTextoObjSub;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
@@ -157,6 +159,7 @@ public:
         TTextoTxt    * end_textotxt; ///< Instr::cTextoTxt
         TTextoPos    * end_textopos; ///< Instr::cTextoPos
         TTextoVar    * end_textovar; ///< Instr::cTextoVar
+        TTextoObj    * end_textoobj; ///< Instr::cTextoObj
         TVarTelaTxt  * end_telatxt;  ///< Instr::cTelaTxt
         TVarSocket   * end_socket;   ///< Instr::cSocket
         TVarServ     * end_serv;     ///< Instr::cServ
@@ -168,6 +171,7 @@ public:
         TVarDataHora * end_datahora; ///< Instr::cDataHora
         int  valor_int;              ///< Instr::cVarInt - endvar como int
         TTextoVarSub * end_textovarsub; ///< Instr::cTextoVarSub
+        TTextoObjSub * end_textoobjsub; ///< Instr::cTextoObjSub
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
                     /**< 0 significa que não está usando ou a variável está

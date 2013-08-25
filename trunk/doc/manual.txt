@@ -42,32 +42,33 @@ IntMUD (Interpretador MUD)
 18. ListaItem - um item de ListaObj
 19. TextoTxt - lista de texto
 20. TextoPos - acessar linha de textotxt
-21. TextoVar - lista de variáveis
-22. NomeObj - para obter um ou mais objetos
-23. ArqDir - acessar diretórios
-24. ArqLog - gravar texto em arquivos de log
-25. ArqSav - salvar objetos em arquivos
-26. ArqTxt - acessar arquivos de texto
-27. IntTempo - gerar eventos depois de um tempo
-28. IntExec - gerar evento assim que possível
-29. TelaTxt - acessar a janela do programa
-30. Socket - comunicação via TCP/IP
-31. Serv - receber conexões via TCP/IP
-32. Prog - ler e alterar o programa
-32.1. Funções para iniciar uma consulta
-32.2. Funções para ler o resultado da consulta
-32.3. Funções para obter informações
-32.4. Funções para alterar o programa
-33. Debug - auxiliar a detectar erros no programa
-34. IndiceObj - objetos organizados de acordo com um texto
-35. IndiceItem - obter objeto pelo texto
-36. DataHora - calendário
+21. TextoVar - lista de variáveis de texto
+22. TextoObj - lista de variáveis ref
+23. NomeObj - para obter um ou mais objetos
+24. ArqDir - acessar diretórios
+25. ArqLog - gravar texto em arquivos de log
+26. ArqSav - salvar objetos em arquivos
+27. ArqTxt - acessar arquivos de texto
+28. IntTempo - gerar eventos depois de um tempo
+29. IntExec - gerar evento assim que possível
+30. TelaTxt - acessar a janela do programa
+31. Socket - comunicação via TCP/IP
+32. Serv - receber conexões via TCP/IP
+33. Prog - ler e alterar o programa
+33.1. Funções para iniciar uma consulta
+33.2. Funções para ler o resultado da consulta
+33.3. Funções para obter informações
+33.4. Funções para alterar o programa
+34. Debug - auxiliar a detectar erros no programa
+35. IndiceObj - objetos organizados de acordo com um texto
+36. IndiceItem - obter objeto pelo texto
+37. DataHora - calendário
 
 
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012, por Paulo Santos Ramos e Edward Martin, até o tópico 15.2.
+em 2012 e 2013, por Paulo Santos Ramos e Edward Martin, até o tópico 15.3.1.
 
 
 1. SOBRE O INTMUD
@@ -251,7 +252,7 @@ quando uma classe é alterada, todos os objetos derivados dela também são.
 Nota: Para mais detalhes de criação/remoção de objetos, vide funções
       CRIAR() e APAGAR().
 
-Sintaxe da definição de classes:
+Sintaxe para definir uma classe:
 
 classe <nome da classe>
 herda <classe 1>, <classe 2>, <classe 3> ... <classe n>
@@ -294,7 +295,7 @@ São partes do programa que via de regra fazem uma tarefa específica.
 As funções são sempre definidas dentro de uma classe e possuem nomes, pelos
 quais podem ser chamadas.
 
-Sintaxe da definição de funções:
+Sintaxe para definir uma função:
 func <nome da função>
 <variáveis e/ou instruções>
 
@@ -351,7 +352,7 @@ Em princípio, são semelhantes a variáveis, porém possuem uma informação que
 não pode ser alterada. E é justamente essa imutabilidade de alteração
 que dá origem ao nome 'constante' para as tais.
 
-Sintaxe da definição:
+Sintaxe para definir uma constante:
 const <nome da constante> = <valor da constante>
 
 Exemplos:
@@ -725,7 +726,8 @@ Corresponde sempre ao primeiro objeto da classe. Se a classe não existir
 ou não possuir nenhum objeto, assume 'nulo'. Para mais detalhes de
 criação e remoção de objetos, vide funções CRIAR() e APAGAR().
 
-Exemplo: '$teste' corresponde ao primeiro objeto da classe 'teste'.
+Exemplo:
+'$teste' corresponde ao primeiro objeto da classe 'teste'.
 
 9.9. Colchetes
 
@@ -878,7 +880,6 @@ infinito), tanto positivos quanto negativos. A precisão é de 15 dígitos.
 Define uma variável que contém um texto, de até 1 a 512 caracteres.
 
 Exemplo:
-
 txt10 x # Define a variável 'x', de até 10 caracteres
 
 Nota: Se for atribuído um texto que ultrapassa a quantidade de caracteres
@@ -898,6 +899,7 @@ Essa variável passa a ter o valor 'nulo' quando:
  - O objeto correspondente a ela é apagado.
 
 Exemplo:
+
 ref r0
 # Cria um objeto da classe 'teste' e faz 'r0' corresponder a esse objeto
 r0 = criar("teste")
@@ -964,13 +966,15 @@ for salvo por arqsav. Vide também o tópico da variável arqsav.
 
 São conjuntos de variáveis de mesmo tipo.
 
-Sintaxe da definição de vetores:
+Sintaxe para definir um vetor:
 <tipo da variável> <nome do vetor>.<número de variáveis de 1 a 255>
 
 Exemplo:
+
 int8 v.3
 
 Nesse caso existem 3 variáveis do tipo 'int8':
+
 v.0
 v.1
 v.2
@@ -1073,7 +1077,8 @@ A-=B       - O mesmo que: A = A - B;
 
 Pode-se usar também os parênteses em expressões.
 
-Exemplo: 2*(3+4)
+Exemplo:
+2*(3+4)
 
 Nota: Duas variáveis são consideradas exatamente iguais se forem do mesmo
       tipo (dois números, dois textos, etc.) e possuírem o mesmo valor. Em
@@ -1663,7 +1668,6 @@ Veja também a função 'criar()'.
 15.1.2. fim
 
 É executada antes do objeto ser apagado.
-
 Veja também a função 'apagar'.
 
 15.1.3. iniclasse
@@ -1741,29 +1745,44 @@ Calcula o logaritmo natural.
 
 15.3.1. txtnum(<número>, <formato>)
 Retorna um texto correspondente a um número ou variável numérica.
+
 Formato é um texto que pode conter:
-Um dígito de 0 a 9 = número de casas após a vírgula
-Uma vírgula: separar o número com vírgulas
-Um ponto: separar número com pontos, o ponto decimal vira vírgula
-Letra E: mostrar em notação científica; as opções anteriores são ignoradas
+Dígito de 0 a 9 - É o número de casas após a vírgula
+',' (vírgula)   - Separar o número com vírgula;
+'.' (ponto)     - Separar o número com pontos, o ponto decimal vira
+                  vírgula;
+'E' (letra E)   - Mostrar em notação científica; as outras opções são
+                  ignoradas.
+
 Exemplo:
-txtnum(1005.23, "3.") é o mesmo que "1.005,230"
-Nota: números muito grandes (mais de 18 dígitos antes da vírgula)
-são mostrados em notação científica.
-Exemplo: 5.9E+18 significa 59 seguido de 17 zeros.
+txtnum(1005.23, "3.") # Retorna "1.005,230"
+
+Nota: números muito grandes (mais de 18 dígitos antes da vírgula) são
+      mostrados em notação científica. Por exemplo, 5.9E+18 significa
+      59 seguido de 17 zeros.
 
 15.3.2. txt(<texto>)
 Texto constante (não pode ser alterado) igual a <texto>.
 Se <texto> não for um texto, retorna um texto vazio.
 Se for objeto, retorna o nome da classe.
 
-15.3.3. txt(<texto>, [caracter inicial], [quantidade de caracteres])
-Retorna um texto que é parte do texto especificado. Exemplo:
+15.3.3. txt(<texto>, [início], [tamanho])
+Retorna os caracteres de um texto começando pela posição especificada em
+[início] e limitando a quantidade de caracteres no parâmetro [tamanho].
+
+O argumento [início] representa o caracter inicial do texto retornado,
+sendo '0' o primeiro caracter.
+
+O argumento [tamanho] é tamanho do texto retornado em número de caracteres.
+Se for omitido ou se texto original for menor, retorna até o final do texto.
+
+Exemplo:
 txt("abcdef", 2, 2) é o mesmo que "cd".
 
 15.3.4. txtfim(<texto>, <quantidade de caracteres>)
-Retorna um texto que contém os últimos caracteres do texto
-especificado. Exemplo:
+Retorna um texto que contém os últimos caracteres do texto.
+
+Exemplo:
 txtfim("abcdef", 3) é o mesmo que "def".
 
 15.3.5. txt1(<texto>)
@@ -1777,9 +1796,8 @@ Retorna a quantidade de palavras contidas no texto.
 As palavras são sempre separadas por um ou mais espaços.
 
 15.3.8. txtsub(<texto>, <palavra inicial>, [quantidade de palavras])
-Retorna um texto que é parte do texto especificado.
-As palavras são sempre separadas por um ou mais espaços.
-Palavra inicial é a primeira palavra, 0=início do texto.
+Retorna um texto que é parte de <texto>.
+As palavras sempre separadas por espaços e numeradas a partir do 0.
 Se a quantidade de palavras for omitida, assume até o final do texto.
 Exemplos:
 txtsub("bom dia boa tarde", 2) é o mesmo que "boa tarde".
@@ -1790,16 +1808,17 @@ Retorna a quantidade de linhas contidas no texto.
 As linhas são separadas por '\n'.
 Nota: Se for um texto vazio, essa função retorna 0.
 
-15.3.10. txtsublin(<texto>, <palavra inicial>, [quantidade de linhas])
-Retorna um texto que é parte do texto especificado.
+15.3.10. txtsublin(<texto>, <linha inicial>, [quantidade de linhas])
+Retorna um texto que é parte de <texto>, da mesma forma que a função txtsub.
 As linhas são sempre separadas por '\n'.
-Linha inicial é a primeira linha, 0=início do texto.
 Se a quantidade de linhas for omitida, assume até o final do texto.
 
 15.3.11. txtcor(<texto>)
-Retorna o texto sem as definições de cores e opções do telnet
-(eco, "go ahead" e bipe: de "\cg" até "\cj"). Exemplo:
-txtcor("\cF\d4Teste\b") é o mesmo que "Teste".
+Retorna o texto sem as definições de cores e opções do Telnet, ou seja
+sem as definições compostas por '\b', '\c' e '\d'.
+
+Exemplo:
+txtcor("\cF\d4Teste\b") # É o mesmo que "Teste".
 
 15.3.12. txtmai(<texto>)
 Retorna o texto em letras maiúsculas.
@@ -1818,25 +1837,31 @@ Se encontrar um ponto, a próxima letra será maiúscula.
 15.3.16. txtmudamai(<texto>, [porcentagem])
 Retorna um texto que é o texto original com letras maiúsculas
 trocadas com minúsculas.
+
 Exemplo: txtmudamai("Bom Dia") é o mesmo que "bOM dIA"
-A porcentagem, se estiver presente, é a chance de fazer uma troca.
-Exemplo: 0=não trocar, 100=trocar sempre, 50=50% de chances de trocar
+
+A porcentagem é um número de 0 a 100 que indica a probabilidade de
+ocorrer essa mudança em cada letra. O valor 0 significa não trocar,
+e 100 troca sempre.
 
 15.3.17. txtcopiamai(<texto1>, <texto2>)
-Retorna texto1, mas passando letras para maiúscula ou minúscula
-conforme as letras correspondentes em <texto2>.
+Retorna <texto1> com a mesma sequência de maiúsculas e minúsculas
+existente em <texto2> (a única alteração no texto é passar letras
+para maiúsculas ou minúsculas).
+
 Exemplo: txtcopiamai("teste", "XYZnn") é o mesmo que "TESte"
 
 15.3.18. txtfiltro(<texto>)
-Filtra mensagens. Retorna o texto filtrado.
+Filtra mensagens.
+Retorna o texto filtrado.
 
 15.3.19. txtesp(<quantidade de espaços>)
-Retorna um texto que é a quantidade de espaços requisitada.
-O texto retornado tem de 0 a 100 caracteres.
+Retorna de 0 a 100 espaços conforme <quantidade de espaços>.
 
 15.3.20. txtrepete(<texto>, <quantidade de repetições>)
-Retorna um texto que é o texto especificado repetido o número
-especificado. Exemplos:
+Retorna o <texto> concatenando-o com ele mesmo repetidas vezes.
+
+Exemplos:
 txtrepete("a", 3) # é o mesmo que "aaa"
 txtrepete("xyz", 2) # é o mesmo que "xyzxyz"
 
@@ -1856,38 +1881,42 @@ Para indicar aonde o texto separador deve ser acrescentado, escreve-se
 uma ou mais letras, que correspondem a um tipo de caracter, seguido do
 sinal de mais e uma ou mais letras, correspondentes ao caracter seguinte.
 
-Exemplo: para separar os números, acrescentando um espaço na frente, o texto
-         de opções é "LNO+N", que significa letra, número ou outros caracteres
-         seguido de número.
+Pode-se usar mais de uma condição, separando-as com vírgulas.
 
-txtsepara("1,10abc-40", "LNO+N") resulta em: "1, 10abc -40"
+Exemplo 1:
+Para adicionar um espaço entre letras, o texto de opções deve ser "L+L".
+
+txtsepara("bom dia!", "L+L") # Resulta em "b o m d i a!"
 
 Exemplo 2:
-
 txtsepara("bom dia boa tarde", "L+EV", "!")
 # É o mesmo que: "bom! dia! boa! tarde!"
 
-Pode-se usar mais de uma condição, separando-as com vírgulas.
-
 Exemplo 3:
+Para separar os números, acrescentando um espaço na frente, o texto o texto
+de opções é "LNO+N", que significa qualquer letra, número ou outro carater
+seguido de um número.
+
+txtsepara("1,10abc-40", "LNO+N") # Resulta em: "1, 10abc -40"
+
+Exemplo 4: Usando mais de uma condição
 
 txtsepara("1,10abc-40", "LON+N,N+LON")
 # É o mesmo que: "1 , 10 abc -40"
 
-15.3.20. txtremove(<texto1>, <texto2>)
-Retorna um texto semelhante a <texto1>, mas removendo espaços e/ou
-cores, conforme <texto2>. As letras interpretadas em <texto2> são:
+15.3.22. txtremove(<texto>, <opções>)
+Retorna <texto> com algumas alterações como remover espaços extras,
+cores, remover acentos de letras acentuadas, etc.
+
+O argumento <opções> é um texto, sendo que cada letra é um tipo de alteração:
 E = remover espaços à esquerda.
 M = remover espaços extras, exceto à esquerda e à direita.
 D = remover espaços à direita.
-C = remover cores.
+C = remover cores, exatamente como a função txtcor.
 T = remover eco, "go ahead" e bipe (de "\cg" até "\cj").
 S = remover aspas simples trocando espaços entre duas aspas por sublinhado.
 A = remover aspas duplas trocando espaços entre duas aspas por sublinhado.
 7 = usar letras sem acentuação (caracteres em 7 bits).
-    Exemplo, "ã É ì" vira "a E i".
-
-Vide também txtcor.
 
 Exemplos:
 
@@ -1896,23 +1925,24 @@ txtremove("  bom  dia  ", "ED") # É o mesmo que "bom  dia"
 txtremove("\cF\d4Teste\b", "C") # É o mesmo que "Teste"
 txtremove("tenha um 'bom dia' !", "S") # É o mesmo que "tenha um bom_dia !"
 
-15.3.21. intdist(<texto1>, <texto2>)
+15.3.23. intdist(<texto1>, <texto2>)
 Calcula a distância 'Levenshtein' entre os dois textos.
 Em outras palavras, calcula o quanto os dois textos são diferentes.
 Retorna a quantidade de mudanças necessárias; 0=textos iguais.
 
 As funções intdistmai e intdistdif fazem a mesma coisa, exceto que:
-intdist - considera iguais letras minúsculas, maiúsculas e acentuadas.
-intdistmai - considera iguais letras maiúsculas e minúsculas.
-intdistdif - diferencia letras maiúsculas, minúsculas e acentuadas.
+intdist    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
+intdistmai - Considera iguais letras maiúsculas e minúsculas;
+intdistdif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
 
 15.4. FUNÇÕES PARA PROCURA E SUBSTITUIÇÃO DE TEXTOS
 
 15.4.1. txtcod(<texto>)
 Codifica um texto de modo que possa ser usado como nome de variável.
-Caracteres válidos em nomes de variáveis não são alterados, com exceção
+Os caracteres válidos em nomes de variáveis não são alterados, com exceção
 do espaço, que muda para '@_'.
+
 Os caracteres modificados são:
 @ /b /c /d /n  mudam para  @@ @b @c @d @n
 " ! # $ %  mudam para  @a @e @f @g @h
@@ -1938,8 +1968,12 @@ func tela_msg
   tela.msg("txtdec = \"" + txtdec(txtcod(arg0)) + "\"\n")
 
 15.4.3. txtvis(<texto>)
-Torna visíveis caracteres especiais, como \n e \b.
-"\b\c\d\n"   mudam para  "\\b\\c\\d\\n"
+Torna visíveis caracteres especiais, como \n e \b, fazendo as seguintes
+substituições:
+"\b" muda para "\\b"
+"\c" muda para "\\c"
+"\d" muda para "\\d"
+"\n" muda para "\\n"
 "\"" muda para "\\\""
 "\\" muda para "\\\\"
 
@@ -1956,28 +1990,30 @@ msg("A variável x contém \"" + txtvis(x) + "\"\n")
 15.4.4. txtinvis(<texto>)
 Processo inverso da função txtvis.
 
-15.4.5. txtproc(<texto>, <texto procurado>, [caracter inicial])
-Procura <texto procurado> em <texto>
-Retorna -1 se não encontrou ou o número do caracter se encontrou
-<caracter inicial> = a partir de onde procurar no texto
-        0 = primeiro caracter, 1 = segundo, etc.
+15.4.5. txtproc(<texto1>, <texto2>, [caracter inicial])
+Procura <texto2> em <texto1>.
+Retorna -1 se não encontrou ou o número do caracter se encontrou.
+O <caracter inicial> indica o número do caracter em que deve-se começar
+a busca. O valor 0 corresponde ao primeiro caracter, o valor 1 o segundo,
+etc. Se omitido começa no primeiro.
 
 As funções txtprocmai e txtprocdif fazem a mesma coisa, exceto que:
-txtproc - considera iguais letras minúsculas, maiúsculas e acentuadas.
-txtprocmai - considera iguais letras maiúsculas e minúsculas.
-txtprocdif - diferencia letras maiúsculas, minúsculas e acentuadas.
+txtproc    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
+txtprocmai - Considera iguais letras maiúsculas e minúsculas;
+txtprocdif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
 15.4.6. txttroca(<texto>, <valor anterior>, <novo valor>)
 Troca <valor anterior> por <novo valor> no <texto>.
 Retorna o texto modificado ao invés de alterar o texto original.
 Nota: Se <valor anterior> for um texto vazio, retorna <texto>.
+
 Exemplo:
 txttroca("possibilidade", "i", "e") é o mesmo que "possebeledade".
 
 As funções txttrocamai e txttrocadif fazem a mesma coisa, exceto que:
-txttroca - considera iguais letras minúsculas, maiúsculas e acentuadas.
-txttrocamai - considera iguais letras maiúsculas e minúsculas.
-txttrocadif - diferencia letras maiúsculas, minúsculas e acentuadas.
+txttroca    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
+txttrocamai - Considera iguais letras maiúsculas e minúsculas;
+txttrocadif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
 15.4.7. txte(<texto>)
 Retorna o texto substituindo sublinhado '_' por espaço ' '.
@@ -1988,8 +2024,8 @@ Retorna o texto substituindo espaço ' ' por sublinhado '_'.
 Tem o mesmo efeito de txttroca(<texto>, " ", "_").
 
 15.4.9. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
-Procura alguns textos específicos em <texto> e substitui por variáveis ou
-funções do objeto 'este'.
+Procura alguns textos em <texto> e substitui por variáveis ou funções
+do objeto 'este'.
 Os textos procurados são <texto2> seguido de uma palavra qualquer.
 Os nomes das funções são <variável> seguido da mesma palavra.
 
@@ -2001,11 +2037,14 @@ vartroca("$1 falou com $2", "$", "t_")
 # É o mesmo que: t_1 + " falou com " + t_2
 # Que por sua vez, resulta no texto "joão falou com maria"
 
-A porcentagem, se estiver presente, é a chance de fazer uma troca.
-Exemplo: 0=não trocar, 100=trocar sempre, 50=50% de chances de trocar
-O espaço, se estiver presente, é um número que indica quantas trocas
-não deve fazer após fazer uma troca com sucesso.
-Exemplo: 1=cada vez que trocar, ignora a próxima troca
+A [porcentagem] é um número de 0 a 100 que indica a probabilidade de
+ocorrer cada troca. O valor 0 significa não trocar, e 100 troca sempre.
+Se omitido, assume 100.
+
+O [espaço] é um número que indica quantas trocas não deve fazer após
+ter efetuado a última troca. Se omitido, assume 0.
+Exemplo: 1 significa cada vez que trocar ignora a próxima troca
+
 Quando vartroca chama uma função, coloca em arg0 o texto encontrado.
 
 Exemplo de como diferenciar letras maiúsculas de minúsculas:
@@ -2019,9 +2058,7 @@ vartroca("$A $a", "$", "teste_") # Produz o texto "A maiúsculo A minúsculo"
 
 Outra forma de escrever:
 
-const teste_a = t_a[arg0=="A"]
-const t_a0 = "A maiúsculo"
-const t_a1 = "A minúsculo"
+const teste_a = arg0 === "A" ? "A maiúsculo" : "A minúsculo"
 vartroca("$A $a", "$", "teste_")
 
 
@@ -2049,13 +2086,15 @@ Retorna o mesmo texto para dois apelidos parecidos.
 Nota: o texto retornado nunca é maior que o apelido.
 
 15.5.5. intnome(<texto>)
-Verifica se texto é válido para apelido. Retorna:
+Verifica se texto é válido para apelido.
+Retorna:
 0 = apelido válido
 1 = muito pequeno (menos de 2 caracteres)
 2 = contém caracteres inválidos
 
 15.5.6. intsenha(<texto>)
-Verifica se texto é válido para senha. Retorna:
+Verifica se texto é válido para senha.
+Retorna:
 0 = senha válida
 1 = muito pequena (menos de 5 caracteres)
 2 = contém caracteres inválidos
@@ -2066,24 +2105,25 @@ Verifica se texto é válido para senha. Retorna:
 
 15.2.6. ref(<objeto 1>, <robjeto 2>, <objeto 3> ..., <objeto N>)
 Checa os argumentos, do primeiro ao último, até encontrar um que seja
-um objeto. Se encontrou, retorna o objeto. Caso contrário retorna nulo.
+um objeto. Se encontrou, retorna o objeto. Caso contrário retorna NULO.
 Portanto, quando houver apenas um argumento, que retorna o objeto
 correspondente ou nulo se não for objeto.
 
-15.6.2. criar(<nome da classe>, [argumentos da função ini])
+15.6.2. criar(<nome da classe>, [um ou mais argumentos da função ini])
 Cria um objeto e chama a função ini do objeto.
-Entrada: texto que contém o nome da classe.
-Retorna: uma referência para o objeto, ou nulo se classe não existe.
+O [nome da classe] é um texto que contém o nome da classe.
+Retorna uma referência para o objeto, ou nulo se classe não existe.
+
 Exemplos:
 ref x
 x = criar("teste1")
 criar("teste2")
 
 15.6.3. apagar(<objeto>)
-Marca um objeto para ser apagado. O objeto só será realmente apagado
-após o controle retornar ao programa. Mesmo assim, antes de apagar
-ainda será chamada a função fim do objeto.
-Entrada: referência para o objeto.
+Marca um objeto para ser apagado. O objeto só será realmente apagado após
+o controle retornar ao programa. Mesmo assim, antes de apagar ainda será
+chamada a função fim do objeto.
+
 Exemplo:
 apagar(este)
 
@@ -2102,37 +2142,42 @@ Exemplos: $jog  ou  $["jog"]
 
 15.7.1. txturlcod(<texto>)
 Codifica um texto formando uma URL válida.
+
 Atua da seguinte forma:
-O primeiro \n é substituído por interrogação.
-Os próximos \n são substituídos pelo caracter &.
-O espaço é substituído pelo um sinal de soma.
-Letras A a Z maiúsculas e minúsculas, dígitos de 0 a 9, hífen, ponto,
-sinal de igual e '/' não são alterados.
-Qualquer outro caracter é substituído por um '%' seguido de dois
-dígitos, que são código ASCII do caracter, em hexadecimal.
+- O primeiro '\n' é substituído por '?' (interrogação);
+- Os próximos '\n' são substituídos pelo caracter '&'.
+- O espaço é substituído por um sinal de '+' (mais);
+- Letras de 'A' a 'Z' maiúsculas e minúsculas, dígitos decimal, '-'
+  (hífen), '.' (ponto), '=' (igual) e '/' (barra) não são alterados;
+- Qualquer outro caracter é substituído por um '%' seguido de dois
+  dígitos, que são o código ASCII do caracter, em hexadecimal.
 
 Exemplo:
+
 txturlcod("/x.html\na=1\nb=bom dia!")
 Resulta em "/x.html?a=1&b=bom+dia%21"
 Em um servidor HTTP, isso geralmente significa acessar a página "/x.html"
 passando as variáveis a="1" e b="bom dia!".
 
 15.7.2. txturldec(<texto>)
-Decodifica uma URL formando um texto.
-Processo inverso de txturlcod.
+Decodifica uma URL formando um texto. Processo inverso de txturlcod.
 
 Exemplo:
 
 txturldec("/x.html?a=1&b=bom+dia%21")
 # Resulta em "/x.html\na=1\nb=bom dia!"
 
-15.7.3. intchr(<texto>, [número do caracter])
-Retorna o código ASCII de um caracter, de 32 a 255, ou um dos
-seguintes códigos usados no IntMUD:
-0=não é um caracter (ex. texto vazio)
-1=\b,   2=\c,   3=\d,   10=\n
-Se a posição do caracter no texto for omitida, é considerado como
-se fosse 0 (o primeiro caracter do texto).
+15.7.3. intchr(<texto>, [posição do caracter])
+Retorna o código ASCII de um caracter, de 32 a 255, ou um dos seguintes
+códigos usados no IntMUD:
+0 = não é um caracter (por exemplo, um texto vazio)
+1 = '\b'
+2 = '\c'
+3 = '\d'
+10 = '\n'
+
+Se a posição do caracter no texto for omitida, assume 0, ou seja o
+primeiro caracter do texto.
 
 15.7.4. txtchr(<valor numérico>)
 Retorna o caracter correspondente a um código ASCII, ou um texto
@@ -2143,25 +2188,29 @@ Se for objeto, retorna a quantidade de objetos da classe.
 Se for texto, retorna o tamanho do texto em caracteres.
 Se for vetor, retorna a quantidade de variáveis do vetor.
 Se for fornecido mais de um argumento, é retornada a soma.
-Exemplo: inttotal(a,b)
-É o mesmo que: inttotal(a) + inttotal(b)
+
+Exemplo:
+inttotal("bom", "dia")
+
+Nesse caso, é o mesmo que: inttotal("bom") + inttotal("dia")
 
 
 15.8. FUNÇÕES DE VETORES DE VARIÁVEIS NUMÉRICAS
 
-As variáveis do tipo real e as numéricas começadas com int (int1 a int32,
-uint1 a uint32, intinc, intdec, inttempo) possuem a seguinte função:
+As variáveis do tipo 'real' e os tipos numéricos começados com a palavra
+'int' (int1 a int32, uint1 a uint32, intinc, intdec e inttempo) possuem
+as seguintes funções:
 
 15.8.1. limpar([novo valor])
 Faz todas as variáveis serem iguais ao novo valor. Se o novo valor for
 omitido, faz todas variáveis serem 0.
 
 15.8.2. bits
-Existente somente em vetores de int1. É uma variável do tipo int32,
+Existente somente em vetores de 'int1'. É uma variável do tipo 'int32',
 que corresponde ao valor numérico das variáveis do vetor.
 
 
-15.9. Funções de vetores de variáveis txt1 a txt512
+15.9. FUNÇÕES DE VETORES DE VARIÁVEIS TXT1 A TXT512
 
 15.9.1. limpar([novo texto])
 Faz todas as variáveis conterem o novo texto. Se o novo texto for omitido,
@@ -2180,7 +2229,7 @@ x.1 = ""
 x.2 = ""
 
 15.9.2. texto([número da primeira variável], [número da última variável])
-Retorna um texto que corresponde a todas as variáveis concatenadas
+Retorna um texto que corresponde a todas as variáveis concatenadas.
 
 Exemplo:
 
@@ -2195,21 +2244,25 @@ msg(x.texto(0,1)) # É o mesmo que msg("ab")
 Divide o texto em palavras.
 As palavras são separadas por espaço ou '\n'.
 Retorna o número de palavras (pode ser zero).
+
 Exemplo:
+
 txt10 x.2
 x.palavras("bom dia !")
+
 É o mesmo que:
+
 txt10 x.2
 x.0 = "bom"
 x.1 = "dia !"
 
 15.9.4. linhas(<texto>, [número de colunas])
 Preenche as variáveis do vetor com o texto, da seguinte forma:
-Cada variável recebe uma linha do texto (o caracter '\n' indica
-o fim de uma linha).
-Linhas que não cabem em uma variável são divididas automaticamente,
-de preferência no último espaço entre <número de colunas> e o tamanho
-da variável.
+- Cada variável recebe uma linha do texto (o caracter '\n' indica
+  o fim de uma linha).
+- Linhas que não cabem em uma variável são divididas automaticamente,
+  de preferência no último espaço entre <número de colunas> e o tamanho
+  da variável.
 Retorna o número de linhas (pelo menos uma linha).
 
 15.9.5. separar(<texto>, <delimitador>, [número de textos])
@@ -2219,14 +2272,17 @@ A última variável recebe o restante do texto.
 Retorna o número de variáveis (pelo menos uma variável).
 
 As funções separarmai e separardif fazem a mesma coisa, exceto que:
-separar - considera iguais letras minúsculas, maiúsculas e acentuadas.
-separarmai - considera iguais letras maiúsculas e minúsculas.
-separardif - diferencia letras maiúsculas, minúsculas e acentuadas.
+separar    - Considera iguais letras minúsculas, maiúsculas e acentuadas.
+separarmai - Considera iguais letras maiúsculas e minúsculas.
+separardif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
 Exemplo:
+
 txt10 x.4
 x.separar("abc:10::def:20", ":")
+
 É o mesmo que:
+
 txt10 x.4
 x.0 = "abc"
 x.1 = "10"
@@ -2238,16 +2294,19 @@ Concatena o número de variáveis do vetor especificadas, acrescentando
 o delimitador entre duas variáveis. Retorna o texto obtido.
 
 Exemplo:
-
 x.juntar(",", 3) # É o mesmo que: x.0 + "," + x.1 + "," + x.2
 
-15.9.7. txtremove(<texto>)
+15.9.7. txtremove(<opções>)
 Altera todos os textos do vetor com a função txtremove.
+
 Exemplo:
+
 txt10 x.2
 x.0 = txtremove(x.0, "C")
 x.1 = txtremove(x.1, "C")
+
 É o mesmo que:
+
 txt10 x.2
 x.txtremove("C")
 
@@ -2258,51 +2317,66 @@ Constituem uma extensão do programa interpretador. Algumas permitem
 a comunicação com o mundo externo, outras possibilitam mais recursos.
 
 Possuem funções/variáveis e podem gerar eventos (executar funções
-do objeto em que pertencem).
+da classe ou do objeto em que pertencem).
 
-Definição de um tipo:
+Sintaxe para definir uma variável:
 <tipo de variável>  <nome da variável>
-Exemplo:  listaobj x
 
-Executar uma função:
-<nome da variável>.<função>
+Exemplo:
+listaobj x
+
+Sintaxe para executar uma função:
+<nome da variável>.<nome da função>
+
 Exemplos:
+
 x.limpar
 x.addini(este)
 
-Eventos (funções chamadas pela variável):
+Sintaxe dos eventos (funções chamadas pela variável):
 func <nome da variável>_<nome do evento>
-Exemplo, uma função teste para a variável x, acima, pode ser definida como:
-func x_teste
+
+Exemplo:
+
+telatxt tela # Aqui define-se a variável 'tela', do tipo 'telatxt'
+func tela_msg # Esse é o evento 'msg', da variável 'tela'
 
 
 17. LISTAOBJ - LISTA DE OBJETOS
 
 Um objeto pode ser adicionado várias vezes em uma lista.
 Como valor numérico, é 0 se a lista estiver vazia ou 1 se não estiver.
-Quando um objeto é apagado, é executada a função apagaobj de todas
+Quando um objeto é apagado, é executada a função apagar de todas
 as variáveis listaobj do objeto.
 
 Funções:
 
 17.1. addini(<objetos e/ou listaobj>)
-Adiciona no topo da lista.
+Adiciona objetos no topo da lista.
+Quando o argumento for uma listaobj, adiciona todos os objetos da listaobj.
+Pode-se adicionar mais de um objeto ou listaobj de uma vez, separando-os
+por vírgulas.
 Retorna o primeiro item adicionado da lista (variável listaitem).
+
+Exemplo:
+
+listaobj l
+l.addini(este, $teste) # Adiciona os objetos 'este' e '$teste' em 'l'
 
 17.2. addfim(<objetos e/ou listaobj>)
-Adiciona no final da lista.
-Retorna o primeiro item adicionado da lista (variável listaitem).
+Idêntico a addini, exceto que os objetos são adicionados no fim da listaobj.
 
 17.3. addini1 e addfim1
-Mesmo que addini e addfim, exceto que não adiciona objetos
-se já estiverem na listaobj.
+Idênticos a addini e addfim, exceto que não adiciona os objetos que já
+estiverem na listaobj.
 
 17.4. remove
 Remove objetos repetidos na lista.
 Retorna a quantidade de objetos removidos.
 
 17.5. remove(<objetos e/ou listaobj>)
-Retira objetos da lista. Retorna a quantidade de objetos removidos.
+Retira objetos da lista.
+Retorna a quantidade de objetos removidos.
 
 17.6. rand
 Muda a ordem dos objetos aleatoriamente.
@@ -2314,13 +2388,14 @@ Retira todos os objetos da lista.
 Retorna quantos objetos estão na lista (0=não estão na lista).
 
 17.9. apagar
-Marca todos os objetos da lista para exclusão, usando a função apagar()
+Marca todos os objetos da lista para exclusão, usando a função 'apagar'.
 
 17.10. total([nome da classe])
 Quantidade de itens da lista.
 Se o nome da classe for especificado, considera apenas objetos da classe.
+
 Nota: Se o objetivo for saber apenas se existe algum objeto, as funções
-'objini' e 'objfim' são mais eficientes.
+      'objini' e 'objfim' são mais eficientes.
 
 17.11. objlista
 Objeto que contém a lista; pode ser NULO.
@@ -2334,17 +2409,17 @@ Se o nome da classe for especificado, considera apenas objetos da classe.
 Se o nome da classe for especificado, considera apenas objetos da classe.
 
 17.14. objini([nome da classe])
-Primeiro objeto da lista, o mesmo que ini.obj.
+Primeiro objeto da lista, o mesmo que 'ini.obj'.
 Se o nome da classe for especificado, considera apenas objetos da classe.
 
 17.15. objfim([nome da classe])
-Último objeto da lista, o mesmo que fim.obj.
+Último objeto da lista, o mesmo que 'fim.obj'.
 Se o nome da classe for especificado, considera apenas objetos da classe.
 
 
 18. LISTAITEM - UM ITEM DE LISTAOBJ
 
-É usado para acessar os objetos de listaobj. Representa um objeto.
+É usado para acessar os objetos de 'listaobj'. Representa um objeto.
 Como valor numérico, é 1 se for um objeto ou 0 se não for.
 
 Funções:
@@ -2358,42 +2433,39 @@ Adiciona objetos depois desse.
 Retorna o primeiro item adicionado da lista (variável listaitem).
 
 18.3. addantes1 e adddepois1
-Mesmo que addantes e adddepois, exceto que não adiciona objetos
-se já estiverem na listaobj.
+Idênticos a addantes e adddepois, exceto que não adiciona os objetos que
+já estiverem na listaobj.
 
-18.4. antes
-Passa para o objeto anterior.
+18.4. antes([número de objetos])
+Recua a quantidade de objetos especificada.
+Nada faz se a quantidade for menor ou igual a zero.
+Sem argumentos, posiciona-se no objeto anterior.
 
-18.5. antes(<número de objetos>)
-Recua o número de objetos especificado.
-Nada faz se o número for menor ou igual a zero.
+18.5. depois([número de objetos])
+Avança a quantidade de objetos especificada.
+Nada faz se a quantidade for menor ou igual a zero.
+Sem argumentos, posiciona-se no próximo objeto.
 
-18.6. depois
-Passa para o próximo objeto.
-
-18.7. depois(<número de objetos>)
-Avança o número de objetos especificado.
-Nada faz se o número for menor ou igual a zero.
-
-18.8. objantes([número de objetos])
+18.6. objantes([número de objetos])
 Semelhante à função 'antes', mas considera apenas objetos da mesma classe.
 
-18.9. objdepois([número de objetos])
+18.7. objdepois([número de objetos])
 Semelhante à função 'depois', mas considera apenas objetos da mesma classe.
 
-18.10. remove
+18.8. remove
 Remove objeto da lista, listaitem passa a não ser um objeto válido.
 
-18.11. removeantes
+18.9. removeantes
+
 Remove objeto da lista e passa para o anterior.
-Nota: não confundir com 'remover o objeto anterior'.
+Nota: Não confundir com 'remover o objeto anterior'.
+18.10. removedepois
 
-18.12. removedepois
 Remove objeto da lista e passa para o próximo.
-Nota: não confundir com 'remover o próximo objeto'.
+Nota: Não confundir com 'remover o próximo objeto'.
 
-18.13. obj
-Objeto.
+18.11. obj
+O objeto atual.
 
 18.14. total
 Quantidade de itens da lista.
@@ -2401,7 +2473,7 @@ Quantidade de itens da lista.
 18.15. objlista
 Objeto que contém a lista; pode ser NULO.
 
-Exemplo:
+18.16. Exemplo usando 'listaobj' e 'listaitem':
 
 listaobj l
 listaitem i
@@ -2421,7 +2493,7 @@ efim
 19. TEXTOTXT - LISTA DE TEXTO
 
 Lista de textos. É o equivalente ao texto de um editor de textos.
-Todas as linhas de texto terminam com um caracter \n.
+Todas as linhas de texto terminam com um caracter '\n'.
 
 Funções:
 
@@ -2648,7 +2720,7 @@ acentuadas e sem acento. Exemplo, 'a', 'A' e 'Á' são consideradas três
 letras diferentes em txtprocdif.
 
 
-21. TEXTOVAR - LISTA DE VARIÁVEIS
+21. TEXTOVAR - LISTA DE VARIÁVEIS DE TEXTO
 
 Lista de variáveis organizadas em ordem alfabética.
 Semelhante a textotxt, porém as linhas contém variáveis de texto
@@ -2658,54 +2730,48 @@ Cada variável pode conter qualquer texto, inclusive caracteres como
 
 Funções:
 
-21.1. ini
-Retorna nome da primeira variável.
-
-21.2. fim
-Retorna nome da última variável.
-
-21.3. ini(<texto>)
+21.1. ini([texto])
 Retorna nome da primeira variável cujo nome começa com o texto.
+Sem argumentos, retorna nome da primeira variável.
 
-21.4. fim(<texto>)
+21.2. fim([texto])
 Retorna nome da última variável cujo nome começa com o texto.
+Sem argumentos, retorna nome da última variável.
 
-21.5. antes(<nome da variável>)
+21.3. antes(<nome da variável>)
 Retorna nome da variável anterior ou "" se não existe.
 
-21.6. depois(<nome da variável>)
+21.4. depois(<nome da variável>)
 Retorna nome da próxima variável ou "" se não existe.
 
-21.7. valor(<nome da variável>)
+21.5. valor(<nome da variável>)
 Retorna o conteúdo da variável (um texto) ou "" se não existe.
 
-21.8. nomevar(<nome da variável>)
+21.6. nomevar(<nome da variável>)
 Retorna o nome da variável (um texto) ou "" se não existe.
 
-21.9. mudar("variável=valor")
+21.7. mudar("variável=valor")
 Cria uma variável ou muda se já existir.
 Para apagar variável, basta atribuir um texto vazio.
 Nota: é possível fornecer mais de uma variável (vários argumentos).
 
-21.10. limpar
-Apaga todas as variáveis do textovar.
-
-21.11. limpar([texto])
+21.8. limpar([texto])
 Apaga todas as variáveis cujos nomes começam com o texto.
 Nota: pode ser fornecido vários textos (vários argumentos).
+Sem argumentos, apaga todas as variáveis do textovar.
 
-21.12. total([texto])
+21.9. total([texto])
 Retorna a quantidade de variáveis que começam com o texto especificado.
 A função 'total' sem argumentos tem o mesmo efeito de 'total("")',
 ou seja, retorna a quantidade de variáveis do 'textovar'. Nesse caso,
 essa função é bem mais eficiente.
 
-21.13. Outros nomes:
+21.10. Outros nomes:
 Correspondem a uma variável de textovar, do tipo texto.
 Para a variável ser tratada como numérica, acrescentar sublinhado
 após o nome da variável.
 
-21.14. Exemplos
+21.11. Exemplos:
 
 textovar v
 v.mudar("x=teste") # Cria variável x faz ser "teste"
@@ -2724,7 +2790,35 @@ tela.msg(nome + "=" + v.valor(nome) + "\n")
 efim
 
 
-22. NOMEOBJ - PARA OBTER UM OU MAIS OBJETOS
+22. TEXTOOBJ - LISTA DE VARIÁVEIS REF
+
+Permitem associar nomes de variáveis a objetos. Funcionam exatamente como
+textovar, exceto que as variáveis são referências a objetos.
+
+Quando um objeto é apagado, é executada a função apagar de todas
+as variáveis textoobj do objeto.
+
+Devido à grande semelhança entre textoobj e textovar, são listadas aqui
+as funções que possuem alguma diferença.
+
+22.1. valor(<nome da variável>)
+Retorna o objeto ou NULO se a variável não existe.
+
+22.2. mudar("variável", [objeto])
+Cria uma variável ou muda se já existir.
+Se [objeto] for omitido ou não for um objeto, a variável será apagada.
+
+22.3. apagar([texto])
+Marca para exclusão (usando a função apagar) todos os objetos das variáveis
+cujos nomes começam com o texto.
+Nota: pode ser fornecido vários textos (vários argumentos).
+Sem argumentos, marca para exclusão todos os objetos do textoobj.
+
+22.4. Outros nomes:
+Correspondem a uma variável de textoobj, do tipo ref.
+
+
+23. NOMEOBJ - PARA OBTER UM OU MAIS OBJETOS
 
 Usado para obter um ou mais objetos, correspondente ao que o usuário
 digitou. Como valor numérico, é o resultado da última função 'nome'
@@ -2732,7 +2826,7 @@ da variável nomeobj.
 
 Funções:
 
-22.1. ini(<texto>, [quantidade])
+23.1. ini(<texto>, [quantidade])
 Inicia a busca.
 
 <texto> é o nome procurado, geralmente é o que o usuário digitou.
@@ -2758,7 +2852,7 @@ no máximo 10 itens, a quantidade deve ser o número 10.
 
 Vide também exemplo de código no tópico 22.3 (abaixo).
 
-22.2. nome(<texto>, [quantidade])
+23.2. nome(<texto>, [quantidade])
 Checa se um objeto corresponde ao item escolhido pelo usuário.
 
 <texto> contém as palavras que se referem ao objeto.
@@ -2768,7 +2862,7 @@ omitido, significa apenas um item.
 
 Essa função retorna a quantidade de itens encontrados.
 
-22.3. Exemplo
+23.3. Exemplo
 
 nomeobj x
 x.ini("2.ch", 5)# Achar no máximo 5 itens que começam com "ch"
@@ -2779,89 +2873,89 @@ x.nome("chave verde") # Retorna 1
 x.nome("chave azul")  # Retorna 0 porque já encontrou o item
 
 
-23. ARQDIR - ACESSAR DIRETÓRIOS
+24. ARQDIR - ACESSAR DIRETÓRIOS
 
 Funções:
 
-23.1. abrir(<nome do diretório>)
+24.1. abrir(<nome do diretório>)
 Inicia a busca de arquivos/diretórios em um diretório.
 Retorna "" se sucesso ou um texto contendo o erro.
 
-23.2. fechar
+24.2. fechar
 Encerra a busca em um diretório
 
-23.3. lin
+24.3. lin
 É 1 se entrada válida ou 0 se chegou no fim do diretório.
 
-23.4. texto
+24.4. texto
 Nome da entrada.
 
-23.5. depois
+24.5. depois
 Passa para a próxima entrada.
 Fecha o diretório se não houver próxima entrada.
 
-23.6. tipo([nome da entrada])
+24.6. tipo([nome da entrada])
 Sem argumentos, retorna o tipo da entrada encontrada em abrir()
 Retorna o tipo:
 "A" = arquivo, "D" = diretório, "O" = outro tipo de entrada
 "?" = não existe
 
-23.7. tamanho(<nome da entrada>)
+24.7. tamanho(<nome da entrada>)
 Retorna o tamanho do arquivo.
 
-23.8. atempo(<nome da entrada>)
+24.8. atempo(<nome da entrada>)
 Retorna quando o arquivo foi acessado; um texto no formato:
 ano mês dia hora minuto segundo milhonésimos de segundo
 Exemplo: "2010 1 20 14 30 02 1500"
 Retorna um texto vazio se o arquivo não existir ou não permitido.
 
-23.9. mtempo(<nome da entrada>)
+24.9. mtempo(<nome da entrada>)
 Retorna quando o arquivo foi modificado, da mesma forma que atempo.
 
-23.10. criardir(<nome do diretório>)
+24.10. criardir(<nome do diretório>)
 Cria um diretório.
 
-23.11. apagardir(<nome do diretório>)
+24.11. apagardir(<nome do diretório>)
 Apaga um diretório, exceto se não estiver vazio.
 
-23.12. apagar(<nome do arquivo>)
+24.12. apagar(<nome do arquivo>)
 Apaga um arquivo.
 
-23.13. renomear(<antigo nome>, <novo nome>)
+24.13. renomear(<antigo nome>, <novo nome>)
 Renomeia uma entrada.
 
 
-24. ARQLOG - GRAVAR TEXTO EM ARQUIVOS DE LOG
+25. ARQLOG - GRAVAR TEXTO EM ARQUIVOS DE LOG
 
 Para gravar mensagens em arquivos de texto chamados de log.
 Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
 
 Funções:
 
-24.1. valido(<nome do arquivo>)
+25.1. valido(<nome do arquivo>)
 Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
 
-24.2. existe(<nome do arquivo>)
+25.2. existe(<nome do arquivo>)
 Retorna 1 se arquivo existe ou 0 se não existe.
 
-24.3. abrir(<nome do arquivo>)
+25.3. abrir(<nome do arquivo>)
 Abre arquivo, cria se não existir.
 Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
 Nota 1: O nome do arquivo sempre terminará com '.log'.
 Nota 2: O arquivo deve pertencer ao diretório atual ou a um
 subdiretório dele. Não é possível criar arquivos em outros lugares.
 
-24.4. fechar
+25.4. fechar
 Fecha o arquivo.
 
-24.5. msg(<texto>)
+25.5. msg(<texto>)
 Grava texto em uma nova linha, no final do arquivo.
 Nota 1: Definições de cores e linhas vazias não são gravadas.
 Nota 2: Pode demorar até 2 segundos para o texto ser realmente
         gravado no arquivo.
 
 
-25. ARQSAV - SALVAR OBJETOS EM ARQUIVOS
+26. ARQSAV - SALVAR OBJETOS EM ARQUIVOS
 
 Para salvar objetos em arquivos e recuperar posteriormente.
 Nota 1: Não acessa arquivos executáveis ou terminados em:
@@ -2885,20 +2979,20 @@ quando se referem a outro objeto que também será salvo no mesmo arquivo.
 
 Funções:
 
-25.1. valido(<nome do arquivo>)
+26.1. valido(<nome do arquivo>)
 Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
 
-25.2. existe(<nome do arquivo>)
+26.2. existe(<nome do arquivo>)
 Retorna 1 se arquivo existe ou 0 se não existe.
 
-25.3. senha(<nome do arquivo>, <senha>)
+26.3. senha(<nome do arquivo>, <senha>)
 Retorna 1 se senha correta ou 0 se incorreta.
 
-25.4. dias(<nome do arquivo>)
+26.4. dias(<nome do arquivo>)
 Retorna quantos dias faltam para o arquivo expirar.
 Retorna 0 se expirou, -1 se nunca expira.
 
-25.5. ler(<nome do arquivo>, <listaobj>, [núm. de objetos lidos])
+26.5. ler(<nome do arquivo>, <listaobj>, [núm. de objetos lidos])
 Lê Arquivo.
 O primeiro objeto do arquivo vai para o primeiro da listaobj.
 O segundo do arquivo vai para o segundo da listaobj, e assim por
@@ -2908,17 +3002,17 @@ Número de objetos lidos é a quantidade máxima de objetos que serão lidos do
 arquivo. Se for omitido, assume 4000.
 Retorna a quantidade de objetos lidos.
 
-25.6. salvar(<nome do arquivo>, <listaobj>, <dias>, <senha>)
+26.6. salvar(<nome do arquivo>, <listaobj>, <dias>, <senha>)
 Salva em arquivo todos os objetos de uma listaobj.
 <dias> é a quantidade de dias para apagar o arquivo, 0=nunca apagar
 Retorna 1 se conseguiu salvar ou 0 se não conseguiu.
 
-25.7. apagar(<nome do arquivo>)
+26.7. apagar(<nome do arquivo>)
 Apaga arquivo.
 Retorna 1 se conseguiu apagar ou arquivo não existia.
 Retorna 0 se não conseguiu apagar.
 
-25.8. limpar(<nome do diretório>)
+26.8. limpar(<nome do diretório>)
 Inicia checagem dos arquivos .sav no diretório especificado; apaga
 arquivos que expiraram. Os arquivos são verificados aos poucos para
 ficar transparente aos usuários.
@@ -2927,7 +3021,7 @@ Exemplo:
 arqsav sav
 sav.limpar(".") # Inicia checagem do diretório atual, em segundo plano
 
-25.9. limpar
+26.9. limpar
 Checa de uma vez todos os diretórios que estiverem sendo checados
 aos poucos, em segundo plano.
 Exemplo:
@@ -2935,7 +3029,7 @@ arqsav sav
 sav.limpar(".") # Inicia checagem do diretório atual
 sav.limpar # Checa todos os arquivos de uma vez
 
-25.10. limpou
+26.10. limpou
 Retorna um texto de uma ou mais linhas.
 A primeira linha é o texto "1" se a função 'limpar' estiver verificando
 arquivos em segundo plano, ou "0" se não estiver.
@@ -2945,7 +3039,7 @@ Nota: As linhas são separadas por caracteres '\n'.
 Veja também a função 'txtsublin'.
 
 
-26. ARQTXT - ACESSAR ARQUIVOS DE TEXTO
+27. ARQTXT - ACESSAR ARQUIVOS DE TEXTO
 
 Para ler ou gravar arquivos de texto.
 Como valor numérico, é 1 se o arquivo estiver aberto ou 0 se não estiver.
@@ -2953,13 +3047,13 @@ Nota: A escrita em arquivo não é tão eficiente quanto arqlog.
 
 Funções:
 
-26.1. valido(<nome do arquivo>)
+27.1. valido(<nome do arquivo>)
 Retorna 1 se <texto> for nome válido para arquivo ou 0 se não for.
 
-26.2. existe(<nome do arquivo>)
+27.2. existe(<nome do arquivo>)
 Retorna 1 se arquivo existe ou 0 se não existe.
 
-26.3. abrir(<nome do arquivo>, <modo>)
+27.3. abrir(<nome do arquivo>, <modo>)
 Abre arquivo. Retorna 1 se conseguiu ou 0 se não conseguiu.
 Modo pode ser:
 0 = somente leitura
@@ -2972,10 +3066,10 @@ Nota 1: Não acessa arquivos executáveis ou terminados em:
 Nota 2: O arquivo deve pertencer ao diretório atual ou a um
 subdiretório dele. Não é possível acessar arquivos de outros lugares.
 
-26.4. fechar
+27.4. fechar
 Fecha o arquivo.
 
-26.5. truncar(<arquivo>, <tamanho>)
+27.5. truncar(<arquivo>, <tamanho>)
 Trunca o tamanho de um arquivo no tamanho especificado.
 Retorna 1 se conseguiu ou 0 se não conseguiu.
 
@@ -2983,37 +3077,37 @@ Exemplo:
 
 truncar("a.txt", 0) # Limpa o conteúdo do arquivo a.txt
 
-26.6. msg(<texto>)
+27.6. msg(<texto>)
 Escreve texto no arquivo.
 Se for especificado mais de um texto, serão concatenados no arquivo.
 Exemplo, escr("ab", "\n") é o mesmo que escr("ab\n")
 
-26.7. flush
+27.7. flush
 Grava em arquivo as alterações pendentes.
 
-26.8. ler
+27.8. ler
 Lê uma linha do arquivo; retorna a linha lida sem o \n no final.
 Pode ler menos se chegou no fim do arquivo.
 
-26.9. ler(<tamanho>)
+27.9. ler(<tamanho>)
 Lê um determinado número de caracteres do arquivo.
 Pode ler menos se chegou no fim do arquivo.
 Exemplo: ler(1) lê um caracter.
 
-26.10. pos
+27.10. pos
 Retorna a posição atual no arquivo (0=está no início do arquivo).
 
-26.11. pos(<posição>, <modo>)
+27.11. pos(<posição>, <modo>)
 Muda a posição atual no arquivo. Modo pode ser:
 0 = a partir do início do arquivo
 1 = a partir da posição atual
 2 = a partir do fim do arquivo
 
-26.12. eof
+27.12. eof
 1 se chegou no fim do arquivo, 0 se não chegou.
 
 
-27. INTTEMPO - GERAR EVENTOS DEPOIS DE UM TEMPO
+28. INTTEMPO - GERAR EVENTOS DEPOIS DE UM TEMPO
 
 Uma variável inteira de 0 a 1048575, subtraída 1 a cada décimo de segundo.
 A diferença de inttempo para intdec é que quando chega a 0, uma função
@@ -3041,7 +3135,7 @@ n.pos # Volta a contar (n=4)
 teste = n.abs # Mesmo que teste=4
 
 
-28. INTEXEC - GERAR EVENTO ASSIM QUE POSSÍVEL
+29. INTEXEC - GERAR EVENTO ASSIM QUE POSSÍVEL
 
 É uma variável que pode ser 0 ou 1, exatamente como int1.
 
@@ -3074,7 +3168,7 @@ telatxt t
 t.msg("Variável y é do tipo: " + p.vartipo("x", "y") + "\n")
 
 
-29. TELATXT - ACESSAR A JANELA DO PROGRAMA
+30. TELATXT - ACESSAR A JANELA DO PROGRAMA
 
 Semelhante a socket, mas trabalha com uma tela de texto, chamada console.
 Essa tela é semelhante ao 'prompt de comando', no Windows, ou o próprio
@@ -3082,43 +3176,43 @@ terminal, em Unix.
 
 Funções e variáveis:
 
-29.1. proto
+30.1. proto
 Retorna 0 se a janela do IntMUD estiver fechada ou 6 se estiver aberta.
 O valor de 'proto' depende da opção 'TELATXT' no início do programa
 (vide tópico 2.3).
 
-29.2. posx
+30.2. posx
 Posição do cursor: quantos caracteres enviou após o último \n.
 Caracteres especiais, como definição da cor, não contam
 
-29.3. msg(<mensagem>)
+30.3. msg(<mensagem>)
 Envia mensagem para telatxt.
 
-29.4. tecla(<nome da tecla>)
+30.4. tecla(<nome da tecla>)
 Processa uma tecla, como se tivesse sido digitada pelo usuário.
 Nota: não gera eventos.
 
-29.5. texto
+30.5. texto
 Conteúdo da linha sendo digitada pelo usuário. Pode ser mudado.
 
-29.6. total
+30.6. total
 Tamanho da linha sendo editada, de 1 a 1023. Pode ser mudado.
 
-29.7. linha
+30.7. linha
 Linha em que o cursor está. 0 é a linha de edição, 1=última linha
 de texto, 2 = linha anterior, etc.
 
-29.8. limpa
+30.8. limpa
 Limpa a tela.
 
 Eventos:
 
-29.10. <nomedavariável>_msg
+30.9. <nomedavariável>_msg
 Recebeu mensagem
 arg0 = mensagem recebida
 arg1 = índice da variável vetor, se não for vetor arg1=0
 
-29.11. <nomedavariável>_tecla
+29.10. <nomedavariável>_tecla
 Chamado sempre que o usuário pressionar uma tecla.
 arg0 = nome da tecla
 arg1 = índice da variável vetor, se não for vetor arg1=0
@@ -3141,7 +3235,7 @@ Notas - em um terminal Unix ou Linux:
  - Control+M é a tecla ENTER
 
 
-30. SOCKET - COMUNICAÇÃO VIA TCP/IP
+31. SOCKET - COMUNICAÇÃO VIA TCP/IP
 
 Representa uma conexão TCP/IP com outro programa.
 Como valor numérico, é 1 se proto!=0 (está conectado) ou 0 se proto=0.
@@ -3150,7 +3244,7 @@ Nesse caso, os eventos são gerados em mais de uma variável socket.
 
 Funções e variáveis:
 
-30.1. proto
+31.1. proto
 Define o protocolo; um número com o significado:
 0 = não está conectado
 1 = conectando
@@ -3160,77 +3254,77 @@ Define o protocolo; um número com o significado:
 5 = Papovox (sem cores)
 Nota: pode-se mudar entre 2 e 4 para socket conectado
 
-30.2. cores
+31.2. cores
 0 = nenhuma cor
 1 = cores somente ao receber
 2 = cores somente ao enviar
 3 = cores ao enviar e receber
 
-30.3. aflooder
+31.3. aflooder
 O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
 0 desativa o anti flooder, outro valor ativa.
 
-30.4. opctelnet
+31.4. opctelnet
 Define se pode receber caracteres especiais do protocolo Telnet:
 Eco desligado "\ci", eco ligado "\cj", caracteres go ahead "\ck"
 e bipe "\cl". Não tem efeito em IRC e Papovox.
 
-30.5. posx
+31.5. posx
 Posição do cursor: quantos caracteres enviou após o último \n.
 Caracteres especiais, como definição da cor, não contam.
 
-30.6. ip
+31.6. ip
 Endereço IP correspondente a quem está conectado.
 
-30.7. iplocal
+31.7. iplocal
 Endereço IP local.
 
-30.8. abrir(<endereço>, <porta>)
+31.8. abrir(<endereço>, <porta>)
 Tenta conectar-se a um endereço.
 Após conectar, 'proto' passa a ser 3 e o evento _con é chamado (vide abaixo).
 Retorna 1 se conexão em progresso ou 0 se ocorreu erro
 (0 geralmente significa endereço inválido)
 
-30.9 abrirssl(<endereço>, <porta>)
+31.9 abrirssl(<endereço>, <porta>)
 Mesmo que a função abrir, acima, porém usando conexão segura (SSL).
 
-30.10. fechar
+31.10. fechar
 Encerra a conexão; não gera o evento fechou.
 
-30.11. msg(<mensagem>)
+31.11. msg(<mensagem>)
 Envia mensagem para o socket.
 Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
 Nota: Se o protocolo for Papovox, devido às limitações do Papovox,
 é acrescentado "\n" no final da mensagem se já não houver um "\n".
 
-30.12. inissl
+31.12. inissl
 Apenas carrega biblioteca OpenSSL, usada para conexões seguras.
 Retorna a mensagem de erro ou "" se sucesso.
 Nota: a função 'abrirssl' já carrega a biblioteca automaticamente.
 
-30.13. txtmd5
+31.13. txtmd5
 Usado somente em conexões SSL. Retorna a assinatura MD5 do certificado
 do servidor.
 
-30.14. txtsha1
+31.14. txtsha1
 Usado somente em conexões SSL. Retorna a assinatura SHA1 do certificado
 do servidor.
 
-30.15. ipvalido(<texto>)
+31.15. ipvalido(<texto>)
 Retorna 1 se <texto> for um endereço IP, ou 0 se não for.
 
-30.16. ipnome(<nome ou endereço IP>)
+31.16. ipnome(<nome ou endereço IP>)
 Retorna o nome da máquina a partir do endereço IP.
 Se o nome não existir, retorna um texto vazio.
 Essa função funciona independente do socket estar conectado.
 Em servidores, não é recomendável usá-la pois enquanto o nome estiver
 sendo resolvido, o IntMUD fica parado. Melhor usar eventoip.
 
-30.17. nomeip(<nome ou endereço IP>)
+31.17. nomeip(<nome ou endereço IP>)
 Retorna o endereço IP a partir do nome da máquina ou endereço IP.
 Funciona exatamente como a função ipnome acima.
 
-30.18. eventoip(<nome ou endereço IP>)
+31.18. eventoip(<nome ou endereço IP>)
 Obtém nome e endereço IP a partir de um endereço.
 Não trava o programa até o endereço ser resolvido. Ao invés disso, gera
 um evento '_eventoip' (vide abaixo).
@@ -3242,33 +3336,33 @@ podem levar mais tempo para serem resolvidos.
 
 Eventos:
 
-30.19. <nomedavariável>_msg
+31.19. <nomedavariável>_msg
 Recebeu mensagem
 arg0 = mensagem recebida
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
 arg2 = índice da variável vetor, se não for vetor arg2=0
 
-30.20. <nomedavariável>_env
+31.20. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão
 ficou vazio).
 arg0 = índice da variável vetor, se não for vetor arg0=0
 
-30.21. <nomedavariável>_fechou
+31.21. <nomedavariável>_fechou
 O socket foi fechado remotamente
 arg0 = motivo (texto)
 arg1 = índice da variável vetor, se não for vetor arg1=0
 Se essa função não existir, o objeto que contém o socket é apagado
 
-30.22. <nomedavariável>_con
+31.22. <nomedavariável>_con
 Conseguiu conectar
 arg0 = índice da variável vetor, se não for vetor arg0=0
 
-30.23. <nomedavariável>_err
+31.23. <nomedavariável>_err
 Não conseguiu conectar
 arg0 = mensagem de erro
 arg1 = índice da variável vetor, se não for vetor arg1=0
 
-30.24. <nomedavariável>_eventoip
+31.24. <nomedavariável>_eventoip
 Resolveu um endereço fornecido pela função eventoip.
 arg0 = texto recebido pela função eventoip
 arg1 = nome da máquina, ou um texto vazio se não encontrou
@@ -3276,24 +3370,24 @@ arg2 = endereço IP da máquina, ou um texto vazio se não encontrou
 arg3 = índice da variável vetor, se não for vetor arg3=0
 
 
-31. SERV - RECEBER CONEXÕES VIA TCP/IP
+32. SERV - RECEBER CONEXÕES VIA TCP/IP
 
 Funções:
 
-31.1 abrir(<endereço>, <porta>)
+32.1 abrir(<endereço>, <porta>)
 Abre uma porta para receber conexões.
 Se não quiser especificar um endereço, colocar "" no endereço.
 Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
 
-31.2 abrirssl(<endereço>, <porta>)
+32.2 abrirssl(<endereço>, <porta>)
 Mesmo que a função abrir, acima, porém usando conexão segura (SSL).
 Para essa função funcionar, o suporte a conexões seguras já deve ter
 sido inicializado (vide função inissl, abaixo).
 
-31.3. fechar
+32.3. fechar
 Deixa de receber conexões
 
-31.4. inissl(<nome do arquivo CRT>, <nome do arquivo KEY>)
+32.4. inissl(<nome do arquivo CRT>, <nome do arquivo KEY>)
 Carrega biblioteca OpenSSL (usada para conexões seguras) um certificado
 digital (um arquivo CRT) e uma chave privativa (um arquivo KEY).
 Retorna a mensagem de erro ou "" se sucesso.
@@ -3308,7 +3402,7 @@ que nesse caso serão 'x.key' e 'x.crt'.
 
 Eventos:
 
-31.5. <nomedavariável>_socket
+32.5. <nomedavariável>_socket
 arg0 = socket correspondente à conexão (com a variável 'proto' sendo 2)
 arg1 = índice da variável vetor, se não for vetor arg1=0
 
@@ -3328,144 +3422,144 @@ func conec_msg
   conec.msg("você escreveu " + arg1 + "\n")
 
 
-32. PROG - LER E ALTERAR O PROGRAMA
+33. PROG - LER E ALTERAR O PROGRAMA
 
 Nota: pode ser usado um objeto no lugar do nome de uma classe.
 
 
-32.1. Funções para iniciar uma consulta
+33.1. Funções para iniciar uma consulta
 
 Retornam 1 se há algum resultado resultado (pelo menos uma linha)
 para a consulta ou 0 se não há.
 
-32.1.1. iniarq
+33.1.1. iniarq
 Obter os sufixos dos nomes dos arquivos que compõem o programa.
 Não necessariamente em ordem alfabética.
 
-32.1.2. iniarq(<sufixo do arquivo>)
+33.1.2. iniarq(<sufixo do arquivo>)
 Obter as classes que pertencem ao arquivo.
 Na ordem definida no arquivo.
 
-32.1.3. iniclasse([texto])
+33.1.3. iniclasse([texto])
 Obter os nomes das classes que começam com o texto especificado.
 Em ordem alfabética.
 
-32.1.4. inifunc(<nome da classe>, [texto])
+33.1.4. inifunc(<nome da classe>, [texto])
 Obter os nomes das funções e variáveis definidas em uma classe.
 Somente as variáveis e funções que começam com o texto especificado.
 Em ordem alfabética.
 
-32.1.5. inifunctudo(<nome da classe>, [texto])
+33.1.5. inifunctudo(<nome da classe>, [texto])
 Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
 
-32.1.6. iniherda(<nome da classe>)
+33.1.6. iniherda(<nome da classe>)
 Obter os nomes das classes definidas na instrução 'herda'.
 Na ordem definida na classe.
 
-32.1.7. iniherdatudo(<nome da classe>)
+33.1.7. iniherdatudo(<nome da classe>)
 Obter a lista de classes herdadas por uma classe.
 Inclui também as classes herdadas indiretamente.
 Na ordem em que as classes são herdadas.
 
-32.1.8. iniherdainv(<nome da classe>)
+33.1.8. iniherdainv(<nome da classe>)
 Herança inversa: obter os nomes das classes que herdam uma classe.
 A ordem em que as classes são listadas é imprevisível.
 
-32.1.9. inilinha(<nome da classe>)
+33.1.9. inilinha(<nome da classe>)
 Obter as linhas correspondentes a uma classe.
 
-32.1.10. inilinha(<nome da classe>, <nome da função>)
+33.1.10. inilinha(<nome da classe>, <nome da função>)
 Obter as linhas correspondentes a uma variável ou função da classe
 (definida na classe ou herdada).
 
 
-32.2. Funções para ler o resultado da consulta
+33.2. Funções para ler o resultado da consulta
 
-32.2.1. lin
+33.2.1. lin
 É 1 se linha válida ou 0 se chegou no fim da consulta.
 
-32.2.2. depois
+33.2.2. depois
 Vai para a próxima linha.
 
-32.2.3. depois(<número de linhas>)
+33.2.3. depois(<número de linhas>)
 Avança o número de linhas especificado.
 Nada faz se o número for menor ou igual a zero.
 
-32.2.4. texto
+33.2.4. texto
 Retorna o texto da linha atual.
 
-32.2.5. nivel
+33.2.5. nivel
 Retorna um número, que é o nível de indentação. Usado somente com
 inilinha.
 
 
-32.3. Funções para obter informações
+33.3. Funções para obter informações
 
 Nota: Funcionam independente das demais.
 
-32.3.1. existe(<nome da classe>)
+33.3.1. existe(<nome da classe>)
 Retorna 1 se a classe existe ou 0 se não existe.
 
-32.3.2. existe(<nome da classe>, <nome da variável>)
+33.3.2. existe(<nome da classe>, <nome da variável>)
 Retorna 0 se a variável ou função não existe, 1 se estiver
 definido na própria classe ou 2 se foi herdada.
 
-32.3.3. arquivo(<nome da classe>)
+33.3.3. arquivo(<nome da classe>)
 Retorna o sufixo do nome do arquivo que contém a classe.
 Exemplo, "abc" corresponde ao arquivo 'intmud-abc.int'.
 Um texto vazio significa arquivo 'intmud.int'.
 
-32.3.4. arqnome(<sufixo do nome do arquivo>)
+33.3.4. arqnome(<sufixo do nome do arquivo>)
 Retorna o nome do arquivo a partir dosufixo do nome.
 Exemplo:
 prog p
 p.arqnome("abc") # Retorna algo como 'intmud-abc.int'.
 
-32.3.5. vartipo(<nome da classe>, <nome da variável>)
+33.3.5. vartipo(<nome da classe>, <nome da variável>)
 Retorna o tipo de variável ou "" se a variável não existe.
 
-32.3.6. varnum(<nome da classe>, <nome da variável>)
+33.3.6. varnum(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante numérica do tipo:
 const variável = valor numérico
 ou 0 se não for.
 
-32.3.7. vartexto(<nome da classe>, <nome da variável>)
+33.3.7. vartexto(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante de texto do tipo:
 const variável = "texto"
 ou 0 se não for.
 
-32.3.8. varcomum(<nome da classe>, <nome da variável>)
+33.3.8. varcomum(<nome da classe>, <nome da variável>)
 Retorna 1 se variável for comum ou 0 se não for.
 
-32.3.9. varsav(<nome da classe>, <nome da variável>)
+33.3.9. varsav(<nome da classe>, <nome da variável>)
 Retorna 1 se variável for sav ou 0 se não for.
 
-32.3.10. varvetor(<nome da classe>, <nome da variável>)
+33.3.10. varvetor(<nome da classe>, <nome da variável>)
 Retorna a quantidade de variáveis do vetor ou 0 se não for vetor.
 
-32.3.11. const(<nome da classe>, <nome da variável>)
+33.3.11. const(<nome da classe>, <nome da variável>)
 Retorna o texto de uma variável constante do tipo:
 const variável = valor    (nesse caso retorna valor)
 const variável = "texto"  (nesse caso retorna texto)
 Retorna um texto vazio para outros tipos de variáveis.
 
-32.3.12. classe(<nome da classe>, <texto>)
+33.3.12. classe(<nome da classe>, <texto>)
 Primeiro checa se <texto> pode ser o conteúdo de uma classe (se não tem
 nenhum erro). Depois checa se está igual à classe especificada.
 Retorna a lista de erros em <texto>. Se não houver nenhum erro,
 retorna "1" se estiver igual ou "0" se estiver diferente.
 
 
-32.4. Funções para alterar o programa
+33.4. Funções para alterar o programa
 
 Nota: as alterações só serão efetuadas quando o controle retornar ao IntMUD.
 
-32.4.1. apagar(<classe>)
+33.4.1. apagar(<classe>)
         apagar(<classe>, <variável>)
 Apaga classe ou variável.
 Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
 
-32.4.2. criar(<texto>)
+33.4.2. criar(<texto>)
 Cria uma classe. Se já existia, altera ao invés de criar.
 A primeira linha é o nome da classe.
 A segunda linha de <texto> é o sufixo do nome do arquivo.
@@ -3484,7 +3578,7 @@ Cria a seguinte classe no arquivo intmud.int:
 Para criar a mesma classe, mas no arquivo intmud-x.int:
     p.criar("abc\nx\nint8 x\nconst n = 10")
 
-32.4.3. criar(<nome da classe>, <texto>)
+33.4.3. criar(<nome da classe>, <texto>)
 Cria uma função ou variável de uma classe.
 Se já existia, antes apaga a função ou variável.
 <texto> contém todas as instruções da função ou variável.
@@ -3497,21 +3591,21 @@ Exemplos:
     p.criar("abc", "int8 n") # Cria a variável n na classe abc
     p.criar("xyz", "func x\nret 10") # cria a função x na classe xyz
 
-32.4.4. apagarlin(<nome da classe>, <número da linha>)
+33.4.4. apagarlin(<nome da classe>, <número da linha>)
    apagarlin(<nome da classe>, <nome da variável>, <número da linha>)
 Apaga uma linha de uma classe ou variável.
 Nota: A primeira linha é a número 1.
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
 
-32.4.5. criarlin(<nome da classe>, <linha inicial>, <texto>)
+33.4.5. criarlin(<nome da classe>, <linha inicial>, <texto>)
    criarlin(<nome da classe>, <nome da variável>, <linha inicial>, <texto>)
 Adiciona linhas na classe ou função especificada.
 Nota: A primeira linha é a número 1.
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
 
-32.4.6. salvar([texto])
+33.4.6. salvar([texto])
 Salva as alterações nos arquivos correspondentes, depois que todas
 as alterações pendentes nas classes forem efetuadas.
 O texto é composto de letras seguidas de números, que indicam como
@@ -3533,23 +3627,23 @@ Significa não dividir linhas, 2 espaços para indentação,
 1 linha vazia entre classes e entre funções e nenhuma linha vazia
 entre variáveis.
 
-32.4.7. salvartudo([texto])
+33.4.7. salvartudo([texto])
 Mesmo que a função salvar, porém salva todos os arquivos,
 independete de terem sido alterados ou não.
 
 
-32.5. Funções para organizar as classes nos arquivos
+33.5. Funções para organizar as classes nos arquivos
 
-32.5.1. clini(<sufixo do nome do arquivo>)
+33.5.1. clini(<sufixo do nome do arquivo>)
 Retorna o nome da primeira classe do arquivo ou "" se não existe.
 
-32.5.2. clfim(<sufixo do nome do arquivo>)
+33.5.2. clfim(<sufixo do nome do arquivo>)
 Retorna o nome da última classe do arquivo ou "" se não existe.
 
-32.5.3. clantes(<nome da classe>)
+33.5.3. clantes(<nome da classe>)
 Retorna classe anterior do arquivo, ou "" se não houver.
 
-32.5.4. cldepois(<nome da classe>)
+33.5.4. cldepois(<nome da classe>)
 Retorna próxima classe do arquivo, ou "" se não houver.
 
 Para mudar a posição de uma classe no arquivo, acrescentar um argumento,
@@ -3582,21 +3676,21 @@ func organiza
   arquivos.salvar # Salva os arquivos que foram alterados
 
 
-33. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
+34. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
 
 Funções:
 
-33.1. exec
+34.1. exec
 Contador de instruções - opção 'exec' no início do arquivo int.
 A cada instrução executada essa variável é subtraída de 1.
 Quando chega a 0, o controle retorna automaticamente ao IntMUD.
 Pode ser lido e alterado, como uma variável.
 
-33.2. ini
+34.2. ini
 Inicializa exec com o valor definido na opção 'exec' no início
 do arquivo int.
 
-33.3. cmd(<texto>, [texto])
+34.3. cmd(<texto>, [texto])
 Executa a instrução que está no texto especificado.
 Se for mais de uma instrução, separar com '\n'.
 Retorna mensagem de erro se instrução não for válida.
@@ -3609,7 +3703,7 @@ d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
 d.cmd("ret \"teste\"") # d.cmd retorna "teste"
 d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna 3
 
-33.4. passo(<objeto>, <texto>)
+34.4. passo(<objeto>, <texto>)
       passo()
 Antes de executar cada instrução chama a função de <objeto>
 com o nome especificado em <texto>. Se a função não existir, passa
@@ -3618,7 +3712,7 @@ Na função:
 arg0 é oobjeto 'este'
 arg1 é o texto contendo a instrução que será executada executada
 
-33.5. func
+34.5. func
 Retorna o nível de funções: quantas funções foram chamadas até chegar
 na instrução atual. Exemplo:
 classe x
@@ -3628,15 +3722,15 @@ func iniclasse
 func teste
     # Aqui debug.func será 1 porque foi chamado por x:iniclasse
 
-33.6. stempo
-33.7. utempo
+34.6. stempo
+34.7. utempo
 Quanto tempo o programa usou do processador, em milésimos de segundos.
 stempo é o tempo usado pelo sistema e utempo é o tempo usado pelo programa.
 Se não for possível obter essa informação, tempo será -1.
 
 Eventos:
 
-33.8. <nomedavariável>_erro
+34.8. <nomedavariável>_erro
 Ocorreu algum erro ao executar uma função.
 arg0 = mensagem de erro (uma linha) seguido dos detalhes sobre o erro
 arg1 = índice da variável vetor, se não for vetor arg1=0
@@ -3657,47 +3751,47 @@ telatxt tt
 tt.msg("Erro:   " + arg0 + "\n")
 
 
-34. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
+35. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
 
 É semelhante a uma variável txt64, porém o texto é associado ao objeto
 que contém essa variável. O processo inverso, obter um objeto a partir
 de um texto, é possível com a variável indiceitem.
 
 
-35. INDICEITEM - OBTER OBJETO PELO TEXTO
+36. INDICEITEM - OBTER OBJETO PELO TEXTO
 
 Permite obter os objetos que contém uma variável indiceobj com um
 determinado texto. Ignora variáveis indiceobj com texto nulo.
 
 Funções:
 
-35.1. ini(<texto>)
+36.1. ini(<texto>)
 Vai para o primeiro objeto com o texto ou parte dele.
 
-35.2. fim(<texto>)
+36.2. fim(<texto>)
 Vai para o último objeto com o texto ou parte dele.
 
-35.3. antes
+36.3. antes
 Passa para o objeto anterior.
 
-35.4. antes(<número de objetos>)
+36.4. antes(<número de objetos>)
 Recua o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-35.5. depois
+36.5. depois
 Passa para o próximo objeto.
 
-35.6. depois(<número de objetos>)
+36.6. depois(<número de objetos>)
 Avança o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-35.7. obj
+36.7. obj
 Objeto.
 
-35.8. txt
+36.8. txt
 Texto associado ao objeto.
 
-35.9. obj(<texto>)
+36.9. obj(<texto>)
 Objeto que contém o texto exato.
 Essa função funciona independente das demais.
 
@@ -3705,57 +3799,57 @@ Nota: Pode-se passar mais de um texto para as funções que possuem texto.
 Nesse caso, a função procurará por todos os textos.
 
 
-36. DATAHORA - CALENDÁRIO
+37. DATAHORA - CALENDÁRIO
 
 Operações envolvendo data e/ou hora, como obter a data atual e calcular
 quantidade de dias entre duas datas.
 
 Funções e variáveis:
 
-36.1. novadata(<ano>, <mês>, <dia>)
+37.1. novadata(<ano>, <mês>, <dia>)
 Muda ano, mês e dia.
 
-36.2. novahora(<hora>, <minuto>, <segundo>)
+37.2. novahora(<hora>, <minuto>, <segundo>)
 Muda hora, minuto e segundo.
 
-36.3. antes
+37.3. antes
 Muda data para o dia anterior.
 
-36.4. depois
+37.4. depois
 Muda data para o próximo dia.
 
-36.5. agora
+37.5. agora
 Muda para data e hora atuais.
 
-36.6. diasem
+37.6. diasem
 Retorna o dia da semana, de 0 a 6 (0=domingo).
 
-36.7. bissexto
+37.7. bissexto
 Retorna 1 se o ano for bissexto ou 0 se não for.
 
-36.8. ano
+37.8. ano
 Ano, de 1 a 9999.
 
-36.9. mes
+37.9. mes
 Mês, de 1 a 12.
 
-36.10. dia
+37.10. dia
 Dia, de 1 a 31. Conforme o mês pode não chegar a 31.
 
-36.11. hora
+37.11. hora
 Hora, de 0 a 23.
 
-36.12. min
+37.12. min
 Minuto, de 0 a 59.
 
-36.13. seg
+37.13. seg
 Segundo, de 0 a 59.
 
-36.14. numdias
+37.14. numdias
 Número de dias desde 1/1/1.
 
-36.15. numseg
+37.15. numseg
 Número de segundos desde o início do dia.
 
-36.16. numtotal
+37.16. numtotal
 Número de segundos desde 1/1/1.

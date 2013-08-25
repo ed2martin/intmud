@@ -229,6 +229,7 @@ const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, (char)0xFF, 0, 0, 0, '
 const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarTextoObjSub[] =  { 9, 0, Instr::cTextoObjSub, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, (char)0xFF, 0, 0, 0, 'f', 0 };
 
 static void ApagaVarEscopo()
@@ -1488,62 +1489,70 @@ bool Instr::ExecX()
             // Compara valores
                 int tipo1 = VarAtual[-1].Tipo();
                 int tipo2 = VarAtual[0].Tipo();
-                    // Textos
-                if (tipo1==varTxt || tipo2==varTxt)
-                    tipo1 = comparaZ(VarAtual[-1].getTxt(),
-                                    VarAtual->getTxt());
-                    // Ref
-                else if (tipo1==varObj || tipo2==varObj)
+                    // Números
+                switch (tipo1)
                 {
-                    if (tipo1 != tipo2)
-                        tipo1 -= tipo2;
-                    else
-                    {
-                        TObjeto * v1 = VarAtual[-1].getObj();
-                        TObjeto * v2 = VarAtual[0].getObj();
-                        tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
-                    }
-                }
-                    // Valores numéricos
-                else if (tipo1!=varOutros && tipo2!=varOutros)
-                {
-                    if (tipo1==varInt && tipo2==varInt)
+                case varInt:
+                    if (tipo2==varInt)
                     {
                         int v1 = VarAtual[-1].getInt();
                         int v2 = VarAtual[0].getInt();
                         tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                        break;
                     }
-                    else
+                case varDouble:
                     {
                         double v1 = VarAtual[-1].getDouble();
                         double v2 = VarAtual[0].getDouble();
                         tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                        break;
                     }
+                case varTxt:
+                    tipo1 = comparaZ(VarAtual[-1].getTxt(),
+                                    VarAtual->getTxt());
+                    break;
+                case varObj:
+                    if (tipo2 == varObj)
+                    {
+                        TObjeto * v1 = VarAtual[-1].getObj();
+                        TObjeto * v2 = VarAtual[0].getObj();
+                        tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                        break;
+                    }
+                default:
+                        // Mesmo tipo de variável
+                    if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2])
+                    {
+                        tipo1 = VarAtual[-1].Compara(VarAtual);
+                        break;
+                    }
+                        // Tipos diferentes de variáveis
+                    tipo1 = (*FuncAtual->expr == exo_diferente);
+                    FuncAtual->expr++;
+                    ApagarVar(VarAtual-1);
+                    if (!CriarVarInt(tipo1))
+                        return RetornoErro(2);
+                    goto exo_compara_sair;
+                    //const void * v1 = VarAtual[-1].endvar;
+                    //const void * v2 = VarAtual[0].endvar;
+                    //tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
+                    //break;
                 }
-                    // Mesmo tipo de variável
-                else if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2])
-                    tipo1 = VarAtual[-1].Compara(VarAtual);
-                    // Tipos diferentes de variáveis
-                else
-                {
-                    const void * v1 = VarAtual[-1].endvar;
-                    const void * v2 = VarAtual[0].endvar;
-                    tipo1 = (v1==v2 ? 0 : v1<v2 ? -1 : 1);
-                }
-            // Apaga valores da pilha; cria int32 na pilha
-                ApagarVar(VarAtual-1);
-                if (!CriarVarInt(0))
-                    return RetornoErro(2);
             // Avança Func->expr, verifica operador
                 switch (*FuncAtual->expr++)
                 {
-                case exo_menor:      if (tipo1<0)  VarAtual->setInt(1); break;
-                case exo_menorigual: if (tipo1<=0) VarAtual->setInt(1); break;
-                case exo_maior:      if (tipo1>0)  VarAtual->setInt(1); break;
-                case exo_maiorigual: if (tipo1>=0) VarAtual->setInt(1); break;
-                case exo_igual:      if (tipo1==0) VarAtual->setInt(1); break;
-                case exo_diferente:  if (tipo1!=0) VarAtual->setInt(1); break;
+                case exo_menor:      tipo1 = (tipo1<0);  break;
+                case exo_menorigual: tipo1 = (tipo1<=0); break;
+                case exo_maior:      tipo1 = (tipo1>0);  break;
+                case exo_maiorigual: tipo1 = (tipo1>=0); break;
+                case exo_igual:      tipo1 = (tipo1==0); break;
+                case exo_diferente:  tipo1 = (tipo1!=0); break;
                 }
+            // Apaga valores da pilha; cria int32 na pilha
+                ApagarVar(VarAtual-1);
+                if (!CriarVarInt(tipo1))
+                    return RetornoErro(2);
+exo_compara_sair:
                 break;
             }
         case exo_igual2:     // Operador: a===b

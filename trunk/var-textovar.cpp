@@ -356,7 +356,7 @@ TBlocoVar * TTextoVar::ProcDepois(const char * texto)
 }
 
 //----------------------------------------------------------------------------
-TBlocoVar * TTextoVar::Mudar(const char * texto)
+void TTextoVar::Mudar(const char * texto)
 {
 // Obtém nome e conteúdo da variável
     char nomevar[256];
@@ -364,7 +364,7 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
     while (*txtvar && *txtvar!='=')
         txtvar++;
     if (txtvar==texto || txtvar-texto >= (int)sizeof(nomevar))
-        return 0;
+        return;
     memcpy(nomevar, texto, txtvar-texto);
     nomevar[txtvar-texto] = 0;
     if (*txtvar=='=')
@@ -374,18 +374,18 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
     if (bl==0)
     {
         if (*txtvar==0) // Texto vazio: não tem como apagar
-            return 0;
+            return;
         bl = TBlocoVar::AlocarMem(texto);
         bl->TextoVar = this;
         bl->RBinsert();
         Total++;
-        return 0;
+        return;
     }
 // Apagar texto
     if (*txtvar==0)
     {
         bl->Apagar();
-        return 0;
+        return;
     }
 // Alterar texto
     unsigned int total = strlen(texto) + 1;
@@ -395,7 +395,7 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
         char * p = bl->Texto;
         while (*p && *p!='=') p++;
         *p=0;
-        return bl;
+        return;
     }
     TBlocoVar * bl2 = TBlocoVar::AlocarMem(texto);
     bl2->TextoVar = this;
@@ -405,7 +405,6 @@ TBlocoVar * TTextoVar::Mudar(const char * texto)
            bl2, bl2->Texto); fflush(stdout);
 #endif
     delete[] (char*)bl;
-    return bl2;
 }
 
 //----------------------------------------------------------------------------

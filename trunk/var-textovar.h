@@ -25,7 +25,7 @@ public:
         ///< Semelhante a Procura(), mas procura o texto anterior
     TBlocoVar * ProcDepois(const char * nome);
         ///< Semelhante a Procura(), mas procura o próximo texto
-    TBlocoVar * Mudar(const char * texto);
+    void Mudar(const char * texto);
         ///< Adiciona/muda/apaga texto
     bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
@@ -47,7 +47,7 @@ public:
 };
 
 //----------------------------------------------------------------------------
-class TTextoVarSub
+class TTextoVarSub /// Para acessar uma variável de textovar
 {
 public:
     void Criar(TTextoVar * var); ///< Adiciona objeto em um textovar

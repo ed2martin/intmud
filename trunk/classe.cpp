@@ -232,8 +232,8 @@ void TClasse::MoveArqIni(TArqMapa * arquivo)
     if (arquivo->ClInicio == this)
         return;
     REMOVE_ARQ;
-    ArqAntes = arquivo->ClInicio;
-    ArqDepois = 0;
+    ArqAntes = 0;
+    ArqDepois = arquivo->ClInicio;
     arquivo->ClInicio = this;
     (ArqDepois ? ArqDepois->ArqAntes : arquivo->ClFim) = this;
 }

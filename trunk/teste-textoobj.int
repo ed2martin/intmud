@@ -1,0 +1,140 @@
+telatxt = 1
+
+classe teste
+telatxt tela1
+const msg = tela1.msg(arg0 + "\n")
+sav textoobj t1
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  msg("Teste de textoobj")
+  menu
+  t1.f2 = criar("objeto", "banana")
+  t1.f1 = criar("objeto", "laranja")
+  t1.f5 = criar("objeto", "uva")
+  #t1.f3 = criar("objeto", "pêssego")
+  #t1.f4 = criar("objeto", "abacaxi")
+  #t1.o1 = criar("objeto", "limão")
+  t1.banana = t1.f2
+  t1.uva = t1.f5
+
+func tela1_tecla
+  se arg0 == "ESC"
+    terminar
+
+func tela1_msg
+  se !escr_[txt1(arg0)](txt2(arg0))
+    menu
+
+func menu
+  msg("Opções:")
+  msg("o - mostra os objetos")
+  msg("o <nome do objeto> - cria ou apaga objeto")
+  msg("v - mostra as variáveis")
+  msg("v <nome> <nome do objeto> - cria variável")
+  msg("v <nome> - apaga variável")
+  msg("a <nome> - apaga variáveis que começam com o nome")
+  msg("aa <nome> - apaga objetos das variáveis que começam com o nome")
+  msg("s - salva em arquivo")
+  msg("c - carrega do arquivo")
+  msg("x - limpa tudo")
+  msg("Tecla ESC - encerra o programa")
+
+func escr_o
+  se arg0 # Criar ou apagar objeto
+    ref r
+    epara r = $objeto, r && r.nome != arg0, r = objdepois(r)
+    efim
+    se r
+      apagar(r)
+      msg("Apagando objeto: " + r.nome)
+    senao
+      r = criar("objeto", arg0)
+      msg("Criando objeto: " + r.nome)
+    fimse
+  senao # Listar objetos
+    ref r
+    msg("Objetos (" + inttotal($objeto) + "):")
+    epara r = $objeto, r, r = objdepois(r)
+      msg(r.nome)
+    efim
+  fimse
+  ret 1
+
+func escr_v
+  se arg0 # Criar ou apagar variável
+    ref r
+    se txt2(arg0)
+      epara r = $objeto, r && r.nome != txt2(arg0), r = objdepois(r)
+      efim
+    fimse
+    se r
+      msg("Variável criada: " + txt1(arg0))
+    senao t1.valor(arg0)
+      msg("Variável apagada: " + txt1(arg0))
+    senao
+      msg("Variável não existe: " + txt1(arg0))
+    fimse
+    t1.mudar(txt1(arg0), r)
+  senao
+    txt100 lin
+    msg("Variáveis (" + t1.total + "):")
+    epara lin = t1.ini, lin, lin = t1.depois(lin)
+      msg(lin + " = " + t1.[lin].nome)
+    efim
+  fimse
+  ret 1
+
+func escr_a
+  msg("Apagando variáveis que começam com: " + arg0)
+  t1.limpar(arg0)
+  ret 1
+
+func escr_aa
+  msg("Apagando objetos das variáveis que começam com: " + arg0)
+  t1.apagar(arg0)
+  ret 1
+
+func escr_s
+  arqsav sav
+  listaobj l
+  ref r
+  l.addfim(este)
+  epara r = $objeto, r, r = objdepois(r)
+    l.addfim(r)
+  efim
+  sav.salvar("a.sav", l, 0, "")
+  msg("Total de objetos salvos em a.sav: " + int(l.total - 1))
+  ret 1
+
+func escr_c
+# Primeiro apaga todos os objetos e limpa as variáveis
+  ref r
+  epara r = $objeto, r, r = objdepois(r)
+    apagar(r)
+  efim
+  t1.limpar
+# Depois carrega o arquivo
+  arqsav sav
+  listaobj l
+  ref r
+  l.addfim(este)
+  sav.ler("a.sav", l)
+  msg("Total de objetos lidos de a.sav: " + int(l.total - 1))
+  ret 1
+
+func escr_x
+  ref r
+  epara r = $objeto, r, r = objdepois(r)
+    apagar(r)
+  efim
+  msg("Objetos apagados")
+  ret 1
+
+
+classe objeto
+sav txt100 nome
+func ini
+  nome = arg0

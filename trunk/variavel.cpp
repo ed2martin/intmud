@@ -24,6 +24,7 @@
 #include "var-listaobj.h"
 #include "var-texto.h"
 #include "var-textovar.h"
+#include "var-textoobj.h"
 #include "var-dir.h"
 #include "var-log.h"
 #include "var-sav.h"
@@ -58,20 +59,36 @@
             return;                                 \
         }
 
+#define MOVER_OBJETO(classenome) \
+        { \
+            classenome * o = (classenome *)endvar;  \
+            classenome * d = (classenome *)destino; \
+            int inc=1;                              \
+            if (destino > endvar)                   \
+                o+=vetor-1, d+=vetor-1, inc=-1;     \
+            for (; vetor; vetor--,o+=inc,d+=inc)    \
+            {                                       \
+                o->Objeto = objeto;                 \
+                o->Mover(d);                        \
+            }                                       \
+            endvar = destino;                       \
+            return;                                 \
+        }
+
 #define MOVER_COMPLETO(classenome) \
         { \
-            classenome * o = (classenome *)endvar;    \
-            classenome * d = (classenome *)destino;   \
-            int inc=1;                                \
-            if (destino > endvar)                     \
-                o+=vetor-1, d+=vetor-1, inc=-1;       \
-            for (; vetor; vetor--,o+=inc,d+=inc)      \
-            {                                         \
-                o->EndObjeto(classe, objeto);         \
-                o->Mover(d);                          \
-            }                                         \
-            endvar = destino;                         \
-            return;                                   \
+            classenome * o = (classenome *)endvar;  \
+            classenome * d = (classenome *)destino; \
+            int inc=1;                              \
+            if (destino > endvar)                   \
+                o+=vetor-1, d+=vetor-1, inc=-1;     \
+            for (; vetor; vetor--,o+=inc,d+=inc)    \
+            {                                       \
+                o->EndObjeto(classe, objeto);       \
+                o->Mover(d);                        \
+            }                                       \
+            endvar = destino;                       \
+            return;                                 \
         }
 
 //----------------------------------------------------------------------------
@@ -119,6 +136,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cTextoTxt:  return sizeof(TTextoTxt);
     case Instr::cTextoPos:  return sizeof(TTextoPos);
     case Instr::cTextoVar:  return sizeof(TTextoVar);
+    case Instr::cTextoObj:  return sizeof(TTextoObj);
     case Instr::cNomeObj:   return sizeof(TVarNomeObj);
     case Instr::cArqDir:    return sizeof(TVarDir);
     case Instr::cArqLog:    return sizeof(TVarLog);
@@ -141,6 +159,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cVarObjeto:
     case Instr::cVarInt:    return 0;
     case Instr::cTextoVarSub: return sizeof(TTextoVarSub);
+    case Instr::cTextoObjSub: return sizeof(TTextoObjSub);
     }
     return 0;
 }
@@ -192,6 +211,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cTextoPos:
         return (TVarTipo)TTextoPos::getTipo(numfunc);
     case Instr::cTextoVar:  return varOutros;
+    case Instr::cTextoObj:  return varOutros;
     case Instr::cNomeObj:   return varOutros;
     case Instr::cArqDir:    return varOutros;
     case Instr::cArqLog:    return varOutros;
@@ -218,6 +238,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cVarInt:    return varInt;
     case Instr::cTextoVarSub:
         return (TVarTipo)numfunc;
+    case Instr::cTextoObjSub: return varObj;
     }
     return varOutros;
 }
@@ -342,7 +363,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         break;
     case Instr::cListaObj:
         for (; antes<depois; antes++)
-            end_listaobj[antes].EndObjeto(o);
+            end_listaobj[antes].Objeto = o;
         for (; depois<antes; depois++)
             end_listaobj[depois].Apagar();
         break;
@@ -373,6 +394,12 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
     case Instr::cTextoVar:
         for (; depois<antes; depois++)
             end_textovar[depois].Apagar();
+        break;
+    case Instr::cTextoObj:
+        for (; antes<depois; antes++)
+            end_textoobj[antes].Objeto = o;
+        for (; depois<antes; depois++)
+            end_textoobj[depois].Apagar();
         break;
     case Instr::cTelaTxt:
         for (; antes<depois; antes++)
@@ -440,6 +467,10 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
     case Instr::cTextoVarSub:
         for (; depois<antes; depois++)
             end_textovarsub[depois].Apagar();
+        break;
+    case Instr::cTextoObjSub:
+        for (; depois<antes; depois++)
+            end_textoobjsub[depois].Apagar();
         break;
     }
 }
@@ -524,54 +555,17 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
 
 // Variáveis extras
     case Instr::cListaObj:
-        {
-            TListaObj * o = (TListaObj *)endvar;
-            TListaObj * d = (TListaObj *)destino;
-            int inc=1;
-            if (destino > endvar)
-                o+=vetor-1, d+=vetor-1, inc=-1;
-            for (; vetor; vetor--,o+=inc,d+=inc)
-            {
-                o->EndObjeto(objeto);
-                o->Mover(d);
-            }
-            endvar = destino;
-            return;
-        }
+        MOVER_OBJETO( TListaObj )
     case Instr::cListaItem:
-        {
-            TListaItem * o = (TListaItem *)endvar;
-            TListaItem * d = (TListaItem *)destino;
-            int inc=1;
-            if (destino > endvar)
-                o+=vetor-1, d+=vetor-1, inc=-1;
-            for (; vetor; vetor--,o+=inc,d+=inc)
-            {
-                o->Objeto = objeto;
-                o->Mover(d);
-            }
-            endvar = destino;
-            return;
-        }
+        MOVER_OBJETO( TListaItem )
     case Instr::cTextoTxt:
         MOVER_SIMPLES( TTextoTxt )
     case Instr::cTextoPos:
-        {
-            TTextoPos * o = (TTextoPos *)endvar;
-            TTextoPos * d = (TTextoPos *)destino;
-            int inc=1;
-            if (destino > endvar)
-                o+=vetor-1, d+=vetor-1, inc=-1;
-            for (; vetor; vetor--,o+=inc,d+=inc)
-            {
-                o->Objeto = objeto;
-                o->Mover(d);
-            }
-            endvar = destino;
-            return;
-        }
+        MOVER_OBJETO( TTextoPos )
     case Instr::cTextoVar:
         MOVER_SIMPLES( TTextoVar )
+    case Instr::cTextoObj:
+        MOVER_OBJETO( TTextoObj )
     case Instr::cNomeObj:
         memmove(destino, endvar, vetor*sizeof(TVarNomeObj));
         endvar = destino;
@@ -604,20 +598,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
     case Instr::cDebug:
         MOVER_COMPLETO( TVarDebug )
     case Instr::cIndiceObj:
-        {
-            TIndiceObj * o = (TIndiceObj *)endvar;
-            TIndiceObj * d = (TIndiceObj *)destino;
-            int inc=1;
-            if (destino > endvar)
-                o+=vetor-1, d+=vetor-1, inc=-1;
-            for (; vetor; vetor--,o+=inc,d+=inc)
-            {
-                o->Objeto = objeto;
-                o->Mover(d);
-            }
-            endvar = destino;
-            return;
-        }
+        MOVER_OBJETO( TIndiceObj )
     case Instr::cIndiceItem:
         MOVER_SIMPLES( TIndiceItem )
     case Instr::cDataHora:
@@ -648,6 +629,8 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         return;
     case Instr::cTextoVarSub:
         MOVER_SIMPLES( TTextoVarSub )
+    case Instr::cTextoObjSub:
+        MOVER_SIMPLES( TTextoObjSub )
     }
     assert(0);
 }
@@ -793,6 +776,7 @@ bool TVariavel::getBool()
     case Instr::cTextoPos:
         return end_textopos[indice].getValor(numfunc);
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
         return 0;
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
@@ -832,6 +816,8 @@ bool TVariavel::getBool()
         return (valor_int!=0);
     case Instr::cTextoVarSub:
         return end_textovarsub[indice].getBool();
+    case Instr::cTextoObjSub:
+        return end_textoobjsub[indice].getInt();
     }
     return 0;
 }
@@ -962,6 +948,7 @@ int TVariavel::getInt()
     case Instr::cTextoPos:
         return end_textopos[indice].getValor(numfunc);
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
         return 0;
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
@@ -1004,6 +991,8 @@ int TVariavel::getInt()
         return (endvar!=0);
     case Instr::cTextoVarSub:
         return end_textovarsub[indice].getInt();
+    case Instr::cTextoObjSub:
+        return end_textoobjsub[indice].getInt();
     }
     return 0;
 }
@@ -1131,6 +1120,7 @@ double TVariavel::getDouble()
     case Instr::cTextoPos:
         return end_textopos[indice].getValor(numfunc);
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
         return 0;
     case Instr::cNomeObj:
         return end_nomeobj[indice].getValor();
@@ -1173,6 +1163,8 @@ double TVariavel::getDouble()
         return (endvar!=0);
     case Instr::cTextoVarSub:
         return end_textovarsub[indice].getDouble();
+    case Instr::cTextoObjSub:
+        return end_textoobjsub[indice].getInt();
     }
     return 0;
 }
@@ -1338,6 +1330,7 @@ const char * TVariavel::getTxt()
         sprintf(txtnum, "%d", getInt());
         return txtnum;
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
     case Instr::cArqDir:
     case Instr::cArqSav:
     case Instr::cServ:
@@ -1374,6 +1367,13 @@ const char * TVariavel::getTxt()
                 return "0";
             return p;
         }
+    case Instr::cTextoObjSub:
+        {
+            TObjeto * obj = end_textoobjsub[indice].getObj();
+            if (obj == 0)
+                break;
+            return obj->Classe->Nome;
+        }
     }
     return "";
 }
@@ -1394,6 +1394,8 @@ TObjeto * TVariavel::getObj()
             TListaX * l = end_listaitem[indice].ListaX;
             return (l==0 ? 0 : l->Objeto);
         }
+    case Instr::cTextoObjSub:
+        return end_textoobjsub[indice].getObj();
     }
     return 0;
 }
@@ -1500,6 +1502,7 @@ void TVariavel::setInt(int valor)
         break;
     case Instr::cTextoTxt:
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
     case Instr::cNomeObj:
     case Instr::cArqDir:
     case Instr::cArqLog:
@@ -1552,6 +1555,9 @@ void TVariavel::setInt(int valor)
             sprintf(mens, "%d", valor);
             end_textovarsub[indice].setTxt(mens);
         }
+        break;
+    case Instr::cTextoObjSub:
+        end_textoobjsub[indice].setObj(0);
         break;
     }
 }
@@ -1611,6 +1617,7 @@ void TVariavel::setDouble(double valor)
         break;
     case Instr::cTextoTxt:
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
     case Instr::cNomeObj:
     case Instr::cArqDir:
     case Instr::cArqLog:
@@ -1641,12 +1648,16 @@ void TVariavel::setDouble(double valor)
     case Instr::cVarObjeto:
         endvar = 0;
         break;
+    case Instr::cTextoObjSub:
+        end_textoobjsub[indice].setObj(0);
+        break;
     case Instr::cTextoVarSub:
         if (numfunc != varTxt && valor==0)
         {
             end_textovarsub[indice].setTxt("");
             break;
         }
+        // Caso contrário, interpreta como texto
     case Instr::cTxt1:
     case Instr::cTxt2:
         {
@@ -1750,6 +1761,7 @@ void TVariavel::setTxt(const char * txt)
         break;
     case Instr::cTextoTxt:
     case Instr::cTextoVar:
+    case Instr::cTextoObj:
     case Instr::cNomeObj:
     case Instr::cArqDir:
     case Instr::cArqLog:
@@ -1776,6 +1788,9 @@ void TVariavel::setTxt(const char * txt)
         break;
     case Instr::cTextoVarSub:
         end_textovarsub[indice].setTxt(txt);
+        break;
+    case Instr::cTextoObjSub:
+        end_textoobjsub[indice].setObj(0);
         break;
     }
 }
@@ -1830,6 +1845,9 @@ void TVariavel::setObj(TObjeto * obj)
         break;
     case Instr::cVarObjeto:
         endvar = obj;
+        break;
+    case Instr::cTextoObjSub:
+        end_textoobjsub[indice].setObj(obj);
         break;
     }
 }
@@ -1952,6 +1970,8 @@ bool TVariavel::Func(const char * nome)
         return end_textopos[indice].Func(this, nome);
     case Instr::cTextoVar:
         return end_textovar[indice].Func(this, nome);
+    case Instr::cTextoObj:
+        return end_textoobj[indice].Func(this, nome);
     case Instr::cNomeObj:
         return end_nomeobj[indice].Func(this, nome);
     case Instr::cArqDir:

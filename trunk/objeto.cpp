@@ -20,6 +20,7 @@
 #include "variavel.h"
 #include "var-outros.h"
 #include "var-listaobj.h"
+#include "var-textoobj.h"
 #include "instr.h"
 
 //#define DEBUG_CRIAR // Mostra objetos criados e apagados
@@ -88,6 +89,9 @@ void TObjeto::Apagar()
 // Remove variáveis TListaX que apontam para o objeto
     while (VarListaX)
         VarListaX->Apagar();
+// Remove variáveis TBlocoObj que apontam para o objeto
+    while (VarBlocoObj)
+        VarBlocoObj->Apagar();
 // Chama destrutores das variáveis
     TVariavel v;
     for (int x=(int)Classe->NumVar-1; x>=0; x--)
@@ -129,6 +133,10 @@ void TObjeto::Apagar(TObjeto * obj)
     for (TListaX * pont = VarListaX; pont; pont=pont->ObjDepois)
         pont->Objeto = obj;
     obj->VarListaX = VarListaX;
+// Acerta variáveis TBlocoObj que apontam para o objeto
+    for (TBlocoObj * pont = VarBlocoObj; pont; pont=pont->ObjDepois)
+        pont->Objeto = obj;
+    obj->VarBlocoObj = VarBlocoObj;
 // Tira da lista ligada
     (Antes ? Antes->Depois : Classe->ObjetoIni) = Depois;
     (Depois ? Depois->Antes : Classe->ObjetoFim) = Antes;
