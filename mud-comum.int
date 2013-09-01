@@ -10,6 +10,7 @@ listaitem evrec.2 # Usado internamente, para receber eventos
 uint8 socktot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 const objtot = 1 # Quantidade de objetos que esse objeto representa
 const objmax = 100 # Quantos itens pode ter (objetos em dentro1)
+uint16 objnum # Quantidade total de itens que representa é: (objnum>>1)
 sav textovar var # Variáveis criadas sob demanda
 #
 uint32 pesoden # Somente leitura: quanto peso tem dentro
@@ -43,7 +44,7 @@ func fim # Objeto vai sair do jogo
   listaobj l
   l.addfim(evento), evento.limpar, atkrec.limpar
   enquanto l
-    l0.objini.cmd_fim(este), l.ini.remove
+    l.objini.cmd_fim(este), l.ini.remove
   efim
   cmd_objfim, idono && (dono = nulo)
 
@@ -74,6 +75,16 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
       r.luztot += x, r = r.idono.objlista, r.luzden += x
     efim
   fimse
+# Acerta a quantidade de itens (objnum)
+  se objnum & 1
+  senao item
+    objnum += 3, r = idono.objlista
+    epara r.objnum += 2, r.item, r.objnum += 2
+      r = r.idono.objlista
+    efim
+  senao
+    objnum += 1
+  fimse
 
 func ajustaev # Acerta eventos
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
@@ -102,6 +113,10 @@ varfunc dono # O dono do personagem/item
       r.luztot -= luztot, r = r.idono.objlista, r.luzden -= luztot
     efim
   fimse
+# Retira a quantidade de itens (objnum)
+  epara r = este, r.item, r.objnum -= objnum & ~1
+    r = idono.objlista
+  efim
 # Acerta se tem jogador dentro
   se socktot
     epara r = donoantes, r, r = r.idono.objlista
@@ -138,6 +153,10 @@ varfunc dono # O dono do personagem/item
       r.luztot += luztot, r = r.idono.objlista, r.luzden += luztot
     efim
   fimse
+# Acrescenta a quantidade de itens (objnum)
+  epara r = este, r.item, r.objnum += objnum & ~1
+    r = idono.objlista
+  efim
 # Acerta se tem jogador dentro
   se socktot
     epara r = idono.objlista, r, r = r.idono.objlista

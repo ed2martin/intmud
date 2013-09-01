@@ -284,10 +284,10 @@ uint32 pmanamax # Quantidade máxima de mana
 uint32 pmovemax # Quantidade máxima de movimento
 uint16 pveloc1 # Velocidade calculada do personagem
 const pveloc = pveloc1 - int((pesoden - pesovest) / 1500)
-uint32 atknorm # Quantidade de ataque normal
-uint32 defnorm # Quantidade de defesa normal
-uint32 atkesp # Quantidade de ataque especial
-uint32 defesp # Quantidade de defesa especial
+uint32 atknorm # Quantidade de ataque normal, sem modificadores em atktipo
+uint32 defnorm # Quantidade de defesa normal, sem modificadores em deftipo
+uint32 atkesp # Quantidade de ataque especial, sem modificadores em atktipo
+uint32 defesp # Quantidade de defesa especial, sem modificadores em deftipo
 uint16 evasao # Habilidade de desviar dos golpes (thac0)
 uint16 precisao # Habilidade de acertar os golpes (hitroll)
 uint32 pesoveste # Metade do peso de tudo que está vestindo
@@ -295,8 +295,9 @@ uint32 pesomax # Quanto peso consegue carregar
 const tipo1 = "normal" # Tipo de personagem
 # const tipo2 = "" # Segundo tipo do personagem
 # const tipo3 = "" # Terceiro tipo do personagem
-uint16 atktipo.20 # Ataque de ataque para diversos tipos de danos
-uint16 deftipo.20 # Defesa contra os diversos tipos de danos
+uint16 atktipo.22 # Ataque de ataque para diversos tipos de danos
+uint16 deftipo.22 # Defesa contra os diversos tipos de danos
+# As duas primeiras variáveis do vetor são golpes normais e especiais
 # 1000=danos normais e 0=nenhum dano (500=metade dos danos, etc.)
 # Vide constante config:atknomes
 #

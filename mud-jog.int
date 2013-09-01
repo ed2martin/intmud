@@ -259,7 +259,7 @@ func p_perso1
   se arg0 == "N"
     p_perso
   senao arg0 == "S"
-    config:salvacria ? p_criasenha1 : p_sexo1
+    config:salvacria ? p_criasenha1 : config:email ? p_email1 : p_sexo1
   senao
     passo = "perso1"
     msg("Deseja criar o personagem '" + nome + "'? (tecle S ou N)")
@@ -290,6 +290,31 @@ func p_criasenha2 # Repetir a senha ao criar personagem
     var.limpar("j_")
     p_perso
   senao
+    config:email ? p_email1 : p_sexo1
+  fimse
+  ret 1
+
+func p_email1 # Digitar o e-mail
+  passo = "email1"
+  txt100 lin.3
+  se !arg0
+    se config:email == 1
+      msg("Digite seu e-mail ou N para nenhum")
+    senao
+      msg("Digite seu e-mail")
+    fimse
+  senao arg0 == "n" && config:email == 1
+    p_sexo1
+  senao txtproc(arg0, " ") >= 0
+    msg("O e-mail não pode conter espaços; digite outro")
+  senao txtremove(arg0, "7") !== arg0
+    msg("E-mail contém caracteres inválidos, digite outro")
+  senao lin.separar(arg0, "@") != 2 || lin.0 == ""
+    msg("E-mail inválido; digite outro")
+  senao txtfim(lin.1, 1) == "." || txtproc(lin.1, ".") <= 0
+    msg("E-mail inválido; digite outro")
+  senao 
+    var.j_email = arg0
     p_sexo1
   fimse
   ret 1
@@ -424,6 +449,7 @@ func p_entrajogo # Entrar no jogo: cria personagem
   perso.senha = var.j_senha
   perso.tipo1 = var.j_tipo1
   perso.tipo2 = var.j_tipo2
+  perso.var.z_email = var.j_email
   var.limpar("j_")
   perso.mudadono(config:salaini)
   perso.recalc = 1
