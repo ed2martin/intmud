@@ -130,32 +130,34 @@ func escr
   epara l.addfim(sala.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
+    refvar r = ref(l.objini)
     se arg0.dentro1.total + total > arg0.objmax
-      ret arg0.msg("Você não consegue carregar tanta coisa nada.")
-    senao arg0.volden + l.objini.voltot * total / l.objini.objtot > arg0.volmax
       ret arg0.msg("Você não consegue carregar tanta coisa.")
-    senao arg0.pesoden - arg0.pesoveste + l.objini.pesotot * total / l.objini.objtot > arg0.pesom\
-ax
-      ret l.objini.pesotot > l.objini.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
+    senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
+      ret arg0.msg("Você não consegue carregar tanta coisa.")
+    senao arg0.pesoden - arg0.pesoveste + r.pesotot * total / r.objtot > arg0.pesomax
+      ret r.pesotot > r.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
       ret arg0.msg("Você não consegue carregar tanto peso.")
+    senao (arg0.objnum >> 1) + (r.objnum >> 1) > config:itens
+      ret arg0.msg("Você não consegue carregar tanta coisa.")
     fimse
     listaobj e
-    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_pegarobj(arg0, sala, l.objini, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      sair e.objini.cmd_pegarobj(arg0, sala, r, total)
     efim
     se e
       sair (achou += 1) >= 10
       continuar
     fimse
-    $mens.p(arg0, sala, l.objini)
+    $mens.p(arg0, sala, r)
     se total <= 1
       $mens.mvis1("$P pega $o" + mens)
     senao
       $mens.mvis1("$P pega " + total + "x $o" + mens)
     fimse
-    l.objini.mudadono(arg0, total)
-    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      e.objini.cmd_pegouobj(arg0, sala, l.objini, total)
+    r.mudadono(arg0, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_pegouobj(arg0, sala, r, total)
     efim
     sair (achou += 1) >= 10
   efim
@@ -442,31 +444,33 @@ animal.")
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
+    refvar r = ref(l.objini)
     se sala.dentro1.total + total >= sala.objmax
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada.")
-    senao sala.volden + l.objini.voltot * total / l.objini.objtot > sala.volmax
+    senao sala.volden + r.voltot * total / r.objtot > sala.volmax
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
-    senao sala.pesoden - sala.pesoveste + l.objini.pesotot * total / l.objini.objtot > sala.pesom\
-ax
+    senao sala.pesoden - sala.pesoveste + r.pesotot * total / r.objtot > sala.pesomax
       ret arg0.msg("É pesado de mais para " + txtcopiamai(sala.descnome, "A") + ".")
+    senao (sala.objnum >> 1) + (r.objnum >> 1) > config:itens
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
     fimse
     listaobj e
-    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_darobj(arg0, sala, l.objini, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      sair e.objini.cmd_darobj(arg0, sala, r, total)
     efim
     se e
       sair (achou += 1) >= 10
       continuar
     fimse
-    $mens.p(arg0, sala, l.objini)
+    $mens.p(arg0, sala, r)
     se total <= 1
       $mens.mvis1("$P dá $o para $a.")
     senao
       $mens.mvis1("$P dá " + total + "x $o para $a.")
     fimse
-    l.objini.mudadono(sala, total)
-    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      e.objini.cmd_deuobj(arg0, sala, l.objini, total)
+    r.mudadono(sala, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_deuobj(arg0, sala, r, total)
     efim
     sair (achou += 1) >= 10
   efim

@@ -1,0 +1,327 @@
+
+
+classe tipo_anao
+herda comum_tipo
+const nome = "Anão"
+const menu = "raça"
+const desc = "Anões\n\
+Embora pequenos, são mais fortes fisicamente.\n\
+Porém, não lidam muito bem com magia."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += 2 * pnivel
+  atknorm += 0.5 * pnivel
+  defnorm += 1 * pnivel
+  atkesp += -0.5 * pnivel
+  defesp += -1 * pnivel
+  pesomax += 10000
+  deftipo.2 *= 0.5 # Cortante
+  deftipo.3 *= 0.5 # Perfurante
+  deftipo.16 *= 2 # Fantasma
+
+
+classe tipo_elfo
+herda comum_tipo
+const nome = "Elfo"
+const menu = "raça"
+const desc = "Elfos\n\
+Lidam melhor com magia e são mais rápidos, porém são\n\
+mais fracos fisicamente."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += 3 * pnivel
+  atknorm += -0.5 * pnivel
+  defnorm += -1 * pnivel
+  atkesp += 0.5 * pnivel
+  defesp += 1 * pnivel
+  deftipo.1 *= 2 # Luta
+  deftipo.2 *= 2 # Cortante
+  deftipo.3 *= 2 # Perfurante
+  deftipo.16 *= 0.5 # Fantasma
+
+
+classe tipo_humano
+herda comum_tipo
+const nome = "Humano"
+const menu = "raça"
+const desc = "Humanos\n\
+Uma raça equilibrada. Lidam razoavelmente bem com magia e\n\
+são razoavelmente fortes fisicamente."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.1 *= 2 # Luta
+  deftipo.2 *= 2 # Cortante
+  deftipo.3 *= 2 # Perfurante
+  deftipo.16 *= 0.5 # Fantasma
+
+
+classe tipo_normal
+herda comum_tipo
+# Contusão/Normal
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.1 *= 2 # Luta
+  deftipo.2 *= 2 # Cortante
+  deftipo.3 *= 2 # Perfurante
+  deftipo.16 *= 0 # Fantasma
+
+
+classe tipo_luta
+herda comum_tipo
+const nome = "Luta"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.1 *= 1.5 # Luta
+  deftipo.8 *= 0.5 # Pedra
+  deftipo.9 *= 2 # Aéreo/vento
+  deftipo.11 *= 0.5 # Trevas
+  deftipo.15 *= 0.5 # Inseto
+
+
+classe tipo_cortante
+herda comum_tipo
+const nome = "Cortante"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.4 *= 2 # fogo
+  deftipo.5 *= 2 # água
+  deftipo.12 *= 2 # eletricidade
+  deftipo.6 *= 0.5 # gelo
+  deftipo.8 *= 0.5 # pedra
+  deftipo.11 *= 0.5 # trevas
+
+
+classe tipo_perfurante
+herda comum_tipo
+const nome = "Perfurante"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.3 *= 1.5 # Perfurante
+  deftipo.4 *= 2 # Fogo
+  deftipo.5 *= 2 # Água
+  deftipo.6 *= 0.5 # Gelo
+  deftipo.8 *= 0.5 # Pedra
+  deftipo.11 *= 0.5 # Trevas
+  deftipo.12 *= 2 # Elétrico
+
+
+classe tipo_fogo
+herda comum_tipo
+const nome = "Fogo"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.5 *= 2 # água
+  deftipo.7 *= 2 # terra
+  deftipo.8 *= 2 # pedra
+  deftipo.4 *= 0.5 # fogo
+  deftipo.6 *= 0.5 # gelo
+  deftipo.13 *= 0.5 # vegetal
+  deftipo.15 *= 0.5 # inseto
+
+
+classe tipo_agua
+herda comum_tipo
+const nome = "Água"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.5 *= 1.5 # Água
+  deftipo.4 *= 0.5 # Fogo
+  deftipo.5 *= 0.5 # Água
+  deftipo.6 *= 0.5 # Gelo
+  deftipo.12 *= 2 # Elétrico
+  deftipo.13 *= 2 # Vegetal
+
+
+classe tipo_gelo
+herda comum_tipo
+const nome = "Gelo"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.6 *= 1.5 # Gelo
+  deftipo.1 *= 2 # Luta
+  deftipo.2 *= 0.5 # Cortante
+  deftipo.3 *= 0.5 # Perfurante
+  deftipo.4 *= 2 # Fogo
+  deftipo.6 *= 0.5 # Gelo
+  deftipo.8 *= 2 # Pedra
+
+
+classe tipo_terra
+herda comum_tipo
+const nome = "Terra"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.7 *= 1.5 # Terra
+  deftipo.4 *= 2 # Fogo
+  deftipo.5 *= 2 # Água
+  deftipo.6 *= 2 # Gelo
+  deftipo.8 *= 0.5 # Pedra
+  deftipo.12 *= 0 # Elétrico
+  deftipo.13 *= 2 # Vegetal
+
+
+classe tipo_pedra
+herda comum_tipo
+const nome = "Pedra"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.8 *= 1.5 # Pedra
+  deftipo.0 *= 0.5 # Contusão
+  deftipo.1 *= 2 # Luta
+  deftipo.2 *= 0.5 # Cortante
+  deftipo.3 *= 0.5 # Perfurante
+  deftipo.4 *= 0.5 # Fogo
+  deftipo.5 *= 2 # Água
+  deftipo.7 *= 2 # Terra
+  deftipo.9 *= 0.5 # Aéreo/vento
+  deftipo.13 *= 2 # Vegetal
+
+
+classe tipo_ar
+herda comum_tipo
+const nome = "Ar"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.9 *= 1.5 # Aéreo/vento
+  deftipo.1 *= 0.5 # Luta
+  deftipo.6 *= 2 # Gelo
+  deftipo.7 *= 0 # Terra
+  deftipo.8 *= 2 # Pedra
+  deftipo.12 *= 2 # Elétrico
+  deftipo.13 *= 0.5 # Vegetal
+  deftipo.15 *= 0.5 # Inseto
+
+
+classe tipo_luz
+herda comum_tipo
+const nome = "Luz"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.10 *= 1.5 # Luz
+  deftipo.10 *= 0.5 # Luz
+  deftipo.11 *= 0.5 # Trevas
+  deftipo.13 *= 2 # Vegetal
+  deftipo.14 *= 0 # Psíquico
+  deftipo.16 *= 2 # Fantasma
+
+
+classe tipo_trevas
+herda comum_tipo
+const nome = "Trevas"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.11 *= 1.5 # Trevas
+  deftipo.1 *= 0.5 # Luta
+  deftipo.10 *= 2 # Luz
+  deftipo.11 *= 2 # Trevas
+  deftipo.14 *= 0 # Psíquico
+  deftipo.15 *= 0.5 # Inseto
+  deftipo.16 *= 2 # Fantasma
+
+
+classe tipo_eletrico
+herda comum_tipo
+const nome = "Elétrico"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.12 *= 1.5 # Elétrico
+  deftipo.7 *= 2 # Terra
+  deftipo.9 *= 0.5 # Aéreo/vento
+  deftipo.12 *= 0.5 # Elétrico
+
+
+classe tipo_vegetal
+herda comum_tipo
+const nome = "Vegetal"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.13 *= 1.5 # Vegetal
+  deftipo.2 *= 2 # Cortante
+  deftipo.4 *= 2 # Fogo
+  deftipo.5 *= 0.5 # Água
+  deftipo.6 *= 2 # Gelo
+  deftipo.7 *= 0.5 # Terra
+  deftipo.9 *= 2 # Aéreo/vento
+  deftipo.10 *= 0.5 # Luz
+  deftipo.12 *= 0.5 # Elétrico
+  deftipo.13 *= 0.5 # Vegetal
+  deftipo.15 *= 2 # Inseto
+
+
+classe tipo_psiquico
+herda comum_tipo
+const nome = "Psíquico"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.14 *= 1.5 # Psíquico
+  deftipo.1 *= 2 # Luta
+  deftipo.11 *= 0.5 # Trevas
+  deftipo.14 *= 2 # Psíquico
+  deftipo.15 *= 0.5 # Inseto
+  deftipo.16 *= 0.5 # Fantasma
+
+
+classe tipo_inseto
+herda comum_tipo
+const nome = "Inseto"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.15 *= 1.5 # Inseto
+  deftipo.1 *= 0.5 # Luta
+  deftipo.4 *= 2 # Fogo
+  deftipo.7 *= 0.5 # Terra
+  deftipo.8 *= 2 # Pedra
+  deftipo.9 *= 2 # Aéreo/vento
+  deftipo.13 *= 0.5 # Vegetal
+
+
+classe tipo_fantasma
+herda comum_tipo
+const nome = "Fantasma"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.16 *= 1.5 # Fantasma
+  deftipo.0 *= 0 # Contusão
+  deftipo.1 *= 0 # Luta
+  deftipo.2 *= 0 # Cortante
+  deftipo.3 *= 0 # Perfurante
+  deftipo.10 *= 2 # Luz
+  deftipo.11 *= 2 # Trevas
+  deftipo.15 *= 0.5 # Inseto
+  deftipo.16 *= 2 # Fantasma
+
+
+classe tipo_dragao
+herda comum_tipo
+const nome = "Dragão"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.17 *= 1.5 # Dragão
+  deftipo.3 *= 0.5 # Perfurante
+  deftipo.4 *= 0.5 # Fogo
+  deftipo.5 *= 0.5 # Água
+  deftipo.6 *= 2 # Gelo
+  deftipo.12 *= 0.5 # Elétrico
+  deftipo.13 *= 0.5 # Vegetal
+  deftipo.17 *= 2 # Dragão

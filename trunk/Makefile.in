@@ -79,10 +79,10 @@ am_intmud_OBJECTS = main.$(OBJEXT) classe.$(OBJEXT) objeto.$(OBJEXT) \
 	var-textovar.$(OBJEXT) var-textoobj.$(OBJEXT) \
 	var-nomeobj.$(OBJEXT) var-log.$(OBJEXT) var-sav.$(OBJEXT) \
 	var-txt.$(OBJEXT) var-dir.$(OBJEXT) var-indiceobj.$(OBJEXT) \
-	var-prog.$(OBJEXT) var-debug.$(OBJEXT) var-datahora.$(OBJEXT) \
-	mudarclasse.$(OBJEXT) arqler.$(OBJEXT) misc.$(OBJEXT) \
-	procurar.$(OBJEXT) random.$(OBJEXT) sha1.$(OBJEXT) \
-	md5.$(OBJEXT) ssl.$(OBJEXT)
+	var-prog.$(OBJEXT) var-debug.$(OBJEXT) getrss.$(OBJEXT) \
+	var-datahora.$(OBJEXT) mudarclasse.$(OBJEXT) arqler.$(OBJEXT) \
+	misc.$(OBJEXT) procurar.$(OBJEXT) random.$(OBJEXT) \
+	sha1.$(OBJEXT) md5.$(OBJEXT) ssl.$(OBJEXT)
 intmud_OBJECTS = $(am_intmud_OBJECTS)
 intmud_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -213,7 +213,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = doc/* make-mingw-* intmud*.int mud*.int mud.txt casa* teste*.int telnet.int editmud.int editmud-gtkmm.cpp editmud.c editmud-resource.h editmud-resource.rc quest* minichat.int mudaprog.int Doxyfile TODO
-intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h variavel.cpp variavel.h arqmapa.cpp arqmapa.h instr-codif.cpp instr-decod.cpp instr-mostra.cpp instr-exec.cpp instr-func.cpp instr-misc.cpp instr.h socket.cpp socket.h console.cpp console.h var-telatxt.cpp var-telatxt.h var-socket.cpp var-socket.h var-serv.cpp var-serv.h var-outros.cpp var-outros.h var-listaobj.cpp var-listaobj.h var-texto.cpp var-texto-bloco.cpp var-texto-func.cpp var-texto.h var-textovar.cpp var-textovar.h var-textoobj.cpp var-textoobj.h var-nomeobj.cpp var-nomeobj.h var-log.cpp var-log.h var-sav.cpp var-sav.h var-txt.cpp var-txt.h var-dir.cpp var-dir.h var-indiceobj.cpp var-indiceobj.h var-prog.cpp var-prog.h var-debug.cpp var-debug.h var-datahora.cpp var-datahora.h mudarclasse.cpp mudarclasse.h arqler.cpp arqler.h misc.cpp misc.h procurar.cpp procurar.h random.cpp random.h sha1.cpp sha1.h md5.cpp md5.h ssl.cpp ssl.h rbt.cpp.h
+intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h variavel.cpp variavel.h arqmapa.cpp arqmapa.h instr-codif.cpp instr-decod.cpp instr-mostra.cpp instr-exec.cpp instr-func.cpp instr-misc.cpp instr.h socket.cpp socket.h console.cpp console.h var-telatxt.cpp var-telatxt.h var-socket.cpp var-socket.h var-serv.cpp var-serv.h var-outros.cpp var-outros.h var-listaobj.cpp var-listaobj.h var-texto.cpp var-texto-bloco.cpp var-texto-func.cpp var-texto.h var-textovar.cpp var-textovar.h var-textoobj.cpp var-textoobj.h var-nomeobj.cpp var-nomeobj.h var-log.cpp var-log.h var-sav.cpp var-sav.h var-txt.cpp var-txt.h var-dir.cpp var-dir.h var-indiceobj.cpp var-indiceobj.h var-prog.cpp var-prog.h var-debug.cpp var-debug.h getrss.cpp var-datahora.cpp var-datahora.h mudarclasse.cpp mudarclasse.h arqler.cpp arqler.h misc.cpp misc.h procurar.cpp procurar.h random.cpp random.h sha1.cpp sha1.h md5.cpp md5.h ssl.cpp ssl.h rbt.cpp.h
 AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -323,6 +323,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arqmapa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/console.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getrss.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-codif.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-decod.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-exec.Po@am__quote@

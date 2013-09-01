@@ -20,6 +20,8 @@ Os tópicos são:\n\
 const adm_outros = "\c3Outros comandos\b\n\
 \c2ECONFIG\b\n\
   Edita as configurações do MUD.\n\
+\c2SERV\b\n\
+  Mostra informações sobre o estado atual do MUD.\n\
 \c2AC\b <texto>\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
@@ -77,6 +79,17 @@ func cmd_adm
   fimse
   ret 1
 
+func cmd_serv # Informações sobre o servidor
+  debug d
+  txtmais.limpar
+  txtmais.addfim("\b\c3Estado atual do MUD:\b")
+  txtmais.addfim("Memória usada:  " + txtnum(d.mem, ".") + " bytes")
+  txtmais.addfim("Mémória máxima: " + txtnum(d.memmax, ".") + " bytes")
+  txtmais.addfim("Processador (stempo): " + d.stempo / 1000 + " seg.")
+  txtmais.addfim("Processador (utempo): " + d.utempo / 1000 + " seg.")
+  txtmostra
+  ret 1
+
 func cmd2_info # Usado por cmd_info
   txt512 lin
   lin = "Peso:   obj=" + arg0.pesoobj + "  dentro=" + arg0.pesoden
@@ -85,6 +98,7 @@ func cmd2_info # Usado por cmd_info
   lin += "  total=" + arg0.voltot + "  expande=" + (arg0.volexp ? "S" : "N")
   lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.socktot
   lin += "  Itens dentro=" + arg0.dentro1.total + "  Personagens dentro=" + arg0.dentro2.total
+  lin += "  objnum=" + arg0.objnum
   lin += "\nevento="
   listaitem i
   epara i = arg0.evento.ini, i, i.depois
@@ -588,21 +602,26 @@ const clas7 = "config"
 const vari7 = "animal1"
 const extr7 = "1 8"
 #
-const nome8 = "Salvar personagem ao criar"
-const tipo8 = "simnao--"
+const nome8 = "Itens por personagem"
+const info8 = "Quantos itens cada jogador pode ter, ao todo\n\
+Essa opção visa limitar o tamanho dos arquivos dos jogos salvos"
+const tipo8 = "numero--"
 const clas8 = "config"
-const vari8 = "salvacria"
+const vari8 = "itens"
+const extr8 = "1 1000"
 #
-const nome9 = "Ataques e batalha"
-const tipo9 = "menu--"
-const clas9 = "menu_econfig_ataques"
+const nome9 = "Salvar personagem ao criar"
+const tipo9 = "simnao--"
+const clas9 = "config"
+const vari9 = "salvacria"
 #
-const nome10 = "Quando alguém entra avisar"
-const info10 = "Quem deve ser informado quando um jogador entra ou sai"
+const nome10 = "E-mail"
+const info10 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
+e procure por uma linha que contém o texto z_email"
 const tipo10 = "opcao--"
 const clas10 = "config"
-const vari10 = "entrainfo"
-const extr10 = "Ninguém\nSomente administradores\nTodos"
+const vari10 = "email"
+const extr10 = "Não pede\nOpcional\nObrigatório"
 #
 const nome11 = "Config ao criar personagem"
 const info11 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
@@ -611,42 +630,53 @@ const clas11 = "config"
 const vari11 = "jogconfig"
 const extr11 = "desc\nsaidas\ncores\nacento\nchat\nseguir\nprompt\nbprompt\npvt"
 #
-const nome12 = "Canal chat"
+const nome12 = "Quando alguém entra avisar"
+const info12 = "Quem deve ser informado quando um jogador entra ou sai"
 const tipo12 = "opcao--"
 const clas12 = "config"
-const vari12 = "chattipo"
-const extr12 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+const vari12 = "entrainfo"
+const extr12 = "Ninguém\nSomente administradores\nTodos"
 #
-const nome13 = "Canal chat a partir do nível"
-const tipo13 = "numero--"
-const clas13 = "config"
-const vari13 = "chatnivel"
+const nome13 = "Ataques e batalha"
+const tipo13 = "menu--"
+const clas13 = "menu_econfig_ataques"
 #
-const nome14 = "Aulas por nível"
-const info14 = "Quantos pontos de aulas ganha quando sobe de nível\n\
-Se 0, o comando aprender não usa pontos de aula"
-const tipo14 = "numero--"
+const nome14 = "Canal chat"
+const tipo14 = "opcao--"
 const clas14 = "config"
-const vari14 = "aulas"
-const extr14 = "0 1000"
+const vari14 = "chattipo"
+const extr14 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome15 = "Comando Retornar até nível"
-const info15 = "Até que nível pode usar o comando retornar"
+const nome15 = "Canal chat a partir do nível"
 const tipo15 = "numero--"
 const clas15 = "config"
-const vari15 = "retornar"
+const vari15 = "chatnivel"
 #
-const nome16 = "Tipos de produtos"
-const info16 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo16 = "txtopcao--"
+const nome16 = "Aulas por nível"
+const info16 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+Se 0, o comando aprender não usa pontos de aula"
+const tipo16 = "numero--"
 const clas16 = "config"
-const vari16 = "produtos"
-const extr16 = "1 30"
+const vari16 = "aulas"
+const extr16 = "0 1000"
 #
-const nome17 = "Posições para vestir itens"
-const info17 = "Os nomes das posições"
-const tipo17 = "menu--"
-const clas17 = "menu_econfig_vestir"
+const nome17 = "Comando Retornar até nível"
+const info17 = "Até que nível pode usar o comando retornar"
+const tipo17 = "numero--"
+const clas17 = "config"
+const vari17 = "retornar"
+#
+const nome18 = "Tipos de produtos"
+const info18 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo18 = "txtopcao--"
+const clas18 = "config"
+const vari18 = "produtos"
+const extr18 = "1 30"
+#
+const nome19 = "Posições para vestir itens"
+const info19 = "Os nomes das posições"
+const tipo19 = "menu--"
+const clas19 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar

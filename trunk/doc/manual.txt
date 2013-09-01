@@ -68,7 +68,7 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012 e 2013, por Paulo Santos Ramos e Edward Martin, até o tópico 15.3.1.
+em 2012 e 2013, por Paulo Santos Ramos e Edward Martin, até o tópico 15.4.8.
 
 
 1. SOBRE O INTMUD
@@ -539,34 +539,34 @@ São eles:
 O primeiro caracter após '\c' ou '\d' corresponde à nova cor.
 
 Caracteres válidos para '\c' e '\d':
-0 = preto
-1 = vermelho
-2 = verde
-3 = marrom
-4 = azul
-5 = magenta
-6 = ciano
-7 = branco
+0 - Preto
+1 - Vermelho
+2 - Verde
+3 - Marrom
+4 - Azul
+5 - Magenta
+6 - Ciano
+7 - Branco
 
 Caracteres válidos apenas para '\c':
-8 = cinza
-9 = vermelho intenso
-A = verde intenso
-B = amarelo
-C = azul intenso
-D = magenta intenso
-E = ciano intenso
-F = branco intenso
-G = liga o sublinhado (um traço horizontal em baixo)
-H = desliga o sublinhado
-I = liga inversão de frente com fundo (troca cores de frente com fundo)
-J = desliga inversão de frente com fundo
-K = liga texto piscante
-L = desliga texto piscante
-M = echo off (não deve ecoar na tela o que o usuário digita)
-N = echo on (deve ecoar na tela o que o usuário digita)
-O = go ahead (usado por alguns clientes de MUD para identificar o prompt)
-P = bipe
+8 - Cinza
+9 - Vermelho intenso
+A - Verde intenso
+B - Amarelo
+C - Azul intenso
+D - Magenta intenso
+E - Ciano intenso
+F - Branco intenso
+G - Liga o sublinhado (um traço horizontal em baixo)
+H - Desliga o sublinhado
+I - Liga inversão de frente com fundo (troca cores de frente com fundo)
+J - Desliga inversão de frente com fundo
+K - Liga texto piscante
+L - Desliga texto piscante
+M - Echo off (não deve ecoar na tela o que o usuário digita)
+N - Echo on (deve ecoar na tela o que o usuário digita)
+O - Go ahead (usado por alguns clientes de MUD para identificar o prompt)
+P - Bipe
 
 Importante:
 A janela do IntMUD, no Windows, não permite sublinhado e texto piscante.
@@ -1747,7 +1747,7 @@ Calcula o logaritmo natural.
 Retorna um texto correspondente a um número ou variável numérica.
 
 Formato é um texto que pode conter:
-Dígito de 0 a 9 - É o número de casas após a vírgula
+Dígito de 0 a 9 - É o número de casas após a vírgula;
 ',' (vírgula)   - Separar o número com vírgula;
 '.' (ponto)     - Separar o número com pontos, o ponto decimal vira
                   vírgula;
@@ -1757,7 +1757,7 @@ Dígito de 0 a 9 - É o número de casas após a vírgula
 Exemplo:
 txtnum(1005.23, "3.") # Retorna "1.005,230"
 
-Nota: números muito grandes (mais de 18 dígitos antes da vírgula) são
+Nota: Números muito grandes (mais de 18 dígitos antes da vírgula) são
       mostrados em notação científica. Por exemplo, 5.9E+18 significa
       59 seguido de 17 zeros.
 
@@ -1771,7 +1771,7 @@ Retorna os caracteres de um texto começando pela posição especificada em
 [início] e limitando a quantidade de caracteres no parâmetro [tamanho].
 
 O argumento [início] representa o caracter inicial do texto retornado,
-sendo '0' o primeiro caracter.
+sendo 0 o primeiro caracter.
 
 O argumento [tamanho] é tamanho do texto retornado em número de caracteres.
 Se for omitido ou se texto original for menor, retorna até o final do texto.
@@ -1799,6 +1799,7 @@ As palavras são sempre separadas por um ou mais espaços.
 Retorna um texto que é parte de <texto>.
 As palavras sempre separadas por espaços e numeradas a partir do 0.
 Se a quantidade de palavras for omitida, assume até o final do texto.
+
 Exemplos:
 txtsub("bom dia boa tarde", 2) é o mesmo que "boa tarde".
 txtsub("bom dia boa tarde", 1, 1) é o mesmo que "dia".
@@ -1863,23 +1864,24 @@ Retorna o <texto> concatenando-o com ele mesmo repetidas vezes.
 
 Exemplos:
 txtrepete("a", 3) # é o mesmo que "aaa"
-txtrepete("xyz", 2) # é o mesmo que "xyzxyz"
+txtrepete("bom", 2) # é o mesmo que "bombom"
 
 15.3.21. txtsepara(<texto>, <opções>, [texto usado como separador])
 Separa números e palavras de um texto, acrescentando um texto separador.
 Se o texto separador for omitido, será usado um espaço.
 
 Opções é um texto, sendo que cada letra significa um tipo de caracter:
-D = dígito de 0 a 9
-N = um número (pode começar com um sinal de menos e ter um ponto)
-L = letra (de A a Z, acentuada ou não)
-E = espaço vazio
-O = outros caracteres
-V = vazio (antes do início do texto ou depois do fim)
+D - Dígito de 0 a 9;
+N - Números. Podem ser negativos (começar com um sinal de menos) e ter
+    um ponto decimal;
+E - Espaço;
+O - Outros caracteres (vírgulas, sublinhados, pontos e etc);
+V - Vazio (antes do início e depois do fim do texto).
 
 Para indicar aonde o texto separador deve ser acrescentado, escreve-se
 uma ou mais letras, que correspondem a um tipo de caracter, seguido do
-sinal de mais e uma ou mais letras, correspondentes ao caracter seguinte.
+sinal de mais e uma ou mais letras, correspondentes ao tipo de caracter
+seguinte.
 
 Pode-se usar mais de uma condição, separando-as com vírgulas.
 
@@ -1893,7 +1895,7 @@ txtsepara("bom dia boa tarde", "L+EV", "!")
 # É o mesmo que: "bom! dia! boa! tarde!"
 
 Exemplo 3:
-Para separar os números, acrescentando um espaço na frente, o texto o texto
+Para separar os números, acrescentando um espaço na frente, o texto
 de opções é "LNO+N", que significa qualquer letra, número ou outro carater
 seguido de um número.
 
@@ -1909,14 +1911,14 @@ Retorna <texto> com algumas alterações como remover espaços extras,
 cores, remover acentos de letras acentuadas, etc.
 
 O argumento <opções> é um texto, sendo que cada letra é um tipo de alteração:
-E = remover espaços à esquerda.
-M = remover espaços extras, exceto à esquerda e à direita.
-D = remover espaços à direita.
-C = remover cores, exatamente como a função txtcor.
-T = remover eco, "go ahead" e bipe (de "\cg" até "\cj").
-S = remover aspas simples trocando espaços entre duas aspas por sublinhado.
-A = remover aspas duplas trocando espaços entre duas aspas por sublinhado.
-7 = usar letras sem acentuação (caracteres em 7 bits).
+E - Remover espaços à esquerda;
+M - Remover espaços extras, exceto à esquerda e à direita;
+D - Remover espaços à direita;
+C - Remover cores, exatamente como a função txtcor;
+T - Remover eco, "go ahead" e bipe (de "\cg" até "\cj");
+S - Remover aspas simples trocando espaços entre duas aspas por sublinhado;
+A - Remover aspas duplas trocando espaços entre duas aspas por sublinhado;
+7 - Usar letras sem acentuação (caracteres em 7 bits).
 
 Exemplos:
 
@@ -1928,7 +1930,8 @@ txtremove("tenha um 'bom dia' !", "S") # É o mesmo que "tenha um bom_dia !"
 15.3.23. intdist(<texto1>, <texto2>)
 Calcula a distância 'Levenshtein' entre os dois textos.
 Em outras palavras, calcula o quanto os dois textos são diferentes.
-Retorna a quantidade de mudanças necessárias; 0=textos iguais.
+Retorna a quantidade de mudanças necessárias. O valor 0 significa
+textos iguais.
 
 As funções intdistmai e intdistdif fazem a mesma coisa, exceto que:
 intdist    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
@@ -1941,16 +1944,29 @@ intdistdif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 15.4.1. txtcod(<texto>)
 Codifica um texto de modo que possa ser usado como nome de variável.
 Os caracteres válidos em nomes de variáveis não são alterados, com exceção
-do espaço, que muda para '@_'.
+do espaço, que muda para '@_'. Outros caracteres, como ponto, vírgula, etc,
+são substituídos por uma '@' (arroba) seguido de um caracter válido em nomes
+de variáveis, conforme a tabela abaixo.
 
-Os caracteres modificados são:
-@ /b /c /d /n  mudam para  @@ @b @c @d @n
-" ! # $ %  mudam para  @a @e @f @g @h
-& ' ( ) *  mudam para  @i @j @k @l @m
-+ , - . /  mudam para  @o @p @q @r @s
-: ; < = >  mudam para  @t @u @v @w @x
-? [ \ ] ^  mudam para  @y @z @0 @1 @2
-` { | } ~  mudam para  @3 @4 @5 @6 @7
+@ (arroba)                  @@    \b (letras brancas sobre preto) @b
+\c (cor das letras)         @c    \d (cor de fundo)               @d
+\n (fim de linha)           @n    " (aspas)                       @a
+! (exclamação)              @e    # (cerquilha)                   @f
+$ (cifrão)                  @g    % (porcentagem)                 @h
+& (E comercial)             @i    ' (apóstrofo)                   @j
+( (abre parênteses)         @k    ) (fecha parêntese)             @l
+* (asterisco)               @m    + (soma)                        @o
+, (vírgula)                 @p    - (subtração ou hífen)          @q
+. (ponto)                   @r    / (divisão)                     @s
+: (dois pontos)             @t    ; (ponto-e-vírgula)             @u
+< (menor que)               @v    = (igual)                       @W
+> (maior que)               @x    ? (interrogação)                @y
+[ (abre colchetes)          @z    \ (barra invertida)             @0
+] (fecha colchetes)         @1    ^ (acento circunflexo)          @2
+` (crase)                   @3    { (abre chaves)                 @4
+| ('pipe', traço vertical)  @5    } (fecha chaves)                @6
+~ (til)                     @7 
+
 Vide exemplo em txtdec (abaixo).
 
 15.4.2. txtdec(<texto>)
@@ -1993,7 +2009,7 @@ Processo inverso da função txtvis.
 15.4.5. txtproc(<texto1>, <texto2>, [caracter inicial])
 Procura <texto2> em <texto1>.
 Retorna -1 se não encontrou ou o número do caracter se encontrou.
-O <caracter inicial> indica o número do caracter em que deve-se começar
+O [caracter inicial] indica o número do caracter em que deve-se começar
 a busca. O valor 0 corresponde ao primeiro caracter, o valor 1 o segundo,
 etc. Se omitido começa no primeiro.
 
@@ -2067,7 +2083,7 @@ vartroca("$A $a", "$", "teste_")
 15.5.1. txtmd5(<texto>)
 Calcula e retorna o MD5 de um texto.
 O texto original é codificado de modo que não é possível decodificar.
-O resultado é um texto de 32 caracteres de '0' a 9' e 'a' a 'f'.
+O resultado é um texto de 32 caracteres de '0' a '9' e 'a' a 'f'.
 
 15.5.2. txtsha1(<texto>)
 Calcula e retorna o SHA1 de um texto.
@@ -2087,31 +2103,31 @@ Nota: o texto retornado nunca é maior que o apelido.
 
 15.5.5. intnome(<texto>)
 Verifica se texto é válido para apelido.
-Retorna:
-0 = apelido válido
-1 = muito pequeno (menos de 2 caracteres)
-2 = contém caracteres inválidos
+Retorna um número:
+0 - Apelido válido;
+1 - Muito pequeno (menos de 2 caracteres);
+2 - Contém caracteres inválidos.
 
 15.5.6. intsenha(<texto>)
 Verifica se texto é válido para senha.
-Retorna:
-0 = senha válida
-1 = muito pequena (menos de 5 caracteres)
-2 = contém caracteres inválidos
-3 = contém só letras ou só números
+Retorna um número:
+0 - Senha válida;
+1 - Muito pequena (menos de 5 caracteres);
+2 - Contém caracteres inválidos;
+3 - Contém só letras ou só números.
 
 
 15.6. FUNÇÕES PARA OBJETOS
 
-15.2.6. ref(<objeto 1>, <robjeto 2>, <objeto 3> ..., <objeto N>)
+15.6.1. ref(<objeto 1>, <robjeto 2>, <objeto 3> ..., <objeto N>)
 Checa os argumentos, do primeiro ao último, até encontrar um que seja
 um objeto. Se encontrou, retorna o objeto. Caso contrário retorna NULO.
 Portanto, quando houver apenas um argumento, que retorna o objeto
 correspondente ou nulo se não for objeto.
 
 15.6.2. criar(<nome da classe>, [um ou mais argumentos da função ini])
-Cria um objeto e chama a função ini do objeto.
-O [nome da classe] é um texto que contém o nome da classe.
+Cria um objeto e chama a função 'ini' do objeto.
+O <nome da classe> é um texto que contém o nome da classe.
 Retorna uma referência para o objeto, ou nulo se classe não existe.
 
 Exemplos:
@@ -2122,7 +2138,7 @@ criar("teste2")
 15.6.3. apagar(<objeto>)
 Marca um objeto para ser apagado. O objeto só será realmente apagado após
 o controle retornar ao programa. Mesmo assim, antes de apagar ainda será
-chamada a função fim do objeto.
+chamada a função 'fim' do objeto.
 
 Exemplo:
 apagar(este)
@@ -2133,7 +2149,7 @@ Retorna o objeto anterior da classe ou NULO se não houver.
 15.6.5. objdepois(<objeto>)
 Retorna o próximo objeto da classe ou NULO se não houver.
 
-15.6.6. $ seguido do nome da classe
+15.6.6. $<nome da classe>
 Retorna o primeiro objeto da classe especificada.
 Exemplos: $jog  ou  $["jog"]
 
@@ -2168,13 +2184,13 @@ txturldec("/x.html?a=1&b=bom+dia%21")
 # Resulta em "/x.html\na=1\nb=bom dia!"
 
 15.7.3. intchr(<texto>, [posição do caracter])
-Retorna o código ASCII de um caracter, de 32 a 255, ou um dos seguintes
-códigos usados no IntMUD:
-0 = não é um caracter (por exemplo, um texto vazio)
-1 = '\b'
-2 = '\c'
-3 = '\d'
-10 = '\n'
+Retorna um número que é o código ASCII de um caracter, de 32 a 255,
+ou um dos seguintes números:
+0 - Não é um caracter (por exemplo, um texto vazio);
+1 - '\b' (caracteres brancos com cor de fundo preta);
+2 - '\c' (mudar cor dos caracteres);
+3 - '\d' (mudar cor de fundo);
+10 - '\n' (passar para a próxima linha).
 
 Se a posição do caracter no texto for omitida, assume 0, ou seja o
 primeiro caracter do texto.
@@ -3055,16 +3071,18 @@ Retorna 1 se arquivo existe ou 0 se não existe.
 
 27.3. abrir(<nome do arquivo>, <modo>)
 Abre arquivo. Retorna 1 se conseguiu ou 0 se não conseguiu.
-Modo pode ser:
-0 = somente leitura
-1 = leitura e escrita
-2 = somente escrita; o tamanho do arquivo é truncado para 0 bytes
-3 = para escrever no final do arquivo
+
+Modo é um número que indica como o arquivo deve ser aberto:
+0 - Somente leitura;
+1 - Leitura e escrita;
+2 - Somente escrita; o tamanho do arquivo é truncado para 0 bytes;
+3 - Para escrever no final do arquivo.
 Os modos 0 e 1 não criam um novo arquivo, caso ele não exista.
+
 Nota 1: Não acessa arquivos executáveis ou terminados em:
         .exe, .com, .bat, .pif, .scr ou .log
-Nota 2: O arquivo deve pertencer ao diretório atual ou a um
-subdiretório dele. Não é possível acessar arquivos de outros lugares.
+Nota 2: O arquivo deve pertencer ao diretório atual ou a um subdiretório
+        dele. Não é possível acessar arquivos de outros lugares.
 
 27.4. fechar
 Fecha o arquivo.
@@ -3098,10 +3116,12 @@ Exemplo: ler(1) lê um caracter.
 Retorna a posição atual no arquivo (0=está no início do arquivo).
 
 27.11. pos(<posição>, <modo>)
-Muda a posição atual no arquivo. Modo pode ser:
-0 = a partir do início do arquivo
-1 = a partir da posição atual
-2 = a partir do fim do arquivo
+Muda a posição atual no arquivo.
+
+O modo é um número que indica como deve mudar a posição:
+0 - A partir do início do arquivo
+1 - A partir da posição atual
+2 - A partir do fim do arquivo
 
 27.12. eof
 1 se chegou no fim do arquivo, 0 se não chegou.
@@ -3117,9 +3137,9 @@ Nota: o valor 1048575 corresponde a 29 horas, 7 minutos e 37.5 segundos.
 inttempo aceita valores negativos, mas nesse caso a contagem fica parada.
 
 Possui as funções e variáveis:
-neg = Faz a variável ser menor que zero, multiplicando por -1 se necessário
-pos = Faz a variável ser maior que zero, multiplicando por -1 se necessário
-abs = Valor de inttempo sem o sinal
+neg - Faz a variável ser menor que zero, multiplicando por -1 se necessário
+pos - Faz a variável ser maior que zero, multiplicando por -1 se necessário
+abs - Valor de inttempo sem o sinal
 
 Exemplo:
 
@@ -3209,13 +3229,13 @@ Eventos:
 
 30.9. <nomedavariável>_msg
 Recebeu mensagem
-arg0 = mensagem recebida
-arg1 = índice da variável vetor, se não for vetor arg1=0
+arg0 = Mensagem recebida
+arg1 = Índice da variável vetor, se não for vetor arg1=0
 
 29.10. <nomedavariável>_tecla
 Chamado sempre que o usuário pressionar uma tecla.
-arg0 = nome da tecla
-arg1 = índice da variável vetor, se não for vetor arg1=0
+arg0 = Nome da tecla
+arg1 = Índice da variável vetor, se não for vetor arg1=0
 Se retornar verdadeiro, significa que a função já processou a tecla.
 Portanto, não será processada pelo IntMUD.
 
@@ -3245,20 +3265,23 @@ Nesse caso, os eventos são gerados em mais de uma variável socket.
 Funções e variáveis:
 
 31.1. proto
-Define o protocolo; um número com o significado:
-0 = não está conectado
-1 = conectando
-2 = Telnet, só recebe mensagens completas
-3 = Telnet, pode receber mensagens incompletas (sem o \n no fim)
-4 = IRC
-5 = Papovox (sem cores)
-Nota: pode-se mudar entre 2 e 4 para socket conectado
+É um número que define o protocolo usado:
+0 - Não está conectado;
+1 - Conectando;
+2 - Telnet, só recebe mensagens completas;
+3 - Telnet, pode receber mensagens incompletas (sem o \n no fim);
+4 - IRC;
+5 - Papovox (sem cores).
+
+Nota: É possível mudar essa variável para qualquer valor de 2 a 5,
+      quando o socket estiver conectado.
 
 31.2. cores
-0 = nenhuma cor
-1 = cores somente ao receber
-2 = cores somente ao enviar
-3 = cores ao enviar e receber
+É um número que define como deve usar as cores nas mensagens:
+0 - Nenhuma cor;
+1 - Cores somente ao receber;
+2 - Cores somente ao enviar;
+3 - Cores ao enviar e receber.
 
 31.3. aflooder
 O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
@@ -3338,9 +3361,9 @@ Eventos:
 
 31.19. <nomedavariável>_msg
 Recebeu mensagem
-arg0 = mensagem recebida
+arg0 = Mensagem recebida
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
-arg2 = índice da variável vetor, se não for vetor arg2=0
+arg2 = Índice da variável vetor, se não for vetor arg2=0
 
 31.20. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão
@@ -3349,25 +3372,25 @@ arg0 = índice da variável vetor, se não for vetor arg0=0
 
 31.21. <nomedavariável>_fechou
 O socket foi fechado remotamente
-arg0 = motivo (texto)
-arg1 = índice da variável vetor, se não for vetor arg1=0
+arg0 = Motivo (texto)
+arg1 = Índice da variável vetor, se não for vetor arg1=0
 Se essa função não existir, o objeto que contém o socket é apagado
 
 31.22. <nomedavariável>_con
 Conseguiu conectar
-arg0 = índice da variável vetor, se não for vetor arg0=0
+arg0 = Índice da variável vetor, se não for vetor arg0=0
 
 31.23. <nomedavariável>_err
 Não conseguiu conectar
-arg0 = mensagem de erro
-arg1 = índice da variável vetor, se não for vetor arg1=0
+arg0 = Mensagem de erro
+arg1 = Índice da variável vetor, se não for vetor arg1=0
 
 31.24. <nomedavariável>_eventoip
 Resolveu um endereço fornecido pela função eventoip.
 arg0 = texto recebido pela função eventoip
-arg1 = nome da máquina, ou um texto vazio se não encontrou
-arg2 = endereço IP da máquina, ou um texto vazio se não encontrou
-arg3 = índice da variável vetor, se não for vetor arg3=0
+arg1 = Nome da máquina, ou um texto vazio se não encontrou
+arg2 = Endereço IP da máquina, ou um texto vazio se não encontrou
+arg3 = Índice da variável vetor, se não for vetor arg3=0
 
 
 32. SERV - RECEBER CONEXÕES VIA TCP/IP
@@ -3403,8 +3426,8 @@ que nesse caso serão 'x.key' e 'x.crt'.
 Eventos:
 
 32.5. <nomedavariável>_socket
-arg0 = socket correspondente à conexão (com a variável 'proto' sendo 2)
-arg1 = índice da variável vetor, se não for vetor arg1=0
+arg0 = Socket correspondente à conexão (com a variável 'proto' sendo 2)
+arg1 = Índice da variável vetor, se não for vetor arg1=0
 
 Exemplo de uso com socket:
 
@@ -3609,23 +3632,25 @@ se não conseguiu.
 Salva as alterações nos arquivos correspondentes, depois que todas
 as alterações pendentes nas classes forem efetuadas.
 O texto é composto de letras seguidas de números, que indicam como
-o arquivo deve ser salvo. As opções são as seguintes:
-L = quantidade máxima de caracteres por linha, de 70 a 4000
-N = se deve dividir linhas grandes (conforme opção L) em caracteres \n
-  As opções são:
-  N0 = não divide
-  N1 = somente em const contendo apenas texto
-  N2 = em qualquer const
-  N3 = sempre
-I = espaços usados para indentação, de 0 a 8
-C = linhas entre classes, de 0 a 10
-F = linhas vazias entre funções, de 0 a 10
-V = linhas vazias entre variáveis e constantes, de 0 a 10
+o arquivo deve ser salvo.
+
+As opções são as seguintes:
+'L70' a 'L4000'   - Quantidade máxima de caracteres por linha, de 70 a 4000;
+'N0'              - Não divide linhas grandes (a opção 'L' é gnorada);
+'N1'              - Divide linhas grandes somente em const contendo
+                    apenas texto;
+'N2'              - Divide linhas grandes em qualquer const;
+'N3'              - Sempre divide linhas grandes;
+'I0' a 'I8'       - Quantos espaços usados para indentação, de 0 a 8;
+'C0' a 'C10'      - Linhas vazias entre classes, de 0 a 10;
+'F0' a 'F10'      - Linhas vazias entre funções, de 0 a 10;
+'V0' a 'V10'      - Linhas vazias entre variáveis e constantes, de 0 a 10.
+
 A função salvar sem argumentos é o mesmo que:
 salvar("L4000N0I2C1F1V0")
-Significa não dividir linhas, 2 espaços para indentação,
-1 linha vazia entre classes e entre funções e nenhuma linha vazia
-entre variáveis.
+
+Significa não dividir linhas, 2 espaços para indentação, 1 linha vazia
+entre classes e entre funções e nenhuma linha vazia entre variáveis.
 
 33.4.7. salvartudo([texto])
 Mesmo que a função salvar, porém salva todos os arquivos,
@@ -3728,12 +3753,19 @@ Quanto tempo o programa usou do processador, em milésimos de segundos.
 stempo é o tempo usado pelo sistema e utempo é o tempo usado pelo programa.
 Se não for possível obter essa informação, tempo será -1.
 
+34.8. mem
+Quantidade de memória que o programa está usando, em bytes.
+
+38.9. memmax
+Quantidade máxima de memória que o programa chegou a usar, em bytes.
+
 Eventos:
 
-34.8. <nomedavariável>_erro
+34.10. <nomedavariável>_erro
 Ocorreu algum erro ao executar uma função.
-arg0 = mensagem de erro (uma linha) seguido dos detalhes sobre o erro
-arg1 = índice da variável vetor, se não for vetor arg1=0
+arg0 = Mensagem de erro (uma linha) seguido dos detalhes sobre o erro
+arg1 = Índice da variável vetor, se não for vetor arg1=0
+
 Os erros podem ser:
 - A variável exec chegou a 0
   (exemplo, uma instrução 'enquanto 1' seguido de um 'efim' gera esse erro)

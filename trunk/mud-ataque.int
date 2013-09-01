@@ -614,8 +614,13 @@ func execgolpe # Realiza um ataque e coloca resultado em result
       ret dano <= 0, nulo
     fimse
   fimse
-# Checa bônus do tipo de defesa
-  dano = r.atktipo.[tipoatk] * s.deftipo.[tipoatk] / 1000000
+# Checa bônus ao combinar o tipo de ataque com o tipo de defesa
+  dano = r.atktipo.[2 + tipoatk] * s.deftipo.[2 + tipoatk] / 1000000
+  se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
+    dano *= r.atktipo.1 * s.deftipo.1 / 1000000
+  senao
+    dano *= r.atktipo.0 * s.deftipo.0 / 1000000
+  fimse
   se dano == 0 # Imune
     result = 0
     ret

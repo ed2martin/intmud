@@ -17,6 +17,7 @@
 #ifdef __WIN32__
 #include <windows.h>
 #else
+#include <unistd.h>
 #include <sys/resource.h>
 #endif
 #include "var-debug.h"
@@ -28,6 +29,9 @@
 
 TVarDebug * TVarDebug::Inicio = 0;
 TVarDebug * TVarDebug::ObjAtual = 0;
+
+size_t getPeakRSS();
+size_t getCurrentRSS();
 
 //------------------------------------------------------------------------------
 void TVarDebug::Criar()
@@ -109,30 +113,26 @@ void TVarDebug::FuncEvento(const char * evento, const char * texto)
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
     using namespace Instr;
-// Inicializa contador de instruções executadas
     if (comparaZ(nome, "ini")==0)
     {
         VarExec = VarExecIni;
         return false;
     }
-// Contador de instruções executadas
+    int num=0;
     if (comparaZ(nome, "exec")==0)
+        num=1;
+    else if (comparaZ(nome, "utempo")==0)
+        num=2;
+    else if (comparaZ(nome, "stempo")==0)
+        num=3;
+    else if (comparaZ(nome, "mem")==0)
+        num=4;
+    else if (comparaZ(nome, "memmax")==0)
+        num=5;
+    if (num)
     {
         ApagarVar(v+1);
-        VarAtual->numfunc = 1;
-        return true;
-    }
-// Quanto tempo usou do processador
-    if (comparaZ(nome, "utempo")==0)
-    {
-        ApagarVar(v+1);
-        VarAtual->numfunc = 2;
-        return true;
-    }
-    if (comparaZ(nome, "stempo")==0)
-    {
-        ApagarVar(v+1);
-        VarAtual->numfunc = 3;
+        VarAtual->numfunc = num;
         return true;
     }
 // Nível da função atual
@@ -257,10 +257,10 @@ int TVarDebug::getTipo(int numfunc)
 {
     switch (numfunc)
     {
+    case 0: return varOutros;
     case 1: return varInt;
-    case 2: return varDouble;
     }
-    return varOutros;
+    return varDouble;
 }
 
 //----------------------------------------------------------------------------
@@ -268,7 +268,7 @@ int TVarDebug::getInt(int numfunc)
 {
     if (numfunc==1)
         return Instr::VarExec;
-    else if (numfunc==2)
+    else
         return DoubleToInt(getDouble(numfunc));
     return 0;
 }
@@ -304,6 +304,10 @@ double TVarDebug::getDouble(int numfunc)
                uso.ru_stime.tv_usec / 1000.0;
 #endif
     }
+    else if (numfunc==4)
+        return getCurrentRSS();
+    else if (numfunc==5)
+        return getPeakRSS();
     return 0;
 }
 

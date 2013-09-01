@@ -1429,19 +1429,22 @@ bool TVarProg::FuncClIni(TVariavel * v)
 {
     if (Instr::VarAtual < v+1)
         return false;
-    const char * nomearq = v[1].getTxt();
+    char nomearq[100];
+    copiastr(nomearq, v[1].getTxt(), sizeof(nomearq));
     TArqMapa * m = TArqMapa::Procura(nomearq);
-    if (Instr::VarAtual > v+1)
+    while (Instr::VarAtual > v+1)
     {
+        TClasse * cl = TClasse::Procura(v[2].getTxt());
+        if (cl==0)
+            break;
         if (m==0)
         {
             if (!TArqMapa::NomeValido(nomearq))
-                return Instr::CriarVarTexto("");
+                break;
             m = new TArqMapa(nomearq);
         }
-        TClasse * cl = TClasse::Procura(v[2].getTxt());
-        if (cl)
-            cl->MoveArqIni(m);
+        cl->MoveArqIni(m);
+        break;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(m==0 ? "" : m->ClInicio->Nome);
@@ -1452,19 +1455,22 @@ bool TVarProg::FuncClFim(TVariavel * v)
 {
     if (Instr::VarAtual < v+1)
         return false;
-    const char * nomearq = v[1].getTxt();
+    char nomearq[100];
+    copiastr(nomearq, v[1].getTxt(), sizeof(nomearq));
     TArqMapa * m = TArqMapa::Procura(nomearq);
-    if (Instr::VarAtual > v+1)
+    while (Instr::VarAtual > v+1)
     {
+        TClasse * cl = TClasse::Procura(v[2].getTxt());
+        if (cl==0)
+            break;
         if (m==0)
         {
             if (!TArqMapa::NomeValido(nomearq))
-                return Instr::CriarVarTexto("");
+                break;
             m = new TArqMapa(nomearq);
         }
-        TClasse * cl = TClasse::Procura(v[2].getTxt());
-        if (cl)
-            cl->MoveArqFim(m);
+        cl->MoveArqFim(m);
+        break;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(m==0 ? "" : m->ClFim->Nome);
@@ -1477,7 +1483,10 @@ bool TVarProg::FuncClAntes(TVariavel * v)
         return false;
     TClasse * cl = TClasse::Procura(v[1].getTxt());
     if (cl==0)
+    {
+        Instr::ApagarVar(v);
         return Instr::CriarVarTexto("");
+    }
     if (Instr::VarAtual > v+1)
     {
         TClasse * cl2 = TClasse::Procura(v[2].getTxt());
@@ -1496,7 +1505,10 @@ bool TVarProg::FuncClDepois(TVariavel * v)
         return false;
     TClasse * cl = TClasse::Procura(v[1].getTxt());
     if (cl==0)
+    {
+        Instr::ApagarVar(v);
         return Instr::CriarVarTexto("");
+    }
     if (Instr::VarAtual > v+1)
     {
         TClasse * cl2 = TClasse::Procura(v[2].getTxt());

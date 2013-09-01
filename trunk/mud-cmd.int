@@ -1000,8 +1000,20 @@ func escr
   t.addfim("Nível:            " + r.pnivel)
   t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)
 # Batalha
-  t.addfim("Ataque/defesa:    " + r.atknorm + "/" + r.defnorm)
-  t.addfim("Atq/def especial: " + r.atkesp + "/" + r.defesp)
+  t1 = "Ataque/defesa:    " + int(r.atknorm * r.atktipo.0 / 1000) + "/"
+  se !r.deftipo.0
+    t.addfim(t1 + "Imune")
+  senao
+    t.addfim(t1 + int(r.defnorm * 1000 / r.deftipo.0))
+  fimse
+# t.addfim("Ataque/defesa:    " + r.atknorm + "/" + r.defnorm)
+  t1 = "Atq/def especial: " + int(r.atkesp * r.atktipo.1 / 1000) + "/"
+  se !r.deftipo.1
+    t.addfim(t1 + "Imune")
+  senao
+    t.addfim(t1 + int(r.defesp * 1000 / r.deftipo.1))
+  fimse
+# t.addfim("Atq/def especial: " + r.atkesp + "/" + r.defesp)
   t.addfim("Precisão/evasão:  " + r.precisao + "/" + r.evasao)
   t.addfim("Velocidade:       " + r.pveloc)
 # Mortes

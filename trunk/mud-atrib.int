@@ -72,13 +72,13 @@ func p_atrib # Editando atributos
       efim
       sair
     casose "atribatk" # Ataques
-      linha = p_atrib_tipo + intsublin(config:atknomes) * 2 - 2
+      linha = p_atrib_tipo + intsublin(p_atrib_atk1) * 2 - 2
       enquanto linha >= p_atrib_tipo
         valor.[linha] = 100, linha -= 2
       efim
       sair
     casose "atribdef" # Defesas
-      linha = p_atrib_tipo + intsublin(config:atknomes) * 2 - 1
+      linha = p_atrib_tipo + intsublin(p_atrib_atk1) * 2 - 1
       enquanto linha >= p_atrib_tipo
         valor.[linha] = 100, linha -= 2
       efim
@@ -121,7 +121,7 @@ func p_atrib # Editando atributos
     casose "atribatk" # Ataques
       int16 indice
       indice = p_atrib_tipo
-      epara t1.addfim(config:atknomes), t1.linhas, indice += 2
+      epara t1.addfim(p_atrib_atk1), t1.linhas, indice += 2
         linha += 1, lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
         lin += "Danos " + t1.remove
         se valor.[indice] != 100
@@ -134,7 +134,7 @@ func p_atrib # Editando atributos
     casose "atribdef" # Defesas
       int16 indice
       indice = p_atrib_tipo + 1
-      epara t1.addfim(config:atknomes), t1.linhas, indice += 2
+      epara t1.addfim(p_atrib_atk1), t1.linhas, indice += 2
         linha += 1, lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
         lin += "Danos " + t1.remove
         se valor.[indice] != 100
@@ -149,7 +149,7 @@ func p_atrib # Editando atributos
     txtmostra
   senao txt(linha) != arg0
     msg("Opção inexistente: " + txt1(arg0))
-  senao !linha || linha > p_atrib_tipo + intsublin(config:atknomes) * 2
+  senao !linha || linha > p_atrib_tipo + intsublin(p_atrib_atk1) * 2
     msg("Opção inexistente: " + txt1(arg0))
   senao arg1 == "atribcomum" # Atributos comuns
     se !linha || linha > p_atrib_tipo
@@ -173,7 +173,7 @@ func p_atrib # Editando atributos
       ret 1
     fimse
   senao arg1 == "atribatk" # Atributos de ataque
-    se !linha || linha > intsublin(config:atknomes)
+    se !linha || linha > intsublin(p_atrib_atk1)
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
@@ -182,11 +182,11 @@ func p_atrib # Editando atributos
     linha -= 1
     var.opcpasso2 = arg1
     var.opclin = linha * 2 + p_atrib_tipo
-    refvar nomedano = txtsublin(config:atknomes, linha, 1)
+    refvar nomedano = txtsublin(p_atrib_atk1, linha, 1)
     msg("Danos " + nomedano + ": " + valor.[var.opclin] + "%")
     ret p_atrib2("\b")
   senao # Atributos de defesa
-    se !linha || linha > intsublin(config:atknomes)
+    se !linha || linha > intsublin(p_atrib_atk1)
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
@@ -195,7 +195,7 @@ func p_atrib # Editando atributos
     linha -= 1
     var.opcpasso2 = arg1
     var.opclin = linha * 2 + p_atrib_tipo + 1
-    refvar nomedano = txtsublin(config:atknomes, linha, 1)
+    refvar nomedano = txtsublin(p_atrib_atk1, linha, 1)
     msg("Danos " + nomedano + ": " + valor.[var.opclin] + "%")
     ret p_atrib2("\b")
   fimse
@@ -348,17 +348,17 @@ func p_atrib_salvar # Salva os atributos em função
   fimse
   uint16 linha
   txt100 lin
-  refvar total = intsublin(config:atknomes) * 2 + p_atrib_tipo
+  refvar total = intsublin(p_atrib_atk1) * 2 + p_atrib_tipo
   epara linha = p_atrib_tipo, linha < total, linha += 2
     continuar arg0.[linha] == 100
     refvar indice = (linha - p_atrib_tipo) / 2
-    lin = " # " + txtsublin(config:atknomes, indice, 1)
+    lin = " # " + txtsublin(p_atrib_atk1, indice, 1)
     t.addfim("atktipo." + indice + "*=" + arg0.[linha] / 100 + lin)
   efim
   epara linha = p_atrib_tipo + 1, linha < total, linha += 2
     continuar arg0.[linha] == 100
     refvar indice = (linha - p_atrib_tipo - 1) / 2
-    lin = " # " + txtsublin(config:atknomes, indice, 1)
+    lin = " # " + txtsublin(p_atrib_atk1, indice, 1)
     t.addfim("deftipo." + indice + "*=" + arg0.[linha] / 100 + lin)
   efim
 # msg("----------\n" + t.ini.textolin(10000) + "\n----------")
@@ -376,7 +376,7 @@ func p_atrib_salvar # Salva os atributos em função
 
 const p_atrib_valor = 22 # Quantidade de opções que recebem valor numérico
 const p_atrib_tipo = 30 # Quantidade de opções antes de ataque e defesa
-# Depois disso vem as opções de config:atknomes, e são em porcentagem
+# Depois disso vem as opções de p_atrib_atk1, e são em porcentagem
 const p_atrib_txt = "Vida\n\
 Vida por nível\n\
 Mana\n\
@@ -407,6 +407,7 @@ Torna oculto\n\
 Invisível a não admin\n\
 Anda em silêncio\n\
 Está flutuando"
+const p_atrib_atk1 = "Tipos Normais\nTipos Especiais\n" + config:atknomes
 
 
 classe comando_identificar
@@ -416,6 +417,9 @@ const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nIdentifica um objeto."
 const cmdmenu = "identif" # Editável via "menu_hab_identif" e "menu_magia_identif"
 const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
 textovar var
+const p_atrib_atk1 = "normais\nespeciais\n" + config:atknomes
+const p_atrib_def1 = "normal\nespecial\n" + config:atknomes
+const p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
 
 func escr
   ret !arg1, arg0.msg("Identificar o quê?")
@@ -519,28 +523,30 @@ func escr
     efim
     lin && t.addfim("Propriedades:" + txt(lin, 1) + ".")
 # Efeitos de ataque
-    refvar total = intsublin(config:atknomes) * 2 + p_atrib_tipo
+    refvar total = intsublin(p_atrib_atk1) * 2 + p_atrib_tipo
     epara x = p_atrib_tipo, x < total, x += 2
       continuar valor.[x] == 100
-      lin = txtsublin(config:atknomes, x - p_atrib_tipo >> 1, 1)
+      lin = txtsublin(p_atrib_atk1, x - p_atrib_tipo >> 1, 1)
       se valor.[x] == 0
-        t.addfim("Anula ataque de " + lin + ".")
+        t.addfim("Anula ataques " + lin + ".")
       senao valor.[x] < 100
-        t.addfim("Diminui ataque " + lin + " em " + txt(100 - valor.[x]) + "%.")
+        t.addfim("Reduz ataques " + lin + " em " + int(100 - valor.[x]) + "%.")
       senao
-        t.addfim("Aumenta ataque " + lin + " em " + txt(valor.[x] - 100) + "%.")
+        t.addfim("Aumenta ataques " + lin + " em " + int(valor.[x] - 100) + "%.")
       fimse
     efim
 # Efeitos de defesa
     epara x = p_atrib_tipo + 1, x < total, x += 2
       continuar valor.[x] == 100
-      lin = txtsublin(config:atknomes, x - p_atrib_tipo >> 1, 1)
       se valor.[x] == 0
+        lin = txtsublin(p_atrib_def2, x - p_atrib_tipo >> 1, 1)
         t.addfim("Torna imune a " + lin + ".")
       senao valor.[x] < 100
-        t.addfim("Corta danos " + lin + " em " + txt(100 - valor.[x]) + "%.")
+        lin = txtsublin(p_atrib_def1, x - p_atrib_tipo >> 1, 1)
+        t.addfim("Melhora defesa " + lin + " em " + int(10000 / valor.[x] - 100) + "%.")
       senao
-        t.addfim("Aumenta danos " + lin + " em " + txt(valor.[x] - 100) + "%.")
+        lin = txtsublin(p_atrib_def1, x - p_atrib_tipo >> 1, 1)
+        t.addfim("Piora defesa " + lin + " em " + int(100 - 10000 / valor.[x]) + "%.")
       fimse
     efim
 # Identificação

@@ -50,7 +50,7 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [], [
 ])
 ],[
 AC_MSG_RESULT(yes)
-LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -mms-bitfields -mwindows -static-libgcc -static-libstdc++"
+LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -lpsapi -mms-bitfields -mwindows -static-libgcc -static-libstdc++"
 ])
 
 dnl from: http://fisheye.globus.org/browse/~raw,r=1.5/GlobusToolkit/ogsa-c/tools/libxml25/configure.in
