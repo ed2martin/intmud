@@ -1,4 +1,4 @@
-classe jog_atrib
+classe adm_atrib
 # Funções para mudar atributos de personagens e itens
 
 func t_atribcomum # Retorna a quantidade de atributos comuns
@@ -63,7 +63,7 @@ func p_atrib # Editando atributos
       msg("Entre com uma opção, O mostra as opções, N nenhum atributo, Z cancela")
     fimse
   senao arg0 == "n" && !var.opcvalido
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor)
     casovar arg1
     casose "atribcomum" # Atributos comuns
@@ -92,7 +92,7 @@ func p_atrib # Editando atributos
   senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
     perso.teclou(txtremove(txt(arg0, 1), "E"))
   senao arg0 == "o"
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor)
     txtmais.limpar
     txtmais.addfim("Atributos")
@@ -156,7 +156,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -177,7 +177,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -190,7 +190,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -202,7 +202,7 @@ func p_atrib # Editando atributos
   ret 1
 
 func p_atrib2 # Usado por p_atrib; editando um atributo
-  real num
+  real2 num
   num = arg0, passo = "atrib2"
   se arg0 == "" || arg0 == "\b"
     se var.opclin_ >= p_atrib_tipo
@@ -218,7 +218,7 @@ func p_atrib2 # Usado por p_atrib; editando um atributo
   senao num < 0 && var.opclin_ >= p_atrib_tipo
     msg("A porcentagem não pode ser menor que zero, entre com outra")
   senao
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor)
     valor.[var.opclin] = num
     p_atrib_salvar(valor)
@@ -236,7 +236,7 @@ func p_atrib2txt # Usado internamente em p_atrib2
 
 func p_atrib_ler # Extrai os atributos de uma função
 # var.opcclasse e var.opcvar = nomes da classe e da função
-# arg0 = variável "real valor.80"
+# arg0 = variável "real2 valor.80"
   int32 x
   arg0.limpar(100)
   epara x = p_atrib_tipo - 1, x >= 0, x -= 1
@@ -315,7 +315,7 @@ func p_atrib_ler2 # Usado internamente em p_atrib_ler
 
 func p_atrib_salvar # Salva os atributos em função
 # var.opcclasse e var.opcvar = nomes da classe e da função
-# arg0 = variável "real valor.80"
+# arg0 = variável "real2 valor.80"
   textotxt t
   t.addfim("func " + var.opcvar + " # Altera atributos do personagem")
   t.addfim("# Não alterar; função criada automaticamente")
@@ -411,11 +411,11 @@ const p_atrib_atk1 = "Tipos Normais\nTipos Especiais\n" + config:atknomes
 
 
 classe comando_identificar
-herda comando_hab, jog_atrib
+herda comando_hab, adm_atrib
 const posic = 8
 const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nIdentifica um objeto."
 const cmdmenu = "identif" # Editável via "menu_hab_identif" e "menu_magia_identif"
-const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
+const tipoalvo = 4 # Não agressivo
 textovar var
 const p_atrib_atk1 = "normais\nespeciais\n" + config:atknomes
 const p_atrib_def1 = "normal\nespecial\n" + config:atknomes
@@ -438,13 +438,11 @@ func escr
       ret l.objini.cmd_ident(arg0, r), nulo
     efim
 # Checa se pode identificar
-    arg0.pvida -= int(usavida)
-    arg0.pmana -= int(usamana)
-    arg0.pmove -= int(usamove)
+    custohab(arg0)
+    msgini && $mens.p(arg0, nulo, r) + $mens.mtodos1(msgini)
     arg0.p_espera < 15 && (arg0.p_espera = 15)
-    se rand(10) >= 2 + arg0.persobat.var.[nomevar] # Checa o quanto conhece (vai até 10)
-      ret arg0.msg("Por algum motivo, a magia falhou.")
-    fimse
+    arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+    ret rand(100) < precisao, arg0.msg("Por algum motivo, a magia falhou.")
 # Identificar personagem
     textotxt t
     txt100 lin
@@ -507,7 +505,7 @@ func escr
 # Obtém os efeitos
     var.opcclasse = r
     var.opcvar = "recalc_auto"
-    real valor.80
+    real2 valor.80
     p_atrib_ler(valor) # Extrai os atributos de uma função
 # Efeitos comuns
     int8 x
@@ -568,109 +566,3 @@ classe menu_magia_identif
 herda menu_hab_comum
 const titulo = "Magia Identificar"
 const colunas = 23
-
-
-classe comando_curar
-herda comando_hab
-const posic = 7
-const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nCura um personagem."
-const cmdmenu = "curar" # Editável via "menu_hab_curar" e "menu_magia_curar"
-const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
-const msgacertou1 = "$R se cura"
-const msgnulo1 = "$R tenta se curar"
-const msgacertou2 = "$R cura $c"
-const msgnulo2 = "$R tenta curar $c"
-
-func escr
-  ret !checahab(arg0), nulo
-# Obtém o personagem que será curado
-  ref r
-  r = arg0
-  se arg1
-    nomeobj n
-    listaobj l
-    n.ini(arg1, 1)
-    l.addfim(arg0.dono.dentro2)
-    epara nulo, l, l.ini.remove
-      sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
-    efim
-    r = l.objini
-  fimse
-# Eventos
-  l.limpar
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_curar(arg0, r), nulo
-  efim
-# Checa se pode curar
-  ret !r, arg0.msg("Você não vê isso.")
-  arg0.pvida -= int(usavida)
-  arg0.pmana -= int(usamana)
-  arg0.pmove -= int(usamove)
-  arg0.p_espera < 15 && (arg0.p_espera = 15)
-# Cura
-  uint32 valor # O quanto vai curar
-  refvar maximo = r.persobat.pvidamax - r.persobat.pvida # Até quanto pode curar
-  se maximo > 0
-    valor = 2 + arg0.persobat.var.[nomevar]
-    valor = (curabase + arg0.pnivel * curanivel) * valor / 10
-    valor < 1 && (valor = 1) # Garante um ponto de cura
-    curamax && valor > curamax && (valor = curamax) # Não pode passar de curamax
-    valor > maximo && (valor = maximo) # Não pode passar dos pontos de vida máximos
-    r.persobat.pvida += valor
-  fimse
-  $mens.p(arg0, r)
-  se r == arg0
-    $mens.mtodos1(valor ? msgacertou1 + ", " + valor : msgnulo1)
-  senao
-    $mens.mtodos1(valor ? msgacertou2 + ", " + valor : msgnulo2)
-  fimse
-  arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
-
-
-classe menu_hab_curar
-herda menu_magia_curar
-const titulo = "Hab de cura " + txt(var.classe1, 4)
-
-
-classe menu_magia_curar
-herda menu_hab_comum
-const titulo = "Magia de cura " + txt(var.classe1, 6)
-const colunas = 23
-#
-const nome1 = "Pontos de cura"
-const info1 = "Quantos pontos de vida cura no nível perito"
-const tipo1 = "numero"
-const clas1 = var.classe1
-const vari1 = "curabase"
-#
-const nome2 = "Cura por nível"
-const info2 = "Quantos pontos de vida cura no nível perito, para cada nível do personagem"
-const tipo2 = "numreal"
-const clas2 = var.classe1
-const vari2 = "curanivel"
-#
-const nome3 = "Cura máxima"
-const info3 = "Até quantos pontos de vida pode curar; ou 0 se não há limite"
-const tipo3 = "numero"
-const clas3 = var.classe1
-const vari3 = "curamax"
-#
-const nome10 = "Msg curou perso"
-const tipo10 = "linha"
-const clas10 = var.classe1
-const vari10 = "msgacertou2"
-#
-const nome11 = "Msg não curou"
-const tipo11 = "linha"
-const clas11 = var.classe1
-const vari11 = "msgnulo2"
-#
-const nome12 = "Msg se curou"
-const tipo12 = "linha"
-const clas12 = var.classe1
-const vari12 = "msgacertou1"
-#
-const nome13 = "Msg não se curou"
-const tipo13 = "linha"
-const clas13 = var.classe1
-const vari13 = "msgnulo1"

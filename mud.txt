@@ -114,16 +114,18 @@ A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
-2.13. mud-social.int
+2.13. mud-info.int
+Comandos que apenas dão informações ao jogador.
+
+2.14. mud-social.int
 Menus para criar e editar comandos sociais e a classe 'soccomum', que serve
 de base para esses comandos. Todo comando é uma classe cujo nome é "soc_"
 seguido do nome do comando. Quando o jogador digita algo, os sociais são
 verificados após as classes 'cmd_' e 'cmd_magia_' e antes das classes
 'cmdfim_'.
 
-2.14. mud-cmd.int
-Comandos de informação.
-Contém também a classe 'comando_ataque', que é herdada por todos os comandos.
+2.15. mud-cmd.int
+Diversos comandos.
 
 2.15. mud-cmd-item.int
 Comandos de manuseio de objetos.
@@ -132,10 +134,10 @@ Comandos de manuseio de objetos.
 Comandos de movimentação.
 
 2.17. mud-ataque.int
-Menus para criar e editar comandos sociais e a classe 'comando_ataque', que
-serve de base para esses comandos. Via de regra, a função 'escr' checa se
-está em condições de atacar e obtém o alvo, e chama a função 'ataca', que
-realiza o ataque propriamente dito.
+Menus para criar e editar habilidades e magias e a classe 'comando_ataque',
+que serve de base para esses comandos. Via de regra, a função 'escr' checa
+se está em condições de atacar e obtém o alvo, e chama a função 'exechab',
+que realiza o ataque propriamente dito.
 
 2.18. mud-efeito.int
 Efeitos que podem afetar personagens e itens.

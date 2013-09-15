@@ -148,7 +148,8 @@ public:
         signed   int * end_int;      ///< Instr::cInt32
         unsigned int * end_uint;     ///< Instr::cUInt32
         TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
-        double       * end_double;   ///< Instr::cReal
+        float        * end_float;    ///< Instr::cReal
+        double       * end_double;   ///< Instr::cReal2
         TVarDir      * end_dir;      ///< Instr::cArqDir
         TVarLog      * end_log;      ///< Instr::cArqLog
         TVarTxt      * end_txt;      ///< Instr::cArqTxt

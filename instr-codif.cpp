@@ -1,14 +1,10 @@
-/* Este programa é software livre; você pode redistribuir e/ou
- * modificar nos termos da GNU General Public License V2
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details at www.gnu.org
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
  */
 
 #include <stdio.h>
@@ -269,6 +265,7 @@ static const TListaInstr ListaInstr[] = {
     { "nomeobj",   cNomeObj },
     { "prog",      cProg },
     { "real",      cReal },
+    { "real2",     cReal2 },
     { "ref",       cRef },
     { "refvar",    cRefVar },
     { "ret",       cRet1 }, // Pode ser cRet1 ou cRet2

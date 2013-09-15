@@ -139,6 +139,9 @@ bool FuncVetorUInt32(TVariavel * v, const char * nome);
 /// Processa funções de vetores de variáveis real
 bool FuncVetorReal(TVariavel * v, const char * nome);
 
+/// Processa funções de vetores de variáveis real2
+bool FuncVetorReal2(TVariavel * v, const char * nome);
+
 //----------------------------------------------------------------------------
 
 #endif

@@ -1,4 +1,4 @@
-classe jog_admperso
+classe adm_perso
 # Comandos de personagem
 #
 const adm_perso = "\b\c3Comandos de personagens não jogador\b\n\
@@ -19,7 +19,7 @@ func cmd_lperso # Listar personagens
   senao
     textotxt t
     txt100 lin
-    t.addfim("\bPersonagem Tipo Quantidade Nome")
+    t.addfim("\b\c6Personagem Tipo Quantidade Nome\b")
     enquanto p.lin && t.linhas < 500
       lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
       se inttotal($[p.texto]) == [p.texto]:objsolto.total

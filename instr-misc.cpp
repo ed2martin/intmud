@@ -1,14 +1,10 @@
-/* Este programa é software livre; você pode redistribuir e/ou
- * modificar nos termos da GNU General Public License V2
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details at www.gnu.org
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
  */
 
 #include <stdio.h>
@@ -760,6 +756,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cIntInc:           return "intinc";
     case cIntDec:           return "intdec";
     case cReal:             return "real";
+    case cReal2:            return "real2";
     case cRef:              return "ref";
     case cConstNulo:
     case cConstTxt:
@@ -850,6 +847,7 @@ const char * Instr::NomeComando(int valor)
     case cIntInc:           return "cIntInc";
     case cIntDec:           return "cIntDec";
     case cReal:             return "cReal";
+    case cReal2:            return "cReal2";
     case cRef:              return "cRef";
     case cConstNulo:        return "cConstNulo";
     case cConstTxt:         return "cConstTxt";

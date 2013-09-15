@@ -1,4 +1,4 @@
-classe jog_adm
+classe adm_comum
 # Funções necessárias para os comandos de administração
 #
 const txt_legenda = "Legenda:\n\
@@ -304,7 +304,7 @@ func p_numreal # Alterando um número
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
-    real valor
+    real2 valor
     valor = arg0
     se arg0 != valor # Checa se é número
       ret p_numero("\b")

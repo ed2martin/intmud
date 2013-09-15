@@ -794,7 +794,7 @@ func escr
   lugar = arg0.animalnum
   ret lugar == 0, arg0.msg("Sem espaço para guardar animal.")
 # Decide se consegue capturar
-  real valor
+  real2 valor
   valor = r.pvida * 100 / r.pvidamax
   se valor < 10 # 0% a 10% de vida: valor=10
     valor = 10
@@ -882,7 +882,7 @@ func escr
   se t.linhas == 1
     arg0.msg("Não possui nenhum animal.")
   senao
-    arg0.msg2("Animais:\n" + t.remove(1000))
+    arg0.msg2("\b\c6Animais:\b\n" + t.remove(1000))
 
 
 classe comando_escolhe

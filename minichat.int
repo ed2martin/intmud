@@ -761,6 +761,25 @@ func usr_0 # /usuário +0
   msg("*.Você não recebe mensagens de " + arg0.apelido, 2)
   ret 1
 
+func usr_chutar # /usuário +chutar
+# Checa se é administrador
+  se !admin_chat
+    ret
+# Checa se é o próprio usuário
+  senao arg0 == este
+    msg("> Não pode chutar você mesmo", 2)
+    ret 1
+  fimse
+# Chuta
+  txt100 nome
+  nome = arg0.apelido
+  arg0.msg("*.Você foi expulso (por " + apelido + ")", 2)
+  arg0.retirausr
+  apagar(arg0)
+# Avisa que chutou
+  msg_admin("*.Usuário expulso: " + nome + " (por " + apelido + ")", 2)
+  ret 1
+  
 func usr_banir # /usuário +banir
   exec_banir(arg0.apelido, txt(arg0.ender_ip, 2))
   ret 1
@@ -790,13 +809,13 @@ func exec_banir # Opção de banir usuário
 # Checa se é o próprio usuário
   senao arg1 == txt(ender_ip, 2)
     msg("> Não pode banir a si mesmo", 2)
-    ret
+    ret 1
   fimse
 # Checa se está banido
   pos = $chat.l_banido.ini
   se pos.txtproc("\n" + arg1 + " ") >= 0
     msg("> Usuário já está banido", 2)
-    ret
+    ret 1
   fimse
 # Adiciona na lista
   $chat.l_banido.addini(arg1 + " " + arg0)

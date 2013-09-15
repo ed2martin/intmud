@@ -871,12 +871,21 @@ Possui as funções 'neg', 'pos' e 'abs', exatamente como intdec (vide
 acima).
 
 10.10. real <nome da variável>
-Corresponde ao tipo 'double' em C++.
+Corresponde ao tipo 'float' em C++.
+Pode representar números na faixa de 10 elevado a -38 (menor que isso
+é considerado zero) até 10 elevado a 38 (maior que isso é considerado
+infinito), tanto positivos quanto negativos. A precisão é de 6 dígitos.
+Ocupa o mesmo espaço na memória que uma variável int32.
+
+10.11. real2 <nome da variável>
+Variável real de dupla precisão. Corresponde ao tipo 'double' em C++.
 Pode representar números na faixa de 10 elevado a -308 (menor que isso
 é considerado zero) até 10 elevado a 308 (maior que isso é considerado
 infinito), tanto positivos quanto negativos. A precisão é de 15 dígitos.
+Ocupa o mesmo espaço na memória que duas variáveis int32.
+Internamente, os cálculos matemáticos são feitos com variáveis real2.
 
-10.11. txt<quantidade de caracteres> <nome da variável>
+10.12. txt<quantidade de caracteres> <nome da variável>
 Define uma variável que contém um texto, de até 1 a 512 caracteres.
 
 Exemplo:
@@ -890,7 +899,7 @@ Exemplo:
 txt3 y # Quantidade máxima de caracteres de 'y' é 3
 y = "bom dia" # Tem o mesmo efeito que y="bom"
 
-10.12. ref <nome da variável>
+10.13. ref <nome da variável>
 Referência a um objeto, ou seja, corresponde a um objeto qualquer.
 
 Essa variável passa a ter o valor 'nulo' quando:
@@ -908,7 +917,7 @@ r0.x = 2
 # Anula a referência, sem apagar o objeto criado
 r0 = nulo
 
-10.13. refvar <nome da variável> = <valor>
+10.14. refvar <nome da variável> = <valor>
 Referência a uma variável, ou seja, corresponde a uma variável qualquer.
 A principal utilidade é abreviar nomes extensos de variáveis. Vide
 exemplos abaixo.

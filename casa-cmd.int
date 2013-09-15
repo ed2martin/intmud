@@ -982,5 +982,6 @@ func escr
   r = arg0.persoesc # Personagem escolhido
   r.pvida += 20
   r.pvida > r.pvidamax && (r.pvida = r.pvidamax)
+  escolhebat # Atualiza persobat
   arg0.dono.msg(arg0.nome + " cura " + r.nome + ", " + r.pvida + " de " + r.pvidamax)
   arg0.var.i_poção_ -= 1

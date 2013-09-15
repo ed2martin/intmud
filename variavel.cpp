@@ -1,14 +1,10 @@
-/* Este programa é software livre; você pode redistribuir e/ou
- * modificar nos termos da GNU General Public License V2
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details at www.gnu.org
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
  */
 
 #include <stdio.h>
@@ -120,7 +116,8 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cUInt32:    return sizeof(int);
     case Instr::cIntInc:
     case Instr::cIntDec:    return sizeof(TVarIncDec);
-    case Instr::cReal:      return sizeof(double);
+    case Instr::cReal:      return sizeof(float);
+    case Instr::cReal2:     return sizeof(double);
     case Instr::cRef:       return sizeof(TVarRef);
     case Instr::cConstNulo:
     case Instr::cConstTxt:
@@ -195,6 +192,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cIntInc:
     case Instr::cIntDec:    return varInt;
     case Instr::cReal:      return varDouble;
+    case Instr::cReal2:     return varDouble;
     case Instr::cRef:       return varObj;
     case Instr::cConstNulo: return varObj;
     case Instr::cConstTxt:  return varTxt;
@@ -538,6 +536,10 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         endvar = destino;
         return;
     case Instr::cReal:
+        memmove(destino, endvar, vetor*sizeof(float));
+        endvar = destino;
+        return;
+    case Instr::cReal2:
         memmove(destino, endvar, vetor*sizeof(double));
         endvar = destino;
         return;
@@ -726,6 +728,8 @@ bool TVariavel::getBool()
     case Instr::cIntDec:
         return end_incdec[indice].getDec(numfunc);
     case Instr::cReal:
+        return (end_float[indice] != 0);
+    case Instr::cReal2:
         return (end_double[indice] != 0);
     case Instr::cConstNulo:
         return 0;
@@ -868,6 +872,8 @@ int TVariavel::getInt()
     case Instr::cIntDec:
         return end_incdec[indice].getDec(numfunc);
     case Instr::cReal:
+        return DoubleToInt(end_float[indice]);
+    case Instr::cReal2:
         return DoubleToInt(end_double[indice]);
     case Instr::cConstNulo:
         return 0;
@@ -1042,6 +1048,8 @@ double TVariavel::getDouble()
     case Instr::cIntDec:
         return end_incdec[indice].getDec(numfunc);
     case Instr::cReal:
+        return end_float[indice];
+    case Instr::cReal2:
         return end_double[indice];
     case Instr::cConstNulo:
         return 0;
@@ -1216,6 +1224,7 @@ const char * TVariavel::getTxt()
         sprintf(txtnum, "%u", end_uint[indice]);
         return txtnum;
     case Instr::cReal:
+    case Instr::cReal2:
         {
             double d = getDouble();
             if (d >= DOUBLE_MAX || d <= -DOUBLE_MAX)
@@ -1477,6 +1486,9 @@ void TVariavel::setInt(int valor)
         end_incdec[indice].setDec(numfunc, valor);
         break;
     case Instr::cReal:
+        end_float[indice] = valor;
+        break;
+    case Instr::cReal2:
         end_double[indice] = valor;
         break;
     case Instr::cConstNulo:
@@ -1592,6 +1604,9 @@ void TVariavel::setDouble(double valor)
             end_uint[indice] = (unsigned int)valor;
         break;
     case Instr::cReal:
+        end_float[indice] = valor;
+        break;
+    case Instr::cReal2:
         end_double[indice] = valor;
         break;
     case Instr::cConstNulo:
@@ -1733,6 +1748,15 @@ void TVariavel::setTxt(const char * txt)
             break;
         }
     case Instr::cReal:
+        {
+            double num;
+            errno=0, num=strtod(txt, 0);
+            if (errno)
+                num=0;
+            end_float[indice] = num;
+            break;
+        }
+    case Instr::cReal2:
         {
             double num;
             errno=0, num=strtod(txt, 0);
@@ -1949,6 +1973,8 @@ bool TVariavel::Func(const char * nome)
             return end_inttempo->FuncVetor(this, nome);
         case Instr::cReal:
             return FuncVetorReal(this, nome);
+        case Instr::cReal2:
+            return FuncVetorReal2(this, nome);
         }
         return false;
     }
