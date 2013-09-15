@@ -791,7 +791,7 @@ func escr
     ret l.objini.cmd_fugir(arg0), nulo
   efim
 # Checa se consegue fugir
-  real valor
+  real2 valor
   listaitem i
   epara i = arg0.atkrec.ini, i, i.depois
     valor += i.obj.persobat.precisao
@@ -847,33 +847,24 @@ const posic = 8
 const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nTeletransporta o seu personagem para o \
 ponto de retorno."
 const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
-const tipoatk = 100 # Para não aparecer nenhum nome no tipo de habilidade
+const tipoalvo = 4 # Não agressivo
 
-func escr
-  exec(arg0, 2 + arg0.persobat.var.[nomevar])
-
-func exec # Personagem retorna
+func escr # Personagem retorna
 # arg0 = personagem
-# arg1 = o quanto sabe da magia, de 0 a 10
-  ref r
-  r = $[arg0.var.z_salafim]
+  refvar r = $[arg0.var.z_salafim]
   ret !r, arg0.msg("Você não possui ponto de retorno.")
   ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
   ret r.s_retornar == 1, arg0.msg("Você não consegue retornar.")
   ret !checahab(arg0), nulo
-  arg0.pvida -= int(usavida)
-  arg0.pmana -= int(usamana)
-  arg0.pmove -= int(usamove)
+  custohab(arg0)
+  msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   arg0.p_espera < 15 && (arg0.p_espera = 15)
-  se rand(10) >= arg1
-    arg0.msg("Por algum motivo, a magia falhou.")
-  senao
-    $mens.p(arg0)
-    !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
-    arg0.mudadono(r)
-    !(arg0.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
-  fimse
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+  ret rand(100) < precisao, arg0.msg("Por algum motivo, a magia falhou.")
+  $mens.p(arg0)
+  !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+  arg0.mudadono(r)
+  !(arg0.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
 
 
 classe cmd_retornar
@@ -884,9 +875,6 @@ const txtajuda = "\b\c3Retornar\b\nSintaxe: RETORNAR\nTeletransporta o seu perso
 ponto de retorno, geralmente sua\ncidade natal. Esse comando existe para jogadores até o nível " \
 + config:retornar + "."
 const cmdmenu = "" # Para não ser editável
-
-func escr
-  exec(arg0, 10)
 
 
 classe menu_hab_retornar

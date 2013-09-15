@@ -1,14 +1,10 @@
-/* Este programa é software livre; você pode redistribuir e/ou
- * modificar nos termos da GNU General Public License V2
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details at www.gnu.org
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
  */
 
 #include <stdio.h>
@@ -163,6 +159,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cIntInc:    strcpy(nome, "intinc"); break;
     case cIntDec:    strcpy(nome, "intdec"); break;
     case cReal:      strcpy(nome, "real"); break;
+    case cReal2:     strcpy(nome, "real2"); break;
     case cRef:       strcpy(nome, "ref"); break;
     case cRefVar:    strcpy(nome, "refvar"); coment=0; break;
     case cConstNulo: strcpy(nome, "const (nulo)"); coment=0; break;

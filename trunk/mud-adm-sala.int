@@ -1,4 +1,4 @@
-classe jog_admsala
+classe adm_sala
 # Comandos de sala e de área
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
@@ -155,7 +155,7 @@ func cmd_lsala # Listar salas
     msg("\bNenhuma sala encontrada.")
   senao
     textotxt t
-    t.addfim("\bSalas:")
+    t.addfim("\b\c6Salas:\b")
     enquanto p.lin && t.linhas < 500
       t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo)
       p.depois
@@ -361,7 +361,7 @@ func cmd_lsai # Listar saídas
   txt80 dir
   txt80 lin
   tpasso = perso.dono
-  msg("\bSaídas de " + txt(tpasso, 2) + ":")
+  msg("\b\c6Saídas de " + txt(tpasso, 2) + ":\b")
   epara dir = misc:listadir, dir, dir = txt2(dir)
     continuar !p.existe(tpasso, "dir_" + txt1(dir))
     lin = txtmai(txt1(dir)) + "  "

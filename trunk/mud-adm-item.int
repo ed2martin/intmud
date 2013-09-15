@@ -1,4 +1,4 @@
-classe jog_admitem
+classe adm_item
 # Comandos de itens
 #
 const adm_item = "\b\c3Comandos de itens\b\n\
@@ -19,7 +19,7 @@ func cmd_litem # Listar itens
   senao
     textotxt t
     txt100 lin
-    t.addfim("\bItem Tipo Quantidade Nome")
+    t.addfim("\b\c6Item Tipo Quantidade Nome\b")
     enquanto p.lin && t.linhas < 500
       lin = txt(p.texto, 2) + "  " + txt(" SGC", [p.texto]:item, 1)
       t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
@@ -261,9 +261,9 @@ const exec8 = "ajustapeso"
 #
 const nome9 = "Volume"
 const tipo9 = "numero"
-const extr9 = "1 1000000000"
 const clas9 = var.classe1
 const vari9 = "volobj"
+const extr9 = "1 1000000000"
 const exec9 = "ajustapeso"
 #
 const nome13 = "Nível"

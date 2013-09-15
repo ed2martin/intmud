@@ -1,14 +1,10 @@
-/* Este programa é software livre; você pode redistribuir e/ou
- * modificar nos termos da GNU General Public License V2
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details at www.gnu.org
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
  */
 
 #include <stdio.h>
@@ -1219,6 +1215,19 @@ bool FuncVetorUInt32(TVariavel * v, const char * nome)
 
 //------------------------------------------------------------------------------
 bool FuncVetorReal(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar")!=0)
+        return false;
+    float * ender = v->end_float;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    const float valor = (Instr::VarAtual <= v ? 0 : v[1].getDouble());
+    for (int x=0; x<total; x++)
+        ender[x] = valor;
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool FuncVetorReal2(TVariavel * v, const char * nome)
 {
     if (comparaZ(nome, "limpar")!=0)
         return false;

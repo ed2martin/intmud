@@ -77,7 +77,7 @@ int  Prioridade(int operador);
 // Variáveis predefinidas
 /// TVariavel::defvar para Instr::cNulo
 extern const char InstrNulo[];
-/// TVariavel::defvar para Instr::cReal
+/// TVariavel::defvar para Instr::cReal2
 extern const char InstrDouble[];
 /// TVariavel::defvar para Instr::cSocket
 extern const char InstrSocket[];
@@ -293,7 +293,8 @@ enum Comando
     cInt8, cUInt8,      ///< Var: 8 bits com e sem sinal
     cInt16, cUInt16,    ///< Var: 16 bits com e sem sinal
     cInt32, cUInt32,    ///< Var: 32 bits com e sem sinal
-    cReal,              ///< Var: real - "double"
+    cReal,              ///< Var: real - "float"
+    cReal2,             ///< Var: real2 - "double"
     cConstNulo,         ///< Var: Constante = nulo
     cConstTxt,          ///< Var: Constante = texto
     cConstNum,          ///< Var: Constante = número

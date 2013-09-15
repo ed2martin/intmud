@@ -1,14 +1,10 @@
-/* Este programa é software livre; você pode redistribuir e/ou
- * modificar nos termos da GNU General Public License V2
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details at www.gnu.org
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
  */
 
 #include <stdio.h>
@@ -218,7 +214,7 @@ Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
 const char Instr::InstrNulo[] = { 9, 0, Instr::cConstNulo, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrDouble[] = { 9, 0, Instr::cReal, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrDouble[] = { 9, 0, Instr::cReal2, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrSocket[] = { 9, 0, Instr::cSocket, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrTxtFixo[] = { 9, 0, Instr::cTxtFixo, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarNome[] = { 9, 0, Instr::cVarNome, (char)0xFF, 0, 0, 0, '+', 0 };
@@ -1028,7 +1024,7 @@ bool Instr::ExecX()
                 case ex_div5: valor/=100000; break;
                 default:      valor/=1000000; break;
                 }
-                if (VarAtual->tamanho==0 || VarAtual->defvar[2] != cReal)
+                if (VarAtual->tamanho==0 || VarAtual->defvar[2] != cReal2)
                 {
                     ApagarVar(VarAtual);
                     CriarVar(InstrDouble);
