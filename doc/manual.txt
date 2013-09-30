@@ -1862,8 +1862,19 @@ para maiúsculas ou minúsculas).
 Exemplo: txtcopiamai("teste", "XYZnn") é o mesmo que "TESte"
 
 15.3.18. txtfiltro(<texto>)
-Filtra mensagens.
-Retorna o texto filtrado.
+Filtra e retorna o texto filtrado.
+
+O que o filtro elimina:
+- Espaços no começo e no fim do texto;
+- A mesma sequência de caracteres repetida várias vezes seguidas;
+- Muitos caracteres seguidos sem nenhuma vogal.
+
+Exemplos de filtragens:
+- 'aaaaaaaaaaaaa' vira 'aaaaa';
+- 'abababababab' vira 'ababab';
+- 'bom dia bom dia bom dia bom dia!' vira 'bom dia bom dia bom di!';
+- 'http://xxx.yyy.zzz.nnn.br' vira 'http://xxx.yyy.zzz.nn', porque são
+  muitos caracteres sem uma vogal no meio.
 
 15.3.19. txtesp(<quantidade de espaços>)
 Retorna de 0 a 100 espaços conforme <quantidade de espaços>.
@@ -2107,7 +2118,14 @@ letras maiúsculas e alguns símbolos.
 
 15.5.4. txtnome(<texto>)
 Codifica apelido para comparação.
-Retorna o mesmo texto para dois apelidos parecidos.
+São feitas diversas mudanças de acordo com algumas regras de pronúncia
+do português. Por exemplo, 'ph' tem som de 'pi', 'l' seguido de qualquer
+coisa exceto uma vogal tem som de 'u', 'c' exceto em 'ce' e 'ci' tem som
+de 'k', entre outros. A lista de mudanças é um pouco complexa, por isso
+foi omitida nesse manual.
+Basicamente, se essa função retornar o mesmo texto para dois apelidos,
+é quase certo que as pessoas que usam um sintetizador de voz em português
+não conseguirão distinguir a diferença.
 Nota: o texto retornado nunca é maior que o apelido.
 
 15.5.5. intnome(<texto>)
@@ -2116,6 +2134,9 @@ Retorna um número:
 0 - Apelido válido;
 1 - Muito pequeno (menos de 2 caracteres);
 2 - Contém caracteres inválidos.
+Nota: Essa função também retorna 2 para algumas combinações de letras que
+      podem gerar problemas para os usuários de sintetizadores de voz.
+      Por exemplo, qualquer letra antes de 'h' exceto em 'ch', 'lh' e 'nh'.
 
 15.5.6. intsenha(<texto>)
 Verifica se texto é válido para senha.
@@ -2371,7 +2392,7 @@ func tela_msg # Esse é o evento 'msg', da variável 'tela'
 
 Um objeto pode ser adicionado várias vezes em uma lista.
 Como valor numérico, é 0 se a lista estiver vazia ou 1 se não estiver.
-Quando um objeto é apagado, é executada a função apagar de todas
+Quando um objeto é apagado, é executada a função 'apagar' de todas
 as variáveis listaobj do objeto.
 
 Funções:
@@ -2381,7 +2402,7 @@ Adiciona objetos no topo da lista.
 Quando o argumento for uma listaobj, adiciona todos os objetos da listaobj.
 Pode-se adicionar mais de um objeto ou listaobj de uma vez, separando-os
 por vírgulas.
-Retorna o primeiro item adicionado da lista (variável listaitem).
+Retorna o primeiro item adicionado da lista (uma variável listaitem).
 
 Exemplo:
 
@@ -2389,11 +2410,11 @@ listaobj l
 l.addini(este, $teste) # Adiciona os objetos 'este' e '$teste' em 'l'
 
 17.2. addfim(<objetos e/ou listaobj>)
-Idêntico a addini, exceto que os objetos são adicionados no fim da listaobj.
+Idêntico a 'addini', exceto que os objetos são adicionados no fim da listaobj.
 
 17.3. addini1 e addfim1
-Idênticos a addini e addfim, exceto que não adiciona os objetos que já
-estiverem na listaobj.
+Idênticos a 'addini' e 'addfim', exceto que não adiciona os objetos que já
+estiverem na 'listaobj'.
 
 17.4. remove
 Remove objetos repetidos na lista.
@@ -2410,7 +2431,7 @@ Muda a ordem dos objetos aleatoriamente.
 Retira todos os objetos da lista.
 
 17.8. possui(<objetos e/ou listaobj>)
-Retorna quantos objetos estão na lista (0=não estão na lista).
+Retorna quantos objetos estão na lista. O valor 0 significa nenhum objeto.
 
 17.9. apagar
 Marca todos os objetos da lista para exclusão, usando a função 'apagar'.
@@ -2426,11 +2447,11 @@ Nota: Se o objetivo for saber apenas se existe algum objeto, as funções
 Objeto que contém a lista; pode ser NULO.
 
 17.12. ini([nome da classe])
-Primeiro item da lista (variável listaitem).
+Primeiro item da lista (uma variável 'listaitem').
 Se o nome da classe for especificado, considera apenas objetos da classe.
 
 17.13. fim([nome da classe])
-Último item da lista (variável listaitem).
+Último item da lista (uma variável 'listaitem').
 Se o nome da classe for especificado, considera apenas objetos da classe.
 
 17.14. objini([nome da classe])
@@ -2444,18 +2465,18 @@ Se o nome da classe for especificado, considera apenas objetos da classe.
 
 18. LISTAITEM - UM ITEM DE LISTAOBJ
 
-É usado para acessar os objetos de 'listaobj'. Representa um objeto.
+É usada para acessar os objetos de 'listaobj'. Representa um objeto.
 Como valor numérico, é 1 se for um objeto ou 0 se não for.
 
 Funções:
 
 18.1. addantes(<objetos e/ou listaobj>)
 Adiciona objetos antes desse.
-Retorna o primeiro item adicionado da lista (variável listaitem).
+Retorna o primeiro item adicionado da lista (uma variável 'listaitem').
 
 18.2. adddepois(<objetos e/ou listaobj>)
 Adiciona objetos depois desse.
-Retorna o primeiro item adicionado da lista (variável listaitem).
+Retorna o primeiro item adicionado da lista (uma variável 'listaitem').
 
 18.3. addantes1 e adddepois1
 Idênticos a addantes e adddepois, exceto que não adiciona os objetos que
@@ -2478,7 +2499,7 @@ Semelhante à função 'antes', mas considera apenas objetos da mesma classe.
 Semelhante à função 'depois', mas considera apenas objetos da mesma classe.
 
 18.8. remove
-Remove objeto da lista, listaitem passa a não ser um objeto válido.
+Remove objeto da lista, a 'listaitem' passa a não ser um objeto válido.
 
 18.9. removeantes
 
@@ -2505,12 +2526,12 @@ listaitem i
 l.addantes(este) # Adiciona no topo da lista
 l.adddepois(este) # Adiciona no final da lista
 l.remove(l.ini.obj) # remove um objeto da lista
-l.possui(este) # retorna !=0 se objeto está na lista
+l.possui(este) # retorna diferente de zero se objeto está na lista
 l.ini.obj # é o primeiro objeto da lista
 l.fim.obj # é o último objeto da lista
 i = l.ini  # i é o primeiro item da lista
-enquanto i    # Enquanto i for um objeto (não acabou a lista)
-  i.obj.l = 1   # Faz a variável l do objeto = 1
+enquanto i    # Enquanto 'i' for um objeto (não acabou a lista)
+  i.obj.x = 1   # Faz a variável 'x' do objeto ser 1
   i.depois      # Passa para o próximo objeto
 efim
 

@@ -15,7 +15,7 @@
 13. Eventos incondicionais
 14. Eventos condicionais
 15. Criando menus de edição (administração)
-16. Lista de itens pendentes
+16. Lista de coisas pendente
 
 
 1. Rodando o MUD
@@ -190,21 +190,17 @@ O texto pode conter os seguintes caracteres especiais:
 
 $$ = Símbolo $
 $P = Nome do personagem
-$Q = Nome do personagem escolhido, ex. "Lula"
-$R = Nome do personagem em batalha, ex. "Lula de fulano"
+$Q = Nome do personagem sem citar o dono
 $A = Nome do alvo
-$B = Nome do alvo escolhido, ex. "Lula"
-$C = Nome do alvo em batalha, ex. "Lula de fulano"
-$D = Nome do alvo, sendo que pode ser "Animal X de fulano"
+$B = Nome do alvo sem citar o dono
 $O = Nome do objeto
 $S = Depende do personagem: "o", "a", "um" ou "uma"
 $T = Depende do alvo: "o", "a", "um" ou "uma"
 $U = Depende do objeto: "o", "a", "um" ou "uma"
 $M = Texto de $mens.mens
 
-Em qualquer dessas opções:
-$ + letra maiúscula = primeira letra do texto em maiúscula
-$ + letra minúscula = texto em letras minúsculas
+Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra
+do texto não é transformada em maiúscula."
 
 
 4. Variáveis dinâmicas de personagens, salas e itens
@@ -374,7 +370,8 @@ somar 16 se pode ver voando alto
 somar 128 se pode ver administradores invisíveis
 somar 256 se anda em silêncio
 somar 512 se está voando ou flutuando
-
+somar 1024 se está dormindo por efeito de algo
+somar 2048 se não pode ser colocado para dormir
 
 7.3. intexec recalc
 Para chamar recalc_exec quando necessário
@@ -798,6 +795,12 @@ func cmd_removeu(personagem, item, posição)
 Remover um item que está vestindo/usando ou uma arma que está empunhando.
 Posição é a posição em que estava vestindo ou empunhando.
 
+func cmd_atacou(personagem, alvo, objeto que processa o comando)
+Fim do ataque a outro personagem.
+A variável result do objeto contém o resultado; 0=atacou com sucesso,
+A variável mudavida do objeto contém quantos pontos de vida mudaram no alvo.
+Esse evento é chamado também para o objeto que processa o comando.
+
 func cmd_levantou(personagem)
 func cmd_sentouchao(personagem)
 func cmd_descansouchao(personagem)
@@ -890,11 +893,28 @@ Tipo pode ser "comprar", "vender" ou "ensinar".
 func cmd_atacar(personagem, alvo, objeto que processa o ataque)
 Quer atacar algum personagem.
 
-func cmd_atkenv(quem ataca, quem recebe, objeto que processa o ataque)
-func cmd_atkrec(quem ataca, quem recebe, objeto que processa o ataque)
+cmd_alvocontr(personagem, alvo, objeto que processa o comando)
+Personagem quer usar uma habilidade ou magia não agressiva.
+Esse evento é chamado para quem está controlando o personagem e o alvo.
+
+cmd_alvo(personagem, alvo, objeto que processa o comando)
+Personagem quer usar uma habilidade ou magia não agressiva.
+
+cmd_atacarcontr(personagem, alvo, objeto que processa o comando)
+Personagem quer usar uma habilidade ou magia agressiva.
+Esse evento é chamado para quem está controlando o personagem e o alvo.
+
+cmd_atacar(personagem, alvo, objeto que processa o comando)
+Personagem quer usar uma habilidade ou magia agressiva.
+Esse evento é chamado também para o objeto que processa o comando.
+
+func cmd_atkenv(personagem, alvo, objeto que processa o ataque)
 Chamado quando um personagem vai realizar um ataque a outro.
-Use cmd_atkenv quando for o personagem atacando e cmd_atkrec quando for
-o personagem que recebe o ataque.
+Esse evento é chamado para o personagem e o objeto que processa o comando.
+
+func cmd_atkrec(personagem, alvo, objeto que processa o ataque)
+Chamado quando um personagem vai receber um ataque de outro.
+Esse evento é chamado para o alvo.
 
 func cmd_levantar(personagem)
 func cmd_sentarchao(personagem)
@@ -1001,12 +1021,45 @@ jogsock), passando como argumento o nome da classe.
 Exemplo: m_menu("menu_config")
 
 
-16. Lista de itens pendentes
+16. Lista de coisas pendente
 
-Efeitos para ataques
+Habilidades:
+- Rosnar - diminui ataque do adversário
+- Dormir - restaura pontos de vida e dorme por 15 segundos
+- Roncar - só pode ser usado enquanto estiver dormindo
+- Visível - cancela a magia invisibilidade no próprio personagem
+Magias:
+- Flutuar - deixa de flutuar se o personagem sentar ou deitar
+- Invisibilidade
+- Ocultar
+- Furtividade - anda em silêncio
+- Detectar invisibilidade
+- Detectar oculto
+- Cegueira
+- Curar cegueira
+- Drenar energia - retira parte do mana e movimento do alvo
+- Restaurar vitalidade - restaura movimentos
+Efeitos de área - afetam uma sala; podem mudar o clima
+Comandos para salvar e para mudar a senha
+Personagens: poder definir somente as posições em que pode-se vestir algo
+Itens: poder definir se só jogadores ou só animais ou ambos podem vestir
+Equip, Inv, Vestir, Empunhar e Remover: considerar o animal escolhido
+Comando trocar:
+- trocar - pega um item do animal escolhido
+- trocar <item> - dá um item para o animal escolhido
+- trocar <número> <número> - Troca dois animais de posição
+Poder aprender algo ao subir de nível; para cada linha da lista:
+- Nível do personagem
+- Aprender ou aperfeiçoar
+- Nome da magia/habilidade/idioma
+- Nível de aprendizado
+Evolução de itens e personagens; para cada linha da lista:
+- Nível do item ou personagem
+- Evoluir obrigatório ou opcional
+- Nome do novo item ou personagem
+Criar uma classe específica para restaurar vida/mana/vigor dos jogadores
 Vendedores: poder vender itens que possui no inventário
 Ao criar personagem: altura
-APRENDER: Definir em que nível e o quanto pode aprender de cada habilidade
 Acertar itens que produzem luz
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto

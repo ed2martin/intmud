@@ -15,7 +15,7 @@ classe i_ini001
 herda comum_itemgrupo
 const nome = "diamante azul"
 const descnome = "um diamante azul"
-const sexo = 1
+const msexo = 1
 const descpos = "Aqui tem um diamante azul."
 const pesoobj = 200
 
@@ -30,7 +30,7 @@ classe i_ini002
 herda comum_itemgrupo
 const nome = "diamante amarelo"
 const descnome = "um diamante amarelo"
-const sexo = 1
+const msexo = 1
 const descpos = "Aqui tem um diamante amarelo."
 const pesoobj = 200
 
@@ -45,7 +45,7 @@ classe i_ini003
 herda comum_itemgrupo
 const nome = "diamante vermelho"
 const descnome = "um diamante vermelho"
-const sexo = 1
+const msexo = 1
 const descpos = "Aqui tem um diamante vermelho."
 const pesoobj = 200
 
@@ -60,7 +60,7 @@ classe i_ini004
 herda comum_itemgrupo
 const nome = "diamante verde"
 const descnome = "um diamante verde"
-const sexo = 1
+const msexo = 1
 const descpos = "Aqui tem um diamante verde."
 const pesoobj = 200
 
@@ -78,7 +78,7 @@ const descnome = "um manto escuro"
 const descver = "Embora extremamente frágil, possui um pequeno foguete preso nele. Há uma\n\
 pequena corda para acionar o foguete, mas antes você deve vestir o manto.\n\
 O comando para puxar a corda é PUXAR."
-const sexo = 1
+const msexo = 1
 const descpos = "Um manto escuro relativamente pesado está aqui."
 const pesoobj = 15000
 const vestir1 = 64 # Aonde vestir: Sobre o corpo
@@ -109,7 +109,7 @@ classe i_ini006
 herda comum_itemperso
 const nome = "tronco"
 const descnome = "um tronco de árvore"
-const sexo = 1
+const msexo = 1
 const descpos = "Um pedaço grande de tronco está aqui no centro."
 const pesoobj = 1000000
 const i_movel = 1 # 1=pode sentar, 2=pode sentar e deitar
@@ -127,7 +127,7 @@ const persobat = este # Personagem usado na batalha
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
-func cmd_atacar
+func cmd_atacar1
   se "p_ini001" == arg1
     arg2.result = 10
     $mens.p(arg0, arg1)
@@ -177,7 +177,7 @@ func entrou70
   se !arg0.var.h_chutar
     arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
 
-func cmd_atacar
+func cmd_atacar1
   ret [arg2](arg0, arg1) # Chama a função que trata do ataque específico
 
 func cmd_socar

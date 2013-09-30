@@ -311,41 +311,48 @@ const titulo = "Consome"
 const menufim = var.menufim
 const colunas = 25
 #
-const nome1 = "Vida iniciante"
-const info1 = "Quantos pontos de vida consome no nível iniciante"
+const nome1 = "Tempo de espera"
+const info1 = "Tempo mínimo que deve esperar, em décimos de segundo"
 const tipo1 = "numero"
 const clas1 = var.classe1
-const vari1 = "c_vida1"
+const vari1 = "c_espera"
+const extr1 = "5 150"
 #
-const nome2 = "Vida perito"
-const info2 = "Quantos pontos de vida consome no nível perito"
+const nome2 = "Vida iniciante"
+const info2 = "Quantos pontos de vida consome no nível iniciante"
 const tipo2 = "numero"
 const clas2 = var.classe1
-const vari2 = "c_vida2"
+const vari2 = "c_vida1"
 #
-const nome3 = "Mana iniciante"
-const info3 = "Quantos pontos de mana consome no nível iniciante"
+const nome3 = "Vida perito"
+const info3 = "Quantos pontos de vida consome no nível perito"
 const tipo3 = "numero"
 const clas3 = var.classe1
-const vari3 = "c_mana1"
+const vari3 = "c_vida2"
 #
-const nome4 = "Mana perito"
-const info4 = "Quantos pontos de mana consome no nível perito"
+const nome4 = "Mana iniciante"
+const info4 = "Quantos pontos de mana consome no nível iniciante"
 const tipo4 = "numero"
 const clas4 = var.classe1
-const vari4 = "c_mana2"
+const vari4 = "c_mana1"
 #
-const nome5 = "Vigor iniciante"
-const info5 = "Quantos pontos de vigor consome no nível iniciante"
+const nome5 = "Mana perito"
+const info5 = "Quantos pontos de mana consome no nível perito"
 const tipo5 = "numero"
 const clas5 = var.classe1
-const vari5 = "c_move1"
+const vari5 = "c_mana2"
 #
-const nome6 = "Vigor perito"
-const info6 = "Quantos pontos de vigor consome no nível perito"
+const nome6 = "Vigor iniciante"
+const info6 = "Quantos pontos de vigor consome no nível iniciante"
 const tipo6 = "numero"
 const clas6 = var.classe1
-const vari6 = "c_move2"
+const vari6 = "c_move1"
+#
+const nome7 = "Vigor perito"
+const info7 = "Quantos pontos de vigor consome no nível perito"
+const tipo7 = "numero"
+const clas7 = var.classe1
+const vari7 = "c_move2"
 
 
 classe menu_hab_alvo
@@ -446,96 +453,102 @@ const titulo = "Mensagens"
 const menufim = var.menufim
 const colunas = 25
 #
-const nome1 = "Início"
-const info1 = "Ao usar a habilidade ou magia"
-const tipo1 = "linha"
+const nome1 = "Info"
+const info1 = "Informações extras"
+const tipo1 = "texto"
 const clas1 = var.classe1
-const vari1 = "msgini"
+const vari1 = "msgextra"
 #
-const nome2 = "Acertou"
-const info2 = "Quando acertou o alvo"
+const nome2 = "Início"
+const info2 = "Ao usar a habilidade ou magia"
 const tipo2 = "linha"
 const clas2 = var.classe1
-const vari2 = "msgacertou2"
+const vari2 = "msgini"
 #
-const nome3 = "Acertou em si"
-const info3 = "Quando o alvo é o próprio personagem e acertou"
+const nome3 = "Acertou"
+const info3 = "Quando acertou o alvo"
 const tipo3 = "linha"
 const clas3 = var.classe1
-const vari3 = "msgacertou1"
+const vari3 = "msgacertou2"
 #
-const nome4 = "Errou"
-const info4 = "Quando errou o alvo"
+const nome4 = "Acertou em si"
+const info4 = "Quando o alvo é o próprio personagem e acertou"
 const tipo4 = "linha"
 const clas4 = var.classe1
-const vari4 = "msgerrou2"
+const vari4 = "msgacertou1"
 #
-const nome5 = "Errou em si"
-const info5 = "Quando o alvo é o próprio personagem e errou"
+const nome5 = "Errou"
+const info5 = "Quando errou o alvo"
 const tipo5 = "linha"
 const clas5 = var.classe1
-const vari5 = "msgerrou1"
+const vari5 = "msgerrou2"
 #
-const nome6 = "Sem efeito"
-const info6 = "Quando quando o golpe não teve efeito"
+const nome6 = "Errou em si"
+const info6 = "Quando o alvo é o próprio personagem e errou"
 const tipo6 = "linha"
 const clas6 = var.classe1
-const vari6 = "msgnulo2"
+const vari6 = "msgerrou1"
 #
-const nome7 = "Sem efeito em si"
-const info7 = "Quando quando o golpe não teve efeito no próprio personagem"
+const nome7 = "Sem efeito"
+const info7 = "Quando quando o golpe não teve efeito"
 const tipo7 = "linha"
 const clas7 = var.classe1
-const vari7 = "msgnulo1"
+const vari7 = "msgnulo2"
+#
+const nome8 = "Sem efeito em si"
+const info8 = "Quando quando o golpe não teve efeito no próprio personagem"
+const tipo8 = "linha"
+const clas8 = var.classe1
+const vari8 = "msgnulo1"
 
 
 classe menu_hab_comum
-const nome2 = "Precisão"
-const info2 = "Em porcentagem, maior que 100 nunca falha"
-const tipo2 = "numero"
-const clas2 = var.classe1
-const vari2 = "precisao"
-#
-const nome3 = "Requer arma"
-const info3 = "Deixar vazio se funciona independente da arma usada."
-const tipo3 = "vetor"
+const nome3 = "Precisão"
+const info3 = "Em porcentagem, maior que 100 nunca falha"
+const tipo3 = "numero"
 const clas3 = var.classe1
-const vari3 = "tipoarma"
-const extr3 = config:arma_txt
+const vari3 = "precisao"
 #
-const nome4 = "Consome"
-const tipo4 = "menu--"
-const clas4 = "menu_hab_custo"
+const nome4 = "Requer arma"
+const info4 = "Deixar vazio se funciona independente da arma usada."
+const tipo4 = "vetor"
+const clas4 = var.classe1
+const vari4 = "tipoarma"
+const extr4 = config:arma_txt
 #
-const nome11 = "Preço da aula"
-const info11 = "Quantas moedas os personagens cobram para ensinar"
-const tipo11 = "numero"
-const clas11 = var.classe1
-const vari11 = "valor"
+const nome5 = "Consome"
+const tipo5 = "menu--"
+const clas5 = "menu_hab_custo"
 #
-const nome12 = "Depende de"
-const info12 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
-const tipo12 = "tipodep"
+const nome12 = "Preço da aula"
+const info12 = "Quantas moedas os personagens cobram para ensinar"
+const tipo12 = "numero"
 const clas12 = var.classe1
-const vari12 = "depende"
+const vari12 = "valor"
 #
-const nome13 = "Iniciante nível"
-const info13 = "A partir de que nível pode ter a primeira aula"
-const tipo13 = "numero"
+const nome13 = "Depende de"
+const info13 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
+const tipo13 = "tipodep"
 const clas13 = var.classe1
-const vari13 = "aulaini"
+const vari13 = "depende"
 #
-const nome14 = "Perito nível"
-const info14 = "A partir de que nível pode ter todas as aulas"
+const nome14 = "Iniciante nível"
+const info14 = "A partir de que nível pode ter a primeira aula"
 const tipo14 = "numero"
 const clas14 = var.classe1
-const vari14 = "aulafim"
+const vari14 = "aulaini"
 #
-const nome15 = "Somente tipos"
-const info15 = "Se estiver vazio, todas as classes e raças podem aprender"
-const tipo15 = "tipos"
+const nome15 = "Perito nível"
+const info15 = "A partir de que nível pode ter todas as aulas"
+const tipo15 = "numero"
 const clas15 = var.classe1
-const vari15 = "tipoperso"
+const vari15 = "aulafim"
+#
+const nome16 = "Somente tipos"
+const info16 = "Se estiver vazio, todas as classes e raças podem aprender"
+const tipo16 = "tipos"
+const clas16 = var.classe1
+const vari16 = "tipoperso"
 
 
 classe menu_hab_ataque
@@ -554,37 +567,46 @@ Todos sem dividir o ataque\n\
 Qualquer um; não é ataque\n\
 O personagem; não é ataque"
 #
-const nome5 = "Afeta o alvo"
-const tipo5 = "menu--"
-const clas5 = "menu_hab_alvo"
 #
-const nome6 = "Ataque tipo"
-const tipo6 = "opcao"
-const clas6 = var.classe1
-const vari6 = "tipoatk"
-const extr6 = config:atknomes
+const nome2 = "Condição"
+const tipo2 = "opcao"
+const clas2 = var.classe1
+const vari2 = "a_batalha"
+const extr2 = "Nenhuma\n\
+Durante a batalha\n\
+Fora da batalha"
 #
-const nome7 = "Ataque força"
-const info7 = "Em porcentagem"
-const tipo7 = "numero"
+const nome6 = "Afeta o alvo"
+const tipo6 = "menu--"
+const clas6 = "menu_hab_alvo"
+#
+const nome7 = "Ataque tipo"
+const tipo7 = "opcao"
 const clas7 = var.classe1
-const vari7 = "ataque"
+const vari7 = "tipoatk"
+const extr7 = config:atknomes
 #
-const nome8 = "Ataque velocidade"
+const nome8 = "Ataque força"
 const info8 = "Em porcentagem"
 const tipo8 = "numero"
 const clas8 = var.classe1
-const vari8 = "vel"
+const vari8 = "ataque"
 #
-const nome9 = "Ataque bônus"
-const info9 = "Quais raças e classes atacam com mais força"
-const tipo9 = "tipos"
+const nome9 = "Ataque velocidade"
+const info9 = "Em porcentagem"
+const tipo9 = "numero"
 const clas9 = var.classe1
-const vari9 = "tipobonus"
+const vari9 = "vel"
 #
-const nome10 = "Mensagens"
-const tipo10 = "menu--"
-const clas10 = "menu_hab_msg"
+const nome10 = "Ataque bônus"
+const info10 = "Quais raças e classes atacam com mais força"
+const tipo10 = "tipos"
+const clas10 = var.classe1
+const vari10 = "tipobonus"
+#
+const nome11 = "Mensagens"
+const tipo11 = "menu--"
+const clas11 = "menu_hab_msg"
 
 
 classe menu_magia_ataque
@@ -603,66 +625,90 @@ const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
 func checahab # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
 # Retorna verdadeiro se pode usar
-  refvar r = ref(arg0.persobat)
-  se !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
-  senao !r.iempu # Não está usando uma arma
+  se arg0.posicao < posic # Checa a posição necessária
+    txt100 lin
+    lin = txtcopiamai(arg0.nome, "A")
+    casovar arg0.posicao
+    casose "0"
+      arg0.contr.msg(lin + " desmaiou.")
+      ret
+    casose "1"
+    casose "2"
+    casose "3"
+      arg0.contr.msg(lin + " está frac" + (arg0.msexo ? "o" : "a") + " demais.")
+      ret
+    casose "4"
+      arg0.contr.msg(lin + " está dormind" + (arg0.msexo ? "o" : "a") + ".")
+      ret
+    casose "5"
+      arg0.contr.msg(lin + " está descansand" + (arg0.msexo ? "o" : "a") + ".")
+      ret
+    casose "6"
+      arg0.contr.msg(lin + " está sentad" + (arg0.msexo ? "o" : "a") + ".")
+      ret
+    casose "7"
+      arg0.contr.msg(lin + " está lutand" + (arg0.msexo ? "o" : "a") + ".")
+      ret
+    casofim
+    arg0.contr.msg(lin + " não consegue fazer isso.")
+    ret
+  senao !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
+  senao !arg0.iempu # Não está usando uma arma
     se !(tipoarma & 1)
-      arg0.msg("Não possui a arma necessária.")
+      arg0.contr.msg("Não possui a arma necessária.")
       ret
     fimse
-  senao r.iempu && tipoarma & 1 << r.iempu.obj.armatipo
+  senao arg0.iempu && tipoarma & 1 << arg0.iempu.obj.armatipo
   senao tipoarma == 1
-    arg0.msg("Empunhando uma arma?")
+    arg0.contr.msg("Empunhando uma arma?")
     ret
   senao
-    arg0.msg("Com essa arma?")
+    arg0.contr.msg("Com essa arma?")
     ret
   fimse
   refvar x = (arg0.persobat.var.[nomevar] - 2) / 8
-  se r.pvida <= x * (c_vida2 - c_vida1) + c_vida1
-    arg0.msg("Pontos de vida insuficientes")
+  se arg0.pvida <= x * (c_vida2 - c_vida1) + c_vida1
+    arg0.contr.msg("Pontos de vida insuficientes")
     ret
-  senao r.pmana < x * (c_mana2 - c_mana1) + c_mana1
-    arg0.msg("Mana insuficiente")
+  senao arg0.pmana < x * (c_mana2 - c_mana1) + c_mana1
+    arg0.contr.msg("Mana insuficiente")
     ret
-  senao r.pmove < x * (c_move2 - c_move1) + c_move1
-    arg0.msg("Vigor insuficiente")
+  senao arg0.pmove < x * (c_move2 - c_move1) + c_move1
+    arg0.contr.msg("Vigor insuficiente")
     ret
   fimse
   ret 1
 
 func custohab
 # arg0 = personagem
-  refvar r = ref(arg0.persobat)
-  refvar x = (r.var.[nomevar] - 2) / 8
-  r.pvida -= x * (c_vida2 - c_vida1) + c_vida1
-  r.pmana -= x * (c_mana2 - c_mana1) + c_mana1
-  r.pvigor -= x * (c_move2 - c_move1) + c_move1
+  refvar x = (arg0.var.[nomevar] - 2) / 8
+  arg0.pvida -= x * (c_vida2 - c_vida1) + c_vida1
+  arg0.pmana -= x * (c_mana2 - c_mana1) + c_mana1
+  arg0.pmove -= x * (c_move2 - c_move1) + c_move1
+  arg0.contr.p_espera < c_espera && (arg0.contr.p_espera = c_espera)
 
 func efeitohab # Efeito da habilidade sob o alvo
 # arg0 lançou habilidade ou magia em arg1
 # Altera mudavida conforme pontos de vida alterados
-# refvar r = ref(tipoalvo >= 4 && arg0 == arg1 ? arg1.persoesc : arg1.persobat)
-  refvar r = ref(arg1.persobat)
-  a_efeito1 && rand(100) < a_prob1 && criar("e_" + a_efeito1, r, r.pnivel)
-  a_efeito2 && rand(100) < a_prob2 && criar("e_" + a_efeito2, r, r.pnivel)
-  a_efeito3 && rand(100) < a_prob3 && criar("e_" + a_efeito3, r, r.pnivel)
+  a_efeito1 && rand(100) < a_prob1 && criar("e_" + a_efeito1, arg1, arg0.pnivel)
+  a_efeito2 && rand(100) < a_prob2 && criar("e_" + a_efeito2, arg1, arg0.pnivel)
+  a_efeito3 && rand(100) < a_prob3 && criar("e_" + a_efeito3, arg1, arg0.pnivel)
   se a_remove
     textotxt t
-    epara t.addfim(a_remove), t.linha, apagar(r.dentro2.objini("e_" + t.remove))
+    epara t.addfim(a_remove), t.linha, apagar(arg1.dentro2.objini("e_" + t.remove))
     efim
   fimse
-  refvar x = (arg0.persobat.var.[nomevar] - 2) / 8
+  refvar x = (arg0.var.[nomevar] - 2) / 8
   real2 valor
   valor = x * (a_move2 - a_move1) + a_move1
-  valor && (r.pmove += valor) > r.pmovemax && (r.pmove = r.pmovemax)
+  valor && (arg1.pmove += valor) > arg1.pmovemax && (arg1.pmove = arg1.pmovemax)
   valor = x * (a_mana2 - a_mana1) + a_mana1
-  valor && (r.pmana += valor) > r.pmanamax && (r.pmana = r.pmanamax)
+  valor && (arg1.pmana += valor) > arg1.pmanamax && (arg1.pmana = arg1.pmanamax)
   ret !(valor = x * (a_vida2 - a_vida1) + a_vida1), nulo
-  refvar vida = int(r.pvida)
-  (r.pvida += valor) > r.pvidamax && (r.pvida = r.pvidamax)
-  mudavida += r.pvida - vida
-  !vida && r.pvida && r.dono.perso && r.dono.escolhebat
+  refvar vida = int(arg1.pvida)
+  (arg1.pvida += valor) > arg1.pvidamax && (arg1.pvida = arg1.pvidamax)
+  mudavida += arg1.pvida - vida
+  !vida && arg1.pvida && arg1.dono.perso && arg1.dono.escolhebat
 
 
 classe comando_ataque
@@ -676,18 +722,19 @@ const vel = 50 # Velocidade do golpe, 100 significa 100%
 const a_prob1 = 100
 const a_prob2 = 100
 const a_prob3 = 100
-const msgacertou2 = "$R ataca $c"
+const msgacertou2 = "$P ataca $a"
 const msgacertou1 = msgacertou2
 const msgerrou2 = msgacertou2 + " mas erra"
 const msgerrou1 = msgerrou2
 const msgnulo2 = msgacertou2 + ", nada acontece"
 const msgnulo1 = msgnulo2
+const c_espera = 15 # Tempo de esperar após usar esse comando
 int32 mudavida # Para calcular mudança nos pontos de vida do alvo
 int8 result # Resultado da batalha:
 # 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=cancelar ataque
 ref arma1 # Arma usada
 
-func txtajuda
+func txtajuda # Retorna um texto que contém informações
   textotxt t
   se depende
     t.addfim(depende)
@@ -698,7 +745,6 @@ func txtajuda
     t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
     t.juntar, t.dividelin(40, 75)
   fimse
-  extra && t.addini(extra)
   txt100 lin
   lin = "\c3" + misc:nomevar(nomevar)
   se tipoalvo < 4
@@ -712,6 +758,40 @@ func txtajuda
     lin += precisao < 100 ? ", Acerta " + precisao + "%" : ", Não falha"
     t.addini(lin)
   fimse
+  msgextra && t.addfim(msgextra)
+  se c_vida1 || c_vida2
+    refvar min = int(c_vida2)
+    refvar max = int(c_vida1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de vida.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de vida.")
+    senao
+      t.addfim("Consome " + min + " pontos de vida.")
+    fimse
+  fimse
+  se c_mana1 || c_mana2
+    refvar min = int(c_mana2)
+    refvar max = int(c_mana1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de mana.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de mana.")
+    senao
+      t.addfim("Consome " + min + " pontos de mana.")
+    fimse
+  fimse
+  se c_move1 || c_move2
+    refvar min = int(c_move2)
+    refvar max = int(c_move1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de movimento.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de movimento.")
+    senao
+      t.addfim("Consome " + min + " pontos de movimento.")
+    fimse
+  fimse
   se tipoperso
     t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
   fimse
@@ -720,8 +800,8 @@ func txtajuda
 func escr # Atacar alguém
   ref r
   se persobat.pvida == 0
-    arg0.msg("Você está desmaiad" + misc:sletra[sexo] + ".")
-  senao !checahab(arg0)
+    arg0.msg("Você está desmaiad" + (msexo ? "o." : "a."))
+  senao !checahab(arg0.persobat)
     ret
   senao arg1 # Digitou o alvo
     listaitem i
@@ -734,7 +814,7 @@ func escr # Atacar alguém
     ret !r, arg0.msg("Você não vê isso.")
   senao tipoalvo >= 4 # Hab não agressiva: o alvo é o próprio personagem
     r = arg0
-  senao # Hab agressivo: o alvo é quem está batalhando
+  senao # Hab agressiva: o alvo é quem está batalhando
     r = arg0.atkenv.objlista
     se !r || r.dono != arg0.dono
       arg0.msg("Atacar quem?")
@@ -742,7 +822,7 @@ func escr # Atacar alguém
     fimse
   fimse
   se tipoalvo >= 4 # Se Não for agressivo...
-    exechab(arg0, r)
+    exechab(arg0.persobat, r.persobat)
   senao !arg0.dono.s_luta
     arg0.msg("Aqui é um lugar pacífico.")
   senao arg0.jog && r.jog && arg0 != r && arg0.dono.s_luta < 2
@@ -750,28 +830,34 @@ func escr # Atacar alguém
   senao !r.p_agressivo(arg0)
     arg0.msg(r.descnome + " não quer brigar.")
   senao
-    exechab(arg0, r)
+    exechab(arg0.persobat, r.persobat)
 
 func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
-  ref r
-  r = arg0.persobat
+# Checa a condição de batalha
+  se a_batalha == 1 && !arg0.contr.atkenv
+    ret arg0.contr.msg("Você não está lutando com ninguém.")
+  senao a_batalha == 2 && arg0.contr.atkenv
+    ret arg0.contr.msg("Você está lutando pela sua vida.")
 # Checa condição do alvo
-  se !a_cond
-    ret !arg1.persobat.pvida, arg0.msg("Alvo está desmaiado")
+  senao !a_cond
+    ret !arg1.pvida, arg0.contr.msg("Alvo está desmaiado.")
   senao a_cond == 1
-    ret arg1.persobat.pvida, arg0.msg("Alvo não está desmaiado")
+    ret arg1.pvida, arg0.contr.msg("Alvo não está desmaiado.")
   fimse
 # Obtém a arma usada
   arma1 = nulo
-  tipoarma && (arma1 = r.iempu.obj)
+  tipoarma && (arma1 = arg0.iempu.obj)
 # Técnicas não agressivas
   listaobj l
   se tipoalvo >= 4
-    se tipoalvo == 5 && r != arg1.persobat
+    se tipoalvo == 5 && arg0 != arg1
       refvar msg = txt(nomevar, 0, 1) == "m" ? "magia" : "habilidade"
-      msg("Essa " + msg + " pode ser usada nos outros.")
+      arg0.contr.msg("Essa " + msg + " não pode ser usada nos outros.")
       ret
     fimse
+    epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
+      ret l.objini.cmd_alvocontr(arg0, arg1, este), nulo
+    efim
     epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
       ret l.objini.cmd_alvo(arg0, arg1, este), nulo
     efim
@@ -779,7 +865,7 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
     msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
     se rand(100) >= precisao # Errou o alvo
       $mens.p(arg0, arg1)
-      $mens.mtodos1(arg0 == arg1 ? msgerrou1 : msgerrou2)
+      $mens.mtodos1(arg0.contr == arg1.contr ? msgerrou1 : msgerrou2)
       ret
     fimse
     mudavida = 0
@@ -787,12 +873,16 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
     $mens.p(arg0, arg1)
     refvar lin = mudavida ? ", " + mudavida : ""
     $mens.mtodos1(arg0 == arg1 ? msgacertou1 + lin : msgacertou2 + lin)
-    r.acertapos(1)
-    arg1.persobat.acertapos(1)
+    arg0.contr != arg1.contr && arg0.acertapos(1)
+    arg1.acertapos(1)
     ret
   fimse
 # Checa o alvo e dispara eventos
-  ret tipoalvo == 1 && arg0 == arg1, arg0.msg("Em você mesmo?")
+  ret tipoalvo == 1 && arg0 == arg1, arg0.contr.msg("Em você mesmo?")
+  ret cmd_atacar(arg0, arg1, este), nulo
+  epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
+    ret l.objini.cmd_atacarcontr(arg0, arg1, este), nulo
+  efim
   epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
     ret l.objini.cmd_atacar(arg0, arg1, este), nulo
   efim
@@ -801,34 +891,47 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
   msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
 # Obtém a força do ataque e os alvos secundários
   real2 atk
-  tipoalvo >= 2 && l.addfim(arg0.dono.dentro1) + l.remove(arg0, arg1)
+  tipoalvo >= 2 && l.addfim(arg0.contr.dono.dentro2) + l.remove(arg0.contr, arg1.contr)
   atk = tipoalvo == 2 ? ataque / l.total : ataque
   se arma1
     real2 carga
     carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
     se carga > 1.2 # Muito pesado
       atk /= carga < 1.4 ? 10 : 100
-      arg0.msg("É muito peso!")
+      arg0.contr.msg("É muito peso!")
     senao carga > 1 # Um pouco pesado
       atk *= 5 - 4 * carga # se carga=1,atk*=1  se carga=1.2,atk*=0.2
-      arg0.msg("Bastante peso!")
+      arg0.contr.msg("Bastante peso!")
     fimse
   fimse
 # Ataca o alvo escolhido
+  listaobj e
   velgolpe(arg0, arg1) # Tempo do golpe
-  execgolpe(arg0, arg1, atk, 2 + arg0.persobat.var.[nomevar]) # Ataca
-  !result && efeitohab(arg0, r)
-  result != 3 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe(arg0 == arg1))
-  !result && arg1.persobat.acertapos(1)
+  execgolpe(arg0, arg1, atk, 2 + arg0.var.[nomevar]) # Ataca
+  se result != 3
+    !result && efeitohab(arg0, arg1)
+    $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe(arg0 == arg1))
+    !result && arg1.persobat.acertapos(1)
+    cmd_atacou(arg0, arg1, este)
+    epara e.addfim(arg0.evento, arg1.evento), e, e.ini.remove
+      e.objini.cmd_atacou(arg0, arg1, este)
+    efim
+  fimse
 # Ataca os alvos secundários
+  ref r
   enquanto l
     r = l.objini, l.ini.remove
     continuar r.jog || r.perso < 2 # Não prossegue se for jogador
-    velgolpe(arg0, r) # Tempo do golpe
-    execgolpe(arg0, r, atk, 2 + arg0.persobat.var.[nomevar]) # Ataca
+    velgolpe(arg0, r = r.contr) # Tempo do golpe
+    execgolpe(arg0, r, atk, 2 + arg0.var.[nomevar]) # Ataca
+    continuar result == 3
     !result && efeitohab(arg0, r)
-    result != 3 && $mens.p(arg0, r) + r.msginv(mensgolpe)
+    $mens.p(arg0, r) + r.contr.msginv(mensgolpe)
     !result && r.acertapos(1)
+    cmd_atacou(arg0, r, este)
+    epara e.addfim(arg0.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_atacou(arg0, r, este)
+    efim
   efim
   arg0.persobat.acertapos(1)
 
@@ -836,17 +939,19 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # vel = velocidade do golpe
-  real2 tempo
 # Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
-# Fórmula 1
-# tempo = arg0.persobat.pveloc + arg1.persobat.pveloc # Tempo total
-# tempo = tempo * 1500 / (arg0.persobat.pveloc * veloc + 1)
-# Fórmula 2
-  tempo = arg1.persobat.pveloc * 3000 / (arg0.persobat.pveloc * veloc + 1)
-# Acerta o tempo
+  real2 tempo
+  tempo = arg1.pveloc * 3000 / (arg0.pveloc * veloc + 1)
   tempo < 8 && (tempo = 8)
   tempo > 70 && (tempo = 70)
-  arg0.p_espera < tempo && (arg0.p_espera = tempo)
+  arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
+  ret
+# Outra fórmula:
+  tempo = arg0.pveloc + arg1.pveloc # Tempo total
+  tempo = tempo * 1500 / (arg0.pveloc * veloc + 1)
+  tempo < 8 && (tempo = 8)
+  tempo > 70 && (tempo = 70)
+  arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
 
 func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # arg0 = personagem que está atacando
@@ -855,21 +960,20 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # arg3 = o quanto sabe do golpe, de 0 a 10
 # tipoatk = tipo de ataque, arma1 = arma usada
   real2 dano
-  ref r # Personagem que ataca
-  ref s # Personagem que recebe o ataque
 # Checa se pode realmente atacar
-  r = arg0.persobat, s = arg1.persobat, result = 3, mudavida = 0
+  result = 3, mudavida = 0
   listaobj l
-  epara l.addfim(r.evento), l, l.ini.remove
+  ret cmd_atkenv(arg0, arg1, este), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_atkenv(arg0, arg1, este), nulo
   efim
-  epara l.addfim(s.evento), l, l.ini.remove
+  epara l.addfim(arg1.evento), l, l.ini.remove
     ret l.objini.cmd_atkrec(arg0, arg1, este), nulo
   efim
 # Indica que atacou, recebe experiência se vencer
   arg0.batalhaini(arg1)
-  se r.podepegar && arg1.var.o_agenda # Coloca na agenda
-    refvar v1 = arg1.var.a_[r.nome]
+  se arg0.podepegar && arg1.contr.var.o_agenda # Coloca na agenda
+    refvar v1 = arg1.contr.var.a_[arg0.nome]
     !v1 && (v1 = 1)
   fimse
 # Checa se acertou o alvo
@@ -880,18 +984,18 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     senao dano == 1 # Errou o alvo automaticamente
       ret
     senao # Checa se acertou
-      dano += precisao * r.precisao * (arma1 ? arma1.armaprecisao : 100) / 10000
-      dano -= s.evasao
-      !s.visivel(r) && (dano -= 5) # Invisível é mais difícil de acertar
+      dano += precisao * arg0.precisao * (arma1 ? arma1.armaprecisao : 100) / 10000
+      dano -= arg1.evasao
+      !arg1.visivel(arg0) && (dano -= 5) # Invisível é mais difícil de acertar
       ret dano <= 0, nulo
     fimse
   fimse
 # Checa bônus ao combinar o tipo de ataque com o tipo de defesa
-  dano = r.atktipo.[2 + tipoatk] * s.deftipo.[2 + tipoatk]
+  dano = arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
   se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-    dano *= r.atktipo.1 * s.deftipo.1
+    dano *= arg0.atktipo.1 * arg1.deftipo.1
   senao
-    dano *= r.atktipo.0 * s.deftipo.0
+    dano *= arg0.atktipo.0 * arg1.deftipo.0
   fimse
   se dano == 0 # Imune
     result = 1
@@ -901,32 +1005,32 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   ret !arg2, nulo
 # Checa bônus do personagem
   se !tipobonus
-  senao r.tipo1 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo1 + "\n") >= 0
+  senao arg0.tipo1 && txtproc("\n" + tipobonus + "\n", "\n" + arg0.tipo1 + "\n") >= 0
     dano *= 1.5
-  senao r.tipo2 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo2 + "\n") >= 0
+  senao arg0.tipo2 && txtproc("\n" + tipobonus + "\n", "\n" + arg0.tipo2 + "\n") >= 0
     dano *= 1.5
-  senao r.tipo3 && txtproc("\n" + tipobonus + "\n", "\n" + r.tipo3 + "\n") >= 0
+  senao arg0.tipo3 && txtproc("\n" + tipobonus + "\n", "\n" + arg0.tipo3 + "\n") >= 0
     dano *= 1.5
   fimse
 # Calcula dano com arma
   se arma1
     dano *= rand(arma1.armamin, arma1.armamax)
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= r.atkesp * arg2 / (s.defesp * 500)
+      dano *= arg0.atkesp * arg2 / (arg1.defesp * 500)
     senao
-      dano *= r.atknorm * arg2 / (s.defnorm * 500)
+      dano *= arg0.atknorm * arg2 / (arg1.defnorm * 500)
     fimse
 # Calcula dano sem arma; valor do rand é por volta de 500
   senao
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= r.atkesp * r.atkesp * arg2 / (s.defesp * rand(450, 550))
+      dano *= arg0.atkesp * arg0.atkesp * arg2 / (arg1.defesp * rand(450, 550))
     senao
-      dano *= r.atknorm * r.atknorm * arg2 / (s.defnorm * rand(450, 550))
+      dano *= arg0.atknorm * arg0.atknorm * arg2 / (arg1.defnorm * rand(450, 550))
     fimse
-    dano *= 1 + (r.pnivel - s.pnivel) / (r.pnivel + s.pnivel + 10)
+    dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
   fimse
 # Modificadores de posição
-  casovar s.posicao
+  casovar arg1.posicao
   casose "0" # Morto
   casose "1" # Mortalmente ferido
   casose "2" # Incapacitado
@@ -947,7 +1051,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   casofim
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
   mudavida = dano < 1 ? -1 : -dano
-  s.pvida += mudavida
+  arg1.pvida += mudavida
 
 func mensgolpe # Retorna mensagem do golpe de acordo com result e mudavida
 # Se arg0 for verdadeiro, está atacando o próprio personagem
@@ -975,32 +1079,50 @@ const extra = "Ataque automático"
 uint8 tipoatk # Tipo de ataque
 
 func exechab # arg0 ataca arg1
+  refvar p = arg0.persobat
+  refvar a = arg1.persobat
   uint8 aulas # O quanto sabe do golpe, de 0 a 10
-  arma1 = ref(arg0.persobat.iempu.obj)
+  arma1 = ref(p.iempu.obj)
   arma1.armamanual && (arma1 = nulo)
   tipoatk = arma1.armatipoatk
-  aulas = 2 + arg0.persobat.var.[txtsublin(config:arma_txt, arma1.armatipo, 1)]
+  aulas = 2 + p.var.[txtsublin(config:arma_txt, arma1.armatipo, 1)]
 # Acerta mensagens
   msgacertou2 = txtsublin(config:arma_acertou, arma1.armatipo, 1)
   msgerrou2 = txtsublin(config:arma_errou, arma1.armatipo, 1)
   msgnulo2 = txtsublin(config:arma_nulo, arma1.armatipo, 1)
-  !msgacertou2 && (msgacertou2 = "$R dá um golpe em $c")
-  !msgerrou2 && (msgerrou2 = "$R tenta dar um golpe em $c mas erra")
-  !msgnulo2 && (msgnulo2 = "$R dá um golpe em $c mas nada acontece")
+  !msgacertou2 && (msgacertou2 = "$P dá um golpe em $a")
+  !msgerrou2 && (msgerrou2 = "$P tenta dar um golpe em $a mas erra")
+  !msgnulo2 && (msgnulo2 = "$P dá um golpe em $a mas nada acontece")
 # Primeiro ataque
-  execgolpe(arg0, arg1, ataque, aulas) # Ataca
-  result != 3 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
-  arg1.persobat.acertapos(1), arg0.persobat.acertapos(1)
+  listaobj e
+  execgolpe(p, a, ataque, aulas) # Ataca
+  se result != 3
+    $mens.p(p, a) + $mens.mtodos1(mensgolpe)
+    epara e.addfim(p.evento, a.evento), e, e.ini.remove
+      e.objini.cmd_atacou(p, a, este)
+    efim
+  fimse
+  a.acertapos(1), p.acertapos(1)
 # Segundo ataque
   ret !arg0.atkenv || !arg0.persobat.var.h_segundo_ataque, nulo
-  execgolpe(arg0, arg1, ataque, aulas * (2 + arg0.persobat.var.h_segundo_ataque) / 10)
-  result != 3 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
-  arg1.persobat.acertapos(1), arg0.persobat.acertapos(1)
+  execgolpe(p, a, ataque, aulas * (2 + p.var.h_segundo_ataque) / 10)
+  se result != 3
+    $mens.p(p, a) + $mens.mtodos1(mensgolpe)
+    epara e.addfim(p.evento, a.evento), e, e.ini.remove
+      e.objini.cmd_atacou(p, a, este)
+    efim
+  fimse
+  a.acertapos(1), p.acertapos(1)
 # Terceiro ataque
   ret !arg0.atkenv || !arg0.persobat.var.h_terceiro_ataque, nulo
-  execgolpe(arg0, arg1, ataque, aulas * (2 + arg0.persobat.var.h_terceiro_ataque) / 10)
-  result != 3 && $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe)
-  arg1.persobat.acertapos(1), arg0.persobat.acertapos(1)
+  execgolpe(p, a, ataque, aulas * (2 + p.var.h_terceiro_ataque) / 10)
+  se result != 3
+    $mens.p(p, a) + $mens.mtodos1(mensgolpe)
+    epara e.addfim(p.evento, a.evento), e, e.ini.remove
+      e.objini.cmd_atacou(p, a, este)
+    efim
+  fimse
+  a.acertapos(1), p.acertapos(1)
 
 
 classe cmd_resgatar
@@ -1028,8 +1150,9 @@ func escr
     ret r.atkenv.objlista == arg0, arg0.msg(i.obj.descnome + " está lutando com você.")
 # Checa se personagens permitem resgate
     epara i = r.atkrec.ini, i, i.depois
-      ret i.obj.p_naoresg, arg0.msg("Não é possível resgatar " + r.descnome + " de " + i.obj.desc\
-nome + ".")
+      continuar !i.obj.p_naoresg
+      arg0.msg("Não é possível resgatar " + r.descnome + " de " + i.obj.descnome + ".")
+      ret
     efim
 # Eventos
     listaobj l

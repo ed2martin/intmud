@@ -676,80 +676,12 @@ func t_resetlin # Obtém um texto a partir de uma linha do reset
 
 
 classe reset
-# Permite executar instruções do reset e criar funções que realizam o reset
+# Permite criar funções que realizam o reset
 #
 prog p
-debug dbg
-uint8 dbgexec
-ref perso # Último personagem criado
-ref ultimo # Último personagem ou animal criado
-ref r
-int8 x
-textotxt t # Texto do reset
-txt100 l.8 # Linha do texto
 
 func iniclasse
   criar(arg0)
-
-func sala # Executa comandos de reset de uma sala
-# arg0 = objeto da sala, arg1 = texto do reset
-# Nota: é mais eficiente criar o reset com a função atualiza
-  dbgexec = dbg.exec, perso = ultimo = nulo, t.limpar, t.addfim(arg1)
-  enquanto t.linhas
-    l.separar(txtremove(t.remove, "EMD"), " ") # Pega próxima linha e separa
-    casovar txtmai(l.0)
-    casose "P" # <personagem> <nível min> <nível max> <limite> <variáveis>
-      perso = ultimo = nulo
-      sair int(l.1) < 100 && rand(100) < l.1 || int(l.5) <= inttotal($p_[l.2])
-      se l.3 != l.4
-        ultimo = perso = criar("p_" + l.2, arg0, rand(l.3, l.4), l.6)
-      senao
-        ultimo = perso = criar("p_" + l.2, arg0, l.3, l.6)
-      fimse
-      sair
-    casose "A" # <animal> <nível min> <nível max> <variáveis>
-      ultimo = nulo
-      sair perso.tipo != 3 || int(l.1) < 100 && rand(100) < l.1
-      x = perso.animalnum # Obtém o número do próximo animal
-      sair x == 0
-      se l.3 != l.4
-        ultimo = criar("p_" + l.2, perso, rand(l.3, l.4), l.6)
-      senao
-        ultimo = criar("p_" + l.2, perso, l.3, l.6)
-      fimse
-      perso.animal.[x - 1] = ultimo
-      sair
-    casose "I" # Dar item: <item> <nível> <variáveis>
-      sair !ultimo || int(l.1) < 100 && rand(100) < l.1
-      criar("i_" + l.2, ultimo, l.3, l.4)
-      sair
-    casose "E" # Equipar: <item> <nível> <lugar> <variáveis>
-      sair !ultimo || int(l.1) < 100 && rand(100) < l.1
-      r = criar("i_" + l.2, ultimo, l.3, l.5)
-      r.vestir(l.4), u.recalc = 1
-      sair
-    casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
-      sair int(l.1) < 100 && rand(100) < l.1
-      r = l.4 == "s" ? arg0 : arg0.dentro1.objini("i_" + l.3)
-      sair !r || r.dentro1.objini("i_" + l.2)
-      criar("i_" + l.2, r, l.3, l.5)
-      sair
-    casose "R" # Remover da sala: <item>
-      sair int(l.1) < 100 && rand(100) < l.1
-      r = arg0.dentro1.objini("i_" + l.2)
-      r.apagar
-      sair
-    casose "D" # Porta em uma direção
-      sair int(l.1) < 100 && rand(100) < l.1
-      arg0.mudaporta(l.2, l.3) # l.2=direção, l.3=novo valor
-      sair
-    casose "F" # Fim
-      sair !ultimo || int(l.1) < 100 && rand(100) < l.1
-      t.limpar
-      sair
-    casofim
-  efim
-  dbg.exec = dbgexec
 
 func atualiza # Atualiza reset de sala
 # arg0 = nome da sala

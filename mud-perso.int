@@ -3,8 +3,8 @@ herda comum_persoitem
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
 comum listaobj objsolto # Lista de personagens soltos (não pertencem a outros)
-sav int1 sexo # Sexo: 0=feminino, 1=masculino
-const sexoini = 2 # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
+sav int1 psexo # Sexo do personagem: 0=feminino, 1=masculino
+const sexoini = msexo # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 const nome = "sem nome"
 const ident = nome
 const descnome = nome
@@ -26,11 +26,11 @@ listaitem iseguir # Quem o personagem está segundo
 listaobj lseguir # Quem está seguindo o personagem
 sav listaitem iempu # Arma que que está empunhando
 const p_morreu1 = "$P morreu."
-const p_morreu2 = "$A de $p desmaiou."
+const p_morreu2 = "$P desmaiou."
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
-  sexo = sexoini == 2 ? rand(2) : sexoini
+  psexo = sexoini == 2 ? rand(2) : sexoini
   se arg2 || inivar
     textotxt t
     epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
@@ -86,7 +86,6 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     ret
   fimse
 # Eventos cmd_chegou
-# (sock || jog) && $reset.sala(dono, dono.s_reset) + dono.cmd_salaperso(este)
   (sock || jog) && dono.s_reset1 + dono.cmd_salaperso(este)
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
@@ -185,7 +184,7 @@ func p_espera_exec # Pega o próximo comando
 func erropos # Retorna uma mensagem conforme a posição
   casovar posicao
   casose "0"
-    ret "\c9Você está mort" + misc:sletra[sexo] + "!!!\b"
+    ret "\c9Você está mort" + (msexo ? "o" : "a") + "!!!\b"
   casose "1" # Mortalmente ferido
   casose "2" # Incapacitado
     ret "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
@@ -194,7 +193,7 @@ func erropos # Retorna uma mensagem conforme a posição
   casose "4" # Dormindo
     ret "\c9Nos seus sonhos...\b"
   casose "5" # Descansando
-    ret "\c9Você se sente relaxad" + misc:sletra[sexo] + " demais para fazer isso.\b"
+    ret "\c9Você se sente relaxad" + (msexo ? "o" : "a") + " demais para fazer isso.\b"
   casose "6" # Sentado
     ret "\c9Talvez você deva ficar em pé primeiro.\b"
   casose "7" # Lutando
@@ -209,28 +208,25 @@ func descpos
   casose "0"
     ret txtcopiamai(descnome, "A") + " jás aqui."
   casose "1"
-    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + misc:sletra[sexo] + "."
+    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + (msexo ? "o." : "a.")
   casose "2"
-    ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + misc:sletra[sexo] + "."
+    ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + (msexo ? "o." : "a.")
   casose "3"
-    ret txtcopiamai(descnome, "A") + " está aqui, muito frac" + misc:sletra[sexo] + "."
+    ret txtcopiamai(descnome, "A") + " está aqui, muito frac" + (msexo ? "o." : "a.")
   casose "4"
     ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui."
-    ref r
-    r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " dorme em " + misc:sum[r.sexo] + " " + r.descnome + "."
+    refvar r = poslugar.objlista
+    ret txtcopiamai(descnome, "A") + " dorme em um" + (msexo ? " " : "a ") + r.descnome + "."
   casose "5"
     ret !poslugar, txtcopiamai(descnome, "A") + " descansa aqui."
-    ref r
-    r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " descansa em " + misc:sum[r.sexo] + " " + r.descnome + \
-"."
+    refvar r = poslugar.objlista
+    refvar lin = txtcopiamai(descnome, "A") + " descansa em "
+    ret lin + (r.msexo ? "um " : "uma ") + r.descnome + "."
   casose "6"
-    ret !poslugar, txtcopiamai(descnome, "A") + " está sentad" + misc:sletra[sexo] + "aqui."
-    ref r
-    r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " está sentad" + misc:sletra[sexo] + " em " + misc:sum[r.sex\
-o] + " " + r.descnome + "."
+    refvar lin = txtcopiamai(descnome, "A") + " está sentad" + (msexo ? "o" : "a")
+    ret !poslugar, lin + " aqui."
+    refvar r = poslugar.objlista
+    ret lin + (r.msexo ? " em um " : " em uma ") + r.descnome + "."
   casose "7"
     ret txtcopiamai(descnome, "A") + " está lutando."
   casose "8"
@@ -254,7 +250,7 @@ func morreu # Procedimentos quando morre
   efim
 # Morreu
   mortes += 1
-  p_morreu1 && $mens.p(este, dono) + $mens.mtodos1(p_morreu1)
+  p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
   apagar(este)
   ref r
   r = sock, r.mudaperso(nulo), r.reinicia
@@ -306,6 +302,7 @@ const persoesc = este # Personagem escolhido
 listaobj atkrec # Quem atacou esse personagem; dá experiência se perder
 listaitem atkenv # Item de atkrec; atkenv.objlista = alvo do personagem
 listaobj atkdiv # Para dividir experiência entre personagens que atacaram
+listaobj atkbat # Para apagar objetos ao iniciar ou terminar uma batalha
 inttempo atktempo # Tempo para completar um turno da batalha
 uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_proc # Para processar comportamento do personagem
@@ -333,7 +330,9 @@ func acertapos # Acerta posição
     poslugar.remove, posicao = 3 # fraco
     ret
   casose
-    se atkenv
+    se bitver & 1024
+      posicao = 4
+    senao atkenv
       poslugar.remove, posicao = 7 # lutando
     senao posicao < 4 || posicao == 7
       poslugar.remove, posicao = pospadr # posição padrão
@@ -371,9 +370,16 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   epara l = evento.ini, l, l.depois
     l.obj.cmd_recalc3(este)
   efim
+# Acerta atributo dormindo de bitver
+  bitver & 2048 && (bitver = bitver & ~1024)
+  bitver & 1024 && posicao > 4 && (posicao = 4)
 
-func batalhaini # Indica que atacou outro personagem (está batalhando)
+const batalhaini = contr.bat_ini_int(arg0.contr, este, arg0)
+# batalhaini - Indica que atacou outro personagem (está batalhando)
 # arg0 = alvo do personagem
+
+func bat_ini_int # Chamado internamente por batalhaini
+# Personagem 'arg1' de 'este' quer atacar personagem 'arg2' de 'arg0'
   ret este == arg0, nulo # Não inicia batalha contra o próprio personagem
   se atkenv.objlista != arg0 # Se o alvo do ataque mudou...
     atkenv.remove
@@ -382,11 +388,11 @@ func batalhaini # Indica que atacou outro personagem (está batalhando)
     atktempo = config:atktempo, atkturno = 0
     posicao >= 4 && (posicao = 7)
   fimse
-  atkdiv.addfim1(persobat) # Adiciona personagem para ganhar experiência
+  atkdiv.addfim1(arg1) # Adiciona personagem para ganhar experiência
   se !arg0.atkenv # Se o alvo não está batalhando...
     arg0.atkenv = atkrec.addfim(arg0)
     arg0.atkdiv.limpar
-    arg0.atkdiv.addfim(arg0.persobat)
+    arg0.atkdiv.addfim(arg2)
     arg0.atktempo = config:atktempo, arg0.atkturno = 0
     arg0.posicao >= 4 && (arg0.posicao = 7)
   fimse
@@ -397,32 +403,40 @@ func batalhaini # Indica que atacou outro personagem (está batalhando)
   !p_proc && (p_proc = 1)
   arg0.p_proc = 1 # Para gerar evento de PNJs
   listaitem i
-  epara i = dentro2.ini, i, i.obj.fimbat + i.depois
+  epara i = atkbat.ini, i, i.depois
+    i.obj.e_condicao == 3 && apagar(i.obj)
   efim
 
-func batalhafim # Encerra a batalha
+const batalhafim = contr.bat_fim_int(arg0)
+# batalhafim - Encerra a batalha
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
+
+func bat_fim_int # Chamado internamente por batalhafim
   atkenv.remove, atktempo = 0, acertapos(arg0)
+  listaitem i
+  epara i = atkbat.ini, i, i.depois
+    i.obj.e_condicao == 2 && apagar(i.obj)
+  efim
   ref r
   enquanto atkrec.ini
     r = atkrec.objini, atkrec.ini.remove, r.atktempo = 0, r.acertapos(arg0)
-  efim
-  listaitem i
-  epara i = dentro2.ini, i, i.obj.fimbat + i.depois
+    epara i = r.atkbat.ini, i, i.depois
+      i.obj.e_condicao == 2 && apagar(i.obj)
+    efim
   efim
 
 func batalhaexp # Dá experiência a quem estiver atacando o personagem
-# arg0 = fator do ganho de experiência; se 0 retira toda experiência
+# arg0 = fator do ganho de experiência; se menor que 0 retira toda experiência
   listaitem i
   listaobj l
 # Preenche lista com os personagens
-  epara i = dono.perso ? dono.atkrec.ini : atkrec.ini, i, i.depois
+  epara i = contr.atkrec.ini, i, i.depois
     l.addfim(i.obj.atkdiv)
   efim
   epara i = l.ini, i, i.obj.pvida ? i.depois : i.removedepois
   efim
 # Retira experiência
-  se !arg0
+  se arg0 < 0
     epara i = l.ini, i, i.depois
       i.obj.expatual = 0
     efim
@@ -479,7 +493,7 @@ func atktempo_exec # Encerra a batalha depois de um tempo
     senao atkturno == 2
       $mens.mvis1("$P procura uma brecha.")
     senao
-      $mens.mvis1("$P encara $A.")
+      $mens.mvis1("$P encara $a.")
     fimse
   senao # Tempo suficiente: encerra a luta
     atkenv.objlista.msg("Batalha encerrada.")
@@ -510,20 +524,20 @@ func morreu # Procedimentos quando morre
     pmana = pmanamax / 2
     pmove = pmovemax / 2
     p_restaura = rand(100, 130)
-    batalhaexp(0), batalhafim # Retira toda experiência de quem atacou
+    batalhaexp(-1), batalhafim # Retira toda experiência de quem atacou
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     mudadono(config:salafim)
     salvar # Salva o jogo
     !sock && apagar(este) # Sai do jogo se ninguém está controlando o personagem
 # Animal do jogador: não dá experiência
   senao dono.jog
-    p_morreu2 && $mens.p(dono, este) + $mens.mtodos2(p_morreu2)
-    pvida = 0, batalhafim
+    pvida = 0
+    p_morreu2 && $mens.p(este) + $mens.mtodos2(p_morreu2)
     dono.escolhebat # Atualiza persobat
 # Outro personagem: dá experiência
   senao dono.perso
-    pvida = 0, batalhaexp(1.5), batalhafim
-    p_morreu2 && $mens.p(dono, este) + $mens.mtodos2(p_morreu2)
+    pvida = 0, batalhaexp(1.5)
+    p_morreu2 && $mens.p(este) + $mens.mtodos2(p_morreu2)
     dono.escolhebat # Atualiza persobat
   senao
     pvida = 0, batalhaexp(1), batalhafim
@@ -533,6 +547,11 @@ func morreu # Procedimentos quando morre
     r = sock, r.mudaperso(nulo), r.reinicia
     p_corpo && criar("comum_corpo", este, p_corpo == 2)
   fimse
+# Apaga efeitos
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    i.obj.e_condicao && apagar(i.obj)
+  efim
 # Gera eventos
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_morreu(este)
@@ -609,7 +628,7 @@ func p_proc_exec # Processar comportamento do personagem
     t1 = escolheatk
     obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
     se obj && persobat.pvida && dono.s_luta
-      ret obj.checahab(este) && obj.exechab(este, alvo)
+      ret obj.checahab(persobat) && obj.exechab(persobat, alvo.persobat)
     fimse
   fimse
 # Acerta condição do personagem

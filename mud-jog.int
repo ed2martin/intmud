@@ -445,7 +445,7 @@ func p_entrajogo # Entrar no jogo: cria personagem
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
   perso.jogconfig.bits = jogconfig.bits
-  perso.sexo = var.j_sexo
+  perso.psexo = var.j_sexo
   perso.senha = var.j_senha
   perso.tipo1 = var.j_tipo1
   perso.tipo2 = var.j_tipo2
@@ -595,6 +595,7 @@ const ident = nome
 indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
+const msexo = psexo # Sexo do personagem
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
 inttempo vazio1 # Tempo para mensagem que vai sair do MUD
 inttempo vazio2 # Tempo sem comunicação para desconectar do MUD

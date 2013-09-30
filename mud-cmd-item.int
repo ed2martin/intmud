@@ -21,7 +21,7 @@ func escr
     senao !r.luztempo
       ret arg0.msg(txtcopiamai(r.descnome, "A") + " não acende mais.")
     senao r.luztempo > 0
-      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está aces" + (r.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está aces" + (r.msexo ? "o." : "a."))
     senao r.luzitem == 6 # Se requer fogo para acender
       l.limpar
       epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
@@ -67,7 +67,7 @@ func escr
     se !r.luzitem || r.luzitem == 3
       ret arg0.msg("Você não consegue apagar " + r.descnome + ".")
     senao !r.luztempo || r.luztempo < 0
-      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está apagad" + (r.sexo ? "o." : "a."))
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está apagad" + (r.msexo ? "o." : "a."))
     fimse
 # Eventos
     l.limpar
@@ -118,7 +118,7 @@ func escr
     senao !sala.i_aberto
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
     senao sala.i_aberto > 2
-      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.sexo ? "o." : \
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
 "a."))
     fimse
     mens = " de $a."
@@ -262,7 +262,7 @@ func escr
     senao !sala.i_aberto
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
     senao sala.i_aberto > 2
-      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.sexo ? "o." : \
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
 "a."))
     fimse
     mens = " em $a"
@@ -912,7 +912,7 @@ func escr
     arg0.persoesc = r
     arg0.escolhebat # Atualiza persobat
     $mens.p(arg0, r)
-    $mens.mvis1("$P escolhe $A.")
+    $mens.mvis1("$P escolhe $b.")
 
 
 classe cmd_0

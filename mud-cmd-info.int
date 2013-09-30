@@ -243,16 +243,17 @@ Mostra os efeitos que estão afetando o seu personagem."
 const posic = 0
 
 func escr
-  listaitem item
+  listaitem i
   textotxt t
-  epara item = arg0.persoesc.dentro2.ini, item, item.depois
-    continuar !item.obj.e_nome
-    t.addfim(item.obj.e_nome + (item.obj.t_duracao ? " (" + int(item.obj.t_duracao / 10) + \
+  epara i = arg0.persoesc.dentro2.ini, i, i.depois
+    continuar !i.obj.e_nome
+    t.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
 ")"))
   efim
 # Envia mensagem
   refvar nome = arg0.persoesc == arg0 ? "você" : arg0.persoesc.nome
   se t.linhas
+    t.ordenalin("", "x")
     arg0.msg2("\b\c6Efeitos em " + nome + ":\b\n" + t.remove(1000))
   senao
     arg0.msg("\bNenhum efeito afetando " + nome + ".")
@@ -383,7 +384,7 @@ func escr
     se 1 & arg0.bitver
       arg0.msg("Está escuro...")
     senao
-      arg0.msg("Você está ceg" + $mens.sexoA[arg0.sexo] + ".")
+      arg0.msg("Você está ceg" + (arg0.msexo ? "o" : "a") + ".")
     fimse
     ret
   fimse
@@ -434,7 +435,7 @@ func escr
   r.tipo2 && h.addfim(txtcopiamai(r.tipo2, "A"))
   r.tipo3 && h.addfim(txtcopiamai(r.tipo3, "A"))
   h.linhas && t.addfim("Tipo/raça/classe: " + txttroca(h.remove(10), "\n", ", "))
-  t.addfim("Sexo:             " + (r.sexo ? "Masculino" : "Feminino"))
+  t.addfim("Sexo:             " + (r.psexo ? "Masculino" : "Feminino"))
 # Quem pegou
   se r != arg0
     t.addfim("Pego por:         " + r.var.z_dono + " (no nível " + r.var.z_pnivel + ")")

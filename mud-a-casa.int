@@ -34,7 +34,7 @@ classe i_casa001
 herda comum_item
 const nome = "escada"
 const descnome = "uma escada"
-const sexo = 0
+const msexo = 0
 const pesoobj = 10200
 const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
 const visivel = arg0.posicao < 7 || arg0.var.d_escada_
@@ -78,7 +78,7 @@ herda comum_item
 const nome = "bife"
 const descnome = "um bife"
 const descpos = "O que restou de um bife repousa aqui, imóvel."
-const sexo = 1
+const msexo = 1
 const pesoobj = 100
 const inivar = "e_apagar=50"
 
@@ -251,7 +251,7 @@ classe p_casa001
 herda comum_persobat
 const nome = "boneco de papel"
 const descnome = "um boneco de papel"
-const sexoini = 1
+const msexo = 1
 const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
 const p_agressivo = arg0.pnivel <= 4 ? 2 : 1 # Agressivo para jogadores até nível 4
@@ -265,7 +265,7 @@ classe p_casa002
 herda comum_persobat
 const nome = "boneco de papel"
 const descnome = "um boneco de papel"
-const sexoini = 1
+const msexo = 1
 const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
 ref alvo # Quem esse personagem deve atacar
@@ -291,7 +291,7 @@ classe p_casa003
 herda comum_persobat
 const nome = "boneco de papelão"
 const descnome = "um boneco de papelão"
-const sexoini = 1
+const msexo = 1
 const descpadr = "Um boneco de papelão está se mexendo."
 const descver = "Parece frágil, pois é feito de papelão."
 const eveste = 1 # Receber eventos do próprio objeto
@@ -325,7 +325,7 @@ classe p_casa004
 herda comum_persobat
 const nome = "menina"
 const descnome = "uma menina"
-const sexoini = 0
+const msexo = 0
 const descpadr = "Uma menina está sentada aqui, dobrando papéis."
 const descver = "Debaixo do braço carrega diversas artes feitas dobrando-se papéis."
 const eveste = 1 # Receber eventos do próprio objeto
@@ -365,7 +365,7 @@ func desaparece2
   dono.msg("Menina ficou transparente por um instante")
   batalhafim
 
-func cmd_atacar
+func cmd_atacar1
   se arg1 == este # Atacar a menina
     misc:tempo("desaparece", este) # Dispara funções 'desaparece'
     ret
@@ -385,7 +385,7 @@ classe p_casa005
 herda comum_perso
 const nome = "menino"
 const descnome = "um menino"
-const sexoini = 1
+const msexo = 1
 const nivel = 4
 const descpadr = "Um menino está aqui brincando."
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -405,7 +405,7 @@ classe p_casa006
 herda comum_perso
 const nome = "senhora"
 const descnome = "uma senhora"
-const sexoini = 0
+const msexo = 0
 const descpadr = "Uma senhora brinca com cartas, sentada em uma poltrona."
 const nivel = 8
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -429,7 +429,7 @@ classe p_casa007
 herda comum_persobat
 const nome = "bife"
 const descnome = "um bife"
-const sexoini = 1
+const msexo = 1
 const descpadr = "Um bife está flutuando aqui."
 const p_morreu1 = "Um bife caiu no chão, imóvel."
 const p_mover = 1
@@ -445,7 +445,7 @@ classe p_casa008
 herda comum_persobat
 const nome = "alface"
 const descnome = "um pé de alface"
-const sexoini = 1
+const msexo = 1
 const descpadr = "Um pé de alface está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
@@ -462,7 +462,7 @@ classe p_casa009
 herda comum_persobat
 const nome = "banana"
 const descnome = "uma banana"
-const sexoini = 0
+const msexo = 0
 const descpadr = "Uma banana está flutuando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
@@ -474,7 +474,7 @@ classe p_casa010
 herda comum_persobat
 const nome = "peão"
 const descnome = "um peão"
-const sexoini = 1
+const msexo = 1
 const descpadr = "Um peão está girando aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
@@ -486,7 +486,7 @@ classe p_casa011
 herda comum_persobat
 const nome = "boneca"
 const descnome = "uma boneca"
-const sexoini = 0
+const msexo = 0
 const descpadr = "Uma boneca está parada aqui."
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
@@ -500,7 +500,7 @@ const nome = "folha de alface"
 const ident = "folha alface"
 const descnome = "uma folha de alface"
 const ident = "folha alface"
-const sexoini = 0
+const msexo = 0
 const descpadr = "Uma folha de alface balança no ar."
 const pesoobj = 50
 const p_mover = 1
@@ -514,7 +514,7 @@ herda comum_persobat
 const nome = "cachorro"
 const descnome = "um cachorro"
 const descpadr = "Um cachorro faminto está à procura de comida."
-const sexoini = 1
+const msexo = 1
 const pesoobj = 40000
 const volobj = 100
 const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
@@ -603,7 +603,7 @@ func cmd_morreu
 classe p_casa015
 herda comum_perso
 const nome = "Ivone"
-const sexoini = 1
+const msexo = 1
 const nivel = 10
 const pospadr = 5 # Posição padrão: 5 Descansando
 const p_recebe = 1 # Se pode receber itens de outros personagens

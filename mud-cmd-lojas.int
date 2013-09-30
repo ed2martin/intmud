@@ -186,7 +186,7 @@ func escr1 # Consultar a lista de aulas
       continuar !(lin = t2.remove)
       aulas = txt2(lin)
       valor = lucro * $[misc:objvar(lin)].valor(arg0)
-      lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + misc:nomevar(lin)
+      lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + misc:nomevar(txt1(lin))
       lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
       aulas && (lin += "   (" + txtsublin(misc:aulas, aulas, 1) + ")")
       t.addfim(lin), linha += 1
@@ -216,7 +216,7 @@ func escr2 # Consultar uma aula
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
-      lin = misc:nomevar(lin), linha += 1
+      lin = misc:nomevar(txt1(lin)), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
       ref r
       r = $[misc:objvar(t2.ini.texto)]
@@ -280,7 +280,7 @@ func escr
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
-      lin = misc:nomevar(lin), linha += 1
+      lin = misc:nomevar(txt1(lin)), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
 # Obtém variáveis
       ref r
@@ -321,7 +321,7 @@ func escr
       epara t2.addfim(r.depende), t2.linhas, t2.remove
         continuar !t2.ini.texto
         continuar arg0.var.[t2.ini.texto]_ > arg0.var.[nomevar]_
-        lin = misc:nomevar(t2.ini.texto)
+        lin = misc:nomevar(txt1(t2.ini.texto))
         lin = "Você não conhece o suficiente sobre " + lin + "."
         ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
       efim

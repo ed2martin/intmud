@@ -9,12 +9,6 @@ comum ref obj
 comum txt100 sep1 # Objeto procurado
 comum txt100 sep2 # Objeto ou personagem destino
 #
-# Mensagem conforme o sexo
-const sletra0 = "a" # sletra[sexo] = "o" ou "a"
-const sletra1 = "o"
-const sum0 = "uma" # sum[sexo] = "um" ou "uma"
-const sum1 = "um"
-#
 # Hora MUD
 comum int1 luz # Se tem luz do dia
 comum uint8 dia # Dia MUD, de 0 (domingo) a 6 (sábado)
@@ -90,11 +84,11 @@ func nomevar # Retorna o nome da habilidade/magia/idioma a partir do nome da var
 # arg0 = nome da variável
   casovar txt(arg0, 0, 2)
   casose "i_"
-    ret "Idioma " + txte(txt(txt1(arg0), 2))
+    ret "Idioma " + txte(txt(arg0, 2))
   casose "m_"
-    ret "Magia " + txte(txt(txt1(arg0), 2))
+    ret "Magia " + txte(txt(arg0, 2))
   casose
-    ret txte(txt(txt1(arg0), 2))
+    ret txte(txt(arg0, 2))
   casofim
 
 func objvar # Retorna o nome da classe de uma habilidade/magia/idioma

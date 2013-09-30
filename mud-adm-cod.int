@@ -15,7 +15,8 @@ Os tópicos são:\n\
   \c2EFEITO\b   Efeitos\n\
   \c2SOCIAL\b   Comandos sociais\n\
   \c2COD\b      Edição do código fonte\n\
-  \c2OUTROS\b   Outros comandos"
+  \c2OUTROS\b   Outros comandos\n\
+  \c2MENS\b     Caracteres especiais em mensagens"
 # \c2INFO\b     Informações sobre o MUD"
 #
 const adm_outros = "\c3Outros comandos\b\n\
@@ -54,6 +55,20 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2ESCR\b <comando>\n\
   Digita um comando no teclado do usuário sendo monitorado."
 #
+const adm_mens = "\b\c3Caracteres especiais em mensagens\b\n\n\
+As seguintes sequências de caracteres têm um significado especial:\n\
+ \c2$$\b  Símbolo $\n\
+ \c2$P\b  Nome do personagem\n\
+ \c2$Q\b  Nome do personagem sem citar o dono\n\
+ \c2$A\b  Nome do alvo\n\
+ \c2$B\b  Nome do alvo sem citar o dono\n\
+ \c2$O\b  Nome do objeto\n\
+ \c2$S\b  Depende do personagem: o, a, um ou uma\n\
+ \c2$T\b  Depende do alvo: o, a, um ou uma\n\
+ \c2$U\b  Depende do objeto: o, a, um ou uma\n\n\
+Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra\n\
+do texto não é transformada em maiúscula."
+#
 const adm_cod = "\b\c3Comandos de edição do código\b\n\
 \c2lcl\b [nome]\n\
   Lista as classes existentes.\n\
@@ -85,7 +100,7 @@ func cmd_serv # Informações sobre o servidor
   txtmais.limpar
   txtmais.addfim("\b\c3Estado atual do MUD:\b")
   txtmais.addfim("Memória usada:  " + txtnum(d.mem, ".") + " bytes")
-  txtmais.addfim("Mémória máxima: " + txtnum(d.memmax, ".") + " bytes")
+  txtmais.addfim("Memória máxima: " + txtnum(d.memmax, ".") + " bytes")
   txtmais.addfim("Processador (stempo): " + d.stempo / 1000 + " seg.")
   txtmais.addfim("Processador (utempo): " + d.utempo / 1000 + " seg.")
   txtmostra

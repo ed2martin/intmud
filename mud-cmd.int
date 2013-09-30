@@ -20,6 +20,7 @@ const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 
 classe cmd_lançar
 herda cmd_lancar
+# Para aceitar o comando lançar escrito com c cedilha
 
 
 classe cmd_fim
@@ -29,7 +30,7 @@ const posic = 0
 
 func escr
   se arg0.atkenv && arg0.senha
-    arg0.msg("Você está ocupad" + misc:sletra[arg0.sexo] + " demais para isso.")
+    arg0.msg("Você está ocupad" + (arg0.msexo ? "o" : "a") + " demais para isso.")
   senao
     arg0.msg("Até mais. Aguardamos o seu retorno.")
     apagar(arg0)
@@ -278,7 +279,7 @@ func escr
 # O que o container possui
     senao r.i_aberto == 5
     senao int(r.i_aberto) >= 3
-      t.addfim(txtcopiamai(r.descnome, "A") + (r.sexo ? " está fechado." : " está fechada."))
+      t.addfim(txtcopiamai(r.descnome, "A") + (r.msexo ? " está fechado." : " está fechada."))
     senao r.i_aberto
       r.var.z_moedas && t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
       listaitem item
@@ -287,7 +288,7 @@ func escr
         t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
       efim
       se !t.linhas
-        t.addfim(r.sexo ? "Está vazio." : "Está vazia.")
+        t.addfim(r.msexo ? "Está vazio." : "Está vazia.")
       senao completo
         t.juntalin("(", "x)")
         t.addini("Dentro você vê:")
@@ -312,7 +313,7 @@ func escr
     se int(r.luztempo.abs) >= 25
       int32 tempo
       tempo = r.luztempo.abs / 50
-      r.luztempo > 0 && (t2 += r.sexo ? ", aceso" : ", acesa")
+      r.luztempo > 0 && (t2 += r.msexo ? ", aceso" : ", acesa")
       t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
 # t2 += r.luztempo
     fimse
@@ -327,15 +328,15 @@ func estado # Retorna texto que contém o estado atual do personagem
   ret !arg0.pvidamax, "perfeitamente saudável"
   casovar intdiv(arg0.pvida * 6 / arg0.pvidamax)
   casose "0"
-    ret arg0.pvida ? "à beira da morte" : "demaiad" + misc:sletra[arg0.sexo]
+    ret arg0.pvida ? "à beira da morte" : "demaiad" + (arg0.msexo ? "o" : "a")
   casose "1"
     ret "sangrando bastante"
   casose "2"
-    ret "muito machucad" + misc:sletra[arg0.sexo]
+    ret "muito machucad" + (arg0.msexo ? "o" : "a")
   casose "3"
-    ret "bastante machucad" + misc:sletra[arg0.sexo]
+    ret "bastante machucad" + (arg0.msexo ? "o" : "a")
   casose "4"
-    ret "um pouco machucad" + misc:sletra[arg0.sexo]
+    ret "um pouco machucad" + (arg0.msexo ? "o" : "a")
   casose "5"
     ret "possui algumas escoriações"
   casose
