@@ -1,0 +1,201 @@
+classe e_confusao
+herda comum_efeito
+const e_nome = "Confusão"
+const desc = "Ao atacar tem 25% de chances de se bater / trigger"
+const msgini = "$P ficou confus$s."
+const msgfim = "$P não está mais confus$s."
+const tempo1 = 3000
+const tempo2 = 20
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_atacar
+  se arg0.persobat == dono && rand(100) < 25
+    int32 danos
+    danos = -1 - dono.pvidamax * rand(70, 110) / 1000
+    $mens.p(arg0, arg1)
+    $mens.mtodos1("$P se confundiu e se bateu, " + danos)
+    dono.pvida += danos
+    dono.acertapos(1)
+    arg0.p_espera < 50 && (arg0.p_espera = 50)
+    ret 1
+
+
+classe e_congelado
+herda comum_efeito
+const e_nome = "Congelado"
+const desc = "Fica sem ação / trigger"
+const msgini = "$P congelou."
+const msgfim = "$P descongelou."
+const tempo1 = 1200
+const tempo2 = 10
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_escr
+  casovar arg2
+  casose "cmd_ver"
+  casose "cmd_olhar"
+  casose "cmd_inv"
+  casose "cmd_equip"
+  casose "cmd_hab"
+  casose "cmd_mag"
+    ret
+  casofim
+  se arg2.posic >= 5
+    arg0.msg("Você está congelad" + (arg0.msexo ? "o." : "a."))
+    ret 1
+
+func cmd_atacar
+  se arg0.persobat == dono
+    $mens.p(arg0)
+    arg0.msginv("$P está congelad$s.")
+    ret 1
+
+func cmd_atacou
+  se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
+    t_duracao > 50 && (t_duracao -= 40) # Menos tempo congelado
+    se arg2.tipoatk == 4 # Recebeu ataque do tipo fogo
+      apagar(este)
+
+
+classe e_endurecer
+herda comum_efeito
+const e_nome = "Endurecer"
+const desc = "Aumenta a defesa durante a batalha"
+const maximo = 4
+const e_condicao = 2 # Condição: 2 Durante a batalha e tem pontos de vida
+const msgnulo = "$P não sente diferença."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.0 *= 0.8 # Tipos Normais
+  deftipo.1 *= 0.8 # Tipos Especiais
+
+
+classe e_envenenado
+herda comum_efeito
+const e_nome = "Envenenado"
+const desc = "Perde vida de tempos em tempos"
+const tempo1 = 3000
+const tempo2 = 20
+const r_tempo = 80
+const r_vida = 10
+const msgini = "$P foi envenenad$s."
+const msgfim = "$P não está mais envenenad$s."
+const msgreduz = "$P sofre com o veneno."
+
+
+classe e_invisibilidade
+herda comum_efeito
+const e_nome = "Invisibilidade"
+const e_condicao = 3 # Condição: 3 Fora da batalha e tem pontos de vida
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv = 4 | bitinv
+
+
+classe e_meditando
+herda comum_efeito
+const e_nome = "Meditando"
+const desc = "Recupara mana / trigger"
+const r_tempo = 40
+const evperso = 1 # Eventos perso: Sim
+#
+# A partir daqui começa o código para a meditação funcionar
+const cmd_escr = encerrar
+const cmd_atacar = arg0.persobat == dono && encerrar
+const cmd_alvo = arg0.persobat == dono && encerrar
+const cmd_morreu = encerrar
+
+func encerrar
+  ret !t_reduzir, nulo
+  apagar(este)
+  t_reduzir = 0
+  ret dono.pvida <= 0, nulo
+  $mens.p(donomsg, dono) + $mens.mvis1("$P perdeu a concentração.")
+
+func t_reduzir_exec # Restaura mana
+  t_reduzir = r_tempo
+  refvar mana = dono.pmana
+  refvar max = dono.pmanamax
+  se mana >= max
+  senao (mana += 1 + max / 10) >= max
+    mana = max
+  senao
+    ret
+  fimse
+  apagar(este)
+  $mens.p(dono)
+  $mens.mvis1("$P conclui a meditação.")
+
+
+classe e_ocultar
+herda comum_efeito
+const e_nome = "Ocultar"
+const e_condicao = 3 # Condição: 3 Fora da batalha e tem pontos de vida
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv = 8 | bitinv
+
+const msgini = "$P ficou oculto."
+const msgfim = "$P não está mais oculto."
+
+
+classe e_paralisado
+herda comum_efeito
+const e_nome = "Paralisado"
+const desc = "Espera mais tempo entre ataques / trigger"
+const tempo1 = 3000
+const tempo2 = 20
+const msgini = "$P foi paralisad$s."
+const msgfim = "$P não está mais paralisad$s."
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_atacou
+  se arg0.persobat == dono && arg0.p_espera < 110
+    arg0.p_espera = 110
+
+
+classe e_queimando
+herda comum_efeito
+const e_nome = "Queimando"
+const desc = "Perde vida de tempos em tempos / trigger"
+const tempo1 = 600
+const tempo2 = 5
+const r_tempo = 80
+const r_vida = 10
+const msgini = "$P sofre queimaduras."
+const msgfim = "$P não está mais queimando."
+const msgreduz = "$P está queimando."
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_atacou
+  se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
+    se arg2.tipoatk == 6 # Recebeu ataque do tipo gelo
+      apagar(este)
+    senao arg2.tipoatk == 5 && rand(100) < 25 # Recebeu ataque do tipo água
+      apagar(este)
+
+
+classe e_sono_profundo
+herda comum_efeito
+const e_nome = "Sono profundo"
+const desc = "Não pode acordar / trigger"
+const msgini = "$P pegou no sono."
+const msgfim = "$P acordou."
+const tempo1 = 600
+const tempo2 = 5
+const evperso = 1 # Eventos perso: Sim
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 1024 | bitver
+
+func cmd_fim # Efeito foi apagado
+  se dono.posicao == 4 # Se estiver dormindo
+    dono.posicao = 8 # Acordou
+
+func cmd_atacou
+  se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
+    t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo

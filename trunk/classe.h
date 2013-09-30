@@ -15,7 +15,7 @@ Na inicialização do programa:
 -# Colocar os comandos em TClasse::Comandos das classes
 -# AcertaDeriv() para acertar herança de todas as classes
 -# AcertaVar() para cada classe
--# Executar a função ini de cada classe
+-# Executar a função iniclasse de cada classe
 .
 
 Para alterar uma classe:

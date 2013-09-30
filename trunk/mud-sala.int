@@ -18,7 +18,6 @@ func reset_exec # Executa o reset da área
   x = d.exec
   epara p.iniherdainv("b_" + txt(este, 2)), p.lin, p.depois
     $[p.texto].a_reset1, d.exec = x
-# $[p.texto].a_reset && $reset.sala($[p.texto], $[p.texto].a_reset)
   efim
 # Avisa jogadores
   txt100 mres
@@ -137,7 +136,7 @@ func descsala # Retorna descrição da sala
   senao 1 & arg0.bitver
     t.addfim("Está escuro...")
   senao
-    t.addfim("Você está ceg" + $mens.sexoA[arg0.sexo] + ".")
+    t.addfim("Você está ceg" + (arg0.msexo ? "o" : "a") + ".")
   fimse
   se arg1 & 4
     textotxt t2

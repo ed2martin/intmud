@@ -14,7 +14,7 @@ classe i_teste001
 herda comum_item
 const nome = "borracha"
 const descnome = "uma borracha"
-const sexo = 0
+const msexo = 0
 const descpos = "Uma borracha está jogada aqui."
 const vestir = 8
 
@@ -23,7 +23,7 @@ classe i_teste002
 herda comum_item
 const nome = "pedra"
 const descnome = "uma pedra"
-const sexo = 0
+const msexo = 0
 const descpos = "Aqui tem uma pedra."
 const pesoobj = 200
 
@@ -85,7 +85,7 @@ classe i_teste008
 herda comum_itemperso
 const nome = "lampião"
 const descnome = "um lampião"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
 const luzini = -3000
 const luztxt = "Um lampião apagou."
@@ -96,7 +96,7 @@ classe i_teste009
 herda comum_itemgrupo
 const nome = "palito de fósforo"
 const descnome = "um palito de fósforo"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const tipoitem = 256 # Tipo de produto: Fonte de luz
 
 
@@ -104,7 +104,7 @@ classe i_teste010
 herda comum_itemperso
 const nome = "fósforo aceso"
 const descnome = "um fósforo aceso"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const luzini = 80
 const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
 const luztxt = "Um palito de fósforo acaba de queimar."
@@ -163,7 +163,7 @@ classe i_teste013
 herda comum_itemgrupo
 const nome = "colete"
 const descnome = "um colete"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
 const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 const descpos = "Um colete está jogado aqui."
@@ -181,7 +181,7 @@ classe i_teste014
 herda comum_itemgrupo
 const nome = "colete dos elfos"
 const descnome = "o colete dos elfos"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
 const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 const pnivel = 3
@@ -218,7 +218,7 @@ classe i_teste016
 herda comum_itemgrupo
 const nome = "óculos especiais"
 const descnome = "uns óculos especiais"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const descver = "Esses óculos permitem ver coisas invisíveis."
 const vestir1 = 2 # Aonde vestir: 1-rosto
 
@@ -238,7 +238,7 @@ classe i_teste018
 herda comum_itemgrupo
 const nome = "sapatos"
 const descnome = "um par de sapatos"
-const sexo = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -267,7 +267,7 @@ func recalc_auto # Altera atributos do personagem
 func cmd_mover
 # Nos tornozelos, prejudica os pontos de movimento
   se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
-    arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
+    arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret 1
 
 func cmd_moveu
@@ -297,7 +297,7 @@ classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
 const descpadr = "Um jardineiro está sentado aqui."
-const sexoini = 1 # 0=feminino, 1=masculino
+const msexo = 1 # 0=feminino, 1=masculino
 const p_recebe = 1 # Se pode receber itens de outros personagens
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -335,12 +335,14 @@ const nome = "macaco"
 const descnome = "um macaco"
 const descpadr = "Um macaco está fazendo bagunça aqui."
 const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
+const msexo = 1 # 0=feminino, 1=masculino
 const p_captura = 3 # Capturar: 3 Normal
 const p_agressivo = 2 # Agressivo: 2 Sim
 const pesoobj = 30500
 const volobj = 500
 const tipo1 = "luta"
 const inivar = "h_socar=1,h_chutar=1"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 
 
 classe p_teste003
@@ -349,11 +351,13 @@ const nome = "cão"
 const descnome = "um cão"
 const descpadr = "Um cachorro late para você."
 const descver = "Mamífero da família dos canídeos."
+const msexo = 1 # 0=feminino, 1=masculino
 const p_captura = 2 # Capturar: 2 Fácil
 const p_agressivo = 2 # Agressivo: 2 Sim
 const pesoobj = 30100
 const volobj = 500
 const inivar = "h_arremessar=1"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 
 
 classe p_teste004
@@ -362,6 +366,7 @@ const nome = "morcego"
 const descnome = "um morcego"
 const descpadr = "Um morcego está voando."
 const descver = "Mamífero da ordem dos quirópteros"
+const msexo = 1 # 0=feminino, 1=masculino
 const p_captura = 4 # Capturar: 4 Difícil
 const p_agressivo = 2 # Agressivo: 2 Sim
 const pesoobj = 30500
@@ -373,11 +378,13 @@ func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pveloc1 += 2 * pnivel
 
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+
 
 classe p_teste005
 herda comum_persoanimal
 const nome = "Lixeiro"
-const sexoini = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const pesoobj = 75300
 const volobj = 1000
 const p_naoresg = 1 # Sem resgate: Sim
@@ -389,7 +396,7 @@ classe p_teste006
 herda comum_persobat
 const nome = "geléia"
 const descnome = "uma geléia"
-const sexoini = 0 # Sexo: 0 Feminino
+const msexo = 0 # Sexo: 0 Feminino
 const pesoobj = 10000
 const nivel = 3
 const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
@@ -406,7 +413,7 @@ func cmd_recalc1 # Recalcula variáveis do personagem
 classe p_teste007
 herda comum_perso
 const nome = "João o mercenário"
-const sexoini = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const tipo1 = "Humano"
 const lojaitem = "teste012 3\nteste013 0"
 const taxavenda = 20
@@ -418,7 +425,7 @@ const tipoitem = 3 # Compra produtos: Possui metal, Arma
 classe p_teste008
 herda comum_perso
 const nome = "Faixa preta"
-const sexoini = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const tipo1 = "Humano"
 const lojaaula = "h_Chutar 3\n\
 h_Voadora 7\n\
@@ -434,7 +441,7 @@ const lojanao = ""
 classe p_teste009
 herda comum_perso
 const nome = "Perito"
-const sexoini = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const tipo1 = "Anão"
 const lojaaula = "h_Varinha 8\n\
 h_Cajado 8\n\
@@ -453,7 +460,7 @@ const lojanao = ""
 classe p_teste010
 herda comum_perso
 const nome = "Prefeito"
-const sexoini = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const tipo1 = "Elfo"
 const evsala = 1 # Eventos em sala: Sim
 
@@ -480,7 +487,7 @@ func cmd_falou
 
 classe p_teste011
 herda comum_persobat
-const sexoini = 1 # Sexo: 1 Masculino
+const msexo = 1 # Sexo: 1 Masculino
 const nome = "camundongo gigante"
 const descnome = "um camundongo gigante"
 const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas

@@ -1,4 +1,176 @@
 classe mens
+ref contr # Mesmo que perso.contr
+ref perso # Personagem que está enviando a mensagem
+ref alvo # Personagem ou objeto alvo da ação
+ref obj # Objeto secundário
+ref r # Objeto que vai receber a mensagem
+txt512 mens # Mensagem usada em $M
+
+func iniclasse
+  criar(arg0)
+
+func p # Define os personagens
+  contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
+
+func mtodos1 # Mensagem só para quem estiver acordado
+# arg0 = mensagem para todos
+  se contr.dono.socktot && arg0
+    listaobj l0
+    l0.addfim(contr.dono.dentro2)
+    enquanto l0
+      l0.objini.msginv(arg0), l0.ini.remove
+    efim
+
+func mtodos2 # Mensagem só para quem estiver acordado
+# arg0 = mensagem para personagem, arg1 = mensagem para outros
+  se contr.dono.socktot
+    arg0 && contr.msginv(arg0)
+    se arg1
+      listaobj l0
+      l0.addfim(contr.dono.dentro2)
+      l0.remove(contr)
+      enquanto l0
+        l0.objini.msginv(arg1), l0.ini.remove
+      efim
+
+func mtodos3 # Mensagem só para quem estiver acordado
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+  se contr.dono.socktot
+    arg0 && contr.msginv(arg0)
+    arg1 && alvo.contr.msginv(arg1)
+    se arg2
+      listaobj l0
+      l0.addfim(contr.dono.dentro2)
+      l0.remove(contr, alvo.contr)
+      enquanto l0
+        l0.objini.msginv(arg2), l0.ini.remove
+      efim
+
+func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0 = mensagem para todos
+  se contr.dono.socktot && arg0
+    contr.msginv(arg0)
+    listaobj l0
+    l0.addfim(contr.dono.dentro2)
+    l0.remove(contr)
+    enquanto l0
+      l0.objini.msgvis(arg0), l0.ini.remove
+    efim
+
+func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0 = mensagem para personagem, arg1 = mensagem para outros
+  se contr.dono.socktot
+    arg0 && contr.msginv(arg0)
+    se arg1
+      listaobj l0
+      l0.addfim(contr.dono.dentro2)
+      l0.remove(contr)
+      enquanto l0
+        l0.objini.msgvis(arg1), l0.ini.remove
+      efim
+
+func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+  se contr.dono.socktot
+    arg0 && contr.msginv(arg0)
+    arg1 && alvo.contr.msgvis(arg1)
+    se arg2
+      listaobj l0
+      l0.addfim(contr.dono.dentro2)
+      l0.remove(contr, alvo.contr)
+      enquanto l0
+        l0.objini.msgvis(arg2), l0.ini.remove
+      efim
+
+func proc # Prepara e retorna mensagem
+# arg0=mensagem, arg1=objeto
+  r = arg1
+  ret vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+
+const o_@ = "$"
+const o_a = arg0 === "A" ? txtcopiamai(nome(alvo), "A") : nome(alvo)
+const o_p = arg0 === "P" ? txtcopiamai(nome(perso), "A") : nome(perso)
+
+func nome # Nome de um personagem; arg0=personagem
+  se arg0 == arg0.contr
+    se r == arg0
+      ret "você"
+    senao arg0.visivel(r)
+      ret arg0.descnome
+    senao arg0.perso
+      ret "alguém"
+    senao
+      ret "alguma coisa"
+    fimse
+  senao r == arg0.contr
+    ret (arg0.msexo ? "seu " : "sua ") + arg0.nome
+  senao arg0.contr.visivel(r)
+    ret arg0.descnome + " de " + arg0.contr.descnome
+  senao arg0.visivel(r)
+    ret arg0.descnome + " de alguém"
+  senao
+    ret arg0.perso ? "alguém" : "alguma coisa"
+
+func o_q # Nome do personagem sem citar o dono
+  se r == perso
+    ret arg0 === "Q" ? "Você" : "você"
+  senao perso.visivel(r)
+    ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+  senao perso.perso
+    ret arg0 === "Q" ? "Alguém" : "alguém"
+  senao
+    ret arg0 === "Q" ? "Alguma coisa" : "alguma coisa"
+
+func o_b # Nome do alvo sem citar o dono
+  se r == alvo
+    ret arg0 === "B" ? "Você" : "você"
+  senao alvo.visivel(r)
+    ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+  senao alvo.perso
+    ret arg0 === "B" ? "Alguém" : "alguém"
+  senao
+    ret arg0 === "B" ? "Alguma coisa" : "alguma coisa"
+
+func o_o # Nome do objeto
+  se r == obj
+    ret arg0 === "O" ? "Você" : "você"
+  senao obj.visivel(r)
+    ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
+  senao obj.perso
+    ret arg0 === "O" ? "Alguém" : "alguém"
+  senao
+    ret arg0 === "O" ? "Alguma coisa" : "alguma coisa"
+
+func o_s # Gênero do personagem
+  se arg0 == "S"
+    ret perso.perso, perso.msexo ? "O" : "A"
+    ret perso.msexo ? "Um" : "Uma"
+  senao
+    ret perso.perso, perso.msexo ? "o" : "a"
+    ret perso.msexo ? "um" : "uma"
+  
+func o_t # Gênero do alvo
+  se arg0 == "T"
+    ret alvo.perso, alvo.msexo ? "O" : "A"
+    ret alvo.msexo ? "Um" : "Uma"
+  senao
+    ret alvo.perso, alvo.msexo ? "o" : "a"
+    ret alvo.msexo ? "um" : "uma"
+
+func o_u # Gênero do objeto
+  se arg0 == "U"
+    ret obj.perso, obj.msexo ? "O" : "A"
+    ret obj.msexo ? "Um" : "Uma"
+  senao
+    ret obj.perso, obj.msexo ? "o" : "a"
+    ret obj.msexo ? "um" : "uma"
+
+const o_m = txttroca(arg0 == "M" ? txtcopiamai(mens, "A") : mens, "$", "$$")
+
+classe mens_antigo
+# Exemplo de código da versão anterior da classe mens
+#
+ref contr # Mesmo que perso.contr
 ref perso # Personagem que está enviando a mensagem
 ref alvo # Personagem ou objeto alvo da ação
 ref obj # Objeto secundário
@@ -14,77 +186,7 @@ func iniclasse
   criar(arg0)
 
 func p # Define os personagens
-  perso = arg0, alvo = arg1, obj = arg2
-
-func mtodos1 # Mensagem só para quem estiver acordado
-# arg0 = mensagem para todos
-  se perso.dono.socktot && arg0
-    listaobj l0
-    l0.addfim(perso.dono.dentro2)
-    enquanto l0
-      l0.objini.msginv(arg0), l0.ini.remove
-    efim
-
-func mtodos2 # Mensagem só para quem estiver acordado
-# arg0 = mensagem para personagem, arg1 = mensagem para outros
-  se perso.dono.socktot
-    arg0 && perso.msginv(arg0)
-    se arg1
-      listaobj l0
-      l0.addfim(perso.dono.dentro2)
-      l0.remove(perso)
-      enquanto l0
-        l0.objini.msginv(arg1), l0.ini.remove
-      efim
-
-func mtodos3 # Mensagem só para quem estiver acordado
-# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  se perso.dono.socktot
-    arg0 && perso.msginv(arg0)
-    arg1 && alvo.msginv(arg1)
-    se arg2
-      listaobj l0
-      l0.addfim(perso.dono.dentro2)
-      l0.remove(perso, alvo)
-      enquanto l0
-        l0.objini.msginv(arg2), l0.ini.remove
-      efim
-
-func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
-# arg0 = mensagem para todos
-  se perso.dono.socktot && arg0
-    perso.msginv(arg0)
-    listaobj l0
-    l0.addfim(perso.dono.dentro2)
-    l0.remove(perso)
-    enquanto l0
-      l0.objini.msgvis(arg0), l0.ini.remove
-    efim
-
-func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
-# arg0 = mensagem para personagem, arg1 = mensagem para outros
-  se perso.dono.socktot
-    arg0 && perso.msginv(arg0)
-    se arg1
-      listaobj l0
-      l0.addfim(perso.dono.dentro2)
-      l0.remove(perso)
-      enquanto l0
-        l0.objini.msgvis(arg1), l0.ini.remove
-      efim
-
-func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
-# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  se perso.dono.socktot
-    arg0 && perso.msginv(arg0)
-    arg1 && alvo.msgvis(arg1)
-    se arg2
-      listaobj l0
-      l0.addfim(perso.dono.dentro2)
-      l0.remove(perso, alvo)
-      enquanto l0
-        l0.objini.msgvis(arg2), l0.ini.remove
-      efim
+  contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
 
 func proc # Prepara e retorna mensagem
 # arg0=mensagem, arg1=objeto
@@ -117,236 +219,12 @@ func opcmai_p # Nome do personagem
   senao
     ret "Alguma coisa" + arg0
 
-func opcmin_p # Nome do personagem
-  se r == perso
-    ret "você" + arg0
-  senao perso.visivel(r)
-    ret perso.descnome + arg0
-  senao perso.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_q # Nome do personagem escolhido
-  se r == perso.persoesc
-    ret "Você" + arg0
-  senao perso.visivel(r)
-    ret txtcopiamai(perso.persoesc.descnome, "A") + arg0
-  senao perso.persoesc.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_q # Nome do personagem escolhido
-  se r == perso.persoesc
-    ret "você" + arg0
-  senao perso.visivel(r)
-    ret perso.persoesc.descnome + arg0
-  senao perso.persoesc.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_r # Nome do personagem em batalha
-  se r == perso.persobat
-    ret "Você" + arg0
-  senao perso.visivel(r)
-    se perso.persobat == perso
-      ret txtcopiamai(perso.persobat.descnome, "A") + arg0
-    senao
-      ret txtcopiamai(perso.persobat.descnome, "A") + " de " + perso.descnome + arg0
-    fimse
-  senao perso.persoesc.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_r # Nome do personagem em batalha
-  se r == perso.persobat
-    ret "você" + arg0
-  senao perso.visivel(r)
-    se perso.persobat == perso
-      ret perso.persobat.descnome + arg0
-    senao
-      ret perso.persobat.descnome + " de " + perso.descnome + arg0
-    fimse
-  senao perso.persoesc.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_a # Nome do alvo
-  se r == alvo
-    ret "Você" + arg0
-  senao alvo.visivel(r)
-    ret txtcopiamai(alvo.descnome, "A") + arg0
-  senao alvo.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_a # Nome do alvo
-  se r == alvo
-    ret "você" + arg0
-  senao alvo.visivel(r)
-    ret alvo.descnome + arg0
-  senao alvo.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_b # Nome do alvo escolhido
-  se r == alvo.persoesc
-    ret "Você" + arg0
-  senao alvo.visivel(r)
-    ret txtcopiamai(alvo.persoesc.descnome, "A") + arg0
-  senao alvo.persoesc.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_b # Nome do alvo escolhido
-  se r == alvo.persoesc
-    ret "você" + arg0
-  senao alvo.visivel(r)
-    ret alvo.persoesc.descnome + arg0
-  senao alvo.persoesc.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_c # Nome do alvo em batalha
-  se r == alvo.persobat
-    ret "Você" + arg0
-  senao alvo.visivel(r)
-    se alvo.persobat == alvo
-      ret txtcopiamai(alvo.persobat.descnome, "A") + arg0
-    senao
-      ret txtcopiamai(alvo.persobat.descnome, "A") + " de " + alvo.descnome + arg0
-    fimse
-  senao alvo.persoesc.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_c # Nome do alvo em batalha
-  se r == alvo.persobat
-    ret "você" + arg0
-  senao alvo.visivel(r)
-    se alvo.persobat == alvo
-      ret alvo.persobat.descnome + arg0
-    senao
-      ret alvo.persobat.descnome + " de " + alvo.descnome + arg0
-    fimse
-  senao alvo.persoesc.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_d # Nome do alvo
-  se r == alvo
-    ret "Você" + arg0
-  senao alvo.visivel(r)
-    se alvo.dono.perso
-      ret txtcopiamai(alvo.descnome, "A") + " de " + alvo.dono.descnome + arg0
-    senao
-      ret txtcopiamai(alvo.descnome, "A") + arg0
-    fimse
-  senao alvo.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_d # Nome do alvo
-  se r == alvo
-    ret "você" + arg0
-  senao alvo.visivel(r)
-    se alvo.dono.perso
-      ret alvo.descnome + " de " + alvo.dono.descnome + arg0
-    senao
-      ret alvo.descnome + arg0
-    fimse
-  senao alvo.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_o # Nome do objeto
-  se r == obj
-    ret "Você" + arg0
-  senao obj.visivel(r)
-    ret txtcopiamai(obj.descnome, "A") + arg0
-  senao obj.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
-
-func opcmin_o # Nome do objeto
-  se r == obj
-    ret "você" + arg0
-  senao obj.visivel(r)
-    ret obj.descnome + arg0
-  senao obj.perso
-    ret "alguém" + arg0
-  senao
-    ret "alguma coisa" + arg0
-
-func opcmai_s # Gênero do personagem
-  se perso.perso
-    ret sexoB[perso.sexo] + arg0
-  senao
-    ret sexoD[perso.sexo] + arg0
-
-func opcmin_s # Gênero do personagem
-  se perso.perso
-    ret sexoA[perso.sexo] + arg0
-  senao
-    ret sexoC[perso.sexo] + arg0
-
-func opcmai_t # Gênero do alvo
-  se alvo.perso
-    ret sexoB[alvo.sexo] + arg0
-  senao
-    ret sexoD[alvo.sexo] + arg0
-
-func opcmin_t # Gênero do alvo
-  se alvo.perso
-    ret sexoA[alvo.sexo] + arg0
-  senao
-    ret sexoC[alvo.sexo] + arg0
-
-func opcmai_u # Gênero do objeto
-  se obj.perso
-    ret sexoB[obj.sexo] + arg0
-  senao
-    ret sexoD[obj.sexo] + arg0
-
-func opcmin_u # Gênero do objeto
-  se obj.perso
-    ret sexoA[obj.sexo] + arg0
-  senao
-    ret sexoC[obj.sexo] + arg0
-
-func opcmai_m # Mensagem
-  ret txttroca(txtcopiamai(mens, "A"), "$", "$$") + arg0
-
-func opcmin_m # Mensagem
-  ret txttroca(mens, "$", "$$") + arg0
 # func opcmai_a
 # # arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
 # ret "teste" + arg0 # Substitui "$a" por "teste"
 # func opcmin_a
 # ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
 # # Ou assim: ret txttroca("R$", "$", "$$") + arg0
-
-const sexoA0 = "a"
-const sexoA1 = "o"
-const sexoB0 = "A"
-const sexoB1 = "O"
-const sexoC0 = "uma"
-const sexoC1 = "um"
-const sexoD0 = "Uma"
-const sexoD1 = "Um"
 
 
 classe mens_prompt

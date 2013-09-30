@@ -1,7 +1,7 @@
 classe cmd_arremessar
 herda comando_ataque
 const nomevar = "h_Arremessar"
-const msgacertou2 = "$R se joga contra $c"
+const msgacertou2 = "$P se joga contra $a"
 const tipoatk = 0 # Normal
 const ataque = 80
 const vel = 30
@@ -15,12 +15,25 @@ const c_mana1 = 30
 const c_mana2 = 20
 const a_efeito1 = "Queimando"
 const a_prob1 = 10
+const tipoatk = 4 # Ataque tipo: 4 Fogo
+const msgextra = "Pode causar queimaduras."
+
+
+classe cmd_choque
+herda comando_ataque
+const nomevar = "h_Choque"
+const tipoatk = 12 # Ataque tipo: 12 Elétrico
+const msgextra = "Dá uma descarta elétrica que pode paralisar."
+const msgacertou2 = "$P dá um choque em $a"
+const msgerrou2 = "$P erra um choque em $a"
+const a_efeito1 = "paralisado"
+const a_prob1 = 10
 
 
 classe cmd_chutar
 herda comando_ataque
 const nomevar = "h_Chutar"
-const msgacertou2 = "$R chuta $c"
+const msgacertou2 = "$P chuta $a"
 const tipoatk = 0 # Normal
 const ataque = 70
 const vel = 50
@@ -36,25 +49,112 @@ const tipoatk = 2 # Tipo de ataque: 2 Cortante
 const tipoarma = 8 # Requer arma: Lâmina curta
 const c_move1 = 5
 const c_move2 = 5
-const msgacertou2 = "$R corta $c"
-const msgerrou2 = "$R tenta cortar $c"
+const msgacertou2 = "$P corta $a"
+const msgerrou2 = "$P tenta cortar $a"
+
+
+classe cmd_drenar
+herda comando_ataque
+const nomevar = "h_Drenar"
+const tipoatk = 13 # Ataque tipo: 13 Vegetal
+const c_move1 = 10
+const c_move2 = 5
+const msgacertou2 = "$P drena $a"
+const msgerrou2 = "$P tenta drena $a"
+const msgextra = "Absorve metade dos danos que causa."
+int32 pontos
+
+func cmd_atkenv
+  pontos = arg1.persobat.pvida
+
+func cmd_atacou
+  refvar vida = arg0.persobat.pvida
+  refvar max = arg0.persobat.pvidamax
+  se !arg2.result && vida && vida < max
+    pontos = intpos(pontos - arg1.persobat.pvida) / 2
+    vida += pontos
+    vida > max && (vida = max)
+
+
+classe cmd_endurecer
+herda comando_ataque
+const nomevar = "h_Endurecer"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const c_move1 = 15
+const c_move2 = 5
+const a_efeito1 = "endurecer"
+const msgacertou2 = "$P endurece."
+const msgerrou2 = "$P tenta endurecer."
+const msgextra = "Endurece os músculos para melhorar a sua defesa.\n\
+Só pode ser usado durante uma batalha."
+const a_batalha = 1 # Condição: 1 Durante a batalha
+const c_espera = 40
+
+
+classe cmd_explodir
+herda comando_ataque
+const nomevar = "h_Explodir"
+const ataque = 200
+const vel = 100
+const msgextra = "Extremamente forte, mas quem aplica esse golpe desmaia."
+const msgacertou2 = "$P explodiu na direção de $a"
+const msgerrou2 = "$P explodiu mas $a desviou em tempo."
+const msgnulo2 = "$P explodiu, nada acontece com $a"
+const precisao = 200
+
+func cmd_atacou # Desmaia após o ataque
+  arg0.persobat.pvida = 0
+
+
+classe cmd_gás_tóxico
+herda comando_ataque
+const nomevar = "h_Gás tóxico"
+const tipoatk = 15 # Ataque tipo: 15 Veneno
+const c_move1 = 5
+const c_move2 = 2
+const c_mana1 = 10
+const c_mana2 = 5
+const a_efeito1 = "envenenado"
+const a_prob1 = 70
+const msgextra = "Tem grandes chances de envenenar."
+const msgacertou2 = "$P lança gás tóxico em $a"
+
+
+classe cmd_meditar
+herda comando_ataque
+const nomevar = "h_Meditar"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const a_efeito1 = "meditando"
+const msgacertou2 = "$P começa a meditar."
+const msgerrou2 = "$P tenta meditar mas não consegue."
 
 
 classe cmd_morder
 herda comando_ataque
 const nomevar = "h_Morder"
-const msgacertou2 = "$R morde $c"
-const tipoatk = 0 # Normal
+const msgacertou2 = "$P morde $a"
+const tipoatk = 2 # Ataque tipo: 2 Cortante
 const ataque = 50
 const vel = 60
 const extra = "Golpe físico de força"
 const valor = 120
 
 
+classe cmd_onda_trovão
+herda comando_ataque
+const nomevar = "h_Onda trovão"
+const ataque = 0
+const a_efeito1 = "paralisado"
+const c_mana1 = 20
+const c_mana2 = 5
+const msgextra = "Paralisa com uma descarta elétrica."
+const tipoatk = 12 # Ataque tipo: 12 Elétrico
+
+
 classe cmd_socar
 herda comando_ataque
 const nomevar = "h_Socar"
-const msgacertou2 = "$R soca $c"
+const msgacertou2 = "$P soca $a"
 const tipoatk = 0 # Normal
 const ataque = 40
 const vel = 80
@@ -67,7 +167,7 @@ herda comando_ataque
 const nomevar = "h_Voadora"
 const ataque = 90
 const vel = 40
-const msgacertou2 = "$R dá uma voadora em $c"
+const msgacertou2 = "$P dá uma voadora em $a"
 const depende = "h_chutar"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
 
@@ -76,10 +176,10 @@ classe magia_curar
 herda comando_ataque
 const nomevar = "m_Curar"
 const tipoalvo = 4 # Alvo: 4 Qualquer um; não agressivo
-const msgacertou2 = "$R cura $c"
-const msgacertou1 = "$R se cura"
-const msgerrou2 = "$R tenta curar $c"
-const msgerrou1 = "$R tenta se curar"
+const msgacertou2 = "$P cura $a"
+const msgacertou1 = "$P se cura"
+const msgerrou2 = "$P tenta curar $a"
+const msgerrou1 = "$P tenta se curar"
 const valor = 100
 const c_mana1 = 30
 const c_mana2 = 5
@@ -93,7 +193,7 @@ const nomevar = "m_Fogo"
 const tipoatk = 4 # Tipo de ataque: 4 Fogo
 const c_mana1 = 15
 const c_mana2 = 10
-const msgacertou2 = "$R lança fogo em $c"
+const msgacertou2 = "$P lança fogo em $a"
 const valor = 100
 
 
@@ -105,9 +205,46 @@ const c_mana2 = 5
 const valor = 100
 
 
+classe magia_raio_confusão
+herda comando_ataque
+const nomevar = "m_Raio confusão"
+const msgextra = "Pode causar confusào."
+const msgacertou2 = "$P lança um raio de confusão em $a"
+const msgerrou2 = "$P lança um raio de confusão na direção de $a"
+const ataque = 80
+const tipoatk = 14 # Ataque tipo: 14 Psíquico
+const a_efeito1 = "confusao"
+const a_prob1 = 100
+const c_mana1 = 20
+const c_mana2 = 5
+
+
 classe magia_retornar
 herda comando_retornar
 const nomevar = "m_Retornar"
 const c_mana1 = 20
 const c_mana2 = 5
 const valor = 100
+
+
+classe magia_sono_profundo
+herda comando_ataque
+const nomevar = "m_Sono profundo"
+const ataque = 0
+const c_mana1 = 20
+const c_mana2 = 5
+const tipoatk = 14 # Ataque tipo: 14 Psíquico
+const a_efeito1 = "sono profundo"
+
+
+classe magia_sopro_de_gelo
+herda comando_ataque
+const nomevar = "m_Sopro de gelo"
+const tipoatk = 6 # Ataque tipo: 6 Gelo
+const a_efeito1 = "congelado"
+const a_prob1 = 10
+const c_mana1 = 30
+const c_mana2 = 15
+const msgextra = "Pode congelar."
+const msgacertou2 = "$P lança um sopro gelo em $a"
+const msgerrou2 = "$P lança um sopro gelo na direção de $a"

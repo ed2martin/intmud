@@ -503,55 +503,63 @@ const tipo6 = "texto"
 const clas6 = var.classe1
 const vari6 = "descident"
 #
-const nome7 = "Sexo"
-const info7 = "Aleatório escolhe um quando o personagem é criado"
+const nome7 = "Sexo Msg"
+const info7 = "Usado nas mensagens com o personagem"
 const tipo7 = "opcao"
 const clas7 = var.classe1
-const vari7 = "sexoini"
-const extr7 = "Feminino\nMasculino\nAleatório"
+const vari7 = "msexo"
+const extr7 = "Feminino\nMasculino"
 #
-const nome8 = "Peso"
-const info8 = "Em gramas"
-const tipo8 = "numero"
+const nome8 = "Sexo Perso"
+const info8 = "Se estiver como <herda const>, assume o mesmo valor de Sexo Msg\n\
+Aleatório escolhe um quando o personagem é criado"
+const tipo8 = "opcao"
 const clas8 = var.classe1
-const vari8 = "pesoobj"
-const extr8 = "1 1000000000"
-const exec8 = "ajustapeso"
+const vari8 = "sexoini"
+const extr8 = "Feminino\nMasculino\nAleatório"
 #
-const nome9 = "Volume"
+const nome9 = "Peso"
+const info9 = "Em gramas"
 const tipo9 = "numero"
-const extr9 = "1 1000000000"
 const clas9 = var.classe1
-const vari9 = "volobj"
+const vari9 = "pesoobj"
+const extr9 = "1 1000000000"
 const exec9 = "ajustapeso"
 #
-const nome10 = "Volume dentro"
+const nome10 = "Volume"
 const tipo10 = "numero"
+const extr10 = "1 1000000000"
 const clas10 = var.classe1
-const vari10 = "volmax"
+const vari10 = "volobj"
+const exec10 = "ajustapeso"
 #
-const nome11 = "Expande"
-const info11 = "Volume aumenta se tiver itens dentro"
-const tipo11 = "simnao"
+const nome11 = "Volume dentro"
+const tipo11 = "numero"
 const clas11 = var.classe1
-const vari11 = "volexp"
-const exec11 = "ajustapeso"
+const vari11 = "volmax"
 #
-const nome12 = "Objetos máximo"
-const tipo12 = "numero"
+const nome12 = "Expande"
+const info12 = "Volume aumenta se tiver itens dentro"
+const tipo12 = "simnao"
 const clas12 = var.classe1
-const vari12 = "objmax"
+const vari12 = "volexp"
+const exec12 = "ajustapeso"
 #
-const nome13 = "Nível"
+const nome13 = "Objetos máximo"
 const tipo13 = "numero"
 const clas13 = var.classe1
-const vari13 = "nivel"
+const vari13 = "objmax"
 #
-const nome14 = "Posição padrão"
-const tipo14 = "opcao"
+const nome14 = "Nível"
+const tipo14 = "numero"
 const clas14 = var.classe1
-const vari14 = "pospadr"
-const extr14 = "Morto (não usar essa opção)\n\
+const vari14 = "nivel"
+#
+const nome15 = "Posição padrão"
+const tipo15 = "opcao"
+const clas15 = var.classe1
+const vari15 = "pospadr"
+const extr15 = "Morto (não usar essa opção)\n\
 Mortalmente ferido\n\
 Incapacitado\n\
 Fraco\n\
@@ -560,40 +568,40 @@ Descansando\n\
 Sentado\n\
 Lutando (não usar essa opção)\nEm pé"
 #
-const nome15 = "Tipo 1"
-const info15 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
-const tipo15 = "linha"
-const clas15 = var.classe1
-const vari15 = "tipo1"
-#
-const nome16 = "Tipo 2"
+const nome16 = "Tipo 1"
 const info16 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
-const info16 = "Vide comando: adm tipo"
 const tipo16 = "linha"
 const clas16 = var.classe1
-const vari16 = "tipo2"
+const vari16 = "tipo1"
 #
-const nome17 = "Tipo 3"
+const nome17 = "Tipo 2"
 const info17 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
 const info17 = "Vide comando: adm tipo"
 const tipo17 = "linha"
 const clas17 = var.classe1
-const vari17 = "tipo3"
+const vari17 = "tipo2"
 #
-const nome18 = "Loja e aulas"
-const tipo18 = "menu--"
-const clas18 = "menu_ploja"
+const nome18 = "Tipo 3"
+const info18 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
+const info18 = "Vide comando: adm tipo"
+const tipo18 = "linha"
+const clas18 = var.classe1
+const vari18 = "tipo3"
 #
-const nome19 = "Recebe itens"
-const info19 = "Se outros personagens podem dar itens para este"
-const tipo19 = "simnao"
-const clas19 = var.classe1
-const vari19 = "p_recebe"
+const nome19 = "Loja e aulas"
+const tipo19 = "menu--"
+const clas19 = "menu_ploja"
 #
-const nome20 = "Não podem seguir"
+const nome20 = "Recebe itens"
+const info20 = "Se outros personagens podem dar itens para este"
 const tipo20 = "simnao"
 const clas20 = var.classe1
-const vari20 = "p_naoseguir"
+const vari20 = "p_recebe"
+#
+const nome21 = "Não podem seguir"
+const tipo21 = "simnao"
+const clas21 = var.classe1
+const vari21 = "p_naoseguir"
 #
 const nome50 = "Variáveis"
 const tipo50 = "linha"
@@ -630,68 +638,68 @@ const exec54 = "ajustaev"
 
 
 classe menu_pcomum2
-const nome21 = "Atributos comuns"
-const tipo21 = "atribcomum"
-const clas21 = var.classe1
-const vari21 = "recalc_auto"
-const exec21 = "recalc_exec"
-#
-const nome22 = "Atributos ataque"
-const info22 = "Afetam os danos quando o personagem ataca alguém"
-const tipo22 = "atribatk"
+const nome22 = "Atributos comuns"
+const tipo22 = "atribcomum"
 const clas22 = var.classe1
 const vari22 = "recalc_auto"
 const exec22 = "recalc_exec"
 #
-const nome23 = "Atributos defesa"
-const info23 = "Afetam os danos quando alguém ataca o personagem"
-const tipo23 = "atribdef"
+const nome23 = "Atributos ataque"
+const info23 = "Afetam os danos quando o personagem ataca alguém"
+const tipo23 = "atribatk"
 const clas23 = var.classe1
 const vari23 = "recalc_auto"
 const exec23 = "recalc_exec"
 #
-const nome24 = "Quando morre"
-const tipo24 = "opcao"
+const nome24 = "Atributos defesa"
+const info24 = "Afetam os danos quando alguém ataca o personagem"
+const tipo24 = "atribdef"
 const clas24 = var.classe1
-const vari24 = "p_corpo"
-const extr24 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
+const vari24 = "recalc_auto"
+const exec24 = "recalc_exec"
 #
-const nome25 = "Morreu"
-const info25 = "Quando não tem dono"
-const tipo25 = "linha"
+const nome25 = "Quando morre"
+const tipo25 = "opcao"
 const clas25 = var.classe1
-const vari25 = "p_morreu1"
+const vari25 = "p_corpo"
+const extr25 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
 #
-const nome26 = "Desmaiou"
-const info26 = "Quando pertence a outro personagem"
+const nome26 = "Morreu"
+const info26 = "Quando não tem dono"
 const tipo26 = "linha"
 const clas26 = var.classe1
-const vari26 = "p_morreu2"
+const vari26 = "p_morreu1"
 #
-const nome27 = "Movimentar"
-const tipo27 = "opcao"
+const nome27 = "Desmaiou"
+const info27 = "Quando pertence a outro personagem"
+const tipo27 = "linha"
 const clas27 = var.classe1
-const vari27 = "p_mover"
-const extr27 = "Não sai do lugar\nSomente na área\nQualquer lugar"
+const vari27 = "p_morreu2"
 #
-const nome28 = "Tempo move"
-const nome28 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo28 = "numero"
+const nome28 = "Movimentar"
+const tipo28 = "opcao"
 const clas28 = var.classe1
-const vari28 = "p_movervel"
-const extr28 = "5 1000"
+const vari28 = "p_mover"
+const extr28 = "Não sai do lugar\nSomente na área\nQualquer lugar"
 #
-const nome29 = "Agressivo"
-const tipo29 = "opcao"
+const nome29 = "Tempo move"
+const nome29 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo29 = "numero"
 const clas29 = var.classe1
-const vari29 = "p_agressivo"
-const extr29 = "Pacífico\nSe atacarem\nSim"
+const vari29 = "p_movervel"
+const extr29 = "5 1000"
 #
-const nome30 = "Sem resgate"
-const info30 = "Se não é possível resgatar jogadores lutando com esse personagem"
-const tipo30 = "simnao"
+const nome30 = "Agressivo"
+const tipo30 = "opcao"
 const clas30 = var.classe1
-const vari30 = "p_naoresg"
+const vari30 = "p_agressivo"
+const extr30 = "Pacífico\nSe atacarem\nSim"
+#
+const nome31 = "Sem resgate"
+const info31 = "Se não é possível resgatar jogadores lutando com esse personagem"
+const tipo31 = "simnao"
+const clas31 = var.classe1
+const vari31 = "p_naoresg"
 
 
 classe menu_ploja
@@ -769,19 +777,19 @@ herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 const colunas = 23
 #
-const nome31 = "Capturar"
-const info31 = "Se pode ser capturado"
-const tipo31 = "opcao"
-const clas31 = var.classe1
-const vari31 = "p_captura"
-const extr31 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
-#
-const nome32 = "Dar e soltar"
-const info32 = "Se esse personagem pode ser dado ou solto"
+const nome32 = "Capturar"
+const info32 = "Se pode ser capturado"
 const tipo32 = "opcao"
 const clas32 = var.classe1
-const vari32 = "p_soltar"
-const extr32 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
+const vari32 = "p_captura"
+const extr32 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+#
+const nome33 = "Dar e soltar"
+const info33 = "Se esse personagem pode ser dado ou solto"
+const tipo33 = "opcao"
+const clas33 = var.classe1
+const vari33 = "p_soltar"
+const extr33 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3

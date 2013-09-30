@@ -1,6 +1,7 @@
 classe comum_obj
 # Comum a todos os personagens, itens e salas
 #
+ref contr # Quem está controlando; mesmo que: (dono.perso ? dono : este)
 ref donoantes # Dono anterior
 sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
@@ -88,7 +89,9 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
 
 func ajustaev # Acerta eventos
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
-  (dono.perso ? evperso : dono.item ? evitem : evsala) && (evrec.1 = dono.addfim(este))
+  contr = idono.objlista
+  (contr.perso ? evperso : contr.item ? evitem : evsala) && (evrec.1 = contr.addfim(este))
+  !contr.perso && (contr = este)
 
 varfunc dono # O dono do personagem/item
   ret !args, idono.objlista # Checa se é leitura
@@ -134,6 +137,7 @@ varfunc dono # O dono do personagem/item
     idono = r.dentro1.addfim(este) # Adiciona item
   fimse
   (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.1 = r.evento.addfim(este))
+  contr = (r.perso ? r : este)
 # Se não está voando: acrescenta o peso total
   se pesotot
     r.pesoden += pesotot # Nota: r já é idono.objlista

@@ -21,7 +21,7 @@ func escr # Executa o comando
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
-    arg0.msg("Você está cansad" + misc:sletra[arg0.sexo] + " demais.")
+    arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret
   fimse
   listaobj l
@@ -243,10 +243,9 @@ func escrobj # Abrir um item
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está abert" + misc:sletra[r.sexo] + \
-".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está abert" + (r.msexo ? "o." : "a."))
   casose "4"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está trancad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está trancad" + (r.msexo ? "o." : "a."))
   casose
     ret arg0.msg("Não foi possível abrir " + r.descnome + ".")
   casose "3"
@@ -329,8 +328,7 @@ func escrobj # Fechar um item
   casovar r.i_aberto
   casose "3"
   casose "4"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está fechad" + misc:sletra[r.sexo] + \
-".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está fechad" + (r.msexo ? "o." : "a."))
   casose
     ret arg0.msg("Não foi possível fechar " + r.descnome + ".")
   casose "2"
@@ -417,12 +415,10 @@ func escrobj # Destrancar um item
   r = i.obj, misc:obj = arg0
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está abert" + (r.msexo ? "o." : "a."))
   casose "3"
-    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + misc:sletra\
-[r.sexo] + ".")
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está trancad" + misc:sletra[r.sexo] + \
-".")
+    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + (r.msexo ? "o." : "a."))
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está trancad" + (r.msexo ? "o." : "a."))
   casose
     ret arg0.msg("Não foi possível destrancar " + r.descnome + ".")
   casose "4"
@@ -527,16 +523,15 @@ func escrobj # Trancar um item
   r = i.obj, misc:obj = arg0
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + (r.msexo ? "o." : "a."))
   casose "4"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está trancad" + misc:sletra[r.sexo] + ".")
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está trancad" + (r.msexo ? "o." : "a."))
   casose
     ret arg0.msg("Não foi possível trancar " + r.nome + ".")
   casose "3"
   casose "5"
   casofim
-  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + misc:sletra[r.sex\
-o] + ".")
+  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + (r.msexo ? "o." : "a."))
 # Procura a chave
   ref chave
   se r.i_fechadura
@@ -649,7 +644,7 @@ func escr
     sair !arg1
     ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
   casose "6" # Sentado
-    ret arg0.msg("\c9Você já está sentad" + misc:sletra[arg0.sexo] + ".\b")
+    ret arg0.msg("\c9Você já está sentad" + (arg0.msexo ? "o" : "a") + ".\b")
   casose "8" # Em pé
     sair
   casose # Outras posições
@@ -671,8 +666,7 @@ func escr
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       ret l.objini.cmd_sentarobj(arg0, r, arg1), nulo
     efim
-    txt100 nome
-    nome = misc:sum[r.sexo] + " " + r.nome + "."
+    refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
     ret !r.i_movel, arg0.msg("Não é possível sentar-se em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
     arg0.poslugar.remove
@@ -742,8 +736,7 @@ func escr
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       ret l.objini.cmd_descansarobj(arg0, r, arg1), nulo
     efim
-    txt100 nome
-    nome = misc:sum[r.sexo] + " " + r.nome + "."
+    refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
     ret !r.i_movel, arg0.msg("Não é possível descansar em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
     arg0.poslugar.remove
@@ -848,6 +841,7 @@ const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nTeletransporta o seu perso
 ponto de retorno."
 const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
 const tipoalvo = 4 # Não agressivo
+const c_espera = 15 # Tempo de esperar após usar esse comando
 
 func escr # Personagem retorna
 # arg0 = personagem
@@ -855,10 +849,9 @@ func escr # Personagem retorna
   ret !r, arg0.msg("Você não possui ponto de retorno.")
   ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
   ret r.s_retornar == 1, arg0.msg("Você não consegue retornar.")
-  ret !checahab(arg0), nulo
-  custohab(arg0)
+  ret !checahab(arg0.persobat), nulo
+  custohab(arg0.persobat)
   msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
-  arg0.p_espera < 15 && (arg0.p_espera = 15)
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
   ret rand(100) < precisao, arg0.msg("Por algum motivo, a magia falhou.")
   $mens.p(arg0)

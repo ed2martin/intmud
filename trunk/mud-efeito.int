@@ -48,7 +48,7 @@ func cmd_cef # Criar efeito
 # Cria efeito
   txt200 lin
   lin = "e_" + txts(txtmin(nome)) + "\nb-efeito\nherda comum_efeito"
-  lin += "\nconst e_nome = \"" + nome + "\""
+  lin += "\nconst e_nome = \"" + txtcopiamai(nome, "A") + "\""
   prog p
   p.criar(lin)
   criar("admordena", "b-efeito")
@@ -85,7 +85,7 @@ func p_aef # Confirmar que quer apagar efeito
     prog p
     uint16 x
     enquanto txtsub(tpasso, x, 1)
-      p.apagar("ef_" + txtsub(tpasso, x, 1))
+      p.apagar("e_" + txtsub(tpasso, x, 1))
       x += 1
     efim
     config:salvar
@@ -135,19 +135,22 @@ const tipo2 = "linha"
 const clas2 = var.classe1
 const vari2 = "desc"
 #
-const nome3 = "Condição"
-const tipo3 = "opcao"
+const nome3 = "Quantidade máx."
+const info3 = "Quantos efeitos desse tipo um personagem pode ter"
+const tipo3 = "numero"
 const clas3 = var.classe1
-const vari3 = "condicao"
-const extr3 = "Nenhuma\nDurante a batalha\nFora da batalha"
-const exec3 = "ajustacond"
+const vari3 = "maximo"
+const extr3 = "1 10"
 #
-const nome4 = "Quantidade máx."
-const info4 = "Quantos efeitos desse tipo um personagem pode ter"
-const tipo4 = "numero"
+const nome4 = "Condição"
+const tipo4 = "opcao"
 const clas4 = var.classe1
-const vari4 = "maximo"
-const extr4 = "1 10"
+const vari4 = "e_condicao"
+const extr4 = "Nenhuma; permanente\n\
+Tem pontos de vida\n\
+Durante a batalha e tem pontos de vida\n\
+Fora da batalha e tem pontos de vida"
+const exec4 = "ajustaev"
 #
 const nome5 = "Duração"
 const info5 = "Quantos décimos de segundo o efeito dura ou 0 se não expira"
@@ -241,12 +244,14 @@ classe comum_efeito
 # Efeitos que afetam os personagens
 sav listaitem idono # Uso interno: aonde o objeto está
 listaitem evrec # Usado internamente, para receber eventos
+listaitem evbat # Para apagar o objeto ao iniciar/terminar batalha
 intexec recalc # Se deve acertar os eventos que recebe
 const dono = idono.objlista # Personagem que contém esse efeito
-const jogsav = 1 != condicao # Se deve salvar o efeito ao salvar personagem do jogador
+const jogsav = 2 != e_condicao # Se deve salvar o efeito ao salvar personagem do jogador
 sav inttempo t_reduzir # Tempo para a próxima redução
 sav inttempo t_duracao # Duração do efeito
 # const evperso = 1 # Receber eventos do personagem
+const e_condicao = 1
 const maximo = 1
 intexec evini # Para inicializar o efeito
 
@@ -257,53 +262,34 @@ func ini # Cria efeito
   !(idono = ref(arg0).dentro2.addini(este)) && apagar(este)
 
 func evini_exec # Inicializa efeito
-  refvar r = ref(dono.dono.perso ? dono.dono : dono)
-  se dono.dentro2.total(este) > maximo || int(condicao) == (r.atkenv ? 1 : 2)
+  se dono.dentro2.total(este) > maximo || e_condicao == (dono.contr.atkenv ? 3 : 2)
     apagar(este)
     evini = 1
-    msgnulo && $mens.p(r, dono) + $mens.mvis1(msgnulo)
+    msgnulo && $mens.p(dono) + $mens.mvis1(msgnulo)
   senao
     evperso && (evrec = dono.evento.addfim(este))
+    e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
     dono.recalc = 1
-    msgini && $mens.p(r, dono) + $mens.mvis1(msgini)
+    msgini && $mens.p(dono) + $mens.mvis1(msgini)
+  fimse
+  cmd_ini
 
 func fim # Apaga efeito
-  se msgfim && !evini
-    refvar r = ref(dono.dono.perso ? dono.dono : dono)
-    $mens.p(r, dono)
-    $mens.mvis1(msgfim)
-    dono.recalc = 1
+  ret evini, nulo
+  dono.pvida > 0 && msgfim && $mens.p(dono) + $mens.mvis1(msgfim)
+  dono.recalc = 1
+  cmd_fim
 
 func ajustaev # Acerta eventos
   evrec.remove, evperso && (evrec = dono.evento.addfim(este))
-
-func ajustacond # Acerta constantes inicond e fimcond
-  prog p
-  casovar int(condicao)
-  casose "1"
-    p.apagar(este, "inibat")
-    p.criar(este, "const fimbat = apagar(este)")
-    ret
-  casose "2"
-    p.criar(este, "const inibat = apagar(este)")
-    p.apagar(este, "fimbat")
-    ret
-  casose
-    p.apagar(este, "inibat")
-    p.apagar(este, "fimbat")
-  casofim
-  config:salvar
+  evbat.remove, e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
 
 func t_duracao_exec # Efeito expirou: apaga efeito
   apagar(este)
 
 func t_reduzir_exec # Executa redução
   t_reduzir = r_tempo
-  se msgreduz
-    refvar r = ref(dono.dono.perso ? dono.dono : dono)
-    $mens.p(r, dono)
-    $mens.mvis1(msgreduz)
-  fimse
+  msgreduz && $mens.p(dono) + $mens.mvis1(msgreduz)
   dono.pmana -= r_mana
   dono.pmove -= r_move
   se dono.pvida
