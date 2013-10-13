@@ -380,20 +380,19 @@ func cmd_lcl # Listar classes
   se !p.iniclasse(arg0)
     msg("\bNenhuma classe encontrada.")
   senao
-    textotxt t
-    t.addfim("\bClasses:")
-    enquanto p.lin
-      se inttotal(lin + p.texto) >= 70
-        t.addfim(lin), lin = p.texto
-      senao lin
-        lin += ", " + p.texto
-      senao
-        lin = p.texto
-      fimse
-      p.depois
+    txt100 lin
+    debug d
+    d.exec = 50000
+    txtmais.limpar
+    lin = p.texto
+    epara p.depois, p.lin, p.depois
+      txtmais.addfim(lin + ","), lin = p.texto
     efim
-    lin && t.addfim(lin)
-    msg2(t.remove(1000))
+    txtmais.addfim(lin)
+    txtmais.juntar
+    txtmais.dividelin(50, 70)
+    txtmais.addini("\bClasses:")
+    txtmostra
   fimse
   ret 1
 
@@ -773,70 +772,84 @@ const titulo = "Ataques"
 const menufim = "menu_econfig"
 const colunas = 35
 #
-const nome1 = "Modo de batalha"
-const tipo1 = "opcao--"
+const nome1 = "Experiência ganha"
+const info1 = "Quanta experiência os personagens dão quando morrem, em porcentagem"
+const tipo1 = "numero--"
 const clas1 = "config"
-const vari1 = "atktipo"
-const extr1 = "Manual\nAutomático com a classe comando_atkauto"
+const vari1 = "atkexp"
+const extr1 = "0 1000"
+#
+const nome2 = "Modo de batalha"
+const tipo2 = "opcao--"
+const clas2 = "config"
+const vari2 = "atktipo"
+const extr2 = "Manual\nAutomático com a classe comando_atkauto"
 #
 
-func nome2
+func nome3
   se config:atktipo
     ret "Tempo para finalizar batalha"
   senao
     ret "Tempo de um turno"
 
-func info2
+func info3
   se config:atktipo
     ret "Em décimos de segundo; tempo para chegar a primeira mensagem"
   senao
     ret "Em décimos de segundo"
 
-const tipo2 = "numero--"
-const clas2 = "config"
-const vari2 = "atktempo"
-const extr2 = "10 200"
-#
-const nome3 = "Tipos de ataques"
-const tipo3 = "txtopcao--"
+const tipo3 = "numero--"
 const clas3 = "config"
-const vari3 = "atknomes"
-const extr3 = "1 20"
+const vari3 = "atktempo"
+const extr3 = "10 200"
 #
-const nome4 = "Ataques especiais"
-const info4 = "Os tipos de ataque que usam ataque e defesa especial"
-const tipo4 = "vetor--"
+const nome4 = "Força do ataque automático"
+const info4 = "Usado no modo de batalha for automático"
+const tipo4 = "numero--"
 const clas4 = "config"
-const vari4 = "atkespecial"
-const extr4 = config:atknomes
+const vari4 = "atkfor"
+const extr4 = "1 100"
 #
-const nome5 = "Tipos de armas"
-const info5 = "Alguns ataques precisam de tipos específicos de armas"
+const nome5 = "Tipos de ataques"
 const tipo5 = "txtopcao--"
 const clas5 = "config"
-const vari5 = "arma_txt"
-const extr5 = "1 30 1"
+const vari5 = "atknomes"
+const extr5 = "1 20"
 #
-const nome6 = "Msg acertou golpe"
-const info6 = "Mensagens para cada tipo de arma, somente ataques automáticos"
-const tipo6 = "txtopcao--"
+const nome6 = "Ataques especiais"
+const info6 = "Os tipos de ataque que usam ataque e defesa especial"
+const tipo6 = "vetor--"
 const clas6 = "config"
-const vari6 = "arma_acertou"
-const extr6 = "1 30"
+const vari6 = "atkespecial"
+const extr6 = config:atknomes
 #
-const nome7 = "Msg errou golpe"
-const info7 = "Mensagens para cada tipo de arma, somente ataques automáticos"
+const nome7 = "Tipos de armas"
+const info7 = "Alguns ataques precisam de tipos específicos de armas"
 const tipo7 = "txtopcao--"
 const clas7 = "config"
-const vari7 = "arma_errou"
-const extr7 = "1 30"
+const vari7 = "arma_txt"
+const extr7 = "1 30 1"
 #
-const nome8 = "Msg golpe sem efeito"
+const nome8 = "Msg acertou golpe"
 const info8 = "Mensagens para cada tipo de arma, somente ataques automáticos"
 const tipo8 = "txtopcao--"
 const clas8 = "config"
-const vari8 = "arma_nulo"
+const vari8 = "arma_acertou"
 const extr8 = "1 30"
+#
+const nome9 = "Msg errou golpe"
+const info9 = "Mensagens para cada tipo de arma, somente ataques automáticos"
+const tipo9 = "txtopcao--"
+const clas9 = "config"
+const vari9 = "arma_errou"
+const extr9 = "1 30"
+#
+const nome10 = "Msg golpe sem efeito"
+const info10 = "Mensagens para cada tipo de arma, somente ataques automáticos"
+const tipo10 = "txtopcao--"
+const clas10 = "config"
+const vari10 = "arma_nulo"
+const extr10 = "1 30"
 
 
 classe menu_econfig_vestir

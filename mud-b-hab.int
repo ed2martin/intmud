@@ -106,6 +106,17 @@ func cmd_atacou # Desmaia após o ataque
   arg0.persobat.pvida = 0
 
 
+classe cmd_furtividade
+herda comando_ataque
+const nomevar = "h_Furtividade"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const a_efeito1 = "furtividade"
+const a_batalha = 2 # Condição: 2 Fora da batalha
+const msgacertou2 = ""
+const c_move1 = 20
+const c_move2 = 5
+
+
 classe cmd_gás_tóxico
 herda comando_ataque
 const nomevar = "h_Gás tóxico"
@@ -140,6 +151,17 @@ const extra = "Golpe físico de força"
 const valor = 120
 
 
+classe cmd_ocultar
+herda comando_ataque
+const nomevar = "h_Ocultar"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const a_efeito1 = "ocultar"
+const a_batalha = 2 # Condição: 2 Fora da batalha
+const msgacertou2 = ""
+const c_move1 = 20
+const c_move2 = 5
+
+
 classe cmd_onda_trovão
 herda comando_ataque
 const nomevar = "h_Onda trovão"
@@ -162,6 +184,15 @@ const extra = "Golpe físico de força"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
 
 
+classe cmd_visivel
+herda comando_ataque
+const nomevar = "h_Visivel"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const msgacertou2 = "$P fica visível."
+const a_remove = "furtividade\ninvisibilidade\nocultar"
+const a_batalha = 2 # Condição: 2 Fora da batalha
+
+
 classe cmd_voadora
 herda comando_ataque
 const nomevar = "h_Voadora"
@@ -170,6 +201,16 @@ const vel = 40
 const msgacertou2 = "$P dá uma voadora em $a"
 const depende = "h_chutar"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+
+
+classe magia_cegueira
+herda comando_ataque
+const nomevar = "m_Cegueira"
+const ataque = 0
+const c_mana1 = 20
+const c_mana2 = 5
+const tipoatk = 14 # Ataque tipo: 14 Psíquico
+const a_efeito1 = "cegueira"
 
 
 classe magia_curar
@@ -185,6 +226,29 @@ const c_mana1 = 30
 const c_mana2 = 5
 const a_vida1 = 30
 const a_vida2 = 50
+
+
+classe magia_curar_cegueira
+herda comando_ataque
+const nomevar = "m_Curar cegueira"
+const tipoalvo = 4 # Alvo: 4 Qualquer um; não agressivo
+const valor = 100
+const c_mana1 = 30
+const c_mana2 = 5
+const msgini = "$P fala solenemente 'Curar Cegueira'"
+const msgacertou2 = ""
+const a_remove = "cegueira"
+
+
+classe magia_flutuar
+herda comando_ataque
+const nomevar = "m_Flutuar"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const msgini = "$P fala solenemente 'Flutuar'"
+const a_efeito1 = "flutuar"
+const msgacertou2 = ""
+const c_mana1 = 20
+const c_mana2 = 5
 
 
 classe magia_fogo
@@ -203,6 +267,18 @@ const nomevar = "m_Identificar"
 const c_mana1 = 20
 const c_mana2 = 5
 const valor = 100
+
+
+classe magia_invisibilidade
+herda comando_ataque
+const nomevar = "m_Invisibilidade"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const msgini = "$P fala solenemente 'Inv'"
+const a_efeito1 = "invisibilidade"
+const a_batalha = 2 # Condição: 2 Fora da batalha
+const msgacertou2 = ""
+const c_mana1 = 20
+const c_mana2 = 5
 
 
 classe magia_raio_confusão
@@ -248,3 +324,25 @@ const c_mana2 = 15
 const msgextra = "Pode congelar."
 const msgacertou2 = "$P lança um sopro gelo em $a"
 const msgerrou2 = "$P lança um sopro gelo na direção de $a"
+
+
+classe magia_ver_invisivel
+herda comando_ataque
+const nomevar = "m_Ver Invisível"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const msgacertou2 = ""
+const msgini = "$P fala solenemente 'Ver Inv'"
+const a_efeito1 = "ver invisível"
+const c_mana1 = 30
+const c_mana2 = 4
+
+
+classe magia_ver_oculto
+herda comando_ataque
+const nomevar = "m_Ver Oculto"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const msgacertou2 = ""
+const msgini = "$P fala solenemente 'Ver Oculto'"
+const a_efeito1 = "ver oculto"
+const c_mana1 = 30
+const c_mana2 = 4

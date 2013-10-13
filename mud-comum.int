@@ -137,7 +137,7 @@ varfunc dono # O dono do personagem/item
     idono = r.dentro1.addfim(este) # Adiciona item
   fimse
   (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.1 = r.evento.addfim(este))
-  contr = (r.perso ? r : este)
+  contr = r.perso ? r : este
 # Se não está voando: acrescenta o peso total
   se pesotot
     r.pesoden += pesotot # Nota: r já é idono.objlista
@@ -191,4 +191,8 @@ func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   casofim
 
 func atribs # Retorna texto com os atributos do item ou personagem
-  ret bitinv & 2 ? "" : "(brilhando) "
+  ret bitinv & 0x8E == 2 && !(bitver & 528), ""
+  refvar lin = (bitinv & 2 ? "" : " Brilhando") + (bitinv & 16 ? " Voando" : bitver & 512 ? " \
+Flutuando") + (bitinv & 4 ? " Invisível") + (bitinv & 8 ? " Oculto") + (bitinv & 128 ? " \
+InvSala")
+  ret "(" + txt(lin, 1) + ") "

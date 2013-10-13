@@ -63,12 +63,18 @@ pvt
 # 0=ninguém, 1=administradores, 2=todos
 const entrainfo = 1
 #
+# Quanta experiência os personagens dão quando morrem, em porcentagem
+const atkexp = 100
+#
 # Tipo de ataque: 0=manual, 1=automático (realizado pela classe comando_atkauto)
 const atktipo = 0
 #
 # Ataque automático: tempo de um turno (em décimos de segundo)
 # Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
 const atktempo = 60
+#
+# Somente em ataque automático: força do ataque
+const atkfor = 30
 #
 # Canal chat: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
 const chattipo = 2 # Canal chat: 2 Para todo o MUD
@@ -185,17 +191,17 @@ tornozelos\npés"
 # Mensagens ao vestir um item
 # Não contém a posição 50, que é "empunhando"
 const equip_vestir = "$P coloca $a na cabeça.\n\
-$P coloca $a no rosto.\n\
-$P coloca $a nos olhos.\n\
-$P coloca $a nas orelhas.\n\
-$P coloca $a no pescoço.\n\n\n\n\n\
-$P coloca $a nas mãos.\n\
-$P coloca $a.\n\
-$P coloca $a.\n\n\n\
-$P usa $a como escudo.\n\
-$P coloca $a na cintura.\n\n\
-$P coloca $a nos tornozelos.\n\
-$P calça $a."
+$P coloca $o no rosto.\n\
+$P coloca $o nos olhos.\n\
+$P coloca $o nas orelhas.\n\
+$P coloca $o no pescoço.\n\n\n\n\n\
+$P coloca $o nas mãos.\n\
+$P coloca $o.\n\
+$P coloca $o.\n\n\n\
+$P usa $o como escudo.\n\
+$P coloca $o na cintura.\n\n\
+$P coloca $o nos tornozelos.\n\
+$P calça $o."
 #
 # As posições que estão em cima de cada posição
 const vestir0 = 0

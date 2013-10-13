@@ -120,6 +120,11 @@ func teclou # Processa comando (arg0=comando)
   ret !arg0, nulo
 # Obtém o comando
   enquanto 1
+    se arg0 == intpos(arg0) && config:animal1 >= arg0 && config:animal1
+      obj = $comando_escolhe_animal
+      obj.num = arg0
+      sair
+    fimse
     sair obj = $cmd_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
     sair obj = $soc_[txt1(arg0)].objcmd(este, arg0) # Checa social exato
     sair obj = $cmdfim_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
@@ -234,6 +239,17 @@ func descpos
   casofim
   ret txtcopiamai(descnome, "A") + " está aqui."
 
+func equippos # Retorna as posições aonde pode usar equipamentos
+  txt100 lin
+  int32 pos
+  lin = "tipo_" + tipo1
+  pos = (([lin]:equip1 ? [lin]:equip1 : -1) | [lin]:equip2) & ~[lin]:equip3
+  lin = "tipo_" + tipo2
+  pos = (([lin]:equip1 ? [lin]:equip1 : pos) | [lin]:equip2) & ~[lin]:equip3
+  lin = "tipo_" + tipo3
+  pos = (([lin]:equip1 ? [lin]:equip1 : pos) | [lin]:equip2) & ~[lin]:equip3
+  ret ((equip1 ? equip1 : pos) | equip2) & ~equip3
+
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se sock && posicao > 4 && $mens.perso.visivel(este) # Se tem jogador e está acordado
     msg($mens.proc(arg0, este))
@@ -288,6 +304,7 @@ uint16 evasao # Habilidade de desviar dos golpes (thac0)
 uint16 precisao # Habilidade de acertar os golpes (hitroll)
 uint32 pesoveste # Metade do peso de tudo que está vestindo
 uint32 pesomax # Quanto peso consegue carregar
+#
 const tipo1 = "normal" # Tipo de personagem
 # const tipo2 = "" # Segundo tipo do personagem
 # const tipo3 = "" # Terceiro tipo do personagem
@@ -308,6 +325,7 @@ uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
 const p_movervel = 140
+const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
 
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
@@ -443,6 +461,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     ret
   fimse
 # Ganha experiência
+  refvar exp1 = arg0 * config:atkexp * p_exp * (pnivel + 6) / 1000
   real2 v1
   ref r
   epara i = l.ini, i, i.depois
@@ -450,7 +469,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     v1 > 1 && (v1 = 1)
     r = i.obj.dono
     r.perso && i.obj.var.z_dono != r.descnome && (v1 *= 1.5)
-    i.obj.ganhaexp(v1 * arg0 * (pnivel * 10 + 60) / (l.total + 1))
+    i.obj.ganhaexp(v1 * exp1 / (l.total + 1))
   efim
 
 func ganhaexp # Personagem ganha experiência
@@ -517,12 +536,14 @@ func morreu # Procedimentos quando morre
   mortes += 1
 # Jogador: retira toda experiência e transfere jogador para outro lugar
   se jog
-    expatual = 0, animal.0.expatual = 0, animal.1.expatual = 0
-    animal.2.expatual = 0, animal.3.expatual = 0, animal.4.expatual = 0
-    animal.5.expatual = 0, animal.6.expatual = 0, animal.7.expatual = 0
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
     pmove = pmovemax / 2
+    expatual = 0
+    listaitem i
+    epara i = dentro2.ini, i, i.depois
+      i.obj.perso && (i.obj.expatual = 0)
+    efim
     p_restaura = rand(100, 130)
     batalhaexp(-1), batalhafim # Retira toda experiência de quem atacou
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
@@ -633,10 +654,17 @@ func p_proc_exec # Processar comportamento do personagem
   fimse
 # Acerta condição do personagem
   pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
+# Checa se é tempo de agir
+  ret p_tmove, p_proc = p_tmove + 1
+  ret posicao == 7, p_proc = 30
+# Come corpos
+  se p_comecorpo && (alvo = dono.dentro1.objini("comum_corpo"))
+    $mens.p(este, nulo, alvo)
+    $mens.mtodos1("$P come $o.")
+    alvo.apagar(1)
+    p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
 # Movimenta-se
-  se p_mover
-    ret p_tmove, p_proc = p_tmove + 1
-    ret posicao == 7, p_proc = 30
+  senao p_mover && posicao == 8
     ref r
     textotxt t
     prog p
@@ -658,59 +686,59 @@ herda comum_persobat
 # Personagem que pode batalhar e carregar animais
 const perso = 3 # Para identificar o tipo de personagem
 const objmax = 15 # Quantos itens pode carregar
-sav ref animal.8 # Animais que possui
 sav ref persobat # Personagem usado na batalha
 sav ref persoesc # Personagem escolhido pelo jogador
 
 func escolhebat # Escolhe um personagem em condições de lutar
   se persoesc.pvida # Checa se personagem escolhido está em condições
     persobat = persoesc
-  senao animal.0.pvida && config:animal1 >= 1
-    persobat = animal.0
-  senao animal.1.pvida && config:animal1 >= 2
-    persobat = animal.1
-  senao animal.2.pvida && config:animal1 >= 3
-    persobat = animal.2
-  senao animal.3.pvida && config:animal1 >= 4
-    persobat = animal.3
-  senao animal.4.pvida && config:animal1 >= 5
-    persobat = animal.4
-  senao animal.5.pvida && config:animal1 >= 6
-    persobat = animal.5
-  senao animal.6.pvida && config:animal1 >= 7
-    persobat = animal.6
-  senao animal.7.pvida && config:animal1 >= 8
-    persobat = animal.7
   senao
-    persobat = este
-  fimse
+    listaitem i
+    epara i = dentro2.ini, i && !i.obj.pvida, i.depois
+    efim
+    persobat = (i ? i.obj : este)
 
-func animalnum # Retorna o número do próximo lugar disponível para animal
-# A variável animal.[animalnum-1] é o próximo lugar disponível
-# Se retornar 0, significa que não há mais espaço
-  ret !animal.0, config:animal1 >= 1 ? 1 : 0
-  ret !animal.1, config:animal1 >= 2 ? 2 : 0
-  ret !animal.2, config:animal1 >= 3 ? 3 : 0
-  ret !animal.3, config:animal1 >= 4 ? 4 : 0
-  ret !animal.4, config:animal1 >= 5 ? 5 : 0
-  ret !animal.5, config:animal1 >= 6 ? 6 : 0
-  ret !animal.6, config:animal1 >= 7 ? 7 : 0
-  ret !animal.7, config:animal1 >= 8 ? 8 : 0
-  ret 0
+func animalmais # Retorna quantos animais ainda pode adquirir
+  uint8 x
+  x = config:animal1
+  listaitem i
+  epara i = dentro2.ini, i, (i.obj.perso && (x -= 1)) + i.depois
+  efim
+  ret x
+  
+func animaltot # Retorna quantos animais possui
+  uint8 x
+  listaitem i
+  epara i = dentro2.ini, i, (i.obj.perso && (x += 1)) + i.depois
+  efim
+  ret x
+
+func animalnum # Retorna o animal a partir do número
+# arg0 = número do animal (0 = o próprio personagem)
+  int8 x
+  x = arg0
+  ret !x, este
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    sair i.obj.perso && !(x -= 1)
+  efim
+  ret ref(i.obj)
 
 func p_proc_exec # Processar comportamento do personagem
   ret sock, nulo # Retorna se está sendo controlado por jogador
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
-# Animal em condições: escolhe
-  se persoesc == este && animal.0.pvida
-    persobat = persoesc = animal.0
-# Animal desmaiado: escolhe outro
-  senao !persoesc.pvida
-    persoesc = persobat, p_proc = 5
-    $mens.p(este, persoesc)
-    ret persobat != este, $mens.mvis1("$P escolhe $a.")
-    $mens.mvis1("$P não escolhe ninguém.")
-    ret
+# Escolhe animal
+  se persoesc == este || !persoesc.pvida
+    listaitem i
+    epara i = dentro2.ini, i && !i.obj.pvida, i.depois
+    efim
+    persobat = (i ? i.obj : este)
+    se persoesc != persobat
+      persoesc = persobat
+      $mens.p(este, persoesc)
+      ret persobat != este, $mens.mvis1("$P escolhe $b.")
+      ret $mens.mvis1("$P não escolhe ninguém.")
+    fimse
   fimse
 # Comportamento de PNJ que pode batalhar
   comum_persobat:p_proc_exec

@@ -208,36 +208,70 @@ const tipo13 = "numero"
 const clas13 = var.classe1
 const vari13 = "r_move"
 #
-const nome14 = "Msg criou"
-const info14 = "Mensagem quando o personagem recebe o efeito"
-const tipo14 = "linha"
-const clas14 = var.classe1
-const vari14 = "msgini"
+const nome14 = "Mensagens"
+const tipo14 = "menu--"
+const clas14 = "menu_efeito_msg"
 #
-const nome15 = "Msg sem efeito"
-const info15 = "Mensagem quando não foi possível criar efeito no personagem"
-const tipo15 = "linha"
+const nome15 = "Eventos perso"
+const info15 = "Se recebe eventos do personagem que está com o efeito"
+const tipo15 = "simnao"
 const clas15 = var.classe1
-const vari15 = "msgnulo"
+const vari15 = "evperso"
+const exec15 = "ajustaev"
+
+
+classe menu_efeito_msg
+const titulo = "Mensagens"
+const menufim = var.menufim
+const colunas = 25
 #
-const nome16 = "Msg apagou"
-const info16 = "Mensagem quando o efeito deixa de existir"
-const tipo16 = "linha"
-const clas16 = var.classe1
-const vari16 = "msgfim"
+const nome1 = "Criou"
+const info1 = "Quando personagem recebe o efeito"
+const tipo1 = "linha"
+const clas1 = var.classe1
+const vari1 = "msgini2"
 #
-const nome17 = "Msg reduz"
-const info17 = "Mensagem quando reduz vida, mana ou vigor"
-const tipo17 = "linha"
-const clas17 = var.classe1
-const vari17 = "msgreduz"
+const nome2 = "Criou; perso"
+const info2 = "Somente para o personagem; quando o personagem recebe o efeito"
+const tipo2 = "linha"
+const clas2 = var.classe1
+const vari2 = "msgini1"
 #
-const nome18 = "Eventos perso"
-const info18 = "Se recebe eventos do personagem que está com o efeito"
-const tipo18 = "simnao"
-const clas18 = var.classe1
-const vari18 = "evperso"
-const exec18 = "ajustaev"
+const nome3 = "Sem efeito"
+const info3 = "Quando não foi possível criar efeito no personagem"
+const tipo3 = "linha"
+const clas3 = var.classe1
+const vari3 = "msgnulo2"
+#
+const nome4 = "Sem efeito; perso"
+const info4 = "Somente para o personagem; quando não foi possível criar efeito no personagem"
+const tipo4 = "linha"
+const clas4 = var.classe1
+const vari4 = "msgnulo1"
+#
+const nome5 = "Apagou"
+const info5 = "Quando o efeito deixa de existir"
+const tipo5 = "linha"
+const clas5 = var.classe1
+const vari5 = "msgfim2"
+#
+const nome6 = "Apagou; perso"
+const info6 = "Somente para o personagem; quando o efeito deixa de existir"
+const tipo6 = "linha"
+const clas6 = var.classe1
+const vari6 = "msgfim1"
+#
+const nome7 = "Reduz"
+const info7 = "Quando reduz vida, mana ou vigor"
+const tipo7 = "linha"
+const clas7 = var.classe1
+const vari7 = "msgreduz2"
+#
+const nome8 = "Reduz; perso"
+const info8 = "Somente para o personagem; quando reduz vida, mana ou vigor"
+const tipo8 = "linha"
+const clas8 = var.classe1
+const vari8 = "msgreduz1"
 
 
 classe comum_efeito
@@ -253,6 +287,10 @@ sav inttempo t_duracao # Duração do efeito
 # const evperso = 1 # Receber eventos do personagem
 const e_condicao = 1
 const maximo = 1
+const msgini1 = msgini2
+const msgfim1 = msgfim2
+const msgnulo1 = msgnulo2
+const msgreduz1 = msgreduz2
 intexec evini # Para inicializar o efeito
 
 func ini # Cria efeito
@@ -265,18 +303,18 @@ func evini_exec # Inicializa efeito
   se dono.dentro2.total(este) > maximo || e_condicao == (dono.contr.atkenv ? 3 : 2)
     apagar(este)
     evini = 1
-    msgnulo && $mens.p(dono) + $mens.mvis1(msgnulo)
+    $mens.p(dono) + $mens.mvis2(msgnulo1, msgnulo2)
   senao
     evperso && (evrec = dono.evento.addfim(este))
     e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
     dono.recalc = 1
-    msgini && $mens.p(dono) + $mens.mvis1(msgini)
+    $mens.p(dono) + $mens.mvis2(msgini1, msgini2)
   fimse
   cmd_ini
 
 func fim # Apaga efeito
   ret evini, nulo
-  dono.pvida > 0 && msgfim && $mens.p(dono) + $mens.mvis1(msgfim)
+  dono.pvida > 0 && $mens.p(dono) + $mens.mvis2(msgfim1, msgfim2)
   dono.recalc = 1
   cmd_fim
 
@@ -289,7 +327,7 @@ func t_duracao_exec # Efeito expirou: apaga efeito
 
 func t_reduzir_exec # Executa redução
   t_reduzir = r_tempo
-  msgreduz && $mens.p(dono) + $mens.mvis1(msgreduz)
+  $mens.p(dono) + $mens.mvis2(msgreduz1, msgreduz2)
   dono.pmana -= r_mana
   dono.pmove -= r_move
   se dono.pvida

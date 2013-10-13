@@ -279,20 +279,30 @@ func p_atrib_ler # Extrai os atributos de uma função
       p_atrib_ler2(p.texto, arg0.20, arg0.21)
       sair
     casose "bitver ="
-      x = txtsub(p.texto, 2)
-      x & 2 && (arg0.22 = 1) # Visão noturna
-      x & 4 && (arg0.23 = 1) # Pode ver invisível
-      x & 8 && (arg0.24 = 1) # Pode ver oculto
-      x & 256 && (arg0.28 = 1) # Anda em silêncio
-      x & 512 && (arg0.29 = 1) # Voando ou flutuando
-      x & 1024 && (arg0.30 = 1) # Dormindo
-      x & 2048 && (arg0.31 = 1) # Imune a dormir
+      se txtsub(p.texto, 2, 1) == "bitver"
+        arg0.26 = 1 # Está cego
+      senao
+        x = txtsub(p.texto, 2)
+        x & 2 && (arg0.22 = 1) # Visão noturna
+        x & 4 && (arg0.23 = 1) # Pode ver invisível
+        x & 8 && (arg0.24 = 1) # Pode ver oculto
+        x & 16 && (arg0.25 = 1) # Pode ver voando alto
+        x & 256 && (arg0.31 = 1) # Anda em silêncio
+        x & 512 && (arg0.32 = 1) # Voando ou flutuando
+        x & 1024 && (arg0.34 = 1) # Dormindo
+        x & 2048 && (arg0.35 = 1) # Imune a dormir
+      fimse
       sair
     casose "bitinv ="
-      x = txtsub(p.texto, 2)
-      x & 4 && (arg0.25 = 1) # Torna invisível
-      x & 8 && (arg0.26 = 1) # Torna oculto
-      x & 128 && (arg0.27 = 1) # Invisível a não admin
+      se txtsub(p.texto, 2, 1) == "bitinv"
+        arg0.30 = 1 # Visível no escuro
+      senao
+        x = txtsub(p.texto, 2)
+        x & 4 && (arg0.27 = 1) # Torna invisível
+        x & 8 && (arg0.28 = 1) # Torna oculto
+        x & 16 && (arg0.33 = 1) # Voando alto
+        x & 128 && (arg0.29 = 1) # Invisível a não admin
+      fimse
       sair
     casose
       se txt(p.texto, 0, 8) == "atktipo." && txtsub(p.texto, 1, 1) == "*="
@@ -332,23 +342,25 @@ func p_atrib_salvar # Salva os atributos em função
   (arg0.16 || arg0.17) && t.addfim("evasao+=" + p_atrib2txt(arg0.16, arg0.17))
   (arg0.18 || arg0.19) && t.addfim("precisao+=" + p_atrib2txt(arg0.18, arg0.19))
   (arg0.20 || arg0.21) && t.addfim("pesomax+=" + p_atrib2txt(arg0.20, arg0.21))
-  se arg0.22 || arg0.23 || arg0.24 || arg0.28 || arg0.29 || arg0.30 || arg0.31
+  arg0.26 && t.addfim("bitver = bitver & ~1") # Está cego
+  arg0.30 && t.addfim("bitinv = bitinv & ~2") # Visível no escuro
+  se 1
     int32 x
     arg0.22 && (x += 2) # Visão noturna
     arg0.23 && (x += 4) # Pode ver invisível
     arg0.24 && (x += 8) # Pode ver oculto
-    arg0.28 && (x += 256) # Anda em silêncio
-    arg0.29 && (x += 512) # Voando ou flutuando
-    arg0.30 && (x += 1024) # Dormindo
-    arg0.31 && (x += 2048) # Imune a dormir
-    t.addfim("bitver=" + x + "|bitver")
-  fimse
-  se arg0.25 || arg0.26 || arg0.27
-    int32 x
-    arg0.25 && (x += 4) # Torna invisível
-    arg0.26 && (x += 8) # Torna oculto
-    arg0.27 && (x += 128) # Invisível a não admin
-    t.addfim("bitinv=" + x + "|bitinv")
+    arg0.25 && (x += 16) # Pode ver voando alto
+    arg0.31 && (x += 256) # Anda em silêncio
+    arg0.32 && (x += 512) # Voando ou flutuando
+    arg0.34 && (x += 1024) # Dormindo
+    arg0.35 && (x += 2048) # Imune a dormir
+    x && t.addfim("bitver=" + x + "|bitver")
+    x = 0
+    arg0.27 && (x += 4) # Torna invisível
+    arg0.28 && (x += 8) # Torna oculto
+    arg0.33 && (x += 16) # Voando alto
+    arg0.29 && (x += 128) # Invisível a não admin
+    x && t.addfim("bitinv=" + x + "|bitinv")
   fimse
   uint16 linha
   txt100 lin
@@ -379,7 +391,7 @@ func p_atrib_salvar # Salva os atributos em função
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 const p_atrib_valor = 22 # Quantidade de opções que recebem valor numérico
-const p_atrib_tipo = 32 # Quantidade de opções antes de ataque e defesa
+const p_atrib_tipo = 36 # Quantidade de opções antes de ataque e defesa
 # Depois disso vem as opções de p_atrib_atk1, e são em porcentagem
 const p_atrib_txt = "Vida\n\
 Vida por nível\n\
@@ -406,11 +418,15 @@ Carrega (gramas) por nível\n\
 Visão noturna\n\
 Pode ver invisível\n\
 Pode ver oculto\n\
+Pode ver voando alto\n\
+Está cego\n\
 Torna invisível\n\
 Torna oculto\n\
 Invisível a não admin\n\
+Visível no escuro\n\
 Anda em silêncio\n\
 Está flutuando\n\
+Está voando alto\n\
 Está dormindo\n\
 Imune a dormir"
 const p_atrib_atk1 = "Tipos Normais\nTipos Especiais\n" + config:atknomes

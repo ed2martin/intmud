@@ -695,7 +695,7 @@ func efeitohab # Efeito da habilidade sob o alvo
   a_efeito3 && rand(100) < a_prob3 && criar("e_" + a_efeito3, arg1, arg0.pnivel)
   se a_remove
     textotxt t
-    epara t.addfim(a_remove), t.linha, apagar(arg1.dentro2.objini("e_" + t.remove))
+    epara t.addfim(a_remove), t.linhas, apagar(arg1.dentro2.objini("e_" + t.remove))
     efim
   fimse
   refvar x = (arg0.var.[nomevar] - 2) / 8
@@ -1073,7 +1073,7 @@ const objajuda = nulo
 txt100 msgacertou2
 txt100 msgerrou2
 txt100 msgnulo2
-const ataque = 100
+const ataque = config:atkfor
 const vel = 50
 const extra = "Ataque automático"
 uint8 tipoatk # Tipo de ataque

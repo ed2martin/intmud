@@ -170,57 +170,87 @@ func escr
 
 classe cmd_inv
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Inv\b\n\
+const posic = 5
+const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
+const ta1 = "\b\c3Inv\b\n\
 Sintaxe: INV\n\
 Mostra os itens que o seu personagem está carregando."
-const posic = 5
+const ta2 = "\b\c3Inv\b\n\
+Sintaxe: INV\n\
+         INV <número>\n\
+Mostra os itens que o seu personagem está carregando.\n\
+Seguido de um número de 0 a $ mostra os itens do animal correspondente."
 
 func escr
   textotxt t
   listaitem item
-  epara item = arg0.dentro1.fim, item, item.antes
+  ref r
+  r = arg0.persoesc
+  se arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
+  fimse
+  epara item = r.dentro1.fim, item, item.antes
     continuar !item.obj.visivel(arg0)
     t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtcopiamai(item.obj.descnome, \
 "A"))
   efim
   t.juntalin("(", "x)")
+  refvar nome = r == arg0 ? "Você" : txtcopiamai(r.nome, "A")
   se t
-    arg0.msg2("\b\c6Você carrega:\b\n" + t.remove(1000))
+    arg0.msg2("\b\c6" + nome + " carrega:\b\n" + t.remove(1000))
   senao
-    arg0.msg("\bVocê não está carregando nada.")
+    arg0.msg("\b" + nome + " não está carregando nada.")
   fimse
 
 
 classe cmd_equip
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Equip\b\n\
+const posic = 5
+const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
+const ta1 = "\b\c3Equip\b\n\
 Sintaxe: EQUIP\n\
          EQUIP TUDO\n\
 Mostra os itens que o seu personagem está vestindo ou usando.\n\
 Digitando EQUIP TUDO, são mostradas também as posições aonde o seu\n\
 personagem pode vestir algo."
-const posic = 5
+const ta2 = "\b\c3Equip\b\n\
+Sintaxe: EQUIP\n\
+         EQUIP TUDO\n\
+         EQUIP <número>\n\
+Mostra os itens que o seu personagem está vestindo ou usando.\n\
+Digitando EQUIP TUDO, são mostradas também as posições aonde o seu\n\
+personagem pode vestir algo.\n\
+Seguido de um número de 0 a $ mostra os itens do animal correspondente."
 
 func escr
   textotxt t
   listaitem item
   ref pos.55
   txt50 nomepos
+# Obtém o personagem
+  ref r
+  r = arg0.persoesc
+  se arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
+  fimse
 # Preenche pos
-  epara item = arg0.dentro2.fim, item, item.antes
+  epara item = r.dentro2.fim, item, item.antes
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
     pos.[item.obj.vestpos] = item.obj
   efim
   pos.0 = pos.50
 # Mostra as posições
   int8 x
+  refvar lugar = (arg1 == "tudo" ? r.equippos : 0)
   epara x = 0, x <= 32, x += 1
-    refvar obj = pos.[x]
+     refvar obj = pos.[x]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(20 - inttotal(nomepos))
       t.addfim(nomepos + obj.atribs + txtcopiamai(obj.descnome, "A"))
-    senao arg1 == "tudo"
+    senao lugar & (1 << x)
       nomepos = "\c2(" + misc:equip(x ? x : 50) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(20 - inttotal(nomepos)) + "nada")
@@ -228,30 +258,45 @@ func escr
     fimse
   efim
 # Envia mensagem
+  refvar nome = r == arg0 ? "Você" : txtcopiamai(r.nome, "A")
   se t.linhas
-    arg0.msg2("\b\c6Equipado com:\b\n" + t.remove(1000))
+    refvar eq = r.msexo ? " está equipado" : " está equipada"
+    arg0.msg2("\b\c6" + nome + eq + " com:\b\n" + t.remove(1000))
   senao
-    arg0.msg("\bNão está vestindo/usando nada.")
+    arg0.msg("\b" + nome + " não está vestindo/usando nada.")
   fimse
 
 
 classe cmd_efeito
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Efeito\b\n\
+const posic = 0
+const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
+const ta1 = "\b\c3Efeito\b\n\
 Sintaxe: EFEITO\n\
 Mostra os efeitos que estão afetando o seu personagem."
-const posic = 0
+const ta2 = "\b\c3Efeito\b\n\
+Sintaxe: EFEITO\n\
+         EFEITO <número>\n\
+Mostra os efeitos que estão afetando o seu personagem.\n\
+Seguido de um número de 0 a $ mostra os efeitos afetando o animal\n\
+correspondente."
 
 func escr
   listaitem i
   textotxt t
-  epara i = arg0.persoesc.dentro2.ini, i, i.depois
+  ref r
+  r = arg0.persoesc
+  se arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
+  fimse
+  epara i = r.dentro2.ini, i, i.depois
     continuar !i.obj.e_nome
     t.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
 ")"))
   efim
 # Envia mensagem
-  refvar nome = arg0.persoesc == arg0 ? "você" : arg0.persoesc.nome
+  refvar nome = r == arg0 ? "você" : r.nome
   se t.linhas
     t.ordenalin("", "x")
     arg0.msg2("\b\c6Efeitos em " + nome + ":\b\n" + t.remove(1000))
@@ -262,16 +307,28 @@ func escr
 
 classe cmd_vida
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Vida\b\n\
+const posic = 0
+const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
+const ta1 = "\b\c3Vida\b\n\
 Sintaxe: VIDA\n\
 Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
-const posic = 0
+const ta2 = "\b\c3Vida\b\n\
+Sintaxe: VIDA\n\
+         VIDA <número>\n\
+Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
+Seguido de um número de 0 a $ mostra as informações do animal correspondente."
 
 func escr
-  se arg0.persoesc == arg0
+  ref r
+  r = arg0.persoesc
+  se arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
+  fimse
+  se r == arg0
     arg0.msg(vidalin(arg0))
   senao
-    arg0.msg(txtcopiamai(arg0.persoesc.nome, "A") + ": " + vidalin(arg0.persoesc))
+    arg0.msg(txtcopiamai(r.nome, "A") + ": " + vidalin(r))
 
 func vidalin
   txt100 lin
@@ -286,7 +343,7 @@ func vidalin
 classe cmd_moedas
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Moedas\b\n\
-Sintaxe: VIDA\n\
+Sintaxe: MOEDAS\n\
 Mostra quantas moedas você está carregando."
 const posic = 0
 
@@ -407,23 +464,30 @@ func escr
 
 classe cmd_estat
 herda comando_comum, comando_ajuda
-const txtajuda = config:animal1 ? ta1 : ta2
 const posic = 5
+const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
 const ta1 = "\b\c3Estat\b\n\
 Sintaxe: ESTAT\n\
-Mostra as estatísticas e diversas informações sobre o seu personagem ou\n\
-o animal você escolheu."
+Mostra as estatísticas e diversas informações sobre o seu personagem."
 const ta2 = "\b\c3Estat\b\n\
 Sintaxe: ESTAT\n\
-Mostra as estatísticas e diversas informações sobre o seu personagem."
+         ESTAT <número>\n\
+Mostra as estatísticas e diversas informações sobre o seu personagem ou\n\
+o animal você escolheu.\n\
+Seguido de um número de 0 a $ mostra as estatísticas do animal\n\
+correspondente."
 
 func escr
   textotxt t
   textotxt h
   txt100 t1
-  txt100 t2
   ref r
+# Obtém o personagem
   r = arg0.persoesc
+  se arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
+  fimse
   t.addfim("\b\c6Estatísticas de \"" + r.nome + "\"\b")
 # Vida, mana e vigor
   t1 = "Vida " + r.pvida + "/" + r.pvidamax
@@ -437,8 +501,9 @@ func escr
   h.linhas && t.addfim("Tipo/raça/classe: " + txttroca(h.remove(10), "\n", ", "))
   t.addfim("Sexo:             " + (r.psexo ? "Masculino" : "Feminino"))
 # Quem pegou
-  se r != arg0
-    t.addfim("Pego por:         " + r.var.z_dono + " (no nível " + r.var.z_pnivel + ")")
+  se r != arg0 && r.var.z_dono
+    t1 = "Pego por:         " + txte(r.var.z_dono)
+    t.addfim(t1 + " (no nível " + int(r.var.z_pnivel) + ")")
   fimse
 # Moedas e pontos de aulas
   r.var.z_moedas_ && t.addfim("Moedas:           " + txtnum(r.var.z_moedas_, "."))

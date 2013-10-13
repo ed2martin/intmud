@@ -147,8 +147,14 @@ func p_linha # Alterando um texto de uma linha
   prog p
   se arg0 == "" || arg0 == "\b"
     passo = "linha"
-    msg("Entre com um texto, N nenhum, Z cancela")
+    msg("Entre com um texto, N nenhum, V Texto vazio, Z cancela")
     ret 1
+  senao arg0 == "v"
+    p.criar(var.opcclasse, "const " + var.opcvar + "=\"\"")
+    config:salvar
+    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    msg(var.opcnome + " mudou para um texto vazio")
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 == "n"
     se !var.opcvalido
       p.apagar(var.opcclasse, var.opcvar)
@@ -217,6 +223,14 @@ func p_texto # Alterando um texto de várias linhas
     ret 1
   casose "x" # Salvar o texto
     prog p
+    se !var.opcvalido && !teditor.linhas
+      p.apagar(var.opcclasse, var.opcvar)
+      config:salvar
+      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      msg("Apagado: " + var.opcnome)
+      admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+      ret 1
+    fimse
     textopos p1
     textotxt t1
     epara p1 = teditor.ini, p1.lin, p1.depois
