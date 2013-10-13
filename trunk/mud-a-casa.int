@@ -703,11 +703,11 @@ func cmd_salaperso # Personagem chegou
 
 func cmd_escr # Escreveu algo
   se arg1 == "deitar"
-    uint8 total
-    epara nulo, total < config:animal1, total += 1
-      arg0.animal.[total].restaurar
-    efim
     arg0.restaurar
+    listaitem i
+    epara i = dentro2.ini, i, i.depois
+      i.obj.perso && i.obj.restaurar
+    efim
     $mens.p(arg0)
     $mens.mtodos1("$P descansa e se recupera.")
     ret 1

@@ -20,6 +20,7 @@ func escr # Executa o comando
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
+  ((arg0.bitver & 512) || (arg0.bitinv & 16)) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret

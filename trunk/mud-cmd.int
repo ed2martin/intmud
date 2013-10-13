@@ -52,7 +52,7 @@ Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
 seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
 preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
 As opções são:\n\
-  \c2DESC\b     Mostra descrições completas (como ao digitar VER)\n\
+  \c2DESC\b     Mostra descrições completas (como ao digitar OLHAR)\n\
   \c2SAIDAS\b   Mostra as saídas visíveis após a descrição da sala\n\
   \c2CORES\b    Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
   \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
@@ -101,7 +101,7 @@ func escr
   opc.bits = arg0.jogconfig.bits
   se !arg1
     epara p.inifunc(este, "opc_"), p.lin, p.depois
-      se [p.texto] == nulo
+      se !txt([p.texto])
       senao opc.[[p.texto]]
         x += " +" + txtmai(txt(p.texto, 4))
       senao [p.texto] < 16 || arg0.jogconfig.23
@@ -117,7 +117,7 @@ func escr
   txt512 mudou
   enquanto x
     epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
-      sair ([p.texto] < 16 || arg0.jogconfig.23) && [p.texto] != nulo
+      sair ([p.texto] < 16 || arg0.jogconfig.23) && txt([p.texto])
     efim
     se !p.lin
       y += " " + txt1(x)
@@ -249,7 +249,7 @@ func escr
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-# ret arg0 == l.objini, arg0.msg("Olhar para você mesmo?")
+    ret arg0 == l.objini, arg0.msg("Olhar para você mesm" + (arg0.msexo ? "o?" : "a?"))
     r = l.objini
     textotxt t
 # O que o personagem está vestindo

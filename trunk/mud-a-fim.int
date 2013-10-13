@@ -47,3 +47,25 @@ func espera_exec # Restaura a vida do jogador
       r.mudadono($[r.var.z_salafim] ? $[r.var.z_salafim] : $s_casa001)
     fimse
   efim
+
+
+classe s_fim003
+herda b_fim
+const s_titulo = "Sem movimentação"
+const s_desc = "Essa sala bloqueia os comandos dos jogadores que estiverem nela,\n\
+exceto comandos de administração."
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr
+  casovar arg2
+  casose "cmd_ver"
+  casose "cmd_olhar"
+  casose "cmd_inv"
+  casose "cmd_equip"
+  casose "cmd_quem"
+    ret
+  casofim
+  arg0.msg("Você está sem movimentação!")
+  ret 1

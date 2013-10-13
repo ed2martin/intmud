@@ -39,7 +39,7 @@ func cmd_citem # Criar item
     ret 1
   fimse
 # Checa nome completo
-  nome = arg0
+  nome = txtmin(txtremove(arg0, "EMDCT7"))
   num = int(txtfim(nome, 3)) + 1000
   se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
@@ -82,8 +82,8 @@ func p_citem # Escolher o tipo de item ao criar
   casose "o"
     txtmais.limpar
     txtmais.addfim("S Simples")
-    txtmais.addfim("G Agrupa vários em um único objeto")
-    txtmais.addfim("C Completo")
+    txtmais.addfim("G Agrupa vários em um objeto para economizar memória")
+    txtmais.addfim("C Completo (luz, mobília, container)")
     txtmostra
     ret 1
   casose "s"
@@ -110,19 +110,20 @@ func p_citem # Escolher o tipo de item ao criar
 
 func cmd_aitem # Apagar item
   prog p
-  se arg0 == ""
+  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  se nome == ""
     msg("Tecle um ou mais nomes de itens após AITEM")
     ret 1
   fimse
   uint16 x
-  enquanto txtsub(arg0, x, 1)
-    se !p.existe("i_" + txtsub(arg0, x, 1))
-      msg("Item não existe: " + txtsub(arg0, x, 1))
+  enquanto txtsub(nome, x, 1)
+    se !p.existe("i_" + txtsub(nome, x, 1))
+      msg("Item não existe: " + txtsub(nome, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = arg0, p_aitem
+  tpasso = nome, p_aitem
   ret 1
 
 func p_aitem # Confirmar que quer apagar item
@@ -155,14 +156,15 @@ func p_aitem # Confirmar que quer apagar item
 func cmd_eitem # Editar item
   prog p
   uint8 num
-  se arg0 == ""
+  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  se nome == ""
     msg("Tecle o nome do item após EITEM")
-  senao !p.existe("i_" + arg0)
-    msg("\bItem não existe: " + arg0)
-  senao !p.existe("menu_item" + (num = i_[arg0]:item))
-    msg("\bItem não pode ser editado: " + arg0)
+  senao !p.existe("i_" + nome)
+    msg("\bItem não existe: " + nome)
+  senao !p.existe("menu_item" + (num = i_[nome]:item))
+    msg("\bItem não pode ser editado: " + nome)
   senao
-    var.classe1 = "i_" + txtmin(arg0)
+    var.classe1 = "i_" + txtmin(nome)
     var.menufim = "menu_item" + num
     m_menu("menu_item" + num)
   fimse
@@ -297,48 +299,54 @@ const clas17 = var.classe1
 const vari17 = "vestir1"
 const extr17 = config:equip_txt
 #
-const nome18 = "Não podem vestir"
-const info18 = "Raças e classes que não podem usar esse item"
-const tipo18 = "tipos"
+const nome18 = "Podem vestir"
+const tipo18 = "opcao"
 const clas18 = var.classe1
-const vari18 = "vestirnao"
+const vari18 = "vestirsim"
+const extr18 = "Todos\nJogadores e PNJs\nAnimais capturados"
 #
-const nome19 = "Atrib vestir"
-const tipo19 = "atribcomum"
+const nome19 = "Não podem vestir"
+const info19 = "Raças e classes que não podem usar esse item"
+const tipo19 = "tipos"
 const clas19 = var.classe1
-const vari19 = "recalc_auto"
-const exec19 = "recalc_ajusta"
+const vari19 = "vestirnao"
 #
-const nome20 = "Atrib atk vestir"
-const info20 = "Afetam os danos quando o personagem ataca alguém"
-const tipo20 = "atribatk"
+const nome20 = "Atrib vestir"
+const tipo20 = "atribcomum"
 const clas20 = var.classe1
 const vari20 = "recalc_auto"
 const exec20 = "recalc_ajusta"
 #
-const nome21 = "Atrib def vestir"
-const info21 = "Afetam os danos quando alguém ataca o personagem"
-const tipo21 = "atribdef"
+const nome21 = "Atrib atk vestir"
+const info21 = "Afetam os danos quando o personagem ataca alguém"
+const tipo21 = "atribatk"
 const clas21 = var.classe1
 const vari21 = "recalc_auto"
 const exec21 = "recalc_ajusta"
 #
-const nome22 = "Tipo de arma"
-const tipo22 = "menu--"
-const clas22 = "menu_iarma"
+const nome22 = "Atrib def vestir"
+const info22 = "Afetam os danos quando alguém ataca o personagem"
+const tipo22 = "atribdef"
+const clas22 = var.classe1
+const vari22 = "recalc_auto"
+const exec22 = "recalc_ajusta"
 #
-const nome23 = "Pega animal nível"
-const info23 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+const nome23 = "Tipo de arma"
+const tipo23 = "menu--"
+const clas23 = "menu_iarma"
+#
+const nome24 = "Pega animal nível"
+const info24 = "Nível médio dos animais que podem ser capturados com esse item,\n\
 ou 0 se não puder capturar"
-const tipo23 = "numero"
-const clas23 = var.classe1
-const vari23 = "i_captura"
-#
-const nome24 = "Chave"
-const info24 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo24 = "linha"
+const tipo24 = "numero"
 const clas24 = var.classe1
-const vari24 = "i_chave"
+const vari24 = "i_captura"
+#
+const nome25 = "Chave"
+const info25 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo25 = "linha"
+const clas25 = var.classe1
+const vari25 = "i_chave"
 #
 const nome50 = "Variáveis"
 const tipo50 = "linha"
@@ -414,44 +422,44 @@ herda menu_item1
 const titulo = "Item " + txt(var.classe1, 2)
 const colunas = 23
 #
-const nome25 = "Mobília"
-const tipo25 = "opcao"
-const clas25 = var.classe1
-const vari25 = "i_movel"
-const extr25 = "Não\nPodem sentar\nPodem sentar e deitar"
-#
-const nome26 = "Lugares"
-const tipo26 = "numero"
+const nome26 = "Mobília"
+const tipo26 = "opcao"
 const clas26 = var.classe1
-const vari26 = "i_lugar"
+const vari26 = "i_movel"
+const extr26 = "Não\nPodem sentar\nPodem sentar e deitar"
 #
-const nome27 = "Container"
-const tipo27 = "opcao"
+const nome27 = "Lugares"
+const tipo27 = "numero"
 const clas27 = var.classe1
-const vari27 = "i_abertoini"
-const exec27 = "recalc_exec"
-const extr27 = "Não\n\
+const vari27 = "i_lugar"
+#
+const nome28 = "Container"
+const tipo28 = "opcao"
+const clas28 = var.classe1
+const vari28 = "i_abertoini"
+const exec28 = "recalc_exec"
+const extr28 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome28 = "Trancar"
-const tipo28 = "opcao"
-const clas28 = var.classe1
-const vari28 = "i_tranc"
-const extr28 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
-#
-const nome29 = "Fechadura"
-const info29 = "Código da chave que tranca e destranca o container"
-const tipo29 = "linha"
+const nome29 = "Trancar"
+const tipo29 = "opcao"
 const clas29 = var.classe1
-const vari29 = "i_fechadura"
+const vari29 = "i_tranc"
+const extr29 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome30 = "Fonte de luz"
-const tipo30 = "menu--"
-const clas30 = "menu_iluz"
+const nome39 = "Fechadura"
+const info39 = "Código da chave que tranca e destranca o container"
+const tipo39 = "linha"
+const clas39 = var.classe1
+const vari39 = "i_fechadura"
+#
+const nome31 = "Fonte de luz"
+const tipo31 = "menu--"
+const clas31 = "menu_iluz"
 
 
 classe menu_iluz

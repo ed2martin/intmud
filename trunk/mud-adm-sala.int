@@ -77,20 +77,14 @@ func cmd_larea # Listar ·reas
 
 func cmd_carea # Criar ·rea
   txt100 prefixo
-  prefixo = txtmin(arg0)
+  prefixo = txtmin(txtremove(arg0, "EMDCT7"))
   se $a_[prefixo]
     msg("\b¡rea j· existe: " + prefixo)
   senao inttotal(prefixo) < 2 || inttotal(prefixo) > 10
     msg("\bNome de ·rea deve ter de 2 a 10 caracteres")
+  senao prefixo != txtsepara(prefixo, "DEO+DEOL,DEOL+DEO")
+    msg("\bNome de ·rea deve ter apenas letras de a a z.")
   senao
-    uint8 pos
-    enquanto pos < inttotal(prefixo)
-      se txt(prefixo, pos, 1) < "a" || txt(prefixo, pos, 1) > "z"
-        msg("\bNome de ·rea deve ter apenas letras de a a z.")
-        ret 1
-      fimse
-      pos += 1
-    efim
     prog p
     p.criar("a_" + prefixo + "\na-" + prefixo + "\nherda area")
     p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala\nconst s_area=\"" + prefixo + \
@@ -103,7 +97,7 @@ func cmd_carea # Criar ·rea
 func cmd_aarea # Apagar ·rea
   txt100 prefixo
   prog p
-  prefixo = txtmin(arg0)
+  prefixo = txtmin(txtremove(arg0, "EMDCT7"))
   se !$a_[prefixo]
     msg("\b¡rea n„o existe: " + prefixo)
 # senao p.iniherdainv("b_" + prefixo)
@@ -136,7 +130,7 @@ func cmd_aarea # Apagar ·rea
 func cmd_earea # Editar ·rea
   txt100 prefixo
   prog p
-  prefixo = txtmin(arg0)
+  prefixo = txtmin(txtremove(arg0, "EMDCT7"))
   se prefixo == ""
     prefixo = txt(perso.dono, 2, inttotal(txt(perso.dono)) - 5)
   fimse
@@ -146,21 +140,6 @@ func cmd_earea # Editar ·rea
     var.classe1 = "a_" + prefixo
     var.classe2 = "b_" + prefixo
     m_menu("menu_area")
-  fimse
-  ret 1
-
-func cmd_lsala # Listar salas
-  prog p
-  se !p.iniclasse("s_" + arg0)
-    msg("\bNenhuma sala encontrada.")
-  senao
-    textotxt t
-    t.addfim("\b\c6Salas:\b")
-    enquanto p.lin && t.linhas < 500
-      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo)
-      p.depois
-    efim
-    msg2(t.remove(500))
   fimse
   ret 1
 
@@ -204,6 +183,21 @@ func cmd_tele # Ir para uma sala especÌfica
     !(p.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaÁa.")
     p.mudadono(s)
     !(p.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaÁa.")
+  fimse
+  ret 1
+
+func cmd_lsala # Listar salas
+  prog p
+  se !p.iniclasse("s_" + txtremove(arg0, "EMDCT7"))
+    msg("\bNenhuma sala encontrada.")
+  senao
+    textotxt t
+    t.addfim("\b\c6Salas:\b")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo)
+      p.depois
+    efim
+    msg2(t.remove(500))
   fimse
   ret 1
 
@@ -262,7 +256,7 @@ func cmd_csala # Criar sala
     ret 1
   fimse
 # Checa nome completo
-  nome = arg0
+  nome = txtmin(txtremove(arg0, "EMDCT7"))
   num = int(txtfim(nome, 3)) + 1000
   se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
@@ -297,19 +291,20 @@ func cmd_csala # Criar sala
 
 func cmd_asala # Apagar sala
   prog p
-  se arg0 == ""
+  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  se nome == ""
     msg("Tecle um ou mais nomes da sala apÛs ASALA")
     ret 1
   fimse
   uint16 x
-  enquanto txtsub(arg0, x, 1)
-    se !p.existe("s_" + txtsub(arg0, x, 1))
-      msg("Sala n„o existe: " + txtsub(arg0, x, 1))
+  enquanto txtsub(nome, x, 1)
+    se !p.existe("s_" + txtsub(nome, x, 1))
+      msg("Sala n„o existe: " + txtsub(nome, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = arg0, p_asala
+  tpasso = nome, p_asala
   ret 1
 
 func p_asala # Confirmar que quer apagar sala
@@ -342,7 +337,7 @@ func p_asala # Confirmar que quer apagar sala
 func cmd_esala # Editar sala
   txt100 nome
   prog p
-  nome = txtmin(arg0)
+  nome = txtmin(txtremove(arg0, "EMDCT7"))
   nome == "" && (nome = txt(perso.dono, 2))
   se !$s_[nome]
     msg("\bSala n„o existe: " + nome)

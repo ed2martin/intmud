@@ -1,9 +1,24 @@
+classe e_cegueira
+herda comum_efeito
+const e_nome = "Cegueira"
+const msgini2 = "$P ficou ceg$s."
+const msgfim2 = "A visão de $p retornou."
+const tempo1 = 9000
+const tempo2 = 50
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = bitver & ~1
+
+const msgfim1 = "A sua visão retornou."
+
+
 classe e_confusao
 herda comum_efeito
 const e_nome = "Confusão"
 const desc = "Ao atacar tem 25% de chances de se bater / trigger"
-const msgini = "$P ficou confus$s."
-const msgfim = "$P não está mais confus$s."
+const msgini2 = "$P ficou confus$s."
+const msgfim2 = "$P não está mais confus$s."
 const tempo1 = 3000
 const tempo2 = 20
 const evperso = 1 # Eventos perso: Sim
@@ -24,8 +39,8 @@ classe e_congelado
 herda comum_efeito
 const e_nome = "Congelado"
 const desc = "Fica sem ação / trigger"
-const msgini = "$P congelou."
-const msgfim = "$P descongelou."
+const msgini2 = "$P congelou."
+const msgfim2 = "$P descongelou."
 const tempo1 = 1200
 const tempo2 = 10
 const evperso = 1 # Eventos perso: Sim
@@ -63,7 +78,7 @@ const e_nome = "Endurecer"
 const desc = "Aumenta a defesa durante a batalha"
 const maximo = 4
 const e_condicao = 2 # Condição: 2 Durante a batalha e tem pontos de vida
-const msgnulo = "$P não sente diferença."
+const msgnulo2 = "$P não sente diferença."
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -75,19 +90,52 @@ classe e_envenenado
 herda comum_efeito
 const e_nome = "Envenenado"
 const desc = "Perde vida de tempos em tempos"
-const tempo1 = 3000
-const tempo2 = 20
+const tempo1 = 6000
+const tempo2 = 40
 const r_tempo = 80
 const r_vida = 10
-const msgini = "$P foi envenenad$s."
-const msgfim = "$P não está mais envenenad$s."
-const msgreduz = "$P sofre com o veneno."
+const msgini2 = "$P foi envenenad$s."
+const msgfim2 = "$P não está mais envenenad$s."
+const msgreduz2 = "$P sofre com o veneno."
+
+
+classe e_flutuar
+herda comum_efeito
+const e_nome = "Flutuar"
+const msgini2 = "$P começa a flutuar."
+const msgfim2 = "$P retorna ao chão."
+const msgnulo2 = "$P sobe um pouco no ar e volta."
+const tempo1 = 6000
+const tempo2 = 40
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 512 | bitver
+
+
+classe e_furtividade
+herda comum_efeito
+const e_nome = "Furtividade"
+const desc = "Anda em silêncio"
+const e_condicao = 3 # Condição: 3 Fora da batalha e tem pontos de vida
+const msgini1 = "Você anda em silêncio."
+const msgnulo1 = "Você anda em silêncio."
+const tempo1 = 6000
+const tempo2 = 40
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 256 | bitver
 
 
 classe e_invisibilidade
 herda comum_efeito
 const e_nome = "Invisibilidade"
 const e_condicao = 3 # Condição: 3 Fora da batalha e tem pontos de vida
+const msgini2 = "$P ficou invisível."
+const msgnulo2 = "$P ficou visível por um instante."
+const tempo1 = 6000
+const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -133,13 +181,14 @@ classe e_ocultar
 herda comum_efeito
 const e_nome = "Ocultar"
 const e_condicao = 3 # Condição: 3 Fora da batalha e tem pontos de vida
+const msgini1 = "$P se esconde."
+const msgnulo1 = "$P continua escondid$s."
+const tempo1 = 6000
+const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitinv = 8 | bitinv
-
-const msgini = "$P ficou oculto."
-const msgfim = "$P não está mais oculto."
 
 
 classe e_paralisado
@@ -148,8 +197,8 @@ const e_nome = "Paralisado"
 const desc = "Espera mais tempo entre ataques / trigger"
 const tempo1 = 3000
 const tempo2 = 20
-const msgini = "$P foi paralisad$s."
-const msgfim = "$P não está mais paralisad$s."
+const msgini2 = "$P foi paralisad$s."
+const msgfim2 = "$P não está mais paralisad$s."
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacou
@@ -165,9 +214,9 @@ const tempo1 = 600
 const tempo2 = 5
 const r_tempo = 80
 const r_vida = 10
-const msgini = "$P sofre queimaduras."
-const msgfim = "$P não está mais queimando."
-const msgreduz = "$P está queimando."
+const msgini2 = "$P sofre queimaduras."
+const msgfim2 = "$P não está mais queimando."
+const msgreduz2 = "$P está queimando."
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacou
@@ -182,8 +231,8 @@ classe e_sono_profundo
 herda comum_efeito
 const e_nome = "Sono profundo"
 const desc = "Não pode acordar / trigger"
-const msgini = "$P pegou no sono."
-const msgfim = "$P acordou."
+const msgini2 = "$P pegou no sono."
+const msgfim2 = "$P acordou."
 const tempo1 = 600
 const tempo2 = 5
 const evperso = 1 # Eventos perso: Sim
@@ -199,3 +248,32 @@ func cmd_fim # Efeito foi apagado
 func cmd_atacou
   se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo
+
+
+classe e_ver_oculto
+herda comum_efeito
+const e_nome = "Ver Oculto"
+const msgini2 = "Os sentidos de $p ficam mais aguçados."
+const msgini1 = "Seus sentidos ficam mais aguçados."
+const msgnulo1 = "$P não sente diferença."
+const msgfim1 = "Seus sentidos voltam ao normal."
+const tempo1 = 6000
+const tempo2 = 40
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 8 | bitver
+
+
+classe e_ver_invisivel
+herda comum_efeito
+const e_nome = "Ver Invisível"
+const msgini2 = "Os sentidos de $p ficam mais aguçados."
+const msgnulo2 = "$P não sente diferença."
+const msgfim2 = "Os sentidos de $p voltam ao normal."
+const tempo1 = 6000
+const tempo2 = 40
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 4 | bitver

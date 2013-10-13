@@ -349,7 +349,7 @@ classe p_teste003
 herda comum_persobat
 const nome = "cão"
 const descnome = "um cão"
-const descpadr = "Um cachorro late para você."
+const descpadr = "Um cão late para você."
 const descver = "Mamífero da família dos canídeos."
 const msexo = 1 # 0=feminino, 1=masculino
 const p_captura = 2 # Capturar: 2 Fácil
@@ -433,7 +433,16 @@ h_Morder 4\n\
 i_Hebráico 2\n\
 m_Fogo 4\n\
 m_Retornar 8\n\
-m_Identificar 8"
+m_Identificar 8\n\
+h_Visível 8\n\
+h_Ocultar 8\n\
+h_Furtividade 8\n\
+m_Ver_Invisível 8\n\
+m_Ver_Oculto 8\n\
+m_Invisibilidade 8\n\
+m_Flutuar 8\n\
+m_Cegueira 8\n\
+m_Curar_Cegueira 8"
 const taxaaula = 50
 const lojanao = ""
 
@@ -497,6 +506,59 @@ func recalc_auto # Altera atributos do personagem
   pvidamax += -40
 
 
+classe p_teste012
+herda comum_perso
+const nome = "Adestradora de animais raros"
+const ident = "adestradora"
+const descpadr = "Adestradora de animais raros está aqui, esperando por clientes."
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Alguém chegou na mesma sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  se arg1 == "branco"
+    se arg0.dentro2.objini("p_teste013")
+      arg0.msg("Adestradora: Mas você já possui uma duende branca!")
+    senao !arg0.animalmais
+      arg0.msg("Adestradora: Você não tem espaço para receber mais animais")
+    senao
+      txt200 habs
+      habs = "z_dono=Adestradora_de_animais,m_Curar=4,h_Raio_confusão=4"
+      habs += ",m_Sono_profundo=4,m_Sopro_de_gelo=4,m_Meditar=4"
+      refvar r = criar("p_teste013", arg0, 3, habs)
+      $mens.p(arg0, r)
+      $mens.mvis1("Adestradora dá $a para $P.")
+    fimse
+  senao arg1 == "negro"
+    se arg0.dentro2.objini("p_teste014")
+      arg0.msg("Adestradora: Mas você já possui um duende negro!")
+    senao !arg0.animalmais
+      arg0.msg("Adestradora: Você não tem espaço para receber mais animais")
+    senao
+      txt200 habs
+      habs = "z_dono=Adestradora_de_animais,h_Explodir=4,h_Choque=1"
+      habs += ",h_Onda_trovão=4,h_Drenar=4,h_Endurecer=4,h_Meditar=4"
+      refvar r = criar("p_teste014", arg0, 3, habs)
+      $mens.p(arg0, r)
+      $mens.mvis1("Adestradora dá $a para $P.")
+    fimse
+
+
+classe p_teste013
+herda comum_persobat
+const nome = "Duende branca"
+const equip1 = 262182 # Equip posições: 1-rosto, 2-olhos, 5-corpo, 18-pés
+const equip2 = 16 # Equip adicionar: 4-pescoço
+
+
+classe p_teste014
+herda comum_persobat
+const nome = "Duende negro"
+const msexo = 1 # Sexo Msg: 1 Masculino
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -519,14 +581,15 @@ func cmd_mover
 
 classe s_teste002
 herda b_teste
-const s_titulo = "Bifurcação"
-const s_desc = "A leste há um pequeno jardim.\n\
+const s_titulo = "Portaria"
+const s_desc = "Cada andar desse pequeno edifício trata de um assunto.\n\
+A leste há um pequeno jardim.\n\
 A sudeste você pode mudar de nível.\n\
 As salas ao sul mostram diversos recursos do MUD.\n\
 A oeste há explicações sobre o comando de administração CMD e derivados."
 const dir_n = $s_teste001
 const dir_l = $s_teste003
-const dir_s = $s_teste014
+const dir_c = $s_teste014
 const dir_o = $s_teste033
 const dir_se = $s_teste015
 
@@ -713,17 +776,17 @@ sujeira. O simples fato de entrar aqui levanta uma poeira que faz você\ntossir."
 
 classe s_teste014
 herda b_teste
-const s_titulo = "Animais e batalha"
+const s_titulo = "Primeiro andar: Animais e batalha"
 const s_desc = "À leste você pode mudar o seu nível.\n\
-À sudeste há alguns itens, usados para capturar animais.\n\
+Ao sul há alguns itens, usados para capturar animais.\n\
 À oeste pode batalhar com animais de níveis diferentes.\n\
-À sudoeste fica um pequeno centro de treinamento de animais."
-const dir_n = $s_teste002
+Ao norte fica um pequeno centro de treinamento de animais."
+const dir_b = $s_teste002
 const dir_l = $s_teste015
-const dir_se = $s_teste016
+const dir_s = $s_teste016
 const dir_o = $s_teste017
-const dir_so = $s_teste021
-const dir_s = $s_teste023
+const dir_n = $s_teste021
+const dir_c = $s_teste023
 
 
 classe s_teste015
@@ -775,7 +838,7 @@ no chão. Alguns são mais fáceis, outros mais difíceis.\n\
 Pegue alguns, e quando estiver lutando, use o comando capturar. Mas\n\
 antes, enfraqueça o animal, senão é mais dífícil de capturar.\n\
 Pode pegar itens teclando, por exemplo, \"peg 3 car_cru\" e \"peg 5 car_coz\"."
-const dir_no = $s_teste014
+const dir_n = $s_teste014
 const s_reset = "S 100 teste003 10 S\nS 100 teste004 10 S"
 
 func s_reset1 # Realiza o reset
@@ -801,9 +864,10 @@ func cmd_salaperso # Personagem chegou
 
 func cmd_escr # Escreveu algo
   se arg1 == "deitar"
-    uint8 total
-    epara nulo, total < config:animal1, total += 1
-      arg0.animal.[total].restaurar
+    persobat.restaurar
+    listaitem i
+    epara i = dentro2.ini, i, i.depois
+      i.obj.perso && i.obj.restaurar
     efim
     arg0.restaurar
     $mens.p(arg0)
@@ -865,9 +929,9 @@ herda b_teste
 const s_titulo = "Centro de treinamento"
 const s_desc = "Aqui os funcionários do zoológico treinam animais e fazem duelos\n\
 entre si. No momento estão descansando, mas você pode desafiá-los\n\
-indo em qualquer direção, exceto ao nordeste, que é a saída."
-const dir_ne = $s_teste014
-const dir_o = $s_teste022
+seguindo ao norte."
+const dir_s = $s_teste014
+const dir_n = $s_teste022
 
 
 classe s_teste022
@@ -876,7 +940,7 @@ const s_titulo = "Sala"
 const s_desc = "Aqui está totalmente vazio. Apenas alguns quadros enfeitam a parede.\n\
 O chão é de concreto, dando a impressão de inacabado. No teto há\n\
 uma lâmpada pendurada. De dia, a luz vem de duas grandes janelas."
-const dir_l = $s_teste021
+const dir_s = $s_teste021
 const s_reset = "P 100 teste005 0 0 1 h_chutar=1,e_apagar=5\n\
 A 100 teste003 4 4 h_socar=1\n\
 A 100 teste003 5 5 h_socar=1"
@@ -885,27 +949,26 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  int8 x # Usado como rascunho
   se p_teste005:objsolto.total < 1
     p = u = criar("p_teste005", este, 0, "h_chutar=1,e_apagar=5")
   fimse
-  se (x = p.animalnum) > 0
-    p.animal.[x - 1] = criar("p_teste003", p, 4, "h_socar=1")
+  se p.animalmais
+    criar("p_teste003", p, 4, "h_socar=1")
   fimse
-  se (x = p.animalnum) > 0
-    p.animal.[x - 1] = criar("p_teste003", p, 5, "h_socar=1")
+  se p.animalmais
+    criar("p_teste003", p, 5, "h_socar=1")
   fimse
 
 
 classe s_teste023
 herda b_teste
-const s_titulo = "Luz e itens que iluminam"
+const s_titulo = "Segundo andar: Luz e itens que iluminam"
 const s_desc = "À leste você pode pegar uma lamparina.\n\
 À oeste há uma sala escura, porém visível se houver uma lamparina."
-const dir_n = $s_teste014
+const dir_b = $s_teste014
 const dir_l = $s_teste024
 const dir_o = $s_teste025
-const dir_s = $s_teste026
+const dir_c = $s_teste026
 
 
 classe s_teste024
@@ -944,13 +1007,14 @@ const s_luz = 3 # Luz: 3 Escuro
 
 classe s_teste026
 herda b_teste
-const s_titulo = "Armas e equipamentos"
+const s_titulo = "Terceiro andar: Armas e equipamentos"
 const s_desc = "Para checar seus atributos tecle estat.\n\
 Para aprender a cortar, nessa sala, tecle cortar.\n\
 À leste há duas armas e explicações de como criar equipamentos.\n\
 À oeste há uma geléia, imune a socos e chutes, mas frágil contra\n\
 armas cortantes."
-const dir_n = $s_teste023
+const dir_b = $s_teste023
+const dir_c = $s_teste052
 const dir_o = $s_teste027
 const dir_l = $s_teste028
 const eveste = 1 # Eventos sala: Sim
@@ -963,8 +1027,6 @@ func cmd_escr # Escreveu algo
     arg0.var.h_cortar = 1
     arg0.msg("Você aprende a cortar.")
     ret 1
-
-const dir_s = $s_teste052
 
 
 classe s_teste027
@@ -990,6 +1052,9 @@ também podem mudar alguns atributos de um personagem, quando vestidos.\n\
 Veja a opção \"Atributos\" de tipos (raças e classes) e personagens,\n\
 e a opção \"Atributos vestir\" de itens."
 const dir_o = $s_teste026
+const dir_l = $s_teste032
+const dir_n = $s_teste029
+const dir_s = $s_teste063
 const s_reset = "S 100 teste012 3 S\n\
 S 100 teste013 3 S\n\
 S 100 teste015 1 S\n\
@@ -1002,10 +1067,6 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste015") && criar("i_teste015", este, 1)
   !dentro1.objini("i_teste016") && criar("i_teste016", este, 1)
 
-const dir_l = $s_teste032
-const dir_ne = $s_teste029
-const dir_se = $s_teste063
-
 
 classe s_teste029
 herda b_teste
@@ -1015,6 +1076,7 @@ personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
 Uma forma de fazer isso é editar a opção \"Não podem vestir\" do item.\n\
 Outra é escrevendo a função cmd_podevestir do item. Nesse caso, veja\n\
 a classe i_teste014 no arquivo mud-a-teste.int."
+const dir_s = $s_teste028
 const s_reset = "S 100 teste014 3 S\nS 100 teste017 1 S"
 
 func s_reset1 # Realiza o reset
@@ -1022,20 +1084,19 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste014") && criar("i_teste014", este, 3)
   !dentro1.objini("i_teste017") && criar("i_teste017", este, 1)
 
-const dir_so = $s_teste028
-
 
 classe s_teste030
 herda b_teste
-const s_titulo = "Loja, professores e ponto de retorno"
+const s_titulo = "Quinto andar: Loja, professores e ponto de retorno"
 const s_desc = "À leste há um vendedor e um professor.\n\
 À oeste trata-se do ponto de retorno.\n\
 À sudeste você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
 Ou pode teclar AA nessa sala, para ficar com mil moedas."
-const dir_n = $s_teste052
+const dir_b = $s_teste052
+const dir_c = $s_teste064
 const dir_l = $s_teste031
 const dir_o = $s_teste049
-const dir_se = $s_teste051
+const dir_s = $s_teste051
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
@@ -1335,7 +1396,7 @@ por incrível que possa parecer. Primeiro tecle chutar camundongo.\n\
 Quando ele morrer, tecle pegar moedas corpo, depois tecle olhar corpo,\n\
 e então pode pegar a faca dele teclando pegar faca corpo.\n\
 Obviamente, pode-se usar abreviações. Exemplo, peg fa cor."
-const dir_no = $s_teste030
+const dir_n = $s_teste030
 const s_reset = "P 100 teste011 0 0 1 z_moedas=200\nI 100 teste012 1"
 
 func s_reset1 # Realiza o reset
@@ -1350,13 +1411,13 @@ func s_reset1 # Realiza o reset
 
 classe s_teste052
 herda b_teste
-const s_titulo = "Fórmulas de batalha"
+const s_titulo = "Quarto andar: Fórmulas de batalha"
 const s_desc = "A leste há explicações sobre danos de batalha.\n\
 O principal objetivo é ter uma ideia de como funciona a batalha,\n\
 para balancear melhor os itens e personagens. Esses cálculos são\n\
 realizados pela classe comando_ataque, no arquivo mud-ataque.int."
-const dir_n = $s_teste026
-const dir_s = $s_teste030
+const dir_b = $s_teste026
+const dir_c = $s_teste030
 const dir_l = $s_teste053
 
 
@@ -1485,10 +1546,35 @@ Quando usado nos tornozelos, perde-se muitos pontos de movimento ao andar.\n\
 Há também outro trigger que não deixa remover se você não tiver a chave.\n\
 Triggers são funções, na linguagem do IntMUD. No caso da algema, é\n\
 a classe i_teste019 do arquivo mud-a-teste.int."
-const dir_no = $s_teste028
+const dir_n = $s_teste028
 const s_reset = "S 100 teste019 3 S\nS 100 teste020 3 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste019") && criar("i_teste019", este, 3)
   !dentro1.objini("i_teste020") && criar("i_teste020", este, 3)
+
+
+classe s_teste064
+herda b_teste
+const s_titulo = "Sexto andar: Lidando com animais"
+const s_desc = "A oeste pode-se conseguir dois animais."
+const dir_b = $s_teste030
+const dir_o = $s_teste065
+
+
+classe s_teste065
+herda b_teste
+const s_titulo = "Animais"
+const s_desc = "Se quiser um duende branco tecle: falar branco\n\
+Se quiser um duende negro tecle: falar negro\n\
+Esses duendes possuem outras habilidades e magias, e podem ser usados\n\
+em batalhas. Para saber como lidar com animais, tecle: ajuda animal"
+const dir_l = $s_teste064
+const s_reset = "P 100 teste012 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste012:objsolto.total < 1
+    criar("p_teste012", este, 0)
+  fimse
