@@ -69,12 +69,14 @@ const txtajuda2 = "\n\
   \c2AC\b       Participa do canal de comunicação AC (administração)\n\
   \c2ADMLOG\b   Canal ADMLOG - é informado sobre mudanças online no MUD\n\
   \c2CMDLOG\b   Canal CMDLOG - é informado quando alguém usar CMD, CMDP\n\
-           ou CMDJs e o comando possuir alguma letra"
+           ou CMDJs e o comando possuir alguma letra\n\
+  \c2EXECLOG\b  Canal EXECLOG - só tem utilidade para programadores\n\
+           informa quando a variável exec chegar a 0 (bug no programa)"
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
 # As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
-# Números de 0 a 15 são as opções disponíveis a todos
-# Números de 16 a 23 são as opções disponíveis aos administradores
+# Números de 0 a 13 são as opções disponíveis a todos
+# Números de 14 a 23 são as opções disponíveis aos administradores
 const opc_desc = 0
 const opc_saidas = 1
 const opc_cores = 2
@@ -84,6 +86,7 @@ const opc_seguir = 5
 const opc_prompt = 6
 const opc_bprompt = 7
 const opc_pvt = 8
+const opc_execlog = 15
 const opc_sala = 16
 const opc_invquem = 17
 const opc_invsala = 18
@@ -104,7 +107,7 @@ func escr
       se !txt([p.texto])
       senao opc.[[p.texto]]
         x += " +" + txtmai(txt(p.texto, 4))
-      senao [p.texto] < 16 || arg0.jogconfig.23
+      senao [p.texto] < 14 || arg0.jogconfig.23
         y += " -" + txtmai(txt(p.texto, 4))
       fimse
     efim
@@ -117,7 +120,7 @@ func escr
   txt512 mudou
   enquanto x
     epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
-      sair ([p.texto] < 16 || arg0.jogconfig.23) && txt([p.texto])
+      sair ([p.texto] < 14 || arg0.jogconfig.23) && txt([p.texto])
     efim
     se !p.lin
       y += " " + txt1(x)
@@ -545,6 +548,76 @@ func escr
     ret total >= 20, arg0.msg("Atingido o limite de usuários ignorados.")
     arg0.var.u_[arg1] = 1
     arg0.msg("Você ignora " + arg1 + ".")
+
+
+classe cmd_atalho
+herda comando_comum, comando_ajuda
+const posic = 0
+const txtajuda = "\b\c3Atalho\b\n\
+Sintaxe: ATALHO\n\
+         ATALHO <nome>\n\
+         ATALHO <nome> <comandos>\n\
+         ATALHO LIMPAR\n\n\
+Permite definir atalhos para os comandos que você usa frequentemente.\n\
+Para criar um atalho, basta teclar a palavra atalho seguido de um nome\n\
+qualquer e o comando. Assim, sempre que você digitar o nome, o efeito\n\
+será o mesmo que digitar o comando correspondente.\n\n\
+Para apagar um atalho, basta digitar a palavra atalho seguido do nome.\n\n\
+Para apagar todos os atalhos, digite atalho limpar.\n\n\
+Digitando apenas a palavra atalho, mostra todos os atalhos definidos.\n\n\
+As seguintes sequências de caracteres tem um significado especial:\n\
+ \c2$1\b  Primeira palavra digitada após o nome do atalho\n\
+ \c2$2\b  Segunda palavra digitada após o nome do atalho\n\
+ \c2$3\b a \c2$9\b  Terceira à nona palavra digitada após o nome do atalho\n\
+ \c2$0\b  Todas as palavras\n\
+ \c2$S\b  Da segunda palavra em diante\n\
+ \c2$T\b  Da terceira palavra em diante\n\
+ \c2$Z\b  Uma quebra de linha (para colocar mais um comando)\n\
+ \c2$$\b  O Caracter $\n\n\
+Exemplos:\n\n\
+atalho med sentar $Z meditar\n\
+  Cria o atalho med. Depois disso, digitar med terá o mesmo efeito\n\
+  de digitar sentar, e em seguida, digitar meditar.\n\n\
+atalho con lançar \"raio confusão\" $1\n\
+  Cria o atalho chamado con. Digitando, por exemplo, con silva,\n\
+  terá o mesmo efeito de digitar lançar \"raio confusão\" silva.\n\n\
+alias med\n\
+  Apaga o atalho med, se existir."
+
+func escr
+  se !arg1
+    textotxt t
+    txt100 nome
+    nome = arg0.var.ini("t_")
+    enquanto txt(nome, 0, 2) == "t_"
+      t.addfim(txt(nome, 2) + " " + arg0.var.[nome])
+      nome = arg0.var.depois(nome)
+    efim
+    ret t.linhas == 0, arg0.msg("Nenhum atalho definido.")
+    arg0.msg("Atalhos:\n" + t.remove(1000))
+  senao arg1 == "limpar"
+    ret !arg0.var.ini("t_"), arg0.msg("Nenhum atalho definido.")
+    arg0.var.limpar("t_")
+    arg0.msg("Atalhos apagados.")
+  senao !txt2(arg1)
+    ret !arg0.var.t_[arg1], arg0.msg("Atalho não foi definido: " + arg1)
+    arg0.var.t_[arg1] = ""
+    arg0.msg("Atalho apagado: " + arg1)
+  senao txt1(arg1) == "atalho"
+    arg0.msg("Não é possível criar um atalho chamado atalho.")
+  senao arg0.var.t_[txt1(arg1)]
+    arg0.var.t_[txt1(arg1)] = txt2(arg1)
+    arg0.msg("Atalho mudado: " + arg1)
+  senao
+    uint16 total
+    txt100 nome
+    total = 50, nome = arg0.var.ini("t_")
+    enquanto txt(nome, 0, 2) == "t_"
+      ret !(total -= 1), arg0.msg("Atingido limite de atalhos.")
+      nome = arg0.var.depois(nome)
+    efim
+    arg0.var.t_[txt1(arg1)] = txt2(arg1)
+    arg0.msg("Criado atalho: " + arg1)
 
 
 classe cmd_debug

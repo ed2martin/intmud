@@ -13,6 +13,8 @@ func m_menu
   ret
 
 const t_menu = "<menu>"
+const admcod = txttroca(arg0, "\"", "\\\"")
+const admdec = txttroca(txtvis(arg0), "\\\"", "\"")
 
 func p_menu
   casovar txtmin(arg0)
@@ -132,11 +134,11 @@ func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), "\c3" + txtvis([arg0]:[arg1]) + "\b"
+    ret p.vartexto(arg0, arg1), "\c3" + admdec([arg0]:[arg1]) + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> \c3" + txtvis([arg0]:[arg1]) + "\b"
+    ret p.vartexto(arg0, arg1), "<herda> \c3" + admdec([arg0]:[arg1]) + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -170,7 +172,7 @@ func p_linha # Alterando um texto de uma linha
       admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     fimse
   senao arg0 != "z"
-    p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txtvis(arg0) + "\"")
+    p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + admcod(arg0) + "\"")
     config:salvar
     var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para: " + arg0)
@@ -207,7 +209,7 @@ func p_texto # Alterando um texto de várias linhas
     teditor.limpar
     teditor.addfim([var.opcclasse]:[var.opcvar])
     epara p1 = teditor.ini, p1.lin, p1.depois
-      p1.mudar(txtvis(p1.texto))
+      p1.mudar(admdec(p1.texto))
     efim
     teditor.bytes == 1 && teditor.limpar
     leditor = teditor.ini
@@ -238,7 +240,7 @@ func p_texto # Alterando um texto de várias linhas
     efim
     txt200 t
     t = "const " + var.opcvar + "=\""
-    p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
+    p.criar(var.opcclasse, t + admcod(t1.remove(1000)) + "\"")
     config:salvar
     var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
     msg("Salvou " + var.opcnome)

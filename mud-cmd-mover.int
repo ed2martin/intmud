@@ -854,7 +854,7 @@ func escr # Personagem retorna
   custohab(arg0.persobat)
   msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
-  ret rand(100) < precisao, arg0.msg("Por algum motivo, a magia falhou.")
+  ret rand(100) >= precisao, arg0.msg("Por algum motivo, a magia falhou.")
   $mens.p(arg0)
   !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
   arg0.mudadono(r)
