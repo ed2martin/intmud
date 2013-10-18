@@ -149,6 +149,7 @@ herda comum_perso
 const nome = "Silva"
 const sexoini = 1
 const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
+const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const pesoobj = 80000
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -177,8 +178,11 @@ func entrou70
   se !arg0.var.h_chutar
     arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
 
-func cmd_atacar1
-  ret [arg2](arg0, arg1) # Chama a função que trata do ataque específico
+func cmd_atacar
+  se ![arg2](arg0, arg1) # Chama a função que trata do ataque específico
+    arg0.msg("Silva bloqueia seu golpe.")
+  fimse
+  ret 1
 
 func cmd_socar
   se arg1 != este

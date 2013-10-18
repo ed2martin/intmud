@@ -69,6 +69,18 @@ func reinicia # Volta ao início: pede o nome do personagem
   p_perso
 
 func recebe # Recebeu mensagem do jogador
+  ret !perso.var.t_[txt1(arg0)], recebe1(arg0)
+  $cmdalias.m_0 = txt2(arg0)
+  textotxt t
+  t.addfim($cmdalias.mens(perso.var.t_[txt1(arg0)]))
+  debug d
+  enquanto t.linhas
+    d.exec = 5000
+    ret recebe1(t.remove), nulo
+  efim
+
+func recebe1 # Função recebe após uso de alias
+# Retorna verdadeiro se deve cancelar os comandos do alias
 # Checa quem está monitorando
   se lmonit
     casovar passo
@@ -143,6 +155,7 @@ func recebe # Recebeu mensagem do jogador
     comandos.addfim(ultimocom)
   senao # Chegou ao limite de comandos
     msg("Aguarde")
+    ret 1
 
 func espera_exec # Chamado por p_espera do personagem
   se comandos
@@ -682,3 +695,23 @@ func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)
   jogconfig.18 && (bitinv = bitinv | 128) # Propriedade config +invsala
   jogconfig.23 && (bitver = bitver | 128) # Se é administrador
+
+
+classe cmdalias
+# Para processar o comando alias
+const iniclasse = criar(arg0)
+txt512 m_0
+const m_1 = txt1(m_0)
+const m_2 = txtsub(m_0, 1, 1)
+const m_3 = txtsub(m_0, 2, 1)
+const m_4 = txtsub(m_0, 3, 1)
+const m_5 = txtsub(m_0, 4, 1)
+const m_6 = txtsub(m_0, 5, 1)
+const m_7 = txtsub(m_0, 6, 1)
+const m_8 = txtsub(m_0, 7, 1)
+const m_9 = txtsub(m_0, 8, 1)
+const m_S = txtsub(m_0, 1)
+const m_T = txtsub(m_0, 2)
+const m_Z = "\n"
+const m_@ = "$"
+const mens = vartroca(txttroca(arg0, "$$", "$@"), "$", "m_")

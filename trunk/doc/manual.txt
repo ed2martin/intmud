@@ -675,7 +675,7 @@ As variáveis e funções só são reconhecidas quando:
 
  - São funções nativas da linguagem, como por exemplo 'intabs';
  - Estiverem definidas na própria função ou na mesma classe;
- - Caso não exista, resultará em 'nulo'.
+ - Caso não exista, resultará em NULO.
 
 É possível também passar variáveis como argumentos para outra função,
 ou mesmo retornar uma variável pela instrução ret.
@@ -723,7 +723,7 @@ tela.msg("este.intabs=" + este.intabs(-10) + "\n") # Mostra 'intabs=classe3'
 Sintaxe: $<nome da classe>
 
 Corresponde sempre ao primeiro objeto da classe. Se a classe não existir
-ou não possuir nenhum objeto, assume 'nulo'. Para mais detalhes de
+ou não possuir nenhum objeto, assume NULO. Para mais detalhes de
 criação e remoção de objetos, vide funções CRIAR() e APAGAR().
 
 Exemplo:
@@ -902,9 +902,9 @@ y = "bom dia" # Tem o mesmo efeito que y="bom"
 10.13. ref <nome da variável>
 Referência a um objeto, ou seja, corresponde a um objeto qualquer.
 
-Essa variável passa a ter o valor 'nulo' quando:
+Essa variável passa a ter o valor NULO quando:
  - É criada;
- - É atribuído o valor 'nulo';
+ - É atribuído o valor NULO;
  - O objeto correspondente a ela é apagado.
 
 Exemplo:
@@ -1034,11 +1034,11 @@ condição é verdadeira. Na maioria dos casos, o resultado é bastante
 óbvio. Por exemplo, 'a==1' resulta em verdadeiro se a for igual a 1.
 Mas quando a condição é uma variável, é um pouco diferente.
 
-- O valor 'nulo' é sempre falso.
+- O valor NULO é sempre falso.
 - Números são considerados verdadeiros quando forem diferente de zero.
 - Textos são considerados verdadeiros quando não forem textos vazios.
 - Quando a variável não existe, ou quando é uma função que não
-  retorna nenhum valor, o resultado é 'nulo', portanto falso.
+  retorna nenhum valor, o resultado é NULO, portanto falso.
 
 
 13.2. LISTA DE OPERADORES
@@ -2154,12 +2154,12 @@ Retorna um número:
 Checa os argumentos, do primeiro ao último, até encontrar um que seja
 um objeto. Se encontrou, retorna o objeto. Caso contrário retorna NULO.
 Portanto, quando houver apenas um argumento, que retorna o objeto
-correspondente ou nulo se não for objeto.
+correspondente ou NULO se não for objeto.
 
 15.6.2. criar(<nome da classe>, [um ou mais argumentos da função ini])
 Cria um objeto e chama a função 'ini' do objeto.
 O <nome da classe> é um texto que contém o nome da classe.
-Retorna uma referência para o objeto, ou nulo se classe não existe.
+Retorna uma referência para o objeto, ou NULO se classe não existe.
 
 Exemplos:
 ref x
@@ -3824,7 +3824,7 @@ de um texto, é possível com a variável indiceitem.
 36. INDICEITEM - OBTER OBJETO PELO TEXTO
 
 Permite obter os objetos que contém uma variável indiceobj com um
-determinado texto. Ignora variáveis indiceobj com texto nulo.
+determinado texto. Ignora variáveis indiceobj com texto vazio.
 
 Funções:
 

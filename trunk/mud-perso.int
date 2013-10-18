@@ -9,6 +9,10 @@ const nome = "sem nome"
 const ident = nome
 const descnome = nome
 const volexp = 1 # Volume expande se tiver itens dentro
+const pesomax = 1000000 # Para poder receber itens
+const persobat = este # Personagem usado na batalha; alguns comandos usam
+const persoesc = este # Personagem escolhido; alguns comandos usam
+const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
@@ -314,8 +318,6 @@ real deftipo.22 # Defesa contra os diversos tipos de danos
 # 1=danos normais e 0=nenhum dano (0.5=metade dos danos, etc.)
 # Vide constante config:atknomes
 #
-const persobat = este # Personagem usado na batalha
-const persoesc = este # Personagem escolhido
 listaobj atkrec # Quem atacou esse personagem; dá experiência se perder
 listaitem atkenv # Item de atkrec; atkenv.objlista = alvo do personagem
 listaobj atkdiv # Para dividir experiência entre personagens que atacaram
@@ -339,7 +341,7 @@ func acertapos # Acerta posição
   casose "0" # Mortalmente ferito ou morto
   casose "1"
     poslugar.remove
-    !(posicao = (pvida > 0)) && arg0 && morreu
+    !(posicao = pvida > 0) && arg0 && morreu
     ret
   casose "2"
     poslugar.remove, posicao = 2 # incapacitado
@@ -696,7 +698,7 @@ func escolhebat # Escolhe um personagem em condições de lutar
     listaitem i
     epara i = dentro2.ini, i && !i.obj.pvida, i.depois
     efim
-    persobat = (i ? i.obj : este)
+    persobat = i ? i.obj : este
 
 func animalmais # Retorna quantos animais ainda pode adquirir
   uint8 x
@@ -705,7 +707,7 @@ func animalmais # Retorna quantos animais ainda pode adquirir
   epara i = dentro2.ini, i, (i.obj.perso && (x -= 1)) + i.depois
   efim
   ret x
-  
+
 func animaltot # Retorna quantos animais possui
   uint8 x
   listaitem i
@@ -732,7 +734,7 @@ func p_proc_exec # Processar comportamento do personagem
     listaitem i
     epara i = dentro2.ini, i && !i.obj.pvida, i.depois
     efim
-    persobat = (i ? i.obj : este)
+    persobat = i ? i.obj : este
     se persoesc != persobat
       persoesc = persobat
       $mens.p(este, persoesc)

@@ -425,7 +425,7 @@ animal.")
     senao sala.volden + r.voltot * total / r.objtot > sala.volmax
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
     senao sala.pesoden - sala.pesoveste + r.pesotot * total / r.objtot > sala.pesomax
-      ret arg0.msg("É pesado de mais para " + txtcopiamai(sala.descnome, "A") + ".")
+      ret arg0.msg("É pesado demais para " + txtcopiamai(sala.descnome, "A") + ".")
     senao (sala.objnum >> 1) + (r.objnum >> 1) > config:itens
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
     fimse

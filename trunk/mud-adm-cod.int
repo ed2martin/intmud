@@ -241,9 +241,12 @@ func cmd_echo
   se !arg0
     msg("\bTecle a mensagem após ECHO.")
   senao
+    $cmdecho.echo_m = arg0
+    $cmdecho.echo_p = nome
+    refvar lin = $cmdecho.mens
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.msg("\b\cB(ADM) " + arg0 + "\b")
+      item.obj.msg(lin)
     efim
   fimse
   ret 1
@@ -572,6 +575,15 @@ func p_herda
   ret p_editor(arg0, 200, "Herança")
 
 
+classe cmdecho
+# Para preparar mensagem do comando echo
+const iniclasse = criar(arg0)
+txt512 echo_m
+txt100 echo_p
+const echo_@ = "$"
+const mens = vartroca(txttroca(config:echomsg, "$$", "$@"), "$", "echo_")
+
+
 classe menu_econfig
 # Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
 const titulo = "Configurações do MUD"
@@ -656,42 +668,48 @@ const nome13 = "Ataques e batalha"
 const tipo13 = "menu--"
 const clas13 = "menu_econfig_ataques"
 #
-const nome14 = "Canal chat"
-const tipo14 = "opcao--"
+const nome14 = "Mensagem comando echo"
+const info14 = "Nesse texto, $m é a mensagem, $p é o personagem e $$ é o símbolo $"
+const tipo14 = "linha--"
 const clas14 = "config"
-const vari14 = "chattipo"
-const extr14 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+const vari14 = "echomsg"
 #
-const nome15 = "Canal chat a partir do nível"
-const tipo15 = "numero--"
+const nome15 = "Canal chat"
+const tipo15 = "opcao--"
 const clas15 = "config"
-const vari15 = "chatnivel"
+const vari15 = "chattipo"
+const extr15 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome16 = "Aulas por nível"
-const info16 = "Quantos pontos de aulas ganha quando sobe de nível\n\
-Se 0, o comando aprender não usa pontos de aula"
+const nome16 = "Canal chat a partir do nível"
 const tipo16 = "numero--"
 const clas16 = "config"
-const vari16 = "aulas"
-const extr16 = "0 1000"
+const vari16 = "chatnivel"
 #
-const nome17 = "Comando Retornar até nível"
-const info17 = "Até que nível pode usar o comando retornar"
+const nome17 = "Aulas por nível"
+const info17 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+Se 0, o comando aprender não usa pontos de aula"
 const tipo17 = "numero--"
 const clas17 = "config"
-const vari17 = "retornar"
+const vari17 = "aulas"
+const extr17 = "0 1000"
 #
-const nome18 = "Tipos de produtos"
-const info18 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo18 = "txtopcao--"
+const nome18 = "Comando Retornar até nível"
+const info18 = "Até que nível pode usar o comando retornar"
+const tipo18 = "numero--"
 const clas18 = "config"
-const vari18 = "produtos"
-const extr18 = "1 30"
+const vari18 = "retornar"
 #
-const nome19 = "Posições para vestir itens"
-const info19 = "Os nomes das posições"
-const tipo19 = "menu--"
-const clas19 = "menu_econfig_vestir"
+const nome19 = "Tipos de produtos"
+const info19 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo19 = "txtopcao--"
+const clas19 = "config"
+const vari19 = "produtos"
+const extr19 = "1 30"
+#
+const nome20 = "Posições para vestir itens"
+const info20 = "Os nomes das posições"
+const tipo20 = "menu--"
+const clas20 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar

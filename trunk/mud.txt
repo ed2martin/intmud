@@ -893,18 +893,18 @@ Tipo pode ser "comprar", "vender" ou "ensinar".
 func cmd_atacar(personagem, alvo, objeto que processa o ataque)
 Quer atacar algum personagem.
 
-cmd_alvocontr(personagem, alvo, objeto que processa o comando)
+func cmd_alvocontr(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia não agressiva.
 Esse evento é chamado para quem está controlando o personagem e o alvo.
 
-cmd_alvo(personagem, alvo, objeto que processa o comando)
+func cmd_alvo(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia não agressiva.
 
-cmd_atacarcontr(personagem, alvo, objeto que processa o comando)
+func cmd_atacarcontr(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia agressiva.
 Esse evento é chamado para quem está controlando o personagem e o alvo.
 
-cmd_atacar(personagem, alvo, objeto que processa o comando)
+func cmd_atacar(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia agressiva.
 Esse evento é chamado também para o objeto que processa o comando.
 
@@ -1023,6 +1023,7 @@ Exemplo: m_menu("menu_config")
 
 16. Lista de coisas pendentes
 
+Comando "emote"
 Animais reserva (além dos animais usados na batalha)
 Veículos fechados
 Habilidades:
@@ -1056,6 +1057,7 @@ Idiomas
 Criar itens genéricos
 Sistema de dicas aleatórias
 Banco
+Tipo de terreno: em baixo d'água
 Propriedade de salas:
 * const s_semrastr = 0 # Se o comando de rastrear não passa por essa sala
 Propriedades de personagens:

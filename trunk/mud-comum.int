@@ -118,7 +118,7 @@ varfunc dono # O dono do personagem/item
   fimse
 # Retira a quantidade de itens (objnum)
   epara r = este, r.item, r.objnum -= objnum & ~1
-    r = idono.objlista
+    r = r.idono.objlista
   efim
 # Acerta se tem jogador dentro
   se socktot
@@ -159,7 +159,7 @@ varfunc dono # O dono do personagem/item
   fimse
 # Acrescenta a quantidade de itens (objnum)
   epara r = este, r.item, r.objnum += objnum & ~1
-    r = idono.objlista
+    r = r.idono.objlista
   efim
 # Acerta se tem jogador dentro
   se socktot
