@@ -13,7 +13,7 @@ func m_menu
   ret
 
 const t_menu = "<menu>"
-const admcod = txttroca(arg0, "\"", "\\\"")
+const admcod = txttroca(txttroca(arg0, "\"", "\\\""), "\n", "\\n")
 const admdec = txttroca(txtvis(arg0), "\\\"", "\"")
 
 func p_menu

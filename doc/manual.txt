@@ -1874,7 +1874,7 @@ Exemplos de filtragens:
 - 'abababababab' vira 'ababab';
 - 'bom dia bom dia bom dia bom dia!' vira 'bom dia bom dia bom di!';
 - 'http://xxx.yyy.zzz.nnn.br' vira 'http://xxx.yyy.zzz.nn', porque são
-  muitos caracteres sem uma vogal no meio.
+  muitos caracteres seguidos sem uma vogal.
 
 15.3.19. txtesp(<quantidade de espaços>)
 Retorna de 0 a 100 espaços conforme <quantidade de espaços>.
@@ -2136,8 +2136,8 @@ Retorna um número:
 1 - Muito pequeno (menos de 2 caracteres);
 2 - Contém caracteres inválidos.
 Nota: Essa função também retorna 2 para algumas combinações de letras que
-      podem gerar problemas para os usuários de sintetizadores de voz.
-      Por exemplo, qualquer letra antes de 'h' exceto em 'ch', 'lh' e 'nh'.
+      podem causar resultados imprevisíveis nos sintetizadores de voz.
+      Por exemplo, qualquer letra seguida de 'h', exceto 'ch', 'lh' e 'nh'.
 
 15.5.6. intsenha(<texto>)
 Verifica se texto é válido para senha.
