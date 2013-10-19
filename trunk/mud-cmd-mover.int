@@ -234,7 +234,7 @@ func escrobj # Abrir um item
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
-    epara i = arg0.dentro1, i, i.depois
+    epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     ret !i, arg0.msg("Você não vê " + arg1 + ".")
@@ -260,7 +260,7 @@ func escrobj # Abrir um item
 # Abre o item
   r.i_aberto = 2
   $mens.p(arg0, r)
-  $mens.mtodos1("$P abriu $A.")
+  $mens.mtodos1("$P abriu $a.")
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
     l.objini.cmd_abriuobj(arg0, r)
   efim
@@ -318,7 +318,7 @@ func escrobj # Fechar um item
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
-    epara i = arg0.dentro1, i, i.depois
+    epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     ret !i, arg0.msg("Você não vê " + arg1 + ".")
@@ -343,7 +343,7 @@ func escrobj # Fechar um item
 # Fecha o item
   r.i_aberto = r.i_tranc == 2 ? 4 : 3
   $mens.p(arg0, r)
-  $mens.mtodos1("$P fechou $A.")
+  $mens.mtodos1("$P fechou $a.")
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
     l.objini.cmd_fechouobj(arg0, r)
   efim
@@ -406,7 +406,7 @@ func escrobj # Destrancar um item
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
-    epara i = arg0.dentro1, i, i.depois
+    epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     ret !i, arg0.msg("Você não vê " + arg1 + ".")
@@ -442,7 +442,7 @@ func escrobj # Destrancar um item
 # Destranca o item
   r.i_aberto = 3
   $mens.p(arg0, r)
-  $mens.mtodos1("$P destrancou $A.")
+  $mens.mtodos1("$P destrancou $a.")
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
     l.objini.cmd_destrancouobj(arg0, r, chave)
   efim
@@ -514,7 +514,7 @@ func escrobj # Trancar um item
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
   se !i
-    epara i = arg0.dentro1, i, i.depois
+    epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     ret !i, arg0.msg("Você não vê " + arg1 + ".")
@@ -550,7 +550,7 @@ func escrobj # Trancar um item
 # Tranca o item
   r.i_aberto = 4
   $mens.p(arg0, r)
-  $mens.mtodos1("$P trancou $A.")
+  $mens.mtodos1("$P trancou $a.")
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
     l.objini.cmd_trancouobj(arg0, r, chave)
   efim
