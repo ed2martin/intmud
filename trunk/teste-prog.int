@@ -10,9 +10,13 @@ func iniclasse
   criar(arg0)
 func ini
   msg("Digite o nome de uma variável ou:\n")
-  msg("FIM para encerrar o programa\n")
-  msg("A, B ou C para selecionar a classe\n")
-  msg("0 a 10 para escolher uma função\n")
+  msg("FIM          Encerrar o programa\n")
+  msg("A, B ou C    Seleciona a classe\n")
+  msg("0 a 10       Escolhe uma função\n")
+  msg("I <função>   Move função para o início da classe\n")
+  msg("F <função>   Move função para o fim da classe\n")
+  msg("I <f1> <f2>  Move função 1 para antes da função 2\n")
+  msg("F <f1> <f2>  Move função 1 para depois da função 2\n")
 func tela_msg
   prog p
   int16 i
@@ -117,6 +121,24 @@ func p10
     efim
     cl.depois
   efim
+func pI
+  txt512 err
+  prog p
+  se txt2(arg0)
+    err = p.fantes(nomeclasse, txt1(arg0), txt2(arg0))
+  senao
+    err = p.fantes(nomeclasse, arg0)
+  fimse
+  msg(err ? "Erro: " + err + "\n" : txt1(arg0) + " movido com sucesso\n")
+func pF
+  txt512 err
+  prog p
+  se txt2(arg0)
+    err = p.fdepois(nomeclasse, txt1(arg0), txt2(arg0))
+  senao
+    err = p.fdepois(nomeclasse, arg0)
+  fimse
+  msg(err ? "Erro: " + err + "\n" : txt1(arg0) + " movido com sucesso\n")
 func mostra
   enquanto arg0.lin
     msg(txtesp(1 + arg0.nivel * 2) + arg0.texto + "\n")
@@ -140,12 +162,17 @@ func pteste12345teste12345teste12345teste12345teste12345teste12345teste12345test
   msg("funcionou 8\n")
 
 classe B
+herda teste
 int8 var1
 int8 v.10
 sav txt10 teste
 const c1 = 10
 const c2 = "10"
 const x = "\d4bom dia\b\n"
+func f1
+  ret 1
+func f2
+  ret 2
 
 classe C
 func xxx

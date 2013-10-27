@@ -1148,6 +1148,8 @@ func s_reset1 # Realiza o reset
     criar("p_teste009", este, 0)
   fimse
 
+const dir_l = $s_teste066
+
 
 classe s_teste033
 herda b_teste
@@ -1438,10 +1440,10 @@ classe s_teste054
 herda b_teste
 const s_titulo = "Danos de batalha"
 const s_desc = "Os danos de um ataque dependem basicamente da seguinte fórmula:\n\
-danos = ataque * ataque / defesa / 5\n\
-Por exemplo, se você possui 50 pontos de ataque, e ataca um personagem com\n\
-30 pontos de defesa, os danos serão 50*50/30/5, que resulta em 17 pontos\n\
-de vida. O valor de 16,666 é arredondado para 17."
+danos = ataque_perso * ataque_perso * força_golpe / defesa_alvo / 300\n\
+Por exemplo, se você possui 50 pontos de ataque, e dá um chute de força 70\n\
+em um personagem com 30 pontos de defesa, os danos serão 50*50*70/30/300,\n\
+que resulta em 19 pontos de vida. O valor de 19,444 é arredondado para 19."
 const dir_o = $s_teste053
 const dir_l = $s_teste055
 
@@ -1489,22 +1491,24 @@ const dir_so = $s_teste055
 classe s_teste058
 herda b_teste
 const s_titulo = "Usando uma arma"
-const s_desc = "Quando está usando uma arma, o cálculo de danos, que é:\n\
-danos = ataque do personagem * ataque do personagem / defesa do alvo / 5\n\
-Passa a ser:\n\
-danos = ataque do personagem * ataque da arma / defesa do alvo / 5\n\
-Portanto, os danos depende tanto do seu ataque quanto da sua arma."
+const s_desc = "Quando está usando uma arma, o cálculo de danos, passa a ser:\n\
+danos = ataque_perso * ataque_arma * força_golpe / defesa_alvo / 300\n\
+Portanto, os danos dependem tanto do seu ataque quanto da sua arma.\n\
+Nos ataques automáticos, com e sem armas, os danos são multiplicados pela\n\
+opção \"Força do ataque automático\" do comando ECONFIG."
 const dir_o = $s_teste055
 
 
 classe s_teste059
 herda b_teste
 const s_titulo = "Ataque sem armas"
-const s_desc = "Nesse caso, o cálculo de danos depende da fórmula:\n\
-danos = ataque do personagem * ataque do personagem / defesa do alvo / 5\n\
-Os danos podem ter uma variação de 10 por cento, para mais ou para menos.\n\
-A diferença de nível também faz alguma diferença. Um personagem de nível\n\
-mais alto causa mais danos em um personagem de nível menor."
+const s_desc = "Nesse caso, é usada a fórmula já apresentada:\n\
+danos = ataque_perso * ataque_perso * força_golpe / defesa_alvo / 300\n\
+Pode haver ainda uma variação de 10 por cento nos danos, para mais ou\n\
+para menos. Quando os dois personagens possuem níveis diferentes,\n\
+os danos são multiplicados pelo resultado da seguinte fórmula:\n\
+1 + (nível_perso - nível_alvo) / (nível_perso + nível_alvo + 10)\n\
+Portanto, atacar personagens de nível mais baixo causa mais danos."
 const dir_no = $s_teste055
 
 
@@ -1578,3 +1582,15 @@ func s_reset1 # Realiza o reset
   se p_teste012:objsolto.total < 1
     criar("p_teste012", este, 0)
   fimse
+
+
+classe s_teste066
+herda b_teste
+const s_titulo = "Habilidades automáticas"
+const s_desc = "Pode-se definir em que nível aprende e o preço da aula das habilidades\n\
+ensinadas pelo Perito (a oeste). Para isso, basta criar a habilidade\n\
+teclando chab seguido do nome da habilidade. Depois, editar a habilidade,\n\
+com o comando ehab, e na opção \"Alvo\" tecle 6, que significa automático\n\
+(sem intervenção do jogador).\n\
+Veja também a ajuda teclando: adm atk"
+const dir_o = $s_teste032

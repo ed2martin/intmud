@@ -3659,7 +3659,21 @@ Nota: A primeira linha é a número 1.
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
 
-33.4.6. salvar([texto])
+33.4.6. fantes(<nome da classe>, <nome da função 1>, [nome da função 2])
+Muda uma função, constante ou variável de lugar em uma classe.
+Coloca a função 1 antes da função 2, caso as duas existam.
+Se a função 2 for omitida, coloca a função 1 no início da classe.
+Retorna um texto vazio se conseguiu mover ou a mensagem de erro se não
+conseguiu.
+
+33.4.7. fdepois(<nome da classe>, <nome da função 1>, [nome da função 2])
+Muda uma função, constante ou variável de lugar em uma classe.
+Coloca a função 1 depois da função 2, caso as duas existam.
+Se a função 2 for omitida, coloca a função 1 no final da classe.
+Retorna um texto vazio se conseguiu mover ou a mensagem de erro se não
+conseguiu.
+
+33.4.8. salvar([texto])
 Salva as alterações nos arquivos correspondentes, depois que todas
 as alterações pendentes nas classes forem efetuadas.
 O texto é composto de letras seguidas de números, que indicam como
@@ -3683,7 +3697,7 @@ salvar("L4000N0I2C1F1V0")
 Significa não dividir linhas, 2 espaços para indentação, 1 linha vazia
 entre classes e entre funções e nenhuma linha vazia entre variáveis.
 
-33.4.7. salvartudo([texto])
+33.4.9. salvartudo([texto])
 Mesmo que a função salvar, porém salva todos os arquivos,
 independete de terem sido alterados ou não.
 

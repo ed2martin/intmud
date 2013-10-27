@@ -565,7 +565,8 @@ Exceto o personagem; ataque\n\
 Todos dividindo o ataque\n\
 Todos sem dividir o ataque\n\
 Qualquer um; não é ataque\n\
-O personagem; não é ataque"
+O personagem; não é ataque\n\
+Automático (sem intervenção do jogador)"
 #
 #
 const nome2 = "Condição"
@@ -713,6 +714,7 @@ func efeitohab # Efeito da habilidade sob o alvo
 
 classe comando_ataque
 herda comando_hab
+const objcmd = 6 != tipoalvo && arg0.persobat.var.[nomevar] ? este
 const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoalvo = 0 # Alvo
@@ -1016,16 +1018,16 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   se arma1
     dano *= rand(arma1.armamin, arma1.armamax)
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= arg0.atkesp * arg2 / (arg1.defesp * 500)
+      dano *= arg0.atkesp * arg2 * arg3 / (arg1.defesp * 3000)
     senao
-      dano *= arg0.atknorm * arg2 / (arg1.defnorm * 500)
+      dano *= arg0.atknorm * arg2 * arg3 / (arg1.defnorm * 3000)
     fimse
-# Calcula dano sem arma; valor do rand é por volta de 500
+# Calcula dano sem arma
   senao
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= arg0.atkesp * arg0.atkesp * arg2 / (arg1.defesp * rand(450, 550))
+      dano *= arg0.atkesp * arg0.atkesp * arg2 * arg3 / (arg1.defesp * rand(2700, 3300))
     senao
-      dano *= arg0.atknorm * arg0.atknorm * arg2 / (arg1.defnorm * rand(450, 550))
+      dano *= arg0.atknorm * arg0.atknorm * arg2 * arg3 / (arg1.defnorm * rand(2700, 3300))
     fimse
     dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
   fimse
