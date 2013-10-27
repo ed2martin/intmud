@@ -89,7 +89,7 @@ public:
              @param origem Endereço origem (texto)
              @retval true Sucesso; destino contém as instruções codificadas
              @retval false Falha; destino contém as mensagens de erro */
-    void AddBloco(char * ender, int tamanho);
+    void AddBloco(const char * ender, int tamanho);
         ///< Adiciona um bloco de instruções na lista
         /**< @param ender Endereço inicial do bloco
              @param tamanho Tamanho do bloco sem os dois bytes =0 no final
@@ -108,7 +108,7 @@ public:
              adicionadas com AddBloco */
 
 private:
-    char * endbloco[30]; ///< Endereços dos blocos de instruções
+    const char * endbloco[30]; ///< Endereços dos blocos de instruções
     int  tambloco[30];   ///< Tamanhos dos blocos de instruções
     unsigned int numbloco;  ///< Número de blocos
 };

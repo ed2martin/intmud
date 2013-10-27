@@ -90,6 +90,8 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "criarlin",     &TVarProg::FuncCriarLin },
         { "depois",       &TVarProg::FuncDepois },
         { "existe",       &TVarProg::FuncExiste },
+        { "fantes",       &TVarProg::FuncFAntes },
+        { "fdepois",      &TVarProg::FuncFDepois },
         { "iniarq",       &TVarProg::FuncIniArq },
         { "iniclasse",    &TVarProg::FuncIniClasse },
         { "inifunc",      &TVarProg::FuncIniFunc },
@@ -1351,6 +1353,168 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
 // Anota alterações em objeto TMudarClasse
     if (obj==0)
         obj = new TMudarClasse(cl->Nome);
+    mudarcom.AnotaBloco(obj);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto("");
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncFAntes(TVariavel * v)
+{
+    return FuncMudar(v, 0);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncFDepois(TVariavel * v)
+{
+    return FuncMudar(v, 1);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncMudar(TVariavel * v, int lugar)
+{
+    if (Instr::VarAtual < v+2)
+        return false;
+// Obtém a classe
+    const char * nomeclasse = v[1].getTxt();
+    TClasse * cl = TClasse::Procura(nomeclasse);
+    TMudarClasse * obj = TMudarClasse::Procurar(nomeclasse);
+// Obtém: texto1 = instruções da classe
+    char * texto1 = 0;
+    if (obj && obj->Comandos!=0) // Comandos definidos em TMudarClasse
+        texto1 = obj->Comandos, nomeclasse=obj->Nome;
+    else if (cl)    // Comandos definidos em TClasse
+        texto1 = cl->Comandos, nomeclasse=cl->Nome;
+    else            // Nenhum comando definido, retorna
+    {
+        char mens[100];
+        mprintf(mens, sizeof(mens), "Classe não existe: %s", nomeclasse);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
+    }
+// Obtém: p1 = início da primeira função
+    const char * nome1 = v[2].getTxt();
+    const char * p1 = 0;
+    for (const char * p = texto1; p[0] || p[1]; p += Num16(p))
+        if (p[2] > Instr::cVariaveis)
+            if (comparaVar(p + Instr::endNome, nome1)==0)
+            {
+                p1 = p;
+                break;
+            }
+    if (p1==0)
+    {
+        char mens[100];
+        mprintf(mens, sizeof(mens), "Função não existe: %s", nome1);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
+    }
+// Obtém: p2 = primeiro byte após a primeira função
+    const char * p2 = p1 + Num16(p1);
+    for (; p2[0] || p2[1]; p2 += Num16(p2))
+        if (p2[2] > Instr::cVariaveis)
+            break;
+// Obtém: p3 = fim das instruções da classe
+    const char * p3 = p2;
+    while (p3[0] || p3[1])
+        p3 += Num16(p3);
+// Obtém: d1 = segunda função (aonde colocar a primeira função)
+    const char * d1 = 0;
+    if (Instr::VarAtual >= v+3)
+    {
+        const char * nomefunc = v[3].getTxt();
+        for (const char * p = texto1; p[0] || p[1]; p += Num16(p))
+            if (p[2] > Instr::cVariaveis)
+                if (comparaVar(p + Instr::endNome, nomefunc)==0)
+                {
+                    d1 = p;
+                    break;
+                }
+        if (d1 == 0)
+        {
+            char mens[100];
+            mprintf(mens, sizeof(mens), "Função não existe: %s", nomefunc);
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens);
+        }
+        if (lugar == 1)
+            for (d1 += Num16(d1); d1[0] || d1[1]; d1 += Num16(d1))
+                if (d1[2] >= Instr::cVariaveis)
+                    break;
+    }
+    else if (lugar == 1) // Mover para o final
+        d1 = p3;
+    else if (texto1[2] == Instr::cHerda) // Mover para o início
+        d1 = texto1 + Num16(texto1);
+    else
+        d1 = texto1;
+// Checa se não está colocando função antes da última variável
+// ou variável depois da primeira função
+    switch (p1[2])
+    {
+    case Instr::cConstNulo: // Constantes podem ir em qualquer lugar
+    case Instr::cConstTxt:
+    case Instr::cConstNum:
+    case Instr::cConstExpr:
+    case Instr::cConstVar:
+        break;
+    case Instr::cFunc: // Funções depois da última variável
+    case Instr::cVarFunc:
+        {
+        // Procura a primeira função
+            const char * p = texto1;
+            for (; p<p3; p+=Num16(p))
+                if (p[2] == Instr::cFunc || p[2] == Instr::cVarFunc)
+                    break;
+        // Colocar depois das variáveis
+            if (d1 < p)
+                d1 = p;
+            break;
+        }
+    default: // Variáveis antes da primeira função
+        {
+        // Procura a primeira função
+            const char * p = texto1;
+            for (; p<p3; p+=Num16(p))
+                if (p[2] == Instr::cFunc || p[2] == Instr::cVarFunc)
+                    break;
+        // Colocar antes das funções
+            if (d1 > p)
+                d1 = p;
+        }
+    }
+// Checa se a posição da função não vai mudar
+    if (d1 >= p1 && d1 <= p2)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("");
+    }
+// Prepara as instruções
+    TMudarAux mudarcom; // Para mudar a lista de instruções
+    if (d1 < p2)
+    {
+        mudarcom.AddBloco(texto1, d1 - texto1); // texto1 a d1
+        mudarcom.AddBloco(p1, p2 - p1);       // função que será movida
+        mudarcom.AddBloco(d1, p1 - d1);       // d1 a p1
+        mudarcom.AddBloco(p2, p3 - p2);       // p2 a p3
+    }
+    else
+    {
+        mudarcom.AddBloco(texto1, p1 - texto1); // texto1 a p1
+        mudarcom.AddBloco(p2, d1 - p2);       // p2 a d1
+        mudarcom.AddBloco(p1, p2 - p1);       // função que será movida
+        mudarcom.AddBloco(d1, p3 - d1);       // d1 a p3
+    }
+// Verifica se bloco válido
+    char err[200];
+    if (!mudarcom.ChecaBloco(err, sizeof(err)))
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(err);
+    }
+// Anota alterações em objeto TMudarClasse
+    if (obj==0)
+        obj = new TMudarClasse(nomeclasse);
     mudarcom.AnotaBloco(obj);
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto("");

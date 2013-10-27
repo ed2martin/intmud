@@ -69,13 +69,13 @@ func reinicia # Volta ao início: pede o nome do personagem
   p_perso
 
 func recebe # Recebeu mensagem do jogador
-  ret !perso.var.t_[txt1(arg0)], recebe1(arg0)
+  ret passo || !perso.var.t_[txt1(arg0)], recebe1(arg0)
   $cmdalias.m_0 = txt2(arg0)
   textotxt t
   t.addfim($cmdalias.mens(perso.var.t_[txt1(arg0)]))
   debug d
   enquanto t.linhas
-    d.exec = 5000
+    d.ini
     ret recebe1(t.remove), nulo
   efim
 

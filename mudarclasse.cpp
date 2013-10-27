@@ -31,7 +31,7 @@ TMudarAux::TMudarAux()
 }
 
 //------------------------------------------------------------------------------
-void TMudarAux::AddBloco(char * ender, int tamanho)
+void TMudarAux::AddBloco(const char * ender, int tamanho)
 {
     if (tamanho<=0 || numbloco >= sizeof(tambloco) / sizeof(tambloco[0]))
         return;
@@ -63,8 +63,8 @@ bool TMudarAux::ChecaBloco(char * mensagem, int tamanho)
     checalinha.Inicio();
     for (unsigned int bloco=0; bloco<numbloco; bloco++)
     {
-        char * com = endbloco[bloco];
-        char * fim = com + tambloco[bloco];
+        const char * com = endbloco[bloco];
+        const char * fim = com + tambloco[bloco];
         while (com<fim)
         {
             const char * p = checalinha.Instr(com);
