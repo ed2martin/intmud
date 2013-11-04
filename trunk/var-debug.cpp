@@ -17,6 +17,7 @@
 #include <sys/resource.h>
 #endif
 #include "var-debug.h"
+#include "config.h"
 #include "mudarclasse.h"
 #include "objeto.h"
 #include "variavel.h"
@@ -244,6 +245,17 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         FuncAtual->objdebug = obj;
         FuncAtual->funcdebug = instr;
         return false;
+    }
+// Dados do IntMUD
+    if (comparaZ(nome, "ver")==0)
+    {
+        ApagarVar(v);
+        return CriarVarTexto(VERSION);
+    }
+    if (comparaZ(nome, "data")==0)
+    {
+        ApagarVar(v);
+        return CriarVarTexto(__DATE__);
     }
     return false;
 }

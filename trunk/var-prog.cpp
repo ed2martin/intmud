@@ -95,6 +95,7 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "iniarq",       &TVarProg::FuncIniArq },
         { "iniclasse",    &TVarProg::FuncIniClasse },
         { "inifunc",      &TVarProg::FuncIniFunc },
+        { "inifunccl",    &TVarProg::FuncIniFuncCl },
         { "inifunctudo",  &TVarProg::FuncIniFuncTudo },
         { "iniherda",     &TVarProg::FuncIniHerda },
         { "iniherdainv",  &TVarProg::FuncIniHerdaInv },
@@ -106,6 +107,7 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "salvartudo",   &TVarProg::FuncSalvarTudo },
         { "texto",        &TVarProg::FuncTexto },
         { "varcomum",     &TVarProg::FuncVarComum },
+        { "varlugar",     &TVarProg::FuncVarLugar },
         { "varnum",       &TVarProg::FuncVarNum },
         { "varsav",       &TVarProg::FuncVarSav },
         { "vartexto",     &TVarProg::FuncVarTexto },
@@ -280,6 +282,43 @@ bool TVarProg::FuncVarTipo(TVariavel * v)
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncVarLugar(TVariavel * v)
+{
+    int valor = 0;
+    while (true)
+    {
+        if (Instr::VarAtual < v+2)
+            break;
+        TClasse * cl = TClasse::Procura(v[1].getTxt());
+        if (cl==0)
+            break;
+        int indice = cl->IndiceNome(v[2].getTxt());
+        if (indice>=0)
+        {
+            switch (cl->InstrVar[indice][2])
+            {
+            case Instr::cConstNulo:
+            case Instr::cConstTxt:
+            case Instr::cConstNum:
+            case Instr::cConstExpr:
+            case Instr::cConstVar:
+                valor = 2;
+                break;
+            case Instr::cFunc:
+            case Instr::cVarFunc:
+                valor = 3;
+                break;
+            default:
+                valor = 1;
+            }
+        }
+        break;
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor);
 }
 
 //------------------------------------------------------------------------------
@@ -684,6 +723,30 @@ bool TVarProg::FuncIniLinha(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
+bool TVarProg::FuncIniFuncCl(TVariavel * v)
+{
+    TProgConsulta valor = prNada;
+    while (Instr::VarAtual >= v+1)
+    {
+        Classe = TClasse::Procura(v[1].getTxt());
+        if (Classe==0)
+            break;
+        const char * p = Classe->Comandos;
+        for (; p[0] || p[1]; p += Num16(p))
+            if (p[2] >= Instr::cVariaveis)
+            {
+                TextoAtual = p;
+                valor = prFuncCl;
+                break;
+            }
+        break;
+    }
+    MudaConsulta(valor);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor != 0);
+}
+
+//------------------------------------------------------------------------------
 bool TVarProg::FuncDepois(TVariavel * v)
 {
     int total = 1;
@@ -801,6 +864,40 @@ bool TVarProg::FuncDepois(TVariavel * v)
     case prLinhaVar:  // inilinha com variável
         MudaConsulta(prNada);
         break;
+    case prFuncCl:    // inifunccl
+        for (; total>0 && consulta != prNada; total--)
+        {
+            const char * p = TextoAtual;
+        // Avançar para próxima variável
+            if (p[2] != Instr::cFunc && p[2] != Instr::cVarFunc)
+            {
+                for (p += Num16(p); p[0] || p[1]; p += Num16(p))
+                    if (p[2] > Instr::cVariaveis)
+                    {
+                        TextoAtual = p;
+                        return false;
+                    }
+                MudaConsulta(prNada);
+                break;
+            }
+        // Avançár para próxima função
+            for (p += Num16(p); p[0] || p[1]; p += Num16(p))
+                if (p[2] > Instr::cVariaveis)
+                    switch (p[2])
+                    {
+                    case Instr::cConstNulo:
+                    case Instr::cConstTxt:
+                    case Instr::cConstNum:
+                    case Instr::cConstExpr:
+                    case Instr::cConstVar:
+                    case Instr::cFunc:
+                    case Instr::cVarFunc:
+                        TextoAtual = p;
+                        return false;
+                    }
+            MudaConsulta(prNada);
+            break;
+        }
     }
     return false;
 }
@@ -854,6 +951,9 @@ bool TVarProg::FuncTexto(TVariavel * v)
             Instr::DadosTopo = destino;
             return true;
         }
+    case prFuncCl:  // inifunccl
+        p = TextoAtual + Instr::endNome;
+        break;
     }
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrTxtFixo))
@@ -1371,6 +1471,30 @@ bool TVarProg::FuncFDepois(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
+/// Obtém o endereço após o fim de uma função ou variável
+/** @note Usado em TVarProg::FuncMudar */
+const char * FuncMudarProximo(const char * p)
+{
+    if (p[0]==0 && p[1]==0)
+        return p;
+    if (p[2] != Instr::cFunc && p[2] != Instr::cVarFunc)
+        return p + Num16(p);
+    for (p += Num16(p); p[0] || p[1]; p += Num16(p))
+        switch (p[2])
+        {
+        case Instr::cConstNulo:
+        case Instr::cConstTxt:
+        case Instr::cConstNum:
+        case Instr::cConstExpr:
+        case Instr::cConstVar:
+        case Instr::cFunc:
+        case Instr::cVarFunc:
+            return p;
+        }
+    return p;
+}
+
+//------------------------------------------------------------------------------
 bool TVarProg::FuncMudar(TVariavel * v, int lugar)
 {
     if (Instr::VarAtual < v+2)
@@ -1410,10 +1534,7 @@ bool TVarProg::FuncMudar(TVariavel * v, int lugar)
         return Instr::CriarVarTexto(mens);
     }
 // Obtém: p2 = primeiro byte após a primeira função
-    const char * p2 = p1 + Num16(p1);
-    for (; p2[0] || p2[1]; p2 += Num16(p2))
-        if (p2[2] > Instr::cVariaveis)
-            break;
+    const char * p2 = FuncMudarProximo(p1);
 // Obtém: p3 = fim das instruções da classe
     const char * p3 = p2;
     while (p3[0] || p3[1])
@@ -1438,16 +1559,14 @@ bool TVarProg::FuncMudar(TVariavel * v, int lugar)
             return Instr::CriarVarTexto(mens);
         }
         if (lugar == 1)
-            for (d1 += Num16(d1); d1[0] || d1[1]; d1 += Num16(d1))
-                if (d1[2] >= Instr::cVariaveis)
-                    break;
+            d1 = FuncMudarProximo(d1);
     }
     else if (lugar == 1) // Mover para o final
         d1 = p3;
-    else if (texto1[2] == Instr::cHerda) // Mover para o início
-        d1 = texto1 + Num16(texto1);
-    else
-        d1 = texto1;
+    else  // Mover para o início
+        for (d1 = texto1; d1[0] || d1[1]; d1 += Num16(d1))
+            if (d1[2] >= Instr::cVariaveis)
+                break;
 // Checa se não está colocando função antes da última variável
 // ou variável depois da primeira função
     switch (p1[2])

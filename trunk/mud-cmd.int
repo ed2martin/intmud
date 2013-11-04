@@ -19,8 +19,10 @@ const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 
 
 classe cmd_lançar
-herda cmd_lancar
+herda comando_comum, comando_ajuda
 # Para aceitar o comando lançar escrito com c cedilha
+const objcmd = $cmd_lancar
+const objajuda = $cmd_lancar
 
 
 classe cmd_fim
@@ -44,7 +46,7 @@ classe cmd_config
 herda comando_comum, comando_ajuda
 const posic = 0
 const txtajuda = arg0.jogconfig.23 ? txtajuda1 + txtajuda2 : txtajuda1
-const txtajuda1 = config:chattipo ? aj1 + aj2 + aj3 : aj1 + aj3
+const txtajuda1 = aj1 + (config:chattipo ? aj2) + (config:acaotipo ? aj3) + aj4
 const aj1 = "\b\c3Config\b\n\
 Sintaxe: config +<opção>\n\
          config -<opção>\n\
@@ -58,7 +60,8 @@ As opções são:\n\
   \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
   \c2PVT\b      Recebe mensagens com o comando PVT\n"
 const aj2 = "  \c2CHAT\b     Participa do canal de comunicação CHAT\n"
-const aj3 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
+const aj3 = "  \c2ACAO\b     Mostra (ação) nas mensagens geradas com esse comando\n"
+const aj4 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
   \c2PROMPT\b   Ativa o prompt normal\n\
   \c2BROMPT\b   Ativa o prompt de batalha"
 const txtajuda2 = "\n\
@@ -86,6 +89,7 @@ const opc_seguir = 5
 const opc_prompt = 6
 const opc_bprompt = 7
 const opc_pvt = 8
+const opc_acao = config:acaotipo ? 9
 const opc_execlog = 15
 const opc_sala = 16
 const opc_invquem = 17
@@ -443,6 +447,67 @@ func escr
   efim
 # Mensagem se não encontrou o personagem
   !r && arg0.msg("Você não vê " + txt1(arg1) + ".")
+
+
+classe cmd_açao
+herda comando_comum, comando_ajuda
+# Para aceitar o comando ação escrito com c cedilha
+const objcmd = config:acaotipo ? $cmd_acao
+const objajuda = config:acaotipo ? $cmd_acao
+
+
+classe cmd_acao
+herda comando_comum, comando_ajuda
+const objcmd = config:acaotipo ? este
+const objajuda = config:acaotipo ? este
+const txtajuda = "\b\c3Ação\b\n\
+Sintaxe: ACAO <mensagem>\n\
+         AÇÃO <mensagem>\n\
+Envia uma mensagem para todos que estiverem na mesma sala demonstrando\n\
+uma ação (é adicionado o nome do seu personagem na frente da mensagem).\n\
+Por exemplo, se o seu personagem se chamar Joaquim e você teclar:\n\
+acao sorriu\n\
+Os jogadores receberão a mensagem:\n\
+Joaquim sorriu\n\
+Veja também o comando CONFIG"
+
+func escr
+  ret !arg0.contr.dono.socktot, nulo
+  se arg0.pnivel < config:acaonivel
+    arg0.msg("Para usar o comando ACAO você precisa estar no nível " + config:acaonivel + \
+".")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após ACAO.")
+  senao
+    refvar lin = "$P " + txttroca(arg1, "$", "$$")
+    $mens.p(arg0)
+    listaobj l0
+    epara l0.addfim(arg0.contr.dono.dentro2), l0, l0.ini.remove
+      l0.objini.msginv(l0.objini.jogconfig.9 ? "(ação) " + lin : lin)
+    efim
+
+
+classe cmdfim_rezar
+herda comando_comum, comando_ajuda
+const objcmd = config:rezartipo ? este
+const objajuda = config:rezartipo ? este
+const txtajuda = "\b\c3Rezar\b\n\
+Sintaxe: REZAR <mensagem>\n\
+Envia mensagem para os administradores que estiverem no jogo."
+
+func escr
+  se arg0.pnivel < config:rezarnivel
+    arg0.msg("Para usar o comando REZAR você precisa estar no nível " + config:rezarnivel + \
+".")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após REZAR.")
+  senao
+    arg0.msg("Você rezou '" + arg1 + "'")
+    indiceitem item
+    refvar lin = "(rezar) " + arg0.nome + ": " + arg1
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.23 && !item.obj.perso.var.u_[arg0.nome] && item.obj.msg(lin)
+    efim
 
 
 classe cmdfim_chat

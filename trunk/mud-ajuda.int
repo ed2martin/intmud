@@ -67,14 +67,20 @@ Depois, para voltar a caminhar, deverá ficar em pé (digitando LEVANTAR)."
 
 classe cmd_comunica
 herda comando_ajuda
-const txtajuda = aj1 + (config:chattipo ? aj2) + aj3
+
+func txtajuda
+  ret aj1 + (config:chattipo ? aj2) + aj3 + (config:acaotipo ? aj4) + aj5 + (config:rezartipo ? aj6)
+
 const aj1 = "\b\c3Comunicação\b\n"
 const aj2 = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n"
 const aj3 = "  \c2PVT\b       Envia mensagem privativa para um jogador\n\
   \c2FALAR\b     Envia mensagem para os personagens na mesma sala\n\
   \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala\n\
-  \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens\n\
-  \c2IGNORAR\b   Ignora um jogador"
+  \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens\n"
+const aj4 = "  \c2ACAO\b      Envia mensagens para demonstrar ações do seu personagem\n"
+const aj5 = "  \c2IGNORAR\b   Ignora um jogador"
+const aj6 = "\n\
+  \c2REZAR\b     Envia mensagem para os administradores que estiverem no jogo"
 
 
 classe cmd_info
@@ -94,7 +100,7 @@ const txtajuda = "\b\c3Informações\b\n\
   \c2MAGIA\b    As magias do seu personagem\n\
   \c2IDIOMA\b   Idiomas que o seu personagem conhece\n\
   \c2OUTROS\b   Outras habilidades e itens do seu personagem\n\
-  \C2EFEITO\b   Os efeitos que estão afetando o seu personagem"
+  \c2EFEITO\b   Os efeitos que estão afetando o seu personagem"
 
 
 classe cmd_objeto
