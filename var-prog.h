@@ -17,6 +17,7 @@ enum TProgConsulta ///< O que consultar, TVarProg::consulta
     prClasse,   ///< iniclasse()
     prFunc,     ///< inifunc()
     prFuncTudo, ///< inifunctudo()
+    prFuncCl,   ///< inifunccl()
     prHerda,    ///< iniherda()
     prHerdaTudo,///< iniherdatudo()
     prHerdaInv, ///< iniherdainv()
@@ -46,6 +47,7 @@ private:
     bool FuncVarNum(TVariavel * v);       ///< Processa função VarNum
     bool FuncVarTexto(TVariavel * v);     ///< Processa função VarTexto
     bool FuncVarTipo(TVariavel * v);      ///< Processa função VarTipo
+    bool FuncVarLugar(TVariavel * v);     ///< Processa função VarLugar
     bool FuncVarVetor(TVariavel * v);     ///< Processa função VarVetor
     bool FuncConst(TVariavel * v);        ///< Processa função Const
     bool FuncClasse(TVariavel * v);       ///< Processa função Classe
@@ -53,7 +55,8 @@ private:
     bool FuncIniArq(TVariavel * v);       ///< Processa função IniArq
     bool FuncIniClasse(TVariavel * v);    ///< Processa função IniClasse
     bool FuncIniFunc(TVariavel * v);      ///< Processa função IniFunc
-    bool FuncIniFuncTudo(TVariavel * v);  ///< Processa função IniFunctudo
+    bool FuncIniFuncTudo(TVariavel * v);  ///< Processa função IniFuncTudo
+    bool FuncIniFuncCl(TVariavel * v);    ///< Processa função IniFuncCl
     bool FuncIniHerda(TVariavel * v);     ///< Processa função IniHerda
     bool FuncIniHerdaTudo(TVariavel * v); ///< Processa função IniHerdatudo
     bool FuncIniHerdaInv(TVariavel * v);  ///< Processa função IniHerdainv

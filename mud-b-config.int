@@ -80,18 +80,30 @@ const atkfor = 30
 # Nesse texto, $m é a mensagem, $p é o personagem e $$ é o símbolo $
 const echomsg = "\b\cb(ADM) $m\b"
 #
+# Comando rezar: 0=não existe, 1=existe
+const rezartipo = 0 # Comando rezar: 0 Desabilitado
+#
+# Nível necessário para usar o comando rezar
+const rezarnivel = 0
+#
 # Canal chat: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
 const chattipo = 2 # Canal chat: 2 Para todo o MUD
 #
 # Nível necessário para escrever no canal chat
 const chatnivel = 0
 #
-# Quantos pontos de aulas ganha quando sobe de nível
-# Se 0, o comando aprender não usa pontos de aula
-const aulas = 0
+# Comando ação: 0=não existe, 1=existe
+const acaotipo = 0 # Comando ação: 0 Desabilitado
+#
+# Nível necessário para usar o comando ação
+const acaonivel = 0
 #
 # Até que nível pode usar o comando retornar
 const retornar = -1
+#
+# Quantos pontos de aulas ganha quando sobe de nível
+# Se 0, o comando aprender não usa pontos de aula
+const aulas = 0
 #
 # Os tipos de produtos (itens) que vendedores podem comprar
 const produtos = "Possui metal\n\
@@ -198,7 +210,8 @@ const equip_vestir = "$P coloca $a na cabeça.\n\
 $P coloca $o no rosto.\n\
 $P coloca $o nos olhos.\n\
 $P coloca $o nas orelhas.\n\
-$P coloca $o no pescoço.\n\n\n\n\n\
+$P coloca $o no pescoço.\n\n\n\
+$P coloca $o nas costas.\n\n\
 $P coloca $o nas mãos.\n\
 $P coloca $o.\n\
 $P coloca $o.\n\n\n\

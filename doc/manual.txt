@@ -3506,23 +3506,27 @@ Em ordem alfabética.
 33.1.5. inifunctudo(<nome da classe>, [texto])
 Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
 
-33.1.6. iniherda(<nome da classe>)
+33.1.6. inifunccl(<nome da classe>, [texto])
+Mesmo que inifunc, mas as funções e variáveis são listadas na ordem em que
+aparecem na classe.
+
+33.1.7. iniherda(<nome da classe>)
 Obter os nomes das classes definidas na instrução 'herda'.
 Na ordem definida na classe.
 
-33.1.7. iniherdatudo(<nome da classe>)
+33.1.8. iniherdatudo(<nome da classe>)
 Obter a lista de classes herdadas por uma classe.
 Inclui também as classes herdadas indiretamente.
 Na ordem em que as classes são herdadas.
 
-33.1.8. iniherdainv(<nome da classe>)
+33.1.9. iniherdainv(<nome da classe>)
 Herança inversa: obter os nomes das classes que herdam uma classe.
 A ordem em que as classes são listadas é imprevisível.
 
-33.1.9. inilinha(<nome da classe>)
+33.1.10. inilinha(<nome da classe>)
 Obter as linhas correspondentes a uma classe.
 
-33.1.10. inilinha(<nome da classe>, <nome da função>)
+33.1.11. inilinha(<nome da classe>, <nome da função>)
 Obter as linhas correspondentes a uma variável ou função da classe
 (definida na classe ou herdada).
 
@@ -3571,6 +3575,13 @@ p.arqnome("abc") # Retorna algo como 'intmud-abc.int'.
 
 33.3.5. vartipo(<nome da classe>, <nome da variável>)
 Retorna o tipo de variável ou "" se a variável não existe.
+
+33.3.6. varlugar(<nome da classe>, <nome da variável>)
+Retorna um número de acordo com o tipo de variável ou função:
+0 = Função ou variável não existe;
+1 = É variável da classe, está antes das funções;
+2 = É 'const' ou 'varconst', pode ser colocado em qualquer lugar;
+3 = É 'func' ou 'varfunc', está depois das variáveis.
 
 33.3.6. varnum(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante numérica do tipo:
@@ -3804,9 +3815,16 @@ Quantidade de memória que o programa está usando, em bytes.
 38.9. memmax
 Quantidade máxima de memória que o programa chegou a usar, em bytes.
 
+38.10. ver
+Retorna um texto que é a versão do IntMUD.
+
+38.11. data
+Retorna um texto que é a data em que o programa (mais especificamente
+o arquivo var-debug.cpp) foi compilado.
+
 Eventos:
 
-34.10. <nomedavariável>_erro
+34.12. <nomedavariável>_erro
 Ocorreu algum erro ao executar uma função.
 arg0 = Mensagem de erro (uma linha) seguido dos detalhes sobre o erro
 arg1 = Índice da variável vetor, se não for vetor arg1=0

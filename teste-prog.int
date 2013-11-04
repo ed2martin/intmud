@@ -12,7 +12,7 @@ func ini
   msg("Digite o nome de uma variável ou:\n")
   msg("FIM          Encerrar o programa\n")
   msg("A, B ou C    Seleciona a classe\n")
-  msg("0 a 10       Escolhe uma função\n")
+  msg("0 a 11       Escolhe uma função\n")
   msg("I <função>   Move função para o início da classe\n")
   msg("F <função>   Move função para o fim da classe\n")
   msg("I <f1> <f2>  Move função 1 para antes da função 2\n")
@@ -78,35 +78,39 @@ func p3
   mostra(p)
 func p4
   prog p
-  msg("iniherda=" + p.iniherda(nomeclasse) + " (herança)\n")
+  msg("inifunccl=" + p.inifunccl(nomeclasse) + " (funções na classe)\n")
   mostra(p)
 func p5
   prog p
-  msg("iniherdatudo=" + p.iniherdatudo(nomeclasse) + " (todas as classes hedadas)\n")
+  msg("iniherda=" + p.iniherda(nomeclasse) + " (herança)\n")
   mostra(p)
 func p6
   prog p
-  msg("iniherdainv=" + p.iniherdainv(nomeclasse) + " (herança inversa)\n")
+  msg("iniherdatudo=" + p.iniherdatudo(nomeclasse) + " (todas as classes hedadas)\n")
   mostra(p)
 func p7
   prog p
-  msg("inilinha=" + p.inilinha(nomeclasse) + " (instruções da classe)\n")
+  msg("iniherdainv=" + p.iniherdainv(nomeclasse) + " (herança inversa)\n")
   mostra(p)
 func p8
+  prog p
+  msg("inilinha=" + p.inilinha(nomeclasse) + " (instruções da classe)\n")
+  mostra(p)
+func p9
   prog p
   se arg0 == ""
     msg("Digite o nome de uma função ou variável após 8\n")
   senao
     msg("inilinha=" + p.inilinha(nomeclasse, arg0) + " (instruções da função)\n")
     mostra(p)
-func p9
+func p10
   prog p
   se arg0 == ""
     msg("Digite o nome de uma função ou variável após 9\n")
   senao
     msg("Texto da constante:\n" + p.const(nomeclasse, arg0) + "\n")
 #msg(txt([nomeclasse]:[arg0]) + "\n")
-func p10
+func p11
   prog cl
   prog p
   msg("Lista de classes\n")
@@ -163,16 +167,22 @@ func pteste12345teste12345teste12345teste12345teste12345teste12345teste12345test
 
 classe B
 herda teste
+# Uma variável comum
 int8 var1
+# Um vetor
 int8 v.10
 sav txt10 teste
+# Algumas constantes
 const c1 = 10
 const c2 = "10"
-const x = "\d4bom dia\b\n"
 func f1
+# Teste de função
+  uint8 nn
   ret 1
 func f2
+  int16 vv
   ret 2
+const x = "\d4bom dia\b\n"
 
 classe C
 func xxx
