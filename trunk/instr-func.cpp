@@ -218,6 +218,54 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função intmax
+bool Instr::FuncMax(TVariavel * v, int valor)
+{
+    if (VarAtual <= v+1)
+    {
+        if (VarAtual == v)
+            return false;
+        ApagarRet(v);
+        return true;
+    }
+    double d = v[1].getDouble();
+    TVariavel * pos = v+1;
+    for (TVariavel * var = v+2; var<=VarAtual; var++)
+    {
+        double num = var->getDouble();
+        if (d < num)
+            d=num, pos=var;
+    }
+    ApagarVar(pos+1);
+    ApagarRet(v);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Função intmin
+bool Instr::FuncMin(TVariavel * v, int valor)
+{
+    if (VarAtual <= v+1)
+    {
+        if (VarAtual == v)
+            return false;
+        ApagarRet(v);
+        return true;
+    }
+    double d = v[1].getDouble();
+    TVariavel * pos = v+1;
+    for (TVariavel * var = v+2; var<=VarAtual; var++)
+    {
+        double num = var->getDouble();
+        if (d > num)
+            d=num, pos=var;
+    }
+    ApagarVar(pos+1);
+    ApagarRet(v);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Função rand
 bool Instr::FuncRand(TVariavel * v, int valor)
 {

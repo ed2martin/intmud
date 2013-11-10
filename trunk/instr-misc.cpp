@@ -42,6 +42,8 @@ const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
         { "intdistdif", Instr::FuncIntDist, 2 },
         { "intdistmai", Instr::FuncIntDist, 1 },
         { "intdiv",     Instr::FuncNumero, 3 },
+        { "intmax",     Instr::FuncMax, 0 },
+        { "intmin",     Instr::FuncMin, 0 },
         { "intnome",    Instr::FuncInt, 0 },
         { "intpos",     Instr::FuncNumero, 0 },
         { "intsenha",   Instr::FuncInt, 1 },

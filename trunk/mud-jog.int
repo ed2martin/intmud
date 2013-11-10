@@ -1,6 +1,6 @@
 classe jogsock
-herda adm_comum, adm_tipo, adm_atk, adm_cod, adm_sala, adm_perso, adm_item, \
-adm_social, adm_efeito, adm_atrib, adm_reset
+herda adm_comum, adm_tipo, adm_atk, adm_cod, adm_sala, adm_perso, adm_item, adm_social, adm_efeit\
+o, adm_atrib, adm_reset
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -16,7 +16,6 @@ adm_social, adm_efeito, adm_atrib, adm_reset
 ref perso # Personagem controlado pelo jogador
 indiceobj cnome # "un " + nome codificado
 txt20 nome # Nome do personagem
-inttempo vazio # Tempo sem comunicação para desconectar do MUD
 textotxt txtmais # Texto do tecle M para mais
 int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
@@ -97,7 +96,7 @@ func recebe1 # Função recebe após uso de alias
     casose "mudasenha3"
     casofim
   fimse
-# Checa tempo para sair
+# Atualiza tempo para sair do MUD
   temposair
 # Teclar M para mais
   se arg0 == "m" && txtmais.linhas
@@ -166,13 +165,12 @@ func temposair # Acerta variáveis de tempo para sair do MUD
   casovar txt1(info)
   casose "t" # Conectado via Papovox
   casose "p" # Conectado via Telnet
-    perso.vazio1 = 4800 # 8 minutos
-    perso.vazio2 = 6000 # 10 minutos
-    vazio = 6000
+    perso.p_tempofim = 30
     sair
   casose # Rodando como bot ou independente
-    perso.vazio1 = perso.vazio2 = vazio = 0 # Não desconectar
+    perso.p_tempofim = 0
   casofim
+  !perso.p_tempoatu && (perso.p_tempoatu = 150)
 
 func msg2 # Mensagem grande para o jogador
   txtmais.limpar
@@ -238,10 +236,6 @@ func msgchegou # Mensagem de usuário chegando ou saindo
         item.obj.msg(arg1)
       fimse
     efim
-
-func vazio_exec
-  msg("Muito tempo sem comunicação")
-  apagar(este)
 
 func p_perso # Entrando no jogo: digitar o nome do personagem
   indiceitem ind
@@ -326,7 +320,7 @@ func p_email1 # Digitar o e-mail
     msg("E-mail inválido; digite outro")
   senao txtfim(lin.1, 1) == "." || txtproc(lin.1, ".") <= 0
     msg("E-mail inválido; digite outro")
-  senao 
+  senao
     var.j_email = arg0
     p_sexo1
   fimse
@@ -466,10 +460,10 @@ func p_entrajogo # Entrar no jogo: cria personagem
   var.limpar("j_")
   perso.mudadono(config:salaini)
   perso.recalc = 1
+  temposair # Acerta tempo para sair do MUD
   se perso.senha
     !perso.salvar && msg("Não foi possível salvar o personagem")
   fimse
-  temposair # Acerta tempo para sair do MUD
   msgchegou("* Criou personagem: " + nome + ", " + info, "* " + nome + " entrou")
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
@@ -541,7 +535,6 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     ref r
     r = $[perso.salanome]
     perso.mudadono(r ? r : config:salasav)
-    perso.salvarev = 3000 # 5 minutos
     temposair # Acerta tempo para sair do MUD
     txt200 lin
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
@@ -601,7 +594,7 @@ func p_mudasenha3 # Repetir a senha digitada
 
 
 classe jogador
-herda comum_persoanimal, perso_restaurar
+herda comum_persoanimal
 # Personagem no jogo
 const jog = 1 # Para identificar que é jogador
 const ident = nome
@@ -610,11 +603,11 @@ sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 const msexo = psexo # Sexo do personagem
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
-inttempo vazio1 # Tempo para mensagem que vai sair do MUD
-inttempo vazio2 # Tempo sem comunicação para desconectar do MUD
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 const jogsav = 1 # Necessário para salvar o personagem do jogador
-inttempo salvarev # Para salvar o jogo de tempos em tempos
+inttempo p_tempoatu # Tempo para atualizar personagem
+uint8 p_tempofim # Para sair do jogo após algum tempo
+uint8 p_temposav # Para salvar o jogo regularmente
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
@@ -640,12 +633,10 @@ func fim # Objeto foi apagado
 func fechou # Executado quando o objeto sock é apagado
 # arg0 é verdadeiro se jogador via bot (deve sair mais rápido do jogo)
   se arg0
-    vazio1 = 600 # 1 minuto
-    vazio2 = 900 # 1 minuto e meio
+    p_tempofim = 7
     !atkenv && apagar(este) # Apaga personagem se não estiver batalhando
   senao
-    vazio1 = 1800 # 3 minutos
-    vazio2 = 2400 # 4 minutos
+    p_tempofim = 12
   fimse
   senha == "" && apagar(este) # Apaga personagem se não tem jogo salvo
 
@@ -655,8 +646,58 @@ func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
 func tempojogo1_exec
   tempojogo1 = 864000, tempojogo2 += 1
 
+func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
+  p_tempoatu = rand(150, 200)
+# msg(">" + p_temposav + "/" + p_tempofim)
+# Checa tempo para sair do jogo
+  se !p_tempofim # 0 não faz nada
+  senao (p_tempofim -= 1) == 5 # Informa que vai sair do jogo
+    $mens.p(este)
+    $mens.mvis1("$P caminha em direção ao vazio.")
+  senao !p_tempofim # Chegou a 0 apaga o personagem (sai do jogo)
+    msg("Muito tempo sem comunicação")
+    ret apagar(este)
+  fimse
+# Restaura status de tempos em tempos
+  real2 recup
+  casovar posicao
+  casose "1" # Mortalmente ferido
+  casose "2" # Incapacitado
+    vida += 1
+    sair
+  casose "3" # Fraco
+    vida += 2
+    sair
+  casose "4" # Dormindo
+    recup = poslugar.objlista.i_movel >= 3 ? 3 : 5
+    sair
+  casose "5" # Descansando
+    recup = poslugar.objlista.i_movel >= 3 ? 7 : 10
+    sair
+  casose "6" # Sentado
+    recup = poslugar.objlista.i_movel >= 3 ? 12 : 15
+    sair
+  casose "7" # Lutando
+  casose "8" # Em pé
+    recup = 30
+    sair
+  casofim
+  se recup
+    pvida < pvidamax && (pvida = intmin(pvida + pvidamax / recup + 5, pvidamax))
+    pmana < pmanamax && (pmana = intmin(pmana + pmanamax / recup + 5, pmanamax))
+    se pmove >= pmovemax
+    senao pnivel
+      pmove = intmin(pmove + pmovemax / recup + 5, pmovemax)
+    senao
+      pmove = intmin(pmove + pmovemax / recup + 20, pmovemax)
+    fimse
+  fimse
+# Salva o jogo
+  (p_temposav += 1) >= 9 && salvar
+
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar
+  p_temposav = 0
   ret !senha, 0
   listaitem item
   listaobj lista
@@ -668,28 +709,17 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   enquanto item
     se !item.obj.jogsav
       item.removedepois
-    senao lista.total < 1000
+    senao lista.total < 2000
       lista.addfim(item.obj.dentro1, item.obj.dentro2), item.depois
     senao
       item.depois
     fimse
   efim
   salanome = dono
-  salvarev = 3000 # 5 minutos
 # msg(txt2(cnome) + " , " + senha)
   dbg.exec = 2000
   ret !lista.total, 0
   ret sav1.salvar("sav/" + txt2(cnome) + ".sav", lista, 30, senha)
-
-func salvarev_exec
-  salvar
-
-func vazio1_exec # Próximo de sair do MUD
-  $mens.p(este)
-  $mens.mvis1("$P caminha em direção ao vazio.")
-
-func vazio2_exec # Sair do MUD automaticamente
-  apagar(este)
 
 func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)

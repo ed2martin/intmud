@@ -21,7 +21,7 @@ extern char * arqext;    ///< A partir de onde colocar a extensão.
 void tabASCinic(void);
 
 extern char * tabNOMES1;   ///< Apenas caracteres válidos em nomes de classes
-extern char * tabNOMES2;   ///< Para comparar de nomes de classes e funções
+extern char * tabNOMES2;   ///< Para comparar nomes de classes e funções
 extern char * tabCOMPLETO; ///< Todos os caracteres
 extern char * tabMAI;      ///< Todos os caracteres em letras maiúsculas
 extern char * tabMIN;      ///< Todos os caracteres em letras minúsculas
