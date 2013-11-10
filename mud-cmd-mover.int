@@ -664,12 +664,12 @@ func escr
   listaobj l
 # Sentar em algum objeto
   se r
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_sentarobj(arg0, r, arg1), nulo
-    efim
     refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
     ret !r.i_movel, arg0.msg("Não é possível sentar-se em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_sentarobj(arg0, r, arg1), nulo
+    efim
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 6
@@ -734,12 +734,12 @@ func escr
   listaobj l
 # Descansar em algum objeto
   se r
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_descansarobj(arg0, r, arg1), nulo
-    efim
     refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
     ret !r.i_movel, arg0.msg("Não é possível descansar em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_descansarobj(arg0, r, arg1), nulo
+    efim
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 5
@@ -766,6 +766,132 @@ func escr
     $mens.mtodos1("$P descansa.")
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouchao(arg0)
+    efim
+
+
+classe cmd_dormir
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Dormir\b\n\
+Sintaxe: DORMIR [objeto]\n\
+Dorme no chão. Com o nome de um objeto, tenta dormir no objeto."
+
+func escr
+  ref r
+# Checa posição
+  ret arg0.bitver & 0x800, arg0.msg("Você não consegue dormir.")
+  casovar arg0.posicao
+  casose "5" # Descansando
+  casose "6" # Sentado
+    r = arg0.poslugar.objlista
+    sair !arg1
+    ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+  casose "8" # Em pé
+    sair
+  casose # Outras posições
+    ret arg0.msg(arg0.erropos)
+  casofim
+# Obtém aonde quer dormir
+  se arg1
+    listaitem i # Para procurar o item
+    nomeobj n # Para reconhecer os itens
+    n.ini(arg1, 1)
+    epara i = arg0.dono.dentro1.ini, i, i.depois
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    r = i.obj
+  fimse
+  listaobj l
+# Dormir em algum objeto
+  se r
+    refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
+    se txt(r.i_movel) != "2" && txt(r.i_movel) != "4"
+      ret arg0.msg("Não é possível dormir em " + nome)
+    senao r.i_lugar <= r.persolugar.total
+      ret arg0.msg("Não cabe mais ninguém em " + nome)
+    fimse
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_dormirobj(arg0, r, arg1), nulo
+    efim
+    $mens.p(arg0, nulo, r)
+    $mens.mtodos1("$P dorme em $u $o.")
+    arg0.poslugar.remove
+    arg0.poslugar = r.persolugar.addfim(arg0)
+    arg0.posicao = 4
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      l.objini.cmd_dormiuobj(arg0, r, arg1)
+    efim
+# Dormir num objeto que não existe
+  senao arg1
+    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+      ret l.objini.cmd_dormirobj(arg0, nulo, arg1), nulo
+    efim
+    arg0.msg("Você não vê " + arg1 + ".")
+    ret
+# Dormir no chão
+  senao
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_dormirchao(arg0), nulo
+    efim
+    $mens.p(arg0)
+    $mens.mtodos1("$P dorme.")
+    arg0.poslugar.remove, arg0.posicao = 4
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_dormiuchao(arg0)
+    efim
+
+
+classe cmd_acordar
+herda comando_comum, comando_ajuda
+const posic = 4
+const txtajuda = "\b\c3Acordar\b\n\
+Sintaxe: ACORDAR [personagem]\n\
+Acorda. Com o nome de um personagem, tenta acordar o personagem."
+
+func escr
+# Acordar outro personagem
+  se arg1
+    ret arg0.posicao == 4, arg0.msg(arg0.erropos)
+    listaitem i # Para procurar o item
+    nomeobj n # Para reconhecer os itens
+    n.ini(arg1, 1)
+    epara i = arg0.dono.dentro2.ini, i, i.depois
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    ref r
+    r = i.obj
+    se !r
+      ret arg0.msg("Você não vê " + arg1 + ".")
+    senao r.posicao != 4
+      ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está dormindo.")
+    senao (r.bitver & 0xC00) == 0x400
+      $mens.p(arg0, r)
+      $mens.mtodos1("$P tenta acordar $a.")
+      ret
+    fimse
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_acordar(arg0, r), nulo
+    efim
+    r.posicao = 5
+    $mens.p(arg0, r)
+    $mens.mtodos1("$P acorda $a.")
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_acordou(arg0, r)
+    efim
+# Acordar o próprio personagem
+  senao arg0.posicao > 4
+    ret arg0.msg("\c9Mas você já está acordad" + (r.msexo ? "o." : "a.\b"))
+  senao (arg0.bitver & 0xC00) == 0x400
+    ret arg0.msg("Você não consegue acordar.")
+  senao
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_acordar(arg0, arg0), nulo
+    efim
+    arg0.posicao = 5
+    $mens.p(arg0)
+    $mens.mtodos1("$P acorda.")
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_acordou(arg0, arg0)
     efim
 
 

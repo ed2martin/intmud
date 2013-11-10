@@ -50,7 +50,7 @@ void tabASCinic(void)
             "aáÁeéÉiíÍoóÓuúÚ" // Acento agudo
             "aàÀeèÈiìÌoòÒuùÙ" // Acento grave
             "aâÂeêÊiîÎoôÔuûÛ" // Acento circunflexo
-            "ççÇ"; // C cedilha
+            "cçÇ"; // C cedilha
     const char * cpont;
     int caract;
 // Verifica se deve acertar alguma tabela
