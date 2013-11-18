@@ -115,7 +115,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
       msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
 
 func recalc_exec # Ajusta variáveis
-  bitver = 1, bitinv = 3, recalc_auto, cmd_recalc1(este)
+  bitver = 17, bitinv = 3, recalc_auto, cmd_recalc1(este)
 
 func teclou # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
@@ -286,7 +286,7 @@ herda comum_perso
 # Personagem que pode batalhar
 const perso = 2 # Para identificar o tipo de personagem
 const objmax = 1 # Quantos itens pode carregar
-const pesoadd = !dono.perso && !(bitver & 48) # Se falso, está voando
+const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 const p_agressivo = 1 # Ataca se atacarem
 #
 const expmax = pnivel * pnivel + 20 # Experiência para subir de nível
@@ -324,6 +324,7 @@ listaobj atkdiv # Para dividir experiência entre personagens que atacaram
 listaobj atkbat # Para apagar objetos ao iniciar ou terminar uma batalha
 inttempo atktempo # Tempo para completar um turno da batalha
 uint8 atkturno # Turno da batalha, usado para decidir se encerra
+inttempo p_tempoatu # Tempo para atualizar personagem
 inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
 const p_movervel = 140
@@ -337,11 +338,13 @@ func ini # Objeto foi criado
 
 func acertapos # Acerta posição
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
+# Retorna o corpo do personagem, se ele morreu e ficou o corpo
+  !p_tempoatu && (p_tempoatu = 100)
   casovar pvida * 100 / pvidamax
   casose "0" # Mortalmente ferito ou morto
   casose "1"
     poslugar.remove
-    !(posicao = pvida > 0) && arg0 && morreu
+    ret !(posicao = pvida > 0) && arg0, morreu
     ret
   casose "2"
     poslugar.remove, posicao = 2 # incapacitado
@@ -361,7 +364,7 @@ func acertapos # Acerta posição
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
-  bitver = 1, bitinv = 3
+  bitver = 17, bitinv = 3
   atknorm = pnivel * 12 + 36
   defnorm = pnivel * 10 + 30
   atkesp = pnivel * 12 + 36
@@ -530,6 +533,8 @@ func restaurar # Restaura personagem (HP, mana, etc.)
     pvida = pvidamax
 
 func morreu # Procedimentos quando morre
+# Retorna o corpo do personagem, se ele morreu e ficou o corpo
+  ref corpo # Corpo do personagem morto
 # Checa se pode morrer
   listaobj l
   epara l.addfim(evento), l, l.ini.remove
@@ -568,7 +573,7 @@ func morreu # Procedimentos quando morre
     apagar(este)
     ref r
     r = sock, r.mudaperso(nulo), r.reinicia
-    p_corpo && criar("comum_corpo", este, p_corpo == 2)
+    p_corpo && (corpo = criar("comum_corpo", este, p_corpo == 2))
   fimse
 # Apaga efeitos
   listaitem i
@@ -579,6 +584,7 @@ func morreu # Procedimentos quando morre
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_morreu(este)
   efim
+  ret corpo
 
 func escolhehab # Escolhe e retorna o nome da variável de uma habilidade
   txt100 t1 # Nome da habilidade
@@ -626,8 +632,9 @@ func escolhejog # Escolhe e retorna um jogador
 
 func p_proc_exec # Processar comportamento do personagem
   ret sock, nulo # Retorna se está sendo controlado por jogador
-  ret dono.perso, nulo # Retorna se pertence a outro personagem
+  ret este != contr, nulo # Retorna se pertence a outro personagem
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
+  !p_tempoatu && (p_tempoatu = 100)
 # Evento do personagem
   ret cmd_pnj_proc, nulo
 # Obtém o alvo para realizar um ataque
@@ -655,7 +662,7 @@ func p_proc_exec # Processar comportamento do personagem
     fimse
   fimse
 # Acerta condição do personagem
-  pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
+# pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
 # Checa se é tempo de agir
   ret p_tmove, p_proc = p_tmove + 1
   ret posicao == 7, p_proc = 30
@@ -680,7 +687,19 @@ func p_proc_exec # Processar comportamento do personagem
     ret !dir || p_mover == 1 && r.dir_[dir].s_area != r.s_area, p_proc = 50
     $cmd_[dir].escr(este)
     p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
+    !p_tempoatu && (p_tempoatu = 100)
   fimse
+
+func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
+  se pvida
+    refvar recup = contr.dono.s_recup / 1000
+    pvida < pvidamax && (pvida = intmin(pvida + pvidamax * recup + 4, pvidamax)) + (p_tempoatu = \
+100)
+    pmana < pmanamax && (pmana = intmin(pmana + pmanamax * recup + 4, pmanamax)) + (p_tempoatu = \
+100)
+    pmove < pmovemax && (pmove = intmin(pmove + pmovemax * recup + 4, pmovemax)) + (p_tempoatu = \
+100)
+    posicao < 4 && acertapos # Se estiver incapacitado, pode voltar a ficar normal
 
 
 classe comum_persoanimal

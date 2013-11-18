@@ -483,7 +483,7 @@ const objajuda = $cmd_vestir
 
 classe cmd_vestir
 herda comando_comum, comando_ajuda
-const txtajuda ="\b\c3Vestir\b\n\
+const txtajuda = "\b\c3Vestir\b\n\
 Sintaxe: VESTIR <objeto> [posição]\n\
          USAR <objeto> [posição]\n\
 Seu personagem veste ou usa um objeto que está carregando.\n\
@@ -521,7 +521,7 @@ func escr
     t.addfim(config:equip_txt)
     refvar lug2 = ~alvo.equippos
     epara pos = t.ini, pos, pos.depois
-      continuar lug2 & (1 << pos.linha)
+      continuar lug2 & 1 << pos.linha
       n.nome(pos.texto) && (lugar = lugar | 1 << pos.linha)
     efim
     ret !lugar, arg0.msg("Você não sabe aonde fica " + misc:sep2 + ".")
@@ -882,7 +882,7 @@ func escr_dar # Dar item para o animal
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     refvar env = ref(l.objini)
     refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
-    se (env.objnum >> 1) > 1 # Animal não carrega objetos com coisas dentro
+    se env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
       arg0.msg(txtcopiamai(arg0.persoesc.descnome, "A") + " não consegue carregar isso.")
     senao !rec # Se animal não está carregando nada
       env.mudadono(arg0.persoesc, 1)
@@ -915,8 +915,8 @@ func escr_trocar # Trocar dois animais de lugar
   i1 = a1.idono
   i2 = a2.idono
 # Adiciona novos itens na lista
-  a1.idono = (i2 ? i2.adddepois(a1) : arg0.dentro2.addfim(a1))
-  a2.idono = (i1 ? i1.adddepois(a2) : arg0.dentro2.addfim(a2))
+  a1.idono = i2 ? i2.adddepois(a1) : arg0.dentro2.addfim(a1)
+  a2.idono = i1 ? i1.adddepois(a2) : arg0.dentro2.addfim(a2)
 # Remove os itens antigos da lista
   i1.remove, i2.remove
 # Mensagens
@@ -958,7 +958,6 @@ func escr
     arg0.msg("Não possui nenhum animal.")
   senao
     arg0.msg2("\b\c6Animais:\b\n" + t.remove(1000))
-
 
 
 classe comando_escolhe_animal

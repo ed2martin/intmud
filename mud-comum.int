@@ -191,8 +191,8 @@ func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   casofim
 
 func atribs # Retorna texto com os atributos do item ou personagem
-  ret bitinv & 0x8E == 2 && !(bitver & 528), ""
-  refvar lin = (bitinv & 2 ? "" : " Brilhando") + (bitinv & 16 ? " Voando" : bitver & 512 ? " \
-Flutuando") + (bitinv & 4 ? " Invisível") + (bitinv & 8 ? " Oculto") + (bitinv & 128 ? " \
-InvSala")
+  ret bitinv & 0xBE == 2 && !(bitver & 512), ""
+  refvar lin = (bitinv & 2 ? "" : " Brilhando") + (bitinv & 32 ? " Voando alto" : bitinv & 16 ? \
+" Voando" : bitver & 512 ? " Flutuando") + (bitinv & 4 ? " Invisível") + (bitinv & 8 ? " \
+Oculto") + (bitinv & 128 ? " InvSala")
   ret "(" + txt(lin, 1) + ") "

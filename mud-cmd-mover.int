@@ -20,7 +20,7 @@ func escr # Executa o comando
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
-  ((arg0.bitver & 512) || (arg0.bitinv & 16)) && (total /= 2) # Flutuando gasta menos movimentos
+  (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret
@@ -32,9 +32,21 @@ func escr # Executa o comando
   arg0.pmove -= intdiv((total + 1) / 2)
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
   $mens.p(arg0)
-  !(arg0.bitver & 256) && $mens.mvis2("", m_sai)
-  arg0.mudadono(s2)
-  !(arg0.bitver & 256) && $mens.mvis2("", m_entra)
+  se arg0.bitver & 256 # Anda em silêncio
+    arg0.mudadono(s2)
+  senao arg0.bitinv & 48 # Voando ou voando alto
+    $mens.mvis2("", m_sai3)
+    arg0.mudadono(s2)
+    $mens.mvis2("", m_entra3)
+  senao arg0.bitver & 512 # Flutuando
+    $mens.mvis2("", m_sai2)
+    arg0.mudadono(s2)
+    $mens.mvis2("", m_entra2)
+  senao # Não está voando nem flutuando
+    $mens.mvis2("", m_sai1)
+    arg0.mudadono(s2)
+    $mens.mvis2("", m_entra1)
+  fimse
   listaobj l
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, arg0.dono, dir)
@@ -51,24 +63,36 @@ func escr # Executa o comando
 
 classe cmd_n
 herda comando_mover
-const m_entra = "$P chegou do sul."
-const m_sai = "$P foi para o norte."
+const m_entra1 = "$P chegou do sul."
+const m_entra2 = "$P flutuou do sul."
+const m_entra3 = "$P voou do sul."
+const m_sai1 = "$P foi para o norte."
+const m_sai2 = "$P flutuou o norte."
+const m_sai3 = "$P voou para o norte."
 const m_porta = "a porta norte"
 const dir = "n"
 
 
 classe cmd_s
 herda comando_mover
-const m_entra = "$P chegou do norte."
-const m_sai = "$P foi para o sul."
+const m_entra1 = "$P chegou do norte."
+const m_entra2 = "$P flutuou do norte."
+const m_entra3 = "$P voou do norte."
+const m_sai1 = "$P foi para o sul."
+const m_sai2 = "$P flutuou para o sul."
+const m_sai3 = "$P voou para o sul."
 const m_porta = "a porta sul"
 const dir = "s"
 
 
 classe cmd_l
 herda comando_mover
-const m_entra = "$P chegou do oeste."
-const m_sai = "$P foi para leste."
+const m_entra1 = "$P chegou do oeste."
+const m_entra2 = "$P flutuou do oeste."
+const m_entra3 = "$P voou do oeste."
+const m_sai1 = "$P foi para leste."
+const m_sai2 = "$P flutuou para leste."
+const m_sai3 = "$P voou para leste."
 const m_porta = "a porta leste"
 const dir = "l"
 
@@ -80,8 +104,12 @@ const objcmd = $cmd_l.objcmd(arg0, arg1)
 
 classe cmd_o
 herda comando_mover
-const m_entra = "$P chegou do leste."
-const m_sai = "$P foi para oeste."
+const m_entra1 = "$P chegou do leste."
+const m_entra2 = "$P flutuou do leste."
+const m_entra3 = "$P voou do leste."
+const m_sai1 = "$P foi para oeste."
+const m_sai2 = "$P flutuou para oeste."
+const m_sai3 = "$P voou para oeste."
 const m_porta = "a porta oeste"
 const dir = "o"
 
@@ -93,8 +121,12 @@ const objcmd = $cmd_o.objcmd(arg0, arg1)
 
 classe cmd_c
 herda comando_mover
-const m_entra = "$P chegou de baixo."
-const m_sai = "$P subiu."
+const m_entra1 = "$P chegou de baixo."
+const m_entra2 = "$P flutuou de baixo."
+const m_entra3 = "$P voou de baixo."
+const m_sai1 = "$P subiu."
+const m_sai2 = "$P flutuou para cima."
+const m_sai3 = "$P voou para cima."
 const m_porta = "a passagem para cima"
 const dir = "c"
 
@@ -106,8 +138,12 @@ const objcmd = $cmd_c.objcmd(arg0, arg1)
 
 classe cmd_b
 herda comando_mover
-const m_entra = "$P chegou de cima."
-const m_sai = "$P desceu."
+const m_entra1 = "$P chegou de cima."
+const m_entra2 = "$P flutuou de cima."
+const m_entra3 = "$P voou de cima."
+const m_sai1 = "$P desceu."
+const m_sai2 = "$P flutuou para baixo."
+const m_sai3 = "$P voou para baixo."
 const m_porta = "a passagem para baixo"
 const dir = "b"
 
@@ -119,16 +155,24 @@ const objcmd = $cmd_b.objcmd(arg0, arg1)
 
 classe cmd_ne
 herda comando_mover
-const m_entra = "$P chegou do sudoeste."
-const m_sai = "$P foi para o nordeste."
+const m_entra1 = "$P chegou do sudoeste."
+const m_entra2 = "$P flutuou do sudoeste."
+const m_entra3 = "$P voou do sudoeste."
+const m_sai1 = "$P foi para o nordeste."
+const m_sai2 = "$P flutuou para o nordeste."
+const m_sai3 = "$P voou para o nordeste."
 const m_porta = "a porta nordeste"
 const dir = "ne"
 
 
 classe cmd_no
 herda comando_mover
-const m_entra = "$P chegou do sudeste."
-const m_sai = "$P foi para o noroeste."
+const m_entra1 = "$P chegou do sudeste."
+const m_entra2 = "$P flutuou do sudeste."
+const m_entra3 = "$P voou do sudeste."
+const m_sai1 = "$P foi para o noroeste."
+const m_sai2 = "$P flutuou para o noroeste."
+const m_sai3 = "$P voou para o noroeste."
 const m_porta = "a porta noroeste"
 const dir = "no"
 
@@ -140,16 +184,24 @@ const objcmd = $cmd_no.objcmd(arg0, arg1)
 
 classe cmd_se
 herda comando_mover
-const m_entra = "$P chegou do noroeste."
-const m_sai = "$P foi para o sudeste."
+const m_entra1 = "$P chegou do noroeste."
+const m_entra2 = "$P flutuou do noroeste."
+const m_entra3 = "$P voou do noroeste."
+const m_sai1 = "$P foi para o sudeste."
+const m_sai2 = "$P flutuou para o sudeste."
+const m_sai3 = "$P voou para o sudeste."
 const m_porta = "a porta sudeste"
 const dir = "se"
 
 
 classe cmd_so
 herda comando_mover
-const m_entra = "$P chegou do nordeste."
-const m_sai = "$P foi para o sudoeste."
+const m_entra1 = "$P chegou do nordeste."
+const m_entra2 = "$P flutuou do nordeste."
+const m_entra3 = "$P voou do nordeste."
+const m_sai1 = "$P foi para o sudoeste."
+const m_sai2 = "$P flutuou para o sudoeste."
+const m_sai3 = "$P voou para o sudoeste."
 const m_porta = "a porta sudoeste"
 const dir = "so"
 
@@ -161,16 +213,24 @@ const objcmd = $cmd_so.objcmd(arg0, arg1)
 
 classe cmd_entrar
 herda comando_mover
-const m_entra = "$P entrou aqui."
-const m_sai = "$P entrou."
+const m_entra1 = "$P entrou aqui."
+const m_entra2 = "$P flutuou de fora."
+const m_entra3 = "$P voou de fora."
+const m_sai1 = "$P entrou."
+const m_sai2 = "$P flutuou para dentro."
+const m_sai3 = "$P voou para dentro."
 const m_porta = "dentro"
 const dir = "entrar"
 
 
 classe cmd_sair
 herda comando_mover
-const m_entra = "$P chegou de dentro."
-const m_sai = "$P saiu."
+const m_entra1 = "$P chegou de dentro."
+const m_entra2 = "$P flutuou de dentro."
+const m_entra3 = "$P voou de dentro."
+const m_sai1 = "$P saiu."
+const m_sai2 = "$P flutuou para fora."
+const m_sai3 = "$P voou para fora."
 const m_porta = "fora"
 const dir = "sair"
 
@@ -418,7 +478,8 @@ func escrobj # Destrancar um item
   casose "2"
     ret arg0.msg(txtcopiamai(r.descnome, "A") + " está abert" + (r.msexo ? "o." : "a."))
   casose "3"
-    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + (r.msexo ? "o." : "a."))
+    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + (r.msexo ? \
+"o." : "a."))
     ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está trancad" + (r.msexo ? "o." : "a."))
   casose
     ret arg0.msg("Não foi possível destrancar " + r.descnome + ".")
@@ -532,7 +593,8 @@ func escrobj # Trancar um item
   casose "3"
   casose "5"
   casofim
-  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + (r.msexo ? "o." : "a."))
+  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + (r.msexo ? "o." \
+: "a."))
 # Procura a chave
   ref chave
   se r.i_fechadura
@@ -864,7 +926,7 @@ func escr
       ret arg0.msg("Você não vê " + arg1 + ".")
     senao r.posicao != 4
       ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está dormindo.")
-    senao (r.bitver & 0xC00) == 0x400
+    senao r.bitver & 0xC00 == 0x400
       $mens.p(arg0, r)
       $mens.mtodos1("$P tenta acordar $a.")
       ret
@@ -880,8 +942,8 @@ func escr
     efim
 # Acordar o próprio personagem
   senao arg0.posicao > 4
-    ret arg0.msg("\c9Mas você já está acordad" + (r.msexo ? "o." : "a.\b"))
-  senao (arg0.bitver & 0xC00) == 0x400
+    ret arg0.msg("\c9Mas você já está acordad" + (arg0.msexo ? "o.\b" : "a.\b"))
+  senao arg0.bitver & 0xC00 == 0x400
     ret arg0.msg("Você não consegue acordar.")
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove

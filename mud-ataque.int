@@ -573,9 +573,7 @@ const nome2 = "Condição"
 const tipo2 = "opcao"
 const clas2 = var.classe1
 const vari2 = "a_batalha"
-const extr2 = "Nenhuma\n\
-Durante a batalha\n\
-Fora da batalha"
+const extr2 = "Nenhuma\nDurante a batalha\nFora da batalha"
 #
 const nome6 = "Afeta o alvo"
 const tipo6 = "menu--"
@@ -907,24 +905,31 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
     fimse
   fimse
 # Ataca o alvo escolhido
+  ref r
   listaobj e
   velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, atk, 2 + arg0.var.[nomevar]) # Ataca
   se result != 3
     !result && efeitohab(arg0, arg1)
     $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe(arg0 == arg1))
-    !result && arg1.persobat.acertapos(1)
+    !result && (r = arg1.acertapos(1))
+    se r.var.z_moedas && arg0.jogconfig.10 # Se deve pegar moedas
+      refvar moeda = r.var.z_moedas == 1 ? "uma moeda" : r.var.z_moedas + " moedas"
+      $mens.p(arg0.contr)
+      $mens.mvis1("$P pega " + moeda + ".")
+      arg0.contr.var.z_moedas_ += r.var.z_moedas_
+      r.var.z_moedas = ""
+    fimse
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento, arg1.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este)
     efim
   fimse
 # Ataca os alvos secundários
-  ref r
   enquanto l
     r = l.objini, l.ini.remove
     continuar r.jog || r.perso < 2 # Não prossegue se for jogador
-    velgolpe(arg0, r = r.contr) # Tempo do golpe
+    velgolpe(arg0, r = r.contr) # Tempo do golpe; Faz também r = r.contr
     execgolpe(arg0, r, atk, 2 + arg0.var.[nomevar]) # Ataca
     continuar result == 3
     !result && efeitohab(arg0, r)
@@ -935,7 +940,7 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
       e.objini.cmd_atacou(arg0, r, este)
     efim
   efim
-  arg0.persobat.acertapos(1)
+  arg0.acertapos(1)
 
 func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
@@ -1060,10 +1065,10 @@ func mensgolpe # Retorna mensagem do golpe de acordo com result e mudavida
   casovar result
   casose "0" # Acertou o alvo
     ret arg0 ? msgacertou2 + ", " + mudavida : msgacertou1 + ", " + mudavida
-  casose "1" # Errou o alvo
-    ret arg0 ? menserrou1 : msgerrou2
-  casose "2" # O golpe não teve efeito
-    ret msgnulo
+  casose "1" # O golpe não teve efeito
+    ret arg0 ? msgnulo1 : msgnulo2
+  casose "2" # Errou o alvo
+    ret arg0 ? msgerrou1 : msgerrou2
   casofim
 
 

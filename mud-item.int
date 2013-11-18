@@ -30,7 +30,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   dono = arg0, cmd_mudadono
 
 func recalc_exec # Ajusta variáveis
-  bitver = 1, bitinv = 3, cmd_recalc1(este)
+  bitver = 17, bitinv = 3, cmd_recalc1(este)
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
   dono.perso && (dono.recalc = 1)
@@ -144,7 +144,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   persolugar.limpar, dono = arg0, cmd_mudadono
 
 func recalc_exec # Acerta variáveis do item
-  bitver = 1, bitinv = luztempo ? 1 : 3, cmd_recalc1(este)
+  bitver = 17, bitinv = luztempo ? 1 : 3, cmd_recalc1(este)
   se int(i_abertoini) < 2 || i_aberto < 2
     i_aberto = i_abertoini
 

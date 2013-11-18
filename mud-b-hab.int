@@ -185,6 +185,18 @@ const extra = "Golpe físico de força"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
 
 
+classe cmd_soneca
+herda comando_ataque
+const nomevar = "h_Soneca"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const a_vida1 = 10000
+const a_vida2 = 10000
+const a_efeito1 = "soneca"
+const msgacertou2 = "$P boceja"
+const msgextra = "Recupera os pontos de vida e dorme por 15 segundos\n\
+Depois disso, você deve teclar acorar para acordar"
+
+
 classe cmd_visivel
 herda comando_ataque
 const nomevar = "h_Visivel"
@@ -250,6 +262,7 @@ const a_efeito1 = "flutuar"
 const msgacertou2 = ""
 const c_mana1 = 20
 const c_mana2 = 5
+const a_remove = "voar"
 
 
 classe magia_fogo
@@ -348,3 +361,15 @@ const msgini = "$P fala solenemente 'Ver Oculto'"
 const a_efeito1 = "ver oculto"
 const c_mana1 = 30
 const c_mana2 = 4
+
+
+classe magia_voar
+herda comando_ataque
+const nomevar = "m_Voar"
+const tipoalvo = 4 # Alvo: 4 Qualquer um; não é ataque
+const msgini = "$P fala solenemente 'Voar'"
+const a_efeito1 = "voar"
+const msgacertou2 = ""
+const c_mana1 = 40
+const c_mana2 = 10
+const a_remove = "flutuar"

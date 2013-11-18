@@ -612,8 +612,8 @@ sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
 const p_recebe = 1 # Para poder receber itens de outros personagens
-sav txt32 tipo1 # Raça do jogador; vide classes "tipo_*" em mud-tipo.int
-sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-tipo.int
+sav txt32 tipo1 # Raça do jogador; vide classes "tipo_*" em mud-b-tipo.int
+sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-b-tipo.int
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
@@ -663,33 +663,33 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   casovar posicao
   casose "1" # Mortalmente ferido
   casose "2" # Incapacitado
-    vida += 1
+    vida += 1, acertapos
     sair
   casose "3" # Fraco
-    vida += 2
+    vida += 2, acertapos
     sair
   casose "4" # Dormindo
-    recup = poslugar.objlista.i_movel >= 3 ? 3 : 5
+    recup = contr.dono.s_recup / (poslugar.objlista.i_movel >= 3 ? 500 : 600)
     sair
   casose "5" # Descansando
-    recup = poslugar.objlista.i_movel >= 3 ? 7 : 10
+    recup = contr.dono.s_recup / (poslugar.objlista.i_movel >= 3 ? 685 : 800)
     sair
   casose "6" # Sentado
-    recup = poslugar.objlista.i_movel >= 3 ? 12 : 15
+    recup = contr.dono.s_recup / (poslugar.objlista.i_movel >= 3 ? 1000 : 1200)
     sair
   casose "7" # Lutando
   casose "8" # Em pé
-    recup = 30
+    recup = contr.dono.s_recup / 1400
     sair
   casofim
   se recup
-    pvida < pvidamax && (pvida = intmin(pvida + pvidamax / recup + 5, pvidamax))
-    pmana < pmanamax && (pmana = intmin(pmana + pmanamax / recup + 5, pmanamax))
+    pvida < pvidamax && (pvida = intmin(pvida + pvidamax * recup + 4, pvidamax))
+    pmana < pmanamax && (pmana = intmin(pmana + pmanamax * recup + 4, pmanamax))
     se pmove >= pmovemax
     senao pnivel
-      pmove = intmin(pmove + pmovemax / recup + 5, pmovemax)
+      pmove = intmin(pmove + pmovemax * recup + 4, pmovemax)
     senao
-      pmove = intmin(pmove + pmovemax / recup + 20, pmovemax)
+      pmove = intmin(pmove + pmovemax * recup + 20, pmovemax)
     fimse
   fimse
 # Salva o jogo
