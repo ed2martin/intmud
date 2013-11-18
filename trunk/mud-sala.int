@@ -56,6 +56,7 @@ const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
 const s_pnj = 1 # PNJs podem entrar
 const s_noite = s_desc(arg0) # Inicialmente descrição de noite e de dia são iguais
+const s_recup = 100 # Taxa de recuperação de vida, mana e movimentos
 #
 uint8 porta_n # Tipo de saída
 uint8 porta_s # Tipo de saída
@@ -100,7 +101,7 @@ func t_item_exec # Começar a apagar objetos
       t_item = 300 # 30 segundos para apagar o próximo
       ret
     efim
-    var.z_moedas = ""
+    var.z_moedas = "" # Por último apaga as moedas
 
 func visivel # Informa se a sala está visível (arg0=quem quer ver)
 # Se retornar 0, significa que não está visível. Nesse caso, para saber

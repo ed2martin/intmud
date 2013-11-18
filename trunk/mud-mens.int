@@ -14,7 +14,7 @@ func p # Define os personagens
 
 func mperso # Mensagem só para o personagem
   contr.dono.socktot && arg0 && contr.msginv(arg0)
-  
+
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
   se contr.dono.socktot && arg0
@@ -151,7 +151,7 @@ func o_s # Gênero do personagem
   senao
     ret perso.perso, perso.msexo ? "o" : "a"
     ret perso.msexo ? "um" : "uma"
-  
+
 func o_t # Gênero do alvo
   se arg0 === "T"
     ret alvo.perso, alvo.msexo ? "O" : "A"
@@ -169,6 +169,7 @@ func o_u # Gênero do objeto
     ret obj.msexo ? "um" : "uma"
 
 const o_m = txttroca(arg0 == "M" ? txtcopiamai(mens, "A") : mens, "$", "$$")
+
 
 classe mens_antigo
 # Exemplo de código da versão anterior da classe mens
@@ -221,7 +222,6 @@ func opcmai_p # Nome do personagem
     ret "Alguém" + arg0
   senao
     ret "Alguma coisa" + arg0
-
 # func opcmai_a
 # # arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
 # ret "teste" + arg0 # Substitui "$a" por "teste"

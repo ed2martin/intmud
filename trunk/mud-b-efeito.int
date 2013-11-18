@@ -8,7 +8,7 @@ const tempo2 = 50
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = bitver & ~1
+  bitver = ~1 & bitver
 
 const msgfim1 = "A sua visão retornou."
 
@@ -227,6 +227,23 @@ func cmd_atacou
       apagar(este)
 
 
+classe e_soneca
+herda comum_efeito
+const e_nome = "Soneca"
+const desc = "Recupera vida e dorme por um tempo"
+const tempo1 = 150
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 1024 | bitver
+  deftipo.0 *= 0.5 # Tipos Normais
+  deftipo.1 *= 0.5 # Tipos Especiais
+
+const msgini2 = "$P tira uma soneca."
+const msgnulo2 = "$P tenta tirar uma soneca."
+const msgfim2 = "$P acorda da soneca."
+
+
 classe e_sono_profundo
 herda comum_efeito
 const e_nome = "Sono profundo"
@@ -250,6 +267,20 @@ func cmd_atacou
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo
 
 
+classe e_ver_invisivel
+herda comum_efeito
+const e_nome = "Ver Invisível"
+const msgini2 = "Os sentidos de $p ficam mais aguçados."
+const msgnulo2 = "$P não sente diferença."
+const msgfim2 = "Os sentidos de $p voltam ao normal."
+const tempo1 = 6000
+const tempo2 = 40
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 4 | bitver
+
+
 classe e_ver_oculto
 herda comum_efeito
 const e_nome = "Ver Oculto"
@@ -265,15 +296,15 @@ func recalc_auto # Altera atributos do personagem
   bitver = 8 | bitver
 
 
-classe e_ver_invisivel
+classe e_voar
 herda comum_efeito
-const e_nome = "Ver Invisível"
-const msgini2 = "Os sentidos de $p ficam mais aguçados."
-const msgnulo2 = "$P não sente diferença."
-const msgfim2 = "Os sentidos de $p voltam ao normal."
+const e_nome = "Voar"
+const msgini2 = "$P começa a voar."
+const msgfim2 = "$P retorna ao chão."
+const msgnulo2 = "$P sobe um pouco no ar e volta."
 const tempo1 = 6000
 const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 4 | bitver
+  bitinv = 16 | bitinv

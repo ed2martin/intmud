@@ -20,6 +20,8 @@ func escr
       obj.jogconfig.23 && (t1 += "  [ADM]")
       obj.jogconfig.17 && (t1 += "  [INVQUEM]")
       obj.sock.imonit && (t1 += "  [MONIT " + obj.sock.imonit.objlista.perso.nome + "]")
+    senao obj.jogconfig.23 && config:mostraadm
+      t1 += "  [ADM]"
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
     t0.addfim(t1)
@@ -243,14 +245,14 @@ func escr
   pos.0 = pos.50
 # Mostra as posições
   int8 x
-  refvar lugar = (arg1 == "tudo" ? r.equippos : 0)
+  refvar lugar = arg1 == "tudo" ? r.equippos : 0
   epara x = 0, x <= 32, x += 1
-     refvar obj = pos.[x]
+    refvar obj = pos.[x]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(20 - inttotal(nomepos))
       t.addfim(nomepos + obj.atribs + txtcopiamai(obj.descnome, "A"))
-    senao lugar & (1 << x)
+    senao lugar & 1 << x
       nomepos = "\c2(" + misc:equip(x ? x : 50) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(20 - inttotal(nomepos)) + "nada")

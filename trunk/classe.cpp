@@ -846,18 +846,20 @@ void TClasse::LimpaInstr()
         }
         else
             p=cl->Comandos, tam_herda = Num16(p);
-        memcpy(p, p+tam_herda, fim-p-tam_herda);
+        memmove(p, p+tam_herda, fim-p-tam_herda);
         //printf(">>>> %s\n", cl->Nome);
         //for (const char * p = cl->Comandos; Num16(p); p+=Num16(p))
         //{
         //    char mens[2048];
         //    assert(Instr::Decod(mens, p, sizeof(mens)));
-        //    printf("  %s\n", mens);
+        //    printf(">  %s\n", mens);
         //}
         //fflush(stdout);
     // Acerta endereços das variáveis na classe herdada
         for (unsigned int y=0; y<cl->NumVar; y++)
-            cl->InstrVar[y] -= tam_herda;
+            if (cl->InstrVar[y] >= ini &&
+                        cl->InstrVar[y] < fim)
+                cl->InstrVar[y] -= tam_herda;
     // Acerta endereços das variáveis nas outras classes
         for (unsigned int numd=0; numd < cl->NumDeriv; numd++)
         {

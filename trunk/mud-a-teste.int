@@ -173,8 +173,9 @@ const tipoitem = 8 # Tipo de produto: Vestimenta
 
 func cmd_recalc2 # Recalcula variáveis do personagem
   arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
-# Nota os tipos de ataque são considerados normais ou mágicos conforme
-# a função misc:atkesp, no arquivo mud-misc.int
+# Nota os tipos de ataque são considerados normais ou especiais conforme
+# a constante config:atkespecial, no arquivo mud-b-config.int
+# Mas não é necessário editar diretamente; use o comando econfig para isso
 
 
 classe i_teste014

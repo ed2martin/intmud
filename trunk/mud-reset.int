@@ -764,7 +764,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       lin = "se p.animalmais"
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
-      lin = (m1 == 2 ? "u=")
+      lin = m1 == 2 ? "u="
       lin += "criar(\"p_" + txtvis(l.2) + "\", p, "
       lin += l.3 == l.4 ? int(l.3) : "rand(" + int(l.3) + ", " + int(l.4) + ")"
       lin += l.5 ? ", \"" + txtvis(l.5) + "\")" : ")"

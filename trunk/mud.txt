@@ -355,7 +355,8 @@ somar 1 se invisível a quem estiver cego
 somar 2 se invisível no escuro
 somar 4 se está invisível
 somar 8 se está oculto
-somar 16 se está voando alto
+somar 16 se está voando
+somar 32 se está voando alto
 somar 128 se é administrador invisível
 
 7.2. int16 bitver
@@ -365,10 +366,11 @@ somar 1 se não está cego
 somar 2 se enxega no escuro
 somar 4 se pode ver invisível
 somar 8 se pode ver oculto
-somar 16 se pode ver voando alto
+somar 16 se pode ver voando
+somar 32 se pode ver voando alto
 somar 128 se pode ver administradores invisíveis
 somar 256 se anda em silêncio
-somar 512 se está voando ou flutuando
+somar 512 se está flutuando
 somar 1024 se está dormindo por efeito de algo
 somar 2048 se não pode ser colocado para dormir
 
@@ -983,7 +985,8 @@ const tipo1 = "numero--"
 # "tipodep" = texto contendo uma lista de habilidades, magias e/ou idiomas
 # "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
 # "sala" = uma sala
-# "atribcomum" = função que altera atributos comuns de um personagem
+# "atribnum" = função que altera atributos numéricos de um personagem
+# "atribbit" = função que altera atributos sim/não de um personagem
 # "atribatk" = função que altera atributos de ataque de um personagem
 # "atribdef" = função que altera atributos de defesa de um personagem
 # "menu" = um submenu; a opção nome da classe é a classe que contém o submenu
@@ -1024,13 +1027,13 @@ Exemplo: m_menu("menu_config")
 
 Comando fugir - poder definir com quantos pontos de vida foge automaticamente
 Possibilidade de colocar sede e fome
-(talvez) Restaurar vida/mana/vigor dos PNJs
 Murais, livros, papéis e caneta/lápis
+Lista de novidades do MUD
 Animais reserva (além dos animais usados na batalha)
 Veículos fechados
+Pergaminhos e poções
 Habilidades:
 - Rosnar - diminui ataque do adversário
-- Dormir - restaura pontos de vida e dorme por 15 segundos
 - Roncar - só pode ser usado enquanto estiver dormindo
 Magias:
 - Drenar energia - retira parte do mana e movimento do alvo
