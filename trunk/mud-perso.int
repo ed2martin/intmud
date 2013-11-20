@@ -586,36 +586,22 @@ func morreu # Procedimentos quando morre
   efim
   ret corpo
 
-func escolhehab # Escolhe e retorna o nome da variável de uma habilidade
-  txt100 t1 # Nome da habilidade
-  uint8 total
-# Obtém a quantidade de habilidades
-  t1 = persoesc.var.ini("h_")
-  enquanto txt(t1, 0, 2) == "h_"
-    total += 1, t1 = persoesc.var.depois(t1)
-  efim
-  ret !total, "" # Retorna se não tem nenhuma habilidade
-# Escolhe uma habilidade
-  t1 = persoesc.var.ini("h_")
-  epara total = rand(total), total, total -= 1
-    t1 = persoesc.var.depois(t1)
-  efim
-  ret t1
-
 func escolheatk # Escolhe e retorna o nome da variável de uma habilidade ou magia
   textotxt t # Lista de habilidades e magias
   txt100 t1 # Nome da habilidade ou magia
   t1 = persoesc.var.ini("h_")
   enquanto txt(t1, 0, 2) == "h_"
-    $cmd_[txt(t1, 2)].cmdmenu && t.addfim(t1), t1 = persoesc.var.depois(t1)
+    refvar r = $cmd_[txt(t1, 2)]
+    r.cmdmenu && 6 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
   efim
   se !dono.s_semmagia
     t1 = persoesc.var.ini("m_")
     enquanto txt(t1, 0, 2) == "m_"
-      $magia_[txt(t1, 2)].cmdmenu && t.addfim(t1), t1 = persoesc.var.depois(t1)
+      refvar r = $magia_[txt(t1, 2)]
+      r.cmdmenu && 6 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
     efim
   fimse
-  t.remove(rand(t.linhas - 1))
+  t.remove(rand(t.linhas))
   ret t.ini.texto
 
 func escolhejog # Escolhe e retorna um jogador

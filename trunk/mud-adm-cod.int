@@ -11,29 +11,46 @@ Os tópicos são:\n\
   \c2TIPO\b     Tipos de personagens\n\
   \c2PERSO\b    Personagens não jogador\n\
   \c2RESET\b    Reset de área ou sala\n\
-  \c2ATK\b      Comandos de ataques\n\
+  \c2HAB\b      Habilidades e magias\n\
   \c2EFEITO\b   Efeitos\n\
   \c2SOCIAL\b   Comandos sociais\n\
   \c2COD\b      Edição do código fonte\n\
+  \c2JOG\b      Comandos para jogadores\n\
   \c2OUTROS\b   Outros comandos\n\
   \c2MENS\b     Caracteres especiais em mensagens"
 # \c2INFO\b     Informações sobre o MUD"
 #
-const adm_outros = "\c3Outros comandos\b\n\
-\c2ECONFIG\b\n\
-  Edita as configurações do MUD.\n\
-\c2SERV\b\n\
-  Mostra informações sobre o estado atual do MUD.\n\
+const adm_jog = "\c3Comandos para jogadores\b\n\
+\c2TELE\b <sala ou jogador>\n\
+  Teletransporta para uma sala específica ou para aonde um jogador está.\n\
+\c2TELE\b <jogador> <sala>\n\
+  Transporta um jogador para uma sala.\n\
 \c2AC\b <texto>\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores.\n\
 \c2MUDANOME\b <nome atual> <novo nome>\n\
   Muda o nome do personagem de um jogador.\n\
+\c2MONIT\b [jogador]\n\
+  Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
+  Se [jogador] estiver ausente ou for o próprio, deixa de monitorar.\n\
+  O principal objetivo é auxiliar outros usuários, por isso quando\n\
+  esse comando é usado, todos os administradores são informados.\n\
+  O comando QUEM também mostra aos administradores quem está monitorando.\n\
+\c2ESCR\b <comando>\n\
+  Digita um comando no teclado do usuário sendo monitorado."
+#
+const adm_outros = "\c3Outros comandos\b\n\
+\c2ECONFIG\b\n\
+  Edita as configurações do MUD.\n\
+\c2SERV\b\n\
+  Mostra informações sobre o estado atual do MUD.\n\
 \c2INFO\b\n\
   Informações sobre a sala.\n\
 \c2INFO\b <personagem ou item>\n\
   Informações sobre personagem ou item.\n\
+\c2ESTAT\b <personagem>\n\
+  Mostra estatísticas de um personagem que está na sala.\n\
 \c2MATAR1\b <personagem ou item>\n\
   Apaga personagem ou item.\n\
 \c2MATAR2\b <personagem>\n\
@@ -45,15 +62,7 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2MUDLER\b\n\
   Recarrega arquivos do MUD que foram alterados.\n\
   Nota: Outra forma de reclarregar os arquivos é pressionar a tecla F10\n\
-  na janela do IntMUD.\n\
-\c2MONIT\b [jogador]\n\
-  Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
-  Se [jogador] estiver ausente ou for o próprio, deixa de monitorar.\n\
-  O principal objetivo é auxiliar outros usuários, por isso quando\n\
-  esse comando é usado, todos os administradores são informados.\n\
-  O comando QUEM também mostra aos administradores quem está monitorando.\n\
-\c2ESCR\b <comando>\n\
-  Digita um comando no teclado do usuário sendo monitorado."
+  na janela do IntMUD."
 #
 const adm_mens = "\b\c3Caracteres especiais em mensagens\b\n\n\
 As seguintes sequências de caracteres têm um significado especial:\n\
@@ -104,6 +113,49 @@ func cmd_serv # Informações sobre o servidor
   txtmais.addfim("Processador (stempo): " + d.stempo / 1000 + " seg.")
   txtmais.addfim("Processador (utempo): " + d.utempo / 1000 + " seg.")
   txtmostra
+  ret 1
+
+func cmd_tele # Ir para uma sala específica
+  ref p # Personagem
+  ref s # Sala destino
+  indiceitem item
+# Transportar um jogador para uma sala
+  se txt2(arg0)
+    item.ini("pn " + txtnome(txt1(arg0)))
+    p = item.obj, s = $s_[txt2(arg0)]
+    se !p
+      msg("Jogador inexistente ou ausente: " + txt1(arg0))
+    senao !s
+      msg("\bSala não existe: " + txt2(arg0))
+    senao s == p.dono
+      msg(p.nome + " já está em " + txt(s, 2) + ".")
+      s = nulo
+    fimse
+# Transportar-se para uma sala
+  senao arg0
+    p = perso, s = $s_[arg0]
+    se !p
+      msg("Você deve estar controlando um personagem para isso")
+    senao !s
+      item.ini("pn " + txtnome(arg0))
+      s = item.obj.dono
+      !s && msg("\bSala ou jogador não existe: " + arg0)
+    fimse
+    se s && s == p.dono
+      msg("Você já está em " + txt(s, 2) + ".")
+      s = nulo
+    fimse
+  senao
+    msg("Teletransportar quem? Para onde?")
+  fimse
+# Realiza o teletransporte
+  se p && s
+    $mens.p(p, perso)
+    p != perso && p.msginv("$A teletransporta você.")
+    !(p.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+    p.mudadono(s)
+    !(p.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+  fimse
   ret 1
 
 func cmd2_info # Usado por cmd_info

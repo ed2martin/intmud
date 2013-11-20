@@ -31,10 +31,6 @@ const adm_area = "\b\c3Comandos de áreas\b\n\
 \c2AAREA\b <nome>\n\
   Apaga área, desde que não tenha nenhuma sala."
 const adm_sala = "\b\c3Comandos de salas\b\n\
-\c2TELE\b <sala ou jogador>\n\
-  Teletransporta para uma sala específica ou para aonde um jogador está.\n\
-\c2TELE\b <jogador> <sala>\n\
-  Transporta um jogador para uma sala.\n\
 \c2LSALA\b [sala]\n\
   Lista salas que começam com o nome especificado.\n\
 \c2CSALA\b <sala>\n\
@@ -140,49 +136,6 @@ func cmd_earea # Editar área
     var.classe1 = "a_" + prefixo
     var.classe2 = "b_" + prefixo
     m_menu("menu_area")
-  fimse
-  ret 1
-
-func cmd_tele # Ir para uma sala específica
-  ref p # Personagem
-  ref s # Sala destino
-  indiceitem item
-# Transportar um jogador para uma sala
-  se txt2(arg0)
-    item.ini("pn " + txtnome(txt1(arg0)))
-    p = item.obj, s = $s_[txt2(arg0)]
-    se !p
-      msg("Jogador inexistente ou ausente: " + txt1(arg0))
-    senao !s
-      msg("\bSala não existe: " + txt2(arg0))
-    senao s == p.dono
-      msg(p.nome + " já está em " + txt(s, 2) + ".")
-      s = nulo
-    fimse
-# Transportar-se para uma sala
-  senao arg0
-    p = perso, s = $s_[arg0]
-    se !p
-      msg("Você deve estar controlando um personagem para isso")
-    senao !s
-      item.ini("pn " + txtnome(arg0))
-      s = item.obj.dono
-      !s && msg("\bSala ou jogador não existe: " + arg0)
-    fimse
-    se s && s == p.dono
-      msg("Você já está em " + txt(s, 2) + ".")
-      s = nulo
-    fimse
-  senao
-    msg("Teletransportar quem? Para onde?")
-  fimse
-# Realiza o teletransporte
-  se p && s
-    $mens.p(p, perso)
-    p != perso && p.msginv("$A teletransporta você.")
-    !(p.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
-    p.mudadono(s)
-    !(p.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
   fimse
   ret 1
 
