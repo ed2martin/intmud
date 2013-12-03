@@ -35,7 +35,7 @@ func escr
       ret l.objini.cmd_acender(arg0, r), nulo
     efim
 # Acende
-    r.luztempo.pos, r.ajustapeso
+    r.luztempo.pos, r.recalc = 1, r.ajustapeso
     $mens.p(arg0, nulo, r)
     $mens.mvis1(r.luzliga ? r.luzliga : "$P acende $o.")
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
@@ -75,7 +75,7 @@ func escr
       ret l.objini.cmd_apagar(arg0, r), nulo
     efim
 # Apaga
-    r.luztipo == 5 ? (r.luztempo = 0) : r.luztempo.neg, r.ajustapeso
+    r.luztipo == 5 ? (r.luztempo = 0) : r.luztempo.neg, r.recalc = 1, r.ajustapeso
     $mens.p(arg0, nulo, r)
     $mens.mvis1("$P apaga $o.")
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
@@ -117,7 +117,7 @@ func escr
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
-    senao sala.i_aberto > 2
+    senao sala.i_aberto > 2 && !arg0.jogconfig.14
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
 "a."))
     fimse
@@ -249,7 +249,7 @@ func escr
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
-    senao sala.i_aberto > 2
+    senao sala.i_aberto > 2 && !arg0.jogconfig.14
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
 "a."))
     fimse

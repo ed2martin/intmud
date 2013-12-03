@@ -115,7 +115,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
       msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
 
 func recalc_exec # Ajusta variáveis
-  bitver = 17, bitinv = 3, recalc_auto, cmd_recalc1(este)
+  bitver = 17, bitinv = 3, atribs.limpar, recalc_auto, cmd_recalc1(este), atribs_exec
 
 func teclou # Processa comando (arg0=comando)
 # Procura objeto que contém o comando
@@ -338,13 +338,15 @@ func ini # Objeto foi criado
 
 func acertapos # Acerta posição
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
+# arg1 = quem atacou o personagem; pode ser nulo
 # Retorna o corpo do personagem, se ele morreu e ficou o corpo
-  !p_tempoatu && (p_tempoatu = 100)
+  jogconfig.14 && pvida < pvidamax && (pvida = pvidamax) # Imortal
+  !p_tempoatu && (p_tempoatu = 100) # Para atualizar o personagem
   casovar pvida * 100 / pvidamax
   casose "0" # Mortalmente ferito ou morto
   casose "1"
     poslugar.remove
-    ret !(posicao = pvida > 0) && arg0, morreu
+    ret !(posicao = pvida > 0) && arg0, morreu(arg1)
     ret
   casose "2"
     poslugar.remove, posicao = 2 # incapacitado
@@ -364,7 +366,7 @@ func acertapos # Acerta posição
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributos básicos
-  bitver = 17, bitinv = 3
+  bitver = 17, bitinv = 3, atribs.limpar
   atknorm = pnivel * 12 + 36
   defnorm = pnivel * 10 + 30
   atkesp = pnivel * 12 + 36
@@ -396,6 +398,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
 # Acerta atributo dormindo de bitver
   bitver & 2048 && (bitver = bitver & ~1024)
   bitver & 1024 && posicao > 4 && (posicao = 4)
+  atribs_exec
 
 const batalhaini = contr.bat_ini_int(arg0.contr, este, arg0)
 # batalhaini - Indica que atacou outro personagem (está batalhando)
@@ -533,6 +536,7 @@ func restaurar # Restaura personagem (HP, mana, etc.)
     pvida = pvidamax
 
 func morreu # Procedimentos quando morre
+# arg0 = quem atacou o personagem; pode ser nulo
 # Retorna o corpo do personagem, se ele morreu e ficou o corpo
   ref corpo # Corpo do personagem morto
 # Checa se pode morrer
@@ -574,6 +578,13 @@ func morreu # Procedimentos quando morre
     ref r
     r = sock, r.mudaperso(nulo), r.reinicia
     p_corpo && (corpo = criar("comum_corpo", este, p_corpo == 2))
+    se corpo.var.z_moedas && arg0.jogconfig.10 # Se deve pegar moedas
+      refvar moeda = corpo.var.z_moedas == 1 ? "uma moeda" : corpo.var.z_moedas + " moedas"
+      $mens.p(arg0)
+      $mens.mvis1("$P pega " + moeda + ".")
+      arg0.var.z_moedas_ += corpo.var.z_moedas_
+      corpo.var.z_moedas = ""
+    fimse
   fimse
 # Apaga efeitos
   listaitem i

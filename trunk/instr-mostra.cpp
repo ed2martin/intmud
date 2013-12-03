@@ -469,11 +469,16 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_e:            strcpy(nome, " &&"); break;
         case exo_ou:           strcpy(nome, " ||"); break;
         case exo_atrib:        strcpy(nome, " =");  break;
-        case exo_igualmul:     strcpy(nome, " *="); break;
-        case exo_igualdiv:     strcpy(nome, " /="); break;
-        case exo_igualporcent: strcpy(nome, " %="); break;
-        case exo_igualadd:     strcpy(nome, " +="); break;
-        case exo_igualsub:     strcpy(nome, " -="); break;
+        case exo_i_mul:        strcpy(nome, " *="); break;
+        case exo_i_div:        strcpy(nome, " /="); break;
+        case exo_i_porcent:    strcpy(nome, " %="); break;
+        case exo_i_add:        strcpy(nome, " +="); break;
+        case exo_i_sub:        strcpy(nome, " -="); break;
+        case exo_i_b_shl:      strcpy(nome, " <<="); break;
+        case exo_i_b_shr:      strcpy(nome, " >>="); break;
+        case exo_i_b_e:        strcpy(nome, " &="); break;
+        case exo_i_b_ouou:     strcpy(nome, " ^="); break;
+        case exo_i_b_ou:       strcpy(nome, " |="); break;
         case exo_fim:        break; // Marca o fim dos operadores
         case exo_ee:           strcpy(nome, " &&início"); break;
         case exo_ouou:         strcpy(nome, " ||início"); break;

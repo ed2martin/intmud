@@ -373,3 +373,15 @@ const msgacertou2 = ""
 const c_mana1 = 40
 const c_mana2 = 10
 const a_remove = "flutuar"
+
+
+classe magia_volta
+herda comando_ataque
+const nomevar = "m_Volta"
+const tipoalvo = 4 # Alvo: 4 Qualquer um; não é ataque
+const msgacertou2 = "$P faz $a voltar."
+
+func cmd_alvofim
+  arg1.contr.mudadono($s_casa002)
+  $mens.p(arg1)
+  $mens.mtodos1("$P caiu aqui.")

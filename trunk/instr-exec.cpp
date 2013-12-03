@@ -1649,7 +1649,7 @@ exo_compara_sair:
                     return RetornoErro(2);
                 break;
             }
-        case exo_igualadd:   // Operador: a+=b
+        case exo_i_add:      // Operador: a += b
             if (VarAtual[-1].Tipo() == varTxt)
             {
                 FuncAtual->expr += 3;
@@ -1657,10 +1657,15 @@ exo_compara_sair:
                 ApagarVar(VarAtual);
                 break;
             }
-        case exo_igualmul:   // Operador: a*=b
-        case exo_igualdiv:   // Operador: a/=b
-        case exo_igualporcent: // Operador: a%=b
-        case exo_igualsub:   // Operador: a-=b
+        case exo_i_mul:      // Operador: a *= b
+        case exo_i_div:      // Operador: a /= b
+        case exo_i_porcent:  // Operador: a %= b
+        case exo_i_sub:      // Operador: a -= b
+        case exo_i_b_shl:    // Operador: a <<= b
+        case exo_i_b_shr:    // Operador: a >>= b
+        case exo_i_b_e:      // Operador: a &= b
+        case exo_i_b_ouou:   // Operador: a ^= b
+        case exo_i_b_ou:     // Operador: a |= b
             FuncAtual->expr++;
             if (VarAtual >= VarFim-1)
                 return RetornoErro(2);

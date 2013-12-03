@@ -796,6 +796,10 @@ func cmd_removeu(personagem, item, posição)
 Remover um item que está vestindo/usando ou uma arma que está empunhando.
 Posição é a posição em que estava vestindo ou empunhando.
 
+func cmd_alvofim(personagem, alvo, objeto que processa o comando)
+Personagem usou uma habilidade ou magia não agressiva.
+Esse evento é chamado também para o objeto que processa o comando.
+
 func cmd_atacou(personagem, alvo, objeto que processa o comando)
 Fim do ataque a outro personagem.
 A variável result do objeto contém o resultado; 0=atacou com sucesso,
@@ -891,15 +895,13 @@ Se o personagem negocia com um jogador.
 Se não negocia, deve retornar uma mensagem (um texto) contendo o motivo.
 Tipo pode ser "comprar", "vender" ou "ensinar".
 
-func cmd_atacar(personagem, alvo, objeto que processa o ataque)
-Quer atacar algum personagem.
-
 func cmd_alvocontr(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia não agressiva.
 Esse evento é chamado para quem está controlando o personagem e o alvo.
 
 func cmd_alvo(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia não agressiva.
+Esse evento é chamado também para o objeto que processa o comando.
 
 func cmd_atacarcontr(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia agressiva.
@@ -1026,6 +1028,8 @@ Exemplo: m_menu("menu_config")
 16. Lista de coisas pendentes
 
 Comando fugir - poder definir com quantos pontos de vida foge automaticamente
+Casa de doações
+Leilões
 Possibilidade de colocar sede e fome
 Murais, livros, papéis e caneta/lápis
 Lista de novidades do MUD

@@ -45,6 +45,8 @@ bool FuncCriar(TVariavel * v, int valor);
 bool FuncApagar(TVariavel * v, int valor);
 bool FuncEste(TVariavel * v, int valor);
 bool FuncNumero(TVariavel * v, int valor);
+bool FuncIntBit(TVariavel * v, int valor);
+bool FuncTxtBit(TVariavel * v, int valor);
 bool FuncMax(TVariavel * v, int valor);
 bool FuncMin(TVariavel * v, int valor);
 bool FuncRand(TVariavel * v, int valor);
@@ -424,39 +426,44 @@ enum Expressao
     exo_neg,        ///< Operador: -a
     exo_exclamacao, ///< Operador: !a
     exo_b_comp,     ///< Operador: ~a
-    exo_mul,        ///< Operador: a*b
-    exo_div,        ///< Operador: a/b
-    exo_porcent,    ///< Operador: a%b
-    exo_add,        ///< Operador: a+b
-    exo_sub,        ///< Operador: a-b
+    exo_mul,        ///< Operador: a * b
+    exo_div,        ///< Operador: a / b
+    exo_porcent,    ///< Operador: a % b
+    exo_add,        ///< Operador: a + b
+    exo_sub,        ///< Operador: a - b
     exo_b_shl,      ///< Operador: a << b
     exo_b_shr,      ///< Operador: a >> b
-    exo_b_e,        ///< Operador: a&b
-    exo_b_ouou,     ///< Operador: a^b
-    exo_b_ou,       ///< Operador: a|b
-    exo_menor,      ///< Operador: a<b
-    exo_menorigual, ///< Operador: a<=b
-    exo_maior,      ///< Operador: a>b
-    exo_maiorigual, ///< Operador: a>=b
-    exo_igual,      ///< Operador: a==b
-    exo_igual2,     ///< Operador: a===b
-    exo_diferente,  ///< Operador: a!=b
-    exo_diferente2, ///< Operador: a!==b
-    exo_e,          ///< Operador: a&b
-    exo_ou,         ///< Operador: a|b
-    exo_atrib,      ///< Operador: a=b
-    exo_igualmul,   ///< Operador: a*=b   (segue exo_mul, exo_igual)
-    exo_igualdiv,   ///< Operador: a/=b   (segue exo_div, exo_igual)
-    exo_igualporcent,///< Operador: a%=b  (segue exo_porcent, exo_igual)
-    exo_igualadd,   ///< Operador: a+=b   (segue exo_add, exo_igual)
-    exo_igualsub,   ///< Operador: a-=b   (segue exo_sub, exo_igual)
+    exo_b_e,        ///< Operador: a & b
+    exo_b_ouou,     ///< Operador: a ^ b
+    exo_b_ou,       ///< Operador: a | b
+    exo_menor,      ///< Operador: a < b
+    exo_menorigual, ///< Operador: a <= b
+    exo_maior,      ///< Operador: a > b
+    exo_maiorigual, ///< Operador: a >= b
+    exo_igual,      ///< Operador: a == b
+    exo_igual2,     ///< Operador: a === b
+    exo_diferente,  ///< Operador: a != b
+    exo_diferente2, ///< Operador: a !== b
+    exo_e,          ///< Operador: a && b
+    exo_ou,         ///< Operador: a || b
+    exo_atrib,      ///< Operador: a = b
+    exo_i_mul,      ///< Operador: a *= b   (segue exo_mul, exo_atrib)
+    exo_i_div,      ///< Operador: a /= b   (segue exo_div, exo_atrib)
+    exo_i_porcent,  ///< Operador: a %= b   (segue exo_porcent, exo_atrib)
+    exo_i_add,      ///< Operador: a += b   (segue exo_add, exo_atrib)
+    exo_i_sub,      ///< Operador: a -= b   (segue exo_sub, exo_atrib)
+    exo_i_b_shl,    ///< Operador: a <<= b  (segue exo_b_shl, exo_atrib)
+    exo_i_b_shr,    ///< Operador: a >>= b  (segue exo_b_shr, exo_atrib)
+    exo_i_b_e,      ///< Operador: a &= b   (segue exo_b_e, exo_atrib)
+    exo_i_b_ouou,   ///< Operador: a ^= b   (segue exo_b_ouou, exo_atrib)
+    exo_i_b_ou,     ///< Operador: a |= b   (segue exo_b_ou, exo_atrib)
     exo_int2,       ///< Operador: Fim de ?
     exo_dponto2,    ///< Operador: Fim de :
     exo_fim,        ///< Operador: Marca o fim dos operadores
     exo_int1,       ///< Operador: Início de ?
     exo_dponto1,    ///< Operador: Início de :
-    exo_ee,         ///< Operador: Início do operador &
-    exo_ouou,       ///< Operador: Início do operador |
+    exo_ee,         ///< Operador: Início do operador &&
+    exo_ouou,       ///< Operador: Início do operador ||
 
 // Usado ao codificar expressões
     ex_var1,        ///< Interno: Processando nome de variável; aceita dois pontos

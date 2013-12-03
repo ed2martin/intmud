@@ -611,11 +611,16 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_int2:         strcpy(nome, " ? "); indica=16; break;
         case exo_dponto2:      strcpy(nome, " : "); indica=16; break;
         case exo_atrib:        strcpy(nome, " = ");  indica=16; break;
-        case exo_igualmul:     strcpy(nome, " *= "); indica=16,origem+=2; break;
-        case exo_igualdiv:     strcpy(nome, " /= "); indica=16,origem+=2; break;
-        case exo_igualporcent: strcpy(nome, " %= "); indica=16,origem+=2; break;
-        case exo_igualadd:     strcpy(nome, " += "); indica=16,origem+=2; break;
-        case exo_igualsub:     strcpy(nome, " -= "); indica=16,origem+=2; break;
+        case exo_i_mul:        strcpy(nome, " *= "); indica=16,origem+=2; break; 
+        case exo_i_div:        strcpy(nome, " /= "); indica=16,origem+=2; break;
+        case exo_i_porcent:    strcpy(nome, " %= "); indica=16,origem+=2; break;
+        case exo_i_add:        strcpy(nome, " += "); indica=16,origem+=2; break;
+        case exo_i_sub:        strcpy(nome, " -= "); indica=16,origem+=2; break;
+        case exo_i_b_shl:      strcpy(nome, " <<= "); indica=16,origem+=2; break;
+        case exo_i_b_shr:      strcpy(nome, " >>= "); indica=16,origem+=2; break;
+        case exo_i_b_e:        strcpy(nome, " &= "); indica=16,origem+=2; break;
+        case exo_i_b_ouou:     strcpy(nome, " ^= "); indica=16,origem+=2; break;
+        case exo_i_b_ou:       strcpy(nome, " |= "); indica=16,origem+=2; break;
         case exo_virg_expr:
         case exo_ee:
         case exo_ouou:

@@ -457,12 +457,13 @@ func p_resetE # Equipar personagem
     ret 1
   casose "5" # Lugar
     refvar total = intsublin(config:equip_txt)
-    se x > 0 && x <= total
+    se arg0 == txt(x) && x <= total
       var.opclin += " " + x, p_resetE("")
     senao arg0 == "o"
       txtmais.limpar
       txtmais.addfim("Opções:")
       uint8 n
+      txtmais.addfim("0 empunhando")
       epara n = 0, n < total, n += 1
         txtmais.addfim(txt(n + 1) + " " + txtsublin(config:equip_txt, n, 1))
       efim
@@ -629,7 +630,7 @@ func t_resetlin # Obtém um texto a partir de uma linha do reset
     lin += "Equipar    "
     lin += txt(l.2 + "(" + i_[l.2]:nome, 0, 30) + ")"
     lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "N" + l.3)
-    lin += "  " + misc:equip(l.4)
+    lin += l.4 == "0" ? "  empunhando" : "  " + misc:equip(l.4)
     l.5 && (lin += "  Var " + l.5)
     ret lin
   casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
@@ -727,7 +728,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
         casose "e"
         casose "f"
           m1 = 2
-          mudou & 1 ? t2.addfim("p=u=nulo") : (mudou = mudou | 1)
+          mudou & 1 ? t2.addfim("p=u=nulo") : (mudou |= 1)
           sair
         casofim
       efim
@@ -760,7 +761,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
         casofim
       efim
       sair int(l.1) <= 0
-# mudou = mudou | 4 # Usa a variável x
+# mudou |= 4 # Usa a variável x
       lin = "se p.animalmais"
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
@@ -783,13 +784,13 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
     casose "E" # Equipar: <item> <nível> <lugar> <variáveis>
       sair !(mudou & 1) # Sai se não criou nenhum personagem
       sair int(l.1) <= 0
-      mudou = mudou | 2 # Usa a variável r
+      mudou |= 2 # Usa a variável r
       lin = "se u"
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
       lin = "  r=criar(\"i_" + txtvis(l.2) + "\", u, " + int(l.3)
       lin += l.5 ? ", \"" + txtvis(l.5) + "\")" : ")"
-      lin += ", r.vestir(" + int(l.4) + "), u.recalc=1"
+      lin += ", r.vestir(" + int(l.4 == "0" ? 50 : l.4) + "), u.recalc=1"
       t2.addfim(lin)
       t2.addfim("fimse")
       sair
@@ -809,7 +810,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       sair
     casose "R" # Remover da sala: <item>
       sair int(l.1) <= 0
-      mudou = mudou | 2 # Usa a variável r
+      mudou |= 2 # Usa a variável r
       lin = ""
       int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
       sair int(l.1) < 100 && rand(100) < l.1

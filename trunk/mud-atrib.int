@@ -307,7 +307,9 @@ func p_atrib_ler # Extrai os atributos de uma função
       p_atrib_ler2(p.texto, arg0.20, arg0.21)
       sair
     casose "bitver ="
-      se txtsub(p.texto, 3, 1) == "&"
+    casose "bitver &="
+    casose "bitver |="
+      se txtsub(p.texto, 3, 1) == "&" || txtsub(p.texto, 1, 1) == "&="
         x = txt(txtsub(p.texto, 2), 1)
         x & 1 && (arg0.29 = 1) # Está cego
         x & 16 && (arg0.26 = 1) # Não pode ver voando
@@ -326,7 +328,9 @@ func p_atrib_ler # Extrai os atributos de uma função
       fimse
       sair
     casose "bitinv ="
-      se txtsub(p.texto, 3, 1) == "&"
+    casose "bitinv &="
+    casose "bitinv |="
+      se txtsub(p.texto, 3, 1) == "&" || txtsub(p.texto, 1, 1) == "&="
         arg0.33 = 1 # Visível no escuro
       senao
         x = txtsub(p.texto, 2)
@@ -375,13 +379,13 @@ func p_atrib_salvar # Salva os atributos em função
   (arg0.16 || arg0.17) && t.addfim("evasao+=" + p_atrib2txt(arg0.16, arg0.17))
   (arg0.18 || arg0.19) && t.addfim("precisao+=" + p_atrib2txt(arg0.18, arg0.19))
   (arg0.20 || arg0.21) && t.addfim("pesomax+=" + p_atrib2txt(arg0.20, arg0.21))
-  arg0.33 && t.addfim("bitinv = ~2 & bitinv") # Visível no escuro
+  arg0.33 && t.addfim("bitinv &= ~2") # Visível no escuro
   se 1
     int32 x
     arg0.26 && (x += 16) # Não pode ver voando
     arg0.28 && (x += 32) # Não pode ver voando alto
     arg0.29 && (x += 1) # Está cego
-    x && t.addfim("bitver=~" + x + "&bitver")
+    x && t.addfim("bitver&=~" + x)
     x = 0
     arg0.22 && (x += 2) # Visão noturna
     arg0.23 && (x += 4) # Pode ver invisível
@@ -392,14 +396,14 @@ func p_atrib_salvar # Salva os atributos em função
     arg0.35 && (x += 512) # Voando ou flutuando
     arg0.38 && (x += 1024) # Dormindo
     arg0.39 && (x += 2048) # Imune a dormir
-    x && t.addfim("bitver=" + x + "|bitver")
+    x && t.addfim("bitver|=" + x)
     x = 0
     arg0.30 && (x += 4) # Torna invisível
     arg0.31 && (x += 8) # Torna oculto
     arg0.36 && (x += 16) # Voando
     arg0.37 && (x += 32) # Voando alto
     arg0.32 && (x += 128) # Invisível a não admin
-    x && t.addfim("bitinv=" + x + "|bitinv")
+    x && t.addfim("bitinv|=" + x)
   fimse
   uint16 linha
   txt100 lin

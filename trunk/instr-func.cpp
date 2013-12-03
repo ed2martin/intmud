@@ -218,6 +218,64 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função intbit
+bool Instr::FuncIntBit(TVariavel * v, int valor)
+{
+    int result = 0;
+    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    {
+        const char * p = var->getTxt();
+        while (*p)
+        {
+            if (*p < '0' || *p > '9')
+            {
+                p++;
+                continue;
+            }
+            int valor = *p - '0';
+            for (p++; *p >= '0' && *p <= '9'; p++)
+            {
+                valor = 10 * valor + *p - '0';
+                if (valor >= 32)
+                    break;
+            }
+            if (valor < 32)
+                result |= 1 << valor;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarInt(result);
+}
+
+//----------------------------------------------------------------------------
+/// Função txtbit
+bool Instr::FuncTxtBit(TVariavel * v, int valor)
+{
+    if (VarAtual < v+1)
+        return false;
+    int num = v[1].getInt();
+    const char * separador = (VarAtual >= v+2 ? v[2].getTxt() : " ");
+    char mens[BUF_MENS];    // Resultado
+    char * destino = mens;
+    for (int x=0; x<32; x++, num>>=1)
+    {
+        if ((num & 1) == 0)
+            continue;
+        if (destino != mens)
+        {
+            const char * p = separador;
+            while (*p && destino<mens+sizeof(mens))
+                *destino++ = *p++;
+        }
+        if (x >= 10)
+            *destino++ = x/10+'0';
+        *destino++ = x%10+'0';
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino-mens);
+}
+
+//----------------------------------------------------------------------------
 /// Função intmax
 bool Instr::FuncMax(TVariavel * v, int valor)
 {

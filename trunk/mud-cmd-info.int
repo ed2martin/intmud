@@ -17,11 +17,13 @@ func escr
     t1 += txt(txt(obj.pnivel) + "      ", 0, 6) + obj.nome
     obj.sock == nulo && (t1 += "  [Desconectado]")
     se arg0.jogconfig.23
-      obj.jogconfig.23 && (t1 += "  [ADM]")
-      obj.jogconfig.17 && (t1 += "  [INVQUEM]")
-      obj.sock.imonit && (t1 += "  [MONIT " + obj.sock.imonit.objlista.perso.nome + "]")
-    senao obj.jogconfig.23 && config:mostraadm
-      t1 += "  [ADM]"
+      obj.jogconfig.23 && (t1 += "  [Admin]")
+      obj.jogconfig.14 && (t1 += "  [Imortal]")
+      obj.jogconfig.17 && (t1 += "  [InvQuem]")
+      obj.sock.imonit && (t1 += "  [Monit " + obj.sock.imonit.objlista.perso.nome + "]")
+    senao
+      obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
+      obj.jogconfig.14 && config:mostraimortal && (t1 += "  [Imortal]")
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
     t0.addfim(t1)
@@ -194,8 +196,8 @@ func escr
   fimse
   epara item = r.dentro1.fim, item, item.antes
     continuar !item.obj.visivel(arg0)
-    t.addfim(txt(item.obj.objtot) + " " + item.obj.atribs + txtcopiamai(item.obj.descnome, \
-"A"))
+    refvar nn = item.obj.atribs.linhas ? " (" + txttroca(item.obj.atribs.ini.textolin(100), "\n", " ") + ") " : " "
+    t.addfim(txt(item.obj.objtot) + nn + txtcopiamai(item.obj.descnome, "A"))
   efim
   t.juntalin("(", "x)")
   refvar nome = r == arg0 ? "Você" : txtcopiamai(r.nome, "A")
@@ -251,7 +253,8 @@ func escr
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(20 - inttotal(nomepos))
-      t.addfim(nomepos + obj.atribs + txtcopiamai(obj.descnome, "A"))
+      obj.atribs.linhas && (nomepos += "(" + txttroca(obj.atribs.ini.textolin(100), "\n", " ") + ") ")
+      t.addfim(nomepos + " " + txtcopiamai(obj.descnome, "A"))
     senao lugar & 1 << x
       nomepos = "\c2(" + misc:equip(x ? x : 50) + ")\b "
       se nomepos != "\c2(desconhecido)\b "

@@ -5,12 +5,11 @@ const msgini2 = "$P ficou ceg$s."
 const msgfim2 = "A visão de $p retornou."
 const tempo1 = 9000
 const tempo2 = 50
+const msgfim1 = "A sua visão retornou."
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = ~1 & bitver
-
-const msgfim1 = "A sua visão retornou."
+  bitver &= ~1
 
 
 classe e_confusao
@@ -24,7 +23,7 @@ const tempo2 = 20
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacar
-  se arg0.persobat == dono && rand(100) < 25
+  se arg0 == dono && rand(100) < 25
     int32 danos
     danos = -1 - dono.pvidamax * rand(70, 110) / 1000
     $mens.p(arg0, arg1)
@@ -51,25 +50,33 @@ func cmd_escr
   casose "cmd_olhar"
   casose "cmd_inv"
   casose "cmd_equip"
+  casose "cmd_quem"
   casose "cmd_hab"
   casose "cmd_mag"
+  casose "cmdfim_chat"
     ret
   casofim
-  se arg2.posic >= 5
-    arg0.msg("Você está congelad" + (arg0.msexo ? "o." : "a."))
-    ret 1
+  arg0.msg("Você está congelad" + (arg0.msexo ? "o." : "a."))
+  ret 1
 
 func cmd_atacar
-  se arg0.persobat == dono
+  se arg0 == dono
     $mens.p(arg0)
     arg0.msginv("$P está congelad$s.")
     ret 1
 
 func cmd_atacou
-  se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
+  se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo congelado
     se arg2.tipoatk == 4 # Recebeu ataque do tipo fogo
       apagar(este)
+
+func cmd_mover
+  arg0.msg("Você congelou")
+  ret 1
+
+func cmd_recalc2
+  arg0.atribs.addfim("Congelado")
 
 
 classe e_endurecer
@@ -110,7 +117,7 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 512 | bitver
+  bitver |= 512
 
 
 classe e_furtividade
@@ -125,7 +132,7 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 256 | bitver
+  bitver |= 256
 
 
 classe e_invisibilidade
@@ -139,7 +146,7 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitinv = 4 | bitinv
+  bitinv |= 4
 
 
 classe e_meditando
@@ -151,8 +158,8 @@ const evperso = 1 # Eventos perso: Sim
 #
 # A partir daqui começa o código para a meditação funcionar
 const cmd_escr = encerrar
-const cmd_atacar = arg0.persobat == dono && encerrar
-const cmd_alvo = arg0.persobat == dono && encerrar
+const cmd_atacar = arg0 == dono && encerrar
+const cmd_alvo = arg0 == dono && encerrar
 const cmd_morreu = encerrar
 
 func encerrar
@@ -188,7 +195,7 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitinv = 8 | bitinv
+  bitinv |= 8
 
 
 classe e_paralisado
@@ -202,7 +209,7 @@ const msgfim2 = "$P não está mais paralisad$s."
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacou
-  se arg0.persobat == dono && arg0.p_espera < 110
+  se arg0 == dono && arg0.p_espera < 110
     arg0.p_espera = 110
 
 
@@ -220,7 +227,7 @@ const msgreduz2 = "$P está queimando."
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacou
-  se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
+  se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     se arg2.tipoatk == 6 # Recebeu ataque do tipo gelo
       apagar(este)
     senao arg2.tipoatk == 5 && rand(100) < 25 # Recebeu ataque do tipo água
@@ -235,7 +242,7 @@ const tempo1 = 150
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 1024 | bitver
+  bitver |= 1024
   deftipo.0 *= 0.5 # Tipos Normais
   deftipo.1 *= 0.5 # Tipos Especiais
 
@@ -256,14 +263,14 @@ const evperso = 1 # Eventos perso: Sim
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 1024 | bitver
+  bitver |= 1024
 
 func cmd_fim # Efeito foi apagado
   se dono.posicao == 4 # Se estiver dormindo
     dono.posicao = 8 # Acordou
 
 func cmd_atacou
-  se !arg2.result && arg1.persobat == dono # Recebeu ataque com sucesso
+  se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo
 
 
@@ -278,7 +285,7 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 4 | bitver
+  bitver |= 4
 
 
 classe e_ver_oculto
@@ -293,7 +300,7 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 8 | bitver
+  bitver |= 8
 
 
 classe e_voar
@@ -307,4 +314,4 @@ const tempo2 = 40
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitinv = 16 | bitinv
+  bitinv |= 16

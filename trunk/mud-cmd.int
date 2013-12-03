@@ -59,6 +59,9 @@ const aj4 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
   \c2PROMPT\b   Ativa o prompt normal\n\
   \c2BROMPT\b   Ativa o prompt de batalha"
 const txtajuda2 = "\n\
+  \c2IMORTAL\b  Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
+           cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
+           fechadas, anda sem gastar movimento\n\
   \c2SALA\b     Mostra o nome da sala cadastrada antes do título\n\
   \c2QUEM\b     O comando QUEM mostra onde cada jogador está no MUD\n\
   \c2INVQUEM\b  Ocultar a presença no comando quem\n\
@@ -85,6 +88,7 @@ const opc_bprompt = 7
 const opc_pvt = 8
 const opc_emocao = config:emocaotipo ? 9
 const opc_moedas = 10
+const opc_imortal = 14
 const opc_execlog = 15
 const opc_sala = 16
 const opc_invquem = 17
@@ -138,6 +142,10 @@ func escr
 # Checa a propriedade INVIS
   se arg0.jogconfig.18 != opc.18 # Se a propriedade INVIS mudou
     arg0.recalc = 1 # Deverá atualizar bitinv
+  fimse
+# Checa a propriedade IMORTAL
+  se arg0.jogconfig.18 != opc.18 # Se a propriedade IMORTAL mudou
+    arg0.recalc = 1 # Deverá atualizar bitver
   fimse
 # Checa a propriedade SEGUIR
   se !opc.5 # Se não pode ser seguido
@@ -280,22 +288,25 @@ func escr
       fimse
 # O que o container possui
     senao r.i_aberto == 5
-    senao int(r.i_aberto) >= 3
-      t.addfim(txtcopiamai(r.descnome, "A") + (r.msexo ? " está fechado." : " está fechada."))
     senao r.i_aberto
-      r.var.z_moedas && t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
-      listaitem item
-      epara item = r.dentro1.ini, item, item.depois
-        continuar !item.obj.visivel(arg0)
-        t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
-      efim
-      se !t.linhas
-        t.addfim(r.msexo ? "Está vazio." : "Está vazia.")
-      senao completo
-        t.juntalin("(", "x)")
-        t.addini("Dentro você vê:")
-      senao
-        t.limpar
+      se r.i_aberto < 3 || arg0.jogconfig.14
+        r.var.z_moedas && t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
+        listaitem item
+        epara item = r.dentro1.ini, item, item.depois
+          continuar !item.obj.visivel(arg0)
+          t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
+        efim
+        se !t.linhas
+          t.addfim(r.msexo ? "Está vazio." : "Está vazia.")
+        senao completo
+          t.juntalin("(", "x)")
+          t.addini("Dentro você vê:")
+        senao
+          t.limpar
+        fimse
+      fimse
+      se r.i_aberto >= 3
+        t.addini(r.msexo ? "Está fechado." : "Está fechada.")
       fimse
     fimse
 # Nome, nível, situação atual e animal que escolheu
@@ -322,7 +333,7 @@ func escr
 # Envia mensagem
     ret !completo, arg0.msg(t2 + ".\b")
     ret t.linhas, arg0.msg2(t2 + ".\b\n" + t.remove(1000))
-    ret arg0.msg(t2 + ".\nVocê não vê nada de especial.")
+    ret arg0.msg(t2 + ".\b\nVocê não vê nada de especial.")
   efim
   arg0.msg("Você não vê isso.")
 
