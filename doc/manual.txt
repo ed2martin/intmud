@@ -1081,8 +1081,14 @@ A=B        - Operador de atribuição, faz A igual a B.
 Alguns operadores podem ter uma forma compacta:
 A*=B       - O mesmo que: A = A * B;
 A/=B       - O mesmo que: A = A / B;
+A%=B       - O mesmo que: A = A % B;
 A+=B       - O mesmo que: A = A + B;
 A-=B       - O mesmo que: A = A - B;
+A<<=B      - O mesmo que: A = A << B;
+A>>=B      - O mesmo que: A = A >> B;
+A|=B       - O mesmo que: A = A | B;
+A^=B       - O mesmo que: A = A ^ B;
+A&=B       - O mesmo que: A = A & B.
 
 Pode-se usar também os parênteses em expressões.
 
@@ -1754,6 +1760,49 @@ Calcula a função exponencial, usando o logaritmo natural como base.
 
 15.2.17. matlog(<número>)
 Calcula o logaritmo natural.
+
+15.2.18. intbit(<um ou mais textos>)
+Retorna um número inteiro que é o resultado de uma operação de bits.
+Os bits que contém o valor 1 são os números contidos nos textos. Qualquer
+caracter que não seja um dígito de '0' a '9' pode ser usado para separar
+os números, inclusive o sinal de menos.
+
+Vide também o tópico 13.6 - Operadores de bit.
+
+Exemplo 1:
+intbit("0 1 4) # Retorna 19, que corresponde aos bits 0, 1 e 4 em 1
+# 19 = 1+2+16 = 2 elevado a 0 + 2 elevado a 1 + 2 elevado a 4
+
+Exemplo 2:
+telatxt t
+int32 x
+x = intbit("2,3") # Faz x=12, ou seja apenas os bits 2 e 3 em 1
+x = intbit("2", "3") # A mesma coisa, faz x=12
+x = intbit(2, 3) # A mesma coisa, faz x=12
+x |= intbit("0") # Faz o bit 0 de x ser 1
+x &= ~intbit("3") # Faz o bit 3 de x ser 0
+x ^= intbit("1") # Inverte o bit 1 de x; como estava em 0 agora vai para 1
+se x & intbit("1")
+  t.msg("O bit 1 de x está em 1\n")
+senao ~x & intbit("0")
+  t.msg("O bit 0 de x está em 0\n")
+senao x & intbit("2 3 4")
+  t.msg("O bit 2, o 3 e/ou o 4 de x está em 1\n")
+senao x & intbit("1 2") == intbit("1 2")
+  t.msg("Os bits 1 e 2 de x estão em 1\n")
+senao x & intbit("2 5") == intbit("5")
+  t.msg("O bit 2 de x está em 0 e o bit 5 de x está em 1\n")
+fimse
+
+15.2.19. txtbit(<número>, [delimitador])
+Retorna um texto formado por números de 0 a 31, que correspondem aos bits
+do número que estiverem em 1. Os números são separados pelo texto usado
+delimitador. Se for omitido, será usado um espaço.
+Essa função faz o processo inverso de intbit.
+
+Exemplos:
+txtbit(10) # Retorna o texto "1 3"
+txtbit(52, ", ") # Retorna o texto "2, 4, 5"
 
 
 15.3. FUNÇÕES DE TEXTO

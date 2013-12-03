@@ -11,6 +11,7 @@ telatxt = 1
 # Aonde apresentar mensagens de erro no programa
 log = 0
 
+
 classe jogoini
 # Inicializa as seguintes classes:
 # jogoserv - jogar em uma porta
@@ -390,3 +391,45 @@ func msgtodos # Envia mensagem para todos os jogadores
   epara r = $jogobot_sala, r, r = objdepois(r)
     r.msg(arg0)
   efim
+
+
+classe atualiza
+# Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
+prog p
+debug dbg
+uint16 versao
+
+func iniclasse
+  criar(arg0)
+
+func ini
+# Checa e muda a versão
+  ret (versao = config:versao) >= 291, nulo
+  p.criar("config", "const versao = 291 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  config:salvar
+# Coloca habilidades e magias no arquivo mud-b-config.int
+  se versao < 291
+    textotxt t
+    epara p.iniarq("b-config"), p.lin, p.depois
+      continuar txt(p.texto, 0, 4) != "cmd_" && txt(p.texto, 0, 6) != "magia_"
+      t.addfim(p.texto)
+    efim
+    epara p.iniarq("b-hab"), p.lin, p.depois
+      t.addfim(p.texto)
+    efim
+    t.ordena
+    p.clini("b-hab", t.ini.texto)
+    enquanto t.linhas > 1
+      p.cldepois(t.remove, t.ini.texto)
+    efim
+    se !p.existe("e_congelado", "cmd_mover")
+      p.criar("e_congelado", "func cmd_mover\narg0.msg(\"Você congelou\")\nret 1")
+    fimse
+    se !p.existe("e_congelado", "cmd_recalc2")
+      p.criar("e_congelado", "func cmd_recalc2\n\arg0.atribs.addfim(\"Congelado\")")
+    fimse
+    dbg.ini
+  fimse
+# Avisa que atualizou arquivos
+  telatxt tela
+  tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

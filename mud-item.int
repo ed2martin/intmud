@@ -30,7 +30,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   dono = arg0, cmd_mudadono
 
 func recalc_exec # Ajusta variáveis
-  bitver = 17, bitinv = 3, cmd_recalc1(este)
+  bitver = 17, bitinv = 3, atribs.limpar, cmd_recalc1(este), atribs_exec
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
   dono.perso && (dono.recalc = 1)
@@ -144,10 +144,14 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   persolugar.limpar, dono = arg0, cmd_mudadono
 
 func recalc_exec # Acerta variáveis do item
-  bitver = 17, bitinv = luztempo ? 1 : 3, cmd_recalc1(este)
-  se int(i_abertoini) < 2 || i_aberto < 2
-    i_aberto = i_abertoini
-
+  bitver = 17, bitinv = luztempo ? 1 : 3, atribs.limpar, cmd_recalc1(este)
+  int(i_abertoini) < 2 || i_aberto < 2 ? (i_aberto = i_abertoini)
+  atribs_exec
+  se intpos(luztempo) > 0
+    textopos p
+    p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
+    atribs.addini("Aceso")
+    
 func luztempo_exec # A luz apagou
   se luztxt
     ref r
@@ -156,9 +160,6 @@ func luztempo_exec # A luz apagou
     r.msg(luztxt)
   fimse
   luzfim ? apagar(este) : ajustapeso + recalc_exec
-
-func atribs # Retorna texto com os atributos do item ou personagem
-  ret intpos(luztempo) ? "(aceso) " : bitinv & 2 ? "" : "(brilhando) "
 
 
 classe comum_corpo

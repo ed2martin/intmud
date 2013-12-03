@@ -178,6 +178,7 @@ herda comum_obj
 int16 bitver # O que o personagem/item pode ver
 int16 bitinv # Grau de invisibilidade do personagem/item
 intexec recalc # Se deve recalcular variáveis do personagem/item
+textotxt atribs # Atributos do item ou personagem, um atributo por linha
 
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   ret arg0.idono.objlista.luzden, !(~(arg0.bitver | 2) & bitinv)
@@ -190,9 +191,21 @@ func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
     ret !(~(arg0.bitver | 2) & bitinv)
   casofim
 
-func atribs # Retorna texto com os atributos do item ou personagem
-  ret bitinv & 0xBE == 2 && !(bitver & 512), ""
-  refvar lin = (bitinv & 2 ? "" : " Brilhando") + (bitinv & 32 ? " Voando alto" : bitinv & 16 ? \
-" Voando" : bitver & 512 ? " Flutuando") + (bitinv & 4 ? " Invisível") + (bitinv & 8 ? " \
-Oculto") + (bitinv & 128 ? " InvSala")
-  ret "(" + txt(lin, 1) + ") "
+func atribs_exec # Organiza a variável atribs
+  !(bitinv & 2) ? atribs.addfim("Brilhando")
+  bitinv & 4 ? atribs.addfim("Invisível")
+  bitinv & 8 ? atribs.addfim("Oculto")
+  bitinv & 128 ? atribs.addfim("InvSala")
+  se bitinv & 32
+    atribs.addfim("Voando alto")
+  senao bitinv & 16
+    atribs.addfim("Voando")
+  senao bitver & 512
+    atribs.addfim("Flutuando")
+  fimse
+  se atrib.linhas > 1
+    textopos p
+    atribs.ordena, p = atribs.ini
+    enquanto p.lin
+      p.texto == txtsublin(p.textolin(2), 1) ? p.apagar : p.depois
+    efim

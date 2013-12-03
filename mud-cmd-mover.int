@@ -16,7 +16,7 @@ func escr # Executa o comando
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
   ret s2 == nulo, arg0.msg("Impossível seguir nessa direção.")
-  ret s1.porta_[dir] & 3 >= 2, arg0.msg("A porta está fechada.")
+  ret s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14, arg0.msg("A porta está fechada.")
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
@@ -29,7 +29,7 @@ func escr # Executa o comando
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_mover(arg0, arg0.dono, dir), nulo
   efim
-  arg0.pmove -= intdiv((total + 1) / 2)
+  !arg0.jogconfig.14 && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
   $mens.p(arg0)
   se arg0.bitver & 256 # Anda em silêncio
@@ -51,7 +51,7 @@ func escr # Executa o comando
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, arg0.dono, dir)
   efim
-  arg0.dono.s_morre && arg0.morreu
+  arg0.dono.s_morre && !arg0.jogconfig.14 && arg0.morreu
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
     continuar l.objini.posicao < 8 || l.objini.dono != s1 || lseg.possui(l.objini)
@@ -488,7 +488,7 @@ func escrobj # Destrancar um item
   casofim
 # Procura a chave
   ref chave
-  se r.i_fechadura
+  se r.i_fechadura && !arg0.jogconfig.14
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
@@ -530,7 +530,7 @@ func escrdir # Destrancar uma porta
   cod = arg0.dono.fechadura_[arg1], mporta = arg0.dono.portanome_[arg1]
   !mporta && (mporta = $cmd_[arg1].m_porta)
   !mporta && (mporta = "uma porta")
-  se cod
+  se cod && !arg0.jogconfig.14
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
@@ -597,7 +597,7 @@ func escrobj # Trancar um item
 : "a."))
 # Procura a chave
   ref chave
-  se r.i_fechadura
+  se r.i_fechadura && !arg0.jogconfig.14
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
@@ -639,7 +639,7 @@ func escrdir # Trancar uma porta
   cod = arg0.dono.fechadura_[arg1], mporta = arg0.dono.portanome_[arg1]
   !mporta && (mporta = $cmd_[arg1].m_porta)
   !mporta && (mporta = "uma porta")
-  se cod
+  se cod && !arg0.jogconfig.14
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
@@ -664,7 +664,7 @@ func escrdir # Trancar uma porta
 classe cmd_levantar
 herda comando_comum, comando_ajuda
 const posic = 5
-const txtajuda = "\b\c3Sentar\b\nSintaxe: LEVANTAR\nFica em pé."
+const txtajuda = "\b\c3Levantar\b\nSintaxe: LEVANTAR\nFica em pé."
 
 func escr
 # Checa posição
@@ -965,7 +965,7 @@ const txtajuda = "\b\c3Fugir\b\nSintaxe: FUGIR\nTenta fugir de uma batalha."
 func escr
 # Checa posição
   ret arg0.posicao != 7, arg0.msg("Você não está lutando.")
-  ret arg0.pmove < 5, arg0.msg("Você está sem fôlego.")
+  ret arg0.pmove < 5 && !arg0.jogconfig.14, arg0.msg("Você está sem fôlego.")
   arg0.p_espera = 5
 # Gera eventos
   listaobj l
@@ -979,7 +979,7 @@ func escr
     valor += i.obj.persobat.precisao
   efim
   valor = valor * rand(70, 130) - arg0.persobat.evasao * 150
-  se valor > 0
+  se valor > 0 && !arg0.jogconfig.14
     $mens.p(arg0)
     $mens.mtodos1("$P tenta fugir, mas não consegue.")
     ret

@@ -539,7 +539,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     txt200 lin
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
-    $mens.p(arg0)
+    $mens.p(perso)
     $mens.mvis2("", "$P chegou.")
   fimse
   ret 1
@@ -723,8 +723,9 @@ func salvar # Salva o jogo, desde que a senha não seja nula
 
 func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)
-  jogconfig.18 && (bitinv = bitinv | 128) # Propriedade config +invsala
-  jogconfig.23 && (bitver = bitver | 128) # Se é administrador
+  jogconfig.14 && (bitver |= 0x7C) # Propriedade config +imortal
+  jogconfig.18 && (bitinv |= 128) # Propriedade config +invsala
+  jogconfig.23 && (bitver |= 128) # Se é administrador
 
 
 classe cmdalias

@@ -855,6 +855,7 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
       arg0.contr.msg("Essa " + msg + " não pode ser usada nos outros.")
       ret
     fimse
+    ret cmd_alvo(arg0, arg1, este), nulo
     epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
       ret l.objini.cmd_alvocontr(arg0, arg1, este), nulo
     efim
@@ -873,6 +874,10 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
     $mens.p(arg0, arg1)
     refvar lin = mudavida ? ", " + mudavida : ""
     $mens.mtodos1(arg0 == arg1 ? msgacertou1 + lin : msgacertou2 + lin)
+    cmd_alvofim(arg0, arg1, este)
+    epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
+      l.objini.cmd_alvofim(arg0, arg1, este)
+    efim
     arg0.contr != arg1.contr && arg0.acertapos(1)
     arg1.acertapos(1)
     ret
@@ -912,14 +917,7 @@ func exechab # Chamado quando personagem (arg0) usa hab/magia em alguém (arg1)
   se result != 3
     !result && efeitohab(arg0, arg1)
     $mens.p(arg0, arg1) + $mens.mtodos1(mensgolpe(arg0 == arg1))
-    !result && (r = arg1.acertapos(1))
-    se r.var.z_moedas && arg0.jogconfig.10 # Se deve pegar moedas
-      refvar moeda = r.var.z_moedas == 1 ? "uma moeda" : r.var.z_moedas + " moedas"
-      $mens.p(arg0.contr)
-      $mens.mvis1("$P pega " + moeda + ".")
-      arg0.contr.var.z_moedas_ += r.var.z_moedas_
-      r.var.z_moedas = ""
-    fimse
+    !result && (r = arg1.acertapos(1, arg0.contr))
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento, arg1.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este)
@@ -1086,9 +1084,10 @@ const extra = "Ataque automático"
 uint8 tipoatk # Tipo de ataque
 
 func exechab # arg0 ataca arg1
-  refvar p = arg0.persobat
-  refvar a = arg1.persobat
+  refvar p = arg0.persobat # Quem está atacando
+  refvar a = arg1.persobat # Quem vai receber o ataque
   uint8 aulas # O quanto sabe do golpe, de 0 a 10
+  ret p.posicao <= 4, nulo # Não ataca dormindo
   arma1 = ref(p.iempu.obj)
   arma1.armamanual && (arma1 = nulo)
   tipoatk = arma1.armatipoatk
@@ -1100,36 +1099,44 @@ func exechab # arg0 ataca arg1
   !msgacertou2 && (msgacertou2 = "$P dá um golpe em $a")
   !msgerrou2 && (msgerrou2 = "$P tenta dar um golpe em $a mas erra")
   !msgnulo2 && (msgnulo2 = "$P dá um golpe em $a mas nada acontece")
+# Checa se pode atacar
+  listaobj l
+  ret cmd_atacar(p, a, este), nulo
+  epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
+    ret l.objini.cmd_atacarcontr(p, a, este), nulo
+  efim
+  epara l.addfim(p.evento, a.evento), l, l.ini.remove
+    ret l.objini.cmd_atacar(p, a, este), nulo
+  efim
 # Primeiro ataque
-  listaobj e
   execgolpe(p, a, ataque, aulas) # Ataca
   se result != 3
     $mens.p(p, a) + $mens.mtodos1(mensgolpe)
-    epara e.addfim(p.evento, a.evento), e, e.ini.remove
-      e.objini.cmd_atacou(p, a, este)
+    epara l.addfim(p.evento, a.evento), l, l.ini.remove
+      l.objini.cmd_atacou(p, a, este)
     efim
   fimse
-  a.acertapos(1), p.acertapos(1)
+  a.acertapos(1, arg0), p.acertapos(1, arg1)
 # Segundo ataque
   ret !arg0.atkenv || !arg0.persobat.var.h_segundo_ataque, nulo
   execgolpe(p, a, ataque, aulas * (2 + p.var.h_segundo_ataque) / 10)
   se result != 3
     $mens.p(p, a) + $mens.mtodos1(mensgolpe)
-    epara e.addfim(p.evento, a.evento), e, e.ini.remove
-      e.objini.cmd_atacou(p, a, este)
+    epara l.addfim(p.evento, a.evento), l, l.ini.remove
+      l.objini.cmd_atacou(p, a, este)
     efim
   fimse
-  a.acertapos(1), p.acertapos(1)
+  a.acertapos(1, arg0), p.acertapos(1, arg1)
 # Terceiro ataque
   ret !arg0.atkenv || !arg0.persobat.var.h_terceiro_ataque, nulo
   execgolpe(p, a, ataque, aulas * (2 + p.var.h_terceiro_ataque) / 10)
   se result != 3
     $mens.p(p, a) + $mens.mtodos1(mensgolpe)
-    epara e.addfim(p.evento, a.evento), e, e.ini.remove
-      e.objini.cmd_atacou(p, a, este)
+    epara l.addfim(p.evento, a.evento), l, l.ini.remove
+      l.objini.cmd_atacou(p, a, este)
     efim
   fimse
-  a.acertapos(1), p.acertapos(1)
+  a.acertapos(1, arg0), p.acertapos(1, arg1)
 
 
 classe cmd_resgatar

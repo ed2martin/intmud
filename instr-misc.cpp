@@ -37,6 +37,7 @@ const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
         { "este",       Instr::FuncEste, 0 },
         { "int",        Instr::FuncNumero, 2 },
         { "intabs",     Instr::FuncNumero, 1 },
+        { "intbit",     Instr::FuncIntBit, 0 },
         { "intchr",     Instr::FuncIntChr, 0 },
         { "intdist",    Instr::FuncIntDist, 0 },
         { "intdistdif", Instr::FuncIntDist, 2 },
@@ -66,6 +67,7 @@ const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
         { "txt",        Instr::FuncTxt, 0 },
         { "txt1",       Instr::FuncTxt2, 0 },
         { "txt2",       Instr::FuncTxt2, 1 },
+        { "txtbit",     Instr::FuncTxtBit, 0 },
         { "txtchr",     Instr::FuncTxtChr, 0 },
         { "txtcod",     Instr::FuncTxt2, 12 },
         { "txtcopiamai",Instr::FuncTxtCopiaMai, 0 },
@@ -159,11 +161,16 @@ int Instr::Prioridade(int operador)
     case exo_dponto1:    return 13;
     case exo_dponto2:    return 13;
     case exo_atrib:      return 20;
-    case exo_igualmul:   return 20;
-    case exo_igualdiv:   return 20;
-    case exo_igualporcent: return 10;
-    case exo_igualadd:   return 20;
-    case exo_igualsub:   return 20;
+    case exo_i_mul:      return 20;
+    case exo_i_div:      return 20;
+    case exo_i_porcent:  return 20;
+    case exo_i_add:      return 20;
+    case exo_i_sub:      return 20;
+    case exo_i_b_shl:    return 20;
+    case exo_i_b_shr:    return 20;
+    case exo_i_b_e:      return 20;
+    case exo_i_b_ouou:   return 20;
+    case exo_i_b_ou:     return 20;
     }
     return 0;
 }
@@ -683,11 +690,16 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_diferente:
         case exo_diferente2:
         case exo_atrib:
-        case exo_igualmul:
-        case exo_igualdiv:
-        case exo_igualporcent:
-        case exo_igualadd:
-        case exo_igualsub:
+        case exo_i_mul:
+        case exo_i_div:
+        case exo_i_porcent:
+        case exo_i_add:
+        case exo_i_sub:
+        case exo_i_b_shl:
+        case exo_i_b_shr:
+        case exo_i_b_e:
+        case exo_i_b_ouou:
+        case exo_i_b_ou:
             break;
         case exo_e:
         case exo_ou:
@@ -970,11 +982,16 @@ const char * Instr::NomeExpr(int valor)
     case exo_e:             return "exo_e";
     case exo_ou:            return "exo_ou";
     case exo_atrib:         return "exo_atrib";
-    case exo_igualmul:      return "exo_igualmul";
-    case exo_igualdiv:      return "exo_igualdiv";
-    case exo_igualporcent:  return "exo_igualporcent";
-    case exo_igualadd:      return "exo_igualadd";
-    case exo_igualsub:      return "exo_igualsub";
+    case exo_i_mul:         return "exo_i_mul";
+    case exo_i_div:         return "exo_i_div";
+    case exo_i_porcent:     return "exo_i_porcent";
+    case exo_i_add:         return "exo_i_add";
+    case exo_i_sub:         return "exo_i_sub";
+    case exo_i_b_shl:       return "exo_i_b_shl";
+    case exo_i_b_shr:       return "exo_i_b_shr";
+    case exo_i_b_e:         return "exo_i_b_e";
+    case exo_i_b_ouou:      return "exo_i_b_ouou";
+    case exo_i_b_ou:        return "exo_i_b_ou";
     case exo_fim:           return "exo_fim";
     case exo_ee:            return "exo_ee";
     case exo_ouou:          return "exo_ouou";

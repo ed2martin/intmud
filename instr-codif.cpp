@@ -308,24 +308,44 @@ static char * anotaModo(char * destino, int modo)
     *destino++ = modo;
     switch (modo)
     {
-    case exo_igualmul:
+    case exo_i_mul:
         *destino++ = exo_mul;
         *destino++ = exo_atrib;
         break;
-    case exo_igualdiv:
+    case exo_i_div:
         *destino++ = exo_div;
         *destino++ = exo_atrib;
         break;
-    case exo_igualporcent:
+    case exo_i_porcent:
         *destino++ = exo_porcent;
         *destino++ = exo_atrib;
         break;
-    case exo_igualadd:
+    case exo_i_add:
         *destino++ = exo_add;
         *destino++ = exo_atrib;
         break;
-    case exo_igualsub:
+    case exo_i_sub:
         *destino++ = exo_sub;
+        *destino++ = exo_atrib;
+        break;
+    case exo_i_b_shl:
+        *destino++ = exo_b_shl;
+        *destino++ = exo_atrib;
+        break;
+    case exo_i_b_shr:
+        *destino++ = exo_b_shr;
+        *destino++ = exo_atrib;
+        break;
+    case exo_i_b_e:
+        *destino++ = exo_b_e;
+        *destino++ = exo_atrib;
+        break;
+    case exo_i_b_ouou:
+        *destino++ = exo_b_ouou;
+        *destino++ = exo_atrib;
+        break;
+    case exo_i_b_ou:
+        *destino++ = exo_b_ou;
         *destino++ = exo_atrib;
         break;
     }
@@ -1467,23 +1487,23 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 
         case '*': sinal=exo_mul;
                   if (origem[1]=='=')
-                      sinal=exo_igualmul,origem++;
+                      sinal=exo_i_mul,origem++;
                   break;
         case '/': sinal=exo_div;
                   if (origem[1]=='=')
-                      sinal=exo_igualdiv,origem++;
+                      sinal=exo_i_div,origem++;
                   break;
         case '%': sinal=exo_porcent;
                   if (origem[1]=='=')
-                      sinal=exo_igualporcent,origem++;
+                      sinal=exo_i_porcent,origem++;
                   break;
 
         case '+': sinal=exo_add;
                   if (origem[1]=='=')
-                      sinal=exo_igualadd,origem++;
+                      sinal=exo_i_add,origem++;
                   break;
         case '-': if (origem[1]=='=')
-                      sinal=exo_igualsub,origem++;
+                      sinal=exo_i_sub,origem++;
                   else if (arg)
                       sinal=exo_sub;
                   else
@@ -1494,13 +1514,23 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                   if (origem[1]=='=')
                       sinal=exo_menorigual,origem++;
                   else if (origem[1]=='<')
-                      sinal=exo_b_shl,origem++;
+                  {
+                      if (origem[2]=='=')
+                          sinal=exo_i_b_shl,origem+=2;
+                      else
+                          sinal=exo_b_shl,origem++;
+                  }
                   break;
         case '>': sinal=exo_maior;
                   if (origem[1]=='=')
                        sinal=exo_maiorigual,origem++;
                   else if (origem[1]=='>')
-                      sinal=exo_b_shr,origem++;
+                  {
+                      if (origem[2]=='=')
+                          sinal=exo_i_b_shr,origem+=2;
+                      else
+                          sinal=exo_b_shr,origem++;
+                  }
                   break;
 
         case '=': if (origem[1]!='=')
@@ -1514,12 +1544,19 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case '&': sinal=exo_b_e;
                   if (origem[1]=='&')
                        sinal=exo_e,origem++;
+                  else if (origem[1]=='=')
+                      sinal=exo_i_b_e,origem++;
                   break;
         case '|': sinal=exo_b_ou;
                   if (origem[1]=='|')
                        sinal=exo_ou,origem++;
+                  else if (origem[1]=='=')
+                      sinal=exo_i_b_ou,origem++;
                   break;
-        case '^': sinal=exo_b_ouou; break;
+        case '^': sinal=exo_b_ouou;
+                  if (origem[1]=='=')
+                      sinal=exo_i_b_ouou,origem++;
+                  break;
         case '?': sinal=exo_int2; break;
         case ':': sinal=exo_dponto2; break;
 

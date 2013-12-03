@@ -1,6 +1,11 @@
 classe config
 # Configuração
 #
+# A variável versão é usada na classe atualiza, arquivo mud.int,
+# para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
+# haver mudanças nesses arquivos em versões mais recentes
+const versao = 291 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+#
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
 #
@@ -67,7 +72,7 @@ const entrainfo = 1
 const atkexp = 100
 #
 # Tipo de ataque: 0=manual, 1=automático (realizado pela classe comando_atkauto)
-const atktipo = 0
+const atktipo = 0 # Modo de batalha: 0 Manual
 #
 # Ataque automático: tempo de um turno (em décimos de segundo)
 # Ataque manual: Tempo para gerar a primeira mensagem de fim de batalha
@@ -104,6 +109,10 @@ const retornar = -1
 # Se não administradores podem saber quem é administrador teclando QUEM
 # 0=não, 1=sim
 const mostraadm = 0 # Comando quem mostra admin: Não
+#
+# Se não administradores podem saber quem é imortal teclando QUEM
+# 0=não, 1=sim
+const mostraimortal = 0 # Comando Quem mostra imortal: Não
 #
 # Quantos pontos de aulas ganha quando sobe de nível
 # Se 0, o comando aprender não usa pontos de aula
