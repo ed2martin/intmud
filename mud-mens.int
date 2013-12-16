@@ -86,15 +86,16 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
       efim
 
 func proc # Prepara e retorna mensagem
-# arg0=mensagem, arg1=objeto
+# arg0=mensagem, arg1=a quem se destina a mensagem
   r = arg1
   ret vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
 
 const o_@ = "$"
 const o_a = arg0 === "A" ? txtcopiamai(nome(alvo), "A") : nome(alvo)
+const o_m = arg0 == "M" ? txtcopiamai(mens, "A") : mens
 const o_p = arg0 === "P" ? txtcopiamai(nome(perso), "A") : nome(perso)
 
-func nome # Nome de um personagem; arg0=personagem
+func nome # Usado em $P e $A para obter o nome de um personagem; arg0=personagem
   se arg0 == arg0.contr
     se r == arg0
       ret "você"
@@ -124,6 +125,12 @@ func o_q # Nome do personagem sem citar o dono
   senao
     ret arg0 === "Q" ? "Alguma coisa" : "alguma coisa"
 
+func o_r # Nome do personagem no comando QUEM
+  se arg0 == "R"
+    ret txtcopiamai(perso.sock ? perso.sock.nome : perso.nome, "A")
+  senao
+    ret perso.sock ? perso.sock.nome : perso.nome
+
 func o_b # Nome do alvo sem citar o dono
   se r == alvo
     ret arg0 === "B" ? "Você" : "você"
@@ -133,6 +140,12 @@ func o_b # Nome do alvo sem citar o dono
     ret arg0 === "B" ? "Alguém" : "alguém"
   senao
     ret arg0 === "B" ? "Alguma coisa" : "alguma coisa"
+
+func o_c # Nome do alvo no comando QUEM
+  se arg0 == "C"
+    ret txtcopiamai(alvo.sock ? alvo.sock.nome : alvo.nome, "A")
+  senao
+    ret alvo.sock ? alvo.sock.nome : alvo.nome
 
 func o_o # Nome do objeto
   se r == obj
@@ -168,7 +181,23 @@ func o_u # Gênero do objeto
     ret obj.perso, obj.msexo ? "o" : "a"
     ret obj.msexo ? "um" : "uma"
 
-const o_m = txttroca(arg0 == "M" ? txtcopiamai(mens, "A") : mens, "$", "$$")
+func o_v # Gênero do personagem: e/a
+  se arg0 === "V"
+    ret perso.msexo ? "E" : "A"
+  senao
+    ret perso.msexo ? "e" : "a"
+
+func o_w # Gênero do alvo: e/a
+  se arg0 === "W"
+    ret alvo.msexo ? "E" : "A"
+  senao
+    ret alvo.msexo ? "e" : "a"
+
+func o_x # Gênero do objeto: e/a
+  se arg0 === "X"
+    ret obj.msexo ? "E" : "A"
+  senao
+    ret obj.msexo ? "e" : "a"
 
 
 classe mens_antigo
@@ -305,10 +334,41 @@ func m_t # Conforme o sol: amanhecendo, manhã, tarde, anoitecendo, noite
     ret "tarde"
   casose "17"
     ret "escurecendo"
-    caseose
+  casose
     ret "noite"
   casofim
 
 const m_v = arg0 === "v" ? p2.pmove : p2.pmovemax
 const m_x = arg0 === "x" ? p2.expatual : p2.expmax - p2.expatual
 const m_z = arg0 === "z" ? "\n" : "%"
+const m_b = "\b"
+const m_c0 = "\c0"
+const m_c1 = "\c1"
+const m_c2 = "\c2"
+const m_c3 = "\c3"
+const m_c4 = "\c4"
+const m_c5 = "\c5"
+const m_c6 = "\c6"
+const m_c7 = "\c7"
+const m_c8 = "\c8"
+const m_c9 = "\c9"
+const m_ca = "\ca"
+const m_cb = "\cb"
+const m_cc = "\cc"
+const m_cd = "\cd"
+const m_ce = "\ce"
+const m_cf = "\cf"
+const m_cg = "\cg"
+const m_ch = "\ch"
+const m_ci = "\ci"
+const m_cj = "\cj"
+const m_ck = "\ck"
+const m_cl = "\cl"
+const m_f0 = "\d0"
+const m_f1 = "\d1"
+const m_f2 = "\d2"
+const m_f3 = "\d3"
+const m_f4 = "\d4"
+const m_f5 = "\d5"
+const m_f6 = "\d6"
+const m_f7 = "\d7"

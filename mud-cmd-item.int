@@ -130,7 +130,8 @@ func escr
   epara l.addfim(sala.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
-    refvar r = ref(l.objini)
+    ref r # Nota: r pode mudar após r.mudadono
+    r = l.objini
     se arg0.dentro1.total + total > arg0.objmax
       ret arg0.msg("Você não consegue carregar tanta coisa.")
     senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
@@ -155,7 +156,7 @@ func escr
     senao
       $mens.mvis1("$P pega " + total + "x $o" + mens)
     fimse
-    r.mudadono(arg0, total)
+    r = r.mudadono(arg0, total)
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_pegouobj(arg0, sala, r, total)
     efim
@@ -261,44 +262,46 @@ func escr
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ref r # Nota: r pode mudar após r.mudadono
+    r = l.objini
     total = n # Quantidade de itens
     se sala.dentro1.total + total >= sala.objmax
       ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.descnome + ".")
       ret arg0.msg("Não consegue soltar nada aqui.")
-    senao sala.volden + l.objini.voltot * total / l.objini.objtot > sala.volmax * l.objini.objtot
+    senao sala.volden + r.voltot * total / r.objtot > sala.volmax * r.objtot
       ret arg0.msg("Não há espaço suficiente para soltar isso.")
     fimse
     listaobj e
     total = n # Quantidade de itens
-    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_soltarobj(arg0, sala, l.objini, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      sair e.objini.cmd_soltarobj(arg0, sala, r, total)
     efim
     se e
       sair (achou += 1) >= 10
       continuar
     fimse
-    $mens.p(arg0, sala, l.objini)
+    $mens.p(arg0, sala, r)
     mens2 = mens ? "$P coloca " : "$P solta "
     mens2 += total <= 1 ? "$o" : txt(total) + "x $o"
     casovar soltar
     casose "2"
       $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
-      l.objini.apagar(total)
+      r.apagar(total)
       sair
     casose "3"
       $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
-      l.objini.apagar(total)
+      r.apagar(total)
       sair
     casose "4"
       $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
-      l.objini.apagar(total)
+      r.apagar(total)
       sair
     casose
       $mens.mvis1(mens2 + mens + ".")
-      l.objini.mudadono(sala, total)
+      r = r.mudadono(sala, total)
     casofim
-    epara e.addfim(arg0.evento, sala.evento, l.objini.evento), e, e.ini.remove
-      e.objini.cmd_soltouobj(arg0, sala, l.objini, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_soltouobj(arg0, sala, r, total)
     efim
     sair (achou += 1) >= 10
   efim
@@ -418,8 +421,9 @@ animal.")
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ref r # Nota: r pode mudar após r.mudadono
+    r = l.objini
     total = n # Quantidade de itens
-    refvar r = ref(l.objini)
     se sala.dentro1.total + total >= sala.objmax
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada.")
     senao sala.volden + r.voltot * total / r.objtot > sala.volmax
@@ -443,7 +447,7 @@ animal.")
     senao
       $mens.mvis1("$P dá " + total + "x $o para $a.")
     fimse
-    r.mudadono(sala, total)
+    r = r.mudadono(sala, total)
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_deuobj(arg0, sala, r, total)
     efim

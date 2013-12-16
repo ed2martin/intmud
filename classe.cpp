@@ -578,7 +578,12 @@ void TClasse::AcertaComandos(char * comandos)
         int pos = p-comandos;
         char mens[4096];
         if (Instr::Decod(mens, p, sizeof(mens)))
-            printf("%d  %s", pos, mens);
+        {
+            printf("%4d  ", pos);
+            for (int x=0; x<p[Instr::endAlin]; x++)
+                printf("  ");
+            printf("%s", mens);
+        }
         else
             printf("ERRO  %s", mens);
         switch (p[2])
@@ -588,11 +593,11 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao2:
         case Instr::cEnquanto:
         case Instr::cEPara:
-        case Instr::cSair:
+        case Instr::cSair1:
             printf("  *** %d", pos+Num16(p+Instr::endVar)); // Para frente
             break;
         case Instr::cEFim:
-        case Instr::cContinuar:
+        case Instr::cContinuar1:
             printf("  *** %d", pos-Num16(p+Instr::endVar)); // Para trás
             break;
         case Instr::cCasoVar: // Para frente ou para trás

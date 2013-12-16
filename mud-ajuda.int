@@ -19,6 +19,7 @@ const ta3 = "  \c2COMBATE\b  Lutas com outros personagens\n\
   \c2NOMES\b    Digitando nomes de objetos e personagens\n\
   \c2CONFIG\b   Opções de configuração\n\
   \c2PROMPT\b   Mensagens do prompt\n\
+  \c2CORES\b    Cores no prompt\n\
   \c2ATALHO\b   Criando atalhos para os comandos mais usados\n\
 Para sair do MUD tecle \c2FIM\b"
 const ta4 = arg0.jogconfig.23 ? "\nPara ler as páginas de administração tecle \c2ADM\b"
@@ -69,18 +70,19 @@ classe cmd_comunica
 herda comando_ajuda
 
 func txtajuda
-  ret aj1 + (config:chattipo ? aj2) + aj3 + (config:emocaotipo ? aj4) + aj5 + (config:rezartipo \
-? aj6)
+  ret aj1 + (config:chattipo ? aj2) + (config:novatostipo ? aj3) + aj4 + (config:emocaotipo ? \
+aj5) + aj6 + (config:rezartipo ? aj7)
 
 const aj1 = "\b\c3Comunicação\b\n"
 const aj2 = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n"
-const aj3 = "  \c2PVT\b       Envia mensagem privativa para um jogador\n\
+const aj3 = "  \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado\n"
+const aj4 = "  \c2PVT\b       Envia mensagem privativa para um jogador\n\
   \c2FALAR\b     Envia mensagem para os personagens na mesma sala\n\
   \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala\n\
   \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens\n"
-const aj4 = "  \c2EMOÇÃO\b    Demonstra emoções do seu personagem\n"
-const aj5 = "  \c2IGNORAR\b   Ignora um jogador"
-const aj6 = "\n\
+const aj5 = "  \c2EMOÇÃO\b    Demonstra emoções do seu personagem\n"
+const aj6 = "  \c2IGNORAR\b   Ignora um jogador"
+const aj7 = "\n\
   \c2REZAR\b     Envia mensagem para os administradores que estiverem no jogo"
 
 
@@ -174,3 +176,31 @@ desfavorável, pode tentar fugir teclando FUGIR. Mas saiba que algumas\n\
 criaturas podem procurar por você e perseguir.\n\
 Se outro jogador estiver por perto, muitas vezes poderá resgatar você.\n\
 Veja o comando RESGATAR."
+
+
+classe cmd_cores
+herda comando_ajuda
+const txtajuda = "\b\c3Cores no prompt\b\n\n\
+É possível definir as cores dos caracteres e do fundo no prompt.\n\
+Entretanto, não há suporte a cores no Papovox, nem para os usuários\n\
+que jogarem através de um chat.\n\n\
+As seguintes sequências de caracteres mudam a cor das letras:\n\
+ %c0  \c7Preto\b             %c1  \c1Vermelho\b         \b %c2  \c2Verde\b\n\
+ %c3  \c3Marrom\b            %c4  \c4Azul\b             \b %c5  \c5Magenta\b\n\
+ %c6  \c6Ciano\b             %c7  \c7Branco\b           \b %c8  \c8Cinza\b\n\
+ %c9  \c9Vermelho intenso\b  %ca  \caVerde intenso\b    \b %cb  \cbAmarelo\b\n\
+ %cc  \ccAzul intenso\b      %cd  \cdMagenta intenso\b  \b %ce  \ceCiano intenso\b\n\
+ %cf  \cfBranco intenso\b\n\n\
+As seguintes sequências de caracteres mudam a cor de fundo:\n\
+ %f0  \d0Preto\b             %f1  \d1Vermelho\b          %f2  \d2Verde\b\n\
+ %f3  \d3Marrom\b            %f4  \d4Azul\b              %f5  \d5Magenta\b\n\
+ %f6  \d6Ciano\b             %f7  \c0\d7Branco\b\n\n\
+As seguintes sequências de caracteres mudam outros atributos:\n\
+ %b   Caracteres brancos sob fundo preto sem piscante, sublinhado e inverso\n\
+ %cg  Liga o sublinhado (um traço horizontal em baixo)\n\
+ %ch  Desliga o sublinhado\n\
+ %ci  Liga inversão de frente com fundo (troca cores de frente com fundo)\n\
+ %cj  Desliga inversão de frente com fundo\n\
+ %ck  Liga texto piscante\n\
+ %cl  Desliga texto piscante\n\n\
+Veja também: PROMPT"

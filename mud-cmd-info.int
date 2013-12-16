@@ -196,7 +196,8 @@ func escr
   fimse
   epara item = r.dentro1.fim, item, item.antes
     continuar !item.obj.visivel(arg0)
-    refvar nn = item.obj.atribs.linhas ? " (" + txttroca(item.obj.atribs.ini.textolin(100), "\n", " ") + ") " : " "
+    refvar nn = item.obj.atribs.linhas ? " (" + txttroca(item.obj.atribs.ini.textolin(100), \
+"\n", " ") + ") " : " "
     t.addfim(txt(item.obj.objtot) + nn + txtcopiamai(item.obj.descnome, "A"))
   efim
   t.juntalin("(", "x)")
@@ -253,7 +254,8 @@ func escr
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(20 - inttotal(nomepos))
-      obj.atribs.linhas && (nomepos += "(" + txttroca(obj.atribs.ini.textolin(100), "\n", " ") + ") ")
+      obj.atribs.linhas && (nomepos += "(" + txttroca(obj.atribs.ini.textolin(100), "\n", " ") + \
+") ")
       t.addfim(nomepos + " " + txtcopiamai(obj.descnome, "A"))
     senao lugar & 1 << x
       nomepos = "\c2(" + misc:equip(x ? x : 50) + ")\b "

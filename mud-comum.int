@@ -90,7 +90,7 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
 func ajustaev # Acerta eventos
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
   contr = idono.objlista
-  (contr.perso ? evperso : contr.item ? evitem : evsala) && (evrec.1 = contr.addfim(este))
+  (contr.perso ? evperso : contr.item ? evitem : evsala) && (evrec.1 = contr.evento.addfim(este))
   !contr.perso && (contr = este)
 
 varfunc dono # O dono do personagem/item
