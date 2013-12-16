@@ -28,6 +28,7 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   dono = arg0, cmd_mudadono
+  ret este
 
 func recalc_exec # Ajusta variáveis
   bitver = 17, bitinv = 3, atribs.limpar, cmd_recalc1(este), atribs_exec
@@ -75,17 +76,20 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   ref r
   r = objproc(arg0.dentro1) # r = objeto no novo dono
   se objtot > arg1 # Se não vai mover tudo
+    objtot -= arg1, ajustapeso
     se r
       r.objtot += arg1, r.ajustapeso
+      ret r
     senao
-      criar(este, arg0, arg1)
+      ret criar(este, arg0, arg1)
     fimse
-    objtot -= arg1, ajustapeso
   senao r # Se já existe objeto no destino
     r.objtot += arg1, r.ajustapeso
     dono = nulo, apagar(este)
+    ret r
   senao # Senão, apenas muda o dono
     dono = arg0, cmd_mudadono
+    ret este
   fimse
 
 func vestir # Veste o item, arg0=posição
@@ -142,6 +146,7 @@ func fim # Objeto foi apagado
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   persolugar.limpar, dono = arg0, cmd_mudadono
+  ret este
 
 func recalc_exec # Acerta variáveis do item
   bitver = 17, bitinv = luztempo ? 1 : 3, atribs.limpar, cmd_recalc1(este)
@@ -151,7 +156,7 @@ func recalc_exec # Acerta variáveis do item
     textopos p
     p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
     atribs.addini("Aceso")
-    
+
 func luztempo_exec # A luz apagou
   se luztxt
     ref r

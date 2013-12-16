@@ -39,10 +39,11 @@ classe cmd_config
 herda comando_comum, comando_ajuda
 const posic = 0
 const txtajuda = arg0.jogconfig.23 ? txtajuda1 + txtajuda2 : txtajuda1
-const txtajuda1 = aj1 + (config:chattipo ? aj2) + (config:emocaotipo ? aj3) + aj4
+const txtajuda1 = aj1 + (config:chattipo ? aj2) + (config:novatostipo ? aj3) + (config:emocaotipo\
+ ? aj4) + aj5
 const aj1 = "\b\c3Config\b\n\
-Sintaxe: config +<opção>\n\
-         config -<opção>\n\
+Sintaxe: CONFIG +<opção>\n\
+         CONFIG -<opção>\n\
 Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
 seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
 preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
@@ -53,12 +54,13 @@ As opções são:\n\
   \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
   \c2PVT\b      Recebe mensagens com o comando PVT\n"
 const aj2 = "  \c2CHAT\b     Participa do canal de comunicação CHAT\n"
-const aj3 = "  \c2EMOÇÃO\b   Mostra (e) nas mensagens geradas com esse comando\n"
-const aj4 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
+const aj3 = "  \c2NOVATOS\b  Participa do canal de comunicação NOVATOS\n"
+const aj4 = "  \c2EMOÇÃO\b   Mostra (e) nas mensagens geradas com esse comando\n"
+const aj5 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
   \c2MOEDAS\b   Pega as moedas do corpo do personagem após vencer uma batalha\n\
   \c2PROMPT\b   Ativa o prompt normal\n\
   \c2BROMPT\b   Ativa o prompt de batalha"
-const txtajuda2 = "\n\
+const txtajuda2 = "\nOpções para administradores:\n\
   \c2IMORTAL\b  Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
            cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
            fechadas, anda sem gastar movimento\n\
@@ -88,6 +90,7 @@ const opc_bprompt = 7
 const opc_pvt = 8
 const opc_emocao = config:emocaotipo ? 9
 const opc_moedas = 10
+const opc_novatos = config:novatostipo ? 11
 const opc_imortal = 14
 const opc_execlog = 15
 const opc_sala = 16
@@ -202,12 +205,14 @@ As seguintes sequências de caracteres têm um significado especial:\n\n\
 Exemplos (considerando 30 pontos de vida, 45 de mana e 50 de vigor):\n\n\
 PROMPT %h%m                =  3045\n\
 PROMPT %h %m %v            =  30 45 50\n\
-PROMPT <%hhp %mmn %vmv>    =  <30hp 45mn 50mv>"
+PROMPT <%hhp %mmn %vmv>    =  <30hp 45mn 50mv>\n\
+PROMPT <%c3%hhp %c2%mmn %c6%vmv%b>  = <\c330hp \c245mn \c650mv\b>  (com cores)\n\n\
+Veja também: AJUDA CORES"
 
 func escr
   ret !arg1, arg0.msg("Prompt:\n" + arg0.var.z_prompt)
   txt100 lin
-  lin = arg1 == "ini" ? "<%hhp %mmn %vmv> " : arg1
+  lin = arg1 == "ini" ? "<%c3%hhp %c2%mmn %c6%vmv%b> " : arg1
   arg0.var.z_prompt = lin
   arg0.msg("Prompt alterado para:\n" + lin)
 
@@ -218,7 +223,7 @@ herda cmd_prompt
 func escr
   ret !arg1, arg0.msg("Prompt de batalha:\n" + arg0.var.z_bprompt)
   txt100 lin
-  lin = arg1 == "ini" ? "<%hhp %mmn %vmv> " : arg1
+  lin = arg1 == "ini" ? "<%c3%hhp %c2%mmn %c6%vmv%b> " : arg1
   arg0.var.z_bprompt = lin
   arg0.msg("Prompt de batalha alterado para:\n" + lin)
 
@@ -379,6 +384,7 @@ terminada com reticências, interrogação ou exclamação."
 
 func escr
   $mens.p(arg0)
+  $mens.mens = arg1
   se !arg1
     arg0.msg("Tecle a mensagem após FALAR.")
     ret
@@ -386,16 +392,17 @@ func escr
     arg0.msg(arg0.dono.s_falar)
     ret
   senao txt(arg1, 0, 3) == "..."
-    $mens.mtodos1("$P continuou '" + txttroca(arg1, "$", "$$") + "'")
+    $mens.mtodos1(config:continuarmsg)
   senao txtfim(arg1, 1) == "?"
-    $mens.mtodos1("$P perguntou '" + txttroca(arg1, "$", "$$") + "'")
+    $mens.mtodos1(config:perguntarmsg)
   senao txtfim(arg1, 1) == "!"
-    $mens.mtodos1("$P exclamou '" + txttroca(arg1, "$", "$$") + "'")
+    $mens.mtodos1(config:exclamarmsg)
   senao txtfim(arg1, 3) == "..."
-    $mens.mtodos1("$P ponderou '" + txttroca(arg1, "$", "$$") + "'")
+    $mens.mtodos1(config:ponderarmsg)
   senao
-    $mens.mtodos1("$P falou '" + txttroca(arg1, "$", "$$") + "'")
+    $mens.mtodos1(config:falarmsg)
   fimse
+
 # Executa eventos
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -514,7 +521,7 @@ const objcmd = config:chattipo ? este
 const objajuda = config:chattipo ? este
 const posic = 0
 const txtajuda = config:chattipo == 1 ? aj1 + aj2 : aj1
-const aj1 = "\b\c3Canal chat\b\n\
+const aj1 = "\b\c3Canal Chat\b\n\
 Sintaxe: CHAT <mensagem>\n\
          .<mensagem>\n\
 Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
@@ -525,6 +532,7 @@ não irão para as outras outras salas."
 
 func escr
   $mens.p(arg0)
+  $mens.mens = arg1
   se arg0.pnivel < config:chatnivel
     arg0.msg("Para escrever no canal CHAT você precisa estar no nível " + config:chatnivel + \
 ".")
@@ -534,15 +542,54 @@ func escr
     arg0.msg("Tecle a mensagem após CHAT.")
   senao config:chattipo == 2 # Escrever para todos
     indiceitem item
-    refvar lin = "(chat) " + arg0.sock.nome + " '" + arg1 + "'"
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.4 && !item.obj.perso.var.u_[arg0.nome] && item.obj.msg(lin)
+      continuar !item.obj.jogconfig.4 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:chatmsg, item.obj.perso))
     efim
   senao # Escrever para quem estiver na mesma sala
     listaobj l
-    refvar lin = "(chat) " + arg0.sock.nome + " '" + arg1 + "'"
     epara arg0.sock.salaobj(l), l, l.ini.remove
-      l.objini.jogconfig.4 && !l.objini.perso.var.u_[arg0.nome] && l.objini.msg(lin)
+      continuar !l.objini.jogconfig.4 || l.objini.perso.var.u_[arg0.nome]
+      l.objini.msg($mens.proc(config:chatmsg, l.objini.perso))
+    efim
+
+
+classe cmdfim_novatos
+herda comando_comum, comando_ajuda
+const objcmd = config:novatostipo ? este
+const objajuda = config:novatostipo ? este
+const posic = 0
+const txtajuda = config:chattipo == 1 ? aj1 + aj2 : aj1
+const aj1 = "\b\c3Canal Novatos\b\n\
+Sintaxe: NOVATOS <mensagem>\n\
+Envia mensagem para os jogadores que estiverem com o canal NOVATOS\n\
+habilitado. Esse canal é destinado a dúvidas de iniciantes.\n\
+Para habilitar ou desabilitar esse canal, use o comando CONFIG."
+const aj2 = "\n\
+Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
+não irão para as outras outras salas."
+
+func escr
+  $mens.p(arg0)
+  $mens.mens = arg1
+  se arg0.pnivel < config:novatosnivel
+    arg0.msg("Para escrever no canal NOVATOS você precisa estar no nível " + config:novatosnivel \
++ ".")
+  senao !arg0.jogconfig.11
+    arg0.msg("Canal NOVATOS está desabilitado.")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após NOVATOS.")
+  senao config:novatostipo == 2 # Escrever para todos
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      continuar !item.obj.jogconfig.11 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:novatosmsg, item.obj.perso))
+    efim
+  senao # Escrever para quem estiver na mesma sala
+    listaobj l
+    epara arg0.sock.salaobj(l), l, l.ini.remove
+      continuar !l.objini.jogconfig.11 || l.objini.perso.var.u_[arg0.nome]
+      l.objini.msg($mens.proc(config:novatosmsg, l.objini.perso))
     efim
 
 

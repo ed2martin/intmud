@@ -17,7 +17,8 @@ Os tópicos são:\n\
   \c2COD\b      Edição do código fonte\n\
   \c2JOG\b      Comandos para jogadores\n\
   \c2OUTROS\b   Outros comandos\n\
-  \c2MENS\b     Caracteres especiais em mensagens"
+  \c2MENS\b     Caracteres especiais em mensagens\n\
+  \c2CORES\b    Cores em mensagens"
 # \c2INFO\b     Informações sobre o MUD"
 #
 const adm_jog = "\c3Comandos para jogadores\b\n\
@@ -69,14 +70,47 @@ As seguintes sequências de caracteres têm um significado especial:\n\
  \c2$$\b  Símbolo $\n\
  \c2$P\b  Nome do personagem\n\
  \c2$Q\b  Nome do personagem sem citar o dono\n\
+ \c2$R\b  Nome do personagem no comando QUEM\n\
  \c2$A\b  Nome do alvo\n\
  \c2$B\b  Nome do alvo sem citar o dono\n\
+ \c2$C\b  Nome do alvo no comando QUEM\n\
  \c2$O\b  Nome do objeto\n\
  \c2$S\b  Depende do personagem: o, a, um ou uma\n\
  \c2$T\b  Depende do alvo: o, a, um ou uma\n\
- \c2$U\b  Depende do objeto: o, a, um ou uma\n\n\
+ \c2$U\b  Depende do objeto: o, a, um ou uma\n\
+ \c2$V\b  Depende do personagem: e ou a\n\
+ \c2$W\b  Depende do alvo: e ou a\n\
+ \c2$X\b  Depende do objeto: e ou a\n\
+ \c2$M\b  Mensagem; somente comandos que usam uma mensagem digitada por alguém\n\n\
 Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra\n\
 do texto não é transformada em maiúscula."
+#
+const adm_cores = "\b\c3Cores em mensagens\b\n\n\
+É possível definir as cores dos caracteres e do fundo nas mensagens.\n\
+Entretanto, não há suporte a cores no Papovox, nem para os usuários\n\
+que jogarem através de um chat.\n\n\
+As seguintes sequências de caracteres mudam a cor das letras:\n\
+ \\c0  \c7Preto\b             \\c1  \c1Vermelho\b          \\c2  \c2Verde\b\n\
+ \\c3  \c3Marrom\b            \\c4  \c4Azul\b              \\c5  \c5Magenta\b\n\
+ \\c6  \c6Ciano\b             \\c7  \c7Branco\b            \\c8  \c8Cinza\b\n\
+ \\c9  \c9Vermelho intenso\b  \\ca  \caVerde intenso\b     \\cb  \cbAmarelo\b\n\
+ \\cc  \ccAzul intenso\b      \\cd  \cdMagenta intenso\b   \\ce  \ceCiano intenso\b\n\
+ \\cf  \cfBranco intenso\b\n\n\
+As seguintes sequências de caracteres mudam a cor de fundo:\n\
+ \\d0  \d0Preto\b             \\d1  \d1Vermelho\b          \\d2  \d2Verde\b\n\
+ \\d3  \d3Marrom\b            \\d4  \d4Azul\b              \\d5  \d5Magenta\b\n\
+ \\d6  \d6Ciano\b             \\d7  \c0\d7Branco\b\n\n\
+As seguintes sequências de caracteres mudam outros atributos:\n\
+ \"    Aspas duplas\n\
+ \\\\   Barra invertida: \\\n\
+ \\b   Caracteres brancos sob fundo preto sem piscante, sublinhado e inverso\n\
+ \\cg  Liga o sublinhado (um traço horizontal em baixo)\n\
+ \\ch  Desliga o sublinhado\n\
+ \\ci  Liga inversão de frente com fundo (troca cores de frente com fundo)\n\
+ \\cj  Desliga inversão de frente com fundo\n\
+ \\ck  Liga texto piscante\n\
+ \\cl  Desliga texto piscante"
+
 #
 const adm_cod = "\b\c3Comandos de edição do código\b\n\
 \c2lcl\b [nome]\n\
@@ -293,12 +327,11 @@ func cmd_echo
   se !arg0
     msg("\bTecle a mensagem após ECHO.")
   senao
-    $cmdecho.echo_m = arg0
-    $cmdecho.echo_p = nome
-    refvar lin = $cmdecho.mens
+    $mens.p(perso)
+    $mens.mens = arg0
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.msg(lin)
+      item.obj.msg($mens.proc(config:echomsg, item.obj.perso))
     efim
   fimse
   ret 1
@@ -627,15 +660,6 @@ func p_herda
   ret p_editor(arg0, 200, "Herança")
 
 
-classe cmdecho
-# Para preparar mensagem do comando echo
-const iniclasse = criar(arg0)
-txt512 echo_m
-txt100 echo_p
-const echo_@ = "$"
-const mens = vartroca(txttroca(config:echomsg, "$$", "$@"), "$", "echo_")
-
-
 classe menu_econfig
 # Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
 const titulo = "Configurações do MUD"
@@ -651,63 +675,57 @@ const tipo2 = "linha--"
 const clas2 = "config"
 const vari2 = "senhaadm"
 #
-const nome3 = "Mensagem de apresentação"
-const info3 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
-const tipo3 = "texto--"
+const nome3 = "Sala inicial"
+const info3 = "Sala onde os jogadores vão após criar o personagem"
+const tipo3 = "sala--"
 const clas3 = "config"
-const vari3 = "apres"
+const vari3 = "salaini"
 #
-const nome4 = "Sala inicial"
-const info4 = "Sala onde os jogadores vão após criar o personagem"
+const nome4 = "Sala quando morre"
 const tipo4 = "sala--"
 const clas4 = "config"
-const vari4 = "salaini"
+const vari4 = "salafim"
 #
-const nome5 = "Sala quando morre"
+const nome5 = "Continuar jogo salvo sala"
+const info5 = "Se acontecer do jogador cair em uma sala inexistente"
 const tipo5 = "sala--"
 const clas5 = "config"
-const vari5 = "salafim"
+const vari5 = "salasav"
 #
-const nome6 = "Continuar jogo salvo sala"
-const info6 = "Se acontecer do jogador cair em uma sala inexistente"
-const tipo6 = "sala--"
+const nome6 = "Animais para batalhar"
+const info6 = "Quantos animais pode usar em batalha"
+const tipo6 = "numero--"
 const clas6 = "config"
-const vari6 = "salasav"
+const vari6 = "animal1"
+const extr6 = "1 8"
 #
-const nome7 = "Animais para batalhar"
-const info7 = "Quantos animais pode usar em batalha"
+const nome7 = "Itens por personagem"
+const info7 = "Quantos itens cada jogador pode ter, ao todo\n\
+Essa opção visa limitar o tamanho dos arquivos dos jogos salvos"
 const tipo7 = "numero--"
 const clas7 = "config"
-const vari7 = "animal1"
-const extr7 = "1 8"
+const vari7 = "itens"
+const extr7 = "1 1000"
 #
-const nome8 = "Itens por personagem"
-const info8 = "Quantos itens cada jogador pode ter, ao todo\n\
-Essa opção visa limitar o tamanho dos arquivos dos jogos salvos"
-const tipo8 = "numero--"
+const nome8 = "Salvar personagem ao criar"
+const tipo8 = "simnao--"
 const clas8 = "config"
-const vari8 = "itens"
-const extr8 = "1 1000"
+const vari8 = "salvacria"
 #
-const nome9 = "Salvar personagem ao criar"
-const tipo9 = "simnao--"
-const clas9 = "config"
-const vari9 = "salvacria"
-#
-const nome10 = "E-mail"
-const info10 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
+const nome9 = "E-mail"
+const info9 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
 e procure por uma linha que contém o texto z_email"
-const tipo10 = "opcao--"
-const clas10 = "config"
-const vari10 = "email"
-const extr10 = "Não pede\nOpcional\nObrigatório"
+const tipo9 = "opcao--"
+const clas9 = "config"
+const vari9 = "email"
+const extr9 = "Não pede\nOpcional\nObrigatório"
 #
-const nome11 = "Config ao criar personagem"
-const info11 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
-const tipo11 = "vetor--"
-const clas11 = "config"
-const vari11 = "jogconfig"
-const extr11 = "desc\n\
+const nome10 = "Config ao criar personagem"
+const info10 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
+const tipo10 = "vetor--"
+const clas10 = "config"
+const vari10 = "jogconfig"
+const extr10 = "desc\n\
 saidas\n\
 cores\n\
 acento\n\
@@ -716,42 +734,40 @@ seguir\n\
 prompt\n\
 bprompt\n\
 pvt\n\
-emocao\nmoedas"
+emocao\n\
+moedas\nnovatos"
 #
-const nome12 = "Quando alguém entra avisar"
-const info12 = "Quem deve ser informado quando um jogador entra ou sai"
-const tipo12 = "opcao--"
-const clas12 = "config"
-const vari12 = "entrainfo"
-const extr12 = "Ninguém\nSomente administradores\nTodos"
+const nome11 = "Mensagens"
+const tipo11 = "menu--"
+const clas11 = "menu_econfig_msg"
 #
-const nome13 = "Comandos"
+const nome12 = "Comandos"
+const tipo12 = "menu--"
+const clas12 = "menu_econfig_comandos"
+#
+const nome13 = "Ataques e batalha"
 const tipo13 = "menu--"
-const clas13 = "menu_econfig_comandos"
+const clas13 = "menu_econfig_ataques"
 #
-const nome14 = "Ataques e batalha"
-const tipo14 = "menu--"
-const clas14 = "menu_econfig_ataques"
-#
-const nome15 = "Aulas por nível"
-const info15 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+const nome14 = "Aulas por nível"
+const info14 = "Quantos pontos de aulas ganha quando sobe de nível\n\
 Se 0, o comando aprender não usa pontos de aula"
-const tipo15 = "numero--"
+const tipo14 = "numero--"
+const clas14 = "config"
+const vari14 = "aulas"
+const extr14 = "0 1000"
+#
+const nome15 = "Tipos de produtos"
+const info15 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo15 = "txtopcao--"
 const clas15 = "config"
-const vari15 = "aulas"
-const extr15 = "0 1000"
+const vari15 = "produtos"
+const extr15 = "1 30"
 #
-const nome16 = "Tipos de produtos"
-const info16 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo16 = "txtopcao--"
-const clas16 = "config"
-const vari16 = "produtos"
-const extr16 = "1 30"
-#
-const nome17 = "Posições para vestir itens"
-const info17 = "Os nomes das posições"
-const tipo17 = "menu--"
-const clas17 = "menu_econfig_vestir"
+const nome16 = "Posições para vestir itens"
+const info16 = "Os nomes das posições"
+const tipo16 = "menu--"
+const clas16 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar
@@ -827,67 +843,136 @@ const clas11 = "config"
 const vari11 = "senha"
 
 
+classe menu_econfig_msg
+const titulo = "Mensagens"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Apresentação"
+const info1 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
+const tipo1 = "texto--"
+const clas1 = "config"
+const vari1 = "apres"
+#
+const nome2 = "Quando alguém entra avisar"
+const info2 = "Quem deve ser informado quando um jogador entra ou sai"
+const tipo2 = "opcao--"
+const clas2 = "config"
+const vari2 = "entrainfo"
+const extr2 = "Ninguém\nSomente administradores\nTodos"
+#
+const nome3 = "Comando Echo"
+const tipo3 = "linha--"
+const clas3 = "config"
+const vari3 = "echomsg"
+#
+const nome4 = "Canal Chat"
+const tipo4 = "linha--"
+const clas4 = "config"
+const vari4 = "chatmsg"
+#
+const nome5 = "Canal Novatos"
+const tipo5 = "linha--"
+const clas5 = "config"
+const vari5 = "novatosmsg"
+#
+const nome6 = "Falar"
+const info6 = "Ao teclar falar e uma mensagem qualquer"
+const tipo6 = "linha--"
+const clas6 = "config"
+const vari6 = "falarmsg"
+#
+const nome7 = "Perguntar"
+const info7 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo7 = "linha--"
+const clas7 = "config"
+const vari7 = "perguntarmsg"
+#
+const nome8 = "Exclamar"
+const info8 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo8 = "linha--"
+const clas8 = "config"
+const vari8 = "exclamarmsg"
+#
+const nome9 = "Ponderar"
+const info9 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo9 = "linha--"
+const clas9 = "config"
+const vari9 = "ponderarmsg"
+#
+const nome10 = "Continuar"
+const info10 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo10 = "linha--"
+const clas10 = "config"
+const vari10 = "continuarmsg"
+
+
 classe menu_econfig_comandos
 const titulo = "Comandos"
 const menufim = "menu_econfig"
 const colunas = 35
 #
-const nome1 = "Mensagem comando echo"
-const info1 = "Nesse texto, $m é a mensagem, $p é o personagem e $$ é o símbolo $"
-const tipo1 = "linha--"
+const nome1 = "Comando Rezar"
+const tipo1 = "opcao--"
 const clas1 = "config"
-const vari1 = "echomsg"
+const vari1 = "rezartipo"
+const extr1 = "Desabilitado\nHabilitado"
 #
-const nome2 = "Comando Rezar"
-const tipo2 = "opcao--"
+const nome2 = "Rezar a partir do nível"
+const tipo2 = "numero--"
 const clas2 = "config"
-const vari2 = "rezartipo"
-const extr2 = "Desabilitado\nHabilitado"
+const vari2 = "rezarnivel"
 #
-const nome3 = "Rezar a partir do nível"
-const tipo3 = "numero--"
+const nome3 = "Comando Chat"
+const tipo3 = "opcao--"
 const clas3 = "config"
-const vari3 = "rezarnivel"
+const vari3 = "chattipo"
+const extr3 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome4 = "Comando Chat"
-const tipo4 = "opcao--"
+const nome4 = "Chat a partir do nível"
+const tipo4 = "numero--"
 const clas4 = "config"
-const vari4 = "chattipo"
-const extr4 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+const vari4 = "chatnivel"
 #
-const nome5 = "Chat a partir do nível"
-const tipo5 = "numero--"
+const nome5 = "Comando Novatos"
+const tipo5 = "opcao--"
 const clas5 = "config"
-const vari5 = "chatnivel"
+const vari5 = "novatostipo"
+const extr5 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome6 = "Comando Emoção"
-const tipo6 = "opcao--"
+const nome6 = "Novatos a partir do nível"
+const tipo6 = "numero--"
 const clas6 = "config"
-const vari6 = "emocaotipo"
-const extr6 = "Desabilitado\nHabilitado"
+const vari6 = "novatosnivel"
 #
-const nome7 = "Emoção a partir do nível"
-const tipo7 = "numero--"
+const nome7 = "Comando Emoção"
+const tipo7 = "opcao--"
 const clas7 = "config"
-const vari7 = "emocaonivel"
+const vari7 = "emocaotipo"
+const extr7 = "Desabilitado\nHabilitado"
 #
-const nome8 = "Comando Retornar até nível"
-const info8 = "Até que nível pode usar o comando retornar"
+const nome8 = "Emoção a partir do nível"
 const tipo8 = "numero--"
 const clas8 = "config"
-const vari8 = "retornar"
+const vari8 = "emocaonivel"
 #
-const nome9 = "Comando Quem mostra admin"
-const info9 = "Se não administradores podem saber quem é administrador teclando QUEM"
-const tipo9 = "simnao--"
+const nome9 = "Comando Retornar até nível"
+const info9 = "Até que nível pode usar o comando retornar"
+const tipo9 = "numero--"
 const clas9 = "config"
-const vari9 = "mostraadm"
+const vari9 = "retornar"
 #
-const nome10 = "Comando Quem mostra imortal"
-const info10 = "Se não administradores podem saber quem é imortal teclando QUEM"
+const nome10 = "Comando Quem mostra admin"
+const info10 = "Se não administradores podem saber quem é administrador teclando QUEM"
 const tipo10 = "simnao--"
 const clas10 = "config"
-const vari10 = "mostraimortal"
+const vari10 = "mostraadm"
+#
+const nome11 = "Comando Quem mostra imortal"
+const info11 = "Se não administradores podem saber quem é imortal teclando QUEM"
+const tipo11 = "simnao--"
+const clas11 = "config"
+const vari11 = "mostraimortal"
 
 
 classe menu_econfig_ataques

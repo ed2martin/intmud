@@ -211,16 +211,11 @@ func msgprompt_exec
   se !perso
   senao perso.atkenv
     ret !jogconfig.7, nulo
-    txt150 t1
-    t1 = perso.var.z_bprompt
-    t1 = $mens_prompt.mens(t1, perso)
+    refvar t1 = $mens_prompt.mens(perso.var.z_bprompt, perso) + "\b"
     msg(t1, 1)
   senao
     ret !jogconfig.6, nulo
-    txt150 t1
-    t1 = perso.var.z_prompt
-    t1 = $mens_prompt.mens(t1, perso)
-    t1 = $mens_prompt.mens(perso.var.z_prompt, perso)
+    refvar t1 = $mens_prompt.mens(perso.var.z_prompt, perso) + "\b"
     msg(t1, 1)
 
 func msgchegou # Mensagem de usuário chegando ou saindo
@@ -618,8 +613,8 @@ sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-b-tipo.int
 func ini # Objeto foi criado
   tempojogo1 = 864000
   nivel = 1
-  var.z_prompt = "<%hhp %mmn %vmv> "
-  var.z_bprompt = "<%hhp %mmn %vmv> "
+  var.z_prompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
+  var.z_bprompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
   comum_persoanimal:ini
 
 func fim # Objeto foi apagado

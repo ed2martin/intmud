@@ -87,7 +87,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Checa se novo dono é sala
   se dono.perso
     p_proc = 1
-    ret
+    ret este
   fimse
 # Eventos cmd_chegou
   (sock || jog) && dono.s_reset1 + dono.cmd_salaperso(este)
@@ -105,14 +105,18 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock
     p_proc = 1
+    ret este
   senao dono.s_ocultar
     dono.t_item = 0
+    ret este
   senao
     dono.t_item = 0
     se jogconfig.16
       msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
+      ret este
     senao
       msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
+      ret este
 
 func recalc_exec # Ajusta variáveis
   bitver = 17, bitinv = 3, atribs.limpar, recalc_auto, cmd_recalc1(este), atribs_exec
@@ -263,6 +267,7 @@ func msginv # Mensagem mesmo se o alvo estiver invisível
     msg($mens.proc(arg0, este))
 
 func morreu # Procedimentos quando morre
+# arg0 = quem atacou o personagem; pode ser nulo
 # Checa se pode morrer
   listaobj l
   epara l.addfim(evento), l, l.ini.remove

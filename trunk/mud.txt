@@ -190,12 +190,17 @@ O texto pode conter os seguintes caracteres especiais:
 $$ = Símbolo $
 $P = Nome do personagem
 $Q = Nome do personagem sem citar o dono
+$R = Nome do personagem no comando QUEM
 $A = Nome do alvo
 $B = Nome do alvo sem citar o dono
+$C = Nome do alvo no comando QUEM
 $O = Nome do objeto
 $S = Depende do personagem: "o", "a", "um" ou "uma"
 $T = Depende do alvo: "o", "a", "um" ou "uma"
 $U = Depende do objeto: "o", "a", "um" ou "uma"
+$V = Depende do personagem: "e" ou "a"
+$W = Depende do alvo: "e" ou "a"
+$X = Depende do objeto: "e" ou "a"
 $M = Texto de $mens.mens
 
 Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra
@@ -1006,6 +1011,9 @@ const extr1 = "1 8"
 # No tipo "txtopcao" são a quantidade mínima e a quantidade máxima de linhas
 #         e o número da primeira opção que pode ser alterada
 
+const titu1 = "um texto qualquer"
+# Título: mensagem que deve ser apresentada antes da opção
+
 # As outras opções seguem o mesmo padrão, apenas mudando o número
 # no nome da variável. Exemplo:
 
@@ -1027,6 +1035,7 @@ Exemplo: m_menu("menu_config")
 
 16. Lista de coisas pendentes
 
+Habilidades e magias que jogador ganha quando escolhe uma raça ou classe
 Comando fugir - poder definir com quantos pontos de vida foge automaticamente
 Casa de doações
 Leilões

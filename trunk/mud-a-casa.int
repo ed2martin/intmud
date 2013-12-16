@@ -644,13 +644,15 @@ func cmd_darobj # Alguém deu algum item
     arg0.msg("Ivone: Essa não é a minha bolsa..")
     ret 1 # Para não receber o item
   casose "i_casa009"
-    apagar(arg2) # Apaga o item
-    misc:tempo("deubolsa", arg0) # Dispara 'deubolsa'
     ret
   casose
     arg0.msg("Ivone não aceita " + arg2.descnome + ".")
     ret 1 # Para não receber o item
   casofim
+
+func cmd_deuobj # Recebeu um item
+  apagar(arg2) # Apaga o item
+  misc:tempo("deubolsa", arg0) # Dispara 'deubolsa'
 
 func deubolsa20
   arg0.msg("Ivone olha para uma bolsa.")
