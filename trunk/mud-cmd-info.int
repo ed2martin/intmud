@@ -245,20 +245,19 @@ func escr
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
     pos.[item.obj.vestpos] = item.obj
   efim
-  pos.0 = pos.50
 # Mostra as posições
-  int8 x
+  txt512 lin
   refvar lugar = arg1 == "tudo" ? r.equippos : 0
-  epara x = 0, x <= 32, x += 1
-    refvar obj = pos.[x]
+  epara lin = config:equip_ordem, lin, lin = txt2(lin)
+    refvar obj = pos.[1 + txt1(lin)]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(20 - inttotal(nomepos))
       obj.atribs.linhas && (nomepos += "(" + txttroca(obj.atribs.ini.textolin(100), "\n", " ") + \
 ") ")
       t.addfim(nomepos + " " + txtcopiamai(obj.descnome, "A"))
-    senao lugar & 1 << x
-      nomepos = "\c2(" + misc:equip(x ? x : 50) + ")\b "
+    senao lugar & intbit(1 + txt1(lin))
+      nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(20 - inttotal(nomepos)) + "nada")
       fimse

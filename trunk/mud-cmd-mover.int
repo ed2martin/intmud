@@ -1,7 +1,11 @@
 classe comando_mover
 herda comando_comum
-const m_entra = "$P chegou"
-const m_sai = "$P foi embora"
+const m_entra1 = "$P chegou"
+const m_entra2 = m_entra1
+const m_entra3 = m_entra1
+const m_sai1 = "$P foi embora"
+const m_sai2 = m_sai1
+const m_sai3 = m_sai1
 const dir = ""
 listaobj lseg # Para não seguir ciclicamente
 debug dbg
@@ -998,9 +1002,9 @@ func escr
   arg0.pmove -= 5
   arg0.batalhafim
   $mens.p(arg0)
-  !(arg0.bitver & 256) && $mens.mtodos1(txttroca($cmd_[dir].m_sai, " foi ", " fugiu "))
+  !(arg0.bitver & 256) && $mens.mtodos1(txttroca($cmd_[dir].m_sai1, " foi ", " fugiu "))
   arg0.mudadono(r)
-  !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra)
+  !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)
 
 func fugirdir # Obtém direção para onde pode fugir
 # Entrada: arg0 = personagem
@@ -1038,8 +1042,8 @@ func escr # Personagem retorna
   ret !r, arg0.msg("Você não possui ponto de retorno.")
   ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
   ret r.s_retornar == 1, arg0.msg("Você não consegue retornar.")
-  ret !checahab(arg0.persobat), nulo
-  custohab(arg0.persobat)
+  ret !checahab1(arg0.persobat), nulo
+  custohab1(arg0.persobat)
   msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
   ret rand(100) >= precisao, arg0.msg("Por algum motivo, a magia falhou.")

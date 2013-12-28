@@ -685,34 +685,20 @@ const clas28 = var.classe1
 const vari28 = "recalc_auto"
 const exec28 = "recalc_exec"
 #
-const nome29 = "Quando morre"
+const nome29 = "Tipo de ataque"
+const info29 = "Que habilidade usa em ataques automáticos"
 const tipo29 = "opcao"
 const clas29 = var.classe1
-const vari29 = "p_corpo"
-const extr29 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
+const vari29 = "p_atktipo"
+const extr29 = config:atk_txt
 #
-const nome30 = "Experiência"
-const info30 = "Quanta experiência dá quando morre, em porcentagem"
-const tipo30 = "numero"
-const clas30 = var.classe1
-const vari30 = "p_exp"
-const extr30 = "0 1000"
+const nome30 = "Quando morre"
+const tipo30 = "menu--"
+const clas30 = "menu_pmorreu"
 #
-const nome31 = "Morreu"
-const info31 = "Quando não tem dono"
-const tipo31 = "linha"
-const clas31 = var.classe1
-const vari31 = "p_morreu1"
-#
-const nome32 = "Desmaiou"
-const info32 = "Quando pertence a outro personagem"
-const tipo32 = "linha"
-const clas32 = var.classe1
-const vari32 = "p_morreu2"
-#
-const nome33 = "Comportamento"
-const tipo33 = "menu--"
-const clas33 = "menu_pcomportamento"
+const nome31 = "Comportamento"
+const tipo31 = "menu--"
+const clas31 = "menu_pcomportamento"
 
 
 classe menu_ploja
@@ -779,6 +765,42 @@ const clas9 = var.classe1
 const vari9 = "lojanao"
 
 
+classe menu_pmorreu
+const titulo = "Quando morre"
+const menufim = var.menufim
+const colunas = 23
+#
+const nome1 = "Imortal"
+const tipo1 = "simnao"
+const clas1 = var.classe1
+const vari1 = "p_imortal"
+#
+const nome2 = "Corpo"
+const tipo2 = "opcao"
+const clas2 = var.classe1
+const vari2 = "p_corpo"
+const extr2 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
+#
+const nome3 = "Experiência"
+const info3 = "Quanta experiência dá quando morre, em porcentagem"
+const tipo3 = "numero"
+const clas3 = var.classe1
+const vari3 = "p_exp"
+const extr3 = "0 1000"
+#
+const nome4 = "Morreu"
+const info4 = "Quando não tem dono"
+const tipo4 = "linha"
+const clas4 = var.classe1
+const vari4 = "p_morreu1"
+#
+const nome5 = "Desmaiou"
+const info5 = "Quando pertence a outro personagem"
+const tipo5 = "linha"
+const clas5 = var.classe1
+const vari5 = "p_morreu2"
+
+
 classe menu_pcomportamento
 const titulo = "Comportamento"
 const menufim = var.menufim
@@ -826,19 +848,19 @@ herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 const colunas = 23
 #
-const nome34 = "Capturar"
-const info34 = "Se pode ser capturado"
-const tipo34 = "opcao"
-const clas34 = var.classe1
-const vari34 = "p_captura"
-const extr34 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+const nome32 = "Capturar"
+const info32 = "Se pode ser capturado"
+const tipo32 = "opcao"
+const clas32 = var.classe1
+const vari32 = "p_captura"
+const extr32 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
 #
-const nome35 = "Dar e soltar"
-const info35 = "Se esse personagem pode ser dado ou solto"
-const tipo35 = "opcao"
-const clas35 = var.classe1
-const vari35 = "p_soltar"
-const extr35 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
+const nome33 = "Dar e soltar"
+const info33 = "Se esse personagem pode ser dado ou solto"
+const tipo33 = "opcao"
+const clas33 = var.classe1
+const vari33 = "p_soltar"
+const extr33 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3

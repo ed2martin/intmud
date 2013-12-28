@@ -134,7 +134,7 @@ func m_menu3 # Usado em m_menu para obter o nome da variável
   ret lin + ": " + [arg0]:clas[arg1] + ":" + [arg0]:vari[arg1]
 
 func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
-# arg0=nome da classe, arg1=nome da variável
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -185,8 +185,66 @@ func p_linha # Alterando um texto de uma linha
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
+func t_txtlinha # Retorna uma linha de uma variável do tipo "const x = \"abc\""
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.vartexto(arg0, arg1), "\c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + "\b"
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.vartexto(arg0, arg1), "<herda> \c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + \
+"\b"
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo>"
+  casofim
+
+func p_txtlinha # Alterando um texto de uma linha
+  prog p
+  se arg0 == "" || arg0 == "\b"
+    passo = "txtlinha"
+    msg("Entre com um texto, N nenhum, Z cancela")
+    ret 1
+  senao arg0 != "z"
+    refvar linha = int(var.opcextra)
+    textotxt t1
+    textopos pos
+    t1.addfim([var.opcclasse]:[var.opcvar])
+    t1.linhas < linha && t1.addfim(txtrepete("\n", linha - t1.linhas))
+    pos = t1.ini, pos.linha = linha
+    pos.mudar(arg0 == "n" ? "" : arg0)
+    pos = t1.fim, pos.antes
+    enquanto t1.bytes && pos.texto == ""
+      pos.remove, pos.antes
+    efim
+    se t1.bytes == 0 && !var.opcvalido
+      p.apagar(var.opcclasse, var.opcvar)
+      config:salvar
+      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      msg("Apagado: " + var.opcnome)
+      admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    senao
+      prog p
+      refvar t = "const " + var.opcvar + "=\""
+      p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
+      config:salvar
+      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      se arg0 == "n"
+        msg(var.opcnome + " mudou para um texto vazio")
+      senao
+        msg(var.opcnome + " mudou para: " + arg0)
+      fimse
+      admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    fimse
+  fimse
+  passo = var.opcpasso, p_[passo]("\b")
+  ret 1
+
 func t_texto # Retorna quantidade de linhas de texto de várias linhas
-# arg0=nome da classe, arg1=nome da variável
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -254,7 +312,7 @@ func p_texto # Alterando um texto de várias linhas
   ret p_editor(arg0, 2000, var.opcvar)
 
 func t_numero # Retorna número, do tipo "const x = 10"
-# arg0=nome da classe, arg1=nome da variável
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -292,7 +350,8 @@ func p_numero # Alterando um número
       ret p_numero("\b")
     senao var.opcextra # Checa limites mínimo e máximo
       se valor < int(txt1(var.opcextra)) || valor > int(txt2(var.opcextra))
-        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
+        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + \
+".")
         ret 1
       fimse
     fimse
@@ -330,7 +389,8 @@ func p_numreal # Alterando um número
       ret p_numero("\b")
     senao var.opcextra # Checa limites mínimo e máximo
       se valor < int(txt1(var.opcextra)) || valor > int(txt2(var.opcextra))
-        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
+        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + \
+".")
         ret 1
       fimse
     fimse
@@ -469,7 +529,7 @@ func p_txtopcao
     textotxt t1
     textopos pos
     t1.addfim([var.opcclasse]:[var.opcvar])
-    t1.linhas < linha && t1.addfim(txtrepete("\n", linha - t.linhas))
+    t1.linhas < linha && t1.addfim(txtrepete("\n", linha - t1.linhas))
     pos = t1.ini, pos.linha = linha, pos.mudar(txt2(arg0))
     pos = t1.fim, pos.antes
     uint16 linhasmin
@@ -479,8 +539,7 @@ func p_txtopcao
     efim
     pos.linha == linhasmin && pos.texto == "" && pos.remove
     prog p
-    txt200 t
-    t = "const " + var.opcvar + "=\""
+    refvar t = "const " + var.opcvar + "=\""
     p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
     config:salvar
     var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
@@ -552,10 +611,11 @@ func p_vetor # Alterando uma opção de uma lista de opções
       msg("Opção inválida")
       ret p_vetor("\b")
     fimse
-    x = 1 << x ^ [var.opcclasse]:[var.opcvar]
+    x = intbit(x) ^ [var.opcclasse]:[var.opcvar]
     txt100 lin
     lin = txtcor(t_vetormostra(x, var.opcextra))
-    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + lin)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + \
+lin)
     config:salvar
     var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
     msg("Escolheu: " + lin)
@@ -606,7 +666,7 @@ func p_tipodep
   ret p_vetorfunc(arg0, 0)
 
 func t_vetorfunc # Usado intermanente: retorna uma lista de textos
-# arg0=nome da classe, arg1=nome da variável
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -677,7 +737,7 @@ func p_vetorfunc # Usado intermanente: alterando um vetor de textos
   ret 1
 
 func t_simnao # Retorna opção que pode ser 0 (não) ou 1 (sim)
-# arg0=nome da classe, arg1=nome da variável
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -738,7 +798,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
   ret 1
 
 func t_sala # Retorna sala (constante do tipo "const x = $s_abc")
-# arg0=nome da classe, arg1=nome da variável
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe

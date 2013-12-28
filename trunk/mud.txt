@@ -981,6 +981,7 @@ const vari1 = "animal"
 const tipo1 = "numero--"
 # Tipo é o tipo de dado sendo editado:
 # "linha" = texto de uma linha (exemplo: título das salas)
+# "txtlinha" = uma linha de um texto de várias linhas
 # "texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
 # "numero" = valor numérico inteiro
 # "numreal" = valor numérico que pode ter dígitos após a vírgula
@@ -992,6 +993,7 @@ const tipo1 = "numero--"
 # "tipodep" = texto contendo uma lista de habilidades, magias e/ou idiomas
 # "simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
 # "sala" = uma sala
+# "atribcfg" = função que altera atributos base para todos os personagens
 # "atribnum" = função que altera atributos numéricos de um personagem
 # "atribbit" = função que altera atributos sim/não de um personagem
 # "atribatk" = função que altera atributos de ataque de um personagem
@@ -1000,16 +1002,17 @@ const tipo1 = "numero--"
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
 # Se não for possível apagar, acrescente mais um sinal de '-' no nome
 
-const exec = "atualiza"
-# Se não for nulo, quando o usuário muda a opção, é executada a função
-# com esse nome de todos os objetos que foram mudados
-
 const extr1 = "1 8"
 # Opções extras. Os tipos que possuem opções extras são:
+# No tipo "txtlinha" é o número da linha (começa no 0)
 # No tipo "numero" são os valores mínimo e máximo (nesse caso, vai de 1 a 8)
 # No tipo "opcao", é a lista de opções
 # No tipo "txtopcao" são a quantidade mínima e a quantidade máxima de linhas
 #         e o número da primeira opção que pode ser alterada
+
+const exec1 = "atualiza"
+# Se não for nulo, quando o usuário muda a opção, é executada a função
+# com esse nome de todos os objetos que foram mudados
 
 const titu1 = "um texto qualquer"
 # Título: mensagem que deve ser apresentada antes da opção
