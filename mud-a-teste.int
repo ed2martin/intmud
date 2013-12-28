@@ -279,6 +279,7 @@ func cmd_moveu
     arg0.pmove -= 1
 
 func cmd_remover
+  ret arg1 != este, nulo # Retorna se não for esse item
   se i_fechadura # Se tem fechadura: só pode remover se o jogador tiver a chave
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
@@ -1761,9 +1762,11 @@ classe s_teste061
 herda b_teste
 const s_titulo = "Conhecimento do golpe"
 const s_desc = "Dependendo do quanto o seu personagem conhece um golpe, os danos podem\n\
-ser maiores ou menores. Abaixo do nível perito, o ataque é mais fraco.\n\
-perito=100%, mestre=90%, muito avançado=80%, avançado=70%,\n\
-intermediário=60%, básico=50%, muito básico=40%, iniciante=30%"
+aumentar em até 50% (no nível perito) ou cair pela metade (iniciante)\n\
+perito=150%, mestre=135%, muito avançado=121%, avançado=107%,\n\
+intermediário=92%, básico=78%, muito básico=64%, iniciante=50%\n\
+Apenas em ataques automáticos sem arma o conhecimento do golpe não tem\n\
+influência (o golpe não precisa estar na lista do comando HAB)."
 const dir_ne = $s_teste055
 
 
@@ -1822,12 +1825,12 @@ func s_reset1 # Realiza o reset
 classe s_teste066
 herda b_teste
 const s_titulo = "Habilidades automáticas"
-const s_desc = "Pode-se definir em que nível aprende e o preço da aula das habilidades\n\
-ensinadas pelo Perito (a oeste). Para isso, basta criar a habilidade\n\
-teclando chab seguido do nome da habilidade. Depois, editar a habilidade,\n\
-com o comando ehab, e na opção \"Alvo\" tecle 6, que significa automático\n\
-(sem intervenção do jogador).\n\
-Veja também a ajuda teclando: adm atk"
+const s_desc = "São criadas com o comando CHAB, opção \"C Habilidade ou magia comum\".\n\
+Depois deve-se editar (com EHAB) e mudar o alvo para \"Ataque automático\".\n\
+Se a habilidade for usada em ataques sem arma, adicione o nome da\n\
+habilidade no comando ECONFIG, menu \"Ataque\", opção \"Tipo de personagem\".\n\
+Se for ataque com arma, adicione na opção \"Tipo de armas\". Nesse caso,\n\
+o nome da habilidade é também um tipo de arma."
 const dir_o = $s_teste032
 
 

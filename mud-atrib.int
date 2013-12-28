@@ -1,6 +1,22 @@
 classe adm_atrib
 # Funções para mudar atributos de personagens e itens
 
+func t_atribcfg # Retorna a quantidade de atributos numéricos
+# arg0=nome da classe, arg1=nome da variável
+  prog p
+  uint16 linhas
+  epara p.inilinha(arg0, arg1) && p.depois, p.lin, p.depois
+    linhas += 1
+  efim
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret linhas == 1 ? "\c61 linha\b" : "\c6" + linhas + " linhas\b"
+  casose "2" # Em uma classe herdada
+    ret linhas == 1 ? "<herda> \c61 linha\b" : "<herda> \c6" + linhas + " linhas\b"
+  casose # Não foi definido
+    ret "<nulo> \c60 linhas\b"
+  casofim
+
 func t_atribnum # Retorna a quantidade de atributos numéricos
 # arg0=nome da classe, arg1=nome da variável
   prog p
@@ -64,6 +80,94 @@ func t_atribdef # Retorna a quantidade de defesas
   casose # Não foi definido
     ret "<nulo> \c60 linhas\b"
   casofim
+
+func p_atribcfg
+  uint16 linha
+  linha = arg0, passo = "atribcfg"
+  se arg0 == "" || arg0 == "\b"
+    se var.opcvalido
+      msg("Entre com uma opção, O mostra as opções, Z cancela")
+    senao
+      msg("Entre com uma opção, O mostra as opções, N nenhum atributo, Z cancela")
+    fimse
+  senao arg0 == "n" && !var.opcvalido
+    p.apagar(var.opcclasse, var.opcvar)
+    config:salvar
+    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    msg("Apagado: " + var.opcnome)
+    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    passo = var.opcpasso, p_[passo]("\b")
+  senao arg0 == "z"
+    passo = var.opcpasso, p_[passo]("\b")
+  senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
+    perso.teclou(txtremove(txt(arg0, 1), "E"))
+  senao arg0 == "o"
+    real2 valor.80
+    p_atrib_ler(valor)
+    txtmais.limpar
+    txtmais.addfim("Atributos")
+    textotxt t1
+    txt100 lin
+    epara t1.addfim(p_atrib_txtnum), t1.linhas, linha += 1
+      lin = "\b\c2" + txt(linha + 1) + (linha < 9 ? "\b. " : "\b.") + t1.remove
+      txtmais.addfim(txt(lin + txtesp(29), 0, 34) + ": \c3" + valor.[linha] + "\b")
+    efim
+    txtmostra
+  senao txt(linha) != arg0
+    msg("Opção inexistente: " + txt1(arg0))
+  senao !linha || linha > p_atrib_bit
+    msg("Opção inexistente: " + txt1(arg0))
+  senao
+    real2 valor.80
+    p_atrib_ler(valor)
+    linha -= 1
+    var.opcpasso2 = arg1
+    var.opclin = linha
+    msg(txtsublin(p_atrib_txtnum, linha, 1) + ": " + valor.[linha])
+    ret p_atribcfg2("\b")
+  fimse
+  ret 1
+
+func p_atribcfg2 # Usado por p_atribcfg; editando um atributo
+  real2 num
+  num = arg0, passo = "atribcfg2"
+  se arg0 == "" || arg0 == "\b"
+    msg("Entre com a quantidade, Z cancela")
+  senao arg0 == "z"
+    p_atribcfg("", var.opcpasso2)
+    var.opcpasso2 = "", var.opclin = ""
+  senao txt(num) != arg0
+    msg("Opção inválida, entre com outra")
+  senao num < 0 && var.opclin_ >= p_atrib_atk
+    msg("O número não pode ser menor que zero, entre com outro")
+  senao
+    real2 valor.80
+    p_atrib_ler(valor)
+    valor.[var.opclin] = num
+    textotxt t
+    t.addfim("func " + var.opcvar + " # Altera atributos do personagem")
+    t.addfim("# Função criada automaticamente")
+    t.addfim("pvidamax=" + p_atrib2txt(valor.0, valor.1))
+    t.addfim("pmanamax=" + p_atrib2txt(valor.2, valor.3))
+    t.addfim("pmovemax=" + p_atrib2txt(valor.4, valor.5))
+    t.addfim("pveloc1=" + p_atrib2txt(valor.6, valor.7))
+    t.addfim("atknorm=" + p_atrib2txt(valor.8, valor.9))
+    t.addfim("defnorm=" + p_atrib2txt(valor.10, valor.11))
+    t.addfim("atkesp=" + p_atrib2txt(valor.12, valor.13))
+    t.addfim("defesp=" + p_atrib2txt(valor.14, valor.15))
+    t.addfim("evasao=" + p_atrib2txt(valor.16, valor.17))
+    t.addfim("precisao=" + p_atrib2txt(valor.18, valor.19))
+    t.addfim("pesomax=" + p_atrib2txt(valor.20, valor.21))
+    prog p
+    p.criar(var.opcclasse, t.remove(10000))
+    config:salvar
+    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    p_atribcfg("", var.opcpasso2)
+    var.opcpasso2 = "", var.opclin = ""
+    criar("admrecalctudo") # Para atualizar os personagens
+  fimse
+  ret 1
 
 const p_atribnum = p_atrib(arg0, "atribnum") # Editando atributos numéricos
 const p_atribbit = p_atrib(arg0, "atribbit") # Editando atributos sim/não
@@ -255,9 +359,9 @@ func p_atrib2 # Usado por p_atrib; editando um atributo
   fimse
   ret 1
 
-func p_atrib2txt # Usado internamente em p_atrib2
+func p_atrib2txt # Usado internamente em p_atrib_salvar
 # arg0 e arg1 = variáveis
-  ret !arg1, txt(arg0) # Exemplo: 5
+  ret !arg1, txt(0 + arg0) # Exemplo: 5
   ret !arg0, txt(arg1) + "*pnivel" # Exemplo: 10*pnivel
   ret arg0 < 0, txt(arg1) + "*pnivel" + txt(arg0) # Exemplo: 10*pnivel-5
   ret txt(arg1) + "*pnivel+" + txt(arg0) # Exemplo: 10*pnivel+5
@@ -272,43 +376,41 @@ func p_atrib_ler # Extrai os atributos de uma função
   efim
   prog p
   epara p.inilinha(var.opcclasse, var.opcvar), p.lin, p.depois
-    casovar txtsub(p.texto, 0, 2)
-    casose "pvidamax +="
+    casovar txt1(p.texto)
+    casose "pvidamax"
       p_atrib_ler2(p.texto, arg0.0, arg0.1)
       sair
-    casose "pmanamax +="
+    casose "pmanamax"
       p_atrib_ler2(p.texto, arg0.2, arg0.3)
       sair
-    casose "pmovemax +="
+    casose "pmovemax"
       p_atrib_ler2(p.texto, arg0.4, arg0.5)
       sair
-    casose "pveloc1 +="
+    casose "pveloc1"
       p_atrib_ler2(p.texto, arg0.6, arg0.7)
       sair
-    casose "atknorm +="
+    casose "atknorm"
       p_atrib_ler2(p.texto, arg0.8, arg0.9)
       sair
-    casose "defnorm +="
+    casose "defnorm"
       p_atrib_ler2(p.texto, arg0.10, arg0.11)
       sair
-    casose "atkesp +="
+    casose "atkesp"
       p_atrib_ler2(p.texto, arg0.12, arg0.13)
       sair
-    casose "defesp +="
+    casose "defesp"
       p_atrib_ler2(p.texto, arg0.14, arg0.15)
       sair
-    casose "evasao +="
+    casose "evasao"
       p_atrib_ler2(p.texto, arg0.16, arg0.17)
       sair
-    casose "precisao +="
+    casose "precisao"
       p_atrib_ler2(p.texto, arg0.18, arg0.19)
       sair
-    casose "pesomax +="
+    casose "pesomax"
       p_atrib_ler2(p.texto, arg0.20, arg0.21)
       sair
-    casose "bitver ="
-    casose "bitver &="
-    casose "bitver |="
+    casose "bitver"
       se txtsub(p.texto, 3, 1) == "&" || txtsub(p.texto, 1, 1) == "&="
         x = txt(txtsub(p.texto, 2), 1)
         x & 1 && (arg0.29 = 1) # Está cego
@@ -327,9 +429,7 @@ func p_atrib_ler # Extrai os atributos de uma função
         x & 2048 && (arg0.39 = 1) # Imune a dormir
       fimse
       sair
-    casose "bitinv ="
-    casose "bitinv &="
-    casose "bitinv |="
+    casose "bitinv"
       se txtsub(p.texto, 3, 1) == "&" || txtsub(p.texto, 1, 1) == "&="
         arg0.33 = 1 # Visível no escuro
       senao
@@ -496,7 +596,7 @@ const p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
 
 func escr
   ret !arg1, arg0.msg("Identificar o quê?")
-  ret !checahab(arg0.persobat), nulo
+  ret !checahab1(arg0.persobat), nulo
   nomeobj n
   listaobj l
   n.ini(arg1, 1)
@@ -511,7 +611,7 @@ func escr
       ret l.objini.cmd_ident(arg0, r), nulo
     efim
 # Checa se pode identificar
-    custohab(arg0.persobat)
+    custohab1(arg0.persobat)
     msgini && $mens.p(arg0, nulo, r) + $mens.mtodos1(msgini)
     arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
     ret rand(100) >= precisao, arg0.msg("Por algum motivo, a magia falhou.")
@@ -639,3 +739,19 @@ classe menu_magia_identif
 herda menu_hab_comum
 const titulo = "Magia Identificar"
 const colunas = 23
+
+
+classe admrecalctudo
+# Recalcula os atributos de todos os personagens
+prog p
+debug d
+ref r
+
+func ini
+  apagar(este)
+  d.exec = 50000
+  epara p.iniherdainv("comum_persobat"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.recalc = 1
+    efim
+  efim

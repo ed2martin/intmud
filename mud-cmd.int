@@ -60,7 +60,8 @@ const aj5 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
   \c2MOEDAS\b   Pega as moedas do corpo do personagem após vencer uma batalha\n\
   \c2PROMPT\b   Ativa o prompt normal\n\
   \c2BROMPT\b   Ativa o prompt de batalha"
-const txtajuda2 = "\nOpções para administradores:\n\
+const txtajuda2 = "\n\
+Opções para administradores:\n\
   \c2IMORTAL\b  Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
            cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
            fechadas, anda sem gastar movimento\n\
@@ -278,11 +279,10 @@ func escr
         epara item = r.dentro2.ini, item, item.depois
           vest.[item.obj.vestpos - 1] = 1, pos.[item.obj.vestpos] = item.obj
         efim
-        pos.0 = pos.50
-        int8 x
+        txt512 lin
         txt100 nomepos
-        epara x = 0, x <= 32, x += 1
-          refvar obj = pos.[x]
+        epara lin = config:equip_ordem, lin, lin = txt2(lin)
+          refvar obj = pos.[1 + txt1(lin)]
           continuar !obj.vestpos || !obj.visivel(arg0)
 # continuar vest.bits & config:vestir[obj.vestpos - 1]
           nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
@@ -402,7 +402,6 @@ func escr
   senao
     $mens.mtodos1(config:falarmsg)
   fimse
-
 # Executa eventos
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove

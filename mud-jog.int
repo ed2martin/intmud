@@ -664,13 +664,13 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     vida += 2, acertapos
     sair
   casose "4" # Dormindo
-    recup = contr.dono.s_recup / (poslugar.objlista.i_movel >= 3 ? 500 : 600)
+    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 500 : 600)
     sair
   casose "5" # Descansando
-    recup = contr.dono.s_recup / (poslugar.objlista.i_movel >= 3 ? 685 : 800)
+    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 685 : 800)
     sair
   casose "6" # Sentado
-    recup = contr.dono.s_recup / (poslugar.objlista.i_movel >= 3 ? 1000 : 1200)
+    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 1000 : 1200)
     sair
   casose "7" # Lutando
   casose "8" # Em pé
@@ -678,14 +678,9 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     sair
   casofim
   se recup
-    pvida < pvidamax && (pvida = intmin(pvida + pvidamax * recup + 4, pvidamax))
-    pmana < pmanamax && (pmana = intmin(pmana + pmanamax * recup + 4, pmanamax))
-    se pmove >= pmovemax
-    senao pnivel
-      pmove = intmin(pmove + pmovemax * recup + 4, pmovemax)
-    senao
-      pmove = intmin(pmove + pmovemax * recup + 20, pmovemax)
-    fimse
+    pvida < pvidamax && (pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))
+    pmana < pmanamax && (pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
+    pmove < pmovemax && (pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
   fimse
 # Salva o jogo
   (p_temposav += 1) >= 9 && salvar

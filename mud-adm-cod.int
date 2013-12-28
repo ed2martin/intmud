@@ -110,7 +110,6 @@ As seguintes sequências de caracteres mudam outros atributos:\n\
  \\cj  Desliga inversão de frente com fundo\n\
  \\ck  Liga texto piscante\n\
  \\cl  Desliga texto piscante"
-
 #
 const adm_cod = "\b\c3Comandos de edição do código\b\n\
 \c2lcl\b [nome]\n\
@@ -693,11 +692,12 @@ const clas5 = "config"
 const vari5 = "salasav"
 #
 const nome6 = "Animais para batalhar"
-const info6 = "Quantos animais pode usar em batalha"
+const info6 = "Quantos animais pode usar em batalha, de 0 a 8\n\
+Se 0, os comandos para animais deixam de existir"
 const tipo6 = "numero--"
 const clas6 = "config"
 const vari6 = "animal1"
-const extr6 = "1 8"
+const extr6 = "0 8"
 #
 const nome7 = "Itens por personagem"
 const info7 = "Quantos itens cada jogador pode ter, ao todo\n\
@@ -737,37 +737,43 @@ pvt\n\
 emocao\n\
 moedas\nnovatos"
 #
-const nome11 = "Mensagens"
-const tipo11 = "menu--"
-const clas11 = "menu_econfig_msg"
+const nome11 = "Atributos dos personagens"
+const info11 = "Valor inicial dos atributos para todos os personagens"
+const tipo11 = "atribcfg--"
+const clas11 = "config"
+const vari11 = "atribcfg"
 #
-const nome12 = "Comandos"
+const nome12 = "Mensagens"
 const tipo12 = "menu--"
-const clas12 = "menu_econfig_comandos"
+const clas12 = "menu_econfig_msg"
 #
-const nome13 = "Ataques e batalha"
+const nome13 = "Comandos"
 const tipo13 = "menu--"
-const clas13 = "menu_econfig_ataques"
+const clas13 = "menu_econfig_comandos"
 #
-const nome14 = "Aulas por nível"
-const info14 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+const nome14 = "Ataques e batalha"
+const tipo14 = "menu--"
+const clas14 = "menu_econfig_ataques"
+#
+const nome15 = "Aulas por nível"
+const info15 = "Quantos pontos de aulas ganha quando sobe de nível\n\
 Se 0, o comando aprender não usa pontos de aula"
-const tipo14 = "numero--"
-const clas14 = "config"
-const vari14 = "aulas"
-const extr14 = "0 1000"
-#
-const nome15 = "Tipos de produtos"
-const info15 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo15 = "txtopcao--"
+const tipo15 = "numero--"
 const clas15 = "config"
-const vari15 = "produtos"
-const extr15 = "1 30"
+const vari15 = "aulas"
+const extr15 = "0 1000"
 #
-const nome16 = "Posições para vestir itens"
-const info16 = "Os nomes das posições"
-const tipo16 = "menu--"
-const clas16 = "menu_econfig_vestir"
+const nome16 = "Tipos de produtos"
+const info16 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo16 = "txtopcao--"
+const clas16 = "config"
+const vari16 = "produtos"
+const extr16 = "1 30"
+#
+const nome17 = "Posições para vestir itens"
+const info17 = "Os nomes das posições"
+const tipo17 = "menu--"
+const clas17 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar
@@ -991,7 +997,7 @@ const nome2 = "Modo de batalha"
 const tipo2 = "opcao--"
 const clas2 = "config"
 const vari2 = "atktipo"
-const extr2 = "Manual\nAutomático com a classe comando_atkauto"
+const extr2 = "Manual\nAutomático"
 #
 
 func nome3
@@ -1032,32 +1038,18 @@ const vari6 = "atkespecial"
 const extr6 = config:atknomes
 #
 const nome7 = "Tipos de armas"
-const info7 = "Alguns ataques precisam de tipos específicos de armas"
+const info7 = "Habilidades usadas em ataques automáticos conforme o tipo de arma"
 const tipo7 = "txtopcao--"
 const clas7 = "config"
 const vari7 = "arma_txt"
 const extr7 = "1 30 1"
 #
-const nome8 = "Msg acertou golpe"
-const info8 = "Mensagens para cada tipo de arma, somente ataques automáticos"
+const nome8 = "Tipos de personagens"
+const info8 = "Habilidades usadas em ataques automáticos sem arma"
 const tipo8 = "txtopcao--"
 const clas8 = "config"
-const vari8 = "arma_acertou"
-const extr8 = "1 30"
-#
-const nome9 = "Msg errou golpe"
-const info9 = "Mensagens para cada tipo de arma, somente ataques automáticos"
-const tipo9 = "txtopcao--"
-const clas9 = "config"
-const vari9 = "arma_errou"
-const extr9 = "1 30"
-#
-const nome10 = "Msg golpe sem efeito"
-const info10 = "Mensagens para cada tipo de arma, somente ataques automáticos"
-const tipo10 = "txtopcao--"
-const clas10 = "config"
-const vari10 = "arma_nulo"
-const extr10 = "1 30"
+const vari8 = "atk_txt"
+const extr8 = "0 30"
 
 
 classe menu_econfig_vestir
@@ -1071,166 +1063,173 @@ const clas1 = "config"
 const vari1 = "equip_txt"
 const extr1 = "0 30"
 #
-const nome2 = "Mensagens ao vestir"
-const tipo2 = "txtopcao--"
+const nome2 = "Ordem das posições"
+const info2 = "Em que ordem as posições são mostradas no comando equip\n\
+A posição 49 corresponde à arma sendo empunhada"
+const tipo2 = "linha--"
 const clas2 = "config"
-const vari2 = "equip_vestir"
-const extr2 = "0 30"
+const vari2 = "equip_ordem"
 #
-const nome3 = menu_econfig_vestir:sobre(0)
-const tipo3 = "vetor--"
+const nome3 = "Mensagens ao vestir"
+const tipo3 = "txtopcao--"
 const clas3 = "config"
-const vari3 = "vestir0"
-const extr3 = config:equip_txt
-const nome4 = menu_econfig_vestir:sobre(1)
+const vari3 = "equip_vestir"
+const extr3 = "0 30"
+#
+const nome4 = menu_econfig_vestir:sobre(0)
 const tipo4 = "vetor--"
 const clas4 = "config"
-const vari4 = "vestir1"
+const vari4 = "vestir0"
 const extr4 = config:equip_txt
-const nome5 = menu_econfig_vestir:sobre(2)
+const nome5 = menu_econfig_vestir:sobre(1)
 const tipo5 = "vetor--"
 const clas5 = "config"
-const vari5 = "vestir2"
+const vari5 = "vestir1"
 const extr5 = config:equip_txt
-const nome6 = menu_econfig_vestir:sobre(3)
+const nome6 = menu_econfig_vestir:sobre(2)
 const tipo6 = "vetor--"
 const clas6 = "config"
-const vari6 = "vestir3"
+const vari6 = "vestir2"
 const extr6 = config:equip_txt
-const nome7 = menu_econfig_vestir:sobre(4)
+const nome7 = menu_econfig_vestir:sobre(3)
 const tipo7 = "vetor--"
 const clas7 = "config"
-const vari7 = "vestir4"
+const vari7 = "vestir3"
 const extr7 = config:equip_txt
-#
-const nome8 = menu_econfig_vestir:sobre(5)
+const nome8 = menu_econfig_vestir:sobre(4)
 const tipo8 = "vetor--"
 const clas8 = "config"
-const vari8 = "vestir5"
+const vari8 = "vestir4"
 const extr8 = config:equip_txt
-const nome9 = menu_econfig_vestir:sobre(6)
+#
+const nome9 = menu_econfig_vestir:sobre(5)
 const tipo9 = "vetor--"
 const clas9 = "config"
-const vari9 = "vestir6"
+const vari9 = "vestir5"
 const extr9 = config:equip_txt
-const nome10 = menu_econfig_vestir:sobre(7)
+const nome10 = menu_econfig_vestir:sobre(6)
 const tipo10 = "vetor--"
 const clas10 = "config"
-const vari10 = "vestir7"
+const vari10 = "vestir6"
 const extr10 = config:equip_txt
-const nome11 = menu_econfig_vestir:sobre(8)
+const nome11 = menu_econfig_vestir:sobre(7)
 const tipo11 = "vetor--"
 const clas11 = "config"
-const vari11 = "vestir8"
+const vari11 = "vestir7"
 const extr11 = config:equip_txt
-const nome12 = menu_econfig_vestir:sobre(9)
+const nome12 = menu_econfig_vestir:sobre(8)
 const tipo12 = "vetor--"
 const clas12 = "config"
-const vari12 = "vestir9"
+const vari12 = "vestir8"
 const extr12 = config:equip_txt
-#
-const nome13 = menu_econfig_vestir:sobre(10)
+const nome13 = menu_econfig_vestir:sobre(9)
 const tipo13 = "vetor--"
 const clas13 = "config"
-const vari13 = "vestir10"
+const vari13 = "vestir9"
 const extr13 = config:equip_txt
-const nome14 = menu_econfig_vestir:sobre(11)
+#
+const nome14 = menu_econfig_vestir:sobre(10)
 const tipo14 = "vetor--"
 const clas14 = "config"
-const vari14 = "vestir11"
+const vari14 = "vestir10"
 const extr14 = config:equip_txt
-const nome15 = menu_econfig_vestir:sobre(12)
+const nome15 = menu_econfig_vestir:sobre(11)
 const tipo15 = "vetor--"
 const clas15 = "config"
-const vari15 = "vestir12"
+const vari15 = "vestir11"
 const extr15 = config:equip_txt
-const nome16 = menu_econfig_vestir:sobre(13)
+const nome16 = menu_econfig_vestir:sobre(12)
 const tipo16 = "vetor--"
 const clas16 = "config"
-const vari16 = "vestir13"
+const vari16 = "vestir12"
 const extr16 = config:equip_txt
-const nome17 = menu_econfig_vestir:sobre(14)
+const nome17 = menu_econfig_vestir:sobre(13)
 const tipo17 = "vetor--"
 const clas17 = "config"
-const vari17 = "vestir14"
+const vari17 = "vestir13"
 const extr17 = config:equip_txt
-#
-const nome18 = menu_econfig_vestir:sobre(15)
+const nome18 = menu_econfig_vestir:sobre(14)
 const tipo18 = "vetor--"
 const clas18 = "config"
-const vari18 = "vestir15"
+const vari18 = "vestir14"
 const extr18 = config:equip_txt
-const nome19 = menu_econfig_vestir:sobre(16)
+#
+const nome19 = menu_econfig_vestir:sobre(15)
 const tipo19 = "vetor--"
 const clas19 = "config"
-const vari19 = "vestir16"
+const vari19 = "vestir15"
 const extr19 = config:equip_txt
-const nome20 = menu_econfig_vestir:sobre(17)
+const nome20 = menu_econfig_vestir:sobre(16)
 const tipo20 = "vetor--"
 const clas20 = "config"
-const vari20 = "vestir17"
+const vari20 = "vestir16"
 const extr20 = config:equip_txt
-const nome21 = menu_econfig_vestir:sobre(18)
+const nome21 = menu_econfig_vestir:sobre(17)
 const tipo21 = "vetor--"
 const clas21 = "config"
-const vari21 = "vestir18"
+const vari21 = "vestir17"
 const extr21 = config:equip_txt
-const nome22 = menu_econfig_vestir:sobre(19)
+const nome22 = menu_econfig_vestir:sobre(18)
 const tipo22 = "vetor--"
 const clas22 = "config"
-const vari22 = "vestir19"
+const vari22 = "vestir18"
 const extr22 = config:equip_txt
-#
-const nome23 = menu_econfig_vestir:sobre(20)
+const nome23 = menu_econfig_vestir:sobre(19)
 const tipo23 = "vetor--"
 const clas23 = "config"
-const vari23 = "vestir20"
+const vari23 = "vestir19"
 const extr23 = config:equip_txt
-const nome24 = menu_econfig_vestir:sobre(21)
+#
+const nome24 = menu_econfig_vestir:sobre(20)
 const tipo24 = "vetor--"
 const clas24 = "config"
-const vari24 = "vestir21"
+const vari24 = "vestir20"
 const extr24 = config:equip_txt
-const nome25 = menu_econfig_vestir:sobre(22)
+const nome25 = menu_econfig_vestir:sobre(21)
 const tipo25 = "vetor--"
 const clas25 = "config"
-const vari25 = "vestir22"
+const vari25 = "vestir21"
 const extr25 = config:equip_txt
-const nome26 = menu_econfig_vestir:sobre(23)
+const nome26 = menu_econfig_vestir:sobre(22)
 const tipo26 = "vetor--"
 const clas26 = "config"
-const vari26 = "vestir23"
+const vari26 = "vestir22"
 const extr26 = config:equip_txt
-const nome27 = menu_econfig_vestir:sobre(24)
+const nome27 = menu_econfig_vestir:sobre(23)
 const tipo27 = "vetor--"
 const clas27 = "config"
-const vari27 = "vestir24"
+const vari27 = "vestir23"
 const extr27 = config:equip_txt
-#
-const nome28 = menu_econfig_vestir:sobre(25)
+const nome28 = menu_econfig_vestir:sobre(24)
 const tipo28 = "vetor--"
 const clas28 = "config"
-const vari28 = "vestir25"
+const vari28 = "vestir24"
 const extr28 = config:equip_txt
-const nome29 = menu_econfig_vestir:sobre(26)
+#
+const nome29 = menu_econfig_vestir:sobre(25)
 const tipo29 = "vetor--"
 const clas29 = "config"
-const vari29 = "vestir26"
+const vari29 = "vestir25"
 const extr29 = config:equip_txt
-const nome30 = menu_econfig_vestir:sobre(27)
+const nome30 = menu_econfig_vestir:sobre(26)
 const tipo30 = "vetor--"
 const clas30 = "config"
-const vari30 = "vestir27"
+const vari30 = "vestir26"
 const extr30 = config:equip_txt
-const nome31 = menu_econfig_vestir:sobre(28)
+const nome31 = menu_econfig_vestir:sobre(27)
 const tipo31 = "vetor--"
 const clas31 = "config"
-const vari31 = "vestir28"
+const vari31 = "vestir27"
 const extr31 = config:equip_txt
-const nome32 = menu_econfig_vestir:sobre(29)
+const nome32 = menu_econfig_vestir:sobre(28)
 const tipo32 = "vetor--"
 const clas32 = "config"
-const vari32 = "vestir29"
+const vari32 = "vestir28"
 const extr32 = config:equip_txt
+const nome33 = menu_econfig_vestir:sobre(29)
+const tipo33 = "vetor--"
+const clas33 = "config"
+const vari33 = "vestir29"
+const extr33 = config:equip_txt
 #
 const sobre = txtcopiamai(txtsublin(config:equip_txt, arg0, 1), "A") + " depende de"

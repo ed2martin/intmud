@@ -525,8 +525,8 @@ func escr
     t.addfim(config:equip_txt)
     refvar lug2 = ~alvo.equippos
     epara pos = t.ini, pos, pos.depois
-      continuar lug2 & 1 << pos.linha
-      n.nome(pos.texto) && (lugar = lugar | 1 << pos.linha)
+      continuar lug2 & intbit(pos.linha)
+      n.nome(pos.texto) && (lugar = lugar | intbit(pos.linha))
     efim
     ret !lugar, arg0.msg("Você não sabe aonde fica " + misc:sep2 + ".")
   fimse
@@ -592,7 +592,7 @@ func escr
       se erro2
         epara item = alvo.dentro2.ini, item, item.depois
           continuar !item.obj.vestpos
-          sair erro2 & 1 << item.obj.vestpos - 1
+          sair erro2 & intbit(item.obj.vestpos - 1)
         efim
         arg0.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
         sair
@@ -715,7 +715,7 @@ func escr
         listaitem item
         epara item = alvo.dentro2.ini, item, item.depois
           continuar !item.obj.vestpos
-          sair valor & 1 << item.obj.vestpos - 1
+          sair valor & intbit(item.obj.vestpos - 1)
         efim
         alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
       senao

@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 292 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 293 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -47,7 +47,8 @@ const salasav = $s_casa001
 # Sala quando morre
 const salafim = $s_fim001
 #
-# Quantos animais pode ter numa batalha, de 1 a 8
+# Quantos animais pode ter numa batalha, de 0 a 8
+# Se 0, os comandos para animais deixam de existir
 const animal1 = 5
 #
 # Quantos itens (ao todo) cada personagem pode ter
@@ -184,7 +185,11 @@ Fantasma\nDragão"
 const atkespecial = 31856 # Ataques especiais: Fogo, Água, Gelo, Luz, Trevas, Elétrico, Vegetal, \
 Psíquico
 #
+# Habilidades usadas em ataques automáticos sem arma
+const atk_txt = "Bater"
+#
 # Tipos de armas existentes
+# Habilidades usadas em ataques automáticos com arma
 const arma_txt = "Sem armas\n\
 Varinha\n\
 Cajado\n\
@@ -197,27 +202,12 @@ Arma exótica"
 #
 # Mensagens quando acertou um golpe com uma arma
 # Somente ataques automáticos
-const arma_acertou = "$P dá um golpe em $a\n\
-$P lança um feitiço em $a\n\
-$P lança um raio com um cajado em $a\n\
-$P fura $a\n\
-$P corta $a"
 #
 # Mensagens quando errou um golpe com uma arma
 # Somente ataques automáticos
-const arma_errou = "$P tenta dar um golpe em $a mas erra\n\
-$P lança um feitiço na direção de $a\n\
-$P lança um raio com um cajado em $a, mas erra\n\
-$P tenta furar $a, mas erra\n\
-$P tenta cortar $a, mas erra"
 #
 # Mensagens quando um golpe com uma arma não teve efeito
 # Somente ataques automáticos
-const arma_nulo = "$P dá um golpe em $a mas nada acontece\n\
-$P lança um feitiço em $a mas nada acontece\n\
-$P lança um raio com um cajado em $a mas nada acontece\n\
-$P tenta furar $a, sem sucesso\n\
-$P tenta cortar $a, sem sucesso"
 #
 # Tipos de comandos sociais existentes
 const social_txt = "Neutro\nAgradecer\nOfender\nCumprimentar"
@@ -242,6 +232,11 @@ escudo\n\
 cintura\n\
 pernas\n\
 tornozelos\npés"
+#
+# Em que ordem as posições são mostradas no comando equip
+# A posição 49 corresponde à arma sendo empunhada
+const equip_ordem = "49 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 \
+27 28 29"
 #
 # Mensagens ao vestir um item
 # Não contém a posição 50, que é "empunhando"
@@ -290,6 +285,20 @@ const vestir26 = 0
 const vestir27 = 0
 const vestir28 = 0
 const vestir29 = 0
+
+func atribcfg # Altera atributos do personagem
+# Função criada automaticamente
+  pvidamax = 15 * pnivel + 45
+  pmanamax = 1 * pnivel + 30
+  pmovemax = 2 * pnivel + 30
+  pveloc1 = 5 * pnivel + 20
+  atknorm = 12 * pnivel + 36
+  defnorm = 10 * pnivel + 30
+  atkesp = 12 * pnivel + 36
+  defesp = 10 * pnivel + 30
+  evasao = 2 * pnivel + 30
+  precisao = 2 * pnivel + 30
+  pesomax = 20000
 
 func salvar # Salva o programa
   prog p
