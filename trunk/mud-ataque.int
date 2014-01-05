@@ -644,7 +644,8 @@ Todos dividindo o ataque\n\
 Todos sem dividir o ataque\n\
 Qualquer um; não é ataque\n\
 O personagem; não é ataque\n\
-Ataque automático"
+Ataque automático\n\
+Nenhum (não ataca)"
 #
 #
 const nome2 = "Condição"
@@ -730,6 +731,7 @@ const objcmd = arg0.persobat.var.[nomevar] ? este
 const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 7
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
+const tipoalvo = 4
 
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
@@ -781,13 +783,16 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     ret
   fimse
   se arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1
-    arg0.contr.msg("Pontos de vida insuficientes")
+    arg0.contr.msg("Pontos de vida insuficientes.")
     ret
   senao arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1
-    arg0.contr.msg("Mana insuficiente")
+    arg0.contr.msg("Mana insuficiente.")
     ret
   senao arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1
-    arg0.contr.msg("Vigor insuficiente")
+    arg0.contr.msg("Vigor insuficiente.")
+    ret
+  senao !arg0.contr.dono.s_luta && tipoalvo != 4 && tipoalvo != 5
+    arg0.contr.msg("Aqui é um lugar pacífico.")
     ret
   fimse
   ret 1
@@ -804,6 +809,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
   ret arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1, nulo
+  ret !arg0.contr.dono.s_luta && tipoalvo != 4 && tipoalvo != 5, nulo
   ret 1
 
 func costohab1 # Aplica os custos da habilidade/magia
@@ -848,7 +854,7 @@ func efeitohab2 # Efeito da habilidade sob o alvo
 
 classe comando_ataque
 herda comando_hab
-const objcmd = 6 != tipoalvo && arg0.persobat.var.[nomevar] ? este
+const objcmd = tipoalvo < 6 && arg0.persobat.var.[nomevar] ? este
 const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoalvo = 0 # Alvo
@@ -953,10 +959,6 @@ func escr # Atacar alguém
   fimse
   se tipoalvo >= 4 # Se Não for agressivo...
     exechab(arg0.persobat, r.persobat, intpos(arg0.var.[nomevar] - 1) / 7)
-  senao !arg0.dono.s_luta
-    arg0.msg("Aqui é um lugar pacífico.")
-  senao arg0.jog && r.jog && arg0 != r && arg0.dono.s_luta < 2
-    arg0.msg(r.descnome + " é jogador e aqui não é uma arena.")
   senao !r.p_agressivo(arg0)
     arg0.msg(r.descnome + " não quer brigar.")
   senao
@@ -1000,7 +1002,9 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     custohab2(arg0, arg2)
     msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
     mudavida = 0
-    se rand(100) >= precisao
+    se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+      result = 1 # Sem efeito
+    senao rand(100) >= precisao
       result = 2 # Errou o alvo
     senao
       result = 0 # Acertou o alvo
@@ -1026,8 +1030,19 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
     ret l.objini.cmd_atacar(arg0, arg1, este), nulo
   efim
-# Custo da hab/magia, força do ataque e alvos secundários
+# Custo da hab/magia e checa se é permitido usar ataques
   custohab2(arg0, arg2)
+  msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
+  se arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
+    result = 1
+    mensgolpe(arg0, arg1)
+    ret arg0.acertapos(1)
+  senao arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    result = 1
+    mensgolpe(arg0, arg1)
+    ret arg0.acertapos(1)
+  fimse
+# Força do ataque e alvos secundários
   real2 atk
   casovar tipoalvo
   casose # Casos 0 e 1: Ataca um personagem
@@ -1047,7 +1062,6 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     atk = ataque * (arg2 + 0.5) * config:atkfor / 100
     sair
   casofim
-  msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
 # Checa a arma usada
   se arma1
     real2 carga
@@ -1213,7 +1227,7 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = verdadeiro se for alvo secundário (não mostra todas as mensagens)
-# Faz result=10 se o alvo morreu
+# Faz result=10 se o alvo morreu, mas não chama a função morreu
   textotxt t
 # t.addfim("msgatk0\nmsgatk1\nmsgatk2\nmsgatk3\nmsgatk4")
   msgatk0 && t.addfim("msgatk0")
@@ -1228,6 +1242,7 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
+    arg1.p_imortal && arg1.pvida < arg1.pvidamax && (arg1.pvida = arg1.pvidamax) # Imortal
     se !arg1.pvida # Se morreu
       epara lin.separar([t.remove], "\n"), !lin.5, lin.separar([t.remove], "\n")
         ret !t.linhas, nulo
@@ -1315,15 +1330,17 @@ func escr
 
 classe cmd_matar
 herda comando_ataque
-const objcmd = config:atktipo ? este
-const objajuda = config:atktipo ? este
+const objcmd = config:matartipo ? este
+const objajuda = config:matartipo ? este
 const txtajuda = "\b\c3Matar\b\n\
 Sintaxe: MATAR <personagem>\n\
-Começa uma batalha com um personagem."
+Começa um combate com um personagem."
 const cmdmenu = ""
 
 func exechab # Chamado quando personagem (arg0) quer atacar alguém (arg1)
-  ret arg0.atkenv, msg("Você já está lutando.")
-  arg0.persobat.atkauto(arg1, 8) # Realiza um ataque automático
-  ret !arg0.atkenv, nulo # Retorna se não está lutando
-  arg0.p_espera < config:atktempo && (arg0.p_espera = config:atktempo)
+  se arg0.atkenv
+    arg0.msg("Você já está lutando.")
+  senao !arg0.persobat.atkauto(arg1, 8) # Realiza um ataque automático
+    arg0.msg("Você não sabe como atacar " + arg1.descnome + ".")
+  senao arg0.atkenv # Se está lutando
+    arg0.p_espera = intmax(arg0.p_espera, config:atktempo)

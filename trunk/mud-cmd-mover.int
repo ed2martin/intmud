@@ -1,11 +1,12 @@
 classe comando_mover
 herda comando_comum
-const m_entra1 = "$P chegou"
+const m_entra1 = "$P chegou."
 const m_entra2 = m_entra1
 const m_entra3 = m_entra1
-const m_sai1 = "$P foi embora"
+const m_sai1 = "$P foi embora."
 const m_sai2 = m_sai1
 const m_sai3 = m_sai1
+const m_fugir = "$P fugiu."
 const dir = ""
 listaobj lseg # Para não seguir ciclicamente
 debug dbg
@@ -19,8 +20,13 @@ func escr # Executa o comando
   arg1 != "\n" && lseg.limpar, lseg.addfim(arg0)
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
-  ret s2 == nulo, arg0.msg("Impossível seguir nessa direção.")
-  ret s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14, arg0.msg("A porta está fechada.")
+  se s2 == nulo
+    ret rg0.msg("Impossível seguir nessa direção.")
+  senao s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14
+    ret arg0.msg("A porta está fechada.")
+  senao s1.voar_[dir] && !(arg0.bitver & 512 || arg0.bitinv & 48)
+    ret arg0.msg("Você não consegue porque não está flutuando.")
+  fimse
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
@@ -73,6 +79,7 @@ const m_entra3 = "$P voou do sul."
 const m_sai1 = "$P foi para o norte."
 const m_sai2 = "$P flutuou o norte."
 const m_sai3 = "$P voou para o norte."
+const m_fugir = "$P fugiu para o norte."
 const m_porta = "a porta norte"
 const dir = "n"
 
@@ -85,6 +92,7 @@ const m_entra3 = "$P voou do norte."
 const m_sai1 = "$P foi para o sul."
 const m_sai2 = "$P flutuou para o sul."
 const m_sai3 = "$P voou para o sul."
+const m_fugir = "$P fugiu para o sul."
 const m_porta = "a porta sul"
 const dir = "s"
 
@@ -97,6 +105,7 @@ const m_entra3 = "$P voou do oeste."
 const m_sai1 = "$P foi para leste."
 const m_sai2 = "$P flutuou para leste."
 const m_sai3 = "$P voou para leste."
+const m_fugir = "$P fugiu para leste."
 const m_porta = "a porta leste"
 const dir = "l"
 
@@ -114,6 +123,7 @@ const m_entra3 = "$P voou do leste."
 const m_sai1 = "$P foi para oeste."
 const m_sai2 = "$P flutuou para oeste."
 const m_sai3 = "$P voou para oeste."
+const m_fugir = "$P fugiu para oeste."
 const m_porta = "a porta oeste"
 const dir = "o"
 
@@ -131,6 +141,7 @@ const m_entra3 = "$P voou de baixo."
 const m_sai1 = "$P subiu."
 const m_sai2 = "$P flutuou para cima."
 const m_sai3 = "$P voou para cima."
+const m_fugir = "$P fugiu para cima."
 const m_porta = "a passagem para cima"
 const dir = "c"
 
@@ -148,6 +159,7 @@ const m_entra3 = "$P voou de cima."
 const m_sai1 = "$P desceu."
 const m_sai2 = "$P flutuou para baixo."
 const m_sai3 = "$P voou para baixo."
+const m_fugir = "$P fugiu para baixo."
 const m_porta = "a passagem para baixo"
 const dir = "b"
 
@@ -165,6 +177,7 @@ const m_entra3 = "$P voou do sudoeste."
 const m_sai1 = "$P foi para o nordeste."
 const m_sai2 = "$P flutuou para o nordeste."
 const m_sai3 = "$P voou para o nordeste."
+const m_fugir = "$P fugiu para o nordeste."
 const m_porta = "a porta nordeste"
 const dir = "ne"
 
@@ -177,6 +190,7 @@ const m_entra3 = "$P voou do sudeste."
 const m_sai1 = "$P foi para o noroeste."
 const m_sai2 = "$P flutuou para o noroeste."
 const m_sai3 = "$P voou para o noroeste."
+const m_fugir = "$P fugiu para o noroeste."
 const m_porta = "a porta noroeste"
 const dir = "no"
 
@@ -194,6 +208,7 @@ const m_entra3 = "$P voou do noroeste."
 const m_sai1 = "$P foi para o sudeste."
 const m_sai2 = "$P flutuou para o sudeste."
 const m_sai3 = "$P voou para o sudeste."
+const m_fugir = "$P fugiu para o sudeste."
 const m_porta = "a porta sudeste"
 const dir = "se"
 
@@ -206,6 +221,7 @@ const m_entra3 = "$P voou do nordeste."
 const m_sai1 = "$P foi para o sudoeste."
 const m_sai2 = "$P flutuou para o sudoeste."
 const m_sai3 = "$P voou para o sudoeste."
+const m_fugir = "$P fugiu para o sudoeste."
 const m_porta = "a porta sudoeste"
 const dir = "so"
 
@@ -223,6 +239,7 @@ const m_entra3 = "$P voou de fora."
 const m_sai1 = "$P entrou."
 const m_sai2 = "$P flutuou para dentro."
 const m_sai3 = "$P voou para dentro."
+const m_fugir = "$P fugiu para dentro."
 const m_porta = "dentro"
 const dir = "entrar"
 
@@ -235,6 +252,7 @@ const m_entra3 = "$P voou de dentro."
 const m_sai1 = "$P saiu."
 const m_sai2 = "$P flutuou para fora."
 const m_sai3 = "$P voou para fora."
+const m_fugir = "$P fugiu para fora."
 const m_porta = "fora"
 const dir = "sair"
 
@@ -268,7 +286,7 @@ func escr
   se i.obj == arg0
     arg0.iseguir.remove
     arg0.msg("Você não segue ninguém.")
-  senao i.obj.jog ? !i.obj.jogconfig.5 : i.obj.p_naoseguir(arg0)
+  senao i.obj.p_naoseguir(arg0)
     arg0.msg("Você não consegue seguir " + i.obj.descnome + ".")
   senao
     arg0.iseguir.remove
@@ -964,13 +982,29 @@ func escr
 classe cmd_fugir
 herda comando_comum, comando_ajuda
 const posic = 7
-const txtajuda = "\b\c3Fugir\b\nSintaxe: FUGIR\nTenta fugir de uma batalha."
+const txtajuda = "\b\c3Fugir\b\n\
+Sintaxe: FUGIR [número]\n\
+Tenta fugir de uma batalha.\n\
+Seguido de um número, muda os pontos para a fuga. Quando os pontos\n\
+de vida do seu personagem estiverem abaixo desse número, ele tentará\n\
+fugir automaticamente.\n\
+Para saber quantos pontos foram definidos, tecle fugir fora da batalha."
 
 func escr
 # Checa posição
-  ret arg0.posicao != 7, arg0.msg("Você não está lutando.")
-  ret arg0.pmove < 5 && !arg0.jogconfig.14, arg0.msg("Você está sem fôlego.")
-  arg0.p_espera = 5
+  se arg1
+    ret txt(intpos(arg1)) != arg1, arg0.msg("Pontos de vida inválidos: " + arg1)
+    arg0.p_fugir = arg1
+    ret arg0.msg("Pontos de vida para fugir mudaram para: " + arg1)
+  senao arg0.posicao != 7
+    ret arg0.msg("Pontos de vida para fugir: " + arg0.p_fugir)
+  senao
+    ret arg0.pmove < 5 && !arg0.jogconfig.14, arg0.msg("Você está sem fôlego.")
+    arg0.p_espera = 5
+    fugir(arg0)
+
+func fugir # Tenta fugir da luta
+# arg0 = personagem
 # Gera eventos
   listaobj l
   epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
@@ -989,10 +1023,8 @@ func escr
     ret
   fimse
 # Obtém direção para onde fugir
-  txt10 dir
-  ref r
-  dir = fugirdir(arg0)
-  r = arg0.dono.dir_[dir]
+  refvar dir = fugirdir(arg0)
+  refvar r = ref(arg0.dono.dir_[dir])
   se !r || !dir
     $mens.p(arg0)
     $mens.mtodos1("$P tenta fugir mas não vê para onde.")
@@ -1002,27 +1034,43 @@ func escr
   arg0.pmove -= 5
   arg0.batalhafim
   $mens.p(arg0)
-  !(arg0.bitver & 256) && $mens.mtodos1(txttroca($cmd_[dir].m_sai1, " foi ", " fugiu "))
+  !(arg0.bitver & 256) && $mens.mtodos1($cmd_[dir].m_fugir)
   arg0.mudadono(r)
   !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)
 
 func fugirdir # Obtém direção para onde pode fugir
 # Entrada: arg0 = personagem
 # Retorna: direção ou "" se não há para onde fugir
-  txt100 t
-  ref r
   misc:obj = arg0
-  r = arg0.dono
-  r.dir_n && int(r.porta_n) < 2 && (t += "n ")
-  r.dir_s && int(r.porta_s) < 2 && (t += "s ")
-  r.dir_l && int(r.porta_l) < 2 && (t += "l ")
-  r.dir_o && int(r.porta_o) < 2 && (t += "o ")
-  r.dir_c && int(r.porta_c) < 2 && (t += "c ")
-  r.dir_b && int(r.porta_b) < 2 && (t += "b ")
-  r.dir_ne && int(r.porta_ne) < 2 && (t += "ne ")
-  r.dir_no && int(r.porta_no) < 2 && (t += "no ")
-  r.dir_se && int(r.porta_se) < 2 && (t += "se ")
-  r.dir_so && int(r.porta_so) < 2 && (t += "so ")
+  refvar r = ref(arg0.dono)
+  txt100 t
+  se arg0.jog
+    r.dir_n && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
+    r.dir_s && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
+    r.dir_l && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
+    r.dir_o && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
+    r.dir_c && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
+    r.dir_b && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
+    r.dir_ne && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
+    r.dir_no && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
+    r.dir_se && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
+    r.dir_so && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
+    r.dir_entrar && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
+    r.dir_sair && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
+  senao
+    r.dir_n.s_pnj && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
+    r.dir_s.s_pnj && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
+    r.dir_l.s_pnj && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
+    r.dir_o.s_pnj && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
+    r.dir_c.s_pnj && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
+    r.dir_b.s_pnj && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
+    r.dir_ne.s_pnj && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
+    r.dir_no.s_pnj && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
+    r.dir_se.s_pnj && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
+    r.dir_so.s_pnj && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
+    r.dir_entrar.s_pnj && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
+    r.dir_sair.s_pnj && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
+  fimse
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
 
@@ -1041,12 +1089,17 @@ func escr # Personagem retorna
   refvar r = $[arg0.var.z_salafim]
   ret !r, arg0.msg("Você não possui ponto de retorno.")
   ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
-  ret r.s_retornar == 1, arg0.msg("Você não consegue retornar.")
   ret !checahab1(arg0.persobat), nulo
   custohab1(arg0.persobat)
   msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
-  ret rand(100) >= precisao, arg0.msg("Por algum motivo, a magia falhou.")
+  se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    ret arg0.msg("Por algum motivo, a magia falhou.")
+  senao arg0.dono.s_retornar == 1
+    ret arg0.msg("Por algum motivo, a magia falhou.")
+  senao rand(100) >= precisao
+    ret arg0.msg("Por algum motivo, a magia falhou.")
+  fimse
   $mens.p(arg0)
   !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
   arg0.mudadono(r)

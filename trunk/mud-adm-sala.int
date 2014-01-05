@@ -335,6 +335,8 @@ func cmd_asai # Apagar saída
     p.apagar(perso.dono, "inv_" + dir)
     p.apagar(perso.dono, "tranc_" + dir)
     p.apagar(perso.dono, "fechadura_" + dir)
+    p.apagar(perso.dono, "voar_" + dir)
+    p.apagar(perso.dono, "fugir_" + dir)
     p.apagar(perso.dono, "portanome_" + dir)
     config:salvar, msg("\bSaída apagada: " + dir)
     admlog("apagou saída " + dir + " de " + txt(perso.dono, 2))
@@ -706,7 +708,19 @@ const tipo5 = "linha"
 const clas5 = var.classe1
 const vari5 = "fechadura_" + var.saida1
 #
-const nome6 = "Nome da porta"
-const tipo6 = "linha"
+const nome6 = "Voar"
+const info6 = "Se é preciso estar voando ou flutuando"
+const tipo6 = "simnao"
 const clas6 = var.classe1
-const vari6 = "portanome_" + var.saida1
+const vari6 = "voar_" + var.saida1
+#
+const nome7 = "Sem fuga"
+const info7 = "Se não existe a possibilidade de fugir de uma luta nessa direção"
+const tipo7 = "simnao"
+const clas7 = var.classe1
+const vari7 = "fugir_" + var.saida1
+#
+const nome8 = "Nome da porta"
+const tipo8 = "linha"
+const clas8 = var.classe1
+const vari8 = "portanome_" + var.saida1

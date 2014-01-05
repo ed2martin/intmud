@@ -614,7 +614,11 @@ func escr
     custohab1(arg0.persobat)
     msgini && $mens.p(arg0, nulo, r) + $mens.mtodos1(msgini)
     arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
-    ret rand(100) >= precisao, arg0.msg("Por algum motivo, a magia falhou.")
+    se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+      ret arg0.msg("Por algum motivo, a magia falhou.")
+    senao rand(100) >= precisao
+      ret arg0.msg("Por algum motivo, a magia falhou.")
+    fimse
 # Identificar personagem
     textotxt t
     txt100 lin
@@ -648,7 +652,7 @@ func escr
     fimse
     t.addfim("Isso pesa " + lin + ".")
 # Se é arma
-    se r.armatipo && config:atktipo
+    se r.armatipo
       lin = "É uma arma do tipo \"" + txtsublin(config:arma_txt, r.armatipo, 1)
       lin += "\" de ataque " + r.armamin
       r.armamin != r.armamax && (lin += " a " + r.armamax)

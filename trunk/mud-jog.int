@@ -609,6 +609,9 @@ const pesoobj = 65000
 const p_recebe = 1 # Para poder receber itens de outros personagens
 sav txt32 tipo1 # Raça do jogador; vide classes "tipo_*" em mud-b-tipo.int
 sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-b-tipo.int
+const p_naoseguir = !i.obj.jogconfig.5
+const p_imortal = jogconfig.14
+sav uint32 p_fugir
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
