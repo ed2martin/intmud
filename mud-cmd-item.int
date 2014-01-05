@@ -655,7 +655,7 @@ func escr
       ret $mens.mperso("$P não consegue vestir $o.")
     senao int(r.pnivel) > alvo.pnivel
       ret $mens.mperso("$P precisa estar no nível " + r.pnivel + " para empunhar $o.")
-    senao config:atktipo && !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
+    senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
       ret $mens.mperso("$P não conhece " + txtsublin(config:arma_txt, r.armatipo, 1) + ".")
     senao r.vestirnao
       se tipo1 && txtproc("\n" + r.vestirnao + "\n", tipo1) >= 0

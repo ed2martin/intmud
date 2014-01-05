@@ -433,7 +433,6 @@ const tipo1 = "Humano"
 const lojaitem = "teste012 3\nteste013 0"
 const taxavenda = 20
 const taxacompra = 30
-const lojanao = ""
 const tipoitem = 3 # Compra produtos: Possui metal, Arma
 
 
@@ -1368,23 +1367,20 @@ func s_reset1 # Realiza o reset
 
 classe s_teste032
 herda b_teste
-const s_titulo = "Ataques manuais e automáticos"
-const s_desc = "Os ataques do MUD podem ser automáticos ou manuais. Isso é definido com\n\
-o comando ECONFIG.\n\
-Se você escolher ataque automático, para empunhar uma arma é necessário\n\
-saber lidar com aquele tipo de arma. Este sujeito aqui ensina essas\n\
-habilidades. Tecle AULAS para saber o que ele ensina e APRENDER seguido\n\
-de um número ou nome para aprender. A cada aula você aprende mais."
-const dir_l = $s_teste066
+const s_titulo = "Ataques automáticos"
+const s_desc = "Quando seu personagem está lutando com alguém, de tempos em tempos ele\n\
+ataca automaticamente. O nome da habilidade usada depende se está ou não\n\
+usando armas. Armado, é o tipo de arma. Desarmado, é a opção\n\
+\"tipo de ataque\" do personagem.\n\
+As únicas habilidades especiais são \"Segundo ataque\" e \"Terceiro ataque\",\n\
+que permitem fazer mais de um ataque por turno."
+const dir_l = $s_teste094
 const dir_o = $s_teste028
-const s_reset = "S 100 teste018 2 S\nP 100 teste009 0 0 1"
+const s_reset = "S 100 teste018 2 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste018") && criar("i_teste018", este, 2)
-  se p_teste009:objsolto.total < 1
-    criar("p_teste009", este, 0)
-  fimse
 
 
 classe s_teste033
@@ -1827,11 +1823,11 @@ herda b_teste
 const s_titulo = "Habilidades automáticas"
 const s_desc = "São criadas com o comando CHAB, opção \"C Habilidade ou magia comum\".\n\
 Depois deve-se editar (com EHAB) e mudar o alvo para \"Ataque automático\".\n\
-Se a habilidade for usada em ataques sem arma, adicione o nome da\n\
-habilidade no comando ECONFIG, menu \"Ataque\", opção \"Tipo de personagem\".\n\
+Se a habilidade for usada em ataques sem arma, adicione o nome no comando\n\
+ECONFIG, menu \"Ataque\", opção \"Tipo de personagem\".\n\
 Se for ataque com arma, adicione na opção \"Tipo de armas\". Nesse caso,\n\
 o nome da habilidade é também um tipo de arma."
-const dir_o = $s_teste032
+const dir_o = $s_teste094
 
 
 classe s_teste067
@@ -2364,4 +2360,24 @@ func s_reset1 # Realiza o reset
   fimse
   se p_teste020:objsolto.total < 1
     criar("p_teste020", este, 0)
+  fimse
+
+
+classe s_teste094
+herda b_teste
+const s_titulo = "Ataques automáticos"
+const s_desc = "Para empunhar uma arma é necessário saber lidar com o tipo de arma.\n\
+Este sujeito aqui ensina essas habilidades. Tecle AULAS para saber o que\n\
+ele ensina e APRENDER seguido de um número ou nome para aprender.\n\
+A cada aula você aprende mais.\n\
+Se não quiser ataques automáticos, basta editar a habilidade correspondente\n\
+e mudar a opção \"Alvo\" para \"7 Nenhum (não ataca)\"."
+const dir_l = $s_teste066
+const dir_o = $s_teste032
+const s_reset = "P 100 teste009 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste009:objsolto.total < 1
+    criar("p_teste009", este, 0)
   fimse

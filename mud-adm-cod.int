@@ -962,23 +962,29 @@ const tipo8 = "numero--"
 const clas8 = "config"
 const vari8 = "emocaonivel"
 #
-const nome9 = "Comando Retornar até nível"
-const info9 = "Até que nível pode usar o comando retornar"
-const tipo9 = "numero--"
+const nome9 = "Comando Matar"
+const tipo9 = "opcao--"
 const clas9 = "config"
-const vari9 = "retornar"
+const vari9 = "matartipo"
+const extr9 = "Desabilitado\nHabilitado"
 #
-const nome10 = "Comando Quem mostra admin"
-const info10 = "Se não administradores podem saber quem é administrador teclando QUEM"
-const tipo10 = "simnao--"
+const nome10 = "Comando Retornar até nível"
+const info10 = "Até que nível pode usar o comando retornar"
+const tipo10 = "numero--"
 const clas10 = "config"
-const vari10 = "mostraadm"
+const vari10 = "retornar"
 #
-const nome11 = "Comando Quem mostra imortal"
-const info11 = "Se não administradores podem saber quem é imortal teclando QUEM"
+const nome11 = "Comando Quem mostra admin"
+const info11 = "Se não administradores podem saber quem é administrador teclando QUEM"
 const tipo11 = "simnao--"
 const clas11 = "config"
-const vari11 = "mostraimortal"
+const vari11 = "mostraadm"
+#
+const nome12 = "Comando Quem mostra imortal"
+const info12 = "Se não administradores podem saber quem é imortal teclando QUEM"
+const tipo12 = "simnao--"
+const clas12 = "config"
+const vari12 = "mostraimortal"
 
 
 classe menu_econfig_ataques
@@ -993,63 +999,46 @@ const clas1 = "config"
 const vari1 = "atkexp"
 const extr1 = "0 1000"
 #
-const nome2 = "Modo de batalha"
-const tipo2 = "opcao--"
+const nome2 = "Tempo de um turno"
+const info2 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
+const tipo2 = "numero--"
 const clas2 = "config"
-const vari2 = "atktipo"
-const extr2 = "Manual\nAutomático"
+const vari2 = "atktempo"
+const extr2 = "10 200"
 #
-
-func nome3
-  se config:atktipo
-    ret "Tempo para finalizar batalha"
-  senao
-    ret "Tempo de um turno"
-
-func info3
-  se config:atktipo
-    ret "Em décimos de segundo; tempo para chegar a primeira mensagem"
-  senao
-    ret "Em décimos de segundo"
-
+const nome3 = "Força do ataque automático"
+const info3 = "Usado no modo de batalha for automático"
 const tipo3 = "numero--"
 const clas3 = "config"
-const vari3 = "atktempo"
-const extr3 = "10 200"
+const vari3 = "atkfor"
+const extr3 = "1 100"
 #
-const nome4 = "Força do ataque automático"
-const info4 = "Usado no modo de batalha for automático"
-const tipo4 = "numero--"
+const nome4 = "Tipos de ataques"
+const tipo4 = "txtopcao--"
 const clas4 = "config"
-const vari4 = "atkfor"
-const extr4 = "1 100"
+const vari4 = "atknomes"
+const extr4 = "1 20"
 #
-const nome5 = "Tipos de ataques"
-const tipo5 = "txtopcao--"
+const nome5 = "Ataques especiais"
+const info5 = "Os tipos de ataque que usam ataque e defesa especial"
+const tipo5 = "vetor--"
 const clas5 = "config"
-const vari5 = "atknomes"
-const extr5 = "1 20"
+const vari5 = "atkespecial"
+const extr5 = config:atknomes
 #
-const nome6 = "Ataques especiais"
-const info6 = "Os tipos de ataque que usam ataque e defesa especial"
-const tipo6 = "vetor--"
+const nome6 = "Tipos de armas"
+const info6 = "Habilidades usadas em ataques automáticos com arma"
+const tipo6 = "txtopcao--"
 const clas6 = "config"
-const vari6 = "atkespecial"
-const extr6 = config:atknomes
+const vari6 = "arma_txt"
+const extr6 = "1 30 1"
 #
-const nome7 = "Tipos de armas"
-const info7 = "Habilidades usadas em ataques automáticos conforme o tipo de arma"
+const nome7 = "Tipos de personagens"
+const info7 = "Habilidades usadas em ataques automáticos sem arma"
 const tipo7 = "txtopcao--"
 const clas7 = "config"
-const vari7 = "arma_txt"
-const extr7 = "1 30 1"
-#
-const nome8 = "Tipos de personagens"
-const info8 = "Habilidades usadas em ataques automáticos sem arma"
-const tipo8 = "txtopcao--"
-const clas8 = "config"
-const vari8 = "atk_txt"
-const extr8 = "0 30"
+const vari7 = "atk_txt"
+const extr7 = "0 30"
 
 
 classe menu_econfig_vestir

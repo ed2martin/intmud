@@ -14,8 +14,9 @@
 12. Eventos
 13. Eventos incondicionais
 14. Eventos condicionais
-15. Criando menus de edição (administração)
-16. Lista de coisas pendente
+15. Habilidades e magias
+16. Criando menus de edição (administração)
+17. Lista de coisas pendente
 
 
 1. Rodando o MUD
@@ -238,54 +239,135 @@ z_aulas = pontos de aula (quantas aulas ainda pode fazer)
 
 5. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
 
-5.1. varfunc dono
+varfunc dono
 Quem possui esse objeto.
 No caso do personagem, é a sala aonde o personagem está.
 
-5.2. ref donoantes
+ref contr
+Quem está controlando; mesmo que: (dono.perso ? dono : este)
+Usado principalmente quando um personagem possui animais.
+
+ref donoantes
 Dono anterior desse objeto.
 
-5.3. listaobj dentro1
-Lista de itens, exceto vestindo
+listaobj dentro1
+Lista de itens, exceto os que estão sendo vestidos.
 
-5.4. listaobj dentro2
-Se for sala: lista de personagens
-Se for personagem: lista de itens que está vestindo
+listaobj dentro2
+Se for sala: lista de personagens.
+Se for personagem: lista de itens que está vestindo, animais e efeitos.
 
-5.5. listaobj evento
-Objetos que recebem eventos desse objeto
+listaobj evento
+Objetos que recebem eventos desse objeto.
+
+Variáveis relacionadas ao peso
+uint32 pesoden # Somente leitura: quanto peso tem dentro
+uint32 pesotot # Somente leitura: peso total
+const pesoobj = 1 # Peso do objeto (em gramas)
+const pesoadd = 1 # Se falso, está voando/flutuando (pesotot será 0)
+
+5.8. func ajustapeso
+Ajuda peso e volume; variáveis pesoden, pesotot, volden, voltot.
+Vide arquivo mud-comum.int
+
+5.9. func ajustaev
+Faz o objeto receber ou parar de receber eventos, baseado nas constantes:
+const eveste = 1 # Receber eventos do próprio objeto
+const evperso = 1 # Receber eventos do dono se o dono for personagem
+const evitem = 1 # Receber eventos do dono se o dono for item
+const evsala = 1 # Receber eventos do dono se o dono for sala
+Usa internamente a variável:
+listaitem evrec.2
 
 
 6. Salas (classe sala, em mud-sala.int)
 
-6.1. const s_titulo = "texto"
+const s_titulo = "texto"
 Retorna o título da sala. arg0 é quem está requisitanto o título.
 
-6.2. const s_desc = "texto"
+const s_desc = "texto"
 Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
 
-6.3. const s_noite = "texto"
+const s_noite = "texto"
 Retorna a descrição da sala quando está de noite.
 arg0 é quem está requisitanto a descrição.
+Inicialmente, para ser a mesma descrição que de dia, é definido como:
+const s_noite = s_desc
 
-6.4. const s_ocultar = 0
+const s_ocultar = 0
 Verdadeiro (geralmente 1) deve ocultar a descrição da sala ao entrar.
 
-6.5. const s_luta = 0
+const s_terreno = 0
+Tipo de terreno:
+0 Dentro, lugar fechado - 1mv
+1 Rua de uma cidade - 2mv
+2 Campo, um campo aberto - 2mv
+3 Pântano, itens afundam - 3mv
+4 Floresta densa - 3mv
+5 Colina - 4mv
+6 Montanha, excessivamente montanhoso - 6mv
+7 Água, pode nadar - 4mv
+Tecle M para mais
+8 Água, requer barco para passar - 50mv
+9 Em baixo d'água - 5mv
+10 Ar, itens e personagens caem - 1mv
+
+const s_luz = 0
+Tipo de iluminação:
+0 Claro com eventos de tempo
+1 Claro sem eventos de tempo
+2 Luz do sol
+3 Escuro
+
+const s_recup = 100
+Taxa de recuperação de vida, mana e movimentos dos personagens.
+Quanto maior, mais recupera; 0 não recupera.
+
+const s_item = 5
+Em quantos minutos sem jogador na sala deve começar a apagar os itens.
+Os itens são apagados aos poucos, pela função t_item_exec, com a variável:
+inttempo t_item # Tempo para começar a apagar itens da sala
+
+const s_morre = 0
+Se o personagem morre ao entrar na sala (0=não, 1=sim).
+
+const s_falar = ""
+Mensagem recebida ao usar o comando falar.
+Se nulo, ou um texto vazio, permite falar.
+
+const s_luta = 1
 Tipo de luta permitido:
 0=nenhuma
 1=exceto entre jogador
 2=qualquer luta
 
-6.6. ref dir_[direção]
+const s_semmagia = 0
+Se não é possível usar magia na sala (0=permite, 1=não permite).
+
+const s_retornar = 0
+Se não é possível retornar (comando e magia retornar) dessa sala
+(0=permite, 1=não permite).
+
+const s_pnj = 0
+Se PNJs não entram (0=podem entrar, 1=não podem).
+
+const s_soltar = 0
+Se é permitido soltar itens:
+0 Permitido
+1 Não permitido
+2 Se soltar, destrói afundando
+3 Se soltar, destrói caindo
+4 Se soltar, desintegra
+
+ref dir_[direção]
 Antes de acessar fazer misc:obj=personagem
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
 Se estiver ausente, não há sala nessa direção
 
-6.7. uint8 porta_[direção]
-     const portaini_[direção]
+uint8 porta_[direção]
+const portaini_[direção]
 Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
 Porta é o valor atual, geralmente definido dessa forma: uint8 porta_s
@@ -295,57 +377,67 @@ PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
 2 = está fechado
 3 = está trancado
 
-6.8. const inv_[direção]
+const inv_[direção]
 Antes de acessar fazer misc:obj=personagem
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
-6.9. const tranc_[direção]
-Antes de acessar fazer misc:obj=personagem
+const tranc_[direção]
+Antes de aceessar fazer misc:obj=personagem
 0 = não pode ser trancado
 1 = pode ser trancado
 2 = tranca ao fechar
 
-6.10. const fechadura_[direção]
-Antes de acssar fazer misc:obj=personagem
+const fechadura_[direção]
+Antes de acessar fazer misc:obj=personagem
 Texto que contém o código da fechadura.
 Somente uma chave com o mesmo código tranca e destranca.
 Se estiver ausente ou for um texto vazio, não requer chave.
 
-6.11. const portanome_[direção]
+const voar_[direção]
+Antes de acessar fazer misc:obj=personagem
+Se é preciso estar voando ou flutuando para seguir nessa direção.
+0=não, 1=sim
+
+const fugir_[direção]
+Antes de acessar fazer misc:obj=personagem
+Se não existe a possibilidade de fugir de uma luta nessa direção.
+0=permite fugir, 1=não permite fugir
+
+const portanome_[direção]
 Nome da porta na direção especificada. Se estiver ausente ou for um
 texto vazio, será usada a mensagem padrão, que depende da porta.
 Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
 Exemplo:
 const portanome_n = "a porta da casa"
 
-6.12. const s_reset
+const s_reset
 Reset de sala:
 Um texto que contém os executados quando algum jogador entra na sala.
 O significado do texto está explicado no início do arquivo mud-reset.int.
 
-6.13. const a_reset
+const a_reset
 Reset de área:
 Um texto que contém os executados quando ocorre reset da área.
 O significado do texto está explicado no início do arquivo mud-reset.int.
 
-6.14. func txtsai( jogador )
+func txtsai( jogador )
 Retorna as saídas existentes (texto)
 
-6.15. func descsala( jogador, modo )
+func descsala( jogador, modo )
 Adiciona texto com a descrição da sala
 Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
 Somar 4 para mostrar os personagens e itens
 
-6.16. func descitens( jogador )
+func descitens( jogador )
 Adiciona texto com descrição dos itens para um jogador
 
-6.17. func ver_[nome do a descrição]( jogador, 0 )
+func ver_[nome do a descrição]( jogador, 0 )
 Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
 existir ou falso (ou um texto não vazio) se não existir.
 
-6.18. func ver_[nome do a descrição]( jogador, 1 )
+func ver_[nome do a descrição]( jogador, 1 )
 Deve retornar um texto que é a descrição extra.
 Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
@@ -353,7 +445,7 @@ const ver_placa = "Você olha para uma placa vazia."
 
 7. Personagens e itens (classe comum_persoitem, em mud-comum.int)
 
-7.1. int16 bitinv
+int16 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
 0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
 somar 1 se invisível a quem estiver cego
@@ -364,7 +456,7 @@ somar 16 se está voando
 somar 32 se está voando alto
 somar 128 se é administrador invisível
 
-7.2. int16 bitver
+int16 bitver
 O que está visível ao personagem ou objeto; geralmente é 1 ou 3
 0 = nada (está cego)
 somar 1 se não está cego
@@ -379,50 +471,84 @@ somar 512 se está flutuando
 somar 1024 se está dormindo por efeito de algo
 somar 2048 se não pode ser colocado para dormir
 
-7.3. intexec recalc
-Para chamar recalc_exec quando necessário
+textotxt atribs
+Atributos do item ou personagem, como "flutuando", "invisível", etc.
+Um atributo por linha.
 
-7.4. func recalc_exec
-Ajusta variáveis, principalmente batalha
+const nivel = 0
+Nível definido no item ou personagem.
 
-7.5. func visivel( personagem )
-Retorna verdadeiro se está visível para o persoangem
+sav uint16 pnivel
+Nível atual do item ou personagem.
+Os personagens só conseguem vestir itens de nível igual ou menor.
 
-7.6. texto ident
-Nomes que o jogador digita para ações com o personagem ou item
-Exemplo: ao pegar um item ou atacar um personagem
+txt16 nome
+const nome = ""
+Nome do personagem ou item, usado em ações com o objeto.
 
-7.7. txt16 nome
-Nome do personagem ou item, usado em ações com o objeto
+const ident = nome
+Nomes que o jogador digita para ações com o personagem ou item.
+Exemplo: ao pegar um item ou atacar um personagem.
 
-7.8. int1 sexoini
-Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
+const descnome = nome
+Descrição curta. É a descrição usada na maioria dos comandos.
+Exemplos: "uma bola", "Joaquim" e "um ladrão"
 
-7.9. int1 sexo
-Sexo atual: 0=feminino, 1=masculino
+func descpos
+Descrição quando está na sala; arg0=quem quer ver.
+Nos itens, inicialmente é uma mensagem genérica.
+Nos personagens apresenta uma mensagem de acordo com a posição atual,
+e por isso é raramente alterado.
 
-7.10. texto descpos
-Descrição quando está na sala; arg0=quem quer ver
+const descver = ""
+Descrição quando alguém olha para o item ou personagem (comando olhar).
+Aqui arg0=quem quer ver.
 
-7.11. texto descver
-Descrição, quando olha para o objeto; arg0=quem quer ver
+const descident = ""
+Descrição para quem usa a habilidade identificar no item ou personagem.
+Não é necessário colocar aqui a maioria das propriedades (nível, tipo,
+etc) porque elas já são mostradas automaticamente.
+
+const msexo = 0
+Usado nas mensagens com o personagem ou item.
+0=feminino, 1=masculino
+
+const inivar = ""
+Lista de variáveis definidas quando o personagem ou item é criado.
+Vide tópico "Variáveis dinâmicas de personagens, salas e itens".
+
+intexec recalc
+Para chamar recalc_exec quando necessário.
+
+func recalc_exec
+Ajusta variáveis, principalmente batalha.
+
+func visivel( personagem )
+Retorna verdadeiro se está visível para o persoangem.
+
+func mudadono( item ou personagem, quantidade )
+Item ou personagem muda de dono.
+Quando a quantidade for omitida ou não for um item que pode ser
+agrupado em um objeto, a quantidade será considerada 1.
+Essa função retorna o próprio personagem ou item que foi movido.
+Isso é útil principalmente em itens que agrupam.
 
 
 8. Personagens (arquivo mud-perso.int)
 
-8.1. Para criar um personagem
+Para criar um personagem
 criar("nome da classe", aonde está, nível do personagem, "variáveis")
 Se o nível for omitido, será 0.
 Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
 variável, separar por vírgula (exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do personagem.
 
-8.2. const perso = 1
+const perso = 1
 1 = personagem que não batalha (classe comum_perso)
 2 = personagem que batalha (classe comum_persobat)
 3 = personagem que batalha e carrega animais (classe comum_persoanimal)
 
-8.3. sav uint8 posicao
+sav uint8 posicao
 Posição do personagem:
 0 = morto
 1 = mortalmente ferido
@@ -434,62 +560,225 @@ Posição do personagem:
 7 = lutando
 8 = em pé
 
-8.4. const pospadr = 8
-Posição padrão do personagem
+const pospadr = 8
+Posição padrão do personagem.
 
-8.5. const p_recebe = 0
-Verdadeiro (=1) se pode receber itens
+const descpadr
+Descrição quando está na sala na posição padrão.
+Exemplo: "Uma bola foi largada aqui." e "Um ladrão procura alguém distraído".
 
-8.6. sav textovar var
-Variáveis criadas sob demanda do personagem
-As variáveis cujo nome começa com "1" são apagadas quando o personagem
-muda de sala (função mudadono).
-As variáveis cujo nome começa com "1" ou "2" são apagadas quando o jogo
-salvo é recarregado (quando o jogador entra no jogo).
+const sexoini = msexo
+Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
+Aleatório escolhe um quando o personagem é criado.
+Da forma como foi feita, se não for definido, é o mesmo sexo usado nas
+mensagens com o personagem (constante msexo).
 
-8.7. func teclou
+int1 psexo
+Sexo do personagem: 0=feminino, 1=masculino
+
+const tipo1 = 0
+Primeiro tipo associado ao personagem; geralmente é a raça.
+
+const tipo2 = 0
+Segundo tipo associado ao personagem; geralmente é a classe.
+
+const tipo3 = 0
+Terceiro tipo associado ao personagem.
+
+const equip1 = 0
+Se não for 0, são as posições aonde pode usar equipamentos.
+Cada bit corresponde a uma posição.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const equip2 = 0
+Adicionar essas posições no personagem.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const equip3 = 0
+Remover essas posições no personagem.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const p_recebe = 0
+Se recebe itens (se podem dar itens ao personagem); 0=não pode, 1=pode.
+Nos jogadores, essa constante é 1 (pode receber).
+
+const p_naoseguir = 0
+Se não é possível seguir o personagem (0=podem seguir, 1=não podem).
+Nos jogadores, depende da opção "config +seguir", devido à linha:
+const p_naoseguir = !i.obj.jogconfig.5
+
+const p_atktipo = 0
+Tipo de ataque, quando o personagem ataca automaticamente e sem arma.
+Os tipos estão definidos na constante config:atk_txt, arquivo mud-config.int.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const p_imortal = 0
+Se é imortal (0=pode morrer, 1=não pode).
+Nos jogadores, depende da opção "config +imortal", devido à linha:
+const p_imortal = jogconfig.14
+
+const p_corpo = 0
+Se o corpo do personagem fica quando ele morre:
+0 Não deixa corpo
+1 Deixa corpo vazio
+2 Deixa corpo com itens e moedas
+
+const p_exp = 100
+Quanta experiência dá quando morre, em porcentagem.
+Com essa opção é possível fazer alguns PNJs darem mais experiência que
+outros, independente do nível.
+
+const p_morreu1 = "$P morreu."
+Mensagem quando o personagem morreu e não tem dono.
+
+const p_morreu2 = "$P desmaiou."
+Mensagem quando o personagem morreu e tem dono (percente a outro personagem).
+
+func teclou
 Chamado sempre que o personagem tecla algum comando (arg0=comando)
 
-8.8. func p_espera_exec
-Pega o próximo comando da lista
+func p_espera_exec
+Pega o próximo comando da lista.
 
-8.9. func teclouproc
-Processa comando, sem espera (arg0=comando)
+func teclouproc
+Processa comando, sem espera (arg0=comando).
 
-8.10. func mudadono
-Coloca personagem em outra sala (arg0 = sala)
+func erropos
+Retorna uma mensagem conforme a posição atual, para indicar que o que
+o personagem digitou não pode ser feito.
 
-8.11. func acertapos
-Acerta posição do personagem, conforme pontos de vida e batalha
+func acertapos
+func acertapos(1)
+Acerta posição do personagem, conforme pontos de vida e batalha.
 Para checar se morreu, chamar com: acertapos(1)
+Retorna o corpo do personagem, se ele morreu e ficou o corpo.
 
-8.12. func batalhafim
+func batalhafim
 Encerra a batalha
 Para checar se morreu, chamar com: batalhafim(1)
 
-8.13. func atktempo
-É chamado após algum tempo sem golpes, para encerrar a batalha
+func atktempo
+É chamado após algum tempo sem golpes, para encerrar a batalha.
 
-8.14. func morreu
-Executa procedimentos quando o personagem morre
+func morreu
+func morreu( quem matou o personagem )
+Executa procedimentos quando o personagem morre.
+Se for fornecido o personagem, é ele quem pegará as moedas.
+Retorna o corpo do personagem, se ele morreu e ficou o corpo.
+
+func msgvis( mensagem )
+Envia mensagem para o personagem, se ele estiver vendo o autor da mensagem.
+Essa função funciona em conjunto com a classe mens, mais especificamente
+a função: $mens.p( autor, alvo, objeto )
+
+func msginv( mensagem )
+Envia mensagem para o personagem, mesmo se o autor da mensagem estiver
+invisível. Vide comentários na documentação de msgvis (logo acima).
 
 
 9. Personagens não jogador (arquivo mud-perso.int)
+
+const p_captura = 0
+Se pode ser capturado:
+0 Não
+1 Muito fácil
+2 Fácil
+3 Normal
+4 Difícil
+5 Muito difícil
+
+const p_soltar = 0
+Se pode ser dado ou solto:
+0 Pode-se dar e soltar
+1 Pode-se apenas soltar
+2 Não se pode dar nem soltar
+
+const p_mover = 0
+Aonde pode se movimentar:
+0 Não sai do lugar
+1 Somente na área
+2 Qualquer lugar
+
+const p_movervel = 140
+Tempo médio em décimos de segundo para ir para outra sala.
+
+const p_agressivo = 0
+func p_agressivo(personagem)
+Se ataca os jogadores.
+0 Pacífico
+1 Se atacarem
+2 Sim
+
+const p_fugir = 0
+Foge de uma luta se os pontos de vida estiverem abaixo desse valor.
+
+const p_naoresg = 0
+Se não permite resgatar jogadores lutando com esse personagem.
+(0=permite resgatar, 1=não permite)
+
+const p_comecorpo = 0
+Se come corpos de outros personagens (desde que esteja cordado).
+(0=não come, 1=come)
+
+const lojaini = 0
+Que horas a loja abre ou o PNJ começa a ensinar.
+
+const lojafim = 0
+Que horas a loja abre ou o PNJ pára de ensinar.
+Se for igual ao horário de abertura, nunca fecha.
+
+const taxavenda = 0
+Lucro na venda, em porcentagem (0=sem lucro; paga o valor do item).
+
+const taxacompra = 0
+Lucro na compra, em porcentagem (0=preço normal e 100=não paga pelo item).
+
+const taxaaula = 0
+Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula).
+
+const lojaitem = ""
+Tipos de produtos que vende. É um texto sendo que cada linha é um produto,
+no seguinte formato: <item>  <nível>
+Exemplo:
+const lojaitem = "teste012 3\nteste013 0"
+
+const tipoitem = 0
+Tipos de produtos que compra.
+É um valor numérico em que cada bit corresponde a um tipo de produto
+da lista em config:produtos, no arquivo mud-b-config.int.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const lojaaula = ""
+Aulas que ensina. É um texto sendo que cada linha é uma aula, no seguinte
+formato:  <nome da variável>  <nível>
+O nome da variável pode começar com:
+  "h_" para habilidade, como h_Chutar
+  "m_" para magia, como m_Retornar
+  "i_" Para idioma, como i_Hebráico
+  "e_" para extra (aparece no comando Outros)
+O nível pode ser:
+  1 Iniciante
+  2 Muito básico
+  3 Básico
+  4 Intermediário
+  5 Avançado
+  6 Muito avançado
+  7 Mestre
+  8 Perito
+Exemplo:
+const lojaaula = "h_Chutar 3\nm_Retornar 7"
+
+const lojanao = ""
+Raças e classes de personagens com quem não negocia (não compra, não vende
+e não ensina). É um texto sendo que cada linha é uma raça ou classe.
+Exemplo:
+const lojanao = "anão\nguerreiro"
 
 * const p_pet = 0
 NÃO ESTÁ PRONTO
 0 = não pode ser animal de estimação
 1 = jogador pode pegar e usar em batalhas
 2 = segue ordens do jogador
-
-* const p_mover = 0
-Aonde pode se movimentar:
-0 = não sai do lugar
-1 = somente na área
-2 = pode sair da área
-
-* const p_movervel = 100
-Tempo médio em décimos de segundo para ir para outra sala
 
 * const p_fora = 0
 NÃO ESTÁ PRONTO
@@ -501,39 +790,10 @@ NÃO ESTÁ PRONTO
 1 = pega itens
 2 = pega somente itens de valor
 
-* func p_agressivo(personagem alvo)
-* const p_agressivo = 0
-Se é agressivo a um determinado personagem
-0 = pacífico, não luta
-1 = ataca se for atacado
-2 = ataca quando possível
-
-* func p_naoseguir(personagem que quer seguir)
-* const p_naoseguir = 0
-Se não pode ser seguido.
-0 = pode ser seguido
-1 = não pode ser seguido
-
-* const p_foge = 0
-NÃO ESTÁ PRONTO
-Se foge quando estiver fraco
-Não agressivo: foge se for atacado
-
 * const p_nadar = 0
 NÃO ESTÁ PRONTO
 Pode atravessar lugares em que não se pode nadar.
 
-* const p_imortal = 0
-NÃO ESTÁ PRONTO
-Se não pode morrer.
-
-* const taxacompra = 0
-Porcentagem de lucro quando compra: preço final = valor * (100-p_compra)
-
-* const taxavenda = 0
-Porcentagem de lucro quando vende: preço final = valor * (100+p_venda)
-
-come corpos
 mata jogadores que mataram ou roubaram outros
 ataca jogadores que mataram ou roubaram outros
 pega lixo
@@ -542,7 +802,7 @@ patrulha: encerra brigas
 
 10. Itens (arquivo mud-item.int)
 
-10.1. Para criar um item
+Para criar um item
 Itens que podem ser agrupados:
 criar("nome da classe", aonde está, quantidade de itens)
 Se a quantidade for omitida ou for menor que 1, será 1.
@@ -554,17 +814,17 @@ Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
 variável, separar por vírgula (exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do item.
 
-10.2. const item = 1
+const item = 1
 1 = item comum (classe comum_item)
 2 = pode agrupar (classe comum_itemgrupo)
 3 = completo (classe comum_itemperso)
 
-10.3. const vestir1 = 0
+const vestir1 = 0
 Em que lugares do corpo pode ir quando é vestido.
 Cada bit corresponde a um lugar. Os nomes dos lugares estão definidos na
 constante equip_txt, na classe config, no arquivo mud-b.config.int.
 
-10.4. uint8 vestpos
+uint8 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
 50 = está empunhando
@@ -572,27 +832,27 @@ Outros valores, começando pelo número 1, correspondem aos lugares definidos
 na constante equip_txt, na classe config, no arquivo mud-b.config.int.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
-10.5. const i_captura = 0
-      func i_captura( animal )
+const i_captura = 0
+func i_captura( animal )
 Nível médio dos animais que podem ser capturados com esse item.
 Se for 0, esse item não pode ser usado para capturar animais.
 O argumento dessa função é o animal que o jogador está tentando capturar,
 (uma variável ref), ou nulo se estiver apenas escolhendo esse item para
 capturar.
 
-10.6. const i_movel = 0
+const i_movel = 0
 Tipo de móvel:
 0 = não é móvel
 1 = pode sentar
 2 = pode sentar e deitar
 
-10.7. const i_lugar = 0
+const i_lugar = 0
 Quantos personagens podem sentar-se.
 
-10.8. const i_abertoini = 0
+const i_abertoini = 0
 Valor inicial de aberto
 
-10.9. uint8 i_aberto
+uint8 i_aberto
 Tipo de container:
 0 = não é container
 1 = está sempre aberto
@@ -600,20 +860,20 @@ Tipo de container:
 3 = está fechado
 4 = está trancado
 
-10.10. const i_tranc = 0
+const i_tranc = 0
 0 = não pode ser trancado
 1 = pode ser trancado
 2 = tranca ao fechar
 
-10.11. const i_fechadura = ""
+const i_fechadura = ""
 Texto que contém o código da fechadura.
 Somente uma chave com o mesmo código tranca e destranca.
 Se estiver ausente ou for um texto vazio, não requer chave.
 
-10.12. const i_chave = ""
+const i_chave = ""
 Texto que contém o código da chave, ou "" se não for chave.
 
-10.13. const luzitem = 0
+const luzitem = 0
 Tipo de fonte de luz:
 0 = Não aceita acender/apagar, sem fogo
 1 = Lanterna (acende/apaga, sem fogo)
@@ -623,38 +883,37 @@ Tipo de fonte de luz:
 5 = Fósforo (acende uma vez, produz fogo)
 6 = Tocha (acende com fogo, produz fogo)
 
-10.14. const luzini = 1000
-Duração da luz, em décimos de segundo
+const luzini = 1000
+Duração da luz, em décimos de segundo.
 
-10.15. const luzliga = "$P acende $o."
-Mensagem quando alguém acende a luz
+const luzliga = "$P acende $o."
+Mensagem quando alguém acende a luz.
 
-10.16. const luztxt = ""
-Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem
+const luztxt = ""
+Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem.
 
-10.17. const luzfim = 0
-Se item some (é apagado) quando a luz acaba (0=não, 1=sim)
+const luzfim = 0
+Se item some (é apagado) quando a luz acaba (0=não, 1=sim).
 
-10.18. const armatipo = 0
-Tipo de arma; vide config:arma_txt (0 significa que não é arma)
+const armatipo = 0
+Tipo de arma; vide config:arma_txt (0 significa que não é arma).
 
-10.19. const armaprecisao = 0
+const armaprecisao = 0
 Precisão da arma, em porcentagem, 100 significa mesma precisão de
-atacar sem arma
+atacar sem arma.
 
-10.20. const armamin = 0
-Ataque mínimo da arma
+const armamin = 0
+Ataque mínimo da arma.
 
-10.21. const armamax = 0
-Ataque máximo da arma
+const armamax = 0
+Ataque máximo da arma.
 
-10.22. func vestir( posição )
+const armamanual = 0
+Se o personagem não usa essa arma em ataques automáticos (0=pode, 1=não pode).
+
+func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
-
-10.23. func mudadono(novo dono, quantidade)
-Item muda de dono. Quando a quantidade for omitida ou o tipo de item
-não puder ser agrupado em um objeto, a quantidade será sempre 1.
 
 
 11. Funções chamadas somente para o póprio objeto
@@ -947,7 +1206,244 @@ func cmd_curar(personagem, personagem alvo)
 Quer curar um personagem.
 
 
-15. Criando menus de edição (administração)
+15. Habilidades e magias
+
+Habilidades são definidas como a maioria dos comandos do MUD: uma classe
+cujo nome é "cmd_" seguido do nome da habilidade.
+Magias são classes cujo nome é "magia_" seguido do nome da magia.
+
+Via de regra, habilidades e magias são colocadas no arquivo mud-b-hab.int.
+Todas elas herdam, diretamente ou indiretamente, a classe comando_hab.
+
+Podem ser dos seguintes tipos:
+Comuns: herdam comando_ataque
+De identificação: herdam comando_identificar
+De retorno: herdam comando_retornar
+
+Na classe comando_hab:
+
+const posic = 7
+Posição mínima do personagem para usar a hab/magia.
+
+const precisao = 100
+Precisão do golpe, maior que 100 nunca falha.
+
+const tipoarma = 0
+É um valor numérico em que cada bit corresponde a um tipo de arma
+da lista em config:arma_txt, no arquivo mud-b-config.int.
+Se for 0, funciona independente da arma usada.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const valor = 0
+Preço da aula: quantas moedas os personagens cobram para ensinar.
+
+const depende = ""
+Habilidades, magias e idiomas necessários para aprender esse ataque.
+É um texto em que cada linha contém o nome de uma prática, no formato:
+Habilidades são "h_" seguido do nome da habilida
+Magias são "m_" seguido do nome da magia
+Idiomas são "i_" seguido do nome do idioma
+Exemplo:
+const depende = "h_chutar\nm_voar"
+
+const aulaini = 0
+Iniciante nível: a partir de que nível pode ter a primeira aula.
+
+const aulafim = 0
+Perito nível: A partir de que nível pode ter todas as aulas
+
+const tipoperso = ""
+Raças e classes de personagens que podem aprender essa hab/magia.
+É um texto sendo que cada linha é uma raça ou classe.
+Se estiver vazio, todas as classes e raças podem aprender.
+Exemplo:
+const tipoperso = "anão\nguerreiro"
+
+const c_espera = 15
+Tempo de espera: tempo mínimo que deve esperar, em décimos de segundo
+
+const c_vida1 = 0
+Quantos pontos de vida consome no nível iniciante.
+
+const c_vida2 = 0
+Quantos pontos de vida consome no nível perito.
+
+const c_mana1 = 0
+Quantos pontos de mana consome no nível iniciante.
+
+const c_mana2 = 0
+Quantos pontos de mana consome no nível perito.
+
+const c_move1 = 0
+Quantos pontos de vigor consome no nível iniciante.
+
+const c_move2 = 0
+Quantos pontos de vigor consome no nível perito.
+
+const a_cond = 0
+Condição para aplicar os efeitos sob o alvo:
+0 Um ou mais pontos de vida
+1 Nenhum ponto de vida
+2 Nenhuma condição
+
+const a_vida1 = 0
+Quantos pontos de vida ganha no nível iniciante.
+
+const a_vida2 = 0
+Quantos pontos de vida ganha no nível perito.
+
+const a_mana1 = 0
+Quantos pontos de mana ganha no nível iniciante.
+
+const a_mana2 = 0
+Quantos pontos de mana ganha no nível perito.
+
+const a_move1 = 0
+Quantos pontos de vigor ganha no nível iniciante.
+
+const a_move2 = 0
+Quantos pontos de vigor ganha no nível perito.
+
+const a_efeito1 = ""
+Nome do primeiro efeito aplicado sob o alvo.
+
+const a_prob1 = 100
+Probabilidade de criar o primeiro efeito, 100=não falha.
+
+const a_efeito2 = ""
+Nome do segundo efeito aplicado sob o alvo.
+
+const a_prob2 = 100
+Probabilidade de criar o segundo efeito, 100=não falha.
+
+const a_efeito3 = ""
+Nome do terceiro efeito aplicado sob o alvo.
+
+const a_prob3 = 100
+Probabilidade de criar o terceiro efeito, 100=não falha.
+
+const a_remove = ""
+Nomes dos efeitos que serão removidos.
+É um texto sendo que cada linha é o nome de um efeito.
+Exemplo:
+const a_remove = "flutuar"
+
+func checahab1( personagem )
+func checahab2( personagem, quanto sabe )
+Checa se personagem pode usar habilidade/magia e avisa o personagem.
+O argumento quanto sabe é um número de 0 a 1 que indica quanto sabe da
+habilidade ou magia (0=iniciante até 1=perito).
+Retorna verdadeiro se puder usar (na prática, 0=falso, 1=verdadeiro).
+
+func autohab1( personagem )
+func autohab2( personagem, quanto sabe )
+Mesmo que checahab (acima), exceto que não avisa o personagem.
+
+func custohab1( personagem )
+func custohab2( personagem, quanto sabe )
+Aplica os custos da habilidade/magia, como gasto de mana e de moviemnto.
+Argumento quanto sabe, vide função checahab2, acima.
+
+func efeitohab1( personagem, alvo )
+func efeitohab2( personagem, alvo, quanto sabe )
+Aplica o efeito da habilidade sob o alvo.
+Argumento quanto sabe, vide função checahab2, acima.
+
+Na classe comando_ataque:
+
+const tipoalvo = 0
+Indica o tipo de alvo e de hab/magia:
+0 Qualquer um; ataque
+1 Exceto o personagem; ataque
+2 Todos dividindo o ataque
+3 Todos sem dividir o ataque
+4 Qualquer um; não é ataque
+5 O personagem; não é ataque
+6 Ataque automático
+
+const a_batalha = 0
+Condição:
+0 Nenhuma
+1 Durante a batalha
+2 Fora da batalha
+
+const tipoatk = 0
+Elemento usado no ataque, como contusão, cortante, fogo, etc. Os elementos
+estão definidos na constante config:atknomes, arquivo mud-config.int.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const ataque = 50
+Força de ataque, em porcentagem (100 significa 100%).
+
+const vel = 50
+Velocidade do golpe, em porcentagem (100 significa 100%).
+
+const tipobonus = ""
+Raças e classes de personagens que possuem um bônus (atacam com mais força).
+É um texto sendo que cada linha é uma raça ou classe.
+Exemplo:
+const tipobonus = "anão\nguerreiro"
+
+const msgextra = ""
+Informações extras, mostradas quando o jogador consulta sobre a hab/magia.
+
+const msgini = ""
+Mensagem enviada a todos da sala ao usar a hab/magia.
+
+const msgatk0 = ""
+Variáveis msgatk0 a msgatk4. Contém várias linhas de texto, sendo que cada
+linha é uma mensagem de batalha.
+Quando acertou o golpe em si mesmo:
+Linha 0 = para o personagem
+Linha 1 = para os outros; se vazio assume linha 0
+Quando acertou outro personagem:
+Linha 2 = para o personagem
+Linha 3 = para o alvo; se vazio assume linha 2
+Linha 4 = para os outros; se vazio assume linha 2
+Quando matou o alvo:
+Linha 5 = para o personagem
+Linha 6 = para o alvo; se vazio assume linha 5
+Linha 7 = para os outros; se vazio assume linha 5
+Quando errou o alvo:
+Linha 8 = para o personagem
+Linha 9 = para o alvo; se vazio assume linha 8
+Linha 10 = para os outros; se vazio assume linha 8
+Quando o golpe não teve efeito:
+Linha 11 = para o personagem
+Linha 12 = para o alvo; se vazio assume linha 11
+Linha 13 = para os outros; se vazio assume linha 11
+
+func txtajuda
+Retorna um texto que contém informações, para os comandos hab, magia e
+quando o jogador pede informações sobre uma aula.
+
+func escr
+É chamado quando o jogador digita o comando para usar a hab/magia.
+Essa função checa se pode usar, obtém o alvo e chama a função exechab.
+
+func exechab( personagem, alvo, quanto sabe )
+Chamado quando personagem usa habilidade ou magia.
+O argumento quanto sabe é um número de 0 a 1 que indica quanto sabe da
+habilidade ou magia (0=iniciante até 1=perito).
+
+func velgolpe( personagem, alvo )
+Acerta o tempo de espera conforme o golpe.
+Se baseia na constante vel da hag/magia, que é a velocidade do golpe.
+
+func execgolpe( personagem, alvo, força do ataque )
+Realiza um ataque e coloca resultado em result e mudavida
+Na força do ataque deve estar incluído o quanto sabe do golpe.
+Se for 0, não calcula os danos.
+Se baseia em tipoatk (tipo de ataque) e arma1 (arma usada)
+
+func mensgolpe( personagem, alvo, alvo secundário )
+Envia mensagens de acordo com o resultado do ataque
+A opção alvo secundário pode ser omitida, mas se for 1 (ou qualquer outro
+valor que seja considerado verdadeiro), não mostra todas as mensagens.
+Faz result=10 se o alvo morreu, mas não chama a função morreu.
+
+
+16. Criando menus de edição (administração)
 
 Primeiro criar uma classe como a seguinte:
 
@@ -1036,10 +1532,9 @@ jogsock), passando como argumento o nome da classe.
 Exemplo: m_menu("menu_config")
 
 
-16. Lista de coisas pendentes
+17. Lista de coisas pendentes
 
 Habilidades e magias que jogador ganha quando escolhe uma raça ou classe
-Comando fugir - poder definir com quantos pontos de vida foge automaticamente
 Casa de doações
 Leilões
 Possibilidade de colocar sede e fome

@@ -84,7 +84,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
       donoantes.t_item = 0
     fimse
   fimse
-# Checa se novo dono é sala
+# Checa se novo dono é personagem
   se dono.perso
     p_proc = 1
     ret este
@@ -343,15 +343,14 @@ func ini # Objeto foi criado
 
 func acertapos # Acerta posição
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
-# arg1 = quem atacou o personagem; pode ser nulo
 # Retorna o corpo do personagem, se ele morreu e ficou o corpo
-  jogconfig.14 && pvida < pvidamax && (pvida = pvidamax) # Imortal
+  p_imortal && pvida < pvidamax && (pvida = pvidamax) # Imortal
   !p_tempoatu && (p_tempoatu = 100) # Para atualizar o personagem
   casovar pvida * 100 / pvidamax
   casose "0" # Mortalmente ferito ou morto
   casose "1"
     poslugar.remove
-    ret !(posicao = pvida > 0) && arg0, morreu(arg1)
+    ret !(posicao = pvida > 0) && arg0, morreu
     ret
   casose "2"
     poslugar.remove, posicao = 2 # incapacitado
@@ -416,10 +415,7 @@ func bat_ini_int # Chamado internamente por batalhaini
     arg0.atktempo = config:atktempo, arg0.atkturno = 0
     arg0.posicao >= 4 && (arg0.posicao = 7)
   fimse
-  se !config:atktipo # Se for batalha manual
-    atktempo = config:atktempo, atkturno = 0
-    arg0.atktempo = config:atktempo, arg0.atkturno = 0
-  fimse
+  atkturno = arg0.atkturno = 0
   !p_proc && (p_proc = 1)
   arg0.p_proc = 1 # Para gerar evento de PNJs
   listaitem i
@@ -502,6 +498,7 @@ func ganhaexp # Personagem ganha experiência
 func atkauto # Realiza um ataque automático
 # arg0 = alvo do ataque
 # arg1 = quanto conhece da habilidade (primeiro, segundo ou terceiro ataque)
+# Retorna verdadeiro se tentou atacar
   ref obj # Objeto correspondente à habilidade
   real2 aulas # Quanto sabe da habilidade, de 0 a 1
   se iempu.obj && !iempu.obj.armamanual # Ataque com arma
@@ -511,36 +508,44 @@ func atkauto # Realiza um ataque automático
     obj = $cmd_[txtsublin(config:atk_txt, p_atktipo, 1)]
     aulas = intpos(arg1 - 1) / 14 # Nota: 14=7*2
   fimse
+  ret int(obj.tipoalvo) != 6, nulo # Retorna se não for ataque automático
   ret !obj.autohab2(este, aulas), nulo # Checa condições para atacar
-  ret txt(obj.cmdmenu) != "ataque", nulo # Retorna se comando não é habilidade
+# ret txt(obj.cmdmenu) != "ataque", nulo # Retorna se comando não é habilidade
   obj.exechab(este, arg0, aulas) # Realiza um ataque
+  ret 1
 
 func atktempo_exec # Encerra a batalha depois de um tempo
-  se !atkenv # Se não tem um alvo
-    batalhafim(1)
-  senao config:atktipo # Se for ataque automático
-    atktempo = config:atktempo
-    persobat.atkauto(atkenv.objlista.persobat, 8)
+  ret !atkenv, batalhafim(1) # Termina a batalha se não tem um alvo
+  atktempo = config:atktempo
+  se pvida < p_fugir
+# $cmd_fugir.fugir(este)
+  senao persobat.atkauto(atkenv.objlista.persobat, 8)
     ret !atkenv || !persobat.var.h_segundo_ataque_, nulo
     debug d
     d.ini, persobat.atkauto(atkenv.objlista.persobat, persobat.var.h_segundo_ataque_)
     ret !atkenv || !persobat.var.h_terceiro_ataque_, nulo
     d.ini, persobat.atkauto(atkenv.objlista.persobat, persobat.var.h_terceiro_ataque_)
-  senao atkturno < 3 # Se não passou tempo suficiente
-    atkturno += 1, atktempo = 30
-    ret p_espera || posicao < 4, nulo
-    $mens.p(este, atkenv.objlista)
-    se atkturno == 1
-      $mens.mvis1("$P se prepara.")
-    senao atkturno == 2
-      $mens.mvis1("$P procura uma brecha.")
-    senao
-      $mens.mvis1("$P encara $a.")
-    fimse
-  senao # Tempo suficiente: encerra a luta
-    atkenv.objlista.msg("Batalha encerrada.")
-    msg("Batalha encerrada.")
-    batalhafim(1)
+    ret
+  fimse
+  $mens.p(este, atkenv.objlista)
+  casovar atkturno += 1
+  casose "1"
+    ret
+  casose "2"
+    posicao >= 4 && $mens.mvis1("$P se prepara.")
+    ret
+  casose "3"
+    atktempo = 30
+    posicao >= 4 && $mens.mvis1("$P procura uma brecha.")
+    ret
+  casose "4"
+    atktempo = 30
+    posicao >= 4 && $mens.mvis1("$P encara $a.")
+    ret
+  casofim
+  atkenv.objlista.msg("Batalha encerrada.")
+  msg("Batalha encerrada.")
+  batalhafim(1)
 
 func restaurar # Restaura personagem (HP, mana, etc.)
   pmana = pmanamax, pmove = pmovemax
@@ -643,8 +648,9 @@ func escolhejog # Escolhe e retorna um jogador
   ret i.obj
 
 func p_proc_exec # Processar comportamento do personagem
-  ret sock, nulo # Retorna se está sendo controlado por jogador
   ret este != contr, nulo # Retorna se pertence a outro personagem
+  ret atkenv && pvida < p_fugir, $cmd_fugir.fugir(este) # Tenta fugir da luta
+  ret sock, nulo # Retorna se está sendo controlado por jogador
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
   !p_tempoatu && (p_tempoatu = 100)
 # Evento do personagem
@@ -668,7 +674,7 @@ func p_proc_exec # Processar comportamento do personagem
     refvar t1 = escolheatk
     refvar obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
     refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
-    se obj.checahab2(persobat, aulas)
+    se obj.autohab2(persobat, aulas)
       ret obj.exechab(persobat, alvo.persobat, aulas)
     fimse
   fimse
@@ -685,10 +691,10 @@ func p_proc_exec # Processar comportamento do personagem
     p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
 # Movimenta-se
   senao p_mover && posicao == 8
-    ref r
     textotxt t
     prog p
-    misc:obj = este, r = dono
+    misc:obj = este
+    refvar r = ref(dono)
     epara p.inifunctudo(r, "dir_"), p.lin, p.depois
       r.[p.texto].s_pnj && t.addfim(txt(p.texto, 4))
     efim
@@ -756,8 +762,8 @@ func animalnum # Retorna o animal a partir do número
   ret ref(i.obj)
 
 func p_proc_exec # Processar comportamento do personagem
-  ret sock, nulo # Retorna se está sendo controlado por jogador
-  ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
+  ret sock, comum_persobat:p_proc_exec # Checa se está sendo controlado por jogador
+  ret p_espera, comum_persobat:p_proc_exec # Checa tempo para agir
 # Escolhe animal
   se persoesc == este || !persoesc.pvida
     listaitem i
