@@ -27,7 +27,7 @@ func ini # Objeto foi criado (arg0=dono, arg1=nível)
   recalc_exec
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
-  dono = arg0, cmd_mudadono
+  mdono(arg0), cmd_mudadono
   ret este
 
 func recalc_exec # Ajusta variáveis
@@ -38,15 +38,14 @@ func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
 
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
-  ref r
-  r = dono, idono.remove, vestpos = arg0
+  idono.remove, vestpos = arg0
   se vestpos
-    idono = r.dentro2.addfim(este)
-    vestpos == 50 && (r.iempu = idono)
+    idono = dono.dentro2.addfim(este)
+    vestpos == 50 && (dono.iempu = idono)
   senao
-    idono = r.dentro1.addfim(este)
+    idono = dono.dentro1.addfim(este)
 
-const apagar = dono = nulo, apagar(este) # Apaga o item (arg0 = quantidade)
+const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
 
 
 classe comum_itemgrupo
@@ -85,10 +84,10 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
     fimse
   senao r # Se já existe objeto no destino
     r.objtot += arg1, r.ajustapeso
-    dono = nulo, apagar(este)
+    apagar(este), mdono(nulo)
     ret r
   senao # Senão, apenas muda o dono
-    dono = arg0, cmd_mudadono
+    mdono(arg0), cmd_mudadono
     ret este
   fimse
 
@@ -98,32 +97,29 @@ func vestir # Veste o item, arg0=posição
   se !pos # Checa se deve remover
     ret !vestpos, nulo # Retorna se não está vestindo
     dono.recalc = 1 # Para recalcular atributos
-    ref r
-    r = objproc(dono.dentro1) # Procura objeto que não está vestindo
+    refvar r = objproc(dono.dentro1) # Procura objeto que não está vestindo
     se r # Encontrou: aumenta a quantidade
-      r.objtot += 1, r.ajustapeso, dono = nulo, apagar(este)
+      r.objtot += 1, r.ajustapeso, apagar(este), mdono(nulo)
     senao # Não encontrou: move
-      vestpos = 0, r = dono, idono.remove, idono = r.dentro1.addfim(este)
+      vestpos = 0, idono.remove, idono = dono.dentro1.addfim(este)
     fimse
   senao vestpos || objtot <= 1 # Se já está vestindo ou só tem um objeto
     dono.recalc = 1 # Para recalcular atributos
     vestpos = pos
-    ref r
-    r = dono, idono.remove, idono = r.dentro2.addfim(este)
-    vestpos == 50 && (r.iempu = idono)
+    idono.remove, idono = dono.dentro2.addfim(este)
+    vestpos == 50 && (dono.iempu = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
     objtot -= 1, ajustapeso
-    ref r
-    r = criar(este)
-    r.dono = dono, r.vestpos = pos
+    refvar r = criar(este)
+    r.mdono(dono), r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
     pos == 50 && (r.dono.iempu = r.idono)
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)
   se !(objtot -= arg0)
-    dono = nulo, apagar(este)
+    apagar(este), mdono(nulo)
 
 
 classe comum_itemperso
@@ -145,7 +141,7 @@ func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
-  persolugar.limpar, dono = arg0, cmd_mudadono
+  persolugar.limpar, mdono(arg0), cmd_mudadono
   ret este
 
 func recalc_exec # Acerta variáveis do item

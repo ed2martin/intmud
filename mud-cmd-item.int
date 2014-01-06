@@ -226,7 +226,7 @@ func escr
     $mens.p(arg0, r)
     $mens.mvis1("$P se despede de $a e $b vai embora.")
     apagar(r) # Apaga animal
-    r.dono = nulo # Indica que não tem o animal
+    r.mdono(nulo) # Indica que não tem o animal
     arg0.recalc = 1 # Acerta personagem
     arg0.persobat == r && (arg0.persobat = arg0)
     arg0.persoesc == r && (arg0.persoesc = arg0)
@@ -393,7 +393,7 @@ animal.")
       ret r.dono != arg0, nulo # Retorna se não possui mais o animal
       ret !l.objini.animalmais, nulo
       arg0.recalc = 1, l.objini.recalc = 1 # Acerta personagens
-      r.dono = l.objini # Muda de dono
+      r.mdono(l.objini) # Muda de dono
       arg0.persobat == r && (arg0.persobat = arg0)
       arg0.persoesc == r && (arg0.persoesc = arg0)
       arg0.escolhebat # Escolhe um animal em condições de batalhar

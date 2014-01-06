@@ -519,11 +519,10 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     listaitem item
     debug d
     epara item = l1.fim, item, item.antes
-      d.exec = 5000
+      d.ini, item.obj.ajustaobj
       !item.obj.dono && !item.obj.jog && apagar(item.obj)
       item.obj.var.limpar("d_", "j_")
-      item.obj.ajustapeso, item.obj.ajustaev
-      item.obj.recalc = 1, item.obj.acertapos
+      item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
     efim
 # Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")

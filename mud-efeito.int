@@ -150,7 +150,7 @@ const extr4 = "Nenhuma; permanente\n\
 Tem pontos de vida\n\
 Durante a batalha e tem pontos de vida\n\
 Fora da batalha e tem pontos de vida"
-const exec4 = "ajustaev"
+const exec4 = "ajustaobj"
 #
 const nome5 = "Duração"
 const info5 = "Quantos décimos de segundo o efeito dura ou 0 se não expira"
@@ -223,7 +223,7 @@ const info16 = "Se recebe eventos do personagem que está com o efeito"
 const tipo16 = "simnao"
 const clas16 = var.classe1
 const vari16 = "evperso"
-const exec16 = "ajustaev"
+const exec16 = "ajustaobj"
 
 
 classe menu_efeito_msg
@@ -285,8 +285,7 @@ classe comum_efeito
 sav listaitem idono # Uso interno: aonde o objeto está
 listaitem evrec # Usado internamente, para receber eventos
 listaitem evbat # Para apagar o objeto ao iniciar/terminar batalha
-intexec recalc # Se deve acertar os eventos que recebe
-const dono = idono.objlista # Personagem que contém esse efeito
+ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
 const jogsav = 2 != e_condicao # Se deve salvar o efeito ao salvar personagem do jogador
 sav inttempo t_reduzir # Tempo para a próxima redução
 sav inttempo t_duracao # Duração do efeito
@@ -303,7 +302,8 @@ func ini # Cria efeito
 # arg0 = personagem que receberá o efeito
 # arg1 = nível de quem usou o efeito
   evini = 1, t_duracao = int(arg1) * tempo2 + tempo1, t_reduzir = r_tempo
-  !(idono = ref(arg0).dentro2.addini(este)) && apagar(este)
+  ret !(dono = arg0), apagar(este) # Acerta dono e apaga efeito se for nulo
+  idono = dono.dentro2.addini(este) # Adiciona como personagem
 
 func evini_exec # Inicializa efeito
   se dono.dentro2.total(este) > maximo || e_condicao == (dono.contr.atkenv ? 3 : 2)
@@ -324,7 +324,8 @@ func fim # Apaga efeito
   dono.recalc = 1
   cmd_fim
 
-func ajustaev # Acerta eventos
+func ajustaobj # Acerta dono e eventos do objeto
+  dono = idono.objlista
   evrec.remove, evperso && (evrec = dono.evento.addfim(este))
   evbat.remove, e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
 
@@ -348,7 +349,7 @@ classe e_apagar
 #
 sav listaitem idono # Uso interno: aonde o objeto está
 listaitem evrec.2 # Usado internamente, para receber eventos
-const dono = idono.objlista # Personagem que contém esse efeito
+ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
 const interno = 1 # Para não ser editável e apagável
 const desc = "Usado internamente: apaga PNJ após um tempo sem jogador na sala"
 const jogsav = 0 # Não salvar o efeito ao salvar o personagem
@@ -362,7 +363,8 @@ intexec recalc # Se deve acertar os eventos que recebe
 func ini # Cria efeito
 # arg0 = personagem que receberá o efeito
 # arg1 = quanto tempo para apagar o personagem, em décimos de segundo
-  idono = ref(arg0).dentro2.addini(este) # Adiciona como personagem
+  ret !(dono = arg0), apagar(este) # Acerta dono e apaga efeito se for nulo
+  idono = dono.dentro2.addini(este) # Adiciona como personagem
   !dono && apagar(este) # Apaga se não tiver dono
   evrec.0 = dono.evento.addfim(este)
   evrec.1 = dono.dono.evento.addfim(este)
@@ -370,7 +372,10 @@ func ini # Cria efeito
 
 const cmd_saiu = recalc = 1 # Alguém saiu da sala
 
+const ajustaobj = recalc_exec # Acerta dono e eventos do objeto
+
 func recalc_exec # Acerta eventos
+  dono = idono.objlista
   dono.dono.socktot ? (tatual = 0) : !tatual && (tatual = tapaga)
 
 func cmd_chegou # Alguém mudou de sala: acerta eventos do dono do personagem

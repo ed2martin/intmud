@@ -1,8 +1,9 @@
 classe comum_obj
 # Comum a todos os personagens, itens e salas
 #
-ref contr # Quem está controlando; mesmo que: (dono.perso ? dono : este)
+ref dono # Quem possui esse objeto; mesmo que: idono.objlista
 ref donoantes # Dono anterior
+ref contr # Quem está controlando; mesmo que: (dono.perso ? dono : este)
 sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
@@ -41,13 +42,13 @@ func ini # Objeto é criado, acerta eventos, peso, volume e luz
   luztipo > 1 && (luztot = 1) # Acerta a luz
 
 func fim # Objeto vai sair do jogo
-  idono && (dono = nulo)
+  idono && mdono(nulo)
   listaobj l
   l.addfim(evento), evento.limpar, atkrec.limpar
   enquanto l
     l.objini.cmd_fim(este), l.ini.remove
   efim
-  cmd_objfim, idono && (dono = nulo)
+  cmd_objfim, idono && mdono(nulo)
 
 func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   real2 x
@@ -55,80 +56,80 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
 # Acerta o peso (pesoden e pesotot)
   x = pesoadd ? pesoden + pesoobj * objtot - pesotot : -pesotot
   se x
-    pesotot += x, r = idono.objlista, r.pesoden += x
+    pesotot += x, r = dono, r.pesoden += x
     enquanto r.pesoadd
-      r.pesotot += x, r = r.idono.objlista, r.pesoden += x
+      r.pesotot += x, r = r.dono, r.pesoden += x
     efim
   fimse
 # Acerta o volume (volden e voltot)
   x = volexp ? volden + volobj * objtot - voltot : volobj * objtot - voltot
   se x
-    voltot += x, r = idono.objlista, r.volden += x
+    voltot += x, r = dono, r.volden += x
     enquanto r.volexp
-      r.voltot += x, r = r.idono.objlista, r.volden += x
+      r.voltot += x, r = r.dono, r.volden += x
     efim
   fimse
 # Acerta a luz (luzden e luztot)
   x = !luztipo ? -luztot : (luztipo > 1) + luzden - luztot
   se x
-    luztot += x, r = idono.objlista, r.luzden += x
+    luztot += x, r = dono, r.luzden += x
     enquanto r.luztipo
-      r.luztot += x, r = r.idono.objlista, r.luzden += x
+      r.luztot += x, r = r.dono, r.luzden += x
     efim
   fimse
 # Acerta a quantidade de itens (objnum)
   se objnum & 1
   senao item
-    objnum += 3, r = idono.objlista
+    objnum += 3, r = dono
     epara r.objnum += 2, r.item, r.objnum += 2
-      r = r.idono.objlista
+      r = r.dono
     efim
   senao
     objnum += 1
   fimse
 
-func ajustaev # Acerta eventos
+func ajustaobj # Acerta dono e eventos do objeto
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
-  contr = idono.objlista
+  contr = dono = idono.objlista
   (contr.perso ? evperso : contr.item ? evitem : evsala) && (evrec.1 = contr.evento.addfim(este))
   !contr.perso && (contr = este)
 
-varfunc dono # O dono do personagem/item
-  ret !args, idono.objlista # Checa se é leitura
-  ret (donoantes = idono.objlista) == ref(arg0), nulo # Retorna se o dono não vai mudar
+func mdono # Objeto muda de dono (arg0 = novo dono)
+  donoantes = dono # Acerta o dono anterior
+  ret idono.objlista == arg0, nulo # Retorna se o dono não vai mudar
   ref r
 # Se não está voando: retira o peso total
   se pesotot
-    r = donoantes, r.pesoden -= pesotot
+    r = dono, r.pesoden -= pesotot
     enquanto r.pesoadd
-      r.pesotot -= pesotot, r = r.idono.objlista, r.pesoden -= pesotot
+      r.pesotot -= pesotot, r = r.dono, r.pesoden -= pesotot
     efim
   fimse
 # Retira o volume
-  r = donoantes, r.volden -= voltot
+  r = dono, r.volden -= voltot
   enquanto r.volexp
-    r.voltot -= voltot, r = r.idono.objlista, r.volden -= voltot
+    r.voltot -= voltot, r = r.dono, r.volden -= voltot
   efim
 # Retira a luz
   se luztot
-    r = donoantes, r.luzden -= luztot
+    r = dono, r.luzden -= luztot
     enquanto r.luztipo
-      r.luztot -= luztot, r = r.idono.objlista, r.luzden -= luztot
+      r.luztot -= luztot, r = r.dono, r.luzden -= luztot
     efim
   fimse
 # Retira a quantidade de itens (objnum)
   epara r = este, r.item, r.objnum -= objnum & ~1
-    r = r.idono.objlista
+    r = r.dono
   efim
 # Acerta se tem jogador dentro
   se socktot
-    epara r = donoantes, r, r = r.idono.objlista
+    epara r = dono, r, r = r.dono
       r.socktot -= socktot
     efim
   fimse
 # Muda de dono e acerta eventos
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
-  r = arg0, idono.remove # Retira do dono atual
+  r = dono = arg0, idono.remove # Retira do dono atual
   se !r
     ret
   senao perso
@@ -140,30 +141,30 @@ varfunc dono # O dono do personagem/item
   contr = r.perso ? r : este
 # Se não está voando: acrescenta o peso total
   se pesotot
-    r.pesoden += pesotot # Nota: r já é idono.objlista
+    r.pesoden += pesotot # Nota: r já é dono
     enquanto r.pesoadd
-      r.pesotot += pesotot, r = r.idono.objlista, r.pesoden += pesotot
+      r.pesotot += pesotot, r = r.dono, r.pesoden += pesotot
     efim
   fimse
 # Acrescenta o volume
-  r = idono.objlista, r.volden += voltot
+  r = dono, r.volden += voltot
   enquanto r.volexp
-    r.voltot += voltot, r = r.idono.objlista, r.volden += voltot
+    r.voltot += voltot, r = r.dono, r.volden += voltot
   efim
 # Acrescenta a luz
   se luztot
-    r = idono.objlista, r.luzden += luztot
+    r = dono, r.luzden += luztot
     enquanto r.luztipo
-      r.luztot += luztot, r = r.idono.objlista, r.luzden += luztot
+      r.luztot += luztot, r = r.dono, r.luzden += luztot
     efim
   fimse
 # Acrescenta a quantidade de itens (objnum)
   epara r = este, r.item, r.objnum += objnum & ~1
-    r = r.idono.objlista
+    r = r.dono
   efim
 # Acerta se tem jogador dentro
   se socktot
-    epara r = idono.objlista, r, r = r.idono.objlista
+    epara r = dono, r, r = r.dono
       r.socktot += socktot
     efim
   fimse
@@ -181,8 +182,8 @@ intexec recalc # Se deve recalcular variáveis do personagem/item
 textotxt atribs # Atributos do item ou personagem, um atributo por linha
 
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
-  ret arg0.idono.objlista.luzden, !(~(arg0.bitver | 2) & bitinv)
-  casovar arg0.idono.objlista.s_luz
+  ret arg0.dono.luzden, !(~(arg0.bitver | 2) & bitinv)
+  casovar arg0.dono.s_luz
   casose "2" # Pode estar escuro
     ret !(~(misc:luz ? arg0.bitver | 2 : arg0.bitver) & bitinv)
   casose "3" # Escuro
