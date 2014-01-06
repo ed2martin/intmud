@@ -1,22 +1,23 @@
 Índice
 
 1. Rodando o MUD
-2. Organização dos arquivos e classes
-3. Envio de mensagens formatadas (mud-mens.int)
-4. Variáveis dinâmicas de personagens, salas e itens
-5. Comum a salas, personagens e itens (mud-comum.int)
-6. Salas (mud-sala.int)
-7. Personagens e itens
-8. Personagens (mud-perso.int)
-9. Personagens não jogador (mud-perso.int)
-10. Itens (mud-item.int)
-11. Funções chamadas somente para o próprio objeto
-12. Eventos
-13. Eventos incondicionais
-14. Eventos condicionais
-15. Habilidades e magias
-16. Criando menus de edição (administração)
-17. Lista de coisas pendente
+2. Como atualizar o MUD
+3. Organização dos arquivos e classes
+4. Envio de mensagens formatadas (mud-mens.int)
+5. Variáveis dinâmicas de personagens, salas e itens
+6. Comum a salas, personagens e itens (mud-comum.int)
+7. Salas (mud-sala.int)
+8. Personagens e itens
+9. Personagens (mud-perso.int)
+10. Personagens não jogador (mud-perso.int)
+11. Itens (mud-item.int)
+12. Funções chamadas somente para o próprio objeto
+13. Eventos
+14. Eventos incondicionais
+15. Eventos condicionais
+16. Habilidades e magias (mud-ataque.int)
+17. Criando menus de edição (administração)
+18. Lista de coisas pendentes
 
 
 1. Rodando o MUD
@@ -37,14 +38,37 @@ jogar em uma porta ou jogar em um chat.
 
 O programa em si não produz som, portanto deficientes visuais deverão
 usar um leitor de telas, como o NVDA ou o JAWS. Se isso não for possível,
-antes de rodar o MUD, altere as configurações abrindo o arquivo mud.int
-em um editor de texto. As opções estão definidas a partir da linha 15
-desse arquivo.
-
-Os próximos tópicos referem-se à organização do programa do MUD.
+antes de rodar o MUD, altere as configurações abrindo o arquivo
+mud-b-config.int em um editor de texto. As opções estão definidas a partir
+da linha 9 desse arquivo.
 
 
-2. Organização dos arquivos e classes
+2. Como atualizar o MUD
+
+Copie as áreas que você criou (arquivos mud-a-*.int) para a nova versão.
+Não copie as áreas que já vêm com o MUD, os arquivos:
+mud-a-casa.int
+mud-a-fim.int
+mud-a-ini.int
+mud-a-teste.int
+
+Copie todos os arquivos mud-b-*.int da versão antiga para a nova,
+substituindo os já existentes. São eles:
+mud-b-config.int
+mud-b-tipo.int
+mud-b-social.int
+mud-b-hab.int
+mud-b-efeito.int
+
+Copie os arquivos do diretório sav (os jogos salvos) da versão antiga
+para a nova.
+
+Rode o MUD. Se for necessário, ele atualizará os arquivos para a nova versão.
+
+Nota: É sempre recomendável manter uma cópia da versão anterior por um tempo.
+
+
+3. Organização dos arquivos e classes
 
 De modo geral, o MUD está dividido em três grupos:
 Arquivos mud-a-*.int Contém as áreas (itens, personagens e salas das areas).
@@ -52,51 +76,59 @@ Arquivos mud-b-*.int Contém os comandos e configurações definidos pela
 administração do MUD.
 Os demais arquivos mud*.int formam a base do MUD.
 
-2.1. mud.int
+mud.int
 É responsável pela comunicação entre o jogo e os jogadores.
 
-2.2. mud-b-config.int
+mud-b-config.int
 Configuração do jogo (a classe 'config'), como por exemplo, se vai rodar em
-uma janela ou abrindo uma porta, a sala inicial, etc.
+uma janela ou abrindo uma porta, a sala inicial, etc. A grande maioria são
+as opções do comando ECONFIG do MUD.
 
-2.3. mud-b-tipo.int
-Raças e classes definidas no MUD.
+mud-b-tipo.int
+Raças e classes de personagens existentes.
 
-2.4. mud-b-social.int
-Comandos sociais criados pela administração.
+mud-b-social.int
+Comandos sociais existentes.
 
-2.5. mud-b-hab.int
-Habilidades e magias criadas pela administração.
+mud-b-hab.int
+Habilidades e magias existente.
 
-2.6. mud-a-*.int
+mud-b-efeito.int
+Efeitos existentes.
+
+mud-a-*.int
 Contém as classes que compõem uma área.
 Geralmente são:
 Definições da área: classe de nome 'a_' + prefixo da área
 Propriedades herdadas pelas salas: classe de nome 'b_' + prefixo da área
 Salas: classes de nome 's_' + prefixo da área + número de '001' a '999'
 
-2.7. mud-comum.int
+mud-atualiza.int
+Atualiza os arquivos mud-a-*.int e mud-b-*.int criados com versões
+anteriores do programa.
+
+mud-comum.int
 Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
 Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
 um objeto possui), peso e volume.
 Classe 'comum_persoitem', que é herdada por todos os personagens e itens.
 
-2.8. mud-sala.int
+mud-sala.int
 Classes 'area' e 'sala', herdadas por todas as áreas e salas.
 
-2.9. mud-item.int
+mud-item.int
 Classe 'comum_item', herdada por todos os itens.
 Classe 'comum_itemgrupo', herdada pelos itens que podem ser agrupados
 em um único objeto.
 Os itens são classes cujo nome começa com 'i_'.
 
-2.10. mud-perso.int
+mud-perso.int
 Classe 'comum_perso' - herdada por todos os personagens.
 Classe 'comum_persobat' - personagens que podem batalhar.
 Classe 'comum_persoanimal' - personagens que podem batalhar e carregar animais.
 Os personagens não jogadores são classes cujo nome começa com 'p_'.
 
-2.11. mud-jog.int
+mud-jog.int
 Classes responsáveis pelos jogadores.
 A classe 'jogador' é o personagem dos jogadores.
 A classe 'jogsock' é responsável pela comunicação com o usuário:
@@ -104,7 +136,7 @@ Funções cmd_<nome do comando>   Comandos de administração
 Funções adm_<nome do tópico>    Tópicos de ajuda da administração
 Funções p_<texto>               São executadas conforme a variável passo
 
-2.12. mud-cmd*.int
+mud-cmd*.int
 Contém os comandos que os personagens podem digitar. Todo comando é uma
 classe cujo nome é 'cmd_' (comandos normais), 'cmd_magia_' (magias) ou
 'cmdfim_' (comandos de baixa prioridade) seguido do nome do comando.
@@ -114,51 +146,51 @@ A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
-2.13. mud-info.int
+mud-info.int
 Comandos que apenas dão informações ao jogador.
 
-2.14. mud-social.int
+mud-social.int
 Menus para criar e editar comandos sociais e a classe 'soccomum', que serve
 de base para esses comandos. Todo comando é uma classe cujo nome é "soc_"
 seguido do nome do comando. Quando o jogador digita algo, os sociais são
 verificados após as classes 'cmd_' e 'cmd_magia_' e antes das classes
 'cmdfim_'.
 
-2.15. mud-cmd.int
+mud-cmd.int
 Diversos comandos.
 
-2.15. mud-cmd-item.int
+mud-cmd-item.int
 Comandos de manuseio de objetos.
 
-2.16. mud-cmd-mover.int
+mud-cmd-mover.int
 Comandos de movimentação.
 
-2.17. mud-ataque.int
+mud-ataque.int
 Menus para criar e editar habilidades e magias e a classe 'comando_ataque',
 que serve de base para esses comandos. Via de regra, a função 'escr' checa
 se está em condições de atacar e obtém o alvo, e chama a função 'exechab',
 que realiza o ataque propriamente dito.
 
-2.18. mud-efeito.int
+mud-efeito.int
 Efeitos que podem afetar personagens e itens.
 Cada efeito é uma classe cujo nome começa com 'e_'.
 
-2.19. mud-mens.int
+mud-mens.int
 Contém a classe 'mens', especializada no envio de mensagens para personagens.
 
-2.20. mud-misc.int
+mud-misc.int
 Contém a classe 'misc', que é uma miscelânia de funções, variáveis e tabelas.
 Diferentemente das outras classes, as funções de misc devem ser chamadas
 com 'misc:'. Por exemplo, 'misc:obj' ao invés de '$misc.obj'.
 
-2.21. mud-adm.int
+mud-adm.int
 Funções básicas usadas pelos comandos de adminsitração.
 
-2.22. mud-adm-*.int
+mud-adm-*.int
 Comandos de administração.
 
 
-3. Envio de mensagens formatadas (arquivo mud-mens.int)
+4. Envio de mensagens formatadas (arquivo mud-mens.int)
 
 Para enviar uma mensagem formatada a um ou mais personagens, usa-se
 a classe 'mens', contida no arquivo 'mud-mens.int'.
@@ -208,7 +240,7 @@ Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra
 do texto não é transformada em maiúscula."
 
 
-4. Variáveis dinâmicas de personagens, salas e itens
+5. Variáveis dinâmicas de personagens, salas e itens
 
 Todos os personagens e salas têm uma lista de variáveis dinâmicas
 (podem ser criadas e apagadas) contidas na seguinte variável:
@@ -237,11 +269,12 @@ z_moedas = quantas moedas o personagem, item ou sala possui
 z_aulas = pontos de aula (quantas aulas ainda pode fazer)
 
 
-5. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
+6. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
 
-varfunc dono
-Quem possui esse objeto.
+ref dono
+Quem possui esse objeto; mesmo que: idono.objlista
 No caso do personagem, é a sala aonde o personagem está.
+Para mudar o dono, usar a função mdono.
 
 ref contr
 Quem está controlando; mesmo que: (dono.perso ? dono : este)
@@ -266,12 +299,11 @@ uint32 pesotot # Somente leitura: peso total
 const pesoobj = 1 # Peso do objeto (em gramas)
 const pesoadd = 1 # Se falso, está voando/flutuando (pesotot será 0)
 
-5.8. func ajustapeso
-Ajuda peso e volume; variáveis pesoden, pesotot, volden, voltot.
-Vide arquivo mud-comum.int
+func mdono( novo dono )
+Muda o dono do objeto, acertando diversas variáveis.
 
-5.9. func ajustaev
-Faz o objeto receber ou parar de receber eventos, baseado nas constantes:
+func ajustaobj
+Acerta o dono do objeto (variável dono) e os eventos, baseado nas constantes:
 const eveste = 1 # Receber eventos do próprio objeto
 const evperso = 1 # Receber eventos do dono se o dono for personagem
 const evitem = 1 # Receber eventos do dono se o dono for item
@@ -279,8 +311,12 @@ const evsala = 1 # Receber eventos do dono se o dono for sala
 Usa internamente a variável:
 listaitem evrec.2
 
+func ajustapeso
+Ajuda peso e volume; variáveis pesoden, pesotot, volden, voltot.
+Vide arquivo mud-comum.int
 
-6. Salas (classe sala, em mud-sala.int)
+
+7. Salas (classe sala, em mud-sala.int)
 
 const s_titulo = "texto"
 Retorna o título da sala. arg0 é quem está requisitanto o título.
@@ -443,7 +479,7 @@ Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
 
 
-7. Personagens e itens (classe comum_persoitem, em mud-comum.int)
+8. Personagens e itens (classe comum_persoitem, em mud-comum.int)
 
 int16 bitinv
 Grau de invisibilidade do personagem ou objeto; geralmente é 3
@@ -534,7 +570,7 @@ Essa função retorna o próprio personagem ou item que foi movido.
 Isso é útil principalmente em itens que agrupam.
 
 
-8. Personagens (arquivo mud-perso.int)
+9. Personagens (arquivo mud-perso.int)
 
 Para criar um personagem
 criar("nome da classe", aonde está, nível do personagem, "variáveis")
@@ -676,7 +712,7 @@ Envia mensagem para o personagem, mesmo se o autor da mensagem estiver
 invisível. Vide comentários na documentação de msgvis (logo acima).
 
 
-9. Personagens não jogador (arquivo mud-perso.int)
+10. Personagens não jogador (arquivo mud-perso.int)
 
 const p_captura = 0
 Se pode ser capturado:
@@ -800,7 +836,7 @@ pega lixo
 patrulha: encerra brigas
 
 
-10. Itens (arquivo mud-item.int)
+11. Itens (arquivo mud-item.int)
 
 Para criar um item
 Itens que podem ser agrupados:
@@ -916,7 +952,7 @@ Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
 
 
-11. Funções chamadas somente para o póprio objeto
+12. Funções chamadas somente para o póprio objeto
 
 func cmd_ini(arg0, arg1, arg2, arg3, arg4)
 Chamado quando o objeto é criado. Arg0 a arg5 são os 5 primeiros argumentos
@@ -947,7 +983,7 @@ ou empunhar (arma). Se retornar um texto, o personagem não conseguirá
 vestir e será enviado esse texto.
 
 
-12. Eventos
+13. Eventos
 
 São funções executadas quando um personagem digita algo, muda de sala
 ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar eventos.
@@ -961,7 +997,7 @@ const evitem = 1 # Receber eventos do dono se o dono for item
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
 Essas constantes têm efeito sempre que o objeto muda de dono ou é criado.
-Se for preciso atualizar em outras situações, chamar a função ajustaev.
+Se for preciso atualizar em outras situações, chamar a função ajustaobj.
 
 Internamente, itens, personagens e salas possuem a seguinte variável:
 listaobj evento
@@ -980,7 +1016,7 @@ Significa que quando o personagem tentar abrir uma porta, será executada
 a função cmd_abrirdir das listas do personagem e da sala.
 
 
-13. Eventos incondicionais
+14. Eventos incondicionais
 
 São funções chamadas como resultado de uma ação que aconteceu ou vai
 acontecer. A função não tem a opção de cancelar a ação.
@@ -1081,7 +1117,7 @@ func cmd_morreu(personagem)
 Personagem morreu.
 
 
-14. Eventos condicionais
+15. Eventos condicionais
 
 São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
 a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
@@ -1206,7 +1242,7 @@ func cmd_curar(personagem, personagem alvo)
 Quer curar um personagem.
 
 
-15. Habilidades e magias
+16. Habilidades e magias (mud-ataque.int)
 
 Habilidades são definidas como a maioria dos comandos do MUD: uma classe
 cujo nome é "cmd_" seguido do nome da habilidade.
@@ -1443,7 +1479,7 @@ valor que seja considerado verdadeiro), não mostra todas as mensagens.
 Faz result=10 se o alvo morreu, mas não chama a função morreu.
 
 
-16. Criando menus de edição (administração)
+17. Criando menus de edição (administração)
 
 Primeiro criar uma classe como a seguinte:
 
@@ -1532,7 +1568,7 @@ jogsock), passando como argumento o nome da classe.
 Exemplo: m_menu("menu_config")
 
 
-17. Lista de coisas pendentes
+18. Lista de coisas pendentes
 
 Habilidades e magias que jogador ganha quando escolhe uma raça ou classe
 Casa de doações
