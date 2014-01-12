@@ -128,7 +128,7 @@ func escr
   txt100 n
   ref r
   r = arg0.persoesc
-  r.persoesc != arg0 && (n = " de " + r.nome)
+  r != arg0 && (n = " de " + r.nome)
   textotxt h
   txt100 t1
   txt100 t2
@@ -152,7 +152,6 @@ pegar, soltar, dar e vestir)."
 
 func escr
   txt100 n
-  ref r
   r = arg0.persoesc
   r != arg0 && (n = " de " + r.nome)
   textotxt h
@@ -188,12 +187,8 @@ Seguido de um número de 0 a $ mostra os itens do animal correspondente."
 func escr
   textotxt t
   listaitem item
-  ref r
-  r = arg0.persoesc
-  se arg1 == intpos(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
-  fimse
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, nulo
   epara item = r.dentro1.fim, item, item.antes
     continuar !item.obj.visivel(arg0)
     refvar nn = item.obj.atribs.linhas ? " (" + txttroca(item.obj.atribs.ini.textolin(100), \
@@ -234,12 +229,8 @@ func escr
   ref pos.55
   txt50 nomepos
 # Obtém o personagem
-  ref r
-  r = arg0.persoesc
-  se arg1 == intpos(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
-  fimse
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, nulo
 # Preenche pos
   epara item = r.dentro2.fim, item, item.antes
     continuar !item.obj.vestpos || !item.obj.visivel(arg0)
@@ -290,12 +281,8 @@ correspondente."
 func escr
   listaitem i
   textotxt t
-  ref r
-  r = arg0.persoesc
-  se arg1 == intpos(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
-  fimse
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, nulo
   epara i = r.dentro2.ini, i, i.depois
     continuar !i.obj.e_nome
     t.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
@@ -325,12 +312,8 @@ Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
 Seguido de um número de 0 a $ mostra as informações do animal correspondente."
 
 func escr
-  ref r
-  r = arg0.persoesc
-  se arg1 == intpos(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
-  fimse
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, nulo
   se r == arg0
     arg0.msg(vidalin(arg0))
   senao
@@ -487,24 +470,9 @@ func escr
   textotxt t
   textotxt h
   txt100 t1
-  ref r
 # Obtém o personagem
-  r = arg0.persoesc
-  se arg1 == intpos(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui animal " + arg1 + ".")
-  senao arg1 && arg0.jogconfig.23
-    listaobj l
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg1, 1000000)
-    r = nulo
-    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-      r = l.objini
-      sair
-    efim
-    ret !r, arg0.msg("Você não vê isso.")
-  fimse
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, nulo
   t.addfim("\b\c6Estatísticas de \"" + r.nome + "\"\b")
 # Vida, mana e vigor
   t1 = "Vida " + r.pvida + "/" + r.pvidamax

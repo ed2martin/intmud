@@ -518,8 +518,11 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
 # Acerta variáveis
     listaitem item
     debug d
-    epara item = l1.fim, item, item.antes
+    epara item = l1.ini, item, item.depois
       d.ini, item.obj.ajustaobj
+    efim
+    epara item = l1.fim, item, item.antes
+      d.ini
       !item.obj.dono && !item.obj.jog && apagar(item.obj)
       item.obj.var.limpar("d_", "j_")
       item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
@@ -608,7 +611,7 @@ const pesoobj = 65000
 const p_recebe = 1 # Para poder receber itens de outros personagens
 sav txt32 tipo1 # Raça do jogador; vide classes "tipo_*" em mud-b-tipo.int
 sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-b-tipo.int
-const p_naoseguir = !i.obj.jogconfig.5
+const p_naoseguir = !jogconfig.5
 const p_imortal = jogconfig.14
 sav uint32 p_fugir
 

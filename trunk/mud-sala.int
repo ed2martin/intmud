@@ -68,6 +68,43 @@ uint8 porta_ne # Tipo de saída
 uint8 porta_no # Tipo de saída
 uint8 porta_se # Tipo de saída
 uint8 porta_so # Tipo de saída
+uint8 porta_entrar # Tipo de saída
+uint8 porta_sair # Tipo de saída
+#
+# Ordem que deve organizar as constantes:
+const admordem = "s_titulo\n\
+s_desc\n\
+s_noite\n\
+s_falar\n\
+s_item\n\
+s_luta\n\
+s_luz\n\
+s_morre\n\
+s_naoresg\n\
+s_ocultar\n\
+s_pnj\n\
+s_recup\n\
+s_semmagia\n\
+s_soltar\n\
+s_retornar\n\
+s_terreno\n\
+volmax\n\
+objmax\n\
+eveste\n\
+dir_n portaini_n portanome_n fechadura_n fugir_n inv_n tranc_n voar_n\n\
+dir_s portaini_s portanome_s fechadura_s fugir_s inv_s tranc_s voar_s\n\
+dir_l portaini_l portanome_l fechadura_l fugir_l inv_l tranc_l voar_l\n\
+dir_o portaini_o portanome_o fechadura_o fugir_o inv_o tranc_o voar_o\n\
+dir_c portaini_c portanome_c fechadura_c fugir_c inv_c tranc_c voar_c\n\
+dir_b portaini_b portanome_b fechadura_b fugir_b inv_b tranc_b voar_b\n\
+dir_ne portaini_ne portanome_ne fechadura_ne fugir_ne inv_ne tranc_ne voar_ne\n\
+dir_no portaini_no portanome_no fechadura_no fugir_no inv_no tranc_no voar_no\n\
+dir_se portaini_se portanome_se fechadura_se fugir_se inv_se tranc_se voar_se\n\
+dir_so portaini_so portanome_so fechadura_so fugir_so inv_so tranc_so voar_so\n\
+dir_entrar portaini_entrar portanome_entrar fechadura_entrar\n\
+fugir_entrar inv_entrar tranc_entrar voar_entrar\n\
+dir_sair portaini_sair portanome_sair fechadura_sair\n\
+fugir_sair inv_sair tranc_sair voar_sair"
 
 func iniclasse
   criar(arg0)
@@ -83,6 +120,8 @@ func ini # Objeto foi criado: inicializa variáveis
   porta_no = portaini_no
   porta_se = portaini_se
   porta_so = portaini_so
+  porta_entrar = portaini_entrar
+  porta_sair = portaini_sair
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
 
 func msg # Mensagem para todos da sala

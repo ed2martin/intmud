@@ -16,12 +16,12 @@ func escr # Executa o comando
 # arg1 = o que digitou ou "\n" se está seguindo alguém
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
-  dbg.exec = 5000
+  dbg.ini
   arg1 != "\n" && lseg.limpar, lseg.addfim(arg0)
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
   se s2 == nulo
-    ret rg0.msg("Impossível seguir nessa direção.")
+    ret arg0.msg("Impossível seguir nessa direção.")
   senao s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14
     ret arg0.msg("A porta está fechada.")
   senao s1.voar_[dir] && !(arg0.bitver & 512 || arg0.bitinv & 48)
@@ -61,7 +61,16 @@ func escr # Executa o comando
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, arg0.dono, dir)
   efim
-  arg0.dono.s_morre && !arg0.jogconfig.14 && arg0.morreu
+# Checa se morre ao entrar
+  se arg0.dono.s_morre && !arg0.jogconfig.14
+    se arg0.dono.s_morre == 2 # Se apaga os itens
+      epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+        l.ini.obj.item && apagar(l.ini.obj)
+      efim
+      arg0.var.z_moedas = ""
+    fimse
+    ret arg0.morreu
+  fimse
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
     continuar l.objini.posicao < 8 || l.objini.dono != s1 || lseg.possui(l.objini)

@@ -34,11 +34,11 @@ classe i_casa001
 herda comum_item
 const nome = "escada"
 const descnome = "uma escada"
+const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
 const msexo = 0
 const pesoobj = 10200
-const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
+const eveste = 1 # Eventos item: Sim
 const visivel = arg0.posicao < 7 || arg0.var.d_escada_
-const eveste = 1 # Receber eventos do próprio objeto
 const i_aberto = 5 # Para os comandos abrir e fechar não checarem se a escada está aberta
 
 func descpos
@@ -251,9 +251,9 @@ classe p_casa001
 herda comum_persobat
 const nome = "boneco de papel"
 const descnome = "um boneco de papel"
-const msexo = 1
 const descpadr = "Um boneco de papel está se mexendo."
 const descver = "Parece ser muito frágil, pois é feito de papel."
+const msexo = 1 # Sexo Msg: 1 Masculino
 const p_agressivo = arg0.pnivel <= 4 ? 2 : 1 # Agressivo para jogadores até nível 4
 
 func recalc_auto # Altera atributos do personagem
@@ -683,18 +683,17 @@ func deubolsa270
 
 classe s_casa001
 herda b_casa
-const s_luta = 0 # Sem luta
-const s_pnj = 0
 const s_titulo = "Quarto"
 const s_desc = arg0.var.j_salvar || arg0.senha ? s_desc1 + s_desc2 : s_desc1
+const s_luta = 0 # Sem luta
+const s_retornar = 2 # Comando retornar: 2 Muda o ponto de retorno para essa sala
+const s_pnj = 0 # PNJs entram: Não
+const dir_l = $s_casa002
 const s_desc1 = "Enquanto os outros cômodos são de um tamanho desproporcinal, esse\n\
 quarto se destaca por ser pequeno. Dois beliches ocupam quase todo\n\
 o espaço. O espaço de um metro entre eles segue à leste.\n\
 Você pode descansar rapidamente aqui teclando DEITAR"
 const s_desc2 = "\nPode também salvar o jogo ou mudar a senha teclando SALVAR"
-const dir_l = $s_casa002
-# const dir_s = $s_casa036
-const s_retornar = 2 # Comando retornar: 2 Muda o ponto de retorno para essa sala
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
