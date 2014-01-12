@@ -158,27 +158,27 @@ func p_linha # Alterando um texto de uma linha
   senao arg0 == "v"
     p.criar(var.opcclasse, "const " + var.opcvar + "=\"\"")
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para um texto vazio")
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 == "n"
     se !var.opcvalido
       p.apagar(var.opcclasse, var.opcvar)
       config:salvar
-      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      criar("admmudou", var.opcclasse, var.opcexec)
       msg("Apagado: " + var.opcnome)
       admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     senao
       p.criar(var.opcclasse, "const " + var.opcvar + "=\"\"")
       config:salvar
-      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      criar("admmudou", var.opcclasse, var.opcexec)
       msg(var.opcnome + " mudou para um texto vazio")
       admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     fimse
   senao arg0 != "z"
     p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + admcod(arg0) + "\"")
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para: " + arg0)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
@@ -223,7 +223,7 @@ func p_txtlinha # Alterando um texto de uma linha
     se t1.bytes == 0 && !var.opcvalido
       p.apagar(var.opcclasse, var.opcvar)
       config:salvar
-      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      criar("admmudou", var.opcclasse, var.opcexec)
       msg("Apagado: " + var.opcnome)
       admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     senao
@@ -231,7 +231,7 @@ func p_txtlinha # Alterando um texto de uma linha
       refvar t = "const " + var.opcvar + "=\""
       p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
       config:salvar
-      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      criar("admmudou", var.opcclasse, var.opcexec)
       se arg0 == "n"
         msg(var.opcnome + " mudou para um texto vazio")
       senao
@@ -290,7 +290,7 @@ func p_texto # Alterando um texto de várias linhas
     se !var.opcvalido && !teditor.linhas
       p.apagar(var.opcclasse, var.opcvar)
       config:salvar
-      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      criar("admmudou", var.opcclasse, var.opcexec)
       msg("Apagado: " + var.opcnome)
       admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
       ret 1
@@ -304,7 +304,7 @@ func p_texto # Alterando um texto de várias linhas
     t = "const " + var.opcvar + "=\""
     p.criar(var.opcclasse, t + admcod(t1.remove(1000)) + "\"")
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Salvou " + var.opcnome)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     ret 1
@@ -340,7 +340,7 @@ func p_numero # Alterando um número
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
@@ -357,7 +357,7 @@ func p_numero # Alterando um número
     fimse
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + valor)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para: " + valor)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
@@ -379,7 +379,7 @@ func p_numreal # Alterando um número
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
@@ -396,7 +396,7 @@ func p_numreal # Alterando um número
     fimse
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + valor)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para: " + valor)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
@@ -453,7 +453,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
@@ -469,7 +469,7 @@ func p_opcao # Alterando uma opção de uma lista de opções
     lin = " # " + var.opcnome + ": " + x + " " + t.ini.texto
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + lin)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para: " + x + " " + t.remove)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
@@ -514,7 +514,7 @@ func p_txtopcao
     prog p
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
@@ -542,7 +542,7 @@ func p_txtopcao
     refvar t = "const " + var.opcvar + "=\""
     p.criar(var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Linha " + linha + " foi alterada")
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
@@ -601,7 +601,7 @@ func p_vetor # Alterando uma opção de uma lista de opções
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
@@ -617,7 +617,7 @@ func p_vetor # Alterando uma opção de uma lista de opções
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + \
 lin)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Escolheu: " + lin)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     ret p_vetor("\b")
@@ -706,7 +706,7 @@ func p_vetorfunc # Usado intermanente: alterando um vetor de textos
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
@@ -728,7 +728,7 @@ func p_vetorfunc # Usado intermanente: alterando um vetor de textos
     lin = "const " + var.opcvar + "=\""
     p.criar(var.opcclasse, lin + txtvis(t.ini.textolin(1000)) + "\"")
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Escolheu: " + txttroca(t.ini.textolin(1000), "\n", " "))
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     ret p_vetorfunc("\b")
@@ -771,7 +771,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
     lin = " # " + var.opcnome + ": " + (arg0 == 1 ? "Sim" : "Não")
     p.criar(var.opcclasse, "const " + var.opcvar + "=" + arg0 + lin)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para: " + (arg0 == 1 ? "1 sim" : "0 não"))
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   casose "z"
@@ -780,7 +780,7 @@ func p_simnao # Alterando uma opção que pode ser "SIM" ou "NÃO"
     se !var.opcvalido
       p.apagar(var.opcclasse, var.opcvar)
       config:salvar
-      var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+      criar("admmudou", var.opcclasse, var.opcexec)
       msg("Apagado: " + var.opcnome)
       admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
       sair
@@ -840,7 +840,7 @@ func p_sala # Alterando a sala
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao arg0 != "z"
@@ -852,7 +852,7 @@ func p_sala # Alterando a sala
     fimse
     p.criar(var.opcclasse, "const " + var.opcvar + "=$s_" + nome)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg(var.opcnome + " mudou para " + nome)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
@@ -998,7 +998,7 @@ func p_funcsalvar # Opçao salvar de p_func
 # Informa se conseguiu salvar
   se t1.ini.texto == ""
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Salvo com sucesso")
     admlog("editou classe " + var.opcclasse)
     ret
@@ -1296,23 +1296,57 @@ func infosala # Retorna 1 se pode ser editado como variável tipo "const x = $s_a
 
 
 classe admmudou
-# Chama uma função de todos os objetos de uma determinada classe
+# Organiza constantes da classe na ordem definida pela constante admordem
+# da classe. Depois, se o nome da função especificada não for nulo,
+# chama essa função de todos os objetos da classe.
 # Modo de usar:
-# criar("admmudou", <nome da classe>, <nome da função>)
-intexec repete
+# criar("admmudou", <nome da classe>, [nome da função])
+txt100 nomeclasse
 txt100 nomefunc
-listaobj l
-ref r
+intexec ordem
+intexec repete
+listaobj l # Objetos cuja função ainda não foi chamada
+textotxt t # Usado para organizar as constantes no início da classe
+prog p # Usado para organizar as constantes no início da classe
+txt100 tantes # Nome da constante anterior em textotxt t
+int1 mudou # Se ocorreu alguma mudança no programa
+uint8 cont # Contador, como medida de segurança
 
 func ini
-  repete = 1, nomefunc = arg1
+  nomeclasse = arg0, nomefunc = arg1, ordem = 1
+
+func ordem_exec
+  tantes = ""
+  t.limpar
+  (cont += 1) < 50 && t.addfim(txttroca([nomeclasse]:admordem, " ", "\n"))
+  p.inifunccl(nomeclasse)
+  enquanto t.linhas
+    se p.existe(nomeclasse, t.ini.texto) != 1 || p.vartipo(nomeclasse, t.ini.texto) != "const"
+      t.remove
+    senao p.texto == t.ini.texto
+      p.depois, tantes = t.remove
+    senao tantes
+      p.fdepois(nomeclasse, t.remove, tantes)
+      ordem = 1, mudou = 1
+      ret
+    senao
+      p.fantes(nomeclasse, t.remove)
+      ordem = 1, mudou = 1
+      ret
+    fimse
+  efim
+  mudou && config:salvar
+# Aqui obtém os objetos para chamar uma função de cada objeto
+  ret !nomefunc, apagar(este)
+  repete = 1
   epara r = $[arg0], r, r = objdepois(r)
     l.addfim(r)
   efim
 
 func repete_exec
   ret !l, apagar(este)
-  repete = 1, r = l.objini, l.ini.remove, r.[nomefunc]
+  refvar r = ref(l.objini)
+  repete = 1, l.ini.remove, r.[nomefunc]
 
 
 classe admordena

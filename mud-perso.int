@@ -31,6 +31,58 @@ listaobj lseguir # Quem está seguindo o personagem
 sav listaitem iempu # Arma que que está empunhando
 const p_morreu1 = "$P morreu."
 const p_morreu2 = "$P desmaiou."
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nome\n\
+ident\n\
+descnome\n\
+descpadr\n\
+descver\n\
+descident\n\
+msexo\n\
+sexoini\n\
+pesoobj\n\
+volobj\n\
+volmax\n\
+volexp\n\
+objmax\n\
+nivel\n\
+pospadr\n\
+tipo1\n\
+tipo2\n\
+tipo3\n\
+equip1\n\
+equip2\n\
+equip3\n\
+lojaaula\n\
+lojafim\n\
+lojaini\n\
+lojaitem\n\
+lojanao\n\
+taxaaula\n\
+taxacompra\n\
+taxavenda\n\
+tipoitem\n\
+p_agressivo\n\
+p_atktipo\n\
+p_captura\n\
+p_comecorpo\n\
+p_corpo\n\
+p_exp\n\
+p_fugir\n\
+p_imortal\n\
+p_morreu1\n\
+p_morreu2\n\
+p_mover\n\
+p_movervel\n\
+p_naoresg\n\
+p_naoseguir\n\
+p_recebe\n\
+p_soltar\n\
+inivar\n\
+eveste\n\
+evperso\n\
+evitem\nevsala"
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
@@ -295,6 +347,7 @@ const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, e
 const p_agressivo = 1 # Ataca se atacarem
 #
 const expmax = pnivel * pnivel + 20 # Experiência para subir de nível
+sav textotxt p_hist # Histórico do personagem (quem ele matou)
 sav uint32 expatual # Experiência atual
 sav uint16 pnivel # Nível atual
 sav uint32 pvida # Pontos de vida
@@ -564,7 +617,17 @@ func morreu # Procedimentos quando morre
   epara l.addfim(evento), l, l.ini.remove
     ret l.objini.cmd_morrer(este), nulo
   efim
+# Histórico
   mortes += 1
+  se arg0
+    arg0.p_hist.remove(arg0.p_hist.linhas - 9)
+    refvar lin = "N" + arg0.pnivel + " x " + este + "(" + nome + ") N" + pnivel
+    se este == contr
+      arg0.p_hist.addfim(lin)
+    senao
+      arg0.p_hist.addfim(lin + " de " + contr + "(" + contr.nome + ") N" + contr.pnivel)
+    fimse
+  fimse
 # Jogador: retira toda experiência e transfere jogador para outro lugar
   se jog
     pvida = intpos(pvidamax / 2 - 10) + 2

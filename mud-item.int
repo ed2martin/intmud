@@ -10,6 +10,48 @@ const descpos = txtcopiamai(descnome, "A") + " está aqui."
 const jogsav = 1 # Se deve salvar o item ao salvar personagem do jogador
 sav uint16 pnivel # Nível atual (personagens de nível mais baixo não vestem)
 sav uint8 vestpos # Em que posição está vestindo, 0=nenhuma
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nome\n\
+ident\n\
+descnome\n\
+descpos\n\
+descver\n\
+descident\n\
+msexo\n\
+nivel\n\
+armamanual\n\
+armamax\n\
+armamin\n\
+armaprecisao\n\
+armatipo\n\
+i_captura\n\
+i_chave\n\
+i_movel\n\
+i_lugar\n\
+i_abertoini\n\
+i_tranc\n\
+i_fechadura\n\
+luzfim\n\
+luzitem\n\
+luzini\n\
+luzliga\n\
+luztxt\n\
+mantersala\n\
+objmax\n\
+pesoobj\n\
+tipoitem\n\
+valor\n\
+vestir1\n\
+vestirnao\n\
+vestirsim\n\
+volexp\n\
+volmax\n\
+volobj\n\
+inivar\n\
+eveste\n\
+evperso\n\
+evitem\nevsala"
 
 func ini # Objeto foi criado (arg0=dono, arg1=nível)
   se arg2 || inivar

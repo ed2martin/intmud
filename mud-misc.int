@@ -158,6 +158,36 @@ func sepperso # Procura o personagem destino
     ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
   efim
 
+func objperso # Obtém o personagem que o jogador quer consultar a partir de um texto
+# arg0 = personagem
+# arg1 = texto do tipo: [nome do personagem na sala] [número do animal]
+# Retorna o objeto do personagem, ou nulo se não encontrou (e avisa o jogador)
+  ref r
+  se !arg1
+    ret arg0.persoesc
+  senao arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    !r && arg0.msg("Você não possui animal " + arg1 + ".")
+    ret r
+  senao !arg0.jogconfig.23
+    ret arg0.persoesc
+  fimse
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+  n.ini(txt1(arg1), 1000000)
+  r = nulo
+  epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    r = l.objini
+    sair
+  efim
+  ret !r, arg0.msg("Você não vê isso.")
+  refvar num = txt2(arg1)
+  ret num != intpos(num) || config:animal1 < num, r
+  refvar rr = r.animalnum(num)
+  !rr && arg0.msg(txtcopiamai(r.descnome, "A") + " não possui animal " + num + ".")
+  ret rr
+
 func txtmoedas # Retorna texto correspondente à quantidade de moedas
 # arg0 = quantidade de moedas
   casovar int(arg0)

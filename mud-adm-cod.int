@@ -51,11 +51,19 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2INFO\b <personagem ou item>\n\
   Informações sobre personagem ou item.\n\
 \c2ESTAT\b <personagem>\n\
+\c2ESTAT\b <personagem> <número do animal>\n\
   Mostra estatísticas de um personagem que está na sala.\n\
+  Essa sintaxe também funciona com os comandos INV, EQUIP e EFEITO.\n\
+\c2HIST\b [personagem] [número do animal]\n\
+  Mostra o histórico de um personagem na mesma sala ou animal desse\n\
+  personagem, ou seja, os últimos 10 personagens que ele matou.\n\
+\c2INFOHAB\b [personagem] [número do animal]\n\
+\c2INFOMAG\b [personagem] [número do animal]\n\
+  Informa as habilidades e magias de um personagem que está na sala.\n\
 \c2MATAR1\b <personagem ou item>\n\
-  Apaga personagem ou item.\n\
+  Apaga um personagem ou item.\n\
 \c2MATAR2\b <personagem>\n\
-  Mata instantaneamente personagem.\n\
+  Mata instantaneamente um personagem.\n\
 \c2CMD\b <comando>\n\
 \c2CMDP\b <personagem da sala> <comando>\n\
 \c2CMDJ\b <personagem jogador> <comando>\n\
@@ -444,6 +452,53 @@ func cmd_escr
     imonit.objlista.msg("*** " + perso.nome + " escreve no seu teclado: " + arg0)
     imonit.objlista.recebe(arg0)
   fimse
+  ret 1
+
+func cmd_hist
+  refvar r = misc:objperso(perso, arg0)
+  ret !r, 1
+  se !r.p_hist.linhas
+    msg(txtcopiamai(r.nome, "A") + " não matou ninguém.")
+  senao
+    txtmais.limpar
+    txtmais.addfim("\b\c6Histórico de " + txtcopiamai(r.nome, "A") + ":\b")
+    txtmais.addfim(r.p_hist.ini.textolin(100))
+    txtmostra
+  fimse
+  ret 1
+
+func cmd_infohab
+  refvar r = misc:objperso(perso, arg0)
+  ret !r, 1
+  txt100 t1
+  txt100 t2
+  txtmais.limpar
+  epara t1 = r.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = r.var.depois(t1)
+    txtmais.addfim(txte(txt(t1, 2)) + " / " + txtsublin(misc:aulas, r.var.[t1], 1))
+  efim
+  se !txtmais.linhas
+    txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece habilidades.")
+  senao
+    txtmais.addini("\b\c6Habilidades de " + r.nome + ":\b")
+  fimse
+  txtmostra
+  ret 1
+
+func cmd_infomag
+  refvar r = misc:objperso(perso, arg0)
+  ret !r, 1
+  txt100 t1
+  txt100 t2
+  txtmais.limpar
+  epara t1 = r.var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = r.var.depois(t1)
+    txtmais.addfim(txte(txt(t1, 2)) + " / " + txtsublin(misc:aulas, r.var.[t1], 1))
+  efim
+  se !txtmais.linhas
+    txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece magias.")
+  senao
+    txtmais.addini("\b\c6Magias de " + r.nome + ":\b")
+  fimse
+  txtmostra
   ret 1
 
 func admlog # Mensagem para todos com a opção "config +admlog"

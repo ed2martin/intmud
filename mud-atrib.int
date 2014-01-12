@@ -93,7 +93,7 @@ func p_atribcfg
   senao arg0 == "n" && !var.opcvalido
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     passo = var.opcpasso, p_[passo]("\b")
@@ -161,7 +161,7 @@ func p_atribcfg2 # Usado por p_atribcfg; editando um atributo
     prog p
     p.criar(var.opcclasse, t.remove(10000))
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     p_atribcfg("", var.opcpasso2)
     var.opcpasso2 = "", var.opclin = ""
@@ -525,12 +525,12 @@ func p_atrib_salvar # Salva os atributos em função
   se t.linhas > 2
     p.criar(var.opcclasse, t.remove(10000))
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
-    var.opcexec && criar("admmudou", var.opcclasse, var.opcexec)
+    criar("admmudou", var.opcclasse, var.opcexec)
     admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 const p_atrib_bit = 22 # A partir de que opção começam atributos de bit

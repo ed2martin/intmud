@@ -335,25 +335,24 @@ Verdadeiro (geralmente 1) deve ocultar a descrição da sala ao entrar.
 
 const s_terreno = 0
 Tipo de terreno:
-0 Dentro, lugar fechado - 1mv
-1 Rua de uma cidade - 2mv
-2 Campo, um campo aberto - 2mv
-3 Pântano, itens afundam - 3mv
-4 Floresta densa - 3mv
-5 Colina - 4mv
-6 Montanha, excessivamente montanhoso - 6mv
-7 Água, pode nadar - 4mv
-Tecle M para mais
-8 Água, requer barco para passar - 50mv
-9 Em baixo d'água - 5mv
-10 Ar, itens e personagens caem - 1mv
+0 = Dentro, lugar fechado - 1mv
+1 = Rua de uma cidade - 2mv
+2 = Campo, um campo aberto - 2mv
+3 = Pântano, itens afundam - 3mv
+4 = Floresta densa - 3mv
+5 = Colina - 4mv
+6 = Montanha, excessivamente montanhoso - 6mv
+7 = Água, pode nadar - 4mv
+8 = Água, requer barco para passar - 50mv
+9 = Em baixo d'água - 5mv
+10 = Ar, itens e personagens caem - 1mv
 
 const s_luz = 0
 Tipo de iluminação:
-0 Claro com eventos de tempo
-1 Claro sem eventos de tempo
-2 Luz do sol
-3 Escuro
+0 = Claro com eventos de tempo
+1 = Claro sem eventos de tempo
+2 = Luz do sol
+3 = Escuro
 
 const s_recup = 100
 Taxa de recuperação de vida, mana e movimentos dos personagens.
@@ -365,7 +364,10 @@ Os itens são apagados aos poucos, pela função t_item_exec, com a variável:
 inttempo t_item # Tempo para começar a apagar itens da sala
 
 const s_morre = 0
-Se o personagem morre ao entrar na sala (0=não, 1=sim).
+Se o personagem morre ao entrar na sala:
+0 = Não morre
+1 = Morre
+2 = Morre e perde itens e moedas
 
 const s_falar = ""
 Mensagem recebida ao usar o comando falar.
@@ -373,9 +375,9 @@ Se nulo, ou um texto vazio, permite falar.
 
 const s_luta = 1
 Tipo de luta permitido:
-0=nenhuma
-1=exceto entre jogador
-2=qualquer luta
+0 = Nenhuma
+1 = Exceto entre jogador
+2 = Qualquer luta
 
 const s_semmagia = 0
 Se não é possível usar magia na sala (0=permite, 1=não permite).
@@ -389,11 +391,11 @@ Se PNJs não entram (0=podem entrar, 1=não podem).
 
 const s_soltar = 0
 Se é permitido soltar itens:
-0 Permitido
-1 Não permitido
-2 Se soltar, destrói afundando
-3 Se soltar, destrói caindo
-4 Se soltar, desintegra
+0 = Permitido
+1 = Não permitido
+2 = Se soltar, destrói afundando
+3 = Se soltar, destrói caindo
+4 = Se soltar, desintegra
 
 ref dir_[direção]
 Antes de acessar fazer misc:obj=personagem
@@ -408,10 +410,10 @@ Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
 Porta é o valor atual, geralmente definido dessa forma: uint8 porta_s
 PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
-0 = não há porta
-1 = está aberto
-2 = está fechado
-3 = está trancado
+0 = Não há porta
+1 = Está aberto
+2 = Está fechado
+3 = Está trancado
 
 const inv_[direção]
 Antes de acessar fazer misc:obj=personagem
@@ -419,9 +421,9 @@ Verdadeiro se for invisível (não aparece na lista de saídas)
 
 const tranc_[direção]
 Antes de aceessar fazer misc:obj=personagem
-0 = não pode ser trancado
-1 = pode ser trancado
-2 = tranca ao fechar
+0 = Não pode ser trancado
+1 = Pode ser trancado
+2 = Tranca ao fechar
 
 const fechadura_[direção]
 Antes de acessar fazer misc:obj=personagem
@@ -634,6 +636,9 @@ const equip3 = 0
 Remover essas posições no personagem.
 Nota: é muito mais fácil alterar essa constante pela edição online.
 
+sav textotxt p_hist
+Histórico do personagem: quem o personagem matou.
+
 const p_recebe = 0
 Se recebe itens (se podem dar itens ao personagem); 0=não pode, 1=pode.
 Nos jogadores, essa constante é 1 (pode receber).
@@ -716,24 +721,24 @@ invisível. Vide comentários na documentação de msgvis (logo acima).
 
 const p_captura = 0
 Se pode ser capturado:
-0 Não
-1 Muito fácil
-2 Fácil
-3 Normal
-4 Difícil
-5 Muito difícil
+0 = Não
+1 = Muito fácil
+2 = Fácil
+3 = Normal
+4 = Difícil
+5 = Muito difícil
 
 const p_soltar = 0
 Se pode ser dado ou solto:
-0 Pode-se dar e soltar
-1 Pode-se apenas soltar
-2 Não se pode dar nem soltar
+0 = Pode-se dar e soltar
+1 = Pode-se apenas soltar
+2 = Não se pode dar nem soltar
 
 const p_mover = 0
 Aonde pode se movimentar:
-0 Não sai do lugar
-1 Somente na área
-2 Qualquer lugar
+0 = Não sai do lugar
+1 = Somente na área
+2 = Qualquer lugar
 
 const p_movervel = 140
 Tempo médio em décimos de segundo para ir para outra sala.
@@ -741,9 +746,9 @@ Tempo médio em décimos de segundo para ir para outra sala.
 const p_agressivo = 0
 func p_agressivo(personagem)
 Se ataca os jogadores.
-0 Pacífico
-1 Se atacarem
-2 Sim
+0 = Pacífico
+1 = Se atacarem
+2 = Sim
 
 const p_fugir = 0
 Foge de uma luta se os pontos de vida estiverem abaixo desse valor.
@@ -793,14 +798,14 @@ O nome da variável pode começar com:
   "i_" Para idioma, como i_Hebráico
   "e_" para extra (aparece no comando Outros)
 O nível pode ser:
-  1 Iniciante
-  2 Muito básico
-  3 Básico
-  4 Intermediário
-  5 Avançado
-  6 Muito avançado
-  7 Mestre
-  8 Perito
+  1 = Iniciante
+  2 = Muito básico
+  3 = Básico
+  4 = Intermediário
+  5 = Avançado
+  6 = Muito avançado
+  7 = Mestre
+  8 = Perito
 Exemplo:
 const lojaaula = "h_Chutar 3\nm_Retornar 7"
 
@@ -851,9 +856,9 @@ variável, separar por vírgula (exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do item.
 
 const item = 1
-1 = item comum (classe comum_item)
-2 = pode agrupar (classe comum_itemgrupo)
-3 = completo (classe comum_itemperso)
+1 = Item comum (classe comum_item)
+2 = Pode agrupar (classe comum_itemgrupo)
+3 = Completo (classe comum_itemperso)
 
 const vestir1 = 0
 Em que lugares do corpo pode ir quando é vestido.
@@ -878,9 +883,9 @@ capturar.
 
 const i_movel = 0
 Tipo de móvel:
-0 = não é móvel
-1 = pode sentar
-2 = pode sentar e deitar
+0 = Não é móvel
+1 = Pode sentar
+2 = Pode sentar e deitar
 
 const i_lugar = 0
 Quantos personagens podem sentar-se.
@@ -890,16 +895,16 @@ Valor inicial de aberto
 
 uint8 i_aberto
 Tipo de container:
-0 = não é container
-1 = está sempre aberto
-2 = está aberto
-3 = está fechado
-4 = está trancado
+0 = Não é container
+1 = Está sempre aberto
+2 = Está aberto
+3 = Está fechado
+4 = Está trancado
 
 const i_tranc = 0
-0 = não pode ser trancado
-1 = pode ser trancado
-2 = tranca ao fechar
+0 = Não pode ser trancado
+1 = Pode ser trancado
+2 = Tranca ao fechar
 
 const i_fechadura = ""
 Texto que contém o código da fechadura.
@@ -1318,9 +1323,9 @@ Quantos pontos de vigor consome no nível perito.
 
 const a_cond = 0
 Condição para aplicar os efeitos sob o alvo:
-0 Um ou mais pontos de vida
-1 Nenhum ponto de vida
-2 Nenhuma condição
+0 = Um ou mais pontos de vida
+1 = Nenhum ponto de vida
+2 = Nenhuma condição
 
 const a_vida1 = 0
 Quantos pontos de vida ganha no nível iniciante.
@@ -1389,19 +1394,19 @@ Na classe comando_ataque:
 
 const tipoalvo = 0
 Indica o tipo de alvo e de hab/magia:
-0 Qualquer um; ataque
-1 Exceto o personagem; ataque
-2 Todos dividindo o ataque
-3 Todos sem dividir o ataque
-4 Qualquer um; não é ataque
-5 O personagem; não é ataque
-6 Ataque automático
+0 = Qualquer um; ataque
+1 = Exceto o personagem; ataque
+2 = Todos dividindo o ataque
+3 = Todos sem dividir o ataque
+4 = Qualquer um; não é ataque
+5 = O personagem; não é ataque
+6 = Ataque automático
 
 const a_batalha = 0
 Condição:
-0 Nenhuma
-1 Durante a batalha
-2 Fora da batalha
+0 = Nenhuma
+1 = Durante a batalha
+2 = Fora da batalha
 
 const tipoatk = 0
 Elemento usado no ataque, como contusão, cortante, fogo, etc. Os elementos
