@@ -13,7 +13,7 @@ Os tópicos são:\n\
   \c2COMUNICA\b Comunicação com outros jogadores\n\
   \c2INFO\b     Informações sobre o seu personagem\n\
   \c2OBJETO\b   Manuseio de objetos\n"
-const ta2 = config:animal1 ? "  \c2ANIMAL\b   Manuseio de animais\n"
+const ta2 = "  \c2ANIMAL\b   Manuseio de animais\n"
 const ta3 = "  \c2COMBATE\b  Lutas com outros personagens\n\
   \c2LOJAS\b    Lojas e professores\n\
   \c2NOMES\b    Digitando nomes de objetos e personagens\n\
@@ -21,15 +21,19 @@ const ta3 = "  \c2COMBATE\b  Lutas com outros personagens\n\
   \c2PROMPT\b   Mensagens do prompt\n\
   \c2CORES\b    Cores no prompt\n\
   \c2ATALHO\b   Criando atalhos para os comandos mais usados\n\
-Para sair do MUD tecle \c2FIM\b"
-const ta4 = arg0.jogconfig.23 ? "\nPara ler as páginas de administração tecle \c2ADM\b"
+  \c2FIM\b      Sai do MUD, retirando também o seu personagem"
+const ta4 = "\n  \c2SALVAR\b   Salva o seu personagem (e \c2SENHA\b muda a senha)"
+const ta5 = "\nPara ler as páginas de administração tecle \c2ADM\b"
+
+func txtajuda
+  ret ta1 + (config:animal1 ? ta2) + ta3 + (config:salvartipo ? ta4) + (arg0.jogconfig.23 ? ta5)
 
 func escr
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_ajuda(arg0, arg1), nulo
   efim
-  ret arg1 == "", arg0.msg2(ta1(arg0) + ta2(arg0) + ta3(arg0) + ta4(arg0))
+  ret arg1 == "", arg0.msg2(txtajuda(arg0))
   ref obj
   prog p
   obj = $cmd_[txt1(arg1)].objajuda(arg0)
@@ -70,19 +74,23 @@ classe cmd_comunica
 herda comando_ajuda
 
 func txtajuda
-  ret aj1 + (config:chattipo ? aj2) + (config:novatostipo ? aj3) + aj4 + (config:emocaotipo ? \
-aj5) + aj6 + (config:rezartipo ? aj7)
+  ret tit + (config:chattipo ? cha) + (config:novatostipo ? nov) + pvt + (config:gritartipo ? \
+gri) + fal + sus + soc + (config:emocaotipo ? emo) + ign + (config:rezartipo ? rez)
 
-const aj1 = "\b\c3Comunicação\b\n"
-const aj2 = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n"
-const aj3 = "  \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado\n"
-const aj4 = "  \c2PVT\b       Envia mensagem privativa para um jogador\n\
-  \c2FALAR\b     Envia mensagem para os personagens na mesma sala\n\
-  \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala\n\
-  \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens\n"
-const aj5 = "  \c2EMOÇÃO\b    Demonstra emoções do seu personagem\n"
-const aj6 = "  \c2IGNORAR\b   Ignora um jogador"
-const aj7 = "\n\
+const tit = "\b\c3Comunicação\b"
+const cha = "\n\
+  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado"
+const nov = "\n\
+  \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado"
+const pvt = "\n  \c2PVT\b       Envia mensagem privativa para um jogador"
+const gri = "\n  \c2GRITAR\b    Envia mensagem para os personagens na mesma área"
+const fal = "\n  \c2FALAR\b     Envia mensagem para os personagens na mesma sala"
+const sus = "\n  \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala"
+const soc = "\n\
+  \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens"
+const emo = "\n  \c2EMOÇÃO\b    Demonstra emoções do seu personagem"
+const ign = "\n  \c2IGNORAR\b   Ignora um jogador"
+const rez = "\n\
   \c2REZAR\b     Envia mensagem para os administradores que estiverem no jogo"
 
 
@@ -155,7 +163,14 @@ Para poupar digitação, na maioria dos casos pode-se abreviar, digitando\n\
 apenas o começo das palavras.\n\
 Exemplo 1: PE CH\n\
 Exemplo 2: PE CH_BRA\n\
-Nesse caso, CH refere-se a qualquer objeto cujo nome começa com CH."
+Nesse caso, CH refere-se a qualquer objeto cujo nome começa com CH.\n\
+Alguns comandos aceitam a palava TUDO, que se refere a todos os itens.\n\
+Exemplo 1: PEGAR TUDO\n\
+Exemplo 2: PEGAR TUDO.CHAVE\n\
+No exemplo 1, você está pegando todos os itens do chão.\n\
+Já no segundo, está pegando todas as chaves do chão.\n\
+No entanto, dependendo da natureza dos objetos, você pode ter de repetir\n\
+o comando (ou teclar um sinal de exclamação) até pegar todos."
 
 
 classe cmd_combate

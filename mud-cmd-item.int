@@ -93,7 +93,8 @@ Sintaxe: PEGAR <objeto>\n\
          PEGAR <quantidade> <objeto>\n\
          PEGAR <objeto> <container>\n\
          PEGAR <quantidade> <objeto> <container>\n\
-Pega um objeto do chão ou de um container (uma bolsa, uma estante, etc)."
+Pega um objeto do chão ou de um container (uma bolsa, uma estante, etc).\n\
+Para pegar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const posic = 5
 #
 ref sala # De onde pegar os itens
@@ -124,7 +125,7 @@ func escr
     mens = " de $a."
   fimse
   nomeobj n # Para reconhecer os itens
-  n.ini(misc:sep1, 1000000)
+  n.ini(misc:sep1, 1000000, misc:tudo)
 # Pega os itens
   achou = 0
   epara l.addfim(sala.dentro1), l, l.ini.remove
@@ -197,7 +198,8 @@ Sintaxe: SOLTAR <objeto>\n\
          SOLTAR <objeto> <container>\n\
          SOLTAR <quantidade> <objeto> <container>\n"
 const ta2 = "         SOLTAR <número do animal>\n"
-const ta3 = "Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc)."
+const ta3 = "Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
+Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
 #
@@ -257,7 +259,7 @@ func escr
     mens = " em $a"
   fimse
   nomeobj n # Para reconhecer os itens
-  n.ini(misc:sep1, 1000000)
+  n.ini(misc:sep1, 1000000, misc:tudo)
 # Solta os itens
   achou = 0
   epara l.addfim(arg0.dentro1), l, l.ini.remove
@@ -491,6 +493,7 @@ const txtajuda = "\b\c3Vestir\b\n\
 Sintaxe: VESTIR <objeto> [posição]\n\
          USAR <objeto> [posição]\n\
 Seu personagem veste ou usa um objeto que está carregando.\n\
+Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
 Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const posic = 5
 txt30 tipo1 # alvo.tipo1
@@ -533,7 +536,7 @@ func escr
 # Veste
   listaobj l
   ref r
-  n.ini(misc:sep1, 1000000)
+  n.ini(misc:sep1, 1000000, misc:tudo)
   epara l.addfim(alvo.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
@@ -685,7 +688,8 @@ herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Remover\b\n\
 Sintaxe: REMOVER <objeto>\n\
          REMOVER <quantidade> <objeto>\n\
-Seu personagem deixa de usar um objeto que está vestindo ou usando."
+Seu personagem deixa de usar um objeto que está vestindo ou usando.\n\
+Para remover tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const posic = 5
 ref alvo # Quem vai remover
 
@@ -703,10 +707,10 @@ func escr
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1000000)
+  n.ini(arg1, 1000000, misc:tudo)
   epara l.addfim(alvo.dentro2), l, l.ini.remove
     r = l.objini
-    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     uint8 x
     epara x = n, x, x -= 1
       total += 1

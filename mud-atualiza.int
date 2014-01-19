@@ -29,8 +29,8 @@ func iniclasse
 func ini
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 293, nulo
-  p.criar("config", "const versao = 293 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 297, nulo
+  p.criar("config", "const versao = 297 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Coloca habilidades e magias no arquivo mud-b-config.int
   se versao < 292
@@ -162,6 +162,11 @@ func ini
     criafunc("config", "const matartipo = 1")
     criar("admordena", "b-hab")
     dbg.ini
+  fimse
+# Comando gritar
+  se versao < 297
+    criafunc("config", "const gritarmsg = \"$P gritou '$m'\"")
+    criafunc("config", "const gritarmove = 2")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-b-*.int atualizados\n")

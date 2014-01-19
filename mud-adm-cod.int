@@ -26,12 +26,23 @@ const adm_jog = "\c3Comandos para jogadores\b\n\
   Teletransporta para uma sala específica ou para aonde um jogador está.\n\
 \c2TELE\b <jogador> <sala>\n\
   Transporta um jogador para uma sala.\n\
+\c2TELEENTRA\b [mensagem]\n\
+\c2TELESAI\b [mensagem]\n\
+  Define as mensagens de quando você se teletransporta usando\n\
+  o comando TELE. Sem argumentos, muda para a mensagem padrão, que é:\n\
+  \"aparece de um redemoinho de fumaça.\" para Teleentra e\n\
+  \"some em um redemoinho de fumaça.\" para Telesai.\n\
+  Para saber as mensagens que você definiu, use o comando ESTAT.\n\
 \c2AC\b <texto>\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores.\n\
 \c2MUDANOME\b <nome atual> <novo nome>\n\
   Muda o nome do personagem de um jogador.\n\
+\c2LISTARSAV\b\n\
+  Mostra os arquivos de jogos salvos. Estão no diretório sav.\n\
+\c2APAGARSAV\b <nome do arquivo>\n\
+  Apaga um arquivo de jogo salvo.\n\
 \c2MONIT\b [jogador]\n\
   Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
   Se [jogador] estiver ausente ou for o próprio, deixa de monitorar.\n\
@@ -70,7 +81,7 @@ const adm_outros = "\c3Outros comandos\b\n\
   Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 \c2MUDLER\b\n\
   Recarrega arquivos do MUD que foram alterados.\n\
-  Nota: Outra forma de reclarregar os arquivos é pressionar a tecla F10\n\
+  Nota: Outra forma de recarregar os arquivos é pressionar a tecla F10\n\
   na janela do IntMUD."
 #
 const adm_mens = "\b\c3Caracteres especiais em mensagens\b\n\n\
@@ -156,6 +167,24 @@ func cmd_serv # Informações sobre o servidor
   txtmostra
   ret 1
 
+func cmd_teleentra
+  perso.var.z_teleentra = arg0
+  se arg0
+    msg("Mensagem teleentra mudou para " + arg0)
+  senao
+    msg("Mensagem teleentra voltou ao padrão.")
+  fimse
+  ret 1
+
+func cmd_telesai
+  perso.var.z_telesai = arg0
+  se arg0
+    msg("Mensagem telesai mudou para " + arg0)
+  senao
+    msg("Mensagem telesai voltou ao padrão.")
+  fimse
+  ret 1
+
 func cmd_tele # Ir para uma sala específica
   ref p # Personagem
   ref s # Sala destino
@@ -190,12 +219,22 @@ func cmd_tele # Ir para uma sala específica
     msg("Teletransportar quem? Para onde?")
   fimse
 # Realiza o teletransporte
-  se p && s
+  se !(p && s)
+  senao p == perso
     $mens.p(p, perso)
-    p != perso && p.msginv("$A teletransporta você.")
-    !(p.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+    $mens.mens = perso.var.z_telesai
+    !$mens.mens && ($mens.mens = "aparece de um redemoinho de fumaça.")
+    $mens.mvis2("", "$P $m")
     p.mudadono(s)
-    !(p.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+    $mens.mens = perso.var.z_teleentra
+    !$mens.mens && ($mens.mens = "some em um redemoinho de fumaça.")
+    $mens.mvis2("", "$P $m")
+  senao
+    $mens.p(p, perso)
+    p.msginv("$A teletransporta você.")
+    $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+    p.mudadono(s)
+    $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
   fimse
   ret 1
 
@@ -409,6 +448,44 @@ func cmd_mudanome
   fimse
   ret 1
 
+func cmd_listarsav
+  arqdir dir
+  txt100 lin
+  lin = dir.abrir("sav")
+  se lin
+    msg("\bErro: " + lin)
+  senao
+    debug d
+    d.exec = 50000
+    txtmais.limpar
+    epara nulo, dir.lin, dir.depois
+      txtmais.addfim(txttroca(dir.texto + "\b", ".sav\b", ","))
+    efim
+    txtmais.ordena
+    textopos pos
+    pos = txtmais.fim, pos.antes
+    pos.mudar("", inttotal(pos.texto) - 1, 1)
+    refvar total = int(txtmais.linhas)
+    txtmais.juntar
+    txtmais.dividelin(50, 70)
+    txtmais.addini("\bArquivos de jogos salvos (" + total + "):")
+    txtmostra
+  fimse
+  ret 1
+
+func cmd_apagarsav
+  arqdir dir
+  txt100 lin
+  se !arg0
+    msg("Tecle o nome do arquivo após APAGARSAV.")
+  senao (lin = dir.apagar("sav/" + arg0 + ".sav")) != ""
+    msg("Erro ao apagar jogo salvo " + arg0 + ": " + lin)
+  senao
+    msg("Jogo salvo apagado: " + arg0)
+    admlog("apagou arquivo sav: " + arg0)
+  fimse
+  ret 1
+
 func cmd_monit
   indiceitem item
   ref r
@@ -522,15 +599,14 @@ func cmd_lcl # Listar classes
   se !p.iniclasse(arg0)
     msg("\bNenhuma classe encontrada.")
   senao
-    txt100 lin
     debug d
     d.exec = 50000
-    txtmais.limpar
-    lin = p.texto
-    epara p.depois, p.lin, p.depois
-      txtmais.addfim(lin + ","), lin = p.texto
+    epara txtmais.limpar, p.lin, p.depois
+      txtmais.addfim(p.texto + ",")
     efim
-    txtmais.addfim(lin)
+    textopos pos
+    pos = txtmais.fim, pos.antes
+    pos.mudar("", inttotal(pos.texto) - 1, 1)
     txtmais.juntar
     txtmais.dividelin(50, 70)
     txtmais.addini("\bClasses:")
@@ -966,6 +1042,12 @@ const info10 = "Ao teclar falar e uma mensagem começada com reticências"
 const tipo10 = "linha--"
 const clas10 = "config"
 const vari10 = "continuarmsg"
+#
+const nome11 = "Gritar"
+const info11 = "Ao teclar gritar e uma mensagem"
+const tipo11 = "linha--"
+const clas11 = "config"
+const vari11 = "gritarmsg"
 
 
 classe menu_econfig_comandos
@@ -973,73 +1055,104 @@ const titulo = "Comandos"
 const menufim = "menu_econfig"
 const colunas = 35
 #
-const nome1 = "Comando Rezar"
+const nome1 = "Comando Salvar"
+const info1 = "Se os comandos SALVAR e SENHA existem"
 const tipo1 = "opcao--"
 const clas1 = "config"
-const vari1 = "rezartipo"
+const vari1 = "salvartipo"
 const extr1 = "Desabilitado\nHabilitado"
 #
-const nome2 = "Rezar a partir do nível"
+const nome2 = "Salvar a partir do nível"
+const info2 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
+Se for um número acima de 65535, quem não tem jogo salvo não salva"
 const tipo2 = "numero--"
 const clas2 = "config"
-const vari2 = "rezarnivel"
+const vari2 = "salvarnivel"
 #
-const nome3 = "Comando Chat"
+const nome3 = "Comando Rezar"
 const tipo3 = "opcao--"
 const clas3 = "config"
-const vari3 = "chattipo"
-const extr3 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+const vari3 = "rezartipo"
+const extr3 = "Desabilitado\nHabilitado"
 #
-const nome4 = "Chat a partir do nível"
+const nome4 = "Rezar a partir do nível"
 const tipo4 = "numero--"
 const clas4 = "config"
-const vari4 = "chatnivel"
+const vari4 = "rezarnivel"
 #
-const nome5 = "Comando Novatos"
+const nome5 = "Comando Chat"
 const tipo5 = "opcao--"
 const clas5 = "config"
-const vari5 = "novatostipo"
+const vari5 = "chattipo"
 const extr5 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome6 = "Novatos a partir do nível"
+const nome6 = "Chat a partir do nível"
 const tipo6 = "numero--"
 const clas6 = "config"
-const vari6 = "novatosnivel"
+const vari6 = "chatnivel"
 #
-const nome7 = "Comando Emoção"
+const nome7 = "Comando Novatos"
 const tipo7 = "opcao--"
 const clas7 = "config"
-const vari7 = "emocaotipo"
-const extr7 = "Desabilitado\nHabilitado"
+const vari7 = "novatostipo"
+const extr7 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome8 = "Emoção a partir do nível"
+const nome8 = "Novatos a partir do nível"
 const tipo8 = "numero--"
 const clas8 = "config"
-const vari8 = "emocaonivel"
+const vari8 = "novatosnivel"
 #
-const nome9 = "Comando Matar"
+const nome9 = "Comando Emoção"
 const tipo9 = "opcao--"
 const clas9 = "config"
-const vari9 = "matartipo"
+const vari9 = "emocaotipo"
 const extr9 = "Desabilitado\nHabilitado"
 #
-const nome10 = "Comando Retornar até nível"
-const info10 = "Até que nível pode usar o comando retornar"
+const nome10 = "Emoção a partir do nível"
 const tipo10 = "numero--"
 const clas10 = "config"
-const vari10 = "retornar"
+const vari10 = "emocaonivel"
 #
-const nome11 = "Comando Quem mostra admin"
-const info11 = "Se não administradores podem saber quem é administrador teclando QUEM"
-const tipo11 = "simnao--"
+const nome11 = "Comando Gritar"
+const tipo11 = "opcao--"
 const clas11 = "config"
-const vari11 = "mostraadm"
+const vari11 = "gritartipo"
+const extr11 = "Desabilitado\nHabilitado"
 #
-const nome12 = "Comando Quem mostra imortal"
-const info12 = "Se não administradores podem saber quem é imortal teclando QUEM"
-const tipo12 = "simnao--"
+const nome12 = "Gritar a partir do nível"
+const tipo12 = "numero--"
 const clas12 = "config"
-const vari12 = "mostraimortal"
+const vari12 = "gritarnivel"
+#
+const nome13 = "Movimentos gastos ao gritar"
+const info13 = "Quantos pontos de movimentos o personagem gasta ao gritar"
+const tipo13 = "numero--"
+const clas13 = "config"
+const vari13 = "gritarmove"
+#
+const nome14 = "Comando Matar"
+const tipo14 = "opcao--"
+const clas14 = "config"
+const vari14 = "matartipo"
+const extr14 = "Desabilitado\nHabilitado"
+#
+const nome15 = "Comando Retornar até nível"
+const info15 = "Até que nível pode usar o comando retornar"
+const tipo15 = "numero--"
+const clas15 = "config"
+const vari15 = "retornar"
+#
+const nome16 = "Comando Quem mostra admin"
+const info16 = "Se não administradores podem saber quem é administrador teclando QUEM"
+const tipo16 = "simnao--"
+const clas16 = "config"
+const vari16 = "mostraadm"
+#
+const nome17 = "Comando Quem mostra imortal"
+const info17 = "Se não administradores podem saber quem é imortal teclando QUEM"
+const tipo17 = "simnao--"
+const clas17 = "config"
+const vari17 = "mostraimortal"
 
 
 classe menu_econfig_ataques
@@ -1062,7 +1175,6 @@ const vari2 = "atktempo"
 const extr2 = "10 200"
 #
 const nome3 = "Força do ataque automático"
-const info3 = "Usado no modo de batalha for automático"
 const tipo3 = "numero--"
 const clas3 = "config"
 const vari3 = "atkfor"

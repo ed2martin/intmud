@@ -130,7 +130,8 @@ func m_menu3 # Usado em m_menu para obter o nome da variável
 # arg1 = número da opção
   txt100 lin
   lin = arg1 + (txt(arg1, 1) ? "." : ". ") + [arg0]:nome[arg1]
-  inttotal(lin) < 20 && (lin = txt(lin + txtesp(18), 0, 20))
+  refvar maximo = int([arg0]:colunas) - 4
+  inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   ret lin + ": " + [arg0]:clas[arg1] + ":" + [arg0]:vari[arg1]
 
 func t_linha # Retorna texto de uma linha, do tipo "const x = \"abc\""
