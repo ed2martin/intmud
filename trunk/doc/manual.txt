@@ -2928,7 +2928,7 @@ da variável nomeobj.
 
 Funções:
 
-23.1. ini(<texto>, [quantidade])
+23.1. ini(<texto>, [quantidade], [tudo])
 Inicia a busca.
 
 <texto> é o nome procurado, geralmente é o que o usuário digitou.
@@ -2950,29 +2950,36 @@ de espaço antes. Exemplo, "10 poção" significa 10 itens 'poção'.
 
 [quantidade] é a quantidade máxima de objetos que podem ser encontrados.
 Se for omitido, significa apenas um. Por exemplo, se for desejável processar
-no máximo 10 itens, a quantidade deve ser o número 10.
+no máximo 10 objetos, a quantidade deve ser o número 10.
+
+[tudo] é a palavra que o usuário deve digitar para se referir a todos
+os objetos. Exemplo, se o terceiro argumento for o texto "tudo":
+"tudo" são todos os objetos
+"10 tudo" significa os 10 primeiros objetos
+"10 4.tudo" significa 10 objetos a partir do quarto
+"tudo.perg" são todos os objetos cujo nome começa com perg
 
 Vide também exemplo de código no tópico 23.3 (abaixo).
 
 23.2. nome(<texto>, [quantidade])
-Checa se um objeto corresponde ao item escolhido pelo usuário.
+Checa se um objeto corresponde ao objeto escolhido pelo usuário.
 
 <texto> contém as palavras que se referem ao objeto.
 
-[quantidade] é a quantidade de itens com o nome especificado. Se for
-omitido, significa apenas um item.
+[quantidade] é a quantidade de objetos com o nome especificado. Se for
+omitido, significa apenas um.
 
-Essa função retorna a quantidade de itens encontrados.
+Essa função retorna a quantidade de objetos encontrados.
 
 23.3. Exemplo
 
 nomeobj x
-x.ini("2.ch", 5)# Achar no máximo 5 itens que começam com "ch"
+x.ini("2.ch", 5)# Achar no máximo 5 objetos que começam com "ch"
                 # No entanto, como o texto é "2.ch", procurará só o segundo
-x.nome("bolsa") # Retorna 0 porque não é o item procurado
-x.nome("chave azul")  # Retorna 0; o nome confere, mas esse é o primeiro item
+x.nome("bolsa") # Retorna 0 porque não é o objeto procurado
+x.nome("chave azul") # Retorna 0; o nome confere, mas esse é o primeiro objeto
 x.nome("chave verde") # Retorna 1
-x.nome("chave azul")  # Retorna 0 porque já encontrou o item
+x.nome("chave azul") # Retorna 0 porque já encontrou o objeto
 
 
 24. ARQDIR - ACESSAR DIRETÓRIOS
@@ -3016,15 +3023,19 @@ Retorna quando o arquivo foi modificado, da mesma forma que atempo.
 
 24.10. criardir(<nome do diretório>)
 Cria um diretório.
+Retorna "" se sucesso ou um texto contendo o erro.
 
 24.11. apagardir(<nome do diretório>)
 Apaga um diretório, exceto se não estiver vazio.
+Retorna "" se sucesso ou um texto contendo o erro.
 
 24.12. apagar(<nome do arquivo>)
 Apaga um arquivo.
+Retorna "" se sucesso ou um texto contendo o erro.
 
 24.13. renomear(<antigo nome>, <novo nome>)
 Renomeia uma entrada.
+Retorna "" se sucesso ou um texto contendo o erro.
 
 
 25. ARQLOG - GRAVAR TEXTO EM ARQUIVOS DE LOG

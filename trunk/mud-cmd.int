@@ -20,7 +20,15 @@ const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 
 classe cmd_fim
 herda comando_comum, comando_ajuda
-const txtajuda = "\b\c3Fim\b\nSintaxe: FIM\nSai do jogo."
+const txtajuda = "\b\c3Fim\b\n\
+Sintaxe: FIM\n\
+Sai do jogo, retirando também o seu personagem. Você pode usar esse\n\
+comando a qualquer momento, exceto se estiver lutando. E quando entrar\n\
+novamente no jogo, voltar aonte estava.\n\
+Simplesmente sair do jogo sem teclar FIM pode deixar seu personagem\n\
+\"pendurado\" no jogo por alguns minutos, à mercê de qualquer perigo.\n\
+Mas isso não significa que ele está totalmente indefeso. Se atacado,\n\
+lutará como qualquer personagem não jogador."
 const posic = 0
 
 func escr
@@ -229,6 +237,51 @@ func escr
   arg0.msg("Prompt de batalha alterado para:\n" + lin)
 
 
+classe cmd_salvar
+herda comando_comum, comando_ajuda
+const objcmd = config:salvartipo ? este
+const objajuda = config:salvartipo ? este
+const posic = 5
+const txtajuda = "\b\c3Salvar\b\n\
+Sintaxe: SALVAR\n\
+O MUD já salva o seu personagem de tempos em tempos e quando seu personagem\n\
+sai do jogo. Esse comando permite salvar novamente a qualquer momento.\n\
+Se o personagem nunca foi salvo, será solicitada uma nova senha.\n\
+Veja também o comando SENHA (muda a senha do seu personagem)"
+
+func escr
+  ref r
+  $mens.p(arg0)
+  $mens.mens = arg1
+  se arg0.senha
+    arg0.p_espera = 10
+    ret arg0.msg(arg0.salvar ? "Jogo salvo com sucesso" : "Erro ao salvar o jogo")
+  senao int(config:salvarnivel) > 65535
+    ret arg0.msg("Para poder salvar, você precisa já ter salvo o jogo uma vez.")
+  senao arg0.pnivel < config:salvarnivel
+    ret arg0.msg("Para salvar você precisa estar no nível " + config:salvarnivel + ".")
+  senao
+    ret arg0.mudasenha
+
+
+classe cmd_senha
+herda comando_comum, comando_ajuda
+const objcmd = config:salvartipo ? este
+const objajuda = config:salvartipo ? este
+const posic = 5
+const txtajuda = "\b\c3Senha\b\n\
+Sintaxe: SALVAR\n\
+Muda a senha do seu personagem e salva em seguida.\n\
+Veja também o comando SALVAR (salva o seu personagem)"
+
+func escr
+  ref r
+  $mens.p(arg0)
+  $mens.mens = arg1
+  ret arg0.senha, arg0.mudasenha
+  arg0.msg("Seu personagem não possui senha. Tecle SALVAR para salvar o jogo.")
+
+
 classe cmd_ver
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Ver\b\n\
@@ -406,6 +459,48 @@ func escr
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_falou(arg0, arg1)
+  efim
+
+
+classe cmd_gritar
+herda comando_comum, comando_ajuda
+const objcmd = config:gritartipo ? este
+const objajuda = config:gritartipo ? este
+const posic = 5
+const txtajuda = "\b\c3Gritar\b\n\
+Sintaxe: GRITAR <mensagem>\n\
+Envia mensagem para todos os personagens que estiverem na mesma área."
+
+func escr
+  ref r
+  txt100 area
+  $mens.p(arg0)
+  $mens.mens = arg1
+  se arg0.pnivel < config:gritarnivel
+    ret arg0.msg("Para gritar você precisa estar no nível " + config:gritarnivel + ".")
+  senao !arg1
+    ret arg0.msg("Tecle a mensagem após GRITAR.")
+  senao arg0.pmove < config:gritarmove
+    ret arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
+  fimse
+  epara r = arg0.dono, r, r = r.dono
+    area = r.s_area
+    ret r.s_gritar, arg0.msg(r.s_gritar)
+  efim
+  arg0.pmove -= config:gritarmove
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    continuar item.obj.var.u_[arg0.nome]
+    epara r = item.obj.dono, r.dono, r = r.dono
+      r.s_gritar && (r = nulo)
+    efim
+    r.s_gritar && (r = nulo)
+    r.s_area == area && item.obj.msg($mens.proc(config:gritarmsg, item.obj))
+  efim
+# Executa eventos
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_gritou(arg0, arg1)
   efim
 
 
@@ -666,11 +761,13 @@ const txtajuda = "\b\c3Atalho\b\n\
 Sintaxe: ATALHO\n\
          ATALHO <nome>\n\
          ATALHO <nome> <comandos>\n\
-         ATALHO LIMPAR\n\n\
-Permite definir atalhos para os comandos que você usa frequentemente.\n\
-Para criar um atalho, basta teclar a palavra atalho seguido de um nome\n\
-qualquer e o comando. Assim, sempre que você digitar o nome, o efeito\n\
-será o mesmo que digitar o comando correspondente.\n\n\
+         ATALHO LIMPAR\n\
+         !\n\n\
+O sinal de exclamação repete o último comando que você digitou.\n\n\
+Já o comando ATALHO, permite definir atalhos para os comandos que você usa\n\
+frequentemente. Para criar um atalho, basta teclar a palavra atalho seguido\n\
+de um nome qualquer e o comando. Assim, sempre que você digitar o nome,\n\
+o efeito será o mesmo que digitar o comando correspondente.\n\n\
 Para apagar um atalho, basta digitar a palavra atalho seguido do nome.\n\n\
 Para apagar todos os atalhos, digite atalho limpar.\n\n\
 Digitando apenas a palavra atalho, mostra todos os atalhos definidos.\n\n\
@@ -681,7 +778,7 @@ As seguintes sequências de caracteres tem um significado especial:\n\
  \c2$0\b  Todas as palavras\n\
  \c2$S\b  Da segunda palavra em diante\n\
  \c2$T\b  Da terceira palavra em diante\n\
- \c2$Z\b  Uma quebra de linha (para colocar mais um comando)\n\
+ \c2$Z\b  Uma quebra de linha (para separar dois comandos)\n\
  \c2$$\b  O Caracter $\n\n\
 Exemplos:\n\n\
 atalho med sentar $Z meditar\n\
@@ -690,7 +787,7 @@ atalho med sentar $Z meditar\n\
 atalho con lançar \"raio confusão\" $1\n\
   Cria o atalho chamado con. Digitando, por exemplo, con silva,\n\
   terá o mesmo efeito de digitar lançar \"raio confusão\" silva.\n\n\
-alias med\n\
+atalho med\n\
   Apaga o atalho med, se existir."
 
 func escr
