@@ -156,7 +156,7 @@ func escr
     arg0.recalc = 1 # Deverá atualizar bitinv
   fimse
 # Checa a propriedade IMORTAL
-  se arg0.jogconfig.18 != opc.18 # Se a propriedade IMORTAL mudou
+  se arg0.jogconfig.14 != opc.14 # Se a propriedade IMORTAL mudou
     arg0.recalc = 1 # Deverá atualizar bitver
   fimse
 # Checa a propriedade SEGUIR
@@ -560,6 +560,7 @@ classe cmd_emocao
 herda comando_comum, comando_ajuda
 const objcmd = config:emocaotipo ? este
 const objajuda = config:emocaotipo ? este
+const posic = 5
 const txtajuda = "\b\c3Emoção\b\n\
 Sintaxe: EMOÇÃO <mensagem>\n\
 Mostra para os jogadores na mesma sala o que você está sentindo.\n\

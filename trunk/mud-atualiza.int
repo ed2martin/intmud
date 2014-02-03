@@ -4,6 +4,7 @@ prog p
 debug dbg
 uint16 versao
 telatxt tela
+intexec ini2
 
 func p_criar # Para testar as modificações
   se args == 1
@@ -27,7 +28,7 @@ func iniclasse
   criar(arg0)
 
 func ini
-  apagar(este)
+  ini2 = 1
 # Checa e muda a versão
   ret (versao = config:versao) >= 297, nulo
   p.criar("config", "const versao = 297 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
@@ -167,6 +168,58 @@ func ini
   se versao < 297
     criafunc("config", "const gritarmsg = \"$P gritou '$m'\"")
     criafunc("config", "const gritarmove = 2")
+  fimse
+
+func ini2_exec
+  apagar(este)
+# Checa e muda a versão
+  ret (versao = config:versao) >= 298, nulo
+  p.criar("config", "const versao = 298 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  config:salvar
+# Acerta variáveis das habilidades e magias
+  se versao < 298
+    uint16 valor
+    epara p.iniarq("b-hab"), p.lin, p.depois
+      dbg.ini
+      se (valor = ([p.texto]:a_vida1 + [p.texto]:a_vida2) / 2) != 0
+        p.criar(p.texto, "const a_vida1 = " + valor)
+      senao
+        p.apagar(p.texto, "a_vida1")
+      fimse
+      p.apagar(p.texto, "a_vida2")
+      se (valor = ([p.texto]:a_mana1 + [p.texto]:a_mana2) / 2) != 0
+        p.criar(p.texto, "const a_mana1 = " + valor)
+      senao
+        p.apagar(p.texto, "a_mana1")
+      fimse
+      p.apagar(p.texto, "a_mana2")
+      se (valor = ([p.texto]:a_move1 + [p.texto]:a_move2) / 2) != 0
+        p.criar(p.texto, "const a_move1 = " + valor)
+      senao
+        p.apagar(p.texto, "a_move1")
+      fimse
+      p.apagar(p.texto, "a_move2")
+      refvar msgini = txtsublin([p.texto]:msgini, 0, 1)
+      se [p.texto]:msgatk0
+        refvar lin = msgini + "\n\n\n" + [p.texto]:msgatk0
+        p.criar(p.texto, "const msgatk0=\"" + txtvis(lin) + "\"")
+      senao msgini
+        p.criar(p.texto, "const msgatk0=\"" + txtvis(msgini) + "\"")
+      fimse
+      se [p.texto]:msgatk1
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk1) + "\"")
+      fimse
+      se [p.texto]:msgatk2
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk2) + "\"")
+      fimse
+      se [p.texto]:msgatk3
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk3) + "\"")
+      fimse
+      se [p.texto]:msgatk4
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk4) + "\"")
+      fimse
+      p.apagar(p.texto, "msgini")
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-b-*.int atualizados\n")

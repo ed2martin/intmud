@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 297 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 298 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -48,8 +48,16 @@ const salasav = $s_casa001
 const salafim = $s_fim001
 #
 # Quantos animais pode ter numa batalha, de 0 a 8
-# Se 0, os comandos para animais deixam de existir
+# Se 0, os comando para animais deixam de existir
 const animal1 = 5
+#
+# Quantos animais reserva pode guardar com o comando Reserva
+# Se 0, o comandos Reserva deixa de existir
+const animal2 = 50
+#
+# Se os animais capturados podem ir para a lista de reservas
+# 0=não pode, 1=pode
+const capturar = 1
 #
 # Quantos itens (ao todo) cada personagem pode ter
 const itens = 50

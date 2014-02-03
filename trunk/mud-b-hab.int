@@ -2,7 +2,8 @@ classe cmd_arma_exótica
 herda comando_ataque
 const nomevar = "h_arma_exótica"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P ataca $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P ataca $a, $m\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, errou\n\n\n\
@@ -15,8 +16,9 @@ const nomevar = "h_Arremessar"
 const tipoatk = 0 # Normal
 const ataque = 80
 const vel = 30
-const extra = "Golpe físico de força"
-const msgatk0 = "$P se joga contra $a, $m\n\n\
+const msgextra = "Golpe físico de força"
+const msgatk0 = "\n\n\n\
+$P se joga contra $a, $m\n\n\
 $P se joga contra $a, $m\n\n\n\
 $P se joga contra $a, $m\n\n\n\
 $P se joga contra $a, errou\n\n\n\
@@ -27,7 +29,8 @@ classe cmd_Bater
 herda comando_ataque
 const nomevar = "h_Bater"
 const tipoalvo = 7 # Alvo: 7 Nenhum (não ataca)
-const msgatk0 = "$P bate em $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P bate em $a, $m\n\n\
 $P bate em $a, $m\n\n\n\
 $P bate em $a, $m\n\n\n\
 $P bate em $a, errou\n\n\n\
@@ -50,7 +53,8 @@ classe cmd_cajado
 herda comando_ataque
 const nomevar = "h_cajado"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P lança um raio com um cajado em $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P lança um raio com um cajado em $a, $m\n\n\
 $P lança um raio com um cajado em $a, $m\n\n\n\
 $P lança um raio com um cajado em $a, $m\n\n\n\
 $P lança um raio com um cajado em $a, mas erra\n\n\n\
@@ -61,7 +65,8 @@ classe cmd_chicote_e_corrente
 herda comando_ataque
 const nomevar = "h_chicote_e_corrente"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P ataca $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P ataca $a, $m\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, errou\n\n\n\
@@ -75,7 +80,8 @@ const tipoatk = 12 # Ataque tipo: 12 Elétrico
 const msgextra = "Dá uma descarta elétrica que pode paralisar."
 const a_efeito1 = "paralisado"
 const a_prob1 = 10
-const msgatk0 = "$P dá um choque em $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P dá um choque em $a, $m\n\n\
 $P dá um choque em $a, $m\n\n\n\
 $P dá um choque em $a, $m\n\n\n\
 $P erra um choque em $a, errou\n\n\n\
@@ -85,13 +91,14 @@ $P dá um choque em $a, nada acontece"
 classe cmd_chutar
 herda comando_ataque
 const nomevar = "h_Chutar"
-const tipoatk = 0 # Normal
-const ataque = 70
-const vel = 50
-const extra = "Golpe físico de força"
-const valor = 80
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
-const msgatk0 = "$P chuta $a, $m\n\n\
+const ataque = 70
+const tipoatk = 0 # Normal
+const valor = 80
+const vel = 50
+const msgextra = "Golpe físico de força"
+const msgatk0 = "\n\n\n\
+$P chuta $a, $m\n\n\
 $P chuta $a, $m\n\n\n\
 $P chuta $a, $m\n\n\n\
 $P chuta $a, errou\n\n\n\
@@ -105,7 +112,8 @@ const tipoatk = 2 # Tipo de ataque: 2 Cortante
 const tipoarma = 8 # Requer arma: Lâmina curta
 const c_move1 = 5
 const c_move2 = 5
-const msgatk0 = "$P corta $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P corta $a, $m\n\n\
 $P corta $a, $m\n\n\n\
 $P corta $a, $m\n\n\n\
 $P tenta cortar $a, errou\n\n\n\
@@ -119,7 +127,8 @@ const tipoatk = 13 # Ataque tipo: 13 Vegetal
 const c_move1 = 10
 const c_move2 = 5
 const msgextra = "Absorve metade dos danos que causa."
-const msgatk0 = "$P drena $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P drena $a, $m\n\n\
 $P drena $a, $m\n\n\n\
 $P drena $a, $m\n\n\n\
 $P tenta drena $a, errou\n\n\n\
@@ -149,7 +158,8 @@ const msgextra = "Endurece os músculos para melhorar a sua defesa.\n\
 Só pode ser usado durante uma batalha."
 const a_batalha = 1 # Condição: 1 Durante a batalha
 const c_espera = 40
-const msgatk0 = "$P endurece., $m\n\n\
+const msgatk0 = "\n\n\n\
+$P endurece., $m\n\n\
 $P endurece., $m\n\n\n\
 $P endurece., $m\n\n\n\
 $P tenta endurecer., errou\n\n\n\
@@ -162,7 +172,8 @@ const nomevar = "h_Explodir"
 const ataque = 200
 const vel = 100
 const msgextra = "Extremamente forte, mas quem aplica esse golpe desmaia."
-const msgatk0 = "$P explodiu na direção de $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P explodiu na direção de $a, $m\n\n\
 $P explodiu na direção de $a, $m\n\n\n\
 $P explodiu na direção de $a, $m\n\n\n\
 $P explodiu mas $a desviou em tempo., errou\n\n\n\
@@ -194,7 +205,8 @@ const c_mana2 = 5
 const a_efeito1 = "envenenado"
 const a_prob1 = 70
 const msgextra = "Tem grandes chances de envenenar."
-const msgatk0 = "$P lança gás tóxico em $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P lança gás tóxico em $a, $m\n\n\
 $P lança gás tóxico em $a, $m\n\n\n\
 $P lança gás tóxico em $a, $m\n\n\n\
 $P lança gás tóxico em $a, errou\n\n\n\
@@ -205,7 +217,8 @@ classe cmd_lâmina_curta
 herda comando_ataque
 const nomevar = "h_lâmina_curta"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P fura $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P fura $a, $m\n\n\
 $P fura $a, $m\n\n\n\
 $P fura $a, $m\n\n\n\
 $P tenta furar $a, mas erra\n\n\n\
@@ -216,7 +229,8 @@ classe cmd_lâmina_longa
 herda comando_ataque
 const nomevar = "h_lâmina_longa"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P corta $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P corta $a, $m\n\n\
 $P corta $a, $m\n\n\n\
 $P corta $a, $m\n\n\n\
 $P tenta cortar $a, mas erra\n\n\n\
@@ -227,7 +241,8 @@ classe cmd_maca_e_martelo
 herda comando_ataque
 const nomevar = "h_maca_e_martelo"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P ataca $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P ataca $a, $m\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, errou\n\n\n\
@@ -238,7 +253,8 @@ classe cmd_mangual
 herda comando_ataque
 const nomevar = "h_mangual"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P ataca $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P ataca $a, $m\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, $m\n\n\n\
 $P ataca $a, errou\n\n\n\
@@ -250,7 +266,8 @@ herda comando_ataque
 const nomevar = "h_Meditar"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
 const a_efeito1 = "meditando"
-const msgatk0 = "$P começa a meditar., $m\n\n\
+const msgatk0 = "\n\n\n\
+$P começa a meditar., $m\n\n\
 $P começa a meditar., $m\n\n\n\
 $P começa a meditar., $m\n\n\n\
 $P tenta meditar mas não consegue., errou\n\n\n\
@@ -263,9 +280,10 @@ const nomevar = "h_Morder"
 const tipoatk = 2 # Ataque tipo: 2 Cortante
 const ataque = 50
 const vel = 60
-const extra = "Golpe físico de força"
+const msgextra = "Golpe físico de força"
 const valor = 120
-const msgatk0 = "$P morde $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P morde $a, $m\n\n\
 $P morde $a, $m\n\n\n\
 $P morde $a, $m\n\n\n\
 $P morde $a, errou\n\n\n\
@@ -296,12 +314,13 @@ const tipoatk = 12 # Ataque tipo: 12 Elétrico
 classe cmd_socar
 herda comando_ataque
 const nomevar = "h_Socar"
-const tipoatk = 0 # Normal
-const ataque = 40
-const vel = 80
-const extra = "Golpe físico de força"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
-const msgatk0 = "$P soca $a, $m\n\n\
+const ataque = 40
+const tipoatk = 0 # Normal
+const vel = 80
+const msgextra = "Golpe físico de força"
+const msgatk0 = "\n\n\n\
+$P soca $a, $m\n\n\
 $P soca $a, $m\n\n\n\
 $P soca $a, $m\n\n\n\
 $P soca $a, errou\n\n\n\
@@ -313,11 +332,11 @@ herda comando_ataque
 const nomevar = "h_Soneca"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
 const a_vida1 = 10000
-const a_vida2 = 10000
 const a_efeito1 = "soneca"
 const msgextra = "Recupera os pontos de vida e dorme por 15 segundos\n\
 Depois disso, você deve teclar acorar para acordar"
-const msgatk0 = "$P boceja, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P boceja, $m\n\n\
 $P boceja, $m\n\n\n\
 $P boceja, $m\n\n\n\
 $P boceja, errou\n\n\n\
@@ -328,7 +347,8 @@ classe cmd_varinha
 herda comando_ataque
 const nomevar = "h_varinha"
 const tipoalvo = 6 # Alvo: Ataque automático
-const msgatk0 = "$P lança um feitiço em $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P lança um feitiço em $a, $m\n\n\
 $P lança um feitiço em $a, $m\n\n\n\
 $P lança um feitiço em $a, $m\n\n\n\
 $P lança um feitiço na direção de $a\n\n\n\
@@ -341,7 +361,8 @@ const nomevar = "h_Visivel"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
 const a_remove = "furtividade\ninvisibilidade\nocultar"
 const a_batalha = 2 # Condição: 2 Fora da batalha
-const msgatk0 = "$P fica visível., $m\n\n\
+const msgatk0 = "\n\n\n\
+$P fica visível., $m\n\n\
 $P fica visível., $m\n\n\n\
 $P fica visível., $m\n\n\n\
 $P fica visível., errou\n\n\n\
@@ -355,7 +376,8 @@ const ataque = 90
 const vel = 40
 const depende = "h_chutar"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
-const msgatk0 = "$P dá uma voadora em $a, $m\n\n\
+const msgatk0 = "\n\n\n\
+$P dá uma voadora em $a, $m\n\n\
 $P dá uma voadora em $a, $m\n\n\n\
 $P dá uma voadora em $a, $m\n\n\n\
 $P dá uma voadora em $a, errou\n\n\n\
@@ -376,15 +398,15 @@ classe magia_curar
 herda comando_ataque
 const nomevar = "m_Curar"
 const tipoalvo = 4 # Alvo: 4 Qualquer um; não agressivo
-const msgacertou2 = "$P cura $a"
-const msgacertou1 = "$P se cura"
-const msgerrou2 = "$P tenta curar $a"
-const msgerrou1 = "$P tenta se curar"
+const msgatk0 = "\n\n\n\
+$P se cura\n\n\
+$P cura $a\n\n\n\n\n\n\
+$P tenta curar $a\n\n\n\
+$P tenta curar $a"
 const valor = 100
 const c_mana1 = 30
 const c_mana2 = 5
-const a_vida1 = 30
-const a_vida2 = 50
+const a_vida1 = 40
 
 
 classe magia_curar_cegueira
@@ -394,21 +416,20 @@ const tipoalvo = 4 # Alvo: 4 Qualquer um; não agressivo
 const valor = 100
 const c_mana1 = 30
 const c_mana2 = 5
-const msgini = "$P fala solenemente 'Curar Cegueira'"
 const msgacertou2 = ""
 const a_remove = "cegueira"
+const msgatk0 = "$P fala solenemente 'Curar Cegueira'"
 
 
 classe magia_flutuar
 herda comando_ataque
 const nomevar = "m_Flutuar"
 const tipoalvo = 4 # Alvo: 4 Qualquer um; não é ataque
-const msgini = "$P fala solenemente 'Flutuar'"
 const a_efeito1 = "flutuar"
-const msgacertou2 = ""
+const a_remove = "voar"
 const c_mana1 = 20
 const c_mana2 = 5
-const a_remove = "voar"
+const msgatk0 = "$P fala solenemente 'Flutuar'"
 
 
 classe magia_fogo
@@ -417,9 +438,14 @@ const nomevar = "m_Fogo"
 const tipoatk = 4 # Tipo de ataque: 4 Fogo
 const c_mana1 = 15
 const c_mana2 = 10
-const msgacertou2 = "$P lança fogo em $a"
 const valor = 100
 const tipoalvo = 0 # Alvo: 0 Qualquer um; ataque
+const msgatk0 = "\n\n\n\
+$P lança fogo em si mesm$s.\n\n\
+$P lança fogo em $a.\n\n\n\
+$P assa $a em fogo alto.\n\n\n\
+$P lança fogo em $a mas erra.\n\n\n\
+$P lança fogo em $a mas nada acontece."
 
 
 classe magia_identificar
@@ -434,26 +460,30 @@ classe magia_invisibilidade
 herda comando_ataque
 const nomevar = "m_Invisibilidade"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
-const msgini = "$P fala solenemente 'Inv'"
 const a_efeito1 = "invisibilidade"
 const a_batalha = 2 # Condição: 2 Fora da batalha
 const msgacertou2 = ""
 const c_mana1 = 20
 const c_mana2 = 5
+const msgatk0 = "$P fala solenemente 'Inv'"
 
 
 classe magia_raio_confusão
 herda comando_ataque
 const nomevar = "m_Raio confusão"
 const msgextra = "Pode causar confusào."
-const msgacertou2 = "$P lança um raio de confusão em $a"
-const msgerrou2 = "$P lança um raio de confusão na direção de $a"
 const ataque = 80
 const tipoatk = 14 # Ataque tipo: 14 Psíquico
 const a_efeito1 = "confusao"
 const a_prob1 = 100
 const c_mana1 = 20
 const c_mana2 = 5
+const msgatk0 = "\n\n\n\
+$P lança em raio de confusão em si mesm$m, $m\n\n\
+$P lança um raio de confusão em $a, $m\n\n\n\
+$P destrói $a com um raio de confusão, $m\n\n\n\
+$P lança um raio de confusão na direção de $a\n\n\n\
+$P lança um raio em $a, mas o raio se dissipa."
 
 
 classe magia_retornar
@@ -483,49 +513,50 @@ const a_prob1 = 10
 const c_mana1 = 30
 const c_mana2 = 15
 const msgextra = "Pode congelar."
-const msgacertou2 = "$P lança um sopro gelo em $a"
-const msgerrou2 = "$P lança um sopro gelo na direção de $a"
+const msgatk0 = "\n\n\n\
+$P lança em sopro de gelo em si mesm$m, $m\n\n\
+$P lança um sopro de gelo em $a, $m\n\n\n\
+$P destrói $a com um sopro de gelo, $m\n\n\n\
+$P lança um sopro de gelo na direção de $a\n\n\n\
+$P lança um sopro de gelo em $a, mas a temperatura sequer chega a cair."
 
 
 classe magia_ver_invisivel
 herda comando_ataque
 const nomevar = "m_Ver Invisível"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
-const msgacertou2 = ""
-const msgini = "$P fala solenemente 'Ver Inv'"
 const a_efeito1 = "ver invisível"
 const c_mana1 = 30
 const c_mana2 = 4
+const msgatk0 = "$P fala solenemente 'Ver Inv'"
 
 
 classe magia_ver_oculto
 herda comando_ataque
 const nomevar = "m_Ver Oculto"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
-const msgacertou2 = ""
-const msgini = "$P fala solenemente 'Ver Oculto'"
 const a_efeito1 = "ver oculto"
 const c_mana1 = 30
 const c_mana2 = 4
+const msgatk0 = "$P fala solenemente 'Ver Oculto'"
 
 
 classe magia_voar
 herda comando_ataque
 const nomevar = "m_Voar"
 const tipoalvo = 4 # Alvo: 4 Qualquer um; não é ataque
-const msgini = "$P fala solenemente 'Voar'"
 const a_efeito1 = "voar"
-const msgacertou2 = ""
 const c_mana1 = 40
 const c_mana2 = 10
 const a_remove = "flutuar"
+const msgatk0 = "$P fala solenemente 'Voar'"
 
 
 classe magia_volta
 herda comando_ataque
 const nomevar = "m_Volta"
 const tipoalvo = 4 # Alvo: 4 Qualquer um; não é ataque
-const msgacertou2 = "$P faz $a voltar."
+const msgatk0 = "\n\n\n$P volta.\n\n\n$P faz $a voltar."
 
 func cmd_alvofim
   arg1.contr.mudadono($s_casa002)

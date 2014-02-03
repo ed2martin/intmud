@@ -231,53 +231,65 @@ const titulo = "Mensagens"
 const menufim = var.menufim
 const colunas = 25
 #
-const nome1 = "Criou"
-const info1 = "Quando personagem recebe o efeito"
+const titu1 = " * Criou"
+#
+const nome1 = "Perso"
 const tipo1 = "linha"
 const clas1 = var.classe1
-const vari1 = "msgini2"
+const vari1 = "msgini1"
 #
-const nome2 = "Criou; perso"
-const info2 = "Somente para o personagem; quando o personagem recebe o efeito"
+const nome2 = "Outros"
 const tipo2 = "linha"
 const clas2 = var.classe1
-const vari2 = "msgini1"
+const vari2 = "msgini2"
 #
-const nome3 = "Sem efeito"
-const info3 = "Quando não foi possível criar efeito no personagem"
+const titu3 = " * Falhou"
+#
+const nome3 = "Perso"
 const tipo3 = "linha"
 const clas3 = var.classe1
-const vari3 = "msgnulo2"
+const vari3 = "msgfalhou1"
 #
-const nome4 = "Sem efeito; perso"
-const info4 = "Somente para o personagem; quando não foi possível criar efeito no personagem"
+const nome4 = "Outros"
 const tipo4 = "linha"
 const clas4 = var.classe1
-const vari4 = "msgnulo1"
+const vari4 = "msgfalhou2"
 #
-const nome5 = "Apagou"
-const info5 = "Quando o efeito deixa de existir"
+const titu5 = " * Não teve efeito"
+#
+const nome5 = "Perso"
 const tipo5 = "linha"
 const clas5 = var.classe1
-const vari5 = "msgfim2"
+const vari5 = "msgnulo1"
 #
-const nome6 = "Apagou; perso"
-const info6 = "Somente para o personagem; quando o efeito deixa de existir"
+const nome6 = "Outros"
 const tipo6 = "linha"
 const clas6 = var.classe1
-const vari6 = "msgfim1"
+const vari6 = "msgnulo2"
 #
-const nome7 = "Reduz"
-const info7 = "Quando reduz vida, mana ou vigor"
+const titu7 = " * Apagou"
+#
+const nome7 = "Perso"
 const tipo7 = "linha"
 const clas7 = var.classe1
-const vari7 = "msgreduz2"
+const vari7 = "msgfim1"
 #
-const nome8 = "Reduz; perso"
-const info8 = "Somente para o personagem; quando reduz vida, mana ou vigor"
+const nome8 = "Outros"
 const tipo8 = "linha"
 const clas8 = var.classe1
-const vari8 = "msgreduz1"
+const vari8 = "msgfim2"
+#
+const titu9 = " * Ao reduzir vida/mana/vigor"
+#
+const nome9 = "Perso"
+const tipo9 = "linha"
+const clas9 = var.classe1
+const vari9 = "msgreduz1"
+#
+const nome10 = "Outros"
+const tipo10 = "linha"
+const clas10 = var.classe1
+const vari10 = "msgreduz2"
 
 
 classe comum_efeito
@@ -294,34 +306,59 @@ const e_condicao = 1
 const maximo = 1
 const msgini1 = msgini2
 const msgfim1 = msgfim2
+const msgfalhou1 = msgfalhou2
 const msgnulo1 = msgnulo2
 const msgreduz1 = msgreduz2
 intexec evini # Para inicializar o efeito
+#
+# Ordem que deve organizar as constantes:
+const admordem = "e_nome\n\
+e_condicao\n\
+desc\n\
+maximo\n\
+r_mana r_move r_tempo r_vida\n\
+tempo1 tempo2\n\
+msgini1\n\
+msgini2\n\
+msgfalhou1\n\
+msgfalhou2\n\
+msgnulo1\n\
+msgnulo2\n\
+msgfim1\n\
+msgfim2\n\
+msgreduz1\n\
+msgreduz2\n\
+evperso"
 
 func ini # Cria efeito
 # arg0 = personagem que receberá o efeito
 # arg1 = nível de quem usou o efeito
-  evini = 1, t_duracao = int(arg1) * tempo2 + tempo1, t_reduzir = r_tempo
+  evini = 1, t_reduzir = r_tempo
+  t_duracao = 0 > arg1 ? -1 : intpos(tempo1 + tempo2 * arg1)
   ret !(dono = arg0), apagar(este) # Acerta dono e apaga efeito se for nulo
-  idono = dono.dentro2.addini(este) # Adiciona como personagem
 
 func evini_exec # Inicializa efeito
-  se dono.dentro2.total(este) > maximo || e_condicao == (dono.contr.atkenv ? 3 : 2)
+  se t_duracao < 0
     apagar(este)
-    evini = 1
+    $mens.p(dono) + $mens.mvis2(msgfalhou1, msgfalhou2)
+  senao dono.dentro2.total(este) >= maximo || e_condicao == (dono.contr.atkenv ? 3 : 2)
+    apagar(este)
     $mens.p(dono) + $mens.mvis2(msgnulo1, msgnulo2)
   senao
+    idono = dono.dentro2.addini(este) # Adiciona como personagem
     evperso && (evrec = dono.evento.addfim(este))
     e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
     dono.recalc = 1
     $mens.p(dono) + $mens.mvis2(msgini1, msgini2)
+    cmd_ini
   fimse
-  cmd_ini
 
 func fim # Apaga efeito
-  ret evini, nulo
+  ret !idono, nulo
+  idono.remove
+  dono.recalc = 0
+  dono.recalc_exec
   dono.pvida > 0 && $mens.p(dono) + $mens.mvis2(msgfim1, msgfim2)
-  dono.recalc = 1
   cmd_fim
 
 func ajustaobj # Acerta dono e eventos do objeto
@@ -371,7 +408,6 @@ func ini # Cria efeito
   tapaga = arg1, !dono.dono.socktot && (tatual = tapaga) # Acerta tempo
 
 const cmd_saiu = recalc = 1 # Alguém saiu da sala
-
 const ajustaobj = recalc_exec # Acerta dono e eventos do objeto
 
 func recalc_exec # Acerta eventos

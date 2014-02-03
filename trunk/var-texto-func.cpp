@@ -931,7 +931,7 @@ bool TTextoPos::FuncAdd(TVariavel * v, int valor)
     }
 // Obtém número de linhas
     int linhas = v[2].getInt();
-    if (linhas<0)
+    if (linhas<=0)
         return false;
 // Obtém variável textopos
     if (v[1].defvar[2] != Instr::cTextoPos)

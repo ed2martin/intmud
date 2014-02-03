@@ -40,7 +40,7 @@ func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   se contr.dono.socktot
     arg0 && contr.msginv(arg0)
-    arg1 && alvo.contr.msginv(arg1)
+    arg1 && alvo.contr != contr && alvo.contr.msginv(arg1)
     se arg2
       listaobj l0
       l0.addfim(contr.dono.dentro2)
@@ -76,7 +76,7 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   se contr.dono.socktot
     arg0 && contr.msginv(arg0)
-    arg1 && alvo.contr.msgvis(arg1)
+    arg1 && alvo.contr != contr && alvo.contr.msgvis(arg1)
     se arg2
       listaobj l0
       l0.addfim(contr.dono.dentro2)
