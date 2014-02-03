@@ -229,7 +229,7 @@ func escr
   ref pos.55
   txt50 nomepos
 # Obtém o personagem
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = arg1 == "tudo" ? arg0 : misc:objperso(arg0, arg1)
   ret !r, nulo
 # Preenche pos
   epara item = r.dentro2.fim, item, item.antes
@@ -243,14 +243,14 @@ func escr
     refvar obj = pos.[1 + txt1(lin)]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
-      nomepos += txtesp(20 - inttotal(nomepos))
+      nomepos += txtesp(23 - inttotal(nomepos))
       obj.atribs.linhas && (nomepos += "(" + txttroca(obj.atribs.ini.textolin(100), "\n", " ") + \
 ") ")
-      t.addfim(nomepos + " " + txtcopiamai(obj.descnome, "A"))
+      t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
     senao lugar & intbit(1 + txt1(lin))
       nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
-        t.addfim(nomepos + txtesp(20 - inttotal(nomepos)) + "nada")
+        t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")
       fimse
     fimse
   efim

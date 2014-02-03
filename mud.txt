@@ -279,8 +279,9 @@ No caso do personagem, é a sala aonde o personagem está.
 Para mudar o dono, usar a função mdono.
 
 ref contr
-Quem está controlando; mesmo que: (dono.perso ? dono : este)
-Usado principalmente quando um personagem possui animais.
+Quem está controlando; mesmo que: (perso && dono.perso ? dono : este)
+Usado quando um personagem possui animais, para saber quem está
+controlando o animal.
 
 ref donoantes
 Dono anterior desse objeto.
@@ -1337,22 +1338,22 @@ Condição para aplicar os efeitos sob o alvo:
 2 = Nenhuma condição
 
 const a_vida1 = 0
-Quantos pontos de vida ganha no nível iniciante.
+Quantos pontos de vida ganha.
 
 const a_vida2 = 0
-Quantos pontos de vida ganha no nível perito.
+Quantos pontos de vida ganha por nível.
 
 const a_mana1 = 0
-Quantos pontos de mana ganha no nível iniciante.
+Quantos pontos de mana ganha.
 
 const a_mana2 = 0
-Quantos pontos de mana ganha no nível perito.
+Quantos pontos de mana ganha por nível.
 
 const a_move1 = 0
-Quantos pontos de vigor ganha no nível iniciante.
+Quantos pontos de vigor ganha.
 
 const a_move2 = 0
-Quantos pontos de vigor ganha no nível perito.
+Quantos pontos de vigor ganha por nível.
 
 const a_efeito1 = ""
 Nome do primeiro efeito aplicado sob o alvo.
@@ -1394,11 +1395,6 @@ func custohab2( personagem, quanto sabe )
 Aplica os custos da habilidade/magia, como gasto de mana e de moviemnto.
 Argumento quanto sabe, vide função checahab2, acima.
 
-func efeitohab1( personagem, alvo )
-func efeitohab2( personagem, alvo, quanto sabe )
-Aplica o efeito da habilidade sob o alvo.
-Argumento quanto sabe, vide função checahab2, acima.
-
 Na classe comando_ataque:
 
 const tipoalvo = 0
@@ -1437,31 +1433,32 @@ const tipobonus = "anão\nguerreiro"
 const msgextra = ""
 Informações extras, mostradas quando o jogador consulta sobre a hab/magia.
 
-const msgini = ""
-Mensagem enviada a todos da sala ao usar a hab/magia.
-
 const msgatk0 = ""
 Variáveis msgatk0 a msgatk4. Contém várias linhas de texto, sendo que cada
 linha é uma mensagem de batalha.
-Quando acertou o golpe em si mesmo:
+Ao usar a habilidade ou magia:
 Linha 0 = para o personagem
-Linha 1 = para os outros; se vazio assume linha 0
+Linha 1 = para o alvo; se vazio assume linha 0
+Linha 2 = para os outros; se vazio assume linha 0
+Quando acertou o golpe em si mesmo:
+Linha 3 = para o personagem
+Linha 4 = para os outros; se vazio assume linha 3
 Quando acertou outro personagem:
-Linha 2 = para o personagem
-Linha 3 = para o alvo; se vazio assume linha 2
-Linha 4 = para os outros; se vazio assume linha 2
-Quando matou o alvo:
 Linha 5 = para o personagem
 Linha 6 = para o alvo; se vazio assume linha 5
 Linha 7 = para os outros; se vazio assume linha 5
-Quando errou o alvo:
+Quando matou o alvo:
 Linha 8 = para o personagem
 Linha 9 = para o alvo; se vazio assume linha 8
 Linha 10 = para os outros; se vazio assume linha 8
-Quando o golpe não teve efeito:
+Quando errou o alvo:
 Linha 11 = para o personagem
 Linha 12 = para o alvo; se vazio assume linha 11
 Linha 13 = para os outros; se vazio assume linha 11
+Quando o golpe não teve efeito:
+Linha 14 = para o personagem
+Linha 15 = para o alvo; se vazio assume linha 14
+Linha 16 = para os outros; se vazio assume linha 14
 
 func txtajuda
 Retorna um texto que contém informações, para os comandos hab, magia e
@@ -1471,10 +1468,14 @@ func escr
 É chamado quando o jogador digita o comando para usar a hab/magia.
 Essa função checa se pode usar, obtém o alvo e chama a função exechab.
 
-func exechab( personagem, alvo, quanto sabe )
+func exechab( personagem, alvo, quanto sabe, nível do personagem )
 Chamado quando personagem usa habilidade ou magia.
 O argumento quanto sabe é um número de 0 a 1 que indica quanto sabe da
 habilidade ou magia (0=iniciante até 1=perito).
+
+func efeitohab( personagem, alvo, quanto sabe, nível do personagem )
+Aplica o efeito da habilidade ou magia sobre o alvo.
+Argumento quanto sabe, vide função checahab2, acima.
 
 func velgolpe( personagem, alvo )
 Acerta o tempo de espera conforme o golpe.
@@ -1590,7 +1591,6 @@ Leilões
 Possibilidade de colocar sede e fome
 Murais, livros, papéis e caneta/lápis
 Lista de novidades do MUD
-Animais reserva (além dos animais usados na batalha)
 Veículos fechados
 Pergaminhos e poções
 Habilidades:

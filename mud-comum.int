@@ -90,9 +90,9 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
 
 func ajustaobj # Acerta dono e eventos do objeto
   evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
-  contr = dono = idono.objlista
-  (contr.perso ? evperso : contr.item ? evitem : evsala) && (evrec.1 = contr.evento.addfim(este))
-  !contr.perso && (contr = este)
+  dono = idono.objlista
+  (dono.perso ? evperso : dono.item ? evitem : evsala) && (evrec.1 = dono.evento.addfim(este))
+  contr = (perso && dono.perso ? dono : este)
 
 func mdono # Objeto muda de dono (arg0 = novo dono)
   donoantes = dono # Acerta o dono anterior

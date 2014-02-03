@@ -564,7 +564,7 @@ func atkauto # Realiza um ataque automático
   ret int(obj.tipoalvo) != 6, nulo # Retorna se não for ataque automático
   ret !obj.autohab2(este, aulas), nulo # Checa condições para atacar
 # ret txt(obj.cmdmenu) != "ataque", nulo # Retorna se comando não é habilidade
-  obj.exechab(este, arg0, aulas) # Realiza um ataque
+  obj.exechab(este, arg0, aulas, pnivel) # Realiza um ataque
   ret 1
 
 func atktempo_exec # Encerra a batalha depois de um tempo
@@ -738,7 +738,7 @@ func p_proc_exec # Processar comportamento do personagem
     refvar obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
     refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
     se obj.autohab2(persobat, aulas)
-      ret obj.exechab(persobat, alvo.persobat, aulas)
+      ret obj.exechab(persobat, alvo.persobat, aulas, persobat.pnivel)
     fimse
   fimse
 # Acerta condição do personagem

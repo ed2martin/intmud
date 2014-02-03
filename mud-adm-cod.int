@@ -223,11 +223,11 @@ func cmd_tele # Ir para uma sala específica
   senao p == perso
     $mens.p(p, perso)
     $mens.mens = perso.var.z_telesai
-    !$mens.mens && ($mens.mens = "aparece de um redemoinho de fumaça.")
+    !$mens.mens && ($mens.mens = "some em um redemoinho de fumaça.")
     $mens.mvis2("", "$P $m")
     p.mudadono(s)
     $mens.mens = perso.var.z_teleentra
-    !$mens.mens && ($mens.mens = "some em um redemoinho de fumaça.")
+    !$mens.mens && ($mens.mens = "aparece de um redemoinho de fumaça.")
     $mens.mvis2("", "$P $m")
   senao
     $mens.p(p, perso)
@@ -830,33 +830,47 @@ const clas6 = "config"
 const vari6 = "animal1"
 const extr6 = "0 8"
 #
-const nome7 = "Itens por personagem"
-const info7 = "Quantos itens cada jogador pode ter, ao todo\n\
-Essa opção visa limitar o tamanho dos arquivos dos jogos salvos"
+const nome7 = "Animais reserva"
+const info7 = "Quantos animais pode guardar com o comando Reserva\n\
+Se 0, o comando Reserva deixa de existir"
 const tipo7 = "numero--"
 const clas7 = "config"
-const vari7 = "itens"
-const extr7 = "1 1000"
+const vari7 = "animal2"
+const extr7 = "0 200"
 #
-const nome8 = "Salvar personagem ao criar"
+const nome8 = "Capturar reserva"
+const info8 = "Se os animais capturados podem ir para a lista de reservas"
 const tipo8 = "simnao--"
 const clas8 = "config"
-const vari8 = "salvacria"
+const vari8 = "capturar"
 #
-const nome9 = "E-mail"
-const info9 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
-e procure por uma linha que contém o texto z_email"
-const tipo9 = "opcao--"
+const nome9 = "Itens por personagem"
+const info9 = "Quantos itens cada jogador pode ter, ao todo\n\
+Essa opção visa limitar o tamanho dos arquivos dos jogos salvos"
+const tipo9 = "numero--"
 const clas9 = "config"
-const vari9 = "email"
-const extr9 = "Não pede\nOpcional\nObrigatório"
+const vari9 = "itens"
+const extr9 = "1 1000"
 #
-const nome10 = "Config ao criar personagem"
-const info10 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
-const tipo10 = "vetor--"
+const nome10 = "Salvar personagem ao criar"
+const tipo10 = "simnao--"
 const clas10 = "config"
-const vari10 = "jogconfig"
-const extr10 = "desc\n\
+const vari10 = "salvacria"
+#
+const nome11 = "E-mail"
+const info11 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
+e procure por uma linha que contém o texto z_email"
+const tipo11 = "opcao--"
+const clas11 = "config"
+const vari11 = "email"
+const extr11 = "Não pede\nOpcional\nObrigatório"
+#
+const nome12 = "Config ao criar personagem"
+const info12 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
+const tipo12 = "vetor--"
+const clas12 = "config"
+const vari12 = "jogconfig"
+const extr12 = "desc\n\
 saidas\n\
 cores\n\
 acento\n\
@@ -868,43 +882,43 @@ pvt\n\
 emocao\n\
 moedas\nnovatos"
 #
-const nome11 = "Atributos dos personagens"
-const info11 = "Valor inicial dos atributos para todos os personagens"
-const tipo11 = "atribcfg--"
-const clas11 = "config"
-const vari11 = "atribcfg"
+const nome13 = "Atributos dos personagens"
+const info13 = "Valor inicial dos atributos para todos os personagens"
+const tipo13 = "atribcfg--"
+const clas13 = "config"
+const vari13 = "atribcfg"
 #
-const nome12 = "Mensagens"
-const tipo12 = "menu--"
-const clas12 = "menu_econfig_msg"
-#
-const nome13 = "Comandos"
-const tipo13 = "menu--"
-const clas13 = "menu_econfig_comandos"
-#
-const nome14 = "Ataques e batalha"
+const nome14 = "Mensagens"
 const tipo14 = "menu--"
-const clas14 = "menu_econfig_ataques"
+const clas14 = "menu_econfig_msg"
 #
-const nome15 = "Aulas por nível"
-const info15 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+const nome15 = "Comandos"
+const tipo15 = "menu--"
+const clas15 = "menu_econfig_comandos"
+#
+const nome16 = "Ataques e batalha"
+const tipo16 = "menu--"
+const clas16 = "menu_econfig_ataques"
+#
+const nome17 = "Aulas por nível"
+const info17 = "Quantos pontos de aulas ganha quando sobe de nível\n\
 Se 0, o comando aprender não usa pontos de aula"
-const tipo15 = "numero--"
-const clas15 = "config"
-const vari15 = "aulas"
-const extr15 = "0 1000"
+const tipo17 = "numero--"
+const clas17 = "config"
+const vari17 = "aulas"
+const extr17 = "0 1000"
 #
-const nome16 = "Tipos de produtos"
-const info16 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo16 = "txtopcao--"
-const clas16 = "config"
-const vari16 = "produtos"
-const extr16 = "1 30"
+const nome18 = "Tipos de produtos"
+const info18 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo18 = "txtopcao--"
+const clas18 = "config"
+const vari18 = "produtos"
+const extr18 = "1 30"
 #
-const nome17 = "Posições para vestir itens"
-const info17 = "Os nomes das posições"
-const tipo17 = "menu--"
-const clas17 = "menu_econfig_vestir"
+const nome19 = "Posições para vestir itens"
+const info19 = "Os nomes das posições"
+const tipo19 = "menu--"
+const clas19 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar

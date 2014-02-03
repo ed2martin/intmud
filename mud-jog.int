@@ -602,6 +602,7 @@ const msexo = psexo # Sexo do personagem
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 const jogsav = 1 # Necessário para salvar o personagem do jogador
+sav listaobj dentro3 # Lista de animais reserva
 inttempo p_tempoatu # Tempo para atualizar personagem
 uint8 p_tempofim # Para sair do jogo após algum tempo
 uint8 p_temposav # Para salvar o jogo regularmente
@@ -699,13 +700,13 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   arqsav sav1
   debug dbg
   lista.addfim(este)
-  dbg.exec = 20000
+  dbg.exec = 50000
   item = lista.ini
   enquanto item
     se !item.obj.jogsav
       item.removedepois
     senao lista.total < 2000
-      lista.addfim(item.obj.dentro1, item.obj.dentro2), item.depois
+      lista.addfim(item.obj.dentro1, item.obj.dentro2, item.obj.dentro3), item.depois
     senao
       item.depois
     fimse

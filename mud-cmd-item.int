@@ -267,7 +267,10 @@ func escr
     ref r # Nota: r pode mudar após r.mudadono
     r = l.objini
     total = n # Quantidade de itens
-    se sala.dentro1.total + total >= sala.objmax
+    se r == sala # Soltar o objeto dentro dele mesmo
+      refvar lin = r.msexo ? " dentro dele mesmo." : " dentro dela mesma."
+      ret arg0.msg("Não é possível soltar " + r.descnome + lin)
+    senao sala.dentro1.total + total >= sala.objmax
       ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.descnome + ".")
       ret arg0.msg("Não consegue soltar nada aqui.")
     senao sala.volden + r.voltot * total / r.objtot > sala.volmax * r.objtot
@@ -785,8 +788,11 @@ func escr
     $mens.p(arg0, r)
     $mens.mvis2("Não é possível capturar $a.", "")
     ret
+  senao arg0.animalmais # Se tem espaço suficiente
+  senao !config:capturar || arg0.dentro3.total >= config:animal2
+    arg0.msg("Sem espaço para guardar animal.")
+    ret
   fimse
-  ret !arg0.animalmais, arg0.msg("Sem espaço para guardar animal.")
 # Decide se consegue capturar
   real2 valor
   valor = r.pvida * 100 / r.pvidamax
@@ -826,7 +832,7 @@ func escr
   epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
     ret e.objini.cmd_pegaranim(arg0, r, arg0.dono), nulo
   efim
-  ret !arg0.animalmais || !item, nulo # Retorna se o espaço foi ocupado
+  refvar estacheio = !arg0.animalmais
   r.mudadono(arg0) # Muda de dono
   r.var.z_dono = arg0.nome
   r.var.z_pnivel = r.pnivel
@@ -834,7 +840,12 @@ func escr
   arg0.recalc = 1
   r.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
   $mens.p(arg0, r)
-  $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
+  se estacheio
+    r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
+    $mens.mvis2("$A entrou para a sua equipe como reserva.", "$A entrou para a equipe de $P.")
+  senao
+    $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
+  fimse
   epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
     sair e.objini.cmd_pegouanim(arg0, r, arg0.dono)
   efim
@@ -935,8 +946,8 @@ classe cmd_animal
 herda comando_comum, comando_ajuda
 const objcmd = config:animal1 ? este
 const objajuda = config:animal1 ? este
-const txtajuda = txttroca(txtajuda1, "$$", config:animal1)
-const txtajuda1 = "\b\c3Animais\b\n\
+const txtajuda = txttroca(config:animal2 ? ta1 + ta2 : ta1, "$$", config:animal1)
+const ta1 = "\b\c3Animais\b\n\
   \c2CAPTURAR\b Pega o animal que está lutando com você.\n\
   \c2SOLTAR\b   Solta um animal (você se desfaz dele)\n\
   \c2DAR\b      Dá animal a outro personagem\n\
@@ -944,6 +955,7 @@ const txtajuda1 = "\b\c3Animais\b\n\
   \c20\b        Não escolhe nenhum animal para batalha\n\
   \c21\b a \c2$$\b    Escolhe um animal seu, de 1 a $$\n\
   \c2TROCAR\b   Dá itens para um animal e troca animais de lugar"
+const ta2 = "\n\  \c2RESERVA\b  Manuseio de animais reserva"
 const posic = 0
 
 func escr
@@ -995,3 +1007,72 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
     arg0.escolhebat # Atualiza persobat
     $mens.p(arg0, r)
     $mens.mvis1("$P escolhe $b.")
+
+
+classe cmd_reserva
+herda comando_comum, comando_ajuda
+const objcmd = config:animal1 && config:animal2 ? este
+const objajuda = config:animal1 && config:animal2 ? este
+const txtajuda = "\b\c3Reserva\b\n\
+Sintaxe: RESERVA\n\
+         RESERVA <número do animal>\n\
+         RESERVA <nome do animal>\n\
+Sem argumentos mostra os seus animais reserva.\n\
+Com um número guarda seu animal para a lista de animais reserva.\n\
+Com um nome pega um animal reserva."
+
+func escr
+  se arg0.dentro3.total != txt(int(arg0.dentro3.total))
+    arg0.msg("Você não sabe como lidar com animais reserva.")
+  senao !arg0.dono.s_reserva
+    arg0.msg("Não pode lidar com animais reserva aqui.")
+  senao arg0.atkenv
+    arg0.msg("Você está lutando pela sua vida.")
+  senao !arg1
+    textotxt t
+    txt100 lin
+    listaitem i
+    epara i = arg0.dentro3.ini, i, i.depois
+      se i.obj.pvida
+        lin = "1 " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
+      senao
+        lin = "1 (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
+      fimse
+      t.addfim(lin)
+    efim
+    se !t.linhas
+      arg0.msg("Não possui nenhum animal reserva.")
+    senao
+      t.juntalin("(", "x)")
+      arg0.msg2("\b\c6Animais reserva:\b\n" + t.remove(1000))
+    fimse
+  senao arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+    se arg0.dentro3.total >= config:animal2
+      ret arg0.msg("Atingido o limite de animais reserva.")
+    fimse
+    refvar r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    listaobj e
+    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+      ret e.objini.cmd_reservaguarda(arg0, r, arg0.dono), nulo
+    efim
+    ret r.dono != arg0, nulo # Retorna se não possui mais o animal
+    r.idono.remove
+    r.idono = r.dono.dentro3.addfim(r)
+    arg0.recalc = 1
+    arg0.msg("Você guardou " + r.descnome + " N" + r.pnivel)
+  senao
+    listaobj l
+    nomeobj n # Para reconhecer os itens
+    n.ini(arg1, 1)
+    epara l.addfim(arg0.dentro3), l, l.ini.remove
+      sair n.nome(l.objini.ident, l.objini.objtot)
+    efim
+    refvar r = ref(l.objini)
+    ret !r, arg0.msg("Você não possui animal reserva " + arg1 + ".")
+    ret !arg0.animalmais, arg0.msg("Sem espaço para pegar animal reserva.")
+    r.idono.remove
+    r.idono = r.dono.dentro2.addfim(r)
+    arg0.recalc = 1
+    arg0.msg("Você pegou " + r.descnome + " N" + r.pnivel)
+  fimse

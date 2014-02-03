@@ -369,86 +369,90 @@ const clas1 = var.classe1
 const vari1 = "a_cond"
 const extr1 = "Um ou mais pontos de vida\nNenhum ponto de vida\nNenhuma condição"
 #
-const nome2 = "Vida iniciante"
-const info2 = "Quantos pontos de vida ganha no nível iniciante"
+const nome2 = "Vida"
+const info2 = "Quantos pontos de vida ganha"
 const tipo2 = "numero"
 const clas2 = var.classe1
 const vari2 = "a_vida1"
 #
-const nome3 = "Vida perito"
-const info3 = "Quantos pontos de vida ganha no nível perito"
+const nome3 = "Vida por nível"
+const info3 = "Quantos pontos de vida ganha a cada nível"
 const tipo3 = "numero"
 const clas3 = var.classe1
 const vari3 = "a_vida2"
 #
-const nome4 = "Mana iniciante"
-const info4 = "Quantos pontos de mana ganha no nível iniciante"
+const nome4 = "Mana"
+const info4 = "Quantos pontos de mana ganha"
 const tipo4 = "numero"
 const clas4 = var.classe1
 const vari4 = "a_mana1"
 #
-const nome5 = "Mana perito"
-const info5 = "Quantos pontos de mana ganha no nível perito"
+const nome5 = "Mana por nível"
+const info5 = "Quantos pontos de mana ganha a cada nível"
 const tipo5 = "numero"
 const clas5 = var.classe1
 const vari5 = "a_mana2"
 #
-const nome6 = "Vigor iniciante"
-const info6 = "Quantos pontos de vigor ganha no nível iniciante"
+const nome6 = "Vigor"
+const info6 = "Quantos pontos de vigor ganha"
 const tipo6 = "numero"
 const clas6 = var.classe1
 const vari6 = "a_move1"
 #
-const nome7 = "Vigor perito"
-const info7 = "Quantos pontos de vigor ganha no nível perito"
+const nome7 = "Vigor por nível"
+const info7 = "Quantos pontos de vigor ganha a cada nível"
 const tipo7 = "numero"
 const clas7 = var.classe1
 const vari7 = "a_move2"
 #
-const nome8 = "Efeito 1"
-const info8 = "Nome do efeito"
-const tipo8 = "linha"
-const clas8 = var.classe1
-const vari8 = "a_efeito1"
+const nome8 = "Nota vida/mana/vigor"
+const extr8 = "Os valores de vida, mana e vigor são para o nível itermediário.\n\
+Eles podem diminuir em até 50% (iniciante) ou aumentar em até 50% (perito)."
 #
-const nome9 = "Precisão 1"
-const info9 = "Probabilidade de criar o efeito, 100=não falha"
-const tipo9 = "numero"
+const nome9 = "Efeito 1"
+const info9 = "Nome do efeito"
+const tipo9 = "linha"
 const clas9 = var.classe1
-const vari9 = "a_prob1"
-const extr9 = "0 100"
+const vari9 = "a_efeito1"
 #
-const nome10 = "Efeito 2"
-const info10 = "Nome do efeito"
-const tipo10 = "linha"
+const nome10 = "Precisão 1"
+const info10 = "Probabilidade de criar o efeito, 100=não falha"
+const tipo10 = "numero"
 const clas10 = var.classe1
-const vari10 = "a_efeito2"
+const vari10 = "a_prob1"
+const extr10 = "0 100"
 #
-const nome11 = "Precisão 2"
-const info11 = "Probabilidade de criar o efeito, 100=não falha"
-const tipo11 = "numero"
+const nome11 = "Efeito 2"
+const info11 = "Nome do efeito"
+const tipo11 = "linha"
 const clas11 = var.classe1
-const vari11 = "a_prob2"
-const extr11 = "0 100"
+const vari11 = "a_efeito2"
 #
-const nome12 = "Efeito 3"
-const info12 = "Nome do efeito"
-const tipo12 = "linha"
+const nome12 = "Precisão 2"
+const info12 = "Probabilidade de criar o efeito, 100=não falha"
+const tipo12 = "numero"
 const clas12 = var.classe1
-const vari12 = "a_efeito3"
+const vari12 = "a_prob2"
+const extr12 = "0 100"
 #
-const nome13 = "Precisão 3"
-const info13 = "Probabilidade de criar o efeito, 100=não falha"
-const tipo13 = "numero"
+const nome13 = "Efeito 3"
+const info13 = "Nome do efeito"
+const tipo13 = "linha"
 const clas13 = var.classe1
-const vari13 = "a_prob3"
-const extr13 = "0 100"
+const vari13 = "a_efeito3"
 #
-const nome14 = "Remover efeitos"
-const info14 = "Efeitos que serão removidos; uma linha por efeito"
-const tipo14 = "texto"
+const nome14 = "Precisão 3"
+const info14 = "Probabilidade de criar o efeito, 100=não falha"
+const tipo14 = "numero"
 const clas14 = var.classe1
-const vari14 = "a_remove"
+const vari14 = "a_prob3"
+const extr14 = "0 100"
+#
+const nome15 = "Remover efeitos"
+const info15 = "Efeitos que serão removidos; uma linha por efeito"
+const tipo15 = "texto"
+const clas15 = var.classe1
+const vari15 = "a_remove"
 
 
 classe menu_hab_msg0
@@ -456,7 +460,7 @@ const titulo = "Mensagens 1"
 const menufim = var.menufim
 const colunas = 25
 #
-const titu1 = " * Acertou em si mesmo"
+const titu1 = " * Ao usar a habilidade ou magia"
 #
 const nome1 = "Perso"
 const tipo1 = "txtlinha"
@@ -464,23 +468,23 @@ const clas1 = var.classe1
 const vari1 = "msgatk" + txtfim(tpasso, 1)
 const extr1 = "0"
 #
-const nome2 = "Outros"
-const info2 = "Se vazio, pega mensagem da opção 2"
+const nome2 = "Alvo"
+const info2 = "Se vazio, pega mensagem da opção 1"
 const tipo2 = "txtlinha"
 const clas2 = var.classe1
 const vari2 = "msgatk" + txtfim(tpasso, 1)
 const extr2 = "1"
 #
-const titu3 = " * Acertou outro personagem"
-#
-const nome3 = "Perso"
+const nome3 = "Outros"
+const info3 = "Se vazio, pega mensagem da opção 1"
 const tipo3 = "txtlinha"
 const clas3 = var.classe1
 const vari3 = "msgatk" + txtfim(tpasso, 1)
 const extr3 = "2"
 #
-const nome4 = "Alvo"
-const info4 = "Se vazio, pega mensagem da opção 4"
+const titu4 = " * Acertou em si mesmo"
+#
+const nome4 = "Perso"
 const tipo4 = "txtlinha"
 const clas4 = var.classe1
 const vari4 = "msgatk" + txtfim(tpasso, 1)
@@ -493,7 +497,7 @@ const clas5 = var.classe1
 const vari5 = "msgatk" + txtfim(tpasso, 1)
 const extr5 = "4"
 #
-const titu6 = " * Matou o alvo"
+const titu6 = " * Acertou outro personagem"
 #
 const nome6 = "Perso"
 const tipo6 = "txtlinha"
@@ -502,20 +506,20 @@ const vari6 = "msgatk" + txtfim(tpasso, 1)
 const extr6 = "5"
 #
 const nome7 = "Alvo"
-const info7 = "Se vazio, pega mensagem da opção 7"
+const info7 = "Se vazio, pega mensagem da opção 6"
 const tipo7 = "txtlinha"
 const clas7 = var.classe1
 const vari7 = "msgatk" + txtfim(tpasso, 1)
 const extr7 = "6"
 #
 const nome8 = "Outros"
-const info8 = "Se vazio, pega mensagem da opção 7"
+const info8 = "Se vazio, pega mensagem da opção 6"
 const tipo8 = "txtlinha"
 const clas8 = var.classe1
 const vari8 = "msgatk" + txtfim(tpasso, 1)
 const extr8 = "7"
 #
-const titu9 = " * Errou o alvo"
+const titu9 = " * Matou o alvo"
 #
 const nome9 = "Perso"
 const tipo9 = "txtlinha"
@@ -524,20 +528,20 @@ const vari9 = "msgatk" + txtfim(tpasso, 1)
 const extr9 = "8"
 #
 const nome10 = "Alvo"
-const info10 = "Se vazio, pega mensagem da opção 10"
+const info10 = "Se vazio, pega mensagem da opção 9"
 const tipo10 = "txtlinha"
 const clas10 = var.classe1
 const vari10 = "msgatk" + txtfim(tpasso, 1)
 const extr10 = "9"
 #
 const nome11 = "Outros"
-const info11 = "Se vazio, pega mensagem da opção 10"
+const info11 = "Se vazio, pega mensagem da opção 9"
 const tipo11 = "txtlinha"
 const clas11 = var.classe1
 const vari11 = "msgatk" + txtfim(tpasso, 1)
 const extr11 = "10"
 #
-const titu12 = " * Não teve efeito"
+const titu12 = " * Errou o alvo"
 #
 const nome12 = "Perso"
 const tipo12 = "txtlinha"
@@ -546,18 +550,40 @@ const vari12 = "msgatk" + txtfim(tpasso, 1)
 const extr12 = "11"
 #
 const nome13 = "Alvo"
-const info13 = "Se vazio, pega mensagem da opção 13"
+const info13 = "Se vazio, pega mensagem da opção 12"
 const tipo13 = "txtlinha"
 const clas13 = var.classe1
 const vari13 = "msgatk" + txtfim(tpasso, 1)
 const extr13 = "12"
 #
 const nome14 = "Outros"
-const info14 = "Se vazio, pega mensagem da opção 13"
+const info14 = "Se vazio, pega mensagem da opção 12"
 const tipo14 = "txtlinha"
 const clas14 = var.classe1
 const vari14 = "msgatk" + txtfim(tpasso, 1)
 const extr14 = "13"
+#
+const titu15 = " * Não teve efeito"
+#
+const nome15 = "Perso"
+const tipo15 = "txtlinha"
+const clas15 = var.classe1
+const vari15 = "msgatk" + txtfim(tpasso, 1)
+const extr15 = "14"
+#
+const nome16 = "Alvo"
+const info16 = "Se vazio, pega mensagem da opção 15"
+const tipo16 = "txtlinha"
+const clas16 = var.classe1
+const vari16 = "msgatk" + txtfim(tpasso, 1)
+const extr16 = "15"
+#
+const nome17 = "Outros"
+const info17 = "Se vazio, pega mensagem da opção 15"
+const tipo17 = "txtlinha"
+const clas17 = var.classe1
+const vari17 = "msgatk" + txtfim(tpasso, 1)
+const extr17 = "16"
 
 
 classe menu_hab_msg1
@@ -692,31 +718,25 @@ const tipo16 = "texto"
 const clas16 = var.classe1
 const vari16 = "msgextra"
 #
-const nome17 = "Mensagem inicial"
-const info17 = "Ao usar a habilidade ou magia"
-const tipo17 = "linha"
-const clas17 = var.classe1
-const vari17 = "msgini"
+const nome17 = "Mensagens 1"
+const tipo17 = "menu--"
+const clas17 = "menu_hab_msg0"
 #
-const nome18 = "Mensagens 1"
+const nome18 = "Mensagens 2"
 const tipo18 = "menu--"
-const clas18 = "menu_hab_msg0"
+const clas18 = "menu_hab_msg1"
 #
-const nome19 = "Mensagens 2"
+const nome19 = "Mensagens 3"
 const tipo19 = "menu--"
-const clas19 = "menu_hab_msg1"
+const clas19 = "menu_hab_msg2"
 #
-const nome20 = "Mensagens 3"
+const nome20 = "Mensagens 4"
 const tipo20 = "menu--"
-const clas20 = "menu_hab_msg2"
+const clas20 = "menu_hab_msg3"
 #
-const nome21 = "Mensagens 4"
+const nome21 = "Mensagens 5"
 const tipo21 = "menu--"
-const clas21 = "menu_hab_msg3"
-#
-const nome22 = "Mensagens 5"
-const tipo22 = "menu--"
-const clas22 = "menu_hab_msg4"
+const clas21 = "menu_hab_msg4"
 
 
 classe menu_magia_ataque
@@ -824,33 +844,6 @@ func custohab2 # Aplica os custos da habilidade/magia
   arg0.pmove -= arg1 * (c_move2 - c_move1) + c_move1
   arg0.contr.p_espera < c_espera && (arg0.contr.p_espera = c_espera)
 
-func efeitohab1 # Efeito da habilidade sob o alvo
-# arg0 = personagem
-  efeitohab2(arg0, arg1, (arg0.var.[nomevar] - 1) / 7)
-
-func efeitohab2 # Efeito da habilidade sob o alvo
-# arg0 lançou habilidade ou magia em arg1
-# arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
-# Altera mudavida conforme pontos de vida alterados
-  a_efeito1 && rand(100) < a_prob1 && criar("e_" + a_efeito1, arg1, arg0.pnivel)
-  a_efeito2 && rand(100) < a_prob2 && criar("e_" + a_efeito2, arg1, arg0.pnivel)
-  a_efeito3 && rand(100) < a_prob3 && criar("e_" + a_efeito3, arg1, arg0.pnivel)
-  se a_remove
-    textotxt t
-    epara t.addfim(a_remove), t.linhas, apagar(arg1.dentro2.objini("e_" + t.remove))
-    efim
-  fimse
-  real2 valor
-  valor = arg2 * (a_move2 - a_move1) + a_move1
-  valor && (arg1.pmove += valor) > arg1.pmovemax && (arg1.pmove = arg1.pmovemax)
-  valor = arg2 * (a_mana2 - a_mana1) + a_mana1
-  valor && (arg1.pmana += valor) > arg1.pmanamax && (arg1.pmana = arg1.pmanamax)
-  ret !(valor = arg2 * (a_vida2 - a_vida1) + a_vida1), nulo
-  refvar vida = int(arg1.pvida)
-  (arg1.pvida += valor) > arg1.pvidamax && (arg1.pvida = arg1.pvidamax)
-  mudavida += arg1.pvida - vida
-  !vida && arg1.pvida && arg1.dono.perso && arg1.dono.escolhebat
-
 
 classe comando_ataque
 herda comando_hab
@@ -869,6 +862,33 @@ int32 mudavida # Para calcular mudança nos pontos de vida do alvo
 int8 result # Resultado da batalha:
 # 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=cancelar ataque
 ref arma1 # Arma usada
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nomevar\n\
+tipoalvo\n\
+a_batalha\n\
+a_cond\n\
+a_efeito1 a_efeito2 a_efeito3\n\
+a_prob1 a_prob2 a_prob3\n\
+a_mana1 a_mana2\n\
+a_move1 a_move2\n\
+a_remove\n\
+a_vida1 a_vida2\n\
+c_espera\n\
+c_vida1 c_vida2\n\
+c_mana1 c_mana2\n\
+c_move1 c_move2\n\
+ataque\n\
+aulaini aulafim\n\
+depende\n\
+precisao\n\
+tipoarma\n\
+tipoatk\n\
+tipobonus\n\
+tipoperso\n\
+valor\n\
+vel\n\
+msgextra msgatk0 msgatk1 msgatk2 msgatk3 msgatk4"
 
 func txtajuda # Retorna um texto que contém informações
   textotxt t
@@ -936,7 +956,7 @@ func txtajuda # Retorna um texto que contém informações
 func escr # Atacar alguém
   ref r
   se persobat.pvida == 0
-    arg0.msg("Você está desmaiad" + (msexo ? "o." : "a."))
+    ret arg0.msg("Você está desmaiad" + (msexo ? "o." : "a."))
   senao !checahab1(arg0.persobat)
     ret
   senao arg1 # Digitou o alvo
@@ -957,17 +977,17 @@ func escr # Atacar alguém
       ret
     fimse
   fimse
-  se tipoalvo >= 4 # Se Não for agressivo...
-    exechab(arg0.persobat, r.persobat, intpos(arg0.var.[nomevar] - 1) / 7)
-  senao !r.p_agressivo(arg0)
+  se tipoalvo < 4 && !r.p_agressivo(arg0)
     arg0.msg(r.descnome + " não quer brigar.")
   senao
-    exechab(arg0.persobat, r.persobat, intpos(arg0.var.[nomevar] - 1) / 7)
+    refvar p = arg0.persobat
+    exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel)
 
 func exechab # Chamado quando personagem usa habilidade ou magia
 # arg0 = quem está usando a habilidade ou magia
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+# arg3 = nível da habilidade ou magia (=nível do personagem)
 # Checa a condição de batalha
   se a_batalha == 1 && !arg0.contr.atkenv
     ret arg0.contr.msg("Você não está lutando com ninguém.")
@@ -1000,7 +1020,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       ret l.objini.cmd_alvo(arg0, arg1, este), nulo
     efim
     custohab2(arg0, arg2)
-    msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
+    mensinicio(arg0, arg1)
     mudavida = 0
     se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       result = 1 # Sem efeito
@@ -1008,7 +1028,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       result = 2 # Errou o alvo
     senao
       result = 0 # Acertou o alvo
-      efeitohab2(arg0, arg1, arg2)
+      efeitohab(arg0, arg1, arg2, arg3)
     fimse
     mensgolpe(arg0, arg1)
     cmd_alvofim(arg0, arg1, este)
@@ -1032,7 +1052,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   efim
 # Custo da hab/magia e checa se é permitido usar ataques
   custohab2(arg0, arg2)
-  msgini && $mens.p(arg0, arg1) + $mens.mtodos1(msgini)
+  mensinicio(arg0, arg1)
   se arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
     result = 1
     mensgolpe(arg0, arg1)
@@ -1080,7 +1100,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   tipoalvo != 6 && velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, atk) # Ataca
   se result != 3
-    !result && efeitohab2(arg0, arg1, arg2) # Acertou: aplica os efeitos
+    !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     mensgolpe(arg0, arg1)
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento, arg1.evento), e, e.ini.remove
@@ -1096,7 +1116,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     tipoalvo != 6 && velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3
-    !result && efeitohab2(arg0, arg1, arg2) # Acertou: aplica os efeitos
+    !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     mensgolpe(arg0, arg1, 1)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento, r.evento), e, e.ini.remove
@@ -1106,6 +1126,31 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   efim
   arg0.acertapos(1)
 
+func efeitohab # Efeito da habilidade ou magia sobre o alvo
+# arg0 = quem lançou a habilidade ou magia
+# arg1 = personagem alvo
+# arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+# arg3 = nível da habilidade ou magia (=nível do personagem)
+# Nota: Altera mudavida conforme pontos de vida alterados
+  a_efeito1 && criar("e_" + a_efeito1, arg1, rand(100) < a_prob1 ? arg3 : -1)
+  a_efeito2 && criar("e_" + a_efeito2, arg1, rand(100) < a_prob2 ? arg3 : -1)
+  a_efeito3 && criar("e_" + a_efeito3, arg1, rand(100) < a_prob3 ? arg3 : -1)
+  se a_remove
+    textotxt t
+    epara t.addfim(a_remove), t.linhas, apagar(arg1.dentro2.objini("e_" + t.remove))
+    efim
+  fimse
+  real2 valor
+  valor = (a_move1 + a_move2 * arg3) * (0.5 + arg2)
+  valor && (arg1.pmove = intmin(arg1.pmove + valor, arg1.pmovemax))
+  valor = (a_mana1 + a_mana2 * arg3) * (0.5 + arg2)
+  valor && (arg1.pmana = intmin(arg1.pmana + valor, arg1.pmanamax))
+  ret !(valor = (a_vida1 + a_vida2 * arg3) * (0.5 + arg2)), nulo
+  refvar vida = int(arg1.pvida)
+  arg1.pvida = intmin(vida + valor, arg1.pvidamax)
+  mudavida += arg1.pvida - vida
+  !vida && arg1.pvida && arg1.dono.perso && arg1.dono.escolhebat
+
 func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
@@ -1113,15 +1158,13 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
   real2 tempo
   tempo = arg1.pveloc * 3000 / (arg0.pveloc * veloc + 1)
-  tempo < 8 && (tempo = 8)
-  tempo > 70 && (tempo = 70)
+  tempo = intmax(8, intmin(70, tempo))
   arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
   ret
 # Outra fórmula:
   tempo = arg0.pveloc + arg1.pveloc # Tempo total
   tempo = tempo * 1500 / (arg0.pveloc * veloc + 1)
-  tempo < 8 && (tempo = 8)
-  tempo > 70 && (tempo = 70)
+  tempo = intmax(8, intmin(70, tempo))
   arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
 
 func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
@@ -1223,64 +1266,70 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   mudavida = dano < 1 ? -1 : -dano
   arg1.pvida += mudavida
 
+func mensinicio # Envia mensagem inicial da habilidade ou magia
+# arg0 = personagem que está usando a habilidade ou magia
+# arg1 = personagem alvo
+  txt100 lin.4
+  ret menssub(lin, 0), nulo
+  se arg0 == arg1
+    $mens.p(arg0, arg1)
+    $mens.mtodos2(lin.0, lin.2 ? lin.2 : lin.0)
+  senao
+    $mens.p(arg0, arg1)
+    $mens.mtodos3(lin.0, lin.1 ? lin.1 : lin.0, lin.2 ? lin.2 : lin.0)
+
 func mensgolpe # Envia mensagens de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = verdadeiro se for alvo secundário (não mostra todas as mensagens)
 # Faz result=10 se o alvo morreu, mas não chama a função morreu
-  textotxt t
-# t.addfim("msgatk0\nmsgatk1\nmsgatk2\nmsgatk3\nmsgatk4")
-  msgatk0 && t.addfim("msgatk0")
-  msgatk1 && t.addfim("msgatk1")
-  msgatk2 && t.addfim("msgatk2")
-  msgatk3 && t.addfim("msgatk3")
-  msgatk4 && t.addfim("msgatk4")
-# ret !t.linhas, nulo
-  t.rand
   $mens.p(arg0, arg1)
-  txt100 lin.14
+  txt100 lin.20
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    arg1.p_imortal && arg1.pvida < arg1.pvidamax && (arg1.pvida = arg1.pvidamax) # Imortal
+    arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     se !arg1.pvida # Se morreu
-      epara lin.separar([t.remove], "\n"), !lin.5, lin.separar([t.remove], "\n")
-        ret !t.linhas, nulo
-      efim
-      $mens.mtodos3(lin.5, lin.6 ? lin.6 : lin.5, lin.7 ? lin.7 : lin.5)
+      ret menssub(lin, 8), nulo
+      $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
       result = 10
     senao arg2 # Se for alvo secundário
-      epara lin.separar([t.remove], "\n"), !lin.2, lin.separar([t.remove], "\n")
-        ret !t.linhas, nulo
-      efim
-      arg1.contr.msginv(lin.3 ? lin.3 : lin.2)
+      ret menssub(lin, 5), nulo
+      arg1.contr.msginv(lin.6 ? lin.6 : lin.5)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
-      epara lin.separar([t.remove], "\n"), !lin.0, lin.separar([t.remove], "\n")
-        ret !t.linhas, nulo
-      efim
-      $mens.mtodos2(lin.0, lin.1 ? lin.1 : lin.0)
+      ret menssub(lin, 3), nulo
+      $mens.mtodos2(lin.3, lin.4 ? lin.4 : lin.3)
     senao # Outros casos
-      epara lin.separar([t.remove], "\n"), !lin.2, lin.separar([t.remove], "\n")
-        ret !t.linhas, nulo
-      efim
-      $mens.mtodos3(lin.2, lin.3 ? lin.3 : lin.2, lin.4 ? lin.4 : lin.2)
+      ret menssub(lin, 5), nulo
+      $mens.mtodos3(lin.5, lin.6 ? lin.6 : lin.5, lin.7 ? lin.7 : lin.5)
     fimse
     ret
   casose "1" # Não teve efeito
     $mens.mudavida = "0"
-    epara lin.separar([t.remove], "\n"), !lin.11, lin.separar([t.remove], "\n")
-      ret !t.linhas, nulo
-    efim
+    ret menssub(lin, 14), nulo
     ret arg2, arg1.contr.msginv(lin.12 ? lin.12 : lin.11)
-    ret $mens.mtodos3(lin.11, lin.12 ? lin.12 : lin.11, lin.13 ? lin.13 : lin.11)
+    ret $mens.mtodos3(lin.14, lin.15 ? lin.15 : lin.14, lin.16 ? lin.16 : lin.14)
   casose "2" # Errou o alvo
     $mens.mudavida = "0"
-    epara lin.separar([t.remove], "\n"), !lin.8, lin.separar([t.remove], "\n")
-      ret !t.linhas, nulo
-    efim
-    ret arg2, arg1.contr.msginv(lin.9 ? lin.9 : lin.8)
-    ret $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
+    ret menssub(lin, 11), nulo
+    ret arg2, arg1.contr.msginv(lin.12 ? lin.12 : lin.11)
+    ret $mens.mtodos3(lin.11, lin.12 ? lin.12 : lin.11, lin.13 ? lin.13 : lin.11)
   casofim
+
+func menssub # Usado em mensgolpe
+# arg0 = variável txt100 lin.20
+# arg1 = índice da mensagem a obter
+# Retorna 1 se mensagem vazia
+  textotxt t
+  txtsublin(msgatk0, arg1, 1) && t.addfim("msgatk0")
+  txtsublin(msgatk1, arg1, 1) && t.addfim("msgatk1")
+  txtsublin(msgatk2, arg1, 1) && t.addfim("msgatk2")
+  txtsublin(msgatk3, arg1, 1) && t.addfim("msgatk3")
+  txtsublin(msgatk4, arg1, 1) && t.addfim("msgatk4")
+  ret !t.linhas, 1
+  t.remove(rand(t.linhas))
+  arg0.separar([t.remove], "\n")
+  ret 0
 
 
 classe cmd_resgatar
