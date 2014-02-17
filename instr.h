@@ -149,7 +149,12 @@ public:
     TVariavel * inivar; ///< Primeiro argumento da função
     TVariavel * fimvar; ///< Primeira variável após variáveis locais da função
     char  numarg;       ///< Número de argumentos arg0 a arg9
-    char  tipo;         ///< 0=func 1=ler varfunc 2=mudar varfunc 3=criar()
+    char  tipo;         ///< Como é o retorno da função:
+            /**< - 0 = função normal
+             *   - 1 = ler varfunc
+             *   - 2 = mudar varfunc
+             *   - 3 = instrução criar()
+             *   - 4 = instrução debug.cmd (transforma retorno em texto) */
     unsigned char indent;///< Para apagar variáveis que saíram do escopo
     char * funcdebug;   ///< Função executada a cada instrução, 0 se nenhuma
     TObjeto * objdebug; ///< Objeto relacionado a funcdebug

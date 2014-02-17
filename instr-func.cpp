@@ -84,9 +84,19 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
         int indice = c->IndiceNome("ini");
         if (indice<0) // Variável/função inexistente
             break;
-        char * defvar = c->InstrVar[indice];
+        const char * defvar = c->InstrVar[indice];
+        const char * instr = defvar;
+        const char * expr = 0;
     // Verifica se é função
-        if (defvar[2] != cFunc)
+        if (defvar[2] == cFunc || defvar[2] == cVarFunc)
+        {
+            instr += Num16(instr);
+            if (instr[0]==0 && instr[1]==0)
+                break;
+        }
+        else if (defvar[2] == cConstExpr || defvar[2] == cConstVar)
+            expr = instr + instr[endIndice];
+        else
             break;
     // Verifica se pode criar função
         if (FuncAtual >= FuncFim - 1)
@@ -94,9 +104,9 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
     // Cria função
         FuncAtual++;
         FuncAtual->nome = defvar;
-        FuncAtual->linha = defvar + Num16(defvar);
+        FuncAtual->linha = instr;
         FuncAtual->este = obj;
-        FuncAtual->expr = 0;
+        FuncAtual->expr = expr;
         FuncAtual->inivar = v+2;
         FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;

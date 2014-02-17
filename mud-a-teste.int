@@ -794,6 +794,38 @@ func fechaporta80
   $mens.mtodos1("A porta ao norte fechou.")
 
 
+classe p_teste021
+herda comum_perso
+const nome = "ajudante"
+const descnome = "um ajudante"
+const msexo = 1 # Sexo Msg: 1 Masculino
+
+func descpadr
+  se iseguir # Se está seguindo alguém...
+    ret "Um ajudante está aqui, à serviço de " + iseguir.objlista.descnome + "."
+  senao
+    ret "Um ajudante está aqui."
+
+func seguirjog # Função chamada pela sala
+# arg0 = personagem que o ajudante deve seguir e observar
+  misc:evento(arg0) # Receber eventos do jogador, para saber quando teclou dispensar
+# Nota: essas duas próximas instruções foram pegas da classe cmd_seguir
+  iseguir.remove # Deixa de seguir
+  iseguir = arg0.lseguir.addfim(este) # Passa a seguir o jogador
+
+func cmd_mudadono
+# Essa função é chamada sempre que o ajudande muda de dono (muda de sala)
+# Quando isso acontece, ele deixa de receber os eventos do jogador
+# Aqui fazemos ele voltar a receber
+  misc:evento(iseguir.objlista)
+
+func cmd_falou
+  se arg1 == "dispensar"
+    apagar(este)
+    $mens.p(este, arg0)
+    $mens.mtodos1("$P deixa de seguir $a e vai embora")
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2089,6 +2121,7 @@ const dir_n = $s_teste083
 const dir_s = $s_teste086
 const dir_l = $s_teste089
 const dir_o = $s_teste092
+const dir_b = $s_teste095
 
 
 classe s_teste083
@@ -2380,3 +2413,35 @@ func s_reset1 # Realiza o reset
   se p_teste009:objsolto.total < 1
     criar("p_teste009", este, 0)
   fimse
+
+
+classe s_teste095
+herda b_teste
+const s_titulo = "Subsolo 3: Diversos"
+const s_desc = "Ao norte: um ajudante que te seguirá"
+const dir_c = $s_teste082
+const dir_n = $s_teste096
+
+
+classe s_teste096
+herda b_teste
+const s_titulo = "Ajudante"
+const s_desc = "Aqui, fale ajudante (teclando falar ajudante) se você quiser um.\n\
+É um personagem (teste021) que te seguirá aonde você for.\n\
+Quando não quiser mais, fale dispensar, e ele irá embora.\n\
+Foi estabelecido, também, um limite de dois ajudantes por personagem."
+const dir_s = $s_teste095
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  se arg1 == "ajudante"
+    se arg0.lseguir.total("p_teste021") >= 2
+      ret arg0.msg("Você já tem ajudantes demais!")
+    fimse
+    refvar r = criar("p_teste021", este, 10)
+    r.seguirjog(arg0) # Chama uma função que foi criada em p_teste021 para seguir o jogador
+    $mens.p(r, arg0)
+    $mens.mvis1("$P apareceu, para auxiliar $a.")

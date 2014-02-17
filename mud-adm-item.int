@@ -205,6 +205,76 @@ const clas5 = var.classe1
 const vari5 = "armamanual"
 
 
+classe menu_ifome
+const titulo = "Fome e sede"
+const menufim = var.menufim
+const colunas = 23
+#
+const nome1 = "Tipo"
+const tipo1 = "opcao"
+const clas1 = var.classe1
+const vari1 = "f_tipo"
+const extr1 = "Nenhum\n\
+Fonte (não some após beber)\n\
+Bebida ou poção\n\
+Comida\n\
+Pergaminho"
+#
+const nome2 = "Sacia a sede"
+const tipo2 = "numero"
+const clas2 = var.classe1
+const vari2 = "f_sede"
+const extr2 = "-50 50"
+#
+const nome3 = "Sustenta"
+const tipo3 = "numero"
+const clas3 = var.classe1
+const vari3 = "f_fome"
+const extr3 = "-50 50"
+#
+const nome4 = "Embriaguês"
+const tipo4 = "numero"
+const clas4 = var.classe1
+const vari4 = "f_bebida"
+const extr4 = "-50 50"
+#
+const nome5 = "Magia 1"
+const info5 = "Nome da magia"
+const tipo5 = "linha"
+const clas5 = var.classe1
+const vari5 = "f_magia1"
+#
+const nome6 = "Nível 1"
+const tipo6 = "numero"
+const clas6 = var.classe1
+const vari6 = "f_nivel1"
+const extr6 = "0 65535"
+#
+const nome7 = "Magia 2"
+const info7 = "Nome da magia"
+const tipo7 = "linha"
+const clas7 = var.classe1
+const vari7 = "f_magia2"
+#
+const nome8 = "Nível 2"
+const tipo8 = "numero"
+const clas8 = var.classe1
+const vari8 = "f_nivel2"
+const extr8 = "0 65535"
+#
+const nome9 = "Magia 3"
+const info9 = "Nome da magia"
+const tipo9 = "linha"
+const clas9 = var.classe1
+const vari9 = "f_magia3"
+#
+const nome10 = "Nível 3"
+const tipo10 = "numero"
+const clas10 = var.classe1
+const vari10 = "f_nivel3"
+const extr10 = "0 65535"
+
+
 classe menu_icomum
 const nome1 = "Nome"
 const tipo1 = "linha"
@@ -330,22 +400,26 @@ const clas23 = var.classe1
 const vari23 = "recalc_auto"
 const exec23 = "recalc_ajusta"
 #
-const nome24 = "Tipo de arma"
+const nome24 = "Fome e sede"
 const tipo24 = "menu--"
-const clas24 = "menu_iarma"
+const clas24 = "menu_ifome"
 #
-const nome25 = "Pega animal nível"
-const info25 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+const nome25 = "Tipo de arma"
+const tipo25 = "menu--"
+const clas25 = "menu_iarma"
+#
+const nome26 = "Pega animal nível"
+const info26 = "Nível médio dos animais que podem ser capturados com esse item,\n\
 ou 0 se não puder capturar"
-const tipo25 = "numero"
-const clas25 = var.classe1
-const vari25 = "i_captura"
-#
-const nome26 = "Chave"
-const info26 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo26 = "linha"
+const tipo26 = "numero"
 const clas26 = var.classe1
-const vari26 = "i_chave"
+const vari26 = "i_captura"
+#
+const nome27 = "Chave"
+const info27 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo27 = "linha"
+const clas27 = var.classe1
+const vari27 = "i_chave"
 #
 const nome50 = "Variáveis"
 const tipo50 = "linha"
@@ -421,49 +495,49 @@ herda menu_item1
 const titulo = "Item " + txt(var.classe1, 2)
 const colunas = 23
 #
-const nome27 = "Mobília"
-const info27 = "Sentar/dormir confortavelmente se recupera mais rápido"
-const tipo27 = "opcao"
-const clas27 = var.classe1
-const vari27 = "i_movel"
-const extr27 = "Não\n\
+const nome28 = "Mobília"
+const info28 = "Sentar/dormir confortavelmente se recupera mais rápido"
+const tipo28 = "opcao"
+const clas28 = var.classe1
+const vari28 = "i_movel"
+const extr28 = "Não\n\
 Sentar\n\
 Sentar e dormir\n\
 Sentar confortavelmente\n\
 Sentar e dormir confortavelmente"
 #
-const nome28 = "Lugares"
-const tipo28 = "numero"
-const clas28 = var.classe1
-const vari28 = "i_lugar"
-#
-const nome29 = "Container"
-const tipo29 = "opcao"
+const nome29 = "Lugares"
+const tipo29 = "numero"
 const clas29 = var.classe1
-const vari29 = "i_abertoini"
-const exec29 = "recalc_exec"
-const extr29 = "Não\n\
+const vari29 = "i_lugar"
+#
+const nome30 = "Container"
+const tipo30 = "opcao"
+const clas30 = var.classe1
+const vari30 = "i_abertoini"
+const exec30 = "recalc_exec"
+const extr30 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome30 = "Trancar"
-const tipo30 = "opcao"
-const clas30 = var.classe1
-const vari30 = "i_tranc"
-const extr30 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
-#
-const nome31 = "Fechadura"
-const info31 = "Código da chave que tranca e destranca o container"
-const tipo31 = "linha"
+const nome31 = "Trancar"
+const tipo31 = "opcao"
 const clas31 = var.classe1
-const vari31 = "i_fechadura"
+const vari31 = "i_tranc"
+const extr31 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome32 = "Fonte de luz"
-const tipo32 = "menu--"
-const clas32 = "menu_iluz"
+const nome32 = "Fechadura"
+const info32 = "Código da chave que tranca e destranca o container"
+const tipo32 = "linha"
+const clas32 = var.classe1
+const vari32 = "i_fechadura"
+#
+const nome33 = "Fonte de luz"
+const tipo33 = "menu--"
+const clas33 = "menu_iluz"
 
 
 classe menu_iluz

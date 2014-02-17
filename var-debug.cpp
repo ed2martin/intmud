@@ -202,7 +202,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         FuncAtual->inivar = VarAtual + 1;
         //FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = 0;
-        FuncAtual->tipo = 0;
+        FuncAtual->tipo = 4;
         FuncAtual->indent = 0;
         FuncAtual->objdebug = FuncAtual[-1].objdebug;
         FuncAtual->funcdebug = FuncAtual[-1].funcdebug;

@@ -174,8 +174,8 @@ func p_chab # Escolher o tipo de habilidade ou magia
   txt512 lin
   lin = var.opcclasse + "\nb-hab\nherda " + deriv
   lin += "\nconst nomevar = \"" + var.opcvar + "\""
-  lin += "\nconst msgatk0 = \"$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
-  lin += "$P ataca $a, $m\\n\\n\\n$P ataca $a, errou\\n\\n\\n"
+  lin += "\nconst msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
+  lin += "$P ataca e mata $a, $m\\n\\n\\n$P ataca $a, errou\\n\\n\\n"
   lin += "$P ataca $a, nada acontece\\n\\n\\n\""
   prog p
   p.criar(lin)
@@ -1117,7 +1117,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
-    mensgolpe(arg0, arg1, 1)
+    mensgolpe(arg0, r, 1)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento, r.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este)
@@ -1290,9 +1290,13 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
     $mens.mens = mudavida
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     se !arg1.pvida # Se morreu
-      ret menssub(lin, 8), nulo
-      $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
       result = 10
+      ret menssub(lin, 8), nulo
+      se arg2 # Alvo secundário
+        arg1.contr.msginv(lin.9 ? lin.9 : lin.8)
+      senao # Alvo principal
+        $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
+      fimse
     senao arg2 # Se for alvo secundário
       ret menssub(lin, 5), nulo
       arg1.contr.msginv(lin.6 ? lin.6 : lin.5)

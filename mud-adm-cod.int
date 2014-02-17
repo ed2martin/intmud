@@ -8,7 +8,7 @@ Os tópicos são:\n\
   \c2SALA\b     Salas\n\
   \c2SAI\b      Saídas das salas\n\
   \c2ITEM\b     Itens\n\
-  \c2TIPO\b     Tipos de personagens\n\
+  \c2TIPO\b     Tipos de personagens (raças e classes)\n\
   \c2PERSO\b    Personagens não jogador\n\
   \c2RESET\b    Reset de área ou sala\n\
   \c2HAB\b      Habilidades e magias\n\
@@ -30,8 +30,8 @@ const adm_jog = "\c3Comandos para jogadores\b\n\
 \c2TELESAI\b [mensagem]\n\
   Define as mensagens de quando você se teletransporta usando\n\
   o comando TELE. Sem argumentos, muda para a mensagem padrão, que é:\n\
-  \"aparece de um redemoinho de fumaça.\" para Teleentra e\n\
-  \"some em um redemoinho de fumaça.\" para Telesai.\n\
+  \"$P aparece de um redemoinho de fumaça.\" para Teleentra e\n\
+  \"$P some em um redemoinho de fumaça.\" para Telesai.\n\
   Para saber as mensagens que você definiu, use o comando ESTAT.\n\
 \c2AC\b <texto>\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
@@ -168,21 +168,27 @@ func cmd_serv # Informações sobre o servidor
   ret 1
 
 func cmd_teleentra
-  perso.var.z_teleentra = arg0
-  se arg0
-    msg("Mensagem teleentra mudou para " + arg0)
-  senao
+  se !arg0
     msg("Mensagem teleentra voltou ao padrão.")
+  senao txtproc(arg0, "$P") >= 0
+    msg("Mensagem teleentra mudou para: " + arg0)
+  senao
+    msg("Mensagem teleentra deve ter obrigatoriamente $P.")
+    ret 1
   fimse
+  perso.var.z_teleentra = arg0
   ret 1
 
 func cmd_telesai
-  perso.var.z_telesai = arg0
-  se arg0
-    msg("Mensagem telesai mudou para " + arg0)
-  senao
+  se !arg0
     msg("Mensagem telesai voltou ao padrão.")
+  senao txtproc(arg0, "$P") >= 0
+    msg("Mensagem telesai mudou para: " + arg0)
+  senao
+    msg("Mensagem telesai deve ter obrigatoriamente $P.")
+    ret 1
   fimse
+  perso.var.z_telesai = arg0
   ret 1
 
 func cmd_tele # Ir para uma sala específica
@@ -221,14 +227,13 @@ func cmd_tele # Ir para uma sala específica
 # Realiza o teletransporte
   se !(p && s)
   senao p == perso
+    txt200 mens1
     $mens.p(p, perso)
-    $mens.mens = perso.var.z_telesai
-    !$mens.mens && ($mens.mens = "some em um redemoinho de fumaça.")
-    $mens.mvis2("", "$P $m")
+    mens1 = perso.var.z_telesai
+    $mens.mvis2("", mens1 ? mens1 : "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
-    $mens.mens = perso.var.z_teleentra
-    !$mens.mens && ($mens.mens = "aparece de um redemoinho de fumaça.")
-    $mens.mvis2("", "$P $m")
+    mens1 = perso.var.z_teleentra
+    $mens.mvis2("", mens1 ? mens1 : "$P aparece em um redemoinho de fumaça.")
   senao
     $mens.p(p, perso)
     p.msginv("$A teletransporta você.")
@@ -888,37 +893,49 @@ const tipo13 = "atribcfg--"
 const clas13 = "config"
 const vari13 = "atribcfg"
 #
-const nome14 = "Mensagens"
-const tipo14 = "menu--"
-const clas14 = "menu_econfig_msg"
+const nome14 = "Fome e sede nível"
+const info14 = "A partir de que nível sente fome e sede"
+const tipo14 = "numero--"
+const clas14 = "config"
+const vari14 = "fomeini"
 #
-const nome15 = "Comandos"
-const tipo15 = "menu--"
-const clas15 = "menu_econfig_comandos"
+const nome15 = "Sem fome e sede nível"
+const info15 = "A partir de que nível não sente mais fome e sede"
+const tipo15 = "numero--"
+const clas15 = "config"
+const vari15 = "fomefim"
 #
-const nome16 = "Ataques e batalha"
+const nome16 = "Mensagens"
 const tipo16 = "menu--"
-const clas16 = "menu_econfig_ataques"
+const clas16 = "menu_econfig_msg"
 #
-const nome17 = "Aulas por nível"
-const info17 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+const nome17 = "Comandos"
+const tipo17 = "menu--"
+const clas17 = "menu_econfig_comandos"
+#
+const nome18 = "Ataques e batalha"
+const tipo18 = "menu--"
+const clas18 = "menu_econfig_ataques"
+#
+const nome19 = "Aulas por nível"
+const info19 = "Quantos pontos de aulas ganha quando sobe de nível\n\
 Se 0, o comando aprender não usa pontos de aula"
-const tipo17 = "numero--"
-const clas17 = "config"
-const vari17 = "aulas"
-const extr17 = "0 1000"
+const tipo19 = "numero--"
+const clas19 = "config"
+const vari19 = "aulas"
+const extr19 = "0 1000"
 #
-const nome18 = "Tipos de produtos"
-const info18 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo18 = "txtopcao--"
-const clas18 = "config"
-const vari18 = "produtos"
-const extr18 = "1 30"
+const nome20 = "Tipos de produtos"
+const info20 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo20 = "txtopcao--"
+const clas20 = "config"
+const vari20 = "produtos"
+const extr20 = "1 30"
 #
-const nome19 = "Posições para vestir itens"
-const info19 = "Os nomes das posições"
-const tipo19 = "menu--"
-const clas19 = "menu_econfig_vestir"
+const nome21 = "Posições para vestir itens"
+const info21 = "Os nomes das posições"
+const tipo21 = "menu--"
+const clas21 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar
