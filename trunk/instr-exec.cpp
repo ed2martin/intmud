@@ -560,6 +560,13 @@ bool Instr::ExecX()
                     VarAtual->defvar = InstrVarObjeto;
                     VarAtual->endvar = FuncAtual->este;
                     break;
+                case 4: // debug.cmd
+                    ApagarVar(FuncAtual->inivar - 1);
+                    VarAtual++;
+                    VarAtual->Limpar();
+                    VarAtual->defvar = InstrTxtFixo;
+                    VarAtual->endfixo = "";
+                    break;
                 default: // Função normal
                     ApagarVar(FuncAtual->inivar - 1);
                     VarAtual++;
@@ -765,6 +772,20 @@ bool Instr::ExecX()
                     VarAtual->defvar = InstrVarObjeto;
                     VarAtual->endvar = FuncAtual->este;
                     break;
+                case 4: // debug.cmd
+                    {
+                        assert(VarAtual >= FuncAtual->inivar);
+                        char mens[BUF_MENS];
+                        char * p = copiastr(mens, VarAtual->getTxt(), sizeof(mens));
+                        ApagarVar(FuncAtual->inivar - 1);
+                        if (!CriarVarTexto(mens, p-mens))
+                        {
+                            VarAtual++;
+                            VarAtual->Limpar();
+                            VarAtual->defvar = InstrNulo;
+                        }
+                        break;
+                    }
                 default: // Função normal
                     assert(VarAtual >= FuncAtual->inivar);
                     ApagarRet(FuncAtual->inivar-1);

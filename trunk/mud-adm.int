@@ -1340,7 +1340,8 @@ func ordem_exec
 # Aqui obtém os objetos para chamar uma função de cada objeto
   ret !nomefunc, apagar(este)
   repete = 1
-  epara r = $[arg0], r, r = objdepois(r)
+  ref r
+  epara r = $[nomeclasse], r, r = objdepois(r)
     l.addfim(r)
   efim
 

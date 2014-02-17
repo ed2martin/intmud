@@ -615,10 +615,14 @@ sav txt32 tipo2 # Classe do jogador; vide classes "tipo_*" em mud-b-tipo.int
 const p_naoseguir = !jogconfig.5
 const p_imortal = jogconfig.14
 sav uint32 p_fugir
+sav uint8 p_sede # Sede, quanto menor mais sede tem
+sav uint8 p_fome # Fome, quanto menor mais fome tem
+sav uint8 p_bebida # Embriagês, quanto maior mais bêbado está
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
   nivel = 1
+  p_sede = p_fome = 30
   var.z_prompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
   var.z_bprompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
   comum_persoanimal:ini
@@ -683,13 +687,110 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     recup = contr.dono.s_recup / 1400
     sair
   casofim
-  se recup
+  se !recup # Sem taxa de recuperação
+  senao p_sede && p_fome # Recuperação normal
+    pmana < pmanamax && (pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
+    pmove < pmovemax && (pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
     pvida < pvidamax && (pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))
+  senao # Recuperação com muita fome e/ou muita sede
+    recup /= 2
     pmana < pmanamax && (pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
     pmove < pmovemax && (pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
   fimse
+# Acerta fome, sede e embriaguês
+  se p_bebida == 1
+    msg(msexo ? "Você está sóbrio." : "Você está sóbria.")
+  fimse
+  se jogconfig.14 # Imortal
+    p_sede = intmax(15, p_sede - 1)
+    p_fome = intmax(15, p_fome - 1)
+    p_bebida = intmin(1, p_bebida - 1)
+  senao pnivel >= config:fomeini && pnivel < config:fomefim # Sente fome
+    p_sede -= 1
+    p_fome -= 1
+    p_bebida -= 1
+  senao # Não sente fome
+    p_sede = intmax(15, p_sede - 1)
+    p_fome = intmax(15, p_fome - 1)
+    p_bebida -= 1
+  fimse
+# Mensagens de fome e sede e pontos de vida
+  casovar txtchr(97 + jogador_tabfome:t[p_fome]) + jogador_tabfome:t[p_sede]
+  casose "a1" # Pouca sede
+    msg("Sua boa está um pouco seca.")
+    sair
+  casose "a2" # Com sede
+    $mens.p(este)
+    $mens.mvis1("$P está com sede.")
+    sair
+  casose "a3" # Muita sede
+    $mens.p(este)
+    $mens.mvis1("$P está morrendo de sede, -1")
+    pvida -= 1
+    sair
+  casose "b" # Pouca fome
+    msg("Você sente umas pontadas de fome.")
+    sair
+  casose "b1" # Pouca fome + Pouca sede
+    msg("Você sente umas pontadas de fome e a boca um pouco seca.")
+    sair
+  casose "b2" # Pouca fome + Com sede
+    msg("Você com sede e sente umas pontadas de fome.")
+    $mens.p(este)
+    $mens.mvis2("", "$P está com sede.")
+    sair
+  casose "b3" # Pouca fome + Muita sede
+    msg("Você está morrendo de sede e sente umas pontadas de fome, -1")
+    $mens.p(este)
+    $mens.mvis2("", "$P está morrendo de sede, -1")
+    pvida -= 1
+    sair
+  casose "c" # Com fome
+    msg("Você está com fome.")
+    $mens.p(este)
+    $mens.mvis2("", "Você ouve o estômago de $P roncar.")
+    sair
+  casose "c1" # Com fome + Pouca sede
+    msg("Você com fome e sente a boca um pouco seca.")
+    $mens.p(este)
+    $mens.mvis2("", "Você ouve o estômago de $P roncar.")
+    sair
+  casose "c2" # Com fome + Com sede
+    $mens.p(este)
+    $mens.mvis1("$P está com fome e sede.")
+    sair
+  casose "c3" # Com fome + Muita sede
+    $mens.p(este)
+    $mens.mvis1("$P está morrendo de sede e com fome, -1")
+    pvida -= 1
+    sair
+  casose "d" # Muita fome
+    $mens.p(este)
+    $mens.mvis1("$P está morrendo de fome, -2")
+    pvida -= 2
+    sair
+  casose "d1" # Muita fome + Pouca sede
+    msg("Você morrendo de fome e sente a boca um pouco seca, -2")
+    $mens.p(este)
+    $mens.mvis2("", "$P está morrendo de fome, -2")
+    pvida -= 2
+    sair
+  casose "d2" # Muita fome + Com sede
+    $mens.p(este)
+    $mens.mvis1("$P está morrendo de fome e com sede, -2")
+    pvida -= 2
+    sair
+  casose "d3" # Muita fome + Muita sede
+    $mens.p(este)
+    $mens.mvis1("$P está morrendo de fome e de sede, -3")
+    pvida -= 3
+    sair
+  casofim
+# Acerta estado do personagem
+  acertapos(1)
 # Salva o jogo
   (p_temposav += 1) >= 9 && salvar
+
 
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar
@@ -722,6 +823,27 @@ func cmd_recalc1 # Recalcula variáveis do personagem
   jogconfig.14 && (bitver |= 0x7C) # Propriedade config +imortal
   jogconfig.18 && (bitinv |= 128) # Propriedade config +invsala
   jogconfig.23 && (bitver |= 128) # Se é administrador
+
+
+classe jogador_tabfome
+# Tabela para acertar fome e sede dos jogadores
+# jogador_tabfome:t[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca nulo=sem
+# jogador_tabfome:t[p_sede] = quantidade de sede: 3=muita 2=média 1=pouca nulo=sem
+const t0 = 3
+const t1 = 2
+const t2 = 2
+const t3 = 2
+const t4 = 2
+const t5 = 2
+const t6 = 2
+const t7 = 2
+const t8 = 2
+const t9 = 1
+const t10 = 1
+const t11 = 1
+const t12 = 1
+const t13 = 1
+const t14 = 1
 
 
 classe cmdalias

@@ -28,7 +28,7 @@ $P se joga contra $a, nada acontece"
 classe cmd_Bater
 herda comando_ataque
 const nomevar = "h_Bater"
-const tipoalvo = 7 # Alvo: 7 Nenhum (não ataca)
+const tipoalvo = 6 # Alvo: 6 Ataque automático
 const msgatk0 = "\n\n\n\
 $P bate em $a, $m\n\n\
 $P bate em $a, $m\n\n\n\
@@ -267,11 +267,11 @@ const nomevar = "h_Meditar"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
 const a_efeito1 = "meditando"
 const msgatk0 = "\n\n\n\
-$P começa a meditar., $m\n\n\
-$P começa a meditar., $m\n\n\n\
-$P começa a meditar., $m\n\n\n\
-$P tenta meditar mas não consegue., errou\n\n\n\
-$P começa a meditar., nada acontece"
+$P começa a meditar.\n\n\
+$P começa a meditar.\n\n\n\
+$P começa a meditar.\n\n\n\
+$P tenta meditar mas não consegue.\n\n\n\
+$P tenta meditar, em vão."
 
 
 classe cmd_morder
@@ -288,6 +288,21 @@ $P morde $a, $m\n\n\n\
 $P morde $a, $m\n\n\n\
 $P morde $a, errou\n\n\n\
 $P morde $a, nada acontece"
+
+
+classe cmd_multissoco
+herda comando_ataque
+const nomevar = "h_Multissoco"
+const tipoalvo = 2 # Alvo: 2 Todos dividindo o ataque
+const ataque = 70
+const precisao = 70
+const tipoatk = 1 # Tipo: 1 Luta
+const msgatk0 = "\n\n\n\
+$P acerta um belo soco em si mesm$s, $m\n\n\
+$P dá um soco múltiplo em $a, $m\n\n\n\
+$P mata $a com um multissoco, $m\n\n\n\
+$P dá um multissoco em $a, errou\n\n\n\
+$P dá um multissoco em $a, nada acontece"
 
 
 classe cmd_ocultar

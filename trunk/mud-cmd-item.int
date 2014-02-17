@@ -745,6 +745,83 @@ func escr
   !total && $mens.p(alvo) + $mens.mperso("$P não está usando isso.")
 
 
+classe cmd_beber
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Beber\b\n\
+Sintaxe: BEBER [objeto]\n\
+Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
+que encontrar."
+const posic = 5
+
+func escr
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+# Obtém o objeto
+  n.ini(arg1, 1)
+  se !arg1
+    epara l.addfim(arg0.dono.dentro1), l, l.ini.remove
+      sair l.objini.f_tipo == 1 && l.objini.visivel(arg0)
+    efim
+    ret !l.objini, arg0.msg("Beber o quê?")
+  senao
+    epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+      sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+    efim
+    refvar r = l.objini
+    se !r
+      ret arg0.msg("Você não vê isso.")
+    senao r.f_tipo == 1
+    senao r.f_tipo != 2
+      ret arg0.msg("Você não consegue beber " + r.nomedesc + ".")
+    senao r.dono != arg0
+      ret arg0.msg("Você precisa pegar " + r.nomedesc + " primeiro.")
+    fimse
+  fimse
+  ref r
+  r = l.objini
+# Checa se consegue beber
+  se arg0.p_sede >= 40 || arg0.p_fome >= 40
+    ret arg0.msg("Você não consegue beber mais nada.")
+  senao arg0.p_bebida >= 40
+    ret arg0.msg("Você não consegue levar $o à boca.")
+  fimse
+# Avisa que bebeu e apaga objeto
+  $mens.p(arg0, nulo, r)
+  $mens.mvis1(r.f_tipo == 1 ? "$P bebe de $o." : "$P bebe $o.")
+  r.apagar(1)
+# Efeitos do objeto
+  efeito(arg0, arg0, r, 1)
+
+func efeito
+# arg0 = personagem que usou o objeto
+# arg1 = personagem alvo do efeito
+# arg2 = objeto
+# arg3 = quantidade
+  arg1.p_fome = intmin(40, arg1.p_fome + arg2.f_fome * arg3)
+  arg1.p_sede = intmin(40, arg1.p_sede + arg2.f_sede * arg3)
+  arg1.p_bebida = intmin(40, arg1.p_bebida + arg2.f_bebida * arg3)
+  ref r
+  debug d
+# Magia 1
+  se !(r = $magia_[arg2.f_magia1])
+  senao r.tipoalvo >= 4 || r.p_agressivo(arg0)
+    d.ini
+    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3))
+  fimse
+# Magia 2
+  se !(r = $magia_[arg2.f_magia2])
+  senao r.tipoalvo >= 4 || r.p_agressivo(arg0)
+    d.ini
+    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3))
+  fimse
+# Magia 3
+  se !(r = $magia_[arg2.f_magia3])
+  senao r.tipoalvo >= 4 || r.p_agressivo(arg0)
+    d.ini
+    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3))
+  fimse
+
+
 classe cmd_capturar
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Capturar\b\n\

@@ -3838,17 +3838,20 @@ Inicializa exec com o valor definido na opção 'exec' no início
 do arquivo int.
 
 34.3. cmd(<texto>, [texto])
-Executa a instrução que está no texto especificado.
-Se for mais de uma instrução, separar com '\n'.
-Retorna mensagem de erro se instrução não for válida.
-Nota 1: instruções ret no texto retornam para o cmd (vide abaixo).
-Nota 2: variáveis criadas no cmd só existem dentro do cmd.
+Executa as instruções que estão no texto especificado.
+Quando houver mais de uma instrução, deve-se separá-las com '\n'.
+Se houver algum erro (como sintaxe incorreta ou instrução inexistente),
+essa função retornará a mensagem de erro.
+Variáveis criadas no 'cmd' deixam de existir quando o 'cmd' retornar.
+Instruções 'ret' no texto fazem a função 'cmd' retornar o valor do 'ret',
+na forma de texto.
+
 Exemplos:
 debug d
 d.cmd("x = 10")
 d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
 d.cmd("ret \"teste\"") # d.cmd retorna "teste"
-d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna 3
+d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna "3"
 
 34.4. passo(<objeto>, <texto>)
       passo()
