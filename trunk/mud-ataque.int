@@ -460,7 +460,7 @@ const titulo = "Mensagens 1"
 const menufim = var.menufim
 const colunas = 25
 #
-const titu1 = " * Ao usar a habilidade ou magia"
+const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
 const tipo1 = "txtlinha"
@@ -988,6 +988,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # arg3 = nível da habilidade ou magia (=nível do personagem)
+# arg4 = se verdadeiro não tem custo da hab/magia e não mostra mensagem inicial
 # Checa a condição de batalha
   se a_batalha == 1 && !arg0.contr.atkenv
     ret arg0.contr.msg("Você não está lutando com ninguém.")
@@ -1019,8 +1020,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
       ret l.objini.cmd_alvo(arg0, arg1, este), nulo
     efim
-    custohab2(arg0, arg2)
-    mensinicio(arg0, arg1)
+    se !arg4
+      custohab2(arg0, arg2)
+      mensinicio(arg0, arg1)
+    fimse
     mudavida = 0
     se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       result = 1 # Sem efeito
@@ -1051,8 +1054,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret l.objini.cmd_atacar(arg0, arg1, este), nulo
   efim
 # Custo da hab/magia e checa se é permitido usar ataques
-  custohab2(arg0, arg2)
-  mensinicio(arg0, arg1)
+  se !arg4
+    custohab2(arg0, arg2)
+    mensinicio(arg0, arg1)
+  fimse
   se arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
     result = 1
     mensgolpe(arg0, arg1)

@@ -436,15 +436,11 @@ A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
 terminada com reticências, interrogação ou exclamação."
 
 func escr
+  ret !arg1, arg0.msg("Tecle a mensagem após FALAR.")
+  ret arg0.dono.s_falar, arg0.msg(arg0.dono.s_falar)
   $mens.p(arg0)
-  $mens.mens = arg1
-  se !arg1
-    arg0.msg("Tecle a mensagem após FALAR.")
-    ret
-  senao arg0.dono.s_falar
-    arg0.msg(arg0.dono.s_falar)
-    ret
-  senao txt(arg1, 0, 3) == "..."
+  $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
+  se txt(arg1, 0, 3) == "..."
     $mens.mtodos1(config:continuarmsg)
   senao txtfim(arg1, 1) == "?"
     $mens.mtodos1(config:perguntarmsg)
@@ -474,8 +470,6 @@ Envia mensagem para todos os personagens que estiverem na mesma área."
 func escr
   ref r
   txt100 area
-  $mens.p(arg0)
-  $mens.mens = arg1
   se arg0.pnivel < config:gritarnivel
     ret arg0.msg("Para gritar você precisa estar no nível " + config:gritarnivel + ".")
   senao !arg1
@@ -488,6 +482,8 @@ func escr
     ret r.s_gritar, arg0.msg(r.s_gritar)
   efim
   arg0.pmove -= config:gritarmove
+  $mens.p(arg0)
+  $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.var.u_[arg0.nome]
@@ -515,16 +511,9 @@ Os outros apenas ficam sabendo que você sussurrou alguma coisa."
 
 func escr
   $mens.p(arg0)
-  se !arg1
-    arg0.msg("Sussurrar para quem?")
-    ret
-  senao !txt2(arg1)
-    arg0.msg("Sussurrar o que?")
-    ret
-  senao arg0.dono.s_falar
-    arg0.msg(arg0.dono.s_falar)
-    ret
-  fimse
+  ret !arg1, arg0.msg("Sussurrar para quem?")
+  ret !txt2(arg1), arg0.msg("Sussurrar o que?")
+  ret arg0.dono.s_falar, arg0.msg(arg0.dono.s_falar)
   nomeobj n
   listaobj l
   n.ini(txt1(arg1), 1)
@@ -539,8 +528,9 @@ func escr
       $mens.p(arg0, l.objini)
       $mens.mtodos1("$P sussurrou algumas palavras.")
     senao
-      refvar m1 = "$P sussurou para $a '" + txttroca(txt2(arg1), "$", "$$") + "'"
       $mens.p(arg0, l.objini)
+      $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
+      refvar m1 = "$P sussurou para $a '$m'"
       $mens.mtodos3(m1, m1, "$P sussurou algumas palavras para $a.")
     fimse
     sair

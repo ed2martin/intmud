@@ -51,13 +51,13 @@ classe i_teste005
 herda comum_itemperso
 const nome = "bolsa"
 const descnome = "uma bolsa"
-const pesoobj = 200
-const volobj = 30
-const volmax = 5000
-const objmax = 20
 const i_abertoini = 2 # Container: 2 Inicialmente aberto
 const i_tranc = 1 # Trancar: 1 Pode ser trancado
+const objmax = 20
+const pesoobj = 200
 const tipoitem = 2048 # Tipo de produto: Container
+const volmax = 5000
+const volobj = 30
 
 
 classe i_teste006
@@ -306,6 +306,153 @@ func cmd_chegou
   arg0.msg("Uma pequena caixa treme por um instante.")
 
 
+classe i_teste022
+herda comum_itemgrupo
+const nome = "bombom de licor"
+const descnome = "um bombom de licor"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_bebida = 20
+const f_fome = 4
+const f_sede = -1
+const f_diges = 1
+
+
+classe i_teste023
+herda comum_itemgrupo
+const nome = "copo de água"
+const descnome = "um copo de água"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_bebida = -2
+const f_sede = 30
+
+
+classe i_teste024
+herda comum_itemgrupo
+const nome = "coxa de frango"
+const descnome = "uma coxa de frango"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 25
+const f_diges = 1
+
+
+classe i_teste025
+herda comum_itemgrupo
+const nome = "caipirinha de metanol"
+const descnome = "uma caipinha de metanol"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_bebida = 5
+const f_sede = -2
+const f_magia1 = "cegueira"
+const f_nivel1 = 2
+const f_diges = 40
+
+
+classe i_teste026
+herda comum_itemgrupo
+const nome = "poção do sono"
+const descnome = "uma poção do sono"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_magia1 = "sono profundo"
+const f_nivel1 = 5
+
+
+classe i_teste027
+herda comum_itemgrupo
+const nome = "pergaminho curar cegueira"
+const descnome = "um pergaminho curar cegueira"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const f_magia1 = "curar cegueira"
+
+
+classe i_teste028
+herda comum_itemgrupo
+const nome = "pergaminho sopro de gelo"
+const descnome = "um pergaminho sopro de gelo"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const f_magia1 = "sopro de gelo"
+const f_nivel1 = 5
+
+
+classe i_teste029
+herda comum_itemgrupo
+const nome = "chave tipo um"
+const descnome = "uma chave do tipo um"
+const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
+inttempo tempo # inttempo executa uma função após um tempo
+
+func cmd_mudadono
+  se dono.perso && tempo == 0 # Se pertence a um personagem e tempo é zero
+    tempo = 100 # Faz tempo ser 100 (10 segundos)
+
+func tempo_exec
+  apagar(este)
+  se dono.perso # Se pertence a personagem, avisa o personagem
+    dono.msg("Sua chave do tipo um some misteriosamente!")
+    $mens.p(dono)
+    $mens.mtodos2("", "A chave de $p some misteriosamente!")
+  senao !dono.item # Se não está em outro item (está na sala), avisa a todos
+    $mens.p(este)
+    $mens.mvis1("$P some misteriosamente.")
+
+
+classe i_teste030
+herda comum_itemgrupo
+const nome = "chave tipo dois"
+const descnome = "uma chave do tipo dois"
+const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
+inttempo tempo # inttempo executa uma função após um tempo
+
+func cmd_mudadono
+  se dono.perso # Se pertence a um personagem
+    !tempo && (tempo = 100) # Se tempo for 0, faz tempo ser 100 (10 segundos)
+  senao !dono.item # Se não está em outro item (está na sala)
+    tempo = 0
+
+func tempo_exec
+  apagar(este)
+  se dono.perso # Se pertence a personagem, avisa o personagem
+    dono.msg("Sua chave do tipo dois some misteriosamente!")
+    $mens.p(dono)
+    $mens.mtodos2("", "A chave de $p some misteriosamente!")
+
+
+classe i_teste031
+herda comum_itemgrupo
+const nome = "chave tipo três"
+const descnome = "uma chave do tipo três"
+sav inttempo tempo # sav salva essa variável no jogo salvo do jogador
+
+func cmd_mudadono
+  se dono.perso # Se personagem pegou
+    tempo = 0 # Item não será apagado
+  senao # Caso contrário
+    tempo = 100 # Item será apagado em 10 segundos
+
+func tempo_exec
+  apagar(este)
+  se !dono.perso && !dono.item # Se não pertence a personagem nem a outro item
+    $mens.p(este)
+    $mens.mvis1("$P some misteriosamente.")
+
+
+classe i_teste032
+herda comum_itemgrupo
+const nome = "fonte de água"
+const descnome = "uma fonte de água"
+const descpos = "Uma fonte jorra uma água límpida incessantemente."
+const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
+const f_fome = 1
+const f_sede = 20
+
+
+classe i_teste033
+herda comum_itemgrupo
+const nome = "pergaminho de retorno"
+const descnome = "um pergaminho de retorno"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const f_magia1 = "retornar"
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -429,7 +576,16 @@ herda comum_perso
 const nome = "João o mercenário"
 const msexo = 1 # Sexo: 1 Masculino
 const tipo1 = "Humano"
-const lojaitem = "teste012 3\nteste013 0"
+const lojaitem = "teste012 3\n\
+teste013 0\n\
+teste022 0\n\
+teste023 0\n\
+teste024 0\n\
+teste025 0\n\
+teste026 0\n\
+teste027 0\n\
+teste028 0\n\
+teste033 0"
 const taxavenda = 20
 const taxacompra = 30
 const tipoitem = 3 # Compra produtos: Possui metal, Arma
@@ -844,6 +1000,12 @@ func cmd_mover
     !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
     !arg0.pnivel && (arg0.pnivel = 1)
     arg0.recalc = 1
+
+const s_reset = "S 100 teste032 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste032") && criar("i_teste032", este, 1)
 
 
 classe s_teste002
@@ -1421,7 +1583,8 @@ const s_desc = "Os comandos de administração CMD, CMDP e CMDJ permitem executar 
 na linguagem do IntMUD. Todo o MUD foi feito nessa linguagem.\n\
 Pode-se carregar itens e personagens em uma sala, ler e alterar algumas\n\
 variáveis, como pontos de vida, mana, e vigor, transportar um jogador\n\
-para uma sala, entre outras coisas."
+para uma sala, entre outras coisas.\n\
+Recomenda-se também monitorar o uso do CMD, teclando: config +cmdlog"
 const dir_l = $s_teste002
 const dir_o = $s_teste034
 
@@ -1560,6 +1723,7 @@ const dir_no = $s_teste044
 const dir_n = $s_teste046
 const dir_ne = $s_teste047
 const dir_s = $s_teste048
+const dir_o = $s_teste098
 
 
 classe s_teste044
@@ -2418,9 +2582,11 @@ func s_reset1 # Realiza o reset
 classe s_teste095
 herda b_teste
 const s_titulo = "Subsolo 3: Diversos"
-const s_desc = "Ao norte: um ajudante que te seguirá"
-const dir_c = $s_teste082
+const s_desc = "Ao norte: um ajudante que te seguirá\n\
+Ao sul: itens apagados após um tempo"
 const dir_n = $s_teste096
+const dir_c = $s_teste082
+const dir_s = $s_teste097
 
 
 classe s_teste096
@@ -2445,3 +2611,71 @@ func cmd_falou
     r.seguirjog(arg0) # Chama uma função que foi criada em p_teste021 para seguir o jogador
     $mens.p(r, arg0)
     $mens.mvis1("$P apareceu, para auxiliar $a.")
+
+
+classe s_teste097
+herda b_teste
+const s_titulo = "Itens apagados após um tempo"
+const s_desc = "Aqui há três tipos de chave.\n\
+O primeiro some 10 segundos depois que alguém pegar.\n\
+O segundo também some, mas se você soltar na sala, não some.\n\
+Já o terceiro tipo some após 10 segundos se ninguém pegar.\n\
+Os três somem se forem colocados em outro item (exemplo, uma bolsa)."
+const dir_n = $s_teste095
+const s_reset = "S 100 teste029 1 S\nS 100 teste030 1 S\nS 100 teste031 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste029") && criar("i_teste029", este, 1)
+  !dentro1.objini("i_teste030") && criar("i_teste030", este, 1)
+  !dentro1.objini("i_teste031") && criar("i_teste031", este, 1)
+
+
+classe s_teste098
+herda b_teste
+const s_titulo = "Controlando outros personagens"
+const s_desc = "Ao norte, monitorando o cmd e outros comandos\n\
+Ao sul, comandos para os personagens\n\
+A nordeste, usando atalhos"
+const dir_l = $s_teste043
+const dir_n = $s_teste099
+const dir_s = $s_teste100
+const dir_ne = $s_teste101
+
+
+classe s_teste099
+herda b_teste
+const s_titulo = "Monitorando comandos"
+const s_desc = "Os comandos CMD são potencialmente perigosos. Por isso, se há mais de\n\
+uma pessoa administrando, é recomendável monitorar o CMD. Tecle:\n\
+config +cmdlog\n\
+O MUD só não informará quando o comando CMD for usado como calculadora.\n\
+Outro log importante é quando alguém altera algo no MUD. Tecle:\n\
+config +admlog"
+const dir_s = $s_teste098
+
+
+classe s_teste100
+herda b_teste
+const s_titulo = "Comandos para os personagens"
+const s_desc = "Se houver um personagem chamado João na mesma sala que você, e quiser\n\
+que ele tecle \"falar oi\", basta digitar:\n\
+cmdp joão teclou(\"falar oi\")\n\
+Se quiser que um jogador chamado João tecle \"falar bom dia\", digite:\n\
+cmdj joão teclou(\"falar bom dia\")\n\
+Se quiser mandar a mensagem \"Alguém disse oi\" para o jogador João, tecle:\n\
+cmdj joão msg(\"Alguém disse oi\")"
+const dir_n = $s_teste098
+
+
+classe s_teste101
+herda b_teste
+const s_titulo = "Usando atalhos"
+const s_desc = "Provavelmente os seguintes atalhos são bastante úteis:\n\
+atalho esc cmdj $1 teclou(\"$S\")\n\
+atalho tel cmdj $1 msg(\"Alguém fala telepaticamente '$S'\")\n\
+Depois disso, para forçar um jogador a teclar algo, tecle\n\
+esc jogador comando. Exemplo: esc joão n\n\
+E para escrever anonimamente para um jogador, use o comando tel.\n\
+Exemplo: tel joão a saída fica ao norte"
+const dir_so = $s_teste098

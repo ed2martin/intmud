@@ -347,8 +347,9 @@ Tipo de terreno:
 6 = Montanha, excessivamente montanhoso - 6mv
 7 = Água, pode nadar - 4mv
 8 = Água, requer barco para passar - 50mv
-9 = Em baixo d'água - 5mv
-10 = Ar, itens e personagens caem - 1mv
+9 = Em baixo d'água - 10mv
+10 = Ar, itens e personagens caem - 10mv
+11 = Deserto, 3x mais sede, 6mv
 
 const s_luz = 0
 Tipo de iluminação:
@@ -959,6 +960,44 @@ Ataque máximo da arma.
 const armamanual = 0
 Se o personagem não usa essa arma em ataques automáticos (0=pode, 1=não pode).
 
+const f_tipo = 0
+Tipo de item fome/sede:
+0 = Nenhum
+1 = Fonte, não some após beber
+2 = Poção, beber
+3 = Comida, comer
+4 = Pergaminho, recitar
+
+const f_sede = 0
+O quanto sacia a sede. Um minuto são de 3 a 4 unidades, exceto no deserto.
+O valor máximo da sede do jogador (sem sede) é miscfome:cheio.
+
+const f_fome = 0
+O quanto sustenta. Um minuto são de 3 a 4 unidades.
+O valor máximo da fome do jogador (sem fome) é miscfome:cheio.
+
+const f_bebida = 0
+O quanto deixa bêbado. Um minuto são de 6 a 8 unidades.
+O valor máximo da embriaguês do jogador (totalmente embriagado)
+é miscfome:cheio.
+
+const f_diges = 0
+Quanto tempo leva para digerir o alimento.
+Um minuto são de 3 a 12 unidades, dependendo da posição do personagem.
+O valor máximo da digestão do jogador é miscfome:cheio.
+
+const f_magia1 = ""
+const f_nivel1 = 0
+Primeira magia lançada ao beber/comer/recitar e o nível da magia.
+
+const f_magia2 = ""
+const f_nivel2 = 0
+Segunda magia lançada ao beber/comer/recitar e o nível da magia.
+
+const f_magia3 = ""
+const f_nivel3 = 0
+Terceira magia lançada ao beber/comer/recitar e o nível da magia.
+
 func vestir( posição )
 Veste um item apenas, não verifica se a posição já está ocupada.
 Se posição for 0, deixa de vestir.
@@ -1111,6 +1150,11 @@ func cmd_removeu(personagem, item, posição)
 Remover um item que está vestindo/usando ou uma arma que está empunhando.
 Posição é a posição em que estava vestindo ou empunhando.
 
+func cmd_bebeu(personagem, item)
+func cmd_comeu(personagem, item)
+func cmd_recitou(personagem, item)
+Comeu, bebeu ou recitou alguma coisa.
+
 func cmd_alvofim(personagem, alvo, objeto que processa o comando)
 Personagem usou uma habilidade ou magia não agressiva.
 Esse evento é chamado também para o objeto que processa o comando.
@@ -1204,6 +1248,11 @@ do objeto. Começa na posição1, empunhando é a posição 50.
 func cmd_remover(personagem, item, posição)
 Quer remover um item que está vestindo/usando ou uma arma que está empunhando.
 Posição é a posição atual.
+
+func cmd_beber(personagem, item)
+func cmd_comer(personagem, item)
+func cmd_recitar(personagem, item)
+Quer comer, beber ou recitar alguma coisa.
 
 func cmd_negociar(personagem, personagem vendedor, tipo)
 Se o personagem negocia com um jogador.
@@ -1585,14 +1634,20 @@ Exemplo: m_menu("menu_config")
 
 18. Lista de coisas pendentes
 
+Fome e sede:
+- Criar um tipo de pergaminho que pode-se recitar em outros personagens
+- (talvez) Pergaminhos de identificação
+- Embriaguês diminuir precisão e evasão
+- Embriaguês poder fazer errar a direção ao ir de um lugar a outro
+- Fome e sede diminuirem a força dos golpes nos ataques
+- Usar digestão para alguma coisa, exemplo, vomitar em batalha
+- Tipos de líquidos e containers de líquido
 Habilidades e magias que jogador ganha quando escolhe uma raça ou classe
 Casa de doações
 Leilões
-Possibilidade de colocar sede e fome
 Murais, livros, papéis e caneta/lápis
 Lista de novidades do MUD
 Veículos fechados
-Pergaminhos e poções
 Habilidades:
 - Rosnar - diminui ataque do adversário
 - Roncar - só pode ser usado enquanto estiver dormindo
@@ -1615,8 +1670,6 @@ Acertar itens que produzem luz
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas
-Quantos litros cabe, ou 0 se não for vasilhame
-Quanto sustenta, ou 0 se não for alimento
 Idiomas
 Criar itens genéricos
 Sistema de dicas aleatórias
