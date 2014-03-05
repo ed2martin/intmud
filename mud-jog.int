@@ -529,15 +529,10 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     efim
 # Muda de sala e volta ao jogo
     msg("Continuando jogo salvo.")
-    ref r
-    r = $[perso.salanome]
-    perso.mudadono(r ? r : config:salasav)
-    temposair # Acerta tempo para sair do MUD
     txt200 lin
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
-    $mens.p(perso)
-    $mens.mvis2("", "$P chegou.")
+    criar("jogsock_retorna", perso, $[perso.salanome])
   fimse
   ret 1
 
@@ -590,6 +585,25 @@ func p_mudasenha3 # Repetir a senha digitada
   ret 1
 
 
+classe jogsock_retorna
+# Coloca o jogador na sala em que estava, logo após entrar no MUD
+ref perso
+ref sala
+intexec ex
+
+func ini
+  perso = arg0, sala = arg1, ex = 1
+  telatxt t
+  t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
+
+func ex_exec
+  apagar(este)
+  perso.mudadono(sala ? sala : config:salasav)
+  temposair # Acerta tempo para sair do MUD
+  $mens.p(perso)
+  $mens.mvis2("", "$P chegou.")
+
+
 classe jogador
 herda comum_persoanimal
 # Personagem no jogo
@@ -618,6 +632,7 @@ sav uint32 p_fugir
 sav uint8 p_sede # Sede, quanto menor mais sede tem
 sav uint8 p_fome # Fome, quanto menor mais fome tem
 sav uint8 p_bebida # Embriagês, quanto maior mais bêbado está
+sav uint8 p_diges # Digestão
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
@@ -668,24 +683,33 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   casovar posicao
   casose "1" # Mortalmente ferido
   casose "2" # Incapacitado
-    vida += 1, acertapos
+    p_diges -= 1, vida += 1, acertapos
     sair
   casose "3" # Fraco
-    vida += 2, acertapos
+    p_diges -= 1, vida += 2, acertapos
     sair
   casose "4" # Dormindo
     recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 500 : 600)
+    p_diges -= 3
     sair
   casose "5" # Descansando
     recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 685 : 800)
+    p_diges -= 3
     sair
   casose "6" # Sentado
     recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 1000 : 1200)
+    p_diges -= 3
     sair
   casose "7" # Lutando
+    recup = contr.dono.s_recup / 1400
+    p_diges -= 1
+    sair
   casose "8" # Em pé
     recup = contr.dono.s_recup / 1400
+    p_diges -= 2
     sair
+  casose
+    p_diges -= 1
   casofim
   se !recup # Sem taxa de recuperação
   senao p_sede && p_fome # Recuperação normal
@@ -698,34 +722,36 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     pmove < pmovemax && (pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
   fimse
 # Acerta fome, sede e embriaguês
-  se p_bebida == 1
+  se p_bebida == 1 || p_bebida == 2
     msg(msexo ? "Você está sóbrio." : "Você está sóbria.")
   fimse
   se jogconfig.14 # Imortal
-    p_sede = intmax(15, p_sede - 1)
-    p_fome = intmax(15, p_fome - 1)
+    p_sede = intmax(miscfome:semfome, p_sede - 1)
+    p_fome = intmax(miscfome:semfome, p_fome - 1)
     p_bebida = intmin(1, p_bebida - 1)
   senao pnivel >= config:fomeini && pnivel < config:fomefim # Sente fome
-    p_sede -= 1
+    p_sede -= dono.s_terreno == 11 ? 3 : 1 # No deserto sente sede 3x mais rápido
     p_fome -= 1
-    p_bebida -= 1
+    p_bebida -= 2
   senao # Não sente fome
-    p_sede = intmax(15, p_sede - 1)
-    p_fome = intmax(15, p_fome - 1)
-    p_bebida -= 1
+    p_sede = intmax(miscfome:semfome, p_sede - 1)
+    p_fome = intmax(miscfome:semfome, p_fome - 1)
+    p_bebida -= 2
   fimse
 # Mensagens de fome e sede e pontos de vida
-  casovar txtchr(97 + jogador_tabfome:t[p_fome]) + jogador_tabfome:t[p_sede]
+  casovar txtchr(97 + miscfome:t[p_fome]) + miscfome:t[p_sede]
   casose "a1" # Pouca sede
     msg("Sua boa está um pouco seca.")
     sair
   casose "a2" # Com sede
+    msg("Você está com sede.")
     $mens.p(este)
-    $mens.mvis1("$P está com sede.")
+    $mens.mvis2("", "$P está com sede.")
     sair
   casose "a3" # Muita sede
+    msg("Você está morrendo de sede, -1")
     $mens.p(este)
-    $mens.mvis1("$P está morrendo de sede, -1")
+    $mens.mvis2("", "$P está morrendo de sede, -1")
     pvida -= 1
     sair
   casose "b" # Pouca fome
@@ -735,7 +761,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     msg("Você sente umas pontadas de fome e a boca um pouco seca.")
     sair
   casose "b2" # Pouca fome + Com sede
-    msg("Você com sede e sente umas pontadas de fome.")
+    msg("Você está com sede e sente umas pontadas de fome.")
     $mens.p(este)
     $mens.mvis2("", "$P está com sede.")
     sair
@@ -751,22 +777,25 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     $mens.mvis2("", "Você ouve o estômago de $P roncar.")
     sair
   casose "c1" # Com fome + Pouca sede
-    msg("Você com fome e sente a boca um pouco seca.")
+    msg("Você está com fome e sente a boca um pouco seca.")
     $mens.p(este)
     $mens.mvis2("", "Você ouve o estômago de $P roncar.")
     sair
   casose "c2" # Com fome + Com sede
+    msg("Você está com fome e sede.")
     $mens.p(este)
-    $mens.mvis1("$P está com fome e sede.")
+    $mens.mvis2("", "$P está com fome e sede.")
     sair
   casose "c3" # Com fome + Muita sede
+    msg("Você está morrendo de sede e com fome, -1")
     $mens.p(este)
-    $mens.mvis1("$P está morrendo de sede e com fome, -1")
+    $mens.mvis2("", "$P está morrendo de sede e com fome, -1")
     pvida -= 1
     sair
   casose "d" # Muita fome
+    msg("Você está morrendo de fome, -2")
     $mens.p(este)
-    $mens.mvis1("$P está morrendo de fome, -2")
+    $mens.mvis2("", "$P está morrendo de fome, -2")
     pvida -= 2
     sair
   casose "d1" # Muita fome + Pouca sede
@@ -776,13 +805,15 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     pvida -= 2
     sair
   casose "d2" # Muita fome + Com sede
+    msg("Você está morrendo de fome e com sede, -2")
     $mens.p(este)
-    $mens.mvis1("$P está morrendo de fome e com sede, -2")
+    $mens.mvis2("", "$P está morrendo de fome e com sede, -2")
     pvida -= 2
     sair
   casose "d3" # Muita fome + Muita sede
+    msg("Você está morrendo de sede e fome, -3")
     $mens.p(este)
-    $mens.mvis1("$P está morrendo de fome e de sede, -3")
+    $mens.mvis2("", "$P está morrendo de sede e fome, -3")
     pvida -= 3
     sair
   casofim
@@ -790,7 +821,6 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   acertapos(1)
 # Salva o jogo
   (p_temposav += 1) >= 9 && salvar
-
 
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar
@@ -823,27 +853,6 @@ func cmd_recalc1 # Recalcula variáveis do personagem
   jogconfig.14 && (bitver |= 0x7C) # Propriedade config +imortal
   jogconfig.18 && (bitinv |= 128) # Propriedade config +invsala
   jogconfig.23 && (bitver |= 128) # Se é administrador
-
-
-classe jogador_tabfome
-# Tabela para acertar fome e sede dos jogadores
-# jogador_tabfome:t[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca nulo=sem
-# jogador_tabfome:t[p_sede] = quantidade de sede: 3=muita 2=média 1=pouca nulo=sem
-const t0 = 3
-const t1 = 2
-const t2 = 2
-const t3 = 2
-const t4 = 2
-const t5 = 2
-const t6 = 2
-const t7 = 2
-const t8 = 2
-const t9 = 1
-const t10 = 1
-const t11 = 1
-const t12 = 1
-const t13 = 1
-const t14 = 1
 
 
 classe cmdalias

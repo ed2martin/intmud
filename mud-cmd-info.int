@@ -479,6 +479,12 @@ func escr
   t1 += "  Mana " + r.pmana + "/" + r.pmanamax
   t1 += "  Vigor " + r.pmove + "/" + r.pmovemax
   t.addfim(t1)
+# Fome, sede e embriaguês, somente para administradores
+  se arg0.jogconfig.23 && r.jog
+    t1 = "Sede " + r.p_sede + " fome " + r.p_fome + " embriaguês " + r.p_bebida
+    t1 += " digestão " + r.p_diges + "; máximo é " + miscfome:cheio
+    t.addfim(t1)
+  fimse
 # Tipo
   r.tipo1 && h.addfim(txtcopiamai(r.tipo1, "A"))
   r.tipo2 && h.addfim(txtcopiamai(r.tipo2, "A"))

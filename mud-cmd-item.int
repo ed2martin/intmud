@@ -100,7 +100,7 @@ const posic = 5
 ref sala # De onde pegar os itens
 uint32 total # Quantidade de itens do mesmo tipo
 txt20 mens # Parte da mensagem
-int1 achou # Se achou algum item
+int8 achou # Quantos itens achou multiplicado por 2
 
 func escr
   listaobj l
@@ -148,7 +148,7 @@ func escr
       sair e.objini.cmd_pegarobj(arg0, sala, r, total)
     efim
     se e
-      sair (achou += 1) >= 10
+      sair (achou += 2) >= 20
       continuar
     fimse
     $mens.p(arg0, sala, r)
@@ -161,7 +161,7 @@ func escr
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_pegouobj(arg0, sala, r, total)
     efim
-    sair (achou += 1) >= 10
+    sair (achou += 2) >= 20
   efim
   ret achou, nulo
 # Pega moedas
@@ -207,7 +207,7 @@ ref sala # Aonde soltar os itens
 uint32 total # Quantidade de itens do mesmo tipo
 txt20 mens # Parte da mensagem
 txt80 mens2 # Outra parte da mensagem
-int1 achou # Se achou algum item
+int8 achou # Quantos itens achou multiplicado por 2
 int8 soltar # Se pode soltar itens
 
 func escr
@@ -268,8 +268,8 @@ func escr
     r = l.objini
     total = n # Quantidade de itens
     se r == sala # Soltar o objeto dentro dele mesmo
-      refvar lin = r.msexo ? " dentro dele mesmo." : " dentro dela mesma."
-      ret arg0.msg("Não é possível soltar " + r.descnome + lin)
+      achou += 1
+      continuar
     senao sala.dentro1.total + total >= sala.objmax
       ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.descnome + ".")
       ret arg0.msg("Não consegue soltar nada aqui.")
@@ -282,7 +282,7 @@ func escr
       sair e.objini.cmd_soltarobj(arg0, sala, r, total)
     efim
     se e
-      sair (achou += 1) >= 10
+      sair (achou += 2) >= 20
       continuar
     fimse
     $mens.p(arg0, sala, r)
@@ -308,9 +308,9 @@ func escr
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_soltouobj(arg0, sala, r, total)
     efim
-    sair (achou += 1) >= 10
+    sair (achou += 2) >= 20
   efim
-  ret achou, nulo
+  ret achou >= 2, nulo
 # Solta moedas
   se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
     total = n
@@ -347,7 +347,12 @@ func escr
     ret
   fimse
 # Não encontrou o item
-  arg0.msg("Você não vê isso.")
+  se !achou
+    arg0.msg("Você não vê isso.")
+  senao sala.msexo
+    arg0.msg("Não é possível soltar " + sala.descnome + " dentro dele mesmo.")
+  senao
+    arg0.msg("Não é possível soltar " + sala.descnome + " dentro dela mesma.")
 
 
 classe cmd_dar
@@ -745,10 +750,51 @@ func escr
   !total && $mens.p(alvo) + $mens.mperso("$P não está usando isso.")
 
 
+classe comando_comebebe
+herda comando_comum
+
+func efeito
+# arg0 = personagem que usou o objeto
+# arg1 = personagem alvo do efeito
+# arg2 = objeto
+# arg3 = quantidade
+  arg1.p_fome = intmin(miscfome:cheio, arg1.p_fome + arg2.f_fome * arg3)
+  arg1.p_sede = intmin(miscfome:cheio, arg1.p_sede + arg2.f_sede * arg3)
+  arg1.p_bebida = intmin(miscfome:cheio, arg1.p_bebida + arg2.f_bebida * arg3)
+  arg1.p_diges = intmin(miscfome:cheio, arg1.p_diges + arg2.f_diges * arg3)
+  ref r
+  debug d
+# Magia 1
+  se !(r = $magia_[arg2.f_magia1])
+  senao r.tipoalvo >= 4 || arg1.p_agressivo(arg0)
+    d.ini
+    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3), 1)
+  fimse
+# Magia 2
+  se !(r = $magia_[arg2.f_magia2])
+  senao r.tipoalvo >= 4 || arg1.p_agressivo(arg0)
+    d.ini
+    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3), 1)
+  fimse
+# Magia 3
+  se !(r = $magia_[arg2.f_magia3])
+  senao r.tipoalvo >= 4 || arg1.p_agressivo(arg0)
+    d.ini
+    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3), 1)
+  fimse
+
+
+classe cmd_tomar
+herda cmd_beber
+const objcmd = $cmd_beber
+const objajuda = $cmd_beber
+
+
 classe cmd_beber
-herda comando_comum, comando_ajuda
+herda comando_comebebe, comando_ajuda
 const txtajuda = "\b\c3Beber\b\n\
 Sintaxe: BEBER [objeto]\n\
+         TOMAR [objeto]\n\
 Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
 que encontrar."
 const posic = 5
@@ -770,56 +816,137 @@ func escr
     refvar r = l.objini
     se !r
       ret arg0.msg("Você não vê isso.")
-    senao r.f_tipo == 1
-    senao r.f_tipo != 2
-      ret arg0.msg("Você não consegue beber " + r.nomedesc + ".")
+    senao r.f_tipo == 1 # Fonte
+    senao r.f_tipo != 2 # Não é bebida ou poção
+      ret arg0.msg("Você não consegue beber " + r.descnome + ".")
     senao r.dono != arg0
-      ret arg0.msg("Você precisa pegar " + r.nomedesc + " primeiro.")
+      ret arg0.msg("Você precisa pegar " + r.descnome + " primeiro.")
     fimse
   fimse
   ref r
   r = l.objini
 # Checa se consegue beber
-  se arg0.p_sede >= 40 || arg0.p_fome >= 40
+  se arg0.p_sede >= miscfome:cheio || arg0.p_fome >= miscfome:cheio
     ret arg0.msg("Você não consegue beber mais nada.")
-  senao arg0.p_bebida >= 40
-    ret arg0.msg("Você não consegue levar $o à boca.")
+  senao arg0.p_bebida >= miscfome:cheio - 5
+    $mens.p(arg0, nulo, r)
+    $mens.mvis1("$P não consegue levar $o à boca.")
+    ret
   fimse
-# Avisa que bebeu e apaga objeto
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_beber(arg0, r), nulo
+  efim
+# Bebe o objeto
   $mens.p(arg0, nulo, r)
-  $mens.mvis1(r.f_tipo == 1 ? "$P bebe de $o." : "$P bebe $o.")
-  r.apagar(1)
-# Efeitos do objeto
+  se r.f_tipo == 1
+    refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P bebe de $o."
+    $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  senao
+    refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P bebe $o."
+    $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+    r.apagar(1)
+  fimse
   efeito(arg0, arg0, r, 1)
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_bebeu(arg0, r)
+  efim
 
-func efeito
-# arg0 = personagem que usou o objeto
-# arg1 = personagem alvo do efeito
-# arg2 = objeto
-# arg3 = quantidade
-  arg1.p_fome = intmin(40, arg1.p_fome + arg2.f_fome * arg3)
-  arg1.p_sede = intmin(40, arg1.p_sede + arg2.f_sede * arg3)
-  arg1.p_bebida = intmin(40, arg1.p_bebida + arg2.f_bebida * arg3)
+
+classe cmd_comer
+herda comando_comebebe, comando_ajuda
+const txtajuda = "\b\c3Comer\b\n\
+Sintaxe: COMER <objeto>\n\
+Tenta comer alguma coisa, geralmente um alimento."
+const posic = 5
+
+func escr
+  ret arg0.posicao == 7, arg0.msg(arg0.erropos(7)) # Não come durante a luta
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+# Obtém o objeto
+  n.ini(arg1, 1)
+  ret !arg1, arg0.msg("Comer o quê?")
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+  efim
   ref r
-  debug d
-# Magia 1
-  se !(r = $magia_[arg2.f_magia1])
-  senao r.tipoalvo >= 4 || r.p_agressivo(arg0)
-    d.ini
-    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3))
+  r = l.objini
+# Checa se consegue comer
+  se !r
+    ret arg0.msg("Você não vê isso.")
+  senao arg0.jogconfig.14 # Se é imortal, consegue comer
+  senao r.f_tipo != 3 # Checa se é comida
+    ret arg0.msg("Você não consegue comer " + r.descnome + ".")
+  senao arg0.p_fome >= miscfome:cheio - 5
+    ret arg0.msg("Você não consegue comer mais nada.")
+  senao arg0.p_bebida >= miscfome:cheio - 5
+    $mens.p(arg0, nulo, r)
+    $mens.mvis1("$P não consegue levar $o à boca.")
+    ret
   fimse
-# Magia 2
-  se !(r = $magia_[arg2.f_magia2])
-  senao r.tipoalvo >= 4 || r.p_agressivo(arg0)
-    d.ini
-    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3))
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_comer(arg0, r), nulo
+  efim
+# Come o objeto
+  $mens.p(arg0, nulo, r)
+  refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P come $o."
+  $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  r.apagar(1)
+  efeito(arg0, arg0, r, 1)
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_comeu(arg0, r)
+  efim
+
+
+classe cmd_recitar
+herda comando_comebebe, comando_ajuda
+const txtajuda = "\b\c3Recitar\b\n\
+Sintaxe: RECITAR <objeto>\n\
+Tenta recitar alguma coisa, geralmente um pergaminho."
+const posic = 5
+
+func escr
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+# Obtém o objeto
+  n.ini(arg1, 1)
+  ret !arg1, arg0.msg("Recitar o quê?")
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+  efim
+  ref r
+  r = l.objini
+# Checa se consegue recitar
+  se !r
+    ret arg0.msg("Você não vê isso.")
+  senao r.f_tipo != 4 # Checa se pode recitar
+    ret arg0.msg("Não há nada para recitar em " + r.descnome + ".")
+  senao arg0.p_bebida >= miscfome:cheio / 2
+    ret arg0.msg("Você não consegue ler o que está escrito em $o.")
+  senao arg0.dono.s_falar
+    ret arg0.msg(arg0.dono.s_falar)
   fimse
-# Magia 3
-  se !(r = $magia_[arg2.f_magia3])
-  senao r.tipoalvo >= 4 || r.p_agressivo(arg0)
-    d.ini
-    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3))
-  fimse
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_recitar(arg0, r), nulo
+  efim
+# Recita o objeto
+  $mens.p(arg0, nulo, r)
+  refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P recita $o."
+  $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  r.apagar(1)
+  efeito(arg0, arg0, r, 1)
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_recitou(arg0, r)
+  efim
 
 
 classe cmd_capturar
@@ -919,7 +1046,8 @@ func escr
   $mens.p(arg0, r)
   se estacheio
     r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
-    $mens.mvis2("$A entrou para a sua equipe como reserva.", "$A entrou para a equipe de $P.")
+    $mens.mvis2("$A entrou para a sua equipe como reserva.", "$A entrou para a equipe de \
+$P.")
   senao
     $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
   fimse
@@ -1032,7 +1160,7 @@ const ta1 = "\b\c3Animais\b\n\
   \c20\b        Não escolhe nenhum animal para batalha\n\
   \c21\b a \c2$$\b    Escolhe um animal seu, de 1 a $$\n\
   \c2TROCAR\b   Dá itens para um animal e troca animais de lugar"
-const ta2 = "\n\  \c2RESERVA\b  Manuseio de animais reserva"
+const ta2 = "\n  \c2RESERVA\b  Manuseio de animais reserva"
 const posic = 0
 
 func escr

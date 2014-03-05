@@ -30,6 +30,7 @@ func escr # Executa o comando
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
+  total *= (intmax(1, int(miscfome:t[arg0.p_sede])) + intmax(1, miscfome:t[arg0.p_fome])) / 2
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
@@ -1095,11 +1096,19 @@ const c_espera = 15 # Tempo de esperar após usar esse comando
 
 func escr # Personagem retorna
 # arg0 = personagem
+  exechab(arg0)
+
+func exechab
+# arg0 = personagem
+# arg1 a arg3 = não usados; apenas para compatibilidade com outras habilidades e magias
+# arg4 = se verdadeiro não tem custo da hab/magia e não mostra mensagem inicial
   refvar r = $[arg0.var.z_salafim]
   ret !r, arg0.msg("Você não possui ponto de retorno.")
   ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
-  ret !checahab1(arg0.persobat), nulo
-  custohab1(arg0.persobat)
+  se !arg4
+    ret !checahab1(arg0.persobat), nulo
+    custohab1(arg0.persobat)
+  fimse
   msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
   se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"

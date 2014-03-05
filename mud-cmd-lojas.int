@@ -411,7 +411,7 @@ func escr
 # Checa se pode carregar os itens
       se arg0.dentro1.total + linha > arg0.objmax
         ret arg0.msg("Você não consegue carregar tanta coisa nada.")
-      senao arg0.volden + [lin]:volobj * total > [lin]:volmax
+      senao arg0.volden + [lin]:volobj * total > arg0.volmax
         ret arg0.msg("Você não consegue carregar tanta coisa.")
       senao arg0.pesoden - arg0.pesoveste + [lin]:pesoobj * total > arg0.pesomax
         ret arg0.msg("Você não consegue carregar tanto peso.")

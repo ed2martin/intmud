@@ -366,3 +366,157 @@ func tempo1_exec # Executa eventos
   tempo1 = x - tempo2
   tempo2 = x
   obj.[func + v](perso1, perso2, perso3, este)
+
+
+classe miscfome
+# Tabela para acertar fome e sede dos jogadores
+# miscfome:t[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca nulo=sem
+# miscfome:t[p_sede] = quantidade de sede: 3=muita 2=média 1=pouca nulo=sem
+const semfome = 50 # Valor para não sentir fome e sede
+const cheio = 160 # Valor máximo (não cabe mais nada no estômago)
+const t0 = 3
+const t1 = 2
+const t2 = 2
+const t3 = 2
+const t4 = 2
+const t5 = 2
+const t6 = 2
+const t7 = 2
+const t8 = 2
+const t9 = 2
+const t10 = 2
+const t11 = 2
+const t12 = 2
+const t13 = 2
+const t14 = 2
+const t15 = 2
+const t16 = 2
+const t17 = 2
+const t18 = 2
+const t19 = 2
+const t20 = 2
+const t21 = 2
+const t22 = 2
+const t23 = 2
+const t24 = 2
+const t25 = 2
+const t26 = 2
+const t27 = 2
+const t28 = 2
+const t29 = 2
+const t30 = 2
+const t31 = 1
+const t32 = 1
+const t33 = 1
+const t34 = 1
+const t35 = 1
+const t36 = 1
+const t37 = 1
+const t38 = 1
+const t39 = 1
+const t40 = 1
+const t41 = 1
+const t42 = 1
+const t43 = 1
+const t44 = 1
+const t45 = 1
+
+
+classe miscbebida
+# Muda mensagens conforme a bebedeira
+const bebeini = 20 # A partir desse valor, a bebida começa a ter efeito
+
+func iniclasse
+  criar(arg0)
+
+func msgperso # Substituições conforme a bebedeira
+# arg0 = texto original
+# arg1 = valor da variável p_bebida do jogador
+# Retorna o texto modificado conforme a bebedeira
+  ret arg1 <= bebeini, arg0
+  refvar indice = intmin(50 * (arg1 - bebeini) / miscfome:cheio, 100)
+  ret msg(arg0, indice)
+
+func msg # Substituições conforme a bebedeira
+# arg0 = texto original
+# arg1 = porcentagem de bebedeira, de 0 a 100
+# Retorna o texto modificado conforme a bebedeira
+  txt512 lin
+# Repete uma ou duas vezes o mesmo caracter
+  lin = vartroca(arg0, "", "beb2_", arg1 / 2)
+# T vira TH, X vira SH
+  lin = vartroca(lin, "", "beb1_", arg1 * 0.8)
+# Troca maiúsculas com minúsculas
+  lin = txtmudamai(lin, arg1 / 2.5)
+# Gagueira
+  ret vartroca(lin, "", "beb3_", arg1 / 3, 2)
+
+const beb1_t = "th"
+const beb1_x = "sh"
+const beb2_a = bebida2(arg0)
+const beb2_b = bebida2(arg0)
+const beb2_c = bebida2(arg0)
+const beb2_d = bebida2(arg0)
+const beb2_e = bebida2(arg0)
+const beb2_f = bebida2(arg0)
+const beb2_g = bebida2(arg0)
+const beb2_h = bebida2(arg0)
+const beb2_i = bebida2(arg0)
+const beb2_j = bebida2(arg0)
+const beb2_k = bebida2(arg0)
+const beb2_l = bebida2(arg0)
+const beb2_m = bebida2(arg0)
+const beb2_n = bebida2(arg0)
+const beb2_o = bebida2(arg0)
+const beb2_p = bebida2(arg0)
+const beb2_q = bebida2(arg0)
+const beb2_r = bebida2(arg0)
+const beb2_s = bebida2(arg0)
+const beb2_t = bebida2(arg0)
+const beb2_u = bebida2(arg0)
+const beb2_v = bebida2(arg0)
+const beb2_w = bebida2(arg0)
+const beb2_x = bebida2(arg0)
+const beb2_y = bebida2(arg0)
+const beb2_z = bebida2(arg0)
+
+func bebida2
+  ret rand(2), arg0 + arg0
+  ret arg0 + arg0 + arg0
+
+const beb3_a = bebida3(arg0)
+const beb3_b = bebida3(arg0)
+const beb3_c = bebida3(arg0)
+const beb3_d = bebida3(arg0)
+const beb3_e = bebida3(arg0)
+const beb3_f = bebida3(arg0)
+const beb3_g = bebida3(arg0)
+const beb3_h = bebida3(arg0)
+const beb3_i = bebida3(arg0)
+const beb3_j = bebida3(arg0)
+const beb3_k = bebida3(arg0)
+const beb3_l = bebida3(arg0)
+const beb3_m = bebida3(arg0)
+const beb3_n = bebida3(arg0)
+const beb3_o = bebida3(arg0)
+const beb3_p = bebida3(arg0)
+const beb3_q = bebida3(arg0)
+const beb3_r = bebida3(arg0)
+const beb3_s = bebida3(arg0)
+const beb3_t = bebida3(arg0)
+const beb3_u = bebida3(arg0)
+const beb3_v = bebida3(arg0)
+const beb3_w = bebida3(arg0)
+const beb3_x = bebida3(arg0)
+const beb3_y = bebida3(arg0)
+const beb3_z = bebida3(arg0)
+
+func bebida3
+  casovar rand(3)
+  casose "0"
+    ret arg0 + "-" + arg0
+  casose "1"
+    ret arg0 + "-" + arg0 + "-" + arg0
+  casose "2"
+    ret arg0 + "-" + arg0 + "-" + arg0 + "-" + arg0
+  casofim
