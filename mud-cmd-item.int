@@ -755,33 +755,20 @@ herda comando_comum
 
 func efeito
 # arg0 = personagem que usou o objeto
-# arg1 = personagem alvo do efeito
+# arg1 = o que o personagem digitou; usado ao lançar magias
 # arg2 = objeto
 # arg3 = quantidade
-  arg1.p_fome = intmin(miscfome:cheio, arg1.p_fome + arg2.f_fome * arg3)
-  arg1.p_sede = intmin(miscfome:cheio, arg1.p_sede + arg2.f_sede * arg3)
-  arg1.p_bebida = intmin(miscfome:cheio, arg1.p_bebida + arg2.f_bebida * arg3)
-  arg1.p_diges = intmin(miscfome:cheio, arg1.p_diges + arg2.f_diges * arg3)
-  ref r
+  arg0.p_fome = intmin(miscfome:cheio, arg0.p_fome + arg2.f_fome * arg3)
+  arg0.p_sede = intmin(miscfome:cheio, arg0.p_sede + arg2.f_sede * arg3)
+  arg0.p_bebida = intmin(miscfome:cheio, arg0.p_bebida + arg2.f_bebida * arg3)
+  arg0.p_diges = intmin(miscfome:cheio, arg0.p_diges + arg2.f_diges * arg3)
   debug d
-# Magia 1
-  se !(r = $magia_[arg2.f_magia1])
-  senao r.tipoalvo >= 4 || arg1.p_agressivo(arg0)
-    d.ini
-    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3), 1)
-  fimse
-# Magia 2
-  se !(r = $magia_[arg2.f_magia2])
-  senao r.tipoalvo >= 4 || arg1.p_agressivo(arg0)
-    d.ini
-    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3), 1)
-  fimse
-# Magia 3
-  se !(r = $magia_[arg2.f_magia3])
-  senao r.tipoalvo >= 4 || arg1.p_agressivo(arg0)
-    d.ini
-    r.exechab(arg0.persobat, arg1.persobat, 0.5, int(arg2.f_nivel3), 1)
-  fimse
+# Magias
+  $magia_[arg2.f_magia1].escr(arg0, arg1, arg2, arg2.f_nivel1)
+  d.ini
+  $magia_[arg2.f_magia2].escr(arg0, arg1, arg2, arg2.f_nivel2)
+  d.ini
+  $magia_[arg2.f_magia3].escr(arg0, arg1, arg2, arg2.f_nivel3)
 
 
 classe cmd_tomar
@@ -848,7 +835,7 @@ func escr
     $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
     r.apagar(1)
   fimse
-  efeito(arg0, arg0, r, 1)
+  efeito(arg0, "", r, 1)
 # Eventos
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_bebeu(arg0, r)
@@ -897,7 +884,7 @@ func escr
   refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P come $o."
   $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
   r.apagar(1)
-  efeito(arg0, arg0, r, 1)
+  efeito(arg0, "", r, 1)
 # Eventos
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_comeu(arg0, r)
@@ -908,14 +895,20 @@ classe cmd_recitar
 herda comando_comebebe, comando_ajuda
 const txtajuda = "\b\c3Recitar\b\n\
 Sintaxe: RECITAR <objeto>\n\
-Tenta recitar alguma coisa, geralmente um pergaminho."
+         RECITAR <objeto>  <alvo>\n\
+Tenta recitar alguma coisa, geralmente um pergaminho.\n\
+Conforme as magias contidas no pergaminho, é possível direcioná-las\n\
+para um personagem ou mesmo um item."
 const posic = 5
 
 func escr
   listaobj l
   nomeobj n # Para reconhecer os itens
 # Obtém o objeto
-  n.ini(arg1, 1)
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  n.ini(misc:sep1, 1)
+  txt100 nome
+  nome = misc:sep2
   ret !arg1, arg0.msg("Recitar o quê?")
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
@@ -928,7 +921,10 @@ func escr
   senao r.f_tipo != 4 # Checa se pode recitar
     ret arg0.msg("Não há nada para recitar em " + r.descnome + ".")
   senao arg0.p_bebida >= miscfome:cheio / 2
-    ret arg0.msg("Você não consegue ler o que está escrito em $o.")
+    ret arg0.msg("Você não consegue ler o que está escrito em " + r.descnome + ".")
+  senao int(r.pnivel) > arg0.pnivel
+    refvar lin = txtcopiamai(r.descnome, "A")
+    ret arg0.msg(lin + " é complicad" + (r.msexo ? "o" : "a") + " demais.")
   senao arg0.dono.s_falar
     ret arg0.msg(arg0.dono.s_falar)
   fimse
@@ -942,7 +938,7 @@ func escr
   refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P recita $o."
   $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
   r.apagar(1)
-  efeito(arg0, arg0, r, 1)
+  efeito(arg0, nome, r, 1)
 # Eventos
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_recitou(arg0, r)

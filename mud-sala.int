@@ -93,20 +93,20 @@ s_terreno\n\
 volmax\n\
 objmax\n\
 eveste\n\
-dir_n portaini_n portanome_n fechadura_n fugir_n inv_n tranc_n voar_n\n\
-dir_s portaini_s portanome_s fechadura_s fugir_s inv_s tranc_s voar_s\n\
-dir_l portaini_l portanome_l fechadura_l fugir_l inv_l tranc_l voar_l\n\
-dir_o portaini_o portanome_o fechadura_o fugir_o inv_o tranc_o voar_o\n\
-dir_c portaini_c portanome_c fechadura_c fugir_c inv_c tranc_c voar_c\n\
-dir_b portaini_b portanome_b fechadura_b fugir_b inv_b tranc_b voar_b\n\
-dir_ne portaini_ne portanome_ne fechadura_ne fugir_ne inv_ne tranc_ne voar_ne\n\
-dir_no portaini_no portanome_no fechadura_no fugir_no inv_no tranc_no voar_no\n\
-dir_se portaini_se portanome_se fechadura_se fugir_se inv_se tranc_se voar_se\n\
-dir_so portaini_so portanome_so fechadura_so fugir_so inv_so tranc_so voar_so\n\
+dir_n portaini_n portanome_n fechadura_n fugir_n inv_n fecha_n tranc_n voar_n\n\
+dir_s portaini_s portanome_s fechadura_s fugir_s inv_s fecha_s tranc_s voar_s\n\
+dir_l portaini_l portanome_l fechadura_l fugir_l inv_l fecha_l tranc_l voar_l\n\
+dir_o portaini_o portanome_o fechadura_o fugir_o inv_o fecha_o tranc_o voar_o\n\
+dir_c portaini_c portanome_c fechadura_c fugir_c inv_c fecha_c tranc_c voar_c\n\
+dir_b portaini_b portanome_b fechadura_b fugir_b inv_b fecha_b tranc_b voar_b\n\
+dir_ne portaini_ne portanome_ne fechadura_ne fugir_ne inv_ne fecha_ne tranc_ne voar_ne\n\
+dir_no portaini_no portanome_no fechadura_no fugir_no inv_no fecha_no tranc_no voar_no\n\
+dir_se portaini_se portanome_se fechadura_se fugir_se inv_se fecha_se tranc_se voar_se\n\
+dir_so portaini_so portanome_so fechadura_so fugir_so inv_so fecha_so tranc_so voar_so\n\
 dir_entrar portaini_entrar portanome_entrar fechadura_entrar\n\
-fugir_entrar inv_entrar tranc_entrar voar_entrar\n\
+fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n\
 dir_sair portaini_sair portanome_sair fechadura_sair\n\
-fugir_sair inv_sair tranc_sair voar_sair"
+fugir_sair inv_sair fecha_sair tranc_sair voar_sair"
 
 func iniclasse
   criar(arg0)
@@ -219,13 +219,38 @@ func tsai2 # Para mostrar as saídas existentes
 func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # arg0 = nome da saída (até duas letras)
 # arg1 = novo valor
+# arg2 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
+# arg3 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+# Nas mensagens, "$m" é o nome da porta
 # Retorna: 0=saída inexistente, 1=saída foi alterada
   ref r
-  ret !(r = dir_[arg0]), 0
-  txt10 nome
-  nome = misc:d2[arg0]
-  r.dir_[nome] == este && r.porta_[nome] == porta_[arg0] && (r.porta_[nome] = arg1)
+  ret !(r = dir_[arg0]), 0 # Retorna se a saída não é uma sala
+  refvar nome = misc:d2[arg0]
+  se r.dir_[nome] == este && r.porta_[nome] == porta_[arg0]
+    r.porta_[nome] = arg1
+    se arg3 && r.socktot
+      txt200 mporta
+      mporta = r.portanome_[nome]
+      !mporta && !(mporta = $cmd_[arg0].m_porta) && (mporta = "uma porta")
+      $mens.mens = mporta
+      listaobj l
+      epara l.addfim(r.dentro2), l, l.ini.remove
+        l.objini.msginv(arg3)
+      efim
+    fimse
+  fimse
   porta_[arg0] = arg1
+  se arg2 && socktot
+    txt100 mporta
+    mporta = portanome_[arg0]
+    !mporta && !(mporta = $cmd_[arg0].m_porta) && (mporta = "uma porta")
+    $mens.mens = mporta
+    mporta = txttroca(arg2, "$m", mporta)
+    listaobj l
+    epara l.addfim(dentro2), l, l.ini.remove
+      l.objini.msginv(arg2)
+    efim
+  fimse
   ret 1
 
 func totalmove # Quantos movimentos consome, conforme o terreno

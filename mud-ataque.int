@@ -755,15 +755,20 @@ const tipoalvo = 4
 
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
-  ret checahab2(arg0, (arg0.var.[nomevar] - 1) / 7)
+# arg1 = item usado, ou nulo se não usou nenhum item
+  ret checahab2(arg0, (arg0.var.[nomevar] - 1) / 7, arg1)
 
 func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+# arg2 = item usado, ou nulo se não usou nenhum item
 # Retorna verdadeiro se pode usar
-  se arg0.posicao < posic # Checa a posição necessária
-    txt100 lin
-    lin = txtcopiamai(arg0.nome, "A")
+  se !arg0.pvida
+    refvar lin = txtcopiamai(arg0.nome, "A")
+    arg0.contr.msg(lin + " está desmaiad" + (arg0.msexo ? "o." : "a."))
+    ret
+  senao arg0.posicao < posic # Checa a posição necessária
+    refvar lin = txtcopiamai(arg0.nome, "A")
     casovar arg0.posicao
     casose "0"
       arg0.contr.msg(lin + " desmaiou.")
@@ -788,6 +793,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     casofim
     arg0.contr.msg(lin + " não consegue fazer isso.")
     ret
+  senao arg2.item # Usou algum objeto: não checa a arma usada
   senao !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
   senao !arg0.iempu # Não está usando uma arma
     se !(tipoarma & 1)
@@ -802,7 +808,11 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     arg0.contr.msg("Com essa arma?")
     ret
   fimse
-  se arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1
+  se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    arg0.msg("A magia não teve efeito.")
+    ret
+  senao arg2.item # Usou algum objeto: não tem custo
+  senao arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1
     arg0.contr.msg("Pontos de vida insuficientes.")
     ret
   senao arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1
@@ -810,9 +820,6 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     ret
   senao arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1
     arg0.contr.msg("Vigor insuficiente.")
-    ret
-  senao !arg0.contr.dono.s_luta && tipoalvo != 4 && tipoalvo != 5
-    arg0.contr.msg("Aqui é um lugar pacífico.")
     ret
   fimse
   ret 1
@@ -825,7 +832,8 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # Retorna verdadeiro se pode usar
-  ret arg0.posicao < posic, nulo
+  ret !arg0.pvida || arg0.posicao < posic, nulo
+  ret arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
   ret arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1, nulo
@@ -954,12 +962,12 @@ func txtajuda # Retorna um texto que contém informações
   ret t.remove(1000)
 
 func escr # Atacar alguém
+# arg0 = personagem
+# arg1 = o que o personagem digitou; usado para obter o personagem alvo
+# arg2 = item usado, ou nulo se não usou nenhum item
+# arg3 = nível da magia, se usou algum item
   ref r
-  se persobat.pvida == 0
-    ret arg0.msg("Você está desmaiad" + (msexo ? "o." : "a."))
-  senao !checahab1(arg0.persobat)
-    ret
-  senao arg1 # Digitou o alvo
+  se arg1 # Digitou o alvo
     listaitem i
     nomeobj nome
     nome.ini(arg1, 1)
@@ -972,15 +980,17 @@ func escr # Atacar alguém
     r = arg0
   senao # Hab agressiva: o alvo é quem está batalhando
     r = arg0.atkenv.objlista
-    se !r || r.dono != arg0.dono
-      arg0.msg("Atacar quem?")
-      ret
+    se r && r.dono == arg0.dono # Alvo é personagem na mesma sala
+    senao arg2.item # Lançado com bebida/comida/pergaminho: alvo é o próprio personagem
+      r = arg0
+    senao # O personagem digitou a habilidade/magia: sem alvo
+      ret arg0.msg("Atacar quem?")
     fimse
   fimse
-  se tipoalvo < 4 && !r.p_agressivo(arg0)
-    arg0.msg(r.descnome + " não quer brigar.")
+  refvar p = arg0.persobat
+  se arg2
+    exechab(p, r.persobat, 0.5, 1, arg3, arg2)
   senao
-    refvar p = arg0.persobat
     exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel)
 
 func exechab # Chamado quando personagem usa habilidade ou magia
@@ -988,7 +998,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # arg3 = nível da habilidade ou magia (=nível do personagem)
-# arg4 = se verdadeiro não tem custo da hab/magia e não mostra mensagem inicial
+# arg4 = item usado, ou nulo se não usou nenhum item
+  ret !checahab2(arg0, arg2, arg4), nulo
 # Checa a condição de batalha
   se a_batalha == 1 && !arg0.contr.atkenv
     ret arg0.contr.msg("Você não está lutando com ninguém.")
@@ -999,6 +1010,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret !arg1.pvida, arg0.contr.msg("Alvo está desmaiado.")
   senao a_cond == 1
     ret arg1.pvida, arg0.contr.msg("Alvo não está desmaiado.")
+  senao dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    ret msg("A magia não teve efeito.")
   fimse
 # Obtém a arma usada
   arma1 = nulo
@@ -1020,7 +1033,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
       ret l.objini.cmd_alvo(arg0, arg1, este), nulo
     efim
-    se !arg4
+    se !arg4.item
       custohab2(arg0, arg2)
       mensinicio(arg0, arg1)
     fimse
@@ -1046,6 +1059,11 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret arg0.contr.msg("Em você mesmo?")
   casofim
 # Checa o alvo e dispara eventos
+  se !arg0.contr.dono.s_luta
+    ret arg0.contr.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
+  senao tipoalvo < 4 && !arg1.contr.p_agressivo(arg0)
+    ret arg0.contr.msg(arg1.contr.descnome + " não quer brigar.")
+  fimse
   ret cmd_atacar(arg0, arg1, este), nulo
   epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
     ret l.objini.cmd_atacarcontr(arg0, arg1, este), nulo
@@ -1054,7 +1072,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret l.objini.cmd_atacar(arg0, arg1, este), nulo
   efim
 # Custo da hab/magia e checa se é permitido usar ataques
-  se !arg4
+  se !arg4litem
     custohab2(arg0, arg2)
     mensinicio(arg0, arg1)
   fimse

@@ -30,7 +30,8 @@ func escr # Executa o comando
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
-  total *= (intmax(1, int(miscfome:t[arg0.p_sede])) + intmax(1, miscfome:t[arg0.p_fome])) / 2
+  total *= (intmax(1, int(miscfome:t[arg0.p_sede])) + intmax(1, miscfome:t[arg0.p_fome])) / \
+2
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
@@ -79,6 +80,11 @@ func escr # Executa o comando
     l.objini.msg("Você segue " + arg0.descnome + ".")
     escr(l.objini, "\n")
   efim
+# Fecha a porta
+  se arg1 != "\n" && s1.fecha_[dir]
+    refvar m = s1.porta_[dir] < 2 ? "$M fechou."
+    s1.mudaporta(dir, s1.tranc_[dir] == 2 ? 3 : 2, m, m)
+  fimse
 
 
 classe cmd_n
@@ -376,13 +382,8 @@ func escrdir # Abrir uma porta
     ret l.objini.cmd_abrirdir(arg0, arg0.dono, arg1), nulo
   efim
 # Abre a porta
-  arg0.dono.mudaporta(arg1, 1) # Abre a porta
-  txt100 mporta
-  mporta = arg0.dono.portanome_[arg1]
-  !mporta && (mporta = $cmd_[arg1].m_porta)
-  !mporta && (mporta = "uma porta")
   $mens.p(arg0)
-  $mens.mtodos1("$P abriu " + mporta + ".")
+  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M abriu.") # Abre a porta
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
   efim
@@ -459,17 +460,12 @@ func escrdir # Fechar uma porta
   efim
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
 # Fecha a porta
-  se arg0.dono.tranc_[arg1] == 2
-    arg0.dono.mudaporta(arg1, 3) # Tranca a porta
-  senao
-    arg0.dono.mudaporta(arg1, 2) # Fecha a porta
-  fimse
-  txt100 mporta
-  mporta = arg0.dono.portanome_[arg1]
-  !mporta && (mporta = $cmd_[arg1].m_porta)
-  !mporta && (mporta = "uma porta")
   $mens.p(arg0)
-  $mens.mtodos1("$P fechou " + mporta + ".")
+  se arg0.dono.tranc_[arg1] == 2
+    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M fechou.") # Tranca a porta
+  senao
+    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M fechou.") # Fecha a porta
+  fimse
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
   efim
@@ -1096,20 +1092,19 @@ const c_espera = 15 # Tempo de esperar após usar esse comando
 
 func escr # Personagem retorna
 # arg0 = personagem
-  exechab(arg0)
-
-func exechab
-# arg0 = personagem
-# arg1 a arg3 = não usados; apenas para compatibilidade com outras habilidades e magias
-# arg4 = se verdadeiro não tem custo da hab/magia e não mostra mensagem inicial
+# arg1 = não usado; apenas para compatibilidade com outras habilidades e magias
+# arg2 = item usado, ou nulo se não usou nenhum item
   refvar r = $[arg0.var.z_salafim]
-  ret !r, arg0.msg("Você não possui ponto de retorno.")
-  ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
-  se !arg4
-    ret !checahab1(arg0.persobat), nulo
+  se arg2.item
+    ret !r || r == arg0.dono, arg0.msg("Por algum motivo, a magia falhou.")
+    ret !checahab1(arg0.persobat, arg2), nulo
+  senao
+    ret !r, arg0.msg("Você não possui ponto de retorno.")
+    ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
+    ret !checahab1(arg0.persobat, arg2), nulo
     custohab1(arg0.persobat)
+    msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   fimse
-  msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
   se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     ret arg0.msg("Por algum motivo, a magia falhou.")
