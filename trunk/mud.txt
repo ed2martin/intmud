@@ -466,19 +466,6 @@ Reset de área:
 Um texto que contém os executados quando ocorre reset da área.
 O significado do texto está explicado no início do arquivo mud-reset.int.
 
-func txtsai( jogador )
-Retorna as saídas existentes (texto)
-
-func descsala( jogador, modo )
-Adiciona texto com a descrição da sala
-Se modo=0, mostra o mais curto possível
-Somar 1 para mostrar descrição completa
-Somar 2 para mostrar saídas
-Somar 4 para mostrar os personagens e itens
-
-func descitens( jogador )
-Adiciona texto com descrição dos itens para um jogador
-
 func ver_[nome do a descrição]( jogador, 0 )
 Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
 existir ou falso (ou um texto não vazio) se não existir.
@@ -487,6 +474,25 @@ func ver_[nome do a descrição]( jogador, 1 )
 Deve retornar um texto que é a descrição extra.
 Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
+
+func descsala( jogador, modo )
+Adiciona texto com a descrição da sala
+Se modo=0, mostra o mais curto possível
+Somar 1 para mostrar descrição completa
+Somar 2 para mostrar saídas
+Somar 4 para mostrar os personagens e itens
+
+func txtsai( jogador )
+Retorna as saídas existentes (texto)
+
+func mudaporta( saída, valor, mens1, mens2 )
+Muda estado de uma saída; variável porta_[arg0]
+Saída é nome da saída (até duas letras)
+Novo valor, vide porta_[direção]
+Mens1 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
+Mens2 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+Nas mensagens, "$m" é o nome da porta
+Retorna: 0=saída inexistente, 1=saída foi alterada
 
 
 8. Personagens e itens (classe comum_persoitem, em mud-comum.int)
@@ -1455,6 +1461,7 @@ Indica o tipo de alvo e de hab/magia:
 4 = Qualquer um; não é ataque
 5 = O personagem; não é ataque
 6 = Ataque automático
+7 = Nenhum (não ataca)
 
 const a_batalha = 0
 Condição:
@@ -1513,18 +1520,24 @@ func txtajuda
 Retorna um texto que contém informações, para os comandos hab, magia e
 quando o jogador pede informações sobre uma aula.
 
-func escr
+func escr( personagem, o que escreveu, item, nível )
 É chamado quando o jogador digita o comando para usar a hab/magia.
-Essa função checa se pode usar, obtém o alvo e chama a função exechab.
+Essa função basicamente obtém o alvo e chama a função exechab.
+O argumento é o item que disparou a hab/magia (uma comida, bebida
+ou pergaminho), ou nulo se não usou nenhum.
+O argumento nível é o nível da hab/magia, quando o item não for nulo.
 
-func exechab( personagem, alvo, quanto sabe, nível do personagem )
+func exechab( personagem, alvo, quanto sabe, nível, item usado )
 Chamado quando personagem usa habilidade ou magia.
 O argumento quanto sabe é um número de 0 a 1 que indica quanto sabe da
 habilidade ou magia (0=iniciante até 1=perito).
+O argumento nível geralmente é o nível do personagem.
+O argumento item é o item que disparou a hab/magia (uma comida, bebida
+ou pergaminho), ou nulo se não usou nenhum.
 
-func efeitohab( personagem, alvo, quanto sabe, nível do personagem )
+func efeitohab( personagem, alvo, quanto sabe, nível )
 Aplica o efeito da habilidade ou magia sobre o alvo.
-Argumento quanto sabe, vide função checahab2, acima.
+Os argumento quanto sabe, e nível, vide função exechab, acima.
 
 func velgolpe( personagem, alvo )
 Acerta o tempo de espera conforme o golpe.
@@ -1635,8 +1648,6 @@ Exemplo: m_menu("menu_config")
 18. Lista de coisas pendentes
 
 Fome e sede:
-- Criar um tipo de pergaminho que pode-se recitar em outros personagens
-- (talvez) Pergaminhos de identificação
 - Embriaguês diminuir precisão e evasão
 - Embriaguês poder fazer errar a direção ao ir de um lugar a outro
 - Fome e sede diminuirem a força dos golpes nos ataques

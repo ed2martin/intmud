@@ -217,9 +217,7 @@ func teclou # Processa comando (arg0=comando)
       ret l.objini.cmd_escr(este, arg0, obj), nulo
     efim
 # Magia: Executa comando
-    se dono.s_semmagia
-      msg("Você não consegue lançar magias aqui.")
-    senao !lin
+    se !lin
       msg("Lançar que magia?")
     senao !obj
       msg("Você não possui a magia " + lin)
@@ -357,7 +355,7 @@ uint32 pvidamax # Quantidade máxima de vida
 uint32 pmanamax # Quantidade máxima de mana
 uint32 pmovemax # Quantidade máxima de movimento
 uint16 pveloc1 # Velocidade calculada do personagem
-const pveloc = pveloc1 - int((pesoden - pesovest) / 1500)
+const pveloc = pveloc1 - int((pesoden - pesoveste) / 1500)
 uint32 atknorm # Quantidade de ataque normal, sem modificadores em atktipo
 uint32 defnorm # Quantidade de defesa normal, sem modificadores em deftipo
 uint32 atkesp # Quantidade de ataque especial, sem modificadores em atktipo
@@ -633,10 +631,10 @@ func morreu # Procedimentos quando morre
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
     pmove = pmovemax / 2
-    expatual = 0
+    expatual *= config:atkmorreuexp / 100
     listaitem i
     epara i = dentro2.ini, i, i.depois
-      i.obj.perso && (i.obj.expatual = 0)
+      i.obj.perso && (i.obj.expatual *= config:atkmorreuexp / 100)
     efim
     p_restaura = rand(100, 130)
     batalhaexp(-1), batalhafim # Retira toda experiência de quem atacou

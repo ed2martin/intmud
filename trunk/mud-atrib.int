@@ -595,8 +595,11 @@ const p_atrib_def1 = "normal\nespecial\n" + config:atknomes
 const p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
 
 func escr
+# arg0 = personagem
+# arg1 = o que o personagem digitou; usado para obter o item ou personagem alvo
+# arg2 = item usado, ou nulo se não usou nenhum item
   ret !arg1, arg0.msg("Identificar o quê?")
-  ret !checahab1(arg0.persobat), nulo
+  ret !checahab1(arg0.persobat, arg2), nulo
   nomeobj n
   listaobj l
   n.ini(arg1, 1)
@@ -611,8 +614,10 @@ func escr
       ret l.objini.cmd_ident(arg0, r), nulo
     efim
 # Checa se pode identificar
-    custohab1(arg0.persobat)
-    msgini && $mens.p(arg0, nulo, r) + $mens.mtodos1(msgini)
+    se !arg2.item
+      custohab1(arg0.persobat)
+      msgini && $mens.p(arg0, nulo, r) + $mens.mtodos1(msgini)
+    fimse
     arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
     se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       ret arg0.msg("Por algum motivo, a magia falhou.")

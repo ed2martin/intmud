@@ -692,23 +692,25 @@ func escr
   ret !arg1, arg0.msg("Escrever para quem?")
   indiceitem item
   item.ini("pn " + txtnome(txt1(arg1)))
+  $mens.p(arg0, item.obj)
+  $mens.mens = txt2(arg1)
   se !item.obj || item.obj.jogconfig.17 && !arg0.jogconfig.23
     arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
   senao item.obj == arg0
-    arg0.msg("Escrever para você mesmo?")
+    arg0.msginv("Escrever para você mesm$s?")
   senao item.obj.var.u_[arg0.nome]
-    arg0.msg(item.obj.nome + " está ignorando você.")
+    arg0.msginv("$C está ignorando você.")
   senao arg0.var.u_[item.obj.nome]
-    arg0.msg("Você está ignorando " + item.obj.nome + ".")
+    arg0.msginv("Você está ignorando $C.")
   senao !item.obj.jogconfig.8
-    arg0.msg(item.obj.nome + " desabilitou o canal PVT.")
+    arg0.msginv("$C desabilitou o canal PVT.")
   senao arg0.jogconfig.17 && !item.obj.jogconfig.23
-    arg0.msg("Você está invisível para " + item.obj.nome)
+    arg0.msginv("Você está invisível para $C.")
   senao !txt2(arg1)
-    arg0.msg("Escrever o quê?")
+    arg0.msginv("Escrever o quê?")
   senao
-    item.obj.msg("(pvt) " + arg0.sock.nome + " '" + txt2(arg1) + "'")
-    arg0.msg("(pvt+) " + item.obj.sock.nome + " '" + txt2(arg1) + "'")
+    item.obj.msginv("(pvt) $R '$m'")
+    arg0.msginv("(pvt+) $C '$m'")
 
 
 classe cmdfim_ignorar
