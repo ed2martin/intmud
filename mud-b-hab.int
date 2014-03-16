@@ -151,19 +151,19 @@ classe cmd_endurecer
 herda comando_ataque
 const nomevar = "h_Endurecer"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const a_batalha = 1 # Condição: 1 Durante a batalha
+const a_efeito1 = "endurecer"
+const c_espera = 40
 const c_move1 = 15
 const c_move2 = 5
-const a_efeito1 = "endurecer"
 const msgextra = "Endurece os músculos para melhorar a sua defesa.\n\
 Só pode ser usado durante uma batalha."
-const a_batalha = 1 # Condição: 1 Durante a batalha
-const c_espera = 40
 const msgatk0 = "\n\n\n\
-$P endurece., $m\n\n\
-$P endurece., $m\n\n\n\
-$P endurece., $m\n\n\n\
-$P tenta endurecer., errou\n\n\n\
-$P endurece., nada acontece"
+$P endurece.\n\n\
+$P endurece.\n\n\n\
+$P endurece.\n\n\n\
+$P tenta endurecer.\n\n\n\
+$P parece tão dur$s quanto antes."
 
 
 classe cmd_explodir
@@ -512,11 +512,12 @@ const valor = 100
 classe magia_sono_profundo
 herda comando_ataque
 const nomevar = "m_Sono profundo"
-const ataque = 0
+const a_efeito1 = "sono profundo"
 const c_mana1 = 20
 const c_mana2 = 5
+const ataque = 0
 const tipoatk = 14 # Ataque tipo: 14 Psíquico
-const a_efeito1 = "sono profundo"
+const msgatk0 = "$P inicia uma canção de ninar para $a."
 
 
 classe magia_sopro_de_gelo

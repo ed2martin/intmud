@@ -1117,6 +1117,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       arg0.contr.msg("Bastante peso!")
     fimse
   fimse
+# Checa sede e fome
+  atk /= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
 # Ataca o alvo escolhido
   ref r
   listaobj e
@@ -1219,6 +1221,9 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     se dano == 20 || arg1.posicao == 4 # Acertou automaticamente
     senao dano == 1 # Errou o alvo automaticamente
       ret
+    senao arg0.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg0.p_bebida
+      ret # Quem ataca errou o golpe devido à embriaguês
+    senao arg1.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg1.p_bebida # Embriagado
     senao # Checa se acertou
       dano += precisao * arg0.precisao * (arma1 ? arma1.armaprecisao : 100) / 10000
       dano -= arg1.evasao

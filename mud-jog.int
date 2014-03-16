@@ -726,20 +726,20 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     msg(msexo ? "Você está sóbrio." : "Você está sóbria.")
   fimse
   se jogconfig.14 # Imortal
-    p_sede = intmax(miscfome:semfome, p_sede - 1)
-    p_fome = intmax(miscfome:semfome, p_fome - 1)
+    p_sede = intmax($miscfome.semfome, p_sede - 1)
+    p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida = intmin(1, p_bebida - 1)
   senao pnivel >= config:fomeini && pnivel < config:fomefim # Sente fome
     p_sede -= dono.s_terreno == 11 ? 3 : 1 # No deserto sente sede 3x mais rápido
     p_fome -= 1
     p_bebida -= 2
   senao # Não sente fome
-    p_sede = intmax(miscfome:semfome, p_sede - 1)
-    p_fome = intmax(miscfome:semfome, p_fome - 1)
+    p_sede = intmax($miscfome.semfome, p_sede - 1)
+    p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida -= 2
   fimse
 # Mensagens de fome e sede e pontos de vida
-  casovar txtchr(97 + miscfome:t[p_fome]) + miscfome:t[p_sede]
+  casovar txtchr(97 + $miscfome.t.[p_fome]) + $miscfome.t.[p_sede]
   casose "a1" # Pouca sede
     msg("Sua boa está um pouco seca.")
     sair
@@ -754,7 +754,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     $mens.mvis2("", "$P está morrendo de sede, -1")
     pvida -= 1
     sair
-  casose "b" # Pouca fome
+  casose "b0" # Pouca fome
     msg("Você sente umas pontadas de fome.")
     sair
   casose "b1" # Pouca fome + Pouca sede
@@ -771,7 +771,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     $mens.mvis2("", "$P está morrendo de sede, -1")
     pvida -= 1
     sair
-  casose "c" # Com fome
+  casose "c0" # Com fome
     msg("Você está com fome.")
     $mens.p(este)
     $mens.mvis2("", "Você ouve o estômago de $P roncar.")
@@ -792,7 +792,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     $mens.mvis2("", "$P está morrendo de sede e com fome, -1")
     pvida -= 1
     sair
-  casose "d" # Muita fome
+  casose "d0" # Muita fome
     msg("Você está morrendo de fome, -2")
     $mens.p(este)
     $mens.mvis2("", "$P está morrendo de fome, -2")

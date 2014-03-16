@@ -231,7 +231,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
     se arg3 && r.socktot
       txt200 mporta
       mporta = r.portanome_[nome]
-      !mporta && !(mporta = $cmd_[arg0].m_porta) && (mporta = "uma porta")
+      !mporta && !(mporta = $cmd_[nome].m_porta) && (mporta = "uma porta")
       $mens.mens = mporta
       listaobj l
       epara l.addfim(r.dentro2), l, l.ini.remove

@@ -370,57 +370,30 @@ func tempo1_exec # Executa eventos
 
 classe miscfome
 # Tabela para acertar fome e sede dos jogadores
-# miscfome:t[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca nulo=sem
-# miscfome:t[p_sede] = quantidade de sede: 3=muita 2=média 1=pouca nulo=sem
+# $miscfome.t.[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca 0=sem
+# $miscfome.t.[p_sede] = quantidade de sede: 3=muita 2=média 1=pouca 0=sem
 const semfome = 50 # Valor para não sentir fome e sede
-const cheio = 160 # Valor máximo (não cabe mais nada no estômago)
-const t0 = 3
-const t1 = 2
-const t2 = 2
-const t3 = 2
-const t4 = 2
-const t5 = 2
-const t6 = 2
-const t7 = 2
-const t8 = 2
-const t9 = 2
-const t10 = 2
-const t11 = 2
-const t12 = 2
-const t13 = 2
-const t14 = 2
-const t15 = 2
-const t16 = 2
-const t17 = 2
-const t18 = 2
-const t19 = 2
-const t20 = 2
-const t21 = 2
-const t22 = 2
-const t23 = 2
-const t24 = 2
-const t25 = 2
-const t26 = 2
-const t27 = 2
-const t28 = 2
-const t29 = 2
-const t30 = 2
-const t31 = 1
-const t32 = 1
-const t33 = 1
-const t34 = 1
-const t35 = 1
-const t36 = 1
-const t37 = 1
-const t38 = 1
-const t39 = 1
-const t40 = 1
-const t41 = 1
-const t42 = 1
-const t43 = 1
-const t44 = 1
-const t45 = 1
+const cheio = 160 # Valor máximo de p_fome, p_sede, p_bebida e p_diges
+const bebedir = 100 # A partir de que valor pode errar a direção ao se movimentar
+const bebeatk = 70 # A partir de que valor pode errar os golpes devido à bebida
+uint8 t.255 # Fome e sede: 3=muita 2=média 1=pouca 0=sem
+uint8 f.255 # Fome e sede: 2=muita 1=média 0=pouca ou sem
 
+func iniclasse
+  criar(arg0)
+
+func ini
+  uint16 ind
+# Com muita fome/sede
+  t.0 = 3, f.0 = 2
+# Com fome/sede
+  epara ind = 1, ind <= 30, ind += 1
+    t.[ind] = 2, f.[ind] = 1
+  efim
+# Com pouca fome/sede
+  epara nulo, ind <= 45, ind += 1
+    t.[ind] = 1
+  efim
 
 classe miscbebida
 # Muda mensagens conforme a bebedeira
@@ -447,7 +420,7 @@ func msg # Substituições conforme a bebedeira
 # T vira TH, X vira SH
   lin = vartroca(lin, "", "beb1_", arg1 * 0.8)
 # Troca maiúsculas com minúsculas
-  lin = txtmudamai(lin, arg1 / 2.5)
+  lin = txtmudamai(lin, arg1 / 1.5)
 # Gagueira
   ret vartroca(lin, "", "beb3_", arg1 / 3, 2)
 
@@ -481,8 +454,7 @@ const beb2_y = bebida2(arg0)
 const beb2_z = bebida2(arg0)
 
 func bebida2
-  ret rand(2), arg0 + arg0
-  ret arg0 + arg0 + arg0
+  ret rand(2) ? arg0 + arg0 : arg0 + arg0 + arg0
 
 const beb3_a = bebida3(arg0)
 const beb3_b = bebida3(arg0)
