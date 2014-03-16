@@ -12,12 +12,30 @@ listaobj lseg # Para não seguir ciclicamente
 debug dbg
 
 func escr # Executa o comando
+  $comando_mover.lseg.limpar
+  refvar sala = ref(arg0.dono)
+# Anda
+  txt100 dir1
+  se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
+    dir1 = dir, mover(arg0)
+  senao # Bêbado andando em uma direção aleatória
+    dir1 = fugirdir(arg0)
+    !dir1 && (dir1 = dir)
+    $cmd_[dir1].mover(arg0)
+  fimse
+# Fecha a porta
+  se sala.fecha_[dir1]
+    refvar m = sala.porta_[dir1] < 2 ? "$M fechou."
+    sala.mudaporta(dir1, sala.tranc_[dir1] == 2 ? 3 : 2, m, m)
+  fimse
+
+func mover # Personagem anda em uma direção
 # arg0 = personagem
 # arg1 = o que digitou ou "\n" se está seguindo alguém
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
   dbg.ini
-  arg1 != "\n" && lseg.limpar, lseg.addfim(arg0)
+  $comando_mover.lseg.addfim(arg0)
   misc:obj = arg0
   s1 = arg0.dono, s2 = s1.dir_[dir]
   se s2 == nulo
@@ -30,8 +48,7 @@ func escr # Executa o comando
   uint8 total
   total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
-  total *= (intmax(1, int(miscfome:t[arg0.p_sede])) + intmax(1, miscfome:t[arg0.p_fome])) / \
-2
+  total *= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
@@ -75,16 +92,47 @@ func escr # Executa o comando
   fimse
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
-    continuar l.objini.posicao < 8 || l.objini.dono != s1 || lseg.possui(l.objini)
+    continuar l.objini.posicao < 8 || l.objini.dono != s1
+    continuar $comando_mover.lseg.possui(l.objini)
     continuar !arg0.visivel(l.objini) || !s1.visivel(l.objini)
     l.objini.msg("Você segue " + arg0.descnome + ".")
-    escr(l.objini, "\n")
+    mover(l.objini)
   efim
-# Fecha a porta
-  se arg1 != "\n" && s1.fecha_[dir]
-    refvar m = s1.porta_[dir] < 2 ? "$M fechou."
-    s1.mudaporta(dir, s1.tranc_[dir] == 2 ? 3 : 2, m, m)
+
+func fugirdir # Obtém direção para onde pode fugir
+# Entrada: arg0 = personagem
+# Retorna: direção ou "" se não há para onde fugir
+  misc:obj = arg0
+  refvar r = ref(arg0.dono)
+  txt100 t
+  se arg0.jog
+    r.dir_n && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
+    r.dir_s && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
+    r.dir_l && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
+    r.dir_o && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
+    r.dir_c && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
+    r.dir_b && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
+    r.dir_ne && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
+    r.dir_no && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
+    r.dir_se && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
+    r.dir_so && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
+    r.dir_entrar && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
+    r.dir_sair && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
+  senao
+    r.dir_n.s_pnj && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
+    r.dir_s.s_pnj && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
+    r.dir_l.s_pnj && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
+    r.dir_o.s_pnj && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
+    r.dir_c.s_pnj && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
+    r.dir_b.s_pnj && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
+    r.dir_ne.s_pnj && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
+    r.dir_no.s_pnj && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
+    r.dir_se.s_pnj && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
+    r.dir_so.s_pnj && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
+    r.dir_entrar.s_pnj && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
+    r.dir_sair.s_pnj && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
   fimse
+  ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
 
 classe cmd_n
@@ -1029,7 +1077,7 @@ func fugir # Tenta fugir da luta
     ret
   fimse
 # Obtém direção para onde fugir
-  refvar dir = fugirdir(arg0)
+  refvar dir = $comando_mover.fugirdir(arg0)
   refvar r = ref(arg0.dono.dir_[dir])
   se !r || !dir
     $mens.p(arg0)
@@ -1043,41 +1091,6 @@ func fugir # Tenta fugir da luta
   !(arg0.bitver & 256) && $mens.mtodos1($cmd_[dir].m_fugir)
   arg0.mudadono(r)
   !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)
-
-func fugirdir # Obtém direção para onde pode fugir
-# Entrada: arg0 = personagem
-# Retorna: direção ou "" se não há para onde fugir
-  misc:obj = arg0
-  refvar r = ref(arg0.dono)
-  txt100 t
-  se arg0.jog
-    r.dir_n && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
-    r.dir_s && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
-    r.dir_l && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
-    r.dir_o && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
-    r.dir_c && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
-    r.dir_b && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
-    r.dir_ne && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
-    r.dir_no && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
-    r.dir_se && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
-    r.dir_so && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
-    r.dir_entrar && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
-    r.dir_sair && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
-  senao
-    r.dir_n.s_pnj && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
-    r.dir_s.s_pnj && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
-    r.dir_l.s_pnj && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
-    r.dir_o.s_pnj && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
-    r.dir_c.s_pnj && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
-    r.dir_b.s_pnj && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
-    r.dir_ne.s_pnj && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
-    r.dir_no.s_pnj && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
-    r.dir_se.s_pnj && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
-    r.dir_so.s_pnj && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
-    r.dir_entrar.s_pnj && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
-    r.dir_sair.s_pnj && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
-  fimse
-  ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
 
 classe comando_retornar

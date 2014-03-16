@@ -758,10 +758,10 @@ func efeito
 # arg1 = o que o personagem digitou; usado ao lançar magias
 # arg2 = objeto
 # arg3 = quantidade
-  arg0.p_fome = intmin(miscfome:cheio, arg0.p_fome + arg2.f_fome * arg3)
-  arg0.p_sede = intmin(miscfome:cheio, arg0.p_sede + arg2.f_sede * arg3)
-  arg0.p_bebida = intmin(miscfome:cheio, arg0.p_bebida + arg2.f_bebida * arg3)
-  arg0.p_diges = intmin(miscfome:cheio, arg0.p_diges + arg2.f_diges * arg3)
+  arg0.p_fome = intmin($miscfome.cheio, arg0.p_fome + arg2.f_fome * arg3)
+  arg0.p_sede = intmin($miscfome.cheio, arg0.p_sede + arg2.f_sede * arg3)
+  arg0.p_bebida = intmin($miscfome.cheio, arg0.p_bebida + arg2.f_bebida * arg3)
+  arg0.p_diges = intmin($miscfome.cheio, arg0.p_diges + arg2.f_diges * arg3)
   debug d
 # Magias
   $magia_[arg2.f_magia1].escr(arg0, arg1, arg2, arg2.f_nivel1)
@@ -813,9 +813,9 @@ func escr
   ref r
   r = l.objini
 # Checa se consegue beber
-  se arg0.p_sede >= miscfome:cheio || arg0.p_fome >= miscfome:cheio
+  se arg0.p_sede >= $miscfome.cheio || arg0.p_fome >= $miscfome.cheio
     ret arg0.msg("Você não consegue beber mais nada.")
-  senao arg0.p_bebida >= miscfome:cheio - 5
+  senao arg0.p_bebida >= $miscfome.cheio - 5
     $mens.p(arg0, nulo, r)
     $mens.mvis1("$P não consegue levar $o à boca.")
     ret
@@ -867,9 +867,9 @@ func escr
   senao arg0.jogconfig.14 # Se é imortal, consegue comer
   senao r.f_tipo != 3 # Checa se é comida
     ret arg0.msg("Você não consegue comer " + r.descnome + ".")
-  senao arg0.p_fome >= miscfome:cheio - 5
+  senao arg0.p_fome >= $miscfome.cheio - 5
     ret arg0.msg("Você não consegue comer mais nada.")
-  senao arg0.p_bebida >= miscfome:cheio - 5
+  senao arg0.p_bebida >= $miscfome.cheio - 5
     $mens.p(arg0, nulo, r)
     $mens.mvis1("$P não consegue levar $o à boca.")
     ret
@@ -920,7 +920,7 @@ func escr
     ret arg0.msg("Você não vê isso.")
   senao r.f_tipo != 4 # Checa se pode recitar
     ret arg0.msg("Não há nada para recitar em " + r.descnome + ".")
-  senao arg0.p_bebida >= miscfome:cheio / 2
+  senao arg0.p_bebida >= $miscfome.cheio / 2
     ret arg0.msg("Você não consegue ler o que está escrito em " + r.descnome + ".")
   senao int(r.pnivel) > arg0.pnivel
     refvar lin = txtcopiamai(r.descnome, "A")

@@ -1734,34 +1734,38 @@ Exemplo: rand(10) retorna um número aleatório de 0 a 9.
 Um número inteiro aleatório de <mínimo> a <máximo>.
 Exemplo: rand(2,4) retorna um número aleatório de 2 a 4.
 
-15.2.9. matraiz(<número>)
+15.2.9. rand(<texto>)
+Retorna o texto original, mas com os caracteres embaralhados aleatoriamente.
+Exemplo: rand("abcde") retorna algo como "debac".
+
+15.2.10. matraiz(<número>)
 Calcula a raiz quadrada de um número.
 
-15.2.10. matsin(<ângulo>)
+15.2.11. matsin(<ângulo>)
 Calcula o seno de um ângulo (o ângulo está em radianos).
 
-15.2.11. matcos(<ângulo>)
+15.2.12. matcos(<ângulo>)
 Calcula o cosseno de um ângulo (o ângulo está em radianos).
 
-15.2.12. mattan(<ângulo>)
+15.2.13. mattan(<ângulo>)
 Calcula a tangente de um ângulo (o ângulo está em radianos).
 
-15.2.13. matasin(<número>)
+15.2.14. matasin(<número>)
 Calcula o arco seno, um número de -pi/2 a pi/2.
 
-15.2.14. matacos(<número>)
+15.2.15. matacos(<número>)
 Calcula o arco cosseno, um número de 0 a pi.
 
-15.2.15. matatan(<número>)
+15.2.16. matatan(<número>)
 Calcula a arco tangente, um número de -pi/2 a pi/2.
 
-15.2.16. matexp(<número>)
+15.2.17. matexp(<número>)
 Calcula a função exponencial, usando o logaritmo natural como base.
 
-15.2.17. matlog(<número>)
+15.2.18. matlog(<número>)
 Calcula o logaritmo natural.
 
-15.2.18. intbit(<um ou mais textos>)
+15.2.19. intbit(<um ou mais textos>)
 Retorna um número inteiro que é o resultado de uma operação de bits.
 Os bits que contém o valor 1 são os números contidos nos textos. Qualquer
 caracter que não seja um dígito de '0' a '9' pode ser usado para separar
@@ -1794,7 +1798,7 @@ senao x & intbit("2 5") == intbit("5")
   t.msg("O bit 2 de x está em 0 e o bit 5 de x está em 1\n")
 fimse
 
-15.2.19. txtbit(<número>, [delimitador])
+15.2.20. txtbit(<número>, [delimitador])
 Retorna um texto formado por números de 0 a 31, que correspondem aos bits
 do número que estiverem em 1. Os números são separados pelo texto usado
 delimitador. Se for omitido, será usado um espaço.

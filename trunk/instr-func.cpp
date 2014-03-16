@@ -340,6 +340,21 @@ bool Instr::FuncRand(TVariavel * v, int valor)
     int result = 0;
     if (VarAtual == v+1)
     {
+        if (v[1].Tipo() == varTxt) // Se for texto, embaralha o texto
+        {
+            char mens[BUF_MENS];
+            const char * fim = copiastr(mens, v[1].getTxt(), sizeof(mens));
+            const int total = fim - mens;
+            for (char * p = mens; p<fim; p++)
+            {
+                int ind = circle_random() % total;
+                char x = mens[ind];
+                mens[ind] = *p;
+                *p = x;
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mens);
+        }
         int max = v[1].getInt();
         if (max>0)
             result = circle_random() % max;
@@ -1401,8 +1416,7 @@ bool Instr::FuncTxtSepara(TVariavel * v, int valor)
                 if ((valormask&0xFF) && (valormask&0xFF00) &&
                         nummask < sizeof(mask) / sizeof(mask[0]))
                     mask[nummask++] = valormask & 0xFFFF;
-                else
-                    valormask = 0;
+                valormask = 0;
                 break;
             }
         if ((valormask&0xFF) && (valormask&0xFF00) &&
