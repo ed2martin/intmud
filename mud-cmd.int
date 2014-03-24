@@ -526,12 +526,11 @@ func escr
       arg0.msg("Você está ignorando " + l.objini.nome)
     senao arg0 == l.objini
       $mens.p(arg0, l.objini)
-      $mens.mtodos1("$P sussurrou algumas palavras.")
+      $mens.mtodos1(config:sussurrar1msg)
     senao
       $mens.p(arg0, l.objini)
-      $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
-      refvar m1 = "$P sussurou para $a '$m'"
-      $mens.mtodos3(m1, m1, "$P sussurou algumas palavras para $a.")
+      $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
+      $mens.mtodos3(config:sussurrar2msg, config:sussurrar2msg, config:sussurrar3msg)
     fimse
     sair
   efim

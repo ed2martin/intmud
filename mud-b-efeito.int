@@ -256,10 +256,10 @@ classe e_sono_profundo
 herda comum_efeito
 const e_nome = "Sono profundo"
 const desc = "Não pode acordar / trigger"
-const msgini2 = "$P pegou no sono."
-const msgfim2 = "$P acordou."
 const tempo1 = 600
 const tempo2 = 5
+const msgini2 = "$P pegou no sono."
+const msgfim2 = "$P acordou."
 const evperso = 1 # Eventos perso: Sim
 
 func recalc_auto # Altera atributos do personagem
@@ -273,6 +273,28 @@ func cmd_fim # Efeito foi apagado
 func cmd_atacou
   se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo
+
+
+classe e_veneno_mortal
+herda comum_efeito
+const e_nome = "Veneno mortal"
+const r_func = "morte"
+const tempo1 = 200
+
+func morte10
+  arg0.msg("Tem alguma coisa errada. O líquido desceu queimando.")
+
+func morte50
+  arg0.msg("Aos poucos você sente uma terrível dor, corroendo os órgãos por dentro.")
+
+func morte90
+  $mens.p(arg0)
+  $mens.mtodos1("$P dobra os joelhos e vomita.")
+
+func morte110
+  $mens.p(arg0)
+  $mens.mtodos1("$P cai no chão com a boca aberta, já sem vida.")
+  arg0.morreu
 
 
 classe e_ver_invisivel

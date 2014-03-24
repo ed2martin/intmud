@@ -173,8 +173,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 298, nulo
-  p.criar("config", "const versao = 298 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 303, nulo
+  p.criar("config", "const versao = 303 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -220,6 +220,12 @@ func ini2_exec
       fimse
       p.apagar(p.texto, "msgini")
     efim
+  fimse
+# Acerta variáveis das habilidades e magias
+  se versao < 303
+    criafunc("config", "const sussurrar1msg = \"$P sussurrou algumas palavras.\"")
+    criafunc("config", "const sussurrar2msg = \"$P sussurou para $a '$m'\"")
+    criafunc("config", "const sussurrar3msg = \"$P sussurou algumas palavras para $a.\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-b-*.int atualizados\n")
