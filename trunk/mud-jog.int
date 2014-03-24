@@ -443,7 +443,8 @@ func p_entrajogo # Entrar no jogo: cria personagem
   passo = ""
   jogconfig.bits = config:jogconfig # Configurações iniciais
   msg("Iniciando jogo; para ajuda tecle AJUDA")
-  mudaperso(criar("jogador"))
+  var.j_inivar = txt(tipo_[var.j_tipo1]:inivar) + "," + tipo_[var.j_tipo2]:inivar
+  mudaperso(criar("jogador", nulo, 0, var.j_inivar))
   perso.cnome = "pn " + txt2(cnome)
   perso.nome = nome
   perso.jogconfig.bits = jogconfig.bits
@@ -528,11 +529,12 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
       item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
     efim
 # Muda de sala e volta ao jogo
+    perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
+    criar("jogsock_retorna", perso, $[perso.salanome]) # Para mudar de sala
     msg("Continuando jogo salvo.")
     txt200 lin
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
-    criar("jogsock_retorna", perso, $[perso.salanome])
   fimse
   ret 1
 
@@ -618,6 +620,7 @@ txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 const jogsav = 1 # Necessário para salvar o personagem do jogador
 sav listaobj dentro3 # Lista de animais reserva
 inttempo p_tempoatu # Tempo para atualizar personagem
+uint8 p_tempomsg # Para enviar mensagens de fome e sede em tempoatu_exec
 uint8 p_tempofim # Para sair do jogo após algum tempo
 uint8 p_temposav # Para salvar o jogo regularmente
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
@@ -640,7 +643,7 @@ func ini # Objeto foi criado
   p_sede = p_fome = 30
   var.z_prompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
   var.z_bprompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
-  comum_persoanimal:ini
+  comum_persoanimal:ini(arg0, arg1, arg2, arg3, arg4)
 
 func fim # Objeto foi apagado
   salvar
@@ -739,84 +742,104 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     p_bebida -= 2
   fimse
 # Mensagens de fome e sede e pontos de vida
-  casovar txtchr(97 + $miscfome.t.[p_fome]) + $miscfome.t.[p_sede]
-  casose "a1" # Pouca sede
-    msg("Sua boa está um pouco seca.")
-    sair
-  casose "a2" # Com sede
-    msg("Você está com sede.")
-    $mens.p(este)
-    $mens.mvis2("", "$P está com sede.")
-    sair
-  casose "a3" # Muita sede
-    msg("Você está morrendo de sede, -1")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de sede, -1")
-    pvida -= 1
-    sair
-  casose "b0" # Pouca fome
-    msg("Você sente umas pontadas de fome.")
-    sair
-  casose "b1" # Pouca fome + Pouca sede
-    msg("Você sente umas pontadas de fome e a boca um pouco seca.")
-    sair
-  casose "b2" # Pouca fome + Com sede
-    msg("Você está com sede e sente umas pontadas de fome.")
-    $mens.p(este)
-    $mens.mvis2("", "$P está com sede.")
-    sair
-  casose "b3" # Pouca fome + Muita sede
-    msg("Você está morrendo de sede e sente umas pontadas de fome, -1")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de sede, -1")
-    pvida -= 1
-    sair
-  casose "c0" # Com fome
-    msg("Você está com fome.")
-    $mens.p(este)
-    $mens.mvis2("", "Você ouve o estômago de $P roncar.")
-    sair
-  casose "c1" # Com fome + Pouca sede
-    msg("Você está com fome e sente a boca um pouco seca.")
-    $mens.p(este)
-    $mens.mvis2("", "Você ouve o estômago de $P roncar.")
-    sair
-  casose "c2" # Com fome + Com sede
-    msg("Você está com fome e sede.")
-    $mens.p(este)
-    $mens.mvis2("", "$P está com fome e sede.")
-    sair
-  casose "c3" # Com fome + Muita sede
-    msg("Você está morrendo de sede e com fome, -1")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de sede e com fome, -1")
-    pvida -= 1
-    sair
-  casose "d0" # Muita fome
-    msg("Você está morrendo de fome, -2")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de fome, -2")
-    pvida -= 2
-    sair
-  casose "d1" # Muita fome + Pouca sede
-    msg("Você morrendo de fome e sente a boca um pouco seca, -2")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de fome, -2")
-    pvida -= 2
-    sair
-  casose "d2" # Muita fome + Com sede
-    msg("Você está morrendo de fome e com sede, -2")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de fome e com sede, -2")
-    pvida -= 2
-    sair
-  casose "d3" # Muita fome + Muita sede
-    msg("Você está morrendo de sede e fome, -3")
-    $mens.p(este)
-    $mens.mvis2("", "$P está morrendo de sede e fome, -3")
-    pvida -= 3
-    sair
-  casofim
+  se !(p_tempomsg -= 1)
+    casovar txtchr(97 + $miscfome.t.[p_fome]) + $miscfome.t.[p_sede]
+    casose "a1" # Pouca sede
+      msg("Sua boca está um pouco seca.")
+      p_tempomsg = 3
+      sair
+    casose "a2" # Com sede
+      msg("Você está com sede.")
+      $mens.p(este)
+      $mens.mvis2("", "$P está com sede.")
+      p_tempomsg = 3
+      sair
+    casose "a3" # Muita sede
+      msg("Você está morrendo de sede, -3")
+      pvida -= 3
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de sede.")
+      pvida -= 1
+      p_tempomsg = 3
+      sair
+    casose "b0" # Pouca fome
+      msg("Você sente umas pontadas de fome.")
+      p_tempomsg = 3
+      sair
+    casose "b1" # Pouca fome + Pouca sede
+      msg("Você sente umas pontadas de fome e a boca um pouco seca.")
+      p_tempomsg = 3
+      sair
+    casose "b2" # Pouca fome + Com sede
+      msg("Você está com sede e sente umas pontadas de fome.")
+      $mens.p(este)
+      $mens.mvis2("", "$P está com sede.")
+      p_tempomsg = 3
+      sair
+    casose "b3" # Pouca fome + Muita sede
+      msg("Você está morrendo de sede e sente umas pontadas de fome, -3")
+      pvida -= 3
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de sede.")
+      pvida -= 1
+      p_tempomsg = 3
+      sair
+    casose "c0" # Com fome
+      msg("Você está com fome.")
+      $mens.p(este)
+      $mens.mvis2("", "Você ouve o estômago de $P roncar.")
+      p_tempomsg = 3
+      sair
+    casose "c1" # Com fome + Pouca sede
+      msg("Você está com fome e sente a boca um pouco seca.")
+      $mens.p(este)
+      $mens.mvis2("", "Você ouve o estômago de $P roncar.")
+      p_tempomsg = 3
+      sair
+    casose "c2" # Com fome + Com sede
+      msg("Você está com fome e sede.")
+      $mens.p(este)
+      $mens.mvis2("", "$P está com fome e sede.")
+      p_tempomsg = 3
+      sair
+    casose "c3" # Com fome + Muita sede
+      msg("Você está morrendo de sede e com fome, -3")
+      pvida -= 3
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de sede e com fome.")
+      pvida -= 1
+      p_tempomsg = 3
+      sair
+    casose "d0" # Muita fome
+      msg("Você está morrendo de fome, -7")
+      pvida -= 7
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de fome.")
+      p_tempomsg = 3
+      sair
+    casose "d1" # Muita fome + Pouca sede
+      msg("Você está morrendo de fome e sente a boca um pouco seca, -7")
+      pvida -= 7
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de fome.")
+      p_tempomsg = 3
+      sair
+    casose "d2" # Muita fome + Com sede
+      msg("Você está morrendo de fome e com sede, -7")
+      pvida -= 7
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de fome e com sede.")
+      p_tempomsg = 3
+      sair
+    casose "d3" # Muita fome + Muita sede
+      msg("Você está morrendo de sede e fome, -10")
+      pvida -= 10
+      $mens.p(este)
+      $mens.mvis2("", "$P está morrendo de sede e fome.")
+      p_tempomsg = 3
+      sair
+    casofim
+  fimse
 # Acerta estado do personagem
   acertapos(1)
 # Salva o jogo

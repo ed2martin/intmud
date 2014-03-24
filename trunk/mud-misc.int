@@ -298,12 +298,10 @@ func evento # Objeto passa a receber eventos até um objeto mudar de sala
 
 func tempo # Eventos de tempo (cria objeto), vide classe evtempo
   se txt(arg0) && ref(arg1)
-    ref r
-    r = criar("evtempo")
+    refvar r = criar("evtempo")
     r.tempo1 = r.tempo2 = 1
     r.obj = este
     r.func = arg0
-    r.tfunc = inttotal(arg0)
     r.perso1 = arg1, r.perso1.evento.addfim(r)
     r.perso2 = arg2, r.perso2.evento.addfim(r)
     r.perso3 = arg3, r.perso3.evento.addfim(r)
@@ -340,7 +338,6 @@ classe evtempo
 inttempo tempo1 # Para gerar eventos de tempo
 uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
 txt100 func # Nome da função que deve chamar
-uint8 tfunc # Tamanho de func em caracteres
 ref obj # Objeto que contém a função
 ref perso1 # Primeiro personagem
 ref perso2 # Segundo personagem
@@ -357,9 +354,9 @@ func tempo1_exec # Executa eventos
   uint32 x
   uint32 v
   x = 1000000
+  refvar tam = inttotal(func)
   epara p.inifunc(obj, func), p.lin, p.depois
-    v = txt(p.texto, tfunc)
-    v > tempo2 && v < x && (x = v)
+    (v = txt(p.texto, tam)) > tempo2 && v < x && (x = v)
   efim
   x == 1000000 && apagar(este)
   v = tempo2

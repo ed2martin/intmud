@@ -443,6 +443,7 @@ const descpos = "Uma fonte jorra uma água límpida incessantemente."
 const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
 const f_fome = 1
 const f_sede = 20
+const pesoobj = 599000
 
 
 classe i_teste033
@@ -451,6 +452,42 @@ const nome = "pergaminho de retorno"
 const descnome = "um pergaminho de retorno"
 const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
 const f_magia1 = "retornar"
+
+
+classe i_teste034
+herda comum_itemgrupo
+const nome = "poção dos elfos"
+const ident = "poção elfos"
+const descnome = "uma poção dos elfos"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_fome = 5
+const f_sede = 20
+const f_diges = 2
+const f_msgperso = "$P engole todo o conteúdo de uma poção de uma só vez."
+const eveste = 1 # Eventos item: Sim
+
+func cmd_bebeu
+  ret arg1 != este, nulo # Retorna se arg1 não for o próprio item
+  se arg0.tipo1 != "elfo"
+    criar("e_veneno_mortal", arg0, 10) # arg0 recebe um efeito "Veneno Mortal" nível 10
+
+
+classe i_teste035
+herda comum_itemgrupo
+const nome = "antidoto"
+const descnome = "um antídoto"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const eveste = 1 # Eventos item: Sim
+
+func cmd_bebeu
+  ret arg1 != este, nulo # Retorna se arg1 não for o próprio item
+  refvar r = arg0.dentro2.objini("e_veneno_mortal")
+  se r # Se está com o efeito "Veneno Mortal"
+    apagar(r) # apaga o efeito
+    $mens.p(arg0)
+    $mens.mvis2("Você se sente melhor.", "$P parece melhor.")
+  senao # Se não está com o efeito
+    arg0.msg("Você não sente diferença.")
 
 
 classe p_teste001
@@ -2583,10 +2620,10 @@ classe s_teste095
 herda b_teste
 const s_titulo = "Subsolo 3: Diversos"
 const s_desc = "Ao norte: um ajudante que te seguirá\n\
-Ao sul: itens apagados após um tempo"
+Ao sul: itens apagados após um tempo e poção mortal"
 const dir_n = $s_teste096
-const dir_c = $s_teste082
 const dir_s = $s_teste097
+const dir_c = $s_teste082
 
 
 classe s_teste096
@@ -2629,6 +2666,8 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste029") && criar("i_teste029", este, 1)
   !dentro1.objini("i_teste030") && criar("i_teste030", este, 1)
   !dentro1.objini("i_teste031") && criar("i_teste031", este, 1)
+
+const dir_s = $s_teste102
 
 
 classe s_teste098
@@ -2679,3 +2718,20 @@ esc jogador comando. Exemplo: esc joão n\n\
 E para escrever anonimamente para um jogador, use o comando tel.\n\
 Exemplo: tel joão a saída fica ao norte"
 const dir_so = $s_teste098
+
+
+classe s_teste102
+herda b_teste
+const s_titulo = "Poção mortal"
+const s_desc = "Essa poção possui um veneno que só não afeta os elfos.\n\
+Usar misc:tempo aqui não resolve, porque se o item for apagado\n\
+ou se o personagem mudar de sala, o efeito do veneno desaparece.\n\
+Foi criado o efeito \"Veneno Mortal\" para isso. O item teste034\n\
+também possui trigger, para checar a raça e criar o efeito."
+const dir_n = $s_teste097
+const s_reset = "S 100 teste034 1 S\nS 100 teste035 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste034") && criar("i_teste034", este, 1)
+  !dentro1.objini("i_teste035") && criar("i_teste035", este, 1)

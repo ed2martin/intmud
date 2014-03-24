@@ -1,0 +1,651 @@
+classe menu_econfig
+# Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
+const titulo = "Configurações do MUD"
+const colunas = 35
+#
+const nome1 = "Como ativar o MUD"
+const tipo1 = "menu--"
+const clas1 = "menu_econfig_ativar"
+#
+const nome2 = "Senha de administração"
+const info2 = "Se vazia, ninguém poderá ser administrador do MUD"
+const tipo2 = "linha--"
+const clas2 = "config"
+const vari2 = "senhaadm"
+#
+const nome3 = "Sala inicial"
+const info3 = "Sala onde os jogadores vão após criar o personagem"
+const tipo3 = "sala--"
+const clas3 = "config"
+const vari3 = "salaini"
+#
+const nome4 = "Sala quando morre"
+const tipo4 = "sala--"
+const clas4 = "config"
+const vari4 = "salafim"
+#
+const nome5 = "Continuar jogo salvo sala"
+const info5 = "Se acontecer do jogador cair em uma sala inexistente"
+const tipo5 = "sala--"
+const clas5 = "config"
+const vari5 = "salasav"
+#
+const nome6 = "Animais para batalhar"
+const info6 = "Quantos animais pode usar em batalha, de 0 a 8\n\
+Se 0, os comandos para animais deixam de existir"
+const tipo6 = "numero--"
+const clas6 = "config"
+const vari6 = "animal1"
+const extr6 = "0 8"
+#
+const nome7 = "Animais reserva"
+const info7 = "Quantos animais pode guardar com o comando Reserva\n\
+Se 0, o comando Reserva deixa de existir"
+const tipo7 = "numero--"
+const clas7 = "config"
+const vari7 = "animal2"
+const extr7 = "0 200"
+#
+const nome8 = "Capturar reserva"
+const info8 = "Se os animais capturados podem ir para a lista de reservas"
+const tipo8 = "simnao--"
+const clas8 = "config"
+const vari8 = "capturar"
+#
+const nome9 = "Itens por personagem"
+const info9 = "Quantos itens cada jogador pode ter, ao todo\n\
+Essa opção visa limitar o tamanho dos arquivos dos jogos salvos"
+const tipo9 = "numero--"
+const clas9 = "config"
+const vari9 = "itens"
+const extr9 = "1 1000"
+#
+const nome10 = "Salvar personagem ao criar"
+const tipo10 = "simnao--"
+const clas10 = "config"
+const vari10 = "salvacria"
+#
+const nome11 = "E-mail"
+const info11 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
+e procure por uma linha que contém o texto z_email"
+const tipo11 = "opcao--"
+const clas11 = "config"
+const vari11 = "email"
+const extr11 = "Não pede\nOpcional\nObrigatório"
+#
+const nome12 = "Config ao criar personagem"
+const info12 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
+const tipo12 = "vetor--"
+const clas12 = "config"
+const vari12 = "jogconfig"
+const extr12 = "desc\n\
+saidas\n\
+cores\n\
+acento\n\
+chat\n\
+seguir\n\
+prompt\n\
+bprompt\n\
+pvt\n\
+emocao\n\
+moedas\nnovatos"
+#
+const nome13 = "Atributos dos personagens"
+const info13 = "Valor inicial dos atributos para todos os personagens"
+const tipo13 = "atribcfg--"
+const clas13 = "config"
+const vari13 = "atribcfg"
+#
+const nome14 = "Fome e sede nível"
+const info14 = "A partir de que nível sente fome e sede"
+const tipo14 = "numero--"
+const clas14 = "config"
+const vari14 = "fomeini"
+#
+const nome15 = "Sem fome e sede nível"
+const info15 = "A partir de que nível não sente mais fome e sede"
+const tipo15 = "numero--"
+const clas15 = "config"
+const vari15 = "fomefim"
+#
+const nome16 = "Mensagens"
+const tipo16 = "menu--"
+const clas16 = "menu_econfig_msg"
+#
+const nome17 = "Comandos"
+const tipo17 = "menu--"
+const clas17 = "menu_econfig_comandos"
+#
+const nome18 = "Ataques e batalha"
+const tipo18 = "menu--"
+const clas18 = "menu_econfig_ataques"
+#
+const nome19 = "Aulas por nível"
+const info19 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+Se 0, o comando aprender não usa pontos de aula"
+const tipo19 = "numero--"
+const clas19 = "config"
+const vari19 = "aulas"
+const extr19 = "0 1000"
+#
+const nome20 = "Tipos de produtos"
+const info20 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo20 = "txtopcao--"
+const clas20 = "config"
+const vari20 = "produtos"
+const extr20 = "1 30"
+#
+const nome21 = "Posições para vestir itens"
+const info21 = "Os nomes das posições"
+const tipo21 = "menu--"
+const clas21 = "menu_econfig_vestir"
+
+
+classe menu_econfig_ativar
+const titulo = "Como ativar o MUD"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Jogar localmente"
+const info1 = "Jogar na própria janela que o IntMUD abre\n\
+Terá efeito na próxima vez que o MUD for ativado"
+const tipo1 = "simnao--"
+const clas1 = "config"
+const vari1 = "modolocal"
+#
+const nome2 = "Jogar em uma porta"
+const info2 = "Terá efeito na próxima vez que o MUD for ativado"
+const tipo2 = "opcao--"
+const clas2 = "config"
+const vari2 = "modoserv"
+const extr2 = "Não\nTelnet\nTelnet e Papovox"
+#
+const nome3 = "Endereço do MUD"
+const info3 = "Para ativar em um endereço, quando seu micro possui vários endereços IP"
+const tipo3 = "linha--"
+const clas3 = "config"
+const vari3 = "servender"
+#
+const nome4 = "Porta do MUD"
+const info4 = "Nota: o programa Papovox só se conecta na porta 1963\n\
+Terá efeito na próxima vez que o MUD for ativado"
+const tipo4 = "numero--"
+const clas4 = "config"
+const vari4 = "servporta"
+#
+const nome5 = "Limite de conexões por IP"
+const tipo5 = "numero--"
+const clas5 = "config"
+const vari5 = "servusr"
+#
+const nome6 = "Tempo entre duas conexões"
+const info6 = "Quantos décimos de segundo para poder conectar-se novamente pelo mesmo IP"
+const tipo6 = "numero--"
+const clas6 = "config"
+const vari6 = "servtempo"
+#
+const nome7 = "Jogar em um chat"
+const info7 = "Somente em chats que suportam bots\n\
+Terá efeito na próxima vez que o MUD for ativado"
+const tipo7 = "simnao--"
+const clas7 = "config"
+const vari7 = "modobot"
+#
+const nome8 = "Endereço do chat"
+const tipo8 = "linha--"
+const clas8 = "config"
+const vari8 = "serv"
+#
+const nome9 = "Porta do chat"
+const tipo9 = "numero--"
+const clas9 = "config"
+const vari9 = "porta"
+#
+const nome10 = "Sala do chat"
+const tipo10 = "linha--"
+const clas10 = "config"
+const vari10 = "sala"
+#
+const nome11 = "Senha da sala do chat"
+const info11 = "Se for vazia, o programa pede a senha antes de conectar\n\
+Se não for vazia, outros administradores poderão ver a senha"
+const tipo11 = "linha--"
+const clas11 = "config"
+const vari11 = "senha"
+
+
+classe menu_econfig_msg
+const titulo = "Mensagens"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Apresentação"
+const info1 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
+const tipo1 = "texto--"
+const clas1 = "config"
+const vari1 = "apres"
+#
+const nome2 = "Quando alguém entra avisar"
+const info2 = "Quem deve ser informado quando um jogador entra ou sai"
+const tipo2 = "opcao--"
+const clas2 = "config"
+const vari2 = "entrainfo"
+const extr2 = "Ninguém\nSomente administradores\nTodos"
+#
+const nome3 = "Comando Echo"
+const tipo3 = "linha--"
+const clas3 = "config"
+const vari3 = "echomsg"
+#
+const nome4 = "Canal Chat"
+const tipo4 = "linha--"
+const clas4 = "config"
+const vari4 = "chatmsg"
+#
+const nome5 = "Canal Novatos"
+const tipo5 = "linha--"
+const clas5 = "config"
+const vari5 = "novatosmsg"
+#
+const nome6 = "Falar"
+const info6 = "Ao teclar falar e uma mensagem qualquer"
+const tipo6 = "linha--"
+const clas6 = "config"
+const vari6 = "falarmsg"
+#
+const nome7 = "Perguntar"
+const info7 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo7 = "linha--"
+const clas7 = "config"
+const vari7 = "perguntarmsg"
+#
+const nome8 = "Exclamar"
+const info8 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo8 = "linha--"
+const clas8 = "config"
+const vari8 = "exclamarmsg"
+#
+const nome9 = "Ponderar"
+const info9 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo9 = "linha--"
+const clas9 = "config"
+const vari9 = "ponderarmsg"
+#
+const nome10 = "Continuar"
+const info10 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo10 = "linha--"
+const clas10 = "config"
+const vari10 = "continuarmsg"
+#
+const nome11 = "Gritar"
+const info11 = "Ao teclar gritar e uma mensagem"
+const tipo11 = "linha--"
+const clas11 = "config"
+const vari11 = "gritarmsg"
+#
+const nome12 = "Sussurrou para si mesmo"
+const info12 = "Ao teclar sussurrar"
+const tipo12 = "linha--"
+const clas12 = "config"
+const vari12 = "sussurrar1msg"
+#
+const nome13 = "Ouviu o sussurro"
+const info13 = "Ao teclar sussurrar e uma mensagem"
+const tipo13 = "linha--"
+const clas13 = "config"
+const vari13 = "sussurrar2msg"
+#
+const nome14 = "Não ouviu o sussurro"
+const info14 = "Quando ouve duas pessoas sussurrando"
+const tipo14 = "linha--"
+const clas14 = "config"
+const vari14 = "sussurrar3msg"
+
+
+classe menu_econfig_comandos
+const titulo = "Comandos"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Comando Salvar"
+const info1 = "Se os comandos SALVAR e SENHA existem"
+const tipo1 = "opcao--"
+const clas1 = "config"
+const vari1 = "salvartipo"
+const extr1 = "Desabilitado\nHabilitado"
+#
+const nome2 = "Salvar a partir do nível"
+const info2 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
+Se for um número acima de 65535, quem não tem jogo salvo não salva"
+const tipo2 = "numero--"
+const clas2 = "config"
+const vari2 = "salvarnivel"
+#
+const nome3 = "Comando Rezar"
+const tipo3 = "opcao--"
+const clas3 = "config"
+const vari3 = "rezartipo"
+const extr3 = "Desabilitado\nHabilitado"
+#
+const nome4 = "Rezar a partir do nível"
+const tipo4 = "numero--"
+const clas4 = "config"
+const vari4 = "rezarnivel"
+#
+const nome5 = "Comando Chat"
+const tipo5 = "opcao--"
+const clas5 = "config"
+const vari5 = "chattipo"
+const extr5 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+#
+const nome6 = "Chat a partir do nível"
+const tipo6 = "numero--"
+const clas6 = "config"
+const vari6 = "chatnivel"
+#
+const nome7 = "Comando Novatos"
+const tipo7 = "opcao--"
+const clas7 = "config"
+const vari7 = "novatostipo"
+const extr7 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+#
+const nome8 = "Novatos a partir do nível"
+const tipo8 = "numero--"
+const clas8 = "config"
+const vari8 = "novatosnivel"
+#
+const nome9 = "Comando Emoção"
+const tipo9 = "opcao--"
+const clas9 = "config"
+const vari9 = "emocaotipo"
+const extr9 = "Desabilitado\nHabilitado"
+#
+const nome10 = "Emoção a partir do nível"
+const tipo10 = "numero--"
+const clas10 = "config"
+const vari10 = "emocaonivel"
+#
+const nome11 = "Comando Gritar"
+const tipo11 = "opcao--"
+const clas11 = "config"
+const vari11 = "gritartipo"
+const extr11 = "Desabilitado\nHabilitado"
+#
+const nome12 = "Gritar a partir do nível"
+const tipo12 = "numero--"
+const clas12 = "config"
+const vari12 = "gritarnivel"
+#
+const nome13 = "Movimentos gastos ao gritar"
+const info13 = "Quantos pontos de movimentos o personagem gasta ao gritar"
+const tipo13 = "numero--"
+const clas13 = "config"
+const vari13 = "gritarmove"
+#
+const nome14 = "Comando Matar"
+const tipo14 = "opcao--"
+const clas14 = "config"
+const vari14 = "matartipo"
+const extr14 = "Desabilitado\nHabilitado"
+#
+const nome15 = "Comando Retornar até nível"
+const info15 = "Até que nível pode usar o comando retornar"
+const tipo15 = "numero--"
+const clas15 = "config"
+const vari15 = "retornar"
+#
+const nome16 = "Comando Quem mostra admin"
+const info16 = "Se não administradores podem saber quem é administrador teclando QUEM"
+const tipo16 = "simnao--"
+const clas16 = "config"
+const vari16 = "mostraadm"
+#
+const nome17 = "Comando Quem mostra imortal"
+const info17 = "Se não administradores podem saber quem é imortal teclando QUEM"
+const tipo17 = "simnao--"
+const clas17 = "config"
+const vari17 = "mostraimortal"
+
+
+classe menu_econfig_ataques
+const titulo = "Ataques"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Experiência ganha"
+const info1 = "Quanta experiência os personagens dão quando morrem, em porcentagem"
+const tipo1 = "numero--"
+const clas1 = "config"
+const vari1 = "atkexp"
+const extr1 = "0 1000"
+#
+const nome2 = "Experiência ao morrer"
+const info2 = "Experiência do personagem ao morrer, em porcentagem\n\
+De 0 a 100, sendo que 0 perde tudo e 100 não perde experiência"
+const tipo2 = "numero--"
+const clas2 = "config"
+const vari2 = "atkmorreuexp"
+const extr2 = "0 100"
+#
+const nome3 = "Tempo de um turno"
+const info3 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
+const tipo3 = "numero--"
+const clas3 = "config"
+const vari3 = "atktempo"
+const extr3 = "10 200"
+#
+const nome4 = "Força do ataque automático"
+const tipo4 = "numero--"
+const clas4 = "config"
+const vari4 = "atkfor"
+const extr4 = "1 100"
+#
+const nome5 = "Tipos de ataques"
+const tipo5 = "txtopcao--"
+const clas5 = "config"
+const vari5 = "atknomes"
+const extr5 = "1 20"
+#
+const nome6 = "Ataques especiais"
+const info6 = "Os tipos de ataque que usam ataque e defesa especial"
+const tipo6 = "vetor--"
+const clas6 = "config"
+const vari6 = "atkespecial"
+const extr6 = config:atknomes
+#
+const nome7 = "Tipos de armas"
+const info7 = "Habilidades usadas em ataques automáticos com arma"
+const tipo7 = "txtopcao--"
+const clas7 = "config"
+const vari7 = "arma_txt"
+const extr7 = "1 30 1"
+#
+const nome8 = "Tipos de personagens"
+const info8 = "Habilidades usadas em ataques automáticos sem arma"
+const tipo8 = "txtopcao--"
+const clas8 = "config"
+const vari8 = "atk_txt"
+const extr8 = "0 30"
+
+
+classe menu_econfig_vestir
+const titulo = "Vestir itens"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Nomes das posições"
+const tipo1 = "txtopcao--"
+const clas1 = "config"
+const vari1 = "equip_txt"
+const extr1 = "0 30"
+#
+const nome2 = "Ordem das posições"
+const info2 = "Em que ordem as posições são mostradas no comando equip\n\
+A posição 49 corresponde à arma sendo empunhada"
+const tipo2 = "linha--"
+const clas2 = "config"
+const vari2 = "equip_ordem"
+#
+const nome3 = "Mensagens ao vestir"
+const tipo3 = "txtopcao--"
+const clas3 = "config"
+const vari3 = "equip_vestir"
+const extr3 = "0 30"
+#
+const nome4 = menu_econfig_vestir:sobre(0)
+const tipo4 = "vetor--"
+const clas4 = "config"
+const vari4 = "vestir0"
+const extr4 = config:equip_txt
+const nome5 = menu_econfig_vestir:sobre(1)
+const tipo5 = "vetor--"
+const clas5 = "config"
+const vari5 = "vestir1"
+const extr5 = config:equip_txt
+const nome6 = menu_econfig_vestir:sobre(2)
+const tipo6 = "vetor--"
+const clas6 = "config"
+const vari6 = "vestir2"
+const extr6 = config:equip_txt
+const nome7 = menu_econfig_vestir:sobre(3)
+const tipo7 = "vetor--"
+const clas7 = "config"
+const vari7 = "vestir3"
+const extr7 = config:equip_txt
+const nome8 = menu_econfig_vestir:sobre(4)
+const tipo8 = "vetor--"
+const clas8 = "config"
+const vari8 = "vestir4"
+const extr8 = config:equip_txt
+#
+const nome9 = menu_econfig_vestir:sobre(5)
+const tipo9 = "vetor--"
+const clas9 = "config"
+const vari9 = "vestir5"
+const extr9 = config:equip_txt
+const nome10 = menu_econfig_vestir:sobre(6)
+const tipo10 = "vetor--"
+const clas10 = "config"
+const vari10 = "vestir6"
+const extr10 = config:equip_txt
+const nome11 = menu_econfig_vestir:sobre(7)
+const tipo11 = "vetor--"
+const clas11 = "config"
+const vari11 = "vestir7"
+const extr11 = config:equip_txt
+const nome12 = menu_econfig_vestir:sobre(8)
+const tipo12 = "vetor--"
+const clas12 = "config"
+const vari12 = "vestir8"
+const extr12 = config:equip_txt
+const nome13 = menu_econfig_vestir:sobre(9)
+const tipo13 = "vetor--"
+const clas13 = "config"
+const vari13 = "vestir9"
+const extr13 = config:equip_txt
+#
+const nome14 = menu_econfig_vestir:sobre(10)
+const tipo14 = "vetor--"
+const clas14 = "config"
+const vari14 = "vestir10"
+const extr14 = config:equip_txt
+const nome15 = menu_econfig_vestir:sobre(11)
+const tipo15 = "vetor--"
+const clas15 = "config"
+const vari15 = "vestir11"
+const extr15 = config:equip_txt
+const nome16 = menu_econfig_vestir:sobre(12)
+const tipo16 = "vetor--"
+const clas16 = "config"
+const vari16 = "vestir12"
+const extr16 = config:equip_txt
+const nome17 = menu_econfig_vestir:sobre(13)
+const tipo17 = "vetor--"
+const clas17 = "config"
+const vari17 = "vestir13"
+const extr17 = config:equip_txt
+const nome18 = menu_econfig_vestir:sobre(14)
+const tipo18 = "vetor--"
+const clas18 = "config"
+const vari18 = "vestir14"
+const extr18 = config:equip_txt
+#
+const nome19 = menu_econfig_vestir:sobre(15)
+const tipo19 = "vetor--"
+const clas19 = "config"
+const vari19 = "vestir15"
+const extr19 = config:equip_txt
+const nome20 = menu_econfig_vestir:sobre(16)
+const tipo20 = "vetor--"
+const clas20 = "config"
+const vari20 = "vestir16"
+const extr20 = config:equip_txt
+const nome21 = menu_econfig_vestir:sobre(17)
+const tipo21 = "vetor--"
+const clas21 = "config"
+const vari21 = "vestir17"
+const extr21 = config:equip_txt
+const nome22 = menu_econfig_vestir:sobre(18)
+const tipo22 = "vetor--"
+const clas22 = "config"
+const vari22 = "vestir18"
+const extr22 = config:equip_txt
+const nome23 = menu_econfig_vestir:sobre(19)
+const tipo23 = "vetor--"
+const clas23 = "config"
+const vari23 = "vestir19"
+const extr23 = config:equip_txt
+#
+const nome24 = menu_econfig_vestir:sobre(20)
+const tipo24 = "vetor--"
+const clas24 = "config"
+const vari24 = "vestir20"
+const extr24 = config:equip_txt
+const nome25 = menu_econfig_vestir:sobre(21)
+const tipo25 = "vetor--"
+const clas25 = "config"
+const vari25 = "vestir21"
+const extr25 = config:equip_txt
+const nome26 = menu_econfig_vestir:sobre(22)
+const tipo26 = "vetor--"
+const clas26 = "config"
+const vari26 = "vestir22"
+const extr26 = config:equip_txt
+const nome27 = menu_econfig_vestir:sobre(23)
+const tipo27 = "vetor--"
+const clas27 = "config"
+const vari27 = "vestir23"
+const extr27 = config:equip_txt
+const nome28 = menu_econfig_vestir:sobre(24)
+const tipo28 = "vetor--"
+const clas28 = "config"
+const vari28 = "vestir24"
+const extr28 = config:equip_txt
+#
+const nome29 = menu_econfig_vestir:sobre(25)
+const tipo29 = "vetor--"
+const clas29 = "config"
+const vari29 = "vestir25"
+const extr29 = config:equip_txt
+const nome30 = menu_econfig_vestir:sobre(26)
+const tipo30 = "vetor--"
+const clas30 = "config"
+const vari30 = "vestir26"
+const extr30 = config:equip_txt
+const nome31 = menu_econfig_vestir:sobre(27)
+const tipo31 = "vetor--"
+const clas31 = "config"
+const vari31 = "vestir27"
+const extr31 = config:equip_txt
+const nome32 = menu_econfig_vestir:sobre(28)
+const tipo32 = "vetor--"
+const clas32 = "config"
+const vari32 = "vestir28"
+const extr32 = config:equip_txt
+const nome33 = menu_econfig_vestir:sobre(29)
+const tipo33 = "vetor--"
+const clas33 = "config"
+const vari33 = "vestir29"
+const extr33 = config:equip_txt
+#
+const sobre = txtcopiamai(txtsublin(config:equip_txt, arg0, 1), "A") + " depende de"

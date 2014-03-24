@@ -742,7 +742,7 @@ const clas21 = "menu_hab_msg4"
 classe menu_magia_ataque
 herda menu_hab_ataque
 const titulo = "Magia " + txt(var.classe1, 6)
-const colunas = 23
+const colunas = 25
 
 
 classe comando_hab
@@ -1061,7 +1061,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Checa o alvo e dispara eventos
   se !arg0.contr.dono.s_luta
     ret arg0.contr.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
-  senao tipoalvo < 4 && !arg1.contr.p_agressivo(arg0)
+  senao !arg1.contr.p_agressivo(arg0)
     ret arg0.contr.msg(arg1.contr.descnome + " não quer brigar.")
   fimse
   ret cmd_atacar(arg0, arg1, este), nulo

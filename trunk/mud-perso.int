@@ -637,6 +637,9 @@ func morreu # Procedimentos quando morre
       i.obj.perso && (i.obj.expatual *= config:atkmorreuexp / 100)
     efim
     p_restaura = rand(100, 130)
+    p_sede = intmax($miscfome.cheio / 2, p_sede)
+    p_fome = intmax($miscfome.cheio / 2, p_fome)
+    p_bebida = p_diges = 0
     batalhaexp(-1), batalhafim # Retira toda experiência de quem atacou
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     mudadono(config:salafim)
@@ -786,6 +789,9 @@ const perso = 3 # Para identificar o tipo de personagem
 const objmax = 15 # Quantos itens pode carregar
 sav ref persobat # Personagem usado na batalha
 sav ref persoesc # Personagem escolhido pelo jogador
+
+func ini
+  comum_persobat:ini(arg0, arg1, arg2, arg3, arg4)
 
 func escolhebat # Escolhe um personagem em condições de lutar
   se persoesc.pvida # Checa se personagem escolhido está em condições
