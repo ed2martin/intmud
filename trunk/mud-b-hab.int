@@ -326,6 +326,53 @@ const msgextra = "Paralisa com uma descarta elétrica."
 const tipoatk = 12 # Ataque tipo: 12 Elétrico
 
 
+classe cmd_roncar
+herda comando_ataque
+const nomevar = "h_Roncar"
+const tipoalvo = 3 # Alvo: 3 Todos sem dividir o ataque
+const c_move1 = 10
+const c_move2 = 4
+const ataque = 70
+const precisao = 200
+const tipoatk = 9 # Tipo: 9 Aéreo/vento
+const msgextra = "Só pode ser usado enquanto estiver dormindo."
+const msgatk0 = "\n\n\n\
+$P ronca alto e se machuca, $m\n\n\
+Seu ronco potente atinge $a, $m\n\
+O ronco potente de $p atinge $a, $m\n\
+O ronco potente de $p atinge $a, $m\n\
+$A sucumbe com o seu ronco ensurdecedor, $m\n\
+$A sucumbe com o ronco ensurdecedor de $P, $m\n\
+$A sucumbe com o ronco ensurdecedor de $P, $m\n\
+$P ronca alto mas $a se afasta a tempo.\n\n\n\
+$A apenas observa $p roncando alto."
+const posic = 4
+
+func cmd_atacar
+  se arg0.posicao > 4
+    $mens.p(arg0)
+    arg0.msginv("$P não consegue roncar estando acordad$s.")
+    ret 1
+
+
+classe cmd_rosnar
+herda comando_ataque
+const nomevar = "h_Rosnar"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const a_efeito1 = "medo"
+const c_espera = 40
+const c_move1 = 15
+const c_move2 = 5
+const msgextra = "Rosna para diminuir o ataque do adversário por um tempo.\n\
+Só pode ser usado durante uma batalha."
+const msgatk0 = "\n\n\n\
+$P rosna e se assusta.\n\n\
+$P rosna para $a.\n\n\n\
+$P mata $a rosnando.\n\n\n\
+$P rosna para onde $a estava.\n\n\n\
+$A não entende por que $p rosnou."
+
+
 classe cmd_socar
 herda comando_ataque
 const nomevar = "h_Socar"
@@ -431,9 +478,30 @@ const tipoalvo = 4 # Alvo: 4 Qualquer um; não agressivo
 const valor = 100
 const c_mana1 = 30
 const c_mana2 = 5
-const msgacertou2 = ""
 const a_remove = "cegueira"
 const msgatk0 = "$P fala solenemente 'Curar Cegueira'"
+
+
+classe magia_drenar_energia
+herda comando_ataque
+const nomevar = "m_Drenar energia"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const c_mana1 = 30
+const c_mana2 = 10
+const ataque = 0
+const tipoatk = 11 # Tipo: 11 Trevas
+const msgextra = "Retira parte do mana e do vigor do alvo."
+const msgatk0 = "\n\n\n\
+$P se sente cansad$s.\n\n\
+$P deixa $a cansad$t.\n\n\n\
+$P esgota as últimas energias de $a.\n\n\n\
+$P se cansou à toa.\n\n\n\
+$A parece tão cansad$t quanto antes."
+
+func cmd_atacou
+  se !arg2.result
+    arg1.pmana *= 0.6
+    arg1.pmove *= 0.6
 
 
 classe magia_flutuar
@@ -477,7 +545,6 @@ const nomevar = "m_Invisibilidade"
 const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
 const a_efeito1 = "invisibilidade"
 const a_batalha = 2 # Condição: 2 Fora da batalha
-const msgacertou2 = ""
 const c_mana1 = 20
 const c_mana2 = 5
 const msgatk0 = "$P fala solenemente 'Inv'"
@@ -499,6 +566,24 @@ $P lança um raio de confusão em $a, $m\n\n\n\
 $P destrói $a com um raio de confusão, $m\n\n\n\
 $P lança um raio de confusão na direção de $a\n\n\n\
 $P lança um raio em $a, mas o raio se dissipa."
+
+
+classe magia_restaurar_vitalidade
+herda comando_ataque
+const nomevar = "m_Restaurar vitalidade"
+const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
+const a_move1 = 20
+const a_move2 = 3
+const c_mana1 = 12
+const c_mana2 = 5
+const tipoatk = 10 # Tipo: 10 Luz
+const msgextra = "Recupera alguns pontos de vigor."
+const msgatk0 = "\n\n\n\
+$P faz um gesto e se sente mais descansad$s.\n\n\
+$P ataca $a, $m\n\n\n\
+$P ataca e mata $a, $m\n\n\n\
+$P faz um gesto esquisito.\n\n\n\
+$P faz um gesto e se sente tão descansad$s quanto antes."
 
 
 classe magia_retornar

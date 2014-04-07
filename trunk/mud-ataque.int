@@ -1094,7 +1094,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casose "2" # Todos dividindo o ataque
     l.addfim(arg0.contr.dono.dentro2)
     l.remove(arg0.contr, arg1.contr)
-    atk = ataque / l.total * (arg2 + 0.5)
+    atk = ataque / (l.total + 1) * (arg2 + 0.5)
     sair
   casose "3" # Todos sem dividir o ataque
     l.addfim(arg0.contr.dono.dentro2)
@@ -1245,13 +1245,15 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   result = 0
   ret !arg2, nulo
 # Checa bônus do personagem
-  se !tipobonus
-  senao arg0.tipo1 && txtproc("\n" + tipobonus + "\n", "\n" + arg0.tipo1 + "\n") >= 0
-    dano *= 1.5
-  senao arg0.tipo2 && txtproc("\n" + tipobonus + "\n", "\n" + arg0.tipo2 + "\n") >= 0
-    dano *= 1.5
-  senao arg0.tipo3 && txtproc("\n" + tipobonus + "\n", "\n" + arg0.tipo3 + "\n") >= 0
-    dano *= 1.5
+  se tipobonus
+    refvar tbonus = "\n" + txte(tipobonus) + "\n"
+    se arg0.tipo1 && txtproc(tbonus, "\n" + arg0.tipo1 + "\n") >= 0
+      dano *= 1.5
+    senao arg0.tipo2 && txtproc(tbonus, "\n" + arg0.tipo2 + "\n") >= 0
+      dano *= 1.5
+    senao arg0.tipo3 && txtproc(tbonus, "\n" + arg0.tipo3 + "\n") >= 0
+      dano *= 1.5
+    fimse
   fimse
 # Calcula dano com arma
   se arma1
@@ -1320,29 +1322,23 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
     se !arg1.pvida # Se morreu
       result = 10
       ret menssub(lin, 8), nulo
-      se arg2 # Alvo secundário
-        arg1.contr.msginv(lin.9 ? lin.9 : lin.8)
-      senao # Alvo principal
-        $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
-      fimse
+      ret $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
     senao arg2 # Se for alvo secundário
       ret menssub(lin, 5), nulo
-      arg1.contr.msginv(lin.6 ? lin.6 : lin.5)
+      ret arg1.contr.msginv(lin.6 ? lin.6 : lin.5)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
       ret menssub(lin, 3), nulo
-      $mens.mtodos2(lin.3, lin.4 ? lin.4 : lin.3)
+      ret $mens.mtodos2(lin.3, lin.4 ? lin.4 : lin.3)
     senao # Outros casos
       ret menssub(lin, 5), nulo
-      $mens.mtodos3(lin.5, lin.6 ? lin.6 : lin.5, lin.7 ? lin.7 : lin.5)
+      ret $mens.mtodos3(lin.5, lin.6 ? lin.6 : lin.5, lin.7 ? lin.7 : lin.5)
     fimse
     ret
   casose "1" # Não teve efeito
-    $mens.mudavida = "0"
     ret menssub(lin, 14), nulo
     ret arg2, arg1.contr.msginv(lin.12 ? lin.12 : lin.11)
     ret $mens.mtodos3(lin.14, lin.15 ? lin.15 : lin.14, lin.16 ? lin.16 : lin.14)
   casose "2" # Errou o alvo
-    $mens.mudavida = "0"
     ret menssub(lin, 11), nulo
     ret arg2, arg1.contr.msginv(lin.12 ? lin.12 : lin.11)
     ret $mens.mtodos3(lin.11, lin.12 ? lin.12 : lin.11, lin.13 ? lin.13 : lin.11)

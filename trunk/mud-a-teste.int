@@ -643,14 +643,17 @@ m_Identificar 8\n\
 h_Visível 8\n\
 h_Ocultar 8\n\
 h_Furtividade 8\n\
+m_Restaurar_vitalidade 8\n\
+m_Drenar_Energia 8\n\
 m_Ver_Invisível 8\n\
 m_Ver_Oculto 8\n\
 m_Invisibilidade 8\n\
 m_Flutuar 8\n\
 m_Cegueira 8\n\
-m_Curar_Cegueira 8"
+m_Curar_Cegueira 8\n\
+h_Rosnar 8\n\
+h_Roncar 8"
 const taxaaula = 50
-const lojanao = ""
 
 
 classe p_teste009
@@ -1027,9 +1030,9 @@ ao sul para uma área de testes e exemplos. Para desabilitar a área de\n\
 testes, digite econfig, como administrador e mude a opção \"Sala inicial\"\n\
 para ini001. Inicialmente a senha de administração é x2."
 const s_luz = 1 # Luz: 1 Claro sem eventos de tempo
+const eveste = 1 # Receber eventos do próprio objeto
 const dir_n = $s_ini001
 const dir_s = $s_teste002
-const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_mover
   se arg2 == "s"
@@ -1055,10 +1058,10 @@ As salas ao sul mostram diversos recursos do MUD.\n\
 A oeste há explicações sobre o comando de administração CMD e derivados."
 const dir_n = $s_teste001
 const dir_l = $s_teste003
-const dir_c = $s_teste014
 const dir_o = $s_teste033
-const dir_se = $s_teste015
+const dir_c = $s_teste014
 const dir_b = $s_teste067
+const dir_se = $s_teste015
 
 
 classe s_teste003
