@@ -404,7 +404,7 @@ func msgperso # Substituições conforme a bebedeira
 # arg1 = valor da variável p_bebida do jogador
 # Retorna o texto modificado conforme a bebedeira
   ret arg1 <= bebeini, arg0
-  refvar indice = intmin(50 * (arg1 - bebeini) / miscfome:cheio, 100)
+  refvar indice = intmin(50 * (arg1 - bebeini) / $miscfome.cheio, 100)
   ret msg(arg0, indice)
 
 func msg # Substituições conforme a bebedeira

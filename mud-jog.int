@@ -732,13 +732,17 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     p_sede = intmax($miscfome.semfome, p_sede - 1)
     p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida = intmin(1, p_bebida - 1)
-  senao pnivel >= config:fomeini && pnivel < config:fomefim # Sente fome
+  senao pnivel < config:fomeini || pnivel >= config:fomefim || dono.s_fome == 1 # Não sente
+    p_sede = intmax($miscfome.semfome, p_sede - 1)
+    p_fome = intmax($miscfome.semfome, p_fome - 1)
+    p_bebida -= 2
+  senao !dono.s_fome # Sente fome/sede
     p_sede -= dono.s_terreno == 11 ? 3 : 1 # No deserto sente sede 3x mais rápido
     p_fome -= 1
     p_bebida -= 2
-  senao # Não sente fome
-    p_sede = intmax($miscfome.semfome, p_sede - 1)
-    p_fome = intmax($miscfome.semfome, p_fome - 1)
+  senao # Se recupera de fome/sede aos poucos
+    p_sede = intmax(p_sede - 1, intmin($miscfome.semfome, p_sede + 1))
+    p_fome = intmax(p_fome - 1, intmin($miscfome.semfome, p_fome + 1))
     p_bebida -= 2
   fimse
 # Mensagens de fome e sede e pontos de vida
@@ -840,6 +844,15 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
       sair
     casofim
   fimse
+# Cair sentado devido à bebida
+  se posicao == 8 && p_bebida >= rand($miscfome.bebedir, $miscfome.cheio)
+    poslugar.remove
+    posicao = 6
+    pvida -= 5
+    msg("Você se desequilibrou e caiu, -5")
+    $mens.p(este)
+    $mens.mtodos2("", "$P se desequilibrou e caiu.")
+  fimse 
 # Acerta estado do personagem
   acertapos(1)
 # Salva o jogo

@@ -367,82 +367,88 @@ const tipo14 = "simnao"
 const clas14 = var.classe1
 const vari14 = "mantersala"
 #
-const nome15 = "Quanto vale"
-const tipo15 = "numero"
+const nome15 = "Mantém em jogador"
+const info15 = "Se o jogador não perde o item ao entrar em uma sala que mata e perde itens"
+const tipo15 = "simnao"
 const clas15 = var.classe1
-const vari15 = "valor"
+const vari15 = "manterperso"
 #
-const nome16 = "Tipo de produto"
-const info16 = "Para saber se um vendedor pode comprar esse item"
-const tipo16 = "vetor"
+const nome16 = "Quanto vale"
+const tipo16 = "numero"
 const clas16 = var.classe1
-const vari16 = "tipoitem"
-const extr16 = config:produtos
+const vari16 = "valor"
 #
-const nome17 = "Aonde vestir"
+const nome17 = "Tipo de produto"
+const info17 = "Para saber se um vendedor pode comprar esse item"
 const tipo17 = "vetor"
 const clas17 = var.classe1
-const vari17 = "vestir1"
-const extr17 = config:equip_txt
+const vari17 = "tipoitem"
+const extr17 = config:produtos
 #
-const nome18 = "Podem vestir"
-const tipo18 = "opcao"
+const nome18 = "Aonde vestir"
+const tipo18 = "vetor"
 const clas18 = var.classe1
-const vari18 = "vestirsim"
-const extr18 = "Todos\nJogadores e PNJs\nAnimais capturados"
+const vari18 = "vestir1"
+const extr18 = config:equip_txt
 #
-const nome19 = "Não podem vestir"
-const info19 = "Raças e classes que não podem usar esse item"
-const tipo19 = "tipos"
+const nome19 = "Podem vestir"
+const tipo19 = "opcao"
 const clas19 = var.classe1
-const vari19 = "vestirnao"
+const vari19 = "vestirsim"
+const extr19 = "Todos\nJogadores e PNJs\nAnimais capturados"
 #
-const nome20 = "Atrib núm vestir"
-const tipo20 = "atribnum"
+const nome20 = "Não podem vestir"
+const info20 = "Raças e classes que não podem usar esse item"
+const tipo20 = "tipos"
 const clas20 = var.classe1
-const vari20 = "recalc_auto"
-const exec20 = "recalc_ajusta"
+const vari20 = "vestirnao"
 #
-const nome21 = "Atrib s/n vestir"
-const tipo21 = "atribbit"
+const nome21 = "Atrib núm vestir"
+const tipo21 = "atribnum"
 const clas21 = var.classe1
 const vari21 = "recalc_auto"
 const exec21 = "recalc_ajusta"
 #
-const nome22 = "Atrib atk vestir"
-const info22 = "Afetam os danos quando o personagem ataca alguém"
-const tipo22 = "atribatk"
+const nome22 = "Atrib s/n vestir"
+const tipo22 = "atribbit"
 const clas22 = var.classe1
 const vari22 = "recalc_auto"
 const exec22 = "recalc_ajusta"
 #
-const nome23 = "Atrib def vestir"
-const info23 = "Afetam os danos quando alguém ataca o personagem"
-const tipo23 = "atribdef"
+const nome23 = "Atrib atk vestir"
+const info23 = "Afetam os danos quando o personagem ataca alguém"
+const tipo23 = "atribatk"
 const clas23 = var.classe1
 const vari23 = "recalc_auto"
 const exec23 = "recalc_ajusta"
 #
-const nome24 = "Fome e sede"
-const tipo24 = "menu--"
-const clas24 = "menu_ifome"
+const nome24 = "Atrib def vestir"
+const info24 = "Afetam os danos quando alguém ataca o personagem"
+const tipo24 = "atribdef"
+const clas24 = var.classe1
+const vari24 = "recalc_auto"
+const exec24 = "recalc_ajusta"
 #
-const nome25 = "Tipo de arma"
+const nome25 = "Fome e sede"
 const tipo25 = "menu--"
-const clas25 = "menu_iarma"
+const clas25 = "menu_ifome"
 #
-const nome26 = "Pega animal nível"
-const info26 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+const nome26 = "Tipo de arma"
+const tipo26 = "menu--"
+const clas26 = "menu_iarma"
+#
+const nome27 = "Pega animal nível"
+const info27 = "Nível médio dos animais que podem ser capturados com esse item,\n\
 ou 0 se não puder capturar"
-const tipo26 = "numero"
-const clas26 = var.classe1
-const vari26 = "i_captura"
-#
-const nome27 = "Chave"
-const info27 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo27 = "linha"
+const tipo27 = "numero"
 const clas27 = var.classe1
-const vari27 = "i_chave"
+const vari27 = "i_captura"
+#
+const nome28 = "Chave"
+const info28 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo28 = "linha"
+const clas28 = var.classe1
+const vari28 = "i_chave"
 #
 const nome50 = "Variáveis"
 const tipo50 = "linha"
@@ -518,49 +524,49 @@ herda menu_item1
 const titulo = "Item " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome28 = "Mobília"
-const info28 = "Sentar/dormir confortavelmente se recupera mais rápido"
-const tipo28 = "opcao"
-const clas28 = var.classe1
-const vari28 = "i_movel"
-const extr28 = "Não\n\
+const nome29 = "Mobília"
+const info29 = "Sentar/dormir confortavelmente se recupera mais rápido"
+const tipo29 = "opcao"
+const clas29 = var.classe1
+const vari29 = "i_movel"
+const extr29 = "Não\n\
 Sentar\n\
 Sentar e dormir\n\
 Sentar confortavelmente\n\
 Sentar e dormir confortavelmente"
 #
-const nome29 = "Lugares"
-const tipo29 = "numero"
-const clas29 = var.classe1
-const vari29 = "i_lugar"
-#
-const nome30 = "Container"
-const tipo30 = "opcao"
+const nome30 = "Lugares"
+const tipo30 = "numero"
 const clas30 = var.classe1
-const vari30 = "i_abertoini"
-const exec30 = "recalc_exec"
-const extr30 = "Não\n\
+const vari30 = "i_lugar"
+#
+const nome31 = "Container"
+const tipo31 = "opcao"
+const clas31 = var.classe1
+const vari31 = "i_abertoini"
+const exec31 = "recalc_exec"
+const extr31 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome31 = "Trancar"
-const tipo31 = "opcao"
-const clas31 = var.classe1
-const vari31 = "i_tranc"
-const extr31 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
-#
-const nome32 = "Fechadura"
-const info32 = "Código da chave que tranca e destranca o container"
-const tipo32 = "linha"
+const nome32 = "Trancar"
+const tipo32 = "opcao"
 const clas32 = var.classe1
-const vari32 = "i_fechadura"
+const vari32 = "i_tranc"
+const extr32 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome33 = "Fonte de luz"
-const tipo33 = "menu--"
-const clas33 = "menu_iluz"
+const nome33 = "Fechadura"
+const info33 = "Código da chave que tranca e destranca o container"
+const tipo33 = "linha"
+const clas33 = var.classe1
+const vari33 = "i_fechadura"
+#
+const nome34 = "Fonte de luz"
+const tipo34 = "menu--"
+const clas34 = "menu_iluz"
 
 
 classe menu_iluz

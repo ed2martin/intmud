@@ -110,8 +110,10 @@ anteriores do programa.
 mud-comum.int
 Classe 'comum_obj', que é herdada por todos os personagens, itens e salas.
 Basicamente essa classe lida com a hierarquia dos objetos (quais objetos
-um objeto possui), peso e volume.
+um objeto possui), peso, volume, quantidade de itens e luz.
 Classe 'comum_persoitem', que é herdada por todos os personagens e itens.
+Herda 'comum_obj' e acrescenta duas coisas: se está ou não visível e os
+atributos que aparecem na frente do nome do personagem ou item.
 
 mud-sala.int
 Classes 'area' e 'sala', herdadas por todas as áreas e salas.
@@ -585,6 +587,9 @@ agrupado em um objeto, a quantidade será considerada 1.
 Essa função retorna o próprio personagem ou item que foi movido.
 Isso é útil principalmente em itens que agrupam.
 
+func apagar( quantidade )
+Apaga o personagem ou uma quantidade do item.
+
 
 9. Personagens (arquivo mud-perso.int)
 
@@ -874,6 +879,16 @@ const item = 1
 2 = Pode agrupar (classe comum_itemgrupo)
 3 = Completo (classe comum_itemperso)
 
+const mantersala = 0
+Como a opção "Apagar itens" da sala ou área afeta o item.
+0 = Item é apagado normalmente depois de um tempo sem jogador por perto
+1 = Item permanece na sala
+
+const manterperso = 0
+Se o jogador não perde o item ao entrar em uma sala que mata e perde itens.
+0 = Perde
+1 = Não perde
+
 const vestir1 = 0
 Em que lugares do corpo pode ir quando é vestido.
 Cada bit corresponde a um lugar. Os nomes dos lugares estão definidos na
@@ -976,21 +991,21 @@ Tipo de item fome/sede:
 
 const f_sede = 0
 O quanto sacia a sede. Um minuto são de 3 a 4 unidades, exceto no deserto.
-O valor máximo da sede do jogador (sem sede) é miscfome:cheio.
+O valor máximo da sede do jogador (sem sede) é $miscfome.cheio.
 
 const f_fome = 0
 O quanto sustenta. Um minuto são de 3 a 4 unidades.
-O valor máximo da fome do jogador (sem fome) é miscfome:cheio.
+O valor máximo da fome do jogador (sem fome) é $miscfome.cheio.
 
 const f_bebida = 0
 O quanto deixa bêbado. Um minuto são de 6 a 8 unidades.
 O valor máximo da embriaguês do jogador (totalmente embriagado)
-é miscfome:cheio.
+é $miscfome.cheio.
 
 const f_diges = 0
 Quanto tempo leva para digerir o alimento.
 Um minuto são de 3 a 12 unidades, dependendo da posição do personagem.
-O valor máximo da digestão do jogador é miscfome:cheio.
+O valor máximo da digestão do jogador é $miscfome.cheio.
 
 const f_magia1 = ""
 const f_nivel1 = 0
@@ -1654,12 +1669,6 @@ Leilões
 Murais, livros, papéis e caneta/lápis
 Lista de novidades do MUD
 Veículos fechados
-Habilidades:
-- Rosnar - diminui ataque do adversário
-- Roncar - só pode ser usado enquanto estiver dormindo
-Magias:
-- Drenar energia - retira parte do mana e movimento do alvo
-- Restaurar vitalidade - restaura movimentos
 Efeitos de área - afetam uma sala; podem mudar o clima
 Poder aprender algo ao subir de nível; para cada linha da lista:
 - Nível do personagem

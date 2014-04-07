@@ -185,6 +185,23 @@ func t_reduzir_exec # Restaura mana
   $mens.mvis1("$P conclui a meditação.")
 
 
+classe e_medo
+herda comum_efeito
+const e_nome = "Medo"
+const e_condicao = 2 # Condição: 2 Durante a batalha e tem pontos de vida
+const desc = "Diminui o ataque do alvo durante a batalha"
+const maximo = 4
+const tempo1 = 500
+const tempo2 = 5
+const msgini2 = "$P ficou com medo."
+const msgfim2 = "$P perdeu o medo."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  atktipo.0 *= 0.83 # Tipos Normais
+  atktipo.1 *= 0.83 # Tipos Especiais
+
+
 classe e_ocultar
 herda comum_efeito
 const e_nome = "Ocultar"

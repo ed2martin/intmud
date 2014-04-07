@@ -32,13 +32,13 @@ func escr1 # Consultar a lista de itens
     se lin
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
       continuar
-    senao tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
+    senao tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
-    senao tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
+    senao tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo2)
       continuar
-    senao tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    senao tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo3)
       continuar
     fimse
@@ -84,9 +84,9 @@ func escr2 # Consultar um item
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
     continuar l.objini.atkenv || !l.objini.lojaitem(arg0) || l.objini.cmd_loja(arg0)
-    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
@@ -152,13 +152,13 @@ func escr1 # Consultar a lista de aulas
     se lin
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
       continuar
-    senao tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
+    senao tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
-    senao tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
+    senao tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo2)
       continuar
-    senao tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    senao tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
       t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo3)
       continuar
     fimse
@@ -203,9 +203,9 @@ func escr2 # Consultar uma aula
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
     continuar l.objini.atkenv || !l.objini.lojaaula(arg0) || l.objini.cmd_ensinar(arg0)
-    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
@@ -267,9 +267,9 @@ func escr
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
     continuar l.objini.atkenv || !l.objini.lojaaula(arg0) || l.objini.cmd_ensinar(arg0)
-    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
@@ -382,9 +382,9 @@ func escr
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
     continuar l.objini.atkenv || !l.objini.lojaitem(arg0) || l.objini.cmd_loja(arg0)
-    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
@@ -479,9 +479,9 @@ func exec # Avalia ou vende um item
   linha = 0, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     continuar arg1.tipoitem & l.objini.tipoitem == 0 # Checa se tem interesse
-    continuar tipo1 && txtproc("\n" + l.objini.lojanao + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + l.objini.lojanao + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + l.objini.lojanao + "\n", tipo3) >= 0
+    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
