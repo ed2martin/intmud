@@ -68,7 +68,8 @@ IntMUD (Interpretador MUD)
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
-em 2012 e 2013, por Paulo Santos Ramos e Edward Martin, até o tópico 15.4.8.
+de 2012 a 2014, por Paulo Santos Ramos e Edward Martin, até o tópico 15.4.8
+e o tópico 23.
 
 
 1. SOBRE O INTMUD
@@ -2933,52 +2934,57 @@ da variável nomeobj.
 Funções:
 
 23.1. ini(<texto>, [quantidade], [tudo])
-Inicia a busca.
+Inicia a busca por objetos.
 
-<texto> é o nome procurado, geralmente é o que o usuário digitou.
+O parâmetro <texto> é o nome que corresponde aos objetos procurados,
+e geralmente é o que o usuário digitou.
 
-O usuário só precisa digitar uma ou mais palavras que que fazem parte
-do nome do objeto, e ainda pode abreviar (escrever só o começo).
-Exemplo, se o nome do objeto for "chave pequena", pode-se digitar
-"chave", "pequena", "ch peq" ou mesmo "pequena cha".
+Só é necessário digitar uma ou mais palavras que fazem parte do nome
+do objeto, e ainda pode-se abreviar escrevendo só o começo da palavra.
+Exemplo, "chave", "pequena" ou mesmo "ch peq" podem ser usados para pegar
+um objeto chamado "chave pequena". Porém, "pequena" e "ch peq" não
+servem para outro objeto chamado "chave grande".
 
 Qualquer caracter que não for letra pode ser usado para separar
 as palavras. Exemplo, "ch_peq" e "ch+*-peq" têm o mesmo efeito que
 "ch peq".
 
-Para escolher o número do objeto, acrescente o número seguido de um
-ponto antes do nome. Exemplo, "2.poção" é a segunda poção.
+Pode-se escolher o número do objeto acrescentando um número e um ponto
+antes do nome. Isso é útil quando há vários objetos com o mesmo nome.
+Exemplo, "2.poção" é a segunda poção.
 
-Para escolher a quantidade de objetos, acrescente um número seguido
-de espaço antes. Exemplo, "10 poção" significa 10 itens 'poção'.
+Para escolher mais de um objeto, acrescenta-se um número e um espaço
+antes. Exemplo, "10 poção" significa 10 objetos 'poção'.
 
-[quantidade] é a quantidade máxima de objetos que podem ser encontrados.
-Se for omitido, significa apenas um. Por exemplo, se for desejável processar
-no máximo 10 objetos, a quantidade deve ser o número 10.
+O parâmetro [quantidade] é a quantidade máxima de objetos que podem ser
+encontrados. Se for omitido, assume apenas um. Por exemplo, se for
+desejável encontrar no máximo 10 objetos, mesmo que existam mais,
+a quantidade deve ser o número 10.
 
-[tudo] é a palavra que o usuário deve digitar para se referir a todos
-os objetos. Exemplo, se o terceiro argumento for o texto "tudo":
-"tudo" são todos os objetos
-"10 tudo" significa os 10 primeiros objetos
-"10 4.tudo" significa 10 objetos a partir do quarto
-"tudo.perg" são todos os objetos cujo nome começa com perg
+O parâmetro [tudo] é a palavra que o usuário deve digitar quando quiser
+todos os objetos. Exemplo, se esse parâmetro for o texto "tudo", o usuário
+pode-se digitar:
+"tudo" para todos os objetos
+"10 tudo" para os 10 primeiros objetos
+"10 4.tudo" para 10 objetos a partir do quarto
+"tudo.perg" para todos os objetos cujo nome começa com perg
 
 Vide também exemplo de código no tópico 23.3 (abaixo).
 
 23.2. nome(<texto>, [quantidade])
 Checa se um objeto corresponde ao objeto escolhido pelo usuário.
 
-<texto> contém as palavras que se referem ao objeto.
+O parâmetro <texto> contém as palavras que se referem ao objeto.
 
-[quantidade] é a quantidade de objetos com o nome especificado. Se for
-omitido, significa apenas um.
+O parâmetro [quantidade] é a quantidade de objetos com o nome
+especificado. Se for omitido, será apenas um.
 
 Essa função retorna a quantidade de objetos encontrados.
 
 23.3. Exemplo
 
 nomeobj x
-x.ini("2.ch", 5)# Achar no máximo 5 objetos que começam com "ch"
+x.ini("2.ch", 5, "tudo")# Achar no máximo 5 objetos que começam com "ch"
                 # No entanto, como o texto é "2.ch", procurará só o segundo
 x.nome("bolsa") # Retorna 0 porque não é o objeto procurado
 x.nome("chave azul") # Retorna 0; o nome confere, mas esse é o primeiro objeto

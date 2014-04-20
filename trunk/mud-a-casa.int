@@ -964,7 +964,7 @@ const s_pnj = 0
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_casa004:objsolto.total < 1
+  se p_casa004:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa004", este, 10)
   fimse
 
@@ -1025,7 +1025,7 @@ grande saguão, que continua ao sul e à leste."
 const dir_l = $s_casa031
 const dir_s = $s_casa034
 const eveste = 1 # Receber eventos do próprio objeto
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 func cmd_mover
   se arg2 == "s" && !arg0.var.j_salvar && !arg0.senha
@@ -1044,7 +1044,7 @@ const dir_n = $s_casa027
 const dir_o = $s_casa032
 const dir_s = $s_casa033
 const eveste = 1 # Receber eventos do próprio objeto
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 func cmd_mover
   se arg2 == "s" && !arg0.var.j_salvar && !arg0.senha
@@ -1063,7 +1063,7 @@ const dir_s = $s_casa018
 const dir_l = $s_casa022
 const dir_c = !misc:obj.jog ? $s_casa027
 const dir_b = !misc:obj.jog ? $s_casa028
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa021
@@ -1077,7 +1077,7 @@ const dir_l = $s_casa023
 const dir_o = $s_casa030
 const dir_c = !misc:obj.jog ? $s_casa027
 const dir_b = !misc:obj.jog ? $s_casa028
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa022
@@ -1091,7 +1091,7 @@ const dir_o = $s_casa020
 const dir_l = !misc:obj.jog ? $s_casa026
 const dir_n = !misc:obj.jog ? $s_casa023
 const dir_s = !misc:obj.jog ? $s_casa031
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa023
@@ -1107,15 +1107,15 @@ const dir_s = !misc:obj.jog ? $s_casa022
 const dir_n = !misc:obj.jog ? $s_casa030
 const dir_c = !misc:obj.jog ? $s_casa026
 const dir_b = !misc:obj.jog ? $s_casa029
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 4 6 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa010:objsolto.total < 1 && rand(100) < 50
+  se p_casa010:objsolto.total < 1 && dentro2.total - socktot < s_pnj && rand(100) < 50
     criar("p_casa010", este, rand(4, 6))
   fimse
-  se p_casa011:objsolto.total < 1 && rand(100) < 50
+  se p_casa011:objsolto.total < 1 && dentro2.total - socktot < s_pnj && rand(100) < 50
     criar("p_casa011", este, rand(4, 6))
   fimse
 
@@ -1134,7 +1134,7 @@ const s_reset = "P 100 casa006 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_casa006:objsolto.total < 1
+  se p_casa006:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa006", este, 0)
   fimse
 
@@ -1153,7 +1153,7 @@ const s_reset = "P 100 casa005 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_casa005:objsolto.total < 1
+  se p_casa005:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa005", este, 0)
   fimse
 
@@ -1170,15 +1170,15 @@ const dir_s = !misc:obj.jog ? $s_casa032
 const dir_n = !misc:obj.jog ? $s_casa029
 const dir_c = !misc:obj.jog ? $s_casa023
 const dir_b = !misc:obj.jog ? $s_casa030
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 4 6 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa010:objsolto.total < 1 && rand(100) < 50
+  se p_casa010:objsolto.total < 1 && dentro2.total - socktot < s_pnj && rand(100) < 50
     criar("p_casa010", este, rand(4, 6))
   fimse
-  se p_casa011:objsolto.total < 1 && rand(100) < 50
+  se p_casa011:objsolto.total < 1 && dentro2.total - socktot < s_pnj && rand(100) < 50
     criar("p_casa011", este, rand(4, 6))
   fimse
 
@@ -1195,7 +1195,7 @@ const dir_o = $s_casa026
 const dir_l = $s_casa030
 const dir_c = !misc:obj.jog ? $s_casa020
 const dir_b = !misc:obj.jog ? $s_casa021
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa028
@@ -1208,7 +1208,7 @@ const dir_s = $s_casa027
 const dir_o = $s_casa029
 const dir_c = !misc:obj.jog ? $s_casa020
 const dir_b = !misc:obj.jog ? $s_casa021
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa029
@@ -1223,18 +1223,18 @@ const dir_n = !misc:obj.jog ? $s_casa028
 const dir_s = !misc:obj.jog ? $s_casa026
 const dir_c = !misc:obj.jog ? $s_casa023
 const dir_b = !misc:obj.jog ? $s_casa030
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 const a_reset = "P 50 casa009 3 5 1\nF 100\nP 100 casa008 3 5 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  se p_casa009:objsolto.total < 1 && rand(100) < 50
+  se p_casa009:objsolto.total < 1 && dentro2.total - socktot < s_pnj && rand(100) < 50
     p = u = criar("p_casa009", este, rand(3, 5))
   fimse
   ret u, nulo
-  se p_casa008:objsolto.total < 1
+  se p_casa008:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa008", este, rand(3, 5))
   fimse
 
@@ -1252,18 +1252,18 @@ const dir_c = !misc:obj.jog ? $s_casa022
 const dir_b = !misc:obj.jog ? $s_casa026
 const dir_c = !misc:obj.jog ? $s_casa026
 const dir_b = !misc:obj.jog ? $s_casa029
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 const a_reset = "P 100 casa007 3 5 2\nF 100\nP 100 casa008 3 5 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  se p_casa007:objsolto.total < 2
+  se p_casa007:objsolto.total < 2 && dentro2.total - socktot < s_pnj
     p = u = criar("p_casa007", este, rand(3, 5))
   fimse
   ret u, nulo
-  se p_casa008:objsolto.total < 1
+  se p_casa008:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa008", este, rand(3, 5))
   fimse
 
@@ -1277,7 +1277,7 @@ madeira. A escada continua à leste e oeste."
 const dir_l = $s_casa017
 const dir_o = $s_casa018
 const dir_n = !misc:obj.jog ? $s_casa022
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa032
@@ -1289,7 +1289,7 @@ e um escudo antigos. Ao sul, um balaústre de madeira. A escada continua\n\
 const dir_o = $s_casa017
 const dir_l = $s_casa019
 const dir_n = !misc:obj.jog ? $s_casa026
-const s_pnj = socktot == dentro2.total # Não entram dois PNJs na mesma sala
+const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa033
@@ -1299,9 +1299,9 @@ const s_desc = s_desc1 + s_desc2
 const s_desc1 = "Aqui já se vê o piso do saguão da casa, ao sul. O tapete cobre a escada\n\
 até no último degrau. À oeste fica o balaústre de madeira, e à leste só\n\
 se vê uma parede."
-const s_pnj = 0
 const dir_n = $s_casa019
 const dir_s = $s_casa035
+const s_pnj = 0 # PNJs na sala
 const eveste = 1 # Receber eventos do próprio objeto
 
 func s_desc2
@@ -1354,7 +1354,7 @@ const a_reset = "P 100 casa013 0 0 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa013:objsolto.total < 1
+  se p_casa013:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa013", este, 0)
   fimse
 
@@ -1457,7 +1457,7 @@ const a_reset = "P 70 casa014 11 15 6"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 6 && rand(100) < 70
+  se p_casa014:objsolto.total < 6 && dentro2.total - socktot < s_pnj && rand(100) < 70
     criar("p_casa014", este, rand(11, 15))
   fimse
 
@@ -1483,7 +1483,7 @@ const a_reset = "P 70 casa014 11 15 6"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 6 && rand(100) < 70
+  se p_casa014:objsolto.total < 6 && dentro2.total - socktot < s_pnj && rand(100) < 70
     criar("p_casa014", este, rand(11, 15))
   fimse
 
@@ -1520,7 +1520,7 @@ const a_reset = "P 70 casa014 11 15 6"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 6 && rand(100) < 70
+  se p_casa014:objsolto.total < 6 && dentro2.total - socktot < s_pnj && rand(100) < 70
     criar("p_casa014", este, rand(11, 15))
   fimse
 
@@ -1558,7 +1558,7 @@ const a_reset = "P 70 casa014 11 15 6"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 6 && rand(100) < 70
+  se p_casa014:objsolto.total < 6 && dentro2.total - socktot < s_pnj && rand(100) < 70
     criar("p_casa014", este, rand(11, 15))
   fimse
 
@@ -1692,7 +1692,7 @@ const a_reset = "P 70 casa014 11 15 6"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
-  se p_casa014:objsolto.total < 6 && rand(100) < 70
+  se p_casa014:objsolto.total < 6 && dentro2.total - socktot < s_pnj && rand(100) < 70
     criar("p_casa014", este, rand(11, 15))
   fimse
 
@@ -1708,6 +1708,6 @@ const s_reset = "P 100 casa015 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_casa015:objsolto.total < 1
+  se p_casa015:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_casa015", este, 0)
   fimse

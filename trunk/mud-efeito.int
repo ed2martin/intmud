@@ -218,18 +218,12 @@ const nome15 = "Mensagens"
 const tipo15 = "menu--"
 const clas15 = "menu_efeito_msg"
 #
-const nome16 = "Função de tempo"
-const info16 = "O nome da função que será executada de forma semelhante a misc:tempo"
-const tipo16 = "linha"
+const nome16 = "Eventos perso"
+const info16 = "Se recebe eventos do personagem que está com o efeito"
+const tipo16 = "simnao"
 const clas16 = var.classe1
-const vari16 = "r_func"
-#
-const nome17 = "Eventos perso"
-const info17 = "Se recebe eventos do personagem que está com o efeito"
-const tipo17 = "simnao"
-const clas17 = var.classe1
-const vari17 = "evperso"
-const exec17 = "ajustaobj"
+const vari16 = "evperso"
+const exec16 = "ajustaobj"
 
 
 classe menu_efeito_msg
@@ -324,7 +318,7 @@ const admordem = "e_nome\n\
 e_condicao\n\
 desc\n\
 maximo\n\
-r_func r_mana r_move r_tempo r_vida\n\
+r_mana r_move r_tempo r_vida\n\
 tempo1 tempo2\n\
 msgini1\n\
 msgini2\n\
@@ -353,9 +347,8 @@ func evini_exec # Inicializa efeito
     evperso && (evrec = dono.evento.addfim(este))
     e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
     dono.recalc = 1
-    r_func && (t_tempo1 = t_tempo2 = 1)
     $mens.p(dono) + $mens.mvis2(msgini1, msgini2)
-    cmd_ini
+    cmd_ini(dono)
   senao t_duracao == -1
     apagar(este), idono.remove
     $mens.p(dono) + $mens.mvis2(msgfalhou1, msgfalhou2)
@@ -370,7 +363,7 @@ func fim # Apaga efeito
   dono.recalc = 0
   dono.recalc_exec
   dono.pvida > 0 && $mens.p(dono) + $mens.mvis2(msgfim1, msgfim2)
-  cmd_fim
+  cmd_fim(dono)
 
 func ajustaobj # Acerta dono e eventos do objeto
   dono = idono.objlista
@@ -388,23 +381,26 @@ func t_reduzir_exec # Executa redução
   se dono.pvida
     dono.pvida -= r_vida
     dono.acertapos(1)
+  fimse
+  cmd_reduz(dono)
+
+func tempoini # Inicia contagem de tempo
+  t_tempo1 = t_tempo2 = 1
 
 func t_tempo1_exec # Executa eventos
-  ret !r_func, nulo
   prog p
   uint32 x
   uint32 v
   x = 1000000
-  refvar tam = inttotal(r_func)
-  epara p.inifunc(este, r_func), p.lin, p.depois
-    (v = txt(p.texto, tam)) > t_tempo2 && v < x && (x = v)
+  epara p.inifunc(este, "cmd_tempo"), p.lin, p.depois
+    (v = txt(p.texto, 9)) > t_tempo2 && v < x && (x = v)
   efim
   v = t_tempo2
   se x != 1000000
     t_tempo1 = x - t_tempo2
     t_tempo2 = x
   fimse
-  [r_func + v](dono)
+  cmd_tempo[v](dono)
 
 
 classe e_apagar

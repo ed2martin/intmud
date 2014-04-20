@@ -173,8 +173,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 303, nulo
-  p.criar("config", "const versao = 303 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 305, nulo
+  p.criar("config", "const versao = 305 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -227,5 +227,14 @@ func ini2_exec
     criafunc("config", "const sussurrar2msg = \"$P sussurou para $a '$m'\"")
     criafunc("config", "const sussurrar3msg = \"$P sussurou algumas palavras para $a.\"")
   fimse
+# Atualiza funções de reset das salas
+  se versao < 305
+    debug d
+    epara p.iniclasse("s_"), p.lin, p.depois
+      $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
+      $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
+      d.ini
+    efim
+  fimse
 # Avisa que atualizou arquivos
-  tela.msg("Arquivos mud-b-*.int atualizados\n")
+  tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

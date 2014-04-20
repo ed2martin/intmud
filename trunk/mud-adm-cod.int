@@ -72,8 +72,9 @@ const adm_outros = "\c3Outros comandos\b\n\
 \c2INFOHAB\b [personagem] [número do animal]\n\
 \c2INFOMAG\b [personagem] [número do animal]\n\
   Informa as habilidades e magias de um personagem que está na sala.\n\
-\c2MATAR1\b <personagem ou item>\n\
-  Apaga um personagem ou item.\n\
+\c2MATAR1\b <personagem/item>  [personagem/item] ... [personagem/item]\n\
+  Com um argumento, apaga um personagem ou item.\n\
+  Pode ser usado para apagar personagens ou itens dentro de outros.\n\
 \c2MATAR2\b <personagem>\n\
   Mata instantaneamente um personagem.\n\
 \c2LUGAR\b <sala ou personagem jogador> <comando>\n\
@@ -162,13 +163,28 @@ func cmd_adm
   ret 1
 
 func cmd_serv # Informações sobre o servidor
+  txt100 lin
+  int32 i.3
   debug d
   txtmais.limpar
   txtmais.addfim("\b\c3Estado atual do MUD:\b")
+  i.2 = $miscserv.noar % 1440
+  i.0 = ($miscserv.noar - i.2) / 1440 # Dias
+  i.1 = intdiv(i.2 / 60) # Horas
+  i.2 %= 60 # Minutos
+  txtmais.addfim("No ar há " + i.0 + " dias " + i.1 + " horas " + i.2 + " min")
   txtmais.addfim("Memória usada:  " + txtnum(d.mem, ".") + " bytes")
   txtmais.addfim("Memória máxima: " + txtnum(d.memmax, ".") + " bytes")
-  txtmais.addfim("Processador (stempo): " + d.stempo / 1000 + " seg.")
-  txtmais.addfim("Processador (utempo): " + d.utempo / 1000 + " seg.")
+  #lin = "Memória usada:  " + txtnum(d.mem, ".") + " bytes"
+  #lin += "   (máximo foi " + txtnum(d.memmax, ".") + " bytes)"
+  #txtmais.addfim(lin)
+  lin = "Processador (stempo): " + txtnum(d.stempo / 1000, ".3") + " seg."
+  lin += "  (no último minuto " + txtnum($miscserv.stempo / 1000, ".3") + " seg.)"
+  txtmais.addfim(lin)
+  lin = "Processador (utempo): " + txtnum(d.utempo / 1000, ".3") + " seg."
+  lin += "  (no último minuto " + txtnum($miscserv.utempo / 1000, ".3") + " seg.)"
+  txtmais.addfim(lin)
+  txtmais.addfim("IntMUD versão " + d.ver + " (" + d.data + "), MUD versão " + misc:versao)
   txtmostra
   ret 1
 
@@ -318,20 +334,39 @@ func cmd_info
   ret 1
 
 func cmd_matar1
+  se !arg0
+    msg("Apagar o quê?")
+    ret 1
+  fimse
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
-  n.ini(arg0, 1000000)
+  n.ini(txt1(arg0), 1000000)
   r = perso
-  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1)
-  enquanto l
-    r = l.objini, l.ini.remove
-    continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
-    msg("Apagando " + r.nome), apagar(r)
-    ret 1
+  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1, r.dentro2)
+  txt200 nome
+  nome = arg0
+  enquanto 1
+    n.ini(txt1(nome), 1000000)
+    epara nulo, l, l.ini.remove
+      r = l.objini
+      sair r.visivel(perso) && n.nome(r.ident, r.objtot)
+    efim
+    se !l
+      msg("Item ou personagem não encontrado: " + txt1(nome))
+      ret 1
+    senao txt2(nome)
+      nome = txt2(nome)
+      l.limpar
+      l.addfim(r.dentro1, r.dentro2)
+    senao r.perso && r.contr.jog
+      msg("Não é possível apagar personagem de jogador: " + r.nome)
+      ret 1
+    senao
+      msg("Apagando: " + r.nome), apagar(r)
+      ret 1
+    fimse
   efim
-  msg("Não há nenhum personagem ou item chamado " + arg0)
-  ret 1
 
 func cmd_matar2
   listaobj l

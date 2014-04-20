@@ -295,20 +295,22 @@ func cmd_atacou
 classe e_veneno_mortal
 herda comum_efeito
 const e_nome = "Veneno mortal"
-const r_func = "morte"
 const tempo1 = 200
 
-func morte10
+func cmd_ini # Chamado quando o efeito é criado
+  tempoini # Inicia contagem de tempo
+
+func cmd_tempo10
   arg0.msg("Tem alguma coisa errada. O líquido desceu queimando.")
 
-func morte50
+func cmd_tempo50
   arg0.msg("Aos poucos você sente uma terrível dor, corroendo os órgãos por dentro.")
 
-func morte90
+func cmd_tempo90
   $mens.p(arg0)
   $mens.mtodos1("$P dobra os joelhos e vomita.")
 
-func morte110
+func cmd_tempo110
   $mens.p(arg0)
   $mens.mtodos1("$P cai no chão com a boca aberta, já sem vida.")
   arg0.morreu

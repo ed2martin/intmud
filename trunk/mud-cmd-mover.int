@@ -109,32 +109,19 @@ func fugirdir # Obtém direção para onde pode fugir
   misc:obj = arg0
   refvar r = ref(arg0.dono)
   txt100 t
+  prog p
   se arg0.jog
-    r.dir_n && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
-    r.dir_s && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
-    r.dir_l && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
-    r.dir_o && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
-    r.dir_c && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
-    r.dir_b && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
-    r.dir_ne && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
-    r.dir_no && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
-    r.dir_se && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
-    r.dir_so && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
-    r.dir_entrar && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
-    r.dir_sair && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
+    epara p.inifunctudo(r, "dir_"), p.lin, p.depois
+      refvar y = txt(p.texto, 4)
+      r.[p.texto] && !r.fugir_[y] && int(r.porta_[y]) < 2 && (t += y + " ")
+    efim
   senao
-    r.dir_n.s_pnj && !r.fugir_n && int(r.porta_n) < 2 && (t += "n ")
-    r.dir_s.s_pnj && !r.fugir_s && int(r.porta_s) < 2 && (t += "s ")
-    r.dir_l.s_pnj && !r.fugir_l && int(r.porta_l) < 2 && (t += "l ")
-    r.dir_o.s_pnj && !r.fugir_o && int(r.porta_o) < 2 && (t += "o ")
-    r.dir_c.s_pnj && !r.fugir_c && int(r.porta_c) < 2 && (t += "c ")
-    r.dir_b.s_pnj && !r.fugir_b && int(r.porta_b) < 2 && (t += "b ")
-    r.dir_ne.s_pnj && !r.fugir_ne && int(r.porta_ne) < 2 && (t += "ne ")
-    r.dir_no.s_pnj && !r.fugir_no && int(r.porta_no) < 2 && (t += "no ")
-    r.dir_se.s_pnj && !r.fugir_se && int(r.porta_se) < 2 && (t += "se ")
-    r.dir_so.s_pnj && !r.fugir_so && int(r.porta_so) < 2 && (t += "so ")
-    r.dir_entrar.s_pnj && !r.fugir_entrar && int(r.porta_entrar) < 2 && (t += "entrar ")
-    r.dir_sair.s_pnj && !r.fugir_sair && int(r.porta_sair) < 2 && (t += "sair ")
+    epara p.inifunctudo(r, "dir_"), p.lin, p.depois
+      refvar x = ref(r.[p.texto])
+      continuar !x || x.dentro2.total - x.socktot >= x.s_pnj
+      refvar y = txt(p.texto, 4)
+      !r.fugir_[y] && int(r.porta_[y]) < 2 && (t += y + " ")
+    efim
   fimse
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
@@ -980,7 +967,7 @@ func escr
       ret l.objini.cmd_dormirobj(arg0, r, arg1), nulo
     efim
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P dorme em $u $o.")
+    $mens.mtodos1("$P deita em $u $o e dorme.")
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 4
@@ -1000,7 +987,7 @@ func escr
       ret l.objini.cmd_dormirchao(arg0), nulo
     efim
     $mens.p(arg0)
-    $mens.mtodos1("$P dorme.")
+    $mens.mtodos1("$P deita e dorme.")
     arg0.poslugar.remove, arg0.posicao = 4
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_dormiuchao(arg0)
@@ -1116,7 +1103,7 @@ func fugir # Tenta fugir da luta
   arg0.pmove -= 5
   arg0.batalhafim
   $mens.p(arg0)
-  !(arg0.bitver & 256) && $mens.mtodos1($cmd_[dir].m_fugir)
+  $mens.mtodos1($cmd_[dir].m_fugir)
   arg0.mudadono(r)
   !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)
 
@@ -1125,57 +1112,159 @@ classe comando_retornar
 herda comando_hab
 # Herdado pela classe magia_retornar
 const posic = 8
-const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\nTeletransporta o seu personagem para o \
-ponto de retorno."
+const objcmd = arg0.persobat.var.[nomevar] || arg0.pnivel <= nivel ? este
+const objajuda = int(nivel) >= 0 ? este
+const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
 const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
 const tipoalvo = 4 # Não agressivo
 const c_espera = 15 # Tempo de esperar após usar esse comando
+const msgantes2 = "$P some em um redemoinho de fumaça."
+const msgdepois2 = "$P aparece de um redemoinho de fumaça."
+const msgerrou1 = "Por algum motivo a magia falhou."
+const msgnulo1 = "Por algum motivo a magia não teve efeito."
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nomevar nivel sala\n\
+c_espera\n\
+c_vida1 c_vida2\n\
+c_mana1 c_mana2\n\
+c_move1 c_move2\n\
+aulaini aulafim\n\
+depende\n\
+precisao\n\
+tipoarma\n\
+tipoperso\n\
+valor\n\
+msgextra msgini1 msgini2\n\
+msgantes1 msgantes2 msgdepois1 msgdepois2\n\
+msgerrou1 msgerrou2 msgnulo1 msgnulo2"
 
 func escr # Personagem retorna
 # arg0 = personagem
 # arg1 = não usado; apenas para compatibilidade com outras habilidades e magias
 # arg2 = item usado, ou nulo se não usou nenhum item
-  refvar r = $[arg0.var.z_salafim]
+  ref r
+  r = sala
+  !r && (r = $[arg0.var.z_salafim])
   se arg2.item
-    ret !r || r == arg0.dono, arg0.msg("Por algum motivo, a magia falhou.")
     ret !checahab1(arg0.persobat, arg2), nulo
+    ret !r || r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   senao
     ret !r, arg0.msg("Você não possui ponto de retorno.")
-    ret r == arg0.dono, arg0.msg("Você já está no ponto de retorno.")
     ret !checahab1(arg0.persobat, arg2), nulo
+    ret r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
     custohab1(arg0.persobat)
-    msgini && $mens.p(arg0) + $mens.mtodos1(msgini)
+    $mens.p(arg0) + $mens.mvis2(msgini1, msgini2)
   fimse
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
   se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
-    ret arg0.msg("Por algum motivo, a magia falhou.")
+    ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
   senao arg0.dono.s_retornar == 1
-    ret arg0.msg("Por algum motivo, a magia falhou.")
-  senao rand(100) >= precisao
-    ret arg0.msg("Por algum motivo, a magia falhou.")
+    ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
+  senao rand(100) >= precisao || arg0.atkenv # Checa a precisão e se está batalhando
+    ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   fimse
   $mens.p(arg0)
-  !(arg0.bitver & 256) && $mens.mvis2("", "$P some em um redemoinho de fumaça.")
+  $mens.mvis2(msgantes1, msgantes2)
   arg0.mudadono(r)
-  !(arg0.bitver & 256) && $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+  $mens.mvis2(msgdepois1, msgdepois2)
 
 
-classe cmd_retornar
-herda comando_retornar
-const objcmd = arg0.pnivel <= config:retornar ? este
-const objajuda = config:retornar >= 0 ? este
-const txtajuda = "\b\c3Retornar\b\nSintaxe: RETORNAR\nTeletransporta o seu personagem para o \
-ponto de retorno, geralmente sua\ncidade natal. Esse comando existe para jogadores até o nível " \
-+ config:retornar + "."
-const cmdmenu = "" # Para não ser editável
-
-
-classe menu_hab_retornar
+classe menu_magia_retornar
 herda menu_magia_retornar
 const titulo = "Hab Retornar"
 
 
-classe menu_magia_retornar
+classe menu_hab_retornar
 herda menu_hab_comum
 const titulo = "Magia Retornar"
 const colunas = 25
+#
+const nome1 = "Gratuito até nível"
+const info1 = "Até que nível pode-se usar esse comando sem precisar aprender\n\
+Se menor que 0, não usa sem aprender"
+const tipo1 = "numero"
+const clas1 = var.classe1
+const vari1 = "nivel"
+#
+const nome11 = "Ir para sala"
+const info11 = "Se a sala não existir, o personagem vai para o ponto de retorno"
+const tipo11 = "sala"
+const clas11 = var.classe1
+const vari11 = "sala"
+#
+const nome12 = "Informações"
+const info12 = "Informações extras"
+const tipo12 = "texto"
+const clas12 = var.classe1
+const vari12 = "msgextra"
+#
+const nome13 = "Mensagens 1"
+const tipo13 = "menu--"
+const clas13 = "menu_hab_retornar0"
+
+
+classe menu_hab_retornar0
+const titulo = "Mensagens"
+const menufim = var.menufim
+const colunas = 25
+#
+const titu1 = " * Ao usar, exceto poções comidas etc"
+#
+const nome1 = "Perso"
+const tipo1 = "linha"
+const clas1 = var.classe1
+const vari1 = "msgini1"
+#
+const nome2 = "Outros"
+const tipo2 = "linha"
+const clas2 = var.classe1
+const vari2 = "msgini2"
+#
+const titu3 = " * Antes do retorno"
+#
+const nome3 = "Perso"
+const tipo3 = "linha"
+const clas3 = var.classe1
+const vari3 = "msgantes1"
+#
+const nome4 = "Outros"
+const tipo4 = "linha"
+const clas4 = var.classe1
+const vari4 = "msgantes2"
+#
+const titu5 = " * Depois do retorno"
+#
+const nome5 = "Perso"
+const tipo5 = "linha"
+const clas5 = var.classe1
+const vari5 = "msgdepois1"
+#
+const nome6 = "Outros"
+const tipo6 = "linha"
+const clas6 = var.classe1
+const vari6 = "msgdepois2"
+#
+const titu7 = " * Falhou"
+#
+const nome7 = "Perso"
+const tipo7 = "linha"
+const clas7 = var.classe1
+const vari7 = "msgerrou1"
+#
+const nome8 = "Outros"
+const tipo8 = "linha"
+const clas8 = var.classe1
+const vari8 = "msgerrou2"
+#
+const titu9 = " * Não teve efeito"
+#
+const nome9 = "Perso"
+const tipo9 = "linha"
+const clas9 = var.classe1
+const vari9 = "msgnulo1"
+#
+const nome10 = "Outros"
+const tipo10 = "linha"
+const clas10 = var.classe1
+const vari10 = "msgnulo2"
