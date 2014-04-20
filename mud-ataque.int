@@ -764,11 +764,12 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
 # arg2 = item usado, ou nulo se não usou nenhum item
 # Retorna verdadeiro se pode usar
   se !arg0.pvida
-    refvar lin = txtcopiamai(arg0.nome, "A")
+    refvar lin = arg0 == arg0.contr ? "Você" : txtcopiamai(arg0.nome, "A")
     arg0.contr.msg(lin + " está desmaiad" + (arg0.msexo ? "o." : "a."))
     ret
+  senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
   senao arg0.posicao < posic # Checa a posição necessária
-    refvar lin = txtcopiamai(arg0.nome, "A")
+    refvar lin = arg0 == arg0.contr ? "Você" : txtcopiamai(arg0.nome, "A")
     casovar arg0.posicao
     casose "0"
       arg0.contr.msg(lin + " desmaiou.")
@@ -793,7 +794,6 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     casofim
     arg0.contr.msg(lin + " não consegue fazer isso.")
     ret
-  senao arg2.item # Usou algum objeto: não checa a arma usada
   senao !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
   senao !arg0.iempu # Não está usando uma arma
     se !(tipoarma & 1)
@@ -978,18 +978,18 @@ func escr # Atacar alguém
     ret !r, arg0.msg("Você não vê isso.")
   senao tipoalvo >= 4 # Hab não agressiva: o alvo é o próprio personagem
     r = arg0
-  senao # Hab agressiva: o alvo é quem está batalhando
+  senao arg2.f_tipo == 4 # Hab agressiva usando pergaminho
     r = arg0.atkenv.objlista
-    se r && r.dono == arg0.dono # Alvo é personagem na mesma sala
-    senao arg2.item # Lançado com bebida/comida/pergaminho: alvo é o próprio personagem
-      r = arg0
-    senao # O personagem digitou a habilidade/magia: sem alvo
-      ret arg0.msg("Atacar quem?")
-    fimse
+    (!r || r.dono != arg0.dono) && (r = arg0)
+  senao arg2.item # Hab agressiva usando outro item
+    r = arg0
+  senao # Hab agressiva sem usar um item: o alvo é quem está batalhando
+    r = arg0.atkenv.objlista
+    ret !r || r.dono != arg0.dono, arg0.msg("Atacar quem?")
   fimse
   refvar p = arg0.persobat
   se arg2
-    exechab(p, r.persobat, 0.5, 1, arg3, arg2)
+    exechab(p, r.persobat, 0.5, arg3, arg2)
   senao
     exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel)
 
@@ -1072,7 +1072,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret l.objini.cmd_atacar(arg0, arg1, este), nulo
   efim
 # Custo da hab/magia e checa se é permitido usar ataques
-  se !arg4litem
+  se !arg4.item
     custohab2(arg0, arg2)
     mensinicio(arg0, arg1)
   fimse

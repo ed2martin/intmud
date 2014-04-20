@@ -16,8 +16,9 @@
 14. Eventos incondicionais
 15. Eventos condicionais
 16. Habilidades e magias (mud-ataque.int)
-17. Criando menus de edição (administração)
-18. Lista de coisas pendentes
+17. Efeitos (mud-efeito.int e mud-b-efeito.int)
+18. Criando menus de edição (administração)
+19. Lista de coisas pendentes
 
 
 1. Rodando o MUD
@@ -1571,7 +1572,88 @@ valor que seja considerado verdadeiro), não mostra todas as mensagens.
 Faz result=10 se o alvo morreu, mas não chama a função morreu.
 
 
-17. Criando menus de edição (administração)
+17. Efeitos (mud-efeito.int e mud-b-efeito.int)
+
+const e_nome = ""
+Nome que aparece no comando efeitos.
+
+const desc = ""
+Uma breve descrição do que faz; aparece no comando lef.
+
+const maximo = 1
+Quantos efeitos desse tipo um personagem pode ter.
+
+const e_condicao = 1
+Em que condições o efeito existe:
+0 Nenhuma; permanente
+1 Tem pontos de vida
+2 Durante a batalha e tem pontos de vida
+3 Fora da batalha e tem pontos de vida
+
+const tempo1 = 0
+Duração do efeito, em décimos de segundo.
+
+const tempo2 = 0
+Duração por nível: em quantos décimos de segundo o nível do personagem
+aumenta a duração do efeito.
+
+func recalc_auto
+Atributos: função criada automaticamente pelo menu de edição do efeito.
+Não deve ser editada por outros meios.
+
+const r_tempo = 0
+De quantos em quantos décimos de segundo reduz algo.
+
+const r_vida = 0
+Quantos pontos de vida reduz de tempos em tempos.
+
+const r_mana = 0
+Quantos pontos de mana reduz de tempos em tempos.
+
+const r_move = 0
+Quantos pontos de vigor reduz de tempos em tempos.
+
+const evperso = 0
+Se deve receber eventos do dono se o dono for personagem (0=não, 1=sim).
+
+Mensagens ao criar o efeito:
+const msgini1       Para o personagem
+const msgini2       Para os demais
+
+Mensagens quando o efeito falhou:
+const msgfalhou1    Para o personagem
+const msgfalhou2    Para os demais
+
+Mensagens quando não teve efeito (o alvo é imune):
+const msgnulo1      Para o personagem
+const msgnulo2      Para os demais
+
+Mensagens ao apagar o efeito:
+const msgfim1       Para o personagem
+const msgfim2       Para os demais
+
+Mensagens quando ocorre o evento que reduz algo do personagem:
+const msgreduz1     Para o personagem
+const msgreduz2     Para os demais
+
+func cmd_ini( personagem )
+Função executada quando o efeito é criado.
+
+func cmd_fim( personagem )
+Função executada quando o efeito é apagado.
+
+func cmd_reduz( personagem )
+Função executada de tempos em tempos quando reduz algo.
+Vide também constante r_tempo.
+
+func tempoini
+Começa a executar as funções cujo nome é "cmd_tempo" seguido do tempo
+decorrido, em décimos de segundo. Exemplo, cmd_tempo10 é executado
+10 segundos após a função tempoini ser chamada.
+Cada vez que essa função é chamada, a contagem de tempo é reiniciada.
+
+
+18. Criando menus de edição (administração)
 
 Primeiro criar uma classe como a seguinte:
 
@@ -1660,7 +1742,7 @@ jogsock), passando como argumento o nome da classe.
 Exemplo: m_menu("menu_config")
 
 
-18. Lista de coisas pendentes
+19. Lista de coisas pendentes
 
 Usar digestão para alguma coisa, exemplo, vomitar em batalha
 Tipos de líquidos e containers de líquido

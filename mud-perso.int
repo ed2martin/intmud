@@ -760,7 +760,8 @@ func p_proc_exec # Processar comportamento do personagem
     misc:obj = este
     refvar r = ref(dono)
     epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-      r.[p.texto].s_pnj && t.addfim(txt(p.texto, 4))
+      refvar x = ref(r.[p.texto])
+      x && x.dentro2.total - x.socktot < x.s_pnj && t.addfim(txt(p.texto, 4))
     efim
     t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
     txt10 dir

@@ -1158,7 +1158,7 @@ func cmd_mover
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste001:objsolto.total < 1
+  se p_teste001:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste001", este, 0)
   fimse
 
@@ -1356,7 +1356,7 @@ const s_reset = "P 100 teste002 3 6 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste002:objsolto.total < 1
+  se p_teste002:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste002", este, rand(3, 6))
   fimse
 
@@ -1372,7 +1372,7 @@ const s_reset = "P 100 teste003 3 6 1 h_socar=1,h_arremessar=1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste003:objsolto.total < 1
+  se p_teste003:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste003", este, rand(3, 6), "h_socar=1,h_arremessar=1")
   fimse
 
@@ -1388,7 +1388,7 @@ const s_reset = "P 100 teste004 3 6 1 h_arremessar=1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste004:objsolto.total < 1
+  se p_teste004:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste004", este, rand(3, 6), "h_arremessar=1")
   fimse
 
@@ -1418,7 +1418,7 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  se p_teste005:objsolto.total < 1
+  se p_teste005:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     p = u = criar("p_teste005", este, 0, "h_chutar=1,e_apagar=5")
   fimse
   se p.animalmais
@@ -1508,7 +1508,7 @@ const s_reset = "P 100 teste006 0 0 1 h_socar=3"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste006:objsolto.total < 1
+  se p_teste006:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste006", este, 0, "h_socar=3")
   fimse
 
@@ -1590,10 +1590,10 @@ const s_reset = "P 100 teste007 0 0 1\nP 100 teste008 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste007:objsolto.total < 1
+  se p_teste007:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste007", este, 0)
   fimse
-  se p_teste008:objsolto.total < 1
+  se p_teste008:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste008", este, 0)
   fimse
 
@@ -1852,7 +1852,7 @@ const s_reset = "P 100 teste010 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste010:objsolto.total < 1
+  se p_teste010:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste010", este, 0)
   fimse
 
@@ -1872,7 +1872,7 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
-  se p_teste011:objsolto.total < 1
+  se p_teste011:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     p = u = criar("p_teste011", este, 0, "z_moedas=200")
   fimse
   u && criar("i_teste012", u, 1)
@@ -2048,7 +2048,7 @@ const s_reset = "P 100 teste012 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste012:objsolto.total < 1
+  se p_teste012:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste012", este, 0)
   fimse
 
@@ -2158,7 +2158,7 @@ const s_reset = "P 100 teste015 0 0 1\nS 100 teste021 1 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste015:objsolto.total < 1
+  se p_teste015:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste015", este, 0)
   fimse
   !dentro1.objini("i_teste021") && criar("i_teste021", este, 1)
@@ -2209,7 +2209,7 @@ const s_reset = "P 100 teste016 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste016:objsolto.total < 1
+  se p_teste016:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste016", este, 0)
   fimse
 
@@ -2458,7 +2458,7 @@ const s_reset = "P 100 teste017 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste017:objsolto.total < 1
+  se p_teste017:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste017", este, 0)
   fimse
 
@@ -2570,7 +2570,7 @@ const s_reset = "P 100 teste018 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste018:objsolto.total < 1
+  se p_teste018:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste018", este, 0)
   fimse
 
@@ -2591,10 +2591,10 @@ const s_reset = "P 100 teste019 0 0 1\nP 100 teste020 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste019:objsolto.total < 1
+  se p_teste019:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste019", este, 0)
   fimse
-  se p_teste020:objsolto.total < 1
+  se p_teste020:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste020", este, 0)
   fimse
 
@@ -2614,7 +2614,7 @@ const s_reset = "P 100 teste009 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste009:objsolto.total < 1
+  se p_teste009:objsolto.total < 1 && dentro2.total - socktot < s_pnj
     criar("p_teste009", este, 0)
   fimse
 

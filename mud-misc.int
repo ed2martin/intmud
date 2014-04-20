@@ -2,6 +2,9 @@ classe misc
 # Miscelânea: tabelas (variáveis) e funções
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
+# Revisão do SVN
+const versao = "19/4/2014"
+#
 # Objeto usado para acessar as saídas das salas
 comum ref obj
 #
@@ -363,6 +366,24 @@ func tempo1_exec # Executa eventos
   tempo1 = x - tempo2
   tempo2 = x
   obj.[func + v](perso1, perso2, perso3, este)
+
+
+classe miscserv
+# Para atualizar informações do comando serv a cada 60 segundos
+inttempo tempo
+real stempo_antes
+real utempo_antes
+real stempo
+real utempo
+int32 noar # Quantos minutos está no ar
+const iniclasse = criar(arg0)
+const ini = tempo = 1, noar = -1
+
+func tempo_exec
+  tempo = 600, noar += 1
+  debug d
+  stempo = d.stempo - stempo_antes, stempo_antes = d.stempo
+  utempo = d.utempo - utempo_antes, utempo_antes = d.utempo
 
 
 classe miscfome

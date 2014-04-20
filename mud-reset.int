@@ -734,6 +734,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       efim
       sair int(l.1) <= 0
       lin = "se p_" + txtvis(l.2) + ":objsolto.total < " + int(l.5)
+      lin += " && dentro2.total - socktot < s_pnj"
       int(l.1) < 100 && (lin += " && rand(100)<" + int(l.1))
       t2.addfim(lin)
       lin = m1 == 2 ? "  p=u=" : "  "
