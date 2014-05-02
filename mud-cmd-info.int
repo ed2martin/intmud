@@ -78,7 +78,7 @@ func escr
   efim
   ret !h.linhas, arg0.msg("Nenhuma habilidade.")
   h.addini("\b\c6Habilidades" + n + ":\b")
-  arg0.msg(h.remove(1000))
+  arg0.msg2(h.remove(1000))
 
 
 classe cmd_magia
@@ -114,7 +114,7 @@ func escr
   efim
   ret !h.linhas, arg0.msg("Nenhuma magia.")
   h.addini("\b\c6Magias" + n + ":\b")
-  arg0.msg(h.remove(1000))
+  arg0.msg2(h.remove(1000))
 
 
 classe cmd_idioma
@@ -267,35 +267,40 @@ func escr
 classe cmd_efeito
 herda comando_comum, comando_ajuda
 const posic = 0
-const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
-const ta1 = "\b\c3Efeito\b\n\
-Sintaxe: EFEITO\n\
-Mostra os efeitos que estão afetando o seu personagem."
-const ta2 = "\b\c3Efeito\b\n\
-Sintaxe: EFEITO\n\
-         EFEITO <número>\n\
-Mostra os efeitos que estão afetando o seu personagem.\n\
-Seguido de um número de 0 a $ mostra os efeitos afetando o animal\n\
-correspondente."
+const txtajuda = "\b\c3Efeito\b\n\
+Sintaxe: EFEITO  [nome do efeito]\n\
+Sem argumentos mostra os efeitos que estão afetando o seu personagem.\n\
+Seguido de um nome, mostra informações sobre o efeito."
 
 func escr
   listaitem i
-  textotxt t
-  refvar r = misc:objperso(arg0, arg1)
-  ret !r, nulo
+  ref r
+  r = arg0.persoesc
+  se arg1
+    ref obj
+    nomeobj n
+    n.ini(arg1, 1)
+    epara i = r.dentro2.ini, i, i.depois
+      continuar !i.obj.e_nome || !n.nome(i.obj.e_nome)
+      txt100 lin
+      lin = "Efeito " + i.obj.e_nome + ", duração "
+      lin += i.obj.t_duracao ? txt(int(i.obj.t_duracao / 10)) : " indeterminada"
+      ret arg0.msg2(i.obj.e_desc ? lin + "\n" + i.obj.e_desc : lin)
+    efim
+    ret arg0.msg("Nenhuma informação sobre o efeito: " + arg1)
+  fimse
+  txt100 n
+  r.persoesc != arg0 && (n = " de " + r.nome)
+  textotxt h
   epara i = r.dentro2.ini, i, i.depois
     continuar !i.obj.e_nome
-    t.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
+    h.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
 ")"))
   efim
-# Envia mensagem
   refvar nome = r == arg0 ? "você" : r.nome
-  se t.linhas
-    t.ordenalin("", "x")
-    arg0.msg2("\b\c6Efeitos em " + nome + ":\b\n" + t.remove(1000))
-  senao
-    arg0.msg("\bNenhum efeito afetando " + nome + ".")
-  fimse
+  ret !h.linhas, arg0.msg("\bNenhum efeito afetando " + nome + ".")
+  h.ordenalin("", "x")
+  arg0.msg2("\b\c6Efeitos afetando " + nome + ":\b\n" + h.remove(1000))
 
 
 classe cmd_vida
@@ -449,6 +454,40 @@ func escr
   efim
   t0.txtmostra
   arg0.msg2(t0.remove(1000))
+
+
+classe cmd_saidas
+herda comando_comum, comando_ajuda
+const posic = 5
+const txtajuda = "\b\c3Saídas\b\n\
+Sintaxe: SAÍDAS\n\
+Mostra as saídas óbvias do lugar onde você está."
+
+func escr
+  se !arg0.dono.visivel(arg0)
+    arg0.msg("Está escuro...")
+    ret
+  fimse
+  textotxt t
+  txt80 dir
+  ref r
+  misc:obj = arg0
+  epara dir = misc:listadir, dir, dir = txt2(dir)
+    refvar nome = txt1(dir)
+    continuar !(r = arg0.dono.dir_[nome]) || arg0.dono.inv_[nome]
+    se int(arg0.dono.porta_[nome]) >= 2
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está fechado")
+    senao r.visivel(arg0)
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + r.s_titulo)
+    senao
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está escuro")
+    fimse
+  efim
+  se t.linhas
+    arg0.msg2("\b\c6Saídas óbvias:\b\n" + t.remove(1000))
+  senao
+    arg0.msg("Não há nenhuma saída óbvia.")
+  fimse
 
 
 classe cmd_estat

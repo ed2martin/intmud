@@ -887,7 +887,7 @@ func escr
   listaobj l
 # Descansar em algum objeto
   se r
-    refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
+    refvar nome = r.descnome + "."
     ret !r.i_movel, arg0.msg("Não é possível descansar em " + nome)
     ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
@@ -1171,13 +1171,13 @@ func escr # Personagem retorna
 
 
 classe menu_magia_retornar
-herda menu_magia_retornar
-const titulo = "Hab Retornar"
+herda menu_hab_retornar
+const titulo = "Magia " + txt(var.classe1, 6)
 
 
 classe menu_hab_retornar
 herda menu_hab_comum
-const titulo = "Magia Retornar"
+const titulo = "Hab " + txt(var.classe1, 4)
 const colunas = 25
 #
 const nome1 = "Gratuito até nível"

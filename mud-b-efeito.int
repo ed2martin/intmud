@@ -12,14 +12,41 @@ func recalc_auto # Altera atributos do personagem
   bitver &= ~1
 
 
+classe e_chama_protetora
+herda comum_efeito
+const e_nome = "Chama protetora"
+const e_desc = "Causa danos em quem atacar você."
+const desc = "Ao ser atacado, o alvo perde 10 pontos de vida / trigger"
+const tempo1 = 600
+const tempo2 = 10
+const msgini1 = "Uma chama surge em sua volta."
+const msgini2 = "Uma chama protetora surge em volta de $p."
+const msgnulo1 = "Por um instante, uma chama aparece em volta de $p."
+const msgfim1 = "A chama em sua volta se apaga."
+const msgfim2 = "A chama em volta de $p se apaga."
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_atacou # Personagem arg0 atacou arg1
+  se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
+    $mens.p(arg1, arg0)
+# Aqui foi usado refvar para não colocar todas as mensagens na mesma instrução
+    refvar m1 = "Sua chama protetora queima $a, -10"
+    refvar m2 = "A chama protetora de $p queima você, -10"
+    refvar m3 = "A chama protetora de $p queima $a."
+    $mens.mvis3(m1, m2, m3)
+    arg0.pvida -= 10
+    arg0.acertapos(1)
+
+
 classe e_confusao
 herda comum_efeito
 const e_nome = "Confusão"
+const e_desc = "Ao atacar, poder errar o golpe e se machucar."
 const desc = "Ao atacar tem 25% de chances de se bater / trigger"
-const msgini2 = "$P ficou confus$s."
-const msgfim2 = "$P não está mais confus$s."
 const tempo1 = 3000
 const tempo2 = 20
+const msgini2 = "$P ficou confus$s."
+const msgfim2 = "$P não está mais confus$s."
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacar
@@ -109,11 +136,12 @@ const msgreduz2 = "$P sofre com o veneno."
 classe e_flutuar
 herda comum_efeito
 const e_nome = "Flutuar"
-const msgini2 = "$P começa a flutuar."
-const msgfim2 = "$P retorna ao chão."
-const msgnulo2 = "$P sobe um pouco no ar e volta."
+const e_desc = "Flutuando se cansa menos para ir de uma sala a outra."
 const tempo1 = 6000
 const tempo2 = 40
+const msgini2 = "$P começa a flutuar."
+const msgnulo2 = "$P sobe um pouco no ar e volta."
+const msgfim2 = "$P retorna ao chão."
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -255,18 +283,18 @@ func cmd_atacou
 classe e_soneca
 herda comum_efeito
 const e_nome = "Soneca"
+const e_desc = "Dorme por um tempo."
 const desc = "Recupera vida e dorme por um tempo"
 const tempo1 = 150
+const msgini2 = "$P tira uma soneca."
+const msgnulo2 = "$P tenta tirar uma soneca."
+const msgfim2 = "$P acorda da soneca."
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver |= 1024
   deftipo.0 *= 0.5 # Tipos Normais
   deftipo.1 *= 0.5 # Tipos Especiais
-
-const msgini2 = "$P tira uma soneca."
-const msgnulo2 = "$P tenta tirar uma soneca."
-const msgfim2 = "$P acorda da soneca."
 
 
 classe e_sono_profundo
@@ -351,11 +379,12 @@ func recalc_auto # Altera atributos do personagem
 classe e_voar
 herda comum_efeito
 const e_nome = "Voar"
-const msgini2 = "$P começa a voar."
-const msgfim2 = "$P retorna ao chão."
-const msgnulo2 = "$P sobe um pouco no ar e volta."
+const e_desc = "Voando se cansa menos para ir de um lugar a outro."
 const tempo1 = 6000
 const tempo2 = 40
+const msgini2 = "$P começa a voar."
+const msgnulo2 = "$P sobe um pouco no ar e volta."
+const msgfim2 = "$P retorna ao chão."
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente

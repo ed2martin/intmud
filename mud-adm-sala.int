@@ -195,6 +195,7 @@ func cmd_cdir # Criar sala na direção especificada
   p.criar(nome2)
   p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
   criar("admordena", "a-" + txt(nome, 2))
+  criar("admmudou", perso.dono)
 # config:salvar
   msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
   admlog("criou sala " + txt(nome, 2) + txtfim(num, 3))
@@ -367,6 +368,7 @@ func cmd_csai # Criar saída
       msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg0)))
     fimse
     config:salvar
+    criar("admmudou", perso.dono)
     admlog("criou saída " + dir + " de " + txt(perso.dono, 2))
   fimse
   ret 1
@@ -551,7 +553,7 @@ const clas18 = var.classe2
 const vari18 = "s_reserva"
 #
 const nome19 = "PNJs na sala"
-const info19 = "Quantidade máxima de PNJs na sala"
+const info19 = "Quantidade máxima de PNJs na sala; não afeta o reset"
 const tipo19 = "numero"
 const clas19 = var.classe2
 const vari19 = "s_pnj"
@@ -583,6 +585,7 @@ const clas1 = var.classe1
 const vari1 = "s_titulo"
 #
 const nome2 = "Descrição"
+const info2 = "Aceita caracteres especiais do personagem; vide adm mens"
 const tipo2 = "texto"
 const clas2 = var.classe1
 const vari2 = "s_desc"
@@ -686,7 +689,7 @@ const clas18 = var.classe1
 const vari18 = "s_reserva"
 #
 const nome19 = "PNJs na sala"
-const info19 = "Quantidade máxima de PNJs na sala"
+const info19 = "Quantidade máxima de PNJs na sala; não afeta o reset"
 const tipo19 = "numero"
 const clas19 = var.classe1
 const vari19 = "s_pnj"

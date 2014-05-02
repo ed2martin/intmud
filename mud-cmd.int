@@ -56,33 +56,33 @@ Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
 seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
 preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
 As opções são:\n\
-  \c2DESC\b     Mostra descrições completas (como ao digitar OLHAR)\n\
-  \c2SAIDAS\b   Mostra as saídas visíveis após a descrição da sala\n\
-  \c2CORES\b    Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
-  \c2ACENTO\b   Recebe letras com acentuação (codificação ISO8859-1)\n\
-  \c2PVT\b      Recebe mensagens com o comando PVT\n"
-const aj2 = "  \c2CHAT\b     Participa do canal de comunicação CHAT\n"
-const aj3 = "  \c2NOVATOS\b  Participa do canal de comunicação NOVATOS\n"
-const aj4 = "  \c2EMOÇÃO\b   Mostra (e) nas mensagens geradas com esse comando\n"
-const aj5 = "  \c2SEGUIR\b   Se outros personagens podem escolher seguir você\n\
-  \c2MOEDAS\b   Pega as moedas do corpo do personagem após vencer uma batalha\n\
-  \c2PROMPT\b   Ativa o prompt normal\n\
-  \c2BROMPT\b   Ativa o prompt de batalha"
+  \c2DESC\b      Mostra descrições completas (como ao digitar OLHAR)\n\
+  \c2SAIDAS\b    Mostra as saídas visíveis após a descrição da sala\n\
+  \c2CORES\b     Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
+  \c2ACENTO\b    Recebe letras com acentuação (codificação ISO8859-1)\n\
+  \c2TELEPATIA\b Recebe mensagens com o comando PVT\n"
+const aj2 = "  \c2CHAT\b      Participa do canal de comunicação CHAT\n"
+const aj3 = "  \c2NOVATOS\b   Participa do canal de comunicação NOVATOS\n"
+const aj4 = "  \c2EMOÇÃO\b    Mostra (e) nas mensagens geradas com esse comando\n"
+const aj5 = "  \c2SEGUIR\b    Se outros personagens podem escolher seguir você\n\
+  \c2MOEDAS\b    Pega as moedas do corpo do personagem após vencer uma batalha\n\
+  \c2PROMPT\b    Ativa o prompt normal\n\
+  \c2BROMPT\b    Ativa o prompt de batalha"
 const txtajuda2 = "\n\
 Opções para administradores:\n\
-  \c2IMORTAL\b  Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
-           cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
-           fechadas, anda sem gastar movimento\n\
-  \c2SALA\b     Mostra o nome da sala cadastrada antes do título\n\
-  \c2QUEM\b     O comando QUEM mostra onde cada jogador está no MUD\n\
-  \c2INVQUEM\b  Ocultar a presença no comando quem\n\
-  \c2INVSALA\b  Invisível a não administradores\n\
-  \c2AC\b       Participa do canal de comunicação AC (administração)\n\
-  \c2ADMLOG\b   Canal ADMLOG - é informado sobre mudanças online no MUD\n\
-  \c2CMDLOG\b   Canal CMDLOG - é informado quando alguém usar CMD, CMDP\n\
-           ou CMDJs e o comando possuir alguma letra\n\
-  \c2EXECLOG\b  Canal EXECLOG - só tem utilidade para programadores\n\
-           informa quando a variável exec chegar a 0 (bug no programa)"
+  \c2IMORTAL\b   Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
+            cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
+            fechadas, anda sem gastar movimento\n\
+  \c2SALA\b      Mostra o nome da sala cadastrada antes do título\n\
+  \c2QUEM\b      O comando QUEM mostra onde cada jogador está no MUD\n\
+  \c2INVQUEM\b   Ocultar a presença no comando quem\n\
+  \c2INVSALA\b   Invisível a não administradores\n\
+  \c2AC\b        Participa do canal de comunicação AC (administração)\n\
+  \c2ADMLOG\b    Canal ADMLOG - é informado sobre mudanças online no MUD\n\
+  \c2CMDLOG\b    Canal CMDLOG - é informado quando alguém usar CMD, CMDP\n\
+            ou CMDJs e o comando possuir alguma letra\n\
+  \c2EXECLOG\b   Canal EXECLOG - só tem utilidade para programadores\n\
+            informa quando a variável exec chegar a 0 (bug no programa)"
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
 # As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
@@ -96,7 +96,7 @@ const opc_chat = config:chattipo ? 4
 const opc_seguir = 5
 const opc_prompt = 6
 const opc_bprompt = 7
-const opc_pvt = 8
+const opc_telepatia = 8
 const opc_emocao = config:emocaotipo ? 9
 const opc_moedas = 10
 const opc_novatos = config:novatostipo ? 11
@@ -372,9 +372,9 @@ func escr
     txt200 t2
     t2 = (completo ? "\b\c6" : "\b") + txtcopiamai(r.descnome, "A")
     se r.perso
-      t2 += (r.jog ? ", jogador nível " : ", nível ") + r.pnivel + ", " + estado(r)
+      t2 += niveltipo(r) + ", " + estado(r)
       se r.persobat && r.persobat != r
-        t2 += ".\b\nEscolheu " + r.persobat.nome + ", nível " + r.persobat.pnivel
+        t2 += ".\b\nEscolheu " + r.persobat.nome + niveltipo(r.persobat)
         t2 += ", " + estado(r.persobat)
       fimse
     senao r.pnivel
@@ -413,6 +413,17 @@ func estado # Retorna texto que contém o estado atual do personagem
   casose
     ret "perfeitamente saudável"
   casofim
+
+func niveltipo # Usado para informar nível, raça e classe do personagem
+  txt100 t
+  arg0.jog ? (t = " jogador")
+  se config:olhartipo
+    arg0.tipo1 && (t += " " + txtcopiamai(arg0.tipo1, "A"))
+    arg0.tipo2 && (t += " " + txtcopiamai(arg0.tipo2, "A"))
+    arg0.tipo3 && (t += " " + txtcopiamai(arg0.tipo3, "A"))
+  fimse
+  config:olharnivel && (t += " nível " + arg0.pnivel)
+  ret t ? "," + t : ""
 
 
 classe cmd_olhar
@@ -510,6 +521,7 @@ A mensagem é enviada reservadamente para o personagem escolhido.\n\
 Os outros apenas ficam sabendo que você sussurrou alguma coisa."
 
 func escr
+  $mens.mens = ""
   $mens.p(arg0)
   ret !arg1, arg0.msg("Sussurrar para quem?")
   ret !txt2(arg1), arg0.msg("Sussurrar o que?")
@@ -677,17 +689,17 @@ func escr
     efim
 
 
-classe cmdfim_pvt
+classe cmdfim_telepatia
 herda comando_comum, comando_ajuda
 const posic = 0
-const txtajuda = "\b\c3PVT\b\n\
-Sintaxe: pvt <personagem> <mensagem>\n\
-Envia uma mensagem privativa a outro jogador, independente da sala em\n\
-que ele estiver.\n\
+const txtajuda = "\b\c3Telepatia\b\n\
+Sintaxe: TELEPATIA <personagem> <mensagem>\n\
+Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
+da sala em que ele estiver.\n\
 Veja também os comandos CONFIG e IGNORAR."
 
 func escr
-  ret !arg0.jogconfig.8, arg0.msg("Canal PVT está desabilitado.")
+  ret !arg0.jogconfig.8, arg0.msg("Canal Telepatia está desabilitado.")
   ret !arg1, arg0.msg("Escrever para quem?")
   indiceitem item
   item.ini("pn " + txtnome(txt1(arg1)))
@@ -702,14 +714,14 @@ func escr
   senao arg0.var.u_[item.obj.nome]
     arg0.msginv("Você está ignorando $C.")
   senao !item.obj.jogconfig.8
-    arg0.msginv("$C desabilitou o canal PVT.")
+    arg0.msginv("$C desabilitou o canal Telepatia.")
   senao arg0.jogconfig.17 && !item.obj.jogconfig.23
     arg0.msginv("Você está invisível para $C.")
   senao !txt2(arg1)
     arg0.msginv("Escrever o quê?")
   senao
-    item.obj.msginv("(pvt) $R '$m'")
-    arg0.msginv("(pvt+) $C '$m'")
+    item.obj.msginv(config:telepatia2)
+    arg0.msginv(config:telepatia1)
 
 
 classe cmdfim_ignorar

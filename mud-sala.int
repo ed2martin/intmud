@@ -173,7 +173,14 @@ func descsala # Retorna descrição da sala
 # t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo(arg0) + "\b")
     t.addfim("\b\c6" + s_titulo(arg0) + "\b")
     t.bytes <= 5 && t.limpar
-    arg1 & 1 && t.addfim(misc:luz ? s_desc(arg0) : s_noite(arg0))
+    se arg1 & 1
+      refvar r1 = ref($mens.contr)
+      refvar r2 = ref($mens.perso)
+      $mens.contr = $mens.perso = arg0
+      t.addfim($mens.proc(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
+      $mens.contr = r1
+      $mens.perso = r2
+    fimse
     arg1 & 2 && t.addfim(txtsai(arg0))
     arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")
   senao 1 & arg0.bitver
