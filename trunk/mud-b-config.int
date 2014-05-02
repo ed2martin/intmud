@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 305 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 306 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -131,6 +131,13 @@ const sussurrar2msg = "$P sussurou para $a '$m'"
 #
 # Não ouviu o sussurro
 const sussurrar3msg = "$P sussurou algumas palavras para $a."
+#
+# Enviou mensagem telepática
+const telepatia1 = "(+telepatia) $R '$m'"
+#
+# Recebeu mensagem telepática
+const telepatia2 = "(telepatia) $R '$m'"
+#
 # Comandos salvar e senha: 0=não existe, 1=existe
 const salvartipo = 0 # Comando Salvar: 0 Desabilitado
 #
@@ -182,6 +189,14 @@ const mostraadm = 0 # Comando quem mostra admin: Não
 # Se não administradores podem saber quem é imortal teclando QUEM
 # 0=não, 1=sim
 const mostraimortal = 0 # Comando Quem mostra imortal: Não
+#
+# Se os comandos Olhar e Ver mostram o nível do personagem
+# 0=não, 1=sim
+const olharnivel = 1 # Olhar mostra nível: Sim
+#
+# Se os comandos Olhar e Ver mostram a raça e a classe do personagem
+# 0=não, 1=sim
+const olhartipo = 0 # Olhar mostra raça e classe: Não
 #
 # Quantos pontos de aulas ganha quando sobe de nível
 # Se 0, o comando aprender não usa pontos de aula

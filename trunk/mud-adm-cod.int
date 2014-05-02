@@ -71,7 +71,8 @@ const adm_outros = "\c3Outros comandos\b\n\
   personagem, ou seja, os últimos 10 personagens que ele matou.\n\
 \c2INFOHAB\b [personagem] [número do animal]\n\
 \c2INFOMAG\b [personagem] [número do animal]\n\
-  Informa as habilidades e magias de um personagem que está na sala.\n\
+\c2INFOE\b   [personagem] [número do animal]\n\
+  Informa habilidades, magias e efeitos de um personagem na sala.\n\
 \c2MATAR1\b <personagem/item>  [personagem/item] ... [personagem/item]\n\
   Com um argumento, apaga um personagem ou item.\n\
   Pode ser usado para apagar personagens ou itens dentro de outros.\n\
@@ -175,9 +176,9 @@ func cmd_serv # Informações sobre o servidor
   txtmais.addfim("No ar há " + i.0 + " dias " + i.1 + " horas " + i.2 + " min")
   txtmais.addfim("Memória usada:  " + txtnum(d.mem, ".") + " bytes")
   txtmais.addfim("Memória máxima: " + txtnum(d.memmax, ".") + " bytes")
-  #lin = "Memória usada:  " + txtnum(d.mem, ".") + " bytes"
-  #lin += "   (máximo foi " + txtnum(d.memmax, ".") + " bytes)"
-  #txtmais.addfim(lin)
+# lin = "Memória usada:  " + txtnum(d.mem, ".") + " bytes"
+# lin += "   (máximo foi " + txtnum(d.memmax, ".") + " bytes)"
+# txtmais.addfim(lin)
   lin = "Processador (stempo): " + txtnum(d.stempo / 1000, ".3") + " seg."
   lin += "  (no último minuto " + txtnum($miscserv.stempo / 1000, ".3") + " seg.)"
   txtmais.addfim(lin)
@@ -648,6 +649,25 @@ func cmd_infomag
     txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece magias.")
   senao
     txtmais.addini("\b\c6Magias de " + r.nome + ":\b")
+  fimse
+  txtmostra
+  ret 1
+
+func cmd_infoe
+  refvar r = misc:objperso(perso, arg0)
+  ret !r, 1
+  txtmais.limpar
+  listaitem i
+  epara i = r.dentro2.ini, i, i.depois
+    continuar !i.obj.e_nome
+    txtmais.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
+")"))
+  efim
+  se !txtmais.linhas
+    txtmais.addfim("Nenhum efeito afetando " + r.nome + ".")
+  senao
+    txtmais.ordenalin("", "x")
+    txtmais.addini("\b\c6Efeitos afetando " + r.nome + ":\b")
   fimse
   txtmostra
   ret 1

@@ -572,13 +572,13 @@ func escr
         sair
 # Vestir - checa se a classe ou a raça tem permissão
       senao !r.vestirnao
-      senao tipo1 && txtproc("\n" + r.vestirnao + "\n", tipo1) >= 0
+      senao tipo1 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo1) >= 0
         $mens.mperso("$P não consegue vestir $o.")
         sair
-      senao tipo2 && txtproc("\n" + r.vestirnao + "\n", tipo2) >= 0
+      senao tipo2 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo2) >= 0
         $mens.mperso("$P não consegue vestir $o.")
         sair
-      senao tipo3 && txtproc("\n" + r.vestirnao + "\n", tipo3) >= 0
+      senao tipo3 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo3) >= 0
         $mens.mperso("$P não consegue vestir $o.")
         sair
       fimse
@@ -669,11 +669,11 @@ func escr
     senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
       ret $mens.mperso("$P não conhece " + txtsublin(config:arma_txt, r.armatipo, 1) + ".")
     senao r.vestirnao
-      se tipo1 && txtproc("\n" + r.vestirnao + "\n", tipo1) >= 0
+      se tipo1 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo1) >= 0
         ret $mens.mperso("$P não consegue empunhar $o.")
-      senao tipo2 && txtproc("\n" + r.vestirnao + "\n", tipo2) >= 0
+      senao tipo2 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo2) >= 0
         ret $mens.mperso("$P não consegue empunhar $o.")
-      senao tipo3 && txtproc("\n" + r.vestirnao + "\n", tipo3) >= 0
+      senao tipo3 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo3) >= 0
         ret $mens.mperso("$P não consegue empunhar $o.")
       fimse
     fimse
