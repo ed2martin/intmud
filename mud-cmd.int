@@ -293,10 +293,6 @@ const posic = 5
 const completo = 0 # No comando olhar, essa variável é 1
 
 func escr
-  listaobj l
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_ver(arg0, arg1, completo), nulo
-  efim
   se !arg1
     se arg0.jogconfig.16
       arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, completo ? 7 : 6))
@@ -315,13 +311,25 @@ func escr
     arg0.msg(r.[p.texto](arg0, 1))
     ret
   efim
+  listaobj l
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     ret arg0 == l.objini, arg0.msg("Olhar para você mesm" + (arg0.msexo ? "o?" : "a?"))
     r = l.objini
-    textotxt t
+# Gera eventos
+    l.limpar
+    se completo
+      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+        ret l.objini.cmd_olhar(arg0, r), nulo
+      efim
+    senao
+      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+        ret l.objini.cmd_ver(arg0, r), nulo
+      efim
+    fimse
 # O que o personagem está vestindo
+    textotxt t
     se r.perso
       $mens.p(arg0, r)
       $mens.mvis2("", "$P olha para $a.")
@@ -603,11 +611,13 @@ func escr
   senao !arg1
     arg0.msg("Tecle a mensagem após REZAR.")
   senao
-    arg0.msg("Você rezou '" + arg1 + "'")
+    $mens.p(arg0)
+    $mens.mens = arg1
+    arg0.msginv(config:rezar2msg)
     indiceitem item
-    refvar lin = "(rezar) " + arg0.nome + ": " + arg1
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.23 && !item.obj.perso.var.u_[arg0.nome] && item.obj.msg(lin)
+      continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:rezar1msg, item.obj.perso))
     efim
 
 

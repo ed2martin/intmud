@@ -5,6 +5,11 @@ ref alvo # Personagem ou objeto alvo da ação
 ref obj # Objeto secundário
 ref r # Objeto que vai receber a mensagem
 txt512 mens # Mensagem usada em $M
+txt100 o_1 # Texto de $1
+txt100 o_2 # Texto de $2
+txt100 o_3 # Texto de $3
+txt100 o_4 # Texto de $4
+txt100 o_5 # Texto de $5
 
 func iniclasse
   criar(arg0)
@@ -372,3 +377,52 @@ const m_f4 = "\d4"
 const m_f5 = "\d5"
 const m_f6 = "\d6"
 const m_f7 = "\d7"
+
+
+classe mens_porta
+# Monta mensagem para avisar sobre portas abertas e fechadas
+#
+# Chamar com:
+# $mens_porta.mens(mensagem, sala, direção, mensagem)
+#
+# Exemplo:
+# $mens_porta.mens("$P est$o fechad$a.", dono, "s")
+#
+# Caracteres usados na mensagem:
+# $A = a,o,as,os, conforme a porta
+# $M = um texto vazio (no singular) ou "m" (no plural)
+# $O = "á" (no singular) ou "ão" (no plural)
+# $P = nome da porta
+#
+txt100 n # Nome da porta
+txt2 tsexo # Pode ser a,as,o,os
+txt2 tplural # Pode ser á,ão
+txt2 tm # Pode ser "" ou "m"
+txt100 tnome # Nome da porta
+
+func iniclasse
+  criar(arg0)
+
+func mens
+  !(tnome = arg1.portanome_[arg2])
+  !tnome && !(tnome = $cmd_[arg2].m_porta) && (tnome = "uma porta")
+  casovar arg1.portaartigo_[arg2]
+  casose # Feminino singular
+    tplural = "á", tsexo = "a", tm = ""
+    sair
+  casose "1" # Feminino plural
+    tplural = "ão", tsexo = "as", tm = "m"
+    sair
+  casose "2" # Masculino plural
+    tplural = "á", tsexo = "o", tm = ""
+    sair
+  casose "3" # Masculino plural
+    tplural = "ão", tsexo = "os", tm = "m"
+    sair
+  casofim
+  ret vartroca(arg0, "$", "m_")
+
+const m_a = arg0 === "a" ? tsexo : txtcopiamai(tsexo, "A")
+const m_m = arg0 === "m" ? tm : txtcopiamai(tm, "A")
+const m_o = arg0 === "o" ? tplural : txtcopiamai(tplural, "A")
+const m_p = arg0 === "p" ? tnome : txtcopiamai(tnome, "A")

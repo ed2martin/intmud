@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 306 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 307 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -59,6 +59,22 @@ const animal2 = 50
 # 0=não pode, 1=pode
 const capturar = 1
 #
+# Nomes não permitidos para personagens dos jogadores, uma linha por nome
+const nomesnao = "cagar\n\
+defecar\n\
+peitar\n\
+mijar\n\
+urinar\n\
+porra\n\
+viado\n\
+veado\n\
+merda\n\
+puta\n\
+pariu\n\
+foder\n\
+fuder\n\
+fodido\nfudido"
+#
 # Quantos itens (ao todo) cada personagem pode ter
 const itens = 50
 #
@@ -98,6 +114,12 @@ const atkfor = 30
 #
 # Mensagem do comando Echo
 const echomsg = "\b\cb(ADM) $m\b"
+#
+# Mensagem do canal Rezar
+const rezar1msg = "(rezar) $R '$m'"
+#
+# Mensagem quando o jogador usa o comando rezar
+const rezar2msg = "Você rezou '$m'"
 #
 # Mensagem do canal Chat
 const chatmsg = "(chat) $R '$m'"

@@ -466,6 +466,30 @@ const tipoatk = 14 # Ataque tipo: 14 Psíquico
 const a_efeito1 = "cegueira"
 
 
+classe magia_chama_protetora
+herda comando_ataque
+const nomevar = "m_Chama Protetora"
+const tipoalvo = 4 # Alvo: 4 Qualquer um; não é ataque
+const a_efeito1 = "Chama Protetora"
+const tipoatk = 4 # Tipo: 4 Fogo
+const msgatk0 = "$P esfrega as mãos até aparecer uma pequena chama.\n\n\n\
+$P fecha os olhos e a chama cresce, até ficar totalmente transparente.\n\n\
+$P separa as mãos e a chama caminha em direção a $a.\n\n\n\
+$P ataca e mata $a, $m\n\n\n\
+$P perde a concentração e a chama diminui até desaparecer.\n\n\n\
+$P separa as mãos e a chama desaparece, enquanto segue em direção a $a."
+#
+# Nota: nas habilidades/magias ofensivas (ataques), usar a função cmd_atacar
+# ao invés da função cmd_alvo.
+
+func cmd_alvo
+  se arg1.dentro2.objini("e_chama_protetora") # Se o alvo está com o efeito
+    mensinicio(arg0, arg1) # Envia mensagem inicial
+    result = 1 # Resultado: 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo
+    mensgolpe(arg0, arg1) # Envia mensagem de acordo com a variável result
+    ret 1 # Para cancelar a magiaclasse magia_curar
+
+
 classe magia_curar
 herda comando_ataque
 const nomevar = "m_Curar"
@@ -547,6 +571,11 @@ const nomevar = "m_Identificar"
 const c_mana1 = 20
 const c_mana2 = 5
 const valor = 100
+const msgextra = "Obtém informações sobre itens e personagens."
+const msgperso1 = "Você olha $a com atenção."
+const msgobj1 = "Você olha $o com atenção."
+const msgerrou1 = "A magia falhou."
+const msgnulo1 = "A magia não teve efeito."
 
 
 classe magia_invisibilidade
@@ -639,6 +668,8 @@ const tipoalvo = 5 # Alvo: 5 O personagem; não é ataque
 const a_efeito1 = "ver invisível"
 const c_mana1 = 30
 const c_mana2 = 4
+const aulaini = 3
+const aulafim = 5
 const msgatk0 = "$P fala solenemente 'Ver Inv'"
 
 

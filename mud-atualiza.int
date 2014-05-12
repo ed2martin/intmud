@@ -173,8 +173,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 306, nulo
-  p.criar("config", "const versao = 306 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 307, nulo
+  p.criar("config", "const versao = 307 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -221,16 +221,18 @@ func ini2_exec
       p.apagar(p.texto, "msgini")
     efim
   fimse
-# Acerta variáveis das habilidades e magias
+# Mensagens do comando Sussurrar
   se versao < 303
     criafunc("config", "const sussurrar1msg = \"$P sussurrou algumas palavras.\"")
     criafunc("config", "const sussurrar2msg = \"$P sussurou para $a '$m'\"")
     criafunc("config", "const sussurrar3msg = \"$P sussurou algumas palavras para $a.\"")
   fimse
-# Mensagens do comando Telepatia e funções de reset das salas
-  se versao < 306
+# Mensagens dos comandos Telepatia e Rezar e funções de reset das salas
+  se versao < 307
     criafunc("config", "const telepatia1 = \"(+telepatia) $R '$m'\"")
     criafunc("config", "const telepatia2 = \"(telepatia) $R '$m'\"")
+    criafunc("config", "const rezar1msg = \"(rezar) $R '$m'\"")
+    criafunc("config", "const rezar2msg = \"Você rezou '$m'\"")
     debug d
     epara p.iniclasse("s_"), p.lin, p.depois
       $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)

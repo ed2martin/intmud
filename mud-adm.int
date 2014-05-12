@@ -1302,6 +1302,7 @@ classe admmudou
 # chama essa função de todos os objetos da classe.
 # Modo de usar:
 # criar("admmudou", <nome da classe>, [nome da função])
+#
 txt100 nomeclasse
 txt100 nomefunc
 intexec ordem
@@ -1339,6 +1340,11 @@ func ordem_exec
   mudou && config:salvar
 # Aqui obtém os objetos para chamar uma função de cada objeto
   ret !nomefunc, apagar(este)
+  se txtproc(nomefunc, ":") > 0
+    refvar ind = txtproc(nomefunc, ":")
+    nomeclasse = txt(nomefunc, 0, ind)
+    nomefunc = txt(nomefunc, ind + 1)
+  fimse
   repete = 1
   ref r
   epara r = $[nomeclasse], r, r = objdepois(r)

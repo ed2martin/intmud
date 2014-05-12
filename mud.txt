@@ -238,6 +238,7 @@ $V = Depende do personagem: "e" ou "a"
 $W = Depende do alvo: "e" ou "a"
 $X = Depende do objeto: "e" ou "a"
 $M = Texto de $mens.mens
+$1 a $5 = variáveis $mens.o_1 a $mens.o_5
 
 Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra
 do texto não é transformada em maiúscula."
@@ -1221,10 +1222,12 @@ Quer abrir um objeto ou uma porta.
 func cmd_fechar(personagem, texto)
 Quer fechar um objeto ou uma porta.
 
-func cmd_ver(personagem, texto, completo)
-Quer ver alguma coisa.
-Completo pode ser 0 se for descrição resumida (comando olhar) ou 1 se
-for descrição completa (comando ver).
+func cmd_ver(personagem, personagem ou item alvo)
+func cmd_olhar(personagem, personagem ou item alvo)
+Quer ver ou olhar alguma coisa. São os comandos ver (descrição resumida)
+e olhar (descrição completa). Para apenas acrescentar uma descrição ao
+personagem ou item, vide constante descver e a opção "Descrição ao olhar"
+dos comandos de edição online eperso e eitem.
 
 func cmd_pegar(personagem, texto)
 func cmd_soltar(personagem, texto)
@@ -1265,7 +1268,7 @@ Quer acender ou apagar um item.
 func cmd_vestir(personagem, item, posição)
 Quer vestir um item ou empunhar uma arma.
 A posição é um número que indica a posição, conforme a variável vestpos
-do objeto. Começa na posição1, empunhando é a posição 50.
+do objeto. Começa na posição 1, empunhando é a posição 50.
 
 func cmd_remover(personagem, item, posição)
 Quer remover um item que está vestindo/usando ou uma arma que está empunhando.
@@ -1719,6 +1722,8 @@ const extr1 = "1 8"
 const exec1 = "atualiza"
 # Se não for nulo, quando o usuário muda a opção, é executada a função
 # com esse nome de todos os objetos que foram mudados
+# Pode-se especificar a classe, da seguinte forma:
+# const exec1 = "nomedaclasse:nomedafunção"
 
 const titu1 = "um texto qualquer"
 # Título: mensagem que deve ser apresentada antes da opção
@@ -1744,16 +1749,12 @@ Exemplo: m_menu("menu_config")
 
 19. Lista de coisas pendentes
 
-Para colocar um item dentro de outro, usar comando Guardar ao invés de Soltar
-Acertar comandos sentar e descansar - em um item
 Acrescentar altura/peso/volume mínimo/máximo para jogadores nos tipos (comando etipo)
 Opção para os jogadores escolherem altura e peso, ao criar o personagem
    - Volume seria baseado em altura e peso, e o que foi definido na raça
-Poder definir as mensagens da habilidade/magia identificar
 Usar digestão para alguma coisa, exemplo, vomitar em batalha
 Tipos de líquidos e containers de líquido
 Casa de doações
-Menu para criação e edição de descrições extras das salas
 Comando para jogador informar que está ausente
 Leilões
 Murais, livros, papéis e caneta/lápis
@@ -1770,7 +1771,6 @@ Evolução de itens e personagens; para cada linha da lista:
 - Evoluir obrigatório ou opcional
 - Nome do novo item ou personagem
 Vendedores: poder vender itens que possui no inventário
-Ao criar personagem: altura
 Acertar itens que produzem luz
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto

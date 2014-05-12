@@ -25,7 +25,7 @@ func escr # Executa o comando
   fimse
 # Fecha a porta
   se sala.fecha_[dir1]
-    refvar m = sala.porta_[dir1] < 2 ? "$M fechou."
+    refvar m = sala.porta_[dir1] < 2 ? "$M $2."
     sala.mudaporta(dir1, sala.tranc_[dir1] == 2 ? 3 : 2, m, m)
   fimse
 
@@ -41,7 +41,7 @@ func mover # Personagem anda em uma direção
   se s2 == nulo
     ret arg0.msg("Impossível seguir nessa direção.")
   senao s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14
-    ret arg0.msg("A porta está fechada.")
+    ret arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
   senao s1.voar_[dir] && !(arg0.bitver & 512 || arg0.bitinv & 48)
     ret arg0.msg("Você não consegue porque não está flutuando.")
   fimse
@@ -434,9 +434,9 @@ func escrdir # Abrir uma porta
   casose
     ret arg0.msg("Não há porta nessa direção.")
   casose "1"
-    ret arg0.msg("Porta já está aberta.")
+    ret arg0.msg($mens_porta.mens("$P já est$o abert$a.", arg0.dono, arg1))
   casose "3"
-    ret arg0.msg("Porta está trancada.")
+    ret arg0.msg($mens_porta.mens("$P est$o trancad$a.", arg0.dono, arg1))
   casose "2"
   casofim
 # Gera eventos
@@ -446,7 +446,7 @@ func escrdir # Abrir uma porta
   efim
 # Abre a porta
   $mens.p(arg0)
-  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M abriu.") # Abre a porta
+  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M $1.") # Abre a porta
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
   efim
@@ -513,7 +513,7 @@ func escrdir # Fechar uma porta
     ret arg0.msg("Não há porta nessa direção.")
   casose "2"
   casose "3"
-    ret arg0.msg("Porta já está fechada.")
+    ret arg0.msg($mens_porta.mens("$P já est$o fechad$a.", arg0.dono, arg1))
   casose "1"
   casofim
 # Gera eventos
@@ -525,9 +525,9 @@ func escrdir # Fechar uma porta
 # Fecha a porta
   $mens.p(arg0)
   se arg0.dono.tranc_[arg1] == 2
-    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M fechou.") # Tranca a porta
+    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M $2.") # Tranca a porta
   senao
-    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M fechou.") # Fecha a porta
+    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M $2.") # Fecha a porta
   fimse
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
@@ -607,10 +607,13 @@ func escrdir # Destrancar uma porta
   casose
     ret arg0.msg("Não há porta nessa direção.")
   casose "1"
-    ret arg0.msg("Porta está aberta.")
+    ret arg0.msg($mens_porta.mens("$P est$o abert$a.", arg0.dono, arg1))
   casose "2"
-    ret !arg0.dono.tranc_[arg1], arg0.msg("Essa porta não pode ser trancada.")
-    ret arg0.msg("Porta não está trancada.")
+    se arg0.dono.tranc_[arg1]
+      ret arg0.msg($mens_porta.mens("$P não est$o trancad$a.", arg0.dono, arg1))
+    senao
+      ret arg0.msg($mens_porta.mens("$P não pode$m ser trancad$a.", arg0.dono, arg1))
+    fimse
   casose "3"
   casofim
 # Procura a chave
@@ -637,7 +640,8 @@ func escrdir # Destrancar uma porta
 # Destranca a porta
   arg0.dono.mudaporta(arg1, 2) # Destranca a porta
   $mens.p(arg0)
-  $mens.mtodos1("$P destrancou " + mporta + ".")
+  $mens.mens = mporta
+  $mens.mtodos1("$P destrancou $m.")
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave)
   efim
@@ -716,12 +720,14 @@ func escrdir # Trancar uma porta
   casose
     ret arg0.msg("Não há porta nessa direção.")
   casose "1"
-    ret arg0.msg("Porta está aberta.")
+    ret arg0.msg($mens_porta.mens("$P est$o abert$a.", arg0.dono, arg1))
   casose "3"
-    ret arg0.msg("Porta já está trancada.")
+    ret arg0.msg($mens_porta.mens("$P já est$o trancad$a.", arg0.dono, arg1))
   casose "2"
   casofim
-  ret !arg0.dono.tranc_[arg1], arg0.msg("Porta não pode ser trancada.")
+  se !arg0.dono.tranc_[arg1]
+    ret arg0.msg($mens_porta.mens("$P não pode$m ser trancad$a.", arg0.dono, arg1))
+  fimse
 # Procura a chave
   txt100 mporta # Nome da porta
   txt100 cod # Código da fechadura
@@ -746,7 +752,8 @@ func escrdir # Trancar uma porta
 # Tranca a porta
   arg0.dono.mudaporta(arg1, 3) # Tranca a porta
   $mens.p(arg0)
-  $mens.mtodos1("$P trancou " + mporta + ".")
+  $mens.mens = mporta
+  $mens.mtodos1("$P trancou $m.")
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave)
   efim
@@ -795,8 +802,7 @@ func escr
   casovar arg0.posicao
   casose "5" # Descansando
     r = arg0.poslugar.objlista
-    sair !arg1
-    ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+    sair
   casose "6" # Sentado
     ret arg0.msg("\c9Você já está sentad" + (arg0.msexo ? "o" : "a") + ".\b")
   casose "8" # Em pé
@@ -812,14 +818,17 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret r && r != i.obj, arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
     r = i.obj
   fimse
   listaobj l
 # Sentar em algum objeto
   se r
-    refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
-    ret !r.i_movel, arg0.msg("Não é possível sentar-se em " + nome)
-    ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
+    se !r.i_movel
+      ret arg0.msg("Não é possível descansar em " + r.descnome + ".")
+    senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
+      ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
+    fimse
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       ret l.objini.cmd_sentarobj(arg0, r, arg1), nulo
     efim
@@ -827,7 +836,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 6
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P sentou-se em $u $o.")
+    $mens.mtodos1("$P sentou-se em $o.")
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       l.objini.cmd_sentouobj(arg0, r, arg1)
     efim
@@ -867,8 +876,7 @@ func escr
     ret arg0.msg("\c9Você já está descansando.\b")
   casose "6" # Sentado
     r = arg0.poslugar.objlista
-    sair !arg1
-    ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+    sair
   casose "8" # Em pé
     sair
   casose # Outras posições
@@ -882,14 +890,17 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret r && r != i.obj, arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
     r = i.obj
   fimse
   listaobj l
 # Descansar em algum objeto
   se r
-    refvar nome = r.descnome + "."
-    ret !r.i_movel, arg0.msg("Não é possível descansar em " + nome)
-    ret r.i_lugar <= r.persolugar.total, arg0.msg("Não cabe mais ninguém em " + nome)
+    se !r.i_movel
+      ret arg0.msg("Não é possível descansar em " + r.descnome + ".")
+    senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
+      ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
+    fimse
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       ret l.objini.cmd_descansarobj(arg0, r, arg1), nulo
     efim
@@ -897,7 +908,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 5
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P descansa em $u $o.")
+    $mens.mtodos1("$P descansa em $o.")
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       l.objini.cmd_descansouobj(arg0, r, arg1)
     efim
@@ -937,8 +948,7 @@ func escr
   casose "5" # Descansando
   casose "6" # Sentado
     r = arg0.poslugar.objlista
-    sair !arg1
-    ret arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+    sair
   casose "8" # Em pé
     sair
   casose # Outras posições
@@ -952,22 +962,22 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
+    ret r && r != i.obj, arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
     r = i.obj
   fimse
   listaobj l
 # Dormir em algum objeto
   se r
-    refvar nome = (r.msexo ? "um " : "uma ") + " " + r.nome + "."
     se txt(r.i_movel) != "2" && txt(r.i_movel) != "4"
-      ret arg0.msg("Não é possível dormir em " + nome)
-    senao r.i_lugar <= r.persolugar.total
-      ret arg0.msg("Não cabe mais ninguém em " + nome)
+      ret arg0.msg("Não é possível dormir em " + r.descnome + ".")
+    senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
+      ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
     fimse
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       ret l.objini.cmd_dormirobj(arg0, r, arg1), nulo
     efim
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P deita em $u $o e dorme.")
+    $mens.mtodos1("$P deita em $o e dorme.")
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 4
@@ -1199,7 +1209,7 @@ const tipo12 = "texto"
 const clas12 = var.classe1
 const vari12 = "msgextra"
 #
-const nome13 = "Mensagens 1"
+const nome13 = "Mensagens"
 const tipo13 = "menu--"
 const clas13 = "menu_hab_retornar0"
 
