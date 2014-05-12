@@ -799,10 +799,12 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       sair int(l.1) <= 0
       se l.4 == "s"
         lin = "!dentro1.objini(\"i_" + txtvis(l.2) + "\") && "
+        int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
         lin += "criar(\"i_" + txtvis(l.2) + "\", este"
       senao
         lin = "$i_" + txtvis(l.4) + " && !$i_" + txtvis(l.4)
         lin += ".dentro1.objini(\"i_" + txtvis(l.2) + "\") && "
+        int(l.1) < 100 && (lin += "rand(100)<" + int(l.1) + " && ")
         lin += "criar(\"i_" + txtvis(l.2) + "\", $i_" + txtvis(l.4)
       fimse
       lin += ", " + int(l.3)

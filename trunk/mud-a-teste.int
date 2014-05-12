@@ -1034,6 +1034,15 @@ func cmd_falou
     $mens.mtodos1("$P deixa de seguir $a e vai embora")
 
 
+classe p_teste022
+herda comum_perso
+const nome = "aprendiz do fogo"
+const ident = "aprendiz fogo"
+const descpadr = "Um aprendiz do fogo está brincando com uma pequena chama."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const lojaaula = "m_Chama_Protetora 5"
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -1186,10 +1195,11 @@ const s_titulo = "Sala ampla"
 const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal assombrada.\n\
 Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
 e uma passagem ao norte."
-const dir_l = $s_teste010
 const dir_n = $s_teste009
-const dir_s = $s_teste007
 const portaini_n = 2
+const fecha_n = 1 # Fecha ao passar: Sim
+const dir_s = $s_teste007
+const dir_l = $s_teste010
 
 
 classe s_teste009
@@ -1200,6 +1210,7 @@ nenhuma saída. As paredes estão cinzas de sujeira e há teias de aranha\n\
 por toda parte. Nota-se que ninguém vem aqui há anos."
 const dir_s = $s_teste008
 const portaini_s = 2
+const fecha_s = 1 # Fecha ao passar: Sim
 
 
 classe s_teste010
@@ -2767,6 +2778,7 @@ const s_titulo = "Chama protetora"
 const s_desc = "Aqui tecle C para criar o efeito \"chama protetora\", que te protege nas\n\
 batalhas, tirando 10 pontos de vida de quem atacar você.\n\
 Para apagar a chama, tecle A."
+const dir_n = $s_teste104
 const dir_s = $s_teste096
 
 func cmd_salaperso # Personagem chegou
@@ -2781,3 +2793,21 @@ func cmd_escr # Escreveu algo
     !r && arg0.msg("Você não possui nenhuma chama protetora.")
     apagar(r)
     ret 1
+
+
+classe s_teste104
+herda b_teste
+const s_titulo = "Magia Chama Protetora"
+const s_desc = "Esse sujeito aqui ensina a magia Chama Protetora, que lança o efeito\n\
+de mesmo nome. Para aprender a magia tecle aprender chama.\n\
+Aqui foi criada a função cmd_alvo na classe magia_chama_protetora\n\
+(arquivo mud-b-hab.int) para apresentar a mensagem de \"Errou o alvo\"\n\
+da magia se for lançada em quem já estiver com o efeito Chama Protetora."
+const dir_s = $s_teste103
+const s_reset = "P 100 teste022 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste022:objsolto.total < 1
+    criar("p_teste022", este, 0)
+  fimse

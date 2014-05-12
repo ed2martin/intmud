@@ -246,14 +246,16 @@ func p_perso # Entrando no jogo: digitar o nome do personagem
     msg("Nome inválido; digite outro")
   senao ind.obj("un " + texto)
     msg("Nome já está sendo usado; digite outro")
-  senao !sav1.existe("sav/" + texto + ".sav") # Novo personagem
-    cnome = "un " + texto
-    nome = txtmaimin(arg0)
-    p_perso1
-  senao
+  senao sav1.existe("sav/" + texto + ".sav") # Carregar jogo salvo
     msg("Personagem '" + txtmaimin(arg0) + "' já existe")
     tpasso = txtmaimin(arg0)
     p_entrasenha
+  senao $admnomesnao.nomes.n_[texto] # Criar personagem: checa se nome permitido
+    msg("Nome não permitido para personagem")
+  senao # Criar personagem
+    cnome = "un " + texto
+    nome = txtmaimin(arg0)
+    p_perso1
   fimse
   ret 1
 
@@ -852,7 +854,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     msg("Você se desequilibrou e caiu, -5")
     $mens.p(este)
     $mens.mtodos2("", "$P se desequilibrou e caiu.")
-  fimse 
+  fimse
 # Acerta estado do personagem
   acertapos(1)
 # Salva o jogo

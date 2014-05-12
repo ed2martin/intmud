@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "20/4/2014"
+const versao = "10/5/2014"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -135,8 +135,7 @@ func separa # Separa o nome do objeto do nome do destino
     misc:sep2 = txtsub(x, 2)
     ret
   casose
-    uint8 tam
-    tam = intsub(arg0) - 1
+    refvar tam = intsub(arg0) - 1
     misc:sep1 = txtsub(x, 0, tam)
     misc:sep2 = txtsub(x, tam)
   casofim

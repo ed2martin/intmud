@@ -99,8 +99,10 @@ const posic = 5
 #
 ref sala # De onde pegar os itens
 uint32 total # Quantidade de itens do mesmo tipo
+ref r # Objeto sendo pego
 txt20 mens # Parte da mensagem
-int8 achou # Quantos itens achou multiplicado por 2
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
 
 func escr
   listaobj l
@@ -127,28 +129,35 @@ func escr
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, 1000000, misc:tudo)
 # Pega os itens
-  achou = 0
+  achou = 0, erro = "Você não vê isso."
   epara l.addfim(sala.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
-    ref r # Nota: r pode mudar após r.mudadono
-    r = l.objini
+    r = l.objini # Nota: r pode mudar após r.mudadono
     se arg0.dentro1.total + total > arg0.objmax
-      ret arg0.msg("Você não consegue carregar tanta coisa.")
+      erro = "Você não consegue carregar tanta coisa."
+      continuar
     senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
-      ret arg0.msg("Você não consegue carregar tanta coisa.")
+      erro = "Você não consegue carregar tanta coisa."
+      continuar
+    senao arg0 == sala.dono
     senao arg0.pesoden - arg0.pesoveste + r.pesotot * total / r.objtot > arg0.pesomax
-      ret r.pesotot > r.objtot * arg0.pesomax * 2, arg0.msg("É pesado demais.")
-      ret arg0.msg("Você não consegue carregar tanto peso.")
+      se r.pesotot > r.objtot * arg0.pesomax * 2
+        erro = "É pesado demais."
+      senao
+        erro = "Você não consegue carregar tanto peso."
+      fimse
+      continuar
     senao (arg0.objnum >> 1) + (r.objnum >> 1) > config:itens
-      ret arg0.msg("Você não consegue carregar tanta coisa.")
+      erro = "Você não consegue carregar tanta coisa."
+      continuar
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       sair e.objini.cmd_pegarobj(arg0, sala, r, total)
     efim
     se e
-      sair (achou += 2) >= 20
+      sair (achou += 1) >= 10
       continuar
     fimse
     $mens.p(arg0, sala, r)
@@ -161,7 +170,7 @@ func escr
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_pegouobj(arg0, sala, r, total)
     efim
-    sair (achou += 2) >= 20
+    sair (achou += 1) >= 10
   efim
   ret achou, nulo
 # Pega moedas
@@ -186,7 +195,7 @@ func escr
     ret
   fimse
 # Não encontrou o item
-  arg0.msg("Você não vê isso.")
+  arg0.msg(erro)
 
 
 classe cmd_soltar
@@ -203,11 +212,14 @@ Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
 #
+const cmdsg = 0 # 0=comando soltar, 1=comando guardar
 ref sala # Aonde soltar os itens
 uint32 total # Quantidade de itens do mesmo tipo
+ref r # Objeto sendo pego
 txt20 mens # Parte da mensagem
 txt80 mens2 # Outra parte da mensagem
-int8 achou # Quantos itens achou multiplicado por 2
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
 int8 soltar # Se pode soltar itens
 
 func escr
@@ -216,7 +228,7 @@ func escr
     ret l.objini.cmd_soltar(arg0, arg1), nulo
   efim
 # Checa soltar animal
-  se arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+  se !cmdsg && arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
     refvar r = arg0.animalnum(arg1)
     ret !r, arg0.msg("Você não possui " + arg1 + ".")
     ret r.p_soltar == 2, arg0.msg("Não é possível soltar esse animal.")
@@ -241,6 +253,7 @@ func escr
 # Obtém o objeto de onde soltar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    ret cmdsg, arg0.msg("Guardar aonde?")
     sala = arg0.dono
     soltar = sala.s_soltar
     mens = ""
@@ -261,20 +274,28 @@ func escr
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, 1000000, misc:tudo)
 # Solta os itens
-  achou = 0
+  achou = 0, erro = "Você não vê isso."
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    ref r # Nota: r pode mudar após r.mudadono
-    r = l.objini
     total = n # Quantidade de itens
+    r = l.objini # Nota: r pode mudar após r.mudadono
     se r == sala # Soltar o objeto dentro dele mesmo
-      achou += 1
+      se sala.msexo
+        erro = "Não é possível colocar " + sala.descnome + " dentro dele mesmo."
+      senao
+        erro = "Não é possível colocar " + sala.descnome + " dentro dela mesma."
+      fimse
       continuar
     senao sala.dentro1.total + total >= sala.objmax
-      ret sala.item, arg0.msg("Não consegue soltar nada em " + sala.descnome + ".")
-      ret arg0.msg("Não consegue soltar nada aqui.")
-    senao sala.volden + r.voltot * total / r.objtot > sala.volmax * r.objtot
-      ret arg0.msg("Não há espaço suficiente para soltar isso.")
+      se sala.item
+        erro = "Não consegue colocar nada em " + sala.descnome + "."
+      senao
+        erro = "Não consegue soltar nada aqui."
+      fimse
+      continuar
+    senao sala.volden + r.voltot * total / r.objtot > sala.volmax
+      erro = "Não há espaço suficiente para soltar isso."
+      continuar
     fimse
     listaobj e
     total = n # Quantidade de itens
@@ -282,7 +303,7 @@ func escr
       sair e.objini.cmd_soltarobj(arg0, sala, r, total)
     efim
     se e
-      sair (achou += 2) >= 20
+      sair (achou += 1) >= 10
       continuar
     fimse
     $mens.p(arg0, sala, r)
@@ -308,9 +329,9 @@ func escr
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_soltouobj(arg0, sala, r, total)
     efim
-    sair (achou += 2) >= 20
+    sair (achou += 1) >= 10
   efim
-  ret achou >= 2, nulo
+  ret achou, nulo
 # Solta moedas
   se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
     total = n
@@ -347,12 +368,18 @@ func escr
     ret
   fimse
 # Não encontrou o item
-  se !achou
-    arg0.msg("Você não vê isso.")
-  senao sala.msexo
-    arg0.msg("Não é possível soltar " + sala.descnome + " dentro dele mesmo.")
-  senao
-    arg0.msg("Não é possível soltar " + sala.descnome + " dentro dela mesma.")
+  arg0.msg(erro)
+
+
+classe cmd_guardar
+herda cmd_soltar
+const cmdsg = 1
+const txtajuda = "\b\c3Guardar\b\n\
+Sintaxe: GUARDAR\n\
+         GUARDAR <objeto> <container>\n\
+         GUARDAR <quantidade> <objeto> <container>\n\
+Coloca um objeto dentro de um container (uma bolsa, uma estante, etc).\n\
+Para guardar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 
 
 classe cmd_dar
@@ -369,8 +396,10 @@ const posic = 5
 #
 ref sala # Para quem dar os itens
 uint32 total # Quantidade de itens do mesmo tipo
+ref r # Objeto sendo pego
 txt20 mens # Parte da mensagem
-int1 achou # Se achou algum item
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
 
 func escr
   listaobj l
@@ -426,22 +455,25 @@ animal.")
     ret arg0.msg("Não é possível dar nada para " + sala.descnome + ".")
   fimse
   nomeobj n # Para reconhecer os itens
-  n.ini(misc:sep1, 1000000)
+  n.ini(misc:sep1, 1000000, misc:tudo)
 # Dá os itens
-  achou = 0
+  achou = 0, erro = "Você não vê isso."
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    ref r # Nota: r pode mudar após r.mudadono
-    r = l.objini
     total = n # Quantidade de itens
+    r = l.objini # Nota: r pode mudar após r.mudadono
     se sala.dentro1.total + total >= sala.objmax
-      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada.")
+      erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada."
+      continuar
     senao sala.volden + r.voltot * total / r.objtot > sala.volmax
-      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
+      erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar isso."
+      continuar
     senao sala.pesoden - sala.pesoveste + r.pesotot * total / r.objtot > sala.pesomax
-      ret arg0.msg("É pesado demais para " + txtcopiamai(sala.descnome, "A") + ".")
+      erro = "É pesado demais para " + txtcopiamai(sala.descnome, "A") + "."
+      continuar
     senao (sala.objnum >> 1) + (r.objnum >> 1) > config:itens
-      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não consegue carregar isso.")
+      erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar isso."
+      continuar
     fimse
     listaobj e
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
@@ -486,7 +518,7 @@ animal.")
     ret
   fimse
 # Não encontrou o item
-  arg0.msg("Você não vê isso.")
+  arg0.msg(erro)
 
 
 classe cmd_usar
