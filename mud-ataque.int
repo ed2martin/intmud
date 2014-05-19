@@ -1302,10 +1302,10 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
   txt100 lin.4
   ret menssub(lin, 0), nulo
   se arg0 == arg1
-    $mens.p(arg0, arg1)
+    $mens.p(arg0, arg1, arma1)
     $mens.mtodos2(lin.0, lin.2 ? lin.2 : lin.0)
   senao
-    $mens.p(arg0, arg1)
+    $mens.p(arg0, arg1, arma1)
     $mens.mtodos3(lin.0, lin.1 ? lin.1 : lin.0, lin.2 ? lin.2 : lin.0)
 
 func mensgolpe # Envia mensagens de acordo com o resultado do ataque
@@ -1313,7 +1313,7 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
 # arg1 = personagem alvo
 # arg2 = verdadeiro se for alvo secundário (não mostra todas as mensagens)
 # Faz result=10 se o alvo morreu, mas não chama a função morreu
-  $mens.p(arg0, arg1)
+  $mens.p(arg0, arg1, arma1)
   txt100 lin.20
   casovar result
   casose "0" # Acertou o alvo

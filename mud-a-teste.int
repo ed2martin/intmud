@@ -502,6 +502,16 @@ const pesoobj = 300000
 const volobj = 100000
 
 
+classe i_teste037
+herda comum_itemperso
+const nome = "cinto dourado"
+const descnome = "um cinto dourado"
+const luzfim = 1 # Sem luz item some: Sim
+const luzitem = 7 # Tipo de luz: 7 Automático (acende ao vestir, sem fogo)
+const luzini = -5000
+const vestir1 = 32768 # Aonde vestir: 15-cintura
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1474,7 +1484,8 @@ const s_titulo = "Itens que produzem luz"
 const s_desc = "Aqui há diversos itens que podem ser usados como fonte de luz.\n\
 Você pode acender e apagar usando os comandos acender e apagar.\n\
 Para acender um fósforo da caixa, basta tentar acender a caixa.\n\
-Já a tocha requer algum fogo para ser acesa (fósforo ou lambião)."
+Já a tocha requer algum fogo para ser acesa (fósforo ou lambião).\n\
+O cinto dourado produz luz ao vestir e apaga ao remover."
 const dir_o = $s_teste023
 const s_reset = "S 100 teste006 0 S\n\
 S 100 teste005 0 S\n\
@@ -1482,7 +1493,8 @@ S 100 teste007 0 teste005\n\
 S 100 teste007 0 S\n\
 S 100 teste008 0 S\n\
 S 100 teste009 1 S\n\
-S 100 teste011 0 S"
+S 100 teste011 0 S\n\
+S 100 teste037 0 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -1494,6 +1506,7 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste008") && criar("i_teste008", este, 0)
   !dentro1.objini("i_teste009") && criar("i_teste009", este, 1)
   !dentro1.objini("i_teste011") && criar("i_teste011", este, 0)
+  !dentro1.objini("i_teste037") && criar("i_teste037", este, 0)
 
 
 classe s_teste025

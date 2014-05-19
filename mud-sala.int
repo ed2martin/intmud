@@ -251,7 +251,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
       mporta = r.portanome_[nome]
       !mporta && !(mporta = $cmd_[nome].m_porta) && (mporta = "uma porta")
       $mens.mens = mporta
-      se r.portaartigo_[nome] & 2
+      se r.portaartigo_[nome] & 1
         $mens.o_1 = "abriram", $mens.o_2 = "fecharam"
       senao
         $mens.o_1 = "abriu", $mens.o_2 = "fechou"
@@ -268,7 +268,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
     mporta = portanome_[arg0]
     !mporta && !(mporta = $cmd_[arg0].m_porta) && (mporta = "uma porta")
     $mens.mens = mporta
-    se portaartigo_[arg0] & 2
+    se portaartigo_[arg0] & 1
       $mens.o_1 = "abriram", $mens.o_2 = "fecharam"
     senao
       $mens.o_1 = "abriu", $mens.o_2 = "fechou"

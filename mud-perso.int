@@ -493,7 +493,7 @@ func bat_fim_int # Chamado internamente por batalhafim
   efim
 
 func batalhaexp # Dá experiência a quem estiver atacando o personagem
-# arg0 = fator do ganho de experiência; se menor que 0 retira toda experiência
+# arg0 = fator do ganho de experiência; se menor que 0 multiplica experiência por -arg0
   listaitem i
   listaobj l
 # Preenche lista com os personagens
@@ -505,7 +505,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
 # Retira experiência
   se arg0 < 0
     epara i = l.ini, i, i.depois
-      i.obj.expatual = 0
+      i.obj.ganhaexp(i.obj.expatual * arg0 / 100)
     efim
     ret
   fimse
@@ -514,37 +514,39 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   real2 v1
   ref r
   epara i = l.ini, i, i.depois
-    v1 = intpos(pnivel - i.obj.pnivel + 8) / 16
-    v1 > 1 && (v1 = 1)
+    v1 = intmin(1, intpos(pnivel - i.obj.pnivel + 8) / 16)
     r = i.obj.dono
     r.perso && i.obj.var.z_dono != r.descnome && (v1 *= 1.5)
     i.obj.ganhaexp(v1 * exp1 / (l.total + 1))
   efim
 
 func ganhaexp # Personagem ganha experiência
-# arg0 = experiência
+# arg0 = experiência (se negativo perde experiência)
 # arg1 = verdadeiro se não deve mostrar mensagem de ganhar XP para o jogador
-  uint32 exp1
-  ret !(exp1 = arg0), nulo
+  refvar exp1 = intpos(int(expatual + arg0)) - expatual
+  ret !exp1, nulo
   expatual += exp1
-  se arg1
-  senao !dono.perso
-    se exp1 == 1
-      msg("Você recebe 1 ponto de experiência.")
-    senao
-      msg("Você recebe " + exp1 + " pontos de experiência.")
+# Mensagem de experiência ganha
+  se !arg1
+    refvar n1 = este == contr ? "Você" : txtcopiamai(descnome, "A")
+    se exp1 > 1
+      contr.msg(n1 + " recebe " + exp1 + " pontos de experiência.")
+    senao exp1 < -1
+      contr.msg(n1 + " perde " + -exp1 + " pontos de experiência.")
+    senao exp1 == 1
+      contr.msg(n1 + " recebe 1 ponto de experiência.")
+    senao exp1 == -1
+      contr.msg(n1 + " perde 1 ponto de experiência.")
     fimse
-  senao exp1 == 1
-    dono.msg(nome + " recebe 1 ponto de experiência.")
-  senao
-    dono.msg(nome + " recebe " + exp1 + " pontos de experiência.")
   fimse
-  se expatual >= expmax
-    expatual -= expmax
-    pnivel += 1
-    dono.msg(nome + " avança para o nível " + pnivel)
-    var.z_aulas_ += config:aulas
-    recalc = 1 # Recalcular atributos do personagem
+# Subir de nível
+  ret expatual < expmax, nulo
+  expatual -= expmax
+  pnivel += 1
+  var.z_aulas_ += config:aulas
+  recalc = 1 # Recalcular atributos do personagem
+  refvar n1 = txtcopiamai(descnome, "A") + (este != contr ? " de " + contr.descnome)
+  contr.dono.msg(n1 + " avança para o nível " + pnivel + ".")
 
 func atkauto # Realiza um ataque automático
 # arg0 = alvo do ataque
@@ -626,7 +628,7 @@ func morreu # Procedimentos quando morre
       arg0.p_hist.addfim(lin + " de " + contr + "(" + contr.nome + ") N" + contr.pnivel)
     fimse
   fimse
-# Jogador: retira toda experiência e transfere jogador para outro lugar
+# Jogador: perde experiência e transfere jogador para outro lugar
   se jog
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
@@ -640,7 +642,7 @@ func morreu # Procedimentos quando morre
     p_sede = intmax($miscfome.cheio / 2, p_sede)
     p_fome = intmax($miscfome.cheio / 2, p_fome)
     p_bebida = p_diges = 0
-    batalhaexp(-1), batalhafim # Retira toda experiência de quem atacou
+    batalhaexp(-config:atkmatouexp), batalhafim # Acerta a experiência de quem atacou
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     mudadono(config:salafim)
     salvar # Salva o jogo

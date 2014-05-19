@@ -36,7 +36,9 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         { "mudar",        &TTextoVar::FuncMudar },
         { "nomevar",      &TTextoVar::FuncNomeVar },
         { "total",        &TTextoVar::FuncTotal },
-        { "valor",        &TTextoVar::FuncValor }  };
+        { "valor",        &TTextoVar::FuncValor },
+        { "valorfim",     &TTextoVar::FuncValorFim },
+        { "valorini",     &TTextoVar::FuncValorIni } };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -104,6 +106,48 @@ bool TTextoVar::FuncValor(TVariavel * v)
     Instr::VarAtual->setDouble(errno ? 0 : num);
     return true;
 } */
+
+//----------------------------------------------------------------------------
+// Primeira variável como texto
+bool TTextoVar::FuncValorIni(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (RBroot)
+    {
+        if (Instr::VarAtual < v+1)
+            bl = RBroot->RBfirst();
+        else
+            bl = ProcIni(v[1].getTxt());
+    }
+    Instr::ApagarVar(v);
+    if (bl==0)
+        return Instr::CriarVarTexto("");
+    const char * p = bl->Texto;
+    while (*p++);
+    return Instr::CriarVarTexto(p);
+}
+
+//----------------------------------------------------------------------------
+// Última variável como texto
+bool TTextoVar::FuncValorFim(TVariavel * v)
+{
+    TBlocoVar * bl = 0;
+    if (RBroot)
+    {
+        if (Instr::VarAtual < v+1)
+            bl = RBroot->RBlast();
+        else
+            bl = ProcFim(v[1].getTxt());
+    }
+    Instr::ApagarVar(v);
+    if (bl==0)
+        return Instr::CriarVarTexto("");
+    const char * p = bl->Texto;
+    while (*p++);
+//printf("\nLEU DE: %p\n", p); fflush(stdout);
+//printf("\n%s\n\n\n", p); fflush(stdout);
+    return Instr::CriarVarTexto(p);
+}
 
 //----------------------------------------------------------------------------
 // Nome da variável

@@ -31,6 +31,8 @@ public:
         ///< Função da variável
 
     bool FuncValor(TVariavel * v);
+    bool FuncValorIni(TVariavel * v);
+    bool FuncValorFim(TVariavel * v);
     // bool FuncInt(TVariavel * v);
     bool FuncNomeVar(TVariavel * v);
     bool FuncMudar(TVariavel * v);

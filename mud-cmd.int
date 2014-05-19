@@ -331,8 +331,6 @@ func escr
 # O que o personagem está vestindo
     textotxt t
     se r.perso
-      $mens.p(arg0, r)
-      $mens.mvis2("", "$P olha para $a.")
       se completo
         int1 vest.32 # Aonde está vestindo
         ref pos.55
@@ -398,6 +396,13 @@ func escr
     fimse
 # Envia mensagem
     ret !completo, arg0.msg(t2 + ".\b")
+    se r.perso
+      $mens.p(arg0, r)
+      $mens.mvis2("", "$P olha para $a.")
+    senao r.dono != arg0
+      $mens.p(arg0, nulo, r)
+      $mens.mvis2("", "$P olha para $o.")
+    fimse
     ret t.linhas, arg0.msg2(t2 + ".\b\n" + t.remove(1000))
     ret arg0.msg(t2 + ".\b\nVocê não vê nada de especial.")
   efim

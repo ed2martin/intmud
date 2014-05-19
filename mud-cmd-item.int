@@ -28,6 +28,8 @@ func escr
         sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
       efim
       ret !l.objini, arg0.msg("Você precisa de fogo para acender " + r.descnome + ".")
+    senao r.luzitem == 7 # Se acende ao vestir
+      ret arg0.msg("Você acenderá " + r.descnome + " quando usar.")
     fimse
 # Eventos
     l.limpar
