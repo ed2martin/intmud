@@ -460,6 +460,13 @@ Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
 Exemplo:
 const portanome_n = "a porta da casa"
 
+const portaartigo_[direção]
+Se o nome da porta está no singular ou plural, feminino ou masculino.
+0 a (porta)
+1 as (portas)
+2 o (portão)
+3 os (portões)
+
 const s_reset
 Reset de sala:
 Um texto que contém os executados quando algum jogador entra na sala.
@@ -714,6 +721,11 @@ func acertapos(1)
 Acerta posição do personagem, conforme pontos de vida e batalha.
 Para checar se morreu, chamar com: acertapos(1)
 Retorna o corpo do personagem, se ele morreu e ficou o corpo.
+
+func batalhaexp( valor )
+Dá experiência a quem estiver atacando o personagem
+Valor é o fator do ganho de experiência
+See menor que 0 multiplica a experiência por -valor
 
 func batalhafim
 Encerra a batalha
@@ -1749,6 +1761,12 @@ Exemplo: m_menu("menu_config")
 
 19. Lista de coisas pendentes
 
+Checar mensagens dos itens ao acender e ao apagar
+Opção em Itens / Tipo de arma:
+   Ataque automático:
+   Habilidade usada como ataque automático dessa arma
+   Se estiver vazio, o nome da habilidade é o tipo de arma
+Descrições extras diurnas e noturnas
 Acrescentar altura/peso/volume mínimo/máximo para jogadores nos tipos (comando etipo)
 Opção para os jogadores escolherem altura e peso, ao criar o personagem
    - Volume seria baseado em altura e peso, e o que foi definido na raça

@@ -2854,31 +2854,39 @@ Retorna nome da próxima variável ou "" se não existe.
 21.5. valor(<nome da variável>)
 Retorna o conteúdo da variável (um texto) ou "" se não existe.
 
-21.6. nomevar(<nome da variável>)
+21.6. valorini(<nome da variável>)
+Retorna o conteúdo da primeira variável cujo nome começa com o texto,
+ou "" se a variável não existe.
+
+21.7. valorini(<nome da variável>)
+Retorna o conteúdo da última variável cujo nome começa com o texto,
+ou "" se a variável não existe.
+
+21.8. nomevar(<nome da variável>)
 Retorna o nome da variável (um texto) ou "" se não existe.
 
-21.7. mudar("variável=valor")
+21.9. mudar("variável=valor")
 Cria uma variável ou muda se já existir.
 Para apagar variável, basta atribuir um texto vazio.
 Nota: é possível fornecer mais de uma variável (vários argumentos).
 
-21.8. limpar([texto])
+21.10. limpar([texto])
 Apaga todas as variáveis cujos nomes começam com o texto.
 Nota: pode ser fornecido vários textos (vários argumentos).
 Sem argumentos, apaga todas as variáveis do textovar.
 
-21.9. total([texto])
+21.11. total([texto])
 Retorna a quantidade de variáveis que começam com o texto especificado.
 A função 'total' sem argumentos tem o mesmo efeito de 'total("")',
 ou seja, retorna a quantidade de variáveis do 'textovar'. Nesse caso,
 essa função é bem mais eficiente.
 
-21.10. Outros nomes:
+21.12. Outros nomes:
 Correspondem a uma variável de textovar, do tipo texto.
 Para a variável ser tratada como numérica, acrescentar sublinhado
 após o nome da variável.
 
-21.11. Exemplos:
+21.13. Exemplos:
 
 textovar v
 v.mudar("x=teste") # Cria variável x faz ser "teste"
@@ -2911,11 +2919,19 @@ as funções que possuem alguma diferença.
 22.1. valor(<nome da variável>)
 Retorna o objeto ou NULO se a variável não existe.
 
-22.2. mudar("variável", [objeto])
+22.2. valorini(<nome da variável>)
+Retorna o objeto da primeira variável cujo nome começa com o texto,
+ou "" se a variável não existe.
+
+22.3. valorini(<nome da variável>)
+Retorna o objeto da última variável cujo nome começa com o texto,
+ou "" se a variável não existe.
+
+22.4. mudar("variável", [objeto])
 Cria uma variável ou muda se já existir.
 Se [objeto] for omitido ou não for um objeto, a variável será apagada.
 
-22.3. apagar([texto])
+22.5. apagar([texto])
 Marca para exclusão (usando a função apagar) todos os objetos das variáveis
 cujos nomes começam com o texto.
 Nota: pode ser fornecido vários textos (vários argumentos).

@@ -37,7 +37,9 @@ bool TTextoObj::Func(TVariavel * v, const char * nome)
         { "mudar",        &TTextoObj::FuncMudar },
         { "nomevar",      &TTextoObj::FuncNomeVar },
         { "total",        &TTextoObj::FuncTotal },
-        { "valor",        &TTextoObj::FuncValor }  };
+        { "valor",        &TTextoObj::FuncValor },
+        { "valorfim",     &TTextoObj::FuncValorFim },
+        { "valorini",     &TTextoObj::FuncValorIni } };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -79,6 +81,44 @@ bool TTextoObj::FuncValor(TVariavel * v)
     Instr::ApagarVar(v);
     if (obj==0)
         return false;
+    return Instr::CriarVarObj(obj);
+}
+
+//----------------------------------------------------------------------------
+// Primeira variável como texto
+bool TTextoObj::FuncValorIni(TVariavel * v)
+{
+    TBlocoObj * bl = 0;
+    if (RBroot)
+    {
+        if (Instr::VarAtual < v+1)
+            bl = RBroot->RBfirst();
+        else
+            bl = ProcIni(v[1].getTxt());
+    }
+    if (bl==0)
+        return false;
+    TObjeto * obj = bl->Objeto;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarObj(obj);
+}
+
+//----------------------------------------------------------------------------
+// Última variável como texto
+bool TTextoObj::FuncValorFim(TVariavel * v)
+{
+    TBlocoObj * bl = 0;
+    if (RBroot)
+    {
+        if (Instr::VarAtual < v+1)
+            bl = RBroot->RBlast();
+        else
+            bl = ProcFim(v[1].getTxt());
+    }
+    if (bl==0)
+        return false;
+    TObjeto * obj = bl->Objeto;
+    Instr::ApagarVar(v);
     return Instr::CriarVarObj(obj);
 }
 
