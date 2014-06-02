@@ -172,37 +172,44 @@ func cmd_eitem # Editar item
 
 
 classe menu_iarma
-const titulo = "Tipo de arma"
+const titulo = "Arma"
 const menufim = var.menufim
 const colunas = 25
 #
-const nome1 = "Arma tipo"
+const nome1 = "Tipo de arma"
 const tipo1 = "opcao"
 const clas1 = var.classe1
 const vari1 = "armatipo"
 const extr1 = "Não é arma\n" + txtsublin(config:arma_txt, 1)
 #
-const nome2 = "Arma precisão"
-const info2 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
-const tipo2 = "numero"
+const nome2 = "Ataque automático"
+const info2 = "Habilidade usada como ataque automático dessa arma\n\
+Se estiver vazio, o nome da habilidade é o tipo de arma"
+const tipo2 = "linha"
 const clas2 = var.classe1
-const vari2 = "armaprecisao"
+const vari2 = "armaatk"
 #
-const nome3 = "Ataque mín"
+const nome3 = "Precisão"
+const info3 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
 const tipo3 = "numero"
 const clas3 = var.classe1
-const vari3 = "armamin"
+const vari3 = "armaprecisao"
 #
-const nome4 = "Ataque máx"
+const nome4 = "Ataque mín"
 const tipo4 = "numero"
 const clas4 = var.classe1
-const vari4 = "armamax"
+const vari4 = "armamin"
 #
-const nome5 = "Só ataca manual"
-const info5 = "Se o personagem não usa essa arma em ataques automáticos"
-const tipo5 = "simnao"
+const nome5 = "Ataque máx"
+const tipo5 = "numero"
 const clas5 = var.classe1
-const vari5 = "armamanual"
+const vari5 = "armamax"
+#
+const nome6 = "Só ataca manual"
+const info6 = "Se o personagem não usa essa arma em ataques automáticos"
+const tipo6 = "simnao"
+const clas6 = var.classe1
+const vari6 = "armamanual"
 
 
 classe menu_ifome
@@ -237,21 +244,21 @@ const info4 = "Um minuto são de 3 a 4 unidades, exceto no deserto"
 const tipo4 = "numero"
 const clas4 = var.classe1
 const vari4 = "f_sede"
-const extr4 = "-200 200"
+const extr4 = "-250 250"
 #
 const nome5 = "Sustenta"
 const info5 = "Um minuto são de 3 a 4 unidades"
 const tipo5 = "numero"
 const clas5 = var.classe1
 const vari5 = "f_fome"
-const extr5 = "-200 200"
+const extr5 = "-250 250"
 #
 const nome6 = "Embriaguês"
 const info6 = "Um minuto são de 6 a 8 unidades"
 const tipo6 = "numero"
 const clas6 = var.classe1
 const vari6 = "f_bebida"
-const extr6 = "-200 200"
+const extr6 = "-250 250"
 #
 const nome7 = "Digestão"
 const info7 = "Quanto tempo leva para digerir o alimento\n\
@@ -259,7 +266,7 @@ Um minuto são de 3 a 12 unidades, dependendo da posição do personagem"
 const tipo7 = "numero"
 const clas7 = var.classe1
 const vari7 = "f_diges"
-const extr7 = "-200 200"
+const extr7 = "-250 250"
 #
 const nome8 = "Magia 1"
 const info8 = "Nome da magia"
@@ -433,7 +440,7 @@ const nome25 = "Fome e sede"
 const tipo25 = "menu--"
 const clas25 = "menu_ifome"
 #
-const nome26 = "Tipo de arma"
+const nome26 = "Arma"
 const tipo26 = "menu--"
 const clas26 = "menu_iarma"
 #

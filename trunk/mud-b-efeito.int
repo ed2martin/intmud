@@ -103,7 +103,10 @@ func cmd_mover
   ret 1
 
 func cmd_recalc2
-  arg0.atribs.addfim("Congelado")
+  arg0.atribs.addfim(arg0.msexo ? "Congelado" : "Congelada")
+# Nota, as mensagens para persongaens masculinos e femininos forem iguais,
+# pode-se substituir essa linha do arg0.atribs por algo como:
+# arg0.atribs.addfim("Congelado")
 
 
 classe e_endurecer
@@ -124,10 +127,10 @@ classe e_envenenado
 herda comum_efeito
 const e_nome = "Envenenado"
 const desc = "Perde vida de tempos em tempos"
+const r_tempo = 200
+const r_vida = 20
 const tempo1 = 6000
 const tempo2 = 40
-const r_tempo = 80
-const r_vida = 10
 const msgini2 = "$P foi envenenad$s."
 const msgfim2 = "$P não está mais envenenad$s."
 const msgreduz2 = "$P sofre com o veneno."
@@ -198,8 +201,7 @@ func encerrar
   ret dono.pvida <= 0, nulo
   $mens.p(dono) + $mens.mvis1("$P perdeu a concentração.")
 
-func t_reduzir_exec # Restaura mana
-  t_reduzir = r_tempo
+func cmd_reduz # Restaura mana
   refvar mana = dono.pmana
   refvar max = dono.pmanamax
   se mana >= max

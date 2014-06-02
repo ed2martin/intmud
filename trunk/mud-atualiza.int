@@ -173,8 +173,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 307, nulo
-  p.criar("config", "const versao = 307 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 309, nulo
+  p.criar("config", "const versao = 309 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -238,6 +238,39 @@ func ini2_exec
       $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
       $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
       d.ini
+    efim
+  fimse
+# Tipos de ataque (em habilidades e magias)
+  se versao < 309
+    epara p.iniarq("b-hab"), p.lin, p.depois
+      dbg.ini
+      continuar p.existe(p.texto, "tipoalvo") != 1
+      casovar [p.texto]:tipoalvo
+      casose "0"
+        p.criar(p.texto, "const tipoalvo = 0 # Alvo: 0 Qualquer um; ataque")
+        sair
+      casose "1"
+        p.criar(p.texto, "const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque")
+        sair
+      casose "2"
+        p.criar(p.texto, "const tipoalvo = 2 # Alvo: 2 Todos dividindo o ataque")
+        sair
+      casose "3"
+        p.criar(p.texto, "const tipoalvo = 4 # Alvo: 4 Todos sem dividir o ataque")
+        sair
+      casose "4"
+        p.criar(p.texto, "const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque")
+        sair
+      casose "5"
+        p.criar(p.texto, "const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque")
+        sair
+      casose "6"
+        p.criar(p.texto, "const tipoalvo = 8 # Alvo: 8 Ataque automático")
+        sair
+      casose "7"
+        p.criar(p.texto, "const tipoalvo = 9 # Alvo: 9 Nenhum (não ataca)")
+        sair
+      casofim
     efim
   fimse
 # Avisa que atualizou arquivos
