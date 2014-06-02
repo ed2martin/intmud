@@ -23,7 +23,7 @@ func cmd_lhab # Listar habilidades
   epara p.iniclasse("cmd_"), p.lin && t.linhas < 499, p.depois
     continuar !$[p.texto].cmdmenu # Continua se não é uma habilidade
     lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
-    se $[p.texto].tipoalvo < 4
+    se $[p.texto].tipoalvo < 6
       lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
     fimse
     casovar $[p.texto].tipoalvo
@@ -34,13 +34,25 @@ func cmd_lhab # Listar habilidades
       lin += ", Todos dividindo ataque"
       sair
     casose "3"
-      lin += ", Todos sem dividir ataque"
+      lin += ", Outros dividindo ataque"
       sair
     casose "4"
-      lin += "Não agressivo"
+      lin += ", Todos sem dividir ataque"
       sair
     casose "5"
+      lin += ", Outros sem dividir ataque"
+      sair
+    casose "6"
+      lin += "Não agressivo"
+      sair
+    casose "7"
       lin += "Não agressivo, O próprio"
+      sair
+    casose "8"
+      lin += "Automático"
+      sair
+    casose "9"
+      lin += "Nenhum"
       sair
     casofim
     t.addfim(lin)
@@ -59,7 +71,7 @@ func cmd_lmag # Listar magias
   epara p.iniclasse("magia_"), p.lin && t.linhas < 499, p.depois
     continuar !$[p.texto].cmdmenu # Continua se não é uma magia editável
     lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
-    se $[p.texto].tipoalvo < 4
+    se $[p.texto].tipoalvo < 6
       lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
     fimse
     casovar $[p.texto].tipoalvo
@@ -70,13 +82,25 @@ func cmd_lmag # Listar magias
       lin += ", Todos dividindo ataque"
       sair
     casose "3"
-      lin += ", Todos sem dividir ataque"
+      lin += ", Outros dividindo ataque"
       sair
     casose "4"
-      lin += "Não agressivo"
+      lin += ", Todos sem dividir ataque"
       sair
     casose "5"
+      lin += ", Outros sem dividir ataque"
+      sair
+    casose "6"
+      lin += "Não agressivo"
+      sair
+    casose "7"
       lin += "Não agressivo, O próprio"
+      sair
+    casose "8"
+      lin += "Automático"
+      sair
+    casose "9"
+      lin += "Nenhum"
       sair
     casofim
     t.addfim(lin)
@@ -667,7 +691,9 @@ const vari1 = "tipoalvo"
 const extr1 = "Qualquer um; ataque\n\
 Exceto o personagem; ataque\n\
 Todos dividindo o ataque\n\
+Outros dividindo o ataque\n\
 Todos sem dividir o ataque\n\
+Outros sem dividir o ataque\n\
 Qualquer um; não é ataque\n\
 O personagem; não é ataque\n\
 Ataque automático\n\
@@ -751,7 +777,7 @@ const objcmd = arg0.persobat.var.[nomevar] ? este
 const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 7
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
-const tipoalvo = 4
+const tipoalvo = 6
 
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
@@ -837,7 +863,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
   ret arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1, nulo
-  ret !arg0.contr.dono.s_luta && tipoalvo != 4 && tipoalvo != 5, nulo
+  ret !arg0.contr.dono.s_luta && tipoalvo != 6 && tipoalvo != 7, nulo
   ret 1
 
 func costohab1 # Aplica os custos da habilidade/magia
@@ -855,7 +881,7 @@ func custohab2 # Aplica os custos da habilidade/magia
 
 classe comando_ataque
 herda comando_hab
-const objcmd = tipoalvo < 6 && arg0.persobat.var.[nomevar] ? este
+const objcmd = tipoalvo < 8 && arg0.persobat.var.[nomevar] ? este
 const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoalvo = 0 # Alvo
@@ -911,7 +937,7 @@ func txtajuda # Retorna um texto que contém informações
   fimse
   txt100 lin
   lin = "\c3" + misc:nomevar(nomevar)
-  se tipoalvo < 4
+  se tipoalvo < 6
     lin += "\b\nAtaque do nível " + int(aulafim)
     lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
     lin += ", Força " + ataque + ", Velocidade " + vel
@@ -976,7 +1002,7 @@ func escr # Atacar alguém
     efim
     r = i.obj
     ret !r, arg0.msg("Você não vê isso.")
-  senao tipoalvo >= 4 # Hab não agressiva: o alvo é o próprio personagem
+  senao tipoalvo >= 6 # Hab não agressiva: o alvo é o próprio personagem
     r = arg0
   senao arg2.f_tipo == 4 # Hab agressiva usando pergaminho
     r = arg0.atkenv.objlista
@@ -1019,13 +1045,13 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Técnicas não agressivas
   listaobj l
   casovar tipoalvo
-  casose "5"
+  casose "7"
     se arg0 != arg1
       refvar msg = txt(nomevar, 0, 1) == "m" ? "magia" : "habilidade"
       arg0.contr.msg("Essa " + msg + " não pode ser usada nos outros.")
       ret
     fimse
-  casose "4"
+  casose "6"
     ret cmd_alvo(arg0, arg1, este), nulo
     epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
       ret l.objini.cmd_alvocontr(arg0, arg1, este), nulo
@@ -1055,8 +1081,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     arg0 != arg1 && arg0.acertapos(1)
     ret
   casose "1" # Ataque que não pode ser ao próprio personagem
+  casose "3"
+  casose "5"
     sair arg0 != arg1
-    ret arg0.contr.msg("Em você mesmo?")
+    ret arg0.contr.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
   casofim
 # Checa o alvo e dispara eventos
   se !arg0.contr.dono.s_luta
@@ -1092,11 +1120,13 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     atk = ataque * (arg2 + 0.5)
     sair
   casose "2" # Todos dividindo o ataque
+  casose "3"
     l.addfim(arg0.contr.dono.dentro2)
     l.remove(arg0.contr, arg1.contr)
     atk = ataque / (l.total + 1) * (arg2 + 0.5)
     sair
-  casose "3" # Todos sem dividir o ataque
+  casose "4" # Todos sem dividir o ataque
+  casose "5"
     l.addfim(arg0.contr.dono.dentro2)
     l.remove(arg0.contr, arg1.contr)
     atk = ataque * (arg2 + 0.5)
@@ -1122,7 +1152,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Ataca o alvo escolhido
   ref r
   listaobj e
-  tipoalvo != 6 && velgolpe(arg0, arg1) # Tempo do golpe
+  tipoalvo != 8 && velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, atk) # Ataca
   se result != 3
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
@@ -1138,10 +1168,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     r = l.objini, l.ini.remove
     continuar r.jog || r.perso < 2 # Não prossegue se for jogador
     r = r.persobat
-    tipoalvo != 6 && velgolpe(arg0, r) # Tempo do golpe
+    tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3
-    !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
+    !result && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     mensgolpe(arg0, r, 1)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento, r.evento), e, e.ini.remove
@@ -1299,14 +1329,14 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 func mensinicio # Envia mensagem inicial da habilidade ou magia
 # arg0 = personagem que está usando a habilidade ou magia
 # arg1 = personagem alvo
-  txt100 lin.4
+  txt512 lin.3
   ret menssub(lin, 0), nulo
   se arg0 == arg1
     $mens.p(arg0, arg1, arma1)
-    $mens.mtodos2(lin.0, lin.2 ? lin.2 : lin.0)
+    $mens.mtodos2(lin.0, lin.2)
   senao
     $mens.p(arg0, arg1, arma1)
-    $mens.mtodos3(lin.0, lin.1 ? lin.1 : lin.0, lin.2 ? lin.2 : lin.0)
+    $mens.mtodos3(lin.0, lin.1, lin.2)
 
 func mensgolpe # Envia mensagens de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
@@ -1314,7 +1344,7 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
 # arg2 = verdadeiro se for alvo secundário (não mostra todas as mensagens)
 # Faz result=10 se o alvo morreu, mas não chama a função morreu
   $mens.p(arg0, arg1, arma1)
-  txt100 lin.20
+  txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
@@ -1322,30 +1352,30 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
     se !arg1.pvida # Se morreu
       result = 10
       ret menssub(lin, 8), nulo
-      ret $mens.mtodos3(lin.8, lin.9 ? lin.9 : lin.8, lin.10 ? lin.10 : lin.8)
+      ret $mens.mtodos3(lin.0, lin.1, lin.2)
     senao arg2 # Se for alvo secundário
       ret menssub(lin, 5), nulo
-      ret arg1.contr.msginv(lin.6 ? lin.6 : lin.5)
+      ret arg1.contr.msginv(lin.1)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
       ret menssub(lin, 3), nulo
-      ret $mens.mtodos2(lin.3, lin.4 ? lin.4 : lin.3)
+      ret $mens.mtodos2(lin.0, lin.1)
     senao # Outros casos
       ret menssub(lin, 5), nulo
-      ret $mens.mtodos3(lin.5, lin.6 ? lin.6 : lin.5, lin.7 ? lin.7 : lin.5)
+      ret $mens.mtodos3(lin.0, lin.1, lin.2)
     fimse
     ret
   casose "1" # Não teve efeito
     ret menssub(lin, 14), nulo
-    ret arg2, arg1.contr.msginv(lin.12 ? lin.12 : lin.11)
-    ret $mens.mtodos3(lin.14, lin.15 ? lin.15 : lin.14, lin.16 ? lin.16 : lin.14)
+    ret arg2, arg1.contr.msginv(lin.1)
+    ret $mens.mtodos3(lin.0, lin.1, lin.2)
   casose "2" # Errou o alvo
     ret menssub(lin, 11), nulo
-    ret arg2, arg1.contr.msginv(lin.12 ? lin.12 : lin.11)
-    ret $mens.mtodos3(lin.11, lin.12 ? lin.12 : lin.11, lin.13 ? lin.13 : lin.11)
+    ret arg2, arg1.contr.msginv(lin.1)
+    ret $mens.mtodos3(lin.0, lin.1, lin.2)
   casofim
 
 func menssub # Usado em mensgolpe
-# arg0 = variável txt100 lin.20
+# arg0 = variável txt512 lin.3
 # arg1 = índice da mensagem a obter
 # Retorna 1 se mensagem vazia
   textotxt t
@@ -1356,7 +1386,10 @@ func menssub # Usado em mensgolpe
   txtsublin(msgatk4, arg1, 1) && t.addfim("msgatk4")
   ret !t.linhas, 1
   t.remove(rand(t.linhas))
-  arg0.separar([t.remove], "\n")
+  arg0.separar(txtsublin([t.remove], arg1, 3), "\n")
+  arg0.0 = txtvis(arg0.0)
+  arg0.1 = txtvis(arg0.1 ? arg0.1 : arg0.0)
+  arg0.2 = txtvis(arg0.2 ? arg0.2 : arg0.0)
   ret 0
 
 

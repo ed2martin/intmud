@@ -557,11 +557,13 @@ func atkauto # Realiza um ataque automático
   se iempu.obj && !iempu.obj.armamanual # Ataque com arma
     obj = $cmd_[txtsublin(config:arma_txt, iempu.obj.armatipo, 1)]
     aulas = intpos((arg1 - 1) * (var.[obj.nomevar] - 1) / 49) # Nota: 49=7*7
+    refvar obj2 = $cmd_[iempu.obj.armaatk]
+    obj2 && (obj = obj2)
   senao # Ataque sem arma
     obj = $cmd_[txtsublin(config:atk_txt, p_atktipo, 1)]
     aulas = intpos(arg1 - 1) / 14 # Nota: 14=7*2
   fimse
-  ret int(obj.tipoalvo) != 6, nulo # Retorna se não for ataque automático
+  ret int(obj.tipoalvo) != 8, nulo # Retorna se não for ataque automático
   ret !obj.autohab2(este, aulas), nulo # Checa condições para atacar
 # ret txt(obj.cmdmenu) != "ataque", nulo # Retorna se comando não é habilidade
   obj.exechab(este, arg0, aulas, pnivel) # Realiza um ataque
@@ -689,13 +691,13 @@ func escolheatk # Escolhe e retorna o nome da variável de uma habilidade ou magi
   t1 = persoesc.var.ini("h_")
   enquanto txt(t1, 0, 2) == "h_"
     refvar r = $cmd_[txt(t1, 2)]
-    r.cmdmenu && 6 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
+    r.cmdmenu && 8 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
   efim
   se !dono.s_semmagia
     t1 = persoesc.var.ini("m_")
     enquanto txt(t1, 0, 2) == "m_"
       refvar r = $magia_[txt(t1, 2)]
-      r.cmdmenu && 6 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
+      r.cmdmenu && 8 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
     efim
   fimse
   t.remove(rand(t.linhas))
@@ -775,7 +777,7 @@ func p_proc_exec # Processar comportamento do personagem
   fimse
 
 func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
-  refvar recup = contr.dono.s_recup(este) / 1000
+  refvar recup = contr.dono.s_recup(este) / 1200
   se recup && pvida
     uint8 x
     pvida < pvidamax && (x = pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))

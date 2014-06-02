@@ -191,12 +191,11 @@ func t_txtlinha # Retorna uma linha de uma variável do tipo "const x = \"abc\""
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), "\c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + "\b"
+    ret p.vartexto(arg0, arg1), "\c3" + txtsublin([arg0]:[arg1], arg2, 1) + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> \c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + \
-"\b"
+    ret p.vartexto(arg0, arg1), "<herda> \c3" + txtsublin([arg0]:[arg1], arg2, 1) + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -351,8 +350,7 @@ func p_numero # Alterando um número
       ret p_numero("\b")
     senao var.opcextra # Checa limites mínimo e máximo
       se valor < int(txt1(var.opcextra)) || valor > int(txt2(var.opcextra))
-        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + \
-".")
+        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
         ret 1
       fimse
     fimse
@@ -390,8 +388,7 @@ func p_numreal # Alterando um número
       ret p_numero("\b")
     senao var.opcextra # Checa limites mínimo e máximo
       se valor < int(txt1(var.opcextra)) || valor > int(txt2(var.opcextra))
-        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + \
-".")
+        msg("Entre com um número de " + txt1(var.opcextra) + " a " + txt2(var.opcextra) + ".")
         ret 1
       fimse
     fimse
@@ -615,8 +612,7 @@ func p_vetor # Alterando uma opção de uma lista de opções
     x = intbit(x) ^ [var.opcclasse]:[var.opcvar]
     txt100 lin
     lin = txtcor(t_vetormostra(x, var.opcextra))
-    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + \
-lin)
+    p.criar(var.opcclasse, "const " + var.opcvar + "=" + x + " # " + var.opcnome + ": " + lin)
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
     msg("Escolheu: " + lin)

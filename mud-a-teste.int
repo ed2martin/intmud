@@ -148,14 +148,14 @@ classe i_teste012
 herda comum_itemgrupo
 const nome = "faca"
 const descnome = "uma faca"
-const pesoobj = 300
-const armatipo = 3 # Arma tipo: 1 Lâmina curta
-const armaprecisao = 100
-const armamin = 70
-const armamax = 120
-const valor = 50
 const descpos = "Há uma faca no chão."
+const armamax = 120
+const armamin = 70
+const armaprecisao = 100
+const armatipo = 3 # Arma tipo: 1 Lâmina curta
+const pesoobj = 300
 const tipoitem = 3 # Tipo de produto: Possui metal, Arma
+const valor = 50
 
 
 classe i_teste013
@@ -1053,6 +1053,87 @@ const msexo = 1 # Sexo Msg: 1 Masculino
 const lojaaula = "m_Chama_Protetora 5"
 
 
+classe p_teste023
+herda comum_persobat
+const nome = "moleque"
+const descnome = "um moleque"
+const descpadr = "Um moleque está encarando você."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.var.d_moleque == "" # Se ainda não lutou com o moleque
+    misc:evento(arg0) # Receber eventos do jogador
+    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+  fimse
+
+func entrou10
+  arg0.msg("Moleque: Topa uma luta comigo? Fale sim ou não.")
+
+func cmd_mover # Jogador quer sair da sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.var.d_moleque == "" # Se ainda não lutou com o moleque
+    $mens.p(arg0)
+    $mens.mtodos1("$P tenta ir embora, mas um moleque $s segura pelo braço.")
+    arg0.msg("Moleque: Antes de sair, me responda sim ou não.")
+    ret 1
+  fimse
+
+func cmd_falou # Jogador falou alguma coisa
+  se arg0.var.d_moleque # Se já lutou com o moleque não faz nada
+  senao arg1 == "sim" # Quer lutar
+    arg0.var.d_moleque = "A" # Nota: na verdade qualquer coisa diferente de "" serve aqui
+    atkauto(arg0, 8) # Faz um ataque automático contra arg0
+  senao arg1 == "não" # Não quer lutar
+    arg0.var.d_moleque = "A" # Nota: na verdade qualquer coisa diferente de "" serve aqui
+    $mens.p(arg0)
+    $mens.mtodos1("Moleque: Tudo bem, você não ia aguentar mesmo.")
+  senao
+    arg0.msg("Moleque: E então, vai lutar?")
+  fimse
+
+
+classe p_teste024
+herda comum_perso
+const nome = "Úrsula"
+const descpadr = "Úrsula está tentando acender alguma coisa, sem sucesso."
+const msexo = 1 # 0=feminino, 1=masculino
+const pesoobj = 80000
+const p_recebe = 1 # Se pode receber itens de outros personagens
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Úrsula disse: Preciso de palitos de fósforo. Você pode me arrumar alguns?")
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=item, arg3=quantidade
+  se arg2.nome != "palito de fósforo"
+    arg0.msg("Úrsula não aceita " + arg2.descnome + ".")
+    ret 1 # Para não receber o item
+  senao arg3 + arg0.var.j_ursula_ > 3
+    refvar total = 3 - arg0.var.j_ursula_
+    arg0.msg("Úrsula: É muita coisa. Eu só preciso de " + total + " desses palitos.")
+    ret 1 # Para não receber o item
+
+func cmd_deuobj # Recebeu um item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=item, arg3=quantidade
+  apagar(arg2) # Apaga o item
+  arg0.var.j_ursula_ += arg3
+  se arg0.var.j_ursula_ < 3
+    arg0.msg("Úrsula: Só preciso de mais " + (3 - arg0.var.j_ursula_) + ".")
+  senao
+    arg0.var.j_ursula_ = 0
+    $mens.p(este, arg0)
+    $mens.mvis1("$P dá uma lanterna para $a.")
+    criar("i_teste007", arg0, 0)
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -1492,7 +1573,7 @@ S 100 teste005 0 S\n\
 S 100 teste007 0 teste005\n\
 S 100 teste007 0 S\n\
 S 100 teste008 0 S\n\
-S 100 teste009 1 S\n\
+S 100 teste009 5 S\n\
 S 100 teste011 0 S\n\
 S 100 teste037 0 S"
 
@@ -1504,7 +1585,7 @@ func s_reset1 # Realiza o reset
 0)
   !dentro1.objini("i_teste007") && criar("i_teste007", este, 0)
   !dentro1.objini("i_teste008") && criar("i_teste008", este, 0)
-  !dentro1.objini("i_teste009") && criar("i_teste009", este, 1)
+  !dentro1.objini("i_teste009") && criar("i_teste009", este, 5)
   !dentro1.objini("i_teste011") && criar("i_teste011", este, 0)
   !dentro1.objini("i_teste037") && criar("i_teste037", este, 0)
 
@@ -2586,6 +2667,7 @@ const s_desc = "Se o objetivo for contar apenas quantas vezes personagens entrar
 na sala, usa-se uma variável na própria sala. Não precisa ser de \"var\".\n\
 Nesse caso, foi criada uma variável \"int32 contador\". Para saber os tipos\n\
 existentes, vide manual do IntMUD, arquivo manual.txt."
+const dir_l = $s_teste105
 const dir_o = $s_teste090
 int32 contador
 
@@ -2627,10 +2709,11 @@ encontrados na sala teste024, e abrem a porta ao norte por 10 segundos.\n\
 Só que João pede um de cada vez, e Maria não se importa com a ordem que\n\
 você der os itens. João e Maria são os personagens teste019 e teste020.\n\
 Nota: esse trigger é sensivelmente mais complicado."
-const dir_l = $s_teste092
 const dir_n = $s_teste082
 const portaini_n = 3 # Estado inicial: 3 Porta trancada
 const fechadura_n = "aaaaaaaaaa"
+const dir_l = $s_teste092
+const dir_o = $s_teste106
 const s_reset = "P 100 teste019 0 0 1\nP 100 teste020 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -2823,4 +2906,39 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste022:objsolto.total < 1
     criar("p_teste022", este, 0)
+  fimse
+
+
+classe s_teste105
+herda b_teste
+const s_titulo = "Variável em personagem"
+const s_desc = "A opção \"Eventos em sala\" do moleque (teste023) está em 1, assim quando\n\
+alguém chegar na sala é chamada a função cmd_chegou.\n\
+Aqui foi usada a variável var.d_moleque no jogador para permitir ou não\n\
+que saia da sala e responder quando o jogador usa o comando falar."
+const dir_o = $s_teste091
+const s_reset = "P 100 teste023 0 0 1 h_chutar=5,h_socar=5"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste023:objsolto.total < 1
+    criar("p_teste023", este, 0, "h_chutar=5,h_socar=5")
+  fimse
+
+
+classe s_teste106
+herda b_teste
+const s_titulo = "Receber vários itens de um tipo"
+const s_desc = "Se você der três palitos de fósforo (item teste009, sala teste024) para\n\
+essa pessoa, ela lhe dará uma lanterna em troca. Foi usada uma variável\n\
+\"var.j_\" no jogador, por isso se você sair do jogo e voltar, ela\n\
+esquecerá quantos palitos você deu. Na sala teste090 (indo a leste) são\n\
+explicados alguns tipos de variáveis."
+const dir_l = $s_teste093
+const s_reset = "P 100 teste024 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste024:objsolto.total < 1
+    criar("p_teste024", este, 0)
   fimse

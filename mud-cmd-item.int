@@ -136,7 +136,7 @@ func escr
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     r = l.objini # Nota: r pode mudar após r.mudadono
-    se arg0.dentro1.total + total > arg0.objmax
+    se arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax
       erro = "Você não consegue carregar tanta coisa."
       continuar
     senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
@@ -288,7 +288,7 @@ func escr
         erro = "Não é possível colocar " + sala.descnome + " dentro dela mesma."
       fimse
       continuar
-    senao sala.dentro1.total + total >= sala.objmax
+    senao sala.dentro1.total + (r.item == 2 ? 1 : total) >= sala.objmax
       se sala.item
         erro = "Não consegue colocar nada em " + sala.descnome + "."
       senao
@@ -409,7 +409,7 @@ func escr
     ret l.objini.cmd_dar(arg0, arg1), nulo
   efim
 # Dar animal a outro personagem
-  se txt1(arg1) == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+  se txt1(arg1) == intpos(arg1) && int(arg1) && intsub(arg1) <= 2 && config:animal1 >= arg1
     refvar r = arg0.animalnum(arg1)
     ret !r, arg0.msg("Você não possui " + arg1 + ".")
     ret r.p_soltar, arg0.msg("Não é possível dar esse animal.")
@@ -464,7 +464,7 @@ animal.")
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     r = l.objini # Nota: r pode mudar após r.mudadono
-    se sala.dentro1.total + total >= sala.objmax
+    se sala.dentro1.total + (r.item == 2 ? 1 : total) >= sala.objmax
       erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada."
       continuar
     senao sala.volden + r.voltot * total / r.objtot > sala.volmax

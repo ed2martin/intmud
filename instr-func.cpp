@@ -598,10 +598,12 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
             ini--;
         }
             // Copia texto
-        while (tam>0 && *txt && destino<mens+sizeof(mens))
+        while (tam>0 && destino<mens+sizeof(mens))
         {
             while (*txt && *txt!=ex_barra_n && destino<mens+sizeof(mens))
                 *destino++ = *txt++;
+            if (*txt==0)
+                break;
             if (--tam)
                 *destino++ = *txt++;
         }
