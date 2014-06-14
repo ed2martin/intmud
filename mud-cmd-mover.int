@@ -32,6 +32,7 @@ func escr # Executa o comando
 func mover # Personagem anda em uma direção
 # arg0 = personagem
 # arg1 = o que digitou ou "\n" se está seguindo alguém
+  listaobj l
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
   dbg.ini
@@ -54,33 +55,42 @@ func mover # Personagem anda em uma direção
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret
   fimse
-  listaobj l
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_mover(arg0, arg0.dono, dir), nulo
   efim
   !arg0.jogconfig.14 && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
-  $mens.p(arg0)
-  se arg0.bitver & 256 # Anda em silêncio
+  se !arg0.dono.socktot # Não tem jogador por perto
     arg0.mudadono(s2)
+  senao arg0.bitver & 256 # Anda em silêncio
+    $mens.p(arg0)
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      l.objini.jogconfig.14 && l.objini.msgvis("(furtivo) " + m_sai1)
+    efim
+    arg0.mudadono(s2)
+    $mens.p(arg0)
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      l.objini.jogconfig.14 && l.objini.msgvis("(furtivo) " + m_entra1)
+    efim
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20)
-    $mens.mvis2("", m_sai4)
+    $mens.p(arg0) + $mens.mvis2("", m_sai4)
     arg0.mudadono(s2)
-    $mens.mvis2("", m_entra4)
+    $mens.p(arg0) + $mens.mvis2("", m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    $mens.mvis2("", m_sai3)
+    $mens.p(arg0) + $mens.mvis2("", m_sai3)
     arg0.mudadono(s2)
-    $mens.mvis2("", m_entra3)
+    $mens.p(arg0) + $mens.mvis2("", m_entra3)
   senao arg0.bitver & 512 # Flutuando
-    $mens.mvis2("", m_sai2)
+    $mens.p(arg0) + $mens.mvis2("", m_sai2)
     arg0.mudadono(s2)
-    $mens.mvis2("", m_entra2)
+    $mens.p(arg0) + $mens.mvis2("", m_entra2)
   senao # Não está voando nem flutuando
-    $mens.mvis2("", m_sai1)
+    $mens.p(arg0) + $mens.mvis2("", m_sai1)
     arg0.mudadono(s2)
-    $mens.mvis2("", m_entra1)
+    $mens.p(arg0) + $mens.mvis2("", m_entra1)
   fimse
-  listaobj l
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, arg0.dono, dir)
   efim

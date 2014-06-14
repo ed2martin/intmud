@@ -22,6 +22,8 @@ txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
 intexec msgprompt # Para enviar mensagens do prompt
 intinc tempojogo # Tempo da sessão
+intdec msgtot1 # Usado no controle de banda das mensagens para o jogador
+real msgtot2 # Usado no controle de banda das mensagens para o jogador
 #
 txt20 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -196,6 +198,11 @@ func msg # Envia mensagem
   senao
     msgprompt = 1
   fimse
+# Controle de banda
+  ret msgtot1 >= admbanda:b1, nulo
+  msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
+  msgtot2 -= intdiv(msgtot2)
+# Configuração do jogador
   casovar jogconfig.bits & 12
   casose "0" # -CORES -ACENTO
     ret msgsock("\b" + txtremove(arg0, "C7"))
@@ -895,7 +902,16 @@ func salvar # Salva o jogo, desde que a senha não seja nula
 # msg(txt2(cnome) + " , " + senha)
   dbg.exec = 2000
   ret !lista.total, 0
-  ret sav1.salvar("sav/" + txt2(cnome) + ".sav", lista, 30, senha)
+# Obtém o tempo do jogo salvo, em dias, e salva o jogo
+  int32 tempo
+  se jogconfig.23
+    tempo = config:salvaadmin
+  senao pnivel < config:nivelveterano
+    tempo = config:salvainiciante
+  senao
+    tempo = config:salvaveterano
+  fimse
+  ret sav1.salvar("sav/" + txt2(cnome) + ".sav", lista, tempo, senha)
 
 func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)

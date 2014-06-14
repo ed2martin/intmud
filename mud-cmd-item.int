@@ -420,7 +420,7 @@ func escr
     epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
       continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
       se i.obj == arg0
-        ret arg0.msg("Dar para você mesmo?")
+        ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
       senao !l.objini.jog
         ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + " não é jogador.")
       senao !l.objini.animalmais
@@ -455,6 +455,8 @@ animal.")
     ret arg0.msg("Você não vê " + misc:sep2 + ".")
   senao !sala.p_recebe
     ret arg0.msg("Não é possível dar nada para " + sala.descnome + ".")
+  senao sala == arg0
+    ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
   fimse
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, 1000000, misc:tudo)

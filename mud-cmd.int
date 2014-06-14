@@ -308,7 +308,7 @@ func escr
   r = arg0.dono
   epara p.inifunc(r, "ver_"), p.lin, p.depois
     continuar !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4))
-    arg0.msg(r.[p.texto](arg0, 1))
+    arg0.msg2(r.[p.texto](arg0, 1))
     ret
   efim
   listaobj l
@@ -608,6 +608,7 @@ const objajuda = config:rezartipo ? este
 const txtajuda = "\b\c3Rezar\b\n\
 Sintaxe: REZAR <mensagem>\n\
 Envia mensagem para os administradores que estiverem no jogo."
+const posic = 5
 
 func escr
   se arg0.pnivel < config:rezarnivel

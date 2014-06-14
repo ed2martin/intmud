@@ -67,10 +67,9 @@ const clas10 = "config"
 const vari10 = "itens"
 const extr10 = "1 1000"
 #
-const nome11 = "Salvar personagem ao criar"
-const tipo11 = "simnao--"
-const clas11 = "config"
-const vari11 = "salvacria"
+const nome11 = "Salvar personagem"
+const tipo11 = "menu--"
+const clas11 = "menu_econfig_salvar"
 #
 const nome12 = "E-mail"
 const info12 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
@@ -227,6 +226,66 @@ Se não for vazia, outros administradores poderão ver a senha"
 const tipo11 = "linha--"
 const clas11 = "config"
 const vari11 = "senha"
+#
+const nome12 = "Caracteres de uma vez"
+const info12 = "Quantos caracteres cada jogador pode receber de uma vez do MUD.\n\
+Passado esse limite, jogadores começarão a perder mensagens."
+const tipo12 = "numero--"
+const clas12 = "config"
+const vari12 = "banda1"
+const exec12 = "admbanda:atualiza"
+const extr12 = "100 10000"
+#
+const nome13 = "Caracteres por segundo"
+const info13 = "Quantos caracteres por segundo cada jogador pode receber do MUD.\n\
+Passado esse limite, jogadores começarão a perder mensagens."
+const tipo13 = "numero--"
+const clas13 = "config"
+const vari13 = "banda2"
+const exec13 = "admbanda:atualiza"
+const extr12 = "100 10000"
+
+
+classe menu_econfig_salvar
+const titulo = "Salvar personagem"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Salvar ao criar"
+const tipo1 = "simnao--"
+const clas1 = "config"
+const vari1 = "salvacria"
+#
+const nome2 = "Veterano a partir do nível"
+const info2 = "A partir de que nível um jogador é considerado veterano"
+const tipo2 = "numero--"
+const clas2 = "config"
+const vari2 = "nivelveterano"
+const extr2 = "0 65535"
+#
+const nome3 = "Dias salvar iniciante"
+const info3 = "Quantos dias personagens de iniciantes ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo3 = "numero--"
+const clas3 = "config"
+const vari3 = "salvainiciante"
+const extr3 = "1 10000"
+#
+const nome4 = "Dias salvar veterano"
+const info4 = "Quantos dias personagens de veteranos ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo4 = "numero--"
+const clas4 = "config"
+const vari4 = "salvaveterano"
+const extr4 = "1 10000"
+#
+const nome5 = "Dias salvar admin"
+const info5 = "Quantos dias personagens de administradores ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo5 = "numero--"
+const clas5 = "config"
+const vari5 = "salvaadmin"
+const extr5 = "1 10000"
 
 
 classe menu_econfig_msg
@@ -509,9 +568,10 @@ const clas8 = "config"
 const vari8 = "arma_txt"
 const extr8 = "1 30 1"
 #
-const nome9 = "Tipos de personagens"
-const info9 = "Habilidades usadas em ataques automáticos sem arma"
-const tipo9 = "txtopcao--"
+const nome9 = "Ataque automático sem arma"
+const info9 = "Habilidade usada em ataques automáticos sem arma, se não for definida\n\
+uma habilidade no próprio personagem"
+const tipo9 = "linha--"
 const clas9 = "config"
 const vari9 = "atk_txt"
 const extr9 = "0 30"
@@ -705,7 +765,7 @@ classe admnomesnao
 textovar nomes # Nomes, atualizados a partir de config:nomesnao
 intexec atu
 const iniclasse = criar(arg0)
-const ini = atu = 1
+const ini = atu_exec
 const atualiza = atu = 1
 
 func atu_exec # Atualiza a lista de nomes: a variável nomes
@@ -718,3 +778,19 @@ func atu_exec # Atualiza a lista de nomes: a variável nomes
   epara p = t.ini, p, p.depois
     p.texto && (nomes.n_[txtnome(p.texto)] = 1)
   efim
+
+
+classe admbanda
+# Contém as variáveis para controle de banda dos jogadores
+# Objetivo: limitar as mensagens enviadas para os jogadores
+comum real b1 # Mesmo que config:banda1, só que em décimos de segundo
+comum real b2 # Mesmo que config:banda2, só que a cada décimo de segundo
+intexec atu
+const iniclasse = criar(arg0)
+const ini = atualiza
+
+func atualiza # Atualiza banda1 e banda2
+  b2 = config:banda2
+  b2 < 100 && (b2 = 100)
+  b1 = config:banda1 / b2
+  b1 < 1 && (b1 = 1)

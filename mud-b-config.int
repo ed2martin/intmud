@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 309 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 310 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -32,6 +32,16 @@ const serv = "localhost"
 const porta = 1963
 const sala = "sala01"
 const senha = ""
+#
+# Caracteres de uma vez
+# Quantos caracteres cada jogador pode receber de uma vez do MUD.
+# Passado esse limite, jogadores começarão a perder mensagens.
+const banda1 = 4000
+#
+# Caracteres por segundo
+# Quantos caracteres por segundo cada jogador pode receber do MUD.
+# Passado esse limite, jogadores começarão a perder mensagens.
+const banda2 = 500
 #
 # Senha para se tornar administrador, ou "" se não puder
 const senhaadm = "x2"
@@ -80,6 +90,21 @@ const itens = 50
 #
 # Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
 const salvacria = 0
+#
+# A partir de que nível um jogador é considerado veterano
+const nivelveterano = 10
+#
+# Quantos dias personagens de iniciantes ficam salvos
+# Essa opção é atualizada quando um jogo é salvo
+const salvainiciante = 30
+#
+# Quantos dias personagens de veteranos ficam salvos
+# Essa opção é atualizada quando um jogo é salvo
+const salvaveterano = 60
+#
+# Quantos dias personagens de administradores ficam salvos
+# Essa opção é atualizada quando um jogo é salvo
+const salvaadmin = 120
 #
 # Se pede o e-mail ao criar personagem
 # 0=não pede, 1=opcional, 2=obrigatório
@@ -272,7 +297,7 @@ Fantasma\nDragão"
 const atkespecial = 31856 # Ataques especiais: Fogo, Água, Gelo, Luz, Trevas, Elétrico, Vegetal, \
 Psíquico
 #
-# Habilidades usadas em ataques automáticos sem arma
+# Habilidade usada em ataques automáticos sem arma
 const atk_txt = "Bater"
 #
 # Tipos de armas existentes
