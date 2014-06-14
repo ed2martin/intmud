@@ -109,6 +109,22 @@ func cmd_recalc2
 # arg0.atribs.addfim("Congelado")
 
 
+classe e_dreno_de_mana
+herda comum_efeito
+const e_nome = "Dreno de mana"
+const e_desc = "Drena mana constantemente até acabar."
+const desc = "Consome mana até ficar sem mana / trigger"
+const r_mana = 12
+const r_tempo = 40
+const msgini2 = "$P se sente esgotad$s."
+const msgfim2 = "$P se sente renovad$s."
+
+func cmd_reduz
+  se arg0.pmana == 0
+    apagar(este)
+  fimse
+
+
 classe e_endurecer
 herda comum_efeito
 const e_nome = "Endurecer"

@@ -105,6 +105,52 @@ $P chuta $a, errou\n\n\n\
 $P mostra para $a como se chuta"
 
 
+classe cmd_chute_élfico
+herda comando_ataque
+const nomevar = "h_Chute élfico"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const ataque = 60
+const msgextra = "Consome 20 pontos de movimento. Se você não tiver movimento\n\
+suficiente, consome 20 pontos de vida.\n\
+Se usado contra elfos, é uma magia de cura.\n\
+Se usado contra anões, é um chute comum.\n\
+Contra outras raças, chuta e lança o efeito Dreno de Mana."
+const msgatk0 = "\n\n\n\
+$P chuta $a, $m\n\n\
+$P chuta $a, $m\n\n\n\
+$P chuta $a, $m\n\n\n\
+$P chuta $a, errou\n\n\n\
+$P mostra para $a como se chuta"
+
+func cmd_atacar # Vai atacar
+# Consome 20 pontos de movimentos. Se não tiver, consome 20 pontos de vida.
+# Nota: para consumir mana ao invés de movimentos, substituir pmove por pmana.
+  se arg0.pmove >= 20
+    arg0.pmove -= 20
+  senao arg0.pvida > 20
+    $mens.p(arg0)
+    arg0.msginv("Você se sente mais frac$s.")
+    arg0.pvida -= 20
+  senao
+    arg0.msg("Pontos de movimento e vida insuficientes.")
+    ret 1 # Cancela o ataque
+  fimse
+# Se for usado contra elfos, vira habilidade de cura
+  se arg1.tipo1 == "elfo"
+    $mens.p(arg0, arg1)
+    $mens.mtodos1("$P dá um chute direto e $a se sente melhor.")
+    arg1.pvida = intmin(arg1.pvida + 20, arg1.pvidamax)
+    arg1.acertapos(1) # Acerta posição de arg1
+    arg0.acertapos(1) # Checa se arg0 morreu e acerta posição de arg0
+    ret 1 # Cancela o ataque
+  fimse
+
+func cmd_atacou # Realizou o ataque
+  se !arg2.result && arg1.tipo1 != "anão"
+    criar("e_dreno_de_mana", arg1, 0) # Cria efeito Dreno de Mana nível 0 em arg1
+  fimse
+
+
 classe cmd_cortar
 herda comando_ataque
 const nomevar = "h_Cortar"
@@ -136,13 +182,13 @@ $P drena $a, nada acontece"
 int32 pontos
 
 func cmd_atkenv
-  pontos = arg1.persobat.pvida
+  pontos = arg1.pvida
 
 func cmd_atacou
-  refvar vida = arg0.persobat.pvida
-  refvar max = arg0.persobat.pvidamax
+  refvar vida = arg0.pvida
+  refvar max = arg0.pvidamax
   se !arg2.result && vida && vida < max
-    pontos = intpos(pontos - arg1.persobat.pvida) / 2
+    pontos = intpos(pontos - arg1.pvida) / 2
     vida += pontos
     vida > max && (vida = max)
 
@@ -181,7 +227,7 @@ $P explodiu, nada acontece com $a, nada acontece"
 const precisao = 200
 
 func cmd_atacou # Desmaia após o ataque
-  arg0.persobat.pvida = 0
+  arg0.pvida = 0
 
 
 classe cmd_furtividade

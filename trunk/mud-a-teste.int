@@ -378,7 +378,7 @@ herda comum_itemgrupo
 const nome = "chave tipo um"
 const descnome = "uma chave do tipo um"
 const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
-inttempo tempo # inttempo executa uma função após um tempo
+sav inttempo tempo # inttempo executa uma função após um tempo
 
 func cmd_mudadono
   se dono.perso && tempo == 0 # Se pertence a um personagem e tempo é zero
@@ -400,7 +400,7 @@ herda comum_itemgrupo
 const nome = "chave tipo dois"
 const descnome = "uma chave do tipo dois"
 const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
-inttempo tempo # inttempo executa uma função após um tempo
+sav inttempo tempo # inttempo executa uma função após um tempo
 
 func cmd_mudadono
   se dono.perso # Se pertence a um personagem
@@ -510,6 +510,67 @@ const luzfim = 1 # Sem luz item some: Sim
 const luzitem = 7 # Tipo de luz: 7 Automático (acende ao vestir, sem fogo)
 const luzini = -5000
 const vestir1 = 32768 # Aonde vestir: 15-cintura
+
+
+classe i_teste038
+herda comum_itemperso
+const nome = "cama"
+const descnome = "uma cama"
+const descpos = "Uma confortável cama está à espera de algum necessitado."
+const i_movel = 4 # Mobília: 4 Sentar e dormir confortavelmente
+const pesoobj = 300500
+
+
+classe i_teste039
+herda comum_itemgrupo
+const nome = "chave tipo dois"
+const descnome = "uma chave do tipo dois"
+const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
+sav inttempo tempo # inttempo executa uma função após um tempo
+
+func cmd_mudadono
+  se dono.jog # Se pertence a um jogador
+    !tempo && (tempo = 100) # Se tempo for 0, faz tempo ser 100 (10 segundos)
+  senao !dono.item # Se não está em outro item (está na sala ou em PNJ)
+    tempo = 0
+
+func tempo_exec
+  apagar(este)
+  se dono.jog # Se pertence a jogador, avisa o jogador
+    dono.msg("Sua chave do tipo dois some misteriosamente!")
+    $mens.p(dono)
+    $mens.mtodos2("", "A chave de $p some misteriosamente!")
+
+
+classe i_teste040
+herda comum_itemperso
+const nome = "baú"
+const descnome = "um baú"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_abertoini = 3 # Container: 3 Inicialmente fechado
+const i_tranc = 1 # Trancar: 1 Pode ser trancado
+const objmax = 10
+const eveste = 1 # Receber eventos do próprio objeto
+intdec tempo_ouro # Contagem de tempo, para criar as moedas
+inttempo tempo_fechar # Para fechar o baú após algum tempo
+
+func cmd_abriuobj # O baú foi aberto
+  tempo_fechar = 50 # Fechar em 5 segundos
+  se tempo_ouro == 0
+    tempo_ouro = rand(1 * 600, 2 * 600)
+    se var.z_moedas_ < 1000
+      var.z_moedas_ = 1000
+    fimse
+  fimse
+
+func tempo_fechar_exec
+  se i_aberto <= 2 # Se não está fechado
+    $mens.p(este, este)
+    $mens.mtodos1("$A fechou com o vento.")
+  fimse
+  se i_aberto != 4 # Se não está trancado
+    i_aberto = i_tranc == 2 ? 4 : 3 # Fecha ou tranca, conforme i_tranc
+  fimse
 
 
 classe p_teste001
@@ -1050,7 +1111,7 @@ const nome = "aprendiz do fogo"
 const ident = "aprendiz fogo"
 const descpadr = "Um aprendiz do fogo está brincando com uma pequena chama."
 const msexo = 1 # Sexo Msg: 1 Masculino
-const lojaaula = "m_Chama_Protetora 5"
+const lojaaula = "m_Chama_Protetora 5\nh_Chute_Élfico 5"
 
 
 classe p_teste023
@@ -1461,6 +1522,7 @@ func cmd_escr # Escreveu algo
     $mens.p(arg0)
     $mens.mtodos1("$P descansa e se recupera.")
     ret 1
+  fimse
 
 
 classe s_teste018
@@ -2749,10 +2811,12 @@ func s_reset1 # Realiza o reset
 classe s_teste095
 herda b_teste
 const s_titulo = "Subsolo 3: Diversos"
-const s_desc = "Ao norte: um ajudante que te seguirá e uma chama protetora\n\
-Ao sul: itens apagados após um tempo e poção mortal"
+const s_desc = "Ao norte: um ajudante que te seguirá, chama protetora e chute élfico\n\
+Ao sul: itens apagados após um tempo e poção mortal\n\
+A leste: algumas opções envolvendo itens"
 const dir_n = $s_teste096
 const dir_s = $s_teste097
+const dir_l = $s_teste108
 const dir_c = $s_teste082
 
 
@@ -2790,6 +2854,7 @@ O segundo também some, mas se você soltar na sala, não some.\n\
 Já o terceiro tipo some após 10 segundos se ninguém pegar.\n\
 Os três somem se forem colocados em outro item (exemplo, uma bolsa)."
 const dir_n = $s_teste095
+const dir_s = $s_teste112
 const s_reset = "S 100 teste029 1 S\nS 100 teste030 1 S\nS 100 teste031 1 S"
 
 func s_reset1 # Realiza o reset
@@ -2797,8 +2862,6 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste029") && criar("i_teste029", este, 1)
   !dentro1.objini("i_teste030") && criar("i_teste030", este, 1)
   !dentro1.objini("i_teste031") && criar("i_teste031", este, 1)
-
-const dir_s = $s_teste102
 
 
 classe s_teste098
@@ -2859,7 +2922,7 @@ Usar misc:tempo aqui não resolve, porque se o item for apagado\n\
 ou se o personagem mudar de sala, o efeito do veneno desaparece.\n\
 Foi criado o efeito \"Veneno Mortal\" para isso. O item teste034\n\
 também possui trigger, para checar a raça e criar o efeito."
-const dir_n = $s_teste097
+const dir_n = $s_teste112
 const s_reset = "S 100 teste034 1 S\nS 100 teste035 1 S"
 
 func s_reset1 # Realiza o reset
@@ -2899,6 +2962,7 @@ de mesmo nome. Para aprender a magia tecle aprender chama.\n\
 Aqui foi criada a função cmd_alvo na classe magia_chama_protetora\n\
 (arquivo mud-b-hab.int) para apresentar a mensagem de \"Errou o alvo\"\n\
 da magia se for lançada em quem já estiver com o efeito Chama Protetora."
+const dir_n = $s_teste107
 const dir_s = $s_teste103
 const s_reset = "P 100 teste022 0 0 1"
 
@@ -2942,3 +3006,141 @@ func s_reset1 # Realiza o reset
   se p_teste024:objsolto.total < 1
     criar("p_teste024", este, 0)
   fimse
+
+
+classe s_teste107
+herda b_teste
+const s_titulo = "Chute Élfico"
+const s_desc = "O aprendiz ao sul ensina também a habilidade Chute Élfico.\n\
+Para aprender, vá ao sul e tecle aprender chute.\n\
+Para saber tudo que o Chute Élfico faz, vá ao sul e tecle aulas chute.\n\
+Se usado contra alguém que não é anão ou elfo, e o golpe acertar, o alvo\n\
+recebe o efeito Dreno de Mana, que vai reduzindo a quantidade de mana\n\
+até chegar a zero."
+const dir_s = $s_teste104
+
+
+classe s_teste108
+herda b_teste
+const s_titulo = "Itens"
+const s_desc = "Nesta sala é demonstrado basicamente como lidar com itens:\n\
+Teclando 1 perde-se itens e dinheiro\n\
+Teclando 2 você remove (deixa de usar) todos os seus itens\n\
+Teclando 3 seus itens e dinheiro vão para a sala\n\
+Teclando 4 todos os personagens daqui vão para a sala teste095"
+const dir_l = $s_teste109
+const dir_o = $s_teste095
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  se arg1 == "1" # Perder itens e dinheiro
+    listaobj l
+    epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+      l.objini.item && !l.objini.manterperso && apagar(l.objini)
+    efim
+    arg0.var.z_moedas = "" # Perde dinheiro
+    arg0.msg("Você perdeu itens e dinheiro.")
+    ret 1
+  senao arg1 == "2" # Remover todos os itens
+    listaobj l
+    epara l.addfim(arg0.dentro2), l, l.ini.remove
+      l.objini.item && !l.objini.vestir(0)
+    efim
+    arg0.msg("Você tem todos os itens removidos.")
+    ret 1
+  senao arg1 == "3" # Mover itens e dinheiro para a sala
+    listaobj l
+    epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+      l.objini.item && !l.objini.mudadono(arg0.dono, 10000)
+    efim
+    arg0.dono.var.z_moedas_ += arg0.var.z_moedas_
+    arg0.var.z_moedas_ = 0
+    arg0.msg("Todos seus itens e dinheiro foram para a sala.")
+    ret 1
+  senao arg1 == "4" # Transportar personagens para outra sala
+    listaobj l
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      se l.objini.perso
+        $mens.p(l.objini) # Define o personagem na função msginv
+        l.objini.msginv("Você foi teletransportad$s.")
+        l.objini.mudadono($s_teste095)
+      fimse
+    efim
+    ret 1
+  fimse
+
+
+classe s_teste109
+herda b_teste
+const s_titulo = "Várias camas"
+const s_desc = "Nesta sala são criadas três camas via função cmd_salaperso.\n\
+Isso não seria possível via reset de sala (comando sres), pois cama\n\
+é um item do tipo completo (não se pode definir a quantidade no reset)."
+const dir_l = $s_teste110
+const dir_o = $s_teste108
+
+func cmd_salaperso
+  se !dentro1.objini("i_teste038")
+    criar("i_teste038", este, 1)
+    criar("i_teste038", este, 1)
+    criar("i_teste038", este, 1)
+  fimse
+
+
+classe s_teste110
+herda b_teste
+const s_titulo = "Itens raros"
+const s_desc = "Nessa sala ficam uns óculos especiais. Eles são criados quando um\n\
+personagem entra, como na sala teste028. No entanto, não basta pegar\n\
+os óculos, sair da sala e voltar para aparecerem outros. É necessário\n\
+esperar de 2 a 3 minutos.\n\
+A linha que cria o item foi copiada da função s_reset1 da sala teste028.\n\
+Essa função é criada e mudada automaticamente pelo comando sres."
+const dir_l = $s_teste111
+const dir_o = $s_teste109
+intdec tempo_oculos # Contagem de tempo, para criar os óculos
+
+func cmd_salaperso
+# Nota 1: A variável tempo_oculos (definida logo acima nesta sala) contém
+# um número que diminui 1 a cada décimo de segundo, até chegar a 0
+# Nota 2: ao invés de fazer algo como: tempo_oculos = 2 * 600
+# foi usada a instrução rand, para gerar um número aleatório
+  se tempo_oculos == 0
+    tempo_oculos = rand(2 * 600, 3 * 600)
+    !dentro1.objini("i_teste016") && criar("i_teste016", este, 1)
+  fimse
+
+
+classe s_teste111
+herda b_teste
+const s_titulo = "Itens raros - continuação"
+const s_desc = "Aqui há um baú com 1000 moedas.\n\
+Você pode abrir mas ele fecha em 5 segundos.\n\
+Pode ser trancado ao fechar, vide opções Container e Trancar do item.\n\
+E se pegar as moedas, não aparecerão outras logo em seguida."
+const dir_o = $s_teste110
+const s_reset = "S 100 teste040 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste040") && criar("i_teste040", este, 0)
+
+
+classe s_teste112
+herda b_teste
+const s_titulo = "Itens apagados - continuação"
+const s_desc = "Se qualquer uma das chaves ao norte forem pegas por um PNJ (personagem\n\
+não jogador), ela também sumirá. Para não sumir, aonde está escrito\n\
+dono.perso mude para dono.jog (checar se é jogador ao invés de checar\n\
+se é personagem. Essa chave é exatamente igual à do tipo 2, exceto\n\
+que não some nas mãos de um PNJ."
+const dir_n = $s_teste097
+const dir_s = $s_teste102
+const s_reset = "S 100 teste039 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste039") && criar("i_teste039", este, 1)

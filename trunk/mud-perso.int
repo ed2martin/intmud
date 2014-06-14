@@ -385,6 +385,7 @@ inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
 const p_movervel = 140
 const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
+const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
 
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
@@ -560,7 +561,7 @@ func atkauto # Realiza um ataque automático
     refvar obj2 = $cmd_[iempu.obj.armaatk]
     obj2 && (obj = obj2)
   senao # Ataque sem arma
-    obj = $cmd_[txtsublin(config:atk_txt, p_atktipo, 1)]
+    obj = $cmd_[p_atktipo]
     aulas = intpos(arg1 - 1) / 14 # Nota: 14=7*2
   fimse
   ret int(obj.tipoalvo) != 8, nulo # Retorna se não for ataque automático
