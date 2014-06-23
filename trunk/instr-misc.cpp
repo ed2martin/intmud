@@ -393,7 +393,7 @@ bool Instr::CriarVar(const char * def)
         VarAtual->endvar = 0;
         VarAtual->tamanho = 0;
         VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
-        VarAtual->bit = 1;
+        VarAtual->numbit = 0;
         VarAtual->numfunc = 0;
         return true;
     }
@@ -409,7 +409,7 @@ bool Instr::CriarVar(const char * def)
     VarAtual->defvar = def;
     VarAtual->nomevar = def;
     VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
-    VarAtual->bit = 1;
+    VarAtual->numbit = 0;
     VarAtual->numfunc = 0;
     VarAtual->tamanho = VarAtual->Tamanho();
 // Verifica se memória suficiente

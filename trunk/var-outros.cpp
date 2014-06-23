@@ -954,7 +954,7 @@ bool FuncVetorInt1(TVariavel * v, const char * nome)
     {
         unsigned int total = (unsigned char)v->defvar[Instr::endVetor];
         unsigned char * p = (unsigned char*)v->end_char;
-        unsigned char bitmask = v->bit;
+        unsigned char bitmask = 1 << v->numbit;
     // Preencher com 1
         if (Instr::VarAtual > v && v[1].getBool())
         {
@@ -996,18 +996,12 @@ bool FuncVetorInt1(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 int GetVetorInt1(TVariavel * v)
 {
-    unsigned int bitmask = v->bit;
-    unsigned int bitnum = 0;
-    int total = (unsigned char)v->defvar[Instr::endVetor];
+    unsigned int bitnum = v->numbit;
     unsigned char * p = (unsigned char *)v->end_char;
+    int total = (unsigned char)v->defvar[Instr::endVetor];
     int valor = 0;
-// Obtém o número do bit inicial, de 0 a 7
-    if (bitmask & 0xF0)
-        bitnum+=4, bitmask>>=4;
-    if (bitmask & 0x0C)
-        bitnum+=2, bitmask>>=2;
-    if (bitmask & 2)
-        bitnum++;
+    if (total > 32)
+        total = 32;
 // Primeiro byte
     if (total>0 && bitnum)
     {
@@ -1027,6 +1021,7 @@ int GetVetorInt1(TVariavel * v)
     }
 // Demais bytes
     for (; total>0 && bitnum<32; total-=8,bitnum+=8)
+    {
         switch (total)
         {
         case 1: valor |= (*p & 1) << bitnum; break;
@@ -1038,26 +1033,22 @@ int GetVetorInt1(TVariavel * v)
         case 7: valor |= (*p & 127) << bitnum; break;
         default: valor |= *p++ << bitnum;
         }
+    }
     return valor;
 }
 
 //------------------------------------------------------------------------------
 void SetVetorInt1(TVariavel * v, int valor)
 {
-    unsigned int bitmask = v->bit;
-    int bitnum = 0;
-    int total = (unsigned char)v->defvar[Instr::endVetor];
+    unsigned int bitnum = v->numbit;
     unsigned char * p = (unsigned char *)v->end_char;
-// Obtém o número do bit inicial, de 0 a 7
-    if (bitmask & 0xF0)
-        bitnum+=4, bitmask>>=4;
-    if (bitmask & 0x0C)
-        bitnum+=2, bitmask>>=2;
-    if (bitmask & 2)
-        bitnum++;
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    if (total > 32)
+        total = 32;
 // Altera as variáveis
     while (total > 0)
     {
+        int bitmask = 255;
         switch (total)
         {
         case 1: bitmask = 1; break;
@@ -1067,7 +1058,6 @@ void SetVetorInt1(TVariavel * v, int valor)
         case 5: bitmask = 31; break;
         case 6: bitmask = 63; break;
         case 7: bitmask = 127; break;
-        default: bitmask = 255; break;
         }
     // Bits já estão alinhados
         if (bitnum == 0)

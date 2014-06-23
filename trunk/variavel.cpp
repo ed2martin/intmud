@@ -280,21 +280,22 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         if (depois<antes)
             return;
     // Obtém byte e bit inicial
+        antes += numbit;
+        depois += numbit;
         char * end = end_char + antes/8;
-        unsigned char b = (bit + bit * 0x100) << (antes&7);
-    // Se não começa no bit 0: avança bit a bit até o fim do primeiro byte
-        if (b>1)
+    // Avança bit a bit até o fim do primeiro byte
+        if (antes & 7)
         {
-            for (; antes<depois && b; antes++)
-                *end &= ~b, b<<=1;
+            for (; antes<depois && (antes&7); antes++)
+                *end &= ~(1 << (antes&7));
             end++;
         }
     // Preenche bytes = 0
         for (; antes+8 <= depois; antes+=8)
             *end++ = 0;
     // Avança bit a bit
-        for (b=1; antes<depois; antes++)
-            *end &= ~b, b<<=1;
+        for (int mask=1; antes<depois; antes++)
+            *end &= ~mask, mask<<=1;
         return;
     }
 // Obtém o tamanho de uma variável
@@ -713,10 +714,10 @@ bool TVariavel::getBool()
             return GetVetorInt1(this);
         if (indice)
         {
-            int valor = (bit + bit * 0x100) << (indice&7);
-            return end_char[indice/8] & (valor>>8);
+            int ind2 = indice + numbit;
+            return end_char[ind2/8] & (1 << (ind2 & 7));
         }
-        return (end_char[0] & bit);
+        return (end_char[0] & (1 << numbit));
     case Instr::cInt16:
     case Instr::cUInt16:
         return end_short[indice];
@@ -849,11 +850,7 @@ int TVariavel::getInt()
             return (errno ? 0 : num);
         }
     case Instr::cInt1:
-        if (numfunc)
-            return GetVetorInt1(this);
-        if (indice==0)
-            return (end_char[0] & bit) != 0;
-        return getBool();
+        return (numfunc ? GetVetorInt1(this) : getBool());
     case Instr::cInt8:
         return (signed char)end_char[indice];
     case Instr::cUInt8:
@@ -1026,11 +1023,7 @@ double TVariavel::getDouble()
             return (errno ? 0 : num);
         }
     case Instr::cInt1:
-        if (numfunc)
-            return GetVetorInt1(this);
-        if (indice==0)
-            return (end_char[0] & bit) != 0;
-        return getBool();
+        return (numfunc ? GetVetorInt1(this) : getBool());
     case Instr::cInt8:
         return (signed char)end_char[indice];
     case Instr::cUInt8:
@@ -1195,11 +1188,7 @@ const char * TVariavel::getTxt()
         return end_char;
     case Instr::cInt1:
         if (numfunc==0)
-        {
-            if (indice==0)
-                return (end_char[0] & bit ? "1" : "0");
             return (getBool() ? "1" : "0");
-        }
     case Instr::cInt8:
     case Instr::cUInt8:
     case Instr::cInt16:
@@ -1432,16 +1421,16 @@ void TVariavel::setInt(int valor)
             SetVetorInt1(this, valor);
         else if (indice)
         {
-            int mask = (bit + bit * 0x100) << (indice&7);
+            int ind2 = indice + numbit;
             if (valor)
-                end_char[indice/8] |= (mask>>8);
+                end_char[ind2/8] |= (1 << (ind2 & 7));
             else
-                end_char[indice/8] &= ~(mask>>8);
+                end_char[ind2/8] &= ~(1 << (ind2 & 7));
         }
         else if (valor)
-            end_char[0] |= bit;
+            end_char[0] |= (1 << numbit);
         else
-            end_char[0] &= ~bit;
+            end_char[0] &= ~(1 << numbit);
         break;
     case Instr::cInt8:
         if (valor<-0x80)

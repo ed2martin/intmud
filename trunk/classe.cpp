@@ -1042,8 +1042,8 @@ int TClasse::AcertaVar(bool acertaderiv)
 
 // Acerta bits de controle de TClasse::IndiceVar
 // Acerta variáveis cInt1 (alinhamento de bit)
-    int indclasse=0, bitclasse=1;
-    int indobjeto=0, bitobjeto=1;
+    int indclasse=0, bitclasse=0;
+    int indobjeto=0, bitobjeto=0;
     IndiceVar = new unsigned int[NumVar];
     for (unsigned int x=0; x<NumVar; x++)
     {
@@ -1063,29 +1063,23 @@ int TClasse::AcertaVar(bool acertaderiv)
             if (valor & 0x400000) // Classe
             {
                 valor += indclasse + (bitclasse << 24);
-                indclasse += total/8;
-                for (; total&7; total--)
-                    if (bitclasse==0x80)
-                        bitclasse=1, indclasse++;
-                    else
-                        bitclasse <<= 1;
+                bitclasse += total;
+                indclasse += bitclasse/8;
+                bitclasse &= 7;
             }
             else // Objeto
             {
                 valor += indobjeto + (bitobjeto << 24);
-                indobjeto += total/8;
-                for (; total&7; total--)
-                    if (bitobjeto==0x80)
-                        bitobjeto=1, indobjeto++;
-                    else
-                        bitobjeto <<= 1;
+                bitobjeto += total;
+                indobjeto += bitobjeto/8;
+                bitobjeto &= 7;
             }
         }
     // Anota o resultado
         IndiceVar[x] = valor;
     }
-    if (bitclasse!=1) indclasse++;
-    if (bitobjeto!=1) indobjeto++;
+    if (bitclasse) indclasse++;
+    if (bitobjeto) indobjeto++;
 
 // Acerta variáveis com alinhamento de 1 byte
     for (unsigned int x=0; x<NumVar; x++)
@@ -1348,7 +1342,7 @@ int TClasse::AcertaVar(bool acertaderiv)
         al[x].tam = (unsigned char)al[x].defvar[Instr::endVetor];
         if (al[x].tam==0)
             al[x].tam=1;
-        al[x].bit = al[x].indvar >> 24;
+        al[x].numbit = al[x].indvar >> 24;
     }
 
 // Acerta al[n].tam para comandos 4 em diante

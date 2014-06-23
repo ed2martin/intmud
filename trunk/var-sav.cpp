@@ -301,7 +301,7 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
 // Prepara objeto TVariavel
     var->defvar = c->InstrVar[indice];
     indice = c->IndiceVar[indice];
-    var->bit = indice >> 24;
+    var->numbit = indice >> 24;
     var->indice = indvar;
     if (TVariavel::Tamanho(var->defvar)==0 ||
             indice & 0x400000) // Variável da classe
@@ -747,7 +747,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
             TVariavel var;
             var.defvar = c->InstrVar[x];
             int posic = c->IndiceVar[x];
-            var.bit = posic >> 24;
+            var.numbit = posic >> 24;
             var.indice = 0;
             if (TVariavel::Tamanho(var.defvar)==0 ||
                     (posic & 0x400000)) // Variável da classe
