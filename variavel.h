@@ -180,7 +180,7 @@ public:
                              @note Não é usado em TVariavel */
     unsigned char indice;
         ///< Índice no vetor ou 0 se não for vetor ou 0xFF se for o vetor
-    unsigned char bit;  ///< Máscara do bit, se for variável de bit
+    unsigned char numbit;  ///< Número do primeiro bit de 0 a 7, se int1
     unsigned short numfunc; ///< Para uso da variável; inicialmente é zero
 };
 

@@ -1739,7 +1739,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             x = c->IndiceVar[x];
             v.defvar = defvar;
             v.tamanho = 0;
-            v.bit = x >> 24;
+            v.numbit = x >> 24;
             if (defvar[2]==cConstTxt || // Constante
                     defvar[2]==cConstNum)
                 v.endvar = 0;

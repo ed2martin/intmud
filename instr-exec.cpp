@@ -2005,7 +2005,7 @@ exo_compara_sair:
                 VarAtual->Limpar();
                 VarAtual->defvar = defvar;
                 VarAtual->nomevar = defvar;
-                VarAtual->bit = indvar >> 24;
+                VarAtual->numbit = indvar >> 24;
                 VarAtual->numfunc = 0;
                 VarAtual->indice = (defvar[endVetor]==0 ? 0 : 0xFF);
                 if (defvar[2]==cConstTxt || // Constante

@@ -146,7 +146,7 @@ public:
          *  - Bit 22 =0 -> índice em TObjeto::Vars
          *  - Bit 22 =1 -> índice em TClasse::Vars
          *  - Bit 23 =1 se variável definida na classe (não foi herdada)
-         *  - Bits 31-24 = máscara do bit, se for int1 */
+         *  - Bits 31-24 = número do bit (de 0 a 7), se for int1 */
     unsigned int NumVar;
         ///< Número de elementos de TClasse::InstrVar e TClasse::IndiceVar
 
