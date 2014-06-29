@@ -8,41 +8,47 @@ const posic = 0
 func escr
   textotxt t0
   txt100 t1
+  int16 total.2
 # Lista de personagens dos jogadores
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
     refvar obj = item.obj
-    t1 = txt(999000 - obj.pnivel) + " N"
+    total.[obj.jogconfig.14] += 1
+    t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " N"
     t1 += txt(txt(obj.pnivel) + "      ", 0, 6) + obj.nome
     obj.sock == nulo && (t1 += "  [Desconectado]")
     se arg0.jogconfig.23
       obj.jogconfig.23 && (t1 += "  [Admin]")
-      obj.jogconfig.14 && (t1 += "  [Imortal]")
       obj.jogconfig.17 && (t1 += "  [InvQuem]")
       obj.sock.imonit && (t1 += "  [Monit " + obj.sock.imonit.objlista.perso.nome + "]")
     senao
       obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
-      obj.jogconfig.14 && config:mostraimortal && (t1 += "  [Imortal]")
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
     t0.addfim(t1)
   efim
 # Lista de jogadores sem personagem
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    continuar item.obj.perso.jog # Continuar se personagem é jogador
-    continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
-    t1 = "999001 N?     " + item.obj.nome
-    item.obj.jogconfig.17 && (t1 += "  [Invis]")
+    refvar obj = item.obj
+    continuar obj.perso.jog # Continuar se personagem é jogador
+    continuar obj.jogconfig.17 && !arg0.jogconfig.23
+    total.[obj.jogconfig.14] += 1
+    t1 = (obj.jogconfig.14 ? "A999001 N?     " : "B999001 N?     ") + item.obj.nome
+    obj.jogconfig.17 && (t1 += "  [InvQuem]")
     t0.addfim(t1)
   efim
+# Mostra a quantidade de personagens online
+  total.0 && t0.addfim("B 00000 \b\c6Jogadores online: " + total.0 + "\b")
+  total.1 && t0.addfim("A 00000 \b\c6Imortais online: " + total.1 + "\b")
 # Ordena e mostra para o jogador
   t0.ordena
   textopos pos
+  txt1 ch
   epara pos = t0.ini, pos, pos.depois
-    pos.mudar("", 0, 7)
+    pos.mudar("", 0, 8)
   efim
-  arg0.msg2("\b\c6Personagens online: " + t0.linhas + "\b\n" + t0.remove(1000))
+  arg0.msg2(t0.remove(1000))
 
 
 classe cmd_hab
