@@ -173,8 +173,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 310, nulo
-  p.criar("config", "const versao = 310 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 312, nulo
+  p.criar("config", "const versao = 312 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -281,6 +281,10 @@ func ini2_exec
     criafunc("config", "const salvainiciante = 30")
     criafunc("config", "const salvaveterano = 60")
     criafunc("config", "const salvaadmin = 120")
+  fimse
+# Retira mostraimortal da configuração
+  se versao < 312
+    p.apagar("config", "mostraimortal")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

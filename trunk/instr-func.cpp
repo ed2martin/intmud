@@ -826,12 +826,8 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             unsigned char ch = tabTXTCOD[*(unsigned char*)txt];
             if (ch)
                 *destino++='@', *destino++=ch;
-            else
-            {
-                ch = tabNOMES1[*(unsigned char*)txt];
-                if (ch)
-                    *destino++ = ch;
-            }
+            else //if (tabNOMES1[*(unsigned char*)txt])
+                *destino++ = *txt;
             txt++;
         }
         break;

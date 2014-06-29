@@ -93,9 +93,33 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 func proc # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   r = arg1
-  ret vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+  refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+  ret txtdec(vartroca(txtcod(t), "@d", "x_"))
 
+const x_a = "De"
+const x_a@_a@_ = "Da "
+const x_a@_as@_ = "Das "
+const x_a@_o@_ = "Do "
+const x_a@_os@_ = "Dos "
+const x_b = "de"
+const x_b@_a@_ = "da "
+const x_b@_as@_ = "das "
+const x_b@_o@_ = "do "
+const x_b@_os@_ = "dos "
+const x_c = "Em"
+const x_c@_a@_ = "Na "
+const x_c@_as@_ = "Nas "
+const x_c@_o@_ = "No "
+const x_c@_os@_ = "Nos "
+const x_d = "em"
+const x_d@_a@_ = "na "
+const x_d@_as@_ = "nas "
+const x_d@_o@_ = "no "
+const x_d@_os@_ = "nos "
+#
 const o_@ = "$"
+const o_d = arg0 === "D" ? "\da" : "\db"
+const o_e = arg0 === "E" ? "\dc" : "\dd"
 const o_a = arg0 === "A" ? txtcopiamai(nome(alvo), "A") : nome(alvo)
 const o_m = arg0 === "M" ? txtcopiamai(mens, "A") : mens
 const o_p = arg0 === "P" ? txtcopiamai(nome(perso), "A") : nome(perso)
