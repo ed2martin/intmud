@@ -18,7 +18,8 @@
 16. Habilidades e magias (mud-ataque.int)
 17. Efeitos (mud-efeito.int e mud-b-efeito.int)
 18. Criando menus de edição (administração)
-19. Lista de coisas pendentes
+19. Funcionamento interno das opções dos menus
+20. Lista de coisas pendentes
 
 
 1. Rodando o MUD
@@ -1760,8 +1761,92 @@ Para chamar o menu, basta executar a função m_menu do jogador (classe
 jogsock), passando como argumento o nome da classe.
 Exemplo: m_menu("menu_config")
 
+Alguns exemplos de uso dos diversos tipos de dados:
 
-19. Lista de coisas pendentes
+"linha" - usado em títulos de salas, nome do personagem, descrição curta
+"texto" - descrição de uma sala, ao olhar para um personagem ou item,
+  mensagem de apresentação do mud
+"numero" - nível dos personagens e dos itens, tempo de reset de uma área
+"numreal" - não foi usado, mas parece lógico existir números que podem
+  ter dígitos após a vírgula
+"opcao" - tipo de terreno de uma sala, se uma saída não pode ser trancada,
+  pode ser trancada ou tranca ao fechar, etc. Qualquer coisa que tenha duas
+  opções ou mais, sendo cada uma um número
+"simnao" - qualquer coisa que seja 0=não e 1=sim, como permite PNJ,
+  sala não permite magia, PNJ é agressivo, PNJ é imortal
+"vetor" - em que posições pode vestir um item, quando alguém cria um
+  personagem, quais as opções do comando config vêm habilitadas,
+  quais tipos de ataque são normais e quais são especiais (exemplo,
+  contusão, luta e terra são normais, fogo, água e elétrico são especiais)
+"txtlinha" - cada habilidade e cada magia pode ter até 5 mensagens diferentes
+  para cada coisa; por exemplo, 5 mensagens diferentes quando matou o alvo.
+  Com essa opção são criadas só 5 constantes. Sem, seriam 85, e o código
+  das habilidades e magia seria mais complicado
+"txtopcao" - tipos de produtos existentes, tipos de ataques (água, fogo,
+  etc.), nomes das posições em que pode vestir alguma coisa
+"sala" - em que sala os jogadores começam o jogo e para que sala vão
+  quando morrem
+"atrib*" - um submenu para alterar alguns atributos de itens, personagens
+  e classes, como vida por nível, furtividade, ver invisível, porcentagem
+  de defesa e de ataque para um elemento (cortante, perfurante, água,
+  fogo, terra, etc.)
+"tipos" - com que raças e classes um vendedor ou professor não negocia,
+  que raças e classes não podem vestir um item
+"tipodep" - quais habilidades e magias são necessárias para aprender uma
+  determinada habilidade ou magia
+"menu" - para poder criar submenus
+
+
+19. Funcionamento interno das opções dos menus
+
+Para cada tipo de opção, devem existir duas funções correspondentes na
+classe jogsock:
+t_<tipo da opção> é chamada para mostrar a opção no menu
+p_<tipo da opção> é chamada quando o jogador escolhe a opção do menu
+
+Exemplo, a seguinte opção:
+const nome5 = "Limite de conexões por IP"
+const tipo5 = "numero--"
+const clas5 = "config"
+const vari5 = "servusr"
+usa as funções t_numero e p_numero, porque o tipo é "numero--".
+Esse "--" no final apenas indica que não deve ter opção de apagar variável,
+e também não pode ser editado como função. Essa é a opção 5 do menu,
+pois os nomes das constantes terminam com o número 5.
+
+A maioria dessas funções está definida no aquivo mud-adm.int, na classe
+adm_comum, que é herdada pela classe jogsock.
+
+Na função t_<tipo da opção> as variáveis são as seguintes:
+arg0 = nome da classe (constante clas)
+arg1 = nome da variável (constante vari)
+arg2 = nomes das opções (constante extr)
+este = objeto jogsock do jogador
+tpasso = nome da classe que contém o menu
+
+Na função p_<tipo da opção> as variáveis são as seguintes:
+arg0 = o que o usuário digitou
+este = objeto jogsock do jogador
+tpasso = nome da classe que contém o menu
+var.opcnome = nome da opção (constante nome)
+var.opcclasse = classe da variável (constante clas)
+var.opcvar = nome da variável (constante vari)
+var.opcextra = informações extras (constante extr)
+var.opcpasso = usado para a opção poder voltar ao menu; essas instruções:
+  passo = var.opcpasso, p_[passo]("\b")
+var.opcvalido = 1 se a opço pode apagar a variável ou 0 se não pode
+var.opcexec = função executada após alterar as variáveis (constante exec)
+  Isso costuma ser feito com a seguinte linha:
+  criar("admmudou", var.opcclasse, var.opcexec)
+
+Quando a função 'p_' altera o programa, costuma-se salvar o programa e gerar
+uma mensagem para os jogadores que estão com o canal admlog habilitado.
+São linhas como essas:
+config:salvar
+admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+
+
+20. Lista de coisas pendentes
 
 Descrições extras diurnas e noturnas
 Acrescentar altura/peso/volume mínimo/máximo para jogadores nos tipos (comando etipo)

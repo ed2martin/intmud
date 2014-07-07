@@ -74,6 +74,7 @@ private:
     bool FuncFAntes(TVariavel * v);       ///< Processa função FAntes
     bool FuncFDepois(TVariavel * v);      ///< Processa função FDepois
     bool FuncMudar(TVariavel * v, int lugar); ///< Chamado por FuncF*
+    bool FuncRenomear(TVariavel * v);     ///< Processa função Renomear
     bool FuncSalvar(TVariavel * v);       ///< Processa função Salvar
     bool FuncSalvarTudo(TVariavel * v);   ///< Processa função SalvarTudo
 

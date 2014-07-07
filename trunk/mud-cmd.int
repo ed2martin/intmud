@@ -43,6 +43,22 @@ classe cmd_quit
 herda cmd_fim
 
 
+classe cmdfim_autoapagar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Autoapagar\b\n\
+Sintaxe: AUTOAPAGAR\n\
+Apaga definitivamente o seu personagem, retirando também você do jogo.\n\
+Após digitar esse comando, é necessário confirmar e digitar a senha atual\n\
+do seu personagem"
+const posic = 0
+
+func escr
+  se !arg0.senha
+    arg0.msg("Seu personagem não está salvo. Basta sair do MUD teclando SAIR.")
+  senao
+    arg0.sock.p_autoapagar1
+
+
 classe cmd_config
 herda comando_comum, comando_ajuda
 const posic = 0

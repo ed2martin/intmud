@@ -257,7 +257,21 @@ func ini
 # arg0 = personagem que morreu
 # arg1 = verdadeiro se deve transferir os itens do personagem que morreu
   tempo = 1200, volobj = arg0.volobj, pesoobj = arg0.pesoobj
-  descnome = arg0.nome ? "um corpo de " + arg0.nome : "um corpo"
+  descnome = arg0.descnome
+  se txt2(descnome)
+    casovar txtmin(txt1(descnome))
+    casose "o"
+    casose "a"
+    casose "os"
+    casose "as"
+      descnome = "O corpo d" + txtmin(txt1(descnome)) + " " + txt2(descnome)
+      sair
+    casose
+      descnome = "O corpo de " + descnome
+    casofim
+  senao
+    descnome = "O corpo de " + descnome
+  fimse
   ident = "corpo " + arg0.ident
   comum_obj:ini
   arg0.dono && mudadono(arg0.dono)

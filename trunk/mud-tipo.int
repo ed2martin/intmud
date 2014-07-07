@@ -100,7 +100,7 @@ func cmd_etipo # Editar tipo
   prog p
   se arg0 == ""
     msg("Tecle o nome do tipo após ETIPO")
-  senao !p.existe("tipo_" + arg0)
+  senao !p.existe("tipo_" + txts(arg0))
     msg("Tipo não existe: " + arg0)
   senao
     var.classe1 = "tipo_" + txts(txtmin(arg0))

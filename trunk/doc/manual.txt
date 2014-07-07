@@ -69,7 +69,7 @@ IntMUD (Interpretador MUD)
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
 de 2012 a 2014, por Paulo Santos Ramos e Edward Martin, até o tópico 15.4.8
-e o tópico 23.
+e os tópico 20.16 e 23.
 
 
 1. SOBRE O INTMUD
@@ -2803,18 +2803,23 @@ Exemplo, se textopos estiver na linha 3, a função juntar juntará as linhas
 Retorna 1 se juntou linhas ou 0 se não juntou.
 Nota: Para dividir uma linha, adicionar texto '\n' com a função mudar.
 
-20.16. txtproc(<texto procurado>, <caracter inicial>, [núm. de linhas])
-Procura um texto a partir da linha atual, sem diferenciar letras maiúsculas,
-minúsculas e acentuadas.
-Se o texto procurado começar com '\n', significa que ele deve estar no
-começo de uma linha.
-Se o texto procurado terminar com '\n', significa que ele deve estar no
-fim de uma linha.
-Se não for especificado o número de linhas a procurar, procura até o final
-do texto de textotxt.
-Se o caracter inicial não for especificado, assume início da linha.
-Se não encontrou, retorna -1. Se encontrou, posiciona na linha que
-contém o texto e retorna o número do caracter (0=início da linha).
+20.16. txtproc(<texto>, [núm. do caracter inicial], [núm. de linhas])
+Procura <texto> no textotxt sem diferenciar letras maiúsculas de
+minúsculas e acentuadas de não acentuadas.
+
+A busca começa na linha atual, a partir do [núm. do caracter inicial].
+O valor 0 corresponde ao primeiro caracter, o valor 1 o segundo, etc.
+Se omitido começa no primeiro.
+
+O [núm. de linhas] é o número máximo de linhas a buscar o texto. Se for
+omitido, procura até ao final do textotxt.
+
+Para procurar uma linha que começa e/ou termina com um determinado
+texto, acrescente um '\n' no início e/ou no fim do <texto> respectivamente.
+
+Se encontrou, posiciona na linha que contém o texto e retorna o número
+do caracter (0=início da linha). Se não encontrou, retorna -1, sem mudar
+de linha.
 
 20.17. txtprocmai(<texto procurado>, <caracter inicial>, [núm. de linhas])
 Mesmo que txtproc (acima), exceto que diferencia letras acentuadas e não
@@ -3776,7 +3781,12 @@ Se a função 2 for omitida, coloca a função 1 no final da classe.
 Retorna um texto vazio se conseguiu mover ou a mensagem de erro se não
 conseguiu.
 
-33.4.8. salvar([texto])
+33.4.8. renomear(<nome da classe>, <novo nome da classe>)
+Renomeia a classe.
+Nota: A classe só será realmente renomeada quando o controle voltar ao
+IntMUD e após todas as outras alterações pendentes serem realizadas.
+
+33.4.9. salvar([texto])
 Salva as alterações nos arquivos correspondentes, depois que todas
 as alterações pendentes nas classes forem efetuadas.
 O texto é composto de letras seguidas de números, que indicam como
@@ -3800,7 +3810,7 @@ salvar("L4000N0I2C1F1V0")
 Significa não dividir linhas, 2 espaços para indentação, 1 linha vazia
 entre classes e entre funções e nenhuma linha vazia entre variáveis.
 
-33.4.9. salvartudo([texto])
+33.4.10. salvartudo([texto])
 Mesmo que a função salvar, porém salva todos os arquivos,
 independete de terem sido alterados ou não.
 
