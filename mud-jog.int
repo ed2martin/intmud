@@ -96,6 +96,7 @@ func recebe1 # Função recebe após uso de alias
     casose "mudasenha1"
     casose "mudasenha2"
     casose "mudasenha3"
+    casose "autoapagar2"
     casofim
   fimse
 # Atualiza tempo para sair do MUD
@@ -349,7 +350,7 @@ func p_raca2 # Escolhe a raça
 # Obtém a lista de raças e checa se escolheu uma raça
   txtmais.limpar
   epara p.iniclasse("tipo_"), p.lin, p.depois
-    continuar [p.texto]:menu != tpasso
+    continuar txts([p.texto]:menu) != tpasso
     txtmais.addfim(txt(txtmais.linhas + 1) + ". " + [p.texto]:nome)
     lin = p.texto
     continuar txt(arg0) != txt(txtmais.linhas)
@@ -386,7 +387,7 @@ func p_raca3 # Mostra informações da raça e pede confirmação
     tpasso = txt(tpasso, 5)
     ret p_raca2
   senao arg0 == "N"
-    tpasso = [tpasso]:menu
+    tpasso = txts([tpasso]:menu)
     ret p_raca2
   senao
     msg("Você quer essa raça? (tecle S ou N)")
@@ -402,9 +403,11 @@ func p_classe2 # Escolhe a classe
 # Obtém a lista de classes e checa se escolheu uma classe
   txtmais.limpar
   epara p.iniclasse("tipo_"), p.lin, p.depois
-    continuar [p.texto]:menu != tpasso
+    continuar txts([p.texto]:menu) != tpasso
     se [p.texto]:racas
-      continuar txtproc("\n" + [p.texto]:racas + "\n", "\n" + var.j_tipo1 + "\n") < 0
+      se txtproc("\n" + txts([p.texto]:racas) + "\n", "\n" + var.j_tipo1 + "\n") < 0
+        continuar
+      fimse
     fimse
     txtmais.addfim(txt(txtmais.linhas + 1) + ". " + [p.texto]:nome)
     lin = p.texto
@@ -442,7 +445,7 @@ func p_classe3 # Mostra informações da classe e pede confirmação
     tpasso = txt(tpasso, 5)
     ret p_classe2
   senao arg0 == "N"
-    tpasso = [tpasso]:menu
+    tpasso = txts([tpasso]:menu)
     ret p_classe2
   senao
     msg("Você quer essa classe? (tecle S ou N)")
@@ -592,6 +595,36 @@ func p_mudasenha3 # Repetir a senha digitada
     perso.senha = txtmin(arg0)
     msg(perso.salvar ? "Jogo salvo" : "Não foi possível salvar")
     passo = ""
+  fimse
+  ret 1
+
+func p_autoapagar1
+  passo = "autoapagar1"
+  se !arg0
+    msg("Deseja realmente apagar o personagem " + perso.nome + "? Tecle S ou N")
+  senao arg0 == "s"
+    p_autoapagar2
+  senao
+    msg("Autoapagar cancelado")
+    passo = ""
+  fimse
+  ret 1
+
+func p_autoapagar2
+  passo = "autoapagar2"
+  se !arg0
+    msg("Digite a senha ou tecle Z para cancelar")
+  senao arg0 == "z"
+    msg("Autoapagar cancelado")
+    passo = ""
+  senao arg0 != perso.senha
+    msg("Senha incorreta; autoapagar cancelado")
+    passo = ""
+  senao
+    arqsav sav1
+    sav1.apagar("sav/" + txt2(cnome) + ".sav")
+    perso.senha = ""
+    apagar(perso)
   fimse
   ret 1
 

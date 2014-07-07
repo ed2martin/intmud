@@ -198,6 +198,95 @@ char * TClasse::NomeDef(char * texto)
 }
 
 //----------------------------------------------------------------------------
+void TClasse::MudaNome(const char * novonome)
+{
+    char nomeantes[CLASSE_NOME_TAM]; // Nome anterior da classe
+
+// Acerta o nome da classe e guarda o nome anterior
+    ArqArquivo->Mudou = true;
+    RBremove();
+    copiastr(nomeantes, Nome, sizeof(nomeantes));
+    copiastr(Nome, novonome, sizeof(Nome));
+    RBinsert();
+    //printf("\nRenomeando classe %s para %s\n", nomeantes, Nome); fflush(stdout);
+
+// Acerta classes que herdam essa
+    for (unsigned int contderiv = 0; contderiv < NumDeriv; contderiv++)
+    {
+        char txtherda[HERDA_TAM * CLASSE_NOME_TAM + 10];
+        TClasse * cl = ListaDeriv[contderiv];
+
+    // Monta a instrução herda com o novo nome da classe
+        assert(cl->Comandos[2] == Instr::cHerda);
+        memcpy(txtherda, cl->Comandos, Instr::endVar+1);
+        const char * o = cl->Comandos + Instr::endVar + 1;
+        char * d = txtherda + Instr::endVar + 1;
+        bool mudounome = false;
+        for (int total=(unsigned char)txtherda[Instr::endVar]; total; total--)
+        {
+            if (strcmp(o, nomeantes) == 0)
+            {
+                strcpy(d, Nome);
+                mudounome = true;
+            }
+            else
+                strcpy(d, o);
+            while (*o++);
+            while (*d++);
+        }
+        unsigned int tamherda = d - txtherda;
+        txtherda[0] = tamherda;
+        txtherda[1] = tamherda >> 8;
+        assert(tamherda <= sizeof(txtherda));
+        /*{
+          char mens[4096];
+          if (!mudounome)
+            printf("Classe %s não herda %s diretamente\n", cl->Nome, Nome);
+          else if (Instr::Decod(mens, txtherda, sizeof(mens)))
+            printf("Classe %s: %s\n", cl->Nome, mens);
+          fflush(stdout);
+        }*/
+        if (!mudounome) // Classe não é herdada diretamente
+            continue;
+
+    // Obtém faixa de endereços das instruções da classe
+        const char * ini = cl->Comandos + Num16(cl->Comandos);
+        const char * fim = ini;
+        while (fim[0] || fim[1])
+            fim += Num16(fim);
+        fim += 2;
+
+    // Acerta instruções da classe
+        char * pnovo = new char[fim - ini + tamherda];
+        memcpy(pnovo, txtherda, tamherda);
+        memcpy(pnovo + tamherda, ini, fim - ini);
+        delete[] cl->Comandos;
+        cl->Comandos = pnovo;
+        pnovo += tamherda;
+        cl->ArqArquivo->Mudou = true;
+
+    // Acerta endereços das variáveis na classe herdada
+        long long enddif = pnovo - ini;
+        assert(ini + enddif == pnovo);
+        for (unsigned int y=0; y<cl->NumVar; y++)
+            if (cl->InstrVar[y] >= ini &&
+                        cl->InstrVar[y] < fim)
+                cl->InstrVar[y] += enddif;
+
+    // Acerta endereços das variáveis nas outras classes
+        for (unsigned int numd=0; numd < cl->NumDeriv; numd++)
+        {
+            TClasse * deriv = cl->ListaDeriv[numd];
+            //printf("  Ajustando classe %s\n", deriv->Nome); fflush(stdout);
+            for (unsigned int y=0; y<deriv->NumVar; y++)
+                if (deriv->InstrVar[y] >= ini &&
+                        deriv->InstrVar[y] < fim)
+                    deriv->InstrVar[y] += enddif;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
 #define REMOVE_ARQ \
     if (ArqArquivo) \
     { \

@@ -153,6 +153,8 @@ const adm_cod = "\b\c3Comandos de edição do código\b\n\
   Apaga classe.\n\
 \c2ecl\b [nome]\n\
   Edita uma classe.\n\
+\c2rcl\b <nome> <novo nome>\n\
+  Renomeia uma classe.\n\
 \c2herda\b <nome>\n\
   Edita herança de uma classe (uma classe herdada por linha).\n\
 \c2lfunc\b <nome>\n\
@@ -788,6 +790,21 @@ func cmd_ecl # Edita uma classe
     var.opcnome = ""
     var.opcclasse = txts(arg0)
     p_classe("\b")
+  fimse
+  ret 1
+
+func cmd_rcl # Renomeia uma classe
+  prog p
+  se !txt2(arg0)
+    msg("Digite RCL seguido do nome da classe e o novo nome da classe")
+  senao !p.existe(txt1(arg0))
+    msg("Classe não existe: " + txt1(arg0))
+  senao p.existe(txt2(arg0))
+    msg("Classe já existe: " + txt2(arg0))
+  senao
+    msg("Renomeando classe " + txt1(arg0) + " para " + txt2(arg0))
+    p.renomear(txt1(arg0), txt2(arg0))
+    config:salvar
   fimse
   ret 1
 

@@ -4,7 +4,7 @@
 class TObjeto;
 class TArqMapa;
 
-#define HERDA_TAM 40 // Número máximo de classes herdadas por classe
+#define HERDA_TAM 50 // Número máximo de classes herdadas por classe
 #define CLASSE_NOME_TAM 48 // Tamanho máximo dos nomes das classes + 1
 
 //----------------------------------------------------------------------------
@@ -47,18 +47,17 @@ public:
     TClasse(const char * nome, TArqMapa * arquivo);
         ///< Construtor
         /**< @param nome Nome da classe
-             @param arquivo A qual arquivo pertence
-             @note Indica que o arquivo da classe foi alterado */
+         *   @param arquivo A qual arquivo pertence
+         *   @note Indica que o arquivo da classe foi alterado */
     ~TClasse();
         ///< Destrutor
         /**< @note Antes de apagar, não deve haver nenhuma classe derivada
-             @note Indica que o arquivo da classe foi alterado */
+         *   @note Indica que o arquivo da classe foi alterado */
 
     static bool NomeValido(char * nome);
         ///< Verifica se nome é um nome válido para classe
-        /**<
-         *  @param nome Nome a pesquisar
-         *  @return true se o nome é valido; nome original é alterado */
+        /**< @param nome Nome a pesquisar
+         *   @return true se o nome é valido; nome original é alterado */
     static char * NomeDef(char * texto);
         ///< Obtém nome de classe a partir da linha que define uma classe
         /**< @param texto Linha contendo a definição da classe
@@ -66,13 +65,14 @@ public:
 
     static TClasse * Procura(const char * nome);
         ///< Procura uma classe a partir do nome
-        /**<
-         *  @param nome Nome a pesquisar
-         *  @return Endereço da classe, ou 0 se não foi encontrada */
+        /**< @param nome Nome a pesquisar
+         *   @return Endereço da classe, ou 0 se não foi encontrada */
     static TClasse * ProcuraIni(const char * nome);
         ///< Procura() que procura a primeira classe que começa com o nome
     static TClasse * ProcuraFim(const char * nome);
         ///< Procura() que procura a última classe que começa com o nome
+    void MudaNome(const char * novonome);
+        ///< Muda o nome da classe
 
     char * Comandos;    ///< Lista de comandos da classe
     char Nome[CLASSE_NOME_TAM]; ///< Nome da classe; não deve ser mudado

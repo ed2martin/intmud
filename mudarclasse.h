@@ -114,5 +114,25 @@ private:
 };
 
 //----------------------------------------------------------------------------
+class TRenomeiaClasse /// Classes que devem ser renomeadas
+{
+public:
+    TRenomeiaClasse(const char * antes, const char * depois);
+        ///< Construtor
+        /**< @param antes Nome da classe que será renomeada
+         *   @param depois Novo nome da classe */
+    ~TRenomeiaClasse();              ///< Destrutor
+    static void Processa();          ///< Renomeia as classes
+
+private:
+    char NomeAntes[CLASSE_NOME_TAM]; ///< Nome da classe
+    char NomeDepois[CLASSE_NOME_TAM];///< Novo nome da classe
+
+    static TRenomeiaClasse * Inicio; ///< Primeiro objeto
+    static TRenomeiaClasse * Fim;    ///< Último objeto
+    TRenomeiaClasse * Antes;         ///< Objeto anterior
+    TRenomeiaClasse * Depois;        ///< Próximo objeto
+};
+//----------------------------------------------------------------------------
 
 #endif

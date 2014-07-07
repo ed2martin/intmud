@@ -103,6 +103,7 @@ bool TVarProg::Func(TVariavel * v, const char * nome)
         { "inilinha",     &TVarProg::FuncIniLinha },
         { "lin",          &TVarProg::FuncLin },
         { "nivel",        &TVarProg::FuncNivel },
+        { "renomear",     &TVarProg::FuncRenomear },
         { "salvar",       &TVarProg::FuncSalvar },
         { "salvartudo",   &TVarProg::FuncSalvarTudo },
         { "texto",        &TVarProg::FuncTexto },
@@ -1637,6 +1638,24 @@ bool TVarProg::FuncMudar(TVariavel * v, int lugar)
     mudarcom.AnotaBloco(obj);
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto("");
+}
+
+//------------------------------------------------------------------------------
+bool TVarProg::FuncRenomear(TVariavel * v)
+{
+    if (Instr::VarAtual < v+2)
+        return false;
+    char antes[CLASSE_NOME_TAM+100];
+    char depois[CLASSE_NOME_TAM+100];
+    copiastr(antes, v[1].getTxt(), sizeof(antes));
+    copiastr(depois, v[2].getTxt(), sizeof(depois));
+    if (TClasse::NomeValido(antes)==false ||
+        TClasse::NomeValido(depois)==false)
+        return false;
+    if (comparaVar(antes, depois) == 0)
+        return false;
+    new TRenomeiaClasse(antes, depois);
+    return false;
 }
 
 //------------------------------------------------------------------------------

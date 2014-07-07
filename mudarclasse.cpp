@@ -23,6 +23,8 @@
 TMudarClasse * TMudarClasse::Inicio=0;
 TMudarClasse * TMudarClasse::Fim=0;
 char TMudarClasse::Salvar=0;
+TRenomeiaClasse * TRenomeiaClasse::Inicio = 0;
+TRenomeiaClasse * TRenomeiaClasse::Fim = 0;
 
 //----------------------------------------------------------------------------
 TMudarAux::TMudarAux()
@@ -451,6 +453,8 @@ bool TMudarClasse::ExecPasso()
             return true;
         }
     }
+// Renomeia classes
+    TRenomeiaClasse::Processa();
 // Salva classes
     if (Salvar)
     {
@@ -488,3 +492,33 @@ TMudarClasse * TMudarClasse::RBroot=0;
 #define CLASS TMudarClasse          // Nome da classe
 #define RBmask 1 // Máscara para bit 0
 #include "rbt.cpp.h"
+
+//----------------------------------------------------------------------------
+TRenomeiaClasse::TRenomeiaClasse(const char * antes, const char * depois)
+{
+    copiastr(NomeAntes, antes, sizeof(NomeAntes));
+    copiastr(NomeDepois, depois, sizeof(NomeDepois));
+    Antes = Fim;
+    Depois = 0;
+    Fim = this;
+    (Antes ? Antes->Depois : Inicio) = this;
+}
+
+//----------------------------------------------------------------------------
+TRenomeiaClasse::~TRenomeiaClasse()
+{
+    (Antes ? Antes->Depois : Inicio) = Depois;
+    (Depois ? Depois->Antes : Fim) = Antes;
+}
+
+//----------------------------------------------------------------------------
+void TRenomeiaClasse::Processa()
+{
+    while (Inicio)
+    {
+        TClasse * cl = TClasse::Procura(Inicio->NomeAntes);
+        if (cl && TClasse::Procura(Inicio->NomeDepois)==0)
+            cl->MudaNome(Inicio->NomeDepois);
+        delete Inicio;
+    }
+}

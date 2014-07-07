@@ -742,11 +742,16 @@ func p_proc_exec # Processar comportamento do personagem
   fimse
 # Realiza um ataque
   se alvo && persobat.pvida && dono.s_luta
-    refvar t1 = escolheatk
-    refvar obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
-    refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
-    se obj.autohab2(persobat, aulas)
-      ret obj.exechab(persobat, alvo.persobat, aulas, persobat.pnivel)
+    txt100 t1
+    t1 = escolheatk # Obtém o nome de um ataque
+    se t1 # Ataque manual
+      refvar obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
+      refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
+      se obj.autohab2(persobat, aulas)
+        ret obj.exechab(persobat, alvo.persobat, aulas, persobat.pnivel)
+      fimse
+    senao !arg0.atkenv # Ataque automático
+      persobat.atkauto(alvo.persobat, 8)
     fimse
   fimse
 # Acerta condição do personagem
