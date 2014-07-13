@@ -1,243 +1,430 @@
+* 13/7/2014 IntMUD 1.02f MUD baseado na revisão 314 do SVN
+
+   No Int MUD:
+  1. Corrigido bug em vetores de variáveis int1
+  2. Corrigido bug em txtcod: estava passando letras maiúsculas e letras
+     acentuadas para minúsculas sem acento
+  3. Criada função prog.renomear, para renomear classes
+  4. Quantidade máxima de heranças (diretas + indiretas) por classe
+     aumentou para 50
+  5. Corrigido bug ao salvar e ler conteúdo de textotxt e textovar via
+     arqsav: dependendo de como divide as linhas no arquivo sav, podia
+     remover espaços do texto
+  6. Versão do IntMUD mudou para 1.02f
+
+   No MUD:
+  1. Criado comando para administradores: atklog
+  2. Corrigido bug: a opção "Força do ataque automático" do comando
+     Econfig estava sendo ignorada
+  3. Corrigido bug: PNJs estavam agindo como se estivessem com fome e
+     sede extremas
+  4. Mudada a forma como as armas influenciam nos danos de batalha
+  5. Criadas opções $d e $e para mensagens; estão explicadas a teclar
+     adm mens
+  6. Comando QUEM agora mostra lista de imortais e lista de jogadores
+  7. Criado comando rcl, para renomear classes
+  8. Criado tópico no mud.txt: Funcionamento interno das opções dos
+     menus
+  9. Mensagem do corpo dos personagens mudou para "O corpo
+     de/do/da/dos/das..."
+ 10. Criado comando autoapagar, para apagar o próprio personagem
+ 11. Corrigido alguns bugs em relação a nomes de tipos (raças e classes)
+     compostos (exemplo, meio elfo)
+ 12. PNJ agressivo agora ataca se tiver apenas ataque automático
+ 13. Criada opção no comando Econfig em Ataque, para definir se ganha ou
+     perde experiência ao matar um personagem de jogador
+ 14. Opção Experiência ao morrer, no comando Econfig, agora é quanta
+     experiência perde ao morrer
+ 15. Personagens podem subir até 5 níveis de uma vez, dependendo de
+     quanta experiência ganhou
+ 16. Corrigido bug: não estava avisando quando um PNJ chega de uma sala
+     que não tinha jogador
+ 17. Comandos Salvar e Senha passam a existir sempre
+ 18. Área da casa mudou devido à mudança nos comandos Salvar e Senha
+ 19. Mensagens ao subir de nível, ao escurecer e ficar claro agora estão
+     no comando Econfig
+
 * 14/6/2014 IntMUD 1.02e MUD baseado na revisão 310 do SVN
 
-  No Int MUD:
+   No IntMUD:
+  1. Criadas funções textovar.valorini, textovar.valorfim,
+     textoobj.valorini e textoobj.valorfim
+  2. Versão do programa mudou para 1.02e
 
-    Criadas funções textovar.valorini, textovar.valorfim, textoobj.valorini e textoobj.valorfim
-    Versão do programa mudou para 1.02e
-
-  No MUD:
-
-    Nas mensagens de ataques, o objeto é a arma usada (opções $O, $U e $X)
-    Comando olhar avisa a todos quando o personagem olha para outro ou para algum item que não está carregando
-    Comando ver não avisa os outros personagens
-    Criada opção no comando Econfig: experiência do personagem ao matar um jogador
-    Quando perde experiência ao matar outro jogador, mostra quanta experiência perdeu
-    Tempo entre duas mensagens de fome e sede aumentou 67%
-    Criada nova opção para itens em Fonte de luz/Tipo de luz: 7 Automático (acende ao vestir, sem fogo)
-    Criado exemplo de item que acende ao vestir: cinto dourado, na sala teste024
-    Tamanho máximo das mensagens de ataques mudaram para 512 caracteres
-    Quantidade máxima de fome, sede e embriaguês mudou de 160 para 250
-    Mensagens das habilidades e magias agora aceitam cores e \n (quebra de linha)
-    Sala teste105, com personagem teste023 que desafia o jogador a uma luta
-    Sala teste106, com personagem teste024 que dá uma lanterna em troca de 3 palitos de fósforo
-    Corrigido bug ao pegar, dar e soltar itens que agrupam: não estava considerando corretamente a quantidade máxima de itens
-    Corrigido bug: efeitos dos ataques não estavam atingindo os alvos secundários
-    A quantidade máxima de itens que agrupam em um lugar mudou de 255 para 65535
-    Opção no Econfig: se mostra mensagens de fome e sede moderada para os outros jogadores
-    Ataques de área agora podem ser do tipo "exceto o personagem"
-    Opção em Itens / Tipo de arma: pode-se escolher a habilidade usada como ataque automático da arma
-    Opção "Tipo de ataque" dos personagens passou a ser a habilidade que o personagem usa nos ataques automáticos
-    Opção "Tipos de personagens" do comando Econfig/Ataques passou a ser "Ataque automático sem arma" (quando não for definido o ataque automático no personagem)
-    Quantidade de experiência que um PNJ dá (opção Quando morre / Experiência) não está mais limitado a um número de 0 a 1000
-    Furtividade (andar em silêncio) não escondem personagens dos imortais
-    Criada habilidade Chute Élfico, efeito Dreno de Mana e sala teste107 com explicações
-    Sala teste108 para demonstrar como fazer: perder itens e dinheiro, remover todos os itens, jogar itens e dinheiro na sala e transportar jogadores da sala
-    Sala teste109: são criadas três camas (cama é um item do tipo completo; só se pode criar uma no reset)
-    Sala teste110: óculos que são criados a cada 2 a 3 minutos se não houver nenhum na sala
-    Sala teste111: um baú que fecha após um tempo e com moedas que não aparecem em seguida após pegar
-    Sala teste112: mesmas chaves da sala teste097, mas não somem nas mãos de personagens não jogador
-    Criado controle de banda das mensagens do MUD para os jogadores: no comando Econfig, em "Como ativar o MUD"
-    Corrigido bug: um personagem podia dar um item para ele mesmo
-    Quantos dias os jogos ficam salvos agora é definido no comando Econfig
+   No MUD:
+  1. Nas mensagens de ataques, o objeto é a arma usada (opções $O, $U e
+     $X)
+  2. Comando olhar avisa a todos quando o personagem olha para outro ou
+     para algum item que não está carregando
+  3. Comando ver não avisa os outros personagens
+  4. Criada opção no comando Econfig: experiência do personagem ao matar
+     um jogador
+  5. Quando perde experiência ao matar outro jogador, mostra quanta
+     experiência perdeu
+  6. Tempo entre duas mensagens de fome e sede aumentou 67%
+  7. Criada nova opção para itens em Fonte de luz/Tipo de luz: 7
+     Automático (acende ao vestir, sem fogo)
+  8. Criado exemplo de item que acende ao vestir: cinto dourado, na sala
+     teste024
+  9. Tamanho máximo das mensagens de ataques mudaram para 512 caracteres
+ 10. Quantidade máxima de fome, sede e embriaguês mudou de 160 para 250
+ 11. Mensagens das habilidades e magias agora aceitam cores e \n (quebra
+     de linha)
+ 12. Sala teste105, com personagem teste023 que desafia o jogador a uma
+     luta
+ 13. Sala teste106, com personagem teste024 que dá uma lanterna em troca
+     de 3 palitos de fósforo
+ 14. Corrigido bug ao pegar, dar e soltar itens que agrupam: não estava
+     considerando corretamente a quantidade máxima de itens
+ 15. Corrigido bug: efeitos dos ataques não estavam atingindo os alvos
+     secundários
+ 16. A quantidade máxima de itens que agrupam em um lugar mudou de 255
+     para 65535
+ 17. Opção no Econfig: se mostra mensagens de fome e sede moderada para
+     os outros jogadores
+ 18. Ataques de área agora podem ser do tipo "exceto o personagem"
+ 19. Opção em Itens / Tipo de arma: pode-se escolher a habilidade usada
+     como ataque automático da arma
+ 20. Opção "Tipo de ataque" dos personagens passou a ser a habilidade
+     que o personagem usa nos ataques automáticos
+ 21. Opção "Tipos de personagens" do comando Econfig/Ataques passou a
+     ser "Ataque automático sem arma" (quando não for definido o ataque
+     automático no personagem)
+ 22. Quantidade de experiência que um PNJ dá (opção Quando morre /
+     Experiência) não está mais limitado a um número de 0 a 1000
+ 23. Furtividade (andar em silêncio) não escondem personagens dos
+     imortais
+ 24. Criada habilidade Chute Élfico, efeito Dreno de Mana e sala
+     teste107 com explicações
+ 25. Sala teste108 para demonstrar como fazer: perder itens e dinheiro,
+     remover todos os itens, jogar itens e dinheiro na sala e
+     transportar jogadores da sala
+ 26. Sala teste109: são criadas três camas (cama é um item do tipo
+     completo; só se pode criar uma no reset)
+ 27. Sala teste110: óculos que são criados a cada 2 a 3 minutos se não
+     houver nenhum na sala
+ 28. Sala teste111: um baú que fecha após um tempo e com moedas que não
+     aparecem em seguida após pegar
+ 29. Sala teste112: mesmas chaves da sala teste097, mas não somem nas
+     mãos de personagens não jogador
+ 30. Criado controle de banda das mensagens do MUD para os jogadores: no
+     comando Econfig, em "Como ativar o MUD"
+ 31. Corrigido bug: um personagem podia dar um item para ele mesmo
+ 32. Quantos dias os jogos ficam salvos agora é definido no comando
+     Econfig
 
 * 11/5/2014 IntMUD 1.02d MUD baseado na revisão 307 do SVN
 
-  No MUD:
-
-    Corrigido bug no menu de edição de habilidades/magias de retorno
-    Comando Saídas, para mostrar as saídas óbvias de onde o personagem está
-    Comando e canal PVT mudaram de nome para Telepatia
-    Criada sala teste103 para demonstrar como cria e apaga um efeito em um trigger
-    Criado efeito Chama Protetora, que causa danos no personagem que atacar quem está com esse efeito
-    Corrigido opções "Não podem vestir" dos itens e "Somente tipos" das habilidades e magias: não estavam funcionando com nomes de raças e classes com mais de uma palavra
-    Corrigido bug: o reset não estava criando itens dentro de outros itens
-    Corrigido bug: no reset, as chances de um item aparecer dentro de outro eram ignoradas
-    Opção "PNJs em uma sala" não afeta mais o reset
-    Criada opção no comando Econfig para mostrar ou não nível e raça/classe nos comandos ver e olhar
-    Comando Efeitos seguido do nome do efeito que está afetando o personagem agora mostra informações
-    Criado comando Infoe para administradores saberem os efeitos afetando personagem
-    Descrições de sala agora permitem alguns caracteres especiais: $P, $Q, $R, $S e $V
-    Criado comando Guardar, para colocar itens dentro de outros; comando Soltar continua como antes
-    Criada magia Chama Protetora e sala teste104, com algumas explicações
-    Corrigidos bugs nos comandos sentar, descansar e dormir: checavam se havia espaço quando o personagem já estava na mobília e as mensagens estavam erradas
-    Pode-se definir as mensagens das habilidades e magias de identificação
-    Criado: lista de nomes não permitidos para personagens dos jogadores
-    Corrigido bug: ao pegar e soltar vários itens de uma vez, quando não é possível pegar/soltar um, estava ignorando os outros itens
-    Corrigido bug: o comando "dar tudo" para dar todos os itens não estava funcionando
-    Acertado eventos cmd_ver e cmd_olhar (comandos ver e olhar)
-    Mensagens do comando Rezar agora podem ser mudadas pelo comando Econfig
-    Criado comandos LDESC, EDESC e ADESC, para criação e edição de descrições extras das salas; vide ADM SALA
-    Criada opção nas saídas das salas para definir se o nome da saída está no masculino ou feminino, singular ou plural
+   No MUD:
+  1. Corrigido bug no menu de edição de habilidades/magias de retorno
+  2. Comando Saídas, para mostrar as saídas óbvias de onde o personagem
+     está
+  3. Comando e canal PVT mudaram de nome para Telepatia
+  4. Criada sala teste103 para demonstrar como cria e apaga um efeito em
+     um trigger
+  5. Criado efeito Chama Protetora, que causa danos no personagem que
+     atacar quem está com esse efeito
+  6. Corrigido opções "Não podem vestir" dos itens e "Somente tipos" das
+     habilidades e magias: não estavam funcionando com nomes de raças e
+     classes com mais de uma palavra
+  7. Corrigido bug: o reset não estava criando itens dentro de outros
+     itens
+  8. Corrigido bug: no reset, as chances de um item aparecer dentro de
+     outro eram ignoradas
+  9. Opção "PNJs em uma sala" não afeta mais o reset
+ 10. Criada opção no comando Econfig para mostrar ou não nível e
+     raça/classe nos comandos ver e olhar
+ 11. Comando Efeitos seguido do nome do efeito que está afetando o
+     personagem agora mostra informações
+ 12. Criado comando Infoe para administradores saberem os efeitos
+     afetando personagem
+ 13. Descrições de sala agora permitem alguns caracteres especiais: $P,
+     $Q, $R, $S e $V
+ 14. Criado comando Guardar, para colocar itens dentro de outros;
+     comando Soltar continua como antes
+ 15. Criada magia Chama Protetora e sala teste104, com algumas
+     explicações
+ 16. Corrigidos bugs nos comandos sentar, descansar e dormir: checavam
+     se havia espaço quando o personagem já estava na mobília e as
+     mensagens estavam erradas
+ 17. Pode-se definir as mensagens das habilidades e magias de
+     identificação
+ 18. Criado: lista de nomes não permitidos para personagens dos
+     jogadores
+ 19. Corrigido bug: ao pegar e soltar vários itens de uma vez, quando
+     não é possível pegar/soltar um, estava ignorando os outros itens
+ 20. Corrigido bug: o comando "dar tudo" para dar todos os itens não
+     estava funcionando
+ 21. Acertado eventos cmd_ver e cmd_olhar (comandos ver e olhar)
+ 22. Mensagens do comando Rezar agora podem ser mudadas pelo comando
+     Econfig
+ 23. Criado comandos LDESC, EDESC e ADESC, para criação e edição de
+     descrições extras das salas; vide ADM SALA
+ 24. Criada opção nas saídas das salas para definir se o nome da saída
+     está no masculino ou feminino, singular ou plural
 
 * 20/4/2014 IntMUD 1.02d MUD baseado na revisão 305 do SVN
 
-  Nota: Ao atualizar o MUD de uma versão anterior, copie também os novos efeitos (classes e_medo e e_veneno_mortal do arquivo mud-b-efeito.int) e as novas habilidades e magias (classes cmd_retornar, cmd_roncar, cmd_rosnar, magia_drenar_energia e magia_restaurar_vitalidade do arquivo mud-b-hab.int).
+   Nota: Ao atualizar o MUD de uma versão anterior, copie também os
+   novos efeitos (classes e_medo e e_veneno_mortal do arquivo
+   mud-b-efeito.int) e as novas habilidades e magias (classes
+   cmd_retornar, cmd_roncar, cmd_rosnar, magia_drenar_energia e
+   magia_restaurar_vitalidade do arquivo mud-b-hab.int).
 
-  No manual.txt:
+   No manual.txt:
+  1. Tópico 23 revisado
 
-    Tópico 23 revisado
+   No MUD casa (primeira tentativa de criar um MUD):
+  1. Comando Sobre agora mostra corretamente a versão do IntMUD
 
-  No MUD casa (primeira tentativa de criar um MUD):
-
-    Comando Sobre agora mostra corretamente a versão do IntMUD
-
-  No MUD:
-
-    Corrigido bug nos eventos cmd_bebeu, cmd_comeu e cmd_recitou: não estavam sendo chamados para o próprio item
-    Mensagens de sede e fome não mostram aos outros jogadores quando o jogador perdeu pontos de vida
-    Corrigido bug no comando sussurrar: estava repetindo o nome do personagem, como se ele tivesse sussurrado o nome dele
-    Mensagens do comando Sussurrar agora estão no comando Econfig
-    O tempo entre mensagens de fome e sede foi triplicado
-    Acerta fome, sede e embriaguês quando morre
-    Criado comando Lugar, para executar um comando como se estivesse em outra sala
-    Habilidades e magias que jogador ganha quando escolhe uma raça ou classe
-    Corrigido bug: o comando matar funcionava com personagens simples (que não entram em batalha)
-    Criada sala teste102, com exemplo de poção mortal; usa também o efeito "Veneno Mortal"
-    Quando mata um alvo secundário (em ataques que atacam vários PNJs), a mensagem que matou aparece para todos
-    Nova opção nas salas e áreas: se sente fome/sede, se não sente ou se fome/sede somem aos poucos
-    Nova opção para itens: Se o jogador não perde o item ao entrar em uma sala que mata e perde itens
-    Criada habilidade Rosnar e efeito Medo: diminui o ataque do adversário por um tempo
-    Criada habilidade Roncar: ataca todos, mas só pode ser usado enquanto estiver dormindo
-    Criada magia Restaurar Vitalidade: restaura pontos de vigor
-    Criada magia Drenar Energia: o alvo perde 40% dos pontos de vigor e mana
-    Pesonagem Faixa Preta, na sala teste031, ensina as novas magias e habilidades
-    Corrigido bug: lojas e professores nunca rejeitavam nomes de raças e classes que continham espaço no meio
-    Ao ir de um lugar a outro embriagado, vem a mensagem que o personagem foi cambaleando
-    Um personagem muito embriagado em pé pode cair sentado
-    Comando Matar1 agora permite destruir itens e personagens dentro de outros itens ou personagens
-    Foi acrescentada a documentação dos efeitos no arquivo mud.txt
-    Acertado eventos dos efeitos
-    Opção PNJs entram/não entram na sala mudou para quantidade máxima de PNJs na sala
-    Comando Serv mostra mais informações
-    Comando Retornar ganhou algumas opções, saiu do comando Econfig e passou a ser editável, como qualquer outra habilidade ou magia de retorno
-    Corrigido bug: comer ou beber sentado anulada as magias definidas na comida ou bebida
-    Corrigido bug: recitar pergaminho de retorno durante a batalha estava retornando
-    Corrigido bug: ao beber uma poção do sono durante a batalha, o alvo era afetado pela poção
+   No MUD:
+  1. Corrigido bug nos eventos cmd_bebeu, cmd_comeu e cmd_recitou: não
+     estavam sendo chamados para o próprio item
+  2. Mensagens de sede e fome não mostram aos outros jogadores quando o
+     jogador perdeu pontos de vida
+  3. Corrigido bug no comando sussurrar: estava repetindo o nome do
+     personagem, como se ele tivesse sussurrado o nome dele
+  4. Mensagens do comando Sussurrar agora estão no comando Econfig
+  5. O tempo entre mensagens de fome e sede foi triplicado
+  6. Acerta fome, sede e embriaguês quando morre
+  7. Criado comando Lugar, para executar um comando como se estivesse em
+     outra sala
+  8. Habilidades e magias que jogador ganha quando escolhe uma raça ou
+     classe
+  9. Corrigido bug: o comando matar funcionava com personagens simples
+     (que não entram em batalha)
+ 10. Criada sala teste102, com exemplo de poção mortal; usa também o
+     efeito "Veneno Mortal"
+ 11. Quando mata um alvo secundário (em ataques que atacam vários PNJs),
+     a mensagem que matou aparece para todos
+ 12. Nova opção nas salas e áreas: se sente fome/sede, se não sente ou
+     se fome/sede somem aos poucos
+ 13. Nova opção para itens: Se o jogador não perde o item ao entrar em
+     uma sala que mata e perde itens
+ 14. Criada habilidade Rosnar e efeito Medo: diminui o ataque do
+     adversário por um tempo
+ 15. Criada habilidade Roncar: ataca todos, mas só pode ser usado
+     enquanto estiver dormindo
+ 16. Criada magia Restaurar Vitalidade: restaura pontos de vigor
+ 17. Criada magia Drenar Energia: o alvo perde 40% dos pontos de vigor e
+     mana
+ 18. Pesonagem Faixa Preta, na sala teste031, ensina as novas magias e
+     habilidades
+ 19. Corrigido bug: lojas e professores nunca rejeitavam nomes de raças
+     e classes que continham espaço no meio
+ 20. Ao ir de um lugar a outro embriagado, vem a mensagem que o
+     personagem foi cambaleando
+ 21. Um personagem muito embriagado em pé pode cair sentado
+ 22. Comando Matar1 agora permite destruir itens e personagens dentro de
+     outros itens ou personagens
+ 23. Foi acrescentada a documentação dos efeitos no arquivo mud.txt
+ 24. Acertado eventos dos efeitos
+ 25. Opção PNJs entram/não entram na sala mudou para quantidade máxima
+     de PNJs na sala
+ 26. Comando Serv mostra mais informações
+ 27. Comando Retornar ganhou algumas opções, saiu do comando Econfig e
+     passou a ser editável, como qualquer outra habilidade ou magia de
+     retorno
+ 28. Corrigido bug: comer ou beber sentado anulada as magias definidas
+     na comida ou bebida
+ 29. Corrigido bug: recitar pergaminho de retorno durante a batalha
+     estava retornando
+ 30. Corrigido bug: ao beber uma poção do sono durante a batalha, o alvo
+     era afetado pela poção
 
 * 16/3/2014 IntMUD 1.02d MUD baseado na revisão 302 do SVN
 
-  No IntMUD:
+   No IntMUD:
+  1. Corrigido bug: função ini não era chamada ao criar um objeto se
+     fosse definida como constante
+  2. Corrigido bug na função debug.cmd, quando é retornada uma variável
+     definida no texto do cmd
+  3. Corrigido bug em txtsepara: produzia resultado incorreto em algumas
+     situações
+  4. Função rand com um texto agora funciona diferente: retorna o texto
+     original com os caracteres embaralhados aleatoriamente
+  5. Versão do programa mudou para 1.02d
 
-    Corrigido bug: função ini não era chamada ao criar um objeto se fosse definida como constante
-    Corrigido bug na função debug.cmd, quando é retornada uma variável definida no texto do cmd
-    Corrigido bug em txtsepara: produzia resultado incorreto em algumas situações
-    Função rand com um texto agora funciona diferente: retorna o texto original com os caracteres embaralhados aleatoriamente
-    Versão do programa mudou para 1.02d
-
-  No MUD:
-
-    Corrigido bug: habilidades e magias que atacam vários personagens ao mesmo tempo não estavam mostrando as mensagens corretas, mais especificamente o nome do personagem alvo
-    Corrigido bug: não estava atualizando automaticamente os atributos dos personagens vivos ao editar o personagem
-    Corrigido bug: o anão da ilha não deixava mais o personagem passar após receber um soco ou um chute
-    Corrigido bug: ao pegar e soltar objetos, vinha mensagem como: Você coloca uma faca em sua uma bolsa.
-    Corrigido bug: ao soltar todos os objetos dentro de um container que o personagem está carregando: às vezes dizia que não podia soltar um item dentro dele mesmo.
-    Corrigido bug: ao retornar ao MUD sempre aparecia a descrição da sala, mesmo quando o personagem do jogador estava cego
-    Corrigido bug: ao comprar um item com volume interno pequeno (exemplo, 10), dizia que não pode carregar tanta coisa
-    Corrigido mensagens das magias Sono Profundo, Ver invisível e Ver oculto e da habilidade Endurecer
-    Criada sala teste096, com um exemplo de como fazer um ajudante, um personagem que segue o jogador
-    Comandos teleentra e telesai agora permitem $P, que é substituído pelo nome do personagem
-    Personagens agora podem sentir fome e sede, conforme a configuração
-    Criado novo tipo de terreno: deserto (sente sede 3 vezes mais rápido)
-    Embriaguês altera mensagens dos comandos falar, gritar e sussurar
-    Comando Estat mostra fome, sede e embriaguês para administradores
-    Criados comandos beber, comer e recitar
-    Pode-se definir em cada item a mensagem ao comer/beber/recitar
-    Na sala teste031 agora são vendidos comidas, bebidas, poções e pergaminhos
-    Criada sala teste097, com itens que somem após um tempo
-    Criadas salas teste099 a teste101 para explicar como usar o comando CMD para enviar mensagens anônimas e para digitar no teclado de outro personagem
-    Comando PVT (classe cmdfim_pvt do arquivo mud-cmd.int) foi modificado para ficar mais fácil mudar as mensagens
-    Pode-se recitar pergaminhos tendo como alvo outro personagem ou um item
-    Opção no econfig: como fica a experiência dos personagens quando morrem
-    Quando uma porta é aberta ou fechada, avisa na outra sala que isso aconteceu
-    Possibilidade da porta fechar quando um personagem passar por ela
-    Embriaguês diminui precisão e evasão nos ataques
-    Fome e sede diminuem a força dos golpes nos ataques
+   No MUD:
+  1. Corrigido bug: habilidades e magias que atacam vários personagens
+     ao mesmo tempo não estavam mostrando as mensagens corretas, mais
+     especificamente o nome do personagem alvo
+  2. Corrigido bug: não estava atualizando automaticamente os atributos
+     dos personagens vivos ao editar o personagem
+  3. Corrigido bug: o anão da ilha não deixava mais o personagem passar
+     após receber um soco ou um chute
+  4. Corrigido bug: ao pegar e soltar objetos, vinha mensagem como: Você
+     coloca uma faca em sua uma bolsa.
+  5. Corrigido bug: ao soltar todos os objetos dentro de um container
+     que o personagem está carregando: às vezes dizia que não podia
+     soltar um item dentro dele mesmo.
+  6. Corrigido bug: ao retornar ao MUD sempre aparecia a descrição da
+     sala, mesmo quando o personagem do jogador estava cego
+  7. Corrigido bug: ao comprar um item com volume interno pequeno
+     (exemplo, 10), dizia que não pode carregar tanta coisa
+  8. Corrigido mensagens das magias Sono Profundo, Ver invisível e Ver
+     oculto e da habilidade Endurecer
+  9. Criada sala teste096, com um exemplo de como fazer um ajudante, um
+     personagem que segue o jogador
+ 10. Comandos teleentra e telesai agora permitem $P, que é substituído
+     pelo nome do personagem
+ 11. Personagens agora podem sentir fome e sede, conforme a configuração
+ 12. Criado novo tipo de terreno: deserto (sente sede 3 vezes mais
+     rápido)
+ 13. Embriaguês altera mensagens dos comandos falar, gritar e sussurar
+ 14. Comando Estat mostra fome, sede e embriaguês para administradores
+ 15. Criados comandos beber, comer e recitar
+ 16. Pode-se definir em cada item a mensagem ao comer/beber/recitar
+ 17. Na sala teste031 agora são vendidos comidas, bebidas, poções e
+     pergaminhos
+ 18. Criada sala teste097, com itens que somem após um tempo
+ 19. Criadas salas teste099 a teste101 para explicar como usar o comando
+     CMD para enviar mensagens anônimas e para digitar no teclado de
+     outro personagem
+ 20. Comando PVT (classe cmdfim_pvt do arquivo mud-cmd.int) foi
+     modificado para ficar mais fácil mudar as mensagens
+ 21. Pode-se recitar pergaminhos tendo como alvo outro personagem ou um
+     item
+ 22. Opção no econfig: como fica a experiência dos personagens quando
+     morrem
+ 23. Quando uma porta é aberta ou fechada, avisa na outra sala que isso
+     aconteceu
+ 24. Possibilidade da porta fechar quando um personagem passar por ela
+ 25. Embriaguês diminui precisão e evasão nos ataques
+ 26. Fome e sede diminuem a força dos golpes nos ataques
 
 * 2/2/2014 IntMUD 1.02c MUD baseado na revisão 298 do SVN
 
-  No IntMUD:
+   No IntMUD:
+  1. Função nomeobj.ini aceita um terceiro argumento, que é a palavra
+     que se usada significa todos os objetos
+  2. Versão do IntMUD mudou para 1.02c
 
-    Função nomeobj.ini aceita um terceiro argumento, que é a palavra que se usada significa todos os objetos
-    Versão do IntMUD mudou para 1.02c
-
-  No MUD:
-
-    Corrigidos três bugs que apareceram depois de melhorar o código: no cálculo de peso e volume dos itens, no comando seguir e a mensagem tenta ir em uma direção que não existe
-    Ao alterar sala, item ou personagem via menu de edição, o programa organiza as constantes na classe correspondente
-    Comandos Estat, Inv, Equip e Efeitos permitem administradores checarem outros personagens e os animais de outros personagens
-    Comando Hist, para administradores saberem o histórico do personagem: os últimos personagens que ele matou
-    Comados InfoHab e InfoMag, para administradores saberem as habilidades e magias de outros personagens
-    Opção para salas: morre ao entrar e perde itens e moedas
-    Comandos Pegar, Soltar, Vestir e Remover aceitam a palavra tudo, que significa todos os objetos; no entanto, dependendo da natureza dos objetos, podem não ser todos
-    Comandos Listarsav e Apagarsav, para ver e apagar arquivos de jogos salvos
-    Comandos Salvar e Senha, para salvar o jogo e para mudar a senha
-    Comando Gritar, para enviar mensagem para os jogadores que estiverem na mesma área
-    Comandos Teleentra e Telesai, para administradores mudarem as mensagens de quando se teletransportam com o comando Tele
-    Ajuda do comando Fim foi melhorada
-    Corrigido bug: ao tentar colocar um item dentro dele mesmo
-    Corrigido bug: mudler não estava funcionando ao alterar arquivos com um pouco mais de 400 classes
-    Corrigido bug: comando emoção agora pode ser usado sentado e descansando
-    Mensagem inicial nas habilidades e magias agora permite mais variações
-    A opção "Afeta o alvo" de habilidades e magias foi mudada, opções: vida/mana/vigor e vida/mana/vigor por nível
-    Algumas mensagens em habilidades e magias foram corrigidas
-    Corrigido bug: quando erra uma magia ou habilidade em si mesmo, estava aparecendo duas mensagens para o personagem
-    Adicionada mensagem para efeitos: quando falhou
-    Corrigido bug: opções "config +imortal" e "config -imortal" não estava alterando de imediato as propriedades do personagem (ex. enxergar tudo)
-    Corrigido bug: quando um efeito como invisibilidade termina, quem não via invisível não recebe nenhuma mensagem
-    Criado: animais reserva e comando Reserva (vide comando econfig)
+   No MUD:
+  1. Corrigidos três bugs que apareceram depois de melhorar o código: no
+     cálculo de peso e volume dos itens, no comando seguir e a mensagem
+     tenta ir em uma direção que não existe
+  2. Ao alterar sala, item ou personagem via menu de edição, o programa
+     organiza as constantes na classe correspondente
+  3. Comandos Estat, Inv, Equip e Efeitos permitem administradores
+     checarem outros personagens e os animais de outros personagens
+  4. Comando Hist, para administradores saberem o histórico do
+     personagem: os últimos personagens que ele matou
+  5. Comados InfoHab e InfoMag, para administradores saberem as
+     habilidades e magias de outros personagens
+  6. Opção para salas: morre ao entrar e perde itens e moedas
+  7. Comandos Pegar, Soltar, Vestir e Remover aceitam a palavra tudo,
+     que significa todos os objetos; no entanto, dependendo da natureza
+     dos objetos, podem não ser todos
+  8. Comandos Listarsav e Apagarsav, para ver e apagar arquivos de jogos
+     salvos
+  9. Comandos Salvar e Senha, para salvar o jogo e para mudar a senha
+ 10. Comando Gritar, para enviar mensagem para os jogadores que
+     estiverem na mesma área
+ 11. Comandos Teleentra e Telesai, para administradores mudarem as
+     mensagens de quando se teletransportam com o comando Tele
+ 12. Ajuda do comando Fim foi melhorada
+ 13. Corrigido bug: ao tentar colocar um item dentro dele mesmo
+ 14. Corrigido bug: mudler não estava funcionando ao alterar arquivos
+     com um pouco mais de 400 classes
+ 15. Corrigido bug: comando emoção agora pode ser usado sentado e
+     descansando
+ 16. Mensagem inicial nas habilidades e magias agora permite mais
+     variações
+ 17. A opção "Afeta o alvo" de habilidades e magias foi mudada, opções:
+     vida/mana/vigor e vida/mana/vigor por nível
+ 18. Algumas mensagens em habilidades e magias foram corrigidas
+ 19. Corrigido bug: quando erra uma magia ou habilidade em si mesmo,
+     estava aparecendo duas mensagens para o personagem
+ 20. Adicionada mensagem para efeitos: quando falhou
+ 21. Corrigido bug: opções "config +imortal" e "config -imortal" não
+     estava alterando de imediato as propriedades do personagem (ex.
+     enxergar tudo)
+ 22. Corrigido bug: quando um efeito como invisibilidade termina, quem
+     não via invisível não recebe nenhuma mensagem
+ 23. Criado: animais reserva e comando Reserva (vide comando econfig)
 
 * 6/1/2014 IntMUD 1.02b MUD baseado na revisão 295 do SVN
 
-  No MUD:
-
-    Os ataques automáticos saíram do comando econfig (classe config) e passaram a ser habilidades com a opção "Alvo" sendo "Ataque automático"
-    A descrição da sala teste066 foi mudada para explicar como criar ataques automáticos
-    Mensagens de batalha foram reformuladas
-    O conhecimento do golpe afeta a batalha de forma um pouquinho diferente; sala teste061 explica como é agora
-    Criada opção "Ordem das posições" no menu de "Vestir itens" do comando econfig
-    Criada opção "Atributos dos personagens" para definir o valor inicial dos atributos (vida, mana, movimento, ataque, defesa, etc)
-    Corrigido bug na opção "Animais para batalhar" do comando econfig: não era permitido 0 animais
-    Corrigido bug: peso do corpo de personagens que morreram não passava de 65 Kg
-    Corrigido bug: PNJs não podem comer corpos se estiverem dormindo
-    Documentação do mud, arquivo mud.txt, foi atualizada
-    Corrigido algumas opções, como PNJ imortal, e opções de sala sem retorno e sem magias
-    Opção de ataque manual ou automático deixa de existir
-    Nova opção para habilidades e magias: Alvo "Nenhum (não ataca)", quando não quiser que seja usado em ataques (manuais e automáticos)
-    Comando fugir agora permite escolher com quantos pontos de vida o personagem começa a fugir
-    PNJs também podem fugir automaticamente
-    Nova opção para saídas das salas: se é permitido fugir nessa direção
-    Nova opção para saídas das salas: se é necessário flutuar ou voar
-    Criada nova opção no comando econfig: Se o comando Matar existe ou não
-    Explicação de ataques automáticos no MUD mudou (salas teste032 e teste094)
-    Acrescentada explicação de como atualizar o MUD no arquivo mud.txt
+   No MUD:
+  1. Os ataques automáticos saíram do comando econfig (classe config) e
+     passaram a ser habilidades com a opção "Alvo" sendo "Ataque
+     automático"
+  2. A descrição da sala teste066 foi mudada para explicar como criar
+     ataques automáticos
+  3. Mensagens de batalha foram reformuladas
+  4. O conhecimento do golpe afeta a batalha de forma um pouquinho
+     diferente; sala teste061 explica como é agora
+  5. Criada opção "Ordem das posições" no menu de "Vestir itens" do
+     comando econfig
+  6. Criada opção "Atributos dos personagens" para definir o valor
+     inicial dos atributos (vida, mana, movimento, ataque, defesa, etc)
+  7. Corrigido bug na opção "Animais para batalhar" do comando econfig:
+     não era permitido 0 animais
+  8. Corrigido bug: peso do corpo de personagens que morreram não
+     passava de 65 Kg
+  9. Corrigido bug: PNJs não podem comer corpos se estiverem dormindo
+ 10. Documentação do mud, arquivo mud.txt, foi atualizada
+ 11. Corrigido algumas opções, como PNJ imortal, e opções de sala sem
+     retorno e sem magias
+ 12. Opção de ataque manual ou automático deixa de existir
+ 13. Nova opção para habilidades e magias: Alvo "Nenhum (não ataca)",
+     quando não quiser que seja usado em ataques (manuais e automáticos)
+ 14. Comando fugir agora permite escolher com quantos pontos de vida o
+     personagem começa a fugir
+ 15. PNJs também podem fugir automaticamente
+ 16. Nova opção para saídas das salas: se é permitido fugir nessa
+     direção
+ 17. Nova opção para saídas das salas: se é necessário flutuar ou voar
+ 18. Criada nova opção no comando econfig: Se o comando Matar existe ou
+     não
+ 19. Explicação de ataques automáticos no MUD mudou (salas teste032 e
+     teste094)
+ 20. Acrescentada explicação de como atualizar o MUD no arquivo mud.txt
 
 * 16/12/2013 IntMUD 1.02b MUD baseado na revisão 292 do SVN
 
-  No IntMUD:
+   No IntMUD:
+  1. Forma compacta para operadores: <<=, >>=, |=, ^= e &=
+  2. Criadas funções intbit e txtbit
+  3. Versão do IntMUD mudou para 1.02b
 
-    Forma compacta para operadores: <<=, >>=, |=, ^= e &=
-    Criadas funções intbit e txtbit
-    Versão do IntMUD mudou para 1.02b
+   No MUD:
+  1. Corrigido bug: a opção "config +moedas", para pegar moedas
+     automaticamente de um PNJ, não funcionava se o PNJ foi morto com um
+     ataque automático
+  2. Corrigido bug: não estava avisando na sala quando alguém entra no
+     jogo com um personagem já salvo
+  3. Corrigido bug: não era possível fazer um PNJ empunhar uma arma, no
+     reset (comandos sres e ares)
+  4. Corrigido bug: personagens dormindo e congelado continuavam fazendo
+     ataques automáticos
+  5. A forma como os atributos de itens e personagens (brilhando,
+     flutando, invisível, etc) são feitos foi melhorada
+  6. Efeito congelado agora aparece como (congelado) na frente do
+     personagem
+  7. Adicionada opção "config +imortal": não morre em batalha, sempre
+     consegue fugir, enxerga tudo exceto cego e no escuro, tranca e
+     destranca tudo, atravessa coisas fechadas, anda sem gastar
+     movimento
+  8. Adicionada opção no comando econfig: Comando Quem mostra imortal
+  9. O MUD agora atualiza arquivos mud-a-*.int e mud-b-*.int de versões
+     anteriores
+ 10. Criadas opções $v, $w e $x nas mensagens, que são substituídos por
+     "e" ou "a", dependendo se o personagem, o algo ou o objeto é
+     masculino ou feminino
+ 11. Criadas opções $r e $c nas mensagens, que são os nomes do
+     personagem e do alvo no comando QUEM
+ 12. Criado canal Novatos
+ 13. Possibilidade de mudar as mensagens dos comandos Chat, Novatos e
+     Falar
+ 14. Adicionado cores para o prompt e ajuda sobre cores (em "adm cores"
+     e "ajuda cores")
+ 15. Criadas salas no subsolo da área de teste para explicar um pouco
+     sobre triggers
 
-  No MUD:
-
-    Corrigido bug: a opção "config +moedas", para pegar moedas automaticamente de um PNJ, não funcionava se o PNJ foi morto com um ataque automático
-    Corrigido bug: não estava avisando na sala quando alguém entra no jogo com um personagem já salvo
-    Corrigido bug: não era possível fazer um PNJ empunhar uma arma, no reset (comandos sres e ares)
-    Corrigido bug: personagens dormindo e congelado continuavam fazendo ataques automáticos
-    A forma como os atributos de itens e personagens (brilhando, flutando, invisível, etc) são feitos foi melhorada
-    Efeito congelado agora aparece como (congelado) na frente do personagem
-    Adicionada opção "config +imortal": não morre em batalha, sempre consegue fugir, enxerga tudo exceto cego e no escuro, tranca e destranca tudo, atravessa coisas fechadas, anda sem gastar movimento
-    Adicionada opção no comando econfig: Comando Quem mostra imortal
-    O MUD agora atualiza arquivos mud-a-*.int e mud-b-*.int de versões anteriores
-    Criadas opções $v, $w e $x nas mensagens, que são substituídos por "e" ou "a", dependendo se o personagem, o algo ou o objeto é masculino ou feminino
-    Criadas opções $r e $c nas mensagens, que são os nomes do personagem e do alvo no comando QUEM
-    Criado canal Novatos
-    Possibilidade de mudar as mensagens dos comandos Chat, Novatos e Falar
-    Adicionado cores para o prompt e ajuda sobre cores (em "adm cores" e "ajuda cores")
-    Criadas salas no subsolo da área de teste para explicar um pouco sobre triggers
-
-  Para atualizar:
-
-    Copie as áreas que você criou (arquivos mud-a-*.int) para a nova versão.
-    Copie os arquivos mud-b-*.int da versão antiga para a nova (substituindo os arquivos).
+   Para atualizar:
+  1. Copie as áreas que você criou (arquivos mud-a-*.int) para a nova
+     versão.
+  2. Copie os arquivos mud-b-*.int da versão antiga para a nova
+     (substituindo os arquivos).

@@ -423,6 +423,21 @@ func acertapos # Acerta posição
   casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
+# Checa subida de nível
+  se expatual >= expmax
+    int8 num
+    enquanto expatual >= expmax
+      expatual -= expmax
+      pnivel += 1
+      var.z_aulas_ += config:aulas
+      num += 1
+      num >= 5 && (expatual = 0)
+    efim
+    $mens.o_1 = txtcopiamai(descnome, "A") + (este != contr ? " de " + contr.descnome)
+    $mens.mens = pnivel
+    $mens.p(este)
+    $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
+  fimse
 # Acerta atributos básicos
   bitver = 17, bitinv = 3, atribs.limpar
   pesoveste = 0
@@ -496,31 +511,21 @@ func bat_fim_int # Chamado internamente por batalhafim
   efim
 
 func batalhaexp # Dá experiência a quem estiver atacando o personagem
-# arg0 = fator do ganho de experiência; se menor que 0 multiplica experiência por -arg0
+# arg0 = fator do ganho de experiência
   listaitem i
   listaobj l
 # Preenche lista com os personagens
   epara i = contr.atkrec.ini, i, i.depois
-    l.addfim(i.obj.atkdiv)
+    i.obj.pvida && l.addfim(i.obj.atkdiv)
   efim
-  epara i = l.ini, i, i.obj.pvida ? i.depois : i.removedepois
-  efim
-# Retira experiência
-  se arg0 < 0
-    epara i = l.ini, i, i.depois
-      i.obj.ganhaexp(i.obj.expatual * arg0 / 100)
-    efim
-    ret
-  fimse
 # Ganha experiência
-  refvar exp1 = arg0 * config:atkexp * p_exp * (pnivel + 6) / 1000
+  refvar exp1 = arg0 * config:atkexp * (pnivel + 6) / 1000
   real2 v1
-  ref r
   epara i = l.ini, i, i.depois
-    v1 = intmin(1, intpos(pnivel - i.obj.pnivel + 8) / 16)
-    r = i.obj.dono
-    r.perso && i.obj.var.z_dono != r.descnome && (v1 *= 1.5)
-    i.obj.ganhaexp(v1 * exp1 / (l.total + 1))
+    refvar r = i.obj
+    v1 = intmin(1, intpos(pnivel - r.pnivel + 8) / 16)
+    r.dono.perso && r.var.z_dono != r.dono.descnome && (v1 *= 1.5)
+    r.ganhaexp(v1 * exp1 * p_exp(r) / (l.total + 1))
   efim
 
 func ganhaexp # Personagem ganha experiência
@@ -543,13 +548,7 @@ func ganhaexp # Personagem ganha experiência
     fimse
   fimse
 # Subir de nível
-  ret expatual < expmax, nulo
-  expatual -= expmax
-  pnivel += 1
-  var.z_aulas_ += config:aulas
-  recalc = 1 # Recalcular atributos do personagem
-  refvar n1 = txtcopiamai(descnome, "A") + (este != contr ? " de " + contr.descnome)
-  contr.dono.msg(n1 + " avança para o nível " + pnivel + ".")
+  expatual >= expmax && (recalc = 1)
 
 func atkauto # Realiza um ataque automático
 # arg0 = alvo do ataque
@@ -638,16 +637,34 @@ func morreu # Procedimentos quando morre
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
     pmove = pmovemax / 2
-    expatual *= config:atkmorreuexp / 100
-    listaitem i
-    epara i = dentro2.ini, i, i.depois
-      i.obj.perso && (i.obj.expatual *= config:atkmorreuexp / 100)
-    efim
     p_restaura = rand(100, 130)
     p_sede = intmax($miscfome.cheio / 2, p_sede)
     p_fome = intmax($miscfome.cheio / 2, p_fome)
     p_bebida = p_diges = 0
-    batalhaexp(-config:atkmatouexp), batalhafim # Acerta a experiência de quem atacou
+    casovar config:atkmatoutipo
+    casose # Quem atacou ganha experiência como ao matar um PNJ
+      batalhaexp(config:atkmatouexp / 100)
+      sair
+    casose "1" # Transfere experiência para quem atacou
+      listaitem i
+      epara i = contr.atkrec.ini, i, i.depois
+        i.obj.pvida && l.addfim(i.obj.atkdiv)
+      efim
+      refvar valor = expatual * config:atkmorreuexp * config:atkmatouexp / 10000
+      epara i = l.ini, i, i.depois
+        i.obj.ganhaexp(valor / l.total)
+      efim
+      l.limpar
+      sair
+    casose "2" # Quem atacou perde experiência
+      epara l.addfim(contr.atkrec.ini), l, l.ini.remove
+        continuar !l.objini.pvida
+        l.objini.ganhaexp(l.objini.expatual * config:atkmatouexp / -100)
+      efim
+      sair
+    casofim
+    batalhafim # Encerra a batalha
+    expatual *= (100 - config:atkmorreuexp) / 100
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     mudadono(config:salafim)
     salvar # Salva o jogo

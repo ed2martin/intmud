@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 312 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 314 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -133,17 +133,43 @@ const atkexp = 100
 #
 # Experiência do personagem ao morrer, em porcentagem
 # De 0 a 100, sendo que 0 perde tudo e 100 não perde experiência
-const atkmorreuexp = 0
+const atkmorreuexp = 50
 #
-# Experiência do personagem ao matar um jogador, em porcentagem
-# De 0 a 100, sendo que 0 perde tudo e 100 não perde experiência
-const atkmatouexp = 0
+# Experiência ao matar um jogador
+# 0 = Ganha experiência como ao matar PNJ
+# 1 = Ganha experiência que o jogador perdeu
+# 2 = Perde experiência que possui
+const atkmatoutipo = 2
+#
+# Quantidade de experiência ao matar um jogador, em porcentagem
+# De 0 a 100, sendo que 0 não ganha nem perde e 100 ganha/perde tudo
+const atkmatouexp = 30
 #
 # Tempo de um turno (em décimos de segundo)
 const atktempo = 60
 #
 # Força dos ataques automáticos (ataques sem o personagem digitar o golpe)
 const atkfor = 30
+#
+# Mensagem começa a amanhecer
+const horamsg5 = "Começa a amanhecer."
+#
+# Mensagem amanheceu
+const horamsg6 = "O sol surge no leste."
+#
+# Mensagem começa a escurecer
+const horamsg17 = "O sol começa a se por no oeste."
+#
+# Mensagem escureceu
+const horamsg18 = "A noite chega."
+#
+# Mensagem subiu de nível para o próprio personagem
+# Aqui $1 é o nome do personagem visível a todos, $m é o nível
+const nivelmsg1 = "$P avança para o nível $m."
+#
+# Mensagem subiu de nível para os outros
+# Aqui $1 é o nome do personagem visível a todos, $m é o nível
+const nivelmsg2 = "$1 avança para o nível $m."
 #
 # Mensagem do comando Echo
 const echomsg = "\b\cb(ADM) $m\b"
@@ -193,13 +219,10 @@ const telepatia1 = "(+telepatia) $C '$m'"
 # Recebeu mensagem telepática
 const telepatia2 = "(telepatia) $R '$m'"
 #
-# Comandos salvar e senha: 0=não existe, 1=existe
-const salvartipo = 0 # Comando Salvar: 0 Desabilitado
-#
 # Nível necessário para usar o comando salvar
 # Abaixo desse nível, só pode salvar quem já tem jogo salvo
 # Se for um número acima de 65535, quem não tem jogo salvo não salva
-const salvarnivel = 0
+const salvarnivel = 11
 #
 # Comando rezar: 0=não existe, 1=existe
 const rezartipo = 0 # Comando Rezar: 0 Desabilitado

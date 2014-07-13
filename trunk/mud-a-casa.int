@@ -291,9 +291,10 @@ classe p_casa003
 herda comum_persobat
 const nome = "boneco de papelão"
 const descnome = "um boneco de papelão"
-const msexo = 1
 const descpadr = "Um boneco de papelão está se mexendo."
 const descver = "Parece frágil, pois é feito de papelão."
+const msexo = 1
+const p_exp = 0
 const eveste = 1 # Receber eventos do próprio objeto
 ref alvo # Quem esse personagem deve atacar
 
@@ -309,16 +310,22 @@ func cmd_pnj_proc # Processamento do PNJ
     apagar(este)
     dono.msg("Boneco de papelão caiu do telhado.")
     ret 1
+  fimse
 
-func cmd_objfim # Personagem foi apagado
-  se pvida == 0 && alvo # Se morreu e o alvo ainda existe
+func cmd_morreu # Personagem morreu
+  se alvo # Se o alvo ainda existe
     alvo.var.j_salvar = 1 # Altera uma variável do alvo
+    se alvo.pnivel < 11 && alvo.expatual < alvo.expmax
+      alvo.ganhaexp(alvo.expmax + 1 - alvo.expatual)
+    fimse
+  fimse
 
 func cmd_atkrec # Somente o jogador alvo pode atacar o boneco
   se arg0 != alvo
     $mens.p(arg0, este)
     $mens.mtodos2("$A impede o seu ataque.", "$A impede o ataque de $P.")
     ret 1
+  fimse
 
 
 classe p_casa004
@@ -343,15 +350,22 @@ func cmd_chegou # Chegou na sala
 func entrou20
   se arg0.var.j_salvar
     arg0.msg("Menina: Você destruiu meu boneco de papelão!!!")
-  senao !arg0.senha
+  senao arg0.pnivel < 11
     arg0.msg("Menina: Olá!")
 
 func entrou40
   se arg0.var.j_salvar
-    arg0.msg("Menina: Agora vá até o quarto. Poderá salvar o jogo lá.")
-  senao !arg0.senha
+    se arg0.pnivel < 11
+      arg0.msg("Menina: Mas ainda não está forte o suficiente.")
+    senao !arg0.senha
+      arg0.msg("Menina: Agora tecle SALVAR para seu personagem começar a ser salvo.")
+      arg0.msg("Menina: Depois disso, poderá sempre continuar de onde parou.")
+    fimse
+  senao arg0.pnivel < 11
     arg0.msg("Menina: Ao leste tem uns bonecos fortes. Se perceber que vai perder,")
-    arg0.msg("Menina: tecle fugir. Depois vá ao quarto e tecle DEITAR.")
+    arg0.msg("Menina: tecle FUGIR. Depois vá ao quarto e tecle DEITAR.")
+    arg0.msg("Menina: Ou tecle FUGIR 50, para fugir quando tiver menos de 50 de vida.")
+  fimse
 
 func tempo_exec
   tempo = rand(80, 200)
@@ -436,6 +450,7 @@ const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
 const eveste = 1 # Receber eventos do próprio objeto
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 func cmd_morreu
   criar("i_casa002", dono, nivel)
@@ -452,6 +467,7 @@ const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
 const p_morreu1 = "Alface se quebrou em folhas."
 const eveste = 1 # Receber eventos do próprio objeto
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 func cmd_morreu
   criar("p_casa012", dono, nivel - 1)
@@ -468,6 +484,7 @@ const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
 const p_morreu1 = "$P se partiu."
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 
 classe p_casa010
@@ -480,6 +497,7 @@ const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
 const p_morreu1 = "$P virou pó de madeira."
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 
 classe p_casa011
@@ -492,6 +510,7 @@ const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
 const p_morreu1 = "$P foi vencida e desapareceu."
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 
 classe p_casa012
@@ -507,6 +526,7 @@ const p_mover = 1
 const p_agressivo = 2 # Agressivo: 2 Sim
 const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
 const inivar = "h_arremessar=2,e_apagar=100"
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 
 classe p_casa013
@@ -684,24 +704,22 @@ func deubolsa270
 classe s_casa001
 herda b_casa
 const s_titulo = "Quarto"
-const s_desc = arg0.var.j_salvar || arg0.senha ? s_desc1 + s_desc2 : s_desc1
+const s_desc = "Enquanto os outros cômodos são de um tamanho desproporcinal, esse\n\
+quarto se destaca por ser pequeno. Dois beliches ocupam quase todo\n\
+o espaço. O espaço de um metro entre eles segue à leste.\n\
+Você pode descansar rapidamente aqui teclando DEITAR"
 const s_luta = 0 # Sem luta
 const s_pnj = 0 # PNJs entram: Não
 const s_reserva = 1 # Comando reserva: Sim
 const s_retornar = 2 # Comando retornar: 2 Muda o ponto de retorno para essa sala
 const dir_l = $s_casa002
-const s_desc1 = "Enquanto os outros cômodos são de um tamanho desproporcinal, esse\n\
-quarto se destaca por ser pequeno. Dois beliches ocupam quase todo\n\
-o espaço. O espaço de um metro entre eles segue à leste.\n\
-Você pode descansar rapidamente aqui teclando DEITAR"
-const s_desc2 = "\nPode também salvar o jogo ou mudar a senha teclando SALVAR"
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
 # Para teste: muda o nível do personagem
 # se arg0.pnivel < 2
 # arg0.pnivel = 12, arg0.recalc = 1
-# arg0.var.j_salvar = 1, criar("i_casa002", arg0)
+# criar("i_casa002", arg0)
 
 func cmd_escr # Escreveu algo
   se arg1 == "deitar"
@@ -712,9 +730,6 @@ func cmd_escr # Escreveu algo
     efim
     $mens.p(arg0)
     $mens.mtodos1("$P descansa e se recupera.")
-    ret 1
-  senao arg1 == "salvar" && (arg0.var.j_salvar || arg0.senha)
-    arg0.mudasenha
     ret 1
 
 
@@ -987,8 +1002,9 @@ const dir_o = $s_casa014
 const s_naoresg = 1 # Não permite resgatar jogador
 
 func cmd_salaperso # Personagem chegou
-  se arg0.jog && !arg0.senha && !arg0.var.j_salvar # Jogador que ainda não salvou o jogo
-    criar("p_casa003", este, 9, "h_socar=3,h_chutar=3", arg0)
+  arg0.var.j_salvar = ""
+  se arg0.jog && arg0.pnivel < 11 # Jogador que ainda não chegou no nível 11
+    criar("p_casa003", este, 9, "h_socar=3,h_chutar=2", arg0)
     misc:evento(arg0) # Receber eventos do jogador
 
 func cmd_fugir
@@ -1028,7 +1044,7 @@ const eveste = 1 # Receber eventos do próprio objeto
 const s_pnj = 1 # PNJs na sala
 
 func cmd_mover
-  se arg2 == "s" && !arg0.var.j_salvar && !arg0.senha
+  se arg2 == "s" && arg0.pnivel < 11
     arg0.msg("O medo toma conta de você, ao ver um cachorro andando pelo saguão.")
     ret 1
 
@@ -1047,7 +1063,7 @@ const eveste = 1 # Receber eventos do próprio objeto
 const s_pnj = 1 # PNJs na sala
 
 func cmd_mover
-  se arg2 == "s" && !arg0.var.j_salvar && !arg0.senha
+  se arg2 == "s" && arg0.pnivel < 11
     arg0.msg("O medo toma conta de você, ao ver um cachorro andando pelo saguão.")
     ret 1
 
@@ -1108,7 +1124,7 @@ const dir_n = !misc:obj.jog ? $s_casa030
 const dir_c = !misc:obj.jog ? $s_casa026
 const dir_b = !misc:obj.jog ? $s_casa029
 const s_pnj = 1 # PNJs na sala
-const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 4 6 1"
+const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 5 7 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
@@ -1116,7 +1132,7 @@ func a_reset1 # Realiza o reset
     criar("p_casa010", este, rand(4, 6))
   fimse
   se p_casa011:objsolto.total < 1 && rand(100) < 50
-    criar("p_casa011", este, rand(4, 6))
+    criar("p_casa011", este, rand(5, 7))
   fimse
 
 
@@ -1171,15 +1187,15 @@ const dir_n = !misc:obj.jog ? $s_casa029
 const dir_c = !misc:obj.jog ? $s_casa023
 const dir_b = !misc:obj.jog ? $s_casa030
 const s_pnj = 1 # PNJs na sala
-const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 4 6 1"
+const a_reset = "P 50 casa010 4 7 1\nP 50 casa011 4 7 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   se p_casa010:objsolto.total < 1 && rand(100) < 50
-    criar("p_casa010", este, rand(4, 6))
+    criar("p_casa010", este, rand(4, 7))
   fimse
   se p_casa011:objsolto.total < 1 && rand(100) < 50
-    criar("p_casa011", este, rand(4, 6))
+    criar("p_casa011", este, rand(4, 7))
   fimse
 
 

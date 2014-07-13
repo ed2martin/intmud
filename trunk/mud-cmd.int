@@ -255,8 +255,8 @@ func escr
 
 classe cmd_salvar
 herda comando_comum, comando_ajuda
-const objcmd = config:salvartipo ? este
-const objajuda = config:salvartipo ? este
+const objcmd = este
+const objajuda = este
 const posic = 5
 const txtajuda = "\b\c3Salvar\b\n\
 Sintaxe: SALVAR\n\
@@ -282,8 +282,8 @@ func escr
 
 classe cmd_senha
 herda comando_comum, comando_ajuda
-const objcmd = config:salvartipo ? este
-const objajuda = config:salvartipo ? este
+const objcmd = este
+const objajuda = este
 const posic = 5
 const txtajuda = "\b\c3Senha\b\n\
 Sintaxe: SALVAR\n\
@@ -865,14 +865,13 @@ func escr
 classe cmd_debug
 herda comando_comum
 const posic = 0
-#const objcmd = nulo # Comentar essa linha para o esse comando funcionar
+# const objcmd = nulo # Comentar essa linha para o esse comando funcionar
 
 func escr
   $mens.p(arg0)
   $mens.mvis1("[$e a chave] \c3\d6abc $e teste.\b $E um $d. $E a bolsa $d os carpinteiros.")
   arg0.msg("teste")
-ret
-
+  ret
   arg0.msg("Sala: " + arg0.dono)
   listaobj l0
   l0.addfim(arg0.dono.dentro1, arg0.dono.dentro2)

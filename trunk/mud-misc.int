@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "6/7/2014"
+const versao = "13/7/2014"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -261,33 +261,18 @@ func imin_exec # Atualiza hora MUD
     sav.limpou # Para limpar a lista de arquivos excluídos por arqsav
     misc:dia = (misc:dia + 1) % 7 # Atualiza o dia
   fimse
-# Checa mensagem para os jogadores
-  txt100 lin
-  casovar misc:hora
-  casose "5"
-    lin = "Começa a amanhecer."
-    sair
-  casose "6"
-    lin = "O sol surge no leste."
-    sair
-  casose "17"
-    lin = "O sol começa a se por no oeste."
-    sair
-  casose "18"
-    lin = "A noite chega."
-    sair
-  casose
-    ret
-  casofim
-# Envia mensagem para os jogadores
-  indiceitem i
-  ref r
-  epara i.ini("un "), txt1(i.txt) == "un", i.depois
-    epara r = i.obj.perso.dono, r.dono, r = r.dono
+# Envia mensagem da hora para os jogadores
+  refvar horamsg = config:horamsg[misc:hora]
+  se horamsg
+    indiceitem i
+    ref r
+    epara i.ini("un "), txt1(i.txt) == "un", i.depois
+      epara r = i.obj.perso.dono, r.dono, r = r.dono
+      efim
+      continuar r.s_luz && r.s_luz != 2
+      i.obj.perso.msg(horamsg)
     efim
-    continuar r.s_luz && r.s_luz != 2
-    i.obj.perso.msg(lin)
-  efim
+  fimse
 
 func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
