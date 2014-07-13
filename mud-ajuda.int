@@ -18,11 +18,10 @@ const ta3 = "  \c2COMBATE\b   Lutas com outros personagens\n\
   \c2LOJAS\b     Lojas e professores\n\
   \c2NOMES\b     Digitando nomes de objetos e personagens\n\
   \c2JOG\b       Outros comandos para jogadores"
-const ta4 = "\n  \c2SALVAR\b    Salva o seu personagem (e \c2SENHA\b muda a senha)"
-const ta5 = "\nPara ler as páginas de administração tecle \c2ADM\b"
+const ta4 = "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func txtajuda
-  ret ta1 + (config:animal1 ? ta2) + ta3 + (config:salvartipo ? ta4) + (arg0.jogconfig.23 ? ta5)
+  ret ta1 + (config:animal1 ? ta2) + ta3 + (arg0.jogconfig.23 ? ta4)
 
 func escr
   listaobj l
@@ -192,6 +191,7 @@ abaixo desse número em uma luta, seu personagem foge automaticamente.\n\
 Se outro jogador estiver por perto, muitas vezes poderá resgatar você.\n\
 Veja o comando RESGATAR."
 
+
 classe cmd_jog
 herda comando_ajuda
 const txtajuda = "\b\c3Outros comandos para jogadores\b\n\
@@ -199,6 +199,8 @@ const txtajuda = "\b\c3Outros comandos para jogadores\b\n\
   \c2PROMPT\b    Mensagens do prompt\n\
   \c2CORES\b     Cores no prompt\n\
   \c2ATALHO\b    Criando atalhos para os comandos mais usados\n\
+  \c2SALVAR\b    Salva o seu personagem\n\
+  \c2SENHA\b     Muda a senha do seu personagem\n\
   \c2FIM\b       Sai do MUD, retirando também o seu personagem\n\
   \c2AUTOAPAGAR\b  Apaga o seu personagem definitivamente"
 

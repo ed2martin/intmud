@@ -991,7 +991,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         if (d >= mens + 150)
                         {
                             *d = 0;
-                            fprintf(arq, "%s\n", mens);
+                            fprintf(arq, "%s\\f\n", mens);
                             d=copiastr(mens, ".=t");
                         }
                     // Anota um byte
@@ -1008,7 +1008,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                     }
                     *d = 0;
                     if (strcmp(mens, ".=t")!=0)
-                        fprintf(arq, "%s\n", mens);
+                        fprintf(arq, "%s\\f\n", mens);
                 } while (++var.indice < posic);
                 break;
         // TextoVar
@@ -1050,7 +1050,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                             if (d-mens < 150)
                                 continue;
                             *d=0;
-                            fprintf(arq, "%s\n", mens);
+                            fprintf(arq, "%s\\f\n", mens);
                             d = copiastr(mens, ".=");
                         }
                         *d++ = '\\';
@@ -1058,7 +1058,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                     }
                     *d=0;
                     if (strcmp(mens, ".=\\0")!=0)
-                        fprintf(arq, "%s\n", mens);
+                        fprintf(arq, "%s\\f\n", mens);
                 } while (++var.indice < posic);
                 break;
         // TextoObj

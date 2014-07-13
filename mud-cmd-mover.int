@@ -60,7 +60,7 @@ func mover # Personagem anda em uma direção
   efim
   !arg0.jogconfig.14 && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
-  se !arg0.dono.socktot # Não tem jogador por perto
+  se !(s1.socktot || s2.socktot) # Não tem jogador por perto
     arg0.mudadono(s2)
   senao arg0.bitver & 256 # Anda em silêncio
     $mens.p(arg0)

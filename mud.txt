@@ -694,6 +694,7 @@ Se o corpo do personagem fica quando ele morre:
 2 Deixa corpo com itens e moedas
 
 const p_exp = 100
+func p_exp( personagem )
 Quanta experiência dá quando morre, em porcentagem.
 Com essa opção é possível fazer alguns PNJs darem mais experiência que
 outros, independente do nível.
@@ -726,7 +727,6 @@ Retorna o corpo do personagem, se ele morreu e ficou o corpo.
 func batalhaexp( valor )
 Dá experiência a quem estiver atacando o personagem
 Valor é o fator do ganho de experiência
-See menor que 0 multiplica a experiência por -valor
 
 func batalhafim
 Encerra a batalha
