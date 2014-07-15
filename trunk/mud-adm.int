@@ -908,6 +908,8 @@ func p_codcomum
       teditor.addfim(txtesp(p.nivel) + p.texto), p.depois
     efim
 # Divide linhas grandes acrescentando barra invertida no final
+    debug d
+    d.exec = 100000
     textopos pos
     int16 n
     int16 x
@@ -935,12 +937,14 @@ func p_codcomum
     p_funcsalvar(arg1)
     ret 1
   casofim
-  ret p_editor(arg0, 16384, var.opcnome)
+  ret p_editor(arg0, 64000, var.opcnome)
 
 func p_funcsalvar # Opçao salvar de p_func
   textotxt t1
   textopos p1
   txt512 lin
+  debug d
+  d.exec = 100000
 # Junta linhas e coloca em t1
   t1.ini.add(teditor.ini, teditor.linhas)
   p1 = t1.ini

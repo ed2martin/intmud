@@ -581,10 +581,10 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   senao arma1
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
       dano *= arg0.atkesp + rand(arma1.armamin, arma1.armamax)
-      dano /= arg1.defesp * 300
+      dano *= arg0.atkesp / (arg1.defesp * 300)
     senao
       dano *= arg0.atknorm + rand(arma1.armamin, arma1.armamax)
-      dano /= arg1.defnorm * 300
+      dano *= arg0.atknorm / (arg1.defnorm * 300)
     fimse
 # Calcula dano sem arma
   senao
