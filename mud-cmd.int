@@ -447,9 +447,9 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
   txt100 t
   arg0.jog ? (t = " jogador")
   se config:olhartipo
-    arg0.tipo1 && (t += " " + txtcopiamai(arg0.tipo1, "A"))
-    arg0.tipo2 && (t += " " + txtcopiamai(arg0.tipo2, "A"))
-    arg0.tipo3 && (t += " " + txtcopiamai(arg0.tipo3, "A"))
+    arg0.tipo1 && (t += " " + txtcopiamai(txte(arg0.tipo1), "A"))
+    arg0.tipo2 && (t += " " + txtcopiamai(txte(arg0.tipo2), "A"))
+    arg0.tipo3 && (t += " " + txtcopiamai(txte(arg0.tipo3), "A"))
   fimse
   config:olharnivel && (t += " nível " + arg0.pnivel)
   ret t ? "," + t : ""
