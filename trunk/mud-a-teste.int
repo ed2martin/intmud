@@ -10,6 +10,23 @@ const s_terreno = 1
 const s_luta = 1
 
 
+classe c_teste001
+herda casa
+const area = "teste"
+const s1 = $s_teste116
+const sfora = $s_teste115
+const valor = 1200
+
+
+classe c_teste002
+herda casa
+const area = "teste"
+const sfora = $s_teste115
+const s1 = $s_teste117
+const s2 = $s_teste118
+const valor = 2000
+
+
 classe i_teste001
 herda comum_item
 const nome = "borracha"
@@ -377,7 +394,7 @@ classe i_teste029
 herda comum_itemgrupo
 const nome = "chave tipo um"
 const descnome = "uma chave do tipo um"
-const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
+const objsav = 0 # Para não salvar esse item em arquivo, com o personagem
 sav inttempo tempo # inttempo executa uma função após um tempo
 
 func cmd_mudadono
@@ -399,7 +416,7 @@ classe i_teste030
 herda comum_itemgrupo
 const nome = "chave tipo dois"
 const descnome = "uma chave do tipo dois"
-const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
+const objsav = 0 # Para não salvar esse item em arquivo, com o personagem
 sav inttempo tempo # inttempo executa uma função após um tempo
 
 func cmd_mudadono
@@ -525,7 +542,7 @@ classe i_teste039
 herda comum_itemgrupo
 const nome = "chave tipo dois"
 const descnome = "uma chave do tipo dois"
-const jogsav = 0 # Para não salvar esse item em arquivo, com o personagem
+const objsav = 0 # Para não salvar esse item em arquivo, com o personagem
 sav inttempo tempo # inttempo executa uma função após um tempo
 
 func cmd_mudadono
@@ -1427,7 +1444,7 @@ sujeira. O simples fato de entrar aqui levanta uma poeira que faz você\ntossir."
 classe s_teste014
 herda b_teste
 const s_titulo = "Primeiro andar: Animais e batalha"
-const s_desc = "À leste você pode mudar o seu nível.\n\
+const s_desc = "À leste você pode mudar o seu nível e conseguir animais.\n\
 Ao sul há alguns itens, usados para capturar animais.\n\
 À oeste pode batalhar com animais de níveis diferentes.\n\
 Ao norte fica um pequeno centro de treinamento de animais."
@@ -1445,9 +1462,10 @@ const s_titulo = "Mudança de nível"
 const s_desc = "Aqui você pode mudar o nível do seu personagem.\n\
 Tecle A ou AA para aumentar 1 ou 10 níveis\n\
 Tecle D ou DD para diminuir 1 ou 10 níveis"
+const eveste = 1 # Eventos sala: Sim
+const dir_l = $s_teste065
 const dir_o = $s_teste014
 const dir_no = $s_teste002
-const eveste = 1 # Eventos sala: Sim
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog
@@ -1746,7 +1764,7 @@ herda b_teste
 const s_titulo = "Quinto andar: Loja, professores e ponto de retorno"
 const s_desc = "À leste há um vendedor e um professor.\n\
 À oeste trata-se do ponto de retorno.\n\
-À sudeste você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
+Ao sul você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
 Ou pode teclar AA nessa sala, para ficar com mil moedas."
 const dir_b = $s_teste052
 const dir_c = $s_teste064
@@ -2217,10 +2235,10 @@ func s_reset1 # Realiza o reset
 
 classe s_teste064
 herda b_teste
-const s_titulo = "Sexto andar: Lidando com animais"
-const s_desc = "A oeste pode-se conseguir dois animais."
+const s_titulo = "Sexto andar: Casas de jogadores"
+const s_desc = "A oeste há um gerenciador de casas e duas casas"
+const dir_o = $s_teste115
 const dir_b = $s_teste030
-const dir_o = $s_teste065
 
 
 classe s_teste065
@@ -2230,7 +2248,7 @@ const s_desc = "Se quiser um duende branco tecle: falar branco\n\
 Se quiser um duende negro tecle: falar negro\n\
 Esses duendes possuem outras habilidades e magias, e podem ser usados\n\
 em batalhas. Para saber como lidar com animais, tecle: ajuda animal"
-const dir_l = $s_teste064
+const dir_o = $s_teste015
 const s_reset = "P 100 teste012 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -2813,10 +2831,12 @@ herda b_teste
 const s_titulo = "Subsolo 3: Diversos"
 const s_desc = "Ao norte: um ajudante que te seguirá, chama protetora e chute élfico\n\
 Ao sul: itens apagados após um tempo e poção mortal\n\
-A leste: algumas opções envolvendo itens"
+A leste: algumas opções envolvendo itens\n\
+A oeste: bloquear canais de comunicação de um jogador com efeitos"
 const dir_n = $s_teste096
 const dir_s = $s_teste097
 const dir_l = $s_teste108
+const dir_o = $s_teste113
 const dir_c = $s_teste082
 
 
@@ -3144,3 +3164,72 @@ const s_reset = "S 100 teste039 1 S"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste039") && criar("i_teste039", este, 1)
+
+
+classe s_teste113
+herda b_teste
+const s_titulo = "Bloquear canais de comunicação de um jogador com efeitos"
+const s_desc = "O efeito rouquidão impede um jogador de usar os canais chat e novatos,\n\
+e usar os comandos telepatia e gritar.\n\
+É possível colocar/tirar esse efeito em um jogador com o comando cmdj:\n\
+cmdj fulano criar(\"e_rouquidao\", este)\n\
+cmdj fulano apagar(dentro2.objini(\"e_rouquidao\"))\n\
+Nesse caso, fulano é o nome do personagem do jogador."
+const dir_l = $s_teste095
+const dir_o = $s_teste114
+
+
+classe s_teste114
+herda b_teste
+const s_titulo = "Efeitos - continuação"
+const s_desc = "Atalhos facilitam muito para colocar e tirar o efeito rouquidão.\n\
+Exemplo, após digitar esses dois comandos:\n\
+atalho r1 cmdj $$1 criar(\"e_rouquidao\", este)\n\
+atalho r0 cmdj $$1 apagar(dentro2.objini(\"e_rouquidao\"))\n\
+Pode colocar ou tirar o efeito teclando r1 ou r0, seguido do nome\n\
+do personagem do jogador."
+const dir_l = $s_teste113
+
+
+classe s_teste115
+herda b_teste
+const s_titulo = "Entrada das casas"
+const s_desc = ""
+const dir_n = $s_teste116
+const dir_s = $s_teste117
+const dir_l = $s_teste064
+
+
+classe s_teste116
+herda b_teste
+const s_titulo = "Casa 1"
+const s_desc = "Esta pequena casa possui apenas uma sala.\n\
+É uma sala pacífica, os itens não são apagados depois de um tempo,\n\
+e por se tratar de uma casa, os itens são salvos em arquivo.\n\
+A quantidade de objetos que a sala comporta foi muada para 50."
+const s_item = 0
+const s_luta = 0 # Batalha: 0 Pacífico
+const objmax = 50
+const dir_s = $s_teste115
+
+
+classe s_teste117
+herda b_teste
+const s_titulo = "Casa 2 - sala principal"
+const s_desc = "Essa casa é exatamente como a casa ao norte, só que possui dois cômodos.\n\
+Esse é o cômodo principal."
+const s_item = 0
+const s_luta = 0 # Batalha: 0 Pacífico
+const objmax = 50
+const dir_n = $s_teste115
+const dir_s = $s_teste118
+
+
+classe s_teste118
+herda b_teste
+const s_titulo = "Casa 2 - quarto"
+const s_desc = "Esse é o segundo cômodo da casa."
+const s_item = 0
+const s_luta = 0 # Batalha: 0 Pacífico
+const objmax = 50
+const dir_n = $s_teste117

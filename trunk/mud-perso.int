@@ -16,7 +16,7 @@ const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
-const jogsav = 1 # Se deve salvar o personagem ao salvar personagem do jogador
+const objsav = 2 # Se deve salvar o personagem ao salvar personagem do jogador
 const objmax = 15 # Quantos itens pode carregar
 const luztipo = 1 # 1=não é fonte de luz, mas repassa a luz
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
@@ -110,6 +110,7 @@ func fim # Objeto foi apagado
       apagar(sock)
       sair
     casose "l" # Jogando localmente
+      $miscsav.salvartudo
       terminar
     casose "b" # Como bot
       sock.reinicia

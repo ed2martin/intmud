@@ -1,6 +1,6 @@
 classe jogsock
 herda adm_comum, adm_tipo, adm_atk, adm_cod, adm_sala, adm_perso, adm_item, adm_social, adm_efeit\
-o, adm_atrib, adm_reset
+o, adm_atrib, adm_reset, adm_casa
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -637,8 +637,8 @@ intexec ex
 
 func ini
   perso = arg0, sala = arg1, ex = 1
-  telatxt t
-  t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
+# telatxt t
+# t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
 
 func ex_exec
   apagar(este)
@@ -659,12 +659,10 @@ sav txt40 salanome # Nome da sala
 const msexo = psexo # Sexo do personagem
 sav int1 jogconfig.24 # Para salvar sock.jogconfig
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
-const jogsav = 1 # Necessário para salvar o personagem do jogador
 sav listaobj dentro3 # Lista de animais reserva
 inttempo p_tempoatu # Tempo para atualizar personagem
 uint8 p_tempomsg # Para enviar mensagens de fome e sede em tempoatu_exec
 uint8 p_tempofim # Para sair do jogo após algum tempo
-uint8 p_temposav # Para salvar o jogo regularmente
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
@@ -695,6 +693,11 @@ func fim # Objeto foi apagado
     $mens.mvis2("", "$P foi embora.")
   fimse
   comum_persoanimal:fim
+# Se era o último jogador online, salva todas as casas
+  cnome = nome = ""
+  indiceitem item
+  item.ini("pn ")
+  txt1(item.txt) != "pn" && $miscsav.salvartudo
 
 func fechou # Executado quando o objeto sock é apagado
 # arg0 é verdadeiro se jogador via bot (deve sair mais rápido do jogo)
@@ -714,7 +717,6 @@ func tempojogo1_exec
 
 func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   p_tempoatu = rand(150, 200)
-# msg(">" + p_temposav + "/" + p_tempofim)
 # Checa tempo para sair do jogo
   se !p_tempofim # 0 não faz nada
   senao (p_tempofim -= 1) == 5 # Informa que vai sair do jogo
@@ -909,22 +911,18 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   fimse
 # Acerta estado do personagem
   acertapos(1)
-# Salva o jogo
-  (p_temposav += 1) >= 9 && salvar
 
 func salvar # Salva o jogo, desde que a senha não seja nula
 # Retorna verdadeiro se conseguiu salvar
-  p_temposav = 0
   ret !senha, 0
   listaitem item
   listaobj lista
-  arqsav sav1
   debug dbg
-  lista.addfim(este)
   dbg.exec = 50000
-  item = lista.ini
+  lista.addfim(este, dentro1, dentro2, dentro3)
+  item = lista.ini, item.depois
   enquanto item
-    se !item.obj.jogsav
+    se !item.obj.objsav
       item.removedepois
     senao lista.total < 2000
       lista.addfim(item.obj.dentro1, item.obj.dentro2, item.obj.dentro3), item.depois
@@ -945,6 +943,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   senao
     tempo = config:salvaveterano
   fimse
+  arqsav sav1
   ret sav1.salvar("sav/" + txt2(cnome) + ".sav", lista, tempo, senha)
 
 func cmd_recalc1 # Recalcula variáveis do personagem

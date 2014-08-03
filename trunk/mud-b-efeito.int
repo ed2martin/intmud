@@ -298,6 +298,26 @@ func cmd_atacou
       apagar(este)
 
 
+classe e_rouquidao
+herda comum_efeito
+const e_nome = "Rouquidão"
+const e_desc = "Você perdeu a voz, por isso não consegue usar alguns canais de comunicação."
+const desc = "Bloqueia alguns canais de comunicação / trigger"
+const msgini1 = "Você perdeu a voz."
+const msgfim1 = "Sua voz voltou."
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_escr
+  casovar arg2
+  casose "cmd_telepatia"
+  casose "cmd_gritar"
+  casose "cmdfim_novatos"
+  casose "cmdfim_chat"
+    arg0.msg("Você perdeu a voz.")
+    ret 1
+  casofim
+
+
 classe e_soneca
 herda comum_efeito
 const e_nome = "Soneca"

@@ -50,7 +50,7 @@ void TVarSav::ProcEventos(int tempoespera)
     time_t tempoatual=0;
     struct tm * tempolocal;
     time(&tempoatual);
-    // localtime() Converte para representaçãao local de tempo
+    // localtime() Converte para representação local de tempo
     tempolocal = localtime(&tempoatual);
     Dia = tempolocal->tm_yday+1;
     Hora = tempolocal->tm_hour;
