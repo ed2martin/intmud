@@ -10,6 +10,7 @@ Os tópicos são:\n\
   \c2ITEM\b     Itens\n\
   \c2TIPO\b     Tipos de personagens (raças e classes)\n\
   \c2PERSO\b    Personagens não jogador\n\
+  \c2CASA\b     Casas de jogadores\n\
   \c2RESET\b    Reset de área ou sala\n\
   \c2HAB\b      Habilidades e magias\n\
   \c2EFEITO\b   Efeitos\n\
@@ -22,6 +23,8 @@ Os tópicos são:\n\
 # \c2INFO\b     Informações sobre o MUD"
 #
 const adm_jog = "\c3Comandos para jogadores\b\n\
+\c2SALVARTUDO\b\n\
+  Salva todos os jogos de jogadores e casas pendentes em arquivo\n\
 \c2TELE\b <sala ou jogador>\n\
   Teletransporta para uma sala específica ou para aonde um jogador está.\n\
 \c2TELE\b <jogador> <sala>\n\
@@ -195,6 +198,14 @@ func cmd_serv # Informações sobre o servidor
   txtmais.addfim(lin)
   txtmais.addfim("IntMUD versão " + d.ver + " (" + d.data + "), MUD versão " + misc:versao)
   txtmostra
+  ret 1
+
+func cmd_salvartudo
+  $miscsav.salvartudo
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.23 && item.obj.msg("\b(salvartudo) " + nome + " salvou os jogos.\b")
+  efim
   ret 1
 
 func cmd_teleentra
@@ -564,6 +575,7 @@ func cmd_apagarsav
   senao (lin = dir.apagar("sav/" + arg0 + ".sav")) != ""
     msg("Erro ao apagar jogo salvo " + arg0 + ": " + lin)
   senao
+    $miscsav.apagousav(arg0)
     msg("Jogo salvo apagado: " + arg0)
     admlog("apagou arquivo sav: " + arg0)
   fimse
@@ -692,7 +704,7 @@ func cmdlog # Mensagem para todos com a opção "config +cmdlog"
   se txtproc(txtsepara(txttroca(arg1, " ", ""), "L+DLEOV,DLEOV+L"), " ") >= 0
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.22 && item.obj.msg("\b\d4" + arg0 + "\b")
+      item.obj.jogconfig.22 && item.obj.msg("\b" + arg0 + "\b")
     efim
 
 func cmd_lcl # Listar classes

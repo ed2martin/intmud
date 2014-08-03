@@ -109,6 +109,9 @@ func cmd_aarea # Apagar área
     epara p.iniarq("a-" + prefixo), p.lin, p.depois
       se p.texto != "a_" + prefixo && p.texto != "b_" + prefixo
         casovar txt(p.texto, 0, 2)
+        casose "c_"
+          msg("\bÁrea " + prefixo + " contém pelo menos uma casa")
+          ret 1
         casose "s_"
           msg("\bÁrea " + prefixo + " contém pelo menos uma sala")
           ret 1

@@ -239,10 +239,16 @@ $V = Depende do personagem: "e" ou "a"
 $W = Depende do alvo: "e" ou "a"
 $X = Depende do objeto: "e" ou "a"
 $M = Texto de $mens.mens
-$1 a $5 = variáveis $mens.o_1 a $mens.o_5
+$D = É substituído por "de"
+     No entando, seguido de o/a/os/as, forma as palavras do/da/dos/das
+     Costuma ser usado nas mensagens como $d $p, $d $a e $d $o
+$E = É substituído por "em"
+     No entando, seguido de o/a/os/as, forma as palavras no/na/nos/nas
+     Costuma ser usado nas mensagens como $e $p, $e $a e $e $o
+$1 a $5 = Variáveis $mens.o_1 a $mens.o_5
 
 Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra
-do texto não é transformada em maiúscula."
+do texto não é transformada em maiúscula.
 
 
 5. Variáveis dinâmicas de personagens, salas e itens
@@ -275,6 +281,24 @@ z_salafim = sala para onde vai quando retorna da morte
 z_teleentra = mensagem definida com o comando teleentra
 z_telesai = mensagem definida com o comando telesai
 
+São usados os seguintes textos em indiceobj/indiceitem:
+"ip " + endereço IP
+    Contém a lista de usuários com esse endereço IP
+    Variável jogoservip:endereco, arquivo mud.int
+"bs " + nome da sala no chat (quando o MUD é ativado como bot)
+    Variável jogobot_sala:sala_nome, arquivo mud.int
+"bu " + nome do usuário no chat (quando o MUD é ativado como bot)
+    Variável jogobot_usr:j_nome, arquivo mud.int
+"un " + nome codificado (nome do arquivo SAV sem o .SAV)
+    O objeto responsável pela comunicação com o jogador
+    Variável jogsock:cnome, arquivo mud-jog.int
+"pn " + nome codificado (nome do arquivo SAV sem o .SAV)
+    Personagem do jogador
+    Variável jogador:cnome, arquivo mud-jog.int
+"cj " + nome codificado + " " + prefixo da área
+    Casa do jogador (nome codificado corresponde ao arquivo SAV do jogador)
+    Variável jogador:cnome, arquivo mud-jog.int
+
 
 6. Comum a salas, personagens e itens (classe comum_obj, em mud-comum.int)
 
@@ -300,6 +324,17 @@ Se for personagem: lista de itens que está vestindo, animais e efeitos.
 
 listaobj evento
 Objetos que recebem eventos desse objeto.
+
+const objsav = 0
+Se deve salvar o objeto ao salvar personagem ou sala
+0 = não salva
+1 = salva
+2 = salva só em arquivos de jogadores
+3 = salva só em arquivos de casas
+
+int1 objmudou
+Se 1, deve salvar a sala porque ocorreu alguma mudança na lista de objetos
+Essa variável costuma estar presente somente nas salas
 
 Variáveis relacionadas ao peso
 uint32 pesoden # Somente leitura: quanto peso tem dentro

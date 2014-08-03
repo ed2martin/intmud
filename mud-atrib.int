@@ -102,7 +102,7 @@ func p_atribcfg
   senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
     perso.teclou(txtremove(txt(arg0, 1), "E"))
   senao arg0 == "o"
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     txtmais.limpar
     txtmais.addfim("Atributos")
@@ -118,7 +118,7 @@ func p_atribcfg
   senao !linha || linha > p_atrib_bit
     msg("Opção inexistente: " + txt1(arg0))
   senao
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -141,7 +141,7 @@ func p_atribcfg2 # Usado por p_atribcfg; editando um atributo
   senao num < 0 && var.opclin_ >= p_atrib_atk
     msg("O número não pode ser menor que zero, entre com outro")
   senao
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     valor.[var.opclin] = num
     textotxt t
@@ -184,7 +184,7 @@ func p_atrib # Editando atributos
       msg("Entre com uma opção, O mostra as opções, N nenhum atributo, Z cancela")
     fimse
   senao arg0 == "n" && !var.opcvalido
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     casovar arg1
     casose "atribnum" # Atributos numéricos
@@ -218,7 +218,7 @@ func p_atrib # Editando atributos
   senao txt(arg0, 0, 1) == "m" # Executa comando do MUD
     perso.teclou(txtremove(txt(arg0, 1), "E"))
   senao arg0 == "o"
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     txtmais.limpar
     txtmais.addfim("Atributos")
@@ -284,7 +284,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -296,7 +296,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     linha += p_atrib_bit - 1
     valor.[linha] = !valor.[linha]
@@ -309,7 +309,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -322,7 +322,7 @@ func p_atrib # Editando atributos
       msg("Opção inexistente: " + txt1(arg0))
       ret 1
     fimse
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     linha -= 1
     var.opcpasso2 = arg1
@@ -350,7 +350,7 @@ func p_atrib2 # Usado por p_atrib; editando um atributo
   senao num < 0 && var.opclin_ >= p_atrib_atk
     msg("A porcentagem não pode ser menor que zero, entre com outra")
   senao
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor)
     valor.[var.opclin] = num
     p_atrib_salvar(valor)
@@ -368,7 +368,7 @@ func p_atrib2txt # Usado internamente em p_atrib_salvar
 
 func p_atrib_ler # Extrai os atributos de uma função
 # var.opcclasse e var.opcvar = nomes da classe e da função
-# arg0 = variável "real2 valor.80"
+# arg0 = variável "real2 valor.120"
   int32 x
   arg0.limpar(100)
   epara x = p_atrib_atk - 1, x >= 0, x -= 1
@@ -464,7 +464,7 @@ func p_atrib_ler2 # Usado internamente em p_atrib_ler
 
 func p_atrib_salvar # Salva os atributos em função
 # var.opcclasse e var.opcvar = nomes da classe e da função
-# arg0 = variável "real2 valor.80"
+# arg0 = variável "real2 valor.120"
   textotxt t
   t.addfim("func " + var.opcvar + " # Altera atributos do personagem")
   t.addfim("# Não alterar; função criada automaticamente")
@@ -708,7 +708,7 @@ func escr
 # Obtém os efeitos
     var.opcclasse = r
     var.opcvar = "recalc_auto"
-    real2 valor.80
+    real2 valor.120
     p_atrib_ler(valor) # Extrai os atributos de uma função
 # Efeitos numéricos
     int8 x

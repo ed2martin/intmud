@@ -25,7 +25,7 @@ func escr # Executa o comando
   fimse
 # Fecha a porta
   se sala.fecha_[dir1]
-    refvar m = sala.porta_[dir1] < 2 ? "$M $2."
+    refvar m = sala.porta_[dir1] < 2 ? "$M se $2."
     sala.mudaporta(dir1, sala.tranc_[dir1] == 2 ? 3 : 2, m, m)
   fimse
 
@@ -456,7 +456,7 @@ func escrdir # Abrir uma porta
   efim
 # Abre a porta
   $mens.p(arg0)
-  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M $1.") # Abre a porta
+  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M se $1.") # Abre a porta
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
   efim
@@ -535,9 +535,9 @@ func escrdir # Fechar uma porta
 # Fecha a porta
   $mens.p(arg0)
   se arg0.dono.tranc_[arg1] == 2
-    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M $2.") # Tranca a porta
+    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M se $2.") # Tranca a porta
   senao
-    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M $2.") # Fecha a porta
+    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M se $2.") # Fecha a porta
   fimse
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)

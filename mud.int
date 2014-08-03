@@ -49,10 +49,7 @@ func tela_tecla
       ret 0
     fimse
     fimprog = 1
-    indiceitem item
-    epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-      item.obj.salvar
-    efim
+    $miscsav.salvartudo
     ret 1
   senao inttotal(arg0) == 1 # Um caracter qualquer: adiciona na senha
     txtsenha += arg0

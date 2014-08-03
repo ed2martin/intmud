@@ -16,8 +16,8 @@ comum txt100 sep2 # Objeto ou personagem destino
 comum int1 luz # Se tem luz do dia
 comum uint8 dia # Dia MUD, de 0 (domingo) a 6 (sábado)
 comum uint8 hora # Hora MUD (1 dia MUD = 2 horas)
-const min = intdiv((3000 - misc:imin) / 50) # Minuto MUD
-comum inttempo imin # Usado internamente: quanto tempo para completar 1 hora MUD
+const min = intdiv((2999 - misc:imin) / 50) # Minuto MUD
+comum intdec imin # Usado internamente para calcular o minuto MUD
 #
 # Direções
 const d1n = "n"
@@ -230,50 +230,6 @@ func txtmoedas # Retorna texto correspondente à quantidade de moedas
   ret x <= 50000, "um pequeno morro de moedas"
   ret "uma quantidade imensa de moedas"
 
-func iniclasse # Inicialização
-# Cria diretório de jogos salvos, se não existir
-  arqdir d
-  d.criardir("sav")
-# Inicia contagem de tempo hora MUD
-# Nota: o tempo MUD é 12 vezes mais rápido que o tempo real
-# um dia MUD = 2 horas (7200 segundos), uma hora MUD = 300 segundos
-  datahora dh
-  dh.agora
-  misc:imin = 3000 - dh.numseg * 10 % 3000
-  misc:hora = intdiv(dh.numseg % 7200 / 300)
-  misc:dia = dh.numdias % 7 * 12 + intdiv(dh.numseg / 7200)
-  misc:dia = misc:dia % 7
-  misc:luz = misc:hora >= 6 && misc:hora < 18
-  arqsav sav
-  sav.limpar("sav") # Limpa jogos antigos
-  sav.limpar # Faz imediatamente
-  sav.limpou # Limpa a lista de arquivos excluídos
-
-func imin_exec # Atualiza hora MUD
-# Acerta minuto, hora e luz
-  misc:imin = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
-  misc:hora = (misc:hora + 1) % 24
-  misc:luz = misc:hora >= 6 && misc:hora < 18
-# Acerta dia e limpa jogos antigos
-  arqsav sav
-  se misc:hora == 0
-    sav.limpar("sav") # Limpa jogos antigos
-    sav.limpou # Para limpar a lista de arquivos excluídos por arqsav
-    misc:dia = (misc:dia + 1) % 7 # Atualiza o dia
-  fimse
-# Envia mensagem da hora para os jogadores
-  refvar horamsg = config:horamsg[misc:hora]
-  se horamsg
-    indiceitem i
-    ref r
-    epara i.ini("un "), txt1(i.txt) == "un", i.depois
-      epara r = i.obj.perso.dono, r.dono, r = r.dono
-      efim
-      continuar r.s_luz && r.s_luz != 2
-      i.obj.perso.msg(horamsg)
-    efim
-  fimse
-
 func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
   se ref(arg0)
@@ -366,8 +322,120 @@ const ini = tempo = 1, noar = -1
 func tempo_exec
   tempo = 600, noar += 1
   debug d
-  stempo = d.stempo - stempo_antes, stempo_antes = d.stempo
-  utempo = d.utempo - utempo_antes, utempo_antes = d.utempo
+  stempo = intpos(d.stempo - stempo_antes), stempo_antes = d.stempo
+  utempo = intpos(d.utempo - utempo_antes), utempo_antes = d.utempo
+
+
+classe miscsav
+# Para atualizar hora MUD e salvar personagens e casas de tempos em tempos
+inttempo horatempo # Para atualizar a hora e salvar jogos de tempos em tempos
+listaobj savlista
+inttempo extempo # Salva um jogo / checa se jogo foi excluído
+int8 expasso # Usado em extempo_exec
+const iniclasse = criar(arg0)
+
+func salvartudo # Salva todos os arquivos pendentes de uma vez
+  savlista.limpar
+  debug d
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    d.ini, item.obj.salvar
+  efim
+  prog p
+  epara p.iniclasse("c_"), p.lin, p.depois
+    d.ini, $[p.texto].mudou && $[p.texto].salvar
+  efim
+
+func apagousav # Deve ser chamado quando um arquivo de jogador for apagado
+# arg0 = nome codificado
+  indiceitem item
+  refvar nome = "cj " + arg0
+  enquanto 1
+    item.ini(nome)
+    ret txtsub(item.txt, 0, 2) != nome
+    item.obj.objmudou = 1
+    item.obj.nomejog = ""
+  efim
+
+func ini
+# Cria diretório de jogos salvos, se não existir
+  arqdir d
+  d.criardir("sav")
+  d.criardir("sav2")
+# Inicia contagem de tempo hora MUD
+# Nota: o tempo MUD é 12 vezes mais rápido que o tempo real
+# um dia MUD = 2 horas (7200 segundos), uma hora MUD = 300 segundos
+  datahora dh
+  dh.agora
+  horatempo = 3000 - dh.numseg * 10 % 3000
+  misc:imin = horatempo - 1
+  misc:hora = intdiv(dh.numseg % 7200 / 300)
+  misc:dia = dh.numdias % 7 * 12 + intdiv(dh.numseg / 7200)
+  misc:dia = misc:dia % 7
+  misc:luz = misc:hora >= 6 && misc:hora < 18
+  arqsav sav
+  sav.limpar("sav") # Limpa jogos antigos
+  sav.limpar # Faz imediatamente
+  sav.limpou # Limpa a lista de arquivos excluídos
+
+func horatempo_exec # Atualiza hora MUD
+# Acerta minuto, hora e luz
+  extempo = 2, expasso = 1
+  horatempo = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
+  misc:imin = 2999
+  misc:hora = (misc:hora + 1) % 24
+  misc:luz = misc:hora >= 6 && misc:hora < 18
+# Acerta dia e limpa jogos antigos
+  se misc:hora == 0
+    misc:dia = (misc:dia + 1) % 7 # Atualiza o dia
+    arqsav sav
+    sav.limpar("sav") # Limpa jogos antigos
+  fimse
+# Obtém lista de objetos (casas e personagens) que devem ser salvos
+  se savlista.total == 0
+    debug d
+    indiceitem item
+    epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+      savlista.addfim(item.obj)
+    efim
+    prog p
+    epara p.iniclasse("c_"), p.lin, p.depois
+      d.ini, $[p.texto].mudou && savlista.addfim($[p.texto])
+    efim
+  fimse
+# Envia mensagem da hora para os jogadores
+  refvar horamsg = config:horamsg[misc:hora]
+  se horamsg
+    indiceitem i
+    ref r
+    epara i.ini("un "), txt1(i.txt) == "un", i.depois
+      epara r = i.obj.perso.dono, r.dono, r = r.dono
+      efim
+      continuar r.s_luz && r.s_luz != 2
+      i.obj.perso.msg(horamsg)
+    efim
+  fimse
+
+func extempo_exec
+# Checa se arquivos sav apagados em segundo plano
+  se expasso
+    textotxt t
+    arqsav sav
+    t.addfim(sav.limpou)
+    expasso = t.remove, extempo = 5
+    enquanto t.linhas
+      refvar t1 = txt(t.remove)
+      apagousav(txt(t1, 4, inttotal(t1) - 8))
+    efim
+    ret
+  fimse
+# Salva arquivos pendentes
+  se savlista.total
+    extempo = 2
+    refvar r = ref(savlista.objini)
+    savlista.ini.remove
+    r.salvar
+  fimse
 
 
 classe miscfome

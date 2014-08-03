@@ -304,7 +304,7 @@ sav listaitem idono # Uso interno: aonde o objeto está
 listaitem evrec # Usado internamente, para receber eventos
 listaitem evbat # Para apagar o objeto ao iniciar/terminar batalha
 ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
-const jogsav = 2 != e_condicao # Se deve salvar o efeito ao salvar personagem do jogador
+const objsav = 2 != e_condicao # Se deve salvar o efeito ao salvar personagem do jogador
 sav inttempo t_reduzir # Tempo para a próxima redução
 sav inttempo t_duracao # Duração do efeito
 sav inttempo t_tempo1 # Para gerar eventos de tempo
@@ -420,7 +420,7 @@ listaitem evrec.2 # Usado internamente, para receber eventos
 ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
 const interno = 1 # Para não ser editável e apagável
 const desc = "Usado internamente: apaga PNJ após um tempo sem jogador na sala"
-const jogsav = 0 # Não salvar o efeito ao salvar o personagem
+const objsav = 0 # Não salvar o efeito ao salvar o personagem
 inttempo tatual # Contagem de tempo para apagar o personagem
 uint16 tapaga # Tempo para apagar o personagem
 intexec recalc # Se deve acertar os eventos que recebe
