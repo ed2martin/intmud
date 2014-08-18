@@ -1,6 +1,6 @@
 classe jogsock
-herda adm_comum, adm_tipo, adm_atk, adm_cod, adm_sala, adm_perso, adm_item, adm_social, adm_efeit\
-o, adm_atrib, adm_reset, adm_casa
+herda adm_comum, adm_misc, adm_tipo, adm_atk, adm_sala, adm_perso, adm_item, adm_social, \
+adm_efeito, adm_atrib, adm_reset, adm_casa
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -16,6 +16,7 @@ o, adm_atrib, adm_reset, adm_casa
 ref perso # Personagem controlado pelo jogador
 indiceobj cnome # "un " + nome codificado
 txt20 nome # Nome do personagem
+txt20 nomefim # Nome ao apresentar quando o usuário sair do jogo
 textotxt txtmais # Texto do tecle M para mais
 int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
@@ -40,13 +41,15 @@ textotxt transf # Área de transferência do editor
 func ini
   cnome = "un"
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
-  config:apres && msg(config:apres)
+  refvar t = info
+  refvar ban = (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
+  ban ? config:apresban && msg(config:apresban) : config:apres && msg(config:apres)
   reinicia
 
 func fim
   perso.fechou(txt1(info) == "b")
   mudaperso(nulo)
-  msgchegou("* Saiu: " + nome, "* " + nome + " saiu")
+  nomefim && msgchegou("* Saiu: " + nome + ", " + nomefim, "* " + nome + " saiu")
 
 func mudaperso # Muda o personagem, arg0=novo personagem
   ret perso == arg0 || arg0.sock, nulo
@@ -234,9 +237,9 @@ func msgchegou # Mensagem de usuário chegando ou saindo
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar item.obj == este
       se item.obj.jogconfig.23 # Se usuário é admin...
-        item.obj.msg(arg0)
+        arg0 && item.obj.msg(arg0)
       senao config:entrainfo == 2 && !jogconfig.17
-        item.obj.msg(arg1)
+        arg1 && item.obj.msg(arg1)
       fimse
     efim
 
@@ -258,12 +261,18 @@ func p_perso # Entrando no jogo: digitar o nome do personagem
     msg("Personagem '" + txtmaimin(arg0) + "' já existe")
     tpasso = txtmaimin(arg0)
     p_entrasenha
-  senao $admnomesnao.nomes.n_[texto] # Criar personagem: checa se nome permitido
-    msg("Nome não permitido para personagem")
   senao # Criar personagem
-    cnome = "un " + texto
-    nome = txtmaimin(arg0)
-    p_perso1
+    refvar t = info
+    se (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
+      msg(config:apresban)
+      apagar(este)
+    senao $admnomesnao.nomes.n_[texto] # Checa se nome permitido
+      msg("Nome não permitido para personagem")
+    senao
+      cnome = "un " + texto
+      nome = txtmaimin(arg0)
+      p_perso1
+    fimse
   fimse
   ret 1
 
@@ -272,6 +281,8 @@ func p_perso1
     p_perso
   senao arg0 == "S"
     config:salvacria ? p_criasenha1 : config:email ? p_email1 : p_sexo1
+    nomefim = info
+    msgchegou("* Criando personagem: " + nome + ", " + nomefim)
   senao
     passo = "perso1"
     msg("Deseja criar o personagem '" + nome + "'? (tecle S ou N)")
@@ -472,7 +483,7 @@ func p_entrajogo # Entrar no jogo: cria personagem
   se perso.senha
     !perso.salvar && msg("Não foi possível salvar o personagem")
   fimse
-  msgchegou("* Criou personagem: " + nome + ", " + info, "* " + nome + " entrou")
+  msgchegou("* Criou personagem: " + nome + ", " + nomefim, "* " + nome + " entrou")
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
   ret 1
@@ -510,8 +521,10 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     temposair # Acerta tempo para sair do MUD
     msg("Reconectado")
     txt200 lin
+    nomefim = info
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
+    nomefim = info
     perso.teclou("olhar")
   senao
 # Primeiro cria personagem
@@ -547,6 +560,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     txt200 lin
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
+    nomefim = info
   fimse
   ret 1
 
@@ -611,6 +625,7 @@ func p_autoapagar1
   ret 1
 
 func p_autoapagar2
+  arqsav sav1
   passo = "autoapagar2"
   se !arg0
     msg("Digite a senha ou tecle Z para cancelar")
@@ -620,11 +635,13 @@ func p_autoapagar2
   senao arg0 != perso.senha
     msg("Senha incorreta; autoapagar cancelado")
     passo = ""
-  senao
-    arqsav sav1
-    sav1.apagar("sav/" + txt2(cnome) + ".sav")
+  senao sav1.apagar("sav/" + txt2(cnome) + ".sav")
     perso.senha = ""
     apagar(perso)
+    $miscsav.apagousav(txt2(cnome))
+  senao
+    msg("Não foi possível apagar o personagem.")
+    passo = ""
   fimse
   ret 1
 

@@ -12,6 +12,7 @@ listaobj lseg # Para não seguir ciclicamente
 debug dbg
 
 func escr # Executa o comando
+# arg0 = personagem
   $comando_mover.lseg.limpar
   refvar sala = ref(arg0.dono)
 # Anda
@@ -31,7 +32,6 @@ func escr # Executa o comando
 
 func mover # Personagem anda em uma direção
 # arg0 = personagem
-# arg1 = o que digitou ou "\n" se está seguindo alguém
   listaobj l
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
@@ -62,34 +62,16 @@ func mover # Personagem anda em uma direção
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
   se !(s1.socktot || s2.socktot) # Não tem jogador por perto
     arg0.mudadono(s2)
-  senao arg0.bitver & 256 # Anda em silêncio
-    $mens.p(arg0)
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
-      l.objini.jogconfig.14 && l.objini.msgvis("(furtivo) " + m_sai1)
-    efim
-    arg0.mudadono(s2)
-    $mens.p(arg0)
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
-      l.objini.jogconfig.14 && l.objini.msgvis("(furtivo) " + m_entra1)
-    efim
-  senao arg0.p_bebida >= $miscfome.bebedir - rand(20)
+  senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
     $mens.p(arg0) + $mens.mvis2("", m_sai4)
     arg0.mudadono(s2)
     $mens.p(arg0) + $mens.mvis2("", m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    $mens.p(arg0) + $mens.mvis2("", m_sai3)
-    arg0.mudadono(s2)
-    $mens.p(arg0) + $mens.mvis2("", m_entra3)
-  senao arg0.bitver & 512 # Flutuando
-    $mens.p(arg0) + $mens.mvis2("", m_sai2)
-    arg0.mudadono(s2)
-    $mens.p(arg0) + $mens.mvis2("", m_entra2)
+    mover2(arg0, s2, m_sai3, m_entra3)
+  senao arg0.bitver & 0x200 # Flutuando
+    mover2(arg0, s2, m_sai2, m_entra2)
   senao # Não está voando nem flutuando
-    $mens.p(arg0) + $mens.mvis2("", m_sai1)
-    arg0.mudadono(s2)
-    $mens.p(arg0) + $mens.mvis2("", m_entra1)
+    mover2(arg0, s2, m_sai1, m_entra1)
   fimse
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, arg0.dono, dir)
@@ -112,6 +94,26 @@ func mover # Personagem anda em uma direção
     l.objini.msg("Você segue " + arg0.descnome + ".")
     mover(l.objini)
   efim
+
+func mover2 # Chamado por mover, para mudar de sala enviando mensagem
+  listaobj l
+  se arg0.bitver & 256 # Anda em silêncio
+    $mens.p(arg0), $mens.mens = " em silêncio"
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      l.objini.bitver & 0x1000 && l.objini.msgvis(arg2)
+    efim
+    arg0.mudadono(arg1)
+    $mens.p(arg0), $mens.mens = " em silêncio"
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      l.objini.bitver & 0x1000 && l.objini.msgvis(arg3)
+    efim
+  senao
+    $mens.p(arg0), $mens.mens = "", $mens.mvis2("", arg2)
+    arg0.mudadono(arg1)
+    $mens.p(arg0), $mens.mens = "", $mens.mvis2("", arg3)
+  fimse
 
 func fugirdir # Obtém direção para onde pode fugir
 # Entrada: arg0 = personagem
@@ -138,13 +140,13 @@ func fugirdir # Obtém direção para onde pode fugir
 
 classe cmd_n
 herda comando_mover
-const m_entra1 = "$P chegou do sul."
-const m_entra2 = "$P flutuou do sul."
-const m_entra3 = "$P voou do sul."
+const m_entra1 = "$P chegou $m do sul$m."
+const m_entra2 = "$P flutuou do sul$m."
+const m_entra3 = "$P voou do sul$m."
 const m_entra4 = "$P chegou do sul cambaleando."
-const m_sai1 = "$P foi para o norte."
-const m_sai2 = "$P flutuou o norte."
-const m_sai3 = "$P voou para o norte."
+const m_sai1 = "$P foi para o norte$m."
+const m_sai2 = "$P flutuou o norte$m."
+const m_sai3 = "$P voou para o norte$m."
 const m_sai4 = "$P foi para o norte cambaleando."
 const m_fugir = "$P fugiu para o norte."
 const m_porta = "a porta norte"
@@ -153,13 +155,13 @@ const dir = "n"
 
 classe cmd_s
 herda comando_mover
-const m_entra1 = "$P chegou do norte."
-const m_entra2 = "$P flutuou do norte."
-const m_entra3 = "$P voou do norte."
+const m_entra1 = "$P chegou do norte$m."
+const m_entra2 = "$P flutuou do norte$m."
+const m_entra3 = "$P voou do norte$m."
 const m_entra4 = "$P chegou do norte cambaleando."
-const m_sai1 = "$P foi para o sul."
-const m_sai2 = "$P flutuou para o sul."
-const m_sai3 = "$P voou para o sul."
+const m_sai1 = "$P foi para o sul$m."
+const m_sai2 = "$P flutuou para o sul$m."
+const m_sai3 = "$P voou para o sul$m."
 const m_sai4 = "$P foi para o sul cambaleando."
 const m_fugir = "$P fugiu para o sul."
 const m_porta = "a porta sul"
@@ -168,13 +170,13 @@ const dir = "s"
 
 classe cmd_l
 herda comando_mover
-const m_entra1 = "$P chegou do oeste."
-const m_entra2 = "$P flutuou do oeste."
-const m_entra3 = "$P voou do oeste."
+const m_entra1 = "$P chegou do oeste$m."
+const m_entra2 = "$P flutuou do oeste$m."
+const m_entra3 = "$P voou do oeste$m."
 const m_entra4 = "$P chegou do oeste cambaleando."
-const m_sai1 = "$P foi para leste."
-const m_sai2 = "$P flutuou para leste."
-const m_sai3 = "$P voou para leste."
+const m_sai1 = "$P foi para leste$m."
+const m_sai2 = "$P flutuou para leste$m."
+const m_sai3 = "$P voou para leste$m."
 const m_sai4 = "$P foi para leste cambaleando."
 const m_fugir = "$P fugiu para leste."
 const m_porta = "a porta leste"
@@ -188,13 +190,13 @@ const objcmd = $cmd_l.objcmd(arg0, arg1)
 
 classe cmd_o
 herda comando_mover
-const m_entra1 = "$P chegou do leste."
-const m_entra2 = "$P flutuou do leste."
-const m_entra3 = "$P voou do leste."
+const m_entra1 = "$P chegou do leste$m."
+const m_entra2 = "$P flutuou do leste$m."
+const m_entra3 = "$P voou do leste$m."
 const m_entra4 = "$P chegou do leste cambaleando."
-const m_sai1 = "$P foi para oeste."
-const m_sai2 = "$P flutuou para oeste."
-const m_sai3 = "$P voou para oeste."
+const m_sai1 = "$P foi para oeste$m."
+const m_sai2 = "$P flutuou para oeste$m."
+const m_sai3 = "$P voou para oeste$m."
 const m_sai4 = "$P foi para oeste cambaleando."
 const m_fugir = "$P fugiu para oeste."
 const m_porta = "a porta oeste"
@@ -208,13 +210,13 @@ const objcmd = $cmd_o.objcmd(arg0, arg1)
 
 classe cmd_c
 herda comando_mover
-const m_entra1 = "$P chegou de baixo."
-const m_entra2 = "$P flutuou de baixo."
-const m_entra3 = "$P voou de baixo."
+const m_entra1 = "$P chegou de baixo$m."
+const m_entra2 = "$P flutuou de baixo$m."
+const m_entra3 = "$P voou de baixo$m."
 const m_entra4 = "$P chegou de baixo cambaleando."
-const m_sai1 = "$P subiu."
-const m_sai2 = "$P flutuou para cima."
-const m_sai3 = "$P voou para cima."
+const m_sai1 = "$P subiu$m."
+const m_sai2 = "$P flutuou para cima$m."
+const m_sai3 = "$P voou para cima$m."
 const m_sai4 = "$P subiu cambaleando."
 const m_fugir = "$P fugiu para cima."
 const m_porta = "a passagem para cima"
@@ -228,13 +230,13 @@ const objcmd = $cmd_c.objcmd(arg0, arg1)
 
 classe cmd_b
 herda comando_mover
-const m_entra1 = "$P chegou de cima."
-const m_entra2 = "$P flutuou de cima."
-const m_entra3 = "$P voou de cima."
+const m_entra1 = "$P chegou de cima$m."
+const m_entra2 = "$P flutuou de cima$m."
+const m_entra3 = "$P voou de cima$m."
 const m_entra4 = "$P chegou de cima cambaleando."
-const m_sai1 = "$P desceu."
-const m_sai2 = "$P flutuou para baixo."
-const m_sai3 = "$P voou para baixo."
+const m_sai1 = "$P desceu$m."
+const m_sai2 = "$P flutuou para baixo$m."
+const m_sai3 = "$P voou para baixo$m."
 const m_sai4 = "$P desceu cambaleando."
 const m_fugir = "$P fugiu para baixo."
 const m_porta = "a passagem para baixo"
@@ -248,13 +250,13 @@ const objcmd = $cmd_b.objcmd(arg0, arg1)
 
 classe cmd_ne
 herda comando_mover
-const m_entra1 = "$P chegou do sudoeste."
-const m_entra2 = "$P flutuou do sudoeste."
-const m_entra3 = "$P voou do sudoeste."
+const m_entra1 = "$P chegou do sudoeste$m."
+const m_entra2 = "$P flutuou do sudoeste$m."
+const m_entra3 = "$P voou do sudoeste$m."
 const m_entra4 = "$P chegou do sudoeste cambaleando."
-const m_sai1 = "$P foi para o nordeste."
-const m_sai2 = "$P flutuou para o nordeste."
-const m_sai3 = "$P voou para o nordeste."
+const m_sai1 = "$P foi para o nordeste$m."
+const m_sai2 = "$P flutuou para o nordeste$m."
+const m_sai3 = "$P voou para o nordeste$m."
 const m_sai4 = "$P foi para o nordeste cambaleando."
 const m_fugir = "$P fugiu para o nordeste."
 const m_porta = "a porta nordeste"
@@ -263,13 +265,13 @@ const dir = "ne"
 
 classe cmd_no
 herda comando_mover
-const m_entra1 = "$P chegou do sudeste."
-const m_entra2 = "$P flutuou do sudeste."
-const m_entra3 = "$P voou do sudeste."
+const m_entra1 = "$P chegou do sudeste$m."
+const m_entra2 = "$P flutuou do sudeste$m."
+const m_entra3 = "$P voou do sudeste$m."
 const m_entra4 = "$P chegou do sudeste cambaleando."
-const m_sai1 = "$P foi para o noroeste."
-const m_sai2 = "$P flutuou para o noroeste."
-const m_sai3 = "$P voou para o noroeste."
+const m_sai1 = "$P foi para o noroeste$m."
+const m_sai2 = "$P flutuou para o noroeste$m."
+const m_sai3 = "$P voou para o noroeste$m."
 const m_sai4 = "$P foi para o noroeste cambaleando."
 const m_fugir = "$P fugiu para o noroeste."
 const m_porta = "a porta noroeste"
@@ -283,13 +285,13 @@ const objcmd = $cmd_no.objcmd(arg0, arg1)
 
 classe cmd_se
 herda comando_mover
-const m_entra1 = "$P chegou do noroeste."
-const m_entra2 = "$P flutuou do noroeste."
-const m_entra3 = "$P voou do noroeste."
+const m_entra1 = "$P chegou do noroeste$m."
+const m_entra2 = "$P flutuou do noroeste$m."
+const m_entra3 = "$P voou do noroeste$m."
 const m_entra4 = "$P chegou do noroeste cambaleando."
-const m_sai1 = "$P foi para o sudeste."
-const m_sai2 = "$P flutuou para o sudeste."
-const m_sai3 = "$P voou para o sudeste."
+const m_sai1 = "$P foi para o sudeste$m."
+const m_sai2 = "$P flutuou para o sudeste$m."
+const m_sai3 = "$P voou para o sudeste$m."
 const m_sai4 = "$P foi para o sudeste cambaleando."
 const m_fugir = "$P fugiu para o sudeste."
 const m_porta = "a porta sudeste"
@@ -298,13 +300,13 @@ const dir = "se"
 
 classe cmd_so
 herda comando_mover
-const m_entra1 = "$P chegou do nordeste."
-const m_entra2 = "$P flutuou do nordeste."
-const m_entra3 = "$P voou do nordeste."
+const m_entra1 = "$P chegou do nordeste$m."
+const m_entra2 = "$P flutuou do nordeste$m."
+const m_entra3 = "$P voou do nordeste$m."
 const m_entra4 = "$P chegou do nordeste cambaleando."
-const m_sai1 = "$P foi para o sudoeste."
-const m_sai2 = "$P flutuou para o sudoeste."
-const m_sai3 = "$P voou para o sudoeste."
+const m_sai1 = "$P foi para o sudoeste$m."
+const m_sai2 = "$P flutuou para o sudoeste$m."
+const m_sai3 = "$P voou para o sudoeste$m."
 const m_sai4 = "$P foi para o sudoeste cambaleando."
 const m_fugir = "$P fugiu para o sudoeste."
 const m_porta = "a porta sudoeste"
@@ -318,13 +320,13 @@ const objcmd = $cmd_so.objcmd(arg0, arg1)
 
 classe cmd_entrar
 herda comando_mover
-const m_entra1 = "$P entrou aqui."
-const m_entra2 = "$P flutuou de fora."
-const m_entra3 = "$P voou de fora."
+const m_entra1 = "$P entrou aqui$m."
+const m_entra2 = "$P flutuou de fora$m."
+const m_entra3 = "$P voou de fora$m."
 const m_entra4 = "$P entrou aqui cambaleando."
-const m_sai1 = "$P entrou."
-const m_sai2 = "$P flutuou para dentro."
-const m_sai3 = "$P voou para dentro."
+const m_sai1 = "$P entrou$m."
+const m_sai2 = "$P flutuou para dentro$m."
+const m_sai3 = "$P voou para dentro$m."
 const m_sai4 = "$P entrou cambaleando."
 const m_fugir = "$P fugiu para dentro."
 const m_porta = "dentro"
@@ -333,13 +335,13 @@ const dir = "entrar"
 
 classe cmd_sair
 herda comando_mover
-const m_entra1 = "$P chegou de dentro."
-const m_entra2 = "$P flutuou de dentro."
-const m_entra3 = "$P voou de dentro."
+const m_entra1 = "$P chegou de dentro$m."
+const m_entra2 = "$P flutuou de dentro$m."
+const m_entra3 = "$P voou de dentro$m."
 const m_entra4 = "$P chegou de dentro cambaleando."
-const m_sai1 = "$P saiu."
-const m_sai2 = "$P flutuou para fora."
-const m_sai3 = "$P voou para fora."
+const m_sai1 = "$P saiu$m."
+const m_sai2 = "$P flutuou para fora$m."
+const m_sai3 = "$P voou para fora$m."
 const m_sai4 = "$P saiu cambaleando."
 const m_fugir = "$P fugiu para fora."
 const m_porta = "fora"

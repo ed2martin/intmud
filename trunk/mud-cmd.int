@@ -253,51 +253,6 @@ func escr
   arg0.msg("Prompt de batalha alterado para:\n" + lin)
 
 
-classe cmd_salvar
-herda comando_comum, comando_ajuda
-const objcmd = este
-const objajuda = este
-const posic = 5
-const txtajuda = "\b\c3Salvar\b\n\
-Sintaxe: SALVAR\n\
-O MUD já salva o seu personagem de tempos em tempos e quando seu personagem\n\
-sai do jogo. Esse comando permite salvar novamente a qualquer momento.\n\
-Se o personagem nunca foi salvo, será solicitada uma nova senha.\n\
-Veja também o comando SENHA (muda a senha do seu personagem)"
-
-func escr
-  ref r
-  $mens.p(arg0)
-  $mens.mens = arg1
-  se arg0.senha
-    arg0.p_espera = 10
-    ret arg0.msg(arg0.salvar ? "Jogo salvo com sucesso" : "Erro ao salvar o jogo")
-  senao int(config:salvarnivel) > 65535
-    ret arg0.msg("Para poder salvar, você precisa já ter salvo o jogo uma vez.")
-  senao arg0.pnivel < config:salvarnivel
-    ret arg0.msg("Para salvar você precisa estar no nível " + config:salvarnivel + ".")
-  senao
-    ret arg0.mudasenha
-
-
-classe cmd_senha
-herda comando_comum, comando_ajuda
-const objcmd = este
-const objajuda = este
-const posic = 5
-const txtajuda = "\b\c3Senha\b\n\
-Sintaxe: SALVAR\n\
-Muda a senha do seu personagem e salva em seguida.\n\
-Veja também o comando SALVAR (salva o seu personagem)"
-
-func escr
-  ref r
-  $mens.p(arg0)
-  $mens.mens = arg1
-  ret arg0.senha, arg0.mudasenha
-  arg0.msg("Seu personagem não possui senha. Tecle SALVAR para salvar o jogo.")
-
-
 classe cmd_ver
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Ver\b\n\
@@ -853,7 +808,7 @@ func escr
   senao
     uint16 total
     txt100 nome
-    total = 50, nome = arg0.var.ini("t_")
+    total = config:atalhos, nome = arg0.var.ini("t_")
     enquanto txt(nome, 0, 2) == "t_"
       ret !(total -= 1), arg0.msg("Atingido limite de atalhos.")
       nome = arg0.var.depois(nome)
@@ -894,3 +849,48 @@ func escr
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     arg0.msg("> " + item.obj.nome + " (" + item.obj.sock.nome + ")")
   efim
+
+
+classe cmdfim_senha
+herda comando_comum, comando_ajuda
+const objcmd = este
+const objajuda = este
+const posic = 5
+const txtajuda = "\b\c3Senha\b\n\
+Sintaxe: SALVAR\n\
+Muda a senha do seu personagem e salva em seguida.\n\
+Veja também o comando SALVAR (salva o seu personagem)"
+
+func escr
+  ref r
+  $mens.p(arg0)
+  $mens.mens = arg1
+  ret arg0.senha, arg0.mudasenha
+  arg0.msg("Seu personagem não possui senha. Tecle SALVAR para salvar o jogo.")
+
+
+classe cmdfim_salvar
+herda comando_comum, comando_ajuda
+const objcmd = este
+const objajuda = este
+const posic = 5
+const txtajuda = "\b\c3Salvar\b\n\
+Sintaxe: SALVAR\n\
+O MUD já salva o seu personagem de tempos em tempos e quando seu personagem\n\
+sai do jogo. Esse comando permite salvar novamente a qualquer momento.\n\
+Se o personagem nunca foi salvo, será solicitada uma nova senha.\n\
+Veja também o comando SENHA (muda a senha do seu personagem)"
+
+func escr
+  ref r
+  $mens.p(arg0)
+  $mens.mens = arg1
+  se arg0.senha
+    arg0.p_espera = 10
+    ret arg0.msg(arg0.salvar ? "Jogo salvo com sucesso" : "Erro ao salvar o jogo")
+  senao int(config:salvarnivel) > 65535
+    ret arg0.msg("Para poder salvar, você precisa já ter salvo o jogo uma vez.")
+  senao arg0.pnivel < config:salvarnivel
+    ret arg0.msg("Para salvar você precisa estar no nível " + config:salvarnivel + ".")
+  senao
+    ret arg0.mudasenha

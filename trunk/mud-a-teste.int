@@ -12,27 +12,38 @@ const s_luta = 1
 
 classe c_teste001
 herda casa
-const area = "teste"
-const s1 = $s_teste116
-const sfora = $s_teste115
+const nome = "casa 1"
 const valor = 1200
+const sfora = $s_teste115
+const s1 = $s_teste116
+const area = "teste"
+
+func mudou # Se houve alguma mudança
+# Não alterar; função criada automaticamente
+  ret objmudou || s1.objmudou
 
 
 classe c_teste002
 herda casa
-const area = "teste"
+const nome = "casa 2"
+const valor = 2000
 const sfora = $s_teste115
 const s1 = $s_teste117
 const s2 = $s_teste118
-const valor = 2000
+const area = "teste"
+
+func mudou # Se houve alguma mudança
+# Não alterar; função criada automaticamente
+  ret objmudou || s1.objmudou || s2.objmudou
 
 
 classe i_teste001
 herda comum_item
 const nome = "borracha"
 const descnome = "uma borracha"
-const msexo = 0
 const descpos = "Uma borracha está jogada aqui."
+const msexo = 0
+const valor = 50
 const vestir = 8
 
 
@@ -179,13 +190,13 @@ classe i_teste013
 herda comum_itemgrupo
 const nome = "colete"
 const descnome = "um colete"
-const msexo = 1 # Sexo: 1 Masculino
-const pesoobj = 1000
-const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 const descpos = "Um colete está jogado aqui."
-const valor = 300
+const msexo = 1 # Sexo: 1 Masculino
 const nivel = 1
+const pesoobj = 1000
 const tipoitem = 8 # Tipo de produto: Vestimenta
+const valor = 300
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 
 func cmd_recalc2 # Recalcula variáveis do personagem
   arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
@@ -587,6 +598,39 @@ func tempo_fechar_exec
   fimse
   se i_aberto != 4 # Se não está trancado
     i_aberto = i_tranc == 2 ? 4 : 3 # Fecha ou tranca, conforme i_tranc
+  fimse
+
+
+classe i_teste041
+herda comum_item
+const nome = "relógio"
+const descnome = "um grande relógio"
+const descpos = "Há grande relógio que mais parece uma pequena estante."
+const descver = parte1 + parte2 + parte3
+const evhora = 1 # Eventos hora: Sim
+const parte1 = "Na parte de cima você vê números de 1 a 12, em algarismos romanos.\n\
+O ponteiro dos segundos é um polegar, enquanto e dos minutos é um\n\
+dedo indicador. Juntos, estão marcando "
+const parte3 = "Na parte de baixo, você vê através de um pequeno vidro, um pêndulo\n\
+balançando. A cada hora, o relógio dá badaladas."
+
+func parte2
+  txt100 lin
+  refvar hora = (misc:hora + 11) % 12 + 1 # Hora MUD de 1 a 12
+  lin = txt(hora) + (hora == 1 ? " hora e " : " horas e ") + misc:min
+  lin += misc:min == 1 ? " minuto.\n" : " minutos.\n"
+  ret lin
+
+func cmd_hora
+  ret !dono.socktot, nulo # Retorna se não houver jogador na sala
+  refvar hora = (arg0 + 11) % 12 + 1 # Hora MUD de 1 a 12
+  $mens.p(este)
+  se hora == 1
+    $mens.mtodos1("O grande relógio dá uma badalada.")
+  senao hora == 2
+    $mens.mtodos1("O grande relógio dá duas badaladas.")
+  senao
+    $mens.mtodos1("O grande relógio dá " + hora + " badaladas.")
   fimse
 
 
@@ -1212,6 +1256,15 @@ func cmd_deuobj # Recebeu um item
     criar("i_teste007", arg0, 0)
 
 
+classe p_teste025
+herda comum_perso
+const nome = "Corretor de imóveis"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const lojainv = 1 # Produtos inv: Sim
+const lojacasa = 1 # Vende casas: Sim
+const lojachave = 1 # Chaveiro: Sim
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -1252,11 +1305,12 @@ const dir_o = $s_teste033
 const dir_c = $s_teste014
 const dir_b = $s_teste067
 const dir_se = $s_teste015
-const s_reset = "S 100 teste036 0 S"
+const s_reset = "S 100 teste036 0 S\nS 100 teste041 0 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste036") && criar("i_teste036", este, 0)
+  !dentro1.objini("i_teste041") && criar("i_teste041", este, 0)
 
 
 classe s_teste003
@@ -2035,7 +2089,7 @@ const dir_n = $s_teste043
 
 classe s_teste049
 herda b_teste
-const s_titulo = "Retornar para níveis baixos"
+const s_titulo = "Retornar em níveis baixos"
 const s_desc = "Como administrador, tecle ECONFIG e mude a opção \"Retornar até nível\" para,\n\
 por exemplo, 10. Assim jogadores até nível 10 poderão retornar teclando\n\
 retornar. Depois, vá até o centro de uma cidade, tecle ESALA e mude a opção\n\
@@ -2831,7 +2885,7 @@ herda b_teste
 const s_titulo = "Subsolo 3: Diversos"
 const s_desc = "Ao norte: um ajudante que te seguirá, chama protetora e chute élfico\n\
 Ao sul: itens apagados após um tempo e poção mortal\n\
-A leste: algumas opções envolvendo itens\n\
+A leste: algumas opções com itens e transportando personagens de uma sala\n\
 A oeste: bloquear canais de comunicação de um jogador com efeitos"
 const dir_n = $s_teste096
 const dir_s = $s_teste097
@@ -3198,6 +3252,17 @@ const s_desc = ""
 const dir_n = $s_teste116
 const dir_s = $s_teste117
 const dir_l = $s_teste064
+const s_reset = "P 100 teste025 0 0 1\nI 100 teste006 0\nI 100 teste001 0"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se p_teste025:objsolto.total < 1
+    p = u = criar("p_teste025", este, 0)
+  fimse
+  u && criar("i_teste006", u, 0)
+  u && criar("i_teste001", u, 0)
 
 
 classe s_teste116

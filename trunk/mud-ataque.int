@@ -457,7 +457,7 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # vel = velocidade do golpe
 # Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
   real2 tempo
-  tempo = arg1.pveloc * 3000 / (arg0.pveloc * veloc + 1)
+  tempo = arg1.pveloc * 3000 * 70 / (arg0.pveloc * vel + 1)
   tempo = intmax(8, intmin(70, tempo))
   arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
   ret
@@ -512,30 +512,36 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # Checa bônus ao combinar o tipo de ataque com o tipo de defesa
   se log
     log.atk = arg2
-    dano = arg2 * arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
-    log.mul(">Elemento " + txtsublin(config:atknomes, tipoatk, 1), dano)
+    dano = arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
+    log.mul(">Elemento " + txtsublin(config:atknomes, tipoatk, 1), dano * arg2)
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
       dano *= arg0.atktipo.1 * arg1.deftipo.1
-      log.mul(">Elemento especial", dano)
+      log.mul(">Elemento especial", dano * arg2)
     senao
       dano *= arg0.atktipo.0 * arg1.deftipo.0
-      log.mul(">Elemento normal", dano)
+      log.mul(">Elemento normal", dano * arg2)
     fimse
-    dano == 0 && log.m(">Alvo é imune")
+    se !dano
+      log.m(">Alvo é imune")
+    senao !arg2
+      log.m(">Ataque tem força 0 (não causa danos)")
+    fimse
   senao
-    dano = arg2 * arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
+    dano = arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
       dano *= arg0.atktipo.1 * arg1.deftipo.1
     senao
       dano *= arg0.atktipo.0 * arg1.deftipo.0
     fimse
   fimse
-  se dano == 0 # Imune
+  se !dano # Imune (dano == 0)
     result = 1
     ret
+  senao !arg2 # Ataque tem força 0 (arg2 == 0)
+    result = 0
+    ret
   fimse
-  result = 0
-  ret !arg2, nulo
+  result = 0, dano *= arg2
 # Checa bônus do personagem
   se tipobonus
     refvar tbonus = "\n" + txte(tipobonus) + "\n"
@@ -761,20 +767,16 @@ func igual # arg0 = mensagem, arg1 = ataque
   t.addfim(arg0 + " " + arg1)
 
 func mul # arg0 = mensagem, arg1 = ataque
+  ret atk == arg1, t.addfim(arg0 + " (não altera)")
   refvar fator = arg1 / atk
   atk = arg1
-  se txt(fator) == "1"
-    t.addfim(arg0 + " (não altera)")
-  senao
-    t.addfim(arg0 + " (x" + fator + ") " + arg1)
+  t.addfim(arg0 + " (x" + fator + ") " + arg1)
 
 func div # arg0 = mensagem, arg1 = ataque
+  ret atk == arg1, t.addfim(arg0 + " (não altera)")
   refvar fator = atk / arg1
   atk = arg1
-  se txt(fator) == "1"
-    t.addfim(arg0 + " (não altera)")
-  senao
-    t.addfim(arg0 + " (/" + fator + ") " + arg1)
+  t.addfim(arg0 + " (/" + fator + ") " + arg1)
 
 func ini
   apagar(este)

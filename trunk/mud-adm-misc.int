@@ -1,4 +1,4 @@
-classe adm_cod
+classe adm_misc
 # Edição do código e comandos gerais de administração
 #
 const adm_ = "\b\c3Páginas de administração\b\n\
@@ -18,6 +18,7 @@ Os tópicos são:\n\
   \c2COD\b      Edição do código fonte\n\
   \c2JOG\b      Comandos para jogadores\n\
   \c2OUTROS\b   Outros comandos\n\
+  \c2BAN\b      Banir jogadores por IP\n\
   \c2MENS\b     Caracteres especiais em mensagens\n\
   \c2CORES\b    Cores em mensagens"
 # \c2INFO\b     Informações sobre o MUD"
@@ -93,6 +94,27 @@ const adm_outros = "\c3Outros comandos\b\n\
   Recarrega arquivos do MUD que foram alterados.\n\
   Nota: Outra forma de recarregar os arquivos é pressionar a tecla F10\n\
   na janela do IntMUD."
+#
+const adm_ban = "\c3Banir jogadores por IP\b\n\
+\c2BAN\b\n\
+  Mostra a lista de endereços banidos.\n\
+\c2BAN\b <endereço IP> <tempo>\n\
+  Impede que os jogadores de um endereço IP criem personagens no jogo.\n\
+  Tempo é um número, em minutos. Se for 0, bane por tempo indeterminado.\n\
+  Para banir uma faixa de endereços, terminar o endereço com um ponto.\n\
+  Para banir todos os usuários novos, colocar um ponto no lugar do endereço.\n\
+\c2BAN\b <endereço IP>\n\
+  Desbane os jogadores do endereço especificado.\n\
+\c2Exemplos:\b\n\
+  ban 10.20.30.40    Bane 10.20.30.40 por tempo indeterminado\n\
+  ban 1.2.3.4 10     Bane 1.2.3.4 por 10 minutos\n\
+  ban 1.2. 0         Bane todos os endereços que começam com 1.2.\n\
+  ban 1.2.3.4        Desbane 1.2.3.4\n\
+  ban . 0            Bane todos; quem não tem personagem salvo não entra\n\
+\c2Notas:\b\n\
+1. Não é possível banir jogadores conectados via bot\n\
+2. Para apenas derrubar jogadores, usar o comando cmdj da seguinte forma:\n\
+   cmdj <personagem> apagar(este)"
 #
 const adm_mens = "\b\c3Caracteres especiais em mensagens\b\n\n\
 As seguintes sequências de caracteres têm um significado especial:\n\
@@ -329,6 +351,7 @@ func cmd2_info # Usado por cmd_info
   efim
   lin += "\nevrec.0=" + arg0.evrec.0.objlista
   lin += "  evrec.1=" + arg0.evrec.1.objlista
+  lin += "  evrec.2=" + arg0.evrec.2.objlista
   ret lin
 
 func cmd_info
@@ -691,6 +714,72 @@ func cmd_infoe
   fimse
   txtmostra
   ret 1
+
+func cmd_ban
+  textopos pos
+# Nenhum argumento: lista de endereços banidos
+  se !arg0
+    txtmais.limpar
+    datahora dh
+    dh.agora
+    refvar tini = dh.numtotal
+    epara pos = $miscban.texto.ini, pos, pos.depois
+      refvar tempo = intpos(txt2(pos.texto)) - tini
+      se tempo < 0
+        txtmais.addfim(txt1(pos.texto))
+      senao tempo < 60
+        txtmais.addfim(txt1(pos.texto) + " " + tempo + " seg.")
+      senao
+        txtmais.addfim(txt1(pos.texto) + " " + tempo / 60 + " min.")
+      fimse
+    efim
+    se !txtmais.linhas
+      txtmais.addfim("Nenhum endereço banido.")
+    senao
+      txtmais.addini("\b\c6Endereços banidos:\b")
+    fimse
+    txtmostra
+    ret 1
+# Pelo menos um argumento: checa se endereço IP válido
+  senao
+    socket s
+    refvar ender = txtsub(arg0, 1, 1)
+    se !s.ipvalido(ender) && !s.ipvalido(ender + "0")
+      msg("Endereço IP inválido: " + arg0)
+      ret 1
+    fimse
+  fimse
+# Um argumento: desbane
+  se !txt2(arg0)
+    pos = $miscban.texto.ini
+    se pos.txtproc("\n" + arg0 + " ") < 0
+      msg("Endereço não está banido: " + arg0)
+    senao
+      pos.remove
+      $miscban.salvar
+      msg("Endereço foi desbanido: " + arg0)
+      admlog("desbaniu IP " + arg0)
+    fimse
+    ret 1
+# Mais de um argumento: bane
+  senao
+    refvar tempo = intpos(txt2(arg0))
+    pos = $miscban.texto.ini
+    pos.txtproc("\n" + txt1(arg0) + " ") >= 0 && pos.remove
+    se tempo > 0
+      datahora hora
+      hora.agora
+      $miscban.texto.addini(txt1(arg0) + " " + (tempo * 60 + hora.numtotal))
+      msg("Endereço foi banido: " + txt1(arg0) + " por " + tempo + " min")
+      admlog("baniu IP " + txt1(arg0) + " por " + tempo + " min")
+    senao
+      $miscban.texto.addini(txt1(arg0) + " 0")
+      msg("Endereço foi banido: " + txt1(arg0))
+      admlog("baniu IP " + txt1(arg0))
+    fimse
+    $miscban.salvar
+    ret 1
+  fimse
 
 func admlog # Mensagem para todos com a opção "config +admlog"
   indiceitem item

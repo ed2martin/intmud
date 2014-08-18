@@ -994,7 +994,8 @@ func p_funcsalvar # Opçao salvar de p_func
       msg("Primeira linha deve conter o texto \"ARQ:\" seguido do nome do arquivo")
       ret 1
     fimse
-    t1.addfim(p.criar(var.opcclasse + "\n" + txt(t1.remove(10000), 4)))
+    t1.ini.mudar("", 0, 4)
+    t1.addfim(p.criar(var.opcclasse + "\n" + t1.remove(10000)))
   fimse
 # Informa se conseguiu salvar
   se t1.ini.texto == ""
@@ -1012,7 +1013,7 @@ func p_funcsalvar # Opçao salvar de p_func
   enquanto t1.linhas
     x = lin = t1.remove
     se txt(x) == txt(lin, 0, inttotal(txt(x)))
-      p1 = teditor.ini
+      p1 = teditor.ini, arg0 && (x += 1)
       enquanto p1.txtproc("\\\n") >= 0 && p1.linha < x
         p1.depois, x += 1
       efim

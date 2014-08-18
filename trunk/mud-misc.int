@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "14/7/2014"
+const versao = "10/8/2014"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -332,6 +332,9 @@ inttempo horatempo # Para atualizar a hora e salvar jogos de tempos em tempos
 listaobj savlista
 inttempo extempo # Salva um jogo / checa se jogo foi excluído
 int8 expasso # Usado em extempo_exec
+listaobj evhora # Objetos que devem receber eventos cmd_hora
+listaobj lhora # Objetos que ainda não receberam eventos cmd_hora
+inttempo thora # Para gerar eventos cmd_hora
 const iniclasse = criar(arg0)
 
 func salvartudo # Salva todos os arquivos pendentes de uma vez
@@ -391,6 +394,9 @@ func horatempo_exec # Atualiza hora MUD
     arqsav sav
     sav.limpar("sav") # Limpa jogos antigos
   fimse
+# Gerar eventos cmd_hora
+  lhora.limpar, lhora.addfim(evhora)
+  thora = 2
 # Obtém lista de objetos (casas e personagens) que devem ser salvos
   se savlista.total == 0
     debug d
@@ -436,6 +442,78 @@ func extempo_exec
     savlista.ini.remove
     r.salvar
   fimse
+
+func thora_exec # Gera eventos cmd_hora
+  ret !lhora, nulo # Retorna se todos os objetos receberam evento
+  debug d
+  uint16 t
+  thora = 2, t = 20000
+  enquanto t && lhora
+    refvar r = ref(lhora.objini)
+    lhora.ini.remove
+    refvar tt = d.exec + 5
+    r.cmd_hora(int(misc:hora))
+    t -= intpos(tt - d.exec), d.ini
+  efim
+  !lhora && (thora = 0)
+
+
+classe miscban
+# Para controlar endereços banidos
+textotxt texto # Lista de endereços banidos
+inttempo tempo
+const iniclasse = criar(arg0)
+const ini = texto.ler("sav2/ban.txt"), tempo_exec
+
+func salvar # Salva o arquivo com os endereços banidos
+  texto.salvar("sav2/ban.txt")
+
+func banido # Retorna 1 se um endereço IP está banido o 0 se não está
+# arg0 = endereço a verificar
+  textopos pos
+  txt100 lin
+  int16 var
+  lin = "\n" + arg0
+  pos = texto.ini
+  ret pos.txtproc(lin + " ") >= 0, 1
+  ret pos.txtproc("\n. ") >= 0, 1
+  enquanto 1
+    var = txtproc(lin, ".", var) + 1
+    ret !var, 0
+    ret pos.txtproc(txt(lin, 0, var) + " ") >= 0, 1
+  efim
+
+func tempo_exec # Limpa a lista de endereços e acerta a variável tempo
+  datahora hora
+  socket sock
+  debug d
+  d.exec = texto.linhas * 15 + 100
+  hora.agora
+  refvar num = hora.numtotal # Tempo atual, em segundos
+  refvar linhas = int(texto.linhas) # Quantidade de linhas antes da mudança
+  exec(num, sock)
+  d.ini
+  linhas != texto.linhas && salvar # Se a quantidade de linhas mudou, salva
+
+func exec # Chamado internamente por tempo_exec
+# arg0 = quantos segundos se passaram desde 1/1/1
+# arg1 = variável socket
+  tempo = 1000000
+  textopos pos
+  real t2
+  pos = texto.ini
+  enquanto pos
+    se !arg1.ipvalido(txt1(pos.texto)) && !arg1.ipvalido(txt1(pos.texto) + "0")
+      pos.remove
+    senao txt2(pos.texto) == "0"
+      pos.depois
+    senao (t2 = intpos(txt2(pos.texto)) - arg0) <= 0
+      pos.remove
+    senao
+      pos.depois
+      tempo > t2 * 10 && (tempo = t2 * 10)
+    fimse
+  efim
 
 
 classe miscfome
