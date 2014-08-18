@@ -632,33 +632,40 @@ const tipo50 = "linha"
 const clas50 = var.classe1
 const vari50 = "inivar"
 #
-const nome51 = "Eventos perso"
-const info51 = "Receber eventos do próprio personagem"
+const nome51 = "Eventos hora"
+const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
 const tipo51 = "simnao"
 const clas51 = var.classe1
-const vari51 = "eveste"
+const vari51 = "evhora"
 const exec51 = "ajustaobj"
 #
-const nome52 = "Eventos em perso"
-const info52 = "Se recebe eventos do dono se for personagem"
+const nome52 = "Eventos perso"
+const info52 = "Receber eventos do próprio personagem"
 const tipo52 = "simnao"
 const clas52 = var.classe1
-const vari52 = "evperso"
+const vari52 = "eveste"
 const exec52 = "ajustaobj"
 #
-const nome53 = "Eventos em item"
-const info53 = "Se recebe eventos do dono se for item"
+const nome53 = "Eventos em perso"
+const info53 = "Se recebe eventos do dono se for personagem"
 const tipo53 = "simnao"
 const clas53 = var.classe1
-const vari53 = "evitem"
+const vari53 = "evperso"
 const exec53 = "ajustaobj"
 #
-const nome54 = "Eventos em sala"
-const info54 = "Se recebe eventos da sala se estiver em uma sala"
+const nome54 = "Eventos em item"
+const info54 = "Se recebe eventos do dono se for item"
 const tipo54 = "simnao"
 const clas54 = var.classe1
-const vari54 = "evsala"
+const vari54 = "evitem"
 const exec54 = "ajustaobj"
+#
+const nome55 = "Eventos em sala"
+const info55 = "Se recebe eventos da sala se estiver em uma sala"
+const tipo55 = "simnao"
+const clas55 = var.classe1
+const vari55 = "evsala"
+const exec55 = "ajustaobj"
 
 
 classe menu_pcomum2
@@ -749,22 +756,46 @@ const tipo6 = "menuprod"
 const clas6 = var.classe1
 const vari6 = "lojaitem"
 #
-const nome7 = "Compra produtos"
-const info7 = "Vide tipos de produtos, no comando ECONFIG"
-const tipo7 = "vetor"
+const nome7 = "Produtos inv"
+const info7 = "Se vende os produtos listados no comando inv"
+const tipo7 = "simnao"
 const clas7 = var.classe1
-const vari7 = "tipoitem"
-const extr7 = config:produtos
+const vari7 = "lojainv"
 #
-const nome8 = "Aulas"
-const tipo8 = "menuaula"
+const nome8 = "Produtos sala"
+const info8 = "Nome da sala com os produtos que serão vendidos"
+const tipo8 = "linha"
 const clas8 = var.classe1
-const vari8 = "lojaaula"
+const vari8 = "lojasala"
 #
-const nome9 = "Não negocia com"
-const tipo9 = "tipos"
+const nome9 = "Vende casas"
+const info9 = "Se compra e vende casas na área aonde está"
+const tipo9 = "simnao"
 const clas9 = var.classe1
-const vari9 = "lojanao"
+const vari9 = "lojacasa"
+#
+const nome10 = "Chaveiro"
+const info10 = "Se vende chaves e fechaduras para casas da área aonde está"
+const tipo10 = "simnao"
+const clas10 = var.classe1
+const vari10 = "lojachave"
+#
+const nome11 = "Compra produtos"
+const info11 = "Vide tipos de produtos, no comando ECONFIG"
+const tipo11 = "vetor"
+const clas11 = var.classe1
+const vari11 = "tipoitem"
+const extr11 = config:produtos
+#
+const nome12 = "Aulas"
+const tipo12 = "menuaula"
+const clas12 = var.classe1
+const vari12 = "lojaaula"
+#
+const nome13 = "Não negocia com"
+const tipo13 = "tipos"
+const clas13 = var.classe1
+const vari13 = "lojanao"
 
 
 classe menu_pmorreu

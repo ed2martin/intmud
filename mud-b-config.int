@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 314 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 317 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -49,6 +49,11 @@ const senhaadm = "x2"
 # Mensagem de apresentação
 # Primeira mensagem que o jogador recebe ao entrar no MUD
 const apres = ""
+#
+# Mensagem de apresentação banido
+# Primeira mensagem que um jogador com IP banido recebe ao entrar no MUD
+# Esses jogadores não podem criar novos personagens
+const apresban = "Seu endereço IP está bloqueado para novos personagens"
 #
 # Sala inicial
 const salaini = $s_teste001
@@ -113,6 +118,9 @@ const email = 0
 # Opções ativas do comando CONFIG quando um jogador cria um personagem
 const jogconfig = 319 # Config ao criar personagem: desc, saidas, cores, acento, chat, seguir, \
 pvt
+#
+# Comando Atalho: quantidade máxima de atalhos
+const atalhos = 50
 #
 # A partir de que nível sente fome e sede
 const fomeini = 0

@@ -140,41 +140,64 @@ classe menu_casa
 const titulo = "Casa " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome1 = "Valor da casa"
-const tipo1 = "numero"
+const nome1 = "Nome"
+const info1 = "Nome para os comandos LISTA e COMPRAR"
+const tipo1 = "linha"
 const clas1 = var.classe1
-const vari1 = "valor"
+const vari1 = "nome"
 #
-const nome2 = "Sala fora da casa"
-const info2 = "Quem sai do jogo dentro da casa entra no jogo nessa sala"
-const tipo2 = "sala--"
+const nome2 = "Descrição"
+const info2 = "É mostrado ao teclar LISTAR e o nome da casa"
+const tipo2 = "texto"
 const clas2 = var.classe1
-const vari2 = "sfora"
+const vari2 = "desc"
 #
-const nome3 = "Sala 1"
-const tipo3 = "sala--"
+const nome3 = "Palavras chave"
+const info3 = "Palavras que os jogadores digitam para os comandos COMPRAR e LISTAR"
+const tipo3 = "linha"
 const clas3 = var.classe1
-const vari3 = "s1"
+const vari3 = "ident"
 #
-const nome4 = "Sala 2"
-const tipo4 = "sala--"
+const nome4 = "Valor da casa"
+const tipo4 = "numero"
 const clas4 = var.classe1
-const vari4 = "s2"
+const vari4 = "valor"
 #
-const nome5 = "Sala 3"
+const nome5 = "Sala fora da casa"
+const info5 = "Quem sai do jogo dentro da casa entra no jogo nessa sala"
 const tipo5 = "sala--"
 const clas5 = var.classe1
-const vari5 = "s3"
+const vari5 = "sfora"
 #
-const nome6 = "Sala 4"
-const tipo6 = "sala--"
+const nome6 = "Sala 1"
+const tipo6 = "sala"
 const clas6 = var.classe1
-const vari6 = "s4"
+const vari6 = "s1"
+const exec6 = "acerta_mudou"
 #
-const nome7 = "Sala 5"
-const tipo7 = "sala--"
+const nome7 = "Sala 2"
+const tipo7 = "sala"
 const clas7 = var.classe1
-const vari7 = "s5"
+const vari7 = "s2"
+const exec7 = "acerta_mudou"
+#
+const nome8 = "Sala 3"
+const tipo8 = "sala"
+const clas8 = var.classe1
+const vari8 = "s3"
+const exec8 = "acerta_mudou"
+#
+const nome9 = "Sala 4"
+const tipo9 = "sala"
+const clas9 = var.classe1
+const vari9 = "s4"
+const exec9 = "acerta_mudou"
+#
+const nome10 = "Sala 5"
+const tipo10 = "sala"
+const clas10 = var.classe1
+const vari10 = "s5"
+const exec10 = "acerta_mudou"
 
 
 classe casa
@@ -184,6 +207,10 @@ const iniclasse = criar(arg0)
 const ini = inicasa = 1
 sav indiceobj nomejog # "cj " + nome codificado + " " + prefixo da área
 int1 objmudou
+const ident = nome
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nome\ndesc\nident\nvalor\nsfora\ns1\ns2\ns3\ns4\ns5"
 
 func fim # Apaga arquivo da casa
   ret inttotal(este) != 1, nulo # Por segurança: só apaga arquivo se tiver 1 objeto
@@ -225,8 +252,20 @@ func inicasa_exec # Carrega objetos da casa
     fimse
   fimse
 
+func acerta_mudou
+  txt512 lin
+  lin = "func mudou # Se houve alguma mudança\n"
+  lin += "# Não alterar; função criada automaticamente\nret objmudou"
+  prog p
+  int8 x
+  epara x = 1, x < 10, x += 1
+    p.existe(este, "s" + x) && (lin += "||s" + x + ".objmudou")
+  efim
+  p.criar(este, lin)
+  config:salvar
+
 func mudou # Se houve alguma mudança (há necessidade de salvar)
-  ret objmudou || s1.objmudou || s2.objmudou || s3.objmudou || s4.objmudou || s5.objmudou
+  ret objmudou
 
 func salvar # Salva objetos da casa
   objmudou = 0
@@ -242,7 +281,7 @@ func salvar # Salva objetos da casa
   lista.addfim1(este, s1, s2, s3, s4, s5)
   item = lista.ini, item.depois
   enquanto item
-    se (item.obj.objsav & 1) != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
+    se item.obj.objsav & 1 != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
       item.removedepois
     senao lista.total < 2000
       lista.addfim(item.obj.dentro1, item.obj.dentro2, item.obj.dentro3), item.depois

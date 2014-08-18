@@ -136,7 +136,22 @@ func escr
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     r = l.objini # Nota: r pode mudar após r.mudadono
-    se arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax
+    se r.persolugar
+      casovar r.persolugar.objini.posicao
+      casose "4"
+        erro = "Você não consegue pegar porque tem alguém dormindo em cima."
+        sair
+      casose "5"
+        erro = "Você não consegue pegar porque tem alguém descansando em cima."
+        sair
+      casose "6"
+        erro = "Você não consegue pegar porque tem alguém sentado em cima."
+        sair
+      casose
+        erro = "Você não consegue pegar porque tem alguém em cima."
+      casofim
+      continuar
+    senao arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax
       erro = "Você não consegue carregar tanta coisa."
       continuar
     senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax

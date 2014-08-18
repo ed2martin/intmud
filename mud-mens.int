@@ -120,113 +120,93 @@ const x_d@_os@_ = "nos "
 const o_@ = "$"
 const o_d = arg0 === "D" ? "\da" : "\db"
 const o_e = arg0 === "E" ? "\dc" : "\dd"
-const o_a = arg0 === "A" ? txtcopiamai(nome(alvo), "A") : nome(alvo)
 const o_m = arg0 === "M" ? txtcopiamai(mens, "A") : mens
-const o_p = arg0 === "P" ? txtcopiamai(nome(perso), "A") : nome(perso)
 
-func nome # Usado em $P e $A para obter o nome de um personagem; arg0=personagem
-  se arg0 == arg0.contr
-    se r == arg0
-      ret "você"
-    senao arg0.visivel(r)
-      ret arg0.descnome
-    senao arg0.perso
-      ret "alguém"
+func o_p
+  se perso == perso.contr
+    se r == perso
+      ret txtcopiamai("você", arg0)
+    senao perso.visivel(r)
+      ret arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
     senao
-      ret "alguma coisa"
+      ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
     fimse
-  senao r == arg0.contr
-    ret (arg0.msexo ? "seu " : "sua ") + arg0.nome
-  senao arg0.contr.visivel(r)
-    ret arg0.descnome + " de " + arg0.contr.descnome
-  senao arg0.visivel(r)
-    ret arg0.descnome + " de alguém"
+  senao r == perso.contr
+    ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
+  senao perso.contr.visivel(r)
+    refvar m = arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+    ret m + " de " + perso.contr.descnome
+  senao perso.visivel(r)
+    ret (arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome) + " de alguém"
   senao
-    ret arg0.perso ? "alguém" : "alguma coisa"
+    ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
+
+func o_a
+  se alvo == alvo.contr
+    se r == alvo
+      ret txtcopiamai("você", arg0)
+    senao alvo.visivel(r)
+      ret arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+    senao
+      ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
+    fimse
+  senao r == alvo.contr
+    ret txtcopiamai(alvo.msexo ? "seu " : "sua ", arg0) + alvo.nome
+  senao alvo.contr.visivel(r)
+    refvar m = arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+    ret m + " de " + alvo.contr.descnome
+  senao alvo.visivel(r)
+    ret (arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome) + " de alguém"
+  senao
+    ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_q # Nome do personagem sem citar o dono
   se r == perso
-    ret arg0 === "Q" ? "Você" : "você"
+    ret txtcopiamai("você", arg0)
   senao perso.visivel(r)
     ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
-  senao perso.perso
-    ret arg0 === "Q" ? "Alguém" : "alguém"
   senao
-    ret arg0 === "Q" ? "Alguma coisa" : "alguma coisa"
+    ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_r # Nome do personagem no comando QUEM
-  se arg0 == "R"
-    ret txtcopiamai(perso.sock ? perso.sock.nome : perso.nome, "A")
-  senao
-    ret perso.sock ? perso.sock.nome : perso.nome
+  ret arg0 === "r", perso.sock ? perso.sock.nome : perso.nome
+  ret txtcopiamai(perso.sock ? perso.sock.nome : perso.nome, "A")
 
 func o_b # Nome do alvo sem citar o dono
   se r == alvo
-    ret arg0 === "B" ? "Você" : "você"
+    ret txtcopiamai("você", arg0)
   senao alvo.visivel(r)
     ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
-  senao alvo.perso
-    ret arg0 === "B" ? "Alguém" : "alguém"
   senao
-    ret arg0 === "B" ? "Alguma coisa" : "alguma coisa"
+    ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_c # Nome do alvo no comando QUEM
-  se arg0 == "C"
-    ret txtcopiamai(alvo.sock ? alvo.sock.nome : alvo.nome, "A")
-  senao
-    ret alvo.sock ? alvo.sock.nome : alvo.nome
+  ret arg0 === "c", alvo.sock ? alvo.sock.nome : alvo.nome
+  ret txtcopiamai(alvo.sock ? alvo.sock.nome : alvo.nome, "A")
 
 func o_o # Nome do objeto
   se r == obj
-    ret arg0 === "O" ? "Você" : "você"
+    ret txtcopiamai("você", arg0)
   senao obj.visivel(r)
     ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
-  senao obj.perso
-    ret arg0 === "O" ? "Alguém" : "alguém"
   senao
-    ret arg0 === "O" ? "Alguma coisa" : "alguma coisa"
+    ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_s # Gênero do personagem
-  se arg0 === "S"
-    ret perso.perso, perso.msexo ? "O" : "A"
-    ret perso.msexo ? "Um" : "Uma"
-  senao
-    ret perso.perso, perso.msexo ? "o" : "a"
-    ret perso.msexo ? "um" : "uma"
+  ret perso.perso, txtcopiamai(perso.msexo ? "o" : "a", arg0)
+  ret txtcopiamai(perso.msexo ? "um" : "uma", arg0)
 
 func o_t # Gênero do alvo
-  se arg0 === "T"
-    ret alvo.perso, alvo.msexo ? "O" : "A"
-    ret alvo.msexo ? "Um" : "Uma"
-  senao
-    ret alvo.perso, alvo.msexo ? "o" : "a"
-    ret alvo.msexo ? "um" : "uma"
+  ret alvo.perso, txtcopiamai(alvo.msexo ? "o" : "a", arg0)
+  ret txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
 
 func o_u # Gênero do objeto
-  se arg0 === "U"
-    ret obj.perso, obj.msexo ? "O" : "A"
-    ret obj.msexo ? "Um" : "Uma"
-  senao
-    ret obj.perso, obj.msexo ? "o" : "a"
-    ret obj.msexo ? "um" : "uma"
+  ret obj.perso, txtcopiamai(obj.msexo ? "o" : "a", arg0)
+  ret txtcopiamai(obj.msexo ? "um" : "uma", arg0)
 
-func o_v # Gênero do personagem: e/a
-  se arg0 === "V"
-    ret perso.msexo ? "E" : "A"
-  senao
-    ret perso.msexo ? "e" : "a"
-
-func o_w # Gênero do alvo: e/a
-  se arg0 === "W"
-    ret alvo.msexo ? "E" : "A"
-  senao
-    ret alvo.msexo ? "e" : "a"
-
-func o_x # Gênero do objeto: e/a
-  se arg0 === "X"
-    ret obj.msexo ? "E" : "A"
-  senao
-    ret obj.msexo ? "e" : "a"
+const o_v = txtcopiamai(perso.msexo ? "e" : "a", arg0)
+const o_w = txtcopiamai(alvo.msexo ? "e" : "a", arg0)
+const o_x = txtcopiamai(obj.msexo ? "e" : "a", arg0)
 
 
 classe mens_antigo

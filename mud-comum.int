@@ -8,7 +8,7 @@ sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
 listaobj evento # Objetos que recebem eventos desse
-listaitem evrec.2 # Usado internamente, para receber eventos
+listaitem evrec.3 # Usado internamente, para receber eventos
 uint8 socktot # Quantidade de objetos controlados por jogadores (com sock!=nulo)
 const objtot = 1 # Quantidade de itens que esse objeto representa
 const objmax = 100 # Quantos itens pode ter (objetos em dentro1)
@@ -30,13 +30,15 @@ uint16 luzden # Somente leitura: quantas fontes de luz dentro
 uint16 luztot # Somente leitura: quantidade total de fontes de luz
 # const luztipo = 0 # 0=não repassa a luz, 1=não é fonte de luz, 2=é fonte de luz
 #
+# const evhora = 1 # Receber evento cmd_hora a cada hora MUD
 # const eveste = 1 # Receber eventos do próprio objeto
 # const evperso = 1 # Receber eventos do dono se o dono for personagem
 # const evitem = 1 # Receber eventos do dono se o dono for item
 # const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func ini # Objeto é criado, acerta eventos, peso, volume e luz
-  eveste && (evrec.0 = evento.addfim(este))
+  evhora && (evrec.0 = $miscsav.evhora.addfim(este))
+  eveste && (evrec.1 = evento.addfim(este))
   pesoadd && (pesotot = pesoobj * objtot) # Acerta o peso
   voltot = volobj * objtot # Acerta o volume
   luztipo > 1 && (luztot = 1) # Acerta a luz
@@ -89,10 +91,12 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   fimse
 
 func ajustaobj # Acerta dono e eventos do objeto
-  evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
   dono = idono.objlista
-  (dono.perso ? evperso : dono.item ? evitem : evsala) && (evrec.1 = dono.evento.addfim(este))
   contr = (perso && dono.perso ? dono : este)
+  evrec.0.remove, evrec.1.remove, evrec.2.remove
+  evhora && (evrec.0 = $miscsav.evhora.addfim(este))
+  eveste && (evrec.1 = evento.addfim(este))
+  (dono.perso ? evperso : dono.item ? evitem : evsala) && (evrec.2 = dono.evento.addfim(este))
 
 func mdono # Objeto muda de dono (arg0 = novo dono)
   donoantes = dono # Acerta o dono anterior
@@ -132,8 +136,9 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
     efim
   fimse
 # Muda de dono e acerta eventos
-  evrec.0.remove, evrec.1.remove, eveste && (evrec.0 = evento.addfim(este))
-  r = dono = arg0, idono.remove # Retira do dono atual
+  evrec.1.remove, evrec.2.remove, eveste && (evrec.1 = evento.addfim(este))
+  r = dono = arg0, idono.remove # Muda o dono atual
+  contr = (perso && r.perso) ? r : este
   se !r
     ret
   senao perso
@@ -141,8 +146,7 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
   senao
     idono = r.dentro1.addfim(este) # Adiciona item
   fimse
-  (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.1 = r.evento.addfim(este))
-  contr = (perso && r.perso) ? r : este
+  (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.2 = r.evento.addfim(este))
 # Se não está voando: acrescenta o peso total
   se pesotot
     r.pesoden += pesotot # Nota: r já é dono

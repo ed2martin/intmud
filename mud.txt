@@ -564,11 +564,12 @@ somar 4 se pode ver invisível
 somar 8 se pode ver oculto
 somar 16 se pode ver voando
 somar 32 se pode ver voando alto
-somar 128 se pode ver administradores invisíveis
-somar 256 se anda em silêncio
-somar 512 se está flutuando
-somar 1024 se está dormindo por efeito de algo
-somar 2048 se não pode ser colocado para dormir
+somar 0x80 se pode ver administradores invisíveis
+somar 0x100 se anda em silêncio
+somar 0x200 se está flutuando
+somar 0x400 se está dormindo por efeito de algo
+somar 0x800 se não pode ser colocado para dormir
+somar 0x1000 se percebe quem anda em silêncio
 
 textotxt atribs
 Atributos do item ou personagem, como "flutuando", "invisível", etc.
@@ -841,7 +842,7 @@ const taxavenda = 0
 Lucro na venda, em porcentagem (0=sem lucro; paga o valor do item).
 
 const taxacompra = 0
-Lucro na compra, em porcentagem (0=preço normal e 100=não paga pelo item).
+Lucro na compra, em porcentagem (de 0=preço normal a 100=não paga pelo item).
 
 const taxaaula = 0
 Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula).
@@ -851,6 +852,19 @@ Tipos de produtos que vende. É um texto sendo que cada linha é um produto,
 no seguinte formato: <item>  <nível>
 Exemplo:
 const lojaitem = "teste012 3\nteste013 0"
+
+const lojainv = 0
+Produtos inv: se vende os produtos listados no comando inv (0=não, 1=sim).
+
+const lojasala = ""
+Produtos sala: Nome da sala com os produtos que serão vendidos.
+
+const lojacasa = 0
+Vende casas: se compra e vende casas na área aonde está (0=não, 1=sim).
+
+const lojachave = 0
+Chaveiro: Se vende chaves e fechaduras para casas da área aonde está
+(0=não, 1=sim).
 
 const tipoitem = 0
 Tipos de produtos que compra.
@@ -1113,6 +1127,7 @@ ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar eventos.
 Um item, personagem ou sala pode receber diversos tipos de eventos,
 bastando acrescentar uma ou mais das seguintes variáveis:
 
+const evhora = 1 # Receber evento cmd_hora a cada hora MUD (5 minutos)
 const eveste = 1 # Receber eventos do próprio objeto
 const evperso = 1 # Receber eventos do dono se o dono for personagem
 const evitem = 1 # Receber eventos do dono se o dono for item
@@ -1120,6 +1135,9 @@ const evsala = 1 # Receber eventos do dono se o dono for sala
 
 Essas constantes têm efeito sempre que o objeto muda de dono ou é criado.
 Se for preciso atualizar em outras situações, chamar a função ajustaobj.
+
+Quando a função cmd_hora do objeto é chamada, arg0 é sempre a hora atual,
+ou seja, o mesmo que a variável misc:hora.
 
 Internamente, itens, personagens e salas possuem a seguinte variável:
 listaobj evento
@@ -1883,6 +1901,13 @@ admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 20. Lista de coisas pendentes
 
+Vendedores comprarem e venderem casas para jogadores
+Chaveiros venderem fechaduras e chaves das casas dos jogadores
+Opção para pagar a taxa mensal da casa
+Bloquear casas sem pagar a taxa; tirar do jogador após um tempo sem pagar a taxa
+Jogadores devem poder mudar título e descrição das salas da casa que possuem
+Comando para expulsar todos da casa do jogador
+Comando para listar os usuários por IP
 Descrições extras diurnas e noturnas
 Acrescentar altura/peso/volume mínimo/máximo para jogadores nos tipos (comando etipo)
 Opção para os jogadores escolherem altura e peso, ao criar o personagem
@@ -1905,13 +1930,11 @@ Evolução de itens e personagens; para cada linha da lista:
 - Nível do item ou personagem
 - Evoluir obrigatório ou opcional
 - Nome do novo item ou personagem
-Vendedores: poder vender itens que possui no inventário
 Acertar itens que produzem luz
 (testar) Volume que cabe dentro, ou 0 se não for container
 (testar) Ao alterar tipo de container, acertar a variável i_aberto
 Volume que cabe dentro em salas
 Idiomas
-Casas para jogadores
 Criar itens genéricos
 Sistema de dicas aleatórias
 Banco

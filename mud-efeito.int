@@ -224,12 +224,19 @@ const nome16 = "Mensagens"
 const tipo16 = "menu--"
 const clas16 = "menu_efeito_msg"
 #
-const nome17 = "Eventos perso"
-const info17 = "Se recebe eventos do personagem que está com o efeito"
+const nome17 = "Eventos hora"
+const info17 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
 const tipo17 = "simnao"
 const clas17 = var.classe1
-const vari17 = "evperso"
+const vari17 = "evhora"
 const exec17 = "ajustaobj"
+#
+const nome18 = "Eventos perso"
+const info18 = "Se recebe eventos do personagem que está com o efeito"
+const tipo18 = "simnao"
+const clas18 = var.classe1
+const vari18 = "evperso"
+const exec18 = "ajustaobj"
 
 
 classe menu_efeito_msg
@@ -301,8 +308,7 @@ const vari10 = "msgreduz2"
 classe comum_efeito
 # Efeitos que afetam os personagens
 sav listaitem idono # Uso interno: aonde o objeto está
-listaitem evrec # Usado internamente, para receber eventos
-listaitem evbat # Para apagar o objeto ao iniciar/terminar batalha
+listaitem evrec.3 # Usado internamente, para receber eventos
 ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
 const objsav = 2 != e_condicao # Se deve salvar o efeito ao salvar personagem do jogador
 sav inttempo t_reduzir # Tempo para a próxima redução
@@ -336,7 +342,8 @@ msgnulo2\n\
 msgfim1\n\
 msgfim2\n\
 msgreduz1\n\
-msgreduz2\nevperso"
+msgreduz2\n\
+evhora\nevperso"
 
 func ini # Cria efeito
 # arg0 = personagem que receberá o efeito
@@ -351,8 +358,9 @@ func ini # Cria efeito
 
 func evini_exec # Inicializa efeito
   se t_duracao >= 0
-    evperso && (evrec = dono.evento.addfim(este))
-    e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
+    evhora && (evrec.0 = $miscsav.evhora.addfim(este))
+    evperso && (evrec.1 = dono.evento.addfim(este))
+    e_condicao >= 2 && (evrec.2 = dono.contr.atkbat.addfim(este))
     dono.recalc = 1
     $mens.p(dono) + $mens.mvis2(msgini1, msgini2)
     cmd_ini(dono)
@@ -374,8 +382,9 @@ func fim # Apaga efeito
 
 func ajustaobj # Acerta dono e eventos do objeto
   dono = idono.objlista
-  evrec.remove, evperso && (evrec = dono.evento.addfim(este))
-  evbat.remove, e_condicao >= 2 && (evbat = dono.contr.atkbat.addfim(este))
+  evrec.0.remove, evhora && (evrec.0 = $miscsav.evhora.addfim(este))
+  evrec.1.remove, evperso && (evrec.1 = dono.evento.addfim(este))
+  evrec.2.remove, e_condicao >= 2 && (evrec.2 = dono.contr.atkbat.addfim(este))
 
 func t_duracao_exec # Efeito expirou: apaga efeito
   apagar(este)

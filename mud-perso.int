@@ -82,6 +82,7 @@ p_naoseguir\n\
 p_recebe\n\
 p_soltar\n\
 inivar\n\
+evhora\n\
 eveste\n\
 evperso\n\
 evitem\nevsala"
@@ -342,10 +343,14 @@ func morreu # Procedimentos quando morre
 classe comum_persobat
 herda comum_perso
 # Personagem que pode batalhar
-const perso = 2 # Para identificar o tipo de personagem
 const objmax = 1 # Quantos itens pode carregar
-const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
+const tipo1 = "normal" # Tipo de personagem
 const p_agressivo = 1 # Ataca se atacarem
+const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
+const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
+const p_movervel = 140
+const perso = 2 # Para identificar o tipo de personagem
+const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 #
 const expmax = pnivel * pnivel + 20 # Experiência para subir de nível
 sav textotxt p_hist # Histórico do personagem (quem ele matou)
@@ -368,11 +373,10 @@ uint16 precisao # Habilidade de acertar os golpes (hitroll)
 uint32 pesoveste # Metade do peso de tudo que está vestindo
 uint32 pesomax # Quanto peso consegue carregar
 #
-const tipo1 = "normal" # Tipo de personagem
 # const tipo2 = "" # Segundo tipo do personagem
 # const tipo3 = "" # Terceiro tipo do personagem
-real atktipo.22 # Ataque de ataque para diversos tipos de danos
-real deftipo.22 # Defesa contra os diversos tipos de danos
+real atktipo.32 # Ataque de ataque para diversos tipos de danos
+real deftipo.32 # Defesa contra os diversos tipos de danos
 # As duas primeiras variáveis do vetor são golpes normais e especiais
 # 1=danos normais e 0=nenhum dano (0.5=metade dos danos, etc.)
 # Vide constante config:atknomes
@@ -386,9 +390,6 @@ uint8 atkturno # Turno da batalha, usado para decidir se encerra
 inttempo p_tempoatu # Tempo para atualizar personagem
 inttempo p_proc # Para processar comportamento do personagem
 intdec p_tmove # Quanto para se mover novamente
-const p_movervel = 140
-const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
-const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
 
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
@@ -768,7 +769,7 @@ func p_proc_exec # Processar comportamento do personagem
       se obj.autohab2(persobat, aulas)
         ret obj.exechab(persobat, alvo.persobat, aulas, persobat.pnivel)
       fimse
-    senao !arg0.atkenv # Ataque automático
+    senao !atkenv # Ataque automático
       persobat.atkauto(alvo.persobat, 8)
     fimse
   fimse
