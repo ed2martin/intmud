@@ -41,6 +41,8 @@ const adm_jog = "\c3Comandos para jogadores\b\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores.\n\
+\c2REZOU\b <jogador> <texto>\n\
+  Envia mensagem para o jogador com cópia para todos os administradores.\n\
 \c2MUDANOME\b <nome atual> <novo nome>\n\
   Muda o nome do personagem de um jogador.\n\
 \c2LISTARSAV\b\n\
@@ -647,6 +649,26 @@ func cmd_escr
     imonit.objlista.msg("*** " + perso.nome + " escreve no seu teclado: " + arg0)
     imonit.objlista.recebe(arg0)
   fimse
+  ret 1
+
+func cmd_rezou
+  se !txt2(arg0)
+    msg("Digite REZOU seguido do nome do personagem jogador e a mensagem")
+    ret 1
+  fimse
+  indiceitem item
+  item.ini("pn " + txtnome(txt1(arg0)))
+  se !item.obj
+    msg("Jogador inexistente ou ausente: " + txt1(arg0))
+    ret 1
+  fimse
+  $mens.p(este, item.obj)
+  $mens.mens = txt2(arg0)
+  item.obj.msginv(config:rezou2msg)
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[nome]
+    item.obj.msg($mens.proc(config:rezou1msg, item.obj.perso))
+  efim
   ret 1
 
 func cmd_hist

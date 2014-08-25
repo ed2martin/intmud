@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 317 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 318 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -185,8 +185,14 @@ const echomsg = "\b\cb(ADM) $m\b"
 # Mensagem do canal Rezar
 const rezar1msg = "(rezar) $R '$m'"
 #
-# Mensagem quando o jogador usa o comando rezar
+# Mensagem quando o jogador usa o comando Rezar
 const rezar2msg = "Você rezou '$m'"
+#
+# Mensagem do canal Rezou
+const rezou1msg = "(rezou) $R para $c '$m'"
+#
+# Mensagem para o personagem alvo do comando Rezou
+const rezou2msg = "Os deuses responderam '$m'"
 #
 # Mensagem do canal Chat
 const chatmsg = "(chat) $R '$m'"
@@ -284,6 +290,18 @@ const olhartipo = 0 # Olhar mostra raça e classe: Não
 # Se 0, o comando aprender não usa pontos de aula
 const aulas = 0
 #
+# Quantas casas um jogador pode ter (sendo uma casa por área)
+const casajog = 3
+#
+# Nível mínimo para comprar uma casa
+const casanivel = 30
+#
+# Valor para fazer uma cópia da chave da casa do jogador
+const casachave = 120
+#
+# Valor para trocar a fechadura da casa do jogador
+const casafechadura = 500
+#
 # Os tipos de produtos (itens) que vendedores podem comprar
 const produtos = "Possui metal\n\
 Arma\n\
@@ -338,15 +356,6 @@ Maca e Martelo\n\
 Mangual\n\
 Chicote e Corrente\n\
 Arma exótica"
-#
-# Mensagens quando acertou um golpe com uma arma
-# Somente ataques automáticos
-#
-# Mensagens quando errou um golpe com uma arma
-# Somente ataques automáticos
-#
-# Mensagens quando um golpe com uma arma não teve efeito
-# Somente ataques automáticos
 #
 # Tipos de comandos sociais existentes
 const social_txt = "Neutro\nAgradecer\nOfender\nCumprimentar"

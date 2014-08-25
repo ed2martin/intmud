@@ -12,11 +12,11 @@ const s_luta = 1
 
 classe c_teste001
 herda casa
+const area = "teste"
 const nome = "casa 1"
 const valor = 1200
 const sfora = $s_teste115
 const s1 = $s_teste116
-const area = "teste"
 
 func mudou # Se houve alguma mudança
 # Não alterar; função criada automaticamente
@@ -25,12 +25,12 @@ func mudou # Se houve alguma mudança
 
 classe c_teste002
 herda casa
+const area = "teste"
 const nome = "casa 2"
 const valor = 2000
 const sfora = $s_teste115
 const s1 = $s_teste117
 const s2 = $s_teste118
-const area = "teste"
 
 func mudou # Se houve alguma mudança
 # Não alterar; função criada automaticamente
@@ -1260,9 +1260,10 @@ classe p_teste025
 herda comum_perso
 const nome = "Corretor de imóveis"
 const msexo = 1 # Sexo Msg: 1 Masculino
+const taxacompra = 20
 const lojainv = 1 # Produtos inv: Sim
-const lojacasa = 1 # Vende casas: Sim
-const lojachave = 1 # Chaveiro: Sim
+const lojacasa = "teste"
+const lojachave = "teste"
 
 
 classe s_teste001
@@ -3248,9 +3249,22 @@ const dir_l = $s_teste113
 classe s_teste115
 herda b_teste
 const s_titulo = "Entrada das casas"
-const s_desc = ""
+const s_desc = "Ao norte fica a casa 1, ao sul fica a casa 2\n\
+Pode-se comprar e vender casas, aqui, mas cada jogador não pode ter\n\
+mais de uma casa por área. Em seguida, compre uma chave, para poder entrar\n\
+e sair da casa. Quem tem a chave, não precisa nem destrancar a porta.\n\
+Se perder a chave ou ela for roubada, basta comprar fechadura.\n\
+As chaves antigas deixam de funcionar e você precisa comprar chaves novas."
 const dir_n = $s_teste116
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "teste001"
+const fecha_n = 1 # Fecha ao passar: Sim
+const tranc_n = 2 # Trancar: 2 Tranca ao fechar
 const dir_s = $s_teste117
+const portaini_s = 3 # Estado inicial: 3 Porta trancada
+const fechadura_s = "teste002"
+const fecha_s = 1 # Fecha ao passar: Sim
+const tranc_s = 2 # Trancar: 2 Tranca ao fechar
 const dir_l = $s_teste064
 const s_reset = "P 100 teste025 0 0 1\nI 100 teste006 0\nI 100 teste001 0"
 
@@ -3271,22 +3285,32 @@ const s_titulo = "Casa 1"
 const s_desc = "Esta pequena casa possui apenas uma sala.\n\
 É uma sala pacífica, os itens não são apagados depois de um tempo,\n\
 e por se tratar de uma casa, os itens são salvos em arquivo.\n\
-A quantidade de objetos que a sala comporta foi muada para 50."
+A quantidade de objetos que a sala comporta foi mudada para 50."
 const s_item = 0
 const s_luta = 0 # Batalha: 0 Pacífico
 const objmax = 50
 const dir_s = $s_teste115
+const portaini_s = 3 # Estado inicial: 3 Porta trancada
+const fechadura_s = "teste001"
+const fecha_s = 1 # Fecha ao passar: Sim
+const tranc_s = 2 # Trancar: 2 Tranca ao fechar
 
 
 classe s_teste117
 herda b_teste
 const s_titulo = "Casa 2 - sala principal"
 const s_desc = "Essa casa é exatamente como a casa ao norte, só que possui dois cômodos.\n\
-Esse é o cômodo principal."
+As portas da casa (editadas com o comando esai) são:\n\
+Inicialmente trancada, fecha ao passar, tranca ao fechar e o código\n\
+da fechadura é teste002 (o nome dessa casa)."
 const s_item = 0
 const s_luta = 0 # Batalha: 0 Pacífico
 const objmax = 50
 const dir_n = $s_teste115
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "teste002"
+const fecha_n = 1 # Fecha ao passar: Sim
+const tranc_n = 2 # Trancar: 2 Tranca ao fechar
 const dir_s = $s_teste118
 
 

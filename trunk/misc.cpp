@@ -429,6 +429,10 @@ bool arqvalido(char * nome)
             memcmp(ext, "bat", 3)==0 || memcmp(ext, "pif", 3)==0 ||
             memcmp(ext, "scr", 3)==0 || memcmp(ext, "log", 3)==0)
             return false;
+#ifndef __WIN32__
+        if (memcmp(ext, "int", 3)==0)
+            return true;
+#endif
     }
 // Checa se é executável
 #ifndef __WIN32__

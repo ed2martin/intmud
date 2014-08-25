@@ -29,8 +29,8 @@ func escr1 # Consultar a lista de itens
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv
-    continuar !(p.lojaitem || p.lojainv || p.lojasala || $s_[p.lojacasa] || p.lojachave)
+    continuar p.atkenv || !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
+$a_[p.lojachave])
 # Checa se pode vender alguma coisa
     lin = p.cmd_loja(arg0)
     se lin
@@ -83,7 +83,7 @@ func escr1 # Consultar a lista de itens
     se 1
       listaobj e
       p.lojainv && e.addfim(p.dentro1)
-      epara e.addfim($s_[p.lojacasa]), e, e.ini.remove
+      epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
         nivel = e.objini.pnivel
         valor = lucro * e.objini.valor
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
@@ -95,11 +95,11 @@ func escr1 # Consultar a lista de itens
       efim
     fimse
 # Casas
-    se p.lojacasa && p.dono.s_area
+    se $a_[p.lojacasa]
       lin = ""
       prog prg
-      epara prg.iniclasse("c_" + p.dono.s_area), prg.lin, prg.depois
-        sair $[prg.texto].area != p.dono.s_area
+      epara prg.iniclasse("c_" + p.lojacasa), prg.lin, prg.depois
+        sair $[prg.texto].area != p.lojacasa
         continuar $[prg.texto].nomejog
         valor = lucro * $[prg.texto].valor
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
@@ -110,13 +110,14 @@ func escr1 # Consultar a lista de itens
       !lin && t.addfim("Não há nenhuma casa à venda.")
     fimse
 # Chaves
-    se p.lojachave
+    se $a_[p.lojachave]
       indiceitem item
-      se item.obj("cj " + arg0.sock.cnome + " " + p.dono.s_area)
-        valor = 100
+      se item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
+        valor = lucro * config:casachave
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + "Chave da casa"
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         t.addfim(lin), linha += 1
+        valor = lucro * config:casafechadura
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + "Fechadura da casa"
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         t.addfim(lin), linha += 1
@@ -137,7 +138,8 @@ func escr2 # Consultar um item
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
     continuar p.atkenv || p.cmd_loja(arg0)
-    continuar !(p.lojaitem || p.lojainv || p.lojasala || $s_[p.lojacasa] || p.lojachave)
+    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
+)
 # Checa se pode vender alguma coisa
     continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
     continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
@@ -170,7 +172,7 @@ func escr2 # Consultar um item
     se 1
       listaobj e
       p.lojainv && e.addfim(p.dentro1)
-      epara e.addfim($s_[p.lojacasa]), e, e.ini.remove
+      epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
         continuar txt(linha += 1) != arg1 && !n.nome(e.objini.ident, 1)
         nivel = e.objini.pnivel
         valor = lucro * e.objini.valor
@@ -184,41 +186,41 @@ func escr2 # Consultar um item
       efim
     fimse
 # Casas
-    se p.lojacasa && p.dono.s_area
+    se $a_[p.lojacasa]
       lin = ""
       prog prg
-      epara prg.iniclasse("c_" + p.dono.s_area), prg.lin, prg.depois
-        sair $[prg.texto].area != p.dono.s_area
-        continuar $[prg.texto].nomejog
-        continuar txt(linha += 1) != arg1 && !n.nome($[prg.texto].ident, 1)
-        valor = lucro * $[prg.texto].valor
+      ref r
+      epara prg.iniclasse("c_" + p.lojacasa), prg.lin, prg.depois
+        r = $[prg.texto]
+        sair r.area != p.lojacasa
+        continuar r.nomejog || txt(linha += 1) != arg1 && !n.nome(r.ident, 1)
+        valor = lucro * r.valor
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
         uint16 itens
         uint8 salas
         epara linha = 1, linha < 10, linha += 1
-          refvar r = $[prg.texto].s[linha]
-          itens += r.objmax, r && (salas += 1)
+          itens += r.s[linha].objmax, r.s[linha] && (salas += 1)
         efim
-        lin = txtcopiamai($[prg.texto].nome, "A")
-        lin += (salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas")
+        lin = txtcopiamai(r.nome, "A")
+        lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"
         t2.addfim(lin + ", até " + txt(itens) + " itens, custa $" + valor + ".")
-        $[prg.texto].desc && t2.addfim($[prg.texto].desc)
+        r.desc && t2.addfim(r.desc)
         ret arg0.msg2(t2.remove(1000))
       efim
     fimse
 # Chave e fechadura da casa
-    se p.lojachave
+    se $a_[p.lojachave]
       indiceitem item
-      se !item.obj("cj " + arg0.sock.cnome + " " + p.dono.s_area)
+      se !item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
       senao txt(linha += 1) == arg1 || n.nome("chave da casa", 1)
-        valor = 100
+        valor = (100 + p.taxavenda) / 100 * config:casachave
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
-        t2.addfim("Faço uma cópia da chave para entrar na sua casa por $" + valor + ".")
+        t2.addfim("Faço uma cópia da chave da sua casa por $" + valor + ".")
         ret arg0.msg2(t2.remove(1000))
       senao txt(linha += 1) == arg1 || n.nome("fechadura da casa", 1)
-        valor = 100
+        valor = (100 + p.taxavenda) / 100 * config:casafechadura
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
         t2.addfim("Troco a fechadura da sua casa por $" + valor + ".")
@@ -265,8 +267,8 @@ func escr
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv
-    continuar !(p.lojaitem || p.lojainv || p.lojasala || $s_[p.lojacasa] || p.lojachave)
+    continuar p.atkenv || !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
+$a_[p.lojachave])
 # Checa se pode vender alguma coisa
     continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
     continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
@@ -323,7 +325,7 @@ func escr
     se 1
       listaobj e
       p.lojainv && e.addfim(p.dentro1)
-      epara e.addfim($s_[p.lojacasa]), e, e.ini.remove
+      epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
         continuar txt(linha += 1) != arg1 && !n.nome(e.objini.ident, 1)
         ref r
         r = ref(e.objini)
@@ -343,12 +345,85 @@ func escr
         arg0.var.z_moedas_ -= valor * total
         $mens.p(arg0, p, r)
         se total == 1
-          $mens.mtodos1("$P compra $o de $A.")
+          $mens.mtodos1("$P compra $o de $a.")
         senao
-          $mens.mtodos1("$P compra " + total + "x $o de $A.")
+          $mens.mtodos1("$P compra " + total + "x $o de $a.")
         fimse
         ret
       efim
+    fimse
+# Casas
+    se $a_[p.lojacasa]
+      prog prg
+      ref r
+      epara prg.iniclasse("c_" + p.lojacasa), prg.lin, prg.depois
+        r = $[prg.texto]
+        sair r.area != p.lojacasa
+        continuar r.nomejog || txt(linha += 1) != arg1 && !n.nome(r.ident, 1)
+        se !arg0.senha
+          ret arg0.msg("Você precisa ter jogo salvo para comprar uma casa.")
+        senao arg0.pnivel < config:casanivel
+          refvar m = "Você precisa estar no nível " + config:casanivel
+          ret arg0.msg(m + " para comprar uma casa.")
+        fimse
+        valor = config:casajog
+        lin = "cj " + txt2(arg0.sock.cnome)
+        indiceitem item
+        epara item.ini(lin + " "), txtsub(item.txt, 0, 2) == lin, item.depois
+          valor -= 1
+        efim
+        ret valor <= 0, arg0.msg("Atingido o limite de casas por jogador.")
+        valor = (100 + p.taxavenda) / 100 * r.valor
+        se item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
+          ret arg0.msg("Você já tem uma casa aqui.")
+        senao arg0.var.z_moedas_ < valor
+          lin = "Você não tem $" + valor + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        r.nomejog = "cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa
+        r.mudachave # Já faz r.objmudou=1
+        arg0.var.z_moedas_ -= valor
+        $mens.p(arg0, p)
+        $mens.mens = r.nome ? r.nome : "uma casa"
+        $mens.mtodos1("$P compra $m de $a.")
+        ret
+      efim
+    fimse
+# Chave e fechadura da casa
+    se $a_[p.lojachave]
+      indiceitem item
+      refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
+      se !casa
+      senao txt(linha += 1) == arg1 || n.nome("chave da casa", 1)
+        valor = (100 + p.taxavenda) / 100 * config:casachave
+        se arg0.dentro1.total + 1 > arg0.objmax
+          ret arg0.msg("Você não consegue carregar tanta coisa.")
+        senao arg0.volden + comum_chave:voltot > arg0.volmax
+          ret arg0.msg("Você não consegue carregar tanta coisa.")
+        senao arg0.pesoden - arg0.pesoveste + comum_chave:pesotot > arg0.pesomax
+          ret arg0.msg("Você não consegue carregar tanto peso.")
+        senao arg0.var.z_moedas_ < valor
+          lin = "Você não tem $" + valor + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        refvar r = criar("comum_chave", arg0, 1)
+        r.i_chave = casa.chave
+        arg0.var.z_moedas_ -= valor
+        $mens.p(arg0, p)
+        $mens.mtodos1("$A fez uma chave para $p.")
+        ret
+      senao txt(linha += 1) == arg1 || n.nome("fechadura da casa", 1)
+        valor = (100 + p.taxavenda) / 100 * config:casafechadura
+        se arg0.var.z_moedas_ < valor
+          lin = "Você não tem $" + valor + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        arg0.var.z_moedas_ -= valor
+        casa.mudachave # Já faz r.objmudou=1
+        $mens.p(arg0, p, r)
+        refvar m1 = "$A manda alguém para trocar a fechadura da "
+        ret $mens.mtodos2(m1 + "sua casa.", m1 + "casa de $p.")
+      fimse
     fimse
   efim
   arg0.msg("Ninguém vende isso aqui.")
@@ -358,10 +433,13 @@ classe cmd_avaliar
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Avaliar\b\n\
 Sintaxe: AVALIAR <nome do objeto>\n\
-Pergunta a um vendedor quanto ele paga por um item que você está carregando."
+         AVALIAR CASA\n\
+Pergunta a um vendedor quanto ele paga por um item que você está carregando\n\
+ou por uma casa que você possui."
 txt200 lin
 int8 abre # Usado internamente: horário de abertura
 int8 fecha # Usado internamente: horário de fechamento
+ref p # Vendedor que está verificando
 txt30 tipo1 # arg0.tipo1
 txt30 tipo2 # arg0.tipo2
 txt30 tipo3 # arg0.tipo3
@@ -369,7 +447,59 @@ const vender = 0
 
 func escr
   ret !arg1, arg0.msg(vender ? "Vender o que?" : "Avaliar o que?")
+  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
   listaobj l
+# Avaliar/comprar casas
+  se arg1 == "casa"
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      p = l.objini # Personagem que está sendo verificado
+      continuar !$a_[p.lojacasa] || p.atkenv
+      continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+      continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+      continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+      abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
+      continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      listaobj e
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+        sair e.objini.cmd_negociar(arg0, p, "vender")
+      efim
+      continuar e
+      indiceitem item
+      refvar r = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
+      refvar valor = intpos(r.valor * (100 - p.taxacompra) / 100)
+      se !r
+        ret arg0.msg("Você não tem uma casa aqui.")
+      senao vender
+        arg0.var.z_moedas_ += valor
+        r.nomejog = ""
+        r.mudachave # Já faz r.objmudou=1
+        $mens.p(arg0, p)
+        $mens.mens = r.nome ? r.nome : "uma casa"
+        lin = "$P vende $m para $a"
+        se valor == 1
+          $mens.mvis2(lin + " por uma moeda.", lin + ".")
+        senao valor == 2
+          $mens.mvis2(lin + " por duas moedas.", lin + ".")
+        senao
+          $mens.mvis2(lin + " por " + valor + " moedas.", lin + ".")
+        fimse
+        ret
+      senao
+        se valor == 0
+          lin = "Não pagaria nenhuma moeda pela sua casa."
+        senao valor == 1
+          lin = "Eu pagaria uma única moeda pela sua casa."
+        senao
+          lin = "Eu pagaria " + valor + " moedas pela sua casa."
+        fimse
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+      fimse
+    efim
+  fimse
+# Avaliar/comprar itens
   nomeobj n # Para reconhecer os itens
   n.ini(arg1, 1000000)
   epara l.addfim(arg0.dentro1), l, l.ini.remove
@@ -383,30 +513,29 @@ func exec # Avalia ou vende um item
 # arg0 = personagem
 # arg1 = item
 # arg2 = quantidade de itens
-  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
   listaobj l
   linha = 0, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
-    continuar arg1.tipoitem & l.objini.tipoitem == 0 # Checa se tem interesse
-    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
-    abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv
+    continuar arg1.tipoitem & p.tipoitem == 0 # Checa se tem interesse
+    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
-    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_negociar(arg0, l.objini, "vender")
+    epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, p, "vender")
     efim
     continuar e
     int32 valor # Valor do item
-    valor = intpos(arg1.valor * (100 - l.objini.taxacompra) / 100)
+    valor = intpos(arg1.valor * (100 - p.taxacompra) / 100)
     se vender
       valor *= arg2
       arg1.apagar(arg2)
       arg0.var.z_moedas_ += valor
-      $mens.p(arg0, l.objini, arg1)
+      $mens.p(arg0, p, arg1)
       se arg2 == 1
         lin = "$P vende $o para $a"
       senao
@@ -428,7 +557,7 @@ func exec # Avalia ou vende um item
       senao
         lin = "Eu pagaria " + valor + " moedas por isso."
       fimse
-      ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+      ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
     fimse
   efim
 # Ninguém quer comprar
@@ -440,8 +569,10 @@ herda cmd_avaliar
 const txtajuda = "\b\c3Vender\b\n\
 Sintaxe: VENDER <nome do objeto>\n\
          VENDER <quantidade> <nome do objeto>\n\
+         VENDER CASA\n\
 Vende objetos que você está carregando para um vendedor.\n\
-Somente em alguns casos é possível vender mais de um objeto de uma vez."
+Somente em alguns casos é possível vender mais de um objeto de uma vez.\n\
+Vende também uma casa que você possui."
 const vender = 1
 
 

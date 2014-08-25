@@ -111,6 +111,7 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_pegar(arg0, arg1), nulo
   efim
+  arg0.p_espera < 3 && (arg0.p_espera = 3)
 # Obtém o objeto de onde pegar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
@@ -187,6 +188,7 @@ func escr
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_pegouobj(arg0, sala, r, total)
     efim
+    arg0.p_espera += 2
     sair (achou += 1) >= 10
   efim
   ret achou, nulo
@@ -209,6 +211,7 @@ func escr
     senao
       $mens.mvis1("$P pega " + total + " moedas" + mens)
     fimse
+    arg0.p_espera += 2
     ret
   fimse
 # Não encontrou o item
@@ -244,6 +247,7 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_soltar(arg0, arg1), nulo
   efim
+  arg0.p_espera < 3 && (arg0.p_espera = 3)
 # Checa soltar animal
   se !cmdsg && arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
     refvar r = arg0.animalnum(arg1)
@@ -346,6 +350,7 @@ func escr
     epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
       e.objini.cmd_soltouobj(arg0, sala, r, total)
     efim
+    arg0.p_espera += 2
     sair (achou += 1) >= 10
   efim
   ret achou, nulo
@@ -382,6 +387,7 @@ func escr
       $mens.mvis1(mens2 + mens + ".")
       sala.var.z_moedas_ += total
     casofim
+    arg0.p_espera += 2
     ret
   fimse
 # Não encontrou o item

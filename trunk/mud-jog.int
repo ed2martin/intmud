@@ -39,7 +39,6 @@ txt512 peditor # Texto sendo procurado, opção P do editor
 textotxt transf # Área de transferência do editor
 
 func ini
-  cnome = "un"
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
   refvar t = info
   refvar ban = (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
@@ -47,6 +46,7 @@ func ini
   reinicia
 
 func fim
+  lmonit.limpar
   perso.fechou(txt1(info) == "b")
   mudaperso(nulo)
   nomefim && msgchegou("* Saiu: " + nome + ", " + nomefim, "* " + nome + " saiu")
@@ -68,8 +68,9 @@ func mudaperso # Muda o personagem, arg0=novo personagem
   efim
 
 func reinicia # Volta ao início: pede o nome do personagem
-  mudaperso(nulo)
+  jogconfig.bits = 12 # Cores(8) + acentuação(4)
   cnome = "un", nome = ""
+  mudaperso(nulo)
   p_perso
 
 func recebe # Recebeu mensagem do jogador
@@ -139,6 +140,9 @@ func recebe1 # Função recebe após uso de atalhos
       sair
     casose "'"
       ultimocom = "falar " + txt(arg0, 1)
+      sair
+    casose "="
+      ultimocom = "telepatia " + txt(arg0, 1)
       sair
     casose
       ultimocom = arg0
@@ -255,12 +259,12 @@ func p_perso # Entrando no jogo: digitar o nome do personagem
     msg("O nome deve ter de 3 a 16 caracteres; digite outro")
   senao intnome(arg0) || txtproc(txtsepara("a" + arg0, "L+D"), " ") >= 0
     msg("Nome inválido; digite outro")
-  senao ind.obj("un " + texto)
-    msg("Nome já está sendo usado; digite outro")
   senao sav1.existe("sav/" + texto + ".sav") # Carregar jogo salvo
     msg("Personagem '" + txtmaimin(arg0) + "' já existe")
     tpasso = txtmaimin(arg0)
     p_entrasenha
+  senao ind.obj("un " + texto)
+    msg("Nome já está sendo usado; digite outro")
   senao # Criar personagem
     refvar t = info
     se (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
@@ -500,9 +504,6 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     msg("Digite a senha ou, se o personagem não for seu, tecle Z")
   senao arg0 == "z"
     nome = "", p_perso
-  senao ind.obj("un " + texto)
-    msg("Outro jogador começou a usar esse personagem")
-    p_perso
   senao !sav1.senha("sav/" + texto + ".sav", txtmin(arg0))
     msg("Senha incorreta")
     casovar txt1(info)
@@ -513,6 +514,20 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     casofim
     p_perso
   senao ind.obj("pn " + texto)
+    r = ind.obj("un " + texto)
+    casovar txt1(r.info)
+    casose "t" # Conectado via Papovox
+    casose "p" # Conectado via Telnet
+      apagar(r)
+      r.mudaperso(nulo)
+      r.msg("Jogador " + info + " começou a usar seu personagem")
+      r.nomefim = ""
+    casose ""
+      sair
+    casose
+      r.msg("Jogador " + info + " começou a usar seu personagem")
+      r.reinicia
+    casofim
     passo = ""
     mudaperso(ind.obj("pn " + texto))
     nome = perso.nome
@@ -524,7 +539,6 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     nomefim = info
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
-    nomefim = info
     perso.teclou("olhar")
   senao
 # Primeiro cria personagem
