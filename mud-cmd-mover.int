@@ -9,11 +9,13 @@ const m_sai3 = m_sai1
 const m_fugir = "$P fugiu."
 const dir = ""
 listaobj lseg # Para não seguir ciclicamente
+int8 andou # Se conseguiu andar (deve fechar a porta)
 debug dbg
 
 func escr # Executa o comando
 # arg0 = personagem
   $comando_mover.lseg.limpar
+  $comando_mover.andou = 0
   refvar sala = ref(arg0.dono)
 # Anda
   txt100 dir1
@@ -25,7 +27,7 @@ func escr # Executa o comando
     $cmd_[dir1].mover(arg0)
   fimse
 # Fecha a porta
-  se sala.fecha_[dir1]
+  se sala.fecha_[dir1] && $comando_mover.andou
     refvar m = sala.porta_[dir1] < 2 ? "$M se $2."
     sala.mudaporta(dir1, sala.tranc_[dir1] == 2 ? 3 : 2, m, m)
   fimse
@@ -42,7 +44,20 @@ func mover # Personagem anda em uma direção
   se s2 == nulo
     ret arg0.msg("Impossível seguir nessa direção.")
   senao s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14
-    ret arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    ret !s1.socktot, nulo
+    refvar cod = $c_[s1.fechadura_[dir]].chave
+    ret !cod, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i.obj, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    txt200 mporta
+    mporta = r.portanome_[nome]
+    !mporta && !(mporta = $cmd_[nome].m_porta) && (mporta = "uma porta")
+    $mens.p(arg0)
+    $mens.mens = mporta
+    $mens.mvis1("Por um instante, $p abre $m.")
   senao s1.voar_[dir] && !(arg0.bitver & 512 || arg0.bitinv & 48)
     ret arg0.msg("Você não consegue porque não está flutuando.")
   fimse
@@ -58,6 +73,7 @@ func mover # Personagem anda em uma direção
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_mover(arg0, arg0.dono, dir), nulo
   efim
+  $comando_mover.andou = 1
   !arg0.jogconfig.14 && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
   se !(s1.socktot || s2.socktot) # Não tem jogador por perto
@@ -633,7 +649,8 @@ func escrdir # Destrancar uma porta
   txt100 cod # Código da fechadura
   ref chave # Chave que abre a fechadura
   misc:obj = arg0
-  cod = arg0.dono.fechadura_[arg1], mporta = arg0.dono.portanome_[arg1]
+  cod = arg0.dono.fechadura_[arg1], $c_[cod] && (cod = $c_[cod].chave)
+  mporta = arg0.dono.portanome_[arg1]
   !mporta && (mporta = $cmd_[arg1].m_porta)
   !mporta && (mporta = "uma porta")
   se cod && !arg0.jogconfig.14
@@ -745,7 +762,8 @@ func escrdir # Trancar uma porta
   txt100 cod # Código da fechadura
   ref chave # Chave que abre a fechadura
   misc:obj = arg0
-  cod = arg0.dono.fechadura_[arg1], mporta = arg0.dono.portanome_[arg1]
+  cod = arg0.dono.fechadura_[arg1], $c_[cod] && (cod = $c_[cod].chave)
+  mporta = arg0.dono.portanome_[arg1]
   !mporta && (mporta = $cmd_[arg1].m_porta)
   !mporta && (mporta = "uma porta")
   se cod && !arg0.jogconfig.14

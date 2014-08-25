@@ -17,7 +17,9 @@ const adm_casa = "\b\c3Comandos de casas\b\n\
   2. Definir as salas que correspondem à casa com o comando ECASA\n\
   3. Editar as salas (comando ESALA) colocando 0 na opção \"Apagar itens\"\n\
   4. Acertar também a opção \"Objetos máximo\"\n\
-  5. Editar as saídas da casa"
+  5. Para segurança dos jogadores, editar as saídas da casa (comando ESAI)\n\
+     para fechar ao passar e trancar ao fechar\n\
+  6. Colocar o nome da casa no código da fechadura (comando ESAI)"
 
 func cmd_lcasa # Listar casas
   prog p
@@ -203,14 +205,15 @@ const exec10 = "acerta_mudou"
 classe casa
 listaobj salas
 intexec inicasa
-const iniclasse = criar(arg0)
+const iniclasse = arg0 != "casa" && criar(arg0)
 const ini = inicasa = 1
 sav indiceobj nomejog # "cj " + nome codificado + " " + prefixo da área
-int1 objmudou
+sav txt50 chave # Código da chave que abre a porta da casa
+int1 objmudou # Se as informações da casa foram mudadas (precisa salvar a casa)
 const ident = nome
 #
 # Ordem que deve organizar as constantes:
-const admordem = "nome\ndesc\nident\nvalor\nsfora\ns1\ns2\ns3\ns4\ns5"
+const admordem = "area\nnome\ndesc\nident\nvalor\nsfora\ns1\ns2\ns3\ns4\ns5"
 
 func fim # Apaga arquivo da casa
   ret inttotal(este) != 1, nulo # Por segurança: só apaga arquivo se tiver 1 objeto
@@ -219,7 +222,7 @@ func fim # Apaga arquivo da casa
 
 func inicasa_exec # Carrega objetos da casa
   listaobj l1
-  lista.addfim(este)
+  l1.addfim(este)
   arqsav sav1
   sav1.ler("sav2/c-" + txt(este, 2) + ".sav", l1)
   l1.ini.remove # Remove da lista, porque é o objeto de controle da casa
@@ -231,17 +234,23 @@ func inicasa_exec # Carrega objetos da casa
   efim
   epara item = l1.fim, item, item.antes
     d.ini
-    !item.obj.dono && apagar(txt(item.obj, 0, 2) == "s_" ? $[item.obj] : este)
+    se txt(item.obj, 0, 2) == "s_" # Se for sala
+      apagar($[item.obj]), item.obj.ini # Apaga a sala que já existia e inicializa essa
+    senao !item.obj.dono # Se for item sem dono
+      apagar(item.obj) # Apaga o item
+    fimse
     item.obj.var.limpar("d_", "j_")
     item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
   efim
 # Indica que nenhuma sala mudou
-  objmudou
+  objmudou = 0
   s1.objmudou = 0
   s2.objmudou = 0
   s3.objmudou = 0
   s4.objmudou = 0
   s5.objmudou = 0
+# Checa a fechadura
+  !chave && mudachave
 # Checa se ainda pertence a um jogador
   se nomejog
     arqsav sav
@@ -263,6 +272,12 @@ func acerta_mudou
   efim
   p.criar(este, lin)
   config:salvar
+
+func mudachave # Muda o código da fechadura da casa
+  datahora hora
+  hora.agora
+  chave = txt(este) + " " + rand(10) + rand(10) + hora.numtotal
+  objmudou = 1
 
 func mudou # Se houve alguma mudança (há necessidade de salvar)
   ret objmudou
