@@ -325,7 +325,12 @@ func escr
     senao r.i_aberto == 5
     senao r.i_aberto
       se r.i_aberto < 3 || arg0.jogconfig.14
-        r.var.z_moedas && t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
+        se !r.var.z_moedas
+        senao r.dono != arg0 || var.z_moedas_ <= 10
+          t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
+        senao
+          t.addfim("1 " + txtnum(r.var.z_moedas_, ".") + " moedas")
+        fimse
         listaitem item
         epara item = r.dentro1.ini, item, item.depois
           continuar !item.obj.visivel(arg0)

@@ -154,7 +154,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   se jog
     int(dono.s_retornar) >= 2 && (!var.z_salafim || int(dono.s_retornar) == 2) && (var.z_salafim \
 = dono)
-    epara l.addfim(arg0.dentro2), l, l.ini.remove
+    epara l.addfim(dono.dentro2), l, l.ini.remove
       l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
     efim
   fimse
@@ -451,18 +451,24 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   tipo_[tipo1]:recalc, tipo_[tipo2]:recalc, tipo_[tipo3]:recalc
   cmd_recalc1(este)
 # Bônus conforme o que está vestindo e os efeitos
-  listaitem l
-  epara l = dentro2.ini, l, l.depois
-    [l.obj]:recalc_auto, l.obj.cmd_recalc2(este), pesoveste += l.obj.pesotot
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    [i.obj]:recalc_auto, i.obj.cmd_recalc2(este), pesoveste += iobj.pesotot
   efim
   pesoveste /= 2
-  epara l = evento.ini, l, l.depois
-    l.obj.cmd_recalc3(este)
+  epara i = evento.ini, i, i.depois
+    i.obj.cmd_recalc3(este)
   efim
 # Acerta atributo dormindo de bitver
   bitver & 2048 && (bitver = bitver & ~1024)
   bitver & 1024 && posicao > 4 && (posicao = 4)
   atribs_exec
+# Se for jogador, checa PNJs agressivos
+  ret !jog, nulo
+  epara i = dono.dentro2.ini, i, i.depois
+    i.obj.p_agressivo(este) == 2 && !i.obj.p_proc && (i.obj.p_proc = 1)
+  efim
+
 
 const batalhaini = contr.bat_ini_int(arg0.contr, este, arg0)
 # batalhaini - Indica que atacou outro personagem (está batalhando)

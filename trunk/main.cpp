@@ -545,14 +545,14 @@ void Inicializa(const char * arg)
 
         // Verifica opções
             if (comparaZ(mens, "exec")==0)
-                Instr::VarExecIni = atoi(valor);
+                Instr::VarExecIni = NumInt(valor);
             if (comparaZ(mens, "telatxt")==0)
-                telatxt = atoi(valor);
+                telatxt = NumInt(valor);
             if (comparaZ(mens, "log")==0)
-                err_tipo = (atoi(valor) != 0);
+                err_tipo = (NumInt(valor) != 0);
 
         // Verifica opção MAPAGRANDE, que indica vários arquivos
-            if (comparaZ(mens, "mapagrande")==0 && atoi(valor))
+            if (comparaZ(mens, "mapagrande")==0 && NumInt(valor))
             {
                 if (TArqMapa::MapaGrande) // Se já obteve a lista de arquivos
                     continue;

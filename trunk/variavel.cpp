@@ -838,17 +838,9 @@ int TVariavel::getInt()
     case Instr::cTxt1:
     case Instr::cTxt2:
         if (indice)
-        {
-            long num;
-            errno=0, num=strtol(&end_char[indice * Tamanho(defvar)], 0, 10);
-            return (errno ? 0 : num);
-        }
+            return NumInt(&end_char[indice * Tamanho(defvar)]);
     case Instr::cTxtFixo:
-        {
-            long num;
-            errno=0, num=strtol(end_char, 0, 10);
-            return (errno ? 0 : num);
-        }
+        return NumInt(end_char);
     case Instr::cInt1:
         return (numfunc ? GetVetorInt1(this) : getBool());
     case Instr::cInt8:
@@ -875,11 +867,7 @@ int TVariavel::getInt()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        {
-            long num;
-            errno=0, num=strtol(defvar + defvar[Instr::endIndice] + 1, 0, 10);
-            return (errno ? 0 : num);
-        }
+        return NumInt(defvar + defvar[Instr::endIndice] + 1);
     case Instr::cConstNum:
         {
             unsigned int valor = 0;
@@ -978,11 +966,7 @@ int TVariavel::getInt()
     case Instr::cDebug:
         return TVarDebug::getInt(numfunc);
     case Instr::cIndiceObj:
-        {
-            long num;
-            errno=0, num=strtol(end_indiceobj[indice].getNome(), 0, 10);
-            return (errno ? 0 : num);
-        }
+        return NumInt(end_indiceobj[indice].getNome());
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
     case Instr::cDataHora:
@@ -1719,14 +1703,8 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cSocket:
     case Instr::cDebug:
     case Instr::cDataHora:
-        {
-            long num;
-            errno=0, num=strtol(txt, 0, 10);
-            if (errno)
-                num=0;
-            setInt(num);
-            break;
-        }
+        setInt(NumInt(txt));
+        break;
     case Instr::cUInt32:
         {
             unsigned long num;

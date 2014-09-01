@@ -11,6 +11,8 @@ const dir = ""
 listaobj lseg # Para não seguir ciclicamente
 int8 andou # Se conseguiu andar (deve fechar a porta)
 debug dbg
+txt300 abriu1 # Mensagem, se abriu a porta da casa
+txt300 abriu2
 
 func escr # Executa o comando
 # arg0 = personagem
@@ -40,6 +42,7 @@ func mover # Personagem anda em uma direção
   dbg.ini
   $comando_mover.lseg.addfim(arg0)
   misc:obj = arg0
+  abriu1 = abriu2 = ""
   s1 = arg0.dono, s2 = s1.dir_[dir]
   se s2 == nulo
     ret arg0.msg("Impossível seguir nessa direção.")
@@ -52,12 +55,9 @@ func mover # Personagem anda em uma direção
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     ret !i.obj, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
-    txt200 mporta
-    mporta = r.portanome_[nome]
-    !mporta && !(mporta = $cmd_[nome].m_porta) && (mporta = "uma porta")
-    $mens.p(arg0)
-    $mens.mens = mporta
-    $mens.mvis1("Por um instante, $p abre $m.")
+    abriu1 = config:casaabriu1
+    abriu2 = config:casaabriu2
+    abriu2 && (abriu2 += "\n")
   senao s1.voar_[dir] && !(arg0.bitver & 512 || arg0.bitinv & 48)
     ret arg0.msg("Você não consegue porque não está flutuando.")
   fimse
@@ -79,15 +79,15 @@ func mover # Personagem anda em uma direção
   se !(s1.socktot || s2.socktot) # Não tem jogador por perto
     arg0.mudadono(s2)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
-    $mens.p(arg0) + $mens.mvis2("", m_sai4)
+    $mens.p(arg0) + $mens.mvis2(abriu1, abriu2 + m_sai4)
     arg0.mudadono(s2)
     $mens.p(arg0) + $mens.mvis2("", m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    mover2(arg0, s2, m_sai3, m_entra3)
+    mover2(arg0, s2, abriu2 + m_sai3, m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
-    mover2(arg0, s2, m_sai2, m_entra2)
+    mover2(arg0, s2, abriu2 + m_sai2, m_entra2)
   senao # Não está voando nem flutuando
-    mover2(arg0, s2, m_sai1, m_entra1)
+    mover2(arg0, s2, abriu2 + m_sai1, m_entra1)
   fimse
   epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, arg0.dono, dir)
@@ -112,9 +112,16 @@ func mover # Personagem anda em uma direção
   efim
 
 func mover2 # Chamado por mover, para mudar de sala enviando mensagem
+# arg0 = personagem
+# arg1 = sala destino
+# arg2 = mensagem saiu
+# arg3 = mensagem chegou
+# abriu1 = mensagem para o personagem
   listaobj l
+  $mens.p(arg0)
+  abriu1 && arg0.msgvis(abriu1)
   se arg0.bitver & 256 # Anda em silêncio
-    $mens.p(arg0), $mens.mens = " em silêncio"
+    $mens.mens = " em silêncio"
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
       l.objini.bitver & 0x1000 && l.objini.msgvis(arg2)
@@ -126,9 +133,10 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
       l.objini.bitver & 0x1000 && l.objini.msgvis(arg3)
     efim
   senao
-    $mens.p(arg0), $mens.mens = "", $mens.mvis2("", arg2)
+    $mens.mens = "", $mens.mvis2("", arg2)
     arg0.mudadono(arg1)
-    $mens.p(arg0), $mens.mens = "", $mens.mvis2("", arg3)
+    $mens.p(arg0)
+    $mens.mens = "", $mens.mvis2("", arg3)
   fimse
 
 func fugirdir # Obtém direção para onde pode fugir
@@ -156,7 +164,7 @@ func fugirdir # Obtém direção para onde pode fugir
 
 classe cmd_n
 herda comando_mover
-const m_entra1 = "$P chegou $m do sul$m."
+const m_entra1 = "$P chegou do sul$m."
 const m_entra2 = "$P flutuou do sul$m."
 const m_entra3 = "$P voou do sul$m."
 const m_entra4 = "$P chegou do sul cambaleando."

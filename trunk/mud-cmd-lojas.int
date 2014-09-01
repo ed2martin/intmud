@@ -197,14 +197,7 @@ func escr2 # Consultar um item
         valor = lucro * r.valor
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
-        uint16 itens
-        uint8 salas
-        epara linha = 1, linha < 10, linha += 1
-          itens += r.s[linha].objmax, r.s[linha] && (salas += 1)
-        efim
-        lin = txtcopiamai(r.nome, "A")
-        lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"
-        t2.addfim(lin + ", até " + txt(itens) + " itens, custa $" + valor + ".")
+        t2.addfim(r.descloja + ", custa $" + valor + ".")
         r.desc && t2.addfim(r.desc)
         ret arg0.msg2(t2.remove(1000))
       efim

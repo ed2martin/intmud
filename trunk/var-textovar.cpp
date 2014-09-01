@@ -513,9 +513,7 @@ int TTextoVarSub::getInt()
     if (bl==0) return 0;
     const char * p = bl->Texto;
     while (*p++);
-    long num;
-    errno=0, num=strtol(p, 0, 10);
-    return (errno ? 0 : num);
+    return NumInt(p);
 }
 
 //----------------------------------------------------------------------------
