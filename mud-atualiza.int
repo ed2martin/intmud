@@ -173,8 +173,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 318, nulo
-  p.criar("config", "const versao = 318 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 319, nulo
+  p.criar("config", "const versao = 319 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -293,7 +293,7 @@ func ini2_exec
     criafunc("config", "const nivelmsg1 = \"$P avança para o nível $m.\"")
     criafunc("config", "const nivelmsg2 = \"$1 avança para o nível $m.\"")
   fimse
-# Atalhos
+# Diversos
   se versao < 318
     criafunc("config", "const atalhos = 50")
     criafunc("config", "const apresban = \"Seu endereço IP está bloqueado para novos personagens\"\
@@ -304,6 +304,11 @@ func ini2_exec
     criafunc("config", "const casanivel = 30")
     criafunc("config", "const casachave = 100")
     criafunc("config", "const casafechadura = 500")
+  fimse
+# Diversos
+  se versao < 319
+    criafunc("config", "const casaabriu1 = \"Você segura uma chave e abre a porta da sua casa.\"")
+    criafunc("config", "const casaabriu2 = \"$P segura uma chave e abre a porta da casa del$v.\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

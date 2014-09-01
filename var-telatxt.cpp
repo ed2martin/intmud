@@ -485,7 +485,7 @@ int TVarTelaTxt::getValor(int numfunc)
     switch (numfunc)
     {
     case TelaTxtTexto:
-        return atoi(LerLinha());
+        return NumInt(LerLinha());
     case TelaTxtTotal:
         return max_linha;
     case TelaTxtLinha:
@@ -569,19 +569,15 @@ void TVarTelaTxt::setTxt(int numfunc, const char * txt)
     txt_linha[tam_linha]=0;
     if (Console==0 || strcmp(txt_linha, txt)==0)
         return;
-    const char * p;
     switch (numfunc)
     {
     case TelaTxtTexto:
-        p = copiastr(txt_linha, txt, max_linha + 1);
-        tam_linha = p - txt_linha;
-        col_linha = 0xFFF;
-        CursorEditor();     // Cursor na linha de edição
-        ProcTeclaCursor(0); // Semelhante à tecla HOME
+        tam_linha = 0;
+        addTxt(numfunc, txt);
         break;
     case TelaTxtTotal:
     case TelaTxtLinha:
-        setValor(numfunc, atoi(txt));
+        setValor(numfunc, NumInt(txt));
         break;
     }
 }
@@ -591,18 +587,45 @@ void TVarTelaTxt::addTxt(int numfunc, const char * txt)
 {
     if (Console==0 || *txt==0)
         return;
+    char * destino;
     switch (numfunc)
     {
     case TelaTxtTexto:
-        while (tam_linha < max_linha && *txt)
-            txt_linha[tam_linha++] = *txt++;
+        destino = txt_linha + tam_linha;
+        while (*txt && destino < txt_linha + max_linha)
+        {
+            switch (*txt)
+            {
+            case Instr::ex_barra_n:
+            case Instr::ex_barra_b:
+                txt++;
+                break;
+            case Instr::ex_barra_c:
+                if ((txt[1]>='0' && txt[1]<='9') ||
+                        (txt[1]>='A' && txt[1]<='J') ||
+                        (txt[1]>='a' && txt[1]<='j'))
+                    txt += 2;
+                else
+                    txt++;
+                break;
+            case Instr::ex_barra_d:
+                if (txt[1]>='0' && txt[1]<='7')
+                    txt += 2;
+                else
+                    txt++;
+                break;
+            default:
+                *destino++ = *txt++;
+            }
+        }
+        tam_linha = destino - txt_linha;
         col_linha = 0xFFF;
         CursorEditor();     // Cursor na linha de edição
         ProcTeclaCursor(0); // Semelhante à tecla HOME
         break;
     case TelaTxtTotal:
     case TelaTxtLinha:
-        setValor(numfunc, atoi(txt));
+        setValor(numfunc, NumInt(txt));
         break;
     }
 }

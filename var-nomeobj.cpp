@@ -125,10 +125,9 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
             {
             // Obtém o número
                 const char * p = txt;
-                int num = 0;
-                for (; *p>='0' && *p<='9'; p++)
-                    if (num<1000000)
-                        num = num * 10 + *p - '0';
+                int num = NumInt(p);
+                while (*p>='0' && *p<='9')
+                    p++;
             // O número é zero
                 if (num==0)
                     break;

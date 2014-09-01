@@ -130,7 +130,7 @@ func escr
     mens = " de $a."
   fimse
   nomeobj n # Para reconhecer os itens
-  n.ini(misc:sep1, 1000000, misc:tudo)
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Pega os itens
   achou = 0, erro = "Você não vê isso."
   epara l.addfim(sala.dentro1), l, l.ini.remove
@@ -293,7 +293,7 @@ func escr
     mens = " $e $a"
   fimse
   nomeobj n # Para reconhecer os itens
-  n.ini(misc:sep1, 1000000, misc:tudo)
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Solta os itens
   achou = 0, erro = "Você não vê isso."
   epara l.addfim(arg0.dentro1), l, l.ini.remove
@@ -480,7 +480,7 @@ animal.")
     ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
   fimse
   nomeobj n # Para reconhecer os itens
-  n.ini(misc:sep1, 1000000, misc:tudo)
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Dá os itens
   achou = 0, erro = "Você não vê isso."
   epara l.addfim(arg0.dentro1), l, l.ini.remove
@@ -601,7 +601,7 @@ func escr
 # Veste
   listaobj l
   ref r
-  n.ini(misc:sep1, 1000000, misc:tudo)
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
   epara l.addfim(alvo.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
@@ -712,7 +712,7 @@ func escr
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1000000)
+  n.ini(arg1, misc:objmax)
   epara l.addfim(alvo.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
@@ -772,7 +772,7 @@ func escr
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1000000, misc:tudo)
+  n.ini(arg1, misc:objmax, misc:tudo)
   epara l.addfim(alvo.dentro2), l, l.ini.remove
     r = l.objini
     continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
@@ -1020,7 +1020,7 @@ func escr
   ret !arg1 && !arg0.var.z_captura, arg0.msg("Capturar com o quê?")
 # Obtém o item
   nomeobj n # Para reconhecer os itens
-  n.ini(arg1 ? arg1 : arg0.var.z_captura, 1000000)
+  n.ini(arg1 ? arg1 : arg0.var.z_captura, misc:objmax)
   listaobj l
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini

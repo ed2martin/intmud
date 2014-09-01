@@ -417,7 +417,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3
     !result && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
-    mensgolpe(arg0, r, 1)
+    mensgolpe2(arg0, r)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento, r.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este)
@@ -629,18 +629,16 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
 # arg0 = personagem que está usando a habilidade ou magia
 # arg1 = personagem alvo
   txt512 lin.3
-  ret menssub(lin, 0), nulo
+  ret !menssub(lin, 0), nulo
+  $mens.p(arg0, arg1, arma1)
   se arg0 == arg1
-    $mens.p(arg0, arg1, arma1)
     $mens.mtodos2(lin.0, lin.2)
   senao
-    $mens.p(arg0, arg1, arma1)
     $mens.mtodos3(lin.0, lin.1, lin.2)
 
-func mensgolpe # Envia mensagens de acordo com o resultado do ataque
+func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
-# arg2 = verdadeiro se for alvo secundário (não mostra todas as mensagens)
 # Faz result=10 se o alvo morreu, mas não chama a função morreu
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
@@ -650,46 +648,54 @@ func mensgolpe # Envia mensagens de acordo com o resultado do ataque
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     se !arg1.pvida # Se morreu
       result = 10
-      ret menssub(lin, 8), nulo
-      ret $mens.mtodos3(lin.0, lin.1, lin.2)
-    senao arg2 # Se for alvo secundário
-      ret menssub(lin, 5), nulo
-      ret arg1.contr.msginv(lin.1)
+      ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
-      ret menssub(lin, 3), nulo
-      ret $mens.mtodos2(lin.0, lin.1)
+      ret menssub(lin, 3) && $mens.mtodos2(lin.0, lin.1)
     senao # Outros casos
-      ret menssub(lin, 5), nulo
-      ret $mens.mtodos3(lin.0, lin.1, lin.2)
+      ret menssub(lin, 5) && $mens.mtodos3(lin.0, lin.1, lin.2)
     fimse
-    ret
   casose "1" # Não teve efeito
-    ret menssub(lin, 14), nulo
-    ret arg2, arg1.contr.msginv(lin.1)
-    ret $mens.mtodos3(lin.0, lin.1, lin.2)
+    ret menssub(lin, 14) && $mens.mtodos3(lin.0, lin.1, lin.2)
   casose "2" # Errou o alvo
-    ret menssub(lin, 11), nulo
-    ret arg2, arg1.contr.msginv(lin.1)
-    ret $mens.mtodos3(lin.0, lin.1, lin.2)
+    ret menssub(lin, 11) && $mens.mtodos3(lin.0, lin.1, lin.2)
+  casofim
+
+func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado do ataque
+# arg0 = personagem que está atacando
+# arg1 = personagem alvo
+# Faz result=10 se o alvo morreu, mas não chama a função morreu
+  $mens.p(arg0, arg1, arma1)
+  txt512 lin.3
+  casovar result
+  casose "0" # Acertou o alvo
+    $mens.mens = mudavida
+    arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
+    ret arg1.pvida, arg1.sock && menssub(lin, 5) && arg1.contr.msginv(lin.1)
+    result = 10 # Morreu
+    ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
+  casose "1" # Não teve efeito
+    ret arg1.sock && menssub(lin, 14) && arg1.contr.msginv(lin.1)
+  casose "2" # Errou o alvo
+    ret arg1.sock && menssub(lin, 11) && arg1.contr.msginv(lin.1)
   casofim
 
 func menssub # Usado em mensgolpe
 # arg0 = variável txt512 lin.3
 # arg1 = índice da mensagem a obter
-# Retorna 1 se mensagem vazia
+# Retorna 0 se mensagem vazia ou 1 se há alguma mensagem
   textotxt t
   txtsublin(msgatk0, arg1, 1) && t.addfim("msgatk0")
   txtsublin(msgatk1, arg1, 1) && t.addfim("msgatk1")
   txtsublin(msgatk2, arg1, 1) && t.addfim("msgatk2")
   txtsublin(msgatk3, arg1, 1) && t.addfim("msgatk3")
   txtsublin(msgatk4, arg1, 1) && t.addfim("msgatk4")
-  ret !t.linhas, 1
+  ret !t.linhas, 0
   t.remove(rand(t.linhas))
   arg0.separar(txtsublin([t.remove], arg1, 3), "\n")
   arg0.0 = txtvis(arg0.0)
   arg0.1 = txtvis(arg0.1 ? arg0.1 : arg0.0)
   arg0.2 = txtvis(arg0.2 ? arg0.2 : arg0.0)
-  ret 0
+  ret 1
 
 
 classe cmd_resgatar

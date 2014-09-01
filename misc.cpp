@@ -1086,6 +1086,26 @@ char * ClipboardLer()
 }
 
 //------------------------------------------------------------------------------
+int NumInt(const char * txt)
+{
+    unsigned int num = 0;
+    bool sinal = false;
+    if (*txt=='-')
+        txt++, sinal=true;
+    for (; *txt>='0' && *txt<='9'; txt++)
+    {
+        unsigned int antes = num;
+        num = num * 10 + *txt - '0';
+        if (num/10 >= antes)
+            continue;
+        return (sinal ? -0x80000000 : 0x7FFFFFFF);
+    }
+    if (sinal)
+        return (num<0x80000000 ? -num : -0x80000000);
+    return (num < 0x7FFFFFFF ? num : 0x7FFFFFFF);
+}
+
+//------------------------------------------------------------------------------
 unsigned short Num16(const char * x)
 {
     return ((unsigned int)(unsigned char)x[1]<<8)+(unsigned char)x[0];

@@ -123,7 +123,7 @@ int TVarSav::Tempo(const char * arqnome)
             break;
         if (compara(mens, "data=",5)!=0)
             continue;
-        int tempo = atoi(mens+5) - HoraReg;
+        int tempo = NumInt(mens+5) - HoraReg;
         return (tempo<0 ? 0 : tempo);
     }
     return -1;
@@ -428,7 +428,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         {
     // Variáveis numéricas
         case varInt:
-            var.setInt(atoi(p));
+            var.setInt(NumInt(p));
             break;
     // Ponto flutuante
         case varDouble:

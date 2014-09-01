@@ -1175,5 +1175,5 @@ void TTextoPos::setValor(int numfunc, int valor)
 //----------------------------------------------------------------------------
 void TTextoPos::setTxt(int numfunc, const char * txt)
 {
-    setValor(numfunc, atoi(txt));
+    setValor(numfunc, NumInt(txt));
 }

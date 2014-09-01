@@ -27,9 +27,10 @@ func cmd_lcasa # Listar casas
     msg("\bNenhuma casa encontrada.")
   senao
     textotxt t
-    t.addfim("\b\c6Casas:\b")
+    t.addfim("\b\c6Casa  Jogo salvo\b")
     enquanto p.lin && t.linhas < 500
-      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo)
+      refvar m = txtsub($[p.texto].nomejog, 1, 1)
+      t.addfim(txt(p.texto, 2) + $[p.texto].s_titulo + (m ? "  " + m))
       p.depois
     efim
     msg2(t.remove(500))
@@ -200,6 +201,30 @@ const tipo10 = "sala"
 const clas10 = var.classe1
 const vari10 = "s5"
 const exec10 = "acerta_mudou"
+#
+const nome11 = "Sala 6"
+const tipo11 = "sala"
+const clas11 = var.classe1
+const vari11 = "s6"
+const exec11 = "acerta_mudou"
+#
+const nome12 = "Sala 7"
+const tipo12 = "sala"
+const clas12 = var.classe1
+const vari12 = "s7"
+const exec12 = "acerta_mudou"
+#
+const nome13 = "Sala 8"
+const tipo13 = "sala"
+const clas13 = var.classe1
+const vari13 = "s8"
+const exec13 = "acerta_mudou"
+#
+const nome14 = "Sala 9"
+const tipo14 = "sala"
+const clas14 = var.classe1
+const vari14 = "s9"
+const exec14 = "acerta_mudou"
 
 
 classe casa
@@ -244,11 +269,9 @@ func inicasa_exec # Carrega objetos da casa
   efim
 # Indica que nenhuma sala mudou
   objmudou = 0
-  s1.objmudou = 0
-  s2.objmudou = 0
-  s3.objmudou = 0
-  s4.objmudou = 0
-  s5.objmudou = 0
+  s1.objmudou = 0, s2.objmudou = 0, s3.objmudou = 0
+  s4.objmudou = 0, s5.objmudou = 0, s6.objmudou = 0
+  s7.objmudou = 0, s8.objmudou = 0, s9.objmudou = 0
 # Checa a fechadura
   !chave && mudachave
 # Checa se ainda pertence a um jogador
@@ -284,16 +307,14 @@ func mudou # Se houve alguma mudança (há necessidade de salvar)
 
 func salvar # Salva objetos da casa
   objmudou = 0
-  s1.objmudou = 0
-  s2.objmudou = 0
-  s3.objmudou = 0
-  s4.objmudou = 0
-  s5.objmudou = 0
+  s1.objmudou = 0, s2.objmudou = 0, s3.objmudou = 0
+  s4.objmudou = 0, s5.objmudou = 0, s6.objmudou = 0
+  s7.objmudou = 0, s8.objmudou = 0, s9.objmudou = 0
   listaitem item
   listaobj lista
   debug dbg
   dbg.exec = 50000
-  lista.addfim1(este, s1, s2, s3, s4, s5)
+  lista.addfim1(este, s1, s2, s3, s4, s5, s6, s7, s8, s9)
   item = lista.ini, item.depois
   enquanto item
     se item.obj.objsav & 1 != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
@@ -306,3 +327,14 @@ func salvar # Salva objetos da casa
   efim
   arqsav sav1
   sav1.salvar("sav2/c-" + txt(este, 2) + ".sav", lista, 365000, "x")
+
+func descloja # Retorna informações da casa para a venda
+  uint16 itens
+  uint8 salas
+  itens = s1.objmax + s2.objmax + s3.objmax + s4.objmax + s5.objmax
+  itens += s6.objmax + s7.objmax + s8.objmax + s9.objmax
+  salas = 9 - !s1 - !s2 - !s3 - !s4 - !s5 - !s6 - !s7 - !s8 - !s9
+  txt300 lin
+  lin = txtcopiamai(nome, "A")
+  lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"
+  ret lin + ", até " + itens + " itens"
