@@ -628,6 +628,7 @@ func escrobj # Destrancar um item
     ret l.objini.cmd_destrancarobj(arg0, r, chave), nulo
   efim
 # Destranca o item
+  r.i_comechave && chave.apagar(1)
   r.i_aberto = 3
   $mens.p(arg0, r)
   $mens.mtodos1("$P destrancou $a.")
@@ -675,6 +676,7 @@ func escrdir # Destrancar uma porta
     ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave), nulo
   efim
 # Destranca a porta
+  arg0.dono.comechave_[arg1] && chave.apagar(1)
   arg0.dono.mudaporta(arg1, 2) # Destranca a porta
   $mens.p(arg0)
   $mens.mens = mporta

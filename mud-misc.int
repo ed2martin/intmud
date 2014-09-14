@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "31/8/2014"
+const versao = "13/9/2014"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -319,7 +319,7 @@ real utempo_antes
 real stempo
 real utempo
 int32 noar # Quantos minutos está no ar
-const iniclasse = criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 const ini = tempo = 1, noar = -1
 
 func tempo_exec
@@ -338,7 +338,7 @@ int8 expasso # Usado em extempo_exec
 listaobj evhora # Objetos que devem receber eventos cmd_hora
 listaobj lhora # Objetos que ainda não receberam eventos cmd_hora
 inttempo thora # Para gerar eventos cmd_hora
-const iniclasse = criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func salvartudo # Salva todos os arquivos pendentes de uma vez
   savlista.limpar
@@ -465,7 +465,7 @@ classe miscban
 # Para controlar endereços banidos
 textotxt texto # Lista de endereços banidos
 inttempo tempo
-const iniclasse = criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 const ini = texto.ler("sav2/ban.txt"), tempo_exec
 
 func salvar # Salva o arquivo com os endereços banidos
@@ -529,9 +529,7 @@ const bebedir = 100 # A partir de que valor pode errar a direção ao se movimenta
 const bebeatk = 70 # A partir de que valor pode errar os golpes devido à bebida
 uint8 t.255 # Fome e sede: 3=muita 2=média 1=pouca 0=sem
 uint8 f.255 # Fome e sede: 2=muita 1=média 0=pouca ou sem
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func ini
   uint16 ind
@@ -549,9 +547,7 @@ func ini
 classe miscbebida
 # Muda mensagens conforme a bebedeira
 const bebeini = 20 # A partir desse valor, a bebida começa a ter efeito
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func msgperso # Substituições conforme a bebedeira
 # arg0 = texto original

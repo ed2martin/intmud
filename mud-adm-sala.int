@@ -395,6 +395,7 @@ func cmd_asai # Apagar saída
     p.apagar(perso.dono, "inv_" + dir)
     p.apagar(perso.dono, "tranc_" + dir)
     p.apagar(perso.dono, "fechadura_" + dir)
+    p.apagar(perso.dono, "comechave_" + dir)
     p.apagar(perso.dono, "voar_" + dir)
     p.apagar(perso.dono, "fugir_" + dir)
     p.apagar(perso.dono, "portanome_" + dir)
@@ -816,25 +817,31 @@ const tipo6 = "linha"
 const clas6 = var.classe1
 const vari6 = "fechadura_" + var.saida1
 #
-const nome7 = "Voar"
-const info7 = "Se é preciso estar voando ou flutuando"
+const nome7 = "Come chave"
+const info7 = "Se o personagem perde a chave ao abrir a porta"
 const tipo7 = "simnao"
 const clas7 = var.classe1
-const vari7 = "voar_" + var.saida1
+const vari7 = "comechave_" + var.saida1
 #
-const nome8 = "Sem fuga"
-const info8 = "Se não existe a possibilidade de fugir de uma luta nessa direção"
+const nome8 = "Voar"
+const info8 = "Se é preciso estar voando ou flutuando"
 const tipo8 = "simnao"
 const clas8 = var.classe1
-const vari8 = "fugir_" + var.saida1
+const vari8 = "voar_" + var.saida1
 #
-const nome9 = "Nome da porta"
-const tipo9 = "linha"
+const nome9 = "Sem fuga"
+const info9 = "Se não existe a possibilidade de fugir de uma luta nessa direção"
+const tipo9 = "simnao"
 const clas9 = var.classe1
-const vari9 = "portanome_" + var.saida1
+const vari9 = "fugir_" + var.saida1
 #
-const nome10 = "Artigo porta"
-const tipo10 = "opcao"
+const nome10 = "Nome da porta"
+const tipo10 = "linha"
 const clas10 = var.classe1
-const vari10 = "portaartigo_" + var.saida1
-const extr10 = "a (porta)\nas (portas)\no (portão)\nos (portões)"
+const vari10 = "portanome_" + var.saida1
+#
+const nome11 = "Artigo porta"
+const tipo11 = "opcao"
+const clas11 = var.classe1
+const vari11 = "portaartigo_" + var.saida1
+const extr11 = "a (porta)\nas (portas)\no (portão)\nos (portões)"

@@ -274,9 +274,7 @@ const visivel = 1
 const persobat = este
 const persoesc = este
 const contr = este
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 
 classe cmd2_socialY
@@ -296,9 +294,7 @@ const descnome = "uma bolsa"
 const msexo = 0
 const visivel = 1
 const contr = este
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 
 classe soccomum
@@ -323,7 +319,7 @@ func escr
     ret !sem1, arg0.msg("Digite alguma coisa após " + txt(este, 4))
     $mens.p(arg0)
     mvis ? $mens.mtodos2(sem1, sem2) : $mens.mvis2(sem1, sem2)
-    epara l.addfim(arg0.evento), l, l.ini.remove
+    epara l.addfim(arg0.evento, este), l, l.ini.remove
       l.objini.cmd_social1(arg0, nulo, este)
     efim
     ret
@@ -353,10 +349,10 @@ func escr
       mvis ? $mens.mtodos2(item1, item2) : $mens.mvis2(item1, item2)
     fimse
     l.limpar
-    epara l.addfim(arg0.evento), l, l.ini.remove
+    epara l.addfim(arg0.evento, este), l, l.ini.remove
       l.objini.cmd_social1(arg0, r, este)
     efim
-    epara l.addfim(r.evento), l, l.ini.remove
+    epara l.addfim(r.evento, este), l, l.ini.remove
       l.objini.cmd_social2(arg0, r, este)
     efim
     ret

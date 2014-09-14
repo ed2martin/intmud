@@ -10,9 +10,7 @@ txt100 o_2 # Texto de $2
 txt100 o_3 # Texto de $3
 txt100 o_4 # Texto de $4
 txt100 o_5 # Texto de $5
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func p # Define os personagens
   contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
@@ -192,18 +190,12 @@ func o_o # Nome do objeto
   senao
     ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
 
-func o_s # Gênero do personagem
-  ret perso.perso, txtcopiamai(perso.msexo ? "o" : "a", arg0)
-  ret txtcopiamai(perso.msexo ? "um" : "uma", arg0)
-
-func o_t # Gênero do alvo
-  ret alvo.perso, txtcopiamai(alvo.msexo ? "o" : "a", arg0)
-  ret txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
-
-func o_u # Gênero do objeto
-  ret obj.perso, txtcopiamai(obj.msexo ? "o" : "a", arg0)
-  ret txtcopiamai(obj.msexo ? "um" : "uma", arg0)
-
+const o_f = txtcopiamai(perso.msexo ? "um" : "uma", arg0)
+const o_g = txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
+const o_h = txtcopiamai(obj.msexo ? "um" : "uma", arg0)
+const o_s = txtcopiamai(perso.msexo ? "o" : "a", arg0)
+const o_t = txtcopiamai(alvo.msexo ? "o" : "a", arg0)
+const o_u = txtcopiamai(obj.msexo ? "o" : "a", arg0)
 const o_v = txtcopiamai(perso.msexo ? "e" : "a", arg0)
 const o_w = txtcopiamai(alvo.msexo ? "e" : "a", arg0)
 const o_x = txtcopiamai(obj.msexo ? "e" : "a", arg0)
@@ -223,9 +215,7 @@ textopos p0 # Usado em proc: linha atual
 int16 i # Posição em p0 # Usado em proc: posição em p0
 txt1 opc # Usado em proc: opção
 txt100 lin # Usado em proc: linha
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func p # Define os personagens
   contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
@@ -277,9 +267,7 @@ ref p1 # O próprio personagem
 ref p2 # O animal usado por p1
 ref a1 # Quem está batalhando com o personagem
 ref a2 # O animal de quem está batalhando com o personagem
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func mens
 # arg0 = mensagem
@@ -403,9 +391,7 @@ txt2 tsexo # Pode ser a,as,o,os
 txt2 tplural # Pode ser á,ão
 txt2 tm # Pode ser "" ou "m"
 txt100 tnome # Nome da porta
-
-func iniclasse
-  criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 
 func mens
   tnome = arg1.portanome_[arg2]

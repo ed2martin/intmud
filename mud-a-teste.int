@@ -470,6 +470,7 @@ const descpos = "Uma fonte jorra uma água límpida incessantemente."
 const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
 const f_fome = 1
 const f_sede = 20
+const i_pegar = "A fonte faz parte do chão."
 const pesoobj = 599000
 
 
@@ -606,6 +607,7 @@ const nome = "relógio"
 const descnome = "um grande relógio"
 const descpos = "Há grande relógio que mais parece uma pequena estante."
 const descver = parte1 + parte2 + parte3
+const i_pegar = "O relógio está preso por uma corrente."
 const evhora = 1 # Eventos hora: Sim
 const parte1 = "Na parte de cima você vê números de 1 a 12, em algarismos romanos.\n\
 O ponteiro dos segundos é um polegar, enquanto e dos minutos é um\n\
@@ -631,6 +633,26 @@ func cmd_hora
   senao
     $mens.mtodos1("O grande relógio dá " + hora + " badaladas.")
   fimse
+
+
+classe i_teste042
+herda comum_item
+const nome = "fonte de água"
+const descnome = "uma fonte de água"
+const descpos = "Uma fonte jorra uma água límpida incessantemente."
+const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
+const f_fome = 1
+const f_sede = 20
+const i_pegar = "A fonte faz parte do chão."
+sav inttempo tempo
+
+func cmd_ini
+  tempo = 1200 # Quanto tempo a fonte dura, em décimos de segundo
+
+func tempo_exec
+  apagar(este)
+  $mens.p(este)
+  $mens.mtodos1("Uma fonte de água secou.")
 
 
 classe p_teste001
@@ -794,6 +816,7 @@ m_Invisibilidade 8\n\
 m_Flutuar 8\n\
 m_Cegueira 8\n\
 m_Curar_Cegueira 8\n\
+m_Criar_Fonte 8\n\
 h_Rosnar 8\n\
 h_Roncar 8"
 const taxaaula = 50
@@ -1263,6 +1286,30 @@ const taxacompra = 20
 const lojainv = 1 # Produtos inv: Sim
 const lojacasa = "teste"
 const lojachave = "teste"
+
+
+classe p_teste026
+herda comum_perso
+const nome = "garoto"
+const descnome = "um garoto"
+const msexo = 0
+const inivar = "e_apagar=50"
+inttempo tempo
+
+func cmd_mudadono
+  tempo = 70
+
+func tempo_exec
+  tempo = 70
+  dono.msg(txtsublin(frases, rand(intsublin(frases)), 1))
+
+const frases = "Um garoto diz: Bem-vindo amigo.\n\
+Um garoto diz: Bienvenido amigo.\n\
+Um garoto diz: Welcome friend.\n\
+Um garoto diz: Willkommen Freund.\n\
+Um garoto diz: Bienvenue ami.\n\
+Um garoto diz: Lorem ipsum amicum.\n\
+Um garoto diz: youkoso yuujin."
 
 
 classe s_teste001
@@ -2892,6 +2939,7 @@ const dir_s = $s_teste097
 const dir_l = $s_teste108
 const dir_o = $s_teste113
 const dir_c = $s_teste082
+const dir_b = $s_teste119
 
 
 classe s_teste096
@@ -3321,3 +3369,27 @@ const s_item = 0
 const s_luta = 0 # Batalha: 0 Pacífico
 const objmax = 50
 const dir_n = $s_teste117
+
+
+classe s_teste119
+herda b_teste
+const s_titulo = "Subsolo 4: Diversos"
+const s_desc = "Ao norte: Frases aleatórias"
+const dir_n = $s_teste120
+const dir_c = $s_teste095
+
+
+classe s_teste120
+herda b_teste
+const s_titulo = "Frases aleatórias"
+const s_desc = "Aqui, o garoto fala uma frase aleatória a cada 7 segundos.\n\
+Todas elas significam bem-vindo amigo. Cinco segundos depois\n\
+dos jogadores saírem da sala, o PNJ é apagado."
+const dir_s = $s_teste119
+const s_reset = "P 100 teste026 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste026:objsolto.total < 1
+    criar("p_teste026", este, 0)
+  fimse

@@ -860,7 +860,7 @@ classe admnomesnao
 # Lista de nomes não permitidos para personagens dos jogadores
 textovar nomes # Nomes, atualizados a partir de config:nomesnao
 intexec atu
-const iniclasse = criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 const ini = atu_exec
 const atualiza = atu = 1
 
@@ -882,7 +882,7 @@ classe admbanda
 comum real b1 # Mesmo que config:banda1, só que em décimos de segundo
 comum real b2 # Mesmo que config:banda2, só que a cada décimo de segundo
 intexec atu
-const iniclasse = criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 const ini = atualiza
 
 func atualiza # Atualiza banda1 e banda2
