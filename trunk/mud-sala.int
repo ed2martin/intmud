@@ -2,9 +2,7 @@ classe area
 inttempo reset # Para executar reset quando a área é criada
 inttempo resetcont # Tempo para o próximo reset
 intexec resetcheca # Para acertar tempo do próximo reset, após mudar a área
-
-func iniclasse
-  arg0 != "area" && criar(arg0)
+const iniclasse = arg0 != "area" && !$[arg0] && criar(arg0)
 
 func ini
   reset = 1
@@ -97,32 +95,30 @@ volmax\n\
 objmax\n\
 eveste\n\
 dir_n portaini_n portanome_n portaartigo_n fechadura_n\n\
-fugir_n inv_n fecha_n tranc_n voar_n\n\
+comechave_n fugir_n inv_n fecha_n tranc_n voar_n\n\
 dir_s portaini_s portanome_s portaartigo_s fechadura_s\n\
-fugir_s inv_s fecha_s tranc_s voar_s\n\
+comechave_s fugir_s inv_s fecha_s tranc_s voar_s\n\
 dir_l portaini_l portanome_l portaartigo_l fechadura_l\n\
-fugir_l inv_l fecha_l tranc_l voar_l\n\
+comechave_l fugir_l inv_l fecha_l tranc_l voar_l\n\
 dir_o portaini_o portanome_o portaartigo_o fechadura_o\n\
-fugir_o inv_o fecha_o tranc_o voar_o\n\
+comechave_o fugir_o inv_o fecha_o tranc_o voar_o\n\
 dir_c portaini_c portanome_c portaartigo_c fechadura_c\n\
-fugir_c inv_c fecha_c tranc_c voar_c\n\
+comechave_c fugir_c inv_c fecha_c tranc_c voar_c\n\
 dir_b portaini_b portanome_b portaartigo_b fechadura_b\n\
-fugir_b inv_b fecha_b tranc_b voar_b\n\
+comechave_b fugir_b inv_b fecha_b tranc_b voar_b\n\
 dir_ne portaini_ne portanome_ne portaartigo_ne fechadura_ne\n\
-fugir_ne inv_ne fecha_ne tranc_ne voar_ne\n\
+comechave_ne fugir_ne inv_ne fecha_ne tranc_ne voar_ne\n\
 dir_no portaini_no portanome_no portaartigo_no fechadura_no\n\
-fugir_no inv_no fecha_no tranc_no voar_no\n\
+comechave_no fugir_no inv_no fecha_no tranc_no voar_no\n\
 dir_se portaini_se portanome_se portaartigo_se fechadura_se\n\
-fugir_se inv_se fecha_se tranc_se voar_se\n\
+comechave_se fugir_se inv_se fecha_se tranc_se voar_se\n\
 dir_so portaini_so portanome_so portaartigo_so fechadura_so\n\
-fugir_so inv_so fecha_so tranc_so voar_so\n\
+comechave_so fugir_so inv_so fecha_so tranc_so voar_so\n\
 dir_entrar portaini_entrar portanome_entrar portaartigo_entrar fechadura_entrar\n\
-fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n\
+comechave_entrar fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n\
 dir_sair portaini_sair portanome_sair portaartigo_sair fechadura_sair\n\
-fugir_sair inv_sair fecha_sair tranc_sair voar_sair"
-
-func iniclasse
-  criar(arg0)
+comechave_sair fugir_sair inv_sair fecha_sair tranc_sair voar_sair"
+const iniclasse = !$[arg0] && criar(arg0)
 
 func ini # Objeto foi criado: inicializa variáveis
   porta_n = portaini_n

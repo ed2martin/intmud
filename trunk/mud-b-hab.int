@@ -544,6 +544,26 @@ func cmd_alvo
     ret 1 # Para cancelar a magiaclasse magia_curar
 
 
+classe magia_criar_fonte
+herda comando_ataque
+const nomevar = "m_Criar fonte"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const c_mana1 = 15
+const c_mana2 = 5
+const precisao = 101
+const msgatk0 = "\n\n\n\
+$P faz um gesto circular com as mãos.\n\n\
+$P faz um gesto circular com as mãos."
+
+func cmd_alvofim
+  refvar sala = arg0.contr.dono # sala = sala aonde o personagem está
+  se sala.dentro1.total("i_teste042") < 5
+    criar("i_teste042", sala)
+    $mens.p(arg0)
+    $mens.mtodos1("Aos poucos, uma fonte brota do chão.")
+  fimse
+
+
 classe magia_curar
 herda comando_ataque
 const nomevar = "m_Curar"

@@ -128,9 +128,12 @@ As seguintes sequências de caracteres têm um significado especial:\n\
  \c2$B\b  Nome do alvo sem citar o dono\n\
  \c2$C\b  Nome do alvo no comando QUEM\n\
  \c2$O\b  Nome do objeto\n\
- \c2$S\b  Depende do personagem: o, a, um ou uma\n\
- \c2$T\b  Depende do alvo: o, a, um ou uma\n\
- \c2$U\b  Depende do objeto: o, a, um ou uma\n\
+ \c2$F\b  Depende do personagem: um ou uma\n\
+ \c2$G\b  Depende do alvo: um ou uma\n\
+ \c2$H\b  Depende do objeto: um ou uma\n\
+ \c2$S\b  Depende do personagem: o ou a\n\
+ \c2$T\b  Depende do alvo: o ou a\n\
+ \c2$U\b  Depende do objeto: o ou a\n\
  \c2$V\b  Depende do personagem: e ou a\n\
  \c2$W\b  Depende do alvo: e ou a\n\
  \c2$X\b  Depende do objeto: e ou a\n\
@@ -176,10 +179,14 @@ const adm_cod = "\b\c3Comandos de edição do código\b\n\
 \c2ccl\b <nome> [arquivo]\n\
   Cria classe. Aquivo é o sufixo do arquivo aonde criar a classe.\n\
   Se for omitido, cria no arquivo mud.int.\n\
+  Nota: após criar a classe, costuma-se editar com ecl e inicializar com icl.\n\
 \c2acl\b <nome>\n\
   Apaga classe.\n\
 \c2ecl\b [nome]\n\
   Edita uma classe.\n\
+\c2icl\b [nome]\n\
+  Inicializa uma classe (chama a função iniclasse da classe).\n\
+  Isso é necessário após criar e editar com os comandos ccl e ecl.\n\
 \c2rcl\b <nome> <novo nome>\n\
   Renomeia uma classe.\n\
 \c2herda\b <nome>\n\
@@ -913,6 +920,18 @@ func cmd_ecl # Edita uma classe
     var.opcnome = ""
     var.opcclasse = txts(arg0)
     p_classe("\b")
+  fimse
+  ret 1
+
+func cmd_icl # Inicializa uma classe
+  prog p
+  se !arg0
+    msg("\bDigite o nome da classe após ECL")
+  senao !p.existe(arg0)
+    msg("\bClasse não existe: " + arg0)
+  senao
+    [arg0]:iniclasse(arg0)
+    msg("\bClasse inicializada: " + arg0)
   fimse
   ret 1
 

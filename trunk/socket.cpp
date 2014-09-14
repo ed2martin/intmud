@@ -1350,8 +1350,9 @@ void TSocket::Processa(const char * buffer, int tamanho)
                 }
             // Telnet: Mensagem de 2 bytes
             // 255 255 = caracter 255
-            // 255 240 = mensagem 240
             // 255 249 = go ahead
+            // 255 244 = interrupt process (Control+C)
+            // 255 240 = end of option negotiation
                 if (pontTelnet==1)
                 {
                     if (dado==255)
@@ -1368,6 +1369,11 @@ void TSocket::Processa(const char * buffer, int tamanho)
                     {
                         pontTelnet=0;
                         continue;
+                    }
+                    if (dado==244)
+                    {
+                        FecharSock(-1, 0);
+                        return;
                     }
                 }
             // Telnet: Anota caracter no buffer

@@ -680,12 +680,12 @@ func morreu # Procedimentos quando morre
 # Animal do jogador: não dá experiência
   senao dono.jog
     pvida = 0
-    p_morreu2 && $mens.p(este) + $mens.mtodos2(p_morreu2)
+    p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
     dono.escolhebat # Atualiza persobat
 # Outro personagem: dá experiência
   senao dono.perso
     pvida = 0, batalhaexp(1.5)
-    p_morreu2 && $mens.p(este) + $mens.mtodos2(p_morreu2)
+    p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
     dono.escolhebat # Atualiza persobat
   senao
     pvida = 0, batalhaexp(1), batalhafim

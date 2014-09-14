@@ -6,6 +6,7 @@ adm_efeito, adm_atrib, adm_reset, adm_casa
 # ini = objeto foi criado
 # fim = objeto está sendo apagado
 # info = tipo (l=local, t=telnet, p=papovox, b=bot) + espaço + extra
+# infotelnet = 1 (verdadeiro) se estiver conectado via Telnet
 # sendo que extra pode ser o endereço IP ou o nome da sala
 # msgsock(texto) = envia mensagem para jogador
 # msgsala(texto) = envia mensagem para todos da sala
@@ -68,6 +69,10 @@ func mudaperso # Muda o personagem, arg0=novo personagem
   efim
 
 func reinicia # Volta ao início: pede o nome do personagem
+  se nomefim
+    msgchegou("* Personagem saiu: " + nome + ", " + nomefim, "")
+    nomefim = ""
+  fimse
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
   cnome = "un", nome = ""
   mudaperso(nulo)
@@ -223,13 +228,13 @@ func msg # Envia mensagem
   casofim
 
 func msgprompt_exec
-  se !perso
+  se passo || !perso
   senao perso.atkenv
-    ret !jogconfig.7, nulo
+    ret !jogconfig.7, infotelnet && msg("", 1)
     refvar t1 = $mens_prompt.mens(perso.var.z_bprompt, perso) + "\b"
     msg(t1, 1)
   senao
-    ret !jogconfig.6, nulo
+    ret !jogconfig.6, infotelnet && msg("", 1)
     refvar t1 = $mens_prompt.mens(perso.var.z_prompt, perso) + "\b"
     msg(t1, 1)
 
@@ -254,7 +259,7 @@ func p_perso # Entrando no jogo: digitar o nome do personagem
   passo = "perso", tpasso = nome = cnome = ""
   texto = txtnome(arg0)
   se !arg0
-    msg("Digite o nome do seu personagem")
+    msg("Digite o nome do seu personagem:\cn ")
   senao inttotal(arg0) < 3 || inttotal(arg0) > 16
     msg("O nome deve ter de 3 a 16 caracteres; digite outro")
   senao intnome(arg0) || txtproc(txtsepara("a" + arg0, "L+D"), " ") >= 0
@@ -295,7 +300,7 @@ func p_criasenha1 # Digitar a senha ao criar personagem
   passo = "criasenha1"
   tpasso = txt1(tpasso)
   se !arg0
-    msg("Digite uma senha para o personagem")
+    msg("Digite uma senha para o personagem\cm")
   senao inttotal(arg0) < 5 || inttotal(arg0) > 16
     msg("A senha deve ter de 5 a 16 caracteres, digite outra")
   senao intsenha(arg0) == 3
@@ -326,9 +331,9 @@ func p_email1 # Digitar o e-mail
   txt100 lin.3
   se !arg0
     se config:email == 1
-      msg("Digite seu e-mail ou N para nenhum")
+      msg("Digite seu e-mail ou N para nenhum\cn")
     senao
-      msg("Digite seu e-mail")
+      msg("Digite seu e-mail\cn")
     fimse
   senao arg0 == "n" && config:email == 1
     p_sexo1
@@ -501,7 +506,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
   texto = txtnome(tpasso)
   passo = "entrasenha"
   se !arg0
-    msg("Digite a senha ou, se o personagem não for seu, tecle Z")
+    msg("Digite a senha ou tecle Z se não for seu: \cm")
   senao arg0 == "z"
     nome = "", p_perso
   senao !sav1.senha("sav/" + texto + ".sav", txtmin(arg0))
@@ -534,7 +539,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     cnome = "un " + texto
     jogconfig.bits = perso.jogconfig.bits
     temposair # Acerta tempo para sair do MUD
-    msg("Reconectado")
+    msg("Reconectado\cn")
     txt200 lin
     nomefim = info
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
@@ -570,7 +575,7 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
 # Muda de sala e volta ao jogo
     perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
     criar("jogsock_retorna", perso, $[perso.salanome]) # Para mudar de sala
-    msg("Continuando jogo salvo.")
+    msg("Continuando jogo salvo\cn")
     txt200 lin
     lin = "* Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, "* " + nome + " entrou")
@@ -723,7 +728,7 @@ func fim # Objeto foi apagado
     $mens.p(este)
     $mens.mvis2("", "$P foi embora.")
   fimse
-  comum_persoanimal:fim
+  comum_perso:fim
 # Se era o último jogador online, salva todas as casas
   cnome = nome = ""
   indiceitem item
@@ -986,7 +991,7 @@ func cmd_recalc1 # Recalcula variáveis do personagem
 
 classe cmdalias
 # Para processar o comando alias
-const iniclasse = criar(arg0)
+const iniclasse = !$[arg0] && criar(arg0)
 txt512 m_0
 const m_1 = txt1(m_0)
 const m_2 = txtsub(m_0, 1, 1)

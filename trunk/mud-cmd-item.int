@@ -59,7 +59,7 @@ func escr
   listaobj l
   nomeobj n # Para reconhecer os itens
   textotxt nomes # Nomes dos itens pegos
-  ret !arg1, arg0.msg("Acender o quê?")
+  ret !arg1, arg0.msg("Apagar o quê?")
   n.ini(arg1, 1)
   epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
@@ -127,7 +127,7 @@ func escr
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
 "a."))
     fimse
-    mens = " de $a."
+    mens = " d$ $a."
   fimse
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
@@ -137,7 +137,10 @@ func escr
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
     r = l.objini # Nota: r pode mudar após r.mudadono
-    se r.persolugar
+    se r.i_pegar
+      erro = r.i_pegar
+      continuar
+    senao r.persolugar
       casovar r.persolugar.objini.posicao
       casose "4"
         erro = "Você não consegue pegar porque tem alguém dormindo em cima."

@@ -232,9 +232,12 @@ $A = Nome do alvo
 $B = Nome do alvo sem citar o dono
 $C = Nome do alvo no comando QUEM
 $O = Nome do objeto
-$S = Depende do personagem: "o", "a", "um" ou "uma"
-$T = Depende do alvo: "o", "a", "um" ou "uma"
-$U = Depende do objeto: "o", "a", "um" ou "uma"
+$F = Depende do personagem: "um" ou "uma"
+$G = Depende do alvo: "um" ou "uma"
+$H = Depende do objeto: "um" ou "uma"
+$S = Depende do personagem: "o" ou "a"
+$T = Depende do alvo: "o" ou "a"
+$U = Depende do objeto: "o" ou "a"
 $V = Depende do personagem: "e" ou "a"
 $W = Depende do alvo: "e" ou "a"
 $X = Depende do objeto: "e" ou "a"
@@ -1007,6 +1010,9 @@ Se estiver ausente ou for um texto vazio, não requer chave.
 const i_chave = ""
 Texto que contém o código da chave, ou "" se não for chave.
 
+const i_pegar = ""
+Mensagem ao tentar pegar o item; se vazio, consegue pegar.
+
 const luzitem = 0
 Tipo de fonte de luz:
 0 = Não aceita acender/apagar, sem fogo
@@ -1200,9 +1206,11 @@ o personagem.
 
 cmd_social1(personagem, alvo, objeto do comando)
 Personagem executou algum comando social.
+É chamada também a função cmd_social1 do objeto que trata do comando.
 
 cmd_social2(personagem, alvo, objeto do comando)
-Personagem ou item foi algo de algum comando social.
+Personagem ou item foi alvo de algum comando social.
+É chamada também a função cmd_social2 do objeto que trata do comando.
 
 func cmd_pegouobj(personagem, origem, item, quantidade do item)
 func cmd_soltouobj(personagem, destino, item, quantidade do item)
