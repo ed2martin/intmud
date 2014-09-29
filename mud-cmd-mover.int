@@ -54,7 +54,16 @@ func mover # Personagem anda em uma direção
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i.obj, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    ret !i, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    casovar $c_[s1.fechadura_[dir]].infotaxa
+    casose "2" # Casa bloqueada por falta de pagamento
+      $mens.p(arg0)
+      arg0.msginv(config:casamsgbloq)
+      ret
+    casose "1" # Atrasou pagamento da taxa
+      $mens.p(arg0)
+      arg0.msginv(config:casamsgaviso)
+    casofim
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
@@ -619,7 +628,7 @@ func escrobj # Destrancar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave de " + r.descnome + ".")
+    ret !i, arg0.msg("Você não possui a chave para destrancar " + r.descnome + ".")
     chave = i.obj
   fimse
 # Gera eventos
@@ -669,6 +678,15 @@ func escrdir # Destrancar uma porta
     efim
     ret !i, arg0.msg("Você não possui a chave para destrancar " + mporta + ".")
     chave = i.obj
+    casovar $c_[arg0.dono.fechadura_[arg1]].infotaxa
+    casose "2" # Casa bloqueada por falta de pagamento
+      $mens.p(arg0)
+      arg0.msginv(config:casamsgbloq)
+      ret
+    casose "1" # Atrasou pagamento da taxa
+      $mens.p(arg0)
+      arg0.msginv(config:casamsgaviso)
+    casofim
   fimse
 # Gera eventos
   listaobj l
@@ -735,7 +753,7 @@ func escrobj # Trancar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave de " + r.nome + ".")
+    ret !i, arg0.msg("Você não possui a chave para trancar " + r.nome + ".")
     chave = i.obj
   fimse
 # Gera eventos
@@ -876,7 +894,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 6
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P sentou-se em $o.")
+    $mens.mtodos1("$P sentou-se $e $o.")
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       l.objini.cmd_sentouobj(arg0, r, arg1)
     efim
@@ -948,7 +966,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 5
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P descansa em $o.")
+    $mens.mtodos1("$P descansa $e $o.")
     epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
       l.objini.cmd_descansouobj(arg0, r, arg1)
     efim
@@ -1017,7 +1035,7 @@ func escr
       ret l.objini.cmd_dormirobj(arg0, r, arg1), nulo
     efim
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P deita em $o e dorme.")
+    $mens.mtodos1("$P deita $e $o e dorme.")
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 4
@@ -1252,6 +1270,10 @@ const vari12 = "msgextra"
 const nome13 = "Mensagens"
 const tipo13 = "menu--"
 const clas13 = "menu_hab_retornar0"
+#
+const nome14 = "Menu de mensagens"
+const tipo14 = "ajuda--"
+const extr14 = menu_hab_ataque:msg2
 
 
 classe menu_hab_retornar0

@@ -1787,6 +1787,8 @@ const tipo1 = "numero--"
 # "atribatk" = função que altera atributos de ataque de um personagem
 # "atribdef" = função que altera atributos de defesa de um personagem
 # "menu" = um submenu; a opção nome da classe é a classe que contém o submenu
+# "ajuda" = um texto explicativo, que é mostrado ao usuário
+#           nesse caso, só é usada a constante extr (vide abaixo)
 # Se não for possível editar como função, acrescente um sinal de '-' no nome
 # Se não for possível apagar, acrescente mais um sinal de '-' no nome
 
@@ -1794,14 +1796,15 @@ const extr1 = "1 8"
 # Opções extras. Os tipos que possuem opções extras são:
 # No tipo "txtlinha" é o número da linha (começa no 0)
 # No tipo "numero" são os valores mínimo e máximo (nesse caso, vai de 1 a 8)
-# No tipo "opcao", é a lista de opções
+# No tipo "opcao" é a lista de opções
 # No tipo "txtopcao" são a quantidade mínima e a quantidade máxima de linhas
 #         e o número da primeira opção que pode ser alterada
+# No tipo "ajuda" é o texto que será mostrado ao usuário
 
 const exec1 = "atualiza"
 # Se não for nulo, quando o usuário muda a opção, é executada a função
 # com esse nome de todos os objetos que foram mudados
-# Pode-se especificar a classe, da seguinte forma:
+# É possível especificar também a classe, da seguinte forma:
 # const exec1 = "nomedaclasse:nomedafunção"
 
 const titu1 = "um texto qualquer"
@@ -1912,8 +1915,6 @@ admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 20. Lista de coisas pendentes
 
-Opção para pagar a taxa mensal da casa
-Bloquear casas sem pagar a taxa; tirar do jogador após um tempo sem pagar a taxa
 Jogadores devem poder mudar título e descrição das salas da casa que possuem
 Comando para expulsar todos da casa do jogador
 Comando para listar os usuários por IP

@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 319 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 321 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -302,11 +302,37 @@ const casachave = 120
 # Valor para trocar a fechadura da casa do jogador
 const casafechadura = 500
 #
+# Taxa de manutenção
+# Valor da taxa de manutenção da casa, em porcentagem (100=preço da casa)
+const casataxa = 5
+#
+# Dias manutenção
+# De quantos em quantos dias precisa pagar a taxa de manutenção da casa
+const casatempotaxa = 30
+#
+# Dias avisar
+# Quantos dias sem pagar a taxa avisa sobre o atraso
+const casatempoaviso = 5
+#
+# Dias bloquear
+# Quantos dias sem pagar a taxa bloqueia a casa
+const casatempobloq = 20
+#
+# Dias perder
+# Quantos dias sem pagar a taxa perde a casa
+const casatempoperder = 180
+#
 # Mensagem perso - quando tem a chave da casa e atravessa a porta fechada
 const casaabriu1 = "Você segura uma chave e abre a porta da sua casa."
 #
 # Mensagem outros - quando tem a chave da casa e atravessa a porta fechada
 const casaabriu2 = "$P segura uma chave e abre a porta da casa del$v."
+#
+# Mensagem aviso - ao entrar na casa, se o pagamento da taxa está atrasado
+const casamsgaviso = "Há uma nota avisando que a taxa de manutenção da casa está atrasada."
+#
+# Mensagem bloqueado - ao entrar na casa, se está bloqueada por falta de pagamento
+const casamsgbloq = "A porta foi lacrada por falta de pagamento."
 #
 # Os tipos de produtos (itens) que vendedores podem comprar
 const produtos = "Possui metal\n\

@@ -26,11 +26,27 @@ func cmd_lcasa # Listar casas
   se !p.iniclasse("c_" + txtremove(arg0, "EMDCT7"))
     msg("\bNenhuma casa encontrada.")
   senao
+    datahora hora
+    hora.agora
     textotxt t
-    t.addfim("\b\c6Casa  Jogo salvo\b")
+    txt200 lin
+    t.addfim("\b\c6Casa  ArquivoJogador  DiasTaxa  Situação\b")
     enquanto p.lin && t.linhas < 500
-      refvar m = txtsub($[p.texto].nomejog, 1, 1)
-      t.addfim(txt(p.texto, 2) + $[p.texto].s_titulo + (m ? "  " + m))
+      lin = txtsub($[p.texto].nomejog, 1, 1)
+      se lin
+        lin = "  " + lin + "  " + (hora.numdias - $[p.texto].diataxa)
+        casovar $[p.texto].infotaxa
+        casose "1"
+          lin += "  Atrasado"
+          sair
+        casose "2"
+          lin += "  Bloqueado"
+          sair
+        casose
+          lin += "  Ok"
+        casofim
+      fimse
+      t.addfim(txt(p.texto, 2) + lin)
       p.depois
     efim
     msg2(t.remove(500))
@@ -227,6 +243,22 @@ const vari14 = "s9"
 const exec14 = "acerta_mudou"
 
 
+classe admatucasa
+# Atualiza a variável infotaxa de todas as casas
+const iniclasse = arg0 != "casa" && !$[arg0] && criar(arg0)
+prog p
+debug d
+ref r
+
+func atualiza # Atualiza as casas
+  d.exec = 50000
+  epara p.iniherdainv("casa"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.tempotaxa = 1
+    efim
+  efim
+
+
 classe casa
 listaobj salas
 intexec inicasa
@@ -234,6 +266,9 @@ const iniclasse = arg0 != "casa" && !$[arg0] && criar(arg0)
 const ini = inicasa = 1
 sav indiceobj nomejog # "cj " + nome codificado + " " + prefixo da área
 sav txt50 chave # Código da chave que abre a porta da casa
+sav int32 diataxa # A partir de quando deve pagar a taxa de manutenção da casa
+int8 infotaxa # 0=taxa em dia, 1=avisar, 2=bloquear casa
+inttempo tempotaxa # Para atualizar infotaxa
 int1 objmudou # Se as informações da casa foram mudadas (precisa salvar a casa)
 const ident = nome
 #
@@ -283,8 +318,42 @@ func inicasa_exec # Carrega objetos da casa
       nomejog = "", objmudou = 1
     fimse
   fimse
+  nomejog && tempotaxa_exec
 
-func acerta_mudou
+func tempotaxa_exec # Atualiza variável infotaxa
+  datahora hora
+  hora.agora
+  refvar atraso = hora.numdias - diataxa
+  se intpos(config:casatempotaxa) == 0 # Sem taxa de manutenção das casas
+    infotaxa = 0
+    tempotaxa = 0
+  senao !nomejog # Se não pertence a nenhum jogador
+    infotaxa = 0
+    tempotaxa = 0
+  senao !diataxa # Se o tempo quando pagou a taxa está vazio
+    infotaxa = 0
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+    refvar tempo = intpos(config:casatempotaxa)
+    diataxa = hora.numdias + tempo
+    tempo && (diataxa = intdiv(diataxa / tempo) * tempo)
+    objmudou = 1
+  senao atraso >= config:casatempoperder
+    infotaxa = 0
+    tempotaxa = 0
+    nomejog = ""
+    mudachave
+  senao atraso >= config:casatempobloq
+    infotaxa = 2
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+  senao atraso >= config:casatempoaviso
+    infotaxa = 1
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+  senao
+    infotaxa = 0
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+  fimse
+
+func acerta_mudou # Chamado quando a lista das salas da casa mudou
   txt512 lin
   lin = "func mudou # Se houve alguma mudança\n"
   lin += "# Não alterar; função criada automaticamente\nret objmudou"
@@ -295,6 +364,7 @@ func acerta_mudou
   efim
   p.criar(este, lin)
   config:salvar
+  objmudou = 1
 
 func mudachave # Muda o código da fechadura da casa
   datahora hora
@@ -338,3 +408,158 @@ func descloja # Retorna informações da casa para a venda
   lin = txtcopiamai(nome, "A")
   lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"
   ret lin + ", até " + itens + " itens"
+
+
+classe cmd_pagar
+herda comando_comum, comando_ajuda
+const txtajuda = "\b\c3Pagar\b\n\
+Sintaxe: PAGAR [item]\n\
+Sem argumentos mostra a lista de casas cujas taxas de manutenção podem\n\
+ser pagas. Seguido de um nome ou número paga a taxa."
+const posic = 5
+txt200 lin
+int32 valor # Usado internamente: valor da taxa
+int8 abre # Usado internamente: horário de abertura
+int8 fecha # Usado internamente: horário de fechamento
+real2 lucro # Para calcular o lucro do vendedor
+int32 linha
+ref p # Vendedor que está verificando
+txt30 tipo1 # arg0.tipo1
+txt30 tipo2 # arg0.tipo2
+txt30 tipo3 # arg0.tipo3
+
+func escr
+  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  arg1 ? escr2(arg0, arg1) : escr1(arg0)
+
+func escr1 # Consultar a lista de taxas
+  se intpos(config:casatempotaxa) == 0
+    ret arg0.msg("Não há taxa de manutenção das casas.")
+  fimse
+  textotxt t
+  listaobj l
+  linha = 1, l.addfim(arg0.dono.dentro2)
+  epara l.remove(arg0), l, l.ini.remove
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv || !p.taxacasa
+# Checa se pode cobrar alguma taxa
+    se tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo1)
+      continuar
+    senao tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo2)
+      continuar
+    senao tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo3)
+      continuar
+    fimse
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
+    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
+      continuar
+    senao
+      listaobj e
+      lin = ""
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+        lin = e.objini.cmd_negociar(arg0, p, "pagar")
+        sair lin
+      efim
+      se lin
+        t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+        continuar
+      fimse
+    fimse
+    t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " informa:\b")
+    lucro = (100 + p.taxavenda) / 100
+# Informa casas
+    se 1
+      textotxt t2
+      indiceitem item
+      datahora hora
+      hora.agora
+      int1 mudou
+      epara t2.addfim(p.taxacasa), t2.linhas, t2.remove
+        refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + t2.ini.texto)
+        continuar !casa
+        lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
+        lin += txtcopiamai(casa.nome, "A")
+        lin += txtesp(40 - inttotal(lin))
+        valor = hora.numdias - casa.diataxa
+        se valor == -1
+          t.addfim(lin + "Em 12 dias MUD (1 dia)")
+        senao valor < 0
+          valor = -valor
+          t.addfim(lin + "Em " + valor * 12 + " dias MUD (" + valor + " dias)")
+        senao
+          se config:casatempotaxa
+            valor = intdiv(valor / config:casatempotaxa) + 1
+          senao
+            valor = 0
+          fimse
+          valor *= lucro * casa.valor * config:casataxa / 100
+          t.addfim(lin + "$ " + valor)
+        fimse
+        mudou = 1
+      efim
+      !mudou && t.addfim("Você não deve nada.")
+    fimse
+  efim
+# Envia mensagens
+  se t.linhas
+    arg0.msg2(t.remove(1000))
+  senao
+    arg0.msg("Ninguém cobra taxas aqui.")
+
+func escr2 # Consultar um item
+  listaobj l
+  nomeobj n
+  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
+  epara l.remove(arg0), l, l.ini.remove
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv || !p.taxacasa
+# Checa se pode vender alguma coisa
+    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
+    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    listaobj e
+    epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+      sair e.objini.cmd_negociar(arg0, p, "pagar")
+    efim
+    continuar e
+    lucro = (100 + p.taxavenda) / 100
+# Pagar casas
+    se 1
+      textotxt t2
+      indiceitem item
+      datahora hora
+      hora.agora
+      epara t2.addfim(p.taxacasa), t2.linhas, t2.remove
+        refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + t2.ini.texto)
+        continuar !casa
+        continuar txt(linha += 1) != arg1 && !n.nome(casa.ident, 1)
+        valor = hora.numdias - casa.diataxa
+        se valor < 0
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + " informa que a taxa já está paga.")
+        senao config:casatempotaxa
+          refvar total = intdiv(valor / config:casatempotaxa) + 1
+          valor = total * lucro * casa.valor * config:casataxa / 100
+          se arg0.var.z_moedas_ < valor
+            ret arg0.msg("Você não tem " + valor + (valor == 1 ? " moeda." : " moedas."))
+          fimse
+          casa.diataxa += total * config:casatempotaxa
+          casa.objmudou = 1
+          arg0.var.z_moedas_ -= valor
+        senao
+          casa.diataxa = hora.numdias
+          casa.objmudou = 1
+        fimse
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + " informa que a taxa foi paga.")
+      efim
+      !mudou && t.addfim("Você não deve nada.")
+    fimse
+  efim
+  arg0.msg("Não tem como você pagar isso aqui.")

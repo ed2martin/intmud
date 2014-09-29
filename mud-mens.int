@@ -115,10 +115,58 @@ const x_d@_as@_ = "nas "
 const x_d@_o@_ = "no "
 const x_d@_os@_ = "nos "
 #
+const x_e = "De"
+const x_e@_a@_ = "Da "
+const x_e@_as@_ = "Das "
+const x_e@_o@_ = "Do "
+const x_e@_os@_ = "Dos "
+const x_e@_uma@_ = "Da "
+const x_e@_umas@_ = "Das "
+const x_e@_um@_ = "Do "
+const x_e@_uns@_ = "Dos "
+const x_f = "de"
+const x_f@_a@_ = "da "
+const x_f@_as@_ = "das "
+const x_f@_o@_ = "do "
+const x_f@_os@_ = "dos "
+const x_f@_uma@_ = "da "
+const x_f@_umas@_ = "das "
+const x_f@_um@_ = "do "
+const x_f@_uns@_ = "dos "
+const x_g = "Em"
+const x_g@_a@_ = "Na "
+const x_g@_as@_ = "Nas "
+const x_g@_o@_ = "No "
+const x_g@_os@_ = "Nos "
+const x_g@_uma@_ = "Na "
+const x_g@_umas@_ = "Nas "
+const x_g@_um@_ = "No "
+const x_g@_uns@_ = "Nos "
+const x_h = "em"
+const x_h@_a@_ = "na "
+const x_h@_as@_ = "nas "
+const x_h@_o@_ = "no "
+const x_h@_os@_ = "nos "
+const x_h@_uma@_ = "na "
+const x_h@_umas@_ = "nas "
+const x_h@_um@_ = "no "
+const x_h@_uns@_ = "nos "
+#
 const o_@ = "$"
 const o_d = arg0 === "D" ? "\da" : "\db"
 const o_e = arg0 === "E" ? "\dc" : "\dd"
+const o_f = arg0 === "F" ? "\de" : "\df"
+const o_g = arg0 === "G" ? "\dg" : "\dh"
+const o_h = txtcopiamai(perso.msexo ? "um" : "uma", arg0)
+const o_i = txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
+const o_j = txtcopiamai(obj.msexo ? "um" : "uma", arg0)
 const o_m = arg0 === "M" ? txtcopiamai(mens, "A") : mens
+const o_s = txtcopiamai(perso.msexo ? "o" : "a", arg0)
+const o_t = txtcopiamai(alvo.msexo ? "o" : "a", arg0)
+const o_u = txtcopiamai(obj.msexo ? "o" : "a", arg0)
+const o_v = txtcopiamai(perso.msexo ? "e" : "a", arg0)
+const o_w = txtcopiamai(alvo.msexo ? "e" : "a", arg0)
+const o_x = txtcopiamai(obj.msexo ? "e" : "a", arg0)
 
 func o_p
   se perso == perso.contr
@@ -189,16 +237,6 @@ func o_o # Nome do objeto
     ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
   senao
     ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
-
-const o_f = txtcopiamai(perso.msexo ? "um" : "uma", arg0)
-const o_g = txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
-const o_h = txtcopiamai(obj.msexo ? "um" : "uma", arg0)
-const o_s = txtcopiamai(perso.msexo ? "o" : "a", arg0)
-const o_t = txtcopiamai(alvo.msexo ? "o" : "a", arg0)
-const o_u = txtcopiamai(obj.msexo ? "o" : "a", arg0)
-const o_v = txtcopiamai(perso.msexo ? "e" : "a", arg0)
-const o_w = txtcopiamai(alvo.msexo ? "e" : "a", arg0)
-const o_x = txtcopiamai(obj.msexo ? "e" : "a", arg0)
 
 
 classe mens_antigo

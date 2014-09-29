@@ -1312,6 +1312,14 @@ Um garoto diz: Lorem ipsum amicum.\n\
 Um garoto diz: youkoso yuujin."
 
 
+classe p_teste027
+herda comum_perso
+const nome = "cobrador de taxas"
+const descnome = "um cobrador de taxas"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const taxacasa = "teste"
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2186,134 +2194,139 @@ func s_reset1 # Realiza o reset
 
 classe s_teste052
 herda b_teste
-const s_titulo = "Quarto andar: Fórmulas de batalha"
-const s_desc = "A leste há explicações sobre danos de batalha.\n\
-O principal objetivo é ter uma ideia de como funciona a batalha,\n\
-para balancear melhor os itens e personagens. Esses cálculos são\n\
-realizados pela classe comando_ataque, no arquivo mud-ataque.int."
-const dir_b = $s_teste026
+const s_titulo = "Quarto andar: Fórmulas de batalha, calculadas a cada golpe"
+const s_desc = "No norte, qual habilidade é usada nos ataques automáticos\n\
+No sul, os critérios para saber se um golpe acertou o alvo\n\
+No leste, cálculo básico dos danos de batalha e comando atklog\n\
+No oeste, ataques automáticos, arma, fome, sede e nível\n\
+No sudeste, conhecimento do golpe e bônus do personagem\n\
+No sudoeste, posição do alvo e tipo de ataque"
+const dir_n = $s_teste053
+const dir_s = $s_teste056
+const dir_l = $s_teste059
+const dir_o = $s_teste061
 const dir_c = $s_teste030
-const dir_l = $s_teste053
+const dir_b = $s_teste026
+const dir_se = $s_teste122
+const dir_so = $s_teste124
 
 
 classe s_teste053
 herda b_teste
-const s_titulo = "Acertar o alvo"
-const s_desc = "Quando um personagem ataca, primeiro é necessário saber se acertou o alvo.\n\
-É sorteado um número de 1 a 20. Se for 20 ou o alvo estiver dormindo,\n\
-acertou o golpe. Se for 1, errou o golpe.\n\
-Outros valores, some à precisão do personagem e subtraia à evasão do alvo.\n\
-Alvo invisível, subtraia 5. Se o resultado for maior que 0, acertou o alvo.\n\
-Nota: As precisões do ataque e da arma também são levadas em consideração."
-const dir_o = $s_teste052
-const dir_l = $s_teste054
+const s_titulo = "Ataque escolhido 1 de 3"
+const s_desc = "Nos ataques manuais, digita-se o nome da habilidade ou a palavra lançar\n\
+e o nome da magia. Já nos automáticos, quando o personagem está desarmado,\n\
+o nome da habilidade usada está na opção \"Ataque automático sem arma\"\n\
+do menu \"Ataques\" do comando ECONFIG. Porém, pode-se fazer um PNJ usar\n\
+outra habilidade com a opção \"Tipo de ataque\" do comando EPERSO."
+const dir_n = $s_teste054
+const dir_s = $s_teste052
 
 
 classe s_teste054
 herda b_teste
-const s_titulo = "Danos de batalha"
-const s_desc = "Os danos de um ataque dependem basicamente da seguinte fórmula:\n\
-danos = ataque_perso * ataque_perso * força_golpe / defesa_alvo / 300\n\
-Por exemplo, se você possui 50 pontos de ataque, e dá um chute de força 70\n\
-em um personagem com 30 pontos de defesa, os danos serão 50*50*70/30/300,\n\
-que resulta em 19 pontos de vida. O valor de 19,444 é arredondado para 19."
-const dir_o = $s_teste053
-const dir_l = $s_teste055
+const s_titulo = "Ataque escolhido 2 de 3"
+const s_desc = "Empunhando uma arma, veja os atributos da arma (no menu \"Arma\" do comando\n\
+EITEM). Se a opção \"Só ataca manual\" estiver em \"SIM\", a arma é ignorada\n\
+e o ataque sai como sendo sem arma. Se estiver em \"NÃO\", o nome da\n\
+habilidade está na opção \"Tipo de arma\". Por exemplo, ao usar a faca dessa\n\
+área (item teste012), ataca-se com \"Lâmina curta\". E se não conhecer\n\
+\"Lâmina curta\", não é possível nem mesmo empunhar a faca."
+const dir_n = $s_teste055
+const dir_s = $s_teste053
 
 
 classe s_teste055
 herda b_teste
-const s_titulo = "Modificadores de batalha"
-const s_desc = "Diversos fatores podem afetar a batalha:\n\
-Ao norte, tipo de ataque; nordeste, tipo normal ou especial\n\
-A leste, usando uma arma; sudeste, ataque sem armas\n\
-Ao sul, posição do alvo; sudoeste, conhecimento do golpe\n\
-A noroeste, bônus do personagem"
-const dir_o = $s_teste054
-const dir_n = $s_teste056
-const dir_ne = $s_teste057
-const dir_l = $s_teste058
-const dir_se = $s_teste059
-const dir_s = $s_teste060
-const dir_so = $s_teste061
-const dir_no = $s_teste062
+const s_titulo = "Ataque escolhido 3 de 3"
+const s_desc = "Com a opção \"Ataque automático\" do item, é possível mudar a habilidade\n\
+sem mudar o tipo de arma. Exemplo, mudando o ataque automático da faca\n\
+para \"Brasa\", atacará com a habilidade Brasa. No entanto, os danos\n\
+continuam dependendo do conhecimento em \"Lâmina curta\".\n\
+Nota: os tipos de armas existentes estão definidos no comando ECONFIG."
+const dir_s = $s_teste054
 
 
 classe s_teste056
 herda b_teste
-const s_titulo = "Tipo de ataque"
-const s_desc = "Existem diversos tipos de ataque (são definidos com o comando ECONFIG).\n\
-É comum um personagem ser forte contra alguns tipos e fraco contra outros,\n\
-e algumas vezes pode ser até imune. Ao editar um ataque, escolhe-se o tipo.\n\
-Vide também \"Atributos ataque\" e \"Atributos defesa\", ao editar personagens,\n\
-itens e classes/raças."
-const dir_s = $s_teste055
+const s_titulo = "Acertar o alvo 1 de 3"
+const s_desc = "Se a precisão do golpe estiver acima de 100, acertou o alvo, porque\n\
+o golpe nunca falha (embriaguês, precisão e evasão são ignorados).\n\
+Nos outros casos, é escolhido aleatoriamente um número de 0 a 99.\n\
+Se for menor ou igual à precisão do golpe, errou automaticamente."
+const dir_n = $s_teste052
+const dir_s = $s_teste057
 
 
 classe s_teste057
 herda b_teste
-const s_titulo = "Tipo normal ou especial"
-const s_desc = "Alguns tipos de ataque são considerados normais (contusão, luta, terra,\n\
-etc) e outros são especiais (fogo, água, luz, etc). O que define se é\n\
-normal ou especial é uma opção do comando ECONFIG.\n\
-Os tipos normais usam ataque e defesa normal. Os especiais usam ataque e\n\
-defesa especial."
-const dir_so = $s_teste055
+const s_titulo = "Acertar o alvo 2 de 3"
+const s_desc = "Se está usando arma, é escolhido outro número aleatório de 0 a 99.\n\
+Se for menor ou igual à precisão da arma, errou automaticamente.\n\
+Depois checa-se a embriaguês de quem está atacando (estando bêbado é\n\
+mais difícil acertar) e do personagem alvo (bêbado é mais fácil acertar)."
+const dir_n = $s_teste056
+const dir_s = $s_teste058
 
 
 classe s_teste058
 herda b_teste
-const s_titulo = "Usando uma arma"
-const s_desc = "Quando está usando uma arma, o cálculo de danos, passa a ser:\n\
-danos = ataque_perso * ataque_arma * força_golpe / defesa_alvo / 300\n\
-Portanto, os danos dependem tanto do seu ataque quanto da sua arma.\n\
-Nos ataques automáticos, com e sem armas, os danos são multiplicados pela\n\
-opção \"Força do ataque automático\" do comando ECONFIG."
-const dir_o = $s_teste055
+const s_titulo = "Acertar o alvo 3 de 3"
+const s_desc = "A última é sortear um número de 1 a 20. Se for 20 ou o alvo estiver\n\
+dormindo, acertou o golpe. Se for 1, errou o golpe. Outros valores,\n\
+some à precisão do personagem, à opção \"precisão perso\" do golpe e\n\
+à opção \"precisão perso\" da arma. Alvo invisível, subtraia 5.\n\
+Se o resultado for maior que a evasão do alvo, acertou o golpe."
+const dir_n = $s_teste057
 
 
 classe s_teste059
 herda b_teste
-const s_titulo = "Ataque sem armas"
-const s_desc = "Nesse caso, é usada a fórmula já apresentada:\n\
-danos = ataque_perso * ataque_perso * força_golpe / defesa_alvo / 300\n\
-Pode haver ainda uma variação de 10 por cento nos danos, para mais ou\n\
-para menos. Quando os dois personagens possuem níveis diferentes,\n\
-os danos são multiplicados pelo resultado da seguinte fórmula:\n\
-1 + (nível_perso - nível_alvo) / (nível_perso + nível_alvo + 10)\n\
-Portanto, atacar personagens de nível mais baixo causa mais danos."
-const dir_no = $s_teste055
+const s_titulo = "Danos de batalha"
+const s_desc = "O cálculo de danos é realizado basicamente da seguinte forma:\n\
+1. Some o ataque do personagem ao ataque da arma usada.\n\
+2. Multiplique pelo ataque do personagem e pela força do golpe.\n\
+3. Divida pela defesa do alvo.\n\
+4. Divida por 300.\n\
+O resultado é quantos pontos de vida o alvo perde."
+const dir_l = $s_teste060
+const dir_o = $s_teste052
 
 
 classe s_teste060
 herda b_teste
-const s_titulo = "Posição do alvo"
-const s_desc = "Dependendo da posição do personagem alvo, os danos causados por um\n\
-golpe podem ser maiores.\n\
-Sentado, 33% a mais. Descansando, 67% a mais. Dormindo, o dano dobra.\n\
-E se estiver incapacitado, 133% a mais."
-const dir_n = $s_teste055
+const s_titulo = "Exemplo de dano de batalha"
+const s_desc = "Se você possui 50 pontos de ataque, não está usando nenhuma arma e dá\n\
+um chute de força 70 em um personagem com 30 pontos de defesa, os danos\n\
+serão 50*50*70/30/300, que resulta em 19 pontos de vida. O valor de 19,444\n\
+é arredondado para 19. Na prática, não é preciso ficar calculando. Basta\n\
+teclar atklog e o jogo mostrará os cálculos realizados no próximo ataque\n\
+que você fizer ou receber."
+const dir_o = $s_teste059
 
 
 classe s_teste061
 herda b_teste
-const s_titulo = "Conhecimento do golpe"
-const s_desc = "Dependendo do quanto o seu personagem conhece um golpe, os danos podem\n\
-aumentar em até 50% (no nível perito) ou cair pela metade (iniciante)\n\
-perito=150%, mestre=135%, muito avançado=121%, avançado=107%,\n\
-intermediário=92%, básico=78%, muito básico=64%, iniciante=50%\n\
-Apenas em ataques automáticos sem arma o conhecimento do golpe não tem\n\
-influência (o golpe não precisa estar na lista do comando HAB)."
-const dir_ne = $s_teste055
+const s_titulo = "Ataques automáticos"
+const s_desc = "Funcionam exatamente como os manuais, quando o jogador digita para atacar.\n\
+No entanto, os danos são multiplicados pela opção \"Força do ataque\n\
+automático\" do comando ECONFIG. O segundo e o terceiro ataques dependem\n\
+também do conhecimento das habilidades \"Segundo ataque\" e \"Terceiro\n\
+ataque\". No nível perito, chegam ter a mesma força do primeiro ataque."
+const dir_l = $s_teste052
+const dir_o = $s_teste062
 
 
 classe s_teste062
 herda b_teste
-const s_titulo = "Bônus do personagem"
-const s_desc = "Ao editar um ataque, é possível especificar que tipos de personagens\n\
-(ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
-Esse bônus aumenta os danos em cinquenta por cento."
-const dir_se = $s_teste055
+const s_titulo = "Arma, fome e sede"
+const s_desc = "Nos ataques sem arma, os danos podem aumentar ou diminuir até 10\n\
+por cento. Com arma, isso não é necessário, porque cada arma possui\n\
+valores mínimo e máximo de ataque. Se a arma for pesada demais para\n\
+o seu personagem, os danos diminuem. Se estiver com fome e com sede\n\
+o ataque também diminui."
+const dir_l = $s_teste061
+const dir_o = $s_teste121
 
 
 classe s_teste063
@@ -3313,6 +3326,7 @@ const fechadura_s = "teste002"
 const fecha_s = 1 # Fecha ao passar: Sim
 const tranc_s = 2 # Trancar: 2 Tranca ao fechar
 const dir_l = $s_teste064
+const dir_o = $s_teste127
 const s_reset = "P 100 teste025 0 0 1\nI 100 teste006 0\nI 100 teste001 0"
 
 func s_reset1 # Realiza o reset
@@ -3392,4 +3406,86 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste026:objsolto.total < 1
     criar("p_teste026", este, 0)
+  fimse
+
+
+classe s_teste121
+herda b_teste
+const s_titulo = "Nível"
+const s_desc = "Quando os dois personagens possuem níveis diferentes, os danos são\n\
+multiplicados pelo resultado da seguinte fórmula:\n\
+1 + (nível_perso - nível_alvo) / (nível_perso + nível_alvo + 10)\n\
+Portanto, atacar personagens de nível mais baixo causa mais danos."
+const dir_l = $s_teste062
+
+
+classe s_teste122
+herda b_teste
+const s_titulo = "Conhecimento do golpe"
+const s_desc = "Dependendo de quanto o seu personagem conhece um golpe, os danos podem\n\
+aumentar em até 50% (no nível perito) ou cair pela metade (iniciante)\n\
+perito=150%, mestre=135%, muito avançado=121%, avançado=107%,\n\
+intermediário=92%, básico=78%, muito básico=64%, iniciante=50%"
+const dir_no = $s_teste052
+const dir_se = $s_teste123
+
+
+classe s_teste123
+herda b_teste
+const s_titulo = "Bônus do personagem"
+const s_desc = "Ao editar um ataque, é possível especificar que tipos de personagens\n\
+(ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
+Esse bônus aumenta os danos em cinquenta por cento."
+const dir_no = $s_teste122
+
+
+classe s_teste124
+herda b_teste
+const s_titulo = "Posição do alvo"
+const s_desc = "Dependendo da posição do personagem alvo, os danos causados por um\n\
+golpe podem ser maiores.\n\
+Sentado, 33% a mais. Descansando, 67% a mais. Dormindo, o dano dobra.\n\
+E se estiver incapacitado, 133% a mais."
+const dir_ne = $s_teste052
+const dir_so = $s_teste125
+
+
+classe s_teste125
+herda b_teste
+const s_titulo = "Tipo de ataque"
+const s_desc = "Existem diversos tipos de ataque (são definidos com o comando ECONFIG).\n\
+É comum um personagem ser forte contra alguns tipos e fraco contra outros,\n\
+e algumas vezes pode ser até imune. Ao editar um ataque, escolhe-se o tipo.\n\
+Vide também \"Atributos ataque\" e \"Atributos defesa\", ao editar personagens,\n\
+itens e classes/raças."
+const dir_ne = $s_teste124
+const dir_so = $s_teste126
+
+
+classe s_teste126
+herda b_teste
+const s_titulo = "Tipo normal ou especial"
+const s_desc = "Alguns tipos de ataque são considerados normais (contusão, luta, terra,\n\
+etc) e outros são especiais (fogo, água, luz, etc). O que define se é\n\
+normal ou especial é uma opção do comando ECONFIG.\n\
+Os tipos normais usam ataque e defesa normal. Os especiais usam ataque e\n\
+defesa especial."
+const dir_ne = $s_teste125
+
+
+classe s_teste127
+herda b_teste
+const s_titulo = "Taxa mensal"
+const s_desc = "Os proprietários de imóveis devem pagar uma taxa de manutenção de tempos\n\
+em tempos. O valor a ser pago é sempre uma porcentagem em relação ao\n\
+preço da casa. Isso está definido no comando Econfig.\n\
+Aqui, digite pagar para saber se você deve alguma coisa, e pagar seguido\n\
+do número da taxa para pagar."
+const dir_l = $s_teste115
+const s_reset = "P 100 teste027 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste027:objsolto.total < 1
+    criar("p_teste027", este, 0)
   fimse

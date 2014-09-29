@@ -644,13 +644,15 @@ const titulo = "Mensagens 5"
 
 classe menu_hab_comum
 const nome3 = "Precisão"
-const info3 = "Em porcentagem, maior que 100 nunca falha"
+const info3 = "Para habilidades e magias que por natureza são imprecisas\n\
+De 0 (sempre erra) a 100 (mesmo que atacar sem arma) ou 101 (nunca falha)"
 const tipo3 = "numero"
 const clas3 = var.classe1
 const vari3 = "precisao"
+const extr3 = "0 100"
 #
-const nome4 = "Usa arma"
-const info4 = "Deixar vazio se não requer arma e não usa arma"
+const nome4 = "Requer arma"
+const info4 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
 const tipo4 = "vetor"
 const clas4 = var.classe1
 const vari4 = "tipoarma"
@@ -742,39 +744,64 @@ const tipo14 = "numero"
 const clas14 = var.classe1
 const vari14 = "vel"
 #
-const nome15 = "Bônus"
-const info15 = "Quais raças e classes atacam com mais força"
-const tipo15 = "tipos"
+const nome15 = "Precisão perso"
+const info15 = "Quanta precisão o personagem ganha durante um ataque com essa arma"
+const tipo15 = "numero"
 const clas15 = var.classe1
-const vari15 = "tipobonus"
+const vari15 = "addprecisao"
 #
-const titu16 = " * Textos"
-#
-const nome16 = "Informações"
-const info16 = "Informações extras"
-const tipo16 = "texto"
+const nome16 = "Bônus"
+const info16 = "Quais raças e classes atacam com mais força"
+const tipo16 = "tipos"
 const clas16 = var.classe1
-const vari16 = "msgextra"
+const vari16 = "tipobonus"
 #
-const nome17 = "Mensagens 1"
-const tipo17 = "menu--"
-const clas17 = "menu_hab_msg0"
+const titu17 = " * Textos"
 #
-const nome18 = "Mensagens 2"
+const nome17 = "Informações"
+const info17 = "Informações extras"
+const tipo17 = "texto"
+const clas17 = var.classe1
+const vari17 = "msgextra"
+#
+const nome18 = "Mensagens 1"
 const tipo18 = "menu--"
-const clas18 = "menu_hab_msg1"
+const clas18 = "menu_hab_msg0"
 #
-const nome19 = "Mensagens 3"
+const nome19 = "Mensagens 2"
 const tipo19 = "menu--"
-const clas19 = "menu_hab_msg2"
+const clas19 = "menu_hab_msg1"
 #
-const nome20 = "Mensagens 4"
+const nome20 = "Mensagens 3"
 const tipo20 = "menu--"
-const clas20 = "menu_hab_msg3"
+const clas20 = "menu_hab_msg2"
 #
-const nome21 = "Mensagens 5"
+const nome21 = "Mensagens 4"
 const tipo21 = "menu--"
-const clas21 = "menu_hab_msg4"
+const clas21 = "menu_hab_msg3"
+#
+const nome22 = "Mensagens 5"
+const tipo22 = "menu--"
+const clas22 = "menu_hab_msg4"
+#
+const nome23 = "Menus de mensagens"
+const tipo23 = "ajuda--"
+const extr23 = menu_hab_ataque:msg1 + "\n" + menu_hab_ataque:msg2
+#
+const msg1 = "\c3Menus de mensagens:\b\n\
+Em princípio, pode-se colocar todas as mensagens no menu Mensagens 1.\n\
+Se você colocar mensagens em mais de um desses menus, as mensagens\n\
+de batalha serão pegas de um dos menus, escolhido aleatoriamente.\n\
+O efeito do golpe será o mesmo, apenas a mensagem muda.\n\
+\c3Perso, alvo e outros:\b\n\
+Se quiser mensagens diferentes para o personagem, para o alvo e para\n\
+quem estiver assistindo, coloque as mensagens nas opções perso, alvo\n\
+e outros. Se alvo e outros estiverem vazios, será usada a do perso."
+const msg2 = "\c3Ao usar, exceto poções comidas etc:\b\n\
+É a mensagem enviada assim que o personagem usa a habilidade ou magia,\n\
+independente dela falhar ou não. No entanto, essa mensagem não é enviada\n\
+quando a magia for disparada por um item (quando o personagem comeu ou\n\
+bebeu o item, usou pergaminho, etc)."
 
 
 classe menu_magia_ataque

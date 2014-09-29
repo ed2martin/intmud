@@ -186,6 +186,14 @@ func p_linha # Alterando um texto de uma linha
   passo = var.opcpasso, p_[passo]("\b")
   ret 1
 
+const t_ajuda = "<ajuda>"
+
+func p_ajuda
+  msg2(arg2)
+  passo = var.opcpasso, p_[passo]("\b")
+  ret 1
+  
+
 func t_txtlinha # Retorna uma linha de uma variável do tipo "const x = \"abc\""
 # arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções
   prog p
