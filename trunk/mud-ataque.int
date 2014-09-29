@@ -144,6 +144,7 @@ ataque\n\
 aulaini aulafim\n\
 depende\n\
 precisao\n\
+addprecisao\n\
 tipoarma\n\
 tipoatk\n\
 tipobonus\n\
@@ -490,24 +491,27 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     !v1 && (v1 = 1)
   fimse
 # Checa se acertou o alvo
-  result = 2
-  se precisao <= 100
-    dano = rand(1, 20)
-    se dano == 20 || arg1.posicao == 4 # Acertou automaticamente
-    senao dano == 1 # Errou o alvo automaticamente
-      log.m(">Dado de 20 faces = 1: errou automaticamente")
-      ret
-    senao arg0.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg0.p_bebida
-      log.m(">Errou por estar embriagado")
-      ret # Quem ataca errou o golpe devido à embriaguês
-    senao arg1.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg1.p_bebida # Embriagado
-      log.m(">Acertou porque o alvo está embriagado")
-    senao # Checa se acertou
-      dano += precisao * arg0.precisao * (arma1 ? arma1.armaprecisao : 100) / 10000
-      dano -= arg1.evasao
-      !arg1.visivel(arg0) && (dano -= 5) # Invisível é mais difícil de acertar
-      ret dano <= 0, nulo
-    fimse
+  result = 2, dano = rand(1, 20)
+  se precisao > 100
+  senao rand(100) >= precisao
+    log.m(">Errou porque a o golpe é impreciso")
+    ret
+  senao arma1 && rand(100) >= arma1.armaprecisao
+    log.m(">Errou porque a arma é imprecisa")
+    ret
+  senao dano == 20 || arg1.posicao == 4 # Acertou automaticamente
+  senao dano == 1 # Errou o alvo automaticamente
+    log.m(">Dado de 20 faces = 1: errou automaticamente")
+    ret
+  senao arg0.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg0.p_bebida
+    log.m(">Errou por estar embriagado")
+    ret
+  senao arg1.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg1.p_bebida # Embriagado
+    log.m(">Acertou porque o alvo está embriagado")
+  senao # Checa se acertou
+    dano += arg0.precisao + addprecisao + arma1.armaaddprecisao - arg1.evasao
+    !arg1.visivel(arg0) && (dano -= 5) # Invisível é mais difícil de acertar
+    ret dano <= 0, nulo
   fimse
 # Checa bônus ao combinar o tipo de ataque com o tipo de defesa
   se log
@@ -753,7 +757,9 @@ Começa um combate com um personagem."
 const cmdmenu = ""
 
 func exechab # Chamado quando personagem (arg0) quer atacar alguém (arg1)
-  se arg0.atkenv
+  se arg0 == arg1
+    arg0.contr.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
+  senao arg0.atkenv
     arg0.msg("Você já está lutando.")
   senao !arg0.persobat.atkauto(arg1, 8) # Realiza um ataque automático
     arg0.msg("Você não sabe como atacar " + arg1.descnome + ".")

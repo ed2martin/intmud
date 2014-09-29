@@ -572,8 +572,15 @@ void TVarTelaTxt::setTxt(int numfunc, const char * txt)
     switch (numfunc)
     {
     case TelaTxtTexto:
-        tam_linha = 0;
-        addTxt(numfunc, txt);
+        if (*txt==0)
+        {
+            tam_linha = 0;
+            col_linha = 0xFFF;
+            CursorEditor();     // Cursor na linha de edição
+            ProcTeclaCursor(0); // Semelhante à tecla HOME
+        }
+        else
+            addTxt(numfunc, txt);
         break;
     case TelaTxtTotal:
     case TelaTxtLinha:

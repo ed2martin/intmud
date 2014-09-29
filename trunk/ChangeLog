@@ -1,3 +1,66 @@
+* 28/9/2014 IntMUD 1.02g MUD baseado na revisão 321 do SVN
+
+   No IntMUD:
+  1. Quantidade máxima de itens em nomeobj aumentou de 1 milhão para
+     para 2147483647
+  2. Quando está conectado via Telnet, interpreta Control+C como
+     encerrar a conexão
+  3. Corrigido bug que aparece com o seguinte código:
+     telatxt t
+     t.texto = "a\nb\n"
+     No lugar do \n aparecia uma cara branca na tela na versão para
+     Windows
+  4. Corrigido bug que acontece com o seguinte código:
+     telatxt tela
+     tela.tecla("*"), tela.texto = "", tela.tecla("BACK")
+  5. Versão do IntMUD mudou para 1.02g
+
+   No MUD:
+  1. Corrigido bug: identificar item tinha deixado de mostrar alguns
+     atributos do item
+  2. Corrigido bug: era possível atacar a si mesmo com o comando matar
+  3. Imortais percebem quando alguém anda em silêncio
+  4. Quantidade de salas por casa aumentou de 5 para 9
+  5. Mensagem de quando entra na própria casa com a porta fechada foi
+     colocada no comando econfig
+  6. No comando lcasa aparece o nome do jogo salvo se a casa pertence a
+     um jogador
+  7. Ao olhar containers que o personagem está carregando, não aparece
+     mais uma quantidade vaga de moedas
+  8. Quantidade máxima de moedas que pode-se pegar e soltar de uma vez
+     mudou para 1 milhão para 2 bilhões
+  9. Se um jogador ficou visível, os PNJs agressivos começam a atacar
+ 10. Criado comando icl: Inicializa uma classe (chama a função iniclasse
+     da classe); vide: adm cod
+ 11. Opção para itens: se pode ser pego e a mensagem, quando não pode
+     ser pego
+ 12. Criada opção nas saídas das salas e nos itens: se perde a chave
+     quando destranca
+ 13. Criada magia Criar Fonte (no arquivo mud-b-hab.int) e o objeto
+     fonte usado na magia (item teste042)
+ 14. Criado PNJ que fala uma frase aleatória de tempos em tempos
+     (personagem teeste026, na sala teste120)
+ 15. Melhorado acesso via Telnet para o MUD: não mostra a senha na tela
+     e a última linha da tela contém o prompt
+ 16. A linha do prompt não aparece mais quando estiver em um menu
+ 17. Nas mensagens, $s $t $u passaram a ser apenas "o" ou "a", e $h $i
+     $j são "um" ou "uma"
+ 18. Criadas opções em mensagens $f e $g
+ 19. Eventos cmd_social1 e cmd_social2 também são executados para o
+     objeto que trata do comando social
+ 20. Adicionadas opções no comando Econfig para taxa de manutenção das
+     casas
+ 21. Jogador é informado ao destrancar e entrar na casa com pagamento
+     atrasado
+ 22. Comando lcasa mostra o tempo para pagar a taxa e se está atrasado
+ 23. Acrescentada explicação sobre o menu de mensagens das habilidades e
+     magias, opção "Menu de mensagens : "
+ 24. Fórmula de batalha para acertar ou errar os golpes mudou
+ 25. Explicação das fórmulas de batalha foi atualizada (a partir da sala
+     teste052)
+ 26. Comando Pagar, para pagar a taxa de manutenção da casa (vide sala
+     teste127)
+
 * 24/8/2014 IntMUD 1.02f MUD baseado na revisão 318 do SVN
 
    No IntMUD:

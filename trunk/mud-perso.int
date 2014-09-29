@@ -56,12 +56,11 @@ tipo3\n\
 equip1\n\
 equip2\n\
 equip3\n\
-lojaaula\n\
-lojafim\n\
-lojaini\n\
-lojaitem\n\
-lojanao\n\
+lojaini lojafim lojanao\n\
+lojaaula lojaitem lojainv\n\
+lojasala lojacasa lojachave\n\
 taxaaula\n\
+taxacasa\n\
 taxacompra\n\
 taxavenda\n\
 tipoitem\n\
@@ -571,7 +570,7 @@ func atkauto # Realiza um ataque automático
     obj2 && (obj = obj2)
   senao # Ataque sem arma
     obj = $cmd_[p_atktipo]
-    aulas = intpos(arg1 - 1) / 14 # Nota: 14=7*2
+    aulas = intpos(arg1 - 1) / 14 # Primeiro ataque sai com aulas=0.5 (intermediário)
   fimse
   ret int(obj.tipoalvo) != 8, nulo # Retorna se não for ataque automático
   ret !obj.autohab2(este, aulas), nulo # Checa condições para atacar

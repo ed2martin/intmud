@@ -21,7 +21,7 @@ func cmd_litem # Listar itens
     txt100 lin
     t.addfim("\b\c6Item Tipo Quantidade Nome\b")
     enquanto p.lin && t.linhas < 500
-      lin = txt(p.texto, 2) + "  " + txt(" SGC", [p.texto]:item, 1)
+      lin = txt(p.texto, 2) + " " + txt(" SGC", [p.texto]:item, 1)
       t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
       p.depois
     efim
@@ -189,27 +189,35 @@ const tipo2 = "linha"
 const clas2 = var.classe1
 const vari2 = "armaatk"
 #
-const nome3 = "Precisão"
-const info3 = "Em porcentagem, 100=mesma precisão de atacar sem arma"
+const nome3 = "Precisão arma"
+const info3 = "Para armas que por natureza são imprecisas\n\
+De 0 a 100, 0=sempre erra e 100=mesma precisão que atacar sem arma"
 const tipo3 = "numero"
 const clas3 = var.classe1
 const vari3 = "armaprecisao"
+const extr3 = "0 100"
 #
-const nome4 = "Ataque mín"
+const nome4 = "Precisão perso"
+const info4 = "Quanta precisão o personagem ganha durante um ataque com essa arma"
 const tipo4 = "numero"
 const clas4 = var.classe1
-const vari4 = "armamin"
+const vari4 = "armaaddprecisao"
 #
-const nome5 = "Ataque máx"
+const nome5 = "Ataque mín"
 const tipo5 = "numero"
 const clas5 = var.classe1
-const vari5 = "armamax"
+const vari5 = "armamin"
 #
-const nome6 = "Só ataca manual"
-const info6 = "Se o personagem não usa essa arma em ataques automáticos"
-const tipo6 = "simnao"
+const nome6 = "Ataque máx"
+const tipo6 = "numero"
 const clas6 = var.classe1
-const vari6 = "armamanual"
+const vari6 = "armamax"
+#
+const nome7 = "Só ataca manual"
+const info7 = "Se o personagem não usa essa arma em ataques automáticos"
+const tipo7 = "simnao"
+const clas7 = var.classe1
+const vari7 = "armamanual"
 
 
 classe menu_ifome
