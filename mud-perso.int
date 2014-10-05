@@ -468,7 +468,6 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
     i.obj.p_agressivo(este) == 2 && !i.obj.p_proc && (i.obj.p_proc = 1)
   efim
 
-
 const batalhaini = contr.bat_ini_int(arg0.contr, este, arg0)
 # batalhaini - Indica que atacou outro personagem (está batalhando)
 # arg0 = alvo do personagem
@@ -630,7 +629,7 @@ func morreu # Procedimentos quando morre
   efim
 # Histórico
   mortes += 1
-  se arg0
+  se arg0.perso
     arg0.p_hist.remove(arg0.p_hist.linhas - 9)
     refvar lin = "N" + arg0.pnivel + " x " + este + "(" + nome + ") N" + pnivel
     se este == contr
@@ -639,8 +638,17 @@ func morreu # Procedimentos quando morre
       arg0.p_hist.addfim(lin + " de " + contr + "(" + contr.nome + ") N" + contr.pnivel)
     fimse
   fimse
-# Jogador: perde experiência e transfere jogador para outro lugar
+# Jogador: anota no log, perde experiência e transfere jogador para outro lugar
   se jog
+    se !arg0.perso
+      $misclog.mortes(nome + " N" + pnivel)
+    senao arg0.contr.jog
+      refvar lin = nome + " N" + pnivel + " por jogador " + arg0.descnome + " N" + arg0.pnivel
+      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome)
+    senao
+      refvar lin = nome + " N" + pnivel + " por " + arg0.descnome + " N" + arg0.pnivel
+      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome)
+    fimse
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
     pmove = pmovemax / 2

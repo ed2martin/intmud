@@ -7,6 +7,7 @@ func escr # Processa o comando
 # arg0 = objeto do personagem
 # arg1 = texto digitado após o nome do comando
 
+
 classe cmd_lancar
 herda comando_comum, comando_ajuda
 const txtajuda = "\b\c3Lançar\b\nSintaxe: LANÇAR <nome da magia>\nLança uma magia."
@@ -92,8 +93,8 @@ Opções para administradores:\n\
   \c2INVSALA\b   Invisível a não administradores\n\
   \c2AC\b        Participa do canal de comunicação AC (administração)\n\
   \c2ADMLOG\b    Canal ADMLOG - é informado sobre mudanças online no MUD\n\
-  \c2CMDLOG\b    Canal CMDLOG - é informado quando alguém usar CMD, CMDP\n\
-            ou CMDJs e o comando possuir alguma letra\n\
+  \c2CMDLOG\b    Canal CMDLOG - é informado quando alguém usar Cmd, Cmdp,\n\
+            Cmdj, ApagarSav, MudaNome, Ban ou teleportar outro jogador\n\
   \c2EXECLOG\b   Canal EXECLOG - só tem utilidade para programadores\n\
             informa quando a variável exec chegar a 0 (bug no programa)"
 # As próximas constantes são as opções do comando CONFIG
@@ -590,6 +591,7 @@ func escr
   senao !arg1
     arg0.msg("Tecle a mensagem após REZAR.")
   senao
+    $misclog.rezou("rezar " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
     $mens.mens = arg1
     arg0.msginv(config:rezar2msg)
@@ -626,12 +628,14 @@ func escr
   senao !arg1
     arg0.msg("Tecle a mensagem após CHAT.")
   senao config:chattipo == 2 # Escrever para todos
+    $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !item.obj.jogconfig.4 || item.obj.perso.var.u_[arg0.nome]
       item.obj.msg($mens.proc(config:chatmsg, item.obj.perso))
     efim
   senao # Escrever para quem estiver na mesma sala
+    $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
     listaobj l
     epara arg0.sock.salaobj(l), l, l.ini.remove
       continuar !l.objini.jogconfig.4 || l.objini.perso.var.u_[arg0.nome]
@@ -665,12 +669,14 @@ func escr
   senao !arg1
     arg0.msg("Tecle a mensagem após NOVATOS.")
   senao config:novatostipo == 2 # Escrever para todos
+    $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !item.obj.jogconfig.11 || item.obj.perso.var.u_[arg0.nome]
       item.obj.msg($mens.proc(config:novatosmsg, item.obj.perso))
     efim
   senao # Escrever para quem estiver na mesma sala
+    $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
     listaobj l
     epara arg0.sock.salaobj(l), l, l.ini.remove
       continuar !l.objini.jogconfig.11 || l.objini.perso.var.u_[arg0.nome]

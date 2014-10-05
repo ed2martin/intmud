@@ -316,6 +316,9 @@ func cmd_tele # Ir para uma sala específica
     $mens.mvis2("", "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
     $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
+    se !p.jogconfig.23
+      $misclog.cmdlog("tele " + nome + ": " + p.nome + " para " + txt(s, 2))
+    fimse
   fimse
   ret 1
 
@@ -433,14 +436,16 @@ func cmd_matar2
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
-    msg("Matando " + r.nome), r.morreu
+    msg("Matando " + r.nome), r.morreu(perso)
     ret 1
   efim
   msg("Não há nenhum personagem chamado " + arg0)
   ret 1
 
 func cmd_cmd
-  cmdlog("(cmd) " + nome + ": " + arg0, arg0)
+  se txtsepara(arg0, "L+DLEOV,DLEOV+L", "\b") != arg0
+    cmdlog("cmd", arg0)
+  fimse
   debug d
   msg(">" + d.cmd(perso, "ret " + arg0))
   ret 1
@@ -455,8 +460,9 @@ func cmd_cmdj
   se !item.obj
     msg("Jogador inexistente ou ausente: " + txt1(arg0))
     ret 1
+  senao txtsepara(txt2(arg0), "L+DLEOV,DLEOV+L", "\b") != txt2(arg0)
+    cmdlog("cmdj", arg0)
   fimse
-  cmdlog("(cmdj) " + nome + ": " + arg0, txt2(arg0))
   debug d
   msg(txt(item.obj.nome) + ">" + d.cmd(item.obj, "ret " + txt2(arg0)))
   ret 1
@@ -474,7 +480,9 @@ func cmd_cmdp
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(perso) || !n.nome(r.ident, r.objtot)
-    cmdlog("(cmdp) " + nome + ": " + arg0, txt2(arg0))
+    se txtsepara(txt2(arg0), "L+DLEOV,DLEOV+L", "\b") != txt2(arg0)
+      cmdlog("cmdp", arg0)
+    fimse
     debug d
     msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg0)))
     ret 1
@@ -503,6 +511,7 @@ func cmd_echo
   se !arg0
     msg("\bTecle a mensagem após ECHO.")
   senao
+    $misclog.rezou("echo " + nome + ": " + arg0)
     $mens.p(perso)
     $mens.mens = arg0
     indiceitem item
@@ -574,7 +583,7 @@ func cmd_mudanome
     msg("Personagem " + nome.0 + " não existe.")
   senao
     msg("Personagem " + nome.0 + " mudou para " + nome.1 + ".")
-    admlog("mudou personagem jogador " + nome.0 + " para " + nome.1)
+    cmdlog("mudanome", "Mudou personagem jogador " + nome.0 + " para " + nome.1)
   fimse
   ret 1
 
@@ -613,7 +622,7 @@ func cmd_apagarsav
   senao
     $miscsav.apagousav(arg0)
     msg("Jogo salvo apagado: " + arg0)
-    admlog("apagou arquivo sav: " + arg0)
+    cmdlog("apagarsav", "Apagou jogo salvo " + arg0)
   fimse
   ret 1
 
@@ -631,6 +640,7 @@ func cmd_monit
       epara item.ini("un "), txt1(item.txt) == "un", item.depois
         item.obj.jogconfig.23 && item.obj != este && item.obj.msg(t1)
       efim
+      $misclog.cmdlog("monit " + nome + ":")
     senao
       msg("Não está monitorando ninguém")
     fimse
@@ -648,6 +658,7 @@ func cmd_monit
     efim
     imonit = r.sock.lmonit.addini(este)
     msg("Monitorando " + r.nome)
+    $misclog.cmdlog("monit " + nome + ": " + r.nome)
   fimse
   ret 1
 
@@ -659,6 +670,7 @@ func cmd_escr
   senao
     imonit.objlista.msg("*** " + perso.nome + " escreve no seu teclado: " + arg0)
     imonit.objlista.recebe(arg0)
+    $misclog.cmdlog("escr " + nome + ": " + arg0)
   fimse
   ret 1
 
@@ -673,6 +685,7 @@ func cmd_rezou
     msg("Jogador inexistente ou ausente: " + txt1(arg0))
     ret 1
   fimse
+  $misclog.rezou("rezou " + nome + ": " + arg0)
   $mens.p(este, item.obj)
   $mens.mens = txt2(arg0)
   item.obj.msginv(config:rezou2msg)
@@ -791,7 +804,7 @@ func cmd_ban
       pos.remove
       $miscban.salvar
       msg("Endereço foi desbanido: " + arg0)
-      admlog("desbaniu IP " + arg0)
+      cmdlog("ban", "desbaniu IP " + arg0)
     fimse
     ret 1
 # Mais de um argumento: bane
@@ -804,29 +817,32 @@ func cmd_ban
       hora.agora
       $miscban.texto.addini(txt1(arg0) + " " + (tempo * 60 + hora.numtotal))
       msg("Endereço foi banido: " + txt1(arg0) + " por " + tempo + " min")
-      admlog("baniu IP " + txt1(arg0) + " por " + tempo + " min")
+      cmdlog("ban", "baniu IP " + txt1(arg0) + " por " + tempo + " min")
     senao
       $miscban.texto.addini(txt1(arg0) + " 0")
       msg("Endereço foi banido: " + txt1(arg0))
-      admlog("baniu IP " + txt1(arg0))
+      cmdlog("ban", "baniu IP " + txt1(arg0))
     fimse
     $miscban.salvar
     ret 1
   fimse
 
 func admlog # Mensagem para todos com a opção "config +admlog"
+  $misclog.admlog(nome + ": " + arg0)
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     item.obj.jogconfig.21 && item.obj.msg("\b\d1(adm) " + nome + " " + arg0 + "\b")
   efim
 
 func cmdlog # Mensagem para todos com a opção "config +cmdlog"
-# arg0 = texto que será enviado aos usuários
+# arg0 = nome do comando
 # arg1 = comando (se não tiver nenhuma letra, não envia o texto)
   se txtproc(txtsepara(txttroca(arg1, " ", ""), "L+DLEOV,DLEOV+L"), " ") >= 0
+    $misclog.cmdlog(arg0 + " " + nome + ": " + arg1)
+    refvar t = "\b(cmd) " + nome + " " + arg0 + ": " + arg1 + "\b"
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.22 && item.obj.msg("\b" + arg0 + "\b")
+      item.obj.jogconfig.22 && item.obj.msg(t)
     efim
 
 func cmd_lcl # Listar classes

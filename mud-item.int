@@ -268,13 +268,13 @@ func ini
     casose "a"
     casose "os"
     casose "as"
-      descnome = "O corpo d" + txtmin(txt1(descnome)) + " " + txt2(descnome)
+      descnome = "o corpo d" + txtmin(txt1(descnome)) + " " + txt2(descnome)
       sair
     casose
-      descnome = "O corpo de " + descnome
+      descnome = "o corpo de " + descnome
     casofim
   senao
-    descnome = "O corpo de " + descnome
+    descnome = "o corpo de " + descnome
   fimse
   ident = "corpo " + arg0.ident
   comum_obj:ini
@@ -289,13 +289,13 @@ func ini
     se var.z_moedas
       $mens.p(arg0)
       se dentro1.total
-        $mens.mvis2("", "Você nota alguns itens e moedas em " + descnome + ".")
+        $mens.mvis2("", "Você nota alguns itens e moedas $e " + descnome + ".")
       senao
-        $mens.mvis2("", "Você nota algumas moedas em " + descnome + ".")
+        $mens.mvis2("", "Você nota algumas moedas $e " + descnome + ".")
       fimse
     senao dentro1.total
       $mens.p(arg0)
-      $mens.mvis2("Você nota alguns itens em " + descnome + ".")
+      $mens.mvis2("Você nota alguns itens $e " + descnome + ".")
     fimse
 
 func tempo_exec
