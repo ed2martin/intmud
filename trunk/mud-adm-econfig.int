@@ -122,41 +122,45 @@ const clas17 = "config"
 const vari17 = "fomemsg"
 const extr17 = "Somente jogador\nTodos"
 #
-const nome18 = "Mensagens"
+const nome18 = "Arquivos de log"
 const tipo18 = "menu--"
-const clas18 = "menu_econfig_msg"
+const clas18 = "menu_econfig_log"
 #
-const nome19 = "Comandos"
+const nome19 = "Mensagens"
 const tipo19 = "menu--"
-const clas19 = "menu_econfig_comandos"
+const clas19 = "menu_econfig_msg"
 #
-const nome20 = "Ataques e batalha"
+const nome20 = "Comandos"
 const tipo20 = "menu--"
-const clas20 = "menu_econfig_ataques"
+const clas20 = "menu_econfig_comandos"
 #
-const nome21 = "Casas dos jogadores"
+const nome21 = "Ataques e batalha"
 const tipo21 = "menu--"
-const clas21 = "menu_econfig_casas"
+const clas21 = "menu_econfig_ataques"
 #
-const nome22 = "Aulas por nível"
-const info22 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+const nome22 = "Casas dos jogadores"
+const tipo22 = "menu--"
+const clas22 = "menu_econfig_casas"
+#
+const nome23 = "Aulas por nível"
+const info23 = "Quantos pontos de aulas ganha quando sobe de nível\n\
 Se 0, o comando aprender não usa pontos de aula"
-const tipo22 = "numero--"
-const clas22 = "config"
-const vari22 = "aulas"
-const extr22 = "0 1000"
-#
-const nome23 = "Tipos de produtos"
-const info23 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo23 = "txtopcao--"
+const tipo23 = "numero--"
 const clas23 = "config"
-const vari23 = "produtos"
-const extr23 = "1 30"
+const vari23 = "aulas"
+const extr23 = "0 1000"
 #
-const nome24 = "Posições para vestir itens"
-const info24 = "Os nomes das posições"
-const tipo24 = "menu--"
-const clas24 = "menu_econfig_vestir"
+const nome24 = "Tipos de produtos"
+const info24 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo24 = "txtopcao--"
+const clas24 = "config"
+const vari24 = "produtos"
+const extr24 = "1 30"
+#
+const nome25 = "Posições para vestir itens"
+const info25 = "Os nomes das posições"
+const tipo25 = "menu--"
+const clas25 = "menu_econfig_vestir"
 
 
 classe menu_econfig_ativar
@@ -297,6 +301,67 @@ const tipo6 = "numero--"
 const clas6 = "config"
 const vari6 = "salvaadmin"
 const extr6 = "1 10000"
+
+
+classe menu_econfig_log
+const titulo = "Arquivos de log"
+const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Entrou e saiu"
+const info1 = "Usuários que entraram e saíram"
+const tipo1 = "opcao--"
+const clas1 = "config"
+const vari1 = "l_entrou"
+const extr1 = "Não grava\nGrava"
+const exec1 = "misclog:atualiza_exec"
+#
+const nome2 = "Admlog"
+const info2 = "Canal Admlog: Comandos que alteram o MUD"
+const tipo2 = "opcao--"
+const clas2 = "config"
+const vari2 = "l_admlog"
+const extr2 = "Não grava\nGrava"
+const exec2 = "misclog:atualiza_exec"
+#
+const nome3 = "Cmdlog"
+const info3 = "Canal Cmdlog: Alguns comandos de administração\n\
+cmd, cmdj, cmdp, monit, escr, apagarsav, mudanome, ban, teleportar jogadores"
+const tipo3 = "opcao--"
+const clas3 = "config"
+const vari3 = "l_cmdlog"
+const extr3 = "Não grava\nGrava"
+const exec3 = "misclog:atualiza_exec"
+#
+const nome4 = "Canais dos jogadores"
+const info4 = "Canais públicos: chat e novatos"
+const tipo4 = "opcao--"
+const clas4 = "config"
+const vari4 = "l_jogchat"
+const extr4 = "Não grava\nGrava"
+const exec4 = "misclog:atualiza_exec"
+#
+const nome5 = "Conversa com admin"
+const info5 = "Comandos Rezar, Rezou e Echo"
+const tipo5 = "opcao--"
+const clas5 = "config"
+const vari5 = "l_rezou"
+const extr5 = "Não grava\nGrava"
+const exec5 = "misclog:atualiza_exec"
+#
+const nome6 = "Mortes (jogadores)"
+const tipo6 = "opcao--"
+const clas6 = "config"
+const vari6 = "l_mortes"
+const extr6 = "Não grava\nGrava"
+const exec6 = "misclog:atualiza_exec"
+#
+const nome7 = "Arquivos de log"
+const tipo7 = "opcao--"
+const clas7 = "config"
+const vari7 = "logtempo"
+const extr7 = "Um por dia\nUm a cada 5 dias\nUm a cada 10 dias\nUm por mês"
+const exec7 = "misclog:atualiza_exec"
 
 
 classe menu_econfig_msg

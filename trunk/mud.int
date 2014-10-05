@@ -118,8 +118,10 @@ inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
 uint8 j_passo # 0=definindo se Papovox, 1=entrando Papovox, 2=dentro
 listaitem j_servip # Objeto jogoservip que possui esse objeto
 int1 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo)
-const msgsock = j_conec.msg(infotelnet ? "\n" + arg0 : arg0 + "\n")
-const msgsala = j_conec.msg(infotelnet ? "\n" + arg0 : arg0 + "\n")
+txt1 j_t_crlf # Para controlar quando enviar CRLF no início
+const j_t_prompt = infotelnet ? j_conec.msg(j_t_crlf), j_t_crlf = ""
+const msgsock = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
+const msgsala = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
 const info = (infotelnet ? "t " : "p ") + j_conec.ip
 
 func msgtodos

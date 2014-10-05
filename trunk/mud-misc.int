@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "28/9/2014"
+const versao = "4/10/2014"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -519,6 +519,68 @@ func exec # Chamado internamente por tempo_exec
   efim
 
 
+classe misclog
+# Para gravar os logs
+arqlog l0
+arqlog l1
+arqlog l2
+arqlog l3
+arqlog l4
+arqlog l5
+inttempo atualiza
+datahora h
+#
+const iniclasse = !$[arg0] && criar(arg0)
+const entrou = h.agora, l0.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const admlog = h.agora, l1.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const cmdlog = h.agora, l2.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const jogchat = h.agora, l3.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const rezou = h.agora, l4.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const mortes = h.agora, l5.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+
+func ini
+  arqdir d
+  d.criardir("log")
+  atualiza_exec
+
+func atualiza_exec
+  h.agora
+  txt100 sufixo
+  tempotaxa = (86401 - h.numseg) * 10 # Um segundo após o dia mudar
+# Obtém o sufixo dos arquivos
+  sufixo = txt(h.ano) + txtfim("0" + h.mes, 2)
+  casovar int(config:logtempo)
+  casose "1"
+    sufixo += txtchr(intdiv((h.dia - 1) / 5) + 97)
+    sair
+  casose "2"
+    se h.dia <= 10
+      sufixo += "a"
+    senao h.dia <= 20
+      sufixo += "b"
+    senao
+      sufixo += "c"
+    fimse
+  casose "3"
+    sair
+  casose
+    sufixo += txtfim("0" + h.dia, 2)
+  casofim
+# Fecha e abre os arquivos
+  l0.fechar, config:l_entrou ? l0.abrir("log/entrou-" + sufixo)
+  l1.fechar, config:l_admlog ? l1.abrir("log/admlog-" + sufixo)
+  l2.fechar, config:l_cmdlog ? l2.abrir("log/cmdlog-" + sufixo)
+  l3.fechar, config:l_jogchat ? l3.abrir("log/jogchat-" + sufixo)
+  l4.fechar, config:l_rezou ? l4.abrir("log/rezou-" + sufixo)
+  l5.fechar, config:l_mortes ? l5.abrir("log/mortes-" + sufixo)
+
+
 classe miscfome
 # Tabela para acertar fome e sede dos jogadores
 # $miscfome.t.[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca 0=sem
@@ -543,6 +605,7 @@ func ini
   epara nulo, ind <= 45, ind += 1
     t.[ind] = 1
   efim
+
 
 classe miscbebida
 # Muda mensagens conforme a bebedeira
