@@ -4,19 +4,19 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 321 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 323 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
 #
 # Ativar em uma porta? 0=não, 1=Telnet, 2=Telnet e Papovox
-const modoserv = 0 # Jogar em uma porta: 0 Não
+const modoserv = 1 # Jogar em uma porta: 0 Não
 #
 # Ativar como bot em um chat? 0=não, 1=sim
 const modobot = 0 # Jogar em um chat: Não
 #
 # Endereço, se modoserv for 1 ou 2
-const servender = ""
+const servender = "localhost"
 #
 # Porta, se modoserv for 1 ou 2 (nota: Papovox só se conecta na porta 1963)
 const servporta = 1963
@@ -206,6 +206,15 @@ const nivelmsg2 = "$1 avança para o nível $m."
 #
 # Mensagem do comando Echo
 const echomsg = "\b\cb(ADM) $m\b"
+#
+# Mensagem do comando SEcho
+const sechomsg = "\b\cb$m\b"
+#
+# Mensagem do comando JEcho
+const jecho1msg = "\b\cb$m\b"
+#
+# Mensagem para o jogador que usou o comando JEcho
+const jecho2msg = "\bJEcho para $a '$m'"
 #
 # Mensagem do canal Rezar
 const rezar1msg = "(rezar) $R '$m'"

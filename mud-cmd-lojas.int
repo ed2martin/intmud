@@ -308,9 +308,9 @@ $a_[p.lojachave])
       arg0.var.z_moedas_ -= valor * total
       $mens.p(arg0, p, r)
       se total == 1
-        $mens.mtodos1("$P compra $o de $A.")
+        $mens.mtodos1("$P compra $o $d $A.")
       senao
-        $mens.mtodos1("$P compra " + total + "x $o de $A.")
+        $mens.mtodos1("$P compra " + total + "x $o $d $A.")
       fimse
       ret
     efim
@@ -338,9 +338,9 @@ $a_[p.lojachave])
         arg0.var.z_moedas_ -= valor * total
         $mens.p(arg0, p, r)
         se total == 1
-          $mens.mtodos1("$P compra $o de $a.")
+          $mens.mtodos1("$P compra $o $d $a.")
         senao
-          $mens.mtodos1("$P compra " + total + "x $o de $a.")
+          $mens.mtodos1("$P compra " + total + "x $o $d $a.")
         fimse
         ret
       efim
@@ -380,7 +380,7 @@ $a_[p.lojachave])
         arg0.var.z_moedas_ -= valor
         $mens.p(arg0, p)
         $mens.mens = r.nome ? r.nome : "uma casa"
-        $mens.mtodos1("$P compra $m de $a.")
+        $mens.mtodos1("$P compra $m $d $a.")
         ret
       efim
     fimse
@@ -417,7 +417,7 @@ $a_[p.lojachave])
         casa.mudachave # Já faz r.objmudou=1
         $mens.p(arg0, p, r)
         refvar m1 = "$A manda alguém para trocar a fechadura da "
-        ret $mens.mtodos2(m1 + "sua casa.", m1 + "casa de $p.")
+        ret $mens.mtodos2(m1 + "sua casa.", m1 + "casa $d $p.")
       fimse
     fimse
   efim

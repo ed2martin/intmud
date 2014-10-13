@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 321, nulo
-  p.criar("config", "const versao = 321 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 323, nulo
+  p.criar("config", "const versao = 323 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -318,6 +318,12 @@ func ini2_exec
     criafunc("config", "const casatempoperder = 180")
     criafunc("config", "const casamsgaviso = \"Há uma nota avisando que a taxa de manutenção da casa está atrasada.\"")
     criafunc("config", "const casamsgbloq = \"A porta foi lacrada por falta de pagamento.\"")
+  fimse
+# Echo
+  se versao < 323
+    criafunc("config", "const jecho1msg = \"\b\cb$m\b\"")
+    criafunc("config", "const jecho2msg = \"\bJEcho para $a '$m'\"")
+    criafunc("config", "const sechomsg = \"\b\cb$m\b\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

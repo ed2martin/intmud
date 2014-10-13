@@ -41,6 +41,10 @@ const adm_jog = "\c3Comandos para jogadores\b\n\
   Envia mensagem para o canal de administração; vide comando CONFIG\n\
 \c2ECHO\b <texto>\n\
   Envia texto para todos os jogadores.\n\
+\c2SECHO\b <mensagem>\n\
+  Envia mensagem para todos da sala em que você está.\n\
+\c2JECHO\b <jogador> <mensagem>\n\
+  Envia mensagem para um jogador.\n\
 \c2REZOU\b <jogador> <texto>\n\
   Envia mensagem para o jogador com cópia para todos os administradores.\n\
 \c2MUDANOME\b <nome atual> <novo nome>\n\
@@ -518,6 +522,34 @@ func cmd_echo
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       item.obj.msg($mens.proc(config:echomsg, item.obj.perso))
     efim
+  fimse
+  ret 1
+
+func cmd_jecho
+  se !txt2(arg0)
+    msg("Digite JECHO seguido do nome do personagem jogador e a mensagem")
+    ret 1
+  fimse
+  indiceitem item
+  item.ini("pn " + txtnome(txt1(arg0)))
+  se !item.obj
+    msg("Jogador inexistente ou ausente: " + txt1(arg0))
+    ret 1
+  fimse
+  $misclog.rezou("jecho " + nome + ": " + arg0)
+  $mens.p(este, item.obj)
+  $mens.mens = txt2(arg0)
+  item.obj.msginv(config:jecho1msg)
+  perso.msginv(config:jecho2msg)
+  ret 1
+
+func cmd_secho
+  se !arg0
+    msg("\bTecle a mensagem após SECHO.")
+  senao
+    $mens.p(perso)
+    $mens.mens = arg0
+    $mens.mtodos1(config:sechomsg)
   fimse
   ret 1
 

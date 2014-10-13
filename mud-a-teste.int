@@ -655,11 +655,101 @@ func tempo_exec
   $mens.mtodos1("Uma fonte de água secou.")
 
 
+classe i_teste043
+herda comum_itemgrupo
+const nome = "fruta verde"
+const descnome = "uma fruta verde"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 5
+const eveste = 1 # Eventos item: Sim
+
+func cmd_comeu
+  se arg0.pvida < arg0.pvidamax
+    arg0.pvida += 5
+    se arg0.pvida > arg0.pvidamax
+      arg0.pvida = arg0.pvidamax
+    fimse
+    arg0.msg("Você se sente um pouco melhor.")
+  fimse
+
+
+classe i_teste044
+herda comum_itemgrupo
+const nome = "fruta azul"
+const descnome = "uma fruta azul"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 5
+const eveste = 1 # Eventos item: Sim
+
+func cmd_comeu
+  se arg0.pmana < arg0.pmanamax
+    arg0.pmana += 5 + arg0.pnivel
+    se arg0.pmana > arg0.pmanamax
+      arg0.pmana = arg0.pmanamax
+    fimse
+  fimse
+
+
+classe i_teste045
+herda comum_itemgrupo
+const nome = "fruta vermelha"
+const descnome = "uma fruta vermelha"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 5
+const eveste = 1 # Eventos item: Sim
+
+func cmd_comeu
+  arg0.pvida += 1
+
+
+classe i_teste046
+herda comum_item
+const nome = "poça de água"
+const descnome = "uma poça de água"
+const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
+const f_sede = 5
+const i_pegar = "Você tenta pagar a água, mas ela escapa pelas suas mãos."
+const eveste = 1 # Eventos item: Sim
+sav uint8 bebeu # Quantas vezes bebeu o item
+
+func f_msgperso
+  ret bebeu < 2, "$P se agaixa e bebe de uma poça de água."
+  ret "$P bebe o último gole de uma poça de água."
+
+const f_msgoutros = f_msgperso
+
+func cmd_bebeu
+  bebeu += 1
+  bebeu >= 3 && apagar(este)
+
+
+classe i_teste047
+herda comum_itemgrupo
+const nome = "pulseira negra"
+const descnome = "uma pulseira negra"
+const vestir1 = 3072 # Aonde vestir: 10-pulso direito, 11-pulso esquerdo
+const eveste = 1 # Eventos item: Sim
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv |= 4
+
+func cmd_vestiu
+  se arg1 == este # Se é esse item
+    criar("e_queimando", arg0, 0)
+  fimse
+
+func cmd_removeu
+  se arg1 == este # Se é esse item
+    arg0.pvida -= arg0.pvida / 4
+  fimse
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
 const descpadr = "Um jardineiro está sentado aqui."
-const msexo = 1 # 0=feminino, 1=masculino
+const msexo = 1 # Sexo Msg: 1 Masculino
 const pesoobj = 80000
 const p_recebe = 1 # Se pode receber itens de outros personagens
 const eveste = 1 # Receber eventos do próprio objeto
@@ -698,14 +788,14 @@ const nome = "macaco"
 const descnome = "um macaco"
 const descpadr = "Um macaco está fazendo bagunça aqui."
 const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
-const msexo = 1 # 0=feminino, 1=masculino
-const p_captura = 3 # Capturar: 3 Normal
-const p_agressivo = 2 # Agressivo: 2 Sim
+const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 30500
 const volobj = 500
 const tipo1 = "luta"
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 3 # Capturar: 3 Normal
 const inivar = "h_socar=1,h_chutar=1"
-const sexoini = 2 # Sexo Perso: 2 Aleatório
 
 
 classe p_teste003
@@ -714,13 +804,13 @@ const nome = "cão"
 const descnome = "um cão"
 const descpadr = "Um cão late para você."
 const descver = "Mamífero da família dos canídeos."
-const msexo = 1 # 0=feminino, 1=masculino
-const p_captura = 2 # Capturar: 2 Fácil
-const p_agressivo = 2 # Agressivo: 2 Sim
+const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 30100
 const volobj = 500
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 2 # Capturar: 2 Fácil
 const inivar = "h_arremessar=1"
-const sexoini = 2 # Sexo Perso: 2 Aleatório
 
 
 classe p_teste004
@@ -730,18 +820,17 @@ const descnome = "um morcego"
 const descpadr = "Um morcego está voando."
 const descver = "Mamífero da ordem dos quirópteros"
 const msexo = 1 # 0=feminino, 1=masculino
-const p_captura = 4 # Capturar: 4 Difícil
-const p_agressivo = 2 # Agressivo: 2 Sim
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 30500
 const volobj = 500
 const tipo1 = "ar"
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 4 # Capturar: 4 Difícil
 const inivar = "h_arremessar=1"
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pveloc1 += 2 * pnivel
-
-const sexoini = 2 # Sexo Perso: 2 Aleatório
 
 
 classe p_teste005
@@ -1318,6 +1407,22 @@ const nome = "cobrador de taxas"
 const descnome = "um cobrador de taxas"
 const msexo = 1 # Sexo Msg: 1 Masculino
 const taxacasa = "teste"
+
+
+classe p_teste028
+herda comum_perso
+const nome = "curandeira"
+const descnome = "uma curandeira"
+const nivel = 5
+const inivar = "m_Curar=8"
+const eveste = 1 # Eventos perso: Sim
+
+func cmd_social2
+  se arg1 == este && arg2.tipo == 1
+    $magia_curar.exechabperso(este, arg0)
+  senao arg1 == este && arg2.tipo == 2
+    $cmd_socar.exechabperso(este, arg0)
+  fimse
 
 
 classe s_teste001
@@ -3388,8 +3493,10 @@ const dir_n = $s_teste117
 classe s_teste119
 herda b_teste
 const s_titulo = "Subsolo 4: Diversos"
-const s_desc = "Ao norte: Frases aleatórias"
+const s_desc = "Ao norte: Frases aleatórias e frutas que recuperam pontos de vida\n\
+Ao sul: Comandos sociais, poça d'água e ao vestir ou remover item"
 const dir_n = $s_teste120
+const dir_s = $s_teste129
 const dir_c = $s_teste095
 
 
@@ -3399,6 +3506,7 @@ const s_titulo = "Frases aleatórias"
 const s_desc = "Aqui, o garoto fala uma frase aleatória a cada 7 segundos.\n\
 Todas elas significam bem-vindo amigo. Cinco segundos depois\n\
 dos jogadores saírem da sala, o PNJ é apagado."
+const dir_n = $s_teste128
 const dir_s = $s_teste119
 const s_reset = "P 100 teste026 0 0 1"
 
@@ -3489,3 +3597,80 @@ func s_reset1 # Realiza o reset
   se p_teste027:objsolto.total < 1
     criar("p_teste027", este, 0)
   fimse
+
+
+classe s_teste128
+herda b_teste
+const s_titulo = "Frutas que curam"
+const s_desc = "Aqui há três tipos de fruta. A verde recupera 5 pontos de vida.\n\
+A azul, recupea 2 pontos de mana mais 1 para cada nível do personagem.\n\
+A vermelha dá apenas um ponto de vida, mas pode passar da quantidade máxima\n\
+de pontos de vida."
+const dir_s = $s_teste120
+const s_reset = "S 100 teste043 1 S\nS 100 teste044 1 S\nS 100 teste045 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste043") && criar("i_teste043", este, 1)
+  !dentro1.objini("i_teste044") && criar("i_teste044", este, 1)
+  !dentro1.objini("i_teste045") && criar("i_teste045", este, 1)
+
+
+classe s_teste129
+herda b_teste
+const s_titulo = "Transporte e poça"
+const s_desc = "Aqui, quem tentar beijar volta para a sala do relógio.\n\
+Há também uma pequena poça d'água. O suficiente para tomar três goles.\n\
+Ao agradecer a curandeira (exemplo, reverenciar curandeira), ela lança\n\
+uma magia de cura em você. Porém, ria dela e leavará um soco."
+const dir_n = $s_teste119
+const dir_s = $s_teste130
+const s_reset = "P 100 teste028 0 0 1\nS 100 teste046 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste028:objsolto.total < 1
+    criar("p_teste028", este, 0)
+  fimse
+  !dentro1.objini("i_teste046") && criar("i_teste046", este, 0)
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_social1
+  se txt(arg2) == "soc_beijar"
+    $mens.p(arg0)
+    $mens.mvis2("", "De repente, você não vê mais $p aqui.")
+    arg0.msg("Por um instante você sente tontura e quando olha ao redor novamente,\nnão está \
+mais no mesmo lugar.")
+    arg0.mudadono($s_teste001)
+    $mens.p(arg0)
+    $mens.mvis2("", "De repente, $p aparece aqui.")
+  fimse
+
+
+classe s_teste130
+herda b_teste
+const s_titulo = "Sem social e ao vestir ou remover item"
+const s_desc = "Aqui não são permitidos comandos sociais.\n\
+A pulseira deixa você invisível, mas você sofre queimaduras por 60\n\
+segundos quando coloca (efeito queimando nível 0) e perde um quarto\n\
+dos pontos de vida quando tira."
+const dir_n = $s_teste129
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr
+  se txt(arg2, 0, 4) == "soc_"
+    arg0.msg("Você não consegue fazer isso.")
+    ret 1
+  fimse
+
+const s_reset = "S 100 teste047 2 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste047") && criar("i_teste047", este, 2)

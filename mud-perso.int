@@ -191,16 +191,18 @@ func teclou # Processa comando (arg0=comando)
     sair obj = $cmd_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
     sair obj = $soc_[txt1(arg0)].objcmd(este, arg0) # Checa social exato
     sair obj = $cmdfim_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
-    epara p.iniclasse("cmd_" + txt1(arg0)), p.lin, p.depois
-      sair obj = $[p.texto].objcmd(este, arg0)
+    nomeobj n
+    n.ini(txt1(arg0))
+    epara p.iniclasse("cmd_" + txt1(txte(arg0))), p.lin, p.depois
+      sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 4))
     efim
     sair obj
-    epara p.iniclasse("soc_" + txt1(arg0)), p.lin, p.depois
-      sair obj = $[p.texto].objcmd(este, arg0)
+    epara p.iniclasse("soc_" + txt1(txte(arg0))), p.lin, p.depois
+      sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 4))
     efim
     sair obj
-    epara p.iniclasse("cmdfim_" + txt1(arg0)), p.lin, p.depois
-      sair obj = $[p.texto].objcmd(este, arg0)
+    epara p.iniclasse("cmdfim_" + txt1(txte(arg0))), p.lin, p.depois
+      sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 7))
     efim
     sair
   efim
@@ -210,8 +212,10 @@ func teclou # Processa comando (arg0=comando)
     lin = txtremove(txt2(arg0), "EMDSA")
     obj = ref($magia_[txt1(lin)].objcmd(este, arg0))
     se !obj && lin
-      epara p.iniclasse("magia_" + txt1(lin)), p.lin, p.depois
-        sair obj = $[p.texto].objcmd(este, arg0)
+      nomeobj n
+      n.ini(txt1(lin))
+      epara p.iniclasse("magia_" + txt1(txte(lin))), p.lin, p.depois
+        sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 6))
       efim
     fimse
 # Magia: Gera eventos
@@ -270,35 +274,68 @@ func erropos # Retorna uma mensagem conforme a posição
 
 func descpos
   ret posicao == pospadr && descpadr, descpadr
+  refvar i = jogconfig.14 ? " diante de você." : "."
   casovar posicao
   casose "0"
-    ret txtcopiamai(descnome, "A") + " jaz aqui."
+    ret txtcopiamai(descnome, "A") + " jaz aqui" + i
   casose "1"
-    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + (msexo ? "o." : "a.")
+    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + (msexo ? "o" : "a") + i
   casose "2"
-    ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + (msexo ? "o." : "a.")
+    ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + (msexo ? "o." : "a") + i
   casose "3"
-    ret txtcopiamai(descnome, "A") + " está aqui, muito frac" + (msexo ? "o." : "a.")
+    ret txtcopiamai(descnome, "A") + " está aqui, muito frac" + (msexo ? "o." : "a") + i
   casose "4"
-    ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui."
-    refvar r = poslugar.objlista
-    ret txtcopiamai(descnome, "A") + " dorme em um" + (msexo ? " " : "a ") + r.descnome + "."
+    ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui" + i
+    refvar mens = poslugar.objlista.descnome
+    casovar txt1(mens)
+    casose "a"
+    casose "A"
+      ret txtcopiamai(descnome, "A") + " dorme na " + txt2(mens) + i
+    casose "o"
+    casose "O"
+      ret txtcopiamai(descnome, "A") + " dorme no " + txt2(mens) + i
+    casofim
+    ret txtcopiamai(descnome, "A") + " dorme em " + mens + i
   casose "5"
-    ret !poslugar, txtcopiamai(descnome, "A") + " descansa aqui."
-    refvar r = poslugar.objlista
-    refvar lin = txtcopiamai(descnome, "A") + " descansa em "
-    ret lin + (r.msexo ? "um " : "uma ") + r.descnome + "."
+    ret !poslugar, txtcopiamai(descnome, "A") + " descansa aqui" + i
+    refvar mens = poslugar.objlista.descnome
+    casovar txt1(mens)
+    casose "a"
+    casose "A"
+      ret txtcopiamai(descnome, "A") + " descansa na " + txt2(mens) + i
+    casose "o"
+    casose "O"
+      ret txtcopiamai(descnome, "A") + " descansa no " + txt2(mens) + i
+    casofim
+    ret txtcopiamai(descnome, "A") + " descansa em " + mens + i
   casose "6"
     refvar lin = txtcopiamai(descnome, "A") + " está sentad" + (msexo ? "o" : "a")
-    ret !poslugar, lin + " aqui."
-    refvar r = poslugar.objlista
-    ret lin + (r.msexo ? " em um " : " em uma ") + r.descnome + "."
+    ret !poslugar, lin + " aqui" + i
+    refvar mens = poslugar.objlista.descnome
+    casovar txt1(mens)
+    casose "a"
+    casose "A"
+      ret lin + " na " + txt2(mens) + i
+    casose "o"
+    casose "O"
+      ret lin + " no " + txt2(mens) + i
+    casofim
+    ret lin + " em " + mens + i
   casose "7"
-    ret txtcopiamai(descnome, "A") + " está lutando."
+    refvar alvo = atkenv.objlista
+    se !alvo
+      ret txtcopiamai(descnome, "A") + " está lutando" + i
+    senao alvo == arg0
+      ret txtcopiamai(descnome, "A") + " está lutando com você" + i
+    senao alvo.visivel(arg0)
+      ret txtcopiamai(descnome, "A") + " está lutando com " + alvo.descnome + i
+    senao
+      ret txtcopiamai(descnome, "A") + " está lutando com alguém" + i
+    fimse
   casose "8"
-    ret txtcopiamai(descnome, "A") + " está em pé aqui."
+    ret txtcopiamai(descnome, "A") + " está em pé aqui" + i
   casofim
-  ret txtcopiamai(descnome, "A") + " está aqui."
+  ret txtcopiamai(descnome, "A") + " está aqui" + i
 
 func equippos # Retorna as posições aonde pode usar equipamentos
   txt100 lin
