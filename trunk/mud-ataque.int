@@ -248,6 +248,11 @@ func escr # Atacar alguém
   senao
     exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel)
 
+func exechabperso # Personagem usa uma habilidade ou magia
+# arg0 = quem está usando a habilidade ou magia
+# arg1 = personagem alvo
+  arg0 && arg1 && exechab(arg0, arg1, intpos(arg0.var.[nomevar] - 1) / 7, arg0.pnivel)
+
 func exechab # Chamado quando personagem usa habilidade ou magia
 # arg0 = quem está usando a habilidade ou magia
 # arg1 = personagem alvo
@@ -319,7 +324,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   se !arg0.contr.dono.s_luta
     ret arg0.contr.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
   senao !arg1.contr.p_agressivo(arg0)
-    ret arg0.contr.msg(arg1.contr.descnome + " não quer brigar.")
+    ret arg0.contr.msg(txtcopiamai(arg1.contr.descnome, "A") + " não quer brigar.")
   fimse
   ret cmd_atacar(arg0, arg1, este), nulo
   epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove

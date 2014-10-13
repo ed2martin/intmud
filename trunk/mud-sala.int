@@ -207,7 +207,7 @@ func descsala # Retorna descrição da sala
       continuar !r.visivel(arg0)
       refvar n = r.atribs.linhas ? " (" + txttroca(r.atribs.ini.textolin(100), "\n", " ") + ") " \
 : " "
-      t2.addfim(txt(r.objtot) + n + r.descpos)
+      t2.addfim(txt(r.objtot) + n + r.descpos(arg0))
     efim
     t2.juntalin("(", "x)")
     t.fim.add(t2.ini, t2.linhas)

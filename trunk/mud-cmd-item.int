@@ -11,7 +11,7 @@ func escr
   textotxt nomes # Nomes dos itens pegos
   ret !arg1, arg0.msg("Acender o quê?")
   n.ini(arg1, 1)
-  epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+  epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     ref r
     r = l.objini
@@ -24,7 +24,7 @@ func escr
       ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está aces" + (r.msexo ? "o." : "a."))
     senao r.luzitem == 6 # Se requer fogo para acender
       l.limpar
-      epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+      epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
         sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
       efim
       ret !l.objini, arg0.msg("Você precisa de fogo para acender " + r.descnome + ".")
@@ -61,7 +61,7 @@ func escr
   textotxt nomes # Nomes dos itens pegos
   ret !arg1, arg0.msg("Apagar o quê?")
   n.ini(arg1, 1)
-  epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+  epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     ref r
     r = l.objini
@@ -857,7 +857,7 @@ func escr
     efim
     ret !l.objini, arg0.msg("Beber o quê?")
   senao
-    epara l.addfim(arg0.dono.dentro1, arg0.dentro1), l, l.ini.remove
+    epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
       sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
     efim
     refvar r = l.objini

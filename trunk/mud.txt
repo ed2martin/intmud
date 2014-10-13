@@ -62,8 +62,7 @@ mud-b-social.int
 mud-b-hab.int
 mud-b-efeito.int
 
-Copie os arquivos do diretório sav (os jogos salvos) da versão antiga
-para a nova.
+Copie os diretórios sav e sav2 (os jogos salvos) da versão antiga para a nova.
 
 Rode o MUD. Se for necessário, ele atualizará os arquivos para a nova versão.
 
@@ -1621,6 +1620,9 @@ Essa função basicamente obtém o alvo e chama a função exechab.
 O argumento é o item que disparou a hab/magia (uma comida, bebida
 ou pergaminho), ou nulo se não usou nenhum.
 O argumento nível é o nível da hab/magia, quando o item não for nulo.
+
+func exechabperso( personagem, alvo )
+Personagem usa uma habilidade ou magia. É uma versão simplificada de exechab.
 
 func exechab( personagem, alvo, quanto sabe, nível, item usado )
 Chamado quando personagem usa habilidade ou magia.
