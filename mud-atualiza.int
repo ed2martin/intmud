@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 323, nulo
-  p.criar("config", "const versao = 323 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 324, nulo
+  p.criar("config", "const versao = 324 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -319,11 +319,21 @@ func ini2_exec
     criafunc("config", "const casamsgaviso = \"Há uma nota avisando que a taxa de manutenção da casa está atrasada.\"")
     criafunc("config", "const casamsgbloq = \"A porta foi lacrada por falta de pagamento.\"")
   fimse
-# Echo
-  se versao < 323
+# Echo, fórmula de experiência em batalha e sala fora da casa
+  se versao < 324
     criafunc("config", "const jecho1msg = \"\b\cb$m\b\"")
     criafunc("config", "const jecho2msg = \"\bJEcho para $a '$m'\"")
     criafunc("config", "const sechomsg = \"\b\cb$m\b\"")
+    criafunc("config", "const atkbexp = 8")
+    criafunc("config", "const atkcexp = 8")
+    criafunc("config", "const atkmaxexp = 100")
+    criafunc("config", "const ptitulonivel = 10")
+    criafunc("config", "const pdescnivel = 5")
+    debug d
+    epara p.iniclasse("c_"), p.lin, p.depois
+      d.ini
+      p.apagar(p.texto, "sfora")
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

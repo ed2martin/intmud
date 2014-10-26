@@ -326,7 +326,7 @@ func descpos
     se !alvo
       ret txtcopiamai(descnome, "A") + " está lutando" + i
     senao alvo == arg0
-      ret txtcopiamai(descnome, "A") + " está lutando com você" + i
+      ret txtcopiamai(descnome, "A") + " está lutando com você!"
     senao alvo.visivel(arg0)
       ret txtcopiamai(descnome, "A") + " está lutando com " + alvo.descnome + i
     senao
@@ -562,11 +562,18 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     i.obj.pvida && l.addfim(i.obj.atkdiv)
   efim
 # Ganha experiência
-  refvar exp1 = arg0 * config:atkexp * (pnivel + 6) / 1000
+  refvar exp1 = arg0 * config:atkexp * (pnivel + 6) / 2000
   real2 v1
   epara i = l.ini, i, i.depois
     refvar r = i.obj
-    v1 = intmin(1, intpos(pnivel - r.pnivel + 8) / 16)
+    v1 = pnivel - r.pnivel
+    se v1 < 0 # Atacou nível mais baixo
+      v1 = (config:atkbexp ? intpos(1 + v1 / config:atkbexp) : 1)
+    senao v1 # Atacou nível mais alto
+      v1 = 1 + (config:atkcexp ? intmin(1, v1 / config:atkcexp) * config:atkmaxexp / 100)
+    senao # Mesmo nível
+      v1 = 1
+    fimse
     r.dono.perso && r.var.z_dono != r.dono.descnome && (v1 *= 1.5)
     r.ganhaexp(v1 * exp1 * p_exp(r) / (l.total + 1))
   efim

@@ -274,12 +274,31 @@ func escr
   prog p
   ref r
   n.ini(arg1, 1)
+# Descrições extras da sala
   r = arg0.dono
-  epara p.inifunc(r, "ver_"), p.lin, p.depois
-    continuar !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4))
-    arg0.msg2(r.[p.texto](arg0, 1))
-    ret
-  efim
+  se r.visivel(arg0) && txtfim(arg1, 1) != "@"
+    epara p.inifunc(r, "ver_"), p.lin, p.depois
+      casovar txtfim(p.texto, 2)
+      casose "@d"
+      casose "@D"
+        continuar !misc:luz
+        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
+        arg0.msg2(r.[p.texto](arg0, 1))
+        ret
+      casose "@n"
+      casose "@n"
+        continuar misc:luz
+        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
+        arg0.msg2(r.[p.texto](arg0, 1))
+        ret
+      casose
+        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4))
+        arg0.msg2(r.[p.texto](arg0, 1))
+        ret
+      casofim
+    efim
+  fimse
+# Descrições de itens e personagens
   listaobj l
   l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
@@ -300,6 +319,7 @@ func escr
 # O que o personagem está vestindo
     textotxt t
     se r.perso
+      r.var.z_desc && t.addfim(r.var.z_desc)
       se completo
         int1 vest.32 # Aonde está vestindo
         ref pos.55

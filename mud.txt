@@ -275,6 +275,7 @@ z_ = variável não visível ao jogador
 Variáveis mais comuns:
 z_aulas = pontos de aula (quantas aulas ainda pode fazer)
 z_captura = nome do item que o jogador escolheu para capturar animais
+z_desc = descrição criada por um jogador; vide comandos pdesc e rdesc
 z_dono = nome do dono original (quem capturou o animal)
 z_email = e-mail do jogador (somente nos personagens de jogadores)
 z_moedas = quantas moedas o personagem, item ou sala possui
@@ -282,6 +283,7 @@ z_pnivel = nível do animal quando foi capturado
 z_salafim = sala para onde vai quando retorna da morte
 z_teleentra = mensagem definida com o comando teleentra
 z_telesai = mensagem definida com o comando telesai
+z_titulo = título criado por um jogador; vide comandos ptitulo e rtitulo
 
 São usados os seguintes textos em indiceobj/indiceitem:
 "ip " + endereço IP
@@ -435,6 +437,10 @@ Se não é possível usar magia na sala (0=permite, 1=não permite).
 const s_retornar = 0
 Se não é possível retornar (comando e magia retornar) dessa sala
 (0=permite, 1=não permite).
+
+const s_voltar = nulo
+Quando um jogador sair do jogo e voltar, para qual sala deve voltar.
+Exemplo de constante: const s_voltar = $s_casa001
 
 const s_pnj = 0
 Se PNJs não entram (0=podem entrar, 1=não podem).
@@ -787,6 +793,10 @@ a função: $mens.p( autor, alvo, objeto )
 func msginv( mensagem )
 Envia mensagem para o personagem, mesmo se o autor da mensagem estiver
 invisível. Vide comentários na documentação de msgvis (logo acima).
+
+func dentrocasa
+Retorna 1 se o jogador está dentro da própria casa ou nulo se não está
+Para personagens não jogador, essa função retorna sempre nulo
 
 
 10. Personagens não jogador (arquivo mud-perso.int)
@@ -1917,10 +1927,8 @@ admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 20. Lista de coisas pendentes
 
-Jogadores devem poder mudar título e descrição das salas da casa que possuem
 Comando para expulsar todos da casa do jogador
 Comando para listar os usuários por IP
-Descrições extras diurnas e noturnas
 Acrescentar altura/peso/volume mínimo/máximo para jogadores nos tipos (comando etipo)
 Opção para os jogadores escolherem altura e peso, ao criar o personagem
    - Volume seria baseado em altura e peso, e o que foi definido na raça

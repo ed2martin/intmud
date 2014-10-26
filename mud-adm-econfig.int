@@ -631,6 +631,16 @@ const info16 = "Se os comandos Olhar e Ver mostram a raça e a classe do personag
 const tipo16 = "simnao--"
 const clas16 = "config"
 const vari16 = "olhartipo"
+#
+const nome17 = "PTitulo a partir do nível"
+const tipo17 = "numero--"
+const clas17 = "config"
+const vari17 = "ptitulonivel"
+#
+const nome18 = "PDesc a partir do nível"
+const tipo18 = "numero--"
+const clas18 = "config"
+const vari18 = "pdescnivel"
 
 
 classe menu_econfig_ataques
@@ -669,46 +679,72 @@ const clas4 = "config"
 const vari4 = "atkmatouexp"
 const extr4 = "0 100"
 #
-const nome5 = "Tempo de um turno"
-const info5 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
+const nome5 = "Exp nível abaixo"
+const info5 = "Se essa opção não for 0, nas lutas com personagens abaixo do seu nível,\n\
+quanto maior a diferença entre os níveis, menor a experiência ganha.\n\
+Quando a diferença chegar nesse valor, você não ganha experiência."
 const tipo5 = "numero--"
 const clas5 = "config"
-const vari5 = "atktempo"
-const extr5 = "10 200"
+const vari5 = "atkbexp"
 #
-const nome6 = "Força do ataque automático"
+const nome6 = "Exp nível acima"
+const info6 = "Se essa opção não for 0, nas lutas com personagens acima do seu nível,\n\
+quanto maior a diferença entre os níveis, maior a experiência ganha.\n\
+No entanto, quando a diferença entre níveis passar desse valor, a taxa\n\
+de experiência será fixa, definida pela opção \"Exp máxima acima\"."
 const tipo6 = "numero--"
 const clas6 = "config"
-const vari6 = "atkfor"
-const extr6 = "1 100"
+const vari6 = "atkcexp"
 #
-const nome7 = "Tipos de ataques"
-const tipo7 = "txtopcao--"
+const nome7 = "Exp máxima acima"
+const info7 = "Somente nas lutas com personagens acima do seu nível. É o bônus de\n\
+experiência ganha quando a diferença entre os níveis chegar ou passar\n\
+do que está definido na opção \"Exp máxima acima\". Em porcentagem.\n\
+Exemplo, 0 não tem bônus, 50 ganha 50% a mais, 100 ganha o dobro."
+const tipo7 = "numero--"
 const clas7 = "config"
-const vari7 = "atknomes"
-const extr7 = "1 30"
+const vari7 = "atkmaxexp"
 #
-const nome8 = "Ataques especiais"
-const info8 = "Os tipos de ataque que usam ataque e defesa especial"
-const tipo8 = "vetor--"
+const nome8 = "Tempo de um turno"
+const info8 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
+const tipo8 = "numero--"
 const clas8 = "config"
-const vari8 = "atkespecial"
-const extr8 = config:atknomes
+const vari8 = "atktempo"
+const extr8 = "10 200"
 #
-const nome9 = "Tipos de armas"
-const info9 = "Habilidades usadas em ataques automáticos com arma"
-const tipo9 = "txtopcao--"
+const nome9 = "Força do ataque automático"
+const tipo9 = "numero--"
 const clas9 = "config"
-const vari9 = "arma_txt"
-const extr9 = "1 30 1"
+const vari9 = "atkfor"
+const extr9 = "1 100"
 #
-const nome10 = "Ataque automático sem arma"
-const info10 = "Habilidade usada em ataques automáticos sem arma, se não for definida\n\
-uma habilidade no próprio personagem"
-const tipo10 = "linha--"
+const nome10 = "Tipos de ataques"
+const tipo10 = "txtopcao--"
 const clas10 = "config"
-const vari10 = "atk_txt"
-const extr10 = "0 30"
+const vari10 = "atknomes"
+const extr10 = "1 30"
+#
+const nome11 = "Ataques especiais"
+const info11 = "Os tipos de ataque que usam ataque e defesa especial"
+const tipo11 = "vetor--"
+const clas11 = "config"
+const vari11 = "atkespecial"
+const extr11 = config:atknomes
+#
+const nome12 = "Tipos de armas"
+const info12 = "Habilidades usadas em ataques automáticos com arma"
+const tipo12 = "txtopcao--"
+const clas12 = "config"
+const vari12 = "arma_txt"
+const extr12 = "1 30 1"
+#
+const nome13 = "Ataque automático sem arma"
+const info13 = "Habilidade usada em ataques automáticos sem arma, se não for definida\n\
+uma habilidade no próprio personagem"
+const tipo13 = "linha--"
+const clas13 = "config"
+const vari13 = "atk_txt"
+const extr13 = "0 30"
 
 
 classe menu_econfig_casas
