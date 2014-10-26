@@ -26,6 +26,7 @@ func escr
       obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
+    obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     t0.addfim(t1)
   efim
 # Lista de jogadores sem personagem
@@ -384,7 +385,8 @@ func escr
   d.agora
   t1 = "  (" + semanamud(misc:dia) + ")"
   arg0.msg("Hora atual MUD:      " + misc:hora + ":" + misc:min + t1)
-  arg0.msg("Hora atual servidor: " + d.hora + ":" + d.min)
+  t1 = "Hora atual servidor: " + d.hora + ":" + d.min
+  arg0.msg(t1 + "  " + d.dia + "/" + d.mes + "/" + d.ano)
   t1 = "Tempo total de jogo: "
   arg0.tempojogo2 == 1 && (t1 += "1 dia ")
   arg0.tempojogo2 > 1 && (t1 += txt(arg0.tempojogo2) + " dias ")

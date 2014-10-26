@@ -4,19 +4,19 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 323 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 324 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
 #
 # Ativar em uma porta? 0=não, 1=Telnet, 2=Telnet e Papovox
-const modoserv = 1 # Jogar em uma porta: 0 Não
+const modoserv = 0 # Jogar em uma porta: 0 Não
 #
 # Ativar como bot em um chat? 0=não, 1=sim
 const modobot = 0 # Jogar em um chat: Não
 #
 # Endereço, se modoserv for 1 ou 2
-const servender = "localhost"
+const servender = ""
 #
 # Porta, se modoserv for 1 ou 2 (nota: Papovox só se conecta na porta 1963)
 const servporta = 1963
@@ -178,6 +178,26 @@ const atkmatoutipo = 2
 # De 0 a 100, sendo que 0 não ganha nem perde e 100 ganha/perde tudo
 const atkmatouexp = 30
 #
+# Exp nível abaixo
+# Se essa opção não for 0, nas lutas com personagens abaixo do seu nível,
+# quanto maior a diferença entre os níveis, menor a experiência ganha.
+# Quando a diferença chegar nesse valor, você não ganha experiência.
+const atkbexp = 8
+#
+# Exp nível acima
+# Se essa opção não for 0, nas lutas com personagens acima do seu nível,
+# quanto maior a diferença entre os níveis, maior a experiência ganha.
+# No entanto, quando a diferença entre níveis passar desse valor, a taxa
+# de experiência será fixa, definida pela opção "Exp máxima acima".
+const atkcexp = 8
+#
+# Exp máxima acima
+# Somente nas lutas com personagens acima do seu nível. É o bônus de
+# experiência ganha quando a diferença entre os níveis chegar ou passar
+# do que está definido na opção "Exp máxima acima". Em porcentagem.
+# Exemplo, 0 não tem bônus, 50 ganha 50% a mais, 100 ganha o dobro.
+const atkmaxexp = 100
+#
 # Tempo de um turno (em décimos de segundo)
 const atktempo = 60
 #
@@ -267,7 +287,7 @@ const telepatia1 = "(+telepatia) $C '$m'"
 # Recebeu mensagem telepática
 const telepatia2 = "(telepatia) $R '$m'"
 #
-# Nível necessário para usar o comando salvar
+# Nível necessário para usar o comando Salvar
 # Abaixo desse nível, só pode salvar quem já tem jogo salvo
 # Se for um número acima de 65535, quem não tem jogo salvo não salva
 const salvarnivel = 11
@@ -275,31 +295,31 @@ const salvarnivel = 11
 # Comando rezar: 0=não existe, 1=existe
 const rezartipo = 0 # Comando Rezar: 0 Desabilitado
 #
-# Nível necessário para usar o comando rezar
+# Nível necessário para usar o comando Rezar
 const rezarnivel = 0
 #
 # Canal chat: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
 const chattipo = 2 # Canal chat: 2 Para todo o MUD
 #
-# Nível necessário para escrever no canal chat
+# Nível necessário para escrever no canal Chat
 const chatnivel = 0
 #
 # Canal novatos: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
 const novatostipo = 2 # Comando Novatos: 2 Para todo o MUD
 #
-# Nível necessário para escrever no canal novatos
+# Nível necessário para escrever no canal Novatos
 const novatosnivel = 0
 #
 # Comando emoção: 0=não existe, 1=existe
 const emocaotipo = 0 # Comando Emoção: 0 Desabilitado
 #
-# Nível necessário para usar o comando emoção
+# Nível necessário para usar o comando Emoção
 const emocaonivel = 0
 #
 # Comando gritar: 0=não existe, 1=existe
 const gritartipo = 0 # Comando Gritar: 0 Desabilitado
 #
-# Nível necessário para usar o comando gritar
+# Nível necessário para usar o comando Gritar
 const gritarnivel = 0
 #
 # Quantos pontos de movimentos o personagem gasta ao gritar
@@ -319,6 +339,12 @@ const olharnivel = 1 # Olhar mostra nível: Sim
 # Se os comandos Olhar e Ver mostram a raça e a classe do personagem
 # 0=não, 1=sim
 const olhartipo = 0 # Olhar mostra raça e classe: Não
+#
+# Nível necessário para usar o comando PTitulo
+const ptitulonivel = 10
+#
+# Nível necessário para usar o comando PDesc
+const pdescnivel = 5
 #
 # Quantos pontos de aulas ganha quando sobe de nível
 # Se 0, o comando aprender não usa pontos de aula

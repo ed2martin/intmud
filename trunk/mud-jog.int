@@ -547,7 +547,14 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     nomefim = info
     lin = "Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
     msgchegou(lin, nome + " entrou")
-    perso.teclou("olhar")
+    refvar alvo = perso.atkenv.objlista
+    se !alvo
+      perso.teclou("olhar")
+    senao alvo.visivel(arg0)
+      msg("Alguém está lutando com você!")
+    senao
+      msg(txtcopiamai(alvo.descnome, "A") + " está lutando com você!")
+    fimse
   senao
 # Primeiro cria personagem
     passo = ""
@@ -681,6 +688,7 @@ func ini
 
 func ex_exec
   apagar(este)
+  ref(sala.s_voltar) && (sala = sala.s_voltar)
   perso.mudadono(sala ? sala : config:salasav)
   temposair # Acerta tempo para sair do MUD
   $mens.p(perso)
@@ -984,6 +992,16 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   fimse
   arqsav sav1
   ret sav1.salvar("sav/" + txt2(cnome) + ".sav", lista, tempo, senha)
+
+func dentrocasa # Retorna verdadeiro se o jogador está dentro da própria casa
+  ret !dono, nulo
+  indiceitem item
+  refvar t = "cj " + txt2(cnome)
+  epara item.ini(t), txtsub(item.txt, 0, 2) == t, item.depois
+    refvar c = item.obj # Casa encontrada
+    ret c.s1 == dono || c.s2 == dono || c.s3 == dono || c.s4 == dono || c.s5 == dono, 1
+    ret c.s6 == dono || c.s7 == dono || c.s8 == dono || c.s9 == dono, 1
+  efim
 
 func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)

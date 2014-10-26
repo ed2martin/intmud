@@ -50,7 +50,11 @@ const adm_sala = "\b\c3Comandos de salas\b\n\
 \c2EDESC\b <nome da descrição>\n\
   Edita uma descrição extra da sala.\n\
 \c2ADESC\b <nome da descrição>\n\
-  Apaga uma descrição extra da sala."
+  Apaga uma descrição extra da sala.\n\
+Para criar descrições somente diurnas ou somente noturnas, acrescentar\n\
+@d ou @n, respectivamente, no final dos nomes das descrições.\n\
+Exemplo, se quiser uma descrição diurna e outra noturna para uma janela,\n\
+criar as descrições janela@d e janela@n ao invés de janela."
 const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
 \c2LSAI\b\n\
   Mostra saídas da sala em que você está.\n\
@@ -334,7 +338,7 @@ func cmd_edesc # Editar descrição extra
     msg("\bVocê não está em uma sala")
   senao !arg0
     msg("\bDigite o nome da descrição após EDESC")
-  senao nome != txtsepara(nome, "LV+DO", "DO+LV")
+  senao txttroca(nome, "@", "") != txtsepara(txttroca(nome, "@", ""), "LV+DO", "DO+LV")
     msg("Nomes de descrições só podem ter letras e espaço")
   senao
     var.opcnome = "Descrição " + nome
@@ -613,27 +617,33 @@ const tipo18 = "simnao"
 const clas18 = var.classe2
 const vari18 = "s_reserva"
 #
-const nome19 = "PNJs na sala"
-const info19 = "Quantidade máxima de PNJs na sala; não afeta o reset"
-const tipo19 = "numero"
+const nome19 = "Sala ao voltar"
+const info19 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
+const tipo19 = "sala"
 const clas19 = var.classe2
-const vari19 = "s_pnj"
+const vari19 = "s_voltar"
 #
-const nome20 = "Soltar itens"
-const tipo20 = "opcao"
+const nome20 = "PNJs na sala"
+const info20 = "Quantidade máxima de PNJs na sala; não afeta o reset"
+const tipo20 = "numero"
 const clas20 = var.classe2
-const vari20 = "s_soltar"
-const extr20 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
+const vari20 = "s_pnj"
 #
-const nome21 = "Volume dentro"
-const tipo21 = "numero"
+const nome21 = "Soltar itens"
+const tipo21 = "opcao"
 const clas21 = var.classe2
-const vari21 = "volmax"
+const vari21 = "s_soltar"
+const extr21 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
-const nome22 = "Objetos máximo"
+const nome22 = "Volume dentro"
 const tipo22 = "numero"
 const clas22 = var.classe2
-const vari22 = "objmax"
+const vari22 = "volmax"
+#
+const nome23 = "Objetos máximo"
+const tipo23 = "numero"
+const clas23 = var.classe2
+const vari23 = "objmax"
 
 
 classe menu_sala
@@ -749,34 +759,40 @@ const tipo18 = "simnao"
 const clas18 = var.classe1
 const vari18 = "s_reserva"
 #
-const nome19 = "PNJs na sala"
-const info19 = "Quantidade máxima de PNJs na sala; não afeta o reset"
-const tipo19 = "numero"
+const nome19 = "Sala ao voltar"
+const info19 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
+const tipo19 = "sala"
 const clas19 = var.classe1
-const vari19 = "s_pnj"
+const vari19 = "s_voltar"
 #
-const nome20 = "Soltar itens"
-const tipo20 = "opcao"
+const nome20 = "PNJs na sala"
+const info20 = "Quantidade máxima de PNJs na sala; não afeta o reset"
+const tipo20 = "numero"
 const clas20 = var.classe1
-const vari20 = "s_soltar"
-const extr20 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
+const vari20 = "s_pnj"
 #
-const nome21 = "Volume dentro"
-const tipo21 = "numero"
+const nome21 = "Soltar itens"
+const tipo21 = "opcao"
 const clas21 = var.classe1
-const vari21 = "volmax"
+const vari21 = "s_soltar"
+const extr21 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
-const nome22 = "Objetos máximo"
+const nome22 = "Volume dentro"
 const tipo22 = "numero"
 const clas22 = var.classe1
-const vari22 = "objmax"
+const vari22 = "volmax"
 #
-const nome23 = "Eventos sala"
-const info23 = "Se recebe eventos da própria sala"
-const tipo23 = "simnao"
+const nome23 = "Objetos máximo"
+const tipo23 = "numero"
 const clas23 = var.classe1
-const vari23 = "eveste"
-const exec23 = "ajustaobj"
+const vari23 = "objmax"
+#
+const nome24 = "Eventos sala"
+const info24 = "Se recebe eventos da própria sala"
+const tipo24 = "simnao"
+const clas24 = var.classe1
+const vari24 = "eveste"
+const exec24 = "ajustaobj"
 
 
 classe menu_saida

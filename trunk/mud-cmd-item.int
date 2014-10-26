@@ -204,8 +204,9 @@ func escr
     efim
     ret !total, nulo
     sala.var.z_moedas_ -= total
-    sala.var.z_moedas_ < 0 && sala.var.z_moedas = ""
+    sala.var.z_moedas_ < 0 && (sala.var.z_moedas = "")
     arg0.var.z_moedas_ += total
+    sala.objmudou = 1
     $mens.p(arg0, sala)
     se total == 1
       $mens.mvis1("$P pega uma moeda" + mens)
@@ -312,7 +313,23 @@ func escr
       continuar
     senao sala.dentro1.total + (r.item == 2 ? 1 : total) >= sala.objmax
       se sala.item
-        erro = "Não consegue colocar nada em " + sala.descnome + "."
+        erro = sala.descnome + "."
+        casovar txtmin(txt1(erro))
+        casose "o"
+          erro = "Não consegue colocar mais nada no " + txt2(erro)
+          sair
+        casose "a"
+          erro = "Não consegue colocar mais nada na " + txt2(erro)
+          sair
+        casose "os"
+          erro = "Não consegue colocar mais nada nos " + txt2(erro)
+          sair
+        casose "as"
+          erro = "Não consegue colocar mais nada nas " + txt2(erro)
+          sair
+        casose
+          erro = "Não consegue colocar mais nada em " + erro
+        casofim
       senao
         erro = "Não consegue soltar nada aqui."
       fimse
@@ -366,7 +383,7 @@ func escr
     efim
     ret !total, nulo
     arg0.var.z_moedas_ -= total
-    arg0.var.z_moedas_ < 0 && arg0.var.z_moedas = ""
+    arg0.var.z_moedas_ < 0 && (arg0.var.z_moedas = "")
     $mens.p(arg0, sala)
     mens2 = mens ? "$P coloca " : "$P solta "
     se total == 1
@@ -389,6 +406,7 @@ func escr
     casose
       $mens.mvis1(mens2 + mens + ".")
       sala.var.z_moedas_ += total
+      sala.objmudou = 1
     casofim
     arg0.p_espera += 2
     ret
