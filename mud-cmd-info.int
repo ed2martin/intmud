@@ -17,6 +17,7 @@ func escr
     total.[obj.jogconfig.14] += 1
     t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " N"
     t1 += txt(txt(obj.pnivel) + "      ", 0, 6) + obj.nome
+    obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     obj.sock == nulo && (t1 += "  [Desconectado]")
     se arg0.jogconfig.23
       obj.jogconfig.23 && (t1 += "  [Admin]")
@@ -26,7 +27,6 @@ func escr
       obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
     fimse
     arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
-    obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     t0.addfim(t1)
   efim
 # Lista de jogadores sem personagem

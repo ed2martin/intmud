@@ -60,8 +60,8 @@ public:
              @return Tamanho da variável (0=não ocupa lugar na memória)
              @note  Se for vetor, retorna o tamanho do vetor na memória */
 
-    int Tamanho();
-        ///< Obtém o tamanho de uma variável conforme TVariavel::defvar e TVariavel::vetor
+    int TamanhoVetor();
+        ///< Obtém o tamanho do vetor de variáveis conforme TVariavel::defvar
 
     TVarTipo Tipo();
         ///< Obtém o tipo mais apropriado para expressões numéricas

@@ -87,6 +87,8 @@ classe jogolocal
 herda jogsock
 # Jogando localmente
 telatxt j_tela
+textotxt j_hist_texto
+textopos j_hist_pos
 const msgsock = j_tela.msg(arg0 + "\n")
 const msgsala = j_tela.msg(arg0 + "\n")
 const msgtodos = j_tela.msg(arg0 + "\n")
@@ -97,16 +99,35 @@ func inicio
   criar("jogolocal")
 
 func ini
-  msgsock("Jogando localmente; tecla ESC encerra o programa")
+  msgsock("Jogando localmente")
+  msgsock("Tecla ESC encerra o programa")
+  msgsock("Teclas PGUP e PGDN permite acessar o histórico dos comandos que você digitou")
   jogsock:ini
 
 func j_tela_msg
   j_tela.linha = 0
+  j_hist_texto.addfim(arg0)
+  j_hist_texto.remove(j_hist_texto.linhas - 50)
+  j_hist_pos = j_hist_texto.fim
   recebe(txtremove(arg0, "ED"))
 # func j_tela_tecla
 # se arg0 == "ESC"
 # jogsock:fim
 # terminar
+
+func j_tela_tecla
+  casovar arg0
+  casose "PGUP"
+    j_hist_pos.antes
+    j_tela.texto = ""
+    j_tela.texto = j_hist_pos.texto
+    ret 1
+  casose "PGDN"
+    j_hist_pos.depois
+    j_tela.texto = ""
+    j_tela.texto = j_hist_pos.texto
+    ret 1
+  casofim
 
 
 classe jogoserv
