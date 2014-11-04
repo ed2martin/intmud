@@ -162,9 +162,9 @@ int TVariavel::Tamanho(const char * instr)
 }
 
 //------------------------------------------------------------------------------
-int TVariavel::Tamanho()
+int TVariavel::TamanhoVetor()
 {
-    int total = (indice!=0xFF ? 0 : (unsigned char)defvar[Instr::endVetor]);
+    int total = (unsigned char)defvar[Instr::endVetor];
     if (total<=1)       // Uma variável
         return Tamanho(defvar);
     if (defvar[2]==Instr::cInt1) // Vetor de bits
@@ -498,7 +498,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         if (vetor <= 8)
             *(char*)destino = *(char*)endvar;
         else
-            memmove(destino, endvar, Tamanho());
+            memmove(destino, endvar, TamanhoVetor());
         endvar = destino;
         return;
     case Instr::cInt8:

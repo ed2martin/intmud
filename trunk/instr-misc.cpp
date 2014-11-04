@@ -353,7 +353,7 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
 //----------------------------------------------------------------------------
 /// Cria variável ref com um valor definido
 /**
- *  @param objeto Objeto correspondente à variável
+ *  @param obj Objeto correspondente à variável
  *  @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVarObj(TObjeto * obj)
 {
@@ -411,7 +411,7 @@ bool Instr::CriarVar(const char * def)
     VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
     VarAtual->numbit = 0;
     VarAtual->numfunc = 0;
-    VarAtual->tamanho = VarAtual->Tamanho();
+    VarAtual->tamanho = VarAtual->TamanhoVetor();
 // Verifica se memória suficiente
     if (p + VarAtual->tamanho > Instr::DadosFim)
     {

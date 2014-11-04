@@ -47,6 +47,9 @@ const adm_jog = "\c3Comandos para jogadores\b\n\
   Envia mensagem para um jogador.\n\
 \c2REZOU\b <jogador> <texto>\n\
   Envia mensagem para o jogador com cópia para todos os administradores.\n\
+\c2INFOJOG\b <jogador>\n\
+  Mostra algumas informações do jogador: como está conectado, nível, moedas,\n\
+  e-mail, sala e jogo salvo. Se não estiver online, procura no jogo salvo.\n\
 \c2MUDANOME\b <nome atual> <novo nome>\n\
   Muda o nome do personagem de um jogador.\n\
 \c2LISTARSAV\b\n\
@@ -793,6 +796,47 @@ func cmd_infoe
   txtmostra
   ret 1
 
+func cmd_infojog
+  se !arg0
+    msg("Digite o nome do jogador após INFOJOG")
+    ret 1
+  fimse
+# Obtém: p = objeto do personagem
+  ref p # Objeto do personagem
+  enquanto 1
+    indiceitem item
+    item.ini("pn " + txtnome(arg0))
+    p = item.obj
+    sair p
+    se intnome(arg0)
+      msg("Nome inválido para jogador: " + arg0)
+      ret 1
+    fimse
+    arqsav sav1
+    listaobj l1
+    p = $jog_info, l1.addfim(p)
+    p.cnome = "x " + txtnome(arg0)
+    sair sav1.ler("sav/" + txt2(p.cnome) + ".sav", l1, 1)
+    msg("Jogador inexistente: " + arg0)
+    ret 1
+  efim
+# Mostra os dados do personagem
+  txt100 lin
+  lin = p.nome + ", nível " + p.pnivel
+  p.var.z_moedas_ == 1 && (lin += ", uma moeda")
+  p.var.z_moedas_ == 2 && (lin += ", duas moedas")
+  p.var.z_moedas_ > 2 && (lin += ", " + p.var.z_moedas_ + " moedas")
+  msg("\b\c6" + lin + "\b")
+  p.sock && msg("Conexão:      " + p.sock.info)
+  p.cnome && msg("Jogo salvo:   " + txt2(p.cnome))
+  se p.dono
+    msg("Está em:      " + p.dono)
+  senao p.salanome
+    msg("Entrará em:   " + p.salanome)
+  fimse
+  p.var.z_email && msg("E-mail:       " + p.var.z_email)
+  ret 1
+
 func cmd_ban
   textopos pos
 # Nenhum argumento: lista de endereços banidos
@@ -1118,3 +1162,13 @@ func ini
 func fim
   perso.mdono(dono)
   perso.donoantes = donoantes
+
+
+classe jog_info
+# Usado no comando infojog
+const iniclasse = !$[arg0] && criar(arg0)
+sav textovar var # Variáveis criadas sob demanda
+sav txt20 nome # Nome do personagem
+txt100 cnome # Para obter o nome codificado
+sav txt40 salanome # Nome da sala
+sav uint16 pnivel # Nível atual

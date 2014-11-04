@@ -77,6 +77,7 @@ classe i_teste005
 herda comum_itemperso
 const nome = "bolsa"
 const descnome = "uma bolsa"
+const descver = "O couro é leve, porém resistente."
 const i_abertoini = 2 # Container: 2 Inicialmente aberto
 const i_tranc = 1 # Trancar: 1 Pode ser trancado
 const objmax = 20
@@ -1423,6 +1424,36 @@ func cmd_social2
   fimse
 
 
+classe p_teste029
+herda comum_perso
+const nome = "instrutor"
+const descnome = "o instrutor de facas"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.dentro1.objini("i_teste012") || arg0.dentro2.objini("i_teste012")
+    misc:tempo("comfaca", arg0) # Tem faca: dispara funções comfaca
+  senao
+    misc:tempo("semfaca", arg0) # Não tem faca: dispara funções semfaca
+  fimse
+
+func comfaca20
+  arg0.msg("Instrutor: O que está esperando? Vá usar a faca.")
+
+func semfaca20
+  arg0.msg("Instrutor: Uma faca é muito útil aqui, inclusive para se defender.")
+
+func semfaca40
+  arg0.msg("Instrutor: Vou te dar uma faca e você experimenta.")
+
+func semfaca60
+  $mens.p(este, arg0)
+  $mens.mvis1("$P dá uma faca para $a.")
+  criar("i_teste012", arg0, 1)
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2741,12 +2772,12 @@ const s_titulo = "Subsolo 2: Triggers"
 const s_desc = "Ao norte: saídas baseadas em triggers\n\
 Ao sul: checando classe, nível, sexo ou empunhando/vestindo algo\n\
 À leste: variáveis\n\
-À oeste: recebendo itens"
-const dir_c = $s_teste067
+À oeste: recebendo e dando itens"
 const dir_n = $s_teste083
 const dir_s = $s_teste086
 const dir_l = $s_teste089
 const dir_o = $s_teste092
+const dir_c = $s_teste067
 const dir_b = $s_teste095
 
 
@@ -3237,6 +3268,7 @@ essa pessoa, ela lhe dará uma lanterna em troca. Foi usada uma variável\n\
 esquecerá quantos palitos você deu. Na sala teste090 (indo a leste) são\n\
 explicados alguns tipos de variáveis."
 const dir_l = $s_teste093
+const dir_o = $s_teste131
 const s_reset = "P 100 teste024 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -3672,3 +3704,19 @@ const s_reset = "S 100 teste047 2 S"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste047") && criar("i_teste047", este, 2)
+
+
+classe s_teste131
+herda b_teste
+const s_titulo = "Dar itens"
+const s_desc = "Aqui um instrutor dá uma faca para o jogador.\n\
+Se você já possui uma faca ou está empunhando uma, o instrutor\n\
+não dá outra."
+const dir_l = $s_teste106
+const s_reset = "P 100 teste029 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste029:objsolto.total < 1
+    criar("p_teste029", este, 0)
+  fimse

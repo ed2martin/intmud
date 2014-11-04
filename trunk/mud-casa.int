@@ -613,10 +613,12 @@ func escr2 # Consultar um item
             ret arg0.msg("Você não tem " + valor + (valor == 1 ? " moeda." : " moedas."))
           fimse
           casa.diataxa += total * config:casatempotaxa
+          casa.tempotaxa = 1
           casa.objmudou = 1
           arg0.var.z_moedas_ -= valor
         senao
           casa.diataxa = hora.numdias
+          casa.tempotaxa = 1
           casa.objmudou = 1
         fimse
         ret arg0.msg(txtcopiamai(p.descnome, "A") + " informa que a taxa foi paga.")
@@ -672,10 +674,19 @@ func escr
     arg0.msg("Você precisa chegar no nível " + config:ptitulonivel + " para usar esse comando")
   senao inttotal(arg0) > 30
     arg0.msg("O título do personagem não pode passar de 30 caracteres.")
+  senao vartroca(txtcod(arg1), "", "t_") != txtcod(arg1)
+    arg0.msg("O título contém caracteres não permitidos.")
   senao
     arg0.var.z_titulo = arg1
     arg0.msg(arg1 ? "Título do personagem alterado." : "Título do personagem apagado.")
   fimse
+
+const t_@v = "" # menor que
+const t_@x = "" # maior que
+const t_@z = "" # abre colchetes
+const t_@1 = "" # fecha colchetes
+const t_@4 = "" # abre chaves
+const t_@6 = "" # fecha chaves
 
 
 classe cmd_stitulo
