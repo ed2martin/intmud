@@ -406,6 +406,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   execgolpe(arg0, arg1, atk) # Ataca
   se result != 3
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
+    !result && (arg0.contr.atkdanos += intpos(-mudavida))
     mensgolpe(arg0, arg1)
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento, arg1.evento), e, e.ini.remove
@@ -577,6 +578,10 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
         dano /= arg1.defnorm, log.div(">Defesa normal", dano)
       fimse
       dano /= 300, log.msg(">Divide por 300: " + dano)
+      se config:atknivel >= 2
+        dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
+        log.mul(">Diferença de nível", dano)
+      fimse
 # Log + Calcula dano sem arma
     senao
       se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
@@ -589,8 +594,10 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
         dano /= arg1.defnorm, log.div(">Defesa normal", dano)
       fimse
       dano /= rand(270, 330), log.div(">Divide por ~300", dano)
-      dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
-      log.mul(">Diferença de nível", dano)
+      se config:atknivel
+        dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
+        log.mul(">Diferença de nível", dano)
+      fimse
     fimse
 # Calcula dano com arma
   senao arma1
@@ -601,6 +608,9 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
       dano *= arg0.atknorm + rand(arma1.armamin, arma1.armamax)
       dano *= arg0.atknorm / (arg1.defnorm * 300)
     fimse
+    se config:atknivel >= 2
+      dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
+    fimse
 # Calcula dano sem arma
   senao
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
@@ -608,7 +618,9 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     senao
       dano *= arg0.atknorm * arg0.atknorm / (arg1.defnorm * rand(270, 330))
     fimse
-    dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
+    se config:atknivel
+      dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
+    fimse
   fimse
 # Modificadores de posição
   casovar arg1.posicao
