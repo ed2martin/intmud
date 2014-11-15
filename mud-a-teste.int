@@ -2205,13 +2205,15 @@ const s_titulo = "Corredor"
 const s_desc = "A noroeste, uma calculadora.\n\
 Ao norte, carregando personagens.\n\
 A nordeste, carregando itens.\n\
+Ao sudoeste, colocando e tirando efeitos.\n\
 Ao sul, apagando personagens e itens."
-const dir_l = $s_teste035
-const dir_no = $s_teste044
 const dir_n = $s_teste046
-const dir_ne = $s_teste047
 const dir_s = $s_teste048
+const dir_l = $s_teste035
 const dir_o = $s_teste098
+const dir_ne = $s_teste047
+const dir_no = $s_teste044
+const dir_se = $s_teste132
 
 
 classe s_teste044
@@ -3138,11 +3140,15 @@ herda b_teste
 const s_titulo = "Controlando outros personagens"
 const s_desc = "Ao norte, monitorando o cmd e outros comandos\n\
 Ao sul, comandos para os personagens\n\
-A nordeste, usando atalhos"
-const dir_l = $s_teste043
+A nordeste, usando atalhos\n\
+A noroeste, animais de personagens\n\
+A sudeste, Limpar itens,habilidades,magias"
 const dir_n = $s_teste099
 const dir_s = $s_teste100
+const dir_l = $s_teste043
 const dir_ne = $s_teste101
+const dir_no = $s_teste133
+const dir_se = $s_teste135
 
 
 classe s_teste099
@@ -3720,3 +3726,51 @@ func s_reset1 # Realiza o reset
   se p_teste029:objsolto.total < 1
     criar("p_teste029", este, 0)
   fimse
+
+
+classe s_teste132
+herda b_teste
+const s_titulo = "Efeitos"
+const s_desc = "Suponha que você queira colocar o efeito Voar no seu personagem.\n\
+Nesse caso, o comando é:\n\
+cmd criar(\"e_voar\", este)\n\
+Se quiser esse efeito de um personagem do nível 5:\n\
+cmd criar(\"e_voar\", este, 5)\n\
+O processo inverso, remover o efeito, pode ser feito com:\n\
+cmd apagar(dentro2.objini(\"e_voar\"))"
+const dir_no = $s_teste043
+
+
+classe s_teste133
+herda b_teste
+const s_titulo = "Animais de personagens"
+const s_desc = "O animal escolhido é sempre persoesc. Assim, se seu animal número 2 for um\n\
+macaco e você quiser mudar o nível dele para 4, primeiro você tecla 2.\n\
+Depois, os comandos:\n\
+cmd persoesc.pnivel=4,persoesc.recalc=1\n\
+Basicamente foi colocado persoesc seguido de ponto antes de cada variável."
+const dir_no = $s_teste134
+const dir_se = $s_teste098
+
+
+classe s_teste134
+herda b_teste
+const s_titulo = "Continuação de animais de personagens"
+const s_desc = "Outro exemplo, animal com habilidade Socar no nível perito:\n\
+cmd persoesc.var.h_Socar=8\n\
+Animais desmaiam ao invés de morrer, e nesse caso não se recupera\n\
+automaticamente. Mas você pode recuperá-lo com:\n\
+cmd persoesc.restaurar\n\
+Para restaurar todos os animais, vide comando Deitar da sala casa001."
+const dir_se = $s_teste133
+
+
+classe s_teste135
+herda b_teste
+const s_titulo = "Limpar itens,habilidades,magias"
+const s_desc = "Para apagar todos os seus itens que você está carregando:\n\
+cmd dentro1.apagar\n\
+Para apagar todas as habilidades, depois as magias:\n\
+cmd var.limpar(\"h_\")\n\
+cmd var.limpar(\"m_\")"
+const dir_no = $s_teste098

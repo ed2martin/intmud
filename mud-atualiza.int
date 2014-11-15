@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 324, nulo
-  p.criar("config", "const versao = 324 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 326, nulo
+  p.criar("config", "const versao = 326 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -334,6 +334,10 @@ func ini2_exec
       d.ini
       p.apagar(p.texto, "sfora")
     efim
+  fimse
+# SVN 326
+  se versao < 326
+    criafunc("config", "const atknivel = 1")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")
