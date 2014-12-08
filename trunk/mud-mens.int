@@ -88,6 +88,46 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
         l0.objini.msgvis(arg2), l0.ini.remove
       efim
 
+func mmud1 # Mensagem para todos do MUD
+# arg0 = mensagem para todos
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.msg($mens.proc(arg0, item.obj.perso))
+  efim
+
+func mmudtodos1 # Mensagem para todos que estiverem acordados no MUD
+# arg0 = mensagem para todos
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.perso.msginv(arg0)
+  efim
+
+func marea1 # Mensagem para todos que estiverem na mesma área
+# arg0 = mensagem para todos
+  ref r
+  epara r = contr, r.dono, r = r.dono
+  efim
+  refvar area = r.s_area
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    epara r = item.obj.dono, r.dono, r = r.dono
+    efim
+    r.s_area == area && item.obj.msg($mens.proc(arg0, item.obj))
+  efim
+
+func mareatodos1 # Mensagem para todos que estiverem acordados na mesma área
+# arg0 = mensagem para todos
+  ref r
+  epara r = contr, r.dono, r = r.dono
+  efim
+  refvar area = r.s_area
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    epara r = item.obj.dono, r.dono, r = r.dono
+    efim
+    r.s_area == area && item.obj.msginv(arg0)
+  efim
+
 func proc # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   r = arg1

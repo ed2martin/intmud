@@ -3530,9 +3530,11 @@ classe s_teste119
 herda b_teste
 const s_titulo = "Subsolo 4: Diversos"
 const s_desc = "Ao norte: Frases aleatórias e frutas que recuperam pontos de vida\n\
-Ao sul: Comandos sociais, poça d'água e ao vestir ou remover item"
+Ao sul: Comandos sociais, poça d'água e ao vestir ou remover item\n\
+Ao leste: Mensagens para a área e para o MUD inteiro"
 const dir_n = $s_teste120
 const dir_s = $s_teste129
+const dir_l = $s_teste136
 const dir_c = $s_teste095
 
 
@@ -3774,3 +3776,23 @@ Para apagar todas as habilidades, depois as magias:\n\
 cmd var.limpar(\"h_\")\n\
 cmd var.limpar(\"m_\")"
 const dir_no = $s_teste098
+
+
+classe s_teste136
+herda b_teste
+const s_titulo = "Mensagens para a área e o MUD"
+const s_desc = "Aqui, qualquer coisa que você falar é ecoado na área inteira.\n\
+Só quem não estiver acordado não ouve.\n\
+Para fazer ecoar no MUD inteiro, usar mmudtodos1 ao invés de mareatodos1\n\
+na função cmd_falou. Para jogadores dormindo também receberem a mensagem,\n\
+usar as funções mmud1 e marea1 ao invés de mudtodos1 e mareatodos1."
+const dir_o = $s_teste119
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  $mens.p(arg0)
+  $mens.mens = arg1 # Aqui $m passa a ser o que o personagem falou
+  $mens.mareatodos1("Uma voz ecoa '$m'")

@@ -218,7 +218,7 @@ const dir = "l"
 
 classe cmd_e
 herda comando_comum
-const objcmd = $cmd_l.objcmd(arg0, arg1)
+const objcmd = $cmd_l.objcmd(arg0)
 
 
 classe cmd_o
@@ -238,7 +238,7 @@ const dir = "o"
 
 classe cmd_w
 herda comando_comum
-const objcmd = $cmd_o.objcmd(arg0, arg1)
+const objcmd = $cmd_o.objcmd(arg0)
 
 
 classe cmd_c
@@ -258,7 +258,7 @@ const dir = "c"
 
 classe cmd_u
 herda comando_comum
-const objcmd = $cmd_c.objcmd(arg0, arg1)
+const objcmd = $cmd_c.objcmd(arg0)
 
 
 classe cmd_b
@@ -278,7 +278,7 @@ const dir = "b"
 
 classe cmd_d
 herda comando_comum
-const objcmd = $cmd_b.objcmd(arg0, arg1)
+const objcmd = $cmd_b.objcmd(arg0)
 
 
 classe cmd_ne
@@ -313,7 +313,7 @@ const dir = "no"
 
 classe cmd_nw
 herda comando_comum
-const objcmd = $cmd_no.objcmd(arg0, arg1)
+const objcmd = $cmd_no.objcmd(arg0)
 
 
 classe cmd_se
@@ -348,7 +348,7 @@ const dir = "so"
 
 classe cmd_sw
 herda comando_comum
-const objcmd = $cmd_so.objcmd(arg0, arg1)
+const objcmd = $cmd_so.objcmd(arg0)
 
 
 classe cmd_entrar
@@ -382,7 +382,7 @@ const dir = "sair"
 
 
 classe cmd_seguir
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Seguir\b\n\
 Sintaxe: SEGUIR [personagem]\n\
 Segue um personagem.\n\
@@ -419,7 +419,7 @@ func escr
 
 
 classe cmd_abrir
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Abrir\b\n\
 Sintaxe: ABRIR <objeto ou direção>\n\
 Abre um objeto ou uma porta."
@@ -498,7 +498,7 @@ func escrdir # Abrir uma porta
 
 
 classe cmd_fechar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Fechar\b\n\
 Sintaxe: FECHAR <objeto ou direção>\n\
 Fecha um objeto ou uma porta."
@@ -580,7 +580,7 @@ func escrdir # Fechar uma porta
 
 
 classe cmd_destrancar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Destrancar\b\n\
 Sintaxe: DESTRANCAR <objeto ou direção>\n\
 Destranca um objeto ou uma porta.\n\
@@ -705,7 +705,7 @@ func escrdir # Destrancar uma porta
 
 
 classe cmd_trancar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Trancar\b\n\
 Sintaxe: TRANCAR <objeto ou direção>\n\
 Tranca um objeto ou uma porta.\n\
@@ -818,7 +818,7 @@ func escrdir # Trancar uma porta
 
 
 classe cmd_levantar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Levantar\b\nSintaxe: LEVANTAR\nFica em pé."
 
@@ -848,7 +848,7 @@ func escr
 
 
 classe cmd_sentar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Sentar\b\n\
 Sintaxe: SENTAR [objeto]\n\
@@ -920,7 +920,7 @@ func escr
 
 
 classe cmd_descansar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Sentar\b\n\
 Sintaxe: DESCANSAR [objeto]\n\
@@ -992,7 +992,7 @@ func escr
 
 
 classe cmd_dormir
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Dormir\b\n\
 Sintaxe: DORMIR [objeto]\n\
@@ -1063,7 +1063,7 @@ func escr
 
 
 classe cmd_acordar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 4
 const txtajuda = "\b\c3Acordar\b\n\
 Sintaxe: ACORDAR [personagem]\n\
@@ -1117,7 +1117,7 @@ func escr
 
 
 classe cmd_fugir
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 7
 const txtajuda = "\b\c3Fugir\b\n\
 Sintaxe: FUGIR [número]\n\
@@ -1156,14 +1156,16 @@ func fugir # Tenta fugir da luta
   valor = valor * rand(70, 130) - arg0.persobat.evasao * 150
   se valor > 0 && !arg0.jogconfig.14
     $mens.p(arg0)
+    $mens.mens = ""
     $mens.mtodos1("$P tenta fugir, mas não consegue.")
     ret
   fimse
 # Obtém direção para onde fugir
   refvar dir = $comando_mover.fugirdir(arg0)
   refvar r = ref(arg0.dono.dir_[dir])
-  se !r || !dir
+  se !r || r == arg0.dono || !dir
     $mens.p(arg0)
+    $mens.mens = ""
     $mens.mtodos1("$P tenta fugir mas não vê para onde.")
     ret
   fimse
@@ -1181,8 +1183,7 @@ herda comando_hab
 # Herdado pela classe magia_retornar
 const posic = 8
 const objcmd = arg0.persobat.var.[nomevar] || arg0.pnivel <= nivel ? este
-const objajuda = int(nivel) >= 0 ? este
-const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
+const txtajuda = int(nivel) >= 0 ? "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
 const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
 const tipoalvo = 6 # Não agressivo
 const c_espera = 15 # Tempo de esperar após usar esse comando
@@ -1251,19 +1252,19 @@ const colunas = 25
 const nome1 = "Gratuito até nível"
 const info1 = "Até que nível pode-se usar esse comando sem precisar aprender\n\
 Se menor que 0, não usa sem aprender"
-const tipo1 = "numero"
+const tipo1 = "opc_numero"
 const clas1 = var.classe1
 const vari1 = "nivel"
 #
 const nome11 = "Ir para sala"
 const info11 = "Se a sala não existir, o personagem vai para o ponto de retorno"
-const tipo11 = "sala"
+const tipo11 = "opc_sala"
 const clas11 = var.classe1
-const vari11 = "sala"
+const vari11 = "opc_sala"
 #
 const nome12 = "Informações"
 const info12 = "Informações extras"
-const tipo12 = "texto"
+const tipo12 = "opc_texto"
 const clas12 = var.classe1
 const vari12 = "msgextra"
 #
@@ -1277,6 +1278,7 @@ const extr14 = menu_hab_ataque:msg2
 
 
 classe menu_hab_retornar0
+herda comando_menu
 const titulo = "Mensagens"
 const menufim = var.menufim
 const colunas = 25
@@ -1284,59 +1286,59 @@ const colunas = 25
 const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "msgini1"
 #
 const nome2 = "Outros"
-const tipo2 = "linha"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
 const vari2 = "msgini2"
 #
 const titu3 = " * Antes do retorno"
 #
 const nome3 = "Perso"
-const tipo3 = "linha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "msgantes1"
 #
 const nome4 = "Outros"
-const tipo4 = "linha"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
 const vari4 = "msgantes2"
 #
 const titu5 = " * Depois do retorno"
 #
 const nome5 = "Perso"
-const tipo5 = "linha"
+const tipo5 = "opc_linha"
 const clas5 = var.classe1
 const vari5 = "msgdepois1"
 #
 const nome6 = "Outros"
-const tipo6 = "linha"
+const tipo6 = "opc_linha"
 const clas6 = var.classe1
 const vari6 = "msgdepois2"
 #
 const titu7 = " * Falhou"
 #
 const nome7 = "Perso"
-const tipo7 = "linha"
+const tipo7 = "opc_linha"
 const clas7 = var.classe1
 const vari7 = "msgerrou1"
 #
 const nome8 = "Outros"
-const tipo8 = "linha"
+const tipo8 = "opc_linha"
 const clas8 = var.classe1
 const vari8 = "msgerrou2"
 #
 const titu9 = " * Não teve efeito"
 #
 const nome9 = "Perso"
-const tipo9 = "linha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
 const vari9 = "msgnulo1"
 #
 const nome10 = "Outros"
-const tipo10 = "linha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "msgnulo2"

@@ -1,5 +1,5 @@
 classe cmd_acender
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Acender\b\n\
 Sintaxe: ACENDER <objeto>\n\
 Acende um objeto (um fósforo, uma lamparina, etc)."
@@ -49,7 +49,7 @@ func escr
 
 
 classe cmd_apagar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Apagar\b\n\
 Sintaxe: APAGAR <objeto>\n\
 Apaga um objeto (um fósforo, uma lamparina, etc)."
@@ -89,7 +89,7 @@ func escr
 
 
 classe cmd_pegar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Pegar\b\n\
 Sintaxe: PEGAR <objeto>\n\
          PEGAR <quantidade> <objeto>\n\
@@ -223,7 +223,7 @@ func escr
 
 
 classe cmd_soltar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = config:animal1 ? ta1 + ta2 + ta3 + ta4 : ta1 + ta3
 const ta1 = "\b\c3Soltar\b\n\
 Sintaxe: SOLTAR <objeto>\n\
@@ -427,7 +427,7 @@ Para guardar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 
 
 classe cmd_dar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = config:animal1 ? ta2 : ta1
 const ta1 = "\b\c3Dar\b\n\
 Sintaxe: DAR <objeto> <personagem>\n\
@@ -568,13 +568,12 @@ animal.")
 
 
 classe cmd_usar
-herda comando_comum
+herda cmd_vestir
 const objcmd = $cmd_vestir
-const objajuda = $cmd_vestir
 
 
 classe cmd_vestir
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Vestir\b\n\
 Sintaxe: VESTIR <objeto> [posição]\n\
          USAR <objeto> [posição]\n\
@@ -712,7 +711,7 @@ func escr
 
 
 classe cmd_empunhar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Empunhar\b\n\
 Sintaxe: EMPUNHAR <objeto>\n\
 Seu personagem empunha uma arma que está carregando."
@@ -770,7 +769,7 @@ func escr
 
 
 classe cmd_remover
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Remover\b\n\
 Sintaxe: REMOVER <objeto>\n\
          REMOVER <quantidade> <objeto>\n\
@@ -852,11 +851,10 @@ func efeito
 classe cmd_tomar
 herda cmd_beber
 const objcmd = $cmd_beber
-const objajuda = $cmd_beber
 
 
 classe cmd_beber
-herda comando_comebebe, comando_ajuda
+herda comando_comebebe
 const txtajuda = "\b\c3Beber\b\n\
 Sintaxe: BEBER [objeto]\n\
          TOMAR [objeto]\n\
@@ -921,7 +919,7 @@ func escr
 
 
 classe cmd_comer
-herda comando_comebebe, comando_ajuda
+herda comando_comebebe
 const txtajuda = "\b\c3Comer\b\n\
 Sintaxe: COMER <objeto>\n\
 Tenta comer alguma coisa, geralmente um alimento."
@@ -970,7 +968,7 @@ func escr
 
 
 classe cmd_recitar
-herda comando_comebebe, comando_ajuda
+herda comando_comebebe
 const txtajuda = "\b\c3Recitar\b\n\
 Sintaxe: RECITAR <objeto>\n\
          RECITAR <objeto>  <alvo>\n\
@@ -1024,7 +1022,7 @@ func escr
 
 
 classe cmd_capturar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Capturar\b\n\
 Sintaxe: CAPTURAR\n\
          CAPTURAR <objeto>\n\
@@ -1131,10 +1129,10 @@ $P.")
 
 
 classe cmd_trocar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const objcmd = config:animal1 ? este
-const objajuda = config:animal1 ? este
-const txtajuda = "\b\c3Trocar\b\n\
+const txtajuda = config:animal1 ? txtajuda1
+const txtajuda1 = "\b\c3Trocar\b\n\
 Sintaxe: TROCAR\n\
          TROCAR <item>\n\
          TROCAR <número> <número>\n\
@@ -1222,10 +1220,10 @@ func escr_trocar # Trocar dois animais de lugar
 
 
 classe cmd_animal
-herda comando_comum, comando_ajuda
+herda comando_comum
 const objcmd = config:animal1 ? este
-const objajuda = config:animal1 ? este
-const txtajuda = txttroca(config:animal2 ? ta1 + ta2 : ta1, "$$", config:animal1)
+const txtajuda = config:animal1 ? txtajuda1
+const txtajuda1 = txttroca(config:animal2 ? ta1 + ta2 : ta1, "$$", config:animal1)
 const ta1 = "\b\c3Animais\b\n\
   \c2CAPTURAR\b  Pega o animal que está lutando com você.\n\
   \c2SOLTAR\b    Solta um animal (você se desfaz dele)\n\
@@ -1289,10 +1287,10 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
 
 
 classe cmd_reserva
-herda comando_comum, comando_ajuda
+herda comando_comum
 const objcmd = config:animal1 && config:animal2 ? este
-const objajuda = config:animal1 && config:animal2 ? este
-const txtajuda = "\b\c3Reserva\b\n\
+const txtajuda = config:animal1 && config:animal2 ? txtajuda1
+const txtajuda1 = "\b\c3Reserva\b\n\
 Sintaxe: RESERVA\n\
          RESERVA <número do animal>\n\
          RESERVA <nome do animal>\n\

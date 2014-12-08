@@ -41,7 +41,7 @@ private:
 
 //----------------------------------------------------------------------------
 /** Trata das variáveis do tipo inttempo */
-class TVarIntTempo /// Variáveis intinc e intdec
+class TVarIntTempo /// Variáveis inttempo
 {
 public:
     static void PreparaIni();
@@ -81,7 +81,7 @@ private:
 
 //----------------------------------------------------------------------------
 /** Executa eventos */
-class TVarIntExec /// Variáveis intinc e intdec
+class TVarIntExec /// Variáveis intexec
 {
 public:
     static void ProcEventos(); ///< Processa eventos pendentes

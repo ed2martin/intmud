@@ -1,7 +1,6 @@
-classe adm_atk
-# Comandos de habilidades e magias, geralmente ataques
-#
-const adm_hab = "\b\c3Habilidades e magias\b\n\
+classe adm_hab
+herda comando_adm
+const txtajuda = "\b\c3Habilidades e magias\b\n\
 \c2LHAB\b [nome]\n\
 \c2LMAG\b [nome]\n\
   Lista habilidades ou magias que começam com o nome especificado.\n\
@@ -19,7 +18,11 @@ const adm_hab = "\b\c3Habilidades e magias\b\n\
   Mostra os cálculos de batalha no próximo ataque que o seu personagem\n\
   fizer ou receber, exceto quando seu personagem é um alvo secundário."
 
-func cmd_lhab # Listar habilidades
+
+classe adm_lhab
+herda comando_adm, comando_comum
+
+func escr # Listar habilidades
   prog p
   textotxt t
   txt100 lin
@@ -61,13 +64,17 @@ func cmd_lhab # Listar habilidades
     t.addfim(lin)
   efim
   se t.linhas
-    msg2("\b\c6Habilidade, Tipo, Alvo\b\n" + t.remove(500))
+    arg0.msg2("\b\c6Habilidade, Tipo, Alvo\b\n" + t.remove(500))
   senao
-    msg("\bNenhuma habilidade encontrada.")
+    arg0.msg("\bNenhuma habilidade encontrada.")
   fimse
   ret 1
 
-func cmd_lmag # Listar magias
+
+classe adm_lmag
+herda comando_adm, comando_comum
+
+func escr # Listar magias
   prog p
   textotxt t
   txt100 lin
@@ -109,31 +116,35 @@ func cmd_lmag # Listar magias
     t.addfim(lin)
   efim
   se t.linhas
-    msg2("\b\c6Magia, Tipo, Alvo\b\n" + t.remove(500))
+    arg0.msg2("\b\c6Magia, Tipo, Alvo\b\n" + t.remove(500))
   senao
-    msg("\bNenuma magia encontrada.")
+    arg0.msg("\bNenuma magia encontrada.")
   fimse
   ret 1
 
-func cmd_chab # Criar habilidade
+
+classe adm_chab
+herda comando_adm, comando_comum
+
+func escr # Criar habilidade
   prog p
   txt80 nome
   uint16 num
 # Checa se digitou nome do ataque
-  se arg0 == ""
-    msg("Tecle o nome da habilidade após CHAB")
+  se arg1 == ""
+    arg0.msg("Tecle o nome da habilidade após CHAB")
     ret 1
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg0, EMDSA))
+  nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    msg("Nome inválido para habilidade: " + nome)
+    arg0.msg("Nome inválido para habilidade: " + nome)
     ret 1
   senao p.existe("cmd_" + nome)
-    msg("Já existe o comando: " + nome)
+    arg0.msg("Já existe o comando: " + nome)
     ret 1
   senao p.existe("soc_" + nome)
-    msg("Já existe o comando social: " + nome)
+    arg0.msg("Já existe o comando social: " + nome)
     ret 1
   fimse
 # Pergunta que tipo de habilidade criar
@@ -142,22 +153,26 @@ func cmd_chab # Criar habilidade
   var.opctipo = "habilidade"
   ret p_chab("\b")
 
-func cmd_cmag # Criar magia
+
+classe adm_cmag
+herda comando_adm, comando_comum
+
+func escr # Criar magia
   prog p
   txt80 nome
   uint16 num
 # Checa se digitou nome do ataque
-  se arg0 == ""
-    msg("Tecle o nome da magia após CMAG")
+  se arg1 == ""
+    arg0.msg("Tecle o nome da magia após CMAG")
     ret 1
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg0, EMDSA))
+  nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    msg("Nome inválido para magia: " + nome)
+    arg0.msg("Nome inválido para magia: " + nome)
     ret 1
   senao p.existe("magia_" + nome)
-    msg("Já existe a magia: " + nome)
+    arg0.msg("Já existe a magia: " + nome)
     ret 1
   fimse
 # Pergunta que tipo de magia criar
@@ -166,18 +181,18 @@ func cmd_cmag # Criar magia
   var.opctipo = "magia"
   ret p_chab("\b")
 
-func p_chab # Escolher o tipo de habilidade ou magia
+func exec # Escolher o tipo de habilidade ou magia
   txt40 deriv
-  casovar txtmin(arg0)
+  casovar txtmin(arg1)
   casose
-    msg("Opção inválida")
+    arg0.msg("Opção inválida")
   casose "\b"
   casose ""
     passo = "chab"
-    msg("Entre com o tipo de " + var.opctipo + ", O mostra as opções, Z cancela")
+    arg0.msg("Entre com o tipo de " + var.opctipo + ", O mostra as opções, Z cancela")
     ret 1
   casose "z"
-    msg("Retornando ao jogo")
+    arg0.msg("Retornando ao jogo")
     passo = "", var.opcclasse = "", var.opcnome = "", var.opctipo = ""
     ret 1
   casose "o"
@@ -201,43 +216,47 @@ func p_chab # Escolher o tipo de habilidade ou magia
   txt512 lin
   lin = var.opcclasse + "\nb-hab\nherda " + deriv
   lin += "\nconst nomevar = \"" + var.opcvar + "\""
-  lin += "\nconst msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
+  lin += "\nconst arg0.msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
   lin += "$P ataca e mata $a, $m\\n\\n\\n$P ataca $a, errou\\n\\n\\n"
   lin += "$P ataca $a, nada acontece\\n\\n\\n\""
   prog p
   p.criar(lin)
   criar("admordena", "b-hab")
 # config:salvar
-  msg("\bCriou " + var.opctipo + ": " + txt(var.opcvar, 2))
+  arg0.msg("\bCriou " + var.opctipo + ": " + txt(var.opcvar, 2))
   admlog("criou " + var.opctipo + " " + txt(var.opcvar, 2))
   passo = "", var.opcclasse = "", var.opcnome = "", var.opctipo = ""
   ret 1
 
-func cmd_ahab # Apagar habilidade
+
+classe adm_ahab
+herda comando_adm, comando_comum
+
+func escr # Apagar habilidade
   prog p
-  se arg0 == ""
-    msg("Tecle um ou mais nomes de habilidades após AHAB")
+  se arg1 == ""
+    arg0.msg("Tecle um ou mais nomes de habilidades após AHAB")
     ret 1
   fimse
   uint16 x
-  enquanto txtsub(arg0, x, 1)
-    se !p.existe("cmd_" + txtsub(arg0, x, 1))
-      msg("Habilidade não existe: " + txtsub(arg0, x, 1))
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("cmd_" + txtsub(arg1, x, 1))
+      arg0.msg("Habilidade não existe: " + txtsub(arg1, x, 1))
       ret 1
-    senao !$cmd_[txtsub(arg0, x, 1)].cmdmenu
-      msg("Comando não é uma habilidade: " + txtsub(arg0, x, 1))
+    senao !$cmd_[txtsub(arg1, x, 1)].cmdmenu
+      arg0.msg("Comando não é uma habilidade: " + txtsub(arg1, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = arg0, p_ahab
+  tpasso = arg1, p_ahab
   ret 1
 
-func p_ahab # Confirmar que quer apagar habilidade
+func passo # Confirmar que quer apagar habilidade
   passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
     uint16 x
     enquanto txtsub(tpasso, x, 1)
@@ -246,44 +265,48 @@ func p_ahab # Confirmar que quer apagar habilidade
     efim
     config:salvar
     se x < 2
-      msg("Habilidade apagada: " + tpasso)
+      arg0.msg("Habilidade apagada: " + tpasso)
       admlog("apagou habilidade " + tpasso)
     senao
-      msg("Habilidades apagados: " + tpasso)
+      arg0.msg("Habilidades apagados: " + tpasso)
       admlog("apagou habilidades " + tpasso)
     fimse
   senao
     passo = "ahab"
     refvar m1 = txt2(tpasso) ? "habilidades" : "habilidade"
-    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
-func cmd_amag # Apagar magia
+
+classe adm_amag
+herda comando_adm, comando_comum
+
+func escr # Apagar magia
   prog p
-  se arg0 == ""
-    msg("Tecle um ou mais nomes de magias após AMAG")
+  se arg1 == ""
+    arg0.msg("Tecle um ou mais nomes de magias após AMAG")
     ret 1
   fimse
   uint16 x
-  enquanto txtsub(arg0, x, 1)
-    se !p.existe("magia_" + txtsub(arg0, x, 1))
-      msg("Magia não existe: " + txtsub(arg0, x, 1))
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("magia_" + txtsub(arg1, x, 1))
+      arg0.msg("Magia não existe: " + txtsub(arg1, x, 1))
       ret 1
-    senao !$magia_[txtsub(arg0, x, 1)].cmdmenu
-      msg("Magia não pode ser apagada: " + txtsub(arg0, x, 1))
+    senao !$magia_[txtsub(arg1, x, 1)].cmdmenu
+      arg0.msg("Magia não pode ser apagada: " + txtsub(arg1, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = arg0, p_amag
+  tpasso = arg1, p_amag
   ret 1
 
-func p_amag # Confirmar que quer apagar magia
+func passo # Confirmar que quer apagar magia
   passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
     uint16 x
     enquanto txtsub(tpasso, x, 1)
@@ -292,152 +315,167 @@ func p_amag # Confirmar que quer apagar magia
     efim
     config:salvar
     se x < 2
-      msg("Magia apagada: " + tpasso)
+      arg0.msg("Magia apagada: " + tpasso)
       admlog("apagou magia " + tpasso)
     senao
-      msg("Magias apagadas: " + tpasso)
+      arg0.msg("Magias apagadas: " + tpasso)
       admlog("apagou magias " + tpasso)
     fimse
   senao
     passo = "amag"
     refvar m1 = txt2(tpasso) ? "magias" : "magia"
-    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
-func cmd_ehab # Editar habilidade
+
+classe adm_ehab
+herda comando_adm, comando_comum
+
+func escr # Editar habilidade
   prog p
-  se arg0 == ""
-    msg("Tecle o nome da habilidade após EHAB")
-  senao !p.existe("cmd_" + arg0)
-    msg("Habilidade não existe: " + arg0)
-  senao !$cmd_[arg0].cmdmenu
-    msg("Comando não é uma habilidade: " + arg0)
+  se arg1 == ""
+    arg0.msg("Tecle o nome da habilidade após EHAB")
+  senao !p.existe("cmd_" + arg1)
+    arg0.msg("Habilidade não existe: " + arg1)
+  senao !$cmd_[arg1].cmdmenu
+    arg0.msg("Comando não é uma habilidade: " + arg1)
   senao
-    var.classe1 = "cmd_" + txts(txtmin(arg0))
-    var.menufim = "menu_hab_" + $cmd_[arg0].cmdmenu
-    m_menu(var.menufim)
+    var.classe1 = "cmd_" + txts(txtmin(arg1))
+    var.menufim = "menu_hab_" + $cmd_[arg1].cmdmenu
+    $[var.menufim].passo(arg0.sock)
+    arg0.sock.m_menu(var.menufim)
   fimse
   ret 1
 
-func cmd_emag # Editar magia
+
+classe adm_emag
+herda comando_adm, comando_comum
+
+func escr # Editar magia
   prog p
-  se arg0 == ""
-    msg("Tecle o nome da magia após EMAG")
-  senao !p.existe("magia_" + arg0)
-    msg("Magia não existe: " + arg0)
-  senao !$magia_[arg0].cmdmenu
-    msg("Comando não é uma magia editável: " + arg0)
+  se arg1 == ""
+    arg0.msg("Tecle o nome da magia após EMAG")
+  senao !p.existe("magia_" + arg1)
+    arg0.msg("Magia não existe: " + arg1)
+  senao !$magia_[arg1].cmdmenu
+    arg0.msg("Comando não é uma magia editável: " + arg1)
   senao
-    var.classe1 = "magia_" + txts(txtmin(arg0))
-    var.menufim = "menu_magia_" + $magia_[arg0].cmdmenu
-    m_menu(var.menufim)
+    var.classe1 = "magia_" + txts(txtmin(arg1))
+    var.menufim = "menu_magia_" + $magia_[arg1].cmdmenu
+    arg0.sock.m_menu(var.menufim)
   fimse
   ret 1
 
-func cmd_atklog # Mostrar ou não cálculos de batalha
+
+classe adm_atklog
+herda comando_adm, comando_comum
+
+func escr # Mostrar ou não cálculos de batalha
   perso.atklog = !perso.atklog
   se perso.atklog
-    msg("Informando cálculos de batalha.")
+    arg0.msg("Informando cálculos de batalha.")
   senao
-    msg("Não informando cálculos de batalha.")
+    arg0.msg("Não informando cálculos de batalha.")
   fimse
   ret 1
 
 
 classe menu_hab_custo
+herda comando_menu
 const titulo = "Consome"
 const menufim = var.menufim
 const colunas = 25
 #
 const nome1 = "Tempo de espera"
 const info1 = "Tempo mínimo que deve esperar, em décimos de segundo"
-const tipo1 = "numero"
+const tipo1 = "opc_numero"
 const clas1 = var.classe1
 const vari1 = "c_espera"
 const extr1 = "5 150"
 #
 const nome2 = "Vida iniciante"
 const info2 = "Quantos pontos de vida consome no nível iniciante"
-const tipo2 = "numero"
+const tipo2 = "opc_numero"
 const clas2 = var.classe1
 const vari2 = "c_vida1"
 #
 const nome3 = "Vida perito"
 const info3 = "Quantos pontos de vida consome no nível perito"
-const tipo3 = "numero"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "c_vida2"
 #
 const nome4 = "Mana iniciante"
 const info4 = "Quantos pontos de mana consome no nível iniciante"
-const tipo4 = "numero"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
 const vari4 = "c_mana1"
 #
 const nome5 = "Mana perito"
 const info5 = "Quantos pontos de mana consome no nível perito"
-const tipo5 = "numero"
+const tipo5 = "opc_numero"
 const clas5 = var.classe1
 const vari5 = "c_mana2"
 #
 const nome6 = "Vigor iniciante"
 const info6 = "Quantos pontos de vigor consome no nível iniciante"
-const tipo6 = "numero"
+const tipo6 = "opc_numero"
 const clas6 = var.classe1
 const vari6 = "c_move1"
 #
 const nome7 = "Vigor perito"
 const info7 = "Quantos pontos de vigor consome no nível perito"
-const tipo7 = "numero"
+const tipo7 = "opc_numero"
 const clas7 = var.classe1
 const vari7 = "c_move2"
 
 
 classe menu_hab_alvo
+herda comando_menu
 const titulo = "Afeta o alvo"
 const menufim = var.menufim
 const colunas = 25
 #
 const nome1 = "Condição"
-const tipo1 = "opcao"
+const tipo1 = "opc_opcao"
 const clas1 = var.classe1
 const vari1 = "a_cond"
 const extr1 = "Um ou mais pontos de vida\nNenhum ponto de vida\nNenhuma condição"
 #
 const nome2 = "Vida"
 const info2 = "Quantos pontos de vida ganha"
-const tipo2 = "numero"
+const tipo2 = "opc_numero"
 const clas2 = var.classe1
 const vari2 = "a_vida1"
 #
 const nome3 = "Vida por nível"
 const info3 = "Quantos pontos de vida ganha a cada nível"
-const tipo3 = "numero"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "a_vida2"
 #
 const nome4 = "Mana"
 const info4 = "Quantos pontos de mana ganha"
-const tipo4 = "numero"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
 const vari4 = "a_mana1"
 #
 const nome5 = "Mana por nível"
 const info5 = "Quantos pontos de mana ganha a cada nível"
-const tipo5 = "numero"
+const tipo5 = "opc_numero"
 const clas5 = var.classe1
 const vari5 = "a_mana2"
 #
 const nome6 = "Vigor"
 const info6 = "Quantos pontos de vigor ganha"
-const tipo6 = "numero"
+const tipo6 = "opc_numero"
 const clas6 = var.classe1
 const vari6 = "a_move1"
 #
 const nome7 = "Vigor por nível"
 const info7 = "Quantos pontos de vigor ganha a cada nível"
-const tipo7 = "numero"
+const tipo7 = "opc_numero"
 const clas7 = var.classe1
 const vari7 = "a_move2"
 #
@@ -447,51 +485,52 @@ Eles podem diminuir em até 50% (iniciante) ou aumentar em até 50% (perito)."
 #
 const nome9 = "Efeito 1"
 const info9 = "Nome do efeito"
-const tipo9 = "linha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
 const vari9 = "a_efeito1"
 #
 const nome10 = "Precisão 1"
 const info10 = "Probabilidade de criar o efeito, 100=não falha"
-const tipo10 = "numero"
+const tipo10 = "opc_numero"
 const clas10 = var.classe1
 const vari10 = "a_prob1"
 const extr10 = "0 100"
 #
 const nome11 = "Efeito 2"
 const info11 = "Nome do efeito"
-const tipo11 = "linha"
+const tipo11 = "opc_linha"
 const clas11 = var.classe1
 const vari11 = "a_efeito2"
 #
 const nome12 = "Precisão 2"
 const info12 = "Probabilidade de criar o efeito, 100=não falha"
-const tipo12 = "numero"
+const tipo12 = "opc_numero"
 const clas12 = var.classe1
 const vari12 = "a_prob2"
 const extr12 = "0 100"
 #
 const nome13 = "Efeito 3"
 const info13 = "Nome do efeito"
-const tipo13 = "linha"
+const tipo13 = "opc_linha"
 const clas13 = var.classe1
 const vari13 = "a_efeito3"
 #
 const nome14 = "Precisão 3"
 const info14 = "Probabilidade de criar o efeito, 100=não falha"
-const tipo14 = "numero"
+const tipo14 = "opc_numero"
 const clas14 = var.classe1
 const vari14 = "a_prob3"
 const extr14 = "0 100"
 #
 const nome15 = "Remover efeitos"
 const info15 = "Efeitos que serão removidos; uma linha por efeito"
-const tipo15 = "texto"
+const tipo15 = "opc_texto"
 const clas15 = var.classe1
 const vari15 = "a_remove"
 
 
 classe menu_hab_msg0
+herda comando_menu
 const titulo = "Mensagens 1"
 const menufim = var.menufim
 const colunas = 25
@@ -499,21 +538,21 @@ const colunas = 25
 const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
-const tipo1 = "txtlinha"
+const tipo1 = "opc_txtlinha"
 const clas1 = var.classe1
 const vari1 = "msgatk" + txtfim(tpasso, 1)
 const extr1 = "0"
 #
 const nome2 = "Alvo"
 const info2 = "Se vazio, pega mensagem da opção 1"
-const tipo2 = "txtlinha"
+const tipo2 = "opc_txtlinha"
 const clas2 = var.classe1
 const vari2 = "msgatk" + txtfim(tpasso, 1)
 const extr2 = "1"
 #
 const nome3 = "Outros"
 const info3 = "Se vazio, pega mensagem da opção 1"
-const tipo3 = "txtlinha"
+const tipo3 = "opc_txtlinha"
 const clas3 = var.classe1
 const vari3 = "msgatk" + txtfim(tpasso, 1)
 const extr3 = "2"
@@ -521,14 +560,14 @@ const extr3 = "2"
 const titu4 = " * Acertou em si mesmo"
 #
 const nome4 = "Perso"
-const tipo4 = "txtlinha"
+const tipo4 = "opc_txtlinha"
 const clas4 = var.classe1
 const vari4 = "msgatk" + txtfim(tpasso, 1)
 const extr4 = "3"
 #
 const nome5 = "Outros"
 const info5 = "Se vazio, pega mensagem da opção 4"
-const tipo5 = "txtlinha"
+const tipo5 = "opc_txtlinha"
 const clas5 = var.classe1
 const vari5 = "msgatk" + txtfim(tpasso, 1)
 const extr5 = "4"
@@ -536,21 +575,21 @@ const extr5 = "4"
 const titu6 = " * Acertou outro personagem"
 #
 const nome6 = "Perso"
-const tipo6 = "txtlinha"
+const tipo6 = "opc_txtlinha"
 const clas6 = var.classe1
 const vari6 = "msgatk" + txtfim(tpasso, 1)
 const extr6 = "5"
 #
 const nome7 = "Alvo"
 const info7 = "Se vazio, pega mensagem da opção 6"
-const tipo7 = "txtlinha"
+const tipo7 = "opc_txtlinha"
 const clas7 = var.classe1
 const vari7 = "msgatk" + txtfim(tpasso, 1)
 const extr7 = "6"
 #
 const nome8 = "Outros"
 const info8 = "Se vazio, pega mensagem da opção 6"
-const tipo8 = "txtlinha"
+const tipo8 = "opc_txtlinha"
 const clas8 = var.classe1
 const vari8 = "msgatk" + txtfim(tpasso, 1)
 const extr8 = "7"
@@ -558,21 +597,21 @@ const extr8 = "7"
 const titu9 = " * Matou o alvo"
 #
 const nome9 = "Perso"
-const tipo9 = "txtlinha"
+const tipo9 = "opc_txtlinha"
 const clas9 = var.classe1
 const vari9 = "msgatk" + txtfim(tpasso, 1)
 const extr9 = "8"
 #
 const nome10 = "Alvo"
 const info10 = "Se vazio, pega mensagem da opção 9"
-const tipo10 = "txtlinha"
+const tipo10 = "opc_txtlinha"
 const clas10 = var.classe1
 const vari10 = "msgatk" + txtfim(tpasso, 1)
 const extr10 = "9"
 #
 const nome11 = "Outros"
 const info11 = "Se vazio, pega mensagem da opção 9"
-const tipo11 = "txtlinha"
+const tipo11 = "opc_txtlinha"
 const clas11 = var.classe1
 const vari11 = "msgatk" + txtfim(tpasso, 1)
 const extr11 = "10"
@@ -580,21 +619,21 @@ const extr11 = "10"
 const titu12 = " * Errou o alvo"
 #
 const nome12 = "Perso"
-const tipo12 = "txtlinha"
+const tipo12 = "opc_txtlinha"
 const clas12 = var.classe1
 const vari12 = "msgatk" + txtfim(tpasso, 1)
 const extr12 = "11"
 #
 const nome13 = "Alvo"
 const info13 = "Se vazio, pega mensagem da opção 12"
-const tipo13 = "txtlinha"
+const tipo13 = "opc_txtlinha"
 const clas13 = var.classe1
 const vari13 = "msgatk" + txtfim(tpasso, 1)
 const extr13 = "12"
 #
 const nome14 = "Outros"
 const info14 = "Se vazio, pega mensagem da opção 12"
-const tipo14 = "txtlinha"
+const tipo14 = "opc_txtlinha"
 const clas14 = var.classe1
 const vari14 = "msgatk" + txtfim(tpasso, 1)
 const extr14 = "13"
@@ -602,21 +641,21 @@ const extr14 = "13"
 const titu15 = " * Não teve efeito"
 #
 const nome15 = "Perso"
-const tipo15 = "txtlinha"
+const tipo15 = "opc_txtlinha"
 const clas15 = var.classe1
 const vari15 = "msgatk" + txtfim(tpasso, 1)
 const extr15 = "14"
 #
 const nome16 = "Alvo"
 const info16 = "Se vazio, pega mensagem da opção 15"
-const tipo16 = "txtlinha"
+const tipo16 = "opc_txtlinha"
 const clas16 = var.classe1
 const vari16 = "msgatk" + txtfim(tpasso, 1)
 const extr16 = "15"
 #
 const nome17 = "Outros"
 const info17 = "Se vazio, pega mensagem da opção 15"
-const tipo17 = "txtlinha"
+const tipo17 = "opc_txtlinha"
 const clas17 = var.classe1
 const vari17 = "msgatk" + txtfim(tpasso, 1)
 const extr17 = "16"
@@ -643,17 +682,18 @@ const titulo = "Mensagens 5"
 
 
 classe menu_hab_comum
+herda comando_menu
 const nome3 = "Precisão"
 const info3 = "Para habilidades e magias que por natureza são imprecisas\n\
 De 0 (sempre erra) a 100 (mesmo que atacar sem arma) ou 101 (nunca falha)"
-const tipo3 = "numero"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "precisao"
 const extr3 = "0 101"
 #
 const nome4 = "Requer arma"
 const info4 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
-const tipo4 = "vetor"
+const tipo4 = "opc_vetor"
 const clas4 = var.classe1
 const vari4 = "tipoarma"
 const extr4 = config:arma_txt
@@ -664,31 +704,31 @@ const clas5 = "menu_hab_custo"
 #
 const nome6 = "Preço da aula"
 const info6 = "Quantas moedas os personagens cobram para ensinar"
-const tipo6 = "numero"
+const tipo6 = "opc_numero"
 const clas6 = var.classe1
 const vari6 = "valor"
 #
 const nome7 = "Depende de"
 const info7 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
-const tipo7 = "tipodep"
+const tipo7 = "opc_tipodep"
 const clas7 = var.classe1
 const vari7 = "depende"
 #
 const nome8 = "Iniciante nível"
 const info8 = "A partir de que nível pode ter a primeira aula"
-const tipo8 = "numero"
+const tipo8 = "opc_numero"
 const clas8 = var.classe1
 const vari8 = "aulaini"
 #
 const nome9 = "Perito nível"
 const info9 = "A partir de que nível pode ter todas as aulas"
-const tipo9 = "numero"
+const tipo9 = "opc_numero"
 const clas9 = var.classe1
 const vari9 = "aulafim"
 #
 const nome10 = "Somente tipos"
 const info10 = "Se estiver vazio, todas as classes e raças podem aprender"
-const tipo10 = "tipos"
+const tipo10 = "opc_tipos"
 const clas10 = var.classe1
 const vari10 = "tipoperso"
 
@@ -699,7 +739,7 @@ const titulo = "Hab " + txt(var.classe1, 4)
 const colunas = 25
 #
 const nome1 = "Alvo"
-const tipo1 = "opcao"
+const tipo1 = "opc_opcao"
 const clas1 = var.classe1
 const vari1 = "tipoalvo"
 const extr1 = "Qualquer um; ataque\n\
@@ -715,7 +755,7 @@ Nenhum (não ataca)"
 #
 #
 const nome2 = "Condição"
-const tipo2 = "opcao"
+const tipo2 = "opc_opcao"
 const clas2 = var.classe1
 const vari2 = "a_batalha"
 const extr2 = "Nenhuma\nDurante a batalha\nFora da batalha"
@@ -727,32 +767,32 @@ const clas11 = "menu_hab_alvo"
 const titu12 = " * Ataque"
 #
 const nome12 = "Tipo"
-const tipo12 = "opcao"
+const tipo12 = "opc_opcao"
 const clas12 = var.classe1
 const vari12 = "tipoatk"
 const extr12 = config:atknomes
 #
 const nome13 = "Força"
 const info13 = "Em porcentagem; se 0 o alvo não perde pontos de vida"
-const tipo13 = "numero"
+const tipo13 = "opc_numero"
 const clas13 = var.classe1
 const vari13 = "ataque"
 #
 const nome14 = "Velocidade"
 const info14 = "Em porcentagem"
-const tipo14 = "numero"
+const tipo14 = "opc_numero"
 const clas14 = var.classe1
 const vari14 = "vel"
 #
 const nome15 = "Precisão perso"
 const info15 = "Quanta precisão o personagem ganha durante um ataque com essa arma"
-const tipo15 = "numero"
+const tipo15 = "opc_numero"
 const clas15 = var.classe1
 const vari15 = "addprecisao"
 #
 const nome16 = "Bônus"
 const info16 = "Quais raças e classes atacam com mais força"
-const tipo16 = "tipos"
+const tipo16 = "opc_tipos"
 const clas16 = var.classe1
 const vari16 = "tipobonus"
 #
@@ -760,7 +800,7 @@ const titu17 = " * Textos"
 #
 const nome17 = "Informações"
 const info17 = "Informações extras"
-const tipo17 = "texto"
+const tipo17 = "opc_texto"
 const clas17 = var.classe1
 const vari17 = "msgextra"
 #

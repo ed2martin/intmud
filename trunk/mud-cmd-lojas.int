@@ -1,5 +1,5 @@
 classe cmd_lista
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Lista\b\n\
 Sintaxe: LISTA [item]\n\
 Sem argumentos mostra a lista de produtos sendo vendidos.\n\
@@ -225,7 +225,7 @@ func escr2 # Consultar um item
 
 
 classe cmd_comprar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Comprar\b\n\
 Sintaxe: COMPRAR <nome ou número do objeto>\n\
          COMPRAR <quantidade>  <nome ou número do objeto>\n\
@@ -425,7 +425,7 @@ $a_[p.lojachave])
 
 
 classe cmd_avaliar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Avaliar\b\n\
 Sintaxe: AVALIAR <nome do objeto>\n\
          AVALIAR CASA\n\
@@ -572,7 +572,7 @@ const vender = 1
 
 
 classe cmd_aulas
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Aulas\b\n\
 Sintaxe: AULAS [nome ou número do curso]\n\
 Sem argumentos mostra quem dá aulas e o que ensina.\n\
@@ -676,7 +676,7 @@ func escr2 # Consultar uma aula
       valor = r.valor(arg0) * l.objini.taxaaula / 100
       aulas = txt2(t2.ini.texto)
       t2.limpar
-      t2.addfim(r.txtajuda)
+      t2.addfim(r.habajuda(arg0))
       se t2.bytes <= 1
         t2.limpar
         t2.addfim("\b\c3" + lin + "\b")
@@ -692,7 +692,7 @@ func escr2 # Consultar uma aula
 
 
 classe cmd_aprender
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Aprender\b\n\
 Sintaxe: APRENDER <nome ou número do curso>\n\
 Aprende um pouco sobre uma habilidade ou idioma.\n\

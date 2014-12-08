@@ -83,7 +83,7 @@ func t_atribdef # Retorna a quantidade de defesas
 
 func p_atribcfg
   uint16 linha
-  linha = arg0, passo = "atribcfg"
+  linha = arg0, passo = "opc_atribcfg"
   se arg0 == "" || arg0 == "\b"
     se var.opcvalido
       msg("Entre com uma opção, O mostra as opções, Z cancela")
@@ -95,7 +95,7 @@ func p_atribcfg
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
     msg("Apagado: " + var.opcnome)
-    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    admlog(arg0, "apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     passo = var.opcpasso, p_[passo]("\b")
   senao arg0 == "z"
     passo = var.opcpasso, p_[passo]("\b")
@@ -162,7 +162,7 @@ func p_atribcfg2 # Usado por p_atribcfg; editando um atributo
     p.criar(var.opcclasse, t.remove(10000))
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
-    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    admlog(arg0, "mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
     p_atribcfg("", var.opcpasso2)
     var.opcpasso2 = "", var.opclin = ""
     criar("admrecalctudo") # Para atualizar os personagens
@@ -528,12 +528,12 @@ func p_atrib_salvar # Salva os atributos em função
     p.criar(var.opcclasse, t.remove(10000))
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
-    admlog("mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    admlog(arg0, "mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   senao
     p.apagar(var.opcclasse, var.opcvar)
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
-    admlog("apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+    admlog(arg0, "apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
 
 const p_atrib_bit = 22 # A partir de que opção começam atributos de bit
 const p_atrib_atk = 41 # A partir de que opção começam atributos de ataque/defesa
@@ -781,7 +781,7 @@ const colunas = 25
 #
 const nome11 = "Informações"
 const info11 = "Informações extras"
-const tipo11 = "texto"
+const tipo11 = "opc_texto"
 const clas11 = var.classe1
 const vari11 = "msgextra"
 #
@@ -795,6 +795,7 @@ const extr13 = menu_hab_ataque:msg2
 
 
 classe menu_hab_identif0
+herda comando_menu
 const titulo = "Mensagens"
 const menufim = var.menufim
 const colunas = 25
@@ -802,65 +803,65 @@ const colunas = 25
 const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "msgini1"
 #
 const nome2 = "Outros"
-const tipo2 = "linha"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
 const vari2 = "msgini2"
 #
 const titu3 = " * Identificou personagem"
 #
 const nome3 = "Perso"
-const tipo3 = "linha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "msgperso1"
 #
 const nome4 = "Alvo"
-const tipo4 = "linha"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
 const vari4 = "msgperso2"
 #
 const nome5 = "Outros"
-const tipo5 = "linha"
+const tipo5 = "opc_linha"
 const clas5 = var.classe1
 const vari5 = "msgperso3"
 #
 const titu6 = " * Identificou objeto"
 #
 const nome6 = "Perso"
-const tipo6 = "linha"
+const tipo6 = "opc_linha"
 const clas6 = var.classe1
 const vari6 = "msgobj1"
 #
 const nome7 = "Outros"
-const tipo7 = "linha"
+const tipo7 = "opc_linha"
 const clas7 = var.classe1
 const vari7 = "msgobj2"
 #
 const titu8 = " * Falhou"
 #
 const nome8 = "Perso"
-const tipo8 = "linha"
+const tipo8 = "opc_linha"
 const clas8 = var.classe1
 const vari8 = "msgerrou1"
 #
 const nome9 = "Outros"
-const tipo9 = "linha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
 const vari9 = "msgerrou2"
 #
 const titu10 = " * Não teve efeito"
 #
 const nome10 = "Perso"
-const tipo10 = "linha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "msgnulo1"
 #
 const nome11 = "Outros"
-const tipo11 = "linha"
+const tipo11 = "opc_linha"
 const clas11 = var.classe1
 const vari11 = "msgnulo2"
 

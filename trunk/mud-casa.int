@@ -1,7 +1,8 @@
 classe adm_casa
+herda comando_adm
 # Comandos de casas
 #
-const adm_casa = "\b\c3Comandos de casas\b\n\
+const txtajuda = "\b\c3Comandos de casas\b\n\
 \c2LCASA\b [casa]\n\
   Lista casas que começam com o nome especificado.\n\
 \c2CCASA\b <nome>\n\
@@ -21,10 +22,14 @@ const adm_casa = "\b\c3Comandos de casas\b\n\
      para fechar ao passar e trancar ao fechar\n\
   6. Colocar o nome da casa no código da fechadura (comando ESAI)"
 
-func cmd_lcasa # Listar casas
+
+classe adm_lcasa
+herda comando_adm, comando_comum
+
+func escr # Listar casas
   prog p
   se !p.iniclasse("c_" + txtremove(arg0, "EMDCT7"))
-    msg("\bNenhuma casa encontrada.")
+    arg0.msg("\bNenhuma casa encontrada.")
   senao
     datahora hora
     hora.agora
@@ -49,17 +54,21 @@ func cmd_lcasa # Listar casas
       t.addfim(txt(p.texto, 2) + lin)
       p.depois
     efim
-    msg2(t.remove(500))
+    arg0.msg2(t.remove(500))
   fimse
   ret 1
 
-func cmd_ccasa # Criar casa
+
+classe adm_ccasa
+herda comando_adm, comando_comum
+
+func escr # Criar casa
   prog p
   txt40 nome
   uint16 num
 # Checa se digitou nome da casa
   se arg0 == ""
-    msg("Tecle o nome da casa ou área após CCASA")
+    arg0.msg("Tecle o nome da casa ou área após CCASA")
     ret 1
   fimse
 # Checa nome completo
@@ -67,20 +76,20 @@ func cmd_ccasa # Criar casa
   num = int(txtfim(nome, 3)) + 1000
   se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
-      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+      arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
       ret 1
     senao p.existe("c_" + nome)
-      msg("Casa já existe: " + nome)
+      arg0.msg("Casa já existe: " + nome)
       ret 1
     fimse
 # Checa nome de área
   senao !p.existe("a_" + nome)
-    msg("Área não existe: " + nome)
+    arg0.msg("Área não existe: " + nome)
     ret 1
   senao
     epara num = 1001, p.existe("c_" + nome + txtfim(num, 3)), num += 1
       continuar num < 2000
-      msg("Atingido limite de casas na área " + nome)
+      arg0.msg("Atingido limite de casas na área " + nome)
       ret 1
     efim
     nome += txtfim(num, 3)
@@ -91,32 +100,36 @@ func cmd_ccasa # Criar casa
   criar("admordena", "a-" + area)
   p.criar("c_" + nome + "\na-" + area + "\nherda casa\nconst area = \"" + area + "\"")
 # config:salvar
-  msg("\bCasa criada: " + nome)
-  admlog("criou casa " + nome)
+  arg0.msg("\bCasa criada: " + nome)
+  admlog(arg0, "criou casa " + nome)
   ret 1
 
-func cmd_acasa # Apagar casa
+
+classe adm_acasa
+herda comando_adm, comando_comum
+
+func escr # Apagar casa
   prog p
   refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
   se nome == ""
-    msg("Tecle um ou mais nomes da casa após ACASA")
+    arg0.msg("Tecle um ou mais nomes da casa após ACASA")
     ret 1
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
     se !p.existe("c_" + txtsub(nome, x, 1))
-      msg("Casa não existe: " + txtsub(nome, x, 1))
+      arg0.msg("Casa não existe: " + txtsub(nome, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = nome, p_acasa
+  tpasso = nome, adm_acasa:p_acasa
   ret 1
 
-func p_acasa # Confirmar que quer apagar casa
+func passo # Confirmar que quer apagar casa
   passo = ""
   se arg0 == "n"
-    msg("Cancelado")
+    arg0.msg("Cancelado")
   senao arg0 == "s"
     prog p
     uint16 x
@@ -126,180 +139,117 @@ func p_acasa # Confirmar que quer apagar casa
     efim
     config:salvar
     se x < 2
-      msg("Casa apagada: " + tpasso)
-      admlog("apagou casa " + tpasso)
+      arg0.msg("Casa apagada: " + tpasso)
+      admlog(arg0, "apagou casa " + tpasso)
     senao
-      msg("Casas apagadas: " + tpasso)
-      admlog("apagou casas " + tpasso)
+      arg0.msg("Casas apagadas: " + tpasso)
+      admlog(arg0, "apagou casas " + tpasso)
     fimse
   senao
     txt10 m1
     passo = "acasa"
     txt2(tpasso) && (m1 = "s")
-    msg("Apagar casa" + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar casa" + m1 + " " + tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
-func cmd_ecasa # Editar casa
+
+classe adm_ecasa
+herda comando_adm, comando_comum
+
+func escr # Editar casa
   txt100 nome
   prog p
   nome = txtmin(txtremove(arg0, "EMDCT7"))
   se nome == ""
-    msg("Tecle o nome da casa após ECASA")
+    arg0.msg("Tecle o nome da casa após ECASA")
   senao !$c_[nome]
-    msg("\bCasa não existe: " + nome)
+    arg0.msg("\bCasa não existe: " + nome)
   senao
     var.classe1 = "c_" + nome
-    m_menu("menu_casa")
+    arg0.sock.m_menu("menu_casa")
   fimse
   ret 1
 
-func p_pdesc # Alterando descrição do personagem
-  casovar txtmin(txt(arg0, 0, 1))
-  casose "\b"
-    textopos p1
-    teditor.limpar
-    teditor.addfim(perso.var.z_desc)
-    teditor.bytes == 1 && teditor.limpar
-    leditor = teditor.ini
-    leditor1 = teditor.ini
-    leditor2 = teditor.fim
-    leditor2.antes
-    passo = "pdesc"
-    msg("Editando descrição do personagem, O opções, X salvar, Z sair")
-    ret 1
-  casose "z" # Sair do editor
-    msg("Fechando editor")
-    passo = ""
-    ret 1
-  casose "x" # Salvar o texto
-    se teditor.linhas > 8
-      msg("Máximo permitido 8 linhas.")
-    senao !teditor.linhas
-      perso.var.z_desc = ""
-      msg("Descrição do personagem apagada.")
-    senao
-      perso.var.z_desc = teditor.ini.textolin(100)
-      msg("Descrição do personagem alterada.")
-    fimse
-    ret 1
-  casofim
-  ret p_editor(arg0, 1000, "descrição do personagem")
-
-func p_sdesc # Alterando descrição da sala
-  casovar txtmin(txt(arg0, 0, 1))
-  casose "\b"
-    textopos p1
-    teditor.limpar
-    teditor.addfim(perso.dono.var.z_desc)
-    teditor.bytes == 1 && teditor.limpar
-    leditor = teditor.ini
-    leditor1 = teditor.ini
-    leditor2 = teditor.fim
-    leditor2.antes
-    passo = "sdesc"
-    msg("Editando descrição da sala, O opções, X salvar, Z sair")
-    ret 1
-  casose "z" # Sair do editor
-    msg("Fechando editor")
-    passo = ""
-    ret 1
-  casose "x" # Salvar o texto
-    se !perso.dentrocasa
-      msg("Você não está dentro da sua casa.")
-    senao teditor.linhas > 8
-      msg("Máximo permitido 8 linhas.")
-    senao !teditor.linhas
-      perso.dono.var.z_desc = ""
-      perso.dono.objmudou = 1
-      msg("Descrição da sala apagada.")
-    senao
-      perso.dono.var.z_desc = teditor.ini.textolin(100)
-      perso.dono.objmudou = 1
-      msg("Descrição da sala alterada.")
-    fimse
-    ret 1
-  casofim
-  ret p_editor(arg0, 1000, "descrição da sala")
-
 
 classe menu_casa
+herda comando_menu
 const titulo = "Casa " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Nome"
 const info1 = "Nome para os comandos LISTA e COMPRAR"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "nome"
 #
 const nome2 = "Descrição"
 const info2 = "É mostrado ao teclar LISTAR e o nome da casa"
-const tipo2 = "texto"
+const tipo2 = "opc_texto"
 const clas2 = var.classe1
 const vari2 = "desc"
 #
 const nome3 = "Palavras chave"
 const info3 = "Palavras que os jogadores digitam para os comandos COMPRAR e LISTAR"
-const tipo3 = "linha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "ident"
 #
 const nome4 = "Valor da casa"
-const tipo4 = "numero"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
 const vari4 = "valor"
 #
 const nome5 = "Sala 1"
-const tipo5 = "sala"
+const tipo5 = "opc_sala"
 const clas5 = var.classe1
 const vari5 = "s1"
 const exec5 = "acerta_mudou"
 #
 const nome6 = "Sala 2"
-const tipo6 = "sala"
+const tipo6 = "opc_sala"
 const clas6 = var.classe1
 const vari6 = "s2"
 const exec6 = "acerta_mudou"
 #
 const nome7 = "Sala 3"
-const tipo7 = "sala"
+const tipo7 = "opc_sala"
 const clas7 = var.classe1
 const vari7 = "s3"
 const exec7 = "acerta_mudou"
 #
 const nome8 = "Sala 4"
-const tipo8 = "sala"
+const tipo8 = "opc_sala"
 const clas8 = var.classe1
 const vari8 = "s4"
 const exec8 = "acerta_mudou"
 #
 const nome9 = "Sala 5"
-const tipo9 = "sala"
+const tipo9 = "opc_sala"
 const clas9 = var.classe1
 const vari9 = "s5"
 const exec9 = "acerta_mudou"
 #
 const nome10 = "Sala 6"
-const tipo10 = "sala"
+const tipo10 = "opc_sala"
 const clas10 = var.classe1
 const vari10 = "s6"
 const exec10 = "acerta_mudou"
 #
 const nome11 = "Sala 7"
-const tipo11 = "sala"
+const tipo11 = "opc_sala"
 const clas11 = var.classe1
 const vari11 = "s7"
 const exec11 = "acerta_mudou"
 #
 const nome12 = "Sala 8"
-const tipo12 = "sala"
+const tipo12 = "opc_sala"
 const clas12 = var.classe1
 const vari12 = "s8"
 const exec12 = "acerta_mudou"
 #
 const nome13 = "Sala 9"
-const tipo13 = "sala"
+const tipo13 = "opc_sala"
 const clas13 = var.classe1
 const vari13 = "s9"
 const exec13 = "acerta_mudou"
@@ -473,7 +423,7 @@ func descloja # Retorna informações da casa para a venda
 
 
 classe cmd_pagar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Pagar\b\n\
 Sintaxe: PAGAR [item]\n\
 Sem argumentos mostra a lista de casas cujas taxas de manutenção podem\n\
@@ -630,7 +580,7 @@ func escr2 # Consultar um item
 
 
 classe cmd_pdesc
-herda comando_comum, comando_ajuda
+herda comando_comum, comando_editor
 const txtajuda = "\b\c3PDesc\b\n\
 Sintaxe: PDESC\n\
 Muda a descrição do seu personagem. Essa descrição aparece quando alguém\n\
@@ -641,12 +591,44 @@ func escr
   se arg0.pnivel < config:pdescnivel
     arg0.msg("Você precisa chegar no nível " + config:pdescnivel + " para usar esse comando")
   senao
-    arg0.sock.p_pdesc("\b")
+    passo(sock, "\b")
   fimse
+
+func passo # Alterando descrição do personagem
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "\b"
+    textopos p1
+    arg0.teditor.limpar
+    arg0.teditor.addfim(arg0.perso.var.z_desc)
+    arg0.teditor.bytes == 1 && arg0.teditor.limpar
+    arg0.leditor = arg0.teditor.ini
+    arg0.leditor1 = arg0.teditor.ini
+    arg0.leditor2 = arg0.teditor.fim
+    arg0.leditor2.antes
+    arg0.passo = este
+    msg("Editando descrição do personagem, O opções, X salvar, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    se arg0.teditor.linhas > 8
+      arg0.msg("Máximo permitido 8 linhas.")
+    senao !arg0.teditor.linhas
+      arg0.perso.var.z_desc = ""
+      arg0.msg("Descrição do personagem apagada.")
+    senao
+      arg0.perso.var.z_desc = arg0.teditor.ini.textolin(100)
+      arg0.msg("Descrição do personagem alterada.")
+    fimse
+    ret 1
+  casofim
+  ret passoeditor(arg0, arg1, 1000, "descrição do personagem")
 
 
 classe cmd_sdesc
-herda comando_comum, comando_ajuda
+herda comando_comum, comando_editor
 const txtajuda = "\b\c3SDesc\b\n\
 Sintaxe: SDESC\n\
 Muda a descrição da sala em que você está, desde que esteja na sua casa.\n\
@@ -658,12 +640,48 @@ func escr
   se !arg0.dentrocasa
     arg0.msg("Você não está dentro da sua casa.")
   senao
-    arg0.sock.p_sdesc("\b")
+    passo(sock, "\b")
   fimse
+
+func passo # Alterando descrição da sala
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "\b"
+    textopos p1
+    arg0.teditor.limpar
+    arg0.teditor.addfim(arg0.perso.dono.var.z_desc)
+    arg0.teditor.bytes == 1 && arg0.teditor.limpar
+    arg0.leditor = arg0.teditor.ini
+    arg0.leditor1 = arg0.teditor.ini
+    arg0.leditor2 = arg0.teditor.fim
+    arg0.leditor2.antes
+    arg0.passo = este
+    arg0.msg("Editando descrição da sala, O opções, X salvar, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    se !arg0.perso.dentrocasa
+      arg0.msg("Você não está dentro da sua casa.")
+    senao arg0.teditor.linhas > 8
+      arg0.msg("Máximo permitido 8 linhas.")
+    senao !arg0.teditor.linhas
+      arg0.perso.dono.var.z_desc = ""
+      arg0.perso.dono.objmudou = 1
+      arg0.msg("Descrição da sala apagada.")
+    senao
+      arg0.perso.dono.var.z_desc = arg0.teditor.ini.textolin(100)
+      arg0.perso.dono.objmudou = 1
+      arg0.msg("Descrição da sala alterada.")
+    fimse
+    ret 1
+  casofim
+  ret passoeditor(arg0, arg1, 1000, "descrição da sala")
 
 
 classe cmd_ptitulo
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3PTitulo\b\n\
 Sintaxe: PTITULO  [novo título]\n\
 Muda o título do seu personagem. O título aparece no comando QUEM."
@@ -672,7 +690,7 @@ const posic = 5
 func escr
   se arg0.pnivel < config:ptitulonivel
     arg0.msg("Você precisa chegar no nível " + config:ptitulonivel + " para usar esse comando")
-  senao inttotal(arg0) > 30
+  senao inttotal(arg1) > 30
     arg0.msg("O título do personagem não pode passar de 30 caracteres.")
   senao vartroca(txtcod(arg1), "", "t_") != txtcod(arg1)
     arg0.msg("O título contém caracteres não permitidos.")
@@ -690,7 +708,7 @@ const t_@6 = "" # fecha chaves
 
 
 classe cmd_stitulo
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3STitulo\b\n\
 Sintaxe: STITULO  [novo título]\n\
 Muda o título da sala em que você está, desde que esteja na sua casa.\n\
@@ -701,7 +719,7 @@ const posic = 5
 func escr
   se !arg0.dentrocasa
     arg0.msg("Você não está dentro da sua casa.")
-  senao inttotal(arg0) > 60
+  senao inttotal(arg1) > 60
     arg0.msg("O título da sala não pode passar de 60 caracteres.")
   senao
     arg0.dono.var.z_titulo = arg1

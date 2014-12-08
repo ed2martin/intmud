@@ -1,7 +1,8 @@
 classe adm_efeito
+herda comando_adm
 # Comandos de efeitos
 #
-const adm_efeito = "\b\c3Efeitos\b\n\
+const txtajuda = "\b\c3Efeitos\b\n\
 Magias e habilidades podem lançar efeitos sobre um personagem.\n\
 Esses comandos permitem criar e editar os efeitos.\n\
 \c2LEF\b [nome]\n\
@@ -14,35 +15,43 @@ Esses comandos permitem criar e editar os efeitos.\n\
 \c2AEF\b <nome>\n\
   Apaga um efeito."
 
-func cmd_lef # Listar efeitos
+
+classe adm_lef
+herda comando_adm, comando_comum
+
+func escr # Listar efeitos
   prog p
   textotxt t
   epara p.iniclasse("e_"), p.lin && t.linhas < 499, p.depois
     t.addfim(txtcopiamai(txt2(txte(p.texto)), "A") + ", " + [p.texto]:desc)
   efim
   se t.linhas
-    msg2("\b\c3Efeitos:\b\n" + t.remove(500))
+    arg0.msg2("\b\c3Efeitos:\b\n" + t.remove(500))
   senao
-    msg("\bNenhum efeito encontrado.")
+    arg0.msg("\bNenhum efeito encontrado.")
   fimse
   ret 1
 
-func cmd_cef # Criar efeito
+
+classe adm_cef
+herda comando_adm, comando_comum
+
+func escr # Criar efeito
   prog p
   txt80 nome
   uint16 num
 # Checa se digitou nome do ataque
-  se arg0 == ""
-    msg("Tecle o nome da magia após CEF")
+  se arg1 == ""
+    arg0.msg("Tecle o nome da magia após CEF")
     ret 1
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg0, EMDSA))
+  nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    msg("Nome inválido para efeito: " + nome)
+    arg0.msg("Nome inválido para efeito: " + nome)
     ret 1
   senao p.existe("e_" + nome)
-    msg("Já existe o efeito: " + nome)
+    arg0.msg("Já existe o efeito: " + nome)
     ret 1
   fimse
 # Cria efeito
@@ -53,35 +62,39 @@ func cmd_cef # Criar efeito
   p.criar(lin)
   criar("admordena", "b-efeito")
 # config:salvar
-  msg("\bCriou efeito: " + nome)
-  admlog("criou efeito " + nome)
+  arg0.msg("\bCriou efeito: " + nome)
+  admlog(arg0, "criou efeito " + nome)
   ret 1
 
-func cmd_aef # Apagar efeito
+
+classe adm_aef
+herda comando_adm, comando_comum
+
+func escr # Apagar efeito
   prog p
-  se arg0 == ""
-    msg("Tecle um ou mais nomes de efeitos após AEF")
+  se arg1 == ""
+    arg0.msg("Tecle um ou mais nomes de efeitos após AEF")
     ret 1
   fimse
   uint16 x
-  enquanto txtsub(arg0, x, 1)
-    se !p.existe("e_" + txtsub(arg0, x, 1))
-      msg("Efeito não existe: " + txtsub(arg0, x, 1))
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("e_" + txtsub(arg1, x, 1))
+      arg0.msg("Efeito não existe: " + txtsub(arg1, x, 1))
       ret 1
-    senao e_[txtsub(arg0, x, 1)]:interno
-      msg("Efeito não pode ser apagado: " + txtsub(arg0, x, 1))
+    senao e_[txtsub(arg1, x, 1)]:interno
+      arg0.msg("Efeito não pode ser apagado: " + txtsub(arg1, x, 1))
       ret 1
     fimse
     x += 1
   efim
-  tpasso = arg0, p_aef
+  tpasso = arg1, p_aef
   ret 1
 
-func p_aef # Confirmar que quer apagar efeito
+func passo # Confirmar que quer apagar efeito
   passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
     uint16 x
     enquanto txtsub(tpasso, x, 1)
@@ -90,66 +103,71 @@ func p_aef # Confirmar que quer apagar efeito
     efim
     config:salvar
     se x < 2
-      msg("Efeito apagado: " + tpasso)
-      admlog("apagou efeito " + tpasso)
+      arg0.msg("Efeito apagado: " + tpasso)
+      admlog(arg0, "apagou efeito " + tpasso)
     senao
-      msg("Efeitos apagados: " + tpasso)
-      admlog("apagou efeitoss " + tpasso)
+      arg0.msg("Efeitos apagados: " + tpasso)
+      admlog(arg0, "apagou efeitoss " + tpasso)
     fimse
   senao
     passo = "aef"
     refvar m1 = txt2(tpasso) ? "efeitos" : "efeito"
-    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
-func cmd_eef # Editar efeito
+
+classe adm_eef
+herda comando_adm, comando_comum
+
+func escr # Editar efeito
   prog p
-  se arg0 == ""
-    msg("Tecle o nome do efeito após EEF")
-  senao !p.existe("e_" + arg0)
-    msg("Efeito não existe: " + arg0)
-  senao e_[txtsub(arg0, x, 1)]:interno
-    msg("Efeito não pode ser editado: " + txtsub(arg0, x, 1))
+  se arg1 == ""
+    arg0.msg("Tecle o nome do efeito após EEF")
+  senao !p.existe("e_" + arg1)
+    arg0.msg("Efeito não existe: " + arg1)
+  senao e_[txtsub(arg1, x, 1)]:interno
+    arg0.msg("Efeito não pode ser editado: " + txtsub(arg1, x, 1))
   senao
-    var.classe1 = "e_" + txts(txtmin(arg0))
+    var.classe1 = "e_" + txts(txtmin(arg1))
     var.menufim = "menu_efeito"
-    m_menu(var.menufim)
+    arg0.sock.m_menu(var.menufim)
   fimse
   ret 1
 
 
 classe menu_efeito
+herda comando_menu
 const titulo = "Efeito " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Nome"
 const info1 = "Nome que aparece no comando efeitos"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "e_nome"
 #
 const nome2 = "Descrição"
 const info2 = "Descrição do efeito, para os jogadores"
-const tipo2 = "texto"
+const tipo2 = "opc_texto"
 const clas2 = var.classe1
 const vari2 = "e_desc"
 #
 const nome3 = "Descrição interna"
 const info3 = "Uma breve descrição do que faz; aparece apenas no comando lef"
-const tipo3 = "linha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "desc"
 #
 const nome4 = "Quantidade máx."
 const info4 = "Quantos efeitos desse tipo um personagem pode ter"
-const tipo4 = "numero"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
 const vari4 = "maximo"
 const extr4 = "1 10"
 #
 const nome5 = "Condição"
-const tipo5 = "opcao"
+const tipo5 = "opc_opcao"
 const clas5 = var.classe1
 const vari5 = "e_condicao"
 const extr5 = "Nenhuma; permanente\n\
@@ -160,63 +178,63 @@ const exec5 = "ajustaobj"
 #
 const nome6 = "Duração"
 const info6 = "Quantos décimos de segundo o efeito dura ou 0 se não expira"
-const tipo6 = "numero"
+const tipo6 = "opc_numero"
 const clas6 = var.classe1
 const vari6 = "tempo1"
 const extr6 = "0 1000000"
 #
 const nome7 = "Duração por nível"
 const info7 = "Quantos décimos de segundo dura para cada nível de quem lançou"
-const tipo7 = "numero"
+const tipo7 = "opc_numero"
 const clas7 = var.classe1
 const vari7 = "tempo2"
 const extr7 = "0 100000"
 #
 const nome8 = "Atrib números"
-const tipo8 = "atribnum"
+const tipo8 = "opc_atribnum"
 const clas8 = var.classe1
 const vari8 = "recalc_auto"
 const exec8 = "recalc_ajusta"
 #
 const nome9 = "Atrib sim/não"
-const tipo9 = "atribbit"
+const tipo9 = "opc_atribbit"
 const clas9 = var.classe1
 const vari9 = "recalc_auto"
 const exec9 = "recalc_ajusta"
 #
 const nome10 = "Atrib ataque"
 const info10 = "Afetam os danos quando o personagem ataca alguém"
-const tipo10 = "atribatk"
+const tipo10 = "opc_atribatk"
 const clas10 = var.classe1
 const vari10 = "recalc_auto"
 const exec10 = "recalc_ajusta"
 #
 const nome11 = "Atrib defesa"
 const info11 = "Afetam os danos quando alguém ataca o personagem"
-const tipo11 = "atribdef"
+const tipo11 = "opc_atribdef"
 const clas11 = var.classe1
 const vari11 = "recalc_auto"
 const exec11 = "recalc_ajusta"
 #
 const nome12 = "Tempo reduzir"
 const info12 = "De quantos em quantos décimos de segundo reduz algo"
-const tipo12 = "numero"
+const tipo12 = "opc_numero"
 const clas12 = var.classe1
 const vari12 = "r_tempo"
 const extr12 = "0 10000"
 #
 const nome13 = "Reduz vida"
-const tipo13 = "numero"
+const tipo13 = "opc_numero"
 const clas13 = var.classe1
 const vari13 = "r_vida"
 #
 const nome14 = "Reduz mana"
-const tipo14 = "numero"
+const tipo14 = "opc_numero"
 const clas14 = var.classe1
 const vari14 = "r_mana"
 #
 const nome15 = "Reduz vigor"
-const tipo15 = "numero"
+const tipo15 = "opc_numero"
 const clas15 = var.classe1
 const vari15 = "r_move"
 #
@@ -226,20 +244,21 @@ const clas16 = "menu_efeito_msg"
 #
 const nome17 = "Eventos hora"
 const info17 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
-const tipo17 = "simnao"
+const tipo17 = "opc_simnao"
 const clas17 = var.classe1
 const vari17 = "evhora"
 const exec17 = "ajustaobj"
 #
 const nome18 = "Eventos perso"
 const info18 = "Se recebe eventos do personagem que está com o efeito"
-const tipo18 = "simnao"
+const tipo18 = "opc_simnao"
 const clas18 = var.classe1
 const vari18 = "evperso"
 const exec18 = "ajustaobj"
 
 
 classe menu_efeito_msg
+herda comando_menu
 const titulo = "Mensagens"
 const menufim = var.menufim
 const colunas = 25
@@ -247,60 +266,60 @@ const colunas = 25
 const titu1 = " * Criou"
 #
 const nome1 = "Perso"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "msgini1"
 #
 const nome2 = "Outros"
-const tipo2 = "linha"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
 const vari2 = "msgini2"
 #
 const titu3 = " * Falhou"
 #
 const nome3 = "Perso"
-const tipo3 = "linha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "msgfalhou1"
 #
 const nome4 = "Outros"
-const tipo4 = "linha"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
 const vari4 = "msgfalhou2"
 #
 const titu5 = " * Não teve efeito"
 #
 const nome5 = "Perso"
-const tipo5 = "linha"
+const tipo5 = "opc_linha"
 const clas5 = var.classe1
 const vari5 = "msgnulo1"
 #
 const nome6 = "Outros"
-const tipo6 = "linha"
+const tipo6 = "opc_linha"
 const clas6 = var.classe1
 const vari6 = "msgnulo2"
 #
 const titu7 = " * Apagou"
 #
 const nome7 = "Perso"
-const tipo7 = "linha"
+const tipo7 = "opc_linha"
 const clas7 = var.classe1
 const vari7 = "msgfim1"
 #
 const nome8 = "Outros"
-const tipo8 = "linha"
+const tipo8 = "opc_linha"
 const clas8 = var.classe1
 const vari8 = "msgfim2"
 #
 const titu9 = " * Ao reduzir vida/mana/vigor"
 #
 const nome9 = "Perso"
-const tipo9 = "linha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
 const vari9 = "msgreduz1"
 #
 const nome10 = "Outros"
-const tipo10 = "linha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "msgreduz2"
 

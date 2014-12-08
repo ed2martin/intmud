@@ -1,7 +1,6 @@
 classe adm_perso
-# Comandos de personagem
-#
-const adm_perso = "\b\c3Comandos de personagens não jogador\b\n\
+herda comando_adm
+const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
 \c2LPERSO\b [nome]\n\
   Lista personagens que começam com o nome especificado.\n\
 \c2CPERSO\b <nome>\n\
@@ -12,7 +11,11 @@ const adm_perso = "\b\c3Comandos de personagens não jogador\b\n\
 \c2APERSO\b <nome>\n\
   Apaga personagem."
 
-func cmd_lperso # Listar personagens
+
+classe adm_lperso
+herda comando_adm, comando_comum
+
+func escr # Listar personagens
   prog p
   se !p.iniclasse("p_" + arg0)
     msg("\bNenhum personagem encontrado.")
@@ -34,7 +37,11 @@ func cmd_lperso # Listar personagens
   fimse
   ret 1
 
-func cmd_cperso # Criar personagem
+
+classe adm_cperso
+herda comando_adm, comando_comum
+
+func escr # Criar personagem
   prog p
   txt40 nome
   uint16 num
@@ -68,9 +75,9 @@ func cmd_cperso # Criar personagem
   fimse
 # Pergunta que tipo de personagem criar
   var.opcclasse = nome
-  ret p_cperso("\b")
+  ret adm_cperso:exec("\b")
 
-func p_cperso # Escolher o tipo de personagem ao criar
+func passo # Escolher o tipo de personagem ao criar
   txt40 deriv
   casovar txtmin(arg0)
   casose
@@ -109,11 +116,13 @@ func p_cperso # Escolher o tipo de personagem ao criar
   criar("admordena", "a-" + area)
 # config:salvar
   msg("\bPersonagem criado: " + var.opcclasse)
-  admlog("criou personagem " + var.opcclasse)
+  admlog(arg0, "criou personagem " + var.opcclasse)
   passo = "", var.opcclasse = ""
   ret 1
 
-func cmd_aperso # Apagar personagem
+func cmd_aperso
+
+func escr # Apagar personagem
   prog p
   refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
   se nome == ""
@@ -128,10 +137,10 @@ func cmd_aperso # Apagar personagem
     fimse
     x += 1
   efim
-  tpasso = nome, p_aperso
+  tpasso = nome, adm_aperso:exec
   ret 1
 
-func p_aperso # Confirmar que quer apagar personagem
+func passo # Confirmar que quer apagar personagem
   passo = ""
   se arg0 == "n"
     msg("Cancelado")
@@ -145,10 +154,10 @@ func p_aperso # Confirmar que quer apagar personagem
     config:salvar
     se x < 2
       msg("Personagem apagado: " + tpasso)
-      admlog("apagou personagem " + tpasso)
+      admlog(arg0, "apagou personagem " + tpasso)
     senao
       msg("Personagens apagados: " + tpasso)
-      admlog("apagou personagens " + tpasso)
+      admlog(arg0, "apagou personagens " + tpasso)
     fimse
   senao
     txt20 m1
@@ -158,7 +167,11 @@ func p_aperso # Confirmar que quer apagar personagem
   fimse
   ret 1
 
-func cmd_eperso # Editar personagem
+
+classe adm_eperso
+herda comando_adm, comando_comum
+
+func escr # Editar personagem
   prog p
   uint8 num
   refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
@@ -171,56 +184,64 @@ func cmd_eperso # Editar personagem
   senao
     var.classe1 = "p_" + txtmin(nome)
     var.menufim = "menu_perso" + num
-    m_menu("menu_perso" + num)
+    arg0.sock.m_menu("menu_perso" + num)
   fimse
   ret 1
 
-func t_menuprod # Retorna quantidade de produtos
+
+classe adm_menuaula
+herda comando_adm, comando_comum
+
+func menu # Retorna quantidade de aulas
 # arg0=nome da classe, arg1=nome da variável
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), t_menuprod2([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), adm_menuaula:menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + t_menuprod2([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), "<herda> " + adm_menuaula:menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
-    ret "<nulo> " + t_menuprod2
+    ret "<nulo> " + adm_menuaula:menu2
   casofim
 
-func t_menuprod2 # Usado por t_menuprod
-  txt10 x
-  x = intsublin(arg0)
-  ret x == "0" ? "\c6Nenhum produto\b" : x == "1" ? "\c6Um produto\b" : "\c6" + x + " produtos\b"
-
-func t_menuaula # Retorna quantidade de aulas
-# arg0=nome da classe, arg1=nome da variável
-  prog p
-  casovar p.existe(arg0, arg1)
-  casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), t_menuaula2([arg0]:[arg1])
-    p.inilinha(arg0, arg1)
-    ret "<" + txt1(p.texto) + ">"
-  casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + t_menuaula2([arg0]:[arg1])
-    p.inilinha(arg0, arg1)
-    ret "<herda " + txt1(p.texto) + ">"
-  casose # Não foi definido
-    ret "<nulo> " + t_menuaula2
-  casofim
-
-func t_menuaula2 # Usado por t_menuaula
+func menu2 # Usado por menu
   txt10 x
   x = intsublin(arg0)
   ret x == "0" ? "\c6Nenhuma aula\b" : x == "1" ? "\c6Uma aula\b" : "\c6" + x + " aulas\b"
 
-func p_menuaula # Menu de aulas
-  ret p_menuprod(arg0, "aula")
+func passo # Menu de aulas
+  ret adm_menuprod:exec(arg0, "aula")
 
-func p_menuprod # Menu de produtos
+
+classe adm_menuprod
+herda comando_adm, comando_comum
+
+func menu # Retorna quantidade de produtos
+# arg0=nome da classe, arg1=nome da variável
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.vartexto(arg0, arg1), adm_menuprod:menu2([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.vartexto(arg0, arg1), "<herda> " + adm_menuprod:menu2([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo> " + adm_menuprod:menu2
+  casofim
+
+func menu2 # Usado por menu
+  txt10 x
+  x = intsublin(arg0)
+  ret x == "0" ? "\c6Nenhum produto\b" : x == "1" ? "\c6Um produto\b" : "\c6" + x + " produtos\b"
+
+func passo # Menu de produtos
 # msg(arg1 ? ">aula" : ">produto")
   var.opcinserir = ""
   casovar txtmin(txt(arg0, 0, 1))
@@ -284,14 +305,14 @@ func p_menuprod # Menu de produtos
     ret 1
   casose "z"
     passo = var.opcpasso
-    ret p_[passo]("\b")
+    ret adm_[passo]:exec("\b")
   casose "a"
     uint16 lin
     uint16 total
     lin = txt(arg0, 1), total = intsublin([var.opcclasse]:[var.opcvar])
     se lin > 0 && lin <= total
       var.opclin = lin
-      arg1 ? p_menuaula_a("\b") : p_menuprod_a("\b")
+      arg1 ? adm_menuaula_a:exec("\b") : adm_menuprod_a:exec("\b")
     senao total == 0
       msg("Não há nenhuma linha")
     senao total == 1
@@ -308,7 +329,7 @@ func p_menuprod # Menu de produtos
     se lin > 0 && lin <= total + 1
       var.opclin = lin
       var.opcinserir_ = txt(arg0, 0, 1) == "i"
-      arg1 ? p_menuaula1("\b") : p_menuprod1("\b")
+      arg1 ? adm_menuaula1:exec("\b") : adm_menuprod1:exec("\b")
     senao total == 0
       msg("Só existe a linha 1")
     senao
@@ -319,7 +340,11 @@ func p_menuprod # Menu de produtos
   msg("Opção inválida: " + arg0)
   ret 1
 
-func p_menuaula_a # Apagar uma aula
+
+classe adm_menuaula_a
+herda comando_adm, comando_comum
+
+func passo # Apagar uma aula
   casovar txtmin(arg0)
   casose
     msg("Apagar linha " + var.opclin + "? N não, S sim")
@@ -339,12 +364,16 @@ func p_menuaula_a # Apagar uma aula
 "\\n") + "\"")
     fimse
     config:salvar
-    admlog("alterou aulas: " + var.opcclasse + ":" + var.opcvar)
+    admlog(arg0, "alterou aulas: " + var.opcclasse + ":" + var.opcvar)
   casose "n"
-    ret p_menuaula("")
+    ret adm_menuaula_a:exec("")
   casofim
 
-func p_menuprod_a # Apagar um produto
+
+classe adm_menuprod_a
+herda comando_adm, comando_comum
+
+func passo # Apagar um produto
   casovar txtmin(arg0)
   casose
     msg("Apagar linha " + var.opclin + "? N não, S sim")
@@ -364,21 +393,25 @@ func p_menuprod_a # Apagar um produto
 "\\n") + "\"")
     fimse
     config:salvar
-    admlog("alterou produtos: " + var.opcclasse + ":" + var.opcvar)
+    admlog(arg0, "alterou produtos: " + var.opcclasse + ":" + var.opcvar)
   casose "n"
-    ret p_menuprod("")
+    ret adm_menuprod:exec("")
   casofim
 
-func p_menuaula1 # Inserir ou editar aula
+
+classe adm_menuaula1
+herda comando_adm, comando_comum
+
+func passo # Inserir ou editar aula
   uint16 x
   ret arg0 == "z", p_menuaula("")
   x = arg0, passo = "menuaula1"
   casovar intsub(var.opclin)
   casose "1" # Escolher o tipo de aula
     se arg0 == "h" || arg0 == "i" || arg0 == "m"
-      var.opclin += " " + txtmin(arg0), p_menuaula1("")
+      var.opclin += " " + txtmin(arg0), adm_menuaula1:exec("")
     senao arg0 == "e"
-      var.opclin += " o", p_menuaula1("")
+      var.opclin += " o", adm_menuaula1:exec("")
     senao arg0 == "o"
       txtmais.limpar
       txtmais.addfim("Opções:")
@@ -397,7 +430,7 @@ func p_menuaula1 # Inserir ou editar aula
     senao txtproc(txtsepara(arg0, "DO+DOLE,DOLE+DO", "\b"), "\b") >= 0
       msg("Digite apenas letras e espaço")
     senao
-      var.opclin += " " + txts(txtremove(arg0, "EMD")), p_menuaula1("")
+      var.opclin += " " + txts(txtremove(arg0, "EMD")), adm_menuaula1:exec("")
     fimse
     ret 1
   casose "3" # Escolher a quantidade de aulas
@@ -423,14 +456,18 @@ func p_menuaula1 # Inserir ou editar aula
       p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
       config:salvar
-      admlog("alterou aulas: " + var.opcclasse + ":" + var.opcvar)
+      admlog(arg0, "alterou aulas: " + var.opcclasse + ":" + var.opcvar)
       sair
     fimse
     ret 1
   casofim
   ret p_menuaula("")
 
-func p_menuprod1 # Inserir ou editar produto
+
+classe adm_menuprod1
+herda comando_adm, comando_comum
+
+func passo # Inserir ou editar produto
   uint16 x
   ret arg0 == "z", p_menuprod("")
   x = arg0, passo = "menuprod1"
@@ -442,7 +479,7 @@ func p_menuprod1 # Inserir ou editar produto
     senao !p.existe("i_" + txts(arg0))
       msg("Item não existe: " + txts(arg0) + "; entre com outro")
     senao
-      var.opclin += " " + txts(arg0), p_menuprod1("")
+      var.opclin += " " + txts(arg0), adm_menuprod1:exec("")
     fimse
     ret 1
   casose "2" # Escolher o nível
@@ -462,7 +499,7 @@ func p_menuprod1 # Inserir ou editar produto
       config:salvar
       var.opclin = txtsub(var.opclin, 1, 1)
       msg("Produto adicionado: " + var.opclin + "(" + i_[var.opclin]:nome + ")")
-      admlog("alterou produtos: " + var.opcclasse + ":" + var.opcvar)
+      admlog(arg0, "alterou produtos: " + var.opcclasse + ":" + var.opcvar)
       sair
     fimse
     ret 1
@@ -471,43 +508,44 @@ func p_menuprod1 # Inserir ou editar produto
 
 
 classe menu_pcomum1
+herda comando_menu
 const nome1 = "Nome"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "nome"
 #
 const nome2 = "Palavras chave"
 const info2 = "Palavras que os jogadores digitam para se referir ao item"
-const tipo2 = "linha"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
 const vari2 = "ident"
 #
 const nome3 = "Descrição curta"
 const info3 = "Descrição usada na maioria dos comandos"
-const tipo3 = "linha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "descnome"
 #
 const nome4 = "Descrição sala"
 const info4 = "Descrição quando está na sala na posição padrão"
-const tipo4 = "linha"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
 const vari4 = "descpadr"
 #
 const nome5 = "Descrição ao olhar"
-const tipo5 = "texto"
+const tipo5 = "opc_texto"
 const clas5 = var.classe1
 const vari5 = "descver"
 #
 const nome6 = "Descrição ident"
 const info6 = "Texto adicionado após identificar (com magia de identificação)"
-const tipo6 = "texto"
+const tipo6 = "opc_texto"
 const clas6 = var.classe1
 const vari6 = "descident"
 #
 const nome7 = "Sexo Msg"
 const info7 = "Usado nas mensagens com o personagem"
-const tipo7 = "opcao"
+const tipo7 = "opc_opcao"
 const clas7 = var.classe1
 const vari7 = "msexo"
 const extr7 = "Feminino\nMasculino"
@@ -515,50 +553,50 @@ const extr7 = "Feminino\nMasculino"
 const nome8 = "Sexo Perso"
 const info8 = "Se estiver como <herda const>, assume o mesmo valor de Sexo Msg\n\
 Aleatório escolhe um quando o personagem é criado"
-const tipo8 = "opcao"
+const tipo8 = "opc_opcao"
 const clas8 = var.classe1
 const vari8 = "sexoini"
 const extr8 = "Feminino\nMasculino\nAleatório"
 #
 const nome9 = "Peso"
 const info9 = "Em gramas"
-const tipo9 = "numero"
+const tipo9 = "opc_numero"
 const clas9 = var.classe1
 const vari9 = "pesoobj"
 const extr9 = "1 1000000000"
 const exec9 = "ajustapeso"
 #
 const nome10 = "Volume"
-const tipo10 = "numero"
+const tipo10 = "opc_numero"
 const extr10 = "1 1000000000"
 const clas10 = var.classe1
 const vari10 = "volobj"
 const exec10 = "ajustapeso"
 #
 const nome11 = "Volume dentro"
-const tipo11 = "numero"
+const tipo11 = "opc_numero"
 const clas11 = var.classe1
 const vari11 = "volmax"
 #
 const nome12 = "Expande"
 const info12 = "Volume aumenta se tiver itens dentro"
-const tipo12 = "simnao"
+const tipo12 = "opc_simnao"
 const clas12 = var.classe1
 const vari12 = "volexp"
 const exec12 = "ajustapeso"
 #
 const nome13 = "Objetos máximo"
-const tipo13 = "numero"
+const tipo13 = "opc_numero"
 const clas13 = var.classe1
 const vari13 = "objmax"
 #
 const nome14 = "Nível"
-const tipo14 = "numero"
+const tipo14 = "opc_numero"
 const clas14 = var.classe1
 const vari14 = "nivel"
 #
 const nome15 = "Posição padrão"
-const tipo15 = "opcao"
+const tipo15 = "opc_opcao"
 const clas15 = var.classe1
 const vari15 = "pospadr"
 const extr15 = "Morto (não usar essa opção)\n\
@@ -572,42 +610,42 @@ Lutando (não usar essa opção)\nEm pé"
 #
 const nome16 = "Tipo 1"
 const info16 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
-const tipo16 = "linha"
+const tipo16 = "opc_linha"
 const clas16 = var.classe1
 const vari16 = "tipo1"
 const exec16 = "recalc_exec"
 #
 const nome17 = "Tipo 2"
 const info17 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
-const tipo17 = "linha"
+const tipo17 = "opc_linha"
 const clas17 = var.classe1
 const vari17 = "tipo2"
 const exec17 = "recalc_exec"
 #
 const nome18 = "Tipo 3"
 const info18 = "Nome da raça ou classe; o comando que mostra os tipos é adm tipo"
-const tipo18 = "linha"
+const tipo18 = "opc_linha"
 const clas18 = var.classe1
 const vari18 = "tipo3"
 const exec18 = "recalc_exec"
 #
 const nome19 = "Equip posições"
 const info19 = "Se não estiver vazio, são as posições aonde pode usar equipamentos"
-const tipo19 = "vetor"
+const tipo19 = "opc_vetor"
 const clas19 = var.classe1
 const vari19 = "equip1"
 const extr19 = config:equip_txt
 #
 const nome20 = "Equip adicionar"
 const info20 = "Adicionar essas posições no personagem"
-const tipo20 = "vetor"
+const tipo20 = "opc_vetor"
 const clas20 = var.classe1
 const vari20 = "equip2"
 const extr20 = config:equip_txt
 #
 const nome21 = "Equip remover"
 const info21 = "Remover essas posições do personagem"
-const tipo21 = "vetor"
+const tipo21 = "opc_vetor"
 const clas21 = var.classe1
 const vari21 = "equip3"
 const extr21 = config:equip_txt
@@ -618,86 +656,87 @@ const clas22 = "menu_ploja"
 #
 const nome23 = "Recebe itens"
 const info23 = "Se outros personagens podem dar itens para este"
-const tipo23 = "simnao"
+const tipo23 = "opc_simnao"
 const clas23 = var.classe1
 const vari23 = "p_recebe"
 #
 const nome24 = "Não podem seguir"
-const tipo24 = "simnao"
+const tipo24 = "opc_simnao"
 const clas24 = var.classe1
 const vari24 = "p_naoseguir"
 #
 const nome50 = "Variáveis"
-const tipo50 = "linha"
+const tipo50 = "opc_linha"
 const clas50 = var.classe1
 const vari50 = "inivar"
 #
 const nome51 = "Eventos hora"
 const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
-const tipo51 = "simnao"
+const tipo51 = "opc_simnao"
 const clas51 = var.classe1
 const vari51 = "evhora"
 const exec51 = "ajustaobj"
 #
 const nome52 = "Eventos perso"
 const info52 = "Receber eventos do próprio personagem"
-const tipo52 = "simnao"
+const tipo52 = "opc_simnao"
 const clas52 = var.classe1
 const vari52 = "eveste"
 const exec52 = "ajustaobj"
 #
 const nome53 = "Eventos em perso"
 const info53 = "Se recebe eventos do dono se for personagem"
-const tipo53 = "simnao"
+const tipo53 = "opc_simnao"
 const clas53 = var.classe1
 const vari53 = "evperso"
 const exec53 = "ajustaobj"
 #
 const nome54 = "Eventos em item"
 const info54 = "Se recebe eventos do dono se for item"
-const tipo54 = "simnao"
+const tipo54 = "opc_simnao"
 const clas54 = var.classe1
 const vari54 = "evitem"
 const exec54 = "ajustaobj"
 #
 const nome55 = "Eventos em sala"
 const info55 = "Se recebe eventos da sala se estiver em uma sala"
-const tipo55 = "simnao"
+const tipo55 = "opc_simnao"
 const clas55 = var.classe1
 const vari55 = "evsala"
 const exec55 = "ajustaobj"
 
 
 classe menu_pcomum2
+herda comando_menu
 const nome25 = "Atributos números"
-const tipo25 = "atribnum"
+const tipo25 = "opc_atribnum"
 const clas25 = var.classe1
 const vari25 = "recalc_auto"
 const exec25 = "recalc_exec"
 #
 const nome26 = "Atributos sim/não"
-const tipo26 = "atribbit"
+const tipo26 = "opc_atribbit"
 const clas26 = var.classe1
 const vari26 = "recalc_auto"
 const exec26 = "recalc_exec"
 #
 const nome27 = "Atributos ataque"
 const info27 = "Afetam os danos quando o personagem ataca alguém"
-const tipo27 = "atribatk"
+const tipo27 = "opc_atribatk"
 const clas27 = var.classe1
 const vari27 = "recalc_auto"
 const exec27 = "recalc_exec"
 #
 const nome28 = "Atributos defesa"
 const info28 = "Afetam os danos quando alguém ataca o personagem"
-const tipo28 = "atribdef"
+const tipo28 = "opc_atribdef"
 const clas28 = var.classe1
 const vari28 = "recalc_auto"
 const exec28 = "recalc_exec"
 #
 const nome29 = "Tipo de ataque"
 const info29 = "Que habilidade usa em ataques automáticos"
-const tipo29 = "linha"
+const tipo29 = "opc_linha"
 const clas29 = var.classe1
 const vari29 = "p_atktipo"
 #
@@ -711,13 +750,14 @@ const clas31 = "menu_pcomportamento"
 
 
 classe menu_ploja
+herda comando_menu
 const titulo = "Loja e aulas"
 const menufim = var.menufim
 const colunas = 25
 #
 const nome1 = "Hora que abre"
 const info1 = "Que horas a loja abre ou o PNJ começa a ensinar"
-const tipo1 = "numero"
+const tipo1 = "opc_numero"
 const clas1 = var.classe1
 const vari1 = "lojaini"
 const extr1 = "0 23"
@@ -725,28 +765,28 @@ const extr1 = "0 23"
 const nome2 = "Hora que fecha"
 const info2 = "Que horas a loja abre ou o PNJ pára de ensinar\n\
 Se for igual ao horário de abertura, nunca fecha"
-const tipo2 = "numero"
+const tipo2 = "opc_numero"
 const clas2 = var.classe1
 const vari2 = "lojafim"
 const extr2 = "0 23"
 #
 const nome3 = "Lucro na venda"
 const info3 = "Em porcentagem (0=sem lucro; paga o valor do item)"
-const tipo3 = "numero"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "taxavenda"
 const extr3 = "0 10000"
 #
 const nome4 = "Lucro na compra"
 const info4 = "Em porcentagem (0=preço normal e 100=não paga pelo item)"
-const tipo4 = "numero"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
 const vari4 = "taxacompra"
 const extr4 = "0 100"
 #
 const nome5 = "Preço da aula"
 const info5 = "Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula)"
-const tipo5 = "numero"
+const tipo5 = "opc_numero"
 const clas5 = var.classe1
 const vari5 = "taxaaula"
 const extr5 = "0 10000"
@@ -758,37 +798,37 @@ const vari6 = "lojaitem"
 #
 const nome7 = "Produtos inv"
 const info7 = "Se vende os produtos listados no comando inv"
-const tipo7 = "simnao"
+const tipo7 = "opc_simnao"
 const clas7 = var.classe1
 const vari7 = "lojainv"
 #
 const nome8 = "Produtos sala"
 const info8 = "Nome da sala com os produtos que serão vendidos"
-const tipo8 = "linha"
+const tipo8 = "opc_linha"
 const clas8 = var.classe1
 const vari8 = "lojasala"
 #
 const nome9 = "Vende casas área"
 const info9 = "Nome de uma área; compra e vende casas dessa área"
-const tipo9 = "linha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
 const vari9 = "lojacasa"
 #
 const nome10 = "Chaveiro área"
 const info10 = "Nome de uma área; vende chaves e fechaduras para casas nessa área"
-const tipo10 = "linha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "lojachave"
 #
 const nome11 = "Cobra taxa áreas"
 const info11 = "Somente os prefixos da área, uma linha por área"
-const tipo11 = "texto"
+const tipo11 = "opc_texto"
 const clas11 = var.classe1
 const vari11 = "taxacasa"
 #
 const nome12 = "Compra produtos"
 const info12 = "Vide tipos de produtos, no comando ECONFIG"
-const tipo12 = "vetor"
+const tipo12 = "opc_vetor"
 const clas12 = var.classe1
 const vari12 = "tipoitem"
 const extr12 = config:produtos
@@ -799,84 +839,86 @@ const clas13 = var.classe1
 const vari13 = "lojaaula"
 #
 const nome14 = "Não negocia com"
-const tipo14 = "tipos"
+const tipo14 = "opc_tipos"
 const clas14 = var.classe1
 const vari14 = "lojanao"
 
 
 classe menu_pmorreu
+herda comando_menu
 const titulo = "Quando morre"
 const menufim = var.menufim
 const colunas = 25
 #
 const nome1 = "Imortal"
-const tipo1 = "simnao"
+const tipo1 = "opc_simnao"
 const clas1 = var.classe1
 const vari1 = "p_imortal"
 #
 const nome2 = "Corpo"
-const tipo2 = "opcao"
+const tipo2 = "opc_opcao"
 const clas2 = var.classe1
 const vari2 = "p_corpo"
 const extr2 = "Não deixa corpo\nDeixa corpo vazio\nDeixa corpo com itens e moedas"
 #
 const nome3 = "Experiência"
 const info3 = "Quanta experiência dá quando morre, em porcentagem"
-const tipo3 = "numero"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "p_exp"
 #
 const nome4 = "Morreu"
 const info4 = "Quando não tem dono"
-const tipo4 = "linha"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
 const vari4 = "p_morreu1"
 #
 const nome5 = "Desmaiou"
 const info5 = "Quando pertence a outro personagem"
-const tipo5 = "linha"
+const tipo5 = "opc_linha"
 const clas5 = var.classe1
 const vari5 = "p_morreu2"
 
 
 classe menu_pcomportamento
+herda comando_menu
 const titulo = "Comportamento"
 const menufim = var.menufim
 const colunas = 25
 #
 const nome1 = "Movimentar"
-const tipo1 = "opcao"
+const tipo1 = "opc_opcao"
 const clas1 = var.classe1
 const vari1 = "p_mover"
 const extr1 = "Não sai do lugar\nSomente na área\nQualquer lugar"
 #
 const nome2 = "Tempo move"
 const info2 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo2 = "numero"
+const tipo2 = "opc_numero"
 const clas2 = var.classe1
 const vari2 = "p_movervel"
 const extr2 = "5 1000"
 #
 const nome3 = "Agressivo"
-const tipo3 = "opcao"
+const tipo3 = "opc_opcao"
 const clas3 = var.classe1
 const vari3 = "p_agressivo"
 const extr3 = "Pacífico\nSe atacarem\nSim"
 #
 const nome4 = "Foge abaixo de"
 const info4 = "Se os pontos de vida caírem abaixo desse número, o personagem foge"
-const tipo4 = "numero"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
 const vari4 = "p_fugir"
 #
 const nome5 = "Sem resgate"
 const info5 = "Se não permite resgatar jogadores lutando com esse personagem"
-const tipo5 = "simnao"
+const tipo5 = "opc_simnao"
 const clas5 = var.classe1
 const vari5 = "p_naoresg"
 #
 const nome6 = "Come corpos"
-const tipo6 = "simnao"
+const tipo6 = "opc_simnao"
 const clas6 = var.classe1
 const vari6 = "p_comecorpo"
 
@@ -894,14 +936,14 @@ const colunas = 25
 #
 const nome32 = "Capturar"
 const info32 = "Se pode ser capturado"
-const tipo32 = "opcao"
+const tipo32 = "opc_opcao"
 const clas32 = var.classe1
 const vari32 = "p_captura"
 const extr32 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
 #
 const nome33 = "Dar e soltar"
 const info33 = "Se esse personagem pode ser dado ou solto"
-const tipo33 = "opcao"
+const tipo33 = "opc_opcao"
 const clas33 = var.classe1
 const vari33 = "p_soltar"
 const extr33 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"

@@ -1,7 +1,6 @@
 classe comando_hab
 herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
-const atkajuda = arg0.persobat.var.[nomevar] ? este
 const posic = 7
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
 const tipoalvo = 6
@@ -153,7 +152,8 @@ valor\n\
 vel\n\
 msgextra msgatk0 msgatk1 msgatk2 msgatk3 msgatk4"
 
-func txtajuda # Retorna um texto que contém informações
+func habajuda # Retorna um texto que contém informações
+  ret arg0 && !arg0.persobat.var.[nomevar], nulo
   textotxt t
   se depende
     t.addfim(depende)
@@ -720,7 +720,7 @@ func menssub # Usado em mensgolpe
 
 
 classe cmd_resgatar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Resgatar\b\n\
 Sintaxe: RESGATAR <personagem>\n\
@@ -767,8 +767,8 @@ func escr
 classe cmd_matar
 herda comando_ataque
 const objcmd = config:matartipo ? este
-const objajuda = config:matartipo ? este
-const txtajuda = "\b\c3Matar\b\n\
+const txtajuda = config:matartipo ? txtajuda1
+const txtajuda1 = "\b\c3Matar\b\n\
 Sintaxe: MATAR <personagem>\n\
 Começa um combate com um personagem."
 const cmdmenu = ""

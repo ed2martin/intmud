@@ -1,8 +1,3 @@
-classe comando_ajuda
-const objajuda = este
-const iniclasse = !$[arg0] && criar(arg0)
-
-
 classe cmd_ajuda
 herda comando_comum
 const posic = 0
@@ -28,26 +23,27 @@ func escr
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_ajuda(arg0, arg1), nulo
   efim
-  ret arg1 == "", arg0.msg2(txtajuda(arg0))
-  ref obj
+  se 1
+    ret !arg1, arg0.msg2(txtajuda(arg0))
+    refvar t1 = $cmd_[txt1(arg1)].txtajuda(arg0)
+    ret t1, arg0.msg2(t1)
+    refvar t2 = $cmdfim_[txt1(arg1)].txtajuda(arg0)
+    ret t2, arg0.msg2(t2)
+  fimse
   prog p
-  obj = $cmd_[txt1(arg1)].objajuda(arg0)
-  ret obj, arg0.msg2(obj.txtajuda(arg0))
-  obj = $cmdfim_[txt1(arg1)].objajuda(arg0)
-  ret obj, arg0.msg2(obj.txtajuda(arg0))
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
-    obj = $[p.texto].objajuda(arg0)
-    ret obj, arg0.msg2(obj.txtajuda(arg0))
+    refvar t1 = $[p.texto].txtajuda(arg0)
+    ret t1, arg0.msg2(t1)
   efim
   epara p.iniclasse("cmdfim_" + txt1(arg1)), p.lin, p.depois
-    obj = $[p.texto].objajuda(arg0)
-    ret obj, arg0.msg2(obj.txtajuda(arg0))
+    refvar t1 = $[p.texto].txtajuda(arg0)
+    ret t1, arg0.msg2(t1)
   efim
   arg0.msg("Comando ou tópico de ajuda desconhecido: " + arg1)
 
 
 classe cmd_mover
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Movimentação\b\n\
 Você pode mover seu personagem para as seguintes direções:\n\
 N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo),\n\
@@ -63,7 +59,7 @@ Depois, para voltar a caminhar, deverá ficar em pé (digitando LEVANTAR)."
 
 
 classe cmd_comunica
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 
 func txtajuda
   ret tit + (config:chattipo ? cha) + (config:novatostipo ? nov) + pvt + (config:gritartipo ? \
@@ -87,7 +83,7 @@ const rez = "\n\
 
 
 classe cmd_info
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Informações\b\n\
   \c2VIDA\b      Pontos de vida, mana, vigor, nível e experiência\n\
   \c2MOEDAS\b    Quantas moedas está carregando\n\
@@ -108,7 +104,7 @@ const txtajuda = "\b\c3Informações\b\n\
 
 
 classe cmd_objeto
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Objetos\b\n\
   \c2PEGAR\b     Pega um objeto, do chão ou de dentro de outro objeto\n\
   \c2SOLTAR\b    Solta um objeto no chão ou coloca dentro de outro\n\
@@ -128,7 +124,7 @@ const txtajuda = "\b\c3Objetos\b\n\
 
 
 classe cmd_lojas
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Lojas e professores\b\n\
   \c2LISTA\b     Lista de produtos sendo vendidos e informações sobre um produto\n\
   \c2COMPRAR\b   Compra um produto\n\
@@ -144,7 +140,7 @@ perca a chave."
 
 
 classe cmd_nomes
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Nomes\b\n\
 Diversos comandos requerem que digite o nome de um personagem ou objeto.\n\
 Exemplo: PEGAR CHAVE\n\
@@ -175,7 +171,7 @@ o comando (ou teclar um sinal de exclamação) até pegar todos."
 
 
 classe cmd_combate
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = aj1 + (config:matartipo ? aj2 : aj3) + aj4
 const aj1 = "\b\c3Combate\b\n"
 const aj2 = "Para começar uma luta basta teclar MATAR ou um comando agressivo,\n\
@@ -197,7 +193,7 @@ Veja o comando RESGATAR."
 
 
 classe cmd_jog
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Outros comandos para jogadores\b\n\
   \c2CONFIG\b    Opções de configuração\n\
   \c2PROMPT\b    Mensagens do prompt\n\
@@ -214,7 +210,7 @@ const txtajuda = "\b\c3Outros comandos para jogadores\b\n\
 
 
 classe cmd_cores
-herda comando_ajuda
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Cores no prompt\b\n\n\
 É possível definir as cores dos caracteres e do fundo no prompt.\n\
 Entretanto, não há suporte a cores no Papovox, nem para os usuários\n\
