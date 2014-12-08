@@ -1,5 +1,5 @@
 classe cmd_quem
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Quem\b\n\
 Sintaxe: QUEM\n\
 Mostra quem está conectado no MUD e jogando."
@@ -53,7 +53,7 @@ func escr
 
 
 classe cmd_hab
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Hab\b\n\
 Sintaxe: HAB  [nome da habilidade]\n\
@@ -68,8 +68,8 @@ func escr
     ref obj
     prog p
     epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
-      obj = $[p.texto].atkajuda(r)
-      ret obj, arg0.msg2(obj.txtajuda(r))
+      refvar t1 = $[p.texto].habajuda(arg0)
+      ret t1, arg0.msg2(t1)
     efim
     ret arg0.msg("Nenhuma informação sobre a habilidade: " + arg1)
   fimse
@@ -89,7 +89,7 @@ func escr
 
 
 classe cmd_magia
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Magia\b\n\
 Sintaxe: MAGIA  [nome da magia]\n\
@@ -104,8 +104,8 @@ func escr
     ref obj
     prog p
     epara p.iniclasse("magia_" + txt1(arg1)), p.lin, p.depois
-      obj = $[p.texto].atkajuda(r)
-      ret obj, arg0.msg2(obj.txtajuda(r))
+      refvar t1 = $[p.texto].habajuda(arg0)
+      ret t1, arg0.msg2(t1)
     efim
     ret arg0.msg("Nenhuma informação sobre a magia: " + arg1)
   fimse
@@ -125,7 +125,7 @@ func escr
 
 
 classe cmd_idioma
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Idioma\b\n\
 Sintaxe: IDIOMA\n\
@@ -150,7 +150,7 @@ func escr
 
 
 classe cmd_outros
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Outros\b\n\
 Sintaxe: OUTROS\n\
@@ -179,7 +179,7 @@ func escr
 
 
 classe cmd_inv
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
 const ta1 = "\b\c3Inv\b\n\
@@ -212,7 +212,7 @@ func escr
 
 
 classe cmd_equip
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
 const ta1 = "\b\c3Equip\b\n\
@@ -272,7 +272,7 @@ func escr
 
 
 classe cmd_efeito
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = "\b\c3Efeito\b\n\
 Sintaxe: EFEITO  [nome do efeito]\n\
@@ -311,7 +311,7 @@ func escr
 
 
 classe cmd_vida
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
 const ta1 = "\b\c3Vida\b\n\
@@ -342,7 +342,7 @@ func vidalin
 
 
 classe cmd_moedas
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Moedas\b\n\
 Sintaxe: MOEDAS\n\
 Mostra quantas moedas você está carregando."
@@ -373,7 +373,7 @@ func escr
 
 
 classe cmd_hora
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Hora\b\n\
 Sintaxe: HORA\n\
 Mostra a hora atual, no calendário do MUD e no servidor."
@@ -425,7 +425,7 @@ func semanamud
 
 
 classe cmd_onde
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Onde\b\n\
 Sintaxe: ONDE\n\
 Mostra a área em que você está e os jogadores que estiverem por perto."
@@ -465,7 +465,7 @@ func escr
 
 
 classe cmd_saidas
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Saídas\b\n\
 Sintaxe: SAÍDAS\n\
@@ -499,7 +499,7 @@ func escr
 
 
 classe cmd_estat
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
 const ta1 = "\b\c3Estat\b\n\

@@ -306,8 +306,10 @@ func ini2_exec
   fimse
 # Diversos
   se versao < 319
-    criafunc("config", "const casaabriu1 = \"Você segura uma chave e abre a porta da sua casa.\"")
-    criafunc("config", "const casaabriu2 = \"$P segura uma chave e abre a porta da casa del$v.\"")
+    criafunc("config", "const casaabriu1 = \"Você segura uma chave e abre a porta da sua \
+casa.\"")
+    criafunc("config", "const casaabriu2 = \"$P segura uma chave e abre a porta da casa del$v.\""\
+)
   fimse
 # Casas
   se versao < 321
@@ -316,7 +318,8 @@ func ini2_exec
     criafunc("config", "const casatempoaviso = 5")
     criafunc("config", "const casatempobloq = 20")
     criafunc("config", "const casatempoperder = 180")
-    criafunc("config", "const casamsgaviso = \"Há uma nota avisando que a taxa de manutenção da casa está atrasada.\"")
+    criafunc("config", "const casamsgaviso = \"Há uma nota avisando que a taxa de manutenção da \
+casa está atrasada.\"")
     criafunc("config", "const casamsgbloq = \"A porta foi lacrada por falta de pagamento.\"")
   fimse
 # Echo, fórmula de experiência em batalha e sala fora da casa

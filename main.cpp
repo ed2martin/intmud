@@ -614,22 +614,35 @@ void Inicializa(const char * arg)
             erro=true;
             continue;
         }
-        if (TClasse::Procura(pclasse))
+        TClasse * cl = TClasse::Procura(pclasse);
+        if (cl)
         {
-            err_printf("%s:%d: Classe repetida: %s\n",
-                            arqinicio, linhanum, pclasse);
+            err_printf("%s:%d: Classe repetida: %s (%s)\n",
+                            arqinicio, linhanum, pclasse, cl->Comandos);
             erro=true;
             continue;
         }
 
     // Cria classe
-        new TClasse(pclasse, mapa);
+        //puts(mens);
+        cl = new TClasse(pclasse, mapa);
+        assert(cl->Comandos == 0);
+        sprintf(mens, "em %s:%d", arqinicio, linhanum);
+        cl->Comandos = new char[strlen(mens)+1];
+        strcpy(cl->Comandos, mens);
         mapa->Mudou = false;
     }
     if (TClasse::RBfirst()==0)
     {
         err_printf("Nenhuma classe foi definida\n");
         erro=true;
+    }
+
+// Limpa a informação de onde está cada classe
+    for (TClasse * cl = TClasse::RBfirst(); cl; cl=TClasse::RBnext(cl))
+    {
+        delete[] cl->Comandos;
+        cl->Comandos = 0;
     }
 
 // Verifica se ocorreu erro no mapa

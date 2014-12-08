@@ -1,6 +1,4 @@
 classe jogsock
-herda adm_comum, adm_misc, adm_tipo, adm_atk, adm_sala, adm_perso, adm_item, adm_social, \
-adm_efeito, adm_atrib, adm_reset, adm_casa
 # Comunicação com o jogador
 # Funções predefinidas:
 # ini = objeto foi criado
@@ -76,7 +74,7 @@ func reinicia # Volta ao início: pede o nome do personagem
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
   cnome = "un", nome = ""
   mudaperso(nulo)
-  p_perso
+  $adm_perso1.passo(este)
 
 func recebe # Recebeu mensagem do jogador
   ret passo || !perso.var.t_[txt1(arg0)], recebe1(arg0)
@@ -99,13 +97,13 @@ func recebe1 # Função recebe após uso de atalhos
       epara i = lmonit.ini, i, i.depois
         i.obj.msg("<" + arg0, 1), i.obj.msgprompt = 1
       efim
-    casose "criasenha1"
-    casose "criasenha2"
-    casose "entrasenha"
-    casose "mudasenha1"
-    casose "mudasenha2"
-    casose "mudasenha3"
-    casose "autoapagar2"
+    casose "adm_criasenha1"
+    casose "adm_criasenha2"
+    casose "adm_entrasenha"
+    casose "adm_mudasenha1"
+    casose "adm_mudasenha2"
+    casose "adm_mudasenha3"
+    casose "adm_autoapagar2"
     casofim
   fimse
 # Atualiza tempo para sair do MUD
@@ -117,7 +115,7 @@ func recebe1 # Função recebe após uso de atalhos
   fimse
 # Passo atual / executa comando
   txtmais.limpar
-  se p_[passo](arg0) # Função do passo
+  se passo && $[passo].passo(este, arg0) # Função do passo
     comandos.limpar
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
@@ -129,11 +127,11 @@ func recebe1 # Função recebe após uso de atalhos
     se jogconfig.23
       msg("Você virou admin, tecle ADM para saber os comandos.")
       t1 = "*** " + perso.nome + " virou admin."
-      $misclog.cmdlog("adm " + nome + ": Virou admin")
+      $misclog.cmdlog("adm " + arg0.nome + ": Virou admin")
     senao
       msg("Você deixou de ser admin.")
       t1 = "*** " + perso.nome + " deixou de ser admin."
-      $misclog.cmdlog("adm " + nome + ": Deixou de ser admin")
+      $misclog.cmdlog("adm " + arg0.nome + ": Deixou de ser admin")
     fimse
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
@@ -156,11 +154,12 @@ func recebe1 # Função recebe após uso de atalhos
     casofim
   fimse
 # Comando de administração
-  se jogconfig.23 && cmd_[txt1(ultimocom)](txt2(ultimocom))
-    comandos.limpar
-    ret
+  se jogconfig.23 && perso
+    refvar r = $adm_[txt1(ultimocom)].objcmd(perso)
+    ret r, r.escr(perso, txt2(ultimocom)) + comandos.limpar
+  fimse
 # Comando para o jogo
-  senao !perso.p_espera # Checa se pode processar o comando
+  se !perso.p_espera # Checa se pode processar o comando
     perso.teclou(ultimocom) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
   senao perso.atktempo # Checa se está batalhando
@@ -255,272 +254,353 @@ func msgchegou # Mensagem de usuário chegando ou saindo
       fimse
     efim
 
-func p_perso # Entrando no jogo: digitar o nome do personagem
+const m_menu = $[arg0].passo(este, "\b")
+
+
+classe adm_perso1
+herda comando_comum
+# Entrando no jogo: digitar o nome do personagem
+
+func passo
   indiceitem ind
   txt20 texto
   arqsav sav1
-  passo = "perso", tpasso = nome = cnome = ""
-  texto = txtnome(arg0)
-  se !arg0
-    msg("Digite o nome do seu personagem:\cn ")
-  senao inttotal(arg0) < 3 || inttotal(arg0) > 16
-    msg("O nome deve ter de 3 a 16 caracteres; digite outro")
-  senao intnome(arg0) || txtproc(txtsepara("a" + arg0, "L+D"), " ") >= 0
-    msg("Nome inválido; digite outro")
+  arg0.passo = este, arg0.tpasso = arg0.nome = arg0.cnome = ""
+  texto = txtnome(arg1)
+  se !arg1
+    arg0.msg("Digite o nome do seu personagem:\cn ")
+  senao inttotal(arg1) < 3 || inttotal(arg1) > 16
+    arg0.msg("O nome deve ter de 3 a 16 caracteres; digite outro")
+  senao intnome(arg1) || txtproc(txtsepara("a" + arg1, "L+D"), " ") >= 0
+    arg0.msg("Nome inválido; digite outro")
   senao sav1.existe("sav/" + texto + ".sav") # Carregar jogo salvo
-    msg("Personagem '" + txtmaimin(arg0) + "' já existe")
-    tpasso = txtmaimin(arg0)
-    p_entrasenha
+    arg0.msg("Personagem '" + txtmaimin(arg1) + "' já existe")
+    arg0.tpasso = txtmaimin(arg1)
+    $adm_entrasenha.passo(arg0)
   senao ind.obj("un " + texto)
-    msg("Nome já está sendo usado; digite outro")
+    arg0.msg("Nome já está sendo usado; digite outro")
   senao # Criar personagem
-    refvar t = info
+    refvar t = arg0.info
     se (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
-      msg(config:apresban)
-      apagar(este)
+      arg0.msg(config:apresban)
+      apagar(arg0)
     senao $admnomesnao.nomes.n_[texto] # Checa se nome permitido
-      msg("Nome não permitido para personagem")
+      arg0.msg("Nome não permitido para personagem")
     senao
-      cnome = "un " + texto
-      nome = txtmaimin(arg0)
-      p_perso1
+      arg0.cnome = "un " + texto
+      arg0.nome = txtmaimin(arg1)
+      $adm_perso2.passo(arg0)
     fimse
   fimse
   ret 1
 
-func p_perso1
-  se arg0 == "N"
-    p_perso
-  senao arg0 == "S"
-    config:salvacria ? p_criasenha1 : config:email ? p_email1 : p_sexo1
+
+classe adm_perso2
+herda comando_comum
+
+func passo
+  se arg1 == "N"
+    $adm_perso1.passo(arg0)
+  senao arg1 == "S"
+    se config:salvacria
+      $adm_criasenha1.passo(arg0)
+    senao config:email
+      $adm_email1.passo(arg0)
+    senao
+      $adm_sexo1.passo(arg0)
+    fimse
     nomefim = info
-    msgchegou("Criando personagem: " + nome + ", " + nomefim)
+    arg0.msgchegou("Criando personagem: " + arg0.nome + ", " + arg0.nomefim)
   senao
-    passo = "perso1"
-    msg("Deseja criar o personagem '" + nome + "'? (tecle S ou N)")
+    arg0.passo = este
+    arg0.msg("Deseja criar o personagem '" + arg0.nome + "'? (tecle S ou N)")
 
-func p_criasenha1 # Digitar a senha ao criar personagem
-  passo = "criasenha1"
-  tpasso = txt1(tpasso)
-  se !arg0
-    msg("Digite uma senha para o personagem\cm")
-  senao inttotal(arg0) < 5 || inttotal(arg0) > 16
-    msg("A senha deve ter de 5 a 16 caracteres, digite outra")
-  senao intsenha(arg0) == 3
-    msg("Senha deve ter letras e números, digite outra")
-  senao intsenha(arg0)
-    msg("Senha inválida, digite outras")
+
+classe adm_criasenha1
+herda comando_comum
+# Digitar a senha ao criar personagem
+
+func passo
+  arg0.passo = este
+  arg0.tpasso = txt1(tpasso)
+  se !arg1
+    arg0.msg("Digite uma senha para o personagem\cm")
+  senao inttotal(arg1) < 5 || inttotal(arg1) > 16
+    arg0.msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+  senao intsenha(arg1) == 3
+    arg0.msg("Senha deve ter letras e números, digite outra")
+  senao intsenha(arg1)
+    arg0.msg("Senha inválida, digite outras")
   senao
-    var.j_senha = arg0
-    p_criasenha2
+    arg0.var.j_senha = arg1
+    $adm_criasenha2.passo(arg0)
   fimse
   ret 1
 
-func p_criasenha2 # Repetir a senha ao criar personagem
-  passo = "criasenha2"
+
+classe adm_criasenha2
+herda comando_comum
+# Repetir a senha ao criar personagem
+
+func passo
+  arg0.passo = este
   se !arg0
-    msg("Digite novamente a senha")
+    arg0.msg("Digite novamente a senha")
   senao arg0 != var.j_senha
-    msg("As senhas são diferentes")
-    var.limpar("j_")
-    p_perso
+    arg0.msg("As senhas são diferentes")
+    arg0.var.limpar("j_")
+    $adm_perso1.passo(arg0)
   senao
-    config:email ? p_email1 : p_sexo1
+    config:email ? $adm_email1.passo(arg0) : $adm_sexo1.passo(arg0)
   fimse
   ret 1
 
-func p_email1 # Digitar o e-mail
-  passo = "email1"
+
+classe adm_email1
+herda comando_comum
+# Digitar o e-mail
+
+func passo
+  arg0.passo = este
   txt100 lin.3
-  se !arg0
+  se !arg1
     se config:email == 1
-      msg("Digite seu e-mail ou N para nenhum\cn")
+      arg0.msg("Digite seu e-mail ou N para nenhum\cn")
     senao
-      msg("Digite seu e-mail\cn")
+      arg0.msg("Digite seu e-mail\cn")
     fimse
-  senao arg0 == "n" && config:email == 1
-    p_sexo1
-  senao txtproc(arg0, " ") >= 0
-    msg("O e-mail não pode conter espaços; digite outro")
-  senao txtremove(arg0, "7") !== arg0
-    msg("E-mail contém caracteres inválidos, digite outro")
-  senao lin.separar(arg0, "@") != 2 || lin.0 == ""
-    msg("E-mail inválido; digite outro")
+  senao arg1 == "n" && config:email == 1
+    $adm_sexo1.passo(arg0)
+  senao txtproc(arg1, " ") >= 0
+    arg0.msg("O e-mail não pode conter espaços; digite outro")
+  senao txtremove(arg1, "7") !== arg1
+    arg0.msg("E-mail contém caracteres inválidos, digite outro")
+  senao lin.separar(arg1, "@") != 2 || lin.0 == ""
+    arg0.msg("E-mail inválido; digite outro")
   senao txtfim(lin.1, 1) == "." || txtproc(lin.1, ".") <= 0
-    msg("E-mail inválido; digite outro")
+    arg0.msg("E-mail inválido; digite outro")
   senao
-    var.j_email = arg0
-    p_sexo1
+    arg0.var.j_email = arg1
+    $adm_sexo1.passo(arg0)
   fimse
   ret 1
 
-func p_sexo1 # Digitar H ou M
-  passo = "sexo1"
-  se arg0 != "H" && arg0 != "M"
-    msg("Você é homem ou mulher? (tecle H ou M)")
+
+classe adm_sexo1
+herda comando_comum
+# Digitar H ou M
+
+func passo
+  arg0.passo = este
+  se arg1 != "H" && arg1 != "M"
+    arg0.msg("Você é homem ou mulher? (tecle H ou M)")
     ret 1
   fimse
-  var.j_sexo = arg0 == "H" # 0=feminino, 1=masculino
-  ret p_raca1
+  arg0.var.j_sexo = arg1 == "H" # 0=feminino, 1=masculino
+  ret $adm_raca1.passo(arg0)
 
-func p_raca1 # Começa a escolha da raça
-  tpasso = "raça"
-  ret p_raca2
 
-func p_raca2 # Escolhe a raça
+classe adm_raca1
+herda comando_comum
+# Começa a escolha da raça
+
+func passo
+  arg0.tpasso = "raça"
+  ret $adm_raca2.passo(arg0)
+
+
+classe adm_raca2
+herda comando_comum
+# Escolhe a raça
+
+func passo
   txt100 lin
   prog p
+  refvar tpasso = arg0.tpasso
 # Obtém a lista de raças e checa se escolheu uma raça
-  txtmais.limpar
+  arg0.txtmais.limpar
   epara p.iniclasse("tipo_"), p.lin, p.depois
     continuar txts([p.texto]:menu) != tpasso
-    txtmais.addfim(txt(txtmais.linhas + 1) + ". " + [p.texto]:nome)
+    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + [p.texto]:nome)
     lin = p.texto
-    continuar txt(arg0) != txt(txtmais.linhas)
-    txtmais.limpar, tpasso = p.texto
-    msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
-    ret p_raca3
+    continuar txt(arg1) != txt(arg0.txtmais.linhas)
+    arg0.txtmais.limpar
+    arg0.tpasso = p.texto
+    arg0.msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
+    ret $adm_raca3.passo(arg0)
   efim
 # Somente uma raça para escolher: escolhe automaticamente
-  se txtmais.linhas == 1
-    txtmais.limpar
-    var.j_tipo1 = txt(lin, 5)
-    ret p_classe1
+  se arg0.txtmais.linhas == 1
+    arg0.txtmais.limpar
+    arg0.var.j_tipo1 = txt(lin, 5)
+    ret $adm_classe1.passo(arg0)
 # Nenhuma raça para escolher: passa para o próximo menu
-  senao txtmais.linhas == 0
-    txtmais.limpar
-    tpasso != "raça" && (var.j_tipo1 = tpasso)
-    ret p_classe1
+  senao arg0.txtmais.linhas == 0
+    arg0.txtmais.limpar
+    arg0.tpasso != "raça" && (arg0.var.j_tipo1 = tpasso)
+    ret $adm_classe1.passo(arg0)
 # Mais de uma raça: apresenta o menu
   senao
-    passo = "raca2"
-    se arg0
-      txtmais.addini("Raça inválida; escolha uma:")
+    arg0.passo = este
+    se arg1
+      arg0.txtmais.addini("Raça inválida; escolha uma:")
     senao tpasso == "raça"
-      txtmais.addini("Escolha uma raça:")
+      arg0.txtmais.addini("Escolha uma raça:")
     senao
-      txtmais.addini("Escolha uma sub-raça:")
+      arg0.txtmais.addini("Escolha uma sub-raça:")
     fimse
-    txtmostra
+    arg0.txtmostra
     ret 1
 
-func p_raca3 # Mostra informações da raça e pede confirmação
-  passo = "raca3"
-  se arg0 == "S"
-    tpasso = txt(tpasso, 5)
-    ret p_raca2
-  senao arg0 == "N"
-    tpasso = txts([tpasso]:menu)
-    ret p_raca2
+
+classe adm_raca3
+herda comando_comum
+# Mostra informações da raça e pede confirmação
+
+func passo
+  arg0.passo = este
+  se arg1 == "S"
+    arg0.tpasso = txt(arg0.tpasso, 5)
+    ret $adm_raca2.passo(arg0)
+  senao arg1 == "N"
+    arg0.tpasso = txts([arg0.tpasso]:menu)
+    ret $adm_raca2.passo(arg0)
   senao
-    msg("Você quer essa raça? (tecle S ou N)")
+    arg0.msg("Você quer essa raça? (tecle S ou N)")
     ret 1
 
-func p_classe1 # Começa a escolha da raça
-  tpasso = "classe"
-  ret p_classe2
 
-func p_classe2 # Escolhe a classe
+classe adm_classe1
+herda comando_comum
+# Começa a escolha da raça
+
+func passo
+  arg0.tpasso = "classe"
+  ret $adm_classe2.passo(arg0)
+
+
+classe adm_classe2
+herda comando_comum
+# Escolhe a classe
+
+func passo
   txt100 lin
   prog p
+  refvar tpasso = arg0.tpasso
 # Obtém a lista de classes e checa se escolheu uma classe
-  txtmais.limpar
+  arg0.txtmais.limpar
   epara p.iniclasse("tipo_"), p.lin, p.depois
     continuar txts([p.texto]:menu) != tpasso
     se [p.texto]:racas
-      se txtproc("\n" + txts([p.texto]:racas) + "\n", "\n" + var.j_tipo1 + "\n") < 0
+      se txtproc("\n" + txts([p.texto]:racas) + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
         continuar
       fimse
     fimse
-    txtmais.addfim(txt(txtmais.linhas + 1) + ". " + [p.texto]:nome)
+    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + [p.texto]:nome)
     lin = p.texto
-    continuar txt(arg0) != txt(txtmais.linhas)
-    txtmais.limpar, tpasso = p.texto
+    continuar txt(arg1) != txt(arg0.txtmais.linhas)
+    arg0.txtmais.limpar
+    tpasso = p.texto
     msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
-    ret p_classe3
+    ret $adm_classe3.passo(arg0)
   efim
 # Somente uma classe para escolher: escolhe automaticamente
-  se txtmais.linhas == 1
-    txtmais.limpar
-    var.j_tipo2 = txt(lin, 5)
-    ret p_entrajogo
+  se arg0.txtmais.linhas == 1
+    arg0.txtmais.limpar
+    arg0.var.j_tipo2 = txt(lin, 5)
+    ret $adm_entrajogo.passo(arg0)
 # Nenhuma classe para escolher: passa para o próximo menu
-  senao txtmais.linhas == 0
-    txtmais.limpar
-    tpasso != "classe" && (var.j_tipo2 = tpasso)
-    ret p_entrajogo
+  senao arg0.txtmais.linhas == 0
+    arg0.txtmais.limpar
+    tpasso != "classe" && (arg0.var.j_tipo2 = tpasso)
+    ret $adm_entrajogo.passo(arg0)
 # Mais de uma classe: apresenta o menu
   senao
-    passo = "classe2"
-    se arg0
-      txtmais.addini("Classe inválida; escolha uma:")
+    arg0.passo = este
+    se arg1
+      arg0.txtmais.addini("Classe inválida; escolha uma:")
     senao tpasso == "classe"
-      txtmais.addini("Escolha uma classe:")
+      arg0.txtmais.addini("Escolha uma classe:")
     senao
-      txtmais.addini("Escolha uma sub-classe:")
+      arg0.txtmais.addini("Escolha uma sub-classe:")
     fimse
     txtmostra
     ret 1
 
-func p_classe3 # Mostra informações da classe e pede confirmação
-  passo = "classe3"
-  se arg0 == "S"
-    tpasso = txt(tpasso, 5)
-    ret p_classe2
-  senao arg0 == "N"
-    tpasso = txts([tpasso]:menu)
-    ret p_classe2
+
+classe adm_classe3
+herda comando_comum
+# Mostra informações da classe e pede confirmação
+
+func passo
+  arg0.passo = este
+  se arg1 == "S"
+    arg0.tpasso = txt(arg0.tpasso, 5)
+    ret $adm_classe2.passo(arg0)
+  senao arg1 == "N"
+    arg0.tpasso = txts([arg0.tpasso]:menu)
+    ret $adm_classe2.passo(arg0)
   senao
-    msg("Você quer essa classe? (tecle S ou N)")
+    arg0.msg("Você quer essa classe? (tecle S ou N)")
     ret 1
 
-func p_entrajogo # Entrar no jogo: cria personagem
-  passo = ""
-  jogconfig.bits = config:jogconfig # Configurações iniciais
-  msg("Iniciando jogo; para ajuda tecle AJUDA")
-  var.j_inivar = txt(tipo_[var.j_tipo1]:inivar) + "," + tipo_[var.j_tipo2]:inivar
-  mudaperso(criar("jogador", nulo, 0, var.j_inivar))
-  perso.cnome = "pn " + txt2(cnome)
-  perso.nome = nome
-  perso.jogconfig.bits = jogconfig.bits
-  perso.psexo = var.j_sexo
-  perso.senha = var.j_senha
-  perso.tipo1 = var.j_tipo1
-  perso.tipo2 = var.j_tipo2
-  perso.var.z_email = var.j_email
-  var.limpar("j_")
-  perso.mudadono(config:salaini)
-  perso.recalc = 1
-  temposair # Acerta tempo para sair do MUD
-  se perso.senha
-    !perso.salvar && msg("Não foi possível salvar o personagem")
+
+classe adm_entrajogo
+herda comando_comum
+# Entrar no jogo: cria personagem
+
+func passo
+  arg0.passo = ""
+  arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
+  arg0.msg("Iniciando jogo; para ajuda tecle AJUDA")
+  arg0.var.j_inivar = txt(tipo_[arg0.var.j_tipo1]:inivar) + "," + tipo_[arg0.var.j_tipo2]:inivar
+  arg0.mudaperso(criar("jogador", nulo, 0, arg0.var.j_inivar))
+  arg0.perso.cnome = "pn " + txt2(arg0.cnome)
+  arg0.perso.nome = arg0.nome
+  arg0.perso.jogconfig.bits = arg0.jogconfig.bits
+  arg0.perso.psexo = arg0.var.j_sexo
+  arg0.perso.senha = arg0.var.j_senha
+  arg0.perso.tipo1 = arg0.var.j_tipo1
+  arg0.perso.tipo2 = arg0.var.j_tipo2
+  arg0.perso.var.z_email = arg0.var.j_email
+  arg0.var.limpar("j_")
+  arg0.perso.mudadono(config:salaini)
+  arg0.perso.recalc = 1
+  arg0.temposair # Acerta tempo para sair do MUD
+  se arg0.perso.senha
+    !arg0.perso.salvar && arg0.msg("Não foi possível salvar o personagem")
   fimse
-  msgchegou("Criou personagem: " + nome + ", " + nomefim, nome + " entrou")
-  $mens.p(perso)
+  arg0.msgchegou("Criou personagem: " + arg0.nome + ", " + arg0.nomefim, arg0.nome + " entrou")
+  $mens.p(arg0.perso)
   $mens.mvis2("", "$P chegou.")
   ret 1
 
-func p_entrasenha # Entrar com a senha para carregar jogo salvo
+
+classe adm_entrasenha
+herda comando_comum
+# Entrar com a senha para carregar jogo salvo
+
+func passo
   indiceitem ind
   txt20 texto
   arqsav sav1
   ref r
 # msg(texto + " , " + arg0)
-  texto = txtnome(tpasso)
-  passo = "entrasenha"
-  se !arg0
-    msg("Digite a senha ou tecle Z se não for seu: \cm")
-  senao arg0 == "z"
-    nome = "", p_perso
-  senao !sav1.senha("sav/" + texto + ".sav", txtmin(arg0))
-    msg("Senha incorreta")
-    casovar txt1(info)
+  texto = txtnome(arg0.tpasso)
+  arg0.passo = este
+  se !arg1
+    arg0.msg("Digite a senha ou tecle Z se não for seu: \cm")
+  senao arg1 == "z"
+    arg0.nome = "", $adm_perso1.passo(arg0)
+  senao !sav1.senha("sav/" + texto + ".sav", txtmin(arg1))
+    arg0.msg("Senha incorreta")
+    casovar txt1(arg0.info)
     casose "t" # Conectado via Papovox
     casose "p" # Conectado via Telnet
-      apagar(este)
+      apagar(arg0)
       ret
     casofim
-    p_perso
+    $adm_perso1.passo(arg0)
   senao ind.obj("pn " + texto)
     r = ind.obj("un " + texto)
     casovar txt1(r.info)
@@ -528,48 +608,49 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
     casose "p" # Conectado via Telnet
       apagar(r)
       r.mudaperso(nulo)
-      r.msg("Jogador " + info + " começou a usar seu personagem")
+      r.msg("Jogador " + arg0.info + " começou a usar seu personagem")
       r.nomefim = ""
     casose ""
       sair
     casose
-      r.msg("Jogador " + info + " começou a usar seu personagem")
+      r.msg("Jogador " + arg0.info + " começou a usar seu personagem")
       r.reinicia
     casofim
-    passo = ""
-    mudaperso(ind.obj("pn " + texto))
-    nome = perso.nome
-    cnome = "un " + texto
-    jogconfig.bits = perso.jogconfig.bits
-    temposair # Acerta tempo para sair do MUD
-    msg("Reconectado\cn")
+    arg0.passo = ""
+    arg0.mudaperso(ind.obj("pn " + texto))
+    arg0.nome = arg0.perso.nome
+    arg0.cnome = "un " + texto
+    arg0.jogconfig.bits = arg0.perso.jogconfig.bits
+    arg0.temposair # Acerta tempo para sair do MUD
+    arg0.msg("Reconectado\cn")
     txt200 lin
-    nomefim = info
-    lin = "Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
-    msgchegou(lin, nome + " entrou")
-    refvar alvo = perso.atkenv.objlista
+    arg0.nomefim = arg0.info
+    lin = "Entrou: " + nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
+    lin += " $" + arg0.perso.var.z_moedas_
+    arg0.msgchegou(lin, arg0.nome + " entrou")
+    refvar alvo = arg0.perso.atkenv.objlista
     se !alvo
-      perso.teclou("olhar")
+      arg0.perso.teclou("olhar")
     senao alvo.visivel(arg0)
-      msg("Alguém está lutando com você!")
+      arg0.msg("Alguém está lutando com você!")
     senao
-      msg(txtcopiamai(alvo.descnome, "A") + " está lutando com você!")
+      arg0.msg(txtcopiamai(alvo.descnome, "A") + " está lutando com você!")
     fimse
   senao
 # Primeiro cria personagem
-    passo = ""
-    nome = tpasso
-    cnome = "un " + texto
-    mudaperso(criar("jogador"))
-    perso.cnome = "pn " + texto
-    perso.nome = nome
-    perso.senha = txtmin(arg0)
+    arg0.passo = ""
+    arg0.nome = arg0.tpasso
+    arg0.cnome = "un " + texto
+    arg0.mudaperso(criar("jogador"))
+    arg0.perso.cnome = "pn " + texto
+    arg0.perso.nome = arg0.nome
+    arg0.perso.senha = txtmin(arg1)
 # Carrega personagem
     listaobj l1
-    l1.addfim(perso)
+    l1.addfim(arg0.perso)
     sav1.ler("sav/" + texto + ".sav", l1)
-    nome = perso.nome
-    jogconfig.bits = perso.jogconfig.bits
+    arg0.nome = arg0.perso.nome
+    arg0.jogconfig.bits = arg0.perso.jogconfig.bits
 # Acerta variáveis
     listaitem item
     debug d
@@ -583,94 +664,118 @@ func p_entrasenha # Entrar com a senha para carregar jogo salvo
       item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
     efim
 # Muda de sala e volta ao jogo
-    perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
-    criar("jogsock_retorna", perso, $[perso.salanome]) # Para mudar de sala
-    msg("Continuando jogo salvo\cn")
+    arg0.perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
+    criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome]) # Para mudar de sala
+    arg0.msg("Continuando jogo salvo\cn")
     txt200 lin
-    lin = "Entrou: " + nome + ", " + info + ", N" + perso.pnivel + " $" + perso.var.z_moedas_
-    msgchegou(lin, nome + " entrou")
-    nomefim = info
+    lin = "Entrou: " + nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
+    lin += " $" + arg0.perso.var.z_moedas_
+    arg0.msgchegou(lin, arg0.nome + " entrou")
+    arg0.nomefim = arg0.info
   fimse
   ret 1
 
-func p_mudasenha1 # Digitar a senha atual para mudar a senha
-  passo = "mudasenha1"
-  se !arg0
-    msg("Digite a senha atual do personagem ou z para desistir")
-  senao arg0 == "z"
-    passo = ""
-    msg("Cancelado")
-  senao arg0 != perso.senha
-    msg("Senha incorreta; cancelado")
-    passo = ""
+
+classe adm_mudasenha1
+herda comando_comum
+# Digitar a senha atual para mudar a senha
+
+func passo
+  arg0.passo = este
+  se !arg1
+    arg0.msg("Digite a senha atual do personagem ou z para desistir")
+  senao arg1 == "z"
+    arg0.passo = ""
+    arg0.msg("Cancelado")
+  senao arg1 != arg0.perso.senha
+    arg0.msg("Senha incorreta; cancelado")
+    arg0.passo = ""
   senao
-    p_mudasenha2
+    $adm_mudasenha2.passo(arg0)
   fimse
   ret 1
 
-func p_mudasenha2 # Digitar a nova senha
-  passo = "mudasenha2"
-  se !arg0
-    msg("Digite a nova senha do personagem ou Z para desistir")
-  senao arg0 == "z"
-    passo = ""
-    msg("Cancelado")
-  senao inttotal(arg0) < 5 || inttotal(arg0) > 16
-    msg("A senha deve ter de 5 a 16 caracteres, digite outra")
-  senao intsenha(arg0) == 3
-    msg("Senha deve ter letras e números, digite outra")
-  senao intsenha(arg0)
-    msg("Senha inválida, digite outras")
+
+classe adm_mudasenha2
+herda comando_comum
+# Digitar a nova senha
+
+func passo
+  arg0.passo = este
+  se !arg1
+    arg0.msg("Digite a nova senha do personagem ou Z para desistir")
+  senao arg1 == "z"
+    arg0.passo = ""
+    arg0.msg("Cancelado")
+  senao inttotal(arg1) < 5 || inttotal(arg1) > 16
+    arg0.msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+  senao intsenha(arg1) == 3
+    arg0.msg("Senha deve ter letras e números, digite outra")
+  senao intsenha(arg1)
+    arg0.msg("Senha inválida, digite outras")
   senao
-    tpasso = arg0
-    p_mudasenha3
+    arg0.tpasso = arg1
+    $adm_mudasenha3.passo(arg0)
   fimse
   ret 1
 
-func p_mudasenha3 # Repetir a senha digitada
-  passo = "mudasenha3"
-  se !arg0
-    msg("Digite novamente a senha")
-  senao tpasso != arg0
-    msg("As senhas são diferentes; cancelado")
-    passo = ""
+
+classe adm_mudasenha3
+herda comando_comum
+# Repetir a senha digitada
+
+func passo
+  arg0.passo = este
+  se !arg1
+    arg0.msg("Digite novamente a senha")
+  senao arg0.tpasso != arg1
+    arg0.msg("As senhas são diferentes; cancelado")
+    arg0.passo = ""
   senao
-    perso.senha = txtmin(arg0)
-    msg(perso.salvar ? "Jogo salvo" : "Não foi possível salvar")
-    passo = ""
+    arg0.perso.senha = txtmin(arg1)
+    arg0.msg(arg0.perso.salvar ? "Jogo salvo" : "Não foi possível salvar")
+    arg0.passo = ""
   fimse
   ret 1
 
-func p_autoapagar1
-  passo = "autoapagar1"
-  se !arg0
-    msg("Deseja realmente apagar o personagem " + perso.nome + "? Tecle S ou N")
-  senao arg0 == "s"
-    p_autoapagar2
+
+classe adm_autoapagar1
+herda comando_comum
+
+func passo
+  arg0.passo = este
+  se !arg1
+    arg0.msg("Deseja realmente apagar o personagem " + arg0.perso.nome + "? Tecle S ou N")
+  senao arg1 == "s"
+    $adm_autoapagar2.passo(arg0)
   senao
-    msg("Autoapagar cancelado")
-    passo = ""
+    arg0.msg("Autoapagar cancelado")
+    arg0.passo = ""
   fimse
   ret 1
 
-func p_autoapagar2
+
+classe adm_autoapagar2
+herda comando_comum
+
+func passo
   arqsav sav1
-  passo = "autoapagar2"
-  se !arg0
-    msg("Digite a senha ou tecle Z para cancelar")
-  senao arg0 == "z"
-    msg("Autoapagar cancelado")
+  arg0.passo = este
+  se !arg1
+    arg0.msg("Digite a senha ou tecle Z para cancelar")
+  senao arg1 == "z"
+    arg0.msg("Autoapagar cancelado")
     passo = ""
-  senao arg0 != perso.senha
-    msg("Senha incorreta; autoapagar cancelado")
-    passo = ""
-  senao sav1.apagar("sav/" + txt2(cnome) + ".sav")
-    perso.senha = ""
-    apagar(perso)
-    $miscsav.apagousav(txt2(cnome))
+  senao arg1 != perso.senha
+    arg0.msg("Senha incorreta; autoapagar cancelado")
+    arg0.passo = ""
+  senao sav1.apagar("sav/" + txt2(arg0.cnome) + ".sav")
+    arg0.perso.senha = ""
+    apagar(arg0.perso)
+    $miscsav.apagousav(txt2(arg0.cnome))
   senao
-    msg("Não foi possível apagar o personagem.")
-    passo = ""
+    arg0.msg("Não foi possível apagar o personagem.")
+    arg0.passo = ""
   fimse
   ret 1
 
@@ -756,8 +861,8 @@ func fechou # Executado quando o objeto sock é apagado
   fimse
   senha == "" && apagar(este) # Apaga personagem se não tem jogo salvo
 
-func mudasenha # Usuário escolhe mudar a senha ou salvar pela primeira vez
-  senha ? sock.p_mudasenha1 : sock.p_mudasenha2
+func mudasenha # Usuário quer mudar a senha
+  ret sock, senha ? $adm_mudasenha1.passo(sock) : $adm_mudasenha2.passo(sock)
 
 func tempojogo1_exec
   tempojogo1 = 864000, tempojogo2 += 1

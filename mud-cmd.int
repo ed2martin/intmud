@@ -9,7 +9,7 @@ func escr # Processa o comando
 
 
 classe cmd_lancar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Lançar\b\nSintaxe: LANÇAR <nome da magia>\nLança uma magia."
 const posic = 0
 const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
@@ -17,7 +17,7 @@ const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 
 
 classe cmd_fim
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Fim\b\n\
 Sintaxe: FIM\n\
 Sai do jogo, retirando também o seu personagem. Você pode usar esse\n\
@@ -42,7 +42,7 @@ herda cmd_fim
 
 
 classe cmdfim_autoapagar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Autoapagar\b\n\
 Sintaxe: AUTOAPAGAR\n\
 Apaga definitivamente o seu personagem, retirando também você do jogo.\n\
@@ -58,7 +58,7 @@ func escr
 
 
 classe cmd_config
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = arg0.jogconfig.23 ? txtajuda1 + txtajuda2 : txtajuda1
 const txtajuda1 = aj1 + (config:chattipo ? aj2) + (config:novatostipo ? aj3) + (config:emocaotipo\
@@ -186,7 +186,7 @@ func escr
 
 
 classe cmd_prompt
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = "\b\c3Prompt\b\n\
 Sintaxe: PROMPT  [texto]\n\
@@ -252,7 +252,7 @@ func escr
 
 
 classe cmd_ver
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Ver\b\n\
 Sintaxe: VER\n\
          VER <personagem ou objeto>\n\
@@ -455,7 +455,7 @@ sobre um personagem ou um objeto."
 
 
 classe cmd_falar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Falar\b\n\
 Sintaxe: FALAR <mensagem>\n\
@@ -488,11 +488,11 @@ func escr
 
 
 classe cmd_gritar
-herda comando_comum, comando_ajuda
-const objcmd = config:gritartipo ? este
-const objajuda = config:gritartipo ? este
+herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Gritar\b\n\
+const objcmd = config:gritartipo ? este
+const txtajuda = config:gritartipo ? txtajuda1
+const txtajuda1 = "\b\c3Gritar\b\n\
 Sintaxe: GRITAR <mensagem>\n\
 Envia mensagem para todos os personagens que estiverem na mesma área."
 
@@ -530,7 +530,7 @@ func escr
 
 
 classe cmd_sussurrar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 5
 const txtajuda = "\b\c3Sussurrar\b\n\
 Sintaxe: SUSSURRAR <personagem> <mensagem>\n\
@@ -576,11 +576,11 @@ func escr
 
 
 classe cmd_emocao
-herda comando_comum, comando_ajuda
-const objcmd = config:emocaotipo ? este
-const objajuda = config:emocaotipo ? este
+herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Emoção\b\n\
+const objcmd = config:emocaotipo ? este
+const txtajuda = config:emocaotipo ? txtajuda1
+const txtajuda1 = "\b\c3Emoção\b\n\
 Sintaxe: EMOÇÃO <mensagem>\n\
 Mostra para os jogadores na mesma sala o que você está sentindo.\n\
 Esse comando mostra o nome do seu personagem seguido da mensagem.\n\
@@ -607,10 +607,10 @@ func escr
 
 
 classe cmdfim_rezar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const objcmd = config:rezartipo ? este
-const objajuda = config:rezartipo ? este
-const txtajuda = "\b\c3Rezar\b\n\
+const txtajuda = config:rezartipo ? txtajuda1
+const txtajuda1 = "\b\c3Rezar\b\n\
 Sintaxe: REZAR <mensagem>\n\
 Envia mensagem para os administradores que estiverem no jogo."
 const posic = 5
@@ -634,11 +634,11 @@ func escr
 
 
 classe cmdfim_chat
-herda comando_comum, comando_ajuda
-const objcmd = config:chattipo ? este
-const objajuda = config:chattipo ? este
+herda comando_comum
 const posic = 0
-const txtajuda = config:chattipo == 1 ? aj1 + aj2 : aj1
+const objcmd = config:chattipo ? este
+const txtajuda = config:chattipo ? txtajuda1
+const txtajuda1 = config:chattipo == 1 ? aj1 + aj2 : aj1
 const aj1 = "\b\c3Canal Chat\b\n\
 Sintaxe: CHAT <mensagem>\n\
          .<mensagem>\n\
@@ -675,11 +675,11 @@ func escr
 
 
 classe cmdfim_novatos
-herda comando_comum, comando_ajuda
-const objcmd = config:novatostipo ? este
-const objajuda = config:novatostipo ? este
+herda comando_comum
 const posic = 0
-const txtajuda = config:chattipo == 1 ? aj1 + aj2 : aj1
+const objcmd = config:novatostipo ? este
+const txtajuda = config:novatostipo ? txtajuda1
+const txtajuda1 = config:chattipo == 1 ? aj1 + aj2 : aj1
 const aj1 = "\b\c3Canal Novatos\b\n\
 Sintaxe: NOVATOS <mensagem>\n\
 Envia mensagem para os jogadores que estiverem com o canal NOVATOS\n\
@@ -716,7 +716,7 @@ func escr
 
 
 classe cmdfim_telepatia
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = "\b\c3Telepatia\b\n\
 Sintaxe: TELEPATIA <personagem> <mensagem>\n\
@@ -752,7 +752,7 @@ func escr
 
 
 classe cmdfim_ignorar
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = "\b\c3Ignorar\b\n\
 Sintaxe: ignorar [personagem]\n\
@@ -786,7 +786,7 @@ func escr
 
 
 classe cmd_atalho
-herda comando_comum, comando_ajuda
+herda comando_comum
 const posic = 0
 const txtajuda = "\b\c3Atalho\b\n\
 Sintaxe: ATALHO\n\
@@ -842,7 +842,7 @@ func escr
     arg0.msg("Atalho apagado: " + arg1)
   senao txt1(arg1) == "atalho"
     arg0.msg("Não é possível criar um atalho chamado atalho.")
-  senao txtproc(arg1, "=") >= 0
+  senao txtproc(txt1(arg1), "=") >= 0
     arg0.msg("Nomes de atalhos não podem ter o sinal de igual.")
   senao arg0.var.t_[txt1(arg1)]
     arg0.var.t_[txt1(arg1)] = txt2(arg1)
@@ -890,10 +890,9 @@ func escr
 
 
 classe cmdfim_senha
-herda comando_comum, comando_ajuda
-const objcmd = este
-const objajuda = este
+herda comando_comum
 const posic = 5
+const objcmd = este
 const txtajuda = "\b\c3Senha\b\n\
 Sintaxe: SALVAR\n\
 Muda a senha do seu personagem e salva em seguida.\n\
@@ -908,10 +907,9 @@ func escr
 
 
 classe cmdfim_salvar
-herda comando_comum, comando_ajuda
-const objcmd = este
-const objajuda = este
+herda comando_comum
 const posic = 5
+const objcmd = este
 const txtajuda = "\b\c3Salvar\b\n\
 Sintaxe: SALVAR\n\
 O MUD já salva o seu personagem de tempos em tempos e quando seu personagem\n\

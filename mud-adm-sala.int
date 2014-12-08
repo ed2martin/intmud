@@ -1,5 +1,5 @@
-classe adm_sala
-# Comandos de sala e de área
+classe adm_salas
+herda comando_adm
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
 Rua de uma cidade - 2mv\n\
@@ -22,16 +22,7 @@ Luz do sol\nEscuro"
 #
 const txt_porta = "Sem porta\nPorta aberta\nPorta fechada\nPorta trancada"
 #
-const adm_area = "\b\c3Comandos de áreas\b\n\
-\c2LAREA\b [nome]\n\
-  Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
-\c2CAREA\b <nome>\n\
-  Cria área. Nomes de área devem ter de 2 a 16 letras de A a Z.\n\
-\c2EAREA\b [nome]\n\
-  Edita área. Se o nome for omitido, edita a área em que você está.\n\
-\c2AAREA\b <nome>\n\
-  Apaga área, desde que não tenha nenhuma sala."
-const adm_sala = "\b\c3Comandos de salas\b\n\
+const txtajuda = "\b\c3Comandos de salas\b\n\
 \c2LSALA\b [sala]\n\
   Lista salas que começam com o nome especificado.\n\
 \c2CSALA\b <sala>\n\
@@ -55,7 +46,24 @@ Para criar descrições somente diurnas ou somente noturnas, acrescentar\n\
 @d ou @n, respectivamente, no final dos nomes das descrições.\n\
 Exemplo, se quiser uma descrição diurna e outra noturna para uma janela,\n\
 criar as descrições janela@d e janela@n ao invés de janela."
-const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
+
+
+classe adm_area
+herda comando_adm
+const txtajuda = "\b\c3Comandos de áreas\b\n\
+\c2LAREA\b [nome]\n\
+  Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
+\c2CAREA\b <nome>\n\
+  Cria área. Nomes de área devem ter de 2 a 16 letras de A a Z.\n\
+\c2EAREA\b [nome]\n\
+  Edita área. Se o nome for omitido, edita a área em que você está.\n\
+\c2AAREA\b <nome>\n\
+  Apaga área, desde que não tenha nenhuma sala."
+
+
+classe adm_sai
+herda comando_adm
+const txtajuda = "\b\c3Comandos de saídas das sala\b\n\
 \c2LSAI\b\n\
   Mostra saídas da sala em que você está.\n\
 \c2CSAI\b <direção> <sala>\n\
@@ -67,7 +75,11 @@ const adm_sai = "\b\c3Comandos de saídas das sala\b\n\
 \c2ASAI\b <direção>\n\
   Apaga saída na direção especificada."
 
-func cmd_larea # Listar áreas
+
+classe adm_larea
+herda comando_adm, comando_comum
+
+func escr # Listar áreas
   prog p
   se !p.iniclasse("a_" + arg0)
     msg("\bNenhuma área encontrada.")
@@ -82,7 +94,11 @@ func cmd_larea # Listar áreas
   fimse
   ret 1
 
-func cmd_carea # Criar área
+
+classe adm_carea
+herda comando_adm, comando_comum
+
+func escr # Criar área
   txt100 prefixo
   prefixo = txtmin(txtremove(arg0, "EMDCT7"))
   se $a_[prefixo]
@@ -97,11 +113,14 @@ func cmd_carea # Criar área
     p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala\nconst s_area=\"" + prefixo + \
 "\"")
     config:salvar, msg("\bÁrea criada: " + prefixo)
-    admlog("criou área " + prefixo)
+    admlog(arg0, "criou área " + prefixo)
   fimse
   ret 1
 
-func cmd_aarea # Apagar área
+
+classe adm_aarea
+
+func escr # Apagar área
   txt100 prefixo
   prog p
   prefixo = txtmin(txtremove(arg0, "EMDCT7"))
@@ -133,11 +152,15 @@ func cmd_aarea # Apagar área
     p.apagar("a_" + prefixo)
     p.apagar("b_" + prefixo)
     config:salvar, msg("\bÁrea apagada: " + prefixo)
-    admlog("apagou área " + prefixo)
+    admlog(arg0, "apagou área " + prefixo)
   fimse
   ret 1
 
-func cmd_earea # Editar área
+
+classe adm_earea
+herda comando_adm, comando_comum
+
+func escr # Editar área
   txt100 prefixo
   prog p
   prefixo = txtmin(txtremove(arg0, "EMDCT7"))
@@ -149,11 +172,13 @@ func cmd_earea # Editar área
   senao
     var.classe1 = "a_" + prefixo
     var.classe2 = "b_" + prefixo
-    m_menu("menu_area")
+    arg0.sock.m_menu("menu_area")
   fimse
   ret 1
 
-func cmd_lsala # Listar salas
+func cmd_lsala
+
+func escr # Listar salas
   prog p
   se !p.iniclasse("s_" + txtremove(arg0, "EMDCT7"))
     msg("\bNenhuma sala encontrada.")
@@ -168,7 +193,11 @@ func cmd_lsala # Listar salas
   fimse
   ret 1
 
-func cmd_cdir # Criar sala na direção especificada
+
+classe adm_cdir
+herda comando_adm, comando_comum
+
+func escr # Criar sala na direção especificada
   se arg0 == ""
     msg("Tecle o nome da sala ou a direção após CDIR")
     ret 1
@@ -211,10 +240,14 @@ func cmd_cdir # Criar sala na direção especificada
   criar("admmudou", perso.dono)
 # config:salvar
   msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
-  admlog("criou sala " + txt(nome, 2) + txtfim(num, 3))
+  admlog(arg0, "criou sala " + txt(nome, 2) + txtfim(num, 3))
   ret 1
 
-func cmd_csala # Criar sala
+
+classe adm_csala
+herda comando_adm, comando_comum
+
+func escr # Criar sala
   prog p
   txt40 nome
   uint16 num
@@ -254,10 +287,14 @@ func cmd_csala # Criar sala
   p.criar(area + "\nconst s_titulo=\"Sem nome\"\nconst s_desc=\"\"")
 # config:salvar
   msg("\bSala criada: " + nome)
-  admlog("criou sala " + nome)
+  admlog(arg0, "criou sala " + nome)
   ret 1
 
-func cmd_asala # Apagar sala
+
+classe adm_asala
+herda comando_adm, comando_comum
+
+func escr # Apagar sala
   prog p
   refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
   se nome == ""
@@ -272,10 +309,10 @@ func cmd_asala # Apagar sala
     fimse
     x += 1
   efim
-  tpasso = nome, p_asala
+  tpasso = nome, adm_asala:exec
   ret 1
 
-func p_asala # Confirmar que quer apagar sala
+func passo # Confirmar que quer apagar sala
   passo = ""
   se arg0 == "n"
     msg("Cancelado")
@@ -289,10 +326,10 @@ func p_asala # Confirmar que quer apagar sala
     config:salvar
     se x < 2
       msg("Sala apagada: " + tpasso)
-      admlog("apagou sala " + tpasso)
+      admlog(arg0, "apagou sala " + tpasso)
     senao
       msg("Salas apagadas: " + tpasso)
-      admlog("apagou salas " + tpasso)
+      admlog(arg0, "apagou salas " + tpasso)
     fimse
   senao
     txt10 m1
@@ -302,7 +339,9 @@ func p_asala # Confirmar que quer apagar sala
   fimse
   ret 1
 
-func cmd_esala # Editar sala
+func cmd_esala
+
+func escr # Editar sala
   txt100 nome
   prog p
   nome = txtmin(txtremove(arg0, "EMDCT7"))
@@ -311,11 +350,13 @@ func cmd_esala # Editar sala
     msg("\bSala não existe: " + nome)
   senao
     var.classe1 = "s_" + nome
-    m_menu("menu_sala")
+    arg0.sock.m_menu("menu_sala")
   fimse
   ret 1
 
-func cmd_ldesc # Listar descrições extras
+func cmd_ldesc
+
+func escr # Listar descrições extras
   prog p
   se !p.inifunc(perso.dono, "ver_")
     msg("\bNenhuma descrição encontrada.")
@@ -330,7 +371,9 @@ func cmd_ldesc # Listar descrições extras
   fimse
   ret 1
 
-func cmd_edesc # Editar descrição extra
+func cmd_edesc
+
+func escr # Editar descrição extra
   prog p
   txt80 nome
   nome = txtmin(txtremove(txte(arg0), "EMDCT"))
@@ -349,7 +392,9 @@ func cmd_edesc # Editar descrição extra
   fimse
   ret 1
 
-func cmd_adesc # Apagar descrição extra
+func cmd_adesc
+
+func escr # Apagar descrição extra
   prog p
   se !perso.dono
     msg("\bVocê não está em uma sala")
@@ -360,11 +405,13 @@ func cmd_adesc # Apagar descrição extra
   senao
     p.apagar(perso.dono, "ver_" + arg0)
     config:salvar, msg("\bDescrição apagada: " + arg0)
-    admlog("apagou descrição " + arg0 + " de " + txt(perso.dono, 2))
+    admlog(arg0, "apagou descrição " + arg0 + " de " + txt(perso.dono, 2))
   fimse
   ret 1
 
-func cmd_lsai # Listar saídas
+func cmd_lsai
+
+func escr # Listar saídas
   se !perso.dono
     msg("\bVocê não está em uma sala")
     ret 1
@@ -383,7 +430,9 @@ func cmd_lsai # Listar saídas
   !lin && msg("Nenhuma")
   ret 1
 
-func cmd_asai # Apagar saída
+func cmd_asai
+
+func escr # Apagar saída
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg0)]
@@ -405,11 +454,13 @@ func cmd_asai # Apagar saída
     p.apagar(perso.dono, "portanome_" + dir)
     p.apagar(perso.dono, "portaartigo_" + dir)
     config:salvar, msg("\bSaída apagada: " + dir)
-    admlog("apagou saída " + dir + " de " + txt(perso.dono, 2))
+    admlog(arg0, "apagou saída " + dir + " de " + txt(perso.dono, 2))
   fimse
   ret 1
 
-func cmd_csai # Criar saída
+func cmd_csai
+
+func escr # Criar saída
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg0)]
@@ -433,13 +484,20 @@ func cmd_csai # Criar saída
     fimse
     config:salvar
     criar("admmudou", perso.dono)
-    admlog("criou saída " + dir + " de " + txt(perso.dono, 2))
+    admlog(arg0, "criou saída " + dir + " de " + txt(perso.dono, 2))
   fimse
   ret 1
 
-const cmd_csai2 = cmd_csai(arg0, "2") # Criar saída completa
 
-func cmd_esai # Editar saída
+classe adm_csai2
+herda comando_adm, comando_comum
+const escr = adm_csai:escr(arg0, "2") # Criar saída completa
+
+
+classe adm_esai
+herda comando_adm, comando_comum
+
+func escr # Editar saída
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg0)]
@@ -454,14 +512,17 @@ func cmd_esai # Editar saída
   senao
     var.classe1 = perso.dono
     var.saida1 = txtmin(dir)
-    m_menu("menu_saida")
+    arg0.sock.m_menu("menu_saida")
   fimse
   ret 1
 
-const t_saiinicio = t_opcao(arg0, arg1, arg2)
 
-func p_saiinicio
-  p_opcao(arg0)
+classe adm_saiinicio
+herda comando_adm
+const menu = adm_opcao:menu(arg0, arg1, arg2)
+
+func passo
+  adm_opcao:exec(arg0)
   se passo == "opcao"
     passo = "saiinicio"
   senao arg0 != "z" && passo != "saiinicio"
@@ -469,9 +530,12 @@ func p_saiinicio
   fimse
   ret 1
 
-const t_saiagora = t_opcaomostra($[arg0].[arg1], txt_porta)
 
-func p_saiagora # Mudar o estado atual
+classe adm_saiagora
+herda comando_adm
+const menu = adm_opcaomostra:menu($[arg0].[arg1], adm_salas:txt_porta)
+
+func passo # Mudar o estado atual
   casovar arg0
   casose "z"
     sair
@@ -481,7 +545,7 @@ func p_saiagora # Mudar o estado atual
   casose "3"
     se $[var.classe1].mudaporta(var.saida1, arg0)
       textotxt t
-      t.addfim(txt_porta), t.remove(arg0)
+      t.addfim(adm_salas:txt_porta), t.remove(arg0)
       msg("Saída mudou para: " + arg0 + " " + t.remove)
     senao
       msg("Não foi possível mudar a saída")
@@ -492,20 +556,23 @@ func p_saiagora # Mudar o estado atual
     msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
     ret 1
   casofim
-  passo = var.opcpasso, p_[passo]("\b")
+  passo = var.opcpasso, adm_[passo]:exec("\b")
   ret 1
 
-const t_resettempo = t_numero(arg0, arg1)
 
-func p_resettempo # Mudar o estado atual
+classe adm_resettempo
+herda comando_adm
+const menu = adm_numero:menu(arg0, arg1)
+
+func passo # Mudar o estado atual
   $[var.opcclasse].resetcheca = 1
-  p_numero(arg0)
+  adm_numero:exec(arg0)
   passo == "numero" && (passo = "resettempo")
   ret 1
 
 
 classe menu_area
-# Vide arquivo mud.txt, tópico "Criando menus de edição (administração)"
+herda comando_menu
 const titulo = "Área " + txt(var.classe1, 2)
 const colunas = 25
 #
@@ -526,85 +593,85 @@ const clas3 = var.classe1
 const vari3 = "a_tempo"
 #
 const nome4 = "Modo de reset"
-const tipo4 = "opcao"
+const tipo4 = "opc_opcao"
 const clas4 = var.classe1
 const vari4 = "a_reset"
 const extr4 = "Nunca\nQuando não há jogadores\nNormal"
 #
 const nome5 = "Mensagem de reset"
-const tipo5 = "linha"
+const tipo5 = "opc_linha"
 const clas5 = var.classe1
 const vari5 = "a_txtreset"
 const extr5 = "Enviada para os jogadores na área quando ocorre reset"
 #
 const nome6 = "Terreno"
-const tipo6 = "opcao"
+const tipo6 = "opc_opcao"
 const clas6 = var.classe2
 const vari6 = "s_terreno"
-const extr6 = txt_terreno
+const extr6 = adm_salas:txt_terreno
 #
 const nome7 = "Luz"
-const tipo7 = "opcao"
+const tipo7 = "opc_opcao"
 const clas7 = var.classe2
 const vari7 = "s_luz"
-const extr7 = txt_luz
+const extr7 = adm_salas:txt_luz
 #
 const nome8 = "Recuperação"
 const info8 = "Taxa de recuperação de vida, mana e movimentos\n\
 Quanto maior, mais recupera; 0 não recupera"
-const tipo8 = "numero"
+const tipo8 = "opc_numero"
 const clas8 = var.classe2
 const vari8 = "s_recup"
 #
 const nome9 = "Fome e sede"
-const tipo9 = "opcao"
+const tipo9 = "opc_opcao"
 const clas9 = var.classe2
 const vari9 = "s_fome"
 const extr9 = "Presente\nAusente\nSome aos poucos"
 #
 const nome10 = "Apagar itens"
 const info10 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
-const tipo10 = "numero"
+const tipo10 = "opc_numero"
 const clas10 = var.classe2
 const vari10 = "s_item"
 #
 const nome11 = "Morre ao entrar"
-const tipo11 = "opcao"
+const tipo11 = "opc_opcao"
 const clas11 = var.classe2
 const vari11 = "s_morre"
 const extr11 = "Não\nSim\nSim e perde itens e dinheiro"
 #
 const nome12 = "Ao tentar falar"
 const info12 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
-const tipo12 = "linha"
+const tipo12 = "opc_linha"
 const clas12 = var.classe2
 const vari12 = "s_falar"
 #
 const nome13 = "Ao tentar gritar"
 const info13 = "Mensagem recebida ao usar o comando gritar; se nulo permite gritar"
-const tipo13 = "linha"
+const tipo13 = "opc_linha"
 const clas13 = var.classe2
 const vari13 = "s_gritar"
 #
 const nome14 = "Batalha"
-const tipo14 = "opcao"
+const tipo14 = "opc_opcao"
 const clas14 = var.classe2
 const vari14 = "s_luta"
-const extr14 = txt_luta
+const extr14 = adm_salas:txt_luta
 #
 const nome15 = "Sem resgate"
 const info15 = "Se não é possível resgatar outro jogador"
-const tipo15 = "simnao"
+const tipo15 = "opc_simnao"
 const clas15 = var.classe2
 const vari15 = "s_naoresg"
 #
 const nome16 = "Sem magia"
-const tipo16 = "simnao"
+const tipo16 = "opc_simnao"
 const clas16 = var.classe2
 const vari16 = "s_semmagia"
 #
 const nome17 = "Comando retornar"
-const tipo17 = "opcao"
+const tipo17 = "opc_opcao"
 const clas17 = var.classe2
 const vari17 = "s_retornar"
 const extr17 = "Permitido\n\
@@ -613,140 +680,141 @@ Muda o ponto de retorno para essa sala\n\
 Muda o ponto de retorno se não possuir"
 #
 const nome18 = "Comando reserva"
-const tipo18 = "simnao"
+const tipo18 = "opc_simnao"
 const clas18 = var.classe2
 const vari18 = "s_reserva"
 #
 const nome19 = "Sala ao voltar"
 const info19 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
-const tipo19 = "sala"
+const tipo19 = "opc_sala"
 const clas19 = var.classe2
 const vari19 = "s_voltar"
 #
 const nome20 = "PNJs na sala"
 const info20 = "Quantidade máxima de PNJs na sala; não afeta o reset"
-const tipo20 = "numero"
+const tipo20 = "opc_numero"
 const clas20 = var.classe2
 const vari20 = "s_pnj"
 #
 const nome21 = "Soltar itens"
-const tipo21 = "opcao"
+const tipo21 = "opc_opcao"
 const clas21 = var.classe2
 const vari21 = "s_soltar"
 const extr21 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
 const nome22 = "Volume dentro"
-const tipo22 = "numero"
+const tipo22 = "opc_numero"
 const clas22 = var.classe2
 const vari22 = "volmax"
 #
 const nome23 = "Objetos máximo"
-const tipo23 = "numero"
+const tipo23 = "opc_numero"
 const clas23 = var.classe2
 const vari23 = "objmax"
 
 
 classe menu_sala
+herda comando_menu
 const titulo = "Sala " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Título"
-const tipo1 = "linha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "s_titulo"
 #
 const nome2 = "Descrição"
 const info2 = "Aceita caracteres especiais do personagem; vide adm mens"
-const tipo2 = "texto"
+const tipo2 = "opc_texto"
 const clas2 = var.classe1
 const vari2 = "s_desc"
 #
 const nome3 = "Desc de noite"
 const info3 = "Se quiser uma descrição diferente quando etiver de noite"
-const tipo3 = "texto"
+const tipo3 = "opc_texto"
 const clas3 = var.classe1
 const vari3 = "s_noite"
 #
 const nome4 = "Desc completa"
 const info4 = "Se quiser substituir a descrição completa, mostrada ao teclar 'olhar'"
-const tipo4 = "texto"
+const tipo4 = "opc_texto"
 const clas4 = var.classe1
 const vari4 = "descsala"
 #
 const nome5 = "Ocultar desc"
 const info5 = "Se não deve mostrar descrição ao entrar na sala"
-const tipo5 = "simnao"
+const tipo5 = "opc_simnao"
 const clas5 = var.classe1
 const vari5 = "s_ocultar"
 #
 const nome6 = "Terreno"
-const tipo6 = "opcao"
+const tipo6 = "opc_opcao"
 const clas6 = var.classe1
 const vari6 = "s_terreno"
-const extr6 = txt_terreno
+const extr6 = adm_salas:txt_terreno
 #
 const nome7 = "Luz"
-const tipo7 = "opcao"
+const tipo7 = "opc_opcao"
 const clas7 = var.classe1
 const vari7 = "s_luz"
-const extr7 = txt_luz
+const extr7 = adm_salas:txt_luz
 #
 const nome8 = "Recuperação"
 const info8 = "Taxa de recuperação de vida, mana e movimentos\n\
 Quanto maior, mais recupera; 0 não recupera"
-const tipo8 = "numero"
+const tipo8 = "opc_numero"
 const clas8 = var.classe1
 const vari8 = "s_recup"
 #
 const nome9 = "Fome e sede"
-const tipo9 = "opcao"
+const tipo9 = "opc_opcao"
 const clas9 = var.classe1
 const vari9 = "s_fome"
 const extr9 = "Presente\nAusente\nSome aos poucos"
 #
 const nome10 = "Apagar itens"
 const info10 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
-const tipo10 = "numero"
+const tipo10 = "opc_numero"
 const clas10 = var.classe1
 const vari10 = "s_item"
 #
 const nome11 = "Morre ao entrar"
-const tipo11 = "opcao"
+const tipo11 = "opc_opcao"
 const clas11 = var.classe1
 const vari11 = "s_morre"
 const extr11 = "Não\nSim\nSim e perde itens e dinheiro"
 #
 const nome12 = "Ao tentar falar"
 const info12 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
-const tipo12 = "linha"
+const tipo12 = "opc_linha"
 const clas12 = var.classe1
 const vari12 = "s_falar"
 #
 const nome13 = "Ao tentar gritar"
 const info13 = "Mensagem recebida ao usar o comando gritar; se nulo permite gritar"
-const tipo13 = "linha"
+const tipo13 = "opc_linha"
 const clas13 = var.classe1
 const vari13 = "s_gritar"
 #
 const nome14 = "Batalha"
-const tipo14 = "opcao"
+const tipo14 = "opc_opcao"
 const clas14 = var.classe1
 const vari14 = "s_luta"
-const extr14 = txt_luta
+const extr14 = adm_salas:txt_luta
 #
 const nome15 = "Sem resgate"
 const info15 = "Se não é possível resgatar outro jogador"
-const tipo15 = "simnao"
+const tipo15 = "opc_simnao"
 const clas15 = var.classe1
 const vari15 = "s_naoresg"
 #
 const nome16 = "Sem magia"
-const tipo16 = "simnao"
+const tipo16 = "opc_simnao"
 const clas16 = var.classe1
 const vari16 = "s_semmagia"
 #
 const nome17 = "Comando retornar"
-const tipo17 = "opcao"
+const tipo17 = "opc_opcao"
 const clas17 = var.classe1
 const vari17 = "s_retornar"
 const extr17 = "Permitido\n\
@@ -755,47 +823,48 @@ Muda o ponto de retorno para essa sala\n\
 Muda o ponto de retorno se não possuir"
 #
 const nome18 = "Comando reserva"
-const tipo18 = "simnao"
+const tipo18 = "opc_simnao"
 const clas18 = var.classe1
 const vari18 = "s_reserva"
 #
 const nome19 = "Sala ao voltar"
 const info19 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
-const tipo19 = "sala"
+const tipo19 = "opc_sala"
 const clas19 = var.classe1
 const vari19 = "s_voltar"
 #
 const nome20 = "PNJs na sala"
 const info20 = "Quantidade máxima de PNJs na sala; não afeta o reset"
-const tipo20 = "numero"
+const tipo20 = "opc_numero"
 const clas20 = var.classe1
 const vari20 = "s_pnj"
 #
 const nome21 = "Soltar itens"
-const tipo21 = "opcao"
+const tipo21 = "opc_opcao"
 const clas21 = var.classe1
 const vari21 = "s_soltar"
 const extr21 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
 const nome22 = "Volume dentro"
-const tipo22 = "numero"
+const tipo22 = "opc_numero"
 const clas22 = var.classe1
 const vari22 = "volmax"
 #
 const nome23 = "Objetos máximo"
-const tipo23 = "numero"
+const tipo23 = "opc_numero"
 const clas23 = var.classe1
 const vari23 = "objmax"
 #
 const nome24 = "Eventos sala"
 const info24 = "Se recebe eventos da própria sala"
-const tipo24 = "simnao"
+const tipo24 = "opc_simnao"
 const clas24 = var.classe1
 const vari24 = "eveste"
 const exec24 = "ajustaobj"
 
 
 classe menu_saida
+herda comando_menu
 const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
 const colunas = 25
 #
@@ -803,7 +872,7 @@ const nome1 = "Estado inicial"
 const tipo1 = "saiinicio"
 const clas1 = var.classe1
 const vari1 = "portaini_" + var.saida1
-const extr1 = txt_porta
+const extr1 = adm_salas:txt_porta
 #
 const nome2 = "Estado atual"
 const tipo2 = "saiagora--"
@@ -811,17 +880,17 @@ const clas2 = var.classe1
 const vari2 = "porta_" + var.saida1
 #
 const nome3 = "Invisível"
-const tipo3 = "simnao"
+const tipo3 = "opc_simnao"
 const clas3 = var.classe1
 const vari3 = "inv_" + var.saida1
 #
 const nome4 = "Fecha ao passar"
-const tipo4 = "simnao"
+const tipo4 = "opc_simnao"
 const clas4 = var.classe1
 const vari4 = "fecha_" + var.saida1
 #
 const nome5 = "Trancar"
-const tipo5 = "opcao"
+const tipo5 = "opc_opcao"
 const clas5 = var.classe1
 const vari5 = "tranc_" + var.saida1
 const extr5 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
@@ -829,35 +898,35 @@ const extr5 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 const nome6 = "Fechadura"
 const info6 = "Código da chave que tranca e destranca a porta\n\
 Se for o nome de uma casa (vide comando lcasa), a chave da casa também serve"
-const tipo6 = "linha"
+const tipo6 = "opc_linha"
 const clas6 = var.classe1
 const vari6 = "fechadura_" + var.saida1
 #
 const nome7 = "Come chave"
 const info7 = "Se o personagem perde a chave ao abrir a porta"
-const tipo7 = "simnao"
+const tipo7 = "opc_simnao"
 const clas7 = var.classe1
 const vari7 = "comechave_" + var.saida1
 #
 const nome8 = "Voar"
 const info8 = "Se é preciso estar voando ou flutuando"
-const tipo8 = "simnao"
+const tipo8 = "opc_simnao"
 const clas8 = var.classe1
 const vari8 = "voar_" + var.saida1
 #
 const nome9 = "Sem fuga"
 const info9 = "Se não existe a possibilidade de fugir de uma luta nessa direção"
-const tipo9 = "simnao"
+const tipo9 = "opc_simnao"
 const clas9 = var.classe1
 const vari9 = "fugir_" + var.saida1
 #
 const nome10 = "Nome da porta"
-const tipo10 = "linha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "portanome_" + var.saida1
 #
 const nome11 = "Artigo porta"
-const tipo11 = "opcao"
+const tipo11 = "opc_opcao"
 const clas11 = var.classe1
 const vari11 = "portaartigo_" + var.saida1
 const extr11 = "a (porta)\nas (portas)\no (portão)\nos (portões)"

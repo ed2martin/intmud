@@ -188,21 +188,21 @@ func teclou # Processa comando (arg0=comando)
       obj.num = arg0
       sair
     fimse
-    sair obj = $cmd_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
-    sair obj = $soc_[txt1(arg0)].objcmd(este, arg0) # Checa social exato
-    sair obj = $cmdfim_[txt1(arg0)].objcmd(este, arg0) # Checa comando exato
+    sair obj = $cmd_[txt1(arg0)].objcmd(este) # Checa comando exato
+    sair obj = $soc_[txt1(arg0)].objcmd(este) # Checa social exato
+    sair obj = $cmdfim_[txt1(arg0)].objcmd(este) # Checa comando exato
     nomeobj n
     n.ini(txt1(arg0))
     epara p.iniclasse("cmd_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 4))
+      sair (obj = $[p.texto].objcmd(este)) && n.nome(txt(obj, 4))
     efim
     sair obj
     epara p.iniclasse("soc_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 4))
+      sair (obj = $[p.texto].objcmd(este)) && n.nome(txt(obj, 4))
     efim
     sair obj
     epara p.iniclasse("cmdfim_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 7))
+      sair (obj = $[p.texto].objcmd(este)) && n.nome(txt(obj, 7))
     efim
     sair
   efim
@@ -210,12 +210,12 @@ func teclou # Processa comando (arg0=comando)
   se obj.lancamagia
     txt200 lin
     lin = txtremove(txt2(arg0), "EMDSA")
-    obj = ref($magia_[txt1(lin)].objcmd(este, arg0))
+    obj = ref($magia_[txt1(lin)].objcmd(este))
     se !obj && lin
       nomeobj n
       n.ini(txt1(lin))
       epara p.iniclasse("magia_" + txt1(txte(lin))), p.lin, p.depois
-        sair (obj = $[p.texto].objcmd(este, arg0)) && n.nome(txt(obj, 6))
+        sair (obj = $[p.texto].objcmd(este)) && n.nome(txt(obj, 6))
       efim
     fimse
 # Magia: Gera eventos
@@ -578,7 +578,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     refvar r = i.obj
     v1 = pnivel - r.pnivel
     se v1 < 0 # Atacou nível mais baixo
-      v1 = (config:atkbexp ? intpos(1 + v1 / config:atkbexp) : 1)
+      v1 = config:atkbexp ? intpos(1 + v1 / config:atkbexp) : 1
     senao v1 # Atacou nível mais alto
       v1 = 1 + (config:atkcexp ? intmin(1, v1 / config:atkcexp) * config:atkmaxexp / 100)
     senao # Mesmo nível

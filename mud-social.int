@@ -1,7 +1,6 @@
 classe adm_social
-# Comandos sociais
-#
-const adm_social = "\b\c3Comandos sociais\b\n\
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Comandos sociais\b\n\
 \c2LSOC\b [nome]\n\
   Lista sociais que começam com o nome especificado.\n\
 \c2CSOC\b <nome>\n\
@@ -49,7 +48,7 @@ func cmd_csoc # Criar social
     p.criar("soc_" + txtmin(arg0) + "\nb-social\nherda soccomum")
     config:salvar
     msg("\bSocial criado: " + txtmin(arg0))
-    admlog("criou social " + txtmin(arg0))
+    admlog(arg0, "criou social " + txtmin(arg0))
   fimse
   ret 1
 
@@ -61,7 +60,7 @@ func cmd_esoc # Editar social
     msg("Social não existe: " + arg0)
   senao
     var.classe1 = "soc_" + arg0
-    m_menu("menu_social")
+    arg0.sock.m_menu("menu_social")
   fimse
   ret 1
 
@@ -85,7 +84,7 @@ func p_asoc # Confirmar que quer apagar social
     p.apagar("soc_" + tpasso)
     config:salvar
     msg("Social apagado: " + tpasso)
-    admlog("apagou social " + tpasso)
+    admlog(arg0, "apagou social " + tpasso)
   senao
     passo = "asoc"
     msg("Apagar social " + tpasso + "? Tecle S ou N")
@@ -94,11 +93,12 @@ func p_asoc # Confirmar que quer apagar social
 
 
 classe menu_social
+herda comando_menu
 const titulo = "Social " + txt(var.classe1, 4)
 const colunas = 29
 #
 const nome1 = "Tipo de comando"
-const tipo1 = "opcao"
+const tipo1 = "opc_opcao"
 const clas1 = var.classe1
 const vari1 = "tipo"
 const extr1 = config:social_txt
@@ -111,90 +111,90 @@ const vari2 = "social_txt"
 const extr2 = "1 30"
 #
 const nome3 = "Nível mínimo"
-const tipo3 = "numero"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "nivel"
 #
 const nome4 = "Posição mínima"
-const tipo4 = "opcao"
+const tipo4 = "opc_opcao"
 const clas4 = var.classe1
 const vari4 = "posic"
 const extr4 = txt_posicao
 #
 const nome5 = "Alvo posição mínima"
-const tipo5 = "opcao"
+const tipo5 = "opc_opcao"
 const clas5 = var.classe1
 const vari5 = "alvopos"
 const extr5 = txt_posicao
 #
 const nome6 = "Mostrar invisível"
 const info6 = "Se o social aparece para quem não puder ver o personagem"
-const tipo6 = "simnao"
+const tipo6 = "opc_simnao"
 const clas6 = var.classe1
 const vari6 = "mvis"
 #
 const nome7 = "Argumento não existe"
 const info7 = "Quando o objeto ou personagem não existe"
-const tipo7 = "linha"
+const tipo7 = "opc_linha"
 const clas7 = var.classe1
 const vari7 = "invalido"
 #
 const titu8 = " * Sem argumentos"
 #
 const nome8 = "Msg perso"
-const tipo8 = "linha"
+const tipo8 = "opc_linha"
 const clas8 = var.classe1
 const vari8 = "sem1"
 #
 const nome9 = "Msg outros"
-const tipo9 = "linha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
 const vari9 = "sem2"
 #
 const titu10 = " * Com o próprio personagem"
 #
 const nome10 = "Msg perso"
-const tipo10 = "linha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "auto1"
 #
 const nome11 = "Msg outros"
-const tipo11 = "linha"
+const tipo11 = "opc_linha"
 const clas11 = var.classe1
 const vari11 = "auto2"
 #
 const titu12 = " * Com outro personagem"
 #
 const nome12 = "Msg perso"
-const tipo12 = "linha"
+const tipo12 = "opc_linha"
 const clas12 = var.classe1
 const vari12 = "perso1"
 #
 const nome13 = "Msg alvo"
-const tipo13 = "linha"
+const tipo13 = "opc_linha"
 const clas13 = var.classe1
 const vari13 = "perso2"
 #
 const nome14 = "Msg outros"
-const tipo14 = "linha"
+const tipo14 = "opc_linha"
 const clas14 = var.classe1
 const vari14 = "perso3"
 #
 const titu15 = " * Com um objeto"
 #
 const nome15 = "Msg perso"
-const tipo15 = "linha"
+const tipo15 = "opc_linha"
 const clas15 = var.classe1
 const vari15 = "item1"
 #
 const nome16 = "Msg outros"
-const tipo16 = "linha"
+const tipo16 = "opc_linha"
 const clas16 = var.classe1
 const vari16 = "item2"
 
 
 classe cmd_social
-herda comando_comum, comando_ajuda
+herda comando_comum
 const txtajuda = "\b\c3Social\b\n\
 Sintaxe: SOCIAL  [nome do comando]\n\
 Sem argumentos, mostra a lista de comandos sociais disponíveis.\n\
