@@ -179,8 +179,8 @@ func escr # Editar item
   senao !p.existe("menu_item" + (num = i_[nome]:item))
     msg("\bItem não pode ser editado: " + nome)
   senao
-    var.classe1 = "i_" + txtmin(nome)
-    var.menufim = "menu_item" + num
+    arg0.sock.var.classe1 = "i_" + txtmin(nome)
+    arg0.sock.var.menufim = "menu_item" + num
     arg0.sock.m_menu("menu_item" + num)
   fimse
   ret 1
@@ -463,12 +463,10 @@ const vari24 = "recalc_auto"
 const exec24 = "recalc_ajusta"
 #
 const nome25 = "Fome e sede"
-const tipo25 = "menu--"
-const clas25 = "menu_ifome"
+const tipo25 = "menu_ifome--"
 #
 const nome26 = "Arma"
-const tipo26 = "menu--"
-const clas26 = "menu_iarma"
+const tipo26 = "menu_iarma--"
 #
 const nome27 = "Pega animal nível"
 const info27 = "Nível médio dos animais que podem ser capturados com esse item,\n\
@@ -617,8 +615,7 @@ const clas35 = var.classe1
 const vari35 = "i_comechave"
 #
 const nome36 = "Fonte de luz"
-const tipo36 = "menu--"
-const clas36 = "menu_iluz"
+const tipo36 = "menu_iluz--"
 
 
 classe menu_iluz

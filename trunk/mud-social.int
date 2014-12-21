@@ -1,14 +1,10 @@
 classe adm_social
-const iniclasse = !$[arg0] && criar(arg0)
+herda comando_adm
 const txtajuda = "\b\c3Comandos sociais\b\n\
-\c2LSOC\b [nome]\n\
-  Lista sociais que começam com o nome especificado.\n\
-\c2CSOC\b <nome>\n\
-  Cria social. Nome pode conter letras e números.\n\
-\c2ESOC\b <nome>\n\
-  Edita social.\n\
-\c2ASOC\b <nome>\n\
-  Apaga social."
+  \c2LSOC\b      Lista comandos sociais\n\
+  \c2CSOC\b      Cria um social\n\
+  \c2ESOC\b      Edita um social\n\
+  \c2ASOC\b      Apaga um social"
 const txt_posicao = "morto\n\
 mortalmente ferido\n\
 incapacitado\n\
@@ -18,10 +14,17 @@ descansando\n\
 sentado\n\
 lutando\nem pé"
 
-func cmd_lsoc # Listar sociais
+
+classe adm_lsoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lsoc\b\n\
+Sintaxe: LSOC [nome]\n\
+Lista os comandos sociais que começam com o nome especificado."
+
+func escr # Listar sociais
   prog p
-  se !p.iniclasse("soc_" + arg0)
-    msg("\bNenhum social encontrado.")
+  se !p.iniclasse("soc_" + arg1)
+    arg0.msg("\bNenhum social encontrado.")
   senao
     textotxt t
     txt200 n
@@ -34,60 +37,78 @@ func cmd_lsoc # Listar sociais
       r.item1 && r.item2 && (n += " item")
       t.addfim(n), p.depois
     efim
-    msg2(t.remove(1000))
+    arg0.msg2(t.remove(1000))
   fimse
-  ret 1
 
-func cmd_csoc # Criar social
+
+classe adm_csoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Csoc\b\n\
+Sintaxe: CSOC <nome>\n\
+Cria um comando social. Nome pode conter letras e números."
+
+func escr # Criar comando social
   prog p
-  se arg0 == ""
-    msg("Tecle o nome do social após CSOC")
-  senao p.existe("soc_" + arg0)
-    msg("Social já existe: " + arg0)
+  se arg1 == ""
+    arg0.msg("Tecle o nome do social após CSOC")
+  senao p.existe("soc_" + arg1)
+    arg0.msg("Social já existe: " + arg1)
   senao
-    p.criar("soc_" + txtmin(arg0) + "\nb-social\nherda soccomum")
+    p.criar("soc_" + txtmin(arg1) + "\nb-social\nherda soccomum")
     config:salvar
-    msg("\bSocial criado: " + txtmin(arg0))
-    admlog(arg0, "criou social " + txtmin(arg0))
+    arg0.msg("\bSocial criado: " + txtmin(arg1))
+    admlog(arg1, "criou social " + txtmin(arg1))
   fimse
-  ret 1
 
-func cmd_esoc # Editar social
+
+classe adm_esoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Esoc\b\n\
+Sintaxe: ESOC <nome>\n\
+Edita o comando social com o nome especificado."
+
+func escr # Editar social
   prog p
-  se arg0 == ""
-    msg("Tecle o nome do social após ESOC")
-  senao !p.existe("soc_" + arg0)
-    msg("Social não existe: " + arg0)
+  se arg1 == ""
+    arg0.msg("Tecle o nome do social após ESOC")
+  senao !p.existe("soc_" + arg1)
+    arg0.msg("Social não existe: " + arg1)
   senao
-    var.classe1 = "soc_" + arg0
+    arg0.sock.var.classe1 = "soc_" + arg1
     arg0.sock.m_menu("menu_social")
   fimse
-  ret 1
 
-func cmd_asoc # Apagar social
+
+classe adm_asoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Asoc\b\n\
+Sintaxe: ASOC <nome do comando social>\n\
+Apaga o comando social com o nome especificado."
+
+func escr # Apagar social
   prog p
-  se arg0 == ""
-    msg("Tecle o nome do social após ASOC")
-  senao !p.existe("soc_" + arg0)
-    msg("Social não existe: " + arg0)
+  se arg1 == ""
+    arg0.msg("Tecle o nome do social após ASOC")
+  senao !p.existe("soc_" + arg1)
+    arg0.msg("Social não existe: " + arg1)
   senao
-    tpasso = arg0, p_asoc
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
   fimse
-  ret 1
 
-func p_asoc # Confirmar que quer apagar social
-  passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+func passo # Confirmar que quer apagar social
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
-    p.apagar("soc_" + tpasso)
+    p.apagar("soc_" + arg0.tpasso)
     config:salvar
-    msg("Social apagado: " + tpasso)
-    admlog(arg0, "apagou social " + tpasso)
+    arg0.msg("Social apagado: " + arg0.tpasso)
+    admlog(arg1, "apagou social " + arg0.tpasso)
   senao
-    passo = "asoc"
-    msg("Apagar social " + tpasso + "? Tecle S ou N")
+    arg0.passo = este
+    arg0.msg("Apagar social " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
@@ -105,7 +126,7 @@ const extr1 = config:social_txt
 #
 const nome2 = "Editar tipos"
 const info2 = "Os tipos existentes na opção 1"
-const tipo2 = "txtopcao--"
+const tipo2 = "opc_txtopcao--"
 const clas2 = "config"
 const vari2 = "social_txt"
 const extr2 = "1 30"

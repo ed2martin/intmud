@@ -10,13 +10,13 @@ const versao = 326 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 const modolocal = 1 # Jogar localmente: Sim
 #
 # Ativar em uma porta? 0=não, 1=Telnet, 2=Telnet e Papovox
-const modoserv = 1 # Jogar em uma porta: 0 Não
+const modoserv = 0 # Jogar em uma porta: 0 Não
 #
 # Ativar como bot em um chat? 0=não, 1=sim
 const modobot = 0 # Jogar em um chat: Não
 #
 # Endereço, se modoserv for 1 ou 2
-const servender = "localhost"
+const servender = ""
 #
 # Porta, se modoserv for 1 ou 2 (nota: Papovox só se conecta na porta 1963)
 const servporta = 1963
@@ -82,8 +82,10 @@ const logtempo = 0
 #
 # Sala inicial
 const salaini = $s_teste001
+#
 # Sala para continuar jogo salvo (se estava numa sala que não existe mais)
 const salasav = $s_casa001
+#
 # Sala quando morre
 const salafim = $s_fim001
 #
@@ -141,8 +143,8 @@ const salvaadmin = 120
 const email = 0
 #
 # Opções ativas do comando CONFIG quando um jogador cria um personagem
-const jogconfig = 319 # Config ao criar personagem: desc, saidas, cores, acento, chat, seguir, \
-pvt
+const jogconfig = 319 # Config ao criar personagem: 0-desc, 1-saidas, 2-cores, 3-acento, 4-chat, \
+5-seguir, 8-telepatia
 #
 # Comando Atalho: quantidade máxima de atalhos
 const atalhos = 50

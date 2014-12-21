@@ -5,8 +5,7 @@ const txtajuda = "\b\c3Páginas de administração\b\n\
 Para ler tecle ADM seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
   \c2AREA\b      Áreas\n\
-  \c2SALAS\b     Salas\n\
-  \c2SAI\b       Saídas das salas\n\
+  \c2SALA\b      Salas\n\
   \c2ITEM\b      Itens\n\
   \c2TIPO\b      Tipos de personagens (raças e classes)\n\
   \c2PERSO\b     Personagens não jogador\n\
@@ -20,7 +19,6 @@ Os tópicos são:\n\
   \c2OUTROS\b    Outros comandos\n\
   \c2MENS\b      Caracteres especiais em mensagens\n\
   \c2CORES\b     Cores em mensagens"
-# \c2INFO\b     Informações sobre o MUD"
 
 
 classe adm_jog
@@ -486,14 +484,6 @@ func escr
       item.obj.jogconfig.19 && item.obj.msg("(ac) " + arg0.nome + ": " + arg1)
     efim
   fimse
-
-
-classe adm_econfig
-herda comando_adm, comando_comum
-const txtajuda = "\b\c3Econfig\b\nSintaxe: ECONFIG\nEdita as configurações do MUD."
-
-func escr
-  arg0.sock.m_menu("menu_econfig")
 
 
 classe adm_echo
@@ -1163,7 +1153,7 @@ func passo # Editar função
     arg0.passo = ""
   senao
     arg0.var.opcnome = "classe " + arg0.var.opcclasse
-    passocod(arg0, arg1)
+    passocod(arg0, arg1, 1)
   fimse
   ret 1
 
