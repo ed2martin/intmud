@@ -1,7 +1,6 @@
 classe area
 inttempo reset # Para executar reset quando a área é criada
 inttempo resetcont # Tempo para o próximo reset
-intexec resetcheca # Para acertar tempo do próximo reset, após mudar a área
 const iniclasse = arg0 != "area" && !$[arg0] && criar(arg0)
 
 func ini
@@ -40,7 +39,7 @@ func resetcont_exec
   fimse
   reset_exec # Realiza o reset
 
-func resetcheca_exec
+func reset_atualiza
   se resetcont <= 0 || resetcont >= a_tempo * 700
     resetcont = a_tempo * 700
 

@@ -534,7 +534,7 @@ herda opc_texto, comando_adm
 
 func passo
   uint16 linha
-  linha = arg1, passo = este
+  linha = arg1, arg0.passo = este
   se arg1 == "" || arg1 == "\b"
     se arg0.var.opcvalido
       arg0.msg("Entre com uma opção, O mostra as opções, Z sair")
@@ -564,7 +564,7 @@ pos.texto)
     arg0.txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
     arg0.txtmostra
   senao arg1 == "z"
-    passosair
+    passosair(arg0)
   senao arg1 == "n" && !arg0.var.opcvalido
     prog p
     p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
@@ -573,7 +573,7 @@ pos.texto)
     arg0.msg("Apagado: " + arg0.var.opcnome)
     admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
   senao txt(arg1, 0, 1) == "m" # Executa comando do MUD
-    perso.teclou(txtremove(txt(arg1, 1), "E"))
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
   senao txt(linha) != txt1(arg1)
     arg0.msg("Opção inexistente: " + txt1(arg1))
   senao linha < int(txtsub(arg0.var.opcextra, 2)) || linha >= int(txt2(arg0.var.opcextra))
@@ -668,18 +668,18 @@ func passo # Alterando uma opção de uma lista de opções
     x = arg1
     se arg1 != x || x < 0 || x >= intsublin(arg0.var.opcextra)
       arg0.msg("Opção inválida")
-      ret p_vetor("\b")
+      ret passo(arg0, "\b")
     fimse
     x = intbit(x) ^ [arg0.var.opcclasse]:[arg0.var.opcvar]
     txt100 lin
-    lin = txtcor(t_vetormostra(x, arg0.var.opcextra))
+    lin = txtcor(menu2(x, arg0.var.opcextra))
     p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + "=" + x + " # " + arg0.var.opcnome \
 + ": " + lin)
     config:salvar
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     arg0.msg("Escolheu: " + lin)
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
-    ret p_vetor("\b")
+    ret passo(arg0, "\b")
   fimse
   ret passosair(arg0)
 
@@ -936,14 +936,17 @@ func passo # Editar função
     arg0.msg("Fechando editor")
     ret passosair(arg0)
   fimse
-  passocod(arg0, arg1)
+  passocod(arg0, arg1, 0)
   ret 1
 
 
 classe comando_editor
 herda comando_adm
 
-func passocod
+func passocod # Edição do código
+# arg0 = personagem
+# arg1 = o que escreveu
+# arg2 = 0 para editar função ou 1 para editar classe
   casovar txtmin(txt(arg1, 0, 1))
   casose "\b"
     arg0.teditor.limpar
@@ -952,7 +955,7 @@ func passocod
     arg0.passo = este
     lin = arg0.var.opcclasse + ":" + arg0.var.opcvar + ", O opções, Z sair"
 # Classe
-    se arg1
+    se arg2
       arg0.msg("Editando classe " + arg0.var.opcclasse + ", O opções, Z sair")
       p.inilinha(arg0.var.opcclasse)
       arg0.teditor.addfim("ARQ:" + p.arquivo(arg0.var.opcclasse))
@@ -1000,12 +1003,14 @@ func passocod
     arg0.leditor2.antes
     ret 1
   casose "x" # Salvar o texto
-    salvar(arg0)
+    salvar(arg0, arg2)
     ret 1
   casofim
   ret passoeditor(arg0, arg1, 64000, arg0.var.opcnome)
 
 func salvar # Opçao salvar
+# arg0 = personagem
+# arg1 = 0 para editar função ou 1 para editar classe
   textotxt t1
   textopos p1
   txt512 lin
@@ -1019,7 +1024,7 @@ func salvar # Opçao salvar
     p1.depois, p1.juntar # Junta as duas linhas
   efim
 # SOMENTE FUNÇÕES
-  se !arg0
+  se !arg1
 # Obtém o nome da constante / função
     lin = t1.ini.texto
     enquanto txt1(lin) == "sav" || txt1(lin) == "comum"
@@ -1088,8 +1093,7 @@ func salvar # Opçao salvar
     arg0.msg(lin)
   efim
 
-func passoeditor
-# Processamento de qualquer editor de texto
+func passoeditor # Processamento de qualquer editor de texto
 # arg0 = objeto jogsock do jogador
 # arg1 = texto digitado
 # arg2 = quantidade máxima de bytes
@@ -1198,7 +1202,7 @@ func passoeditor
       arg0.msg("Nada encontrado")
     fimse
     ret 1
-  casose "t" # Trocar
+  casose "t" # Trocar na linha atual
     se !arg0.peditor
       arg0.msg("Nenhum texto procurado")
       ret 1
@@ -1206,10 +1210,33 @@ func passoeditor
     refvar t = txttroca(arg0.leditor.texto, arg0.peditor, txtremove(txt(arg1, 1), "ED"))
     se t === arg0.leditor.texto
       arg0.msg("Nada trocado")
+    senao arg0.teditor.bytes + inttotal(t) - inttotal(arg0.leditor.texto) > arg2
+      arg0.msg("Editor não suporta tantos caracteres")
     senao
       arg0.leditor.mudar(t)
       arg0.msg("Troca efetuada")
     fimse
+    ret 1
+  casose "u" # Trocar no texto inteiro
+    se !arg0.peditor
+      arg0.msg("Nenhum texto procurado")
+      ret 1
+    fimse
+    textopos pos
+    pos = arg0.teditor.ini
+    se pos.txtproc(arg0.peditor, 0) < 0
+      arg0.msg("Nada trocado")
+      ret 1
+    fimse
+    enquanto pos.txtproc(arg0.peditor, 0) >= 0
+      refvar t = txttroca(pos.texto, arg0.peditor, txtremove(txt(arg1, 1), "ED"))
+      se arg0.teditor.bytes + inttotal(t) - inttotal(pos.texto) > arg2
+        arg0.msg("Editor não suporta tantos caracteres")
+        ret 1
+      fimse
+      pos.mudar(t), pos.depois
+    efim
+    arg0.msg("Troca efetuada")
     ret 1
   casose "e" # Embelezar o texto
     arg0.teditor.addini(txttroca(arg0.teditor.remove(10000), "\n", " "))
@@ -1357,6 +1384,7 @@ que contém dois espaços e a letra A\n\
 \c2P\b  seguido de um texto: Procura um texto a partir da linha atual\n\
 \c2P\b  Procura a próxima linha que contém o texto\n\
 \c2T\b  seguido do novo texto: Troca o texto da opção P na linha atual\n\
+\c2U\b  seguido do novo texto: Troca o texto da opção P no texto inteiro\n\
 \c2E\b  Embeleza o texto, formatando em até 77 caracteres por linha\n\
 \c2C\b  Mostra o texto com as definições de cores\n\
 \c2M\b  seguido de um texto: Executa um comando do MUD sem sair da edição\n\

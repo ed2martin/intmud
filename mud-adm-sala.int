@@ -1,4 +1,13 @@
-classe adm_salas
+classe adm_area
+herda comando_adm
+const txtajuda = "\b\c3Comandos de áreas\b\n\
+  \c2LAREA\b     Lista áreas existentes\n\
+  \c2CAREA\b     Cria uma área\n\
+  \c2EAREA\b     Edita uma área\n\
+  \c2AAREA\b     Apaga uma área"
+
+
+classe adm_sala
 herda comando_adm
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
@@ -23,165 +32,142 @@ Luz do sol\nEscuro"
 const txt_porta = "Sem porta\nPorta aberta\nPorta fechada\nPorta trancada"
 #
 const txtajuda = "\b\c3Comandos de salas\b\n\
-\c2LSALA\b [sala]\n\
-  Lista salas que começam com o nome especificado.\n\
-\c2CSALA\b <sala>\n\
-  Cria sala. Nome deve ser o nome de uma área ou da sala\n\
-  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
-\c2CDIR\b <direção>\n\
-  Cria sala na direção especificada. Cria automaticamente uma saída\n\
-  com a sala em que você está. Exemplo: cdir ne\n\
-\c2ESALA\b [sala]\n\
-  Edita sala. Se o nome for omitido, edita a sala em que você está.\n\
-\c2ASALA\b <um ou mais nomes de sala>\n\
-  Apaga uma ou mais salas. Atenção: não apaga as saídas das outras salas\n\
-  para as que forem apagadas.\n\
-\c2LDESC\b\n\
-  Lista as descrições extras da sala.\n\
-\c2EDESC\b <nome da descrição>\n\
-  Edita uma descrição extra da sala.\n\
-\c2ADESC\b <nome da descrição>\n\
-  Apaga uma descrição extra da sala.\n\
-Para criar descrições somente diurnas ou somente noturnas, acrescentar\n\
-@d ou @n, respectivamente, no final dos nomes das descrições.\n\
-Exemplo, se quiser uma descrição diurna e outra noturna para uma janela,\n\
-criar as descrições janela@d e janela@n ao invés de janela."
-
-
-classe adm_area
-herda comando_adm
-const txtajuda = "\b\c3Comandos de áreas\b\n\
-\c2LAREA\b [nome]\n\
-  Lista áreas que começam com o nome especificado. Nome pode ser omitido.\n\
-\c2CAREA\b <nome>\n\
-  Cria área. Nomes de área devem ter de 2 a 16 letras de A a Z.\n\
-\c2EAREA\b [nome]\n\
-  Edita área. Se o nome for omitido, edita a área em que você está.\n\
-\c2AAREA\b <nome>\n\
-  Apaga área, desde que não tenha nenhuma sala."
-
-
-classe adm_sai
-herda comando_adm
-const txtajuda = "\b\c3Comandos de saídas das sala\b\n\
-\c2LSAI\b\n\
-  Mostra saídas da sala em que você está.\n\
-\c2CSAI\b <direção> <sala>\n\
-  Cria saída na direção especificada.\n\
-\c2CSAI2\b <direção> <sala>\n\
-  Mesmo que CSAI, mas cria também uma saída no sentido contrário.\n\
-\c2ESAI\b <direção>\n\
-  Edita tipo de saída na direção especificada.\n\
-\c2ASAI\b <direção>\n\
-  Apaga saída na direção especificada."
+  \c2LSALA\b     Lista salas existentes\n\
+  \c2CSALA\b     Cria sala\n\
+  \c2CDIR\b      Cria sala em uma direção\n\
+  \c2ESALA\b     Edita sala\n\
+  \c2ASALA\b     Apaga uma ou mais salas\n\
+  \c2LDESC\b     Lista descrições extras da sala\n\
+  \c2EDESC\b     Edita uma descrição extra da sala\n\
+  \c2ADESC\b     Apaga uma descrição extra da sala\n\
+  \c2LSAI\b      Mostra saídas da sala\n\
+  \c2CSAI\b      Cria saída em uma direção\n\
+  \c2CSAI2\b     Mesmo que CSAI, mas cria também uma saída no sentido contrário\n\
+  \c2ESAI\b      Edita tipo de saída em uma direção\n\
+  \c2ASAI\b      Apaga saída em uma direção"
 
 
 classe adm_larea
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Larea\b\n\
+Sintaxe: LAREA [nome]\n\
+Lista as áreas que começam com o nome especificado."
 
 func escr # Listar áreas
   prog p
-  se !p.iniclasse("a_" + arg0)
-    msg("\bNenhuma área encontrada.")
-  senao
-    textotxt t
-    t.addfim("\b\c6Áreas (prefixo, nome, autor):\b")
-    enquanto p.lin
-      t.addfim(txt(p.texto, 2) + ", " + [p.texto]:a_nome + ", " + [p.texto]:a_autor)
-      p.depois
-    efim
-    msg2(t.remove(1000))
+  se !p.iniclasse("a_" + arg1)
+    ret arg0.msg("\bNenhuma área encontrada.")
   fimse
-  ret 1
+  textotxt t
+  t.addfim("\b\c6Áreas (prefixo, nome, autor):\b")
+  enquanto p.lin
+    t.addfim(txt(p.texto, 2) + ", " + [p.texto]:a_nome + ", " + [p.texto]:a_autor)
+    p.depois
+  efim
+  arg0.msg2(t.remove(1000))
 
 
 classe adm_carea
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Carea\b\n\
+Sintaxe: CAREA <nome>\n\
+Cria uma área com o nome especificado.\n\
+Nota: Nomes de área devem ter de 2 a 16 letras de A a Z."
 
 func escr # Criar área
   txt100 prefixo
-  prefixo = txtmin(txtremove(arg0, "EMDCT7"))
+  prefixo = txtmin(txtremove(arg1, "EMDCT7"))
   se $a_[prefixo]
-    msg("\bÁrea já existe: " + prefixo)
+    arg0.msg("\bÁrea já existe: " + prefixo)
   senao inttotal(prefixo) < 2 || inttotal(prefixo) > 10
-    msg("\bNome de área deve ter de 2 a 10 caracteres")
+    arg0.msg("\bNome de área deve ter de 2 a 10 caracteres")
   senao prefixo != txtsepara(prefixo, "DEO+DEOL,DEOL+DEO")
-    msg("\bNome de área deve ter apenas letras de a a z.")
+    arg0.msg("\bNome de área deve ter apenas letras de a a z.")
   senao
     prog p
     p.criar("a_" + prefixo + "\na-" + prefixo + "\nherda area")
     p.criar("b_" + prefixo + "\na-" + prefixo + "\nherda sala\nconst s_area=\"" + prefixo + \
 "\"")
-    config:salvar, msg("\bÁrea criada: " + prefixo)
+    config:salvar, arg0.msg("\bÁrea criada: " + prefixo)
     admlog(arg0, "criou área " + prefixo)
   fimse
-  ret 1
 
 
 classe adm_aarea
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Aarea\b\n\
+Sintaxe: AAREA <nome>\n\
+Apaga a área com o nomes especificado, desde que esteja vazia\n\
+(nenhuma sala, personagem, item ou casa)."
 
 func escr # Apagar área
   txt100 prefixo
   prog p
-  prefixo = txtmin(txtremove(arg0, "EMDCT7"))
+  prefixo = txtmin(txtremove(arg1, "EMDCT7"))
   se !$a_[prefixo]
-    msg("\bÁrea não existe: " + prefixo)
+    ret arg0.msg("\bÁrea não existe: " + prefixo)
 # senao p.iniherdainv("b_" + prefixo)
-# msg("\bÁrea contém pelo menos uma sala: " + txt(p.texto, 2))
-  senao
-    epara p.iniarq("a-" + prefixo), p.lin, p.depois
-      se p.texto != "a_" + prefixo && p.texto != "b_" + prefixo
-        casovar txt(p.texto, 0, 2)
-        casose "c_"
-          msg("\bÁrea " + prefixo + " contém pelo menos uma casa")
-          ret 1
-        casose "s_"
-          msg("\bÁrea " + prefixo + " contém pelo menos uma sala")
-          ret 1
-        casose "p_"
-          msg("\bÁrea " + prefixo + " contém pelo menos um personagem")
-          ret 1
-        casose "i_"
-          msg("\bÁrea " + prefixo + " contém pelo menos um item")
-          ret 1
-        casofim
-        msg("\bÁrea " + prefixo + " contém pelo menos uma classe do IntMUD")
-        ret 1
-      fimse
-    efim
-    p.apagar("a_" + prefixo)
-    p.apagar("b_" + prefixo)
-    config:salvar, msg("\bÁrea apagada: " + prefixo)
-    admlog(arg0, "apagou área " + prefixo)
+# ret arg0.msg("\bÁrea contém pelo menos uma sala: " + txt(p.texto, 2))
   fimse
-  ret 1
+  epara p.iniarq("a-" + prefixo), p.lin, p.depois
+    se p.texto != "a_" + prefixo && p.texto != "b_" + prefixo
+      casovar txt(p.texto, 0, 2)
+      casose "c_"
+        arg0.msg("\bÁrea " + prefixo + " contém pelo menos uma casa")
+        ret 1
+      casose "s_"
+        arg0.msg("\bÁrea " + prefixo + " contém pelo menos uma sala")
+        ret 1
+      casose "p_"
+        arg0.msg("\bÁrea " + prefixo + " contém pelo menos um personagem")
+        ret 1
+      casose "i_"
+        arg0.msg("\bÁrea " + prefixo + " contém pelo menos um item")
+        ret 1
+      casofim
+      arg0.msg("\bÁrea " + prefixo + " contém pelo menos uma classe do IntMUD")
+      ret 1
+    fimse
+  efim
+  p.apagar("a_" + prefixo)
+  p.apagar("b_" + prefixo)
+  config:salvar, arg0.msg("\bÁrea apagada: " + prefixo)
+  admlog(arg0, "apagou área " + prefixo)
 
 
 classe adm_earea
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Earea\b\n\
+Sintaxe: EAREA [nome]\n\
+Edita a área com o nome especificado. Se o nome for omitido, edita a área\n\
+em que você está."
 
 func escr # Editar área
   txt100 prefixo
   prog p
-  prefixo = txtmin(txtremove(arg0, "EMDCT7"))
+  prefixo = txtmin(txtremove(arg1, "EMDCT7"))
   se prefixo == ""
-    prefixo = txt(perso.dono, 2, inttotal(txt(perso.dono)) - 5)
+    prefixo = txt(arg0.dono, 2, inttotal(txt(arg0.dono)) - 5)
   fimse
   se !$a_[prefixo]
-    msg("\bÁrea não existe: " + prefixo)
+    arg0.msg("\bÁrea não existe: " + prefixo)
   senao
-    var.classe1 = "a_" + prefixo
-    var.classe2 = "b_" + prefixo
+    arg0.sock.var.classe1 = "a_" + prefixo
+    arg0.sock.var.classe2 = "b_" + prefixo
     arg0.sock.m_menu("menu_area")
   fimse
-  ret 1
 
-func cmd_lsala
+
+classe adm_lsala
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lsala\b\n\
+Sintaxe: LSALA [nome]\n\
+Lista as salas que começam com o nome especificado."
 
 func escr # Listar salas
   prog p
-  se !p.iniclasse("s_" + txtremove(arg0, "EMDCT7"))
-    msg("\bNenhuma sala encontrada.")
+  se !p.iniclasse("s_" + txtremove(arg1, "EMDCT7"))
+    arg0.msg("\bNenhuma sala encontrada.")
   senao
     textotxt t
     t.addfim("\b\c6Salas:\b")
@@ -189,43 +175,42 @@ func escr # Listar salas
       t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo)
       p.depois
     efim
-    msg2(t.remove(500))
+    arg0.msg2(t.remove(500))
   fimse
-  ret 1
 
 
 classe adm_cdir
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Cdir\b\n\
+Sintaxe: CDIR <direção>\n\
+Cria sala na direção especificada. Cria automaticamente uma saída com\n\
+a sala em que você está.\n\
+Exemplo: cdir ne"
 
 func escr # Criar sala na direção especificada
-  se arg0 == ""
-    msg("Tecle o nome da sala ou a direção após CDIR")
-    ret 1
-  senao !misc:d1[arg0]
-    msg("Direção inválida: " + arg0)
-    ret 1
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da sala ou a direção após CDIR")
+  senao !misc:d1[arg1]
+    ret arg0.msg("Direção inválida: " + arg1)
   fimse
   prog p
   uint16 num
   txt40 nome
   txt20 dir
-  dir = misc:d1[arg0]
+  dir = misc:d1[arg1]
 # Obtém prefixo da área
-  nome = txt(perso.dono, 0, inttotal(txt(perso.dono)) - 3)
+  nome = txt(arg0.dono, 0, inttotal(txt(arg0.dono)) - 3)
   se txt(nome, 0, 2) != "s_"
-    msg("Você não está em uma sala")
-    ret 1
+    ret arg0.msg("Você não está em uma sala")
   fimse
 # Checa se já existe sala nessa direção
-  se p.existe(perso.dono, "dir_" + dir) == 1
-    msg("Já existe sala na direção " + dir)
-    ret 1
+  se p.existe(arg0.dono, "dir_" + dir) == 1
+    ret arg0.msg("Já existe sala na direção " + dir)
   fimse
 # Obtém número da sala
   epara num = 1001, p.existe(nome + txtfim(num, 3)), num += 1
     continuar num < 2000
-    msg("Atingido limite de salas na área " + txt(nome, 2))
-    ret 1
+    ret arg0.msg("Atingido limite de salas na área " + txt(nome, 2))
   efim
 # Cria sala
   txt300 nome2
@@ -233,49 +218,47 @@ func escr # Criar sala na direção especificada
   nome2 += "a-" + txt(nome, 2) + "\n" # Nome do arquivo
   nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
   nome2 += "const s_titulo=\"Sem nome\"\nconst s_desc=\"\"\n"
-  nome2 += "const dir_" + misc:d2[dir] + "=$" + perso.dono # Saída da sala
+  nome2 += "const dir_" + misc:d2[dir] + "=$" + arg0.dono # Saída da sala
   p.criar(nome2)
-  p.criar(perso.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
+  p.criar(arg0.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
   criar("admordena", "a-" + txt(nome, 2))
-  criar("admmudou", perso.dono)
+  criar("admmudou", arg0.dono)
 # config:salvar
-  msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
+  arg0.msg("\bSala criada em " + dir + ": " + txt(nome, 2) + txtfim(num, 3))
   admlog(arg0, "criou sala " + txt(nome, 2) + txtfim(num, 3))
-  ret 1
 
 
 classe adm_csala
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Csala\b\n\
+Sintaxe: CSALA <nome>\n\
+Cria uma sala. Nome deve ser o nome de uma área da sala.\n\
+Nomes de sala são sempre nomes de área seguido de um número de 001 a 999."
 
 func escr # Criar sala
   prog p
   txt40 nome
   uint16 num
 # Checa se digitou nome da sala
-  se arg0 == ""
-    msg("Tecle o nome da sala ou área após CSALA")
-    ret 1
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da sala ou área após CSALA")
   fimse
 # Checa nome completo
-  nome = txtmin(txtremove(arg0, "EMDCT7"))
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
   num = int(txtfim(nome, 3)) + 1000
-  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+  se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
-      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
-      ret 1
+      ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
     senao p.existe("s_" + nome)
-      msg("Sala já existe: " + nome)
-      ret 1
+      ret arg0.msg("Sala já existe: " + nome)
     fimse
 # Checa nome de área
   senao !p.existe("a_" + nome)
-    msg("Área não existe: " + nome)
-    ret 1
+    ret arg0.msg("Área não existe: " + nome)
   senao
     epara num = 1001, p.existe("s_" + nome + txtfim(num, 3)), num += 1
       continuar num < 2000
-      msg("Atingido limite de salas na área " + nome)
-      ret 1
+      ret arg0.msg("Atingido limite de salas na área " + nome)
     efim
     nome += txtfim(num, 3)
   fimse
@@ -286,80 +269,91 @@ func escr # Criar sala
   area = "s_" + nome + "\na-" + area + "\nherda b_" + area
   p.criar(area + "\nconst s_titulo=\"Sem nome\"\nconst s_desc=\"\"")
 # config:salvar
-  msg("\bSala criada: " + nome)
+  arg0.msg("\bSala criada: " + nome)
   admlog(arg0, "criou sala " + nome)
-  ret 1
 
 
 classe adm_asala
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Asala\b\n\
+Sintaxe: ASALA <nomes das salas>\n\
+Apaga uma ou mais salas, mas não apaga as saídas das outras salas para\n\
+as que forem apagadas."
 
 func escr # Apagar sala
   prog p
-  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    msg("Tecle um ou mais nomes da sala após ASALA")
-    ret 1
+    ret arg0.msg("Tecle um ou mais nomes da sala após ASALA")
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
     se !p.existe("s_" + txtsub(nome, x, 1))
-      msg("Sala não existe: " + txtsub(nome, x, 1))
-      ret 1
+      ret arg0.msg("Sala não existe: " + txtsub(nome, x, 1))
     fimse
     x += 1
   efim
-  tpasso = nome, adm_asala:exec
-  ret 1
+  arg0.sock.tpasso = nome
+  passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar sala
-  passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
     uint16 x
-    enquanto txtsub(tpasso, x, 1)
-      p.apagar("s_" + txtsub(tpasso, x, 1))
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("s_" + txtsub(arg0.tpasso, x, 1))
       x += 1
     efim
     config:salvar
     se x < 2
-      msg("Sala apagada: " + tpasso)
-      admlog(arg0, "apagou sala " + tpasso)
+      arg0.msg("Sala apagada: " + arg0.tpasso)
+      admlog(arg0, "apagou sala " + arg0.tpasso)
     senao
-      msg("Salas apagadas: " + tpasso)
-      admlog(arg0, "apagou salas " + tpasso)
+      arg0.msg("Salas apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou salas " + arg0.tpasso)
     fimse
   senao
     txt10 m1
-    passo = "asala"
-    txt2(tpasso) && (m1 = "s")
-    msg("Apagar sala" + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.passo = este
+    txt2(arg0.tpasso) && (m1 = "s")
+    arg0.msg("Apagar sala" + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
-func cmd_esala
+
+classe adm_esala
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Esala\b\n\
+Sintaxe: ESALA [nome]\n\
+Edita a sala com o nome especificado. Se o nome for omitido, edita a sala\n\
+em que você está."
 
 func escr # Editar sala
   txt100 nome
   prog p
-  nome = txtmin(txtremove(arg0, "EMDCT7"))
-  nome == "" && (nome = txt(perso.dono, 2))
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
+  nome == "" && (nome = txt(arg0.dono, 2))
   se !$s_[nome]
-    msg("\bSala não existe: " + nome)
+    arg0.msg("\bSala não existe: " + nome)
   senao
-    var.classe1 = "s_" + nome
+    arg0.sock.var.classe1 = "s_" + nome
     arg0.sock.m_menu("menu_sala")
   fimse
-  ret 1
 
-func cmd_ldesc
+
+classe adm_ldesc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ldesc\b\n\
+Sintaxe: LDESC\n\
+Lista as descrições extras sala sala aonde você está."
 
 func escr # Listar descrições extras
   prog p
-  se !p.inifunc(perso.dono, "ver_")
-    msg("\bNenhuma descrição encontrada.")
+  se !p.inifunc(arg0.dono, "ver_")
+    arg0.msg("\bNenhuma descrição encontrada.")
   senao
     textotxt t
     t.addfim("\b\c6Descrições:\b")
@@ -367,131 +361,159 @@ func escr # Listar descrições extras
       t.addfim(txt(p.texto, 4))
       p.depois
     efim
-    msg2(t.remove(500))
+    arg0.msg2(t.remove(500))
   fimse
-  ret 1
 
-func cmd_edesc
+
+classe adm_edesc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Edesc\b\n\
+Sintaxe: EDESC <nome da descrição>\n\
+Edita uma descrição extra da sala aonde você está.\n\
+Para criar descrições somente diurnas ou somente noturnas, acrescentar\n\
+@d ou @n, respectivamente, no final dos nomes das descrições.\n\
+Exemplo, se quiser uma descrição diurna e outra noturna para uma janela,\n\
+criar as descrições janela@d e janela@n ao invés de janela.\n\
+Por outro lado, se você criar, por exemplo, somente janela@d, a descrição\n\
+da janela só existirá durante o dia."
 
 func escr # Editar descrição extra
   prog p
   txt80 nome
-  nome = txtmin(txtremove(txte(arg0), "EMDCT"))
-  se !perso.dono
-    msg("\bVocê não está em uma sala")
-  senao !arg0
-    msg("\bDigite o nome da descrição após EDESC")
+  nome = txtmin(txtremove(txte(arg1), "EMDCT"))
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite o nome da descrição após EDESC")
   senao txttroca(nome, "@", "") != txtsepara(txttroca(nome, "@", ""), "LV+DO", "DO+LV")
-    msg("Nomes de descrições só podem ter letras e espaço")
+    arg0.msg("Nomes de descrições só podem ter letras e espaço")
   senao
-    var.opcnome = "Descrição " + nome
-    var.opcclasse = txt(perso.dono)
-    var.opcvar = "ver_" + txts(nome)
-    var.opcpasso = ""
-    p_texto("\b")
+    arg0.sock.var.opcnome = "Descrição " + nome
+    arg0.sock.var.opcclasse = txt(arg0.dono)
+    arg0.sock.var.opcvar = "ver_" + txts(nome)
+    arg0.sock.var.opcpasso = ""
+    $opc_texto.passo(arg0.sock, "\b")
   fimse
-  ret 1
 
-func cmd_adesc
+
+classe adm_adesc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Adesc\b\n\
+Sintaxe: ADESC <nome da descrição>\n\
+Apaga uma descrição extra da sala aonde você está."
 
 func escr # Apagar descrição extra
   prog p
-  se !perso.dono
-    msg("\bVocê não está em uma sala")
-  senao !arg0
-    msg("\bDigite o nome da descrição após ADESC")
-  senao !p.existe(perso.dono, "ver_" + arg0)
-    msg("\bDescrição não existe: " + arg0)
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite o nome da descrição após ADESC")
+  senao !p.existe(arg0.dono, "ver_" + arg1)
+    arg0.msg("\bDescrição não existe: " + arg1)
   senao
-    p.apagar(perso.dono, "ver_" + arg0)
-    config:salvar, msg("\bDescrição apagada: " + arg0)
-    admlog(arg0, "apagou descrição " + arg0 + " de " + txt(perso.dono, 2))
+    p.apagar(arg0.dono, "ver_" + arg1)
+    config:salvar, arg0.msg("\bDescrição apagada: " + arg1)
+    admlog(arg0, "apagou descrição " + arg1 + " de " + txt(arg0.dono, 2))
   fimse
-  ret 1
 
-func cmd_lsai
+
+classe adm_lsai
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lsai\b\nSintaxe: LSAI\nMostra as saídas da sala aonde você está."
 
 func escr # Listar saídas
-  se !perso.dono
-    msg("\bVocê não está em uma sala")
-    ret 1
+  se !arg0.dono
+    ret arg0.msg("\bVocê não está em uma sala")
   fimse
   prog p
   txt80 dir
   txt80 lin
-  tpasso = perso.dono
-  msg("\b\c6Saídas de " + txt(tpasso, 2) + ":\b")
+  arg0.msg("\b\c6Saídas de " + txt(arg0.dono, 2) + ":\b")
   epara dir = misc:listadir, dir, dir = txt2(dir)
-    continuar !p.existe(tpasso, "dir_" + txt1(dir))
+    continuar !p.existe(arg0.dono, "dir_" + txt1(dir))
     lin = txtmai(txt1(dir)) + "  "
-    lin += t_sala(tpasso, "dir_" + txt1(dir))
-    msg(lin)
+    lin += $opc_sala.menu(arg0.dono, "dir_" + txt1(dir))
+    arg0.msg(lin)
   efim
-  !lin && msg("Nenhuma")
-  ret 1
+  !lin && arg0.msg("Nenhuma")
 
-func cmd_asai
+
+classe adm_asai
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Asai\b\n\
+Sintaxe: ASAI <direção>\n\
+Apaga a saída na direção especificada."
 
 func escr # Apagar saída
   prog p
   txt10 dir
-  dir = misc:d1[txt1(arg0)]
-  se !perso.dono
-    msg("\bVocê não está em uma sala")
-  senao !arg0
-    msg("\bDigite a direção após ASAI")
+  dir = misc:d1[txt1(arg1)]
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite a direção após ASAI")
   senao !dir
-    msg("\bSaída não existe: " + arg0)
+    arg0.msg("\bSaída não existe: " + arg1)
   senao
-    p.apagar(perso.dono, "dir_" + dir)
-    p.apagar(perso.dono, "portaini_" + dir)
-    p.apagar(perso.dono, "inv_" + dir)
-    p.apagar(perso.dono, "tranc_" + dir)
-    p.apagar(perso.dono, "fechadura_" + dir)
-    p.apagar(perso.dono, "comechave_" + dir)
-    p.apagar(perso.dono, "voar_" + dir)
-    p.apagar(perso.dono, "fugir_" + dir)
-    p.apagar(perso.dono, "portanome_" + dir)
-    p.apagar(perso.dono, "portaartigo_" + dir)
-    config:salvar, msg("\bSaída apagada: " + dir)
-    admlog(arg0, "apagou saída " + dir + " de " + txt(perso.dono, 2))
+    p.apagar(arg0.dono, "dir_" + dir)
+    p.apagar(arg0.dono, "portaini_" + dir)
+    p.apagar(arg0.dono, "inv_" + dir)
+    p.apagar(arg0.dono, "tranc_" + dir)
+    p.apagar(arg0.dono, "fechadura_" + dir)
+    p.apagar(arg0.dono, "comechave_" + dir)
+    p.apagar(arg0.dono, "voar_" + dir)
+    p.apagar(arg0.dono, "fugir_" + dir)
+    p.apagar(arg0.dono, "portanome_" + dir)
+    p.apagar(arg0.dono, "portaartigo_" + dir)
+    config:salvar, arg0.msg("\bSaída apagada: " + dir)
+    admlog(arg0, "apagou saída " + dir + " de " + txt(arg0.dono, 2))
   fimse
-  ret 1
 
-func cmd_csai
 
-func escr # Criar saída
+classe adm_csai
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Csai\b\n\
+Sintaxe: CSAI <direção> <sala>\n\
+Cria uma saída na sala aonde você está, na direção especificada.\n\
+Exemplo, se quiser que a saída para o norte vá para a sala teste001, tecle:\n\
+csai n teste001"
+const escr = escr1(arg0, arg1) # Criar saída
+
+func escr1
   prog p
   txt10 dir
-  dir = misc:d1[txt1(arg0)]
-  se !perso.dono
-    msg("\bVocê não está em uma sala")
-  senao !arg0
-    msg("\bDigite a direção após CSAI" + arg1)
+  dir = misc:d1[txt1(arg1)]
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite a direção após CSAI" + arg1)
   senao !dir
-    msg("\bSaída não existe: " + txt1(arg0))
-  senao !txt2(arg0)
-    msg("\bDigite a sala após CSAI" + arg1 + " " + arg0)
-  senao !p.existe("s_" + txt2(arg0))
-    msg("\bSala não existe: " + txt2(arg0))
+    arg0.msg("\bSaída não existe: " + txt1(arg1))
+  senao !txt2(arg1)
+    arg0.msg("\bDigite a sala após CSAI" + arg1 + " " + arg1)
+  senao !p.existe("s_" + txt2(arg1))
+    arg0.msg("\bSala não existe: " + txt2(arg1))
   senao
-    p.criar(perso.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg0)))
-    se arg1
-      p.criar("s_" + txt2(arg0), "const dir_" + misc:d2[dir] + "=$" + perso.dono)
-      msg("\bSaída completa criada: " + dir + " para " + txtmin(txt2(arg0)))
+    p.criar(arg0.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg1)))
+    se arg2
+      p.criar("s_" + txt2(arg1), "const dir_" + misc:d2[dir] + "=$" + arg0.dono)
+      arg0.msg("\bSaída completa criada: " + dir + " para " + txtmin(txt2(arg1)))
     senao
-      msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg0)))
+      arg0.msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg1)))
     fimse
     config:salvar
-    criar("admmudou", perso.dono)
-    admlog(arg0, "criou saída " + dir + " de " + txt(perso.dono, 2))
+    criar("admmudou", arg0.dono)
+    admlog(arg0, "criou saída " + dir + " de " + txt(arg0.dono, 2))
   fimse
-  ret 1
 
 
 classe adm_csai2
-herda comando_adm, comando_comum
-const escr = adm_csai:escr(arg0, "2") # Criar saída completa
+herda adm_csai
+const txtajuda = "\b\c3Csai2\b\n\
+Sintaxe: CSAI2 <direção> <sala>\n\
+Cria uma saída na sala aonde você está, na direção especificada, e cria\n\
+também uma saída no sentido contrário, da outra sala para essa."
+const escr = escr1(arg0, arg1, "2") # Criar saída completa
 
 
 classe adm_esai
@@ -500,75 +522,63 @@ herda comando_adm, comando_comum
 func escr # Editar saída
   prog p
   txt10 dir
-  dir = misc:d1[txt1(arg0)]
-  se !perso.dono
-    msg("\bVocê não está em uma sala")
-  senao !arg0
-    msg("\bDigite a direção após ESAI")
+  dir = misc:d1[txt1(arg1)]
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite a direção após ESAI")
   senao !dir
-    msg("\bSaída não existe: " + arg0)
-  senao !p.existe(perso.dono, "dir_" + dir)
-    msg("Não existe saída na direção " + txtmai(dir))
+    arg0.msg("\bSaída não existe: " + arg1)
+  senao !p.existe(arg0.dono, "dir_" + dir)
+    arg0.msg("Não existe saída na direção " + txtmai(dir))
   senao
-    var.classe1 = perso.dono
-    var.saida1 = txtmin(dir)
+    arg0.sock.var.classe1 = arg0.dono
+    arg0.sock.var.saida1 = txtmin(dir)
     arg0.sock.m_menu("menu_saida")
   fimse
-  ret 1
 
 
-classe adm_saiinicio
-herda comando_adm
-const menu = adm_opcao:menu(arg0, arg1, arg2)
+classe opc_saiinicio
+herda opc_opcao
 
 func passo
-  adm_opcao:exec(arg0)
-  se passo == "opcao"
-    passo = "saiinicio"
-  senao arg0 != "z" && passo != "saiinicio"
-    $[var.classe1].mudaporta(var.saida1, arg0)
-  fimse
+  opc_opcao:passo(arg0, arg1)
+  casovar arg1
+  casose "0"
+  casose "1"
+  casose "2"
+  casose "3"
+    $[arg0.var.classe1].mudaporta(arg0.var.saida1, arg1)
+  casofim
   ret 1
 
 
-classe adm_saiagora
-herda comando_adm
-const menu = adm_opcaomostra:menu($[arg0].[arg1], adm_salas:txt_porta)
+classe opc_saiagora
+herda opc_opcao
+const menu = menu2($[arg0].[arg1], adm_sala:txt_porta)
 
 func passo # Mudar o estado atual
-  casovar arg0
+  casovar arg1
   casose "z"
     sair
   casose "0"
   casose "1"
   casose "2"
   casose "3"
-    se $[var.classe1].mudaporta(var.saida1, arg0)
+    arg0.msg(">" + arg1)
+    se $[arg0.var.classe1].mudaporta(arg0.var.saida1, arg1)
       textotxt t
-      t.addfim(adm_salas:txt_porta), t.remove(arg0)
-      msg("Saída mudou para: " + arg0 + " " + t.remove)
+      t.addfim(adm_sala:txt_porta), t.remove(arg1)
+      arg0.msg("Saída mudou para: " + arg1 + " " + t.remove)
     senao
-      msg("Não foi possível mudar a saída")
+      arg0.msg("Não foi possível mudar a saída")
     fimse
     sair
   casose
-    passo = "saiagora"
-    msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
-    ret 1
+    arg0.passo = este
+    ret arg0.msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
   casofim
-  passo = var.opcpasso, adm_[passo]:exec("\b")
-  ret 1
-
-
-classe adm_resettempo
-herda comando_adm
-const menu = adm_numero:menu(arg0, arg1)
-
-func passo # Mudar o estado atual
-  $[var.opcclasse].resetcheca = 1
-  adm_numero:exec(arg0)
-  passo == "numero" && (passo = "resettempo")
-  ret 1
+  ret passosair(arg0)
 
 
 classe menu_area
@@ -577,20 +587,21 @@ const titulo = "Área " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Nome"
-const tipo1 = "linha-"
+const tipo1 = "opc_linha-"
 const clas1 = var.classe1
 const vari1 = "a_nome"
 #
 const nome2 = "Autor"
-const tipo2 = "linha-"
+const tipo2 = "opc_linha-"
 const clas2 = var.classe1
 const vari2 = "a_autor"
 #
 const nome3 = "Tempo de reset"
 const info3 = "Tempo aproximado em minutos"
-const tipo3 = "resettempo"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "a_tempo"
+const exec3 = "reset_atualiza"
 #
 const nome4 = "Modo de reset"
 const tipo4 = "opc_opcao"
@@ -608,13 +619,13 @@ const nome6 = "Terreno"
 const tipo6 = "opc_opcao"
 const clas6 = var.classe2
 const vari6 = "s_terreno"
-const extr6 = adm_salas:txt_terreno
+const extr6 = adm_sala:txt_terreno
 #
 const nome7 = "Luz"
 const tipo7 = "opc_opcao"
 const clas7 = var.classe2
 const vari7 = "s_luz"
-const extr7 = adm_salas:txt_luz
+const extr7 = adm_sala:txt_luz
 #
 const nome8 = "Recuperação"
 const info8 = "Taxa de recuperação de vida, mana e movimentos\n\
@@ -657,7 +668,7 @@ const nome14 = "Batalha"
 const tipo14 = "opc_opcao"
 const clas14 = var.classe2
 const vari14 = "s_luta"
-const extr14 = adm_salas:txt_luta
+const extr14 = adm_sala:txt_luta
 #
 const nome15 = "Sem resgate"
 const info15 = "Se não é possível resgatar outro jogador"
@@ -751,13 +762,13 @@ const nome6 = "Terreno"
 const tipo6 = "opc_opcao"
 const clas6 = var.classe1
 const vari6 = "s_terreno"
-const extr6 = adm_salas:txt_terreno
+const extr6 = adm_sala:txt_terreno
 #
 const nome7 = "Luz"
 const tipo7 = "opc_opcao"
 const clas7 = var.classe1
 const vari7 = "s_luz"
-const extr7 = adm_salas:txt_luz
+const extr7 = adm_sala:txt_luz
 #
 const nome8 = "Recuperação"
 const info8 = "Taxa de recuperação de vida, mana e movimentos\n\
@@ -800,7 +811,7 @@ const nome14 = "Batalha"
 const tipo14 = "opc_opcao"
 const clas14 = var.classe1
 const vari14 = "s_luta"
-const extr14 = adm_salas:txt_luta
+const extr14 = adm_sala:txt_luta
 #
 const nome15 = "Sem resgate"
 const info15 = "Se não é possível resgatar outro jogador"
@@ -869,13 +880,13 @@ const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Estado inicial"
-const tipo1 = "saiinicio"
+const tipo1 = "opc_saiinicio"
 const clas1 = var.classe1
 const vari1 = "portaini_" + var.saida1
-const extr1 = adm_salas:txt_porta
+const extr1 = adm_sala:txt_porta
 #
 const nome2 = "Estado atual"
-const tipo2 = "saiagora--"
+const tipo2 = "opc_saiagora--"
 const clas2 = var.classe1
 const vari2 = "porta_" + var.saida1
 #

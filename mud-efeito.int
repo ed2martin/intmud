@@ -129,8 +129,8 @@ func escr # Editar efeito
   senao e_[txtsub(arg1, x, 1)]:interno
     arg0.msg("Efeito não pode ser editado: " + txtsub(arg1, x, 1))
   senao
-    var.classe1 = "e_" + txts(txtmin(arg1))
-    var.menufim = "menu_efeito"
+    arg0.sock.var.classe1 = "e_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_efeito"
     arg0.sock.m_menu(var.menufim)
   fimse
   ret 1
@@ -239,8 +239,7 @@ const clas15 = var.classe1
 const vari15 = "r_move"
 #
 const nome16 = "Mensagens"
-const tipo16 = "menu--"
-const clas16 = "menu_efeito_msg"
+const tipo16 = "menu_efeito_msg--"
 #
 const nome17 = "Eventos hora"
 const info17 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"

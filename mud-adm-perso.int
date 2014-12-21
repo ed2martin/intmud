@@ -182,8 +182,8 @@ func escr # Editar personagem
   senao !p.existe("menu_perso" + (num = p_[nome]:perso))
     msg("\bPersonagem não pode ser editado: " + nome)
   senao
-    var.classe1 = "p_" + txtmin(nome)
-    var.menufim = "menu_perso" + num
+    arg0.sock.var.classe1 = "p_" + txtmin(nome)
+    arg0.sock.var.menufim = "menu_perso" + num
     arg0.sock.m_menu("menu_perso" + num)
   fimse
   ret 1
@@ -360,7 +360,7 @@ func passo # Apagar uma aula
     se t.bytes <= 1
       p.apagar(var.opcclasse, var.opcvar)
     senao
-      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
     fimse
     config:salvar
@@ -389,7 +389,7 @@ func passo # Apagar um produto
     se t.bytes <= 1
       p.apagar(var.opcclasse, var.opcvar)
     senao
-      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
     fimse
     config:salvar
@@ -453,7 +453,7 @@ func passo # Inserir ou editar aula
       !var.opcinserir && pos.remove
       pos.add(txtsub(var.opclin, 1, 1) + "_" + txtsub(var.opclin, 2))
       prog p
-      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
       config:salvar
       admlog(arg0, "alterou aulas: " + var.opcclasse + ":" + var.opcvar)
@@ -494,7 +494,7 @@ func passo # Inserir ou editar produto
       !var.opcinserir && pos.remove
       pos.add(txt2(var.opclin))
       prog p
-      p.criar(var.opcclasse, "const " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
+      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
 "\\n") + "\"")
       config:salvar
       var.opclin = txtsub(var.opclin, 1, 1)
@@ -651,8 +651,7 @@ const vari21 = "equip3"
 const extr21 = config:equip_txt
 #
 const nome22 = "Loja e aulas"
-const tipo22 = "menu--"
-const clas22 = "menu_ploja"
+const tipo22 = "menu_ploja--"
 #
 const nome23 = "Recebe itens"
 const info23 = "Se outros personagens podem dar itens para este"
@@ -741,12 +740,10 @@ const clas29 = var.classe1
 const vari29 = "p_atktipo"
 #
 const nome30 = "Quando morre"
-const tipo30 = "menu--"
-const clas30 = "menu_pmorreu"
+const tipo30 = "menu_pmorreu--"
 #
 const nome31 = "Comportamento"
-const tipo31 = "menu--"
-const clas31 = "menu_pcomportamento"
+const tipo31 = "menu_pcomportamento--"
 
 
 classe menu_ploja

@@ -341,8 +341,8 @@ func escr # Editar habilidade
   senao !$cmd_[arg1].cmdmenu
     arg0.msg("Comando não é uma habilidade: " + arg1)
   senao
-    var.classe1 = "cmd_" + txts(txtmin(arg1))
-    var.menufim = "menu_hab_" + $cmd_[arg1].cmdmenu
+    arg0.sock.var.classe1 = "cmd_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_hab_" + $cmd_[arg1].cmdmenu
     $[var.menufim].passo(arg0.sock)
     arg0.sock.m_menu(var.menufim)
   fimse
@@ -361,8 +361,8 @@ func escr # Editar magia
   senao !$magia_[arg1].cmdmenu
     arg0.msg("Comando não é uma magia editável: " + arg1)
   senao
-    var.classe1 = "magia_" + txts(txtmin(arg1))
-    var.menufim = "menu_magia_" + $magia_[arg1].cmdmenu
+    arg0.sock.var.classe1 = "magia_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_magia_" + $magia_[arg1].cmdmenu
     arg0.sock.m_menu(var.menufim)
   fimse
   ret 1
@@ -699,8 +699,7 @@ const vari4 = "tipoarma"
 const extr4 = config:arma_txt
 #
 const nome5 = "Consome"
-const tipo5 = "menu--"
-const clas5 = "menu_hab_custo"
+const tipo5 = "menu_hab_custo--"
 #
 const nome6 = "Preço da aula"
 const info6 = "Quantas moedas os personagens cobram para ensinar"
@@ -761,8 +760,7 @@ const vari2 = "a_batalha"
 const extr2 = "Nenhuma\nDurante a batalha\nFora da batalha"
 #
 const nome11 = "Afeta o alvo"
-const tipo11 = "menu--"
-const clas11 = "menu_hab_alvo"
+const tipo11 = "menu_hab_alvo--"
 #
 const titu12 = " * Ataque"
 #
@@ -805,27 +803,22 @@ const clas17 = var.classe1
 const vari17 = "msgextra"
 #
 const nome18 = "Mensagens 1"
-const tipo18 = "menu--"
-const clas18 = "menu_hab_msg0"
+const tipo18 = "menu_hab_msg0--"
 #
 const nome19 = "Mensagens 2"
-const tipo19 = "menu--"
-const clas19 = "menu_hab_msg1"
+const tipo19 = "menu_hab_msg1--"
 #
 const nome20 = "Mensagens 3"
-const tipo20 = "menu--"
-const clas20 = "menu_hab_msg2"
+const tipo20 = "menu_hab_msg2--"
 #
 const nome21 = "Mensagens 4"
-const tipo21 = "menu--"
-const clas21 = "menu_hab_msg3"
+const tipo21 = "menu_hab_msg3--"
 #
 const nome22 = "Mensagens 5"
-const tipo22 = "menu--"
-const clas22 = "menu_hab_msg4"
+const tipo22 = "menu_hab_msg4--"
 #
 const nome23 = "Menus de mensagens"
-const tipo23 = "ajuda--"
+const tipo23 = "opc_ajuda--"
 const extr23 = menu_hab_ataque:msg1 + "\n" + menu_hab_ataque:msg2
 #
 const msg1 = "\c3Menus de mensagens:\b\n\
