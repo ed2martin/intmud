@@ -1,21 +1,19 @@
 classe adm_tipo
 herda comando_adm
-# Tipos de personagens (incluindo raça e classe)
-#
 const txtajuda = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
-\c2LTIPO\b [nome]\n\
-  Lista tipos de personagens que começam com o nome especificado.\n\
-\c2CTIPO\b <nome>\n\
-  Cria um tipo de personagem. Nome deve ser o nome do tipo, e deve ser\n\
-  composto de letras, mas pode ter espaços no meio.\n\
-\c2ETIPO\b <nome>\n\
-  Edita um tipo de personagem.\n\
-\c2ATIPO\b <nome>\n\
-  Apaga um tipo de personagem."
+  \c2LTIPO\b     Lista tipos de personagens\n\
+  \c2CTIPO\b     Cria um tipo de personagem\n\
+  \c2ETIPO\b     Edita um tipo de personagem\n\
+  \c2ATIPO\b     Apaga um tipo de personagem"
 
 
 classe adm_ltipo
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ltipo\b\n\
+Sintaxe: LTIPO [nome]\n\
+Lista os tipos de personagens que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os personagens.\n\
+Nota: tipos de personagens são raça e classe."
 
 func escr # Listar tipos
   prog p
@@ -48,6 +46,11 @@ func escr # Listar tipos
 
 classe adm_ctipo
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ctipo\b\n\
+Sintaxe: CTIPO <nome>\n\
+Cria um tipo de personagem com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio.\n\
+Nota: tipos de personagens são raça e classe."
 
 func escr # Criar tipo
   prog p
@@ -55,17 +58,14 @@ func escr # Criar tipo
   uint16 num
 # Checa se digitou nome do ataque
   se arg1 == ""
-    arg0.msg("Tecle o nome do ataque após CTIPO")
-    ret 1
+    ret arg0.msg("Tecle o nome do ataque após CTIPO")
   fimse
 # Checa se nome válido
   nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "O+DOL,DOL+O") != nome
-    arg0.msg("Nome inválido para tipo de personagem: " + nome)
-    ret 1
+    ret arg0.msg("Nome inválido para tipo de personagem: " + nome)
   senao p.existe("tipo_" + nome)
-    arg0.msg("Já existe o tipo: " + nome)
-    ret 1
+    ret arg0.msg("Já existe o tipo: " + nome)
   fimse
 # Cria tipo
   txt200 lin
@@ -79,15 +79,20 @@ func escr # Criar tipo
 
 classe adm_atipo
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Atipo\b\n\
+Sintaxe: ATIPO <nome>\n\
+Apaga o tipo de personagem com o nome especificado.\n\
+Nota: tipos de personagens são raça e classe."
 
 func escr # Apagar tipo
   prog p
   se arg1 == ""
-    arg0.msg("Tecle um nome após LTIPO")
+    arg0.msg("Tecle um nome após ATIPO")
   senao !p.existe("tipo_" + arg1)
     arg0.msg("Tipo não existe: " + arg1)
   senao
-    arg0.tpasso = arg1, passo
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
   fimse
 
 func passo # Confirmar que quer apagar tipo
@@ -109,6 +114,10 @@ func passo # Confirmar que quer apagar tipo
 
 classe adm_etipo
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Etipo\b\n\
+Sintaxe: ETIPO <nome>\n\
+Edita o tipo de personagem com o nome especificado.\n\
+Nota: tipos de personagens são raça e classe."
 
 func escr # Editar tipo
   prog p
@@ -117,10 +126,9 @@ func escr # Editar tipo
   senao !p.existe("tipo_" + txts(arg1))
     arg0.msg("Tipo não existe: " + arg1)
   senao
-    var.classe1 = "tipo_" + txts(txtmin(arg1))
+    arg0.sock.var.classe1 = "tipo_" + txts(txtmin(arg1))
     arg0.sock.m_menu("menu_tipo")
   fimse
-  ret 1
 
 
 classe menu_tipo
@@ -144,7 +152,7 @@ const info3 = "Digite raça para ser uma raça, classe para ser uma classe ou o no
 de uma raça ou classe para ser uma sub-raça ou sub-classe."
 const tipo3 = "opc_linha"
 const clas3 = var.classe1
-const vari3 = "opc_menu"
+const vari3 = "menu"
 #
 const nome4 = "Somente raças"
 const info4 = "Se esse tipo for uma classe que não existe em todas as raças,\n\

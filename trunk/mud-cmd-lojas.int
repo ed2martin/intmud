@@ -267,12 +267,16 @@ $a_[p.lojachave])
     continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
     continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
     abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-    listaobj e
-    epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-      sair e.objini.cmd_negociar(arg0, p, "comprar")
-    efim
-    continuar e
+    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
+      continuar
+    senao
+      listaobj e
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+        sair e.objini.cmd_negociar(arg0, p, "comprar")
+      efim
+      continuar e
+    fimse
 # Itens fixos - lojaitem
     textotxt t2
     epara t2.addfim(p.lojaitem(arg0)), t2.linhas, t2.remove
@@ -456,12 +460,16 @@ func escr
       continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
       continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
       abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-      continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      listaobj e
-      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-        sair e.objini.cmd_negociar(arg0, p, "vender")
-      efim
-      continuar e
+      se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+        arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
+        continuar
+      senao
+        listaobj e
+        epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+          sair e.objini.cmd_negociar(arg0, p, "vender")
+        efim
+        continuar e
+      fimse
       indiceitem item
       refvar r = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
       refvar valor = intpos(r.valor * (100 - p.taxacompra) / 100)
@@ -724,12 +732,16 @@ func escr
     continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
     continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
     abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
-    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-    listaobj e
-    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
-      sair e.objini.cmd_negociar(arg0, l.objini, "aprender")
-    efim
-    continuar e
+    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
+      continuar
+    senao
+      listaobj e
+      epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+        sair e.objini.cmd_negociar(arg0, l.objini, "aprender")
+      efim
+      continuar e
+    fimse
     textotxt t2
     epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
