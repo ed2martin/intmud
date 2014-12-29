@@ -1,24 +1,23 @@
 classe adm_perso
 herda comando_adm
 const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
-\c2LPERSO\b [nome]\n\
-  Lista personagens que começam com o nome especificado.\n\
-\c2CPERSO\b <nome>\n\
-  Cria personagem. Nome deve ser o nome de uma área ou do personagem\n\
-  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
-\c2EPERSO\b <nome>\n\
-  Edita personagem.\n\
-\c2APERSO\b <nome>\n\
-  Apaga personagem."
+  \c2LPERSO\b    Lista personagens existentes\n\
+  \c2CPERSO\b    Cria um personagem\n\
+  \c2EPERSO\b    Edita um personagem\n\
+  \c2APERSO\b    Apaga um ou mais personagens"
 
 
 classe adm_lperso
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lperso\b\n\
+Sintaxe: LPERSO [nome]\n\
+Lista os personagens que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os personagens."
 
 func escr # Listar personagens
   prog p
-  se !p.iniclasse("p_" + arg0)
-    msg("\bNenhum personagem encontrado.")
+  se !p.iniclasse("p_" + arg1)
+    arg0.msg("\bNenhum personagem encontrado.")
   senao
     textotxt t
     txt100 lin
@@ -33,70 +32,70 @@ func escr # Listar personagens
       t.addfim(lin + "  " + [p.texto]:nome)
       p.depois
     efim
-    msg2(t.remove(500))
+    arg0.msg2(t.remove(500))
   fimse
-  ret 1
 
 
 classe adm_cperso
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Cperso\b\n\
+Sintaxe: CPERSO <nome>\n\
+Cria um personagem. Nome deve ser o nome de uma área ou do personagem.\n\
+Nomes de personagens são sempre nomes de área seguido de um número de\n\
+001 a 999."
 
 func escr # Criar personagem
   prog p
   txt40 nome
   uint16 num
 # Checa se digitou nome da sala
-  se arg0 == ""
-    msg("Tecle o nome do personagem ou da área após CPERSO")
-    ret 1
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do personagem ou da área após CPERSO")
   fimse
 # Checa nome completo
-  nome = txtmin(txtremove(arg0, "EMDCT7"))
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
   num = int(txtfim(nome, 3)) + 1000
-  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+  se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
-      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
-      ret 1
+      ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
     senao p.existe("p_" + nome)
-      msg("Personagem já existe: " + nome)
-      ret 1
+      ret arg0.msg("Personagem já existe: " + nome)
     fimse
 # Checa nome de área
   senao !p.existe("a_" + nome)
-    msg("Área não existe: " + nome)
-    ret 1
+    ret arg0.msg("Área não existe: " + nome)
   senao
     epara num = 1001, p.existe("p_" + nome + txtfim(num, 3)), num += 1
       continuar num < 2000
-      msg("Atingido limite de personagens na área " + nome)
-      ret 1
+      ret arg0.msg("Atingido limite de personagens na área " + nome)
     efim
     nome += txtfim(num, 3)
   fimse
 # Pergunta que tipo de personagem criar
-  var.opcclasse = nome
-  ret adm_cperso:exec("\b")
+  arg0.sock.var.opcclasse = nome
+  passo(arg0.sock, "")
 
 func passo # Escolher o tipo de personagem ao criar
   txt40 deriv
-  casovar txtmin(arg0)
+  casovar txtmin(arg1)
   casose
-    msg("Opção inválida")
+    arg0.msg("Opção inválida")
   casose "\b"
   casose ""
-    passo = "cperso"
-    msg("Entre com o tipo de personagem, O mostra as opções, Z cancela")
+    arg0.passo = este
+    arg0.msg("Entre com o tipo de personagem, O mostra as opções, Z cancela")
     ret 1
   casose "z"
-    msg("Retornando ao jogo")
-    passo = "", var.opcclasse = ""
+    arg0.msg("Retornando ao jogo")
+    arg0.passo = ""
+    arg0.var.opcclasse = ""
     ret 1
   casose "o"
-    txtmais.limpar
-    txtmais.addfim("S Simples/pacífico")
-    txtmais.addfim("B Pode batalhar")
-    txtmais.addfim("A Pode usar animais")
-    txtmostra
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("S Simples/pacífico")
+    arg0.txtmais.addfim("B Pode batalhar")
+    arg0.txtmais.addfim("A Pode usar animais")
+    arg0.txtmostra
     ret 1
   casose "s"
     deriv = "comum_perso"
@@ -111,101 +110,108 @@ func passo # Escolher o tipo de personagem ao criar
 # Cria personagem
   prog p
   txt100 area
-  area = txt(var.opcclasse, 0, inttotal(var.opcclasse) - 3)
-  p.criar("p_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
+  area = txt(arg0.var.opcclasse, 0, inttotal(arg0.var.opcclasse) - 3)
+  p.criar("p_" + arg0.var.opcclasse + "\na-" + area + "\nherda " + deriv)
   criar("admordena", "a-" + area)
 # config:salvar
-  msg("\bPersonagem criado: " + var.opcclasse)
-  admlog(arg0, "criou personagem " + var.opcclasse)
-  passo = "", var.opcclasse = ""
+  arg0.msg("\bPersonagem criado: " + arg0.var.opcclasse)
+  admlog(arg0, "criou personagem " + arg0.var.opcclasse)
+  arg0.passo = ""
+  arg0.var.opcclasse = ""
   ret 1
 
-func cmd_aperso
+
+classe adm_aperso
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Aperso\b\n\
+Sintaxe: APERSO <nomes dos personagens>\n\
+Apaga uma ou mais personagens, com os nomes especificados."
 
 func escr # Apagar personagem
   prog p
-  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    msg("Tecle um ou mais nomes de personagens após APERSO")
-    ret 1
+    ret arg0.msg("Tecle um ou mais nomes de personagens após APERSO")
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
     se !p.existe("p_" + txtsub(nome, x, 1))
-      msg("Personagem não existe: " + txtsub(nome, x, 1))
-      ret 1
+      ret arg0.msg("Personagem não existe: " + txtsub(nome, x, 1))
     fimse
     x += 1
   efim
-  tpasso = nome, adm_aperso:exec
-  ret 1
+  arg0.sock.tpasso = nome
+  passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar personagem
-  passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
     uint16 x
-    enquanto txtsub(tpasso, x, 1)
-      p.apagar("p_" + txtsub(tpasso, x, 1))
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("p_" + txtsub(arg0.tpasso, x, 1))
       x += 1
     efim
     config:salvar
     se x < 2
-      msg("Personagem apagado: " + tpasso)
-      admlog(arg0, "apagou personagem " + tpasso)
+      arg0.msg("Personagem apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou personagem " + arg0.tpasso)
     senao
-      msg("Personagens apagados: " + tpasso)
-      admlog(arg0, "apagou personagens " + tpasso)
+      arg0.msg("Personagens apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou personagens " + arg0.tpasso)
     fimse
   senao
     txt20 m1
-    passo = "aperso"
-    m1 = txt2(tpasso) ? "personagens" : "personagem"
-    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.passo = este
+    m1 = txt2(arg0.tpasso) ? "personagens" : "personagem"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
 
 classe adm_eperso
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Eperso\b\n\
+Sintaxe: EPERSO <nome>\n\
+Edita o personagem com o nome especificado."
 
 func escr # Editar personagem
   prog p
   uint8 num
-  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    msg("Tecle o nome do personagem após EPERSO")
+    arg0.msg("Tecle o nome do personagem após EPERSO")
   senao !p.existe("p_" + nome)
-    msg("\bPersonagem não existe: " + nome)
+    arg0.msg("\bPersonagem não existe: " + nome)
   senao !p.existe("menu_perso" + (num = p_[nome]:perso))
-    msg("\bPersonagem não pode ser editado: " + nome)
+    arg0.msg("\bPersonagem não pode ser editado: " + nome)
   senao
     arg0.sock.var.classe1 = "p_" + txtmin(nome)
     arg0.sock.var.menufim = "menu_perso" + num
     arg0.sock.m_menu("menu_perso" + num)
   fimse
-  ret 1
 
 
-classe adm_menuaula
-herda comando_adm, comando_comum
+classe opc_menuaula
+herda opc_menuprod
+const tipoprod = 0 # Indica que é aula
 
 func menu # Retorna quantidade de aulas
 # arg0=nome da classe, arg1=nome da variável
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), adm_menuaula:menu2([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + adm_menuaula:menu2([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
-    ret "<nulo> " + adm_menuaula:menu2
+    ret "<nulo> " + menu2
   casofim
 
 func menu2 # Usado por menu
@@ -213,27 +219,25 @@ func menu2 # Usado por menu
   x = intsublin(arg0)
   ret x == "0" ? "\c6Nenhuma aula\b" : x == "1" ? "\c6Uma aula\b" : "\c6" + x + " aulas\b"
 
-func passo # Menu de aulas
-  ret adm_menuprod:exec(arg0, "aula")
 
-
-classe adm_menuprod
-herda comando_adm, comando_comum
+classe opc_menuprod
+herda comando_adm
+const tipoprod = 1 # Indica que é produto
 
 func menu # Retorna quantidade de produtos
 # arg0=nome da classe, arg1=nome da variável
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), adm_menuprod:menu2([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + adm_menuprod:menu2([arg0]:[arg1])
+    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
-    ret "<nulo> " + adm_menuprod:menu2
+    ret "<nulo> " + menu2
   casofim
 
 func menu2 # Usado por menu
@@ -241,24 +245,26 @@ func menu2 # Usado por menu
   x = intsublin(arg0)
   ret x == "0" ? "\c6Nenhum produto\b" : x == "1" ? "\c6Um produto\b" : "\c6" + x + " produtos\b"
 
-func passo # Menu de produtos
-# msg(arg1 ? ">aula" : ">produto")
-  var.opcinserir = ""
-  casovar txtmin(txt(arg0, 0, 1))
+func passo # Menu de aulas e de produtos
+# arg0.msg(!tipoprod ? ">aula" : ">produto")
+  arg0.var.opcinserir = ""
+  casovar txtmin(txt(arg1, 0, 1))
   casose "\b"
   casose ""
-    passo = arg1 ? "menuaula" : "menuprod"
-    msg(var.opcnome + " " + txt(var.opcclasse, 2) + ", tecle O para saber as opções")
+    arg0.passo = este
+    refvar lin = ", tecle O para saber as opções"
+    arg0.msg(arg0.var.opcnome + " " + txt(arg0.var.opcclasse, 2) + lin)
     ret 1
   casose "o"
     textopos pos
-    txtmais.addfim(var.opcnome + " " + txt(var.opcclasse, 2))
-    txtmais.addfim([var.opcclasse]:[var.opcvar])
-    pos = txtmais.ini, pos.depois
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim(arg0.var.opcnome + " " + txt(arg0.var.opcclasse, 2))
+    arg0.txtmais.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+    pos = arg0.txtmais.ini, pos.depois
     !pos.texto && pos.remove
     se !pos.texto
       pos.apagar
-    senao !arg1 # Produtos
+    senao tipoprod # Produtos
       txt100 lin
       prog p
       enquanto pos
@@ -295,216 +301,223 @@ func passo # Menu de produtos
         pos.mudar(lin, 0, 1000), pos.depois
       efim
     fimse
-    txtmais.addfim("\c2" + pos.linha + (pos.linha < 10 ? ".\b Linha vazia" : ".\bLinha vazia"))
-    txtmais.addfim("Tecle E editar, I inserir ou A apagar, seguido do número da linha")
-    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
-    txtmostra
+    arg0.txtmais.addfim("\c2" + pos.linha + (pos.linha < 10 ? ".\b Linha vazia" : ".\bLinha \
+vazia"))
+    arg0.txtmais.addfim("Tecle E editar, I inserir ou A apagar, seguido do número da linha")
+    arg0.txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    arg0.txtmostra
     ret 1
   casose "m"
-    perso.teclou(txtremove(txt(arg0, 1), "E"))
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
     ret 1
   casose "z"
-    passo = var.opcpasso
-    ret adm_[passo]:exec("\b")
+    ret passosair(arg0)
   casose "a"
     uint16 lin
     uint16 total
-    lin = txt(arg0, 1), total = intsublin([var.opcclasse]:[var.opcvar])
+    lin = txt(arg1, 1), total = intsublin([arg0.var.opcclasse]:[arg0.var.opcvar])
     se lin > 0 && lin <= total
-      var.opclin = lin
-      arg1 ? adm_menuaula_a:exec("\b") : adm_menuprod_a:exec("\b")
+      arg0.var.opclin = lin
+      tipoprod ? $opc_menuprod_a.passo(arg0, "\b") : $opc_menuaula_a.passo(arg0, "\b")
     senao total == 0
-      msg("Não há nenhuma linha")
+      arg0.msg("Não há nenhuma linha")
     senao total == 1
-      msg("Só existe a linha 1")
+      arg0.msg("Só existe a linha 1")
     senao
-      msg("A linha deve ser um número de 1 a " + total)
+      arg0.msg("A linha deve ser um número de 1 a " + total)
     fimse
     ret 1
   casose "e"
   casose "i"
     uint16 lin
     uint16 total
-    lin = txt(arg0, 1), total = intsublin([var.opcclasse]:[var.opcvar])
+    lin = txt(arg1, 1), total = intsublin([arg0.var.opcclasse]:[arg0.var.opcvar])
     se lin > 0 && lin <= total + 1
-      var.opclin = lin
-      var.opcinserir_ = txt(arg0, 0, 1) == "i"
-      arg1 ? adm_menuaula1:exec("\b") : adm_menuprod1:exec("\b")
+      arg0.var.opclin = lin
+      arg0.var.opcinserir_ = txt(arg1, 0, 1) == "i"
+      tipoprod ? $opc_menuprod1.passo(arg0, "\b") : $opc_menuaula1.passo(arg0, "\b")
     senao total == 0
-      msg("Só existe a linha 1")
+      arg0.msg("Só existe a linha 1")
     senao
-      msg("A linha deve ser um número de 1 a " + (total + 1))
+      arg0.msg("A linha deve ser um número de 1 a " + (total + 1))
     fimse
     ret 1
   casofim
-  msg("Opção inválida: " + arg0)
+  arg0.msg("Opção inválida: " + arg1)
   ret 1
 
 
-classe adm_menuaula_a
+classe opc_menuaula_a
 herda comando_adm, comando_comum
 
 func passo # Apagar uma aula
-  casovar txtmin(arg0)
+  casovar txtmin(arg1)
   casose
-    msg("Apagar linha " + var.opclin + "? N não, S sim")
-    passo = "menuaula_a"
+    arg0.msg("Apagar linha " + arg0.var.opclin + "? N não, S sim")
+    arg0.passo = este
     ret 1
   casose "s"
-    msg("Linha " + var.opclin + " apagada")
+    arg0.msg("Linha " + arg0.var.opclin + " apagada")
     textotxt t
     textopos pos
-    t.addfim([var.opcclasse]:[var.opcvar])
-    pos = t.ini, pos.linha = var.opclin - 1, pos.remove
+    t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+    pos = t.ini, pos.linha = arg0.var.opclin - 1, pos.remove
     prog p
     se t.bytes <= 1
-      p.apagar(var.opcclasse, var.opcvar)
+      p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
     senao
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
-"\\n") + "\"")
+      refvar lin = "=\"" + txttroca(t.remove(1000), "\n", "\\n") + "\""
+      p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + lin)
     fimse
     config:salvar
-    admlog(arg0, "alterou aulas: " + var.opcclasse + ":" + var.opcvar)
+    admlog(arg0, "alterou aulas: " + arg0.var.opcclasse + ":" + arg0.var.opcvar)
   casose "n"
-    ret adm_menuaula_a:exec("")
+    ret $opc_menuaula.passo(arg0, "")
   casofim
 
 
-classe adm_menuprod_a
+classe opc_menuprod_a
 herda comando_adm, comando_comum
 
 func passo # Apagar um produto
-  casovar txtmin(arg0)
+  casovar txtmin(arg1)
   casose
-    msg("Apagar linha " + var.opclin + "? N não, S sim")
-    passo = "menuprod_a"
+    arg0.msg("Apagar linha " + arg0.var.opclin + "? N não, S sim")
+    arg0.passo = este
     ret 1
   casose "s"
-    msg("Linha " + var.opclin + " apagada")
+    arg0.msg("Linha " + arg0.var.opclin + " apagada")
     textotxt t
     textopos pos
-    t.addfim([var.opcclasse]:[var.opcvar])
-    pos = t.ini, pos.linha = var.opclin - 1, pos.remove
+    t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+    pos = t.ini, pos.linha = arg0.var.opclin - 1, pos.remove
     prog p
     se t.bytes <= 1
-      p.apagar(var.opcclasse, var.opcvar)
+      p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
     senao
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
-"\\n") + "\"")
+      refvar lin = "=\"" + txttroca(t.remove(1000), "\n", "\\n") + "\""
+      p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + lin)
     fimse
     config:salvar
-    admlog(arg0, "alterou produtos: " + var.opcclasse + ":" + var.opcvar)
+    admlog(arg0, "alterou produtos: " + arg0.var.opcclasse + ":" + arg0.var.opcvar)
   casose "n"
-    ret adm_menuprod:exec("")
+    ret $opc_menuprod.passo(arg0, "")
   casofim
 
 
-classe adm_menuaula1
+classe opc_menuaula1
 herda comando_adm, comando_comum
 
 func passo # Inserir ou editar aula
   uint16 x
-  ret arg0 == "z", p_menuaula("")
-  x = arg0, passo = "menuaula1"
-  casovar intsub(var.opclin)
+  ret arg1 == "z", $opc_menuaula.passo(arg0, "")
+  x = arg1, arg0.passo = este
+  casovar intsub(arg0.var.opclin)
   casose "1" # Escolher o tipo de aula
-    se arg0 == "h" || arg0 == "i" || arg0 == "m"
-      var.opclin += " " + txtmin(arg0), adm_menuaula1:exec("")
-    senao arg0 == "e"
-      var.opclin += " o", adm_menuaula1:exec("")
-    senao arg0 == "o"
-      txtmais.limpar
-      txtmais.addfim("Opções:")
-      txtmais.addfim("H Ensinar habilidade, comando hab")
-      txtmais.addfim("M Ensinar magia, comando magia")
-      txtmais.addfim("I Ensinar idioma, comando idioma")
-      txtmais.addfim("E Extra: ensinar algo que aparece no comando outros")
-      txtmostra
+    se arg1 == "h" || arg1 == "i" || arg1 == "m"
+      arg0.var.opclin += " " + txtmin(arg1)
+      $opc_menuaula1.passo(arg0, "")
+    senao arg1 == "e"
+      arg0.var.opclin += " o"
+      $opc_menuaula1.passo(arg0, "")
+    senao arg1 == "o"
+      arg0.txtmais.limpar
+      arg0.txtmais.addfim("Opções:")
+      arg0.txtmais.addfim("H Ensinar habilidade, comando hab")
+      arg0.txtmais.addfim("M Ensinar magia, comando magia")
+      arg0.txtmais.addfim("I Ensinar idioma, comando idioma")
+      arg0.txtmais.addfim("E Extra: ensinar algo que aparece no comando outros")
+      arg0.txtmostra
     senao
-      msg("Entre com o tipo, O mostra as opções, Z cancela")
+      arg0.msg("Entre com o tipo, O mostra as opções, Z cancela")
     fimse
     ret 1
   casose "2" # Escolher o que aprender
-    se arg0 == ""
-      msg("Entre com o nome da prática, Z cancela")
-    senao txtproc(txtsepara(arg0, "DO+DOLE,DOLE+DO", "\b"), "\b") >= 0
-      msg("Digite apenas letras e espaço")
+    se arg1 == ""
+      arg0.msg("Entre com o nome da prática, Z cancela")
+    senao txtproc(txtsepara(arg1, "DO+DOLE,DOLE+DO", "\b"), "\b") >= 0
+      arg0.msg("Digite apenas letras e espaço")
     senao
-      var.opclin += " " + txts(txtremove(arg0, "EMD")), adm_menuaula1:exec("")
+      arg0.var.opclin += " " + txts(txtremove(arg1, "EMD"))
+      $opc_menuaula1.passo(arg0, "")
     fimse
     ret 1
   casose "3" # Escolher a quantidade de aulas
-    se arg0 == "o"
-      txtmais.limpar
-      txtmais.addfim("Opções:")
+    se arg1 == "o"
+      arg0.txtmais.limpar
+      arg0.txtmais.addfim("Opções:")
       uint8 n
       epara n = 1, n < intsublin(misc:aulas), n += 1
-        txtmais.addfim(txt(n) + " " + txtsublin(misc:aulas, n, 1))
+        arg0.txtmais.addfim(txt(n) + " " + txtsublin(misc:aulas, n, 1))
       efim
-      txtmostra
+      arg0.txtmostra
     senao x < 1 || x >= intsublin(misc:aulas)
-      msg("Entre com a quantidade de aulas, O mostra as opções, Z cancela")
+      arg0.msg("Entre com a quantidade de aulas, O mostra as opções, Z cancela")
     senao
-      var.opclin += " " + x
+      arg0.var.opclin += " " + x
       textotxt t
       textopos pos
-      t.addfim([var.opcclasse]:[var.opcvar]), t.bytes == 1 && t.limpar
-      pos = t.ini, pos.linha = int(txt1(var.opclin)) - 1
-      !var.opcinserir && pos.remove
-      pos.add(txtsub(var.opclin, 1, 1) + "_" + txtsub(var.opclin, 2))
+      t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+      t.bytes == 1 && t.limpar
+      pos = t.ini, pos.linha = int(txt1(arg0.var.opclin)) - 1
+      !arg0.var.opcinserir && pos.remove
+      pos.add(txtsub(arg0.var.opclin, 1, 1) + "_" + txtsub(arg0.var.opclin, 2))
       prog p
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
-"\\n") + "\"")
+      refvar lin = "=\"" + txttroca(t.remove(1000), "\n", "\\n") + "\""
+      p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + lin)
       config:salvar
-      admlog(arg0, "alterou aulas: " + var.opcclasse + ":" + var.opcvar)
+      admlog(arg0, "alterou aulas: " + arg0.var.opcclasse + ":" + arg0.var.opcvar)
       sair
     fimse
     ret 1
   casofim
-  ret p_menuaula("")
+  ret $opc_menuaula.passo(arg0, "")
 
 
-classe adm_menuprod1
+classe opc_menuprod1
 herda comando_adm, comando_comum
 
 func passo # Inserir ou editar produto
   uint16 x
-  ret arg0 == "z", p_menuprod("")
-  x = arg0, passo = "menuprod1"
-  casovar intsub(var.opclin)
+  ret arg1 == "z", $opc_menuprod.passo(arg0, "")
+  x = arg1, arg0.passo = este
+  casovar intsub(arg0.var.opclin)
   casose "1" # Escolher o item
     prog p
-    se arg0 == "" || arg0 == "\b"
-      msg("Entre com o item, Z cancela")
-    senao !p.existe("i_" + txts(arg0))
-      msg("Item não existe: " + txts(arg0) + "; entre com outro")
+    se arg1 == "" || arg1 == "\b"
+      arg0.msg("Entre com o item, Z cancela")
+    senao !p.existe("i_" + txts(arg1))
+      arg0.msg("Item não existe: " + txts(arg1) + "; entre com outro")
     senao
-      var.opclin += " " + txts(arg0), adm_menuprod1:exec("")
+      arg0.var.opclin += " " + txts(arg1)
+      $opc_menuprod1.passo(arg0, "")
     fimse
     ret 1
   casose "2" # Escolher o nível
-    se txt(x) != arg0
-      msg("Entre com o nível, 0=manter, Z cancela")
+    se txt(x) != arg1
+      arg0.msg("Entre com o nível, 0=manter, Z cancela")
     senao
-      var.opclin += " " + x
+      arg0.var.opclin += " " + x
       textotxt t
       textopos pos
-      t.addfim([var.opcclasse]:[var.opcvar]), t.bytes == 1 && t.limpar
-      pos = t.ini, pos.linha = int(txt1(var.opclin)) - 1
-      !var.opcinserir && pos.remove
-      pos.add(txt2(var.opclin))
+      t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+      t.bytes == 1 && t.limpar
+      pos = t.ini, pos.linha = int(txt1(arg0.var.opclin)) - 1
+      !arg0.var.opcinserir && pos.remove
+      pos.add(txt2(arg0.var.opclin))
       prog p
-      p.criar(var.opcclasse, "oonst " + var.opcvar + "=\"" + txttroca(t.remove(1000), "\n", \
-"\\n") + "\"")
+      refvar lin = "=\"" + txttroca(t.remove(1000), "\n", "\\n") + "\""
+      p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + lin)
       config:salvar
-      var.opclin = txtsub(var.opclin, 1, 1)
-      msg("Produto adicionado: " + var.opclin + "(" + i_[var.opclin]:nome + ")")
-      admlog(arg0, "alterou produtos: " + var.opcclasse + ":" + var.opcvar)
+      arg0.var.opclin = txtsub(arg0.var.opclin, 1, 1)
+      arg0.msg("Produto adicionado: " + arg0.var.opclin + "(" + i_[arg0.var.opclin]:nome + \
+")")
+      admlog(arg0, "alterou produtos: " + arg0.var.opcclasse + ":" + arg0.var.opcvar)
       sair
     fimse
     ret 1
   casofim
-  ret p_menuprod("")
+  ret $opc_menuprod.passo(arg0, "")
 
 
 classe menu_pcomum1
@@ -768,11 +781,12 @@ const vari2 = "lojafim"
 const extr2 = "0 23"
 #
 const nome3 = "Lucro na venda"
-const info3 = "Em porcentagem (0=sem lucro; paga o valor do item)"
+const info3 = "Em porcentagem; 0 significa nenhum lucro (cobra o preço do item).\n\
+Se menor que 0, o vendedor tem prejuízo (-100 é de graça; o item é doado)"
 const tipo3 = "opc_numero"
 const clas3 = var.classe1
 const vari3 = "taxavenda"
-const extr3 = "0 10000"
+const extr3 = "-100 10000"
 #
 const nome4 = "Lucro na compra"
 const info4 = "Em porcentagem (0=preço normal e 100=não paga pelo item)"
@@ -789,7 +803,7 @@ const vari5 = "taxaaula"
 const extr5 = "0 10000"
 #
 const nome6 = "Produtos"
-const tipo6 = "menuprod"
+const tipo6 = "opc_menuprod"
 const clas6 = var.classe1
 const vari6 = "lojaitem"
 #
@@ -831,7 +845,7 @@ const vari12 = "tipoitem"
 const extr12 = config:produtos
 #
 const nome13 = "Aulas"
-const tipo13 = "menuaula"
+const tipo13 = "opc_menuaula"
 const clas13 = var.classe1
 const vari13 = "lojaaula"
 #

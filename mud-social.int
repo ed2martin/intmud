@@ -1,7 +1,7 @@
 classe adm_social
 herda comando_adm
 const txtajuda = "\b\c3Comandos sociais\b\n\
-  \c2LSOC\b      Lista comandos sociais\n\
+  \c2LSOC\b      Lista comandos sociais existentes\n\
   \c2CSOC\b      Cria um social\n\
   \c2ESOC\b      Edita um social\n\
   \c2ASOC\b      Apaga um social"
@@ -19,7 +19,8 @@ classe adm_lsoc
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Lsoc\b\n\
 Sintaxe: LSOC [nome]\n\
-Lista os comandos sociais que começam com o nome especificado."
+Lista os comandos sociais que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os comandos sociais."
 
 func escr # Listar sociais
   prog p

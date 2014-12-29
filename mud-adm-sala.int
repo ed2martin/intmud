@@ -51,7 +51,8 @@ classe adm_larea
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Larea\b\n\
 Sintaxe: LAREA [nome]\n\
-Lista as áreas que começam com o nome especificado."
+Lista as áreas que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as áreas."
 
 func escr # Listar áreas
   prog p
@@ -97,7 +98,7 @@ classe adm_aarea
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Aarea\b\n\
 Sintaxe: AAREA <nome>\n\
-Apaga a área com o nomes especificado, desde que esteja vazia\n\
+Apaga a área com o nome especificado, desde que esteja vazia\n\
 (nenhuma sala, personagem, item ou casa)."
 
 func escr # Apagar área
@@ -162,7 +163,8 @@ classe adm_lsala
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Lsala\b\n\
 Sintaxe: LSALA [nome]\n\
-Lista as salas que começam com o nome especificado."
+Lista as salas que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as salas."
 
 func escr # Listar salas
   prog p
@@ -232,7 +234,7 @@ classe adm_csala
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Csala\b\n\
 Sintaxe: CSALA <nome>\n\
-Cria uma sala. Nome deve ser o nome de uma área da sala.\n\
+Cria uma sala. Nome deve ser o nome de uma área ou da sala.\n\
 Nomes de sala são sempre nomes de área seguido de um número de 001 a 999."
 
 func escr # Criar sala

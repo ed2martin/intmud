@@ -712,11 +712,12 @@ func passo
       arg0.txtmais.addfim(txt(p.texto, 5))
     efim
   fimse
-  ret passo2(arg0, p.existe("tipo_" + txts(arg1)))
+  ret passo2(arg0, arg1, p.existe("tipo_" + txts(arg1)))
 
 func passo2 # Usado intermanente: alterando um vetor de textos
-# arg0 = texto digitado pelo usuário
-# arg1 = verdadeiro se o texto for a texto válido para o vetor
+# arg0 = objeto jogsock do jogador
+# arg1 = texto digitado pelo usuário
+# arg2 = verdadeiro se o texto for válido para o vetor
 # Se arg0=="o", a variável txtmais deve ter a lista de opções válidas, uma por linha
   prog p
   se arg1 == "" || arg1 == "\b"
@@ -728,10 +729,12 @@ func passo2 # Usado intermanente: alterando um vetor de textos
     ret 1
   senao arg1 == "o"
     se arg0.txtmais.bytes <= 1
-      arg0.txtmais.limpar, arg0.txtmais.add("\bNão há nenhuma opção definida")
+      arg0.txtmais.limpar
+      arg0.txtmais.addfim("\bNão há nenhuma opção definida")
     senao
       arg0.txtmais.addfim(txttroca(arg0.txtmais.remove(5000), "\n", ", "))
-      arg0.txtmais.juntar, arg0.txtmais.dividelin(40, 75)
+      arg0.txtmais.juntar
+      arg0.txtmais.dividelin(40, 75)
       arg0.txtmais.addini("\bOpções:")
     fimse
     arg0.txtmostra
@@ -752,9 +755,9 @@ func passo2 # Usado intermanente: alterando um vetor de textos
     pos = t.ini
     se pos.txtproc("\n" + lin + "\n") >= 0
       pos.remove
-    senao !arg1
+    senao !arg2
       arg0.msg("Opção inválida: " + lin)
-      ret adm_tipos:exec2("\b")
+      ret passo2(arg0, "\b")
     senao
       t.addfim(lin), t.ordena
     fimse
@@ -764,7 +767,7 @@ func passo2 # Usado intermanente: alterando um vetor de textos
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     arg0.msg("Escolheu: " + txttroca(t.ini.textolin(1000), "\n", " "))
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
-    ret adm_tipos:exec2("\b")
+    ret passo2(arg0, "\b")
   fimse
   ret passosair(arg0)
 
@@ -789,13 +792,13 @@ func passo
   fimse
   casovar txtmin(txt(arg1, 0, 2))
   casose "h_"
-    ret adm_tipodep:exec2(arg0, $cmd_[txt(arg1, 2)].cmdmenu != nulo)
+    ret passo2(arg0, arg1, $cmd_[txt(arg1, 2)].cmdmenu != nulo)
   casose "m_"
-    ret adm_tipodep:exec2(arg0, $magia_[txt(arg1, 2)] != nulo)
+    ret passo2(arg0, arg1, $magia_[txt(arg1, 2)] != nulo)
   casose "i_"
-    ret adm_tipodep:exec2(arg0, $idioma_[txt(arg1, 2)] != nulo)
+    ret passo2(arg0, arg1, $idioma_[txt(arg1, 2)] != nulo)
   casofim
-  ret adm_tipodep:exec2(arg0, 0)
+  ret passo2(arg0, arg1, 0)
 
 
 classe opc_simnao

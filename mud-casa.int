@@ -1,96 +1,90 @@
 classe adm_casa
 herda comando_adm
-# Comandos de casas
-#
 const txtajuda = "\b\c3Comandos de casas\b\n\
-\c2LCASA\b [casa]\n\
-  Lista casas que começam com o nome especificado.\n\
-\c2CCASA\b <nome>\n\
-  Cria casa. Nome deve ser o nome de uma área ou da casa\n\
-  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
-  Nota: para casa casa é criado um arquivo no diretório sav2.\n\
-\c2ECASA\b <casa>\n\
-  Edita casa.\n\
-\c2ACASA\b <um ou mais nomes de casa>\n\
-  Apaga uma ou mais casas e os arquivos salvos das casas.\n\
-\c2Para criar uma casa:\b\n\
-  1. Usar o comando CCASA\n\
-  2. Definir as salas que correspondem à casa com o comando ECASA\n\
-  3. Editar as salas (comando ESALA) colocando 0 na opção \"Apagar itens\"\n\
-  4. Acertar também a opção \"Objetos máximo\"\n\
-  5. Para segurança dos jogadores, editar as saídas da casa (comando ESAI)\n\
-     para fechar ao passar e trancar ao fechar\n\
-  6. Colocar o nome da casa no código da fechadura (comando ESAI)"
+  \c2LCASA\b     Lista casas existentes\n\
+  \c2CCASA\b     Cria uma \n\
+  \c2ECASA\b     Edita uma casa\n\
+  \c2ACASA\b     Apaga uma ou mais casas"
 
 
 classe adm_lcasa
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lcasa\b\n\
+Sintaxe: LCASA [nome]\n\
+Lista as casas que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as casas."
 
 func escr # Listar casas
   prog p
-  se !p.iniclasse("c_" + txtremove(arg0, "EMDCT7"))
-    arg0.msg("\bNenhuma casa encontrada.")
-  senao
-    datahora hora
-    hora.agora
-    textotxt t
-    txt200 lin
-    t.addfim("\b\c6Casa  ArquivoJogador  DiasTaxa  Situação\b")
-    enquanto p.lin && t.linhas < 500
-      lin = txtsub($[p.texto].nomejog, 1, 1)
-      se lin
-        lin = "  " + lin + "  " + (hora.numdias - $[p.texto].diataxa)
-        casovar $[p.texto].infotaxa
-        casose "1"
-          lin += "  Atrasado"
-          sair
-        casose "2"
-          lin += "  Bloqueado"
-          sair
-        casose
-          lin += "  Ok"
-        casofim
-      fimse
-      t.addfim(txt(p.texto, 2) + lin)
-      p.depois
-    efim
-    arg0.msg2(t.remove(500))
+  se !p.iniclasse("c_" + txtremove(arg1, "EMDCT7"))
+    ret arg0.msg("\bNenhuma casa encontrada.")
   fimse
-  ret 1
+  datahora hora
+  hora.agora
+  textotxt t
+  txt200 lin
+  t.addfim("\b\c6Casa  ArquivoJogador  DiasTaxa  Situação\b")
+  enquanto p.lin && t.linhas < 500
+    lin = txtsub($[p.texto].nomejog, 1, 1)
+    se lin
+      lin = "  " + lin + "  " + (hora.numdias - $[p.texto].diataxa)
+      casovar $[p.texto].infotaxa
+      casose "1"
+        lin += "  Atrasado"
+        sair
+      casose "2"
+        lin += "  Bloqueado"
+        sair
+      casose
+        lin += "  Ok"
+      casofim
+    fimse
+    t.addfim(txt(p.texto, 2) + lin)
+    p.depois
+  efim
+  arg0.msg2(t.remove(500))
 
 
 classe adm_ccasa
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ccasa\b\n\
+Sintaxe: CCASA <nome>\n\
+Cria uma casa. Nome deve ser o nome de uma área ou da casa.\n\
+Nomes de casas são sempre nomes de área seguido de um número de 001 a 999.\n\
+Passos para criar uma casa:\n\
+1. Usar o comando CCASA\n\
+2. Definir as salas que correspondem à casa com o comando ECASA\n\
+3. Editar as salas (comando ESALA) colocando 0 na opção \"Apagar itens\"\n\
+4. Acertar também a opção \"Objetos máximo\"\n\
+5. Para segurança dos jogadores, editar as saídas da casa (comando ESAI)\n\
+   para fechar ao passar e trancar ao fechar\n\
+6. Colocar o nome da casa no código da fechadura (comando ESAI)\n\
+Nota: para casa casa é criado um arquivo no diretório sav2."
 
 func escr # Criar casa
   prog p
   txt40 nome
   uint16 num
 # Checa se digitou nome da casa
-  se arg0 == ""
-    arg0.msg("Tecle o nome da casa ou área após CCASA")
-    ret 1
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da casa ou área após CCASA")
   fimse
 # Checa nome completo
-  nome = txtmin(txtremove(arg0, "EMDCT7"))
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
   num = int(txtfim(nome, 3)) + 1000
-  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+  se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
-      arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
-      ret 1
+      ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
     senao p.existe("c_" + nome)
-      arg0.msg("Casa já existe: " + nome)
-      ret 1
+      ret arg0.msg("Casa já existe: " + nome)
     fimse
 # Checa nome de área
   senao !p.existe("a_" + nome)
-    arg0.msg("Área não existe: " + nome)
-    ret 1
+    ret arg0.msg("Área não existe: " + nome)
   senao
     epara num = 1001, p.existe("c_" + nome + txtfim(num, 3)), num += 1
       continuar num < 2000
-      arg0.msg("Atingido limite de casas na área " + nome)
-      ret 1
+      ret arg0.msg("Atingido limite de casas na área " + nome)
     efim
     nome += txtfim(num, 3)
   fimse
@@ -102,74 +96,76 @@ func escr # Criar casa
 # config:salvar
   arg0.msg("\bCasa criada: " + nome)
   admlog(arg0, "criou casa " + nome)
-  ret 1
 
 
 classe adm_acasa
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Acasa\b\n\
+Sintaxe: ACASA <nomes das casas>\n\
+Apaga uma ou mais casas, com os nomes especificados."
 
 func escr # Apagar casa
   prog p
-  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    arg0.msg("Tecle um ou mais nomes da casa após ACASA")
-    ret 1
+    ret arg0.msg("Tecle um ou mais nomes da casa após ACASA")
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
     se !p.existe("c_" + txtsub(nome, x, 1))
-      arg0.msg("Casa não existe: " + txtsub(nome, x, 1))
-      ret 1
+      ret arg0.msg("Casa não existe: " + txtsub(nome, x, 1))
     fimse
     x += 1
   efim
-  tpasso = nome, adm_acasa:p_acasa
-  ret 1
+  arg0.sock.tpasso = nome
+  passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar casa
-  passo = ""
-  se arg0 == "n"
+  arg0.passo = ""
+  se arg1 == "n"
     arg0.msg("Cancelado")
-  senao arg0 == "s"
+  senao arg1 == "s"
     prog p
     uint16 x
-    enquanto txtsub(tpasso, x, 1)
-      p.apagar("c_" + txtsub(tpasso, x, 1))
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("c_" + txtsub(arg0.tpasso, x, 1))
       x += 1
     efim
     config:salvar
     se x < 2
-      arg0.msg("Casa apagada: " + tpasso)
-      admlog(arg0, "apagou casa " + tpasso)
+      arg0.msg("Casa apagada: " + arg0.tpasso)
+      admlog(arg0, "apagou casa " + arg0.tpasso)
     senao
-      arg0.msg("Casas apagadas: " + tpasso)
-      admlog(arg0, "apagou casas " + tpasso)
+      arg0.msg("Casas apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou casas " + arg0.tpasso)
     fimse
   senao
     txt10 m1
-    passo = "acasa"
-    txt2(tpasso) && (m1 = "s")
-    arg0.msg("Apagar casa" + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.passo = este
+    txt2(arg0.tpasso) && (m1 = "s")
+    arg0.msg("Apagar casa" + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
 
 classe adm_ecasa
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ecasa\b\n\
+Sintaxe: ECASA <nome>\n\
+Edita a casa com o nome especificado."
 
 func escr # Editar casa
   txt100 nome
   prog p
-  nome = txtmin(txtremove(arg0, "EMDCT7"))
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
     arg0.msg("Tecle o nome da casa após ECASA")
   senao !$c_[nome]
     arg0.msg("\bCasa não existe: " + nome)
   senao
-    var.classe1 = "c_" + nome
+    arg0.sock.var.classe1 = "c_" + nome
     arg0.sock.m_menu("menu_casa")
   fimse
-  ret 1
 
 
 classe menu_casa
@@ -591,7 +587,7 @@ func escr
   se arg0.pnivel < config:pdescnivel
     arg0.msg("Você precisa chegar no nível " + config:pdescnivel + " para usar esse comando")
   senao
-    passo(sock, "\b")
+    passo(arg0.sock, "\b")
   fimse
 
 func passo # Alterando descrição do personagem
@@ -606,7 +602,7 @@ func passo # Alterando descrição do personagem
     arg0.leditor2 = arg0.teditor.fim
     arg0.leditor2.antes
     arg0.passo = este
-    msg("Editando descrição do personagem, O opções, X salvar, Z sair")
+    arg0.msg("Editando descrição do personagem, O opções, X salvar, Z sair")
     ret 1
   casose "z" # Sair do editor
     arg0.msg("Fechando editor")
@@ -640,7 +636,7 @@ func escr
   se !arg0.dentrocasa
     arg0.msg("Você não está dentro da sua casa.")
   senao
-    passo(sock, "\b")
+    passo(arg0.sock, "\b")
   fimse
 
 func passo # Alterando descrição da sala

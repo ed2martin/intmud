@@ -1,26 +1,23 @@
 classe adm_hab
 herda comando_adm
 const txtajuda = "\b\c3Habilidades e magias\b\n\
-\c2LHAB\b [nome]\n\
-\c2LMAG\b [nome]\n\
-  Lista habilidades ou magias que começam com o nome especificado.\n\
-\c2CHAB\b <nome>\n\
-\c2CMAG\b <nome>\n\
-  Cria uma habilidade ou magia. Nome deve ser o nome da habilidade ou\n\
-  magia, e deve ser composto de letras, mas pode ter espaços no meio.\n\
-\c2EHAB\b <nome>\n\
-\c2EMAG\b <nome>\n\
-  Edita uma habilidade ou uma magia.\n\
-\c2AHAB\b <nome>\n\
-\c2AMAG\b <nome>\n\
-  Apaga uma habilidade ou uma magia.\n\
-\c2ATKLOG\b\n\
-  Mostra os cálculos de batalha no próximo ataque que o seu personagem\n\
-  fizer ou receber, exceto quando seu personagem é um alvo secundário."
+  \c2LHAB\b      Lista habilidades existentes\n\
+  \c2LMAG\b      Lista magias existentes\n\
+  \c2CHAB\b      Cria uma habilidade\n\
+  \c2CMAG\b      Cria uma magia\n\
+  \c2EHAB\b      Edita uma habilidade\n\
+  \c2EMAG\b      Edita uma magia\n\
+  \c2AHAB\b      Edita uma ou mais habilidades\n\
+  \c2AMAG\b      Edita uma ou mais magias\n\
+  \c2ATKLOG\b    Mostra os cálculos de batalha no próximo ataque"
 
 
 classe adm_lhab
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lhab\b\n\
+Sintaxe: LHAB [nome]\n\
+Lista as habilidades que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as habilidades."
 
 func escr # Listar habilidades
   prog p
@@ -68,11 +65,14 @@ func escr # Listar habilidades
   senao
     arg0.msg("\bNenhuma habilidade encontrada.")
   fimse
-  ret 1
 
 
 classe adm_lmag
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lmag\b\n\
+Sintaxe: LMAG [nome]\n\
+Lista as magias que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as magias."
 
 func escr # Listar magias
   prog p
@@ -120,11 +120,14 @@ func escr # Listar magias
   senao
     arg0.msg("\bNenuma magia encontrada.")
   fimse
-  ret 1
 
 
 classe adm_chab
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Chab\b\n\
+Sintaxe: CHAB <nome>\n\
+Cria uma habilidade com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
 
 func escr # Criar habilidade
   prog p
@@ -132,30 +135,30 @@ func escr # Criar habilidade
   uint16 num
 # Checa se digitou nome do ataque
   se arg1 == ""
-    arg0.msg("Tecle o nome da habilidade após CHAB")
-    ret 1
+    ret arg0.msg("Tecle o nome da habilidade após CHAB")
   fimse
 # Checa se nome válido
   nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    arg0.msg("Nome inválido para habilidade: " + nome)
-    ret 1
+    ret arg0.msg("Nome inválido para habilidade: " + nome)
   senao p.existe("cmd_" + nome)
-    arg0.msg("Já existe o comando: " + nome)
-    ret 1
+    ret arg0.msg("Já existe o comando: " + nome)
   senao p.existe("soc_" + nome)
-    arg0.msg("Já existe o comando social: " + nome)
-    ret 1
+    ret arg0.msg("Já existe o comando social: " + nome)
   fimse
 # Pergunta que tipo de habilidade criar
-  var.opcclasse = "cmd_" + txts(txtmin(nome))
-  var.opcvar = "h_" + txtcopiamai(txte(nome), "A")
-  var.opctipo = "habilidade"
+  arg0.sock.var.opcclasse = "cmd_" + txts(txtmin(nome))
+  arg0.sock.var.opcvar = "h_" + txtcopiamai(txte(nome), "A")
+  arg0.sock.var.opctipo = "habilidade"
   ret p_chab("\b")
 
 
 classe adm_cmag
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Cmag\b\n\
+Sintaxe: CMAG <nome>\n\
+Cria uma magia com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
 
 func escr # Criar magia
   prog p
@@ -163,44 +166,44 @@ func escr # Criar magia
   uint16 num
 # Checa se digitou nome do ataque
   se arg1 == ""
-    arg0.msg("Tecle o nome da magia após CMAG")
-    ret 1
+    ret arg0.msg("Tecle o nome da magia após CMAG")
   fimse
 # Checa se nome válido
   nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    arg0.msg("Nome inválido para magia: " + nome)
-    ret 1
+    ret arg0.msg("Nome inválido para magia: " + nome)
   senao p.existe("magia_" + nome)
-    arg0.msg("Já existe a magia: " + nome)
-    ret 1
+    ret arg0.msg("Já existe a magia: " + nome)
   fimse
 # Pergunta que tipo de magia criar
-  var.opcclasse = "magia_" + txts(txtmin(nome))
-  var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
-  var.opctipo = "magia"
-  ret p_chab("\b")
+  arg0.sock.var.opcclasse = "magia_" + txts(txtmin(nome))
+  arg0.sock.var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
+  arg0.sock.var.opctipo = "magia"
+  passo(arg0.sock, "")
 
-func exec # Escolher o tipo de habilidade ou magia
+func passo # Escolher o tipo de habilidade ou magia
   txt40 deriv
   casovar txtmin(arg1)
   casose
     arg0.msg("Opção inválida")
   casose "\b"
   casose ""
-    passo = "chab"
-    arg0.msg("Entre com o tipo de " + var.opctipo + ", O mostra as opções, Z cancela")
+    arg0.passo = este
+    arg0.msg("Entre com o tipo de " + arg0.var.opctipo + ", O mostra as opções, Z cancela")
     ret 1
   casose "z"
     arg0.msg("Retornando ao jogo")
-    passo = "", var.opcclasse = "", var.opcnome = "", var.opctipo = ""
+    arg0.passo = ""
+    arg0.var.opcclasse = ""
+    arg0.var.opcnome = ""
+    arg0.var.opctipo = ""
     ret 1
   casose "o"
-    txtmais.limpar
-    txtmais.addfim("C Habilidade ou magia comum")
-    txtmais.addfim("I Identificar")
-    txtmais.addfim("R Retornar")
-    txtmostra
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("C Habilidade ou magia comum")
+    arg0.txtmais.addfim("I Identificar")
+    arg0.txtmais.addfim("R Retornar")
+    arg0.txtmostra
     ret 1
   casose "c"
     deriv = "comando_ataque"
@@ -214,8 +217,8 @@ func exec # Escolher o tipo de habilidade ou magia
   casofim
 # Cria habilidade ou magia
   txt512 lin
-  lin = var.opcclasse + "\nb-hab\nherda " + deriv
-  lin += "\nconst nomevar = \"" + var.opcvar + "\""
+  lin = arg0.var.opcclasse + "\nb-hab\nherda " + deriv
+  lin += "\nconst nomevar = \"" + arg0.var.opcvar + "\""
   lin += "\nconst arg0.msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
   lin += "$P ataca e mata $a, $m\\n\\n\\n$P ataca $a, errou\\n\\n\\n"
   lin += "$P ataca $a, nada acontece\\n\\n\\n\""
@@ -223,87 +226,90 @@ func exec # Escolher o tipo de habilidade ou magia
   p.criar(lin)
   criar("admordena", "b-hab")
 # config:salvar
-  arg0.msg("\bCriou " + var.opctipo + ": " + txt(var.opcvar, 2))
-  admlog("criou " + var.opctipo + " " + txt(var.opcvar, 2))
-  passo = "", var.opcclasse = "", var.opcnome = "", var.opctipo = ""
+  arg0.msg("\bCriou " + arg0.var.opctipo + ": " + txt(arg0.var.opcvar, 2))
+  admlog("criou " + arg0.var.opctipo + " " + txt(arg0.var.opcvar, 2))
+  arg0.passo = ""
+  arg0.var.opcclasse = ""
+  arg0.var.opcnome = ""
+  arg0.var.opctipo = ""
   ret 1
 
 
 classe adm_ahab
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ahab\b\n\
+Sintaxe: AHAB <nomes das habilidades>\n\
+Apaga uma ou mais habilidades, com os nomes especificados."
 
 func escr # Apagar habilidade
   prog p
   se arg1 == ""
-    arg0.msg("Tecle um ou mais nomes de habilidades após AHAB")
-    ret 1
+    ret arg0.msg("Tecle um ou mais nomes de habilidades após AHAB")
   fimse
   uint16 x
   enquanto txtsub(arg1, x, 1)
     se !p.existe("cmd_" + txtsub(arg1, x, 1))
-      arg0.msg("Habilidade não existe: " + txtsub(arg1, x, 1))
-      ret 1
+      ret arg0.msg("Habilidade não existe: " + txtsub(arg1, x, 1))
     senao !$cmd_[txtsub(arg1, x, 1)].cmdmenu
-      arg0.msg("Comando não é uma habilidade: " + txtsub(arg1, x, 1))
-      ret 1
+      ret arg0.msg("Comando não é uma habilidade: " + txtsub(arg1, x, 1))
     fimse
     x += 1
   efim
-  tpasso = arg1, p_ahab
-  ret 1
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar habilidade
-  passo = ""
+  arg0.passo = ""
   se arg1 == "n"
     arg0.msg("Cancelado")
   senao arg1 == "s"
     prog p
     uint16 x
-    enquanto txtsub(tpasso, x, 1)
-      p.apagar("cmd_" + txtsub(tpasso, x, 1))
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("cmd_" + txtsub(arg0.tpasso, x, 1))
       x += 1
     efim
     config:salvar
     se x < 2
-      arg0.msg("Habilidade apagada: " + tpasso)
-      admlog("apagou habilidade " + tpasso)
+      arg0.msg("Habilidade apagada: " + arg0.tpasso)
+      admlog("apagou habilidade " + arg0.tpasso)
     senao
-      arg0.msg("Habilidades apagados: " + tpasso)
-      admlog("apagou habilidades " + tpasso)
+      arg0.msg("Habilidades apagados: " + arg0.tpasso)
+      admlog("apagou habilidades " + arg0.tpasso)
     fimse
   senao
-    passo = "ahab"
-    refvar m1 = txt2(tpasso) ? "habilidades" : "habilidade"
-    arg0.msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "habilidades" : "habilidade"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
 
 classe adm_amag
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Amag\b\n\
+Sintaxe: AMAG <nomes das magias>\n\
+Apaga uma ou mais magias, com os nomes especificados."
 
 func escr # Apagar magia
   prog p
   se arg1 == ""
-    arg0.msg("Tecle um ou mais nomes de magias após AMAG")
-    ret 1
+    ret arg0.msg("Tecle um ou mais nomes de magias após AMAG")
   fimse
   uint16 x
   enquanto txtsub(arg1, x, 1)
     se !p.existe("magia_" + txtsub(arg1, x, 1))
-      arg0.msg("Magia não existe: " + txtsub(arg1, x, 1))
-      ret 1
+      ret arg0.msg("Magia não existe: " + txtsub(arg1, x, 1))
     senao !$magia_[txtsub(arg1, x, 1)].cmdmenu
-      arg0.msg("Magia não pode ser apagada: " + txtsub(arg1, x, 1))
-      ret 1
+      ret arg0.msg("Magia não pode ser apagada: " + txtsub(arg1, x, 1))
     fimse
     x += 1
   efim
-  tpasso = arg1, p_amag
-  ret 1
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar magia
-  passo = ""
+  arg0.passo = ""
   se arg1 == "n"
     arg0.msg("Cancelado")
   senao arg1 == "s"
@@ -315,22 +321,25 @@ func passo # Confirmar que quer apagar magia
     efim
     config:salvar
     se x < 2
-      arg0.msg("Magia apagada: " + tpasso)
-      admlog("apagou magia " + tpasso)
+      arg0.msg("Magia apagada: " + arg0.tpasso)
+      admlog("apagou magia " + arg0.tpasso)
     senao
-      arg0.msg("Magias apagadas: " + tpasso)
-      admlog("apagou magias " + tpasso)
+      arg0.msg("Magias apagadas: " + arg0.tpasso)
+      admlog("apagou magias " + arg0.tpasso)
     fimse
   senao
-    passo = "amag"
+    arg0.passo = este
     refvar m1 = txt2(tpasso) ? "magias" : "magia"
-    arg0.msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
 
 classe adm_ehab
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ehab\b\n\
+Sintaxe: EHAB <nome>\n\
+Edita a habilidade com o nome especificado."
 
 func escr # Editar habilidade
   prog p
@@ -343,14 +352,16 @@ func escr # Editar habilidade
   senao
     arg0.sock.var.classe1 = "cmd_" + txts(txtmin(arg1))
     arg0.sock.var.menufim = "menu_hab_" + $cmd_[arg1].cmdmenu
-    $[var.menufim].passo(arg0.sock)
-    arg0.sock.m_menu(var.menufim)
+    $[arg0.sock.var.menufim].passo(arg0.sock)
+    arg0.sock.m_menu(arg0.sock.var.menufim)
   fimse
-  ret 1
 
 
 classe adm_emag
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Emag\b\n\
+Sintaxe: EMSG <nome>\n\
+Edita a magia com o nome especificado."
 
 func escr # Editar magia
   prog p
@@ -363,22 +374,24 @@ func escr # Editar magia
   senao
     arg0.sock.var.classe1 = "magia_" + txts(txtmin(arg1))
     arg0.sock.var.menufim = "menu_magia_" + $magia_[arg1].cmdmenu
-    arg0.sock.m_menu(var.menufim)
+    arg0.sock.m_menu(arg0.sock.var.menufim)
   fimse
-  ret 1
 
 
 classe adm_atklog
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Atklog\b\n\
+Sintaxe: ATKLOG\n\
+Mostra os cálculos de batalha no próximo ataque que o seu personagem fizer\n\
+ou receber, exceto quando seu personagem for um alvo secundário."
 
 func escr # Mostrar ou não cálculos de batalha
-  perso.atklog = !perso.atklog
-  se perso.atklog
+  arg0.atklog = !arg0.atklog
+  se arg0.atklog
     arg0.msg("Informando cálculos de batalha.")
   senao
     arg0.msg("Não informando cálculos de batalha.")
   fimse
-  ret 1
 
 
 classe menu_hab_custo

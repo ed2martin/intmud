@@ -1,24 +1,23 @@
 classe adm_item
 herda comando_adm
 const txtajuda = "\b\c3Comandos de itens\b\n\
-\c2LITEM\b [nome]\n\
-  Lista itens que começam com o nome especificado.\n\
-\c2CITEM\b <nome>\n\
-  Cria item. Nome deve ser o nome de uma área ou do item\n\
-  (nome da área seguido de um número de três dígitos de 001 a 999).\n\
-\c2EITEM\b <nome>\n\
-  Edita item.\n\
-\c2AITEM\b <nome>\n\
-  Apaga item."
+  \c2LITEM\b     Lista itens existentes\n\
+  \c2CITEM\b     Cria um item\n\
+  \c2EITEM\b     Edita um item\n\
+  \c2AITEM\b     Apaga um ou mais itens"
 
 
 classe adm_litem
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Litem\b\n\
+Sintaxe: LITEM [nome]\n\
+Lista os itens que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os itens."
 
 func escr # Listar itens
   prog p
-  se !p.iniclasse("i_" + arg0)
-    msg("\bNenhum item encontrado.")
+  se !p.iniclasse("i_" + arg1)
+    arg0.msg("\bNenhum item encontrado.")
   senao
     textotxt t
     txt100 lin
@@ -28,70 +27,69 @@ func escr # Listar itens
       t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
       p.depois
     efim
-    msg2(t.remove(500))
+    arg0.msg2(t.remove(500))
   fimse
-  ret 1
 
 
 classe adm_citem
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Citem\b\n\
+Sintaxe: CITEM <nome>\n\
+Cria um item. Nome deve ser o nome de uma área ou do item.\n\
+Nomes de itens são sempre nomes de área seguido de um número de 001 a 999."
 
 func escr # Criar item
   prog p
   txt40 nome
   uint16 num
 # Checa se digitou nome da sala
-  se arg0 == ""
-    msg("Tecle o nome do item ou da área após CITEM")
-    ret 1
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do item ou da área após CITEM")
   fimse
 # Checa nome completo
-  nome = txtmin(txtremove(arg0, "EMDCT7"))
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
   num = int(txtfim(nome, 3)) + 1000
-  se num > 1000 && txtfim(num, 3) == txtfim(arg0, 3)
+  se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
-      msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
-      ret 1
+      ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
     senao p.existe("i_" + nome)
-      msg("Item já existe: " + nome)
-      ret 1
+      ret arg0.msg("Item já existe: " + nome)
     fimse
 # Checa nome de área
   senao !p.existe("a_" + nome)
-    msg("Área não existe: " + nome)
-    ret 1
+    ret arg0.msg("Área não existe: " + nome)
   senao
     epara num = 1001, p.existe("i_" + nome + txtfim(num, 3)), num += 1
       continuar num < 2000
-      msg("Atingido limite de itens na área " + nome)
-      ret 1
+      ret arg0.msg("Atingido limite de itens na área " + nome)
     efim
     nome += txtfim(num, 3)
   fimse
 # Pergunta que tipo de item criar
-  var.opcclasse = nome
-  ret adm_citem:exec("\b")
+  arg0.sock.var.opcclasse = nome
+  passo(arg0.sock, "")
 
 func passo # Escolher o tipo de item ao criar
   txt40 deriv
-  casovar txtmin(arg0)
+  casovar txtmin(arg1)
   casose
-    msg("Opção inválida")
+    arg0.msg("Opção inválida")
   casose "\b"
   casose ""
-    passo = "citem"
-    msg("Entre com o tipo de item, O mostra as opções, Z cancela")
+    arg0.passo = este
+    arg0.msg("Entre com o tipo de item, O mostra as opções, Z cancela")
     ret 1
   casose "z"
-    msg("Retornando ao jogo")
-    passo = "", var.opcclasse = ""
+    arg0.msg("Retornando ao jogo")
+    arg0.passo = ""
+    arg0.var.opcclasse = ""
     ret 1
   casose "o"
-    txtmais.limpar
-    txtmais.addfim("S Simples")
-    txtmais.addfim("G Agrupa vários em um objeto para economizar memória")
-    txtmais.addfim("C Completo (luz, mobília, container)")
-    txtmostra
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("S Simples")
+    arg0.txtmais.addfim("G Agrupa vários em um objeto para economizar memória")
+    arg0.txtmais.addfim("C Completo (luz, mobília, container)")
+    arg0.txtmostra
     ret 1
   casose "s"
     deriv = "comum_item"
@@ -106,84 +104,88 @@ func passo # Escolher o tipo de item ao criar
 # Cria item
   prog p
   txt100 area
-  area = txt(var.opcclasse, 0, inttotal(var.opcclasse) - 3)
-  p.criar("i_" + var.opcclasse + "\na-" + area + "\nherda " + deriv)
+  area = txt(arg0.var.opcclasse, 0, inttotal(arg0.var.opcclasse) - 3)
+  p.criar("i_" + arg0.var.opcclasse + "\na-" + area + "\nherda " + deriv)
   criar("admordena", "a-" + area)
 # config:salvar
-  msg("\bItem criado: " + var.opcclasse)
-  admlog(arg0, "criou item " + var.opcclasse)
-  passo = "", var.opcclasse = ""
+  arg0.msg("\bItem criado: " + arg0.var.opcclasse)
+  admlog(arg0, "criou item " + arg0.var.opcclasse)
+  arg0.passo = ""
+  arg0.var.opcclasse = ""
   ret 1
 
 
 classe adm_aitem
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Aitem\b\n\
+Sintaxe: AITEM <nomes dos itens>\n\
+Apaga uma ou mais itens, com os nomes especificados."
 
 func escr # Apagar item
   prog p
-  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    msg("Tecle um ou mais nomes de itens após AITEM")
-    ret 1
+    ret arg0.msg("Tecle um ou mais nomes de itens após AITEM")
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
     se !p.existe("i_" + txtsub(nome, x, 1))
-      msg("Item não existe: " + txtsub(nome, x, 1))
-      ret 1
+      ret arg0.msg("Item não existe: " + txtsub(nome, x, 1))
     fimse
     x += 1
   efim
-  tpasso = nome, adm_aitem:exec
-  ret 1
+  arg0.sock.tpasso = nome
+  passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar item
-  passo = ""
-  se arg0 == "n"
-    msg("Cancelado")
-  senao arg0 == "s"
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
     prog p
     uint16 x
-    enquanto txtsub(tpasso, x, 1)
-      p.apagar("i_" + txtsub(tpasso, x, 1))
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("i_" + txtsub(arg0.tpasso, x, 1))
       x += 1
     efim
     config:salvar
     se x < 2
-      msg("Item apagado: " + tpasso)
-      admlog(arg0, "apagou item " + tpasso)
+      arg0.msg("Item apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou item " + arg0.tpasso)
     senao
-      msg("Itens apagados: " + tpasso)
-      admlog(arg0, "apagou itens " + tpasso)
+      arg0.msg("Itens apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou itens " + arg0.tpasso)
     fimse
   senao
     txt20 m1
-    passo = "aitem"
-    m1 = txt2(tpasso) ? "itens" : "item"
-    msg("Apagar " + m1 + " " + tpasso + "? Tecle S ou N")
+    arg0.passo = este
+    m1 = txt2(arg0.tpasso) ? "itens" : "item"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
 
 
 classe adm_eitem
 herda comando_adm, comando_comum
+const txtajuda = "\b\c3Eitem\b\n\
+Sintaxe: EITEM <nome>\n\
+Edita o item com o nome especificado."
 
 func escr # Editar item
   prog p
   uint8 num
-  refvar nome = txtmin(txtremove(arg0, "EMDCT7"))
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    msg("Tecle o nome do item após EITEM")
+    arg0.msg("Tecle o nome do item após EITEM")
   senao !p.existe("i_" + nome)
-    msg("\bItem não existe: " + nome)
+    arg0.msg("\bItem não existe: " + nome)
   senao !p.existe("menu_item" + (num = i_[nome]:item))
-    msg("\bItem não pode ser editado: " + nome)
+    arg0.msg("\bItem não pode ser editado: " + nome)
   senao
     arg0.sock.var.classe1 = "i_" + txtmin(nome)
     arg0.sock.var.menufim = "menu_item" + num
     arg0.sock.m_menu("menu_item" + num)
   fimse
-  ret 1
 
 
 classe menu_iarma
