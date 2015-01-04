@@ -21,9 +21,12 @@ Se o nome for omitido, lista todas as habilidades."
 
 func escr # Listar habilidades
   prog p
+  se !p.iniclasse("cmd_" + arg1)
+    ret arg0.msg("\bNenhuma habilidade encontrada.")
+  fimse
   textotxt t
   txt100 lin
-  epara p.iniclasse("cmd_"), p.lin && t.linhas < 499, p.depois
+  epara nulo, p.lin && t.linhas < 499, p.depois
     continuar !$[p.texto].cmdmenu # Continua se não é uma habilidade
     lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
     se $[p.texto].tipoalvo < 6
@@ -76,9 +79,12 @@ Se o nome for omitido, lista todas as magias."
 
 func escr # Listar magias
   prog p
+  se !p.iniclasse("magia_" + arg1)
+    ret arg0.msg("\bNenhuma magia encontrada.")
+  fimse
   textotxt t
   txt100 lin
-  epara p.iniclasse("magia_"), p.lin && t.linhas < 499, p.depois
+  epara nulo, p.lin && t.linhas < 499, p.depois
     continuar !$[p.texto].cmdmenu # Continua se não é uma magia editável
     lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
     se $[p.texto].tipoalvo < 6
@@ -128,6 +134,7 @@ const txtajuda = "\b\c3Chab\b\n\
 Sintaxe: CHAB <nome>\n\
 Cria uma habilidade com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
+const tipo = "habilidade"
 
 func escr # Criar habilidade
   prog p
@@ -149,36 +156,6 @@ func escr # Criar habilidade
 # Pergunta que tipo de habilidade criar
   arg0.sock.var.opcclasse = "cmd_" + txts(txtmin(nome))
   arg0.sock.var.opcvar = "h_" + txtcopiamai(txte(nome), "A")
-  arg0.sock.var.opctipo = "habilidade"
-  ret p_chab("\b")
-
-
-classe adm_cmag
-herda comando_adm, comando_comum
-const txtajuda = "\b\c3Cmag\b\n\
-Sintaxe: CMAG <nome>\n\
-Cria uma magia com o nome especificado.\n\
-O nome deve ser composto de letras, mas pode ter espaços no meio."
-
-func escr # Criar magia
-  prog p
-  txt80 nome
-  uint16 num
-# Checa se digitou nome do ataque
-  se arg1 == ""
-    ret arg0.msg("Tecle o nome da magia após CMAG")
-  fimse
-# Checa se nome válido
-  nome = txte(txtremove(arg1, EMDSA))
-  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
-    ret arg0.msg("Nome inválido para magia: " + nome)
-  senao p.existe("magia_" + nome)
-    ret arg0.msg("Já existe a magia: " + nome)
-  fimse
-# Pergunta que tipo de magia criar
-  arg0.sock.var.opcclasse = "magia_" + txts(txtmin(nome))
-  arg0.sock.var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
-  arg0.sock.var.opctipo = "magia"
   passo(arg0.sock, "")
 
 func passo # Escolher o tipo de habilidade ou magia
@@ -189,14 +166,13 @@ func passo # Escolher o tipo de habilidade ou magia
   casose "\b"
   casose ""
     arg0.passo = este
-    arg0.msg("Entre com o tipo de " + arg0.var.opctipo + ", O mostra as opções, Z cancela")
+    arg0.msg("Entre com o tipo de " + tipo + ", O mostra as opções, Z cancela")
     ret 1
   casose "z"
     arg0.msg("Retornando ao jogo")
     arg0.passo = ""
     arg0.var.opcclasse = ""
     arg0.var.opcnome = ""
-    arg0.var.opctipo = ""
     ret 1
   casose "o"
     arg0.txtmais.limpar
@@ -219,27 +195,58 @@ func passo # Escolher o tipo de habilidade ou magia
   txt512 lin
   lin = arg0.var.opcclasse + "\nb-hab\nherda " + deriv
   lin += "\nconst nomevar = \"" + arg0.var.opcvar + "\""
-  lin += "\nconst arg0.msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
+  lin += "\nconst msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
   lin += "$P ataca e mata $a, $m\\n\\n\\n$P ataca $a, errou\\n\\n\\n"
   lin += "$P ataca $a, nada acontece\\n\\n\\n\""
   prog p
   p.criar(lin)
   criar("admordena", "b-hab")
 # config:salvar
-  arg0.msg("\bCriou " + arg0.var.opctipo + ": " + txt(arg0.var.opcvar, 2))
-  admlog("criou " + arg0.var.opctipo + " " + txt(arg0.var.opcvar, 2))
+  arg0.msg("\bCriou " + tipo + ": " + txt(arg0.var.opcvar, 2))
+  admlog(arg0, "criou " + tipo + " " + txt(arg0.var.opcvar, 2))
   arg0.passo = ""
   arg0.var.opcclasse = ""
   arg0.var.opcnome = ""
-  arg0.var.opctipo = ""
   ret 1
+
+
+classe adm_cmag
+herda adm_chab
+const txtajuda = "\b\c3Cmag\b\n\
+Sintaxe: CMAG <nome>\n\
+Cria uma magia com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+const tipo = "magia"
+
+func escr # Criar magia
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do ataque
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da magia após CMAG")
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg1, EMDSA))
+  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
+    ret arg0.msg("Nome inválido para magia: " + nome)
+  senao p.existe("magia_" + nome)
+    ret arg0.msg("Já existe a magia: " + nome)
+  fimse
+# Pergunta que tipo de magia criar
+  arg0.sock.var.opcclasse = "magia_" + txts(txtmin(nome))
+  arg0.sock.var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
+  passo(arg0.sock, "")
 
 
 classe adm_ahab
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Ahab\b\n\
 Sintaxe: AHAB <nomes das habilidades>\n\
-Apaga uma ou mais habilidades, com os nomes especificados."
+Apaga uma ou mais habilidades, com os nomes especificados.\n\
+Para apagar uma habilidade cujo nome contém espaços no meio, use\n\
+sublinhado no lugar dos espaços. Exemplo, se o nome da magia for\n\
+Chute Forte, você deve teclar: ahab Chute_Forte"
 
 func escr # Apagar habilidade
   prog p
@@ -272,10 +279,10 @@ func passo # Confirmar que quer apagar habilidade
     config:salvar
     se x < 2
       arg0.msg("Habilidade apagada: " + arg0.tpasso)
-      admlog("apagou habilidade " + arg0.tpasso)
+      admlog(arg0, "apagou habilidade " + arg0.tpasso)
     senao
-      arg0.msg("Habilidades apagados: " + arg0.tpasso)
-      admlog("apagou habilidades " + arg0.tpasso)
+      arg0.msg("Habilidades apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou habilidades " + arg0.tpasso)
     fimse
   senao
     arg0.passo = este
@@ -289,7 +296,10 @@ classe adm_amag
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Amag\b\n\
 Sintaxe: AMAG <nomes das magias>\n\
-Apaga uma ou mais magias, com os nomes especificados."
+Apaga uma ou mais magias, com os nomes especificados.\n\
+Para apagar uma magia cujo nome contém espaços no meio, use sublinhado\n\
+no lugar dos espaços. Exemplo, se o nome da magia for Curar Cegueira,\n\
+você deve teclar: amag Curar_Cegueira"
 
 func escr # Apagar magia
   prog p
@@ -315,21 +325,21 @@ func passo # Confirmar que quer apagar magia
   senao arg1 == "s"
     prog p
     uint16 x
-    enquanto txtsub(tpasso, x, 1)
-      p.apagar("magia_" + txtsub(tpasso, x, 1))
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("magia_" + txtsub(arg0.tpasso, x, 1))
       x += 1
     efim
     config:salvar
     se x < 2
       arg0.msg("Magia apagada: " + arg0.tpasso)
-      admlog("apagou magia " + arg0.tpasso)
+      admlog(arg0, "apagou magia " + arg0.tpasso)
     senao
       arg0.msg("Magias apagadas: " + arg0.tpasso)
-      admlog("apagou magias " + arg0.tpasso)
+      admlog(arg0, "apagou magias " + arg0.tpasso)
     fimse
   senao
     arg0.passo = este
-    refvar m1 = txt2(tpasso) ? "magias" : "magia"
+    refvar m1 = txt2(arg0.tpasso) ? "magias" : "magia"
     arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
   fimse
   ret 1
@@ -352,7 +362,6 @@ func escr # Editar habilidade
   senao
     arg0.sock.var.classe1 = "cmd_" + txts(txtmin(arg1))
     arg0.sock.var.menufim = "menu_hab_" + $cmd_[arg1].cmdmenu
-    $[arg0.sock.var.menufim].passo(arg0.sock)
     arg0.sock.m_menu(arg0.sock.var.menufim)
   fimse
 
@@ -547,27 +556,28 @@ herda comando_menu
 const titulo = "Mensagens 1"
 const menufim = var.menufim
 const colunas = 25
+const n_variavel = "msgatk0"
 #
 const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
 const tipo1 = "opc_txtlinha"
 const clas1 = var.classe1
-const vari1 = "msgatk" + txtfim(tpasso, 1)
+const vari1 = n_variavel
 const extr1 = "0"
 #
 const nome2 = "Alvo"
 const info2 = "Se vazio, pega mensagem da opção 1"
 const tipo2 = "opc_txtlinha"
 const clas2 = var.classe1
-const vari2 = "msgatk" + txtfim(tpasso, 1)
+const vari2 = n_variavel
 const extr2 = "1"
 #
 const nome3 = "Outros"
 const info3 = "Se vazio, pega mensagem da opção 1"
 const tipo3 = "opc_txtlinha"
 const clas3 = var.classe1
-const vari3 = "msgatk" + txtfim(tpasso, 1)
+const vari3 = n_variavel
 const extr3 = "2"
 #
 const titu4 = " * Acertou em si mesmo"
@@ -575,14 +585,14 @@ const titu4 = " * Acertou em si mesmo"
 const nome4 = "Perso"
 const tipo4 = "opc_txtlinha"
 const clas4 = var.classe1
-const vari4 = "msgatk" + txtfim(tpasso, 1)
+const vari4 = n_variavel
 const extr4 = "3"
 #
 const nome5 = "Outros"
 const info5 = "Se vazio, pega mensagem da opção 4"
 const tipo5 = "opc_txtlinha"
 const clas5 = var.classe1
-const vari5 = "msgatk" + txtfim(tpasso, 1)
+const vari5 = n_variavel
 const extr5 = "4"
 #
 const titu6 = " * Acertou outro personagem"
@@ -590,21 +600,21 @@ const titu6 = " * Acertou outro personagem"
 const nome6 = "Perso"
 const tipo6 = "opc_txtlinha"
 const clas6 = var.classe1
-const vari6 = "msgatk" + txtfim(tpasso, 1)
+const vari6 = n_variavel
 const extr6 = "5"
 #
 const nome7 = "Alvo"
 const info7 = "Se vazio, pega mensagem da opção 6"
 const tipo7 = "opc_txtlinha"
 const clas7 = var.classe1
-const vari7 = "msgatk" + txtfim(tpasso, 1)
+const vari7 = n_variavel
 const extr7 = "6"
 #
 const nome8 = "Outros"
 const info8 = "Se vazio, pega mensagem da opção 6"
 const tipo8 = "opc_txtlinha"
 const clas8 = var.classe1
-const vari8 = "msgatk" + txtfim(tpasso, 1)
+const vari8 = n_variavel
 const extr8 = "7"
 #
 const titu9 = " * Matou o alvo"
@@ -612,21 +622,21 @@ const titu9 = " * Matou o alvo"
 const nome9 = "Perso"
 const tipo9 = "opc_txtlinha"
 const clas9 = var.classe1
-const vari9 = "msgatk" + txtfim(tpasso, 1)
+const vari9 = n_variavel
 const extr9 = "8"
 #
 const nome10 = "Alvo"
 const info10 = "Se vazio, pega mensagem da opção 9"
 const tipo10 = "opc_txtlinha"
 const clas10 = var.classe1
-const vari10 = "msgatk" + txtfim(tpasso, 1)
+const vari10 = n_variavel
 const extr10 = "9"
 #
 const nome11 = "Outros"
 const info11 = "Se vazio, pega mensagem da opção 9"
 const tipo11 = "opc_txtlinha"
 const clas11 = var.classe1
-const vari11 = "msgatk" + txtfim(tpasso, 1)
+const vari11 = n_variavel
 const extr11 = "10"
 #
 const titu12 = " * Errou o alvo"
@@ -634,21 +644,21 @@ const titu12 = " * Errou o alvo"
 const nome12 = "Perso"
 const tipo12 = "opc_txtlinha"
 const clas12 = var.classe1
-const vari12 = "msgatk" + txtfim(tpasso, 1)
+const vari12 = n_variavel
 const extr12 = "11"
 #
 const nome13 = "Alvo"
 const info13 = "Se vazio, pega mensagem da opção 12"
 const tipo13 = "opc_txtlinha"
 const clas13 = var.classe1
-const vari13 = "msgatk" + txtfim(tpasso, 1)
+const vari13 = n_variavel
 const extr13 = "12"
 #
 const nome14 = "Outros"
 const info14 = "Se vazio, pega mensagem da opção 12"
 const tipo14 = "opc_txtlinha"
 const clas14 = var.classe1
-const vari14 = "msgatk" + txtfim(tpasso, 1)
+const vari14 = n_variavel
 const extr14 = "13"
 #
 const titu15 = " * Não teve efeito"
@@ -656,42 +666,46 @@ const titu15 = " * Não teve efeito"
 const nome15 = "Perso"
 const tipo15 = "opc_txtlinha"
 const clas15 = var.classe1
-const vari15 = "msgatk" + txtfim(tpasso, 1)
+const vari15 = n_variavel
 const extr15 = "14"
 #
 const nome16 = "Alvo"
 const info16 = "Se vazio, pega mensagem da opção 15"
 const tipo16 = "opc_txtlinha"
 const clas16 = var.classe1
-const vari16 = "msgatk" + txtfim(tpasso, 1)
+const vari16 = n_variavel
 const extr16 = "15"
 #
 const nome17 = "Outros"
 const info17 = "Se vazio, pega mensagem da opção 15"
 const tipo17 = "opc_txtlinha"
 const clas17 = var.classe1
-const vari17 = "msgatk" + txtfim(tpasso, 1)
+const vari17 = n_variavel
 const extr17 = "16"
 
 
 classe menu_hab_msg1
 herda menu_hab_msg0
 const titulo = "Mensagens 2"
+const n_variavel = "msgatk1"
 
 
 classe menu_hab_msg2
 herda menu_hab_msg0
 const titulo = "Mensagens 3"
+const n_variavel = "msgatk2"
 
 
 classe menu_hab_msg3
 herda menu_hab_msg0
 const titulo = "Mensagens 4"
+const n_variavel = "msgatk3"
 
 
 classe menu_hab_msg4
 herda menu_hab_msg0
 const titulo = "Mensagens 5"
+const n_variavel = "msgatk4"
 
 
 classe menu_hab_comum
