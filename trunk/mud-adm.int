@@ -216,7 +216,7 @@ herda comando_adm
 const menu = "<ajuda>"
 
 func passo
-  arg0.msg2(arg2)
+  arg0.msg2(arg0.var.opcextra)
   ret passosair(arg0)
 
 
@@ -243,42 +243,41 @@ func menu
 func passo # Alterando um texto de uma linha
   prog p
   se arg1 == "" || arg1 == "\b"
-    passo = este
+    arg0.passo = este
     arg0.msg("Entre com um texto, N nenhum, Z cancela")
     ret 1
-  senao arg1 != "z"
-    refvar linha = int(arg0.var.opcextra)
-    textotxt t1
-    textopos pos
-    t1.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
-    t1.linhas < linha && t1.addfim(txtrepete("\n", linha - t1.linhas))
-    pos = t1.ini, pos.linha = linha
-    pos.mudar(arg1 == "n" ? "" : arg1)
-    pos = t1.fim, pos.antes
-    enquanto t1.bytes && pos.texto == ""
-      pos.remove, pos.antes
-    efim
-    se t1.bytes == 0 && !arg0.var.opcvalido
-      p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
-      config:salvar
-      criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
-      arg0.msg("Apagado: " + arg0.var.opcnome)
-      admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnom\
-e)
+  senao arg1 == "z"
+    ret passosair(arg0)
+  fimse
+  refvar linha = int(arg0.var.opcextra)
+  textotxt t1
+  textopos pos
+  t1.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+  t1.linhas < linha && t1.addfim(txtrepete("\n", linha - t1.linhas))
+  pos = t1.ini, pos.linha = linha
+  pos.mudar(arg1 == "n" ? "" : arg1)
+  pos = t1.fim, pos.antes
+  enquanto t1.bytes && pos.texto == ""
+    pos.remove, pos.antes
+  efim
+  se t1.bytes == 0 && !arg0.var.opcvalido
+    p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg("Apagado: " + arg0.var.opcnome)
+    admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
+  senao
+    prog p
+    refvar t = "const " + arg0.var.opcvar + "=\""
+    p.criar(arg0.var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    se arg1 == "n"
+      arg0.msg(arg0.var.opcnome + " mudou para um texto vazio")
     senao
-      prog p
-      refvar t = "const " + arg0.var.opcvar + "=\""
-      p.criar(arg0.var.opcclasse, t + txtvis(t1.remove(1000)) + "\"")
-      config:salvar
-      criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
-      se arg1 == "n"
-        arg0.msg(arg0.var.opcnome + " mudou para um texto vazio")
-      senao
-        arg0.msg(arg0.var.opcnome + " mudou para: " + arg1)
-      fimse
-      admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome\
-)
+      arg0.msg(arg0.var.opcnome + " mudou para: " + arg1)
     fimse
+    admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
   fimse
   ret passosair(arg0)
 
