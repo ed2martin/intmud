@@ -159,14 +159,14 @@ pegar, soltar, dar e vestir)."
 
 func escr
   txt100 n
-  r = arg0.persoesc
+  refvar r = arg0.persoesc
   r != arg0 && (n = " de " + r.nome)
   textotxt h
   txt100 t1
   txt100 t2
   epara t1 = r.var.ini("o_"), txt(t1, 0, 2) == "o_", t1 = r.var.depois(t1)
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    se txt(int(r.var.[t1])) == t.var.[t1]
+    se txt(int(r.var.[t1])) == r.var.[t1]
       t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
     senao
       t2 += " / " + r.var.[t1]
