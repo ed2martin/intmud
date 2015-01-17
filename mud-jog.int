@@ -309,7 +309,7 @@ func passo
     senao
       $adm_sexo1.passo(arg0)
     fimse
-    nomefim = info
+    arg0.nomefim = arg0.info
     arg0.msgchegou("Criando personagem: " + arg0.nome + ", " + arg0.nomefim)
   senao
     arg0.passo = este
@@ -344,9 +344,9 @@ herda comando_comum
 
 func passo
   arg0.passo = este
-  se !arg0
+  se !arg1
     arg0.msg("Digite novamente a senha")
-  senao arg0 != var.j_senha
+  senao arg1 != arg0.var.j_senha
     arg0.msg("As senhas são diferentes")
     arg0.var.limpar("j_")
     $adm_perso1.passo(arg0)
@@ -625,7 +625,7 @@ func passo
     arg0.msg("Reconectado\cn")
     txt200 lin
     arg0.nomefim = arg0.info
-    lin = "Entrou: " + nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
+    lin = "Entrou: " + arg0.nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
     lin += " $" + arg0.perso.var.z_moedas_
     arg0.msgchegou(lin, arg0.nome + " entrou")
     refvar alvo = arg0.perso.atkenv.objlista
@@ -668,7 +668,7 @@ func passo
     criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome]) # Para mudar de sala
     arg0.msg("Continuando jogo salvo\cn")
     txt200 lin
-    lin = "Entrou: " + nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
+    lin = "Entrou: " + arg0.nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
     lin += " $" + arg0.perso.var.z_moedas_
     arg0.msgchegou(lin, arg0.nome + " entrou")
     arg0.nomefim = arg0.info
