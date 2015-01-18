@@ -425,7 +425,7 @@ func passo
     lin = p.texto
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
-    arg0.tpasso = p.texto
+    tpasso = p.texto
     arg0.msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
     ret $adm_raca3.passo(arg0)
   efim
@@ -437,7 +437,7 @@ func passo
 # Nenhuma raça para escolher: passa para o próximo menu
   senao arg0.txtmais.linhas == 0
     arg0.txtmais.limpar
-    arg0.tpasso != "raça" && (arg0.var.j_tipo1 = tpasso)
+    tpasso != "raça" && (arg0.var.j_tipo1 = tpasso)
     ret $adm_classe1.passo(arg0)
 # Mais de uma raça: apresenta o menu
   senao
@@ -524,7 +524,7 @@ func passo
     senao
       arg0.txtmais.addini("Escolha uma sub-classe:")
     fimse
-    txtmostra
+    arg0.txtmostra
     ret 1
 
 
