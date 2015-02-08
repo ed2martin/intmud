@@ -399,7 +399,7 @@ uint32 pvidamax # Quantidade máxima de vida
 uint32 pmanamax # Quantidade máxima de mana
 uint32 pmovemax # Quantidade máxima de movimento
 uint16 pveloc1 # Velocidade calculada do personagem
-const pveloc = pveloc1 - int((pesoden - pesoveste) / 1500)
+const pveloc = intpos(pveloc1 - int((pesoden - pesoveste) / 1500))
 uint32 atknorm # Quantidade de ataque normal, sem modificadores em atktipo
 uint32 defnorm # Quantidade de defesa normal, sem modificadores em deftipo
 uint32 atkesp # Quantidade de ataque especial, sem modificadores em atktipo
@@ -503,7 +503,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
 # Se for jogador, checa PNJs agressivos
   ret !jog, nulo
   epara i = dono.dentro2.ini, i, i.depois
-    i.obj.p_agressivo(este) == 2 && !i.obj.p_proc && (i.obj.p_proc = 1)
+    i.obj.p_agressivo(este) == 2 && (i.obj.p_proc = 1)
   efim
 
 const batalhaini = contr.bat_ini_int(arg0.contr, este, arg0)

@@ -119,6 +119,8 @@ void TObjeto::Apagar(TObjeto * obj)
 // Coloca o outro objeto na lista dos que serão apagados
     obj->AntesApagar = AntesApagar;
     obj->DepoisApagar = DepoisApagar;
+    if (AntesApagar) AntesApagar->DepoisApagar = obj;
+    if (DepoisApagar) DepoisApagar->AntesApagar = obj;
     if (IniApagar==this) IniApagar=obj;
     if (FimApagar==this) FimApagar=obj;
 // Acerta variáveis TVarRef que apontam para o objeto

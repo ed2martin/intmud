@@ -539,7 +539,7 @@ O significado do texto está explicado no início do arquivo mud-reset.int.
 
 func ver_[nome do a descrição]( jogador, 0 )
 Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
-existir ou falso (ou um texto não vazio) se não existir.
+existir ou falso (ou um texto vazio) se não existir.
 
 func ver_[nome do a descrição]( jogador, 1 )
 Deve retornar um texto que é a descrição extra.
@@ -564,6 +564,12 @@ Mens1 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
 Mens2 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
 Nas mensagens, "$m" é o nome da porta
 Retorna: 0=saída inexistente, 1=saída foi alterada
+
+func msg( mensagem )
+Envia mensagem para todos os personagens que estiverem na sala.
+
+func msgtodos( mensagem )
+Envia mensagem para todos os personagens que estiverem acordados na sala.
 
 
 8. Personagens e itens (classe comum_persoitem, em mud-comum.int)
@@ -800,6 +806,9 @@ func morreu( quem matou o personagem )
 Executa procedimentos quando o personagem morre.
 Se for fornecido o personagem, é ele quem pegará as moedas.
 Retorna o corpo do personagem, se ele morreu e ficou o corpo.
+
+func msg( mensagem )
+Envia mensagem para o personagem.
 
 func msgvis( mensagem )
 Envia mensagem para o personagem, se ele estiver vendo o autor da mensagem.

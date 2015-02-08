@@ -18,9 +18,9 @@ txt30 tipo2 # arg0.tipo2
 txt30 tipo3 # arg0.tipo3
 
 func escr
-  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
   arg1 ? escr2(arg0, arg1) : escr1(arg0)
 
 func escr1 # Consultar a lista de itens
@@ -246,9 +246,9 @@ txt30 tipo3 # arg0.tipo3
 
 func escr
   ret !arg1, arg0.msg("Comprar o quê?")
-  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
   listaobj l
   nomeobj n
   total = txt1(arg1)
@@ -446,9 +446,9 @@ const vender = 0
 
 func escr
   ret !arg1, arg0.msg(vender ? "Vender o que?" : "Avaliar o que?")
-  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
   listaobj l
 # Avaliar/comprar casas
   se arg1 == "casa"
@@ -599,9 +599,9 @@ txt30 tipo2 # arg0.tipo2
 txt30 tipo3 # arg0.tipo3
 
 func escr
-  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
   arg1 ? escr2(arg0, arg1) : escr1(arg0)
 
 func escr1 # Consultar a lista de aulas
@@ -720,9 +720,9 @@ func escr
     ret arg0.msg("Você não possui pontos de aula.")
   fimse
   ret !arg1, arg0.msg("Aprender o quê?")
-  tipo1 = arg0.tipo1 ? "\n" + arg0.tipo1 + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + arg0.tipo2 + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + arg0.tipo3 + "\n" : ""
+  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
   listaobj l
   nomeobj n
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
