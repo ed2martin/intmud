@@ -840,7 +840,7 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
         if (vobj == 0)
             ;
     // Definido em objeto: prepara para executar
-        if (vobj->b_objeto)
+        else if (vobj->b_objeto)
         {
             char mens[80];
             sprintf(mens, "%s_eventoip", vobj->defvar+Instr::endNome);

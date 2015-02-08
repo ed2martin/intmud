@@ -31,7 +31,7 @@ public:
     TClasse * Classe;           ///< Classe ao qual o objeto pertence
     TObjeto * Antes;            ///< Lista ligada: objeto anterior
     TObjeto * Depois;           ///< Lista ligada: próximo objeto
-    TObjeto * AntesApagar;      ///< OPjeto anterior marcado para Apagar
+    TObjeto * AntesApagar;      ///< Objeto anterior marcado para Apagar
     TObjeto * DepoisApagar;     ///< Próximo objeto marcado para Apagar
     static TObjeto * IniApagar; ///< Primeiro objeto marcado para apagar
     static TObjeto * FimApagar; ///< Último objeto marcado para apagar

@@ -142,6 +142,13 @@ func msg # Mensagem para todos da sala
       i.obj.msg(arg0)
     efim
 
+func msgtodos # Mensagem para todos da sala que estiverem acordados
+  se socktot
+    listaitem i
+    epara i = dentro2.ini, i, i.depois
+      i.obj.posicao > 4 && i.obj.msg(arg0)
+    efim
+
 func t_item_exec # Começar a apagar objetos
   se !socktot && s_item # Se pode apagar itens
     listaitem i

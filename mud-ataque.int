@@ -464,7 +464,7 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # vel = velocidade do golpe
 # Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
   real2 tempo
-  tempo = arg1.pveloc * 3000 * 70 / (arg0.pveloc * vel + 1)
+  tempo = intpos(arg1.pveloc * 3000 * 70) / (intpos(arg0.pveloc) * vel + 1)
   tempo = intmax(8, intmin(70, tempo))
   arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
   ret

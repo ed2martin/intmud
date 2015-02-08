@@ -739,47 +739,6 @@ func passo
   ret 1
 
 
-classe adm_autoapagar1
-herda comando_comum
-
-func passo
-  arg0.passo = este
-  se !arg1
-    arg0.msg("Deseja realmente apagar o personagem " + arg0.perso.nome + "? Tecle S ou N")
-  senao arg1 == "s"
-    $adm_autoapagar2.passo(arg0)
-  senao
-    arg0.msg("Autoapagar cancelado")
-    arg0.passo = ""
-  fimse
-  ret 1
-
-
-classe adm_autoapagar2
-herda comando_comum
-
-func passo
-  arqsav sav1
-  arg0.passo = este
-  se !arg1
-    arg0.msg("Digite a senha ou tecle Z para cancelar")
-  senao arg1 == "z"
-    arg0.msg("Autoapagar cancelado")
-    passo = ""
-  senao arg1 != perso.senha
-    arg0.msg("Senha incorreta; autoapagar cancelado")
-    arg0.passo = ""
-  senao sav1.apagar("sav/" + txt2(arg0.cnome) + ".sav")
-    arg0.perso.senha = ""
-    apagar(arg0.perso)
-    $miscsav.apagousav(txt2(arg0.cnome))
-  senao
-    arg0.msg("Não foi possível apagar o personagem.")
-    arg0.passo = ""
-  fimse
-  ret 1
-
-
 classe jogsock_retorna
 # Coloca o jogador na sala em que estava, logo após entrar no MUD
 ref perso
