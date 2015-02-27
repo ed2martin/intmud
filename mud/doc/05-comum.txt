@@ -1,0 +1,152 @@
+1. Comum a salas, personagens e itens (classe comum_obj, em obj/comum.int)
+
+ref dono
+Quem possui esse objeto; mesmo que: idono.objlista
+No caso do personagem, é a sala aonde o personagem está.
+Para mudar o dono, usar a função mdono.
+
+ref contr
+Quem está controlando; mesmo que: (perso && dono.perso ? dono : este)
+Usado quando um personagem possui animais, para saber quem está
+controlando o animal.
+
+ref donoantes
+Dono anterior desse objeto.
+
+listaobj dentro1
+Lista de itens, exceto os que estão sendo vestidos.
+
+listaobj dentro2
+Se for sala: lista de personagens.
+Se for personagem: lista de itens que está vestindo, animais e efeitos.
+
+listaobj evento
+Objetos que recebem eventos desse objeto.
+
+const objsav = 0
+Se deve salvar o objeto ao salvar personagem ou sala
+0 = não salva
+1 = salva
+2 = salva só em arquivos de jogadores
+3 = salva só em arquivos de casas
+
+int1 objmudou
+Se 1, deve salvar a sala porque ocorreu alguma mudança na lista de objetos
+Essa variável costuma estar presente somente nas salas
+
+Variáveis relacionadas ao peso
+uint32 pesoden # Somente leitura: quanto peso tem dentro
+uint32 pesotot # Somente leitura: peso total
+const pesoobj = 1 # Peso do objeto (em gramas)
+const pesoadd = 1 # Se falso, está voando/flutuando (pesotot será 0)
+
+func mdono( novo dono )
+Muda o dono do objeto, acertando diversas variáveis.
+
+func ajustaobj
+Acerta o dono do objeto (variável dono) e os eventos, baseado nas constantes:
+const eveste = 1 # Receber eventos do próprio objeto
+const evperso = 1 # Receber eventos do dono se o dono for personagem
+const evitem = 1 # Receber eventos do dono se o dono for item
+const evsala = 1 # Receber eventos do dono se o dono for sala
+Usa internamente a variável:
+listaitem evrec.2
+
+func ajustapeso
+Ajuda peso e volume; variáveis pesoden, pesotot, volden, voltot.
+Vide arquivo obj/comum.int
+
+
+2. Personagens e itens (classe comum_persoitem, em obj/comum.int)
+
+int16 bitinv
+Grau de invisibilidade do personagem ou objeto; geralmente é 3
+0 = visível a qualquer um, mesmo no escuro ou a quem estiver cego
+somar 1 se invisível a quem estiver cego
+somar 2 se invisível no escuro
+somar 4 se está invisível
+somar 8 se está oculto
+somar 16 se está voando
+somar 32 se está voando alto
+somar 128 se é administrador invisível
+
+int16 bitver
+O que está visível ao personagem ou objeto; geralmente é 1 ou 3
+0 = nada (está cego)
+somar 1 se não está cego
+somar 2 se enxega no escuro
+somar 4 se pode ver invisível
+somar 8 se pode ver oculto
+somar 16 se pode ver voando
+somar 32 se pode ver voando alto
+somar 0x80 se pode ver administradores invisíveis
+somar 0x100 se anda em silêncio
+somar 0x200 se está flutuando
+somar 0x400 se está dormindo por efeito de algo
+somar 0x800 se não pode ser colocado para dormir
+somar 0x1000 se percebe quem anda em silêncio
+
+textotxt atribs
+Atributos do item ou personagem, como "flutuando", "invisível", etc.
+Um atributo por linha.
+
+const nivel = 0
+Nível definido no item ou personagem.
+
+sav uint16 pnivel
+Nível atual do item ou personagem.
+Os personagens só conseguem vestir itens de nível igual ou menor.
+
+txt16 nome
+const nome = ""
+Nome do personagem ou item, usado em ações com o objeto.
+
+const ident = nome
+Nomes que o jogador digita para ações com o personagem ou item.
+Exemplo: ao pegar um item ou atacar um personagem.
+
+const descnome = nome
+Descrição curta. É a descrição usada na maioria dos comandos.
+Exemplos: "uma bola", "Joaquim" e "um ladrão"
+
+func descpos
+Descrição quando está na sala; arg0=quem quer ver.
+Nos itens, inicialmente é uma mensagem genérica.
+Nos personagens apresenta uma mensagem de acordo com a posição atual,
+e por isso é raramente alterado.
+
+const descver = ""
+Descrição quando alguém olha para o item ou personagem (comando olhar).
+Aqui arg0=quem quer ver.
+
+const descident = ""
+Descrição para quem usa a habilidade identificar no item ou personagem.
+Não é necessário colocar aqui a maioria das propriedades (nível, tipo,
+etc) porque elas já são mostradas automaticamente.
+
+const msexo = 0
+Usado nas mensagens com o personagem ou item.
+0=feminino, 1=masculino
+
+const inivar = ""
+Lista de variáveis definidas quando o personagem ou item é criado.
+Vide tópico "Variáveis dinâmicas de personagens, salas e itens".
+
+intexec recalc
+Para chamar recalc_exec quando necessário.
+
+func recalc_exec
+Ajusta variáveis, principalmente batalha.
+
+func visivel( personagem )
+Retorna verdadeiro se está visível para o persoangem.
+
+func mudadono( item ou personagem, quantidade )
+Item ou personagem muda de dono.
+Quando a quantidade for omitida ou não for um item que pode ser
+agrupado em um objeto, a quantidade será considerada 1.
+Essa função retorna o próprio personagem ou item que foi movido.
+Isso é útil principalmente em itens que agrupam.
+
+func apagar( quantidade )
+Apaga o personagem ou uma quantidade do item.

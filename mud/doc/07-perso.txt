@@ -1,0 +1,293 @@
+1. Personagens (arquivos obj/perso*.int)
+
+Para criar um personagem
+criar("nome da classe", aonde está, nível do personagem, "variáveis")
+Se o nível for omitido, será 0.
+Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
+variável, separar por vírgula (exemplo, "v1=10,v2=20").
+São criadas as variáveis correspondentes em 'textovar var' do personagem.
+
+const perso = 1
+1 = personagem que não batalha (classe comum_perso)
+2 = personagem que batalha (classe comum_persobat)
+3 = personagem que batalha e carrega animais (classe comum_persoanimal)
+
+sav uint8 posicao
+Posição do personagem:
+0 = morto
+1 = mortalmente ferido
+2 = incapacitado
+3 = fraco
+4 = dormindo
+5 = descansando
+6 = sentado
+7 = lutando
+8 = em pé
+
+const pospadr = 8
+Posição padrão do personagem.
+
+const descpadr
+Descrição quando está na sala na posição padrão.
+Exemplo: "Uma bola foi largada aqui." e "Um ladrão procura alguém distraído".
+
+const sexoini = msexo
+Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
+Aleatório escolhe um quando o personagem é criado.
+Da forma como foi feita, se não for definido, é o mesmo sexo usado nas
+mensagens com o personagem (constante msexo).
+
+int1 psexo
+Sexo do personagem: 0=feminino, 1=masculino
+
+const tipo1 = 0
+Primeiro tipo associado ao personagem; geralmente é a raça.
+
+const tipo2 = 0
+Segundo tipo associado ao personagem; geralmente é a classe.
+
+const tipo3 = 0
+Terceiro tipo associado ao personagem.
+
+const equip1 = 0
+Se não for 0, são as posições aonde pode usar equipamentos.
+Cada bit corresponde a uma posição.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const equip2 = 0
+Adicionar essas posições no personagem.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const equip3 = 0
+Remover essas posições no personagem.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+sav textotxt p_hist
+Histórico do personagem: quem o personagem matou.
+
+const p_recebe = 0
+Se recebe itens (se podem dar itens ao personagem); 0=não pode, 1=pode.
+Nos jogadores, essa constante é 1 (pode receber).
+
+const p_naoseguir = 0
+Se não é possível seguir o personagem (0=podem seguir, 1=não podem).
+Nos jogadores, depende da opção "config +seguir", devido à linha:
+const p_naoseguir = !i.obj.jogconfig.5
+
+const p_atktipo = 0
+Tipo de ataque, quando o personagem ataca automaticamente e sem arma.
+Os tipos estão definidos na constante config:atk_txt, arquivo
+config/config.int.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const p_imortal = 0
+Se é imortal (0=pode morrer, 1=não pode).
+Nos jogadores, depende da opção "config +imortal", devido à linha:
+const p_imortal = jogconfig.14
+
+const p_corpo = 0
+Se o corpo do personagem fica quando ele morre:
+0 Não deixa corpo
+1 Deixa corpo vazio
+2 Deixa corpo com itens e moedas
+
+const p_exp = 100
+func p_exp( personagem )
+Quanta experiência dá quando morre, em porcentagem.
+Com essa opção é possível fazer alguns PNJs darem mais experiência que
+outros, independente do nível.
+
+const p_morreu1 = "$P morreu."
+Mensagem quando o personagem morreu e não tem dono.
+
+const p_morreu2 = "$P desmaiou."
+Mensagem quando o personagem morreu e tem dono (percente a outro personagem).
+
+func teclou
+Chamado sempre que o personagem tecla algum comando (arg0=comando)
+
+func p_espera_exec
+Pega o próximo comando da lista.
+
+func teclouproc
+Processa comando, sem espera (arg0=comando).
+
+func erropos
+Retorna uma mensagem conforme a posição atual, para indicar que o que
+o personagem digitou não pode ser feito.
+
+func acertapos
+func acertapos(1)
+Acerta posição do personagem, conforme pontos de vida e batalha.
+Para checar se morreu, chamar com: acertapos(1)
+Retorna o corpo do personagem, se ele morreu e ficou o corpo.
+
+func batalhaexp( valor )
+Dá experiência a quem estiver atacando o personagem
+Valor é o fator do ganho de experiência
+
+func batalhafim
+Encerra a batalha
+Para checar se morreu, chamar com: batalhafim(1)
+
+func atktempo
+É chamado após algum tempo sem golpes, para encerrar a batalha.
+
+func morreu
+func morreu( quem matou o personagem )
+Executa procedimentos quando o personagem morre.
+Se for fornecido o personagem, é ele quem pegará as moedas.
+Retorna o corpo do personagem, se ele morreu e ficou o corpo.
+
+func msg( mensagem )
+Envia mensagem para o personagem.
+
+func msgvis( mensagem )
+Envia mensagem para o personagem, se ele estiver vendo o autor da mensagem.
+Essa função funciona em conjunto com a classe mens, mais especificamente
+a função: $mens.p( autor, alvo, objeto )
+
+func msginv( mensagem )
+Envia mensagem para o personagem, mesmo se o autor da mensagem estiver
+invisível. Vide comentários na documentação de msgvis (logo acima).
+
+func dentrocasa
+Retorna 1 se o jogador está dentro da própria casa ou nulo se não está
+Para personagens não jogador, essa função retorna sempre nulo
+
+
+2. Personagens não jogador (arquivos obj/perso*.int)
+
+const p_captura = 0
+Se pode ser capturado:
+0 = Não
+1 = Muito fácil
+2 = Fácil
+3 = Normal
+4 = Difícil
+5 = Muito difícil
+
+const p_soltar = 0
+Se pode ser dado ou solto:
+0 = Pode-se dar e soltar
+1 = Pode-se apenas soltar
+2 = Não se pode dar nem soltar
+
+const p_mover = 0
+Aonde pode se movimentar:
+0 = Não sai do lugar
+1 = Somente na área
+2 = Qualquer lugar
+
+const p_movervel = 140
+Tempo médio em décimos de segundo para ir para outra sala.
+
+const p_agressivo = 0
+func p_agressivo(personagem)
+Se ataca os jogadores.
+0 = Pacífico
+1 = Se atacarem
+2 = Sim
+
+const p_fugir = 0
+Foge de uma luta se os pontos de vida estiverem abaixo desse valor.
+
+const p_naoresg = 0
+Se não permite resgatar jogadores lutando com esse personagem.
+(0=permite resgatar, 1=não permite)
+
+const p_comecorpo = 0
+Se come corpos de outros personagens (desde que esteja cordado).
+(0=não come, 1=come)
+
+const lojaini = 0
+Que horas a loja abre ou o PNJ começa a ensinar.
+
+const lojafim = 0
+Que horas a loja abre ou o PNJ pára de ensinar.
+Se for igual ao horário de abertura, nunca fecha.
+
+const taxavenda = 0
+Lucro na venda, em porcentagem (0=sem lucro; paga o valor do item).
+
+const taxacompra = 0
+Lucro na compra, em porcentagem (de 0=preço normal a 100=não paga pelo item).
+
+const taxaaula = 0
+Preço da aula em porcentagem (exemplo, 0=de graça e 100=preço da aula).
+
+const lojaitem = ""
+Tipos de produtos que vende. É um texto sendo que cada linha é um produto,
+no seguinte formato: <item>  <nível>
+Exemplo:
+const lojaitem = "teste012 3\nteste013 0"
+
+const lojainv = 0
+Produtos inv: se vende os produtos listados no comando inv (0=não, 1=sim).
+
+const lojasala = ""
+Produtos sala: Nome da sala com os produtos que serão vendidos.
+
+const lojacasa = 0
+Vende casas: se compra e vende casas na área aonde está (0=não, 1=sim).
+
+const lojachave = 0
+Chaveiro: Se vende chaves e fechaduras para casas da área aonde está
+(0=não, 1=sim).
+
+const tipoitem = 0
+Tipos de produtos que compra.
+É um valor numérico em que cada bit corresponde a um tipo de produto
+da lista em config:produtos, no arquivo config/config.int.
+Nota: é muito mais fácil alterar essa constante pela edição online.
+
+const lojaaula = ""
+Aulas que ensina. É um texto sendo que cada linha é uma aula, no seguinte
+formato:  <nome da variável>  <nível>
+O nome da variável pode começar com:
+  "h_" para habilidade, como h_Chutar
+  "m_" para magia, como m_Retornar
+  "i_" Para idioma, como i_Hebráico
+  "e_" para extra (aparece no comando Outros)
+O nível pode ser:
+  1 = Iniciante
+  2 = Muito básico
+  3 = Básico
+  4 = Intermediário
+  5 = Avançado
+  6 = Muito avançado
+  7 = Mestre
+  8 = Perito
+Exemplo:
+const lojaaula = "h_Chutar 3\nm_Retornar 7"
+
+const lojanao = ""
+Raças e classes de personagens com quem não negocia (não compra, não vende
+e não ensina). É um texto sendo que cada linha é uma raça ou classe.
+Exemplo:
+const lojanao = "anão\nguerreiro"
+
+* const p_pet = 0
+NÃO ESTÁ PRONTO
+0 = não pode ser animal de estimação
+1 = jogador pode pegar e usar em batalhas
+2 = segue ordens do jogador
+
+* const p_fora = 0
+NÃO ESTÁ PRONTO
+Não entra em lugares fechados
+
+* const p_pegar = 0
+NÃO ESTÁ PRONTO
+0 = não pega itens do chão
+1 = pega itens
+2 = pega somente itens de valor
+
+* const p_nadar = 0
+NÃO ESTÁ PRONTO
+Pode atravessar lugares em que não se pode nadar.
+
+mata jogadores que mataram ou roubaram outros
+ataca jogadores que mataram ou roubaram outros
+pega lixo
+patrulha: encerra brigas

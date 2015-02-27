@@ -1,0 +1,243 @@
+classe adm_tipo
+herda comando_adm
+const txtajuda = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
+  \c2LTIPO\b     Lista tipos de personagens\n\
+  \c2CTIPO\b     Cria um tipo de personagem\n\
+  \c2ETIPO\b     Edita um tipo de personagem\n\
+  \c2ATIPO\b     Apaga um tipo de personagem"
+
+
+classe adm_ltipo
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ltipo\b\n\
+Sintaxe: LTIPO [nome]\n\
+Lista os tipos de personagens que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os personagens.\n\
+Nota: tipos de personagens são raça e classe."
+
+func escr # Listar tipos
+  prog p
+  textotxt t
+  txt100 lin
+  se !p.iniclasse("tipo_" + arg1)
+    ret arg0.msg("\bNenhum tipo encontrado.")
+  fimse
+  t.addfim("raça\nclasse")
+  epara nulo, p.lin && t.linhas < 499, p.depois
+    lin = txts([p.texto]:menu)
+    lin = (lin ? lin + " " : "{{{{{{{ ") + txt(p.texto, 5) + ", " + [p.texto]:nome
+    t.addfim(lin)
+  efim
+  t.ordena
+# t.addini("\bTipo de personagem, Menu, Texto do menu")
+  refvar txtmais = arg0.sock.txtmais
+  txt100 lin
+  txtmais.limpar
+  textopos pos
+  epara pos = t.ini, pos, pos.depois
+    se lin != txt1(pos.texto)
+      lin = txt1(pos.texto)
+      txtmais.addfim(lin == "{{{{{{{" ? "Não pertencem a menus:" : "Menu " + lin + ":")
+    fimse
+    txt2(pos.texto) && txtmais.addfim("  " + txt2(pos.texto))
+  efim
+  arg0.sock.txtmostra
+
+
+classe adm_ctipo
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ctipo\b\n\
+Sintaxe: CTIPO <nome>\n\
+Cria um tipo de personagem com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio.\n\
+Nota: tipos de personagens são raça e classe."
+
+func escr # Criar tipo
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do ataque
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do ataque após CTIPO")
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg1, EMDSA))
+  se txtsepara(nome, "O+DOL,DOL+O") != nome
+    ret arg0.msg("Nome inválido para tipo de personagem: " + nome)
+  senao p.existe("tipo_" + nome)
+    ret arg0.msg("Já existe o tipo: " + nome)
+  fimse
+# Cria tipo
+  txt200 lin
+  lin = "tipo_" + txts(nome) + "\nconfig/tipo\nherda comum_tipo"
+  lin += "\nconst nome = \"" + txtcopiamai(txte(nome), "A") + "\""
+  p.criar(lin)
+  criar("admordena", "config/tipo")
+# config:salvar
+  arg0.msg("\bTipo criado: " + nome)
+  admlog(arg0, "criou tipo " + nome)
+
+
+classe adm_atipo
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Atipo\b\n\
+Sintaxe: ATIPO <nome>\n\
+Apaga o tipo de personagem com o nome especificado.\n\
+Nota: tipos de personagens são raça e classe."
+
+func escr # Apagar tipo
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle um nome após ATIPO")
+  senao !p.existe("tipo_" + arg1)
+    arg0.msg("Tipo não existe: " + arg1)
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
+  fimse
+
+func passo # Confirmar que quer apagar tipo
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    p.apagar("tipo_" + arg0.tpasso)
+    config:salvar
+    arg0.msg("Tipo apagado: " + arg0.tpasso)
+    admlog(arg0, "apagou tipo " + arg0.tpasso)
+  senao
+    arg0.passo = este
+    arg0.msg("Apagar tipo " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_etipo
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Etipo\b\n\
+Sintaxe: ETIPO <nome>\n\
+Edita o tipo de personagem com o nome especificado.\n\
+Nota: tipos de personagens são raça e classe."
+
+func escr # Editar tipo
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do tipo após ETIPO")
+  senao !p.existe("tipo_" + txts(arg1))
+    arg0.msg("Tipo não existe: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "tipo_" + txts(txtmin(arg1))
+    arg0.sock.m_menu("menu_tipo")
+  fimse
+
+
+classe menu_tipo
+herda comando_menu
+const titulo = "Tipo " + txt(var.classe1, 5)
+const colunas = 25
+#
+const nome1 = "Texto do menu"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "nome"
+#
+const nome2 = "Descrição"
+const info2 = "Aparece quando o jogador escolhe raça ou classe"
+const tipo2 = "opc_texto"
+const clas2 = var.classe1
+const vari2 = "desc"
+#
+const nome3 = "É uma opção de"
+const info3 = "Digite raça para ser uma raça, classe para ser uma classe ou o nome\n\
+de uma raça ou classe para ser uma sub-raça ou sub-classe."
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "menu"
+#
+const nome4 = "Somente raças"
+const info4 = "Se esse tipo for uma classe que não existe em todas as raças,\n\
+escreva aqui em quais raças existe (uma raça por linha)"
+const tipo4 = "opc_texto"
+const clas4 = var.classe1
+const vari4 = "racas"
+#
+const nome5 = "Atributos números"
+const tipo5 = "opc_atribnum"
+const clas5 = var.classe1
+const vari5 = "recalc_auto"
+const exec5 = "recalc_ajusta"
+#
+const nome6 = "Atributos sim/não"
+const tipo6 = "opc_atribbit"
+const clas6 = var.classe1
+const vari6 = "recalc_auto"
+const exec6 = "recalc_ajusta"
+#
+const nome7 = "Atributos ataque"
+const info7 = "Afetam os danos quando o personagem ataca alguém"
+const tipo7 = "opc_atribatk"
+const clas7 = var.classe1
+const vari7 = "recalc_auto"
+const exec7 = "recalc_ajusta"
+#
+const nome8 = "Atributos defesa"
+const info8 = "Afetam os danos quando alguém ataca o personagem"
+const tipo8 = "opc_atribdef"
+const clas8 = var.classe1
+const vari8 = "recalc_auto"
+const exec8 = "recalc_ajusta"
+#
+const nome9 = "Equip posições"
+const info9 = "Se não estiver vazio, são as posições aonde pode usar equipamentos"
+const tipo9 = "opc_vetor"
+const clas9 = var.classe1
+const vari9 = "equip1"
+const extr9 = config:equip_txt
+#
+const nome10 = "Equip adicionar"
+const info10 = "Adicionar essas posições no personagem"
+const tipo10 = "opc_vetor"
+const clas10 = var.classe1
+const vari10 = "equip2"
+const extr10 = config:equip_txt
+#
+const nome11 = "Equip remover"
+const info11 = "Remover essas posições do personagem"
+const tipo11 = "opc_vetor"
+const clas11 = var.classe1
+const vari11 = "equip3"
+const extr11 = config:equip_txt
+#
+const nome50 = "Variáveis"
+const info50 = "Só tem efeito em jogadores"
+const tipo50 = "opc_linha"
+const clas50 = var.classe1
+const vari50 = "inivar"
+
+
+classe comum_tipo
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nome menu desc racas equip1 equip2 equip3 inivar"
+const iniclasse = !$[arg0] && criar(arg0)
+
+func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
+  txt100 nome
+  ref r
+  prog p
+  nome = txt(este, 5)
+  recalc_ajusta2(nome, p, r)
+
+func recalc_ajusta2 # Chamado internamente por recalc_ajusta para mais eficiência
+# arg0 = nome do tipo
+# arg1 = variável prog
+# arg2 = variável ref
+  epara arg2 = $jogador, arg2, arg2 = objdepois(arg2)
+    (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+  efim
+  epara arg1.iniclasse("p_"), arg1.lin, arg1.depois
+    epara arg2 = $[arg1.texto], arg2, arg2 = objdepois(arg2)
+      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+    efim
+  efim

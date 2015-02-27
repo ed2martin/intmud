@@ -1,0 +1,140 @@
+classe adm_
+const iniclasse = !$[arg0] && criar(arg0)
+# Edição do código e comandos gerais de administração
+const txtajuda = "\b\c3Páginas de administração\b\n\
+Para ler tecle ADM seguido do nome de um tópico ou um comando.\n\
+Os tópicos são:\n\
+  \c2AREA\b      Áreas\n\
+  \c2SALA\b      Salas\n\
+  \c2ITEM\b      Itens\n\
+  \c2TIPO\b      Tipos de personagens (raças e classes)\n\
+  \c2PERSO\b     Personagens não jogador\n\
+  \c2CASA\b      Casas de jogadores\n\
+  \c2RESET\b     Reset de área ou sala\n\
+  \c2HAB\b       Habilidades e magias\n\
+  \c2EFEITO\b    Efeitos\n\
+  \c2SOCIAL\b    Comandos sociais\n\
+  \c2COD\b       Edição do código fonte\n\
+  \c2JOG\b       Comandos para jogadores\n\
+  \c2OUTROS\b    Outros comandos\n\
+  \c2MENS\b      Caracteres especiais em mensagens\n\
+  \c2CORES\b     Cores em mensagens"
+
+
+classe adm_jog
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\c3Comandos para jogadores\b\n\
+  \c2TELE\b      Teletransporta jogador\n\
+  \c2TELEENTRA\b Define mensagem de chegada do Tele\n\
+  \c2TELESAI\b   Define mensagem de saída do Tele\n\
+  \c2AC\b        Envia mensagem para o canal de administração\n\
+  \c2ECHO\b      Envia mensagem para todos\n\
+  \c2SECHO\b     Envia mensagem para uma sala\n\
+  \c2JECHO\b     Envia mensagem para um jogador\n\
+  \c2REZOU\b     Envia mensagem para jogador com cópia para admin\n\
+  \c2BAN\b       Banir jogadores por IP\n\
+  \c2MUDANOME\b  Muda o nome do personagem de um jogador\n\
+  \c2SAVTUDO\b   Salva em arquivo os jogos e as casas pendentes\n\
+  \c2LISTARSAV\b Mostra os arquivos de jogos salvos\n\
+  \c2APAGARSAV\b Apaga um arquivo de jogo salvo.\n\
+  \c2MONIT\b     Monitora um jogador\n\
+  \c2ESCR\b      Digita um comando no teclado do jogador\n\
+  \c2INFOJOG\b   Mostra algumas informações do jogador"
+
+
+classe adm_outros
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\c3Outros comandos\b\n\
+  \c2ECONFIG\b   Edita as configurações do MUD\n\
+  \c2SERV\b      Informações sobre o MUD\n\
+  \c2INFO\b      Informações sobre a sala, personagem ou intem\n\
+  \c2ESTAT\b     Mostra estatísticas de um personagem da sala\n\
+  \c2HIST\b      Mostra o histórico de um personagem da sala\n\
+  \c2INFOHAB\b   Informa habilidades de um personagem da sala\n\
+  \c2INFOMAG\b   Informa magias de um personagem da sala\n\
+  \c2INFOE\b     Informa efeitos de um personagem da sala\n\
+  \c2MATAR1\b    Apaga um personagem ou item\n\
+  \c2MATAR2\b    Mata instantaneamente um personagem\n\
+  \c2LUGAR\b     Executa um comando como se estivesse em outra sala\n\
+  \c2CMD\b       Executa um comando do IntMUD no seu personagem\n\
+  \c2CMDP\b      Executa um comando do IntMUD em um personagem da sala\n\
+  \c2CMDJ\b      Executa um comando do IntMUD em um personagem de jogador\n\
+  \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados"
+
+
+classe adm_mens
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Caracteres especiais em mensagens\b\n\n\
+As seguintes sequências de caracteres têm um significado especial:\n\
+ \c2$$\b  Símbolo $\n\
+ \c2$P\b  Nome do personagem\n\
+ \c2$Q\b  Nome do personagem sem citar o dono\n\
+ \c2$R\b  Nome do personagem no comando QUEM\n\
+ \c2$A\b  Nome do alvo\n\
+ \c2$B\b  Nome do alvo sem citar o dono\n\
+ \c2$C\b  Nome do alvo no comando QUEM\n\
+ \c2$O\b  Nome do objeto\n\
+ \c2$H\b  Depende do personagem: um ou uma\n\
+ \c2$I\b  Depende do alvo: um ou uma\n\
+ \c2$J\b  Depende do objeto: um ou uma\n\
+ \c2$S\b  Depende do personagem: o ou a\n\
+ \c2$T\b  Depende do alvo: o ou a\n\
+ \c2$U\b  Depende do objeto: o ou a\n\
+ \c2$V\b  Depende do personagem: e ou a\n\
+ \c2$W\b  Depende do alvo: e ou a\n\
+ \c2$X\b  Depende do objeto: e ou a\n\
+ \c2$M\b  Mensagem; somente comandos que usam uma mensagem digitada por alguém\n\
+ \c2$D\b  É substituído por \"de\"\n\
+     No entando, seguido de o/a/os/as, forma as palavras do/da/dos/das\n\
+     Costuma ser usado nas mensagens como $d $p, $d $a e $d $o\n\
+ \c2$E\b  É substituído por \"em\"\n\
+     No entando, seguido de o/a/os/as, forma as palavras no/na/nos/nas\n\
+     Costuma ser usado nas mensagens como $e $p, $e $a e $e $o\n\
+ \c2$F\b  Semelhante a $D, exceto que seguido de um/uma/uns/umas também\n\
+     forma as palavras do/da/dos/das.\n\
+ \c2$G\b  Semelhante a $E, exceto que seguido de um/uma/uns/umas também\n\
+     forma as palavras no/na/nos/nas.\n\n\
+Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra\n\
+do texto não é transformada em maiúscula."
+
+
+classe adm_cores
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Cores em mensagens\b\n\n\
+É possível definir as cores dos caracteres e do fundo nas mensagens.\n\
+Entretanto, não há suporte a cores no Papovox, nem para os usuários\n\
+que jogarem através de um chat.\n\n\
+As seguintes sequências de caracteres mudam a cor das letras:\n\
+ \\c0  \c7Preto\b             \\c1  \c1Vermelho\b          \\c2  \c2Verde\b\n\
+ \\c3  \c3Marrom\b            \\c4  \c4Azul\b              \\c5  \c5Magenta\b\n\
+ \\c6  \c6Ciano\b             \\c7  \c7Branco\b            \\c8  \c8Cinza\b\n\
+ \\c9  \c9Vermelho intenso\b  \\ca  \caVerde intenso\b     \\cb  \cbAmarelo\b\n\
+ \\cc  \ccAzul intenso\b      \\cd  \cdMagenta intenso\b   \\ce  \ceCiano intenso\b\n\
+ \\cf  \cfBranco intenso\b\n\n\
+As seguintes sequências de caracteres mudam a cor de fundo:\n\
+ \\d0  \d0Preto\b             \\d1  \d1Vermelho\b          \\d2  \d2Verde\b\n\
+ \\d3  \d3Marrom\b            \\d4  \d4Azul\b              \\d5  \d5Magenta\b\n\
+ \\d6  \d6Ciano\b             \\d7  \c0\d7Branco\b\n\n\
+As seguintes sequências de caracteres mudam outros atributos:\n\
+ \"    Aspas duplas\n\
+ \\\\   Barra invertida: \\\n\
+ \\b   Caracteres brancos sob fundo preto sem piscante, sublinhado e inverso\n\
+ \\cg  Liga o sublinhado (um traço horizontal em baixo)\n\
+ \\ch  Desliga o sublinhado\n\
+ \\ci  Liga inversão de frente com fundo (troca cores de frente com fundo)\n\
+ \\cj  Desliga inversão de frente com fundo\n\
+ \\ck  Liga texto piscante\n\
+ \\cl  Desliga texto piscante"
+
+
+classe adm_adm
+herda comando_adm, comando_comum
+# Ajuda dos comandos de administração
+
+func escr
+  prog p
+  epara p.iniclasse("adm_" + txt1(arg1)), p.lin, p.depois
+    refvar t1 = $[p.texto].txtajuda(arg0)
+    ret t1, arg0.msg2(t1)
+  efim
+  arg0.msg("\bComando ou tópico de administração desconhecido: " + arg1)

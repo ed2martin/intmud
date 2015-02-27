@@ -789,6 +789,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cNomeObj:          return "nomeobj";
     case cArqDir:           return "arqdir";
     case cArqLog:           return "arqlog";
+    case cArqProg:          return "arqprog";
     case cArqSav:           return "arqsav";
     case cArqTxt:           return "arqtxt";
     case cIntTempo:         return "inttempo";
@@ -880,6 +881,7 @@ const char * Instr::NomeComando(int valor)
     case cNomeObj:          return "cNomeObj";
     case cArqDir:           return "cArqDir";
     case cArqLog:           return "cArqLog";
+    case cArqProg:          return "cArqProg";
     case cArqSav:           return "cArqSav";
     case cArqTxt:           return "cArqTxt";
     case cIntTempo:         return "cIntTempo";

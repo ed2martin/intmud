@@ -1,0 +1,50 @@
+classe adm_lugar
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lugar\b\n\
+Sintaxe: LUGAR <sala ou personagem jogador> <comando>\n\
+Executa um comando como se estivesse em outra sala. Com personagem\n\
+jogador, executa como se estivesse na mesma sala do jogador.\n\
+Nota: O administrador é teletransportado momentaneamente para outra sala."
+
+func escr
+  ref sala
+# Checa um comando lugar dentro de outro
+  se $jog_lugar
+    ret arg0.msg("Não é permitido executar um comando LUGAR dentro de outro.")
+# Obtém a sala
+  senao !txt2(arg1)
+    ret arg0.msg("Sintaxe: LUGAR <sala ou jogador> <comando>")
+  senao !(sala = $s_[txt1(arg1)])
+    indiceitem item
+    item.ini("pn " + txtnome(txt1(arg1)))
+    sala = item.obj.dono
+  fimse
+  ret !sala, arg0.msg("\bSala ou jogador não existe: " + txt1(arg1))
+# Muda de sala e garante que vai voltar à sala original
+  criar("jog_lugar", arg0, sala)
+# Comando de administração
+  refvar lin = txt2(arg1)
+  refvar r = $adm_[txt1(lin)].objcmd(arg0)
+  ret r, r.escr(arg0, txt2(lin))
+# Comando para o jogo
+  arg0.teclou(lin) # Personagem processa comando
+  arg0.p_espera < 2 && (arg0.p_espera = 2)
+
+
+classe jog_lugar
+# Muda o personagem temporariamente de sala
+# Chamado com: criar("jog_lugar", personagem, sala)
+ref perso # Personagem do jogador
+ref dono # Quem possui esse objeto; mesmo que: idono.objlista
+ref donoantes # Dono anterior
+
+func ini
+  apagar(este)
+  dono = arg0.dono
+  donoantes = arg0.donoantes
+  perso = arg0
+  perso.mdono(arg1)
+
+func fim
+  perso.mdono(dono)
+  perso.donoantes = donoantes

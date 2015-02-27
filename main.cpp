@@ -46,6 +46,7 @@
 #include "var-texto.h"
 #include "var-log.h"
 #include "var-telatxt.h"
+#include "var-arqprog.h"
 #include "random.h"
 #include "misc.h"
 
@@ -160,7 +161,7 @@ void err_printf(const char * mens, ...)
     case 1:
         if (err_log == 0)
         {
-            strcpy(arqext, ".log");
+            mprintf(arqinicio, INT_NOME_TAM, "%s.log", TArqIncluir::ArqNome());
             err_log = fopen(arqnome, "w");
             if (err_log==0)
                 exit(EXIT_FAILURE);
@@ -378,6 +379,22 @@ int main(int argc, char *argv[])
 }
 
 //------------------------------------------------------------------------------
+/// Adiciona arquivos das instruções incluir
+static void AdicionaIncluir()
+{
+    TVarArqProg arqprog;
+    arqprog.Abrir();
+    while (true)
+    {
+        arqprog.Proximo();
+        if (arqprog.Arquivo[0] == 0)
+            break;
+        TArqMapa * mapa = new TArqMapa(arqprog.Arquivo);
+        mapa->Existe = true;
+    }
+}
+
+//------------------------------------------------------------------------------
 /// Inicialização do programa
 /// @param arg Nome do arquivo .int, ou "" se não foi especificado
 void Inicializa(const char * arg)
@@ -408,7 +425,7 @@ void Inicializa(const char * arg)
     circle_srandom(time(0)); // Para gerar números aleatórios
     TVarIntTempo::PreparaIni(); // Variáveis inttempo
 
-// Obtém nome do programa: arqnome, arqinicio e arqext
+// Obtém nome do programa: arqnome e arqinicio
     {
         char nome[0xC000];
         char * pnome = nome;
@@ -448,53 +465,52 @@ void Inicializa(const char * arg)
         pnome++;
 #endif
 
-    // Copia o nome do arquivo para o início de nome[]
-    // Obtém: pnome = endereço do primeiro byte após o 0
-        if (pnome > nome)
-            pnome = copiastr(nome, pnome);
-        else
-            for (pnome = nome; *pnome;)
-                pnome++;
-        pnome++;
+    // Obtém o nome do arquivo principal, sem o diretório
+        while (true)
+        {
+            int tam1 = strlen(pnome);
+            int tam2 = strlen(INT_EXT)+1;
+            if (tam1 > 4)
+                if (comparaZ(pnome + tam1 - 4, ".exe") == 0)
+                {
+                    pnome[tam1-4] = 0;
+                    break;
+                }
+            if (tam1 > tam2)
+                if (pnome[tam1-tam2] == '.' &&
+                    comparaZ(pnome+tam1-tam2+1, INT_EXT) == 0)
+                {
+                    pnome[tam1-tam2] = 0;
+                    break;
+                }
+            break;
+        }
+        TArqIncluir::ArqNome(pnome);
 
-    // Acerta nomearq
+    // Coloca em arqnome o nome do diretório atual seguido de uma barra
 #ifdef __WIN32__
         if (GetCurrentDirectory((DWORD)(endfim-pnome), pnome) <= 0)
             exit(EXIT_FAILURE);
-        arqnome = new char[strlen(nome) + strlen(pnome) + 70];
-        sprintf(arqnome, "%s\\%s", pnome, nome);
+        arqnome = new char[strlen(pnome) + INT_NOME_TAM + 10];
+        sprintf(arqnome, "%s\\", pnome);
 #else
         if (getcwd(pnome, endfim-pnome) == 0)
             exit(EXIT_FAILURE);
-        arqnome = new char[strlen(nome) + strlen(pnome) + 70];
-        sprintf(arqnome, "%s/%s", pnome, nome);
+        arqnome = new char[strlen(pnome) + INT_NOME_TAM + 10];
+        sprintf(arqnome, "%s/", pnome);
 #endif
 
     // Obtém arqinicio
-        arqinicio = arqnome;
-        if (*nome)
-            arqinicio += 1 + strlen(pnome);
-
-    // Obtém arqext
-        int tam = strlen(INT_EXT);
-        arqext = arqinicio + strlen(arqinicio);
-        if (arqext > arqinicio + tam + 1)
-        {
-            if (arqext[-tam-1]=='.' && comparaZ(arqext-tam, INT_EXT)==0)
-                arqext -= tam + 1;
-            else if (comparaZ(arqext-4, ".exe")==0)
-                arqext -= 4;
-        }
-        *arqext = 0;
+        arqinicio = arqnome + strlen(arqnome);
     }
 
 // Cria classes a partir dos arquivos .int
     bool ini_arq = true;
-    TArqMapa * mapa = new TArqMapa(""); // Arquivo intmud.int
+    TArqMapa * mapa = new TArqMapa(""); // Arquivo .int principal
     mapa->Existe = true;
 
-    // Abre intmud.int
-    strcpy(arqext, "." INT_EXT);
+    // Abre o arquivo principal
+    mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, TArqIncluir::ArqNome());
     if (!arq.Abrir(arqnome))
     {
         err_printf("Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
@@ -511,10 +527,23 @@ void Inicializa(const char * arg)
         }
         if (linhanum==0) // Fim do arquivo
         {
+        // Fim da configuração: adiciona arquivos a serem buscados
+            if (ini_arq)
+            {
+                ini_arq = false;
+                AdicionaIncluir();
+            }
+        // Pasa para o próximo arquivo
             mapa = mapa->Proximo;
             if (mapa==0)
                 break;
-            mprintf(arqext, 60, "-%s." INT_EXT, mapa->Arquivo);
+            mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, mapa->Arquivo);
+            for (char * p = arqinicio; *p; p++)
+#ifdef __WIN32__
+                if (*p == '/') *p = '\\';
+#else
+                if (*p == '\\') *p = '/';
+#endif
             if (!arq.Abrir(arqnome))
             {
                 err_printf("Abrindo arquivo %s: %s\n",
@@ -551,52 +580,18 @@ void Inicializa(const char * arg)
             if (comparaZ(mens, "log")==0)
                 err_tipo = (NumInt(valor) != 0);
 
-        // Verifica opção MAPAGRANDE, que indica vários arquivos
-            if (comparaZ(mens, "mapagrande")==0 && NumInt(valor))
+        // Verifica instruções incluir
+            if (comparaZ(mens, "incluir")==0)
             {
-                if (TArqMapa::MapaGrande) // Se já obteve a lista de arquivos
-                    continue;
-
-            // Abre diretório
-                TArqMapa::MapaGrande = true;
-                DIR * dir=opendir(".");
-                struct dirent * sdir;
-                if (dir==0)
+                if (!TArqMapa::NomeValido(valor, true))
                 {
-                    err_printf("Procurando arquivos: %s\n", strerror(errno));
+                    err_printf("Nome não permitido ao incluir: %s\n", valor);
                     err_fim();
                 }
-
-            // Obtém nomes dos arquivos
-                copiastr(arqext, "-");
-                int tam = strlen(arqinicio);
-                int ext = strlen(INT_EXT) + 1;
-                while ( (sdir=readdir(dir))!=0 )
-                {
-                    char * pont=sdir->d_name;
-                    if (strlen(pont)<=4 || memcmp(arqinicio, pont, tam)!=0)
-                        continue;
-                    for (; *pont; pont++);
-                    pont-=ext;
-                    if ( pont[0]!='.' || comparaZ(pont+1, INT_EXT)!=0)
-                        continue;
-                    copiastr(mens, sdir->d_name+tam, sizeof(mens));
-                    for (pont=mens; *pont; pont++);
-                    if (pont<mens+4)
-                        continue;
-                    pont[-4]=0;
-                    if (TArqMapa::NomeValido(mens))
-                    {
-                        TArqMapa * m = new TArqMapa(mens);
-                        m->Existe = true;
-                    }
-                    //printf("%s\n", sdir->d_name); fflush(stdout);
-                }
-
-            // Fecha diretório
-                closedir(dir);
-                copiastr(arqext, "." INT_EXT);
-                continue;
+                for (char * p = valor; *p; p++)
+                    if (*p=='\\')
+                        *p='/';
+                new TArqIncluir(valor);
             }
         }
 
@@ -604,7 +599,13 @@ void Inicializa(const char * arg)
         char * pclasse = TClasse::NomeDef(mens);
         if (pclasse==0)
             continue;
-        ini_arq = false;
+
+    // Fim da configuração: adiciona arquivos a serem buscados
+        if (ini_arq)
+        {
+            ini_arq = false;
+            AdicionaIncluir();
+        }
 
     // Verifica se classe é válida ou já existe
         if (TClasse::NomeValido(pclasse)==false)
@@ -659,13 +660,8 @@ void Inicializa(const char * arg)
     {
         printf("Arquivos:");
         for (TArqMapa * obj = TArqMapa::Inicio; obj; obj=obj->Proximo)
-        {
-            if (*obj->Arquivo==0)
-                strcpy(arqext, "." INT_EXT);
-            else
-                mprintf(arqext, 60, "-%s." INT_EXT, obj->Arquivo);
-            printf(" %s", arqinicio);
-        }
+            printf(" %s", *obj->Arquivo==0 ? TArqIncluir::ArqNome()
+                                           : obj->Arquivo);
         putchar('\n');
     }
 #endif
@@ -678,8 +674,8 @@ void Inicializa(const char * arg)
     char comando[2048];
     ini_arq = true;
 
-    // Abre intmud.int
-    strcpy(arqext, "." INT_EXT);
+    // Abre o arquivo principal
+    mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, TArqIncluir::ArqNome());
     if (!arq.Abrir(arqnome))
     {
         err_printf("Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
@@ -719,7 +715,7 @@ void Inicializa(const char * arg)
                 mapa = mapa->Proximo;
             if (mapa==0)
                 break;
-            mprintf(arqext, 60, "-%s." INT_EXT, mapa->Arquivo);
+            mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, mapa->Arquivo);
             if (!arq.Abrir(arqnome))
             {
                 err_printf("Abrindo arquivo %s: %s\n",

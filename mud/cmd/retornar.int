@@ -1,0 +1,59 @@
+classe comando_retornar
+herda comando_hab
+# Herdado pela classe magia_retornar
+const posic = 8
+const objcmd = arg0.persobat.var.[nomevar] || arg0.pnivel <= nivel ? este
+const txtajuda = int(nivel) >= 0 ? "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
+const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
+const tipoalvo = 6 # Não agressivo
+const c_espera = 15 # Tempo de esperar após usar esse comando
+const msgantes2 = "$P some em um redemoinho de fumaça."
+const msgdepois2 = "$P aparece de um redemoinho de fumaça."
+const msgerrou1 = "Por algum motivo a magia falhou."
+const msgnulo1 = "Por algum motivo a magia não teve efeito."
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nomevar nivel sala\n\
+c_espera\n\
+c_vida1 c_vida2\n\
+c_mana1 c_mana2\n\
+c_move1 c_move2\n\
+aulaini aulafim\n\
+depende\n\
+precisao\n\
+tipoarma\n\
+tipoperso\n\
+valor\n\
+msgextra msgini1 msgini2\n\
+msgantes1 msgantes2 msgdepois1 msgdepois2\n\
+msgerrou1 msgerrou2 msgnulo1 msgnulo2"
+
+func escr # Personagem retorna
+# arg0 = personagem
+# arg1 = não usado; apenas para compatibilidade com outras habilidades e magias
+# arg2 = item usado, ou nulo se não usou nenhum item
+  ref r
+  r = sala
+  !r && (r = $[arg0.var.z_salafim])
+  se arg2.item
+    ret !checahab1(arg0.persobat, arg2), nulo
+    ret !r || r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
+  senao
+    ret !r, arg0.msg("Você não possui ponto de retorno.")
+    ret !checahab1(arg0.persobat, arg2), nulo
+    ret r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
+    custohab1(arg0.persobat)
+    $mens.p(arg0) + $mens.mvis2(msgini1, msgini2)
+  fimse
+  arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+  se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
+  senao arg0.dono.s_retornar == 1
+    ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
+  senao rand(100) >= precisao || arg0.atkenv # Checa a precisão e se está batalhando
+    ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
+  fimse
+  $mens.p(arg0)
+  $mens.mvis2(msgantes1, msgantes2)
+  arg0.mudadono(r)
+  $mens.mvis2(msgdepois1, msgdepois2)

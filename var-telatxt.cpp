@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "var-telatxt.h"
+#include "var-arqprog.h"
 #include "console.h"
 #include "variavel.h"
 #include "instr.h"
@@ -659,16 +660,8 @@ bool TVarTelaTxt::Inic()
     memset(TelaBuf, ' ', Console->LinTotal * Console->ColTotal);
     TelaLin = 0;
 // Acerta o título da janela
-    int total = arqext - arqinicio;
-    if (total>0)
-    {
-        char mens[100];
-        if (total > (int)sizeof(mens)-1)
-            total = (int)sizeof(mens)-1;
-        memcpy(mens, arqinicio, total);
-        mens[total] = 0;
-        Console->MudaTitulo(mens);
-    }
+    const char * titulo = TArqIncluir::ArqNome();
+    Console->MudaTitulo(titulo);
     return true;
 }
 

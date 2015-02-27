@@ -1,0 +1,216 @@
+classe adm_social
+herda comando_adm
+const txtajuda = "\b\c3Comandos sociais\b\n\
+  \c2LSOC\b      Lista comandos sociais existentes\n\
+  \c2CSOC\b      Cria um social\n\
+  \c2ESOC\b      Edita um social\n\
+  \c2ASOC\b      Apaga um social"
+const txt_posicao = "morto\n\
+mortalmente ferido\n\
+incapacitado\n\
+fraco\n\
+dormindo\n\
+descansando\n\
+sentado\n\
+lutando\nem pé"
+
+
+classe adm_lsoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lsoc\b\n\
+Sintaxe: LSOC [nome]\n\
+Lista os comandos sociais que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os comandos sociais."
+
+func escr # Listar sociais
+  prog p
+  se !p.iniclasse("soc_" + arg1)
+    arg0.msg("\bNenhum social encontrado.")
+  senao
+    textotxt t
+    txt200 n
+    ref r
+    t.addfim("\bComando (nome, nível, alvo):")
+    enquanto p.lin
+      r = $[p.texto], n = txt(r, 4) + ", " + r.nivel + ","
+      r.sem1 && r.sem2 && (n += " sem_args")
+      r.perso1 && r.perso2 && r.perso3 && (n += " perso")
+      r.item1 && r.item2 && (n += " item")
+      t.addfim(n), p.depois
+    efim
+    arg0.msg2(t.remove(1000))
+  fimse
+
+
+classe adm_csoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Csoc\b\n\
+Sintaxe: CSOC <nome>\n\
+Cria um comando social. Nome pode conter letras e números."
+
+func escr # Criar comando social
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do social após CSOC")
+  senao p.existe("soc_" + arg1)
+    arg0.msg("Social já existe: " + arg1)
+  senao
+    p.criar("soc_" + txtmin(arg1) + "\nconfig/social\nherda soccomum")
+    criar("admordena", "config/social")
+# config:salvar
+    arg0.msg("\bSocial criado: " + txtmin(arg1))
+    admlog(arg1, "criou social " + txtmin(arg1))
+  fimse
+
+
+classe adm_esoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Esoc\b\n\
+Sintaxe: ESOC <nome>\n\
+Edita o comando social com o nome especificado."
+
+func escr # Editar social
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do social após ESOC")
+  senao !p.existe("soc_" + arg1)
+    arg0.msg("Social não existe: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "soc_" + arg1
+    arg0.sock.m_menu("menu_social")
+  fimse
+
+
+classe adm_asoc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Asoc\b\n\
+Sintaxe: ASOC <nome do comando social>\n\
+Apaga o comando social com o nome especificado."
+
+func escr # Apagar social
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do social após ASOC")
+  senao !p.existe("soc_" + arg1)
+    arg0.msg("Social não existe: " + arg1)
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
+  fimse
+
+func passo # Confirmar que quer apagar social
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    p.apagar("soc_" + arg0.tpasso)
+    config:salvar
+    arg0.msg("Social apagado: " + arg0.tpasso)
+    admlog(arg1, "apagou social " + arg0.tpasso)
+  senao
+    arg0.passo = este
+    arg0.msg("Apagar social " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe menu_social
+herda comando_menu
+const titulo = "Social " + txt(var.classe1, 4)
+const colunas = 29
+#
+const nome1 = "Tipo de comando"
+const tipo1 = "opc_opcao"
+const clas1 = var.classe1
+const vari1 = "tipo"
+const extr1 = config:social_txt
+#
+const nome2 = "Editar tipos"
+const info2 = "Os tipos existentes na opção 1"
+const tipo2 = "opc_txtopcao--"
+const clas2 = "config"
+const vari2 = "social_txt"
+const extr2 = "1 30"
+#
+const nome3 = "Nível mínimo"
+const tipo3 = "opc_numero"
+const clas3 = var.classe1
+const vari3 = "nivel"
+#
+const nome4 = "Posição mínima"
+const tipo4 = "opc_opcao"
+const clas4 = var.classe1
+const vari4 = "posic"
+const extr4 = txt_posicao
+#
+const nome5 = "Alvo posição mínima"
+const tipo5 = "opc_opcao"
+const clas5 = var.classe1
+const vari5 = "alvopos"
+const extr5 = txt_posicao
+#
+const nome6 = "Mostrar invisível"
+const info6 = "Se o social aparece para quem não puder ver o personagem"
+const tipo6 = "opc_simnao"
+const clas6 = var.classe1
+const vari6 = "mvis"
+#
+const nome7 = "Argumento não existe"
+const info7 = "Quando o objeto ou personagem não existe"
+const tipo7 = "opc_linha"
+const clas7 = var.classe1
+const vari7 = "invalido"
+#
+const titu8 = " * Sem argumentos"
+#
+const nome8 = "Msg perso"
+const tipo8 = "opc_linha"
+const clas8 = var.classe1
+const vari8 = "sem1"
+#
+const nome9 = "Msg outros"
+const tipo9 = "opc_linha"
+const clas9 = var.classe1
+const vari9 = "sem2"
+#
+const titu10 = " * Com o próprio personagem"
+#
+const nome10 = "Msg perso"
+const tipo10 = "opc_linha"
+const clas10 = var.classe1
+const vari10 = "auto1"
+#
+const nome11 = "Msg outros"
+const tipo11 = "opc_linha"
+const clas11 = var.classe1
+const vari11 = "auto2"
+#
+const titu12 = " * Com outro personagem"
+#
+const nome12 = "Msg perso"
+const tipo12 = "opc_linha"
+const clas12 = var.classe1
+const vari12 = "perso1"
+#
+const nome13 = "Msg alvo"
+const tipo13 = "opc_linha"
+const clas13 = var.classe1
+const vari13 = "perso2"
+#
+const nome14 = "Msg outros"
+const tipo14 = "opc_linha"
+const clas14 = var.classe1
+const vari14 = "perso3"
+#
+const titu15 = " * Com um objeto"
+#
+const nome15 = "Msg perso"
+const tipo15 = "opc_linha"
+const clas15 = var.classe1
+const vari15 = "item1"
+#
+const nome16 = "Msg outros"
+const tipo16 = "opc_linha"
+const clas16 = var.classe1
+const vari16 = "item2"

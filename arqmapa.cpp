@@ -14,6 +14,7 @@
 #include "classe.h"
 #include "arqmapa.h"
 #include "console.h"
+#include "var-arqprog.h"
 #include "instr.h"
 #include "misc.h"
 
@@ -24,7 +25,6 @@ extern int err_tipo;
 
 TArqMapa * TArqMapa::Inicio=0;
 TArqMapa * TArqMapa::Fim=0;
-bool TArqMapa::MapaGrande=false;
 unsigned short TArqMapa::ParamLinha = 4000;
 unsigned char TArqMapa::ParamN = 0;
 unsigned char TArqMapa::ParamIndent=2;
@@ -59,15 +59,32 @@ TArqMapa::~TArqMapa()
 }
 
 //----------------------------------------------------------------------------
-bool TArqMapa::NomeValido(const char * nome)
+bool TArqMapa::NomeValido(const char * nome, bool incluir)
 {
+    if (*nome == '.')
+        return false;
     const char *o=nome;
     for (; *o; o++)
+    {
+        if (*o=='\\' || *o=='/')
+        {
+            if (o[1]=='.')
+                return false;
+            continue;
+        }
         if ((*o<'0' || *o>'9') && (*o<'a' || *o>'z') &&
-                *o!='-' && *o!='.' && *o!='_')
+                *o!='-' && *o!='_' && *o!='.')
             return false;
+    }
     if (o-nome >= INT_NOME_TAM)
         return false;
+    if (!incluir && *nome)
+    {
+        o=nome+1;
+        while (*o) o++;
+        if (o[-1] == '/' || o[-1] == '\\')
+            return false;
+    }
     return true;
 }
 
@@ -89,12 +106,6 @@ void TArqMapa::SalvarArq(bool tudo)
     //if (Inicio->Mudou) puts("-------------"); fflush(stdout);
     while (arqmapa)
     {
-    // Checa instrução mapagrande
-        if (*arqmapa->Arquivo==0 && (Inicio!=Fim) != MapaGrande)
-        {
-            MapaGrande = (Inicio!=Fim);
-            Inicio->Mudou=true;
-        }
     // Checa se arquivo foi alterado
         if (!arqmapa->Mudou && !tudo)
         {
@@ -102,10 +113,15 @@ void TArqMapa::SalvarArq(bool tudo)
             continue;
         }
     // Obtém o nome do arquivo
-        if (*arqmapa->Arquivo)
-            mprintf(arqext, 60, "-%s." INT_EXT, arqmapa->Arquivo);
-        else
-            strcpy(arqext, "." INT_EXT);
+        mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT,
+                *arqmapa->Arquivo ? arqmapa->Arquivo
+                                  : TArqIncluir::ArqNome());
+        for (char * p = arqinicio; *p; p++)
+#ifdef __WIN32__
+            if (*p == '/') *p = '\\';
+#else
+            if (*p == '\\') *p = '/';
+#endif
     // Verifica se arquivo vazio
         if (arqmapa->ClInicio==0 && *arqmapa->Arquivo)
         {
@@ -125,9 +141,15 @@ void TArqMapa::SalvarArq(bool tudo)
         }
         if (*arqmapa->Arquivo==0)
         {
+            TArqIncluir * obj = TArqIncluir::IncluirIni();
+            if (obj)
+            {
+                fprintf(arq, "# Nomes dos outros arquivos que compõem "
+                             "o programa começam com:\n");
+                for (; obj; obj=obj->IncluirProximo())
+                    fprintf(arq, "incluir = %s\n", obj->IncluirNome());
+            }
             fprintf(arq,
-                "# Se deve usar vários arquivos\n"
-                "mapagrande = %d\n\n"
                 "# Quantas instruções uma função chamada pelo programa pode\n"
                 "# executar antes do controle retornar ao programa\n"
                 "exec = %d\n\n"
@@ -135,7 +157,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 "telatxt = %d\n\n"
                 "# Aonde apresentar mensagens de erro no programa\n"
                 "log = %d\n\n",
-                MapaGrande, Instr::VarExecIni, Console!=0, err_tipo);
+                Instr::VarExecIni, Console!=0, err_tipo);
         }
         for (TClasse * cl = arqmapa->ClInicio; cl; cl=cl->ArqDepois)
         {

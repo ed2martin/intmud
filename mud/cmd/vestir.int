@@ -1,0 +1,141 @@
+classe cmd_usar
+herda cmd_vestir
+const objcmd = $cmd_vestir
+
+
+classe cmd_vestir
+herda comando_comum
+const txtajuda = "\b\c3Vestir\b\n\
+Sintaxe: VESTIR <objeto> [posição]\n\
+         USAR <objeto> [posição]\n\
+Seu personagem veste ou usa um objeto que está carregando.\n\
+Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
+Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
+const posic = 5
+txt30 tipo1 # alvo.tipo1
+txt30 tipo2 # alvo.tipo2
+txt30 tipo3 # alvo.tipo3
+ref alvo # Quem vai vestir
+
+func escr
+  ret !arg1, arg0.msg("Vestir o que?")
+  alvo = arg0.persoesc
+  tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
+  tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
+  tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
+# Variáveis
+  int32 lugar # Aonde quer vestir
+  int1 vest.32 # Aonde está vestindo
+  int8 total # Quantidade de itens encontrados
+  nomeobj n # Para reconhecer os itens
+  listaitem item
+# Preenche a variável vest com o que está vestindo
+  epara item = alvo.dentro2.ini, item, item.depois
+    vest.[item.obj.vestpos - 1] = 1
+  efim
+# Descobre aonde quer vestir
+  misc:separa(arg1) # Separa nome do objeto do nome da posição
+  se !misc:sep2
+    lugar = alvo.equippos # Todas as posições que possui
+  senao
+    n.ini(misc:sep2, 100)
+    textotxt t
+    textopos pos
+    t.addfim(config:equip_txt)
+    refvar lug2 = ~alvo.equippos
+    epara pos = t.ini, pos, pos.depois
+      continuar lug2 & intbit(pos.linha)
+      n.nome(pos.texto) && (lugar = lugar | intbit(pos.linha))
+    efim
+    ret !lugar, arg0.msg("Você não sabe aonde fica " + misc:sep2 + ".")
+  fimse
+# Veste
+  listaobj l
+  ref r
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
+  epara l.addfim(alvo.dentro1), l, l.ini.remove
+    r = l.objini
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    total += n
+    $mens.p(alvo, nulo, r)
+# Vestir - checa se o personagem pode vestir
+    se r.vestirsim == (alvo == arg0 ? 2 : 1)
+      $mens.mperso("$P não consegue vestir $o.")
+      continuar
+# Vestir - checa o nível
+    senao int(r.pnivel) > alvo.pnivel
+      $mens.mperso("$P precisa estar no nível " + r.pnivel + " para vestir $o.")
+      continuar
+    fimse
+    uint8 x
+    epara x = n, x, x -= 1
+# Vestir - checa se o item pode ser vestido
+      refvar lugar2 = lugar & r.vestir1
+      se !lugar2
+        se !r.vestir1
+          $mens.mperso("Não se pode vestir $o.")
+        senao
+          $mens.mperso("$P não consegue vestir $o.")
+        fimse
+        sair
+# Vestir - checa se a classe ou a raça tem permissão
+      senao !r.vestirnao
+      senao tipo1 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo1) >= 0
+        $mens.mperso("$P não consegue vestir $o.")
+        sair
+      senao tipo2 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo2) >= 0
+        $mens.mperso("$P não consegue vestir $o.")
+        sair
+      senao tipo3 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo3) >= 0
+        $mens.mperso("$P não consegue vestir $o.")
+        sair
+      fimse
+# Vestir - checa se o item deixa
+      txt100 txtvestir
+      txtvestir = r.cmd_podevestir(alvo)
+      ret txtvestir, $mens.mperso(txtvestir)
+# Vestir - checa os itens que estão em cima
+      int32 erro1 # Posição aonde já está vestindo o item
+      int32 erro2 # Posições aonde tem itens em cima
+      uint8 pos
+      epara pos = 0, pos < 32, pos += 1
+        continuar !(lugar2 >> pos & 1) # Checa se é o lugar
+        se vest.[pos]
+          erro1 = pos + 1
+        senao (erro2 = vest.bits & config:vestir[pos]) == 0
+          erro1 = 0
+          sair
+        fimse
+      efim
+# Vestir - mensagens de erro
+      se erro2
+        epara item = alvo.dentro2.ini, item, item.depois
+          continuar !item.obj.vestpos
+          sair erro2 & intbit(item.obj.vestpos - 1)
+        efim
+        arg0.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
+        sair
+      senao erro1
+        epara item = alvo.dentro2.ini, item, item.depois
+          sair item.obj.vestpos == erro1
+        efim
+        arg0.msg("Já está usando " + item.obj.descnome + " nessa posição.")
+        sair
+# Veste o item
+      senao
+        listaobj e
+        epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
+          ret e.objini.cmd_vestir(alvo, r, pos + 1), nulo
+        efim
+        r.vestir(pos + 1)
+        vest.[pos] = 1
+        refvar mvestir = txtsublin(config:equip_vestir, pos, 1)
+        $mens.mvis1(mvestir ? mvestir : "$P veste $o.")
+        epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
+          e.objini.cmd_vestiu(alvo, r, pos + 1)
+        efim
+      fimse
+    efim
+  efim
+# Avisa se não encontrou nenhum item
+  !total && arg0.msg("Você não vê isso.")

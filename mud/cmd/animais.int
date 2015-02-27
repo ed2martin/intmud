@@ -1,0 +1,332 @@
+classe cmd_animal
+herda comando_comum
+const objcmd = config:animal1 ? este
+const txtajuda = config:animal1 ? txtajuda1
+const txtajuda1 = txttroca(config:animal2 ? ta1 + ta2 : ta1, "$$", config:animal1)
+const ta1 = "\b\c3Animais\b\n\
+  \c2CAPTURAR\b  Pega o animal que está lutando com você.\n\
+  \c2SOLTAR\b    Solta um animal (você se desfaz dele)\n\
+  \c2DAR\b       Dá animal a outro personagem\n\
+  \c2ANIMAL\b    Mostra animais que você possui\n\
+  \c20\b         Não escolhe nenhum animal para batalha\n\
+  \c21\b a \c2$$\b     Escolhe um animal seu, de 1 a $$\n\
+  \c2TROCAR\b    Dá itens para um animal e troca animais de lugar"
+const ta2 = "\n  \c2RESERVA\b   Manuseio de animais reserva"
+const posic = 0
+
+func escr
+  textotxt t
+  txt100 lin
+  uint8 num
+  listaitem i
+  t.addfim((arg0.persobat == arg0 ? "0* Você  N" : "0  Você  N") + arg0.pnivel)
+  epara i = arg0.dentro2.ini, i, i.depois
+    continuar !i.obj.perso
+    lin = txt(num += 1) + (arg0.persobat == i.obj ? "*" : " ")
+    se i.obj.pvida
+      lin += " " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
+    senao
+      lin += " (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
+    fimse
+    t.addfim(lin)
+  efim
+  se t.linhas == 1
+    arg0.msg("Não possui nenhum animal.")
+  senao
+    arg0.msg2("\b\c6Animais:\b\n" + t.remove(1000))
+
+
+classe comando_escolhe_animal
+herda comando_comum
+const posic = 5
+int8 num # Número do animal; preenchido pela função "teclou" do personagem
+
+func escr # Chamado pela função "teclou" do personagem ao escolher um animal
+  refvar r = arg0.animalnum(num)
+  se !r
+    arg0.msg("Você não possui " + num + ".")
+  senao arg0.persoesc == r
+    arg0.msg("Você já escolheu " + num + ".")
+  senao r == arg0
+    se arg0.persoesc.pvida && arg0.atkenv # Animal está bom e está lutando
+      arg0.p_espera = 40 # Espera 4 segundos
+    fimse
+    arg0.persoesc = arg0
+    $mens.p(arg0)
+    $mens.mvis1("$P não escolhe ninguém.")
+    arg0.escolhebat # Atualiza persobat
+  senao
+    se arg0.persoesc.pvida && arg0.atkenv # Animal está bom e está lutando
+      arg0.p_espera = 40 # Espera 4 segundos
+    fimse
+    arg0.persoesc = r
+    arg0.escolhebat # Atualiza persobat
+    $mens.p(arg0, r)
+    $mens.mvis1("$P escolhe $b.")
+
+
+classe cmd_reserva
+herda comando_comum
+const objcmd = config:animal1 && config:animal2 ? este
+const txtajuda = config:animal1 && config:animal2 ? txtajuda1
+const txtajuda1 = "\b\c3Reserva\b\n\
+Sintaxe: RESERVA\n\
+         RESERVA <número do animal>\n\
+         RESERVA <nome do animal>\n\
+Sem argumentos mostra os seus animais reserva.\n\
+Com um número guarda seu animal para a lista de animais reserva.\n\
+Com um nome pega um animal reserva."
+
+func escr
+  se arg0.dentro3.total != txt(int(arg0.dentro3.total))
+    arg0.msg("Você não sabe como lidar com animais reserva.")
+  senao !arg0.dono.s_reserva
+    arg0.msg("Não pode lidar com animais reserva aqui.")
+  senao arg0.atkenv
+    arg0.msg("Você está lutando pela sua vida.")
+  senao !arg1
+    textotxt t
+    txt100 lin
+    listaitem i
+    epara i = arg0.dentro3.ini, i, i.depois
+      se i.obj.pvida
+        lin = "1 " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
+      senao
+        lin = "1 (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
+      fimse
+      t.addfim(lin)
+    efim
+    se !t.linhas
+      arg0.msg("Não possui nenhum animal reserva.")
+    senao
+      t.juntalin("(", "x)")
+      arg0.msg2("\b\c6Animais reserva:\b\n" + t.remove(1000))
+    fimse
+  senao arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+    se arg0.dentro3.total >= config:animal2
+      ret arg0.msg("Atingido o limite de animais reserva.")
+    fimse
+    refvar r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    listaobj e
+    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+      ret e.objini.cmd_reservaguarda(arg0, r, arg0.dono), nulo
+    efim
+    ret r.dono != arg0, nulo # Retorna se não possui mais o animal
+    r.idono.remove
+    r.idono = r.dono.dentro3.addfim(r)
+    arg0.recalc = 1
+    arg0.msg("Você guardou " + r.descnome + " N" + r.pnivel)
+  senao
+    listaobj l
+    nomeobj n # Para reconhecer os itens
+    n.ini(arg1, 1)
+    epara l.addfim(arg0.dentro3), l, l.ini.remove
+      sair n.nome(l.objini.ident, l.objini.objtot)
+    efim
+    refvar r = ref(l.objini)
+    ret !r, arg0.msg("Você não possui animal reserva " + arg1 + ".")
+    ret !arg0.animalmais, arg0.msg("Sem espaço para pegar animal reserva.")
+    r.idono.remove
+    r.idono = r.dono.dentro2.addfim(r)
+    arg0.recalc = 1
+    arg0.msg("Você pegou " + r.descnome + " N" + r.pnivel)
+  fimse
+
+
+classe cmd_capturar
+herda comando_comum
+const txtajuda = "\b\c3Capturar\b\n\
+Sintaxe: CAPTURAR\n\
+         CAPTURAR <objeto>\n\
+Usa um objeto para tentar capturar o animal que está lutando com você.\n\
+Se o nome do objeto for omitido, usa o último que você escolheu.\n\
+Nota: a captura pode falhar se o animal achar que não vale a pena entrar\n\
+para a sua equipe. Por isso, é sempre bom enfraquecê-lo antes."
+const posic = 5
+
+func escr
+  ref r
+  ref item # Item usado para capturar
+# Checa se sabe o nome do item
+  ret !arg1 && !arg0.var.z_captura, arg0.msg("Capturar com o quê?")
+# Obtém o item
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1 ? arg1 : arg0.var.z_captura, misc:objmax)
+  listaobj l
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    r = l.objini
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    ret !r.i_captura, arg0.msg(txtcopiamai(r.descnome, "A") + " não serve para capturar animais."\
+)
+    item = r
+    sair
+  efim
+# Checa se pode capturar
+  ret !item, arg0.msg(arg1 ? "Você não vê isso." : "Capturar com o quê?")
+  arg1 && (arg0.var.z_captura = arg1)
+  r = arg0.atkenv.objlista # Alvo do personagem
+  se !r
+    se arg1
+      arg0.msg("Você escolhe " + arg1 + " (" + item.descnome + ") para capturar animais.")
+    senao
+      arg0.msg("Não está lutando com nenhum animal.")
+    fimse
+    ret
+  senao !r.p_captura || r.perso != 2 || arg0.perso != 3
+    $mens.p(arg0, r)
+    $mens.mvis2("Não é possível capturar $a.", "")
+    ret
+  senao arg0.animalmais # Se tem espaço suficiente
+  senao !config:capturar || arg0.dentro3.total >= config:animal2
+    arg0.msg("Sem espaço para guardar animal.")
+    ret
+  fimse
+# Decide se consegue capturar
+  real2 valor
+  valor = r.pvida * 100 / r.pvidamax
+  se valor < 10 # 0% a 10% de vida: valor=10
+    valor = 10
+  senao valor < 46 # 10% a 46% de vida: valor= 10 a 1
+    valor = (50 - valor) / 4
+  senao
+    valor = 1
+  fimse
+  casovar r.p_captura
+  casose "1" # Muito fácil
+    valor *= 2
+    sair
+  casose "2" # Fácil
+    valor *= 1.5
+    sair
+  casose "3" # Normal
+    sair
+  casose "4" # Difícil
+    valor /= 1.5
+    sair
+  casose "5" # Muito difícil
+    valor /= 2
+    sair
+  casofim
+  $mens.p(arg0, r)
+  se valor * item.i_captura(r) < r.pnivel * rand(5, 20)
+    $mens.mvis1("$P joga " + item.descnome + " para $a, mas $a recusa.")
+    item.apagar(1)
+    ret
+  fimse
+  $mens.mvis1("$P joga " + item.descnome + " para $a.")
+  item.apagar(1)
+# Captura
+  listaobj e
+  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, r, arg0.dono), nulo
+  efim
+  refvar estacheio = !arg0.animalmais
+  r.mudadono(arg0) # Muda de dono
+  r.var.z_dono = arg0.nome
+  r.var.z_pnivel = r.pnivel
+  r.objsolto.remove(r) # Não conta mais na lista de personagens soltos
+  arg0.recalc = 1
+  r.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
+  $mens.p(arg0, r)
+  se estacheio
+    r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
+    $mens.mvis2("$A entrou para a sua equipe como reserva.", "$A entrou para a equipe de \
+$P.")
+  senao
+    $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
+  fimse
+  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, r, arg0.dono)
+  efim
+
+
+classe cmd_trocar
+herda comando_comum
+const objcmd = config:animal1 ? este
+const txtajuda = config:animal1 ? txtajuda1
+const txtajuda1 = "\b\c3Trocar\b\n\
+Sintaxe: TROCAR\n\
+         TROCAR <item>\n\
+         TROCAR <número> <número>\n\
+Sem argumentos pega um item do animal escolhido.\n\
+Com o nome de um item, dá um item para o animal escolhido.\n\
+Com dois números, troca dois animais de lugar."
+
+func escr
+  ret arg0.atkenv, arg0.msg("Você não consegue trocar durante a batalha.")
+  ret !arg1, escr_pegar(arg0)
+  uint8 p1
+  uint8 p2
+  p1 = txt1(arg1), p2 = txt2(arg1)
+  se txt1(arg1) != p1 || !p1 || p1 > config:animal1
+    escr_dar(arg0, arg1)
+  senao txt2(arg1) != p2 || !p2 || p2 > config:animal1
+    escr_dar(arg0, arg1)
+  senao
+    escr_trocar(arg0, p1, p2)
+
+func escr_pegar # Pegar item do animal
+# arg0 = personagem
+  ret arg0.persoesc == arg0, arg0.msg("Primeiro escolha um animal.")
+  refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
+  se !rec
+    $mens.p(arg0.persoesc) + $mens.mperso("$P não carrega nenhum item.")
+  senao (arg0.objnum >> 1) + (rec.objnum >> 1) > config:itens
+    arg0.msg("Você não consegue carregar tanta coisa.")
+  senao
+    rec.mudadono(arg0, 1)
+    $mens.p(arg0, nulo, rec)
+    $mens.mens = rec.descnome + " de " + arg0.persoesc.nome
+    $mens.mvis1("$P pega $m.")
+
+func escr_dar # Dar item para o animal
+# arg0 = personagem
+# arg1 = nome do item
+  ret arg0.persoesc == arg0, arg0.msg("Primeiro escolha um animal.")
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1)
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    refvar env = ref(l.objini)
+    refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
+    se env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
+      arg0.msg(txtcopiamai(arg0.persoesc.descnome, "A") + " não consegue carregar isso.")
+    senao !rec # Se animal não está carregando nada
+      env.mudadono(arg0.persoesc, 1)
+      $mens.p(arg0)
+      $mens.mens = env.descnome + " para " + arg0.persoesc.nome
+      $mens.mvis1("$P dá $m.")
+    senao (arg0.objnum >> 1) - (env.objnum >> 1) + (rec.objnum >> 1) > config:itens
+      arg0.msg("Você não consegue carregar tanta coisa.")
+    senao
+      env.mudadono(arg0.persoesc, 1)
+      rec.mudadono(arg0, 1)
+      $mens.p(arg0)
+      $mens.mens = rec.descnome + " de " + arg0.persoesc.nome + " e dá " + env.descnome
+      $mens.mvis1("$P pega $m.")
+    fimse
+    ret
+  efim
+  arg0.msg("Você não vê isso.")
+
+func escr_trocar # Trocar dois animais de lugar
+# arg0 = personagem
+# arg1 = número do primeiro animal
+# arg2 = número do segundo animal
+  refvar a1 = arg0.animalnum(arg1)
+  refvar a2 = arg0.animalnum(arg2)
+  ret a1 == a2, arg0.msg("Nada para ser trocado.")
+# Obtém os itens da lista
+  listaitem i1
+  listaitem i2
+  i1 = a1.idono
+  i2 = a2.idono
+# Adiciona novos itens na lista
+  a1.idono = i2 ? i2.adddepois(a1) : arg0.dentro2.addfim(a1)
+  a2.idono = i1 ? i1.adddepois(a2) : arg0.dentro2.addfim(a2)
+# Remove os itens antigos da lista
+  i1.remove, i2.remove
+# Mensagens
+  arg0.msg("Você troca de lugar " + arg1 + " e " + arg2 + ".")

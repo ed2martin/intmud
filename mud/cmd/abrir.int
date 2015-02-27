@@ -1,0 +1,159 @@
+classe cmd_abrir
+herda comando_comum
+const txtajuda = "\b\c3Abrir\b\n\
+Sintaxe: ABRIR <objeto ou direção>\n\
+Abre um objeto ou uma porta."
+const posic = 5
+
+func escr
+  txt10 dir
+  dir = misc:d1[arg1]
+  dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
+
+func escrobj # Abrir um item
+  listaitem i # Para procurar o item
+  nomeobj n # Para reconhecer os itens
+# Procura o item
+  ret !arg1, arg0.msg("Abrir o que?")
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+  efim
+  se !i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  fimse
+# Checa se está aberto
+  ref r
+  r = i.obj
+  casovar r.i_aberto
+  casose "2"
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está abert" + (r.msexo ? "o." : "a."))
+  casose "4"
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está trancad" + (r.msexo ? "o." : "a."))
+  casose
+    ret arg0.msg("Não foi possível abrir " + r.descnome + ".")
+  casose "3"
+  casose "5"
+  casofim
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_abrirobj(arg0, r), nulo
+  efim
+# Abre o item
+  r.i_aberto = 2
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P abriu $a.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_abriuobj(arg0, r)
+  efim
+
+func escrdir # Abrir uma porta
+# Checa se porta existe
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está aberto
+  casovar 3 & arg0.dono.porta_[arg1]
+  casose
+    ret arg0.msg("Não há porta nessa direção.")
+  casose "1"
+    ret arg0.msg($mens_porta.mens("$P já est$o abert$a.", arg0.dono, arg1))
+  casose "3"
+    ret arg0.msg($mens_porta.mens("$P est$o trancad$a.", arg0.dono, arg1))
+  casose "2"
+  casofim
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_abrirdir(arg0, arg0.dono, arg1), nulo
+  efim
+# Abre a porta
+  $mens.p(arg0)
+  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M se $1.") # Abre a porta
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
+  efim
+
+
+classe cmd_fechar
+herda comando_comum
+const txtajuda = "\b\c3Fechar\b\n\
+Sintaxe: FECHAR <objeto ou direção>\n\
+Fecha um objeto ou uma porta."
+const posic = 5
+
+func escr
+  txt10 dir
+  dir = misc:d1[arg1]
+  dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
+
+func escrobj # Fechar um item
+  listaitem i # Para procurar o item
+  nomeobj n # Para reconhecer os itens
+# Procura o item
+  ret !arg1, arg0.msg("Fechar o que?")
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+  efim
+  se !i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  fimse
+# Checa se está fechado
+  ref r
+  r = i.obj
+  casovar r.i_aberto
+  casose "3"
+  casose "4"
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está fechad" + (r.msexo ? "o." : "a."))
+  casose
+    ret arg0.msg("Não foi possível fechar " + r.descnome + ".")
+  casose "2"
+  casose "5"
+  casofim
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_fecharobj(arg0, r), nulo
+  efim
+# Fecha o item
+  r.i_aberto = r.i_tranc == 2 ? 4 : 3
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P fechou $a.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_fechouobj(arg0, r)
+  efim
+
+func escrdir # Fechar uma porta
+# Checa se porta existe
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está fechado
+  casovar 3 & arg0.dono.porta_[arg1]
+  casose
+    ret arg0.msg("Não há porta nessa direção.")
+  casose "2"
+  casose "3"
+    ret arg0.msg($mens_porta.mens("$P já est$o fechad$a.", arg0.dono, arg1))
+  casose "1"
+  casofim
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1), nulo
+  efim
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Fecha a porta
+  $mens.p(arg0)
+  se arg0.dono.tranc_[arg1] == 2
+    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M se $2.") # Tranca a porta
+  senao
+    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M se $2.") # Fecha a porta
+  fimse
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
+  efim

@@ -1,0 +1,46 @@
+classe cmd_ptitulo
+herda comando_comum
+const txtajuda = "\b\c3PTitulo\b\n\
+Sintaxe: PTITULO  [novo título]\n\
+Muda o título do seu personagem. O título aparece no comando QUEM."
+const posic = 5
+
+func escr
+  se arg0.pnivel < config:ptitulonivel
+    arg0.msg("Você precisa chegar no nível " + config:ptitulonivel + " para usar esse comando")
+  senao inttotal(arg1) > 30
+    arg0.msg("O título do personagem não pode passar de 30 caracteres.")
+  senao vartroca(txtcod(arg1), "", "t_") != txtcod(arg1)
+    arg0.msg("O título contém caracteres não permitidos.")
+  senao
+    arg0.var.z_titulo = arg1
+    arg0.msg(arg1 ? "Título do personagem alterado." : "Título do personagem apagado.")
+  fimse
+
+const t_@v = "" # menor que
+const t_@x = "" # maior que
+const t_@z = "" # abre colchetes
+const t_@1 = "" # fecha colchetes
+const t_@4 = "" # abre chaves
+const t_@6 = "" # fecha chaves
+
+
+classe cmd_stitulo
+herda comando_comum
+const txtajuda = "\b\c3STitulo\b\n\
+Sintaxe: STITULO  [novo título]\n\
+Muda o título da sala em que você está, desde que esteja na sua casa.\n\
+Se não for especificado nenhum título, voltará ao texto original da sala.\n\
+Nota: Somente o dono da casa pode mudar os títulos das salas."
+const posic = 5
+
+func escr
+  se !arg0.dentrocasa
+    arg0.msg("Você não está dentro da sua casa.")
+  senao inttotal(arg1) > 60
+    arg0.msg("O título da sala não pode passar de 60 caracteres.")
+  senao
+    arg0.dono.var.z_titulo = arg1
+    arg0.dono.objmudou = 1
+    arg0.msg(arg1 ? "Título da sala alterado." : "Título da sala apagado.")
+  fimse

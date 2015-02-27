@@ -1,0 +1,102 @@
+classe menu_magia_retornar
+herda menu_hab_retornar
+const titulo = "Magia_Retorno " + txt(var.classe1, 6)
+
+
+classe menu_hab_retornar
+herda menu_hab_comum
+const titulo = "Hab_Retorno " + txt(var.classe1, 4)
+const colunas = 25
+#
+const nome1 = "Gratuito até nível"
+const info1 = "Até que nível pode-se usar esse comando sem precisar aprender\n\
+Se menor que 0, não usa sem aprender"
+const tipo1 = "opc_numero"
+const clas1 = var.classe1
+const vari1 = "nivel"
+#
+const nome11 = "Ir para sala"
+const info11 = "Se a sala não existir, o personagem vai para o ponto de retorno"
+const tipo11 = "opc_sala"
+const clas11 = var.classe1
+const vari11 = "opc_sala"
+#
+const nome12 = "Informações"
+const info12 = "Informações extras"
+const tipo12 = "opc_texto"
+const clas12 = var.classe1
+const vari12 = "msgextra"
+#
+const nome13 = "Mensagens"
+const tipo13 = "menu_hab_retornar0--"
+#
+const nome14 = "Menu de mensagens"
+const tipo14 = "opc_ajuda--"
+const extr14 = menu_hab_ataque:msg2
+
+
+classe menu_hab_retornar0
+herda comando_menu
+const titulo = "Mensagens"
+const menufim = var.menufim
+const colunas = 25
+#
+const titu1 = " * Ao usar, exceto poções comidas etc"
+#
+const nome1 = "Perso"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "msgini1"
+#
+const nome2 = "Outros"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "msgini2"
+#
+const titu3 = " * Antes do retorno"
+#
+const nome3 = "Perso"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "msgantes1"
+#
+const nome4 = "Outros"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "msgantes2"
+#
+const titu5 = " * Depois do retorno"
+#
+const nome5 = "Perso"
+const tipo5 = "opc_linha"
+const clas5 = var.classe1
+const vari5 = "msgdepois1"
+#
+const nome6 = "Outros"
+const tipo6 = "opc_linha"
+const clas6 = var.classe1
+const vari6 = "msgdepois2"
+#
+const titu7 = " * Falhou"
+#
+const nome7 = "Perso"
+const tipo7 = "opc_linha"
+const clas7 = var.classe1
+const vari7 = "msgerrou1"
+#
+const nome8 = "Outros"
+const tipo8 = "opc_linha"
+const clas8 = var.classe1
+const vari8 = "msgerrou2"
+#
+const titu9 = " * Não teve efeito"
+#
+const nome9 = "Perso"
+const tipo9 = "opc_linha"
+const clas9 = var.classe1
+const vari9 = "msgnulo1"
+#
+const nome10 = "Outros"
+const tipo10 = "opc_linha"
+const clas10 = var.classe1
+const vari10 = "msgnulo2"

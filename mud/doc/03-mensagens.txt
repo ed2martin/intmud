@@ -1,0 +1,70 @@
+Envio de mensagens formatadas (arquivo misc/mens.int)
+
+Para enviar uma mensagem formatada a um ou mais personagens, usa-se
+a classe 'mens', contida no arquivo 'misc/mens.int'.
+
+Primeiro define-se de um a três objetos, com a seguinte função:
+$mens.p(<personagem>, [alvo], [objeto])
+
+Depois, envia-se uma mensagem com uma das seguintes funções:
+
+$mens.mtodos1(texto para todos)
+$mens.mtodos2(texto para personagem, texto para outros)
+$mens.mtodos3(texto para personagem, texto para alvo, texto para outros)
+Enviar mensagem para todos que estiverem acordados.
+
+$mens.mvis1(texto para todos)
+$mens.mvis2(texto para personagem, texto para outros)
+$mens.mvis3(texto para personagem, texto para alvo, texto para outros)
+Enviar mensagem para todos que estiverem acordados e puderem ver
+o personagem.
+
+$mens.marea1(texto para todos)
+Enviar mensagem para todos que estiverem na mesma área, mesmo dormindo
+
+$mens.mmudarea1(texto para todos)
+Enviar mensagem para todos que estiverem acordados na mesma área
+
+$mens.mmud1(texto para todos)
+Enviar mensagem para todos do MUD, mesmo os que estiverem dormindo
+
+$mens.mmudtodos1(texto para todos)
+Enviar mensagem para todos que estiverem acordados no MUD
+
+<personagem>.msginv(texto)
+Envia mensagem para o personagem se ele estiver acordado.
+
+<personagem>.msgvis(texto)
+Envia mensagem para o personagem se ele estiver acordado e vendo
+o personagem definido em $mens.p.
+
+O texto pode conter os seguintes caracteres especiais:
+
+$$ = Símbolo $
+$P = Nome do personagem
+$Q = Nome do personagem sem citar o dono
+$R = Nome do personagem no comando QUEM
+$A = Nome do alvo
+$B = Nome do alvo sem citar o dono
+$C = Nome do alvo no comando QUEM
+$O = Nome do objeto
+$F = Depende do personagem: "um" ou "uma"
+$G = Depende do alvo: "um" ou "uma"
+$H = Depende do objeto: "um" ou "uma"
+$S = Depende do personagem: "o" ou "a"
+$T = Depende do alvo: "o" ou "a"
+$U = Depende do objeto: "o" ou "a"
+$V = Depende do personagem: "e" ou "a"
+$W = Depende do alvo: "e" ou "a"
+$X = Depende do objeto: "e" ou "a"
+$M = Texto de $mens.mens
+$D = É substituído por "de"
+     No entando, seguido de o/a/os/as, forma as palavras do/da/dos/das
+     Costuma ser usado nas mensagens como $d $p, $d $a e $d $o
+$E = É substituído por "em"
+     No entando, seguido de o/a/os/as, forma as palavras no/na/nos/nas
+     Costuma ser usado nas mensagens como $e $p, $e $a e $e $o
+$1 a $5 = Variáveis $mens.o_1 a $mens.o_5
+
+Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra
+do texto não é transformada em maiúscula.

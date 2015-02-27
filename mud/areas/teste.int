@@ -1,0 +1,3818 @@
+classe a_teste
+herda area
+const a_nome = "Testes e exemplos"
+
+
+classe b_teste
+herda sala
+const s_area = "teste"
+const s_terreno = 1
+const s_luta = 1
+
+
+classe c_teste001
+herda casa
+const area = "teste"
+const nome = "casa 1"
+const valor = 1200
+const s1 = $s_teste116
+
+func mudou # Se houve alguma mudança
+# Não alterar; função criada automaticamente
+  ret objmudou || s1.objmudou
+
+
+classe c_teste002
+herda casa
+const area = "teste"
+const nome = "casa 2"
+const valor = 2000
+const s1 = $s_teste117
+const s2 = $s_teste118
+
+func mudou # Se houve alguma mudança
+# Não alterar; função criada automaticamente
+  ret objmudou || s1.objmudou || s2.objmudou
+
+
+classe i_teste001
+herda comum_item
+const nome = "borracha"
+const descnome = "uma borracha"
+const descpos = "Uma borracha está jogada aqui."
+const msexo = 0
+const valor = 50
+const vestir = 8
+
+
+classe i_teste002
+herda comum_item
+const nome = "pedra"
+const descnome = "uma pedra"
+const msexo = 0
+const descpos = "Aqui tem uma pedra."
+const pesoobj = 200
+
+
+classe i_teste003
+herda comum_itemgrupo
+const nome = "carne crua"
+const descnome = "uma carne crua"
+const pesoobj = 50
+const i_captura = 4
+const volobj = 4
+const pnivel = 4
+
+
+classe i_teste004
+herda comum_itemgrupo
+const nome = "carne cozida"
+const descnome = "uma carne cozida"
+const i_captura = 8
+const pesoobj = 100
+const volobj = 8
+
+
+classe i_teste005
+herda comum_itemperso
+const nome = "bolsa"
+const descnome = "uma bolsa"
+const descver = "O couro é leve, porém resistente."
+const i_abertoini = 2 # Container: 2 Inicialmente aberto
+const i_tranc = 1 # Trancar: 1 Pode ser trancado
+const objmax = 20
+const pesoobj = 200
+const tipoitem = 2048 # Tipo de produto: Container
+const volmax = 5000
+const volobj = 30
+
+
+classe i_teste006
+herda comum_itemperso
+const nome = "tocha"
+const descnome = "uma tocha"
+const luzini = -600
+const luztxt = "Uma tocha se apagou"
+const luzfim = 1 # Sem luz item some: Sim
+const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste007
+herda comum_itemperso
+const nome = "lanterna"
+const descnome = "uma lanterna"
+const luzitem = 1 # Tipo de luz: 1 Lanterna (acende/apaga, sem fogo)
+const luzini = -6000
+const luztxt = "Uma lanterna apagou."
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste008
+herda comum_itemperso
+const nome = "lampião"
+const descnome = "um lampião"
+const msexo = 1 # Sexo: 1 Masculino
+const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
+const luzini = -3000
+const luztxt = "Um lampião apagou."
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste009
+herda comum_itemgrupo
+const nome = "palito de fósforo"
+const descnome = "um palito de fósforo"
+const msexo = 1 # Sexo: 1 Masculino
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+
+classe i_teste010
+herda comum_itemperso
+const nome = "fósforo aceso"
+const descnome = "um fósforo aceso"
+const msexo = 1 # Sexo: 1 Masculino
+const luzini = 80
+const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
+const luztxt = "Um palito de fósforo acaba de queimar."
+const luzfim = 1 # Sem luz item some: Sim
+
+
+classe i_teste011
+herda comum_itemperso
+const nome = "caixa de fósforo"
+const descnome = "uma caixa de fósforo"
+const eveste = 1 # Receber eventos do próprio objeto
+sav uint8 palitos # Quantidade de palitos de fósforo da caixa
+const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
+const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+
+func cmd_ini
+  palitos = 20
+
+func descver
+  se !palitos
+    ret "Está vazia."
+  senao palitos == 1
+    ret "Contém um palito."
+  senao
+    ret "Contém " + palitos + " palitos."
+
+func cmd_acender
+  se !palitos
+    arg0.msg("Caixa de fósforo está vazia.")
+  senao
+    palitos -= 1
+    criar("i_teste010", arg0, 0) # Cria um palito aceso
+    $mens.p(arg0)
+    $mens.mvis1("$P risca um palito de fósforo.")
+  fimse
+  ret 1
+
+
+classe i_teste012
+herda comum_itemgrupo
+const nome = "faca"
+const descnome = "uma faca"
+const descpos = "Há uma faca no chão."
+const armamax = 120
+const armamin = 70
+const armaprecisao = 100
+const armatipo = 3 # Arma tipo: 1 Lâmina curta
+const pesoobj = 300
+const tipoitem = 3 # Tipo de produto: Possui metal, Arma
+const valor = 50
+
+
+classe i_teste013
+herda comum_itemgrupo
+const nome = "colete"
+const descnome = "um colete"
+const descpos = "Um colete está jogado aqui."
+const msexo = 1 # Sexo: 1 Masculino
+const nivel = 1
+const pesoobj = 1000
+const tipoitem = 8 # Tipo de produto: Vestimenta
+const valor = 300
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
+
+func cmd_recalc2 # Recalcula variáveis do personagem
+  arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
+# Nota os tipos de ataque são considerados normais ou especiais conforme
+# a constante config:atkespecial, no arquivo mud-b-config.int
+# Mas não é necessário editar diretamente; use o comando econfig para isso
+
+
+classe i_teste014
+herda comum_itemgrupo
+const nome = "colete dos elfos"
+const descnome = "o colete dos elfos"
+const msexo = 1 # Sexo: 1 Masculino
+const pesoobj = 1000
+const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
+const pnivel = 3
+const tipoitem = 8 # Tipo de produto: Vestimenta
+
+func cmd_podevestir
+# Essa função é chamada sempre que um personagem tenta vestir um item
+# Se ela retornar um texto, será apresentado o texto ao invés de vestir
+# Nota:
+# dono.tipo1 é a raça
+# dono.tipo2 é a classe
+  se dono.tipo1 != "elfo" # Checa se a raça é "elfo"
+    ret "Somente elfos podem vestir o colete dos elfos."
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  defnorm += 15
+
+
+classe i_teste015
+herda comum_itemgrupo
+const nome = "capa da invisibilidade"
+const descnome = "uma capa da invisibilidade"
+const descver = "Essa capa é capaz de deixar alguém quase que completamente invisível.\n\
+Há, no entanto, uns óculos que permitem ver através da capa."
+const vestir1 = 64 # Aonde vestir: Sobre o corpo
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv = 4 | bitinv
+
+
+classe i_teste016
+herda comum_itemgrupo
+const nome = "óculos especiais"
+const descnome = "uns óculos especiais"
+const descpos = "Uns óculos especiais foram largados aqui."
+const descver = "Esses óculos permitem ver coisas invisíveis."
+const msexo = 1 # Sexo: 1 Masculino
+const vestir1 = 2 # Aonde vestir: 1-rosto
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver = 4 | bitver
+
+
+classe i_teste017
+herda comum_itemgrupo
+const nome = "camisa"
+const descnome = "uma camisa"
+const vestir1 = 32 # Aonde vestir: 5-corpo
+
+
+classe i_teste018
+herda comum_itemgrupo
+const nome = "sapatos"
+const descnome = "um par de sapatos"
+const msexo = 1 # Sexo: 1 Masculino
+const vestir1 = 262144 # Aonde vestir: 18-pés
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pmovemax += 5
+  atknorm += 10
+  precisao += -4
+
+
+classe i_teste019
+herda comum_itemgrupo
+const nome = "algemas"
+const descnome = "um par de algemas"
+const pesoobj = 300
+const vestir1 = 131584 # Aonde vestir: 9-mãos, 17-tornozelos
+const evperso = 1 # Eventos em perso: Sim
+const i_fechadura = "algema1"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += -2 * pnivel - 3
+  atknorm += -2 * pnivel - 10
+  evasao += -1 * pnivel - 2
+
+func cmd_mover
+# Nos tornozelos, prejudica os pontos de movimento
+  se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
+    arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
+    ret 1
+
+func cmd_moveu
+  se vestpos == 18 # Usando nos tornozelos
+    arg0.pmove -= arg0.pmovemax * 0.3
+  senao vestpos # Usando em qualquer outro lugar
+    arg0.pmove -= 1
+
+func cmd_remover
+  ret arg1 != este, nulo # Retorna se não for esse item
+  se i_fechadura # Se tem fechadura: só pode remover se o jogador tiver a chave
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      ret i_fechadura == i.obj.i_chave && i.obj.visivel(arg0), nulo
+    efim
+    arg0.msg("Você não possui a chave de " + descnome + ".")
+    ret 1
+
+
+classe i_teste020
+herda comum_itemgrupo
+const nome = "chave das algemas"
+const descnome = "a chave das algemas"
+const i_chave = "algema1"
+
+
+classe i_teste021
+herda comum_itemgrupo
+const nome = "pequena caixa"
+const descnome = "uma pequena caixa"
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  arg0.msg("Uma pequena caixa treme por um instante.")
+
+
+classe i_teste022
+herda comum_itemgrupo
+const nome = "bombom de licor"
+const descnome = "um bombom de licor"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_bebida = 20
+const f_fome = 4
+const f_sede = -1
+const f_diges = 1
+
+
+classe i_teste023
+herda comum_itemgrupo
+const nome = "copo de água"
+const descnome = "um copo de água"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_bebida = -2
+const f_sede = 30
+
+
+classe i_teste024
+herda comum_itemgrupo
+const nome = "coxa de frango"
+const descnome = "uma coxa de frango"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 25
+const f_diges = 1
+
+
+classe i_teste025
+herda comum_itemgrupo
+const nome = "caipirinha de metanol"
+const descnome = "uma caipinha de metanol"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_bebida = 5
+const f_sede = -2
+const f_magia1 = "cegueira"
+const f_nivel1 = 2
+const f_diges = 40
+
+
+classe i_teste026
+herda comum_itemgrupo
+const nome = "poção do sono"
+const descnome = "uma poção do sono"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_magia1 = "sono profundo"
+const f_nivel1 = 5
+
+
+classe i_teste027
+herda comum_itemgrupo
+const nome = "pergaminho curar cegueira"
+const descnome = "um pergaminho curar cegueira"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const f_magia1 = "curar cegueira"
+
+
+classe i_teste028
+herda comum_itemgrupo
+const nome = "pergaminho sopro de gelo"
+const descnome = "um pergaminho sopro de gelo"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const f_magia1 = "sopro de gelo"
+const f_nivel1 = 5
+
+
+classe i_teste029
+herda comum_itemgrupo
+const nome = "chave tipo um"
+const descnome = "uma chave do tipo um"
+const objsav = 0 # Para não salvar esse item em arquivo, com o personagem
+sav inttempo tempo # inttempo executa uma função após um tempo
+
+func cmd_mudadono
+  se dono.perso && tempo == 0 # Se pertence a um personagem e tempo é zero
+    tempo = 100 # Faz tempo ser 100 (10 segundos)
+
+func tempo_exec
+  apagar(este)
+  se dono.perso # Se pertence a personagem, avisa o personagem
+    dono.msg("Sua chave do tipo um some misteriosamente!")
+    $mens.p(dono)
+    $mens.mtodos2("", "A chave de $p some misteriosamente!")
+  senao !dono.item # Se não está em outro item (está na sala), avisa a todos
+    $mens.p(este)
+    $mens.mvis1("$P some misteriosamente.")
+
+
+classe i_teste030
+herda comum_itemgrupo
+const nome = "chave tipo dois"
+const descnome = "uma chave do tipo dois"
+const objsav = 0 # Para não salvar esse item em arquivo, com o personagem
+sav inttempo tempo # inttempo executa uma função após um tempo
+
+func cmd_mudadono
+  se dono.perso # Se pertence a um personagem
+    !tempo && (tempo = 100) # Se tempo for 0, faz tempo ser 100 (10 segundos)
+  senao !dono.item # Se não está em outro item (está na sala)
+    tempo = 0
+
+func tempo_exec
+  apagar(este)
+  se dono.perso # Se pertence a personagem, avisa o personagem
+    dono.msg("Sua chave do tipo dois some misteriosamente!")
+    $mens.p(dono)
+    $mens.mtodos2("", "A chave de $p some misteriosamente!")
+
+
+classe i_teste031
+herda comum_itemgrupo
+const nome = "chave tipo três"
+const descnome = "uma chave do tipo três"
+sav inttempo tempo # sav salva essa variável no jogo salvo do jogador
+
+func cmd_mudadono
+  se dono.perso # Se personagem pegou
+    tempo = 0 # Item não será apagado
+  senao # Caso contrário
+    tempo = 100 # Item será apagado em 10 segundos
+
+func tempo_exec
+  apagar(este)
+  se !dono.perso && !dono.item # Se não pertence a personagem nem a outro item
+    $mens.p(este)
+    $mens.mvis1("$P some misteriosamente.")
+
+
+classe i_teste032
+herda comum_itemgrupo
+const nome = "fonte de água"
+const descnome = "uma fonte de água"
+const descpos = "Uma fonte jorra uma água límpida incessantemente."
+const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
+const f_fome = 1
+const f_sede = 20
+const i_pegar = "A fonte faz parte do chão."
+const pesoobj = 599000
+
+
+classe i_teste033
+herda comum_itemgrupo
+const nome = "pergaminho de retorno"
+const descnome = "um pergaminho de retorno"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const f_magia1 = "retornar"
+
+
+classe i_teste034
+herda comum_itemgrupo
+const nome = "poção dos elfos"
+const ident = "poção elfos"
+const descnome = "uma poção dos elfos"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const f_fome = 5
+const f_sede = 20
+const f_diges = 2
+const f_msgperso = "$P engole todo o conteúdo de uma poção de uma só vez."
+const eveste = 1 # Eventos item: Sim
+
+func cmd_bebeu
+  ret arg1 != este, nulo # Retorna se arg1 não for o próprio item
+  se arg0.tipo1 != "elfo"
+    criar("e_veneno_mortal", arg0, 10) # arg0 recebe um efeito "Veneno Mortal" nível 10
+
+
+classe i_teste035
+herda comum_itemgrupo
+const nome = "antidoto"
+const descnome = "um antídoto"
+const f_tipo = 2 # Tipo: 2 Poção, beber
+const eveste = 1 # Eventos item: Sim
+
+func cmd_bebeu
+  ret arg1 != este, nulo # Retorna se arg1 não for o próprio item
+  refvar r = arg0.dentro2.objini("e_veneno_mortal")
+  se r # Se está com o efeito "Veneno Mortal"
+    apagar(r) # apaga o efeito
+    $mens.p(arg0)
+    $mens.mvis2("Você se sente melhor.", "$P parece melhor.")
+  senao # Se não está com o efeito
+    arg0.msg("Você não sente diferença.")
+
+
+classe i_teste036
+herda comum_itemperso
+const nome = "sofá"
+const descnome = "um sofá"
+const descpos = "No canto você vê um grande e confortável sofá."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_movel = 4 # Mobília: 4 Sentar e dormir confortavelmente
+const i_lugar = 1
+const pesoobj = 300000
+const volobj = 100000
+
+
+classe i_teste037
+herda comum_itemperso
+const nome = "cinto dourado"
+const descnome = "um cinto dourado"
+const luzfim = 1 # Sem luz item some: Sim
+const luzitem = 7 # Tipo de luz: 7 Automático (acende ao vestir, sem fogo)
+const luzini = -5000
+const vestir1 = 32768 # Aonde vestir: 15-cintura
+
+
+classe i_teste038
+herda comum_itemperso
+const nome = "cama"
+const descnome = "uma cama"
+const descpos = "Uma confortável cama está à espera de algum necessitado."
+const i_movel = 4 # Mobília: 4 Sentar e dormir confortavelmente
+const pesoobj = 300500
+
+
+classe i_teste039
+herda comum_itemgrupo
+const nome = "chave tipo dois"
+const descnome = "uma chave do tipo dois"
+const objsav = 0 # Para não salvar esse item em arquivo, com o personagem
+sav inttempo tempo # inttempo executa uma função após um tempo
+
+func cmd_mudadono
+  se dono.jog # Se pertence a um jogador
+    !tempo && (tempo = 100) # Se tempo for 0, faz tempo ser 100 (10 segundos)
+  senao !dono.item # Se não está em outro item (está na sala ou em PNJ)
+    tempo = 0
+
+func tempo_exec
+  apagar(este)
+  se dono.jog # Se pertence a jogador, avisa o jogador
+    dono.msg("Sua chave do tipo dois some misteriosamente!")
+    $mens.p(dono)
+    $mens.mtodos2("", "A chave de $p some misteriosamente!")
+
+
+classe i_teste040
+herda comum_itemperso
+const nome = "baú"
+const descnome = "um baú"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_abertoini = 3 # Container: 3 Inicialmente fechado
+const i_tranc = 1 # Trancar: 1 Pode ser trancado
+const objmax = 10
+const eveste = 1 # Receber eventos do próprio objeto
+intdec tempo_ouro # Contagem de tempo, para criar as moedas
+inttempo tempo_fechar # Para fechar o baú após algum tempo
+
+func cmd_abriuobj # O baú foi aberto
+  tempo_fechar = 50 # Fechar em 5 segundos
+  se tempo_ouro == 0
+    tempo_ouro = rand(1 * 600, 2 * 600)
+    se var.z_moedas_ < 1000
+      var.z_moedas_ = 1000
+    fimse
+  fimse
+
+func tempo_fechar_exec
+  se i_aberto <= 2 # Se não está fechado
+    $mens.p(este, este)
+    $mens.mtodos1("$A fechou com o vento.")
+  fimse
+  se i_aberto != 4 # Se não está trancado
+    i_aberto = i_tranc == 2 ? 4 : 3 # Fecha ou tranca, conforme i_tranc
+  fimse
+
+
+classe i_teste041
+herda comum_item
+const nome = "relógio"
+const descnome = "um grande relógio"
+const descpos = "Há grande relógio que mais parece uma pequena estante."
+const descver = parte1 + parte2 + parte3
+const i_pegar = "O relógio está preso por uma corrente."
+const evhora = 1 # Eventos hora: Sim
+const parte1 = "Na parte de cima você vê números de 1 a 12, em algarismos romanos.\n\
+O ponteiro dos segundos é um polegar, enquanto e dos minutos é um\n\
+dedo indicador. Juntos, estão marcando "
+const parte3 = "Na parte de baixo, você vê através de um pequeno vidro, um pêndulo\n\
+balançando. A cada hora, o relógio dá badaladas."
+
+func parte2
+  txt100 lin
+  refvar hora = (misc:hora + 11) % 12 + 1 # Hora MUD de 1 a 12
+  lin = txt(hora) + (hora == 1 ? " hora e " : " horas e ") + misc:min
+  lin += misc:min == 1 ? " minuto.\n" : " minutos.\n"
+  ret lin
+
+func cmd_hora
+  ret !dono.socktot, nulo # Retorna se não houver jogador na sala
+  refvar hora = (arg0 + 11) % 12 + 1 # Hora MUD de 1 a 12
+  $mens.p(este)
+  se hora == 1
+    $mens.mtodos1("O grande relógio dá uma badalada.")
+  senao hora == 2
+    $mens.mtodos1("O grande relógio dá duas badaladas.")
+  senao
+    $mens.mtodos1("O grande relógio dá " + hora + " badaladas.")
+  fimse
+
+
+classe i_teste042
+herda comum_item
+const nome = "fonte de água"
+const descnome = "uma fonte de água"
+const descpos = "Uma fonte jorra uma água límpida incessantemente."
+const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
+const f_fome = 1
+const f_sede = 20
+const i_pegar = "A fonte faz parte do chão."
+sav inttempo tempo
+
+func cmd_ini
+  tempo = 1200 # Quanto tempo a fonte dura, em décimos de segundo
+
+func tempo_exec
+  apagar(este)
+  $mens.p(este)
+  $mens.mtodos1("Uma fonte de água secou.")
+
+
+classe i_teste043
+herda comum_itemgrupo
+const nome = "fruta verde"
+const descnome = "uma fruta verde"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 5
+const eveste = 1 # Eventos item: Sim
+
+func cmd_comeu
+  se arg0.pvida < arg0.pvidamax
+    arg0.pvida += 5
+    se arg0.pvida > arg0.pvidamax
+      arg0.pvida = arg0.pvidamax
+    fimse
+    arg0.msg("Você se sente um pouco melhor.")
+  fimse
+
+
+classe i_teste044
+herda comum_itemgrupo
+const nome = "fruta azul"
+const descnome = "uma fruta azul"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 5
+const eveste = 1 # Eventos item: Sim
+
+func cmd_comeu
+  se arg0.pmana < arg0.pmanamax
+    arg0.pmana += 5 + arg0.pnivel
+    se arg0.pmana > arg0.pmanamax
+      arg0.pmana = arg0.pmanamax
+    fimse
+  fimse
+
+
+classe i_teste045
+herda comum_itemgrupo
+const nome = "fruta vermelha"
+const descnome = "uma fruta vermelha"
+const f_tipo = 3 # Tipo: 3 Comida, comer
+const f_fome = 5
+const eveste = 1 # Eventos item: Sim
+
+func cmd_comeu
+  arg0.pvida += 1
+
+
+classe i_teste046
+herda comum_item
+const nome = "poça de água"
+const descnome = "uma poça de água"
+const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
+const f_sede = 5
+const i_pegar = "Você tenta pagar a água, mas ela escapa pelas suas mãos."
+const eveste = 1 # Eventos item: Sim
+sav uint8 bebeu # Quantas vezes bebeu o item
+
+func f_msgperso
+  ret bebeu < 2, "$P se agaixa e bebe de uma poça de água."
+  ret "$P bebe o último gole de uma poça de água."
+
+const f_msgoutros = f_msgperso
+
+func cmd_bebeu
+  bebeu += 1
+  bebeu >= 3 && apagar(este)
+
+
+classe i_teste047
+herda comum_itemgrupo
+const nome = "pulseira negra"
+const descnome = "uma pulseira negra"
+const vestir1 = 3072 # Aonde vestir: 10-pulso direito, 11-pulso esquerdo
+const eveste = 1 # Eventos item: Sim
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv |= 4
+
+func cmd_vestiu
+  se arg1 == este # Se é esse item
+    criar("e_queimando", arg0, 0)
+  fimse
+
+func cmd_removeu
+  se arg1 == este # Se é esse item
+    arg0.pvida -= arg0.pvida / 4
+  fimse
+
+
+classe p_teste001
+herda comum_perso
+const nome = "Jardineiro"
+const descpadr = "Um jardineiro está sentado aqui."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const pesoobj = 80000
+const p_recebe = 1 # Se pode receber itens de outros personagens
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Jardineiro disse: Olá.")
+
+func entrou20
+  arg0.msg("Jardineiro disse: Preciso de uma pedra.")
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=objeto, arg3=quantidade
+  se arg2.nome != "pedra"
+    arg0.msg("Jardineiro não aceita " + arg2.descnome + ".")
+    ret 1 # Para não receber o item
+
+func cmd_deuobj # Recebeu um item
+# telatxt t
+# t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
+  apagar(arg2) # Apaga o item
+  misc:tempo("deupedra", arg0) # Dispara 'deupedra'
+
+func deupedra15
+  arg0.msg("Jardineiro jogou a pedra na planta carnívora.")
+  arg0.var.j_planta = 1 # Indica que já passou pela planta
+
+
+classe p_teste002
+herda comum_persobat
+const nome = "macaco"
+const descnome = "um macaco"
+const descpadr = "Um macaco está fazendo bagunça aqui."
+const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const pesoobj = 30500
+const volobj = 500
+const tipo1 = "luta"
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 3 # Capturar: 3 Normal
+const inivar = "h_socar=1,h_chutar=1"
+
+
+classe p_teste003
+herda comum_persobat
+const nome = "cão"
+const descnome = "um cão"
+const descpadr = "Um cão late para você."
+const descver = "Mamífero da família dos canídeos."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const pesoobj = 30100
+const volobj = 500
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 2 # Capturar: 2 Fácil
+const inivar = "h_arremessar=1"
+
+
+classe p_teste004
+herda comum_persobat
+const nome = "morcego"
+const descnome = "um morcego"
+const descpadr = "Um morcego está voando."
+const descver = "Mamífero da ordem dos quirópteros"
+const msexo = 1 # 0=feminino, 1=masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const pesoobj = 30500
+const volobj = 500
+const tipo1 = "ar"
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 4 # Capturar: 4 Difícil
+const inivar = "h_arremessar=1"
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += 2 * pnivel
+
+
+classe p_teste005
+herda comum_persoanimal
+const nome = "Lixeiro"
+const msexo = 1 # Sexo: 1 Masculino
+const pesoobj = 75300
+const volobj = 1000
+const p_naoresg = 1 # Sem resgate: Sim
+const nivel = 8
+const p_agressivo = 2 # Agressivo: 2 Sim
+
+
+classe p_teste006
+herda comum_persobat
+const nome = "geléia"
+const descnome = "uma geléia"
+const msexo = 0 # Sexo: 0 Feminino
+const pesoobj = 10000
+const nivel = 3
+const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
+
+func cmd_recalc1 # Recalcula variáveis do personagem
+  deftipo.0 = 0 # Imune a ataques de contusão
+  deftipo.2 *= 0.5 # Frágil contra ataques cortantes
+  defnorm *= 1.5 # Mais forte contra ataques normais
+  defesp *= 0.7 # Mais fraco contra ataques especiais
+  pvidamax += 100 # 100 pontos a mais de vida
+# Veja também a variável deftipo, no arquivo em mud-perso.int
+
+
+classe p_teste007
+herda comum_perso
+const nome = "João o mercenário"
+const msexo = 1 # Sexo: 1 Masculino
+const tipo1 = "Humano"
+const lojaitem = "teste012 3\n\
+teste013 0\n\
+teste022 0\n\
+teste023 0\n\
+teste024 0\n\
+teste025 0\n\
+teste026 0\n\
+teste027 0\n\
+teste028 0\n\
+teste033 0"
+const taxavenda = 20
+const taxacompra = 30
+const tipoitem = 3 # Compra produtos: Possui metal, Arma
+
+
+classe p_teste008
+herda comum_perso
+const nome = "Faixa preta"
+const msexo = 1 # Sexo: 1 Masculino
+const tipo1 = "Humano"
+const lojaaula = "h_Chutar 3\n\
+h_Voadora 7\n\
+h_Morder 4\n\
+i_Hebráico 2\n\
+m_Fogo 4\n\
+m_Retornar 8\n\
+m_Identificar 8\n\
+h_Visível 8\n\
+h_Ocultar 8\n\
+h_Furtividade 8\n\
+m_Restaurar_vitalidade 8\n\
+m_Drenar_Energia 8\n\
+m_Ver_Invisível 8\n\
+m_Ver_Oculto 8\n\
+m_Invisibilidade 8\n\
+m_Flutuar 8\n\
+m_Cegueira 8\n\
+m_Curar_Cegueira 8\n\
+m_Criar_Fonte 8\n\
+h_Rosnar 8\n\
+h_Roncar 8"
+const taxaaula = 50
+
+
+classe p_teste009
+herda comum_perso
+const nome = "Perito"
+const msexo = 1 # Sexo: 1 Masculino
+const tipo1 = "Anão"
+const lojaaula = "h_Varinha 8\n\
+h_Cajado 8\n\
+h_Lâmina_curta 8\n\
+h_Lâmina_longa 8\n\
+h_Maca_e_Martelo 8\n\
+h_Mangual 8\n\
+h_Chicote_e_Corrente 8\n\
+h_Arma_exótica 8\n\
+h_Segundo_ataque 8\n\
+h_Terceiro_ataque 8"
+const taxaaula = 50
+const lojanao = ""
+
+
+classe p_teste010
+herda comum_perso
+const nome = "Prefeito"
+const msexo = 1 # Sexo: 1 Masculino
+const tipo1 = "Elfo"
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10 # 1 segundo depois do jogador chegar
+  arg0.msg("Prefeito: Olá. Você pode vir morar nessa cidade por míseras 20 moedas.")
+
+func entrou30 # 3 segundos depois do jogador chegar
+  arg0.msg("Prefeito: Basta falar: Desejo morar aqui.")
+
+func cmd_falou
+  se arg1 == "Desejo morar aqui."
+    ret arg0.var.z_salafim == txt(dono), arg0.msg("Prefeito: Mas você já mora aqui.")
+    ret arg0.var.z_moedas_ < 20, arg0.msg("Prefeito: Você não tem 20 moedas")
+    arg0.var.z_moedas_ -= 20
+    arg0.var.z_salafim = dono
+    $mens.p(este, arg0)
+    $mens.mtodos1("Prefeito disse para $a: Agora seu ponto de retorno é aqui.")
+
+
+classe p_teste011
+herda comum_persobat
+const msexo = 1 # Sexo: 1 Masculino
+const nome = "camundongo gigante"
+const descnome = "um camundongo gigante"
+const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
+
+func recalc_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += -40
+
+
+classe p_teste012
+herda comum_perso
+const nome = "Adestradora de animais raros"
+const ident = "adestradora"
+const descpadr = "Adestradora de animais raros está aqui, esperando por clientes."
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Alguém chegou na mesma sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  se arg1 == "branco"
+    se arg0.dentro2.objini("p_teste013")
+      arg0.msg("Adestradora: Mas você já possui uma duende branca!")
+    senao !arg0.animalmais
+      arg0.msg("Adestradora: Você não tem espaço para receber mais animais")
+    senao
+      txt200 habs
+      habs = "z_dono=Adestradora_de_animais,m_Curar=4,m_Raio_confusão=4"
+      habs += ",m_Sono_profundo=4,m_Sopro_de_gelo=4,h_Meditar=4"
+      refvar r = criar("p_teste013", arg0, 3, habs)
+      $mens.p(arg0, r)
+      $mens.mvis1("Adestradora dá $a para $P.")
+    fimse
+  senao arg1 == "negro"
+    se arg0.dentro2.objini("p_teste014")
+      arg0.msg("Adestradora: Mas você já possui um duende negro!")
+    senao !arg0.animalmais
+      arg0.msg("Adestradora: Você não tem espaço para receber mais animais")
+    senao
+      txt200 habs
+      habs = "z_dono=Adestradora_de_animais,h_Explodir=4,h_Choque=1"
+      habs += ",h_Onda_trovão=4,h_Drenar=4,h_Endurecer=4,h_Meditar=4"
+      refvar r = criar("p_teste014", arg0, 3, habs)
+      $mens.p(arg0, r)
+      $mens.mvis1("Adestradora dá $a para $P.")
+    fimse
+
+
+classe p_teste013
+herda comum_persobat
+const nome = "Duende branca"
+const equip1 = 262182 # Equip posições: 1-rosto, 2-olhos, 5-corpo, 18-pés
+const equip2 = 16 # Equip adicionar: 4-pescoço
+
+
+classe p_teste014
+herda comum_persobat
+const nome = "Duende negro"
+const msexo = 1 # Sexo Msg: 1 Masculino
+
+
+classe p_teste015
+herda comum_perso
+const evsala = 1 # Eventos em sala: Sim
+const nome = "marceneiro"
+const msexo = 1 # Sexo Msg: 1 Masculino
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  arg0.msg("Um marceneiro cumprimenta você.")
+
+
+classe p_teste016
+herda comum_perso
+const nome = "rato"
+const descnome = "um rato de laboratório"
+const ident = "rato laboratório"
+const descpadr = "Um rato de laboratório vaga sem rumo."
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  $mens.p(este, arg0)
+  $mens.mvis1("$P olha rapidamente para $a, desconfiado.")
+
+
+classe p_teste017
+herda comum_persobat
+const nome = "guarda"
+const descnome = "um guarda"
+const descpadr = "Um guarda está em pé, vigiando este lugar."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const nivel = 100
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_mover
+  se arg2 == "o" && arg0.psexo # Um homem querendo ir para oeste
+    $mens.p(este, arg0)
+    $mens.mtodos1("$P impede que $a entre no futuro banheiro feminino.")
+    ret 1
+  senao arg2 == "l" && !arg0.psexo # Uma mulher querendo ir para leste
+    $mens.p(este, arg0)
+    $mens.mtodos1("$P impede que $a entre no futuro banheiro masculino.")
+    ret 1
+  senao arg0.dentro2.objini("i_teste012") # Empunhando/vestindo uma faca
+    arg0.msg("Guarda: Guarde essa faca! Está querendo matar alguém?")
+    ret 1
+  senao arg0.dentro1.objini("i_teste012") # Carregando uma faca
+    arg0.msg("Guarda: Vejo que carrega uma faca. Largue ela aqui, no chão.")
+    ret 1
+  senao arg0.dentro2.objini("i_teste018") # Empunhando/vestindo um sapato
+    arg0.msg("Guarda: Remova os sapatos para não sujar o chão.")
+    ret 1
+
+func cmd_soltouobj # Chamado quando um personagem soltou algum item
+# arg0=personagem, arg1=aonde soltou, arg2=item, arg3=quantidade do item
+  apagar(arg2) # Apaga a faca (deixará de existir)
+  $mens.p(este, arg0, arg2)
+  se arg3 <= 1
+    $mens.mtodos1("$P olha para $a e pega $o do chão.")
+  senao
+    $mens.mtodos1("$P olha para $a e pega (" + arg3 + "x) $o do chão.")
+  fimse
+  ret 1
+
+
+classe p_teste018
+herda comum_perso
+const nome = "Carolina"
+const p_recebe = 1 # Recebe itens: Sim
+const eveste = 1 # Eventos perso: Sim
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=objeto, arg3=quantidade
+  se txt(arg2) != "i_teste019"
+    arg0.msg("Carolina: Isso não me interessa.")
+    ret 1
+  fimse
+
+func cmd_deuobj # Recebeu um item
+  apagar(arg2) # Primeiro apaga o objeto
+  misc:tempo("darchave", arg0) # Para não dar as chaves imediatamente
+# Nota: Em "func darchave", arg0 também é quem deu as algemas (o arg0 daqui)
+
+func darchave20
+  $mens.p(este)
+  $mens.mvis1("$P examina as algemas.")
+
+func darchave50
+  $mens.p(este, arg0)
+  $mens.mvis1("$P dá chave para $a.")
+  criar("i_teste020", arg0, 1)
+
+
+classe p_teste019
+herda comum_perso
+const nome = "João"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_recebe = 1 # Recebe itens: Sim
+const eveste = 1 # Eventos perso: Sim
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+# Primeiro cria um nome mais curto para arg0.var.j_teste019_
+  refvar x = arg0.var.j_teste019_
+# Agora envia mensagens de acordo com o valor dessa variável
+  x == 0 && arg0.msg("João: Preciso de uma lanterna")
+  x == 1 && arg0.msg("João: Agora preciso de um lampião")
+  x == 2 && arg0.msg("João: Agora preciso um palito de fósforo")
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=objeto, arg3=quantidade
+# Primeiro cria um nome mais curto para arg0.var.j_teste019_
+  refvar x = arg0.var.j_teste019_
+# Agora checa se é o item que o personagem quer receber
+  se x == 0 && txt(arg2) == "i_teste007" # Lanterna
+  senao x == 1 && txt(arg2) == "i_teste008" # Lampião
+  senao x == 2 && txt(arg2) == "i_teste009" # Palito de fósforo
+  senao # Se não for um dos anteriores
+    arg0.msg("João: Isso não me interessa.")
+    ret 1
+
+func cmd_deuobj # Recebeu um item
+  apagar(arg2) # Apaga o item
+  casovar arg0.var.j_teste019_
+  casose "0"
+    arg0.var.j_teste019 = 1
+    arg0.msg("João: Agora preciso de um lampião")
+    ret
+  casose "1"
+    arg0.var.j_teste019 = 2
+    arg0.msg("João: Agora preciso um palito de fósforo")
+    ret
+  casose "2"
+    arg0.var.j_teste019 = "" # Apaga a variável
+    dono.porta_n = 1 # Abre a porta da sala (o "dono" do personagem)
+    misc:tempo("fechaporta", este) # Dispara funções 'fechaporta'
+    $mens.p(este)
+    $mens.mtodos1("$P faz um gesto e a porta ao norte se abre.")
+  casofim
+
+func fechaporta80
+  dono.porta_n = 3 # Fecha e tranca a porta da sala (o "dono" do personagem)
+  $mens.p(este)
+  $mens.mtodos1("A porta ao norte fechou.")
+
+
+classe p_teste020
+herda comum_perso
+const nome = "Maria"
+const msexo = 0 # Sexo Msg: 0 Feminino
+const p_recebe = 1 # Recebe itens: Sim
+const eveste = 1 # Eventos perso: Sim
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  int1 obj.3 # Três variáveis (obj.0, obj.1 e obj.2) que podem ser 0 ou 1
+  obj.bits = arg0.var.j_teste020_ # Lê um número e anota nas 3 variáveis
+  txt100 linha # Lin é uma variável que pode conter textos
+  !obj.0 && (linha += " uma lanterna")
+# Significa:
+# Se obj.0 for diferente de 0, adiciona o texto " uma lanterna" em linha
+  !obj.1 && (linha += " um lampião")
+  !obj.2 && (linha += " um palito de fósforo")
+  linha && arg0.msg("Maria: Preciso de" + linha)
+# Significa: Se linha não for um texto nulo, envia mensagem ao jogador
+# Nota: quando a função termina, as variáveis definidas dentro dela,
+# neste caso obj e linha, deixam de existir
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=objeto, arg3=quantidade
+  int1 obj.3
+  obj.bits = arg0.var.j_teste020_
+# Primeiro checa se já recebeu o item
+  txt10 recebeu # ""=não interessa, "0"=não recebeu, "1"=já recebeu
+  txt(arg2) == "i_teste007" && (recebeu = obj.0)
+  txt(arg2) == "i_teste008" && (recebeu = obj.1)
+  txt(arg2) == "i_teste009" && (recebeu = obj.2)
+# Agora recusa o item se já recebeu ou se não quer
+  se recebeu == ""
+    arg0.msg("Maria: Isso não me interessa.")
+    ret 1
+  senao recebeu == "1"
+    arg0.msg("Maria: Você já me deu isso.")
+    ret 1
+
+func cmd_deuobj # Recebeu um item
+  apagar(arg2) # Apaga o item
+  int1 obj.3
+# Muda a indicação dos itens que recebeu
+  obj.bits = arg0.var.j_teste020_
+  txt(arg2) == "i_teste007" && (obj.0 = 1)
+  txt(arg2) == "i_teste008" && (obj.1 = 1)
+  txt(arg2) == "i_teste009" && (obj.2 = 1)
+  arg0.var.j_teste020_ = obj.bits # Salva as alterações na variável do jogador
+# Agora checa se já recebeu os três itens
+  se obj.0 && obj.1 && obj.2
+    arg0.var.j_teste020 = "" # Apaga a variável
+    dono.porta_n = 1 # Abre a porta da sala (o "dono" do personagem)
+    misc:tempo("fechaporta", este) # Dispara funções 'fechaporta'
+    $mens.p(este)
+    $mens.mtodos1("$P faz um gesto e a porta ao norte se abre.")
+  senao
+    entrou10(arg0) # Para pedir o que está faltando
+  fimse
+
+func fechaporta80
+  dono.porta_n = 3 # Fecha e tranca a porta da sala (o "dono" do personagem)
+  $mens.p(este)
+  $mens.mtodos1("A porta ao norte fechou.")
+
+
+classe p_teste021
+herda comum_perso
+const nome = "ajudante"
+const descnome = "um ajudante"
+const msexo = 1 # Sexo Msg: 1 Masculino
+
+func descpadr
+  se iseguir # Se está seguindo alguém...
+    ret "Um ajudante está aqui, à serviço de " + iseguir.objlista.descnome + "."
+  senao
+    ret "Um ajudante está aqui."
+
+func seguirjog # Função chamada pela sala
+# arg0 = personagem que o ajudante deve seguir e observar
+  misc:evento(arg0) # Receber eventos do jogador, para saber quando teclou dispensar
+# Nota: essas duas próximas instruções foram pegas da classe cmd_seguir
+  iseguir.remove # Deixa de seguir
+  iseguir = arg0.lseguir.addfim(este) # Passa a seguir o jogador
+
+func cmd_mudadono
+# Essa função é chamada sempre que o ajudande muda de dono (muda de sala)
+# Quando isso acontece, ele deixa de receber os eventos do jogador
+# Aqui fazemos ele voltar a receber
+  misc:evento(iseguir.objlista)
+
+func cmd_falou
+  se arg1 == "dispensar"
+    apagar(este)
+    $mens.p(este, arg0)
+    $mens.mtodos1("$P deixa de seguir $a e vai embora")
+
+
+classe p_teste022
+herda comum_perso
+const nome = "aprendiz do fogo"
+const ident = "aprendiz fogo"
+const descpadr = "Um aprendiz do fogo está brincando com uma pequena chama."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const lojaaula = "m_Chama_Protetora 5\nh_Chute_Élfico 5"
+
+
+classe p_teste023
+herda comum_persobat
+const nome = "moleque"
+const descnome = "um moleque"
+const descpadr = "Um moleque está encarando você."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.var.d_moleque == "" # Se ainda não lutou com o moleque
+    misc:evento(arg0) # Receber eventos do jogador
+    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+  fimse
+
+func entrou10
+  arg0.msg("Moleque: Topa uma luta comigo? Fale sim ou não.")
+
+func cmd_mover # Jogador quer sair da sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.var.d_moleque == "" # Se ainda não lutou com o moleque
+    $mens.p(arg0)
+    $mens.mtodos1("$P tenta ir embora, mas um moleque $s segura pelo braço.")
+    arg0.msg("Moleque: Antes de sair, me responda sim ou não.")
+    ret 1
+  fimse
+
+func cmd_falou # Jogador falou alguma coisa
+  se arg0.var.d_moleque # Se já lutou com o moleque não faz nada
+  senao arg1 == "sim" # Quer lutar
+    arg0.var.d_moleque = "A" # Nota: na verdade qualquer coisa diferente de "" serve aqui
+    atkauto(arg0, 8) # Faz um ataque automático contra arg0
+  senao arg1 == "não" # Não quer lutar
+    arg0.var.d_moleque = "A" # Nota: na verdade qualquer coisa diferente de "" serve aqui
+    $mens.p(arg0)
+    $mens.mtodos1("Moleque: Tudo bem, você não ia aguentar mesmo.")
+  senao
+    arg0.msg("Moleque: E então, vai lutar?")
+  fimse
+
+
+classe p_teste024
+herda comum_perso
+const nome = "Úrsula"
+const descpadr = "Úrsula está tentando acender alguma coisa, sem sucesso."
+const msexo = 1 # 0=feminino, 1=masculino
+const pesoobj = 80000
+const p_recebe = 1 # Se pode receber itens de outros personagens
+const eveste = 1 # Receber eventos do próprio objeto
+const evsala = 1 # Receber eventos do dono se o dono for sala
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Úrsula disse: Preciso de palitos de fósforo. Você pode me arrumar alguns?")
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=item, arg3=quantidade
+  se arg2.nome != "palito de fósforo"
+    arg0.msg("Úrsula não aceita " + arg2.descnome + ".")
+    ret 1 # Para não receber o item
+  senao arg3 + arg0.var.j_ursula_ > 3
+    refvar total = 3 - arg0.var.j_ursula_
+    arg0.msg("Úrsula: É muita coisa. Eu só preciso de " + total + " desses palitos.")
+    ret 1 # Para não receber o item
+
+func cmd_deuobj # Recebeu um item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=item, arg3=quantidade
+  apagar(arg2) # Apaga o item
+  arg0.var.j_ursula_ += arg3
+  se arg0.var.j_ursula_ < 3
+    arg0.msg("Úrsula: Só preciso de mais " + (3 - arg0.var.j_ursula_) + ".")
+  senao
+    arg0.var.j_ursula_ = 0
+    $mens.p(este, arg0)
+    $mens.mvis1("$P dá uma lanterna para $a.")
+    criar("i_teste007", arg0, 0)
+
+
+classe p_teste025
+herda comum_perso
+const nome = "Corretor de imóveis"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const taxacompra = 20
+const lojainv = 1 # Produtos inv: Sim
+const lojacasa = "teste"
+const lojachave = "teste"
+
+
+classe p_teste026
+herda comum_perso
+const nome = "garoto"
+const descnome = "um garoto"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const inivar = "e_apagar=50"
+inttempo tempo
+
+func cmd_mudadono
+  tempo = 70
+
+func tempo_exec
+  tempo = 70
+  dono.msgtodos(txtsublin(frases, rand(intsublin(frases)), 1))
+
+const frases = "Um garoto diz: Bem-vindo amigo.\n\
+Um garoto diz: Bienvenido amigo.\n\
+Um garoto diz: Welcome friend.\n\
+Um garoto diz: Willkommen Freund.\n\
+Um garoto diz: Bienvenue ami.\n\
+Um garoto diz: Lorem ipsum amicum.\n\
+Um garoto diz: youkoso yuujin."
+
+
+classe p_teste027
+herda comum_perso
+const nome = "cobrador de taxas"
+const descnome = "um cobrador de taxas"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const taxacasa = "teste"
+
+
+classe p_teste028
+herda comum_perso
+const nome = "curandeira"
+const descnome = "uma curandeira"
+const nivel = 5
+const inivar = "m_Curar=8"
+const eveste = 1 # Eventos perso: Sim
+
+func cmd_social2
+  se arg1 == este && arg2.tipo == 1
+    $magia_curar.exechabperso(este, arg0)
+  senao arg1 == este && arg2.tipo == 2
+    $cmd_socar.exechabperso(este, arg0)
+  fimse
+
+
+classe p_teste029
+herda comum_perso
+const nome = "instrutor"
+const descnome = "o instrutor de facas"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos em sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.dentro1.objini("i_teste012") || arg0.dentro2.objini("i_teste012")
+    misc:tempo("comfaca", arg0) # Tem faca: dispara funções comfaca
+  senao
+    misc:tempo("semfaca", arg0) # Não tem faca: dispara funções semfaca
+  fimse
+
+func comfaca20
+  arg0.msg("Instrutor: O que está esperando? Vá usar a faca.")
+
+func semfaca20
+  arg0.msg("Instrutor: Uma faca é muito útil aqui, inclusive para se defender.")
+
+func semfaca40
+  arg0.msg("Instrutor: Vou te dar uma faca e você experimenta.")
+
+func semfaca60
+  $mens.p(este, arg0)
+  $mens.mvis1("$P dá uma faca para $a.")
+  criar("i_teste012", arg0, 1)
+
+
+classe s_teste001
+herda b_teste
+const s_titulo = "Entrada"
+const s_desc = "Aqui há duas portas, uma ao norte, que leva ao início do jogo, e uma\n\
+ao sul para uma área de testes e exemplos. Para desabilitar a área de\n\
+testes, digite econfig, como administrador e mude a opção \"Sala inicial\"\n\
+para ini001. Inicialmente a senha de administração é x2."
+const s_luz = 1 # Luz: 1 Claro sem eventos de tempo
+const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_ini001
+const dir_s = $s_teste002
+
+func cmd_mover
+  se arg2 == "s"
+    !arg0.var.h_socar && (arg0.var.h_socar = 3)
+    !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
+    !arg0.pnivel && (arg0.pnivel = 1)
+    arg0.recalc = 1
+
+const s_reset = "S 100 teste032 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste032") && criar("i_teste032", este, 1)
+
+
+classe s_teste002
+herda b_teste
+const s_titulo = "Portaria"
+const s_desc = "Cada andar desse pequeno edifício trata de um assunto.\n\
+A leste há um pequeno jardim.\n\
+A sudeste você pode mudar de nível.\n\
+As salas ao sul mostram diversos recursos do MUD.\n\
+A oeste há explicações sobre o comando de administração CMD e derivados."
+const dir_n = $s_teste001
+const dir_l = $s_teste003
+const dir_o = $s_teste033
+const dir_c = $s_teste014
+const dir_b = $s_teste067
+const dir_se = $s_teste015
+const s_reset = "S 100 teste036 0 S\nS 100 teste041 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste036") && criar("i_teste036", este, 0)
+  !dentro1.objini("i_teste041") && criar("i_teste041", este, 0)
+
+
+classe s_teste003
+herda b_teste
+const s_titulo = "Jardim"
+const s_desc = "Isso é o que restou de um pequeno jardim. Não é grande, mas a grama\n\
+já virou mato, de modo que mal se vê as cercas à sua volta.\n\
+Há uma placa aqui, com os seguintes dizeres:\n\
+Tecle as direções cardeais para ir de um lugar a outro: n s l o\n\
+Há também as direções colaterais: ne no se so\n\
+Em alguns lugares pode-se ir para cima e para baixo: c b"
+const dir_l = $s_teste004
+const dir_o = $s_teste002
+
+
+classe s_teste004
+herda b_teste
+const s_titulo = "Centro do jardim"
+const s_desc = "Aqui o mato é ainda mais alto. À oeste o mato é um pouco mais baixo,\n\
+enquanto que ao norte você vê uma pequena trilha. À leste e ao sul não é\n\
+possível saber o que há além do mato."
+const s_noite = "Aqui o mato é ainda mais alto, e como está escuro, você não consegue\n\
+ver o que tem em nenuma direção. Mas aqui começa uma pequena trilha\n\
+em direção ao norte."
+const dir_o = $s_teste003
+const dir_s = $s_teste005
+const dir_l = $s_teste006
+const dir_n = $s_teste007
+
+
+classe s_teste005
+herda b_teste
+const s_titulo = "Jardim"
+const s_desc = "Aqui o mato é um pouco mais baixo que ao norte. Há algumas pedras\n\
+espalhadas pelo chão. Se fosse de noite, provavelmente teria torcido o pé."
+const s_noite = "Está escuro, e você acaba pisando em algumas pedras espalhadas pelo chão,\n\
+mesmo andando devagar. Por pouco não torce o pé."
+const dir_n = $s_teste004
+const dir_ne = $s_teste006
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_pegarobj # Pegar alguma coisa
+  se arg2.nome == "pedra"
+    criar("i_teste002", este) # Cria uma pedra na sala
+
+func cmd_soltarobj # Soltar alguma coisa
+  se arg2.nome == "pedra"
+    apagar(arg2) # Apagará a pedra
+
+const s_reset = "S 100 teste002 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste002") && criar("i_teste002", este, 0)
+
+
+classe s_teste006
+herda b_teste
+const s_titulo = "Jardim"
+const s_desc = "O mato termina repentinamente nessa direção. Há uma parede à leste. Algum\n\
+vândalo pixou uma mensagem que mal se entende. Depois de um tempo você lê:\n\
+Se houvesse uma minhoca aqui, e você quisesse pegá-la e depois soltá-la,\n\
+bastaria teclar pegar minhoca, e em seguida, teclar soltar minhoca.\n\
+E se encontrasse um pescador, poderia teclar: dar minhoca pescador\n\
+Pode-se abreviar muita coisa, escrevendo só o começo das palavras. Exemplo,\n\
+peg minho ou mesmo pe mi ao invés de pegar minhoca."
+const dir_o = $s_teste004
+const dir_so = $s_teste005
+const dir_no = $s_teste007
+
+
+classe s_teste007
+herda b_teste
+const s_titulo = "Trilha"
+const s_desc = "O mato chega a um metro aqui, e ao sul crece ainda mais. Na direção norte,\n\
+vai diminuindo gradativamente. É possível seguir também a sudeste.\n\
+Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
+const s_noite = "O mato chega a um metro aqui. Na direção norte ele parece diminuir um\n\
+pouco. Nas outras direções, você não vê nada além do mato na escuridão."
+const dir_s = $s_teste004
+const dir_n = $s_teste008
+const dir_se = $s_teste006
+const eveste = 1 # Receber eventos do próprio objeto
+const s_reset = "P 100 teste001 0 0 1"
+
+func cmd_mover
+  se arg2 == "n" && !arg0.var.j_planta # Se ainda não passou pela planta carnívora
+    arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
+    arg0.msg("Então você recua.")
+    ret 1
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste001:objsolto.total < 1
+    criar("p_teste001", este, 0)
+  fimse
+
+
+classe s_teste008
+herda b_teste
+const s_titulo = "Sala ampla"
+const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal assombrada.\n\
+Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
+e uma passagem ao norte."
+const dir_n = $s_teste009
+const portaini_n = 2
+const fecha_n = 1 # Fecha ao passar: Sim
+const dir_s = $s_teste007
+const dir_l = $s_teste010
+
+
+classe s_teste009
+herda b_teste
+const s_titulo = "Passagem"
+const s_desc = "Um pequeno quarto escuro, que deveria levar a algum lugar, mas você não vê\n\
+nenhuma saída. As paredes estão cinzas de sujeira e há teias de aranha\n\
+por toda parte. Nota-se que ninguém vem aqui há anos."
+const dir_s = $s_teste008
+const portaini_s = 2
+const fecha_s = 1 # Fecha ao passar: Sim
+
+
+classe s_teste010
+herda b_teste
+const s_titulo = "Corredor"
+const s_desc = "Você está em um corredor que se estende a oeste. Mais adiante há uma\n\
+sala bastante ampla. À leste há uma escada para o andar de baixo."
+const dir_s = $s_teste011
+const dir_o = $s_teste008
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Alguém disse olá")
+
+func ini
+  sala:ini
+  criar("i_teste001", este)
+
+
+classe s_teste011
+herda b_teste
+const s_titulo = "Sala de estar"
+const s_desc = "Você está em uma pequena sala com mesa, poltronas e uma televisão. Pode\n\
+ir para a cozinha à oeste ou a sala de jantar ao norte. Há também um\n\
+corredor estreito para leste e uma escada para o andar de cima, ao sul.\n\
+Aqui você pode salvar o personagem teclando salvar"
+const dir_n = $s_teste010
+const dir_l = $s_teste012
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Personagem escreveu alguma coisa
+  se arg1 == "salvar"
+    arg0.mudasenha # Muda a senha
+    ret 1
+
+
+classe s_teste012
+herda b_teste
+const s_titulo = "Forno microondas"
+const s_desc = "Misteriosamente você acaba de entrar em um forno de microondas.\n\
+Há um copo de leite gigante aqui. A tampa é tão pesada que não é possível\n\
+saber se está fechada ou trancada. De repente apareceu alguém lá fora e\n\
+apertou alguns botões. Está ficando quente, muito quente. Você desmaia."
+const s_morre = 1 # Morre ao entrar: 1 Sim
+const dir_o = $ini015
+
+
+classe s_teste013
+herda b_teste
+const s_titulo = "Dentro de um armário"
+const s_desc = "Esse lugar está completamente abandonado há alguns anos. Há teias de aranha\n\
+por todo lado. As paredes de madeira, marrom claro, agora estão pretas de\n\
+sujeira. O simples fato de entrar aqui levanta uma poeira que faz você\ntossir."
+
+
+classe s_teste014
+herda b_teste
+const s_titulo = "Primeiro andar: Animais e batalha"
+const s_desc = "À leste você pode mudar o seu nível e conseguir animais.\n\
+Ao sul há alguns itens, usados para capturar animais.\n\
+À oeste pode batalhar com animais de níveis diferentes.\n\
+Ao norte fica um pequeno centro de treinamento de animais."
+const dir_b = $s_teste002
+const dir_l = $s_teste015
+const dir_s = $s_teste016
+const dir_o = $s_teste017
+const dir_n = $s_teste021
+const dir_c = $s_teste023
+
+
+classe s_teste015
+herda b_teste
+const s_titulo = "Mudança de nível"
+const s_desc = "Aqui você pode mudar o nível do seu personagem.\n\
+Tecle A ou AA para aumentar 1 ou 10 níveis\n\
+Tecle D ou DD para diminuir 1 ou 10 níveis"
+const eveste = 1 # Eventos sala: Sim
+const dir_l = $s_teste065
+const dir_o = $s_teste014
+const dir_no = $s_teste002
+
+func cmd_salaperso # Personagem chegou
+  se arg0.jog
+    misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  casovar txtmin(arg1)
+  casose "aa"
+    arg0.pnivel += 9
+    arg0.recalc = 1
+  casose "a"
+    arg0.pnivel += 1
+    arg0.recalc = 1
+    se arg0.pnivel > 80
+      arg0.msg("Nível máximo é 80")
+      arg0.pnivel = 80
+    senao
+      arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
+    fimse
+    ret 1
+  casose "dd"
+    arg0.pnivel -= 9
+    arg0.recalc = 1
+  casose "d"
+    arg0.pnivel -= 1
+    arg0.recalc = 1
+    arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
+    ret 1
+  casofim
+
+
+classe s_teste016
+herda b_teste
+const s_titulo = "Itens de captura"
+const s_desc = "Você pode capturar animais aproximadamente nível 6 com esses itens\n\
+no chão. Alguns são mais fáceis, outros mais difíceis.\n\
+Pegue alguns, e quando estiver lutando, use o comando capturar. Mas\n\
+antes, enfraqueça o animal, senão é mais dífícil de capturar.\n\
+Pode pegar itens teclando, por exemplo, \"peg 3 car_cru\" e \"peg 5 car_coz\"."
+const dir_n = $s_teste014
+const s_reset = "S 100 teste003 10 S\nS 100 teste004 10 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste003") && criar("i_teste003", este, 10)
+  !dentro1.objini("i_teste004") && criar("i_teste004", este, 10)
+
+
+classe s_teste017
+herda b_teste
+const s_titulo = "Animais"
+const s_desc = "Esta é a praça central de um pequeno zoológico. À leste fica a saída.\n\
+Nas outras direções, você entra na jaula de alguns animais, e poderá\n\
+batalhar com eles. Você pode se recuperar aqui teclando deitar."
+const dir_l = $s_teste014
+const dir_n = $s_teste018
+const dir_o = $s_teste019
+const dir_s = $s_teste020
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  se arg1 == "deitar"
+    persobat.restaurar
+    listaitem i
+    epara i = dentro2.ini, i, i.depois
+      i.obj.perso && i.obj.restaurar
+    efim
+    arg0.restaurar
+    $mens.p(arg0)
+    $mens.mtodos1("$P descansa e se recupera.")
+    ret 1
+  fimse
+
+
+classe s_teste018
+herda b_teste
+const dir_s = $s_teste017
+const s_titulo = "Macaco"
+const s_desc = "Aqui fica um mamífero quadrúmeno. Se alimentam de frutas e de sementes,\n\
+ma quem sabe algum deles se interesse por uma bisteca. Geralmente são\n\
+inteligentes, sociáveis e muito ágeis, mas esses aqui se sentiram\n\
+ameaçados quando você entrou na jaula."
+const s_reset = "P 100 teste002 3 6 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste002:objsolto.total < 1
+    criar("p_teste002", este, rand(3, 6))
+  fimse
+
+
+classe s_teste019
+herda b_teste
+const dir_l = $s_teste017
+const s_titulo = "Cão"
+const s_desc = "Aqui é a jaula de um mamífero da família dos canídeos. São quadrúpedes,\n\
+mas de vez em quando ficam em pé apoiados em duas patas apenas. Esses\n\
+aqui são um pouco selvagens, pouco acostumados com a presença humana."
+const s_reset = "P 100 teste003 3 6 1 h_socar=1,h_arremessar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste003:objsolto.total < 1
+    criar("p_teste003", este, rand(3, 6), "h_socar=1,h_arremessar=1")
+  fimse
+
+
+classe s_teste020
+herda b_teste
+const dir_n = $s_teste017
+const s_titulo = "Morcego"
+const s_desc = "Esta é a jaula de alguns mamíferos da ordem dos quirópteros. Esses aqui\n\
+são basicamente ratos voadores, mas os membros inferiores possuem patágio,\n\
+por isso podem funcionar como asas, e esses animais podem voar."
+const s_reset = "P 100 teste004 3 6 1 h_arremessar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste004:objsolto.total < 1
+    criar("p_teste004", este, rand(3, 6), "h_arremessar=1")
+  fimse
+
+
+classe s_teste021
+herda b_teste
+const s_titulo = "Centro de treinamento"
+const s_desc = "Aqui os funcionários do zoológico treinam animais e fazem duelos\n\
+entre si. No momento estão descansando, mas você pode desafiá-los\n\
+seguindo ao norte."
+const dir_s = $s_teste014
+const dir_n = $s_teste022
+
+
+classe s_teste022
+herda b_teste
+const s_titulo = "Sala"
+const s_desc = "Aqui está totalmente vazio. Apenas alguns quadros enfeitam a parede.\n\
+O chão é de concreto, dando a impressão de inacabado. No teto há\n\
+uma lâmpada pendurada. De dia, a luz vem de duas grandes janelas."
+const dir_s = $s_teste021
+const s_reset = "P 100 teste005 0 0 1 h_chutar=1,e_apagar=5\n\
+A 100 teste003 4 4 h_socar=1\n\
+A 100 teste003 5 5 h_socar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se p_teste005:objsolto.total < 1
+    p = u = criar("p_teste005", este, 0, "h_chutar=1,e_apagar=5")
+  fimse
+  se p.animalmais
+    criar("p_teste003", p, 4, "h_socar=1")
+  fimse
+  se p.animalmais
+    criar("p_teste003", p, 5, "h_socar=1")
+  fimse
+
+
+classe s_teste023
+herda b_teste
+const s_titulo = "Segundo andar: Luz e itens que iluminam"
+const s_desc = "À leste você pode pegar uma lamparina.\n\
+À oeste há uma sala escura, porém visível se houver uma lamparina."
+const dir_b = $s_teste014
+const dir_l = $s_teste024
+const dir_o = $s_teste025
+const dir_c = $s_teste026
+
+
+classe s_teste024
+herda b_teste
+const s_titulo = "Itens que produzem luz"
+const s_desc = "Aqui há diversos itens que podem ser usados como fonte de luz.\n\
+Você pode acender e apagar usando os comandos acender e apagar.\n\
+Para acender um fósforo da caixa, basta tentar acender a caixa.\n\
+Já a tocha requer algum fogo para ser acesa (fósforo ou lambião).\n\
+O cinto dourado produz luz ao vestir e apaga ao remover."
+const dir_o = $s_teste023
+const s_reset = "S 100 teste006 0 S\n\
+S 100 teste005 0 S\n\
+S 100 teste007 0 teste005\n\
+S 100 teste007 0 S\n\
+S 100 teste008 0 S\n\
+S 100 teste009 5 S\n\
+S 100 teste011 0 S\n\
+S 100 teste037 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste006") && criar("i_teste006", este, 0)
+  !dentro1.objini("i_teste005") && criar("i_teste005", este, 0)
+  $i_teste005 && !$i_teste005.dentro1.objini("i_teste007") && criar("i_teste007", $i_teste005, \
+0)
+  !dentro1.objini("i_teste007") && criar("i_teste007", este, 0)
+  !dentro1.objini("i_teste008") && criar("i_teste008", este, 0)
+  !dentro1.objini("i_teste009") && criar("i_teste009", este, 5)
+  !dentro1.objini("i_teste011") && criar("i_teste011", este, 0)
+  !dentro1.objini("i_teste037") && criar("i_teste037", este, 0)
+
+
+classe s_teste025
+herda b_teste
+const s_titulo = "Quarto escuro"
+const s_desc = "Este é um pequeno quarto para revelar fotografias. Não é à toa que é\n\
+tão escuro aqui."
+const dir_l = $s_teste023
+const s_luz = 3 # Luz: 3 Escuro
+
+
+classe s_teste026
+herda b_teste
+const s_titulo = "Terceiro andar: Armas e equipamentos"
+const s_desc = "Para checar seus atributos tecle estat.\n\
+Para aprender a cortar, nessa sala, tecle cortar.\n\
+À leste há duas armas e explicações de como criar equipamentos.\n\
+À oeste há uma geléia, imune a socos e chutes, mas frágil contra\n\
+armas cortantes."
+const dir_b = $s_teste023
+const dir_c = $s_teste052
+const dir_o = $s_teste027
+const dir_l = $s_teste028
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr # Escreveu algo
+  se arg1 == "cortar"
+    arg0.var.h_cortar = 1
+    arg0.msg("Você aprende a cortar.")
+    ret 1
+
+
+classe s_teste027
+herda b_teste
+const s_titulo = "Poço da geléia"
+const s_desc = "A vegetação já tomou conta de um antigo poço, de modo que agora\n\
+ele é bastante raso, embora bastante largo."
+const dir_l = $s_teste026
+const s_reset = "P 100 teste006 0 0 1 h_socar=3"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste006:objsolto.total < 1
+    criar("p_teste006", este, 0, "h_socar=3")
+  fimse
+
+
+classe s_teste028
+herda b_teste
+const s_titulo = "Criando equipamentos"
+const s_desc = "Personagens podem ter algumas propriedades especiais, e alguns itens\n\
+também podem mudar alguns atributos de um personagem, quando vestidos.\n\
+Veja a opção \"Atributos\" de tipos (raças e classes) e personagens,\n\
+e a opção \"Atributos vestir\" de itens."
+const dir_o = $s_teste026
+const dir_l = $s_teste032
+const dir_n = $s_teste029
+const dir_s = $s_teste063
+const s_reset = "S 100 teste012 3 S\n\
+S 100 teste013 3 S\n\
+S 100 teste015 1 S\n\
+S 100 teste016 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
+  !dentro1.objini("i_teste013") && criar("i_teste013", este, 3)
+  !dentro1.objini("i_teste015") && criar("i_teste015", este, 1)
+  !dentro1.objini("i_teste016") && criar("i_teste016", este, 1)
+
+
+classe s_teste029
+herda b_teste
+const s_titulo = "Itens restritos"
+const s_desc = "Alguns itens só podem ser vestidos ou empunhados por determinados\n\
+personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
+Uma forma de fazer isso é editar a opção \"Não podem vestir\" do item.\n\
+Outra é escrevendo a função cmd_podevestir do item. Nesse caso, veja\n\
+a classe i_teste014 no arquivo mud-a-teste.int."
+const dir_s = $s_teste028
+const s_reset = "S 100 teste014 3 S\nS 100 teste017 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste014") && criar("i_teste014", este, 3)
+  !dentro1.objini("i_teste017") && criar("i_teste017", este, 1)
+
+
+classe s_teste030
+herda b_teste
+const s_titulo = "Quinto andar: Loja, professores e ponto de retorno"
+const s_desc = "À leste há um vendedor e um professor.\n\
+À oeste trata-se do ponto de retorno.\n\
+Ao sul você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
+Ou pode teclar AA nessa sala, para ficar com mil moedas."
+const dir_b = $s_teste052
+const dir_c = $s_teste064
+const dir_l = $s_teste031
+const dir_o = $s_teste049
+const dir_s = $s_teste051
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr # Escreveu algo
+  se arg1 == "aa"
+    arg0.var.z_moedas = 1000
+    arg0.msg("Agora você tem 1000 moedas.")
+    ret 1
+
+
+classe s_teste031
+herda b_teste
+const s_titulo = "Escola de luta"
+const s_desc = "Aqui pode-se ver o que é vendido, teclando lista seguido ou não de um item.\n\
+Os comandos comprar, vender e avaliar também podem ser usados em lojas.\n\
+Pode-se também saber o que é ensinado teclando aulas, seguido ou não de uma\n\
+habilidade. E para aprender, tecle aprender seguido de um número ou uma\n\
+habilidade mostrada no comando aulas."
+const dir_o = $s_teste030
+const s_reset = "P 100 teste007 0 0 1\nP 100 teste008 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste007:objsolto.total < 1
+    criar("p_teste007", este, 0)
+  fimse
+  se p_teste008:objsolto.total < 1
+    criar("p_teste008", este, 0)
+  fimse
+
+
+classe s_teste032
+herda b_teste
+const s_titulo = "Ataques automáticos"
+const s_desc = "Quando seu personagem está lutando com alguém, de tempos em tempos ele\n\
+ataca automaticamente. O nome da habilidade usada depende se está ou não\n\
+usando armas. Armado, é o tipo de arma. Desarmado, é a opção\n\
+\"tipo de ataque\" do personagem.\n\
+As únicas habilidades especiais são \"Segundo ataque\" e \"Terceiro ataque\",\n\
+que permitem fazer mais de um ataque por turno."
+const dir_l = $s_teste094
+const dir_o = $s_teste028
+const s_reset = "S 100 teste018 2 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste018") && criar("i_teste018", este, 2)
+
+
+classe s_teste033
+herda b_teste
+const s_titulo = "CMD - Introdução"
+const s_desc = "Os comandos de administração CMD, CMDP e CMDJ permitem executar instruções\n\
+na linguagem do IntMUD. Todo o MUD foi feito nessa linguagem.\n\
+Pode-se carregar itens e personagens em uma sala, ler e alterar algumas\n\
+variáveis, como pontos de vida, mana, e vigor, transportar um jogador\n\
+para uma sala, entre outras coisas.\n\
+Recomenda-se também monitorar o uso do CMD, teclando: config +cmdlog"
+const dir_l = $s_teste002
+const dir_o = $s_teste034
+
+
+classe s_teste034
+herda b_teste
+const s_titulo = "Tipos de CMD"
+const s_desc = "Os personagens têm a função morreu, que é chamada quando o personagem\n\
+deve morrer. Assim, se quiser matar seu personagem, basta teclar:\n\
+cmd morreu\n\
+Se quiser matar o personagem de um jogador, chamado Joaquim, tecle:\n\
+cmdj joaquim morreu\n\
+Se Joaquim for um personagem na sala e você quiser matá-lo, tecle:\n\
+cmdp joaquim morreu"
+const dir_l = $s_teste033
+const dir_o = $s_teste035
+
+
+classe s_teste035
+herda b_teste
+const s_titulo = "Corredor"
+const s_desc = "A noroeste, teletransportando personagens.\n\
+Ao norte, restaurando pontos de vida, mana e movimento.\n\
+A sudoeste, mudando o nível.\n\
+Ao sul, mudando as habilidades e magias.\n\
+A sudeste, mudando a quantidade de dinheiro."
+const dir_l = $s_teste034
+const dir_no = $s_teste036
+const dir_n = $s_teste038
+const dir_so = $s_teste039
+const dir_s = $s_teste040
+const dir_se = $s_teste042
+const dir_o = $s_teste043
+
+
+classe s_teste036
+herda b_teste
+const s_titulo = "Teletransportando personagens"
+const s_desc = "Administradores podem se transportar usar o comando tele. Exemplo:\n\
+tele teste002\n\
+E transportar um jogador chamado João para teste002 assim:\n\
+tele João teste002\n\
+Usando o CMD são os seguintes comandos:\n\
+cmd mudadono($s_teste002)\n\
+cmdj João mudadono($s_teste002)\n\
+Mas tele não transporta um personagem da sala. Com CMDP isso é possível."
+const dir_se = $s_teste035
+const dir_n = $s_teste037
+
+
+classe s_teste037
+herda b_teste
+const s_titulo = "Continuação"
+const s_desc = "Cuidado ao transportar usando CMD e similares.\n\
+Se a sala não existir, o personagem é mandado para o nada, ou seja\n\
+não estará em nenhuma sala. Não tem título nem descrição, nem saída.\n\
+Nesse caso, basta transportar o jogador novamente, para alguma sala."
+const dir_s = $s_teste036
+
+
+classe s_teste038
+herda b_teste
+const s_titulo = "Restaurando"
+const s_desc = "A função que restaura pontos de vida, mana e movimento chama-se restaurar.\n\
+Para restauraurar seu personagem tecle:\n\
+cmd restaurar\n\
+Para restaurar um jogador chamado João tecle:\n\
+cmd joão restaurar"
+const dir_s = $s_teste035
+
+
+classe s_teste039
+herda b_teste
+const s_titulo = "Mudando de nível"
+const s_desc = "Em princípio, colocar o seu personagem no nível 10 é algo assim:\n\
+cmd pnivel=10\n\
+Mas só isso não é suficiente, porque os pontos de vida, movimento e mais\n\
+algumas variáveis não são ajustadas. Então tecle em seguida:\n\
+cmd recalc=1\n\
+Pode-se combinar as duas instruções em uma única linha, assim:\n\
+cmd pnivel=10,recalc=1\n\
+Para mudar nível de outro jogador ou personagem, use CMDJ ou CMDP."
+const dir_ne = $s_teste035
+
+
+classe s_teste040
+herda b_teste
+const s_titulo = "Habilidades e magias"
+const s_desc = "Se quiser ter a habilidade socar no nível mais baixo, basta teclar:\n\
+cmd var.h_Socar=1\n\
+E no nível mais alto, o de perito:\n\
+cmd var.h_Socar=8\n\
+No entanto, ao fazer var.h_Socar=0, a habilidade aparece no comando\n\
+hab como \"Não sabe\". Para realmente apagá-la, tecle:\n\
+cmd var.h_socar=\"\""
+const dir_n = $s_teste035
+const dir_s = $s_teste041
+
+
+classe s_teste041
+herda b_teste
+const s_titulo = "Continuação"
+const s_desc = "Se quiser checar o quanto sabe de socar, tecle:\n\
+cmd var.h_Socar\n\
+As habilidade começam com var.h_ e magias começam com var.m_.\n\
+Quando houver espaço no nome, troque por sublinhado. Exemplo, supondo\n\
+que exista uma magia chamada Bola de fogo, e você quiser tê-la no\n\
+nível intermediário, deve teclar:\n\
+cmd var.m_Bola_de_fogo=4"
+const dir_n = $s_teste040
+
+
+classe s_teste042
+herda b_teste
+const s_titulo = "Dinheiro"
+const s_desc = "Dinheiro é a variável var.z_moedas_. O sublinhado no final do nome,\n\
+nesse caso é necessário para a variável ser interpretada com numérica.\n\
+Se quiser ter exatamente 500 moedas, tecle:\n\
+cmd var.z_moedas_=500\n\
+Se quiser ganhar 300 moedas, tecle:\n\
+cmd var.z_moedas_+=300\n\
+Pode-se, por exemplo, criar 400 moedas para um jogador chamado João:\n\
+cmdj João var.z_moedas_+=400"
+const dir_no = $s_teste035
+
+
+classe s_teste043
+herda b_teste
+const s_titulo = "Corredor"
+const s_desc = "A noroeste, uma calculadora.\n\
+Ao norte, carregando personagens.\n\
+A nordeste, carregando itens.\n\
+Ao sudoeste, colocando e tirando efeitos.\n\
+Ao sul, apagando personagens e itens."
+const dir_n = $s_teste046
+const dir_s = $s_teste048
+const dir_l = $s_teste035
+const dir_o = $s_teste098
+const dir_ne = $s_teste047
+const dir_no = $s_teste044
+const dir_se = $s_teste132
+
+
+classe s_teste044
+herda b_teste
+const s_titulo = "Calculadora"
+const s_desc = "Para realizar cálculos basta teclar cmd e o cálculo. Exemplo:\n\
+cmd 1+2\n\
+É possível usar as quatro operações, + - * /, bem como parênteses.\n\
+Exemplo:\n\
+cmd 2.5*(3+4)\n\
+Rand retorna um número aleatório inteiro. Exemplo, um número de 3 a 8:\n\
+cmd rand(3, 8)"
+const dir_se = $s_teste043
+const dir_n = $s_teste045
+
+
+classe s_teste045
+herda b_teste
+const s_titulo = "Continuação"
+const s_desc = "O cálculo de raiz quadrada é realizado com a função matraiz.\n\
+Exemplo, a raiz quadrada de 2:\n\
+cmd matraiz(2)\n\
+Existem também funções trigonométricas, exponencial e logaritmo\n\
+natural. Para detalhes, consulte o tópico Funções numéricas do manual\n\
+do IntMUD."
+const dir_s = $s_teste044
+
+
+classe s_teste046
+herda b_teste
+const s_titulo = "Carregando personagens"
+const s_desc = "O personagem teste002 é um macaco. Para criar um macaco na sala em\n\
+que você está, basta teclar:\n\
+cmd criar(\"p_teste002\", dono)\n\
+Mas cuidado, ele é um personagem agressivo e vai te atacar.\n\
+Pode-se definir o nível do animal, assim (nesse caso é de nível 10):\n\
+cmd criar(\"p_teste002\", dono, 10)"
+const dir_s = $s_teste043
+
+
+classe s_teste047
+herda b_teste
+const s_titulo = "Carregando itens"
+const s_desc = "O item teste002 é uma pedra. Se quiser ter uma pedra tecle:\n\
+cmd criar(\"i_teste002\", este)\n\
+Se quiser uma pedra na sala em que você está, tecle:\n\
+cmd criar(\"i_teste002\", dono)\n\
+Se quiser que um jogador chamado João tenha uma pedra, tecle:\n\
+cmdj joão criar(\"i_teste002\", dono)"
+const dir_so = $s_teste043
+
+
+classe s_teste048
+herda b_teste
+const s_titulo = "Apagando personagens e itens"
+const s_desc = "O comando matar1 é o suficiente para apagar um personagem ou item (tirar\n\
+do jogo). Exemplo, para apagar o jardineiro, vá até ele e tecle:\n\
+matar1 jardineiro\n\
+Com o comando cmdp fica assim:\n\
+cmdp jardineiro apagar(este)\n\
+Entretanto, apagar itens não pode ser feito com CMD e derivados."
+const dir_n = $s_teste043
+
+
+classe s_teste049
+herda b_teste
+const s_titulo = "Retornar em níveis baixos"
+const s_desc = "Como administrador, tecle ECONFIG e mude a opção \"Retornar até nível\" para,\n\
+por exemplo, 10. Assim jogadores até nível 10 poderão retornar teclando\n\
+retornar. Depois, vá até o centro de uma cidade, tecle ESALA e mude a opção\n\
+\"Comando retornar\" para 3. Assim, o comando retornar retornará para a primeira\n\
+dessas salas em que o jogador esteve."
+const dir_l = $s_teste030
+const dir_o = $s_teste050
+
+
+classe s_teste050
+herda b_teste
+const s_titulo = "Mais sobre retornar"
+const s_desc = "Jogadores de nível mais alto podem retornar usando a magia retornar.\n\
+Faixa preta, indo a leste, ensina essa magia.\n\
+O personagem prefeito é a classe p_teste010 do arquivo mud-a-teste.int.\n\
+Para mudar as mensagens ou o valor que ele cobra, basta mudar essa classe."
+const dir_l = $s_teste049
+const s_reset = "P 100 teste010 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste010:objsolto.total < 1
+    criar("p_teste010", este, 0)
+  fimse
+
+
+classe s_teste051
+herda b_teste
+const s_titulo = "Pegar itens de PNJs"
+const s_desc = "Esse pequeno camundongo gigante carrega algumas coisas úteis,\n\
+por incrível que possa parecer. Primeiro tecle chutar camundongo.\n\
+Quando ele morrer, tecle pegar moedas corpo, depois tecle olhar corpo,\n\
+e então pode pegar a faca dele teclando pegar faca corpo.\n\
+Obviamente, pode-se usar abreviações. Exemplo, peg fa cor."
+const dir_n = $s_teste030
+const s_reset = "P 100 teste011 0 0 1 z_moedas=200\nI 100 teste012 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se p_teste011:objsolto.total < 1
+    p = u = criar("p_teste011", este, 0, "z_moedas=200")
+  fimse
+  u && criar("i_teste012", u, 1)
+
+
+classe s_teste052
+herda b_teste
+const s_titulo = "Quarto andar: Fórmulas de batalha, calculadas a cada golpe"
+const s_desc = "No norte, qual habilidade é usada nos ataques automáticos\n\
+No sul, os critérios para saber se um golpe acertou o alvo\n\
+No leste, cálculo básico dos danos de batalha e comando atklog\n\
+No oeste, ataques automáticos, arma, fome, sede e nível\n\
+No sudeste, conhecimento do golpe e bônus do personagem\n\
+No sudoeste, posição do alvo e tipo de ataque"
+const dir_n = $s_teste053
+const dir_s = $s_teste056
+const dir_l = $s_teste059
+const dir_o = $s_teste061
+const dir_c = $s_teste030
+const dir_b = $s_teste026
+const dir_se = $s_teste122
+const dir_so = $s_teste124
+
+
+classe s_teste053
+herda b_teste
+const s_titulo = "Ataque escolhido 1 de 3"
+const s_desc = "Nos ataques manuais, digita-se o nome da habilidade ou a palavra lançar\n\
+e o nome da magia. Já nos automáticos, quando o personagem está desarmado,\n\
+o nome da habilidade usada está na opção \"Ataque automático sem arma\"\n\
+do menu \"Ataques\" do comando ECONFIG. Porém, pode-se fazer um PNJ usar\n\
+outra habilidade com a opção \"Tipo de ataque\" do comando EPERSO."
+const dir_n = $s_teste054
+const dir_s = $s_teste052
+
+
+classe s_teste054
+herda b_teste
+const s_titulo = "Ataque escolhido 2 de 3"
+const s_desc = "Empunhando uma arma, veja os atributos da arma (no menu \"Arma\" do comando\n\
+EITEM). Se a opção \"Só ataca manual\" estiver em \"SIM\", a arma é ignorada\n\
+e o ataque sai como sendo sem arma. Se estiver em \"NÃO\", o nome da\n\
+habilidade está na opção \"Tipo de arma\". Por exemplo, ao usar a faca dessa\n\
+área (item teste012), ataca-se com \"Lâmina curta\". E se não conhecer\n\
+\"Lâmina curta\", não é possível nem mesmo empunhar a faca."
+const dir_n = $s_teste055
+const dir_s = $s_teste053
+
+
+classe s_teste055
+herda b_teste
+const s_titulo = "Ataque escolhido 3 de 3"
+const s_desc = "Com a opção \"Ataque automático\" do item, é possível mudar a habilidade\n\
+sem mudar o tipo de arma. Exemplo, mudando o ataque automático da faca\n\
+para \"Brasa\", atacará com a habilidade Brasa. No entanto, os danos\n\
+continuam dependendo do conhecimento em \"Lâmina curta\".\n\
+Nota: os tipos de armas existentes estão definidos no comando ECONFIG."
+const dir_s = $s_teste054
+
+
+classe s_teste056
+herda b_teste
+const s_titulo = "Acertar o alvo 1 de 3"
+const s_desc = "Se a precisão do golpe estiver acima de 100, acertou o alvo, porque\n\
+o golpe nunca falha (embriaguês, precisão e evasão são ignorados).\n\
+Nos outros casos, é escolhido aleatoriamente um número de 0 a 99.\n\
+Se for menor ou igual à precisão do golpe, errou automaticamente."
+const dir_n = $s_teste052
+const dir_s = $s_teste057
+
+
+classe s_teste057
+herda b_teste
+const s_titulo = "Acertar o alvo 2 de 3"
+const s_desc = "Se está usando arma, é escolhido outro número aleatório de 0 a 99.\n\
+Se for menor ou igual à precisão da arma, errou automaticamente.\n\
+Depois checa-se a embriaguês de quem está atacando (estando bêbado é\n\
+mais difícil acertar) e do personagem alvo (bêbado é mais fácil acertar)."
+const dir_n = $s_teste056
+const dir_s = $s_teste058
+
+
+classe s_teste058
+herda b_teste
+const s_titulo = "Acertar o alvo 3 de 3"
+const s_desc = "A última é sortear um número de 1 a 20. Se for 20 ou o alvo estiver\n\
+dormindo, acertou o golpe. Se for 1, errou o golpe. Outros valores,\n\
+some à precisão do personagem, à opção \"precisão perso\" do golpe e\n\
+à opção \"precisão perso\" da arma. Alvo invisível, subtraia 5.\n\
+Se o resultado for maior que a evasão do alvo, acertou o golpe."
+const dir_n = $s_teste057
+
+
+classe s_teste059
+herda b_teste
+const s_titulo = "Danos de batalha"
+const s_desc = "O cálculo de danos é realizado basicamente da seguinte forma:\n\
+1. Some o ataque do personagem ao ataque da arma usada.\n\
+2. Multiplique pelo ataque do personagem e pela força do golpe.\n\
+3. Divida pela defesa do alvo.\n\
+4. Divida por 300.\n\
+O resultado é quantos pontos de vida o alvo perde."
+const dir_l = $s_teste060
+const dir_o = $s_teste052
+
+
+classe s_teste060
+herda b_teste
+const s_titulo = "Exemplo de dano de batalha"
+const s_desc = "Se você possui 50 pontos de ataque, não está usando nenhuma arma e dá\n\
+um chute de força 70 em um personagem com 30 pontos de defesa, os danos\n\
+serão 50*50*70/30/300, que resulta em 19 pontos de vida. O valor de 19,444\n\
+é arredondado para 19. Na prática, não é preciso ficar calculando. Basta\n\
+teclar atklog e o jogo mostrará os cálculos realizados no próximo ataque\n\
+que você fizer ou receber."
+const dir_o = $s_teste059
+
+
+classe s_teste061
+herda b_teste
+const s_titulo = "Ataques automáticos"
+const s_desc = "Funcionam exatamente como os manuais, quando o jogador digita para atacar.\n\
+No entanto, os danos são multiplicados pela opção \"Força do ataque\n\
+automático\" do comando ECONFIG. O segundo e o terceiro ataques dependem\n\
+também do conhecimento das habilidades \"Segundo ataque\" e \"Terceiro\n\
+ataque\". No nível perito, chegam ter a mesma força do primeiro ataque."
+const dir_l = $s_teste052
+const dir_o = $s_teste062
+
+
+classe s_teste062
+herda b_teste
+const s_titulo = "Arma, fome e sede"
+const s_desc = "Nos ataques sem arma, os danos podem aumentar ou diminuir até 10\n\
+por cento. Com arma, isso não é necessário, porque cada arma possui\n\
+valores mínimo e máximo de ataque. Se a arma for pesada demais para\n\
+o seu personagem, os danos diminuem. Se estiver com fome e com sede\n\
+o ataque também diminui."
+const dir_l = $s_teste061
+const dir_o = $s_teste121
+
+
+classe s_teste063
+herda b_teste
+const s_titulo = "Testes"
+const s_desc = "Aqui há dois itens para testes. As algemas podem ser usadas nas mãos ou\n\
+nos tornozelos, teclando usar algemas mãos ou usar algemas tornozelos.\n\
+Quando usado nos tornozelos, perde-se muitos pontos de movimento ao andar.\n\
+Há também outro trigger que não deixa remover se você não tiver a chave.\n\
+Triggers são funções, na linguagem do IntMUD. No caso da algema, é\n\
+a classe i_teste019 do arquivo mud-a-teste.int."
+const dir_n = $s_teste028
+const s_reset = "S 100 teste019 3 S\nS 100 teste020 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste019") && criar("i_teste019", este, 3)
+  !dentro1.objini("i_teste020") && criar("i_teste020", este, 3)
+
+
+classe s_teste064
+herda b_teste
+const s_titulo = "Sexto andar: Casas de jogadores"
+const s_desc = "A oeste há um gerenciador de casas e duas casas"
+const dir_o = $s_teste115
+const dir_b = $s_teste030
+
+
+classe s_teste065
+herda b_teste
+const s_titulo = "Animais"
+const s_desc = "Se quiser um duende branco tecle: falar branco\n\
+Se quiser um duende negro tecle: falar negro\n\
+Esses duendes possuem outras habilidades e magias, e podem ser usados\n\
+em batalhas. Para saber como lidar com animais, tecle: ajuda animal"
+const dir_o = $s_teste015
+const s_reset = "P 100 teste012 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste012:objsolto.total < 1
+    criar("p_teste012", este, 0)
+  fimse
+
+
+classe s_teste066
+herda b_teste
+const s_titulo = "Habilidades automáticas"
+const s_desc = "São criadas com o comando CHAB, opção \"C Habilidade ou magia comum\".\n\
+Depois deve-se editar (com EHAB) e mudar o alvo para \"Ataque automático\".\n\
+Se a habilidade for usada em ataques sem arma, adicione o nome no comando\n\
+ECONFIG, menu \"Ataque\", opção \"Tipo de personagem\".\n\
+Se for ataque com arma, adicione na opção \"Tipo de armas\". Nesse caso,\n\
+o nome da habilidade é também um tipo de arma."
+const dir_o = $s_teste094
+
+
+classe s_teste067
+herda b_teste
+const s_titulo = "Subsolo 1: Trigger quando personagem chegou"
+const s_desc = "Ao norte: introdução e como editar\n\
+Ao sul: primeiro trigger\n\
+À leste: após um tempo e mensagens\n\
+À oeste: outras ações"
+const dir_c = $s_teste002
+const dir_n = $s_teste068
+const dir_s = $s_teste071
+const dir_l = $s_teste074
+const dir_o = $s_teste078
+const dir_b = $s_teste082
+
+
+classe s_teste068
+herda b_teste
+const s_titulo = "Introdução"
+const s_desc = "Triggers são funções escritas na linguagem do IntMUD, a mesma linguagem\n\
+usada para criar esse MUD.\n\
+O programa é dividido em classes. Salas são classes cujo nome começa com\n\
+s sublinhado (ex. sala teste001 é a classe s_teste001). Itens começam com\n\
+i sublinhado e PNJs começam com p_. Há outras classes também, que fazem\n\
+parte da programação do MUD."
+const dir_s = $s_teste067
+const dir_n = $s_teste069
+
+
+classe s_teste069
+herda b_teste
+const s_titulo = "Editando triggers"
+const s_desc = "Sabendo-se o nome da classe, pode-se modificá-la online usando o comando\n\
+ecl. Exemplo, para editar o item teste002, o comando é: ecl teste002\n\
+Para o nome da sala aparecer sempre antes do título tecle: config +sala\n\
+Usuários normais não têm acesso a esses comandos, somente administradores."
+const dir_s = $s_teste068
+const dir_n = $s_teste070
+
+
+classe s_teste070
+herda b_teste
+const s_titulo = "Editando triggers"
+const s_desc = "É possível também editar o arquivo diretamente, usando um editor de texto\n\
+qualquer. No caso do item teste002, abra o arquivo mud-a-teste.int.\n\
+O item teste002 está a partir da linha que contém: classe s_teste002\n\
+Se o MUD estiver ativado, após alterar o arquivo, tecle mudler como\n\
+administrador ou pressione F10 na janela do IntMUD, para recarregar os\n\
+arquivos que foram alterados."
+const dir_s = $s_teste069
+
+
+classe s_teste071
+herda b_teste
+const s_titulo = "Quando alguém entra na sala"
+const s_desc = "Trigger na sala: basta criar uma função chamada cmd_salaperso.\n\
+Trigger em item ou personagem: Primeiro mude a opção \"Eventos em sala\"\n\
+do item ou personagem para 1 (comandos eitem e eperso). Caso contrário,\n\
+ele não será informado quando alguém entrar na sala. Depois crie uma\n\
+função chamada cmd_chegou."
+const dir_n = $s_teste067
+const dir_s = $s_teste072
+
+
+classe s_teste072
+herda b_teste
+const s_titulo = "Trigger na sala"
+const s_desc = "A função cmd_salaperso da classe s_teste072 começa com a seguinte linha:\n\
+ret !arg0.jog, nulo\n\
+Se arg0 (o personagem que chegou) não for jogador, retorna. Não tem\n\
+sentido enviar mensagens para não jogadores. Depois vem:\n\
+arg0.msg(\"Você sente o chão tremer por um instante.\")\n\
+Ou seja, é enviada a mensagem (está entre aspas) para o personagem arg0."
+const dir_n = $s_teste071
+const dir_s = $s_teste073
+
+func cmd_salaperso
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  arg0.msg("Você sente o chão tremer por um instante.")
+
+
+classe s_teste073
+herda b_teste
+const s_titulo = "Trigger em item e personagem"
+const s_desc = "Aqui, o mesmo trigger da sala foi reproduzido no marceneiro e na caixa,\n\
+com as devidas modificações:\n\
+O nome da função mudou para cmd_chegou.\n\
+A opção \"Eventos em sala\" foi colocada em 1, com os comandos\n\
+eperso teste015 e eitem teste021."
+const dir_n = $s_teste072
+const s_reset = "P 100 teste015 0 0 1\nS 100 teste021 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste015:objsolto.total < 1
+    criar("p_teste015", este, 0)
+  fimse
+  !dentro1.objini("i_teste021") && criar("i_teste021", este, 1)
+
+
+classe s_teste074
+herda b_teste
+const s_titulo = "Ações após um tempo"
+const s_desc = "No primeiro trigger, o jogador recebe uma mensagem antes da descrição\n\
+da sala. Nessa sala, aonde uma mensagem era enviada foi substituído por:\n\
+misc:tempo(\"entrou\", arg0)\n\
+Isso faz com que funções, cujo nome é \"entrou\" seguido de um número,\n\
+sejam executadas. O número é o tempo decorrido, em décimos de segundo.\n\
+Note que se o personagem sair da sala, as funções páram de ser chamadas\n\
+e o envio das mensagens é interrompido."
+const dir_o = $s_teste067
+const dir_l = $s_teste075
+
+func cmd_salaperso
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  arg0.msg("Você sente o chão tremer.")
+
+func entrou50
+  arg0.msg("Agora parou.")
+
+func entrou90
+  arg0.msg("Voltou a tremer.")
+
+func entrou130
+  arg0.msg("Parou de novo.")
+
+
+classe s_teste075
+herda b_teste
+const s_titulo = "Mensagem para todos - 1 de 3"
+const s_desc = "Este é como o da sala à oeste, porém está no rato (personagem teste016).\n\
+Uma outra diferença é que a mensagem é enviada para todos na mesma sala.\n\
+Primeiro chama-se a função $mens.p da seguinte forma:\n\
+$mens.p(este, arg0)\n\
+Ou seja, o personagem principal é o objeto este (o próprio rato)\n\
+e o personagem alvo é o objeto arg0 (o jogador que chegou)."
+const dir_l = $s_teste076
+const dir_o = $s_teste074
+const s_reset = "P 100 teste016 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste016:objsolto.total < 1
+    criar("p_teste016", este, 0)
+  fimse
+
+
+classe s_teste076
+herda b_teste
+const s_titulo = "Mensagem para todos - 2 de 3"
+const s_desc = "Depois envia-se uma mensagem a todos que puderem ver o rato:\n\
+$mens.mvis1(\"$P olha rapidamente para $a, desconfiado.\")\n\
+Aqui, $P é substituído pela descrição do personagem e $a é o alvo.\n\
+Para saber que símbolos podem ser usados em $mens.mvis1, tecle adm mens\n\
+É possível usar cores em qualquer mensagem, veja adm cores"
+const dir_o = $s_teste075
+const dir_l = $s_teste077
+
+
+classe s_teste077
+herda b_teste
+const s_titulo = "Mensagem para todos - 3 de 3"
+const s_desc = "Para os personagens que não enxergam o rato também receberem a mensagem,\n\
+substitua mvis1 por mtodos1. Exemplo:\n\
+$mens.mtodos1(\"$P olha rapidamente para $a, desconfiado.\")\n\
+Para enviar mensagens diferentes para o personagem, o alvo e os outros,\n\
+use $mens.mvis2, $mens.mvis3, $mens.mtodos2 ou $mens.mtodos3. Exemplo:\n\
+$mens.mvis3(\"\", \"Um rato está encarando você\", \"Um rato olha para $A\")\n\
+Mais detalhes vide arquivo mud.txt tópico \"Envio de mensagens formatadas\"."
+const dir_o = $s_teste076
+
+
+classe s_teste078
+herda b_teste
+const s_titulo = "Outras ações"
+const s_desc = "Ao norte: O teto cai em 15 segundos\n\
+Ao sul: Você escorrega de volta\n\
+À oeste: Um lago congelado"
+const dir_l = $s_teste067
+const dir_n = $s_teste079
+const dir_s = $s_teste080
+const dir_o = $s_teste081
+const eveste = 0 # Eventos sala: Não
+
+
+classe s_teste079
+herda b_teste
+const s_titulo = "Cuidado com o teto"
+const s_desc = "O trigger nesta sala envia uma mensagem para todos e chama a função\n\
+morreu do personagem."
+const dir_s = $s_teste078
+
+func cmd_salaperso
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou100 # 10 segundos
+  $mens.p(arg0)
+  $mens.mtodos2("Uma parte do teto caiu na sua cabeça.", "O teto caiu na cabeça de $p.")
+  arg0.morreu
+
+
+classe s_teste080
+herda b_teste
+const s_titulo = "Montanha de gelo"
+const s_desc = "Você tenta subir montanha acima, mas o chão parece escorregadio demais.\n\
+Aqui o personagem muda de sala após algum tempo, com a função mudadono."
+const dir_n = $s_teste078
+
+func cmd_salaperso
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou50
+  $mens.p(arg0)
+  $mens.mtodos1("$P escorregou e voltou para o norte.")
+  arg0.mudadono($s_teste078)
+  $mens.p(arg0)
+  $mens.mtodos2("", "$P chegou aqui escorregando do sul.")
+
+
+classe s_teste081
+herda b_teste
+const s_titulo = "Lago congelado"
+const s_desc = "O lago agora é um gelo tão liso que você não consegue parar de deslizar.\n\
+Aqui a sala recebe eventos (a opção \"Eventos sala\" está em \"1 Sim\"),\n\
+caso contrário a função cmd_mover não é chamada. Essa função envia uma\n\
+mensagem ao personagem e retorna 1 para impedir que ele ande."
+const dir_l = $s_teste078
+const dir_o = $s_teste002
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_salaperso
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou50
+  $mens.p(arg0)
+  $mens.mtodos1("$P continua deslizando para oeste.")
+  arg0.mudadono(dir_o)
+  $mens.p(arg0)
+  $mens.mtodos2("", "$P chegou aqui deslizando do leste.")
+
+func cmd_mover
+  $mens.p(arg0)
+  $mens.mtodos1("$P escorrega no gelo e quase cai.")
+  ret 1
+
+
+classe s_teste082
+herda b_teste
+const s_titulo = "Subsolo 2: Triggers"
+const s_desc = "Ao norte: saídas baseadas em triggers\n\
+Ao sul: checando classe, nível, sexo ou empunhando/vestindo algo\n\
+À leste: variáveis\n\
+À oeste: recebendo e dando itens"
+const dir_n = $s_teste083
+const dir_s = $s_teste086
+const dir_l = $s_teste089
+const dir_o = $s_teste092
+const dir_c = $s_teste067
+const dir_b = $s_teste095
+
+
+classe s_teste083
+herda b_teste
+const s_titulo = "Ao seguir em uma direção"
+const s_desc = "Trigger em sala: mude a opção \"Eventos sala\" para 1.\n\
+Trigger em item e personagem: mude a opção \"Eventos em sala\" para 1.\n\
+Depois basta criar uma função chamada cmd_mover.\n\
+Nesta sala, a direção leste não funciona para anões. Já a direção oeste\n\
+só é permitida a anões."
+const dir_s = $s_teste082
+const dir_n = $s_teste084
+const dir_l = $s_teste082
+const dir_o = $s_teste082
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_mover
+# Nota: Há comentários demais aqui, para fins didáticos
+# Aqui arg0 é o personagem, arg1 é a sala e arg2 é a direção que quer seguir
+# Portanto, arg0.tipo1 é a raça e arg0.tipo2 é a classe
+  se arg2 == "l" && arg0.tipo1 == "anão"
+# Se quer ir para leste e a raça for anão
+    arg0.msg("Anões não podem seguir a leste.")
+    ret 1
+# Está retornando 1 para não permitir andar nessa direção
+  fimse
+  se arg2 == "o" && arg0.tipo1 != "anão"
+    arg0.msg("Somente anões podem ir para oeste.")
+    ret 1
+  fimse
+
+
+classe s_teste084
+herda b_teste
+const s_titulo = "Mudando as saídas"
+const s_desc = "Aqui a direção leste só existe para anões. Já a direção oeste só\n\
+existe para quem não é anão.\n\
+Isso foi feito apenas alterando as constantes que correspondem às direções.\n\
+Nesse caso específico, o personagem é misc:obj ao invés de arg0."
+const dir_s = $s_teste083
+const dir_l = misc:obj.tipo1 == "anão" ? $s_teste082
+const dir_o = misc:obj.tipo1 != "anão" ? $s_teste082
+const dir_n = $s_teste085
+
+
+classe s_teste085
+herda b_teste
+const s_titulo = "Saídas variáveis"
+const s_desc = "A saída para o norte muda conforme a raça. Anões vão para teste002,\n\
+elfos vão para teste67 e outras raças vão para teste082.\n\
+As saídas à leste e oeste são idênticas ao norte, mas foram feitas de\n\
+forma diferente. Nota: se substituir, por exemplo, \"ret $s_teste002\",\n\
+por \"ret nulo\", ou apenas \"ret\", a saída para teste002 deixa de existir."
+const dir_s = $s_teste084
+
+func dir_n
+  se misc:obj.tipo1 == "anão"
+    ret $s_teste002
+  senao misc:obj.tipo1 == "elfo"
+    ret $s_teste067
+  senao
+    ret $s_teste082
+  fimse
+
+func dir_l
+  ret misc:obj.tipo1 == "anão", $s_teste002
+  ret misc:obj.tipo1 == "elfo", $s_teste067
+  ret $s_teste082
+
+func dir_o
+# Nota: txtmin passa um texto para letras minúsculas
+# Isso é necessário porque casovar considera maiúsculas diferentes de minúsculas
+  casovar txtmin(misc:obj.tipo1)
+  casose "anão"
+    ret $s_teste002
+  casose "elfo"
+    ret $s_teste067
+  casose
+    ret $s_teste082
+  casofim
+
+
+classe s_teste086
+herda b_teste
+const s_titulo = "Classe e nível de personagem"
+const s_desc = "Se você criou classes de personagens, para checar se é de uma classe,\n\
+basta usar \"arg0.tipo2\" ao invés de \"arg0.tipo1\" na instrução \"se\".\n\
+Outro atributo interessante é o nível do personagem, arg0.pnivel.\n\
+A saída à leste é para personagens até o nível 5. À oeste só funciona\n\
+a partir do nível 2. À sudeste, somente níveis 3 a 8.\n\
+Note que nos testes, && significa \"E\" e || significa \"OU\""
+const dir_n = $s_teste082
+const dir_s = $s_teste087
+const dir_l = $s_teste082
+const dir_o = $s_teste082
+const dir_se = $s_teste082
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_mover
+  se arg2 == "l" && arg0.pnivel > 5
+# Se quer ir para leste e o nível for maior que 5
+    arg0.msg("A saída para leste é até o nível 5.")
+    ret 1
+  fimse
+  se arg2 == "o" && arg0.pnivel < 2
+# Se quer ir para oeste e o nível for menor que 2
+    arg0.msg("Você precisa estar no nível 2 para seguir à oeste.")
+    ret 1
+  fimse
+  se arg2 == "se" && (arg0.pnivel < 4 || arg0.pnivel > 8)
+    arg0.msg("Você precisa estar do nível 4 até o 8.")
+    ret 1
+  fimse
+
+
+classe s_teste087
+herda b_teste
+const s_titulo = "Outros testes"
+const s_desc = "À leste está sendo construído o banheiro masculino e à oeste é o feminino.\n\
+Este guarda impede que homens entrem no banheiro feminino e vice-versa.\n\
+Também não é permitido sair daqui usando sapatos ou com uma faca.\n\
+Mas se você guardar a faca em uma bolsa, não tem problema.\n\
+Sapato é o item teste018 e pode ser encontrado na sala teste032.\n\
+Faca é o item teste012 e pode ser encontrada na sala teste028."
+const dir_n = $s_teste086
+const dir_s = $s_teste088
+const dir_l = $s_teste082
+const dir_o = $s_teste082
+const s_reset = "P 100 teste017 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste017:objsolto.total < 1
+    criar("p_teste017", este, 0)
+  fimse
+
+
+classe s_teste088
+herda b_teste
+const s_titulo = "Outro lago congelado"
+const s_desc = "O lago agora é um gelo tão liso que você não consegue parar de deslizar.\n\
+Aqui é como a sala teste081, mas se você conseguir colocar os sapatos\n\
+em tempo, consegue seguir em outra direção."
+const dir_n = $s_teste087
+const dir_s = $s_teste002
+const dir_l = $s_teste082
+const dir_o = $s_teste082
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_salaperso
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou50
+  $mens.p(arg0)
+  $mens.mtodos1("$P continua deslizando para o sul.")
+  arg0.mudadono(dir_s)
+  $mens.p(arg0)
+  $mens.mtodos2("", "$P chegou aqui deslizando do norte.")
+
+func cmd_mover
+# Escorrega no gelo se não estiver usando/calçando sapatos
+  se !arg0.dentro2.objini("i_teste018")
+    $mens.p(arg0)
+    $mens.mtodos1("$P escorrega no gelo e quase cai.")
+    ret 1
+
+
+classe s_teste089
+herda b_teste
+const s_titulo = "Variáveis dinâmicas"
+const s_desc = "Quando um PNJ precisa lembrar-se de algum acontecimento do jogo ou de\n\
+um jogador, usa-se variáveis. Cada uma possui um nome e uma informação.\n\
+Toda sala, item e personagem possui uma variável chamada \"var\", que\n\
+pode ter outras dentro. Essas são chamadas dinâmicas porque podem ser\n\
+criadas e apagadas conforme a necessidade. Uma lista completa, vide\n\
+arquivo mud.txt tópico \"Variáveis dinâmicas de personagens, salas e itens\"."
+const dir_o = $s_teste082
+const dir_l = $s_teste090
+
+
+classe s_teste090
+herda b_teste
+const s_titulo = "Tipos de variáveis"
+const s_desc = "Aqui a sala informa quantas vezes o jogador entrou aqui. Se sair do jogo\n\
+e voltar, o contador é zerado. O nome da variável é var.j_contador.\n\
+Quando o personagem sai do jogo, todas as variáveis \"var.j_\" são apagadas.\n\
+Quando muda de sala ou de dono, o jogo apaga \"var.d_\". Nos demais casos,\n\
+use \"var.z_\" (exemplo, var.z_contador). Essas variáveis contém textos, mas\n\
+se quiser tratar como numérica, para um cálculo matemático, adicione\n\
+um sublinhado no final do nome. Exemplo: var.j_contador_"
+const dir_l = $s_teste091
+const dir_o = $s_teste089
+
+func cmd_salaperso
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou2
+  se !arg0.var.j_contador # Se a variável não existe
+    arg0.var.j_contador = 1
+    arg0.msg("Esta é a primeira vez que você entra aqui.")
+  senao
+    arg0.var.j_contador_ += 1
+# Mesmo que arg0.var.j_contador_ = arg0.var.j_contador_ + 1
+# Ou seja, pega o número de arg0.var.j_contador, soma 1 e guarda
+# o resultado em arg0.var.j_contador
+    arg0.msg("Você já esteve aqui " + arg0.var.j_contador_ + " vezes.")
+
+
+classe s_teste091
+herda b_teste
+const s_titulo = "Variáveis na sala"
+const s_desc = "Se o objetivo for contar apenas quantas vezes personagens entraram\n\
+na sala, usa-se uma variável na própria sala. Não precisa ser de \"var\".\n\
+Nesse caso, foi criada uma variável \"int32 contador\". Para saber os tipos\n\
+existentes, vide manual do IntMUD, arquivo manual.txt."
+const dir_l = $s_teste105
+const dir_o = $s_teste090
+int32 contador
+
+func cmd_salaperso
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou2
+  contador += 1 # Soma 1
+  se contador == 1
+    arg0.msg("Você é o primeiro personagem a entrar aqui.")
+  senao
+    arg0.msg("Já entraram personagens aqui " + contador + " vezes.")
+
+
+classe s_teste092
+herda b_teste
+const s_titulo = "Receber itens"
+const s_desc = "Dê as algemas da sala teste063 para Carolina (personagem teste018) e ela\n\
+lhe dará as chaves em troca. São as funções cmd_darobj e cmd_deuobj,\n\
+que são chamadas se o personagem recebe eventos do próprio personagem\n\
+(opção \"Eventos perso\") e pode receber itens (opção \"Recebe itens\").\n\
+Outro exemplo é o jardineiro (personagem teste001 da sala teste007)."
+const dir_l = $s_teste082
+const dir_o = $s_teste093
+const s_reset = "P 100 teste018 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste018:objsolto.total < 1
+    criar("p_teste018", este, 0)
+  fimse
+
+
+classe s_teste093
+herda b_teste
+const s_titulo = "Receber mais de um item"
+const s_desc = "Aqui, João e Maria pedem uma lanterna, um lampião e um palito de fósforo,\n\
+encontrados na sala teste024, e abrem a porta ao norte por 10 segundos.\n\
+Só que João pede um de cada vez, e Maria não se importa com a ordem que\n\
+você der os itens. João e Maria são os personagens teste019 e teste020.\n\
+Nota: esse trigger é sensivelmente mais complicado."
+const dir_n = $s_teste082
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "aaaaaaaaaa"
+const dir_l = $s_teste092
+const dir_o = $s_teste106
+const s_reset = "P 100 teste019 0 0 1\nP 100 teste020 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste019:objsolto.total < 1
+    criar("p_teste019", este, 0)
+  fimse
+  se p_teste020:objsolto.total < 1
+    criar("p_teste020", este, 0)
+  fimse
+
+
+classe s_teste094
+herda b_teste
+const s_titulo = "Ataques automáticos"
+const s_desc = "Para empunhar uma arma é necessário saber lidar com o tipo de arma.\n\
+Este sujeito aqui ensina essas habilidades. Tecle AULAS para saber o que\n\
+ele ensina e APRENDER seguido de um número ou nome para aprender.\n\
+A cada aula você aprende mais.\n\
+Se não quiser ataques automáticos, basta editar a habilidade correspondente\n\
+e mudar a opção \"Alvo\" para \"7 Nenhum (não ataca)\"."
+const dir_l = $s_teste066
+const dir_o = $s_teste032
+const s_reset = "P 100 teste009 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste009:objsolto.total < 1
+    criar("p_teste009", este, 0)
+  fimse
+
+
+classe s_teste095
+herda b_teste
+const s_titulo = "Subsolo 3: Diversos"
+const s_desc = "Ao norte: um ajudante que te seguirá, chama protetora e chute élfico\n\
+Ao sul: itens apagados após um tempo e poção mortal\n\
+A leste: algumas opções com itens e transportando personagens de uma sala\n\
+A oeste: bloquear canais de comunicação de um jogador com efeitos"
+const dir_n = $s_teste096
+const dir_s = $s_teste097
+const dir_l = $s_teste108
+const dir_o = $s_teste113
+const dir_c = $s_teste082
+const dir_b = $s_teste119
+
+
+classe s_teste096
+herda b_teste
+const s_titulo = "Ajudante"
+const s_desc = "Aqui, fale ajudante (teclando falar ajudante) se você quiser um.\n\
+É um personagem (teste021) que te seguirá aonde você for.\n\
+Quando não quiser mais, fale dispensar, e ele irá embora.\n\
+Foi estabelecido, também, um limite de dois ajudantes por personagem."
+const dir_n = $s_teste103
+const dir_s = $s_teste095
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  se arg1 == "ajudante"
+    se arg0.lseguir.total("p_teste021") >= 2
+      ret arg0.msg("Você já tem ajudantes demais!")
+    fimse
+    refvar r = criar("p_teste021", este, 10)
+    r.seguirjog(arg0) # Chama uma função que foi criada em p_teste021 para seguir o jogador
+    $mens.p(r, arg0)
+    $mens.mvis1("$P apareceu, para auxiliar $a.")
+
+
+classe s_teste097
+herda b_teste
+const s_titulo = "Itens apagados após um tempo"
+const s_desc = "Aqui há três tipos de chave.\n\
+O primeiro some 10 segundos depois que alguém pegar.\n\
+O segundo também some, mas se você soltar na sala, não some.\n\
+Já o terceiro tipo some após 10 segundos se ninguém pegar.\n\
+Os três somem se forem colocados em outro item (exemplo, uma bolsa)."
+const dir_n = $s_teste095
+const dir_s = $s_teste112
+const s_reset = "S 100 teste029 1 S\nS 100 teste030 1 S\nS 100 teste031 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste029") && criar("i_teste029", este, 1)
+  !dentro1.objini("i_teste030") && criar("i_teste030", este, 1)
+  !dentro1.objini("i_teste031") && criar("i_teste031", este, 1)
+
+
+classe s_teste098
+herda b_teste
+const s_titulo = "Controlando outros personagens"
+const s_desc = "Ao norte, monitorando o cmd e outros comandos\n\
+Ao sul, comandos para os personagens\n\
+A nordeste, usando atalhos\n\
+A noroeste, animais de personagens\n\
+A sudeste, Limpar itens,habilidades,magias"
+const dir_n = $s_teste099
+const dir_s = $s_teste100
+const dir_l = $s_teste043
+const dir_ne = $s_teste101
+const dir_no = $s_teste133
+const dir_se = $s_teste135
+
+
+classe s_teste099
+herda b_teste
+const s_titulo = "Monitorando comandos"
+const s_desc = "Os comandos CMD são potencialmente perigosos. Por isso, se há mais de\n\
+uma pessoa administrando, é recomendável monitorar o CMD. Tecle:\n\
+config +cmdlog\n\
+O MUD só não informará quando o comando CMD for usado como calculadora.\n\
+Outro log importante é quando alguém altera algo no MUD. Tecle:\n\
+config +admlog"
+const dir_s = $s_teste098
+
+
+classe s_teste100
+herda b_teste
+const s_titulo = "Comandos para os personagens"
+const s_desc = "Se houver um personagem chamado João na mesma sala que você, e quiser\n\
+que ele tecle \"falar oi\", basta digitar:\n\
+cmdp joão teclou(\"falar oi\")\n\
+Se quiser que um jogador chamado João tecle \"falar bom dia\", digite:\n\
+cmdj joão teclou(\"falar bom dia\")\n\
+Se quiser mandar a mensagem \"Alguém disse oi\" para o jogador João, tecle:\n\
+cmdj joão msg(\"Alguém disse oi\")"
+const dir_n = $s_teste098
+
+
+classe s_teste101
+herda b_teste
+const s_titulo = "Usando atalhos"
+const s_desc = "Provavelmente os seguintes atalhos são bastante úteis:\n\
+atalho esc cmdj $1 teclou(\"$S\")\n\
+atalho tel cmdj $1 msg(\"Alguém fala telepaticamente '$S'\")\n\
+Depois disso, para forçar um jogador a teclar algo, tecle\n\
+esc jogador comando. Exemplo: esc joão n\n\
+E para escrever anonimamente para um jogador, use o comando tel.\n\
+Exemplo: tel joão a saída fica ao norte"
+const dir_so = $s_teste098
+
+
+classe s_teste102
+herda b_teste
+const s_titulo = "Poção mortal"
+const s_desc = "Essa poção possui um veneno que só não afeta os elfos.\n\
+Usar misc:tempo aqui não resolve, porque se o item for apagado\n\
+ou se o personagem mudar de sala, o efeito do veneno desaparece.\n\
+Foi criado o efeito \"Veneno Mortal\" para isso. O item teste034\n\
+também possui trigger, para checar a raça e criar o efeito."
+const dir_n = $s_teste112
+const s_reset = "S 100 teste034 1 S\nS 100 teste035 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste034") && criar("i_teste034", este, 1)
+  !dentro1.objini("i_teste035") && criar("i_teste035", este, 1)
+
+
+classe s_teste103
+herda b_teste
+const s_titulo = "Chama protetora"
+const s_desc = "Aqui tecle C para criar o efeito \"chama protetora\", que te protege nas\n\
+batalhas, tirando 10 pontos de vida de quem atacar você.\n\
+Para apagar a chama, tecle A."
+const dir_n = $s_teste104
+const dir_s = $s_teste096
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr # Escreveu algo
+  se arg1 == "c"
+    criar("e_chama_protetora", arg0, 10) # Chama protetora nível 10
+    ret 1
+  senao arg1 == "a"
+    refvar r = arg0.dentro2.objini("e_chama_protetora")
+    !r && arg0.msg("Você não possui nenhuma chama protetora.")
+    apagar(r)
+    ret 1
+
+
+classe s_teste104
+herda b_teste
+const s_titulo = "Magia Chama Protetora"
+const s_desc = "Esse sujeito aqui ensina a magia Chama Protetora, que lança o efeito\n\
+de mesmo nome. Para aprender a magia tecle aprender chama.\n\
+Aqui foi criada a função cmd_alvo na classe magia_chama_protetora\n\
+(arquivo mud-b-hab.int) para apresentar a mensagem de \"Errou o alvo\"\n\
+da magia se for lançada em quem já estiver com o efeito Chama Protetora."
+const dir_n = $s_teste107
+const dir_s = $s_teste103
+const s_reset = "P 100 teste022 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste022:objsolto.total < 1
+    criar("p_teste022", este, 0)
+  fimse
+
+
+classe s_teste105
+herda b_teste
+const s_titulo = "Variável em personagem"
+const s_desc = "A opção \"Eventos em sala\" do moleque (teste023) está em 1, assim quando\n\
+alguém chegar na sala é chamada a função cmd_chegou.\n\
+Aqui foi usada a variável var.d_moleque no jogador para permitir ou não\n\
+que saia da sala e responder quando o jogador usa o comando falar."
+const dir_o = $s_teste091
+const s_reset = "P 100 teste023 0 0 1 h_chutar=5,h_socar=5"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste023:objsolto.total < 1
+    criar("p_teste023", este, 0, "h_chutar=5,h_socar=5")
+  fimse
+
+
+classe s_teste106
+herda b_teste
+const s_titulo = "Receber vários itens de um tipo"
+const s_desc = "Se você der três palitos de fósforo (item teste009, sala teste024) para\n\
+essa pessoa, ela lhe dará uma lanterna em troca. Foi usada uma variável\n\
+\"var.j_\" no jogador, por isso se você sair do jogo e voltar, ela\n\
+esquecerá quantos palitos você deu. Na sala teste090 (indo a leste) são\n\
+explicados alguns tipos de variáveis."
+const dir_l = $s_teste093
+const dir_o = $s_teste131
+const s_reset = "P 100 teste024 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste024:objsolto.total < 1
+    criar("p_teste024", este, 0)
+  fimse
+
+
+classe s_teste107
+herda b_teste
+const s_titulo = "Chute Élfico"
+const s_desc = "O aprendiz ao sul ensina também a habilidade Chute Élfico.\n\
+Para aprender, vá ao sul e tecle aprender chute.\n\
+Para saber tudo que o Chute Élfico faz, vá ao sul e tecle aulas chute.\n\
+Se usado contra alguém que não é anão ou elfo, e o golpe acertar, o alvo\n\
+recebe o efeito Dreno de Mana, que vai reduzindo a quantidade de mana\n\
+até chegar a zero."
+const dir_s = $s_teste104
+
+
+classe s_teste108
+herda b_teste
+const s_titulo = "Itens"
+const s_desc = "Nesta sala é demonstrado basicamente como lidar com itens:\n\
+Teclando 1 perde-se itens e dinheiro\n\
+Teclando 2 você remove (deixa de usar) todos os seus itens\n\
+Teclando 3 seus itens e dinheiro vão para a sala\n\
+Teclando 4 todos os personagens daqui vão para a sala teste095"
+const dir_l = $s_teste109
+const dir_o = $s_teste095
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  se arg1 == "1" # Perder itens e dinheiro
+    listaobj l
+    epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+      l.objini.item && !l.objini.manterperso && apagar(l.objini)
+    efim
+    arg0.var.z_moedas = "" # Perde dinheiro
+    arg0.msg("Você perdeu itens e dinheiro.")
+    ret 1
+  senao arg1 == "2" # Remover todos os itens
+    listaobj l
+    epara l.addfim(arg0.dentro2), l, l.ini.remove
+      l.objini.item && !l.objini.vestir(0)
+    efim
+    arg0.msg("Você tem todos os itens removidos.")
+    ret 1
+  senao arg1 == "3" # Mover itens e dinheiro para a sala
+    listaobj l
+    epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+      l.objini.item && !l.objini.mudadono(arg0.dono, 10000)
+    efim
+    arg0.dono.var.z_moedas_ += arg0.var.z_moedas_
+    arg0.var.z_moedas_ = 0
+    arg0.msg("Todos seus itens e dinheiro foram para a sala.")
+    ret 1
+  senao arg1 == "4" # Transportar personagens para outra sala
+    listaobj l
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      se l.objini.perso
+        $mens.p(l.objini) # Define o personagem na função msginv
+        l.objini.msginv("Você foi teletransportad$s.")
+        l.objini.mudadono($s_teste095)
+      fimse
+    efim
+    ret 1
+  fimse
+
+
+classe s_teste109
+herda b_teste
+const s_titulo = "Várias camas"
+const s_desc = "Nesta sala são criadas três camas via função cmd_salaperso.\n\
+Isso não seria possível via reset de sala (comando sres), pois cama\n\
+é um item do tipo completo (não se pode definir a quantidade no reset)."
+const dir_l = $s_teste110
+const dir_o = $s_teste108
+
+func cmd_salaperso
+  se !dentro1.objini("i_teste038")
+    criar("i_teste038", este, 1)
+    criar("i_teste038", este, 1)
+    criar("i_teste038", este, 1)
+  fimse
+
+
+classe s_teste110
+herda b_teste
+const s_titulo = "Itens raros"
+const s_desc = "Nessa sala ficam uns óculos especiais. Eles são criados quando um\n\
+personagem entra, como na sala teste028. No entanto, não basta pegar\n\
+os óculos, sair da sala e voltar para aparecerem outros. É necessário\n\
+esperar de 2 a 3 minutos.\n\
+A linha que cria o item foi copiada da função s_reset1 da sala teste028.\n\
+Essa função é criada e mudada automaticamente pelo comando sres."
+const dir_l = $s_teste111
+const dir_o = $s_teste109
+intdec tempo_oculos # Contagem de tempo, para criar os óculos
+
+func cmd_salaperso
+# Nota 1: A variável tempo_oculos (definida logo acima nesta sala) contém
+# um número que diminui 1 a cada décimo de segundo, até chegar a 0
+# Nota 2: ao invés de fazer algo como: tempo_oculos = 2 * 600
+# foi usada a instrução rand, para gerar um número aleatório
+  se tempo_oculos == 0
+    tempo_oculos = rand(2 * 600, 3 * 600)
+    !dentro1.objini("i_teste016") && criar("i_teste016", este, 1)
+  fimse
+
+
+classe s_teste111
+herda b_teste
+const s_titulo = "Itens raros - continuação"
+const s_desc = "Aqui há um baú com 1000 moedas.\n\
+Você pode abrir mas ele fecha em 5 segundos.\n\
+Pode ser trancado ao fechar, vide opções Container e Trancar do item.\n\
+E se pegar as moedas, não aparecerão outras logo em seguida."
+const dir_o = $s_teste110
+const s_reset = "S 100 teste040 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste040") && criar("i_teste040", este, 0)
+
+
+classe s_teste112
+herda b_teste
+const s_titulo = "Itens apagados - continuação"
+const s_desc = "Se qualquer uma das chaves ao norte forem pegas por um PNJ (personagem\n\
+não jogador), ela também sumirá. Para não sumir, aonde está escrito\n\
+dono.perso mude para dono.jog (checar se é jogador ao invés de checar\n\
+se é personagem. Essa chave é exatamente igual à do tipo 2, exceto\n\
+que não some nas mãos de um PNJ."
+const dir_n = $s_teste097
+const dir_s = $s_teste102
+const s_reset = "S 100 teste039 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste039") && criar("i_teste039", este, 1)
+
+
+classe s_teste113
+herda b_teste
+const s_titulo = "Bloquear canais de comunicação de um jogador com efeitos"
+const s_desc = "O efeito rouquidão impede um jogador de usar os canais chat e novatos,\n\
+e usar os comandos telepatia e gritar.\n\
+É possível colocar/tirar esse efeito em um jogador com o comando cmdj:\n\
+cmdj fulano criar(\"e_rouquidao\", este)\n\
+cmdj fulano apagar(dentro2.objini(\"e_rouquidao\"))\n\
+Nesse caso, fulano é o nome do personagem do jogador."
+const dir_l = $s_teste095
+const dir_o = $s_teste114
+
+
+classe s_teste114
+herda b_teste
+const s_titulo = "Efeitos - continuação"
+const s_desc = "Atalhos facilitam muito para colocar e tirar o efeito rouquidão.\n\
+Exemplo, após digitar esses dois comandos:\n\
+atalho r1 cmdj $$1 criar(\"e_rouquidao\", este)\n\
+atalho r0 cmdj $$1 apagar(dentro2.objini(\"e_rouquidao\"))\n\
+Pode colocar ou tirar o efeito teclando r1 ou r0, seguido do nome\n\
+do personagem do jogador."
+const dir_l = $s_teste113
+
+
+classe s_teste115
+herda b_teste
+const s_titulo = "Entrada das casas"
+const s_desc = "Ao norte fica a casa 1, ao sul fica a casa 2\n\
+Pode-se comprar e vender casas, aqui, mas cada jogador não pode ter\n\
+mais de uma casa por área. Em seguida, compre uma chave, para poder entrar\n\
+e sair da casa. Quem tem a chave, não precisa nem destrancar a porta.\n\
+Se perder a chave ou ela for roubada, basta comprar fechadura.\n\
+As chaves antigas deixam de funcionar e você precisa comprar chaves novas."
+const dir_n = $s_teste116
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "teste001"
+const fecha_n = 1 # Fecha ao passar: Sim
+const tranc_n = 2 # Trancar: 2 Tranca ao fechar
+const dir_s = $s_teste117
+const portaini_s = 3 # Estado inicial: 3 Porta trancada
+const fechadura_s = "teste002"
+const fecha_s = 1 # Fecha ao passar: Sim
+const tranc_s = 2 # Trancar: 2 Tranca ao fechar
+const dir_l = $s_teste064
+const dir_o = $s_teste127
+const s_reset = "P 100 teste025 0 0 1\nI 100 teste006 0\nI 100 teste001 0"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se p_teste025:objsolto.total < 1
+    p = u = criar("p_teste025", este, 0)
+  fimse
+  u && criar("i_teste006", u, 0)
+  u && criar("i_teste001", u, 0)
+
+
+classe s_teste116
+herda b_teste
+const s_titulo = "Casa 1"
+const s_desc = "Esta pequena casa possui apenas uma sala.\n\
+É uma sala pacífica, os itens não são apagados depois de um tempo,\n\
+e por se tratar de uma casa, os itens são salvos em arquivo.\n\
+A quantidade de objetos que a sala comporta foi mudada para 50."
+const s_item = 0
+const s_luta = 0 # Batalha: 0 Pacífico
+const objmax = 50
+const dir_s = $s_teste115
+const portaini_s = 3 # Estado inicial: 3 Porta trancada
+const fechadura_s = "teste001"
+const fecha_s = 1 # Fecha ao passar: Sim
+const tranc_s = 2 # Trancar: 2 Tranca ao fechar
+
+
+classe s_teste117
+herda b_teste
+const s_titulo = "Casa 2 - sala principal"
+const s_desc = "Essa casa é exatamente como a casa ao norte, só que possui dois cômodos.\n\
+As portas da casa (editadas com o comando esai) são:\n\
+Inicialmente trancada, fecha ao passar, tranca ao fechar e o código\n\
+da fechadura é teste002 (o nome dessa casa)."
+const s_item = 0
+const s_luta = 0 # Batalha: 0 Pacífico
+const objmax = 50
+const dir_n = $s_teste115
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "teste002"
+const fecha_n = 1 # Fecha ao passar: Sim
+const tranc_n = 2 # Trancar: 2 Tranca ao fechar
+const dir_s = $s_teste118
+
+
+classe s_teste118
+herda b_teste
+const s_titulo = "Casa 2 - quarto"
+const s_desc = "Esse é o segundo cômodo da casa."
+const s_item = 0
+const s_luta = 0 # Batalha: 0 Pacífico
+const objmax = 50
+const dir_n = $s_teste117
+
+
+classe s_teste119
+herda b_teste
+const s_titulo = "Subsolo 4: Diversos"
+const s_desc = "Ao norte: Frases aleatórias e frutas que recuperam pontos de vida\n\
+Ao sul: Comandos sociais, poça d'água e ao vestir ou remover item\n\
+A leste: Mensagens para a área e para o MUD inteiro\n\
+A oeste: Se estiver empunhando uma arma, guarda a arma"
+const dir_n = $s_teste120
+const dir_s = $s_teste129
+const dir_l = $s_teste136
+const dir_o = $s_teste137
+const dir_c = $s_teste095
+
+
+classe s_teste120
+herda b_teste
+const s_titulo = "Frases aleatórias"
+const s_desc = "Aqui, o garoto fala uma frase aleatória a cada 7 segundos.\n\
+Todas elas significam bem-vindo amigo. Cinco segundos depois\n\
+dos jogadores saírem da sala, o PNJ é apagado."
+const dir_n = $s_teste128
+const dir_s = $s_teste119
+const s_reset = "P 100 teste026 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste026:objsolto.total < 1
+    criar("p_teste026", este, 0)
+  fimse
+
+
+classe s_teste121
+herda b_teste
+const s_titulo = "Nível"
+const s_desc = "Quando os dois personagens possuem níveis diferentes, os danos são\n\
+multiplicados pelo resultado da seguinte fórmula:\n\
+1 + (nível_perso - nível_alvo) / (nível_perso + nível_alvo + 10)\n\
+Portanto, atacar personagens de nível mais baixo causa mais danos."
+const dir_l = $s_teste062
+
+
+classe s_teste122
+herda b_teste
+const s_titulo = "Conhecimento do golpe"
+const s_desc = "Dependendo de quanto o seu personagem conhece um golpe, os danos podem\n\
+aumentar em até 50% (no nível perito) ou cair pela metade (iniciante)\n\
+perito=150%, mestre=135%, muito avançado=121%, avançado=107%,\n\
+intermediário=92%, básico=78%, muito básico=64%, iniciante=50%"
+const dir_no = $s_teste052
+const dir_se = $s_teste123
+
+
+classe s_teste123
+herda b_teste
+const s_titulo = "Bônus do personagem"
+const s_desc = "Ao editar um ataque, é possível especificar que tipos de personagens\n\
+(ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
+Esse bônus aumenta os danos em cinquenta por cento."
+const dir_no = $s_teste122
+
+
+classe s_teste124
+herda b_teste
+const s_titulo = "Posição do alvo"
+const s_desc = "Dependendo da posição do personagem alvo, os danos causados por um\n\
+golpe podem ser maiores.\n\
+Sentado, 33% a mais. Descansando, 67% a mais. Dormindo, o dano dobra.\n\
+E se estiver incapacitado, 133% a mais."
+const dir_ne = $s_teste052
+const dir_so = $s_teste125
+
+
+classe s_teste125
+herda b_teste
+const s_titulo = "Tipo de ataque"
+const s_desc = "Existem diversos tipos de ataque (são definidos com o comando ECONFIG).\n\
+É comum um personagem ser forte contra alguns tipos e fraco contra outros,\n\
+e algumas vezes pode ser até imune. Ao editar um ataque, escolhe-se o tipo.\n\
+Vide também \"Atributos ataque\" e \"Atributos defesa\", ao editar personagens,\n\
+itens e classes/raças."
+const dir_ne = $s_teste124
+const dir_so = $s_teste126
+
+
+classe s_teste126
+herda b_teste
+const s_titulo = "Tipo normal ou especial"
+const s_desc = "Alguns tipos de ataque são considerados normais (contusão, luta, terra,\n\
+etc) e outros são especiais (fogo, água, luz, etc). O que define se é\n\
+normal ou especial é uma opção do comando ECONFIG.\n\
+Os tipos normais usam ataque e defesa normal. Os especiais usam ataque e\n\
+defesa especial."
+const dir_ne = $s_teste125
+
+
+classe s_teste127
+herda b_teste
+const s_titulo = "Taxa mensal"
+const s_desc = "Os proprietários de imóveis devem pagar uma taxa de manutenção de tempos\n\
+em tempos. O valor a ser pago é sempre uma porcentagem em relação ao\n\
+preço da casa. Isso está definido no comando Econfig.\n\
+Aqui, digite pagar para saber se você deve alguma coisa, e pagar seguido\n\
+do número da taxa para pagar."
+const dir_l = $s_teste115
+const s_reset = "P 100 teste027 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste027:objsolto.total < 1
+    criar("p_teste027", este, 0)
+  fimse
+
+
+classe s_teste128
+herda b_teste
+const s_titulo = "Frutas que curam"
+const s_desc = "Aqui há três tipos de fruta. A verde recupera 5 pontos de vida.\n\
+A azul, recupea 2 pontos de mana mais 1 para cada nível do personagem.\n\
+A vermelha dá apenas um ponto de vida, mas pode passar da quantidade máxima\n\
+de pontos de vida."
+const dir_s = $s_teste120
+const s_reset = "S 100 teste043 1 S\nS 100 teste044 1 S\nS 100 teste045 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste043") && criar("i_teste043", este, 1)
+  !dentro1.objini("i_teste044") && criar("i_teste044", este, 1)
+  !dentro1.objini("i_teste045") && criar("i_teste045", este, 1)
+
+
+classe s_teste129
+herda b_teste
+const s_titulo = "Transporte e poça"
+const s_desc = "Aqui, quem tentar beijar volta para a sala do relógio.\n\
+Há também uma pequena poça d'água. O suficiente para tomar três goles.\n\
+Ao agradecer a curandeira (exemplo, reverenciar curandeira), ela lança\n\
+uma magia de cura em você. Porém, ria dela e leavará um soco."
+const dir_n = $s_teste119
+const dir_s = $s_teste130
+const s_reset = "P 100 teste028 0 0 1\nS 100 teste046 0 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste028:objsolto.total < 1
+    criar("p_teste028", este, 0)
+  fimse
+  !dentro1.objini("i_teste046") && criar("i_teste046", este, 0)
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_social1
+  se txt(arg2) == "soc_beijar"
+    $mens.p(arg0)
+    $mens.mvis2("", "De repente, você não vê mais $p aqui.")
+    arg0.msg("Por um instante você sente tontura e quando olha ao redor novamente,\nnão está \
+mais no mesmo lugar.")
+    arg0.mudadono($s_teste001)
+    $mens.p(arg0)
+    $mens.mvis2("", "De repente, $p aparece aqui.")
+  fimse
+
+
+classe s_teste130
+herda b_teste
+const s_titulo = "Sem social e ao vestir ou remover item"
+const s_desc = "Aqui não são permitidos comandos sociais.\n\
+A pulseira deixa você invisível, mas você sofre queimaduras por 60\n\
+segundos quando coloca (efeito queimando nível 0) e perde um quarto\n\
+dos pontos de vida quando tira."
+const dir_n = $s_teste129
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr
+  se txt(arg2, 0, 4) == "soc_"
+    arg0.msg("Você não consegue fazer isso.")
+    ret 1
+  fimse
+
+const s_reset = "S 100 teste047 2 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste047") && criar("i_teste047", este, 2)
+
+
+classe s_teste131
+herda b_teste
+const s_titulo = "Dar itens"
+const s_desc = "Aqui um instrutor dá uma faca para o jogador.\n\
+Se você já possui uma faca ou está empunhando uma, o instrutor\n\
+não dá outra."
+const dir_l = $s_teste106
+const s_reset = "P 100 teste029 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste029:objsolto.total < 1
+    criar("p_teste029", este, 0)
+  fimse
+
+
+classe s_teste132
+herda b_teste
+const s_titulo = "Efeitos"
+const s_desc = "Suponha que você queira colocar o efeito Voar no seu personagem.\n\
+Nesse caso, o comando é:\n\
+cmd criar(\"e_voar\", este)\n\
+Se quiser esse efeito de um personagem do nível 5:\n\
+cmd criar(\"e_voar\", este, 5)\n\
+O processo inverso, remover o efeito, pode ser feito com:\n\
+cmd apagar(dentro2.objini(\"e_voar\"))"
+const dir_no = $s_teste043
+
+
+classe s_teste133
+herda b_teste
+const s_titulo = "Animais de personagens"
+const s_desc = "O animal escolhido é sempre persoesc. Assim, se seu animal número 2 for um\n\
+macaco e você quiser mudar o nível dele para 4, primeiro você tecla 2.\n\
+Depois, os comandos:\n\
+cmd persoesc.pnivel=4,persoesc.recalc=1\n\
+Basicamente foi colocado persoesc seguido de ponto antes de cada variável."
+const dir_no = $s_teste134
+const dir_se = $s_teste098
+
+
+classe s_teste134
+herda b_teste
+const s_titulo = "Continuação de animais de personagens"
+const s_desc = "Outro exemplo, animal com habilidade Socar no nível perito:\n\
+cmd persoesc.var.h_Socar=8\n\
+Animais desmaiam ao invés de morrer, e nesse caso não se recupera\n\
+automaticamente. Mas você pode recuperá-lo com:\n\
+cmd persoesc.restaurar\n\
+Para restaurar todos os animais, vide comando Deitar da sala casa001."
+const dir_se = $s_teste133
+
+
+classe s_teste135
+herda b_teste
+const s_titulo = "Limpar itens,habilidades,magias"
+const s_desc = "Para apagar todos os seus itens que você está carregando:\n\
+cmd dentro1.apagar\n\
+Para apagar todas as habilidades, depois as magias:\n\
+cmd var.limpar(\"h_\")\n\
+cmd var.limpar(\"m_\")"
+const dir_no = $s_teste098
+
+
+classe s_teste136
+herda b_teste
+const s_titulo = "Mensagens para a área e o MUD"
+const s_desc = "Aqui, qualquer coisa que você falar é ecoado na área inteira.\n\
+Só quem não estiver acordado não ouve.\n\
+Para fazer ecoar no MUD inteiro, usar mmudtodos1 ao invés de mareatodos1\n\
+na função cmd_falou. Para jogadores dormindo também receberem a mensagem,\n\
+usar as funções mmud1 e marea1 ao invés de mudtodos1 e mareatodos1."
+const dir_o = $s_teste119
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  $mens.p(arg0)
+  $mens.mens = arg1 # Aqui $m passa a ser o que o personagem falou
+  $mens.mareatodos1("Uma voz ecoa '$m'")
+
+
+classe s_teste137
+herda b_teste
+const s_titulo = "Guardar arma"
+const s_desc = "O personagem que entrar nessa sala empunhando uma arma, guardará a arma\n\
+automaticamente."
+const dir_l = $s_teste119
+
+func cmd_salaperso # Personagem chegou
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou1
+  se arg0.iempu # Se estiver empunando uma arma
+    $mens.p(arg0, nulo, arg0.iempu.obj)
+    $mens.mvis1("$P guarda $o.")
+    arg0.iempu.obj.vestir(0)
+  fimse

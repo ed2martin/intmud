@@ -1,0 +1,25 @@
+classe cmdfim_rezar
+herda comando_comum
+const objcmd = config:rezartipo ? este
+const txtajuda = config:rezartipo ? txtajuda1
+const txtajuda1 = "\b\c3Rezar\b\n\
+Sintaxe: REZAR <mensagem>\n\
+Envia mensagem para os administradores que estiverem no jogo."
+const posic = 5
+
+func escr
+  se arg0.pnivel < config:rezarnivel
+    arg0.msg("Para usar o comando REZAR você precisa estar no nível " + config:rezarnivel + \
+".")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após REZAR.")
+  senao
+    $misclog.rezou("rezar " + arg0.nome + ": " + arg1)
+    $mens.p(arg0)
+    $mens.mens = arg1
+    arg0.msginv(config:rezar2msg)
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:rezar1msg, item.obj.perso))
+    efim

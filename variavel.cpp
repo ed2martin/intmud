@@ -23,6 +23,7 @@
 #include "var-textoobj.h"
 #include "var-dir.h"
 #include "var-log.h"
+#include "var-arqprog.h"
 #include "var-sav.h"
 #include "var-txt.h"
 #include "var-nomeobj.h"
@@ -137,6 +138,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cNomeObj:   return sizeof(TVarNomeObj);
     case Instr::cArqDir:    return sizeof(TVarDir);
     case Instr::cArqLog:    return sizeof(TVarLog);
+    case Instr::cArqProg:   return sizeof(TVarArqProg);
     case Instr::cArqSav:    return 0;
     case Instr::cArqTxt:    return sizeof(TVarTxt);
     case Instr::cIntTempo:  return sizeof(TVarIntTempo);
@@ -213,6 +215,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cNomeObj:   return varOutros;
     case Instr::cArqDir:    return varOutros;
     case Instr::cArqLog:    return varOutros;
+    case Instr::cArqProg:   return varOutros;
     case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
     case Instr::cIntTempo:  return varInt;
@@ -333,6 +336,12 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
             end_log[antes].Criar();
         for (; depois<antes; depois++)
             end_log[depois].Apagar();
+        break;
+    case Instr::cArqProg:
+        for (; antes<depois; antes++)
+            end_arqprog[antes].Criar();
+        for (; depois<antes; depois++)
+            end_arqprog[depois].Apagar();
         break;
     case Instr::cArqTxt:
         for (; antes<depois; antes++)
@@ -579,6 +588,10 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         return;
     case Instr::cArqLog:
         MOVER_SIMPLES( TVarLog )
+    case Instr::cArqProg:
+        memmove(destino, endvar, vetor*sizeof(TVarArqProg));
+        endvar = destino;
+        return;
     case Instr::cArqSav:
         endvar = destino;
         return;
@@ -789,6 +802,7 @@ bool TVariavel::getBool()
         return 0;
     case Instr::cArqLog:
         return end_log[indice].getValor();
+    case Instr::cArqProg:
     case Instr::cArqSav:
         return 0;
     case Instr::cArqTxt:
@@ -947,6 +961,7 @@ int TVariavel::getInt()
         return 0;
     case Instr::cArqLog:
         return end_log[indice].getValor();
+    case Instr::cArqProg:
     case Instr::cArqSav:
         return 0;
     case Instr::cArqTxt:
@@ -1113,6 +1128,7 @@ double TVariavel::getDouble()
         return 0;
     case Instr::cArqLog:
         return end_log[indice].getValor();
+    case Instr::cArqProg:
     case Instr::cArqSav:
         return 0;
     case Instr::cArqTxt:
@@ -1314,6 +1330,7 @@ const char * TVariavel::getTxt()
     case Instr::cTextoVar:
     case Instr::cTextoObj:
     case Instr::cArqDir:
+    case Instr::cArqProg:
     case Instr::cArqSav:
     case Instr::cServ:
     case Instr::cProg:
@@ -1490,6 +1507,7 @@ void TVariavel::setInt(int valor)
     case Instr::cTextoObj:
     case Instr::cNomeObj:
     case Instr::cArqDir:
+    case Instr::cArqProg:
     case Instr::cArqLog:
     case Instr::cArqSav:
     case Instr::cArqTxt:
@@ -1609,6 +1627,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cNomeObj:
     case Instr::cArqDir:
     case Instr::cArqLog:
+    case Instr::cArqProg:
     case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
@@ -1756,6 +1775,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cNomeObj:
     case Instr::cArqDir:
     case Instr::cArqLog:
+    case Instr::cArqProg:
     case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
@@ -1971,6 +1991,8 @@ bool TVariavel::Func(const char * nome)
         return end_dir[indice].Func(this, nome);
     case Instr::cArqLog:
         return end_log[indice].Func(this, nome);
+    case Instr::cArqProg:
+        return end_arqprog[indice].Func(this, nome);
     case Instr::cArqSav:
         return TVarSav::Func(this, nome);
     case Instr::cArqTxt:

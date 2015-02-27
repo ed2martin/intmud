@@ -5,15 +5,15 @@
 /** @defgroup misc_h Diversas funções */
 /** @{ */
 
-#define INT_EXT "int" // Extensão dos arquivos do programa interpretado
+#define INT_EXT "int" ///< Extensão dos arquivos do programa interpretado
+#define INT_NOME_TAM 0x200 ///< Tamanho máximo dos nomes dos arquivos ".int"
 
 extern unsigned long TempoIni; ///< Tempo desde que o programa foi executado, 10=1seg
                          /**< @note Atualizado em main.cpp */
 
 extern char * arqnome;   ///< Nome completo dos arquivos
-extern char * arqinicio; ///< Nome dos arquivos sem o diretório
-extern char * arqext;    ///< A partir de onde colocar a extensão.
-                         /** Tem espaço para pelo menos 64 caracteres. */
+extern char * arqinicio; ///< A partir de onde colocar os nomes dos arquivos
+                         /** Tem espaço para pelo menos 0x200 caracteres. */
 
 /// Prepara tabNOMES[] e tabCOMPLETO[]
 /** Usado para transformação de caracteres.

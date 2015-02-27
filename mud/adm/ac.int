@@ -1,0 +1,20 @@
+classe adm_ac
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ac\b\n\
+Sintaxe: AC <texto>\n\
+Envia mensagem para o canal de administração.\n\
+Você pode bloquear ou não o canal AC com o comando CONFIG, conforme abaixo:\n\
+CONFIG -AC\n\
+CONFIG +AC"
+
+func escr
+  se !arg0.jogconfig.19
+    arg0.msg("Canal AC está desabilitado.")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após AC.")
+  senao
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.19 && item.obj.msg("(ac) " + arg0.nome + ": " + arg1)
+    efim
+  fimse

@@ -1,0 +1,663 @@
+classe adm_item
+herda comando_adm
+const txtajuda = "\b\c3Comandos de itens\b\n\
+  \c2LITEM\b     Lista itens existentes\n\
+  \c2CITEM\b     Cria um item\n\
+  \c2EITEM\b     Edita um item\n\
+  \c2AITEM\b     Apaga um ou mais itens"
+
+
+classe adm_litem
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Litem\b\n\
+Sintaxe: LITEM [nome]\n\
+Lista os itens que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os itens."
+
+func escr # Listar itens
+  prog p
+  se !p.iniclasse("i_" + arg1)
+    arg0.msg("\bNenhum item encontrado.")
+  senao
+    textotxt t
+    txt100 lin
+    t.addfim("\b\c6Item Tipo Quantidade Nome\b")
+    enquanto p.lin && t.linhas < 500
+      lin = txt(p.texto, 2) + " " + txt(" SGC", [p.texto]:item, 1)
+      t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
+      p.depois
+    efim
+    arg0.msg2(t.remove(500))
+  fimse
+
+
+classe adm_citem
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Citem\b\n\
+Sintaxe: CITEM <nome>\n\
+Cria um item. Nome deve ser o nome de uma área ou do item.\n\
+Nomes de itens são sempre nomes de área seguido de um número de 001 a 999."
+
+func escr # Criar item
+  prog p
+  txt40 nome
+  uint16 num
+# Checa se digitou nome da sala
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do item ou da área após CITEM")
+  fimse
+# Checa nome completo
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
+  num = int(txtfim(nome, 3)) + 1000
+  se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
+    se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
+      ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+    senao p.existe("i_" + nome)
+      ret arg0.msg("Item já existe: " + nome)
+    fimse
+# Checa nome de área
+  senao !p.existe("a_" + nome)
+    ret arg0.msg("Área não existe: " + nome)
+  senao
+    epara num = 1001, p.existe("i_" + nome + txtfim(num, 3)), num += 1
+      continuar num < 2000
+      ret arg0.msg("Atingido limite de itens na área " + nome)
+    efim
+    nome += txtfim(num, 3)
+  fimse
+# Pergunta que tipo de item criar
+  arg0.sock.var.opcclasse = nome
+  passo(arg0.sock, "")
+
+func passo # Escolher o tipo de item ao criar
+  txt40 deriv
+  casovar txtmin(arg1)
+  casose
+    arg0.msg("Opção inválida")
+  casose "\b"
+  casose ""
+    arg0.passo = este
+    arg0.msg("Entre com o tipo de item, O mostra as opções, Z cancela")
+    ret 1
+  casose "z"
+    arg0.msg("Retornando ao jogo")
+    arg0.passo = ""
+    arg0.var.opcclasse = ""
+    ret 1
+  casose "o"
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("S Simples")
+    arg0.txtmais.addfim("G Agrupa vários em um objeto para economizar memória")
+    arg0.txtmais.addfim("C Completo (luz, mobília, container)")
+    arg0.txtmostra
+    ret 1
+  casose "s"
+    deriv = "comum_item"
+    sair
+  casose "g"
+    deriv = "comum_itemgrupo"
+    sair
+  casose "c"
+    deriv = "comum_itemperso"
+    sair
+  casofim
+# Cria item
+  prog p
+  txt100 area
+  area = txt(arg0.var.opcclasse, 0, inttotal(arg0.var.opcclasse) - 3)
+  p.criar("i_" + arg0.var.opcclasse + "\nareas/" + area + "\nherda " + deriv)
+  criar("admordena", "areas/" + area)
+# config:salvar
+  arg0.msg("\bItem criado: " + arg0.var.opcclasse)
+  admlog(arg0, "criou item " + arg0.var.opcclasse)
+  arg0.passo = ""
+  arg0.var.opcclasse = ""
+  ret 1
+
+
+classe adm_aitem
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Aitem\b\n\
+Sintaxe: AITEM <nomes dos itens>\n\
+Apaga uma ou mais itens, com os nomes especificados."
+
+func escr # Apagar item
+  prog p
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
+  se nome == ""
+    ret arg0.msg("Tecle um ou mais nomes de itens após AITEM")
+  fimse
+  uint16 x
+  enquanto txtsub(nome, x, 1)
+    se !p.existe("i_" + txtsub(nome, x, 1))
+      ret arg0.msg("Item não existe: " + txtsub(nome, x, 1))
+    fimse
+    x += 1
+  efim
+  arg0.sock.tpasso = nome
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar item
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("i_" + txtsub(arg0.tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Item apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou item " + arg0.tpasso)
+    senao
+      arg0.msg("Itens apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou itens " + arg0.tpasso)
+    fimse
+  senao
+    txt20 m1
+    arg0.passo = este
+    m1 = txt2(arg0.tpasso) ? "itens" : "item"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_eitem
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Eitem\b\n\
+Sintaxe: EITEM <nome>\n\
+Edita o item com o nome especificado."
+
+func escr # Editar item
+  prog p
+  uint8 num
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
+  se nome == ""
+    arg0.msg("Tecle o nome do item após EITEM")
+  senao !p.existe("i_" + nome)
+    arg0.msg("\bItem não existe: " + nome)
+  senao !p.existe("menu_item" + (num = i_[nome]:item))
+    arg0.msg("\bItem não pode ser editado: " + nome)
+  senao
+    arg0.sock.var.classe1 = "i_" + txtmin(nome)
+    arg0.sock.var.menufim = "menu_item" + num
+    arg0.sock.m_menu("menu_item" + num)
+  fimse
+
+
+classe menu_iarma
+herda comando_menu
+const titulo = "Arma"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Tipo de arma"
+const tipo1 = "opc_opcao"
+const clas1 = var.classe1
+const vari1 = "armatipo"
+const extr1 = "Não é arma\n" + txtsublin(config:arma_txt, 1)
+#
+const nome2 = "Ataque automático"
+const info2 = "Habilidade usada como ataque automático dessa arma\n\
+Se estiver vazio, o nome da habilidade é o tipo de arma"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "armaatk"
+#
+const nome3 = "Precisão arma"
+const info3 = "Para armas que por natureza são imprecisas\n\
+De 0 a 100, 0=sempre erra e 100=mesma precisão que atacar sem arma"
+const tipo3 = "opc_numero"
+const clas3 = var.classe1
+const vari3 = "armaprecisao"
+const extr3 = "0 100"
+#
+const nome4 = "Precisão perso"
+const info4 = "Quanta precisão o personagem ganha durante um ataque com essa arma"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "armaaddprecisao"
+#
+const nome5 = "Ataque mín"
+const tipo5 = "opc_numero"
+const clas5 = var.classe1
+const vari5 = "armamin"
+#
+const nome6 = "Ataque máx"
+const tipo6 = "opc_numero"
+const clas6 = var.classe1
+const vari6 = "armamax"
+#
+const nome7 = "Só ataca manual"
+const info7 = "Se o personagem não usa essa arma em ataques automáticos"
+const tipo7 = "opc_simnao"
+const clas7 = var.classe1
+const vari7 = "armamanual"
+
+
+classe menu_ifome
+herda comando_menu
+const titulo = "Fome e sede"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Tipo"
+const tipo1 = "opc_opcao"
+const clas1 = var.classe1
+const vari1 = "f_tipo"
+const extr1 = "Nenhum\n\
+Fonte, não some após beber\n\
+Poção, beber\n\
+Comida, comer\n\
+Pergaminho, recitar"
+#
+const nome2 = "Msg perso"
+const info2 = "Quando alguém come/bebe/recita o item; se vazio usa mensagem padrão"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "f_msgperso"
+#
+const nome3 = "Msg outros"
+const info3 = "Quando alguém come/bebe/recita o item; se vazio usa Msg perso"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "f_msgoutros"
+#
+const nome4 = "Sacia a sede"
+const info4 = "Um minuto são de 3 a 4 unidades, exceto no deserto"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "f_sede"
+const extr4 = "-250 250"
+#
+const nome5 = "Sustenta"
+const info5 = "Um minuto são de 3 a 4 unidades"
+const tipo5 = "opc_numero"
+const clas5 = var.classe1
+const vari5 = "f_fome"
+const extr5 = "-250 250"
+#
+const nome6 = "Embriaguês"
+const info6 = "Um minuto são de 6 a 8 unidades"
+const tipo6 = "opc_numero"
+const clas6 = var.classe1
+const vari6 = "f_bebida"
+const extr6 = "-250 250"
+#
+const nome7 = "Digestão"
+const info7 = "Quanto tempo leva para digerir o alimento\n\
+Um minuto são de 3 a 12 unidades, dependendo da posição do personagem"
+const tipo7 = "opc_numero"
+const clas7 = var.classe1
+const vari7 = "f_diges"
+const extr7 = "-250 250"
+#
+const nome8 = "Magia 1"
+const info8 = "Nome da magia"
+const tipo8 = "opc_linha"
+const clas8 = var.classe1
+const vari8 = "f_magia1"
+#
+const nome9 = "Nível 1"
+const tipo9 = "opc_numero"
+const clas9 = var.classe1
+const vari9 = "f_nivel1"
+const extr9 = "0 65535"
+#
+const nome10 = "Magia 2"
+const info10 = "Nome da magia"
+const tipo10 = "opc_linha"
+const clas10 = var.classe1
+const vari10 = "f_magia2"
+#
+const nome11 = "Nível 2"
+const tipo11 = "opc_numero"
+const clas11 = var.classe1
+const vari11 = "f_nivel2"
+const extr11 = "0 65535"
+#
+const nome12 = "Magia 3"
+const info12 = "Nome da magia"
+const tipo12 = "opc_linha"
+const clas12 = var.classe1
+const vari12 = "f_magia3"
+#
+const nome13 = "Nível 3"
+const tipo13 = "opc_numero"
+const clas13 = var.classe1
+const vari13 = "f_nivel3"
+const extr13 = "0 65535"
+
+
+classe menu_icomum
+herda comando_menu
+const nome1 = "Nome"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "nome"
+#
+const nome2 = "Palavras chave"
+const info2 = "Palavras que os jogadores digitam para se referir ao item"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "ident"
+#
+const nome3 = "Descrição curta"
+const info3 = "Descrição usada na maioria dos comandos"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "descnome"
+#
+const nome4 = "Descrição sala"
+const info4 = "Descrição quando está na sala"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "descpos"
+#
+const nome5 = "Descrição ao olhar"
+const tipo5 = "opc_texto"
+const clas5 = var.classe1
+const vari5 = "descver"
+#
+const nome6 = "Descrição ident"
+const info6 = "Texto adicionado após identificar (com magia de identificação)"
+const tipo6 = "opc_texto"
+const clas6 = var.classe1
+const vari6 = "descident"
+#
+const nome7 = "Sexo Msg"
+const info7 = "Usado nas mensagens com o objeto"
+const tipo7 = "opc_opcao"
+const clas7 = var.classe1
+const vari7 = "msexo"
+const extr7 = "Feminino\nMasculino"
+#
+const nome8 = "Peso"
+const info8 = "Em gramas"
+const tipo8 = "opc_numero"
+const clas8 = var.classe1
+const vari8 = "pesoobj"
+const extr8 = "1 1000000000"
+const exec8 = "ajustapeso"
+#
+const nome9 = "Volume"
+const tipo9 = "opc_numero"
+const clas9 = var.classe1
+const vari9 = "volobj"
+const extr9 = "1 1000000000"
+const exec9 = "ajustapeso"
+#
+const nome13 = "Nível"
+const info13 = "Nível mínimo para vestir/empunhar o item"
+const tipo13 = "opc_numero"
+const clas13 = var.classe1
+const vari13 = "nivel"
+#
+const nome14 = "Mantém na sala"
+const info14 = "Como a opção \"Apagar itens\" da sala ou área afeta o item"
+const tipo14 = "opc_simnao"
+const clas14 = var.classe1
+const vari14 = "mantersala"
+#
+const nome15 = "Mantém em jogador"
+const info15 = "Se o jogador não perde o item ao entrar em uma sala que mata e perde itens"
+const tipo15 = "opc_simnao"
+const clas15 = var.classe1
+const vari15 = "manterperso"
+#
+const nome16 = "Quanto vale"
+const tipo16 = "opc_numero"
+const clas16 = var.classe1
+const vari16 = "valor"
+#
+const nome17 = "Tipo de produto"
+const info17 = "Para saber se um vendedor pode comprar esse item"
+const tipo17 = "opc_vetor"
+const clas17 = var.classe1
+const vari17 = "tipoitem"
+const extr17 = config:produtos
+#
+const nome18 = "Aonde vestir"
+const tipo18 = "opc_vetor"
+const clas18 = var.classe1
+const vari18 = "vestir1"
+const extr18 = config:equip_txt
+#
+const nome19 = "Podem vestir"
+const tipo19 = "opc_opcao"
+const clas19 = var.classe1
+const vari19 = "vestirsim"
+const extr19 = "Todos\nJogadores e PNJs\nAnimais capturados"
+#
+const nome20 = "Não podem vestir"
+const info20 = "Raças e classes que não podem usar esse item"
+const tipo20 = "opc_tipos"
+const clas20 = var.classe1
+const vari20 = "vestirnao"
+#
+const nome21 = "Atrib núm vestir"
+const tipo21 = "opc_atribnum"
+const clas21 = var.classe1
+const vari21 = "recalc_auto"
+const exec21 = "recalc_ajusta"
+#
+const nome22 = "Atrib s/n vestir"
+const tipo22 = "opc_atribbit"
+const clas22 = var.classe1
+const vari22 = "recalc_auto"
+const exec22 = "recalc_ajusta"
+#
+const nome23 = "Atrib atk vestir"
+const info23 = "Afetam os danos quando o personagem ataca alguém"
+const tipo23 = "opc_atribatk"
+const clas23 = var.classe1
+const vari23 = "recalc_auto"
+const exec23 = "recalc_ajusta"
+#
+const nome24 = "Atrib def vestir"
+const info24 = "Afetam os danos quando alguém ataca o personagem"
+const tipo24 = "opc_atribdef"
+const clas24 = var.classe1
+const vari24 = "recalc_auto"
+const exec24 = "recalc_ajusta"
+#
+const nome25 = "Fome e sede"
+const tipo25 = "menu_ifome--"
+#
+const nome26 = "Arma"
+const tipo26 = "menu_iarma--"
+#
+const nome27 = "Pega animal nível"
+const info27 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+ou 0 se não puder capturar"
+const tipo27 = "opc_numero"
+const clas27 = var.classe1
+const vari27 = "i_captura"
+#
+const nome28 = "Chave"
+const info28 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo28 = "opc_linha"
+const clas28 = var.classe1
+const vari28 = "i_chave"
+#
+const nome29 = "Ao pegar"
+const info29 = "Mensagem ao tentar pegar o item; se vazio, consegue pegar"
+const tipo29 = "opc_linha"
+const clas29 = var.classe1
+const vari29 = "i_pegar"
+#
+const nome50 = "Variáveis"
+const tipo50 = "opc_linha"
+const clas50 = var.classe1
+const vari50 = "inivar"
+#
+const nome51 = "Eventos hora"
+const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
+const tipo51 = "opc_simnao"
+const clas51 = var.classe1
+const vari51 = "evhora"
+const exec51 = "ajustaobj"
+#
+const nome52 = "Eventos item"
+const info52 = "Receber eventos do próprio item"
+const tipo52 = "opc_simnao"
+const clas52 = var.classe1
+const vari52 = "eveste"
+const exec52 = "ajustaobj"
+#
+const nome53 = "Eventos em perso"
+const info53 = "Se recebe eventos do dono se for personagem"
+const tipo53 = "opc_simnao"
+const clas53 = var.classe1
+const vari53 = "evperso"
+const exec53 = "ajustaobj"
+#
+const nome54 = "Eventos em item"
+const info54 = "Se recebe eventos do dono se for item"
+const tipo54 = "opc_simnao"
+const clas54 = var.classe1
+const vari54 = "evitem"
+const exec54 = "ajustaobj"
+#
+const nome55 = "Eventos em sala"
+const info55 = "Se recebe eventos da sala se estiver em uma sala"
+const tipo55 = "opc_simnao"
+const clas55 = var.classe1
+const vari55 = "evsala"
+const exec55 = "ajustaobj"
+
+
+classe menu_item1
+herda menu_icomum
+const titulo = "Item simples " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome10 = "Volume dentro"
+const tipo10 = "opc_numero"
+const clas10 = var.classe1
+const vari10 = "volmax"
+#
+const nome11 = "Expande"
+const info11 = "Volume aumenta se tiver itens dentro"
+const tipo11 = "opc_simnao"
+const clas11 = var.classe1
+const vari11 = "volexp"
+const exec11 = "ajustapeso"
+#
+const nome12 = "Objetos máximo"
+const tipo12 = "opc_numero"
+const clas12 = var.classe1
+const vari12 = "objmax"
+
+
+classe menu_item2
+herda menu_icomum
+const titulo = "Item grupo " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome13 = "Nível"
+const info13 = "Todos os itens " + txt(var.classe1, 2) + " possuem o mesmo nível"
+const tipo13 = "opc_numero"
+const clas13 = var.classe1
+const vari13 = "nivel"
+
+
+classe menu_item3
+herda menu_item1
+const titulo = "Item " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome30 = "Mobília"
+const info30 = "Sentar/dormir confortavelmente se recupera mais rápido"
+const tipo30 = "opc_opcao"
+const clas30 = var.classe1
+const vari30 = "i_movel"
+const extr30 = "Não\n\
+Sentar\n\
+Sentar e dormir\n\
+Sentar confortavelmente\n\
+Sentar e dormir confortavelmente"
+#
+const nome31 = "Lugares"
+const tipo31 = "opc_numero"
+const clas31 = var.classe1
+const vari31 = "i_lugar"
+#
+const nome32 = "Container"
+const tipo32 = "opc_opcao"
+const clas32 = var.classe1
+const vari32 = "i_abertoini"
+const exec32 = "recalc_exec"
+const extr32 = "Não\n\
+Sempre aberto\n\
+Inicialmente aberto\n\
+Inicialmente fechado\n\
+Inicialmente trancado\n\
+Indefinido; não checa se está aberto, fechado ou trancado"
+#
+const nome33 = "Trancar"
+const tipo33 = "opc_opcao"
+const clas33 = var.classe1
+const vari33 = "i_tranc"
+const extr33 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+#
+const nome34 = "Fechadura"
+const info34 = "Código da chave que tranca e destranca o container"
+const tipo34 = "opc_linha"
+const clas34 = var.classe1
+const vari34 = "i_fechadura"
+#
+const nome35 = "Come chave"
+const info35 = "Se o personagem perde a chave ao abrir o item"
+const tipo35 = "opc_simnao"
+const clas35 = var.classe1
+const vari35 = "i_comechave"
+#
+const nome36 = "Fonte de luz"
+const tipo36 = "menu_iluz--"
+
+
+classe menu_iluz
+herda comando_menu
+const titulo = "Fonte de luz"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Tipo de luz"
+const tipo1 = "opc_opcao"
+const clas1 = var.classe1
+const vari1 = "luzitem"
+const extr1 = "Não aceita acender/apagar, sem fogo\n\
+Lanterna (acende/apaga, sem fogo)\n\
+Lanterna 2 (acende/apaga, inclusive na água)\n\
+Não aceita acender/apagar, produz fogo\n\
+Lampião (acende/apaga, produz fogo)\n\
+Fósforo (acende uma vez, produz fogo)\n\
+Tocha (acende com fogo, produz fogo)\n\
+Automático (acende ao vestir, sem fogo)"
+#
+const nome2 = "Duração da luz"
+const info2 = "Em décimos de segundo, se menor que zero começa apagado"
+const tipo2 = "opc_numero"
+const clas2 = var.classe1
+const vari2 = "luzini"
+#
+const nome3 = "Acendeu mensagem"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "luzliga"
+#
+const nome4 = "Sem luz mensagem"
+const info4 = "Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "luztxt"
+#
+const nome5 = "Sem luz item some"
+const info5 = "Se o item some (é apagado) quando a luz acaba"
+const tipo5 = "opc_simnao"
+const clas5 = var.classe1
+const vari5 = "luzfim"

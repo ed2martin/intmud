@@ -1,0 +1,166 @@
+Itens (arquivo obj/item.int)
+
+Para criar um item
+Itens que podem ser agrupados:
+criar("nome da classe", aonde está, quantidade de itens)
+Se a quantidade for omitida ou for menor que 1, será 1.
+
+Outros itens:
+criar("nome da classe", aonde está, nível do item, "variáveis")
+Se o nível for omitido, será 0.
+Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
+variável, separar por vírgula (exemplo, "v1=10,v2=20").
+São criadas as variáveis correspondentes em 'textovar var' do item.
+
+const item = 1
+1 = Item comum (classe comum_item)
+2 = Pode agrupar (classe comum_itemgrupo)
+3 = Completo (classe comum_itemperso)
+
+const mantersala = 0
+Como a opção "Apagar itens" da sala ou área afeta o item.
+0 = Item é apagado normalmente depois de um tempo sem jogador por perto
+1 = Item permanece na sala
+
+const manterperso = 0
+Se o jogador não perde o item ao entrar em uma sala que mata e perde itens.
+0 = Perde
+1 = Não perde
+
+const vestir1 = 0
+Em que lugares do corpo pode ir quando é vestido.
+Cada bit corresponde a um lugar. Os nomes dos lugares estão definidos na
+constante equip_txt, na classe config, no arquivo obj/config.int.
+
+uint8 vestpos
+Em que posição está vestindo.
+0 = não está vestindo
+50 = está empunhando
+Outros valores, começando pelo número 1, correspondem aos lugares definidos
+na constante equip_txt, na classe config, no arquivo obj/config.int.
+Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
+
+const i_captura = 0
+func i_captura( animal )
+Nível médio dos animais que podem ser capturados com esse item.
+Se for 0, esse item não pode ser usado para capturar animais.
+O argumento dessa função é o animal que o jogador está tentando capturar,
+(uma variável ref), ou nulo se estiver apenas escolhendo esse item para
+capturar.
+
+const i_movel = 0
+Tipo de móvel:
+0 = Não é móvel
+1 = Pode sentar
+2 = Pode sentar e deitar
+
+const i_lugar = 0
+Quantos personagens podem sentar-se.
+
+const i_abertoini = 0
+Valor inicial de aberto
+
+uint8 i_aberto
+Tipo de container:
+0 = Não é container
+1 = Está sempre aberto
+2 = Está aberto
+3 = Está fechado
+4 = Está trancado
+5 = Indefinido; não checa se está aberto, fechado ou trancado
+
+const i_tranc = 0
+0 = Não pode ser trancado
+1 = Pode ser trancado
+2 = Tranca ao fechar
+
+const i_fechadura = ""
+Texto que contém o código da fechadura.
+Somente uma chave com o mesmo código tranca e destranca.
+Se estiver ausente ou for um texto vazio, não requer chave.
+
+const i_chave = ""
+Texto que contém o código da chave, ou "" se não for chave.
+
+const i_pegar = ""
+Mensagem ao tentar pegar o item; se vazio, consegue pegar.
+
+const luzitem = 0
+Tipo de fonte de luz:
+0 = Não aceita acender/apagar, sem fogo
+1 = Lanterna (acende/apaga, sem fogo)
+2 = Lanterna 2 (acende/apaga, inclusive na água)
+3 = Não aceita acender/apagar, produz fogo
+4 = Lampião (acende/apaga, produz fogo)
+5 = Fósforo (acende uma vez, produz fogo)
+6 = Tocha (acende com fogo, produz fogo)
+
+const luzini = 1000
+Duração da luz, em décimos de segundo.
+
+const luzliga = "$P acende $o."
+Mensagem quando alguém acende a luz.
+
+const luztxt = ""
+Mensagem quando a luz acaba, se estiver vazio não envia nenhuma mensagem.
+
+const luzfim = 0
+Se item some (é apagado) quando a luz acaba (0=não, 1=sim).
+
+const armatipo = 0
+Tipo de arma; vide config:arma_txt (0 significa que não é arma).
+
+const armaprecisao = 0
+Precisão da arma, em porcentagem, 100 significa mesma precisão de
+atacar sem arma.
+
+const armamin = 0
+Ataque mínimo da arma.
+
+const armamax = 0
+Ataque máximo da arma.
+
+const armamanual = 0
+Se o personagem não usa essa arma em ataques automáticos (0=pode, 1=não pode).
+
+const f_tipo = 0
+Tipo de item fome/sede:
+0 = Nenhum
+1 = Fonte, não some após beber
+2 = Poção, beber
+3 = Comida, comer
+4 = Pergaminho, recitar
+
+const f_sede = 0
+O quanto sacia a sede. Um minuto são de 3 a 4 unidades, exceto no deserto.
+O valor máximo da sede do jogador (sem sede) é $miscfome.cheio.
+
+const f_fome = 0
+O quanto sustenta. Um minuto são de 3 a 4 unidades.
+O valor máximo da fome do jogador (sem fome) é $miscfome.cheio.
+
+const f_bebida = 0
+O quanto deixa bêbado. Um minuto são de 6 a 8 unidades.
+O valor máximo da embriaguês do jogador (totalmente embriagado)
+é $miscfome.cheio.
+
+const f_diges = 0
+Quanto tempo leva para digerir o alimento.
+Um minuto são de 3 a 12 unidades, dependendo da posição do personagem.
+O valor máximo da digestão do jogador é $miscfome.cheio.
+
+const f_magia1 = ""
+const f_nivel1 = 0
+Primeira magia lançada ao beber/comer/recitar e o nível da magia.
+
+const f_magia2 = ""
+const f_nivel2 = 0
+Segunda magia lançada ao beber/comer/recitar e o nível da magia.
+
+const f_magia3 = ""
+const f_nivel3 = 0
+Terceira magia lançada ao beber/comer/recitar e o nível da magia.
+
+func vestir( posição )
+Veste um item apenas, não verifica se a posição já está ocupada.
+Se posição for 0, deixa de vestir.

@@ -26,7 +26,6 @@
 unsigned long TempoIni;
 char * arqnome = 0;
 char * arqinicio = 0;
-char * arqext = 0;
 char * tabNOMES1 = 0;
 char * tabNOMES2 = 0;
 char * tabCOMPLETO = 0;

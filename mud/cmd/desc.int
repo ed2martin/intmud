@@ -1,0 +1,99 @@
+classe cmd_pdesc
+herda comando_comum, comando_editor
+const txtajuda = "\b\c3PDesc\b\n\
+Sintaxe: PDESC\n\
+Muda a descrição do seu personagem. Essa descrição aparece quando alguém\n\
+olha para você com o comando OLHAR."
+const posic = 5
+
+func escr
+  se arg0.pnivel < config:pdescnivel
+    arg0.msg("Você precisa chegar no nível " + config:pdescnivel + " para usar esse comando")
+  senao
+    passo(arg0.sock, "\b")
+  fimse
+
+func passo # Alterando descrição do personagem
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "\b"
+    textopos p1
+    arg0.teditor.limpar
+    arg0.teditor.addfim(arg0.perso.var.z_desc)
+    arg0.teditor.bytes == 1 && arg0.teditor.limpar
+    arg0.leditor = arg0.teditor.ini
+    arg0.leditor1 = arg0.teditor.ini
+    arg0.leditor2 = arg0.teditor.fim
+    arg0.leditor2.antes
+    arg0.passo = este
+    arg0.msg("Editando descrição do personagem, O opções, X salvar, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    se arg0.teditor.linhas > 8
+      arg0.msg("Máximo permitido 8 linhas.")
+    senao !arg0.teditor.linhas
+      arg0.perso.var.z_desc = ""
+      arg0.msg("Descrição do personagem apagada.")
+    senao
+      arg0.perso.var.z_desc = arg0.teditor.ini.textolin(100)
+      arg0.msg("Descrição do personagem alterada.")
+    fimse
+    ret 1
+  casofim
+  ret passoeditor(arg0, arg1, 1000, "descrição do personagem")
+
+
+classe cmd_sdesc
+herda comando_comum, comando_editor
+const txtajuda = "\b\c3SDesc\b\n\
+Sintaxe: SDESC\n\
+Muda a descrição da sala em que você está, desde que esteja na sua casa.\n\
+Se a descrição estiver vazia, voltará ao texto original da sala.\n\
+Nota: Somente o dono da casa pode mudar as descrições das salas."
+const posic = 5
+
+func escr
+  se !arg0.dentrocasa
+    arg0.msg("Você não está dentro da sua casa.")
+  senao
+    passo(arg0.sock, "\b")
+  fimse
+
+func passo # Alterando descrição da sala
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "\b"
+    textopos p1
+    arg0.teditor.limpar
+    arg0.teditor.addfim(arg0.perso.dono.var.z_desc)
+    arg0.teditor.bytes == 1 && arg0.teditor.limpar
+    arg0.leditor = arg0.teditor.ini
+    arg0.leditor1 = arg0.teditor.ini
+    arg0.leditor2 = arg0.teditor.fim
+    arg0.leditor2.antes
+    arg0.passo = este
+    arg0.msg("Editando descrição da sala, O opções, X salvar, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    se !arg0.perso.dentrocasa
+      arg0.msg("Você não está dentro da sua casa.")
+    senao arg0.teditor.linhas > 8
+      arg0.msg("Máximo permitido 8 linhas.")
+    senao !arg0.teditor.linhas
+      arg0.perso.dono.var.z_desc = ""
+      arg0.perso.dono.objmudou = 1
+      arg0.msg("Descrição da sala apagada.")
+    senao
+      arg0.perso.dono.var.z_desc = arg0.teditor.ini.textolin(100)
+      arg0.perso.dono.objmudou = 1
+      arg0.msg("Descrição da sala alterada.")
+    fimse
+    ret 1
+  casofim
+  ret passoeditor(arg0, arg1, 1000, "descrição da sala")

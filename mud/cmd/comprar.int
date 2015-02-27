@@ -1,0 +1,202 @@
+classe cmd_comprar
+herda comando_comum
+const txtajuda = "\b\c3Comprar\b\n\
+Sintaxe: COMPRAR <nome ou número do objeto>\n\
+         COMPRAR <quantidade>  <nome ou número do objeto>\n\
+Compra objetos de um vendedor.\n\
+Para saber o que é vendido em algum lugar, tecle LISTA."
+txt200 lin
+int8 abre # Usado internamente: horário de abertura
+int8 fecha # Usado internamente: horário de fechamento
+uint32 valor # Usado internamente: preço da aula
+uint32 nivel # Usado internamente: nível do item
+int32 linha
+txt100 nomeitem # O nome do item que está procurando
+uint16 total # Quantos itens quer combrar
+ref p # Vendedor que está verificando
+txt30 tipo1 # arg0.tipo1
+txt30 tipo2 # arg0.tipo2
+txt30 tipo3 # arg0.tipo3
+
+func escr
+  ret !arg1, arg0.msg("Comprar o quê?")
+  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
+  listaobj l
+  nomeobj n
+  total = txt1(arg1)
+  se intsub(arg1) < 2 || total == 0 || txt(total) != txt1(arg1)
+    total = 1, nomeitem = arg1
+  senao
+    nomeitem = txt2(arg1)
+  fimse
+  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
+  epara l.remove(arg0), l, l.ini.remove
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv || !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
+$a_[p.lojachave])
+# Checa se pode vender alguma coisa
+    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
+    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
+      continuar
+    senao
+      listaobj e
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+        sair e.objini.cmd_negociar(arg0, p, "comprar")
+      efim
+      continuar e
+    fimse
+# Itens fixos - lojaitem
+    textotxt t2
+    epara t2.addfim(p.lojaitem(arg0)), t2.linhas, t2.remove
+      continuar !t2.ini.texto
+      lin = "i_" + txt1(t2.ini.texto), linha += 1
+      continuar !n.nome([lin]:nome, 1) && txt(linha) != nomeitem
+      nivel = txt2(t2.ini.texto)
+      nivel == 0 && (nivel = [lin]:nivel)
+      valor = (100 + p.taxavenda) / 100 * [lin]:valor
+      se [lin]:item == 2 # Checa a quantidade de itens
+        total > 100 && (total = 100), linha = 1
+      senao
+        total > 10 && (total = 10), linha = total
+      fimse
+      se arg0.dentro1.total + linha > arg0.objmax
+        ret arg0.msg("Você não consegue carregar tanta coisa.")
+      senao arg0.volden + [lin]:volobj * total > arg0.volmax
+        ret arg0.msg("Você não consegue carregar tanta coisa.")
+      senao arg0.pesoden - arg0.pesoveste + [lin]:pesoobj * total > arg0.pesomax
+        ret arg0.msg("Você não consegue carregar tanto peso.")
+      senao arg0.var.z_moedas_ < valor * total
+        lin = "Você não tem $" + valor * total + "."
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+      fimse
+      ref r
+      se [lin]:item == 2
+        r = criar(lin, arg0, total)
+      senao
+        epara linha = 0, linha < total, linha += 1
+          r = criar(lin, arg0, nivel)
+        efim
+      fimse
+      arg0.var.z_moedas_ -= valor * total
+      $mens.p(arg0, p, r)
+      se total == 1
+        $mens.mtodos1("$P compra $o $d $A.")
+      senao
+        $mens.mtodos1("$P compra " + total + "x $o $d $A.")
+      fimse
+      ret
+    efim
+# Itens que possui e itens em uma sala
+    se 1
+      listaobj e
+      p.lojainv && e.addfim(p.dentro1)
+      epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
+        continuar txt(linha += 1) != arg1 && !n.nome(e.objini.ident, 1)
+        ref r
+        r = ref(e.objini)
+        valor = (100 + p.taxavenda) / 100 * r.valor
+        total > r.objtot && (total = r.objtot)
+        se arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax
+          ret arg0.msg("Você não consegue carregar tanta coisa.")
+        senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
+          ret arg0.msg("Você não consegue carregar tanta coisa.")
+        senao arg0.pesoden - arg0.pesoveste + r.pesotot * total / r.objtot > arg0.pesomax
+          ret arg0.msg("Você não consegue carregar tanto peso.")
+        senao arg0.var.z_moedas_ < valor * total
+          lin = "Você não tem $" + valor * total + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        r = r.mudadono(arg0, total)
+        arg0.var.z_moedas_ -= valor * total
+        $mens.p(arg0, p, r)
+        se total == 1
+          $mens.mtodos1("$P compra $o $d $a.")
+        senao
+          $mens.mtodos1("$P compra " + total + "x $o $d $a.")
+        fimse
+        ret
+      efim
+    fimse
+# Casas
+    se $a_[p.lojacasa]
+      prog prg
+      ref r
+      epara prg.iniclasse("c_" + p.lojacasa), prg.lin, prg.depois
+        r = $[prg.texto]
+        sair r.area != p.lojacasa
+        continuar r.nomejog || txt(linha += 1) != arg1 && !n.nome(r.ident, 1)
+        se !arg0.senha
+          ret arg0.msg("Você precisa ter jogo salvo para comprar uma casa.")
+        senao arg0.pnivel < config:casanivel
+          refvar m = "Você precisa estar no nível " + config:casanivel
+          ret arg0.msg(m + " para comprar uma casa.")
+        fimse
+        valor = config:casajog
+        lin = "cj " + txt2(arg0.sock.cnome)
+        indiceitem item
+        epara item.ini(lin + " "), txtsub(item.txt, 0, 2) == lin, item.depois
+          valor -= 1
+        efim
+        ret valor <= 0, arg0.msg("Atingido o limite de casas por jogador.")
+        valor = (100 + p.taxavenda) / 100 * r.valor
+        se item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
+          ret arg0.msg("Você já tem uma casa aqui.")
+        senao arg0.var.z_moedas_ < valor
+          lin = "Você não tem $" + valor + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        r.nomejog = "cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa
+        r.diataxa = 0 # Para atualizar a taxa de manutenção da casa
+        r.tempotaxa = 1
+        r.mudachave # Já faz r.objmudou=1
+        arg0.var.z_moedas_ -= valor
+        $mens.p(arg0, p)
+        $mens.mens = r.nome ? r.nome : "uma casa"
+        $mens.mtodos1("$P compra $m $d $a.")
+        ret
+      efim
+    fimse
+# Chave e fechadura da casa
+    se $a_[p.lojachave]
+      indiceitem item
+      refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
+      se !casa
+      senao txt(linha += 1) == arg1 || n.nome("chave da casa", 1)
+        valor = (100 + p.taxavenda) / 100 * config:casachave
+        se arg0.dentro1.total + 1 > arg0.objmax
+          ret arg0.msg("Você não consegue carregar tanta coisa.")
+        senao arg0.volden + comum_chave:voltot > arg0.volmax
+          ret arg0.msg("Você não consegue carregar tanta coisa.")
+        senao arg0.pesoden - arg0.pesoveste + comum_chave:pesotot > arg0.pesomax
+          ret arg0.msg("Você não consegue carregar tanto peso.")
+        senao arg0.var.z_moedas_ < valor
+          lin = "Você não tem $" + valor + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        refvar r = criar("comum_chave", arg0, 1)
+        r.i_chave = casa.chave
+        arg0.var.z_moedas_ -= valor
+        $mens.p(arg0, p)
+        $mens.mtodos1("$A fez uma chave para $p.")
+        ret
+      senao txt(linha += 1) == arg1 || n.nome("fechadura da casa", 1)
+        valor = (100 + p.taxavenda) / 100 * config:casafechadura
+        se arg0.var.z_moedas_ < valor
+          lin = "Você não tem $" + valor + "."
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        fimse
+        arg0.var.z_moedas_ -= valor
+        casa.mudachave # Já faz r.objmudou=1
+        $mens.p(arg0, p, r)
+        refvar m1 = "$A manda alguém para trocar a fechadura da "
+        ret $mens.mtodos2(m1 + "sua casa.", m1 + "casa $d $p.")
+      fimse
+    fimse
+  efim
+  arg0.msg("Ninguém vende isso aqui.")

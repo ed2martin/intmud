@@ -1,0 +1,31 @@
+classe adm_serv
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Serv\b\n\
+Sintaxe: SERV\n\
+Mostra informações sobre o estado atual do MUD."
+
+func escr
+  refvar txtmais = arg0.sock.txtmais
+  txt100 lin
+  int32 i.3
+  debug d
+  txtmais.limpar
+  txtmais.addfim("\b\c3Estado atual do MUD:\b")
+  i.2 = $miscserv.noar % 1440
+  i.0 = ($miscserv.noar - i.2) / 1440 # Dias
+  i.1 = intdiv(i.2 / 60) # Horas
+  i.2 %= 60 # Minutos
+  txtmais.addfim("No ar há " + i.0 + " dias " + i.1 + " horas " + i.2 + " min")
+  txtmais.addfim("Memória usada:  " + txtnum(d.mem, ".") + " bytes")
+  txtmais.addfim("Memória máxima: " + txtnum(d.memmax, ".") + " bytes")
+# lin = "Memória usada:  " + txtnum(d.mem, ".") + " bytes"
+# lin += "   (máximo foi " + txtnum(d.memmax, ".") + " bytes)"
+# txtmais.addfim(lin)
+  lin = "Processador (stempo): " + txtnum(d.stempo / 1000, ".3") + " seg."
+  lin += "  (no último minuto " + txtnum($miscserv.stempo / 1000, ".3") + " seg.)"
+  txtmais.addfim(lin)
+  lin = "Processador (utempo): " + txtnum(d.utempo / 1000, ".3") + " seg."
+  lin += "  (no último minuto " + txtnum($miscserv.utempo / 1000, ".3") + " seg.)"
+  txtmais.addfim(lin)
+  txtmais.addfim("IntMUD versão " + d.ver + " (" + d.data + "), MUD versão " + misc:versao)
+  arg0.sock.txtmostra

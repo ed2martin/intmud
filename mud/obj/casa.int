@@ -1,0 +1,149 @@
+classe casa
+listaobj salas
+intexec inicasa
+const iniclasse = arg0 != "casa" && !$[arg0] && criar(arg0)
+const ini = inicasa = 1
+sav indiceobj nomejog # "cj " + nome codificado + " " + prefixo da área
+sav txt50 chave # Código da chave que abre a porta da casa
+sav int32 diataxa # A partir de quando deve pagar a taxa de manutenção da casa
+int8 infotaxa # 0=taxa em dia, 1=avisar, 2=bloquear casa
+inttempo tempotaxa # Para atualizar infotaxa
+int1 objmudou # Se as informações da casa foram mudadas (precisa salvar a casa)
+const ident = nome
+#
+# Ordem que deve organizar as constantes:
+const admordem = "area\nnome\ndesc\nident\nvalor\ns1\ns2\ns3\ns4\ns5"
+
+func fim # Apaga arquivo da casa
+  ret inttotal(este) != 1, nulo # Por segurança: só apaga arquivo se tiver 1 objeto
+  arqsav sav1
+  sav1.apagar("sav2/c-" + txt(este, 2) + ".sav")
+
+func inicasa_exec # Carrega objetos da casa
+  listaobj l1
+  l1.addfim(este)
+  arqsav sav1
+  sav1.ler("sav2/c-" + txt(este, 2) + ".sav", l1)
+  l1.ini.remove # Remove da lista, porque é o objeto de controle da casa
+# Acerta variáveis
+  listaitem item
+  debug d
+  epara item = l1.ini, item, item.depois
+    d.ini, item.obj.ajustaobj
+  efim
+  epara item = l1.fim, item, item.antes
+    d.ini
+    se txt(item.obj, 0, 2) == "s_" # Se for sala
+      apagar($[item.obj]), item.obj.ini # Apaga a sala que já existia e inicializa essa
+    senao !item.obj.dono # Se for item sem dono
+      apagar(item.obj) # Apaga o item
+    fimse
+    item.obj.var.limpar("d_", "j_")
+    item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
+  efim
+# Indica que nenhuma sala mudou
+  objmudou = 0
+  s1.objmudou = 0, s2.objmudou = 0, s3.objmudou = 0
+  s4.objmudou = 0, s5.objmudou = 0, s6.objmudou = 0
+  s7.objmudou = 0, s8.objmudou = 0, s9.objmudou = 0
+# Checa a fechadura
+  !chave && mudachave
+# Checa se ainda pertence a um jogador
+  se nomejog
+    arqsav sav
+    se sav.existe("sav1/" + txtsub(nomejog, 1, 1) + ".sav")
+      nomejog = "cj " + txtsub(nomejog, 1, 1) + " " + area
+    senao
+      nomejog = "", objmudou = 1
+    fimse
+  fimse
+  nomejog && tempotaxa_exec
+
+func tempotaxa_exec # Atualiza variável infotaxa
+  datahora hora
+  hora.agora
+  refvar atraso = hora.numdias - diataxa
+  se intpos(config:casatempotaxa) == 0 # Sem taxa de manutenção das casas
+    infotaxa = 0
+    tempotaxa = 0
+  senao !nomejog # Se não pertence a nenhum jogador
+    infotaxa = 0
+    tempotaxa = 0
+  senao !diataxa # Se o tempo quando pagou a taxa está vazio
+    infotaxa = 0
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+    refvar tempo = intpos(config:casatempotaxa)
+    diataxa = hora.numdias + tempo
+    tempo && (diataxa = intdiv(diataxa / tempo) * tempo)
+    objmudou = 1
+  senao atraso >= config:casatempoperder
+    infotaxa = 0
+    tempotaxa = 0
+    nomejog = ""
+    mudachave
+  senao atraso >= config:casatempobloq
+    infotaxa = 2
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+  senao atraso >= config:casatempoaviso
+    infotaxa = 1
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+  senao
+    infotaxa = 0
+    tempotaxa = (86402 - hora.numseg) * 10 # Dois segundos após o dia mudar
+  fimse
+
+func acerta_mudou # Chamado quando a lista das salas da casa mudou
+  txt512 lin
+  lin = "func mudou # Se houve alguma mudança\n"
+  lin += "# Não alterar; função criada automaticamente\nret objmudou"
+  prog p
+  int8 x
+  epara x = 1, x < 10, x += 1
+    p.existe(este, "s" + x) && (lin += "||s" + x + ".objmudou")
+  efim
+  p.criar(este, lin)
+  config:salvar
+  objmudou = 1
+
+func mudachave # Muda o código da fechadura da casa
+  datahora hora
+  hora.agora
+  chave = txt(este) + " " + rand(10) + rand(10) + hora.numtotal
+  objmudou = 1
+
+func mudou # Se houve alguma mudança (há necessidade de salvar)
+  ret objmudou
+
+func salvar # Salva objetos da casa
+  objmudou = 0
+  s1.objmudou = 0, s2.objmudou = 0, s3.objmudou = 0
+  s4.objmudou = 0, s5.objmudou = 0, s6.objmudou = 0
+  s7.objmudou = 0, s8.objmudou = 0, s9.objmudou = 0
+  listaitem item
+  listaobj lista
+  debug dbg
+  dbg.exec = 50000
+  lista.addfim1(este, s1, s2, s3, s4, s5, s6, s7, s8, s9)
+  item = lista.ini, item.depois
+  enquanto item
+    se item.obj.objsav & 1 != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
+      item.removedepois
+    senao lista.total < 2000
+      lista.addfim(item.obj.dentro1, item.obj.dentro2, item.obj.dentro3), item.depois
+    senao
+      item.depois
+    fimse
+  efim
+  arqsav sav1
+  sav1.salvar("sav2/c-" + txt(este, 2) + ".sav", lista, 365000, "x")
+
+func descloja # Retorna informações da casa para a venda
+  uint16 itens
+  uint8 salas
+  itens = s1.objmax + s2.objmax + s3.objmax + s4.objmax + s5.objmax
+  itens += s6.objmax + s7.objmax + s8.objmax + s9.objmax
+  salas = 9 - !s1 - !s2 - !s3 - !s4 - !s5 - !s6 - !s7 - !s8 - !s9
+  txt300 lin
+  lin = txtcopiamai(nome, "A")
+  lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"
+  ret lin + ", até " + itens + " itens"

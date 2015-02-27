@@ -1,7 +1,7 @@
 #ifndef ARQMAPA_H
 #define ARQMAPA_H
 
-#define INT_NOME_TAM 32 // Tamanho máximo do prefixo dos nomes dos arquivos
+#include "misc.h"
 
 //------------------------------------------------------------------------------
 class TClasse;
@@ -12,16 +12,15 @@ class TArqMapa /// Arquivos que compôem o programa interpretado
 public:
     TArqMapa(const char * arquivo);
     ~TArqMapa();
-    static bool NomeValido(const char * nome);
+    static bool NomeValido(const char * nome, bool incluir=false);
         ///< Verifica se nome é um nome válido para arquivo
-        /**<
-         *  @param nome Nome a pesquisar
-         *  @return true se o nome é valido */
+        /**< @param nome Nome a pesquisar
+         *   @param incluir Se está checando nome para a instrução incluir
+         *   @return true se o nome é valido */
     static TArqMapa * Procura(const char * nome);
         ///< Procura um arquivo a partir do nome
-        /**<
-         *  @param nome Nome a pesquisar
-         *  @return Endereço do objeto, ou 0 se não foi encontrado */
+        /**< @param nome Nome a pesquisar
+         *   @return Endereço do objeto, ou 0 se não foi encontrado */
     static void SalvarArq(bool tudo);
             ///< Salva classes em arquivo
             /**< @param tudo true=salvar todas as classes,
@@ -32,13 +31,11 @@ public:
     static unsigned char ParamClasse; ///< Linhas entre classes
     static unsigned char ParamFunc;   ///< Linhas entre funções
     static unsigned char ParamVar;    ///< Linhas entre variáveis
-    static bool MapaGrande;
-        ///< Se o arquivo intmud.int possui a instrução "mapagrande"
 
     bool Mudou;             ///< Se o arquivo foi alterado
     bool Existe;            ///< Se o arquivo já existe
-    char Arquivo[INT_NOME_TAM];   /**< ??? de intmud-???.int;
-                             Se for nulo, é o arquivo intmud.int */
+    char Arquivo[INT_NOME_TAM];  /**< Nome do arquivo sem o ".int" no final
+                             Se for nulo, é o arquivo principal */
 
 // Objetos TClasse
     TClasse * ClInicio;     ///< Primeira classe do arquivo

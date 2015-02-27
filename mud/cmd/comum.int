@@ -1,0 +1,16 @@
+classe comando_comum
+const posic = 8 # Posição mínima para usar o comando
+const objcmd = este # Objeto que processa o comando, ou nulo se não existe
+const iniclasse = !$[arg0] && criar(arg0)
+
+func escr # Processa o comando
+# arg0 = objeto do personagem
+# arg1 = texto digitado após o nome do comando
+
+
+classe cmd_lancar
+herda comando_comum
+const txtajuda = "\b\c3Lançar\b\nSintaxe: LANÇAR <nome da magia>\nLança uma magia."
+const posic = 0
+const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
+# Nota: a função escr aqui é desnecessária

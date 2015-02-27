@@ -1,0 +1,70 @@
+classe jogoini
+# Inicializa as seguintes classes:
+# jogoserv - jogar em uma porta
+# jogolocal - jogar localmente
+# jogobot - jogar em um chat
+telatxt tela
+int1 entrasenha # Se está digitando a senha do bot
+txt100 txtsenha # A senha que está digitando
+intexec fimprog # Para fechar o programa
+debug dbg # Para informar sobre erros no programa
+const iniclasse = !$[arg0] && criar(arg0)
+
+func ini
+  se !config:modobot # Se não vai ativar como bot
+    jogobotfim # Inicializa servidor e jogo local
+  senao config:senha # Se senha está na configuração
+    jogobot:inicio(config:senha) # Inicializa bot
+  senao
+    entrasenha = 1
+    txtsenha = ""
+    tela.msg("Bot: Digite a senha de administração da sala; tecla ESC cancela\n")
+    tela.linha = 1
+
+func jogobotfim
+  config:modoserv && jogoserv:inicio
+  config:modolocal && jogolocal:inicio
+
+func tela_tecla
+  se !entrasenha # Não está entrando com a senha
+    se arg0 == "F10" # Recarregar o programa
+      $mudaprog.exec
+      ret 1
+    senao arg0 != "ESC" # Encerrar o programa
+      ret 0
+    fimse
+    fimprog = 1
+    $miscsav.salvartudo
+    ret 1
+  senao inttotal(arg0) == 1 # Um caracter qualquer: adiciona na senha
+    txtsenha += arg0
+    tela.tecla("*")
+  senao arg0 == "BACK" || arg0 == "LEFT" # Apagar último caracter da senha
+    txtsenha = txt(txtsenha, 0, inttotal(txtsenha) - 1)
+    tela.tecla("BACK")
+  senao arg0 == "ENTER" # Aceitar a senha
+    tela.linha = 0, tela.texto = ""
+    jogobot:inicio(txtsenha)
+    entrasenha = 0, txtsenha = ""
+  senao arg0 == "ESC" # Cancelar a conexão
+    tela.linha = 0, tela.texto = ""
+    entrasenha = 0, txtsenha = ""
+    jogobotfim
+  fimse
+  ret 1
+
+func fimprog_exec
+  terminar
+
+func dbg_erro
+# tela.msg("\b\d1Erro:   " + txtsublin(arg0, 0, 1) + "\b\n" + txtsublin(arg0, 1, 10))
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    continuar !item.obj.jogconfig.15
+    refvar t = item.obj.txtmais
+    t.limpar
+    t.addfim(arg0)
+    t.addini("\b\d1(EXECLOG) " + t.remove + "\b")
+    t.dividelin(75, 75)
+    item.obj.txtmostra
+  efim

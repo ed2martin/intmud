@@ -1,0 +1,120 @@
+classe jogoserv
+herda jogsock
+# Rodando independente
+comum serv j_serv # Para receber conexões
+socket j_conec # Usuário conectado
+inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
+uint8 j_passo # 0=definindo se Papovox, 1=entrando Papovox, 2=dentro
+listaitem j_servip # Objeto jogoservip que possui esse objeto
+int1 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo)
+txt1 j_t_crlf # Para controlar quando enviar CRLF no início
+const j_t_prompt = infotelnet ? j_conec.msg(j_t_crlf), j_t_crlf = ""
+const msgsock = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
+const msgsala = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
+const info = (infotelnet ? "t " : "p ") + j_conec.ip
+
+func msgtodos
+  ref r
+  epara r = $jogoserv, r, r = objdepois(r)
+    r.j_conec.msg(arg0 + "\n")
+  efim
+
+func salaobj
+  ref r
+  epara r = $jogoserv, r, r = objdepois(r)
+    arg0.addfim(r)
+  efim
+
+func inicio
+  telatxt tela
+  se jogoserv:j_serv.abrir(config:servender, config:servporta)
+    tela.msg("Esperando conexões na porta " + config:servporta + "\n")
+  senao
+    tela.msg("Não foi possível abrir a porta " + config:servporta + "\n")
+  fimse
+
+func j_serv_socket # Conectado: cria objeto
+  criar("jogoserv", arg0)
+
+func ini # Objeto foi criado
+# Acerta variáveis
+  j_conec = arg0
+  j_conec.proto = 2
+  j_conec.aflooder = 1
+  j_conec.cores = 2
+# Checa número de conexões por IP
+  indiceitem i
+  ref r
+  r = i.obj("ip " + j_conec.ip)
+  se !r
+    r = criar("jogoservip")
+    r.endereco = "ip " + j_conec.ip
+  senao r.usr.total >= config:servusr
+    j_conec.msg("-Atingido limite de conexões por IP\n")
+    apagar(este)
+    ret
+  senao r.entrou
+    j_conec.msg("-Entre daqui alguns segundos\n")
+    apagar(este)
+    ret
+  fimse
+  j_servip = r.usr.addfim(este)
+  r.entrou = config:servtempo
+# Mensagem inicial
+  se config:modoserv == 2
+    j_conec.msg("+OK Para Telnet pressione ENTER\n")
+    j_tempo = 100 # 10 segundos depois desconecta
+  senao
+    j_passo = 2
+    j_tempo = 36000 # Fecha conexão em uma hora
+    infotelnet = 1
+    jogsock:ini
+
+func fim # Objeto foi apagado
+  ref r
+  r = j_servip.objlista, r.usr.total <= 1 && r.entrou <= 0 && apagar(r)
+  j_passo == 2 && jogsock:fim
+
+func j_tempo_exec # Tempo esgotado
+  se j_passo == 1
+    j_passo = 2
+    jogsock:ini
+  senao
+    j_conec.msg("-Tempo esgotado\n")
+    apagar(este)
+
+func j_conec_fechou # Conexão fechou
+  apagar(este)
+
+func j_conec_msg # Recebeu mensagem do usuário
+# arg0=mensagem
+  j_tempo = 36000 # Fecha conexão em uma hora
+  se j_passo == 2 # Dentro do jogo
+    recebe(txtremove(arg0, "ED"))
+  senao j_passo == 1 # Conectando
+    j_passo = 2
+    jogsock:ini
+  senao j_passo == 0 # Decide se é Papovox ou Telnet
+    j_passo = 1
+    j_tempo = 10
+    se arg0 != "" # Papovox sempre fornece um nome
+      j_conec.msg("+OK Entrando via Papovox\n")
+      j_conec.proto = 5
+    senao # Nome vazio: é Telnet
+      j_conec.msg("-OK Entrando via Telnet")
+      infotelnet = 1
+
+
+classe jogoservip
+indiceobj endereco # "ip " + endereço IP
+listaobj usr # Lita de usuários que possuem esse endereço IP
+inttempo entrou # Se >0, é o tempo de espera para outro usuário entrar
+
+func entrou_exec
+  usr.total == 0 && apagar(este)
+# func ini
+# telatxt t
+# t.msg("INI\n")
+# func fim
+# telatxt t
+# t.msg("FIM " + endereco + "\n")

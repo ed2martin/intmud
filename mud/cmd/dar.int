@@ -1,0 +1,139 @@
+classe cmd_dar
+herda comando_comum
+const txtajuda = config:animal1 ? ta2 : ta1
+const ta1 = "\b\c3Dar\b\n\
+Sintaxe: DAR <objeto> <personagem>\n\
+Dá um objeto para outro personagem."
+const ta2 = "\b\c3Dar\b\n\
+Sintaxe: DAR <objeto> <personagem>\n\
+         DAR <número do animal> <personagem>\n\
+Dá um objeto ou animal para outro personagem."
+const posic = 5
+#
+ref sala # Para quem dar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+ref r # Objeto sendo pego
+txt20 mens # Parte da mensagem
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_dar(arg0, arg1), nulo
+  efim
+# Dar animal a outro personagem
+  se txt1(arg1) == intpos(arg1) && int(arg1) && intsub(arg1) <= 2 && config:animal1 >= arg1
+    refvar r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    ret r.p_soltar, arg0.msg("Não é possível dar esse animal.")
+    ret !txt2(arg1), arg0.msg("Dar " + arg1 + " para quem?")
+    listaobj l
+    nomeobj n
+    n.ini(txt2(arg1), 1)
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
+      se i.obj == arg0
+        ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
+      senao !l.objini.jog
+        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + " não é jogador.")
+      senao !l.objini.animalmais
+        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + " não tem espaço para receber \
+animal.")
+      fimse
+      listaobj e
+      epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
+        ret e.objini.cmd_daranim(arg0, r, l.objini), nulo
+      efim
+      ret r.dono != arg0, nulo # Retorna se não possui mais o animal
+      ret !l.objini.animalmais, nulo
+      arg0.recalc = 1, l.objini.recalc = 1 # Acerta personagens
+      r.mdono(l.objini) # Muda de dono
+      arg0.persobat == r && (arg0.persobat = arg0)
+      arg0.persoesc == r && (arg0.persoesc = arg0)
+      arg0.escolhebat # Escolhe um animal em condições de batalhar
+      $mens.p(arg0, l.objini)
+      $mens.mvis1("$P dá " + r.descnome + " para $a.")
+      epara e.addfim(arg0.evento, r.evento, l.objini.evento), e, e.ini.remove
+        e.objini.cmd_deunim(arg0, r, l.objini)
+      efim
+      ret
+    efim
+    ret arg0.msg("Você não vê " + txt2(arg1) + ".")
+  fimse
+# Obtém para quem dar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  ret !misc:sep2, arg0.msg("Dar itens para quem?")
+  sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
+  se !sala
+    ret arg0.msg("Você não vê " + misc:sep2 + ".")
+  senao !sala.p_recebe
+    ret arg0.msg("Não é possível dar nada para " + sala.descnome + ".")
+  senao sala == arg0
+    ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
+  fimse
+  nomeobj n # Para reconhecer os itens
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
+# Dá os itens
+  achou = 0, erro = "Você não vê isso."
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    total = n # Quantidade de itens
+    r = l.objini # Nota: r pode mudar após r.mudadono
+    se sala.dentro1.total + (r.item == 2 ? 1 : total) >= sala.objmax
+      erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar mais nada."
+      continuar
+    senao sala.volden + r.voltot * total / r.objtot > sala.volmax
+      erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar isso."
+      continuar
+    senao sala.pesoden - sala.pesoveste + r.pesotot * total / r.objtot > sala.pesomax
+      erro = "É pesado demais para " + txtcopiamai(sala.descnome, "A") + "."
+      continuar
+    senao (sala.objnum >> 1) + (r.objnum >> 1) > config:itens
+      erro = txtcopiamai(sala.descnome, "A") + " não consegue carregar isso."
+      continuar
+    fimse
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      sair e.objini.cmd_darobj(arg0, sala, r, total)
+    efim
+    se e
+      sair (achou += 1) >= 10
+      continuar
+    fimse
+    $mens.p(arg0, sala, r)
+    se total <= 1
+      $mens.mvis1("$P dá $o para $a.")
+    senao
+      $mens.mvis1("$P dá " + total + "x $o para $a.")
+    fimse
+    r = r.mudadono(sala, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_deuobj(arg0, sala, r, total)
+    efim
+    sair (achou += 1) >= 10
+  efim
+  ret achou, nulo
+# Dá moedas
+  se arg0.var.z_moedas_ && n.nome("moedas", arg0.var.z_moedas_)
+    total = n
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
+      ret e.objini.cmd_darmoedas(arg0, sala, total), nulo
+    efim
+    ret !total, nulo
+    sala.var.z_moedas_ += total
+    arg0.var.z_moedas_ -= total
+    arg0.var.z_moedas_ < 0 && arg0.var.z_moedas = ""
+    $mens.p(arg0, sala)
+    se total == 1
+      $mens.mvis1("$P dá uma moeda para $a.")
+    senao total == 2
+      $mens.mvis1("$P dá duas moedas para $a.")
+    senao
+      $mens.mvis1("$P dá " + total + " moedas para $a.")
+    fimse
+    ret
+  fimse
+# Não encontrou o item
+  arg0.msg(erro)

@@ -1,0 +1,191 @@
+Salas (classe sala, em obj/sala.int)
+
+const s_titulo = "texto"
+Retorna o título da sala. arg0 é quem está requisitanto o título.
+
+const s_desc = "texto"
+Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
+
+const s_noite = "texto"
+Retorna a descrição da sala quando está de noite.
+arg0 é quem está requisitanto a descrição.
+Inicialmente, para ser a mesma descrição que de dia, é definido como:
+const s_noite = s_desc
+
+const s_ocultar = 0
+Verdadeiro (geralmente 1) deve ocultar a descrição da sala ao entrar.
+
+const s_terreno = 0
+Tipo de terreno:
+0 = Dentro, lugar fechado - 1mv
+1 = Rua de uma cidade - 2mv
+2 = Campo, um campo aberto - 2mv
+3 = Pântano, itens afundam - 3mv
+4 = Floresta densa - 3mv
+5 = Colina - 4mv
+6 = Montanha, excessivamente montanhoso - 6mv
+7 = Água, pode nadar - 4mv
+8 = Água, requer barco para passar - 50mv
+9 = Em baixo d'água - 10mv
+10 = Ar, itens e personagens caem - 10mv
+11 = Deserto, 3x mais sede, 6mv
+
+const s_luz = 0
+Tipo de iluminação:
+0 = Claro com eventos de tempo
+1 = Claro sem eventos de tempo
+2 = Luz do sol
+3 = Escuro
+
+const s_recup = 100
+Taxa de recuperação de vida, mana e movimentos dos personagens.
+Quanto maior, mais recupera; 0 não recupera.
+
+const s_item = 5
+Em quantos minutos sem jogador na sala deve começar a apagar os itens.
+Os itens são apagados aos poucos, pela função t_item_exec, com a variável:
+inttempo t_item # Tempo para começar a apagar itens da sala
+
+const s_morre = 0
+Se o personagem morre ao entrar na sala:
+0 = Não morre
+1 = Morre
+2 = Morre e perde itens e moedas
+
+const s_falar = ""
+Mensagem recebida ao usar o comando falar.
+Se nulo ou um texto vazio, permite falar.
+
+const s_gritar = s_falar
+Mensagem recebida ao usar o comando gritar.
+Se nulo ou um texto vazio, permite gritar.
+
+const s_luta = 1
+Tipo de luta permitido:
+0 = Nenhuma
+1 = Exceto entre jogador
+2 = Qualquer luta
+
+const s_semmagia = 0
+Se não é possível usar magia na sala (0=permite, 1=não permite).
+
+const s_retornar = 0
+Se não é possível retornar (comando e magia retornar) dessa sala
+(0=permite, 1=não permite).
+
+const s_voltar = nulo
+Quando um jogador sair do jogo e voltar, para qual sala deve voltar.
+Exemplo de constante: const s_voltar = $s_casa001
+
+const s_pnj = 0
+Se PNJs não entram (0=podem entrar, 1=não podem).
+
+const s_soltar = 0
+Se é permitido soltar itens:
+0 = Permitido
+1 = Não permitido
+2 = Se soltar, destrói afundando
+3 = Se soltar, destrói caindo
+4 = Se soltar, desintegra
+
+ref dir_[direção]
+Antes de acessar fazer misc:obj=personagem
+Sala na direção especificada.
+Geralmente definido dessa forma: const dir_s = $sala1
+As direções válidas são: n s l o ne no se so c b
+Se estiver ausente, não há sala nessa direção
+
+uint8 porta_[direção]
+const portaini_[direção]
+Antes de acessar fazer misc:obj=personagem
+Especifica o tipo de saída em determinada direção.
+Porta é o valor atual, geralmente definido dessa forma: uint8 porta_s
+PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
+0 = Não há porta
+1 = Está aberto
+2 = Está fechado
+3 = Está trancado
+
+const inv_[direção]
+Antes de acessar fazer misc:obj=personagem
+Verdadeiro se for invisível (não aparece na lista de saídas)
+
+const tranc_[direção]
+Antes de aceessar fazer misc:obj=personagem
+0 = Não pode ser trancado
+1 = Pode ser trancado
+2 = Tranca ao fechar
+
+const fechadura_[direção]
+Antes de acessar fazer misc:obj=personagem
+Texto que contém o código da fechadura.
+Somente uma chave com o mesmo código tranca e destranca.
+Se estiver ausente ou for um texto vazio, não requer chave.
+
+const voar_[direção]
+Antes de acessar fazer misc:obj=personagem
+Se é preciso estar voando ou flutuando para seguir nessa direção.
+0=não, 1=sim
+
+const fugir_[direção]
+Antes de acessar fazer misc:obj=personagem
+Se não existe a possibilidade de fugir de uma luta nessa direção.
+0=permite fugir, 1=não permite fugir
+
+const portanome_[direção]
+Nome da porta na direção especificada. Se estiver ausente ou for um
+texto vazio, será usada a mensagem padrão, que depende da porta.
+Essas constantes são usadas nos comandos abrir/fechar/trancar/destrancar.
+Exemplo:
+const portanome_n = "a porta da casa"
+
+const portaartigo_[direção]
+Se o nome da porta está no singular ou plural, feminino ou masculino.
+0 a (porta)
+1 as (portas)
+2 o (portão)
+3 os (portões)
+
+const s_reset
+Reset de sala:
+Um texto que contém os executados quando algum jogador entra na sala.
+O significado do texto está explicado no início do arquivo adm/reset.int.
+
+const a_reset
+Reset de área:
+Um texto que contém os executados quando ocorre reset da área.
+O significado do texto está explicado no início do arquivo adm/reset.int.
+
+func ver_[nome do a descrição]( jogador, 0 )
+Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
+existir ou falso (ou um texto vazio) se não existir.
+
+func ver_[nome do a descrição]( jogador, 1 )
+Deve retornar um texto que é a descrição extra.
+Exemplo de como criar uma descrição:
+const ver_placa = "Você olha para uma placa vazia."
+
+func descsala( jogador, modo )
+Adiciona texto com a descrição da sala
+Se modo=0, mostra o mais curto possível
+Somar 1 para mostrar descrição completa
+Somar 2 para mostrar saídas
+Somar 4 para mostrar os personagens e itens
+
+func txtsai( jogador )
+Retorna as saídas existentes (texto)
+
+func mudaporta( saída, valor, mens1, mens2 )
+Muda estado de uma saída; variável porta_[arg0]
+Saída é nome da saída (até duas letras)
+Novo valor, vide porta_[direção]
+Mens1 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
+Mens2 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+Nas mensagens, "$m" é o nome da porta
+Retorna: 0=saída inexistente, 1=saída foi alterada
+
+func msg( mensagem )
+Envia mensagem para todos os personagens que estiverem na sala.
+
+func msgtodos( mensagem )
+Envia mensagem para todos os personagens que estiverem acordados na sala.

@@ -235,6 +235,7 @@ public:
 static const TListaInstr ListaInstr[] = {
     { "arqdir",    cArqDir },
     { "arqlog",    cArqLog },
+    { "arqprog",   cArqProg },
     { "arqsav",    cArqSav },
     { "arqtxt",    cArqTxt },
     { "casofim",   cCasoFim },
