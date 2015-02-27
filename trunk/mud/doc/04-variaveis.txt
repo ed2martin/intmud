@@ -1,0 +1,49 @@
+5. Variáveis dinâmicas de personagens, salas e itens
+
+Todos os personagens e salas têm uma lista de variáveis dinâmicas
+(podem ser criadas e apagadas) contidas na seguinte variável:
+textovar var
+
+Os dois primeiros caracteres das variáveis de var indicam o tipo:
+a_ = agenda (1=viu, 2=pegou)
+d_ = variável que é apagada quando o objeto muda de dono
+e_ = nome da classe que contém o efeito
+     tem efeito somente quando o item ou personagem é criado
+j_ = variável que é apagada quando é carregado um jogo salvo
+h_ = habilidade
+i_ = idioma
+m_ = magia
+o_ = item classificado como "outros"
+u_ = usuário ignorado
+z_ = variável não visível ao jogador
+
+Variáveis mais comuns:
+z_aulas = pontos de aula (quantas aulas ainda pode fazer)
+z_captura = nome do item que o jogador escolheu para capturar animais
+z_desc = descrição criada por um jogador; vide comandos pdesc e rdesc
+z_dono = nome do dono original (quem capturou o animal)
+z_email = e-mail do jogador (somente nos personagens de jogadores)
+z_moedas = quantas moedas o personagem, item ou sala possui
+z_pnivel = nível do animal quando foi capturado
+z_salafim = sala para onde vai quando retorna da morte
+z_teleentra = mensagem definida com o comando teleentra
+z_telesai = mensagem definida com o comando telesai
+z_titulo = título criado por um jogador; vide comandos ptitulo e rtitulo
+
+São usados os seguintes textos em indiceobj/indiceitem:
+"ip " + endereço IP
+    Contém a lista de usuários com esse endereço IP
+    Variável jogoservip:endereco, arquivo mud.int
+"bs " + nome da sala no chat (quando o MUD é ativado como bot)
+    Variável jogobot_sala:sala_nome, arquivo mud.int
+"bu " + nome do usuário no chat (quando o MUD é ativado como bot)
+    Variável jogobot_usr:j_nome, arquivo mud.int
+"un " + nome codificado (nome do arquivo SAV sem o .SAV)
+    O objeto responsável pela comunicação com o jogador
+    Variável jogsock:cnome, arquivo obj/jog.int
+"pn " + nome codificado (nome do arquivo SAV sem o .SAV)
+    Personagem do jogador
+    Variável jogador:cnome, arquivo obj/jog.int
+"cj " + nome codificado + " " + prefixo da área
+    Casa do jogador (nome codificado corresponde ao arquivo SAV do jogador)
+    Variável casa:nomejog, arquivo obj/casa.int

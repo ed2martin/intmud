@@ -1,0 +1,52 @@
+classe cmd_recitar
+herda comando_comebebe
+const txtajuda = "\b\c3Recitar\b\n\
+Sintaxe: RECITAR <objeto>\n\
+         RECITAR <objeto>  <alvo>\n\
+Tenta recitar alguma coisa, geralmente um pergaminho.\n\
+Conforme as magias contidas no pergaminho, é possível direcioná-las\n\
+para um personagem ou mesmo um item."
+const posic = 5
+
+func escr
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+# Obtém o objeto
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  n.ini(misc:sep1, 1)
+  txt100 nome
+  nome = misc:sep2
+  ret !arg1, arg0.msg("Recitar o quê?")
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+  efim
+  ref r
+  r = l.objini
+# Checa se consegue recitar
+  se !r
+    ret arg0.msg("Você não vê isso.")
+  senao r.f_tipo != 4 # Checa se pode recitar
+    ret arg0.msg("Não há nada para recitar em " + r.descnome + ".")
+  senao arg0.p_bebida >= $miscfome.cheio / 2
+    ret arg0.msg("Você não consegue ler o que está escrito em " + r.descnome + ".")
+  senao int(r.pnivel) > arg0.pnivel
+    refvar lin = txtcopiamai(r.descnome, "A")
+    ret arg0.msg(lin + " é complicad" + (r.msexo ? "o" : "a") + " demais.")
+  senao arg0.dono.s_falar
+    ret arg0.msg(arg0.dono.s_falar)
+  fimse
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_recitar(arg0, r), nulo
+  efim
+# Recita o objeto
+  $mens.p(arg0, nulo, r)
+  refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P recita $o."
+  $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  r.apagar(1)
+  efeito(arg0, nome, r, 1)
+# Eventos
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_recitou(arg0, r)
+  efim

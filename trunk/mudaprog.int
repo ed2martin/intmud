@@ -6,24 +6,28 @@ classe mudaprog
 #
 prog p
 debug d
-real datamudou # Quando os arquivos foram atualizados pela última vez
+textovar arqlista # Data e hora dos arquivos, para detectar quando mudaram
 textotxt arqmudou # Sufixo dos arquivos que mudaram
 textovar apagarcl # Classes que serão apagadas
 textovar mudarcl # Novo conteúdo das classes
 textovar inicl # Classes que serão inicializadas (funçao iniclasse)
 intexec passofunc # Para mudar classes
 uint8 passonum # Número do passo atual
-
-func iniclasse
-  criar(arg0)
+const errlin = 20 # Quantidade máxima de linhas de erros
+const iniclasse = !$[arg0] && criar(arg0)
 
 func ini
-  datahora dh
-  dh.agora, datamudou = dh.numtotal
+  acertalista
+
+func acertalista # Acerta variável arqlista
+  arqlista.limpar
+  arqdir dir
+  epara p.iniarq, p.lin, p.depois
+    arqlista.x[p.texto] = dir.mtempo(p.arqnome(p.texto))
+  efim
 
 func exec # Recarrega arquivos
   passonum = 1, passofunc = 1
-# msg("[" + datamudou + "]")
 
 func msg
   telatxt tela
@@ -35,33 +39,19 @@ func passofunc_exec # Próximo passo para alterar programa
 
 func passo1 # Atualiza lista de arquivos que mudaram
 # Acerta variável: textotxt arqmudou
-  datahora dh
   arqdir dir
-  txt100 nomeint
-  txt100 t1
+  arqprog aprg
   arqmudou.limpar
-  epara p.iniarq, p, p.depois
+# Arquivos apagados
+  epara p.iniarq, p.lin, p.depois
     dir.tipo(p.arqnome(p.texto)) != "A" && arqmudou.addfim(p.texto + "=1")
   efim
-  nomeint = p.arqnome("")
-  nomeint = txt(nomeint, 0, inttotal(nomeint) - 4)
-  epara dir.abrir("."), dir.lin, dir.depois
-    continuar txtfim(dir.texto, 4) != ".int"
-    continuar txt(dir.texto, 0, inttotal(nomeint)) != nomeint
-    t1 = dir.mtempo(dir.texto)
-    dh.ano = txt1(t1)
-    dh.mes = txtsub(t1, 1, 1)
-    dh.dia = txtsub(t1, 2, 1)
-    dh.hora = txtsub(t1, 3, 1)
-    dh.min = txtsub(t1, 4, 1)
-    dh.seg = txtsub(t1, 5, 1)
-    continuar dh.numtotal < datamudou
-    t1 = txt(dir.texto, inttotal(nomeint))
-    se t1 == ".int"
-      arqmudou.addfim("")
-    senao txt(t1, 0, 1) == "-"
-      arqmudou.addfim(txt(t1, 1, inttotal(t1) - 5))
-    fimse
+# Arquivos modificados
+  aprg.abrir
+  arqlista.x != dir.mtempo(aprg.texto + ".int") && arqmudou.addfim("")
+  epara aprg.depois, aprg.lin, aprg.depois
+    refvar t1 = aprg.texto
+    arqlista.x[t1] != dir.mtempo(t1 + ".int") && arqmudou.addfim(t1)
   efim
   ret 1
 
@@ -122,11 +112,13 @@ func passo4 # Muda as classes
   textotxt erros
 # Checa instruções das classes que serão mudadas
   nome = mudarcl.ini
+  d.exec = 100000
   enquanto nome
     textotxt t1
     t1.addfim(mudarcl.valor(nome))
     t1.remove
     t1.addfim(p.classe(nome, t1.remove(10000)))
+    d.ini
 # msg("Ao mudar " + nome + ": " + t1.ini.texto)
     casovar t1.ini.texto
     casose "0" # Classe está diferente
@@ -145,7 +137,7 @@ func passo4 # Muda as classes
   efim
 # Termina se ocorreu algum erro
   se erros.linhas
-    msg(erros.remove(1000))
+    msg(erros.remove(errlin))
     passoerro
     ret 0
   fimse
@@ -153,11 +145,13 @@ func passo4 # Muda as classes
   epara nome = mudarcl.ini, nome, nome = mudarcl.depois(nome)
     se p.criar(nome + "\n" + mudarcl.valor(nome))
       erros.addfim("Erro ao alterar classe " + nome)
+      msg(mudarcl.valor(nome))
+      msg(p.criar(nome + "\n" + mudarcl.valor(nome)))
     fimse
   efim
 # Termina se ocorreu algum erro
   se erros.linhas
-    msg(erros.remove(1000))
+    msg(erros.remove(errlin))
     passoerro
     ret 0
   fimse
@@ -175,8 +169,7 @@ func passo5 # Apaga as classes pendentes e inicializa outras classes
     !p.apagar(nome) && t1.addfim("Erro ao apagar classe: " + nome + "\n")
   efim
 # Acerta tempo da última alteração
-  datahora dh
-  dh.agora, datamudou = dh.numtotal + 1
+  acertalista
 # Classes criadas
   epara nome = inicl.ini, nome, nome = inicl.depois(nome)
     t2.addfim(nome)
@@ -195,10 +188,7 @@ func passo5 # Apaga as classes pendentes e inicializa outras classes
 # Mensagem na tela
   mudarcl.limpar
   apagarcl.limpar
-  se t1
-    msg("MUDANÇAS:\n" + t1.remove(1000))
-  senao
-    msg("MUDANÇAS:\nNada mudou")
+  msg(t1 ? t1.remove(errlin) : "Nada mudou")
   fimse
   ret 1
 

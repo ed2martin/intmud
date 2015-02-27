@@ -1,0 +1,384 @@
+classe atualiza
+# Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
+prog p
+debug dbg
+uint16 versao
+telatxt tela
+intexec ini2
+
+func p_criar # Para testar as modificações
+  se args == 1
+    tela.msg("p.criar1(" + arg0 + ")\n")
+  senao
+    tela.msg("p.criar2(" + arg0 + " , " + arg1 + ")\n")
+
+func p_apagar # Para testar as modificações
+  se args == 1
+    tela.msg("p.apagar1(" + arg0 + ")\n")
+  senao
+    tela.msg("p.apagar2(" + arg0 + " , " + arg1 + ")\n")
+
+func criafunc # Cria função ou constante se não existir
+# arg0 = nome da classe
+# arg1 = definição da função ou constante
+  refvar nome = txtsub(txtsepara(arg1, "LD+O,O+LD"), 1, 1)
+  !p.existe(arg0, nome) && p.criar(arg0, arg1)
+
+const iniclasse = !$[arg0] && criar(arg0)
+
+func ini
+  ini2 = 1
+# Checa e muda a versão
+  ret (versao = config:versao) >= 297, nulo
+  p.criar("config", "const versao = 297 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  config:salvar
+# Coloca habilidades e magias no arquivo mud-b-config.int
+  se versao < 292
+    textotxt t
+    epara p.iniarq("b-config"), p.lin, p.depois
+      continuar txt(p.texto, 0, 4) != "cmd_" && txt(p.texto, 0, 6) != "magia_"
+      t.addfim(p.texto)
+    efim
+    epara p.iniarq("b-hab"), p.lin, p.depois
+      t.addfim(p.texto)
+    efim
+    dbg.ini
+    t.ordena
+    p.clini("b-hab", t.ini.texto)
+    enquanto t.linhas > 1
+      p.cldepois(t.remove, t.ini.texto)
+    efim
+    dbg.ini
+    criafunc("e_congelado", "func cmd_mover\narg0.msg(\"Você congelou\")\nret 1")
+    criafunc("e_congelado", "func cmd_recalc2\narg0.atribs.addfim(\"Congelado\")")
+    criafunc("config", "const echomsg = \"\b\cb(ADM) $m\b\"")
+    criafunc("config", "const chatmsg = \"(chat) $R '$m'\"")
+    criafunc("config", "const novatosmsg = \"(novatos) $R '$m'\"")
+    criafunc("config", "const falarmsg = \"$P falou '$m'\"")
+    criafunc("config", "const perguntarmsg = \"$P perguntou '$m'\"")
+    criafunc("config", "const exclamarmsg = \"$P exclamou '$m'\"")
+    criafunc("config", "const ponderarmsg = \"$P ponderou '$m'\"")
+    criafunc("config", "const continuarmsg = \"$P continuou '$m'\"")
+    dbg.ini
+  fimse
+# Para cada habilidade ou magia:
+# msgauto1 = msgacertou1
+# msgacertou1 e msgmatou1 = msgacertou2
+# msgerrou1 = msgerrou2
+# msgnulo1 = msgnulo2
+# Apaga msgacertou2, msgnulo2 e msgerrou2
+  se versao < 293
+    textotxt t
+    epara p.iniclasse("cmd_"), p.lin, p.depois
+      [p.texto]:cmdmenu && t.addfim(p.texto)
+    efim
+    epara p.iniclasse("magia_"), p.lin, p.depois
+      [p.texto].cmdmenu && t.addfim(p.texto)
+    efim
+    txt100 lin
+    enquanto t.linhas
+      dbg.ini
+      refvar obj = criar(t.remove)
+      apagar(obj)
+      se obj.msgacertou2
+        refvar t1 = (obj.msgacertou1 ? obj.msgacertou1 : obj.msgacertou2) + ", $m\\n\\n"
+        refvar t2 = (obj.msgerrou2 ? obj.msgerrou2 : obj.msgacertou2) + ", errou"
+        refvar t3 = (obj.msgnulo2 ? obj.msgnulo2 : obj.msgacertou2) + ", nada acontece"
+        lin = "const msgatk0 = \""
+        p.criar(obj, lin + t1 + t1 + "\\n" + t1 + "\\n" + t2 + "\\n\\n\\n" + t3 + "\"")
+      fimse
+      p.apagar(obj, "msgacertou1")
+      p.apagar(obj, "msgacertou2")
+      p.apagar(obj, "msgerrou1")
+      p.apagar(obj, "msgerrou2")
+      p.apagar(obj, "msgnulo1")
+      p.apagar(obj, "msgnulo2")
+    efim
+    dbg.ini
+# Cria constante config:atk_txt
+    criafunc("config", "const atk_txt = \"bater\"")
+# Cria habilidade bater
+    t.addfim("cmd_Bater\nb-hab\nherda comando_ataque")
+    t.addfim("const nomevar = \"h_Bater\"")
+    t.addfim("const tipoalvo = 6 # Alvo: Ataque automático")
+    lin = "#, $m\\n\\n#, $m\\n\\n\\n#, $m\\n\\n\\n#, errou\\n\\n\\n#, nada acontece\""
+    t.addfim("const msgatk0 = \"" + txttroca(lin, "#", "$P bate em $a"))
+    p.criar(t.remove(100))
+# Cria constante config:equip_ordem
+    criafunc("config", "const equip_ordem = \"49 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 \
+19 20 21 22 23 24 25 26 27 28 29\"")
+# Cria função atribcfg
+    t.addfim("func atribcfg # Altera atributos do personagem")
+    t.addfim("# Função criada automaticamente")
+    t.addfim("pvidamax = 15 * pnivel + 45")
+    t.addfim("pmanamax = 1 * pnivel + 30")
+    t.addfim("pmovemax = 2 * pnivel + 30")
+    t.addfim("pveloc1 = 5 * pnivel + 20")
+    t.addfim("atknorm = 12 * pnivel + 36")
+    t.addfim("defnorm = 10 * pnivel + 30")
+    t.addfim("atkesp = 12 * pnivel + 36")
+    t.addfim("defesp = 10 * pnivel + 30")
+    t.addfim("evasao = 2 * pnivel + 30")
+    t.addfim("precisao = 2 * pnivel + 30")
+    t.addfim("pesomax = 20000")
+    p.criar("config", t.remove(100))
+    config:salvar
+  fimse
+# Cria habilidades para cada ataque automático, nas variáveis:
+# config:arma_txt, config:arma_acertou, config:arma_errou, config:arma_nulo
+# Depois apaga essas variáveis
+  se versao < 293
+    textotxt arma
+    textotxt acertou
+    textotxt errou
+    textotxt vazio
+    arma.addfim(config:arma_txt), arma.remove
+    acertou.addfim(config:arma_acertou), acertou.remove
+    errou.addfim(config:arma_errou), errou.remove
+    vazio.addfim(config:arma_nulo), vazio.remove
+    txt100 lin
+    enquanto arma.linhas
+      refvar cl = "cmd_" + txtmin(txts(arma.remove))
+      se !p.existe(cl)
+        textotxt t
+        t.addfim(cl)
+        t.addfim("b-hab")
+        t.addfim("herda comando_ataque")
+        t.addfim("const nomevar = \"h_" + txt(cl, 4) + "\"")
+        p.criar(t.remove(100))
+      fimse
+      p.criar(cl, "const tipoalvo = 6 # Alvo: Ataque automático")
+      refvar t1 = (acertou.ini.texto ? acertou.ini.texto : "$P ataca $a") + ", $m\\n\\n"
+      refvar t2 = errou.ini.texto ? errou.ini.texto : "$P ataca $a, errou"
+      refvar t3 = vazio.ini.texto ? vazio.ini.texto : "$P ataca $a, nada acontece"
+      lin = "const msgatk0 = \""
+      p.criar(cl, lin + t1 + t1 + "\\n" + t1 + "\\n" + t2 + "\\n\\n\\n" + t3 + "\"")
+      acertou.remove, errou.remove, vazio.remove
+    efim
+    p.apagar("config", "arma_acertou")
+    p.apagar("config", "arma_errou")
+    p.apagar("config", "arma_nulo")
+    p.apagar("config", "atktipo")
+    criafunc("config", "const matartipo = 1")
+    criar("admordena", "b-hab")
+    dbg.ini
+  fimse
+# Comando gritar
+  se versao < 297
+    criafunc("config", "const gritarmsg = \"$P gritou '$m'\"")
+    criafunc("config", "const gritarmove = 2")
+  fimse
+
+func ini2_exec
+  apagar(este)
+# Checa e muda a versão
+  ret (versao = config:versao) >= 334, nulo
+  p.criar("config", "const versao = 334 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  config:salvar
+# Acerta variáveis das habilidades e magias
+  se versao < 298
+    uint16 valor
+    epara p.iniarq("b-hab"), p.lin, p.depois
+      dbg.ini
+      se (valor = ([p.texto]:a_vida1 + [p.texto]:a_vida2) / 2) != 0
+        p.criar(p.texto, "const a_vida1 = " + valor)
+      senao
+        p.apagar(p.texto, "a_vida1")
+      fimse
+      p.apagar(p.texto, "a_vida2")
+      se (valor = ([p.texto]:a_mana1 + [p.texto]:a_mana2) / 2) != 0
+        p.criar(p.texto, "const a_mana1 = " + valor)
+      senao
+        p.apagar(p.texto, "a_mana1")
+      fimse
+      p.apagar(p.texto, "a_mana2")
+      se (valor = ([p.texto]:a_move1 + [p.texto]:a_move2) / 2) != 0
+        p.criar(p.texto, "const a_move1 = " + valor)
+      senao
+        p.apagar(p.texto, "a_move1")
+      fimse
+      p.apagar(p.texto, "a_move2")
+      refvar msgini = txtsublin([p.texto]:msgini, 0, 1)
+      se [p.texto]:msgatk0
+        refvar lin = msgini + "\n\n\n" + [p.texto]:msgatk0
+        p.criar(p.texto, "const msgatk0=\"" + txtvis(lin) + "\"")
+      senao msgini
+        p.criar(p.texto, "const msgatk0=\"" + txtvis(msgini) + "\"")
+      fimse
+      se [p.texto]:msgatk1
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk1) + "\"")
+      fimse
+      se [p.texto]:msgatk2
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk2) + "\"")
+      fimse
+      se [p.texto]:msgatk3
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk3) + "\"")
+      fimse
+      se [p.texto]:msgatk4
+        p.criar(p.texto, "const msgatk1=\"\\n\\n\\n" + txtvis([p.texto]:msgatk4) + "\"")
+      fimse
+      p.apagar(p.texto, "msgini")
+    efim
+  fimse
+# Mensagens do comando Sussurrar
+  se versao < 303
+    criafunc("config", "const sussurrar1msg = \"$P sussurrou algumas palavras.\"")
+    criafunc("config", "const sussurrar2msg = \"$P sussurou para $a '$m'\"")
+    criafunc("config", "const sussurrar3msg = \"$P sussurou algumas palavras para $a.\"")
+  fimse
+# Mensagens dos comandos Telepatia e Rezar e funções de reset das salas
+  se versao < 307
+    criafunc("config", "const telepatia1 = \"(+telepatia) $R '$m'\"")
+    criafunc("config", "const telepatia2 = \"(telepatia) $R '$m'\"")
+    criafunc("config", "const rezar1msg = \"(rezar) $R '$m'\"")
+    criafunc("config", "const rezar2msg = \"Você rezou '$m'\"")
+    debug d
+    epara p.iniclasse("s_"), p.lin, p.depois
+      $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
+      $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
+      d.ini
+    efim
+  fimse
+# Tipos de ataque (em habilidades e magias)
+  se versao < 309
+    epara p.iniarq("b-hab"), p.lin, p.depois
+      dbg.ini
+      continuar p.existe(p.texto, "tipoalvo") != 1
+      casovar [p.texto]:tipoalvo
+      casose "0"
+        p.criar(p.texto, "const tipoalvo = 0 # Alvo: 0 Qualquer um; ataque")
+        sair
+      casose "1"
+        p.criar(p.texto, "const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque")
+        sair
+      casose "2"
+        p.criar(p.texto, "const tipoalvo = 2 # Alvo: 2 Todos dividindo o ataque")
+        sair
+      casose "3"
+        p.criar(p.texto, "const tipoalvo = 4 # Alvo: 4 Todos sem dividir o ataque")
+        sair
+      casose "4"
+        p.criar(p.texto, "const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque")
+        sair
+      casose "5"
+        p.criar(p.texto, "const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque")
+        sair
+      casose "6"
+        p.criar(p.texto, "const tipoalvo = 8 # Alvo: 8 Ataque automático")
+        sair
+      casose "7"
+        p.criar(p.texto, "const tipoalvo = 9 # Alvo: 9 Nenhum (não ataca)")
+        sair
+      casofim
+    efim
+  fimse
+# Controle de banda
+  se versao < 310
+    criafunc("config", "const banda1 = 4000")
+    criafunc("config", "const banda2 = 500")
+    criafunc("config", "const nivelveterano = 10")
+    criafunc("config", "const salvainiciante = 30")
+    criafunc("config", "const salvaveterano = 60")
+    criafunc("config", "const salvaadmin = 120")
+  fimse
+# Retira mostraimortal e salvartipo, coloca mensagens de hora e nível
+  se versao < 314
+    p.apagar("config", "mostraimortal")
+    p.apagar("config", "salvartipo")
+    criafunc("config", "const horamsg5 = \"Começa a amanhecer.\"")
+    criafunc("config", "const horamsg6 = \"O sol surge no leste.\"")
+    criafunc("config", "const horamsg17 = \"O sol começa a se por no oeste.\"")
+    criafunc("config", "const horamsg18 = \"A noite chega.\"")
+    criafunc("config", "const nivelmsg1 = \"$P avança para o nível $m.\"")
+    criafunc("config", "const nivelmsg2 = \"$1 avança para o nível $m.\"")
+  fimse
+# Diversos
+  se versao < 318
+    criafunc("config", "const atalhos = 50")
+    criafunc("config", "const apresban = \"Seu endereço IP está bloqueado para novos personagens\"\
+")
+    criafunc("config", "const rezou1msg = \"(rezou) $R para $c '$m'\"")
+    criafunc("config", "const rezou2msg = \"Os deuses responderam '$m'\"")
+    criafunc("config", "const casajog = 3")
+    criafunc("config", "const casanivel = 30")
+    criafunc("config", "const casachave = 100")
+    criafunc("config", "const casafechadura = 500")
+  fimse
+# Diversos
+  se versao < 319
+    criafunc("config", "const casaabriu1 = \"Você segura uma chave e abre a porta da sua \
+casa.\"")
+    criafunc("config", "const casaabriu2 = \"$P segura uma chave e abre a porta da casa del$v.\""\
+)
+  fimse
+# Casas
+  se versao < 321
+    criafunc("config", "const casataxa = 5")
+    criafunc("config", "const casatempotaxa = 30")
+    criafunc("config", "const casatempoaviso = 5")
+    criafunc("config", "const casatempobloq = 20")
+    criafunc("config", "const casatempoperder = 180")
+    criafunc("config", "const casamsgaviso = \"Há uma nota avisando que a taxa de manutenção da \
+casa está atrasada.\"")
+    criafunc("config", "const casamsgbloq = \"A porta foi lacrada por falta de pagamento.\"")
+  fimse
+# Echo, fórmula de experiência em batalha e sala fora da casa
+  se versao < 324
+    criafunc("config", "const jecho1msg = \"\b\cb$m\b\"")
+    criafunc("config", "const jecho2msg = \"\bJEcho para $a '$m'\"")
+    criafunc("config", "const sechomsg = \"\b\cb$m\b\"")
+    criafunc("config", "const atkbexp = 8")
+    criafunc("config", "const atkcexp = 8")
+    criafunc("config", "const atkmaxexp = 100")
+    criafunc("config", "const ptitulonivel = 10")
+    criafunc("config", "const pdescnivel = 5")
+    debug d
+    epara p.iniclasse("c_"), p.lin, p.depois
+      d.ini
+      p.apagar(p.texto, "sfora")
+    efim
+  fimse
+# SVN 326
+  se versao < 326
+    criafunc("config", "const atknivel = 1")
+  fimse
+# SVN 334
+  se versao < 334
+    debug d
+    p.clfim("config/config", "config")
+    epara p.iniclasse("e_"), p.lin, p.depois
+      d.ini, p.texto != "e_apagar" && p.clfim("config/efeito", p.texto)
+    efim
+    epara p.iniclasse("cmd_"), p.lin, p.depois
+      d.ini, [p.texto]:cmdmenu && p.clfim("config/hab", p.texto)
+    efim
+    epara p.iniclasse("magia_"), p.lin, p.depois
+      d.ini, p.clfim("config/hab", p.texto)
+    efim
+    epara p.iniclasse("soc_"), p.lin, p.depois
+      d.ini, p.clfim("config/social", p.texto)
+    efim
+    epara p.iniclasse("tipo_"), p.lin, p.depois
+      d.ini, p.clfim("config/tipo", p.texto)
+    efim
+    epara p.iniclasse("a_"), p.lin, p.depois
+      d.ini, p.clfim("areas/" + txt(p.texto, 2), p.texto)
+    efim
+    epara p.iniclasse("b_"), p.lin, p.depois
+      d.ini, p.clfim("areas/" + txt(p.texto, 2), p.texto)
+    efim
+    epara p.iniclasse("c_"), p.lin, p.depois
+      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+    efim
+    epara p.iniclasse("i_"), p.lin, p.depois
+      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+    efim
+    epara p.iniclasse("p_"), p.lin, p.depois
+      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+    efim
+    epara p.iniclasse("s_"), p.lin, p.depois
+      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+    efim
+  fimse
+# Avisa que atualizou arquivos
+  tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

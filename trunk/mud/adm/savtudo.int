@@ -1,0 +1,12 @@
+classe adm_savtudo
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3SavTudo\b\n\
+Sintaxe: SAVTUDO\n\
+Salva todos os jogos de jogadores e casas pendentes em arquivo."
+
+func escr
+  $miscsav.salvartudo
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.23 && item.obj.msg("\b(savtudo) " + arg0.nome + " salvou os jogos.\b")
+  efim

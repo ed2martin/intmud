@@ -1,0 +1,80 @@
+classe cmdfim_chat
+herda comando_comum
+const posic = 0
+const objcmd = config:chattipo ? este
+const txtajuda = config:chattipo ? txtajuda1
+const txtajuda1 = config:chattipo == 1 ? aj1 + aj2 : aj1
+const aj1 = "\b\c3Canal Chat\b\n\
+Sintaxe: CHAT <mensagem>\n\
+         .<mensagem>\n\
+Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
+Para habilitar ou desabilitar esse canal, use o comando CONFIG."
+const aj2 = "\n\
+Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
+não irão para as outras outras salas."
+
+func escr
+  $mens.p(arg0)
+  $mens.mens = arg1
+  se arg0.pnivel < config:chatnivel
+    arg0.msg("Para escrever no canal CHAT você precisa estar no nível " + config:chatnivel + \
+".")
+  senao !arg0.jogconfig.4
+    arg0.msg("Canal CHAT está desabilitado.")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após CHAT.")
+  senao config:chattipo == 2 # Escrever para todos
+    $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      continuar !item.obj.jogconfig.4 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:chatmsg, item.obj.perso))
+    efim
+  senao # Escrever para quem estiver na mesma sala
+    $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
+    listaobj l
+    epara arg0.sock.salaobj(l), l, l.ini.remove
+      continuar !l.objini.jogconfig.4 || l.objini.perso.var.u_[arg0.nome]
+      l.objini.msg($mens.proc(config:chatmsg, l.objini.perso))
+    efim
+
+
+classe cmdfim_novatos
+herda comando_comum
+const posic = 0
+const objcmd = config:novatostipo ? este
+const txtajuda = config:novatostipo ? txtajuda1
+const txtajuda1 = config:chattipo == 1 ? aj1 + aj2 : aj1
+const aj1 = "\b\c3Canal Novatos\b\n\
+Sintaxe: NOVATOS <mensagem>\n\
+Envia mensagem para os jogadores que estiverem com o canal NOVATOS\n\
+habilitado. Esse canal é destinado a dúvidas de iniciantes.\n\
+Para habilitar ou desabilitar esse canal, use o comando CONFIG."
+const aj2 = "\n\
+Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
+não irão para as outras outras salas."
+
+func escr
+  $mens.p(arg0)
+  $mens.mens = arg1
+  se arg0.pnivel < config:novatosnivel
+    arg0.msg("Para escrever no canal NOVATOS você precisa estar no nível " + config:novatosnivel \
++ ".")
+  senao !arg0.jogconfig.11
+    arg0.msg("Canal NOVATOS está desabilitado.")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após NOVATOS.")
+  senao config:novatostipo == 2 # Escrever para todos
+    $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      continuar !item.obj.jogconfig.11 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:novatosmsg, item.obj.perso))
+    efim
+  senao # Escrever para quem estiver na mesma sala
+    $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
+    listaobj l
+    epara arg0.sock.salaobj(l), l, l.ini.remove
+      continuar !l.objini.jogconfig.11 || l.objini.perso.var.u_[arg0.nome]
+      l.objini.msg($mens.proc(config:novatosmsg, l.objini.perso))
+    efim

@@ -1,0 +1,32 @@
+classe cmdfim_ignorar
+herda comando_comum
+const posic = 0
+const txtajuda = "\b\c3Ignorar\b\n\
+Sintaxe: ignorar [personagem]\n\
+Permite ignorar todas as mensagens do personagem de outro jogador.\n\
+Se o jogador já estiver sendo ignorado, esse comando deixa de ignorar.\n\
+Digitanto apenas ignorar, sem nenhum nome, mostra quem você está ignorando."
+
+func escr
+  se !arg1
+    textotxt t
+    txt100 nome
+    nome = arg0.var.ini("u_")
+    enquanto txt(nome, 0, 2) == "u_"
+      t.addfim(txt(nome, 2)), nome = arg0.var.depois(nome)
+    efim
+    ret t.linhas == 0, arg0.msg("Não está ignorando ninguém.")
+    arg0.msg("Está ignorando: " + txttroca(t.remove(1000), "\n", ", "))
+  senao arg0.var.u_[arg1]
+    arg0.var.u_[arg1] = ""
+    arg0.msg("Você deixa de ignorar " + arg1 + ".")
+  senao
+    int8 total
+    txt100 nome
+    nome = arg0.var.ini("u_")
+    enquanto txt(nome, 0, 2) == "u_" && total < 20
+      nome = arg0.var.depois(nome), total += 1
+    efim
+    ret total >= 20, arg0.msg("Atingido o limite de usuários ignorados.")
+    arg0.var.u_[arg1] = 1
+    arg0.msg("Você ignora " + arg1 + ".")

@@ -1,0 +1,211 @@
+Índice
+1. Comandos
+2. Criando menus de edição (administração)
+3. Funcionamento interno das opções dos menus
+
+
+1. Comandos
+
+São classes cujo nome começa com um dos seguintes textos:
+cmd_  para comandos normais
+cmdfim_ para comandos de baixa prioridade
+magia_  para magias (só podem ser lançadas com o comando Lançar)
+adm_ para comandos de administração (não existem para não administradores)
+Em seguida vem o nome do comando.
+
+Exemplos:
+cmd_config  trata do comando Config
+cmdfim_chat  trata do comando Chat
+
+Quando o jogador digita algo, primeiro são verificas as classe 'adm_',
+caso seja um administrador. Depois, as classes 'magia_' e 'cmd_', e por
+último, 'cmdfim_'.
+
+A classe 'comando_comum' é herdada por todos os comandos.
+Quando é necessário uma única classe herdada por dois ou mais comandos,
+geralmente o nome dessa classe começa com 'comando_'.
+
+Classes de comandos podem ter as seguintes funções e constantes:
+const objcmd = este # Objeto que processa o comando, ou nulo se não existe
+
+func escr # Processa o comando
+# arg0 = objeto do personagem
+# arg1 = texto digitado após o nome do comando
+
+func txtajuda
+# arg0 = objeto do personagem
+# Deve retornar o texto de ajuda, ou nulo se não houver nenhuma ajuda
+# Não depende da constante objcmd
+
+func passo
+# Função executada quando a variável passo for o nome da classe
+# arg0 = objeto jogsock do jogador (vide arquivo obj/jog.int)
+# arg1 = texto digitado
+# Deve retornar 1 se processou o que o jogador digitou
+
+
+2. Criando menus de edição (administração)
+
+Primeiro criar uma classe como a seguinte:
+
+classe menu_config
+herda comando_menu
+
+# Título é o nome do menu (aparece antes da lista de opções)
+const titulo = "Configuração do MUD"
+
+# Quantos caracteres deve ter o nome de cada opção do menu
+# Se tiver menos que isso, são acrescentados espaços
+const colunas = 25
+
+# Nome da classe que contém o menu anterior, ou "" se não houver menu anterior
+# Quando o usuário escolhe sair do menu (teclando Z), vai para esse menu
+const menufim = ""
+
+# Primeira opção do menu:
+
+const nome1 = "Quantidade de animais"
+# Nome é o nome da opção
+
+const info1 = "Quantos animais um jogador pode usar em batalha"
+# Texto de informações, mostrado quando a opção é escolhida
+# Se estiver ausente, não é mostrado nenhum texto
+
+const clas1 = "config"
+# Nome da classe
+
+const vari1 = "animal"
+# Nome da variável
+
+const tipo1 = "opc_numero--"
+# Tipo de dado - nome da classe responsável pelo dado sendo editado:
+# "opc_linha" = texto de uma linha (exemplo: título das salas)
+# "opc_txtlinha" = uma linha de um texto de várias linhas
+# "opc_texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
+# "opc_numero" = valor numérico inteiro
+# "opc_numreal" = valor numérico que pode ter dígitos após a vírgula
+# "opc_opcao" = um valor numérico baseado numa lista de opções
+# "opc_txtopcao" = uma lista de opções: texto de várias linhas, sendo que
+#                  pode-se mudar uma linha sem mudar as outras
+# "opc_vetor" = um valor numérico sendo que cada bit é uma opção de uma lista
+# "opc_tipos" = texto contendo uma lista de tipos (raças e classes)
+# "opc_tipodep" = texto contendo uma lista de habilidades, magias e/ou idiomas
+# "opc_simnao" = uma opção que pode ser apenas 0 (não) ou 1 (sim)
+# "opc_sala" = uma sala
+# "opc_atribcfg" = alterar atributos base para todos os personagens
+# "opc_atribnum" = alterar atributos numéricos de um personagem
+# "opc_atribbit" = alterar atributos sim/não de um personagem
+# "opc_atribatk" = alterar atributos de ataque de um personagem
+# "opc_atribdef" = alterar atributos de defesa de um personagem
+# "opc_ajuda" = um texto explicativo, que é mostrado ao usuário
+#               nesse caso, só é usada a constante extr (vide abaixo)
+# Pode ser também o nome de um submenu
+# Se não for possível editar como função, acrescente um sinal de '-' no nome
+# Se não for possível apagar, acrescente mais um sinal de '-' no nome
+
+const extr1 = "1 8"
+# Opções extras. Os tipos que possuem opções extras são:
+# No tipo "opc_txtlinha" é o número da linha (começa no 0)
+# No tipo "opc_numero" são os valores mínimo e máximo (nesse caso, vai de 1 a 8)
+# No tipo "opc_opcao" é a lista de opções
+# No tipo "opc_txtopcao" são a quantidade mínima e a quantidade máxima de linhas
+#         e o número da primeira opção que pode ser alterada
+# No tipo "opc_ajuda" é o texto que será mostrado ao usuário
+
+const exec1 = "atualiza"
+# Se não for nulo, quando o usuário muda a opção, é executada a função
+# com esse nome de todos os objetos que foram mudados
+# É possível especificar também a classe, da seguinte forma:
+# const exec1 = "nomedaclasse:nomedafunção"
+
+const titu1 = "um texto qualquer"
+# Título: mensagem que deve ser apresentada antes da opção
+
+# As outras opções seguem o mesmo padrão, apenas mudando o número
+# no nome da variável. Exemplo:
+
+const nome2 = "Senha de administração" # Nome da opção
+const tipo2 = "opc_linha" # Tipo de variável
+const clas2 = "config"
+const vari2 = "senhaadm"
+
+const nome3 = "Tipo de ataque"
+const tipo3 = "opc_opcao"
+const clas3 = "config"
+const vari3 = "atktempo"
+const extr3 = "manual\nautomático" # 0=manual, 1=automático
+
+Para chamar o menu, basta executar a função m_menu do jogador (classe
+jogsock), passando como argumento o nome da classe.
+Exemplo: arg0.sock.m_menu("menu_config")
+
+Alguns exemplos de uso dos diversos tipos de dados:
+
+"opc_linha" - usado em títulos de salas, nome do personagem, descrição curta
+"opc_texto" - descrição de uma sala, ao olhar para um personagem ou item,
+  mensagem de apresentação do mud
+"opc_numero" - nível dos personagens e dos itens, tempo de reset de uma área
+"opc_numreal" - não foi usado, mas parece lógico existir números que podem
+  ter dígitos após a vírgula
+"opc_opcao" - tipo de terreno de uma sala, se uma saída não pode ser trancada,
+  pode ser trancada ou tranca ao fechar, etc. Qualquer coisa que tenha duas
+  opções ou mais, sendo cada uma um número
+"opc_simnao" - qualquer coisa que seja 0=não e 1=sim, como permite PNJ,
+  sala não permite magia, PNJ é agressivo, PNJ é imortal
+"opc_vetor" - em que posições pode vestir um item, quando alguém cria um
+  personagem, quais as opções do comando config vêm habilitadas,
+  quais tipos de ataque são normais e quais são especiais (exemplo,
+  contusão, luta e terra são normais, fogo, água e elétrico são especiais)
+"opc_txtlinha" - cada habilidade e cada magia pode ter até 5 mensagens diferentes
+  para cada coisa; por exemplo, 5 mensagens diferentes quando matou o alvo.
+  Com essa opção são criadas só 5 constantes. Sem, seriam 85, e o código
+  das habilidades e magia seria mais complicado
+"opc_txtopcao" - tipos de produtos existentes, tipos de ataques (água, fogo,
+  etc.), nomes das posições em que pode vestir alguma coisa
+"opc_sala" - em que sala os jogadores começam o jogo e para que sala vão
+  quando morrem
+"opc_atrib*" - um submenu para alterar alguns atributos de itens, personagens
+  e classes, como vida por nível, furtividade, ver invisível, porcentagem
+  de defesa e de ataque para um elemento (cortante, perfurante, água,
+  fogo, terra, etc.)
+"opc_tipos" - com que raças e classes um vendedor ou professor não negocia,
+  que raças e classes não podem vestir um item
+"opc_tipodep" - quais habilidades e magias são necessárias para aprender uma
+  determinada habilidade ou magia
+
+
+3. Funcionamento interno das opções dos menus
+
+Para cada tipo de opção, deve existir uma classe com o mesmo nome,
+com duas funções:
+
+func menu
+É chamada para mostrar a opção no menu
+arg0 = nome da classe (constante clas)
+arg1 = nome da variável (constante vari)
+arg2 = nomes das opções (constante extr)
+
+func passo
+É chamada quando o jogador escolhe a opção do menu
+Vide tópico "Comandos"
+arg0 = objeto jogsock do jogador (vide arquivo obj/jog.int)
+arg1 = texto digitado
+Deve retornar 1 se processou o que o jogador digitou
+
+Outras variáveis da função passo:
+arg0.var.opcnome = nome da opção (constante nome)
+arg0.var.opcclasse = classe da variável (constante clas)
+arg0.var.opcvar = nome da variável (constante vari)
+arg0.var.opcextra = informações extras (constante extr)
+arg0.var.opcpasso = usado para a opção poder voltar ao menu
+ Para sair do menu, chamar passosair( personagem ) da classe comando_adm
+arg0.var.opcvalido = 1 se a opço pode apagar a variável ou 0 se não pode
+arg0.var.opcexec = função executada após alterar as variáveis (constante exec)
+ Isso costuma ser feito com a seguinte linha:
+ criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+
+Quando a função passo altera o programa, costuma-se salvar o programa e gerar
+uma mensagem para os jogadores que estão com o canal admlog habilitado.
+São linhas como essas:
+config:salvar
+admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)

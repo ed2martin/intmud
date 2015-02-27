@@ -1,0 +1,336 @@
+classe cmd_pegar
+herda comando_comum
+const txtajuda = "\b\c3Pegar\b\n\
+Sintaxe: PEGAR <objeto>\n\
+         PEGAR <quantidade> <objeto>\n\
+         PEGAR <objeto> <container>\n\
+         PEGAR <quantidade> <objeto> <container>\n\
+Pega um objeto do chão ou de um container (uma bolsa, uma estante, etc).\n\
+Para pegar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const posic = 5
+#
+ref sala # De onde pegar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+ref r # Objeto sendo pego
+txt20 mens # Parte da mensagem
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_pegar(arg0, arg1), nulo
+  efim
+  arg0.p_espera < 3 && (arg0.p_espera = 3)
+# Obtém o objeto de onde pegar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    sala = arg0.dono
+    mens = "."
+  senao
+    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !sala
+      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao !sala.i_aberto
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
+    senao sala.i_aberto > 2 && !arg0.jogconfig.14
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
+"a."))
+    fimse
+    mens = " $d $a."
+  fimse
+  nomeobj n # Para reconhecer os itens
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
+# Pega os itens
+  achou = 0, erro = "Você não vê isso."
+  epara l.addfim(sala.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    total = n # Quantidade de itens
+    r = l.objini # Nota: r pode mudar após r.mudadono
+    se r.i_pegar
+      erro = r.i_pegar
+      continuar
+    senao r.persolugar
+      casovar r.persolugar.objini.posicao
+      casose "4"
+        erro = "Você não consegue pegar porque tem alguém dormindo em cima."
+        sair
+      casose "5"
+        erro = "Você não consegue pegar porque tem alguém descansando em cima."
+        sair
+      casose "6"
+        erro = "Você não consegue pegar porque tem alguém sentado em cima."
+        sair
+      casose
+        erro = "Você não consegue pegar porque tem alguém em cima."
+      casofim
+      continuar
+    senao arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax
+      erro = "Você não consegue carregar tanta coisa."
+      continuar
+    senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
+      erro = "Você não consegue carregar tanta coisa."
+      continuar
+    senao arg0 == sala.dono
+    senao arg0.pesoden - arg0.pesoveste + r.pesotot * total / r.objtot > arg0.pesomax
+      se r.pesotot > r.objtot * arg0.pesomax * 2
+        erro = "É pesado demais."
+      senao
+        erro = "Você não consegue carregar tanto peso."
+      fimse
+      continuar
+    senao (arg0.objnum >> 1) + (r.objnum >> 1) > config:itens
+      erro = "Você não consegue carregar tanta coisa."
+      continuar
+    fimse
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      sair e.objini.cmd_pegarobj(arg0, sala, r, total)
+    efim
+    se e
+      sair (achou += 1) >= 10
+      continuar
+    fimse
+    $mens.p(arg0, sala, r)
+    se total <= 1
+      $mens.mvis1("$P pega $o" + mens)
+    senao
+      $mens.mvis1("$P pega " + total + "x $o" + mens)
+    fimse
+    r = r.mudadono(arg0, total)
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_pegouobj(arg0, sala, r, total)
+    efim
+    arg0.p_espera += 2
+    sair (achou += 1) >= 10
+  efim
+  ret achou, nulo
+# Pega moedas
+  se sala.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", sala.var.z_moedas_)
+    total = int(misc:sep1) ? n : sala.var.z_moedas
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
+      ret e.objini.cmd_pegarmoedas(arg0, sala, total), nulo
+    efim
+    ret !total, nulo
+    sala.var.z_moedas_ -= total
+    sala.var.z_moedas_ < 0 && (sala.var.z_moedas = "")
+    arg0.var.z_moedas_ += total
+    sala.objmudou = 1
+    $mens.p(arg0, sala)
+    se total == 1
+      $mens.mvis1("$P pega uma moeda" + mens)
+    senao total == 2
+      $mens.mvis1("$P pega duas moedas" + mens)
+    senao
+      $mens.mvis1("$P pega " + total + " moedas" + mens)
+    fimse
+    arg0.p_espera += 2
+    ret
+  fimse
+# Não encontrou o item
+  arg0.msg(erro)
+
+
+classe cmd_soltar
+herda comando_comum
+const txtajuda = config:animal1 ? ta1 + ta2 + ta3 + ta4 : ta1 + ta3
+const ta1 = "\b\c3Soltar\b\n\
+Sintaxe: SOLTAR <objeto>\n\
+         SOLTAR <quantidade> <objeto>\n\
+         SOLTAR <objeto> <container>\n\
+         SOLTAR <quantidade> <objeto> <container>\n"
+const ta2 = "         SOLTAR <número do animal>\n"
+const ta3 = "Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
+Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
+const posic = 5
+#
+const cmdsg = 0 # 0=comando soltar, 1=comando guardar
+ref sala # Aonde soltar os itens
+uint32 total # Quantidade de itens do mesmo tipo
+ref r # Objeto sendo pego
+txt20 mens # Parte da mensagem
+txt80 mens2 # Outra parte da mensagem
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
+int8 soltar # Se pode soltar itens
+
+func escr
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_soltar(arg0, arg1), nulo
+  efim
+  arg0.p_espera < 3 && (arg0.p_espera = 3)
+# Checa soltar animal
+  se !cmdsg && arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+    refvar r = arg0.animalnum(arg1)
+    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    ret r.p_soltar == 2, arg0.msg("Não é possível soltar esse animal.")
+    listaobj e
+    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+      ret e.objini.cmd_soltaranim(arg0, r, arg0.dono), nulo
+    efim
+    ret r.dono != arg0, nulo # Retorna se não possui mais o animal
+    $mens.p(arg0, r)
+    $mens.mvis1("$P se despede $d $a e $b vai embora.")
+    apagar(r) # Apaga animal
+    r.mdono(nulo) # Indica que não tem o animal
+    arg0.recalc = 1 # Acerta personagem
+    arg0.persobat == r && (arg0.persobat = arg0)
+    arg0.persoesc == r && (arg0.persoesc = arg0)
+    arg0.escolhebat # Escolhe um animal em condições de batalhar
+    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(arg0, r, arg0.dono)
+    efim
+    ret
+  fimse
+# Obtém o objeto de onde soltar
+  misc:separa(arg1) # Separa nome do objeto do nome do alvo
+  se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    ret cmdsg, arg0.msg("Guardar aonde?")
+    sala = arg0.dono
+    soltar = sala.s_soltar
+    mens = ""
+    ret soltar == 1, arg0.msg("Você não consegue soltar itens aqui.")
+  senao
+    soltar = 0
+    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    se !sala
+      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao !sala.i_aberto
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
+    senao sala.i_aberto > 2 && !arg0.jogconfig.14
+      ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
+"a."))
+    fimse
+    mens = " $e $a"
+  fimse
+  nomeobj n # Para reconhecer os itens
+  n.ini(misc:sep1, misc:objmax, misc:tudo)
+# Solta os itens
+  achou = 0, erro = "Você não vê isso."
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    total = n # Quantidade de itens
+    r = l.objini # Nota: r pode mudar após r.mudadono
+    se r == sala # Soltar o objeto dentro dele mesmo
+      se sala.msexo
+        erro = "Não é possível colocar " + sala.descnome + " dentro dele mesmo."
+      senao
+        erro = "Não é possível colocar " + sala.descnome + " dentro dela mesma."
+      fimse
+      continuar
+    senao sala.dentro1.total + (r.item == 2 ? 1 : total) >= sala.objmax
+      se sala.item
+        erro = sala.descnome + "."
+        casovar txtmin(txt1(erro))
+        casose "o"
+          erro = "Não consegue colocar mais nada no " + txt2(erro)
+          sair
+        casose "a"
+          erro = "Não consegue colocar mais nada na " + txt2(erro)
+          sair
+        casose "os"
+          erro = "Não consegue colocar mais nada nos " + txt2(erro)
+          sair
+        casose "as"
+          erro = "Não consegue colocar mais nada nas " + txt2(erro)
+          sair
+        casose
+          erro = "Não consegue colocar mais nada em " + erro
+        casofim
+      senao
+        erro = "Não consegue soltar nada aqui."
+      fimse
+      continuar
+    senao sala.volden + r.voltot * total / r.objtot > sala.volmax
+      erro = "Não há espaço suficiente para soltar isso."
+      continuar
+    fimse
+    listaobj e
+    total = n # Quantidade de itens
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      sair e.objini.cmd_soltarobj(arg0, sala, r, total)
+    efim
+    se e
+      sair (achou += 1) >= 10
+      continuar
+    fimse
+    $mens.p(arg0, sala, r)
+    mens2 = mens ? "$P coloca " : "$P solta "
+    mens2 += total <= 1 ? "$o" : txt(total) + "x $o"
+    casovar soltar
+    casose "2"
+      $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
+      r.apagar(total)
+      sair
+    casose "3"
+      $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
+      r.apagar(total)
+      sair
+    casose "4"
+      $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
+      r.apagar(total)
+      sair
+    casose
+      $mens.mvis1(mens2 + mens + ".")
+      r = r.mudadono(sala, total)
+    casofim
+    epara e.addfim(arg0.evento, sala.evento, r.evento), e, e.ini.remove
+      e.objini.cmd_soltouobj(arg0, sala, r, total)
+    efim
+    arg0.p_espera += 2
+    sair (achou += 1) >= 10
+  efim
+  ret achou, nulo
+# Solta moedas
+  se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
+    total = n
+    listaobj e
+    epara e.addfim(arg0.evento, sala.evento), e, e.ini.remove
+      ret e.objini.cmd_soltarmoedas(arg0, sala, total), nulo
+    efim
+    ret !total, nulo
+    arg0.var.z_moedas_ -= total
+    arg0.var.z_moedas_ < 0 && (arg0.var.z_moedas = "")
+    $mens.p(arg0, sala)
+    mens2 = mens ? "$P coloca " : "$P solta "
+    se total == 1
+      mens2 += "uma moeda"
+    senao total == 2
+      mens2 += "duas moedas"
+    senao
+      mens2 += txt(total) + " moedas"
+    fimse
+    casovar soltar
+    casose "2"
+      $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
+      sair
+    casose "3"
+      $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
+      sair
+    casose "4"
+      $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
+      sair
+    casose
+      $mens.mvis1(mens2 + mens + ".")
+      sala.var.z_moedas_ += total
+      sala.objmudou = 1
+    casofim
+    arg0.p_espera += 2
+    ret
+  fimse
+# Não encontrou o item
+  arg0.msg(erro)
+
+
+classe cmd_guardar
+herda cmd_soltar
+const cmdsg = 1
+const txtajuda = "\b\c3Guardar\b\n\
+Sintaxe: GUARDAR\n\
+         GUARDAR <objeto> <container>\n\
+         GUARDAR <quantidade> <objeto> <container>\n\
+Coloca um objeto dentro de um container (uma bolsa, uma estante, etc).\n\
+Para guardar tudo (até 10 objetos) tecle TUDO ao invés do objeto."

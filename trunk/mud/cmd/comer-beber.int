@@ -1,0 +1,138 @@
+classe comando_comebebe
+herda comando_comum
+
+func efeito
+# arg0 = personagem que usou o objeto
+# arg1 = o que o personagem digitou; usado ao lançar magias
+# arg2 = objeto
+# arg3 = quantidade
+  arg0.p_fome = intmin($miscfome.cheio, arg0.p_fome + arg2.f_fome * arg3)
+  arg0.p_sede = intmin($miscfome.cheio, arg0.p_sede + arg2.f_sede * arg3)
+  arg0.p_bebida = intmin($miscfome.cheio, arg0.p_bebida + arg2.f_bebida * arg3)
+  arg0.p_diges = intmin($miscfome.cheio, arg0.p_diges + arg2.f_diges * arg3)
+  debug d
+# Magias
+  $magia_[arg2.f_magia1].escr(arg0, arg1, arg2, arg2.f_nivel1)
+  d.ini
+  $magia_[arg2.f_magia2].escr(arg0, arg1, arg2, arg2.f_nivel2)
+  d.ini
+  $magia_[arg2.f_magia3].escr(arg0, arg1, arg2, arg2.f_nivel3)
+
+
+classe cmd_comer
+herda comando_comebebe
+const txtajuda = "\b\c3Comer\b\n\
+Sintaxe: COMER <objeto>\n\
+Tenta comer alguma coisa, geralmente um alimento."
+const posic = 5
+
+func escr
+  ret arg0.posicao == 7, arg0.msg(arg0.erropos(7)) # Não come durante a luta
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+# Obtém o objeto
+  n.ini(arg1, 1)
+  ret !arg1, arg0.msg("Comer o quê?")
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+  efim
+  ref r
+  r = l.objini
+# Checa se consegue comer
+  se !r
+    ret arg0.msg("Você não vê isso.")
+  senao arg0.jogconfig.14 # Se é imortal, consegue comer
+  senao r.f_tipo != 3 # Checa se é comida
+    ret arg0.msg("Você não consegue comer " + r.descnome + ".")
+  senao arg0.p_fome >= $miscfome.cheio - 5
+    ret arg0.msg("Você não consegue comer mais nada.")
+  senao arg0.p_bebida >= $miscfome.cheio - 5
+    $mens.p(arg0, nulo, r)
+    $mens.mvis1("$P não consegue levar $o à boca.")
+    ret
+  fimse
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_comer(arg0, r), nulo
+  efim
+# Come o objeto
+  $mens.p(arg0, nulo, r)
+  refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P come $o."
+  $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  r.apagar(1)
+  efeito(arg0, "", r, 1)
+# Eventos
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_comeu(arg0, r)
+  efim
+
+
+classe cmd_beber
+herda comando_comebebe
+const txtajuda = "\b\c3Beber\b\n\
+Sintaxe: BEBER [objeto]\n\
+         TOMAR [objeto]\n\
+Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
+que encontrar."
+const posic = 5
+
+func escr
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+# Obtém o objeto
+  n.ini(arg1, 1)
+  se !arg1
+    epara l.addfim(arg0.dono.dentro1), l, l.ini.remove
+      sair l.objini.f_tipo == 1 && l.objini.visivel(arg0)
+    efim
+    ret !l.objini, arg0.msg("Beber o quê?")
+  senao
+    epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
+      sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+    efim
+    refvar r = l.objini
+    se !r
+      ret arg0.msg("Você não vê isso.")
+    senao r.f_tipo == 1 # Fonte
+    senao r.f_tipo != 2 # Não é bebida ou poção
+      ret arg0.msg("Você não consegue beber " + r.descnome + ".")
+    senao r.dono != arg0
+      ret arg0.msg("Você precisa pegar " + r.descnome + " primeiro.")
+    fimse
+  fimse
+  ref r
+  r = l.objini
+# Checa se consegue beber
+  se arg0.p_sede >= $miscfome.cheio || arg0.p_fome >= $miscfome.cheio
+    ret arg0.msg("Você não consegue beber mais nada.")
+  senao arg0.p_bebida >= $miscfome.cheio - 5
+    $mens.p(arg0, nulo, r)
+    $mens.mvis1("$P não consegue levar $o à boca.")
+    ret
+  fimse
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_beber(arg0, r), nulo
+  efim
+# Bebe o objeto
+  $mens.p(arg0, nulo, r)
+  se r.f_tipo == 1
+    refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P bebe $d $o."
+    $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  senao
+    refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P bebe $o."
+    $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+    r.apagar(1)
+  fimse
+  efeito(arg0, "", r, 1)
+# Eventos
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_bebeu(arg0, r)
+  efim
+
+
+classe cmd_tomar
+herda cmd_beber
+const objcmd = $cmd_beber

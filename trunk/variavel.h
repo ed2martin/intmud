@@ -17,6 +17,7 @@ class TTextoPos;
 class TTextoVar;
 class TTextoObj;
 class TVarDir;
+class TVarArqProg;
 class TVarLog;
 class TVarTxt;
 class TVarNomeObj;
@@ -152,6 +153,7 @@ public:
         double       * end_double;   ///< Instr::cReal2
         TVarDir      * end_dir;      ///< Instr::cArqDir
         TVarLog      * end_log;      ///< Instr::cArqLog
+        TVarArqProg  * end_arqprog;  ///< Instr::cArqProg
         TVarTxt      * end_txt;      ///< Instr::cArqTxt
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
         TVarIntExec  * end_intexec;  ///< Instr::cIntExec

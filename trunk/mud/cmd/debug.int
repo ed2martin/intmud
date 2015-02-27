@@ -1,0 +1,28 @@
+classe cmd_debug
+herda comando_comum
+const posic = 0
+const objcmd = nulo # Descomentar essa linha para esse comando funcionar
+
+func escr
+  arg0.msg("Sala: " + arg0.dono)
+  listaobj l0
+  l0.addfim(arg0.dono.dentro1, arg0.dono.dentro2)
+  l0.remove(arg0)
+  enquanto l0
+    arg0.msg(" usr: " + l0.objini + "/" + l0.objini.jog)
+    l0.ini.remove
+  efim
+  arg0.msg("ver=" + arg0.bitver + " inv=" + arg0.bitinv)
+  arg0.msg("visível? " + !(~bitver & bitinv))
+  arg0.msg("JOGADORES:")
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    arg0.msg("> " + item.obj.nome + " (" + item.obj.perso.nome + ")")
+  efim
+  listar("jogolocal", arg0)
+  listar("jogoserv", arg0)
+  listar("jogobot_usr", arg0)
+  arg0.msg("PERSONAGENS:")
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    arg0.msg("> " + item.obj.nome + " (" + item.obj.sock.nome + ")")
+  efim

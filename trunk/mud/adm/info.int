@@ -1,0 +1,197 @@
+classe adm_info
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Info\b\n\
+Sintaxe: INFO [personagem ou item]\n\
+Mostra informações sobre a sala aonde você está, um personagem na sala\n\
+ou item na sala ou que você carrega."
+
+func escr
+  se !arg1
+# arg0.msg("\b\c2Você:\b\n" + info(arg0))
+    ret arg0.msg("\c2Sala " + arg0.dono + ":\b\n" + info(arg0.dono))
+  fimse
+  int1 achou
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  r = arg0
+  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1)
+  enquanto l
+    r = l.objini, l.ini.remove
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    arg0.msg("\b\c2" + r.nome + ": " + r + "\b\n" + info(r))
+    achou = 1
+  efim
+  !achou && arg0.msg("Não há nenhum personagem ou item chamado " + arg1)
+
+func info # Usado por escr
+  txt512 lin
+  lin = "Peso:   obj=" + arg0.pesoobj + "  dentro=" + arg0.pesoden
+  lin += "  total=" + arg0.pesotot + "  voando=" + (arg0.pesoadd ? "N" : "S")
+  lin += "\nVolume: obj=" + arg0.volobj + "  dentro=" + arg0.volden
+  lin += "  total=" + arg0.voltot + "  expande=" + (arg0.volexp ? "S" : "N")
+  lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.socktot
+  lin += "  Itens dentro=" + arg0.dentro1.total + "  Personagens dentro=" + arg0.dentro2.total
+  lin += "  objnum=" + arg0.objnum
+  lin += "\nevento="
+  listaitem i
+  epara i = arg0.evento.ini, i, i.depois
+    lin += txt(i.obj) + " "
+  efim
+  lin += "\nevrec.0=" + arg0.evrec.0.objlista
+  lin += "  evrec.1=" + arg0.evrec.1.objlista
+  lin += "  evrec.2=" + arg0.evrec.2.objlista
+  ret lin
+
+
+classe adm_infohab
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3InfoHab\b\n\
+Sintaxe: INFOHAB [personagem] [número do animal]\n\
+Informa as habilidades de um personagem na sala."
+
+func escr
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, 1
+  txt100 t1
+  txt100 t2
+  refvar txtmais = arg0.sock.txtmais
+  txtmais.limpar
+  epara t1 = r.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = r.var.depois(t1)
+    txtmais.addfim(txte(txt(t1, 2)) + " / " + txtsublin(misc:aulas, r.var.[t1], 1))
+  efim
+  se !txtmais.linhas
+    txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece habilidades.")
+  senao
+    txtmais.addini("\b\c6Habilidades de " + r.nome + ":\b")
+  fimse
+  arg0.sock.txtmostra
+
+
+classe adm_infomag
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3InfoMag\b\n\
+Sintaxe: INFOMAG [personagem] [número do animal]\n\
+Informa as magias de um personagem na sala."
+
+func escr
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, 1
+  txt100 t1
+  txt100 t2
+  refvar txtmais = arg0.sock.txtmais
+  txtmais.limpar
+  epara t1 = r.var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = r.var.depois(t1)
+    txtmais.addfim(txte(txt(t1, 2)) + " / " + txtsublin(misc:aulas, r.var.[t1], 1))
+  efim
+  se !txtmais.linhas
+    txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece magias.")
+  senao
+    txtmais.addini("\b\c6Magias de " + r.nome + ":\b")
+  fimse
+  arg0.sock.txtmostra
+
+
+classe adm_infoe
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3InfoE\b\n\
+Sintaxe: INFOE [personagem] [número do animal]\n\
+Informa os efeitos afetando um personagem na sala."
+
+func escr
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, 1
+  refvar txtmais = arg0.sock.txtmais
+  txtmais.limpar
+  listaitem i
+  epara i = r.dentro2.ini, i, i.depois
+    continuar !i.obj.e_nome
+    txtmais.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
+")"))
+  efim
+  se !txtmais.linhas
+    txtmais.addfim("Nenhum efeito afetando " + r.nome + ".")
+  senao
+    txtmais.ordenalin("", "x")
+    txtmais.addini("\b\c6Efeitos afetando " + r.nome + ":\b")
+  fimse
+  arg0.sock.txtmostra
+
+
+classe adm_infojog
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3InfoJog\b\n\
+Sintaxe: INFOJOG <jogador>\n\
+Mostra algumas informações do jogador: como está conectado, nível, moedas,\n\
+e-mail, sala e jogo salvo. Se não estiver online, procura no jogo salvo."
+
+func escr
+  ret !arg1, arg0.msg("Digite o nome do jogador após INFOJOG")
+# Obtém: p = objeto do personagem
+  ref p # Objeto do personagem
+  enquanto 1
+    indiceitem item
+    item.ini("pn " + txtnome(arg1))
+    p = item.obj
+    sair p
+    se intnome(arg1)
+      arg0.msg("Nome inválido para jogador: " + arg1)
+      ret 1
+    fimse
+    arqsav sav1
+    listaobj l1
+    p = $jog_info, l1.addfim(p)
+    p.cnome = "x " + txtnome(arg1)
+    sair sav1.ler("sav1/" + txt2(p.cnome) + ".sav", l1, 1)
+    ret arg0.msg("Jogador inexistente: " + arg1)
+  efim
+# Mostra os dados do personagem
+  txt100 lin
+  lin = p.nome + ", nível " + p.pnivel
+  p.var.z_moedas_ == 1 && (lin += ", uma moeda")
+  p.var.z_moedas_ == 2 && (lin += ", duas moedas")
+  p.var.z_moedas_ > 2 && (lin += ", " + p.var.z_moedas_ + " moedas")
+  arg0.msg("\b\c6" + lin + "\b")
+  p.sock && arg0.msg("Conexão:      " + p.sock.info)
+  p.cnome && arg0.msg("Jogo salvo:   " + txt2(p.cnome))
+  se p.dono
+    arg0.msg("Está em:      " + p.dono)
+  senao p.salanome
+    arg0.msg("Entrará em:   " + p.salanome)
+  fimse
+  p.var.z_email && arg0.msg("E-mail:       " + p.var.z_email)
+
+
+classe jog_info
+# Usado no comando infojog
+const iniclasse = !$[arg0] && criar(arg0)
+sav textovar var # Variáveis criadas sob demanda
+sav txt20 nome # Nome do personagem
+txt100 cnome # Para obter o nome codificado
+sav txt40 salanome # Nome da sala
+sav uint16 pnivel # Nível atual
+
+
+classe adm_estat
+herda comando_adm
+const txtajuda = "\b\c3Estat\b\n\
+Sintaxe: ESTAT [personagem] [número do animal]\n\
+Mostra estatísticas e diversas informações sobre um personagem da sala."
+
+
+classe adm_hist
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Hist\b\n\
+Sintaxe: HIST [personagem] [número do animal]\n\
+Mostra o histórico de um personagem na mesma sala ou animal desse\n\
+personagem, ou seja, os últimos 10 personagens que ele matou."
+
+func escr
+  refvar r = misc:objperso(arg0, arg1)
+  ret !r, 1
+  ret !r.p_hist.linhas, arg0.msg(txtcopiamai(r.nome, "A") + " não matou ninguém.")
+  arg0.sock.txtmais.limpar
+  arg0.sock.txtmais.addfim("\b\c6Histórico de " + txtcopiamai(r.nome, "A") + ":\b")
+  arg0.sock.txtmais.addfim(r.p_hist.ini.textolin(100))
+  arg0.sock.txtmostra

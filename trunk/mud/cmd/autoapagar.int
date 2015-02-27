@@ -1,0 +1,50 @@
+classe cmdfim_autoapagar
+herda comando_comum
+const txtajuda = "\b\c3Autoapagar\b\n\
+Sintaxe: AUTOAPAGAR\n\
+Apaga definitivamente o seu personagem, retirando também você do jogo.\n\
+Após digitar esse comando, é necessário confirmar e digitar a senha atual\n\
+do seu personagem"
+const posic = 0
+
+func escr
+  se !arg0.senha
+    arg0.msg("Seu personagem não está salvo. Basta sair do MUD teclando SAIR.")
+  senao
+    passo(arg0.sock, "\b")
+
+func passo
+  arg0.passo = este
+  arg1 == "\b" && (arg0.tpasso = "1")
+# Pergunta se quer apagar o personagem
+  se arg0.tpasso == "1"
+    se !arg1 || arg1 == "\b"
+      arg0.msg("Deseja realmente apagar o personagem " + arg0.perso.nome + "? Tecle S ou N")
+    senao arg1 == "s"
+      arg0.msg("Digite a senha ou tecle Z para cancelar")
+      arg0.tpasso = "2"
+    senao
+      arg0.msg("Autoapagar cancelado")
+      arg0.passo = ""
+    fimse
+    ret 1
+  fimse
+# Pede a senha para apagar o personagem
+  arqsav sav1
+  se !arg1
+    arg0.msg("Digite a senha ou tecle Z para cancelar")
+  senao arg1 == "z"
+    arg0.msg("Autoapagar cancelado")
+    arg0.passo = ""
+  senao arg1 != arg0.perso.senha
+    arg0.msg("Senha incorreta; autoapagar cancelado")
+    arg0.passo = ""
+  senao sav1.apagar("sav1/" + txt2(arg0.cnome) + ".sav")
+    arg0.perso.senha = ""
+    apagar(arg0.perso)
+    $miscsav.apagousav(txt2(arg0.cnome))
+  senao
+    arg0.msg("Não foi possível apagar o personagem.")
+    arg0.passo = ""
+  fimse
+  ret 1

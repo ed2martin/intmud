@@ -1,0 +1,201 @@
+classe cmd_ver
+herda comando_comum
+const txtajuda = "\b\c3Ver\b\n\
+Sintaxe: VER\n\
+         VER <personagem ou objeto>\n\
+Olha de relance para o lugar aonde você está ou para um personagem ou\n\
+objeto. É semelhante ao comando olhar, mas dá menos informações."
+const posic = 5
+const completo = 0 # No comando olhar, essa variável é 1
+
+func escr
+  se !arg1
+    se arg0.jogconfig.16
+      arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, completo ? 7 : 6))
+    senao
+      arg0.msg2(arg0.dono.descsala(arg0, completo ? 7 : 6))
+    fimse
+    ret
+  fimse
+  nomeobj n
+  prog p
+  ref r
+  n.ini(arg1, 1)
+# Descrições extras da sala
+  r = arg0.dono
+  se r.visivel(arg0) && txtfim(arg1, 1) != "@"
+    epara p.inifunc(r, "ver_"), p.lin, p.depois
+      casovar txtfim(p.texto, 2)
+      casose "@d"
+      casose "@D"
+        continuar !misc:luz
+        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
+        arg0.msg2(r.[p.texto](arg0, 1))
+        ret
+      casose "@n"
+      casose "@n"
+        continuar misc:luz
+        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
+        arg0.msg2(r.[p.texto](arg0, 1))
+        ret
+      casose
+        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4))
+        arg0.msg2(r.[p.texto](arg0, 1))
+        ret
+      casofim
+    efim
+  fimse
+# Descrições de itens e personagens
+  listaobj l
+  l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
+  epara nulo, l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+# ret arg0 == l.objini, arg0.msg("Olhar para você mesm" + (arg0.msexo ? "o?" : "a?"))
+    r = l.objini
+# Gera eventos
+    l.limpar
+    se completo
+      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+        ret l.objini.cmd_olhar(arg0, r), nulo
+      efim
+    senao
+      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+        ret l.objini.cmd_ver(arg0, r), nulo
+      efim
+    fimse
+# O que o personagem está vestindo
+    textotxt t
+    se r.perso
+      se completo
+        int1 vest.32 # Aonde está vestindo
+        ref pos.55
+        listaitem item
+        epara item = r.dentro2.ini, item, item.depois
+          vest.[item.obj.vestpos - 1] = 1, pos.[item.obj.vestpos] = item.obj
+        efim
+        txt512 lin
+        txt100 nomepos
+        epara lin = config:equip_ordem, lin, lin = txt2(lin)
+          refvar obj = pos.[1 + txt1(lin)]
+          continuar !obj.vestpos || !obj.visivel(arg0)
+# continuar vest.bits & config:vestir[obj.vestpos - 1]
+          nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
+          nomepos += txtesp(20 - inttotal(nomepos))
+          t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
+        efim
+        t.linhas && t.addini(txtcopiamai(r.descnome, "A") + " está usando:")
+      fimse
+# O que o container possui
+    senao r.i_aberto == 5 # Indefinido
+    senao r.i_aberto >= 3 && !arg0.jogconfig.14 # Fechado ou trancado
+      t.addini(r.msexo ? "Está fechado." : "Está fechada.")
+    senao r.i_aberto # Aberto
+      se !r.var.z_moedas
+      senao r.dono != arg0 || var.z_moedas_ <= 10
+        t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
+      senao
+        t.addfim("1 " + txtnum(r.var.z_moedas_, ".") + " moedas")
+      fimse
+      listaitem item
+      epara item = r.dentro1.ini, item, item.depois
+        continuar !item.obj.visivel(arg0)
+        t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
+      efim
+      se !t.linhas
+        t.addfim(r.msexo ? "Está vazio." : "Está vazia.")
+      senao completo
+        t.juntalin("(", "x)")
+        t.addini("Dentro você vê:")
+      senao
+        t.limpar
+      fimse
+    fimse
+# Nome, nível, situação atual e animal que escolheu
+    txt200 t2
+    se r.perso
+      t2 += niveltipo(r, " é", ",") + " " + estado(r)
+      se r.persobat && r.persobat != r
+        t2 += ".\b\nEscolheu " + txtcopiamai(r.persobat.nome, "A")
+        t2 += niveltipo(r.persobat) + ", " + estado(r.persobat)
+      fimse
+    senao r.pnivel
+      t2 += " é um objeto do nível " + r.pnivel
+    fimse
+# Luz
+    se int(r.luztempo.abs) >= 25
+      refvar tempo = int(r.luztempo.abs / 50)
+      r.luztempo > 0 && (t2 += r.msexo ? ", aceso" : ", acesa")
+      t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
+# t2 += r.luztempo
+    fimse
+# Descrição ao olhar
+    se !completo
+      ret arg0.msg("\b" + txtcopiamai(r.descnome, "A") + t2 + ".\b " + t.remove(1000))
+    senao
+      refvar m1 = r.var.z_desc
+      refvar m2 = r.descver(arg0)
+      se m1 || m2 # Com descrição extra
+        t2 && t.addini(txtcopiamai(r.descnome, "A") + t2 + ".")
+        m1 && t.addini(m1)
+        m2 && t.addini(m2)
+        t.addini("\b\c6" + txtcopiamai(r.descnome, "A") + "\b")
+        arg0.msg2(t.remove(1000))
+      senao # Sem descrição extra
+        !t.linhas && t.addfim("Você não vê nada de especial.")
+        arg0.msg2("\b\c6" + txtcopiamai(r.descnome, "A") + t2 + ".\b\n" + t.remove(1000))
+      fimse
+    fimse
+# Envia mensagem
+    se r.perso
+      $mens.p(arg0, r)
+      $mens.mvis2("", "$P olha para $a.")
+    senao r.dono != arg0
+      $mens.p(arg0, nulo, r)
+      $mens.mvis2("", "$P olha para $o.")
+    fimse
+    ret
+  efim
+  arg0.msg("Você não vê isso.")
+
+func estado # Retorna texto que contém o estado atual do personagem
+  ret !arg0.pvidamax, "perfeitamente saudável"
+  casovar intdiv(arg0.pvida * 6 / arg0.pvidamax)
+  casose "0"
+    ret arg0.pvida ? "está à beira da morte" : "está demaiad" + (arg0.msexo ? "o" : "a")
+  casose "1"
+    ret "está sangrando bastante"
+  casose "2"
+    ret "está muito machucad" + (arg0.msexo ? "o." : "a")
+  casose "3"
+    ret "está bastante machucad" + (arg0.msexo ? "o." : "a")
+  casose "4"
+    ret "está um pouco machucad" + (arg0.msexo ? "o." : "a")
+  casose "5"
+    ret "possui algumas escoriações"
+  casose
+    ret "está perfeitamente saudável"
+  casofim
+
+func niveltipo # Usado para informar nível, raça e classe do personagem
+# arg0 = personagem
+# arg1 = texto que deve ser colocado no começo da mensagem, se não for vazia
+# arg2 = texto que deve ser colocado no final da mensagem, se não for vazia
+  txt100 t
+  arg0.jog ? (t = " jogador")
+  se config:olhartipo
+    arg0.tipo1 && (t += " " + txtcopiamai(txte(arg0.tipo1), "A"))
+    arg0.tipo2 && (t += " " + txtcopiamai(txte(arg0.tipo2), "A"))
+    arg0.tipo3 && (t += " " + txtcopiamai(txte(arg0.tipo3), "A"))
+  fimse
+  config:olharnivel && (t += " nível " + arg0.pnivel)
+  ret t ? txt(arg1) + t + arg2 : ""
+
+
+classe cmd_olhar
+herda cmd_ver
+const completo = 1
+const txtajuda = "\b\c3Olhar\b\n\
+Sintaxe: OLHAR\n\
+         OLHAR <personagem ou objeto>\n\
+Mostra a descrição completa do lugar aonde você está ou informações\n\
+sobre um personagem ou um objeto."

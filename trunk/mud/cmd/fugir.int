@@ -1,0 +1,61 @@
+classe cmd_fugir
+herda comando_comum
+const posic = 7
+const txtajuda = "\b\c3Fugir\b\n\
+Sintaxe: FUGIR [número]\n\
+Tenta fugir de uma batalha.\n\
+Seguido de um número, muda os pontos para a fuga. Quando os pontos\n\
+de vida do seu personagem estiverem abaixo desse número, ele tentará\n\
+fugir automaticamente.\n\
+Para saber quantos pontos foram definidos, tecle fugir fora da batalha."
+
+func escr
+# Checa posição
+  se arg1
+    ret txt(intpos(arg1)) != arg1, arg0.msg("Pontos de vida inválidos: " + arg1)
+    arg0.p_fugir = arg1
+    ret arg0.msg("Pontos de vida para fugir mudaram para: " + arg1)
+  senao arg0.posicao != 7
+    ret arg0.msg("Pontos de vida para fugir: " + arg0.p_fugir)
+  senao
+    ret arg0.pmove < 5 && !arg0.jogconfig.14, arg0.msg("Você está sem fôlego.")
+    arg0.p_espera = 5
+    fugir(arg0)
+
+func fugir # Tenta fugir da luta
+# arg0 = personagem
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_fugir(arg0), nulo
+  efim
+# Checa se consegue fugir
+  real2 valor
+  listaitem i
+  epara i = arg0.atkrec.ini, i, i.depois
+    valor += i.obj.persobat.precisao
+  efim
+  valor = valor * rand(70, 130) - arg0.persobat.evasao * 150
+  se valor > 0 && !arg0.jogconfig.14
+    $mens.p(arg0)
+    $mens.mens = ""
+    $mens.mtodos1("$P tenta fugir, mas não consegue.")
+    ret
+  fimse
+# Obtém direção para onde fugir
+  refvar dir = $comando_mover.fugirdir(arg0)
+  refvar r = ref(arg0.dono.dir_[dir])
+  se !r || r == arg0.dono || !dir
+    $mens.p(arg0)
+    $mens.mens = ""
+    $mens.mtodos1("$P tenta fugir mas não vê para onde.")
+    ret
+  fimse
+# Foge
+  arg0.pmove -= 5
+  arg0.batalhafim
+  $mens.p(arg0)
+  $mens.mtodos1($cmd_[dir].m_fugir)
+  arg0.mudadono(r)
+  $mens.mens = ""
+  !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)

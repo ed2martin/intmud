@@ -1,0 +1,57 @@
+classe cmd_remover
+herda comando_comum
+const txtajuda = "\b\c3Remover\b\n\
+Sintaxe: REMOVER <objeto>\n\
+         REMOVER <quantidade> <objeto>\n\
+Seu personagem deixa de usar um objeto que está vestindo ou usando.\n\
+Para remover tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const posic = 5
+ref alvo # Quem vai remover
+
+func escr
+  ret !arg1, arg0.msg("Remover o que?")
+  alvo = arg0.persoesc
+# Preenche a variável vest com o que está vestindo
+  int1 vest.32 # Aonde está vestindo
+  listaitem item
+  epara item = alvo.dentro2.ini, item, item.depois
+    vest.[item.obj.vestpos - 1] = 1
+  efim
+# Remove
+  uint8 total
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, misc:objmax, misc:tudo)
+  epara l.addfim(alvo.dentro2), l, l.ini.remove
+    r = l.objini
+    continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    uint8 x
+    epara x = n, x, x -= 1
+      total += 1
+      refvar valor = vest.bits & config:vestir[r.vestpos - 1]
+      se valor
+        listaitem item
+        epara item = alvo.dentro2.ini, item, item.depois
+          continuar !item.obj.vestpos
+          sair valor & intbit(item.obj.vestpos - 1)
+        efim
+        alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
+      senao
+        refvar posic = int(r.vestpos)
+        listaobj e
+        epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
+          ret e.objini.cmd_remover(alvo, r, posic), nulo
+        efim
+        vest.[r.vestpos] = 0
+        r.vestir(0)
+        $mens.p(alvo, nulo, r)
+        $mens.mvis1("$P remove $o.")
+        epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
+          e.objini.cmd_removeu(alvo, r, posic)
+        efim
+      fimse
+    efim
+  efim
+# Ajusta variáveis
+  !total && $mens.p(alvo) + $mens.mperso("$P não está usando isso.")

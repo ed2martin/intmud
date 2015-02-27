@@ -1,0 +1,64 @@
+Índice
+1. Rodando o MUD no Windows
+2. Rodando o MUD no Linux
+3. Primeiros passos após rodar o programa
+
+
+1. Rodando o MUD no Windows
+
+Copiar o arquivo intmud.exe para o diretório mud (o diretório que
+contém o arquivo mud.int).
+
+Renomear esse arquivo para mud.exe
+
+Executar o mud.exe.
+
+
+2. Rodando o MUD no Linux
+
+Baixar o código fonte do SVN, com o seguinte comando:
+svn checkout http://intmud.googlecode.com/svn/trunk/ intmud
+
+Entrar no diretório do intmud:
+cd intmud
+
+Compilar o programa:
+./configure && make
+
+Isso vai criar o arquivo intmud, que é o executável do IntMUD.
+Copiar para o diretório mud com outro nome:
+cp intmud mud/mud
+
+Entrar no diretório mud e executar o programa:
+cd mud
+./mud
+
+Para manter o MUD funcionando mesmo depois de fechar o terminal, edite
+o arquivo mud.int e mude a seguinte linha:
+telatxt = 1
+Para:
+telatxt = 0
+
+Nesse caso, para fechar o MUD, será necessário digitar:
+killall mud
+
+Ou entrar no MUD como administrador e digitar os comandos:
+savtudo
+cmd terminar
+
+
+3. Primeiros passos após rodar o programa
+
+Crie um personagem e tecle x2. Deverá vir uma mensagem assim:
+Você virou administrador, tecle ADM para saber os comandos.
+Depois tecle ECONFIG para mudar as configurações do MUD, principalmente
+a senha de administração, que inicialmente é x2. Para outros jogadores
+conectarem-se ao MUD, é necessário ativar pelo menos uma das opções:
+jogar em uma porta ou jogar em um chat.
+
+O programa em si não produz som, portanto deficientes visuais deverão
+usar um leitor de telas, como o NVDA ou o JAWS. Se isso não for possível,
+antes de rodar o MUD, altere as configurações abrindo o arquivo
+config/config.int em um editor de texto. As opções estão definidas a partir
+da linha 9 desse arquivo.
+

@@ -1,0 +1,54 @@
+classe adm_echo
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Echo\b\n\
+Sintaxe: ECHO <mensagem>\n\
+Envia uma mensagem para todos os jogadores."
+
+func escr
+  se !arg1
+    arg0.msg("\bTecle a mensagem após ECHO.")
+  senao
+    $misclog.rezou("echo " + arg0.nome + ": " + arg1)
+    $mens.p(arg0)
+    $mens.mens = arg1
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.msg($mens.proc(config:echomsg, item.obj.perso))
+    efim
+  fimse
+
+
+classe adm_secho
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Secho\b\n\
+Sintaxe: SECHO <mensagem>\n\
+Envia uma mensagem para todos da sala em que você está."
+
+func escr
+  se !arg1
+    arg0.msg("\bTecle a mensagem após SECHO.")
+  senao
+    $mens.p(arg0)
+    $mens.mens = arg1
+    $mens.mtodos1(config:sechomsg)
+  fimse
+
+
+classe adm_jecho
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Jecho\b\n\
+Sintaxe: JECHO <jogador> <mensagem>\n\
+Envia uma mensagem para um jogador."
+
+func escr
+  se !txt2(arg1)
+    ret arg0.msg("Digite JECHO seguido do nome do personagem jogador e a mensagem")
+  fimse
+  indiceitem item
+  item.ini("pn " + txtnome(txt1(arg1)))
+  ret !item.obj, arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
+  $misclog.rezou("jecho " + arg0.nome + ": " + arg1)
+  $mens.p(arg0, item.obj)
+  $mens.mens = txt2(arg1)
+  item.obj.msginv(config:jecho1msg)
+  arg0.msginv(config:jecho2msg)

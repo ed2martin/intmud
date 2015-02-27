@@ -1,0 +1,156 @@
+classe comum_efeito
+# Efeitos que afetam os personagens
+sav listaitem idono # Uso interno: aonde o objeto está
+listaitem evrec.3 # Usado internamente, para receber eventos
+ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
+const objsav = 2 != e_condicao # Se deve salvar o efeito ao salvar personagem do jogador
+sav inttempo t_reduzir # Tempo para a próxima redução
+sav inttempo t_duracao # Duração do efeito
+sav inttempo t_tempo1 # Para gerar eventos de tempo
+sav uint32 t_tempo2 # t_tempo2-t_tempo1 = Tempo decorrido
+# const evperso = 1 # Receber eventos do personagem
+const e_condicao = 1
+const maximo = 1
+const msgini1 = msgini2
+const msgfim1 = msgfim2
+const msgfalhou1 = msgfalhou2
+const msgnulo1 = msgnulo2
+const msgreduz1 = msgreduz2
+intexec evini # Para inicializar o efeito
+#
+# Ordem que deve organizar as constantes:
+const admordem = "e_nome\n\
+e_condicao\n\
+e_desc\n\
+desc\n\
+maximo\n\
+r_mana r_move r_tempo r_vida\n\
+tempo1 tempo2\n\
+msgini1\n\
+msgini2\n\
+msgfalhou1\n\
+msgfalhou2\n\
+msgnulo1\n\
+msgnulo2\n\
+msgfim1\n\
+msgfim2\n\
+msgreduz1\n\
+msgreduz2\n\
+evhora\nevperso"
+
+func ini # Cria efeito
+# arg0 = personagem que receberá o efeito
+# arg1 = nível de quem usou o efeito
+  evini = 1
+  ret !(dono = arg0), apagar(este) # Acerta dono e apaga efeito se for nulo
+  idono = dono.dentro2.addini(este) # Adiciona como personagem
+  ret 0 > arg1, t_duracao = -1
+  ret dono.dentro2.total(este) > maximo || e_condicao == (dono.contr.atkenv ? 3 : 2), t_duracao \
+= -2
+  t_reduzir = r_tempo, t_duracao = intpos(tempo1 + tempo2 * arg1)
+
+func evini_exec # Inicializa efeito
+  se t_duracao >= 0
+    evhora && (evrec.0 = $miscsav.evhora.addfim(este))
+    evperso && (evrec.1 = dono.evento.addfim(este))
+    e_condicao >= 2 && (evrec.2 = dono.contr.atkbat.addfim(este))
+    dono.recalc = 1
+    $mens.p(dono) + $mens.mvis2(msgini1, msgini2)
+    cmd_ini(dono)
+  senao t_duracao == -1
+    apagar(este), idono.remove
+    $mens.p(dono) + $mens.mvis2(msgfalhou1, msgfalhou2)
+  senao
+    apagar(este), idono.remove
+    $mens.p(dono) + $mens.mvis2(msgnulo1, msgnulo2)
+  fimse
+
+func fim # Apaga efeito
+  ret evini || !idono, nulo
+  idono.remove
+  dono.recalc = 0
+  dono.recalc_exec
+  dono.pvida > 0 && $mens.p(dono) + $mens.mvis2(msgfim1, msgfim2)
+  cmd_fim(dono)
+
+func ajustaobj # Acerta dono e eventos do objeto
+  dono = idono.objlista
+  evrec.0.remove, evhora && (evrec.0 = $miscsav.evhora.addfim(este))
+  evrec.1.remove, evperso && (evrec.1 = dono.evento.addfim(este))
+  evrec.2.remove, e_condicao >= 2 && (evrec.2 = dono.contr.atkbat.addfim(este))
+
+func t_duracao_exec # Efeito expirou: apaga efeito
+  apagar(este)
+
+func t_reduzir_exec # Executa redução
+  t_reduzir = r_tempo
+  $mens.p(dono) + $mens.mvis2(msgreduz1, msgreduz2)
+  dono.pmana -= r_mana
+  dono.pmove -= r_move
+  se dono.pvida
+    dono.pvida -= r_vida
+    dono.acertapos(1)
+  fimse
+  cmd_reduz(dono)
+
+func tempoini # Inicia contagem de tempo
+  t_tempo1 = t_tempo2 = 1
+
+func t_tempo1_exec # Executa eventos
+  prog p
+  uint32 x
+  uint32 v
+  x = 1000000
+  epara p.inifunc(este, "cmd_tempo"), p.lin, p.depois
+    (v = txt(p.texto, 9)) > t_tempo2 && v < x && (x = v)
+  efim
+  v = t_tempo2
+  se x != 1000000
+    t_tempo1 = x - t_tempo2
+    t_tempo2 = x
+  fimse
+  cmd_tempo[v](dono)
+
+
+classe e_apagar
+# Efeito usado internamente:
+# Apaga o personagem depois de um tempo sem jogador por perto
+# Se o personagem for capturado, esse efeito desaparece
+#
+sav listaitem idono # Uso interno: aonde o objeto está
+listaitem evrec.2 # Usado internamente, para receber eventos
+ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
+const interno = 1 # Para não ser editável e apagável
+const desc = "Usado internamente: apaga PNJ após um tempo sem jogador na sala"
+const objsav = 0 # Não salvar o efeito ao salvar o personagem
+inttempo tatual # Contagem de tempo para apagar o personagem
+uint16 tapaga # Tempo para apagar o personagem
+intexec recalc # Se deve acertar os eventos que recebe
+# func fim
+# telatxt t
+# t.msg("Efeito apagado\n")
+
+func ini # Cria efeito
+# arg0 = personagem que receberá o efeito
+# arg1 = quanto tempo para apagar o personagem, em décimos de segundo
+  ret !(dono = arg0), apagar(este) # Acerta dono e apaga efeito se for nulo
+  idono = dono.dentro2.addini(este) # Adiciona como personagem
+  !dono && apagar(este) # Apaga se não tiver dono
+  evrec.0 = dono.evento.addfim(este)
+  evrec.1 = dono.dono.evento.addfim(este)
+  tapaga = arg1, !dono.dono.socktot && (tatual = tapaga) # Acerta tempo
+
+const cmd_saiu = recalc = 1 # Alguém saiu da sala
+const ajustaobj = recalc_exec # Acerta dono e eventos do objeto
+
+func recalc_exec # Acerta eventos
+  dono = idono.objlista
+  dono.dono.socktot ? (tatual = 0) : !tatual && (tatual = tapaga)
+
+func cmd_chegou # Alguém mudou de sala: acerta eventos do dono do personagem
+  ret dono.dono.perso, apagar(este) # Apaga se pertence a jogador
+  evrec.1.remove, evrec.1 = dono.dono.evento.addfim(este) # Acerta eventos
+  dono.dono.socktot ? (tatual = 0) : !tatual && (tatual = tapaga)
+
+func tatual_exec # Apaga personagem
+  apagar(este), apagar(dono)

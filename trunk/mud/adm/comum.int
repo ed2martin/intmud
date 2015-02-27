@@ -1,0 +1,57 @@
+classe comando_adm
+# Funções necessárias para os comandos de administração
+#
+const iniclasse = !$[arg0] && criar(arg0)
+const admcod = txttroca(txttroca(arg0, "\"", "\\\""), "\n", "\\n")
+const admdec = txttroca(txtvis(arg0), "\\\"", "\"")
+
+func passosair # Sai do passo atual, volta para o menu
+  $[arg0.passo = arg0.var.opcpasso].passo(arg0, "\b")
+  ret 1
+
+func admlog # Mensagem para todos com a opção "config +admlog"
+# arg0.nome = nome do personagem
+# arg1 = mensagem
+  $misclog.admlog(arg0.nome + ": " + arg1)
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.21 && item.obj.msg("\b\d1(adm) " + arg0.nome + " " + arg1 + "\b")
+  efim
+
+func cmdlog # Mensagem para todos com a opção "config +cmdlog"
+# arg0.nome = nome do personagem
+# arg1 = nome do comando
+# arg2 = comando (se não tiver nenhuma letra, não envia o texto)
+  se txtproc(txtsepara(txttroca(arg2, " ", ""), "L+DLEOV,DLEOV+L"), " ") >= 0
+    $misclog.cmdlog(arg1 + " " + arg0.nome + ": " + arg2)
+    refvar t = "\b(cmd) " + arg0.nome + " " + arg1 + ": " + arg2 + "\b"
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.22 && item.obj.msg(t)
+    efim
+
+
+classe admordena
+herda comando_adm
+# Organiza as classes de um arquivo em ordem alfabética
+# Modo de usar:
+# criar("admordena", <nome do arquivo sem o .int no final>)
+intexec repete
+txt100 nomeclasse
+
+func ini
+  nomeclasse = arg0, repete = 1
+
+func repete_exec
+  apagar(este)
+  prog p
+  textotxt t
+  epara p.iniarq(nomeclasse), p.lin, p.depois
+    t.addfim(p.texto)
+  efim
+  t.ordena
+  p.clini(nomeclasse, t.ini.texto)
+  enquanto t.linhas > 1
+    p.cldepois(t.remove, t.ini.texto)
+  efim
+  config:salvar

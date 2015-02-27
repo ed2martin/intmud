@@ -1,0 +1,456 @@
+exec = 500000
+telatxt = 1
+
+classe tela
+telatxt tela
+textotxt t # Texto - arquivo sendo editado
+textopos p # Linha atual no arquivo
+textopos blocoini
+textopos blocofim
+textopos blocopos
+txt20 opcao # Aonde está; menu, abrindo arquivo, editando linha, etc.
+txt512 nomearq # Nome do arquivo aberto
+const msg = tela.msg(arg0)
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  se tela.proto == 0
+    terminar
+  fimse
+  p = t.ini
+  blocoini = t.ini
+  blocofim = t.fim
+  msg("Tecla F1 mostra menu de opções\n")
+  menu:mostra
+  menu:selec
+
+func tela_tecla
+  se arg0 != "UP" && arg0 != "DOWN"
+    tela.linha = 0
+  fimse
+  #msg(opcao + " : tecla_" + txtcod(arg0) + "\n")
+  se [opcao]:tecla_[txtcod(arg0)]
+    ret 1
+  senao arg0 != "UP" && arg0 != "DOWN"
+    ret [opcao]:outro(arg0)
+
+func teste1
+  arqtxt arq
+  se !arq.abrir("doc/criar_autoconf.txt", 0)
+    msg("Erro ao abrir arquivo\n")
+  fimse
+  msg("Arquivo aberto\n")
+  enquanto !arq.eof
+    t.addini(arq.ler)
+#msg(arq.ler + "\n")
+  efim
+  p = t.ini
+  msg("Linhas=" + t.linhas + "  Bytes=" + t.bytes + "\n")
+  enquanto t.linhas
+    msg(t.remove(1) + "\n")
+  efim
+
+classe menu
+func mostra
+  msg("A Abre um arquivo txt\n")
+  msg("S Salva o arquivo\n")
+  msg("E edita linha atual\n")
+  msg("+ insere linha vazia\n")
+  msg("- apaga linha atual\n")
+  msg("Z mostra informações do arquivo e linha atual\n")
+  msg("L ir para uma linha\n")
+  msg("B comandos de bloco\n")
+  msg("Setas sobem e descem uma linha no arquivo\n")
+  msg("Espaço mostra o conteúdo da linha atual\n")
+  msg("J junta com a linha anterior\n")
+  msg("O ordena linhas em ordem alfabética\n")
+  msg("V ordena somando linhas\n")
+  msg("W ordena mostrando as quantidades\n")
+  msg("R ordena aleatoriamente\n")
+  msg("X soma linhas\n")
+  msg("Y soma linhas mostrando as quantidades\n")
+  msg("D divide linhas grandes\n")
+
+func outro
+  msg("Qual sua opção?\n")
+  ret 1
+
+func selec
+  msg("Qual sua opção?\n")
+  opcao = "menu"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  menu:mostra
+  msg("Qual sua opção?\n")
+  ret 1
+
+func tecla_A # Abrir arquivo
+  tela.texto = ""
+  ret abrir:selec
+
+func tecla_B # Comandos de bloco
+  tela.texto = ""
+  ret bloco:selec
+
+func tecla_S # Salvar arquivo
+  #ret menu:tecla_S_antigo
+  ret menu:tecla_S_novo
+
+func tecla_S_novo
+  se !t.salvar(nomearq)
+    msg("Erro ao salvar arquivo\n")
+  senao
+    msg("Arquivo foi salvo\n")
+  fimse
+  ret 1
+
+func tecla_S_antigo
+  arqtxt arq
+  textopos posic
+  se !arq.abrir(nomearq, 2)
+    msg("Erro ao salvar arquivo\n")
+  senao
+    posic = t.ini
+    enquanto posic.lin
+      arq.msg(posic.texto + "\n")
+      posic.depois
+    efim
+    arq.flush
+    arq.truncar(nomearq, arq.pos)
+    msg("Arquivo foi salvo\n")
+  fimse
+  ret 1
+
+func tecla_E # Edita linha atual
+  tela.texto = p.texto
+  ret editor:selec
+
+func tecla_J # Junta com a linha anterior
+  se p.juntar
+    msg("Linhas juntadas\n")
+  senao
+    msg("Nenhuma linha foi juntada\n")
+  fimse
+  ret 1
+
+func tecla_@O # Insere linha vazia
+  p.add("")
+  msg("Linha adicionada\n")
+  ret 1
+
+func tecla_@Q # Remove linha atual
+  p.remove
+  msg("Linha removida\n")
+  ret 1
+
+func tecla_Z # Informações
+  msg("Linha " + p.linha + " de " + t.linhas)
+  msg(", byte " + p.byte + " de " + t.bytes + "\n")
+  ret 1
+
+func tecla_L # Ir para uma linha
+  tela.texto = ""
+  ret linha:selec
+
+func tecla_UP
+  se p.linha == 0
+    msg("\d1Início do arquivo\b\n")
+  senao
+    p.antes
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla_DOWN
+  p.depois
+  se !p.lin
+    msg("\d1Fim do arquivo\b\n")
+  senao
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla_PGUP
+  se p.linha == 0
+    msg("\d1Início do arquivo\b\n")
+  senao
+    p.antes(10)
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla_PGDN
+  p.depois(10)
+  se !p.lin
+    msg("\d1Fim do arquivo\b\n")
+  senao
+    msg(p.texto + "\n")
+    tela.linha = 0
+  fimse
+  ret 1
+
+func tecla__
+  msg(p.texto + "\n")
+  ret 1
+
+func tecla_O
+  t.ordena
+  msg("Ordenado 1\n")
+  ret 1
+
+func tecla_V
+  t.ordenalin
+  msg("Ordenado +linhas\n")
+  ret 1
+
+func tecla_W
+  t.ordenalin("(", "x)")
+  msg("Ordenado +quantidades\n")
+  ret 1
+
+func tecla_R
+  t.rand
+  msg("Ordenado aleatoriamente\n")
+  ret 1
+
+func tecla_X
+  t.juntalin
+  msg("Juntado +linhas\n")
+  ret 1
+
+func tecla_Y
+  t.juntalin("(", "x)")
+  msg("Juntado +quantidades\n")
+  ret 1
+
+func tecla_D
+  tela.texto = ""
+  ret divide:selec
+
+classe editor
+func selec
+  msg("Editando\n")
+  opcao = "editor"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  msg("ENTER salva a linha atual, ESC não salva\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_ENTER
+  msg("Feito\n")
+  p.mudar(tela.texto)
+  tela.texto = ""
+  ret menu:selec
+
+classe abrir
+func selec
+  msg("Qual o nome do arquivo?\n")
+  opcao = "abrir"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  msg("Digite o nome do arquivo ou pressione ESC para cancelar\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_ENTER
+  #ret abrir:ler_antigo(arg0)
+  ret abrir:ler_novo(arg0)
+
+func ler_novo
+  se !t.ler(tela.texto)
+    msg("Erro ao abrir arquivo: " + tela.texto + "\n")
+  senao
+    msg("Arquivo lido; linhas=" + t.linhas + ", bytes=" + t.bytes + "\n")
+    nomearq = tela.texto
+  fimse
+  tela.texto = ""
+  ret menu:selec
+
+func ler_antigo
+  arqtxt arq
+  se !arq.abrir(tela.texto, 0)
+    msg("Erro ao abrir arquivo: " + tela.texto + "\n")
+  senao
+    nomearq = tela.texto
+# Lê arquivo
+    t.limpar
+    enquanto !arq.eof
+      t.addfim(arq.ler)
+    efim
+# Apaga última linha se estiver vazia
+    p = t.fim
+    p.antes
+    se p.texto == ""
+      p.remove
+    fimse
+# Arquivo foi lido
+    p = t.ini
+    msg("Arquivo lido; linhas=" + t.linhas + ", bytes=" + t.bytes + "\n")
+  fimse
+  tela.texto = ""
+  ret menu:selec
+
+classe bloco
+func selec
+  msg("Qual o comando de bloco?\n")
+  opcao = "bloco"
+  tela.linha = 0
+  ret 1
+
+func outro
+  ret bloco:selec
+
+func tecla_F1
+  msg("I marca o início do bloco\n")
+  msg("F marca o fim do bloco\n")
+  msg("P marca uma posição no bloco\n")
+  msg("D desmarca o bloco\n")
+  msg("A apaga bloco\n")
+  msg("C copia para o lugar da linha atual\n")
+  msg("M move para o lugar da linha atual\n")
+  msg("Z informações\n")
+  ret bloco:selec
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_Z # Informações
+  msg("Bloco linhas " + blocoini.linha + " a " + blocofim.linha + "\n")
+  msg("Posição linha " + blocopos.linha + " byte " + blocopos.byte + "\n")
+  ret menu:selec
+
+func tecla_I # Início
+  blocoini = p
+  msg("Início marcado linha " + blocoini.linha + "\n")
+  ret menu:selec
+
+func tecla_F # Fim
+  blocofim = p
+  msg("Fim marcado linha " + blocofim.linha + "\n")
+  ret menu:selec
+
+func tecla_P # Posição
+  blocopos = p
+  msg("Posição marcada linha " + blocopos.linha + " byte " + blocopos.byte + "\n")
+  ret menu:selec
+
+func tecla_D # Desmarcar
+  blocoini = t.fim
+  blocofim = t.ini
+  msg("Bloco desmarcado\n")
+  ret menu:selec
+
+func tecla_A # Apagar
+  int32 lin
+  lin = blocofim.linha - blocoini.linha + 1
+  se lin <= 0
+    msg("Nada a ser apagado\n")
+  senao
+    blocoini.remove(lin)
+    msg("Bloco removido\n")
+  fimse
+  ret menu:selec
+
+func tecla_C # Copiar
+  int32 lin
+  lin = blocofim.linha - blocoini.linha + 1
+  se lin <= 0
+    msg("Nada a ser copiado\n")
+  senao
+    p.add(blocoini, lin)
+    msg("Bloco copiado\n")
+  fimse
+  ret menu:selec
+
+func tecla_M # Mover
+  int32 lin
+  lin = blocofim.linha - blocoini.linha + 1
+  se lin <= 0
+    msg("Nada a ser copiado\n")
+  senao p.linha >= blocoini.linha && p.fim <= blocofim.linha
+    msg("Impossível mover bloco para dentro do bloco\n")
+  senao
+    p.add(blocoini, lin)
+    blocoini.remove(lin)
+    msg("Bloco movido\n")
+  fimse
+  ret menu:selec
+
+classe divide
+func selec
+  msg("Digite os tamanhos mínimo e máximo das linhas. Exemplo: 70 80\n")
+  opcao = "divide"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  msg("Digite os tamanhos mínimo/máximo das linhas, tecla ESC cancela\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_ENTER
+  int16 min
+  int16 max
+  int32 numlin
+  min=tela.texto, max=txt2(tela.texto)
+  se min<2 || max<2
+    msg("Digite dois números maiores ou iguais a 2, tecla ESC cancela\n")
+    ret 1
+  fimse
+  numlin = t.Linhas
+  t.dividelin(min, max)
+  se t.Linhas == numlin
+    msg("Nenhuma linha foi dividida\n")
+  senao
+    msg("Linhas foram divididas\n")
+  fimse
+  tela.texto = ""
+  ret menu:selec
+
+classe linha
+func selec
+  msg("Qual o número da linha?\n")
+  opcao = "linha"
+  tela.linha = 0
+  ret 1
+
+func tecla_F1
+  msg("Digite o número da linha ou pressione ESC para cancelar\n")
+  ret 1
+
+func tecla_ESC
+  msg("Cancelado\n")
+  tela.texto = ""
+  ret menu:selec
+
+func tecla_ENTER
+  p.linha = tela.texto
+  msg("Mudando para linha " + p.linha + " byte " + p.byte + "\n")
+  tela.texto = ""
+  ret menu:selec

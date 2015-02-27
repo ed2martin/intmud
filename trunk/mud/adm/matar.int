@@ -1,0 +1,60 @@
+classe adm_matar1
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Matar1\b\n\
+Sintaxe: MATAR1 <personagem ou item>\n\
+Apaga um personagem ou item da mesma sala.\n\
+Para apagar personagens ou itens dentro de outros, deve-se especificar\n\
+aonde o item está. Exemplo, para apagar uma faca que está dentro de uma\n\
+bolsa que o personagem João carrega, deve-se digitar:\n\
+MATAR1 João bolsa faca"
+
+func escr
+  ret !arg1, arg0.msg("Apagar o quê?")
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(txt1(arg1), 1000000)
+  r = arg0
+  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1, r.dentro2)
+  txt200 nome
+  nome = arg1
+  enquanto 1
+    n.ini(txt1(nome), 1000000)
+    epara nulo, l, l.ini.remove
+      r = l.objini
+      sair r.visivel(arg0) && n.nome(r.ident, r.objtot)
+    efim
+    se !l
+      ret arg0.msg("Item ou personagem não encontrado: " + txt1(nome))
+    senao txt2(nome)
+      nome = txt2(nome)
+      l.limpar
+      l.addfim(r.dentro1, r.dentro2)
+    senao r.perso && r.contr.jog
+      ret arg0.msg("Não é possível apagar personagem de jogador: " + r.nome)
+    senao
+      arg0.msg("Apagando: " + r.nome), apagar(r)
+      ret
+    fimse
+  efim
+
+
+classe adm_matar2
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Matar2\b\n\
+Sintaxe: MATAR2 <personagem>\n\
+Mata instantaneamente um personagem."
+
+func escr
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  l.addfim(arg0.dono.dentro2)
+  enquanto l
+    r = l.objini, l.ini.remove
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    arg0.msg("Matando " + r.nome), r.morreu(arg0)
+    ret
+  efim
+  arg0.msg("Não há nenhum personagem chamado " + arg1)

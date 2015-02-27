@@ -1,0 +1,63 @@
+classe adm_monit
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Monit\b\n\
+Sintaxe: MONIT [jogador]\n\
+Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
+Se [jogador] estiver ausente ou for o próprio, deixa de monitorar.\n\
+O principal objetivo é auxiliar outros usuários, por isso quando\n\
+esse comando é usado, todos os administradores são informados.\n\
+O comando QUEM também mostra aos administradores quem está monitorando."
+
+func escr
+  indiceitem item
+  ref r
+  r = item.obj("pn " + txtnome(arg1))
+  refvar imonit = arg0.sock.imonit
+  se !arg1 || r == arg0
+    se imonit
+      txt100 t1
+      t1 = imonit.objlista.perso.nome
+      imonit.remove
+      arg0.msg("Deixando de monitorar " + t1)
+      t1 = "*** " + arg0.nome + " deixa de monitorar " + t1
+      epara item.ini("un "), txt1(item.txt) == "un", item.depois
+        item.obj.jogconfig.23 && item.obj != arg0.sock && item.obj.msg(t1)
+      efim
+      $misclog.cmdlog("monit " + arg0.nome + ":")
+    senao
+      arg0.msg("Não está monitorando ninguém")
+    fimse
+  senao !r
+    arg0.msg("Jogador não encontrado: " + arg1)
+  senao r == imonit.objlista.perso
+    arg0.msg("Já está monitorando " + r.nome)
+  senao
+    imonit && arg0.msg("Deixando de monitorar " + imonit.objlista.perso.nome)
+    imonit.remove
+    txt100 t1
+    t1 = "*** " + arg0.nome + " monitora " + r.nome
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.23 && item.obj != arg0.sock && item.obj.msg(t1)
+    efim
+    imonit = r.sock.lmonit.addini(arg0.sock)
+    arg0.msg("Monitorando " + r.nome)
+    $misclog.cmdlog("monit " + arg0.nome + ": " + r.nome)
+  fimse
+
+
+classe adm_escr
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Escr\b\n\
+Sintaxe: ESCR <comando>\n\
+Digita um comando no teclado do usuário sendo monitorado."
+
+func escr
+  se !arg0.sock.imonit
+    arg0.msg("Você não está monitorando ninguém")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após ESCR")
+  senao
+    arg0.sock.imonit.objlista.msg("*** " + arg0.nome + " escreve no seu teclado: " + arg1)
+    arg0.sock.imonit.objlista.recebe(arg1)
+    $misclog.cmdlog("escr " + arg0.nome + ": " + arg1)
+  fimse

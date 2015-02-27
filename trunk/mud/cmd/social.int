@@ -1,0 +1,166 @@
+classe cmd_social
+herda comando_comum
+const txtajuda = "\b\c3Social\b\n\
+Sintaxe: SOCIAL  [nome do comando]\n\
+Sem argumentos, mostra a lista de comandos sociais disponíveis.\n\
+Seguido do nome do social mostra as mensagens que o social emitirá.\n\n\
+Os comandos sociais são usados para interpretação entre personagens.\n\
+São comandos que enviam uma mensagem para os personagens na mesma sala,\n\
+mas não causam nenhum dano nos personagens e/ou itens envolvidos."
+const posic = 0
+const o1 = $cmd2_socialX
+const o2 = $cmd2_socialY
+const o3 = $cmd2_socialZ
+
+func escr
+  ret arg1, escr_arg(arg0, arg1)
+  textotxt t
+  prog p
+  epara p.iniclasse("soc_"), p.lin, p.depois
+    arg0.pnivel >= $[p.texto].nivel && t.addfim(txt2(txte(p.texto)))
+  efim
+  se t.linhas
+    t.addfim("Comandos sociais disponíveis:\n" + txttroca(t.remove(1000), "\n", ", "))
+    t.dividelin(50, 75)
+    arg0.msg2(t.remove(1000))
+  senao
+    arg0.msg("Nenhum comando social disponível.")
+
+func escr_arg # Com algum argumento
+  textotxt t # Mensagens
+  prog p # Para obter o objeto correspondente ao comando
+  ref r # Objeto correspondente ao comando
+  txt100 nome # Nome do comando
+  epara p.iniclasse("soc_" + arg1), p.lin, p.depois
+    sair arg0.pnivel >= $[p.texto].nivel
+  efim
+  ret !p.lin, arg0.msg("Comando social não existe: " + arg1)
+  r = $[p.texto]
+  nome = txt2(txte(r))
+  $mens.p(o1)
+  se r.sem1 && r.sem2
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + ", receberá:\n" + r.sem1, \
+o1))
+    t.addfim($mens.proc("E os demais:\n" + r.sem2, o2))
+  fimse
+  $mens.p(o1, o1)
+  se r.auto1 && r.auto2
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", receberá:\
+\n" + r.auto1, o1))
+    t.addfim($mens.proc("E os demais:\n" + r.auto2, o2))
+  fimse
+  $mens.p(o1, o2)
+  se r.perso1 && r.perso2 && r.perso3
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", receberá:\
+\n" + r.perso1, o1))
+    t.addfim($mens.proc("E " + o2.descnome + ":\n" + r.perso2, o2))
+    t.addfim($mens.proc("E os demais:\n" + r.perso3, este))
+  fimse
+  $mens.p(o1, nulo, o3)
+  se r.item1 && r.item2
+    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", receberá:\
+\n" + r.item1, o1))
+    t.addfim($mens.proc("E os demais:\n" + r.item2, este))
+  fimse
+  se t.linhas
+    t.addini("\b\c3" + txtcopiamai(nome, "A") + "\b")
+    arg0.msg2(t.remove(1000))
+  senao
+    arg0.msg("Esse social ainda não está funcionando.")
+
+
+classe cmd2_socialX
+# Pseudo personagem 1 para gerar mensagens do social
+const perso = 1
+const nome = "João"
+const descnome = "João"
+const msexo = 1
+const visivel = 1
+const persobat = este
+const persoesc = este
+const contr = este
+const iniclasse = !$[arg0] && criar(arg0)
+
+
+classe cmd2_socialY
+herda cmd2_socialX
+# Pseudo personagem 2 para gerar mensagens do social
+const nome = "Maria"
+const descnome = "Maria"
+const msexo = 0
+const contr = este
+
+
+classe cmd2_socialZ
+# Pseudo item para gerar mensagens do social
+const item = 1
+const nome = "bolsa"
+const descnome = "uma bolsa"
+const msexo = 0
+const visivel = 1
+const contr = este
+const iniclasse = !$[arg0] && criar(arg0)
+
+
+classe soccomum
+herda comando_comum
+# Comum a todos os sociais
+const objcmd = arg0.pnivel >= nivel ? este
+const nivel = 0
+const posic = 5
+const alvopos = 5
+const mvis = 1
+const invalido = "Você não vê $m."
+# const auto2 = auto1
+# const perso2 = perso1
+# const perso3 = perso1
+# const item2 = item1
+# const item2 = item1
+
+func escr
+  $mens.mens = arg1
+  listaobj l
+  se !arg1 # Sem argumentos
+    ret !sem1, arg0.msg("Digite alguma coisa após " + txt(este, 4))
+    $mens.p(arg0)
+    mvis ? $mens.mtodos2(sem1, sem2) : $mens.mvis2(sem1, sem2)
+    epara l.addfim(arg0.evento, este), l, l.ini.remove
+      l.objini.cmd_social1(arg0, nulo, este)
+    efim
+    ret
+  fimse
+  nomeobj n
+  ref r
+  n.ini(arg1, 1)
+  perso1 && l.addfim(arg0.dono.dentro2)
+  item1 && l.addfim(arg0.dono.dentro1, arg0.dentro1)
+  epara nulo, l, l.ini.remove
+    r = l.objini
+    continuar !r.visivel(arg0) || !n.nome(r.ident)
+    se r.var.u_[arg0.nome]
+      ret arg0.msg(r.nome + " ignora suas palavras.")
+    senao arg0.var.u_[r.nome]
+      ret arg0.msg("Você está ignorando " + r.nome + ".")
+    senao r == arg0 && auto1
+      ret r.posic < alvopos, arg0.msg("Você não está em condições.")
+      $mens.p(arg0)
+      mvis ? $mens.mtodos2(auto1, auto2) : $mens.mvis2(auto1, auto2)
+    senao r.perso
+      $mens.p(arg0, r)
+      ret r.posic < alvopos, $mens.mtodos2("$P não está em condições.", "")
+      mvis ? $mens.mtodos3(perso1, perso2, perso3) : $mens.mvis3(perso1, perso2, perso3)
+    senao
+      $mens.p(arg0, nulo, r)
+      mvis ? $mens.mtodos2(item1, item2) : $mens.mvis2(item1, item2)
+    fimse
+    l.limpar
+    epara l.addfim(arg0.evento, este), l, l.ini.remove
+      l.objini.cmd_social1(arg0, r, este)
+    efim
+    epara l.addfim(r.evento, este), l, l.ini.remove
+      l.objini.cmd_social2(arg0, r, este)
+    efim
+    ret
+  efim
+  $mens.p(arg0)
+  $mens.mtodos2(invalido, "")

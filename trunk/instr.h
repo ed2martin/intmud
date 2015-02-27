@@ -328,6 +328,7 @@ enum Comando
     cNomeObj,           ///< Extra: NomeObj
     cArqDir,            ///< Extra: ArqDir
     cArqLog,            ///< Extra: ArqLog
+    cArqProg,           ///< Extra: ArqProg
     cArqSav,            ///< Extra: Salvar
     cArqTxt,            ///< Extra: ArqTxt
     cIntTempo,          ///< Extra: IntTempo

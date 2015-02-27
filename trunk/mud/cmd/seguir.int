@@ -1,0 +1,35 @@
+classe cmd_seguir
+herda comando_comum
+const txtajuda = "\b\c3Seguir\b\n\
+Sintaxe: SEGUIR [personagem]\n\
+Segue um personagem.\n\
+Se o personagem for omitido ou for você mesmo, você passa a não seguir\n\
+ninguém. Para outros personagens não seguirem você, veja a opção SEGUIR\n\
+do comando CONFIG."
+const posic = 5
+
+func escr
+# Sem argumentos: deixa de seguir
+  se !arg1
+    arg0.iseguir.remove
+    arg0.msg("Você não segue ninguém.")
+    ret
+  fimse
+# Procura o personagem
+  nomeobj n # Para reconhecer os personagens
+  listaitem i
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+  efim
+  ret !i, arg0.msg("Você não vê " + arg1 + ".")
+# Segue o personagem
+  se i.obj == arg0
+    arg0.iseguir.remove
+    arg0.msg("Você não segue ninguém.")
+  senao i.obj.p_naoseguir(arg0)
+    arg0.msg("Você não consegue seguir " + i.obj.descnome + ".")
+  senao
+    arg0.iseguir.remove
+    arg0.iseguir = i.obj.lseguir.addfim(arg0)
+    arg0.msg("Você segue " + i.obj.descnome + ".")

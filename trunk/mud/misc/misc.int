@@ -1,0 +1,704 @@
+classe misc
+# Miscelânea: tabelas (variáveis) e funções
+# Deve ser usado como misc:variável ao invés de $misc.variável
+#
+# Revisão do SVN
+const versao = "27/2/2015"
+#
+# Objeto usado para acessar as saídas das salas
+comum ref obj
+#
+# Objetos usados em misc:separa, misc:sepitem e misc:sepperso
+comum txt100 sep1 # Objeto procurado
+comum txt100 sep2 # Objeto ou personagem destino
+#
+# Hora MUD
+comum int1 luz # Se tem luz do dia
+comum uint8 dia # Dia MUD, de 0 (domingo) a 6 (sábado)
+comum uint8 hora # Hora MUD (1 dia MUD = 2 horas)
+const min = intdiv((2999 - misc:imin) / 50) # Minuto MUD
+comum intdec imin # Usado internamente para calcular o minuto MUD
+#
+# Direções
+const d1n = "n"
+const d1s = "s"
+const d1l = "l"
+const d1o = "o"
+const d1c = "c"
+const d1b = "b"
+const d1e = "l"
+const d1w = "o"
+const d1u = "c"
+const d1d = "b"
+const d1ne = "ne"
+const d1no = "no"
+const d1se = "se"
+const d1so = "so"
+const d1nw = "no"
+const d1sw = "so"
+const d1entrar = "entrar"
+const d1sair = "sair"
+#
+# Direções opostas
+const d2n = "s"
+const d2s = "n"
+const d2l = "o"
+const d2o = "l"
+const d2c = "b"
+const d2b = "c"
+const d2e = "o"
+const d2w = "l"
+const d2u = "b"
+const d2d = "c"
+const d2ne = "so"
+const d2no = "se"
+const d2se = "no"
+const d2so = "ne"
+const d2nw = "se"
+const d2sw = "ne"
+const d2entrar = "sair"
+const d2sair = "entrar"
+#
+# Lista de direções, para o comando LSAI
+const listadir = "n s l o ne no se so c b entrar sair"
+#
+# A classificação das habilidades de acordo com o número de aulas
+const aulas = "Não sabe\n\
+Iniciante\n\
+Muito básico\n\
+Básico\n\
+Intermediário\n\
+Avançado\n\
+Muito avançado\n\
+Mestre\nPerito"
+#
+# Palavra que corresponde a todos os objetos, em nomeobj
+const tudo = "tudo"
+#
+# Quantidade máxima de objetos ao pegar, soltar, guardar, vestir, etc.
+const objmax = 2000000000
+
+func equip # Traduz número para lugar aonde está vestindo um item
+# Retorna um texto ou "Desconhecido" se não for um lugar válido
+  ret arg0 == 50, "empunhando"
+  refvar valor = txtsublin(config:equip_txt, int(arg0) - 1, 1)
+  ret valor ? valor : "desconhecido"
+
+func atkesp # Tipos de golpes
+# arg0 = número do golpe
+# Retorna: 0=normal, 1=especial
+  ret config:atkespecial >> arg0 & 1
+
+func nomevar # Retorna o nome da habilidade/magia/idioma a partir do nome da variável
+# arg0 = nome da variável
+  casovar txt(arg0, 0, 2)
+  casose "i_"
+    ret "Idioma " + txte(txt(arg0, 2))
+  casose "m_"
+    ret "Magia " + txte(txt(arg0, 2))
+  casose
+    ret txte(txt(arg0, 2))
+  casofim
+
+func objvar # Retorna o nome da classe de uma habilidade/magia/idioma
+# arg0 = nome da variável
+  casovar txt(arg0, 0, 2)
+  casose "i_"
+    ret "idioma_" + txt(txt1(arg0), 2)
+  casose "m_"
+    ret "magia_" + txt(txt1(arg0), 2)
+  casose "h_"
+    ret "cmd_" + txt(txt1(arg0), 2)
+  casose
+    ret ""
+  casofim
+
+func separa # Separa o nome do objeto do nome do destino
+# arg0 = texto completo
+# Faz: misc:sep1 = objeto procurado, misc:sep2 = alvo
+  txt200 x
+  x = txtremove(arg0, "EMDSA")
+  casovar intsub(x)
+  casose "0"
+  casose "1"
+    misc:sep1 = x
+    misc:sep2 = ""
+    ret
+  casose "2"
+    se txt1(x) != int(txt1(x))
+      misc:sep1 = txt1(x)
+      misc:sep2 = txt2(x)
+    senao
+      misc:sep1 = x
+      misc:sep2 = ""
+    fimse
+    ret
+  casose "3"
+    misc:sep1 = txtsub(x, 0, 2)
+    misc:sep2 = txtsub(x, 2)
+    ret
+  casose
+    refvar tam = intsub(arg0) - 1
+    misc:sep1 = txtsub(x, 0, tam)
+    misc:sep2 = txtsub(x, tam)
+  casofim
+
+func sepitem # Procura o item destino
+# arg0 = personagem, misc:sep2 = nome do alvo
+# Retorna: o alvo ou nulo se não encontrar
+  listaitem i
+  nomeobj n
+  n.ini(misc:sep2, 1)
+  epara i = arg0.dentro1.ini, i, i.depois
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
+  efim
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
+  efim
+
+func sepperso # Procura o personagem destino
+# arg0 = personagem, misc:sep2 = nome do alvo
+# Retorna: o alvo ou nulo se não encontrar
+  listaitem i
+  nomeobj n
+  n.ini(misc:sep2, 1)
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
+  efim
+
+func objperso # Obtém o personagem que o jogador quer consultar a partir de um texto
+# arg0 = personagem
+# arg1 = texto do tipo: [nome do personagem na sala] [número do animal]
+# Retorna o objeto do personagem, ou nulo se não encontrou (e avisa o jogador)
+  ref r
+  se !arg1
+    ret arg0.persoesc
+  senao arg1 == intpos(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    !r && arg0.msg("Você não possui animal " + arg1 + ".")
+    ret r
+  senao !arg0.jogconfig.23
+    ret arg0.persoesc
+  fimse
+  listaobj l
+  nomeobj n # Para reconhecer os itens
+  n.ini(txt1(arg1), 1000000)
+  r = nulo
+  epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    r = l.objini
+    sair
+  efim
+  ret !r, arg0.msg("Você não vê isso.")
+  refvar num = txt2(arg1)
+  ret num != intpos(num) || config:animal1 < num, r
+  refvar rr = r.animalnum(num)
+  !rr && arg0.msg(txtcopiamai(r.descnome, "A") + " não possui animal " + num + ".")
+  ret rr
+
+func txtmoedas # Retorna texto correspondente à quantidade de moedas
+# arg0 = quantidade de moedas
+  casovar int(arg0)
+  casose "0"
+    ret "nenhuma moeda"
+  casose "1"
+    ret "uma moeda"
+  casose "2"
+    ret "duas moedas"
+  casose "3"
+    ret "três moedas"
+  casose "4"
+    ret "quatro moedas"
+  casose "5"
+    ret "cinco moedas"
+  casose "6"
+    ret "seis moedas"
+  casose "7"
+    ret "sete moedas"
+  casose "8"
+    ret "oito moedas"
+  casose "9"
+    ret "nove moedas"
+  casose "10"
+    ret "dez moedas"
+  casofim
+  uint32 x
+  x = arg0
+  ret x <= 40, "algumas moedas"
+  ret x <= 150, "uma pilha de moedas"
+  ret x <= 500, "poucas pilhas de moedas"
+  ret x <= 2000, "algumas pilhas de moedas"
+  ret x <= 5000, "muitas pilhas de moedas"
+  ret x <= 20000, "um morrinho de moedas"
+  ret x <= 50000, "um pequeno morro de moedas"
+  ret "uma quantidade imensa de moedas"
+
+func evento # Objeto passa a receber eventos até um objeto mudar de sala
+# arg0 a arg2 = objetos cujos eventos serão recebidos
+  se ref(arg0)
+    ref r
+    r = criar("evrecebe")
+    r.perso1 = arg0.evento.addfim(este, r)
+    r.perso2 = arg1.evento.addfim(este, r)
+    r.perso3 = arg2.evento.addfim(este, r)
+
+func tempo # Eventos de tempo (cria objeto), vide classe evtempo
+  se txt(arg0) && ref(arg1)
+    refvar r = criar("evtempo")
+    r.tempo1 = r.tempo2 = 1
+    r.obj = este
+    r.func = arg0
+    r.perso1 = arg1, r.perso1.evento.addfim(r)
+    r.perso2 = arg2, r.perso2.evento.addfim(r)
+    r.perso3 = arg3, r.perso3.evento.addfim(r)
+
+
+classe evrecebe
+listaitem perso1 # Primeiro personagem
+listaitem perso2 # Segundo personagem
+listaitem perso3 # Terceiro personagem
+const cmd_saiu = fim + apagar(este) # Personagem saiu da sala
+const cmd_fim = fim + apagar(este) # Personagem saiu do jogo
+
+func fim # Este objeto foi apagado
+  perso1.remove, perso2.remove, perso3.remove
+
+
+classe evtempo
+# Processa eventos de tempo
+#
+# Deve ser criado com:
+# misc:tempo("nome da função", personagens)
+# É permitido até 3 personagens.
+# Se um dos personagens mudar de sala, o evento é encerrado.
+#
+# Resultado: são executadas as funções cujo nome é o nome
+# especificado seguido do tempo decorrido, em décimos de segundo
+# A função com o nome especificado seguido de "0" é executada
+# quando o objeto for apagado.
+#
+# Na função:
+# arg0 a arg2 = personagens
+# arg3 = objeto evtempo
+#
+inttempo tempo1 # Para gerar eventos de tempo
+uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
+txt100 func # Nome da função que deve chamar
+ref obj # Objeto que contém a função
+ref perso1 # Primeiro personagem
+ref perso2 # Segundo personagem
+ref perso3 # Terceito personagem
+const cmd_saiu = apagar(este) # Personagem saiu da sala
+const cmd_fim = apagar(este) # Personagem saiu do jogo
+
+func fim # Este objeto foi apagado
+  obj.[func]0(perso1, perso2, perso3, este)
+
+func tempo1_exec # Executa eventos
+  ret !obj, apagar(este)
+  prog p
+  uint32 x
+  uint32 v
+  x = 1000000
+  refvar tam = inttotal(func)
+  epara p.inifunc(obj, func), p.lin, p.depois
+    (v = txt(p.texto, tam)) > tempo2 && v < x && (x = v)
+  efim
+  x == 1000000 && apagar(este)
+  v = tempo2
+  tempo1 = x - tempo2
+  tempo2 = x
+  obj.[func + v](perso1, perso2, perso3, este)
+
+
+classe miscserv
+# Para atualizar informações do comando serv a cada 60 segundos
+inttempo tempo
+real stempo_antes
+real utempo_antes
+real stempo
+real utempo
+int32 noar # Quantos minutos está no ar
+const iniclasse = !$[arg0] && criar(arg0)
+const ini = tempo = 1, noar = -1
+
+func tempo_exec
+  tempo = 600, noar += 1
+  debug d
+  stempo = intpos(d.stempo - stempo_antes), stempo_antes = d.stempo
+  utempo = intpos(d.utempo - utempo_antes), utempo_antes = d.utempo
+
+
+classe miscsav
+# Para atualizar hora MUD e salvar personagens e casas de tempos em tempos
+inttempo horatempo # Para atualizar a hora e salvar jogos de tempos em tempos
+listaobj savlista
+inttempo extempo # Salva um jogo / checa se jogo foi excluído
+int8 expasso # Usado em extempo_exec
+listaobj evhora # Objetos que devem receber eventos cmd_hora
+listaobj lhora # Objetos que ainda não receberam eventos cmd_hora
+inttempo thora # Para gerar eventos cmd_hora
+const iniclasse = !$[arg0] && criar(arg0)
+
+func salvartudo # Salva todos os arquivos pendentes de uma vez
+  savlista.limpar
+  debug d
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    d.ini, item.obj.salvar
+  efim
+  prog p
+  epara p.iniclasse("c_"), p.lin, p.depois
+    d.ini, $[p.texto].mudou && $[p.texto].salvar
+  efim
+
+func apagousav # Deve ser chamado quando um arquivo de jogador for apagado
+# arg0 = nome codificado
+  indiceitem item
+  refvar nome = "cj " + arg0
+  enquanto 1
+    item.ini(nome)
+    ret txtsub(item.txt, 0, 2) != nome
+    item.obj.objmudou = 1
+    item.obj.nomejog = ""
+  efim
+
+func ini
+# Cria diretório de jogos salvos, se não existir
+  arqdir d
+  d.criardir("sav1")
+  d.criardir("sav2")
+# Inicia contagem de tempo hora MUD
+# Nota: o tempo MUD é 12 vezes mais rápido que o tempo real
+# um dia MUD = 2 horas (7200 segundos), uma hora MUD = 300 segundos
+  datahora dh
+  dh.agora
+  horatempo = 3000 - dh.numseg * 10 % 3000
+  misc:imin = horatempo - 1
+  misc:hora = intdiv(dh.numseg % 7200 / 300)
+  misc:dia = dh.numdias % 7 * 12 + intdiv(dh.numseg / 7200)
+  misc:dia = misc:dia % 7
+  misc:luz = misc:hora >= 6 && misc:hora < 18
+  arqsav sav
+  sav.limpar("sav") # Limpa jogos antigos
+  sav.limpar # Faz imediatamente
+  sav.limpou # Limpa a lista de arquivos excluídos
+
+func horatempo_exec # Atualiza hora MUD
+# Acerta minuto, hora e luz
+  extempo = 2, expasso = 1
+  horatempo = 3000 # 60 minutos * 60 segundos * 10 décimos / 12
+  misc:imin = 2999
+  misc:hora = (misc:hora + 1) % 24
+  misc:luz = misc:hora >= 6 && misc:hora < 18
+# Acerta dia e limpa jogos antigos
+  se misc:hora == 0
+    misc:dia = (misc:dia + 1) % 7 # Atualiza o dia
+    arqsav sav
+    sav.limpar("sav") # Limpa jogos antigos
+  fimse
+# Gerar eventos cmd_hora
+  lhora.limpar, lhora.addfim(evhora)
+  thora = 2
+# Obtém lista de objetos (casas e personagens) que devem ser salvos
+  se savlista.total == 0
+    debug d
+    indiceitem item
+    epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+      savlista.addfim(item.obj)
+    efim
+    prog p
+    epara p.iniclasse("c_"), p.lin, p.depois
+      d.ini, $[p.texto].mudou && savlista.addfim($[p.texto])
+    efim
+  fimse
+# Envia mensagem da hora para os jogadores
+  refvar horamsg = config:horamsg[misc:hora]
+  se horamsg
+    indiceitem i
+    ref r
+    epara i.ini("un "), txt1(i.txt) == "un", i.depois
+      epara r = i.obj.perso.dono, r.dono, r = r.dono
+      efim
+      continuar r.s_luz && r.s_luz != 2
+      i.obj.perso.msg(horamsg)
+    efim
+  fimse
+
+func extempo_exec
+# Checa se arquivos sav apagados em segundo plano
+  se expasso
+    textotxt t
+    arqsav sav
+    t.addfim(sav.limpou)
+    expasso = t.remove, extempo = 5
+    enquanto t.linhas
+      refvar t1 = txt(t.remove)
+      apagousav(txt(t1, 4, inttotal(t1) - 8))
+    efim
+    ret
+  fimse
+# Salva arquivos pendentes
+  se savlista.total
+    extempo = 2
+    refvar r = ref(savlista.objini)
+    savlista.ini.remove
+    r.salvar
+  fimse
+
+func thora_exec # Gera eventos cmd_hora
+  ret !lhora, nulo # Retorna se todos os objetos receberam evento
+  debug d
+  uint16 t
+  thora = 2, t = 20000
+  enquanto t && lhora
+    refvar r = ref(lhora.objini)
+    lhora.ini.remove
+    refvar tt = d.exec + 5
+    r.cmd_hora(int(misc:hora))
+    t -= intpos(tt - d.exec), d.ini
+  efim
+  !lhora && (thora = 0)
+
+
+classe miscban
+# Para controlar endereços banidos
+textotxt texto # Lista de endereços banidos
+inttempo tempo
+const iniclasse = !$[arg0] && criar(arg0)
+const ini = texto.ler("sav2/ban.txt"), tempo_exec
+
+func salvar # Salva o arquivo com os endereços banidos
+  texto.salvar("sav2/ban.txt")
+
+func banido # Retorna 1 se um endereço IP está banido o 0 se não está
+# arg0 = endereço a verificar
+  textopos pos
+  txt100 lin
+  int16 var
+  lin = "\n" + arg0
+  pos = texto.ini
+  ret pos.txtproc(lin + " ") >= 0, 1
+  ret pos.txtproc("\n. ") >= 0, 1
+  enquanto 1
+    var = txtproc(lin, ".", var) + 1
+    ret !var, 0
+    ret pos.txtproc(txt(lin, 0, var) + " ") >= 0, 1
+  efim
+
+func tempo_exec # Limpa a lista de endereços e acerta a variável tempo
+  datahora hora
+  socket sock
+  debug d
+  d.exec = texto.linhas * 15 + 100
+  hora.agora
+  refvar num = hora.numtotal # Tempo atual, em segundos
+  refvar linhas = int(texto.linhas) # Quantidade de linhas antes da mudança
+  exec(num, sock)
+  d.ini
+  linhas != texto.linhas && salvar # Se a quantidade de linhas mudou, salva
+
+func exec # Chamado internamente por tempo_exec
+# arg0 = quantos segundos se passaram desde 1/1/1
+# arg1 = variável socket
+  tempo = 1000000
+  textopos pos
+  real t2
+  pos = texto.ini
+  enquanto pos
+    se !arg1.ipvalido(txt1(pos.texto)) && !arg1.ipvalido(txt1(pos.texto) + "0")
+      pos.remove
+    senao txt2(pos.texto) == "0"
+      pos.depois
+    senao (t2 = intpos(txt2(pos.texto)) - arg0) <= 0
+      pos.remove
+    senao
+      pos.depois
+      tempo > t2 * 10 && (tempo = t2 * 10)
+    fimse
+  efim
+
+
+classe misclog
+# Para gravar os logs
+arqlog l0
+arqlog l1
+arqlog l2
+arqlog l3
+arqlog l4
+arqlog l5
+inttempo atualiza
+datahora h
+#
+const iniclasse = !$[arg0] && criar(arg0)
+const entrou = h.agora, l0.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const admlog = h.agora, l1.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const cmdlog = h.agora, l2.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const jogchat = h.agora, l3.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const rezou = h.agora, l4.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+const mortes = h.agora, l5.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
+arg0)
+
+func ini
+  arqdir d
+  d.criardir("log")
+  atualiza_exec
+
+func atualiza_exec
+  h.agora
+  txt100 sufixo
+  atualiza = (86401 - h.numseg) * 10 # Um segundo após o dia mudar
+# Obtém o sufixo dos arquivos
+  sufixo = txt(h.ano) + txtfim("0" + h.mes, 2)
+  casovar int(config:logtempo)
+  casose "1"
+    sufixo += txtchr(intdiv((h.dia - 1) / 5) + 97)
+    sair
+  casose "2"
+    se h.dia <= 10
+      sufixo += "a"
+    senao h.dia <= 20
+      sufixo += "b"
+    senao
+      sufixo += "c"
+    fimse
+  casose "3"
+    sair
+  casose
+    sufixo += txtfim("0" + h.dia, 2)
+  casofim
+# Fecha e abre os arquivos
+  l0.fechar, config:l_entrou ? l0.abrir("log/entrou-" + sufixo)
+  l1.fechar, config:l_admlog ? l1.abrir("log/admlog-" + sufixo)
+  l2.fechar, config:l_cmdlog ? l2.abrir("log/cmdlog-" + sufixo)
+  l3.fechar, config:l_jogchat ? l3.abrir("log/jogchat-" + sufixo)
+  l4.fechar, config:l_rezou ? l4.abrir("log/rezou-" + sufixo)
+  l5.fechar, config:l_mortes ? l5.abrir("log/mortes-" + sufixo)
+
+
+classe miscfome
+# Tabela para acertar fome e sede dos jogadores
+# $miscfome.t.[p_fome] = quantidade de fome: 3=muita 2=média 1=pouca 0=sem
+# $miscfome.t.[p_sede] = quantidade de sede: 3=muita 2=média 1=pouca 0=sem
+const semfome = 50 # Valor para não sentir fome e sede
+const cheio = 250 # Valor máximo de p_fome, p_sede, p_bebida e p_diges
+const bebedir = 100 # A partir de que valor pode errar a direção ao se movimentar
+const bebeatk = 70 # A partir de que valor pode errar os golpes devido à bebida
+uint8 t.255 # Fome e sede: 3=muita 2=média 1=pouca 0=sem
+uint8 f.255 # Fome e sede: 2=muita 1=média 0=pouca ou sem
+const iniclasse = !$[arg0] && criar(arg0)
+
+func ini
+  uint16 ind
+# Com muita fome/sede
+  t.0 = 3, f.0 = 2
+# Com fome/sede
+  epara ind = 1, ind <= 30, ind += 1
+    t.[ind] = 2, f.[ind] = 1
+  efim
+# Com pouca fome/sede
+  epara nulo, ind <= 45, ind += 1
+    t.[ind] = 1
+  efim
+
+
+classe miscbebida
+# Muda mensagens conforme a bebedeira
+const bebeini = 20 # A partir desse valor, a bebida começa a ter efeito
+const iniclasse = !$[arg0] && criar(arg0)
+
+func msgperso # Substituições conforme a bebedeira
+# arg0 = texto original
+# arg1 = valor da variável p_bebida do jogador
+# Retorna o texto modificado conforme a bebedeira
+  ret arg1 <= bebeini, arg0
+  refvar indice = intmin(50 * (arg1 - bebeini) / $miscfome.cheio, 100)
+  ret msg(arg0, indice)
+
+func msg # Substituições conforme a bebedeira
+# arg0 = texto original
+# arg1 = porcentagem de bebedeira, de 0 a 100
+# Retorna o texto modificado conforme a bebedeira
+  txt512 lin
+# Repete uma ou duas vezes o mesmo caracter
+  lin = vartroca(arg0, "", "beb2_", arg1 / 2)
+# T vira TH, X vira SH
+  lin = vartroca(lin, "", "beb1_", arg1 * 0.8)
+# Troca maiúsculas com minúsculas
+  lin = txtmudamai(lin, arg1 / 1.5)
+# Gagueira
+  ret vartroca(lin, "", "beb3_", arg1 / 3, 2)
+
+const beb1_t = "th"
+const beb1_x = "sh"
+const beb2_a = bebida2(arg0)
+const beb2_b = bebida2(arg0)
+const beb2_c = bebida2(arg0)
+const beb2_d = bebida2(arg0)
+const beb2_e = bebida2(arg0)
+const beb2_f = bebida2(arg0)
+const beb2_g = bebida2(arg0)
+const beb2_h = bebida2(arg0)
+const beb2_i = bebida2(arg0)
+const beb2_j = bebida2(arg0)
+const beb2_k = bebida2(arg0)
+const beb2_l = bebida2(arg0)
+const beb2_m = bebida2(arg0)
+const beb2_n = bebida2(arg0)
+const beb2_o = bebida2(arg0)
+const beb2_p = bebida2(arg0)
+const beb2_q = bebida2(arg0)
+const beb2_r = bebida2(arg0)
+const beb2_s = bebida2(arg0)
+const beb2_t = bebida2(arg0)
+const beb2_u = bebida2(arg0)
+const beb2_v = bebida2(arg0)
+const beb2_w = bebida2(arg0)
+const beb2_x = bebida2(arg0)
+const beb2_y = bebida2(arg0)
+const beb2_z = bebida2(arg0)
+
+func bebida2
+  ret rand(2) ? arg0 + arg0 : arg0 + arg0 + arg0
+
+const beb3_a = bebida3(arg0)
+const beb3_b = bebida3(arg0)
+const beb3_c = bebida3(arg0)
+const beb3_d = bebida3(arg0)
+const beb3_e = bebida3(arg0)
+const beb3_f = bebida3(arg0)
+const beb3_g = bebida3(arg0)
+const beb3_h = bebida3(arg0)
+const beb3_i = bebida3(arg0)
+const beb3_j = bebida3(arg0)
+const beb3_k = bebida3(arg0)
+const beb3_l = bebida3(arg0)
+const beb3_m = bebida3(arg0)
+const beb3_n = bebida3(arg0)
+const beb3_o = bebida3(arg0)
+const beb3_p = bebida3(arg0)
+const beb3_q = bebida3(arg0)
+const beb3_r = bebida3(arg0)
+const beb3_s = bebida3(arg0)
+const beb3_t = bebida3(arg0)
+const beb3_u = bebida3(arg0)
+const beb3_v = bebida3(arg0)
+const beb3_w = bebida3(arg0)
+const beb3_x = bebida3(arg0)
+const beb3_y = bebida3(arg0)
+const beb3_z = bebida3(arg0)
+
+func bebida3
+  casovar rand(3)
+  casose "0"
+    ret arg0 + "-" + arg0
+  casose "1"
+    ret arg0 + "-" + arg0 + "-" + arg0
+  casose "2"
+    ret arg0 + "-" + arg0 + "-" + arg0 + "-" + arg0
+  casofim

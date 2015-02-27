@@ -1,0 +1,267 @@
+classe adm_casa
+herda comando_adm
+const txtajuda = "\b\c3Comandos de casas\b\n\
+  \c2LCASA\b     Lista casas existentes\n\
+  \c2CCASA\b     Cria uma \n\
+  \c2ECASA\b     Edita uma casa\n\
+  \c2ACASA\b     Apaga uma ou mais casas"
+
+
+classe adm_lcasa
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lcasa\b\n\
+Sintaxe: LCASA [nome]\n\
+Lista as casas que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as casas."
+
+func escr # Listar casas
+  prog p
+  se !p.iniclasse("c_" + txtremove(arg1, "EMDCT7"))
+    ret arg0.msg("\bNenhuma casa encontrada.")
+  fimse
+  datahora hora
+  hora.agora
+  textotxt t
+  txt200 lin
+  t.addfim("\b\c6Casa  ArquivoJogador  DiasTaxa  Situação\b")
+  enquanto p.lin && t.linhas < 500
+    lin = txtsub($[p.texto].nomejog, 1, 1)
+    se lin
+      lin = "  " + lin + "  " + (hora.numdias - $[p.texto].diataxa)
+      casovar $[p.texto].infotaxa
+      casose "1"
+        lin += "  Atrasado"
+        sair
+      casose "2"
+        lin += "  Bloqueado"
+        sair
+      casose
+        lin += "  Ok"
+      casofim
+    fimse
+    t.addfim(txt(p.texto, 2) + lin)
+    p.depois
+  efim
+  arg0.msg2(t.remove(500))
+
+
+classe adm_ccasa
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ccasa\b\n\
+Sintaxe: CCASA <nome>\n\
+Cria uma casa. Nome deve ser o nome de uma área ou da casa.\n\
+Nomes de casas são sempre nomes de área seguido de um número de 001 a 999.\n\
+Passos para criar uma casa:\n\
+1. Usar o comando CCASA\n\
+2. Definir as salas que correspondem à casa com o comando ECASA\n\
+3. Editar as salas (comando ESALA) colocando 0 na opção \"Apagar itens\"\n\
+4. Acertar também a opção \"Objetos máximo\"\n\
+5. Para segurança dos jogadores, editar as saídas da casa (comando ESAI)\n\
+   para fechar ao passar e trancar ao fechar\n\
+6. Colocar o nome da casa no código da fechadura (comando ESAI)\n\
+Nota: para casa casa é criado um arquivo no diretório sav2."
+
+func escr # Criar casa
+  prog p
+  txt40 nome
+  uint16 num
+# Checa se digitou nome da casa
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da casa ou área após CCASA")
+  fimse
+# Checa nome completo
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
+  num = int(txtfim(nome, 3)) + 1000
+  se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
+    se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
+      ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+    senao p.existe("c_" + nome)
+      ret arg0.msg("Casa já existe: " + nome)
+    fimse
+# Checa nome de área
+  senao !p.existe("a_" + nome)
+    ret arg0.msg("Área não existe: " + nome)
+  senao
+    epara num = 1001, p.existe("c_" + nome + txtfim(num, 3)), num += 1
+      continuar num < 2000
+      ret arg0.msg("Atingido limite de casas na área " + nome)
+    efim
+    nome += txtfim(num, 3)
+  fimse
+# Cria casa
+  txt200 area
+  area = txt(nome, 0, inttotal(nome) - 3)
+  criar("admordena", "areas/" + area)
+  p.criar("c_" + nome + "\nareas/" + area + "\nherda casa\nconst area = \"" + area + "\"")
+# config:salvar
+  arg0.msg("\bCasa criada: " + nome)
+  admlog(arg0, "criou casa " + nome)
+
+
+classe adm_acasa
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Acasa\b\n\
+Sintaxe: ACASA <nomes das casas>\n\
+Apaga uma ou mais casas, com os nomes especificados."
+
+func escr # Apagar casa
+  prog p
+  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
+  se nome == ""
+    ret arg0.msg("Tecle um ou mais nomes da casa após ACASA")
+  fimse
+  uint16 x
+  enquanto txtsub(nome, x, 1)
+    se !p.existe("c_" + txtsub(nome, x, 1))
+      ret arg0.msg("Casa não existe: " + txtsub(nome, x, 1))
+    fimse
+    x += 1
+  efim
+  arg0.sock.tpasso = nome
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar casa
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("c_" + txtsub(arg0.tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Casa apagada: " + arg0.tpasso)
+      admlog(arg0, "apagou casa " + arg0.tpasso)
+    senao
+      arg0.msg("Casas apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou casas " + arg0.tpasso)
+    fimse
+  senao
+    txt10 m1
+    arg0.passo = este
+    txt2(arg0.tpasso) && (m1 = "s")
+    arg0.msg("Apagar casa" + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_ecasa
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ecasa\b\n\
+Sintaxe: ECASA <nome>\n\
+Edita a casa com o nome especificado."
+
+func escr # Editar casa
+  txt100 nome
+  prog p
+  nome = txtmin(txtremove(arg1, "EMDCT7"))
+  se nome == ""
+    arg0.msg("Tecle o nome da casa após ECASA")
+  senao !$c_[nome]
+    arg0.msg("\bCasa não existe: " + nome)
+  senao
+    arg0.sock.var.classe1 = "c_" + nome
+    arg0.sock.m_menu("menu_casa")
+  fimse
+
+
+classe menu_casa
+herda comando_menu
+const titulo = "Casa " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome1 = "Nome"
+const info1 = "Nome para os comandos LISTA e COMPRAR"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "nome"
+#
+const nome2 = "Descrição"
+const info2 = "É mostrado ao teclar LISTAR e o nome da casa"
+const tipo2 = "opc_texto"
+const clas2 = var.classe1
+const vari2 = "desc"
+#
+const nome3 = "Palavras chave"
+const info3 = "Palavras que os jogadores digitam para os comandos COMPRAR e LISTAR"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "ident"
+#
+const nome4 = "Valor da casa"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "valor"
+#
+const nome5 = "Sala 1"
+const tipo5 = "opc_sala"
+const clas5 = var.classe1
+const vari5 = "s1"
+const exec5 = "acerta_mudou"
+#
+const nome6 = "Sala 2"
+const tipo6 = "opc_sala"
+const clas6 = var.classe1
+const vari6 = "s2"
+const exec6 = "acerta_mudou"
+#
+const nome7 = "Sala 3"
+const tipo7 = "opc_sala"
+const clas7 = var.classe1
+const vari7 = "s3"
+const exec7 = "acerta_mudou"
+#
+const nome8 = "Sala 4"
+const tipo8 = "opc_sala"
+const clas8 = var.classe1
+const vari8 = "s4"
+const exec8 = "acerta_mudou"
+#
+const nome9 = "Sala 5"
+const tipo9 = "opc_sala"
+const clas9 = var.classe1
+const vari9 = "s5"
+const exec9 = "acerta_mudou"
+#
+const nome10 = "Sala 6"
+const tipo10 = "opc_sala"
+const clas10 = var.classe1
+const vari10 = "s6"
+const exec10 = "acerta_mudou"
+#
+const nome11 = "Sala 7"
+const tipo11 = "opc_sala"
+const clas11 = var.classe1
+const vari11 = "s7"
+const exec11 = "acerta_mudou"
+#
+const nome12 = "Sala 8"
+const tipo12 = "opc_sala"
+const clas12 = var.classe1
+const vari12 = "s8"
+const exec12 = "acerta_mudou"
+#
+const nome13 = "Sala 9"
+const tipo13 = "opc_sala"
+const clas13 = var.classe1
+const vari13 = "s9"
+const exec13 = "acerta_mudou"
+
+
+classe admatucasa
+# Atualiza a variável infotaxa de todas as casas
+const iniclasse = arg0 != "casa" && !$[arg0] && criar(arg0)
+prog p
+debug d
+ref r
+
+func atualiza # Atualiza as casas
+  d.exec = 50000
+  epara p.iniherdainv("casa"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.tempotaxa = 1
+    efim
+  efim

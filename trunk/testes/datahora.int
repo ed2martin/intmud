@@ -1,0 +1,76 @@
+exec = 5000
+telatxt = 1
+
+classe tela
+telatxt tela
+datahora d
+const msg = tela.msg(arg0)
+func iniclasse
+  criar(arg0)
+func ini
+  se tela.proto == 0
+    terminar
+  fimse
+  menu
+  d.novadata(2005, 4, 25)
+  d.novahora(14, 30, 12)
+func menu # Mostra opções válidas
+  msg("Opções:\n")
+  msg("X Muda a data atual para agora\n")
+  msg("I informa data\n")
+  msg("A avança um dia\n")
+  msg("R recua um dia\n")
+  msg("D aaaammdd muda a data; exemplo: D 20091025\n")
+  msg("H hhmmss muda a hora; exemplo: H 124530\n")
+  msg("ND xxxx  Muda data conforme número de dias\n")
+  msg("NS xxxx  Muda hora conforme número de segundos\n")
+  msg("NT xxxx  Muda hora conforme segundos desde 1/1/1\n")
+func tela_msg # Usuário digitou alguma coisa
+  se !escr_[txt1(arg0)](txt2(arg0))
+    menu
+func escr_x # Muda data atual para agora
+  d.agora
+  msg("Data atual\n")
+  ret escr_i
+const semana_0 = "Domingo"
+const semana_1 = "Segunda-Feira"
+const semana_2 = "Terça-Feira"
+const semana_3 = "Quarta-Feira"
+const semana_4 = "Quinta-Feira"
+const semana_5 = "Sexta-Feira"
+const semana_6 = "Sábado"
+func escr_i # Informações
+  msg(txt(d.dia) + "/" + d.mes + "/" + d.ano)
+  msg("  " + d.hora + ":" + d.min + "." + d.seg + "  " + semana_[d.diasem])
+  se d.bissexto
+    msg("  bissexto")
+  fimse
+  msg("  nd=" + d.numdias + "  ns=" + d.numseg + "  nt=" + d.numtotal + "\n")
+  ret 1
+func escr_a # Avança
+  msg("Avança\n")
+  d.depois
+  ret escr_i
+func escr_r # Recua
+  msg("Recua\n")
+  d.antes
+  ret escr_i
+func escr_d # Mudar data
+  d.ano = txt(arg0, 0, 4)
+  d.mes = txt(arg0, 4, 2)
+  d.dia = txt(arg0, 6, 2)
+  ret escr_i
+func escr_h # Mudar a hora
+  d.hora = txt(arg0, 0, 2)
+  d.min = txt(arg0, 2, 2)
+  d.seg = txt(arg0, 4, 2)
+  ret escr_i
+func escr_nd # Mudar data conforme número de dias
+  d.numdias = arg0
+  ret escr_i
+func escr_ns # Muda hora conforme número de segundos
+  d.numseg = arg0
+  ret escr_i
+func escr_nt # Muda hora conforme segundos desde 1/1/1
+  d.numtotal = arg0
+  ret escr_i

@@ -1,0 +1,292 @@
+classe adm_cod
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Comandos de edição do código\b\n\
+  \c2LCL\b       Lista as classes existentes\n\
+  \c2CCL\b       Cria classe\n\
+  \c2ACL\b       Apaga classe\n\
+  \c2ECL\b       Edita uma classe\n\
+  \c2ICL\b       Inicializa uma classe (chama a função iniclasse)\n\
+  \c2RCL\b       Renomeia uma classe\n\
+  \c2HERDA\b     Edita herança de uma classe\n\
+  \c2LFUNC\b     Lista funções de uma classe\n\
+  \c2LFUNC2\b    Lista todas funções de uma classe, inclusive as herdadas"
+
+
+classe adm_lcl
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lcl\b\nSintaxe: LCL [nome]\nLista as classes existentes."
+
+func escr # Listar classes
+  prog p
+  txt80 lin
+  refvar txtmais = arg0.sock.txtmais
+  ret !p.iniclasse(arg1), arg0.msg("\bNenhuma classe encontrada.")
+  debug d
+  d.exec = 50000
+  epara txtmais.limpar, p.lin, p.depois
+    txtmais.addfim(p.texto + ",")
+  efim
+  textopos pos
+  pos = txtmais.fim, pos.antes
+  pos.mudar("", inttotal(pos.texto) - 1, 1)
+  txtmais.juntar
+  txtmais.dividelin(50, 70)
+  txtmais.addini("\bClasses:")
+  arg0.sock.txtmostra
+
+
+classe adm_ccl
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Ccl\b\n\
+Sintaxe: CCL <nome> [arquivo]\n\
+Cria uma classe. Aquivo é o sufixo do arquivo aonde criar a classe.\n\
+Se for omitido, cria no arquivo mud.int.\n\
+Nota: após criar a classe, costuma-se editar com Ecl e inicializar com Icl."
+
+func escr # Cria classe
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após CCL")
+  senao p.existe(txt1(arg1))
+    arg0.msg("\bClasse já existe: " + txt1(arg1))
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
+  fimse
+
+func passo
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    textotxt t
+    prog p
+    t.addfim(p.criar(txt1(arg0.tpasso) + "\n" + txt2(arg0.tpasso)))
+    se t.bytes > 1
+      arg0.msg2("Erro ao criar:\n" + t.remove(1000))
+    senao
+      arg0.msg("Classe criada: " + txt1(arg0.tpasso))
+      config:salvar
+      admlog(arg0, "criou classe " + txt1(arg0.tpasso))
+    fimse
+  senao
+    arg0.msg("Criar classe " + txt1(arg0.tpasso) + " ? Tecle S ou N")
+    arg0.passo = este
+  fimse
+  ret 1
+
+
+classe adm_acl
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Acl\b\nSintaxe: ACL <nome>\nApaga uma classe."
+
+func escr # Apaga classe
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após ACL")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
+  fimse
+
+func passo
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    se !p.apagar(arg0.tpasso)
+      arg0.msg("Erro ao apagar " + arg0.tpasso)
+    senao
+      arg0.msg("Classe apagada " + arg0.tpasso)
+      config:salvar
+      admlog(arg0, "apagou classe " + arg0.tpasso)
+    fimse
+  senao
+    arg0.msg("Apagar classe " + arg0.tpasso + " ? Tecle S ou N")
+    arg0.passo = este
+  fimse
+  ret 1
+
+
+classe adm_ecl
+herda comando_editor, comando_comum
+const txtajuda = "\b\c3Ecl\b\nSintaxe: ECL [nome da classe]\nEdita uma classe."
+
+func escr # Edita uma classe
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após ECL")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao
+    arg0.sock.var.opcnome = ""
+    arg0.sock.var.opcclasse = txts(arg1)
+    passo(arg0.sock, "\b")
+  fimse
+
+func passo # Editar função
+  se arg1 == "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+  senao
+    arg0.var.opcnome = "classe " + arg0.var.opcclasse
+    passocod(arg0, arg1, 1)
+  fimse
+  ret 1
+
+
+classe adm_icl
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Icl\b\n\
+Sintaxe: ICL <nome da classe>\n\
+Inicializa uma classe (chama a função iniclasse da classe).\n\
+Isso é necessário após criar e editar com os comandos ccl e ecl."
+
+func escr # Inicializa uma classe
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após ICL")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao
+    [arg1]:iniclasse(arg1)
+    arg0.msg("\bClasse inicializada: " + arg1)
+  fimse
+
+
+classe adm_rcl
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Rcl\b\nSintaxe: RCL <nome> <novo nome>\nRenomeia uma classe."
+
+func escr # Renomeia uma classe
+  prog p
+  se !txt2(arg1)
+    arg0.msg("Digite RCL seguido do nome da classe e o novo nome da classe")
+  senao !p.existe(txt1(arg1))
+    arg0.msg("Classe não existe: " + txt1(arg1))
+  senao p.existe(txt2(arg1))
+    arg0.msg("Classe já existe: " + txt2(arg1))
+  senao
+    arg0.msg("Renomeando classe " + txt1(arg1) + " para " + txt2(arg1))
+    p.renomear(txt1(arg1), txt2(arg1))
+    config:salvar
+  fimse
+
+
+classe adm_lfunc
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lfunc\b\n\
+Sintaxe: LFUNC <nome da classe>\n\
+Lista as funções de uma classe."
+
+func escr # Listar funções
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após LFUNC")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao !p.inifunc(arg1)
+    arg0.msg("\bNenhuma função encontrada.")
+  senao
+    textotxt t
+    t.addfim("\bFunções de " + arg1 + ":")
+    enquanto p.lin
+      t.addfim(p.vartipo(arg1, p.texto) + " " + p.texto)
+      p.depois
+    efim
+    lin && t.addfim(lin)
+    arg0.msg2(t.remove(1000))
+  fimse
+
+
+classe adm_lfunc2
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lfunc2\b\n\
+Sintaxe: LFUNC2 <nome da classe>\n\
+Lista todas as funções de uma classe, inclusive as herdadas."
+
+func escr # Listar funções inclusive as herdadas
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após LFUNC2")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao !p.inifunctudo(arg1)
+    arg0.msg("\bNenhuma função encontrada.")
+  senao
+    textotxt t
+    t.addfim("\bFunções de " + arg1 + ":")
+    enquanto p.lin
+      t.addfim(p.vartipo(arg1, p.texto) + " " + p.texto)
+      p.depois
+    efim
+    lin && t.addfim(lin)
+    arg0.msg2(t.remove(1000))
+  fimse
+
+
+classe adm_herda
+herda comando_editor, comando_comum
+const txtajuda = "\b\c3Herda\b\n\
+Sintaxe: herda <nome da classe>\n\
+Edita herança de uma classe (uma classe herdada por linha)."
+
+func escr
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após HERDA")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "\b")
+  fimse
+
+func passo
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "\b"
+    prog p
+    arg0.teditor.limpar
+    epara p.iniherda(arg0.tpasso), p.lin, p.depois
+      arg0.teditor.addfim(p.texto)
+    efim
+    arg0.teditor.bytes == 1 && teditor.limpar
+    arg0.leditor = arg0.teditor.ini
+    arg0.leditor1 = arg0.teditor.ini
+    arg0.leditor2 = arg0.teditor.fim
+    arg0.leditor2.antes
+    arg0.passo = este
+    arg0.msg("Editando herança de " + arg0.tpasso + ", O opções, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    prog p
+    textopos p1
+    textotxt t1
+    p1 = arg0.teditor.ini
+    se !p1.lin # Nenhum texto significa apagar herança
+      p.inilinha(arg0.tpasso)
+      txt1(p.texto) == "herda" && p.apagarlin(arg0.tpasso, 1)
+      config:salvar, arg0.msg("Salvou: nenhuma herança")
+      admlog(arg0, "alterou herança da classe " + arg0.tpasso)
+      ret 1
+    fimse
+    enquanto p1.lin
+      t1.addfim(p1.texto), p1.depois
+    efim
+    t1.addfim(p.criar(arg0.tpasso, "herda " + txttroca(t1.remove(100), "\n", ",")))
+    se t1.bytes > 1
+      arg0.msg2("Erro ao salvar herança:\n" + t1.remove(1000))
+    senao
+      config:salvar, arg0.msg("Salvou herança")
+      admlog(arg0, "alterou herança da classe " + arg0.tpasso)
+    fimse
+    ret 1
+  casofim
+  ret passoeditor(arg0, arg1, 1000, "Herança")

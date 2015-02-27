@@ -1,0 +1,64 @@
+classe cmd_prompt
+herda comando_comum
+const posic = 0
+const txtajuda = "\b\c3Prompt\b\n\
+Sintaxe: PROMPT  [texto]\n\
+         BPROMPT [texto]\n\n\
+PROMPT é uma ou mais linhas para indicar a você que o MUD já enviou todas\n\
+as mensagens pendentes. Com essa opção pode-se personalisar as mensagens,\n\
+inclusive adicionando algumas variáveis, como pontos de vida, hora, etc.\n\n\
+BPROMPT funciona de forma idêntica ao PROMPT, porém corresponde à\n\
+mensagem durante a batalha.\n\
+Sem nenhum texto, essas opções mostram o prompt atual.\n\
+Se o texto for a palavra ini (exemplo: PROMPT INI), o prompt será\n\
+redefinido para o padrão do MUD.\n\n\
+Nota: para a mensagem de prompt aparecer, deve estar habilitada no\n\
+comando CONFIG.\n\n\
+As seguintes sequências de caracteres têm um significado especial:\n\n\
+ \c2%n\b  Nome do seu personagem usado nas batalhas\n\
+ \c2%N\b  Nome do seu oponente (se estiver batalhando)\n\
+ \c2%h\b  Pontos de vida atuais\n\
+ \c2%H\b  Total de pontos de vida\n\
+ \c2%p\b  Pontos de vida em porcentagem\n\
+ \c2%P\b  Pontos de vida em uma barra de 10 caracteres\n\
+ \c2%o\b  Pontos de vida do oponente em porcentagem\n\
+ \c2%O\b  Pontos de vida do oponente em uma barra de 10 caracteres\n\
+ \c2%m\b  Pontos de mana atuais\n\
+ \c2%M\b  Pontos de mana totais\n\
+ \c2%v\b  Pontos de vigor atuais\n\
+ \c2%V\b  Pontos de vigor totais\n\
+ \c2%g\b  Quantidade de moedas que seu personagem possui\n\
+ \c2%l\b  Nível do seu personagem\n\
+ \c2%L\b  Nível do seu oponente\n\
+ \c2%x\b  Experiência do seu personagem\n\
+ \c2%X\b  Experiência necessária para o próximo nível\n\
+ \c2%T\b  Conforme o sol: amanhecendo, manhã, tarde, anoitecendo, noite\n\
+ \c2%d\b  Hora no MUD\n\
+ \c2%D\b  Hora no servidor\n\
+ \c2%z\b  Uma quebra de linha (para definir prompts de várias linhas)\n\
+ \c2%Z\b  O caracter %\n\
+ \c2%t\b  O mesmo que um espaço em branco\n\n\
+Exemplos (considerando 30 pontos de vida, 45 de mana e 50 de vigor):\n\n\
+PROMPT %h%m                =  3045\n\
+PROMPT %h %m %v            =  30 45 50\n\
+PROMPT <%hhp %mmn %vmv>    =  <30hp 45mn 50mv>\n\
+PROMPT <%c3%hhp %c2%mmn %c6%vmv%b>  = <\c330hp \c245mn \c650mv\b>  (com cores)\n\n\
+Veja também: AJUDA CORES"
+
+func escr
+  ret !arg1, arg0.msg("Prompt:\n" + arg0.var.z_prompt)
+  txt100 lin
+  lin = arg1 == "ini" ? "<%c3%hhp %c2%mmn %c6%vmv%b> " : arg1
+  arg0.var.z_prompt = lin
+  arg0.msg("Prompt alterado para:\n" + lin)
+
+
+classe cmd_bprompt
+herda cmd_prompt
+
+func escr
+  ret !arg1, arg0.msg("Prompt de batalha:\n" + arg0.var.z_bprompt)
+  txt100 lin
+  lin = arg1 == "ini" ? "<%c3%hhp %c2%mmn %c6%vmv%b> " : arg1
+  arg0.var.z_bprompt = lin
+  arg0.msg("Prompt de batalha alterado para:\n" + lin)

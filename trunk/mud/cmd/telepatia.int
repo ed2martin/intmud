@@ -1,0 +1,34 @@
+classe cmdfim_telepatia
+herda comando_comum
+const posic = 0
+const txtajuda = "\b\c3Telepatia\b\n\
+Sintaxe: TELEPATIA <personagem> <mensagem>\n\
+         =<personagem> <mensagem>\n\
+Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
+da sala em que ele estiver.\n\
+Veja também os comandos CONFIG e IGNORAR."
+
+func escr
+  ret !arg0.jogconfig.8, arg0.msg("Canal Telepatia está desabilitado.")
+  ret !arg1, arg0.msg("Escrever para quem?")
+  indiceitem item
+  item.ini("pn " + txtnome(txt1(arg1)))
+  $mens.p(arg0, item.obj)
+  $mens.mens = txt2(arg1)
+  se !item.obj || item.obj.jogconfig.17 && !arg0.jogconfig.23
+    arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
+  senao item.obj == arg0
+    arg0.msginv("Escrever para você mesm$s?")
+  senao item.obj.var.u_[arg0.nome]
+    arg0.msginv("$C está ignorando você.")
+  senao arg0.var.u_[item.obj.nome]
+    arg0.msginv("Você está ignorando $C.")
+  senao !item.obj.jogconfig.8
+    arg0.msginv("$C desabilitou o canal Telepatia.")
+  senao arg0.jogconfig.17 && !item.obj.jogconfig.23
+    arg0.msginv("Você está invisível para $C.")
+  senao !txt2(arg1)
+    arg0.msginv("Escrever o quê?")
+  senao
+    item.obj.msginv(config:telepatia2)
+    arg0.msginv(config:telepatia1)

@@ -4,7 +4,7 @@ IntMUD (Interpretador MUD)
 
 0. Créditos
 1. Sobre o IntMUD
-2. Opções dos arquivos '*.INT'
+2. Opções dos arquivos *.INT
 2.1. Opção MAPAGRANDE
 2.2. Opção EXEC
 2.3. Opção TELATXT
@@ -59,47 +59,48 @@ IntMUD (Interpretador MUD)
 33.2. Funções para ler o resultado da consulta
 33.3. Funções para obter informações
 33.4. Funções para alterar o programa
-34. Debug - auxiliar a detectar erros no programa
-35. IndiceObj - objetos organizados de acordo com um texto
-36. IndiceItem - obter objeto pelo texto
-37. DataHora - calendário
+34. ArqProg - busca nos diretórios os arquivos que compõem o programa
+35. Debug - auxiliar a detectar erros no programa
+36. IndiceObj - objetos organizados de acordo com um texto
+37. IndiceItem - obter objeto pelo texto
+38. DataHora - calendário
 
 
 0. CRÉDITOS
 
 Este manual foi escrito por Edward Martin e revisado posteriormente,
 de 2012 a 2014, por Paulo Santos Ramos e Edward Martin, até o tópico 15.4.8
-e os tópico 20.16 e 23.
+e os tópicos 20.16, 23 e 34.
 
 
 1. SOBRE O INTMUD
 
 O IntMUD é um interpretador de comandos que trabalha com um ou mais
-arquivos textuais de extensão '.int', cujo o conteúdo deverá ser puramente
+arquivos textuais de extensão .int, cujo o conteúdo deverá ser puramente
 oriundo da linguagem de maneira coerente às regras da mesma, para sua
 eficaz interpretação.
 
-Por padrão, o arquivo principal chama-se 'intmud.int'. É possível mudar
+Por padrão, o arquivo principal chama-se intmud.int. É possível mudar
 esse padrão, das seguintes formas:
 
  - Renomeando o executável (intmud.exe) e o arquivo principal assumirá
-   o nome alterado matendo a extensão '.int', como dito anteriormente;
+   o nome alterado matendo a extensão .int, como dito anteriormente;
 
 Exemplo: Se mudar o nome do arquivo 'intmud.exe' para 'teste.exe'
-         o arquivo principal passará a ser 'teste.int'.
+         o arquivo principal passará a ser teste.int.
 
  - Seguindo as sintaxes:
    <nome do executável> <nome do arquivo>.int
    <nome do executável> <nome do arquivo>
 
 Exemplos:
- - INTMUD TESTE.INT            - Interpreta o arquivo 'teste.int'
-                                 com o executável denominado 'intmud.exe';
+ - INTMUD TESTE.INT            - Interpreta o arquivo teste.int
+                                 com o executável denominado intmud.exe;
  - INTMUD TESTE                - O mesmo que 'intmud teste.int', já
                                  visto acima.
 
 OBS.1: Observe que executando o programa em IntMUD da maneira anterior,
-       não faz diferença omitir ou não a extensão '.int' do arquivo
+       não faz diferença omitir ou não a extensão .int do arquivo
        desejado;
 OBS.2: Note também que o primeiro arquivo é o executável e o segundo é o
        que contém a linguagem.
@@ -111,9 +112,9 @@ Em tópicos posteriores a este, conheceremos mais detalhadamente a
 estrutura completa do IntMUD.
 
 
-2. OPÇÕES DOS ARQUIVOS '*.INT'
+2. OPÇÕES DOS ARQUIVOS *.INT
 
-O arquivo principal do IntMUD possui algumas definições padrão inseridas
+O arquivo .int principal possui algumas definições padrão inseridas
 no início, conforme a seguinte sintaxe:
 
 <opção> = <valor>
@@ -121,46 +122,34 @@ no início, conforme a seguinte sintaxe:
 Após as opções vem as definições de classes, que compõem o programa em si.
 
 
-2.1. OPÇÃO MAPAGRANDE
+2.1. OPÇÃO INCLUIR
 
-Sintaxe: MAPAGRANDE = 0
-         MAPAGRANDE = 1
+Esta opção permite incluir mais de um arquivo .int como parte do
+código, objetivando principalmente facilitar possíveis manutenções de
+programas muito grandes.
 
-Se essa opção estiver ausente, assume 0.
+Sintaxe: INCLUIR = <nome do arquivo ou diretório>
 
-Se MAPAGRANDE for 1, o programa pode estar em vários arquivos. Se for 0,
-está em apenas um arquivo.
+Conforme a sintaxe, serão incluídos todos os arquivos que começam com
+o nome especificado. Caso o nome termine com uma / (barra) será
+interpretado como sendo um diretório, incluindo assim todos os seus
+arquivos .int.
 
-Quando o programa começa a ficar grande, é muito útil dividí-lo em vários
-arquivos. Um código excessivamente extenso em um único arquivo é de difícil
-manutenção.
+Nota: Os arquivos e diretórios especificados na inclusão devem pertencer
+ao mesmo diretório do arquivo .int principal.
 
-Tais arquivos seguem a sintaxe:
-<nome arq principal>-<arq membro>.int.
+Exemplos:
 
-Exemplo: Suponha em dividir um programa em um arquivo com o código
-         principal; outro arquivo apenas contendo classes herdadas por
-         salas; outro contendo classes herdadas exclusivamente para
-         objetos e outro ainda contendo classes restritas para
-         personagens. Levando em conta que o nome do executável seja
-         'intmud.exe', os demais arquivos ficariam assim:
+incluir = mud-
+incluir = area/
+incluir = teste/mud
+incluir = teste1/teste2/
 
-INTMUD.INT                     - Contém o código principal;
-INTMUD-SALAS.INT               - Contém classes apenas herdadas por salas;
-INTMUD-OBJ.INT                 - Contém classes exclusivas para objetos;
-INTMUD-PERSO.INT               - Contém classes restritas apenas para
-                                 personagens.
-
-OBS.: Caso o nome do executável mude, será diferente apenas o prefixo dos
-      arquivos membros, que assumirá o nome modificado.
-
-Veja abaixo a mesma lista de arquivos, porém, com um executável
-denominado 'teste.exe':
-
-TESTE.INT
-TESTE-SALAS.INT
-TESTE-OBJ.INT
-TESTE-PERSO.INT
+O primeiro exemplo inclui todos os arquivos cujo nome começa com mud-.
+Já o segundo inclui todos os arquivos do diretório areas.
+O terceiro inclui todos os arquivos do diretório teste cujos nomes começam
+com a palavra mud. O quarto incluir todos os arquivos do diretório teste2,
+que é um sub-diretório de teste1.
 
 
 2.2. OPÇÃO EXEC
@@ -3022,7 +3011,7 @@ Inicia a busca de arquivos/diretórios em um diretório.
 Retorna "" se sucesso ou um texto contendo o erro.
 
 24.2. fechar
-Encerra a busca em um diretório
+Encerra a busca em um diretório.
 
 24.3. lin
 É 1 se entrada válida ou 0 se chegou no fim do diretório.
@@ -3045,7 +3034,7 @@ Retorna o tamanho do arquivo.
 
 24.8. atempo(<nome da entrada>)
 Retorna quando o arquivo foi acessado; um texto no formato:
-ano mês dia hora minuto segundo milhonésimos de segundo
+ano mês dia hora minuto segundo milhonésimos de segundo.
 Exemplo: "2010 1 20 14 30 02 1500"
 Retorna um texto vazio se o arquivo não existir ou não permitido.
 
@@ -3577,19 +3566,18 @@ func conec_msg
 
 Nota: pode ser usado um objeto no lugar do nome de uma classe.
 
-
 33.1. Funções para iniciar uma consulta
 
 Retornam 1 se há algum resultado resultado (pelo menos uma linha)
 para a consulta ou 0 se não há.
 
 33.1.1. iniarq
-Obter os sufixos dos nomes dos arquivos que compõem o programa.
+Obter os nomes dos arquivos que compõem o programa em o .int no final.
 Não necessariamente em ordem alfabética.
 
-33.1.2. iniarq(<sufixo do arquivo>)
-Obter as classes que pertencem ao arquivo.
-Na ordem definida no arquivo.
+33.1.2. iniarq(<nome do arquivo sem o .int>)
+Obter as classes que pertencem ao arquivo, na ordem definida no arquivo.
+Um texto vazio significa o arquivo .int principal.
 
 33.1.3. iniclasse([texto])
 Obter os nomes das classes que começam com o texto especificado.
@@ -3660,15 +3648,18 @@ Retorna 0 se a variável ou função não existe, 1 se estiver
 definido na própria classe ou 2 se foi herdada.
 
 33.3.3. arquivo(<nome da classe>)
-Retorna o sufixo do nome do arquivo que contém a classe.
-Exemplo, "abc" corresponde ao arquivo 'intmud-abc.int'.
-Um texto vazio significa arquivo 'intmud.int'.
+Retorna o nome do arquivo que contém a classe sem o .int no final.
+Exemplo, abc corresponde ao arquivo abc.int.
+Um texto vazio significa o arquivo .int principal. No entanto, a forma
+mais segura de obter o nome do arquivo é usando a função arqnome, abaixo.
 
-33.3.4. arqnome(<sufixo do nome do arquivo>)
-Retorna o nome do arquivo a partir dosufixo do nome.
+33.3.4. arqnome(<nome do arquivo sem o .int>)
+Retorna o nome do arquivo a partir do nome fornecido pela função arquivo.
+Um texto vazio significa o arquivo .int principal.
+
 Exemplo:
 prog p
-p.arqnome("abc") # Retorna algo como 'intmud-abc.int'.
+p.arqnome("abc") # Retorna algo como "abc.int".
 
 33.3.5. vartipo(<nome da classe>, <nome da variável>)
 Retorna o tipo de variável ou "" se a variável não existe.
@@ -3724,20 +3715,20 @@ Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
 33.4.2. criar(<texto>)
 Cria uma classe. Se já existia, altera ao invés de criar.
 A primeira linha é o nome da classe.
-A segunda linha de <texto> é o sufixo do nome do arquivo.
-    Exemplo, "abc" corresponde ao arquivo 'intmud-abc.int'.
-    Um texto vazio corresponde ao arquivo 'intmud.int'.
+A segunda linha de <texto> é o nome do arquivo sem o .int no final.
+    Exemplo, "abc" corresponde ao arquivo 'abc.int'.
+    Um texto vazio corresponde ao arquivo .int principal.
 Da terceira linha em diante são as instruções (o contéudo da classe).
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
 Exemplo:
     prog p
     p.criar("abc\n\nint8 x\nconst n = 10")
-Cria a seguinte classe no arquivo intmud.int:
+Cria a seguinte classe no arquivo .int principal:
     classe abc
     int8 x
     const n = 10
-Para criar a mesma classe, mas no arquivo intmud-x.int:
+Para criar a mesma classe, mas no arquivo x.int:
     p.criar("abc\nx\nint8 x\nconst n = 10")
 
 33.4.3. criar(<nome da classe>, <texto>)
@@ -3817,10 +3808,10 @@ independete de terem sido alterados ou não.
 
 33.5. Funções para organizar as classes nos arquivos
 
-33.5.1. clini(<sufixo do nome do arquivo>)
+33.5.1. clini(<nome do arquivo sem o .int>)
 Retorna o nome da primeira classe do arquivo ou "" se não existe.
 
-33.5.2. clfim(<sufixo do nome do arquivo>)
+33.5.2. clfim(<nome do arquivo sem o .int>)
 Retorna o nome da última classe do arquivo ou "" se não existe.
 
 33.5.3. clantes(<nome da classe>)
@@ -3835,7 +3826,7 @@ que é o nome da classe.
 Exemplos:
 
 clini("", "teste")
-# Define a classe teste como sendo a primeira do arquivo com sufixo "".
+# Define a classe teste como sendo a primeira do arquivo .int principal.
 
 cldepois("abc", "teste")
 # A classe 'teste' vai para o mesmo arquivo da classe 'abc', após 'abc'.
@@ -3859,21 +3850,44 @@ func organiza
   arquivos.salvar # Salva os arquivos que foram alterados
 
 
-34. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
+34. ARQPROG - OBTER OS ARQUIVOS DO PROGRAMA
+
+Busca nos diretórios os arquivos que compõem o programa.
 
 Funções:
 
-34.1. exec
+34.1. abrir
+Inicia a busca dos arquivos.
+
+34.2. fechar
+Encerra a busca dos arquivos.
+
+34.3. lin
+É 1 se entrada válida ou 0 se chegou no fim da busca.
+
+34.4. texto
+Nome da entrada (nome do arquivo sem o .int no final).
+Nota: a primeira entrada da busca é sempre o arquivo .int principal.
+
+34.5. depois
+Passa para a próxima entrada, ou encerra a busca se não houver.
+
+
+35. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
+
+Funções:
+
+35.1. exec
 Contador de instruções - opção 'exec' no início do arquivo int.
 A cada instrução executada essa variável é subtraída de 1.
 Quando chega a 0, o controle retorna automaticamente ao IntMUD.
 Pode ser lido e alterado, como uma variável.
 
-34.2. ini
+35.2. ini
 Inicializa exec com o valor definido na opção 'exec' no início
 do arquivo int.
 
-34.3. cmd(<texto>)
+35.3. cmd(<texto>)
       cmd(<objeto>, <texto>)
 Executa as instruções que estão no texto especificado.
 Quando houver mais de uma instrução, deve-se separá-las com '\n'.
@@ -3890,7 +3904,7 @@ d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
 d.cmd("ret \"teste\"") # d.cmd retorna "teste"
 d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna "3"
 
-34.4. passo(<objeto>, <texto>)
+35.4. passo(<objeto>, <texto>)
       passo()
 Antes de executar cada instrução chama a função de <objeto>
 com o nome especificado em <texto>. Se a função não existir, passa
@@ -3899,7 +3913,7 @@ Na função:
 arg0 é oobjeto 'este'
 arg1 é o texto contendo a instrução que será executada executada
 
-34.5. func
+35.5. func
 Retorna o nível de funções: quantas funções foram chamadas até chegar
 na instrução atual. Exemplo:
 classe x
@@ -3909,28 +3923,28 @@ func iniclasse
 func teste
     # Aqui debug.func será 1 porque foi chamado por x:iniclasse
 
-34.6. stempo
-34.7. utempo
+35.6. stempo
+35.7. utempo
 Quanto tempo o programa usou do processador, em milésimos de segundos.
 stempo é o tempo usado pelo sistema e utempo é o tempo usado pelo programa.
 Se não for possível obter essa informação, essas funções retornam -1.
 
-34.8. mem
+35.8. mem
 Quantidade de memória que o programa está usando, em bytes.
 
-38.9. memmax
+35.9. memmax
 Quantidade máxima de memória que o programa chegou a usar, em bytes.
 
-38.10. ver
+35.10. ver
 Retorna um texto que é a versão do IntMUD.
 
-38.11. data
+35.11. data
 Retorna um texto que é a data em que o programa (mais especificamente
 o arquivo var-debug.cpp) foi compilado.
 
 Eventos:
 
-34.12. <nomedavariável>_erro
+35.12. <nomedavariável>_erro
 Ocorreu algum erro ao executar uma função.
 arg0 = Mensagem de erro (uma linha) seguido dos detalhes sobre o erro
 arg1 = Índice da variável vetor, se não for vetor arg1=0
@@ -3952,47 +3966,47 @@ telatxt tt
 tt.msg("Erro:   " + arg0 + "\n")
 
 
-35. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
+36. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
 
 É semelhante a uma variável txt64, porém o texto é associado ao objeto
 que contém essa variável. O processo inverso, obter um objeto a partir
 de um texto, é possível com a variável indiceitem.
 
 
-36. INDICEITEM - OBTER OBJETO PELO TEXTO
+37. INDICEITEM - OBTER OBJETO PELO TEXTO
 
 Permite obter os objetos que contém uma variável indiceobj com um
 determinado texto. Ignora variáveis indiceobj com texto vazio.
 
 Funções:
 
-36.1. ini(<texto>)
+37.1. ini(<texto>)
 Vai para o primeiro objeto com o texto ou parte dele.
 
-36.2. fim(<texto>)
+37.2. fim(<texto>)
 Vai para o último objeto com o texto ou parte dele.
 
-36.3. antes
+37.3. antes
 Passa para o objeto anterior.
 
-36.4. antes(<número de objetos>)
+37.4. antes(<número de objetos>)
 Recua o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-36.5. depois
+37.5. depois
 Passa para o próximo objeto.
 
-36.6. depois(<número de objetos>)
+37.6. depois(<número de objetos>)
 Avança o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-36.7. obj
+37.7. obj
 Objeto.
 
-36.8. txt
+37.8. txt
 Texto associado ao objeto.
 
-36.9. obj(<texto>)
+37.9. obj(<texto>)
 Objeto que contém o texto exato.
 Essa função funciona independente das demais.
 
@@ -4000,57 +4014,57 @@ Nota: Pode-se passar mais de um texto para as funções que possuem texto.
 Nesse caso, a função procurará por todos os textos.
 
 
-37. DATAHORA - CALENDÁRIO
+38. DATAHORA - CALENDÁRIO
 
 Operações envolvendo data e/ou hora, como obter a data atual e calcular
 quantidade de dias entre duas datas.
 
 Funções e variáveis:
 
-37.1. novadata(<ano>, <mês>, <dia>)
+38.1. novadata(<ano>, <mês>, <dia>)
 Muda ano, mês e dia.
 
-37.2. novahora(<hora>, <minuto>, <segundo>)
+38.2. novahora(<hora>, <minuto>, <segundo>)
 Muda hora, minuto e segundo.
 
-37.3. antes
+38.3. antes
 Muda data para o dia anterior.
 
-37.4. depois
+38.4. depois
 Muda data para o próximo dia.
 
-37.5. agora
+38.5. agora
 Muda para data e hora atuais.
 
-37.6. diasem
+38.6. diasem
 Retorna o dia da semana, de 0 a 6 (0=domingo).
 
-37.7. bissexto
+38.7. bissexto
 Retorna 1 se o ano for bissexto ou 0 se não for.
 
-37.8. ano
+38.8. ano
 Ano, de 1 a 9999.
 
-37.9. mes
+38.9. mes
 Mês, de 1 a 12.
 
-37.10. dia
+38.10. dia
 Dia, de 1 a 31. Conforme o mês pode não chegar a 31.
 
-37.11. hora
+38.11. hora
 Hora, de 0 a 23.
 
-37.12. min
+38.12. min
 Minuto, de 0 a 59.
 
-37.13. seg
+38.13. seg
 Segundo, de 0 a 59.
 
-37.14. numdias
+38.14. numdias
 Número de dias desde 1/1/1.
 
-37.15. numseg
+38.15. numseg
 Número de segundos desde o início do dia.
 
-37.16. numtotal
+38.16. numtotal
 Número de segundos desde 1/1/1.

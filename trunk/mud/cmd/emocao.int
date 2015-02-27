@@ -1,0 +1,29 @@
+classe cmd_emocao
+herda comando_comum
+const posic = 5
+const objcmd = config:emocaotipo ? este
+const txtajuda = config:emocaotipo ? txtajuda1
+const txtajuda1 = "\b\c3Emoção\b\n\
+Sintaxe: EMOÇÃO <mensagem>\n\
+Mostra para os jogadores na mesma sala o que você está sentindo.\n\
+Esse comando mostra o nome do seu personagem seguido da mensagem.\n\
+Por exemplo, se seu personagem se chamar Joaquim e você teclar:\n\
+emoção está contente hoje.\n\
+Os outros jogadores receberão a mensagem:\n\
+Joaquim está contente hoje.\n\
+Veja também o comando CONFIG"
+
+func escr
+  ret !arg0.contr.dono.socktot, nulo
+  se arg0.pnivel < config:emocaonivel
+    arg0.msg("Para usar o comando EMOÇÃO você precisa estar no nível " + config:emocaonivel + \
+".")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após EMOÇÃO.")
+  senao
+    refvar lin = "$P " + txttroca(arg1, "$", "$$")
+    $mens.p(arg0)
+    listaobj l0
+    epara l0.addfim(arg0.contr.dono.dentro2), l0, l0.ini.remove
+      l0.objini.msginv(l0.objini.jogconfig.9 ? "(e) " + lin : lin)
+    efim

@@ -1,0 +1,236 @@
+classe cmd_trancar
+herda comando_comum
+const txtajuda = "\b\c3Trancar\b\n\
+Sintaxe: TRANCAR <objeto ou direção>\n\
+Tranca um objeto ou uma porta.\n\
+Nota: pode ser necessário possuir uma chave para trancar."
+const posic = 5
+
+func escr
+  txt10 dir
+  dir = misc:d1[arg1]
+  dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
+
+func escrobj # Trancar um item
+  listaitem i # Para procurar o item
+  nomeobj n # Para reconhecer os itens
+# Procura o item
+  ret !arg1, arg0.msg("Trancar o que?")
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+  efim
+  se !i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  fimse
+# Checa se está destrancado
+  ref r
+  r = i.obj, misc:obj = arg0
+  casovar r.i_aberto
+  casose "2"
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + (r.msexo ? "o." : "a."))
+  casose "4"
+    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está trancad" + (r.msexo ? "o." : "a."))
+  casose
+    ret arg0.msg("Não foi possível trancar " + r.nome + ".")
+  casose "3"
+  casose "5"
+  casofim
+  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + (r.msexo ? "o." \
+: "a."))
+# Procura a chave
+  ref chave
+  se r.i_fechadura && !arg0.jogconfig.14
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave para trancar " + r.nome + ".")
+    chave = i.obj
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_trancarobj(arg0, r, chave), nulo
+  efim
+# Tranca o item
+  r.i_aberto = 4
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P trancou $a.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_trancouobj(arg0, r, chave)
+  efim
+
+func escrdir # Trancar uma porta
+# Checa se porta existe
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está trancado
+  casovar 3 & arg0.dono.porta_[arg1]
+  casose
+    ret arg0.msg("Não há porta nessa direção.")
+  casose "1"
+    ret arg0.msg($mens_porta.mens("$P est$o abert$a.", arg0.dono, arg1))
+  casose "3"
+    ret arg0.msg($mens_porta.mens("$P já est$o trancad$a.", arg0.dono, arg1))
+  casose "2"
+  casofim
+  se !arg0.dono.tranc_[arg1]
+    ret arg0.msg($mens_porta.mens("$P não pode$m ser trancad$a.", arg0.dono, arg1))
+  fimse
+# Procura a chave
+  txt100 mporta # Nome da porta
+  txt100 cod # Código da fechadura
+  ref chave # Chave que abre a fechadura
+  misc:obj = arg0
+  cod = arg0.dono.fechadura_[arg1], $c_[cod] && (cod = $c_[cod].chave)
+  mporta = arg0.dono.portanome_[arg1]
+  !mporta && (mporta = $cmd_[arg1].m_porta)
+  !mporta && (mporta = "uma porta")
+  se cod && !arg0.jogconfig.14
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave para trancar " + mporta + ".")
+    chave = i.obj
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_trancardir(arg0, arg0.dono, arg1, chave), nulo
+  efim
+# Tranca a porta
+  arg0.dono.mudaporta(arg1, 3) # Tranca a porta
+  $mens.p(arg0)
+  $mens.mens = mporta
+  $mens.mtodos1("$P trancou $m.")
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave)
+  efim
+
+
+classe cmd_destrancar
+herda comando_comum
+const txtajuda = "\b\c3Destrancar\b\n\
+Sintaxe: DESTRANCAR <objeto ou direção>\n\
+Destranca um objeto ou uma porta.\n\
+Nota: pode ser necessário possuir uma chave para destrancar."
+const posic = 5
+
+func escr
+  txt10 dir
+  dir = misc:d1[arg1]
+  dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
+
+func escrobj # Destrancar um item
+  listaitem i # Para procurar o item
+  nomeobj n # Para reconhecer os itens
+# Procura o item
+  ret !arg1, arg0.msg("Destrancar o que?")
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+  efim
+  se !i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
+    efim
+    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  fimse
+# Checa se está trancado
+  ref r
+  r = i.obj, misc:obj = arg0
+  casovar r.i_aberto
+  casose "2"
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está abert" + (r.msexo ? "o." : "a."))
+  casose "3"
+    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + (r.msexo ? \
+"o." : "a."))
+    ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está trancad" + (r.msexo ? "o." : "a."))
+  casose
+    ret arg0.msg("Não foi possível destrancar " + r.descnome + ".")
+  casose "4"
+  casose "5"
+  casofim
+# Procura a chave
+  ref chave
+  se r.i_fechadura && !arg0.jogconfig.14
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave para destrancar " + r.descnome + ".")
+    chave = i.obj
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancarobj(arg0, r, chave), nulo
+  efim
+# Destranca o item
+  r.i_comechave && chave.apagar(1)
+  r.i_aberto = 3
+  $mens.p(arg0, r)
+  $mens.mtodos1("$P destrancou $a.")
+  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
+    l.objini.cmd_destrancouobj(arg0, r, chave)
+  efim
+
+func escrdir # Destrancar uma porta
+# Checa se porta existe
+  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+# Checa se está trancado
+  casovar 3 & arg0.dono.porta_[arg1]
+  casose
+    ret arg0.msg("Não há porta nessa direção.")
+  casose "1"
+    ret arg0.msg($mens_porta.mens("$P est$o abert$a.", arg0.dono, arg1))
+  casose "2"
+    se arg0.dono.tranc_[arg1]
+      ret arg0.msg($mens_porta.mens("$P não est$o trancad$a.", arg0.dono, arg1))
+    senao
+      ret arg0.msg($mens_porta.mens("$P não pode$m ser trancad$a.", arg0.dono, arg1))
+    fimse
+  casose "3"
+  casofim
+# Procura a chave
+  txt100 mporta # Nome da porta
+  txt100 cod # Código da fechadura
+  ref chave # Chave que abre a fechadura
+  misc:obj = arg0
+  cod = arg0.dono.fechadura_[arg1], $c_[cod] && (cod = $c_[cod].chave)
+  mporta = arg0.dono.portanome_[arg1]
+  !mporta && (mporta = $cmd_[arg1].m_porta)
+  !mporta && (mporta = "uma porta")
+  se cod && !arg0.jogconfig.14
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
+    efim
+    ret !i, arg0.msg("Você não possui a chave para destrancar " + mporta + ".")
+    chave = i.obj
+    casovar $c_[arg0.dono.fechadura_[arg1]].infotaxa
+    casose "2" # Casa bloqueada por falta de pagamento
+      $mens.p(arg0)
+      arg0.msginv(config:casamsgbloq)
+      ret
+    casose "1" # Atrasou pagamento da taxa
+      $mens.p(arg0)
+      arg0.msginv(config:casamsgaviso)
+    casofim
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave), nulo
+  efim
+# Destranca a porta
+  arg0.dono.comechave_[arg1] && chave.apagar(1)
+  arg0.dono.mudaporta(arg1, 2) # Destranca a porta
+  $mens.p(arg0)
+  $mens.mens = mporta
+  $mens.mtodos1("$P destrancou $m.")
+  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave)
+  efim

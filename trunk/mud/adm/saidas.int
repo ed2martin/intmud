@@ -1,0 +1,231 @@
+classe adm_lsai
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lsai\b\nSintaxe: LSAI\nMostra as saídas da sala aonde você está."
+
+func escr # Listar saídas
+  se !arg0.dono
+    ret arg0.msg("\bVocê não está em uma sala")
+  fimse
+  prog p
+  txt80 dir
+  txt80 lin
+  arg0.msg("\b\c6Saídas de " + txt(arg0.dono, 2) + ":\b")
+  epara dir = misc:listadir, dir, dir = txt2(dir)
+    continuar !p.existe(arg0.dono, "dir_" + txt1(dir))
+    lin = txtmai(txt1(dir)) + "  "
+    lin += $opc_sala.menu(arg0.dono, "dir_" + txt1(dir))
+    arg0.msg(lin)
+  efim
+  !lin && arg0.msg("Nenhuma")
+
+
+classe adm_asai
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Asai\b\n\
+Sintaxe: ASAI <direção>\n\
+Apaga a saída na direção especificada."
+
+func escr # Apagar saída
+  prog p
+  txt10 dir
+  dir = misc:d1[txt1(arg1)]
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite a direção após ASAI")
+  senao !dir
+    arg0.msg("\bSaída não existe: " + arg1)
+  senao
+    p.apagar(arg0.dono, "dir_" + dir)
+    p.apagar(arg0.dono, "portaini_" + dir)
+    p.apagar(arg0.dono, "inv_" + dir)
+    p.apagar(arg0.dono, "tranc_" + dir)
+    p.apagar(arg0.dono, "fechadura_" + dir)
+    p.apagar(arg0.dono, "comechave_" + dir)
+    p.apagar(arg0.dono, "voar_" + dir)
+    p.apagar(arg0.dono, "fugir_" + dir)
+    p.apagar(arg0.dono, "portanome_" + dir)
+    p.apagar(arg0.dono, "portaartigo_" + dir)
+    config:salvar, arg0.msg("\bSaída apagada: " + dir)
+    admlog(arg0, "apagou saída " + dir + " de " + txt(arg0.dono, 2))
+  fimse
+
+
+classe adm_csai
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Csai\b\n\
+Sintaxe: CSAI <direção> <sala>\n\
+Cria uma saída na sala aonde você está, na direção especificada.\n\
+Exemplo, se quiser que a saída para o norte vá para a sala teste001, tecle:\n\
+csai n teste001"
+const escr = escr1(arg0, arg1) # Criar saída
+
+func escr1
+  prog p
+  txt10 dir
+  dir = misc:d1[txt1(arg1)]
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite a direção após CSAI" + arg1)
+  senao !dir
+    arg0.msg("\bSaída não existe: " + txt1(arg1))
+  senao !txt2(arg1)
+    arg0.msg("\bDigite a sala após CSAI" + arg1 + " " + arg1)
+  senao !p.existe("s_" + txt2(arg1))
+    arg0.msg("\bSala não existe: " + txt2(arg1))
+  senao
+    p.criar(arg0.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg1)))
+    se arg2
+      p.criar("s_" + txt2(arg1), "const dir_" + misc:d2[dir] + "=$" + arg0.dono)
+      arg0.msg("\bSaída completa criada: " + dir + " para " + txtmin(txt2(arg1)))
+    senao
+      arg0.msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg1)))
+    fimse
+    config:salvar
+    criar("admmudou", arg0.dono)
+    admlog(arg0, "criou saída " + dir + " de " + txt(arg0.dono, 2))
+  fimse
+
+
+classe adm_csai2
+herda adm_csai
+const txtajuda = "\b\c3Csai2\b\n\
+Sintaxe: CSAI2 <direção> <sala>\n\
+Cria uma saída na sala aonde você está, na direção especificada, e cria\n\
+também uma saída no sentido contrário, da outra sala para essa."
+const escr = escr1(arg0, arg1, "2") # Criar saída completa
+
+
+classe adm_esai
+herda comando_adm, comando_comum
+
+func escr # Editar saída
+  prog p
+  txt10 dir
+  dir = misc:d1[txt1(arg1)]
+  se !arg0.dono
+    arg0.msg("\bVocê não está em uma sala")
+  senao !arg1
+    arg0.msg("\bDigite a direção após ESAI")
+  senao !dir
+    arg0.msg("\bSaída não existe: " + arg1)
+  senao !p.existe(arg0.dono, "dir_" + dir)
+    arg0.msg("Não existe saída na direção " + txtmai(dir))
+  senao
+    arg0.sock.var.classe1 = arg0.dono
+    arg0.sock.var.saida1 = txtmin(dir)
+    arg0.sock.m_menu("menu_saida")
+  fimse
+
+
+classe opc_saiinicio
+herda opc_opcao
+
+func passo
+  opc_opcao:passo(arg0, arg1)
+  casovar arg1
+  casose "0"
+  casose "1"
+  casose "2"
+  casose "3"
+    $[arg0.var.classe1].mudaporta(arg0.var.saida1, arg1)
+  casofim
+  ret 1
+
+
+classe opc_saiagora
+herda opc_opcao
+const menu = menu2($[arg0].[arg1], adm_sala:txt_porta)
+
+func passo # Mudar o estado atual
+  casovar arg1
+  casose "z"
+    sair
+  casose "0"
+  casose "1"
+  casose "2"
+  casose "3"
+    arg0.msg(">" + arg1)
+    se $[arg0.var.classe1].mudaporta(arg0.var.saida1, arg1)
+      textotxt t
+      t.addfim(adm_sala:txt_porta), t.remove(arg1)
+      arg0.msg("Saída mudou para: " + arg1 + " " + t.remove)
+    senao
+      arg0.msg("Não foi possível mudar a saída")
+    fimse
+    sair
+  casose
+    arg0.passo = este
+    ret arg0.msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
+  casofim
+  ret passosair(arg0)
+
+
+classe menu_saida
+herda comando_menu
+const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome1 = "Estado inicial"
+const tipo1 = "opc_saiinicio"
+const clas1 = var.classe1
+const vari1 = "portaini_" + var.saida1
+const extr1 = adm_sala:txt_porta
+#
+const nome2 = "Estado atual"
+const tipo2 = "opc_saiagora--"
+const clas2 = var.classe1
+const vari2 = "porta_" + var.saida1
+#
+const nome3 = "Invisível"
+const tipo3 = "opc_simnao"
+const clas3 = var.classe1
+const vari3 = "inv_" + var.saida1
+#
+const nome4 = "Fecha ao passar"
+const tipo4 = "opc_simnao"
+const clas4 = var.classe1
+const vari4 = "fecha_" + var.saida1
+#
+const nome5 = "Trancar"
+const tipo5 = "opc_opcao"
+const clas5 = var.classe1
+const vari5 = "tranc_" + var.saida1
+const extr5 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+#
+const nome6 = "Fechadura"
+const info6 = "Código da chave que tranca e destranca a porta\n\
+Se for o nome de uma casa (vide comando lcasa), a chave da casa também serve"
+const tipo6 = "opc_linha"
+const clas6 = var.classe1
+const vari6 = "fechadura_" + var.saida1
+#
+const nome7 = "Come chave"
+const info7 = "Se o personagem perde a chave ao abrir a porta"
+const tipo7 = "opc_simnao"
+const clas7 = var.classe1
+const vari7 = "comechave_" + var.saida1
+#
+const nome8 = "Voar"
+const info8 = "Se é preciso estar voando ou flutuando"
+const tipo8 = "opc_simnao"
+const clas8 = var.classe1
+const vari8 = "voar_" + var.saida1
+#
+const nome9 = "Sem fuga"
+const info9 = "Se não existe a possibilidade de fugir de uma luta nessa direção"
+const tipo9 = "opc_simnao"
+const clas9 = var.classe1
+const vari9 = "fugir_" + var.saida1
+#
+const nome10 = "Nome da porta"
+const tipo10 = "opc_linha"
+const clas10 = var.classe1
+const vari10 = "portanome_" + var.saida1
+#
+const nome11 = "Artigo porta"
+const tipo11 = "opc_opcao"
+const clas11 = var.classe1
+const vari11 = "portaartigo_" + var.saida1
+const extr11 = "a (porta)\nas (portas)\no (portão)\nos (portões)"

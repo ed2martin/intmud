@@ -12,6 +12,7 @@
 #include <string.h>
 #include <assert.h>
 #include "var-prog.h"
+#include "var-arqprog.h"
 #include "variavel.h"
 #include "classe.h"
 #include "mudarclasse.h"
@@ -176,10 +177,9 @@ bool TVarProg::FuncArqNome(TVariavel * v)
     const char * p = "";
     if (Instr::VarAtual >= v+1)
         p = v[1].getTxt();
-    if (*p)
-        mprintf(arqext, 60, "-%s." INT_EXT, p);
-    else
-        strcpy(arqext, "." INT_EXT);
+    if (*p==0)
+        p = TArqIncluir::ArqNome();
+    mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, p);
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(arqinicio);
 }
@@ -1204,6 +1204,11 @@ bool TVarProg::FuncCriar(TVariavel * v)
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("Nome de arquivo inválido");
         }
+        if (!TArqIncluir::ProcArq(nomearq))
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("Arquivo não pertence ao programa");
+        }
     // Checa se nome de classe válido
         if (!TClasse::NomeValido(nomeclasse))
         {
@@ -1745,7 +1750,9 @@ bool TVarProg::FuncClIni(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(m==0 ? "" : m->ClInicio->Nome);
+    return Instr::CriarVarTexto(m==0 ? "" :
+                                m->ClInicio==0 ? "" :
+                                m->ClInicio->Nome);
 }
 
 //------------------------------------------------------------------------------
@@ -1771,7 +1778,9 @@ bool TVarProg::FuncClFim(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(m==0 ? "" : m->ClFim->Nome);
+    return Instr::CriarVarTexto(m==0 ? "" :
+                                m->ClFim==0 ? "" :
+                                m->ClFim->Nome);
 }
 
 //------------------------------------------------------------------------------
