@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 334, nulo
-  p.criar("config", "const versao = 334 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 336, nulo
+  p.criar("config", "const versao = 336 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -379,6 +379,10 @@ casa está atrasada.\"")
     epara p.iniclasse("s_"), p.lin, p.depois
       d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
     efim
+  fimse
+# Turno ataque manual
+  se versao < 336
+    criafunc("config", "const atkmtempo = 40")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")

@@ -166,9 +166,20 @@ func passo # Confirmar que quer apagar personagem
     txt20 m1
     arg0.passo = este
     m1 = txt2(arg0.tpasso) ? "personagens" : "personagem"
-    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar " + m1 + infonome(arg0.tpasso) + "? Tecle S ou N")
   fimse
   ret 1
+
+func infonome
+  txt200 n1
+  txt300 n2
+  n1 = arg0
+  enquanto n1
+    refvar agora = txt1(n1)
+    n1 = txt2(n1)
+    n2 += " " + agora + "(" + p_[agora]:nome + ")"
+  efim
+  ret n2
 
 
 classe adm_eperso
@@ -696,21 +707,21 @@ const clas52 = var.classe1
 const vari52 = "eveste"
 const exec52 = "ajustaobj"
 #
-const nome53 = "Eventos em perso"
+const nome53 = "Eventos dono perso"
 const info53 = "Se recebe eventos do dono se for personagem"
 const tipo53 = "opc_simnao"
 const clas53 = var.classe1
 const vari53 = "evperso"
 const exec53 = "ajustaobj"
 #
-const nome54 = "Eventos em item"
+const nome54 = "Eventos dono item"
 const info54 = "Se recebe eventos do dono se for item"
 const tipo54 = "opc_simnao"
 const clas54 = var.classe1
 const vari54 = "evitem"
 const exec54 = "ajustaobj"
 #
-const nome55 = "Eventos em sala"
+const nome55 = "Eventos dono sala"
 const info55 = "Se recebe eventos da sala se estiver em uma sala"
 const tipo55 = "opc_simnao"
 const clas55 = var.classe1
@@ -773,7 +784,7 @@ const vari1 = "lojaini"
 const extr1 = "0 23"
 #
 const nome2 = "Hora que fecha"
-const info2 = "Que horas a loja abre ou o PNJ pára de ensinar\n\
+const info2 = "Que horas a loja fecha ou o PNJ pára de ensinar\n\
 Se for igual ao horário de abertura, nunca fecha"
 const tipo2 = "opc_numero"
 const clas2 = var.classe1
@@ -849,10 +860,16 @@ const tipo13 = "opc_menuaula"
 const clas13 = var.classe1
 const vari13 = "lojaaula"
 #
-const nome14 = "Não negocia com"
+const nome14 = "Só negocia com"
+const info14 = "Se vazio, o personagem negocia com todos"
 const tipo14 = "opc_tipos"
 const clas14 = var.classe1
-const vari14 = "lojanao"
+const vari14 = "lojasim"
+#
+const nome15 = "Não negocia com"
+const tipo15 = "opc_tipos"
+const clas15 = var.classe1
+const vari15 = "lojanao"
 
 
 classe menu_pmorreu

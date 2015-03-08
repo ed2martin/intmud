@@ -56,7 +56,7 @@ tipo3\n\
 equip1\n\
 equip2\n\
 equip3\n\
-lojaini lojafim lojanao\n\
+lojaini lojafim lojasim lojanao\n\
 lojaaula lojaitem lojainv\n\
 lojasala lojacasa lojachave\n\
 taxaaula\n\
@@ -145,7 +145,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     ret este
   fimse
 # Eventos cmd_chegou
-  (sock || jog) && dono.s_reset1 + dono.cmd_salaperso(este)
+  (sock || jog) && dono.s_reset1, dono.cmd_salaperso(este)
   epara l.addfim(evento, arg0.evento), l, l.ini.remove
     l.objini.cmd_chegou(este, arg0)
   efim

@@ -10,6 +10,7 @@ int8 fecha # Usado internamente: horário de fechamento
 uint32 aulas # Usado internamente: quantas aulas ensina
 uint32 valor # Usado internamente: preço da aula
 int32 linha
+ref p # Vendedor que está verificando
 txt30 tipo1 # arg0.tipo1
 txt30 tipo2 # arg0.tipo2
 txt30 tipo3 # arg0.tipo3
@@ -26,37 +27,45 @@ func escr
   nomeobj n
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
-    continuar l.objini.atkenv || !l.objini.lojaaula(arg0) || l.objini.cmd_ensinar(arg0)
-    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
-    abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv || !p.lojaaula(arg0) || p.cmd_ensinar(arg0)
+    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+    se !p.lojasim # negocia com todos
+    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
+    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
+    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
+    senao
+      continuar
+    fimse
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
       arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
       continuar
     senao
       listaobj e
-      epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
         sair e.objini.cmd_negociar(arg0, l.objini, "aprender")
       efim
       continuar e
     fimse
     textotxt t2
-    epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
+    epara t2.addfim(p.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
       lin = misc:nomevar(txt1(lin)), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
 # Obtém variáveis
       ref r
       r = $[misc:objvar(t2.ini.texto)]
-      valor = r.valor(arg0) * l.objini.taxaaula / 100
+      valor = r.valor(arg0) * p.taxaaula / 100
       aulas = txt2(t2.ini.texto)
 # Checa número de aulas
       txt100 nomevar
       nomevar = txt1(t2.ini.texto)
       se arg0.var.[nomevar]_ >= aulas
         lin = "Não tenho mais o que ensinar sobre " + lin + "."
-        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
 # Checa se está limitado a alguns tipos (raças/classes)
       se !r.tipoperso
@@ -65,19 +74,19 @@ func escr
       senao tipo3 && txtproc("\n" + txte(r.tipoperso) + "\n", tipo3) >= 0
       senao
         lin = "Não tem como ensinar " + lin + " para sua raça e classe."
-        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
 # Checa se possui o nível necessário
       se arg0.pnivel < int(r.aulaini)
         lin = "Você não possui o nível necessário."
-        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       senao arg0.pnivel >= int(r.aulafim)
       senao
         linha = arg0.pnivel - r.aulaini + 1
         linha *= inttotal(misc:aulas) / (r.aulafim - r.aulaini + 1)
         se arg0.var.[nomevar]_ < linha
           lin = "Você não possui o nível necessário."
-          ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
         fimse
       fimse
 # Checa se conhece as habilidades necessárias
@@ -87,12 +96,12 @@ func escr
         continuar arg0.var.[t2.ini.texto]_ > arg0.var.[nomevar]_
         lin = misc:nomevar(txt1(t2.ini.texto))
         lin = "Você não conhece o suficiente sobre " + lin + "."
-        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       efim
 # Checa se personagem pode pagar
       se valor >= 0 && arg0.var.z_moedas_ < valor
         lin = "Você não tem $" + valor + " e eu não ensino " + lin + " de graça."
-        ret arg0.msg(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
 # Ensina
       config:aulas && (arg0.var.z_aulas_ -= 1)

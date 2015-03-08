@@ -20,6 +20,7 @@ ou por uma casa que você possui."
 txt200 lin
 int8 abre # Usado internamente: horário de abertura
 int8 fecha # Usado internamente: horário de fechamento
+int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
 ref p # Vendedor que está verificando
 txt30 tipo1 # arg0.tipo1
 txt30 tipo2 # arg0.tipo2
@@ -37,10 +38,17 @@ func escr
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
       p = l.objini # Personagem que está sendo verificado
-      continuar !$a_[p.lojacasa] || p.atkenv
+      continuar !$a_[p.lojacasa] || p.atkenv || p.cmd_loja(arg0)
       continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
       continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
       continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+      se !p.lojasim # negocia com todos
+      senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
+      senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
+      senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
+      senao
+        continuar
+      fimse
       abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
       se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
         arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
@@ -99,7 +107,7 @@ func exec # Avalia ou vende um item
 # arg1 = item
 # arg2 = quantidade de itens
   listaobj l
-  linha = 0, l.addfim(arg0.dono.dentro2)
+  mudou = 0, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
     continuar p.atkenv
@@ -108,12 +116,17 @@ func exec # Avalia ou vende um item
     continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
     continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
     abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-    listaobj e
-    epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-      sair e.objini.cmd_negociar(arg0, p, "vender")
-    efim
-    continuar e
+    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
+      mudou = 1
+      continuar
+    senao
+      listaobj e
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
+        sair e.objini.cmd_negociar(arg0, p, "vender")
+      efim
+      continuar e
+    fimse
     int32 valor # Valor do item
     valor = intpos(arg1.valor * (100 - p.taxacompra) / 100)
     se vender
@@ -142,8 +155,9 @@ func exec # Avalia ou vende um item
       senao
         lin = "Eu pagaria " + valor + " moedas por isso."
       fimse
-      ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+      arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+      mudou = 1
     fimse
   efim
 # Ninguém quer comprar
-  arg0.msg("Ninguém quer comprar " + arg1.descnome + ".")
+  !mudou && arg0.msg("Ninguém quer comprar " + arg1.descnome + ".")

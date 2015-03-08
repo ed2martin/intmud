@@ -160,9 +160,20 @@ func passo # Confirmar que quer apagar item
     txt20 m1
     arg0.passo = este
     m1 = txt2(arg0.tpasso) ? "itens" : "item"
-    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar " + m1 + infonome(arg0.tpasso) + "? Tecle S ou N")
   fimse
   ret 1
+
+func infonome
+  txt200 n1
+  txt300 n2
+  n1 = arg0
+  enquanto n1
+    refvar agora = txt1(n1)
+    n1 = txt2(n1)
+    n2 += " " + agora + "(" + i_[agora]:nome + ")"
+  efim
+  ret n2
 
 
 classe adm_eitem
@@ -508,21 +519,21 @@ const clas52 = var.classe1
 const vari52 = "eveste"
 const exec52 = "ajustaobj"
 #
-const nome53 = "Eventos em perso"
+const nome53 = "Eventos dono perso"
 const info53 = "Se recebe eventos do dono se for personagem"
 const tipo53 = "opc_simnao"
 const clas53 = var.classe1
 const vari53 = "evperso"
 const exec53 = "ajustaobj"
 #
-const nome54 = "Eventos em item"
+const nome54 = "Eventos dono item"
 const info54 = "Se recebe eventos do dono se for item"
 const tipo54 = "opc_simnao"
 const clas54 = var.classe1
 const vari54 = "evitem"
 const exec54 = "ajustaobj"
 #
-const nome55 = "Eventos em sala"
+const nome55 = "Eventos dono sala"
 const info55 = "Se recebe eventos da sala se estiver em uma sala"
 const tipo55 = "opc_simnao"
 const clas55 = var.classe1
