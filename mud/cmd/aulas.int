@@ -13,6 +13,7 @@ uint32 aulas # Usado internamente: quantas aulas ensina
 uint32 valor # Usado internamente: preço da aula
 real2 lucro # Para calcular o lucro do vendedor
 int32 linha
+ref p # Vendedor que está verificando
 txt30 tipo1 # arg0.tipo1
 txt30 tipo2 # arg0.tipo2
 txt30 tipo3 # arg0.tipo3
@@ -28,40 +29,51 @@ func escr1 # Consultar a lista de aulas
   listaobj l
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
-    continuar l.objini.atkenv || !l.objini.lojaaula(arg0)
-    lin = l.objini.cmd_ensinar(arg0)
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv || !p.lojaaula(arg0)
+    lin = p.cmd_ensinar(arg0)
     se lin
-      t.addfim(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
       continuar
-    senao tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
-      t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo1)
+    senao tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
-    senao tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
-      t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo2)
+    senao tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo2)
       continuar
-    senao tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
-      t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Não negocio com " + arg0.tipo3)
+    senao tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo3)
+      continuar
+    senao !p.lojasim # negocia com todos
+    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
+    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
+    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
+    senao
+      lin = (tipo1 ? " " + arg0.tipo1 : "") + (tipo2 ? " " + arg0.tipo2 : "")
+      lin += tipo3 ? " " + arg0.tipo3 : ""
+      !lin && (lin = " você")
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com" + lin)
       continuar
     fimse
-    abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      t.addfim(txtcopiamai(l.objini.descnome, "A") + ": Volte outra hora")
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
       continuar
     senao
       listaobj e
-      epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
         lin = e.objini.cmd_negociar(arg0, l.objini, "aprender")
         sair lin
       efim
       se lin
-        t.addfim(txtcopiamai(l.objini.descnome, "A") + ": " + lin)
+        t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
         continuar
       fimse
     fimse
-    t.addfim("\b\c6" + txtcopiamai(l.objini.descnome, "A") + " ensina:\b")
-    lucro = l.objini.taxaaula / 100
+    t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " ensina:\b")
+    lucro = p.taxaaula / 100
     textotxt t2
-    t2.addfim(l.objini.lojaaula(arg0))
+    t2.addfim(p.lojaaula(arg0))
     enquanto t2.linhas
       continuar !(lin = t2.remove)
       aulas = txt2(lin)
@@ -82,25 +94,33 @@ func escr2 # Consultar uma aula
   nomeobj n
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
-    continuar l.objini.atkenv || !l.objini.lojaaula(arg0) || l.objini.cmd_ensinar(arg0)
-    continuar tipo1 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + txte(l.objini.lojanao) + "\n", tipo3) >= 0
-    abre = l.objini.lojaini - misc:hora, fecha = l.objini.lojafim - misc:hora
+    p = l.objini # Personagem que está sendo verificado
+    continuar p.atkenv || !p.lojaaula(arg0) || p.cmd_ensinar(arg0)
+    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+    se !p.lojasim # negocia com todos
+    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
+    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
+    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
+    senao
+      continuar
+    fimse
+    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     listaobj e
-    epara e.addfim(arg0.evento, l.objini.evento), e, e.ini.remove
+    epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
       sair e.objini.cmd_negociar(arg0, l.objini, "aprender")
     efim
     continuar e
     textotxt t2
-    epara t2.addfim(l.objini.lojaaula(arg0)), t2.linhas, t2.remove
+    epara t2.addfim(p.lojaaula(arg0)), t2.linhas, t2.remove
       continuar !(lin = t2.ini.texto)
       lin = misc:nomevar(txt1(lin)), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
       ref r
       r = $[misc:objvar(t2.ini.texto)]
-      valor = r.valor(arg0) * l.objini.taxaaula / 100
+      valor = r.valor(arg0) * p.taxaaula / 100
       aulas = txt2(t2.ini.texto)
       t2.limpar
       t2.addfim(r.habajuda)
@@ -108,7 +128,7 @@ func escr2 # Consultar uma aula
         t2.limpar
         t2.addfim("\b\c3" + lin + "\b")
       fimse
-      t2.addini("\b\c6" + txtcopiamai(l.objini.descnome, "A") + " explica:\b")
+      t2.addini("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
       lin = "Ensino até o nível " + txtmin(txtsublin(misc:aulas, aulas, 1))
       lin += valor <= 0 ? ", não cobro nada." : ", cobro $" + valor + " por aula."
       t2.addfim(lin)

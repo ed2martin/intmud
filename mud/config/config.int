@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 334 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
+const versao = 336 # Para atualizar arquivos mud-a-*.int e mud-b-*.int
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -207,7 +207,13 @@ const atkmaxexp = 100
 # 2 = Sim
 const atknivel = 1
 #
-# Tempo de um turno (em décimos de segundo)
+# Tempo de um turno dos ataques manuais (em décimos de segundo)
+# É o tempo máximo após digitar um comando que ataca
+# Personagens esperam menos tempo quando a velocidade do personagem
+# vezes velocidade do golpe dividido por 70 superar a velocidade do alvo
+const atkmtempo = 40
+#
+# Tempo de um turno dos ataques automáticos (em décimos de segundo)
 const atktempo = 60
 #
 # Força dos ataques automáticos (ataques sem o personagem digitar o golpe)

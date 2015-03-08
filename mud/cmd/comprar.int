@@ -11,6 +11,7 @@ int8 fecha # Usado internamente: horário de fechamento
 uint32 valor # Usado internamente: preço da aula
 uint32 nivel # Usado internamente: nível do item
 int32 linha
+int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
 txt100 nomeitem # O nome do item que está procurando
 uint16 total # Quantos itens quer combrar
 ref p # Vendedor que está verificando
@@ -31,17 +32,26 @@ func escr
   senao
     nomeitem = txt2(arg1)
   fimse
-  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
+  linha = 0, mudou = 0
+  l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv || !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
-$a_[p.lojachave])
+    continuar p.atkenv || p.cmd_loja(arg0)
+    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave])
 # Checa se pode vender alguma coisa
     continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
     continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
     continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+    se !p.lojasim # negocia com todos
+    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
+    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
+    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
+    senao
+      continuar
+    fimse
     abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+      mudou = 1
       arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
       continuar
     senao
@@ -199,4 +209,4 @@ $a_[p.lojachave])
       fimse
     fimse
   efim
-  arg0.msg("Ninguém vende isso aqui.")
+  !mudou && arg0.msg("Ninguém vende isso aqui.")

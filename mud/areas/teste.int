@@ -707,6 +707,7 @@ const nome = "poça de água"
 const descnome = "uma poça de água"
 const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
 const f_sede = 5
+const f_msgoutros = f_msgperso
 const i_pegar = "Você tenta pagar a água, mas ela escapa pelas suas mãos."
 const eveste = 1 # Eventos item: Sim
 sav uint8 bebeu # Quantas vezes bebeu o item
@@ -714,8 +715,6 @@ sav uint8 bebeu # Quantas vezes bebeu o item
 func f_msgperso
   ret bebeu < 2, "$P se agaixa e bebe de uma poça de água."
   ret "$P bebe o último gole de uma poça de água."
-
-const f_msgoutros = f_msgperso
 
 func cmd_bebeu
   bebeu += 1
@@ -741,6 +740,20 @@ func cmd_vestiu
 func cmd_removeu
   se arg1 == este # Se é esse item
     arg0.pvida -= arg0.pvida / 4
+  fimse
+
+
+classe i_teste048
+herda comum_itemgrupo
+const nome = "botas"
+const descnome = "um par de botas de couro"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const vestir1 = 262144 # Aonde vestir: 18-pés
+const evperso = 1 # Eventos em perso: Sim
+
+func cmd_atkenv
+  se vestpos && txt(arg2) == "cmd_chutar"
+    arg3 *= 1.5 # Aumenta os danos em 50%
   fimse
 
 
@@ -876,8 +889,8 @@ teste026 0\n\
 teste027 0\n\
 teste028 0\n\
 teste033 0"
-const taxavenda = 20
 const taxacompra = 30
+const taxavenda = 20
 const tipoitem = 3 # Compra produtos: Possui metal, Arma
 
 
@@ -1454,6 +1467,33 @@ func semfaca60
   criar("i_teste012", arg0, 1)
 
 
+classe p_teste030
+herda comum_persobat
+const nome = "gosma"
+const descnome = "uma gosma"
+const eveste = 1 # Eventos perso: Sim
+
+func cmd_atkrec
+  se txt(arg2) == "cmd_socar"
+    arg2.result = 1 # 1=não teve efeito, 2=errou o alvo
+    ret 1
+  fimse
+
+
+classe p_teste031
+herda comum_persobat
+const nome = "boneca"
+const descnome = "uma boneca"
+const eveste = 1 # Eventos perso: Sim
+
+func cmd_atkrec
+  se txt(arg2) == "cmd_chutar"
+    $mens.p(arg0, arg1)
+    $mens.mtodos1("$P chuta $a, mas $a apenas balança e solta uma risada.")
+    ret 1
+  fimse
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -1929,12 +1969,13 @@ const s_desc = "Para checar seus atributos tecle estat.\n\
 Para aprender a cortar, nessa sala, tecle cortar.\n\
 À leste há duas armas e explicações de como criar equipamentos.\n\
 À oeste há uma geléia, imune a socos e chutes, mas frágil contra\n\
-armas cortantes."
-const dir_b = $s_teste023
-const dir_c = $s_teste052
-const dir_o = $s_teste027
-const dir_l = $s_teste028
+armas cortantes. Ao norte, imunidade a socos e bota que melhora os chutes."
 const eveste = 1 # Eventos sala: Sim
+const dir_n = $s_teste138
+const dir_l = $s_teste028
+const dir_o = $s_teste027
+const dir_c = $s_teste052
+const dir_b = $s_teste023
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
@@ -2331,18 +2372,19 @@ func s_reset1 # Realiza o reset
 classe s_teste052
 herda b_teste
 const s_titulo = "Quarto andar: Fórmulas de batalha, calculadas a cada golpe"
-const s_desc = "No norte, qual habilidade é usada nos ataques automáticos\n\
-No sul, os critérios para saber se um golpe acertou o alvo\n\
-No leste, cálculo básico dos danos de batalha e comando atklog\n\
-No oeste, ataques automáticos, arma, fome, sede e nível\n\
-No sudeste, conhecimento do golpe e bônus do personagem\n\
-No sudoeste, posição do alvo e tipo de ataque"
+const s_desc = "Norte, qual habilidade é usada nos ataques automáticos\n\
+Sul, os critérios para saber se um golpe acertou o alvo\n\
+Leste, cálculo básico dos danos de batalha e comando atklog\n\
+Oeste, ataques automáticos, arma, fome, sede e nível\n\
+Sudeste, conhecimento do golpe e bônus do personagem\n\
+Sudoeste, posição do alvo e tipo de ataque; Nordeste, tempo de espera"
 const dir_n = $s_teste053
 const dir_s = $s_teste056
 const dir_l = $s_teste059
 const dir_o = $s_teste061
 const dir_c = $s_teste030
 const dir_b = $s_teste026
+const dir_ne = $s_teste139
 const dir_se = $s_teste122
 const dir_so = $s_teste124
 
@@ -3816,3 +3858,76 @@ func entrou1
     $mens.mvis1("$P guarda $o.")
     arg0.iempu.obj.vestir(0)
   fimse
+
+
+classe s_teste138
+herda b_teste
+const s_titulo = "Imunidade a socos, bota que melhora chutes"
+const s_desc = "Essa gosma é imune a socos (a habilidade socar), mas não a chutes.\n\
+Já a boneca solta uma risada se tentarem chutá-la. A bota aumenta os\n\
+estragos dos chutes. Os danos de magias aqui são reduzidas a um terço.\n\
+Nota: essas características foram feitas com triggers."
+const dir_s = $s_teste026
+const s_reset = "P 100 teste030 4 4 1\nP 100 teste031 4 4 1\nS 100 teste048 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste030:objsolto.total < 1
+    criar("p_teste030", este, 4)
+  fimse
+  se p_teste031:objsolto.total < 1
+    criar("p_teste031", este, 4)
+  fimse
+  !dentro1.objini("i_teste048") && criar("i_teste048", este, 3)
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_atkrec
+  se txt1(txte(arg2)) == "magia"
+    arg3 /= 3
+  fimse
+
+
+classe s_teste139
+herda b_teste
+const s_titulo = "Tempo de espera em ataques manuais 1 de 2"
+const s_desc = "O cálculo é a velocidade do seu personagem vezes velocidade do golpe\n\
+dividido por 70. Se o resultado for menor ou igual à velocidade do alvo\n\
+ou sua velocidade for menor ou igual a 0, você espera o tempo de um turno\n\
+após cada ataque. No comando Econfig, em Ataques e batalha, define-se\n\
+o tempo do turno. Inicialmente é 40 décimos de segundo (4 segundos)."
+const dir_ne = $s_teste140
+const dir_so = $s_teste052
+
+
+classe s_teste140
+herda b_teste
+const s_titulo = "Tempo de espera 2 de 2"
+const s_desc = "Se superar a velocidade do alvo, o tempo de espera será o tempo do turno\n\
+multiplicado pela velocidade do alvo dividido pelo cálculo explicado\n\
+na sala anterior (velocidade do personagem vezes velocidade do golpe\n\
+dividido por 70)."
+const dir_ne = $s_teste141
+const dir_so = $s_teste139
+
+
+classe s_teste141
+herda b_teste
+const s_titulo = "Tempo de espera - Exemplo"
+const s_desc = "Na prática, digamos que você usa uma habilidade ou magia com velocidade\n\
+70 e seu personagem tem o dobro da velocidade do alvo. Nesse caso, vai\n\
+esperar meio turno (2 segundos ao invés de 4). Ou seja, faz 2 ataques\n\
+por turno. Já o alvo, por ser mais lento, fará 1 ataque por turno."
+const dir_ne = $s_teste142
+const dir_so = $s_teste140
+
+
+classe s_teste142
+herda b_teste
+const s_titulo = "Tempo de espera - Evolução"
+const s_desc = "Conforme o personagem sobe de nível, geralmente a velocidade aumenta,\n\
+mas a velocidade dos golpes não deve aumentar da mesma forma. Golpes\n\
+avançados devem ter velocidade semelhante a golpes básicos. Mas por\n\
+exemplo, um soco via de regra é mais rápido que um chute."
+const dir_so = $s_teste141

@@ -462,16 +462,16 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # vel = velocidade do golpe
-# Se velocidades dos personagens iguais e velocidade do golpe=100: tempo=30
   real2 tempo
-  tempo = intpos(arg1.pveloc * 3000 * 70) / (intpos(arg0.pveloc) * vel + 1)
-  tempo = intmax(8, intmin(70, tempo))
-  arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
-  ret
-# Outra fórmula:
-  tempo = arg0.pveloc + arg1.pveloc # Tempo total
-  tempo = tempo * 1500 / (arg0.pveloc * veloc + 1)
-  tempo = intmax(8, intmin(70, tempo))
+  tempo = arg0.pveloc * vel / 70
+  se tempo <= intmax(0, arg1.pveloc)
+    tempo = config:atkmtempo
+  senao arg1.pveloc <= 0
+    tempo = 8
+  senao
+    tempo = arg1.pveloc * config:atkmtempo / tempo
+    tempo = intmax(8, intmin(config:atkmtempo, tempo))
+  fimse
   arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
 
 func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
@@ -481,14 +481,14 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # tipoatk = tipo de ataque, arma1 = arma usada
   real2 dano
 # Checa se pode realmente atacar
-  result = 3, mudavida = 0
+  result = 3, mudavida = 0, dano = 1
   listaobj l
-  ret cmd_atkenv(arg0, arg1, este), nulo
+  ret cmd_atkenv(arg0, arg1, este, dano), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_atkenv(arg0, arg1, este), nulo
+    ret l.objini.cmd_atkenv(arg0, arg1, este, dano), nulo
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_atkrec(arg0, arg1, este), nulo
+    ret l.objini.cmd_atkrec(arg0, arg1, este, dano), nulo
   efim
 # Indica que atacou, recebe experiência se vencer
   arg0.batalhaini(arg1)
@@ -497,32 +497,39 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     !v1 && (v1 = 1)
   fimse
 # Checa se acertou o alvo
-  result = 2, dano = rand(1, 20)
+  result = rand(1, 20)
   se precisao > 100
   senao rand(100) >= precisao
+    result = 2
     log.m(">Errou porque a o golpe é impreciso")
     ret
   senao arma1 && rand(100) >= arma1.armaprecisao
+    result = 2
     log.m(">Errou porque a arma é imprecisa")
     ret
-  senao dano == 20 || arg1.posicao == 4 # Acertou automaticamente
-  senao dano == 1 # Errou o alvo automaticamente
+  senao result == 20 || arg1.posicao == 4 # Acertou automaticamente
+  senao result == 1 # Errou o alvo automaticamente
+    result = 2
     log.m(">Dado de 20 faces = 1: errou automaticamente")
     ret
   senao arg0.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg0.p_bebida
+    result = 2
     log.m(">Errou por estar embriagado")
     ret
   senao arg1.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg1.p_bebida # Embriagado
     log.m(">Acertou porque o alvo está embriagado")
   senao # Checa se acertou
-    dano += arg0.precisao + addprecisao + arma1.armaaddprecisao - arg1.evasao
-    !arg1.visivel(arg0) && (dano -= 5) # Invisível é mais difícil de acertar
-    ret dano <= 0, nulo
+    real2 v
+    v = result + arg0.precisao + addprecisao + arma1.armaaddprecisao - arg1.evasao
+    !arg1.visivel(arg0) && (v -= 5) # Invisível é mais difícil de acertar
+    result = 2
+    ret v <= 0, nulo
   fimse
 # Checa bônus ao combinar o tipo de ataque com o tipo de defesa
   se log
     log.atk = arg2
-    dano = arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
+    dano != 1 && log.mul(">Trigger", dano * arg2)
+    dano *= arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
     log.mul(">Elemento " + txtsublin(config:atknomes, tipoatk, 1), dano * arg2)
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
       dano *= arg0.atktipo.1 * arg1.deftipo.1
@@ -537,7 +544,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
       log.m(">Ataque tem força 0 (não causa danos)")
     fimse
   senao
-    dano = arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
+    dano *= arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
       dano *= arg0.atktipo.1 * arg1.deftipo.1
     senao

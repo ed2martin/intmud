@@ -1199,12 +1199,12 @@ bool TVarProg::FuncCriar(TVariavel * v)
         if (*nome==Instr::ex_barra_n)
             nome++;
     // Checa se nome de arquivo válido
-        if (!TArqMapa::NomeValido(nomearq))
+        if (*nomearq && !TArqMapa::NomeValido(nomearq))
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("Nome de arquivo inválido");
         }
-        if (!TArqIncluir::ProcArq(nomearq))
+        if (*nomearq && !TArqIncluir::ProcArq(nomearq))
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("Arquivo não pertence ao programa");

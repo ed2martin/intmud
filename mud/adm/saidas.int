@@ -36,16 +36,18 @@ func escr # Apagar saída
   senao !dir
     arg0.msg("\bSaída não existe: " + arg1)
   senao
-    p.apagar(arg0.dono, "dir_" + dir)
-    p.apagar(arg0.dono, "portaini_" + dir)
-    p.apagar(arg0.dono, "inv_" + dir)
-    p.apagar(arg0.dono, "tranc_" + dir)
-    p.apagar(arg0.dono, "fechadura_" + dir)
-    p.apagar(arg0.dono, "comechave_" + dir)
-    p.apagar(arg0.dono, "voar_" + dir)
-    p.apagar(arg0.dono, "fugir_" + dir)
-    p.apagar(arg0.dono, "portanome_" + dir)
-    p.apagar(arg0.dono, "portaartigo_" + dir)
+    int8 x
+    x = p.apagar(arg0.dono, "dir_" + dir)
+    x += p.apagar(arg0.dono, "portaini_" + dir)
+    x += p.apagar(arg0.dono, "inv_" + dir)
+    x += p.apagar(arg0.dono, "tranc_" + dir)
+    x += p.apagar(arg0.dono, "fechadura_" + dir)
+    x += p.apagar(arg0.dono, "comechave_" + dir)
+    x += p.apagar(arg0.dono, "voar_" + dir)
+    x += p.apagar(arg0.dono, "fugir_" + dir)
+    x += p.apagar(arg0.dono, "portanome_" + dir)
+    x += p.apagar(arg0.dono, "portaartigo_" + dir)
+    ret !x, arg0.msg("\bSaída não existe: " + arg1)
     config:salvar, arg0.msg("\bSaída apagada: " + dir)
     admlog(arg0, "apagou saída " + dir + " de " + txt(arg0.dono, 2))
   fimse

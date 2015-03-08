@@ -45,6 +45,13 @@ $a_[p.lojachave])
     senao tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
       t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo3)
       continuar
+    senao !p.lojasim # negocia com todos
+    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
+    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
+    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
+    senao
+      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com você")
+      continuar
     fimse
     abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0

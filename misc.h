@@ -196,7 +196,7 @@ public:
     void Limpar();
         ///< Limpa bytes adicionados no buffer
     unsigned int Total; ///< Quantos bytes adicionados
-    char * Buf;         ///< Buffer gerado por AlocaMem()
+    char * Buf;         ///< Buffer gerado por AnotarBuf()
 private:
     unsigned int PosAtual;  ///< Quantos bytes usados do bloco atual
     TAddBufferBloco * Inicio; ///< Primeiro bloco

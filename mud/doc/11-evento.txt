@@ -15,8 +15,7 @@ func cmd_objfim
 Chamado quando o objeto é apagado. O antigo dono está na variável donoantes.
 
 func cmd_salaperso(personagem)
-Chamado para a própria sala, quando um personagem controlado por um jogador
-entra na sala.
+Chamado para a própria sala, quando um personagem entra na sala.
 
 func cmd_mudadono
 Chamado por mudadono, logo após o item ou personagem mudar de dono.
@@ -285,12 +284,14 @@ func cmd_atacar(personagem, alvo, objeto que processa o comando)
 Personagem quer usar uma habilidade ou magia agressiva.
 Esse evento é chamado também para o objeto que processa o comando.
 
-func cmd_atkenv(personagem, alvo, objeto que processa o ataque)
+func cmd_atkenv(personagem, alvo, objeto que processa o ataque, danos)
 Chamado quando um personagem vai realizar um ataque a outro.
+Danos (arg3) é o quanto deve afetar os danos (1 danos normais, 0=imune, etc).
 Esse evento é chamado para o personagem e o objeto que processa o comando.
 
-func cmd_atkrec(personagem, alvo, objeto que processa o ataque)
+func cmd_atkrec(personagem, alvo, objeto que processa o ataque, danos)
 Chamado quando um personagem vai receber um ataque de outro.
+Danos (arg3) é o quanto deve afetar os danos (1 danos normais, 0=imune, etc).
 Esse evento é chamado para o alvo.
 
 func cmd_levantar(personagem)
