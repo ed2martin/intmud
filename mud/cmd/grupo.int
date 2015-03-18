@@ -1,0 +1,168 @@
+classe cmd_grupo
+herda comando_comum
+const posic = 5
+const txtajuda = "\b\c3Grupo\b\n\
+Sintaxe: GRUPO <personagem>\n\
+         GRUPO +\n\
+         GRUPO -\n\
+         GRUPO\n\
+Permite que dois ou mais jogadores de níveis próximos trabalhem em grupo,\n\
+dividindo a experiência ganha em batalhas.\n\
+Quando alguém do grupo é atacado os outros também entram na luta.\n\
+Os membros do grupo podem ainda conversar entre si com o comando GCHAT.\n\
+Na movimentação pelo MUD, o grupo é semelhante aos seus integrantes\n\
+seguindo o líder.\n\n\
+Digitando GRUPO e o nome de um personagem adiciona no seu grupo\n\
+o personagem que está seguindo você. Se já estava adicionado, remove.\n\
+Um personagem também pode deixar o grupo digitando SEGUIR.\n\
+GRUPO + adiciona todos que estão seguindo você.\n\
+GRUPO - encerra o grupo fazendo os membros pararem de seguir o líder.\n\
+Digitar GRUPO sem nenhum argumento mostra as estatísticas de cada membro\n\
+do grupo.\n\
+Vide também os comandos: \c2SEGUIR\b  \c2GCHAT\b"
+uint16 nivelmax # Nível máximo para entrar no grupo; vide função nivelgrupo
+uint16 nivelmin # Nível mínimo para entrar no grupo; vide função nivelgrupo
+
+func escr
+  listaobj l
+# Encerrar o grupo
+  se arg1 == "-"
+    se arg0.tseguir == 2
+      epara l.addfim(arg0.lseguir), l, l.ini.remove
+        continuar l.objini.tseguir != 1
+        l.objini.iseguir.remove
+        l.objini.tseguir = 0
+        l.objini.iseguir.msg("Grupo encerrado.")
+      efim
+      arg0.tseguir = 0
+      arg0.msg("Grupo encerrado")
+      ret
+    senao arg0.iseguir && arg0.tseguir == 1
+      ret arg0.msg("Você não é o líder do grupo.")
+    senao
+      ret arg0.msg("Você não está em nenhum grupo.")
+    fimse
+# Adicionar quem está seguindo no grupo
+  senao arg1 == "+"
+    se arg0.iseguir && arg0.tseguir == 1
+      ret arg0.msg("Você não é o líder do grupo")
+    fimse
+    nivelgrupo(arg0)
+    txt200 lin
+    epara l.addfim(arg0.lseguir), l, l.ini.remove
+      refvar obj = l.objini
+      se obj.tseguir
+      senao obj.pnivel < nivelmin
+        arg0.msg(txtcopiamai(obj.nome, "A") + " está abaixo do nível " + nivelmin + ".")
+      senao obj.pnivel > nivelmax
+        arg0.msg(txtcopiamai(obj.nome, "A") + " está acima do nível " + nivelmax + ".")
+      senao
+        obj.tseguir = 1
+        lin += ", " + txtcopiamai(obj.nome, "A")
+        nivelgrupo(arg0)
+      fimse
+    efim
+    ret !lin, arg0.msg("Nenhum personagem adicionado no grupo.")
+    arg0.tseguir = 2
+    msggrupo(arg0, "Adicionado no grupo: " + txt2(lin))
+    ret
+# Adicionar um personagem no grupo
+  senao arg1
+    se arg0.iseguir && arg0.tseguir == 1
+      ret arg0.msg("Você não é o líder do grupo")
+    fimse
+    nomeobj nome
+    nome.ini(arg1, 1)
+    epara l.addfim(arg0.lseguir), l, l.ini.remove
+      sair l.objini.tseguir < 2 && nome.nome(l.objini.ident)
+    efim
+    refvar obj = ref(l.objini)
+    ret !obj, arg0.msg(txtcopiamai(arg1, "A") + " não pode ser adicionado.")
+    nivelgrupo(arg0)
+    se obj.tseguir
+      msggrupo(arg0, "Removido do grupo: " + obj.nome)
+      obj.tseguir = 0
+    senao obj.pnivel < nivelmin
+      arg0.msg(txtcopiamai(obj.nome, "A") + " está abaixo do nível " + nivelmin + ".")
+    senao obj.pnivel > nivelmax
+      arg0.msg(txtcopiamai(obj.nome, "A") + " está acima do nível " + nivelmax + ".")
+    senao
+      obj.tseguir = 1, arg0.tseguir = 2
+      msggrupo(arg0, "Adicionado no grupo: " + obj.nome)
+    fimse
+    ret
+# Informações sobre os integrantes do grupo
+  senao
+    ref lider
+    se arg0.tseguir == 2
+      lider = arg0
+    senao arg0.iseguir && arg0.tseguir == 1
+      lider = arg0.iseguir.objlista
+    fimse
+    ret !lider, arg0.msg("Você não está em nenhum grupo.")
+    arg0.msg("Grupo " + txtcopiamai(lider.nome, "A"))
+    arg0.msg(info(lider))
+    epara l.addfim(lider.lseguir), l, l.ini.remove
+      l.objini.tseguir == 1 && arg0.msg(info(l.objini))
+    efim
+    ret
+  fimse
+
+func info # Retorna informações de um personagem
+# arg0 = personagem
+  txt100 lin
+  lin = txtcopiamai(arg0.nome, "A")
+  lin += " Vida " + arg0.pvida + "/" + arg0.pvidamax
+  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
+  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
+  lin += "  Nível " + arg0.pnivel
+  ret lin
+
+func msggrupo # Envia mensagem para todos do grupo
+# arg0 = personagem líder do grupo
+# arg1 = mensagem
+  arg0.msg(arg1)
+  listaobj l
+  epara l.addfim(arg0.lseguir), l, l.ini.remove
+    l.objini.tseguir == 1 && l.objini.msg(arg1)
+  efim
+
+func nivelgrupo # Acerta variáveis nivelmin e nivelmax
+# arg0 = personagem líder do grupo
+  nivelmin = nivelmax = arg0.pnivel
+  listaitem i
+  epara i = arg0.lseguir.ini, i, i.depois
+    se i.obj.tseguir != 1
+    senao nivelmin > i.obj.pnivel
+      nivelmin = i.obj.pnivel
+    senao nivelmax < i.obj.pnivel
+      nivelmax = i.obj.pnivel
+    fimse
+  efim
+  refvar dif = intpos(config:gruponivel - (nivelmax - nivelmin))
+  nivelmax += dif, nivelmin -= dif
+
+
+classe cmdfim_gchat
+herda comando_comum
+const posic = 5
+const txtajuda = "\b\c3GChatb\n\
+Sintaxe: GCHAT <mensagem>\n\
+Envia uma mensagem para todos os integrantes do seu grupo.\n\
+Vide também: GRUPO"
+
+func escr
+  ref lider
+  se arg0.tseguir == 2
+    lider = arg0
+  senao arg0.iseguir && arg0.tseguir == 1
+    lider = arg0.iseguir.objlista
+  fimse
+  ret !lider, arg0.msg("Você não está em nenhum grupo.")
+  $mens.mens = arg1
+  $mens.p(arg0)
+  lider.msginv(config:gchatmsg)
+  listaobj l
+  epara l.addfim(lider.lseguir), l, l.ini.remove
+    l.objini.tseguir == 1 && l.objini.msginv(config:gchatmsg)
+  efim

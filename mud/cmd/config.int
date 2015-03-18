@@ -116,8 +116,15 @@ func escr
   fimse
 # Checa a propriedade SEGUIR
   se !opc.5 # Se não pode ser seguido
-    epara nulo, arg0.lseguir, arg0.lseguir.ini.remove
-      arg0.lseguir.objini.msg("Você pára de seguir " + arg0.descnome + ".")
+    listaitem i
+    i = arg0.lseguir.ini
+    enquanto i
+      se i.obj.tseguir == 0 || i.obj.tseguir == 2
+        i.obj.msg("Você pára de seguir " + arg0.descnome + ".")
+        i.removedepois
+      senao
+        i.depois
+      fimse
     efim
   fimse
 # Atualiza a configuração

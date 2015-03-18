@@ -10,6 +10,7 @@ Os tópicos são:\n\
   \c2OBJETO\b    Manuseio de objetos\n"
 const ta2 = "  \c2ANIMAL\b    Manuseio de animais\n"
 const ta3 = "  \c2COMBATE\b   Lutas com outros personagens\n\
+  \c2GRUPO\b     Jogando em grupo\n\
   \c2LOJAS\b     Lojas e professores\n\
   \c2NOMES\b     Digitando nomes de objetos e personagens\n\
   \c2JOG\b       Outros comandos para jogadores"
@@ -62,14 +63,15 @@ classe cmd_comunica
 const iniclasse = !$[arg0] && criar(arg0)
 
 func txtajuda
-  ret tit + (config:chattipo ? cha) + (config:novatostipo ? nov) + pvt + (config:gritartipo ? \
-gri) + fal + sus + soc + (config:emocaotipo ? emo) + ign + (config:rezartipo ? rez)
+  ret tit + (config:chattipo ? cha) + (config:novatostipo ? nov) + gch + pvt + (config:gritartipo\
+ ? gri) + fal + sus + soc + (config:emocaotipo ? emo) + ign + (config:rezartipo ? rez)
 
 const tit = "\b\c3Comunicação\b"
 const cha = "\n\
   \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado"
 const nov = "\n\
   \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado"
+const gch = "\n  \c2GCHAT\b     Envia uma mensagem para os jogadores do seu grupo"
 const pvt = "\n  \c2TELEPATIA\b Envia mensagem privativa para um jogador"
 const gri = "\n  \c2GRITAR\b    Envia mensagem para os personagens na mesma área"
 const fal = "\n  \c2FALAR\b     Envia mensagem para os personagens na mesma sala"

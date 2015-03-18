@@ -51,6 +51,9 @@ func fim # Objeto vai sair do jogo
     l.objini.cmd_fim(este), l.ini.remove
   efim
   cmd_objfim, idono && mdono(nulo)
+  epara nulo, lseguir, lseguir.ini.remove
+    lseguir.objini.msg("Você pára de seguir " + nome + ".")
+  efim
 
 func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   real2 x
@@ -192,6 +195,9 @@ int16 bitver # O que o personagem/item pode ver
 int16 bitinv # Grau de invisibilidade do personagem/item
 intexec recalc # Se deve recalcular variáveis do personagem/item
 textotxt atribs # Atributos do item ou personagem, um atributo por linha
+listaitem iseguir # Quem o personagem ou item está seguindo
+listaobj lseguir # Quem está seguindo o personagem ou item
+uint8 tseguir # 0=seguir sem compromisso, 1=membro de grupo, 2=líder de grupo
 
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   ret arg0.dono.luzden, !(~(arg0.bitver | 2) & bitinv)
@@ -222,3 +228,9 @@ func atribs_exec # Organiza a variável atribs
     enquanto p.lin
       p.texto == txtsublin(p.textolin(2), 1) ? p.apagar : p.depois
     efim
+
+func seguir # Segue um item ou personagem
+# arg0 = item ou personagem; se nulo, deixa de seguir
+  tseguir != 2 && (tseguir = 0)
+  iseguir.remove
+  arg0 != este && (iseguir = arg0.lseguir.addfim(este))

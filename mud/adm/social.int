@@ -59,7 +59,7 @@ func escr # Criar comando social
     criar("admordena", "config/social")
 # config:salvar
     arg0.msg("\bSocial criado: " + txtmin(arg1))
-    admlog(arg1, "criou social " + txtmin(arg1))
+    admlog(arg0, "criou social " + txtmin(arg1))
   fimse
 
 
@@ -107,7 +107,7 @@ func passo # Confirmar que quer apagar social
     p.apagar("soc_" + arg0.tpasso)
     config:salvar
     arg0.msg("Social apagado: " + arg0.tpasso)
-    admlog(arg1, "apagou social " + arg0.tpasso)
+    admlog(arg0, "apagou social " + arg0.tpasso)
   senao
     arg0.passo = este
     arg0.msg("Apagar social " + arg0.tpasso + "? Tecle S ou N")

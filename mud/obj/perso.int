@@ -26,8 +26,6 @@ sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 listaitem poslugar # Em qual móvel está sentado ou deitado
 int1 jogconfig.24 # Mesmo que sock.jogconfig
-listaitem iseguir # Quem o personagem está segundo
-listaobj lseguir # Quem está seguindo o personagem
 sav listaitem iempu # Arma que que está empunhando
 const p_morreu1 = "$P morreu."
 const p_morreu2 = "$P desmaiou."
@@ -119,9 +117,6 @@ func fim # Objeto foi apagado
     sock = nulo
   fimse
   batalhafim, comum_obj:fim
-  epara nulo, lseguir, lseguir.ini.remove
-    lseguir.objini.msg("Você pára de seguir " + nome + ".")
-  efim
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Muda de sala

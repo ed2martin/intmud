@@ -30,6 +30,5 @@ func escr
   senao i.obj.p_naoseguir(arg0)
     arg0.msg("Você não consegue seguir " + i.obj.descnome + ".")
   senao
-    arg0.iseguir.remove
-    arg0.iseguir = i.obj.lseguir.addfim(arg0)
+    arg0.seguir(i.obj)
     arg0.msg("Você segue " + i.obj.descnome + ".")

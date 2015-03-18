@@ -1272,9 +1272,7 @@ func descpadr
 func seguirjog # Função chamada pela sala
 # arg0 = personagem que o ajudante deve seguir e observar
   misc:evento(arg0) # Receber eventos do jogador, para saber quando teclou dispensar
-# Nota: essas duas próximas instruções foram pegas da classe cmd_seguir
-  iseguir.remove # Deixa de seguir
-  iseguir = arg0.lseguir.addfim(este) # Passa a seguir o jogador
+  seguir(arg0) # Passa a seguir o jogador
 
 func cmd_mudadono
 # Essa função é chamada sempre que o ajudande muda de dono (muda de sala)
