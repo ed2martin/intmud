@@ -153,6 +153,11 @@ func escr
   p.var.z_moedas_ == 2 && (lin += ", duas moedas")
   p.var.z_moedas_ > 2 && (lin += ", " + p.var.z_moedas_ + " moedas")
   arg0.msg("\b\c6" + lin + "\b")
+  lin = ""
+  p.tipo1 && (lin += ", " + txtcopiamai(p.tipo1, "A"))
+  p.tipo2 && (lin += ", " + txtcopiamai(p.tipo2, "A"))
+  p.tipo3 && (lin += ", " + txtcopiamai(p.tipo3, "A"))
+  lin && arg0.msg("Tipo/raça/classe: " + txt2(lin))
   p.sock && arg0.msg("Conexão:      " + p.sock.info)
   p.cnome && arg0.msg("Jogo salvo:   " + txt2(p.cnome))
   se p.dono
@@ -171,6 +176,9 @@ sav txt20 nome # Nome do personagem
 txt100 cnome # Para obter o nome codificado
 sav txt40 salanome # Nome da sala
 sav uint16 pnivel # Nível atual
+sav txt32 tipo1
+sav txt32 tipo2
+sav txt32 tipo3
 
 
 classe adm_inv

@@ -8,8 +8,8 @@ const posic = 5
 func escr
   se arg0.pnivel < config:ptitulonivel
     arg0.msg("Você precisa chegar no nível " + config:ptitulonivel + " para usar esse comando")
-  senao inttotal(arg1) > 30
-    arg0.msg("O título do personagem não pode passar de 30 caracteres.")
+  senao inttotal(arg1) > config:ptitulomax
+    arg0.msg("O título do personagem não pode passar de " + config:ptitulomax + " caracteres.")
   senao vartroca(txtcod(arg1), "", "t_") != txtcod(arg1)
     arg0.msg("O título contém caracteres não permitidos.")
   senao

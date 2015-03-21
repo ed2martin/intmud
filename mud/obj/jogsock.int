@@ -665,7 +665,7 @@ func passo
     efim
 # Muda de sala e volta ao jogo
     arg0.perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
-    criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome]) # Para mudar de sala
+    criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome], l1) # Para mudar de sala
     arg0.msg("Continuando jogo salvo\cn")
     txt200 lin
     lin = "Entrou: " + arg0.nome + ", " + arg0.info + ", N" + arg0.perso.pnivel
@@ -741,22 +741,35 @@ func passo
 
 classe jogsock_retorna
 # Coloca o jogador na sala em que estava, logo após entrar no MUD
+# Chamar com:
+# criar("jogsock_retorna", personagem, sala, lista de objetos do personagem)
 ref perso
 ref sala
-intexec ex
+listaobj l
+intexec ex1
+intexec ex2
 
 func ini
-  perso = arg0, sala = arg1, ex = 1
+  perso = arg0, sala = arg1, l.addfim(arg2), ex1 = 1
 # telatxt t
 # t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
 
-func ex_exec
-  apagar(este)
+func ex1_exec
+  ex2 = 1
   ref(sala.s_voltar) && (sala = sala.s_voltar)
   perso.mudadono(sala ? sala : config:salasav)
   temposair # Acerta tempo para sair do MUD
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
+
+func ex2_exec
+  ex2 = 1
+  enquanto 1
+    ret !l.objfim, apagar(este)
+    sala = l.objfim, l.fim.remove, sala.cmd_sav(perso)
+    debug d
+    d.ini
+  efim
 
 
 classe cmdalias

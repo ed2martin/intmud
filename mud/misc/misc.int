@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "8/3/2015"
+const versao = "21/3/2015"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -353,12 +353,13 @@ func salvartudo # Salva todos os arquivos pendentes de uma vez
   efim
 
 func apagousav # Deve ser chamado quando um arquivo de jogador for apagado
+# Faz o jogador perder as casas que possui
 # arg0 = nome codificado
   indiceitem item
   refvar nome = "cj " + arg0
   enquanto 1
     item.ini(nome)
-    ret txtsub(item.txt, 0, 2) != nome
+    ret txtsub(item.txt, 0, 2) != nome, nulo
     item.obj.objmudou = 1
     item.obj.nomejog = ""
   efim
