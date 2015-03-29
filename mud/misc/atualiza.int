@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 336, nulo
-  p.criar("config", "const versao = 336 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  ret (versao = config:versao) >= 338, nulo
+  p.criar("config", "const versao = 338 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -380,13 +380,35 @@ casa está atrasada.\"")
       d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
     efim
   fimse
-# Turno ataque manual
-  se versao < 336
+# Opções do comando Econfig
+  se versao < 338
     criafunc("config", "const atkmtempo = 40")
     criafunc("config", "const gchatmsg = \"(gchat) $R '$m'\"")
     criafunc("config", "const gruponivel = 10")
     criafunc("config", "const ptitulomax = 30")
     criafunc("config", "const pdescmax = 1000")
+    arqdir dir
+    epara dir.abrir("sav1"), dir.lin, dir.depois
+      continuar dir.texto == txts(dir.texto)
+      dir.renomear("sav1/" + dir.texto, "sav1/" + txts(dir.texto))
+    efim
+    textotxt t
+    textopos pos
+    epara dir.abrir("sav2"), dir.lin, dir.depois
+      continuar !t.ler("sav2/" + dir.texto)
+      pos = t.ini
+      continuar pos.txtproc("\nnomejog=cj ") < 0
+      refvar num = intsub(pos.texto)
+      continuar num <= 3
+      txt512 lin
+      lin = "nomejog=cj " + txts(txtsub(pos.texto, 1, num - 2))
+      lin += " " + txtsub(pos.texto, num - 1)
+      pos.remove(1)
+      pos.add(lin)
+      t.salvar("sav2/" + dir.texto)
+      debug d
+      d.ini
+    efim
   fimse
 # Avisa que atualizou arquivos
-  tela.msg("Arquivos mud-a-*.int e mud-b-*.int atualizados\n")
+  tela.msg("Diretórios areas e config atualizados\n")

@@ -25,6 +25,8 @@ func inicasa_exec # Carrega objetos da casa
   arqsav sav1
   sav1.ler("sav2/c-" + txt(este, 2) + ".sav", l1)
   l1.ini.remove # Remove da lista, porque é o objeto de controle da casa
+# Cria objeto casa_reset
+  !$casa_reset && criar("casa_reset")
 # Acerta variáveis
   listaitem item
   debug d
@@ -40,6 +42,7 @@ func inicasa_exec # Carrega objetos da casa
     fimse
     item.obj.var.limpar("d_", "j_")
     item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
+    $casa_reset.l.addfim(item.obj) # Para chamar a função cmd_sav do item
   efim
 # Indica que nenhuma sala mudou
   objmudou = 0
@@ -148,3 +151,36 @@ func descloja # Retorna informações da casa para a venda
   lin = txtcopiamai(nome, "A")
   lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"
   ret lin + ", até " + itens + " itens"
+
+
+classe casa_reset
+# Chama a função cmd_sav dos objetos das casas (objetos da listaobj l)
+intexec ex
+listaobj l
+
+func ini
+  ex = 1
+
+func ex_exec
+  ex = 1
+  ref r
+  enquanto 1
+    ret !l.objfim, apagar(este)
+    r = l.objfim, l.fim.remove, r.cmd_sav(perso)
+    debug d
+    d.ini
+  efim
+
+
+classe casa_taxa
+# Atualiza a variável infotaxa de todas as casas
+# Deve ser chamado com: casa_taxa:atualiza
+const iniclasse = !$[arg0] && criar(arg0)
+prog p
+debug d
+
+func atualiza # Atualiza as casas
+  d.exec = 50000
+  epara p.iniherdainv("casa"), p.lin, p.depois
+    $[p.texto].tempotaxa = 1
+  efim

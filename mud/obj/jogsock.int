@@ -266,7 +266,7 @@ func passo
   txt20 texto
   arqsav sav1
   arg0.passo = este, arg0.tpasso = arg0.nome = arg0.cnome = ""
-  texto = txtnome(arg1)
+  texto = txts(txtnome(arg1))
   se !arg1
     arg0.msg("Digite o nome do seu personagem:\cn ")
   senao inttotal(arg1) < 3 || inttotal(arg1) > 16
@@ -586,7 +586,7 @@ func passo
   arqsav sav1
   ref r
 # msg(texto + " , " + arg0)
-  texto = txtnome(arg0.tpasso)
+  texto = txts(txtnome(arg0.tpasso))
   arg0.passo = este
   se !arg1
     arg0.msg("Digite a senha ou tecle Z se não for seu: \cm")

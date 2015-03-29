@@ -249,19 +249,3 @@ const tipo13 = "opc_sala"
 const clas13 = var.classe1
 const vari13 = "s9"
 const exec13 = "acerta_mudou"
-
-
-classe admatucasa
-# Atualiza a variável infotaxa de todas as casas
-const iniclasse = arg0 != "casa" && !$[arg0] && criar(arg0)
-prog p
-debug d
-ref r
-
-func atualiza # Atualiza as casas
-  d.exec = 50000
-  epara p.iniherdainv("casa"), p.lin, p.depois
-    epara r = $[p.texto], r, r = objdepois(r)
-      r.tempotaxa = 1
-    efim
-  efim
