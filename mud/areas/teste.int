@@ -1493,6 +1493,32 @@ func cmd_atkrec
   fimse
 
 
+classe p_teste032
+herda comum_perso
+const nome = "lobo mau"
+const descnome = "lobo mau"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  se arg0.visivel(este) # Se arg0 estiver visível para este personagem
+    misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+  fimse
+
+func entrou20
+  se arg0.pesoadd
+    arg0.msg("Lobo mau: Você não é chapeuzinho vermelho.")
+  senao
+    $mens.p(arg0, este)
+    $mens.mtodos2("", "$A assopra na direção $d $p e $p sai voando.")
+    arg0.msginv("$A assopra na sua direção e você sai voando.")
+    dono.dir_s && arg0.mudadono(dono.dir_s)
+    $mens.p(arg0)
+    $mens.mtodos2("", "$P chegou voando do norte.")
+  fimse
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2813,7 +2839,7 @@ classe s_teste082
 herda b_teste
 const s_titulo = "Subsolo 2: Triggers"
 const s_desc = "Ao norte: saídas baseadas em triggers\n\
-Ao sul: checando classe, nível, sexo ou empunhando/vestindo algo\n\
+Ao sul: checando classe nível sexo empunhando/vestindo invisível voando\n\
 À leste: variáveis\n\
 À oeste: recebendo e dando itens"
 const dir_n = $s_teste083
@@ -2913,12 +2939,12 @@ Outro atributo interessante é o nível do personagem, arg0.pnivel.\n\
 A saída à leste é para personagens até o nível 5. À oeste só funciona\n\
 a partir do nível 2. À sudeste, somente níveis 3 a 8.\n\
 Note que nos testes, && significa \"E\" e || significa \"OU\""
+const eveste = 1 # Eventos sala: Sim
 const dir_n = $s_teste082
-const dir_s = $s_teste087
+const dir_s = $s_teste143
 const dir_l = $s_teste082
 const dir_o = $s_teste082
 const dir_se = $s_teste082
-const eveste = 1 # Eventos sala: Sim
 
 func cmd_mover
   se arg2 == "l" && arg0.pnivel > 5
@@ -2946,7 +2972,7 @@ Também não é permitido sair daqui usando sapatos ou com uma faca.\n\
 Mas se você guardar a faca em uma bolsa, não tem problema.\n\
 Sapato é o item teste018 e pode ser encontrado na sala teste032.\n\
 Faca é o item teste012 e pode ser encontrada na sala teste028."
-const dir_n = $s_teste086
+const dir_n = $s_teste143
 const dir_s = $s_teste088
 const dir_l = $s_teste082
 const dir_o = $s_teste082
@@ -3930,3 +3956,21 @@ mas a velocidade dos golpes não deve aumentar da mesma forma. Golpes\n\
 avançados devem ter velocidade semelhante a golpes básicos. Mas por\n\
 exemplo, um soco via de regra é mais rápido que um chute."
 const dir_so = $s_teste141
+
+
+classe s_teste143
+herda b_teste
+const s_titulo = "Invisível e voando"
+const s_desc = "Aqui, o lobo mau só interage com personagens que ele consegue ver\n\
+(quem não está invisível nem oculto). Ele pode assoprar ou falar\n\
+alguma coisa. Isso depende se você está voando ou não (se está\n\
+fazendo peso na sala)."
+const dir_n = $s_teste086
+const dir_s = $s_teste087
+const s_reset = "P 100 teste032 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste032:objsolto.total < 1
+    criar("p_teste032", este, 0)
+  fimse

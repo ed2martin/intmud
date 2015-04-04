@@ -1,0 +1,105 @@
+Casas (arquivo obj/casa.int)
+
+Funções:
+
+const nome = "nome da casa"
+Nome da casa, mostrado pelos comandos Listar e Comprar.
+Editável pelo comando ecasa.
+
+const desc = "Descrição da casa"
+É mostrado ao teclar Listar e o nome da casa. Editável pelo comando ecasa.
+
+const ident = "lista de palavras"
+Palavras que os jogadores digitam para os comandos Comprar e Listar.
+Editável pelo comando ecasa.
+
+const valor = 1200
+Valor da casa, em moedas. Editável pelo comando ecasa.
+
+const s1 até const s9
+Salas que correspondem à casa (até 9). Se uma dessas constantes mudar,
+deve-se chamar a função acerta_mudou da casa. O comando Ecasa cria
+constantes como essa:
+const s1 = $s_teste116
+
+func mudachave
+Muda o código da fechadura da casa. Isso é necessário quando o jogador
+vende a casa ou perde por falta de pagamento.
+
+func mudou
+Retorna 1 (verdadeiro) se houve alguma mudança na casa (ela será salva
+em arquivo) ou 0 se não houve.
+A função acerta_mudou cria essa função de acordo com as variáveis s1 a s9.
+
+func salvar
+Salva a casa junto com as salas que pertencem à casa e os objetos que
+estiverem dentro. Para cada casa existe um arquivo SAV no diretório sav2.
+
+descloja
+Retorna um texto que contém informações da casa para a venda.
+Esse texto é exibido pelo comando lista.
+
+func dentrocasa
+Os jogadores (classe jogador, arquivo obj/jogador.int) possuem essa função.
+Ela retorna 1 (verdadeiro) se o jogador estiver dentro da própria casa
+ou nulo (falso) se não estiver. É usada pelos comandos ETitulo e EDesc.
+
+
+Variáveis:
+
+intexec inicasa
+func inicasa_exec
+Carrega os objetos da casa. Isso é feito pela classe admatucasa, logo que
+o MUD é executado.
+
+int1 objmudou
+Se as informações da casa foram mudadas (precisa salvar a casa).
+As salas também possuem uma variável objmudou, que vai para 1 sempre que
+algum objeto vai para a sala ou sai dela. A casa precisa ser salva se a
+variavel objmudou da casa ou de uma de suas salas estiver em 1.
+Funções relacionadas: mudou e salvar
+
+sav int32 diataxa
+A partir de quando deve pagar a taxa de manutenção da casa.
+O valor corresponde a hoje é a variável hora.numdias após as seguintes
+instruções:
+  datahora hora
+  hora.agora
+
+int8 infotaxa
+Situação da casa: 0=taxa em dia, 1=avisar, 2=bloquear casa.
+Essa variável é atualizada pela função tempotaxa_exec.
+
+inttempo tempotaxa
+func tempotaxa_exec
+Para manter a variável infotaxa atualizada a partir de diataxa e das
+configurações da sala (constantes da classe config, editáveis pelo
+comando Econfig).
+
+sav txt50 chave
+Código da chave (um texto) que abre a porta da casa.
+Essa variável é alterada pela função mudachave, de modo que não exista
+outra chave com o mesmo código.
+
+O jogador pode comprar a chave da casa com o comando Comprar.
+Cada chave é um objeto comum_chave (arquivo obj/item.int).
+O comando Comprar cria chaves com o mesmo código.
+O código da chave é inserido na seguinte variável desse objeto:
+sav txt50 i_chave # Código da chave
+
+sav indiceobj nomejog
+É um texto formado do seguinte modo:
+"cj " + nome codificado do jogador + " " + prefixo da área
+
+O nome codificado é o nome do jogador após passar pela função txtnome.
+Exemplo, se o jogador Xis comprou a casa teste001, a variável
+$c_teste001.nomejog ficará com "cj cis teste". A palavra "cis" é o
+resultado de txtnome("xis").
+
+O nome codificado também é o nome do arquivo SAV do jogador e também
+está na variável cnome do personagem (classe jogador, arquivo
+obj/jogador.int). No caso do jogador Xis, o arquivo SAV será sav1/cis.sav
+e a variável cnome estará com "pn cis".
+
+Quando o MUD é executado, faz parte da inicialização da casa verificar se
+o arquivo do jogador ainda existe. Se não existir, a casa fica à venda.

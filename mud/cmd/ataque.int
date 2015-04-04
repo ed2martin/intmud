@@ -347,7 +347,31 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     mensgolpe(arg0, arg1)
     ret arg0.acertapos(1)
   fimse
-# Força do ataque e alvos secundários
+# Alvos secundários (somente ataques de área)
+  se tipoalvo >= 2 && tipoalvo <= 5
+    listaitem i
+    refvar p1 = arg0.contr
+    l.addfim(p1.dono.dentro2)
+    l.remove(p1, arg1.contr)
+    se p1.tseguir == 2 # Líder do grupo: não ataca os outros integrantes
+      i = l.ini
+      enquanto i
+        i.obj.tseguir == 1 && i.obj.iseguir.objlista == p1 ? i.removedepois : i.depois
+      efim
+    senao p1.tseguir == 1 && p1.iseguir # Seguindo o líder do grupo
+      refvar p2 = p1.iseguir.objlista
+      l.remove(p2)
+      i = l.ini
+      enquanto i
+        i.obj.tseguir == 1 && i.obj.iseguir.objlista == p2 ? i.removedepois : i.depois
+      efim
+    fimse
+    se p1.jog && p1.dono.s_luta < 2 # Sala não permite luta entre jogadores
+      epara i = l.ini, i, i.obj.jog ? i.removedepois : i.depois
+      efim
+    fimse
+  fimse
+# Força do ataque
   real2 atk
   casovar tipoalvo
   casose # Casos 0 e 1: Ataca um personagem
@@ -355,14 +379,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     sair
   casose "2" # Todos dividindo o ataque
   casose "3"
-    l.addfim(arg0.contr.dono.dentro2)
-    l.remove(arg0.contr, arg1.contr)
     atk = ataque / (l.total + 1) * (arg2 + 0.5)
     sair
   casose "4" # Todos sem dividir o ataque
   casose "5"
-    l.addfim(arg0.contr.dono.dentro2)
-    l.remove(arg0.contr, arg1.contr)
     atk = ataque * (arg2 + 0.5)
     sair
   casose "8" # Ataque automático
@@ -400,7 +420,6 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   atk /= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
   log.div(">Fome e sede", atk)
 # Ataca o alvo escolhido
-  ref r
   listaobj e
   tipoalvo != 8 && velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, atk) # Ataca
@@ -415,11 +434,11 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     result == 10 ? arg1.morreu(arg0) : arg1.acertapos(1)
   fimse
 # Ataca os alvos secundários
-  log = nulo # Porque os alvos secundários não entram no log
-  enquanto l
-    r = l.objini, l.ini.remove
-    continuar r.jog || r.perso < 2 # Não prossegue se for jogador
-    r = r.persobat
+  log = nulo # Os alvos secundários não entram no log
+  ref r
+  epara nulo, l, l.ini.remove
+    continuar l.objini.perso < 2 # Não prossegue se for pacífico
+    r = l.objini.persobat
     tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3

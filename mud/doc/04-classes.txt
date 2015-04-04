@@ -1,0 +1,74 @@
+1. Nomes das classes adotados no MUD:
+
+config
+Contém as configurações do MUD, editáveis pelo comando Econfig.
+Fica no arquivo config/config.int.
+
+menu_<nome do menu>
+Menus de edição. Exemplo: menu_econfig.
+Ficam no diretório adm, junto com os respectivos comandos de administração.
+Herdam a classe comando_menu, arquivo adm/menus.int.
+Vide arquivo 14-comandos.txt.
+
+opc_<nome da opção>
+Uma opção dos menus. Exemplo: opc_linha.
+Ficam no arquivo adm/menus.int. Vide arquivo 12-comandos.txt.
+
+adm_<nome do comando>
+Comando de administração. Exemplo: adm_echo.
+Ficam no diretório adm.
+
+cmd_<nome do comando>
+Comandos que o personagem pode digitar. Exemplo: cmd_ver.
+Ficam no diretório cmd. As habilidades também são classes "cmd_", mas ficam
+no arquivo config/hab.int.
+
+cmdfim_<nome do comando>
+Comandos de baixa prioridade que o personagem pode digitar.
+Quando o usuário digita algo, primeiro são verificadas as classes "cmd_",
+e se não for encontrado nenhum comando, verifica as classes "cmdfim_".
+Exemplo: cmdfim_chat.
+Ficam no diretório cmd.
+
+magia_<nome do comando>
+Para executar esses comandos, o jogador deve digitar lançar seguido do
+nome do comando. Esses, e as habilidades, ficam no arquivo config/hab.int.
+Comandos relacionados às magias: magia, lmag, cmag, emag, amag
+Comandos relacionados às habilidades: hab, lhab, chab, ehab, ahab
+
+soc_<nome do comando>
+Comandos sociais. Exemplo: soc_beijar.
+Ficam no arquivo config/social.int.
+Comandos relacionados: social, lsoc, csoc, esoc, asoc
+
+tipo_<nome do tipo>
+Tipos de personagens (raças e classes). Exemplo: tipo_elfo.
+Ficam no arquivo config/tipo.int.
+Comandos relacionados: ltipo, ctipo, etipo, atipo
+
+e_<nome do efeito>
+Efeitos que podem ser aplicados nos personagens. Exemplo: e_congelado.
+Ficam no arquivo config/efeito.int.
+Comandos relacionados: efeito, lef, cef, eef, aef
+
+a_<nome da área>
+Área e configuração da área. Exemplo: a_teste.
+Ficam no diretório areas.
+Comandos relacionados: area, larea, careaf, earea, aarea
+
+b_<nome da área>
+Variáveis e funções da área comuns para todas as salas.
+Essa classe é herdada por todas as salas da área.
+Comando relacionado: earea
+
+c_<nome da área><número da casa>
+Casas. O número da casa vai de 001 a 999. Exemplo: c_teste001.
+Comandos relacionados: lcasa, ccasa, ecasa, acasa
+
+i_<nome da área><número do item>
+Itens. O número do item vai de 001 a 999. Exemplo: i_teste001.
+Comandos relacionados: litem, citem, eitem, aitem
+
+p_<nome da área><número do personagem>
+Personagens. O número do persoangem vai de 001 a 999. Exemplo: p_teste001.
+Comandos relacionados: lperso, cperso, eperso, aperso
