@@ -1,3 +1,58 @@
+* 5/4/2015 IntMUD 1.03a MUD baseado na revisão 340
+
+   No IntMUD:
+  1. Corrigido bug: prog.criar não estava criando classe no arquivo
+     principal
+  2. A versão do programa mudou para 1.03a
+
+   No MUD:
+  1. Corrigido bug: comando cdir não estava criando sala
+  2. Corrigido bug: comandos csoc e asoc não estavam gerando mensagens
+     no admlog
+  3. Corrigido bug na mensagem de adm, quando muda o nome do jogador e
+     depois ele sai do MUD
+  4. Corrigido bug no comando ESoc, nas opções Posição mínima e Alvo
+     posição mínima
+  5. Corrigido bug no comando SDesc: não estava reconhecendo a casa
+     quando o nome do personagem tem sublinhado _ no meio
+  6. Criada sala teste138: personagem imune a um tipo de golpe e uma
+     bota que potencializa os chutes
+  7. Comando Asai agora informa que saída não existe se ela não estava
+     definida na sala
+  8. Comandos Aitem e Aperso agora informam o nome do item ou personagem
+  9. Comando Inv como administrador foi documentado
+ 10. Criada opção no comando Eperso, em Lojas e aulas: Só negocia com
+ 11. Criada opção eventos hora na sala
+ 12. Fórmula do tempo de espera após digitar um comando que ataca mudou
+ 13. Criada opção no comando Econfig: Turno ataque manual
+ 14. Criadas salas teste139 a teste142 (quinto andar) para explicar a
+     fórmula do tempo de espera
+ 15. Criado comando Grupo e opção no comando Econfig para definir a
+     diferença de nível
+ 16. Criado comando GChat e opção no comadno Econfig para mudar a
+     mensagem
+ 17. Ataques de área: não acerta aliados do grupo e respeita a opção das
+     salas de jogador contra jogador
+ 18. Não é permitido um personagem atacar outro do mesmo grupo
+ 19. Não é permitido adicionar personagens no grupo durante a batalha
+ 20. Criada sala teste143 (subsolo 2) com um PNJ que age diferente se vê
+     ou não o jogador e se está voando
+ 21. Internamente, itens também podem seguir jogadores; criada função
+     seguir (vide mud/doc/06-comum.txt)
+ 22. O comando MudaNome agora informa o próprio jogador que o nome do
+     personagem mudou
+ 23. No comando InfoJog: agora informa também raça e classe
+ 24. No comando Econfig: criado menu limites e acrescentado limite para
+     os comandos Ptitulo e Pdesc
+ 25. Evento: Quando um jogo salvo é carregado, é chamada a função
+     cmd_sav de todos os objetos que foram carregados
+ 26. Eventos cmd_morrer e cmd_morreu agora possuem outro argumento: quem
+     matou o personagem
+ 27. Criadas funções $mens.mareaS e $mens.mareatodosS para enviar
+     mensagens para a área exceto para a mesma sala do personagem
+ 28. Adicionados arquivos mud/doc/04-classes.txt, mud/doc/09-casas.txt e
+     doc/contato.txt
+
 * 27/2/2015 IntMUD 1.03 MUD baseado na revisão 334 do SVN
 
    No IntMUD:

@@ -46,6 +46,8 @@ func escr
   senao arg1 == "+"
     se arg0.iseguir && arg0.tseguir == 1
       ret arg0.msg("Você não é o líder do grupo")
+    senao arg0.atkenv
+      ret arg0.msg("Você está lutando.")
     fimse
     nivelgrupo(arg0)
     txt200 lin
@@ -69,7 +71,9 @@ func escr
 # Adicionar um personagem no grupo
   senao arg1
     se arg0.iseguir && arg0.tseguir == 1
-      ret arg0.msg("Você não é o líder do grupo")
+      ret arg0.msg("Você não é o líder do grupo.")
+    senao arg0.atkenv
+      ret arg0.msg("Você está lutando.")
     fimse
     nomeobj nome
     nome.ini(arg1, 1)

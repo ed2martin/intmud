@@ -183,8 +183,9 @@ func cmd_sentouobj(personagem, item, texto)
 func cmd_descansouobj(personagem, item, texto)
 Ficou em pé, começou a descansar ou sentou-se.
 
-func cmd_morreu(personagem)
+func cmd_morreu(personagem, quem matou o personagem)
 Personagem morreu.
+Nota: Quem matou o personagem pode ser nulo.
 
 
 4. Eventos condicionais
@@ -311,8 +312,9 @@ Quer fugir de uma batalha.
 func cmd_resgatar(personagem, quem será resgatado)
 Quer resgatar alguém de uma batalha.
 
-func cmd_morrer(personagem)
+func cmd_morrer(personagem, quem matou o personagem)
 Vai morrer porque os pontos de vida chegaram a zero.
+Nota: Quem matou o personagem pode ser nulo.
 
 func cmd_ident(personagem, item ou personagem)
 Quer identificar um item ou personagem.

@@ -271,7 +271,11 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   senao a_cond == 1
     ret arg1.pvida, arg0.contr.msg("Alvo não está desmaiado.")
   senao dono.s_semmagia && txt(nomevar, 0, 1) == "m"
-    ret msg("A magia não teve efeito.")
+    ret arg0.contr.msg("A magia não teve efeito.")
+  fimse
+# Não permite atacar outro personagem do grupo
+  se arg0.contr.mesmogrupo(arg1.contr)
+    ret arg0.contr.msg("Atacar outro integrante do grupo?")
   fimse
 # Obtém a arma usada
   arma1 = nulo

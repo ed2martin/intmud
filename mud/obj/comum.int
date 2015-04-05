@@ -234,3 +234,8 @@ func seguir # Segue um item ou personagem
   tseguir != 2 && (tseguir = 0)
   iseguir.remove
   arg0 != este && (iseguir = arg0.lseguir.addfim(este))
+
+func mesmogrupo # Retorna 1 se arg0 está no mesmo grupo ou 0 se não está (vide comando grupo)
+  ret tseguir == 2, arg0.tseguir == 1 && arg0.iseguir.objlista == este
+  ret arg0.tseguir == 2, tseguir == 1 && iseguir.objlista == arg0
+  ret tseguir == 1 && arg0.tseguir == 1 && iseguir.objlista == arg0.iseguir.objlista

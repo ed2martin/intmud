@@ -350,7 +350,7 @@ func morreu # Procedimentos quando morre
 # Checa se pode morrer
   listaobj l
   epara l.addfim(evento), l, l.ini.remove
-    ret l.objini.cmd_morrer(este), nulo
+    ret l.objini.cmd_morrer(este, arg0), nulo
   efim
 # Histórico
   mortes += 1
@@ -435,7 +435,7 @@ func morreu # Procedimentos quando morre
   efim
 # Gera eventos
   epara l.addfim(evento), l, l.ini.remove
-    l.objini.cmd_morreu(este)
+    l.objini.cmd_morreu(este, arg0)
   efim
   !jog && !dono.perso && mudadono(nulo)
   ret corpo
