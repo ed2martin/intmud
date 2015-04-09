@@ -131,19 +131,17 @@ func escr
 # Obtém: p = objeto do personagem
   ref p # Objeto do personagem
   enquanto 1
+    refvar nomesav = txts(txtnome(arg1))
     indiceitem item
-    item.ini("pn " + txtnome(arg1))
+    item.ini("pn " + nomesav)
     p = item.obj
     sair p
-    se intnome(arg1)
-      arg0.msg("Nome inválido para jogador: " + arg1)
-      ret 1
-    fimse
+    ret intnome(arg1), arg0.msg("Nome inválido para jogador: " + arg1)
     arqsav sav1
     listaobj l1
     p = $jog_info, l1.addfim(p)
-    p.cnome = "x " + txtnome(arg1)
-    sair sav1.ler("sav1/" + txt2(p.cnome) + ".sav", l1, 1)
+    p.cnome = "x " + nomesav
+    sair sav1.ler("sav1/" + nomesav + ".sav", l1, 1)
     ret arg0.msg("Jogador inexistente: " + arg1)
   efim
 # Mostra os dados do personagem

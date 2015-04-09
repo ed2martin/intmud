@@ -17,29 +17,31 @@ Nota: tipos de personagens são raça e classe."
 
 func escr # Listar tipos
   prog p
-  textotxt t
   txt100 lin
-  se !p.iniclasse("tipo_" + arg1)
+  se !p.iniclasse("t_" + arg1)
     ret arg0.msg("\bNenhum tipo encontrado.")
   fimse
-  t.addfim("raça\nclasse")
-  epara nulo, p.lin && t.linhas < 499, p.depois
-    lin = txts([p.texto]:menu)
-    lin = (lin ? lin + " " : "{{{{{{{ ") + txt(p.texto, 5) + ", " + [p.texto]:nome
-    t.addfim(lin)
-  efim
-  t.ordena
-# t.addini("\bTipo de personagem, Menu, Texto do menu")
   refvar txtmais = arg0.sock.txtmais
-  txt100 lin
   txtmais.limpar
-  textopos pos
-  epara pos = t.ini, pos, pos.depois
-    se lin != txt1(pos.texto)
-      lin = txt1(pos.texto)
-      txtmais.addfim(lin == "{{{{{{{" ? "Não pertencem a menus:" : "Menu " + lin + ":")
-    fimse
-    txt2(pos.texto) && txtmais.addfim("  " + txt2(pos.texto))
+  lin = "Menu raças:\n  "
+  epara nulo, p.lin, p.depois
+    continuar $[p.texto].menu != 1
+    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+  efim
+  lin = "Menu classes:\n  "
+  epara p.iniclasse("t_" + arg1), p.lin, p.depois
+    continuar $[p.texto].menu != 2
+    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+  efim
+  lin = "Menu subclasses:\n  "
+  epara p.iniclasse("t_" + arg1), p.lin, p.depois
+    continuar $[p.texto].menu != 3
+    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+  efim
+  lin = "Em nenhum menu:\n  "
+  epara p.iniclasse("t_" + arg1), p.lin, p.depois
+    continuar $[p.texto].menu
+    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
   efim
   arg0.sock.txtmostra
 
@@ -64,12 +66,12 @@ func escr # Criar tipo
   nome = txte(txtremove(arg1, EMDSA))
   se txtsepara(nome, "O+DOL,DOL+O") != nome
     ret arg0.msg("Nome inválido para tipo de personagem: " + nome)
-  senao p.existe("tipo_" + nome)
+  senao p.existe("t_" + nome)
     ret arg0.msg("Já existe o tipo: " + nome)
   fimse
 # Cria tipo
   txt200 lin
-  lin = "tipo_" + txts(nome) + "\nconfig/tipo\nherda comum_tipo"
+  lin = "t_" + txts(nome) + "\nconfig/tipo\nherda comum_tipo"
   lin += "\nconst nome = \"" + txtcopiamai(txte(nome), "A") + "\""
   p.criar(lin)
   criar("admordena", "config/tipo")
@@ -89,7 +91,7 @@ func escr # Apagar tipo
   prog p
   se arg1 == ""
     arg0.msg("Tecle um nome após ATIPO")
-  senao !p.existe("tipo_" + arg1)
+  senao !p.existe("t_" + arg1)
     arg0.msg("Tipo não existe: " + arg1)
   senao
     arg0.sock.tpasso = arg1
@@ -102,7 +104,7 @@ func passo # Confirmar que quer apagar tipo
     arg0.msg("Cancelado")
   senao arg1 == "s"
     prog p
-    p.apagar("tipo_" + arg0.tpasso)
+    p.apagar("t_" + arg0.tpasso)
     config:salvar
     arg0.msg("Tipo apagado: " + arg0.tpasso)
     admlog(arg0, "apagou tipo " + arg0.tpasso)
@@ -124,17 +126,17 @@ func escr # Editar tipo
   prog p
   se arg1 == ""
     arg0.msg("Tecle o nome do tipo após ETIPO")
-  senao !p.existe("tipo_" + txts(arg1))
+  senao !p.existe("t_" + txts(arg1))
     arg0.msg("Tipo não existe: " + arg1)
   senao
-    arg0.sock.var.classe1 = "tipo_" + txts(txtmin(arg1))
+    arg0.sock.var.classe1 = "t_" + txts(txtmin(arg1))
     arg0.sock.m_menu("menu_tipo")
   fimse
 
 
 classe menu_tipo
 herda comando_menu
-const titulo = "Tipo " + txt(var.classe1, 5)
+const titulo = "Tipo " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Texto do menu"
@@ -148,66 +150,86 @@ const tipo2 = "opc_texto"
 const clas2 = var.classe1
 const vari2 = "desc"
 #
-const nome3 = "É uma opção de"
-const info3 = "Digite raça para ser uma raça, classe para ser uma classe ou o nome\n\
-de uma raça ou classe para ser uma sub-raça ou sub-classe."
-const tipo3 = "opc_linha"
+const nome3 = "Está no menu"
+const tipo3 = "opc_opcao"
 const clas3 = var.classe1
 const vari3 = "menu"
+const extr3 = "Nenhum menu\nRaças\nClasses\nSubclasses"
 #
 const nome4 = "Somente raças"
-const info4 = "Se esse tipo for uma classe que não existe em todas as raças,\n\
-escreva aqui em quais raças existe (uma raça por linha)"
-const tipo4 = "opc_texto"
+const info4 = "Se esse tipo for uma classe ou subclasse que não existe em todas as raças,\n\
+escreva aqui em quais raças existe"
+const tipo4 = "opc_tipos"
 const clas4 = var.classe1
 const vari4 = "racas"
 #
-const nome5 = "Atributos números"
-const tipo5 = "opc_atribnum"
+const nome5 = "Somente classes"
+const info5 = "Se esse tipo for uma subclasse que não existe em todas as classes,\n\
+escreva aqui em quais classes existe"
+const tipo5 = "opc_tipos"
 const clas5 = var.classe1
-const vari5 = "recalc_auto"
-const exec5 = "recalc_ajusta"
+const vari5 = "classes"
 #
-const nome6 = "Atributos sim/não"
-const tipo6 = "opc_atribbit"
+const nome6 = "Atributos números"
+const tipo6 = "opc_atribnum"
 const clas6 = var.classe1
 const vari6 = "recalc_auto"
 const exec6 = "recalc_ajusta"
 #
-const nome7 = "Atributos ataque"
-const info7 = "Afetam os danos quando o personagem ataca alguém"
-const tipo7 = "opc_atribatk"
+const nome7 = "Atributos sim/não"
+const tipo7 = "opc_atribbit"
 const clas7 = var.classe1
 const vari7 = "recalc_auto"
 const exec7 = "recalc_ajusta"
 #
-const nome8 = "Atributos defesa"
-const info8 = "Afetam os danos quando alguém ataca o personagem"
-const tipo8 = "opc_atribdef"
+const nome8 = "Atributos ataque"
+const info8 = "Afetam os danos quando o personagem ataca alguém"
+const tipo8 = "opc_atribatk"
 const clas8 = var.classe1
 const vari8 = "recalc_auto"
 const exec8 = "recalc_ajusta"
 #
-const nome9 = "Equip posições"
-const info9 = "Se não estiver vazio, são as posições aonde pode usar equipamentos"
-const tipo9 = "opc_vetor"
+const nome9 = "Atributos defesa"
+const info9 = "Afetam os danos quando alguém ataca o personagem"
+const tipo9 = "opc_atribdef"
 const clas9 = var.classe1
-const vari9 = "equip1"
-const extr9 = config:equip_txt
+const vari9 = "recalc_auto"
+const exec9 = "recalc_ajusta"
 #
-const nome10 = "Equip adicionar"
-const info10 = "Adicionar essas posições no personagem"
+const nome10 = "Equip posições"
+const info10 = "Se não estiver vazio, são as posições aonde pode usar equipamentos"
 const tipo10 = "opc_vetor"
 const clas10 = var.classe1
-const vari10 = "equip2"
+const vari10 = "equip1"
 const extr10 = config:equip_txt
 #
-const nome11 = "Equip remover"
-const info11 = "Remover essas posições do personagem"
+const nome11 = "Equip adicionar"
+const info11 = "Adicionar essas posições no personagem"
 const tipo11 = "opc_vetor"
 const clas11 = var.classe1
-const vari11 = "equip3"
+const vari11 = "equip2"
 const extr11 = config:equip_txt
+#
+const nome12 = "Equip remover"
+const info12 = "Remover essas posições do personagem"
+const tipo12 = "opc_vetor"
+const clas12 = var.classe1
+const vari12 = "equip3"
+const extr12 = config:equip_txt
+#
+const nome13 = "Nível para reviver"
+const info13 = "Se houverem níveis diferentes na raça, classe e subclasse,\n\
+é considerado somente o maior. Se o resultado for 0, não revive."
+const tipo13 = "opc_numero"
+const clas13 = var.classe1
+const vari13 = "nmax"
+const extr13 = "0 65535"
+#
+const nome14 = "Evolui para"
+const tipo14 = "opc_tipos"
+const info14 = "Os novos tipos que o personagem pode escolher no comando reviver"
+const clas14 = var.classe1
+const vari14 = "evoluir"
 #
 const nome50 = "Variáveis"
 const info50 = "Só tem efeito em jogadores"
@@ -219,7 +241,8 @@ const vari50 = "inivar"
 classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
-const admordem = "nome menu desc racas equip1 equip2 equip3 inivar"
+const admordem = "nome menu desc racas classes equip1 equip2 equip3\n\
+nmax evoluir inivar"
 const iniclasse = !$[arg0] && criar(arg0)
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
@@ -238,6 +261,7 @@ func recalc_ajusta2 # Chamado internamente por recalc_ajusta para mais eficiênci
   efim
   epara arg1.iniclasse("p_"), arg1.lin, arg1.depois
     epara arg2 = $[arg1.texto], arg2, arg2 = objdepois(arg2)
-      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = \
+1)
     efim
   efim

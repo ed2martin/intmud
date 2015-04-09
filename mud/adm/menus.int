@@ -674,11 +674,11 @@ func passo
   arg0.passo = este
   se arg1 == "o"
     arg0.txtmais.limpar
-    epara p.iniclasse("tipo_"), p.lin, p.depois
-      arg0.txtmais.addfim(txt(p.texto, 5))
+    epara p.iniclasse("t_"), p.lin, p.depois
+      arg0.txtmais.addfim(txt(p.texto, 2))
     efim
   fimse
-  ret passo2(arg0, arg1, p.existe("tipo_" + txts(arg1)))
+  ret passo2(arg0, arg1, p.existe("t_" + txts(arg1)))
 
 func passo2 # Usado intermanente: alterando um vetor de textos
 # arg0 = objeto jogsock do jogador

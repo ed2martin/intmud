@@ -402,147 +402,88 @@ func passo
 
 classe adm_raca1
 herda comando_comum
-# Começa a escolha da raça
+# Começa a escolha de raça, classe e subclasse
 
 func passo
-  arg0.tpasso = "raça"
+  arg0.tpasso = 1
   ret $adm_raca2.passo(arg0)
 
 
 classe adm_raca2
 herda comando_comum
-# Escolhe a raça
+# Escolhe raça, classe e subclasse
 
 func passo
+  arg0.passo = este
+  ret !passo1(arg0, arg1), 1
+  enquanto passo1(arg0, "")
+  efim
+  ret 1
+
+func passo1
   txt100 lin
   prog p
   refvar tpasso = arg0.tpasso
-# Obtém a lista de raças e checa se escolheu uma raça
+# Informações da raça
+  se txt2(tpasso)
+    se arg1 == "S"
+      ret escolheu(arg0)
+    senao arg1 == "N"
+      tpasso = txt1(tpasso)
+      ret 1
+    senao
+      lin = int(tpasso) == 1 ? "raça" : int(tpasso) == 2 ? "classe" : "subclasse"
+      arg0.msg("Você quer essa " + lin + "? (tecle S ou N)")
+      ret 0
+    fimse
+  fimse
+# Obtém a lista de raças/classes/subclasses e checa se escolheu alguma
   arg0.txtmais.limpar
-  epara p.iniclasse("tipo_"), p.lin, p.depois
-    continuar txts([p.texto]:menu) != tpasso
-    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + [p.texto]:nome)
+  epara p.iniclasse("t_"), p.lin, p.depois
+    continuar txt($[p.texto].menu) != tpasso
+    se !$[p.texto].racas || tpasso < 2
+    senao txtproc("\n" + $[p.texto].racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
+      continuar
+    fimse
+    se !$[p.texto].classes || tpasso < 3
+    senao txtproc("\n" + $[p.texto].classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
+      continuar
+    fimse
+    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + $[p.texto].nome)
     lin = p.texto
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
-    tpasso = p.texto
-    arg0.msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
-    ret $adm_raca3.passo(arg0)
+    tpasso += " " + p.texto
+    arg0.msg2($[p.texto].desc ? $[p.texto].desc : $[p.texto].nome)
+    ret 1
   efim
-# Somente uma raça para escolher: escolhe automaticamente
-  se arg0.txtmais.linhas == 1
+# Uma ou nenhuma: escolhe automaticamente
+  se arg0.txtmais.linhas <= 1
     arg0.txtmais.limpar
-    arg0.var.j_tipo1 = txt(lin, 5)
-    ret $adm_classe1.passo(arg0)
-# Nenhuma raça para escolher: passa para o próximo menu
-  senao arg0.txtmais.linhas == 0
-    arg0.txtmais.limpar
-    tpasso != "raça" && (arg0.var.j_tipo1 = tpasso)
-    ret $adm_classe1.passo(arg0)
+    tpasso += " " + lin
+    ret escolheu(arg0)
 # Mais de uma raça: apresenta o menu
   senao
-    arg0.passo = este
+    lin = int(tpasso) == 1 ? "raça" : int(tpasso) == 2 ? "classe" : "subclasse"
     se arg1
-      arg0.txtmais.addini("Raça inválida; escolha uma:")
-    senao tpasso == "raça"
-      arg0.txtmais.addini("Escolha uma raça:")
+      arg0.txtmais.addini(txtmaimin(lin) + " inválida; escolha uma:")
     senao
-      arg0.txtmais.addini("Escolha uma sub-raça:")
+      arg0.txtmais.addini("Escolha uma " + lin + ":")
     fimse
     arg0.txtmostra
-    ret 1
+    ret 0
+  fimse
 
-
-classe adm_raca3
-herda comando_comum
-# Mostra informações da raça e pede confirmação
-
-func passo
-  arg0.passo = este
-  se arg1 == "S"
-    arg0.tpasso = txt(arg0.tpasso, 5)
-    ret $adm_raca2.passo(arg0)
-  senao arg1 == "N"
-    arg0.tpasso = txts([arg0.tpasso]:menu)
-    ret $adm_raca2.passo(arg0)
-  senao
-    arg0.msg("Você quer essa raça? (tecle S ou N)")
-    ret 1
-
-
-classe adm_classe1
-herda comando_comum
-# Começa a escolha da raça
-
-func passo
-  arg0.tpasso = "classe"
-  ret $adm_classe2.passo(arg0)
-
-
-classe adm_classe2
-herda comando_comum
-# Escolhe a classe
-
-func passo
-  txt100 lin
-  prog p
-  refvar tpasso = arg0.tpasso
-# Obtém a lista de classes e checa se escolheu uma classe
-  arg0.txtmais.limpar
-  epara p.iniclasse("tipo_"), p.lin, p.depois
-    continuar txts([p.texto]:menu) != tpasso
-    se [p.texto]:racas
-      se txtproc("\n" + txts([p.texto]:racas) + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
-        continuar
-      fimse
-    fimse
-    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + [p.texto]:nome)
-    lin = p.texto
-    continuar txt(arg1) != txt(arg0.txtmais.linhas)
-    arg0.txtmais.limpar
-    tpasso = p.texto
-    msg2([tpasso]:desc ? [tpasso]:desc : [tpasso]:nome)
-    ret $adm_classe3.passo(arg0)
-  efim
-# Somente uma classe para escolher: escolhe automaticamente
-  se arg0.txtmais.linhas == 1
-    arg0.txtmais.limpar
-    arg0.var.j_tipo2 = txt(lin, 5)
-    ret $adm_entrajogo.passo(arg0)
-# Nenhuma classe para escolher: passa para o próximo menu
-  senao arg0.txtmais.linhas == 0
-    arg0.txtmais.limpar
-    tpasso != "classe" && (arg0.var.j_tipo2 = tpasso)
-    ret $adm_entrajogo.passo(arg0)
-# Mais de uma classe: apresenta o menu
-  senao
-    arg0.passo = este
-    se arg1
-      arg0.txtmais.addini("Classe inválida; escolha uma:")
-    senao tpasso == "classe"
-      arg0.txtmais.addini("Escolha uma classe:")
-    senao
-      arg0.txtmais.addini("Escolha uma sub-classe:")
-    fimse
-    arg0.txtmostra
-    ret 1
-
-
-classe adm_classe3
-herda comando_comum
-# Mostra informações da classe e pede confirmação
-
-func passo
-  arg0.passo = este
-  se arg1 == "S"
-    arg0.tpasso = txt(arg0.tpasso, 5)
-    ret $adm_classe2.passo(arg0)
-  senao arg1 == "N"
-    arg0.tpasso = txts([arg0.tpasso]:menu)
-    ret $adm_classe2.passo(arg0)
-  senao
-    arg0.msg("Você quer essa classe? (tecle S ou N)")
-    ret 1
+func escolheu # Jogador fez a escolha
+# arg0 = personagem
+# txt1(arg0.tpasso) = 1 se raça, 2 se classe, 3 se subclasse
+# txt2(arg0.tpasso) = nome da classe t_ alguma coisa
+# Retorna 1 se deve fazer mais uma escolha: se txt1(arg0.tpasso)<=3
+  arg0.var.j_tipo[txt1(arg0.tpasso)] = txt(txt2(arg0.tpasso), 2)
+  arg0.tpasso = int(arg0.tpasso) + 1
+  ret arg0.tpasso <= 3, 1
+  $adm_entrajogo.passo(arg0)
+  ret 0
 
 
 classe adm_entrajogo
@@ -553,7 +494,8 @@ func passo
   arg0.passo = ""
   arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
   arg0.msg("Iniciando jogo; para ajuda tecle AJUDA")
-  arg0.var.j_inivar = txt(tipo_[arg0.var.j_tipo1]:inivar) + "," + tipo_[arg0.var.j_tipo2]:inivar
+  arg0.var.j_inivar = txt(t_[arg0.var.j_tipo1]:inivar) + "," + t_[arg0.var.j_tipo2]:inivar
+  arg0.var.j_inivar += "," + t_[arg0.var.j_tipo3]:inivar
   arg0.mudaperso(criar("jogador", nulo, 0, arg0.var.j_inivar))
   arg0.perso.cnome = "pn " + txt2(arg0.cnome)
   arg0.perso.nome = arg0.nome
@@ -562,6 +504,7 @@ func passo
   arg0.perso.senha = arg0.var.j_senha
   arg0.perso.tipo1 = arg0.var.j_tipo1
   arg0.perso.tipo2 = arg0.var.j_tipo2
+  arg0.perso.tipo3 = arg0.var.j_tipo3
   arg0.perso.var.z_email = arg0.var.j_email
   arg0.var.limpar("j_")
   arg0.perso.mudadono(config:salaini)

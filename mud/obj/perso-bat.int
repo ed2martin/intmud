@@ -88,18 +88,21 @@ func acertapos # Acerta posição
 func recalc_exec # Ajusta variáveis, principalmente batalha
 # Checa subida de nível
   se expatual >= expmax
+    refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))
     int8 num
-    enquanto expatual >= expmax
+    enquanto expatual >= expmax && (nmax <= 0 || pnivel < nmax)
       expatual -= expmax
       pnivel += 1
       var.z_aulas_ += config:aulas
       num += 1
       num >= 5 && (expatual = 0)
     efim
-    $mens.o_1 = txtcopiamai(descnome, "A") + (este != contr ? " de " + contr.descnome)
-    $mens.mens = pnivel
-    $mens.p(este)
-    $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
+    se num
+      $mens.o_1 = txtcopiamai(descnome, "A") + (este != contr ? " de " + contr.descnome)
+      $mens.mens = pnivel
+      $mens.p(este)
+      $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
+    fimse
   fimse
 # Acerta atributos básicos
   bitver = 17, bitinv = 3, atribs.limpar
@@ -108,8 +111,8 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   deftipo.limpar(1)
 # Acerta atributos conforme o tipo de personagem
   config:atribcfg, recalc_auto
-  tipo_[tipo1]:recalc_auto, tipo_[tipo2]:recalc_auto, tipo_[tipo3]:recalc_auto
-  tipo_[tipo1]:recalc, tipo_[tipo2]:recalc, tipo_[tipo3]:recalc
+  t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto
+  t_[tipo1]:recalc, t_[tipo2]:recalc, t_[tipo3]:recalc
   cmd_recalc1(este)
 # Bônus conforme o que está vestindo e os efeitos
   listaitem i
@@ -222,13 +225,14 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   ref r
 # Remove da lista os personagens desmaiados (não ganharão experiência)
 # Limpa variáveis atkdanos1 e atkdanos2 do líder do grupo
+# atkdanos2=1 para a soma das experiências ganhas ser maior se atacar em equipe
   epara i = contr.atkrec.ini, i, i.obj.atkdiv ? i.depois : i.removedepois
     r = i.obj
     listaitem j
     epara j = r.atkdiv, j, j.obj.pvida ? j.depois : j.removedepois
     efim
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
-    r.atkdanos1 = r.atkdanos2 = 0
+    r.atkdanos1 = 0, r.atkdanos2 = 1
   efim
 # Preenche variáveis do líder do grupo:
 # atkdanos1=quantos danos o grupo causou, atkdanos2=quantidade de personagens
@@ -279,7 +283,8 @@ func ganhaexp # Personagem ganha experiência
     fimse
   fimse
 # Subir de nível
-  expatual >= expmax && (recalc = 1)
+  refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))
+  expatual >= expmax && (nmax <= 0 || pnivel < nmax) && (recalc = 1)
 
 func atkauto # Realiza um ataque automático
 # arg0 = alvo do ataque

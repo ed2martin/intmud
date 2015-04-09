@@ -335,11 +335,11 @@ func descpos
 func equippos # Retorna as posições aonde pode usar equipamentos
   txt100 lin
   int32 pos
-  lin = "tipo_" + tipo1
+  lin = "t_" + tipo1
   pos = (([lin]:equip1 ? [lin]:equip1 : -1) | [lin]:equip2) & ~[lin]:equip3
-  lin = "tipo_" + tipo2
+  lin = "t_" + tipo2
   pos = (([lin]:equip1 ? [lin]:equip1 : pos) | [lin]:equip2) & ~[lin]:equip3
-  lin = "tipo_" + tipo3
+  lin = "t_" + tipo3
   pos = (([lin]:equip1 ? [lin]:equip1 : pos) | [lin]:equip2) & ~[lin]:equip3
   ret ((equip1 ? equip1 : pos) | equip2) & ~equip3
 

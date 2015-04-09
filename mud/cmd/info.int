@@ -15,8 +15,9 @@ func escr
     continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
     refvar obj = item.obj
     total.[obj.jogconfig.14] += 1
-    t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " N"
-    t1 += txt(txt(obj.pnivel) + "      ", 0, 6) + obj.nome
+    t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " N" + obj.pnivel
+    obj.var.z_reviver && (t1 += " R" + obj.var.z_reviver)
+    t1 += txtesp(16 - inttotal(t1)) + " " + obj.nome
     obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     obj.sock == nulo && (t1 += "  [Desconectado]")
     se arg0.jogconfig.23
@@ -337,7 +338,9 @@ func vidalin
   lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
   lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
   lin += "  Nível " + arg0.pnivel
-  lin += "  Experiência " + arg0.expatual + "/" + arg0.expmax
+  lin += "  Experiência " + arg0.expatual
+  refvar nmax = int(intmax(t_[arg0.tipo1]:nmax, t_[arg0.tipo2]:nmax, t_[arg0.tipo3]:nmax))
+  (nmax <= 0 || arg0.pnivel < nmax) && (lin += "/" + arg0.expmax)
   ret lin
 
 
@@ -546,9 +549,13 @@ func escr
 # Moedas e pontos de aulas
   r.var.z_moedas_ && t.addfim("Moedas:           " + txtnum(r.var.z_moedas_, "."))
   r.var.z_aulas_ && t.addfim("Aulas:            " + txtnum(r.var.z_aulas_, "."))
-# Nível
+# Nível e experiência
   t.addfim("Nível:            " + r.pnivel)
-  t.addfim("Experiência:      " + r.expatual + "/" + r.expmax)
+  se 1
+    refvar nmax = int(intmax(t_[r.tipo1]:nmax, t_[r.tipo2]:nmax, t_[r.tipo3]:nmax))
+    t1 = nmax > 0 && r.pnivel >= nmax ? "" : "/" + r.expmax
+    t.addfim("Experiência:      " + r.expatual + t1)
+  fimse
 # Batalha
   t1 = "Ataque/defesa:    " + int(r.atknorm * r.atktipo.0) + "/"
   se !r.deftipo.0

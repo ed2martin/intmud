@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 338, nulo
-  p.criar("config", "const versao = 338 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 341, nulo
+  p.criar("config", "const versao = 341 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -408,6 +408,19 @@ casa está atrasada.\"")
       t.salvar("sav2/" + dir.texto)
       debug d
       d.ini
+    efim
+  fimse
+# Tipos (raças e classes)
+  se versao < 341
+    epara p.iniclasse("tipo_"), p.lin, p.depois
+      se [p.texto]:menu == "raça"
+        p.criar(p.texto, "const menu=1")
+      senao [p.texto]:menu == "classe"
+        p.criar(p.texto, "const menu=2")
+      senao
+        p.apagar(p.texto, "menu")
+      fimse
+      p.renomear(p.texto, "t_" + txt(p.texto, 5))
     efim
   fimse
 # Avisa que atualizou arquivos
