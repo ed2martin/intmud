@@ -196,7 +196,8 @@ Veja o comando RESGATAR."
 
 classe cmd_jog
 const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Outros comandos para jogadores\b\n\
+const txtajuda = txtajuda1 + (config:renascer ? txtajuda2) + txtajuda3
+const txtajuda1 = "\b\c3Outros comandos para jogadores\b\n\
   \c2CONFIG\b    Opções de configuração\n\
   \c2PROMPT\b    Mensagens do prompt\n\
   \c2CORES\b     Cores no prompt\n\
@@ -204,9 +205,9 @@ const txtajuda = "\b\c3Outros comandos para jogadores\b\n\
   \c2SALVAR\b    Salva o seu personagem\n\
   \c2SENHA\b     Muda a senha do seu personagem\n\
   \c2FIM\b       Sai do MUD, retirando também o seu personagem\n\
-  \c2AUTOAPAGAR\b  Apaga o seu personagem definitivamente\n\
-  \c2REVIVER\b   Seu personagem renasce, após atingir o nível máximo\n\
-  \c2PTITULO\b   Muda o título do seu personagem, mostrado no comando QUEM\n\
+  \c2AUTOAPAGAR\b  Apaga o seu personagem definitivamente\n"
+const txtajuda2 = "  \c2RENASCER\b  Seu personagem renasce, após atingir o nível máximo\n"
+const txtajuda3 = "  \c2PTITULO\b   Muda o título do seu personagem, mostrado no comando QUEM\n\
   \c2PDESC\b     Muda a descrição do seu personagem, mostrada no comando OLHAR\n\
   \c2STITULO\b   Muda o título da sala, desde que você esteja na sua casa\n\
   \c2SDESC\b     Muda a descrição da sala, desde que você esteja na sua casa"

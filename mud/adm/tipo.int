@@ -217,19 +217,29 @@ const clas12 = var.classe1
 const vari12 = "equip3"
 const extr12 = config:equip_txt
 #
-const nome13 = "Nível para reviver"
-const info13 = "Se houverem níveis diferentes na raça, classe e subclasse,\n\
-é considerado somente o maior. Se o resultado for 0, não revive."
+const nome13 = "Nível mínimo"
+const info13 = "Quando o personagem do jogador é criado ou renasce, ele vai para esse\n\
+nível. Se houverem níveis diferentes na raça, classe e subclasse, é\n\
+considerado somente o maior."
 const tipo13 = "opc_numero"
 const clas13 = var.classe1
-const vari13 = "nmax"
+const vari13 = "nmin"
 const extr13 = "0 65535"
 #
-const nome14 = "Evolui para"
-const tipo14 = "opc_tipos"
-const info14 = "Os novos tipos que o personagem pode escolher no comando reviver"
+const nome14 = "Nível máximo"
+const info14 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
+renascer. Se houverem níveis diferentes na raça, classe e subclasse,\n\
+é considerado somente o maior. Se os três forem 0, não renasce."
+const tipo14 = "opc_numero"
 const clas14 = var.classe1
-const vari14 = "evoluir"
+const vari14 = "nmax"
+const extr14 = "0 65535"
+#
+const nome15 = "Evolui para"
+const tipo15 = "opc_tipos"
+const info15 = "Os novos tipos que o personagem pode escolher no comando renascer"
+const clas15 = var.classe1
+const vari15 = "evoluir"
 #
 const nome50 = "Variáveis"
 const info50 = "Só tem efeito em jogadores"
@@ -242,7 +252,7 @@ classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome menu desc racas classes equip1 equip2 equip3\n\
-nmax evoluir inivar"
+nmin nmax evoluir inivar"
 const iniclasse = !$[arg0] && criar(arg0)
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado

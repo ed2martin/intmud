@@ -12,7 +12,7 @@ func escr # Ir para uma sala específica
   indiceitem item
 # Transportar um jogador para uma sala
   se txt2(arg1)
-    item.ini("pn " + txtnome(txt1(arg1)))
+    item.ini("pn " + txts(txtnome(txt1(arg1))))
     p = item.obj, s = $s_[txt2(arg1)]
     se !p
       arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
@@ -28,7 +28,7 @@ func escr # Ir para uma sala específica
     se !p
       arg0.msg("Você deve estar controlando um personagem para isso")
     senao !s
-      item.ini("pn " + txtnome(arg1))
+      item.ini("pn " + txts(txtnome(arg1)))
       s = item.obj.dono
       !s && arg0.msg("\bSala ou jogador não existe: " + arg1)
     fimse

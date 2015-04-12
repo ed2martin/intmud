@@ -1,30 +1,42 @@
-classe cmd_reviver
+classe cmd_renascer
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Reviver\b\n\
-Sintaxe: REVIVER\n\
+const objcmd = config:renascer ? este
+const txtajuda = config:renascer ? txtajuda1
+const txtajuda1 = "\b\c3Renascer\b\n\
+Sintaxe: RENASCER\n\
 Após atingir o nível máximo para a raça e a classe que você escolheu,\n\
-você pode usar esse comando para escolher outra raça e/ou classe."
+você pode usar esse comando para renascer em outra raça e/ou classe."
 
 func escr
   refvar nmax = int(intmax(t_[arg0.tipo1]:nmax, t_[arg0.tipo2]:nmax, t_[arg0.tipo3]:nmax))
   se nmax <= 0
-    ret arg0.msg("Na raça e classe que você escolheu não é permitido reviver.")
+    ret arg0.msg("Na raça e classe que você escolheu não tem como renascer.")
   senao arg0.pnivel < nmax
-    ret arg0.msg("Você precisa chegar no nível " + nmax + " para reviver.")
+    ret arg0.msg("Você precisa chegar no nível " + nmax + " para renascer.")
   senao
     arg0.sock.tpasso = "1"
     passo(arg0.sock, "")
   fimse
 
 func passo
+# Cancelar
+  se arg1 == "Z"
+    arg0.passo = ""
+    arg0.var.limpar("j_")
+    arg0.msg("Desistiu")
+    ret 1
+  fimse
+# Chama passo1
   arg0.passo = este
-  ret !passo1(arg0, arg1), 1
-  enquanto passo1(arg0, "")
+  ret arg0.tpasso < 4 ? !passo1(arg0, arg1) : !passo4(arg0, arg1), 1
+  enquanto arg0.tpasso < 4 ? passo1(arg0, "") : passo4(arg0, "")
   efim
   ret 1
 
-func passo1
+func passo1 # Escolha da raça, classe e subclasse
+# arg0 = objeto jogsock
+# arg1 = o que digitou
   txt100 lin
   prog p
   refvar tpasso = arg0.tpasso
@@ -40,13 +52,6 @@ func passo1
       arg0.msg("Você quer essa " + lin + "? (tecle S ou N)")
       ret 0
     fimse
-  fimse
-# Cancelar
-  se arg1 == "Z"
-    arg0.passo = ""
-    arg0.var.limpar("j_")
-    arg0.msg("Desistiu")
-    ret 0
   fimse
 # Obtém a lista de raças/classes/subclasses e checa se escolheu alguma
   arg0.txtmais.limpar
@@ -114,17 +119,74 @@ func escolheu # Jogador fez a escolha
 # Retorna 1 se deve fazer mais uma escolha: se txt1(arg0.tpasso)<=3
   arg0.var.j_tipo[txt1(arg0.tpasso)] = txt(txt2(arg0.tpasso), 2)
   arg0.tpasso = int(arg0.tpasso) + 1
-  ret arg0.tpasso <= 3, 1
+  ret 1
+
+func passo4 # Escolha de uma habilidade ou magia
+# arg0 = objeto jogsock
+# arg1 = o que digitou
+  ret config:renascer < 2, renascer(arg0)
+  ret !arg0.perso.var.ini("h_") && !arg0.perso.var.ini("m_"), renascer(arg0)
+  refvar tpasso = arg0.tpasso
+# Pede a habilidade ou magia
+  se txt2(tpasso) == ""
+    refvar var = arg0.perso.var
+    se arg1 == ""
+      arg0.msg("Qual a habilidade ou magia você deseja manter após reviver? Z desiste")
+    senao var.h_[arg1]
+      tpasso += " " + var.nomevar("h_" + arg1)
+      arg0.msg("Você quer a habilidade " + txte(txt(tpasso, 4)) + "? (Tecle S ou N)")
+    senao var.m_[arg1]
+      tpasso += " " + var.nomevar("m_" + arg1)
+      arg0.msg("Você quer a magia " + txte(txt(tpasso, 4)) + "? (Tecle S ou N)")
+    senao
+      txt100 t1
+      nomeobj n
+      n.ini(arg1)
+      epara t1 = var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = var.depois(t1)
+        continuar !n.nome(txt(t1, 2))
+        tpasso += " " + t1
+        arg0.msg("Você quer a habilidade " + txt2(txte(t1)) + "? (Tecle S ou N)")
+        ret 0
+      efim
+      epara t1 = var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = var.depois(t1)
+        continuar !n.nome(txt(t1, 2))
+        tpasso += " " + t1
+        arg0.msg("Você quer a magia " + txt2(txte(t1)) + "? (Tecle S ou N)")
+        ret 0
+      efim
+      arg0.msg("Você não possui " + arg1 + ", escolha outra")
+    fimse
+    ret 0
+# Confirma
+  senao arg1 == "S"
+    refvar valor = txt(arg0.perso.var.valor(txt2(tpasso, 2)))
+    arg0.perso.var.limpar("h_")
+    arg0.perso.var.limpar("m_")
+    arg0.perso.var.[txt2(tpasso)] = valor
+    ret renascer(arg0)
+  senao arg1 == "N"
+    tpasso = txt1(tpasso)
+    ret 1
+  senao txt(tpasso, 2, 1) == "h"
+    arg0.msg("Você quer a habilidade " + txt(tpasso, 4) + "? (Tecle S ou N)")
+  senao
+    arg0.msg("Você quer a magia " + txt(tpasso, 4) + "? (Tecle S ou N)")
+  fimse
+  ret 0
+
+func renascer
+# arg0 = objeto jogsock
   arg0.passo = ""
   arg0.perso.tipo1 = arg0.var.j_tipo1
   arg0.perso.tipo2 = arg0.var.j_tipo2
   arg0.perso.tipo3 = arg0.var.j_tipo3
-  arg0.perso.pnivel = 1
+  arg0.perso.pnivel = intmax(t_[arg0.var.j_tipo1]:nmin, t_[arg0.var.j_tipo2]:nmin, t_[arg0.var.j_\
+tipo3]:nmin)
   arg0.perso.expatual = 0
   arg0.perso.recalc = 1
-  arg0.perso.var.z_reviver_ += 1
+  arg0.perso.var.z_renascer_ += 1
   arg0.var.limpar("j_")
-  arg0.msg("Você reviveu para o nível 1.")
+  arg0.msg("Você renasceu no nível " + arg0.perso.pnivel + ".")
   listaobj l
   epara l.addfim(arg0.perso.dentro2), l, l.ini.remove
     l.objini.item && l.objini.pnivel > 1 && l.objini.vestir(0)

@@ -24,7 +24,7 @@ func escr
     ret arg0.msg("Digite CMDJ seguido do nome do personagem jogador e o comando")
   fimse
   indiceitem item
-  item.ini("pn " + txtnome(txt1(arg1)))
+  item.ini("pn " + txts(txtnome(txt1(arg1))))
   se !item.obj
     ret arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
   senao txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)

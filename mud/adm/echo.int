@@ -45,7 +45,7 @@ func escr
     ret arg0.msg("Digite JECHO seguido do nome do personagem jogador e a mensagem")
   fimse
   indiceitem item
-  item.ini("pn " + txtnome(txt1(arg1)))
+  item.ini("pn " + txts(txtnome(txt1(arg1))))
   ret !item.obj, arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
   $misclog.rezou("jecho " + arg0.nome + ": " + arg1)
   $mens.p(arg0, item.obj)

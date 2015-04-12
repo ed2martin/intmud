@@ -172,8 +172,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 341, nulo
-  p.criar("config", "const versao = 341 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 342, nulo
+  p.criar("config", "const versao = 342 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -422,6 +422,10 @@ casa está atrasada.\"")
       fimse
       p.renomear(p.texto, "t_" + txt(p.texto, 5))
     efim
+  fimse
+# Renascer
+  se versao < 342
+    criafunc("config", "const renascer = 2")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

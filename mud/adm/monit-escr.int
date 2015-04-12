@@ -11,7 +11,7 @@ O comando QUEM também mostra aos administradores quem está monitorando."
 func escr
   indiceitem item
   ref r
-  r = item.obj("pn " + txtnome(arg1))
+  r = item.obj("pn " + txts(txtnome(arg1)))
   refvar imonit = arg0.sock.imonit
   se !arg1 || r == arg0
     se imonit

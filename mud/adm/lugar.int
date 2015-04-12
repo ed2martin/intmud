@@ -16,7 +16,7 @@ func escr
     ret arg0.msg("Sintaxe: LUGAR <sala ou jogador> <comando>")
   senao !(sala = $s_[txt1(arg1)])
     indiceitem item
-    item.ini("pn " + txtnome(txt1(arg1)))
+    item.ini("pn " + txts(txtnome(txt1(arg1))))
     sala = item.obj.dono
   fimse
   ret !sala, arg0.msg("\bSala ou jogador não existe: " + txt1(arg1))

@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 341 # Para atualizar diretórios areas e config
+const versao = 342 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -355,6 +355,9 @@ const matartipo = 1 # Comando Matar: 1 Habilitado
 # Diferença máxima de nível entre os personagens de um grupo
 const gruponivel = 10
 #
+# Comando renascer: 0=não existe, 1=não perde hab/magias, 2=escolhe uma hab/magia
+const renascer = 2
+#
 # Se não administradores podem saber quem é administrador teclando QUEM
 # 0=não, 1=sim
 const mostraadm = 0 # Comando quem mostra admin: Não
@@ -575,3 +578,4 @@ func salvar # Salva o programa
 func sav # Para salvar acertando indentação e linhas entre classes e funções
   prog p
   p.salvartudo("L99N1I2C2F1V0")
+
