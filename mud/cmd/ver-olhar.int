@@ -118,8 +118,9 @@ func escr
         t2 += ".\b\nEscolheu " + txtcopiamai(r.persobat.nome, "A")
         t2 += niveltipo(r.persobat) + ", " + estado(r.persobat)
       fimse
-    senao r.pnivel
+    senao r.pnivel || r.renascer
       t2 += " é um objeto do nível " + r.pnivel
+      r.renascer && (t2 += ", R" + r.renascer)
     fimse
 # Luz
     se int(r.luztempo.abs) >= 25
@@ -161,7 +162,7 @@ func estado # Retorna texto que contém o estado atual do personagem
   ret !arg0.pvidamax, "perfeitamente saudável"
   casovar intdiv(arg0.pvida * 6 / arg0.pvidamax)
   casose "0"
-    ret arg0.pvida ? "está à beira da morte" : "está demaiad" + (arg0.msexo ? "o" : "a")
+    ret arg0.pvida ? "está à beira da morte" : "está desmaiad" + (arg0.msexo ? "o" : "a")
   casose "1"
     ret "está sangrando bastante"
   casose "2"
@@ -187,7 +188,10 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
     arg0.tipo2 && (t += " " + txtcopiamai(txte(arg0.tipo2), "A"))
     arg0.tipo3 && (t += " " + txtcopiamai(txte(arg0.tipo3), "A"))
   fimse
-  config:olharnivel && (t += " nível " + arg0.pnivel)
+  se config:olharnivel && (arg0.pnivel || arg0.renascer)
+    t += " nível " + arg0.pnivel
+    arg0.prenascer && (t += " R" + arg0.prenascer)
+  fimse
   ret t ? txt(arg1) + t + arg2 : ""
 
 

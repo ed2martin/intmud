@@ -2,11 +2,37 @@ classe cmd_renascer
 herda comando_comum
 const posic = 5
 const objcmd = config:renascer ? este
-const txtajuda = config:renascer ? txtajuda1
-const txtajuda1 = "\b\c3Renascer\b\n\
+
+func txtajuda
+  ret !config:renascer, nulo
+  se config:renascer < 2
+    ret ajini
+  senao config:nrenascer > 0
+    ret ajini + aj[config:renascer] + aj_c + ajmenos + config:nrenascer + "."
+  senao config:nrenascer < 0
+    ret ajini + aj[config:renascer] + aj_c + ajmais + -config:nrenascer + "."
+  senao
+    ret ajini + aj[config:renascer] + aj_c
+  fimse
+
+const ajini = "\b\c3Renascer\b\n\
 Sintaxe: RENASCER\n\
-Após atingir o nível máximo para a raça e a classe que você escolheu,\n\
-você pode usar esse comando para renascer em outra raça e/ou classe."
+Assim que o seu personagem atingir o nível máximo, você poderá usar\n\
+usar esse comando para renascer em outra raça e/ou classe.\n\
+O nível máximo depende muito da raça e da classe."
+const aj2 = "\nVocê perde todas as habilidades e magias, mas poderá escolher qual\n\
+não perderá nas próximas vezes que renascer."
+const aj3 = aj_a + "duas" + aj_b
+const aj4 = aj_a + "três" + aj_b
+const aj5 = aj_a + "quatro" + aj_b
+const aj6 = aj_a + "cinco" + aj_b
+const aj_a = "\nVocê perde todas as habilidades e magias, mas poderá escolher "
+const aj_b = " que\nnão perderá nas próximas vezes que renascer. Pode repetir."
+const aj_c = "\nNos comandos hab e magia, aparecerá R1, para indicar que foi escolhida\n\
+uma vez, e renascer fará voltar ao nível iniciante. Na segunda vez, R2,\n\
+e voltará para muito básico, e na terceira em diante, nível básico."
+const ajmenos = "\nE também, cada vez que é escolhida, o nível para aprender diminui em "
+const ajmais = "\nE também, cada vez que é escolhida, o nível para aprender aumenta em "
 
 func escr
   refvar nmax = int(intmax(t_[arg0.tipo1]:nmax, t_[arg0.tipo2]:nmax, t_[arg0.tipo3]:nmax))
@@ -131,7 +157,23 @@ func passo4 # Escolha de uma habilidade ou magia
   se txt2(tpasso) == ""
     refvar var = arg0.perso.var
     se arg1 == ""
-      arg0.msg("Qual a habilidade ou magia você deseja manter após reviver? Z desiste")
+      casovar txt1(tpasso)
+      casose
+        arg0.msg("Qual a habilidade ou magia você deseja manter após renascer? Z desiste")
+        ret 0
+      casose "5"
+        arg0.msg("Qual a segunda habilidade ou magia? Z desiste")
+        ret 0
+      casose "6"
+        arg0.msg("Qual a terceira habilidade ou magia? Z desiste")
+        ret 0
+      casose "7"
+        arg0.msg("Qual a quarta habilidade ou magia? Z desiste")
+        ret 0
+      casose "8"
+        arg0.msg("Qual a quinta habilidade ou magia? Z desiste")
+        ret 0
+      casofim
     senao var.h_[arg1]
       tpasso += " " + var.nomevar("h_" + arg1)
       arg0.msg("Você quer a habilidade " + txte(txt(tpasso, 4)) + "? (Tecle S ou N)")
@@ -159,10 +201,28 @@ func passo4 # Escolha de uma habilidade ou magia
     ret 0
 # Confirma
   senao arg1 == "S"
-    refvar valor = txt(arg0.perso.var.valor(txt2(tpasso, 2)))
-    arg0.perso.var.limpar("h_")
-    arg0.perso.var.limpar("m_")
-    arg0.perso.var.[txt2(tpasso)] = valor
+    arg0.var.j_hab[txt1(tpasso)] = txt2(tpasso)
+    arg0.tpasso = int(arg0.tpasso) + 1
+    ret int(tpasso) < config:renascer + 3, 1
+    refvar v = arg0.perso.var
+    txt100 lin
+    lin = arg0.var.j_hab4, v.[lin] = txt1(v.[lin]) + " " + (1 + txt2(v.[lin]))
+    lin = arg0.var.j_hab5, v.[lin] = txt1(v.[lin]) + " " + (1 + txt2(v.[lin]))
+    lin = arg0.var.j_hab6, v.[lin] = txt1(v.[lin]) + " " + (1 + txt2(v.[lin]))
+    lin = arg0.var.j_hab7, v.[lin] = txt1(v.[lin]) + " " + (1 + txt2(v.[lin]))
+    lin = arg0.var.j_hab8, v.[lin] = txt1(v.[lin]) + " " + (1 + txt2(v.[lin]))
+    debug d
+    d.ini
+    epara lin = v.ini("h_"), txt(lin, 0, 2) == "h_", lin = v.depois(lin)
+      refvar t = v.[lin]
+      t = txt2(t) ? intmin("3", txt1(t), txt2(t)) + " " + txt2(t) : ""
+    efim
+    d.ini
+    epara lin = v.ini("m_"), txt(lin, 0, 2) == "m_", lin = v.depois(lin)
+      refvar t = v.[lin]
+      t = txt2(t) ? intmin("3", txt1(t), txt2(t)) + " " + txt2(t) : ""
+    efim
+    d.ini
     ret renascer(arg0)
   senao arg1 == "N"
     tpasso = txt1(tpasso)
@@ -184,11 +244,16 @@ func renascer
 tipo3]:nmin)
   arg0.perso.expatual = 0
   arg0.perso.recalc = 1
-  arg0.perso.var.z_renascer_ += 1
+  arg0.perso.prenascer += 1
   arg0.var.limpar("j_")
   arg0.msg("Você renasceu no nível " + arg0.perso.pnivel + ".")
   listaobj l
   epara l.addfim(arg0.perso.dentro2), l, l.ini.remove
-    l.objini.item && l.objini.pnivel > 1 && l.objini.vestir(0)
+    l.objini.item && l.objini.pnivel > arg0.perso.pnivel && l.objini.vestir(0)
   efim
+  arg0.perso.recalc_exec
+  arg0.perso.recalc = 0
+  arg0.perso.pvida = arg0.perso.pvidamax
+  arg0.perso.pmana = arg0.perso.pmanamax
+  arg0.perso.pmove = arg0.perso.pmovemax
   ret 0

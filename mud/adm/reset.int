@@ -6,9 +6,9 @@ herda comando_adm, comando_comum
 # Uma linha por comando, entre:
 # P <porcentagem> <personagem> <nível min> <nível max> <limite> [variáveis]
 # A <porcentagem> <personagem> <nível min> <nível max> [variáveis]
-# I <porcentagem> <item> <nível ou quantidade> [variáveis]
-# E <porcentagem> <item> <nível ou quantidade> <lugar> [variáveis]
-# S <porcentagem> <item> <nível ou quantidade> <destino ou s se sala> [variáveis]
+# I <porcentagem> <item> <quantidade> [variáveis]
+# E <porcentagem> <item> <quantidade> <lugar> [variáveis]
+# S <porcentagem> <item> <quantidade> <destino ou s se sala> [variáveis]
 # R <porcentagem> <item>
 # D <porcentagem> <direção> <novo estado>
 # F <porcentagem>
@@ -478,14 +478,9 @@ func passo # Dar item
       senao
         arg0.msg("Entre com a quantidade de 1 a 255, Z cancela")
       fimse
-    senao
-      se txt(x) == arg1
-        arg0.var.opclin += " " + x, $adm_resetI.passo(arg0, "")
-      senao
-        arg0.msg("Entre com o nível, 0=manter, Z cancela")
-      fimse
+      ret 1
     fimse
-    ret 1
+    arg0.var.opclin += " 1"
   casose "5" # Variáveis
     ret $adm_resetVar.passo(arg0, arg1)
   casofim
@@ -513,13 +508,8 @@ func passo # Equipar personagem
       $adm_resetE.passo(arg0, "")
     fimse
     ret 1
-  casose "4" # Nível
-    se txt(x) == arg1
-      arg0.var.opclin += " " + x, $adm_resetE.passo(arg0, "")
-    senao
-      arg0.msg("Entre com o nível, 0=manter, Z cancela")
-    fimse
-    ret 1
+  casose "4" # Quantidade; não usado
+    arg0.var.opclin += " 1"
   casose "5" # Lugar
     refvar total = intsublin(config:equip_txt)
     se arg1 == txt(x) && x <= total
@@ -562,21 +552,16 @@ func passo # Criar item na sala ou em outro item
       arg0.var.opclin += " " + txts(arg1), $adm_resetS.passo(arg0, "")
     fimse
     ret 1
-  casose "4" # Nível ou quantidade
+  casose "4" # Quantidade
     se i_[txtsub(arg0.var.opclin, 3, 1)]:item == 2 # Quantidade
       se txt(x) == arg1 && x >= 1 && x <= 255
         arg0.var.opclin += " " + x, passo(arg0, "")
       senao
         arg0.msg("Entre com a quantidade de 1 a 255, Z cancela")
       fimse
-    senao
-      se txt(x) == arg1
-        arg0.var.opclin += " " + x, passo(arg0, "")
-      senao
-        arg0.msg("Entre com o nível, 0=manter, Z cancela")
-      fimse
+      ret 1
     fimse
-    ret 1
+    arg0.var.opclin += " 1"
   casose "5" # Destino ou s se sala
     prog p
     se arg1 == ""
@@ -870,20 +855,20 @@ func linha # Obtém um texto a partir de uma linha do reset
   casose "I" # Dar item: <item> <nível> <variáveis>
     lin += "Dar item   "
     lin += txt(l.2 + "(" + i_[l.2]:nome, 0, 30) + ")"
-    lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "N" + l.3)
+    lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "1x")
     l.4 && (lin += "  Var " + l.4)
     ret lin
   casose "E" # Equipar: <item> <nível> <lugar> <variáveis>
     lin += "Equipar    "
     lin += txt(l.2 + "(" + i_[l.2]:nome, 0, 30) + ")"
-    lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "N" + l.3)
+    lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "1x")
     lin += l.4 == "0" ? "  empunhando" : "  " + misc:equip(l.4)
     l.5 && (lin += "  Var " + l.5)
     ret lin
   casose "S" # Item: <item> <nível> <destino ou s se sala> <variáveis>
     lin += "Item       "
     lin += txt(l.2 + "(" + i_[l.2]:nome, 0, 30) + ")"
-    lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "N" + l.3)
+    lin += "  " + (i_[l.2]:item == 2 ? l.3 + "x" : "1x")
     se l.4 == "s"
       lin += "  Nessa sala"
     senao

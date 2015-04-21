@@ -1,15 +1,12 @@
 Itens (arquivo obj/item.int)
 
 Para criar um item
-Itens que podem ser agrupados:
-criar("nome da classe", aonde está, quantidade de itens)
-Se a quantidade for omitida ou for menor que 1, será 1.
-
-Outros itens:
-criar("nome da classe", aonde está, nível do item, "variáveis")
-Se o nível for omitido, será 0.
-Variáveis é um texto do tipo "variável=valor". Quando houver mais de uma
-variável, separar por vírgula (exemplo, "v1=10,v2=20").
+criar("nome da classe", aonde está, quantidade de itens, "variáveis")
+Em itens que agrupam: se a quantidade for omitida ou for menor que 1, será 1.
+Em itens que não agrupam: a quantidade é ignorada.
+Variáveis só têm sentido em itens que não agrupam. É um texto do tipo
+"variável=valor". Quando houver mais de uma variável, separar por vírgula
+(exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do item.
 
 const item = 1

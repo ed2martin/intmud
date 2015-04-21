@@ -365,6 +365,11 @@ func morreu # Procedimentos quando morre
   ref r
   r = sock, r.mudaperso(nulo), r.reinicia
   p_corpo && criar("comum_corpo", este, p_corpo == 2)
+# Apaga efeitos
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    i.obj.e_condicao && apagar(i.obj)
+  efim
 # Gera eventos
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_morreu(este, arg0)

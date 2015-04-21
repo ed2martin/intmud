@@ -147,6 +147,7 @@ func escr
 # Mostra os dados do personagem
   txt100 lin
   lin = p.nome + ", nível " + p.pnivel
+  p.prenascer && (lin += ", R" + p.prenascer)
   p.var.z_moedas_ == 1 && (lin += ", uma moeda")
   p.var.z_moedas_ == 2 && (lin += ", duas moedas")
   p.var.z_moedas_ > 2 && (lin += ", " + p.var.z_moedas_ + " moedas")
@@ -173,7 +174,8 @@ sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem
 txt100 cnome # Para obter o nome codificado
 sav txt40 salanome # Nome da sala
-sav uint16 pnivel # Nível atual
+sav uint16 pnivel
+sav uint16 prenascer
 sav txt32 tipo1
 sav txt32 tipo2
 sav txt32 tipo3

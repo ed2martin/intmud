@@ -63,6 +63,7 @@ func escr
 # Checa número de aulas
       txt100 nomevar
       nomevar = txt1(t2.ini.texto)
+      linha = arg0.pnivel + config:nrenascer * txt2(arg0.var.[nomevar])
       se arg0.var.[nomevar]_ >= aulas
         lin = "Não tenho mais o que ensinar sobre " + lin + "."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
@@ -77,12 +78,12 @@ func escr
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
 # Checa se possui o nível necessário
-      se arg0.pnivel < int(r.aulaini)
+      se linha < int(r.aulaini)
         lin = "Você não possui o nível necessário."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
-      senao arg0.pnivel >= int(r.aulafim)
+      senao linha >= int(r.aulafim)
       senao
-        linha = arg0.pnivel - r.aulaini + 1
+        linha = linha - r.aulaini + 1
         linha *= inttotal(misc:aulas) / (r.aulafim - r.aulaini + 1)
         se arg0.var.[nomevar]_ < linha
           lin = "Você não possui o nível necessário."
@@ -106,12 +107,15 @@ func escr
 # Ensina
       config:aulas && (arg0.var.z_aulas_ -= 1)
       arg0.var.z_moedas_ -= valor
-      arg0.var.[nomevar]_ += 1
+      lin = arg0.var.[nomevar]_ + 1
+      txt2(arg0.var.[nomevar]) && (lin += " " + txt2(arg0.var.[nomevar]))
+      arg0.var.[nomevar] = lin
       $mens.p(arg0, l.objini)
+      $mens.mens = txt2(txte(nomevar))
       se valor
-        $mens.mtodos1("$P entrega algumas moedas e $A dá uma aula de " + lin + ".")
+        $mens.mtodos1("$P entrega algumas moedas e $A dá uma aula de $m.")
       senao
-        $mens.mtodos1("$A dá uma aula de " + lin + " para $P.")
+        $mens.mtodos1("$A dá uma aula de $m para $p.")
       fimse
       ret
     efim

@@ -702,6 +702,7 @@ func ident # Adiciona informações de item ou personagem em um textotxt
       lin += " de " + arg0.descnome, arg0 = arg0.persobat
     fimse
     lin += ", nível " + arg0.pnivel
+    arg0.prenascer && (lin += ", R" + arg0.prenascer)
     arg0.tipo1 && (lin += ", " + txtcopiamai(arg0.tipo1, "A"))
     arg0.tipo2 && (lin += ", " + txtcopiamai(arg0.tipo2, "A"))
     arg0.tipo3 && (lin += ", " + txtcopiamai(arg0.tipo3, "A"))
@@ -710,7 +711,11 @@ func ident # Adiciona informações de item ou personagem em um textotxt
     ret
   fimse
 # Nível do item
-  arg0.nivel && arg1.addfim("É um objeto do nível " + arg0.nivel)
+  se arg0.pnivel || arg0.prenascer
+    lin = "É um objeto do nível " + arg0.pnivel
+    arg0.prenascer && (lin += ", R" + arg0.prenascer)
+    arg1.addfim(lin + ".")
+  fimse
 # Peso e valor
   refvar peso = arg0.pesoobj + arg0.pesoden
   lin = peso < 10000 ? txt(peso) + "g" : txt(peso / 1000) + "Kg"

@@ -102,6 +102,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
       $mens.mens = pnivel
       $mens.p(este)
       $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
+      pnivel >= nmax && config:nmaxmsg && msginv(config:nmaxmsg)
     fimse
   fimse
 # Acerta atributos básicos
@@ -431,7 +432,7 @@ func morreu # Procedimentos quando morre
     ref r
     r = sock, r.mudaperso(nulo), r.reinicia
     p_corpo && (corpo = criar("comum_corpo", este, p_corpo == 2))
-    se corpo.var.z_moedas && arg0.jogconfig.10 && arg0.pegamoedas(corpo)
+    corpo.var.z_moedas && arg0.jogconfig.10 && arg0.pegamoedas(corpo)
   fimse
 # Apaga efeitos
   listaitem i

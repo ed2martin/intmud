@@ -66,6 +66,15 @@ func escr
     senao int(r.pnivel) > alvo.pnivel
       $mens.mperso("$P precisa estar no nível " + r.pnivel + " para vestir $o.")
       continuar
+    senao int(r.renascer) > alvo.prenascer
+      se r.renascer == 1
+        $mens.mperso("$P precisa renascer uma vez para vestir $o.")
+      senao r.renascer == 2
+        $mens.mperso("$P precisa renascer duas vezes para vestir $o.")
+      senao
+        $mens.mperso("$P precisa renascer " + r.renascer + " vezes para vestir $o.")
+      fimse
+      continuar
     fimse
     uint8 x
     epara x = n, x, x -= 1

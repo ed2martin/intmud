@@ -269,6 +269,9 @@ const rezou1msg = "(rezou) $R para $c '$m'"
 # Mensagem para o personagem alvo do comando Rezou
 const rezou2msg = "Os deuses responderam '$m'"
 #
+# Mensagem quando o personagem chegou no nível máximo
+const nmaxmsg = ""
+#
 # Mensagem do canal Chat
 const chatmsg = "(chat) $R '$m'"
 #
@@ -355,8 +358,13 @@ const matartipo = 1 # Comando Matar: 1 Habilitado
 # Diferença máxima de nível entre os personagens de um grupo
 const gruponivel = 10
 #
-# Comando renascer: 0=não existe, 1=não perde hab/magias, 2=escolhe uma hab/magia
+# Comando renascer:
+# 0=não existe, 1=não perde hab/magias, 2 a 6 = escolhe de 1 a 5 habs/magias
 const renascer = 2
+#
+# Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,
+# poderá aprendê-la em um nível menor. Essa opção é quantos níveis reduzir.
+const nrenascer = 5
 #
 # Se não administradores podem saber quem é administrador teclando QUEM
 # 0=não, 1=sim
@@ -578,4 +586,3 @@ func salvar # Salva o programa
 func sav # Para salvar acertando indentação e linhas entre classes e funções
   prog p
   p.salvartudo("L99N1I2C2F1V0")
-

@@ -153,7 +153,7 @@ vel\n\
 msgextra msgatk0 msgatk1 msgatk2 msgatk3 msgatk4"
 
 func habajuda # Retorna um texto que contém informações
-  ret arg0 && !arg0.persobat.var.[nomevar], nulo
+# arg0 = objeto do personagem
   textotxt t
   se depende
     t.addfim(depende)
@@ -167,13 +167,15 @@ func habajuda # Retorna um texto que contém informações
   txt100 lin
   lin = "\c3" + misc:nomevar(nomevar)
   se tipoalvo < 6
-    lin += "\b\nAtaque do nível " + int(aulafim)
+    lin += "\b\nAtaque do nível "
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
     lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
     lin += ", Força " + ataque + ", Velocidade " + vel
     lin += precisao <= 100 ? ", Precisao " + precisao : ", Não falha"
     t.addini(lin)
   senao
-    lin += "\b\nNível " + int(aulafim)
+    lin += "\b\nNível "
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
     lin += precisao < 100 ? ", Acerta " + precisao + "%" : ", Não falha"
     t.addini(lin)
   fimse

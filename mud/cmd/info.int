@@ -16,7 +16,7 @@ func escr
     refvar obj = item.obj
     total.[obj.jogconfig.14] += 1
     t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " N" + obj.pnivel
-    obj.var.z_renascer && (t1 += " R" + obj.var.z_renascer)
+    obj.prenascer && (t1 += " R" + obj.prenascer)
     t1 += txtesp(16 - inttotal(t1)) + " " + obj.nome
     obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     obj.sock == nulo && (t1 += "  [Desconectado]")
@@ -69,7 +69,8 @@ func escr
     ref obj
     prog p
     epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
-      refvar t1 = $[p.texto].habajuda(arg0)
+      continuar !r.var.[$[p.texto].nomevar]
+      refvar t1 = $[p.texto].habajuda(r)
       ret t1, arg0.msg2(t1)
     efim
     ret arg0.msg("Nenhuma informação sobre a habilidade: " + arg1)
@@ -81,7 +82,8 @@ func escr
   txt100 t2
   epara t1 = r.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = r.var.depois(t1)
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
+    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
     h.addfim(t2)
   efim
   ret !h.linhas, arg0.msg("Nenhuma habilidade.")
@@ -105,7 +107,8 @@ func escr
     ref obj
     prog p
     epara p.iniclasse("magia_" + txt1(arg1)), p.lin, p.depois
-      refvar t1 = $[p.texto].habajuda(arg0)
+      continuar !r.var.[$[p.texto].nomevar]
+      refvar t1 = $[p.texto].habajuda(r)
       ret t1, arg0.msg2(t1)
     efim
     ret arg0.msg("Nenhuma informação sobre a magia: " + arg1)
@@ -117,7 +120,8 @@ func escr
   txt100 t2
   epara t1 = r.var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = r.var.depois(t1)
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
+    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
     h.addfim(t2)
   efim
   ret !h.linhas, arg0.msg("Nenhuma magia.")
@@ -550,7 +554,9 @@ func escr
   r.var.z_moedas_ && t.addfim("Moedas:           " + txtnum(r.var.z_moedas_, "."))
   r.var.z_aulas_ && t.addfim("Aulas:            " + txtnum(r.var.z_aulas_, "."))
 # Nível e experiência
-  t.addfim("Nível:            " + r.pnivel)
+  t1 = "Nível:            " + r.pnivel
+  r.prenascer && (t1 += ", R" + r.prenascer)
+  t.addfim(t1)
   se 1
     refvar nmax = int(intmax(t_[r.tipo1]:nmax, t_[r.tipo2]:nmax, t_[r.tipo3]:nmax))
     t1 = nmax > 0 && r.pnivel >= nmax ? "" : "/" + r.expmax

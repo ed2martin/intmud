@@ -516,6 +516,11 @@ tipo3]:nmin)
     !arg0.perso.salvar && arg0.msg("Não foi possível salvar o personagem")
   fimse
   arg0.msgchegou("Criou personagem: " + arg0.nome + ", " + arg0.nomefim, arg0.nome + " entrou")
+  arg0.perso.recalc_exec
+  arg0.perso.recalc = 0
+  arg0.perso.pvida = arg0.perso.pvidamax
+  arg0.perso.pmana = arg0.perso.pmanamax
+  arg0.perso.pmove = arg0.perso.pmovemax
   $mens.p(arg0.perso)
   $mens.mvis2("", "$P chegou.")
   ret 1
@@ -698,6 +703,8 @@ func ini
   perso = arg0, sala = arg1, l.addfim(arg2), ex1 = 1
 # telatxt t
 # t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
+  arg0.prenascer = intmax(arg0.prenascer, arg0.var.z_reviver_, arg0.var.z_renascer_)
+  arg0.var.z_reviver = arg0.var.z_renascer = ""
 
 func ex1_exec
   ex2 = 1
