@@ -97,14 +97,15 @@ func escr
       $mens.mtodos1("$P tenta acordar $a.")
       ret
     fimse
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_acordar(arg0, r), nulo
+    listaobj l
+    epara l.addfim(r.evento, arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_acordar(r, arg0), nulo
     efim
     r.posicao = 5
     $mens.p(arg0, r)
     $mens.mtodos1("$P acorda $a.")
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      l.objini.cmd_acordou(arg0, r)
+    epara l.addfim(r.evento, arg0.evento), l, l.ini.remove
+      l.objini.cmd_acordou(r, arg0)
     efim
 # Acordar o próprio personagem
   senao arg0.posicao > 4
@@ -112,6 +113,7 @@ func escr
   senao arg0.bitver & 0xC00 == 0x400
     ret arg0.msg("Você não consegue acordar.")
   senao
+    listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_acordar(arg0, arg0), nulo
     efim

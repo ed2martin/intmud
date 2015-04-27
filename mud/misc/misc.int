@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "19/4/2015"
+const versao = "25/4/2015"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -183,13 +183,15 @@ func objperso # Obtém o personagem que o jogador quer consultar a partir de um t
   listaobj l
   nomeobj n # Para reconhecer os itens
   n.ini(txt1(arg1), 1000000)
-  r = nulo
   epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     r = l.objini
     sair
   efim
-  ret !r, arg0.msg("Você não vê isso.")
+  se !r
+    arg0.msg("Você não vê isso.")
+    ret
+  fimse
   refvar num = txt2(arg1)
   ret num != intpos(num) || config:animal1 < num, r
   refvar rr = r.animalnum(num)

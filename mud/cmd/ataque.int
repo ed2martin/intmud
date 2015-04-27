@@ -292,7 +292,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
       ret l.objini.cmd_alvocontr(arg0, arg1, este), nulo
     efim
-    epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
+    epara l.addfim(arg0.evento, arg0 != arg1 ? arg1.evento), l, l.ini.remove
       ret l.objini.cmd_alvo(arg0, arg1, este), nulo
     efim
     se !arg4.item
@@ -334,7 +334,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   epara l.addfim(arg0.contr.evento, arg1.contr.evento), l, l.ini.remove
     ret l.objini.cmd_atacarcontr(arg0, arg1, este), nulo
   efim
-  epara l.addfim(arg0.evento, arg1.evento), l, l.ini.remove
+  epara l.addfim(arg0.evento, arg0 != arg1 ? arg1.evento), l, l.ini.remove
     ret l.objini.cmd_atacar(arg0, arg1, este), nulo
   efim
 # Custo da hab/magia e checa se é permitido usar ataques

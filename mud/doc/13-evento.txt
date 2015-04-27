@@ -1,51 +1,56 @@
 Índice
-1. Funções chamadas somente para o póprio objeto
-2. Eventos
+1. Funcinamento dos eventos
+2. Funções chamadas somente para o póprio objeto
 3. Eventos incondicionais
 4. Eventos condicionais
 
 
-1. Funções chamadas somente para o póprio objeto
+1. Funcinamento dos eventos
 
-func cmd_ini(arg0, arg1, arg2, arg3, arg4)
-Chamado quando o objeto é criado. Arg0 a arg5 são os 5 primeiros argumentos
-da função ini do objeto.
+Neste tópico, objetos referem-se a personagens, itens, salas, efeitos ou
+qualquer outra coisa que seja um objeto na linguagem do IntMUD.
 
-func cmd_sav(arg0)
-Chamado quando o objeto é carregado a partir de um jogo salvo do jogador.
-Arg0 é o personagem do jogador.
+Algumas funções são chamadas somente no próprio objeto (outros objetos não
+são notificados) em determinadas circunstâncias. Exemplo, quando algum
+personagem entra em uma sala, é chamada a função cmd_salaperso da sala.
+Então, uma função assim:
 
-func cmd_objfim
-Chamado quando o objeto é apagado. O antigo dono está na variável donoantes.
+func cmd_salaperso
+  arg0.msg("Você vê nuvens expessas.")
 
-func cmd_salaperso(personagem)
-Chamado para a própria sala, quando um personagem entra na sala.
+Enviaria essa mensagem aos personagens que entrarem na sala.
 
-func cmd_mudadono
-Chamado por mudadono, logo após o item ou personagem mudar de dono.
+Já eventos são funções executadas quando um personagem digita algo, muda
+de sala ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar
+eventos. Exemplo, quando um personagem olha para um item, é gerado
+o seguinte evento:
 
-func cmd_recalc1(personagem)
-Chamado por func recalc_exec, para ajustar as variáveis do personagem
-(pontos de vida, mana, etc.)
+func cmd_olhar
+arg0 = personagem quer ver ou olhar alguma coisa (comandos ver e olhar)
+arg1 = o que quer ver (personagem ou item)
 
-func cmd_pnj_proc
-Chamado cada vez que o personagem não jogador decidir fazer alguma coisa.
-Não é chamado se estiver sendo controlado por um jogador ou pertencer
-a outro personagem.
+Nesse caso, quem estiver recebendo eventos desse personagem ou desse item,
+terá a função cmd_olhar executada. Então, para fazer o personagem que olhar
+para um determinado item receber uma mensagem, além da própria descrição,
+basta criar uma função como essa no item:
 
-func cmd_podevestir
-Chamado para o próprio item, quando um personagem quer vestir (roupa)
-ou empunhar (arma). Se retornar um texto, o personagem não conseguirá
-vestir e será enviado esse texto.
+func cmd_olhar
+  arg0.msg("Você sente um calafrio.")
 
+Depois editar o item pelo comando de edição online EItem e mudar a opção
+"52.Eventos item" para "1 Sim". Agora, o item será notificado sobre tudo
+que acontecer com ele.
 
-2. Eventos
+É possível receber outros eventos, conforme as seguintes opções dos comandos
+eperso, eitem, etc.:
 
-São funções executadas quando um personagem digita algo, muda de sala
-ou ocorre qualquer outro fato. Mesmo os itens e salas podem gerar eventos.
+51.Eventos hora: Se a função cmd_hora é chamada quando a hora MUD mudar
+52.Eventos perso/item/sala: Receber eventos do próprio personagem/item/sala
+53.Eventos dono perso: Se recebe eventos do dono se for personagem
+54.Eventos dono item: Se recebe eventos do dono se for item
+55.Eventos dono sala: Se recebe eventos da sala se estiver em uma sala
 
-Um item, personagem ou sala pode receber diversos tipos de eventos,
-bastando acrescentar uma ou mais das seguintes variáveis:
+Essas opções correspondem às seguintes constantes:
 
 const evhora = 1 # Receber evento cmd_hora a cada hora MUD (5 minutos)
 const eveste = 1 # Receber eventos do próprio objeto
@@ -55,269 +60,438 @@ const evsala = 1 # Receber eventos do dono se o dono for sala
 
 Essas constantes têm efeito sempre que o objeto muda de dono ou é criado.
 Se for preciso atualizar em outras situações, chamar a função ajustaobj.
+Os comandos de edição online já chamam ajustarobj automaticamente.
 
-Quando a função cmd_hora do objeto é chamada, arg0 é sempre a hora atual,
-ou seja, o mesmo que a variável misc:hora.
+Existem dois tipos de eventos, aqueles que podem cancelar uma ação
+(eventos condicionais) e aqueles que não podem (eventos incondicionais).
+Os que podem cancelar, quando retornarem 1 (retornarem com ret 1) ou
+qualquer outro valor considerado verdadeiro, a ação será cancelada.
 
-Internamente, itens, personagens e salas possuem a seguinte variável:
-listaobj evento
+Por exemplo, o evento cmd_olhar é um desses que podem cancelar.
+No exemplo acima, o personagem recebe a mensagem que sente um calafio
+e em seguida vem a descrição do item (o resultado do comando olhar).
+Se essa função fosse alterada para:
 
-Gerar um evento significa executar uma função qualquer de todos os objetos
-dessa lista. O nome da função está relacionado ao tipo de evento. Exemplo,
-'cmd_pegar' corresponde ao comando 'pegar' (quando um personagem tenta pegar
-algo, é executada a função 'cmd_pegar').
+func cmd_olhar
+  arg0.msg("Você sente um calafrio.")
+  ret 1
 
-Para saber quais são as listas envolvidas, basta verificar os argumentos
-da função.
+Viria só essa mensagem, sem a descrição do item.
 
-Exemplo, o evento correspondente a abrir uma porta está definido assim:
-func cmd_abrirdir(personagem, sala, texto)
-Significa que quando o personagem tentar abrir uma porta, será executada
-a função cmd_abrirdir das listas do personagem e da sala.
+Salas também podem receber eventos de personagens que não tem relação
+com a sala. Basta criar uma função como essa na sala:
+
+func cmd_salaperso
+  misc:evento(arg0) # Receber eventos do personagem
+
+Se for desejável receber apenas eventos dos personagens de jogadores:
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+
+2. Funções chamadas somente para o póprio objeto
+
+func cmd_ini
+Chamado quando o objeto é criado
+Arg0 a arg4 são os 5 primeiros argumentos da função ini do objeto.
+Exemplo, ao executar uma instrução:
+criar("p_teste001", $s_teste002, 10)
+Será chamada a função cmd_ini da classe p_teste001 com:
+arg0 = $s_teste002 (nesse caso, a sala aonde foi criado)
+arg1 = 10 (nesse caso, o nível do personagem)
+
+func cmd_sav
+arg0 = personagem do jogador que possui o objeto
+Chamado quando o objeto é carregado a partir de um jogo salvo do jogador.
+
+func cmd_objfim
+Chamado quando o objeto é apagado.
+donoantes = dono anterior do objeto
+
+func cmd_salaperso
+arg0 = personagem
+Chamado para a própria sala, quando um personagem entra na sala.
+
+func cmd_mudadono
+Chamado por mudadono, logo após o item ou personagem mudar de dono.
+
+func cmd_recalc1
+arg0 = personagem
+Chamado pela função recalc_exec, para ajustar as variáveis do personagem
+(pontos de vida, mana, etc.)
+
+func cmd_pnj_proc
+Chamado cada vez que o personagem não jogador decidir fazer alguma coisa.
+Não é chamado se estiver sendo controlado por um jogador ou pertencer
+a outro personagem.
+
+func cmd_podevestir
+arg0 = personagem
+Chamado para o próprio item, quando um personagem quer vestir (roupa)
+ou empunhar (arma). Se retornar um texto, o personagem não conseguirá
+vestir e será enviado esse texto.
+
+func cmd_hora
+arg0 = hora atual
+É chamado sempre que a hora MUD muda (a cada 5 minutos), desde que o objeto
+esteja recebendo eventos da hora. Vide também constante evhora (abaixo).
 
 
 3. Eventos incondicionais
 
-São funções chamadas como resultado de uma ação que aconteceu ou vai
-acontecer. A função não tem a opção de cancelar a ação.
+São funções geralmente chamadas após uma ação acontecer.
+Essas funções não podem cancelar a ação.
 
-A seguir são listados os eventos (as funções).
-
-func cmd_fim(personagem ou objeto)
+func cmd_fim
+arg0 = personagem
+arg1 = objeto
 Objeto vai sair do jogo. É chamado para os eventos do personagem apenas.
-Antes desse evento ocorrer, o objeto sai da sala a 'listaobj evento' do
+Antes desse evento ocorrer, o objeto sai da sala e a 'listaobj evento' do
 objeto é limpa.
 
-func cmd_saiu(personagem, sala)
+func cmd_saiu
+arg0 = personagem
+arg1 = sala
 Personagem saiu da sala.
 
-func cmd_chegou(personagem, sala)
+func cmd_chegou
+arg0 = personagem
+arg1 = sala
 Personagem entrou na sala. É chamado logo após mudar de sala.
 
-func cmd_recalc2(personagem)
-Chamado para os objetos em personagem.dentro2, por func recalc_exec,
-para ajustar as variáveis (pontos de vida, mana, etc.)
+func cmd_recalc2
+arg0 = personagem
+Chamado para os objetos em arg0.dentro2 (itens que o personagem está vestindo
+ou empunhando, efeitos e animais listados no comando Animal), pela função
+recalc_exec, para ajustar as variáveis (pontos de vida, mana, etc.)
 
-func cmd_recalc3(personagem)
-Chamado para os objetos em personagem.evento, por func recalc_exec,
-para ajustar as variáveis (pontos de vida, mana, etc.)
+func cmd_recalc3
+arg0 = personagem
+Chamado para os objetos em arg0.evento (os objetos que recebem os eventos
+do personagem), pela função recalc_exec, para ajustar as variáveis
+(pontos de vida, mana, etc.)
 
-func cmd_moveu(personagem, sala, direção)
+func cmd_moveu
+arg0 = personagem andou em uma direção
+arg0.donoantes = sala aonde estava
+arg1 = sala aonde foi parar
+arg2 = direção (um texto)
 Personagem foi para uma direção.
 
-func cmd_falou(personagem, texto)
+func cmd_falou
+arg0 = personagem
+arg1 = o que o personagem falou (um texto)
 Personagem falou alguma coisa.
 
 func cmd_gritou(personagem, texto)
 Personagem gritou alguma coisa.
 
-func cmd_sussurrou(personagem, personagem alvo, texto)
+func cmd_sussurrou
+arg0 = personagem que sussurrou
+arg1 = personagem alvo
+arg2 = nome do personagem alvo seguido da mensagem (um texto)
 Personagem sussurrou alguma coisa.
-Texto é o nome do personagem alvo seguido da mensagem.
-Se o personagem alvo não for encontrado esse evento é gerado com personagem
-alvo 'nulo', e em seguida é enviada uma mensagem dizendo que não encontrou
-o personagem.
+Se o personagem alvo não for encontrado, essa função é chamada com arg1=nulo,
+e em seguida é enviada uma mensagem dizendo que não encontrou o personagem.
 
-cmd_social1(personagem, alvo, objeto do comando)
-Personagem executou algum comando social.
+func cmd_social1
+arg0 = personagem que fez o comando social
+arg1 = personagem ou item alvo
+arg2 = objeto que trata do comando social
+Personagem executou algum comando social
 É chamada também a função cmd_social1 do objeto que trata do comando.
 
-cmd_social2(personagem, alvo, objeto do comando)
+func cmd_social2
+arg0 = personagem que fez o comando social
+arg1 = personagem ou item alvo
+arg2 = objeto que trata do comando social
 Personagem ou item foi alvo de algum comando social.
 É chamada também a função cmd_social2 do objeto que trata do comando.
 
-func cmd_pegouobj(personagem, origem, item, quantidade do item)
-func cmd_soltouobj(personagem, destino, item, quantidade do item)
-func cmd_deuobj(personagem, destino, item, quantidade do item)
-Pegou, soltou ou deu algum item.
+func cmd_abriudir
+func cmd_fechoudir
+func cmd_destrancoudir
+func cmd_trancoudir
+arg0 = personagem que abriu, fechou, trancou ou destrancou a porta
+arg1 = sala
+arg2 = direção da porta (um texto)
+arg3 = chave (somente ao trancar ou destrancar, é nulo se não usou chave)
 
-func cmd_pegouanim(personagem, animal, sala)
-func cmd_soltouanim(personagem, animal, sala)
+func cmd_abriuobj
+func cmd_fechouobj
+func cmd_trancouobj
+func cmd_destrancouobj
+arg0 = personagem que abriu, fechou, trancou ou destrancou o item
+arg1 = item
+arg2 = chave (somente ao trancar ou destrancar, é nulo se não usou chave)
+
+func cmd_pegouobj
+func cmd_soltouobj
+func cmd_deuobj
+arg0 = personagem que pegou, soltou ou deu algum item
+arg1 = de onde pegou ou aonde soltou
+arg2 = item
+arg3 = quantidade do item (um número)
+
+func cmd_pegouanim
+func cmd_soltouanim
 func cmd_deuanim(personagem, animal, personagem destino)
-Pegou (capturou), soltou ou deu algum animal.
+arg0 = personagem que pegou (capturou), soltou ou deu o animal
+arg1 = animal
+arg2 = sala
 
-func cmd_abriudir(personagem, sala, texto)
-func cmd_fechoudir(personagem, sala, texto)
-func cmd_destrancoudir(personagem, sala, texto, chave)
-func cmd_trancoudir(personagem, sala, texto, chave)
-Abriu, fechou, trancou ou destrancou porta na direção especificada.
+func cmd_acendeu
+func cmd_apagou
+arg0 = personagem que acendeu ou apagou um item
+arg1 = item
 
-func cmd_abriuobj(personagem, item)
-func cmd_fechouobj(personagem, item)
-func cmd_trancouobj(personagem, item, chave)
-func cmd_destrancouobj(personagem, item, chave)
-Abriu, fechou, trancou ou destrancou um item.
+func cmd_vestiu
+arg0 = persongaem que vestiu ou empunhou o item
+arg1 = item
+arg2 = posição: um número que indica a posição conforme a variável vestpos
+do objeto. Começa na posição 1, empunhando é a posição 50.
 
-func cmd_acendeu(personagem, item)
-func cmd_apagou(personagem, item)
-Acendeu ou apagou um item.
+func cmd_removeu
+arg0 = personagem que removeu um item que está vestindo ou uma arma
+arg1 = item
+arg2 = posição em que estava vestindo ou empunhando (um número)
 
-func cmd_vestiu(personagem, item, posição)
-Vestiu um item ou empunhou uma arma.
-A posição é um número que indica a posição, conforme a variável vestpos
-do objeto. Começa na posição1, empunhando é a posição 50.
+func cmd_bebeu
+func cmd_comeu
+func cmd_recitou
+arg0 = personagem que comeu, bebeu ou recitou alguma coisa
+arg1 = item
 
-func cmd_removeu(personagem, item, posição)
-Remover um item que está vestindo/usando ou uma arma que está empunhando.
-Posição é a posição em que estava vestindo ou empunhando.
+func cmd_alvofim
+arg0 = personagem que usou uma habilidade ou magia não agressiva
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+Essa função é chamada também para o objeto que trata do comando.
 
-func cmd_bebeu(personagem, item)
-func cmd_comeu(personagem, item)
-func cmd_recitou(personagem, item)
-Comeu, bebeu ou recitou alguma coisa.
+func cmd_atacou
+arg0 = personagem que usou uma habilidade ou magia agressiva
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+arg2.result = resultado do ataque:
+    0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=cancelar ataque
+arg2.mudavida = quantos pontos de vida mudaram no alvo
+Essa função é chamada também para o objeto que trata do comando.
 
-func cmd_alvofim(personagem, alvo, objeto que processa o comando)
-Personagem usou uma habilidade ou magia não agressiva.
-Esse evento é chamado também para o objeto que processa o comando.
+func cmd_acordou
+arg0 = personagem que estava dormindo
+arg1 = personagem que acordou o personagem arg0
+    (arg1=nulo se o personagem acordou sozinho)
 
-func cmd_atacou(personagem, alvo, objeto que processa o comando)
-Fim do ataque a outro personagem.
-A variável result do objeto contém o resultado; 0=atacou com sucesso,
-A variável mudavida do objeto contém quantos pontos de vida mudaram no alvo.
-Esse evento é chamado também para o objeto que processa o comando.
+func cmd_dormiuchao
+arg0 = personagem que teclou dormir e dormiu no chão
 
-func cmd_levantou(personagem)
-func cmd_sentouchao(personagem)
-func cmd_descansouchao(personagem)
-func cmd_sentouobj(personagem, item, texto)
-func cmd_descansouobj(personagem, item, texto)
-Ficou em pé, começou a descansar ou sentou-se.
+func cmd_dormiuobj
+arg0 = personagem que teclou dormir e está dormindo em um item
+arg1 = item
+arg2 = nome do item que o personagem digitou
 
-func cmd_morreu(personagem, quem matou o personagem)
-Personagem morreu.
-Nota: Quem matou o personagem pode ser nulo.
+func cmd_levantou
+func cmd_sentouchao
+func cmd_descansouchao
+func cmd_sentouobj
+func cmd_descansouobj
+arg0 = personagem que ficou em pé, descansou ou sentou
+arg1 = item aonde sentou ou descansou (em cmd_sentouobj e cmd_descansouobj)
+arg2 = nome do item que o personagem digitou
+
+func cmd_morreu
+arg0 = personagem que morreu
+arg1 = personagem que matou; pode ser nulo
 
 
 4. Eventos condicionais
 
-São funções que, se retornarem 1 ou qualquer outro valor verdadeiro,
-a ação será cancelada. Nesse caso, a função deve enviar mensagens ao
-usuário informando o motivo.
+São funções geralmente chamadas antes de uma açao acontecer.
+Essas funções cancelam a ação se retornarem 1 (retornarem com ret 1)
+ou qualquer outro valor considerado "verdadeiro". Nesse caso,
+é recomendável enviar alguma mensagem ao usuário.
 
-A seguir são listados os eventos (as funções).
+func cmd_escr
+arg0 = personagem que digitou alguma coisa
+arg1 = o que digitou (um texto)
+arg2 = objeto que trata do comando
+Essa função é chamada antes de processar qualquer comando.
 
-func cmd_escr(personagem, texto que digitou, objeto que processa o comando)
-Personagem digitou alguma coisa.
+func cmd_ajuda
+arg0 = personagem que teclou ajuda seguido de um texto
+arg1 = texto
 
-func cmd_ajuda(personagem ou objeto, texto)
-Teclou ajuda seguido de um texto.
+func cmd_mover
+arg0 = personagem que quer ir em uma direção
+arg1 = sala aonde está
+arg2 = direção (um texto)
 
-func cmd_mover(personagem, sala, direção)
-Personagem quer ir em uma direção.
+func cmd_ver
+func cmd_olhar
+arg0 = personagem quer ver ou olhar alguma coisa (comandos ver e olhar)
+arg1 = o que quer ver (personagem ou item)
+Nota: Para apenas acrescentar uma descrição ao personagem ou item, vide
+constante descver e a opção "Descrição ao olhar" dos comandos EPerso e EItem.
 
-func cmd_abrir(personagem, texto)
-Quer abrir um objeto ou uma porta.
+func cmd_abrir
+func cmd_fechar
+arg0 = personagem que quer abrir ou fechar algo (item ou porta)
+arg1 = o que quer abrir ou fechar (texto que o personagem digitou)
 
-func cmd_fechar(personagem, texto)
-Quer fechar um objeto ou uma porta.
+func cmd_abrirdir
+func cmd_fechardir
+func cmd_trancardir
+func cmd_destrancardir
+arg0 = personagem que quer abrir, fechar, trancar ou destrancar uma porta
+arg1 = sala
+arg2 = direção da porta (um texto)
+arg3 = chave (somente ao trancar ou destrancar, é nulo se não usa chave)
 
-func cmd_ver(personagem, personagem ou item alvo)
-func cmd_olhar(personagem, personagem ou item alvo)
-Quer ver ou olhar alguma coisa. São os comandos ver (descrição resumida)
-e olhar (descrição completa). Para apenas acrescentar uma descrição ao
-personagem ou item, vide constante descver e a opção "Descrição ao olhar"
-dos comandos de edição online eperso e eitem.
+func cmd_abrirobj
+func cmd_fecharobj
+func cmd_trancarobj
+func cmd_destrancarobj
+arg0 = personagem que quer abrir, fechar, trancar ou destrancar um item.
+arg1 = item
+arg3 = chave (somente ao trancar ou destrancar, é nulo se não usa chave)
 
-func cmd_pegar(personagem, texto)
-func cmd_soltar(personagem, texto)
-func cmd_dar(personagem, texto)
-Quer pegar, soltar ou dar alguma coisa.
+func cmd_pegar
+func cmd_soltar
+func cmd_dar
+arg0 = personagem que quer pegar, soltar ou dar alguma coisa
+arg1 = o que quer pegar, soltar ou dar (texto que o personagem digitou)
 
-func cmd_pegarmoedas(personagem, origem, quantidade de moedas)
-func cmd_soltarmoedas(personagem, destino, quantidade de moedas)
-func cmd_darmoedas(personagem, destino, quantidade de moedas)
-Quer pegar, soltar ou dar moedas.
+func cmd_pegarmoedas
+func cmd_soltarmoedas
+func cmd_darmoedas
+arg0 = personagem que quer pegar, soltar ou dar moedas
+arg1 = de onde quer pegar ou para onde quer soltar ou dar
+arg2 = quantidade de moedas (um número)
 
-func cmd_pegarobj(personagem, origem, item, quantidade do item)
-func cmd_soltarobj(personagem, destino, item, quantidade do item)
-func cmd_darobj(personagem, destino, item, quantidade do item)
-Quer pegar, soltar ou dar algum item.
+func cmd_pegarobj
+func cmd_soltarobj
+func cmd_darobj
+arg0 = personagem quer quer pegar, soltar ou dar algum item
+arg1 = de onde quer pegar ou para onde quer soltar ou dar
+arg2 = item
+arg3 = quantidade (um número)
 
-func cmd_pegaranim(personagem, animal, sala)
-func cmd_soltaranim(personagem, animal, sala)
-func cmd_daranim(personagem, animal, personagem destino)
-Quer pegar (capturar), soltar ou dar algum animal.
+func cmd_pegaranim
+func cmd_soltaranim
+func cmd_daranim
+arg0 = personagem que qer pegar (capturar), soltar ou dar algum animal
+arg1 = animal
+arg2 = sala
 
-func cmd_abrirdir(personagem, sala, texto)
-func cmd_fechardir(personagem, sala, texto)
-func cmd_trancardir(personagem, sala, texto, chave)
-func cmd_destrancardir(personagem, sala, texto, chave)
-Quer abrir, fechar, trancar ou destrancar porta na direção especificada.
+func cmd_acender
+func cmd_apagar
+arg0 = personagem que quer acender ou apagar um item
+arg1 = item
 
-func cmd_abrirobj(personagem, item)
-func cmd_fecharobj(personagem, item)
-func cmd_trancarobj(personagem, item, chave)
-func cmd_destrancarobj(personagem, item, chave)
-Quer abrir, fechar, trancar ou destrancar um item.
-
-func cmd_acender(personagem, item)
-func cmd_apagar(personagem, item)
-Quer acender ou apagar um item.
-
-func cmd_vestir(personagem, item, posição)
-Quer vestir um item ou empunhar uma arma.
-A posição é um número que indica a posição, conforme a variável vestpos
+func cmd_vestir
+arg0 = personagem que quer vestir um item ou empunhar uma arma.
+arg1 = item
+arg2 = posição: um número que indica a posição conforme a variável vestpos
 do objeto. Começa na posição 1, empunhando é a posição 50.
 
-func cmd_remover(personagem, item, posição)
-Quer remover um item que está vestindo/usando ou uma arma que está empunhando.
-Posição é a posição atual.
+func cmd_remover
+arg0 = personagem que quer remover um item que está vestindo/usando ou
+       uma arma que está empunhando
+arg1 = item
+arg2 = posição aonde está (um número)
 
-func cmd_beber(personagem, item)
-func cmd_comer(personagem, item)
-func cmd_recitar(personagem, item)
-Quer comer, beber ou recitar alguma coisa.
+func cmd_beber
+func cmd_comer
+func cmd_recitar
+arg0 = personagem que quer comer, beber ou recitar alguma coisa
+arg1 = item
 
-func cmd_negociar(personagem, personagem vendedor, tipo)
-Se o personagem negocia com um jogador.
-Se não negocia, deve retornar uma mensagem (um texto) contendo o motivo.
-Tipo pode ser "comprar", "vender" ou "ensinar".
+func cmd_negociar
+arg0 = personagem que quer comprar, vender ou aprender algo
+arg1 = personagem vendedor ou professor
+arg2 = nome da ação: "comprar", "vender" ou "ensinar"
 
-func cmd_alvocontr(personagem, alvo, objeto que processa o comando)
-Personagem quer usar uma habilidade ou magia não agressiva.
-Esse evento é chamado para quem está controlando o personagem e o alvo.
+func cmd_alvocontr
+arg0 = personagem que quer usar uma habilidade ou magia não agressiva
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+Essa função é chamada para quem está controlando o personagem e o alvo.
 
-func cmd_alvo(personagem, alvo, objeto que processa o comando)
-Personagem quer usar uma habilidade ou magia não agressiva.
-Esse evento é chamado também para o objeto que processa o comando.
+func cmd_alvo
+arg0 = personagem que quer usar uma habilidade ou magia não agressiva
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+Essa função é chamada também para o objeto que trata do comando.
 
-func cmd_atacarcontr(personagem, alvo, objeto que processa o comando)
-Personagem quer usar uma habilidade ou magia agressiva.
-Esse evento é chamado para quem está controlando o personagem e o alvo.
+func cmd_atacarcontr
+arg0 = personagem que quer usar uma habilidade ou magia agressiva
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+Essa função é chamada para quem está controlando o personagem e o alvo.
 
-func cmd_atacar(personagem, alvo, objeto que processa o comando)
-Personagem quer usar uma habilidade ou magia agressiva.
-Esse evento é chamado também para o objeto que processa o comando.
+func cmd_atacar
+arg0 = personagem que quer usar uma habilidade ou magia agressiva
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+Essa função é chamada também para o objeto que trata do comando.
 
-func cmd_atkenv(personagem, alvo, objeto que processa o ataque, danos)
-Chamado quando um personagem vai realizar um ataque a outro.
+func cmd_atkenv
+arg0 = personagem que vai realizar um ataque
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+arg3 = danos: os danos que o alvo recebe são multiplicados por esse valor
+       Por isso: 1=danos normais, 2=dobro dos danos, 0=imune, etc.
+Essa função é chamada para o personagem e o objeto que trata do comando.
+
+func cmd_atkrec
+arg0 = personagem que vai receber um ataque
+arg1 = personagem alvo
+arg2 = objeto que trata do comando
+arg3 = danos: os danos que o alvo recebe são multiplicados por esse valor
+       Por isso: 1=danos normais, 2=dobro dos danos, 0=imune, etc.
 Danos (arg3) é o quanto deve afetar os danos (1 danos normais, 0=imune, etc).
-Esse evento é chamado para o personagem e o objeto que processa o comando.
+Essa função é chamada para o alvo.
 
-func cmd_atkrec(personagem, alvo, objeto que processa o ataque, danos)
-Chamado quando um personagem vai receber um ataque de outro.
-Danos (arg3) é o quanto deve afetar os danos (1 danos normais, 0=imune, etc).
-Esse evento é chamado para o alvo.
+func cmd_acordar(personagem dormindo, quem quer acordar)
+arg0 = personagem que está dormindo
+arg1 = personagem que quer acordar o personagem arg0
+    (arg1=nulo se o personagem quer acordar sozinho)
+O personagem quer acordar sozinho ou alguém quer acordar o personagem
 
-func cmd_levantar(personagem)
-func cmd_sentarchao(personagem)
-func cmd_descansarchao(personagem)
-func cmd_sentarobj(personagem, item, texto)
-func cmd_descansarobj(personagem, item, texto)
-Quer ficar em pé, descansar ou sentar-se.
+func cmd_dormirchao
+arg0 = personagem que quer dormir no chão
 
-func cmd_fugir(personagem)
-Quer fugir de uma batalha.
+func cmd_dormirobj
+arg0 = personagem que quer dormir em um item
+arg1 = item
+arg2 = nome do item que o personagem digitou
 
-func cmd_resgatar(personagem, quem será resgatado)
-Quer resgatar alguém de uma batalha.
+func cmd_levantar
+func cmd_sentarchao
+func cmd_descansarchao
+func cmd_sentarobj
+func cmd_descansarobj
+arg0 = personagem que quer ficar em pé, descansar ou sentar
+arg1 = item aonde quer sentar ou descansar (cmd_sentarobj e cmd_descansarobj)
+arg2 = nome do item que o personagem digitou
 
-func cmd_morrer(personagem, quem matou o personagem)
-Vai morrer porque os pontos de vida chegaram a zero.
-Nota: Quem matou o personagem pode ser nulo.
+func cmd_fugir
+arg0 = personagem que quer fugir de uma batalha
 
-func cmd_ident(personagem, item ou personagem)
-Quer identificar um item ou personagem.
+func cmd_resgatar
+arg0 = personagem que quer resgatar alguém de uma batalha
+arg1 = personagem que será resgatado
 
-func cmd_curar(personagem, personagem alvo)
-Quer curar um personagem.
+func cmd_morrer
+arg0 = personagem que vai morrer porque os pontos de vida chegaram a zero
+arg1 = personagem que matou; pode ser nulo
+
+func cmd_ident
+arg0 = personagem que quer identificar um item ou personagem
+arg1 = item ou personagem que será identificado
+
+func cmd_curar
+arg0 = personagem que quer curar
+arg1 = personagem alvo

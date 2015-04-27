@@ -59,7 +59,10 @@ func escr
   refvar txtmais = arg0.sock.txtmais
   txtmais.limpar
   epara t1 = r.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = r.var.depois(t1)
-    txtmais.addfim(txte(txt(t1, 2)) + " / " + txtsublin(misc:aulas, r.var.[t1], 1))
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
+    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
+    txtmais.addfim(t2)
   efim
   se !txtmais.linhas
     txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece habilidades.")
@@ -83,7 +86,10 @@ func escr
   refvar txtmais = arg0.sock.txtmais
   txtmais.limpar
   epara t1 = r.var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = r.var.depois(t1)
-    txtmais.addfim(txte(txt(t1, 2)) + " / " + txtsublin(misc:aulas, r.var.[t1], 1))
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
+    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
+    txtmais.addfim(t2)
   efim
   se !txtmais.linhas
     txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece magias.")

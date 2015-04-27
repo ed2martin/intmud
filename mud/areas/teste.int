@@ -2249,6 +2249,7 @@ que exista uma magia chamada Bola de fogo, e você quiser tê-la no\n\
 nível intermediário, deve teclar:\n\
 cmd var.m_Bola_de_fogo=4"
 const dir_n = $s_teste040
+const dir_s = $s_teste144
 
 
 classe s_teste042
@@ -3974,3 +3975,15 @@ func s_reset1 # Realiza o reset
   se p_teste032:objsolto.total < 1
     criar("p_teste032", este, 0)
   fimse
+
+
+classe s_teste144
+herda b_teste
+const s_titulo = "Habilidades e magias - renascer"
+const s_desc = "Quando se escolhe habilidades e magias com o comando renascer, aparece\n\
+R1, R2, R3, etc nos comandos hab e mag. Se quiser, por exemplo, fazer\n\
+a habilidade socar ser nível básico, porém R5, deve teclar:\n\
+cmd var.h_Socar=\"3 5\"\n\
+O primeiro número é quanto conhece, nesse caso nível básico.\n\
+O segundo é quantas vezes escolheu a habilidade (R5)."
+const dir_n = $s_teste041
