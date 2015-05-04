@@ -1428,7 +1428,7 @@ const nivel = 5
 const inivar = "m_Curar=8"
 const eveste = 1 # Eventos perso: Sim
 
-func cmd_social2
+func cmd_social
   se arg1 == este && arg2.tipo == 1
     $magia_curar.exechabperso(este, arg0)
   senao arg1 == este && arg2.tipo == 2
@@ -3746,8 +3746,8 @@ func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
   misc:evento(arg0) # Receber eventos do jogador
 
-func cmd_social1
-  se txt(arg2) == "soc_beijar"
+func cmd_social
+  se arg3 == arg0 && txt(arg2) == "soc_beijar"
     $mens.p(arg0)
     $mens.mvis2("", "De repente, você não vê mais $p aqui.")
     arg0.msg("Por um instante você sente tontura e quando olha ao redor novamente,\nnão está \

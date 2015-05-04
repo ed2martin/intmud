@@ -68,24 +68,26 @@ func escr
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
     fimse
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_sentarobj(arg0, r, arg1), nulo
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_sentarobj(arg0, r, arg0), nulo
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_sentarobj(arg0, r, r), nulo
     efim
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 6
     $mens.p(arg0, nulo, r)
     $mens.mtodos1("$P sentou-se $e $o.")
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_sentouobj(arg0, r, arg1)
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_sentouobj(arg0, r, arg0)
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      l.objini.cmd_sentouobj(arg0, r, r)
     efim
 # Sentar-se num objeto que não existe
   senao arg1
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_sentarobj(arg0, nulo, arg1), nulo
-    efim
     arg0.msg("Você não vê " + arg1 + ".")
-    ret
 # Sentar-se no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -98,6 +100,7 @@ func escr
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_sentouchao(arg0)
     efim
+  fimse
 
 
 classe cmd_descansar
@@ -140,24 +143,26 @@ func escr
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
     fimse
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_descansarobj(arg0, r, arg1), nulo
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_descansarobj(arg0, r, arg0), nulo
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_descansarobj(arg0, r, r), nulo
     efim
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 5
     $mens.p(arg0, nulo, r)
     $mens.mtodos1("$P descansa $e $o.")
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_descansouobj(arg0, r, arg1)
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_descansouobj(arg0, r, arg0)
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      l.objini.cmd_descansouobj(arg0, r, r)
     efim
 # Descansar num objeto que não existe
   senao arg1
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_descansarobj(arg0, nulo, arg1), nulo
-    efim
     arg0.msg("Você não vê " + arg1 + ".")
-    ret
 # Descansar no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -170,3 +175,4 @@ func escr
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouchao(arg0)
     efim
+  fimse

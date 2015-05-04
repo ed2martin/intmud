@@ -26,32 +26,35 @@ func escr
   epara l.addfim(alvo.dentro2), l, l.ini.remove
     r = l.objini
     continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    uint8 x
-    epara x = n, x, x -= 1
-      total += 1
-      refvar valor = vest.bits & config:vestir[r.vestpos - 1]
-      se valor
-        listaitem item
-        epara item = alvo.dentro2.ini, item, item.depois
-          continuar !item.obj.vestpos
-          sair valor & intbit(item.obj.vestpos - 1)
-        efim
-        alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
-      senao
-        refvar posic = int(r.vestpos)
-        listaobj e
-        epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
-          ret e.objini.cmd_remover(alvo, r, posic), nulo
-        efim
-        vest.[r.vestpos] = 0
-        r.vestir(0)
-        $mens.p(alvo, nulo, r)
-        $mens.mvis1("$P remove $o.")
-        epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
-          e.objini.cmd_removeu(alvo, r, posic)
-        efim
-      fimse
-    efim
+    total += 1
+    refvar valor = vest.bits & config:vestir[r.vestpos - 1]
+    se valor
+      listaitem item
+      epara item = alvo.dentro2.ini, item, item.depois
+        continuar !item.obj.vestpos
+        sair valor & intbit(item.obj.vestpos - 1)
+      efim
+      alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
+    senao
+      refvar posic = int(r.vestpos)
+      listaobj e
+      epara e.addfim(alvo.evento), e, e.ini.remove
+        ret e.objini.cmd_remover(alvo, r, posic, alvo), nulo
+      efim
+      epara e.addfim(r.evento), e, e.ini.remove
+        ret e.objini.cmd_remover(alvo, r, posic, r), nulo
+      efim
+      vest.[r.vestpos] = 0
+      r.vestir(0)
+      $mens.p(alvo, nulo, r)
+      $mens.mvis1("$P remove $o.")
+      epara e.addfim(alvo.evento), e, e.ini.remove
+        e.objini.cmd_removeu(alvo, r, posic, alvo)
+      efim
+      epara e.addfim(r.evento), e, e.ini.remove
+        e.objini.cmd_removeu(alvo, r, posic, r)
+      efim
+    fimse
   efim
 # Ajusta variáveis
   !total && $mens.p(alvo) + $mens.mperso("$P não está usando isso.")

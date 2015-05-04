@@ -216,28 +216,43 @@ func escr
   fimse
   $mens.mvis1("$P joga " + item.descnome + " para $a.")
   item.apagar(1)
-# Captura
+  pegar(arg0, arg0.dono, r)
+
+func pegar # Pega o animal
+# arg0=quem está pegando, arg1=sala origem, arg2=animal
   listaobj e
-  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
-    ret e.objini.cmd_pegaranim(arg0, r, arg0.dono), nulo
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg1), nulo
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg2), nulo
   efim
   refvar estacheio = !arg0.animalmais
-  r.mudadono(arg0) # Muda de dono
-  r.var.z_dono = arg0.nome
-  r.var.z_pnivel = r.pnivel
-  r.objsolto.remove(r) # Não conta mais na lista de personagens soltos
+  arg2.mudadono(arg0) # Muda de dono
+  arg2.var.z_dono = arg0.nome
+  arg2.var.z_pnivel = arg2.pnivel
+  arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
   arg0.recalc = 1
-  r.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
-  $mens.p(arg0, r)
+  arg2.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
+  $mens.p(arg0, arg2)
   se estacheio
-    r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
+    arg2.idono.remove, arg2.idono = arg2.dono.dentro3.addfim(arg2)
     $mens.mvis2("$A entrou para a sua equipe como reserva.", "$A entrou para a equipe de \
 $P.")
   senao
     $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
   fimse
-  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
-    sair e.objini.cmd_pegouanim(arg0, r, arg0.dono)
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg0)
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg1)
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg2)
   efim
 
 

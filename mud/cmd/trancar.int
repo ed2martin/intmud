@@ -52,15 +52,21 @@ func escrobj # Trancar um item
   fimse
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_trancarobj(arg0, r, chave), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_trancarobj(arg0, r, chave, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_trancarobj(arg0, r, chave, r), nulo
   efim
 # Tranca o item
   r.i_aberto = 4
   $mens.p(arg0, r)
   $mens.mtodos1("$P trancou $a.")
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_trancouobj(arg0, r, chave)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_trancouobj(arg0, r, chave, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_trancouobj(arg0, r, chave, r)
   efim
 
 func escrdir # Trancar uma porta
@@ -98,16 +104,22 @@ func escrdir # Trancar uma porta
   fimse
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_trancardir(arg0, arg0.dono, arg1, chave), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_trancardir(arg0, arg0.dono, arg1, chave, arg0), nulo
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_trancardir(arg0, arg0.dono, arg1, chave, arg0.dono), nulo
   efim
 # Tranca a porta
   arg0.dono.mudaporta(arg1, 3) # Tranca a porta
   $mens.p(arg0)
   $mens.mens = mporta
   $mens.mtodos1("$P trancou $m.")
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave, arg0)
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave, arg0.dono)
   efim
 
 
@@ -165,16 +177,22 @@ func escrobj # Destrancar um item
   fimse
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_destrancarobj(arg0, r, chave), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancarobj(arg0, r, chave, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancarobj(arg0, r, chave, r), nulo
   efim
 # Destranca o item
   r.i_comechave && chave.apagar(1)
   r.i_aberto = 3
   $mens.p(arg0, r)
   $mens.mtodos1("$P destrancou $a.")
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_destrancouobj(arg0, r, chave)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_destrancouobj(arg0, r, chave, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_destrancouobj(arg0, r, chave, r)
   efim
 
 func escrdir # Destrancar uma porta
@@ -222,8 +240,11 @@ func escrdir # Destrancar uma porta
   fimse
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave, arg0), nulo
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave, arg0.dono), nulo
   efim
 # Destranca a porta
   arg0.dono.comechave_[arg1] && chave.apagar(1)
@@ -231,6 +252,9 @@ func escrdir # Destrancar uma porta
   $mens.p(arg0)
   $mens.mens = mporta
   $mens.mtodos1("$P destrancou $m.")
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave, arg0)
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave, arg0.dono)
   efim

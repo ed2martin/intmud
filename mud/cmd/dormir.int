@@ -38,24 +38,26 @@ func escr
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
     fimse
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_dormirobj(arg0, r, arg1), nulo
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_dormirobj(arg0, r, arg0), nulo
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_dormirobj(arg0, r, r), nulo
     efim
     $mens.p(arg0, nulo, r)
     $mens.mtodos1("$P deita $e $o e dorme.")
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 4
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      l.objini.cmd_dormiuobj(arg0, r, arg1)
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_dormiuobj(arg0, r, arg0)
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      l.objini.cmd_dormiuobj(arg0, r, r)
     efim
 # Dormir num objeto que não existe
   senao arg1
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_dormirobj(arg0, nulo, arg1), nulo
-    efim
     arg0.msg("Você não vê " + arg1 + ".")
-    ret
 # Dormir no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -67,6 +69,7 @@ func escr
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_dormiuchao(arg0)
     efim
+  fimse
 
 
 classe cmd_acordar
@@ -98,14 +101,20 @@ func escr
       ret
     fimse
     listaobj l
-    epara l.addfim(r.evento, arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_acordar(r, arg0), nulo
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_acordar(r, arg0, r), nulo
+    efim
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_acordar(r, arg0, arg0), nulo
     efim
     r.posicao = 5
     $mens.p(arg0, r)
     $mens.mtodos1("$P acorda $a.")
-    epara l.addfim(r.evento, arg0.evento), l, l.ini.remove
-      l.objini.cmd_acordou(r, arg0)
+    epara l.addfim(r.evento), l, l.ini.remove
+      l.objini.cmd_acordou(r, arg0, r)
+    efim
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_acordou(r, arg0, arg0)
     efim
 # Acordar o próprio personagem
   senao arg0.posicao > 4
@@ -115,11 +124,11 @@ func escr
   senao
     listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_acordar(arg0, arg0), nulo
+      ret l.objini.cmd_acordar(arg0, nulo, arg0), nulo
     efim
     arg0.posicao = 5
     $mens.p(arg0)
     $mens.mtodos1("$P acorda.")
     epara l.addfim(arg0.evento), l, l.ini.remove
-      l.objini.cmd_acordou(arg0, arg0)
+      l.objini.cmd_acordou(arg0, nulo, arg0)
     efim

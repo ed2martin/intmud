@@ -122,11 +122,8 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Muda de sala
   atkrec.limpar, poslugar.remove, mdono(arg0), cmd_mudadono
 # Eventos cmd_saiu e variável donoantes.s_item
-  listaobj l
   se donoantes && !donoantes.perso
-    epara l.addfim(evento, donoantes.evento), l, l.ini.remove
-      l.objini.cmd_saiu(este, donoantes)
-    efim
+    mudadono_saiu(ref(donoantes))
     se !sock
     senao donoantes.dentro1.total && !donoantes.socktot
       donoantes.t_item = donoantes.s_item * 600
@@ -141,13 +138,12 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   fimse
 # Eventos cmd_chegou
   (sock || jog) && dono.s_reset1, dono.cmd_salaperso(este)
-  epara l.addfim(evento, arg0.evento), l, l.ini.remove
-    l.objini.cmd_chegou(este, arg0)
-  efim
+  mudadono_chegou(ref(dono))
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
     int(dono.s_retornar) >= 2 && (!var.z_salafim || int(dono.s_retornar) == 2) && (var.z_salafim \
 = dono)
+    listaobj l
     epara l.addfim(dono.dentro2), l, l.ini.remove
       l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
     efim
@@ -168,6 +164,24 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
   fimse
   ret este
+
+func mudadono_saiu
+  listaobj l
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_saiu(este, arg0, este)
+  efim
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_saiu(este, arg0, arg0)
+  efim
+
+func mudadono_chegou
+  listaobj l
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_chegou(este, arg0, este)
+  efim
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_chegou(este, arg0, arg0)
+  efim
 
 func recalc_exec # Ajusta variáveis
   bitver = 17, bitinv = 3, atribs.limpar, recalc_auto, cmd_recalc1(este), atribs_exec
@@ -357,7 +371,10 @@ func morreu # Procedimentos quando morre
 # Checa se pode morrer
   listaobj l
   epara l.addfim(evento), l, l.ini.remove
-    ret l.objini.cmd_morrer(este, arg0), nulo
+    ret l.objini.cmd_morrer(este, arg0, este), nulo
+  efim
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_morrer(este, arg0, arg0), nulo
   efim
 # Morreu
   mortes += 1
@@ -373,5 +390,8 @@ func morreu # Procedimentos quando morre
   efim
 # Gera eventos
   epara l.addfim(evento), l, l.ini.remove
-    l.objini.cmd_morreu(este, arg0)
+    l.objini.cmd_morreu(este, arg0, este)
+  efim
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_morreu(este, arg0, arg0)
   efim

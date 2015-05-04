@@ -62,13 +62,16 @@ Mensagens quando ocorre o evento que reduz algo do personagem:
 const msgreduz1     Para o personagem
 const msgreduz2     Para os demais
 
-func cmd_ini( personagem )
+func cmd_ini
+arg0 = personagem
 Função executada quando o efeito é criado.
 
-func cmd_fim( personagem )
+func cmd_fim
+arg0 = personagem
 Função executada quando o efeito é apagado.
 
-func cmd_reduz( personagem )
+func cmd_reduz
+arg0 = personagem
 Função executada de tempos em tempos quando reduz algo.
 Vide também constante r_tempo.
 

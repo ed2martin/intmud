@@ -154,11 +154,12 @@ func escr
       mvis ? $mens.mtodos2(item1, item2) : $mens.mvis2(item1, item2)
     fimse
     l.limpar
-    epara l.addfim(arg0.evento, este), l, l.ini.remove
-      l.objini.cmd_social1(arg0, r, este)
+    cmd_social(arg0, r, este)
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_social(arg0, r, este, arg0)
     efim
-    epara l.addfim(r.evento, este), l, l.ini.remove
-      l.objini.cmd_social2(arg0, r, este)
+    epara l.addfim(r.evento), l, l.ini.remove
+      l.objini.cmd_social(arg0, r, este, r)
     efim
     ret
   efim

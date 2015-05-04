@@ -37,8 +37,11 @@ func escr
   fimse
 # Eventos
   l.limpar
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_recitar(arg0, r), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_recitar(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_recitar(arg0, r, r), nulo
   efim
 # Recita o objeto
   $mens.p(arg0, nulo, r)
@@ -47,6 +50,9 @@ func escr
   r.apagar(1)
   efeito(arg0, nome, r, 1)
 # Eventos
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_recitou(arg0, r)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_recitou(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_recitou(arg0, r, r)
   efim

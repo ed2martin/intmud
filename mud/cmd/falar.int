@@ -112,8 +112,11 @@ func escr
   ref r
   r = l.objini
   l.remove
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_sussurrou(arg0, r, arg1)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_sussurrou(arg0, r, arg1, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_sussurrou(arg0, r, arg1, r)
   efim
 # Mensagem se não encontrou o personagem
   !r && arg0.msg("Você não vê " + txt1(arg1) + ".")

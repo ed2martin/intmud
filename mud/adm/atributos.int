@@ -660,8 +660,11 @@ func escr
     r = l.objini
 # Eventos
     l.limpar
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_ident(arg0, r), nulo
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_ident(arg0, r, arg0), nulo
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_ident(arg0, r, r), nulo
     efim
 # Checa se pode identificar
     se !arg2.item

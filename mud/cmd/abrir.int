@@ -40,15 +40,21 @@ func escrobj # Abrir um item
   casofim
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_abrirobj(arg0, r), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_abrirobj(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_abrirobj(arg0, r, r), nulo
   efim
 # Abre o item
   r.i_aberto = 2
   $mens.p(arg0, r)
   $mens.mtodos1("$P abriu $a.")
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_abriuobj(arg0, r)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_abriuobj(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_abriuobj(arg0, r, r)
   efim
 
 func escrdir # Abrir uma porta
@@ -72,8 +78,11 @@ func escrdir # Abrir uma porta
 # Abre a porta
   $mens.p(arg0)
   arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M se $1.") # Abre a porta
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    l.objini.cmd_abriudir(arg0, arg0.dono, arg1)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_abriudir(arg0, arg0.dono, arg1, arg0)
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_abriudir(arg0, arg0.dono, arg1, arg0.dono)
   efim
 
 
@@ -118,15 +127,21 @@ func escrobj # Fechar um item
   casofim
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_fecharobj(arg0, r), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_fecharobj(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_fecharobj(arg0, r, r), nulo
   efim
 # Fecha o item
   r.i_aberto = r.i_tranc == 2 ? 4 : 3
   $mens.p(arg0, r)
   $mens.mtodos1("$P fechou $a.")
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_fechouobj(arg0, r)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_fechouobj(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_fechouobj(arg0, r, r)
   efim
 
 func escrdir # Fechar uma porta
@@ -143,8 +158,11 @@ func escrdir # Fechar uma porta
   casofim
 # Gera eventos
   listaobj l
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1, arg0), nulo
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1, arg0.dono), nulo
   efim
   ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
 # Fecha a porta
@@ -154,6 +172,9 @@ func escrdir # Fechar uma porta
   senao
     arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M se $2.") # Fecha a porta
   fimse
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    l.objini.cmd_fechoudir(arg0, arg0.dono, arg1)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_fechoudir(arg0, arg0.dono, arg1, arg0)
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_fechoudir(arg0, arg0.dono, arg1, arg0.dono)
   efim

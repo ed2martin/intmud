@@ -39,9 +39,11 @@ func escr
     epara l.remove(arg0), l, l.ini.remove
       p = l.objini # Personagem que está sendo verificado
       continuar !$a_[p.lojacasa] || p.atkenv || p.cmd_loja(arg0)
-      continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
-      continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
-      continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+      se p.lojanao
+        continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
+        continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
+        continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
+      fimse
       se !p.lojasim # negocia com todos
       senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
       senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
@@ -49,17 +51,11 @@ func escr
       senao
         continuar
       fimse
+      continuar evento(arg0, p)
       abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
       se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
         arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
         continuar
-      senao
-        listaobj e
-        epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-          sair e.objini.cmd_negociar(arg0, p, "vender")
-        efim
-        continuar e
-      fimse
       indiceitem item
       refvar r = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
       refvar valor = intpos(r.valor * (100 - p.taxacompra) / 100)
@@ -120,12 +116,9 @@ func exec # Avalia ou vende um item
       arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
       mudou = 1
       continuar
-    senao
-      listaobj e
-      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-        sair e.objini.cmd_negociar(arg0, p, "vender")
-      efim
-      continuar e
+    senao lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
+      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+      continuar
     fimse
     int32 valor # Valor do item
     valor = intpos(arg1.valor * (100 - p.taxacompra) / 100)
@@ -161,3 +154,13 @@ func exec # Avalia ou vende um item
   efim
 # Ninguém quer comprar
   !mudou && arg0.msg("Ninguém quer comprar " + arg1.descnome + ".")
+
+func evento # Gera evento para arg0 e arg1
+  listaobj l
+  txt100 t
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret t = l.objini.cmd_vender(arg0, arg1, arg0), t
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    ret t = l.objini.cmd_vender(arg0, arg1, arg1), t
+  efim

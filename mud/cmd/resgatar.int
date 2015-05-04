@@ -29,8 +29,11 @@ func escr
     efim
 # Eventos
     listaobj l
-    epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-      ret l.objini.cmd_resgatar(arg0, r), nulo
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_resgatar(arg0, r, arg0), nulo
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_resgatar(arg0, r, r), nulo
     efim
 # Resgata
     enquanto r.atkrec.objini

@@ -1,3 +1,55 @@
+* 3/5/2015 IntMUD 1.03a MUD baseado na revisão 345
+
+   No MUD:
+  1. Corrigido bug: não estava permitindo usar habilidades e magias
+     pacíficas em personagens que estão no mesmo grupo
+  2. Corrigido bug nos comandos cmdj, echo, infojog, lugar, monit,
+     mudanome, rezou, tele, telepatia: não estavam funcionando com nomes
+     que possuem sublinhado no meio
+  3. Corrigido bug: personagens estavam ganhando o dobro da experiência
+     em relação à versão anterior
+  4. Corrigido bug nos comandos cmdj, echo, lugar, monit, mudanome,
+     rezou, tele, telepatia: não estavam funcionando com nomes que
+     possuem sublinhado no meio
+  5. Corrigido bug: comandos infohag e infomag não estavam mostrando R1,
+     R2, R3, etc
+  6. Corrigido bug na opção "Sala do chat" do menu "Como ativar o MUD"
+     do comando Econfig
+  7. Corrigido bug: não era possível colocar um item em um container que
+     só cabe um item
+  8. Tipos (raça/classe) foram reformulados
+  9. Classes tipo_* mudaram de nome para t_*
+ 10. Criado comando Renascer
+ 11. Criada opção no comando Econfig: Comandos / Renascer
+ 12. Corrigido bug: ao morrer não estava apagando efeitos permanentes
+ 13. Vida, mana e movimentos são restaurados ao criar o personagem e
+     após renascer (comando renascer)
+ 14. As habilidades e magias escolhidas no comando renascer são
+     acumulativas
+ 15. Nível dos itens agora é uma constante: alterar o nível no comando
+     eitem altera o nível de todos os itens
+ 16. Criada opção no comando eitem: quantas vezes o personagem precisa
+     renascer para poder usar/vestir o item
+ 17. Opção no comando Econfig: mensagem quando chega no nível máximo
+ 18. Personagens de nível 0: os comandos ver e olhar não mostram o nível
+ 19. Criada sala teste144 para explicar como tornar uma habilidade ou
+     magia R alguma coisa com o comando cmd
+ 20. Personagens que não estão acordados não recebem mais a descrição da
+     sala ao serem teletransportados
+ 21. Corrigido bug nos eventos dos comandos acordar e dormir
+ 22. Documentados eventos cmd_acordar, cmd_acordou, cmd_dormirchao,
+     cmd_dormiuchao, cmd_dormirobj, cmd_dormiuobj
+ 23. A documentação dos eventos foi reformulada (arquivo
+     mud/doc/13-eventos.txt)
+ 24. Eventos cmd_social1 e cmd_social2 foram substituídos por cmd_social
+ 25. Evento cmd_negociar foi substituído por cmd_comprar, cmd_vender e
+     cmd_aprender
+ 26. Diversos eventos ganharam um argumento: origem do evento (vide
+     mud/doc/13-evento.txt)
+ 27. Comandos pegar, soltar, dar e capturar foram modificados
+     internamente para a modificação nos eventos
+ 28. Arquivo pegar.int foi dividido em pegar.int e soltar.int
+
 * 5/4/2015 IntMUD 1.03a MUD baseado na revisão 340
 
    No IntMUD:

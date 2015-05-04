@@ -32,10 +32,7 @@ func escr1 # Consultar a lista de itens
     continuar p.atkenv || !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
 $a_[p.lojachave])
 # Checa se pode vender alguma coisa
-    lin = p.cmd_loja(arg0)
-    se lin
-      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
-      continuar
+    se !p.lojanao # negocia com todos
     senao tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
       t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
@@ -45,7 +42,8 @@ $a_[p.lojachave])
     senao tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
       t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo3)
       continuar
-    senao !p.lojasim # negocia com todos
+    fimse
+    se !p.lojasim # negocia com todos
     senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
     senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
     senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
@@ -54,19 +52,12 @@ $a_[p.lojachave])
       continuar
     fimse
     abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    se lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
+      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+      continuar
+    senao abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
       t.addfim(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
       continuar
-    senao
-      listaobj e
-      epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-        lin = e.objini.cmd_negociar(arg0, p, "comprar")
-        sair lin
-      efim
-      se lin
-        t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
-        continuar
-      fimse
     fimse
     t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " informa:\b")
     lucro = (100 + p.taxavenda) / 100
@@ -153,11 +144,7 @@ func escr2 # Consultar um item
     continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
     abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
     continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-    listaobj e
-    epara e.addfim(arg0.evento, p.evento), e, e.ini.remove
-      sair e.objini.cmd_negociar(arg0, p, "comprar")
-    efim
-    continuar e
+    continuar evento(arg0, p)
     lucro = (100 + p.taxavenda) / 100
 # Itens fixos - lojaitem
     textotxt t2
@@ -229,3 +216,13 @@ func escr2 # Consultar um item
     fimse
   efim
   arg0.msg("Ninguém vende isso aqui.")
+
+func evento # Gera evento para arg0 e arg1
+  listaobj l
+  txt100 t
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret t = l.objini.cmd_comprar(arg0, arg1, arg0), t
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    ret t = l.objini.cmd_comprar(arg0, arg1, arg1), t
+  efim

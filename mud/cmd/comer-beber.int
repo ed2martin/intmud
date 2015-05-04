@@ -53,8 +53,11 @@ func escr
   fimse
 # Eventos
   l.limpar
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_comer(arg0, r), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_comer(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_comer(arg0, r, r), nulo
   efim
 # Come o objeto
   $mens.p(arg0, nulo, r)
@@ -63,8 +66,11 @@ func escr
   r.apagar(1)
   efeito(arg0, "", r, 1)
 # Eventos
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_comeu(arg0, r)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_comeu(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_comeu(arg0, r, r)
   efim
 
 
@@ -113,8 +119,11 @@ func escr
   fimse
 # Eventos
   l.limpar
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    ret l.objini.cmd_beber(arg0, r), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_beber(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_beber(arg0, r, r), nulo
   efim
 # Bebe o objeto
   $mens.p(arg0, nulo, r)
@@ -128,8 +137,11 @@ func escr
   fimse
   efeito(arg0, "", r, 1)
 # Eventos
-  epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-    l.objini.cmd_bebeu(arg0, r)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_bebeu(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_bebeu(arg0, r, r)
   efim
 
 

@@ -55,12 +55,18 @@ func escr
 # Gera eventos
     l.limpar
     se completo
-      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-        ret l.objini.cmd_olhar(arg0, r), nulo
+      epara l.addfim(arg0.evento), l, l.ini.remove
+        ret l.objini.cmd_olhar(arg0, r, arg0), nulo
+      efim
+      epara l.addfim(r.evento), l, l.ini.remove
+        ret l.objini.cmd_olhar(arg0, r, r), nulo
       efim
     senao
-      epara l.addfim(arg0.evento, r.evento), l, l.ini.remove
-        ret l.objini.cmd_ver(arg0, r), nulo
+      epara l.addfim(arg0.evento), l, l.ini.remove
+        ret l.objini.cmd_ver(arg0, r, arg0), nulo
+      efim
+      epara l.addfim(r.evento), l, l.ini.remove
+        ret l.objini.cmd_ver(arg0, r, r), nulo
       efim
     fimse
 # O que o personagem está vestindo

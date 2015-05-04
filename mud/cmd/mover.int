@@ -79,8 +79,11 @@ func mover # Personagem anda em uma direção
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret
   fimse
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, arg0.dono, dir), nulo
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0), nulo
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0.dono), nulo
   efim
   $comando_mover.andou = 1
   !arg0.jogconfig.14 && (arg0.pmove -= intdiv((total + 1) / 2))
@@ -98,8 +101,11 @@ func mover # Personagem anda em uma direção
   senao # Não está voando nem flutuando
     mover2(arg0, s2, abriu2 + m_sai1, m_entra1)
   fimse
-  epara l.addfim(arg0.evento, arg0.dono.evento), l, l.ini.remove
-    l.objini.cmd_moveu(arg0, arg0.dono, dir)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_moveu(arg0, arg0.dono, dir, arg0)
+  efim
+  epara l.addfim(arg0.dono.evento), l, l.ini.remove
+    l.objini.cmd_moveu(arg0, arg0.dono, dir, arg0.dono)
   efim
 # Checa se morre ao entrar
   se arg0.dono.s_morre && !arg0.jogconfig.14
