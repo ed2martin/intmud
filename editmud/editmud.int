@@ -8,6 +8,10 @@ telatxt = 1
 # Aonde apresentar mensagens de erro no programa
 log = 0
 
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
 classe edit_mud
 # Conectar via telnet ou outro programa similar na porta especificada.
 #
@@ -51,6 +55,7 @@ func conec_msg0
     ret
   senao !exec_[t.1](t.2)
     apagar(este)
+  fimse
 
 func conec_msg2
   prog p
@@ -85,6 +90,7 @@ func conec_msg2
       efim
     fimse
     apagar(este)
+  fimse
 
 func conec_env
   textopos pos
@@ -93,8 +99,9 @@ func conec_env
       apagar(este)
     senao
       pos = texto.ini
-      se conec.msg(pos.textolin(10) + "\n")
-        pos.remove(10)
+      conec.msg(pos.textolin(10) + "\n") && pos.remove(10)
+    fimse
+  fimse
 
 func exec_salvar
   prog p
@@ -107,6 +114,7 @@ func exec_apagar
     conec.msg("+OK Classe apagada\n")
   senao
     conec.msg("-Classe não existe: " + arg0 + "\n")
+  fimse
 
 func exec_lista
   prog p

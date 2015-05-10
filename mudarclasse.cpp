@@ -78,6 +78,12 @@ bool TMudarAux::ChecaBloco(char * mensagem, int tamanho)
             com+=Num16(com), linha++;
         }
     }
+    const char * p = checalinha.Fim();
+    if (p)
+    {
+        mprintf(mensagem, tamanho, "%d: %s\n", linha, p);
+        return false;
+    }
     *mensagem=0;
     return true;
 }

@@ -1242,6 +1242,14 @@ bool TVarProg::FuncCriar(TVariavel * v)
             }
             com+=Num16(com), linha++;
         }
+        const char * pfim = checalinha.Fim();
+        if (pfim)
+        {
+            char txt1[1024];
+            mprintf(txt1, sizeof(txt1), "%d: %s\n", linha, pfim);
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(txt1);
+        }
     // Anota alterações em objeto TMudarClasse
         TMudarClasse * obj = TMudarClasse::Procurar(nomeclasse);
         if (obj==0)

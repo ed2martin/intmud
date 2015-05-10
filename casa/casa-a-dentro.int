@@ -35,11 +35,13 @@ func segundo2
     fimse
   senao
     jog.pvida = jog.pvidamax
+  fimse
 
 func cmd_escr
   se txt1(arg0) != "d"
     arg0.msg("Aguarde, pontos de vida em " + arg0.pvida + " de " + arg0.pvidamax)
     ret 1
+  fimse
 
 
 classe s_dentro003
@@ -81,6 +83,8 @@ func cmd_s
     senao
       arg0.msg("Você amarrou a corda e começou a descer, mas apareceram vários vampiros.")
       arg0.msg("Felizmente nenhum deles notou a sua presença.")
+    fimse
+  fimse
 # Sala de recuperação total
 
 func segundo1
@@ -117,6 +121,7 @@ func entrou
 func entrou1
   se config:escolhenivel
     arg0.msg("Nesta versão de teste do jogo tecle aqui:")
+  fimse
 
 func entrou2
   se config:escolhenivel
@@ -124,6 +129,7 @@ func entrou2
     arg0.msg("D para diminuir um nível")
     arg0.msg("AA para aumentar 10 níveis")
     arg0.msg("DD para diminuir 10 níveis")
+  fimse
 
 func cmd_escr
   se config:escolhenivel
@@ -155,6 +161,7 @@ func cmd_escr
       fimse
       ret 1
     casofim
+  fimse
 
 
 classe s_dentro005
@@ -278,6 +285,7 @@ func cmd_l
     arg0.msg("mas não resistiu à queda.")
     arg0.dono = $s_dentro001
     ret 1
+  fimse
 
 
 classe s_dentro010
@@ -326,6 +334,7 @@ func segsala2
       msg("Entulho 40 começou a se mexer")
       criar("p_entulho", este, 40, "h_surpreender,h_lançar,h_velocidade")
     casofim
+  fimse
 
 
 classe s_dentro013
@@ -345,6 +354,7 @@ func entrou10
     criar("p_concreto_armado", este, 38, "h_surpreender, h_lançar")
     msg("Concreto armado 38 se desprendeu da porta")
     travado = 0
+  fimse
 
 func segsala15
   se rand(100) < 30 && numperso < 2
@@ -352,6 +362,8 @@ func segsala15
       criar("p_morcego", 33, "h_bico,h_ventania,h_velocidade")
     senao
       criar(sala, rato, 37, "h_roer,h_arranhatox,h_morder")
+    fimse
+  fimse
 
 const dir_o = $s_dentro011
 # const dir_l = -entrar(Rua Estação Sumaré, 1)
@@ -360,6 +372,7 @@ func cmd_l
   se travado
     arg0.msg("A porta está lacrada com concreto")
     ret 1
+  fimse
 
 
 classe s_dentro014
@@ -383,6 +396,7 @@ de fotografias. Melhor voltar à leste."
 func segsala8
   se numperso < 4
     criar("p_rato", este, 38, "h_arranhar,h_morder")
+  fimse
 
 func entrou
   ver(arg0)
@@ -425,6 +439,7 @@ func entrou
 func segsala15
   se numperso == 0
     criar("p_mumia", este, 1, "h_socar,h_chutar")
+  fimse
 
 func cmd_pegar
   casovar arg1
@@ -458,6 +473,7 @@ func entrou
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 2, "h_socar,h_chutar")
+  fimse
 
 
 classe s_dentro019
@@ -479,6 +495,7 @@ const mostra_c = 0 # Esconde saída para cima
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 3, "h_socar,h_chutar")
+  fimse
 
 func entrou
   var.i_Poção = 1
@@ -519,10 +536,12 @@ const dir_l = $s_dentro023
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 4, "h_socar,h_chutar")
+  fimse
 
 func segsala22
   se rand(100) < 50
     criar("p_toupeira", este, 8, "h_lama,h_terremoto,h_arranhar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -546,10 +565,12 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_ima", este, 8, "h_choque,h_onda trovão,h_velocidade")
+  fimse
 
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 5, "h_socar,h_chutar")
+  fimse
 
 func cmd_pegar
   casovar arg1
@@ -580,6 +601,7 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_lula", este, 8, "h_bolha,h_surf,h_cortar")
+  fimse
 
 
 classe s_dentro024
@@ -598,10 +620,12 @@ func entrou
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 8, "h_socar,h_chutar")
+  fimse
 
 func segsala22
   se rand(100) < 50
     criar("p_morcego", este, 5, "h_bico,h_ventania,h_velocidade")
+  fimse
 
 
 classe s_dentro025
@@ -623,6 +647,7 @@ func entrou
 func segsala15
   se rand(100) < 65
     criar("p_mumia", este, 5, "h_socar,h_chutar")
+  fimse
 
 
 classe s_dentro026
@@ -830,6 +855,7 @@ func cmd_escr # Jogador desafia Catador de insetos
       passo = 11
     fimse
     ret 1
+  fimse
 
 func cmd_ataque
   se arg0.jog && arg1.jog # Jogador não ataca jogador
@@ -837,6 +863,7 @@ func cmd_ataque
     ret 1
   senao !arg0.jog && arg1 != escolhido # Não jogador só ataca jogador escolhido
     ret 1
+  fimse
 
 func cmd_n
   se dentro1.objini("p_catador_de_insetos")
@@ -846,6 +873,8 @@ func cmd_n
     senao !arg0.var.l_hebraico
       arg0.msg("Catador de insetos: Não pode ir embora antes da nossa batalha")
       ret 1
+    fimse
+  fimse
 
 func cmd_s
   se dentro1.objini("p_catador_de_insetos")
@@ -858,6 +887,8 @@ func cmd_s
       arg0.msg("Catador de insetos: Não vou deixar que entre na caverna. É perigoso.")
       arg0.msg("Seu primeiro animal precisa ser pelo menos nível 40.")
       ret 1
+    fimse
+  fimse
 
 
 classe s_dentro027
@@ -895,6 +926,7 @@ func segsala15
 func segsala22
   se rand(100) < 50
     criar("p_lagarchama", este, 8, "h_chama,h_brasa,h_cortar,h_arranhar")
+  fimse
 
 func cmd_o
   se arg0.var.i_corda
@@ -905,6 +937,7 @@ func cmd_o
     arg0.msg("mas não resistiu à queda.")
     arg0.dono = $s_dentro001
     ret 1
+  fimse
 
 
 classe s_dentro028
@@ -927,6 +960,8 @@ func entrou1
       criar("p_leopardo", este, 20, "h_arranhar,h_morder")
     senao
       criar("p_leopardo", este, 20, "h_morder,z_sinistro")
+    fimse
+  fimse
 
 func entrou2
   ref r
@@ -961,6 +996,7 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_kickboxer", este, 8, "h_socar,h_chutar,h_multissoco,h_cortar")
+  fimse
 
 
 classe s_dentro030
@@ -978,11 +1014,13 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_pinguim", este, 8, "h_neve,h_aurora,h_cortar,h_arranhar")
+  fimse
 
 func cmd_n
   se !arg0.var.i_chave
     arg0.msg("Você precisa da chave para sair.")
     ret 1
+  fimse
 
 
 classe s_dentro031
@@ -1023,6 +1061,7 @@ func entrou
 func segsala12
   se rand(100) < 50
     criar("p_minhocao", este, 6, "h_pedrada,h_pedregulho,h_explodir,h_cortar")
+  fimse
 
 
 classe s_dentro033
@@ -1045,6 +1084,7 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_borboleta", este, 8, "h_picar,h_morder,h_cortar")
+  fimse
 
 
 classe s_dentro034
@@ -1070,6 +1110,7 @@ func entrou
 func segsala22
   se rand(100) < 50
     criar("p_balao", este, 10, "h_cantar,h_cortar")
+  fimse
 
 func cmd_escr
   se arg1 == "ler" && arg0.var.i_oculos
@@ -1078,6 +1119,7 @@ func cmd_escr
     arg0.msg("durante horas. Apesar disso tudo, ele esconde um artefato raro em uma")
     arg0.msg("despensa. Espero que algum dia alguém faça um mapa...")
     ret 1
+  fimse
 
 
 classe s_dentro035
@@ -1112,6 +1154,7 @@ func cmd_escr
     ret 1
   senao
     livros
+  fimse
 
 func cria_livros
   var.i_Livro_História = 5

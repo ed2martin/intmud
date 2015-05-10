@@ -126,6 +126,14 @@ public:
                 @param instr Instrução codificada
                 @return 0 se instrução está no lugar correto,
                         outro valor=mensagem de erro */
+    const char * Fim();
+            ///< Chamado após checar todas as instruções
+            /**< Verifica se há algum bloco pendente */
+    static int ChecaErro;
+            ///< Checagem de erros em blocos de instruções
+            /**< - 0=não verifica se cada bloco está terminando corretamente
+             *   - 1=verifica blocos exceto fimse no final das funções
+             *   - 2=verifica blocos inclusive fimse no final das funções */
 private:
     char esperando;
             /**< O que está esperando:
@@ -133,6 +141,13 @@ private:
                 - 1=função ou variável (pertencente à classe)
                 - 2=instruções de uma função
                 - 3=após definição de função + definição de constante */
+    unsigned char buf[1024];
+            ///< Blocos; cada byte:
+            /**< - 0=bloco se/senao/fimse
+             *   - 1=bloco enquanto/efim ou epara/efim
+             *   - 2=bloco casovar/casose/casofim */
+    unsigned int pbuf;
+            ///< Quantos bytes de buf[] estão sendo usados
 };
 
 //----------------------------------------------------------------------------

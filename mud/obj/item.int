@@ -99,6 +99,7 @@ func vestir # Veste o item, arg0=posição
     vestpos == 50 && (dono.iempu = idono)
   senao
     idono = dono.dentro1.addfim(este)
+  fimse
 
 const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
 
@@ -172,8 +173,8 @@ func vestir # Veste o item, arg0=posição
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)
-  se !(objtot -= arg0)
-    apagar(este), mdono(nulo)
+  ret objtot -= arg0, nulo
+  apagar(este), mdono(nulo)
 
 
 classe comum_itemperso
@@ -222,6 +223,7 @@ func recalc_exec # Acerta variáveis do item
     textopos p
     p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
     atribs.addini("Aceso")
+  fimse
 
 func luztempo_exec # A luz apagou
   se luztxt
@@ -241,6 +243,7 @@ func vestir # Veste o item, arg0=posição
     vestpos == 50 && (dono.iempu = idono)
   senao
     idono = dono.dentro1.addfim(este)
+  fimse
 
 
 classe comum_corpo
@@ -279,23 +282,23 @@ func ini
   comum_obj:ini
   arg0.dono && mudadono(arg0.dono)
   recalc_exec
-  se arg1
-    var.z_moedas = arg0.var.z_moedas
-    listaobj l
-    epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
-      l.objini.item && l.objini.mudadono(este, 100000)
-    efim
-    se var.z_moedas
-      $mens.p(arg0)
-      se dentro1.total
-        $mens.mvis2("", "Você nota alguns itens e moedas $e " + descnome + ".")
-      senao
-        $mens.mvis2("", "Você nota algumas moedas $e " + descnome + ".")
-      fimse
-    senao dentro1.total
-      $mens.p(arg0)
-      $mens.mvis2("Você nota alguns itens $e " + descnome + ".")
+  ret !arg1, nulo
+  var.z_moedas = arg0.var.z_moedas
+  listaobj l
+  epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
+    l.objini.item && l.objini.mudadono(este, 100000)
+  efim
+  se var.z_moedas
+    $mens.p(arg0)
+    se dentro1.total
+      $mens.mvis2("", "Você nota alguns itens e moedas $e " + descnome + ".")
+    senao
+      $mens.mvis2("", "Você nota algumas moedas $e " + descnome + ".")
     fimse
+  senao dentro1.total
+    $mens.p(arg0)
+    $mens.mvis2("Você nota alguns itens $e " + descnome + ".")
+  fimse
 
 func tempo_exec
   dono.msg(txtcopiamai(descnome, "A") + " se decompôs totalmente.")

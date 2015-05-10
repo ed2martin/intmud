@@ -34,6 +34,7 @@ func escr
     arg0.msg("Não possui nenhum animal.")
   senao
     arg0.msg2("\b\c6Animais:\b\n" + t.remove(1000))
+  fimse
 
 
 classe comando_escolhe_animal
@@ -63,6 +64,7 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
     arg0.escolhebat # Atualiza persobat
     $mens.p(arg0, r)
     $mens.mvis1("$P escolhe $b.")
+  fimse
 
 
 classe cmd_reserva
@@ -280,6 +282,7 @@ func escr
     escr_dar(arg0, arg1)
   senao
     escr_trocar(arg0, p1, p2)
+  fimse
 
 func escr_pegar # Pegar item do animal
 # arg0 = personagem
@@ -294,6 +297,7 @@ func escr_pegar # Pegar item do animal
     $mens.p(arg0, nulo, rec)
     $mens.mens = rec.descnome + " de " + arg0.persoesc.nome
     $mens.mvis1("$P pega $m.")
+  fimse
 
 func escr_dar # Dar item para o animal
 # arg0 = personagem

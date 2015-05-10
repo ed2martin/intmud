@@ -15,6 +15,7 @@ func ini
     tela.msg("Bot: Endereço inválido: " + config:serv + "\n")
   senao
     tela.msg("Bot: Conectando em " + config:serv + " porta " + config:porta + "\n")
+  fimse
 
 func fim
   !conecfim && $jogoini.jogobotfim
@@ -86,6 +87,7 @@ func conec_msg # Recebeu mensagem
   casofim
   se !conecfim
     senha = "", conecfim = 1, $jogoini.jogobotfim
+  fimse
 
 
 classe jogobot_sala

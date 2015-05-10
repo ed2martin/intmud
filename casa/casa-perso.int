@@ -23,6 +23,7 @@ func acordou
     var.h_bolha = 1
     var.h_surf = 1
     var.h_cortar = 1
+  fimse
 
 
 classe p_morcego
@@ -50,6 +51,7 @@ func acordou
     var.h_velocidade = 1
     var.h_bico = 1
     var.h_ventania = 1
+  fimse
 
 
 classe p_ima
@@ -77,6 +79,7 @@ func acordou
     var.h_velocidade = 1
     var.h_choque = 1
     var.h_onda_trovão = 1
+  fimse
 
 
 classe p_lagarchama
@@ -104,6 +107,7 @@ func acordou
     var.h_chama = 1
     var.h_brasa = 1
     var.h_arranhar = 1
+  fimse
 
 
 classe p_kickboxer
@@ -131,6 +135,7 @@ func acordou
     var.h_socar = 1
     var.h_chutar = 1
     var.h_multissoco = 1
+  fimse
 
 
 classe p_fantasma
@@ -161,6 +166,7 @@ func acordou
     var.h_cortar = 1
     var.h_surpreender = 1
     var.h_tóxico = 1
+  fimse
 
 
 classe p_pinguim
@@ -189,6 +195,7 @@ func acordou
     var.h_neve = 1
     var.h_cortar = 1
     var.h_aurora = 1
+  fimse
 
 
 classe p_minhocao
@@ -217,6 +224,7 @@ func acordou
     var.h_pedregulho = 1
     var.h_explodir = 1
     var.h_cortar = 1
+  fimse
 
 
 classe p_cogumelo
@@ -245,6 +253,7 @@ func acordou
     var.h_onda_solar = 1
     var.h_cortar = 1
     var.h_metrônomo = 1
+  fimse
 
 
 classe p_toupeira
@@ -272,6 +281,7 @@ func acordou
     var.h_lama = 1
     var.h_terremoto = 1
     var.h_arranhar = 1
+  fimse
 
 
 classe p_borboleta
@@ -299,6 +309,7 @@ func acordou
     var.h_picar = 1
     var.h_morder = 1
     var.h_cortar = 1
+  fimse
 
 
 classe p_balao
@@ -326,6 +337,7 @@ func acordou
   se nivel >= 10
     var.h_cantar = 1
     var.h_cortar = 1
+  fimse
 
 
 classe p_preguica
@@ -354,6 +366,7 @@ func acordou
     var.h_descansar = 1
     var.h_explodir = 1
     var.h_morder = 1
+  fimse
 
 
 classe p_rato
@@ -429,6 +442,7 @@ func cmd_ataquerec
   se arg2 == $cmd_atirar
     !t1 && (t1 = 10)
     alvo1 = arg0
+  fimse
 
 func t1_exec
   se dono == alvo1.dono
@@ -437,6 +451,7 @@ func t1_exec
     dono.msg("Múmia lança uma bala de espingarda em " + alvo1.nome + $cmd_atirar.msgefeito(alvo1)\
 )
     alvo1.pvida == 0 && alvo1.morreu
+  fimse
 
 
 classe p_anao

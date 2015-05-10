@@ -335,6 +335,7 @@ func escr
     arg0.msg(vidalin(arg0))
   senao
     arg0.msg(txtcopiamai(r.nome, "A") + ": " + vidalin(r))
+  fimse
 
 func vidalin
   txt100 lin
@@ -401,16 +402,16 @@ func escr
   t1 += ":"
   t1 += intdiv((864000 - arg0.tempojogo1) / 600) % 60
   arg0.msg(t1 + " horas")
-  se arg0.sock
-    int32 x
-    x = arg0.sock.tempojogo
-    se x >= 24 * 36000
-      t1 = "Mais de 24 horas"
-    senao
-      t1 = intdiv(x / 36000)
-      t1 += ":" + intdiv(x / 600) % 60 + " horas"
-    fimse
-    arg0.msg("Tempo dessa sessão:  " + t1)
+  ret !arg0.sock, nulo
+  int32 x
+  x = arg0.sock.tempojogo
+  se x >= 24 * 36000
+    t1 = "Mais de 24 horas"
+  senao
+    t1 = intdiv(x / 36000)
+    t1 += ":" + intdiv(x / 600) % 60 + " horas"
+  fimse
+  arg0.msg("Tempo dessa sessão:  " + t1)
 
 func semanamud
   casovar arg0

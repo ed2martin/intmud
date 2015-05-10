@@ -1,4 +1,5 @@
 telatxt = 1
+err = 1
 
 classe A
 herda b,c
@@ -43,6 +44,7 @@ func tela_msg
       msg("." + i)
     fimse
     msg("\n")
+  fimse
 const existe0 = " (não existe)"
 const existe1 = " (existe)"
 const existe2 = " (não existe)"
@@ -103,12 +105,14 @@ func p9
   senao
     msg("inilinha=" + p.inilinha(nomeclasse, arg0) + " (instruções da função)\n")
     mostra(p)
+  fimse
 func p10
   prog p
   se arg0 == ""
     msg("Digite o nome de uma função ou variável após 9\n")
   senao
     msg("Texto da constante:\n" + p.const(nomeclasse, arg0) + "\n")
+  fimse
 #msg(txt([nomeclasse]:[arg0]) + "\n")
 func p11
   prog cl

@@ -222,12 +222,12 @@ func atribs_exec # Organiza a variável atribs
   senao bitver & 512
     atribs.addfim("Flutuando")
   fimse
-  se atrib.linhas > 1
-    textopos p
-    atribs.ordena, p = atribs.ini
-    enquanto p.lin
-      p.texto == txtsublin(p.textolin(2), 1) ? p.apagar : p.depois
-    efim
+  ret atrib.linhas <= 1, nulo
+  textopos p
+  atribs.ordena, p = atribs.ini
+  enquanto p.lin
+    p.texto == txtsublin(p.textolin(2), 1) ? p.apagar : p.depois
+  efim
 
 func seguir # Segue um item ou personagem
 # arg0 = item ou personagem; se nulo, deixa de seguir

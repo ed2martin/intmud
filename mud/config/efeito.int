@@ -36,6 +36,7 @@ func cmd_atacou # Personagem arg0 atacou arg1
     $mens.mvis3(m1, m2, m3)
     arg0.pvida -= 10
     arg0.acertapos(1)
+  fimse
 
 
 classe e_confusao
@@ -59,6 +60,7 @@ func cmd_atacar
     dono.acertapos(1)
     arg0.p_espera < 50 && (arg0.p_espera = 50)
     ret 1
+  fimse
 
 
 classe e_congelado
@@ -91,12 +93,15 @@ func cmd_atacar
     $mens.p(arg0)
     arg0.msginv("$P está congelad$s.")
     ret 1
+  fimse
 
 func cmd_atacou
   se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo congelado
     se arg2.tipoatk == 4 # Recebeu ataque do tipo fogo
       apagar(este)
+    fimse
+  fimse
 
 func cmd_mover
   arg0.msg("Você congelou")
@@ -275,6 +280,7 @@ const evperso = 1 # Eventos perso: Sim
 func cmd_atacou
   se arg0 == dono && arg0.p_espera < 110
     arg0.p_espera = 110
+  fimse
 
 
 classe e_queimando
@@ -296,6 +302,8 @@ func cmd_atacou
       apagar(este)
     senao arg2.tipoatk == 5 && rand(100) < 25 # Recebeu ataque do tipo água
       apagar(este)
+    fimse
+  fimse
 
 
 classe e_rouquidao
@@ -352,10 +360,12 @@ func recalc_auto # Altera atributos do personagem
 func cmd_fim # Efeito foi apagado
   se dono.posicao == 4 # Se estiver dormindo
     dono.posicao = 8 # Acordou
+  fimse
 
 func cmd_atacou
   se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo
+  fimse
 
 
 classe e_veneno_mortal

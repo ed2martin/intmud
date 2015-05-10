@@ -1,4 +1,5 @@
 telatxt = 1
+err = 1
 
 classe teste
 telatxt tela1
@@ -23,10 +24,12 @@ func ini
 func tela1_tecla
   se arg0 == "ESC"
     terminar
+  fimse
 
 func tela1_msg
   se !escr_[txt1(arg0)](txt2(arg0))
     menu
+  fimse
 
 func menu
   msg("Opções:")

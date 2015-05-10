@@ -59,6 +59,7 @@ func escr
     arg0.msg("Não é possível seguir nessa direção")
   senao
     mudasalatxt(arg0, sala)
+  fimse
 
 func mudasalatxt # Muda de sala avisando que personagem saiu e entrou
 # arg0=personagem, arg1=nova sala
@@ -162,6 +163,7 @@ Os tópicos são:\n\
 func adm
   se arg0.sock.admin
     ret "\nPara ler as páginas de administração tecle \c2ADM\b"
+  fimse
 
 func escr
   se exevento(este, arg0, arg1)
@@ -180,6 +182,7 @@ func escr
     arg0.msg_m(obj.txtajuda(arg0))
   senao
     arg0.msg("Tópico de ajuda inexistente: " + arg1)
+  fimse
 
 
 classe comando_ajuda
@@ -222,6 +225,7 @@ func escr
     arg0.msg("IntMUD " + d.ver + " (interpretador MUD)")
     arg0.msg("Autor: Edward Martin")
     arg0.msg("Programa da casa feito pela mesma pessoa")
+  fimse
 
 
 classe cmd_ver
@@ -241,6 +245,7 @@ func escr
       ret arg0.visivel(i.obj) && nome.nome(i.obj.nome) && i.obj.ver(arg0), nulo
     efim
     arg0.msg("Você não vê isso")
+  fimse
 
 
 classe comando_var
@@ -283,6 +288,7 @@ func escr
     txt100 n
     arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
     lista(arg0, arg0.persoesc.var, "h_", "Nenhuma habilidade" + n, "Habilidades" + n)
+  fimse
 
 
 classe cmd_idioma
@@ -291,6 +297,7 @@ herda comando_var
 func escr
   se !exevento(este, arg0, arg1)
     lista(arg0, arg0.var, "l_", "Nenhum idioma", "Idiomas")
+  fimse
 
 
 classe cmd_item
@@ -308,6 +315,7 @@ func escr
     txt100 n
     arg0.persoesc != arg0 && (n = " de " + arg0.persoesc.nome)
     lista(arg0, arg0.persoesc.var, "i_", "Nenhum item" + n, "Itens" + n)
+  fimse
 
 
 classe cmd_outros
@@ -316,6 +324,7 @@ herda comando_var
 func escr
   se !exevento(este, arg0, arg1)
     lista(arg0, arg0.var, "o_", "Nenhum item extra", "Itens extra")
+  fimse
 
 
 classe cmd_quem
@@ -359,6 +368,7 @@ func escr
     $mens.mtodos1("$P perguntou: " + lin)
   senao
     $mens.mtodos1("$P falou: " + lin)
+  fimse
 
 
 classe cmd_d
@@ -374,6 +384,7 @@ func escr
     arg0.msg("Dizer o que?")
   senao !exevento(este, arg0, arg1)
     arg0.msgsala(arg0.nome + " disse: " + arg1)
+  fimse
 
 
 classe cmd_pegar
@@ -384,6 +395,7 @@ func escr
     pegar_objeto(arg0, arg1)
   senao
     pegar_animal(arg0)
+  fimse
 
 func pegar_objeto # arg0 pega objeto arg1
   txt100 item
@@ -432,6 +444,8 @@ func pegar_animal # arg0 pega personagem arg1
     se arg0.var.a_[r.nome] != "2" # Adiciona na agenda
       arg0.var.a_[r.nome] = 2
       arg0.msg("Adicionado na agenda")
+    fimse
+  fimse
 
 
 classe cmd_soltar
@@ -453,6 +467,7 @@ func escr
     arg0.var.[item]_ -= 1
     $mens.p(arg0)
     $mens.mtodos1("$P solta " + txt2(txttroca(item, "_", " ")))
+  fimse
 
 const soltar_1 = soltar(arg0, arg0.animal.0, 1)
 const soltar_2 = soltar(arg0, arg0.animal.1, 2)
@@ -472,6 +487,7 @@ func soltar # arg0 solta arg1, número do animal é arg2
     arg1 = nulo # Retira esse animal da lista
     arg0.escolhebat # Atualiza persobat
     ret 1 # Indica que processou o comando
+  fimse
 
 
 classe cmd_dar
@@ -556,6 +572,7 @@ func dar # arg0 dá arg1 para arg2, número do animal é arg3
     arg1 = nulo # Retira esse animal da lista
     arg0.escolhebat # Atualiza persobat
     ret 1 # Indica que processou o comando
+  fimse
 
 
 classe cmd_desenterrar
@@ -575,6 +592,7 @@ func escr
     arg0.var.i_[arg1]_ += 1
     $mens.p(arg0)
     $mens.mtodos1("$P desenterra " + arg1)
+  fimse
 
 
 classe cmd_enterrar
@@ -592,6 +610,7 @@ func escr
     arg0.var.i_[arg1]_ -= 1
     $mens.p(arg0)
     $mens.mtodos1("$P senterra " + arg1)
+  fimse
 
 
 classe cmd_vida
@@ -727,6 +746,7 @@ func escr
     arg0.escolhebat # Atualiza persobat
     $mens.p(arg0, r)
     $mens.mvis1("$P escolheu $A")
+  fimse
 
 
 classe cmd_0
@@ -796,6 +816,7 @@ func escr
   se exevento(este, arg0, arg1)
   senao !troca_animal(arg0, txt1(arg1), txt2(arg1))
     troca_objetos(arg0, arg1)
+  fimse
 
 func troca_animal # Trocar dois animais de lugar
 # arg0 = personagem
@@ -904,6 +925,7 @@ func escr
     p.apagar(arg1)
     p.salvar(config:progsalvar)
     arg0.msg("Classe apagada: " + arg1)
+  fimse
 
 
 classe cmd_il

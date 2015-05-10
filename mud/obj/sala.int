@@ -19,14 +19,14 @@ func reset_exec # Executa o reset da área
 # Avisa jogadores
   txt100 mres
   mres = a_txtreset
-  se mres
-    indiceitem i
-    ref r
-    epara i.ini("un "), txt1(i.txt) == "un", i.depois
-      epara r = i.obj.perso.dono, r.dono, r = r.dono
-      efim
-      "a_" + r.s_area == este && i.obj.msg(mres)
+  ret !mres, nulo
+  indiceitem i
+  ref r
+  epara i.ini("un "), txt1(i.txt) == "un", i.depois
+    epara r = i.obj.perso.dono, r.dono, r = r.dono
     efim
+    "a_" + r.s_area == este && i.obj.msg(mres)
+  efim
 
 func resetcont_exec
   resetcont = rand(a_tempo * 500, a_tempo * 700)
@@ -42,6 +42,7 @@ func resetcont_exec
 func reset_atualiza
   se resetcont <= 0 || resetcont >= a_tempo * 700
     resetcont = a_tempo * 700
+  fimse
 
 
 classe sala
@@ -137,29 +138,29 @@ func ini # Objeto foi criado: inicializa variáveis
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
 
 func msg # Mensagem para todos da sala
-  se socktot
-    listaitem i
-    epara i = dentro2.ini, i, i.depois
-      i.obj.msg(arg0)
-    efim
+  ret !socktot, nulo
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    i.obj.msg(arg0)
+  efim
 
 func msgtodos # Mensagem para todos da sala que estiverem acordados
-  se socktot
-    listaitem i
-    epara i = dentro2.ini, i, i.depois
-      i.obj.posicao > 4 && i.obj.msg(arg0)
-    efim
+  ret !socktot, nulo
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    i.obj.posicao > 4 && i.obj.msg(arg0)
+  efim
 
 func t_item_exec # Começar a apagar objetos
-  se !socktot && s_item # Se pode apagar itens
-    listaitem i
-    epara i = dentro1.fim, i, i.antes
-      continuar i.obj.mantersala
-      apagar(i.obj)
-      t_item = 300 # 30 segundos para apagar o próximo
-      ret
-    efim
-    var.z_moedas = "" # Por último apaga as moedas
+  ret socktot || !s_item, nulo # Retorna se não pode apagar itens
+  listaitem i
+  epara i = dentro1.fim, i, i.antes
+    continuar i.obj.mantersala
+    apagar(i.obj)
+    t_item = 300 # 30 segundos para apagar o próximo
+    ret
+  efim
+  var.z_moedas = "" # Por último apaga as moedas
 
 func visivel # Informa se a sala está visível (arg0=quem quer ver)
 # Se retornar 0, significa que não está visível. Nesse caso, para saber
@@ -243,6 +244,7 @@ func tsai2 # Para mostrar as saídas existentes
     casose
       ret " !" + arg0
     casofim
+  fimse
 
 func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # arg0 = nome da saída (até duas letras)

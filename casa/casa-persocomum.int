@@ -60,6 +60,7 @@ func ini # Personagem foi criado
       var.mudar(t.remove + "=1")
     efim
     recuperar # Recupera status
+  fimse
 
 func fim # Personagem foi apagado
   atkenv.limpar
@@ -81,6 +82,7 @@ func esperar # Personagem espera um tempo até poder agir novamente
     t_aguarde == 0 && (t_aguardetxt = "")
     t_aguarde < x && (t_aguarde = x)
     dono.perso && dono.esperar(x)
+  fimse
 
 func teclou # Personagem escreveu algo
   ref obj # Objeto que vai processar o comando
@@ -130,6 +132,7 @@ func t_aguarde_exec
     txt512 lin
     lin = t_aguardetxt, t_aguardetxt = ""
     teclou(lin)
+  fimse
 
 func t_proc_exec
   t_proc = 10
@@ -177,6 +180,7 @@ func t_proc2
   se arg0 <= arg1.tempojog && movesala(arg1)
     arg0 = arg1.tempojog
     ret 1
+  fimse
 
 func escolhehab # Escolhe e retorna o nome de uma habilidade
   txt100 t1 # Nome da habilidade
@@ -233,6 +237,7 @@ func recuperar # Recupera status do personagem
     dono.escolhebat # Atualiza persobat
   senao
     pvida = pvidamax
+  fimse
 
 func ataqueini # Testa se pode atacar
 # Retorna "" se pode atacar ou a mensagem com o motivo se não pode
@@ -242,6 +247,7 @@ func ataqueini # Testa se pode atacar
     ret "Não é permitido brigas aqui"
   senao
     ret ""
+  fimse
 
 func morreu # Personagem morreu
 # Fazer arg0=1 se não deve apagar o personagem
@@ -281,6 +287,7 @@ func morreu # Personagem morreu
   senao
     dono.msg(nome + " morreu")
     apagar(este)
+  fimse
 
 func ganhaexp # Personagem ganha experiência
 # arg0 = experiência
@@ -290,6 +297,7 @@ func ganhaexp # Personagem ganha experiência
     nivel += 1
     dono.msg(nome + " foi para nível " + nivel)
     recalc = 1 # Recalcular atributos do personagem
+  fimse
 
 func ver # Quando alguém tecla ver seguido do nome do personagem
   arg0.msg(nome + " nível " + nivel + " vida " + pvida + " de " + pvidamax)

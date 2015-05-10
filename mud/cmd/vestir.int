@@ -138,14 +138,13 @@ func escr
         refvar mvestir = txtsublin(config:equip_vestir, pos, 1)
         $mens.mvis1(mvestir ? mvestir : "$P veste $o.")
         ev_vestiu(alvo, r, pos + 1)
-        efim
       fimse
     efim
   efim
 # Avisa se não encontrou nenhum item
   !total && arg0.msg("Você não vê isso.")
 
-func ev_vestir  # Gera evento cmd_vestir com arg0, arg1 e arg2
+func ev_vestir # Gera evento cmd_vestir com arg0, arg1 e arg2
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_vestir(arg0, arg1, arg2, arg0), 1
@@ -154,7 +153,7 @@ func ev_vestir  # Gera evento cmd_vestir com arg0, arg1 e arg2
     ret l.objini.cmd_vestir(arg0, arg1, arg2, arg1), 1
   efim
 
-func ev_vestiu  # Gera evento cmd_vestiu com arg0, arg1 e arg2
+func ev_vestiu # Gera evento cmd_vestiu com arg0, arg1 e arg2
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_vestu(arg0, arg1, arg2, arg0)

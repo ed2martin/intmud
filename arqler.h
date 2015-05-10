@@ -23,6 +23,8 @@ public:
              *   @return Número da linha lida,
              *          ou 0 se fim do arquivo,
              *          ou -1 se erro na leitura */
+    int  LinhaAtual() { return linhanum; }
+            ///< Retorna o número da linha atual
 
 private:
     int  arq;           ///< Para acessar o arquivo

@@ -171,11 +171,13 @@ func recebe1 # Função recebe após uso de atalhos
   senao # Chegou ao limite de comandos
     msg("Aguarde")
     ret 1
+  fimse
 
 func espera_exec # Chamado por p_espera do personagem
   se comandos
     perso.teclou(comandos.remove(1)) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
+  fimse
 
 func temposair # Acerta variáveis de tempo para sair do MUD
   casovar txt1(info)
@@ -198,6 +200,7 @@ func txtmostra # Mostra próximo bloco de txtmais
     msg(txtmais.remove(10))
   senao
     msg(txtmais.remove(9) + "\nTecle M para mais")
+  fimse
 
 func msg # Envia mensagem
 # arg0=mensagem
@@ -238,21 +241,22 @@ func msgprompt_exec
     ret !jogconfig.6, j_t_prompt
     refvar t1 = $mens_prompt.mens(perso.var.z_prompt, perso) + "\b"
     msg(t1, 1)
+  fimse
 
 func msgchegou # Mensagem de usuário chegando ou saindo
 # arg0 = mensagem para administradores
 # arg1 = mensagem para usuários normais
   $misclog.entrou(arg0)
-  se config:entrainfo
-    indiceitem item
-    epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      continuar item.obj == este
-      se item.obj.jogconfig.23 # Se usuário é admin...
-        arg0 && item.obj.msg("* " + arg0)
-      senao config:entrainfo == 2 && !jogconfig.17
-        arg1 && item.obj.msg("* " + arg1)
-      fimse
-    efim
+  ret !config:entrainfo, nulo
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    continuar item.obj == este
+    se item.obj.jogconfig.23 # Se usuário é admin...
+      arg0 && item.obj.msg("* " + arg0)
+    senao config:entrainfo == 2 && !jogconfig.17
+      arg1 && item.obj.msg("* " + arg1)
+    fimse
+  efim
 
 const m_menu = $[arg0].passo(este, "\b")
 
@@ -314,6 +318,7 @@ func passo
   senao
     arg0.passo = este
     arg0.msg("Deseja criar o personagem '" + arg0.nome + "'? (tecle S ou N)")
+  fimse
 
 
 classe adm_criasenha1
@@ -703,8 +708,6 @@ func ini
   perso = arg0, sala = arg1, l.addfim(arg2), ex1 = 1
 # telatxt t
 # t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
-  arg0.prenascer = intmax(arg0.prenascer, arg0.var.z_reviver_, arg0.var.z_renascer_)
-  arg0.var.z_reviver = arg0.var.z_renascer = ""
 
 func ex1_exec
   ex2 = 1

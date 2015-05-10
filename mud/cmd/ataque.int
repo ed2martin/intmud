@@ -249,6 +249,7 @@ func escr # Atacar alguém
     exechab(p, r.persobat, 0.5, arg3, arg2)
   senao
     exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel)
+  fimse
 
 func exechabperso # Personagem usa uma habilidade ou magia
 # arg0 = quem está usando a habilidade ou magia
@@ -703,10 +704,8 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
   txt512 lin.3
   ret !menssub(lin, 0), nulo
   $mens.p(arg0, arg1, arma1)
-  se arg0 == arg1
-    $mens.mtodos2(lin.0, lin.2)
-  senao
-    $mens.mtodos3(lin.0, lin.1, lin.2)
+  ret arg0 == arg1, $mens.mtodos2(lin.0, lin.2)
+  $mens.mtodos3(lin.0, lin.1, lin.2)
 
 func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
@@ -788,6 +787,7 @@ func exechab # Chamado quando personagem (arg0) quer atacar alguém (arg1)
     arg0.msg("Você não sabe como atacar " + arg1.descnome + ".")
   senao arg0.atkenv # Se está lutando
     arg0.p_espera = intmax(arg0.p_espera, config:atktempo)
+  fimse
 
 
 classe comando_ataque_log

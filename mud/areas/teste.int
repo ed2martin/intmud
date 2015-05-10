@@ -158,6 +158,7 @@ func descver
     ret "Contém um palito."
   senao
     ret "Contém " + palitos + " palitos."
+  fimse
 
 func cmd_acender
   se !palitos
@@ -222,6 +223,7 @@ func cmd_podevestir
 # dono.tipo2 é a classe
   se dono.tipo1 != "elfo" # Checa se a raça é "elfo"
     ret "Somente elfos podem vestir o colete dos elfos."
+  fimse
 
 func recalc_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -296,12 +298,14 @@ func cmd_mover
   se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
     ret 1
+  fimse
 
 func cmd_moveu
   se vestpos == 18 # Usando nos tornozelos
     arg0.pmove -= arg0.pmovemax * 0.3
   senao vestpos # Usando em qualquer outro lugar
     arg0.pmove -= 1
+  fimse
 
 func cmd_remover
   ret arg1 != este, nulo # Retorna se não for esse item
@@ -312,6 +316,7 @@ func cmd_remover
     efim
     arg0.msg("Você não possui a chave de " + descnome + ".")
     ret 1
+  fimse
 
 
 classe i_teste020
@@ -409,6 +414,7 @@ sav inttempo tempo # inttempo executa uma função após um tempo
 func cmd_mudadono
   se dono.perso && tempo == 0 # Se pertence a um personagem e tempo é zero
     tempo = 100 # Faz tempo ser 100 (10 segundos)
+  fimse
 
 func tempo_exec
   apagar(este)
@@ -419,6 +425,7 @@ func tempo_exec
   senao !dono.item # Se não está em outro item (está na sala), avisa a todos
     $mens.p(este)
     $mens.mvis1("$P some misteriosamente.")
+  fimse
 
 
 classe i_teste030
@@ -433,6 +440,7 @@ func cmd_mudadono
     !tempo && (tempo = 100) # Se tempo for 0, faz tempo ser 100 (10 segundos)
   senao !dono.item # Se não está em outro item (está na sala)
     tempo = 0
+  fimse
 
 func tempo_exec
   apagar(este)
@@ -440,6 +448,7 @@ func tempo_exec
     dono.msg("Sua chave do tipo dois some misteriosamente!")
     $mens.p(dono)
     $mens.mtodos2("", "A chave de $p some misteriosamente!")
+  fimse
 
 
 classe i_teste031
@@ -453,12 +462,14 @@ func cmd_mudadono
     tempo = 0 # Item não será apagado
   senao # Caso contrário
     tempo = 100 # Item será apagado em 10 segundos
+  fimse
 
 func tempo_exec
   apagar(este)
   se !dono.perso && !dono.item # Se não pertence a personagem nem a outro item
     $mens.p(este)
     $mens.mvis1("$P some misteriosamente.")
+  fimse
 
 
 classe i_teste032
@@ -497,6 +508,7 @@ func cmd_bebeu
   ret arg1 != este, nulo # Retorna se arg1 não for o próprio item
   se arg0.tipo1 != "elfo"
     criar("e_veneno_mortal", arg0, 10) # arg0 recebe um efeito "Veneno Mortal" nível 10
+  fimse
 
 
 classe i_teste035
@@ -515,6 +527,7 @@ func cmd_bebeu
     $mens.mvis2("Você se sente melhor.", "$P parece melhor.")
   senao # Se não está com o efeito
     arg0.msg("Você não sente diferença.")
+  fimse
 
 
 classe i_teste036
@@ -560,6 +573,7 @@ func cmd_mudadono
     !tempo && (tempo = 100) # Se tempo for 0, faz tempo ser 100 (10 segundos)
   senao !dono.item # Se não está em outro item (está na sala ou em PNJ)
     tempo = 0
+  fimse
 
 func tempo_exec
   apagar(este)
@@ -567,6 +581,7 @@ func tempo_exec
     dono.msg("Sua chave do tipo dois some misteriosamente!")
     $mens.p(dono)
     $mens.mtodos2("", "A chave de $p some misteriosamente!")
+  fimse
 
 
 classe i_teste040
@@ -782,6 +797,7 @@ func cmd_darobj # Alguém quer dar algum item
   se arg2.nome != "pedra"
     arg0.msg("Jardineiro não aceita " + arg2.descnome + ".")
     ret 1 # Para não receber o item
+  fimse
 
 func cmd_deuobj # Recebeu um item
 # telatxt t
@@ -968,6 +984,7 @@ func cmd_falou
     arg0.var.z_salafim = dono
     $mens.p(este, arg0)
     $mens.mtodos1("Prefeito disse para $a: Agora seu ponto de retorno é aqui.")
+  fimse
 
 
 classe p_teste011
@@ -1020,6 +1037,7 @@ func cmd_falou
       $mens.p(arg0, r)
       $mens.mvis1("Adestradora dá $a para $P.")
     fimse
+  fimse
 
 
 classe p_teste013
@@ -1090,6 +1108,7 @@ func cmd_mover
   senao arg0.dentro2.objini("i_teste018") # Empunhando/vestindo um sapato
     arg0.msg("Guarda: Remova os sapatos para não sujar o chão.")
     ret 1
+  fimse
 
 func cmd_soltouobj # Chamado quando um personagem soltou algum item
 # arg0=personagem, arg1=aonde soltou, arg2=item, arg3=quantidade do item
@@ -1162,6 +1181,7 @@ func cmd_darobj # Alguém quer dar algum item
   senao # Se não for um dos anteriores
     arg0.msg("João: Isso não me interessa.")
     ret 1
+  fimse
 
 func cmd_deuobj # Recebeu um item
   apagar(arg2) # Apaga o item
@@ -1230,6 +1250,7 @@ func cmd_darobj # Alguém quer dar algum item
   senao recebeu == "1"
     arg0.msg("Maria: Você já me deu isso.")
     ret 1
+  fimse
 
 func cmd_deuobj # Recebeu um item
   apagar(arg2) # Apaga o item
@@ -1268,6 +1289,7 @@ func descpadr
     ret "Um ajudante está aqui, à serviço de " + iseguir.objlista.descnome + "."
   senao
     ret "Um ajudante está aqui."
+  fimse
 
 func seguirjog # Função chamada pela sala
 # arg0 = personagem que o ajudante deve seguir e observar
@@ -1285,6 +1307,7 @@ func cmd_falou
     apagar(este)
     $mens.p(este, arg0)
     $mens.mtodos1("$P deixa de seguir $a e vai embora")
+  fimse
 
 
 classe p_teste022
@@ -1363,6 +1386,7 @@ func cmd_darobj # Alguém quer dar algum item
     refvar total = 3 - arg0.var.j_ursula_
     arg0.msg("Úrsula: É muita coisa. Eu só preciso de " + total + " desses palitos.")
     ret 1 # Para não receber o item
+  fimse
 
 func cmd_deuobj # Recebeu um item
 # arg0=quem quer dar, arg1=quem vai receber, arg2=item, arg3=quantidade
@@ -1375,6 +1399,7 @@ func cmd_deuobj # Recebeu um item
     $mens.p(este, arg0)
     $mens.mvis1("$P dá uma lanterna para $a.")
     criar("i_teste007", arg0, 0)
+  fimse
 
 
 classe p_teste025
@@ -1537,6 +1562,7 @@ func cmd_mover
     !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
     !arg0.pnivel && (arg0.pnivel = 1)
     arg0.recalc = 1
+  fimse
 
 const s_reset = "S 100 teste032 1 S"
 
@@ -1612,10 +1638,12 @@ func cmd_salaperso # Personagem chegou
 func cmd_pegarobj # Pegar alguma coisa
   se arg2.nome == "pedra"
     criar("i_teste002", este) # Cria uma pedra na sala
+  fimse
 
 func cmd_soltarobj # Soltar alguma coisa
   se arg2.nome == "pedra"
     apagar(arg2) # Apagará a pedra
+  fimse
 
 const s_reset = "S 100 teste002 0 S"
 
@@ -1658,6 +1686,7 @@ func cmd_mover
     arg0.msg("Você começa a ir para o norte, mas uma planta carnívora tenta te comer.")
     arg0.msg("Então você recua.")
     ret 1
+  fimse
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -1728,6 +1757,7 @@ func cmd_escr # Personagem escreveu alguma coisa
   se arg1 == "salvar"
     arg0.mudasenha # Muda a senha
     ret 1
+  fimse
 
 
 classe s_teste012
@@ -1778,6 +1808,7 @@ const dir_no = $s_teste002
 func cmd_salaperso # Personagem chegou
   se arg0.jog
     misc:evento(arg0) # Receber eventos do jogador
+  fimse
 
 func cmd_escr # Escreveu algo
   casovar txtmin(arg1)
@@ -2010,6 +2041,7 @@ func cmd_escr # Escreveu algo
     arg0.var.h_cortar = 1
     arg0.msg("Você aprende a cortar.")
     ret 1
+  fimse
 
 
 classe s_teste027
@@ -2089,6 +2121,7 @@ func cmd_escr # Escreveu algo
     arg0.var.z_moedas = 1000
     arg0.msg("Agora você tem 1000 moedas.")
     ret 1
+  fimse
 
 
 classe s_teste031
@@ -3014,6 +3047,7 @@ func cmd_mover
     $mens.p(arg0)
     $mens.mtodos1("$P escorrega no gelo e quase cai.")
     ret 1
+  fimse
 
 
 classe s_teste089
@@ -3056,6 +3090,7 @@ func entrou2
 # Ou seja, pega o número de arg0.var.j_contador, soma 1 e guarda
 # o resultado em arg0.var.j_contador
     arg0.msg("Você já esteve aqui " + arg0.var.j_contador_ + " vezes.")
+  fimse
 
 
 classe s_teste091
@@ -3078,6 +3113,7 @@ func entrou2
     arg0.msg("Você é o primeiro personagem a entrar aqui.")
   senao
     arg0.msg("Já entraram personagens aqui " + contador + " vezes.")
+  fimse
 
 
 classe s_teste092
@@ -3182,6 +3218,7 @@ func cmd_falou
     r.seguirjog(arg0) # Chama uma função que foi criada em p_teste021 para seguir o jogador
     $mens.p(r, arg0)
     $mens.mvis1("$P apareceu, para auxiliar $a.")
+  fimse
 
 
 classe s_teste097
@@ -3295,6 +3332,7 @@ func cmd_escr # Escreveu algo
     !r && arg0.msg("Você não possui nenhuma chama protetora.")
     apagar(r)
     ret 1
+  fimse
 
 
 classe s_teste104

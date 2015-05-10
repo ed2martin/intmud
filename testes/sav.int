@@ -1,3 +1,5 @@
+err = 1
+
 classe teste
 comum serv servidor
 socket conec
@@ -7,6 +9,7 @@ const msg = conec.msg(arg0)
 func iniclasse
   se ![arg0]:servidor.abrir("localhost", 2000)
     terminar
+  fimse
 func servidor_socket
   criar("teste", arg0)
 func ini
@@ -37,6 +40,7 @@ func escr_s
     msg("Sucesso\n")
   senão
     msg("Falha\n")
+  fimse
 func escr_l
   arqsav sav
   int16 lido
@@ -48,6 +52,7 @@ func escr_a
     msg("Sucesso\n")
   senão
     msg("Falha\n")
+  fimse
 func escr_x
   lista1.addfim(criar("x"))
   msg("Criado objeto x\n")

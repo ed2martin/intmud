@@ -11,6 +11,10 @@ telatxt = 1
 # Aonde apresentar mensagens de erro no programa
 log = 0
 
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
 classe config
 # Configuração
 #
@@ -68,8 +72,7 @@ const msgtodos = j_tela.msg(arg0 + "\n")
 const info = "l local"
 
 func iniclasse
-  se config:modo == 0
-    criar(arg0)
+  config:modo == 0 && criar(arg0)
 
 func ini
   msg("Jogando localmente; tecla ESC encerra o programa")
@@ -83,6 +86,7 @@ func j_tela_tecla
   se arg0 == "ESC"
     jogador:fim
     terminar
+  fimse
 
 
 classe jogoserv
@@ -100,6 +104,7 @@ func info
     ret "p " + j_conec.ip
   senao
     ret "t " + j_conec.ip
+  fimse
 
 func msgtodos
   ref r
@@ -115,6 +120,7 @@ func iniclasse
     senao
       tela.msg("Não foi possível abrir a porta " + config:servporta + "\n")
     fimse
+  fimse
 
 func j_serv_socket # Conectado: cria objeto
   criar("jogoserv", arg0)
@@ -131,10 +137,10 @@ func ini # Objeto foi criado
     j_passo = 2
     j_tempo = 36000 # Fecha conexão em uma hora
     jogador:ini
+  fimse
 
 func fim # Objeto foi apagado
-  se j_passo == 2
-    jogador:fim
+  j_passo == 2 && jogador:fim
 
 func j_tempo_exec # Tempo esgotado
   se j_passo == 1
@@ -143,6 +149,7 @@ func j_tempo_exec # Tempo esgotado
   senao
     j_conec.msg("-Tempo esgotado\n")
     apagar(este)
+  fimse
 
 func j_conec_fechou # Conexão fechou
   apagar(este)
@@ -163,6 +170,8 @@ func j_conec_msg # Recebeu mensagem do usuário
       j_conec.proto = 5
     senao # Nome vazio: é Telnet
       j_conec.msg("-OK Entrando via Telnet\n")
+    fimse
+  fimse
 
 
 classe jogobot
@@ -173,6 +182,7 @@ inttempo conectando
 func iniclasse
   se config:modo == 3
     criar(arg0)
+  fimse
 
 func ini
   conectando = 100
@@ -181,6 +191,7 @@ func ini
     tela.msg("Endereço inválido: " + config:serv + "\n")
   senao
     tela.msg("Conectando em " + config:serv + "\n")
+  fimse
 
 func conectando_exec # 10 segundos tentando conectar
   apagar(este)
@@ -188,6 +199,7 @@ func conectando_exec # 10 segundos tentando conectar
     tela.msg("Tempo demais esperando resposta OK\n")
   senao
     tela.msg("Tempo demais esperando conectar\n")
+  fimse
 
 func conec_err # Não conseguiu conectar
   apagar(este)

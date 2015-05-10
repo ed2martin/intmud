@@ -95,10 +95,8 @@ func escr1 # Consultar a lista de taxas
     fimse
   efim
 # Envia mensagens
-  se t.linhas
-    arg0.msg2(t.remove(1000))
-  senao
-    arg0.msg("Ninguém cobra taxas aqui.")
+  ret t.linhas, arg0.msg2(t.remove(1000))
+  arg0.msg("Ninguém cobra taxas aqui.")
 
 func escr2 # Consultar um item
   listaobj l

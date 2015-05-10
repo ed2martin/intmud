@@ -46,11 +46,13 @@ func descpos
     ret "Uma grande escada está aberta aqui."
   senao
     ret "Uma escada está em baixo do beliche."
+  fimse
 
 func cmd_pegarobj
   se arg2 == este
     arg0.msg("A escada é grande demais para você pegar.")
     ret 1
+  fimse
 
 func cmd_abrirobj
   se arg1 == este
@@ -61,6 +63,7 @@ func cmd_abrirobj
       arg0.var.d_escada_ = 1
     fimse
     ret 1
+  fimse
 
 func cmd_fecharobj
   se arg1 == este
@@ -71,6 +74,7 @@ func cmd_fecharobj
       arg0.msg("A escada já está fechada.")
     fimse
     ret 1
+  fimse
 
 
 classe i_casa002
@@ -141,6 +145,7 @@ func testafim_exec
     dono.msg("Você pensa:\nO jeito é pegar as duas esferas pretas de uma vez, com um só comando."\
 )
     este.apagar
+  fimse
 
 
 classe i_casa005
@@ -154,6 +159,7 @@ func testafim_exec
     dono.msg("Você pensa:\nO jeito é pegar as duas esferas pretas de uma vez, com um só comando."\
 )
     este.apagar
+  fimse
 
 
 classe i_casa006
@@ -285,6 +291,7 @@ func cmd_pnj_proc
     apagar(este)
     dono.msg("Boneco de papel caiu do telhado.")
     ret 1
+  fimse
 
 
 classe p_casa003
@@ -352,6 +359,7 @@ func entrou20
     arg0.msg("Menina: Você destruiu meu boneco de papelão!!!")
   senao arg0.pnivel < 11
     arg0.msg("Menina: Olá!")
+  fimse
 
 func entrou40
   se arg0.var.j_salvar
@@ -393,6 +401,7 @@ func cmd_atacar1
     dono.msg("Menina acabou derrubando dois bonecos de papel.")
     criar("p_casa002", dono, nivel - 2, "h_socar=3", arg0)
     criar("p_casa002", dono, nivel - 2, "h_socar=3", arg0)
+  fimse
 
 
 classe p_casa005
@@ -569,6 +578,7 @@ func cmd_atkenv
   se !arg1.var.d_cachorro
     arg1.var.d_cachorro = 1
     arg1.msg("Cachorro se sente ameaçado com você invadindo o território dele.")
+  fimse
 
 
 classe p_casa014
@@ -608,6 +618,7 @@ func cmd_atkenv
     pvida > pvidamax && (pvida = pvidamax)
 # Checará se o alvo morreu
     alvoexec = 1, alvoitem.remove, alvoitem = arg1.evento.addfim(este)
+  fimse
 
 func alvoexec_exec
   alvoitem.remove
@@ -618,6 +629,7 @@ func cmd_morreu
     $mens.mvis1("O corpo de $A começa a se mexer com um aspecto cadavérico.")
     nomealvo = " " + arg0.descnome
     pvida = pvidamax
+  fimse
 
 
 classe p_casa015
@@ -637,12 +649,14 @@ func cmd_chegou # Chegou na sala
     misc:tempo("pedir", arg0) # Dispara funções 'pedir'
   senao
     misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+  fimse
 
 func pedir30
   se !arg0.dentro1.objini("i_casa009")
     arg0.msg("Ivone: Essa bolsa não é minha.")
   senao
     arg0.msg("Ivone: Poderia devolver minha bolsa? (tecle dar bolsa ivone)")
+  fimse
 
 func entrou40
   arg0.msg("Ivone: Esqueci minha bolsa no escritório.")
@@ -735,6 +749,7 @@ func cmd_escr # Escreveu algo
     $mens.p(arg0)
     $mens.mtodos1("$P descansa e se recupera.")
     ret 1
+  fimse
 
 
 classe s_casa002
@@ -761,11 +776,13 @@ func tempomax_exec
   se !dentro2.objini("p_casa001")
     criar("p_casa001", este, 1, "h_socar=2,e_apagar=100")
     msg("Um boneco de papel entrou pela janela.")
+  fimse
 
 func cmd_mover
   se arg2 == "l" && arg0.pnivel == 0
     arg0.msg("Você tem medo de ir para o leste, estando no nível 0.")
     ret 1
+  fimse
 
 func cmd_fugir
   arg0.pmove -= 5
@@ -829,6 +846,7 @@ func cmd_escr
     arg0.mudadono($s_casa005)
     $mens.mtodos2("", "Boneco $p acaba de cair aqui.")
     ret 1
+  fimse
 
 
 classe s_casa005
@@ -851,6 +869,7 @@ func cmd_mover
       $mens.mtodos2("", "$P acaba de sair de dentro do jogo.")
     fimse
     ret 1
+  fimse
 
 
 classe s_casa006
@@ -890,6 +909,7 @@ func cmd_mover
     $mens.mtodos2("", "$P foi para leste e caiu na madeira podre.")
     arg0.morreu
     ret 1
+  fimse
 
 
 classe s_casa009
@@ -937,11 +957,13 @@ func s_desc
     ret s_desc0 + s_desc1
   senao # Escada fechada, jogador em pé
     ret s_desc0 + s_desc1 + s_desc2
+  fimse
 
 func cmd_mover
   se arg2 == "c" && !arg0.var.d_escada_
     arg0.msg("Você não consegue subir, é muito alto.")
     ret 1
+  fimse
 
 const s_reset = "S 100 casa001 0 s"
 
@@ -1010,6 +1032,7 @@ func cmd_salaperso # Personagem chegou
   se arg0.jog && arg0.pnivel < 11 # Jogador que ainda não chegou no nível 11
     criar("p_casa003", este, 9, "h_socar=3,h_chutar=2", arg0)
     misc:evento(arg0) # Receber eventos do jogador
+  fimse
 
 func cmd_fugir
   arg0.pmove -= 5
@@ -1051,6 +1074,7 @@ func cmd_mover
   se arg2 == "s" && arg0.pnivel < 11
     arg0.msg("O medo toma conta de você, ao ver um cachorro andando pelo saguão.")
     ret 1
+  fimse
 
 
 classe s_casa019
@@ -1070,6 +1094,7 @@ func cmd_mover
   se arg2 == "s" && arg0.pnivel < 11
     arg0.msg("O medo toma conta de você, ao ver um cachorro andando pelo saguão.")
     ret 1
+  fimse
 
 
 classe s_casa020
@@ -1328,12 +1353,14 @@ func s_desc2
   se $s_casa035.dentro2.objini("p_casa013")
     ret " No saguão você vê um cachorro faminto à procura de carne.\nEle olha para você como que \
 pedindo alguma coisa."
+  fimse
 
 func cmd_soltouobj
   se "i_casa002" == arg2 # Se soltou um bife
     ref r
     r = $s_casa035.dentro2.objini("p_casa013") # Cachorro
     r.andar = 30 # Processamento do cachorro
+  fimse
 
 
 classe s_casa034
@@ -1352,12 +1379,14 @@ func s_desc2
   se $s_casa035.dentro2.objini("p_casa013")
     ret " No saguão você vê um cachorro faminto à procura de carne.\nEle olha para você como que \
 pedindo alguma coisa."
+  fimse
 
 func cmd_soltouobj
   se "i_casa002" == arg2 # Se soltou um bife
     ref r
     r = $s_casa035.dentro2.objini("p_casa013") # Cachorro
     r.andar = 30 # Processamento do cachorro
+  fimse
 
 
 classe s_casa035

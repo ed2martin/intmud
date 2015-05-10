@@ -13,6 +13,7 @@ func segsala20
 func segsala7
   se numperso >= 1 && numperso <= 4 & rand(100) < 50
     criar("p_rato", este, 35, "h_Roer,h_Arranhatox")
+  fimse
 
 func entrou
   ver(arg0)
@@ -251,6 +252,7 @@ func entrou
 func segsala11
   se rand(100) < 20
     criar("p_leopardo", este, rand(100) + 20, "h_Arranhar,h_Morder")
+  fimse
 
 func segsala4
   tempo = (tempo + 1) % 130
@@ -277,6 +279,7 @@ func segsala4
       criar("p_rato", este, rand(10, 29), "h_Roer,h_Arranhatox")
       criar("p_rato", este, rand(10, 29), "h_Roer,h_Arranhatox")
     casofim
+  fimse
 
 func entrou16
   criar("p_leopardo", este, 39, "h_Arranhar,h_Morder")
@@ -370,6 +373,7 @@ um ao norte e outro à leste."
 func segsala20
   se numperso == 0 && rand(100) < 50
     criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+  fimse
 
 func entrou
   ver(arg0)
@@ -393,6 +397,7 @@ const dir_s = $s_duto025
 func segsala20
   se numperso == 0 && rand(100) < 50
     criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+  fimse
 
 func entrou
   ver(arg0)
@@ -450,6 +455,7 @@ func entrou
 func segsala10
   se numperso == 0 && rand(100) < 50
     criar("p_rato", este, 29, "h_Roer,h_Arranhatox")
+  fimse
 
 
 classe s_duto029
@@ -471,6 +477,7 @@ func cmd_c
     arg0.msg("Você tenta escalar as paredes mas não consegue")
   senao
     arg0.msg2(arg0.nome + " joga uma corda e escala a parede")
+  fimse
 
 func entrou7
   criar("p_leopardo", este, 30, "h_Arranhar,h_Morder")
@@ -490,6 +497,7 @@ func segsala50
 func segsala10
   se numperso >= 5
     criar("p_leopardo", este, numperso * 2 + 20, "h_Arranhar,h_Morder")
+  fimse
 
 
 classe s_duto030
@@ -506,6 +514,7 @@ func entrou
 func segundo5
   se rand(10) = 0
     criar("p_rato", este, rand(10, 59), "h_Roer,h_Arranhatox")
+  fimse
 
 
 classe s_duto031
@@ -553,6 +562,7 @@ func entrou
 func segundo5
   se rand(10) = 0
     criar("p_rato", este, rand(10, 59), "h_Roer,h_Arranhatox")
+  fimse
 
 
 classe s_duto033
@@ -585,10 +595,12 @@ func segsala50
 func segsala7
   se numperso >= 8
     criar("p_leopardo", este, 20, "h_Arranhar,h_Morder")
+  fimse
 
 func segundo12
   se numperso > 5
     criar("p_leopardo", este, 20, "h_Arranhar,h_Morder")
+  fimse
 
 
 classe s_duto034
@@ -663,6 +675,7 @@ func cmd_entrar
   se $s_duto039.elevador != 0
     arg0.msg("O elevador não está aqui")
     ret 1
+  fimse
 
 
 classe s_duto039
@@ -682,6 +695,7 @@ func cmd_sair
   se elevador != 0 && elevador != 3
     arg0.msg("Não pode sair do elevador agora")
     ret 1
+  fimse
 
 func ini
   tempo = 50 # Faz o contador funcionar
@@ -712,6 +726,7 @@ func tempo_exec
 func segsala5
   se elevador == 1 || elevador == 2
     criar("p_rato", este, rand(30, 79), "h_Roer,h_Arranhatox")
+  fimse
 
 
 classe s_duto040
@@ -732,6 +747,7 @@ func cmd_entrar
   se $s_duto039.elevador != 3
     arg0.msg("O elevador não está aqui")
     ret 1
+  fimse
 
 func segundo3
   se nivel < 50
@@ -741,6 +757,7 @@ func segundo3
   fimse
   se rand(100) < 50 + nivel / 7
     criar("p_leopardo", este, nivel + rand(30, 40), "h_Arranhar,h_Morder")
+  fimse
 
 func segsala23
   casovar rand(6)

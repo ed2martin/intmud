@@ -1,3 +1,5 @@
+err = 1
+
 classe teste
 comum serv servidor
 comum arqlog log1
@@ -9,6 +11,7 @@ func iniclasse
     log1.abrir("intmud.log")
     log1.msg("Não foi possível abrir a porta 2000")
     terminar
+  fimse
 func servidor_socket
   criar("teste", arg0)
 func ini
@@ -35,3 +38,4 @@ func conec_msg
   senao
     conec.msg("Você escreveu " + arg0 + "\n")
     log1.msg("msg: " + arg0)
+  fimse

@@ -186,6 +186,14 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
                 return CriarVarTexto(txt1);
             }
         }
+        const char * p = checalinha.Fim();
+        if (p)
+        {
+            char txt1[1024];
+            mprintf(txt1, sizeof(txt1), "%d: %s", linha, p);
+            ApagarVar(v);
+            return CriarVarTexto(txt1);
+        }
     // Acerta o bloco
         TClasse::AcertaComandos(mens.Buf);
     // Anota instruções em DadosPilha

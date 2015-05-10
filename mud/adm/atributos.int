@@ -155,6 +155,7 @@ func atrib_ler2 # Usado internamente em atrib_ler
     arg1 = txtsub(arg0, 6)
   senao
     arg1 = txtsub(arg0, 2)
+  fimse
 
 func atrib_salvar # Salva os atributos em função conforme a variável vatrib
 # arg0 = objeto jogsock do jogador
@@ -229,6 +230,7 @@ func atrib_salvar # Salva os atributos em função conforme a variável vatrib
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
     admlog(arg0, "apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
+  fimse
 
 func passo # Editando atributos
   uint16 linha

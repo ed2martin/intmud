@@ -156,8 +156,12 @@ void TArqMapa::SalvarArq(bool tudo)
                 "# Se deve abrir uma janela de texto - variável telatxt\n"
                 "telatxt = %d\n\n"
                 "# Aonde apresentar mensagens de erro no programa\n"
-                "log = %d\n\n",
-                Instr::VarExecIni, Console!=0, err_tipo);
+                "log = %d\n\n"
+                "# Erros em blocos de instruções:\n"
+                "# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo\n"
+                "err = %d\n\n",
+                Instr::VarExecIni, Console!=0, err_tipo,
+                Instr::ChecaLinha::ChecaErro);
         }
         for (TClasse * cl = arqmapa->ClInicio; cl; cl=cl->ArqDepois)
         {

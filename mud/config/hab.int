@@ -194,6 +194,7 @@ func cmd_atacou
     pontos = intpos(pontos - arg1.pvida) / 2
     vida += pontos
     vida > max && (vida = max)
+  fimse
 
 
 classe cmd_endurecer
@@ -416,6 +417,7 @@ func cmd_atacar
     $mens.p(arg0)
     arg0.msginv("$P não consegue roncar estando acordad$s.")
     ret 1
+  fimse
 
 
 classe cmd_rosnar
@@ -544,6 +546,7 @@ func cmd_alvo
     result = 1 # Resultado: 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo
     mensgolpe(arg0, arg1) # Envia mensagem de acordo com a variável result
     ret 1 # Para cancelar a magiaclasse magia_curar
+  fimse
 
 
 classe magia_criar_fonte
@@ -612,6 +615,7 @@ func cmd_atacou
   se !arg2.result
     arg1.pmana *= 0.6
     arg1.pmove *= 0.6
+  fimse
 
 
 classe magia_flutuar

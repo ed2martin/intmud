@@ -115,7 +115,7 @@ func soltarobj
     senao
       erro = "Não é possível colocar " + arg1.descnome + " dentro dela mesma."
     fimse
-    continuar
+    ret
   senao arg1.dentro1.total + (arg2.item == 2 ? 1 : total) > arg1.objmax
     se !arg1.item
       erro = "Não consegue soltar nada aqui."

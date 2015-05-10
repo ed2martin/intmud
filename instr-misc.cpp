@@ -15,6 +15,8 @@
 #include "variavel.h"
 #include "misc.h"
 
+int Instr::ChecaLinha::ChecaErro = 0;
+
 //------------------------------------------------------------------------------
 const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
 {
@@ -234,12 +236,14 @@ bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
 Instr::ChecaLinha::ChecaLinha()
 {
     esperando=0;
+    pbuf=0;
 }
 
 //------------------------------------------------------------------------------
 void Instr::ChecaLinha::Inicio()
 {
     esperando=0;
+    pbuf=0;
 }
 
 //------------------------------------------------------------------------------
@@ -265,7 +269,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     if (cod==cFunc || cod==cVarFunc)
     {
         esperando=2;
-        return 0;
+        return Fim();
     }
 // Constante
     if (cod==cConstNulo || cod==cConstTxt ||
@@ -273,7 +277,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     {
         if (esperando!=1)
             esperando=3;
-        return 0;
+        return Fim();
     }
 // Variável
     if (cod >= cVariaveis)
@@ -288,7 +292,90 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
 // Instrução
     if (esperando != 2)
         return "Instrução não pertence a uma função";
+// Blocos de instruções
+    if (ChecaErro <= 0)
+        return 0;
+    switch (cod)
+    {
+    case cSe:
+        if (pbuf < sizeof(buf))
+            buf[pbuf++] = 0;
+        break;
+    case cSenao1:
+    case cSenao2:
+        if (pbuf ? buf[pbuf-1]!=0 : true)
+            return "Senão sem Se";
+        break;
+    case cFimSe:
+        if (pbuf ? buf[pbuf-1]!=0 : true)
+            return "FimSe sem Se";
+        pbuf--;
+        break;
+    case cEnquanto:
+    case cEPara:
+        if (pbuf < sizeof(buf))
+            buf[pbuf++] = 1;
+        break;
+    case cEFim:
+        if (pbuf ? buf[pbuf-1]!=1 : true)
+            return "EFim sem Enquanto ou EPara";
+        pbuf--;
+        break;
+    case cCasoVar:
+        if (pbuf < sizeof(buf))
+            buf[pbuf++] = 2;
+        break;
+    case cCasoSe:
+    case cCasoSePadrao:
+        if (pbuf ? buf[pbuf-1]!=2 : true)
+            return "CasoSe sem CasoVar";
+        break;
+    case cCasoFim:
+        if (pbuf ? buf[pbuf-1]!=2 : true)
+            return "CasoFim sem CasoVar";
+        pbuf--;
+        break;
+    case cSair1:
+    case cSair2:
+        if (pbuf)
+        {
+            for (int x=pbuf-1; x>=0; x--)
+                if (buf[x] != 0)
+                    return 0;
+        }
+        return "Sair sem Enquanto, EPara ou CasoVar";
+    case cContinuar1:
+    case cContinuar2:
+        if (pbuf)
+        {
+            for (int x=pbuf-1; x>=0; x--)
+                if (buf[x] == 1)
+                    return 0;
+        }
+        return "Continuar sem Enquanto ou EPara";
+    }
     return 0;
+}
+
+//------------------------------------------------------------------------------
+const char * Instr::ChecaLinha::Fim()
+{
+    if (ChecaErro <= 0)
+        return 0;
+    if (ChecaErro == 1)
+        for (; pbuf > 0; pbuf--)
+            if (buf[pbuf-1] != 0)
+                break;
+    if (pbuf == 0)
+        return 0;
+    int result = buf[pbuf-1];
+    pbuf = 0;
+    switch (result)
+    {
+    case 0: return "Falta FimSe antes dessa linha";
+    case 1: return "Falta EFim antes dessa linha";
+    default: return "Falta CasoFim antes dessa linha";
+    }
 }
 
 //----------------------------------------------------------------------------

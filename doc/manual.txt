@@ -9,6 +9,7 @@ IntMUD (Interpretador MUD)
 2.2. Opção EXEC
 2.3. Opção TELATXT
 2.4. Opção LOG
+2.5. Opção ERR
 3. Classes
 4. Variáveis
 5. Funções
@@ -228,6 +229,27 @@ as linhas na janela do programa; o valor 1 coloca em um arquivo de LOG.
 O nome do arquivo é o mesmo do executável, mas terminado em '.log'.
 Por exemplo, se o executável chamar-se 'teste.exe' o arquivo de LOG será
 'teste.log'.
+
+
+2.5. OPÇÃO ERR
+
+Sintaxe: ERR = 0
+         ERR = 1
+         ERR = 2
+
+Se essa opção estiver ausente, assume 0.
+
+Via de regra, o IntMUD não checa se os blocos de controle de fluxo estão
+coerentes. Por exemplo, é explicado neste manual que se há uma instrução
+Enquanto ou EPara, mais para frente na mesma função deve existir um EFim.
+Mas se não houver, ele não acusa erro. Apenas a função não funciona
+como deveria.
+
+O valor 0 não checa nenhuma inconsistência.
+O valor 1 considera erro no código qualquer inconsistência nas instruões
+de controle de fluxo, mas permite omitir a instrução FimSe quando
+esta for a última instrução da função.
+O valor 2 também checa inconsistências, mas não permite omitir FimSe.
 
 
 3. CLASSES

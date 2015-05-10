@@ -348,6 +348,7 @@ func restaurar # Restaura personagem (HP, mana, etc.)
     dono.escolhebat # Atualiza persobat
   senao
     pvida = pvidamax
+  fimse
 
 func morreu # Procedimentos quando morre
 # arg0 = quem atacou o personagem; pode ser nulo
@@ -588,13 +589,13 @@ func p_proc_exec # Processar comportamento do personagem
 
 func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   refvar recup = contr.dono.s_recup(este) / 1200
-  se recup && pvida
-    uint8 x
-    pvida < pvidamax && (x = pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))
-    pmana < pmanamax && (x = pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
-    pmove < pmovemax && (x = pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
-    x && (p_tempoatu = 100)
-    posicao < 4 && acertapos # Se estiver incapacitado, pode voltar a ficar normal
+  ret !(recup && pvida), nulo
+  uint8 x
+  pvida < pvidamax && (x = pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))
+  pmana < pmanamax && (x = pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
+  pmove < pmovemax && (x = pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
+  x && (p_tempoatu = 100)
+  posicao < 4 && acertapos # Se estiver incapacitado, pode voltar a ficar normal
 
 
 classe comum_persoanimal
@@ -616,6 +617,7 @@ func escolhebat # Escolhe um personagem em condições de lutar
     epara i = dentro2.ini, i && !i.obj.pvida, i.depois
     efim
     persobat = i ? i.obj : este
+  fimse
 
 func animalmais # Retorna quantos animais ainda pode adquirir
   uint8 x

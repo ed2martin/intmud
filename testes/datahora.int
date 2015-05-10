@@ -1,5 +1,6 @@
 exec = 5000
 telatxt = 1
+err = 1
 
 classe tela
 telatxt tela
@@ -28,6 +29,7 @@ func menu # Mostra opções válidas
 func tela_msg # Usuário digitou alguma coisa
   se !escr_[txt1(arg0)](txt2(arg0))
     menu
+  fimse
 func escr_x # Muda data atual para agora
   d.agora
   msg("Data atual\n")

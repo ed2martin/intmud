@@ -37,7 +37,8 @@ func escr
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
     continuar p.atkenv
-    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave])
+    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
+)
 # Checa se pode vender alguma coisa
     se p.lojanao
       continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0

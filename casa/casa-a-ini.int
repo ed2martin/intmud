@@ -75,6 +75,7 @@ arg0.var.i_Diamante_Amarelo
     $mens.p(arg0)
     $mens.mvis2("", "$P saiu")
     arg0.dono = $s_ini003
+  fimse
 
 
 classe s_ini003
@@ -165,6 +166,7 @@ func cmd_ver
     arg0.msg("Nos lugares em que se pode enterrar você pode enterrar com: ente diamante azul")
     arg0.msg("Saídas: Norte, Sul, Leste, Oeste")
     ret 1
+  fimse
 
 func cmd_desenterrar
   se arg1 == "diamante azul"
@@ -176,6 +178,7 @@ func cmd_desenterrar
       $mens.mtodos1("$P desenterra Diamante Azul")
     fimse
     ret 1
+  fimse
 
 
 classe s_ini007
@@ -202,6 +205,7 @@ func cmd_ver
     arg0.msg("Para pegar tecle pegar diamante vermelho")
     arg0.msg("Para soltar tecle soltar diamante vermelho")
     ret 1
+  fimse
 
 func cmd_pegar
   se arg2 == "i_diamante_vermelho"
@@ -213,6 +217,7 @@ func cmd_pegar
       $mens.mtodos1("$P pega Diamante Vermelho")
     fimse
     ret 1
+  fimse
 
 func cmd_soltar
   se arg2 == "i_diamante_vermelho"
@@ -220,6 +225,7 @@ func cmd_soltar
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Vermelho")
     ret 1
+  fimse
 
 
 classe s_ini008
@@ -243,16 +249,19 @@ func entrou3
     arg0.msg("Silva: Se vai sair da ilha, você precisa aprender alguns golpes.")
   senao
     arg0.msg("Silva: Já te ensinei o que eu sei sobre combates")
+  fimse
 
 func entrou5
   se !arg0.var.h_chutar
     arg0.msg("Silva: Precisa saber se defender.")
     msg("Silva ensina " + arg0.nome + " a socar")
     arg0.var.h_socar = 1
+  fimse
 
 func entrou7
   se !arg0.var.h_chutar
     arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
+  fimse
 
 func cmd_socar
   se "p_ini_silva" != arg1
@@ -266,6 +275,7 @@ func cmd_socar
     arg0.var.h_chutar = 1
     arg0.msg("Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
     ret 1
+  fimse
 
 func cmd_chutar
   se "p_ini_silva" != arg1
@@ -279,6 +289,7 @@ func cmd_chutar
     arg0.msg("Te dou dois conselhos sobre batalhas: Cheque suas habilidades teclando hab")
     arg0.msg("Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
     ret 1
+  fimse
 
 
 classe s_ini009
@@ -367,6 +378,7 @@ func cmd_s
     arg0.msg("Aí eu vou tirar na sorte se deixo ou não você passar.")
     arg0.msg("Você não me mete medo. Eu sei brigar muito bem.")
     ret 1
+  fimse
 
 const cmd_socar = arg0.var.h_socar ? atacou(arg0, arg1, "soca")
 const cmd_chutar = arg0.var.h_chutar ? atacou(arg0, arg1, "chuta")
@@ -403,6 +415,7 @@ func cmd_ver
     arg0.msg("Para saber sobre uma pessoa, um item, uma habilidade, etc. tecle ver")
     arg0.msg("e o nome do que quer saber, como fez para ler esta placa.")
     ret 1
+  fimse
 
 func cmd_pegar
   se arg2 == "i_diamante_verde"
@@ -414,6 +427,7 @@ func cmd_pegar
       $mens.mtodos1("$P pega Diamante Verde")
     fimse
     ret 1
+  fimse
 
 func cmd_soltar
   se arg2 == "i_diamante_verde"
@@ -421,6 +435,7 @@ func cmd_soltar
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Verde")
     ret 1
+  fimse
 
 
 classe s_ini015
@@ -505,12 +520,14 @@ func entrou6
 func entrou14
   se !arg0.var.i_Diamante_Amarelo
     arg0.msg("Sábio: Você parece saber das coisas. Então vou te fazer umas perguntas.")
+  fimse
 
 func entrou20
   se !arg0.var.i_Diamante_Amarelo
     arg0.msg("Tem um lugar nessas ilhas que tem muitos diamantes vermelhos.")
     arg0.msg("Quantos tem nesse lugar? Tecle um número, de 1 a 100")
     arg0.var.z_ini_resp = 0
+  fimse
 
 func cmd_escr # Checa respostas
   casovar arg0.var.z_ini_resp

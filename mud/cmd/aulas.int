@@ -31,7 +31,7 @@ func escr1 # Consultar a lista de aulas
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
     continuar p.atkenv || !p.lojaaula(arg0)
-    senao !p.lojanao # negocia com todos
+    se !p.lojanao # negocia com todos
     senao tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
       t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo1)
       continuar
@@ -74,10 +74,8 @@ func escr1 # Consultar a lista de aulas
       t.addfim(lin), linha += 1
     efim
   efim
-  se t.linhas
-    arg0.msg2(t.remove(1000))
-  senao
-    arg0.msg("Não há professores aqui.")
+  ret t.linhas, arg0.msg2(t.remove(1000))
+  arg0.msg("Não há professores aqui.")
 
 func escr2 # Consultar uma aula
   listaobj l

@@ -8,6 +8,10 @@ telatxt = 1
 # Aonde apresentar mensagens de erro no programa
 log = 0
 
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
 classe config
 # Configuração
 #
@@ -59,6 +63,7 @@ func ini
     txtsenha = ""
     tela.msg("Bot: Digite a senha de administração da sala; tecla ESC cancela\n")
     tela.linha = 1
+  fimse
 
 func jogobotfim
   config:modoserv && jogoserv:inicio
@@ -110,6 +115,7 @@ func j_tela_tecla
   se arg0 == "ESC"
     jogsock:fim
     terminar
+  fimse
 
 
 classe jogoserv
@@ -173,6 +179,7 @@ func ini # Objeto foi criado
     j_passo = 2
     j_tempo = 36000 # Fecha conexão em uma hora
     jogsock:ini
+  fimse
 
 func fim # Objeto foi apagado
   ref r
@@ -186,6 +193,7 @@ func j_tempo_exec # Tempo esgotado
   senao
     j_conec.msg("-Tempo esgotado\n")
     apagar(este)
+  fimse
 
 func j_conec_fechou # Conexão fechou
   apagar(este)
@@ -206,6 +214,8 @@ func j_conec_msg # Recebeu mensagem do usuário
       j_conec.proto = 5
     senao # Nome vazio: é Telnet
       j_conec.msg("-OK Entrando via Telnet\n")
+    fimse
+  fimse
 
 
 classe jogoservip
@@ -240,6 +250,7 @@ func ini
     tela.msg("Bot: Endereço inválido: " + config:serv + "\n")
   senao
     tela.msg("Bot: Conectando em " + config:serv + " porta " + config:porta + "\n")
+  fimse
 
 func fim
   !conecfim && $jogoini.jogobotfim
@@ -311,6 +322,7 @@ func conec_msg # Recebeu mensagem
   casofim
   se !conecfim
     senha = "", conecfim = 1, $jogoini.jogobotfim
+  fimse
 
 
 classe jogobot_sala

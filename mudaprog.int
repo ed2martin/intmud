@@ -1,3 +1,6 @@
+telatxt = 1
+err = 1
+
 classe mudaprog
 # Recarrega os arquivos que mudaram (checa pela data dos arquivos)
 # Para recarregar os arquivos:
@@ -36,6 +39,7 @@ func msg
 func passofunc_exec # Próximo passo para alterar programa
   se passo[passonum]
     passofunc = 1, passonum += 1
+  fimse
 
 func passo1 # Atualiza lista de arquivos que mudaram
 # Acerta variável: textotxt arqmudou
@@ -189,7 +193,6 @@ func passo5 # Apaga as classes pendentes e inicializa outras classes
   mudarcl.limpar
   apagarcl.limpar
   msg(t1 ? t1.remove(errlin) : "Nada mudou")
-  fimse
   ret 1
 
 func passo6 # Inicializa classes
@@ -199,6 +202,7 @@ func passo6 # Inicializa classes
     inicl.mudar(nome + "=")
     passofunc = 1
     [nome]:iniclasse(nome)
+  fimse
 
 func passoerro # Ocorreu algum erro
 # Apaga classes criadas

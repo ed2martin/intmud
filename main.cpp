@@ -579,6 +579,8 @@ void Inicializa(const char * arg)
                 telatxt = NumInt(valor);
             if (comparaZ(mens, "log")==0)
                 err_tipo = (NumInt(valor) != 0);
+            if (comparaZ(mens, "err")==0)
+                Instr::ChecaLinha::ChecaErro = NumInt(valor);
 
         // Verifica instruções incluir
             if (comparaZ(mens, "incluir")==0)
@@ -698,6 +700,13 @@ void Inicializa(const char * arg)
         if (linhanum==0 || pclasse) // Fim do arquivo ou próxima classe
         {
             ini_arq = false;
+
+            const char * p = checalinha.Fim();
+            if (p)
+            {
+                err_printf("%s:%d: %s\n", arqinicio, arq.LinhaAtual(), p);
+                erro=true;
+            }
             if (classeatual) // Anota instruções da classe
             {
                 classecom.Add("\x00\x00", 2); // Marca fim da lista de comandos

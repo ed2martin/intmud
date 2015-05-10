@@ -5,6 +5,10 @@ exec = 5000
 # Se deve abrir uma janela de texto - variável telatxt
 telatxt = 1
 
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
 classe _serv
 # Lista de endereços mais usados
 const inter = "intervox.nce.ufrj.br 1963"
@@ -33,6 +37,7 @@ func ini
   msg("Telnet\n")
   se tela.proto == 0
     terminar
+  fimse
 
 func inic_exec # Mensagem de abertura
   msg("Digite o endereço seguido de espaço e a porta\n")
@@ -72,6 +77,7 @@ func tecla_F1
     efim
     msg("Digite um atalho ou o endereço seguido de espaço e porta\n")
     ret 1
+  fimse
 
 func tecla_F2
   eco = 1 - eco
@@ -157,6 +163,7 @@ func sock_con # Conectou
   se proto == 1
     msg("Assinatura SHA1 = " + sock.txtsha1 + "\n")
     msg("Assinatura MD5 = " + sock.txtmd5 + "\n")
+  fimse
 
 func sock_fechou # Conexão foi encerrada
   msg("\d1Conexão foi encerrada\b\n")
@@ -170,3 +177,4 @@ func sock_msg # Recebeu uma mensagem
   senao proto == 2 && passo == 1 # Papovox; recebeu segunda mensagem
     passo = 2, sock.proto = 5
     msg("\d1Papovox conectado\b\n")
+  fimse

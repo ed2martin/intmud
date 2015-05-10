@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "3/5/2015"
+const versao = "10/5/2015"
 #
 # Objeto usado para acessar as saídas das salas
 comum ref obj
@@ -237,22 +237,22 @@ func txtmoedas # Retorna texto correspondente à quantidade de moedas
 
 func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
-  se ref(arg0)
-    ref r
-    r = criar("evrecebe")
-    r.perso1 = arg0.evento.addfim(este, r)
-    r.perso2 = arg1.evento.addfim(este, r)
-    r.perso3 = arg2.evento.addfim(este, r)
+  ret !ref(arg0), nulo
+  ref r
+  r = criar("evrecebe")
+  r.perso1 = arg0.evento.addfim(este, r)
+  r.perso2 = arg1.evento.addfim(este, r)
+  r.perso3 = arg2.evento.addfim(este, r)
 
 func tempo # Eventos de tempo (cria objeto), vide classe evtempo
-  se txt(arg0) && ref(arg1)
-    refvar r = criar("evtempo")
-    r.tempo1 = r.tempo2 = 1
-    r.obj = este
-    r.func = arg0
-    r.perso1 = arg1, r.perso1.evento.addfim(r)
-    r.perso2 = arg2, r.perso2.evento.addfim(r)
-    r.perso3 = arg3, r.perso3.evento.addfim(r)
+  ret !(txt(arg0) && ref(arg1)), nulo
+  refvar r = criar("evtempo")
+  r.tempo1 = r.tempo2 = 1
+  r.obj = este
+  r.func = arg0
+  r.perso1 = arg1, r.perso1.evento.addfim(r)
+  r.perso2 = arg2, r.perso2.evento.addfim(r)
+  r.perso3 = arg3, r.perso3.evento.addfim(r)
 
 
 classe evrecebe

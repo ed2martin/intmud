@@ -69,10 +69,13 @@ func recebe # Recebeu mensagem do jogador
     senao
       cmd_m.limpar
       teclou(ultimocom) # Personagem processa comando
+    fimse
+  fimse
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se visivel($mens.perso)
     $mens.proc(arg0, este)
+  fimse
 
 func msginv # Mensagem mesmo se o alvo estiver invisível
   $mens.proc(arg0, este)
@@ -143,6 +146,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
       l0.addfim(i0.obj.dentro2)
     efim
     ret sav1.salvar("jog-" + txt2(cnome) + ".sav", l0, 30, senha)
+  fimse
 
 func t_salvar_exec # Salva o jogo de tempos em tempos
   salvar
@@ -178,6 +182,7 @@ func t_proc_exec # Contagem de tempo
       v && misc:tempo % v == 0 && dono.segsala[v](este)
       p.depois
     efim
+  fimse
 
 
 classe jogador_passo

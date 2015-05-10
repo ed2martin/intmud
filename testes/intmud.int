@@ -1,3 +1,5 @@
+err = 2
+
 classe teste
 herda bom dia
 comum int8 x1
@@ -77,6 +79,7 @@ uint16 xvar
 func iniclasse
   se ![arg0]:servidor.abrir("", 2000)
     terminar
+  fimse
 func servidor_socket
   ref novo
   novo = criar("x")
@@ -172,6 +175,7 @@ func teste_a
     ret "A maiúsculo"
   senão
     ret "A minúsculo"
+  fimse
 const teste_b = teste2_b[arg0=="B"]
 const teste2_b0 = "B maiúsculo"
 const teste2_b1 = "B minúsculo"
@@ -264,6 +268,7 @@ func escr_eco
   senão
     conec.eco=1
     msg("Eco habilitado\n")
+  fimse
 func escr_flood
   se conec.aflooder
     conec.aflooder=0
@@ -271,6 +276,7 @@ func escr_flood
   senão
     conec.aflooder=1
     msg("Anti-flooder habilitado\n")
+  fimse
 
 classe mm
 txt20 texto
@@ -295,6 +301,7 @@ intdec dec
 func iniclasse
   se ![arg0]:servidor.abrir("", 2010)
     terminar
+  fimse
 func servidor_socket
   criar("testeinttempo", arg0)
 func ini
@@ -345,6 +352,7 @@ const msg = conec.msg(arg0)
 func iniclasse
   se ![arg0]:servidor.abrir("", 2011)
     terminar
+  fimse
 func servidor_socket
   criar("teste1", arg0)
 func ini

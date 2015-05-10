@@ -24,6 +24,7 @@ func cmd_mudadono # Objeto mudou de dono
     apagar(este)
     $mens.p(donoantes)
     $mens.mvis1("Diamante azul vira pó.")
+  fimse
 
 
 classe i_ini002
@@ -39,6 +40,7 @@ func cmd_mudadono # Objeto mudou de dono
     apagar(esteantes)
     $mens.p(dono)
     $mens.mvis1("Diamante amarelo vira pó.")
+  fimse
 
 
 classe i_ini003
@@ -54,6 +56,7 @@ func cmd_mudadono # Objeto mudou de dono
     apagar(este)
     $mens.p(donoantes)
     $mens.mvis1("Diamante vermelho vira pó.")
+  fimse
 
 
 classe i_ini004
@@ -69,6 +72,7 @@ func cmd_mudadono # Objeto mudou de dono
     apagar(este)
     $mens.p(donoantes)
     $mens.mvis1("Diamante verde vira pó.")
+  fimse
 
 
 classe i_ini005
@@ -89,6 +93,7 @@ func cmd_mudadono # Objeto mudou de dono
     apagar(este)
     $mens.p(donoantes)
     $mens.mvis1("O manto escuro cai no chão e se desintegra.")
+  fimse
 
 func cmd_escr # Escreveu algo
   se arg1 == "puxar"
@@ -103,6 +108,7 @@ func cmd_escr # Escreveu algo
       $mens.mtodos2("", "$P pousou aqui.")
     fimse
     ret 1
+  fimse
 
 
 classe i_ini006
@@ -135,6 +141,7 @@ func cmd_atacar
     arg0.msg("Anão: Tudo bem, você venceu, pode passar.")
     arg0.var.j_atacou_anao = 1
     ret 1
+  fimse
 
 func cmd_mover
   se arg2 == "s" && arg0.jog && !arg0.var.j_atacou_anao
@@ -142,6 +149,7 @@ func cmd_mover
     arg0.msg("Aí eu vou tirar na sorte se deixo ou não você passar.")
     arg0.msg("Você não me mete medo. Eu sei brigar muito bem.")
     ret 1
+  fimse
 
 
 classe p_ini002
@@ -166,6 +174,7 @@ func entrou30
     arg0.msg("Silva: Se vai sair da ilha, você precisa aprender alguns golpes.")
   senao
     arg0.msg("Silva: Já te ensinei o que eu sei sobre combates.")
+  fimse
 
 func entrou50
   se !arg0.var.h_chutar
@@ -173,10 +182,12 @@ func entrou50
     $mens.p(arg0)
     $mens.mvis1("Silva ensina $p a socar.")
     arg0.var.h_socar = 3
+  fimse
 
 func entrou70
   se !arg0.var.h_chutar
     arg0.msg("Silva: Agora tente me socar. Tecle socar Silva")
+  fimse
 
 func cmd_atacar
   se ![arg2](arg0, arg1) # Chama a função que trata do ataque específico
@@ -197,6 +208,7 @@ func cmd_socar
     arg0.var.h_chutar = 3
     arg0.msg("Silva: Tecle chutar silva ou, se estiver com preguiça, tecle ch silva.")
     ret 1
+  fimse
 
 func cmd_chutar
   se arg1 != este
@@ -210,6 +222,7 @@ func cmd_chutar
     arg0.msg("Silva: Te dou dois conselhos: Cheque suas habilidades teclando hab")
     arg0.msg("Silva: Cheque também sua vida teclando vida. Se chegar a 0 você morre.")
     ret 1
+  fimse
 
 
 classe p_ini003
@@ -226,6 +239,7 @@ func cmd_chegou # Chegou na sala
     arg0.var.d_resposta_ = 20 # Já fez todas as perguntas
   senao
     misc:tempo("entrou", arg0) # Se não tem, dispara funções 'entrou'
+  fimse
 
 func entrou10
   arg0.msg("Joaquim: Olá. Não quer se sentar um pouco para conversarmos?")
@@ -240,6 +254,7 @@ func cmd_levantou
   se arg0.var.d_sentouchao_ == 1
     arg0.msg("Joaquim: Isso. Agora sente-se no tronco. Tecle SENTAR TRONCO")
     arg0.var.d_sentouchao_ = 0
+  fimse
 
 func cmd_descansouchao
   arg0.msg("Joaquim: Descansar no tronco é muito melhor.")
@@ -251,6 +266,7 @@ func cmd_sentouobj
   se arg0.var.d_resposta_ == 0
     arg0.var.d_resposta_ = 1
     misc:tempo("pergunta", arg0) # Dispara funções 'pergunta'
+  fimse
 
 func pergunta10
   arg0.msg("Joaquim: Esse arquipélago já foi maior. Agora pouca gente vem aqui.")
@@ -333,6 +349,7 @@ func cmd_mover
     arg0.var.h_socar = 3
     arg0.var.h_chutar = 3
     arg0.recalc = 1
+  fimse
 
 
 classe s_ini002
@@ -361,6 +378,7 @@ func entrou20
     $mens.p(arg0)
     $mens.mvis2("", "$P sumiu da sua vista.")
     arg0.mudadono($s_ini003)
+  fimse
 
 
 classe s_ini003
@@ -406,6 +424,7 @@ func cmd_salaperso # Personagem chegou
   senao
     arg0.msg("Você está um pouco acima da névoa branca.")
     misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+  fimse
 
 func entrou30
   arg0.msg("Tenta andar mas não consegue sair do lugar.")
@@ -436,6 +455,7 @@ func entrou280
   se arg0.dentro2.objini("i_ini005")
     arg0.msg("Da próxima vez que estiver caindo, tecle PUXAR para puxar a corda")
     arg0.msg("que aciona o foguete.")
+  fimse
 
 func entrou300
   arg0.mudadono($s_ini002)
@@ -488,6 +508,7 @@ func entrou130
     $mens.p(arg0)
     $mens.mtodos1("Diamante azul desaparece ao longe enquanto cai.")
     apagar(dentro1.objini("i_ini001"))
+  fimse
 
 func entrou0 # Fim dos eventos 'entrou'
   apagar(dentro1.objini("i_ini001"))
@@ -496,6 +517,7 @@ func cmd_pegarobj
   se "i_ini001" == arg2 && arg0.dentro1.objini("i_ini001")
     arg0.msg("Você tenta pegar, mas não consegue. O diamante está um pouco longe.")
     ret 1
+  fimse
 
 
 classe s_ini007
@@ -526,6 +548,7 @@ func cmd_pegarobj
       $mens.mtodos1("$P pega Diamante Vermelho.")
     fimse
     ret 1
+  fimse
 
 func cmd_soltarobj
   se arg2 == "i_ini003"
@@ -533,6 +556,7 @@ func cmd_soltarobj
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Vermelho.")
     ret 1
+  fimse
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -559,12 +583,14 @@ const ver_placa = "A placa diz:\nPara abrir a porta ao sul, tecle abrir s"
 func cmd_abriudir
   se arg2 == "s"
     fechaporta = 50
+  fimse
 
 func fechaporta_exec
   se porta_s == 1
     mudaporta("s", 2)
     msg("O vento bateu a porta da cabana.")
     $s_ini009.msg("O vento bateu a porta da cabana.")
+  fimse
 
 
 classe s_ini009
@@ -581,6 +607,7 @@ const s_reset = "P 100 ini002 27 27 1"
 func cmd_abriudir
   se arg2 == "n"
     $s_ini008.fechaporta = 50
+  fimse
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -646,6 +673,8 @@ func cmd_mover
     senao arg0.dentro1.objini("i_ini005")
       arg0.msg("Você está segurando algo muito pesado, e por isso não consegue subir.")
       ret 1
+    fimse
+  fimse
 
 
 classe s_ini015
@@ -687,6 +716,7 @@ func cmd_pegarobj
       $mens.mtodos1("$P pega Diamante Verde.")
     fimse
     ret 1
+  fimse
 
 func cmd_soltarobj
   se arg2 == "i_ini004"
@@ -694,6 +724,7 @@ func cmd_soltarobj
     $mens.p(arg0)
     $mens.mtodos1("$P solta Diamante Verde.")
     ret 1
+  fimse
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset

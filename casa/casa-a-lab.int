@@ -38,6 +38,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 8, "h_socar,h_chutar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -89,6 +90,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 7, "h_socar,h_chutar")
+  fimse
 
 func segsala22
   se rand(100) < 50
@@ -117,6 +119,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 9, "h_socar,h_chutar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -139,6 +142,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 8, "h_socar,h_chutar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -161,6 +165,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 7, "h_socar,h_chutar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -243,6 +248,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 8, "h_socar,h_chutar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -265,6 +271,7 @@ corredores exatamente iguais."
 func segsala15
   se rand(100) < 65
     criar("p_anao", este, 9, "h_socar,h_chutar")
+  fimse
 
 func entrou
   ver(arg0)
@@ -359,6 +366,7 @@ func entrou
     arg0.var.i_balde_cheio_ += arg0.var.i_balde_vazio_
     arg0.var.i_balde_vazio_ = 0
     arg0.msg("Seu balde se encheu de água, mas não parece ser água potável.")
+  fimse
 
 const dir_l = $s_lab016
 
@@ -378,6 +386,7 @@ func entrou
     arg0.msg("O teto caiu na sua cabeça e você não resistiu.")
     arg0.dono = $s_dentro001
     ret 1
+  fimse
 
 const dir_n = $s_dentro026
 const dir_s = $s_lab019
@@ -413,6 +422,7 @@ func entrou12
       arg0.msg("Parece água salobra, mas é só por causa da quantidade de sais.")
       arg0.msg("É tão boa quanto as outras. Seria um grande favor se você me desse.")
     fimse
+  fimse
 
 func cmd_dar
   se arg0.var.i_[arg2] && "p_eremita" == arg1
@@ -429,6 +439,7 @@ func cmd_dar
       arg0.msg("Eremita: Isso não me interessa, pode ficar para você")
     fimse
     ret 1
+  fimse
 
 func segundo4
   casovar arg0.var.z_eremita_

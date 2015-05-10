@@ -155,7 +155,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     dono.t_item = 0
   senao posicao <= 4
     dono.t_item = 0
-    arg0.msg("Você vê estranhas imagens em seus sonhos...")
+    msg("Você vê estranhas imagens em seus sonhos...")
   senao jogconfig.16
     dono.t_item = 0
     msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
@@ -251,12 +251,9 @@ func teclou # Processa comando (arg0=comando)
     ret l.objini.cmd_escr(este, arg0, obj), nulo
   efim
 # Executa comando
-  se !obj
-    msg("O quê?")
-  senao posicao < obj.posic
-    msg(erropos)
-  senao
-    obj.escr(este, txt2(arg0))
+  ret !obj, msg("O quê?")
+  ret posicao < obj.posic, msg(erropos)
+  ret obj.escr(este, txt2(arg0))
 
 func p_espera_exec # Pega o próximo comando
   sock ? sock.espera_exec : p_proc_exec
@@ -361,10 +358,12 @@ func equippos # Retorna as posições aonde pode usar equipamentos
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   se sock && posicao > 4 && $mens.perso.visivel(este) # Se tem jogador e está acordado
     msg($mens.proc(arg0, este))
+  fimse
 
 func msginv # Mensagem mesmo se o alvo estiver invisível
   se sock && posicao > 4 # Se tem jogador e está acordado
     msg($mens.proc(arg0, este))
+  fimse
 
 func morreu # Procedimentos quando morre
 # arg0 = quem atacou o personagem; pode ser nulo

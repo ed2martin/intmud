@@ -1,6 +1,10 @@
 telatxt = 1
 exec = 30000
 
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
 classe indiceobj
 # indiceobj é usado da seguinte forma:
 #
@@ -41,6 +45,7 @@ uint8 h_digito # Para evitar mesma mensagem repetida
 func iniclasse
   se ![arg0]:servidor.abrir("", 1965)
     terminar
+  fimse
 
 func servidor_socket # Conectou
   criar("http", arg0)
@@ -50,8 +55,7 @@ func ini # Objeto foi criado
   h_tempo = 100
 
 func fim # Objeto está sendo apagado
-  se h_passo == 4
-    usuario:fim
+  h_passo == 4 && usuario:fim
 
 func h_tempo_exec
   h_tempo[h_passo]
@@ -71,12 +75,13 @@ func h_sock_msg # Recebeu texto do navegador
     apagar(este)
   senao
     h_txt.addfim(txturldec(txtsub(arg0, 1, 1)))
+  fimse
 
 func h_sock_env # Envia linhas pendentes
   se h_passo < 2
     h_sock.msg(h_txt.remove(10) + "\n")
-    se h_txt.linhas == 0
-      apagar(este)
+    h_txt.linhas == 0 && apagar(este)
+  fimse
 
 func h_cabehttp # Prepara cabeçalho HTTP
   h_txt.limpar
@@ -103,6 +108,7 @@ func h_responde # Responde a uma requisição HTTP
     h_respmens
   senao
     h_respframe
+  fimse
 
 # Primeira página, com dois frames
 func h_respframe
@@ -283,6 +289,7 @@ int1 t_modo # =0 volta últimas mensagens (telnet) ou 80 colunas (papovox)
 func iniclasse
   se ![arg0]:servidor.abrir("", 1963)
     terminar
+  fimse
 
 func servidor_socket # Conectou
   criar("telnet", arg0)
@@ -294,8 +301,7 @@ func ini # Objeto foi criado
   t_sock.msg("+OK Para Telnet pressione ENTER\n")
 
 func fim # Objeto está sendo apagado
-  se t_passo >= 3
-    usuario:fim
+  t_passo >= 3 && usuario:fim
 
 func proc_modo
   se arg0 == "0"
@@ -314,6 +320,7 @@ func proc_modo
     fimse
   senao
     msg("Tecle 0 ou 1 após /modo")
+  fimse
 
 const msg = msg[t_passo](arg0)
 
@@ -326,6 +333,8 @@ func msg3 # Enviar mensagem para Telnet
     se t_msgtmp == 0
       t_msgtmp = 10
       t_msgpos.3 = t_msgtxt.ini
+    fimse
+  fimse
 
 func msg4 # Enviar mensagem para Papovox
   textotxt t1
@@ -350,6 +359,7 @@ func msg5 # Enviar mensagem para Telnet em pausa
     t_sock.msg(t_msgtxt.remove(1000) + "\n")
     t_passo = 3
     t_msgtmp = 0
+  fimse
 
 func t_msgtmp_exec # Telnet: apaga mensagens antigas da lista
   t_msgtxt.remove(t_msgpos.0.linha)
@@ -357,8 +367,7 @@ func t_msgtmp_exec # Telnet: apaga mensagens antigas da lista
   t_msgpos.1 = t_msgpos.2
   t_msgpos.2 = t_msgpos.3
   t_msgpos.3 = t_msgtxt.fim
-  se t_msgtxt.linhas != 0
-    t_msgtmp = 10
+  t_msgtxt.linhas != 0 && (t_msgtmp = 10)
 
 func t_sock_msg
   t_msg[t_passo](arg0)
@@ -376,6 +385,7 @@ func t_msg0 # Esperando definição do protocolo
     t_sock.msg("+OK Entrando via Papovox\n")
     t_sock.proto = 5
     t_passo = 2
+  fimse
 
 func t_msg1 # Entrando via Telnet
   t_tempo = 3000
@@ -399,6 +409,7 @@ func t_msg3 # Conectado via Telnet
     t_sock.msg("Tecle\n")
     t_passo = 5
     t_msgtmp = 0
+  fimse
 
 func t_msg4 # Conectado via Papovox
   t_tempo = 3000
@@ -513,18 +524,21 @@ func fim # Usuário saiu
   se apelcod
     msg_todos("." + apelido + " Sai da conversação", 2)
     retirausr
+  fimse
 
 func retirausr # Indica que usuário saiu do chat, mas não envia mensagem
   se apelcod
     lista_add(objsala.l_saiu)
     txt1(id_bot) == "b0" && objbot.msg_saiu("U-" + txt2(apelsala))
     id_bot = apelcod = apelsala = "", usrtotal -= 1
+  fimse
 
 func admin_chat # Retorna verdadeiro se for o administrador
   se txt2(ender_ip) == "127.0.0.1"
     ret 1
   senao
     msg("> Você não administra o bate-papo", 2)
+  fimse
 
 func msg_sala # Envia mensagem para todos da mesma sala sem checar lista negra
 # arg0=texto, arg1=tipo de mensagem
@@ -619,6 +633,7 @@ func aflooder_exec # Avisa sobre o término do anti-flooder
     pflooder = 0
     aflooder = 150
     msg("*.Anti-flooder: pode continuar", 2)
+  fimse
 
 func recebeu # Recebeu mensagem do usuário
   txt300 texto # O que o usuário escreveu
@@ -654,6 +669,7 @@ func recebeu # Recebeu mensagem do usuário
   senao # Mensagem para todos
     lista_add(objsala.l_msg)
     msg_todos(" " + apelido + ". " + texto)
+  fimse
 
 func opcpvt # Comandos começados com barra
   indiceitem ind
@@ -1079,6 +1095,7 @@ func msg # Retorna mensagem que indica porque não pode entrar
     ret "*.Entre daqui a pouco"
   senao
     ret "*.Você está banido temporariamente; tente mais tarde"
+  fimse
 
 func criarmaq # Cria objeto maq se necessário
 # arg0 = endereço IP
@@ -1148,6 +1165,7 @@ func novobot # Cria novo bot
     $bot.fim # Para avisar que bot foi desativado
     apagar($bot) # Desativa se houver algum bot ativo
     criar("bot", arg0, $sala.nome)
+  fimse
 
 func ini # Bot foi criado
 # arg0 = variável socket
@@ -1160,6 +1178,7 @@ func ini # Bot foi criado
   se (r = item.obj("sn " + arg1)) != nulo # Checa se tem uma sala com esse nome
     r.id_bot = "bs " + arg1 # Ativar bot na sala
     b_sock_env # Para enviar mensagens pendentes
+  fimse
 
 func fim # Bot desativado
   indiceitem item
@@ -1247,6 +1266,7 @@ func usr_msg # Envia mensagem para usuário checando anti-flooder
   se arg1 && arg0.botflooder < 185
     arg0.botflooder += inttotal(arg1) / 5 + 1
     arg0.msg(arg1)
+  fimse
 
 classe chat
 # Opções comuns do chat

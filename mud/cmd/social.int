@@ -19,12 +19,10 @@ func escr
   epara p.iniclasse("soc_"), p.lin, p.depois
     arg0.pnivel >= $[p.texto].nivel && t.addfim(txt2(txte(p.texto)))
   efim
-  se t.linhas
-    t.addfim("Comandos sociais disponíveis:\n" + txttroca(t.remove(1000), "\n", ", "))
-    t.dividelin(50, 75)
-    arg0.msg2(t.remove(1000))
-  senao
-    arg0.msg("Nenhum comando social disponível.")
+  ret t.linhas == 0, arg0.msg("Nenhum comando social disponível.")
+  t.addfim("Comandos sociais disponíveis:\n" + txttroca(t.remove(1000), "\n", ", "))
+  t.dividelin(50, 75)
+  arg0.msg2(t.remove(1000))
 
 func escr_arg # Com algum argumento
   textotxt t # Mensagens
@@ -67,6 +65,7 @@ o1))
     arg0.msg2(t.remove(1000))
   senao
     arg0.msg("Esse social ainda não está funcionando.")
+  fimse
 
 
 classe cmd2_socialX

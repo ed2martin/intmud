@@ -20,73 +20,73 @@ func mperso # Mensagem só para o personagem
 
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
-  se contr.dono.socktot && arg0
-    listaobj l0
-    l0.addfim(contr.dono.dentro2)
-    enquanto l0
-      l0.objini.msginv(arg0), l0.ini.remove
-    efim
+  ret !(contr.dono.socktot && arg0), nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  enquanto l0
+    l0.objini.msginv(arg0), l0.ini.remove
+  efim
 
 func mtodos2 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  se contr.dono.socktot
-    arg0 && contr.msginv(arg0)
-    se arg1
-      listaobj l0
-      l0.addfim(contr.dono.dentro2)
-      l0.remove(contr)
-      enquanto l0
-        l0.objini.msginv(arg1), l0.ini.remove
-      efim
+  ret !contr.dono.socktot, nulo
+  arg0 && contr.msginv(arg0)
+  ret !arg1, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  l0.remove(contr)
+  enquanto l0
+    l0.objini.msginv(arg1), l0.ini.remove
+  efim
 
 func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  se contr.dono.socktot
-    arg0 && contr.msginv(arg0)
-    arg1 && alvo.contr != contr && alvo.contr.msginv(arg1)
-    se arg2
-      listaobj l0
-      l0.addfim(contr.dono.dentro2)
-      l0.remove(contr, alvo.contr)
-      enquanto l0
-        l0.objini.msginv(arg2), l0.ini.remove
-      efim
+  ret !contr.dono.socktot, nulo
+  arg0 && contr.msginv(arg0)
+  arg1 && alvo.contr != contr && alvo.contr.msginv(arg1)
+  ret !arg2, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  l0.remove(contr, alvo.contr)
+  enquanto l0
+    l0.objini.msginv(arg2), l0.ini.remove
+  efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para todos
-  se contr.dono.socktot && arg0
-    contr.msginv(arg0)
-    listaobj l0
-    l0.addfim(contr.dono.dentro2)
-    l0.remove(contr)
-    enquanto l0
-      l0.objini.msgvis(arg0), l0.ini.remove
-    efim
+  ret !(contr.dono.socktot && arg0), nulo
+  contr.msginv(arg0)
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  l0.remove(contr)
+  enquanto l0
+    l0.objini.msgvis(arg0), l0.ini.remove
+  efim
 
 func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  se contr.dono.socktot
-    arg0 && contr.msginv(arg0)
-    se arg1
-      listaobj l0
-      l0.addfim(contr.dono.dentro2)
-      l0.remove(contr)
-      enquanto l0
-        l0.objini.msgvis(arg1), l0.ini.remove
-      efim
+  ret !contr.dono.socktot, nulo
+  arg0 && contr.msginv(arg0)
+  ret !arg1, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  l0.remove(contr)
+  enquanto l0
+    l0.objini.msgvis(arg1), l0.ini.remove
+  efim
 
 func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  se contr.dono.socktot
-    arg0 && contr.msginv(arg0)
-    arg1 && alvo.contr != contr && alvo.contr.msgvis(arg1)
-    se arg2
-      listaobj l0
-      l0.addfim(contr.dono.dentro2)
-      l0.remove(contr, alvo.contr)
-      enquanto l0
-        l0.objini.msgvis(arg2), l0.ini.remove
-      efim
+  ret !contr.dono.socktot, nulo
+  arg0 && contr.msginv(arg0)
+  arg1 && alvo.contr != contr && alvo.contr.msgvis(arg1)
+  ret !arg2, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  l0.remove(contr, alvo.contr)
+  enquanto l0
+    l0.objini.msgvis(arg2), l0.ini.remove
+  efim
 
 func mmud1 # Mensagem para todos do MUD
 # arg0 = mensagem para todos
@@ -236,9 +236,8 @@ func o_p
       ret txtcopiamai("você", arg0)
     senao perso.visivel(r)
       ret arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
-    senao
-      ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
     fimse
+    ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
   senao r == perso.contr
     ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
   senao perso.contr.visivel(r)
@@ -246,8 +245,8 @@ func o_p
     ret m + " de " + perso.contr.descnome
   senao perso.visivel(r)
     ret (arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome) + " de alguém"
-  senao
-    ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
+  fimse
+  ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_a
   se alvo == alvo.contr
@@ -255,9 +254,8 @@ func o_a
       ret txtcopiamai("você", arg0)
     senao alvo.visivel(r)
       ret arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
-    senao
-      ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
     fimse
+    ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
   senao r == alvo.contr
     ret txtcopiamai(alvo.msexo ? "seu " : "sua ", arg0) + alvo.nome
   senao alvo.contr.visivel(r)
@@ -265,16 +263,16 @@ func o_a
     ret m + " de " + alvo.contr.descnome
   senao alvo.visivel(r)
     ret (arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome) + " de alguém"
-  senao
-    ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
+  fimse
+  ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_q # Nome do personagem sem citar o dono
   se r == perso
     ret txtcopiamai("você", arg0)
   senao perso.visivel(r)
     ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
-  senao
-    ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
+  fimse
+  ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_r # Nome do personagem no comando QUEM
   ret arg0 === "r", perso.sock ? perso.sock.nome : perso.nome
@@ -285,8 +283,8 @@ func o_b # Nome do alvo sem citar o dono
     ret txtcopiamai("você", arg0)
   senao alvo.visivel(r)
     ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
-  senao
-    ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
+  fimse
+  ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
 
 func o_c # Nome do alvo no comando QUEM
   ret arg0 === "c", alvo.sock ? alvo.sock.nome : alvo.nome
@@ -297,8 +295,8 @@ func o_o # Nome do objeto
     ret txtcopiamai("você", arg0)
   senao obj.visivel(r)
     ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
-  senao
-    ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
+  fimse
+  ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
 
 
 classe mens_antigo
@@ -342,14 +340,10 @@ func proc # Prepara e retorna mensagem
   ret t0.remove(1000)
 
 func opcmai_p # Nome do personagem
-  se r == perso
-    ret "Você" + arg0
-  senao perso.visivel(r)
-    ret txtcopiamai(perso.descnome, "A") + arg0
-  senao perso.perso
-    ret "Alguém" + arg0
-  senao
-    ret "Alguma coisa" + arg0
+  ret r == perso, "Você" + arg0
+  ret perso.visivel(r), txtcopiamai(perso.descnome, "A") + arg0
+  ret perso.perso, "Alguém" + arg0
+  ret "Alguma coisa" + arg0
 # func opcmai_a
 # # arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
 # ret "teste" + arg0 # Substitui "$a" por "teste"
@@ -377,12 +371,10 @@ func mens
   ret vartroca(arg0, "%", "m_")
 
 func m_d
-  se arg0 === "d" # Hora no MUD
-    ret txt(misc:hora) + ":" + misc:min
-  senao # Hora no servidor
-    datahora d
-    d.agora
-    ret txt(d.hora) + ":" + d.min
+  ret arg0 === "d", txt(misc:hora) + ":" + misc:min # Hora no MUD
+  datahora d
+  d.agora # Hora no servidor
+  ret txt(d.hora) + ":" + d.min
 
 const m_g = p1.var.z_moedas_
 const m_h = arg0 === "h" ? p2.pvida : p2.pvidamax
@@ -392,25 +384,25 @@ const m_m = arg0 === "m" ? p2.pmana : p2.pmanamax
 func m_n
   se arg0 === "n" # Nome do seu personagem
     ret p1 == p2 ? p1.descnome : p2.descnome + " de " + p1.descnome
-  senao # Nome do seu oponente
-    ret a1 == a2 ? a1.descnome : a2.descnome + " de " + a1.descnome
+  fimse # Nome do seu oponente
+  ret a1 == a2 ? a1.descnome : a2.descnome + " de " + a1.descnome
 
 func m_o
   se !a2
   senao arg0 === "o" # Pontos de vida do oponente em porcentagem
     ret int(a2.pvida * 100 / a2.pvidamax)
-  senao # Pontos de vida do oponente em uma barra de 10 caracteres
-    uint8 x
-    x = int(a2.pvida * 10 / a2.pvidamax)
-    ret x >= 10 ? ">>>>>>>>>>" : txtrepete(">", x) + txtrepete(" ", 10 - x)
+  fimse # Pontos de vida do oponente em uma barra de 10 caracteres
+  uint8 x
+  x = int(a2.pvida * 10 / a2.pvidamax)
+  ret x >= 10 ? ">>>>>>>>>>" : txtrepete(">", x) + txtrepete(" ", 10 - x)
 
 func m_p
   se arg0 === "p" # Pontos de vida em porcentagem
     ret int(p2.pvida * 100 / p2.pvidamax)
-  senao # Pontos de vida em uma barra de 10 caracteres
-    uint8 x
-    x = int(p2.pvida * 10 / p2.pvidamax)
-    ret x >= 10 ? ">>>>>>>>>>" : txtrepete(">", x) + txtrepete(" ", 10 - x)
+  fimse # Pontos de vida em uma barra de 10 caracteres
+  uint8 x
+  x = int(p2.pvida * 10 / p2.pvidamax)
+  ret x >= 10 ? ">>>>>>>>>>" : txtrepete(">", x) + txtrepete(" ", 10 - x)
 
 func m_t # Conforme o sol: amanhecendo, manhã, tarde, anoitecendo, noite
   ret arg0 === "t", " "

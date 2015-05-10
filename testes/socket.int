@@ -1,3 +1,5 @@
+err = 1
+
 classe config
 const ender = "localhost"
 const porta = 1963
@@ -13,6 +15,7 @@ const msg = conec.msg(arg0)
 func iniclasse
   se ![arg0]:servidor.abrir("localhost", 2000)
     terminar
+  fimse
 func servidor_socket
   criar("teste", arg0)
 func ini
@@ -37,6 +40,7 @@ func escr_pc
     msg("Conectando\n")
   senão
     msg("Erro ao conectar\n")
+  fimse
 func escr_f
   remoto.fechar
   msg("Conexão fechada\n")
@@ -82,6 +86,7 @@ func remoto_con
     msg("Conectado\n")
   senao
     msg("Conectado; esperando mensagem\n")
+  fimse
 func remoto_err
   msg("Erro ao conectar: " + arg0 + "\n")
 func remoto_msg
@@ -93,12 +98,14 @@ func remoto_msg
     papovox = 0
     remoto.proto = 5
     msg("Conectado via Papovox\n")
+  fimse
 func remoto_env
   msg("Enviou\n")
   se repetemens
     repetemens -= 1
     remoto.msg(ultimamens)
     msg(">>\n")
+  fimse
 func remoto_fechou
   msg("Conexão fechada remotamente\n")
 func escr_x # Teste para enviar mensagens grandes

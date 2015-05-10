@@ -69,6 +69,7 @@ func ini # Objeto foi criado
     j_tempo = 36000 # Fecha conexão em uma hora
     infotelnet = 1
     jogsock:ini
+  fimse
 
 func fim # Objeto foi apagado
   ref r
@@ -82,6 +83,7 @@ func j_tempo_exec # Tempo esgotado
   senao
     j_conec.msg("-Tempo esgotado\n")
     apagar(este)
+  fimse
 
 func j_conec_fechou # Conexão fechou
   apagar(este)
@@ -103,6 +105,8 @@ func j_conec_msg # Recebeu mensagem do usuário
     senao # Nome vazio: é Telnet
       j_conec.msg("-OK Entrando via Telnet")
       infotelnet = 1
+    fimse
+  fimse
 
 
 classe jogoservip

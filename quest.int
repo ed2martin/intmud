@@ -1,4 +1,16 @@
+# Quantas instruções uma função chamada pelo programa pode
+# executar antes do controle retornar ao programa
+exec = 5000
+
+# Se deve abrir uma janela de texto - variável telatxt
 telatxt = 1
+
+# Aonde apresentar mensagens de erro no programa
+log = 0
+
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
 
 classe config
 # Configuração
@@ -141,9 +153,11 @@ func _tela_msg
   senao
     nome = arg0
     jogador:ini
+  fimse
 func _tela_tecla
   se arg0 == "ESC"
     terminar
+  fimse
 
 
 classe jogoserv
@@ -178,6 +192,7 @@ func ini # Objeto foi criado
     fechar1 = 100 # 10 segundos depois desconecta
   senão
     espera1 = 1
+  fimse
 
 func fechar1_exec
   conec.msg("-Tempo esgotado\n")
@@ -223,6 +238,8 @@ func conec_msg # Recebeu mensagem do usuário
     senão # Cria objeto do jogador
       apagar(este)
       criar("jogoserv_j", conec, nome)
+    fimse
+  fimse
 
 
 classe jogoserv_j
@@ -253,6 +270,7 @@ func _conec_msg
     efim
   senao
     recebe(arg0)
+  fimse
 func ini
   _fechar = 36000 # Esperar uma hora
   _conec = arg0
@@ -280,11 +298,13 @@ func ini1
   senão
     tela.msg("Conectando em " + config:serv + "\n")
     ret 0
+  fimse
 func conectando_exec # 10 segundos tentando conectar
   se socket
     tela.msg("Tempo demais esperando resposta OK\n")
   senão
     tela.msg("Tempo demais esperando conectar\n")
+  fimse
 func conec_err # Não conseguiu conectar
   tela.msg("Erro ao conectar: " + arg0 + "\n")
 func conec_con # Conectou
@@ -329,6 +349,8 @@ func conec_msg # Recebeu mensagem
     senão comando == "a" # Mudou de apelido
       obj = ind.obj("usr_" + txtsub(arg0, 1, 1))
       obj.novonome(txtsub(arg0, 2, 1))
+    fimse
+  fimse
 
 
 classe bot_sala
@@ -509,6 +531,7 @@ func recebe2 # Durante o jogo
     fim_jogo
     perg.limpar
     info_menu
+  fimse
 
 func info_niveis # Informa os níveis existentes
   textopos pos
@@ -543,6 +566,7 @@ func info_recordes # Informa os récordes de um nível
       msg(txt2(pos.texto) + "\n")
       pos.depois
     efim
+  fimse
 
 func inic_jogo # Inicia jogo
 # arg0 = número da pergunta inicial (começa em 0)

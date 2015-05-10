@@ -45,6 +45,7 @@ func escr # Atacar alguém
       l.ini.remove
     efim
     !l && ataca(arg0, r)
+  fimse
 
 func ataca # Chamado quando personagem (arg0) quer atacar alguém (arg1)
   ataca1(arg0, arg1)
@@ -162,7 +163,6 @@ func execgolpe # Realiza um ataque e coloca resultado em result
   r.atkrec = s.atkenv.addfim(r)
   (!arg1.alvo || arg1.alvo.dono != arg1.dono) && (arg1.alvo = arg0)
   r.podepegar && exgolpe_i(arg1.var.a_[r.nome]) # Coloca na agenda
-  fimse
 # Checa se acertou o alvo
   dano = rand(1, 20)
   se dano == 20 # Acertou automaticamente
@@ -295,6 +295,7 @@ func ataca
   senao
     arg1.novoefeito("e_paralisado")
     $mens.mtodos1("$R paralisa $c com choque")
+  fimse
 
 
 classe cmd_chama
@@ -317,6 +318,7 @@ func ataca
   senao rand(100) < 20 && arg1.defvar.3 < 80
     arg1.persobat.novoefeito("e_queimando")
     $mens.mtodos1("$C está queimando")
+  fimse
 
 
 classe cmd_brasa
@@ -339,6 +341,7 @@ func ataca
   senao rand(100) < 20 && arg1.defvar.3 < 80
     arg1.persobat.novoefeito("e_queimando")
     $mens.mtodos1("$C está queimando")
+  fimse
 
 
 classe cmd_lamber
@@ -375,6 +378,7 @@ func ataca
     arg1.persobat.novoefeito("e_envenenado")
     $mens.p(arg0, arg1)
     $mens.mtodos1("$C foi envenenado")
+  fimse
 
 
 classe cmd_confusao
@@ -391,6 +395,7 @@ func ataca
     arg1.persobat.novoefeito("e_confuso")
     $mens.p(arg0, arg1)
     $mens.mtodos1("$C ficou confuso")
+  fimse
 
 
 classe cmd_neve
@@ -408,6 +413,7 @@ func ataca
     arg1.persobat.novoefeito("e_congelado")
     $mens.p(arg0, arg1)
     $mens.mtodos1("$C congelou")
+  fimse
 
 
 classe cmd_aurora
@@ -425,6 +431,7 @@ func ataca
     arg1.persobat.novoefeito("e_congelado")
     $mens.p(arg0, arg1)
     $mens.mtodos1("$C congelou")
+  fimse
 
 
 classe cmd_pedrada
@@ -486,6 +493,7 @@ const extra = "Joga lama, imobilizando o adversário por 4 segundos"
 func ataca
   se ataca1(arg0, arg1)
     arg1.esperar(40)
+  fimse
 
 
 classe cmd_terremoto
@@ -548,6 +556,7 @@ func ataca
     arg1.persobat.novoefeito("e_dormindo")
     arg0.esperar(130)
     $mens.mtodos1("$R canta uma canção e $c dorme profundamente")
+  fimse
 
 
 classe cmd_velocidade
@@ -614,6 +623,7 @@ func ataca
     arg1.persobat.novoefeito("e_envenenado")
     $mens.p(arg0, arg1)
     $mens.mtodos1("$C foi envenenado")
+  fimse
 
 
 classe cmd_roer
@@ -631,6 +641,7 @@ func ataca
     arg1.persobat.novoefeito("e_envenenado")
     $mens.p(arg0, arg1)
     $mens.mtodos1("$C foi envenenado")
+  fimse
 
 
 classe cmd_lancar
@@ -663,6 +674,7 @@ func ataca
     $mens.mtodos1("$R atira em $c" + msgefeito(arg1))
     arg1.atkenv.remove(arg0) # Não dá experiência
     arg1.persobat.pvida == 0 && arg1.persobat.morreu # Checa se o alvo morreu
+  fimse
 
 
 classe cmd_metronomo
@@ -672,6 +684,7 @@ func ver
   se obj(arg0)
     arg0.msg("Metrônomo: Um golpe que se transforma em outro golpe")
     ret 1
+  fimse
 
 func ataca
   textotxt t

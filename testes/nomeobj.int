@@ -1,3 +1,4 @@
+err = 2
 classe x
 comum serv porta
 socket sock
@@ -18,6 +19,7 @@ func teste
   se nomes.nome(arg0)
     msg(arg0 + "\n")
     encontrou = 1
+  fimse
 func sock_msg
   se arg0 == "fim"
     terminar
@@ -39,6 +41,8 @@ func sock_msg
   teste("5")
   se encontrou == 0
     msg("Nada encontrado\n")
+  fimse
 func iniclasse
   se ![arg0]:porta.abrir("",2000)
     terminar
+  fimse

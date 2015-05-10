@@ -56,6 +56,7 @@ func escr
       se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
         arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
         continuar
+      fimse
       indiceitem item
       refvar r = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
       refvar valor = intpos(r.valor * (100 - p.taxacompra) / 100)
