@@ -499,33 +499,21 @@ func passo
   arg0.passo = ""
   arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
   arg0.msg("Iniciando jogo; para ajuda tecle AJUDA")
-  arg0.var.j_inivar = txt(t_[arg0.var.j_tipo1]:inivar) + "," + t_[arg0.var.j_tipo2]:inivar
-  arg0.var.j_inivar += "," + t_[arg0.var.j_tipo3]:inivar
-  arg0.mudaperso(criar("jogador", nulo, 0, arg0.var.j_inivar))
+  refvar v = arg0.var
+  arg0.mudaperso(criar("jogador", nulo, v.j_tipo1, v.j_tipo2, v.j_tipo3))
   arg0.perso.cnome = "pn " + txt2(arg0.cnome)
   arg0.perso.nome = arg0.nome
   arg0.perso.jogconfig.bits = arg0.jogconfig.bits
   arg0.perso.psexo = arg0.var.j_sexo
   arg0.perso.senha = arg0.var.j_senha
-  arg0.perso.tipo1 = arg0.var.j_tipo1
-  arg0.perso.tipo2 = arg0.var.j_tipo2
-  arg0.perso.tipo3 = arg0.var.j_tipo3
-  arg0.perso.pnivel = intmax(t_[arg0.var.j_tipo1]:nmin, t_[arg0.var.j_tipo2]:nmin, t_[arg0.var.j_\
-tipo3]:nmin)
   arg0.perso.var.z_email = arg0.var.j_email
   arg0.var.limpar("j_")
   arg0.perso.mudadono(config:salaini)
-  arg0.perso.recalc = 1
   arg0.temposair # Acerta tempo para sair do MUD
   se arg0.perso.senha
     !arg0.perso.salvar && arg0.msg("Não foi possível salvar o personagem")
   fimse
   arg0.msgchegou("Criou personagem: " + arg0.nome + ", " + arg0.nomefim, arg0.nome + " entrou")
-  arg0.perso.recalc_exec
-  arg0.perso.recalc = 0
-  arg0.perso.pvida = arg0.perso.pvidamax
-  arg0.perso.pmana = arg0.perso.pmanamax
-  arg0.perso.pmove = arg0.perso.pmovemax
   $mens.p(arg0.perso)
   $mens.mvis2("", "$P chegou.")
   ret 1
@@ -540,7 +528,6 @@ func passo
   txt20 texto
   arqsav sav1
   ref r
-# msg(texto + " , " + arg0)
   texto = txts(txtnome(arg0.tpasso))
   arg0.passo = este
   se !arg1

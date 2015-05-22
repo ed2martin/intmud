@@ -4,7 +4,8 @@ const txtajuda = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
   \c2LTIPO\b     Lista tipos de personagens\n\
   \c2CTIPO\b     Cria um tipo de personagem\n\
   \c2ETIPO\b     Edita um tipo de personagem\n\
-  \c2ATIPO\b     Apaga um tipo de personagem"
+  \c2ATIPO\b     Apaga um tipo de personagem\n\
+  \c2TRES\b      Edita comandos do reset de tipo"
 
 
 classe adm_ltipo
@@ -26,22 +27,26 @@ func escr # Listar tipos
   lin = "Menu raças:\n  "
   epara nulo, p.lin, p.depois
     continuar $[p.texto].menu != 1
-    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+    lin += txt(p.texto, 2) + ", " + $[p.texto].nome
+    txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
   lin = "Menu classes:\n  "
   epara p.iniclasse("t_" + arg1), p.lin, p.depois
     continuar $[p.texto].menu != 2
-    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+    lin += txt(p.texto, 2) + ", " + $[p.texto].nome
+    txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
   lin = "Menu subclasses:\n  "
   epara p.iniclasse("t_" + arg1), p.lin, p.depois
     continuar $[p.texto].menu != 3
-    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+    lin += txt(p.texto, 2) + ", " + $[p.texto].nome
+    txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
   lin = "Em nenhum menu:\n  "
   epara p.iniclasse("t_" + arg1), p.lin, p.depois
     continuar $[p.texto].menu
-    txtmais.addfim(lin + txt(p.texto, 2) + ", " + $[p.texto].nome), lin = "  "
+    lin += txt(p.texto, 2) + ", " + $[p.texto].nome
+    txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
   arg0.sock.txtmostra
 

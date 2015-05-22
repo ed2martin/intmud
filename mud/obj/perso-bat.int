@@ -128,6 +128,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   bitver & 2048 && (bitver = bitver & ~1024)
   bitver & 1024 && posicao > 4 && (posicao = 4)
   atribs_exec
+  recalc = 0
 # Se for jogador, checa PNJs agressivos
   ret !jog, nulo
   epara i = dono.dentro2.ini, i, i.depois

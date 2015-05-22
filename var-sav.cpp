@@ -95,7 +95,7 @@ void TVarSav::Senha(char * senhacodif, const char * senha, char fator)
     unsigned char digest[20];
     SHA_CTX shaInfo;
     SHAInit(&shaInfo);
-    SHAUpdate(&shaInfo, mens, tam);
+    SHAUpdate(&shaInfo, mens, tam+1);
     SHAFinal(digest, &shaInfo);
 // Anota na string
     for (int x=0; x<20; x+=4)

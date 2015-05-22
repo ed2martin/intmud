@@ -56,7 +56,7 @@ Nota: Somente o dono da casa pode mudar as descrições das salas."
 const posic = 5
 
 func escr
-  se !arg0.dentrocasa
+  se !arg0.dentrocasa && !arg0.jogconfig.14
     arg0.msg("Você não está dentro da sua casa.")
   senao
     passo(arg0.sock, "\b")

@@ -466,7 +466,8 @@ func escr
     efim
     continuar area != r.s_area
     misc:obj = arg0
-    t0.addfim(item.obj.nome + "    " + item.obj.dono.s_titulo)
+    refvar titulo =  item.obj.dono.var.z_titulo
+    t0.addfim(item.obj.nome + "    " + (titulo ? titulo : item.obj.dono.s_titulo))
   efim
   t0.txtmostra
   arg0.msg2(t0.remove(1000))

@@ -612,7 +612,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_int2:         strcpy(nome, " ? "); indica=16; break;
         case exo_dponto2:      strcpy(nome, " : "); indica=16; break;
         case exo_atrib:        strcpy(nome, " = ");  indica=16; break;
-        case exo_i_mul:        strcpy(nome, " *= "); indica=16,origem+=2; break; 
+        case exo_i_mul:        strcpy(nome, " *= "); indica=16,origem+=2; break;
         case exo_i_div:        strcpy(nome, " /= "); indica=16,origem+=2; break;
         case exo_i_porcent:    strcpy(nome, " %= "); indica=16,origem+=2; break;
         case exo_i_add:        strcpy(nome, " += "); indica=16,origem+=2; break;
@@ -644,7 +644,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                 p--;
                 assert(p>=dest_ini);
             }
-            memcpy(p, p+1, destino-p);
+            memmove(p, p+1, destino-p);
         }
         if (indica&2) // Copiar texto de nome[]
         {
