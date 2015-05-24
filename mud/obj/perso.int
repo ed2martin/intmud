@@ -31,6 +31,7 @@ const p_morreu1 = "$P morreu."
 const p_morreu2 = "$P desmaiou."
 const p_fome = 100 # Não está com fome
 const p_sede = 100 # Não está com sede
+const lojafechada = "$P: Volte outra hora"
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome\n\
@@ -56,7 +57,7 @@ equip2\n\
 equip3\n\
 lojaini lojafim lojasim lojanao\n\
 lojaaula lojaitem lojainv\n\
-lojasala lojacasa lojachave\n\
+lojasala lojacasa lojachave lojafechada\n\
 taxaaula\n\
 taxacasa\n\
 taxacompra\n\
@@ -184,7 +185,25 @@ func mudadono_chegou
   efim
 
 func recalc_exec # Ajusta variáveis
-  bitver = 17, bitinv = 3, atribs.limpar, recalc_auto, cmd_recalc1(este), atribs_exec
+# Acerta atributos básicos
+  bitver = 17, bitinv = 3, atribs.limpar
+# Acerta atributos conforme o tipo de personagem
+  config:atribcfg, recalc_auto
+  t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto
+  t_[tipo1]:recalc, t_[tipo2]:recalc, t_[tipo3]:recalc
+  cmd_recalc1(este)
+# Efeitos conforme o que está vestindo
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    [i.obj]:recalc_auto, i.obj.cmd_recalc2(este)
+  efim
+  epara i = evento.ini, i, i.depois
+    i.obj.cmd_recalc3(este)
+  efim
+# Acerta atributo dormindo de bitver
+  bitver & 2048 && (bitver = bitver & ~1024)
+  bitver & 1024 && posicao > 4 && (posicao = 4)
+  atribs_exec
   recalc = 0
 
 func teclou # Processa comando (arg0=comando)

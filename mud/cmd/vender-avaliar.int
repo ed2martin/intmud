@@ -1,5 +1,5 @@
 classe cmd_vender
-herda cmd_avaliar
+herda cmd_avaliar, comum_negociar
 const txtajuda = "\b\c3Vender\b\n\
 Sintaxe: VENDER <nome do objeto>\n\
          VENDER <quantidade> <nome do objeto>\n\
@@ -18,50 +18,30 @@ Sintaxe: AVALIAR <nome do objeto>\n\
 Pergunta a um vendedor quanto ele paga por um item que você está carregando\n\
 ou por uma casa que você possui."
 txt200 lin
-int8 abre # Usado internamente: horário de abertura
-int8 fecha # Usado internamente: horário de fechamento
 int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
 ref p # Vendedor que está verificando
-txt30 tipo1 # arg0.tipo1
-txt30 tipo2 # arg0.tipo2
-txt30 tipo3 # arg0.tipo3
 const vender = 0
 
 func escr
   ret !arg1, arg0.msg(vender ? "Vender o que?" : "Avaliar o que?")
-  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
+  negociar_ini(arg0)
   listaobj l
 # Avaliar/comprar casas
   se arg1 == "casa"
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
       p = l.objini # Personagem que está sendo verificado
-      continuar !$a_[p.lojacasa] || p.atkenv || p.cmd_loja(arg0)
-      se p.lojanao
-        continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
-        continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
-        continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
-      fimse
-      se !p.lojasim # negocia com todos
-      senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
-      senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
-      senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
-      senao
-        continuar
-      fimse
+      continuar !$a_[p.lojacasa]
+      lin = negociar_msg(arg0, p)
+      continuar lin == "\b"
+      ret lin, arg0.msg(lin)
       continuar evento(arg0, p)
-      abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-      se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-        arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
-        continuar
-      fimse
       indiceitem item
       refvar r = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
       refvar valor = intpos(r.valor * (100 - p.taxacompra) / 100)
       se !r
-        ret arg0.msg("Você não tem uma casa aqui.")
+        arg0.msg("Você não tem uma casa aqui.")
+        continuar
       senao vender
         arg0.var.z_moedas_ += valor
         r.nomejog = ""
@@ -88,6 +68,7 @@ func escr
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
     efim
+    ret arg0.msg("Ninguém quer comprar casa.")
   fimse
 # Avaliar/comprar itens
   nomeobj n # Para reconhecer os itens
@@ -107,18 +88,12 @@ func exec # Avalia ou vende um item
   mudou = 0, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv
     continuar arg1.tipoitem & p.tipoitem == 0 # Checa se tem interesse
-    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
-    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
-      mudou = 1
-      continuar
-    senao lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
-      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+    lin = negociar_msg(arg0, p)
+    continuar lin == "\b"
+    ret lin, arg0.msg(lin)
+    se lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
+      arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       continuar
     fimse
     int32 valor # Valor do item

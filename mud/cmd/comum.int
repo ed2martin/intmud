@@ -14,3 +14,71 @@ const txtajuda = "\b\c3Lançar\b\nSintaxe: LANÇAR <nome da magia>\nLança uma magi
 const posic = 0
 const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 # Nota: a função escr aqui é desnecessária
+
+
+classe comum_negociar
+# Comandos em que o PNJ negocia com alguém: comprar, vender, avaliar, etc.
+txt30 n_t1 # arg0.tipo1
+txt30 n_t2 # arg0.tipo2
+txt30 n_t3 # arg0.tipo3
+
+func negociar_ini # Inicializa variáveis
+# arg0 = personagem do jogador
+  n_t1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
+  n_t2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
+  n_t3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
+
+func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
+# arg0 = personagem do jogador
+# arg1 = PNJ
+# Retorna: "" se negocia, "\b" se apenas não negocia ou mensagem com o motivo
+  ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0), "\b"
+  se !arg0.visivel(arg1)
+    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com quem não posso ver."
+  senao !arg1.lojanao # negocia com todos
+  senao n_t1 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t1) >= 0
+    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo1
+  senao n_t2 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t2) >= 0
+    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo2
+  senao n_t3 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t3) >= 0
+    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo3
+  fimse
+  se !arg1.lojasim # negocia com todos
+  senao n_t1 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t1) >= 0
+  senao n_t2 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t2) >= 0
+  senao n_t3 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t3) >= 0
+  senao
+    lin = (tipo1 ? " " + arg0.tipo1 : "") + (tipo2 ? " " + arg0.tipo2 : "")
+    lin += tipo3 ? " " + arg0.tipo3 : ""
+    !lin && (lin = " você")
+    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com" + lin
+  fimse
+  refvar abre = int(arg1.lojaini) - misc:hora
+  refvar fecha = int(arg1.lojafim) - misc:hora
+  se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    $mens.p(arg1, arg0)
+    ret $mens.proc(arg1.lojafechada, arg0)
+  fimse
+  ret ""
+
+func negociar_checa # Checa se PNJ pode negociar
+# arg0 = personagem do jogador
+# arg1 = PNJ
+# Retorna: "" se negocia ou "\b" se não negocia
+  ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0) || !arg0.visivel(arg1), "\b"
+  se arg1.lojanao
+    ret n_t1 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t1) >= 0, "\b"
+    ret n_t2 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t2) >= 0, "\b"
+    ret n_t3 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t3) >= 0, "\b"
+  fimse
+  se !arg1.lojasim # negocia com todos
+  senao n_t1 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t1) >= 0
+  senao n_t2 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t2) >= 0
+  senao n_t3 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t3) >= 0
+  senao
+    ret "\b"
+  fimse
+  refvar abre = int(arg1.lojaini) - misc:hora
+  refvar fecha = int(arg1.lojafim) - misc:hora
+  ret abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0, "\b"
+  ret ""

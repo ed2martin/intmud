@@ -1,13 +1,11 @@
 classe cmd_comprar
-herda comando_comum
+herda comando_comum, comum_negociar
 const txtajuda = "\b\c3Comprar\b\n\
 Sintaxe: COMPRAR <nome ou número do objeto>\n\
          COMPRAR <quantidade>  <nome ou número do objeto>\n\
 Compra objetos de um vendedor.\n\
 Para saber o que é vendido em algum lugar, tecle LISTA."
 txt200 lin
-int8 abre # Usado internamente: horário de abertura
-int8 fecha # Usado internamente: horário de fechamento
 uint32 valor # Usado internamente: preço da aula
 uint32 nivel # Usado internamente: nível do item
 int32 linha
@@ -15,15 +13,10 @@ int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
 txt100 nomeitem # O nome do item que está procurando
 uint16 total # Quantos itens quer combrar
 ref p # Vendedor que está verificando
-txt30 tipo1 # arg0.tipo1
-txt30 tipo2 # arg0.tipo2
-txt30 tipo3 # arg0.tipo3
 
 func escr
   ret !arg1, arg0.msg("Comprar o quê?")
-  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
+  negociar_ini(arg0)
   listaobj l
   nomeobj n
   total = txt1(arg1)
@@ -36,29 +29,10 @@ func escr
   l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv
     continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
 )
-# Checa se pode vender alguma coisa
-    se p.lojanao
-      continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
-      continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
-      continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
-    fimse
-    se !p.lojasim # negocia com todos
-    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
-    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
-    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
-    senao
-      continuar
-    fimse
+    continuar negociar_checa(arg0, p)
     continuar evento(arg0, p)
-    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-    se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      mudou = 1
-      arg0.msg(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
-      continuar
-    fimse
 # Itens fixos - lojaitem
     textotxt t2
     epara t2.addfim(p.lojaitem(arg0)), t2.linhas, t2.remove

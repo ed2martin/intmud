@@ -339,6 +339,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret arg0.contr.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
   senao !arg1.contr.p_agressivo(arg0)
     ret arg0.contr.msg(txtcopiamai(arg1.contr.descnome, "A") + " não quer brigar.")
+  senao arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
+    ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + " aqui.")
   fimse
   ret cmd_atacar(arg0, arg1, este), nulo
   epara l.addfim(arg0.contr.evento), l, l.ini.remove
@@ -358,11 +360,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     custohab2(arg0, arg2)
     mensinicio(arg0, arg1)
   fimse
-  se arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
-    result = 1
-    mensgolpe(arg0, arg1)
-    ret arg0.acertapos(1)
-  senao arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+  se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     result = 1
     mensgolpe(arg0, arg1)
     ret arg0.acertapos(1)

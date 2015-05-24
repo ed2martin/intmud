@@ -1,5 +1,5 @@
 classe cmd_lista
-herda comando_comum
+herda comando_comum, comum_negociar
 const txtajuda = "\b\c3Lista\b\n\
 Sintaxe: LISTA [item]\n\
 Sem argumentos mostra a lista de produtos sendo vendidos.\n\
@@ -8,19 +8,12 @@ const posic = 5
 txt200 lin
 uint32 valor # Usado internamente: valor do item
 uint32 nivel # Usado internamente: nível do item
-int8 abre # Usado internamente: horário de abertura
-int8 fecha # Usado internamente: horário de fechamento
 real2 lucro # Para calcular o lucro do vendedor
 int32 linha
 ref p # Vendedor que está verificando
-txt30 tipo1 # arg0.tipo1
-txt30 tipo2 # arg0.tipo2
-txt30 tipo3 # arg0.tipo3
 
 func escr
-  tipo1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
-  tipo2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
-  tipo3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
+  negociar_ini(arg0)
   arg1 ? escr2(arg0, arg1) : escr1(arg0)
 
 func escr1 # Consultar a lista de itens
@@ -29,34 +22,13 @@ func escr1 # Consultar a lista de itens
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv || !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
+    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
 $a_[p.lojachave])
-# Checa se pode vender alguma coisa
-    se !p.lojanao # negocia com todos
-    senao tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
-      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo1)
-      continuar
-    senao tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
-      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo2)
-      continuar
-    senao tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
-      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com " + arg0.tipo3)
-      continuar
-    fimse
-    se !p.lojasim # negocia com todos
-    senao tipo1 && txtproc("\n" + txte(p.lojasim) + "\n", tipo1) >= 0
-    senao tipo2 && txtproc("\n" + txte(p.lojasim) + "\n", tipo2) >= 0
-    senao tipo3 && txtproc("\n" + txte(p.lojasim) + "\n", tipo3) >= 0
-    senao
-      t.addfim(txtcopiamai(p.descnome, "A") + ": Não negocio com você")
-      continuar
-    fimse
-    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
+    lin = negociar_msg(arg0, p)
+    continuar lin == "\b"
+    ret lin, arg0.msg(lin)
     se lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
       t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
-      continuar
-    senao abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
-      t.addfim(txtcopiamai(p.descnome, "A") + ": Volte outra hora")
       continuar
     fimse
     t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " informa:\b")
@@ -125,7 +97,7 @@ $a_[p.lojachave])
     fimse
   efim
   ret t.linhas, arg0.msg2(t.remove(1000))
-  arg0.msg("Ninguém vende nada aqui.")
+  arg0.msg("Não há vendedores aqui.")
 
 func escr2 # Consultar um item
   listaobj l
@@ -133,15 +105,9 @@ func escr2 # Consultar um item
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar p.atkenv || p.cmd_loja(arg0)
     continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
 )
-# Checa se pode vender alguma coisa
-    continuar tipo1 && txtproc("\n" + txte(p.lojanao) + "\n", tipo1) >= 0
-    continuar tipo2 && txtproc("\n" + txte(p.lojanao) + "\n", tipo2) >= 0
-    continuar tipo3 && txtproc("\n" + txte(p.lojanao) + "\n", tipo3) >= 0
-    abre = p.lojaini - misc:hora, fecha = p.lojafim - misc:hora
-    continuar abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
+    continuar negociar_checa(arg0, p)
     continuar evento(arg0, p)
     lucro = (100 + p.taxavenda) / 100
 # Itens fixos - lojaitem
