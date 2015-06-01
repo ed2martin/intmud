@@ -20,7 +20,7 @@ Na inicialização do programa:
 
 Para alterar uma classe:
 -# Criar um novo TClasse::Comandos, mas ainda não apagar o antigo
--# Chamar AcertaDeriv() e AcertaVar(true), nessa ordem
+-# Chamar AcertaDeriv(Comandos antigo) e AcertaVar(true), nessa ordem
 -# Apagar o antigo TClasse::Comandos
 .
 

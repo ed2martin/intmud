@@ -174,8 +174,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 342, nulo
-  p.criar("config", "const versao = 342 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 349, nulo
+  p.criar("config", "const versao = 349 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -425,9 +425,40 @@ casa está atrasada.\"")
       p.renomear(p.texto, "t_" + txt(p.texto, 5))
     efim
   fimse
-# Renascer
-  se versao < 342
+# Renascer e comando COM
+  se versao < 349
     criafunc("config", "const renascer = 2")
+    se config:modoserv
+      txt100 t1
+      t1 = config:modoserv == 1 ? "telnet " : "papo "
+      t1 += config:servender ? config:servender + " " : "* "
+      criafunc("config", "const inicom1 = \"" + t1 + config:servporta + "\"")
+    senao
+      criafunc("config", "const inicom1 = \"\"")
+    fimse
+    se config:modobot && config:senha
+      txt100 t1
+      t1 = config:serv + " " + config:porta + " " + config:sala + " " + config:senha
+      criafunc("config", "const inicom2 = \"bot " + t1 + "\"")
+    senao
+      criafunc("config", "const inicom2 = \"\"")
+    fimse
+    criafunc("config", "const inicom3 = \"\"")
+    criafunc("config", "const inicom4 = \"\"")
+    criafunc("config", "const inicom5 = \"\"")
+    criafunc("config", "const inicom6 = \"\"")
+    criafunc("config", "const inicom7 = \"\"")
+    criafunc("config", "const inicom8 = \"\"")
+    criafunc("config", "const inicom9 = \"\"")
+    criafunc("config", "const inicom10 = \"\"")
+    p.apagar("config", "modoserv")
+    p.apagar("config", "modobot")
+    p.apagar("config", "servender")
+    p.apagar("config", "servporta")
+    p.apagar("config", "serv")
+    p.apagar("config", "porta")
+    p.apagar("config", "sala")
+    p.apagar("config", "senha")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

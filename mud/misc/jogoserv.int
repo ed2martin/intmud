@@ -1,12 +1,72 @@
 classe jogoserv
-herda jogsock
 # Rodando independente
-comum serv j_serv # Para receber conexões
+serv servidor # Para receber conexões
+indiceobj conexao1 # "cn " + porta
+txt100 conexao2 # Texto comando COM: mesmo que arg0 na função ini
+int8 infotelnet # Usado em jogoserv_usr
+
+func ini
+# arg0 contém 3 textos separados por espaço: tipo, endereço, porta
+# Tipo pode ser: "telnet", "ssl" (telnet seguro) ou "papo" (telnet e papovox)
+# Se o endereço for "*", abre a porta em todos os endereços
+  conexao1 = "cn " + txtsub(arg0, 2)
+  conexao2 = arg0
+  refvar ender = txtsub(arg0, 1, 1)
+  txt100 t1
+  casovar txt1(arg0)
+  casose "ssl"
+    infotelnet = 2
+    t1 = servidor.inissl("mud.crt", "mud.key")
+    se t1 != ""
+      telatxt tela
+      !config:modolocal && tela.msg("Serv iniciando SSL: " + t1 + "\n")
+      apagar(este), conexao2 = ""
+      ret
+    fimse
+    t1 = servidor.abrirssl(ender == "*" ? "" : ender, txtsub(arg0, 2))
+    sair
+  casose "telnet"
+    infotelnet = 1
+  casose "papo"
+    t1 = servidor.abrir(ender == "*" ? "" : ender, txtsub(arg0, 2))
+    sair
+  casose
+    apagar(este), conexao2 = ""
+    ret
+  casofim
+  se t1 != "1"
+    msg("Não foi possível abrir a porta")
+    apagar(este), conexao2 = ""
+    ret
+  fimse
+  msg("Esperando conexões")
+
+func fim
+  conexao2 && msg("Conexão encerrada")
+
+func msg
+  se !config:modolocal
+    telatxt tela
+    tela.msg("Serv " + conexao2 + ": " + arg0 + "\n")
+  fimse
+  indiceitem item
+  refvar m = "\b\d1(com) " + conexao2 + ": " + arg0 + "\b"
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.21 && item.obj.msg(m)
+  efim
+
+func servidor_socket # Conectado: cria objeto
+  criar("jogoserv_usr", arg0, este)
+
+
+classe jogoserv_usr
+herda jogsock
 socket j_conec # Usuário conectado
 inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
 uint8 j_passo # 0=definindo se Papovox, 1=entrando Papovox, 2=dentro
-listaitem j_servip # Objeto jogoservip que possui esse objeto
-int1 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo)
+ref j_servip # Objeto jogoservip que possui esse objeto
+ref j_jogoserv # Objeto jogoserv
+int8 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo), 2 se SSL
 txt1 j_t_crlf # Para controlar quando enviar CRLF no início
 const j_t_prompt = infotelnet ? j_conec.msg(j_t_crlf), j_t_crlf = ""
 const msgsock = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
@@ -25,27 +85,19 @@ func salaobj
     arg0.addfim(r)
   efim
 
-func inicio
-  telatxt tela
-  se jogoserv:j_serv.abrir(config:servender, config:servporta)
-    tela.msg("Esperando conexões na porta " + config:servporta + "\n")
-  senao
-    tela.msg("Não foi possível abrir a porta " + config:servporta + "\n")
-  fimse
-
-func j_serv_socket # Conectado: cria objeto
-  criar("jogoserv", arg0)
-
 func ini # Objeto foi criado
+# arg0 = socket
+# arg1 = objeto jogoserv
 # Acerta variáveis
   j_conec = arg0
   j_conec.proto = 2
   j_conec.aflooder = 1
   j_conec.cores = 2
+  infotelnet = arg1.infotelnet
 # Checa número de conexões por IP
   indiceitem i
   ref r
-  r = i.obj("ip " + j_conec.ip)
+  j_servip = i.obj("ip " + j_conec.ip)
   se !r
     r = criar("jogoservip")
     r.endereco = "ip " + j_conec.ip
@@ -58,22 +110,20 @@ func ini # Objeto foi criado
     apagar(este)
     ret
   fimse
-  j_servip = r.usr.addfim(este)
+  j_servip = r, r.usr.addfim(este)
   r.entrou = config:servtempo
 # Mensagem inicial
-  se config:modoserv == 2
+  se infotelnet == 0
     j_conec.msg("+OK Para Telnet pressione ENTER\n")
     j_tempo = 100 # 10 segundos depois desconecta
   senao
     j_passo = 2
     j_tempo = 36000 # Fecha conexão em uma hora
-    infotelnet = 1
     jogsock:ini
   fimse
 
 func fim # Objeto foi apagado
-  ref r
-  r = j_servip.objlista, r.usr.total <= 1 && r.entrou <= 0 && apagar(r)
+  j_servip.usr.total <= 1 && j_servip.entrou <= 0 && apagar(j_servip)
   j_passo == 2 && jogsock:fim
 
 func j_tempo_exec # Tempo esgotado
@@ -103,7 +153,7 @@ func j_conec_msg # Recebeu mensagem do usuário
       j_conec.msg("+OK Entrando via Papovox\n")
       j_conec.proto = 5
     senao # Nome vazio: é Telnet
-      j_conec.msg("-OK Entrando via Telnet")
+      j_conec.msg("-OK Entrando via Telnet\n")
       infotelnet = 1
     fimse
   fimse

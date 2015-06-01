@@ -4,34 +4,37 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 342 # Para atualizar diretórios areas e config
+const versao = 349 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
 #
-# Ativar em uma porta? 0=não, 1=Telnet, 2=Telnet e Papovox
-const modoserv = 0 # Jogar em uma porta: 0 Não
-#
-# Ativar como bot em um chat? 0=não, 1=sim
-const modobot = 0 # Jogar em um chat: Não
-#
-# Endereço, se modoserv for 1 ou 2
-const servender = ""
-#
-# Porta, se modoserv for 1 ou 2 (nota: Papovox só se conecta na porta 1963)
-const servporta = 1963
+# Portas para os jogadores se conectarem e endereços dos chats
+# aonde o MUD deve se conectar assim que for ativo
+# Cada constante é uma conexão, no mesmo formado do comando de admin COM:
+# telnet <endereço> <porta>
+# papo <endereço> <porta>
+# ssl <endereço> <porta>
+# Abre uma porta para entrar via Telnet, Papovox/Telnet ou Telnet c/critografia
+# Endereço deve ser * (asterisco) se deve abrir em todos os endereços
+# bot <endereço> <porta> <sala> <senha>
+# Conecta em um chat que tem suporte a bot
+const inicom1 = ""
+const inicom2 = ""
+const inicom3 = ""
+const inicom4 = ""
+const inicom5 = ""
+const inicom6 = ""
+const inicom7 = ""
+const inicom8 = ""
+const inicom9 = ""
+const inicom10 = ""
 #
 # Limite de conexões por IP na porta definida em servporta
 const servusr = 3
 #
 # Tempo entre duas conexões do mesmo endereço IP, em décimos de segundo
 const servtempo = 80
-#
-# Variáveis se ativar como bot em um chat
-const serv = "localhost"
-const porta = 1963
-const sala = "sala01"
-const senha = ""
 #
 # Caracteres de uma vez
 # Quantos caracteres cada jogador pode receber de uma vez do MUD.

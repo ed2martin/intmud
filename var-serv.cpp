@@ -213,7 +213,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
                     break;
                 strSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
             }
-            
+
     // Unix: Seleciona a porta
         strSock.sin_port = htons(porta);
         if ( bind(sock, (struct sockaddr *)&strSock,
@@ -435,9 +435,10 @@ bool TVarServ::Func(TVariavel * v, const char * nome)
             Instr::ApagarVar(v);
             return Instr::CriarVarInt(0);
         }
-    //printf("%s %d -> %d\n", ender, porta, Instr::VarAtual->getInt()); fflush(stdout);
+    //printf("%s %d -> %d\n\n", ender, porta, Instr::VarAtual->getInt()); fflush(stdout);
         modossl = (tipoabrir > 1);
         int valor = Abrir(ender, porta);
+        Instr::ApagarVar(v);
         return Instr::CriarVarInt(valor);
     }
 // Abre biblioteca SSL

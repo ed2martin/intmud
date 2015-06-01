@@ -433,7 +433,7 @@ bool TMudarClasse::ExecPasso()
             cl->MoveArquivo(mudar->Arquivo);
         cl->Comandos = instr;
         mudar->Comandos = 0;
-        cl->AcertaDeriv();
+        cl->AcertaDeriv(antigo_com);
         cl->AcertaVar(true);
         delete[] antigo_com;
     }

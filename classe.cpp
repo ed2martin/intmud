@@ -845,9 +845,9 @@ void TClasse::AcertaDeriv(char * comandos_antes)
     total2 = Heranca(buf2, HERDA_TAM);
 
 // Verifica se a herança não mudou
-    while (total1>0 && total2>0)
-        if (buf1[total1-1]==buf2[total2-1])
-            total1--, total2--;
+    for (; total1>0 && total2>0; total1--,total2--)
+        if (buf1[total1-1] != buf2[total2-1])
+            break;
     if (total1==0 && total2==0)
         return;
 
@@ -877,7 +877,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
                     memcpy(lista, buf2[x2]->ListaDeriv, total*sizeof(TClasse*));
                 if (buf2[x2]->ListaDeriv)
                     delete[] buf2[x2]->ListaDeriv;
-                lista[total] = buf2[x2];
+                lista[total] = this;
                 buf2[x2]->ListaDeriv = lista;
                 break;
             }
