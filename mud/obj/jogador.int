@@ -92,15 +92,15 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     p_diges -= 1, vida += 2, acertapos
     sair
   casose "4" # Dormindo
-    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 500 : 600)
+    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel(este) >= 3 ? 500 : 600)
     p_diges -= 3
     sair
   casose "5" # Descansando
-    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 685 : 800)
+    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel(este) >= 3 ? 685 : 800)
     p_diges -= 3
     sair
   casose "6" # Sentado
-    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel >= 3 ? 1000 : 1200)
+    recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel(este) >= 3 ? 1000 : 1200)
     p_diges -= 3
     sair
   casose "7" # Lutando

@@ -1,18 +1,21 @@
 Salas (classe sala, em obj/sala.int)
 
 const s_titulo = "texto"
-Retorna o título da sala. arg0 é quem está requisitanto o título.
+arg0 = personagem que está requisitando o título
+Retorna o título da sala
 
 const s_desc = "texto"
-Retorna a descrição da sala. arg0 é quem está requisitanto a descrição.
+arg0 = personagem que está requisitando o título
+Retorna a descrição da sala.
 
 const s_noite = "texto"
+arg0 = personagem que está requisitando o título
 Retorna a descrição da sala quando está de noite.
-arg0 é quem está requisitanto a descrição.
 Inicialmente, para ser a mesma descrição que de dia, é definido como:
-const s_noite = s_desc
+const s_noite = s_desc(arg0)
 
 const s_ocultar = 0
+arg0 = personagem que está consultando essa constante
 Verdadeiro (geralmente 1) deve ocultar a descrição da sala ao entrar.
 
 const s_terreno = 0
@@ -38,6 +41,7 @@ Tipo de iluminação:
 3 = Escuro
 
 const s_recup = 100
+arg0 = personagem que está consultando essa constante
 Taxa de recuperação de vida, mana e movimentos dos personagens.
 Quanto maior, mais recupera; 0 não recupera.
 
@@ -47,16 +51,19 @@ Os itens são apagados aos poucos, pela função t_item_exec, com a variável:
 inttempo t_item # Tempo para começar a apagar itens da sala
 
 const s_morre = 0
+arg0 = personagem que está consultando essa constante
 Se o personagem morre ao entrar na sala:
 0 = Não morre
 1 = Morre
 2 = Morre e perde itens e moedas
 
 const s_falar = ""
+arg0 = personagem que está consultando essa constante
 Mensagem recebida ao usar o comando falar.
 Se nulo ou um texto vazio, permite falar.
 
 const s_gritar = s_falar
+arg0 = personagem que está consultando essa constante
 Mensagem recebida ao usar o comando gritar.
 Se nulo ou um texto vazio, permite gritar.
 
@@ -70,17 +77,23 @@ const s_semmagia = 0
 Se não é possível usar magia na sala (0=permite, 1=não permite).
 
 const s_retornar = 0
-Se não é possível retornar (comando e magia retornar) dessa sala
-(0=permite, 1=não permite).
+arg0 = personagem que está consultando essa constante
+Comando retornar e magia retornar:
+0 = Permite
+1 = Não permite
+2 = Muda o ponto de retorno para essa sala
+3 = Muda o ponto de retorno se ainda não possuir
 
 const s_voltar = nulo
+arg0 = personagem que está consultando essa constante
 Quando um jogador sair do jogo e voltar, para qual sala deve voltar.
 Exemplo de constante: const s_voltar = $s_casa001
 
-const s_pnj = 0
-Se PNJs não entram (0=podem entrar, 1=não podem).
+const s_pnj = 10
+Quantidade máxima de personagens não jogador na sala.
 
 const s_soltar = 0
+arg0 = personagem que está consultando essa constante
 Se é permitido soltar itens:
 0 = Permitido
 1 = Não permitido
@@ -88,8 +101,9 @@ Se é permitido soltar itens:
 3 = Se soltar, destrói caindo
 4 = Se soltar, desintegra
 
+const dir_[direção] = nulo
 ref dir_[direção]
-Antes de acessar fazer misc:obj=personagem
+arg0 = personagem que está consultando essa constante (pode ser nulo)
 Sala na direção especificada.
 Geralmente definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b
@@ -97,7 +111,6 @@ Se estiver ausente, não há sala nessa direção
 
 uint8 porta_[direção]
 const portaini_[direção]
-Antes de acessar fazer misc:obj=personagem
 Especifica o tipo de saída em determinada direção.
 Porta é o valor atual, geralmente definido dessa forma: uint8 porta_s
 PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
@@ -107,28 +120,28 @@ PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
 3 = Está trancado
 
 const inv_[direção]
-Antes de acessar fazer misc:obj=personagem
+arg0 = personagem que está consultando essa constante
 Verdadeiro se for invisível (não aparece na lista de saídas)
 
 const tranc_[direção]
-Antes de aceessar fazer misc:obj=personagem
+arg0 = personagem que está consultando essa constante
 0 = Não pode ser trancado
 1 = Pode ser trancado
 2 = Tranca ao fechar
 
 const fechadura_[direção]
-Antes de acessar fazer misc:obj=personagem
+arg0 = personagem que está consultando essa constante
 Texto que contém o código da fechadura.
 Somente uma chave com o mesmo código tranca e destranca.
 Se estiver ausente ou for um texto vazio, não requer chave.
 
 const voar_[direção]
-Antes de acessar fazer misc:obj=personagem
+arg0 = personagem que está consultando essa constante
 Se é preciso estar voando ou flutuando para seguir nessa direção.
 0=não, 1=sim
 
 const fugir_[direção]
-Antes de acessar fazer misc:obj=personagem
+arg0 = personagem que está consultando essa constante
 Se não existe a possibilidade de fugir de uma luta nessa direção.
 0=permite fugir, 1=não permite fugir
 
@@ -156,14 +169,18 @@ Reset de área:
 Um texto que contém os executados quando ocorre reset da área.
 O significado do texto está explicado no início do arquivo adm/reset.int.
 
-func ver_[nome do a descrição]( jogador, 0 )
-Deve retornar verdadeiro (ou um texto não vazio) se essa descrição extra
-existir ou falso (ou um texto vazio) se não existir.
-
-func ver_[nome do a descrição]( jogador, 1 )
-Deve retornar um texto que é a descrição extra.
+const ver_[nome da descrição] = "descrição"
+func ver_[nome do a descrição]
+arg0 = personagem que está consultando essa constante
+Deve retornar um texto que é a descrição extra ou "" se não houver.
+Para criar descrições diurnas ou noturnas, acrescentar @d ou @n,
+respectivamente, no fim do nome da descrição.
 Exemplo de como criar uma descrição:
 const ver_placa = "Você olha para uma placa vazia."
+Exemplo de descrição diurna:
+const ver_placa@d = "À luz do sol você nota que é uma placa verde."
+Exemplo de descrição noturna:
+const ver_placa@n = "Está escuro demais para ler o que está escrito na placa."
 
 func descsala( jogador, modo )
 Adiciona texto com a descrição da sala

@@ -39,7 +39,7 @@ func escr
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
     ret cmdsg, arg0.msg("Guardar aonde?")
     sala = arg0.dono
-    soltar = sala.s_soltar
+    soltar = sala.s_soltar(arg0)
     mens = ""
     ret soltar == 1, arg0.msg("Você não consegue soltar itens aqui.")
   senao
@@ -124,16 +124,10 @@ func soltarobj
     erro = arg1.descnome + "."
     casovar txtmin(txt1(erro))
     casose "o"
-      erro = "Não consegue colocar mais nada no " + txt2(erro)
-      ret
     casose "a"
-      erro = "Não consegue colocar mais nada na " + txt2(erro)
-      ret
     casose "os"
-      erro = "Não consegue colocar mais nada nos " + txt2(erro)
-      ret
     casose "as"
-      erro = "Não consegue colocar mais nada nas " + txt2(erro)
+      erro = "Não consegue colocar mais nada n" + txtcopiamai(erro, "aa")
       ret
     casofim
     erro = "Não consegue colocar mais nada em " + erro

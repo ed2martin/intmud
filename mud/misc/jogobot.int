@@ -2,6 +2,7 @@ classe jogobot
 telatxt tela
 socket conec # Conexão com o bate-papo
 inttempo conectando
+inttempo tempo # Para enviar pelo menos uma mensagem de tempos em tempos
 listaobj salas # Objetos jogobot_sala
 indiceobj conexao1 # Identificação: "cn " + endereço
 txt100 conexao2 # Texto comando COM: "bot " + endereço + " " + porta + " " + sala
@@ -35,8 +36,6 @@ func conec_eventoip # Resolveu endereço a conectar
 func ini_conec # Inicia conexão
 # arg0 = endereço IP
 # arg1 = porta
-telatxt tt
-tt.msg(">>>" + arg0 + "/" + arg1 + "<<<\n")
   se !conec.abrir(arg0, arg1)
     apagar(este), conexao2 = ""
     msg("Endereço inválido")
@@ -66,12 +65,17 @@ func conectando_exec # 10 segundos tentando conectar
     msg("Tempo demais esperando conectar")
   fimse
 
+func tempo_exec
+  tempo = 3600
+  conec.msg("\n")
+
 func conec_err # Não conseguiu conectar
   apagar(este), conexao2 = ""
   msg("Erro ao conectar")
 
 func conec_con # Conectou
   conec.proto = 2
+  tempo = 3600
   msg("Conectado")
 
 func conec_fechou
@@ -187,6 +191,7 @@ func novonome # Mudou de apelido
   j_nome = arg0
 
 func msgsock # Envia mensagem para o usuário
+  j_jogobot.tempo = 3600
   textotxt t1
   t1.addfim(arg0)
   enquanto t1.linhas

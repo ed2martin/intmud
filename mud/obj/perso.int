@@ -142,8 +142,12 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   mudadono_chegou(ref(dono))
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
-    int(dono.s_retornar) >= 2 && (!var.z_salafim || int(dono.s_retornar) == 2) && (var.z_salafim \
-= dono)
+    casovar int(dono.s_retornar(este))
+    casose "3" # Muda o ponto de retorno se não possuir
+      sair var.z_salafim
+    casose "2" # Muda o ponto de retorno
+      var.z_salafim = dono
+    casofim
     listaobj l
     epara l.addfim(dono.dentro2), l, l.ini.remove
       l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
@@ -152,7 +156,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock
     p_proc = 1
-  senao dono.s_ocultar
+  senao dono.s_ocultar(este)
     dono.t_item = 0
   senao posicao <= 4
     dono.t_item = 0
@@ -300,7 +304,10 @@ func erropos # Retorna uma mensagem conforme a posição
   casofim
 
 func descpos
-  ret posicao == pospadr && descpadr, descpadr
+  se posicao == pospadr
+    refvar m = txt(descpadr(arg0))
+    ret m, m
+  fimse
   refvar i = jogconfig.14 ? " diante de você." : "."
   casovar posicao
   casose "0"

@@ -123,7 +123,7 @@ func escr2 # Consultar um item
       t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
       lin = txtcopiamai(r.descnome, "A") + (r.pnivel ? ", nível " + r.pnivel)
       t2.addfim(lin + ", custa $" + valor + ".")
-      $comando_identificar.ident(r, t2)
+      $comando_identificar.txtident(arg0, r, t2)
       ret arg0.msg2(t2.remove(1000))
     efim
 # Itens que possui e itens em uma sala
@@ -139,7 +139,7 @@ func escr2 # Consultar um item
         lin = txtcopiamai(e.objini.descnome, "A")
         e.objini.pnivel && (lin += ", nível " + e.objini.pnivel)
         t2.addfim(lin + ", custa $" + valor + ".")
-        $comando_identificar.ident(e.objini, t2)
+        $comando_identificar.txtident(arg0, e.objini, t2)
         ret arg0.msg2(t2.remove(1000))
       efim
     fimse

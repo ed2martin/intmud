@@ -43,7 +43,7 @@ func escr
   sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
   se !sala
     ret arg0.msg("Você não vê " + misc:sep2 + ".")
-  senao !sala.p_recebe
+  senao !sala.p_recebe(arg0)
     ret arg0.msg("Não é possível dar nada para " + sala.descnome + ".")
   senao sala == arg0
     ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))

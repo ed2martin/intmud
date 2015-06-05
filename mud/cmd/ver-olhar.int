@@ -20,7 +20,7 @@ func escr
   nomeobj n
   prog p
   ref r
-  n.ini(arg1, 1)
+  n.ini(arg1, 10000)
 # Descrições extras da sala
   r = arg0.dono
   se r.visivel(arg0) && txtfim(arg1, 1) != "@"
@@ -28,20 +28,21 @@ func escr
       casovar txtfim(p.texto, 2)
       casose "@d"
       casose "@D"
-        continuar !misc:luz
-        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
-        arg0.msg2(r.[p.texto](arg0, 1))
-        ret
+        continuar !misc:luz || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
+        refvar m = txt(r.[p.texto](arg0))
+        ret m, arg0.msg2(m)
+        continuar
       casose "@n"
       casose "@n"
-        continuar misc:luz
-        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
-        arg0.msg2(r.[p.texto](arg0, 1))
-        ret
+        continuar misc:luz || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
+        refvar m = txt(r.[p.texto](arg0))
+        ret m, arg0.msg2(m)
+        continuar
       casose
-        sair !r.[p.texto](arg0, 0) || !n.nome(txt(p.texto, 4))
-        arg0.msg2(r.[p.texto](arg0, 1))
-        ret
+        continuar !n.nome(txt(p.texto, 4))
+        refvar m = txt(r.[p.texto](arg0))
+        ret m, arg0.msg2(m)
+        continuar
       casofim
     efim
   fimse

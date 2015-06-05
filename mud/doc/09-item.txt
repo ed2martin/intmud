@@ -27,29 +27,30 @@ Se o jogador não perde o item ao entrar em uma sala que mata e perde itens.
 const vestir1 = 0
 Em que lugares do corpo pode ir quando é vestido.
 Cada bit corresponde a um lugar. Os nomes dos lugares estão definidos na
-constante equip_txt, na classe config, no arquivo obj/config.int.
+constante equip_txt, na classe config, no arquivo config/config.int.
 
 uint8 vestpos
 Em que posição está vestindo.
 0 = não está vestindo
 50 = está empunhando
 Outros valores, começando pelo número 1, correspondem aos lugares definidos
-na constante equip_txt, na classe config, no arquivo obj/config.int.
+na constante equip_txt, na classe config, no arquivo config/config.int.
 Nota: Usar a função vestir ao invés de alterar essa variável diretamente.
 
 const i_captura = 0
-func i_captura( animal )
+arg0 = animal que o jogador está tentando capturar (se nulo, está apenas
+       escolhendo esse item para capturar).
 Nível médio dos animais que podem ser capturados com esse item.
 Se for 0, esse item não pode ser usado para capturar animais.
-O argumento dessa função é o animal que o jogador está tentando capturar,
-(uma variável ref), ou nulo se estiver apenas escolhendo esse item para
-capturar.
 
 const i_movel = 0
+arg0 = personagem que quer sentar-se ou deitar-se no o item
 Tipo de móvel:
 0 = Não é móvel
 1 = Pode sentar
 2 = Pode sentar e deitar
+3 = Pode sentar confortavelmente (se recupe mais rápidamente)
+4 = Pode sentar e deitar confortavelmente (se recupe mais rápidamente)
 
 const i_lugar = 0
 Quantos personagens podem sentar-se.

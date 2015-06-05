@@ -11,6 +11,8 @@ func escr
   dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
 
 func escrobj # Abrir um item
+# arg0 = personagem
+# arg1 = nome do item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
@@ -58,8 +60,10 @@ func escrobj # Abrir um item
   efim
 
 func escrdir # Abrir uma porta
+# arg0 = personagem
+# arg1 = nome da direção
 # Checa se porta existe
-  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
 # Checa se está aberto
   casovar 3 & arg0.dono.porta_[arg1]
   casose
@@ -99,6 +103,8 @@ func escr
   dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
 
 func escrobj # Fechar um item
+# arg0 = personagem
+# arg1 = nome do item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
@@ -145,8 +151,10 @@ func escrobj # Fechar um item
   efim
 
 func escrdir # Fechar uma porta
+# arg0 = personagem
+# arg1 = nome da direção
 # Checa se porta existe
-  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
 # Checa se está fechado
   casovar 3 & arg0.dono.porta_[arg1]
   casose
@@ -164,10 +172,10 @@ func escrdir # Fechar uma porta
   epara l.addfim(arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1, arg0.dono), nulo
   efim
-  ret !arg0.dono.dir_[arg1], arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
 # Fecha a porta
   $mens.p(arg0)
-  se arg0.dono.tranc_[arg1] == 2
+  se arg0.dono.tranc_[arg1](arg0) == 2
     arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M se $2.") # Tranca a porta
   senao
     arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M se $2.") # Fecha a porta

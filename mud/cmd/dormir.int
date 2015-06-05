@@ -33,9 +33,13 @@ func escr
   listaobj l
 # Dormir em algum objeto
   se r
-    se txt(r.i_movel) != "2" && txt(r.i_movel) != "4"
+    casovar r.i_movel(arg0)
+    casose
       ret arg0.msg("Não é possível dormir em " + r.descnome + ".")
-    senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
+    casose "2"
+    casose "4"
+    casofim
+    se r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove

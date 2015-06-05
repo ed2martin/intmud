@@ -1538,7 +1538,7 @@ func entrou20
     $mens.p(arg0, este)
     $mens.mtodos2("", "$A assopra na direção $d $p e $p sai voando.")
     arg0.msginv("$A assopra na sua direção e você sai voando.")
-    dono.dir_s && arg0.mudadono(dono.dir_s)
+    dono.dir_s(arg0) && arg0.mudadono(dono.dir_s(arg0))
     $mens.p(arg0)
     $mens.mtodos2("", "$P chegou voando do norte.")
   fimse
@@ -2859,7 +2859,7 @@ func cmd_salaperso
 func entrou50
   $mens.p(arg0)
   $mens.mtodos1("$P continua deslizando para oeste.")
-  arg0.mudadono(dir_o)
+  arg0.mudadono(dir_o(arg0))
   $mens.p(arg0)
   $mens.mtodos2("", "$P chegou aqui deslizando do leste.")
 
@@ -2919,11 +2919,10 @@ herda b_teste
 const s_titulo = "Mudando as saídas"
 const s_desc = "Aqui a direção leste só existe para anões. Já a direção oeste só\n\
 existe para quem não é anão.\n\
-Isso foi feito apenas alterando as constantes que correspondem às direções.\n\
-Nesse caso específico, o personagem é misc:obj ao invés de arg0."
+Isso foi feito apenas alterando as constantes que correspondem às direções."
 const dir_s = $s_teste083
-const dir_l = misc:obj.tipo1 == "anão" ? $s_teste082
-const dir_o = misc:obj.tipo1 != "anão" ? $s_teste082
+const dir_l = arg0.tipo1 == "anão" ? $s_teste082
+const dir_o = arg0.tipo1 != "anão" ? $s_teste082
 const dir_n = $s_teste085
 
 
@@ -2938,23 +2937,23 @@ por \"ret nulo\", ou apenas \"ret\", a saída para teste002 deixa de existir."
 const dir_s = $s_teste084
 
 func dir_n
-  se misc:obj.tipo1 == "anão"
+  se arg0.tipo1 == "anão"
     ret $s_teste002
-  senao misc:obj.tipo1 == "elfo"
+  senao arg0.tipo1 == "elfo"
     ret $s_teste067
   senao
     ret $s_teste082
   fimse
 
 func dir_l
-  ret misc:obj.tipo1 == "anão", $s_teste002
-  ret misc:obj.tipo1 == "elfo", $s_teste067
+  ret arg0.tipo1 == "anão", $s_teste002
+  ret arg0.tipo1 == "elfo", $s_teste067
   ret $s_teste082
 
 func dir_o
 # Nota: txtmin passa um texto para letras minúsculas
 # Isso é necessário porque casovar considera maiúsculas diferentes de minúsculas
-  casovar txtmin(misc:obj.tipo1)
+  casovar txtmin(arg0.tipo1)
   casose "anão"
     ret $s_teste002
   casose "elfo"
@@ -3037,7 +3036,7 @@ func cmd_salaperso
 func entrou50
   $mens.p(arg0)
   $mens.mtodos1("$P continua deslizando para o sul.")
-  arg0.mudadono(dir_s)
+  arg0.mudadono(dir_s(arg0))
   $mens.p(arg0)
   $mens.mtodos2("", "$P chegou aqui deslizando do norte.")
 

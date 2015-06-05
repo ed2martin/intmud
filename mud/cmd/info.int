@@ -465,9 +465,8 @@ func escr
     epara r = item.obj.dono, r.dono, r = r.dono
     efim
     continuar area != r.s_area
-    misc:obj = arg0
     refvar titulo =  item.obj.dono.var.z_titulo
-    t0.addfim(item.obj.nome + "    " + (titulo ? titulo : item.obj.dono.s_titulo))
+    t0.addfim(item.obj.nome + "    " + (titulo ? titulo : item.obj.dono.s_titulo(arg0)))
   efim
   t0.txtmostra
   arg0.msg2(t0.remove(1000))
@@ -488,14 +487,13 @@ func escr
   textotxt t
   txt80 dir
   ref r
-  misc:obj = arg0
   epara dir = misc:listadir, dir, dir = txt2(dir)
     refvar nome = txt1(dir)
-    continuar !(r = arg0.dono.dir_[nome]) || arg0.dono.inv_[nome]
+    continuar !(r = arg0.dono.dir_[nome](arg0)) || arg0.dono.inv_[nome](arg0)
     se int(arg0.dono.porta_[nome]) >= 2
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está fechado")
     senao r.visivel(arg0)
-      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + r.s_titulo)
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + r.s_titulo(arg0))
     senao
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está escuro")
     fimse

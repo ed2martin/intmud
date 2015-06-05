@@ -48,7 +48,7 @@ func escr # Personagem retorna
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
   se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
-  senao arg0.dono.s_retornar == 1
+  senao arg0.dono.s_retornar(arg0) == 1
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
   senao rand(100) >= precisao || arg0.atkenv # Checa a precisão e se está batalhando
     ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)

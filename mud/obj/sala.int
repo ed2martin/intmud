@@ -56,7 +56,7 @@ inttempo t_item # Tempo para começar a apagar itens da sala
 const s_pnj = 10 # Quantidade máxima de PNJs na sala
 const s_noite = s_desc(arg0) # Inicialmente descrição de noite e de dia são iguais
 const s_recup = 100 # Taxa de recuperação de vida, mana e movimentos
-const s_gritar = s_falar # Mensagem ao gritar; se estiver vazia, pode gritar
+const s_gritar = s_falar(arg0) # Mensagem ao gritar; se estiver vazia, pode gritar
 int1 objmudou # Para salvar sala ao salvar a casa
 #
 uint8 porta_n # Tipo de saída
@@ -228,23 +228,22 @@ func descsala # Retorna descrição da sala
   ret t.remove(1000)
 
 func txtsai # Retorna as saídas existentes
+# arg0 = personagem
   txt40 sai
-  misc:obj = arg0
-  sai = "" + tsai2("n") + tsai2("s") + tsai2("l") + tsai2("o")
-  sai = sai + tsai2("ne") + tsai2("no") + tsai2("se") + tsai2("so")
-  sai = sai + tsai2("c") + tsai2("b") + tsai2("entrar") + tsai2("sair")
+  sai += tsai2(arg0, "n") + tsai2(arg0, "s") + tsai2(arg0, "l") + tsai2(arg0, "o")
+  sai += tsai2(arg0, "ne") + tsai2(arg0, "no") + tsai2(arg0, "se") + tsai2(arg0, "so")
+  sai += tsai2(arg0, "c") + tsai2(arg0, "b") + tsai2(arg0, "entrar") + tsai2(arg0, "sair")
   ret sai ? "\bSaídas:" + sai : "\bSaídas: Nenhuma"
 
 func tsai2 # Para mostrar as saídas existentes
-  se dir_[arg0] && !inv_[arg0]
-    casovar int(porta_[arg0])
-    casose "0"
-    casose "1"
-      ret " " + arg0
-    casose
-      ret " !" + arg0
-    casofim
-  fimse
+  ret !dir_[arg1](arg0) || inv_[arg1](arg0), ""
+  casovar int(porta_[arg1])
+  casose "0"
+  casose "1"
+    ret " " + arg1
+  casose
+    ret " !" + arg1
+  casofim
 
 func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # arg0 = nome da saída (até duas letras)
@@ -320,17 +319,3 @@ func totalmove # Quantos movimentos consome, conforme o terreno
     ret 6
   casofim
   ret 1
-# const s_titulo = descr0
-# const dir_l = dir_e
-# onst dir_o = dir_w
-# const dir_c = dir_u
-# const dir_b = dir_d
-# const dir_so = dir_sw
-# const dir_no = dir_nw
-# func s_desc
-# textotxt t
-# uint16 x
-# enquanto descr[x += 1]
-# t.addfim(descr[x])
-# efim
-# ret t.remove(1000)

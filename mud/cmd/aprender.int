@@ -44,9 +44,9 @@ func escr
       fimse
 # Checa se está limitado a alguns tipos (raças/classes)
       se !r.tipoperso
-      senao tipo1 && txtproc("\n" + txte(r.tipoperso) + "\n", tipo1) >= 0
-      senao tipo2 && txtproc("\n" + txte(r.tipoperso) + "\n", tipo2) >= 0
-      senao tipo3 && txtproc("\n" + txte(r.tipoperso) + "\n", tipo3) >= 0
+      senao n_t1 && txtproc("\n" + txte(r.tipoperso) + "\n", n_t1) >= 0
+      senao n_t2 && txtproc("\n" + txte(r.tipoperso) + "\n", n_t2) >= 0
+      senao n_t3 && txtproc("\n" + txte(r.tipoperso) + "\n", n_t3) >= 0
       senao
         lin = "Não tem como ensinar " + lin + " para sua raça e classe."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)

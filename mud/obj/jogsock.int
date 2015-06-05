@@ -698,8 +698,8 @@ func ini
 
 func ex1_exec
   ex2 = 1
-  ref(sala.s_voltar) && (sala = sala.s_voltar)
-  perso.mudadono(sala ? sala : config:salasav)
+  refvar s = ref(sala.s_voltar(perso))
+  perso.mudadono(s ? s : sala ? sala : config:salasav)
   temposair # Acerta tempo para sair do MUD
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")

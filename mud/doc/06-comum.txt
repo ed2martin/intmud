@@ -113,16 +113,18 @@ Descrição curta. É a descrição usada na maioria dos comandos.
 Exemplos: "uma bola", "Joaquim" e "um ladrão"
 
 func descpos
-Descrição quando está na sala; arg0=quem quer ver.
+arg0 = personagem que está consultando essa constante
+Descrição quando está na sala.
 Nos itens, inicialmente é uma mensagem genérica.
 Nos personagens apresenta uma mensagem de acordo com a posição atual,
 e por isso é raramente alterado.
 
 const descver = ""
+arg0 = personagem que está consultando essa constante
 Descrição quando alguém olha para o item ou personagem (comando olhar).
-Aqui arg0=quem quer ver.
 
 const descident = ""
+arg0 = personagem que está consultando essa constante
 Descrição para quem usa a habilidade identificar no item ou personagem.
 Não é necessário colocar aqui a maioria das propriedades (nível, tipo,
 etc) porque elas já são mostradas automaticamente.

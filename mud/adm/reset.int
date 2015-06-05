@@ -73,7 +73,7 @@ func escr # Listar salas com reset
     lin = txt(p.texto, 2) + "  "
     [p.texto]:a_reset && (lin += "ares ")
     [p.texto]:s_reset && (lin += "sres ")
-    txtmais.addfim(lin + " " + $[p.texto].s_titulo)
+    txtmais.addfim(lin + " " + $[p.texto].s_titulo(arg0))
     sair txtmais.linhas >= 500
   efim
   txtmais.addini(txtmais.linhas ? "\bSalas:" : "\bNenhuma sala encontrada.")

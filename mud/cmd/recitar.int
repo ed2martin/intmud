@@ -32,8 +32,9 @@ func escr
   senao int(r.pnivel) > arg0.pnivel
     refvar lin = txtcopiamai(r.descnome, "A")
     ret arg0.msg(lin + " é complicad" + (r.msexo ? "o" : "a") + " demais.")
-  senao arg0.dono.s_falar
-    ret arg0.msg(arg0.dono.s_falar)
+  senao
+    refvar f = txt(arg0.dono.s_falar(arg0))
+    ret f, arg0.msg(f)
   fimse
 # Eventos
   l.limpar

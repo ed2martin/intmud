@@ -573,16 +573,15 @@ func p_proc_exec # Processar comportamento do personagem
   senao p_mover && posicao == 8
     textotxt t
     prog p
-    misc:obj = este
     refvar r = ref(dono)
     epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-      refvar x = ref(r.[p.texto])
+      refvar x = ref(r.[p.texto](este))
       x && x.dentro2.total - x.socktot < x.s_pnj && t.addfim(txt(p.texto, 4))
     efim
     t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
     txt10 dir
     dir = t.ini.texto # Direção escolhida
-    ret !dir || p_mover == 1 && r.dir_[dir].s_area != r.s_area, p_proc = 50
+    ret !dir || p_mover == 1 && r.dir_[dir](este).s_area != r.s_area, p_proc = 50
     $cmd_[dir].escr(este)
     p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
     !p_tempoatu && (p_tempoatu = 100)

@@ -9,8 +9,12 @@ A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
 terminada com reticências, interrogação ou exclamação."
 
 func escr
-  ret !arg1, arg0.msg("Tecle a mensagem após FALAR.")
-  ret arg0.dono.s_falar, arg0.msg(arg0.dono.s_falar)
+  se !arg1
+    ret arg0.msg("Tecle a mensagem após FALAR.")
+  senao
+    refvar f = txt(arg0.dono.s_falar(arg0))
+    ret f, arg0.msg(f)
+  fimse
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   se txt(arg1, 0, 3) == "..."
@@ -52,7 +56,8 @@ func escr
   fimse
   epara r = arg0.dono, r, r = r.dono
     area = r.s_area
-    ret r.s_gritar, arg0.msg(r.s_gritar)
+    refvar g = txt(r.s_gritar(arg0))
+    ret g, arg0.msg(g)
   efim
   arg0.pmove -= config:gritarmove
   $mens.p(arg0)
@@ -61,9 +66,9 @@ func escr
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.var.u_[arg0.nome]
     epara r = item.obj.dono, r.dono, r = r.dono
-      r.s_gritar && (r = nulo)
+      r.s_gritar(arg0) && (r = nulo)
     efim
-    r.s_gritar && (r = nulo)
+    r.s_gritar(arg0) && (r = nulo)
     r.s_area == area && item.obj.msg($mens.proc(config:gritarmsg, item.obj))
   efim
 # Executa eventos
@@ -85,9 +90,14 @@ Os outros apenas ficam sabendo que você sussurrou alguma coisa."
 func escr
   $mens.mens = ""
   $mens.p(arg0)
-  ret !arg1, arg0.msg("Sussurrar para quem?")
-  ret !txt2(arg1), arg0.msg("Sussurrar o que?")
-  ret arg0.dono.s_falar, arg0.msg(arg0.dono.s_falar)
+  se !arg1
+    ret arg0.msg("Sussurrar para quem?")
+  senao !txt2(arg1)
+    ret arg0.msg("Sussurrar o que?")
+  senao
+    refvar f = txt(arg0.dono.s_falar(arg0))
+    ret f, arg0.msg(f)
+  fimse
   nomeobj n
   listaobj l
   n.ini(txt1(arg1), 1)

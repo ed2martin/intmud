@@ -63,7 +63,7 @@ func escr
   listaobj l
 # Sentar em algum objeto
   se r
-    se !r.i_movel
+    se !r.i_movel(arg0)
       ret arg0.msg("Não é possível descansar em " + r.descnome + ".")
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
@@ -138,7 +138,7 @@ func escr
   listaobj l
 # Descansar em algum objeto
   se r
-    se !r.i_movel
+    se !r.i_movel(arg0)
       ret arg0.msg("Não é possível descansar em " + r.descnome + ".")
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")

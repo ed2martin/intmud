@@ -31,6 +31,7 @@ const pospadr = 8
 Posição padrão do personagem.
 
 const descpadr
+arg0 = personagem que está consultando essa constante
 Descrição quando está na sala na posição padrão.
 Exemplo: "Uma bola foi largada aqui." e "Um ladrão procura alguém distraído".
 
@@ -69,10 +70,12 @@ sav textotxt p_hist
 Histórico do personagem: quem o personagem matou.
 
 const p_recebe = 0
+arg0 = quem quer dar alguma coisa para este personagem
 Se recebe itens (se podem dar itens ao personagem); 0=não pode, 1=pode.
 Nos jogadores, essa constante é 1 (pode receber).
 
 const p_naoseguir = 0
+arg0 = quem quer quer seguir este personagem
 Se não é possível seguir o personagem (0=podem seguir, 1=não podem).
 Nos jogadores, depende da opção "config +seguir", devido à linha:
 const p_naoseguir = !i.obj.jogconfig.5
@@ -95,7 +98,7 @@ Se o corpo do personagem fica quando ele morre:
 2 Deixa corpo com itens e moedas
 
 const p_exp = 100
-func p_exp( personagem )
+arg0 = personagem que está consultando essa constante
 Quanta experiência dá quando morre, em porcentagem.
 Com essa opção é possível fazer alguns PNJs darem mais experiência que
 outros, independente do nível.
@@ -106,14 +109,14 @@ Mensagem quando o personagem morreu e não tem dono.
 const p_morreu2 = "$P desmaiou."
 Mensagem quando o personagem morreu e tem dono (percente a outro personagem).
 
-func teclou
-Chamado sempre que o personagem tecla algum comando (arg0=comando)
+func teclou( texto do comando )
+Chamado sempre que o personagem tecla algum comando.
 
 func p_espera_exec
 Pega o próximo comando da lista.
 
-func teclouproc
-Processa comando, sem espera (arg0=comando).
+func teclouproc( texto do comando )
+Processa comando, sem espera.
 
 func erropos
 Retorna uma mensagem conforme a posição atual, para indicar que o que
