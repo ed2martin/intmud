@@ -56,11 +56,21 @@ func escr1 # Consultar a lista de taxas
         lin += txtcopiamai(casa.nome, "A")
         lin += txtesp(40 - inttotal(lin))
         valor = hora.numdias - casa.diataxa
-        se valor == -1
-          t.addfim(lin + "Em 12 dias MUD (1 dia)")
-        senao valor < 0
-          valor = -valor
-          t.addfim(lin + "Em " + valor * 12 + " dias MUD (" + valor + " dias)")
+        se valor < 0
+          refvar v = -12 * valor - intdiv(hora.hora / 2)
+          lin += v == 1 ? "Em 1 dia MUD" : "Em " + v + " dias MUD"
+          se v < 12
+            lin += " (" + v * 2 + " horas)"
+          senao v == 12
+            lin += " (1 dia)"
+          senao v < 24
+            lin += " (1 dia e " + (v * 2 - 24) + " horas)"
+          senao v % 12 == 0
+            lin += " (" + intdiv(v / 12) + " dias)"
+          senao
+            lin += " (" + intdiv(v / 12) + " dias e " + v % 12 * 2 + " horas)"
+          fimse
+          t.addfim(lin)
         senao
           se config:casatempotaxa
             valor = intdiv(valor / config:casatempotaxa) + 1

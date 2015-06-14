@@ -22,7 +22,10 @@ const aj4 = "  \c2EMOÇÃO\b    Mostra (e) nas mensagens geradas com esse comando\
 const aj5 = "  \c2SEGUIR\b    Se outros personagens podem escolher seguir você\n\
   \c2MOEDAS\b    Pega as moedas do corpo do personagem após vencer uma batalha\n\
   \c2PROMPT\b    Ativa o prompt normal\n\
-  \c2BROMPT\b    Ativa o prompt de batalha"
+  \c2BROMPT\b    Ativa o prompt de batalha\n\
+  \c2SOM\b       Ativa efeitos sonoros via MSP (MUD Sound Protocol)\n\
+            Nota: é necessário usar um cliente de MUD com suporte a MSP\n\
+            e baixar e instalar os sons do MUD"
 const txtajuda2 = "\n\
 Opções para administradores:\n\
   \c2IMORTAL\b   Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
@@ -55,6 +58,7 @@ const opc_telepatia = 8
 const opc_emocao = config:emocaotipo ? 9
 const opc_moedas = 10
 const opc_novatos = config:novatostipo ? 11
+const opc_som = 12
 const opc_imortal = 14
 const opc_execlog = 15
 const opc_sala = 16
@@ -130,4 +134,4 @@ func escr
 # Atualiza a configuração
   arg0.jogconfig.bits = opc.bits
   arg0.sock.jogconfig.bits = opc.bits
-  arg0.msg("Configuração alterada:" + mudou)
+  arg0.msg("\bConfiguração alterada:" + mudou)

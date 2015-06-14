@@ -1,3 +1,53 @@
+* 13/6/2015 IntMUD 1.03c MUD baseado na revisão 351
+
+   No IntMUD:
+  1. Estava desconsiderando o último caracter nas senhas dos jogadores
+     (em arqsav)
+  2. Devido a um memcpy no lugar de um memmove, dependendo do compilador
+     e do processador (não na versão para Windows), o prog.salvar
+     poderia corromper arquivos
+  3. Corrigido bug que deixava alterações online em uma classe um pouco
+     lenta: estava refazendo as heranças de todas as classes
+  4. Corrigido bug em serv.abrir: não estava retornando o que deveria
+  5. A versão mudou para 1.03c
+
+   No MUD:
+  1. Corrigido bug: o comando Onde não estava mostrando os títulos que
+     os jogadores colocam nas salas das casas
+  2. Corrigido bug: opção do reset "Criar item em um item da sala"
+     estava apenas criando item em outro item
+  3. Corrigido bug: comando Pagar estava mostrando dias MUD sempre em
+     múltiplos de 12
+  4. Corrigido nome do PNJ na área casa: pião
+  5. Após a correção no IntMUD, as senhas dos personagens já criados
+     devem ser digitadas sem o último caracter
+  6. Acrescentado comando TRes, para definir itens e animais que o
+     jogador ganha ao criar um personagem de uma determinada raça ou
+     classe
+  7. Comandos stitulo e sdesc passam a funcionar para administradores em
+     qualquer sala
+  8. Corrigido bug: o comando Aulas não estava verificando corretamente
+     a opção "14.Só negocia com" do personagem
+  9. Comando pagar não estava verificando a opção "14.Só negocia com" do
+     personagem
+ 10. Vendedores e professores agora não negociam com quem eles não podem
+     ver e com quem não pode vê-los
+ 11. Mensagem da loja fechada de PNJ agora pode ser mudada no comando
+     eperso
+ 12. Em sala que não permitem luta entre jogadores: o jogador é avisado
+     ao invés do ataque falhar
+ 13. Efeitos de invisibilidade e oculto agora afetam personagens do tipo
+     "simples"
+ 14. Criado comando de administração COM
+ 15. Opções de abrir porta e de conectar em chat como bot do comando
+     Econfig mudaram
+ 16. Diversas constantes de personagens, itens e sala agora recebem arg0
+     como sendo o personagem
+ 17. Variável misc:obj não é mais usada
+ 18. Criado comando SOM
+ 19. Criada opção: config +som
+ 20. Criada opção nos comandos earea e esala: Som da sala
+
 * 10/5/2015 IntMUD 1.03b MUD baseado na revisão 346
 
    No IntMUD:

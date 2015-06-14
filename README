@@ -16,3 +16,29 @@ Acompanha o editmud.exe (versão para Windows) ou editmud-gtkmm.
 * Mudaprog - Para programas na linguagem do IntMUD. Permite recarregar
 os arquivos .int que mudaram sem fechar o programa. Na prática,
 é mais interessante que usar o Editmud.
+
+## Rodando no Linux
+
+Entrar no diretório do intmud:
+cd intmud
+
+Compilar o programa:
+./configure && make
+
+Isso vai criar o arquivo intmud, que é o executável do IntMUD, necessário
+para rodar os programas escritos nessa linguagem.
+
+Se quiser diminuir o tamanho do executável:
+strip --strip-all intmud
+
+Para ativar o MUD, vide arquivo mud/doc/01-ativar-o-mud.txt
+
+## Rodando no Windows
+
+# Opção 1
+Baixar o pacote do IntMUD já compilado para Windows
+
+# Opção 2
+Instalar o MinGW
+Seguir as mesmas instruções para compilar no Linux, só que dentro Msys
+(do MinGW).

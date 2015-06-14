@@ -119,6 +119,10 @@ func fim # Objeto foi apagado
   fimse
   batalhafim, comum_obj:fim
 
+func msgsom
+  refvar m = jogconfig.12 ? $miscsom.t2._[arg0]
+  m && sock.msg(txtsublin(m, 0, 1))
+
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Muda de sala
   atkrec.limpar, poslugar.remove, mdono(arg0), cmd_mudadono
@@ -163,9 +167,11 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     msg("Você vê estranhas imagens em seus sonhos...")
   senao jogconfig.16
     dono.t_item = 0
+    msgsom(dono.s_som)
     msg2(txt(dono, 2) + "  " + dono.descsala(este, (jogconfig.bits & 3) + 4))
   senao
     dono.t_item = 0
+    msgsom(dono.s_som)
     msg2(dono.descsala(este, (jogconfig.bits & 3) + 4))
   fimse
   ret este

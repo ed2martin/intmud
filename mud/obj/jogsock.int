@@ -219,16 +219,27 @@ func msg # Envia mensagem
   ret msgtot1 >= admbanda:b1, nulo
   msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
   msgtot2 -= intdiv(msgtot2)
+# Sons
+  textotxt t
+  t.addfim(arg0)
+  textopos p
+  p = t.ini
+  enquanto p.txtproc("\d=") >= 0
+    refvar ini = p.txtproc("\d=")
+    refvar som = txt1(p.texto(ini, 80))
+    p.mudar("", ini, inttotal(som) + 1)
+    jogconfig.12 && p.mudar($miscsom.t2._[txt(som, 2)], 0, 0)
+  efim
 # Configuração do jogador
   casovar jogconfig.bits & 12
   casose "0" # -CORES -ACENTO
-    ret msgsock("\b" + txtremove(arg0, "C7"))
+    ret msgsock(txtremove(t.remove(1000), "C7"))
   casose "4" # +CORES -ACENTO
-    ret msgsock(txtremove(arg0, "7"))
+    ret msgsock(txtremove(t.remove(1000), "7"))
   casose "8" # -CORES +ACENTO
-    ret msgsock("\b" + txtremove(arg0, "C"))
+    ret msgsock(txtremove(t.remove(1000), "C"))
   casose "12" # +CORES +ACENTO
-    ret msgsock(arg0)
+    ret msgsock(t.remove(1000))
   casofim
 
 func msgprompt_exec

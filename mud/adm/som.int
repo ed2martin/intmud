@@ -1,0 +1,71 @@
+classe adm_som
+herda comando_adm, comando_comum
+const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
+\c2SOM\b\n\
+  Mostra os sons cadastrados.\n\
+\c2SOM A\b <nome>\n\
+  Apaga um som (efeito sonoro ou música).\n\
+\c2SOM E\b <nome> <arquivo> <volume> <repetições>\n\
+  Cadastra um efeito sonoro.\n\
+  <volume> vai de 0 a 100. Se for omitido, assume 100.\n\
+  <repetições> é quantas vezes deve repetir, de 1 a 10.\n\
+\c2SOM M\b <nome> <arquivo> <volume> <repetições>\n\
+  Cadastra uma música de fundo.\n\
+  <volume> vai de 0 a 100.\n\
+  <repetições> é quantas vezes deve repetir, de 1 a 10 ou -1 se deve ser\n\
+  tocado indefinidamente.\n\
+\c2SOM I\b <nome> <arquivo> <volume> <repetições>\n\
+  Mesmo que o comando SOM M, porém quando o MUD pedir para tocar o mesmo\n\
+  arquivo uma segunda vez, a música é interrompida e reiniciada.\n\
+\c2Exemplos:\b\n\
+  som e água agua.wav 100 1     Tocar uma vez agua.wav com volume máximo\n\
+  som e fogo m/fogo.wav 80 2    Tocar duas vezes m/fogo.wav com volume 80\n\
+  som m fundo fuge.mid 100 -1   Tocar fuge.mid indefinidamente\n\
+  som a fogo                    Apagar o som fogo\n\
+\c2Pré requisitos:\b\n\
+  Os jogadores precisam usar um cliente com suporte a MSP, como zMUD,\n\
+  Vipmud, Omnimud, etc. Precisam também baixar (de algum site) o pacote\n\
+  de sons do seu MUD e instalar. E por último, teclar dentro do jogo:\n\
+  config +som\n\
+\c2Sons no jogo:\b\n\
+  A música de fundo é a opção \"Sons\" dos comandos EArea e ESala.\n\
+  Outros sons, basta colocar nas mensagens \\d= seguido do nome de um som\n\
+  cadastrado e um espaço (se o som não estiver no fim da mensagem).\n\
+\c2Exemplos:\b\n\
+  \\d=água Uma fonte jorra uma água límpida incessantemente.\n\
+  \\d=chicote $A leva uma chicotada de $p, $m\n\
+  \\d=latido Um cão do mato olha para a porta e dá três latidos.\n\
+  \\d=chat (chat) $R '$m'"
+
+func escr
+  casovar txtmin(txt1(arg1))
+  casose ""
+    refvar txtmais = arg0.sock.txtmais
+    txtmais.limpar
+    txt100 lin
+    refvar t1 = $miscsom.t1
+    epara lin = t1.ini, lin, lin = t1.depois(lin)
+      txtmais.addfim(txtsublin(t1.[lin], 0, 1))
+    efim
+    se !txtmais.linhas
+      txtmais.addfim("Nenhum som cadastrado.")
+    senao
+      txtmais.addini("\b\c6Sons cadastrados:\b")
+    fimse
+    ret arg0.sock.txtmostra
+  casose "a"
+    refvar lin = txtsub(arg1, 1, 1)
+    ret !$miscsom.t1._[lin], arg0.msg("Som não está cadastrado: " + lin)
+    $miscsom.t1._[lin] = ""
+    $miscsom.t2._[lin] = ""
+    ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
+    ret arg0.msg("Som apagado: " + lin)
+  casose "e"
+  casose "m"
+  casose "i"
+    refvar lin = $miscsom.inserir(arg1)
+    ret lin, arg0.msg(lin)
+    ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
+    ret arg0.msg("Som inserido: " + $miscsom.t1._[txtsub(arg1, 1, 1)])
+  casofim
+  arg0.msg("Opção inexistente: COM " + txt1(arg1))
