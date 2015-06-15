@@ -110,6 +110,11 @@ func escr
     x = txt2(x)
   efim
   ret y, arg0.msg("Opção inexistente:" + y)
+# Checa som
+  se arg0.jogconfig.12 != opc.12 && arg0.sock.msgsom_t
+    arg0.sock.msgsom_t = ""
+    arg0.sock.msgsock("!!MUSIC(off)")
+  fimse
 # Checa a propriedade INVIS
   se arg0.jogconfig.18 != opc.18 # Se a propriedade INVIS mudou
     arg0.recalc = 1 # Deverá atualizar bitinv

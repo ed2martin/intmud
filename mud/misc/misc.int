@@ -597,18 +597,23 @@ func inserir # Insere um som em arquivo
   fimse
 # Adiciona som
   txt512 lin
-  se txt1(lin) == "e"
-    lin = "!!SOUND(" + arq
+  se arq != "off"
+    se txt1(lin) == "e"
+      lin = "!!SOUND(" + arq
+    senao
+      lin = "!!MUSIC(off)\n!!MUSIC(" + arq
+    fimse
+    pos = txtsub(arg0, 3, 1) # Volume
+    pos != 100 && (lin += " V=" + pos)
+    pos = txtsub(arg0, 4, 1) # Repetições
+    pos != 1 && (lin += " L=" + pos)
+  senao txt1(lin) == "e"
+    lin = "!!SOUND(off"
   senao
-    lin = "!!MUSIC(" + arq
+    lin = "!!MUSIC(off"
   fimse
-  pos = txtsub(arg0, 3, 1) # Volume
-  pos != 100 && (lin += " V=" + pos)
-  pos = txtsub(arg0, 4, 1) # Repetições
-  pos != 1 && (lin += " L=" + pos)
-  txt1(lin) == "i" && (lin += " C=0")
   t1._[nome] = txtmin(txt1(arg0)) + " " + nome + " " + arq + " " + txtsub(arg0, 3)
-  t2._[nome] = lin + ")\n"
+  t2._[nome] = lin + ")"
   ret ""
 
 

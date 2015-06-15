@@ -7,10 +7,12 @@ const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
   Apaga um som (efeito sonoro ou música).\n\
 \c2SOM E\b <nome> <arquivo> <volume> <repetições>\n\
   Cadastra um efeito sonoro.\n\
+  Se o arquivo for off, cancela os efeitos sendo tocados\n\
   <volume> vai de 0 a 100. Se for omitido, assume 100.\n\
   <repetições> é quantas vezes deve repetir, de 1 a 10.\n\
 \c2SOM M\b <nome> <arquivo> <volume> <repetições>\n\
   Cadastra uma música de fundo.\n\
+  Se o arquivo for off, a música que estiver tocando para de tocar.\n\
   <volume> vai de 0 a 100.\n\
   <repetições> é quantas vezes deve repetir, de 1 a 10 ou -1 se deve ser\n\
   tocado indefinidamente.\n\
@@ -20,8 +22,9 @@ const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
 \c2Exemplos:\b\n\
   som e água agua.wav 100 1     Tocar uma vez agua.wav com volume máximo\n\
   som e fogo m/fogo.wav 80 2    Tocar duas vezes m/fogo.wav com volume 80\n\
-  som m fundo fuge.mid 100 -1   Tocar fuge.mid indefinidamente\n\
+  som m fundo tema.mp3 100 -1   Tocar tema.mp3 indefinidamente\n\
   som a fogo                    Apagar o som fogo\n\
+  som m mudo off 100 1          Parar a música que estiver tocando\n\
 \c2Pré requisitos:\b\n\
   Os jogadores precisam usar um cliente com suporte a MSP, como zMUD,\n\
   Vipmud, Omnimud, etc. Precisam também baixar (de algum site) o pacote\n\
@@ -68,4 +71,4 @@ func escr
     ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
     ret arg0.msg("Som inserido: " + $miscsom.t1._[txtsub(arg1, 1, 1)])
   casofim
-  arg0.msg("Opção inexistente: COM " + txt1(arg1))
+  arg0.msg("Opção inexistente: SOM " + txt1(arg1))

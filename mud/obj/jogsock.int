@@ -24,6 +24,7 @@ intexec msgprompt # Para enviar mensagens do prompt
 intinc tempojogo # Tempo da sessão
 intdec msgtot1 # Usado no controle de banda das mensagens para o jogador
 real msgtot2 # Usado no controle de banda das mensagens para o jogador
+txt100 msgsom_t # Nome do último som enviado ao jogador
 #
 txt30 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -226,9 +227,17 @@ func msg # Envia mensagem
   p = t.ini
   enquanto p.txtproc("\d=") >= 0
     refvar ini = p.txtproc("\d=")
-    refvar som = txt1(p.texto(ini, 80))
-    p.mudar("", ini, inttotal(som) + 1)
-    jogconfig.12 && p.mudar($miscsom.t2._[txt(som, 2)], 0, 0)
+    refvar som = txt(txt1(p.texto(ini, 80)), 2)
+    p.mudar("", ini, inttotal(som) + 3)
+    continuar !jogconfig.12
+    casovar txt1($miscsom.t1._[som])
+    casose "m"
+      continuar msgsom_t == som
+    casose "i"
+      msgsom_t = arg0
+    casose "e"
+      p.mudar($miscsom.t2._[som] + "\n", 0, 0)
+    casofim
   efim
 # Configuração do jogador
   casovar jogconfig.bits & 12
@@ -240,6 +249,31 @@ func msg # Envia mensagem
     ret msgsock(txtremove(t.remove(1000), "C"))
   casose "12" # +CORES +ACENTO
     ret msgsock(t.remove(1000))
+  casofim
+
+func msgsom # Envia mensagem
+# arg0=nome do som
+# arg1 é verdadeiro se deve apenas enviar a mensagem
+  ret !arg0, nulo
+  se !arg1 && lmonit
+    listaitem i
+    epara i = lmonit.ini, i, i.depois
+      i.obj.msgsom(arg0, 1)
+    efim
+  fimse
+  ret !jogconfig.12, nulo
+# Controle de banda
+  ret msgtot1 >= admbanda:b1, nulo
+  msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
+  msgtot2 -= intdiv(msgtot2)
+# Som
+  casovar txt1($miscsom.t1._[arg0])
+  casose "m"
+    ret msgsom_t == arg0, nulo
+  casose "i"
+    msgsom_t = arg0
+  casose "e"
+    msgsock($miscsom.t2._[arg0])
   casofim
 
 func msgprompt_exec

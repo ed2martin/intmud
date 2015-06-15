@@ -15,6 +15,7 @@ const persoesc = este # Personagem escolhido; alguns comandos usam
 const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
 const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
+const msgsom = sock.msgsom(arg0) # Mensagem de som
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const objsav = 2 # Se deve salvar o personagem ao salvar personagem do jogador
 const objmax = 15 # Quantos itens pode carregar
@@ -118,10 +119,6 @@ func fim # Objeto foi apagado
     sock = nulo
   fimse
   batalhafim, comum_obj:fim
-
-func msgsom
-  refvar m = jogconfig.12 ? $miscsom.t2._[arg0]
-  m && sock.msg(txtsublin(m, 0, 1))
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 # Muda de sala
