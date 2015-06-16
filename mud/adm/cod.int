@@ -29,9 +29,10 @@ func escr # Listar classes
   textopos pos
   pos = txtmais.fim, pos.antes
   pos.mudar("", inttotal(pos.texto) - 1, 1)
+  refvar total = int(txtmais.linhas)
   txtmais.juntar
   txtmais.dividelin(50, 70)
-  txtmais.addini("\bClasses:")
+  txtmais.addini("\bClasses (" + total + "):")
   arg0.sock.txtmostra
 
 
