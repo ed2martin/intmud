@@ -398,6 +398,7 @@ func msginv # Mensagem mesmo se o alvo estiver invisível
 func morreu # Procedimentos quando morre
 # arg0 = quem atacou o personagem; pode ser nulo
 # Checa se pode morrer
+  ret p_imortal, nulo
   listaobj l
   epara l.addfim(evento), l, l.ini.remove
     ret l.objini.cmd_morrer(este, arg0, este), nulo

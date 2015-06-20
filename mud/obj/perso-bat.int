@@ -356,6 +356,7 @@ func morreu # Procedimentos quando morre
 # Retorna o corpo do personagem, se ele morreu e ficou o corpo
   ref corpo # Corpo do personagem morto
 # Checa se pode morrer
+  ret p_imortal, nulo
   listaobj l
   epara l.addfim(evento), l, l.ini.remove
     ret l.objini.cmd_morrer(este, arg0, este), nulo

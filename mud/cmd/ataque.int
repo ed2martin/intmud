@@ -315,7 +315,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       result = 0 # Acertou o alvo
       efeitohab(arg0, arg1, arg2, arg3)
     fimse
-    mensgolpe(arg0, arg1)
+    arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     cmd_alvofim(arg0, arg1, este)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg0)
@@ -323,7 +323,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg1)
     efim
-    result == 10 ? arg1.morreu(arg0) : arg1.acertapos(1)
+    mensgolpe(arg0, arg1)
+    arg1.pvida ? arg1.acertapos(1) : arg1.morreu(arg0)
     arg0 != arg1 && arg0.acertapos(1)
     ret
   casose "1" # Ataque que não pode ser ao próprio personagem
@@ -444,7 +445,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   se result != 3
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     !result && (arg0.contr.atkdanos += intpos(-mudavida))
-    mensgolpe(arg0, arg1)
+    arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg0)
@@ -452,7 +453,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(arg0 != arg1 ? arg1.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg1)
     efim
-    result == 10 ? arg1.morreu(arg0) : arg1.acertapos(1)
+    mensgolpe(arg0, arg1)
+    arg1.pvida ? arg1.acertapos(1) : arg1.morreu(arg0)
   fimse
 # Ataca os alvos secundários
   log = nulo # Os alvos secundários não entram no log
@@ -464,7 +466,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3
     !result && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
-    mensgolpe2(arg0, r)
+    r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, arg0)
@@ -472,7 +474,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(r.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, r)
     efim
-    result == 10 ? r.morreu(arg0) : r.acertapos(1)
+    mensgolpe2(arg0, r)
+    r.pvida ? r.acertapos(1) : r.morreu(arg0)
   efim
   arg0.acertapos(1)
 
@@ -708,15 +711,12 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
 func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
-# Faz result=10 se o alvo morreu, mas não chama a função morreu
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     se !arg1.pvida # Se morreu
-      result = 10
       ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
       ret menssub(lin, 3) && $mens.mtodos2(lin.0, lin.1)
@@ -732,15 +732,12 @@ func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do 
 func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
-# Faz result=10 se o alvo morreu, mas não chama a função morreu
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     ret arg1.pvida, arg1.sock && menssub(lin, 5) && arg1.contr.msginv(lin.1)
-    result = 10 # Morreu
     ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
   casose "1" # Não teve efeito
     ret arg1.sock && menssub(lin, 14) && arg1.contr.msginv(lin.1)
