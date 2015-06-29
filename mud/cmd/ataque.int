@@ -758,9 +758,8 @@ func menssub # Usado em mensgolpe
   ret !t.linhas, 0
   t.remove(rand(t.linhas))
   arg0.separar(txtsublin([t.remove], arg1, 3), "\n")
-  arg0.0 = txtvis(arg0.0)
-  arg0.1 = txtvis(arg0.1 ? arg0.1 : arg0.0)
-  arg0.2 = txtvis(arg0.2 ? arg0.2 : arg0.0)
+  !arg0.1 && (arg0.1 = arg0.0)
+  !arg0.2 && (arg0.2 = arg0.0)
   ret 1
 
 

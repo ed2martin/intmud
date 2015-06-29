@@ -62,13 +62,16 @@ func escr
     $miscsom.t1._[lin] = ""
     $miscsom.t2._[lin] = ""
     ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
-    ret arg0.msg("Som apagado: " + lin)
+    arg0.msg("Som apagado: " + lin)
+    ret cmdlog(arg0, "som", "a " + lin)
   casose "e"
   casose "m"
   casose "i"
     refvar lin = $miscsom.inserir(arg1)
     ret lin, arg0.msg(lin)
     ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
-    ret arg0.msg("Som inserido: " + $miscsom.t1._[txtsub(arg1, 1, 1)])
+    refvar l2 = $miscsom.t1._[txtsub(arg1, 1, 1)]
+    arg0.msg("Som inserido: " + l2)
+    ret cmdlog(arg0, "som", l2)
   casofim
   arg0.msg("Opção inexistente: SOM " + txt1(arg1))

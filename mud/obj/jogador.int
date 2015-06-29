@@ -26,7 +26,7 @@ const p_imortal = jogconfig.14
 sav uint32 p_fugir
 sav uint8 p_sede # Sede, quanto menor mais sede tem
 sav uint8 p_fome # Fome, quanto menor mais fome tem
-sav uint8 p_bebida # Embriagês, quanto maior mais bêbado está
+sav uint8 p_bebida # Embriaguez, quanto maior mais bêbado está
 sav uint8 p_diges # Digestão
 int1 atklog # Para mostrar os cálculos de batalha no próximo ataque
 
@@ -124,7 +124,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
     pmana < pmanamax && (pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
     pmove < pmovemax && (pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
   fimse
-# Acerta fome, sede e embriaguês
+# Acerta fome, sede e embriaguez
   se p_bebida == 1 || p_bebida == 2
     msg(msexo ? "Você está sóbrio." : "Você está sóbria.")
   fimse

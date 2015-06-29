@@ -167,7 +167,7 @@ const info = "b " + txt2(j_nome)
 const salaobj = arg0.addfim(j_sala.objlista.sala_usr)
 
 func ini # Entrou na sala
-  j_nome = arg0
+  j_nome = txtsub(arg0, 0, 3)
   j_sala = arg1.usr.addfim(este) # Adiciona na sala
   j_jogobot = arg1.jogobot
   se !config:modolocal
