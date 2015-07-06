@@ -148,7 +148,13 @@ func escr
     p = $jog_info, l1.addfim(p)
     p.cnome = "x " + nomesav
     sair sav1.ler("sav1/" + nomesav + ".sav", l1, 1)
-    ret arg0.msg("Jogador inexistente: " + arg1)
+    item.ini("un " + nomesav)
+    p = item.obj
+    ret !p, arg0.msg("Jogador inexistente: " + arg1)
+    txt100 lin
+    arg0.msg(p.nome + ", sem personagem")
+    arg0.msg("Conexão:      " + p.info)
+    ret
   efim
 # Mostra os dados do personagem
   txt100 lin

@@ -28,6 +28,8 @@ int1 eco
 int8 proto # 0=Telnet, 1=Telnet seguro, 2=Papovox
 int8 passo # Passo, ao conectar; depende do protocolo
 const msg = tela.msg(arg0)
+textotxt hist_texto
+textopos hist_pos
 
 func iniclasse
   criar(arg0)
@@ -41,6 +43,7 @@ func ini
 
 func inic_exec # Mensagem de abertura
   msg("Digite o endereço seguido de espaço e a porta\n")
+  msg("Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado\n")
   msg("F1 mostra os endereços predefinidos\n")
   msg("F2 ativa/desativa eco das mensagens enviadas\n")
   msg("F3 desconecta\n")
@@ -51,7 +54,6 @@ func inic_exec # Mensagem de abertura
 
 func tela_tecla # Usuário pressionou uma tecla
   casovar arg0
-  casose 
   casose "UP"
   casose "DOWN"
   casose "LEFT"
@@ -61,6 +63,16 @@ func tela_tecla # Usuário pressionou uma tecla
   casose "HOME"
   casose "END"
     sair
+  casose "PGUP"
+    hist_pos.antes
+    tela.texto = ""
+    tela.texto = hist_pos.texto
+    ret 1
+  casose "PGDN"
+    hist_pos.depois
+    tela.texto = ""
+    tela.texto = hist_pos.texto
+    ret 1
   casose
     tela.linha = 0
   casofim
@@ -120,6 +132,9 @@ func tecla_F7
   msg("\nSelecionado Papovox\n")
 
 func tela_msg # Usuário digitou alguma coisa
+  hist_texto.addfim(arg0)
+  hist_texto.remove(hist_texto.linhas - 50)
+  hist_pos = hist_texto.fim
   txt80 linha
   casovar sock.proto
   casose "0" # Desconectado

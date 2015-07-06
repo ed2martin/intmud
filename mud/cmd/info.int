@@ -31,15 +31,17 @@ func escr
     t0.addfim(t1)
   efim
 # Lista de jogadores sem personagem
-  epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    refvar obj = item.obj
-    continuar obj.perso.jog # Continuar se personagem é jogador
-    continuar obj.jogconfig.17 && !arg0.jogconfig.23
-    total.[obj.jogconfig.14] += 1
-    t1 = (obj.jogconfig.14 ? "A999001 N?     " : "B999001 N?     ") + item.obj.nome
-    obj.jogconfig.17 && (t1 += "  [InvQuem]")
-    t0.addfim(t1)
-  efim
+  se arg0.jogconfig.23
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      refvar obj = item.obj
+      continuar obj.perso.jog # Continuar se personagem é jogador
+      continuar obj.jogconfig.17 && !arg0.jogconfig.23
+      total.[obj.jogconfig.14] += 1
+      t1 = (obj.jogconfig.14 ? "A999001 N?       " : "B999001 N?       ") + item.obj.nome
+      obj.jogconfig.17 && (t1 += "  [InvQuem]")
+      t0.addfim(t1)
+    efim
+  fimse
 # Mostra a quantidade de personagens online
   total.0 && t0.addfim("B 00000 \b\c6Jogadores online: " + total.0 + "\b")
   total.1 && t0.addfim("A 00000 \b\c6Imortais online: " + total.1 + "\b")

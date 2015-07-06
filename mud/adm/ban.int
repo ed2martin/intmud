@@ -10,16 +10,17 @@ const txtajuda = "\c3Banir jogadores por IP\b\n\
   Para banir todos os usuários novos, colocar um ponto no lugar do endereço.\n\
 \c2BAN\b <endereço IP>\n\
   Desbane os jogadores do endereço especificado.\n\
+\c2BAN\b <apelido>\n\
+  Expulsa do MUD o jogador com o apelido especificado.\n\
 \c2Exemplos:\b\n\
-  ban 10.20.30.40    Bane 10.20.30.40 por tempo indeterminado\n\
+  ban 10.20.30.40 0  Bane 10.20.30.40 por tempo indeterminado\n\
   ban 1.2.3.4 10     Bane 1.2.3.4 por 10 minutos\n\
   ban 1.2. 0         Bane todos os endereços que começam com 1.2.\n\
   ban 1.2.3.4        Desbane 1.2.3.4\n\
   ban . 0            Bane todos; quem não tem personagem salvo não entra\n\
-\c2Notas:\b\n\
-1. Não é possível banir jogadores conectados via bot\n\
-2. Para apenas derrubar jogadores, usar o comando cmdj da seguinte forma:\n\
-   cmdj <personagem> apagar(este)"
+  ban fulano         Expulsa o jogador fulano\n\
+\c2Nota:\b\n\
+  Não é possível banir jogadores conectados via bot."
 
 func escr
   textopos pos
@@ -46,12 +47,22 @@ func escr
       txtmais.addini("\b\c6Endereços banidos:\b")
     fimse
     ret arg0.sock.txtmostra
-# Pelo menos um argumento: checa se endereço IP válido
+# Pelo menos um argumento: checa se é endereço IP
   senao
     socket s
     refvar ender = txt1(arg1)
     se !s.ipvalido(ender) && !s.ipvalido(ender + "0")
-      ret arg0.msg("Endereço IP inválido: " + arg1)
+      indiceitem item
+      item.ini("un " + txts(txtnome(arg1)))
+      refvar obj = item.obj
+      ret !obj, arg0.msg("Personagem ou endereço IP inválido: " + arg1)
+      obj.nomefim = ""
+      apagar(obj.perso)
+      apagar(obj)
+      arg0.msg("Jogador expulso: " + obj.nome)
+      cmdlog(arg0, "ban", "expulsou " + obj.nome + " " + item.obj.info)
+      obj.msg("Você foi expulso")
+      ret
     fimse
   fimse
 # Um argumento: desbane
