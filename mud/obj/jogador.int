@@ -7,12 +7,11 @@ indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 const msexo = psexo # Sexo do personagem
-sav int1 jogconfig.24 # Para salvar sock.jogconfig
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 sav listaobj dentro3 # Lista de animais reserva
 inttempo p_tempoatu # Tempo para atualizar personagem
 uint8 p_tempomsg # Para enviar mensagens de fome e sede em tempoatu_exec
-uint8 p_tempofim # Para sair do jogo após algum tempo
+uint8 p_tempofim # Para sair do jogo após algum tempo sem digitar nada
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
 const pesoobj = 65000
@@ -33,6 +32,7 @@ int1 atklog # Para mostrar os cálculos de batalha no próximo ataque
 func ini # Objeto foi criado
   tempojogo1 = 864000
   p_sede = p_fome = 30
+  p_tempoatu = rand(150, 200)
   var.z_prompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
   var.z_bprompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
   tipo1 = arg1, tipo2 = arg2, tipo3 = arg3
@@ -54,7 +54,7 @@ func fim # Objeto foi apagado
   item.ini("pn ")
   txt1(item.txt) != "pn" && $miscsav.salvartudo
 
-func fechou # Executado quando o objeto sock é apagado
+func sock_saiu # Executado quando o objeto sock é apagado
 # arg0 é verdadeiro se jogador via bot (deve sair mais rápido do jogo)
   se arg0
     p_tempofim = 7
@@ -64,20 +64,19 @@ func fechou # Executado quando o objeto sock é apagado
   fimse
   senha == "" && apagar(este) # Apaga personagem se não tem jogo salvo
 
+func sock_entrou # Executado quando objeto sock voltou
+  p_tempofim = 0
+
 func mudasenha # Usuário quer mudar a senha
   ret sock, senha ? $adm_mudasenha1.passo(sock) : $adm_mudasenha2.passo(sock)
 
 func tempojogo1_exec
   tempojogo1 = 864000, tempojogo2 += 1
 
-func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
+func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
   p_tempoatu = rand(150, 200)
 # Checa tempo para sair do jogo
-  se !p_tempofim # 0 não faz nada
-  senao (p_tempofim -= 1) == 5 # Informa que vai sair do jogo
-    $mens.p(este)
-    $mens.mvis1("$P caminha em direção ao vazio.")
-  senao !p_tempofim # Chegou a 0 apaga o personagem (sai do jogo)
+  se p_tempofim && (p_tempofim -= 1) == 0
     msg("Muito tempo sem digitar")
     ret apagar(este)
   fimse

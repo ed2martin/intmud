@@ -3,6 +3,7 @@ herda comum_persoitem
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
 comum listaobj objsolto # Lista de personagens soltos (não pertencem a outros)
+sav int1 jogconfig.24 # Configurações do personagem, mesmo que sock.jogconfig
 sav int1 psexo # Sexo do personagem: 0=feminino, 1=masculino
 const sexoini = msexo # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 const nome = "sem nome"
@@ -26,7 +27,6 @@ inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 listaitem poslugar # Em qual móvel está sentado ou deitado
-int1 jogconfig.24 # Mesmo que sock.jogconfig
 sav listaitem iempu # Arma que que está empunhando
 const p_morreu1 = "$P morreu."
 const p_morreu2 = "$P desmaiou."
@@ -103,7 +103,8 @@ func ini # Coloca o objeto dentro de outro
   recalc_exec
 
 func fim # Objeto foi apagado
-  se sock # Se estiver ligado a um jogador
+  se !sock
+  senao jog # Jogador controlando o próprio personagem
     casovar txt1(sock.info)
     casose "t" # Conectado via Papovox
     casose "p" # Conectado via Telnet
@@ -115,8 +116,10 @@ func fim # Objeto foi apagado
     casose "b" # Como bot
       sock.reinicia
     casofim
-    sock.perso = nulo # Desliga-se do jogador
-    sock = nulo
+  senao # Jogador controlando outro personagem
+    indiceitem ind
+    refvar obj = ind.obj("pn " + txt2(sock.cnome))
+    obj ? sock.mudaperso(obj) : sock.reinicia
   fimse
   batalhafim, comum_obj:fim
 
@@ -410,8 +413,6 @@ func morreu # Procedimentos quando morre
   mortes += 1
   p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
   apagar(este)
-  ref r
-  r = sock, r.mudaperso(nulo), r.reinicia
   p_corpo && criar("comum_corpo", este, p_corpo == 2)
 # Apaga efeitos
   listaitem i

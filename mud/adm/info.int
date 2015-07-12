@@ -157,26 +157,27 @@ func escr
     ret
   efim
 # Mostra os dados do personagem
+  textotxt t
   txt100 lin
-  lin = p.nome + ", nível " + p.pnivel
-  p.prenascer && (lin += ", R" + p.prenascer)
-  p.var.z_moedas_ == 1 && (lin += ", uma moeda")
-  p.var.z_moedas_ == 2 && (lin += ", duas moedas")
-  p.var.z_moedas_ > 2 && (lin += ", " + p.var.z_moedas_ + " moedas")
-  arg0.msg("\b\c6" + lin + "\b")
+  lin = p.jogconfig.23 ? "\b\c6Administrador" : "\b\c6Jogador"
+  lin += p.psexo ? " " : "a "
+  t.addfim(lin + p.nome + (p.var.z_titulo ? ", " + p.var.z_titulo) + "\b")
+  t.addfim("Nível:        " + (p.prenascer ? "R" + p.prenascer + " ") + p.pnivel)
+  p.var.z_moedas_ && t.addfim("Moedas:       " + p.var.z_moedas_)
   lin = ""
   p.tipo1 && (lin += ", " + txtcopiamai(p.tipo1, "A"))
   p.tipo2 && (lin += ", " + txtcopiamai(p.tipo2, "A"))
   p.tipo3 && (lin += ", " + txtcopiamai(p.tipo3, "A"))
-  lin && arg0.msg("Tipo/raça/classe: " + txt2(lin))
-  p.sock && arg0.msg("Conexão:      " + p.sock.info)
-  p.cnome && arg0.msg("Jogo salvo:   " + txt2(p.cnome))
+  lin && t.addfim("Raça/classe:  " + txt2(lin))
+  p.sock && t.addfim("Conexão:      " + p.sock.info)
+  p.cnome && t.addfim("Jogo salvo:   " + txt2(p.cnome))
   se p.dono
-    arg0.msg("Está em:      " + p.dono)
+    t.addfim("Está em:      " + p.dono)
   senao p.salanome
-    arg0.msg("Entrará em:   " + p.salanome)
+    t.addfim("Entrará em:   " + p.salanome)
   fimse
-  p.var.z_email && arg0.msg("E-mail:       " + p.var.z_email)
+  p.var.z_email && t.addfim("E-mail:       " + p.var.z_email)
+  arg0.msg2(t.remove(1000))
 
 
 classe jog_info
@@ -186,12 +187,13 @@ sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem
 txt100 cnome # Para obter o nome codificado
 sav txt40 salanome # Nome da sala
+sav int1 psexo
 sav uint16 pnivel
 sav uint16 prenascer
 sav txt32 tipo1
 sav txt32 tipo2
 sav txt32 tipo3
-
+sav int1 jogconfig.24
 
 classe adm_inv
 herda comando_adm

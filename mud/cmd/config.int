@@ -30,7 +30,8 @@ const txtajuda2 = "\n\
 Opções para administradores:\n\
   \c2IMORTAL\b   Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
             cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
-            fechadas, anda sem gastar movimento\n\
+            fechadas, anda sem gastar movimento,\n\
+            não sai do jogo após algum tempo sem digitar nada\n\
   \c2SALA\b      Mostra o nome da sala cadastrada antes do título\n\
   \c2QUEM\b      O comando QUEM mostra onde cada jogador está no MUD\n\
   \c2INVQUEM\b   Ocultar a presença no comando quem\n\
@@ -122,6 +123,8 @@ func escr
 # Checa a propriedade IMORTAL
   se arg0.jogconfig.14 != opc.14 # Se a propriedade IMORTAL mudou
     arg0.recalc = 1 # Deverá atualizar bitver
+    arg0.sock.jogconfig.bits = opc.bits # Para função temposair
+    arg0.sock.temposair # Atualiza tempo para sair do MUD
   fimse
 # Checa a propriedade SEGUIR
   se !opc.5 # Se não pode ser seguido

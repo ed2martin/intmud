@@ -11,15 +11,15 @@ O comando QUEM também mostra aos administradores quem está monitorando."
 func escr
   indiceitem item
   ref r
-  r = item.obj("pn " + txts(txtnome(arg1)))
+  r = item.obj("un " + txts(txtnome(arg1)))
   refvar imonit = arg0.sock.imonit
-  se !arg1 || r == arg0
+  se !arg1 || r == arg0.sock
     se imonit
       txt100 t1
-      t1 = imonit.objlista.perso.nome
+      t1 = imonit.objlista.nome
       imonit.remove
       arg0.msg("Deixando de monitorar " + t1)
-      t1 = "*** " + arg0.nome + " deixa de monitorar " + t1
+      t1 = "*** " + arg0.sock.nome + " deixa de monitorar " + t1
       epara item.ini("un "), txt1(item.txt) == "un", item.depois
         item.obj.jogconfig.23 && item.obj != arg0.sock && item.obj.msg(t1)
       efim
@@ -29,17 +29,17 @@ func escr
     fimse
   senao !r
     arg0.msg("Jogador não encontrado: " + arg1)
-  senao r == imonit.objlista.perso
+  senao r == imonit.objlista
     arg0.msg("Já está monitorando " + r.nome)
   senao
-    imonit && arg0.msg("Deixando de monitorar " + imonit.objlista.perso.nome)
+    imonit && arg0.msg("Deixando de monitorar " + imonit.objlista.nome)
     imonit.remove
     txt100 t1
-    t1 = "*** " + arg0.nome + " monitora " + r.nome
+    t1 = "*** " + arg0.sock.nome + " monitora " + r.nome
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       item.obj.jogconfig.23 && item.obj != arg0.sock && item.obj.msg(t1)
     efim
-    imonit = r.sock.lmonit.addini(arg0.sock)
+    imonit = r.lmonit.addini(arg0.sock)
     arg0.msg("Monitorando " + r.nome)
     $misclog.cmdlog("monit " + arg0.nome + ": " + r.nome)
   fimse

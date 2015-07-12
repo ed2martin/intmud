@@ -154,7 +154,8 @@ func escr
       fimse
     fimse
 # Envia mensagem
-    se r.perso
+    se r == arg0
+    senao r.perso
       $mens.p(arg0, r)
       $mens.mvis2("", "$P olha para $a.")
     senao r.dono != arg0

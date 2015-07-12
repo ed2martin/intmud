@@ -23,7 +23,7 @@ func escr
     se arg0.jogconfig.23
       obj.jogconfig.23 && (t1 += "  [Admin]")
       obj.jogconfig.17 && (t1 += "  [InvQuem]")
-      obj.sock.imonit && (t1 += "  [Monit " + obj.sock.imonit.objlista.perso.nome + "]")
+      obj.sock.imonit && (t1 += "  [Monit " + obj.sock.imonit.objlista.nome + "]")
     senao
       obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
     fimse
@@ -37,8 +37,14 @@ func escr
       continuar obj.perso.jog # Continuar se personagem é jogador
       continuar obj.jogconfig.17 && !arg0.jogconfig.23
       total.[obj.jogconfig.14] += 1
-      t1 = (obj.jogconfig.14 ? "A999001 N?       " : "B999001 N?       ") + item.obj.nome
-      obj.jogconfig.17 && (t1 += "  [InvQuem]")
+      se obj.perso
+        t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.perso.pnivel)
+        t1 += " N" + obj.perso.pnivel
+        t1 += txtesp(16 - inttotal(t1)) + " " + obj.nome + "  [" + obj.perso.nome + "]"
+      senao
+        t1 = (obj.jogconfig.14 ? "A999001 N?       " : "B999001 N?       ")
+        t1 += obj.nome
+      fimse
       t0.addfim(t1)
     efim
   fimse
@@ -349,6 +355,25 @@ func vidalin
   refvar nmax = int(intmax(t_[arg0.tipo1]:nmax, t_[arg0.tipo2]:nmax, t_[arg0.tipo3]:nmax))
   (nmax <= 0 || arg0.pnivel < nmax) && (lin += "/" + arg0.expmax)
   ret lin
+
+
+classe cmd_relatar
+herda comando_comum
+const posic = 5
+const txtajuda = "\b\c3Relatar\b\n\
+Sintaxe: RELATAR\n\
+Mostra as suas estatísticas (vida, mana, movimento e experiência) para\n\
+os outros personagens e jogadores que estiverem na mesma sala."
+
+func escr
+  txt200 lin
+  lin = txt(arg0.nome) + " relata:\n"
+  lin += "Vida " + arg0.pvida + "/" + arg0.pvidamax
+  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
+  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
+  lin += "  Nível " + arg0.pnivel
+  lin += "  Experiência " + arg0.expatual
+  arg0.dono.msg(lin)
 
 
 classe cmd_moedas

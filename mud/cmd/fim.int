@@ -14,9 +14,13 @@ const posic = 0
 func escr
   se arg0.atkenv && arg0.senha
     arg0.msg("Você está ocupad" + (arg0.msexo ? "o" : "a") + " demais para isso.")
-  senao
+  senao arg0.jog
     arg0.msg("Até mais. Aguardamos o seu retorno.")
     apagar(arg0)
+  senao
+    indiceitem ind
+    refvar obj = ind.obj("pn " + txt2(arg0.sock.cnome))
+    obj ? arg0.sock.mudaperso(obj) : arg0.sock.reinicia
   fimse
 
 

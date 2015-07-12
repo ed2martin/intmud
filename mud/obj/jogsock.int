@@ -25,6 +25,8 @@ intinc tempojogo # Tempo da sessão
 intdec msgtot1 # Usado no controle de banda das mensagens para o jogador
 real msgtot2 # Usado no controle de banda das mensagens para o jogador
 txt100 msgsom_t # Nome do último som enviado ao jogador
+inttempo tempofim1 # Para sair do jogo após algum tempo sem digitar nada
+int8 tempofim2 # Para sair do jogo após algum tempo sem digitar nada
 #
 txt30 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -47,13 +49,23 @@ func ini
 
 func fim
   lmonit.limpar
-  perso.fechou(txt1(info) == "b")
   mudaperso(nulo)
+  indiceitem ind
+  ind.obj("pn " + txt2(cnome)).sock_saiu(txt1(info) == "b")
   nomefim && msgchegou("Saiu: " + nome + ", " + nomefim, nome + " saiu")
 
 func mudaperso # Muda o personagem, arg0=novo personagem
   ret perso == arg0 || arg0.sock, nulo
-  lmonit.limpar, imonit.limpar
+  se perso && arg0.jog
+    perso.var.z_prompt = ""
+    perso.var.z_bprompt = ""
+    msg("Você retorna para " + arg0.nome)
+  senao perso && arg0
+    arg0.var.z_prompt = perso.var.z_prompt
+    arg0.var.z_pbprompt = perso.var.z_bprompt
+    arg0.jogconfig.bits = jogconfig.bits
+    msg("Você assume " + arg0.nome)
+  fimse
   ref r
 # Indica que o jogador não controla o antigo personagem
   epara r = perso, r, r = r.dono
@@ -120,6 +132,7 @@ func recebe1 # Função recebe após uso de atalhos
     comandos.limpar
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
+    ret !perso.jog, msg("Primeiro precisa retornar para seu personagem")
     jogconfig.23 = !jogconfig.23 # Administração
     jogconfig.19 = jogconfig.23 # Canal AC
     perso.jogconfig.bits = jogconfig.bits
@@ -181,15 +194,30 @@ func espera_exec # Chamado por p_espera do personagem
   fimse
 
 func temposair # Acerta variáveis de tempo para sair do MUD
+  tempofim2 = 1
   casovar txt1(info)
   casose "t" # Conectado via Papovox
   casose "p" # Conectado via Telnet
-    perso.p_tempofim = 30
-    sair
-  casose # Rodando como bot ou independente
-    perso.p_tempofim = 0
+    se perso
+      tempofim1 = jogconfig.14 ? 0 : 4800 # 8 * 600 (8 minutos)
+    senao
+      tempofim1 = 1800, tempofim2 = 0
+    fimse
+    ret
   casofim
-  !perso.p_tempoatu && (perso.p_tempoatu = 150)
+  tempofim1 = 0
+
+func tempofim1_exec
+  se tempofim2
+    tempofim1 = 600
+    tempofim2 = 0
+    msg("Você caminha em direção ao vazio.")
+  senao
+    msg("Muito tempo sem digitar.")
+    apagar(este)
+    indiceitem ind
+    apagar(ind.obj("pn " + txt2(cnome)))
+  fimse
 
 func msg2 # Mensagem grande para o jogador
   txtmais.limpar
@@ -315,6 +343,11 @@ func passo
   txt20 texto
   arqsav sav1
   arg0.passo = este, arg0.tpasso = arg0.nome = arg0.cnome = ""
+  casovar txt1(arg0.info)
+  casose "t" # Conectado via Papovox
+  casose "p" # Conectado via Telnet
+    arg0.tempofim1 = 600
+  casofim
   texto = txts(txtnome(arg1))
   se !arg1
     arg0.msg("Digite o nome do seu personagem:\cn ")
@@ -572,24 +605,27 @@ func passo
   indiceitem ind
   txt20 texto
   arqsav sav1
-  ref r
   texto = txts(txtnome(arg0.tpasso))
   arg0.passo = este
   se !arg1
     arg0.msg("Digite a senha ou tecle Z se não for seu: \cm")
+    ret 1
   senao arg1 == "z"
-    arg0.nome = "", $adm_perso1.passo(arg0)
+    arg0.nome = ""
+    ret $adm_perso1.passo(arg0)
   senao !sav1.senha("sav1/" + texto + ".sav", txtmin(arg1))
     arg0.msg("Senha incorreta")
     casovar txt1(arg0.info)
     casose "t" # Conectado via Papovox
     casose "p" # Conectado via Telnet
       apagar(arg0)
-      ret
+      ret 1
     casofim
-    $adm_perso1.passo(arg0)
-  senao ind.obj("pn " + texto)
-    r = ind.obj("un " + texto)
+    ret $adm_perso1.passo(arg0)
+  fimse
+# Desconecta outro jogador usando o mesmo personagem
+  se 1
+    refvar r = ind.obj("un " + texto)
     casovar txt1(r.info)
     casose "t" # Conectado via Papovox
     casose "p" # Conectado via Telnet
@@ -603,12 +639,16 @@ func passo
       r.msg("Jogador " + arg0.info + " começou a usar seu personagem")
       r.reinicia
     casofim
+  fimse
+# Reconectar no mesmo personagem
+  se ind.obj("pn " + texto)
     arg0.passo = ""
     arg0.mudaperso(ind.obj("pn " + texto))
     arg0.nome = arg0.perso.nome
     arg0.cnome = "un " + texto
-    arg0.jogconfig.bits = arg0.perso.jogconfig.bits
     arg0.temposair # Acerta tempo para sair do MUD
+    arg0.perso.sock_entrou # Indica que o objeto sock voltou
+    arg0.jogconfig.bits = arg0.perso.jogconfig.bits
     arg0.msg("Reconectado\cn")
     txt200 lin
     arg0.nomefim = arg0.info

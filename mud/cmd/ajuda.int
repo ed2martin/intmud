@@ -63,14 +63,14 @@ classe cmd_comunica
 const iniclasse = !$[arg0] && criar(arg0)
 
 func txtajuda
-  ret tit + (config:chattipo ? cha) + (config:novatostipo ? nov) + gch + pvt + (config:gritartipo\
+  ret tit + (config:novatostipo ? nov) + (config:chattipo ? cha) + gch + pvt + (config:gritartipo\
  ? gri) + fal + sus + soc + (config:emocaotipo ? emo) + ign + (config:rezartipo ? rez)
 
 const tit = "\b\c3Comunicação\b"
-const cha = "\n\
-  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado"
 const nov = "\n\
   \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado"
+const cha = "\n\
+  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado"
 const gch = "\n  \c2GCHAT\b     Envia uma mensagem para os jogadores do seu grupo"
 const pvt = "\n  \c2TELEPATIA\b Envia mensagem privativa para um jogador"
 const gri = "\n  \c2GRITAR\b    Envia mensagem para os personagens na mesma área"
@@ -88,6 +88,7 @@ classe cmd_info
 const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Informações\b\n\
   \c2VIDA\b      Pontos de vida, mana, vigor, nível e experiência\n\
+  \c2RELATAR\b   Relata vida, mana, vigor, experiência para os outros\n\
   \c2MOEDAS\b    Quantas moedas está carregando\n\
   \c2ESTAT\b     Estatísticas e outras informações do seu personagem\n\
   \c2OLHAR\b     Descrição de onde você está ou de um objeto ou personagem\n\

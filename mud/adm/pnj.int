@@ -1,0 +1,34 @@
+classe adm_pnj
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Pnj\b\n\
+Sintaxe: PNJ\n\
+         PNJ <personagem não jogador da sala>\n\
+         PNJ -\n\
+Passa a controlar um personagem não jogador.\n\
+Para retornar ao seu personagem, digite apenas PNJ, sem argumentos.\n\
+Enquanto estiver controlando outro personagem, para tirar o seu do MUD\n\
+basta teclar PNJ seguido de espaço e um hífen."
+
+func escr
+  se !arg0.sock
+    arg0.msg("Você não é jogador")
+  senao arg1 == "-"
+    ret arg0.jog, arg0.msg("Você está no seu personagem")
+    indiceitem ind
+    refvar obj = ind.obj("pn " + txt2(arg0.sock.cnome))
+    apagar(obj)
+    obj && arg0.msg("Personagem " + obj.nome + " sai do jogo")
+    !obj && arg0.msg("Seu personagem já saiu do jogo")
+  senao arg1
+    refvar r = misc:objperso(arg0, arg1)
+    ret !r, 1
+    ret r.jog, arg0.msg("Personagem é jogador")
+    ret r.sock, arg0.msg("Personagem já está sendo controlado por jogador")
+    arg0.sock.mudaperso(r)
+  senao arg0.jog
+    arg0.msg("Você já está no seu personagem")
+  senao
+    indiceitem ind
+    refvar obj = ind.obj("pn " + txt2(arg0.sock.cnome))
+    obj ? arg0.sock.mudaperso(obj) : arg0.sock.reinicia
+  fimse

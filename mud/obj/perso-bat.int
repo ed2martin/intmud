@@ -420,7 +420,8 @@ func morreu # Procedimentos quando morre
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     mudadono(config:salafim)
     salvar # Salva o jogo
-    !sock && apagar(este) # Sai do jogo se ninguém está controlando o personagem
+    indiceitem ind
+    !ind.obj("un " + txt2(cnome)) && apagar(este) # Sai se o jogador já saiu
 # Animal do jogador: não dá experiência
   senao dono.jog
     pvida = 0
@@ -435,8 +436,6 @@ func morreu # Procedimentos quando morre
     pvida = 0, batalhaexp(1), batalhafim
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     apagar(este)
-    ref r
-    r = sock, r.mudaperso(nulo), r.reinicia
     p_corpo && (corpo = criar("comum_corpo", este, p_corpo == 2))
     corpo.var.z_moedas && arg0.jogconfig.10 && arg0.pegamoedas(corpo)
   fimse
