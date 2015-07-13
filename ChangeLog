@@ -1,3 +1,39 @@
+* 12/7/2015 IntMUD 1.03c MUD baseado na revisão 358
+
+   No telnet.int:
+  1. Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado
+
+   No minichat.int:
+  1. Criado comando /p para recarregar o minichat.int (sem precisar
+     reiniciar o programa)
+
+   No MUD:
+  1. Corrigido bug: músicas do comando som não estavam sendo tocadas
+     como deveria
+  2. Corrigido bug: identificação do jogador ao entrar no jogo e sair,
+     para administradores, estava pequena demais (20 caracteres)
+  3. Corrigido bug: o evento cmd_atacou estava sendo chamado com
+     result=10 ao invés de result=0 quando matou o alvo (habilidade
+     drenar não drenava quando matava)
+  4. Corrigido bug: não estava aceitando sons e cores nas mensagens das
+     habilidades e magias
+  5. Corrigido bug: comando empunhar não estava checando quantas vezes
+     renasceu
+  6. Corrigido bug: comando som não estava gravando mensagens nos logs
+  7. Função morreu agora não mata imortais
+  8. Comando Lcl agora mostra a quantidade de classes encontradas
+  9. Comando Quem agora só mostra aos administradores quem está criando
+     personagem
+ 10. Comando InfoJog agora mostra também conexão de usuários que estão
+     criando personagens
+ 11. Comando Ban agora permite expulsar jogadores, mesmo os que estão
+     criando personagens
+ 12. Criado comando Relatar
+ 13. Criado comando PNJ, para controlar um personagem não jogador
+ 14. Comando InfoJog agora mostra também o título que o jogador colocou
+ 15. Agora imortais não são desconectados do MUD após algum tempo (não
+     vão para o "vazio")
+
 * 13/6/2015 IntMUD 1.03c MUD baseado na revisão 351
 
    No IntMUD:
