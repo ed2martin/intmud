@@ -18,7 +18,7 @@ func escr
   senao arg0.posicao != 7
     ret arg0.msg("Pontos de vida para fugir: " + arg0.p_fugir)
   senao
-    ret arg0.pmove < 5 && !arg0.jogconfig.14, arg0.msg("Você está sem fôlego.")
+    ret arg0.pmove < 5 && !arg0.j_imortal, arg0.msg("Você está sem fôlego.")
     arg0.p_espera = 5
     fugir(arg0)
   fimse
@@ -37,7 +37,7 @@ func fugir # Tenta fugir da luta
     valor += i.obj.persobat.precisao
   efim
   valor = valor * rand(70, 130) - arg0.persobat.evasao * 150
-  se valor > 0 && !arg0.jogconfig.14
+  se valor > 0 && !arg0.j_imortal
     $mens.p(arg0)
     $mens.mens = ""
     $mens.mtodos1("$P tenta fugir, mas não consegue.")

@@ -57,8 +57,10 @@ func fim
 func mudaperso # Muda o personagem, arg0=novo personagem
   ret perso == arg0 || arg0.sock, nulo
   se perso && arg0.jog
+    perso.var.jogconfig.bits = 0
     perso.var.z_prompt = ""
     perso.var.z_bprompt = ""
+    arg0.jogconfig.bits = jogconfig.bits
     msg("Você retorna para " + arg0.nome)
   senao perso && arg0
     arg0.var.z_prompt = perso.var.z_prompt

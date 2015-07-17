@@ -45,7 +45,7 @@ func mover # Personagem anda em uma direção
   s1 = arg0.dono, s2 = s1.dir_[dir](arg0)
   se s2 == nulo
     ret arg0.msg("Impossível seguir nessa direção.")
-  senao s1.porta_[dir] & 3 >= 2 && !arg0.jogconfig.14
+  senao s1.porta_[dir] & 3 >= 2 && !arg0.j_imortal
     ret !s1.socktot, nulo
     refvar cod = $c_[s1.fechadura_[dir](arg0)].chave
     ret !cod, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
@@ -85,7 +85,7 @@ func mover # Personagem anda em uma direção
     ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0.dono), nulo
   efim
   $comando_mover.andou = 1
-  !arg0.jogconfig.14 && (arg0.pmove -= intdiv((total + 1) / 2))
+  !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
   se !(s1.socktot || s2.socktot) # Não tem jogador por perto
     arg0.mudadono(s2)
@@ -109,13 +109,13 @@ func mover # Personagem anda em uma direção
 # Checa se morre ao entrar
   casovar arg0.dono.s_morre(arg0)
   casose "2" # Perde os itens e morre
-    sair arg0.jogconfig.14
+    sair arg0.j_imortal
     epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
       l.objini.item && !l.objini.manterperso && apagar(l.objini)
     efim
     arg0.var.z_moedas = ""
    casose "1" # Morre
-    ret !arg0.jogconfig.14, arg0.morreu
+    ret !arg0.j_imortal, arg0.morreu
   casofim
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove

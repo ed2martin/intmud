@@ -45,7 +45,7 @@ func escrobj # Trancar um item
 : "a."))
 # Procura a chave
   ref chave
-  se r.i_fechadura && !arg0.jogconfig.14
+  se r.i_fechadura && !arg0.j_imortal
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
@@ -97,7 +97,7 @@ func escrdir # Trancar uma porta
   mporta = arg0.dono.portanome_[arg1]
   !mporta && (mporta = $cmd_[arg1].m_porta)
   !mporta && (mporta = "uma porta")
-  se cod && !arg0.jogconfig.14
+  se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
@@ -173,7 +173,7 @@ func escrobj # Destrancar um item
   casofim
 # Procura a chave
   ref chave
-  se r.i_fechadura && !arg0.jogconfig.14
+  se r.i_fechadura && !arg0.j_imortal
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
@@ -227,7 +227,7 @@ func escrdir # Destrancar uma porta
   mporta = arg0.dono.portanome_[arg1]
   !mporta && (mporta = $cmd_[arg1].m_porta)
   !mporta && (mporta = "uma porta")
-  se cod && !arg0.jogconfig.14
+  se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)

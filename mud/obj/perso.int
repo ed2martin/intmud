@@ -140,6 +140,8 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   se dono.perso
     p_proc = 1
     ret este
+  senao !dono
+    ret este
   fimse
 # Eventos cmd_chegou
   (sock || jog) && dono.s_reset1, dono.cmd_salaperso(este)
@@ -314,7 +316,7 @@ func descpos
     refvar m = txt(descpadr(arg0))
     ret m, m
   fimse
-  refvar i = jogconfig.14 ? " diante de você." : "."
+  refvar i = j_imortal ? " diante de você." : "."
   casovar posicao
   casose "0"
     ret txtcopiamai(descnome, "A") + " jaz aqui" + i

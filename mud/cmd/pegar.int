@@ -32,7 +32,7 @@ func escr
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
-    senao sala.i_aberto > 2 && !arg0.jogconfig.14
+    senao sala.i_aberto > 2 && !arg0.j_imortal
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " está fechad" + (sala.msexo ? "o." : \
 "a."))
     fimse

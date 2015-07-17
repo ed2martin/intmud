@@ -4,25 +4,27 @@ const txtajuda = "\b\c3Quem\b\n\
 Sintaxe: QUEM\n\
 Mostra quem está conectado no MUD e jogando."
 const posic = 0
+const nivel = "N" # Texto na frente do nível
 
 func escr
   textotxt t0
   txt100 t1
-  int16 total.2
+  int16 total.3
 # Lista de personagens dos jogadores
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
     refvar obj = item.obj
     total.[obj.jogconfig.14] += 1
-    t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " N" + obj.pnivel
-    obj.prenascer && (t1 += " R" + obj.prenascer)
-    t1 += txtesp(16 - inttotal(t1)) + " " + obj.nome
+    t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
+    t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome
+    t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " " + nivel + t1
     obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
-    obj.sock == nulo && (t1 += "  [Desconectado]")
+    obj.p_tempofim && (t1 += "  [Desconectado]")
     se arg0.jogconfig.23
       obj.jogconfig.23 && (t1 += "  [Admin]")
       obj.jogconfig.17 && (t1 += "  [InvQuem]")
+      !(obj.sock || obj.p_tempofim) && (t1 += "  [PNJ]")
       obj.sock.imonit && (t1 += "  [Monit " + obj.sock.imonit.objlista.nome + "]")
     senao
       obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
@@ -30,20 +32,19 @@ func escr
     arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
     t0.addfim(t1)
   efim
-# Lista de jogadores sem personagem
+# Lista de jogadores sem personagem de jogador
   se arg0.jogconfig.23
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       refvar obj = item.obj
       continuar obj.perso.jog # Continuar se personagem é jogador
-      continuar obj.jogconfig.17 && !arg0.jogconfig.23
-      total.[obj.jogconfig.14] += 1
+      total.2 += 1
       se obj.perso
-        t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.perso.pnivel)
-        t1 += " N" + obj.perso.pnivel
-        t1 += txtesp(16 - inttotal(t1)) + " " + obj.nome + "  [" + obj.perso.nome + "]"
+        t1 = txt(obj.perso.pnivel)
+        t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome + ", " + obj.perso.nome
+        t1 = "C" + txt(999000 - obj.perso.pnivel) + " " + nivel + t1
+        arg0.jogconfig.20 && (t1 += "  " + txt(obj.perso.dono, 2))
       senao
-        t1 = (obj.jogconfig.14 ? "A999001 N?       " : "B999001 N?       ")
-        t1 += obj.nome
+        t1 = "C999001 " + nivel + "?       " + obj.nome
       fimse
       t0.addfim(t1)
     efim
@@ -51,6 +52,7 @@ func escr
 # Mostra a quantidade de personagens online
   total.0 && t0.addfim("B 00000 \b\c6Jogadores online: " + total.0 + "\b")
   total.1 && t0.addfim("A 00000 \b\c6Imortais online: " + total.1 + "\b")
+  total.2 && t0.addfim("C 00000 \b\c6Outros: " + total.2 + "\b")
 # Ordena e mostra para o jogador
   t0.ordena
   textopos pos

@@ -41,7 +41,7 @@ func escr
 # Checa se consegue comer
   se !r
     ret arg0.msg("Você não vê isso.")
-  senao arg0.jogconfig.14 # Se é imortal, consegue comer
+  senao arg0.j_imortal # Se é imortal, consegue comer
   senao r.f_tipo != 3 # Checa se é comida
     ret arg0.msg("Você não consegue comer " + r.descnome + ".")
   senao arg0.p_fome >= $miscfome.cheio - 5
