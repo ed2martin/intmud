@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Revisão do SVN
-const versao = "15/7/2015"
+const versao = "19/7/2015"
 #
 # Objetos usados em misc:separa, misc:sepitem e misc:sepperso
 comum txt100 sep1 # Objeto procurado
@@ -300,7 +300,7 @@ func tempo1_exec # Executa eventos
   uint32 v
   x = 1000000
   refvar tam = inttotal(func)
-  epara p.inifunc(obj, func), p.lin, p.depois
+  epara p.inifunctudo(obj, func), p.lin, p.depois
     (v = txt(p.texto, tam)) > tempo2 && v < x && (x = v)
   efim
   x == 1000000 && apagar(este)

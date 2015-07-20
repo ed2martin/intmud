@@ -36,7 +36,8 @@ atalho med\n\
 
 func escr
   se !arg1
-    textotxt t
+    refvar t = arg0.sock.txtmais
+    t.limpar
     txt100 nome
     nome = arg0.var.ini("t_")
     enquanto txt(nome, 0, 2) == "t_"
@@ -44,7 +45,8 @@ func escr
       nome = arg0.var.depois(nome)
     efim
     ret t.linhas == 0, arg0.msg("Nenhum atalho definido.")
-    arg0.msg("Atalhos:\n" + t.remove(1000))
+    t.addini("\b\c6Atalhos:\b")
+    arg0.sock.txtmostra
   senao arg1 == "limpar"
     ret !arg0.var.ini("t_"), arg0.msg("Nenhum atalho definido.")
     arg0.var.limpar("t_")

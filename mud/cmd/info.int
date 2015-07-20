@@ -354,7 +354,7 @@ func vidalin
   lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
   lin += "  Nível " + arg0.pnivel
   lin += "  Experiência " + arg0.expatual
-  refvar nmax = int(intmax(t_[arg0.tipo1]:nmax, t_[arg0.tipo2]:nmax, t_[arg0.tipo3]:nmax))
+  refvar nmax = arg0.pnivelmax
   (nmax <= 0 || arg0.pnivel < nmax) && (lin += "/" + arg0.expmax)
   ret lin
 
@@ -587,7 +587,7 @@ func escr
   r.prenascer && (t1 += ", R" + r.prenascer)
   t.addfim(t1)
   se 1
-    refvar nmax = int(intmax(t_[r.tipo1]:nmax, t_[r.tipo2]:nmax, t_[r.tipo3]:nmax))
+    refvar nmax = r.pnivelmax
     t1 = nmax > 0 && r.pnivel >= nmax ? "" : "/" + r.expmax
     t.addfim("Experiência:      " + r.expatual + t1)
   fimse

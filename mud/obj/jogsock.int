@@ -227,10 +227,13 @@ func msg2 # Mensagem grande para o jogador
   txtmostra
 
 func txtmostra # Mostra próximo bloco de txtmais
-  se txtmais.linhas <= 10
-    msg(txtmais.remove(10))
+# Via bot, o chat corta a mensagem em aproximadamente 10 linhas
+# Conectado diretamente, até 2048 bytes; 20 linhas é uma margem segura
+  refvar lin = txt1(info) == "b" ? 10 : 20
+  se txtmais.linhas <= lin
+    msg(txtmais.remove(lin))
   senao
-    msg(txtmais.remove(9) + "\nTecle M para mais")
+    msg(txtmais.remove(lin - 1) + "\nTecle M para mais")
   fimse
 
 func msg # Envia mensagem
@@ -648,9 +651,9 @@ func passo
     arg0.mudaperso(ind.obj("pn " + texto))
     arg0.nome = arg0.perso.nome
     arg0.cnome = "un " + texto
-    arg0.temposair # Acerta tempo para sair do MUD
     arg0.perso.sock_entrou # Indica que o objeto sock voltou
     arg0.jogconfig.bits = arg0.perso.jogconfig.bits
+    arg0.temposair # Acerta tempo para sair do MUD
     arg0.msg("Reconectado\cn")
     txt200 lin
     arg0.nomefim = arg0.info

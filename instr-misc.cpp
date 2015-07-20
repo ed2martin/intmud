@@ -59,6 +59,7 @@ const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
         { "matcos",     Instr::FuncNumero, 5 },
         { "matexp",     Instr::FuncNumero, 10 },
         { "matlog",     Instr::FuncNumero, 11 },
+        { "matpow",     Instr::FuncPow, 0 },
         { "matraiz",    Instr::FuncNumero, 12 },
         { "matsin",     Instr::FuncNumero, 4 },
         { "mattan",     Instr::FuncNumero, 6 },

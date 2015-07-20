@@ -957,7 +957,7 @@ void TSocket::EnvPend()
     else if (resposta>0)
     {
         pontEnv -= resposta;
-        memcpy(bufEnv, bufEnv+resposta, pontEnv);
+        memmove(bufEnv, bufEnv+resposta, pontEnv);
     }
 }
 

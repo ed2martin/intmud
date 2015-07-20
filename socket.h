@@ -109,7 +109,7 @@ private:
             ///< Para controle da mensagem recebida
             /**< - 0 = comportamento padrão
              *   - 0x0D, 0x0A = para detectar nova linha
-             *   - 2 = para detectar seqüências de ESC
+             *   - 2 = para detectar sequências de ESC
              *   - 21=recebeu Ctrl-C
              *   - 22=recebeu Ctrl-C X
              *   - 23=recebeu Ctrl-C XX
@@ -117,7 +117,7 @@ private:
              *   - 25=recebeu Ctrl-C XX,X
              *   - 26=recebeu Ctrl-C XX,XX; esperando Ctrl+C */
     unsigned char bufTelnet[8]; ///< Para interpretar o protocolo Telnet
-    unsigned char bufESC[20];   ///< Para interpretar seqüências de ESC
+    unsigned char bufESC[20];   ///< Para interpretar sequências de ESC
     unsigned short pontESC;     ///< Ponteiro em bufESC
     unsigned short pontTelnet;  ///< Ponteiro em bufTelnet
     unsigned char telnetopc[10];///< Para responder algumas opções do telnet

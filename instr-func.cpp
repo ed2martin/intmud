@@ -228,6 +228,20 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função mathpow
+bool Instr::FuncPow(TVariavel * v, int valor)
+{
+    if (VarAtual != v+2)
+        return false;
+    double numero = pow(v[1].getDouble(), v[2].getDouble());
+    ApagarVar(v);
+    if (!CriarVar(InstrDouble))
+        return false;
+    VarAtual->setDouble(numero);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Função intbit
 bool Instr::FuncIntBit(TVariavel * v, int valor)
 {

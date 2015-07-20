@@ -38,7 +38,7 @@ E também, cada vez que é escolhida, o nível para aprender diminui em "
 const ajmais = "\nE também, cada vez que é escolhida, o nível para aprender aumenta em "
 
 func escr
-  refvar nmax = int(intmax(t_[arg0.tipo1]:nmax, t_[arg0.tipo2]:nmax, t_[arg0.tipo3]:nmax))
+  refvar nmax = arg0.pnivelmax
   se nmax <= 0
     ret arg0.msg("Na raça e classe que você escolheu não tem como renascer.")
   senao arg0.pnivel < nmax
