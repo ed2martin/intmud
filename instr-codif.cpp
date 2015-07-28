@@ -234,6 +234,7 @@ public:
 // Deve obrigatoriamente estar em ordem alfabética
 static const TListaInstr ListaInstr[] = {
     { "arqdir",    cArqDir },
+    { "arqexec",   cArqExec },
     { "arqlog",    cArqLog },
     { "arqprog",   cArqProg },
     { "arqsav",    cArqSav },

@@ -24,6 +24,7 @@
 #include "var-dir.h"
 #include "var-log.h"
 #include "var-arqprog.h"
+#include "var-exec.h"
 #include "var-sav.h"
 #include "var-txt.h"
 #include "var-nomeobj.h"
@@ -139,6 +140,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cArqDir:    return sizeof(TVarDir);
     case Instr::cArqLog:    return sizeof(TVarLog);
     case Instr::cArqProg:   return sizeof(TVarArqProg);
+    case Instr::cArqExec:   return sizeof(TVarExec);
     case Instr::cArqSav:    return 0;
     case Instr::cArqTxt:    return sizeof(TVarTxt);
     case Instr::cIntTempo:  return sizeof(TVarIntTempo);
@@ -216,6 +218,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cArqDir:    return varOutros;
     case Instr::cArqLog:    return varOutros;
     case Instr::cArqProg:   return varOutros;
+    case Instr::cArqExec:   return varOutros;
     case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
     case Instr::cIntTempo:  return varInt;
@@ -342,6 +345,16 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
             end_arqprog[antes].Criar();
         for (; depois<antes; depois++)
             end_arqprog[depois].Apagar();
+        break;
+    case Instr::cArqExec:
+        for (; antes<depois; antes++)
+        {
+            end_exec[antes].defvar = defvar;
+            end_exec[antes].indice = antes;
+            end_exec[antes].EndObjeto(c, o);
+        }
+        for (; depois<antes; depois++)
+            end_exec[depois].Apagar();
         break;
     case Instr::cArqTxt:
         for (; antes<depois; antes++)
@@ -592,6 +605,8 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         memmove(destino, endvar, vetor*sizeof(TVarArqProg));
         endvar = destino;
         return;
+    case Instr::cArqExec:
+        MOVER_COMPLETO( TVarExec )
     case Instr::cArqSav:
         endvar = destino;
         return;
@@ -669,6 +684,10 @@ void TVariavel::MoverDef()
     int cont;
     switch (defvar[2])
     {
+    case Instr::cArqExec:
+        for (cont=0; cont<vetor; cont++)
+            end_exec[cont].defvar = defvar;
+        break;
     case Instr::cIntTempo:
         for (cont=0; cont<vetor; cont++)
             end_inttempo[cont].defvar = defvar;
@@ -803,6 +822,7 @@ bool TVariavel::getBool()
     case Instr::cArqLog:
         return end_log[indice].getValor();
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqSav:
         return 0;
     case Instr::cArqTxt:
@@ -962,6 +982,7 @@ int TVariavel::getInt()
     case Instr::cArqLog:
         return end_log[indice].getValor();
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqSav:
         return 0;
     case Instr::cArqTxt:
@@ -1129,6 +1150,7 @@ double TVariavel::getDouble()
     case Instr::cArqLog:
         return end_log[indice].getValor();
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqSav:
         return 0;
     case Instr::cArqTxt:
@@ -1331,6 +1353,7 @@ const char * TVariavel::getTxt()
     case Instr::cTextoObj:
     case Instr::cArqDir:
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqSav:
     case Instr::cServ:
     case Instr::cProg:
@@ -1508,6 +1531,7 @@ void TVariavel::setInt(int valor)
     case Instr::cNomeObj:
     case Instr::cArqDir:
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqLog:
     case Instr::cArqSav:
     case Instr::cArqTxt:
@@ -1628,6 +1652,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cArqDir:
     case Instr::cArqLog:
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
@@ -1776,6 +1801,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cArqDir:
     case Instr::cArqLog:
     case Instr::cArqProg:
+    case Instr::cArqExec:
     case Instr::cArqSav:
     case Instr::cArqTxt:
         break;
@@ -1993,6 +2019,8 @@ bool TVariavel::Func(const char * nome)
         return end_log[indice].Func(this, nome);
     case Instr::cArqProg:
         return end_arqprog[indice].Func(this, nome);
+    case Instr::cArqExec:
+        return end_exec[indice].Func(this, nome);
     case Instr::cArqSav:
         return TVarSav::Func(this, nome);
     case Instr::cArqTxt:

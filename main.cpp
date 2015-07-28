@@ -39,6 +39,8 @@
 #include "variavel.h"
 #include "socket.h"
 #include "console.h"
+#include "exec.h"
+#include "var-exec.h"
 #include "var-sav.h"
 #include "var-serv.h"
 #include "var-outros.h"
@@ -65,7 +67,6 @@ void Termina();
 void TerminaSign(int sig);
 
 static FILE * err_log = 0;
-int err_tipo = 0;
 
 //------------------------------------------------------------------------------
 // Semelhante a sprintf(), exceto que:
@@ -143,7 +144,7 @@ void err_printf(const char * mens, ...)
 
 // Envia mensagem
     const char msg1[] = "IntMUD versão " VERSION " (Interpretador MUD)\n";
-    switch (err_tipo)
+    switch (opcao_log)
     {
     case 0:
         if (Console==0)
@@ -293,10 +294,11 @@ int main(int argc, char *argv[])
     // Eventos do console
         TVarTelaTxt::Processa();
 
-    // Chama eventos serv e socket
+    // Chama eventos serv, socket e exec
         TVarServ::ProcEventos(&set_entrada, espera);
         TSocket::ProcEventos(&set_entrada, &set_saida, &set_err);
         TDNSSocket::ProcEventos(&set_entrada);
+        TObjExec::ProcEventos(&set_entrada, &set_saida);
 
     // Chama eventos de arqsav
         TVarSav::ProcEventos(espera);
@@ -320,6 +322,7 @@ int main(int argc, char *argv[])
         FD_ZERO(&set_saida);
         FD_ZERO(&set_err);
         TSocket::Fd_Set(&set_entrada, &set_saida, &set_err);
+        TObjExec::Fd_Set(&set_entrada, &set_saida);
         int esp = TVarServ::Fd_Set(&set_entrada, &set_saida);
         if (espera > esp)
             espera = esp;
@@ -424,6 +427,7 @@ void Inicializa(const char * arg)
     tabASCinic();   // Prepara tabela ASCII
     circle_srandom(time(0)); // Para gerar números aleatórios
     TVarIntTempo::PreparaIni(); // Variáveis inttempo
+    TExec::Inicializa();
 
 // Obtém nome do programa: arqnome e arqinicio
     {
@@ -578,9 +582,13 @@ void Inicializa(const char * arg)
             if (comparaZ(mens, "telatxt")==0)
                 telatxt = NumInt(valor);
             if (comparaZ(mens, "log")==0)
-                err_tipo = (NumInt(valor) != 0);
+                opcao_log = (NumInt(valor) != 0);
             if (comparaZ(mens, "err")==0)
                 Instr::ChecaLinha::ChecaErro = NumInt(valor);
+            if (comparaZ(mens, "completo")==0)
+                opcao_completo = (NumInt(valor) != 0);
+            if (comparaZ(mens, "arqexec")==0)
+                new TArqExec(valor);
 
         // Verifica instruções incluir
             if (comparaZ(mens, "incluir")==0)

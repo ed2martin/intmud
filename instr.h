@@ -345,6 +345,7 @@ enum Comando
     cArqDir,            ///< Extra: ArqDir
     cArqLog,            ///< Extra: ArqLog
     cArqProg,           ///< Extra: ArqProg
+    cArqExec,           ///< Extra: ArqExec
     cArqSav,            ///< Extra: Salvar
     cArqTxt,            ///< Extra: ArqTxt
     cIntTempo,          ///< Extra: IntTempo

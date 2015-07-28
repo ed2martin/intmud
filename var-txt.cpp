@@ -190,12 +190,15 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     }
 // Obtém o nome do arquivo
     char arqnome[300]; // Nome do arquivo; nulo se não for válido
+    bool escrita = false;
     *arqnome=0;
     if (Instr::VarAtual >= v+1)
     {
         copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
     // Verifica se nome permitido
-        if (!arqvalido(arqnome))
+        if (arqvalido(arqnome, true))
+            escrita = true;
+        else if (!arqvalido(arqnome, false))
             *arqnome=0;
     }
 // Checa se nome de arquivo é válido
@@ -224,6 +227,9 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         if (!Instr::CriarVarInt(0))
             return false;
+    // Checa permissões
+        if (modo >= 2 && escrita == false)
+            return true;
     // Abre arquivo
         switch (modo)
         {

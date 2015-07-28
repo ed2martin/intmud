@@ -464,7 +464,7 @@ bool TTextoTxt::FuncLer(TVariavel * v)
     char nome[1024]; // Nome do arquivo / buffer de leitura
     copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
     Instr::ApagarVar(v);
-    if (!arqvalido(nome))
+    if (!arqvalido(nome, true))
         return Instr::CriarVarInt(0);
 // Abre arquivo
     FILE * descr = fopen(nome, "rb");
@@ -530,7 +530,7 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
     char nome[1024]; // Nome do arquivo
     copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
     Instr::ApagarVar(v);
-    if (!arqvalido(nome))
+    if (!arqvalido(nome, false))
         return Instr::CriarVarInt(0);
 // Abre arquivo
     FILE * descr = fopen(nome, "w");

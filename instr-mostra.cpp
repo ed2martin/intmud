@@ -181,6 +181,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cArqDir:    strcpy(nome, "arqdir"); break;
     case cArqLog:    strcpy(nome, "arqlog"); break;
     case cArqProg:   strcpy(nome, "arqprog"); break;
+    case cArqExec:   strcpy(nome, "arqexec"); break;
     case cArqSav:    strcpy(nome, "arqsav"); break;
     case cArqTxt:    strcpy(nome, "arqtxt"); break;
     case cIntTempo:  strcpy(nome, "inttempo"); break;

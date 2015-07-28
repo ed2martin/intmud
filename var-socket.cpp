@@ -695,7 +695,8 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 //------------------------------------------------------------------------------
 #ifndef __WIN32__
 /// Interpreta sinal SIGCHLD
-static void dns_sigchld_handler(int signum)
+// Nota: Já está sendo processado em TExec::proc_sigchld_handler()
+/*static void dns_sigchld_handler(int signum)
 {
     int pid, status, serrno;
     serrno = errno;
@@ -713,7 +714,7 @@ static void dns_sigchld_handler(int signum)
     }
     errno = serrno;
     signal(SIGCHLD,dns_sigchld_handler); // Processar sinal SIGCHLD
-}
+}*/
 #endif
 
 //------------------------------------------------------------------------------
@@ -784,7 +785,8 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
     }
     close(descrpipe[1]);
     fcntl(descrpipe[0], F_SETFL, O_NONBLOCK);
-    signal(SIGCHLD,dns_sigchld_handler); // Processar sinal SIGCHLD
+    //signal(SIGCHLD,dns_sigchld_handler); // Processar sinal SIGCHLD
+    // Nota: Já está sendo processado em TExec::proc_sigchld_handler()
     recdescr = descrpipe[0];
 #endif
 }
@@ -866,6 +868,6 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
     // Passa para o próximo objeto
         TDNSSocket * obj2 = obj;
         obj = obj->Depois;
-        delete obj2;            
+        delete obj2;
     }
 }

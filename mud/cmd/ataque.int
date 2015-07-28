@@ -316,6 +316,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       efeitohab(arg0, arg1, arg2, arg3)
     fimse
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
+    mensgolpe(arg0, arg1)
     cmd_alvofim(arg0, arg1, este)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg0)
@@ -323,7 +324,6 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg1)
     efim
-    mensgolpe(arg0, arg1)
     arg1.pvida ? arg1.acertapos(1) : arg1.morreu(arg0)
     arg0 != arg1 && arg0.acertapos(1)
     ret
@@ -446,6 +446,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     !result && (arg0.contr.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
+    mensgolpe(arg0, arg1)
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg0)
@@ -453,7 +454,6 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(arg0 != arg1 ? arg1.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg1)
     efim
-    mensgolpe(arg0, arg1)
     arg1.pvida ? arg1.acertapos(1) : arg1.morreu(arg0)
   fimse
 # Ataca os alvos secundários
@@ -467,6 +467,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     continuar result == 3
     !result && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
+    mensgolpe2(arg0, r)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, arg0)
@@ -474,7 +475,6 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(r.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, r)
     efim
-    mensgolpe2(arg0, r)
     r.pvida ? r.acertapos(1) : r.morreu(arg0)
   efim
   arg0.acertapos(1)

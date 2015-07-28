@@ -63,13 +63,14 @@ func escr
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   indiceitem item
-  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    continuar item.obj.var.u_[arg0.nome]
-    epara r = item.obj.dono, r.dono, r = r.dono
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    r = item.obj.perso
+    continuar !r || r.var.u_[arg0.nome]
+    epara r = r.dono, r.dono, r = r.dono
       r.s_gritar(arg0) && (r = nulo)
     efim
     r.s_gritar(arg0) && (r = nulo)
-    r.s_area == area && item.obj.msg($mens.proc(config:gritarmsg, item.obj))
+    r.s_area == area && item.obj.perso.msg($mens.proc(config:gritarmsg, item.obj.perso))
   efim
 # Executa eventos
   listaobj l

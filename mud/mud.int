@@ -5,6 +5,7 @@ incluir = misc/
 incluir = obj/
 incluir = config/
 incluir = areas/
+
 # Quantas instruções uma função chamada pelo programa pode
 # executar antes do controle retornar ao programa
 exec = 10000
@@ -18,4 +19,13 @@ log = 0
 # Erros em blocos de instruções:
 # 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
 err = 1
+
+# Se o programa roda sem restrições (0=não, 1=sim)
+# Em caso de dúvida, deixar 0. Nesse caso, as restrições são:
+# Não pode acessar arquivos fora do diretório e subdiretórios do programa
+# Não pode acessar executáveis e .bat .com .exe .pif .scr
+# Arquivos .int só podem ser alterados via PROG
+# Arquivos .log só podem ser acessados via ARQLOG
+# ArqExec só podem executar programas conforme as opções ArqExec
+completo = 0
 

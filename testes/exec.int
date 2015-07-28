@@ -1,0 +1,107 @@
+# Quantas instruções uma função chamada pelo programa pode
+# executar antes do controle retornar ao programa
+exec = 5000
+
+# Se deve abrir uma janela de texto - variável telatxt
+telatxt = 1
+
+# Aonde apresentar mensagens de erro no programa
+log = 0
+
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
+# Se o programa roda sem restrições (0=não, 1=sim)
+# Em caso de dúvida, deixar 0. Nesse caso, as restrições são:
+# Não pode acessar arquivos fora do diretório e subdiretórios do programa
+# Não pode acessar executáveis e .bat .com .exe .pif .scr
+# Arquivos .int só podem ser alterados via PROG
+# Arquivos .log só podem ser acessados via ARQLOG
+# ArqExec só podem executar programas conforme as opções ArqExec
+completo = 1
+
+# Comandos que podem ser executados por ArqExec (se completo=0)
+# Um asterisco no final do comando significa qualquer texto
+# Exemplo: arqexec=wget *     Significa wget seguido de qualquer texto
+arqexec = pwd
+arqexec = ls *
+
+classe x
+telatxt tela
+arqexec exec
+textotxt hist_texto
+textopos hist_pos
+
+func iniclasse
+  criar(arg0)
+
+func ini
+  tela.msg("Digite o nome do programa que será executado\n")
+  tela.msg("Quando estiver rodando, o que você digitar vai para o programa\n")
+  tela.msg("Tecla F1 encerra o programa sendo executado\n")
+  tela.msg("Tecla F4 sai desse programa\n")
+  tela.msg("Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado\n")
+
+func tela_msg
+  hist_texto.addfim(arg0)
+  hist_texto.remove(hist_texto.linhas - 50)
+  hist_pos = hist_texto.fim
+  se exec.aberto
+    exec.msg(arg0 + "\n")
+    ret
+  fimse
+  refvar err = exec.abrir(arg0)
+  se err != ""
+    tela.msg("\d4Erro ao executar " + arg0 + ":\b\n" + err + "\n")
+    ret
+  fimse
+  tela.msg("\d4Executando " + arg0 + "\b\n")
+  tela.linha = 1
+
+func tela_tecla
+  casovar arg0
+  casose "UP"
+  casose "DOWN"
+  casose "LEFT"
+  casose "RIGHT"
+  casose "C_LEFT"
+  casose "C_RIGHT"
+  casose "HOME"
+  casose "END"
+    ret
+  casose "PGUP"
+    hist_pos.antes
+    tela.texto = ""
+    tela.texto = hist_pos.texto
+    sair
+  casose "PGDN"
+    hist_pos.depois
+    tela.texto = ""
+    tela.texto = hist_pos.texto
+    sair
+  casose "F1"
+    tela.linha = 0
+    tela.posx && tela.msg("\n")
+    se !exec.aberto
+      tela.msg("Nenhum programa está sendo executado\n")
+    senao
+      tela.msg("Encerrando programa\n")
+      exec.fechar
+    fimse
+    sair
+  casose "F4"
+    exec.fechar
+    terminar
+  casofim
+  tela.linha = 0
+
+func exec_msg
+  tela.msg(arg1 ? arg0 + "\n" : arg0)
+
+func exec_env
+# tela.msg("\d4.\b")
+
+func exec_fechou
+  tela.posx && tela.msg("\n")
+  tela.msg("\d4O Programa terminou, cod=" + arg0 + "\b\n")

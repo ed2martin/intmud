@@ -22,8 +22,8 @@ func escr1 # Consultar a lista de itens
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     p = l.objini # Personagem que está sendo verificado
-    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || \
-$a_[p.lojachave])
+    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
+)
     lin = negociar_msg(arg0, p)
     continuar lin == "\b"
     ret lin, arg0.msg(lin)

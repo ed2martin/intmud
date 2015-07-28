@@ -15,14 +15,13 @@
 #include "arqmapa.h"
 #include "console.h"
 #include "var-arqprog.h"
+#include "var-exec.h"
 #include "instr.h"
 #include "misc.h"
 
 //#define DEBUG
 
 //------------------------------------------------------------------------------
-extern int err_tipo;
-
 TArqMapa * TArqMapa::Inicio=0;
 TArqMapa * TArqMapa::Fim=0;
 unsigned short TArqMapa::ParamLinha = 4000;
@@ -148,6 +147,7 @@ void TArqMapa::SalvarArq(bool tudo)
                              "o programa começam com:\n");
                 for (; obj; obj=obj->IncluirProximo())
                     fprintf(arq, "incluir = %s\n", obj->IncluirNome());
+                fprintf(arq, "\n");
             }
             fprintf(arq,
                 "# Quantas instruções uma função chamada pelo programa pode\n"
@@ -160,8 +160,29 @@ void TArqMapa::SalvarArq(bool tudo)
                 "# Erros em blocos de instruções:\n"
                 "# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo\n"
                 "err = %d\n\n",
-                Instr::VarExecIni, Console!=0, err_tipo,
+                Instr::VarExecIni, Console!=0, opcao_log,
                 Instr::ChecaLinha::ChecaErro);
+            fprintf(arq,
+                "# Se o programa roda sem restrições (0=não, 1=sim)\n"
+                "# Em caso de dúvida, deixar 0. Nesse caso, as restrições são:\n"
+                "# Não pode acessar arquivos fora do diretório e subdiretórios do programa\n"
+                "# Não pode acessar executáveis e .bat .com .exe .pif .scr\n"
+                "# Arquivos .int só podem ser alterados via PROG\n"
+                "# Arquivos .log só podem ser acessados via ARQLOG\n"
+                "# ArqExec só podem executar programas conforme as opções ArqExec\n"
+                "completo = %d\n\n", opcao_completo);
+            TArqExec * exec = TArqExec::ExecIni();
+            if (exec)
+            {
+                fprintf(arq, "# Comandos que podem ser executados por ArqExec "
+                    "(se completo=0)\n"
+                    "# Um asterisco no final do comando significa qualquer texto\n"
+                    "# Exemplo: arqexec=wget *     "
+                    "Significa wget seguido de qualquer texto\n");
+                for (; exec; exec=exec->ExecProximo())
+                    fprintf(arq, "arqexec = %s\n", exec->ExecNome());
+                fprintf(arq, "\n");
+            }
         }
         for (TClasse * cl = arqmapa->ClInicio; cl; cl=cl->ArqDepois)
         {

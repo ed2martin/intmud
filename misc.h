@@ -14,6 +14,8 @@ extern unsigned long TempoIni; ///< Tempo desde que o programa foi executado, 10
 extern char * arqnome;   ///< Nome completo dos arquivos
 extern char * arqinicio; ///< A partir de onde colocar os nomes dos arquivos
                          /** Tem espaço para pelo menos 0x200 caracteres. */
+extern bool opcao_completo;///< Opção completo do arquivo int principal
+extern bool opcao_log;     ///< Opção log do arquivo int principal
 
 /// Prepara tabNOMES[] e tabCOMPLETO[]
 /** Usado para transformação de caracteres.
@@ -94,14 +96,17 @@ int compara(const char * string1, const char * string2, int tam);
 /** Considera nome inválido se não estiver no diretório do programa
  *  @param nome Nome do arquivo
  *  @param ext Como o nome do arquivo deve terminar
- *  @return true se nome válido ou false se inválido */
+ *  @return true se nome válido ou false se inválido
+ *  @note Se opcao_completo for diferente de 0, sempre retorna true */
 bool arqvalido(char * nome, const char * ext);
 
 /// Verifica se nome de arquivo permitido e acerta barra normal/invertida
 /** Considera nome inválido se não estiver no diretório do programa
  *  @param nome Nome do arquivo
- *  @return true se nome válido ou false se inválido */
-bool arqvalido(char * nome);
+ *  @param somenteleitura Se vai apenas ler o arquivo
+ *  @return true se nome válido ou false se inválido
+ *  @note Se opcao_completo for diferente de 0, sempre retorna true */
+bool arqvalido(char * nome, bool somenteleitura);
 
 /// Verifica se nome válido para apelido
 /** @param nome1 Texto em ASCIIZ

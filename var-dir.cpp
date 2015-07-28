@@ -244,7 +244,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         }
         copiastr(mens, v[1].getTxt(), sizeof(mens));
         Instr::ApagarVar(v);
-        if (!arqvalido(mens))
+        if (!arqvalido(mens, true))
             return Instr::CriarVarTexto("Nome de arquivo não permitido");
         if (remove(mens) >= 0) // remove ou unlink
             *mens = 0;
@@ -265,7 +265,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         copiastr(antes, v[1].getTxt(), sizeof(antes));
         copiastr(depois, v[2].getTxt(), sizeof(depois));
         Instr::ApagarVar(v);
-        if (!arqvalido(antes) || !arqvalido(depois))
+        if (!arqvalido(antes, true) || !arqvalido(depois, true))
             return Instr::CriarVarTexto("Nome de arquivo não permitido");
         if (rename(antes, depois) >= 0)
             *antes = 0;

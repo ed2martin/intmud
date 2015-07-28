@@ -455,9 +455,9 @@ bool TVarServ::Func(TVariavel * v, const char * nome)
         char arq_key[0x100];
         copiastr(arq_crt, v[1].getTxt(), sizeof(arq_crt));
         copiastr(arq_key, v[2].getTxt(), sizeof(arq_key));
-        if (!arqvalido(arq_crt))
+        if (!arqvalido(arq_crt, true))
             return "Nome do arquivo CRT não é permitido";
-        if (!arqvalido(arq_key))
+        if (!arqvalido(arq_key, true))
             return "Nome do arquivo KEY não é permitido";
         const char * err = AbreServidorSSL(arq_crt, arq_key);
         Instr::ApagarVar(v);

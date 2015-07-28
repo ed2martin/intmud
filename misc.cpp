@@ -26,6 +26,8 @@
 unsigned long TempoIni;
 char * arqnome = 0;
 char * arqinicio = 0;
+bool opcao_completo = 0;
+bool opcao_log = 0;
 char * tabNOMES1 = 0;
 char * tabNOMES2 = 0;
 char * tabCOMPLETO = 0;
@@ -375,12 +377,15 @@ bool arqvalido(char * nome, const char * ext)
             *p='\\';
     p = nome;
 // Checa se nome permitido
-    if (nome[0]=='\\' || nome[1]==':')
-        return false;
-    for (; *p; p++)
-        if ((p==nome || p[-1]=='\\') &&
-            p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='\\'))
+    if (opcao_completo == 0)
+    {
+        if (nome[0]=='\\' || nome[1]==':')
             return false;
+        for (; *p; p++)
+            if ((p==nome || p[-1]=='\\') &&
+                p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='\\'))
+                return false;
+    }
 #else
 // Acerta nome
     for (; *p; p++)
@@ -388,12 +393,15 @@ bool arqvalido(char * nome, const char * ext)
             *p='/';
     p = nome;
 // Checa se nome permitido
-    if (nome[0]=='/')
-        return false;
-    for (; *p; p++)
-        if ((p==nome || p[-1]=='/') &&
-            p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='/'))
+    if (opcao_completo == 0)
+    {
+        if (nome[0]=='/')
             return false;
+        for (; *p; p++)
+            if ((p==nome || p[-1]=='/') &&
+                p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='/'))
+                return false;
+    }
 #endif
 // Acerta final do nome do arquivo
     if (*ext==0)
@@ -409,10 +417,12 @@ bool arqvalido(char * nome, const char * ext)
 }
 
 //------------------------------------------------------------------------------
-bool arqvalido(char * nome)
+bool arqvalido(char * nome, bool somenteleitura)
 {
     if (!arqvalido(nome, ""))
         return false;
+    if (opcao_completo)
+        return true;
 // Checa extensão
     char ext[3];
     char * p = nome;
@@ -427,11 +437,8 @@ bool arqvalido(char * nome)
         if (memcmp(ext, "com", 3)==0 || memcmp(ext, "exe", 3)==0 ||
             memcmp(ext, "bat", 3)==0 || memcmp(ext, "pif", 3)==0 ||
             memcmp(ext, "scr", 3)==0 || memcmp(ext, "log", 3)==0)
+        if (!somenteleitura && memcmp(ext, "int", 3)==0 )
             return false;
-#ifndef __WIN32__
-        if (memcmp(ext, "int", 3)==0)
-            return true;
-#endif
     }
 // Checa se é executável
 #ifndef __WIN32__

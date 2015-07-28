@@ -5,11 +5,13 @@ IntMUD (Interpretador MUD)
 0. Créditos
 1. Sobre o IntMUD
 2. Opções dos arquivos *.INT
-2.1. Opção MAPAGRANDE
+2.1. Opção INCLUIR
 2.2. Opção EXEC
 2.3. Opção TELATXT
 2.4. Opção LOG
 2.5. Opção ERR
+2.6. Opção COMPLETO
+2.7. Opção ARQEXEC
 3. Classes
 4. Variáveis
 5. Funções
@@ -61,10 +63,11 @@ IntMUD (Interpretador MUD)
 33.3. Funções para obter informações
 33.4. Funções para alterar o programa
 34. ArqProg - busca nos diretórios os arquivos que compõem o programa
-35. Debug - auxiliar a detectar erros no programa
-36. IndiceObj - objetos organizados de acordo com um texto
-37. IndiceItem - obter objeto pelo texto
-38. DataHora - calendário
+35. ArqExec - executar outros programas
+36. Debug - auxiliar a detectar erros no programa
+37. IndiceObj - objetos organizados de acordo com um texto
+38. IndiceItem - obter objeto pelo texto
+39. DataHora - calendário
 
 
 0. CRÉDITOS
@@ -250,6 +253,39 @@ O valor 1 considera erro no código qualquer inconsistência nas instruões
 de controle de fluxo, mas permite omitir a instrução FimSe quando
 esta for a última instrução da função.
 O valor 2 também checa inconsistências, mas não permite omitir FimSe.
+
+
+2.6. OPÇÃO COMPLETO
+
+Sintaxe: COMPLETO = 0
+         COMPLETO = 1
+
+Se essa opção estiver ausente, assume 0.
+
+Quando essa opção for 0, o programa roda com as seguintes restrições:
+Não pode acessar arquivos fora do diretório e subdiretórios do programa
+Não pode acessar executáveis e .bat .com .exe .pif .scr
+Arquivos .int só podem ser alterados via PROG
+Arquivos .log só podem ser acessados via ARQLOG (não podem ser apagados)
+ArqExec só podem executar programas das opções ArqExec
+
+Em caso de dúvida, deixar 0.
+
+
+2.7. OPÇÃO ARQEXEC
+
+Sintaxe: ARQEXEC = <nome do comando>
+
+Esta opção só tem efeito quando a opção COMPLETO for 0.
+Ela define quais arquivos podem ser executados (via ArqExec).
+Se o nome do ocmando terminar com um asterisco, significa qualquer
+comando que começa com o texto especificado.
+
+Exemplo 1 - permitir executar o programa cmd, sem argumentos:
+arqexec = cmd
+
+Exemplo 2 - permitir executar wget seguido de um texto qualquer:
+arqexec = wget *
 
 
 3. CLASSES
@@ -3897,21 +3933,60 @@ Nota: a primeira entrada da busca é sempre o arquivo .int principal.
 Passa para a próxima entrada, ou encerra a busca se não houver.
 
 
-35. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
+ARQEXEC - Executar outros programas
+
+Funções e variáveis:
+
+35.1. abrir(<comando>)
+Executa o programa com o nome especificado.
+Se conseguiu executar, retorna um texto vazio.
+Caso contrário, retorna a mensagem de erro.
+Nota: As opções COMPLETO e ARQEXEC definem quais programas podem ser
+executados.
+
+35.2. fechar
+Fecha o programa sendo executado.
+
+35.3. aberto
+Retorna 1 (verdadeiro) se estiver executando um programa ou 0 (falso) se
+não estiver.
+
+35.4. msg(<texto>)
+Envia uma mensagem para o programa.
+
+Eventos:
+
+35.5. <nomedavariável>_msg
+Recebeu mensagem do programa.
+arg0 = Mensagem recebida
+arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
+arg2 = Índice da variável vetor, se não for vetor arg2=0
+
+35.6. <nomedavariável>_env
+Todas as mensagens foram enviadas ao programa (buffer de saída ficou vazio).
+arg0 = Índice da variável vetor, se não for vetor arg0=0
+
+35.7. <nomedavariável>_fechou
+O programa terminou.
+arg0 = Código de retorno (um número)
+arg1 = Índice da variável vetor, se não for vetor arg1=0
+
+
+36. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
 
 Funções:
 
-35.1. exec
+36.1. exec
 Contador de instruções - opção 'exec' no início do arquivo int.
 A cada instrução executada essa variável é subtraída de 1.
 Quando chega a 0, o controle retorna automaticamente ao IntMUD.
 Pode ser lido e alterado, como uma variável.
 
-35.2. ini
+36.2. ini
 Inicializa exec com o valor definido na opção 'exec' no início
 do arquivo int.
 
-35.3. cmd(<texto>)
+36.3. cmd(<texto>)
       cmd(<objeto>, <texto>)
 Executa as instruções que estão no texto especificado.
 Quando houver mais de uma instrução, deve-se separá-las com '\n'.
@@ -3928,7 +4003,7 @@ d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
 d.cmd("ret \"teste\"") # d.cmd retorna "teste"
 d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna "3"
 
-35.4. passo(<objeto>, <texto>)
+36.4. passo(<objeto>, <texto>)
       passo()
 Antes de executar cada instrução chama a função de <objeto>
 com o nome especificado em <texto>. Se a função não existir, passa
@@ -3937,7 +4012,7 @@ Na função:
 arg0 é oobjeto 'este'
 arg1 é o texto contendo a instrução que será executada executada
 
-35.5. func
+36.5. func
 Retorna o nível de funções: quantas funções foram chamadas até chegar
 na instrução atual. Exemplo:
 classe x
@@ -3947,28 +4022,28 @@ func iniclasse
 func teste
     # Aqui debug.func será 1 porque foi chamado por x:iniclasse
 
-35.6. stempo
-35.7. utempo
+36.6. stempo
+36.7. utempo
 Quanto tempo o programa usou do processador, em milésimos de segundos.
 stempo é o tempo usado pelo sistema e utempo é o tempo usado pelo programa.
 Se não for possível obter essa informação, essas funções retornam -1.
 
-35.8. mem
+36.8. mem
 Quantidade de memória que o programa está usando, em bytes.
 
-35.9. memmax
+36.9. memmax
 Quantidade máxima de memória que o programa chegou a usar, em bytes.
 
-35.10. ver
+36.10. ver
 Retorna um texto que é a versão do IntMUD.
 
-35.11. data
+36.11. data
 Retorna um texto que é a data em que o programa (mais especificamente
 o arquivo var-debug.cpp) foi compilado.
 
 Eventos:
 
-35.12. <nomedavariável>_erro
+36.12. <nomedavariável>_erro
 Ocorreu algum erro ao executar uma função.
 arg0 = Mensagem de erro (uma linha) seguido dos detalhes sobre o erro
 arg1 = Índice da variável vetor, se não for vetor arg1=0
@@ -3990,47 +4065,47 @@ telatxt tt
 tt.msg("Erro:   " + arg0 + "\n")
 
 
-36. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
+37. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
 
 É semelhante a uma variável txt64, porém o texto é associado ao objeto
 que contém essa variável. O processo inverso, obter um objeto a partir
 de um texto, é possível com a variável indiceitem.
 
 
-37. INDICEITEM - OBTER OBJETO PELO TEXTO
+38. INDICEITEM - OBTER OBJETO PELO TEXTO
 
 Permite obter os objetos que contém uma variável indiceobj com um
 determinado texto. Ignora variáveis indiceobj com texto vazio.
 
 Funções:
 
-37.1. ini(<texto>)
+38.1. ini(<texto>)
 Vai para o primeiro objeto com o texto ou parte dele.
 
-37.2. fim(<texto>)
+38.2. fim(<texto>)
 Vai para o último objeto com o texto ou parte dele.
 
-37.3. antes
+38.3. antes
 Passa para o objeto anterior.
 
-37.4. antes(<número de objetos>)
+38.4. antes(<número de objetos>)
 Recua o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-37.5. depois
+38.5. depois
 Passa para o próximo objeto.
 
-37.6. depois(<número de objetos>)
+38.6. depois(<número de objetos>)
 Avança o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-37.7. obj
+38.7. obj
 Objeto.
 
-37.8. txt
+38.8. txt
 Texto associado ao objeto.
 
-37.9. obj(<texto>)
+38.9. obj(<texto>)
 Objeto que contém o texto exato.
 Essa função funciona independente das demais.
 
@@ -4038,57 +4113,57 @@ Nota: Pode-se passar mais de um texto para as funções que possuem texto.
 Nesse caso, a função procurará por todos os textos.
 
 
-38. DATAHORA - CALENDÁRIO
+39. DATAHORA - CALENDÁRIO
 
 Operações envolvendo data e/ou hora, como obter a data atual e calcular
 quantidade de dias entre duas datas.
 
 Funções e variáveis:
 
-38.1. novadata(<ano>, <mês>, <dia>)
+39.1. novadata(<ano>, <mês>, <dia>)
 Muda ano, mês e dia.
 
-38.2. novahora(<hora>, <minuto>, <segundo>)
+39.2. novahora(<hora>, <minuto>, <segundo>)
 Muda hora, minuto e segundo.
 
-38.3. antes
+39.3. antes
 Muda data para o dia anterior.
 
-38.4. depois
+39.4. depois
 Muda data para o próximo dia.
 
-38.5. agora
+39.5. agora
 Muda para data e hora atuais.
 
-38.6. diasem
+39.6. diasem
 Retorna o dia da semana, de 0 a 6 (0=domingo).
 
-38.7. bissexto
+39.7. bissexto
 Retorna 1 se o ano for bissexto ou 0 se não for.
 
-38.8. ano
+39.8. ano
 Ano, de 1 a 9999.
 
-38.9. mes
+39.9. mes
 Mês, de 1 a 12.
 
-38.10. dia
+39.10. dia
 Dia, de 1 a 31. Conforme o mês pode não chegar a 31.
 
-38.11. hora
+39.11. hora
 Hora, de 0 a 23.
 
-38.12. min
+39.12. min
 Minuto, de 0 a 59.
 
-38.13. seg
+39.13. seg
 Segundo, de 0 a 59.
 
-38.14. numdias
+39.14. numdias
 Número de dias desde 1/1/1.
 
-38.15. numseg
+39.15. numseg
 Número de segundos desde o início do dia.
 
-38.16. numtotal
+39.16. numtotal
 Número de segundos desde 1/1/1.
