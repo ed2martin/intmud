@@ -1,0 +1,96 @@
+classe miscsom
+# Para controlar endereços banidos
+textovar t1 # Textos do comando som
+textovar t2 # Textos que geram os sons
+const iniclasse = !$[arg0] && criar(arg0)
+
+func ini # Lê os sons de arquivo
+  t1.limpar
+  t2.limpar
+  arqtxt arq
+  epara arq.abrir("sav2/som.txt", 0), !arq.eof, inserir(arq.ler) + d.ini
+  efim
+
+func salvar # Salva os sons em arquivo
+# Retorna 1 se conseguiu salvar ou 0 se não conseguiu
+  arqtxt arq
+  ret arq.abrir("sav2/som.txt", 2) == 0, 0
+  txt100 lin
+  epara lin = t1.ini, lin, lin = t1.depois(lin)
+    arq.msg(txtsublin(t1.[lin], 0, 1) + "\n")
+  efim
+  ret 1
+
+func inserir # Insere um som em arquivo
+# arg0 = texto que vem após a palavra SOM, na sintaxe do comando SOM
+# Retorna mensagem de erro ou "" se foi inserido com sucesso
+  casovar txtmin(txt1(arg0))
+  casose "e"
+  casose "m"
+  casose "i"
+    sair intsub(arg0) == 5
+    ret "Opção " + txtmai(txt1(arg0)) + " requer 5 argumentos"
+  casose
+    ret "Opção inexistente: " + arg0
+  casofim
+# Checa o nome do som
+  int16 pos
+  refvar nome = txtremove(txtmin(txtsub(arg0, 1, 1)), "EDC7")
+  epara pos = inttotal(nome) - 1, pos >= 0, pos -= 1
+    refvar ch = txt(nome, pos, 1)
+    continuar ch >= "a" && ch <= "z" || ch >= "0" && ch <= "9" || ch == "_" || ch == "@"
+    ret "Caracter não permitido no nome do som: " + ch
+  efim
+# Checa o nome do arquivo
+  refvar arq = txttroca(txtsub(arg0, 2, 1), "\\", "/")
+  epara pos = inttotal(arq) - 1, pos >= 0, pos -= 1
+    refvar ch = txt(arq, pos, 1)
+    continuar ch >= "a" && ch <= "z" || ch >= "A" && ch <= "Z" || ch >= "0" && ch <= "9"
+    continuar ch == "_" || ch == "/" || ch == "."
+    ret "Caracter não permitido no nome do arquivo: " + ch
+  efim
+  casovar txt(arq, 0, 1)
+  casose "/"
+    ret "O nome do arquivo não pode começar com /"
+  casose "."
+    ret "O nome do arquivo não pode começar com /"
+  casofim
+# Checa o volume
+  pos = txtsub(arg0, 3, 1)
+  se txt(pos) != txtsub(arg0, 3, 1) || pos < 0 || pos > 100
+    ret "O volume deve ser um número de 0 a 100"
+  fimse
+# Checa a quantidade de repetições
+  pos = txtsub(arg0, 4, 1)
+  se txt(pos) != txtsub(arg0, 4, 1) || pos < -1 || pos > 10 || pos == 0
+    pos = -5
+  senao pos == -1 && txt1(arg0) == "e"
+    pos = -5
+  fimse
+  se pos == -5
+    se txt1(arg0) == "e"
+      ret "Número de repetições deve ser um número de 1 a 10"
+    senao
+      ret "Número de repetições deve ser um número de 1 a 10 ou -1"
+    fimse
+  fimse
+# Adiciona som
+  txt512 lin
+  se arq != "off"
+    se txt1(arg0) == "e"
+      lin = "!!SOUND(" + arq
+    senao
+      lin = "!!MUSIC(off)\n!!MUSIC(" + arq
+    fimse
+    pos = txtsub(arg0, 3, 1) # Volume
+    pos != 100 && (lin += " V=" + pos)
+    pos = txtsub(arg0, 4, 1) # Repetições
+    pos != 1 && (lin += " L=" + pos)
+  senao txt1(arg0) == "e"
+    lin = "!!SOUND(off"
+  senao
+    lin = "!!MUSIC(off"
+  fimse
+  t1._[nome] = txtmin(txt1(arg0)) + " " + nome + " " + arq + " " + txtsub(arg0, 3)
+  t2._[nome] = lin + ")"
+  ret ""

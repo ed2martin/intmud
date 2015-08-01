@@ -1110,6 +1110,11 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 coderro = errno;
                 if (coderro==EISCONN)
                     coderro=0;
+                if (coderro==EALREADY)
+                {
+                    obj = obj->sDepois;
+                    continue;
+                }
             }
         // Se erro: obtém o código de erro
             if (coderro)

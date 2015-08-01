@@ -1,5 +1,8 @@
 classe adm_ban
 herda comando_adm, comando_comum
+const texto = $miscban1.texto
+const salvar = $miscban1.salvar
+const comando = "ban"
 const txtajuda = "\c3Banir jogadores por IP\b\n\
 \c2BAN\b\n\
   Mostra a lista de endereços banidos.\n\
@@ -31,14 +34,14 @@ func escr
     datahora dh
     dh.agora
     refvar tini = dh.numtotal
-    epara pos = $miscban.texto.ini, pos, pos.depois
+    epara pos = texto.ini, pos, pos.depois
       refvar tempo = intpos(txt2(pos.texto)) - tini
       se tempo < 0
         txtmais.addfim(txt1(pos.texto))
       senao tempo < 60
-        txtmais.addfim(txt1(pos.texto) + " " + tempo + " seg.")
+        txtmais.addfim(txt1(pos.texto) + " " + txtnum(tempo, "0") + " seg.")
       senao
-        txtmais.addfim(txt1(pos.texto) + " " + tempo / 60 + " min.")
+        txtmais.addfim(txt1(pos.texto) + " " + txtnum(tempo / 60, "1") + " min.")
       fimse
     efim
     se !txtmais.linhas
@@ -60,38 +63,48 @@ func escr
       apagar(obj.perso)
       apagar(obj)
       arg0.msg("Jogador expulso: " + obj.nome)
-      cmdlog(arg0, "ban", "expulsou " + obj.nome + " " + item.obj.info)
+      cmdlog(arg0, comando, "expulsou " + obj.nome + " " + item.obj.info)
       obj.msg("Você foi expulso")
       ret
     fimse
   fimse
 # Um argumento: desbane
   se !txt2(arg1)
-    pos = $miscban.texto.ini
+    pos = texto.ini
     se pos.txtproc("\n" + arg1 + " ") < 0
       arg0.msg("Endereço não está banido: " + arg1)
     senao
       pos.remove
-      $miscban.salvar
+      salvar
       arg0.msg("Endereço foi desbanido: " + arg1)
-      cmdlog(arg0, "ban", "desbaniu IP " + arg1)
+      cmdlog(arg0, comando, "desbaniu IP " + arg1)
     fimse
     ret
 # Mais de um argumento: bane
   senao
     refvar tempo = intpos(txt2(arg1))
-    pos = $miscban.texto.ini
+    pos = texto.ini
     pos.txtproc("\n" + txt1(arg1) + " ") >= 0 && pos.remove
     se tempo > 0
       datahora hora
       hora.agora
-      $miscban.texto.addini(txt1(arg1) + " " + (tempo * 60 + hora.numtotal))
+      texto.addini(txt1(arg1) + " " + (tempo * 60 + hora.numtotal))
       arg0.msg("Endereço foi banido: " + txt1(arg1) + " por " + tempo + " min")
-      cmdlog(arg0, "ban", "baniu IP " + txt1(arg1) + " por " + tempo + " min")
+      cmdlog(arg0, comando, "baniu IP " + txt1(arg1) + " por " + tempo + " min")
     senao
-      $miscban.texto.addini(txt1(arg1) + " 0")
+      texto.addini(txt1(arg1) + " 0")
       arg0.msg("Endereço foi banido: " + txt1(arg1))
-      cmdlog(arg0, "ban", "baniu IP " + txt1(arg1))
+      cmdlog(arg0, comando, "baniu IP " + txt1(arg1))
     fimse
-    $miscban.salvar
+    salvar
   fimse
+
+
+classe adm_ban2
+herda adm_ban
+const texto = $miscban2.texto
+const salvar = $miscban2.salvar
+const comando = "ban2"
+const txtajuda = "\c3Banir jogadores por IP\b\n\
+Funciona exatamente como o comando Ban, porém não permite que os\n\
+usuários banidos entrem no chat, mesmo com personagens salvos."

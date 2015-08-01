@@ -174,8 +174,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 360, nulo
-  p.criar("config", "const versao = 360 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 362, nulo
+  p.criar("config", "const versao = 362 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -460,10 +460,11 @@ casa está atrasada.\"")
     p.apagar("config", "sala")
     p.apagar("config", "senha")
   fimse
-# Renascer
-  se versao < 360
+# Renascer e banido
+  se versao < 362
     criafunc("config", "const exp_renascer = 100")
     criafunc("config", "const nivel_renascer = 0")
+    criafunc("config", "const apresban2 = \"Seu endereço IP está bloqueado\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

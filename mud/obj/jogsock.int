@@ -42,9 +42,14 @@ textotxt transf # Área de transferência do editor
 
 func ini
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
-  refvar t = info
-  refvar ban = (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
-  ban ? config:apresban && msg(config:apresban) : config:apres && msg(config:apres)
+  refvar t = txtsub(info, 0, 2)
+  se $miscban2.banido(txt2(t))
+    config:apresban2 && msg(config:apresban2)
+    apagar(este)
+    ret
+  fimse
+  refvar apres = $miscban1.banido(txt2(t)) ? config:apresban : config:apres
+  apres && msg(apres)
   reinicia
 
 func fim
@@ -368,7 +373,7 @@ func passo
     arg0.msg("Nome já está sendo usado; digite outro")
   senao # Criar personagem
     refvar t = arg0.info
-    se (txt1(t) == "t" || txt1(t) == "p") && $miscban.banido(txt2(t))
+    se (txt1(t) == "t" || txt1(t) == "p") && $miscban1.banido(txt2(t))
       arg0.msg(config:apresban)
       apagar(arg0)
     senao $admnomesnao.nomes.n_[texto] # Checa se nome permitido

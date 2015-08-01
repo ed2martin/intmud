@@ -3186,11 +3186,11 @@ Retorna quantos dias faltam para o arquivo expirar.
 Retorna 0 se expirou, -1 se nunca expira.
 
 26.5. ler(<nome do arquivo>, <listaobj>, [núm. de objetos lidos])
-Lê Arquivo.
-O primeiro objeto do arquivo vai para o primeiro da listaobj.
-O segundo do arquivo vai para o segundo da listaobj, e assim por
-diante. Se a listaobj tiver menos objetos que o arquivo, serão
-criados objetos na listaobj.
+Cria objetos na listaobj a partir do conteúdo do arquivo.
+O primeiro objeto da lista é o primeiro do arquivo, o segundo da
+lista é o segundo do arquivo, e assim por diante.
+Se a listaobj já conter objetos, estes serão alterados de acordo com as
+variáveis presentes no arquivo.
 Número de objetos lidos é a quantidade máxima de objetos que serão lidos do
 arquivo. Se for omitido, assume 4000.
 Retorna a quantidade de objetos lidos.

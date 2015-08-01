@@ -9,6 +9,7 @@ txt100 conexao2 # Texto comando COM: "bot " + endereço + " " + porta + " " + sal
 txt100 conexao3 # sala + " " + senha
 txt100 indbs # "bs " + endereço + " " (é o índice para salas)
 txt100 indbu # "bu " + endereço + " " (é o índice para usuários)
+int8 msgini # Para mostrar as primeiras mensagens do chat ao conectar
 
 func ini
 # arg0 contém 4 textos separados por espaço: endereço, porta, sala, senha
@@ -40,7 +41,7 @@ func ini_conec # Inicia conexão
     apagar(este), conexao2 = ""
     msg("Endereço inválido")
   senao
-    msg("Conectando")
+    msg("Conectando em " + arg0)
   fimse
 
 func fim
@@ -71,11 +72,12 @@ func tempo_exec
 
 func conec_err # Não conseguiu conectar
   apagar(este), conexao2 = ""
-  msg("Erro ao conectar")
+  msg("Erro ao conectar: " + arg0)
 
 func conec_con # Conectou
   conec.proto = 2
   tempo = 3600
+  msgini = 4
   msg("Conectado")
 
 func conec_fechou
@@ -97,6 +99,7 @@ func conec_msg # Recebeu mensagem
   fimse
   casovar txtmai(txt(arg0, 0, 2))
   casose "S+" # Nova sala
+    msgini = 0
     salas.addfim(criar("jogobot_sala", indbs + txt(arg0, 2), este))
     sair
   casose "S-" # Sala fechou
@@ -121,8 +124,10 @@ func conec_msg # Recebeu mensagem
     obj.novonome(indbu + txtsub(arg0, 2, 1))
     sair
   casose
-    telatxt tela
-    tela.msg("Bot: " + arg0 + "\n")
+    se msgini
+      msgini -= 1
+      msg("msg " + arg0)
+    fimse
   casose ""
   casofim
 
