@@ -370,12 +370,12 @@ func t_msgtmp_exec # Telnet: apaga mensagens antigas da lista
   t_msgtxt.linhas != 0 && (t_msgtmp = 10)
 
 func t_sock_msg
-  t_msg[t_passo](arg0)
+  arg2 == 1 ? t_msg[t_passo](arg0) : apagar(este)
 
 func t_msg0 # Esperando definição do protocolo
   t_tempo = 10
-  se txt1(arg0) == "#bot"
-    bot:novobot(t_sock, txtsub(arg0, 1, 1), txtsub(arg0, 2, 1))
+  se txt1(arg0) == "#bot" || txt1(arg0) == "#bot2"
+    bot:novobot(t_sock, arg0)
     t_sock = nulo
     apagar(este)
   senao arg0 == ""
@@ -1159,27 +1159,29 @@ classe bot
 socket b_sock
 textotxt msgsai # Mensagens pendentes de saída do bot (salas e usuários)
 indiceobj botnome
+int1 infoip
 const nome = txt2(botnome)
 
 func novobot # Cria novo bot
 # arg0 = socket
-# arg1 = nome do bot
-# arg2 = senha
+# arg1 = texto recebido: "#bot " ou "#bot2 " + nome do bot + espaço + senha
   se arg0.ip != "127.0.0.1"
     arg0.msg("Só é permitido bots a partir do endereço 127.0.0.1\n")
   senao
     $bot.fim # Para avisar que bot foi desativado
     apagar($bot) # Desativa se houver algum bot ativo
-    criar("bot", arg0, $sala.nome)
+    criar("bot", arg0, $sala.nome, txt1(arg1) == "#bot2")
   fimse
 
 func ini # Bot foi criado
 # arg0 = variável socket
 # arg1 = nome do bot
+# arg2 = 0 se não informa o IP ou 1 se informa
   indiceitem item
   ref r
   b_sock = arg0 # Acerta o socket
   b_sock.aflooder = 0 # Sem anti-flooder
+  infoip = arg2
   botnome = "bn " + arg1 # Acerta o nome do bot
   se (r = item.obj("sn " + arg1)) != nulo # Checa se tem uma sala com esse nome
     r.id_bot = "bs " + arg1 # Ativar bot na sala
@@ -1235,7 +1237,7 @@ func b_sock_env # Envia mensagens pendentes
   fimse
 # Usuários entrando no bot
   enquanto (r = item.obj("bu " + nome)) != nulo
-    se !b_sock.msg("U+" + txt2(r.apelsala) + "\n")
+    se !b_sock.msg("U+" + txt2(r.apelsala) + (infoip ? " " + txt2(r.ender_ip)) + "\n")
       ret
     fimse
     r.id_bot = "b0 " + nome

@@ -97,9 +97,7 @@ void TObjSocket::Endereco(int num, char * mens, int total)
 }
 
 //------------------------------------------------------------------------------
-/** @param mensagem Endereço dos bytes a enviar
- *  @return true se conseguiu enviar, false se não conseguiu */
-bool TObjSocket::Enviar(const char * mensagem)
+bool TObjSocket::Enviar(const char * mensagem, int codigo)
 {
     int coluna = ColunaEnvia; // Coluna atual
     int agora = CorEnvia;
@@ -235,7 +233,7 @@ bool TObjSocket::Enviar(const char * mensagem)
 #endif
 
 // Tenta enviar mensagem
-    if (EnvMens(mens) == false)
+    if (EnvMens(mens, codigo) == false)
         return false;
 
 // Conseguiu - acerta variáveis
@@ -287,7 +285,7 @@ void TObjSocket::FuncFechou(const char * txt)
 }
 
 //------------------------------------------------------------------------------
-bool TObjSocket::FuncEvento(const char * evento, const char * texto, int valor)
+bool TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int v2)
 {
     //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
     sockObj = this;
@@ -314,8 +312,10 @@ bool TObjSocket::FuncEvento(const char * evento, const char * texto, int valor)
         {
             if (texto)
                 Instr::ExecArg(texto);
-            if (valor>=0)
-                Instr::ExecArg(valor);
+            if (v1>=0)
+                Instr::ExecArg(v1);
+            if (v2>=0)
+                Instr::ExecArg(v2);
             Instr::ExecArg(vobj->indice);
             Instr::ExecX();
             Instr::ExecFim();
@@ -408,12 +408,9 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
         if (Socket==0)
             return false;
         bool enviou = true;
-        for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
-            if (Socket->Enviar(obj->getTxt())==false)
-            {
-                enviou = false;
-                break;
-            }
+        int codigo = (Instr::VarAtual > v+1 ? v[2].getInt() : 1);
+        if (Instr::VarAtual >= v+1)
+            enviou = Socket->Enviar(v[1].getTxt(), codigo);
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(enviou);
     }

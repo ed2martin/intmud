@@ -11,10 +11,10 @@ func salvar # Salva o arquivo com os endereços banidos
 
 func banido # Retorna 1 se um endereço IP está banido o 0 se não está
 # arg0 = endereço a verificar
+  ret txt1(arg0) == "local", 0
   textopos pos
-  txt100 lin
   int16 var
-  lin = "\n" + arg0
+  refvar lin = "\n" + txt1(arg0)
   pos = texto.ini
   ret pos.txtproc(lin + " ") >= 0, 1
   ret pos.txtproc("\n. ") >= 0, 1
@@ -33,29 +33,31 @@ func tempo_exec # Limpa a lista de endereços e acerta a variável tempo
   refvar num = hora.numtotal # Tempo atual, em segundos
   refvar linhas = int(texto.linhas) # Quantidade de linhas antes da mudança
   exec(num, sock)
-  d.ini
-  linhas != texto.linhas && salvar # Se a quantidade de linhas mudou, salva
 
 func exec # Chamado internamente por tempo_exec
 # arg0 = quantos segundos se passaram desde 1/1/1
 # arg1 = variável socket
+  int8 mudou
   tempo = 1000000
   textopos pos
   real t2
   pos = texto.ini
   enquanto pos
-    se !arg1.ipvalido(txt1(pos.texto)) && !arg1.ipvalido(txt1(pos.texto) + "0")
+    refvar t = pos.texto
+    se t == ""
       pos.remove
-    senao txt2(pos.texto) == "0"
+    senao txt1(t) != "." && !arg1.ipvalido(txt1(t)) && !arg1.ipvalido(txt1(t) + "0")
+      pos.remove, mudou = 1
+    senao txt2(t) == "0"
       pos.depois
-    senao (t2 = intpos(txt2(pos.texto)) - arg0) <= 0
-      pos.remove
+    senao (t2 = intpos(txt2(t)) - arg0) <= 0
+      pos.remove, mudou = 1
     senao
       pos.depois
       tempo > t2 * 10 && (tempo = t2 * 10)
     fimse
   efim
-
+  mudou && salvar
 
 classe miscban2
 herda miscban1

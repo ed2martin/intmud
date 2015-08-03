@@ -53,9 +53,10 @@ public:
     void CriaSSL();
             ///< Cria conexão SSL (variável sockssl) a partir do socket
     bool Conectado();   ///< Retorna verdadeiro se estiver conectado
-    bool EnvMens(const char * mensagem);
+    bool EnvMens(const char * mensagem, int codigo);
             ///< Envia mensagem conforme protocolo
             /**< @param mensagem Endereço dos bytes a enviar
+             *   @param codigo Tipo de mensagem; usado somente no Papovox
              *   @return true se conseguiu enviar, false se não conseguiu */
     int  Variavel(char num, int valor);
     void Endereco(int num, char * mens, int total);
@@ -70,7 +71,7 @@ private:
             /**< @param completo Se recebeu a mensagem completa
              *                  (arg1 do evento _msg)
              *   @return true se não apagou o objeto, false se apagou */
-    bool EnvMens(const char * mensagem, int tamanho);
+    bool EnvMensBytes(const char * mensagem, int tamanho);
             ///< Envia mensagem pura
             /**< @param mensagem Endereço dos bytes a enviar
              *   @param tamanho Tamanho da mensagem

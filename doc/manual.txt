@@ -3491,8 +3491,10 @@ Mesmo que a função abrir, acima, porém usando conexão segura (SSL).
 31.10. fechar
 Encerra a conexão; não gera o evento fechou.
 
-31.11. msg(<mensagem>)
+31.11. msg(<mensagem>, [tipo de mensagem])
 Envia mensagem para o socket.
+O tipo de mensagem é usado somente no Papovox.
+Se for omitido, assume 1, que significa mensagem de texto.
 Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
 Nota: Se o protocolo for Papovox, devido às limitações do Papovox,
 é acrescentado "\n" no final da mensagem se já não houver um "\n".
@@ -3538,36 +3540,38 @@ Eventos:
 
 31.19. <nomedavariável>_msg
 Recebeu mensagem.
-arg0 = Mensagem recebida
-arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
-arg2 = Índice da variável vetor, se não for vetor arg2=0
+arg0 = Mensagem recebida.
+arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n).
+arg2 = Um número de 0 a 255 que indica o tipo de mensagem.
+       Usado somente no Papovox. O valor 1 significa mensagem de texto.
+arg3 = Índice da variável vetor, se não for vetor arg3=0.
 
 31.20. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão
 ficou vazio).
-arg0 = índice da variável vetor, se não for vetor arg0=0
+arg0 = índice da variável vetor, se não for vetor arg0=0.
 
 31.21. <nomedavariável>_fechou
 O socket foi fechado remotamente.
-arg0 = Motivo (texto)
-arg1 = Índice da variável vetor, se não for vetor arg1=0
+arg0 = Motivo (um texto).
+arg1 = Índice da variável vetor, se não for vetor arg1=0.
 Se essa função não existir, o objeto que contém o socket é apagado.
 
 31.22. <nomedavariável>_con
-Conseguiu conectar
-arg0 = Índice da variável vetor, se não for vetor arg0=0
+Conseguiu conectar.
+arg0 = Índice da variável vetor, se não for vetor arg0=0.
 
 31.23. <nomedavariável>_err
-Não conseguiu conectar
-arg0 = Mensagem de erro
-arg1 = Índice da variável vetor, se não for vetor arg1=0
+Não conseguiu conectar.
+arg0 = Mensagem de erro.
+arg1 = Índice da variável vetor, se não for vetor arg1=0.
 
 31.24. <nomedavariável>_eventoip
 Resolveu um endereço fornecido pela função eventoip.
-arg0 = texto recebido pela função eventoip
-arg1 = Nome da máquina, ou um texto vazio se não encontrou
-arg2 = Endereço IP da máquina, ou um texto vazio se não encontrou
-arg3 = Índice da variável vetor, se não for vetor arg3=0
+arg0 = texto recebido pela função eventoip.
+arg1 = Nome da máquina, ou um texto vazio se não encontrou.
+arg2 = Endereço IP da máquina, ou um texto vazio se não encontrou.
+arg3 = Índice da variável vetor, se não for vetor arg3=0.
 
 
 32. SERV - RECEBER CONEXÕES VIA TCP/IP

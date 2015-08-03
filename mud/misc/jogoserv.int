@@ -141,7 +141,9 @@ func j_conec_fechou # Conexão fechou
 func j_conec_msg # Recebeu mensagem do usuário
 # arg0=mensagem
   j_tempo = 36000 # Fecha conexão em uma hora
-  se j_passo == 2 # Dentro do jogo
+  se arg2 != 1 # Somente mensagens de texto
+    apagar(este)
+  senao j_passo == 2 # Dentro do jogo
     recebe(txtremove(arg0, "ED"))
   senao j_passo == 1 # Conectando
     j_passo = 2

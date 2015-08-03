@@ -22,24 +22,29 @@ class TObjSocket /// Conexão de Socket
 public:
     TObjSocket();               ///< Construtor
     virtual ~TObjSocket();      ///< Destrutor
-    bool Enviar(const char * mensagem);///< Envia mensagem conforme protocolo
+    bool Enviar(const char * mensagem, int codigo);
+        ///< Envia mensagem conforme protocolo
+        /**< @param mensagem Endereço dos bytes a enviar
+         *   @param codigo Tipo de mensagem; usado somente no Papovox
+         *   @return true se conseguiu enviar, false se não conseguiu */
 
 protected:
-    virtual bool EnvMens(const char * mensagem)=0; ///< Envia mensagem
-                    /**< A mensagem segue o formato:
-                     *  - Byte =0 -> fim da mensagem
-                     *  - Byte =1 -> próximos dois bytes = cor
-                     *     - Byte 0 Bits 0-3 = cor de fundo
-                     *     - Byte 0 Bits 4-6 = cor das letras
-                     *     - Byte 0 Bit 7 =1 se negrito (cor das letras mais forte)
-                     *     - Byte 1 Bit 0 =1 se sublinhado
-                     *     .
-                     *  - Byte =2 -> echo off
-                     *  - Byte =3 -> echo on
-                     *  - Byte =4 -> go ahead
-                     *  - Byte =5 -> beep
-                     *  - Byte ='\n' -> passar para próxima linha
-                     */
+    virtual bool EnvMens(const char * mensagem, int codigo)=0;
+        ///< Envia mensagem
+        /**< A mensagem segue o formato:
+         *  - Byte =0 -> fim da mensagem
+         *  - Byte =1 -> próximos dois bytes = cor
+         *     - Byte 0 Bits 0-3 = cor de fundo
+         *     - Byte 0 Bits 4-6 = cor das letras
+         *     - Byte 0 Bit 7 =1 se negrito (cor das letras mais forte)
+         *     - Byte 1 Bit 0 =1 se sublinhado
+         *     .
+         *  - Byte =2 -> echo off
+         *  - Byte =3 -> echo on
+         *  - Byte =4 -> go ahead
+         *  - Byte =5 -> beep
+         *  - Byte ='\n' -> passar para próxima linha
+         */
     virtual void Fechar(void)=0; ///< Fecha socket, pode apagar socket
     virtual int  Variavel(char num, int valor)=0;
                     ///< Lê ou altera uma variável
@@ -65,11 +70,12 @@ protected:
                     ///< Executa função _fechou
                     /**< @param txt Texto que contém o motivo
                      *   @note Pode apagar o próprio objeto */
-    bool FuncEvento(const char * evento, const char * texto, int valor=-1);
+    bool FuncEvento(const char * evento, const char * texto, int v1=-1, int v2=-1);
                     ///< Executa uma função
                     /**< @param evento Nome do evento (ex. "msg")
                      *   @param texto Texto do primeiro argumento, 0=nenhum texto
-                     *   @param valor Segundo argumento, <0 = nenhum valor
+                     *   @param v1 Segundo argumento, se menor que 0 não tem
+                     *   @param v2 Terceiro argumento, se menor que 0 não tem
                      *   @return true se não apagou o objeto, false se apagou
                      */
 

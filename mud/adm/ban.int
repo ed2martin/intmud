@@ -54,7 +54,7 @@ func escr
   senao
     socket s
     refvar ender = txt1(arg1)
-    se !s.ipvalido(ender) && !s.ipvalido(ender + "0")
+    se ender != "." && !s.ipvalido(ender) && !s.ipvalido(ender + "0")
       indiceitem item
       item.ini("un " + txts(txtnome(arg1)))
       refvar obj = item.obj

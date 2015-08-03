@@ -10,12 +10,14 @@ txt100 conexao3 # sala + " " + senha
 txt100 indbs # "bs " + endereço + " " (é o índice para salas)
 txt100 indbu # "bu " + endereço + " " (é o índice para usuários)
 int8 msgini # Para mostrar as primeiras mensagens do chat ao conectar
+const proto1 = "bot "
+const proto2 = "#bot "
 
 func ini
 # arg0 contém 4 textos separados por espaço: endereço, porta, sala, senha
   conectando = 100
   conexao1 = "cn " + txt1(arg0)
-  conexao2 = "bot " + txtsub(arg0, 0, 3)
+  conexao2 = proto1 + txtsub(arg0, 0, 3)
   conexao3 = txtsub(arg0, 2)
   indbs = "bs " + txt1(arg0) + " "
   indbu = "bu " + txt1(arg0) + " "
@@ -37,6 +39,7 @@ func conec_eventoip # Resolveu endereço a conectar
 func ini_conec # Inicia conexão
 # arg0 = endereço IP
 # arg1 = porta
+msg("/" + arg0 + "/" + arg1 + "/")
   se !conec.abrir(arg0, arg1)
     apagar(este), conexao2 = ""
     msg("Endereço inválido")
@@ -90,7 +93,7 @@ func conec_msg # Recebeu mensagem
   se conectando
     se txt(arg0, 0, 1) == "+"
       conectando = 0
-      conec.msg("#bot " + conexao3 + "\n")
+      conec.msg(proto2 + conexao3 + "\n")
     senao
       msg("Erro " + arg0)
       apagar(este)
@@ -167,14 +170,16 @@ classe jogobot_usr
 herda jogsock
 indiceobj j_nome
 listaitem j_sala
+txt30 j_ip
 ref j_jogobot
-const info = "b " + txt2(j_nome)
+const info = "b " + j_ip + txt2(j_nome)
 const salaobj = arg0.addfim(j_sala.objlista.usr)
 
 func ini # Entrou na sala
   j_nome = txtsub(arg0, 0, 3)
   j_sala = arg1.usr.addfim(este) # Adiciona na sala
   j_jogobot = arg1.jogobot
+  j_ip = txtsub(arg0, 3) ? txtsub(arg0, 3) + " " : "- "
   se !config:modolocal
     telatxt tela
     tela.msg("U+  " + txt2(j_sala.objlista.nome) + " " + txtsub(j_nome, 2) + "\n")
@@ -211,3 +216,9 @@ func msgtodos # Envia mensagem para todos os jogadores
   epara r = $jogobot_sala, r, r = objdepois(r)
     r.msg(arg0)
   efim
+
+
+classe jogobot2
+herda jogobot
+const proto1 = "bot2 "
+const proto2 = "#bot2 "

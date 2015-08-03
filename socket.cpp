@@ -577,7 +577,7 @@ void TSocket::Endereco(int num, char * mens, int tam)
 }
 
 //------------------------------------------------------------------------------
-bool TSocket::EnvMens(const char * mensagem)
+bool TSocket::EnvMens(const char * mensagem, int codigo)
 {
     if (sock<0)
         return false;
@@ -588,6 +588,10 @@ bool TSocket::EnvMens(const char * mensagem)
         char mens[SOCKET_ENV];
         char * ini = mens;
         char * destino = mens + 3;
+        if (codigo<0)
+            codigo=0;
+        if (codigo>255)
+            codigo=255;
         for (; *mensagem; mensagem++)
         {
             if (destino >= mens + sizeof(mens) - 4)
@@ -602,7 +606,7 @@ bool TSocket::EnvMens(const char * mensagem)
             case 5:
                 break;
             case '\n':
-                ini[0] = 1;
+                ini[0] = codigo;
                 ini[1] = (destino - ini - 3);
                 ini[2] = (destino - ini - 3) >> 8;
                 ini = destino;
@@ -615,7 +619,7 @@ bool TSocket::EnvMens(const char * mensagem)
         int total = destino - ini - 3;
         if (total>0)
         {
-            ini[0] = 1;
+            ini[0] = codigo;
             ini[1] = total;
             ini[2] = total >> 8;
         }
@@ -623,7 +627,7 @@ bool TSocket::EnvMens(const char * mensagem)
             destino -= 3;
         if (destino != mens)
             eventoenv = true;
-        return EnvMens(mens, destino - mens);
+        return EnvMensBytes(mens, destino - mens);
     }
 
 // Sem cores
@@ -671,7 +675,7 @@ bool TSocket::EnvMens(const char * mensagem)
         }
         if (destino != mens)
             eventoenv = true;
-        return EnvMens(mens, destino - mens);
+        return EnvMensBytes(mens, destino - mens);
     }
 
 // Telnet
@@ -783,7 +787,7 @@ bool TSocket::EnvMens(const char * mensagem)
         }
         if (destino != mens)
             eventoenv = true;
-        if (!EnvMens(mens, destino - mens))
+        if (!EnvMensBytes(mens, destino - mens))
             return false;
         telnetecho += ecototal;
         return true;
@@ -865,7 +869,7 @@ bool TSocket::EnvMens(const char * mensagem)
         }
         if (destino != mens)
             eventoenv = true;
-        return EnvMens(mens, destino - mens);
+        return EnvMensBytes(mens, destino - mens);
     }
 
     assert(0); // Protocolo desconhecido
@@ -873,7 +877,7 @@ bool TSocket::EnvMens(const char * mensagem)
 }
 
 //------------------------------------------------------------------------------
-bool TSocket::EnvMens(const char * mensagem, int tamanho)
+bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
 {
     if (sock<0)
         return false;
@@ -1334,20 +1338,20 @@ void TSocket::Processa(const char * buffer, int tamanho)
                         switch (bufTelnet[2])
                         {
                         case 24: // Quer saber o terminal
-                            EnvMens("\xFF\xFA\x18\x00" // Comando
+                            EnvMensBytes("\xFF\xFA\x18\x00" // Comando
                                 "INTMUD" // Nome
                                 "\xFF\xF0", 12); // Fim do comando
                             break;
                         case 32: // Quer saber velocidade do terminal
-                            EnvMens("\xFF\xFA\x20\x00"
+                            EnvMensBytes("\xFF\xFA\x20\x00"
                                 "38400,38400\xFF\xF0", 17);
                             break;
                         case 35: // Quer saber display X
-                            EnvMens("\xFF\xFA\x23\x00"
+                            EnvMensBytes("\xFF\xFA\x23\x00"
                                 "x.y\xFF\xF0", 9);
                             break;
                         case 39: // Quer saber variáveis de ambiente
-                            EnvMens("\xFF\xFA\x27\x00\xFF\xF0", 6);
+                            EnvMensBytes("\xFF\xFA\x27\x00\xFF\xF0", 6);
                             break;
                         }
                     pontTelnet=0;
@@ -1445,9 +1449,9 @@ void TSocket::Processa(const char * buffer, int tamanho)
                     }
                     if (ind < 0)
                         continue;
-                    EnvMens((char*)bufTelnet, 3);
+                    EnvMensBytes((char*)bufTelnet, 3);
                     if (bufTelnet[2]==31) // Quer saber o tamanho da janela
-                        EnvMens("\xFF\xFA\x1F" // Comando
+                        EnvMensBytes("\xFF\xFA\x1F" // Comando
                             "\x00\x50\x00\x18" // Tamanho
                             "\xFF\xF0", 9); // Fim do comando
                     if (bufTelnet[1]==253 && dado==1) // 255 251 1 = echo off
@@ -1662,11 +1666,6 @@ telnet_cor:
                 bufRec[pontRec].cor = 0x70;
                 pontRec++;
             }
-            if (pontRec && bufRec[0].carac != 1) // Verifica tipo de mensagem
-            {
-                FecharSock(-1, 0);
-                return;
-            }
             if (pontRec < 3) // Verifica se o cabeçalho já chegou
                 return;
             unsigned int mensagem =      // Tamanho da mensagem
@@ -1700,6 +1699,7 @@ bool TSocket::EventoMens(bool completo)
     char texto[2048];
     char * dest = texto;
     char * fim = texto + sizeof(texto) - 9;
+    int codigo = 1;
 
 // Prepara - Telnet e IRC
     if (proto==spTelnet1 || proto==spTelnet2 || proto==spIRC)
@@ -1774,6 +1774,7 @@ bool TSocket::EventoMens(bool completo)
             if (bufRec[x].carac >= ' ')
                 *dest++ = bufRec[x].carac;
         *dest=0;
+        codigo = bufRec[0].carac;
     }
 // Protocolo desconhecido ou não está conectado
     else
@@ -1799,5 +1800,5 @@ bool TSocket::EventoMens(bool completo)
     }
 
 // Processa a mensagem
-    return FuncEvento("msg", texto, completo);
+    return FuncEvento("msg", texto, completo, codigo);
 }
