@@ -2,15 +2,16 @@ classe adm_info
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Info\b\n\
 Sintaxe: INFO [personagem ou item]\n\
-Mostra informações sobre a sala aonde você está, um personagem na sala\n\
-ou item na sala ou que você carrega."
+Mostra informações sobre um personagem ou item, na sala ou que você carrega.\n\
+Sem argumentos, mostra informações sobre a sala aonde você está."
 
 func escr
   se !arg1
-# arg0.msg("\b\c2Você:\b\n" + info(arg0))
-    ret arg0.msg("\c2Sala " + arg0.dono + ":\b\n" + info(arg0.dono))
+    arg0.sock.txtmais.limpar
+    info(arg0.dono, arg0.sock.txtmais)
+    arg0.sock.txtmostra
+    ret
   fimse
-  int1 achou
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
@@ -20,29 +21,85 @@ func escr
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    arg0.msg("\b\c2" + r.nome + ": " + r + "\b\n" + info(r))
-    achou = 1
+    arg0.sock.txtmais.limpar
+    info(r, arg0.sock.txtmais)
+    arg0.sock.txtmostra
+    ret
   efim
-  !achou && arg0.msg("Não há nenhum personagem ou item chamado " + arg1)
+  arg0.msg("\bNão há nenhum item ou personagem chamado " + arg1)
 
 func info # Usado por escr
-  txt512 lin
-  lin = "Peso:   obj=" + arg0.pesoobj + "  dentro=" + arg0.pesoden
-  lin += "  total=" + arg0.pesotot + "  voando=" + (arg0.pesoadd ? "N" : "S")
-  lin += "\nVolume: obj=" + arg0.volobj + "  dentro=" + arg0.volden
-  lin += "  total=" + arg0.voltot + "  expande=" + (arg0.volexp ? "S" : "N")
-  lin += "\nQuantidade=" + arg0.objtot + "  Jogadores=" + arg0.socktot
-  lin += "  Itens dentro=" + arg0.dentro1.total + "  Personagens dentro=" + arg0.dentro2.total
-  lin += "  objnum=" + arg0.objnum
-  lin += "\nevento="
-  listaitem i
-  epara i = arg0.evento.ini, i, i.depois
-    lin += txt(i.obj) + " "
-  efim
-  lin += "\nevrec.0=" + arg0.evrec.0.objlista
-  lin += "  evrec.1=" + arg0.evrec.1.objlista
-  lin += "  evrec.2=" + arg0.evrec.2.objlista
-  ret lin
+# arg0 = sala, personagem ou item
+# arg1 = textotxt aonde enviar as mensagens
+  casovar txtmin(txt(arg0, 0, 2))
+  casose "s_"
+    arg1.addfim("\b\c6Sala " + txt(arg0, 2) + ":\b")
+    sair
+  casose "p_"
+    arg1.addfim("\b\c6Perso " + txt(arg0, 2) + ", " + arg0.nome + ":\b")
+    sair
+  casose "i_"
+    arg1.addfim("\b\c6Item " + txt(arg0, 2) + ", " + arg0.nome + ":\b")
+    sair
+  casose
+    se txt(arg0) == "jogador"
+      arg1.addfim("\b\c6Jogador " + arg0.nome + ":\b")
+    senao
+      arg1.addfim("\b\c6Objeto " + arg0 + ":\b")
+    fimse
+  casofim
+# Quantidade de objetos que esse objeto representa
+  se arg0.objtot != 1
+    arg1.addfim("Equivale a " + arg0.objtot + " objetos")
+  fimse
+  txt100 lin
+# Peso
+  lin = "Peso:   " + arg0.pesoobj + " do objeto, " + arg0.pesoden
+  lin += " dentro, " + arg0.pesotot + " ao todo" + (!arg0.pesoadd ? "  voando")
+  arg1.addfim(lin)
+# Volume
+  lin = "Volume: " + arg0.volobj + " do objeto, " + arg0.volden
+  lin += " dentro, " + arg0.voltot + " ao todo, "
+  lin += (arg0.volexp ? "expande" : "não expande")
+  arg1.addfim(lin)
+# Objetos dentro
+  arg.socktotal == 1
+  lin = "Dentro: " + arg0.socktot + " jogador" + (arg0.socktot != 1 ? "es")
+  lin += ", " + arg0.dentro1.total + (arg0.dentro1.total == 1 ? " item" : " itens")
+  lin += ", " + arg0.dentro2.total + " perso, " + arg0.objnum
+  lin += (arg0.objnum == 1 ? " item ao todo" : " itens ao todo")
+  arg1.addfim(lin)
+# Eventos do objeto
+  arg0.evrec.0 && arg1.addfim("Evento hora de:   " + nobj(arg0.evrec.0.objlista))
+  arg0.evrec.1 && arg1.addfim("Evento objeto de: " + nobj(arg0.evrec.1.objlista))
+  arg0.evrec.2 && arg1.addfim("Evento dono de:   " + nobj(arg0.evrec.2.objlista))
+# Eventos
+  se arg0.evento.total
+    arg1.addfim("Recebem eventos desse objeto:")
+    listaitem i
+    epara i = arg0.evento.ini, i, i.depois
+      arg1.addfim("  " + nobj(i.obj))
+    efim
+  fimse
+
+func nobj # Retorna o nome de um objeto
+# arg0 = objeto
+  casovar txt(arg0, 0, 2)
+  casose "s_"
+    ret txt(arg0) + ", " + arg0.s_titulo
+  casose "p_"
+  casose "i_"
+    ret txt(arg0) + ", " + arg0.nome
+  casofim
+  casovar arg0
+  casose "misc_evento"
+    ret txt(arg0) + (arg0.perso1 ? ", em " + arg0.perso1.obj)
+  casose "misc_tempo"
+    ret txt(arg0) + ", função " + arg0.obj + ":" + arg0.func
+  casose "jogador"
+    ret txt(arg0) + ", " + arg0.nome
+  casofim
+  ret txt(arg0)
 
 
 classe adm_infohab

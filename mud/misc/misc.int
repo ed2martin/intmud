@@ -2,8 +2,8 @@ classe misc
 # Miscelânea: tabelas (variáveis) e funções
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
-# Revisão do SVN
-const versao = "2/8/2015"
+# Versão do MUD, aparece no comando Serv
+const versao = "6/8/2015"
 #
 # Objetos usados em misc:separa, misc:sepitem e misc:sepperso
 comum txt100 sep1 # Objeto procurado
@@ -236,14 +236,14 @@ func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
   ret !ref(arg0), nulo
   ref r
-  r = criar("evrecebe")
+  r = criar("misc_evento")
   r.perso1 = arg0.evento.addfim(este, r)
   r.perso2 = arg1.evento.addfim(este, r)
   r.perso3 = arg2.evento.addfim(este, r)
 
-func tempo # Eventos de tempo (cria objeto), vide classe evtempo
+func tempo # Eventos de tempo (cria objeto), vide classe misc_tempo
   ret !(txt(arg0) && ref(arg1)), nulo
-  refvar r = criar("evtempo")
+  refvar r = criar("misc_tempo")
   r.tempo1 = r.tempo2 = 1
   r.obj = este
   r.func = arg0
@@ -252,7 +252,7 @@ func tempo # Eventos de tempo (cria objeto), vide classe evtempo
   r.perso3 = arg3, r.perso3.evento.addfim(r)
 
 
-classe evrecebe
+classe misc_evento
 listaitem perso1 # Primeiro personagem
 listaitem perso2 # Segundo personagem
 listaitem perso3 # Terceiro personagem
@@ -263,7 +263,7 @@ func fim # Este objeto foi apagado
   perso1.remove, perso2.remove, perso3.remove
 
 
-classe evtempo
+classe misc_tempo
 # Processa eventos de tempo
 #
 # Deve ser criado com:
@@ -278,7 +278,7 @@ classe evtempo
 #
 # Na função:
 # arg0 a arg2 = personagens
-# arg3 = objeto evtempo
+# arg3 = objeto misc_tempo
 #
 inttempo tempo1 # Para gerar eventos de tempo
 uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
@@ -286,7 +286,7 @@ txt100 func # Nome da função que deve chamar
 ref obj # Objeto que contém a função
 ref perso1 # Primeiro personagem
 ref perso2 # Segundo personagem
-ref perso3 # Terceito personagem
+ref perso3 # Terceiro personagem
 const cmd_saiu = apagar(este) # Personagem saiu da sala
 const cmd_fim = apagar(este) # Personagem saiu do jogo
 

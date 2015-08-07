@@ -1,3 +1,54 @@
+* 6/8/2015 IntMUD 1.04 MUD baseado na revisão 364
+
+   No IntMUD:
+  1. Corrigido bug: estava usando memcpy quando deveria ser memmove no
+     socket
+  2. Corrigido bug em socket.conectar: às vezes não conectava com erro
+     "Operation already in progress"
+  3. Criada função matpow
+  4. Criada variável ArqExec - permite executar programas
+  5. Criadas opções Completo e ArqExec
+  6. Adicionado arquivo testes/exec.int, para testar ArqExec
+  7. Função socket.msg e evento _msg de socket agora possuem mais um
+     argumento: tipo de mensagem; usado somente no Papovox
+  8. Versão do IntMUD mudou para 1.04
+
+   No Minichat:
+  1. Criado protocolo #bot2 exatamente como o #bot, mas informa os
+     endereços IP ao bot
+
+   No MUD:
+  1. Corrigido bug: Comando gchat não estava funcionando quando está
+     dormindo
+  2. Corrigido bug: Um imortal controlando um PNJ fazia o PNJ herdar
+     algumas características de config +imortal
+  3. Corrigido bug: Quando está no corpo de um PNJ e ele morre, aparecia
+     a frase: Você vê estranhas imagens em seu sonho.
+  4. No comando Quem, não mostra [desconectado] quando admin controla um
+     PNJ
+  5. No comando Quem, com a opção Config +quem, agora mostra aonde os
+     PNJs controlados por jogadores estão
+  6. Corrigido bug: misc:tempo não estava checando as funções herdadas:
+     triggers não funcionavam em um PNJ que herda as funções de outro
+  7. Corrigido bug: comando atalho estava mostrando no máximo 64 mil
+     caracteres em atalhos
+  8. Agora só são mostradas 10 linhas de cada vez para usuários
+     conectados via bot; para os outros são 20 linhas
+  9. Criadas opções no comando Econfig: Renascer nível máximo e Renascer
+     experiência máxima
+ 10. Corrigido bug: mensagens do comando gritar não iam para usuários
+     controlando PNJs
+ 11. Agora eventos cmd_atacou e cmd_alvofim acontecem depois das
+     mensagens da habilidade ou magia, mas antes do personagem morrer
+ 12. Comando "com bot" agora dá mais informações sobre erros ao conectar
+ 13. Criados comandos Iperso e Iitem, para saber aonde está um
+     personagem ou um item
+ 14. Criado comando Ban2, para banir mesmo quem tem jogo salvo
+ 15. Criada opção "Apresentação banido com ban2" no comando Econfig
+ 16. Corrigido bug: comando "ban . 0" não estava funcionando
+ 17. Criado opção QUEM no comando de administração COM
+ 18. Comando Info foi refeito
+
 * 12/7/2015 IntMUD 1.03c MUD baseado na revisão 358
 
    No telnet.int:
@@ -903,3 +954,54 @@
      versão.
   2. Copie os arquivos mud-b-*.int da versão antiga para a nova
      (substituindo os arquivos).
+
+* 19/11/2013 IntMUD 1.02a MUD 0.5, baseado na revisão 290 do SVN
+
+   Muitas mudanças no MUD. Alguns recursos adicionados no IntMUD.
+
+* 26/7/2013 IntMUD 1.01 MUD 0.4
+
+   Pequenas correções no IntMUD e foi criada variável varref.
+
+   Diversas mudanças no MUD, entre elas:
+  1. Melhor distribuição dos arquivos: mud-b-*.int contém as
+     configurações, classes, raças, magias, habilidades e comandos
+     sociais.
+  2. Arquivos mud-a-*.int continuam contendo as áreas.
+  3. Edição de classes e raças (são tratados como TIPOS de personagens).
+  4. Mensagens privativas e comandos para ignorar outros jogadores.
+  5. Ataques foram divididos em magias e habilidades.
+  6. Quando um PNJ morre, pode ficar o corpo com os itens e moedas.
+  7. Lojas e professores.
+  8. Vários níveis de conhecimento de habilidades e magias (porque
+     pode-se fazer várias aulas).
+  9. Descrição alternativa de salas, mostrada quando está de noite.
+ 10. Comando isala mudou de nome para tele, e passa a ser um comando de
+     administração genérico para teletransportar personagens.
+ 11. A área de teste agora contém explicações do comando CMD e das
+     fórmulas usadas na batalha.
+
+* 19/3/2013 IntMUD 1.0 MUD 0.3
+
+   Diversas melhorias no IntMUD e no MUD feito nessa linguagem.
+   O IntMUD em si está pronto.
+   O MUD está perfeitamente jogável, embora ainda falte bastante coisa.
+
+* 24/7/2011 IntMUD Versão 0.99
+
+   O programa está pronto, porém o MUD em si só possui algumas
+   funcionalidades básicas; ainda não está jogável. O pacote vem com
+   alguns programas extras escrita na linguagem do IntMUD:
+   telnet - Cliente de Telnet. Permite entrar em MUDs.
+   quest - Jogo de perguntas (vide arquivo quest.txt).
+   editmud - Permite editar programas online na linguagem do IntMUD,
+   sem precisar desativar o programa a cada alteração. Acompanha o
+   editmud.exe (versão para Windows) ou editmud-gtkmm.
+   minichat - Pequeno servidor de bate-papo.
+   mud - Pequeno teste de MUD; ainda não está jogável.
+
+* 25/9/2008 IntMUD
+
+   Iniciado o desenvolvimento do IntMUD (Interpretador MUD).
+   Quando pronto, deverá substituir o Avent2 e o ServMUD com algumas
+   vantagens.
