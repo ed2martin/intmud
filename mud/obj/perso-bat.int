@@ -96,7 +96,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
     int8 num
     enquanto 1
       refvar max = expmax
-      sair max <= 0 || nmax > 0 && pnivel >= nmax
+      sair expatual < max || max <= 0 || nmax > 0 && pnivel >= nmax
       expatual -= max, pnivel += 1
       var.z_aulas_ += config:aulas
       (num += 1) >= 5 && (expatual = 0)
