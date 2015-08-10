@@ -1248,7 +1248,8 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 if (resposta<=0)
                 {
                     coderro = errno;
-                    if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
+                    if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK ||
+                                       errno==EAGAIN || errno==ENOBUFS))
                         resposta=0;
                     else
                         resposta=-1;
