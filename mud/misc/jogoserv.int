@@ -97,7 +97,7 @@ func ini # Objeto foi criado
 # Checa número de conexões por IP
   indiceitem i
   ref r
-  j_servip = i.obj("ip " + j_conec.ip)
+  r = i.obj("ip " + j_conec.ip)
   se !r
     r = criar("jogoservip")
     r.endereco = "ip " + j_conec.ip

@@ -16,26 +16,31 @@ txt300 abriu2
 
 func escr # Executa o comando
 # arg0 = personagem
+# arg1 = o que digitou após a direção
   $comando_mover.lseg.limpar
   $comando_mover.andou = 0
   refvar sala = ref(arg0.dono)
 # Anda
   txt100 dir1
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
-    dir1 = dir, mover(arg0)
+    dir1 = dir
+    ret !mover(arg0), nulo
   senao # Bêbado andando em uma direção aleatória
     dir1 = fugirdir(arg0)
     !dir1 && (dir1 = dir)
-    $cmd_[dir1].mover(arg0)
+    ret !$cmd_[dir1].mover(arg0), nulo
   fimse
 # Fecha a porta
   se sala.fecha_[dir1] && $comando_mover.andou
     refvar m = sala.porta_[dir1] < 2 ? "$M se $2."
     sala.mudaporta(dir1, sala.tranc_[dir1](arg0) == 2 ? 3 : 2, m, m)
   fimse
+# Próximo comando
+  arg1 && arg0.sock.comandos.addini(arg1)
 
 func mover # Personagem anda em uma direção
 # arg0 = personagem
+# Retorna 1 se conseguiu mover ou 0 se não conseguiu
   listaobj l
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
@@ -44,21 +49,28 @@ func mover # Personagem anda em uma direção
   abriu1 = abriu2 = ""
   s1 = arg0.dono, s2 = s1.dir_[dir](arg0)
   se s2 == nulo
-    ret arg0.msg("Impossível seguir nessa direção.")
+    arg0.msg("Impossível seguir nessa direção.")
+    ret 0
   senao s1.porta_[dir] & 3 >= 2 && !arg0.j_imortal
-    ret !s1.socktot, nulo
+    ret !s1.socktot, 0
     refvar cod = $c_[s1.fechadura_[dir](arg0)].chave
-    ret !cod, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    se !cod
+      arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+      ret 0
+    fimse
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+    se !i
+      arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+      ret 0
+    fimse
     casovar $c_[s1.fechadura_[dir](arg0)].infotaxa
     casose "2" # Casa bloqueada por falta de pagamento
       $mens.p(arg0)
       arg0.msginv(config:casamsgbloq)
-      ret
+      ret 0
     casose "1" # Atrasou pagamento da taxa
       $mens.p(arg0)
       arg0.msginv(config:casamsgaviso)
@@ -67,7 +79,8 @@ func mover # Personagem anda em uma direção
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
   senao s1.voar_[dir](arg0) && !(arg0.bitver & 512 || arg0.bitinv & 48)
-    ret arg0.msg("Você não consegue porque não está flutuando.")
+    arg0.msg("Você não consegue porque não está flutuando.")
+    ret 0
   fimse
   uint8 total
   total = s1.totalmove + s2.totalmove
@@ -76,13 +89,13 @@ func mover # Personagem anda em uma direção
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
     arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
-    ret
+    ret 0
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0), nulo
+    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0), 0
   efim
   epara l.addfim(arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0.dono), nulo
+    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0.dono), 0
   efim
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
@@ -115,7 +128,9 @@ func mover # Personagem anda em uma direção
     efim
     arg0.var.z_moedas = ""
   casose "1" # Morre
-    ret !arg0.j_imortal, arg0.morreu
+    sair arg0.j_imortal
+    arg0.morreu
+    ret 0
   casofim
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
@@ -125,6 +140,7 @@ func mover # Personagem anda em uma direção
     l.objini.msg("Você segue " + arg0.descnome + ".")
     mover(l.objini)
   efim
+  ret 1
 
 func mover2 # Chamado por mover, para mudar de sala enviando mensagem
 # arg0 = personagem

@@ -38,6 +38,15 @@ func cmd_atacou # Personagem arg0 atacou arg1
     arg0.acertapos(1)
   fimse
 
+func cmd_recalc2
+# Nota: o \d+ no início faz o texto aparecer em uma linha separada
+# Sem o \d+ o texto aparece na frente do personagem
+  se arg0.msexo # Masculino
+    arg0.atribs.addfim("\d+  ... e está protegido por uma chama protetora")
+  senao # Feminino
+    arg0.atribs.addfim("\d+  ... e está protegida por uma chama protetora")
+  fimse
+
 
 classe e_confusao
 herda comum_efeito
@@ -109,9 +118,10 @@ func cmd_mover
 
 func cmd_recalc2
   arg0.atribs.addfim(arg0.msexo ? "Congelado" : "Congelada")
-# Nota, as mensagens para persongaens masculinos e femininos forem iguais,
+# Nota, as mensagens para personagens masculinos e femininos forem iguais,
 # pode-se substituir essa linha do arg0.atribs por algo como:
 # arg0.atribs.addfim("Congelado")
+# Para aparecer em linha separada, vide efeito chama_protetora
 
 
 classe e_dreno_de_mana

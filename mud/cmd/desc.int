@@ -81,7 +81,7 @@ func passo # Alterando descrição da sala
     arg0.passo = ""
     ret 1
   casose "x" # Salvar o texto
-    se !arg0.perso.dentrocasa
+    se !arg0.perso.dentrocasa && !arg0.perso.j_imortal
       arg0.msg("Você não está dentro da sua casa.")
     senao arg0.teditor.linhas > 8
       arg0.msg("Máximo permitido 8 linhas.")

@@ -212,15 +212,15 @@ func escr
   refvar r = misc:objperso(arg0, arg1)
   ret !r, nulo
   epara item = r.dentro1.fim, item, item.antes
-    continuar !item.obj.visivel(arg0)
-    refvar nn = item.obj.atribs.linhas ? " (" + txttroca(item.obj.atribs.ini.textolin(100), \
-"\n", " ") + ") " : " "
-    t.addfim(txt(item.obj.objtot) + nn + txtcopiamai(item.obj.descnome, "A"))
+    refvar i = item.obj
+    continuar !i.visivel(arg0)
+    refvar nn = txtsublin(i.atribs.ini.textolin(2), 1)
+    t.addfim(txt(i.objtot) + i.atribs.ini.texto + txtcopiamai(i.descnome, "A") + nn)
   efim
   t.juntalin("(", "x)")
   refvar nome = r == arg0 ? "Você" : txtcopiamai(r.nome, "A")
   se t
-    arg0.msg2("\b\c6" + nome + " carrega:\b\n" + t.remove(1000))
+    arg0.msg2("\b\c6" + nome + " carrega:\b\n" + txttroca(t.remove(1000), "\d+", "\n"))
   senao
     arg0.msg("\b" + nome + " não está carregando nada.")
   fimse
@@ -265,9 +265,7 @@ func escr
     refvar obj = pos.[1 + txt1(lin)]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
-      nomepos += txtesp(23 - inttotal(nomepos))
-      obj.atribs.linhas && (nomepos += "(" + txttroca(obj.atribs.ini.textolin(100), "\n", " ") + \
-") ")
+      nomepos += txtesp(23 - inttotal(nomepos)) + obj.atribs.ini.texto(1)
       t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
     senao lugar & intbit(1 + txt1(lin))
       nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "

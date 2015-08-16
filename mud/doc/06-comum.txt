@@ -87,8 +87,16 @@ somar 0x800 se não pode ser colocado para dormir
 somar 0x1000 se percebe quem anda em silêncio
 
 textotxt atribs
-Atributos do item ou personagem, como "flutuando", "invisível", etc.
-Um atributo por linha.
+Nas funções recalc_exec, cmd_recalc1, cmd_recalc2 e cmd_recalc3,
+contém os atributos do item ou personagem, sendo um por linha.
+Atributos do tipo "flutuando" e "invisível" aparecem na frente
+do personagem ou item. Exemplo:
+(Flutuando Invisível) Joaquim está aqui
+Atributos que começam com "\d+" aparecem nas linhas seguintes.
+Fora dessas funções recalc:
+A primeira linha é colocada antes do nome do personagem ou item.
+A segunda linha é colocada após o nome do personagem ou item,
+substituindo "\d+" por "\n".
 
 const nivel = 0
 Nível definido no item ou personagem.

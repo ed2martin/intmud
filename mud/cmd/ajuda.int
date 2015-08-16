@@ -48,10 +48,16 @@ const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Movimentação\b\n\
 Você pode mover seu personagem para as seguintes direções:\n\
 N (norte), S (sul), L ou E (leste), O ou W (oeste), C (cima), B (baixo),\n\
-NE (nordeste), NO ou NW (noroeste), SE (sudeste) e SO ou SW (sudoeste).\n\
+NE (nordeste), NO ou NW (noroeste), SE (sudeste) e SO ou SW (sudoeste),\n\
+C (para cima), B (para baixo), ENTRAR e SAIR.\n\
 Você poderá encontrar portas fechadas no caminho. Nesse caso, será\n\
 necessário abrir antes de prosseguir naquela direção. Veja os comandos\n\
 ABRIR, FECHAR, TRANCAR e DESTRANCAR.\n\
+Para percorrer longas distâncias, pode-se digitar as direções na sequência,\n\
+separando por espaço. Por exemplo, N L L C S NO\n\
+Isso funciona porque, quando você digita uma direção e o seu personagem\n\
+consegue andar, o que foi digitado após a direção é interpretado como outro\n\
+comando.\n\
 É possível também seguir outros personagens. Veja o comando SEGUIR.\n\
 O personagem pode cansar-se (pontos de vigor chegar a zero, vide comando\n\
 VIDA). Nesse caso, o melhor é sentar-se (digitando SENTAR) ou descansar\n\

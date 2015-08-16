@@ -11,14 +11,16 @@ err = 1
 
 classe _serv
 # Lista de endereços mais usados
-const inter = "intervox.nce.ufrj.br 1963"
-const dosvox = "sitiodosvox.com 1963"
-const val = "mud.valinor.com.br 4000"
-const myth = "mud.mythserver.com 4000"
-const sim = "mud.simauria.org 23"
-const dentin = "dentinmud.org 3010"
-const turf = "turf.org 4000"
-const lo = "localhost 1963"
+const inter = "p intervox.nce.ufrj.br 1963"
+const dosvox = "p sitiodosvox.com 1963"
+const val = "t mud.valinor.com.br 4000"
+const myth = "t mud.mythserver.com 4000"
+const sim = "t mud.simauria.org 23"
+const dentin = "t dentinmud.org 3010"
+const turf = "t turf.org 4000"
+const lo = "t localhost 1963"
+const t2t = "t t2tmud.org 9999"
+const t2s = "s t2tmud.org 444"
 
 classe tela
 telatxt tela
@@ -42,15 +44,15 @@ func ini
   fimse
 
 func inic_exec # Mensagem de abertura
-  msg("Digite o endereço seguido de espaço e a porta\n")
+  msg("Para conectar como Telnet, digite t endereço porta\n")
+  msg("Para conectar como Telnet seguro, digite s endereço porta\n")
+  msg("Para conectar como Papovox, digite p endereço porta\n")
+  msg("Exemplo: t intervox.nce.ufrj.br 1963\n")
   msg("Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado\n")
   msg("F1 mostra os endereços predefinidos\n")
   msg("F2 ativa/desativa eco das mensagens enviadas\n")
   msg("F3 desconecta\n")
   msg("F4 encerra o programa\n")
-  msg("F5 Usar o protocolo Telnet ao conectar\n")
-  msg("F6 Usar o Telnet seguro\n")
-  msg("F7 Usar o Papovox ao conectar\n")
 
 func tela_tecla # Usuário pressionou uma tecla
   casovar arg0
@@ -116,21 +118,6 @@ func tecla_F3
 func tecla_F4
   terminar
 
-func tecla_F5
-  ret sock.proto, msg("\n\d4Não é possível mudar o protoclo conectado\b\n")
-  proto = 0
-  msg("\nSelecionado Telnet\n")
-
-func tecla_F6
-  ret sock.proto, msg("\n\d4Não é possível mudar o protoclo conectado\b\n")
-  proto = 1
-  msg("\nSelecionado Telnet seguro\n")
-
-func tecla_F7
-  ret sock.proto, msg("\n\d4Não é possível mudar o protoclo conectado\b\n")
-  proto = 2
-  msg("\nSelecionado Papovox\n")
-
 func tela_msg # Usuário digitou alguma coisa
   hist_texto.addfim(arg0)
   hist_texto.remove(hist_texto.linhas - 50)
@@ -142,22 +129,29 @@ func tela_msg # Usuário digitou alguma coisa
     passo = 0
     linha = _serv:[arg0]
     !linha && (linha = txtremove(arg0, "ED"))
-    se proto == 1
+    se txt1(linha) == "s"
+      proto = 1
       txt100 erro
       se (erro = sock.inissl) != ""
         msg("\d4Erro ao carregar biblioteca OpenSSL: " + erro + "\b\n")
-        ret
-      senao !sock.abrirssl(txt1(linha), txt2(linha))
-        msg("\d1Erro ao conectar em " + linha + "\b\n")
+      senao !sock.abrirssl(txtsub(linha, 1, 1), txtsub(linha, 2, 1))
+        msg("\d1Erro ao conectar em " + txt2(linha) + "\b\n")
         msg("\d1Endereço inválido?\b\n")
-        ret
+      senao
+        msg("\d1Conectando em " + txt2(linha) + "\b\n")
       fimse
-    senao !sock.abrir(txt1(linha), txt2(linha))
-      msg("\d1Erro ao conectar em " + linha + "\b\n")
-      msg("\d1Endereço inválido?\b\n")
       ret
+    senao txt1(linha) == "t" || txt1(linha) == "p"
+      proto = (txt1(linha) == "t" ? 0 : 2)
+      se !sock.abrir(txtsub(linha, 1, 1), txtsub(linha, 2, 1))
+        msg("\d1Erro ao conectar em " + txt2(linha) + "\b\n")
+        msg("\d1Endereço inválido?\b\n")
+      senao
+        msg("\d1Conectando em " + txt2(linha) + "\b\n")
+      fimse
+    senao
+      msg("Tecle t, s ou p, seguido de endereço e porta")
     fimse
-    msg("\d1Conectando em " + linha + "\b\n")
     ret
   casose "1" # Conectando
     msg("\d1Conexão em progresso\b\n")
