@@ -1,0 +1,110 @@
+classe adm_lsav
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Lsav\b\n\
+Sintaxe: LSAV\n\
+Mostra os arquivos de jogos salvos. Estão no diretório sav1."
+
+func escr
+  arqdir dir
+  txt100 lin
+  lin = dir.abrir("sav1")
+  ret lin, arg0.msg("\bErro: " + lin)
+  debug d
+  d.exec = 50000
+  refvar txtmais = arg0.sock.txtmais
+  txtmais.limpar
+  epara nulo, dir.lin, dir.depois
+    txtmais.addfim(txttroca(dir.texto + "\b", ".sav\b", ","))
+  efim
+  txtmais.ordena
+  textopos pos
+  pos = txtmais.fim, pos.antes
+  pos.mudar("", inttotal(pos.texto) - 1, 1)
+  refvar total = int(txtmais.linhas)
+  txtmais.juntar
+  txtmais.dividelin(50, 70)
+  txtmais.addini("\bArquivos de jogos salvos (" + total + "):")
+  arg0.sock.txtmostra
+
+
+classe adm_asav
+herda comando_adm, comando_comum
+const txtajuda = "\b\c3Asav\b\n\
+Sintaxe: ASAV <nome do arquivo>\n\
+Apaga um arquivo de jogo salvo."
+
+func escr
+  arqdir dir
+  se !arg1
+    arg0.msg("Tecle o nome do arquivo após APAGARSAV.")
+  senao dir.tipo("sav1/" + arg1 + ".sav") == "?"
+    arg0.msg("Jogo salvo não existe: " + arg1)
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
+  fimse
+
+func passo
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    arqdir dir
+    refvar err = dir.apagar("sav1/" + arg0.tpasso + ".sav")
+    se err
+      arg0.msg("Erro ao apagar jogo salvo " + arg0.tpasso + ": " + err)
+    senao
+      $miscsav.apagousav(arg0.tpasso)
+      arg0.msg("Jogo salvo apagado: " + arg0.tpasso)
+      cmdlog(arg0, "asav", "Apagou jogo salvo " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    arg0.msg("Apagar jogo salvo " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_esav
+herda comando_adm, comando_comum, comando_editor
+const txtajuda = "\b\c3Esav\b\n\
+Sintaxe: ESAV <nome do arquivo>\n\
+Edita um arquivo de jogo salvo na forma de texto.\n\
+Nota: não editar enquanto o jogador estiver no jogo, porque o personagem\n\
+é salvo de tempos em tempos."
+
+func escr
+  se !arg1
+    arg0.msg("Tecle o nome do arquivo após ESAV.")
+  senao !arg0.sock.teditor.ler("sav1/" + arg1 + ".sav")
+    arg0.msg("Jogo salvo não existe: " + arg1)
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "\b")
+  fimse
+
+func passo
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "\b"
+    arg0.teditor.bytes == 1 && arg0.teditor.limpar
+    arg0.leditor = arg0.teditor.ini
+    arg0.leditor1 = arg0.teditor.ini
+    arg0.leditor2 = arg0.teditor.fim
+    arg0.leditor2.antes
+    arg0.passo = este
+    arg0.msg("Editando jogo salvo " + arg0.tpasso + ", O opções, X salvar, Z sair")
+    ret 1
+  casose "z" # Sair do editor
+    arg0.msg("Fechando editor")
+    arg0.passo = ""
+    ret 1
+  casose "x" # Salvar o texto
+    se arg0.teditor.salvar("sav1/" + arg0.tpasso + ".sav")
+      arg0.msg("Jogo foi salvo: " + arg0.tpasso)
+    senao
+      arg0.msg("Erro ao salvar jogo: " + arg0.tpasso)
+    fimse
+    cmdlog(arg0, "esav", "Editou jogo salvo " + arg0.tpasso)
+    ret 1
+  casofim
+  ret passoeditor(arg0, arg1, 1000000, "Jogo salvo " + arg0.tpasso)

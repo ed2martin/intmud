@@ -95,11 +95,35 @@ func mmud1 # Mensagem para todos do MUD
     item.obj.msg(proc(arg0, item.obj.perso))
   efim
 
+func mmudS # Mensagem para todos do MUD exceto na mesma sala
+# arg0 = mensagem para todos
+  ref s
+  epara s = contr, s.dono, s = s.dono
+  efim
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    epara r = item.obj.perso.dono, r.dono, r = r.dono
+    efim
+    r != s && item.obj.msg(proc(arg0, item.obj.perso))
+  efim
+
 func mmudtodos1 # Mensagem para todos que estiverem acordados no MUD
 # arg0 = mensagem para todos
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     item.obj.perso.msginv(arg0)
+  efim
+
+func mmudtodosS # Mensagem para todos que estiverem acordados no MUD em outra sala
+# arg0 = mensagem para todos
+  ref s
+  epara s = contr, s.dono, s = s.dono
+  efim
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    epara r = item.obj.perso.dono, r.dono, r = r.dono
+    efim
+    r != s && item.obj.perso.msginv(arg0)
   efim
 
 func marea1 # Mensagem para todos que estiverem na mesma área
@@ -108,10 +132,10 @@ func marea1 # Mensagem para todos que estiverem na mesma área
   efim
   refvar area = r.s_area
   indiceitem item
-  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    epara r = item.obj.dono, r.dono, r = r.dono
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == area && item.obj.msg(proc(arg0, item.obj))
+    r.s_area == area && item.obj.msg(proc(arg0, item.obj.perso))
   efim
 
 func mareaS # Mensagem para todos que estiverem na mesma área mas em outra sala
@@ -120,10 +144,10 @@ func mareaS # Mensagem para todos que estiverem na mesma área mas em outra sala
   epara s = contr, s.dono, s = s.dono
   efim
   indiceitem item
-  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    epara r = item.obj.dono, r.dono, r = r.dono
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == s.s_area && r != s && item.obj.msg(proc(arg0, item.obj))
+    r.s_area == s.s_area && r != s && item.obj.msg(proc(arg0, item.obj.perso))
   efim
 
 func mareatodos1 # Mensagem para quem está acordado na mesma área
@@ -132,10 +156,10 @@ func mareatodos1 # Mensagem para quem está acordado na mesma área
   efim
   refvar area = r.s_area
   indiceitem item
-  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    epara r = item.obj.dono, r.dono, r = r.dono
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == area && item.obj.msginv(arg0)
+    r.s_area == area && item.obj.perso.msginv(arg0)
   efim
 
 func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra sala
@@ -144,10 +168,10 @@ func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra s
   epara s = contr, s.dono, s = s.dono
   efim
   indiceitem item
-  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    epara r = item.obj.dono, r.dono, r = r.dono
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == s.s_area && r != s && item.obj.msginv(arg0)
+    r.s_area == s.s_area && r != s && item.obj.perso.msginv(arg0)
   efim
 
 func proc # Prepara e retorna mensagem

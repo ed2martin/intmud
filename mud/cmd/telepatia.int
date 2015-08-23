@@ -12,24 +12,25 @@ func escr
   ret !arg0.jogconfig.8, arg0.msg("Canal Telepatia está desabilitado.")
   ret !arg1, arg0.msg("Escrever para quem?")
   indiceitem item
-  item.ini("pn " + txts(txtnome(txt1(arg1))))
+  item.ini("un " + txts(txtnome(txt1(arg1))))
   $mens.p(arg0, item.obj)
   $mens.mens = txt2(arg1)
-  se !item.obj || item.obj.jogconfig.17 && !arg0.jogconfig.23
+  refvar perso = item.obj.perso
+  se !perso || perso.jogconfig.17 && !arg0.jogconfig.23
     arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
-  senao item.obj == arg0
+  senao perso == arg0
     arg0.msginv("Escrever para você mesm$s?")
-  senao item.obj.var.u_[arg0.nome]
+  senao perso.var.u_[arg0.nome]
     arg0.msginv("$C está ignorando você.")
-  senao arg0.var.u_[item.obj.nome]
+  senao arg0.var.u_[perso.nome]
     arg0.msginv("Você está ignorando $C.")
-  senao !item.obj.jogconfig.8
+  senao !perso.jogconfig.8
     arg0.msginv("$C desabilitou o canal Telepatia.")
-  senao arg0.jogconfig.17 && !item.obj.jogconfig.23
+  senao arg0.jogconfig.17 && !perso.jogconfig.23
     arg0.msginv("Você está invisível para $C.")
   senao !txt2(arg1)
     arg0.msginv("Escrever o quê?")
   senao
-    item.obj.msginv(config:telepatia2)
+    perso.msginv(config:telepatia2)
     arg0.msginv(config:telepatia1)
   fimse
