@@ -6,22 +6,19 @@ arqlog l2
 arqlog l3
 arqlog l4
 arqlog l5
+arqlog l6
 inttempo atualiza
 datahora h
 #
 const iniclasse = !$[arg0] && criar(arg0)
-const entrou = h.agora, l0.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
-arg0)
-const admlog = h.agora, l1.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
-arg0)
-const cmdlog = h.agora, l2.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
-arg0)
-const jogchat = h.agora, l3.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
-arg0)
-const rezou = h.agora, l4.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
-arg0)
-const mortes = h.agora, l5.msg(txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min + " " + \
-arg0)
+const entrou = h.agora, l0.msg(hora + " " + arg0)
+const admlog = h.agora, l1.msg(hora + " " + arg0)
+const cmdlog = h.agora, l2.msg(hora + " " + arg0)
+const jogchat = h.agora, l3.msg(hora + " " + arg0)
+const rezou = h.agora, l4.msg(hora + " " + arg0)
+const mortes = h.agora, l5.msg(hora + " " + arg0)
+const bug = h.agora, l6.msg(hora + " " + arg0)
+const hora = txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min
 
 func ini
   arqdir d
@@ -58,3 +55,4 @@ func atualiza_exec
   l3.fechar, config:l_jogchat ? l3.abrir("log/jogchat-" + sufixo)
   l4.fechar, config:l_rezou ? l4.abrir("log/rezou-" + sufixo)
   l5.fechar, config:l_mortes ? l5.abrir("log/mortes-" + sufixo)
+  l6.fechar, config:l_bug ? l6.abrir("log/bug-" + sufixo)

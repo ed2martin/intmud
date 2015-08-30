@@ -365,7 +365,7 @@ int compara(const char * string1, const char * string2, int tam)
 
 //------------------------------------------------------------------------------
 // Verifica se nome de arquivo permitido (está no diretório do programa)
-bool arqvalido(char * nome, const char * ext)
+bool arqvalido(char * nome)
 {
     if (nome[0]==0)
         return false;
@@ -403,23 +403,13 @@ bool arqvalido(char * nome, const char * ext)
                 return false;
     }
 #endif
-// Acerta final do nome do arquivo
-    if (*ext==0)
-        return true;
-    int tam = strlen(ext);
-    if (p+tam < nome)   // Nome muito pequeno: acrescenta extensão
-        strcpy(p, ext);
-    else if (comparaZ(p-tam, ext)!=0) // Extensão incorreta
-        strcpy(p, ext);
-    else // Extensão correta: acerta a extensão
-        strcpy(p-tam, ext);
     return true;
 }
 
 //------------------------------------------------------------------------------
 bool arqvalido(char * nome, bool somenteleitura)
 {
-    if (!arqvalido(nome, ""))
+    if (!arqvalido(nome))
         return false;
     if (opcao_completo)
         return true;
@@ -428,7 +418,8 @@ bool arqvalido(char * nome, bool somenteleitura)
     char * p = nome;
     while (*p)
         p++;
-    if (p >= nome+4 && p[-4]=='.')
+    if (p >= nome+4)
+        if (p[-4]=='.')
     {
         ext[0] = p[-3] | 0x20;
         ext[1] = p[-2] | 0x20;
@@ -436,9 +427,11 @@ bool arqvalido(char * nome, bool somenteleitura)
     // Checa extensão
         if (memcmp(ext, "com", 3)==0 || memcmp(ext, "exe", 3)==0 ||
             memcmp(ext, "bat", 3)==0 || memcmp(ext, "pif", 3)==0 ||
-            memcmp(ext, "scr", 3)==0 || memcmp(ext, "log", 3)==0)
-        if (!somenteleitura && memcmp(ext, "int", 3)==0 )
+            memcmp(ext, "scr", 3)==0)
             return false;
+        if (!somenteleitura)
+            if (memcmp(ext, "int", 3)==0 || memcmp(ext, "log", 3)==0)
+                return false;
     }
 // Checa se é executável
 #ifndef __WIN32__

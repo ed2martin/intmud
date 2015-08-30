@@ -84,7 +84,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         if (*mens==0)
             strcpy(mens, ".");
     // Checa se nome válido
-        if (!arqvalido(mens, ""))
+        if (!arqvalido(mens))
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("Nome não permitido");
@@ -154,7 +154,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         if (Instr::VarAtual >= v+1)
         {
             copiastr(mens, v[1].getTxt(), sizeof(mens));
-            if (!arqvalido(mens, ""))
+            if (!arqvalido(mens))
                 existe = 1;
             else if (stat(mens, &buf) >= 0)
                 existe = 2;
@@ -215,7 +215,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         }
         copiastr(mens, v[1].getTxt(), sizeof(mens));
         Instr::ApagarVar(v);
-        if (!arqvalido(mens, ""))
+        if (!arqvalido(mens))
             return Instr::CriarVarTexto("Nome de diretório não permitido");
         int err = 0;
         if (tipo==1)
@@ -244,7 +244,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         }
         copiastr(mens, v[1].getTxt(), sizeof(mens));
         Instr::ApagarVar(v);
-        if (!arqvalido(mens, true))
+        if (!arqvalido(mens, false))
             return Instr::CriarVarTexto("Nome de arquivo não permitido");
         if (remove(mens) >= 0) // remove ou unlink
             *mens = 0;

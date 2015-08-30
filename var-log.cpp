@@ -156,8 +156,16 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
     {
         copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
     // Verifica se nome permitido
-        if (!arqvalido(arqnome, ".log"))
+        if (!arqvalido(arqnome))
             *arqnome=0;
+        else
+        {
+            int tam = strlen(arqnome);
+            if (tam >= 4) // Tamanho suficiente
+                if (comparaZ(arqnome+tam-4, ".log") == 0) // Extensão correta
+                    tam -= 4;
+            strcpy(arqnome + tam, ".log"); // Acerta a extensão
+        }
     }
 // Checa se nome de arquivo é válido
     if (comparaZ(nome, "valido")==0)

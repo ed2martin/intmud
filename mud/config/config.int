@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 362 # Para atualizar diretórios areas e config
+const versao = 369 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -79,6 +79,9 @@ const l_rezou = 0
 #
 # Mortes dos personagens dos jogadores
 const l_mortes = 0
+#
+# Log do canal Bug
+const l_bug = 0
 #
 # De quanto em quanto tempo criar novos arquivos de log
 # 0 Um por dia
@@ -270,6 +273,12 @@ const rezar1msg = "(rezar) $R '$m'"
 # Mensagem quando o jogador usa o comando Rezar
 const rezar2msg = "Você rezou '$m'"
 #
+# Mensagem do canal bug
+const bug1msg = "(bug) $R '$m'"
+#
+# Mensagem quando o jogador usa o comando Bug
+const bug2msg = "Bug enviado '$m'"
+#
 # Mensagem do canal Rezou
 const rezou1msg = "(rezou) $R para $c '$m'"
 #
@@ -327,10 +336,16 @@ const telepatia2 = "(telepatia) $R '$m'"
 const salvarnivel = 11
 #
 # Comando rezar: 0=não existe, 1=existe
-const rezartipo = 0 # Comando Rezar: 0 Desabilitado
+const rezartipo = 0
 #
 # Nível necessário para usar o comando Rezar
 const rezarnivel = 0
+#
+# Comando Bug: 0=não existe, 1=existe
+const bugtipo = 0
+#
+# Nível necessário para usar o comando Bug
+const bugnivel = 0
 #
 # Canal chat: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
 const chattipo = 2 # Canal chat: 2 Para todo o MUD

@@ -1530,6 +1530,8 @@ func cmd_chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
   se arg0.visivel(este) # Se arg0 estiver visível para este personagem
     misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+  senao
+    misc:tempo("info", arg0) # Dispara funções 'info'
   fimse
 
 func entrou20
@@ -1542,6 +1544,19 @@ func entrou20
     dono.dir_s(arg0) && arg0.mudadono(dono.dir_s(arg0))
     $mens.p(arg0)
     $mens.mtodos2("", "$P chegou voando do norte.")
+  fimse
+
+func info20
+  $mens.p(este)
+  $mens.mtodos1("$P: Alguém chegou aqui, eu posso sentir!")
+  se arg0.bitinv & 4 != 0
+    $mens.mtodos1("$P: E está invisível...")
+  fimse
+  se arg0.bitinv & 8 != 0
+    $mens.mtodos1("$P: E está oculto...")
+  fimse
+  se arg0.bitver & 0x100 != 0
+    $mens.mtodos1("$P: E anda em silêncio...")
   fimse
 
 
@@ -3059,8 +3074,8 @@ Toda sala, item e personagem possui uma variável chamada \"var\", que\n\
 pode ter outras dentro. Essas são chamadas dinâmicas porque podem ser\n\
 criadas e apagadas conforme a necessidade. Uma lista completa, vide\n\
 arquivo mud.txt tópico \"Variáveis dinâmicas de personagens, salas e itens\"."
-const dir_o = $s_teste082
 const dir_l = $s_teste090
+const dir_o = $s_teste082
 
 
 classe s_teste090
@@ -4002,10 +4017,10 @@ const dir_so = $s_teste141
 classe s_teste143
 herda b_teste
 const s_titulo = "Invisível e voando"
-const s_desc = "Aqui, o lobo mau só interage com personagens que ele consegue ver\n\
-(quem não está invisível nem oculto). Ele pode assoprar ou falar\n\
-alguma coisa. Isso depende se você está voando ou não (se está\n\
-fazendo peso na sala)."
+const s_desc = "Aqui, o lobo mau pode assoprar ou falar alguma coisa, dependendo\n\
+se você está voando ou não (se está fazendo peso na sala).\n\
+Mas quando ele não consegue ver (por você estar invisível ou oculto),\n\
+ele apenas dá algumas informações sobre o seu personagem."
 const dir_n = $s_teste086
 const dir_s = $s_teste087
 const s_reset = "P 100 teste032 0 0 1"

@@ -60,14 +60,14 @@ func info # Usado por escr
 # Volume
   lin = "Volume: " + arg0.volobj + " do objeto, " + arg0.volden
   lin += " dentro, " + arg0.voltot + " ao todo, "
-  lin += (arg0.volexp ? "expande" : "não expande")
+  lin += arg0.volexp ? "expande" : "não expande"
   arg1.addfim(lin)
 # Objetos dentro
   arg.socktotal == 1
   lin = "Dentro: " + arg0.socktot + " jogador" + (arg0.socktot != 1 ? "es")
   lin += ", " + arg0.dentro1.total + (arg0.dentro1.total == 1 ? " item" : " itens")
   lin += ", " + arg0.dentro2.total + " perso, " + arg0.objnum
-  lin += (arg0.objnum == 1 ? " item ao todo" : " itens ao todo")
+  lin += arg0.objnum == 1 ? " item ao todo" : " itens ao todo"
   arg1.addfim(lin)
 # Eventos do objeto
   arg0.evrec.0 && arg1.addfim("Evento hora de:   " + nobj(arg0.evrec.0.objlista))

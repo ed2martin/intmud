@@ -168,7 +168,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 "# Não pode acessar arquivos fora do diretório e subdiretórios do programa\n"
                 "# Não pode acessar executáveis e .bat .com .exe .pif .scr\n"
                 "# Arquivos .int só podem ser alterados via PROG\n"
-                "# Arquivos .log só podem ser acessados via ARQLOG\n"
+                "# Arquivos .log só podem ser alterados via ARQLOG\n"
                 "# ArqExec só podem executar programas conforme as opções ArqExec\n"
                 "completo = %d\n\n", opcao_completo);
             TArqExec * exec = TArqExec::ExecIni();

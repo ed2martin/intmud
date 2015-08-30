@@ -10,7 +10,7 @@
 #endif
 
 //------------------------------------------------------------------------------
-class TExec
+class TExec /// Permite executar outros programas
 {
 public:
     static void Inicializa();

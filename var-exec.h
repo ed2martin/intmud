@@ -13,7 +13,7 @@
 #define EXEC_ENV 2048
 
 //------------------------------------------------------------------------------
-class TArqExec
+class TArqExec /// Opções ARQEXEC do arquivo INT principal
 {
 public:
     TArqExec(const char * nome);
@@ -39,7 +39,7 @@ class TClasse;
 class TObjeto;
 class TVariavel;
 class TVarExec;
-class TObjExec : public TExec
+class TObjExec : public TExec /// Um programa sendo executado por ArqExec
 {
 public:
     TObjExec(TVarExec * var);   ///< Construtor
@@ -76,7 +76,7 @@ private:
 };
 
 //------------------------------------------------------------------------------
-class TVarExec : public TExec
+class TVarExec /// Uma variável ArqExec
 {
 public:
     void Apagar();          ///< Apaga objeto

@@ -152,7 +152,7 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
             strcpy(mens, ".");
         Instr::ApagarVar(v);
     // Se inválido: retorna 0
-        if (!arqvalido(mens, ""))
+        if (!arqvalido(mens))
             return Instr::CriarVarInt(0);
     // Válido: coloca na lista de pendentes e retorna 1
         TVarSavDir::NovoDir(mens);

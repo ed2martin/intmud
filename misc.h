@@ -95,13 +95,12 @@ int compara(const char * string1, const char * string2, int tam);
 /// Verifica se nome de arquivo permitido e acerta barra normal/invertida
 /** Considera nome inválido se não estiver no diretório do programa
  *  @param nome Nome do arquivo
- *  @param ext Como o nome do arquivo deve terminar
  *  @return true se nome válido ou false se inválido
  *  @note Se opcao_completo for diferente de 0, sempre retorna true */
-bool arqvalido(char * nome, const char * ext);
+bool arqvalido(char * nome);
 
 /// Verifica se nome de arquivo permitido e acerta barra normal/invertida
-/** Considera nome inválido se não estiver no diretório do programa
+/** Checa se está no diretório do programa e o final do nome do arquivo
  *  @param nome Nome do arquivo
  *  @param somenteleitura Se vai apenas ler o arquivo
  *  @return true se nome válido ou false se inválido

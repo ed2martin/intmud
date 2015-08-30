@@ -294,6 +294,7 @@ func passo # Alterando um texto de várias linhas
     arg0.msg("Editando " + arg0.var.opcnome + ", O opções, X salvar, Z sair")
     ret 1
   casose "z" # Sair do editor
+    arg0.teditor.limpar
     arg0.msg("Fechando editor")
     ret passosair(arg0)
   casose "x" # Salvar o texto
