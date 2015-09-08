@@ -69,6 +69,15 @@ func info # Usado por escr
   lin += ", " + arg0.dentro2.total + " perso, " + arg0.objnum
   lin += arg0.objnum == 1 ? " item ao todo" : " itens ao todo"
   arg1.addfim(lin)
+# Seguindo
+  arg0.iseguir && arg1.addfim("Seguindo:         " + nobj(arg0.iseguir.objlista))
+  se arg0.lseguir.total
+    arg1.addfim("Sendo seguido por:")
+    listaitem i
+    epara i = arg0.lseguir.ini, i, i.depois
+      arg1.addfim("  " + nobj(i.obj))
+    efim
+  fimse
 # Eventos do objeto
   arg0.evrec.0 && arg1.addfim("Evento hora de:   " + nobj(arg0.evrec.0.objlista))
   arg0.evrec.1 && arg1.addfim("Evento objeto de: " + nobj(arg0.evrec.1.objlista))
@@ -234,6 +243,13 @@ func escr
     t.addfim("Entrará em:   " + p.salanome)
   fimse
   p.var.z_email && t.addfim("E-mail:       " + p.var.z_email)
+  lin = "Tempo total de jogo: "
+  p.tempojogo2 == 1 && (lin += "1 dia ")
+  p.tempojogo2 > 1 && (lin += txt(p.tempojogo2) + " dias ")
+  lin += intdiv((864000 - p.tempojogo1) / 36000)
+  lin += ":"
+  lin += intdiv((864000 - p.tempojogo1) / 600) % 60
+  t.addfim(lin + " horas")
   arg0.msg2(t.remove(1000))
 
 
@@ -251,6 +267,8 @@ sav txt32 tipo1
 sav txt32 tipo2
 sav txt32 tipo3
 sav int1 jogconfig.24
+sav int32 tempojogo1
+sav uint16 tempojogo2
 
 
 classe adm_inv

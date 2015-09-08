@@ -70,14 +70,13 @@ protected:
                     ///< Executa função _fechou
                     /**< @param txt Texto que contém o motivo
                      *   @note Pode apagar o próprio objeto */
-    bool FuncEvento(const char * evento, const char * texto, int v1=-1, int v2=-1);
+    void FuncEvento(const char * evento, const char * texto, int v1=-1, int v2=-1);
                     ///< Executa uma função
                     /**< @param evento Nome do evento (ex. "msg")
                      *   @param texto Texto do primeiro argumento, 0=nenhum texto
                      *   @param v1 Segundo argumento, se menor que 0 não tem
                      *   @param v2 Terceiro argumento, se menor que 0 não tem
-                     *   @return true se não apagou o objeto, false se apagou
-                     */
+                     *   @note Pode apagar o próprio objeto */
 
 // Variáveis usadas para enviar mensagens
     unsigned short CorEnvia;     ///< Cor atual, ao enviar
@@ -85,7 +84,6 @@ protected:
 
 private:
 // Para saber quando objetos foram apagados
-    static TObjSocket * sockObj; ///< Usado para saber se objeto foi apagado
     static TVarSocket * varObj;  ///< Usado para saber se objeto foi apagado
 
 // Lista ligadas

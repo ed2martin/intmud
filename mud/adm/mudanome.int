@@ -54,6 +54,15 @@ func escr
     codif.0 != codif.1 && sav1.apagar("sav1/" + codif.0 + ".sav")
     mudou = 1
   fimse
+# Casas
+  se codif.0 != codif.1
+    refvar casa = "cj " + codif.0
+    epara ind.ini(casa), txtsub(ind.txt, 0, 2) == casa, ind.depois
+      ind.obj.nomejog = "cj " + codif.1 + " " + ind.obj.area
+      ind.obj.salvar
+      mudou = 1
+    efim
+  fimse
 # Informa se mudou
   se !mudou
     arg0.msg("Personagem " + nome.0 + " não existe.")

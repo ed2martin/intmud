@@ -43,7 +43,6 @@ SocketOpcTelnet = 4,
 SocketPosX
 };
 
-TObjSocket * TObjSocket::sockObj = 0;
 TVarSocket * TObjSocket::varObj = 0;
 TDNSSocket * TDNSSocket::Inicio = 0;
 
@@ -84,10 +83,6 @@ void TObjSocket::RetiraVarSocket()
             TObjSocket::varObj = 0;
         Inicio = s;
     }
-
-// Acerta sockObj
-    if (sockObj==this)
-        sockObj=0;
 }
 
 //------------------------------------------------------------------------------
@@ -262,8 +257,8 @@ void TObjSocket::FuncFechou(const char * txt)
                 Instr::ExecArg(txt);
                 Instr::ExecArg(indice);
                 Instr::ExecX();
+                Instr::ExecFim();
             }
-            Instr::ExecFim();
         }
         else if (varObj->endclasse)
         {
@@ -275,6 +270,7 @@ void TObjSocket::FuncFechou(const char * txt)
                 // A partir daqui varObj pode ser nulo
             if (Instr::ExecIni(end, mens)==false)
                 continue;
+            Instr::ExecArg(txt);
             Instr::ExecArg(indice);
             Instr::ExecX();
             Instr::ExecFim();
@@ -285,10 +281,9 @@ void TObjSocket::FuncFechou(const char * txt)
 }
 
 //------------------------------------------------------------------------------
-bool TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int v2)
+void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int v2)
 {
     //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
-    sockObj = this;
     for (TVarSocket * vobj = Inicio; vobj;)
     {
         bool prossegue = false;
@@ -323,7 +318,6 @@ bool TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
     // Passa para próximo objeto
         vobj = varObj;
     } // for (TVarSocket ...
-    return (sockObj ? true : false);
 }
 
 //------------------------------------------------------------------------------
@@ -374,10 +368,9 @@ void TVarSocket::Mover(TVarSocket * destino)
         (Antes ? Antes->Depois : Socket->Inicio) = destino;
         if (Depois)
             Depois->Antes = destino;
-    // Acerta TObjSocket::varObj
-        if (TObjSocket::varObj == this)
-            TObjSocket::varObj = destino;
     }
+    if (TObjSocket::varObj == this)
+        TObjSocket::varObj = destino;
     for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj=obj->Depois)
         if (obj->Socket == this)
             obj->Socket = destino;

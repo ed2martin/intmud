@@ -44,7 +44,7 @@
 //#define DEBUG_MSG    // Mostra o que enviou e recebeu
 //#define DEBUG_SSL    // Mostra informações de conexão SSL
 
-TSocket * TSocket::sockAtual = 0;
+TSocket * TSocket::SockAtual = 0;
 TSocket * TSocket::sInicio = 0;
 bool TSocket::boolenvpend = false;
 
@@ -356,9 +356,9 @@ TSocket::~TSocket()
 #endif
 // Fecha Socket
     FecharSock(0, 0);
-// Verifica se apagou objeto sockAtual
-    if (sockAtual==this)
-        sockAtual=sDepois;
+// Verifica se apagou objeto SockAtual
+    if (SockAtual==this)
+        SockAtual=sDepois;
 // Retira da lista ligada
     (sAntes ? sAntes->sDepois : sInicio) = sDepois;
     if (sDepois)
@@ -998,14 +998,13 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
                     obj->sockerro<0 ? "protocolo incorreto" :
                     obj->sockerro==0 ? "" :
                     TxtErro(obj->sockerro));
-                sockAtual = obj;
             // Gera evento
+                SockAtual = obj;
                 obj->FuncFechou(mens);
             // Passa para próximo objeto TSocket
-                if (sockAtual==obj) // Se objeto Socket não foi apagado, apaga
-                    delete obj; // Faz automaticamente:
-                                // sockAtual = sockAtual->Depois
-                obj=sockAtual;  // Passa para o próximo objeto
+                if (SockAtual==obj) // Se objeto Socket não foi apagado, apaga
+                    delete obj;
+                obj=SockAtual;  // SockAtual já está no próximo objeto
                 continue;
             }
         // Verifica se socket fechado
@@ -1018,9 +1017,9 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
             if (ev_env)
             {
                 obj->eventoenv = false;
-                sockAtual = obj->sDepois;
+                SockAtual = obj->sDepois;
                 obj->FuncEvento("env", 0);
-                obj = sockAtual;
+                obj = SockAtual;
                 continue;
             }
         // Passa para próximo socket
@@ -1134,23 +1133,23 @@ void TSocket::ProcEventos(fd_set * set_entrada,
         // Erro ao conectar
             if (coderro)
             {
-                sockAtual = obj;
+                SockAtual = obj;
                 char mens[80] = "Erro ao conectar";
                 if (coderro != -1)
                     copiastr(mens, TxtErro(coderro), sizeof(mens));
-                if (obj->FuncEvento("err", mens))
-                    delete obj; // Apaga objeto se não foi apagado
-                                // socket é fechado ao apagar objeto
-                obj = sockAtual;
+                obj->FuncEvento("err", mens);
+                if (obj == SockAtual) // Se objeto não foi apagado
+                    delete obj; // Apaga objeto e fecha socket automaticamente
+                obj = SockAtual; // SockAtual já está no próximo objeto
                 continue;
             }
         // Conseguiu conectar, checa se é conexão normal (não SSL)
             if (obj->proto!=spConnect2)
             {
-                sockAtual = obj->sDepois;
+                SockAtual = obj->sDepois;
                 obj->proto = spTelnet2;
                 obj->FuncEvento("con", 0);
-                obj = sockAtual;
+                obj = SockAtual;
                 continue;
             }
         // Conexão SSL
@@ -1164,10 +1163,10 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             int resposta = SslConnect(obj->sockssl);
             if (resposta > 0)
             {
-                sockAtual = obj->sDepois;
+                SockAtual = obj->sDepois;
                 obj->proto = spTelnet2;
                 obj->FuncEvento("con", 0);
-                obj = sockAtual;
+                obj = SockAtual;
                 continue;
             }
             switch (SslGetError(obj->sockssl, resposta))
@@ -1190,11 +1189,11 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 obj = obj->sDepois;
                 continue;
             }
-            sockAtual = obj;
-            if (obj->FuncEvento("err", "Erro ao negociar SSL"))
-                delete obj; // Apaga objeto se não foi apagado
-                            // socket é fechado ao apagar objeto
-            obj = sockAtual;
+            SockAtual = obj;
+            obj->FuncEvento("err", "Erro ao negociar SSL");
+            if (obj == SockAtual) // Se objeto não foi apagado
+                delete obj; // Apaga objeto e fecha socket automaticamente
+            obj = SockAtual; // SockAtual já está no próximo objeto
             continue;
         }
     // Lê e processa dados pendentes
@@ -1264,25 +1263,30 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 break;
             }
         // Processa dados recebidos
-            if (resposta)
+            if (resposta > 0)
             {
-                sockAtual = obj;
-                obj->Processa(mens, resposta);
-                if (obj != sockAtual) // Se objeto socket foi apagado
+                SockAtual = obj;
+                int falta = resposta;
+                do
                 {
-                    obj = sockAtual;
+                    falta = obj->Processa(mens+resposta-falta, falta);
+                } while (falta > 0 && obj == SockAtual);
+                if (obj != SockAtual) // Se objeto socket foi apagado
+                {
+                    obj = SockAtual;
                     break;
                 }
+                if (resposta == sizeof(mens))
+                    continue;
             }
         // Verifica se fim da leitura
-            if (resposta == sizeof(mens))
-                continue;
             if (obj->proto == spTelnet2 && obj->pontRec)
             {
-                sockAtual = obj;
-                if (!obj->EventoMens(false))
+                SockAtual = obj;
+                obj->EventoMens(false);
+                if (obj != SockAtual)
                 {
-                    obj = sockAtual;
+                    obj = SockAtual;
                     break;
                 }
             }
@@ -1293,408 +1297,406 @@ void TSocket::ProcEventos(fd_set * set_entrada,
 }
 
 //------------------------------------------------------------------------------
-void TSocket::Processa(const char * buffer, int tamanho)
+int TSocket::Processa(const char * buffer, int tamanho)
 {
-    while (tamanho>0)
+// Ignora CR/LF, quando estiver mudando de protocolo
+    if ((*buffer==10 && dadoRecebido==13) ||
+        (*buffer==13 && dadoRecebido==10))
+        buffer++, tamanho--, dadoRecebido=0;
+// Protocolo Telnet
+    if (proto==spTelnet1 || proto==spTelnet2)
     {
-    // Ignora CR/LF, quando estiver mudando de protocolo
-        if ((*buffer==10 && dadoRecebido==13) ||
-            (*buffer==13 && dadoRecebido==10))
-            buffer++, tamanho--, dadoRecebido=0;
-    // Protocolo Telnet
-        if (proto==spTelnet1 || proto==spTelnet2)
+        unsigned char dado;
+        while (tamanho)
         {
-            unsigned char dado;
-            while (tamanho)
-            {
-            // Obtém próximo caracter
-                dado=*buffer++;
-                tamanho--;
-    //------- Para mostrar o que chegou
-    //printf("[%d;%d] ",dado,dadoRecebido); fflush(stdout);
-    //if (dado>=32 || dado=='\n')
-    //   putchar(dado); else printf("\\%02x", dado); fflush(stdout);
-    //printf(": %d %02x\n", dadoRecebido, CorAtual); fflush(stdout);
-    //printf(": %d %02x\n", dado, pontTelnet); fflush(stdout);
-            // Protocolo do Telnet
+        // Obtém próximo caracter
+            dado=*buffer++;
+            tamanho--;
+//------- Para mostrar o que chegou
+//printf("[%d;%d] ",dado,dadoRecebido); fflush(stdout);
+//if (dado>=32 || dado=='\n')
+//   putchar(dado); else printf("\\%02x", dado); fflush(stdout);
+//printf(": %d %02x\n", dadoRecebido, CorAtual); fflush(stdout);
+//printf(": %d %02x\n", dado, pontTelnet); fflush(stdout);
+        // Protocolo do Telnet
 
-            // Primeiro caracter  - IAC
-                if (pontTelnet==0)
+        // Primeiro caracter  - IAC
+            if (pontTelnet==0)
+            {
+                if (dado<7)
+                    continue;
+                if (dado==255)
                 {
-                    if (dado<7)
-                        continue;
-                    if (dado==255)
+                    bufTelnet[pontTelnet++]=dado;
+                    continue;
+                }
+                goto telnet_cor;
+            }
+        // Telnet: Mensagem comprida (SB + SE)
+        // 255 250 ... 255 240 = mensagem
+            if (pontTelnet>=3 && dado==240 &&
+                    bufTelnet[pontTelnet-1]==255)
+            {
+                if (bufTelnet[3]==1)
+                    switch (bufTelnet[2])
                     {
-                        bufTelnet[pontTelnet++]=dado;
-                        continue;
+                    case 24: // Quer saber o terminal
+                        EnvMensBytes("\xFF\xFA\x18\x00" // Comando
+                            "INTMUD" // Nome
+                            "\xFF\xF0", 12); // Fim do comando
+                        break;
+                    case 32: // Quer saber velocidade do terminal
+                        EnvMensBytes("\xFF\xFA\x20\x00"
+                            "38400,38400\xFF\xF0", 17);
+                        break;
+                    case 35: // Quer saber display X
+                        EnvMensBytes("\xFF\xFA\x23\x00"
+                            "x.y\xFF\xF0", 9);
+                        break;
+                    case 39: // Quer saber variáveis de ambiente
+                        EnvMensBytes("\xFF\xFA\x27\x00\xFF\xF0", 6);
+                        break;
                     }
+                pontTelnet=0;
+                continue;
+            }
+        // Telnet: Mensagem de 2 bytes
+        // 255 255 = caracter 255
+        // 255 249 = go ahead
+        // 255 244 = interrupt process (Control+C)
+        // 255 240 = end of option negotiation
+            if (pontTelnet==1)
+            {
+                if (dado==255)
+                {
+                    pontTelnet=0;
                     goto telnet_cor;
                 }
-            // Telnet: Mensagem comprida (SB + SE)
-            // 255 250 ... 255 240 = mensagem
-                if (pontTelnet>=3 && dado==240 &&
-                        bufTelnet[pontTelnet-1]==255)
+                if (dado==249)
                 {
-                    if (bufTelnet[3]==1)
-                        switch (bufTelnet[2])
-                        {
-                        case 24: // Quer saber o terminal
-                            EnvMensBytes("\xFF\xFA\x18\x00" // Comando
-                                "INTMUD" // Nome
-                                "\xFF\xF0", 12); // Fim do comando
-                            break;
-                        case 32: // Quer saber velocidade do terminal
-                            EnvMensBytes("\xFF\xFA\x20\x00"
-                                "38400,38400\xFF\xF0", 17);
-                            break;
-                        case 35: // Quer saber display X
-                            EnvMensBytes("\xFF\xFA\x23\x00"
-                                "x.y\xFF\xF0", 9);
-                            break;
-                        case 39: // Quer saber variáveis de ambiente
-                            EnvMensBytes("\xFF\xFA\x27\x00\xFF\xF0", 6);
-                            break;
-                        }
+                    pontTelnet=0, dado=6;
+                    goto telnet_cor;
+                }
+                if (dado==240)
+                {
                     pontTelnet=0;
                     continue;
                 }
-            // Telnet: Mensagem de 2 bytes
-            // 255 255 = caracter 255
-            // 255 249 = go ahead
-            // 255 244 = interrupt process (Control+C)
-            // 255 240 = end of option negotiation
-                if (pontTelnet==1)
+                if (dado==244)
                 {
-                    if (dado==255)
-                    {
-                        pontTelnet=0;
-                        goto telnet_cor;
-                    }
-                    if (dado==249)
-                    {
-                        pontTelnet=0, dado=6;
-                        goto telnet_cor;
-                    }
-                    if (dado==240)
-                    {
-                        pontTelnet=0;
-                        continue;
-                    }
-                    if (dado==244)
-                    {
-                        FecharSock(-1, 0);
-                        return;
-                    }
+                    FecharSock(-1, 0);
+                    return 0;
                 }
-            // Telnet: Anota caracter no buffer
-                if (pontTelnet>=(int)sizeof(bufTelnet))
-                    pontTelnet--;
-                bufTelnet[pontTelnet++]=dado;
-            // Telnet: Mensagem de 3 bytes
-            // 255 x y = mensagem x y
-                if (pontTelnet!=3 || bufTelnet[1]==250)
-                    continue;
-                pontTelnet=0;
-                if (bufTelnet[1]>=251 && bufTelnet[1]<=254)
+            }
+        // Telnet: Anota caracter no buffer
+            if (pontTelnet>=(int)sizeof(bufTelnet))
+                pontTelnet--;
+            bufTelnet[pontTelnet++]=dado;
+        // Telnet: Mensagem de 3 bytes
+        // 255 x y = mensagem x y
+            if (pontTelnet!=3 || bufTelnet[1]==250)
+                continue;
+            pontTelnet=0;
+            if (bufTelnet[1]>=251 && bufTelnet[1]<=254)
+            {
+                int ind = -1;
+                switch (bufTelnet[2])
                 {
-                    int ind = -1;
-                    switch (bufTelnet[2])
+                case 1: ind=0; break; // Echo
+                case 3: ind=1; break; // Supress Go Ahead
+                case 5: ind=2; break; // Status
+                case 6: ind=3; break; // Timing Mark
+                case 24: ind=4; break; // Terminal Type
+                case 31: ind=5; break; // Window Size
+                case 32: ind=6; break; // Terminal Speed
+                case 33: ind=7; break; // Remote Flow Control
+                case 34: ind=8; break; // Linemode
+                case 36: ind=9; break; // Environment Variables
+                default:
+                    bufTelnet[1] = (bufTelnet[1]<243 ? 254 : 252);
+                }
+                if (ind>=0) switch (bufTelnet[1])
+                {
+                case 251: // WILL -> responde DO
+                    if ((telnetopc[ind] & 3) == 2)
+                        ind = -1;
+                    else
+                        telnetopc[ind] = (telnetopc[ind] & 0xF0) | 2;
+                    bufTelnet[1] = 253;
+                    break;
+                case 252: // WONT -> responde DONT
+                    if ((telnetopc[ind] & 3) == 3)
+                        ind = -1;
+                    else
+                        telnetopc[ind] = (telnetopc[ind] & 0xF0) | 3;
+                    bufTelnet[1] = 254;
+                    break;
+                case 253: // DO -> responde WILL
+                    if (telnetecho)
+                        telnetecho--, ind=-1;
+                    else if ((telnetopc[ind] & 0x30) == 0x20)
+                        ind = -1;
+                    else
+                        telnetopc[ind] = (telnetopc[ind] & 15) | 0x20;
+                    bufTelnet[1] = 251;
+                    break;
+                case 254: // DONT -> responde WONT
+                    if (telnetecho)
+                        telnetecho--, ind=-1;
+                    else if ((telnetopc[ind] & 0x30) == 0x30)
+                        ind = -1;
+                    else
+                        telnetopc[ind] = (telnetopc[ind] & 15) | 0x30;
+                    bufTelnet[1] = 252;
+                    break;
+                }
+                if (ind < 0)
+                    continue;
+                EnvMensBytes((char*)bufTelnet, 3);
+                if (bufTelnet[2]==31) // Quer saber o tamanho da janela
+                    EnvMensBytes("\xFF\xFA\x1F" // Comando
+                        "\x00\x50\x00\x18" // Tamanho
+                        "\xFF\xF0", 9); // Fim do comando
+                if (bufTelnet[1]==253 && dado==1) // 255 251 1 = echo off
+                {
+                    dado=4;
+                    goto telnet_cor;
+                }
+                if (bufTelnet[1]==254 && dado==1) // 255 252 1 = echo on
+                {
+                    dado=5;
+                    goto telnet_cor;
+                }
+            }
+            continue;
+telnet_cor:
+        // Filtra cores do Telnet
+            if (dadoRecebido==2)
+            {
+                if (dado>' ' && ((dado|0x20)<'a' || (dado|0x20)>'z'))
+                {
+                    if (pontESC<sizeof(bufESC)-2)
+                        bufESC[pontESC++]=dado;
+                    continue;
+                }
+                dadoRecebido=0;
+                if (dado!='m' || bufESC[0]!='[' || pontESC==0)
+                    continue;
+                bufESC[pontESC]=';';
+                bufESC[pontESC+1]=0;
+                unsigned char * x = bufESC+1;
+                while (*x)
+                {
+                    if (x[1]==';')
                     {
-                    case 1: ind=0; break; // Echo
-                    case 3: ind=1; break; // Supress Go Ahead
-                    case 5: ind=2; break; // Status
-                    case 6: ind=3; break; // Timing Mark
-                    case 24: ind=4; break; // Terminal Type
-                    case 31: ind=5; break; // Window Size
-                    case 32: ind=6; break; // Terminal Speed
-                    case 33: ind=7; break; // Remote Flow Control
-                    case 34: ind=8; break; // Linemode
-                    case 36: ind=9; break; // Environment Variables
-                    default:
-                        bufTelnet[1] = (bufTelnet[1]<243 ? 254 : 252);
+                        switch (x[0])
+                        {
+                        case '0': CorAtual=0x70; break; // Cores padrão
+                        case '1': CorAtual|=0x80; break; // Negrito
+                        case '4': CorAtual|=0x100; break; // Sublinhado
+                        case '5': CorAtual|=0x400; break; // Piscando
+                        case '7': CorAtual|=0x200; break; // Inversão
+                        }
                     }
-                    if (ind>=0) switch (bufTelnet[1])
+                    else if (x[0]=='2') // Remover atributos
                     {
-                    case 251: // WILL -> responde DO
-                        if ((telnetopc[ind] & 3) == 2)
-                            ind = -1;
-                        else
-                            telnetopc[ind] = (telnetopc[ind] & 0xF0) | 2;
-                        bufTelnet[1] = 253;
-                        break;
-                    case 252: // WONT -> responde DONT
-                        if ((telnetopc[ind] & 3) == 3)
-                            ind = -1;
-                        else
-                            telnetopc[ind] = (telnetopc[ind] & 0xF0) | 3;
-                        bufTelnet[1] = 254;
-                        break;
-                    case 253: // DO -> responde WILL
-                        if (telnetecho)
-                            telnetecho--, ind=-1;
-                        else if ((telnetopc[ind] & 0x30) == 0x20)
-                            ind = -1;
-                        else
-                            telnetopc[ind] = (telnetopc[ind] & 15) | 0x20;
-                        bufTelnet[1] = 251;
-                        break;
-                    case 254: // DONT -> responde WONT
-                        if (telnetecho)
-                            telnetecho--, ind=-1;
-                        else if ((telnetopc[ind] & 0x30) == 0x30)
-                            ind = -1;
-                        else
-                            telnetopc[ind] = (telnetopc[ind] & 15) | 0x30;
-                        bufTelnet[1] = 252;
-                        break;
+                        if (memcmp(x+1, "2;", 2)==0) // Sem negrito
+                            CorAtual&=~0x80;
+                        else if (memcmp(x+1, "4;", 2)==0) // Sem sublinado
+                            CorAtual&=~0x100;
+                        else if (memcmp(x+1, "5;", 2)==0) // Sem piscante
+                            CorAtual&=~0x400;
+                        else if (memcmp(x+1, "7;", 2)==0) // Sem inversão
+                            CorAtual&=~0x200;
                     }
-                    if (ind < 0)
-                        continue;
-                    EnvMensBytes((char*)bufTelnet, 3);
-                    if (bufTelnet[2]==31) // Quer saber o tamanho da janela
-                        EnvMensBytes("\xFF\xFA\x1F" // Comando
-                            "\x00\x50\x00\x18" // Tamanho
-                            "\xFF\xF0", 9); // Fim do comando
-                    if (bufTelnet[1]==253 && dado==1) // 255 251 1 = echo off
+                    else if (x[0]=='3' && x[1]>='0' &&
+                             x[1]<='9' && x[2]==';')
                     {
-                        dado=4;
-                        goto telnet_cor;
+                        CorAtual &= ~0x70;
+                        if (x[1]>='8')
+                            CorAtual |= 0x70;
+                        else
+                            CorAtual += (x[1]-'0')*16;
                     }
-                    if (bufTelnet[1]==254 && dado==1) // 255 252 1 = echo on
+                    else if (x[0]=='4' && x[1]>='0' &&
+                             x[1]<='9' && x[2]==';')
                     {
-                        dado=5;
-                        goto telnet_cor;
+                        CorAtual &= ~0x0F;
+                        if (x[1]<'8')
+                            CorAtual += (x[1]-'0');
                     }
+                    x++;
+                    while (*x && *x!=';')
+                        x++;
+                    if (*x==';')
+                        x++;
                 }
                 continue;
-telnet_cor:
-            // Filtra cores do Telnet
-                if (dadoRecebido==2)
-                {
-                    if (dado>' ' && ((dado|0x20)<'a' || (dado|0x20)>'z'))
-                    {
-                        if (pontESC<sizeof(bufESC)-2)
-                            bufESC[pontESC++]=dado;
-                        continue;
-                    }
-                    dadoRecebido=0;
-                    if (dado!='m' || bufESC[0]!='[' || pontESC==0)
-                        continue;
-                    bufESC[pontESC]=';';
-                    bufESC[pontESC+1]=0;
-                    unsigned char * x = bufESC+1;
-                    while (*x)
-                    {
-                        if (x[1]==';')
-                        {
-                            switch (x[0])
-                            {
-                            case '0': CorAtual=0x70; break; // Cores padrão
-                            case '1': CorAtual|=0x80; break; // Negrito
-                            case '4': CorAtual|=0x100; break; // Sublinhado
-                            case '5': CorAtual|=0x400; break; // Piscando
-                            case '7': CorAtual|=0x200; break; // Inversão
-                            }
-                        }
-                        else if (x[0]=='2') // Remover atributos
-                        {
-                            if (memcmp(x+1, "2;", 2)==0) // Sem negrito
-                                CorAtual&=~0x80;
-                            else if (memcmp(x+1, "4;", 2)==0) // Sem sublinado
-                                CorAtual&=~0x100;
-                            else if (memcmp(x+1, "5;", 2)==0) // Sem piscante
-                                CorAtual&=~0x400;
-                            else if (memcmp(x+1, "7;", 2)==0) // Sem inversão
-                                CorAtual&=~0x200;
-                        }
-                        else if (x[0]=='3' && x[1]>='0' &&
-                                 x[1]<='9' && x[2]==';')
-                        {
-                            CorAtual &= ~0x70;
-                            if (x[1]>='8')
-                                CorAtual |= 0x70;
-                            else
-                                CorAtual += (x[1]-'0')*16;
-                        }
-                        else if (x[0]=='4' && x[1]>='0' &&
-                                 x[1]<='9' && x[2]==';')
-                        {
-                            CorAtual &= ~0x0F;
-                            if (x[1]<'8')
-                                CorAtual += (x[1]-'0');
-                        }
-                        x++;
-                        while (*x && *x!=';')
-                            x++;
-                        if (*x==';')
-                            x++;
-                    }
-                    continue;
-                }
-            // Sequências de controle - caracter ESC
-                if (dado==27)
-                {
-                    dadoRecebido=2;
-                    pontESC=0;
-                }
-            // Próxima linha
-                else if (dado==10 || dado==13)
-                {
-                    if (dado==13 ? dadoRecebido==10 : dadoRecebido==13)
-                        dadoRecebido=0;
-                    else
-                    {
-                        dadoRecebido = dado;
-                        bufRec[pontRec].cor = CorAtual;
-                    // Envia mensagem
-                        if (!EventoMens(true))
-                            return;
-                        break;
-                    }
-                }
-            // BackSpace
-                else if (dado==8 || dado==127)
-                {
-                    if (pontRec>1)
-                        pontRec--;
-                }
-            // Caracteres imprimíveis
-                else if (dado>=' ' || (usaropctelnet && dado>=4 && dado<=7))
-                {
-                    if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
-                    {
-                        bufRec[pontRec].carac = dado;
-                        bufRec[pontRec].cor = CorAtual;
-                        if ((CorAtual & 15) == (CorAtual>>4))
-                            bufRec[pontRec].cor ^= 0x80;
-                        pontRec++;
-                    }
-                }
-            } // while (tamanho)
-        }
-
-    // Protocolo IRC
-        else if (proto==spIRC)
-        {
-            char dado;
-            while (tamanho)
+            }
+        // Sequências de controle - caracter ESC
+            if (dado==27)
             {
-            // Obtém próximo caracter
-                dado=*buffer++;
-                tamanho--;
-    //printf(" CH(%d,%c) ", (unsigned char)dado,
-    //            (unsigned char)dado>=32?dado:' '); fflush(stdout);
-            // Filtra cores do IRC
-                if (dado==3)
-                {
-                    dadoRecebido=21;
-                    CorIRC1 = CorIRC2 = 0;
-                    continue;
-                }
-                if (dadoRecebido>=21)
-                {
-                    dadoRecebido++;
-                    if (dadoRecebido==23 && dado==',')
-                    {
-                        dadoRecebido++;
-                        continue;
-                    }
-                    else if (dadoRecebido==24)
-                    {
-                        if (dado==',')
-                            continue;
-                    }
-                    else if (dadoRecebido<=26 && dado>='0' && dado<='9')
-                    {
-                        if (dadoRecebido<=24)
-                            CorIRC1 = CorIRC1*10 + dado-'0';
-                        else
-                            CorIRC2 = CorIRC2*10 + dado-'0';
-                        continue;
-                    }
-                    if (dadoRecebido==22)
-                        CorAtual=0x70;
-                    else
-                    {
-                    // Muda a frente
-                        if (dadoRecebido<=25)
-                        {
-                            CorAtual &= 15;
-                            CorAtual |= convirc[CorIRC1&15] * 16;
-                        }
-                    // Muda frente e fundo
-                        else
-                            CorAtual = convirc[CorIRC1&15] * 16 +
-                                    (convirc[CorIRC2&15] & 7);
-                    }
+                dadoRecebido=2;
+                pontESC=0;
+            }
+        // Próxima linha
+            else if (dado==10 || dado==13)
+            {
+                if (dado==13 ? dadoRecebido==10 : dadoRecebido==13)
                     dadoRecebido=0;
-                }
-            // Próxima linha
-                else if (dado==10)
+                else
                 {
+                    dadoRecebido = dado;
                     bufRec[pontRec].cor = CorAtual;
                 // Envia mensagem
-                    if (!EventoMens(true))
-                        return;
-                }
-            // BackSpace
-                else if (dado==8 || dado==127)
-                {
-                    if (pontRec>1)
-                        pontRec--;
-                }
-            // Caracteres imprimíveis
-                else if ((unsigned char)dado>=' ')
-                {
-                    if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
-                    {
-                        bufRec[pontRec].carac = dado;
-                        bufRec[pontRec].cor = CorAtual;
-                        if ((CorAtual & 15) == (CorAtual>>4))
-                            bufRec[pontRec].cor ^= 0x80;
-                        pontRec++;
-                    }
+                    EventoMens(true);
+                    return tamanho;
                 }
             }
-        }
-    // Protocolo Papovox
-        else if (proto==spPapovox)
+        // BackSpace
+            else if (dado==8 || dado==127)
+            {
+                if (pontRec>1)
+                    pontRec--;
+            }
+        // Caracteres imprimíveis
+            else if (dado>=' ' || (usaropctelnet && dado>=4 && dado<=7))
+            {
+                if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
+                {
+                    bufRec[pontRec].carac = dado;
+                    bufRec[pontRec].cor = CorAtual;
+                    if ((CorAtual & 15) == (CorAtual>>4))
+                        bufRec[pontRec].cor ^= 0x80;
+                    pontRec++;
+                }
+            }
+        } // while (tamanho)
+        return tamanho;
+    }
+
+// Protocolo IRC
+    if (proto==spIRC)
+    {
+        char dado;
+        while (tamanho)
         {
-            dadoRecebido=0;
-            for (; pontRec<3 && tamanho>0; tamanho--,buffer++) // Cabeçalho
+        // Obtém próximo caracter
+            dado=*buffer++;
+            tamanho--;
+//printf(" CH(%d,%c) ", (unsigned char)dado,
+//            (unsigned char)dado>=32?dado:' '); fflush(stdout);
+        // Filtra cores do IRC
+            if (dado==3)
             {
-                bufRec[pontRec].carac = *(unsigned char*)buffer;
-                bufRec[pontRec].cor = 0x70;
-                pontRec++;
+                dadoRecebido=21;
+                CorIRC1 = CorIRC2 = 0;
+                continue;
             }
-            if (pontRec < 3) // Verifica se o cabeçalho já chegou
-                return;
-            unsigned int mensagem =      // Tamanho da mensagem
-                            3 + bufRec[1].carac + bufRec[2].carac * 0x100;
-            if (mensagem >= SOCKET_REC) // Verifica tamanho da mensagem
+            if (dadoRecebido>=21)
             {
-                FecharSock(-1, 0);
-                return;
+                dadoRecebido++;
+                if (dadoRecebido==23 && dado==',')
+                {
+                    dadoRecebido++;
+                    continue;
+                }
+                else if (dadoRecebido==24)
+                {
+                    if (dado==',')
+                        continue;
+                }
+                else if (dadoRecebido<=26 && dado>='0' && dado<='9')
+                {
+                    if (dadoRecebido<=24)
+                        CorIRC1 = CorIRC1*10 + dado-'0';
+                    else
+                        CorIRC2 = CorIRC2*10 + dado-'0';
+                    continue;
+                }
+                if (dadoRecebido==22)
+                    CorAtual=0x70;
+                else
+                {
+                // Muda a frente
+                    if (dadoRecebido<=25)
+                    {
+                        CorAtual &= 15;
+                        CorAtual |= convirc[CorIRC1&15] * 16;
+                    }
+                // Muda frente e fundo
+                    else
+                        CorAtual = convirc[CorIRC1&15] * 16 +
+                                (convirc[CorIRC2&15] & 7);
+                }
+                dadoRecebido=0;
             }
-            for (; tamanho>0 && pontRec<mensagem; tamanho--)
+        // Próxima linha
+            else if (dado==10)
             {
-                bufRec[pontRec].carac = *(unsigned char*)buffer++;
-                bufRec[pontRec].cor = 0x70;
-                pontRec++;
+                bufRec[pontRec].cor = CorAtual;
+            // Envia mensagem
+                EventoMens(true);
+                return tamanho;
             }
-            if (pontRec < mensagem)
-                return;
-        // Envia mensagem
-            if (!EventoMens(true))
-                return;
+        // BackSpace
+            else if (dado==8 || dado==127)
+            {
+                if (pontRec>1)
+                    pontRec--;
+            }
+        // Caracteres imprimíveis
+            else if ((unsigned char)dado>=' ')
+            {
+                if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
+                {
+                    bufRec[pontRec].carac = dado;
+                    bufRec[pontRec].cor = CorAtual;
+                    if ((CorAtual & 15) == (CorAtual>>4))
+                        bufRec[pontRec].cor ^= 0x80;
+                    pontRec++;
+                }
+            }
         }
-        else
-            assert(0);
-    } // while (tamanho>0)
+        return tamanho;
+    }
+// Protocolo Papovox
+    if (proto==spPapovox)
+    {
+        dadoRecebido=0;
+        for (; pontRec<3 && tamanho>0; tamanho--,buffer++) // Cabeçalho
+        {
+            bufRec[pontRec].carac = *(unsigned char*)buffer;
+            bufRec[pontRec].cor = 0x70;
+            pontRec++;
+        }
+        if (pontRec < 3) // Verifica se o cabeçalho já chegou
+            return 0;
+        unsigned int mensagem =      // Tamanho da mensagem
+                        3 + bufRec[1].carac + bufRec[2].carac * 0x100;
+        if (mensagem >= SOCKET_REC) // Verifica tamanho da mensagem
+        {
+            FecharSock(-1, 0);
+            return 0;
+        }
+        for (; tamanho>0 && pontRec<mensagem; tamanho--)
+        {
+            bufRec[pontRec].carac = *(unsigned char*)buffer++;
+            bufRec[pontRec].cor = 0x70;
+            pontRec++;
+        }
+        if (pontRec < mensagem)
+            return 0;
+    // Envia mensagem
+        EventoMens(true);
+        return tamanho;
+    }
+// Protocolo desconhecido
+    assert(0);
 }
 
 //------------------------------------------------------------------------------
-bool TSocket::EventoMens(bool completo)
+void TSocket::EventoMens(bool completo)
 {
 // Prepara mensagem
     char texto[2048];
@@ -1781,7 +1783,7 @@ bool TSocket::EventoMens(bool completo)
     else
     {
         pontRec = 0;
-        return false;
+        return;
     }
 
 // Acerta variáveis
@@ -1794,12 +1796,12 @@ bool TSocket::EventoMens(bool completo)
     if (AFlooder && completo) // Verifica se anti-flooder ativado
     {
         if (AFlooder >= TempoIni + 60) // Condição de flooder
-            return true;
+            return;
         AFlooder += strlen(texto)/8+5; // Acerta AFlooder
         if (AFlooder <= TempoIni)  // Acerta valor mínimo de AFlooder
             AFlooder = TempoIni + 1;
     }
 
 // Processa a mensagem
-    return FuncEvento("msg", texto, completo, codigo);
+    FuncEvento("msg", texto, completo, codigo);
 }

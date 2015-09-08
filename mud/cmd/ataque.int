@@ -340,6 +340,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret arg0.contr.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
   senao !arg1.contr.p_agressivo(arg0)
     ret arg0.contr.msg(txtcopiamai(arg1.contr.descnome, "A") + " não quer brigar.")
+  senao !arg0.contr.p_agressivo(arg1)
+    ret arg0.contr.msg("Você não quer brigar com " +arg1.contr.descnome + ".")
   senao arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
     ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + " aqui.")
   fimse
@@ -462,6 +464,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   epara nulo, l, l.ini.remove
     continuar l.objini.perso < 2 # Não prossegue se for pacífico
     r = l.objini.persobat
+    continuar !r.contr.p_agressivo(arg0)
     tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 3

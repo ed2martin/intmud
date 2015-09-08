@@ -7,15 +7,23 @@ telatxt tela
 intexec fimprog # Para fechar o programa
 debug dbg # Para informar sobre erros no programa
 const iniclasse = !$[arg0] && criar(arg0)
+inttempo rbot
 
 func ini
+  rbot_tempo
   int8 x
   epara x = 1, x <= 10, x += 1
     refvar lin = config:inicom[x]
     casovar txtmin(txt1(lin))
     casose "bot"
-      sair inttxtsub(lin) < 5
+    casose "rbot"
+      sair intsub(lin) < 5
       criar("jogobot", txt2(lin))
+      sair
+    casose "bot2"
+    casose "rbot2"
+      sair intsub(lin) < 5
+      criar("jogobot2", txt2(lin))
       sair
     casose "telnet"
     casose "papo"
@@ -26,6 +34,23 @@ func ini
     casofim
   efim
   config:modolocal && criar("jogolocal")
+
+func rbot_tempo
+  ret rbot, nulo
+  datahora dh
+  dh.agora
+  rbot = (3600 - dh.min * 60 - dh.seg) * 10 + 9000
+
+func rbot_exec
+  rbot_tempo
+  indiceitem item
+  int8 x
+  epara x = 1, x <= 10, x += 1
+    refvar lin = config:inicom[x]
+    continuar txt1(lin) != "rbot" && txt1(lin) != "rbot2"
+    continuar intsub(lin) < 5 || item.obj("cn " + txtsub(lin, 1, 1))
+    criar(txt1(lin) == "rbot" ? "jogobot" : "jogobot2", txt2(lin))
+  efim
 
 func tela_tecla
   se arg0 == "F10" # Recarregar o programa
