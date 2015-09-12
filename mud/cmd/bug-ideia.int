@@ -24,3 +24,30 @@ func escr
       item.obj.msg($mens.proc(config:bug1msg, item.obj.perso))
     efim
   fimse
+
+
+classe cmdfim_ideia
+herda comando_comum
+const objcmd = config:ideiatipo ? este
+const txtajuda = config:ideiatipo ? txtajuda1
+const txtajuda1 = "\b\c3Bug\b\n\
+Sintaxe: BUG <mensagem>\n\
+Envia mensagem para os administradores sobre ideias para o jogo."
+const posic = 0
+
+func escr
+  se arg0.pnivel < config:ideianivel
+    arg0.msg("Para usar o comando IDEIA você precisa estar no nível " + config:ideianivel + ".")
+  senao !arg1
+    arg0.msg("Tecle a mensagem após IDEIA.")
+  senao
+    $misclog.ideia("ideia " + arg0.nome + ": " + arg1)
+    $mens.p(arg0)
+    $mens.mens = arg1
+    arg0.msginv(config:ideia2msg)
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]
+      item.obj.msg($mens.proc(config:ideia1msg, item.obj.perso))
+    efim
+  fimse

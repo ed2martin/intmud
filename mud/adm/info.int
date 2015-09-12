@@ -111,10 +111,10 @@ func nobj # Retorna o nome de um objeto
   ret txt(arg0)
 
 
-classe adm_infohab
+classe adm_ihab
 herda comando_adm, comando_comum
-const txtajuda = "\b\c3InfoHab\b\n\
-Sintaxe: INFOHAB [personagem] [número do animal]\n\
+const txtajuda = "\b\c3Ihab\b\n\
+Sintaxe: IHAB [personagem] [número do animal]\n\
 Informa as habilidades de um personagem na sala."
 
 func escr
@@ -138,10 +138,10 @@ func escr
   arg0.sock.txtmostra
 
 
-classe adm_infomag
+classe adm_imag
 herda comando_adm, comando_comum
-const txtajuda = "\b\c3InfoMag\b\n\
-Sintaxe: INFOMAG [personagem] [número do animal]\n\
+const txtajuda = "\b\c3Imag\b\n\
+Sintaxe: IMAG [personagem] [número do animal]\n\
 Informa as magias de um personagem na sala."
 
 func escr
@@ -165,10 +165,10 @@ func escr
   arg0.sock.txtmostra
 
 
-classe adm_infoe
+classe adm_ief
 herda comando_adm, comando_comum
-const txtajuda = "\b\c3InfoE\b\n\
-Sintaxe: INFOE [personagem] [número do animal]\n\
+const txtajuda = "\b\c3Ief\b\n\
+Sintaxe: IEF [personagem] [número do animal]\n\
 Informa os efeitos afetando um personagem na sala."
 
 func escr
@@ -191,15 +191,33 @@ func escr
   arg0.sock.txtmostra
 
 
-classe adm_infojog
+classe adm_ijog
 herda comando_adm, comando_comum
-const txtajuda = "\b\c3InfoJog\b\n\
-Sintaxe: INFOJOG <jogador>\n\
+const txtajuda = "\b\c3Ijog\b\n\
+Sintaxe: IJOG\n\
+         IJOG <jogador>\n\
 Mostra algumas informações do jogador: como está conectado, nível, moedas,\n\
-e-mail, sala e jogo salvo. Se não estiver online, procura no jogo salvo."
+e-mail, sala e jogo salvo. Se não estiver online, procura no jogo salvo.\n\
+Sem argumentos, mostra aonde cada jogador online está."
 
 func escr
-  ret !arg1, arg0.msg("Digite o nome do jogador após INFOJOG")
+  se !arg1
+    textotxt t
+    t.addfim("\b\c6Jogadores:\b")
+    ref r
+    epara r = $jogador, r && t.linhas < 500, r = objdepois(r)
+      t.addfim(r.nome + lugar(r))
+    efim
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      refvar obj = item.obj
+      continuar obj.perso.jog # Continuar se personagem é jogador
+      continuar !obj.perso # Continua se não tem personagem
+      t.addfim(obj.nome + " em " + obj.perso.nome + lugar(obj.perso))
+    efim
+    arg0.msg2(t.remove(500))
+    ret
+  fimse
 # Obtém: p = objeto do personagem
   ref p # Objeto do personagem
   enquanto 1
@@ -252,9 +270,24 @@ func escr
   t.addfim(lin + " horas")
   arg0.msg2(t.remove(1000))
 
+func lugar
+# arg0=jogador
+  ref s
+  txt100 lin
+  epara s = arg0.dono, s, s = s.dono
+    se s.perso
+      lin = (s.jog ? ", jogador" : ", " + txt(s, 2)) + " (" + s.nome + ")" + lin
+    senao s.item
+      lin = ", " + txt(s, 2) + " (" + s.nome + ")" + lin
+    senao
+      lin = ", " + txt(s, 2) + " (" + s.s_titulo + ")" + lin
+    fimse
+  efim
+  ret lin
+
 
 classe jog_info
-# Usado no comando infojog
+# Usado no comando ijog
 const iniclasse = !$[arg0] && criar(arg0)
 sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem

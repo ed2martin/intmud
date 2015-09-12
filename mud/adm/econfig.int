@@ -404,22 +404,29 @@ const vari6 = "l_mortes"
 const extr6 = "Não grava\nGrava"
 const exec6 = "misclog:atualiza_exec"
 #
-const nome7 = "Canal BUG"
+const nome7 = "Canal Bug"
 const tipo7 = "opc_opcao--"
 const clas7 = "config"
 const vari7 = "l_bug"
 const extr7 = "Não grava\nGrava"
 const exec7 = "misclog:atualiza_exec"
 #
-const nome8 = "Arquivos de log"
-const info8 = "Os arquivos de log ficam no diretório log.\n\
-Essa opção define se o MUD deve criar um arquivo novo a cada dia,\n\
-a cada 5 dias, a cada mês, etc. O MUD não apaga arquivos de log."
+const nome8 = "Canal Ideia"
 const tipo8 = "opc_opcao--"
 const clas8 = "config"
-const vari8 = "logtempo"
-const extr8 = "Um por dia\nUm a cada 5 dias\nUm a cada 10 dias\nUm por mês"
+const vari8 = "l_ideia"
+const extr8 = "Não grava\nGrava"
 const exec8 = "misclog:atualiza_exec"
+#
+const nome9 = "Arquivos de log"
+const info9 = "Os arquivos de log ficam no diretório log.\n\
+Essa opção define se o MUD deve criar um arquivo novo a cada dia,\n\
+a cada 5 dias, a cada mês, etc. O MUD não apaga arquivos de log."
+const tipo9 = "opc_opcao--"
+const clas9 = "config"
+const vari9 = "logtempo"
+const extr9 = "Um por dia\nUm a cada 5 dias\nUm a cada 10 dias\nUm por mês"
+const exec9 = "misclog:atualiza_exec"
 
 
 classe menu_econfig_msg1
@@ -537,10 +544,26 @@ const tipo20 = "opc_linha--"
 const clas20 = "config"
 const vari20 = "bug2msg"
 #
-const nome21 = "Chegou ao nível máximo"
-const tipo21 = "opc_texto--"
+const nome21 = "Canal Ideia"
+const tipo21 = "opc_linha--"
 const clas21 = "config"
-const vari21 = "nmaxmsg"
+const vari21 = "ideia1msg"
+#
+const nome22 = "Comando Ideia"
+const tipo22 = "opc_linha--"
+const clas22 = "config"
+const vari22 = "ideia2msg"
+#
+const nome23 = "Chegou ao nível máximo"
+const tipo23 = "opc_texto--"
+const clas23 = "config"
+const vari23 = "nmaxmsg"
+#
+const nome24 = "Sala perigosa por perto"
+const info24 = "Aparece após título e descrição da sala. Se estiver vazio, não aparece."
+const tipo24 = "opc_linha--"
+const clas24 = "config"
+const vari24 = "perigomsg"
 
 
 classe menu_econfig_msg2
@@ -657,74 +680,85 @@ const tipo4 = "opc_numero--"
 const clas4 = "config"
 const vari4 = "bugnivel"
 #
-const nome5 = "Comando Chat"
+const nome5 = "Comando Ideia"
 const tipo5 = "opc_opcao--"
 const clas5 = "config"
-const vari5 = "chattipo"
-const extr5 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
+const vari5 = "ideiatipo"
+const extr5 = "Desabilitado\nHabilitado"
 #
-const nome6 = "Chat a partir do nível"
+const nome6 = "Ideia a partir do nível"
 const tipo6 = "opc_numero--"
 const clas6 = "config"
-const vari6 = "chatnivel"
+const vari6 = "ideianivel"
 #
-const nome7 = "Comando Novatos"
+const nome7 = "Comando Chat"
 const tipo7 = "opc_opcao--"
 const clas7 = "config"
-const vari7 = "novatostipo"
+const vari7 = "chattipo"
 const extr7 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome8 = "Novatos a partir do nível"
+const nome8 = "Chat a partir do nível"
 const tipo8 = "opc_numero--"
 const clas8 = "config"
-const vari8 = "novatosnivel"
+const vari8 = "chatnivel"
 #
-const nome9 = "Comando Emoção"
+const nome9 = "Comando Novatos"
 const tipo9 = "opc_opcao--"
 const clas9 = "config"
-const vari9 = "emocaotipo"
-const extr9 = "Desabilitado\nHabilitado"
+const vari9 = "novatostipo"
+const extr9 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
-const nome10 = "Emoção a partir do nível"
+const nome10 = "Novatos a partir do nível"
 const tipo10 = "opc_numero--"
 const clas10 = "config"
-const vari10 = "emocaonivel"
+const vari10 = "novatosnivel"
 #
-const nome11 = "Comando Gritar"
+const nome11 = "Comando Emoção"
 const tipo11 = "opc_opcao--"
 const clas11 = "config"
-const vari11 = "gritartipo"
+const vari11 = "emocaotipo"
 const extr11 = "Desabilitado\nHabilitado"
 #
-const nome12 = "Gritar a partir do nível"
+const nome12 = "Emoção a partir do nível"
 const tipo12 = "opc_numero--"
 const clas12 = "config"
-const vari12 = "gritarnivel"
+const vari12 = "emocaonivel"
 #
-const nome13 = "Movimentos gastos ao gritar"
-const info13 = "Quantos pontos de movimentos o personagem gasta ao gritar"
-const tipo13 = "opc_numero--"
+const nome13 = "Comando Gritar"
+const tipo13 = "opc_opcao--"
 const clas13 = "config"
-const vari13 = "gritarmove"
+const vari13 = "gritartipo"
+const extr13 = "Desabilitado\nHabilitado"
 #
-const nome14 = "Comando Matar"
-const tipo14 = "opc_opcao--"
+const nome14 = "Gritar a partir do nível"
+const tipo14 = "opc_numero--"
 const clas14 = "config"
-const vari14 = "matartipo"
-const extr14 = "Desabilitado\nHabilitado"
+const vari14 = "gritarnivel"
 #
-const nome15 = "Grupo diferença de nível"
+const nome15 = "Movimentos gastos ao gritar"
+const info15 = "Quantos pontos de movimentos o personagem gasta ao gritar"
 const tipo15 = "opc_numero--"
 const clas15 = "config"
-const vari15 = "gruponivel"
+const vari15 = "gritarmove"
 #
-const nome16 = "Renascer"
-const info16 = "Nota: Renascer não funciona se não houver nível máximo nas raças ou classes\n\
-Nota: A explicação de AJUDA RENASCER muda conforme essa opção e a próxima"
+const nome16 = "Comando Matar"
 const tipo16 = "opc_opcao--"
 const clas16 = "config"
-const vari16 = "renascer"
-const extr16 = "Desabilitado\n\
+const vari16 = "matartipo"
+const extr16 = "Desabilitado\nHabilitado"
+#
+const nome17 = "Grupo diferença de nível"
+const tipo17 = "opc_numero--"
+const clas17 = "config"
+const vari17 = "gruponivel"
+#
+const nome18 = "Renascer"
+const info18 = "Nota: Renascer não funciona se não houver nível máximo nas raças ou classes\n\
+Nota: A explicação de AJUDA RENASCER muda conforme essa opção e a próxima"
+const tipo18 = "opc_opcao--"
+const clas18 = "config"
+const vari18 = "renascer"
+const extr18 = "Desabilitado\n\
 Não perde as hab/magias\n\
 Escolhe uma hab/magia\n\
 Escolhe duas habs/magias\n\
@@ -732,54 +766,54 @@ Escolhe três habs/magias\n\
 Escolhe quatro habs/magias\n\
 Escolhe cinco habs/magias"
 #
-const nome17 = "Renascer nível aula"
-const info17 = "Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,\n\
+const nome19 = "Renascer nível aula"
+const info19 = "Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,\n\
 poderá aprendê-la em um nível menor. Essa opção é quantos níveis reduzir."
-const tipo17 = "opc_numero--"
-const clas17 = "config"
-const vari17 = "nrenascer"
-#
-const nome18 = "Renascer nível máximo"
-const info18 = "Após renascer, o nível para renascer novamente aumenta conforme essa opção"
-const tipo18 = "opc_numero--"
-const clas18 = "config"
-const vari18 = "nivel_renascer"
-#
-const nome19 = "Renascer experiência máxima"
-const info19 = "Em porcentagem. Ao renascer, a experiência necessária para subir de nível\n\
-é multiplicada por esse número."
 const tipo19 = "opc_numero--"
 const clas19 = "config"
-const vari19 = "exp_renascer"
-const extr19 = "1 1000"
+const vari19 = "nrenascer"
 #
-const nome20 = "Quem mostra admin"
-const info20 = "Se não administradores podem saber quem é administrador teclando QUEM"
-const tipo20 = "opc_simnao--"
+const nome20 = "Renascer nível máximo"
+const info20 = "Após renascer, o nível para renascer novamente aumenta conforme essa opção"
+const tipo20 = "opc_numero--"
 const clas20 = "config"
-const vari20 = "mostraadm"
+const vari20 = "nivel_renascer"
 #
-const nome21 = "Olhar mostra nível"
-const info21 = "Se os comandos Olhar e Ver mostram o nível do personagem"
-const tipo21 = "opc_simnao--"
+const nome21 = "Renascer experiência máxima"
+const info21 = "Em porcentagem. Ao renascer, a experiência necessária para subir de nível\n\
+é multiplicada por esse número."
+const tipo21 = "opc_numero--"
 const clas21 = "config"
-const vari21 = "olharnivel"
+const vari21 = "exp_renascer"
+const extr21 = "1 1000"
 #
-const nome22 = "Olhar mostra raça e classe"
-const info22 = "Se os comandos Olhar e Ver mostram a raça e a classe do personagem"
+const nome22 = "Quem mostra admin"
+const info22 = "Se não administradores podem saber quem é administrador teclando QUEM"
 const tipo22 = "opc_simnao--"
 const clas22 = "config"
-const vari22 = "olhartipo"
+const vari22 = "mostraadm"
 #
-const nome23 = "PTitulo a partir do nível"
-const tipo23 = "opc_numero--"
+const nome23 = "Olhar mostra nível"
+const info23 = "Se os comandos Olhar e Ver mostram o nível do personagem"
+const tipo23 = "opc_simnao--"
 const clas23 = "config"
-const vari23 = "ptitulonivel"
+const vari23 = "olharnivel"
 #
-const nome24 = "PDesc a partir do nível"
-const tipo24 = "opc_numero--"
+const nome24 = "Olhar mostra raça e classe"
+const info24 = "Se os comandos Olhar e Ver mostram a raça e a classe do personagem"
+const tipo24 = "opc_simnao--"
 const clas24 = "config"
-const vari24 = "pdescnivel"
+const vari24 = "olhartipo"
+#
+const nome25 = "PTitulo a partir do nível"
+const tipo25 = "opc_numero--"
+const clas25 = "config"
+const vari25 = "ptitulonivel"
+#
+const nome26 = "PDesc a partir do nível"
+const tipo26 = "opc_numero--"
+const clas26 = "config"
+const vari26 = "pdescnivel"
 
 
 classe menu_econfig_ataques

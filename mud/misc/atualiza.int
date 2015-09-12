@@ -174,8 +174,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 369, nulo
-  p.criar("config", "const versao = 369 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 371, nulo
+  p.criar("config", "const versao = 371 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -467,12 +467,17 @@ casa está atrasada.\"")
     criafunc("config", "const apresban2 = \"Seu endereço IP está bloqueado\"")
   fimse
 # Bug
-  se versao < 369
+  se versao < 371
     criafunc("config", "const bug1msg = \"(bug) $R '$m'\"")
     criafunc("config", "const bug2msg = \"Bug enviado '$m'\"")
     criafunc("config", "const bugtipo = 0")
     criafunc("config", "const bugnivel = 0")
     criafunc("config", "const l_bug = 0")
+    criafunc("config", "const ideia1msg = \"(ideia) $R '$m'\"")
+    criafunc("config", "const ideia2msg = \"Ideia enviada '$m'\"")
+    criafunc("config", "const ideiatipo = 0")
+    criafunc("config", "const ideianivel = 0")
+    criafunc("config", "const l_ideia = 0")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

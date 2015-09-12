@@ -11,29 +11,33 @@ func escr
   txt100 t1
   int16 total.3
 # Lista de personagens dos jogadores
+  refvar ver = arg0.jogconfig.23 || arg0.jogconfig.14
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-    continuar item.obj.jogconfig.17 && !arg0.jogconfig.23
+    continuar item.obj.jogconfig.17 && !ver
     refvar obj = item.obj
     total.[obj.jogconfig.14] += 1
     t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
     t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome
     t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " " + nivel + t1
     obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
-    obj.p_tempofim && (t1 += "  [Desconectado]")
-    se arg0.jogconfig.23
-      obj.jogconfig.23 && (t1 += "  [Admin]")
-      obj.jogconfig.17 && (t1 += "  [InvQuem]")
-      !(obj.sock || obj.p_tempofim) && (t1 += "  [PNJ]")
-      obj.sock.imonit && (t1 += "  [Monit " + obj.sock.imonit.objlista.nome + "]")
+    t1 += "  "
+    obj.p_tempofim && (t1 += " [Desconectado]")
+    se ver
+      obj.jogconfig.23 && (t1 += " [Admin]")
+      obj.jogconfig.17 && (t1 += " [InvQuem]")
+      !(obj.sock || obj.p_tempofim) && (t1 += " [PNJ]")
+      obj.sock.imonit && (t1 += " [Monit " + obj.sock.imonit.objlista.nome + "]")
     senao
       obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
     fimse
-    arg0.jogconfig.20 && (t1 += "  " + txt(obj.dono, 2))
-    t0.addfim(t1)
+    $t_[obj.tipo1].nomequem && (t1 += " " + $t_[obj.tipo1].nomequem)
+    $t_[obj.tipo2].nomequem && (t1 += " " + $t_[obj.tipo2].nomequem)
+    $t_[obj.tipo3].nomequem && (t1 += " " + $t_[obj.tipo3].nomequem)
+    t0.addfim(txtremove(t1, "d"))
   efim
 # Lista de jogadores sem personagem de jogador
-  se arg0.jogconfig.23
+  se ver
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       refvar obj = item.obj
       continuar obj.perso.jog # Continuar se personagem é jogador
@@ -42,7 +46,6 @@ func escr
         t1 = txt(obj.perso.pnivel)
         t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome + ", " + obj.perso.nome
         t1 = "C" + txt(999000 - obj.perso.pnivel) + " " + nivel + t1
-        arg0.jogconfig.20 && (t1 += "  " + txt(obj.perso.dono, 2))
       senao
         t1 = "C999001 " + nivel + "?       " + obj.nome
       fimse

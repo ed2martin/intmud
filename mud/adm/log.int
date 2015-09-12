@@ -4,6 +4,7 @@ const txtajuda = "\b\c3Log\b\n\
 Sintaxe: LOG\n\
          LOG <nome do arquivo>\n\
 Sem argumentos, mostra os arquivos de log existentes (no diretório log).\n\
+Os arquivos modificados mais recentemente aparecem primeiro.\n\
 Com um nome de arquivo, abre o arquivo no editor para visualização."
 
 func escr
@@ -15,22 +16,24 @@ func escr
     ret !dir.lin, arg0.msg("\bNenhum arquivo de log")
     debug d
     d.exec = 50000
-    refvar txtmais = arg0.sock.txtmais
-    txtmais.limpar
+    textotxt t
     epara nulo, dir.lin, dir.depois
+      continuar txtfim(dir.texto, 4) != ".log"
       lin = txttroca(dir.texto + "\b", ".log\b", "")
       lin += txtesp(18 - inttotal(lin)) + " " + dir.tamanho("log/" + dir.texto)
       lin += txtesp(27 - inttotal(lin)) + " "
-      refvar data = dir.atempo("log/" + dir.texto)
+      refvar data = dir.mtempo("log/" + dir.texto)
       lin += txtsub(data, 2, 1) + "/" + txtsub(data, 1, 1)
-      txtmais.addfim(lin + " " + txttroca(txtsub(data, 3, 2), " ", ":"))
+      t.addfim(txts(data) + " " + lin + " " + txttroca(txtsub(data, 3, 2), " ", ":"))
     efim
-    txtmais.ordena
+    t.ordena
+    refvar txtmais = arg0.sock.txtmais
+    txtmais.limpar
+    txtmais.addfim("\b\c6Arquivo de log Tamanho Data:\b")
     textopos pos
-    pos = txtmais.fim, pos.antes
-    pos.mudar("", inttotal(pos.texto) - 1, 1)
-    refvar total = int(txtmais.linhas)
-    txtmais.addini("\b\c6Arquivo de log Tamanho Data:\b")
+    epara pos = t.fim, pos.linha, txtmais.addfim(txt2(pos.texto))
+      pos.antes
+    efim
     arg0.sock.txtmostra
   senao !arg0.sock.teditor.ler("log/" + arg1 + ".log")
     arg0.msg("Arquivo de log não existe: " + arg1)

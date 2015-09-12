@@ -51,6 +51,7 @@ herda comum_obj
 #
 const objsav = 3 # Se deve salvar a sala ao salvar casa do jogador
 const s_titulo = "Sem nome"
+const s_desc = ""
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
 const s_pnj = 10 # Quantidade máxima de PNJs na sala
@@ -203,6 +204,14 @@ func descsala # Retorna descrição da sala
         $mens.contr = r1
         $mens.perso = r2
       fimse
+    fimse
+    se !config:perigomsg
+    senao dir_n.s_morre || dir_s.s_morre || dir_l.s_morre || dir_o.s_morre
+      t.addfim(config:perigomsg)
+    senao dir_ne.s_morre || dir_no.s_morre || dir_l.se_morre || dir_so.s_morre
+      t.addfim(config:perigomsg)
+    senao dir_c.s_morre || dir_b.s_morre || dir_entrar.s_morre || dir_sair.s_morre
+      t.addfim(config:perigomsg)
     fimse
     arg1 & 2 && t.addfim(txtsai(arg0))
     arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")

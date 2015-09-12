@@ -219,7 +219,6 @@ func escr # Criar sala na direção especificada
   nome2 = nome + txtfim(num, 3) + "\n" # Nome da classe
   nome2 += "areas/" + txt(nome, 2) + "\n" # Nome do arquivo
   nome2 += "herda b_" + txt(nome, 2) + "\n" # Herda propriedades da área
-  nome2 += "const s_titulo=\"Sem nome\"\nconst s_desc=\"\"\n"
   nome2 += "const dir_" + misc:d2[dir] + "=$" + arg0.dono # Saída da sala
   p.criar(nome2)
   p.criar(arg0.dono, "const dir_" + dir + "=$" + nome + txtfim(num, 3))
@@ -268,8 +267,7 @@ func escr # Criar sala
   txt200 area
   area = txt(nome, 0, inttotal(nome) - 3)
   criar("admordena", "areas/" + area)
-  area = "s_" + nome + "\nareas/" + area + "\nherda b_" + area
-  p.criar(area + "\nconst s_titulo=\"Sem nome\"\nconst s_desc=\"\"")
+  p.criar("s_" + nome + "\nareas/" + area + "\nherda b_" + area)
 # config:salvar
   arg0.msg("\bSala criada: " + nome)
   admlog(arg0, "criou sala " + nome)

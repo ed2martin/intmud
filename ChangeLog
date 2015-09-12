@@ -1,3 +1,63 @@
+* 11/9/2015 IntMUD 1.04 MUD baseado na revisão 371
+
+   No IntMUD:
+  1. Classe TVarExec estava herdando TExec sem necessidade
+  2. Corrigido bug em relação a quais arquivos o programa pode alterar e
+     quais não pode
+  3. Corrigido bug em Socket, quando um evento de Socket altera um
+     objeto que contém o Socket
+  4. Algumas alterações internas no código do Socket
+  5. Versão do IntMUD mudou para 1.04a
+
+   No telnet.int:
+  1. O protocolo (Telnet, Telnet seguro, Papovox) é escolhido ao digitar
+     o endereço, ao invés das teclas F5, F6, F7
+
+   No MUD:
+  1. Corrigido bug: Comando Rdesc não estava salvando a descrição quando
+     um imortal edita uma descrição fora da própria casa
+  2. Corrigido bug: Administrador que está controlando um PNJ (comando
+     PNJ) não recebia mensagens telepáticas
+  3. Corrigido bug: Jogadores dormindo não recebiam mensagens do comando
+     Rezou
+  4. Corrigido bug: não estava apagando jogos antigos
+  5. Corrigido bug: quando um jogador possui casas, o comando Mudanome
+     não estava passando as casas para o novo nome
+  6. Corrigido bug: personagens pacíficos podiam atacar e podiam receber
+     ataques quando são alvo secundário (ataques de área)
+  7. Corrigido bug: $mens.mmud1 e $mens.mmudtodos1 não estavam enviando
+     mensagem para admin que estiver controlando um PNJ
+  8. Criadas duas funções para enviar mensagens para todos do mud exceto
+     na mesma sala: $mens.mmudS e $mens.mmudtodosS
+  9. Textos de atributos, como Invisível, Flutuando, etc. podem ser
+     colocados em linhas separadas
+ 10. Acrescentadas explicações nas salas teste103 e teste104 sobre
+     textos de atributos em linhas separadas
+ 11. Para percorrer longas distâncias, agora é possível digitar as
+     direções na sequência, separadas por espaço. Vide AJUDA MOVER
+ 12. Comandos Listarsav e Apagarsav mudaram de nome para Lsav e Asav
+ 13. Criado comando Esav, para editar um jogo salvo na forma de texto
+ 14. Criado comando de administração Log, para ver os arquivos de log
+ 15. Criado comando Bug e opções correspondentes no Econfig, para
+     jogadores informarem sobre bugs
+ 16. Criado comando Ideia e opções correspondentes no Econfig
+ 17. O personagem teste032, na sala teste143, agora detecta quando
+     alguém está invisível, oculto ou anda em silêncio
+ 18. Criadas opções rbot e rbot2 no comando Econfig, 1 Como ativar o
+     MUD, 2-11 Porta/Bot
+ 19. Comandos Infojog, Infohab, Infomag e Infoe mudaram de nome para
+     Ijog, Ihab, Imag e Ief
+ 20. Comando Ijog agora mostra o tempo total de jogo
+ 21. Comando Ijog sem argumentos agora mostra aonde cada jogador está
+ 22. Comando Info agora mostra informações sobre quem está seguindo quem
+ 23. Os comandos Csala e Cdir agora criam sala sem definir título e
+     descrição
+ 24. Comando Etipo permite definir o nome da raça ou classe que
+     aparecerá no comando Quem
+ 25. A opção Config +Quem foi tirada porque o comando InfoJog já dá essa
+     informação
+ 26. Opção no Econfig para avisar quando tem sala perigosa por perto
+
 * 8/8/2015 IntMUD 1.04 MUD baseado na revisão 365
 
    No MUD:
