@@ -5,6 +5,72 @@ const posic = 7
 const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
 const tipoalvo = 6
 
+func habajuda # Retorna um texto que contém informações
+# arg0 = objeto do personagem
+  textotxt t
+  se depende
+    t.addfim(depende)
+    textopos pos
+    epara pos = t.ini, pos, pos.depois
+      pos.mudar(misc:nomevar(pos.texto))
+    efim
+    t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
+    t.juntar, t.dividelin(40, 75)
+  fimse
+  txt100 lin
+  lin = "\c3" + misc:nomevar(nomevar)
+  se tipoalvo < 6
+    lin += "\b\nAtaque do nível "
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
+    lin += ", Força " + ataque + ", Velocidade " + vel
+    lin += precisao <= 100 ? ", Precisão " + precisao : ", Não falha"
+    t.addini(lin)
+  senao
+    lin += "\b\nNível "
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    lin += precisao < 100 ? ", Acerta " + precisao + "%" : ", Não falha"
+    t.addini(lin)
+  fimse
+  msgextra && t.addfim(msgextra)
+  se c_vida1 || c_vida2
+    refvar min = int(c_vida2)
+    refvar max = int(c_vida1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de vida.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de vida.")
+    senao
+      t.addfim("Consome " + min + " pontos de vida.")
+    fimse
+  fimse
+  se c_mana1 || c_mana2
+    refvar min = int(c_mana2)
+    refvar max = int(c_mana1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de mana.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de mana.")
+    senao
+      t.addfim("Consome " + min + " pontos de mana.")
+    fimse
+  fimse
+  se c_move1 || c_move2
+    refvar min = int(c_move2)
+    refvar max = int(c_move1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de movimento.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de movimento.")
+    senao
+      t.addfim("Consome " + min + " pontos de movimento.")
+    fimse
+  fimse
+  se tipoperso
+    t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
+  fimse
+  ret t.remove(1000)
+
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
 # arg1 = item usado, ou nulo se não usou nenhum item
@@ -151,72 +217,6 @@ tipoperso\n\
 valor\n\
 vel\n\
 msgextra msgatk0 msgatk1 msgatk2 msgatk3 msgatk4"
-
-func habajuda # Retorna um texto que contém informações
-# arg0 = objeto do personagem
-  textotxt t
-  se depende
-    t.addfim(depende)
-    textopos pos
-    epara pos = t.ini, pos, pos.depois
-      pos.mudar(misc:nomevar(pos.texto))
-    efim
-    t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
-    t.juntar, t.dividelin(40, 75)
-  fimse
-  txt100 lin
-  lin = "\c3" + misc:nomevar(nomevar)
-  se tipoalvo < 6
-    lin += "\b\nAtaque do nível "
-    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
-    lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
-    lin += ", Força " + ataque + ", Velocidade " + vel
-    lin += precisao <= 100 ? ", Precisão " + precisao : ", Não falha"
-    t.addini(lin)
-  senao
-    lin += "\b\nNível "
-    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
-    lin += precisao < 100 ? ", Acerta " + precisao + "%" : ", Não falha"
-    t.addini(lin)
-  fimse
-  msgextra && t.addfim(msgextra)
-  se c_vida1 || c_vida2
-    refvar min = int(c_vida2)
-    refvar max = int(c_vida1)
-    se min != max
-      t.addfim("Consome de " + min + " a " + max + " pontos de vida.")
-    senao min == 1
-      t.addfim("Consome 1 ponto de vida.")
-    senao
-      t.addfim("Consome " + min + " pontos de vida.")
-    fimse
-  fimse
-  se c_mana1 || c_mana2
-    refvar min = int(c_mana2)
-    refvar max = int(c_mana1)
-    se min != max
-      t.addfim("Consome de " + min + " a " + max + " pontos de mana.")
-    senao min == 1
-      t.addfim("Consome 1 ponto de mana.")
-    senao
-      t.addfim("Consome " + min + " pontos de mana.")
-    fimse
-  fimse
-  se c_move1 || c_move2
-    refvar min = int(c_move2)
-    refvar max = int(c_move1)
-    se min != max
-      t.addfim("Consome de " + min + " a " + max + " pontos de movimento.")
-    senao min == 1
-      t.addfim("Consome 1 ponto de movimento.")
-    senao
-      t.addfim("Consome " + min + " pontos de movimento.")
-    fimse
-  fimse
-  se tipoperso
-    t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
-  fimse
-  ret t.remove(1000)
 
 func escr # Atacar alguém
 # arg0 = personagem

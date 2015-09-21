@@ -6,12 +6,7 @@ Mostra informações sobre um personagem ou item, na sala ou que você carrega.\n\
 Sem argumentos, mostra informações sobre a sala aonde você está."
 
 func escr
-  se !arg1
-    arg0.sock.txtmais.limpar
-    info(arg0.dono, arg0.sock.txtmais)
-    arg0.sock.txtmostra
-    ret
-  fimse
+  ret !arg1, info(arg0.dono, arg0.sock.txtmais) + arg0.sock.txtmostra
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
@@ -21,33 +16,29 @@ func escr
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    arg0.sock.txtmais.limpar
-    info(r, arg0.sock.txtmais)
-    arg0.sock.txtmostra
+    info(r, arg0.sock.txtmais), arg0.sock.txtmostra
     ret
   efim
   arg0.msg("\bNão há nenhum item ou personagem chamado " + arg1)
 
+func cabe # Cabeçalho: o nome do item/personagem/sala a partir da classe
+# arg0 = nome ou objeto da classe
+  casovar txtmin(txt(arg0, 0, 2))
+  casose "s_"
+    ret "\b\c6Sala " + txt(arg0, 2) + ":\b"
+  casose "p_"
+    ret "\b\c6Perso " + txt(arg0, 2) + ", " + arg0.nome + ":\b"
+  casose "i_"
+    ret "\b\c6Item " + txt(arg0, 2) + ", " + arg0.nome + ":\b"
+  casofim
+  ret txt(arg0) == "jogador", "\b\c6Jogador " + arg0.nome + ":\b"
+  ret "\b\c6Objeto " + arg0 + ":\b"
+
 func info # Usado por escr
 # arg0 = sala, personagem ou item
 # arg1 = textotxt aonde enviar as mensagens
-  casovar txtmin(txt(arg0, 0, 2))
-  casose "s_"
-    arg1.addfim("\b\c6Sala " + txt(arg0, 2) + ":\b")
-    sair
-  casose "p_"
-    arg1.addfim("\b\c6Perso " + txt(arg0, 2) + ", " + arg0.nome + ":\b")
-    sair
-  casose "i_"
-    arg1.addfim("\b\c6Item " + txt(arg0, 2) + ", " + arg0.nome + ":\b")
-    sair
-  casose
-    se txt(arg0) == "jogador"
-      arg1.addfim("\b\c6Jogador " + arg0.nome + ":\b")
-    senao
-      arg1.addfim("\b\c6Objeto " + arg0 + ":\b")
-    fimse
-  casofim
+  arg1.limpar
+  arg1.addfim(cabe(arg0))
 # Quantidade de objetos que esse objeto representa
   se arg0.objtot != 1
     arg1.addfim("Equivale a " + arg0.objtot + " objetos")
@@ -109,6 +100,26 @@ func nobj # Retorna o nome de um objeto
     ret txt(arg0) + ", " + arg0.nome
   casofim
   ret txt(arg0)
+
+
+classe adm_ivar
+herda adm_info
+const txtajuda = "\b\c3Ivar\b\n\
+Sintaxe: IVAR [personagem ou item]\n\
+Mostra as variáveis criadas dinamicamente de um personagem ou item,\n\
+na sala ou que você carrega. Sem argumentos, mostra as variáveis da\n\
+sala aonde você está."
+
+func info # Usado por escr
+# arg0 = sala, personagem ou item
+# arg1 = textotxt aonde enviar as mensagens
+  arg1.limpar
+  arg1.addfim(cabe(arg0))
+  txt100 t1
+  epara t1 = arg0.var.ini, t1, t1 = arg0.var.depois(t1)
+    arg1.addfim(t1 + "=" + arg0.var.[t1])
+  efim
+  arg1.linhas <= 1 && arg1.addfim("Nenhuma variável")
 
 
 classe adm_ihab
