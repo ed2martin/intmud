@@ -225,7 +225,7 @@ func cmd_podevestir
     ret "Somente elfos podem vestir o colete dos elfos."
   fimse
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   defnorm += 15
 
@@ -238,7 +238,7 @@ const descver = "Essa capa é capaz de deixar alguém quase que completamente invi
 Há, no entanto, uns óculos que permitem ver através da capa."
 const vestir1 = 64 # Aonde vestir: Sobre o corpo
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitinv = 4 | bitinv
 
@@ -252,7 +252,7 @@ const descver = "Esses óculos permitem ver coisas invisíveis."
 const msexo = 1 # Sexo: 1 Masculino
 const vestir1 = 2 # Aonde vestir: 1-rosto
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver = 4 | bitver
 
@@ -271,7 +271,7 @@ const descnome = "um par de sapatos"
 const msexo = 1 # Sexo: 1 Masculino
 const vestir1 = 262144 # Aonde vestir: 18-pés
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pmovemax += 5
   atknorm += 10
@@ -286,12 +286,6 @@ const pesoobj = 300
 const vestir1 = 131584 # Aonde vestir: 9-mãos, 17-tornozelos
 const evperso = 1 # Eventos em perso: Sim
 const i_fechadura = "algema1"
-
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  pveloc1 += -2 * pnivel - 3
-  atknorm += -2 * pnivel - 10
-  evasao += -1 * pnivel - 2
 
 func cmd_mover
 # Nos tornozelos, prejudica os pontos de movimento
@@ -317,6 +311,12 @@ func cmd_remover
     arg0.msg("Você não possui a chave de " + descnome + ".")
     ret 1
   fimse
+
+func recalc2_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pveloc1 += -2 * pnivel - 3
+  atknorm += -2 * pnivel - 10
+  evasao += -1 * pnivel - 2
 
 
 classe i_teste020
@@ -743,10 +743,6 @@ const descnome = "uma pulseira negra"
 const vestir1 = 3072 # Aonde vestir: 10-pulso direito, 11-pulso esquerdo
 const eveste = 1 # Eventos item: Sim
 
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  bitinv |= 4
-
 func cmd_vestiu
   se arg1 == este # Se é esse item
     criar("e_queimando", arg0, 0)
@@ -756,6 +752,10 @@ func cmd_removeu
   se arg1 == este # Se é esse item
     arg0.pvida -= arg0.pvida / 4
   fimse
+
+func recalc2_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitinv |= 4
 
 
 classe i_teste048
@@ -856,7 +856,7 @@ const p_agressivo = 2 # Agressivo: 2 Sim
 const p_captura = 4 # Capturar: 4 Difícil
 const inivar = "h_arremessar=1"
 
-func recalc_auto # Altera atributos do personagem
+func recalc1_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pveloc1 += 2 * pnivel
 
@@ -994,7 +994,7 @@ const nome = "camundongo gigante"
 const descnome = "um camundongo gigante"
 const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
 
-func recalc_auto # Altera atributos do personagem
+func recalc1_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pvidamax += -40
 

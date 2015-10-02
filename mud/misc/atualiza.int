@@ -26,6 +26,19 @@ func criafunc # Cria função ou constante se não existir
   refvar nome = txtsub(txtsepara(arg1, "LD+O,O+LD"), 1, 1)
   !p.existe(arg0, nome) && p.criar(arg0, arg1)
 
+func nomefunc # Muda o nome de uma função, constante ou variável
+# arg0 = nome da classe
+# arg1 = nome da função
+# arg2 = novo nome da função
+  prog p
+  textotxt t
+  ret !p.inilinha(arg0, arg1), nulo
+  t.addfim(txt1(p.texto) + " " + arg2 + " " + txtsub(p.texto, 2))
+  epara p.depois, p.lin, p.depois
+    t.addfim(p.texto)
+  efim
+  p.apagar(arg0, arg1), p.criar(arg0, t.remove(10000))
+
 const iniclasse = !$[arg0] && criar(arg0)
 
 func ini
@@ -174,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 371, nulo
-  p.criar("config", "const versao = 371 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 373, nulo
+  p.criar("config", "const versao = 373 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -466,7 +479,7 @@ casa está atrasada.\"")
     criafunc("config", "const nivel_renascer = 0")
     criafunc("config", "const apresban2 = \"Seu endereço IP está bloqueado\"")
   fimse
-# Bug
+# Bug e Ideia
   se versao < 371
     criafunc("config", "const bug1msg = \"(bug) $R '$m'\"")
     criafunc("config", "const bug2msg = \"Bug enviado '$m'\"")
@@ -478,6 +491,16 @@ casa está atrasada.\"")
     criafunc("config", "const ideiatipo = 0")
     criafunc("config", "const ideianivel = 0")
     criafunc("config", "const l_ideia = 0")
+  fimse
+# Correção de recalc_auto para recalc1_auto e recalc2_auto
+  se versao < 373
+    debug d
+    epara p.iniclasse("p_"), p.lin, p.depois
+      d.ini, nomefunc(p.texto, "recalc_auto", "recalc1_auto")
+    efim
+    epara p.iniclasse("i_"), p.lin, p.depois
+      d.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

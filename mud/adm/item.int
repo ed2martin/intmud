@@ -14,21 +14,23 @@ const txtajuda = "\b\c3Litem\b\n\
 Sintaxe: LITEM [nome]\n\
 Lista os itens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os itens."
+int32 total
 
 func escr # Listar itens
   prog p
   se !p.iniclasse("i_" + arg1)
     arg0.msg("\bNenhum item encontrado.")
   senao
-    textotxt t
+    refvar t = arg0.sock.txtmais
     txt100 lin
-    t.addfim("\b\c6Item Tipo Quantidade Nome\b")
-    enquanto p.lin && t.linhas < 500
+    total = 0
+    epara t.limpar, p.lin, p.depois
       lin = txt(p.texto, 2) + " " + txt(" SGC", [p.texto]:item, 1)
       t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
-      p.depois
+      total += inttotal($[p.texto])
     efim
-    arg0.msg2(t.remove(500))
+    t.addini("\b\c6Item(" + t.linhas + ") Tipo Quantidade(" + total + ") Nome\b")
+    arg0.sock.txtmostra
   fimse
 
 
@@ -493,27 +495,27 @@ const vari21 = "vestirnao"
 const nome22 = "Atrib núm vestir"
 const tipo22 = "opc_atribnum"
 const clas22 = var.classe1
-const vari22 = "recalc_auto"
+const vari22 = "recalc2_auto"
 const exec22 = "recalc_ajusta"
 #
 const nome23 = "Atrib s/n vestir"
 const tipo23 = "opc_atribbit"
 const clas23 = var.classe1
-const vari23 = "recalc_auto"
+const vari23 = "recalc2_auto"
 const exec23 = "recalc_ajusta"
 #
 const nome24 = "Atrib atk vestir"
 const info24 = "Afetam os danos quando o personagem ataca alguém"
 const tipo24 = "opc_atribatk"
 const clas24 = var.classe1
-const vari24 = "recalc_auto"
+const vari24 = "recalc2_auto"
 const exec24 = "recalc_ajusta"
 #
 const nome25 = "Atrib def vestir"
 const info25 = "Afetam os danos quando alguém ataca o personagem"
 const tipo25 = "opc_atribdef"
 const clas25 = var.classe1
-const vari25 = "recalc_auto"
+const vari25 = "recalc2_auto"
 const exec25 = "recalc_ajusta"
 #
 const nome26 = "Fome e sede"

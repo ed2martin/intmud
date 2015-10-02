@@ -115,14 +115,14 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   atktipo.limpar(1)
   deftipo.limpar(1)
 # Acerta atributos conforme o tipo de personagem
-  config:atribcfg, recalc_auto
+  config:atribcfg, recalc1_auto
   t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto
   t_[tipo1]:recalc, t_[tipo2]:recalc, t_[tipo3]:recalc
   cmd_recalc1(este)
 # Bônus conforme o que está vestindo e os efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc_auto, i.obj.cmd_recalc2(este), pesoveste += iobj.pesotot
+    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este), pesoveste += iobj.pesotot
   efim
   pesoveste /= 2
   epara i = evento.ini, i, i.depois

@@ -32,7 +32,7 @@ func escr # Listar classes
   refvar total = int(txtmais.linhas)
   txtmais.juntar
   txtmais.dividelin(50, 70)
-  txtmais.addini("\bClasses (" + total + "):")
+  txtmais.addini("\b\c6Classes (" + total + "):\b")
   arg0.sock.txtmostra
 
 
@@ -40,8 +40,9 @@ classe adm_ccl
 herda comando_adm, comando_comum
 const txtajuda = "\b\c3Ccl\b\n\
 Sintaxe: CCL <nome> [arquivo]\n\
-Cria uma classe. Aquivo é o sufixo do arquivo aonde criar a classe.\n\
-Se for omitido, cria no arquivo mud.int.\n\
+Cria uma classe. Aquivo é o nome do arquivo sem o .int no final, e a partir\n\
+do diretório aonde está o arquivo mud.int. Se for omitido, cria no arquivo\n\
+mud.int.\n\
 Nota: após criar a classe, costuma-se editar com Ecl e inicializar com Icl."
 
 func escr # Cria classe
@@ -114,7 +115,11 @@ func passo
 
 classe adm_ecl
 herda comando_editor, comando_comum
-const txtajuda = "\b\c3Ecl\b\nSintaxe: ECL [nome da classe]\nEdita uma classe."
+const txtajuda = "\b\c3Ecl\b\n\
+Sintaxe: ECL [nome da classe]\n\
+Edita uma classe.\n\
+A primeira linha do texto é ARQ: seguido do nome do arquivo aonde\n\
+a classe está sem o .int no final."
 
 func escr # Edita uma classe
   prog p

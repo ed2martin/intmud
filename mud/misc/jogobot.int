@@ -54,6 +54,7 @@ func msg
     telatxt tela
     tela.msg("Bot " + txt2(conexao1) + ": " + arg0 + "\n")
   fimse
+  $misclog.cmdlog("bot " + txt2(conexao1) + ": " + arg0)
   indiceitem item
   refvar m = "\b\d1(com) bot " + txt2(conexao1) + ": " + arg0 + "\b"
   epara item.ini("un "), txt1(item.txt) == "un", item.depois

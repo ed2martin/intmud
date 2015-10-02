@@ -7,6 +7,7 @@ Sintaxe: TELEPATIA <personagem> <mensagem>\n\
 Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
 da sala em que ele estiver.\n\
 Veja também os comandos CONFIG e IGNORAR."
+const msg = arg0.msg($mens.proc(arg1, arg0))
 
 func escr
   ret !arg0.jogconfig.8, arg0.msg("Canal Telepatia está desabilitado.")
@@ -17,20 +18,20 @@ func escr
   $mens.mens = txt2(arg1)
   refvar perso = item.obj.perso
   se !perso || perso.jogconfig.17 && !arg0.jogconfig.23
-    arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
+    msg(arg0, "Jogador inexistente ou ausente: " + txt1(arg1))
   senao perso == arg0
-    arg0.msginv("Escrever para você mesm$s?")
+    msg(arg0, "Escrever para você mesm$s?")
   senao perso.var.u_[arg0.nome]
-    arg0.msginv("$C está ignorando você.")
+    msg(arg0, "$C está ignorando você.")
   senao arg0.var.u_[perso.nome]
-    arg0.msginv("Você está ignorando $C.")
+    msg(arg0, "Você está ignorando $C.")
   senao !perso.jogconfig.8
-    arg0.msginv("$C desabilitou o canal Telepatia.")
+    msg(arg0, "$C desabilitou o canal Telepatia.")
   senao arg0.jogconfig.17 && !perso.jogconfig.23
-    arg0.msginv("Você está invisível para $C.")
+    msg(arg0, "Você está invisível para $C.")
   senao !txt2(arg1)
-    arg0.msginv("Escrever o quê?")
+    msg(arg0, "Escrever o quê?")
   senao
-    perso.msginv(config:telepatia2)
-    arg0.msginv(config:telepatia1)
+    msg(perso, config:telepatia2)
+    msg(arg0, config:telepatia1)
   fimse
