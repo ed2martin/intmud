@@ -21,6 +21,10 @@ func escr # Listar personagens
   se !p.iniclasse("p_" + arg1)
     arg0.msg("\bNenhum personagem encontrado.")
   senao
+    se 1
+      debug d
+      d.exec = 50000
+    fimse
     refvar t = arg0.sock.txtmais
     textotxt t
     txt100 lin

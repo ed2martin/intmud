@@ -762,8 +762,8 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Diversos
   arg1.i_chave && arg2.addfim("É um tipo de chave.")
   arg1.i_captura && arg2.addfim("Pode ser usado para capturar animais.")
-# Obtém os efeitos
-  atrib_ler(arg1, "recalc_auto") # Extrai os atributos de uma função
+# Obtém os efeitos (Extrai os atributos de uma função)
+  atrib_ler(arg1, arg1.perso ? "recalc1_auto" : "recalc2_auto")
 # Efeitos numéricos
   int8 x
   epara nulo, x < p_atrib_bit, x += 1

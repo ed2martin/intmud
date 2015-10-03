@@ -121,14 +121,23 @@ func mover # Personagem anda em uma direção
   efim
 # Checa se morre ao entrar
   casovar arg0.dono.s_morre(arg0)
-  casose "2" # Perde os itens e morre
+  casose "1" # Morre
+    sair arg0.j_imortal
+    arg0.morreu
+    ret 0
+  casose "2" # Perde itens e dinheiro e morre
+    sair arg0.j_imortal
+    arg0.var.z_moedas = ""
+  casose "3" # Perde itens e morre
     sair arg0.j_imortal
     epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
       l.objini.item && !l.objini.manterperso && apagar(l.objini)
     efim
-    arg0.var.z_moedas = ""
-  casose "1" # Morre
+    arg0.morreu
+    ret 0
+  casose "4" # Perde dinheiro e morre
     sair arg0.j_imortal
+    arg0.var.z_moedas = ""
     arg0.morreu
     ret 0
   casofim

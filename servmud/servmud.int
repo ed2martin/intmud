@@ -1,0 +1,686 @@
+# Quantas instruções uma função chamada pelo programa pode
+# executar antes do controle retornar ao programa
+exec = 5000
+
+# Se deve abrir uma janela de texto - variável telatxt
+telatxt = 1
+
+# Aonde apresentar mensagens de erro no programa
+log = 0
+
+# Erros em blocos de instruções:
+# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
+err = 1
+
+# Se o programa roda sem restrições (0=não, 1=sim)
+# Em caso de dúvida, deixar 0. Nesse caso, as restrições são:
+# Não pode acessar arquivos fora do diretório e subdiretórios do programa
+# Não pode acessar executáveis e .bat .com .exe .pif .scr
+# Arquivos .int só podem ser alterados via PROG
+# Arquivos .log só podem ser alterados via ARQLOG
+# ArqExec só podem executar programas conforme as opções ArqExec
+completo = 0
+
+classe serv
+# Porta usada para conexões locais (via localhost ou 127.0.0.1)
+const porta = 1963
+# Lista de endereços mais usados
+const _inter = "/t intervox.nce.ufrj.br 1963"
+const _interp = "/p intervox.nce.ufrj.br 1963"
+const _dosvox = "/p sitiodosvox.com 1963"
+const _val = "/t mud.valinor.com.br 4000"
+const _myth = "/t mud.mythserver.com 4000"
+const _sim = "/t mud.simauria.org 23"
+const _dentin = "/t dentinmud.org 3010"
+const _turf = "/t turf.org 4000"
+const _t2t = "/t t2tmud.org 9999"
+const _t2s = "/s t2tmud.org 444"
+const _night = "/t nightfall.org 4242"
+const _lo = "/t localhost 1963"
+
+
+classe jogoporta
+# Porta aberta para entrar via localhost
+serv servidor1 # Para receber conexões
+serv servidor2 # Para receber conexões
+int8 servaberto # Qual objeto abriu porta: 0=nenhum, 1=servidor1, 2=servidor2
+const iniclasse = !$[arg0] && criar(arg0)
+
+func ini
+  telatxt tela
+  se abrir(serv:porta) != 1
+    tela.msg("Não foi possível abrir a porta " + serv:porta + " para conexões locais\n")
+  senao
+    tela.msg("Porta aberta para conexões locais: " + serv:porta + "\n")
+  fimse
+
+func abrir # Tenta abrir uma porta local
+# arg0 = porta
+# Retorna 1 se conseguiu abrir
+  se servaberto == 1
+    ret !servidor2.abrir("127.0.0.1", arg0), 0
+    servaberto = 2
+    servidor1.fechar
+    ret 1
+  senao
+    ret !servidor1.abrir("127.0.0.1", arg0), 0
+    servaberto = 1
+    servidor2.fechar
+    ret 1
+  fimse
+  ret 0
+
+func aberto # Retorna 1 se a porta local está aberta
+  ret servaberto != 0
+
+func servidor1_socket # Conectado: cria objeto
+  criar("jogoserv_usr", arg0)
+
+func servidor2_socket # Conectado: cria objeto
+  criar("jogoserv_usr", arg0)
+
+
+classe jogoserv
+# Portas abertas para receber conexões de usuários
+serv servidor # Para receber conexões
+txt10 porta
+txt20 ender
+const msg = jogsock:msg_t(arg0)
+
+func ini
+# arg0 = endereço IP de quem vai se conectar
+# arg1 = porta
+  ender = arg0, porta = arg1
+  se servidor.abrir("", porta) != 1
+    msg("//Não foi possível abrir a porta " + arg1)
+    apagar(este)
+  senao
+    msg("//Esperando conexões de " + arg0 + " em " + arg1)
+  fimse
+
+func servidor_socket # Conectado: cria objeto
+  se arg0.ip != ender
+    arg0.msg("-OK Endereço incorreto\n")
+  senao
+    apagar(este)
+    criar("jogoserv_usr", arg0)
+  fimse
+
+
+classe jogoserv_usr
+herda jogsock
+socket j_sock # Usuário conectado
+inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
+uint8 j_passo
+inttempo j_msgtmp # Tempo para mensagens antigas - Telnet
+textotxt j_msgtxt # Mensagens antigas
+textopos j_msgpos.4 # Posições das mensagens antigas
+int1 pconfig1 # 0 = volta últimas mensagens (Telnet) ou 80 colunas (Papovox)
+int1 pconfig2 # 0 = Telnet com cor, 1 = Telnet sem cor
+const proto = j_passo & 1 ? "t" : "p"
+
+func ini # Objeto foi criado
+# arg0 = socket
+  j_sock = arg0
+  j_sock.proto = 2
+  j_sock.aflooder = 1
+  j_sock.cores = 2
+  j_sock.msg("+OK Para Telnet pressione ENTER\n")
+  j_tempo = 100 # 10 segundos depois desconecta
+
+func fim # Objeto foi apagado
+  j_passo == 2 && jogsock:fim
+
+func j_tempo_exec # Tempo esgotado
+  casovar j_passo
+  casose "1" # Entrando via Telnet
+  casose "2" # Entrando via Papovox
+    j_passo += 2
+    ret jogsock:ini
+  casose # Conectado
+    apagar(este)
+    ret j_sock.msg("-Tempo esgotado\n")
+  casofim
+
+func j_sock_fechou # Conexão fechou
+  apagar(este)
+
+func j_sock_msg # Recebeu mensagem do usuário
+# arg0=mensagem
+# j_sock.msg(">" + j_passo + "\n")
+  j_tempo = 36000 # Fecha conexão em uma hora
+  casovar j_passo
+  casose "0" # Decide se é Papovox ou Telnet
+    j_tempo = 10
+    se arg0 != "" # Papovox sempre fornece um nome
+      j_sock.msg("+OK Entrando via Papovox\n")
+      j_sock.proto = 5
+      j_passo = 2
+    senao # Nome vazio: é Telnet
+      j_sock.msg("-OK Entrando via Telnet\n")
+      j_passo = 1
+    fimse
+    ret
+  casose "1" # Entrando via Telnet
+  casose "2" # Entrando via Papovox
+    j_passo += 2
+    ret jogsock:ini
+  casose "3" # Recebendo mensagens via Telnet
+    ret arg0 != "", recebe(arg0)
+    j_sock.msg("Tecle\n")
+    j_passo = 5
+    j_msgtmp = 0
+    ret
+  casose "4" # Recebendo mensagens via Papovox
+    ret arg2 != 1, apagar(este) # Somente mensagens de texto
+    ret recebe(arg0)
+  casose "5" # Telnet com pausa nas mensagens
+    se j_msgtxt.linhas == 0
+    senao pconfig2
+      j_sock.msg(j_msgtxt.remove(1000) + "\n")
+    senao
+      j_sock.msg("\b" + txtcor(j_msgtxt.remove(1000)) + "\n")
+    fimse
+    j_passo = 3
+    ret recebe(arg0)
+  casofim
+
+func msg # Enviar mensagem para o usuário
+# arg0 = mensagem
+  casovar j_passo
+  casose "3" # Enviar mensagem para Telnet
+    j_sock.msg((pconfig2 ? arg0 : "\b" + txtcor(arg0)) + "\n")
+    se pconfig1
+      j_msgtxt.limpar
+      ret
+    fimse
+    j_msgtxt.addfim(arg0)
+    se j_msgtmp == 0
+      j_msgtmp = 10
+      j_msgpos.3 = t_msgtxt.ini
+    fimse
+    ret
+  casose "4" # Enviar mensagem para Papovox
+    textotxt t1
+    t1.addfim(txttroca(txtcor(arg0) + "\n", "\n", "\n\b"))
+    se pconfig1
+      t1.dividelincor(230, 236)
+    senao
+      t1.dividelincor(70, 76)
+    fimse
+    j_sock.msg(txttroca(txttroca(t1.remove(1000), "\n", "\n/ "), "\n/ \b", "\n"))
+    ret
+  casose "5" # Enviar mensagem para Telnet em pausa
+    j_msgtxt.addfim(arg0)
+    se j_msgtxt.bytes < 4096 # Limite de mensagens pendentes
+    senao pconfig2
+      j_sock.msg(j_msgtxt.remove(1000) + "\n")
+      j_passo = 3, j_msgtmp = 0
+    senao
+      j_sock.msg("\b" + txtcor(j_msgtxt.remove(1000)) + "\n")
+      j_passo = 3, j_msgtmp = 0
+    fimse
+    ret
+  casose # Mensagem genérica
+    ret j_sock.msg(arg0 + "\n")
+  casofim
+
+func j_msgtmp_exec # Telnet: apaga mensagens antigas da lista
+  j_msgtxt.remove(j_msgpos.0.linha)
+  j_msgpos.0 = j_msgpos.1
+  j_msgpos.1 = j_msgpos.2
+  j_msgpos.2 = j_msgpos.3
+  j_msgpos.3 = j_msgtxt.fim
+  j_msgtxt.linhas != 0 && (j_msgtmp = 10)
+
+
+classe jogolocal
+herda jogsock
+telatxt j_tela
+textotxt j_hist_texto
+textopos j_hist_pos
+intexec j_execini
+const msg = j_tela.msg(arg0 + "\n")
+const iniclasse = criar(arg0)
+const ini = j_execini = 1
+const j_execini_exec = jogsock:ini
+const proto = "l"
+
+func fim
+  msg_t("//Encerrando o programa")
+  terminar
+
+func j_tela_msg
+  j_tela.linha = 0
+  j_hist_texto.addfim(arg0)
+  j_hist_texto.remove(j_hist_texto.linhas - 50)
+  j_hist_pos = j_hist_texto.fim
+  recebe(arg0)
+
+func j_tela_tecla
+  casovar arg0
+  casose "UP"
+  casose "DOWN"
+  casose "LEFT"
+  casose "RIGHT"
+  casose "C_LEFT"
+  casose "C_RIGHT"
+  casose "HOME"
+  casose "END"
+    sair
+  casose "PGUP"
+    j_hist_pos.antes
+    j_tela.texto = ""
+    j_tela.texto = j_hist_pos.texto
+    ret 1
+  casose "PGDN"
+    j_hist_pos.depois
+    j_tela.texto = ""
+    j_tela.texto = j_hist_pos.texto
+    ret 1
+  casose
+    tela.linha = 0
+  casofim
+  ret tecla_[arg0]
+
+const tecla_F1 = opc_l("")
+const tecla_F2 = opc_c3("")
+const tecla_F3 = opc_d("")
+const tecla_F4 = opc_terminar("")
+
+
+classe s
+# Comunicação com o MUD
+socket sock
+int8 proto # 0=Telnet, 1=Telnet seguro, 2=Papovox
+int8 passo # Passo, ao conectar; depende do protocolo
+txt512 parte_t
+inttempo parte_i
+const iniclasse = criar(arg0)
+const msg_t = jogsock:msg_t(arg0)
+
+func conec # Nova conexão
+# arg0 = protocolo (variável proto)
+  proto = arg0
+  passo = 0
+  parte_t = ""
+  parte_i = 0
+
+func sock_err # Erro ao conectar
+  msg_t("\d1//Erro: " + arg0 + "\b")
+
+func sock_con # Conectou
+  msg_t("\d1//Conectado\b")
+  sock.cores = 1 # Cores somente ao receber
+  se proto == 1
+    msg_t("//Assinatura SHA1 = " + sock.txtsha1)
+    msg_t("//Assinatura MD5 = " + sock.txtmd5)
+  fimse
+
+func sock_fechou # Conexão foi encerrada
+  msg_t("\d1//Conexão foi encerrada\b")
+
+func sock_msg # Recebeu uma mensagem
+  parte_t += arg0
+  ret arg1, sock_processa(arg0)
+  parte_i == 0 && (parte_i = 4)
+
+func parte_i_exec
+  sock_processa
+
+func sock_processa # Processa mensagem recebida
+  msg_t(parte_t)
+  parte_t = ""
+  parte_i = 0
+  se proto == 2
+    se passo == 0 # Papovox; recebeu primeira mensagem
+      passo = 1
+      sock.msg("papovox\n")
+    senao passo == 1 # Papovox; recebeu segunda mensagem
+      passo = 2
+      sock.proto = 5
+      msg_t("\d1//Papovox conectado\b")
+    fimse
+  fimse
+
+
+classe jogsock
+# Quando uma mensagem chega, é chamada a função recebe( mensagem )
+# Para enviar uma mensagem para o usuário: msg( mensagem )
+# A constante proto informa o protocolo: "l"=Local, "t"=Telnet, "p"=Papovox
+# Variável pconfig1 é a opção /c1
+# Variável pconfig2 é a opção /c2
+#
+txt16 nome # Apelido do usuário no ServMUD
+indiceobj nomecod # "n " + apelido codificado
+int1 eco
+
+func ini
+  msg("Digite seu apelido")
+
+func fim
+  nome && msg_t("//" + nome + " saiu")
+
+func msg_t # Mensagem para todos que estão conectados no ServMUD
+  $jogolocal.msg(arg0)
+  ref r
+  epara r = $jogoserv_usr, r, r = objdepois(r)
+    r.nome && r.msg(arg0)
+  efim
+
+func nomevalido # Checa se apelido válido e avisa usuário se não for válido
+# arg0 = nome
+# Retorna: 0=inválido, 1=válido
+  se txtproc(arg0, " ") >= 0
+    msg("Apelido contém espaços; digite outro")
+  senao inttotal(arg0) < 2
+    msg("Apelido muito pequeno; digite outro")
+  senao inttotal(arg0) > 16
+    msg("Apelido ultrapassa 16 caracteres; digite outro")
+  senao intnome(arg0)
+    msg("Apelido inválido; digite outro")
+  senao
+    ret 1
+  fimse
+  ret 0
+
+func recebe # Usuário digitou alguma coisa
+# arg0 = texto
+# Passo 1: entrar com o apelido
+  se nome
+  senao !arg0
+    ret msg("Digite seu apelido")
+  senao !nomevalido(arg0)
+    ret
+  senao
+    refvar n = "n " + txtcod(arg0)
+    indiceitem i
+    ret i.obj(n), msg("Apelido já está sendo usado; digite outro")
+    nome = arg0
+    nomecod = n
+    msg_t("//" + nome + " chegou")
+    ret msg("Tecle /a para saber os comandos")
+  fimse
+# Passo 2: Processar comando
+  txt512 lin
+  lin = arg0
+  $s.sock.proto == 0 && serv:_[lin] && (lin = serv:_[lin])
+  se txt(lin, 0, 1) != "/"
+    enviamud(lin)
+  senao lin == "/"
+    enviamud("")
+  senao txt(lin, 0, 2) == "//"
+    enviamud(txt(lin, 1))
+  senao
+    prog p
+    refvar n = "opc_" + txt1(txt(lin, 1))
+    se p.existe(este, n) && txt(lin, 1, 1) != " "
+      [n](txt2(lin))
+    senao
+      msg_t("/" + nome + ": " + txtremove(txt(lin, 1), "ed"))
+    fimse
+  fimse
+
+func enviamud
+  casovar $s.sock.proto
+  casose "0" # Desconectado
+    ret msg("\d1//Está desconectado\b")
+  casose "1" # Conectando
+    ret msg("\d1//Conexão em progresso\b")
+  casose # Conectado
+    ret proto == 2 && passo != 2, msg("//Ativando Papovox; aguarde")
+    refvar lin = "\d4>" + arg0 + "\b"
+    $jogolocal.eco && $jogolocal.msg(lin)
+    ref r
+    epara r = $jogoserv_usr, r, r = objdepois(r)
+      r.nome && r.eco && r.msg(lin)
+    efim
+    $s.sock.msg(arg0 + "\n")
+  casofim
+
+func opc_a
+  msg("\c3Ajuda:\b")
+  msg("/a1 - Comandos para conectar em um endereço")
+  msg("/a2 - Comandos para receber conexões de usuários")
+  msg("/a3 - Comandos de comunicação")
+  msg("/a4 - Comandos de configuração")
+  msg("/a5 - Outros comandos e teclas na janela do ServMUD")
+  msg("Fim da ajuda")
+
+func opc_a1
+  msg("\c3Conectar:\b")
+  msg("/t <endereço> <porta> - Conecta como Telnet")
+  msg("/p <endereço> <porta> - Conecta como Papovox")
+  msg("/s <endereço> <porta> - Conecta como Telnet seguro")
+  msg("/d - Desconecta")
+  msg("/l - Mostra os atalhos existentes para conectar")
+  msg("/l <nome> - Apaga um atalho")
+  msg("/l <nome> <comando> - Cria um atalho para conectar")
+  msg("Os atalhos funcionam quando o ServMUD não está conectado")
+
+func opc_a2
+  msg("\c3Receber conexões:\b")
+  msg("/rl <porta> - Define a porta para conexões somente na mesma máquina")
+  msg("   Nesse caso, deve-se conectar no endereço localhost ou 127.0.0.1")
+  msg("/r - Mostra portas abertas para conectarem no ServMUD")
+  msg("/r endereço <porta> - Abre a porta para receber uma conexão do endereço IP")
+  msg("   especificado; assim que alguém se conectar a porta é fechada")
+  msg("/r <porta> - Fecha a porta, aberta com o comando /r")
+  msg("Fim da ajuda")
+
+func opc_a3
+  msg("\c3Comunicação:\b")
+  msg("/quem - Diz quem está no ServMud")
+  msg("/nome <apelido> - Muda de apelido")
+  msg("/ - Envia mensagem vazia para o MUD (pressionar ENTER no MUD)")
+  msg("/ seguido de uma mensagem - Envia mensagem para quem estiver no ServMud")
+  msg("Qualquer outra coisa envia o que escreveu para o MUD")
+  msg("Mensagens para o MUD que comecem com / escreva // no lugar de /")
+  msg("Fim da ajuda")
+
+func opc_a4
+  msg("\c3Configuração:\b")
+  msg("/c1 - Telnet alterna entre voltar e não voltar as últimas mensagens quando")
+  msg("      tecla ENTER. Papovox alterna entre 80 e 240 caracteres por linha")
+  msg("/c2 - Somente Telnet: Alterna entre filtrar/não filtrar cores")
+  msg("/c3 - Ativa ou desativa o eco das mensagens enviadas para o MUD")
+  msg("Fim da ajuda")
+
+func opc_a5
+  msg("\c3Outros comandos:\b")
+  msg("/sair ou /quit - Sai do ServMud")
+  msg("/terminar - Encerra o programa")
+  msg("Teclas na janela do ServMUD:")
+  msg("PGUP e PGDN permitem acessar o histórico do que foi digitado")
+  msg("F1 mostra os endereços predefinidos")
+  msg("F2 ativa/desativa eco das mensagens enviadas")
+  msg("F3 desconecta")
+  msg("F4 encerra o programa")
+  msg("Fim da ajuda")
+
+func opc_s
+  txt100 erro
+  se $s.sock.proto == 1
+    msg("\d1//Conexão em progresso\b")
+  senao $s.sock.proto > 1
+    msg("\d1//Já está conectado\b")
+  senao (erro = $s.sock.inissl) != ""
+    msg_t("\d1//Erro ao carregar biblioteca OpenSSL: " + erro + "\b")
+  senao !$s.sock.abrirssl(txt1(arg0), txt2(arg0))
+    msg_t("\d1//Erro ao conectar em " + arg0 + "\b")
+    msg_t("\d1//Endereço inválido?\b")
+  senao
+    msg_t("\d1//Conectando em " + arg0 + "\b")
+    $s.conec(1)
+  fimse
+  ret
+
+const opc_t = opcao_p_t(arg0, 0)
+const opc_p = opcao_p_t(arg0, 2)
+
+func opcao_p_t
+  se $s.sock.proto == 1
+    msg("\d1//Conexão em progresso\b")
+  senao $s.sock.proto > 1
+    msg("\d1//Já está conectado\b")
+  senao !$s.sock.abrir(txt1(arg0), txt2(arg0))
+    msg_t("\d1//Erro ao conectar em " + arg0 + "\b")
+    msg_t("\d1//Endereço inválido?\b")
+  senao
+    msg_t("\d1//Conectando em " + arg0 + "\b")
+    $s.conec(arg1)
+  fimse
+
+func opc_d
+  se $s.sock.proto == 0
+    msg("\d1//Não está conectado em um MUD\b")
+  senao
+    $s.sock.fechar
+    msg_t("\d1//Desconectado do MUD\b")
+  fimse
+
+func opc_l
+  prog p
+  se !arg0
+    se !p.inifunc("serv", "_")
+      msg("Nenhum atalho definido")
+    senao
+      msg("\c3Atalhos para conectar:\b")
+      enquanto p.lin
+        msg("\c6" + txt(p.texto, 1) + "\b " + txtesp(10 - inttotal(p.texto)) + serv:[p.texto])
+        p.depois
+      efim
+      msg("Fim da lista")
+    fimse
+  senao !txt2(arg0)
+    ret !p.existe("serv", "_" + arg0), msg("Atalho não existe: " + arg0)
+    p.apagar("serv", "_" + arg0)
+    p.salvar("L99N1I2C2F1V0")
+    ret msg_t("/Atalho apagado: " + arg0)
+  senao txtsepara("a" + txt1(arg0), "LDO+O,O+LDO") != "a" + txt1(arg0)
+    ret msg("Nome do atalho só pode ter letras e números")
+  senao
+    casovar txtmin(txtsub(arg0, 1, 1))
+    casose "/t"
+    casose "/p"
+    casose "/s"
+      p.criar("serv", "const _" + txt1(arg0) + "=\"" + txtvis(txt2(arg0)) + "\"")
+      p.salvar("L99N1I2C2F1V0")
+      ret msg_t("Atalho criado: " + arg0)
+    casofim
+    ret msg("O texto do atalho deve começar com /t, /p ou /s")
+  fimse
+
+func opc_r
+  se !arg0
+    msg("\c3Recebendo conexões de:\b")
+    se $jogoporta.aberto
+      msg("localhost em " + serv:porta + " (conexões no mesmo micro)")
+    fimse
+    ref r
+    epara r = $jogoserv, r, r = objdepois(r)
+      msg(r.ender + " em " + r.porta)
+    efim
+  senao txt2(arg0)
+    socket s
+    refvar porta = txt2(arg0)
+    se !s.ipvalido(txt1(arg0))
+      msg("Não é endereço IP: " + txt1(arg0))
+    senao txt(int(porta)) != porta || int(porta) <= 0 || int(porta) > 65535
+      msg("Porta inválida: " + arg0)
+      msg("A porta deve ser um número de 1 a 65535")
+    senao
+      msg_t("//Abrindo porta " + arg0)
+      criar("jogoserv", txt1(arg0), txt2(arg0))
+    fimse
+  senao
+    ref r
+    epara r = $jogoserv, r, r = objdepois(r)
+      msg(">" + r.porta + "/" + arg0)
+      continuar r.porta != arg0
+      apagar(r)
+      msg_t("//Porta fechada: " + r.porta)
+      ret
+    efim
+    msg("Porta não está aberta: " + arg0)
+  fimse
+
+func opc_rl
+  serv s
+  se txt(int(arg0)) != arg0 || int(arg0) <= 0 || int(arg0) > 65535
+    msg("Porta inválida: " + arg0)
+    msg("A porta deve ser um número de 1 a 65535")
+  senao arg0 == serv:porta
+    msg("Porta já está aberta: " + arg0)
+  senao !$jogoporta.abrir(arg0)
+    msg("Não foi possível abrir a porta " + arg0)
+  senao
+    prog p
+    p.criar("serv", "const porta = " + arg0)
+    p.salvar("L99N1I2C2F1V0")
+    msg_t("Porta para conexões locais mudou para " + arg0)
+  fimse
+
+func opc_c1
+  casovar proto + pconfig1
+  casose "t0"
+    pconfig1 = 1
+    ret msg("/c1 Não voltando últimas mensagens")
+  casose "t1"
+    pconfig1 = 0
+    ret msg("/c1 Voltando últimas mensagens")
+  casose "p0"
+    pconfig1 = 1
+    ret msg("/c1 Cortando mensagens em 240 caracteres")
+  casose "p1"
+    pconfig1 = 0
+    ret msg("/c1 Cortando mensagens em 80 caracteres")
+  casose
+    ret msg("/c1 Opção não suportada")
+  casofim
+
+func opc_c2
+  casovar proto + pconfig2
+  casose "t0"
+    pconfig2 = 1
+    ret msg("/c2 Não filtrando cores")
+  casose "t1"
+    pconfig2 = 0
+    ret msg("/c2 Filtrando cores")
+  casose
+    ret msg("/c2 Opção não suportada")
+  casofim
+
+func opc_c3
+  eco = 1 - eco
+  se eco
+    msg("/c3 Eco ativado")
+  senao
+    msg("/c3 Eco desativado")
+  fimse
+
+const opc_sair = apagar(este)
+const opc_quit = apagar(este)
+
+func opc_quem
+  msg("/Usuários")
+  $jogolocal.nome && msg($jogolocal.nome)
+  ref r
+  epara r = $jogoserv_usr, r, r = objdepois(r)
+    r.nome && msg(r.nome)
+  efim
+
+func opc_nome
+  ret !arg0, msg("Digite o novo nome após /nome")
+  ret !nomevalido(arg0), nulo
+  refvar n = "n " + txtcod(arg0)
+  indiceitem i
+  se i.obj(n) != este && i.obj(n)
+    ret msg("Apelido já está sendo usado; digite outro")
+  fimse
+  msg_t("//Usuário " + nome + " é conhecido como " + arg0)
+  nome = arg0, nomecod = n
+
+func opc_terminar
+  msg_t("//Encerrando o programa")
+  terminar

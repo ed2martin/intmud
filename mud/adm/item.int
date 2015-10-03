@@ -21,6 +21,10 @@ func escr # Listar itens
   se !p.iniclasse("i_" + arg1)
     arg0.msg("\bNenhum item encontrado.")
   senao
+    se 1
+      debug d
+      d.exec = 50000
+    fimse
     refvar t = arg0.sock.txtmais
     txt100 lin
     total = 0

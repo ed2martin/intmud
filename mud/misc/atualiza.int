@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 373, nulo
-  p.criar("config", "const versao = 373 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 374, nulo
+  p.criar("config", "const versao = 374 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -493,12 +493,15 @@ casa está atrasada.\"")
     criafunc("config", "const l_ideia = 0")
   fimse
 # Correção de recalc_auto para recalc1_auto e recalc2_auto
-  se versao < 373
+  se versao < 374
     debug d
     epara p.iniclasse("p_"), p.lin, p.depois
       d.ini, nomefunc(p.texto, "recalc_auto", "recalc1_auto")
     efim
     epara p.iniclasse("i_"), p.lin, p.depois
+      d.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
+    efim
+    epara p.iniclasse("e_"), p.lin, p.depois
       d.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
     efim
   fimse
