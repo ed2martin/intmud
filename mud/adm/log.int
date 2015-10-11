@@ -12,19 +12,25 @@ func escr
     arqdir dir
     txt100 lin
     lin = dir.abrir("log")
-    ret lin, arg0.msg("\bErro: " + lin)
-    ret !dir.lin, arg0.msg("\bNenhum arquivo de log")
-    debug d
-    d.exec = 50000
+    se (lin = dir.abrir("log")) != ""
+      ret arg0.msg("\bErro: " + lin)
+    senao !dir.lin
+      ret arg0.msg("\bNenhum arquivo de log")
+    senao
+      debug d
+      d.exec = 50000
+    fimse
     textotxt t
     epara nulo, dir.lin, dir.depois
       continuar txtfim(dir.texto, 4) != ".log"
-      lin = txttroca(dir.texto + "\b", ".log\b", "")
-      lin += txtesp(18 - inttotal(lin)) + " " + dir.tamanho("log/" + dir.texto)
-      lin += txtesp(27 - inttotal(lin)) + " "
-      refvar data = dir.mtempo("log/" + dir.texto)
-      lin += txtsub(data, 2, 1) + "/" + txtsub(data, 1, 1)
-      t.addfim(txts(data) + " " + lin + " " + txttroca(txtsub(data, 3, 2), " ", ":"))
+      refvar d = dir.mtempo("log/" + dir.texto)
+      lin = txt1(d) + (50 + txtsub(d, 1, 1)) + (50 + txtsub(d, 2, 1))
+      lin += 500000 + 10000 * txtsub(d, 3, 1) + 100 * txtsub(d, 4, 1) + txtsub(d, 5, 1)
+      lin += " " + txttroca(dir.texto + "\b", ".log\b", "")
+      lin += txtesp(33 - inttotal(lin)) + " " + dir.tamanho("log/" + dir.texto)
+      lin += txtesp(42 - inttotal(lin)) + " "
+      lin += txtsub(d, 2, 1) + "/" + txtsub(d, 1, 1)
+      t.addfim(lin + " " + txttroca(txtsub(d, 3, 2), " ", ":"))
     efim
     t.ordena
     refvar txtmais = arg0.sock.txtmais

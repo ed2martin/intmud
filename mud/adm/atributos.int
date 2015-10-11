@@ -525,7 +525,7 @@ func passo
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
     $opc_atribcfg.passo(arg0, "")
     arg0.var.opclin = ""
-    criar("admrecalctudo") # Para atualizar os personagens
+    $admrecalc.exec # Para atualizar os personagens
   fimse
   ret 1
 
@@ -906,14 +906,15 @@ const clas11 = var.classe1
 const vari11 = "msgnulo2"
 
 
-classe admrecalctudo
-# Recalcula os atributos de todos os personagens
+classe admrecalc
+# Para recalcular os atributos de todos os personagens:
+# $admrecalc.exec
+const iniclasse = !$[arg0] && criar(arg0)
 prog p
 debug d
 ref r
 
-func ini
-  apagar(este)
+func exec
   d.exec = 50000
   epara p.iniherdainv("comum_persobat"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)

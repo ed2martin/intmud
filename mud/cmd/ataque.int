@@ -187,7 +187,7 @@ const c_espera = 15 # Tempo de esperar após usar esse comando
 ref log # Para onde enviar mensagens de log
 int32 mudavida # Para calcular mudança nos pontos de vida do alvo
 int8 result # Resultado da batalha:
-# 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=cancelar ataque
+# 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=esquivou, 4=cancelar ataque
 ref arma1 # Arma usada
 #
 # Ordem que deve organizar as constantes:
@@ -333,7 +333,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     sair arg0 != arg1
     ret arg0.contr.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
   casofim
-# Checa o alvo e dispara eventos
+# Checa o alvo
   se arg0.contr.mesmogrupo(arg1.contr)
     ret arg0.contr.msg("Atacar outro integrante do grupo?")
   senao !arg0.contr.dono.s_luta
@@ -345,6 +345,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   senao arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
     ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + " aqui.")
   fimse
+# Dispara eventos
   ret cmd_atacar(arg0, arg1, este), nulo
   epara l.addfim(arg0.contr.evento), l, l.ini.remove
     ret l.objini.cmd_atacarcontr(arg0, arg1, este, arg0.contr), nulo
@@ -444,7 +445,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   listaobj e
   tipoalvo != 8 && velgolpe(arg0, arg1) # Tempo do golpe
   execgolpe(arg0, arg1, atk) # Ataca
-  se result != 3
+  se result != 4
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     !result && (arg0.contr.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
@@ -467,7 +468,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     continuar !r.contr.p_agressivo(arg0)
     tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
-    continuar result == 3
+    continuar result == 4
     !result && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
     mensgolpe2(arg0, r)
@@ -530,7 +531,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # tipoatk = tipo de ataque, arma1 = arma usada
   real2 dano
 # Checa se pode realmente atacar
-  result = 3, mudavida = 0, dano = 1
+  result = 4, mudavida = 0, dano = 1
   listaobj l
   ret cmd_atkenv(arg0, arg1, este, dano), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -558,7 +559,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     ret
   senao result == 20 || arg1.posicao == 4 # Acertou automaticamente
   senao result == 1 # Errou o alvo automaticamente
-    result = 2
+    result = 3
     log.m(">Dado de 20 faces = 1: errou automaticamente")
     ret
   senao arg0.jog && rand($miscfome.bebeatk, $miscfome.cheio) < arg0.p_bebida
@@ -730,6 +731,8 @@ func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do 
     ret menssub(lin, 14) && $mens.mtodos3(lin.0, lin.1, lin.2)
   casose "2" # Errou o alvo
     ret menssub(lin, 11) && $mens.mtodos3(lin.0, lin.1, lin.2)
+  casose "3" # O alvo desviou
+    ret (menssub(lin, 17) || menssub(lin, 11)) && $mens.mtodos3(lin.0, lin.1, lin.2)
   casofim
 
 func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado do ataque
@@ -740,12 +743,15 @@ func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado d
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    ret arg1.pvida, arg1.sock && menssub(lin, 5) && arg1.contr.msginv(lin.1)
-    ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
+    ret arg1.pvida, arg1.contr.sock && menssub(lin, 5) && arg1.contr.msginv(lin.1)
+    ret arg1.contr.sock && menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
   casose "1" # Não teve efeito
-    ret arg1.sock && menssub(lin, 14) && arg1.contr.msginv(lin.1)
+    ret arg1.contr.sock && menssub(lin, 14) && arg1.contr.msginv(lin.1)
   casose "2" # Errou o alvo
-    ret arg1.sock && menssub(lin, 11) && arg1.contr.msginv(lin.1)
+    ret arg1.contr.sock && menssub(lin, 11) && arg1.contr.msginv(lin.1)
+  casose "3" # O alvo desviou
+    ret !arg1.contr.sock, nulo
+    ret (menssub(lin, 17) || menssub(lin, 11)) && arg1.contr.msginv(lin.1)
   casofim
 
 func menssub # Usado em mensgolpe

@@ -138,6 +138,14 @@ Argumento quanto sabe, vide função checahab2, acima.
 
 Na classe comando_ataque:
 
+int8 result
+Resultado da batalha, atualizado pela função exechab:
+0 = Acertou o alvo
+1 = Não teve efeito
+2 = Errou o alvo
+3 = O alvo esquivou
+4 = Cancelar ataque
+
 const tipoalvo = 0
 Indica o tipo de alvo e de hab/magia:
 0 = Qualquer um; ataque
@@ -203,6 +211,10 @@ Quando o golpe não teve efeito:
 Linha 14 = para o personagem
 Linha 15 = para o alvo; se vazio assume linha 14
 Linha 16 = para os outros; se vazio assume linha 14
+Quando o alvo esquivou (opcional):
+Linha 17 = para o personagem
+Linha 18 = para o alvo; se vazio assume linha 17
+Linha 19 = para os outros; se vazio assume linha 17
 
 func habajuda
 arg0 = objeto do personagem
@@ -239,13 +251,11 @@ func execgolpe( personagem, alvo, força do ataque )
 Realiza um ataque e coloca resultado em result e mudavida.
 Na força do ataque deve estar incluído o quanto sabe do golpe.
 Se for 0, não calcula os danos.
-Se baseia em tipoatk (tipo de ataque) e arma1 (arma usada)
+Se baseia em tipoatk (tipo de ataque) e arma1 (arma usada).
 
 func mensgolpe( personagem, alvo )
 Envia mensagens de alvo principal de acordo com o resultado do ataque.
-Faz result=10 se o alvo morreu, mas não chama a função morreu.
 
 func mensgolpe2( personagem, alvo )
 Envia mensagens de alvo secundário (não envia todas as mensagens)
 de acordo com o resultado do ataque.
-Faz result=10 se o alvo morreu, mas não chama a função morreu.

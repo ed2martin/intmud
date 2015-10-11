@@ -7,7 +7,7 @@ const tempo1 = 9000
 const tempo2 = 50
 const msgfim1 = "A sua visão retornou."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver &= ~1
 
@@ -148,7 +148,7 @@ const maximo = 4
 const e_condicao = 2 # Condição: 2 Durante a batalha e tem pontos de vida
 const msgnulo2 = "$P não sente diferença."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   deftipo.0 *= 0.8 # Tipos Normais
   deftipo.1 *= 0.8 # Tipos Especiais
@@ -177,7 +177,7 @@ const msgini2 = "$P começa a flutuar."
 const msgnulo2 = "$P sobe um pouco no ar e volta."
 const msgfim2 = "$P retorna ao chão."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver |= 512
 
@@ -192,7 +192,7 @@ const msgnulo1 = "Você anda em silêncio."
 const tempo1 = 6000
 const tempo2 = 40
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver |= 256
 
@@ -207,7 +207,7 @@ const msgfim2 = "$P apareceu em um clarão."
 const tempo1 = 6000
 const tempo2 = 40
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitinv |= 4
 
@@ -257,7 +257,7 @@ const tempo2 = 5
 const msgini2 = "$P ficou com medo."
 const msgfim2 = "$P perdeu o medo."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   atktipo.0 *= 0.83 # Tipos Normais
   atktipo.1 *= 0.83 # Tipos Especiais
@@ -272,7 +272,7 @@ const msgnulo1 = "$P continua escondid$s."
 const tempo1 = 6000
 const tempo2 = 40
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitinv |= 8
 
@@ -346,7 +346,7 @@ const msgini2 = "$P tira uma soneca."
 const msgnulo2 = "$P tenta tirar uma soneca."
 const msgfim2 = "$P acorda da soneca."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver |= 1024
   deftipo.0 *= 0.5 # Tipos Normais
@@ -363,10 +363,6 @@ const msgini2 = "$P pegou no sono."
 const msgfim2 = "$P acordou."
 const evperso = 1 # Eventos perso: Sim
 
-func recalc_auto # Altera atributos do personagem
-# Não alterar; função criada automaticamente
-  bitver |= 1024
-
 func cmd_fim # Efeito foi apagado
   se dono.posicao == 4 # Se estiver dormindo
     dono.posicao = 8 # Acordou
@@ -376,6 +372,10 @@ func cmd_atacou
   se !arg2.result && arg1 == dono # Recebeu ataque com sucesso
     t_duracao > 50 && (t_duracao -= 40) # Menos tempo dormindo
   fimse
+
+func recalc2_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  bitver |= 1024
 
 
 classe e_veneno_mortal
@@ -413,7 +413,7 @@ const msgnulo2 = "$P não sente diferença."
 const msgfim1 = "Seus sentidos voltam ao normal."
 const msgfim2 = "Os sentidos de $p voltam ao normal."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver |= 4
 
@@ -429,7 +429,7 @@ const msgnulo1 = "$P não sente diferença."
 const msgfim1 = "Seus sentidos voltam ao normal."
 const msgfim2 = "Os sentidos de $p voltam ao normal."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitver |= 8
 
@@ -444,6 +444,6 @@ const msgini2 = "$P começa a voar."
 const msgnulo2 = "$P sobe um pouco no ar e volta."
 const msgfim2 = "$P retorna ao chão."
 
-func recalc_auto # Altera atributos do personagem
+func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   bitinv |= 16

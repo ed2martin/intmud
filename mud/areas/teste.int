@@ -935,7 +935,8 @@ m_Cegueira 8\n\
 m_Curar_Cegueira 8\n\
 m_Criar_Fonte 8\n\
 h_Rosnar 8\n\
-h_Roncar 8"
+h_Roncar 8\n\
+h_Esquiva 6"
 const taxaaula = 50
 
 
@@ -1558,6 +1559,28 @@ func info20
   se arg0.bitver & 0x100 != 0
     $mens.mtodos1("$P: E anda em silêncio...")
   fimse
+
+
+classe p_teste033
+herda comum_perso
+const nome = "Telepata"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  $mens.p(este, arg0)
+  se misc:hora < 6 || misc:hora >= 18
+    $mens.mens = "Boa noite!"
+  senao misc:hora < 12
+    $mens.mens = "Bom dia!"
+  senao # Nesse caso, misc:hora é um número de 12 a 17
+    $mens.mens = "Boa tarde!"
+  fimse
+  arg0.msginv(config:telepatia2) # Pega a mensagem da configuração
 
 
 classe s_teste001
@@ -3201,11 +3224,11 @@ const s_titulo = "Subsolo 3: Diversos"
 const s_desc = "Ao norte: um ajudante que te seguirá, chama protetora e chute élfico\n\
 Ao sul: itens apagados após um tempo e poção mortal\n\
 A leste: algumas opções com itens e transportando personagens de uma sala\n\
-A oeste: bloquear canais de comunicação de um jogador com efeitos"
+A oeste: Se estiver empunhando uma arma, guarda a arma"
 const dir_n = $s_teste096
 const dir_s = $s_teste097
 const dir_l = $s_teste108
-const dir_o = $s_teste113
+const dir_o = $s_teste137
 const dir_c = $s_teste082
 const dir_b = $s_teste119
 
@@ -3554,7 +3577,7 @@ e usar os comandos telepatia e gritar.\n\
 cmdj fulano criar(\"e_rouquidao\", este)\n\
 cmdj fulano apagar(dentro2.objini(\"e_rouquidao\"))\n\
 Nesse caso, fulano é o nome do personagem do jogador."
-const dir_l = $s_teste095
+const dir_l = $s_teste119
 const dir_o = $s_teste114
 
 
@@ -3651,16 +3674,17 @@ const dir_n = $s_teste117
 
 classe s_teste119
 herda b_teste
-const s_titulo = "Subsolo 4: Diversos"
+const s_titulo = "Subsolo 4: Mensagens e Diversos"
 const s_desc = "Ao norte: Frases aleatórias e frutas que recuperam pontos de vida\n\
 Ao sul: Comandos sociais, poça d'água e ao vestir ou remover item\n\
 A leste: Mensagens para a área e para o MUD inteiro\n\
-A oeste: Se estiver empunhando uma arma, guarda a arma"
+A oeste: bloquear canais de comunicação de um jogador com efeitos"
 const dir_n = $s_teste120
 const dir_s = $s_teste129
 const dir_l = $s_teste136
-const dir_o = $s_teste137
+const dir_o = $s_teste113
 const dir_c = $s_teste095
+const dir_b = $s_teste145
 
 
 classe s_teste120
@@ -3928,7 +3952,7 @@ herda b_teste
 const s_titulo = "Guardar arma"
 const s_desc = "O personagem que entrar nessa sala empunhando uma arma, guardará a arma\n\
 automaticamente."
-const dir_l = $s_teste119
+const dir_l = $s_teste095
 
 func cmd_salaperso # Personagem chegou
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
@@ -4042,3 +4066,27 @@ cmd var.h_Socar=\"3 5\"\n\
 O primeiro número é quanto conhece, nesse caso nível básico.\n\
 O segundo é quantas vezes escolheu a habilidade (R5)."
 const dir_n = $s_teste041
+
+
+classe s_teste145
+herda b_teste
+const s_titulo = "Subsolo 5: Diversos"
+const s_desc = "Ao norte: Checando hora e enviando mensagens telepáticas"
+const dir_n = $s_teste146
+const dir_c = $s_teste119
+
+
+classe s_teste146
+herda b_teste
+const s_titulo = "Hora e mensagens telepáticas"
+const s_desc = "Esse personagem fala telapaticamente com os jogadores que chegarem.\n\
+Fala bom dia das 6 horas até quase meio dia (hora MUD), boa tarde\n\
+meio dia até às 17:59 e boa noite das 18 horas até às 5:59."
+const dir_s = $s_teste145
+const s_reset = "P 100 teste033 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste033:objsolto.total < 1
+    criar("p_teste033", este, 0)
+  fimse
