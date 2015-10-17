@@ -108,9 +108,16 @@ Se item some (é apagado) quando a luz acaba (0=não, 1=sim).
 const armatipo = 0
 Tipo de arma; vide config:arma_txt (0 significa que não é arma).
 
-const armaprecisao = 0
-Precisão da arma, em porcentagem, 100 significa mesma precisão de
-atacar sem arma.
+const armaatk = ""
+Habilidade usada como ataque automático dessa arma.
+Se estiver vazio, o nome da habilidade é o tipo de arma.
+
+const armaprecisao = 100
+Para armas que por natureza são imprecisas.
+De 0 a 100, 0=sempre erra e 100=mesma precisão que atacar sem arma.
+
+const armaaddprecisao = 0
+Quanta precisão o personagem ganha durante um ataque com essa arma.
 
 const armamin = 0
 Ataque mínimo da arma.

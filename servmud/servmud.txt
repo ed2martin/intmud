@@ -1,0 +1,240 @@
+Índice
+
+1. O que é
+2. Executando o programa
+3. Conectando-se ao programa
+4. Usando a janela do próprio programa
+5. Encerrando o ServMud
+6. Mudando a porta
+7. Entrando em um MUD
+8. Saindo de um MUD
+9. Enviando mensagens
+10. Automatizando a entrada em MUDs
+11. Configuração: cores, tamanho das linhas, etc.
+12. Mais de uma pessoa controlando o mesmo personagem
+13. Cuidados a serem tomados em um MUD
+
+--
+
+1. O que é
+
+ServMud é um programa que permite conectar-se a um MUD qualquer
+usando o Papovox ou algum telnet qualquer, inclusive Telnetvox.
+É possível, também, usar só o ServMUD, sem nenhum desses programas.
+Um MUD ("Multiple User Dimension" ou "Multiple User Dungeon") é
+um jogo de RPG, geralmente baseado em texto, em que várias pessoas
+podem jogar ao mesmo tempo, interagindo entre si.
+Os jogadores controlam personagens que, podem ir de um lugar a outro
+(a cada lugar que chega é apresentada uma descrição do lugar), pegar
+e usar itens, lutar com outros personsagens, etc.
+
+
+2. Executando o programa
+
+No Windows:
+Copie o intmud.exe para o diretório aonde está o aquivo servmud.int.
+Depois entre no diretório do servmud.int e renomeie o intmud.exe
+para servmud.exe. Depois disso é só executar o programa servmud.exe.
+
+No Linux:
+Copie o intmud.exe para o diretório aonde está o aquivo servmud.int.
+Depois entre no diretório do servmud.int e renomeie o intmud
+para servmud. Depois disso é só executar o programa servmud.
+
+O programa abre, ainda, a porta 1963, mas apenas para conexões locais
+(no mesmo micro).
+
+
+3. Conectando-se ao programa
+
+Papovox:
+Escolha a opção L e digite o endereço localhost
+
+Tnetvox (Telnet falado):
+Execute o programa e escolha as seguintes opções:
+Endereço: localhost
+Não aceitar os valores padrão.
+Porta: 1963
+Modo de fala: verborrágico
+Pressionar ENTER para as próximas perguntas.
+
+Durante a conversa sempre pressione ENTER antes de escrever. Assim
+não perderá mensagens, pois nenhuma mensagem chegará enquanto você
+escreve. Evite também escrever enquanto o programa lê mensagens.
+
+Telnet (Windows):
+Clicar no botão iniciar / Executar
+Digitar: telnet
+Digitar o endereço e a porta (veja em Tnetvox, acima)
+
+Uma vez conectado no ServMud, depois de digitar uma palavra qualquer
+quando ele pede o apelido, é aconselhável teclar /a para saber
+os comandos do programa.
+
+Já para desconectar do ServMUD, porém sem encerrar o programa, pode-se
+digitar /sair ou /quit.
+
+
+4. Usando a janela do próprio programa
+
+Pode-se digitar na janela do ServMUD sem a necessidade de conectar via
+Telnet ou Papovox. Ele se comporta da mesma forma, porém algumas teclas
+possuem comportamento específico:
+
+F1 mostra os endereços predefinidos (comando /l)
+F2 ativa/desativa eco das mensagens enviadas (comando /c3)
+F3 desconecta (comando /d)
+F4 encerra o programa (comando /terminar)
+
+Pode-se ainda acessar o histórico do que foi digitado com as teclas PGUP
+e PGDN. As mensagens anteriores vão para o campo de digitação.
+
+
+5. Encerrando o ServMud
+
+Para encerrar o programa, basta pressionar a tecla F4 na janela do
+ServMUD ou digitar o comando:
+/terminar
+
+
+você primeiro deverá estar conectado nele
+(veja item 3, acima). Depois tecle:
+/terminar
+
+
+6. Mudando a porta
+
+Inicialmente o programa abre a porta 1963 para conectar-se a ele.
+Se for necessário mudar a porta, tecle /rl seguido de espaço e o número
+da porta. Exemplo, para mudar para a porta 2000, basta teclar:
+/rl 2000
+Mas esteja ciente que o Papovox só se conecta na porta 1963.
+
+É possível mudar a porta sem que o ServMUD esteja aberto. Nesse caso,
+basta abrir o arquivo servmud.int em um editor de texto e mudar a linha
+26, que contém o seguinte texto:
+const porta = 1963
+Onde 1963 é o número da porta.
+
+
+7. Entrando em um MUD
+
+Digite /t seguido do endereço do mud e a porta. Exemplos:
+/t mud.valinor.com.br 4000
+/t mud.simauria.org 23
+/t dentinmud.org 3000
+
+Alguns MUDs aceitam telnet criptografado, porém não é na mesma porta
+usada para telnet normal. Nesse caso, tecle /s ao invés de /t.
+Exemplo, para entrar em t2tmud.org via Telnet normal o comando é:
+/t t2tmud.org 9999
+Já Telnet criptografado:
+/s t2tmud.org 444
+
+É possível ainda entrar em chats como se fosse um Papovox, usando
+o comando /p. ao invés do /t.
+
+
+8. Saindo de um MUD
+
+O mais indicado é teclar quit. Na maioria dos mud você sai do mud.
+Se quiser encerrar a conexão de outra forma tecle /d, mas isso não
+é recomendável porque em boa parte dos muds seu personagem continua
+no jogo.
+
+
+9. Enviando mensagens
+
+Qualquer coisa que escrever que não começar com uma / vai para o MUD.
+Para escrever mensagens apenas para quem estiver conectado no ServMud
+tecle / e a mensagem.
+Para enviar mensagens vazias (exemplo, quando o MUD diz pressione ENTER),
+tecle / e enter.
+Mensagens para o mud que começam com /, escreva // no lugar de /.
+
+
+10. Automatizando a entrada em MUDs
+
+Para entrar em um mud sem precisar digitar o comando completo, digite
+/l seguido de espaço, a palavra chave, espaço e um comando /t, /s ou /p.
+Depois disso, basta digitar a palavra chave para se conectar.
+Exemplo, após teclar:
+/l den /t dentinmud.org 3010
+Basta digitar den o ServMUD se conectará no endereço dentinmud.org porta
+3010 como telnet.
+
+Para apagar um desses atalhos, tecle /l seguido da palavra chave.
+Exemplo:
+/l den
+
+Já para saber os atalhos existentes, tecle apenas /l
+
+Os atalhos também podem ser feitos abrindo o arquivo servmud.int, embora
+não seja recomandado. Estão a partir da linha 28 e seguem o formato:
+const _den = "/t dentinmud.org 3010"
+
+
+11. Configuração: cores, tamanho das linhas, etc.
+
+O comando /c1 tem funções diferentes para quem usa Papovox e Telnet.
+No Papovox, alterna entre cortar as mensagens em 80 ou 240 caracteres.
+No Telnet, alterna entre repetir ou não as últimas mensagens após
+pressionar ENTER.
+
+Ao conectar-se em um MUD, o ServMud envia as mensagens do MUD suprimindo
+as cores, comandos para limpar a tela, etc, o que é muito conveniente
+para alguns programas e scripts. Para alternar entre receber e não receber
+cores, tecle /c2
+
+Teclando /c3 faz o programa ecoar todas as mensagens enviadas para o MUD
+(eco ativado). Teclando /c3 novamente, as mensagens param de ser ecoadas
+(eco desativado).
+
+
+12. Mais de uma pessoa controlando o mesmo personagem
+
+Inicialmente o programa só permite que você se conecte localmente.
+Para permitir que alguém de fora também possa entrar tecle /r seguido
+de espaço, o endereço IP de quem quer se conectar, espaço e a porta.
+Exemplo:
+/r 200.10.20.30 2000
+O programa permitirá uma só conexão do endereço especificado na porta
+2000. Depois disso, a porta é automaticamente fechada.
+
+Caso queira fechar a porta antes disso, tecle /r seguido de espaço e
+a porta. Exemplo:
+/r 2000
+
+Pode-se ainda saber que portas estão abertas teclando apenas /r
+
+Há algumas maneiras de se obter o endereço IP. No Windows 95/98/ME
+clicar no botão Iniciar, Executar, digitar winipcfg e teclar ENTER.
+
+No Windows XP chamar o aviso do MS-DOS e digitar ipconfig
+Se você estiver no bate-papo da rede SACI (http://chat.saci.org.br:1965/)
+digite ?ip para saber seu endereço IP.
+
+IMPORTANTE: Se você estiver acessando a Internet de uma rede local, pessoas
+de fora da rede não vão conseguir conectar-se no ServMud.
+Se o endereço IP seu micro (verificar com winipcfg no 95/98/ME e ipconfig
+no XP) começa com 10 ou 192.168, você está acessando a Internet de uma
+rede local.
+
+
+13. Cuidados a serem tomados em um MUD
+
+13.1  Tomar cuidado com o que escreve para outras pessoas no MUD, mesmo
+que em particular. Geralmente os administradores de um MUD conseguem ler
+as mensagens particulares de terceiros.
+
+13.2  Se você usa BOTs (robozinhos que fazem tarefas repetitivas), nunca
+comente isso em um MUD, nem em particular com outra pessoa. O uso de
+programas para automatizar tarefas costuma ser proibido em qualquer MUD.
+Nota: É possível fazer bots em várias linguagens, incluindo o Scriptvox,
+que é parte integrante do sistema Dosvox. Tudo o que o programa deve fazer
+é conectar-se no endereço localhost, porta 1963, e agir com um cliente de
+telnet. Enviar mensagens de texto e interpretar as mensagens recebidas.
+
+12.3  Se estiver jogando em mais de uma pessoa, é bom não comentar isso
+no MUD, porque em alguns MUDs isso não é permitido. Os jogadores devem
+comportar-se como se fossem uma só pessoa no MUD.

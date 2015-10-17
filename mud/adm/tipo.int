@@ -266,11 +266,9 @@ nmin nmax evoluir inivar"
 const iniclasse = !$[arg0] && criar(arg0)
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
-  txt100 nome
   ref r
   prog p
-  nome = txt(este, 5)
-  recalc_ajusta2(nome, p, r)
+  recalc_ajusta2(txt2(txte(este)), p, r)
 
 func recalc_ajusta2 # Chamado internamente por recalc_ajusta para mais eficiência
 # arg0 = nome do tipo
@@ -281,7 +279,6 @@ func recalc_ajusta2 # Chamado internamente por recalc_ajusta para mais eficiênci
   efim
   epara arg1.iniclasse("p_"), arg1.lin, arg1.depois
     epara arg2 = $[arg1.texto], arg2, arg2 = objdepois(arg2)
-      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = \
-1)
+      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
     efim
   efim

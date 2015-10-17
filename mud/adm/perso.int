@@ -52,7 +52,9 @@ Mostra aonde está cada personagem do tipo especificado."
 
 func escr # Listar personagens
   prog p
-  se !p.existe("p_" + arg1)
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do personagem IPERSO")
+  senao !p.existe("p_" + arg1)
     arg0.msg("\bPersonagem não existe: " + arg1)
   senao !$p_[arg1]
     arg0.msg("\bPersonagem não está no jogo: " + arg1)

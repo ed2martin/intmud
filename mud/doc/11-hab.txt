@@ -12,13 +12,15 @@ Comuns: herdam comando_ataque
 De identificação: herdam comando_identificar
 De retorno: herdam comando_retornar
 
+
 Na classe comando_hab:
 
 const posic = 7
 Posição mínima do personagem para usar a hab/magia.
 
 const precisao = 100
-Precisão do golpe, maior que 100 nunca falha.
+Para habilidades e magias que por natureza são imprecisas.
+De 0 (sempre erra) a 100 (mesmo que atacar sem arma) ou 101 (nunca falha).
 
 const tipoarma = 0
 É um valor numérico em que cada bit corresponde a um tipo de arma
@@ -136,6 +138,7 @@ func custohab2( personagem, quanto sabe )
 Aplica os custos da habilidade/magia, como gasto de mana e de moviemnto.
 Argumento quanto sabe, vide função checahab2, acima.
 
+
 Na classe comando_ataque:
 
 int8 result
@@ -175,6 +178,9 @@ Força de ataque, em porcentagem (100 significa 100%).
 
 const vel = 50
 Velocidade do golpe, em porcentagem (100 significa 100%).
+
+const addprecisao = 0
+Quanta precisão o personagem ganha durante o ataque.
 
 const tipobonus = ""
 Raças e classes de personagens que possuem um bônus (atacam com mais força).

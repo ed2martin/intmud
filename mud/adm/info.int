@@ -210,6 +210,20 @@ Sintaxe: IJOG\n\
 Mostra algumas informações do jogador: como está conectado, nível, moedas,\n\
 e-mail, sala e jogo salvo. Se não estiver online, procura no jogo salvo.\n\
 Sem argumentos, mostra aonde cada jogador online está."
+#
+sav textovar var # Variáveis criadas sob demanda
+sav txt20 nome # Nome do personagem
+txt100 cnome # Para obter o nome codificado
+sav txt40 salanome # Nome da sala
+sav int1 psexo
+sav uint16 pnivel
+sav uint16 prenascer
+sav txt32 tipo1
+sav txt32 tipo2
+sav txt32 tipo3
+sav int1 jogconfig.24
+sav int32 tempojogo1
+sav uint16 tempojogo2
 
 func escr
   se !arg1
@@ -240,7 +254,7 @@ func escr
     ret intnome(arg1), arg0.msg("Nome inválido para jogador: " + arg1)
     arqsav sav1
     listaobj l1
-    p = $jog_info, l1.addfim(p)
+    p = este, l1.addfim(p)
     p.cnome = "x " + nomesav
     sair sav1.ler("sav1/" + nomesav + ".sav", l1, 1)
     item.ini("un " + nomesav)
@@ -295,24 +309,6 @@ func lugar
     fimse
   efim
   ret lin
-
-
-classe jog_info
-# Usado no comando ijog
-const iniclasse = !$[arg0] && criar(arg0)
-sav textovar var # Variáveis criadas sob demanda
-sav txt20 nome # Nome do personagem
-txt100 cnome # Para obter o nome codificado
-sav txt40 salanome # Nome da sala
-sav int1 psexo
-sav uint16 pnivel
-sav uint16 prenascer
-sav txt32 tipo1
-sav txt32 tipo2
-sav txt32 tipo3
-sav int1 jogconfig.24
-sav int32 tempojogo1
-sav uint16 tempojogo2
 
 
 classe adm_inv
