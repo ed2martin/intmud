@@ -73,6 +73,7 @@ const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
         { "txtbit",     Instr::FuncTxtBit, 0 },
         { "txtchr",     Instr::FuncTxtChr, 0 },
         { "txtcod",     Instr::FuncTxt2, 12 },
+        { "txtconv",    Instr::FuncTxtConv, 0 },
         { "txtcopiamai",Instr::FuncTxtCopiaMai, 0 },
         { "txtcor",     Instr::FuncTxt2, 2 },
         { "txtdec",     Instr::FuncTxt2, 13 },

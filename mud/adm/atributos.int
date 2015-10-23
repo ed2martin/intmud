@@ -907,8 +907,13 @@ const vari11 = "msgnulo2"
 
 
 classe admrecalc
-# Para recalcular os atributos de todos os personagens:
+# Para recalcular os atributos de todos os personagens que lutam:
 # $admrecalc.exec
+# Para atualizar os atributos de todos os personagens:
+# $admrecalc.atuperso
+# Para atualizar os atributos de todos os itens:
+# $admrecalc.atuitem
+#
 const iniclasse = !$[arg0] && criar(arg0)
 prog p
 debug d
@@ -917,6 +922,22 @@ ref r
 func exec
   d.exec = 50000
   epara p.iniherdainv("comum_persobat"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.recalc = 1
+    efim
+  efim
+
+func atuperso
+  d.exec = 50000
+  epara p.iniherdainv("comum_perso"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.recalc = 1
+    efim
+  efim
+
+func atuitem
+  d.exec = 50000
+  epara p.iniherdainv("comum_item"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)
       r.recalc = 1
     efim

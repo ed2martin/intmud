@@ -110,7 +110,9 @@ Quantas vezes o personagem renasceu (usou o comando renascer).
 
 txt16 nome
 const nome = ""
-Nome do personagem ou item, usado em ações com o objeto.
+Nome do personagem ou item, usado em algumas mensagens com o item
+ou personagem.
+Nota: a maioria das mensagens usa descnome (abaixo) ao invés de nome.
 
 const ident = nome
 Nomes que o jogador digita para ações com o personagem ou item.
@@ -150,6 +152,14 @@ Para chamar recalc_exec quando necessário.
 
 func recalc_exec
 Ajusta variáveis, principalmente batalha.
+Nota: Quando for necessário atualizar vários personagens ou itens, podem
+ser usadas funções da classe admrecalc (arquivo adm/atributos.int).
+Para recalcular os atributos de todos os personagens que lutam:
+$admrecalc.exec
+Para atualizar os atributos de todos os personagens:
+$admrecalc.atuperso
+Para atualizar os atributos de todos os itens:
+$admrecalc.atuitem
 
 func visivel( personagem )
 Retorna verdadeiro se está visível para o persoangem.

@@ -2069,6 +2069,43 @@ intdist    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
 intdistmai - Considera iguais letras maiúsculas e minúsculas;
 intdistdif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
+15.3.24. txtconv(<texto>, <tipo de conversão>)
+Converte texto em um formato para outro.
+Tipo de conversão é um texto de dois caracteres. O primeiro é o formato
+atual do argumento <texto>. O segundo é o formato retornado por txtconv.
+
+Essa função trabalha com os seguintes formatos:
+T é um texto no padrão iso8859-1 (é o formato usado no IntMUD).
+    Todas as conversões envolvendo esse formato, exceto "TU" e "UT",
+    removem as definições de cores.
+U é um texto no padrão UTF-8.
+    As únicas conversões possíveis com esse formato são "TU" e "UT".
+B é uma sequência de bytes codificados em Base64.
+    (cada 4 caracteres representam 3 bytes)
+H é uma sequência de bytes codificados em Hexadecimal.
+    (caracteres de 0 a 9 e de a a f; cada 2 caracteres representam um byte)
+D é um número em decimal (são usados somente os dígitos de 0 a 9 e são
+    eliminados zeros à esquerda do número). Para grandes textos, conversões
+    com esse formato são um pouco lentas, se comparado com outras.
+    A exceção é "DD", que é rápido.
+X é um número em binário (caracteres 0 e 1; cada 8 caracteres representam
+    um byte).
+
+Pode-se usar ainda os seguintes textos no tipo de conversão:
+"HH" faz o texto ser algo válido em Hexadecimal.
+"BB" faz o texto ser algo válido em Base64.
+"DD" mantém apenas os caracteres de 0 a 9, com exceção do 0 no começo
+     do texto. No caso de não haver nenhum dígito de 0 a 9, retorna "0".
+
+Exemplos:
+txtconv("Não", "TU") # Texto convertido para UTF-8; aparece como "NÃ£o"
+txtconv("A", "TD") # O mesmo que "65", que é o código ASCII da letra "A"
+Nota: txt(intchr("A")) produz o mesmo resultado
+txtconv("A", "TH") # O mesmo que "41", que por sua vez é 65 em hexadecimal
+txtconv("ABC", "TH") # O mesmo que "414243"
+txtconv("65", "DT") # O mesmo que "A", e o mesmo que txtchr(65)
+txtconv("16", "DH") # O mesmo que "10", que é o número 16 em hexadecimal
+
 
 15.4. FUNÇÕES PARA PROCURA E SUBSTITUIÇÃO DE TEXTOS
 

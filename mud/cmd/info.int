@@ -635,6 +635,7 @@ const txtajuda = "\b\c3Infojog\b\n\
 Sintaxe: INFOJOG <jogador>\n\
 Mostra algumas informações de um personagem de jogador, mesmo que\n\
 não esteja online."
+const posic = 0
 #
 sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem
@@ -655,8 +656,7 @@ func escr
   enquanto 1
     refvar nomesav = txts(txtnome(arg1))
     indiceitem item
-    item.ini("pn " + nomesav)
-    p = item.obj
+    p = indice.obj("pn " + nomesav)
     sair p
     ret intnome(arg1), arg0.msg("Nome inválido para jogador: " + arg1)
     arqsav sav1

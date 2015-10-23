@@ -1207,6 +1207,421 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função txtconv
+bool Instr::FuncTxtConv(TVariavel * v, int valor)
+{
+    if (VarAtual != v+2)
+        return false;
+    const char * texto = v[2].getTxt();
+    while (true)
+    {
+        char mens[BUF_MENS];    // Resultado
+        char * destino = mens;
+
+        // Checa se o formato de conversão contém dois caracteres
+        if (texto[0] == 0) break;
+        if (texto[1] == 0) break;
+        if (texto[2] != 0) break;
+
+        // Obtém variáveis
+        char conv1 = texto[0] | 0x20;
+        char conv2 = texto[1] | 0x20;
+        texto = v[1].getTxt();
+
+        if (conv1=='t' && conv2=='u') // "TU" de iso8859-1 para UTF8
+        {
+            while (*texto && destino < mens+BUF_MENS-2)
+            {
+                unsigned char ch = *texto++;
+                if (ch < 0x80)
+                    *destino++ = ch;
+                else
+                {
+                    *destino++ = 0xC0 + ch / 0x40;
+                    *destino++ = 0x80 + (ch & 0x3F);
+                }
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mens, destino-mens);
+        }
+
+        if (conv1=='u' && conv2=='t') // "UT" de UTF8 para iso8859-1
+        {
+            int LerUTF8 = 0;
+            while (*texto && destino < mens+BUF_MENS-1)
+            {
+                int ch = *(unsigned char*)texto++;
+                if (ch < 0x80)
+                    *destino++ = ch;
+                else if (ch >= 0xC0) // Primeiro byte do caracter
+                {
+                    if (ch < 0xE0)
+                        LerUTF8 = ch & 0x1F;
+                    else
+                        LerUTF8 = 0;
+                }
+                else if (LerUTF8 != 0) // Se não está ignorando
+                {
+                    ch = LerUTF8 * 0x40 + (ch & 0x3F); // Obtém caracter
+                    LerUTF8 = 0;
+                    if (ch < 0x100) // Somente caracteres ISO8859-1
+                        *destino++ = ch;
+                }
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mens, destino-mens);
+        }
+
+        if (conv1 == 'd' && conv2 == 'd') // "DD"
+        {
+            for (; *texto; texto++)
+                if (*texto >= '1' && *texto <= '9')
+                    break;
+            while (*texto && destino < mens+BUF_MENS-1)
+            {
+                unsigned char ch = *texto++;
+                if (ch>='0' && ch<='9')
+                    *destino++ = ch;
+            }
+            if (destino == mens)
+                *destino++ = '0';
+            ApagarVar(v);
+            return CriarVarTexto(mens, destino-mens);
+        }
+
+        if (conv2 != 't' && conv2 != 'h' && conv2 != 'b' &&
+            conv2 != 'd' && conv2 != 'x')
+            break;
+
+        if (conv1 == 't') // Decodifica texto
+        {
+            while (*texto && destino < mens+BUF_MENS-2)
+            {
+                unsigned char ch = *texto++;
+                switch (ch)
+                {
+                case ex_barra_b:
+                    break;
+                case ex_barra_c:
+                    ch = *texto;
+                    if (ch && (ch<'0' || ch>'9') &&
+                            (ch<'A' || ch>'J') && (ch<'a' || ch>'j'))
+                        *destino++ = ch, texto++;
+                    break;
+                case ex_barra_d:
+                    ch = *texto;
+                    if (ch && (ch<'0' || ch>'7'))
+                        *destino++ = ch, texto++;
+                    break;
+                case ex_barra_n:
+                    *destino++ = 13;
+                    *destino++ = 10;
+                    break;
+                default:
+                    *destino++ = ch;
+                }
+            }
+        }
+        else if (conv1 == 'h') // Decodifica hexadecimal
+        {
+            int valor = 0;
+            for (const char * p = texto; *p; p++)
+            {
+                unsigned char ch = *p;
+                if ((ch >= '0' && ch <= '9') ||
+                    ((ch|0x20) >= 'a' && (ch|0x20) <= 'f'))
+                    valor++;
+            }
+            valor = (valor & 1 ? 16 : 1);
+            while (*texto && destino < mens+BUF_MENS-1)
+            {
+                unsigned char ch = *texto++;
+                if (ch >= '0' && ch <= '9')
+                    valor = valor * 16 + ch - '0';
+                else if (ch >= 'A' && ch <= 'F')
+                    valor = valor * 16 + ch - 'A' + 10;
+                else if (ch >= 'a' && ch <= 'f')
+                    valor = valor * 16 + ch - 'a' + 10;
+                else
+                    continue;
+                if (valor >= 0x100)
+                    *destino++ = valor, valor=1;
+            }
+        }
+        else if (conv1 == 'b') // Decodifica base64
+        {
+            int valor = 1;
+            while (destino < mens+BUF_MENS-3)
+            {
+                unsigned char ch = *texto++;
+                if (ch >= 'A' && ch <= 'Z')
+                    valor = valor * 64 + ch - 'A';
+                else if (ch >= 'a' && ch <= 'z')
+                    valor = valor * 64 + ch - 'a' + 26;
+                else if (ch >= '0' && ch <= '9')
+                    valor = valor * 64 + ch - '0' + 52;
+                else if (ch == '+')
+                    valor = valor * 64 + 62;
+                else if (ch == '/')
+                    valor = valor * 64 + 63;
+                else if (ch == '=' || ch == 0)
+                {
+                    if (valor >= 0x40000)
+                    {
+                        *destino++ = valor >> 10;
+                        *destino++ = valor >> 2;
+                    }
+                    else if (valor >= 0x1000)
+                        *destino++ = valor >> 4;
+                    if (ch == 0)
+                        break;
+                    valor = 1;
+                    continue;
+                }
+                else
+                    continue;
+                if (valor < 0x1000000)
+                    continue;
+                *destino++ = valor >> 16;
+                *destino++ = valor >> 8;
+                *destino++ = valor;
+                valor = 1;
+            }
+        }
+        else if (conv1 == 'd') // Decodifica decimal
+        {
+            while (true)
+            {
+
+            // Avança até encontrar um dígito de 1 a 9
+                while (*texto && (*texto<'0' || *texto>'9'))
+                    texto++;
+                if (*texto == 0)
+                    break;
+                while (*texto && (*texto<'1' || *texto>'9'))
+                    texto++;
+                if (*texto == 0)
+                {
+                    *destino++ = 0;
+                    break;
+                }
+
+            // Anota em mens: cada byte corresponde ao valor de 2 dígitos
+                {
+                    int total = 0;
+                    for (const char * p = texto; *p; p++)
+                        if (*p >= '0' && *p <= '9')
+                            total++;
+                    if (total > BUF_MENS*2)
+                        total = BUF_MENS*2;
+                    if (total & 1)
+                        *destino++ = *texto++ - '0';
+                    int valor = 0;
+                    for (; *texto; texto++)
+                    {
+                        if (*texto < '0' || *texto > '9')
+                            continue;
+                        if (valor == 0)
+                            valor = *texto;
+                        else
+                        {
+                            *destino++ = *texto - '0' + (valor - '0') * 10;
+                            valor = 0;
+                        }
+                    }
+                }
+
+            // Junta tudo em um número grande
+                int total = destino - mens;
+                assert(total != 0);
+                for (int y = 1; y < total; y++)
+                {
+                    int v = mens[y];
+                    for (int x=y; x>0; x--)
+                    {
+                        v += (unsigned char)mens[x-1] * 100;
+                        mens[x] = (v & 0xFF);
+                        v >>= 8;
+                    }
+                    mens[0] = v;
+                }
+
+            // Elimina bytes 0 no início do número
+                for (char * p = mens; p<destino; p++)
+                {
+                    if (*p == 0)
+                        continue;
+                    if (p != mens)
+                    {
+                        int total = destino - p;
+                        memmove(mens, p, total);
+                        destino = mens + total;
+                    }
+                    break;
+                }
+                break;
+            }
+        }
+        else if (conv1 == 'x') // Decodifica binário
+        {
+            int valor = 0;
+            for (const char * p = texto; *p; p++)
+                if (*p == '0' || *p == '1')
+                    valor--;
+            valor = (1 << (valor & 7));
+            while (*texto && destino < mens+BUF_MENS-1)
+            {
+                unsigned char ch = *texto++;
+                if (ch == '0')
+                    valor <<= 1;
+                else if (ch == '1')
+                    valor = (valor << 1) + 1;
+                if (valor >= 0x100)
+                    *destino++ = valor, valor=1;
+            }
+        }
+        else
+            break;
+
+        if (conv2 == 't') // Codifica texto
+        {
+            char * o = mens;
+            for (; o < destino; o++)
+                if ((*o & 0xE0) == 0)
+                    break;
+            char * d = o;
+            while (o < destino)
+            {
+                char ch = *o++;
+                if (ch & 0xE0)
+                    *d++ = ch;
+                else if (ch==13)
+                {
+                    *d++ = ex_barra_n;
+                    if (o < destino)
+                        if (*o == 10)
+                            o++;
+                }
+                else if (ch == 10)
+                {
+                    *d++ = ex_barra_n;
+                    if (o < destino)
+                        if (*o == 13)
+                            o++;
+                }
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mens, d-mens);
+        }
+        else if (conv2 == 'h') // Codifica em hexadecimal
+        {
+            char mdest[BUF_MENS];
+            char * d = mdest;
+            if (destino > mens+BUF_MENS/2)
+                destino = mens+BUF_MENS/2;
+            for (const char * o = mens; o < destino; o++)
+            {
+                char ch = ((*o >> 4) & 15);
+                *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
+                ch = (*o & 15);
+                *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mdest, d-mdest);
+        }
+        else if (conv2 == 'b') // Codifica em base64
+        {
+            const char cod[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "abcdefghijklmnopqrstuvwxyz0123456789+/";
+            char mdest[BUF_MENS];
+            char * d = mdest;
+            const char * o = mens;
+            const int maximo = (BUF_MENS / 4) * 3;
+            if (destino > mens + maximo)
+                destino = mens + maximo;
+            for (; o <= destino-3; o+=3)
+            {
+                int valor = (unsigned char)o[0] * 0x10000 +
+                            (unsigned char)o[1] * 0x100 +
+                            (unsigned char)o[2];
+                *d++ = cod[(valor >> 18) & 63];
+                *d++ = cod[(valor >> 12) & 63];
+                *d++ = cod[(valor >> 6) & 63];
+                *d++ = cod[valor & 63];
+            }
+            if (o == destino-2)
+            {
+                int valor = (unsigned char)o[0] * 0x400 +
+                            (unsigned char)o[1] * 4;
+                *d++ = cod[(valor >> 12) & 63];
+                *d++ = cod[(valor >> 6) & 63];
+                *d++ = cod[valor & 63];
+                *d++ = '=';
+            }
+            else if (o == destino-1)
+            {
+                int valor = (unsigned char)o[0] * 0x10;
+                *d++ = cod[(valor >> 6) & 63];
+                *d++ = cod[valor & 63];
+                *d++ = '=';
+                *d++ = '=';
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mdest, d-mdest);
+        }
+        else if (conv2 == 'd') // Codifica em decimal
+        {
+            char mdest[BUF_MENS];
+            char * d = mdest + BUF_MENS;
+            while (destino > mens && d > mdest+6)
+            {
+                char * anota = mens;
+                int valor = 0;
+                for (const char * p = mens; p<destino; p++)
+                {
+                    valor = valor * 0x100 + *(unsigned char*)p;
+                    if (valor < 1000000)
+                        continue;
+                    *anota++ = valor / 1000000;
+                    valor %= 1000000;
+                }
+                destino = anota;
+                d -= 6;
+                d[0] = valor / 100000 % 10 + '0';
+                d[1] = valor / 10000 % 10 + '0';
+                d[2] = valor / 1000 % 10 + '0';
+                d[3] = valor / 100 % 10 + '0';
+                d[4] = valor / 10 % 10 + '0';
+                d[5] = valor % 10 + '0';
+            }
+            for (; d < mdest+BUF_MENS; d++)
+                if (*d != '0')
+                    break;
+            if (d == mdest + BUF_MENS)
+                *(--d) = '0';
+            ApagarVar(v);
+            return CriarVarTexto(d, mdest+BUF_MENS-d);
+        }
+        else //if (conv2 == 'x') // Codifica binário
+        {
+            char mdest[BUF_MENS];
+            char * d = mdest;
+            if (destino > mens+BUF_MENS/8)
+                destino = mens+BUF_MENS/8;
+            for (const char * o = mens; o < destino; o++)
+            {
+                unsigned char ch = *o;
+                for (int x=0; x<8; x++,ch<<=1)
+                    *d++ = (ch & 0x80 ? '1' : '0');
+            }
+            ApagarVar(v);
+            return CriarVarTexto(mdest, d-mdest);
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
 /// Função txtchr
 bool Instr::FuncTxtChr(TVariavel * v, int valor)
 {
