@@ -5,23 +5,22 @@ Sintaxe: LISTA [item]\n\
 Sem argumentos mostra a lista de produtos sendo vendidos.\n\
 Seguido de um nome ou número mostra informações sobre um produto."
 const posic = 5
-txt200 lin
-uint32 valor # Usado internamente: valor do item
-uint32 nivel # Usado internamente: nível do item
-real2 lucro # Para calcular o lucro do vendedor
-int32 linha
-ref p # Vendedor que está verificando
 
 func escr
   negociar_ini(arg0)
   arg1 ? escr2(arg0, arg1) : escr1(arg0)
 
 func escr1 # Consultar a lista de itens
+  uint32 valor # Valor do item
+  uint32 nivel # Nível do item
+  real2 lucro # Para calcular o lucro do vendedor
+  txt200 lin
+  int32 linha
   textotxt t
   listaobj l
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
 )
     lin = negociar_msg(arg0, p)
@@ -100,11 +99,16 @@ func escr1 # Consultar a lista de itens
   arg0.msg("Não há vendedores aqui.")
 
 func escr2 # Consultar um item
+  uint32 valor # Valor do item
+  uint32 nivel # Nível do item
+  real2 lucro # Para calcular o lucro do vendedor
+  txt200 lin
+  int32 linha
   listaobj l
   nomeobj n
-  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
+  l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
 )
     continuar negociar_checa(arg0, p)

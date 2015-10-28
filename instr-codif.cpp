@@ -139,15 +139,20 @@ Se *origem for '$', '[' ou uma letra de A a Z:
     Anota ex_nulo
     Avança origem para depois da palavra "nulo"
     Vai para (1)
+  PUSH modo
+  modo = ex_var1
   Se *origem for '[':
     Anota ex_varabre
     Avança origem
+    PUSH modo
+    modo = ex_colchetes
+    arg = false
+    Vai para (1)
   Caso contrário:
+    *** Algoritmo de otimização (vide abaixo)
     Anota ex_varini
     Anota *origem, avança origem
-  PUSH modo
-  modo = ex_var1
-  Vai para (1)
+    Vai para (1)
 
 // Parênteses
 Se *origem for abre parênteses:
@@ -218,6 +223,21 @@ Se for \0:
 Mensagem de erro:
   Caracter inválido na expressão
 Fim
+
+O algoritmo de otimização funciona assim:
+  Faz: const char * p = origem
+  Avança p enquanto *p for um caracter válido para nomes de variáveis
+  Se encontrou algo diferente de ':' e de '[', pode otimizar:
+    Se o texto for nome de uma função predefinida:
+      Anota ex_varfunc
+      Anota o número da função
+      Faz origem = p
+      Vai para (1)
+    Caso contrário:
+      Anota ex_varlocal
+      Anota 255
+      Vai para (1)
+
 @endverbatim
 */
 
@@ -1267,14 +1287,44 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 arg=false;
                 *topo++ = modo;
                 modo = ex_colchetes;
+                origem++;
+                continue;
             }
-            else
+#ifdef OTIMIZAR_VAR
+        // Verifica se pode otimizar o código
+        // Otimização: obtém o nome
+            const char * p = origem;
+            while (tabNOMES1[*(unsigned char*)p]!=0 && *p!=' ')
+                p++;
+        // Otimização: checa se encontrou ':' ou '[' ou se nome nulo
+        // Nesse caso não pode otimizar
+            if (p == origem || *p == ':' || *p == '[' || p-origem > 79)
             {
                 *destino++ = ex_varini;
-                *destino++ = *origem;
+                *destino++ = *origem++;
+                continue;
             }
-            origem++;
+        // Otimização: checa se é uma função predefinida
+            char mens[80];
+            memcpy(mens, origem, p-origem);
+            mens[p-origem] = 0;
+            int NumFunc = InfoFunc(mens);
+            if (NumFunc >= 0) // Função predefinida
+            {
+                *destino++ = ex_varfunc;
+                *destino++ = NumFunc;
+                origem = p;
+                continue;
+            }
+        // Otimização: variável/função local, da classe ou do objeto
+            *destino++ = ex_varlocal;
+            *destino++ = 0xFF;
             continue;
+#else
+            *destino++ = ex_varini;
+            *destino++ = *origem++;
+            continue;
+#endif
         }
 
     // Parênteses

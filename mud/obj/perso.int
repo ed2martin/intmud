@@ -124,11 +124,18 @@ func fim # Objeto foi apagado
   batalhafim, comum_obj:fim
 
 func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
+  listaobj l
 # Muda de sala
   atkrec.limpar, poslugar.remove, mdono(arg0), cmd_mudadono
 # Eventos cmd_saiu e variável donoantes.s_item
   se donoantes && !donoantes.perso
-    mudadono_saiu(ref(donoantes))
+    refvar salasaiu = ref(donoantes)
+    epara l.addfim(evento), l, l.ini.remove
+      l.objini.cmd_saiu(este, salasaiu, este)
+    efim
+    epara l.addfim(salasaiu.evento), l, l.ini.remove
+      l.objini.cmd_saiu(este, salasaiu, salasaiu)
+    efim
     se !sock
     senao donoantes.dentro1.total && !donoantes.socktot
       donoantes.t_item = donoantes.s_item * 600
@@ -145,7 +152,13 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   fimse
 # Eventos cmd_chegou
   (sock || jog) && dono.s_reset1, dono.cmd_salaperso(este)
-  mudadono_chegou(ref(dono))
+  refvar salachegou = ref(dono)
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_chegou(este, salachegou, este)
+  efim
+  epara l.addfim(salachegou.evento), l, l.ini.remove
+    l.objini.cmd_chegou(este, salachegou, salachegou)
+  efim
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
     casovar int(dono.s_retornar(este))
@@ -179,24 +192,6 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     msg2(dono.descsala(este, cfg))
   fimse
   ret este
-
-func mudadono_saiu
-  listaobj l
-  epara l.addfim(evento), l, l.ini.remove
-    l.objini.cmd_saiu(este, arg0, este)
-  efim
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_saiu(este, arg0, arg0)
-  efim
-
-func mudadono_chegou
-  listaobj l
-  epara l.addfim(evento), l, l.ini.remove
-    l.objini.cmd_chegou(este, arg0, este)
-  efim
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_chegou(este, arg0, arg0)
-  efim
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos

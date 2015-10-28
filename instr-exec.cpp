@@ -64,6 +64,12 @@ Para cada modificação agendada nas classes:
 - cVarInicio  -> Esperando texto logo após ex_varini
 - cVarClasse  -> Leu ':', TVariavel::endvar = endereço do objeto TClasse
 - cVarObjeto  -> TVariavel::endvar = endereço do objeto TObjeto
+- cVarIniFunc -> Somente se OTIMIZAR_VAR estiver definido (em instr.h):
+    - Internamente funciona como cVarInt (guarda um int)
+    - Se o valor for >=0, é o número da função interna (ex_varfunc)
+    - Se o valor for <0, é uma variável do objeto (ex_varlocal seguido de 0xFF)
+    - Quando for variável local (ex_varlocal seguido de um valor != 0xFF),
+      a variável local é colocada diretamente na pilha
 
 @par Algoritmo simplificado - apenas a parte de executar uma função:
 
@@ -185,7 +191,7 @@ Se FuncAtual->expr != 0:
         Apaga variáveis a partir da anterior a cVarNome
         Anota variável no topo da pilha de variáveis
      4. Uma variável qualquer:
-        Consulta a variável sobre o que fazer; pode cair em 2 ou 3
+        Consulta a variável sobre o que fazer; pode cair nos passos 2 ou 3
   Nunca deverá chegar aqui; executar assert(0)
 @endverbatim
 */
@@ -219,6 +225,7 @@ const char Instr::InstrSocket[] = { 9, 0, Instr::cSocket, (char)0xFF, 0, 0, 0, '
 const char Instr::InstrTxtFixo[] = { 9, 0, Instr::cTxtFixo, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarNome[] = { 9, 0, Instr::cVarNome, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarInicio[] = { 9, 0, Instr::cVarInicio, (char)0xFF, 0, 0, 0, '+', 0 };
+const char Instr::InstrVarIniFunc[] = { 9, 0, Instr::cVarIniFunc, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarClasse[] = { 9, 0, Instr::cVarClasse, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarObjeto[] = { 9, 0, Instr::cVarObjeto, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, (char)0xFF, 0, 0, 0, '+', 0 };
@@ -1626,7 +1633,7 @@ exo_compara_sair:
                     return RetornoErro(2);
                 break;
             }
-        case exo_ee:         // Operador: Início do operador &
+        case exo_ee:         // Operador: Início do operador &&
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
@@ -1642,7 +1649,7 @@ exo_compara_sair:
             }
             ApagarVar(VarAtual);
             break;
-        case exo_ouou:       // Operador: Início do operador |
+        case exo_ouou:       // Operador: Início do operador ||
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
@@ -1658,8 +1665,8 @@ exo_compara_sair:
             }
             ApagarVar(VarAtual);
             break;
-        case exo_e:          // Operador: a&b
-        case exo_ou:         // Operador: a|b
+        case exo_e:          // Operador: a&&b
+        case exo_ou:         // Operador: a||b
             {
                 if (VarFuncIni(VarAtual))
                     break;
@@ -1748,6 +1755,49 @@ exo_compara_sair:
             if (*FuncAtual->expr++ == ex_varini)
                 FuncAtual->expr = CopiaVarNome(VarAtual-1, FuncAtual->expr);
             break;
+        case ex_varfunc:
+            if (!CriarVar(InstrVarNome))
+                return RetornoErro(2);
+            if (!CriarVar(InstrVarIniFunc))
+                return RetornoErro(2);
+            VarAtual->valor_int = (unsigned char)FuncAtual->expr[1];
+            FuncAtual->expr += 2;
+            break;
+        case ex_varlocal:
+            {
+                if (!CriarVar(InstrVarNome))
+                    return RetornoErro(2);
+                int valor = (unsigned char)FuncAtual->expr[1];
+            // Variável do objeto
+                if (valor == 0xFF)
+                {
+                    if (!CriarVar(InstrVarIniFunc))
+                        return RetornoErro(2);
+                    VarAtual->valor_int = -1;
+                    FuncAtual->expr = CopiaVarNome(
+                        VarAtual-1, FuncAtual->expr + 2);
+                    break;
+                }
+            // Variável da função
+                if (VarAtual >= VarFim-1)
+                    return RetornoErro(2);
+                // 2 bytes para ex_varlocal + X bytes para o nome da variável
+                const char * p = FuncAtual->expr + 2;
+                while (*(const unsigned char*)p >= ' ')
+                    p++;
+                // Avança para o próximo ex_ponto
+                p = ProcuraExpr(p, ex_ponto);
+                assert(p!=0);
+                // Copia o nome depois do ex_ponto
+                FuncAtual->expr = CopiaVarNome(VarAtual, p + 1);
+                // Coloca a variável local na pilha
+                TVariavel * var = FuncAtual->inivar +
+                                  FuncAtual->numarg + valor;
+                VarAtual++;
+                *VarAtual = *var;
+                VarAtual->tamanho = 0;
+                break;
+            }
         case ex_arg:        // Início da lista de argumentos
         case ex_abre:       // Abre colchetes
             FuncAtual->expr++;
@@ -1828,13 +1878,14 @@ exo_compara_sair:
                 assert(v!=0);
 
             // Verifica variável/função da classe
-                if (v[1].defvar[2]==cVarClasse)
+                unsigned char defvar_cod = v[1].defvar[2];
+                if (defvar_cod == cVarClasse)
                 {
                     classe = (TClasse*)v[1].endvar;
                     objeto = FuncAtual->este;
                 }
             // Verifica variável/função da classe
-                else if (v[1].defvar[2]==cVarInicio)
+                else if (defvar_cod == cVarInicio)
                 {
                 // Se começa com $, verifica se objeto existe
                     if (nome[0]=='$')
@@ -1855,9 +1906,10 @@ exo_compara_sair:
                         break;
                     }
                 // Verifica se é variável/comando interno do programa
-                    const TListaFunc * func = InfoFunc(nome);
-                    if (func)
+                    int NumFunc = InfoFunc(nome);
+                    if (NumFunc >= 0)
                     {
+                        const TListaFunc * func = &ListaFunc[NumFunc];
                             // Ler varfunc primeiro
                         ExecFunc * f = FuncAtual;
                         if (VarFuncIni(v+1))
@@ -1892,6 +1944,35 @@ exo_compara_sair:
                         break;
                     }
                 // Verifica se é variável/função do objeto
+                    objeto = FuncAtual->este;
+                    if (objeto)
+                        classe = objeto->Classe;
+                }
+            // Verifica comando interno do programa (função predefinida)
+                else if (defvar_cod == cVarIniFunc)
+                {
+                    int valor = v[1].valor_int;
+                    if (valor >= 0) // Se é função predefinida...
+                    {
+                        const TListaFunc * func = &ListaFunc[ valor ];
+                            // Ler varfunc primeiro
+                        ExecFunc * f = FuncAtual;
+                        if (VarFuncIni(v+1))
+                        {
+                            f->expr--;
+                            break;
+                        }
+                            // Processa função interna
+                        if (func->Func(v+1, func->valor))
+                        {
+                            v->setTxt("");
+                            f->expr = CopiaVarNome(v, f->expr);
+                        }
+                        else
+                            VarInvalido();
+                        break;
+                    }
+                    // Variável/função do objeto
                     objeto = FuncAtual->este;
                     if (objeto)
                         classe = objeto->Classe;

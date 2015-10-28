@@ -10,7 +10,6 @@ const m_fugir = "$P fugiu."
 const dir = ""
 listaobj lseg # Para não seguir ciclicamente
 int8 andou # Se conseguiu andar (deve fechar a porta)
-debug dbg
 txt300 abriu1 # Mensagem, se abriu a porta da casa
 txt300 abriu2
 
@@ -44,6 +43,7 @@ func mover # Personagem anda em uma direção
   listaobj l
   ref s1 # Sala aonde está
   ref s2 # Sala para onde vai
+  debug dbg
   dbg.ini
   $comando_mover.lseg.addfim(arg0)
   abriu1 = abriu2 = ""

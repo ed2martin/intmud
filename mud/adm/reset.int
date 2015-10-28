@@ -671,13 +671,13 @@ func passo # Entrar com a lista de variáveis
 classe reset
 # Permite criar funções que realizam o reset
 #
-prog p
 const iniclasse = !$[arg0] && criar(arg0)
 
 func atualiza # Atualiza reset de sala
 # arg0 = nome da sala
 # arg1 = nome da constante
 # arg2 = texto do reset
+  prog p
   ret !arg2, p.apagar(arg0, arg1 + "1")
   txt512 t
   t = "func " + arg1 + "1 # Realiza o reset\n"

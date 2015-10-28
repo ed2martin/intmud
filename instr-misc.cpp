@@ -18,97 +18,99 @@
 int Instr::ChecaLinha::ChecaErro = 0;
 
 //------------------------------------------------------------------------------
-const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
-{
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
-    static const Instr::TListaFunc ListaFunc[] = {
-        { "apagar",     Instr::FuncApagar, 0 },
-        { "arg0",       Instr::FuncArg, 0 },
-        { "arg1",       Instr::FuncArg, 1 },
-        { "arg2",       Instr::FuncArg, 2 },
-        { "arg3",       Instr::FuncArg, 3 },
-        { "arg4",       Instr::FuncArg, 4 },
-        { "arg5",       Instr::FuncArg, 5 },
-        { "arg6",       Instr::FuncArg, 6 },
-        { "arg7",       Instr::FuncArg, 7 },
-        { "arg8",       Instr::FuncArg, 8 },
-        { "arg9",       Instr::FuncArg, 9 },
-        { "args",       Instr::FuncArgs, 0 },
-        { "criar",      Instr::FuncCriar, 0 },
-        { "este",       Instr::FuncEste, 0 },
-        { "int",        Instr::FuncNumero, 2 },
-        { "intabs",     Instr::FuncNumero, 1 },
-        { "intbit",     Instr::FuncIntBit, 0 },
-        { "intchr",     Instr::FuncIntChr, 0 },
-        { "intdist",    Instr::FuncIntDist, 0 },
-        { "intdistdif", Instr::FuncIntDist, 2 },
-        { "intdistmai", Instr::FuncIntDist, 1 },
-        { "intdiv",     Instr::FuncNumero, 3 },
-        { "intmax",     Instr::FuncMax, 0 },
-        { "intmin",     Instr::FuncMin, 0 },
-        { "intnome",    Instr::FuncInt, 0 },
-        { "intpos",     Instr::FuncNumero, 0 },
-        { "intsenha",   Instr::FuncInt, 1 },
-        { "intsub",     Instr::FuncIntSub, 0 },
-        { "intsublin",  Instr::FuncIntSubLin, 0 },
-        { "inttotal",   Instr::FuncTotal, 0 },
-        { "matacos",    Instr::FuncNumero, 8 },
-        { "matasin",    Instr::FuncNumero, 7 },
-        { "matatan",    Instr::FuncNumero, 9 },
-        { "matcos",     Instr::FuncNumero, 5 },
-        { "matexp",     Instr::FuncNumero, 10 },
-        { "matlog",     Instr::FuncNumero, 11 },
-        { "matpow",     Instr::FuncPow, 0 },
-        { "matraiz",    Instr::FuncNumero, 12 },
-        { "matsin",     Instr::FuncNumero, 4 },
-        { "mattan",     Instr::FuncNumero, 6 },
-        { "objantes",   Instr::FuncAntesDepois, 0 },
-        { "objdepois",  Instr::FuncAntesDepois, 1 },
-        { "rand",       Instr::FuncRand, 0 },
-        { "ref",        Instr::FuncRef, 0 },
-        { "txt",        Instr::FuncTxt, 0 },
-        { "txt1",       Instr::FuncTxt2, 0 },
-        { "txt2",       Instr::FuncTxt2, 1 },
-        { "txtbit",     Instr::FuncTxtBit, 0 },
-        { "txtchr",     Instr::FuncTxtChr, 0 },
-        { "txtcod",     Instr::FuncTxt2, 12 },
-        { "txtconv",    Instr::FuncTxtConv, 0 },
-        { "txtcopiamai",Instr::FuncTxtCopiaMai, 0 },
-        { "txtcor",     Instr::FuncTxt2, 2 },
-        { "txtdec",     Instr::FuncTxt2, 13 },
-        { "txte",       Instr::FuncTxt2, 18 },
-        { "txtesp",     Instr::FuncEsp, 0 },
-        { "txtfiltro",  Instr::FuncTxt2, 7 },
-        { "txtfim",     Instr::FuncTxtFim, 0 },
-        { "txtinvis",   Instr::FuncTxt2, 15 },
-        { "txtmai",     Instr::FuncTxt2, 3 },
-        { "txtmaiini",  Instr::FuncTxt2, 4 },
-        { "txtmaimin",  Instr::FuncTxt2, 6 },
-        { "txtmd5",     Instr::FuncTxt2, 10 },
-        { "txtmin",     Instr::FuncTxt2, 5 },
-        { "txtmudamai", Instr::FuncTxtMudaMai, 0 },
-        { "txtnome",    Instr::FuncTxt2, 11 },
-        { "txtnum",     Instr::FuncTxtNum, 0 },
-        { "txtproc",    Instr::FuncTxtProc, 0 },
-        { "txtprocdif", Instr::FuncTxtProc, 2 },
-        { "txtprocmai", Instr::FuncTxtProc, 1 },
-        { "txtremove",  Instr::FuncTxtRemove, 0 },
-        { "txtrepete",  Instr::FuncTxtRepete, 0 },
-        { "txts",       Instr::FuncTxt2, 19 },
-        { "txtsepara",  Instr::FuncTxtSepara, 0 },
-        { "txtsha1",    Instr::FuncTxt2, 9 },
-        { "txtsha1bin", Instr::FuncTxt2, 8 },
-        { "txtsub",     Instr::FuncTxt, 1 },
-        { "txtsublin",  Instr::FuncTxt, 2 },
-        { "txttroca",   Instr::FuncTxtTroca, 0 },
-        { "txttrocadif",Instr::FuncTxtTroca, 2 },
-        { "txttrocamai",Instr::FuncTxtTroca, 1 },
-        { "txturlcod",  Instr::FuncTxt2, 16 },
-        { "txturldec",  Instr::FuncTxt2, 17 },
-        { "txtvis",     Instr::FuncTxt2, 14 },
-        { "vartroca",   Instr::FuncVarTroca, 0 }
-    };
+const Instr::TListaFunc Instr::ListaFunc[] = {
+    { "apagar",     Instr::FuncApagar, 0 },
+    { "arg0",       Instr::FuncArg, 0 },
+    { "arg1",       Instr::FuncArg, 1 },
+    { "arg2",       Instr::FuncArg, 2 },
+    { "arg3",       Instr::FuncArg, 3 },
+    { "arg4",       Instr::FuncArg, 4 },
+    { "arg5",       Instr::FuncArg, 5 },
+    { "arg6",       Instr::FuncArg, 6 },
+    { "arg7",       Instr::FuncArg, 7 },
+    { "arg8",       Instr::FuncArg, 8 },
+    { "arg9",       Instr::FuncArg, 9 },
+    { "args",       Instr::FuncArgs, 0 },
+    { "criar",      Instr::FuncCriar, 0 },
+    { "este",       Instr::FuncEste, 0 },
+    { "int",        Instr::FuncNumero, 2 },
+    { "intabs",     Instr::FuncNumero, 1 },
+    { "intbit",     Instr::FuncIntBit, 0 },
+    { "intchr",     Instr::FuncIntChr, 0 },
+    { "intdist",    Instr::FuncIntDist, 0 },
+    { "intdistdif", Instr::FuncIntDist, 2 },
+    { "intdistmai", Instr::FuncIntDist, 1 },
+    { "intdiv",     Instr::FuncNumero, 3 },
+    { "intmax",     Instr::FuncMax, 0 },
+    { "intmin",     Instr::FuncMin, 0 },
+    { "intnome",    Instr::FuncInt, 0 },
+    { "intpos",     Instr::FuncNumero, 0 },
+    { "intsenha",   Instr::FuncInt, 1 },
+    { "intsub",     Instr::FuncIntSub, 0 },
+    { "intsublin",  Instr::FuncIntSubLin, 0 },
+    { "inttotal",   Instr::FuncTotal, 0 },
+    { "matacos",    Instr::FuncNumero, 8 },
+    { "matasin",    Instr::FuncNumero, 7 },
+    { "matatan",    Instr::FuncNumero, 9 },
+    { "matcos",     Instr::FuncNumero, 5 },
+    { "matexp",     Instr::FuncNumero, 10 },
+    { "matlog",     Instr::FuncNumero, 11 },
+    { "matpow",     Instr::FuncPow, 0 },
+    { "matraiz",    Instr::FuncNumero, 12 },
+    { "matsin",     Instr::FuncNumero, 4 },
+    { "mattan",     Instr::FuncNumero, 6 },
+    { "objantes",   Instr::FuncAntesDepois, 0 },
+    { "objdepois",  Instr::FuncAntesDepois, 1 },
+    { "rand",       Instr::FuncRand, 0 },
+    { "ref",        Instr::FuncRef, 0 },
+    { "txt",        Instr::FuncTxt, 0 },
+    { "txt1",       Instr::FuncTxt2, 0 },
+    { "txt2",       Instr::FuncTxt2, 1 },
+    { "txtbit",     Instr::FuncTxtBit, 0 },
+    { "txtchr",     Instr::FuncTxtChr, 0 },
+    { "txtcod",     Instr::FuncTxt2, 12 },
+    { "txtconv",    Instr::FuncTxtConv, 0 },
+    { "txtcopiamai",Instr::FuncTxtCopiaMai, 0 },
+    { "txtcor",     Instr::FuncTxt2, 2 },
+    { "txtdec",     Instr::FuncTxt2, 13 },
+    { "txte",       Instr::FuncTxt2, 18 },
+    { "txtesp",     Instr::FuncEsp, 0 },
+    { "txtfiltro",  Instr::FuncTxt2, 7 },
+    { "txtfim",     Instr::FuncTxtFim, 0 },
+    { "txtinvis",   Instr::FuncTxt2, 15 },
+    { "txtmai",     Instr::FuncTxt2, 3 },
+    { "txtmaiini",  Instr::FuncTxt2, 4 },
+    { "txtmaimin",  Instr::FuncTxt2, 6 },
+    { "txtmd5",     Instr::FuncTxt2, 10 },
+    { "txtmin",     Instr::FuncTxt2, 5 },
+    { "txtmudamai", Instr::FuncTxtMudaMai, 0 },
+    { "txtnome",    Instr::FuncTxt2, 11 },
+    { "txtnum",     Instr::FuncTxtNum, 0 },
+    { "txtproc",    Instr::FuncTxtProc, 0 },
+    { "txtprocdif", Instr::FuncTxtProc, 2 },
+    { "txtprocmai", Instr::FuncTxtProc, 1 },
+    { "txtremove",  Instr::FuncTxtRemove, 0 },
+    { "txtrepete",  Instr::FuncTxtRepete, 0 },
+    { "txts",       Instr::FuncTxt2, 19 },
+    { "txtsepara",  Instr::FuncTxtSepara, 0 },
+    { "txtsha1",    Instr::FuncTxt2, 9 },
+    { "txtsha1bin", Instr::FuncTxt2, 8 },
+    { "txtsub",     Instr::FuncTxt, 1 },
+    { "txtsublin",  Instr::FuncTxt, 2 },
+    { "txttroca",   Instr::FuncTxtTroca, 0 },
+    { "txttrocadif",Instr::FuncTxtTroca, 2 },
+    { "txttrocamai",Instr::FuncTxtTroca, 1 },
+    { "txturlcod",  Instr::FuncTxt2, 16 },
+    { "txturldec",  Instr::FuncTxt2, 17 },
+    { "txtvis",     Instr::FuncTxt2, 14 },
+    { "vartroca",   Instr::FuncVarTroca, 0 }
+};
+
+//------------------------------------------------------------------------------
+int Instr::InfoFunc(const char * nome)
+{
 // Procura a função correspondente
     int ini = 0;
     int fim = sizeof(ListaFunc) / sizeof(ListaFunc[0]) - 1;
@@ -119,10 +121,10 @@ const Instr::TListaFunc * Instr::InfoFunc(const char * nome)
         int meio = (ini+fim)/2;
         int resultado = strcmp(mens, ListaFunc[meio].Nome);
         if (resultado==0) // Se encontrou...
-            return &ListaFunc[meio];
+            return meio;
         if (resultado<0) fim=meio-1; else ini=meio+1;
     }
-    return 0;
+    return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -177,43 +179,6 @@ int Instr::Prioridade(int operador)
     case exo_i_b_ou:     return 20;
     }
     return 0;
-}
-
-//------------------------------------------------------------------------------
-/// Verifica se duas instruções codificadas são iguais
-/** @return true se são iguais, false se são diferentes */
-bool Instr::ComparaInstr(const char * instr1, const char * instr2)
-{
-    int total = Num16(instr1);
-    int inicio = Instr::endVar;
-    if (total==0)
-        return (instr2[0]==0 && instr2[1]==0);
-    if (memcmp(instr1, instr2, 3) != 0)
-        return false;
-    switch (instr1[2])
-    {
-    case cSe:           inicio = endVar+2; break;
-    case cSenao1:       inicio = endVar+2; break;
-    case cSenao2:       inicio = endVar+2; break;
-    case cFimSe:        inicio = endVar;   break;
-    case cEnquanto:     inicio = endVar+2; break;
-    case cEPara:        inicio = endVar+6; break;
-    case cEFim:         inicio = endVar+2; break;
-    case cCasoVar:      inicio = endVar+2; break;
-    case cCasoSe:       inicio = endVar+4; break;
-    case cCasoSePadrao: inicio = endVar;   break;
-    case cCasoFim:      inicio = endVar;   break;
-    case cRet1:         inicio = endVar;   break;
-    case cRet2:         inicio = endVar;   break;
-    case cSair1:        inicio = endVar+2; break;
-    case cSair2:        inicio = endVar+2; break;
-    case cContinuar1:   inicio = endVar+2; break;
-    case cContinuar2:   inicio = endVar+2; break;
-    case cTerminar:     inicio = endVar;   break;
-    }
-    if (inicio >= total)
-        return true;
-    return (memcmp(instr1+inicio, instr2+inicio, total-inicio) == 0);
 }
 
 //------------------------------------------------------------------------------
@@ -286,7 +251,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     {
         if (esperando == 3)
             return "Variável não pertence a uma classe ou uma função";
-        else if (esperando == 2 && InfoFunc(instr + endNome))
+        else if (esperando == 2 && InfoFunc(instr + endNome) >= 0)
             return "Variável tem o nome de uma função da linguagem, "
                     "por isso não pode pertencer a uma função";
         return 0;
@@ -688,6 +653,120 @@ bool Instr::VarFuncFim()
     return true;
 }
 
+//------------------------------------------------------------------------------
+/// Verifica se duas instruções codificadas são iguais
+/** @return true se são iguais, false se são diferentes */
+bool Instr::ComparaInstr(const char * instr1, const char * instr2)
+{
+    int total = Num16(instr1);
+    int inicio = Instr::endVar;
+    const char * expr = 0;
+    if (total==0)
+        return (instr2[0]==0 && instr2[1]==0);
+    if (memcmp(instr1, instr2, 3) != 0)
+        return false;
+    switch (instr1[2])
+    {
+    case cExpr:         expr = instr1 + Instr::endVar; break;
+    case cSe:           expr = instr1 + Instr::endVar+2; break;
+    case cSenao2:       expr = instr1 + Instr::endVar+2; break;
+    case cEnquanto:     expr = instr1 + Instr::endVar+2; break;
+    case cEPara:        expr = instr1 + Instr::endVar+6; break;
+    case cCasoVar:      expr = instr1 + Instr::endVar+2; break;
+    case cRet2:         expr = instr1 + Instr::endVar; break;
+    case cSair2:        expr = instr1 + Instr::endVar+2; break;
+    case cContinuar2:   expr = instr1 + Instr::endVar+2; break;
+    case cSenao1:       inicio = endVar+2; break;
+    case cFimSe:        inicio = endVar;   break;
+    case cEFim:         inicio = endVar+2; break;
+    case cCasoSe:       inicio = endVar+4; break;
+    case cCasoSePadrao: inicio = endVar;   break;
+    case cCasoFim:      inicio = endVar;   break;
+    case cRet1:         inicio = endVar;   break;
+    case cSair1:        inicio = endVar+2; break;
+    case cContinuar1:   inicio = endVar+2; break;
+    case cTerminar:     inicio = endVar;   break;
+    case cRefVar:
+        if (strcmp(instr1 + endNome, instr2 + endNome) != 0)
+            return false;
+        expr = instr1 + endNome;
+        while (*expr++);
+        break;
+    }
+    if (inicio >= total)
+        return true;
+    if (expr == 0)
+        return (memcmp(instr1+inicio, instr2+inicio, total-inicio) == 0);
+
+    {
+        int valor = expr - instr1;
+        instr1 += valor;
+        instr2 += valor;
+        total -= valor;
+    }
+    while (*expr != ex_fim && *expr != ex_coment)
+    {
+        switch (*expr++)
+        {
+        case ex_varlocal:
+            if (expr != instr1)
+            {
+                int valor = expr - instr1;
+                if (memcmp(instr1, instr2, valor) != 0)
+                    return false;
+                instr1 += valor+1;
+                instr2 += valor+1;
+                total -= valor+1;
+            }
+        case ex_varfunc:
+            expr++;
+        case ex_varini: // Será fechado com ex_varfim
+        case ex_fecha:  // Aberto com ex_abre
+        case ex_ponto:  // Aberto com ex_arg
+        case ex_doispontos:
+            while (*expr!=ex_arg && *expr!=ex_abre && *expr!=ex_varfim)
+            {
+                assert(*expr!=0);
+                expr++;
+            }
+            break;
+        case ex_varfim:
+        case ex_nulo:
+            break;
+        case ex_txt:
+            while (*expr)
+                expr++;
+            expr++;
+            break;
+        case ex_num32p:
+        case ex_num32n:
+        case ex_num32hexp:
+        case ex_num32hexn:
+            expr+=2;
+        case ex_num16p:
+        case ex_num16n:
+        case ex_num16hexp:
+        case ex_num16hexn:
+            expr++;
+        case ex_num8p:
+        case ex_num8n:
+        case ex_num8hexp:
+        case ex_num8hexn:
+            expr++;
+        case ex_num0:
+        case ex_num1:
+            while (*expr >= ex_div1 &&
+                   *expr <= ex_div6)
+                expr++;
+            break;
+        }
+    }
+    if (total>0)
+        if (memcmp(instr1, instr2, total) != 0)
+            return false;
+    return true;
+}
+
 //----------------------------------------------------------------------------
 /// Procura valor (vide Instr::Expressao) em expressão numérica
 /** @return endereço do valor encontrado ou 0 se não encontrou
@@ -712,6 +791,9 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case ex_varabre:
             contagem++;
             break;
+        case ex_varfunc:
+        case ex_varlocal:
+            expr++;
         case ex_varini: // Será fechado com ex_varfim
             contagem++;
         case ex_fecha:  // Aberto com ex_abre
@@ -896,6 +978,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cTxtFixo:
     case cVarNome:
     case cVarInicio:
+    case cVarIniFunc:
     case cVarClasse:
     case cVarObjeto:
     case cVarInt:
@@ -989,6 +1072,7 @@ const char * Instr::NomeComando(int valor)
     case cTxtFixo:          return "cTxtFixo";
     case cVarNome:          return "cVarNome";
     case cVarInicio:        return "cVarInicio";
+    case cVarIniFunc:       return "cVarIniFunc";
     case cVarClasse:        return "cVarClasse";
     case cVarObjeto:        return "cVarObjeto";
     case cVarInt:           return "cVarInt";
@@ -1024,6 +1108,8 @@ const char * Instr::NomeExpr(int valor)
     case ex_varabre:        return "ex_varabre";
     case ex_abre:           return "ex_abre";
     case ex_fecha:          return "ex_fecha";
+    case ex_varfunc:        return "ex_varfunc";
+    case ex_varlocal:       return "ex_varlocal";
 
     case ex_nulo:           return "ex_nulo";
     case ex_txt:            return "ex_txt";

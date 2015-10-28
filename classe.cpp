@@ -391,7 +391,7 @@ void TClasse::AcertaComandos(char * comandos)
     char * caso2[1024];
     unsigned int casonum; // Quantidade de variáveis usadas em caso1
 
-// Primeiro zera endereços de desvio e alinhamento
+// Primeiro zera endereços de desvio e acerta alinhamento
     int indent = 0;
     for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
     {
@@ -659,6 +659,135 @@ void TClasse::AcertaComandos(char * comandos)
             p[Instr::endVar+1] = (x-p)>>8;
             break;
         }
+
+// Marca quais variáveis são locais (variáveis definidas na função)
+#ifdef OTIMIZAR_VAR
+    const char * varlocal[255]; // Aonde estão definidas as variáveis locais
+    int totallocal=0;  // Quantas variáveis locais
+
+    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
+    {
+        // Retira variáveis locais de varlocal
+        int alin = (unsigned char)p[Instr::endAlin];
+        if (alin == 0)
+            totallocal = 0;
+        while (totallocal)
+        {
+            if ( alin >=
+                 (unsigned char)varlocal[totallocal-1][Instr::endAlin] )
+                break;
+            totallocal--;
+        }
+
+        // Acrescenta variáveis locais em varlocal
+        if (alin && (unsigned char)p[2] > Instr::cVariaveis)
+        {
+            if (totallocal < 255)
+                varlocal[totallocal++] = p;
+            continue;
+        }
+
+        // Checa se instrução contém expressão numérica
+        char * expr = 0;
+        switch ((unsigned char)p[2])
+        {
+        case Instr::cRefVar:
+            expr = p + Instr::endNome;
+            while (*expr++);
+            break;
+        case Instr::cExpr:        expr = p + Instr::endVar; break;
+        case Instr::cSe:          expr = p + Instr::endVar+2; break;
+        case Instr::cSenao2:      expr = p + Instr::endVar+2; break;
+        case Instr::cEnquanto:    expr = p + Instr::endVar+2; break;
+        case Instr::cEPara:       expr = p + Instr::endVar+6; break;
+        case Instr::cCasoVar:     expr = p + Instr::endVar+2; break;
+        case Instr::cRet2:        expr = p + Instr::endVar; break;
+        case Instr::cSair2:       expr = p + Instr::endVar+2; break;
+        case Instr::cContinuar2:  expr = p + Instr::endVar+2; break;
+        }
+        if (expr == 0)
+            continue;
+
+        while (*expr != Instr::ex_fim && *expr != Instr::ex_coment)
+        {
+            switch (*expr++)
+            {
+            //case ex_arg:    // Início da lista de argumentos
+            //case ex_abre:   // Abre colchetes; segue expressão numérica + ex_fecha
+            case Instr::ex_varabre:
+                break;
+            case Instr::ex_varlocal:
+                {
+                    // Obtém o nome da variável
+                    char nome[VAR_NOME_TAM+1];
+                    const char * o = expr + 1;
+                    char * d = nome;
+                    while (*(unsigned char*)o >= ' ' &&
+                           d < nome+sizeof(nome)-1)
+                        *d++ = *o++;
+                    *d = 0;
+
+                    // Procura a variável entre as variáveis locais
+                    expr[0] = 255;
+                    for (int x=0; x<totallocal; x++)
+                        if (strcmp(nome, varlocal[x] + Instr::endNome) == 0)
+                        {
+                            expr[0] = x;
+                            break;
+                        }
+                }
+            case Instr::ex_varfunc:
+                expr++;
+            case Instr::ex_varini: // Será fechado com ex_varfim
+            case Instr::ex_fecha:  // Aberto com ex_abre
+            case Instr::ex_ponto:  // Aberto com ex_arg
+            case Instr::ex_doispontos:
+                while (*expr != Instr::ex_arg &&
+                       *expr != Instr::ex_abre &&
+                       *expr != Instr::ex_varfim)
+                {
+                    assert(*expr!=0);
+                    expr++;
+                }
+                break;
+            case Instr::ex_varfim:
+            case Instr::ex_nulo:
+                break;
+            case Instr::ex_txt:
+                while (*expr)
+                    expr++;
+                expr++;
+                break;
+            case Instr::ex_num32p:
+            case Instr::ex_num32n:
+            case Instr::ex_num32hexp:
+            case Instr::ex_num32hexn:
+                expr+=2;
+            case Instr::ex_num16p:
+            case Instr::ex_num16n:
+            case Instr::ex_num16hexp:
+            case Instr::ex_num16hexn:
+                expr++;
+            case Instr::ex_num8p:
+            case Instr::ex_num8n:
+            case Instr::ex_num8hexp:
+            case Instr::ex_num8hexn:
+                expr++;
+            case Instr::ex_num0:
+            case Instr::ex_num1:
+                while (*expr >= Instr::ex_div1 &&
+                       *expr <= Instr::ex_div6)
+                    expr++;
+                break;
+            }
+        }
+
+        // Refvar: acrescenta variável local em varlocal
+        if (p[2] == Instr::cRefVar)
+            if (totallocal < 255)
+                varlocal[totallocal++] = p;
+    }
+#endif
 
 #if 0
 // Mostra instruções com os endereços de desvio

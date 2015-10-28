@@ -6,23 +6,22 @@ Sem argumentos mostra quem dá aulas e o que ensina.\n\
 Seguido de um nome ou o número na lista mostra informações sobre um curso.\n\
 Para aprender, tecle APRENDER seguido do nome ou número do curso."
 const posic = 5
-txt200 lin
-uint32 aulas # Usado internamente: quantas aulas ensina
-uint32 valor # Usado internamente: preço da aula
-real2 lucro # Para calcular o lucro do vendedor
-int32 linha
-ref p # Vendedor que está verificando
 
 func escr
   negociar_ini(arg0)
   arg1 ? escr2(arg0, arg1) : escr1(arg0)
 
 func escr1 # Consultar a lista de aulas
+  uint32 aulas # Quantas aulas ensina
+  uint32 valor # Preço da aula
+  real2 lucro # Para calcular o lucro do vendedor
+  txt200 lin
   textotxt t
   listaobj l
+  int32 linha
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !p.lojaaula(arg0)
     lin = negociar_msg(arg0, p)
     continuar lin == "\b"
@@ -49,11 +48,15 @@ func escr1 # Consultar a lista de aulas
   arg0.msg("Não há professores aqui.")
 
 func escr2 # Consultar uma aula
+  uint32 aulas # Quantas aulas ensina
+  uint32 valor # Preço da aula
+  txt200 lin
   listaobj l
   nomeobj n
-  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
+  int32 linha
+  l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !p.lojaaula(arg0)
     continuar negociar_checa(arg0, p)
     continuar evento(arg0, p)

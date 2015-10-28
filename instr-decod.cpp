@@ -48,7 +48,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 {
     int  expr=0;   // Índice da expressão numérica, 0=não há
     int  coment=0; // Índice do comentário, 0=não há
-    char nome[40]; // Nome da instrução
+    char nome[VAR_NOME_TAM+20]; // Nome da instrução
     char * perro = destino;
     *nome=0;
     *destino=0;
@@ -400,6 +400,16 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                           // 4 = Prossegue com o nome
             strcpy(nome, "]");
             break;
+        case ex_varfunc:     // Início do texto
+            origem++;
+            *nome = 1;
+            copiastr(nome+1, ListaFunc[*(unsigned char*)origem].Nome,
+                     sizeof(nome)-1);
+            indica=2+4;   // 2 = Copiar o nome em nome[]
+                          // 4 = Prossegue com o nome
+            break;
+        case ex_varlocal:
+            origem++;
         case ex_varini:      // Início do texto
             indica=2+4;   // 2 = Copiar o nome em nome[]
                           // 4 = Prossegue com o nome

@@ -5,6 +5,7 @@ class TClasse;
 class TObjeto;
 class TVariavel;
 
+#define OTIMIZAR_VAR // Otimização de funções predefinidas e variáveis locais
 #define VAR_NOME_TAM 80 // Tamanho máximo dos nomes das variáveis + 1
 #define BUF_MENS 16384 // Tamanho do buffer de texto usado nas funções
 
@@ -93,6 +94,8 @@ extern const char InstrTxtFixo[];
 extern const char InstrVarNome[];
 /// TVariavel::defvar para Instr::cVarInicio
 extern const char InstrVarInicio[];
+/// TVariavel::defvar para Instr::cVarIniFunc
+extern const char InstrVarIniFunc[];
 /// TVariavel::defvar para Instr::cVarClasse
 extern const char InstrVarClasse[];
 /// TVariavel::defvar para Instr::cVarObjeto
@@ -207,7 +210,14 @@ public:
     int  valor;
 };
 
-const TListaFunc * InfoFunc(const char * nome);
+/// Lista de funções predefinidas
+/// Deve obrigatoriamente estar em ordem alfabética
+extern const TListaFunc ListaFunc[];
+
+/// Obtém o índice de uma função em ListaFunc a partir do nome
+/** @param nome Nome da função
+ *  @return -1 se não encontrou; caso contrário é o índice em ListaFunc */
+int InfoFunc(const char * nome);
 
 //----------------------------------------------------------------------------
     /// Pilha de dados (64K)
@@ -364,6 +374,7 @@ enum Comando
     cTxtFixo,           ///< Aponta para um texto fixo
     cVarNome,           ///< Para obter nome da variável
     cVarInicio,         ///< Esperando texto logo após ex_varini
+    cVarIniFunc,        ///< Mesmo que cVarInicio, porém para ex_varfunc
     cVarClasse,         ///< TVariavel::endvar = endereço do objeto TClasse
     cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
     cVarInt,            ///< int local; vide TVariavel::valor_int
@@ -380,17 +391,21 @@ enum Comando
 
     Variável: Nome de variável ou função (um texto)
     - Cada conjunto de variáveis/funções (no estilo x.y.x):
-      -    ex_varini + variáveis/funções + ex_varfim
+      -  ex_varini + variáveis/funções + ex_varfim
       .
     - Cada variável/função (sem e com argumentos):
-      -    nome da variável/função + ex_ponto
-      -    nome da variável/função + ex_arg + expressões numéricas + ex_ponto
+      -  nome da variável/função + ex_ponto
+      -  nome da variável/função + ex_arg + expressões numéricas + ex_ponto
       .
     - Colchetes em nomes de variáveis/funções:
-      -    ex_abre + expressões numéricas + ex_fecha
+      -  ex_abre + expressões numéricas + ex_fecha
       .
     - Substituições:
-      -    ex_varabre = ex_varini + ex_abre
+      -  ex_varabre = ex_varini + ex_abre
+      -  ex_varfunc + número da função = ex_varini + nome da função predefinida
+      -  ex_varlocal + número da variável = ex_varini (para uma variável local)
+      -  ex_varlocal + 255 = ex_varini (para uma variável da classe/objeto)
+      -  Nota: variável local é uma variável definida na função
       .
     .
 
@@ -418,6 +433,8 @@ enum Expressao
     ex_varabre,     ///< Variável: Início do texto + abre colchetes
     ex_abre,        ///< Variável: Abre colchetes; segue expressão numérica + ex_fecha
     ex_fecha,       ///< Variável: Fecha colchetes
+    ex_varfunc,     ///< Variável: próximo byte é o número da função predefinida
+    ex_varlocal,    ///< Variável: (+1 byte) variável/função exceto predefinida
 
 // Valores fixos
     ex_nulo,        ///< Fixo: Valor NULO

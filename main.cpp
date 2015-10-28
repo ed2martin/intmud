@@ -856,9 +856,13 @@ void Inicializa(const char * arg)
                 printf("**** Erro\n");
                 exit(EXIT_FAILURE);
             }
+
+            if (Instr::Mostra(mens, p, sizeof(mens)))
+                printf("+ %s\n", mens);
         }
     }
     putchar('\n');
+    //exit(0);
 #endif
 
 // Acerta variáveis das classes

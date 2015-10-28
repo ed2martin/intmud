@@ -5,11 +5,6 @@ Sintaxe: PAGAR [item]\n\
 Sem argumentos mostra a lista de casas cujas taxas de manutenção podem\n\
 ser pagas. Seguido de um nome ou número paga a taxa."
 const posic = 5
-txt200 lin
-int32 valor # Usado internamente: valor da taxa
-real2 lucro # Para calcular o lucro do vendedor
-int32 linha
-ref p # Vendedor que está verificando
 
 func escr
   negociar_ini(arg0)
@@ -19,11 +14,15 @@ func escr1 # Consultar a lista de taxas
   se intpos(config:casatempotaxa) == 0
     ret arg0.msg("Não há taxa de manutenção das casas.")
   fimse
+  uint32 valor # Valor do item
+  real2 lucro # Para calcular o lucro do vendedor
+  txt200 lin
+  int32 linha
   textotxt t
   listaobj l
   linha = 1, l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !p.taxacasa
     lin = negociar_msg(arg0, p)
     continuar lin == "\b"
@@ -90,11 +89,15 @@ func escr1 # Consultar a lista de taxas
   arg0.msg("Ninguém cobra taxas aqui.")
 
 func escr2 # Consultar um item
+  uint32 valor # Valor do item
+  real2 lucro # Para calcular o lucro do vendedor
+  txt200 lin
+  int32 linha
   listaobj l
   nomeobj n
   linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !p.taxacasa
     lin = negociar_msg(arg0, p)
     continuar lin == "\b"

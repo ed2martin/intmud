@@ -6,11 +6,10 @@ Sintaxe: REMOVER <objeto>\n\
 Seu personagem deixa de usar um objeto que está vestindo ou usando.\n\
 Para remover tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const posic = 5
-ref alvo # Quem vai remover
 
 func escr
   ret !arg1, arg0.msg("Remover o que?")
-  alvo = arg0.persoesc
+  refvar alvo = ref(arg0.persoesc) # Quem vai remover
 # Preenche a variável vest com o que está vestindo
   int1 vest.32 # Aonde está vestindo
   listaitem item

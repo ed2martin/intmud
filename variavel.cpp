@@ -156,6 +156,7 @@ int TVariavel::Tamanho(const char * instr)
 
     case Instr::cVarNome:   return VAR_NOME_TAM;
     case Instr::cVarInicio:
+    case Instr::cVarIniFunc:
     case Instr::cVarClasse:
     case Instr::cVarObjeto:
     case Instr::cVarInt:    return 0;
@@ -239,6 +240,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cVarNome:
     case Instr::cVarClasse: return varTxt;
     case Instr::cVarObjeto: return varObj;
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:    return varInt;
     case Instr::cTextoVarSub:
         return (TVarTipo)numfunc;
@@ -654,6 +656,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         return;
     case Instr::cVarInicio:
         endvar = destino;
+    case Instr::cVarIniFunc:
     case Instr::cVarClasse:
     case Instr::cVarObjeto:
     case Instr::cVarInt:
@@ -851,6 +854,7 @@ bool TVariavel::getBool()
         return end_varref[indice].Pont != 0;
     case Instr::cVarObjeto:
         return (endvar!=0);
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
         return (valor_int!=0);
     case Instr::cTextoVarSub:
@@ -960,6 +964,7 @@ int TVariavel::getInt()
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
         return valor_int;
 
@@ -1128,6 +1133,7 @@ double TVariavel::getDouble()
     case Instr::cFunc:
     case Instr::cVarFunc:
         return 0;
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
         return valor_int;
 
@@ -1379,6 +1385,7 @@ const char * TVariavel::getTxt()
         if (endvar==0)
             break;
         return ((TObjeto*)endvar)->Classe->Nome;
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
         sprintf(txtnum, "%d", valor_int);
         return txtnum;
@@ -1512,6 +1519,7 @@ void TVariavel::setInt(int valor)
     case Instr::cFunc:
     case Instr::cVarFunc:
         break;
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
         valor_int = valor;
         break;
@@ -1632,6 +1640,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cFunc:
     case Instr::cVarFunc:
         break;
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
         valor_int = DoubleToInt(valor);
         break;
@@ -1743,6 +1752,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cIntDec:
     case Instr::cIntTempo:
     case Instr::cIntExec:
+    case Instr::cVarIniFunc:
     case Instr::cVarInt:
     case Instr::cSocket:
     case Instr::cDebug:

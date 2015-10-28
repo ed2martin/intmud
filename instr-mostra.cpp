@@ -30,7 +30,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 {
     int  expr=0;   // Índice da expressão numérica, 0=não há
     int  coment=0; // Índice do comentário, 0=não há
-    char nome[40]; // Nome da instrução
+    char nome[VAR_NOME_TAM+20]; // Nome da instrução
     char * perro = destino;
     *nome=0;
     *destino=0;
@@ -131,7 +131,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         *destino = 0;
         coment++;
         break;
-    case cCasoSePadrao: strcpy(nome, "casose"); coment=endVar; break;
+    case cCasoSePadrao: strcpy(nome, "casose");    coment=endVar; break;
     case cCasoFim:      strcpy(nome, "casofim");   coment=endVar; break;
     case cRet1:         strcpy(nome, "ret");       coment=endVar; break;
     case cRet2:         strcpy(nome, "ret");       expr=endVar; break;
@@ -290,23 +290,28 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             *destino=0;
             return true;
 
-        // Usado em textos
-        case ex_barra_n: break;    // \n
-        case ex_barra_b: break;    // \b
-        case ex_barra_c: break;    // \c
-        case ex_barra_d: break;    // \d
-
         // Nome de variável ou função (um texto)
         case ex_varabre:     // Início do texto + abre colchetes
             strcpy(nome, " (varini)[");
             break;
+        case ex_varfunc:     // Início do texto
+            origem++;
+            mprintf(nome, sizeof(nome), " (varfunc)%s",
+                    ListaFunc[*(unsigned char*)origem].Nome);
+            break;
+        case ex_varlocal:
         case ex_varini:      // Início do texto
         case ex_doispontos:  // Dois pontos
         case ex_ponto:       // Fim do nome da variável
         case ex_fecha:       // Fecha colchetes
             if (tamanho<20)
                 return false;
-            if (*origem==ex_varini)
+            if (*origem==ex_varlocal)
+            {
+                origem++;
+                sprintf(destino, " (varlocal %d)", *(unsigned char*)origem);
+            }
+            else if (*origem==ex_varini)
                 strcpy(destino, " (varini) ");
             else if (*origem==ex_ponto)
                 strcpy(destino, " (ponto) ");
@@ -322,9 +327,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                     return false;
                 *destino++ = *origem++;
             }
-            origem--, destino--;
-            nome[0]=destino[0];
-            nome[1]=0;
+            origem--;
             break;
         case ex_varfim:      // Fim do texto
             strcpy(nome, "(varfim)"); break;
@@ -488,9 +491,17 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_int2:         strcpy(nome, " ?fim"); break;
         case exo_dponto1:      strcpy(nome, " :início"); break;
         case exo_dponto2:      strcpy(nome, " :fim"); break;
+
+        case ex_barra_n:    // \n - usado em textos
+        case ex_barra_b:    // \b - usado em textos
+        case ex_barra_c:    // \c - usado em textos
+        case ex_barra_d:    // \d - usado em textos
+        default:            // Caracter desconhecido
+            *destino=0;
+            return false;
         }
         origem++;
-        if (*nome==0 || (int)strlen(nome)+4 > tamanho)
+        if ((int)strlen(nome)+4 > tamanho)
         {
             *destino=0;
             return false;

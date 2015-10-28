@@ -4,11 +4,6 @@ const txtajuda = "\b\c3Aprender\b\n\
 Sintaxe: APRENDER <nome ou número do curso>\n\
 Aprende um pouco sobre uma habilidade ou idioma.\n\
 Para saber o que é ensinado em algum lugar, tecle AULAS."
-txt200 lin
-uint32 aulas # Usado internamente: quantas aulas ensina
-uint32 valor # Usado internamente: preço da aula
-int32 linha
-ref p # Vendedor que está verificando
 
 func escr
   se config:aulas && !arg0.var.z_aulas
@@ -16,11 +11,15 @@ func escr
   fimse
   ret !arg1, arg0.msg("Aprender o quê?")
   negociar_ini(arg0)
+  uint32 aulas # Quantas aulas ensina
+  uint32 valor # Preço da aula
+  int32 linha
+  txt200 lin
   listaobj l
   nomeobj n
-  linha = 0, l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
+  l.addfim(arg0.dono.dentro2), n.ini(arg1, 1)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !p.lojaaula(arg0)
     continuar negociar_checa(arg0, p)
     continuar evento(arg0, p)
@@ -30,8 +29,7 @@ func escr
       lin = misc:nomevar(txt1(lin)), linha += 1
       continuar !n.nome(lin, 1) && txt(linha) != arg1
 # Obtém variáveis
-      ref r
-      r = $[misc:objvar(t2.ini.texto)]
+      refvar r = $[misc:objvar(t2.ini.texto)]
       valor = r.valor(arg0) * p.taxaaula / 100
       aulas = txt2(t2.ini.texto)
 # Checa número de aulas

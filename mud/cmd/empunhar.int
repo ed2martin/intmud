@@ -4,18 +4,14 @@ const txtajuda = "\b\c3Empunhar\b\n\
 Sintaxe: EMPUNHAR <objeto>\n\
 Seu personagem empunha uma arma que está carregando."
 const posic = 5
-txt30 tipo1 # alvo.tipo1
-txt30 tipo2 # alvo.tipo2
-txt30 tipo3 # alvo.tipo3
-ref alvo # Quem vai empunhar
 
 func escr
   ret !arg1, arg0.msg("Empunhar o que?")
-  alvo = arg0.persoesc
+  refvar alvo = ref(arg0.persoesc)
   ret alvo.iempu, $mens.p(alvo) + $mens.mperso("$P já está empunhando uma arma.")
-  tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
-  tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
-  tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
+  refvar tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
+  refvar tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
+  refvar tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
 # Empunha
   listaobj l
   ref r

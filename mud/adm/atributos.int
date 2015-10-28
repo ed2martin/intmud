@@ -915,11 +915,11 @@ classe admrecalc
 # $admrecalc.atuitem
 #
 const iniclasse = !$[arg0] && criar(arg0)
-prog p
-debug d
-ref r
 
 func exec
+  prog p
+  debug d
+  ref r
   d.exec = 50000
   epara p.iniherdainv("comum_persobat"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)
@@ -928,6 +928,9 @@ func exec
   efim
 
 func atuperso
+  prog p
+  debug d
+  ref r
   d.exec = 50000
   epara p.iniherdainv("comum_perso"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)
@@ -936,6 +939,9 @@ func atuperso
   efim
 
 func atuitem
+  prog p
+  debug d
+  ref r
   d.exec = 50000
   epara p.iniherdainv("comum_item"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)

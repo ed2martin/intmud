@@ -5,18 +5,17 @@ Sintaxe: COMPRAR <nome ou número do objeto>\n\
          COMPRAR <quantidade>  <nome ou número do objeto>\n\
 Compra objetos de um vendedor.\n\
 Para saber o que é vendido em algum lugar, tecle LISTA."
-txt200 lin
-uint32 valor # Usado internamente: preço da aula
-uint32 nivel # Usado internamente: nível do item
-int32 linha
-int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
-txt100 nomeitem # O nome do item que está procurando
-uint16 total # Quantos itens quer combrar
-ref p # Vendedor que está verificando
 
 func escr
   ret !arg1, arg0.msg("Comprar o quê?")
   negociar_ini(arg0)
+  txt200 lin # Texto da linha atual
+  int32 linha # Qual linha está verificando
+  int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
+  txt100 nomeitem # O nome do item que está procurando
+  uint32 valor # Preço da aula
+  uint32 nivel # Nível do item
+  uint16 total # Quantos itens quer combrar
   listaobj l
   nomeobj n
   total = txt1(arg1)
@@ -25,10 +24,10 @@ func escr
   senao
     nomeitem = txt2(arg1)
   fimse
-  linha = 0, mudou = 0
+  mudou = 0
   l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
-    p = l.objini # Personagem que está sendo verificado
+    refvar p = ref(l.objini) # Personagem que está sendo verificado
     continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
 )
     continuar negociar_checa(arg0, p)

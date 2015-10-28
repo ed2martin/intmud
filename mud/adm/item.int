@@ -14,7 +14,6 @@ const txtajuda = "\b\c3Litem\b\n\
 Sintaxe: LITEM [nome]\n\
 Lista os itens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os itens."
-int32 total
 
 func escr # Listar itens
   prog p
@@ -26,8 +25,8 @@ func escr # Listar itens
       d.exec = 50000
     fimse
     refvar t = arg0.sock.txtmais
+    int32 total
     txt100 lin
-    total = 0
     epara t.limpar, p.lin, p.depois
       lin = txt(p.texto, 2) + " " + txt(" SGC", [p.texto]:item, 1)
       t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)

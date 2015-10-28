@@ -14,7 +14,6 @@ const txtajuda = "\b\c3Lperso\b\n\
 Sintaxe: LPERSO [nome]\n\
 Lista os personagens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os personagens."
-int32 total
 
 func escr # Listar personagens
   prog p
@@ -28,7 +27,7 @@ func escr # Listar personagens
     refvar t = arg0.sock.txtmais
     textotxt t
     txt100 lin
-    total = 0
+    int32 total
     epara t.limpar, p.lin, p.depois
       lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
       se inttotal($[p.texto]) == [p.texto]:objsolto.total

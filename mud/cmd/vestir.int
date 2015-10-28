@@ -12,17 +12,13 @@ Seu personagem veste ou usa um objeto que está carregando.\n\
 Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
 Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const posic = 5
-txt30 tipo1 # alvo.tipo1
-txt30 tipo2 # alvo.tipo2
-txt30 tipo3 # alvo.tipo3
-ref alvo # Quem vai vestir
 
 func escr
   ret !arg1, arg0.msg("Vestir o que?")
-  alvo = arg0.persoesc
-  tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
-  tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
-  tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
+  refvar alvo = ref(arg0.persoesc) # Quem vai vestir
+  refvar tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
+  refvar tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
+  refvar tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
 # Variáveis
   int32 lugar # Aonde quer vestir
   int1 vest.32 # Aonde está vestindo
