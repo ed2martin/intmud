@@ -17,7 +17,7 @@ func escr
     $misclog.rezou("rezar " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
     $mens.mens = arg1
-    arg0.msginv(config:rezar2msg)
+    arg0.msg($mens.proc(config:rezar2msg, arg0))
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]

@@ -93,6 +93,7 @@ const Instr::TListaFunc Instr::ListaFunc[] = {
     { "txtprocmai", Instr::FuncTxtProc, 1 },
     { "txtremove",  Instr::FuncTxtRemove, 0 },
     { "txtrepete",  Instr::FuncTxtRepete, 0 },
+    { "txtrev",     Instr::FuncTxt2, 20 },
     { "txts",       Instr::FuncTxt2, 19 },
     { "txtsepara",  Instr::FuncTxtSepara, 0 },
     { "txtsha1",    Instr::FuncTxt2, 9 },

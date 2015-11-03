@@ -1163,7 +1163,32 @@ bool Instr::ExecX()
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
-            if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
+            if (VarAtual->Tipo() == varTxt)
+            {
+                char mens[BUF_MENS];    // Resultado
+                char * d = mens;
+                const char * o = VarAtual->getTxt();
+                while (d < mens + sizeof(mens))
+                {
+                    char ch = *o++;
+                    if (ch == 0)
+                        break;
+                    if (ch >= '0' && ch <= '9')
+                        ch -= '0';
+                    else if (ch >= 'A' && ch <= 'F')
+                        ch -= 'A' - 10;
+                    else if (ch >= 'a' && ch <= 'f')
+                        ch -= 'a' - 10;
+                    else
+                        continue;
+                    ch = 15 - ch;
+                    *d++ = (ch < 10 ? ch + '0' : ch + 'a' - 10);
+                }
+                ApagarVar(VarAtual);
+                if (!CriarVarTexto(mens, d-mens))
+                    return RetornoErro(2);
+            }
+            else if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
             {
                 int valor = ~VarAtual->getInt();
                 ApagarVar(VarAtual);
@@ -1358,11 +1383,61 @@ bool Instr::ExecX()
                 VarAtual->setDouble(valor);
                 break;
             }
+
+#define EXO_B_ROTACAO1                                \
+    char mens[BUF_MENS];                              \
+    char * d = mens;                                  \
+    const char * o = VarAtual[-1].getTxt();           \
+    while (d < mens + sizeof(mens))                   \
+    {                                                 \
+        char ch = *o++;                               \
+        if (ch == 0)                                  \
+            break;                                    \
+        if (ch >= '0' && ch <= '9')                   \
+            *d++ = ch - '0';                          \
+        else if (ch >= 'A' && ch <= 'F')              \
+            *d++ = ch - 'A' + 10;                     \
+        else if (ch >= 'a' && ch <= 'f')              \
+            *d++ = ch - 'a' + 10;                     \
+    }
+
+#define EXO_B_ROTACAO2                                \
+    for (char * d2 = mens; d2 < d; d2++)              \
+        *d2 += (*d2 < 10 ? '0' : 'a' - 10);           \
+    ApagarVar(VarAtual - 1);                          \
+    if (!CriarVarTexto(mens, d-mens))                 \
+        return RetornoErro(2);
+
         case exo_b_shl:  // Operador: a << b
             {
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
+                if (VarAtual[-1].Tipo() == varTxt)
+                {
+                    EXO_B_ROTACAO1
+                    int valor = VarAtual[0].getInt();
+                    if (valor >= (d-mens)*4)
+                        memset(mens, 0, d-mens);
+                    else if (valor > 0)
+                    {
+                        char * d1 = mens;
+                        const char * o1 = mens + valor / 4;
+                        valor &= 3;
+                        int temp = (*o1++ << valor);
+                        for (; o1 < d; o1++)
+                        {
+                            temp = temp * 16 + (*o1 << valor);
+                            *d1++ = temp / 16 % 16;
+                        }
+                        if (d1 < d)
+                            *d1++ = temp % 16;
+                        while (d1 < d)
+                            *d1++ = 0;
+                    }
+                    EXO_B_ROTACAO2
+                    break;
+                }
                 int valor = VarAtual[-1].getInt() << VarAtual[0].getInt();
                 ApagarVar(VarAtual);
                 if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
@@ -1380,6 +1455,31 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
+                if (VarAtual[-1].Tipo() == varTxt)
+                {
+                    EXO_B_ROTACAO1
+                    int valor = VarAtual[0].getInt();
+                    if (valor >= (d-mens)*4)
+                        memset(mens, 0, d-mens);
+                    else if (valor > 0)
+                    {
+                        char * d1 = d - 1;
+                        const char * o1 = d1 - valor / 4;
+                        valor = 4 - (valor & 3);
+                        int temp = (*o1-- << valor);
+                        for (; o1 >= mens; o1--)
+                        {
+                            temp = temp / 16 + (*o1 << valor);
+                            *d1-- = temp % 16;
+                        }
+                        if (d1 >= mens)
+                            *d1-- = temp / 16;
+                        while (d1 >= mens)
+                            *d1-- = 0;
+                    }
+                    EXO_B_ROTACAO2
+                    break;
+                }
                 int valor = VarAtual[-1].getInt() >> VarAtual[0].getInt();
                 ApagarVar(VarAtual);
                 if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
@@ -1392,11 +1492,60 @@ bool Instr::ExecX()
                     VarAtual->setInt(valor);
                 break;
             }
+
+#define EXO_B_TEXTO( cmp1, cmp2 )                     \
+    char mens[BUF_MENS];                              \
+    char * d1 = mens;                                 \
+    const char * o1 = VarAtual[-1].getTxt();          \
+    while (d1 < mens + sizeof(mens))                  \
+    {                                                 \
+        char ch = *o1++;                              \
+        if (ch == 0)                                  \
+            break;                                    \
+        if (ch >= '0' && ch <= '9')                   \
+            *d1++ = ch - '0';                         \
+        else if (ch >= 'A' && ch <= 'F')              \
+            *d1++ = ch - 'A' + 10;                    \
+        else if (ch >= 'a' && ch <= 'f')              \
+            *d1++ = ch - 'a' + 10;                    \
+    }                                                 \
+    char * d2 = mens;                                 \
+    const char * o2 = VarAtual[0].getTxt();           \
+    while (d2 < mens + sizeof(mens))                  \
+    {                                                 \
+        char ch = *o2++;                              \
+        if (ch == 0)                                  \
+            break;                                    \
+        if (ch >= '0' && ch <= '9')                   \
+            ch -= '0';                                \
+        else if (ch >= 'A' && ch <= 'F')              \
+            ch -= 'A' - 10;                           \
+        else if (ch >= 'a' && ch <= 'f')              \
+            ch -= 'a' - 10;                           \
+        else                                          \
+            continue;                                 \
+        ch = (cmp1);                                  \
+        *d2++ = (ch < 10 ? ch + '0' : ch + 'a' - 10); \
+    }                                                 \
+    while (d2 < d1)                                   \
+    {                                                 \
+        char ch = (cmp2);                             \
+        *d2++ = (ch < 10 ? ch + '0' : ch + 'a' - 10); \
+    }                                                 \
+    ApagarVar(VarAtual-1);                            \
+    if (!CriarVarTexto(mens, d2-mens))                \
+        return RetornoErro(2);
+
         case exo_b_e:   // Operador: a&b
             {
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
+                if (VarAtual->Tipo() == varTxt)
+                {
+                    EXO_B_TEXTO( d2 < d1 ? ch & *d2 : 0 , 0 )
+                    break;
+                }
                 int valor = VarAtual[-1].getInt() & VarAtual[0].getInt();
                 ApagarVar(VarAtual);
                 if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
@@ -1414,6 +1563,11 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
+                if (VarAtual->Tipo() == varTxt)
+                {
+                    EXO_B_TEXTO( d2 < d1 ? ch ^ *d2 : ch , *d2 )
+                    break;
+                }
                 int valor = VarAtual[-1].getInt() ^ VarAtual[0].getInt();
                 ApagarVar(VarAtual);
                 if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)
@@ -1431,6 +1585,11 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
+                if (VarAtual->Tipo() == varTxt)
+                {
+                    EXO_B_TEXTO( d2 < d1 ? ch | *d2 : ch, *d2 )
+                    break;
+                }
                 int valor = VarAtual[-1].getInt() | VarAtual[0].getInt();
                 ApagarVar(VarAtual);
                 if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrVarInt)

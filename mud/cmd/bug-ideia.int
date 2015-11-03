@@ -17,7 +17,7 @@ func escr
     $misclog.bug("bug " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
     $mens.mens = arg1
-    arg0.msginv(config:bug2msg)
+    arg0.msg($mens.proc(config:bug2msg, arg0))
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]
@@ -37,14 +37,15 @@ const posic = 0
 
 func escr
   se arg0.pnivel < config:ideianivel
-    arg0.msg("Para usar o comando IDEIA você precisa estar no nível " + config:ideianivel + ".")
+    arg0.msg("Para usar o comando IDEIA você precisa estar no nível " + config:ideianivel + \
+".")
   senao !arg1
     arg0.msg("Tecle a mensagem após IDEIA.")
   senao
     $misclog.ideia("ideia " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
     $mens.mens = arg1
-    arg0.msginv(config:ideia2msg)
+    arg0.msg($mens.proc(config:ideia2msg, arg0))
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]

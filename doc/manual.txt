@@ -29,6 +29,7 @@ IntMUD (Interpretador MUD)
 13.4. Operadores ? e :
 13.5. Conversão de tipos em operadores binários
 13.6. Operadores de bit
+13.7. Operadores de bit com textos
 14. Instruções de controle de fluxo
 15. Lista de funções
 15.1. Funções chamadas pelo interpretador
@@ -1494,6 +1495,38 @@ dígito hexadecimal pelos quatro dígitos correspondente em binário:
 001011111000
 
 
+13.7. Operadores de bit com textos
+
+Para converter entre sistemas de numeração pelo IntMUD, usar a função
+txtconv. Por exemplo, a conversão de 0x2f8 em binário pode ser feita assim:
+txtconv("2F8", "hx") # Resulta em "0000001011111000"
+
+Os operadores de bit '|' (ou), '&' (e) e '^' (ou exclusivo), funcionam
+de outra forma quando o primeiro operando for um texto. Nesse caso,
+o texto é tratado como se fosse um número em hexadecimal. São considerados
+somente os dígitos de 0 a 9 e as letras de A a F.
+
+Exemplo, "123" ^ "456" resulta em "575". Isso acontece porque comparando
+dígito por dígito temos: 1^4=5, 2^5=7 e 3^6=5.
+
+Quando um dos textos é menor, são acrescentados zeros no final antes da
+operação, até que os dois tenham o mesmo tamanho.
+
+Exemplo, "1" | "abc" é tratado como "100" | "abc", e resulta em "bbc".
+
+O operador '~' (inverter) com um texto inverte os bits de cada dígito
+do número.
+
+Exemplo, ~"c430" resulta em "3bcf".
+
+Os operadores '>>' e '<<', deslocam os bits do número em hexadecimal,
+mas mantém a mesma quantidade de dígitos. O operando à direita é sempre
+um número, embora o operando da esquerda seja um texto.
+
+Exemplo, "f208" << 3 resulta em "9040", enquanto que "f208" >> 3 resulta
+em "1e41". Algo como "4000" >> 10 sinifica 10 deslocamentos para a direita.
+
+
 14. INSTRUÇÕES DE CONTROLE DE FLUXO
 
 14.1. Bloco 'se'
@@ -2069,7 +2102,18 @@ intdist    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
 intdistmai - Considera iguais letras maiúsculas e minúsculas;
 intdistdif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
-15.3.24. txtconv(<texto>, <tipo de conversão>)
+15.3.24. txtrev(<texto>)
+Reverte um texto, de modo que o primeiro caracter é trocado com o último,
+o segundo é trocado com o penúltimo, e assim por diante. Porém, não inverte
+definições de cores.
+
+Exemplos:
+
+txtrev("abc") # É o mesmo que "cba"
+txtrev("Bom dia") # É o mesmo que "aid moB"
+txtrev("\c3\d4teste\b") # É o mesmo que "\betset\d4\c3"
+
+15.3.25. txtconv(<texto>, <tipo de conversão>)
 Converte texto em um formato para outro.
 Tipo de conversão é um texto de dois caracteres. O primeiro é o formato
 atual do argumento <texto>. O segundo é o formato retornado por txtconv.
@@ -3153,6 +3197,11 @@ Retorna "" se sucesso ou um texto contendo o erro.
 24.13. renomear(<antigo nome>, <novo nome>)
 Renomeia uma entrada.
 Retorna "" se sucesso ou um texto contendo o erro.
+
+24.14. barra(<texto>)
+Acerta a barra que separa nomes de diretórios e arquivos:
+No Windows, troca a barra normal por barra invertida.
+No Linux, troca a barra invertida por barra normal.
 
 
 25. ARQLOG - GRAVAR TEXTO EM ARQUIVOS DE LOG

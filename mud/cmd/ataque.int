@@ -341,7 +341,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   senao !arg1.contr.p_agressivo(arg0)
     ret arg0.contr.msg(txtcopiamai(arg1.contr.descnome, "A") + " não quer brigar.")
   senao !arg0.contr.p_agressivo(arg1)
-    ret arg0.contr.msg("Você não quer brigar com " +arg1.contr.descnome + ".")
+    ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + ".")
   senao arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
     ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + " aqui.")
   fimse

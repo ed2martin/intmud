@@ -71,6 +71,32 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         return false;
     }
 
+// Barra
+    if (comparaZ(nome, "barra")==0)
+    {
+        const char * txt = "";  // Texto
+        char mens[BUF_MENS];    // Resultado
+        char * destino = mens;
+        if (Instr::VarAtual >= v+1)
+            txt = v[1].getTxt();
+        while (destino < mens+sizeof(mens)-1)
+        {
+            char ch = *txt++;
+            if (ch == 0)
+                break;
+#ifdef __WIN32__
+            if (ch == '/')
+                ch = '\\';
+#else
+            if (ch == '\\')
+                ch = '/';
+#endif
+            *destino++ = ch;
+        }
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens, destino-mens);
+    }
+
 // Abrir/Fechar diretório
     if (comparaZ(nome, "abrir")==0)
     {

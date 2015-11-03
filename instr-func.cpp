@@ -1014,6 +1014,39 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             destino++, txt++;
         }
         break;
+    case 20: // txtrev
+      {
+        unsigned int total = strlen(txt);
+        if (total > sizeof(mens)-1)
+            total = sizeof(mens)-1;
+        const char * t = txt + total;
+        for (t--; t>=txt; t--)
+        {
+            char ch = *t;
+            if (ch == ex_barra_c)
+            {
+                if ((t[1]>='0' && t[1]<='9') ||
+                    (t[1]>='A' && t[1]<='J') ||
+                    (t[1]>='a' && t[1]<='j'))
+                {
+                    destino[-1] = ex_barra_c;
+                    *destino++ = t[1];
+                    continue;
+                }
+            }
+            else if (ch == ex_barra_d)
+            {
+                if (t[1]>='0' && t[1]<='7') \
+                {
+                    destino[-1] = ex_barra_d;
+                    *destino++ = t[1];
+                    continue;
+                }
+            }
+            *destino++ = ch;
+        }
+        break;
+      }
     default:
         return false;
     }
