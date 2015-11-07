@@ -1629,10 +1629,15 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         int pri_sinal = Instr::Prioridade(sinal);
         if (pri_sinal == 20)
             pri_sinal--;
-        while (modo>exo_ini && modo<exo_fim &&
-               pri_sinal >= Instr::Prioridade(modo) &&
-               destino < dest_fim-3)
+        while (true)
         {
+            if (modo <= exo_ini || modo >= exo_fim || destino >= dest_fim-3)
+                break;
+            int pri_modo = Instr::Prioridade(modo);
+            // Checar (pri_sinal==2 && pri_modo==2) resolve bug causado com
+            // dois ou mais operadores unitários consecutivos, como: !!1
+            if (pri_sinal < pri_modo || (pri_sinal==2 && pri_modo==2))
+                break;
             destino = anotaModo(destino, modo);
             modo = *--topo;
         }

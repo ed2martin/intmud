@@ -94,7 +94,7 @@ func reinicia # Volta ao início: pede o nome do personagem
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
   cnome = "un", nome = ""
   mudaperso(nulo)
-  $adm_perso1.passo(este)
+  $ini_perso1.passo(este)
 
 func recebe # Recebeu mensagem do jogador
   ret passo || !perso.var.t_[txt1(arg0)], recebe1(arg0)
@@ -117,13 +117,13 @@ func recebe1 # Função recebe após uso de atalhos
       epara i = lmonit.ini, i, i.depois
         i.obj.msg("<" + arg0, 1), i.obj.msgprompt = 1
       efim
-    casose "adm_criasenha1"
-    casose "adm_criasenha2"
-    casose "adm_entrasenha"
-    casose "adm_mudasenha1"
-    casose "adm_mudasenha2"
-    casose "adm_mudasenha3"
-    casose "adm_autoapagar2"
+    casose "ini_criasenha1"
+    casose "ini_criasenha2"
+    casose "ini_entrasenha"
+    casose "ini_mudasenha1"
+    casose "ini_mudasenha2"
+    casose "ini_mudasenha3"
+    casose "cmdfim_autoapagar"
     casofim
   fimse
 # Atualiza tempo para sair do MUD
@@ -344,7 +344,7 @@ func msgchegou # Mensagem de usuário chegando ou saindo
 const m_menu = $[arg0].passo(este, "\b")
 
 
-classe adm_perso1
+classe ini_perso1
 herda comando_comum
 # Entrando no jogo: digitar o nome do personagem
 
@@ -368,7 +368,7 @@ func passo
   senao sav1.existe("sav1/" + texto + ".sav") # Carregar jogo salvo
     arg0.msg("Personagem '" + txtmaimin(arg1) + "' já existe")
     arg0.tpasso = txtmaimin(arg1)
-    $adm_entrasenha.passo(arg0)
+    $ini_entrasenha.passo(arg0)
   senao ind.obj("un " + texto)
     arg0.msg("Nome já está sendo usado; digite outro")
   senao # Criar personagem
@@ -381,25 +381,25 @@ func passo
     senao
       arg0.cnome = "un " + texto
       arg0.nome = txtmaimin(arg1)
-      $adm_perso2.passo(arg0)
+      $ini_perso2.passo(arg0)
     fimse
   fimse
   ret 1
 
 
-classe adm_perso2
+classe ini_perso2
 herda comando_comum
 
 func passo
   se arg1 == "N"
-    $adm_perso1.passo(arg0)
+    $ini_perso1.passo(arg0)
   senao arg1 == "S"
     se config:salvacria
-      $adm_criasenha1.passo(arg0)
+      $ini_criasenha1.passo(arg0)
     senao config:email
-      $adm_email1.passo(arg0)
+      $ini_email1.passo(arg0)
     senao
-      $adm_sexo1.passo(arg0)
+      $ini_sexo1.passo(arg0)
     fimse
     arg0.nomefim = arg0.info
     arg0.msgchegou("Criando personagem: " + arg0.nome + ", " + arg0.nomefim)
@@ -409,7 +409,7 @@ func passo
   fimse
 
 
-classe adm_criasenha1
+classe ini_criasenha1
 herda comando_comum
 # Digitar a senha ao criar personagem
 
@@ -426,12 +426,12 @@ func passo
     arg0.msg("Senha inválida, digite outras")
   senao
     arg0.var.j_senha = arg1
-    $adm_criasenha2.passo(arg0)
+    $ini_criasenha2.passo(arg0)
   fimse
   ret 1
 
 
-classe adm_criasenha2
+classe ini_criasenha2
 herda comando_comum
 # Repetir a senha ao criar personagem
 
@@ -442,14 +442,14 @@ func passo
   senao arg1 != arg0.var.j_senha
     arg0.msg("As senhas são diferentes")
     arg0.var.limpar("j_")
-    $adm_perso1.passo(arg0)
+    $ini_perso1.passo(arg0)
   senao
-    config:email ? $adm_email1.passo(arg0) : $adm_sexo1.passo(arg0)
+    config:email ? $ini_email1.passo(arg0) : $ini_sexo1.passo(arg0)
   fimse
   ret 1
 
 
-classe adm_email1
+classe ini_email1
 herda comando_comum
 # Digitar o e-mail
 
@@ -463,7 +463,7 @@ func passo
       arg0.msg("Digite seu e-mail\cn")
     fimse
   senao arg1 == "n" && config:email == 1
-    $adm_sexo1.passo(arg0)
+    $ini_sexo1.passo(arg0)
   senao txtproc(arg1, " ") >= 0
     arg0.msg("O e-mail não pode conter espaços; digite outro")
   senao txtremove(arg1, "7") !== arg1
@@ -474,12 +474,12 @@ func passo
     arg0.msg("E-mail inválido; digite outro")
   senao
     arg0.var.j_email = arg1
-    $adm_sexo1.passo(arg0)
+    $ini_sexo1.passo(arg0)
   fimse
   ret 1
 
 
-classe adm_sexo1
+classe ini_sexo1
 herda comando_comum
 # Digitar H ou M
 
@@ -490,19 +490,19 @@ func passo
     ret 1
   fimse
   arg0.var.j_sexo = arg1 == "H" # 0=feminino, 1=masculino
-  ret $adm_raca1.passo(arg0)
+  ret $ini_raca1.passo(arg0)
 
 
-classe adm_raca1
+classe ini_raca1
 herda comando_comum
 # Começa a escolha de raça, classe e subclasse
 
 func passo
   arg0.tpasso = 1
-  ret $adm_raca2.passo(arg0)
+  ret $ini_raca2.passo(arg0)
 
 
-classe adm_raca2
+classe ini_raca2
 herda comando_comum
 # Escolhe raça, classe e subclasse
 
@@ -533,21 +533,23 @@ func passo1
 # Obtém a lista de raças/classes/subclasses e checa se escolheu alguma
   arg0.txtmais.limpar
   epara p.iniclasse("t_"), p.lin, p.depois
-    continuar txt($[p.texto].menu) != tpasso
-    se !$[p.texto].racas || tpasso < 2
-    senao txtproc("\n" + $[p.texto].racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
+    refvar r = $[p.texto]
+    continuar txt(r.menu) != tpasso
+    se !r.racas || tpasso < 2
+    senao txtproc("\n" + r.racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
       continuar
     fimse
-    se !$[p.texto].classes || tpasso < 3
-    senao txtproc("\n" + $[p.texto].classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
+    continuar r.sexo && (arg0.var.j_sexo != r.sexo - 1)
+    se !r.classes || tpasso < 3
+    senao txtproc("\n" + r.classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
       continuar
     fimse
-    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + $[p.texto].nome)
+    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + r.nome)
     lin = p.texto
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
     tpasso += " " + p.texto
-    arg0.msg2($[p.texto].desc ? $[p.texto].desc : $[p.texto].nome)
+    arg0.msg2(r.desc ? r.desc : r.nome)
     ret 1
   efim
 # Uma ou nenhuma: escolhe automaticamente
@@ -575,11 +577,11 @@ func escolheu # Jogador fez a escolha
   arg0.var.j_tipo[txt1(arg0.tpasso)] = txt(txt2(arg0.tpasso), 2)
   arg0.tpasso = int(arg0.tpasso) + 1
   ret arg0.tpasso <= 3, 1
-  $adm_entrajogo.passo(arg0)
+  $ini_entrajogo.passo(arg0)
   ret 0
 
 
-classe adm_entrajogo
+classe ini_entrajogo
 herda comando_comum
 # Entrar no jogo: cria personagem
 
@@ -607,7 +609,7 @@ func passo
   ret 1
 
 
-classe adm_entrasenha
+classe ini_entrasenha
 herda comando_comum
 # Entrar com a senha para carregar jogo salvo
 
@@ -622,7 +624,7 @@ func passo
     ret 1
   senao arg1 == "z"
     arg0.nome = ""
-    ret $adm_perso1.passo(arg0)
+    ret $ini_perso1.passo(arg0)
   senao !sav1.senha("sav1/" + texto + ".sav", txtmin(arg1))
     arg0.msg("Senha incorreta")
     casovar txt1(arg0.info)
@@ -631,7 +633,7 @@ func passo
       apagar(arg0)
       ret 1
     casofim
-    ret $adm_perso1.passo(arg0)
+    ret $ini_perso1.passo(arg0)
   fimse
 # Desconecta outro jogador usando o mesmo personagem
   se 1
@@ -714,7 +716,7 @@ func passo
   ret 1
 
 
-classe adm_mudasenha1
+classe ini_mudasenha1
 herda comando_comum
 # Digitar a senha atual para mudar a senha
 
@@ -729,12 +731,12 @@ func passo
     arg0.msg("Senha incorreta; cancelado")
     arg0.passo = ""
   senao
-    $adm_mudasenha2.passo(arg0)
+    $ini_mudasenha2.passo(arg0)
   fimse
   ret 1
 
 
-classe adm_mudasenha2
+classe ini_mudasenha2
 herda comando_comum
 # Digitar a nova senha
 
@@ -753,12 +755,12 @@ func passo
     arg0.msg("Senha inválida, digite outras")
   senao
     arg0.tpasso = arg1
-    $adm_mudasenha3.passo(arg0)
+    $ini_mudasenha3.passo(arg0)
   fimse
   ret 1
 
 
-classe adm_mudasenha3
+classe ini_mudasenha3
 herda comando_comum
 # Repetir a senha digitada
 

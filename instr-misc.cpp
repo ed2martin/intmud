@@ -132,7 +132,8 @@ int Instr::InfoFunc(const char * nome)
 /// Retorna um número que corresponde à prioridade do operador
 /** @param operador Operador em Instr::Expressao
     @retval 2-0x2F Número que corresponde à prioridade do operador;
-            20 é atribuição (procesado da direita para a esquerda)
+            2 é operador unitário (é também o de maior prioridade);
+            20 é atribuição (processado da direita para a esquerda)
     @retval 0 Operador inválido */
 int Instr::Prioridade(int operador)
 {

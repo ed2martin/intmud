@@ -14,7 +14,7 @@ func escr1 # Consultar a lista de taxas
   se intpos(config:casatempotaxa) == 0
     ret arg0.msg("Não há taxa de manutenção das casas.")
   fimse
-  uint32 valor # Valor do item
+  int32 valor # Valor do item
   real2 lucro # Para calcular o lucro do vendedor
   txt200 lin
   int32 linha
@@ -89,7 +89,7 @@ func escr1 # Consultar a lista de taxas
   arg0.msg("Ninguém cobra taxas aqui.")
 
 func escr2 # Consultar um item
-  uint32 valor # Valor do item
+  int32 valor # Valor do item
   real2 lucro # Para calcular o lucro do vendedor
   txt200 lin
   int32 linha
