@@ -881,27 +881,122 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
 //----------------------------------------------------------------------------
 bool TClasse::RetiraDeriv(TClasse * cl)
 {
-    TClasse ** lista = ListaDeriv;
-    TClasse ** lfim = lista + NumDeriv;
-    for (;; lista++)
+// Checa se tem classes derivadas
+    if (NumDeriv == 0)
+        return false;
+
+// Marca todas as classes que serão verificadas
     {
-        if (lista >= lfim)
-            return false;
-        if (*lista == cl)
-            break;
+        TClasse ** lista1 = ListaDeriv;
+        for (int total = NumDeriv; total>0; total--,lista1++)
+            lista1[0]->Marca = 0;
+        TClasse ** lista2 = cl->ListaDeriv;
+        for (int total = cl->NumDeriv; total>0; total--,lista2++)
+            lista2[0]->Marca = 1;
+        cl->Marca = 1;
     }
-    lista[0] = lfim[-1];
-    if (--NumDeriv==0)
+
+// Verifica se as classes marcadas ainda herdam essa classe
+    unsigned int removeu = 0;
+    TClasse ** lista3 = ListaDeriv;
+    for (int total = NumDeriv; total>0; total--,lista3++)
+    {
+        TClasse * c = *lista3;
+        if (c->Marca == 0)
+            continue;
+        TClasse * buf[HERDA_TAM];
+        int tot = c->Heranca(buf, HERDA_TAM);
+        for (tot--; tot>=0; tot--)
+            if (buf[tot] == this)
+                break;
+        if (tot >= 0)
+            continue;
+        removeu++;
+        *lista3 = 0;
+    }
+
+// Acerta ListaDeriv
+    if (removeu == 0)
+        return false;
+    if (removeu >= NumDeriv)
     {
         delete[] ListaDeriv;
         ListaDeriv = 0;
-        return true;
+        NumDeriv = 0;
     }
-    lista = new TClasse*[NumDeriv];
-    memcpy(lista, ListaDeriv, NumDeriv*sizeof(TClasse*));
-    delete[] ListaDeriv;
-    ListaDeriv = lista;
+    else
+    {
+        const int ltam = NumDeriv - removeu;
+        TClasse ** lnovo = new TClasse*[ltam];
+        TClasse ** p = ListaDeriv;
+        int total1 = NumDeriv;
+        int total2 = 0;
+        for (; total1>0; total1--,p++)
+            if (*p)
+                lnovo[total2++] = *p;
+        assert(total2 == ltam);
+        NumDeriv = ltam;
+        delete[] ListaDeriv;
+        ListaDeriv = lnovo;
+    }
     return true;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::AdicionaDeriv(TClasse * cl)
+{
+// Marca todas as classes que serão adicionadas
+    {
+        TClasse ** lista1 = cl->ListaDeriv;
+        for (int total = cl->NumDeriv; total>0; total--,lista1++)
+            lista1[0]->Marca = 1;
+        cl->Marca = 1;
+        TClasse ** lista2 = ListaDeriv;
+        for (int total = NumDeriv; total>0; total--,lista2++)
+            lista2[0]->Marca = 0;
+    }
+
+// Obtém quantas classes serão adicionadas
+    int add = (cl->Marca ? 1 : 0);
+    {
+        TClasse ** lista3 = cl->ListaDeriv;
+        for (int total = cl->NumDeriv; total>0; total--,lista3++)
+            if (lista3[0]->Marca)
+                add++;
+    }
+
+// Acerta o tamanho de ListaDeriv
+    TClasse ** lnovo = new TClasse*[NumDeriv + add];
+    if (NumDeriv)
+        memcpy(lnovo, ListaDeriv, NumDeriv * sizeof(TClasse*));
+    if (ListaDeriv)
+        delete[] ListaDeriv;
+    ListaDeriv = lnovo;
+
+// Mostra o que será adicionado
+#if 0
+    printf("\nAdd %d\n", add);
+    if (cl->Marca)
+        printf("Add %s\n", cl->Nome);
+    for (unsigned int x=0; x<cl->NumDeriv; x++)
+        if (cl->ListaDeriv[x]->Marca)
+            printf("Add %s\n", cl->ListaDeriv[x]->Nome);
+    fflush(stdout);
+#endif
+
+// Adiciona novas classes
+    unsigned int indice = NumDeriv;
+    TClasse ** lista4 = cl->ListaDeriv;
+    if (cl->Marca)
+        lnovo[indice++] = cl;
+    for (int total = cl->NumDeriv; total>0; total--,lista4++)
+        if (lista4[0]->Marca)
+            lnovo[indice++] = lista4[0];
+    assert(indice == NumDeriv + add);
+    NumDeriv = indice;
+//for (int x=0; x<NumDeriv; x++)
+//    printf(">%s\n", ListaDeriv[x]->Nome);
+//fflush(stdout);
 }
 
 //----------------------------------------------------------------------------
@@ -986,7 +1081,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         {
             if (x2 >= total2) // Retira herança
             {
-                assert(buf1[x1]->RetiraDeriv(this));
+                buf1[x1]->RetiraDeriv(this);
                 break;
             }
             if (buf1[x1] == buf2[x2]) // Se herança não mudou
@@ -999,15 +1094,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         {
             if (x1 >= total1) // Coloca herança
             {
-                int total = buf2[x2]->NumDeriv;
-                buf2[x2]->NumDeriv++;
-                TClasse ** lista = new TClasse*[total+1];
-                if (total>0)
-                    memcpy(lista, buf2[x2]->ListaDeriv, total*sizeof(TClasse*));
-                if (buf2[x2]->ListaDeriv)
-                    delete[] buf2[x2]->ListaDeriv;
-                lista[total] = this;
-                buf2[x2]->ListaDeriv = lista;
+                buf2[x2]->AdicionaDeriv(this);
                 break;
             }
             if (buf1[x1] == buf2[x2]) // Se herança não mudou

@@ -90,6 +90,10 @@ public:
         /**< @param cl Classe que será removida
          *   @return true se conseguiu remover (achou a classe) */
 
+    void AdicionaDeriv(TClasse * cl);
+        ///< Adicionaa classe em ListaDeriv/NumDeriv
+        /**< @param cl Classe que será adicionada */
+
     static void AcertaDeriv();
         ///< Acerta ListaDeriv e NumDeriv de todas as classes
 
@@ -195,6 +199,8 @@ private:
     void RBleft_rotate(void);
     void RBright_rotate(void);
     unsigned char RBcolour;
+
+    unsigned char Marca;      ///< Usado para acertar classes derivadas
 };
 
 //----------------------------------------------------------------------------
