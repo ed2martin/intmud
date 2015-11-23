@@ -117,12 +117,13 @@ TClasse::~TClasse()
     printf("~TClasse( %s , %s , %p )\n", Nome,
            ArqArquivo ? ArqArquivo->Arquivo : "???", this); fflush(stdout);
 #endif
-    LimpaInstr();
-    if (ClInic==this)
-        ClInic=RBnext(this);
 // Apaga objetos
     while (ObjetoIni)
         ObjetoIni->Apagar();
+// Limpa as instruções
+    LimpaInstr();
+    if (ClInic==this)
+        ClInic=RBnext(this);
 // Apaga variáveis
     if (Vars)
     {
@@ -144,7 +145,7 @@ TClasse::~TClasse()
     TClasse * buf[HERDA_TAM];
     int total = Heranca(buf, HERDA_TAM);
     for (int x=0; x<total; x++)
-        assert(buf[x]->RetiraDeriv(this));
+        buf[x]->RetiraDeriv(this);
 // Remove da RBT
     RBremove();
 // Desaloca memória
@@ -881,6 +882,9 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
 //----------------------------------------------------------------------------
 bool TClasse::RetiraDeriv(TClasse * cl)
 {
+#if 0
+    printf("\nRetiraDeriv %s de %s\n", cl->Nome, Nome); fflush(stdout);
+#endif
 // Checa se tem classes derivadas
     if (NumDeriv == 0)
         return false;
@@ -909,6 +913,11 @@ bool TClasse::RetiraDeriv(TClasse * cl)
         for (tot--; tot>=0; tot--)
             if (buf[tot] == this)
                 break;
+#if 0
+        printf("%s %s\n", tot >= 0 ? "Manter" : "Remover", cl->Nome);
+        fflush(stdout);
+#endif
+
         if (tot >= 0)
             continue;
         removeu++;
@@ -1081,6 +1090,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         {
             if (x2 >= total2) // Retira herança
             {
+                // Essa classe não herda mais buf1[x1]
                 buf1[x1]->RetiraDeriv(this);
                 break;
             }
@@ -1094,6 +1104,7 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         {
             if (x1 >= total1) // Coloca herança
             {
+                // Classe buf2[x2] herda essa classe
                 buf2[x2]->AdicionaDeriv(this);
                 break;
             }
@@ -1105,9 +1116,6 @@ void TClasse::AcertaDeriv(char * comandos_antes)
 //----------------------------------------------------------------------------
 void TClasse::LimpaInstr()
 {
-// Se não é herdada, nada faz
-    if (NumDeriv==0)
-        return;
 // Apaga as instruções da classe
     char * antigo_com = Comandos;
     Comandos = new char[2];
@@ -1115,6 +1123,9 @@ void TClasse::LimpaInstr()
     AcertaDeriv(antigo_com);
     AcertaVar(true);
     delete[] antigo_com;
+// Se não é herdada, nada faz
+    if (NumDeriv==0)
+        return;
 // Acerta herança das outras classes - retira essa classe
     for (unsigned int numcl=0; numcl < NumDeriv; numcl++)
     {
@@ -1157,14 +1168,16 @@ void TClasse::LimpaInstr()
         else
             p=cl->Comandos, tam_herda = Num16(p);
         memmove(p, p+tam_herda, fim-p-tam_herda);
-        //printf(">>>> %s\n", cl->Nome);
-        //for (const char * p = cl->Comandos; Num16(p); p+=Num16(p))
-        //{
-        //    char mens[2048];
-        //    assert(Instr::Decod(mens, p, sizeof(mens)));
-        //    printf(">  %s\n", mens);
-        //}
-        //fflush(stdout);
+#if 0
+        printf(">>>> %s\n", cl->Nome);
+        for (const char * p = cl->Comandos; Num16(p); p+=Num16(p))
+        {
+            char mens[2048];
+            assert(Instr::Decod(mens, p, sizeof(mens)));
+            printf(">  %s\n", mens);
+        }
+        fflush(stdout);
+#endif
     // Acerta endereços das variáveis na classe herdada
         for (unsigned int y=0; y<cl->NumVar; y++)
             if (cl->InstrVar[y] >= ini &&

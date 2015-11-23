@@ -7,33 +7,60 @@ const txtajuda = "\b\c3Comandos de edição do código\b\n\
   \c2ECL\b       Edita uma classe\n\
   \c2ICL\b       Inicializa uma classe (chama a função iniclasse)\n\
   \c2RCL\b       Renomeia uma classe\n\
-  \c2HERDA\b     Edita herança de uma classe\n\
+  \c2LHERDA\b    Lista heranças de uma classe\n\
+  \c2EHERDA\b    Edita herança de uma classe\n\
   \c2LFUNC\b     Lista funções de uma classe\n\
   \c2LFUNC2\b    Lista todas funções de uma classe, inclusive as herdadas"
 
 
 classe adm_lcl
 herda comando_adm, comando_comum
-const txtajuda = "\b\c3Lcl\b\nSintaxe: LCL [nome]\nLista as classes existentes."
+const txtajuda = "\b\c3Lcl\b\n\
+Sintaxe: LCL [nome] [quantidade]\n\
+Lista todas as classes que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os itens.\n\
+Para listar somente as classes que tenham uma certa quantidade mínima\n\
+de objetos, acrescentar um número após o comando. Exemplo, LCL 100\n\
+lista somente as classes com 100 ou mais objetos."
 
 func escr # Listar classes
   prog p
-  txt80 lin
   refvar txtmais = arg0.sock.txtmais
-  ret !p.iniclasse(arg1), arg0.msg("\bNenhuma classe encontrada.")
+  txt80 nome
+  uint32 total
   debug d
   d.exec = 50000
-  epara txtmais.limpar, p.lin, p.depois
-    txtmais.addfim(p.texto + ",")
-  efim
-  textopos pos
-  pos = txtmais.fim, pos.antes
-  pos.mudar("", inttotal(pos.texto) - 1, 1)
-  refvar total = int(txtmais.linhas)
-  txtmais.juntar
-  txtmais.dividelin(50, 70)
-  txtmais.addini("\b\c6Classes (" + total + "):\b")
-  arg0.sock.txtmostra
+  txtmais.limpar
+
+  total = txt1(arg1)
+  se txt1(arg1) != total
+    nome = txt1(arg1)
+    total = txt2(arg1)
+  fimse
+  se total
+    epara p.iniclasse(nome), p.lin, p.depois
+      refvar num = inttotal($[p.texto])
+      num >= total && txtmais.addfim(p.texto + "  " + num)
+    efim
+    total = txtmais.linhas
+  senao
+    epara p.iniclasse(nome), p.lin, p.depois
+      txtmais.addfim(p.texto + ",")
+    efim
+    total = txtmais.linhas
+    textopos pos
+    pos = txtmais.fim, pos.antes
+    pos.mudar("", inttotal(pos.texto) - 1, 1)
+    txtmais.juntar
+    txtmais.dividelin(50, 70)
+  fimse
+  se total
+    txtmais.addini("\b\c6Classes (" + total + "):\b")
+    arg0.sock.txtmostra
+  senao
+    txtmais.limpar
+    arg0.msg("\bNenhuma classe encontrada.")
+  fimse
 
 
 classe adm_ccl
@@ -234,10 +261,64 @@ func escr # Listar funções inclusive as herdadas
   fimse
 
 
-classe adm_herda
+classe adm_lherda
 herda comando_editor, comando_comum
-const txtajuda = "\b\c3Herda\b\n\
-Sintaxe: herda <nome da classe>\n\
+const txtajuda = "\b\c3Lherda\b\n\
+Sintaxe: lherda <nome da classe>\n\
+Lista heranças de uma classe."
+
+func escr
+  prog p
+  se !arg1
+    ret arg0.msg("\bDigite o nome da classe após LHERDA")
+  senao !p.existe(arg1)
+    ret arg0.msg("Classe não existe: " + arg1)
+  fimse
+  refvar txtmais = arg0.sock.txtmais
+  txt100 lin
+  txt10 e
+  debug d
+  d.exec = 50000
+  txtmais.addfim("\b\c6Classe " + arg1 + ":\b")
+  txtmais.addfim("\b\c6* Na instrução herda\b")
+  epara p.iniherda(arg1), p.lin, p.depois
+    refvar l = lin + e + p.texto
+    se inttotal(l) < 75
+      lin = l, e = ", "
+    senao
+      txtmais.addfim(lin), lin = e = ""
+    fimse
+  efim
+  lin && txtmais.addfim(lin)
+  txtmais.addfim("\b\c6* Herança completa\b")
+  lin = e = ""
+  epara p.iniherdatudo(arg1), p.lin, p.depois
+    refvar l = lin + e + p.texto
+    se inttotal(l) < 75
+      lin = l, e = ", "
+    senao
+      txtmais.addfim(lin), lin = e = ""
+    fimse
+  efim
+  lin && txtmais.addfim(lin)
+  txtmais.addfim("\b\c6* Herdado por\b")
+  lin = e = ""
+  epara p.iniherdainv(arg1), p.lin, p.depois
+    refvar l = lin + e + p.texto
+    se inttotal(l) < 75
+      lin = l, e = ", "
+    senao
+      txtmais.addfim(lin), lin = e = ""
+    fimse
+  efim
+  lin && txtmais.addfim(lin)
+  arg0.sock.txtmostra
+
+
+classe adm_eherda
+herda comando_editor, comando_comum
+const txtajuda = "\b\c3Eherda\b\n\
+Sintaxe: eherda <nome da classe>\n\
 Edita herança de uma classe (uma classe herdada por linha)."
 
 func escr

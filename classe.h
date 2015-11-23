@@ -88,11 +88,13 @@ public:
     bool RetiraDeriv(TClasse * cl);
         ///< Retira classe de ListaDeriv/NumDeriv
         /**< @param cl Classe que será removida
-         *   @return true se conseguiu remover (achou a classe) */
+         *   @return true se conseguiu remover (achou a classe)
+         *   @note Essa função deve ser chamada após acertar Comandos */
 
     void AdicionaDeriv(TClasse * cl);
-        ///< Adicionaa classe em ListaDeriv/NumDeriv
-        /**< @param cl Classe que será adicionada */
+        ///< Adiciona classe em ListaDeriv/NumDeriv
+        /**< @param cl Classe que será adicionada
+         *   @note Essa função deve ser chamada após acertar Comandos */
 
     static void AcertaDeriv();
         ///< Acerta ListaDeriv e NumDeriv de todas as classes

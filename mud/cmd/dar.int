@@ -107,7 +107,7 @@ func darobj
 # arg0=personagem, arg1=para quem dar, arg2=item que quer soltar, total=quantidade de itens
 # Faz achou+=1 se soltou o item
 # Coloca mensagem de erro na variável erro se não conseguiu pegar
-  se arg1.dentro1.total + (arg2.item == 2 ? 1 : total) >= arg1.objmax
+  se arg1.dentro1.total + (arg2.item == 2 ? 1 : total) > arg1.objmax
     erro = txtcopiamai(arg1.descnome, "A") + " não consegue carregar mais nada."
     ret
   senao arg1.volden + arg2.voltot * total / arg2.objtot > arg1.volmax
