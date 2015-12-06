@@ -22,6 +22,8 @@ txt100 erro # Mensagem de erro
 int8 soltar # Se pode soltar itens
 
 func escr
+  refvar msg_perm = $perm_[arg0.jogperm].item
+  ret msg_perm, arg0.msg(msg_perm)
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_soltar(arg0, arg1), nulo

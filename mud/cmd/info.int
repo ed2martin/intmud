@@ -11,11 +11,15 @@ func escr
   txt100 t1
   int16 total.3
 # Lista de personagens dos jogadores
-  refvar ver = arg0.jogconfig.23 || arg0.jogconfig.14
+  refvar ver = $perm_[arg0.jogperm].c_config & 4
+  refvar monit = $perm_[arg0.jogperm].c_monit
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !ver
     refvar obj = item.obj
+    refvar v1 = $t_[obj.tipo1].nomequem
+    refvar v2 = $t_[obj.tipo2].nomequem
+    refvar v3 = $t_[obj.tipo3].nomequem
     total.[obj.jogconfig.14] += 1
     t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
     t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome
@@ -24,16 +28,16 @@ func escr
     t1 += "  "
     obj.p_tempofim && (t1 += " [Desconectado]")
     se ver
-      obj.jogconfig.23 && (t1 += " [Admin]")
+      obj.jogperm != "jog" && (t1 += " [" + obj.jogperm + "]")
       obj.jogconfig.17 && (t1 += " [InvQuem]")
       !(obj.sock || obj.p_tempofim) && (t1 += " [PNJ]")
-      obj.sock.imonit && (t1 += " [Monit " + obj.sock.imonit.objlista.nome + "]")
-    senao
-      obj.jogconfig.23 && config:mostraadm && (t1 += "  [Admin]")
     fimse
-    $t_[obj.tipo1].nomequem && (t1 += " " + $t_[obj.tipo1].nomequem)
-    $t_[obj.tipo2].nomequem && (t1 += " " + $t_[obj.tipo2].nomequem)
-    $t_[obj.tipo3].nomequem && (t1 += " " + $t_[obj.tipo3].nomequem)
+    monit && obj.sock.imonit && (t1 += " [Monit " + obj.sock.imonit.objlista.nome + "]")
+    t1 += (v1 ? " " + v1 : "") + (v2 ? " " + v2) + (v3 ? " " + v3)
+    se !ver
+      refvar nome = $perm_[obj.jogperm].nomequem
+      nome && (t1 += " " + nome)
+    fimse
     t0.addfim(txtremove(t1, "d"))
   efim
 # Lista de jogadores sem personagem de jogador
@@ -554,6 +558,7 @@ func escr
   textotxt t
   textotxt h
   txt100 t1
+  refvar completo = $perm_[arg0.jogperm].infoperso # Se mostra informações completas
 # Obtém o personagem
   refvar r = misc:objperso(arg0, arg1)
   ret !r, nulo
@@ -564,7 +569,7 @@ func escr
   t1 += "  Vigor " + r.pmove + "/" + r.pmovemax
   t.addfim(t1)
 # Fome, sede e embriaguez, somente para administradores
-  se arg0.jogconfig.23 && r.jog
+  se completo && r.jog
     t1 = "Sede " + r.p_sede + " fome " + r.p_fome + " embriaguez " + r.p_bebida
     t1 += " digestão " + r.p_diges + "; máximo é " + $miscfome.cheio
     t.addfim(t1)
@@ -630,7 +635,7 @@ func escr
 
 
 classe cmd_infojog
-herda comando_adm, comando_comum
+herda comando_comum
 const txtajuda = "\b\c3Infojog\b\n\
 Sintaxe: INFOJOG <jogador>\n\
 Mostra algumas informações de um personagem de jogador, mesmo que\n\

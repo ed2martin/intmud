@@ -8,6 +8,8 @@ sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 const msexo = psexo # Sexo do personagem
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
+sav txt20 jogperm # Permissões do personagem, mesmo que sock.jogperm
+sav int1 jogconfig.24 # Configurações do personagem, mesmo que sock.jogconfig
 sav listaobj dentro3 # Lista de animais reserva
 inttempo p_tempoatu # Tempo para atualizar personagem
 uint8 p_tempomsg # Para enviar mensagens de fome e sede em tempoatu_exec
@@ -20,6 +22,7 @@ sav uint16 prenascer # Quantas vezes renasceu (usou o comando renascer)
 sav txt32 tipo1 # Raça do jogador; vide classes "t_*" em config/tipo.int
 sav txt32 tipo2 # Classe do jogador; vide classes "t_*" em config/tipo.int
 sav txt32 tipo3 # Subclasse do jogador; vide classes "t_*" em config/tipo.int
+const p_agressivo = int($perm_[jogperm].batalha)
 const p_naoseguir = !jogconfig.5
 const p_imortal = jogconfig.14
 const j_imortal = jogconfig.14
@@ -132,6 +135,10 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
     p_sede = intmax($miscfome.semfome, p_sede - 1)
     p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida = intmin(1, p_bebida - 1)
+  senao !$perm_[jogperm].fome # Sem fome/sede
+    p_sede = intmax($miscfome.semfome, p_sede - 1)
+    p_fome = intmax($miscfome.semfome, p_fome - 1)
+    p_bebida -= 2
   senao pnivel < config:fomeini || pnivel >= config:fomefim || dono.s_fome == 1 # Não sente
     p_sede = intmax($miscfome.semfome, p_sede - 1)
     p_fome = intmax($miscfome.semfome, p_fome - 1)
@@ -291,7 +298,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   ret !lista.total, 0
 # Obtém o tempo do jogo salvo, em dias, e salva o jogo
   int32 tempo
-  se jogconfig.23
+  se jogperm == "admin"
     tempo = config:salvaadmin
   senao pnivel < config:nivelveterano
     tempo = config:salvainiciante
@@ -315,4 +322,4 @@ func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)
   jogconfig.14 && (bitver |= 0x107C) # Propriedade config +imortal
   jogconfig.18 && (bitinv |= 128) # Propriedade config +invsala
-  jogconfig.23 && (bitver |= 128) # Se é administrador
+  $perm_[jogperm].c_config & 8 && (bitver |= 128) # Ver personagens com config +invsala

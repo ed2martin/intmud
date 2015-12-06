@@ -1,5 +1,5 @@
 classe adm_area
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Comandos de áreas\b\n\
   \c2LAREA\b     Lista áreas existentes\n\
   \c2CAREA\b     Cria uma área\n\
@@ -8,7 +8,7 @@ const txtajuda = "\b\c3Comandos de áreas\b\n\
 
 
 classe adm_sala
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
 Rua de uma cidade - 2mv\n\
@@ -48,7 +48,7 @@ const txtajuda = "\b\c3Comandos de salas\b\n\
 
 
 classe adm_larea
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Larea\b\n\
 Sintaxe: LAREA [nome]\n\
 Lista as áreas que começam com o nome especificado.\n\
@@ -69,7 +69,7 @@ func escr # Listar áreas
 
 
 classe adm_carea
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Carea\b\n\
 Sintaxe: CAREA <nome>\n\
 Cria uma área com o nome especificado.\n\
@@ -95,7 +95,7 @@ func escr # Criar área
 
 
 classe adm_aarea
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Aarea\b\n\
 Sintaxe: AAREA <nome>\n\
 Apaga a área com o nome especificado, desde que esteja vazia\n\
@@ -137,7 +137,7 @@ func escr # Apagar área
 
 
 classe adm_earea
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Earea\b\n\
 Sintaxe: EAREA [nome]\n\
 Edita a área com o nome especificado. Se o nome for omitido, edita a área\n\
@@ -160,7 +160,7 @@ func escr # Editar área
 
 
 classe adm_lsala
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lsala\b\n\
 Sintaxe: LSALA [nome]\n\
 Lista as salas que começam com o nome especificado.\n\
@@ -181,7 +181,7 @@ func escr # Listar salas
 
 
 classe adm_cdir
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Cdir\b\n\
 Sintaxe: CDIR <direção>\n\
 Cria sala na direção especificada. Cria automaticamente uma saída com\n\
@@ -229,7 +229,7 @@ func escr # Criar sala na direção especificada
 
 
 classe adm_csala
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Csala\b\n\
 Sintaxe: CSALA <nome>\n\
 Cria uma sala. Nome deve ser o nome de uma área ou da sala.\n\
@@ -273,7 +273,7 @@ func escr # Criar sala
 
 
 classe adm_asala
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Asala\b\n\
 Sintaxe: ASALA <nomes das salas>\n\
 Apaga uma ou mais salas, mas não apaga as saídas das outras salas para\n\
@@ -324,7 +324,7 @@ func passo # Confirmar que quer apagar sala
 
 
 classe adm_esala
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Esala\b\n\
 Sintaxe: ESALA [nome]\n\
 Edita a sala com o nome especificado. Se o nome for omitido, edita a sala\n\
@@ -344,7 +344,7 @@ func escr # Editar sala
 
 
 classe adm_ldesc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ldesc\b\n\
 Sintaxe: LDESC\n\
 Lista as descrições extras sala sala aonde você está."
@@ -365,7 +365,7 @@ func escr # Listar descrições extras
 
 
 classe adm_edesc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Edesc\b\n\
 Sintaxe: EDESC <nome da descrição>\n\
 Edita uma descrição extra da sala aonde você está.\n\
@@ -396,7 +396,7 @@ func escr # Editar descrição extra
 
 
 classe adm_adesc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Adesc\b\n\
 Sintaxe: ADESC <nome da descrição>\n\
 Apaga uma descrição extra da sala aonde você está."

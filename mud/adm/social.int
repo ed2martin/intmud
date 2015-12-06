@@ -1,5 +1,5 @@
 classe adm_social
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Comandos sociais\b\n\
   \c2LSOC\b      Lista comandos sociais existentes\n\
   \c2CSOC\b      Cria um social\n\
@@ -8,7 +8,7 @@ const txtajuda = "\b\c3Comandos sociais\b\n\
 
 
 classe adm_lsoc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lsoc\b\n\
 Sintaxe: LSOC [nome]\n\
 Lista os comandos sociais que começam com o nome especificado.\n\
@@ -35,7 +35,7 @@ func escr # Listar sociais
 
 
 classe adm_csoc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Csoc\b\n\
 Sintaxe: CSOC <nome>\n\
 Cria um comando social. Nome pode conter letras e números."
@@ -56,7 +56,7 @@ func escr # Criar comando social
 
 
 classe adm_esoc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Esoc\b\n\
 Sintaxe: ESOC <nome>\n\
 Edita o comando social com o nome especificado."
@@ -74,7 +74,7 @@ func escr # Editar social
 
 
 classe adm_asoc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Asoc\b\n\
 Sintaxe: ASOC <nome do comando social>\n\
 Apaga o comando social com o nome especificado."

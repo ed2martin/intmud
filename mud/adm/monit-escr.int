@@ -1,5 +1,6 @@
 classe adm_monit
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = int($perm_[arg0.jogperm].c_monit) >= 2 ? este
 const txtajuda = "\b\c3Monit\b\n\
 Sintaxe: MONIT [jogador]\n\
 Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
@@ -21,7 +22,8 @@ func escr
       arg0.msg("Deixando de monitorar " + t1)
       t1 = "*** " + arg0.sock.nome + " deixa de monitorar " + t1
       epara item.ini("un "), txt1(item.txt) == "un", item.depois
-        item.obj.jogconfig.23 && item.obj != arg0.sock && item.obj.msg(t1)
+        continuar !$perm_[item.obj.jogperm].c_monit
+        item.obj != arg0.sock && item.obj.msg(t1)
       efim
       $misclog.cmdlog("monit " + arg0.nome + ":")
     senao
@@ -37,7 +39,8 @@ func escr
     txt100 t1
     t1 = "*** " + arg0.sock.nome + " monitora " + r.nome
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.23 && item.obj != arg0.sock && item.obj.msg(t1)
+      continuar !$perm_[item.obj.jogperm].c_monit
+      item.obj != arg0.sock && item.obj.msg(t1)
     efim
     imonit = r.lmonit.addini(arg0.sock)
     arg0.msg("Monitorando " + r.nome)
@@ -46,7 +49,8 @@ func escr
 
 
 classe adm_escr
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = int($perm_[arg0.jogperm].c_monit) >= 3 ? este
 const txtajuda = "\b\c3Escr\b\n\
 Sintaxe: ESCR <comando>\n\
 Digita um comando no teclado do usuário sendo monitorado."
@@ -54,6 +58,8 @@ Digita um comando no teclado do usuário sendo monitorado."
 func escr
   se !arg0.sock.imonit
     arg0.msg("Você não está monitorando ninguém")
+  senao arg0.jogperm != "admin" && arg0.sock.imonit.objlista.jogperm == "admin"
+    arg0.msg("Para escrever em Admin você também precisa ser Admin")
   senao !arg1
     arg0.msg("Tecle a mensagem após ESCR")
   senao

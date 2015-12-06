@@ -1,5 +1,5 @@
 classe adm_hab
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Habilidades e magias\b\n\
   \c2LHAB\b      Lista habilidades existentes\n\
   \c2LMAG\b      Lista magias existentes\n\
@@ -13,7 +13,7 @@ const txtajuda = "\b\c3Habilidades e magias\b\n\
 
 
 classe adm_lhab
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lhab\b\n\
 Sintaxe: LHAB [nome]\n\
 Lista as habilidades que começam com o nome especificado.\n\
@@ -71,7 +71,7 @@ func escr # Listar habilidades
 
 
 classe adm_lmag
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lmag\b\n\
 Sintaxe: LMAG [nome]\n\
 Lista as magias que começam com o nome especificado.\n\
@@ -129,7 +129,7 @@ func escr # Listar magias
 
 
 classe adm_chab
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Chab\b\n\
 Sintaxe: CHAB <nome>\n\
 Cria uma habilidade com o nome especificado.\n\
@@ -240,7 +240,7 @@ func escr # Criar magia
 
 
 classe adm_ahab
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ahab\b\n\
 Sintaxe: AHAB <nomes das habilidades>\n\
 Apaga uma ou mais habilidades, com os nomes especificados.\n\
@@ -293,7 +293,7 @@ func passo # Confirmar que quer apagar habilidade
 
 
 classe adm_amag
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Amag\b\n\
 Sintaxe: AMAG <nomes das magias>\n\
 Apaga uma ou mais magias, com os nomes especificados.\n\
@@ -346,7 +346,7 @@ func passo # Confirmar que quer apagar magia
 
 
 classe adm_ehab
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ehab\b\n\
 Sintaxe: EHAB <nome>\n\
 Edita a habilidade com o nome especificado."
@@ -367,7 +367,7 @@ func escr # Editar habilidade
 
 
 classe adm_emag
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Emag\b\n\
 Sintaxe: EMSG <nome>\n\
 Edita a magia com o nome especificado."
@@ -388,7 +388,7 @@ func escr # Editar magia
 
 
 classe adm_atklog
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Atklog\b\n\
 Sintaxe: ATKLOG\n\
 Mostra os cálculos de batalha no próximo ataque que o seu personagem fizer\n\

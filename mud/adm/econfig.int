@@ -1,5 +1,5 @@
 classe adm_econfig
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Econfig\b\nSintaxe: ECONFIG\nEdita as configurações do MUD."
 
 func escr
@@ -41,103 +41,71 @@ const vari5 = "salasav"
 const nome6 = "Limites"
 const tipo6 = "menu_econfig_limites--"
 #
-const nome7 = "Salvar personagem"
+const nome7 = "Criar e salvar personagem"
 const tipo7 = "menu_econfig_salvar--"
 #
-const nome8 = "Nomes proibidos"
-const info8 = "Nomes não permitidos para personagens dos jogadores, uma linha por nome"
-const tipo8 = "opc_texto--"
+const nome8 = "Atributos dos personagens"
+const info8 = "Valor inicial dos atributos para todos os personagens"
+const tipo8 = "opc_atribcfg--"
 const clas8 = "config"
-const vari8 = "nomesnao"
-const exec8 = "admnomesnao:atualiza"
+const vari8 = "atribcfg"
 #
-const nome9 = "E-mail"
-const info9 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
-e procure por uma linha que contém o texto z_email"
-const tipo9 = "opc_opcao--"
+const nome9 = "Fome e sede nível"
+const info9 = "A partir de que nível sente fome e sede"
+const tipo9 = "opc_numero--"
 const clas9 = "config"
-const vari9 = "email"
-const extr9 = "Não pede\nOpcional\nObrigatório"
+const vari9 = "fomeini"
 #
-const nome10 = "Config ao criar personagem"
-const info10 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
-const tipo10 = "opc_vetor--"
+const nome10 = "Sem fome e sede nível"
+const info10 = "A partir de que nível não sente mais fome e sede"
+const tipo10 = "opc_numero--"
 const clas10 = "config"
-const vari10 = "jogconfig"
-const extr10 = "desc\n\
-saidas\n\
-cores\n\
-acento\n\
-chat\n\
-seguir\n\
-prompt\n\
-bprompt\n\
-telepatia\n\
-emocao\n\
-moedas\nnovatos"
+const vari10 = "fomefim"
 #
-const nome11 = "Atributos dos personagens"
-const info11 = "Valor inicial dos atributos para todos os personagens"
-const tipo11 = "opc_atribcfg--"
+const nome11 = "Avisar fome e sede"
+const info11 = "Se deve avisar a todos na mesma sala quando está com fome ou sede moderada\n\
+Fome e sede extremos sempre avisa"
+const tipo11 = "opc_opcao--"
 const clas11 = "config"
-const vari11 = "atribcfg"
+const vari11 = "fomemsg"
+const extr11 = "Somente jogador\nTodos"
 #
-const nome12 = "Fome e sede nível"
-const info12 = "A partir de que nível sente fome e sede"
+const nome12 = "Aulas por nível"
+const info12 = "Quantos pontos de aulas ganha quando sobe de nível\n\
+Se 0, o comando aprender não usa pontos de aula"
 const tipo12 = "opc_numero--"
 const clas12 = "config"
-const vari12 = "fomeini"
+const vari12 = "aulas"
+const extr12 = "0 1000"
 #
-const nome13 = "Sem fome e sede nível"
-const info13 = "A partir de que nível não sente mais fome e sede"
-const tipo13 = "opc_numero--"
+const nome13 = "Tipos de produtos"
+const info13 = "Os tipos de produtos (itens) que vendedores podem comprar"
+const tipo13 = "opc_txtopcao--"
 const clas13 = "config"
-const vari13 = "fomefim"
+const vari13 = "produtos"
+const extr13 = "1 30"
 #
-const nome14 = "Avisar fome e sede"
-const info14 = "Se deve avisar a todos na mesma sala quando está com fome ou sede moderada\n\
-Fome e sede extremos sempre avisa"
-const tipo14 = "opc_opcao--"
-const clas14 = "config"
-const vari14 = "fomemsg"
-const extr14 = "Somente jogador\nTodos"
+const nome14 = "Arquivos de log"
+const tipo14 = "menu_econfig_log--"
 #
-const nome15 = "Aulas por nível"
-const info15 = "Quantos pontos de aulas ganha quando sobe de nível\n\
-Se 0, o comando aprender não usa pontos de aula"
-const tipo15 = "opc_numero--"
-const clas15 = "config"
-const vari15 = "aulas"
-const extr15 = "0 1000"
+const nome15 = "Mensagens"
+const tipo15 = "menu_econfig_msg1--"
 #
-const nome16 = "Tipos de produtos"
-const info16 = "Os tipos de produtos (itens) que vendedores podem comprar"
-const tipo16 = "opc_txtopcao--"
-const clas16 = "config"
-const vari16 = "produtos"
-const extr16 = "1 30"
+const nome16 = "Conversa entre jogadores"
+const tipo16 = "menu_econfig_msg2--"
 #
-const nome17 = "Arquivos de log"
-const tipo17 = "menu_econfig_log--"
+const nome17 = "Comandos"
+const tipo17 = "menu_econfig_comandos--"
 #
-const nome18 = "Mensagens"
-const tipo18 = "menu_econfig_msg1--"
+const nome18 = "Ataques e batalha"
+const tipo18 = "menu_econfig_ataques--"
 #
-const nome19 = "Conversa entre jogadores"
-const tipo19 = "menu_econfig_msg2--"
+const nome19 = "Casas dos jogadores"
+const tipo19 = "menu_econfig_casas--"
 #
-const nome20 = "Comandos"
-const tipo20 = "menu_econfig_comandos--"
-#
-const nome21 = "Ataques e batalha"
-const tipo21 = "menu_econfig_ataques--"
-#
-const nome22 = "Casas dos jogadores"
-const tipo22 = "menu_econfig_casas--"
-#
-const nome23 = "Posições para vestir itens"
-const info23 = "Os nomes das posições"
-const tipo23 = "menu_econfig_vestir--"
+const nome20 = "Posições para vestir itens"
+const info20 = "Os nomes das posições"
+const tipo20 = "menu_econfig_vestir--"
 
 
 classe menu_econfig_ativar
@@ -302,52 +270,94 @@ const extr7 = "5 5000"
 
 classe menu_econfig_salvar
 herda comando_menu
-const titulo = "Salvar personagem"
+const titulo = "Criar e salvar personagem"
 const menufim = "menu_econfig"
 const colunas = 35
 #
-const nome1 = "Salvar a partir do nível"
-const info1 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
-Se for um número acima de 65535, quem não tem jogo salvo não salva"
-const tipo1 = "opc_numero--"
+const nome1 = "Nomes proibidos"
+const info1 = "Nomes não permitidos para personagens dos jogadores, uma linha por nome"
+const tipo1 = "opc_texto--"
 const clas1 = "config"
-const vari1 = "salvarnivel"
+const vari1 = "nomesnao"
+const exec1 = "admnomesnao:atualiza"
 #
-const nome2 = "Salvar ao criar"
-const tipo2 = "opc_simnao--"
+const nome2 = "E-mail"
+const info2 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
+e procure por uma linha que contém o texto z_email"
+const tipo2 = "opc_opcao--"
 const clas2 = "config"
-const vari2 = "salvacria"
+const vari2 = "email"
+const extr2 = "Não pede\nOpcional\nObrigatório"
 #
-const nome3 = "Veterano a partir do nível"
-const info3 = "A partir de que nível um jogador é considerado veterano"
-const tipo3 = "opc_numero--"
+const nome3 = "Config"
+const info3 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
+const tipo3 = "opc_vetor--"
 const clas3 = "config"
-const vari3 = "nivelveterano"
-const extr3 = "0 65535"
+const vari3 = "jogconfig"
+const extr3 = "desc\n\
+saidas\n\
+cores\n\
+acento\n\
+chat\n\
+seguir\n\
+prompt\n\
+bprompt\n\
+telepatia\n\
+emocao\n\
+moedas\nnovatos"
 #
-const nome4 = "Dias salvar iniciante"
-const info4 = "Quantos dias personagens de iniciantes ficam salvos\n\
-Essa opção é atualizada quando um jogo é salvo"
-const tipo4 = "opc_numero--"
+const nome4 = "Autorizar personagens"
+const info4 = "Se sim, após criar personagem, ele fica no grupo de permissões Autorizar\n\
+Autorizar significa usar o comando MPERM para mudar a permissão para Jog\n\
+Para definir o que esses jogadores podem fazer, tecle EPERM AUTORIZAR"
+const tipo4 = "opc_simnao--"
 const clas4 = "config"
-const vari4 = "salvainiciante"
-const extr4 = "1 10000"
+const vari4 = "autorizar"
 #
-const nome5 = "Dias salvar veterano"
-const info5 = "Quantos dias personagens de veteranos ficam salvos\n\
-Essa opção é atualizada quando um jogo é salvo"
+const titu5 = " * Salvar"
+#
+const nome5 = "Salvar a partir do nível"
+const info5 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
+Se for um número acima de 65535, quem não tem jogo salvo não salva"
 const tipo5 = "opc_numero--"
 const clas5 = "config"
-const vari5 = "salvaveterano"
-const extr5 = "1 10000"
+const vari5 = "salvarnivel"
 #
-const nome6 = "Dias salvar admin"
-const info6 = "Quantos dias personagens de administradores ficam salvos\n\
-Essa opção é atualizada quando um jogo é salvo"
-const tipo6 = "opc_numero--"
+const nome6 = "Salvar ao criar"
+const tipo6 = "opc_simnao--"
 const clas6 = "config"
-const vari6 = "salvaadmin"
-const extr6 = "1 10000"
+const vari6 = "salvacria"
+#
+const nome7 = "Veterano a partir do nível"
+const info7 = "A partir de que nível um jogador é considerado veterano"
+const tipo7 = "opc_numero--"
+const clas7 = "config"
+const vari7 = "nivelveterano"
+const extr7 = "0 65535"
+#
+const nome8 = "Dias salvar iniciante"
+const info8 = "Quantos dias personagens de iniciantes ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo8 = "opc_numero--"
+const clas8 = "config"
+const vari8 = "salvainiciante"
+const extr8 = "1 10000"
+#
+const nome9 = "Dias salvar veterano"
+const info9 = "Quantos dias personagens de veteranos ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo9 = "opc_numero--"
+const clas9 = "config"
+const vari9 = "salvaveterano"
+const extr9 = "1 10000"
+#
+const nome10 = "Dias salvar admin"
+const info10 = "Quantos dias personagens de administradores ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo10 = "opc_numero--"
+const clas10 = "config"
+const vari10 = "salvaadmin"
+const extr10 = "1 10000"
 
 
 classe menu_econfig_log
@@ -455,115 +465,108 @@ const tipo3 = "opc_texto--"
 const clas3 = "config"
 const vari3 = "apresban2"
 #
-const nome4 = "Quando alguém entra avisar"
-const info4 = "Quem deve ser informado quando um jogador entra ou sai"
-const tipo4 = "opc_opcao--"
+const nome4 = "Começa a amanhecer"
+const tipo4 = "opc_linha--"
 const clas4 = "config"
-const vari4 = "entrainfo"
-const extr4 = "Ninguém\nSomente administradores\nTodos"
+const vari4 = "horamsg5"
 #
-const nome5 = "Começa a amanhecer"
+const nome5 = "Amanheceu"
 const tipo5 = "opc_linha--"
 const clas5 = "config"
-const vari5 = "horamsg5"
+const vari5 = "horamsg6"
 #
-const nome6 = "Amanheceu"
+const nome6 = "Começa a escurecer"
 const tipo6 = "opc_linha--"
 const clas6 = "config"
-const vari6 = "horamsg6"
+const vari6 = "horamsg17"
 #
-const nome7 = "Começa a escurecer"
+const nome7 = "Escureceu"
 const tipo7 = "opc_linha--"
 const clas7 = "config"
-const vari7 = "horamsg17"
+const vari7 = "horamsg18"
 #
-const nome8 = "Escureceu"
+const nome8 = "Sobe nível perso"
+const info8 = "$1 é o nome do personagem visível a todos, $m é o nível"
 const tipo8 = "opc_linha--"
 const clas8 = "config"
-const vari8 = "horamsg18"
+const vari8 = "nivelmsg1"
 #
-const nome9 = "Sobe nível perso"
+const nome9 = "Sobe nível outros"
 const info9 = "$1 é o nome do personagem visível a todos, $m é o nível"
 const tipo9 = "opc_linha--"
 const clas9 = "config"
-const vari9 = "nivelmsg1"
+const vari9 = "nivelmsg2"
 #
-const nome10 = "Sobe nível outros"
-const info10 = "$1 é o nome do personagem visível a todos, $m é o nível"
+const nome10 = "Comando Echo"
 const tipo10 = "opc_linha--"
 const clas10 = "config"
-const vari10 = "nivelmsg2"
+const vari10 = "echomsg"
 #
-const nome11 = "Comando Echo"
+const nome11 = "Comando SEcho"
 const tipo11 = "opc_linha--"
 const clas11 = "config"
-const vari11 = "echomsg"
+const vari11 = "sechomsg"
 #
-const nome12 = "Comando SEcho"
+const nome12 = "Comando JEcho"
 const tipo12 = "opc_linha--"
 const clas12 = "config"
-const vari12 = "sechomsg"
+const vari12 = "jecho1msg"
 #
-const nome13 = "Comando JEcho"
+const nome13 = "Enviou mensagem JEcho"
 const tipo13 = "opc_linha--"
 const clas13 = "config"
-const vari13 = "jecho1msg"
+const vari13 = "jecho2msg"
 #
-const nome14 = "Enviou mensagem JEcho"
+const nome14 = "Canal Rezar"
 const tipo14 = "opc_linha--"
 const clas14 = "config"
-const vari14 = "jecho2msg"
+const vari14 = "rezar1msg"
 #
-const nome15 = "Canal Rezar"
+const nome15 = "Comando rezar"
 const tipo15 = "opc_linha--"
 const clas15 = "config"
-const vari15 = "rezar1msg"
+const vari15 = "rezar2msg"
 #
-const nome16 = "Comando rezar"
+const nome16 = "Canal Rezou"
 const tipo16 = "opc_linha--"
 const clas16 = "config"
-const vari16 = "rezar2msg"
+const vari16 = "rezou1msg"
 #
-const nome17 = "Canal Rezou"
+const nome17 = "Comando Rezou"
 const tipo17 = "opc_linha--"
 const clas17 = "config"
-const vari17 = "rezou1msg"
+const vari17 = "rezou2msg"
 #
-const nome18 = "Comando Rezou"
+const nome18 = "Canal Bug"
 const tipo18 = "opc_linha--"
 const clas18 = "config"
-const vari18 = "rezou2msg"
+const vari18 = "bug1msg"
 #
-const nome19 = "Canal Bug"
+const nome19 = "Comando Bug"
 const tipo19 = "opc_linha--"
 const clas19 = "config"
-const vari19 = "bug1msg"
+const vari19 = "bug2msg"
 #
-const nome20 = "Comando Bug"
+const nome20 = "Canal Ideia"
 const tipo20 = "opc_linha--"
 const clas20 = "config"
-const vari20 = "bug2msg"
+const vari20 = "ideia1msg"
 #
-const nome21 = "Canal Ideia"
+const nome21 = "Comando Ideia"
 const tipo21 = "opc_linha--"
 const clas21 = "config"
-const vari21 = "ideia1msg"
+const vari21 = "ideia2msg"
 #
-const nome22 = "Comando Ideia"
-const tipo22 = "opc_linha--"
+const nome22 = "Chegou ao nível máximo"
+const tipo22 = "opc_texto--"
 const clas22 = "config"
-const vari22 = "ideia2msg"
+const vari22 = "nmaxmsg"
 #
-const nome23 = "Chegou ao nível máximo"
-const tipo23 = "opc_texto--"
+const nome23 = "Sala perigosa por perto"
+const info23 = "Aparece após título e descrição da sala. Se estiver vazio, não aparece."
+const tipo23 = "opc_linha--"
 const clas23 = "config"
-const vari23 = "nmaxmsg"
-#
-const nome24 = "Sala perigosa por perto"
-const info24 = "Aparece após título e descrição da sala. Se estiver vazio, não aparece."
-const tipo24 = "opc_linha--"
-const clas24 = "config"
-const vari24 = "perigomsg"
+const vari23 = "perigomsg"
 
 
 classe menu_econfig_msg2
@@ -787,33 +790,27 @@ const clas21 = "config"
 const vari21 = "exp_renascer"
 const extr21 = "1 1000"
 #
-const nome22 = "Quem mostra admin"
-const info22 = "Se não administradores podem saber quem é administrador teclando QUEM"
+const nome22 = "Olhar mostra nível"
+const info22 = "Se os comandos Olhar e Ver mostram o nível do personagem"
 const tipo22 = "opc_simnao--"
 const clas22 = "config"
-const vari22 = "mostraadm"
+const vari22 = "olharnivel"
 #
-const nome23 = "Olhar mostra nível"
-const info23 = "Se os comandos Olhar e Ver mostram o nível do personagem"
+const nome23 = "Olhar mostra raça e classe"
+const info23 = "Se os comandos Olhar e Ver mostram a raça e a classe do personagem"
 const tipo23 = "opc_simnao--"
 const clas23 = "config"
-const vari23 = "olharnivel"
+const vari23 = "olhartipo"
 #
-const nome24 = "Olhar mostra raça e classe"
-const info24 = "Se os comandos Olhar e Ver mostram a raça e a classe do personagem"
-const tipo24 = "opc_simnao--"
+const nome24 = "PTitulo a partir do nível"
+const tipo24 = "opc_numero--"
 const clas24 = "config"
-const vari24 = "olhartipo"
+const vari24 = "ptitulonivel"
 #
-const nome25 = "PTitulo a partir do nível"
+const nome25 = "PDesc a partir do nível"
 const tipo25 = "opc_numero--"
 const clas25 = "config"
-const vari25 = "ptitulonivel"
-#
-const nome26 = "PDesc a partir do nível"
-const tipo26 = "opc_numero--"
-const clas26 = "config"
-const vari26 = "pdescnivel"
+const vari25 = "pdescnivel"
 
 
 classe menu_econfig_ataques

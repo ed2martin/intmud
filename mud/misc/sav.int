@@ -75,7 +75,7 @@ func horatempo_exec # Atualiza hora MUD
     debug d
     indiceitem item
     epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-      savlista.addfim(item.obj)
+      !$perm_[item.obj.jogperm].c_salvar && savlista.addfim(item.obj)
     efim
     prog p
     epara p.iniclasse("c_"), p.lin, p.depois

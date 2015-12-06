@@ -484,7 +484,7 @@ func passo # Alterando uma opção de uma lista de opções
     x = arg1, t.addfim(arg0.var.opcextra)
     se arg1 != x || x < 0 || x >= t.linhas
       arg0.msg("Opção inválida")
-      ret p_opcao("\b")
+      ret passo(arg0, "\b")
     fimse
     t.remove(x)
     txt100 lin

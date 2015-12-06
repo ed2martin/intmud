@@ -15,7 +15,10 @@ Veja também o comando CONFIG"
 
 func escr
   ret !arg0.contr.dono.socktot, nulo
-  se arg0.pnivel < config:emocaonivel
+  refvar perm_msg = $perm_[arg0.jogperm].c_social
+  se perm_msg
+    arg0.msg(perm_msg)
+  senao arg0.pnivel < config:emocaonivel
     arg0.msg("Para usar o comando EMOÇÃO você precisa estar no nível " + config:emocaonivel + \
 ".")
   senao !arg1

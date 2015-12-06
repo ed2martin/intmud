@@ -16,6 +16,8 @@ int8 achou # Quantos itens achou
 txt100 erro # Mensagem de erro
 
 func escr
+  refvar msg_perm = $perm_[arg0.jogperm].item
+  ret msg_perm, arg0.msg(msg_perm)
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_dar(arg0, arg1), nulo

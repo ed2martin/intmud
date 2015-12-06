@@ -1,5 +1,6 @@
 classe adm_matar1
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_matar ? este
 const txtajuda = "\b\c3Matar1\b\n\
 Sintaxe: MATAR1 <personagem ou item>\n\
 Apaga um personagem ou item da mesma sala.\n\
@@ -40,21 +41,15 @@ func escr
 
 
 classe adm_matar2
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_matar ? este
 const txtajuda = "\b\c3Matar2\b\n\
 Sintaxe: MATAR2 <personagem>\n\
 Mata instantaneamente um personagem."
 
 func escr
-  listaobj l
-  ref r
-  nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1000000)
-  l.addfim(arg0.dono.dentro2)
-  enquanto l
-    r = l.objini, l.ini.remove
-    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    arg0.msg("Matando " + r.nome), r.morreu(arg0)
-    ret
-  efim
-  arg0.msg("Não há nenhum personagem chamado " + arg1)
+  ret !arg1, arg0.msg("Matar quem?")
+  refvar r = misc:objpersosala(arg0, arg1)
+  ret !r, arg0.msg("Não há nenhum personagem chamado " + arg1)
+  arg0.msg("Matando " + r.nome)
+  r.morreu(arg0)

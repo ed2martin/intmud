@@ -1,5 +1,5 @@
 classe adm_lsai
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lsai\b\nSintaxe: LSAI\nMostra as saídas da sala aonde você está."
 
 func escr # Listar saídas
@@ -20,7 +20,7 @@ func escr # Listar saídas
 
 
 classe adm_asai
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Asai\b\n\
 Sintaxe: ASAI <direção>\n\
 Apaga a saída na direção especificada."
@@ -54,7 +54,7 @@ func escr # Apagar saída
 
 
 classe adm_csai
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Csai\b\n\
 Sintaxe: CSAI <direção> <sala>\n\
 Cria uma saída na sala aonde você está, na direção especificada.\n\
@@ -100,7 +100,7 @@ const escr = escr1(arg0, arg1, "2") # Criar saída completa
 
 
 classe adm_esai
-herda comando_adm, comando_comum
+herda comando_adm
 
 func escr # Editar saída
   prog p

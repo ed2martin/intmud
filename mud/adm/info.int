@@ -1,5 +1,6 @@
 classe adm_info
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].i_perso ? este
 const txtajuda = "\b\c3Info\b\n\
 Sintaxe: INFO [personagem ou item]\n\
 Mostra informações sobre um personagem ou item, na sala ou que você carrega.\n\
@@ -104,6 +105,7 @@ func nobj # Retorna o nome de um objeto
 
 classe adm_ivar
 herda adm_info
+const objcmd = $perm_[arg0.jogperm].c_ivar ? este
 const txtajuda = "\b\c3Ivar\b\n\
 Sintaxe: IVAR [personagem ou item]\n\
 Mostra as variáveis criadas dinamicamente de um personagem ou item,\n\
@@ -123,7 +125,8 @@ func info # Usado por escr
 
 
 classe adm_ihab
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].i_perso ? este
 const txtajuda = "\b\c3Ihab\b\n\
 Sintaxe: IHAB [personagem] [número do animal]\n\
 Informa as habilidades de um personagem na sala."
@@ -150,7 +153,8 @@ func escr
 
 
 classe adm_imag
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].i_perso ? este
 const txtajuda = "\b\c3Imag\b\n\
 Sintaxe: IMAG [personagem] [número do animal]\n\
 Informa as magias de um personagem na sala."
@@ -177,7 +181,8 @@ func escr
 
 
 classe adm_ief
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].i_perso ? este
 const txtajuda = "\b\c3Ief\b\n\
 Sintaxe: IEF [personagem] [número do animal]\n\
 Informa os efeitos afetando um personagem na sala."
@@ -203,7 +208,8 @@ func escr
 
 
 classe adm_ijog
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].i_perso ? este
 const txtajuda = "\b\c3Ijog\b\n\
 Sintaxe: IJOG\n\
          IJOG <jogador>\n\
@@ -214,6 +220,7 @@ Sem argumentos, mostra aonde cada jogador online está."
 sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem
 txt100 cnome # Para obter o nome codificado
+sav txt20 jogperm
 sav txt40 salanome # Nome da sala
 sav int1 psexo
 sav uint16 pnivel
@@ -268,9 +275,9 @@ func escr
 # Mostra os dados do personagem
   textotxt t
   txt100 lin
-  lin = p.jogconfig.23 ? "\b\c6Administrador" : "\b\c6Jogador"
-  lin += p.psexo ? " " : "a "
-  t.addfim(lin + p.nome + (p.var.z_titulo ? ", " + p.var.z_titulo) + "\b")
+  lin = "\b\c6Jogador" + (p.psexo ? " " : "a ") + p.nome
+  t.addfim(lin + (p.var.z_titulo ? ", " + p.var.z_titulo) + "\b")
+  p.jogperm && p.jogperm != "jog" && t.addfim("Permissão:    " + p.jogperm)
   t.addfim("Nível:        " + (p.prenascer ? "R" + p.prenascer + " ") + p.pnivel)
   p.var.z_moedas_ && t.addfim("Moedas:       " + p.var.z_moedas_)
   lin = ""
@@ -312,21 +319,22 @@ func lugar
 
 
 classe adm_inv
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Inv\b\n\
 Sintaxe: INV [personagem] [número do animal]\n\
 Mostra os itens que um personagem da sala está carregando."
 
 
 classe adm_estat
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Estat\b\n\
 Sintaxe: ESTAT [personagem] [número do animal]\n\
 Mostra estatísticas e diversas informações sobre um personagem da sala."
 
 
 classe adm_hist
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].i_perso ? este
 const txtajuda = "\b\c3Hist\b\n\
 Sintaxe: HIST [personagem] [número do animal]\n\
 Mostra o histórico de um personagem na mesma sala ou animal desse\n\

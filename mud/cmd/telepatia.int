@@ -10,14 +10,20 @@ Veja também os comandos CONFIG e IGNORAR."
 const msg = arg0.msg($mens.proc(arg1, arg0))
 
 func escr
-  ret !arg0.jogconfig.8, arg0.msg("Canal Telepatia está desabilitado.")
-  ret !arg1, arg0.msg("Escrever para quem?")
+  refvar perm = $perm_[arg0.jogperm]
+  se perm.c_telepatia
+    ret arg0.msg(perm.c_telepatia)
+  senao !arg0.jogconfig.8
+    ret arg0.msg("Canal Telepatia está desabilitado; para habilitar tecle CONFIG +TELEPATIA")
+  senao !arg1
+    ret arg0.msg("Escrever para quem?")
+  fimse
   indiceitem item
   item.ini("un " + txts(txtnome(txt1(arg1))))
   $mens.p(arg0, item.obj)
   $mens.mens = txt2(arg1)
   refvar perso = item.obj.perso
-  se !perso || perso.jogconfig.17 && !arg0.jogconfig.23
+  se !perso || perso.jogconfig.17 && !(perm.c_config & 4)
     msg(arg0, "Jogador inexistente ou ausente: " + txt1(arg1))
   senao perso == arg0
     msg(arg0, "Escrever para você mesm$s?")
@@ -27,7 +33,7 @@ func escr
     msg(arg0, "Você está ignorando $C.")
   senao !perso.jogconfig.8
     msg(arg0, "$C desabilitou o canal Telepatia.")
-  senao arg0.jogconfig.17 && !perso.jogconfig.23
+  senao arg0.jogconfig.17 && !($perm_[perso.jogperm].c_config & 4)
     msg(arg0, "Você está invisível para $C.")
   senao !txt2(arg1)
     msg(arg0, "Escrever o quê?")

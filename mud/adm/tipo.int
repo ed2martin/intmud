@@ -1,5 +1,5 @@
 classe adm_tipo
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
   \c2LTIPO\b     Lista tipos de personagens\n\
   \c2CTIPO\b     Cria um tipo de personagem\n\
@@ -9,14 +9,14 @@ const txtajuda = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
 
 
 classe adm_ltipo
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ltipo\b\n\
 Sintaxe: LTIPO [nome]\n\
 Lista os tipos de personagens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os personagens.\n\
 Nota: tipos de personagens são raça e classe."
 
-func escr # Listar tipos
+func escr
   prog p
   txt100 lin
   se !p.iniclasse("t_" + arg1)
@@ -52,20 +52,20 @@ func escr # Listar tipos
 
 
 classe adm_ctipo
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ctipo\b\n\
 Sintaxe: CTIPO <nome>\n\
 Cria um tipo de personagem com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio.\n\
 Nota: tipos de personagens são raça e classe."
 
-func escr # Criar tipo
+func escr
   prog p
   txt80 nome
   uint16 num
-# Checa se digitou nome do ataque
+# Checa se digitou nome do tipo
   se arg1 == ""
-    ret arg0.msg("Tecle o nome do ataque após CTIPO")
+    ret arg0.msg("Tecle o nome do tipo após CTIPO")
   fimse
 # Checa se nome válido
   nome = txte(txtremove(arg1, EMDSA))
@@ -86,13 +86,13 @@ func escr # Criar tipo
 
 
 classe adm_atipo
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Atipo\b\n\
 Sintaxe: ATIPO <nome>\n\
 Apaga o tipo de personagem com o nome especificado.\n\
 Nota: tipos de personagens são raça e classe."
 
-func escr # Apagar tipo
+func escr
   prog p
   se arg1 == ""
     arg0.msg("Tecle um nome após ATIPO")
@@ -121,13 +121,13 @@ func passo # Confirmar que quer apagar tipo
 
 
 classe adm_etipo
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Etipo\b\n\
 Sintaxe: ETIPO <nome>\n\
 Edita o tipo de personagem com o nome especificado.\n\
 Nota: tipos de personagens são raça e classe."
 
-func escr # Editar tipo
+func escr
   prog p
   se arg1 == ""
     arg0.msg("Tecle o nome do tipo após ETIPO")
@@ -272,19 +272,14 @@ equip1 equip2 equip3 nmin nmax evoluir inivar"
 const iniclasse = !$[arg0] && criar(arg0)
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
-  ref r
+  refvar nome = txt2(txte(este))
   prog p
-  recalc_ajusta2(txt2(txte(este)), p, r)
-
-func recalc_ajusta2 # Chamado internamente por recalc_ajusta para mais eficiência
-# arg0 = nome do tipo
-# arg1 = variável prog
-# arg2 = variável ref
-  epara arg2 = $jogador, arg2, arg2 = objdepois(arg2)
-    (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+  ref r
+  epara r = $jogador, r, r = objdepois(r)
+    (r.tipo1 == nome || r.tipo2 == nome || r.tipo3 == nome) && (r.recalc = 1)
   efim
-  epara arg1.iniclasse("p_"), arg1.lin, arg1.depois
-    epara arg2 = $[arg1.texto], arg2, arg2 = objdepois(arg2)
-      (arg2.tipo1 == arg0 || arg2.tipo2 == arg0 || arg2.tipo3 == arg0) && (arg2.recalc = 1)
+  epara p.iniclasse("p_"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      (r.tipo1 == nome || r.tipo2 == nome || r.tipo3 == nome) && (r.recalc = 1)
     efim
   efim

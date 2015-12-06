@@ -1,5 +1,5 @@
 classe adm_efeito
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Efeitos\b\n\
 Magias e habilidades podem lançar efeitos sobre um personagem.\n\
 Esses comandos permitem criar e editar os efeitos.\n\
@@ -10,7 +10,7 @@ Esses comandos permitem criar e editar os efeitos.\n\
 
 
 classe adm_lef
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3LEF\b\n\
 Sintaxe: LEF [nome]\n\
 Lista os efeitos que começam com o nome especificado.\n\
@@ -33,7 +33,7 @@ func escr # Listar efeitos
 
 
 classe adm_cef
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Cef\b\n\
 Sintaxe: CEF <nome>\n\
 Cria um efeito com o nome especificado.\n\
@@ -67,7 +67,7 @@ func escr # Criar efeito
 
 
 classe adm_aef
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Aef\b\n\
 Sintaxe: AEF <nomes dos efeitos>\n\
 Apaga uma ou mais efeitos, com os nomes especificados.\n\
@@ -120,7 +120,7 @@ func passo # Confirmar que quer apagar efeito
 
 
 classe adm_eef
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Eefeito\b\n\
 Sintaxe: EEFEITO <nome>\n\
 Edita o efeito com o nome especificado."

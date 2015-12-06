@@ -1,0 +1,570 @@
+classe adm_perm
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Comandos para permissões de jogadores\b\n\
+  \c2LPERM\b     Lista grupos de permissões\n\
+  \c2CPERM\b     Cria um grupo de permissões\n\
+  \c2EPERM\b     Edita um grupo de permissões\n\
+  \c2APERM\b     Apaga um grupo de permissões\n\
+  \c2MPERM\b     Define o grupo de permissões de um jogador"
+
+
+classe adm_lperm
+herda comando_adm
+const txtajuda = "\b\c3Lperm\b\n\
+Sintaxe: LPERM [nome]\n\
+Lista os grupos de permissões que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os grupos de permissões."
+
+func escr
+  prog p
+  txt100 lin
+  se !p.iniclasse("perm_" + arg1)
+    ret arg0.msg("\bNenhum grupo de permissões encontrado.")
+  fimse
+  refvar txtmais = arg0.sock.txtmais
+  txtmais.limpar
+  txtmais.addfim("Grupos de permissões")
+  epara nulo, p.lin, p.depois
+    casovar p.texto
+    casose "perm_admin"
+      txtmais.addfim("admin      (administração)")
+      sair
+    casose "perm_jog"
+      txtmais.addfim("jog        (jogadores)")
+      sair
+    casose "perm_autorizar"
+      txtmais.addfim("autorizar  (jogadores sem autorização)")
+      sair
+    casose
+      txtmais.addfim(txt(p.texto, 5))
+    casose "perm_"
+    casofim
+  efim
+  arg0.sock.txtmostra
+
+
+classe adm_cperm
+herda comando_adm
+const txtajuda = "\b\c3Cperm\b\n\
+Sintaxe: CPERM <nome>\n\
+Cria um grupo de permissões com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+
+func escr
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do ataque
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do grupo de permissões após CPERM")
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg1, EMDSA))
+  se txtsepara(nome, "O+DOL,DOL+O") != nome
+    ret arg0.msg("Nome inválido para grupo de permissões: " + nome)
+  senao p.existe("perm_" + nome)
+    ret arg0.msg("Já existe o grupo de permissões: " + nome)
+  fimse
+# Cria grupo
+  txt200 lin
+  lin = "perm_" + txts(nome) + "\nconfig/perm\nherda comum_perm"
+  p.criar(lin)
+  criar("admordena", "config/perm")
+# config:salvar
+  arg0.msg("\bGrupo de permissões criado: " + nome)
+  admlog(arg0, "criou grupo de permissões " + nome)
+
+
+classe adm_aperm
+herda comando_adm
+const txtajuda = "\b\c3Aperm\b\n\
+Sintaxe: APERM <nome>\n\
+Apaga o grupo de permissões com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle um nome após APERM")
+  senao !p.existe("perm_" + arg1)
+    arg0.msg("Grupo de permissões não existe: " + arg1)
+  senao arg1 == "admin"
+    arg0.msg("O grupo de permissões Admin não pode ser apagado.")
+  senao arg1 == "jog"
+    arg0.msg("O grupo de permissões Jog não pode ser apagado.")
+  senao arg1 == "autorizar"
+    arg0.msg("O grupo de permissões Autorizar não pode ser apagado.")
+  senao
+    arg0.sock.tpasso = arg1
+    passo(arg0.sock, "")
+  fimse
+
+func passo # Confirmar que quer apagar grupo de permissões
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    p.apagar("perm_" + arg0.tpasso)
+    config:salvar
+    arg0.msg("Grupo de permissões apagado: " + arg0.tpasso)
+    admlog(arg0, "apagou grupo de permissões " + arg0.tpasso)
+  senao
+    arg0.passo = este
+    arg0.msg("Apagar grupo de permissões " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_mperm
+herda comando_adm
+const objcmd = arg0.jogperm == "admin" || $perm_[arg0.jogperm].c_mperm ? este
+const txtajuda = "\b\c3Mperm\b\n\
+Sintaxe: MPERM <jogador> <permissão>\n\
+Muda o grupo de permissões de um jogador.\n\
+Nota: O jogador não precisa estar necessariamente online no MUD."
+txt100 antesperm
+
+func escr
+  refvar nome = txtmin(txt1(arg1))
+  refvar codif = txts(txtnome(nome))
+  refvar perm = txts(txtmin(txt2(arg1)))
+  antesperm = ""
+  se intsub(arg1) != 2
+    ret arg0.msg("Tecle mperm seguido do jogador e a nova permissão")
+  senao !$perm_[perm]
+    ret arg0.msg("Grupo de permissões não existe: " + perm)
+  fimse
+# Jogador online
+  indiceitem ind
+  refvar u = ind.obj("un " + codif)
+  refvar p = ind.obj("pn " + codif)
+  ret u && !checaperm(arg0, u.jogperm, perm), nulo
+  ret p && !checaperm(arg0, p.jogperm, perm), nulo
+# Jogo salvo
+  textotxt t1
+  arqsav sav1
+  se sav1.existe("sav1/" + codif + ".sav")
+    se !t1.ler("sav1/" + codif + ".sav")
+      ret arg0.msg("Não foi possível ler jogo salvo de " + nome)
+    fimse
+    textopos p1
+    p1 = t1.ini
+    se p1.txtproc("\njogperm=") >= 0
+      ret !checaperm(arg0, p1.texto(8), perm), nulo
+      p1.mudar(perm, 8, 100)
+    senao p1.txtproc("\n+++") < 0
+      ret arg0.msg("Jogo salvo de " + nome + " não possui permissões")
+    senao
+      p1.depois
+      se p1.txtproc("\n+++") < 0
+        ret arg0.msg("Jogo salvo de " + nome + " não possui permissões")
+      fimse
+      ret !checaperm(arg0, "", perm), nulo
+      p1.add("jogperm=" + perm)
+    fimse
+  fimse
+  se t1.linhas && !t1.salvar("sav1/" + codif + ".sav")
+    ret arg0.msg("Erro ao salvar jogo de " + nome)
+  fimse
+# Muda permissões
+  ret !t1.linhas && !p, arg0.msg("Personagem não existe: " + nome)
+  se u
+    refvar m1 = $perm_[antesperm].saiumsg
+    refvar m2 = $perm_[perm].entroumsg
+    m1 && u.msg(m1)
+    m2 && u.msg(m2)
+  fimse
+  u.jogperm = perm
+  p.jogperm = perm
+  arg0.msg("Permissão de " + nome + " mudou para " + perm + ".")
+  cmdlog(arg0, "mperm", nome + (antesperm ? " de " + antesperm) + " para " + perm)
+
+func checaperm # Checa se pode mudar o grupo de permissões
+# arg0 = personagem que quer mudar
+# arg1 = permissão antiga
+# arg2 = permissão nova
+# Retorna verdadeiro se pode mudar
+  se arg1 == arg2
+    arg0.msg("Jogador já possui permissão " + arg1)
+    ret 0
+  senao arg0.jogperm == "admin"
+  senao arg1 == "admin"
+    arg0.msg("Somente Admin pode mudar permissão de um Admin")
+    ret 0
+  senao arg2 == "admin"
+    arg0.msg("Somente Admin pode mudar permissão para Admin")
+    ret 0
+  senao txtproc("\n" + $perm_[arg0.jogperm].c_mperm + "\n", "\n" + arg1 + " " + arg2 + "\n") < \
+0
+    arg0.msg("Você não pode mudar permissão " + arg1 + " para " + arg2)
+    ret 0
+  fimse
+  arg1 && (antesperm = arg1)
+  ret 1
+
+
+classe adm_eperm
+herda comando_adm
+const txtajuda = "\b\c3Eperm\b\n\
+Sintaxe: EPERM <nome>\n\
+Edita o grupo de permissões com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do grupo de permissões após EPERM")
+  senao !p.existe("perm_" + txts(arg1))
+    arg0.msg("Grupo de permissões não existe: " + arg1)
+  senao arg1 == "admin"
+    arg0.msg("O grupo de permissões Admin não pode ser editado.")
+  senao
+    arg0.sock.var.classe1 = "perm_" + txts(txtmin(arg1))
+    arg0.sock.m_menu("menu_perm")
+  fimse
+
+
+classe menu_perm
+herda comando_menu
+const titulo = "Grupo de permissões " + txt(var.classe1, 5)
+const colunas = 25
+#
+const nome1 = "Texto comando Quem"
+const info1 = "Aparece para jogadores que não possuem Config +InvQuem"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "nomequem"
+#
+const nome2 = "Config"
+const info2 = "Opções extras do comando Config\n\
+Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
+const tipo2 = "opc_vetor"
+const clas2 = var.classe1
+const vari2 = "c_config"
+const extr2 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog"
+const exec2 = "jogrecalc"
+#
+const nome3 = "Jogador entrando"
+const info3 = "Como deve avisar quando alguém entrar no MUD ou sair"
+const tipo3 = "opc_opcao"
+const clas3 = var.classe1
+const vari3 = "i_entrando"
+const extr3 = "Não informar\nInformar o nome\nInformações completas"
+#
+const nome4 = "Mensagem Admin"
+const info4 = "Se é informado quando alguém digita a senha de administração"
+const tipo4 = "opc_simnao"
+const clas4 = var.classe1
+const vari4 = "i_admin"
+#
+const nome5 = "Ganhou permissão"
+const info5 = "Mensagem quando o jogador muda para esse grupo"
+const tipo5 = "opc_linha"
+const clas5 = var.classe1
+const vari5 = "entroumsg"
+#
+const nome6 = "Perdeu permissão"
+const info6 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo6 = "opc_linha"
+const clas6 = var.classe1
+const vari6 = "saiumsg"
+#
+const nome7 = "Comandos jogador"
+const tipo7 = "menu_perm_cmd--"
+#
+const nome8 = "Comandos admin"
+const tipo8 = "menu_perm_adm--"
+#
+const nome9 = "Outros comandos"
+const tipo9 = "opc_ajuda--"
+const extr9 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
+LSAV, ASAV, ESAV, MUDANOME: interferem com personagens de administradores\n\
+BAN2: bloqueia a entrada de administradores\n\
+ECONFIG: muda configurações do MUD, inclusive senha de administração\n\
+COM: fecha todas as formas de entrar no MUD\n\
+LPERM, CPERM, EPERM, APERM: alteram permissões de outros usuários\n\
+CMD, CMDP, CMDJ, ICL: executam comandos aleatórios na linguagem do IntMUD\n\
+CCL, ACL, ECL, EHERDA, MUDLER: editam o código do MUD\n\
+LAREA, CAREA, EAREA, AAREA, RESET: lidam com muitas áreas\n\
+LTIPO, CTIPO, ETIPO, ATIPO, TRES: apagam raças e classes de jogadores"
+
+
+classe menu_perm_cmd
+herda comando_menu
+const titulo = "Comandos de jogador de " + txt(var.classe1, 5)
+const menufim = "menu_perm"
+const colunas = 25
+#
+const nome1 = "Salvar"
+const info1 = "Mensagem quando tenta salvar; se vazio o personagem pode ser salvo"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "c_salvar"
+#
+const nome2 = "Chat"
+const info2 = "Mensagem quando tenta escrever; se vazio se pode escrever"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "c_chat"
+#
+const nome3 = "Novatos"
+const info3 = "Mensagem quando tenta escrever; se vazio se pode escrever"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "c_novatos"
+#
+const nome4 = "Gritar"
+const info4 = "Mensagem quando tenta gritar; se vazio se pode gritar"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "c_gritar"
+#
+const nome5 = "Falar,Sussurrar"
+const info5 = "Mensagem quando tenta falar/sussurrar; se vazio se pode falar"
+const tipo5 = "opc_linha"
+const clas5 = var.classe1
+const vari5 = "c_falar"
+#
+const nome6 = "Sociais e Emoção"
+const info6 = "Mensagem quando tenta usar sociais/emoção; se vazio se pode"
+const tipo6 = "opc_linha"
+const clas6 = var.classe1
+const vari6 = "c_social"
+#
+const nome7 = "Telepatia"
+const info7 = "Mensagem quando tenta usar telepatia; se vazio se pode escrever"
+const tipo7 = "opc_linha"
+const clas7 = var.classe1
+const vari7 = "c_telepatia"
+#
+const nome8 = "Rezar"
+const info8 = "Mensagem quando tenta rezar; se vazio se pode rezar"
+const tipo8 = "opc_linha"
+const clas8 = var.classe1
+const vari8 = "c_rezar"
+#
+const nome9 = "Bug"
+const info9 = "Mensagem quando tenta usar comando Bug; se vazio se pode usar"
+const tipo9 = "opc_linha"
+const clas9 = var.classe1
+const vari9 = "c_bug"
+#
+const nome10 = "Ideia"
+const info10 = "Mensagem quando tenta usar comando Ideia; se vazio se pode usar"
+const tipo10 = "opc_linha"
+const clas10 = var.classe1
+const vari10 = "c_ideia"
+#
+const nome11 = "Andar"
+const info11 = "Mensagem quando tenta andar (N S L O etc.); se vazio se pode andar"
+const tipo11 = "opc_linha"
+const clas11 = var.classe1
+const vari11 = "andar"
+#
+const nome12 = "Pegar/soltar/dar"
+const info12 = "Mensagem quando tenta pegar/soltar/dar/capturar; se vazio consegue"
+const tipo12 = "opc_linha"
+const clas12 = var.classe1
+const vari12 = "item"
+#
+const nome13 = "Vestir/remover"
+const info13 = "Mensagem quando tenta vestir/empunhar/remover itens; se vazio consegue"
+const tipo13 = "opc_linha"
+const clas13 = var.classe1
+const vari13 = "vestir"
+#
+const nome14 = "Abrir/fechar"
+const info14 = "Mensagem quando tenta abrir/fechar/trancar/destrancar; se vazio consegue"
+const tipo14 = "opc_linha"
+const clas14 = var.classe1
+const vari14 = "abrir"
+#
+const nome15 = "Pode lutar"
+const tipo15 = "opc_simnao"
+const clas15 = var.classe1
+const vari15 = "batalha"
+#
+const nome16 = "Fome/sede"
+const info16 = "Se pode sentir fome e sede (se não for imortal)"
+const tipo16 = "opc_simnao"
+const clas16 = var.classe1
+const vari16 = "fome"
+
+
+classe menu_perm_adm
+herda comando_menu
+const titulo = "Comandos de administração de " + txt(var.classe1, 5)
+const menufim = "menu_perm"
+const colunas = 25
+#
+const nome1 = "Adm"
+const info1 = "Consultar a ajuda dos comandos de administração"
+const tipo1 = "opc_simnao"
+const clas1 = var.classe1
+const vari1 = "c_adm"
+#
+const nome2 = "Serv"
+const info2 = "Mostra informações sobre o estado atual do MUD"
+const tipo2 = "opc_simnao"
+const clas2 = var.classe1
+const vari2 = "c_serv"
+#
+const nome3 = "Rezou,Bug,Ideia"
+const info3 = "Recebe mensagens de Rezar,Bug,Ideia e pode responder com Rezou"
+const tipo3 = "opc_simnao"
+const clas3 = var.classe1
+const vari3 = "c_rezou"
+#
+const nome4 = "Echo,SEcho,JEcho"
+const tipo4 = "opc_simnao"
+const clas4 = var.classe1
+const vari4 = "c_echo"
+#
+const nome5 = "Ban"
+const tipo5 = "opc_simnao"
+const clas5 = var.classe1
+const vari5 = "c_ban"
+#
+const nome6 = "Tele,Lugar"
+const info6 = "Libera também os comandos TeleEntra e TeleSai"
+const tipo6 = "opc_opcao"
+const clas6 = var.classe1
+const vari6 = "c_tele"
+const extr6 = "Não\nSomente o próprio personagem\nQualquer um"
+#
+const nome7 = "PNJ"
+const tipo7 = "opc_simnao"
+const clas7 = var.classe1
+const vari7 = "c_pnj"
+const exec7 = "jogpnj"
+#
+const nome8 = "Monit"
+const info8 = "O comando ESCR não funciona para se um não Admin estiver monitorando um Admin"
+const tipo8 = "opc_opcao"
+const clas8 = var.classe1
+const vari8 = "c_monit"
+const extr8 = "Não\nSaber quem está monitorando\nMonitorar\nMonitorar e escrever"
+const exec8 = "jogmonit"
+#
+const nome9 = "Matar1,Matar2"
+const tipo9 = "opc_simnao"
+const clas9 = var.classe1
+const vari9 = "c_matar"
+#
+const nome10 = "Log"
+const info10 = "Quais arquivos pode ver com o comando Log"
+const tipo10 = "opc_vetor"
+const clas10 = var.classe1
+const vari10 = "c_log"
+const extr10 = "entrou\nadmlog\ncmdlog\njogchat\nrezou\nmortes\nbug\nideia"
+#
+const nome11 = "Mperm"
+const info11 = "Cada linha deve ter a permissão atual seguido de espaço e a nova permissão\n\
+Exemplo, para poder autorizar jogadores coloque uma linha: autorizar jog\n\
+Autorizar jogadores significa mudar a permissão de autorizar para jog"
+const tipo11 = "opc_texto"
+const clas11 = var.classe1
+const vari11 = "c_mperm"
+#
+const nome12 = "Ivar"
+const tipo12 = "opc_simnao"
+const clas12 = var.classe1
+const vari12 = "c_ivar"
+#
+const nome13 = "Informações perso"
+const info13 = "Informações extras com: INFO, INV, ESTAT, HIST, IHAB, IMAG, IEF, IJOG"
+const tipo13 = "opc_simnao"
+const clas13 = var.classe1
+const vari13 = "i_perso"
+
+
+classe comum_perm
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nomequem c_config i_entrando i_admin\n\
+entroumsg saiumsg a_hab a_efeito a_social a_cod\n\
+c_salvar c_chat c_novatos c_gritar c_falar c_social c_telepatia\n\
+c_rezar c_bug c_ideia pacifico andar item vestir abrir batalha fome\n\
+c_admin c_serv c_rezou c_echo c_ban c_tele c_pnj c_monit c_matar\n\
+c_log c_ivar c_ivar i_perso"
+const iniclasse = !$[arg0] && criar(arg0)
+#
+const batalha = 1
+const fome = 1
+
+func fim # Muda permissão dos jogadores para JOG
+  refvar nome = txt(este, 5)
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    continuar item.obj.jogperm != nome
+    item.obj.jogperm = "jog"
+    item.obj.recalc = 1
+  efim
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    continuar item.obj.jogperm != nome
+    item.obj.jogperm = "jog"
+  efim
+
+func jogrecalc # Faz recalc=1 nos personagens de jogadores
+  refvar nome = txt(este, 5)
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    item.obj.jogperm == nome && (item.obj.recalc = 1)
+  efim
+# epara item.ini("un "), txt1(item.txt) == "un", item.depois
+# item.obj.jogperm == nome && (item.obj.perso.recalc = 1)
+# efim
+
+func jogpnj # Jogadores deixam de controlar PNJ se comando PNJ desativado
+  ret c_pnj, nulo
+  refvar nome = txt(este, 5)
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    continuar !item.obj.perso || item.obj.perso.jog || item.obj.jogperm != nome
+    refvar obj = item.obj("pn " + txt2(item.obj.cnome))
+    obj ? item.obj.mudaperso(obj) : item.obj.reinicia
+  efim
+
+func jogmonit # Jogadores deixam de monitorar
+  ret int(c_monit) >= 2, nulo
+  refvar nome = txt(este, 5)
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    refvar obj = item.obj
+    continuar !obj.imonit || obj.jogperm != nome
+    refvar t1 = obj.imonit.objlista.nome
+    obj.imonit.remove
+    obj.msg("Deixando de monitorar " + t1)
+  efim
+
+
+classe comum_perm_admin
+herda comum_perm
+# Permissões dos administradores
+const salvar = 1
+const c_config = 65535
+const i_entrando = 2
+const i_admin = 1
+const entroumsg = "Você virou admin, tecle ADM para saber os comandos."
+const saiumsg = "Você deixou de ser admin."
+const a_hab = 2
+const a_efeito = 2
+const a_social = 2
+const a_cod = 1
+const c_adm = 1
+const c_serv = 1
+const c_rezou = 1
+const c_echo = 1
+const c_ban = 1
+const c_tele = 2
+const c_pnj = 1
+const c_monit = 3
+const c_matar = 1
+const c_log = 65535
+const c_mperm = ""
+const c_ivar = 1
+const i_perso = 1
+
+
+classe perm_
+herda comum_perm
+# Usado por PNJs (porque não têm a permissão definida)

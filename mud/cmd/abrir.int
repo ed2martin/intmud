@@ -6,6 +6,8 @@ Abre um objeto ou uma porta."
 const posic = 5
 
 func escr
+  refvar msg_perm = $perm_[arg0.jogperm].abrir
+  ret msg_perm, arg0.msg(msg_perm)
   txt10 dir
   dir = misc:d1[arg1]
   dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
@@ -98,6 +100,8 @@ Fecha um objeto ou uma porta."
 const posic = 5
 
 func escr
+  refvar msg_perm = $perm_[arg0.jogperm].abrir
+  ret msg_perm, arg0.msg(msg_perm)
   txt10 dir
   dir = misc:d1[arg1]
   dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)

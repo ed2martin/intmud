@@ -8,7 +8,10 @@ Envia mensagem para os administradores que estiverem no jogo."
 const posic = 5
 
 func escr
-  se arg0.pnivel < config:rezarnivel
+  refvar perm_msg = $perm_[arg0.jogperm].c_rezar
+  se perm_msg
+    arg0.msg(perm_msg)
+  senao arg0.pnivel < config:rezarnivel
     arg0.msg("Para usar o comando REZAR você precisa estar no nível " + config:rezarnivel + \
 ".")
   senao !arg1
@@ -20,7 +23,7 @@ func escr
     arg0.msg($mens.proc(config:rezar2msg, arg0))
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[arg0.nome]
+      continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[arg0.nome]
       item.obj.msg($mens.proc(config:rezar1msg, item.obj.perso))
     efim
   fimse

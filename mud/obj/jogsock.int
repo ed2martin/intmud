@@ -17,6 +17,7 @@ indiceobj cnome # "un " + nome codificado
 txt20 nome # Nome do personagem
 txt60 nomefim # Nome ao apresentar quando o usuário sair do jogo
 textotxt txtmais # Texto do tecle M para mais
+txt20 jogperm # Permissões do personagem (objeto $perm_[jogperm])
 int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
@@ -61,17 +62,22 @@ func fim
 
 func mudaperso # Muda o personagem, arg0=novo personagem
   ret perso == arg0 || arg0.sock, nulo
-  se perso && arg0.jog
-    perso.var.jogconfig.bits = 0
-    perso.var.z_prompt = ""
-    perso.var.z_bprompt = ""
-    arg0.jogconfig.bits = jogconfig.bits
-    msg("Você retorna para " + arg0.nome)
-  senao perso && arg0
-    arg0.var.z_prompt = perso.var.z_prompt
-    arg0.var.z_pbprompt = perso.var.z_bprompt
-    arg0.jogconfig.bits = jogconfig.bits
-    msg("Você assume " + arg0.nome)
+# Acerta variáveis
+  se perso
+    se !perso.jog
+      perso.var.jogconfig.bits = 0
+      perso.var.z_prompt = ""
+      perso.var.z_bprompt = ""
+    fimse
+    se arg0.jog
+      arg0.jogconfig.bits = jogconfig.bits
+      msg("Você retorna para " + arg0.nome)
+    senao arg0
+      arg0.var.z_prompt = perso.var.z_prompt
+      arg0.var.z_pbprompt = perso.var.z_bprompt
+      arg0.jogconfig.bits = jogconfig.bits
+      msg("Você assume " + arg0.nome)
+    fimse
   fimse
   ref r
 # Indica que o jogador não controla o antigo personagem
@@ -140,23 +146,27 @@ func recebe1 # Função recebe após uso de atalhos
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
     ret !perso.jog, msg("Primeiro precisa retornar para seu personagem")
-    jogconfig.23 = !jogconfig.23 # Administração
-    jogconfig.19 = jogconfig.23 # Canal AC
+    txt512 t1
+    t1 = $perm_[jogperm].saiumsg
+    t1 && msg(t1)
+    jogperm = jogperm == "admin" ? "jog" : "admin"
+    jogconfig.19 = $perm_[jogperm].c_ac # Canal AC
+    perso.jogperm = jogperm
     perso.jogconfig.bits = jogconfig.bits
     perso.recalc = 1 # Para atualizar perso.bitver
-    txt100 t1
-    se jogconfig.23
-      msg("Você virou admin, tecle ADM para saber os comandos.")
+    t1 = $perm_[jogperm].entroumsg
+    t1 && msg(t1)
+    se jogperm == "admin"
       t1 = "*** " + perso.nome + " virou admin."
       $misclog.cmdlog("adm " + arg0.nome + ": Virou admin")
     senao
-      msg("Você deixou de ser admin.")
       t1 = "*** " + perso.nome + " deixou de ser admin."
       $misclog.cmdlog("adm " + arg0.nome + ": Deixou de ser admin")
     fimse
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.23 && item.obj != este && item.obj.msg(t1)
+      refvar obj = item.obj
+      obj != este && $perm_[obj.jogperm].i_admin && obj.msg(t1)
     efim
     ret
   senao arg0 != "!" # Anota o último comando
@@ -175,7 +185,7 @@ func recebe1 # Função recebe após uso de atalhos
     casofim
   fimse
 # Comando de administração
-  se jogconfig.23 && perso
+  se perso
     refvar r = $adm_[txt1(ultimocom)].objcmd(perso)
     ret r, r.escr(perso, txt2(ultimocom)) + comandos.limpar
   fimse
@@ -327,16 +337,16 @@ func msgprompt_exec
   fimse
 
 func msgchegou # Mensagem de usuário chegando ou saindo
-# arg0 = mensagem para administradores
-# arg1 = mensagem para usuários normais
+# arg0 = mensagem com informações completas (para administradores)
+# arg1 = mensagem com o nome (para usuários normais)
   $misclog.entrou(arg0)
-  ret !config:entrainfo, nulo
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     continuar item.obj == este
-    se item.obj.jogconfig.23 # Se usuário é admin...
+    refvar i_entrando = $perm_[item.obj.jogperm].i_entrando
+    se i_entrando == 2
       arg0 && item.obj.msg("* " + arg0)
-    senao config:entrainfo == 2 && !jogconfig.17
+    senao i_entrando == 1
       arg1 && item.obj.msg("* " + arg1)
     fimse
   efim
@@ -539,7 +549,7 @@ func passo1
     senao txtproc("\n" + r.racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
       continuar
     fimse
-    continuar r.sexo && (arg0.var.j_sexo != r.sexo - 1)
+    continuar r.sexo && arg0.var.j_sexo != r.sexo - 1
     se !r.classes || tpasso < 3
     senao txtproc("\n" + r.classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
       continuar
@@ -600,7 +610,9 @@ func passo
   arg0.var.limpar("j_")
   arg0.perso.mudadono(config:salaini)
   arg0.temposair # Acerta tempo para sair do MUD
-  se arg0.perso.senha
+  arg0.jogperm = config:autorizar ? "autorizar" : "jog"
+  arg0.perso.jogperm = arg0.jogperm
+  se arg0.perso.senha && !$perm_[arg0.jogperm].c_salvar
     !arg0.perso.salvar && arg0.msg("Não foi possível salvar o personagem")
   fimse
   arg0.msgchegou("Criou personagem: " + arg0.nome + ", " + arg0.nomefim, arg0.nome + " entrou")
@@ -661,6 +673,7 @@ func passo
     arg0.cnome = "un " + texto
     arg0.perso.sock_entrou # Indica que o objeto sock voltou
     arg0.jogconfig.bits = arg0.perso.jogconfig.bits
+    arg0.jogperm = arg0.perso.jogperm
     arg0.temposair # Acerta tempo para sair do MUD
     arg0.msg("Reconectado\cn")
     txt200 lin
@@ -691,6 +704,11 @@ func passo
     sav1.ler("sav1/" + texto + ".sav", l1)
     arg0.nome = arg0.perso.nome
     arg0.jogconfig.bits = arg0.perso.jogconfig.bits
+    refvar perm = arg0.perso.jogperm
+    se !perm || !$perm_[perm]
+      perm = arg0.perso.jogconfig.23 ? "admin" : "jog"
+    fimse
+    arg0.jogperm = perm
 # Acerta variáveis
     listaitem item
     debug d

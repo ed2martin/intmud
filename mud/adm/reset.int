@@ -1,5 +1,5 @@
 classe adm_reset
-herda comando_adm, comando_comum
+herda comando_adm
 # Comandos de reset
 #
 # Formato do texto do reset:
@@ -56,7 +56,7 @@ func escr # Executa reset
 
 
 classe adm_lres
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lres\b\n\
 Sintaxe: LRES [nome]\n\
 Lista todas as salas que começam com o nome especificado e possuem algum\n\
@@ -81,7 +81,7 @@ func escr # Listar salas com reset
 
 
 classe adm_ares
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ares\b\n\
 Sintaxe: ARES [nome da sala]\n\
 Reset de área. Edita os comandos executados quando ocorre o reset da área.\n\
@@ -106,7 +106,7 @@ func escr
 
 
 classe adm_sres
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Sres\b\n\
 Sintaxe: ARES [nome da sala]\n\
 Reset de sala. Edita os comandos executados quando algum jogador entra\n\
@@ -129,7 +129,7 @@ func escr
 
 
 classe adm_cres
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Cres\b\n\
 Sintaxe: CRES [nome da sala ou da área]\n\
 Refaz as funções de reset (a_reset1 e s_reset1) a partir da constantes\n\
@@ -693,7 +693,7 @@ func atualiza # Atualiza reset de sala
     t = "(ERRO) ao criar função " + arg0 + ":" + arg1 + "1:\n" + t
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.23 && item.obj.msg(t)
+      item.obj.jogperm == "admin" && item.obj.msg(t)
     efim
   fimse
 
@@ -1008,7 +1008,7 @@ D 10 SE 0"
 
 
 classe adm_tres
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Tres\b\n\
 Sintaxe: TRES [nome do tipo]\n\
 Reset de tipo (raça ou classe). Edita os comandos executados quando algum\n\

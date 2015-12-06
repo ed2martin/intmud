@@ -1,6 +1,6 @@
 classe adm_
-const iniclasse = !$[arg0] && criar(arg0)
 # Edição do código e comandos gerais de administração
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Páginas de administração\b\n\
 Para ler tecle ADM seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
@@ -14,7 +14,9 @@ Os tópicos são:\n\
   \c2HAB\b       Habilidades e magias\n\
   \c2EFEITO\b    Efeitos\n\
   \c2SOCIAL\b    Comandos sociais\n\
+  \c2SOM\b       Sons via MSP\n\
   \c2COD\b       Edição do código fonte\n\
+  \c2PERM\b      Permissões de jogadores\n\
   \c2JOG\b       Comandos para jogadores\n\
   \c2OUTROS\b    Outros comandos\n\
   \c2MENS\b      Caracteres especiais em mensagens\n\
@@ -135,8 +137,9 @@ As seguintes sequências de caracteres mudam outros atributos:\n\
 
 
 classe adm_adm
-herda comando_adm, comando_comum
+herda comando_adm
 # Ajuda dos comandos de administração
+const objcmd = $perm_[arg0.jogperm].c_adm ? este
 
 func escr
   prog p

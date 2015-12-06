@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 374, nulo
-  p.criar("config", "const versao = 374 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 383, nulo
+  p.criar("config", "const versao = 383 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -505,5 +505,25 @@ casa está atrasada.\"")
       d.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
     efim
   fimse
+# Permissões
+  se versao < 383
+    se !p.existe("perm_admin")
+      p.criar("perm_admin\nconfig/perm\nherda comum_perm_admin")
+    fimse
+    se !p.existe("perm_autorizar")
+      p.criar(perm_autorizar)
+    fimse
+    se !p.existe("perm_jog")
+      p.criar("perm_jog\nconfig/perm\nherda comum_perm")
+    fimse
+  fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
+
+const perm_autorizar = "perm_autorizar\n\
+config/perm\n\
+herda comum_perm\n\
+const nomequem = \"[Não autorizado]\"\n\
+const saiumsg = \"Seu personagem foi aprovado\"\n\
+const c_salvar = \"Seu personagem ainda não foi autorizado\"\n\
+const salvar = 0"

@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 374 # Para atualizar diretórios areas e config
+const versao = 383 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -168,6 +168,11 @@ const email = 0
 const jogconfig = 319 # Config ao criar personagem: 0-desc, 1-saidas, 2-cores, 3-acento, 4-chat, \
 5-seguir, 8-telepatia
 #
+# Autorização
+# Se após criar um personagem, o jogador precisa de autorização para
+# o personagem ser salvo; vide também comando de administração Autorizar
+const autorizar = 0
+#
 # A partir de que nível sente fome e sede
 const fomeini = 0
 #
@@ -177,10 +182,6 @@ const fomefim = 0
 # Se deve avisar a todos na sala quando está com fome ou sede moderada
 # Fome e sede extremos sempre avisa
 const fomemsg = 1
-#
-# Quem deve ser informado quando um jogador entra ou sai
-# 0=ninguém, 1=administradores, 2=todos
-const entrainfo = 1
 #
 # Quanta experiência os personagens dão quando morrem, em porcentagem
 const atkexp = 100
@@ -237,6 +238,13 @@ const atktempo = 60
 #
 # Força dos ataques automáticos (ataques sem o personagem digitar o golpe)
 const atkfor = 30
+#
+# Habilidade de esquiva
+# Cada aula nessa habilidade aumenta a evasão do personagem
+const atk_evasao1 = "Esquiva"
+#
+# Quantos pontos de evasão por aula de esquiva
+const atk_evasao2 = "2"
 #
 # Mensagem começa a amanhecer
 const horamsg5 = "Começa a amanhecer."
@@ -416,10 +424,6 @@ const nivel_renascer = 0
 # Em porcentagem. Ao renascer, a experiência necessária para subir de nível
 # é multiplicada por esse número.
 const exp_renascer = 100
-#
-# Se não administradores podem saber quem é administrador teclando QUEM
-# 0=não, 1=sim
-const mostraadm = 0 # Comando quem mostra admin: Não
 #
 # Se os comandos Olhar e Ver mostram o nível do personagem
 # 0=não, 1=sim
@@ -637,6 +641,3 @@ func salvar # Salva o programa
 func sav # Para salvar acertando indentação e linhas entre classes e funções
   prog p
   p.salvartudo("L99N1I2C2F1V0")
-
-const atk_evasao1 = "Esquiva"
-const atk_evasao2 = "2"

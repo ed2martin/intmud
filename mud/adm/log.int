@@ -1,5 +1,6 @@
 classe adm_log
-herda comando_adm, comando_comum, comando_editor
+herda comando_adm, comando_editor
+const objcmd = $perm_[arg0.jogperm].c_log ? este
 const txtajuda = "\b\c3Log\b\n\
 Sintaxe: LOG\n\
          LOG <nome do arquivo>\n\
@@ -8,21 +9,28 @@ Os arquivos modificados mais recentemente aparecem primeiro.\n\
 Com um nome de arquivo, abre o arquivo no editor para visualização."
 
 func escr
+  textovar var
+  arg0.jogperm == "admin" && (var.adm = 1)
+  refvar perm = $perm_[arg0.jogperm].c_log
+  perm & 0x1 && (var._entrou = 1)
+  perm & 0x2 && (var._admlog = 1)
+  perm & 0x4 && (var._cmdlog = 1)
+  perm & 0x8 && (var._jogchat = 1)
+  perm & 0x10 && (var._rezou = 1)
+  perm & 0x20 && (var._mortes = 1)
+  perm & 0x40 && (var._bug = 1)
+  perm & 0x80 && (var._ideia = 1)
   se !arg1
     arqdir dir
     txt100 lin
     lin = dir.abrir("log")
-    se (lin = dir.abrir("log")) != ""
-      ret arg0.msg("\bErro: " + lin)
-    senao !dir.lin
-      ret arg0.msg("\bNenhum arquivo de log")
-    senao
-      debug d
-      d.exec = 50000
-    fimse
+    ret lin != "", arg0.msg("\bErro: " + lin)
+    debug dbg
+    dbg.exec = 50000
     textotxt t
     epara nulo, dir.lin, dir.depois
       continuar txtfim(dir.texto, 4) != ".log"
+      continuar !var.adm && !var._[txt1(txttroca(dir.texto, "-", " "))]
       refvar d = dir.mtempo("log/" + dir.texto)
       lin = txt1(d) + (50 + txtsub(d, 1, 1)) + (50 + txtsub(d, 2, 1))
       lin += 500000 + 10000 * txtsub(d, 3, 1) + 100 * txtsub(d, 4, 1) + txtsub(d, 5, 1)
@@ -32,6 +40,7 @@ func escr
       lin += txtsub(d, 2, 1) + "/" + txtsub(d, 1, 1)
       t.addfim(lin + " " + txttroca(txtsub(d, 3, 2), " ", ":"))
     efim
+    ret !t.linhas, arg0.msg("\bNenhum arquivo de log")
     t.ordena
     refvar txtmais = arg0.sock.txtmais
     txtmais.limpar
@@ -41,6 +50,8 @@ func escr
       pos.antes
     efim
     arg0.sock.txtmostra
+  senao !var.adm && !var._[txt1(txttroca(arg1 + ".log", "-", " "))]
+    arg0.msg("Arquivo de log não existe: " + arg1)
   senao !arg0.sock.teditor.ler("log/" + arg1 + ".log")
     arg0.msg("Arquivo de log não existe: " + arg1)
   senao

@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "6/11/2015"
+const versao = "1/12/2015"
 #
 # Objetos usados em misc:separa, misc:sepitem e misc:sepperso
 comum txt100 sep1 # Objeto procurado
@@ -164,6 +164,7 @@ func sepperso # Procura o personagem destino
   efim
 
 func objperso # Obtém o personagem que o jogador quer consultar a partir de um texto
+# Com jogadores normais, sempre retorna o personagem escolhido
 # arg0 = personagem
 # arg1 = texto do tipo: [nome do personagem na sala] [número do animal]
 # Retorna o objeto do personagem, ou nulo se não encontrou (e avisa o jogador)
@@ -174,7 +175,7 @@ func objperso # Obtém o personagem que o jogador quer consultar a partir de um t
     r = arg0.animalnum(arg1)
     !r && arg0.msg("Você não possui animal " + arg1 + ".")
     ret r
-  senao !arg0.jogconfig.23
+  senao !$perm_[arg0.jogperm].i_perso
     ret arg0.persoesc
   fimse
   listaobj l
@@ -194,6 +195,19 @@ func objperso # Obtém o personagem que o jogador quer consultar a partir de um t
   refvar rr = r.animalnum(num)
   !rr && arg0.msg(txtcopiamai(r.descnome, "A") + " não possui animal " + num + ".")
   ret rr
+
+func objpersosala # Obtém um personagem que está na sala e não é o próprio personagem
+# arg0 = personagem que está consultando
+# arg1 = nome do personagem (texto)
+# Retorna o objeto do personagem, ou nulo se não encontrou
+  listaobj l
+  ref r
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, 1000000)
+  epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+    r = l.objini
+    ret r.visivel(arg0) && n.nome(r.ident, r.objtot), r
+  efim
 
 func txtmoedas # Retorna texto correspondente à quantidade de moedas
 # arg0 = quantidade de moedas

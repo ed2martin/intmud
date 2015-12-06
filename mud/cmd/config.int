@@ -1,51 +1,63 @@
 classe cmd_config
 herda comando_comum
 const posic = 0
-const txtajuda = arg0.jogconfig.23 ? txtajuda1 + txtajuda2 : txtajuda1
-const txtajuda1 = aj1 + (config:chattipo ? aj2) + (config:novatostipo ? aj3) + (config:emocaotipo\
- ? aj4) + aj5
-const aj1 = "\b\c3Config\b\n\
+
+func txtajuda
+  refvar perm = $perm_[arg0.jogperm].c_config
+  txt512 lin
+  textotxt t
+  t.addfim(ajudaini)
+  epara lin = opcoes, lin, lin = txt2(lin)
+    refvar nome = txt1(lin)
+    continuar !txt(opc_[nome](perm))
+    refvar l = "  \c2" + txtmai(nome) + "\b "
+    t.addfim(l + txtesp(15 - inttotal(l)) + m_[nome])
+  efim
+  ret t.remove(1000)
+
+const opcoes = "desc saidas cores acento telepatia chat novatos emocao seguir moedas prompt \
+bprompt som imortal sala invquem invsala ac admlog cmdlog execlog"
+#
+const ajudaini = "\b\c3Config\b\n\
 Sintaxe: CONFIG +<opção>\n\
          CONFIG -<opção>\n\
 Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
 seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
 preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
-As opções são:\n\
-  \c2DESC\b      Mostra descrições completas (como ao digitar OLHAR)\n\
-  \c2SAIDAS\b    Mostra as saídas visíveis após a descrição da sala\n\
-  \c2CORES\b     Recebe sequência de cores no padrão ANSI (somente Telnet)\n\
-  \c2ACENTO\b    Recebe letras com acentuação (codificação ISO8859-1)\n\
-  \c2TELEPATIA\b Recebe mensagens com o comando Telepatia\n"
-const aj2 = "  \c2CHAT\b      Participa do canal de comunicação CHAT\n"
-const aj3 = "  \c2NOVATOS\b   Participa do canal de comunicação NOVATOS\n"
-const aj4 = "  \c2EMOÇÃO\b    Mostra (e) nas mensagens geradas com esse comando\n"
-const aj5 = "  \c2SEGUIR\b    Se outros personagens podem escolher seguir você\n\
-  \c2MOEDAS\b    Pega as moedas do corpo do personagem após vencer uma batalha\n\
-  \c2PROMPT\b    Ativa o prompt normal\n\
-  \c2BROMPT\b    Ativa o prompt de batalha\n\
-  \c2SOM\b       Ativa efeitos sonoros via MSP (MUD Sound Protocol)\n\
+As opções são:"
+#
+const m_desc = "Mostra descrições completas (como ao digitar OLHAR)"
+const m_saidas = "Mostra as saídas visíveis após a descrição da sala"
+const m_cores = "Recebe sequência de cores no padrão ANSI (somente Telnet)"
+const m_acento = "Recebe letras com acentuação (codificação ISO8859-1)"
+const m_telepatia = "Recebe mensagens com o comando Telepatia"
+const m_chat = "Participa do canal de comunicação CHAT"
+const m_novatos = "Participa do canal de comunicação NOVATOS"
+const m_emocao = "Mostra (e) nas mensagens geradas com esse comando"
+const m_seguir = "Se outros personagens podem escolher seguir você"
+const m_moedas = "Pega as moedas do corpo do personagem após vencer uma batalha"
+const m_prompt = "Ativa o prompt normal"
+const m_bprompt = "Ativa o prompt de batalha"
+const m_som = "Ativa efeitos sonoros via MSP (MUD Sound Protocol)\n\
             Nota: é necessário usar um cliente de MUD com suporte a MSP\n\
             e baixar e instalar os sons do MUD"
-const txtajuda2 = "\n\
-Opções para administradores:\n\
-  \c2IMORTAL\b   Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
+const m_imortal = "Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
             cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
             fechadas, anda sem gastar movimento,\n\
-            não sai do jogo após algum tempo sem digitar nada\n\
-  \c2SALA\b      Mostra o nome da sala cadastrada antes do título\n\
-  \c2INVQUEM\b   Ocultar a presença no comando quem\n\
-  \c2INVSALA\b   Invisível a não administradores\n\
-  \c2AC\b        Participa do canal de comunicação AC (administração)\n\
-  \c2ADMLOG\b    Canal ADMLOG - é informado sobre mudanças online no MUD\n\
-  \c2CMDLOG\b    Canal CMDLOG - é informado quando alguém usar Cmd, Cmdp,\n\
-            Cmdj, ApagarSav, MudaNome, Ban ou teleportar outro jogador\n\
-  \c2EXECLOG\b   Canal EXECLOG - só tem utilidade para programadores\n\
+            não sai do jogo após algum tempo sem digitar nada"
+const m_sala = "Mostra o nome da sala cadastrada antes do título"
+const m_invquem = "Ocultar a presença no comando quem"
+const m_invsala = "Invisível a não administradores"
+const m_ac = "Participa do canal de comunicação AC (administração)"
+const m_admlog = "Canal ADMLOG - é informado sobre mudanças online no MUD"
+const m_cmdlog = "Canal CMDLOG - é informado quando alguém usar Cmd, Cmdp,\n\
+            Cmdj, ApagarSav, MudaNome, Ban ou teleportar outro jogador"
+const m_execlog = "Canal EXECLOG - só tem utilidade para programadores\n\
             informa quando a variável exec chegar a 0 (bug no programa)"
+#
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
 # As variáveis "opc_" contém o int1 de jogconfig que correspondente à opção
-# Números de 0 a 13 são as opções disponíveis a todos
-# Números de 14 a 23 são as opções disponíveis aos administradores
 const opc_desc = 0
 const opc_saidas = 1
 const opc_cores = 2
@@ -59,17 +71,17 @@ const opc_emocao = config:emocaotipo ? 9
 const opc_moedas = 10
 const opc_novatos = config:novatostipo ? 11
 const opc_som = 12
-const opc_imortal = 14
-const opc_execlog = 15
-const opc_sala = 16
-const opc_invquem = 17
-const opc_invsala = 18
-const opc_ac = 19
-const opc_admlog = 21
-const opc_cmdlog = 22
-# Nota: o bit 23 é reservado para indicar se é administrador
+const opc_imortal = arg0 & 1 ? 14
+const opc_execlog = arg0 == $perm_admin ? 15
+const opc_sala = arg0 & 2 ? 16
+const opc_invquem = arg0 & 4 ? 17
+const opc_invsala = arg0 & 8 ? 18
+const opc_ac = arg0 & 0x10 ? 19
+const opc_admlog = arg0 & 0x20 ? 21
+const opc_cmdlog = arg0 & 0x40 ? 22
 
 func escr
+  refvar perm = $perm_[arg0.jogperm].c_config
   prog p
   txt512 x
   txt512 y
@@ -77,10 +89,11 @@ func escr
   opc.bits = arg0.jogconfig.bits
   se !arg1
     epara p.inifunc(este, "opc_"), p.lin, p.depois
-      se !txt([p.texto])
-      senao opc.[[p.texto]]
+      refvar atual = [p.texto](perm)
+      se !txt(atual)
+      senao opc.[atual]
         x += " +" + txtmai(txt(p.texto, 4))
-      senao [p.texto] < 14 || arg0.jogconfig.23
+      senao
         y += " -" + txtmai(txt(p.texto, 4))
       fimse
     efim
@@ -93,19 +106,20 @@ func escr
   txt512 mudou
   enquanto x
     epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
-      sair ([p.texto] < 14 || arg0.jogconfig.23) && txt([p.texto])
+      refvar atual = [p.texto](perm)
+      continuar !txt(atual)
+      se txt(x, 0, 1) == "+"
+        opc.[atual] = 1
+        mudou += " +" + txtmai(txt(p.texto, 4))
+      senao txt(x, 0, 1) == "-"
+        opc.[atual] = 0
+        mudou += " -" + txtmai(txt(p.texto, 4))
+      senao
+        y += " " + txt1(x)
+      fimse
+      sair
     efim
-    se !p.lin
-      y += " " + txt1(x)
-    senao txt(x, 0, 1) == "+"
-      opc.[[p.texto]] = 1
-      mudou += " +" + txtmai(txt(p.texto, 4))
-    senao txt(x, 0, 1) == "-"
-      opc.[[p.texto]] = 0
-      mudou += " -" + txtmai(txt(p.texto, 4))
-    senao
-      y += " " + txt1(x)
-    fimse
+    !p.lin && (y += " " + txt1(x))
     x = txt2(x)
   efim
   ret y, arg0.msg("Opção inexistente:" + y)

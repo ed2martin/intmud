@@ -17,7 +17,7 @@ const ta3 = "  \c2COMBATE\b   Lutas com outros personagens\n\
 const ta4 = "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func txtajuda
-  ret ta1 + (config:animal1 ? ta2) + ta3 + (arg0.jogconfig.23 ? ta4)
+  ret ta1 + (config:animal1 ? ta2) + ta3 + ($perm_[arg0.jogperm].c_adm ? ta4)
 
 func escr
   listaobj l

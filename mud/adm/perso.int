@@ -1,5 +1,5 @@
 classe adm_perso
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
   \c2LPERSO\b    Lista personagens existentes\n\
   \c2IPERSO\b    Mostra aonde está um personagem\n\
@@ -9,7 +9,7 @@ const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
 
 
 classe adm_lperso
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lperso\b\n\
 Sintaxe: LPERSO [nome]\n\
 Lista os personagens que começam com o nome especificado.\n\
@@ -44,7 +44,8 @@ func escr # Listar personagens
 
 
 classe adm_iperso
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].infoperso ? este
 const txtajuda = "\b\c3Iperso\b\n\
 Sintaxe: IPERSO <nome>\n\
 Mostra aonde está cada personagem do tipo especificado."
@@ -80,7 +81,7 @@ func escr # Listar personagens
 
 
 classe adm_cperso
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Cperso\b\n\
 Sintaxe: CPERSO <nome>\n\
 Cria um personagem. Nome deve ser o nome de uma área ou do personagem.\n\
@@ -165,7 +166,7 @@ func passo # Escolher o tipo de personagem ao criar
 
 
 classe adm_aperso
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Aperso\b\n\
 Sintaxe: APERSO <nomes dos personagens>\n\
 Apaga uma ou mais personagens, com os nomes especificados."
@@ -226,7 +227,7 @@ func infonome
 
 
 classe adm_eperso
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Eperso\b\n\
 Sintaxe: EPERSO <nome>\n\
 Edita o personagem com o nome especificado."
@@ -402,7 +403,7 @@ vazia"))
 
 
 classe opc_menuaula_a
-herda comando_adm, comando_comum
+herda comando_adm
 
 func passo # Apagar uma aula
   casovar txtmin(arg1)
@@ -431,7 +432,7 @@ func passo # Apagar uma aula
 
 
 classe opc_menuprod_a
-herda comando_adm, comando_comum
+herda comando_adm
 
 func passo # Apagar um produto
   casovar txtmin(arg1)
@@ -460,7 +461,7 @@ func passo # Apagar um produto
 
 
 classe opc_menuaula1
-herda comando_adm, comando_comum
+herda comando_adm
 
 func passo # Inserir ou editar aula
   uint16 x
@@ -529,7 +530,7 @@ func passo # Inserir ou editar aula
 
 
 classe opc_menuprod1
-herda comando_adm, comando_comum
+herda comando_adm
 
 func passo # Inserir ou editar produto
   uint16 x

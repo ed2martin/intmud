@@ -9,7 +9,10 @@ A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
 terminada com reticências, interrogação ou exclamação."
 
 func escr
-  se !arg1
+  refvar perm_msg = $perm_[arg0.jogperm].c_falar
+  se perm_msg
+    ret arg0.msg(perm_msg)
+  senao !arg1
     ret arg0.msg("Tecle a mensagem após FALAR.")
   senao
     refvar f = txt(arg0.dono.s_falar(arg0))
@@ -47,7 +50,10 @@ Envia mensagem para todos os personagens que estiverem na mesma área."
 func escr
   ref r
   txt100 area
-  se arg0.pnivel < config:gritarnivel
+  refvar perm_msg = $perm_[arg0.jogperm].c_gritar
+  se perm_msg
+    ret arg0.msg(perm_msg)
+  senao arg0.pnivel < config:gritarnivel
     ret arg0.msg("Para gritar você precisa estar no nível " + config:gritarnivel + ".")
   senao !arg1
     ret arg0.msg("Tecle a mensagem após GRITAR.")
@@ -89,9 +95,10 @@ A mensagem é enviada reservadamente para o personagem escolhido.\n\
 Os outros apenas ficam sabendo que você sussurrou alguma coisa."
 
 func escr
-  $mens.mens = ""
-  $mens.p(arg0)
-  se !arg1
+  refvar perm_msg = $perm_[arg0.jogperm].c_falar
+  se perm_msg
+    ret arg0.msg(perm_msg)
+  senao !arg1
     ret arg0.msg("Sussurrar para quem?")
   senao !txt2(arg1)
     ret arg0.msg("Sussurrar o que?")
@@ -99,6 +106,8 @@ func escr
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
   fimse
+  $mens.mens = ""
+  $mens.p(arg0)
   nomeobj n
   listaobj l
   n.ini(txt1(arg1), 1)

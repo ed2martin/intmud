@@ -16,11 +16,14 @@ não irão para as outras salas."
 func escr
   $mens.p(arg0)
   $mens.mens = arg1
-  se arg0.pnivel < config:chatnivel
+  refvar perm_msg = $perm_[arg0.jogperm].c_chat
+  se perm_msg
+    ret arg0.msg(perm_msg)
+  senao arg0.pnivel < config:chatnivel
     arg0.msg("Para escrever no canal CHAT você precisa estar no nível " + config:chatnivel + \
 ".")
   senao !arg0.jogconfig.4
-    arg0.msg("Canal CHAT está desabilitado.")
+    arg0.msg("Canal CHAT está desabilitado; para habilitar tecle CONFIG +CHAT")
   senao !arg1
     arg0.msg("Tecle a mensagem após CHAT.")
   senao config:chattipo == 2 # Escrever para todos
@@ -58,11 +61,14 @@ não irão para as outras salas."
 func escr
   $mens.p(arg0)
   $mens.mens = arg1
-  se arg0.pnivel < config:novatosnivel
+  refvar perm_msg = $perm_[arg0.jogperm].c_novatos
+  se perm_msg
+    ret arg0.msg(perm_msg)
+  senao arg0.pnivel < config:novatosnivel
     arg0.msg("Para escrever no canal NOVATOS você precisa estar no nível " + config:novatosnivel \
 + ".")
   senao !arg0.jogconfig.11
-    arg0.msg("Canal NOVATOS está desabilitado.")
+    arg0.msg("Canal NOVATOS está desabilitado; para habilitar tecle CONFIG +NOVATOS")
   senao !arg1
     arg0.msg("Tecle a mensagem após NOVATOS.")
   senao config:novatostipo == 2 # Escrever para todos

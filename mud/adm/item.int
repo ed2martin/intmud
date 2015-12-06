@@ -1,5 +1,5 @@
 classe adm_item
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Comandos de itens\b\n\
   \c2LITEM\b     Lista itens existentes\n\
   \c2IITEM\b     Mostra aonde está um item\n\
@@ -9,7 +9,7 @@ const txtajuda = "\b\c3Comandos de itens\b\n\
 
 
 classe adm_litem
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Litem\b\n\
 Sintaxe: LITEM [nome]\n\
 Lista os itens que começam com o nome especificado.\n\
@@ -38,7 +38,7 @@ func escr # Listar itens
 
 
 classe adm_iitem
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Iitem\b\n\
 Sintaxe: IITEM <nome>\n\
 Mostra aonde está cada item do tipo especificado."
@@ -72,7 +72,7 @@ func escr # Listar personagens
 
 
 classe adm_citem
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Citem\b\n\
 Sintaxe: CITEM <nome>\n\
 Cria um item. Nome deve ser o nome de uma área ou do item.\n\
@@ -156,7 +156,7 @@ func passo # Escolher o tipo de item ao criar
 
 
 classe adm_aitem
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Aitem\b\n\
 Sintaxe: AITEM <nomes dos itens>\n\
 Apaga uma ou mais itens, com os nomes especificados."
@@ -217,7 +217,7 @@ func infonome
 
 
 classe adm_eitem
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Eitem\b\n\
 Sintaxe: EITEM <nome>\n\
 Edita o item com o nome especificado."

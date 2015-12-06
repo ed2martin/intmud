@@ -1,5 +1,6 @@
 classe adm_ban
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_ban ? este
 const texto = $miscban1.texto
 const salvar = $miscban1.salvar
 const comando = "ban"
@@ -102,6 +103,7 @@ func escr
 
 classe adm_ban2
 herda adm_ban
+const objcmd = arg0.jogperm == "admin" ? este
 const texto = $miscban2.texto
 const salvar = $miscban2.salvar
 const comando = "ban2"

@@ -1,5 +1,5 @@
 classe adm_mudler
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Mudler\b\n\
 Sintaxe: MUDLER\n\
 Recarrega arquivos do MUD que foram alterados.\n\
@@ -47,7 +47,7 @@ func msg
   tela.msg("(mudler)\n" + arg0 + "\n")
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    continuar !item.obj.jogconfig.23 || txt1(item.obj.info) == "l"
+    continuar item.obj.jogperm != "admin" || txt1(item.obj.info) == "l"
     item.obj.msg("(mudler)\n" + arg0)
   efim
 

@@ -9,6 +9,8 @@ const posic = 5
 
 func escr
   ret !arg1, arg0.msg("Remover o que?")
+  refvar msg_perm = $perm_[arg0.jogperm].vestir
+  ret msg_perm, arg0.msg(msg_perm)
   refvar alvo = ref(arg0.persoesc) # Quem vai remover
 # Preenche a variável vest com o que está vestindo
   int1 vest.32 # Aonde está vestindo

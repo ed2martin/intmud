@@ -1,5 +1,6 @@
 classe adm_tele
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_tele ? este
 const txtajuda = "\b\c3Tele\b\n\
 Sintaxe: TELE <sala ou jogador>\n\
          TELE <jogador> <sala>\n\
@@ -12,6 +13,9 @@ func escr # Ir para uma sala específica
   indiceitem item
 # Transportar um jogador para uma sala
   se txt2(arg1)
+    se int($perm_[arg0.jogperm].c_tele) != 2
+      ret arg0.msg("Não é possível transportar outros jogadores")
+    fimse
     item.ini("pn " + txts(txtnome(txt1(arg1))))
     p = item.obj, s = $s_[txt2(arg1)]
     se !p
@@ -37,7 +41,11 @@ func escr # Ir para uma sala específica
       s = nulo
     fimse
   senao
-    arg0.msg("Teletransportar quem? Para onde?")
+    se int($perm_[arg0.jogperm].c_tele) != 2
+      arg0.msg("Transportar para onde?")
+    senao
+      arg0.msg("Teletransportar quem? Para onde?")
+    fimse
   fimse
 # Realiza o teletransporte
   se !(p && s)
@@ -55,14 +63,14 @@ func escr # Ir para uma sala específica
     $mens.mvis2("", "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
     $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
-    se !p.jogconfig.23
+    se p.jogperm == "admin"
       $misclog.cmdlog("tele " + arg0.nome + ": " + p.nome + " para " + txt(s, 2))
     fimse
   fimse
 
 
 classe adm_teleentra
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3TeleEntra\b\n\
 Sintaxe: TELEENTRA [texto]\n\
 Define a mensagem quando você se transporta usando o comando Tele.\n\
@@ -83,7 +91,7 @@ func escr
 
 
 classe adm_telesai
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3TeleSai\b\n\
 Sintaxe: TELESAI [texto]\n\
 Define a mensagem quando você se transporta usando o comando Tele.\n\

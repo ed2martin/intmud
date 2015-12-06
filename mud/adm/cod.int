@@ -14,7 +14,7 @@ const txtajuda = "\b\c3Comandos de edição do código\b\n\
 
 
 classe adm_lcl
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lcl\b\n\
 Sintaxe: LCL [nome] [quantidade]\n\
 Lista todas as classes que começam com o nome especificado.\n\
@@ -64,7 +64,7 @@ func escr # Listar classes
 
 
 classe adm_ccl
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Ccl\b\n\
 Sintaxe: CCL <nome> [arquivo]\n\
 Cria uma classe. Aquivo é o nome do arquivo sem o .int no final, e a partir\n\
@@ -106,7 +106,7 @@ func passo
 
 
 classe adm_acl
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Acl\b\nSintaxe: ACL <nome>\nApaga uma classe."
 
 func escr # Apaga classe
@@ -141,7 +141,7 @@ func passo
 
 
 classe adm_ecl
-herda comando_editor, comando_comum
+herda comando_editor
 const txtajuda = "\b\c3Ecl\b\n\
 Sintaxe: ECL [nome da classe]\n\
 Edita uma classe.\n\
@@ -172,7 +172,7 @@ func passo # Editar função
 
 
 classe adm_icl
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Icl\b\n\
 Sintaxe: ICL <nome da classe>\n\
 Inicializa uma classe (chama a função iniclasse da classe).\n\
@@ -191,7 +191,7 @@ func escr # Inicializa uma classe
 
 
 classe adm_rcl
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Rcl\b\nSintaxe: RCL <nome> <novo nome>\nRenomeia uma classe."
 
 func escr # Renomeia uma classe
@@ -210,7 +210,7 @@ func escr # Renomeia uma classe
 
 
 classe adm_lfunc
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lfunc\b\n\
 Sintaxe: LFUNC <nome da classe>\n\
 Lista as funções de uma classe."
@@ -236,7 +236,7 @@ func escr # Listar funções
 
 
 classe adm_lfunc2
-herda comando_adm, comando_comum
+herda comando_adm
 const txtajuda = "\b\c3Lfunc2\b\n\
 Sintaxe: LFUNC2 <nome da classe>\n\
 Lista todas as funções de uma classe, inclusive as herdadas."
@@ -262,7 +262,7 @@ func escr # Listar funções inclusive as herdadas
 
 
 classe adm_lherda
-herda comando_editor, comando_comum
+herda comando_editor
 const txtajuda = "\b\c3Lherda\b\n\
 Sintaxe: lherda <nome da classe>\n\
 Lista heranças de uma classe."
@@ -316,7 +316,7 @@ func escr
 
 
 classe adm_eherda
-herda comando_editor, comando_comum
+herda comando_editor
 const txtajuda = "\b\c3Eherda\b\n\
 Sintaxe: eherda <nome da classe>\n\
 Edita herança de uma classe (uma classe herdada por linha)."

@@ -1,5 +1,6 @@
 classe adm_rezou
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_rezou ? este
 const txtajuda = "\b\c3Rezou\b\n\
 Sintaxe: REZOU <jogador> <texto>\n\
 Envia mensagem para o jogador com cópia para todos os administradores."
@@ -16,6 +17,6 @@ func escr
   $mens.mens = txt2(arg1)
   item.obj.msg($mens.proc(config:rezou2msg, item.obj.perso))
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    continuar !item.obj.jogconfig.23 || item.obj.perso.var.u_[nome]
+    continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[nome]
     item.obj.msg($mens.proc(config:rezou1msg, item.obj.perso))
   efim

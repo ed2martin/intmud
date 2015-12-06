@@ -1,5 +1,6 @@
 classe adm_pnj
-herda comando_adm, comando_comum
+herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_pnj ? este
 const txtajuda = "\b\c3Pnj\b\n\
 Sintaxe: PNJ\n\
          PNJ <personagem não jogador da sala>\n\
@@ -20,8 +21,8 @@ func escr
     obj && arg0.msg("Personagem " + obj.nome + " sai do jogo")
     !obj && arg0.msg("Seu personagem já saiu do jogo")
   senao arg1
-    refvar r = misc:objperso(arg0, arg1)
-    ret !r, 1
+    refvar r = misc:objpersosala(arg0, arg1)
+    ret !r, arg0.msg("Não há nenhum personagem chamado " + arg1)
     ret r.jog, arg0.msg("Personagem é jogador")
     ret r.sock, arg0.msg("Personagem já está sendo controlado por jogador")
     arg0.sock.mudaperso(r)
