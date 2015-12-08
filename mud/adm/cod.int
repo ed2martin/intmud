@@ -7,6 +7,7 @@ const txtajuda = "\b\c3Comandos de edição do código\b\n\
   \c2ECL\b       Edita uma classe\n\
   \c2ICL\b       Inicializa uma classe (chama a função iniclasse)\n\
   \c2RCL\b       Renomeia uma classe\n\
+  \c2AOBJ\b      Apaga todos os objetos de uma classe\n\
   \c2LHERDA\b    Lista heranças de uma classe\n\
   \c2EHERDA\b    Edita herança de uma classe\n\
   \c2LFUNC\b     Lista funções de uma classe\n\
@@ -31,7 +32,6 @@ func escr # Listar classes
   debug d
   d.exec = 50000
   txtmais.limpar
-
   total = txt1(arg1)
   se txt1(arg1) != total
     nome = txt1(arg1)
@@ -206,6 +206,34 @@ func escr # Renomeia uma classe
     arg0.msg("Renomeando classe " + txt1(arg1) + " para " + txt2(arg1))
     p.renomear(txt1(arg1), txt2(arg1))
     config:salvar
+  fimse
+
+
+classe adm_aobj
+herda comando_adm
+const txtajuda = "\b\c3Aobj\b\n\
+Sintaxe: AOBJ <nome>\n\
+Apaga todos os objetos de uma classe."
+
+func escr
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após AOBJ")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao !$[arg1]
+    arg0.msg("\bClasse " + arg1 + " não possui nenhum objeto")
+  senao
+    refvar total = inttotal($[arg1])
+    ref r
+    epara r = $[arg1], r, r = objdepois(r)
+      apagar(r)
+    efim
+    se total == 1
+      arg0.msg("\bClasse " + arg1 + ", 1 objeto apagado")
+    senao
+      arg0.msg("\bClasse " + arg1 + ", " + total + " objetos apagados")
+    fimse
   fimse
 
 

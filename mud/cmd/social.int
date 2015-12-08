@@ -120,7 +120,7 @@ func escr
   $mens.mens = arg1
   listaobj l
   refvar perm_msg = $perm_[arg0.jogperm].c_social
-  ret perm_msg, arg0.msg(perm_msg)
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   se !arg1 # Sem argumentos
     ret !sem1, arg0.msg("Digite alguma coisa após " + txt(este, 4))
     $mens.p(arg0)

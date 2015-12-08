@@ -15,8 +15,8 @@ const posic = 5
 
 func escr
   ret !arg1, arg0.msg("Vestir o que?")
-  refvar msg_perm = $perm_[arg0.jogperm].vestir
-  ret msg_perm, arg0.msg(msg_perm)
+  refvar perm_msg = $perm_[arg0.jogperm].vestir
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc) # Quem vai vestir
   refvar tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
   refvar tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""

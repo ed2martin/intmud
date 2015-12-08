@@ -216,11 +216,42 @@ func escr
   senao !p.existe("perm_" + txts(arg1))
     arg0.msg("Grupo de permissões não existe: " + arg1)
   senao arg1 == "admin"
-    arg0.msg("O grupo de permissões Admin não pode ser editado.")
+    arg0.sock.var.classe1 = "perm_admin"
+    arg0.sock.m_menu("menu_perm_admin")
   senao
     arg0.sock.var.classe1 = "perm_" + txts(txtmin(arg1))
     arg0.sock.m_menu("menu_perm")
   fimse
+
+
+classe menu_perm_admin
+herda comando_menu
+const titulo = "Grupo de permissões admin (administração)"
+const colunas = 25
+#
+const nome1 = "Texto comando Quem"
+const info1 = "Aparece para jogadores que não possuem Config +InvQuem"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "nomequem"
+#
+const nome2 = "Fome/sede"
+const info2 = "Se pode sentir fome e sede (se não for imortal)"
+const tipo2 = "opc_simnao"
+const clas2 = var.classe1
+const vari2 = "fome"
+#
+const nome3 = "Ganhou permissão"
+const info3 = "Mensagem quando o jogador muda para esse grupo"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "entroumsg"
+#
+const nome4 = "Perdeu permissão"
+const info4 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "saiumsg"
 
 
 classe menu_perm
@@ -240,7 +271,7 @@ Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
 const tipo2 = "opc_vetor"
 const clas2 = var.classe1
 const vari2 = "c_config"
-const extr2 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog"
+const extr2 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
 const exec2 = "jogrecalc"
 #
 const nome3 = "Jogador entrando"

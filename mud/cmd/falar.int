@@ -11,7 +11,7 @@ terminada com reticências, interrogação ou exclamação."
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
   se perm_msg
-    ret arg0.msg(perm_msg)
+    ret $mensjog.msg(perm_msg, arg0)
   senao !arg1
     ret arg0.msg("Tecle a mensagem após FALAR.")
   senao
@@ -52,7 +52,7 @@ func escr
   txt100 area
   refvar perm_msg = $perm_[arg0.jogperm].c_gritar
   se perm_msg
-    ret arg0.msg(perm_msg)
+    ret $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:gritarnivel
     ret arg0.msg("Para gritar você precisa estar no nível " + config:gritarnivel + ".")
   senao !arg1
@@ -97,7 +97,7 @@ Os outros apenas ficam sabendo que você sussurrou alguma coisa."
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
   se perm_msg
-    ret arg0.msg(perm_msg)
+    ret $mensjog.msg(perm_msg, arg0)
   senao !arg1
     ret arg0.msg("Sussurrar para quem?")
   senao !txt2(arg1)

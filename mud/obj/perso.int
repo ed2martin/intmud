@@ -184,12 +184,12 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
   senao jogconfig.16
     dono.t_item = 0
     msgsom(dono.s_som)
-    refvar cfg = (jogconfig.bits & 3) | (dono.s_morre ? 5 : 4)
+    refvar cfg = jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)
     msg2(txt(dono, 2) + "  " + dono.descsala(este, cfg))
   senao
     dono.t_item = 0
     msgsom(dono.s_som)
-    refvar cfg = (jogconfig.bits & 3) | (dono.s_morre ? 5 : 4)
+    refvar cfg = jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)
     msg2(dono.descsala(este, cfg))
   fimse
   ret este

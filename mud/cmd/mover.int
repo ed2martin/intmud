@@ -40,9 +40,10 @@ func escr # Executa o comando
 func mover # Personagem anda em uma direção
 # arg0 = personagem
 # Retorna 1 se conseguiu mover ou 0 se não conseguiu
-  se $perm_[arg0.jogperm].andar
-    arg0.msg($perm_[arg0.jogperm].andar)
-    ret 1
+  refvar perm_msg = $perm_[arg0.jogperm].andar
+  se perm_msg
+    $mensjog.msg(perm_msg, arg0)
+    ret 0
   fimse
   listaobj l
   ref s1 # Sala aonde está

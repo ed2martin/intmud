@@ -50,6 +50,13 @@ Envia mensagem para o personagem se ele estiver acordado.
 Envia mensagem para o personagem se ele estiver acordado e vendo
 o personagem definido em $mens.p.
 
+Para enviar mensagens para o próprio personagem, pode-se usar a classe
+mensjog, da seguinte forma:
+$mensjog.msg(texto, personagem)
+
+Para apenas obter o texto, fazendo as substituições com $, usar a função
+$mensjog.txt(texto, personagem)
+
 O texto pode conter os seguintes caracteres especiais:
 
 $$ = Símbolo $
@@ -60,22 +67,26 @@ $A = Nome do alvo
 $B = Nome do alvo sem citar o dono
 $C = Nome do alvo no comando QUEM
 $O = Nome do objeto
-$F = Depende do personagem: "um" ou "uma"
-$G = Depende do alvo: "um" ou "uma"
-$H = Depende do objeto: "um" ou "uma"
-$S = Depende do personagem: "o" ou "a"
-$T = Depende do alvo: "o" ou "a"
-$U = Depende do objeto: "o" ou "a"
-$V = Depende do personagem: "e" ou "a"
-$W = Depende do alvo: "e" ou "a"
-$X = Depende do objeto: "e" ou "a"
-$M = Texto de $mens.mens
+$H = Depende do personagem: um ou uma
+$I = Depende do alvo: um ou uma
+$J = Depende do objeto: um ou uma
+$S = Depende do personagem: o ou a
+$T = Depende do alvo: o ou a
+$U = Depende do objeto: o ou a
+$V = Depende do personagem: e ou a
+$W = Depende do alvo: e ou a
+$X = Depende do objeto: e ou a
+$M = Mensagem; somente comandos que usam uma mensagem digitada por alguém
 $D = É substituído por "de"
      No entando, seguido de o/a/os/as, forma as palavras do/da/dos/das
      Costuma ser usado nas mensagens como $d $p, $d $a e $d $o
 $E = É substituído por "em"
      No entando, seguido de o/a/os/as, forma as palavras no/na/nos/nas
      Costuma ser usado nas mensagens como $e $p, $e $a e $e $o
+$F = Semelhante a $D, exceto que seguido de um/uma/uns/umas também
+     forma as palavras do/da/dos/das.
+$G = Semelhante a $E, exceto que seguido de um/uma/uns/umas também
+     forma as palavras no/na/nos/nas.
 $1 a $5 = Variáveis $mens.o_1 a $mens.o_5
 
 Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra

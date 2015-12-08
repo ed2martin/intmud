@@ -11,7 +11,7 @@ const posic = 0
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_bug
   se perm_msg
-    arg0.msg(perm_msg)
+    $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:bugnivel
     arg0.msg("Para usar o comando BUG você precisa estar no nível " + config:bugnivel + ".")
   senao !arg1
@@ -41,7 +41,7 @@ const posic = 0
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_ideia
   se perm_msg
-    arg0.msg(perm_msg)
+    $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:ideianivel
     arg0.msg("Para usar o comando IDEIA você precisa estar no nível " + config:ideianivel + \
 ".")

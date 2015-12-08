@@ -18,7 +18,7 @@ func escr
   $mens.mens = arg1
   refvar perm_msg = $perm_[arg0.jogperm].c_chat
   se perm_msg
-    ret arg0.msg(perm_msg)
+    ret $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:chatnivel
     arg0.msg("Para escrever no canal CHAT você precisa estar no nível " + config:chatnivel + \
 ".")
@@ -63,7 +63,7 @@ func escr
   $mens.mens = arg1
   refvar perm_msg = $perm_[arg0.jogperm].c_novatos
   se perm_msg
-    ret arg0.msg(perm_msg)
+    ret $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:novatosnivel
     arg0.msg("Para escrever no canal NOVATOS você precisa estar no nível " + config:novatosnivel \
 + ".")

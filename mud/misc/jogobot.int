@@ -205,7 +205,8 @@ func msgsock # Envia mensagem para o usuário
   textotxt t1
   t1.addfim(arg0)
   enquanto t1.linhas
-    j_jogobot.conec.msg(txtsub(j_nome, 2) + " " + t1.remove + "\n")
+    refvar m = t1.remove
+    j_jogobot.conec.msg(txtsub(j_nome, 2) + " " + m + "\n")
   efim
 
 func msgsala # Envia mensagem para todos da sala

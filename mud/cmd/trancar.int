@@ -7,8 +7,8 @@ Nota: pode ser necessário possuir uma chave para trancar."
 const posic = 5
 
 func escr
-  refvar msg_perm = $perm_[arg0.jogperm].abrir
-  ret msg_perm, arg0.msg(msg_perm)
+  refvar perm_msg = $perm_[arg0.jogperm].abrir
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   txt10 dir
   dir = misc:d1[arg1]
   dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)
@@ -137,8 +137,8 @@ Nota: pode ser necessário possuir uma chave para destrancar."
 const posic = 5
 
 func escr
-  refvar msg_perm = $perm_[arg0.jogperm].abrir
-  ret msg_perm, arg0.msg(msg_perm)
+  refvar perm_msg = $perm_[arg0.jogperm].abrir
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   txt10 dir
   dir = misc:d1[arg1]
   dir ? escrdir(arg0, dir) : escrobj(arg0, arg1)

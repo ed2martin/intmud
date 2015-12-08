@@ -9,7 +9,7 @@ Veja também o comando SALVAR (salva o seu personagem)"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_salvar
-  ret perm_msg, arg0.msg(perm_msg)
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   ref r
   $mens.p(arg0)
   $mens.mens = arg1
@@ -31,7 +31,7 @@ Veja também o comando SENHA (muda a senha do seu personagem)"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_salvar
-  ret perm_msg, arg0.msg(perm_msg)
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   ref r
   $mens.p(arg0)
   $mens.mens = arg1

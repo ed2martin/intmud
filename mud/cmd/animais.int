@@ -148,8 +148,8 @@ para a sua equipe. Por isso, é sempre bom enfraquecê-lo antes."
 const posic = 5
 
 func escr
-  refvar msg_perm = $perm_[arg0.jogperm].item
-  ret msg_perm, arg0.msg(msg_perm)
+  refvar perm_msg = $perm_[arg0.jogperm].item
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   ref r
   ref item # Item usado para capturar
 # Checa se sabe o nome do item
@@ -273,8 +273,8 @@ Com o nome de um item, dá um item para o animal escolhido.\n\
 Com dois números, troca dois animais de lugar."
 
 func escr
-  refvar msg_perm = $perm_[arg0.jogperm].item
-  ret msg_perm, arg0.msg(msg_perm)
+  refvar perm_msg = $perm_[arg0.jogperm].item
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
   ret arg0.atkenv, arg0.msg("Você não consegue trocar durante a batalha.")
   ret !arg1, escr_pegar(arg0)
   uint8 p1

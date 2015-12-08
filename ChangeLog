@@ -1,3 +1,57 @@
+* 7/12/2015 IntMUD 1.05 MUD baseado na revisão 384
+
+   No IntMUD:
+  1. Corrigido bug com heranças, do tipo: Se A herda B que por sua vez
+     herda C, mudar uma instrução herda na classe C bagunça as heranças
+  2. Corrigido bug ao ler com prog uma expressão com dois ou mais
+     operadores unitários seguidos (exemplo: !!1)
+  3. O programa ficou um pouco mais rápido para acessar variáveis
+     (principalmente as definidas na própria função) e funções
+     predefinidas
+  4. Criadas funções txtconv, txtrev e arqdir.barra
+  5. Operadores de bit & | ^ ~ << >> agora funcionam diferente quando o
+     primeiro operador for texto; vide tópico 13.7 do manual.txt
+  6. Versão do programa mudou para 1.05
+
+   No MUD:
+  1. Corrigido bug: comando Infojog não podia ser usado quando o
+     personagem do jogador estava dormindo
+  2. Corrigido bug: comando Infojog permitia nomes incompletos de
+     jogadores online, por isso era possível saber quando um jogador
+     estava online
+  3. Corrigido bug: ataques de área, quando matam um alvo secundário,
+     não estavam apresentando a mensagem do golpe
+  4. Corrigido bug: a opção "11.Morre ao entrar" do comando Esala estava
+     incompleto (no comando Earea está completo)
+  5. Corrigido bug: quando um PNJ que carrega um item do tipo grupo
+     morre, eram transferidos 65535 itens para o corpo, não importa
+     quantos itens ele tinha
+  6. Corrigido bug: comandos Bug e Ideia não enviavam mensagem de
+     retorno para o jogador se ele estivesse dormindo
+  7. Corrigido bug: existiam alguns comandos de administração (raca1,
+     perso1, email1, etc) que não produziam efeito, porque os nomes de
+     algumas classes estavam errado
+  8. Corrigido bug: o comando dar não permitia dar itens para
+     personagens com a opção Objetos máximo = 1
+  9. Adicionadas funções para atualizar personagens/itens
+     $admrecalc.atuperso e $admrecalc.atuitem, documentadas em
+     mud/doc/06-comum.txt
+ 10. Pequenas mudanças devido à otimização no IntMUD: algumas variáveis
+     de classe foram movidas para dentro da função que a usa
+ 11. Possibilidade de uma raça ou classe existir somente para homens ou
+     somente para mulheres, pelo comando Etipo
+ 12. Criado comando AOBJ: apaga todos os objetos de uma classe
+ 13. Criado comando LHERDA
+ 14. Comando HERDA mudou de nome para EHERDA
+ 15. Comando LCL agora pode listar somente as classes com mais objetos
+ 16. Criados comandos LPERM, CPERM, EPERM, APERM (e muitas mudanças no
+     código do MUD); vide ADM PERM
+ 17. Opções "Quem mostra admin" e "Quando alguém entra avisar" do
+     comando Econfig foram removidas porque já pode ser feito com o
+     comando MPERM
+ 18. Atualizada a documentação das mensagens (arquivo
+     mud/doc/03-mensagens.txt)
+
 * 16/10/2015 IntMUD 1.04a MUD baseado na revisão 376
 
    Adicionado programa ServMUD (arquivos servmud.int e servmud.txt)

@@ -346,7 +346,7 @@ func msgchegou # Mensagem de usuário chegando ou saindo
     refvar i_entrando = $perm_[item.obj.jogperm].i_entrando
     se i_entrando == 2
       arg0 && item.obj.msg("* " + arg0)
-    senao i_entrando == 1
+    senao i_entrando == 1 && !jogconfig.17
       arg1 && item.obj.msg("* " + arg1)
     fimse
   efim

@@ -72,7 +72,7 @@ const opc_moedas = 10
 const opc_novatos = config:novatostipo ? 11
 const opc_som = 12
 const opc_imortal = arg0 & 1 ? 14
-const opc_execlog = arg0 == $perm_admin ? 15
+const opc_execlog = arg0 & 0x80 ? 15
 const opc_sala = arg0 & 2 ? 16
 const opc_invquem = arg0 & 4 ? 17
 const opc_invsala = arg0 & 8 ? 18

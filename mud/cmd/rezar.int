@@ -10,7 +10,7 @@ const posic = 5
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_rezar
   se perm_msg
-    arg0.msg(perm_msg)
+    $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:rezarnivel
     arg0.msg("Para usar o comando REZAR você precisa estar no nível " + config:rezarnivel + \
 ".")
