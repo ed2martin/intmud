@@ -10,25 +10,23 @@ const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
 
 classe adm_lperso
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_lperso ? este
 const txtajuda = "\b\c3Lperso\b\n\
 Sintaxe: LPERSO [nome]\n\
 Lista os personagens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os personagens."
 
 func escr # Listar personagens
+  refvar t = arg0.sock.txtmais
+  debug d
   prog p
-  se !p.iniclasse("p_" + arg1)
-    arg0.msg("\bNenhum personagem encontrado.")
-  senao
-    se 1
-      debug d
-      d.exec = 50000
-    fimse
-    refvar t = arg0.sock.txtmais
-    textotxt t
-    txt100 lin
-    int32 total
-    epara t.limpar, p.lin, p.depois
+  int32 total
+  txt100 lin
+  t.limpar
+  d.exec = 50000
+  p.iniclasse("p_" + txtremove(arg1, "EMDCT7"))
+  se int($perm_[arg0.jogperm].c_lperso) >= 2
+    epara nulo, p.lin, p.depois
       lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
       se inttotal($[p.texto]) == [p.texto]:objsolto.total
         lin += " " + inttotal($[p.texto])
@@ -38,23 +36,44 @@ func escr # Listar personagens
       total += inttotal($[p.texto])
       t.addfim(lin + "  " + [p.texto]:nome)
     efim
-    t.addini("\b\c6Personagem(" + t.linhas + ") Tipo Quantidade(" + total + ") Nome\b")
-    arg0.sock.txtmostra
+  senao
+    refvar prefixo = "p_" + arg0.jogarea
+    arg1 == txt(arg0.jogarea, 0, inttotal(arg1)) && p.iniclasse(prefixo)
+    epara nulo, p.lin, p.depois
+      sair prefixo + txtfim(p.texto, 3) != p.texto
+      lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
+      se inttotal($[p.texto]) == [p.texto]:objsolto.total
+        lin += " " + inttotal($[p.texto])
+      senao
+        lin += " " + [p.texto]:objsolto.total + "/" + inttotal($[p.texto])
+      fimse
+      total += inttotal($[p.texto])
+      t.addfim(lin + "  " + [p.texto]:nome)
+    efim
   fimse
+  se t.linhas
+    t.addini("\b\c6Personagem(" + t.linhas + ") Tipo Quantidade(" + total + ") Nome\b")
+  senao
+    t.addini("\bNenhum personagem encontrado.")
+  fimse
+  arg0.sock.txtmostra
 
 
 classe adm_iperso
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].i_perso ? este
+const objcmd = $perm_[arg0.jogperm].c_iperso ? este
 const txtajuda = "\b\c3Iperso\b\n\
 Sintaxe: IPERSO <nome>\n\
 Mostra aonde está cada personagem do tipo especificado."
 
 func escr # Listar personagens
   prog p
+  refvar perm = $perm_[arg0.jogperm].c_iperso
   se arg1 == ""
-    ret arg0.msg("Tecle o nome do personagem IPERSO")
+    arg0.msg("\bTecle o nome do personagem IPERSO")
   senao !p.existe("p_" + arg1)
+    arg0.msg("\bPersonagem não existe: " + arg1)
+  senao perm <= 1 && arg0.jogarea + txtfim(arg1, 3) != arg1
     arg0.msg("\bPersonagem não existe: " + arg1)
   senao !$p_[arg1]
     arg0.msg("\bPersonagem não está no jogo: " + arg1)
@@ -82,6 +101,7 @@ func escr # Listar personagens
 
 classe adm_cperso
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_eperso ? este
 const txtajuda = "\b\c3Cperso\b\n\
 Sintaxe: CPERSO <nome>\n\
 Cria um personagem. Nome deve ser o nome de uma área ou do personagem.\n\
@@ -114,6 +134,11 @@ func escr # Criar personagem
       ret arg0.msg("Atingido limite de personagens na área " + nome)
     efim
     nome += txtfim(num, 3)
+  fimse
+# Checa se pode criar sala
+  se $perm_[arg0.jogperm].c_eperso >= 2
+  senao nome != arg0.jogarea + txtfim(nome, 3)
+    ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
   fimse
 # Pergunta que tipo de personagem criar
   arg0.sock.var.opcclasse = nome
@@ -167,6 +192,7 @@ func passo # Escolher o tipo de personagem ao criar
 
 classe adm_aperso
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_eperso ? este
 const txtajuda = "\b\c3Aperso\b\n\
 Sintaxe: APERSO <nomes dos personagens>\n\
 Apaga uma ou mais personagens, com os nomes especificados."
@@ -179,8 +205,12 @@ func escr # Apagar personagem
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
-    se !p.existe("p_" + txtsub(nome, x, 1))
-      ret arg0.msg("Personagem não existe: " + txtsub(nome, x, 1))
+    refvar nome = txtsub(nome, x, 1)
+    se !p.existe("p_" + nome)
+      ret arg0.msg("Personagem não existe: " + nome)
+    senao $perm_[arg0.jogperm].c_eperso >= 2
+    senao nome != arg0.jogarea + txtfim(nome, 3)
+      ret arg0.msg("Personagem não existe: " + nome)
     fimse
     x += 1
   efim
@@ -228,6 +258,7 @@ func infonome
 
 classe adm_eperso
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_eperso ? este
 const txtajuda = "\b\c3Eperso\b\n\
 Sintaxe: EPERSO <nome>\n\
 Edita o personagem com o nome especificado."
@@ -237,16 +268,18 @@ func escr # Editar personagem
   uint8 num
   refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
   se nome == ""
-    arg0.msg("Tecle o nome do personagem após EPERSO")
+    ret arg0.msg("Tecle o nome do personagem após EPERSO")
   senao !p.existe("p_" + nome)
-    arg0.msg("\bPersonagem não existe: " + nome)
+    ret arg0.msg("\bPersonagem não existe: " + nome)
   senao !p.existe("menu_perso" + (num = p_[nome]:perso))
-    arg0.msg("\bPersonagem não pode ser editado: " + nome)
-  senao
-    arg0.sock.var.classe1 = "p_" + txtmin(nome)
-    arg0.sock.var.menufim = "menu_perso" + num
-    arg0.sock.m_menu("menu_perso" + num)
+    ret arg0.msg("\bPersonagem não pode ser editado: " + nome)
+  senao $perm_[arg0.jogperm].c_eperso >= 2
+  senao nome != arg0.jogarea + txtfim(nome, 3)
+    ret arg0.msg("\bPersonagem não existe: " + nome)
   fimse
+  arg0.sock.var.classe1 = "p_" + txtmin(nome)
+  arg0.sock.var.menufim = "menu_perso" + num
+  arg0.sock.m_menu("menu_perso" + num)
 
 
 classe opc_menuaula

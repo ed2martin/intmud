@@ -28,7 +28,8 @@ func escr
     t1 += "  "
     obj.p_tempofim && (t1 += " [Desconectado]")
     se ver
-      obj.jogperm != "jog" && (t1 += " [" + obj.jogperm + "]")
+      refvar txtperm = txtremove(obj.jogperm + " " + obj.jogarea, "ED")
+      txtperm != "jog" && (t1 += " [" + txtperm + "]")
       obj.jogconfig.17 && (t1 += " [InvQuem]")
       !(obj.sock || obj.p_tempofim) && (t1 += " [PNJ]")
     fimse

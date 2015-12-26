@@ -49,6 +49,7 @@ const txtajuda = "\b\c3Comandos de salas\b\n\
 
 classe adm_larea
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_larea ? este
 const txtajuda = "\b\c3Larea\b\n\
 Sintaxe: LAREA [nome]\n\
 Lista as áreas que começam com o nome especificado.\n\
@@ -161,27 +162,36 @@ func escr # Editar área
 
 classe adm_lsala
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_lsala ? este
 const txtajuda = "\b\c3Lsala\b\n\
 Sintaxe: LSALA [nome]\n\
 Lista as salas que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as salas."
 
 func escr # Listar salas
+  refvar t = arg0.sock.txtmais
+  t.limpar
   prog p
-  se !p.iniclasse("s_" + txtremove(arg1, "EMDCT7"))
-    arg0.msg("\bNenhuma sala encontrada.")
-  senao
-    refvar t = arg0.sock.txtmais
-    epara t.limpar, p.lin && t.linhas < 500, p.depois
+  p.iniclasse("s_" + txtremove(arg1, "EMDCT7"))
+  se int($perm_[arg0.jogperm].c_lsala) >= 2
+    epara nulo, p.lin && t.linhas < 500, p.depois
       t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo(arg0))
     efim
-    t.addini("\b\c6Salas:\b")
-    arg0.sock.txtmostra
+  senao
+    refvar prefixo = "s_" + arg0.jogarea
+    arg1 == txt(arg0.jogarea, 0, inttotal(arg1)) && p.iniclasse(prefixo)
+    epara nulo, p.lin && t.linhas < 500, p.depois
+      sair prefixo + txtfim(p.texto, 3) != p.texto
+      t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo(arg0))
+    efim
   fimse
+  t.addini(t.linhas ? "\b\c6Salas:\b" : "\bNenhuma sala encontrada.")
+  arg0.sock.txtmostra
 
 
 classe adm_cdir
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Cdir\b\n\
 Sintaxe: CDIR <direção>\n\
 Cria sala na direção especificada. Cria automaticamente uma saída com\n\
@@ -189,10 +199,13 @@ a sala em que você está.\n\
 Exemplo: cdir ne"
 
 func escr # Criar sala na direção especificada
-  se arg1 == ""
-    ret arg0.msg("Tecle o nome da sala ou a direção após CDIR")
+  refvar perm = $perm_[arg0.jogperm].c_esala
+  se perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
+  senao arg1 == ""
+    ret arg0.msg("\bTecle o nome da sala ou a direção após CDIR")
   senao !misc:d1[arg1]
-    ret arg0.msg("Direção inválida: " + arg1)
+    ret arg0.msg("\bDireção inválida: " + arg1)
   fimse
   prog p
   uint16 num
@@ -202,16 +215,16 @@ func escr # Criar sala na direção especificada
 # Obtém prefixo da área
   nome = txt(arg0.dono, 0, inttotal(txt(arg0.dono)) - 3)
   se txt(nome, 0, 2) != "s_"
-    ret arg0.msg("Você não está em uma sala")
+    ret arg0.msg("\bVocê não está em uma sala")
   fimse
 # Checa se já existe sala nessa direção
   se p.existe(arg0.dono, "dir_" + dir) == 1
-    ret arg0.msg("Já existe sala na direção " + dir)
+    ret arg0.msg("\bJá existe sala na direção " + dir)
   fimse
 # Obtém número da sala
   epara num = 1001, p.existe(nome + txtfim(num, 3)), num += 1
     continuar num < 2000
-    ret arg0.msg("Atingido limite de salas na área " + txt(nome, 2))
+    ret arg0.msg("\bAtingido limite de salas na área " + txt(nome, 2))
   efim
 # Cria sala
   txt300 nome2
@@ -230,6 +243,7 @@ func escr # Criar sala na direção especificada
 
 classe adm_csala
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Csala\b\n\
 Sintaxe: CSALA <nome>\n\
 Cria uma sala. Nome deve ser o nome de uma área ou da sala.\n\
@@ -262,6 +276,11 @@ func escr # Criar sala
     efim
     nome += txtfim(num, 3)
   fimse
+# Checa se pode criar sala
+  se $perm_[arg0.jogperm].c_esala >= 2
+  senao nome != arg0.jogarea + txtfim(nome, 3)
+    ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
+  fimse
 # Cria sala
   txt200 area
   area = txt(nome, 0, inttotal(nome) - 3)
@@ -274,6 +293,7 @@ func escr # Criar sala
 
 classe adm_asala
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Asala\b\n\
 Sintaxe: ASALA <nomes das salas>\n\
 Apaga uma ou mais salas, mas não apaga as saídas das outras salas para\n\
@@ -287,8 +307,12 @@ func escr # Apagar sala
   fimse
   uint16 x
   enquanto txtsub(nome, x, 1)
-    se !p.existe("s_" + txtsub(nome, x, 1))
-      ret arg0.msg("Sala não existe: " + txtsub(nome, x, 1))
+    refvar nome = txtsub(nome, x, 1)
+    se !p.existe("s_" + nome)
+      ret arg0.msg("Sala não existe: " + nome)
+    senao $perm_[arg0.jogperm].c_esala >= 2
+    senao nome != arg0.jogarea + txtfim(nome, 3)
+      ret arg0.msg("Não pode apagar a sala: " + nome)
     fimse
     x += 1
   efim
@@ -325,6 +349,7 @@ func passo # Confirmar que quer apagar sala
 
 classe adm_esala
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Esala\b\n\
 Sintaxe: ESALA [nome]\n\
 Edita a sala com o nome especificado. Se o nome for omitido, edita a sala\n\
@@ -336,22 +361,28 @@ func escr # Editar sala
   nome = txtmin(txtremove(arg1, "EMDCT7"))
   nome == "" && (nome = txt(arg0.dono, 2))
   se !$s_[nome]
-    arg0.msg("\bSala não existe: " + nome)
-  senao
-    arg0.sock.var.classe1 = "s_" + nome
-    arg0.sock.m_menu("menu_sala")
+    ret arg0.msg("\bSala não existe: " + nome)
+  senao $perm_[arg0.jogperm].c_esala >= 2
+  senao nome != arg0.jogarea + txtfim(nome, 3)
+    ret arg0.msg("\bNão pode editar a sala: " + nome)
   fimse
+  arg0.sock.var.classe1 = "s_" + nome
+  arg0.sock.m_menu("menu_sala")
 
 
 classe adm_ldesc
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Ldesc\b\n\
 Sintaxe: LDESC\n\
 Lista as descrições extras sala sala aonde você está."
 
 func escr # Listar descrições extras
   prog p
-  se !p.inifunc(arg0.dono, "ver_")
+  refvar perm = $perm_[arg0.jogperm].c_esala
+  se perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
+  senao !p.inifunc(arg0.dono, "ver_")
     arg0.msg("\bNenhuma descrição encontrada.")
   senao
     textotxt t
@@ -366,6 +397,7 @@ func escr # Listar descrições extras
 
 classe adm_edesc
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Edesc\b\n\
 Sintaxe: EDESC <nome da descrição>\n\
 Edita uma descrição extra da sala aonde você está.\n\
@@ -377,15 +409,18 @@ Por outro lado, se você criar, por exemplo, somente janela@d, a descrição\n\
 da janela só existirá durante o dia."
 
 func escr # Editar descrição extra
+  refvar perm = $perm_[arg0.jogperm].c_esala
   prog p
   txt80 nome
   nome = txtmin(txtremove(txte(arg1), "EMDCT"))
   se !arg0.dono
     arg0.msg("\bVocê não está em uma sala")
+  senao perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
   senao !arg1
     arg0.msg("\bDigite o nome da descrição após EDESC")
   senao txttroca(nome, "@", "") != txtsepara(txttroca(nome, "@", ""), "LV+DO", "DO+LV")
-    arg0.msg("Nomes de descrições só podem ter letras e espaço")
+    arg0.msg("\bNomes de descrições só podem ter letras e espaço")
   senao
     arg0.sock.var.opcnome = "Descrição " + nome
     arg0.sock.var.opcclasse = txt(arg0.dono)
@@ -397,14 +432,18 @@ func escr # Editar descrição extra
 
 classe adm_adesc
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Adesc\b\n\
 Sintaxe: ADESC <nome da descrição>\n\
 Apaga uma descrição extra da sala aonde você está."
 
 func escr # Apagar descrição extra
+  refvar perm = $perm_[arg0.jogperm].c_esala
   prog p
   se !arg0.dono
     arg0.msg("\bVocê não está em uma sala")
+  senao perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
   senao !arg1
     arg0.msg("\bDigite o nome da descrição após ADESC")
   senao !p.existe(arg0.dono, "ver_" + arg1)

@@ -1,10 +1,14 @@
 classe adm_lsai
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_lsai ? este
 const txtajuda = "\b\c3Lsai\b\nSintaxe: LSAI\nMostra as saídas da sala aonde você está."
 
 func escr # Listar saídas
   se !arg0.dono
     ret arg0.msg("\bVocê não está em uma sala")
+  senao $perm_[arg0.jogperm].c_lsai >= 2
+  senao arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    ret arg0.msg("Não pode ver as saídas dessa sala")
   fimse
   prog p
   txt80 dir
@@ -21,16 +25,20 @@ func escr # Listar saídas
 
 classe adm_asai
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Asai\b\n\
 Sintaxe: ASAI <direção>\n\
 Apaga a saída na direção especificada."
 
 func escr # Apagar saída
+  refvar perm = $perm_[arg0.jogperm].c_esala
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg1)]
   se !arg0.dono
     arg0.msg("\bVocê não está em uma sala")
+  senao perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
   senao !arg1
     arg0.msg("\bDigite a direção após ASAI")
   senao !dir
@@ -55,6 +63,7 @@ func escr # Apagar saída
 
 classe adm_csai
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Csai\b\n\
 Sintaxe: CSAI <direção> <sala>\n\
 Cria uma saída na sala aonde você está, na direção especificada.\n\
@@ -63,18 +72,21 @@ csai n teste001"
 const escr = escr1(arg0, arg1) # Criar saída
 
 func escr1
+  refvar perm = $perm_[arg0.jogperm].c_esala
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg1)]
   se !arg0.dono
     arg0.msg("\bVocê não está em uma sala")
+  senao perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
   senao !arg1
-    arg0.msg("\bDigite a direção após CSAI" + arg1)
+    arg0.msg("\bDigite a direção após CSAI " + arg1)
   senao !dir
     arg0.msg("\bSaída não existe: " + txt1(arg1))
   senao !txt2(arg1)
-    arg0.msg("\bDigite a sala após CSAI" + arg1 + " " + arg1)
-  senao !p.existe("s_" + txt2(arg1))
+    arg0.msg("\bDigite a sala após CSAI " + arg1)
+  senao !existe_s(arg0, txt2(arg1))
     arg0.msg("\bSala não existe: " + txt2(arg1))
   senao
     p.criar(arg0.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg1)))
@@ -92,6 +104,7 @@ func escr1
 
 classe adm_csai2
 herda adm_csai
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 const txtajuda = "\b\c3Csai2\b\n\
 Sintaxe: CSAI2 <direção> <sala>\n\
 Cria uma saída na sala aonde você está, na direção especificada, e cria\n\
@@ -101,13 +114,17 @@ const escr = escr1(arg0, arg1, "2") # Criar saída completa
 
 classe adm_esai
 herda comando_adm
+const objcmd = $perm_[arg0.jogperm].c_esala ? este
 
 func escr # Editar saída
+  refvar perm = $perm_[arg0.jogperm].c_esala
   prog p
   txt10 dir
   dir = misc:d1[txt1(arg1)]
   se !arg0.dono
     arg0.msg("\bVocê não está em uma sala")
+  senao perm <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
+    arg0.msg("\bNão pode editar essa sala")
   senao !arg1
     arg0.msg("\bDigite a direção após ESAI")
   senao !dir

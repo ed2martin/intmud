@@ -120,17 +120,24 @@ herda comando_adm
 const objcmd = arg0.jogperm == "admin" || $perm_[arg0.jogperm].c_mperm ? este
 const txtajuda = "\b\c3Mperm\b\n\
 Sintaxe: MPERM <jogador> <permissão>\n\
+         MPERM <jogador> <permissão> <área>\n\
+         MPERM <jogador> <permissão> -\n\
 Muda o grupo de permissões de um jogador.\n\
-Nota: O jogador não precisa estar necessariamente online no MUD."
+Somente usuários com permissão admin podem mudar a área aonde o jogador\n\
+tem permissão (a sintaxe que contém a área). Para não ter permissão para\n\
+nenhuma área, colocar um hífen no lugar do nome da área.\n\
+Nota 1: O jogador não precisa estar necessariamente online no MUD.\n\
+Nota 2: O significado da permissão de área é definido com o comando EPerm"
 txt100 antesperm
 
 func escr
   refvar nome = txtmin(txt1(arg1))
   refvar codif = txts(txtnome(nome))
-  refvar perm = txts(txtmin(txt2(arg1)))
+  refvar perm = txts(txtmin(txtsub(arg1, 1, 1)))
+  refvar area = txts(txtmin(txtsub(arg1, 2)))
   antesperm = ""
-  se intsub(arg1) != 2
-    ret arg0.msg("Tecle mperm seguido do jogador e a nova permissão")
+  se intsub(arg1) < 2
+    ret arg0.msg("Tecle Mperm seguido do jogador e a nova permissão")
   senao !$perm_[perm]
     ret arg0.msg("Grupo de permissões não existe: " + perm)
   fimse
@@ -138,8 +145,8 @@ func escr
   indiceitem ind
   refvar u = ind.obj("un " + codif)
   refvar p = ind.obj("pn " + codif)
-  ret u && !checaperm(arg0, u.jogperm, perm), nulo
-  ret p && !checaperm(arg0, p.jogperm, perm), nulo
+  ret u && !checaperm(arg0, u.jogperm, perm, area), nulo
+  ret p && !checaperm(arg0, p.jogperm, perm, area), nulo
 # Jogo salvo
   textotxt t1
   arqsav sav1
@@ -150,17 +157,30 @@ func escr
     textopos p1
     p1 = t1.ini
     se p1.txtproc("\njogperm=") >= 0
-      ret !checaperm(arg0, p1.texto(8), perm), nulo
+      ret !checaperm(arg0, p1.texto(8), perm, area), nulo
       p1.mudar(perm, 8, 100)
-    senao p1.txtproc("\n+++") < 0
-      ret arg0.msg("Jogo salvo de " + nome + " não possui permissões")
     senao
+      p1.txtproc("\n+++")
       p1.depois
       se p1.txtproc("\n+++") < 0
         ret arg0.msg("Jogo salvo de " + nome + " não possui permissões")
       fimse
-      ret !checaperm(arg0, "", perm), nulo
+      ret !checaperm(arg0, "", perm, area), nulo
+      p1.depois
       p1.add("jogperm=" + perm)
+    fimse
+    p1 = t1.ini
+    se !area
+    senao p1.txtproc("\njogarea=") >= 0
+      p1.mudar(area == "-" ? "" : area, 8, 100)
+    senao
+      p1.txtproc("\n+++")
+      p1.depois
+      se p1.txtproc("\n+++") < 0
+        ret arg0.msg("Jogo salvo de " + nome + " não possui permissões")
+      fimse
+      p1.depois
+      p1.add("jogarea=" + (area == "-" ? "" : area))
     fimse
   fimse
   se t1.linhas && !t1.salvar("sav1/" + codif + ".sav")
@@ -176,15 +196,30 @@ func escr
   fimse
   u.jogperm = perm
   p.jogperm = perm
-  arg0.msg("Permissão de " + nome + " mudou para " + perm + ".")
-  cmdlog(arg0, "mperm", nome + (antesperm ? " de " + antesperm) + " para " + perm)
+  se area == "-"
+    u.jogarea = "", p.jogarea = ""
+  senao area
+    u.jogarea = area, p.jogarea = area
+  fimse
+  refvar txtperm = " para " + perm + (area ? " " + area : "")
+  arg0.msg("Permissão de " + nome + " mudou" + txtperm + ".")
+  cmdlog(arg0, "mperm", nome + (antesperm ? " de " + antesperm) + txtperm)
 
 func checaperm # Checa se pode mudar o grupo de permissões
 # arg0 = personagem que quer mudar
 # arg1 = permissão antiga
 # arg2 = permissão nova
+# arg3 = área nova (se não for um texto vazio)
 # Retorna verdadeiro se pode mudar
-  se arg1 == arg2
+  se arg3
+    se arg0.jogperm != "admin"
+      arg0.msg("Somente admin pode mudar mudar a área")
+      ret 0
+    senao arg3 != "-" && !$a_[arg3]
+      arg0.msg("Área não existe: " + arg3)
+      ret 0
+    fimse
+  senao arg1 == arg2
     arg0.msg("Jogador já possui permissão " + arg1)
     ret 0
   senao arg0.jogperm == "admin"
@@ -305,9 +340,12 @@ const tipo7 = "menu_perm_cmd--"
 const nome8 = "Comandos admin"
 const tipo8 = "menu_perm_adm--"
 #
-const nome9 = "Outros comandos"
-const tipo9 = "opc_ajuda--"
-const extr9 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
+const nome9 = "Comandos edição"
+const tipo9 = "menu_perm_editor--"
+#
+const nome10 = "Outros comandos"
+const tipo10 = "opc_ajuda--"
+const extr10 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
 LSAV, ASAV, ESAV, MUDANOME: interferem com personagens de administradores\n\
 BAN2: bloqueia a entrada de administradores\n\
 ECONFIG: muda configurações do MUD, inclusive senha de administração\n\
@@ -508,6 +546,96 @@ const clas13 = var.classe1
 const vari13 = "i_perso"
 
 
+classe menu_perm_editor
+herda comando_menu
+const titulo = "Comandos de edição de " + txt(var.classe1, 5)
+const menufim = "menu_perm"
+const colunas = 25
+#
+const nome1 = "Larea"
+const tipo1 = "opc_simnao"
+const clas1 = var.classe1
+const vari1 = "c_larea"
+#
+const nome2 = "Lsala"
+const tipo2 = "opc_opcao"
+const clas2 = var.classe1
+const vari2 = "c_lsala"
+const extr2 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome3 = "Lsai"
+const tipo3 = "opc_opcao"
+const clas3 = var.classe1
+const vari3 = "c_lsai"
+const extr3 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome4 = "Editar sala/saídas"
+const info4 = "Comandos Cdir Csala Esala Asala Ldesc Edesc Adesc Csai Csai2 Esai Asai\n\
+Csai e Csai2 só criam saídas para salas que aparecem com Lsala"
+const tipo4 = "opc_opcao"
+const clas4 = var.classe1
+const vari4 = "c_esala"
+const extr4 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome5 = "Lperso"
+const tipo5 = "opc_opcao"
+const clas5 = var.classe1
+const vari5 = "c_lperso"
+const extr5 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome6 = "Iperso"
+const tipo6 = "opc_opcao"
+const clas6 = var.classe1
+const vari6 = "c_iperso"
+const extr6 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome7 = "Editar perso"
+const info7 = "Comandos Cperso Eperso Aperso"
+const tipo7 = "opc_opcao"
+const clas7 = var.classe1
+const vari7 = "c_eperso"
+const extr7 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome8 = "Litem"
+const tipo8 = "opc_opcao"
+const clas8 = var.classe1
+const vari8 = "c_litem"
+const extr8 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome9 = "Iitem"
+const tipo9 = "opc_opcao"
+const clas9 = var.classe1
+const vari9 = "c_iitem"
+const extr9 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome10 = "Editar item"
+const info10 = "Comandos Citem Eitem Aitem"
+const tipo10 = "opc_opcao"
+const clas10 = var.classe1
+const vari10 = "c_eitem"
+const extr10 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome11 = "Lres"
+const tipo11 = "opc_opcao"
+const clas11 = var.classe1
+const vari11 = "c_lres"
+const extr11 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome12 = "Ares"
+const info12 = "Só pode adicionar personagens e itens que aparecem com Lperso e Litem"
+const tipo12 = "opc_opcao"
+const clas12 = var.classe1
+const vari12 = "c_ares"
+const extr12 = "Não\nÁrea onde tem permissão\nTudo"
+#
+const nome13 = "Sres"
+const info13 = "Só pode adicionar personagens e itens que aparecem com Lperso e Litem"
+const tipo13 = "opc_opcao"
+const clas13 = var.classe1
+const vari13 = "c_sres"
+const extr13 = "Não\nÁrea onde tem permissão\nTudo"
+
+
 classe comum_perm
 #
 # Ordem que deve organizar as constantes:
@@ -516,7 +644,9 @@ entroumsg saiumsg a_hab a_efeito a_social a_cod\n\
 c_salvar c_chat c_novatos c_gritar c_falar c_social c_telepatia\n\
 c_rezar c_bug c_ideia pacifico andar item vestir abrir batalha fome\n\
 c_admin c_serv c_rezou c_echo c_ban c_tele c_pnj c_monit c_matar\n\
-c_log c_ivar c_ivar i_perso"
+c_log c_ivar c_ivar i_perso\n\
+c_larea c_lsala c_lsai c_esala c_lperso c_iperso c_eperso\n\
+c_litem c_iitem c_eitem c_lres c_ares c_sres"
 const iniclasse = !$[arg0] && criar(arg0)
 #
 const batalha = 1
@@ -594,6 +724,19 @@ const c_log = 65535
 const c_mperm = ""
 const c_ivar = 1
 const i_perso = 1
+const c_larea = 1
+const c_lsala = 2
+const c_lsai = 2
+const c_esala = 2
+const c_lperso = 2
+const c_iperso = 2
+const c_eperso = 2
+const c_litem = 2
+const c_iitem = 2
+const c_eitem = 2
+const c_lres = 2
+const c_ares = 2
+const c_sres = 2
 
 
 classe perm_

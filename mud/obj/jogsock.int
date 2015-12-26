@@ -18,6 +18,7 @@ txt20 nome # Nome do personagem
 txt60 nomefim # Nome ao apresentar quando o usuário sair do jogo
 textotxt txtmais # Texto do tecle M para mais
 txt20 jogperm # Permissões do personagem (objeto $perm_[jogperm])
+txt20 jogarea # Área aonde o personagem tem permissão
 int1 jogconfig.24 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
@@ -674,6 +675,7 @@ func passo
     arg0.perso.sock_entrou # Indica que o objeto sock voltou
     arg0.jogconfig.bits = arg0.perso.jogconfig.bits
     arg0.jogperm = arg0.perso.jogperm
+    arg0.jogarea = arg0.perso.jogarea
     arg0.temposair # Acerta tempo para sair do MUD
     arg0.msg("Reconectado\cn")
     txt200 lin

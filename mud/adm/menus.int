@@ -36,12 +36,15 @@ func passo
       t1 && arg0.txtmais.addfim(t1)
       arg0.txtmais.addfim(menu2(txt(p.texto, 4)))
     efim
-    arg0.txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
-    arg0.txtmais.addfim("V mostra as variáveis alteradas em cada opção (classe:variável)")
+    se arg0.jogperm == "admin"
+      arg0.txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
+      arg0.txtmais.addfim("V mostra as variáveis alteradas em cada opção (classe:variável)")
+    fimse
     arg0.txtmais.addfim("Z Sair, L Legenda, M seguido de um texto executa comando do MUD")
     arg0.txtmostra
     ret 1
   casose "v"
+    sair arg0.jogperm != "admin"
     arg0.txtmais.limpar
     txt100 lin
     prog p
@@ -79,7 +82,9 @@ func passo
     refvar tipo = txttroca(tipo[arg1], "-", "")
     $[tipo].passo(arg0, "\b")
   senao txt(arg1, 0, 1) == "f" && nome[txt(arg1, 1)] # Editar função
-    se txtproc(tipo[txt(arg1, 1)], "-") >= 0
+    se arg0.jogperm != "admin"
+      arg0.msg("Opção inválida: " + arg1)
+    senao txtproc(tipo[txt(arg1, 1)], "-") >= 0
       arg0.msg("Essa opção não pode ser editada como função; escolha outra")
       ret 1
     fimse

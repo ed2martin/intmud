@@ -33,6 +33,45 @@ func cmdlog # Mensagem para todos com a opção "config +cmdlog"
     efim
   fimse
 
+func existe_p # Checa se personagem existe no comando Lperso
+# arg0 = personagem do jogador ou objeto jogsock
+# arg1 = nome do personagem (nome da classe em o "p_" no começo)
+# Retorna verdadeiro se existe
+  prog p
+  casovar $perm_[arg0.jogperm].c_lperso
+  casose "1"
+    ret p.existe("p_" + arg1) && arg0.jogarea + txtfim(arg1, 3) == arg1
+  casose "2"
+    ret p.existe("p_" + arg1)
+  casofim
+  ret 0
+
+func existe_i # Checa se item existe no comando Litem
+# arg0 = personagem do jogador ou objeto jogsock
+# arg1 = nome do item (nome da classe em o "i_" no começo)
+# Retorna verdadeiro se existe
+  prog p
+  casovar $perm_[arg0.jogperm].c_litem
+  casose "1"
+    ret p.existe("i_" + arg1) && arg0.jogarea + txtfim(arg1, 3) == arg1
+  casose "2"
+    ret p.existe("i_" + arg1)
+  casofim
+  ret 0
+
+func existe_s # Checa se sala existe no comando Lsala
+# arg0 = personagem do jogador ou objeto jogsock
+# arg1 = nome da sala (nome da classe em o "s_" no começo)
+# Retorna verdadeiro se existe
+  prog p
+  casovar $perm_[arg0.jogperm].c_lsala
+  casose "1"
+    ret p.existe("s_" + arg1) && arg0.jogarea + txtfim(arg1, 3) == arg1
+  casose "2"
+    ret p.existe("s_" + arg1)
+  casofim
+  ret 0
+
 
 classe admordena
 herda comando_adm

@@ -48,7 +48,7 @@ func passo1 # Atualiza lista de arquivos que mudaram
   arqmudou.limpar
 # Arquivos apagados
   epara p.iniarq, p.lin, p.depois
-    dir.tipo(p.arqnome(p.texto)) != "A" && arqmudou.addfim(p.texto + "=1")
+    dir.tipo(p.arqnome(p.texto)) != "A" && arqmudou.addfim("*" + p.texto)
   efim
 # Arquivos modificados
   aprg.abrir
@@ -64,7 +64,7 @@ func passo2 # Adiciona classes dos arquivos que mudaram
   textopos p1
   apagarcl.limpar
   epara p1 = arqmudou.ini, p1, p1.depois
-    epara p.iniarq(p1.texto), p.lin, p.depois
+    epara p.iniarq(txttroca(p1.texto, "*", "")), p.lin, p.depois
       apagarcl.mudar(p.texto + "=1")
     efim
     d.exec = 5000
@@ -79,6 +79,7 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
   inicl.limpar
   epara p1 = arqmudou.ini, p1, p1.depois
 # Lê arquivo
+    continuar p1.texto(0, 1) == "*"
     se !t1.ler(p.arqnome(p1.texto), 0)
       msg("Não foi possível abrir arquivo: " + p.arqnome(p1.texto))
       ret 0

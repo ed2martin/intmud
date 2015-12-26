@@ -321,16 +321,16 @@ func errou80
 
 classe s_ini001
 herda b_ini
-const s_luta = 0
 const s_titulo = "Beco"
 const s_desc = "A única saída visível aqui é um barranco à leste. Nas outras direções\n\
 você só vê paredes. Para caminhar à leste, tecle L\n\
 No entanto, se você for veterano, pode tentar caminhar a oeste, mas\n\
 esteja ciente que veteranos começam no nível 0 ao invés do 1."
+const s_luta = 0
+const eveste = 1 # Receber eventos do próprio objeto
 const dir_l = $s_ini002
 const dir_o = $s_casa001
 const inv_o = 1 # Esconde saída para oeste
-const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
