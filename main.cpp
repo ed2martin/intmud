@@ -849,6 +849,13 @@ void Inicializa(const char * arg)
         for (const char * p = obj->Comandos; Num16(p); p+=Num16(p))
         {
             char mens[4096];
+            int total = Num16(p);
+            putchar('-');
+            for (int x=0; x<total; x++)
+                printf(" %02X", (unsigned char)p[x]);
+            putchar('\n');
+            if (Instr::Mostra(mens, p, sizeof(mens)))
+                printf("+ %s\n", mens);
             if (Instr::Decod(mens, p, sizeof(mens)))
                 printf("%s\n", mens);
             else
@@ -856,9 +863,6 @@ void Inicializa(const char * arg)
                 printf("**** Erro\n");
                 exit(EXIT_FAILURE);
             }
-
-            if (Instr::Mostra(mens, p, sizeof(mens)))
-                printf("+ %s\n", mens);
         }
     }
     putchar('\n');

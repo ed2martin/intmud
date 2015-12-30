@@ -45,19 +45,14 @@ descver\n\
 descident\n\
 msexo\n\
 sexoini\n\
+m_atrib1 m_atrib2\n\
 pesoobj\n\
-volobj\n\
-volmax\n\
-volexp\n\
+volobj volmax volexp\n\
 objmax\n\
 nivel\n\
 pospadr\n\
-tipo1\n\
-tipo2\n\
-tipo3\n\
-equip1\n\
-equip2\n\
-equip3\n\
+tipo1 tipo2 tipo3\n\
+equip1 equip2 equip3\n\
 lojaini lojafim lojasim lojanao\n\
 lojaaula lojaitem lojainv\n\
 lojasala lojacasa lojachave lojafechada\n\
@@ -82,11 +77,7 @@ p_naoresg\n\
 p_naoseguir\n\
 p_recebe\n\
 p_soltar\n\
-inivar\n\
-evhora\n\
-eveste\n\
-evperso\n\
-evitem\nevsala"
+inivar evhora eveste evperso evitem evsala"
 
 func ini # Coloca o objeto dentro de outro
   posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
@@ -197,7 +188,7 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
-  bitver = 17, bitinv = 3, atribs.limpar
+  bitver = 17, bitinv = 3
 # Acerta atributos conforme o tipo de personagem
   config:atribcfg, recalc_auto
   t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto

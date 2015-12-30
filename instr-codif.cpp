@@ -73,9 +73,11 @@ modo=0
 
 (1)
 // Verificando nome de variável
-Se modo = ex_var1 ou modo = ex_var2
+Se modo = ex_var1 ou modo = ex_var2 ou modo = ex_var3
   Se *origem for uma letra de A a Z ou um número de 0 a 9:
     Anota *origem, avança origem
+    Se modo = ex_var3:
+      modo = ex_var2
     Vai para (1)
   Se *origem for ':':
     Se modo != ex_var1:
@@ -85,20 +87,27 @@ Se modo = ex_var1 ou modo = ex_var2
       modo = ex_var2
       Vai para (1)
   Se *origem for '.':
-    Anota ex_ponto
-    modo = ex_var2
+    se modo != ex_var3
+      Anota ex_ponto
+      modo = ex_var3
     Vai para (1)
   Se *origem for '[':
     Anota ex_abre
     arg=falso
+    se modo == ex_var3
+      modo = ex_var2
     PUSH modo
     modo = ex_colchetes
     Vai para (1)
   Se *origem for '(':
     arg=falso
+    se modo == ex_var3
+      modo = ex_var2
     PUSH modo
     modo = ex_parenteses
     Vai para (1)
+  se modo != ex_var3
+    Anota ex_ponto
   POP modo
   Anota modo
   arg=verdadeiro
@@ -172,7 +181,7 @@ Se *origem for fecha parênteses:
     Erro na expressão
   POP modo
   // Parênteses com o significado de parâmetros de uma função
-  Se modo for ex_var1 ou ex_var2:
+  Se modo for ex_var1 ou ex_var2 ou ex_var3:
     Anota ex_ponto
     Se *origem for '.':
       Avança origem
@@ -971,10 +980,14 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         }
 
     // Processando nome de variável
-        if (modo==ex_var1 || modo==ex_var2)
+        if (modo==ex_var1 || modo==ex_var2 || modo==ex_var3)
         {
             if (tabNOMES1[*(unsigned char*)origem] && *origem!=' ')
+            {
                 *destino++ = *origem++;
+                if (modo == ex_var3)
+                    modo = ex_var2;
+            }
             else if (*origem==':')
             {
                 if (modo!=ex_var1)
@@ -989,16 +1002,15 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             else if (*origem=='.')
             {
                 origem++;
-                if (destino[-1] != ex_ponto)
-                    *destino++ = ex_ponto;
-                modo = ex_var2;
+                if (modo != ex_var3)
+                    *destino++ = ex_ponto, modo = ex_var3;
             }
             else if (*origem=='[')
             {
                 origem++;
                 *destino++ = ex_abre;
                 arg=false;
-                *topo++ = modo;
+                *topo++ = (modo == ex_var3 ? ex_var2 : modo);
                 modo = ex_colchetes;
             }
             else if (*origem=='(')
@@ -1006,12 +1018,12 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 origem++;
                 *destino++ = ex_arg;
                 arg=false;
-                *topo++ = modo;
+                *topo++ = (modo == ex_var3 ? ex_var2 : modo);
                 modo = ex_parenteses;
             }
             else
             {
-                if (destino[-1] != ex_ponto)
+                if (modo != ex_var3)
                     *destino++ = ex_ponto;
                 *destino++ = ex_varfim;
                 modo = *--topo;
@@ -1364,7 +1376,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
             modo = *--topo;
         // Parênteses como parâmetro de função
-            if (modo==ex_var1 || modo==ex_var2)
+            if (modo==ex_var1 || modo==ex_var2 || modo==ex_var3)
             {
                 *destino++ = ex_ponto;
                 if (*origem=='.')

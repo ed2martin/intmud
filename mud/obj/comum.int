@@ -211,6 +211,7 @@ func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   casofim
 
 func atribs_exec # Organiza a variável atribs
+  atribs.limpar
   !(bitinv & 2) ? atribs.addfim("Brilhando")
   bitinv & 4 ? atribs.addfim("Invisível")
   bitinv & 8 ? atribs.addfim("Oculto")
@@ -222,22 +223,32 @@ func atribs_exec # Organiza a variável atribs
   senao bitver & 512
     atribs.addfim("Flutuando")
   fimse
-  ret atrib.bytes <= 1, nulo
+  txt512 lin
+  (lin = $perm_[jogperm].m_atribs) && atribs.addfim(lin)
+  (lin = m_atribs1(este)) && atribs.addfim(lin)
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    (lin = i.obj.m_atribs2(este)) && atribs.addfim(lin)
+  efim
+  ret atribs.bytes == 0, atribs.addfim(" ")
   atribs.ordena
   textopos p
   textotxt a
   textotxt b
-  epara p = atribs.ini, p, p.depois
-    continuar p.texto == txtsublin(p.textolin(2), 1)
-    p.texto(0, 2) == "\d+" ? b.addfim(p.texto) : a.addfim(p.texto)
+  p = atribs.ini, lin = p.texto
+  epara p.depois, p, p.depois
+    continuar lin == p.texto
+    txt(lin, 0, 1) == "*" ? b.addfim(txt(lin, 1)) : a.addfim(lin)
+    lin = p.texto
   efim
+  txt(lin, 0, 1) == "*" ? b.addfim(txt(lin, 1)) : a.addfim(lin)
   atribs.limpar
   se a.linhas
-    atribs.addfim(" (" + txttroca(a.remove(100), "\n", " ") + ") ")
+    atribs.addfim(" (" + txttroca($mensjog.txt(a.remove(100), este), "\n", " ") + ") ")
   senao
     atribs.addfim(" ")
   fimse
-  b.linhas && atribs.addfim(txttroca(b.remove(100), "\n", ""))
+  b.linhas && atribs.addfim(txttroca("\n" + $mensjog.txt(b.remove(100), este), "\n", "\d+"))
 
 func seguir # Segue um item ou personagem
 # arg0 = item ou personagem; se nulo, deixa de seguir

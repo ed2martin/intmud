@@ -110,7 +110,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
     fimse
   fimse
 # Acerta atributos básicos
-  bitver = 17, bitinv = 3, atribs.limpar
+  bitver = 17, bitinv = 3
   pesoveste = 0
   atktipo.limpar(1)
   deftipo.limpar(1)
@@ -134,6 +134,8 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   bitver & 1024 && posicao > 4 && (posicao = 4)
   atribs_exec
   recalc = 0
+# Checa se ainda pode obedecer o dono
+  dono.perso && dono.escolhebat
 # Se for jogador, checa PNJs agressivos
   ret !jog, nulo
   epara i = dono.dentro2.ini, i, i.depois
@@ -614,12 +616,16 @@ sav ref persoesc # Personagem escolhido pelo jogador
 func ini
   comum_persobat:ini(arg0, arg1, arg2, arg3, arg4)
 
+func recalc_exec # Ajusta variáveis, principalmente batalha
+  comum_persobat:recalc_exec
+  escolhebat
+
 func escolhebat # Escolhe um personagem em condições de lutar
-  se persoesc.pvida # Checa se personagem escolhido está em condições
+  se persoesc.pvida && persoesc.pnivel <= pnivel
     persobat = persoesc
   senao
     listaitem i
-    epara i = dentro2.ini, i && !i.obj.pvida, i.depois
+    epara i = dentro2.ini, i && (!i.obj.pvida || i.obj.pnivel > pnivel), i.depois
     efim
     persobat = i ? i.obj : este
   fimse
@@ -656,10 +662,11 @@ func p_proc_exec # Processar comportamento do personagem
 # Escolhe animal
   se persoesc == este || !persoesc.pvida
     listaitem i
-    epara i = dentro2.ini, i && !i.obj.pvida, i.depois
+    epara i = dentro2.ini, i && (!i.obj.pvida || i.obj.pnivel > pnivel), i.depois
     efim
     persobat = i ? i.obj : este
     se persoesc != persobat
+      p_espera = 5
       persoesc = persobat
       $mens.p(este, persoesc)
       ret persobat != este, $mens.mvis1("$P escolhe $b.")

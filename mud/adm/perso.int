@@ -808,43 +808,99 @@ const exec55 = "ajustaobj"
 
 classe menu_pcomum2
 herda comando_menu
-const nome25 = "Atributos números"
-const tipo25 = "opc_atribnum"
-const clas25 = var.classe1
-const vari25 = "recalc1_auto"
-const exec25 = "recalc_exec"
 #
-const nome26 = "Atributos sim/não"
-const tipo26 = "opc_atribbit"
+const nome26 = "Tipo de ataque"
+const info26 = "Que habilidade usa em ataques automáticos"
+const tipo26 = "opc_linha"
 const clas26 = var.classe1
-const vari26 = "recalc1_auto"
-const exec26 = "recalc_exec"
+const vari26 = "p_atktipo"
 #
-const nome27 = "Atributos ataque"
-const info27 = "Afetam os danos quando o personagem ataca alguém"
-const tipo27 = "opc_atribatk"
-const clas27 = var.classe1
-const vari27 = "recalc1_auto"
-const exec27 = "recalc_exec"
+const nome27 = "Quando morre"
+const tipo27 = "menu_pmorreu--"
 #
-const nome28 = "Atributos defesa"
-const info28 = "Afetam os danos quando alguém ataca o personagem"
-const tipo28 = "opc_atribdef"
-const clas28 = var.classe1
-const vari28 = "recalc1_auto"
-const exec28 = "recalc_exec"
+const nome28 = "Comportamento"
+const tipo28 = "menu_pcomportamento--"
+
+
+classe menu_patribs1
+herda comando_menu
+const titulo = "Atributos"
+const menufim = var.menufim
+const colunas = 25
 #
-const nome29 = "Tipo de ataque"
-const info29 = "Que habilidade usa em ataques automáticos"
-const tipo29 = "opc_linha"
-const clas29 = var.classe1
-const vari29 = "p_atktipo"
+const nome1 = "Texto perso"
+const info1 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está emitindo uma luz"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "m_atribs1"
+const exec1 = "atribs_exec"
 #
-const nome30 = "Quando morre"
-const tipo30 = "menu_pmorreu--"
+const nome3 = "Sim/não perso"
+const tipo3 = "opc_atribbit"
+const clas3 = var.classe1
+const vari3 = "recalc1_auto"
+const exec3 = "recalc_ajusta"
 #
-const nome31 = "Comportamento"
-const tipo31 = "menu_pcomportamento--"
+const nome6 = "Texto dono"
+const info6 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está protegid$s por uma luz"
+const tipo6 = "opc_linha"
+const clas6 = var.classe1
+const vari6 = "m_atribs2"
+const exec6 = "atribs_exec"
+#
+const nome7 = "Números dono"
+const tipo7 = "opc_atribnum"
+const clas7 = var.classe1
+const vari7 = "recalc2_auto"
+const exec7 = "recalc_ajusta"
+#
+const nome8 = "Sim/não dono"
+const tipo8 = "opc_atribbit"
+const clas8 = var.classe1
+const vari8 = "recalc2_auto"
+const exec8 = "recalc_ajusta"
+#
+const nome9 = "Ataque dono"
+const info9 = "Afetam os danos quando o personagem ataca alguém"
+const tipo9 = "opc_atribatk"
+const clas9 = var.classe1
+const vari9 = "recalc2_auto"
+const exec9 = "recalc_ajusta"
+#
+const nome10 = "Defesa ao vestir"
+const info10 = "Afetam os danos quando alguém ataca o personagem"
+const tipo10 = "opc_atribdef"
+const clas10 = var.classe1
+const vari10 = "recalc2_auto"
+const exec10 = "recalc_ajusta"
+
+
+classe menu_patribs2
+herda menu_patribs1
+#
+const nome2 = "Números perso"
+const tipo2 = "opc_atribnum"
+const clas2 = var.classe1
+const vari2 = "recalc1_auto"
+const exec2 = "recalc_ajusta"
+#
+const nome4 = "Ataque perso"
+const info4 = "Afetam os danos quando o personagem ataca alguém"
+const tipo4 = "opc_atribatk"
+const clas4 = var.classe1
+const vari4 = "recalc1_auto"
+const exec4 = "recalc_ajusta"
+#
+const nome5 = "Defesa perso"
+const info5 = "Afetam os danos quando alguém ataca o personagem"
+const tipo5 = "opc_atribdef"
+const clas5 = var.classe1
+const vari5 = "recalc1_auto"
+const exec5 = "recalc_ajusta"
 
 
 classe menu_ploja
@@ -1037,6 +1093,9 @@ classe menu_perso1
 herda menu_pcomum1
 const titulo = "Perso simples " + txt(var.classe1, 2)
 const colunas = 25
+#
+const nome25 = "Atributos"
+const tipo25 = "menu_patribs1--"
 
 
 classe menu_perso2
@@ -1044,22 +1103,28 @@ herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome32 = "Capturar"
-const info32 = "Se pode ser capturado"
-const tipo32 = "opc_opcao"
-const clas32 = var.classe1
-const vari32 = "p_captura"
-const extr32 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+const nome25 = "Atributos"
+const tipo25 = "menu_patribs2--"
 #
-const nome33 = "Dar e soltar"
-const info33 = "Se esse personagem pode ser dado ou solto"
-const tipo33 = "opc_opcao"
-const clas33 = var.classe1
-const vari33 = "p_soltar"
-const extr33 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
+const nome29 = "Capturar"
+const info29 = "Se pode ser capturado"
+const tipo29 = "opc_opcao"
+const clas29 = var.classe1
+const vari29 = "p_captura"
+const extr29 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+#
+const nome30 = "Dar e soltar"
+const info30 = "Se esse personagem pode ser dado ou solto"
+const tipo30 = "opc_opcao"
+const clas30 = var.classe1
+const vari30 = "p_soltar"
+const extr30 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3
 herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso completo " + txt(var.classe1, 2)
 const colunas = 25
+#
+const nome25 = "Atributos"
+const tipo25 = "menu_patribs2--"

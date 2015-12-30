@@ -270,23 +270,32 @@ const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "nomequem"
 #
-const nome2 = "Fome/sede"
-const info2 = "Se pode sentir fome e sede (se não for imortal)"
-const tipo2 = "opc_simnao"
+const nome2 = "Texto Atrib"
+const info2 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está protegid$s por uma luz"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
-const vari2 = "fome"
+const vari2 = "m_atribs"
+const exec2 = "jogrecalc"
 #
-const nome3 = "Ganhou permissão"
-const info3 = "Mensagem quando o jogador muda para esse grupo"
-const tipo3 = "opc_linha"
+const nome3 = "Fome/sede"
+const info3 = "Se pode sentir fome e sede (se não for imortal)"
+const tipo3 = "opc_simnao"
 const clas3 = var.classe1
-const vari3 = "entroumsg"
+const vari3 = "fome"
 #
-const nome4 = "Perdeu permissão"
-const info4 = "Mensagem quando o jogador deixa de ser desse grupo"
+const nome4 = "Ganhou permissão"
+const info4 = "Mensagem quando o jogador muda para esse grupo"
 const tipo4 = "opc_linha"
 const clas4 = var.classe1
-const vari4 = "saiumsg"
+const vari4 = "entroumsg"
+#
+const nome5 = "Perdeu permissão"
+const info5 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo5 = "opc_linha"
+const clas5 = var.classe1
+const vari5 = "saiumsg"
 
 
 classe menu_perm
@@ -300,52 +309,61 @@ const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "nomequem"
 #
-const nome2 = "Config"
-const info2 = "Opções extras do comando Config\n\
-Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
-const tipo2 = "opc_vetor"
+const nome2 = "Texto Atrib"
+const info2 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está protegid$s por uma luz"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
-const vari2 = "c_config"
-const extr2 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
+const vari2 = "m_atribs"
 const exec2 = "jogrecalc"
 #
-const nome3 = "Jogador entrando"
-const info3 = "Como deve avisar quando alguém entrar no MUD ou sair"
-const tipo3 = "opc_opcao"
+const nome3 = "Config"
+const info3 = "Opções extras do comando Config\n\
+Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
+const tipo3 = "opc_vetor"
 const clas3 = var.classe1
-const vari3 = "i_entrando"
-const extr3 = "Não informar\nInformar o nome\nInformações completas"
+const vari3 = "c_config"
+const extr3 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
+const exec3 = "jogrecalc"
 #
-const nome4 = "Mensagem Admin"
-const info4 = "Se é informado quando alguém digita a senha de administração"
-const tipo4 = "opc_simnao"
+const nome4 = "Jogador entrando"
+const info4 = "Como deve avisar quando alguém entrar no MUD ou sair"
+const tipo4 = "opc_opcao"
 const clas4 = var.classe1
-const vari4 = "i_admin"
+const vari4 = "i_entrando"
+const extr4 = "Não informar\nInformar o nome\nInformações completas"
 #
-const nome5 = "Ganhou permissão"
-const info5 = "Mensagem quando o jogador muda para esse grupo"
-const tipo5 = "opc_linha"
+const nome5 = "Mensagem Admin"
+const info5 = "Se é informado quando alguém digita a senha de administração"
+const tipo5 = "opc_simnao"
 const clas5 = var.classe1
-const vari5 = "entroumsg"
+const vari5 = "i_admin"
 #
-const nome6 = "Perdeu permissão"
-const info6 = "Mensagem quando o jogador deixa de ser desse grupo"
+const nome6 = "Ganhou permissão"
+const info6 = "Mensagem quando o jogador muda para esse grupo"
 const tipo6 = "opc_linha"
 const clas6 = var.classe1
-const vari6 = "saiumsg"
+const vari6 = "entroumsg"
 #
-const nome7 = "Comandos jogador"
-const tipo7 = "menu_perm_cmd--"
+const nome7 = "Perdeu permissão"
+const info7 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo7 = "opc_linha"
+const clas7 = var.classe1
+const vari7 = "saiumsg"
 #
-const nome8 = "Comandos admin"
-const tipo8 = "menu_perm_adm--"
+const nome8 = "Comandos jogador"
+const tipo8 = "menu_perm_cmd--"
 #
-const nome9 = "Comandos edição"
-const tipo9 = "menu_perm_editor--"
+const nome9 = "Comandos admin"
+const tipo9 = "menu_perm_adm--"
 #
-const nome10 = "Outros comandos"
-const tipo10 = "opc_ajuda--"
-const extr10 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
+const nome10 = "Comandos edição"
+const tipo10 = "menu_perm_editor--"
+#
+const nome11 = "Outros comandos"
+const tipo11 = "opc_ajuda--"
+const extr11 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
 LSAV, ASAV, ESAV, MUDANOME: interferem com personagens de administradores\n\
 BAN2: bloqueia a entrada de administradores\n\
 ECONFIG: muda configurações do MUD, inclusive senha de administração\n\

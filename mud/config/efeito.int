@@ -24,6 +24,7 @@ const msgini2 = "Uma chama protetora surge em volta de $p."
 const msgnulo1 = "Por um instante, uma chama aparece em volta de $p."
 const msgfim1 = "A chama em sua volta se apaga."
 const msgfim2 = "A chama em volta de $p se apaga."
+const m_atribs2 = "*  ... e está protegid$s por uma chama protetora"
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_atacou # Personagem arg0 atacou arg1
@@ -36,15 +37,6 @@ func cmd_atacou # Personagem arg0 atacou arg1
     $mens.mvis3(m1, m2, m3)
     arg0.pvida -= 10
     arg0.acertapos(1)
-  fimse
-
-func cmd_recalc2
-# Nota: o \d+ no início faz o texto aparecer em uma linha separada
-# Sem o \d+ o texto aparece na frente do personagem
-  se arg0.msexo # Masculino
-    arg0.atribs.addfim("\d+  ... e está protegido por uma chama protetora")
-  senao # Feminino
-    arg0.atribs.addfim("\d+  ... e está protegida por uma chama protetora")
   fimse
 
 
@@ -76,10 +68,11 @@ classe e_congelado
 herda comum_efeito
 const e_nome = "Congelado"
 const desc = "Fica sem ação / trigger"
-const msgini2 = "$P congelou."
-const msgfim2 = "$P descongelou."
 const tempo1 = 1200
 const tempo2 = 10
+const msgini2 = "$P congelou."
+const msgfim2 = "$P descongelou."
+const m_atribs2 = "Congelad$s"
 const evperso = 1 # Eventos perso: Sim
 
 func cmd_escr
@@ -115,13 +108,6 @@ func cmd_atacou
 func cmd_mover
   arg0.msg("Você congelou")
   ret 1
-
-func cmd_recalc2
-  arg0.atribs.addfim(arg0.msexo ? "Congelado" : "Congelada")
-# Nota, as mensagens para personagens masculinos e femininos forem iguais,
-# pode-se substituir essa linha do arg0.atribs por algo como:
-# arg0.atribs.addfim("Congelado")
-# Para aparecer em linha separada, vide efeito chama_protetora
 
 
 classe e_dreno_de_mana

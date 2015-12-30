@@ -509,6 +509,7 @@ enum Expressao
 // Usado ao codificar expressões
     ex_var1,        ///< Interno: Processando nome de variável; aceita dois pontos
     ex_var2,        ///< Interno: Processando nome de variável; não aceita dois pontos
+    ex_var3,        ///< Interno: Processando nome de variável; já anotou ponto
     ex_colchetes,   ///< Interno: Processando colchetes em nome de variável
     ex_parenteses   ///< Interno: Processando parênteses
 };

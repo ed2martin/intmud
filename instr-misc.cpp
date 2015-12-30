@@ -1183,6 +1183,7 @@ const char * Instr::NomeExpr(int valor)
 
     case ex_var1:           return "ex_var1";
     case ex_var2:           return "ex_var2";
+    case ex_var3:           return "ex_var3";
     case ex_colchetes:      return "ex_colchetes";
     case ex_parenteses:     return "ex_parenteses";
     }

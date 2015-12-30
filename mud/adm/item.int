@@ -527,56 +527,33 @@ const tipo21 = "opc_tipos"
 const clas21 = var.classe1
 const vari21 = "vestirnao"
 #
-const nome22 = "Atrib núm vestir"
-const tipo22 = "opc_atribnum"
-const clas22 = var.classe1
-const vari22 = "recalc2_auto"
-const exec22 = "recalc_ajusta"
+const nome22 = "Atributos"
+const tipo22 = "menu_iatribs--"
 #
-const nome23 = "Atrib s/n vestir"
-const tipo23 = "opc_atribbit"
-const clas23 = var.classe1
-const vari23 = "recalc2_auto"
-const exec23 = "recalc_ajusta"
+const nome23 = "Fome e sede"
+const tipo23 = "menu_ifome--"
 #
-const nome24 = "Atrib atk vestir"
-const info24 = "Afetam os danos quando o personagem ataca alguém"
-const tipo24 = "opc_atribatk"
-const clas24 = var.classe1
-const vari24 = "recalc2_auto"
-const exec24 = "recalc_ajusta"
+const nome24 = "Arma"
+const tipo24 = "menu_iarma--"
 #
-const nome25 = "Atrib def vestir"
-const info25 = "Afetam os danos quando alguém ataca o personagem"
-const tipo25 = "opc_atribdef"
-const clas25 = var.classe1
-const vari25 = "recalc2_auto"
-const exec25 = "recalc_ajusta"
-#
-const nome26 = "Fome e sede"
-const tipo26 = "menu_ifome--"
-#
-const nome27 = "Arma"
-const tipo27 = "menu_iarma--"
-#
-const nome28 = "Pega animal nível"
-const info28 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+const nome25 = "Pega animal nível"
+const info25 = "Nível médio dos animais que podem ser capturados com esse item,\n\
 ou 0 se não puder capturar"
-const tipo28 = "opc_numero"
-const clas28 = var.classe1
-const vari28 = "i_captura"
+const tipo25 = "opc_numero"
+const clas25 = var.classe1
+const vari25 = "i_captura"
 #
-const nome29 = "Chave"
-const info29 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo29 = "opc_linha"
-const clas29 = var.classe1
-const vari29 = "i_chave"
+const nome26 = "Chave"
+const info26 = "Código da chave; abre fechaduras com o mesmo código"
+const tipo26 = "opc_linha"
+const clas26 = var.classe1
+const vari26 = "i_chave"
 #
-const nome30 = "Ao pegar"
-const info30 = "Mensagem ao tentar pegar o item; se vazio, consegue pegar"
-const tipo30 = "opc_linha"
-const clas30 = var.classe1
-const vari30 = "i_pegar"
+const nome27 = "Ao pegar"
+const info27 = "Mensagem ao tentar pegar o item; se vazio, consegue pegar"
+const tipo27 = "opc_linha"
+const clas27 = var.classe1
+const vari27 = "i_pegar"
 #
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
@@ -653,54 +630,112 @@ herda menu_item1
 const titulo = "Item " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome31 = "Mobília"
-const info31 = "Sentar/dormir confortavelmente se recupera mais rápido"
-const tipo31 = "opc_opcao"
-const clas31 = var.classe1
-const vari31 = "i_movel"
-const extr31 = "Não\n\
+const nome28 = "Mobília"
+const info28 = "Sentar/dormir confortavelmente se recupera mais rápido"
+const tipo28 = "opc_opcao"
+const clas28 = var.classe1
+const vari28 = "i_movel"
+const extr28 = "Não\n\
 Sentar\n\
 Sentar e dormir\n\
 Sentar confortavelmente\n\
 Sentar e dormir confortavelmente"
 #
-const nome32 = "Lugares"
-const tipo32 = "opc_numero"
-const clas32 = var.classe1
-const vari32 = "i_lugar"
+const nome29 = "Lugares"
+const tipo29 = "opc_numero"
+const clas29 = var.classe1
+const vari29 = "i_lugar"
 #
-const nome33 = "Container"
-const tipo33 = "opc_opcao"
-const clas33 = var.classe1
-const vari33 = "i_abertoini"
-const exec33 = "recalc_exec"
-const extr33 = "Não\n\
+const nome30 = "Container"
+const tipo30 = "opc_opcao"
+const clas30 = var.classe1
+const vari30 = "i_abertoini"
+const exec30 = "recalc_exec"
+const extr30 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome34 = "Trancar"
-const tipo34 = "opc_opcao"
-const clas34 = var.classe1
-const vari34 = "i_tranc"
-const extr34 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+const nome31 = "Trancar"
+const tipo31 = "opc_opcao"
+const clas31 = var.classe1
+const vari31 = "i_tranc"
+const extr31 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome35 = "Fechadura"
-const info35 = "Código da chave que tranca e destranca o container"
-const tipo35 = "opc_linha"
-const clas35 = var.classe1
-const vari35 = "i_fechadura"
+const nome32 = "Fechadura"
+const info32 = "Código da chave que tranca e destranca o container"
+const tipo32 = "opc_linha"
+const clas32 = var.classe1
+const vari32 = "i_fechadura"
 #
-const nome36 = "Come chave"
-const info36 = "Se o personagem perde a chave ao abrir o item"
-const tipo36 = "opc_simnao"
-const clas36 = var.classe1
-const vari36 = "i_comechave"
+const nome33 = "Come chave"
+const info33 = "Se o personagem perde a chave ao abrir o item"
+const tipo33 = "opc_simnao"
+const clas33 = var.classe1
+const vari33 = "i_comechave"
 #
-const nome37 = "Fonte de luz"
-const tipo37 = "menu_iluz--"
+const nome34 = "Fonte de luz"
+const tipo34 = "menu_iluz--"
+
+
+classe menu_iatribs
+herda comando_menu
+const titulo = "Atributos"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Texto item"
+const info1 = "Aparece na frente da descrição do item, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está emitindo uma luz"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "m_atribs1"
+const exec1 = "atribs_exec"
+#
+const nome3 = "Sim/não item"
+const info3 = "Nota: Muitos desses atributos não têm significado em itens"
+const tipo3 = "opc_atribbit"
+const clas3 = var.classe1
+const vari3 = "recalc1_auto"
+const exec3 = "recalc_ajusta"
+#
+const nome6 = "Texto ao vestir"
+const info6 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está protegid$s por uma luz"
+const tipo6 = "opc_linha"
+const clas6 = var.classe1
+const vari6 = "m_atribs2"
+const exec6 = "atribs_exec"
+#
+const nome7 = "Números ao vestir"
+const tipo7 = "opc_atribnum"
+const clas7 = var.classe1
+const vari7 = "recalc2_auto"
+const exec7 = "recalc_ajusta"
+#
+const nome8 = "Sim/não ao vestir"
+const tipo8 = "opc_atribbit"
+const clas8 = var.classe1
+const vari8 = "recalc2_auto"
+const exec8 = "recalc_ajusta"
+#
+const nome9 = "Ataque ao vestir"
+const info9 = "Afetam os danos quando o personagem ataca alguém"
+const tipo9 = "opc_atribatk"
+const clas9 = var.classe1
+const vari9 = "recalc2_auto"
+const exec9 = "recalc_ajusta"
+#
+const nome10 = "Defesa ao vestir"
+const info10 = "Afetam os danos quando alguém ataca o personagem"
+const tipo10 = "opc_atribdef"
+const clas10 = var.classe1
+const vari10 = "recalc2_auto"
+const exec10 = "recalc_ajusta"
 
 
 classe menu_iluz

@@ -86,6 +86,9 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     arg0.contr.msg(lin + " está desmaiad" + (arg0.msexo ? "o." : "a."))
     ret
   senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
+  senao arg0.contr.pnivel < arg0.pnivel
+    arg0.contr.msg(txtcopiamai(arg0.nome, "A") + " não quer obedecer você.")
+    ret
   senao arg0.posicao < posic # Checa a posição necessária
     refvar lin = arg0 == arg0.contr ? "Você" : txtcopiamai(arg0.nome, "A")
     casovar arg0.posicao
@@ -150,7 +153,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # Retorna verdadeiro se pode usar
-  ret !arg0.pvida || arg0.posicao < posic, nulo
+  ret !arg0.pvida || arg0.posicao < posic || arg0.contr.pnivel < arg0.pnivel, nulo
   ret arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
@@ -173,7 +176,7 @@ func custohab2 # Aplica os custos da habilidade/magia
 
 classe comando_ataque
 herda comando_hab
-const objcmd = tipoalvo < 8 && arg0.persobat.var.[nomevar] ? este
+const objcmd = tipoalvo < 8 && arg0.persoesc.var.[nomevar] ? este
 const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoalvo = 0 # Alvo
@@ -244,7 +247,7 @@ func escr # Atacar alguém
     r = arg0.atkenv.objlista
     ret !r || r.dono != arg0.dono, arg0.msg("Atacar quem?")
   fimse
-  refvar p = arg0.persobat
+  refvar p = arg0.persoesc
   se arg2
     exechab(p, r.persobat, 0.5, arg3, arg2)
   senao
