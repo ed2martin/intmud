@@ -327,43 +327,49 @@ const vari3 = "c_config"
 const extr3 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
 const exec3 = "jogrecalc"
 #
-const nome4 = "Jogador entrando"
-const info4 = "Como deve avisar quando alguém entrar no MUD ou sair"
-const tipo4 = "opc_opcao"
+const nome4 = "Fome/sede"
+const info4 = "Se pode sentir fome e sede (se não for imortal)"
+const tipo4 = "opc_simnao"
 const clas4 = var.classe1
-const vari4 = "i_entrando"
-const extr4 = "Não informar\nInformar o nome\nInformações completas"
+const vari4 = "fome"
 #
-const nome5 = "Mensagem Admin"
-const info5 = "Se é informado quando alguém digita a senha de administração"
-const tipo5 = "opc_simnao"
+const nome5 = "Jogador entrando"
+const info5 = "Como deve avisar quando alguém entrar no MUD ou sair"
+const tipo5 = "opc_opcao"
 const clas5 = var.classe1
-const vari5 = "i_admin"
+const vari5 = "i_entrando"
+const extr5 = "Não informar\nInformar o nome\nInformações completas"
 #
-const nome6 = "Ganhou permissão"
-const info6 = "Mensagem quando o jogador muda para esse grupo"
-const tipo6 = "opc_linha"
+const nome6 = "Mensagem Admin"
+const info6 = "Se é informado quando alguém digita a senha de administração"
+const tipo6 = "opc_simnao"
 const clas6 = var.classe1
-const vari6 = "entroumsg"
+const vari6 = "i_admin"
 #
-const nome7 = "Perdeu permissão"
-const info7 = "Mensagem quando o jogador deixa de ser desse grupo"
+const nome7 = "Ganhou permissão"
+const info7 = "Mensagem quando o jogador muda para esse grupo"
 const tipo7 = "opc_linha"
 const clas7 = var.classe1
-const vari7 = "saiumsg"
+const vari7 = "entroumsg"
 #
-const nome8 = "Comandos jogador"
-const tipo8 = "menu_perm_cmd--"
+const nome8 = "Perdeu permissão"
+const info8 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo8 = "opc_linha"
+const clas8 = var.classe1
+const vari8 = "saiumsg"
 #
-const nome9 = "Comandos admin"
-const tipo9 = "menu_perm_adm--"
+const nome9 = "Comandos jogador"
+const tipo9 = "menu_perm_cmd--"
 #
-const nome10 = "Comandos edição"
-const tipo10 = "menu_perm_editor--"
+const nome10 = "Comandos admin"
+const tipo10 = "menu_perm_adm--"
 #
-const nome11 = "Outros comandos"
-const tipo11 = "opc_ajuda--"
-const extr11 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
+const nome11 = "Comandos edição"
+const tipo11 = "menu_perm_editor--"
+#
+const nome12 = "Outros comandos"
+const tipo12 = "opc_ajuda--"
+const extr12 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
 LSAV, ASAV, ESAV, MUDANOME: interferem com personagens de administradores\n\
 BAN2: bloqueia a entrada de administradores\n\
 ECONFIG: muda configurações do MUD, inclusive senha de administração\n\
@@ -465,16 +471,22 @@ const tipo14 = "opc_linha"
 const clas14 = var.classe1
 const vari14 = "abrir"
 #
-const nome15 = "Pode lutar"
-const tipo15 = "opc_simnao"
+const nome15 = "Habilidades"
+const info15 = "Mensagem quando tenta usar habilidades; se vazio consegue"
+const tipo15 = "opc_linha"
 const clas15 = var.classe1
-const vari15 = "batalha"
+const vari15 = "usar_hab"
 #
-const nome16 = "Fome/sede"
-const info16 = "Se pode sentir fome e sede (se não for imortal)"
-const tipo16 = "opc_simnao"
+const nome16 = "Magias"
+const info16 = "Mensagem quando tenta usar magias; se vazio consegue"
+const tipo16 = "opc_linha"
 const clas16 = var.classe1
-const vari16 = "fome"
+const vari16 = "usar_mag"
+#
+const nome17 = "Pode lutar"
+const tipo17 = "opc_simnao"
+const clas17 = var.classe1
+const vari17 = "batalha"
 
 
 classe menu_perm_adm
@@ -658,9 +670,9 @@ classe comum_perm
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomequem c_config i_entrando i_admin\n\
-entroumsg saiumsg a_hab a_efeito a_social a_cod\n\
-c_salvar c_chat c_novatos c_gritar c_falar c_social c_telepatia\n\
-c_rezar c_bug c_ideia pacifico andar item vestir abrir batalha fome\n\
+entroumsg saiumsg fome c_salvar c_chat c_novatos c_gritar\n\
+c_falar c_social c_telepatia c_rezar c_bug c_ideia\n\
+andar item vestir abrir usar_hab usar_mag batalha\n\
 c_admin c_serv c_rezou c_echo c_ban c_tele c_pnj c_monit c_matar\n\
 c_log c_ivar c_ivar i_perso\n\
 c_larea c_lsala c_lsai c_esala c_lperso c_iperso c_eperso\n\

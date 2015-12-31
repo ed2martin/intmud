@@ -723,6 +723,11 @@ func passo
       item.obj.var.limpar("d_", "j_")
       item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
     efim
+    epara item = arg0.perso.dentro2.ini, item, item.depois
+      continuar !item.obj.perso || item.obj.var.z_dono
+      item.obj.var.z_dono = arg0.perso.nome
+      item.obj.var.z_pnivel = item.obj.pnivel
+    efim
 # Muda de sala e volta ao jogo
     arg0.perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
     criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome], l1) # Para mudar de sala

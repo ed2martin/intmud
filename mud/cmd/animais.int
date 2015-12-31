@@ -1,8 +1,24 @@
 classe cmd_animal
 herda comando_comum
 const objcmd = config:animal1 ? este
-const txtajuda = config:animal1 ? txtajuda1
-const txtajuda1 = txttroca(config:animal2 ? ta1 + ta2 : ta1, "$$", config:animal1)
+const posic = 0
+
+func txtajuda
+  ret !config:animal1, nulo
+  refvar m1 = txttroca(ta1, "$$", config:animal1)
+  ret !config:animal2, m1
+  refvar nivel = int(config:animal_n)
+  se !config:animal_n
+    ret m1 + ta2 + "\nNota: Animais acima do seu nível não lutam"
+  senao config:animal_n > 0
+    ret m1 + ta2 + "\nNota: Animais " + (nivel + 1) + " níveis acima do seu não lutam"
+  senao config:animal_n == -1
+    ret m1 + ta2 + "\nNota: Você precisa estar 1 nível acima do animal para ele lutar"
+  senao
+    ret m1 + ta2 + "\nNota: Você precisa estar " + -nivel + " níveis acima do animal para ele \
+lutar"
+  fimse
+
 const ta1 = "\b\c3Animais\b\n\
   \c2CAPTURAR\b  Pega o animal que está lutando com você.\n\
   \c2SOLTAR\b    Solta um animal (você se desfaz dele)\n\
@@ -12,7 +28,6 @@ const ta1 = "\b\c3Animais\b\n\
   \c21\b a \c2$$\b     Escolhe um animal seu, de 1 a $$\n\
   \c2TROCAR\b    Dá itens para um animal e troca animais de lugar"
 const ta2 = "\n  \c2RESERVA\b   Manuseio de animais reserva"
-const posic = 0
 
 func escr
   textotxt t
@@ -236,8 +251,6 @@ func pegar # Pega o animal
   efim
   refvar estacheio = !arg0.animalmais
   arg2.mudadono(arg0) # Muda de dono
-  arg2.var.z_dono = arg0.nome
-  arg2.var.z_pnivel = arg2.pnivel
   arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
   arg0.recalc = 1
   arg2.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)

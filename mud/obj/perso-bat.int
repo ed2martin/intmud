@@ -621,11 +621,12 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   escolhebat
 
 func escolhebat # Escolhe um personagem em condições de lutar
-  se persoesc.pvida && persoesc.pnivel <= pnivel
+  se persoesc.pvida && persoesc.pnivel <= pnivel + config:animal_n
     persobat = persoesc
   senao
     listaitem i
-    epara i = dentro2.ini, i && (!i.obj.pvida || i.obj.pnivel > pnivel), i.depois
+    epara i = dentro2.ini, i, i.depois
+      sair i.obj.pvida && i.obj.pnivel <= pnivel + config:animal_n
     efim
     persobat = i ? i.obj : este
   fimse
@@ -662,7 +663,8 @@ func p_proc_exec # Processar comportamento do personagem
 # Escolhe animal
   se persoesc == este || !persoesc.pvida
     listaitem i
-    epara i = dentro2.ini, i && (!i.obj.pvida || i.obj.pnivel > pnivel), i.depois
+    epara i = dentro2.ini, i, i.depois
+      sair i.obj.pvida && i.obj.pnivel <= pnivel + config:animal_n
     efim
     persobat = i ? i.obj : este
     se persoesc != persobat

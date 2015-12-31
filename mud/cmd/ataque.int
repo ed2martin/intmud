@@ -227,7 +227,11 @@ func escr # Atacar alguém
 # arg2 = item usado, ou nulo se não usou nenhum item
 # arg3 = nível da magia, se usou algum item
   ref r
-  se arg1 # Digitou o alvo
+  refvar perm = $perm_[arg0.jogperm]
+  refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
+  se m1
+    ret arg0.msg(m1)
+  senao arg1 # Digitou o alvo
     listaitem i
     nomeobj nome
     nome.ini(arg1, 1)

@@ -93,6 +93,10 @@ func ini # Coloca o objeto dentro de outro
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
     criar(var.ini("e_"), este, var.valor(var.ini("e_")))
   efim
+  se dono.perso && !var.z_dono
+    var.z_dono = dono.nome
+    var.z_pnivel = pnivel
+  fimse
   recalc_exec
 
 func fim # Objeto foi apagado
@@ -164,6 +168,10 @@ func mudadono # Coloca personagem em outra sala (arg0 = nova sala)
     epara l.addfim(dono.dentro2), l, l.ini.remove
       l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
     efim
+# Se vai ser animal de um personagem, acerta quem é o primeiro dono
+  senao dono.perso && !var.z_dono
+    var.z_dono = dono.nome
+    var.z_pnivel = pnivel
   fimse
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock

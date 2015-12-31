@@ -45,10 +45,11 @@ func exec # Recarrega arquivos
 func msg
   telatxt tela
   tela.msg("(mudler)\n" + arg0 + "\n")
+  refvar m1 = inttotal(arg0) > 490 ? txt(arg0, 0, 490) + " (...)" : arg0
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     continuar item.obj.jogperm != "admin" || txt1(item.obj.info) == "l"
-    item.obj.msg("(mudler)\n" + arg0)
+    item.obj.msg("(mudler)\n" + m1)
   efim
 
 func passofunc_exec # Próximo passo para alterar programa
