@@ -37,12 +37,14 @@
 #include "objeto.h"
 #include "instr.h"
 #include "misc.h"
+#include "random.h"
 #include "sha1.h"
 #include "md5.h"
 
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou e recebeu
 //#define DEBUG_SSL    // Mostra informações de conexão SSL
+//#define DEBUG_WEBSOCK // Mostra informações de conexão WebSock
 
 TSocket * TSocket::SockAtual = 0;
 TSocket * TSocket::sInicio = 0;
@@ -61,7 +63,9 @@ enum TSocketProto ///< Valores de TSocket::proto
     spTelnet1,   ///< Telnet, só mensagens inteiras
     spTelnet2,   ///< Telnet, recebe mensagens incompletas (sem o \\n)
     spIRC,       ///< IRC
-    spPapovox    ///< Papovox
+    spPapovox,   ///< Papovox
+    spWebSockM0, ///< WebSock enviando mensagens sem o campo máscara
+    spWebSockM1, ///< WebSock enviando mensagens com o campo máscara
 };
 
 //------------------------------------------------------------------------------
@@ -419,6 +423,8 @@ bool TSocket::Conectado()
     case spTelnet2:
     case spIRC:
     case spPapovox:
+    case spWebSockM0:
+    case spWebSockM1:
         return true;
     }
     return false;
@@ -441,8 +447,8 @@ int TSocket::Variavel(char num, int valor)
             case spTelnet2:
             case spIRC:
             case spPapovox:
-                if (valor<2) valor=2;
-                if (valor>5) valor=5;
+            case spWebSockM0:
+            case spWebSockM1:
                 switch (valor)
                 {
                 case 2:
@@ -461,6 +467,14 @@ int TSocket::Variavel(char num, int valor)
                     mudar = (proto!=spPapovox);
                     proto = spPapovox;
                     break;
+                case 6:
+                    mudar = (proto!=spWebSockM0 && proto!=spWebSockM1);
+                    proto = spWebSockM0;
+                    break;
+                case 7:
+                    mudar = (proto!=spWebSockM0 && proto!=spWebSockM1);
+                    proto = spWebSockM1;
+                    break;
                 }
                 if (mudar)
                     pontRec=0, pontESC=0, pontTelnet=0;
@@ -468,10 +482,12 @@ int TSocket::Variavel(char num, int valor)
         }
         switch (proto)
         {
-        case spTelnet1: return 2;
-        case spTelnet2: return 3;
-        case spIRC:     return 4;
-        case spPapovox: return 5;
+        case spTelnet1:     return 2;
+        case spTelnet2:     return 3;
+        case spIRC:         return 4;
+        case spPapovox:     return 5;
+        case spWebSockM0:   return 6;
+        case spWebSockM1:   return 7;
         }
         return 1;
     case 2: // cores
@@ -628,6 +644,78 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         if (destino != mens)
             eventoenv = true;
         return EnvMensBytes(mens, destino - mens);
+    }
+
+// WebSock
+    if (proto==spWebSockM0 || proto==spWebSockM1)
+    {
+        char mens[SOCKET_ENV];
+        char * ini = mens + 10;
+        char * destino = mens + 10;
+
+    // Anota mensagem
+        int valor = 1;
+        while (*mensagem && destino < mens+sizeof(mens))
+        {
+            unsigned char ch = *mensagem++;
+            if (ch >= '0' && ch <= '9')
+                valor = valor * 16 + ch - '0';
+            else if (ch >= 'A' && ch <= 'F')
+                valor = valor * 16 + ch - 'A' + 10;
+            else if (ch >= 'a' && ch <= 'f')
+                valor = valor * 16 + ch - 'a' + 10;
+            else
+                continue;
+            if (valor >= 0x100)
+                *destino++ = valor, valor=1;
+        }
+
+    // Máscara
+        if (proto==spWebSockM1)
+        {
+            char cod[4];
+            valor = (circle_random() & 0xFFFF);
+            if (valor == 0)
+                valor = 0x5A38;
+            cod[0] = valor;
+            cod[1] = valor >> 8;
+            valor = (circle_random() & 0xFFFF);
+            if (valor == 0)
+                valor = 0x5A38;
+            cod[2] = valor;
+            cod[3] = valor >> 8;
+            ini -= 4;
+            memcpy(ini, cod, 4);
+            int ind = 0;
+            for (char * p = mens+10; p < destino; p++,ind=(ind+1)&3)
+                *p ^= cod[ind];
+        }
+
+    // Tamanho
+        int tamanho = destino - (mens + 10);
+        if (tamanho <= 125)
+            *(--ini) = tamanho;
+        else
+        {
+            ini -= 3;
+            ini[0] = 126;
+            ini[1] = tamanho;
+            ini[2] = tamanho >> 8;
+        }
+        if (proto==spWebSockM1)
+            ini[0] |= 0x80;
+
+    // Código
+        *(--ini) = (codigo < 0 ? 0 : codigo > 255 ? 255 : codigo);
+
+    // Envia
+#ifdef DEBUG_WEBSOCK
+        printf("Enviando ");
+        for (const char * pp = ini; pp<destino; pp++)
+            printf(" %02x", *(unsigned char*)pp);
+        putchar('\n'); fflush(stdout);
+#endif
+        return EnvMensBytes(ini, destino - ini);
     }
 
 // Sem cores
@@ -1660,6 +1748,7 @@ telnet_cor:
         }
         return tamanho;
     }
+
 // Protocolo Papovox
     if (proto==spPapovox)
     {
@@ -1691,6 +1780,148 @@ telnet_cor:
         EventoMens(true);
         return tamanho;
     }
+
+// Protocolo WebSock
+    if (proto==spWebSockM0 || proto==spWebSockM1)
+    {
+        char dado;
+
+#ifdef DEBUG_WEBSOCK
+        printf("Chegou (%d) =", tamanho);
+        for (const char * pp = buffer; pp<buffer+tamanho; pp++)
+            printf(" %02x", *(unsigned char*)pp);
+        putchar('\n'); fflush(stdout);
+#endif
+
+    // bufRec[0] = mensagem
+    // bufRec[1] = identificação do tamanho da mensagem
+    // bufRec[2] a bufRec[5] = tamanho da mensagem
+        switch (pontRec)
+        {
+        case 0: // Tipo de mensagem
+            if (tamanho <= 0) return 0;
+            telnetecho = *(unsigned char*)buffer;
+            bufRec[pontRec++].carac = *buffer++, tamanho--;
+        case 1: // Tamanho (8 bits)
+            if (tamanho <= 0) return 0;
+            dado = *buffer;
+            bufRec[pontRec++].carac = *buffer++, tamanho--;
+            if ((dado & 0x7F) < 126)
+            {
+                bufRec[pontRec++].carac = dado & 0x7F;
+                bufRec[pontRec++].carac = 0;
+                bufRec[pontRec++].carac = 0;
+                bufRec[pontRec++].carac = 0;
+                break;
+            }
+        case 2: // Tamanho (16 bits)
+            if (tamanho <= 0) return 0;
+            bufRec[pontRec++].carac = *buffer++, tamanho--;
+        case 3:
+            if (tamanho <= 0) return 0;
+            bufRec[pontRec++].carac = *buffer++, tamanho--;
+            if ((bufRec[1].carac & 0x7F) == 127)
+            {
+                bufRec[pontRec++].carac = 0;
+                bufRec[pontRec++].carac = 0;
+                break;
+            }
+        case 4: // Tamanho (32 bits)
+            if (tamanho <= 0) return 0;
+            bufRec[pontRec++].carac = *buffer++, tamanho--;
+        case 5:
+            if (tamanho <= 0) return 0;
+            bufRec[pontRec++].carac = *buffer++, tamanho--;
+        }
+    // bufRec[6] a bufRec[9] = máscara
+        if (pontRec < 10)
+        {
+            if ((bufRec[1].carac & 0x127) == 0)
+            {
+                bufRec[6].carac = 0;
+                bufRec[7].carac = 0;
+                bufRec[8].carac = 0;
+                bufRec[9].carac = 0;
+                pontRec=10;
+            }
+            while (pontRec < 10)
+            {
+                if (tamanho <= 0) return 0;
+                bufRec[pontRec++].carac = *buffer++, tamanho--;
+            }
+        }
+    // bufRec[10] em diante = mensagem
+        if (tamanho <= 0)
+            return 0;
+        const unsigned int max = (SOCKET_REC - 10) & 0xFFFFFC;
+        unsigned int total = // Tamanho da mensagem
+            (unsigned char)bufRec[2].carac +
+            (unsigned char)bufRec[3].carac * 0x100 +
+            (unsigned char)bufRec[4].carac * 0x10000 +
+            (unsigned char)bufRec[5].carac * 0x1000000;
+        unsigned int tot2 = (total < max ? total : max);
+        tot2 -= pontRec-10; // tot2 = quantos bytes para completar o buffer
+        if ((unsigned int)tamanho < tot2)
+        {
+            for (; tamanho>0; tamanho--)
+                bufRec[pontRec++].carac = *buffer++;
+            return 0;
+        }
+        tamanho -= tot2;
+        for (; tot2>0; tot2--)
+            bufRec[pontRec++].carac = *buffer++;
+
+#ifdef DEBUG_WEBSOCK
+        printf("BufRec (%d) =", pontRec);
+        for (unsigned int xx=0; xx<pontRec; xx++)
+            printf(" %02x", (unsigned char)bufRec[xx].carac);
+        putchar('\n'); fflush(stdout);
+#endif
+
+    // Prepara texto do evento
+        char mens[SOCKET_REC * 2];
+        char * d = mens;
+        int cod = 0;
+        for (unsigned int x=10; x<pontRec; x++)
+        {
+            char dadoch = bufRec[x].carac ^ bufRec[6 + cod].carac;
+            char ch = ((dadoch >> 4) & 15);
+            *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
+            ch = (dadoch & 15);
+            *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
+            cod = (cod+1) & 3;
+        }
+        *d = 0;
+    // Acerta bufRec
+        int codigo = telnetecho;
+        total -= pontRec-10;
+        if (total == 0)
+            pontRec = 0;
+        else
+        {
+            codigo = bufRec[0].carac & 0x7F;
+            telnetecho &= 0x80;
+            pontRec = 10;
+            bufRec[2].carac = total;
+            bufRec[3].carac = total >> 8;
+            bufRec[4].carac = total >> 16;
+            bufRec[5].carac = total >> 24;
+            bufRec[0].carac = 0;
+        }
+
+#ifdef DEBUG_WEBSOCK
+        printf("total = %d\n" "codigo = %d\n", total, codigo);
+        printf("Depois (%d) =", pontRec);
+        for (unsigned int xx=0; xx<pontRec; xx++)
+            printf(" %02x", (unsigned char)bufRec[xx].carac);
+        putchar('\n'); fflush(stdout);
+#endif
+
+    // Gera evento
+        FuncEvento("msg", mens, true, codigo);
+        return tamanho;
+    }
+
 // Protocolo desconhecido
     assert(0);
 }

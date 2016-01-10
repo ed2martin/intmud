@@ -9,14 +9,15 @@ func txtajuda
   ret !config:animal2, m1
   refvar nivel = int(config:animal_n)
   se !config:animal_n
-    ret m1 + ta2 + "\nNota: Animais acima do seu nível não lutam"
+    ret m1 + ta2 + "\nNota: Seus animais acima do seu nível não lutam"
   senao config:animal_n > 0
-    ret m1 + ta2 + "\nNota: Animais " + (nivel + 1) + " níveis acima do seu não lutam"
+    ret m1 + ta2 + "\nNota: Seus animais " + (nivel + 1) + " níveis acima do seu nível não \
+lutam"
   senao config:animal_n == -1
-    ret m1 + ta2 + "\nNota: Você precisa estar 1 nível acima do animal para ele lutar"
+    ret m1 + ta2 + "\nNota: Você precisa estar 1 nível acima do seu animal para ele lutar"
   senao
-    ret m1 + ta2 + "\nNota: Você precisa estar " + -nivel + " níveis acima do animal para ele \
-lutar"
+    ret m1 + ta2 + "\nNota: Você precisa estar " + -nivel + " níveis acima do seu animal para \
+ele lutar"
   fimse
 
 const ta1 = "\b\c3Animais\b\n\

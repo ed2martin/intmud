@@ -15,6 +15,7 @@ public:
 private:
     void Fechar();      ///< Fecha arquivo
     FILE * arq;         ///< Para acessar o arquivo
+    bool ModoBinario;   ///< Se está acessando o arquivo em modo binário
 };
 
 //----------------------------------------------------------------------------

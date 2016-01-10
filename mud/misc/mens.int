@@ -126,9 +126,8 @@ func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
   contr.msginv(arg0)
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  l0.remove(contr)
-  enquanto l0
-    l0.objini.msgvis(arg0), l0.ini.remove
+  epara l0.remove(contr), l0, l0.ini.remove
+    l0.objini.msgvis(arg0)
   efim
 
 func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado

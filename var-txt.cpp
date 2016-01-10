@@ -59,7 +59,28 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     // Lê o texto do arquivo
         if (arq) // Se o arquivo está aberto...
         {
-            if (Instr::VarAtual > v) // Ler o tamanho especificado
+            if (ModoBinario)
+            {
+                int tam = 1;
+                if (Instr::VarAtual > v)
+                    tam = v[1].getInt();
+                if (tam < 0)
+                    tam = 0;
+                if (tam > (int)sizeof(mens)/2)
+                    tam = (int)sizeof(mens)/2;
+                tam *= 2;
+                while (pmens<tam)
+                {
+                    int lido = fgetc(arq);
+                    if (lido==EOF)
+                        break;
+                    char ch = ((lido >> 4) & 15);
+                    mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                    ch = (lido & 15);
+                    mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                }
+            }
+            else if (Instr::VarAtual > v) // Ler o tamanho especificado
             {
                 int tam = v[1].getInt();
                 if (tam > (int)sizeof(mens))
@@ -99,6 +120,35 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
             const char * txt = v1->getTxt();
             char mens[2048];
             int pmens=0;
+            if (ModoBinario)
+            {
+                int valor = 1;
+                while (true)
+                {
+                    unsigned char ch = *txt++;
+                    if (ch == 0)
+                        break;
+                    else if (ch >= '0' && ch <= '9')
+                        valor = valor * 16 + ch - '0';
+                    else if (ch >= 'A' && ch <= 'F')
+                        valor = valor * 16 + ch - 'A' + 10;
+                    else if (ch >= 'a' && ch <= 'f')
+                        valor = valor * 16 + ch - 'a' + 10;
+                    else
+                        continue;
+                    if (valor < 0x100)
+                        continue;
+                    mens[pmens++] = valor, valor=1;
+                    if (pmens >= (int)sizeof(mens))
+                    {
+                        fwrite(mens, 1, pmens, arq);
+                        pmens = 0;
+                    }
+                }
+                if (pmens)
+                    fwrite(mens, 1, pmens, arq);
+                continue;
+            }
             while (*txt)
             {
                 if (pmens >= (int)sizeof(mens)-2)
@@ -233,10 +283,14 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     // Abre arquivo
         switch (modo)
         {
-        case 0: descr = fopen(arqnome, "r"); break;
-        case 1: descr = fopen(arqnome, "r+"); break;
-        case 2: descr = fopen(arqnome, "w"); break;
-        case 3: descr = fopen(arqnome, "a"); break;
+        case 0: ModoBinario = false; descr = fopen(arqnome, "r"); break;
+        case 1: ModoBinario = false; descr = fopen(arqnome, "r+"); break;
+        case 2: ModoBinario = false; descr = fopen(arqnome, "w"); break;
+        case 3: ModoBinario = false; descr = fopen(arqnome, "a"); break;
+        case 4: ModoBinario = true;  descr = fopen(arqnome, "rb"); break;
+        case 5: ModoBinario = true;  descr = fopen(arqnome, "rb+"); break;
+        case 6: ModoBinario = true;  descr = fopen(arqnome, "wb"); break;
+        case 7: ModoBinario = true;  descr = fopen(arqnome, "ab"); break;
         }
 #ifdef DEBUG
         printf("Abrindo [%s] : %s\n", nome, descr ? "OK" : "ERRO");

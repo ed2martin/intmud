@@ -3340,7 +3340,15 @@ Modo é um número que indica como o arquivo deve ser aberto:
 1 - Leitura e escrita;
 2 - Somente escrita; o tamanho do arquivo é truncado para 0 bytes;
 3 - Para escrever no final do arquivo.
-Os modos 0 e 1 não criam um novo arquivo, caso ele não exista.
+4 - Modo binário somente leitura;
+5 - Modo binário leitura e escrita;
+6 - Modo binário somente escrita; tamanho do arquivo é truncado para 0 bytes;
+7 - Modo binário para escrever no final do arquivo.
+
+Os modos 0, 1, 4 e 5 não criam um novo arquivo, caso ele não exista.
+No modo binário, cada 2 caracteres representam um byte do arquivo,
+no formato hexadecimal. Assim, se for necessário obter o texto correspodente
+a uma sequência de caracteres em hexadecimal, usar a função txtconv.
 
 Nota 1: Não acessa arquivos executáveis ou terminados em:
         .exe, .com, .bat, .pif, .scr ou .log
@@ -3369,6 +3377,7 @@ Grava em arquivo as alterações pendentes.
 27.8. ler
 Lê uma linha do arquivo; retorna a linha lida sem o \n no final.
 Pode ler menos se chegou no fim do arquivo.
+Em modo binário, lê um caracter do arquivo (2 caracteres em hexadecimal).
 
 27.9. ler(<tamanho>)
 Lê um determinado número de caracteres do arquivo.
@@ -3534,9 +3543,11 @@ Funções e variáveis:
 2 - Telnet, só recebe mensagens completas;
 3 - Telnet, pode receber mensagens incompletas (sem o \n no fim);
 4 - IRC;
-5 - Papovox (sem cores).
+5 - Papovox (sem cores);
+6 - WebSocket sem codificar as mensagens enviadas;
+7 - WebSocket codificando as mensagens enviadas.
 
-Nota: É possível mudar essa variável para qualquer valor de 2 a 5,
+Nota: É possível mudar essa variável para qualquer valor de 2 a 7,
       quando o socket estiver conectado.
 
 31.2. cores
@@ -3579,11 +3590,15 @@ Encerra a conexão; não gera o evento fechou.
 
 31.11. msg(<mensagem>, [tipo de mensagem])
 Envia mensagem para o socket.
-O tipo de mensagem é usado somente no Papovox.
-Se for omitido, assume 1, que significa mensagem de texto.
+O tipo de mensagem é usado somente no Papovox e em WebSocket.
+Se for omitido, assume 1, que no Papovox significa mensagem de texto.
+Vide mais detalhes sobre o tipo da mensagem no evento <nomedavariável>_msg.
 Retorna 1 se conseguiu enviar ou 0 se buffer cheio.
-Nota: Se o protocolo for Papovox, devido às limitações do Papovox,
+Nota 1: Se o protocolo for Papovox, devido às limitações do Papovox,
 é acrescentado "\n" no final da mensagem se já não houver um "\n".
+Nota 2: No protocolo WebSocket, para enviar um texto é necessário antes
+converter para UTF-8 e Hexadecimal. A conversão pode ser feita assim:
+txtconv(txtconv("sua mensagem", "tu", "th"))
 
 31.12. inissl
 Apenas carrega biblioteca OpenSSL, usada para conexões seguras.
@@ -3629,8 +3644,24 @@ Recebeu mensagem.
 arg0 = Mensagem recebida.
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n).
 arg2 = Um número de 0 a 255 que indica o tipo de mensagem.
-       Usado somente no Papovox. O valor 1 significa mensagem de texto.
+       Usado somente no Papovox e no WebSocket (vide abaixo).
 arg3 = Índice da variável vetor, se não for vetor arg3=0.
+
+Tipo de mensagem:
+No Papovox, geralmente só é usado o valor 1, que significa mensagem de texto.
+No WebSocket, os valores usados são os seguintes:
+129 - Mensagem de texto sem continuação
+130 - Mensagem binária sem continuação
+1   - Primeira parte da mensagem de texto
+2   - Primeira parte da mensagem binária
+0   - Continuação da mensagem (de texto ou binária)
+128 - Última parte da mensagem (de texto ou binária)
+136 - Fechar a conexão (motivo vai em arg1)
+137 - Ping (deve responder com Pong com a mesma mensagem de arg1)
+138 - Pong
+Outros valores - Reservado, não usar
+No WebSocket, mensagens de texto (em arg1) estão em UTF-8 e em Hexadecimal.
+Para transformar para texto: txtconv(txtconv(arg1, "ht"), "ut")
 
 31.20. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão

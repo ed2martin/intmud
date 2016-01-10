@@ -1,6 +1,7 @@
 classe adm_com
 herda comando_adm
-const txtajuda = "\b\c3Com (comunicação)\b\n\
+const txtajuda = aj1 + aj2
+const aj1 = "\b\c3Com (comunicação)\b\n\
 \c2COM\b\n\
   Lista as conexões do MUD.\n\
 \c2COM QUEM\b\n\
@@ -25,7 +26,15 @@ const txtajuda = "\b\c3Com (comunicação)\b\n\
   Instalar o OpenSSL, se ainda não estiver instalado. Depois, abrir um\n\
   terminal (no Linux/Unix) ou abrir o \"Prompt do MS-DOS\" e digitar:\n\
   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mud.key -out mud.crt\n\
-  O programa pedirá algumas informações, e em seguida criará os arquivos.\n\
+  O programa pedirá algumas informações, e em seguida criará os arquivos.\n"
+const aj2 = "\c2COM HTTP\b <endereço> <porta>\n\
+  É semelhante à opção TELNET, porém abre a porta para entrar via navegador.\n\
+  Os jogadores devem digitar http:// seguido do endereço do servidor, dois\n\
+  pontos e a porta. Exemplo, se o endereço do servidor for 1.2.3.4 e for\n\
+  a porta 3000, deve-se digitar no navegador http://1.2.3.4:3000\n\
+  Se a porta for a 80, é necessário apenas http:// seguido do endereço\n\
+  Nota: É necessário um navegador não muito antigo (com suporte a\n\
+  Javascript e WebSocket)\n\
 \c2COM FIM\b <endereço ou porta>\n\
   Com um endereço, encerra uma conexão de bot.\n\
   Com um número, fecha uma porta (aberta para Telnet, Papovox ou SSL).\n\
@@ -35,6 +44,7 @@ const txtajuda = "\b\c3Com (comunicação)\b\n\
   com telnet localhost 3000\n\
   com papo * 1963\n\
   com ssl * 2500\n\
+  com http * 3000\n\
   com fim 2000"
 
 func escr
@@ -80,6 +90,13 @@ func escr
     fimse
     cmdlog(arg0, "com", arg1)
     criar("jogoserv", arg1)
+    ret
+  casose "http"
+    se intsub(arg1) != 3
+      ret arg0.msg("A opção COM HTTP requer dois argumentos")
+    fimse
+    cmdlog(arg0, "com", arg1)
+    criar("jogohttp", arg1)
     ret
   casose "fim"
     indiceitem item
@@ -134,6 +151,7 @@ func passo0 # Escolher o tipo de conexão
     arg0.txtmais.addfim("Telnet  Aabrir porta para Telnet")
     arg0.txtmais.addfim("Papo    Abrir porta para Telnet e Papovox")
     arg0.txtmais.addfim("SSL     Abrir porta para Telnet com critografia")
+    arg0.txtmais.addfim("HTTP    Abrir porta para HTTP (navegador)")
     arg0.txtmais.addfim("Bot     Conectar a um chat como Bot")
     arg0.txtmais.addfim("Bot2    Conectar a um chat como Bot usando protocolo bot2")
     arg0.txtmais.addfim("RBot    Mesmo que Bot, mas tenta reconectar aos 15 min de cada hora")
@@ -155,6 +173,7 @@ hora")
   casose "telnet"
   casose "papo"
   casose "ssl"
+  casose "http"
   casose "bot"
   casose "bot2"
   casose "rbot"
