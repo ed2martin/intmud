@@ -16,25 +16,39 @@ Executar o mud.exe.
 
 2. Rodando o MUD no Linux
 
-Baixar o código fonte e copiar para o servidor.
-A última versão lançada está em:
-https://github.com/ed2martin/intmud/releases
-O pacote compactado no formato ZIP:
+Há pelo menos três formas de baixar e compilar o IntMUD:
 
-Ou pode-se baixar a última revisão pelo servidor, com o comando:
-git clone git://github.com/ed2martin/intmud
+2.1. Baixar a última revisão pelo servidor, com o programa wget
 
-Ou o código fonte compactado no formato ZIP, com o comando:
+São os seguinte comandos, nessa ordem:
 wget https://github.com/ed2martin/intmud/archive/master.zip
-
-Entrar no diretório do intmud:
-cd intmud
-
-Compilar o programa:
+unzip master.zip
+cd intmud-master
 ./configure && make
 
-Isso vai criar o arquivo intmud, que é o executável do IntMUD.
-Copiar para o diretório mud com outro nome:
+2.2. Baixar a última revisão pelo servidor, com o programa git
+
+São os seguinte comandos, nessa ordem:
+git clone git://github.com/ed2martin/intmud
+unzip master.zip
+cd intmud
+./configure && make
+
+2.3. Baixar o código fonte e copiar para o servidor
+
+A última versão lançada está em:
+https://github.com/ed2martin/intmud/releases
+Mais especificamente no botão Download ZIP, ou o endereço:
+wget https://github.com/ed2martin/intmud/archive/master.zip
+
+Depois copiar o arquivo master.zip para o servidor e digitar os comandos:
+unzip master.zip
+cd intmud-master
+./configure && make
+
+2.4. Após compilar
+
+Copiar o IntMUD para o diretório mud, mas com outro nome:
 cp intmud mud/mud
 
 Entrar no diretório mud e executar o programa:

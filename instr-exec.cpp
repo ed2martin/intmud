@@ -2262,7 +2262,12 @@ exo_compara_sair:
                     VarAtual->endvar = objeto->Vars +
                             (indvar & 0x3FFFFF);
                 else // Objeto inexistente
+                {
+                    FuncAtual->expr++;
+                    // Somou 1 para compensar Instr::FuncAtual->expr-1
+                    // em VarInvalido()
                     VarInvalido();
+                }
                 break;
             }
         default:

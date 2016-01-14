@@ -699,8 +699,8 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         {
             ini -= 3;
             ini[0] = 126;
-            ini[1] = tamanho;
-            ini[2] = tamanho >> 8;
+            ini[1] = tamanho >> 8;
+            ini[2] = tamanho;
         }
         if (proto==spWebSockM1)
             ini[0] |= 0x80;
@@ -712,7 +712,11 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
 #ifdef DEBUG_WEBSOCK
         printf("Enviando ");
         for (const char * pp = ini; pp<destino; pp++)
+        {
             printf(" %02x", *(unsigned char*)pp);
+            if (*(signed char*)pp >= 0x20)
+                printf("(%c)", *pp);
+        }
         putchar('\n'); fflush(stdout);
 #endif
         return EnvMensBytes(ini, destino - ini);
@@ -980,6 +984,16 @@ bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
     }
     memcpy(bufEnv + pontEnv, mensagem, tamanho);
     pontEnv += tamanho;
+#if 0
+    printf("\nEnviando %p  ", this);
+    for (const char * pp = mensagem; pp<mensagem+tamanho; pp++)
+    {
+        printf(" %02x", *(unsigned char*)pp);
+        if (*(signed char*)pp >= 0x20)
+            printf("(%c)", *pp);
+    }
+    putchar('\n'); fflush(stdout);
+#endif
     return true;
 }
 
@@ -1387,6 +1401,16 @@ void TSocket::ProcEventos(fd_set * set_entrada,
 //------------------------------------------------------------------------------
 int TSocket::Processa(const char * buffer, int tamanho)
 {
+#if 0
+    printf("\nRecebendo %p  ", this);
+    for (const char * pp = buffer; pp<buffer+tamanho; pp++)
+    {
+        printf(" %02x", *(unsigned char*)pp);
+        if (*(signed char*)pp >= 0x20)
+            printf("(%c)", *pp);
+    }
+    putchar('\n'); fflush(stdout);
+#endif
 // Ignora CR/LF, quando estiver mudando de protocolo
     if ((*buffer==10 && dadoRecebido==13) ||
         (*buffer==13 && dadoRecebido==10))
@@ -1808,24 +1832,24 @@ telnet_cor:
             bufRec[pontRec++].carac = *buffer++, tamanho--;
             if ((dado & 0x7F) < 126)
             {
-                bufRec[pontRec++].carac = dado & 0x7F;
                 bufRec[pontRec++].carac = 0;
                 bufRec[pontRec++].carac = 0;
                 bufRec[pontRec++].carac = 0;
+                bufRec[pontRec++].carac = (dado & 0x7F);
                 break;
             }
         case 2: // Tamanho (16 bits)
             if (tamanho <= 0) return 0;
-            bufRec[pontRec++].carac = *buffer++, tamanho--;
-        case 3:
-            if (tamanho <= 0) return 0;
-            bufRec[pontRec++].carac = *buffer++, tamanho--;
             if ((bufRec[1].carac & 0x7F) == 127)
-            {
+                bufRec[pontRec++].carac = *buffer++, tamanho--;
+            else
                 bufRec[pontRec++].carac = 0;
+        case 3: // Tamanho (16 bits)
+            if (tamanho <= 0) return 0;
+            if ((bufRec[1].carac & 0x7F) == 127)
+                bufRec[pontRec++].carac = *buffer++, tamanho--;
+            else
                 bufRec[pontRec++].carac = 0;
-                break;
-            }
         case 4: // Tamanho (32 bits)
             if (tamanho <= 0) return 0;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
@@ -1836,7 +1860,7 @@ telnet_cor:
     // bufRec[6] a bufRec[9] = máscara
         if (pontRec < 10)
         {
-            if ((bufRec[1].carac & 0x127) == 0)
+            if ((bufRec[1].carac & 0x80) == 0)
             {
                 bufRec[6].carac = 0;
                 bufRec[7].carac = 0;
@@ -1855,10 +1879,10 @@ telnet_cor:
             return 0;
         const unsigned int max = (SOCKET_REC - 10) & 0xFFFFFC;
         unsigned int total = // Tamanho da mensagem
-            (unsigned char)bufRec[2].carac +
-            (unsigned char)bufRec[3].carac * 0x100 +
-            (unsigned char)bufRec[4].carac * 0x10000 +
-            (unsigned char)bufRec[5].carac * 0x1000000;
+            (unsigned char)bufRec[2].carac * 0x1000000 +
+            (unsigned char)bufRec[3].carac * 0x10000 +
+            (unsigned char)bufRec[4].carac * 0x100 +
+            (unsigned char)bufRec[5].carac;
         unsigned int tot2 = (total < max ? total : max);
         tot2 -= pontRec-10; // tot2 = quantos bytes para completar o buffer
         if ((unsigned int)tamanho < tot2)
@@ -1902,10 +1926,10 @@ telnet_cor:
             codigo = bufRec[0].carac & 0x7F;
             telnetecho &= 0x80;
             pontRec = 10;
-            bufRec[2].carac = total;
-            bufRec[3].carac = total >> 8;
-            bufRec[4].carac = total >> 16;
-            bufRec[5].carac = total >> 24;
+            bufRec[2].carac = total >> 24;
+            bufRec[3].carac = total >> 16;
+            bufRec[4].carac = total >> 8;
+            bufRec[5].carac = total;
             bufRec[0].carac = 0;
         }
 
