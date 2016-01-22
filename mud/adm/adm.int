@@ -4,6 +4,7 @@ const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Páginas de administração\b\n\
 Para ler tecle ADM seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
+  \c2CONFIG\b    Diversas configurações do MUD\n\
   \c2AREA\b      Áreas\n\
   \c2SALA\b      Salas\n\
   \c2ITEM\b      Itens\n\
@@ -14,13 +15,12 @@ Os tópicos são:\n\
   \c2HAB\b       Habilidades e magias\n\
   \c2EFEITO\b    Efeitos\n\
   \c2SOCIAL\b    Comandos sociais\n\
-  \c2SOM\b       Sons via MSP\n\
   \c2COD\b       Edição do código fonte\n\
   \c2PERM\b      Permissões de jogadores\n\
   \c2JOG\b       Comandos para jogadores\n\
   \c2OUTROS\b    Outros comandos\n\
-  \c2MENS\b      Caracteres especiais em mensagens\n\
-  \c2CORES\b     Cores em mensagens"
+  \c2MENS\b      Mostra os caracteres especiais em mensagens\n\
+  \c2CORES\b     Mostra as cores permitidas em mensagens"
 
 
 classe adm_jog
@@ -46,13 +46,20 @@ const txtajuda = "\c3Comandos para jogadores\b\n\
   \c2IJOG\b      Mostra aonde todos estão ou algumas informações de um jogador"
 
 
+classe adm_config
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\c3Diversas configurações do MUD\b\n\
+  \c2ECONFIG\b   Edita as configurações do MUD\n\
+  \c2MUDAEXP\b   Muda temporariamente a experiência que personagens ganham\n\
+  \c2COM\b       Comunicação do MUD com os jogadores\n\
+  \c2SOM\b       Sons via MSP\n\
+  \c2LOG\b       Ver arquivos de LOG\n\
+  \c2SERV\b      Informações sobre o MUD"
+
+
 classe adm_outros
 const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\c3Outros comandos\b\n\
-  \c2ECONFIG\b   Edita as configurações do MUD\n\
-  \c2COM\b       Comunicação do MUD com os jogadores\n\
-  \c2LOG\b       Ver arquivos de LOG\n\
-  \c2SERV\b      Informações sobre o MUD\n\
   \c2INFO\b      Informações sobre a sala, personagem ou item\n\
   \c2IVAR\b      Mostra as variáveis dinâmicas de sala, personagem ou item\n\
   \c2INV\b       Mostra os itens que um personagem da sala está carregando\n\
@@ -67,8 +74,7 @@ const txtajuda = "\c3Outros comandos\b\n\
   \c2PNJ\b       Passa a controlar um personagem não jogador\n\
   \c2CMD\b       Executa um comando do IntMUD no seu personagem\n\
   \c2CMDP\b      Executa um comando do IntMUD em um personagem da sala\n\
-  \c2CMDJ\b      Executa um comando do IntMUD em um personagem de jogador\n\
-  \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados"
+  \c2CMDJ\b      Executa um comando do IntMUD em um personagem de jogador"
 
 
 classe adm_mens

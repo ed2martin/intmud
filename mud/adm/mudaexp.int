@@ -1,0 +1,102 @@
+classe adm_mudaexp
+herda comando_adm
+const txtajuda = "\b\c3Mudaexp\b\n\
+Sintaxe: MUDAEXP\n\
+Permite mudar temporariamente a experiência que os personagens ganham."
+uint16 contmin # Contagem de minutos
+inttempo contseg # Contagem de segundos
+
+func ini
+  misc:mudaexp = 1
+
+func escr
+  arg0.sock.m_menu("menu_mudaexp")
+
+func menu # Retorna o texto do menu
+  ret contagem == 0 ? "0 (Parado)" : txt(contmin)
+
+func passo # Alterando um número
+  se arg1 == "" || arg1 == "\b"
+    arg0.passo = este
+    arg0.msg("Entre com um número, Z cancela")
+    ret 1
+  senao arg1 != "z"
+    uint16 valor
+    valor = arg1
+    se arg1 != valor # Checa se é número
+      ret passo(arg0, "\b")
+    senao valor == 0
+      se contmin != 0
+        contmin = contseg = 1 # Parar a contagem
+        cmdlog(arg0, "mudaexp", "100%")
+      fimse
+    senao
+      refvar avisaini = contmin == 0 && config:mudaexp_msgini
+      contmin = valor, contseg = 600, acertaexp
+      cmdlog(arg0, "mudaexp", txt(config:mudaexp_exp) + "% por " + valor + " min")
+      se avisaini
+        $mens.p(este)
+        $mens.mmud1(config:mudaexp_msgini)
+      fimse
+    fimse
+  fimse
+  ret passosair(arg0)
+
+func contseg_exec
+  contmin -= 1, contseg = 600
+  se contmin == 0
+    contseg = 0, acertaexp
+    $mens.p(este)
+    $mens.mmud1(config:mudaexp_msgfim)
+  senao config:mudaexp_tempo && contmin % config:mudaexp_tempo == 0
+    $mens.p(este)
+    $mens.mens = contmin
+    $mens.mmud1(config:mudaexp_msgrep)
+  fimse
+
+func acertaexp
+  misc:mudaexp = contmin ? config:mudaexp_exp / 100 : 1
+
+
+classe menu_mudaexp
+herda comando_menu
+const titulo = "Mudar experiência"
+const colunas = 35
+#
+const nome1 = "Tempo restante"
+const info1 = "Por quanto tempo mudar a experiência, em minutos"
+const tipo1 = "adm_mudaexp--"
+const clas1 = "adm_mudaexp"
+const vari1 = "contmin"
+#
+const nome2 = "Experiência ganha"
+const info2 = "Quanta experiência os personagens dão quando morrem, em porcentagem\n\
+Só tem efeito quando estiver contando tempo (o tempo restante não for 0)"
+const tipo2 = "opc_numero--"
+const clas2 = "config"
+const vari2 = "mudaexp_exp"
+const exec2 = "adm_mudaexp:acertaexp"
+#
+const nome3 = "Tempo entre mensagens"
+const info3 = "Tempo da mensagem que se repete, em minutos"
+const tipo3 = "opc_numero--"
+const clas3 = "config"
+const vari3 = "mudaexp_tempo"
+#
+const nome4 = "Mensagem inicial"
+const info4 = "Quando a contegem de tempo começa"
+const tipo4 = "opc_linha--"
+const clas4 = "config"
+const vari4 = "mudaexp_msgini"
+#
+const nome5 = "Mensagem que repete"
+const info5 = "Na mensagem, $m é quantos minutos restam"
+const tipo5 = "opc_linha--"
+const clas5 = "config"
+const vari5 = "mudaexp_msgrep"
+#
+const nome6 = "Mensagem final"
+const info6 = "Quando a contegem de tempo termina"
+const tipo6 = "opc_linha--"
+const clas6 = "config"
+const vari6 = "mudaexp_msgfim"

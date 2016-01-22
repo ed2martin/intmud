@@ -256,7 +256,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   efim
 # Ganha experiência
   ret !v1, nulo
-  refvar exp1 = arg0 * config:atkexp * (pnivel + 6) / (2000 * v1)
+  refvar exp1 = arg0 * config:atkexp * misc:mudaexp * (pnivel + 6) / (2000 * v1)
   epara i = l.ini, i, i.depois
     r = i.obj
     v1 = pnivel - r.pnivel

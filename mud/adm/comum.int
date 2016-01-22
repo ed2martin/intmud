@@ -23,15 +23,13 @@ func admlog # Mensagem para todos com a opção "config +admlog"
 func cmdlog # Mensagem para todos com a opção "config +cmdlog"
 # arg0.nome = nome do personagem
 # arg1 = nome do comando
-# arg2 = comando (se não tiver nenhuma letra, não envia o texto)
-  se txtproc(txtsepara(txttroca(arg2, " ", ""), "L+DLEOV,DLEOV+L"), " ") >= 0
-    $misclog.cmdlog(arg1 + " " + arg0.nome + ": " + arg2)
-    refvar t = "\b(cmd) " + arg0.nome + " " + arg1 + ": " + arg2 + "\b"
-    indiceitem item
-    epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.22 && item.obj.msg(t)
-    efim
-  fimse
+# arg2 = comando
+  $misclog.cmdlog(arg1 + " " + arg0.nome + ": " + arg2)
+  refvar t = "\b(cmd) " + arg0.nome + " " + arg1 + ": " + arg2 + "\b"
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.22 && item.obj.msg(t)
+  efim
 
 func existe_p # Checa se personagem existe no comando Lperso
 # arg0 = personagem do jogador ou objeto jogsock

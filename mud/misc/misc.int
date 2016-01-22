@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "10/1/2016"
+const versao = "21/1/2016"
 #
 # Objetos usados em misc:separa, misc:sepitem e misc:sepperso
 comum txt100 sep1 # Objeto procurado
@@ -15,6 +15,9 @@ comum uint8 dia # Dia MUD, de 0 (domingo) a 6 (sábado)
 comum uint8 hora # Hora MUD (1 dia MUD = 2 horas)
 const min = intdiv((2999 - misc:imin) / 50) # Minuto MUD
 comum intdec imin # Usado internamente para calcular o minuto MUD
+#
+# Experiência ganha conforme o comando Mudaexp
+comum real mudaexp
 #
 # Direções
 const d1n = "n"
@@ -264,6 +267,9 @@ func tempo # Eventos de tempo (cria objeto), vide classe misc_tempo
   r.perso1 = arg1, r.perso1.evento.addfim(r)
   r.perso2 = arg2, r.perso2.evento.addfim(r)
   r.perso3 = arg3, r.perso3.evento.addfim(r)
+
+func ini
+  mudaexp = 1
 
 
 classe misc_evento
