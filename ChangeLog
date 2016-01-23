@@ -1,3 +1,38 @@
+* 23/1/2016 IntMUD 1.06 MUD baseado na revisão 391
+
+   No IntMUD:
+  1. Corrigido bug ao ler com prog qualquer instrução que tenha arg8
+  2. Implementado protocolo WebSocket
+  3. ArqTxt agora lê também arquivos em formato binário; vide função
+     Abrir de ArqTxt
+  4. Corrigido bug que acontece com o seguinte código:
+       classe teste
+       telatxt tela # Variável tela não é do tipo comum
+       func iniclasse
+       teste:tela.proto # Aqui tenta-se acessar a variável tela como se
+     fosse do tipo comum
+  5. Versão mudou para 1.06
+
+   No MUD:
+  1. Corrigido bug: ao remover um arquivo .int o comando Mudler dizia
+     que o arquivo não existe
+  2. Comando Mperm agora permite também definir a área aonde um jogador
+     tem permissão
+  3. Mais opções no comando Eperm
+  4. Criada opção Atrib Texto em Eperso, Eitem, Eef e Eperm: define o
+     texto que aparece entre parênteses antes do nome do personagem
+  5. Efeitos Congelado e Chama Protetora foram mudadas para usar a opção
+     Atrib Texto
+  6. Criada opção Nível animais no menu Ataques do comando Econfig
+  7. Quando um animal é criado ou muda de dono, é atualizado quem é o
+     primeiro dono do animal (no comando Estat)
+  8. Adicionado suporte a HTTP (aceitar conexões via navegador)
+  9. Instruções do arquivo mud/doc/01-ativar-o-mud.txt sobre como rodar
+     no Linux foram reformuladas
+ 10. Criado comando de administração Mudaexp
+ 11. Pequenas mudanças nos textos do comando Adm (índice dos comandos
+     para administradores)
+
 * 7/12/2015 IntMUD 1.05 MUD baseado na revisão 384
 
    No IntMUD:
