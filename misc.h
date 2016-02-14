@@ -8,6 +8,12 @@
 #define INT_EXT "int" ///< Extensão dos arquivos do programa interpretado
 #define INT_NOME_TAM 0x200 ///< Tamanho máximo dos nomes dos arquivos ".int"
 
+// Acima desse valor, double é mostrado com notação científica
+#define DOUBLE_MAX 1000000000000000000.0
+
+// Valor máximo de IntTempo é INTTEMPO_MAX*INTTEMPO_MAX-1
+#define INTTEMPO_MAX 0x400
+
 extern unsigned long TempoIni; ///< Tempo desde que o programa foi executado, 10=1seg
                          /**< @note Atualizado em main.cpp */
 
@@ -163,11 +169,16 @@ long numdata(const char *);
 bool ClipboardMudar(const char * txt);
 char * ClipboardLer();
 
-int NumInt(const char * txt); ///< Converte número para inteiro
+///< Converte texto para número inteiro
+int TxtToInt(const char * txt);
 
-unsigned short Num16(const char * x); ///< Lê unsigned short de char[2]
-unsigned int Num24(const char * x); ///< Lê unsigned int de char[3]
-unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]
+///< Converte texto para double
+double TxtToDouble(const char * txt);
+
+///< Converte double em texto
+/**< @param txt char[80] aonde será colocado o número
+ *   @param valor Número */
+void DoubleToTxt(char * txt, double valor);
 
 /// Passa de double para int arredondando para o valor mais próximo
 /** - É necessário para passar valores de double para int.
@@ -175,6 +186,10 @@ unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]
  *  - double v1 = 63250036212.0;
  *  - printf("%d\n", (int)v1); */
 int DoubleToInt(double valor);
+
+unsigned short Num16(const char * x); ///< Lê unsigned short de char[2]
+unsigned int Num24(const char * x); ///< Lê unsigned int de char[3]
+unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]
 
 //------------------------------------------------------------------------------
 class TAddBufferBloco /// Usado em AddBuffer

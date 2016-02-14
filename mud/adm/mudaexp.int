@@ -36,6 +36,7 @@ func passo # Alterando um número
       cmdlog(arg0, "mudaexp", txt(config:mudaexp_exp) + "% por " + valor + " min")
       se avisaini
         $mens.p(este)
+        $mens.mens = contmin
         $mens.mmud1(config:mudaexp_msgini)
       fimse
     fimse
@@ -47,6 +48,7 @@ func contseg_exec
   se contmin == 0
     contseg = 0, acertaexp
     $mens.p(este)
+    $mens.mens = "0"
     $mens.mmud1(config:mudaexp_msgfim)
   senao config:mudaexp_tempo && contmin % config:mudaexp_tempo == 0
     $mens.p(este)
@@ -84,7 +86,7 @@ const clas3 = "config"
 const vari3 = "mudaexp_tempo"
 #
 const nome4 = "Mensagem inicial"
-const info4 = "Quando a contegem de tempo começa"
+const info4 = "Quando a contegem de tempo começa; na mensagem, $m é quantos minutos restam"
 const tipo4 = "opc_linha--"
 const clas4 = "config"
 const vari4 = "mudaexp_msgini"

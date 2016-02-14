@@ -46,6 +46,7 @@
 #include "var-outros.h"
 #include "var-listaobj.h"
 #include "var-texto.h"
+#include "var-textovar.h"
 #include "var-log.h"
 #include "var-telatxt.h"
 #include "var-arqprog.h"
@@ -286,6 +287,9 @@ int main(int argc, char *argv[])
         if (espera>0x800) espera=0;
         if (espera>TESPERA_MAX) espera=TESPERA_MAX;
 
+    // Apaga variáveis de textovar
+        TBlocoVarDec::ProcEventos(espera);
+
     // Eventos de IntTempo
         if (espera>0)
             TempoIni += espera;
@@ -427,6 +431,7 @@ void Inicializa(const char * arg)
     tabASCinic();   // Prepara tabela ASCII
     circle_srandom(time(0)); // Para gerar números aleatórios
     TVarIntTempo::PreparaIni(); // Variáveis inttempo
+    TBlocoVarDec::PreparaIni();
     TExec::Inicializa();
 
 // Obtém nome do programa: arqnome e arqinicio
@@ -578,15 +583,15 @@ void Inicializa(const char * arg)
 
         // Verifica opções
             if (comparaZ(mens, "exec")==0)
-                Instr::VarExecIni = NumInt(valor);
+                Instr::VarExecIni = TxtToInt(valor);
             if (comparaZ(mens, "telatxt")==0)
-                telatxt = NumInt(valor);
+                telatxt = TxtToInt(valor);
             if (comparaZ(mens, "log")==0)
-                opcao_log = (NumInt(valor) != 0);
+                opcao_log = (TxtToInt(valor) != 0);
             if (comparaZ(mens, "err")==0)
-                Instr::ChecaLinha::ChecaErro = NumInt(valor);
+                Instr::ChecaLinha::ChecaErro = TxtToInt(valor);
             if (comparaZ(mens, "completo")==0)
-                opcao_completo = (NumInt(valor) != 0);
+                opcao_completo = (TxtToInt(valor) != 0);
             if (comparaZ(mens, "arqexec")==0)
                 new TArqExec(valor);
 

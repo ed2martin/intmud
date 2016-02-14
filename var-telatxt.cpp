@@ -486,7 +486,7 @@ int TVarTelaTxt::getValor(int numfunc)
     switch (numfunc)
     {
     case TelaTxtTexto:
-        return NumInt(LerLinha());
+        return TxtToInt(LerLinha());
     case TelaTxtTotal:
         return max_linha;
     case TelaTxtLinha:
@@ -585,7 +585,7 @@ void TVarTelaTxt::setTxt(int numfunc, const char * txt)
         break;
     case TelaTxtTotal:
     case TelaTxtLinha:
-        setValor(numfunc, NumInt(txt));
+        setValor(numfunc, TxtToInt(txt));
         break;
     }
 }
@@ -633,7 +633,7 @@ void TVarTelaTxt::addTxt(int numfunc, const char * txt)
         break;
     case TelaTxtTotal:
     case TelaTxtLinha:
-        setValor(numfunc, NumInt(txt));
+        setValor(numfunc, TxtToInt(txt));
         break;
     }
 }

@@ -73,8 +73,8 @@ IntMUD (Interpretador MUD)
 
 0. CRÉDITOS
 
-Este manual foi escrito por Edward Martin e revisado posteriormente,
-de 2012 a 2014, por Paulo Santos Ramos e Edward Martin.
+Este manual foi escrito por Edward Martin e revisado posteriormente
+por Paulo Santos Ramos e Edward Martin.
 
 
 1. SOBRE O INTMUD
@@ -2964,10 +2964,27 @@ letras diferentes em txtprocdif.
 21. TEXTOVAR - LISTA DE VARIÁVEIS DE TEXTO
 
 Lista de variáveis organizadas em ordem alfabética.
-Semelhante a textotxt, porém as linhas contém variáveis de texto
+Semelhante a textotxt, porém as linhas contêm variáveis de texto
 no formato 'nome da variável=valor', organizadas em ordem alfabética.
 Cada variável pode conter qualquer texto, inclusive caracteres como
 '\b', '\n' e '='.
+
+É possível trabalhar outros tipos de dados, além de texto, bastando
+adicionar um dos seguintes caracteres após o nome:
+- _ (sublinhado) para números, semelhante à variáveis real2.
+- @ (arroba) contagem regressiva: um número inteiro de 1 a 1.048.575,
+  subtraído 1 a cada décimo de segundo. Ao chegar em zero ou menos,
+  a variável é apagada automaticamente.
+- $ (cifrão) para referência a um objeto, semelhante à variáveis ref.
+- Um caracter espaço para tratar como texto; isso só é possível nas funções
+    Valor, ValorIni, ValorFim e Mudar de TextoVar.
+
+Na ausência desses caracteres, a variável é tratada como texto.
+
+Quando uma variável não existe no TextoVar, o valor dela é:
+Um texto vazio "", se for texto.
+O valor 0 se for numérica.
+O valor nulo se for referência a um objeto.
 
 Funções:
 
@@ -2979,48 +2996,54 @@ Sem argumentos, retorna nome da primeira variável.
 Retorna nome da última variável cujo nome começa com o texto.
 Sem argumentos, retorna nome da última variável.
 
-21.3. antes(<nome da variável>)
-Retorna nome da variável anterior ou "" se não existir.
+21.3. tipo(<nome da variável>)
+Retorna um texto de um caracter, que indica o tipo de variável:
+Um espaço se for variável de texto;
+_ (sublinhado) se for numérica;
+@ (arroba) se for de contagem regressiva;
+$ (cifrão) se for referência a um objeto;
+Um texto vazio se variável inexistente.
 
-21.4. depois(<nome da variável>)
-Retorna nome da próxima variável ou "" se não existir.
+21.4. antes(<nome da variável>)
+Retorna nome da variável anterior ou um texto vazio se não existir.
 
-21.5. valor(<nome da variável>)
-Retorna o conteúdo da variável (um texto) ou "" se não existir.
+21.5. depois(<nome da variável>)
+Retorna nome da próxima variável ou um texto vazio se não existir.
 
-21.6. valorini(<nome da variável>)
-Retorna o conteúdo da primeira variável cujo nome começa com o texto,
-ou "" se a variável não existir.
+21.6. valor(<nome da variável>)
+Corresponde à variável com o nome especificado.
+Nesta função, o nome da variável pode ser qualquer texto de até 79 caracteres,
+porém deve-se observar que o último caracter pode indicar o tipo de variável.
 
-21.7. valorfim(<nome da variável>)
-Retorna o conteúdo da última variável cujo nome começa com o texto,
-ou "" se a variável não existir.
+21.7. valorini(<nome da variável>)
+Corresponde à primeira variável cujo nome começa com o texto.
 
-21.8. nomevar(<nome da variável>)
-Retorna o nome da variável (um texto) ou "" se não existir.
+21.8. valorfim(<nome da variável>)
+Corresponde à última variável cujo nome começa com o texto.
 
-21.9. mudar("variável=valor")
+21.9. nomevar(<nome da variável>)
+Retorna o nome da variável (um texto) ou um texto vazio se não existir.
+
+21.10. mudar("variável=valor")
+       mudar(<nome da variável>, <valor>)
 Cria uma variável ou muda se já existir.
-Para apagar variável, basta atribuir um texto vazio.
-Nota: é possível fornecer mais de uma variável (vários argumentos).
+Para apagar uma variável, basta atribuir um texto vazio a ela.
 
-21.10. limpar([texto])
+21.11. limpar([texto])
 Apaga todas as variáveis cujos nomes começam com o texto.
 Nota: pode ser fornecido vários textos (vários argumentos).
 Sem argumentos, apaga todas as variáveis do textovar.
 
-21.11. total([texto])
+21.12. total([texto])
 Retorna a quantidade de variáveis que começam com o texto especificado.
 A função 'total' sem argumentos tem o mesmo efeito de 'total("")',
 ou seja, retorna a quantidade de variáveis do 'textovar'. Nesse caso,
 essa função é bem mais eficiente.
 
-21.12. Outros nomes:
-Correspondem a uma variável de textovar, do tipo texto.
-Para a variável ser tratada como numérica, acrescentar sublinhado
-após o nome da variável.
+21.13. Outros nomes:
+Correspondem a uma variável de TextoVar.
 
-21.13. Exemplos:
+21.14. Exemplos:
 
 textovar v
 v.mudar("x=teste") # Cria variável x faz ser "teste"
@@ -3400,11 +3423,11 @@ O modo é um número que indica como deve mudar a posição:
 
 28. INTTEMPO - GERAR EVENTOS DEPOIS DE UM TEMPO
 
-Uma variável inteira de 0 a 1048575, subtraída 1 a cada décimo de segundo.
+Uma variável inteira de 0 a 1.048.575, subtraída 1 a cada décimo de segundo.
 A diferença de inttempo para intdec é que quando chega a 0, uma função
 do objeto é executada. O nome da função é <nomedavariável>_exec.
 Na função: arg0 = índice da variável vetor, se não for vetor arg0=0
-Nota: o valor 1048575 corresponde a 29 horas, 7 minutos e 37.5 segundos.
+Nota: o valor 1.048.575 corresponde a 29 horas, 7 minutos e 37.5 segundos.
 inttempo aceita valores negativos, mas nesse caso a contagem fica parada.
 
 Possui as funções e variáveis:

@@ -22,9 +22,6 @@
 
 //#define DEBUG  // Mostrar e testar vetores de TVarIntTempo
 
-// Valor máximo de IntTempo é INTTEMPO_MAX*INTTEMPO_MAX-1
-#define INTTEMPO_MAX 0x400
-
 TVarIntTempo ** TVarIntTempo::VetMenos = 0;
 TVarIntTempo ** TVarIntTempo::VetMais = 0;
 unsigned int TVarIntTempo::TempoMenos = 0;
@@ -1177,7 +1174,7 @@ bool FuncVetorInt32(TVariavel * v, const char * nome)
         for (int x=0; x<total; x++)
             ender[x] = valor;
     return false;
-} 
+}
 
 //------------------------------------------------------------------------------
 bool FuncVetorUInt32(TVariavel * v, const char * nome)

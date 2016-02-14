@@ -1049,7 +1049,9 @@ void TSocket::EnvPend()
         if (resposta<=0)
         {
             coderro = errno;
-            if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
+            if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK ||
+                                errno==EAGAIN || errno==ENOBUFS ||
+                                errno==EALREADY || errno==EINPROGRESS))
                 resposta=0;
             else if (resposta==0)
                 resposta=-1,coderro=ECONNRESET;
@@ -1349,11 +1351,12 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 if (resposta<=0)
                 {
                     coderro = errno;
-                    if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK ||
-                                       errno==EAGAIN || errno==ENOBUFS))
+                    if (resposta<0 && (coderro==EINTR || coderro==EWOULDBLOCK ||
+                                       coderro==EAGAIN || coderro==ENOBUFS ||
+                                       coderro==EALREADY || coderro==EINPROGRESS))
                         resposta=0;
                     else
-                        resposta=-1;
+                        resposta=-1, coderro=ECONNRESET;
                 }
 #endif
             }

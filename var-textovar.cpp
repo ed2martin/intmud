@@ -14,10 +14,17 @@
 #include <assert.h>
 #include "var-textovar.h"
 #include "variavel.h"
+#include "classe.h"
+#include "objeto.h"
 #include "instr.h"
 #include "misc.h"
 
-//#define DEBUG_MEM // Mostra variáveis criadas e apagadas
+TTextoVar * TTextoVar::TextoAtual = 0;
+TBlocoVarDec ** TBlocoVarDec::VetMenos = 0;
+TBlocoVarDec ** TBlocoVarDec::VetMais = 0;
+unsigned int TBlocoVarDec::TempoMenos = 0;
+unsigned int TBlocoVarDec::TempoMais = 0;
+char TBlocoVar::txtnum[80] = "";
 
 //----------------------------------------------------------------------------
 bool TTextoVar::Func(TVariavel * v, const char * nome)
@@ -31,10 +38,10 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         { "depois",       &TTextoVar::FuncDepois },
         { "fim",          &TTextoVar::FuncFim },
         { "ini",          &TTextoVar::FuncIni },
-        //{ "int",        &TTextoVar::FuncInt },
         { "limpar",       &TTextoVar::FuncLimpar },
         { "mudar",        &TTextoVar::FuncMudar },
         { "nomevar",      &TTextoVar::FuncNomeVar },
+        { "tipo",         &TTextoVar::FuncTipo },
         { "total",        &TTextoVar::FuncTotal },
         { "valor",        &TTextoVar::FuncValor },
         { "valorfim",     &TTextoVar::FuncValorFim },
@@ -42,7 +49,7 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
+    char mens[VAR_NOME_TAM];
     copiastrmin(mens, nome, sizeof(mens));
     while (ini <= fim)
     {
@@ -53,62 +60,52 @@ bool TTextoVar::Func(TVariavel * v, const char * nome)
         if (resultado<0) fim=meio-1; else ini=meio+1;
     }
 // Outro nome de variável
-    TTextoVarSub sub1;
-    int tipo = varTxt;
-    sub1.Criar(this);
-    char * p = copiastr(sub1.NomeVar, nome, sizeof(sub1.NomeVar));
-    if (*nome && p[-1]=='_')
-        p[-1]=0, tipo=varDouble;
-    Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarTextoVarSub))
-    {
-        sub1.Apagar();
+    if (nome[0] == 0)
         return false;
+    TextoAtual = this;
+    Instr::ApagarVar(v);
+    if (TextoAtual == 0)
+        return false;
+    return CriarTextoVarSub(nome);
+}
+
+//----------------------------------------------------------------------------
+bool TTextoVar::CriarTextoVarSub(const char * nome)
+{
+    if (!Instr::CriarVar(Instr::InstrVarTextoVarSub))
+        return false;
+    TTextoVarSub * sub = Instr::VarAtual->end_textovarsub;
+    sub->Criar(this, nome);
+    switch (sub->TipoVar)
+    {
+    case TextoVarTipoTxt: Instr::VarAtual->numfunc = varTxt; break;
+    case TextoVarTipoNum: Instr::VarAtual->numfunc = varDouble; break;
+    case TextoVarTipoDec: Instr::VarAtual->numfunc = varInt; break;
+    case TextoVarTipoRef: Instr::VarAtual->numfunc = varObj; break;
+    default: Instr::VarAtual->numfunc = varOutros;
     }
-    Instr::VarAtual->numfunc = tipo;
-    sub1.Mover(Instr::VarAtual->end_textovarsub);
     return true;
 }
 
 //----------------------------------------------------------------------------
-// Variável como texto
+// Variável
 bool TTextoVar::FuncValor(TVariavel * v)
 {
-    TBlocoVar * bl = 0;
-    if (Instr::VarAtual >= v+1)
-        bl = Procura(v[1].getTxt());
+    if (Instr::VarAtual < v+1)
+        return false;
+    TextoAtual = this;
+    char mens[VAR_NOME_TAM];
+    copiastr(mens, v[1].getTxt(), sizeof(mens));
+    if (mens[0] == 0)
+        return false;
     Instr::ApagarVar(v);
-    if (bl==0)
-        return Instr::CriarVarTexto("");
-    const char * p = bl->Texto;
-    while (*p++);
-//printf("\nLEU DE: %p\n", p); fflush(stdout);
-//printf("\n%s\n\n\n", p); fflush(stdout);
-    return Instr::CriarVarTexto(p);
+    if (TextoAtual == 0)
+        return false;
+    return CriarTextoVarSub(mens);
 }
 
 //----------------------------------------------------------------------------
-// Variável como valor numérico
-/* bool TTextoVar::FuncInt(TVariavel * v)
-{
-    TBlocoVar * bl = 0;
-    if (Instr::VarAtual >= v+1)
-        bl = Procura(v[1].getTxt());
-    Instr::ApagarVar(v);
-    if (bl==0)
-        return Instr::CriarVarInt(0);
-    const char * p = bl->Texto;
-    while (*p++);
-    if (!Instr::CriarVar(Instr::InstrDouble))
-        return false;
-    double num;
-    errno=0, num=strtod(p+1, 0);
-    Instr::VarAtual->setDouble(errno ? 0 : num);
-    return true;
-} */
-
-//----------------------------------------------------------------------------
-// Primeira variável como texto
+// Primeira variável
 bool TTextoVar::FuncValorIni(TVariavel * v)
 {
     TBlocoVar * bl = 0;
@@ -119,16 +116,17 @@ bool TTextoVar::FuncValorIni(TVariavel * v)
         else
             bl = ProcIni(v[1].getTxt());
     }
+    if (bl == 0)
+        return false;
+    TextoAtual = this;
     Instr::ApagarVar(v);
-    if (bl==0)
-        return Instr::CriarVarTexto("");
-    const char * p = bl->Texto;
-    while (*p++);
-    return Instr::CriarVarTexto(p);
+    if (TextoAtual == 0)
+        return false;
+    return CriarTextoVarSub(bl->NomeVar);
 }
 
 //----------------------------------------------------------------------------
-// Última variável como texto
+// Última variável
 bool TTextoVar::FuncValorFim(TVariavel * v)
 {
     TBlocoVar * bl = 0;
@@ -139,14 +137,62 @@ bool TTextoVar::FuncValorFim(TVariavel * v)
         else
             bl = ProcFim(v[1].getTxt());
     }
+    if (bl == 0)
+        return false;
+    TextoAtual = this;
     Instr::ApagarVar(v);
-    if (bl==0)
-        return Instr::CriarVarTexto("");
-    const char * p = bl->Texto;
-    while (*p++);
-//printf("\nLEU DE: %p\n", p); fflush(stdout);
-//printf("\n%s\n\n\n", p); fflush(stdout);
-    return Instr::CriarVarTexto(p);
+    if (TextoAtual == 0)
+        return false;
+    return CriarTextoVarSub(bl->NomeVar);
+}
+
+//----------------------------------------------------------------------------
+// Mudar variável
+bool TTextoVar::FuncMudar(TVariavel * v)
+{
+    if (Instr::VarAtual < v+1)
+        return false;
+    TTextoVarSub sub;
+    if (Instr::VarAtual > v+1)
+    {
+        sub.Criar(this, v[1].getTxt());
+        switch (sub.TipoVar)
+        {
+        case TextoVarTipoNum:
+            sub.setInt(v[2].getDouble());
+            break;
+        case TextoVarTipoDec:
+            sub.setInt(v[2].getInt());
+            break;
+        case TextoVarTipoRef:
+            sub.setObj(v[2].getObj());
+            break;
+        case TextoVarTipoTxt:
+        default:
+            sub.setTxt(v[2].getTxt());
+            break;
+        }
+    }
+    else
+    {
+        char nome[VAR_NOME_TAM];
+        const char * o = v[1].getTxt();
+        char * d = nome;
+        while (*o)
+        {
+            char ch = *o++;
+            if (ch == '=')
+                break;
+            *d++ = ch;
+            if (d >= nome + sizeof(nome) - 1)
+                return false;
+        }
+        *d = 0;
+        sub.Criar(this, nome);
+        sub.setTxt(o);
+    }
+    sub.Apagar();
+    return false;
 }
 
 //----------------------------------------------------------------------------
@@ -156,19 +202,33 @@ bool TTextoVar::FuncNomeVar(TVariavel * v)
     TBlocoVar * bl = 0;
     if (Instr::VarAtual >= v+1)
         bl = Procura(v[1].getTxt());
+    TextoAtual = this;
     Instr::ApagarVar(v);
-    if (bl==0)
-        return Instr::CriarVarTexto("");
-    return Instr::CriarVarTexto(bl->Texto);
+    if (TextoAtual == 0)
+        return false;
+    return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
 
 //----------------------------------------------------------------------------
-// Mudar variável
-bool TTextoVar::FuncMudar(TVariavel * v)
+// Nome da variável
+bool TTextoVar::FuncTipo(TVariavel * v)
 {
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
-        Mudar(v1->getTxt());
-    return false;
+    const char * texto = "";
+    TBlocoVar * bl = 0;
+    if (Instr::VarAtual >= v+1)
+    {
+        bl = Procura(v[1].getTxt());
+        if (bl)
+            switch (bl->TipoVar())
+            {
+            case TextoVarTipoTxt: texto = " "; break;
+            case TextoVarTipoNum: texto = "_"; break;
+            case TextoVarTipoDec: texto = "@"; break;
+            case TextoVarTipoRef: texto = "$"; break;
+            }
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(texto);
 }
 
 //----------------------------------------------------------------------------
@@ -179,7 +239,7 @@ bool TTextoVar::FuncAntes(TVariavel * v)
     if (Instr::VarAtual >= v+1)
         bl = ProcAntes(v[1].getTxt());
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+    return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
 
 //----------------------------------------------------------------------------
@@ -190,7 +250,7 @@ bool TTextoVar::FuncDepois(TVariavel * v)
     if (Instr::VarAtual >= v+1)
         bl = ProcDepois(v[1].getTxt());
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+    return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
 
 //----------------------------------------------------------------------------
@@ -206,7 +266,7 @@ bool TTextoVar::FuncIni(TVariavel * v)
             bl = ProcIni(v[1].getTxt());
     }
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+    return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
 
 //----------------------------------------------------------------------------
@@ -222,7 +282,7 @@ bool TTextoVar::FuncFim(TVariavel * v)
             bl = ProcFim(v[1].getTxt());
     }
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(bl ? bl->Texto : "");
+    return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
 
 //----------------------------------------------------------------------------
@@ -244,7 +304,7 @@ bool TTextoVar::FuncLimpar(TVariavel * v)
         while (ini && ini != fim)
         {
             TBlocoVar * bl = TBlocoVar::RBnext(ini);
-            ini->Apagar();
+            delete ini;
             ini = bl;
         }
     }
@@ -281,16 +341,18 @@ bool TTextoVar::FuncTotal(TVariavel * v)
 void TTextoVar::Apagar()
 {
     while (RBroot)
-        RBroot->Apagar();
+        delete RBroot;
     while (Inicio)
         Inicio->Apagar();
+    if (TextoAtual == this)
+        TextoAtual = 0;
 }
 
 //----------------------------------------------------------------------------
 void TTextoVar::Limpar()
 {
     while (RBroot)
-        RBroot->Apagar();
+        delete RBroot;
 }
 
 //----------------------------------------------------------------------------
@@ -301,6 +363,8 @@ void TTextoVar::Mover(TTextoVar * destino)
     for (TTextoVarSub * obj = Inicio; obj; obj=obj->Depois)
         obj->TextoVar = destino;
     memmove(destino, this, sizeof(TTextoVar));
+    if (TextoAtual == this)
+        TextoAtual = destino;
 }
 
 //----------------------------------------------------------------------------
@@ -319,7 +383,7 @@ TBlocoVar * TTextoVar::Procura(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        int i = comparaVar(texto, y->Texto);
+        int i = comparaVar(texto, y->NomeVar);
         if (i==0)
             return y;
         if (i<0)
@@ -337,7 +401,7 @@ TBlocoVar * TTextoVar::ProcIni(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        switch (comparaVar(texto, y->Texto))
+        switch (comparaVar(texto, y->NomeVar))
         {
         case -2: // string 2 contém string 1
         case 0:  // encontrou
@@ -359,7 +423,7 @@ TBlocoVar * TTextoVar::ProcFim(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        switch (comparaVar(texto, y->Texto))
+        switch (comparaVar(texto, y->NomeVar))
         {
         case -2: // string 2 contém string 1
         case 0:  // encontrou
@@ -383,7 +447,7 @@ TBlocoVar * TTextoVar::ProcAntes(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        int i = comparaVar(texto, y->Texto);
+        int i = comparaVar(texto, y->NomeVar);
         if (i <= 0)
             y = y->RBleft;
         else
@@ -399,7 +463,7 @@ TBlocoVar * TTextoVar::ProcDepois(const char * texto)
     TBlocoVar * y = RBroot;
     while (y)
     {
-        int i = comparaVar(texto, y->Texto);
+        int i = comparaVar(texto, y->NomeVar);
         if (i >= 0)
             y = y->RBright;
         else
@@ -409,60 +473,31 @@ TBlocoVar * TTextoVar::ProcDepois(const char * texto)
 }
 
 //----------------------------------------------------------------------------
-void TTextoVar::Mudar(const char * texto)
+void TTextoVarSub::Criar(TTextoVar * var, const char * nome)
 {
-// Obtém nome e conteúdo da variável
-    char nomevar[256];
-    const char * txtvar = texto;
-    while (*txtvar && *txtvar!='=')
-        txtvar++;
-    if (txtvar==texto || txtvar-texto >= (int)sizeof(nomevar))
-        return;
-    memcpy(nomevar, texto, txtvar-texto);
-    nomevar[txtvar-texto] = 0;
-    if (*txtvar=='=')
-        txtvar++;
-// Inserir texto (não está no textovar)
-    TBlocoVar * bl = Procura(nomevar);
-    if (bl==0)
+// Acerta variável conforme o nome
+    char * p = copiastr(NomeVar, nome, sizeof(NomeVar));
+    if (p > NomeVar)
     {
-        if (*txtvar==0) // Texto vazio: não tem como apagar
-            return;
-        bl = TBlocoVar::AlocarMem(texto);
-        bl->TextoVar = this;
-        bl->RBinsert();
-        Total++;
-        return;
+        p--;
+        switch (*p)
+        {
+        case ' ': *p=0; TipoVar=TextoVarTipoTxt; break;
+        case '_': *p=0; TipoVar=TextoVarTipoNum; break;
+        case '@': *p=0; TipoVar=TextoVarTipoDec; break;
+        case '$': *p=0; TipoVar=TextoVarTipoRef; break;
+        default:        TipoVar=TextoVarTipoTxt; break;
+        }
     }
-// Apagar texto
-    if (*txtvar==0)
-    {
-        bl->Apagar();
-        return;
-    }
-// Alterar texto
-    unsigned int total = strlen(texto) + 1;
-    if (total <= bl->Bytes && total+32 > bl->Bytes)
-    {
-        memcpy(bl->Texto, texto, total);
-        char * p = bl->Texto;
-        while (*p && *p!='=') p++;
-        *p=0;
-        return;
-    }
-    TBlocoVar * bl2 = TBlocoVar::AlocarMem(texto);
-    bl2->TextoVar = this;
-    bl->RBmove(bl2);
-#ifdef DEBUG_MEM
-    printf("Apagar %p(%s); moveu para %p(%s)\n", bl, bl->Texto,
-           bl2, bl2->Texto); fflush(stdout);
-#endif
-    delete[] (char*)bl;
-}
 
-//----------------------------------------------------------------------------
-void TTextoVarSub::Criar(TTextoVar * var)
-{
+// Checa se é nome válido para variável (não pode ser um texto vazio)
+    if (NomeVar[0] == 0)
+    {
+        TextoVar = 0;
+        return;
+    }
+
+// Coloca na lista ligada
     TextoVar = var;
     Antes = 0;
     Depois = var->Inicio;
@@ -497,47 +532,130 @@ void TTextoVarSub::Mover(TTextoVarSub * destino)
 //----------------------------------------------------------------------------
 bool TTextoVarSub::getBool()
 {
-    if (TextoVar==0) return 0;
+    if (TextoVar==0)
+        return false;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-    if (bl==0) return 0;
-    const char * p = bl->Texto;
-    while (*p++);
-    return (*p != 0);
+    return (bl ? bl->getBool() : false);
 }
 
 //----------------------------------------------------------------------------
 int TTextoVarSub::getInt()
 {
-    if (TextoVar==0) return 0;
+    if (TextoVar==0)
+        return 0;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-    if (bl==0) return 0;
-    const char * p = bl->Texto;
-    while (*p++);
-    return NumInt(p);
+    return (bl ? bl->getInt() : 0);
 }
 
 //----------------------------------------------------------------------------
 double TTextoVarSub::getDouble()
 {
-    if (TextoVar==0) return 0;
+    if (TextoVar==0)
+        return 0;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-    if (bl==0) return 0;
-    const char * p = bl->Texto;
-    while (*p++);
-    double num;
-    errno=0, num=strtod(p, 0);
-    return (errno ? 0 : num);
+    return (bl ? bl->getDouble() : 0);
 }
 
 //----------------------------------------------------------------------------
 const char * TTextoVarSub::getTxt()
 {
-    if (TextoVar==0) return "";
+    if (TextoVar==0)
+        return "";
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-    if (bl==0) return "";
-    const char * p = bl->Texto;
-    while (*p++);
-    return p;
+    return (bl ? bl->getTxt() : "");
+}
+
+//----------------------------------------------------------------------------
+TObjeto * TTextoVarSub::getObj()
+{
+    if (TextoVar==0)
+        return 0;
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+    return (bl ? bl->getObj() : 0);
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::setInt(int valor)
+{
+    if (TextoVar==0)
+        return;
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+// Variável existente: checa se deve mudar ou apagar/criar variável
+    if (bl != 0)
+    {
+        if (bl->TipoVar() == TipoVar)
+        {
+            bl->setInt(valor);
+            return;
+        }
+        delete bl;
+        bl = 0;
+    }
+// Criar variável
+    switch (TipoVar)
+    {
+    case TextoVarTipoTxt:
+        {
+            char mens[40];
+            mprintf(mens, sizeof(mens), "%d", valor);
+            new TBlocoVarTxt(TextoVar, NomeVar, mens);
+            break;
+        }
+        break;
+    case TextoVarTipoNum:
+        if (valor != 0)
+            new TBlocoVarNum(TextoVar, NomeVar, valor);
+        break;
+    case TextoVarTipoDec:
+        if (valor > 0)
+            new TBlocoVarDec(TextoVar, NomeVar, valor);
+        break;
+    case TextoVarTipoRef:
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::setDouble(double valor)
+{
+    if (TextoVar==0)
+        return;
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+// Variável existente: checa se deve mudar ou apagar/criar variável
+    if (bl != 0)
+    {
+        if (bl->TipoVar() == TipoVar)
+        {
+            bl->setDouble(valor);
+            return;
+        }
+        delete bl;
+        bl = 0;
+    }
+// Criar variável
+    switch (TipoVar)
+    {
+    case TextoVarTipoTxt:
+        {
+            char mens[100];
+            DoubleToTxt(mens, valor);
+            new TBlocoVarTxt(TextoVar, NomeVar, mens);
+            break;
+        }
+    case TextoVarTipoNum:
+        if (valor != 0)
+            new TBlocoVarNum(TextoVar, NomeVar, valor);
+        break;
+    case TextoVarTipoDec:
+        {
+            int i = DoubleToInt(valor);
+            if (i > 0)
+                new TBlocoVarDec(TextoVar, NomeVar, i);
+            break;
+        }
+    case TextoVarTipoRef:
+        break;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -545,81 +663,151 @@ void TTextoVarSub::setTxt(const char * txt)
 {
     if (TextoVar==0)
         return;
-    char mens[BUF_MENS];
-    mprintf(mens, sizeof(mens), "%s=%s", NomeVar, txt);
-    TextoVar->Mudar(mens);
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+// Variável existente: checa se deve mudar ou apagar/criar variável
+    if (bl != 0)
+    {
+        if (bl->TipoVar() == TipoVar)
+        {
+            bl->setTxt(txt);
+            return;
+        }
+        delete bl;
+        bl = 0;
+    }
+// Criar variável
+    switch (TipoVar)
+    {
+    case TextoVarTipoTxt:
+        if (*txt != 0)
+            new TBlocoVarTxt(TextoVar, NomeVar, txt);
+        break;
+    case TextoVarTipoNum:
+        {
+            double d = TxtToDouble(txt);
+            if (d != 0)
+                new TBlocoVarNum(TextoVar, NomeVar, d);
+            break;
+        }
+    case TextoVarTipoDec:
+        {
+            int i = TxtToInt(txt);
+            if (i > 0)
+                new TBlocoVarDec(TextoVar, NomeVar, i);
+            break;
+        }
+    case TextoVarTipoRef:
+        break;
+    }
 }
 
 //----------------------------------------------------------------------------
 void TTextoVarSub::addTxt(const char * txt)
 {
+    if (TextoVar==0 || *txt==0)
+        return;
+// Variável existente: checa se deve mudar ou apagar/criar variável
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+    if (bl != 0)
+    {
+        if (bl->TipoVar() == TipoVar)
+        {
+            bl->addTxt(txt);
+            return;
+        }
+        delete bl;
+        bl = 0;
+    }
+// Criar variável
+    switch (TipoVar)
+    {
+    case TextoVarTipoTxt:
+        new TBlocoVarTxt(TextoVar, NomeVar, txt);
+        break;
+    case TextoVarTipoNum:
+        {
+            double d = TxtToDouble(txt);
+            if (d != 0)
+                new TBlocoVarNum(TextoVar, NomeVar, d);
+            break;
+        }
+    case TextoVarTipoDec:
+        {
+            int i = TxtToInt(txt);
+            if (i > 0)
+                new TBlocoVarDec(TextoVar, NomeVar, i);
+            break;
+        }
+    case TextoVarTipoRef:
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------
+void TTextoVarSub::setObj(TObjeto * obj)
+{
     if (TextoVar==0)
         return;
-    char mens[BUF_MENS];
-    mprintf(mens, sizeof(mens), "%s=%s%s", NomeVar, getTxt(), txt);
-    TextoVar->Mudar(mens);
+    TBlocoVar * bl = TextoVar->Procura(NomeVar);
+// Nenhum objeto: apaga variável
+    if (obj == 0)
+    {
+        if (bl)
+            delete bl;
+        return;
+    }
+// Variável existente: checa se deve mudar ou apagar/criar variável
+    if (bl != 0)
+    {
+        if (bl->TipoVar() == TipoVar)
+        {
+            bl->setObj(obj);
+            return;
+        }
+        delete bl;
+        bl = 0;
+    }
+// Criar variável
+    switch (TipoVar)
+    {
+    case TextoVarTipoTxt:
+        new TBlocoVarTxt(TextoVar, NomeVar, obj->Classe->Nome);
+        break;
+    case TextoVarTipoNum:
+    case TextoVarTipoDec:
+        break;
+    case TextoVarTipoRef:
+        new TBlocoVarRef(TextoVar, NomeVar, obj);
+        break;
+    }
 }
 
 //----------------------------------------------------------------------------
-TBlocoVar * TBlocoVar::AlocarMem(const char * texto)
+TBlocoVar::TBlocoVar(TTextoVar * var, const char * nome, const char * texto)
 {
-    TBlocoVar * bl = 0;
-    int total1 = strlen(texto) + 1; // Tamanho do texto
-    int total2 = total1 + (bl->Texto - (char*)bl); // Tamanho do bloco
-    int total3 = (total2+7) & ~7;   // Quantidade de bytes alocados
-    bl = reinterpret_cast<TBlocoVar*>(new char[total3]);
-    bl->Bytes = total1 + total3 - total2;
-    memcpy(bl->Texto, texto, total1);
-    char * p = bl->Texto;
-    while (*p && *p!='=') p++;
-    *p=0;
-//printf("\nANOTOU EM: %p\n", p+1); fflush(stdout);
-//printf("\n%s\n", p+1); fflush(stdout);
-#ifdef DEBUG_MEM
-    printf("Criar %p: %s\n", bl, bl->Texto); fflush(stdout);
-#endif
-    return bl;
+    int tam1 = strlen(nome) + 1;
+    int tam2 = (texto ? strlen(texto) + 1 : 0);
+    char * p = new char[tam1 + tam2];
+    NomeVar = p;
+    memcpy(p, nome, tam1);
+    if (tam2)
+        memcpy(p+tam1, texto, tam2);
+    Texto = tam1;
+    TextoVar = var;
+    RBinsert();
 }
 
 //----------------------------------------------------------------------------
-void TBlocoVar::Apagar()
+TBlocoVar::~TBlocoVar()
 {
-#ifdef DEBUG_MEM
-    printf("Apagar %p: %s\n", this, Texto); fflush(stdout);
-#endif
-    TextoVar->Total--;
+    delete[] NomeVar;
     RBremove();
-    delete[] (char*)this;
 }
 
 //----------------------------------------------------------------------------
 int TBlocoVar::RBcomp(TBlocoVar * x, TBlocoVar * y)
 {
-    return comparaVar(x->Texto, y->Texto);
-}
-
-//----------------------------------------------------------------------------
-void TBlocoVar::RBmove(TBlocoVar * novoender)
-{
-    if (novoender==this)
-        return;
-    novoender->RBparent = RBparent;
-    novoender->RBleft = RBleft;
-    novoender->RBright = RBright;
-    novoender->RBcolour = RBcolour;
-    if (TextoVar->RBroot==this)
-        TextoVar->RBroot=novoender;
-    if (RBparent)
-    {
-        if (RBparent->RBleft==this)
-            RBparent->RBleft=novoender;
-        else if (RBparent->RBright==this)
-            RBparent->RBright=novoender;
-    }
-    if (RBleft)
-        RBleft->RBparent=novoender;
-    if (RBright)
-        RBright->RBparent=novoender;
+    return comparaVar(x->NomeVar, y->NomeVar);
 }
 
 //----------------------------------------------------------------------------
@@ -627,3 +815,455 @@ void TBlocoVar::RBmove(TBlocoVar * novoender)
 #define RBmask 1 // Máscara para bit 0
 #define RBroot TextoVar->RBroot
 #include "rbt.cpp.h"
+
+//----------------------------------------------------------------------------
+TBlocoVarTxt::TBlocoVarTxt(TTextoVar * var, const char * nome, const char * texto) :
+    TBlocoVar(var, nome, texto)
+{
+    assert(*texto != 0);
+}
+
+//----------------------------------------------------------------------------
+TBlocoVarTxt::~TBlocoVarTxt()
+{
+}
+
+//----------------------------------------------------------------------------
+bool TBlocoVarTxt::getBool()
+{
+    return true; // Texto não está vazio
+    //return NomeVar[Texto] != 0;
+}
+
+//----------------------------------------------------------------------------
+int TBlocoVarTxt::getInt()
+{
+    return TxtToInt(NomeVar + Texto);
+}
+
+//----------------------------------------------------------------------------
+double TBlocoVarTxt::getDouble()
+{
+    return TxtToDouble(NomeVar + Texto);
+}
+
+//----------------------------------------------------------------------------
+const char * TBlocoVarTxt::getTxt()
+{
+    return NomeVar + Texto;
+}
+
+//----------------------------------------------------------------------------
+TObjeto * TBlocoVarTxt::getObj()
+{
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarTxt::setInt(int valor)
+{
+    char mens[80];
+    sprintf(mens, "%d", valor);
+    setTxt(mens);
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarTxt::setDouble(double valor)
+{
+    char mens[100];
+    DoubleToTxt(mens, valor);
+    setTxt(mens);
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarTxt::setTxt(const char * txt)
+{
+    if (*txt == 0)
+    {
+        delete this;
+        return;
+    }
+    int tot1 = Texto;
+    int tot2 = strlen(txt) + 1;
+    char * p = new char[tot1 + tot2];
+    memcpy(p, NomeVar, tot1);
+    memcpy(p+tot1, txt, tot2);
+    delete[] NomeVar;
+    NomeVar = p;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarTxt::addTxt(const char * txt)
+{
+    if (*txt == 0)
+        return;
+    int tot1 = Texto + strlen(NomeVar + Texto);
+    int tot2 = strlen(txt) + 1;
+    char * p = new char[tot1 + tot2];
+    memcpy(p, NomeVar, tot1);
+    memcpy(p+tot1, txt, tot2);
+    delete[] NomeVar;
+    NomeVar = p;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarTxt::setObj(TObjeto * obj)
+{
+    delete this;
+}
+
+//------------------------------------------------------------------------------
+TBlocoVarNum::TBlocoVarNum(TTextoVar * var, const char * nome, double valor) :
+    TBlocoVar(var, nome)
+{
+    ValorDouble = valor;
+}
+
+//------------------------------------------------------------------------------
+TBlocoVarNum::~TBlocoVarNum()
+{
+}
+
+//------------------------------------------------------------------------------
+bool TBlocoVarNum::getBool()
+{
+    return ValorDouble != 0;
+}
+
+//------------------------------------------------------------------------------
+int TBlocoVarNum::getInt()
+{
+    return ValorDouble;
+}
+
+//------------------------------------------------------------------------------
+double TBlocoVarNum::getDouble()
+{
+    return ValorDouble;
+}
+//------------------------------------------------------------------------------
+const char * TBlocoVarNum::getTxt()
+{
+    DoubleToTxt(txtnum, getDouble());
+    return txtnum;
+}
+
+//------------------------------------------------------------------------------
+TObjeto * TBlocoVarNum::getObj()
+{
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarNum::setInt(int valor)
+{
+    if (valor == 0)
+        delete this;
+    else
+        ValorDouble = valor;
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarNum::setDouble(double valor)
+{
+    if (valor == 0)
+        delete this;
+    else
+        ValorDouble = valor;
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarNum::setTxt(const char * txt)
+{
+    ValorDouble = TxtToDouble(txt);
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarNum::addTxt(const char * txt)
+{
+    ValorDouble = TxtToDouble(txt);
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarNum::setObj(TObjeto * obj)
+{
+    delete this;
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarDec::PreparaIni()
+{
+    if (TBlocoVarDec::VetMenos)
+        return;
+    VetMenos = new TBlocoVarDec*[INTTEMPO_MAX];
+    VetMais = new TBlocoVarDec*[INTTEMPO_MAX];
+    memset(VetMenos, 0, sizeof(TBlocoVarDec*)*INTTEMPO_MAX);
+    memset(VetMais, 0, sizeof(TBlocoVarDec*)*INTTEMPO_MAX);
+}
+
+//------------------------------------------------------------------------------
+void TBlocoVarDec::ProcEventos(int TempoDecorrido)
+{
+    while (TempoDecorrido-- > 0)
+    {
+    // Avança TempoMenos
+    // Move objetos de VetMais para VetMenos se necessário
+        if (TempoMenos < INTTEMPO_MAX-1)
+            TempoMenos++;
+        else
+        {
+            TempoMenos = 0;
+            TempoMais = (TempoMais + 1) % INTTEMPO_MAX;
+            while (true)
+            {
+                TBlocoVarDec * obj = VetMais[TempoMais];
+                if (obj==0)
+                    break;
+            // Move objeto da lista ligada VetMais para VetMenos
+                VetMais[TempoMais] = obj->Depois;
+                int menos = obj->IndiceMenos;
+                obj->Antes = 0;
+                obj->Depois = VetMenos[menos];
+                VetMenos[menos] = obj;
+                if (obj->Depois)
+                    obj->Depois->Antes = obj;
+            }
+        }
+    // Apaga objetos de VetMenos[TempoMenos]
+        while (true)
+        {
+            TBlocoVarDec * obj = VetMenos[TempoMenos];
+            if (obj==0)
+                break;
+            delete obj;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+TBlocoVarDec::TBlocoVarDec(TTextoVar * var, const char * nome, int valor) :
+    TBlocoVar(var, nome)
+{
+    InsereLista(valor);
+}
+
+//----------------------------------------------------------------------------
+TBlocoVarDec::~TBlocoVarDec()
+{
+    RemoveLista();
+}
+
+//----------------------------------------------------------------------------
+bool TBlocoVarDec::getBool()
+{
+    return true;
+}
+
+//----------------------------------------------------------------------------
+int TBlocoVarDec::getInt()
+{
+    int valor = ((IndiceMais - TempoMais) * INTTEMPO_MAX +
+            IndiceMenos - TempoMenos);
+    if (valor<0)
+        valor += INTTEMPO_MAX * INTTEMPO_MAX;
+    return valor;
+}
+
+//----------------------------------------------------------------------------
+double TBlocoVarDec::getDouble()
+{
+    return getInt();
+}
+
+//----------------------------------------------------------------------------
+const char * TBlocoVarDec::getTxt()
+{
+    sprintf(txtnum, "%d", getInt());
+    return txtnum;
+}
+
+//----------------------------------------------------------------------------
+TObjeto * TBlocoVarDec::getObj()
+{
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::setInt(int valor)
+{
+    if (TextoVar == 0)
+        return;
+    if (valor <= 0)
+        delete this;
+    else
+    {
+        RemoveLista();
+        InsereLista(valor);
+    }
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::setDouble(double valor)
+{
+    if (TextoVar != 0)
+        setInt(DoubleToInt(valor));
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::setTxt(const char * txt)
+{
+    if (TextoVar != 0)
+        setInt(TxtToInt(txt));
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::addTxt(const char * txt)
+{
+    if (TextoVar != 0)
+        setInt(TxtToInt(txt));
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::setObj(TObjeto * obj)
+{
+    delete this;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::InsereLista(int valor)
+{
+// Acerta os valores mínimo e máximo
+    if (valor <= 0)
+        valor = 1;
+    if (valor >= INTTEMPO_MAX * INTTEMPO_MAX)
+        valor = INTTEMPO_MAX * INTTEMPO_MAX - 1;
+// Acerta IndiceMenos e IndiceMais
+    valor += TempoMais * INTTEMPO_MAX + TempoMenos;
+    IndiceMenos = valor % INTTEMPO_MAX;
+    IndiceMais = valor / INTTEMPO_MAX % INTTEMPO_MAX;
+// Coloca na lista apropriada
+    if (IndiceMais != TempoMais || IndiceMenos <= TempoMenos)
+    {
+        Depois = VetMais[IndiceMais];
+        VetMais[IndiceMais] = this;
+    }
+    else
+    {
+        Depois = VetMenos[IndiceMenos];
+        VetMenos[IndiceMenos] = this;
+    }
+    if (Depois)
+        Depois->Antes = this;
+    Antes = 0;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarDec::RemoveLista()
+{
+    if (Antes)
+        Antes->Depois = Depois;
+    else if (VetMenos[IndiceMenos]==this)
+        VetMenos[IndiceMenos] = Depois;
+    else if (VetMais[IndiceMais]==this)
+        VetMais[IndiceMais] = Depois;
+    if (Depois)
+        Depois->Antes = Antes, Depois=0;
+}
+
+//----------------------------------------------------------------------------
+TBlocoVarRef::TBlocoVarRef(TTextoVar * var, const char * nome, TObjeto * obj) :
+    TBlocoVar(var, nome)
+{
+    InsereLista(obj);
+}
+
+//----------------------------------------------------------------------------
+TBlocoVarRef::~TBlocoVarRef()
+{
+    RemoveLista();
+}
+
+//----------------------------------------------------------------------------
+bool TBlocoVarRef::getBool()
+{
+    return true;
+}
+
+//----------------------------------------------------------------------------
+int TBlocoVarRef::getInt()
+{
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+double TBlocoVarRef::getDouble()
+{
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+const char * TBlocoVarRef::getTxt()
+{
+    return Objeto->Classe->Nome;
+}
+
+//----------------------------------------------------------------------------
+TObjeto * TBlocoVarRef::getObj()
+{
+    return Objeto;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::setInt(int valor)
+{
+    delete this;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::setDouble(double valor)
+{
+    delete this;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::setTxt(const char * txt)
+{
+    delete this;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::addTxt(const char * txt)
+{
+    delete this;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::setObj(TObjeto * obj)
+{
+    if (obj == 0)
+        delete this;
+    else if (obj != Objeto)
+    {
+        RemoveLista();
+        InsereLista(obj);
+    }
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::InsereLista(TObjeto * obj)
+{
+    Objeto = obj;
+    ObjAntes = 0;
+    ObjDepois = obj->VarBlocoRef;
+    if (ObjDepois)
+        ObjDepois->ObjAntes = this;
+    obj->VarBlocoRef = this;
+}
+
+//----------------------------------------------------------------------------
+void TBlocoVarRef::RemoveLista()
+{
+    (ObjAntes ? ObjAntes->ObjDepois : Objeto->VarBlocoRef) = ObjDepois;
+    if (ObjDepois)
+        ObjDepois->ObjAntes = ObjAntes;
+}

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
 #include <math.h>
 #include <time.h>
 #ifdef __WIN32__
@@ -1085,7 +1086,7 @@ char * ClipboardLer()
 }
 
 //------------------------------------------------------------------------------
-int NumInt(const char * txt)
+int TxtToInt(const char * txt)
 {
     unsigned int num = 0;
     bool sinal = false;
@@ -1102,6 +1103,48 @@ int NumInt(const char * txt)
     if (sinal)
         return (num<0x80000000 ? -num : -0x80000000);
     return (num < 0x7FFFFFFF ? num : 0x7FFFFFFF);
+}
+
+//------------------------------------------------------------------------------
+double TxtToDouble(const char * txt)
+{
+    double num;
+    errno=0, num=strtod(txt, 0);
+    if (errno)
+        return 0;
+    return num;
+}
+
+//------------------------------------------------------------------------------
+void DoubleToTxt(char * txt, double valor)
+{
+    if (valor >= DOUBLE_MAX || valor <= -DOUBLE_MAX)
+    {
+        sprintf(txt, "%E", valor);
+        return;
+    }
+    sprintf(txt, "%.9f", valor);
+    char * p = txt;
+    while (*p)
+        p++;
+    while (p>txt && p[-1]=='0')
+        p--;
+    if (p>txt && p[-1]=='.')
+        p--;
+    *p=0;
+}
+
+//------------------------------------------------------------------------------
+int DoubleToInt(double valor)
+{
+//printf("Antes %f Depois %f\n", valor, nearbyint(valor));
+    valor = nearbyint(valor);
+    if (valor >= (double)0x7FFFFFFFLL)
+        return 0x7FFFFFFF;
+    if (valor <= (double)-0x80000000LL)
+        return -0x80000000;
+//printf("Conv %f para %d\n", valor, (int)valor);
+    return (int)valor;
 }
 
 //------------------------------------------------------------------------------
@@ -1125,19 +1168,6 @@ unsigned int Num32(const char * x)
            ((unsigned int)(unsigned char)x[2]<<16)+
            ((unsigned int)(unsigned char)x[1]<<8)+
            (unsigned char)x[0];
-}
-
-//------------------------------------------------------------------------------
-int DoubleToInt(double valor)
-{
-//printf("Antes %f Depois %f\n", valor, nearbyint(valor));
-    valor = nearbyint(valor);
-    if (valor >= (double)0x7FFFFFFFLL)
-        return 0x7FFFFFFF;
-    if (valor <= (double)-0x80000000LL)
-        return -0x80000000;
-//printf("Conv %f para %d\n", valor, (int)valor);
-    return (int)valor;
 }
 
 //------------------------------------------------------------------------------

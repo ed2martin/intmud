@@ -12,7 +12,8 @@ const txtajuda = "\b\c3Comandos de edição do código\b\n\
   \c2EHERDA\b    Edita herança de uma classe\n\
   \c2LFUNC\b     Lista funções de uma classe\n\
   \c2LFUNC2\b    Lista todas funções de uma classe, inclusive as herdadas\n\
-  \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados"
+  \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados\n\
+  \c2MD5CL\b     Calcula o MD5 do texto de uma classe (para saber se mudou)"
 
 
 classe adm_lcl
@@ -406,3 +407,29 @@ func passo
     ret 1
   casofim
   ret passoeditor(arg0, arg1, 1000, "Herança")
+
+
+classe adm_md5cl
+herda comando_adm
+const txtajuda = "\b\c3Md5cl\b\n\
+Sintaxe: MD5CL <nome da classe>\n\
+Calcula o MD5 e o SHA1 das linhas que compõem uma classe.\n\
+Quando o conteúdo de uma classe muda, o MD5 e do SHA1 também mudam.\n\
+Dessa forma, consegue-se verificar se duas classes, não necessariamente\n\
+no mesmo MUD, são iguais."
+
+func escr # Listar funções inclusive as herdadas
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após MD5CL")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao
+    textotxt t
+    epara p.inifunc(arg1), p.lin, p.depois
+      t.addfim(p.texto)
+    efim
+    arg0.msg("Classe " + arg1)
+    arg0.msg("md5 = " + txtmd5(t.ini.texto(100000)))
+    arg0.msg("sha1 = " + txtsha1(t.ini.texto(100000)))
+  fimse

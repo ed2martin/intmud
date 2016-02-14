@@ -982,7 +982,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Processando nome de variável
         if (modo==ex_var1 || modo==ex_var2 || modo==ex_var3)
         {
-            if (tabNOMES1[*(unsigned char*)origem] && *origem!=' ')
+            if ((tabNOMES1[*(unsigned char*)origem] && *origem!=' ') ||
+                *origem=='$')
             {
                 *destino++ = *origem++;
                 if (modo == ex_var3)

@@ -876,9 +876,9 @@ int TVariavel::getInt()
     case Instr::cTxt1:
     case Instr::cTxt2:
         if (indice)
-            return NumInt(&end_char[indice * Tamanho(defvar)]);
+            return TxtToInt(&end_char[indice * Tamanho(defvar)]);
     case Instr::cTxtFixo:
-        return NumInt(end_char);
+        return TxtToInt(end_char);
     case Instr::cInt1:
         return (numfunc ? GetVetorInt1(this) : getBool());
     case Instr::cInt8:
@@ -905,7 +905,7 @@ int TVariavel::getInt()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        return NumInt(defvar + defvar[Instr::endIndice] + 1);
+        return TxtToInt(defvar + defvar[Instr::endIndice] + 1);
     case Instr::cConstNum:
         {
             unsigned int valor = 0;
@@ -1007,7 +1007,7 @@ int TVariavel::getInt()
     case Instr::cDebug:
         return TVarDebug::getInt(numfunc);
     case Instr::cIndiceObj:
-        return NumInt(end_indiceobj[indice].getNome());
+        return TxtToInt(end_indiceobj[indice].getNome());
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
     case Instr::cDataHora:
@@ -1036,17 +1036,9 @@ double TVariavel::getDouble()
     case Instr::cTxt1:
     case Instr::cTxt2:
         if (indice)
-        {
-            double num;
-            errno=0, num=strtod(&end_char[indice * Tamanho(defvar)], 0);
-            return (errno ? 0 : num);
-        }
+            return TxtToDouble(&end_char[indice * Tamanho(defvar)]);
     case Instr::cTxtFixo:
-        {
-            double num;
-            errno=0, num=strtod(end_char, 0);
-            return (errno ? 0 : num);
-        }
+        return TxtToDouble(end_char);
     case Instr::cInt1:
         return (numfunc ? GetVetorInt1(this) : getBool());
     case Instr::cInt8:
@@ -1072,11 +1064,7 @@ double TVariavel::getDouble()
     case Instr::cConstNulo:
         return 0;
     case Instr::cConstTxt:
-        {
-            double num;
-            errno=0, num=strtod(defvar + defvar[Instr::endIndice] + 1, 0);
-            return (errno ? 0 : num);
-        }
+        return TxtToDouble(defvar + defvar[Instr::endIndice] + 1);
     case Instr::cConstNum:
         {
             double valor = 0;
@@ -1176,11 +1164,7 @@ double TVariavel::getDouble()
     case Instr::cDebug:
         return TVarDebug::getDouble(numfunc);
     case Instr::cIndiceObj:
-        {
-            double num;
-            errno=0, num=strtod(end_indiceobj[indice].getNome(), 0);
-            return (errno ? 0 : num);
-        }
+        return TxtToDouble(end_indiceobj[indice].getNome());
     case Instr::cIndiceItem:
         return end_indiceitem[indice].getValor();
     case Instr::cDataHora:
@@ -1242,24 +1226,8 @@ const char * TVariavel::getTxt()
         return txtnum;
     case Instr::cReal:
     case Instr::cReal2:
-        {
-            double d = getDouble();
-            if (d >= DOUBLE_MAX || d <= -DOUBLE_MAX)
-            {
-                sprintf(txtnum, "%E", getDouble());
-                return txtnum;
-            }
-            sprintf(txtnum, "%.9f", d);
-            char * p = txtnum;
-            while (*p)
-                p++;
-            while (p>txtnum && p[-1]=='0')
-                p--;
-            if (p>txtnum && p[-1]=='.')
-                p--;
-            *p=0;
-            return txtnum;
-        }
+        DoubleToTxt(txtnum, getDouble());
+        return txtnum;
     case Instr::cConstNulo:
         return "";
     case Instr::cConstTxt:
@@ -1390,12 +1358,7 @@ const char * TVariavel::getTxt()
         sprintf(txtnum, "%d", valor_int);
         return txtnum;
     case Instr::cTextoVarSub:
-        {
-            const char * p = end_textovarsub[indice].getTxt();
-            if (numfunc != varTxt && *p==0)
-                return "0";
-            return p;
-        }
+        return end_textovarsub[indice].getTxt();
     case Instr::cTextoObjSub:
         {
             TObjeto * obj = end_textoobjsub[indice].getObj();
@@ -1425,6 +1388,8 @@ TObjeto * TVariavel::getObj()
         }
     case Instr::cTextoObjSub:
         return end_textoobjsub[indice].getObj();
+    case Instr::cTextoVarSub:
+        return end_textovarsub[indice].getObj();
     }
     return 0;
 }
@@ -1582,14 +1547,7 @@ void TVariavel::setInt(int valor)
         endvar = 0;
         break;
     case Instr::cTextoVarSub:
-        if (numfunc != varTxt && valor==0)
-            end_textovarsub[indice].setTxt("");
-        else
-        {
-            char mens[100];
-            sprintf(mens, "%d", valor);
-            end_textovarsub[indice].setTxt(mens);
-        }
+        end_textovarsub[indice].setInt(valor);
         break;
     case Instr::cTextoObjSub:
         end_textoobjsub[indice].setObj(0);
@@ -1693,12 +1651,8 @@ void TVariavel::setDouble(double valor)
         end_textoobjsub[indice].setObj(0);
         break;
     case Instr::cTextoVarSub:
-        if (numfunc != varTxt && valor==0)
-        {
-            end_textovarsub[indice].setTxt("");
-            break;
-        }
-        // Caso contrário, interpreta como texto
+        end_textovarsub[indice].setDouble(valor);
+        break;
     case Instr::cTxt1:
     case Instr::cTxt2:
         {
@@ -1757,7 +1711,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cSocket:
     case Instr::cDebug:
     case Instr::cDataHora:
-        setInt(NumInt(txt));
+        setInt(TxtToInt(txt));
         break;
     case Instr::cUInt32:
         {
@@ -1769,23 +1723,11 @@ void TVariavel::setTxt(const char * txt)
             break;
         }
     case Instr::cReal:
-        {
-            double num;
-            errno=0, num=strtod(txt, 0);
-            if (errno)
-                num=0;
-            end_float[indice] = num;
-            break;
-        }
+        end_float[indice] = TxtToDouble(txt);
+        break;
     case Instr::cReal2:
-        {
-            double num;
-            errno=0, num=strtod(txt, 0);
-            if (errno)
-                num=0;
-            end_double[indice] = num;
-            break;
-        }
+        end_double[indice] = TxtToDouble(txt);
+        break;
     case Instr::cConstNulo:
     case Instr::cConstTxt:
     case Instr::cConstNum:
@@ -1895,6 +1837,9 @@ void TVariavel::setObj(TObjeto * obj)
         break;
     case Instr::cTextoObjSub:
         end_textoobjsub[indice].setObj(obj);
+        break;
+    case Instr::cTextoVarSub:
+        end_textovarsub[indice].setObj(obj);
         break;
     }
 }

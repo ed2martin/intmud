@@ -123,7 +123,7 @@ int TVarSav::Tempo(const char * arqnome)
             break;
         if (compara(mens, "data=",5)!=0)
             continue;
-        int tempo = NumInt(mens+5) - HoraReg;
+        int tempo = TxtToInt(mens+5) - HoraReg;
         return (tempo<0 ? 0 : tempo);
     }
     return -1;
@@ -433,7 +433,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         {
     // Variáveis numéricas
         case varInt:
-            var.setInt(NumInt(p));
+            var.setInt(TxtToInt(p));
             break;
     // Ponto flutuante
         case varDouble:
@@ -606,11 +606,6 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
             // Outro textovar: anota texto e inicializa textovar
                 if (txtvar != textovar_obj)
                 {
-                    if (pmensvar != mensvar)
-                    {
-                        *pmensvar=0;
-                        textovar_obj->Mudar(mensvar);
-                    }
                     txtvar->Limpar();
                     textovar_obj = txtvar;
                     pmensvar = mensvar;
@@ -619,8 +614,14 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 for (; *p; p++)
                 {
                     if (*p != '\\' || p[1]==0)
-                        *pmensvar++ = *p;
-                    else switch (*++p)
+                    {
+                        *pmensvar = *p;
+                        if (pmensvar < mensvar + sizeof(mensvar))
+                            pmensvar++;
+                        continue;
+                    }
+                    bool completo = false;
+                    switch (*++p)
                     {
                     case 'n':
                     case 'N': *pmensvar++ = Instr::ex_barra_n; break;
@@ -631,13 +632,44 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     case 'd':
                     case 'D': *pmensvar++ = Instr::ex_barra_d; break;
                     case '\\': *pmensvar++ = '\\'; break;
-                    case '0':
-                        *pmensvar=0;
-                        txtvar->Mudar(mensvar);
-                        pmensvar = mensvar;
+                    case '=': *pmensvar++ = 0x1F; break;
+                    case '0': completo = true; break;
                     }
                     if (pmensvar >= mensvar + sizeof(mensvar))
                         pmensvar--;
+                    if (!completo)
+                        continue;
+                // Acerta o texto
+                    *pmensvar=0;
+                    pmensvar = mensvar;
+                // Procura um sinal de igual
+                    char * texto = mensvar;
+                    while (*texto && *texto!='=')
+                    {
+                        if (*texto == 0x1F)
+                            *texto = '=';
+                        texto++;
+                    }
+                    if (*texto==0)
+                        continue;
+                // Marca o fim do nome da variável
+                    *texto++ = 0;
+                    for (char * p1=texto; *p1; p1++)
+                        if (*p1 == 0x1F)
+                            *p1 = '=';
+                // Cria a variável
+                    TTextoVarSub sub;
+                    sub.Criar(txtvar, mensvar);
+                    if (sub.TipoVar != TextoVarTipoRef)
+                        sub.setTxt(texto);
+                    else
+                    {
+                        unsigned int subobj = atoi(texto);
+                        if (*texto && subobj < quantidade)
+                            if (bufobj[subobj])
+                                sub.setObj(bufobj[subobj]);
+                    }
+                    sub.Apagar();
                 }
                 break;
             }
@@ -667,8 +699,9 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     for (; *p>='0' && *p<='9'; p++)
                         subobj = subobj * 10 + *p - '0';
                 // Adiciona variável
-                    if (*nomevar && subobj < quantidade && bufobj[subobj])
-                        txtobj->Mudar(nomevar, bufobj[subobj]);
+                    if (*nomevar && subobj < quantidade)
+                        if (bufobj[subobj])
+                            txtobj->Mudar(nomevar, bufobj[subobj]);
                 // Passa para a próxima variável
                     if (*p=='\'')
                         p++;
@@ -682,12 +715,6 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     } // while
     if (textotxt_obj)
         textotxt_obj->AddTexto("\n", 1);
-
-    if (pmensvar != mensvar)
-    {
-        *pmensvar=0;
-        textovar_obj->Mudar(mensvar);
-    }
 
     return quantidade;
 }
@@ -1019,6 +1046,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
         // TextoVar
               case Instr::cTextoVar:
                 do {
+                    bool vazio = true;
                     char mens[512];
                     char * d = mens;
                     TTextoVar * txtvar = var.end_textovar + var.indice;
@@ -1034,21 +1062,63 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         bl = bl->RBfirst();
                     for (; bl; bl=TBlocoVar::RBnext(bl))
                     {
-                        int cont=1;
-                        const char * p = bl->Texto;
-                        while (true)
+                    // Obtém o conteúdo da variável
+                        char txttemp[10];
+                        const char * var_conteudo = 0;
+                        if (bl->TipoVar() == TextoVarTipoRef)
                         {
-                            if (*p==0)
-                                if (cont--==0)
-                                    break;
+                            // Obtém o número do objeto
+                            TObjeto * obj = bl->getObj();
+                            unsigned int num = obj->NumeroSav;
+                            if (num>=quantidade || bufobj[num]!=obj)
+                                continue;
+                            sprintf(txttemp, "%d", num);
+                            var_conteudo = txttemp;
+                        }
+                        else
+                            var_conteudo = bl->getTxt();
+                    // Nome da variável
+                        const char * p = bl->NomeVar;
+                        assert(*p != 0);
+                        while (*p)
+                        {
                             switch (*p)
                             {
-                            case 0: *d++='='; break;
                             case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
                             case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
                             case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
                             case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
-                            case '\\': *d++='\\';
+                            case '=': *d++='\\'; *d++='='; break;
+                            case '\\': *d++='\\'; *d++='\\'; break;
+                            default: *d++ = *p;
+                            }
+                            p++;
+                            if (d-mens < 150)
+                                continue;
+                            *d=0;
+                            fprintf(arq, "%s\\f\n", mens);
+                            d = copiastr(mens, ".=");
+                        }
+                    // Tipo de variável
+                        if (bl->TipoVar() != TextoVarTipoTxt || p[-1] == ' ' ||
+                                p[-1] == '_' || p[-1] == '@' || p[-1] == '$')
+                            p = bl->Tipo();
+                        else
+                            p = "";
+                        for (int cont=0; cont<10 && *p; cont++)
+                            *d++ = *p++;
+                        *d++ = '=';
+                    // Conteúdo da variável
+                        p = var_conteudo;
+                        while (*p)
+                        {
+                            switch (*p)
+                            {
+                            case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
+                            case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
+                            case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
+                            case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
+                            case '\\': *d++='\\'; *d++='\\'; break;
                             default: *d++ = *p;
                             }
                             p++;
@@ -1060,9 +1130,10 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
                         }
                         *d++ = '\\';
                         *d++ = '0';
+                        vazio = false;
                     }
                     *d=0;
-                    if (strcmp(mens, ".=\\0")!=0)
+                    if (!vazio)
                         fprintf(arq, "%s\\f\n", mens);
                 } while (++var.indice < posic);
                 break;

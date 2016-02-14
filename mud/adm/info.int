@@ -118,8 +118,9 @@ func info # Usado por escr
   arg1.limpar
   arg1.addfim(cabe(arg0))
   txt100 t1
-  epara t1 = arg0.var.ini, t1, t1 = arg0.var.depois(t1)
-    arg1.addfim(t1 + "=" + arg0.var.[t1])
+  refvar var = arg0.var
+  epara t1 = var.ini, t1, t1 = var.depois(t1)
+    arg1.addfim(t1 + var.tipo(t1) + "=" + var.[t1])
   efim
   arg1.linhas <= 1 && arg1.addfim("Nenhuma variável")
 

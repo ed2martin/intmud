@@ -1,0 +1,69 @@
+telatxt = 1
+err = 2
+exec = 1000000
+
+classe x
+telatxt tela
+textotxt lista # Lista de arquivos
+textopos plista # Arquivo atual da lista
+const msg = tela.msg(arg0 + "\n")
+const iniclasse = criar(arg0)
+
+func ini
+  msg("\cBPrograma ImgBase64\b")
+  msg("\cEGera o código da imagem para ser colocado em páginas HTTP\b")
+# Lê arquivos
+  arqdir d
+  epara d.abrir("."), d.lin, d.depois
+    continuar d.tipo != "A"
+    casovar txtmin(txtfim(d.texto, 4))
+    casose ".gif"
+    casose ".jpg"
+    casose ".png"
+      lista.addfim(d.texto)
+    casofim
+  efim
+  lista.ordena
+  plista = lista.ini
+# Mensagens
+  se lista.linhas == 0
+    msg("Não foi encontrado nenhum arquivo GIF, JPG ou PNG no diretório")
+    msg("Tecla ESC encerra o programa")
+  senao
+    msg("1. Escolha o arquivo com as setas para cima e para baixo")
+    msg("2. Pressione ENTER")
+    msg("3. Tecla ESC encerra o programa")
+    msg("")
+    msg("Arquivo " + plista.texto)
+  fimse
+
+func tela_msg
+# Lê conteúdo do arquivo
+  arqtxt arq
+  txt100 lin
+  se !arq.abrir(plista.texto, 4)
+    msg("Não foi possível abrir o arquivo " + plista.texto)
+    ret
+  fimse
+  msg("\c3Arquivo: " + plista.texto + "\b")
+  lin = "<img src=\"data:image/" + txtmin(txtfim(plista.texto, 3)) + ";base64,"
+  tela.msg(lin + txtconv(arq.ler(24), "hb"))
+  enquanto (lin = arq.ler(48)) != ""
+    tela.msg("\n" + txtconv(lin, "hb"))
+  efim
+  tela.msg("\">\n\n")
+
+func tela_tecla
+  casovar arg0
+  casose "ESC"
+    terminar
+  casose "UP"
+    plista.antes
+    msg("Arquivo " + plista.texto)
+    ret 1
+  casose "DOWN"
+    plista.depois(2)
+    plista.antes
+    msg("Arquivo " + plista.texto)
+    ret 1
+  casofim
