@@ -83,9 +83,6 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
 func recalc_exec # Ajusta variáveis
   bitver = 17, bitinv = 3, cmd_recalc1(este), atribs_exec
 
-func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
-  dono.perso && (dono.recalc = 1)
-
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
   idono.remove, vestpos = arg0

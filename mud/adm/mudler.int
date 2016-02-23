@@ -140,7 +140,7 @@ func passo4 # Muda as classes
     t1.remove
     t1.addfim(p.classe(txtcor(nome), t1.remove(10000)))
     d.ini
-# msg("Ao mudar " + nome + ": " + t1.ini.texto)
+# msg("Ao mudar " + txtvis(nome) + ": " + t1.ini.texto)
     casovar t1.ini.texto
     casose "0" # Classe está diferente
       nome = mudarcl.depois(nome)
@@ -164,11 +164,11 @@ func passo4 # Muda as classes
   fimse
 # Muda as classes
   epara nome = mudarcl.ini, nome, nome = mudarcl.depois(nome)
-    se p.criar(txtcor(nome) + "\n" + mudarcl.valor(nome))
-      erros.addfim("Erro ao alterar classe " + nome)
-      msg(mudarcl.valor(nome))
-      msg(p.criar(txtcor(nome) + "\n" + mudarcl.valor(nome)))
-    fimse
+    refvar result = p.criar(txtcor(nome) + "\n" + mudarcl.valor(nome))
+    continuar !result
+    erros.addfim("Erro ao alterar classe " + nome)
+    msg(mudarcl.valor(nome))
+    msg(result)
   efim
 # Termina se ocorreu algum erro
   se erros.linhas

@@ -933,7 +933,7 @@ bool TBlocoVarNum::getBool()
 //------------------------------------------------------------------------------
 int TBlocoVarNum::getInt()
 {
-    return ValorDouble;
+    return DoubleToInt(ValorDouble);
 }
 
 //------------------------------------------------------------------------------

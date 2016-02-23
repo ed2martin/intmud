@@ -44,8 +44,18 @@ func escr
   senao arg0.pnivel < nmax
     ret arg0.msg("Você precisa chegar no nível " + nmax + " para renascer.")
   senao
+    adiciona(arg0.var.z_tipo1, arg0.tipo1)
+    adiciona(arg0.var.z_tipo2, arg0.tipo2)
+    adiciona(arg0.var.z_tipo3, arg0.tipo3)
     arg0.sock.tpasso = "1"
     passo(arg0.sock, "")
+  fimse
+
+func adiciona # Adiciona o texto arg1 na variável arg0
+  se !arg0
+    arg0 = arg1
+  senao arg1 && txtproc("\n" + arg0 + "\n", arg1) < 0
+    arg0 += "\n" + arg1
   fimse
 
 func passo
@@ -68,6 +78,9 @@ func passo1 # Escolha da raça, classe e subclasse
 # arg1 = o que digitou
   txt100 lin
   prog p
+  textovar var # Contém os tipos que o jogador pode escolher
+  textotxt t1 # Para acertar var
+  textotxt t2 # Para acertar var
   refvar tpasso = arg0.tpasso
 # Informações da raça
   se txt2(tpasso)
@@ -82,11 +95,22 @@ func passo1 # Escolha da raça, classe e subclasse
       ret 0
     fimse
   fimse
+# Tipos que todos podem escolher
+  epara p.iniclasse("t_"), p.lin, p.depois
+    tpasso == $[p.texto].menu && (var.[p.texto]_ = 1)
+  efim
+# Tipos que o jogador já completou
+  epara t1.addfim(arg0.perso.var.z_tipo[tpasso]), t1, nulo
+    arg0.msg("A>" + t1.ini.texto)
+    refvar r = $t_[t1.remove(1)]
+    var.[r]_ = 1
+    epara t2.addfim(r.evoluir), t2, var.[$t_[t2.remove(1)]]_ = 1
+    efim
+  efim
 # Obtém a lista de raças/classes/subclasses e checa se escolheu alguma
   arg0.txtmais.limpar
-  epara p.iniclasse("t_"), p.lin, p.depois
-    refvar r = $[p.texto]
-    continuar txt(r.menu) != tpasso
+  epara nulo, var.ini, var.valorini("") = ""
+    refvar r = $[var.ini]
     se !r.racas || tpasso < 2
     senao txtproc("\n" + r.racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
       continuar
@@ -101,28 +125,6 @@ func passo1 # Escolha da raça, classe e subclasse
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
     tpasso += " " + p.texto
-    arg0.msg2(r.desc ? r.desc : r.nome)
-    ret 1
-  efim
-# Obtém a nova lista de raças/classes/subclasses e checa se escolheu alguma
-  textotxt t
-  t.addfim($t_[arg0.perso.tipo[tpasso]].evoluir)
-  enquanto t.linhas
-    refvar r = $t_[t.remove]
-    continuar r == nulo || r.sexo && arg0.perso.psexo != r.sexo - 1
-    se !r.racas || tpasso < 2
-    senao txtproc("\n" + r.racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
-      continuar
-    fimse
-    se !r.classes || tpasso < 3
-    senao txtproc("\n" + r.classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
-      continuar
-    fimse
-    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + r.nome)
-    lin = r
-    continuar txt(arg1) != txt(arg0.txtmais.linhas)
-    arg0.txtmais.limpar
-    tpasso += " " + r
     arg0.msg2(r.desc ? r.desc : r.nome)
     ret 1
   efim

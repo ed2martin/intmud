@@ -250,6 +250,12 @@ func atribs_exec # Organiza a variável atribs
   fimse
   b.linhas && atribs.addfim(txttroca("\n" + $mensjog.txt(b.remove(100), este), "\n", "\d+"))
 
+func atribs_dono # Organiza a variável atribs do dono se o dono for personagem
+  dono.perso && dono.atribs_exec
+
+func recalc_dono # Chama a função recalc_exec do dono se o dono for personagem
+  dono.perso && (dono.recalc = 1)
+
 func seguir # Segue um item ou personagem
 # arg0 = item ou personagem; se nulo, deixa de seguir
   tseguir != 2 && (tseguir = 0)

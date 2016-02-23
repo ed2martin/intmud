@@ -87,16 +87,27 @@ somar 0x800 se não pode ser colocado para dormir
 somar 0x1000 se percebe quem anda em silêncio
 
 textotxt atribs
-Nas funções recalc_exec, cmd_recalc1, cmd_recalc2 e cmd_recalc3,
-contém os atributos do item ou personagem, sendo um por linha.
-Atributos do tipo "flutuando" e "invisível" aparecem na frente
-do personagem ou item. Exemplo:
-(Flutuando Invisível) Joaquim está aqui
-Atributos que começam com "\d+" aparecem nas linhas seguintes.
-Fora dessas funções recalc:
-A primeira linha é colocada antes do nome do personagem ou item.
-A segunda linha é colocada após o nome do personagem ou item,
-substituindo "\d+" por "\n".
+Contém os textos que vão na frente dos personagens e itens e nos textos
+que vão após o personagem ou item.
+A função atribs_exec acerta o conteúdo dessa variável.
+A constante m_atribs1 do próprio item/personagem e a constante m_atribs2
+do dono contém o texto que será acrescentado. Se o texto começar com um
+asterisco, será colocado na linha de baixo. Caso contrário será colocado
+na frente da descrição.
+Exemplo, uma constante:
+const m_atribs1 = "encharcado"
+Num personagem chamado Joaquim mudará a descrição para:
+(encharcado) Joaquim está aqui.
+Já uma constante:
+const m_atribs2 = "* ... e emana uma luz azul."
+Em um item que Joaquim está vestindo, aparecerá após "Joaquim está aqui":
+ ... e emana uma luz azul.
+
+func atribs_exec
+Ajusta variável atribs (acima).
+
+func atribs_dono
+Ajusta variável atribs do dono se o dono for personagem.
 
 const nivel = 0
 Nível definido no item ou personagem.
@@ -160,6 +171,9 @@ Para atualizar os atributos de todos os personagens:
 $admrecalc.atuperso
 Para atualizar os atributos de todos os itens:
 $admrecalc.atuitem
+
+func recalc_dono
+Ajusta variáveis do dono (principalmente batalha) se o dono for personagem.
 
 func visivel( personagem )
 Retorna verdadeiro se está visível para o persoangem.

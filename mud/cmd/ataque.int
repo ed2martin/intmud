@@ -231,6 +231,8 @@ func escr # Atacar alguém
   refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
   se m1
     ret arg0.msg(m1)
+  senao arg0.pnivel < intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    ret arg0.msg("Você ainda não consegue fazer isso.")
   senao arg1 # Digitou o alvo
     listaitem i
     nomeobj nome

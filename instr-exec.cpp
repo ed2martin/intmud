@@ -1349,17 +1349,25 @@ bool Instr::ExecX()
             // Caso 6: Segunda variável é local
                 else
                 {
-                    char mens[BUF_MENS];
                     const char * origem = VarAtual->getTxt();
                     total = 1 + strlen(origem);
-                    if (total>BUF_MENS)
-                        total=BUF_MENS;
                     if (destino + total >= DadosFim)
                         return RetornoErro(2);
-                    memcpy(mens, origem, total);
-                    mens[BUF_MENS-1]=0;
-                    ApagarVar(VarAtual);
-                    memcpy(destino, mens, total);
+                    if (total>BUF_MENS)
+                    {
+                        char * pmens = new char[total];
+                        memcpy(pmens, origem, total);
+                        ApagarVar(VarAtual);
+                        memcpy(destino, pmens, total);
+                        delete[] pmens;
+                    }
+                    else
+                    {
+                        char mens[BUF_MENS];
+                        memcpy(mens, origem, total);
+                        ApagarVar(VarAtual);
+                        memcpy(destino, mens, total);
+                    }
                 }
                 destino += total;
                 VarAtual->tamanho = destino - (char*)VarAtual->endvar;
