@@ -101,7 +101,6 @@ func passo1 # Escolha da raça, classe e subclasse
   efim
 # Tipos que o jogador já completou
   epara t1.addfim(arg0.perso.var.z_tipo[tpasso]), t1, nulo
-    arg0.msg("A>" + t1.ini.texto)
     refvar r = $t_[t1.remove(1)]
     var.[r]_ = 1
     epara t2.addfim(r.evoluir), t2, var.[$t_[t2.remove(1)]]_ = 1
@@ -121,10 +120,10 @@ func passo1 # Escolha da raça, classe e subclasse
       continuar
     fimse
     arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + r.nome)
-    lin = p.texto
+    lin = var.ini
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
-    tpasso += " " + p.texto
+    tpasso += " " + var.ini
     arg0.msg2(r.desc ? r.desc : r.nome)
     ret 1
   efim
@@ -146,7 +145,7 @@ func passo1 # Escolha da raça, classe e subclasse
   fimse
 
 func escolheu # Jogador fez a escolha
-# arg0 = personagem
+# arg0 = objeto jogsock do jogador
 # txt1(arg0.tpasso) = 1 se raça, 2 se classe, 3 se subclasse
 # txt2(arg0.tpasso) = nome da classe t_ alguma coisa
 # Retorna 1 se deve fazer mais uma escolha: se txt1(arg0.tpasso)<=3

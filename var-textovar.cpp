@@ -159,7 +159,7 @@ bool TTextoVar::FuncMudar(TVariavel * v)
         switch (sub.TipoVar)
         {
         case TextoVarTipoNum:
-            sub.setInt(v[2].getDouble());
+            sub.setDouble(v[2].getDouble());
             break;
         case TextoVarTipoDec:
             sub.setInt(v[2].getInt());
