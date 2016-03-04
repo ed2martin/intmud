@@ -296,6 +296,12 @@ const info5 = "Mensagem quando o jogador deixa de ser desse grupo"
 const tipo5 = "opc_linha"
 const clas5 = var.classe1
 const vari5 = "saiumsg"
+#
+const nome6 = "Sala Tele"
+const info6 = "Para qual sala vai ao teclar Tele sem argumentos"
+const tipo6 = "opc_sala"
+const clas6 = var.classe1
+const vari6 = "c_salatele"
 
 
 classe menu_perm
@@ -524,56 +530,64 @@ const clas5 = var.classe1
 const vari5 = "c_ban"
 #
 const nome6 = "Tele,Lugar"
-const info6 = "Libera também os comandos TeleEntra e TeleSai"
+const info6 = "Libera também os comandos TeleEntra e TeleSai\n\
+A opção \"1 Tele na área de edição\" só permite teletransportar entre salas\n\
+da área de edição ou uma sala da área de edição e a \"Sala Tele\""
 const tipo6 = "opc_opcao"
 const clas6 = var.classe1
 const vari6 = "c_tele"
-const extr6 = "Não\nSomente o próprio personagem\nQualquer um"
+const extr6 = "Não\nTele na área de edição\nSomente o próprio personagem\nQualquer um"
 #
-const nome7 = "PNJ"
-const tipo7 = "opc_simnao"
+const nome7 = "Sala Tele"
+const info7 = "Para qual sala vai ao teclar Tele sem argumentos"
+const tipo7 = "opc_sala"
 const clas7 = var.classe1
-const vari7 = "c_pnj"
-const exec7 = "jogpnj"
+const vari7 = "c_salatele"
 #
-const nome8 = "Monit"
-const info8 = "O comando ESCR não funciona para se um não Admin estiver monitorando um Admin"
-const tipo8 = "opc_opcao"
+const nome8 = "PNJ"
+const tipo8 = "opc_simnao"
 const clas8 = var.classe1
-const vari8 = "c_monit"
-const extr8 = "Não\nSaber quem está monitorando\nMonitorar\nMonitorar e escrever"
-const exec8 = "jogmonit"
+const vari8 = "c_pnj"
+const exec8 = "jogpnj"
 #
-const nome9 = "Matar1,Matar2"
-const tipo9 = "opc_simnao"
+const nome9 = "Monit"
+const info9 = "O comando ESCR não funciona para se um não Admin estiver monitorando um Admin"
+const tipo9 = "opc_opcao"
 const clas9 = var.classe1
-const vari9 = "c_matar"
+const vari9 = "c_monit"
+const extr9 = "Não\nSaber quem está monitorando\nMonitorar\nMonitorar e escrever"
+const exec9 = "jogmonit"
 #
-const nome10 = "Log"
-const info10 = "Quais arquivos pode ver com o comando Log"
-const tipo10 = "opc_vetor"
+const nome10 = "Matar1,Matar2"
+const tipo10 = "opc_simnao"
 const clas10 = var.classe1
-const vari10 = "c_log"
-const extr10 = "entrou\nadmlog\ncmdlog\njogchat\nrezou\nmortes\nbug\nideia"
+const vari10 = "c_matar"
 #
-const nome11 = "Mperm"
-const info11 = "Cada linha deve ter a permissão atual seguido de espaço e a nova permissão\n\
+const nome11 = "Log"
+const info11 = "Quais arquivos pode ver com o comando Log"
+const tipo11 = "opc_vetor"
+const clas11 = var.classe1
+const vari11 = "c_log"
+const extr11 = "entrou\nadmlog\ncmdlog\njogchat\nrezou\nmortes\nbug\nideia"
+#
+const nome12 = "Mperm"
+const info12 = "Cada linha deve ter a permissão atual seguido de espaço e a nova permissão\n\
 Exemplo, para poder autorizar jogadores coloque uma linha: autorizar jog\n\
 Autorizar jogadores significa mudar a permissão de autorizar para jog"
-const tipo11 = "opc_texto"
-const clas11 = var.classe1
-const vari11 = "c_mperm"
-#
-const nome12 = "Ivar"
-const tipo12 = "opc_simnao"
+const tipo12 = "opc_texto"
 const clas12 = var.classe1
-const vari12 = "c_ivar"
+const vari12 = "c_mperm"
 #
-const nome13 = "Informações perso"
-const info13 = "Informações extras com: INFO, INV, ESTAT, HIST, IHAB, IMAG, IEF, IJOG"
+const nome13 = "Ivar"
 const tipo13 = "opc_simnao"
 const clas13 = var.classe1
-const vari13 = "i_perso"
+const vari13 = "c_ivar"
+#
+const nome14 = "Informações perso"
+const info14 = "Informações extras com: INFO, INV, ESTAT, HIST, IHAB, IMAG, IEF, IJOG"
+const tipo14 = "opc_simnao"
+const clas14 = var.classe1
+const vari14 = "i_perso"
 
 
 classe menu_perm_editor
@@ -746,7 +760,7 @@ const c_serv = 1
 const c_rezou = 1
 const c_echo = 1
 const c_ban = 1
-const c_tele = 2
+const c_tele = 3
 const c_pnj = 1
 const c_monit = 3
 const c_matar = 1

@@ -47,7 +47,7 @@ func escr
       nome = arg0.var.depois(nome)
     efim
     ret t.linhas == 0, arg0.msg("Nenhum atalho definido.")
-    t.addini("\b\c6Atalhos:\b")
+    t.addini("\b\c6Atalhos(" + t.linhas + "):\b")
     arg0.sock.txtmostra
   senao arg1 == "limpar"
     ret !arg0.var.ini("t_"), arg0.msg("Nenhum atalho definido.")

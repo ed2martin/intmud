@@ -2,54 +2,57 @@ classe adm_tele
 herda comando_adm
 const objcmd = $perm_[arg0.jogperm].c_tele ? este
 const txtajuda = "\b\c3Tele\b\n\
-Sintaxe: TELE <sala ou jogador>\n\
+Sintaxe: TELE\n\
+         TELE <sala ou jogador>\n\
          TELE <jogador> <sala>\n\
 Com um argumento, você se transporta para uma sala ou para aonde o\n\
-jogador está. Com dois argumentos, transporta um jogador para uma sala."
+jogador está. Com dois argumentos, transporta um jogador para uma sala.\n\
+Sem argumentos, você se transporta para a sala definida no comando EPerm."
 
 func escr # Ir para uma sala específica
+  refvar perm = $perm_[arg0.jogperm]
   ref p # Personagem
   ref s # Sala destino
   indiceitem item
 # Transportar um jogador para uma sala
   se txt2(arg1)
-    se int($perm_[arg0.jogperm].c_tele) != 2
+    se int(perm.c_tele) != 3
       ret arg0.msg("Não é possível transportar outros jogadores")
     fimse
     item.ini("pn " + txts(txtnome(txt1(arg1))))
     p = item.obj, s = $s_[txt2(arg1)]
     se !p
-      arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
+      ret arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
     senao !s
-      arg0.msg("\bSala não existe: " + txt2(arg1))
-    senao s == p.dono
-      arg0.msg(p.nome + " já está em " + txt(s, 2) + ".")
-      s = nulo
+      ret arg0.msg("\bSala não existe: " + txt2(arg1))
     fimse
 # Transportar-se para uma sala
   senao arg1
     p = arg0, s = $s_[arg1]
     se !p
-      arg0.msg("Você deve estar controlando um personagem para isso")
+      ret arg0.msg("Você deve estar controlando um personagem para isso")
     senao !s
       item.ini("pn " + txts(txtnome(arg1)))
       s = item.obj.dono
-      !s && arg0.msg("\bSala ou jogador não existe: " + arg1)
+      ret !s, arg0.msg("\bSala ou jogador não existe: " + arg1)
     fimse
-    se s && s == p.dono
-      arg0.msg("Você já está em " + txt(s, 2) + ".")
-      s = nulo
-    fimse
+# Transportar para a sala definida pelo comando EPerm
   senao
-    se int($perm_[arg0.jogperm].c_tele) != 2
-      arg0.msg("Transportar para onde?")
-    senao
-      arg0.msg("Teletransportar quem? Para onde?")
+    p = arg0, s = perm.c_salatele
+    ret !s, arg0.msg("\bTele sem especificar a sala não está transportando.")
+  fimse
+# Checa permissões para se transportar na área
+  se int(perm.c_tele) == 1
+    refvar o = arg0.dono
+    se o != perm.c_salatele && txt(o) != "s_" + arg0.jogarea + txtfim(o, 3)
+      ret arg0.msg("Você não pode se transportar daqui.")
+    senao s != perm.c_salatele && txt(s) != "s_" + arg0.jogarea + txtfim(s, 3)
+      ret arg0.msg("Você não pode se transportar para " + arg1 + ".")
     fimse
   fimse
 # Realiza o teletransporte
-  se !(p && s)
-  senao p == arg0
+  se p == arg0
+    ret s == p.dono, arg0.msg("Você já está em " + txt(s, 2) + ".")
     txt200 mens1
     $mens.p(p, arg0)
     mens1 = arg0.var.z_telesai
@@ -58,6 +61,7 @@ func escr # Ir para uma sala específica
     mens1 = arg0.var.z_teleentra
     $mens.mvis2("", mens1 ? mens1 : "$P aparece em um redemoinho de fumaça.")
   senao
+    ret s == p.dono, arg0.msg(p.nome + " já está em " + txt(s, 2) + ".")
     $mens.p(p, arg0)
     p.msginv("$A teletransporta você.")
     $mens.mvis2("", "$P some em um redemoinho de fumaça.")
@@ -66,6 +70,7 @@ func escr # Ir para uma sala específica
     se p.jogperm == "admin"
       $misclog.cmdlog("tele " + arg0.nome + ": " + p.nome + " para " + txt(s, 2))
     fimse
+    arg0.msg($mens.proc("$P transportad$s.", arg0))
   fimse
 
 

@@ -86,7 +86,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     arg0.contr.msg(lin + " está desmaiad" + (arg0.msexo ? "o." : "a."))
     ret
   senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
-  senao arg0.contr.pnivel < arg0.pnivel
+  senao arg0.contr.pnivel + config:animal_n < arg0.pnivel
     arg0.contr.msg(txtcopiamai(arg0.nome, "A") + " não quer obedecer você.")
     ret
   senao arg0.posicao < posic # Checa a posição necessária
@@ -153,7 +153,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # Retorna verdadeiro se pode usar
-  ret !arg0.pvida || arg0.posicao < posic || arg0.contr.pnivel < arg0.pnivel, nulo
+  ret !arg0.pvida || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel, nulo
   ret arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo

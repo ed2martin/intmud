@@ -1,6 +1,6 @@
 classe adm_lugar
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_tele ? este
+const objcmd = int($perm_[arg0.jogperm].c_tele) > 1 ? este
 const txtajuda = "\b\c3Lugar\b\n\
 Sintaxe: LUGAR <sala ou personagem jogador> <comando>\n\
 Executa um comando como se estivesse em outra sala. Com personagem\n\
