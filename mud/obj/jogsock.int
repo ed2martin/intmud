@@ -712,10 +712,9 @@ func passo
     arg0.nome = arg0.perso.nome
     arg0.jogconfig.bits = arg0.perso.jogconfig.bits
     refvar perm = arg0.perso.jogperm
-    se !perm || !$perm_[perm]
-      perm = arg0.perso.jogconfig.23 ? "admin" : "jog"
-    fimse
+    (!perm || !$perm_[perm]) && (perm = "jog")
     arg0.jogperm = perm
+    arg0.jogarea = arg0.perso.jogarea
 # Acerta variáveis
     listaitem item
     debug d

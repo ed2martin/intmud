@@ -102,15 +102,18 @@ Nota: Esse comando criada a constante a_reset e a função a_reset1 na sala."
 
 func escr
   refvar var = arg0.sock.var
-  refvar sim = $perm_[arg0.jogperm].c_ares >= 2 || arg0.jogarea + txtfim(arg1, 3) == arg1
+  refvar adm = $perm_[arg0.jogperm].c_ares >= 2
   se !arg1
-    ret txt(arg0.dono, 0, 2) != "s_", arg0.msg("Você não está em uma sala")
-    ret !sim, arg0.msg("Não pode editar o reset dessa sala")
+    se txt(arg0.dono, 0, 2) != "s_"
+      ret arg0.msg("Você não está em uma sala")
+    senao !adm && "s_" + arg0.jogarea + txtfim(arg0.dono, 3) != arg0.dono
+      ret arg0.msg("Não pode editar o reset dessa sala")
+    fimse
     var.opcclasse = arg0.dono
-  senao $s_[arg1] && sim
-    var.opcclasse = $s_[arg1]
-  senao
+  senao !$s_[arg1] || !adm && arg0.jogarea + txtfim(arg1, 3) != arg1
     ret arg0.msg("Sala inexistente: " + arg1)
+  senao
+    var.opcclasse = $s_[arg1]
   fimse
   var.opcnome = "Reset "
   var.opcvar = "a_reset"
@@ -128,15 +131,18 @@ Nota: Esse comando criada a constante s_reset e a função s_reset1 na sala."
 
 func escr
   refvar var = arg0.sock.var
-  refvar sim = $perm_[arg0.jogperm].c_sres >= 2 || arg0.jogarea + txtfim(arg1, 3) == arg1
+  refvar adm = $perm_[arg0.jogperm].c_ares >= 2
   se !arg1
-    ret txt(arg0.dono, 0, 2) != "s_", arg0.msg("Você não está em uma sala")
-    ret !sim, arg0.msg("Não pode editar o reset dessa sala")
+    se txt(arg0.dono, 0, 2) != "s_"
+      ret arg0.msg("Você não está em uma sala")
+    senao !adm && "s_" + arg0.jogarea + txtfim(arg0.dono, 3) != arg0.dono
+      ret arg0.msg("Não pode editar o reset dessa sala")
+    fimse
     var.opcclasse = arg0.dono
-  senao $s_[arg1] && sim
-    var.opcclasse = $s_[arg1]
-  senao
+  senao !$s_[arg1] || !adm && arg0.jogarea + txtfim(arg1, 3) != arg1
     ret arg0.msg("Sala inexistente: " + arg1)
+  senao
+    var.opcclasse = $s_[arg1]
   fimse
   var.opcnome = "Ao entrar "
   var.opcvar = "s_reset"
