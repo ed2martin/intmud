@@ -1,0 +1,104 @@
+telatxt = 1
+err = 2
+exec = 1000000
+
+classe x
+const tamanhoconst = 1000 # Quantos caracteres no máximo cada const pode ter
+const prefixoconst = "msg_" # Nomes das constantes
+const numeroinicial = 11 # Número da primeira constante
+telatxt tela
+textotxt lista # Lista de arquivos
+textopos plista # Arquivo atual da lista
+const msg = tela.msg(arg0 + "\n")
+const iniclasse = criar(arg0)
+
+func ini
+  msg("\cBPrograma TxtParaInt\b")
+  msg("\cEConverte um arquivo TXT para constantes na linguagem do IntMUD\b")
+# Lê arquivos
+  arqdir d
+  epara d.abrir("."), d.lin, d.depois
+    continuar d.tipo != "A"
+    casovar txtmin(txtfim(d.texto, 4))
+    casose ".txt"
+      lista.addfim(d.texto)
+    casofim
+  efim
+  lista.ordena
+  plista = lista.ini
+# Mensagens
+  se lista.linhas == 0
+    msg("Não foi encontrado nenhum arquivo TXT no diretório")
+    msg("Tecla ESC encerra o programa")
+  senao
+    msg("1. Escolha o arquivo com as setas para cima e para baixo")
+    msg("2. Pressione ENTER")
+    msg("3. Tecla ESC encerra o programa")
+    msg("")
+    msg("Arquivo " + plista.texto)
+  fimse
+
+func tela_msg
+# Lê conteúdo do arquivo e cria arquivo destino
+  arqtxt arq
+  textotxt t
+  textopos p
+  int32 numero
+  numero = numeroinicial
+  refvar destino = txt(plista.texto, 0, inttotal(plista.texto) - 3) + "int"
+  se lista.linhas == 0
+    ret msg("Não foi encontrado nenhum arquivo")
+  senao !t.ler(plista.texto)
+    ret tmsg("Não foi possível abrir o arquivo " + plista.texto)
+  senao !arq.abrir(destino, 2)
+    ret msg("Não foi possível criar o arquivo " + destino)
+  fimse
+  enquanto t.linhas
+    epara p = t.ini, p.lin && p.byte < tamanhoconst, p.depois
+    efim
+    p.byte >= tamanhoconst && p.antes
+    se p.linha == 0
+      mostra(t.texto(0, tamanhoconst), numero, arq)
+      t.mudar("", 0, tamanhoconst)
+    senao
+      mostra(t.remove(p.linha) + "\n", numero, arq)
+    fimse
+    numero += 1
+  efim
+  msg("\c3Criado arquivo " + destino + "\b")
+
+func mostra
+# arg0 = texto
+# arg1 = número da constante
+# arg2 = arquivo aonde salvar
+  refvar m1 = txttroca(arg0, "\\", "\\\\")
+  refvar m2 = txttroca(m1, "\"", "\\\"")
+  textotxt t
+  textopos p
+  t.addfim(txttroca(m2, "\n", "\\n\n"))
+  #t.dividelin(60, 90) # Nota: dividelin pode retirar espaços do texto
+  p = t.fim, p.antes
+  p.texto == "" && p.remove
+  arg2.msg("const " + prefixoconst + arg1 + " = \"")
+  enquanto t.linhas > 1
+    refvar v = t.remove
+    arg2.msg(v + "\\\n")
+  efim
+  arg2.msg(t.remove + "\"\n#\n")
+
+func tela_tecla
+  casovar arg0
+  casose "ESC"
+    terminar
+  casose "UP"
+    ret lista.linhas == 0, nulo
+    plista.antes
+    msg("Arquivo " + plista.texto)
+    ret 1
+  casose "DOWN"
+    ret lista.linhas == 0, nulo
+    plista.depois(2)
+    plista.antes
+    msg("Arquivo " + plista.texto)
+    ret 1
+  casofim

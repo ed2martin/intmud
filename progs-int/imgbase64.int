@@ -11,7 +11,7 @@ const iniclasse = criar(arg0)
 
 func ini
   msg("\cBPrograma ImgBase64\b")
-  msg("\cEGera o código da imagem para ser colocado em páginas HTTP\b")
+  msg("\cEGera o código da imagem ou som para ser colocado em páginas HTTP\b")
 # Lê arquivos
   arqdir d
   epara d.abrir("."), d.lin, d.depois
@@ -20,6 +20,9 @@ func ini
     casose ".gif"
     casose ".jpg"
     casose ".png"
+    casose ".mp3"
+    casose ".wav"
+    casose ".ogg"
       lista.addfim(d.texto)
     casofim
   efim
@@ -40,28 +43,51 @@ func ini
 func tela_msg
 # Lê conteúdo do arquivo
   arqtxt arq
+  arqtxt dest
   txt100 lin
-  se !arq.abrir(plista.texto, 4)
-    msg("Não foi possível abrir o arquivo " + plista.texto)
-    ret
+  int8 blocoini
+  se lista.linhas == 0
+    ret msg("Não foi encontrado nenhum arquivo")
+  senao !arq.abrir(plista.texto, 4)
+    ret msg("Não foi possível abrir o arquivo " + plista.texto)
+  senao !dest.abrir(plista.texto + ".txt", 2)
+    ret msg("Não foi possível criar o arquivo " + plista.texto + ".txt")
   fimse
-  msg("\c3Arquivo: " + plista.texto + "\b")
-  lin = "<img src=\"data:image/" + txtmin(txtfim(plista.texto, 3)) + ";base64,"
-  tela.msg(lin + txtconv(arq.ler(24), "hb"))
+  lin = "<img src=\"data:image/"
+  blocoini = 24
+  casovar txtmin(txtfim(plista.texto, 4))
+  casose ".mp3"
+    lin = "<source type=\"audio/mpeg\" src=\"data:audio/"
+    blocoini = 9
+    sair
+  casose ".wav"
+    lin = "<source type=\"audio/wav\" src=\"data:audio/"
+    blocoini = 9
+    sair
+  casose ".ogg"
+    lin = "<source type=\"audio/ogg\" src=\"data:audio/"
+    blocoini = 9
+    sair
+  casofim
+  lin += txtmin(txtfim(plista.texto, 3)) + ";base64,"
+  dest.msg(lin + txtconv(arq.ler(blocoini), "hb"))
   enquanto (lin = arq.ler(48)) != ""
-    tela.msg("\n" + txtconv(lin, "hb"))
+    dest.msg("\n" + txtconv(lin, "hb"))
   efim
-  tela.msg("\">\n\n")
+  dest.msg("\">\n")
+  msg("\c3Criado arquivo " + plista.texto + ".txt\b")
 
 func tela_tecla
   casovar arg0
   casose "ESC"
     terminar
   casose "UP"
+    ret lista.linhas == 0, nulo
     plista.antes
     msg("Arquivo " + plista.texto)
     ret 1
   casose "DOWN"
+    ret lista.linhas == 0, nulo
     plista.depois(2)
     plista.antes
     msg("Arquivo " + plista.texto)

@@ -499,36 +499,6 @@ func pegamoedas # Pega todas as moedas do personagem arg0
     fimse
   efim
 
-func escolheatk # Escolhe e retorna o nome da variável de uma habilidade ou magia
-  textotxt t # Lista de habilidades e magias
-  txt100 t1 # Nome da habilidade ou magia
-  t1 = persoesc.var.ini("h_")
-  enquanto txt(t1, 0, 2) == "h_"
-    refvar r = $cmd_[txt(t1, 2)]
-    r.cmdmenu && 8 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
-  efim
-  se !dono.s_semmagia
-    t1 = persoesc.var.ini("m_")
-    enquanto txt(t1, 0, 2) == "m_"
-      refvar r = $magia_[txt(t1, 2)]
-      r.cmdmenu && 8 != r.tipoalvo && t.addfim(t1), t1 = persoesc.var.depois(t1)
-    efim
-  fimse
-  t.remove(rand(t.linhas))
-  ret t.ini.texto
-
-func escolhejog # Escolhe e retorna um jogador
-  listaitem i
-  listaobj l
-# Obtém a quantidade de jogadores
-  epara i = dono.dentro2.ini, i, i.depois
-    i.obj.jog && i.obj.visivel(este) && l.addfim(i.obj)
-  efim
-  ret !l.objini, nulo # Retorna se não tem jogador
-# Escolhe um jogador
-  i = l.ini, i.depois(rand(l.total))
-  ret i.obj
-
 func p_proc_exec # Processar comportamento do personagem
   ret este != contr, nulo # Retorna se pertence a outro personagem
   ret atkenv && pvida < p_fugir, $cmd_fugir.fugir(este) # Tenta fugir da luta
@@ -537,62 +507,58 @@ func p_proc_exec # Processar comportamento do personagem
   !p_tempoatu && (p_tempoatu = 100)
 # Evento do personagem
   ret cmd_pnj_proc, nulo
-# Obtém o alvo para realizar um ataque
-  ref alvo
-  se atkenv # Alvo durante a batalha
-    alvo = atkenv.objlista
-  senao dono.socktot # Escolhe um jogador como alvo
+# Ações do personagem
+  ret p_proc_atacar(p_proc_alvo), nulo
+  ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
+  ret posicao == 7, p_proc = 30 # Retorna se está lutando
+  ret p_comecorpo && posicao >= 5 && p_proc_comecorpo, nulo
+  ret p_mover && posicao == 8 && p_proc_mover, nulo
+  p_proc = 50
+
+func p_proc_alvo # Obtém um jogador alvo para atacar, se for agressivo
+# Retorna: arg0=alvo ou nulo se não encontrar nenhum alvo
+  ret atkenv, ref(atkenv.objlista) # Alvo durante a batalha
+  ret !dono.socktot, nulo # Nenhum alvo se não tem jogador na sala
+  listaitem i
+  listaobj l
+  epara i = dono.dentro2.ini, i, i.depois
+    i.obj.jog && p_agressivo(i.obj) == 2 && i.obj.visivel(este) && l.addfim(i.obj)
+  efim
+  se l.total
+    i = l.ini, i.depois(rand(l.total))
+    ret ref(i.obj)
+  fimse
+
+func p_proc_atacar # Realiza um ataque
+# arg0 = personagem alvo do ataque
+# Retorna: 1=conseguiu atacar, 0=não conseguiu
+  ret !(arg0 && dono.s_luta && persobat.pvida), 0
+  listaobj l # Lista de habilidades e magias
+  txt100 t1 # Nome da habilidade ou magia
+  refvar var = persoesc.var
+  epara t1 = var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = var.depois(t1)
+    refvar r = $cmd_[txt(t1, 2)]
+    r.cmdmenu && 8 != r.tipoalvo && l.addfim(r)
+  efim
+  se !dono.s_semmagia
+    epara t1 = var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = var.depois(t1)
+      refvar r = $magia_[txt(t1, 2)]
+      r.cmdmenu && 8 != r.tipoalvo && l.addfim(r)
+    efim
+  fimse
+  se l.total # Se tem algum ataque, realiza um ataque manual
     listaitem i
-    listaobj l
-    epara i = dono.dentro2.ini, i, i.depois
-      i.obj.jog && p_agressivo(i.obj) == 2 && i.obj.visivel(este) && l.addfim(i.obj)
-    efim
-    se l.total
-      i = l.ini, i.depois(rand(l.total)), alvo = i.obj
-    fimse
+    i = l.ini, i.depois(rand(l.total))
+    refvar obj = ref(i.obj) # Objeto que processa o ataque
+    refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
+    ret !obj.autohab2(persobat, aulas), 0
+    obj.exechab(persobat, arg0.persobat, aulas, persobat.pnivel)
+    ret 1
+  senao !atkenv # Ataque automático
+    persobat.atkauto(arg0.persobat, 8)
+    ret 1
   fimse
-# Realiza um ataque
-  se alvo && persobat.pvida && dono.s_luta
-    txt100 t1
-    t1 = escolheatk # Obtém o nome de um ataque
-    se t1 # Ataque manual
-      refvar obj = txt(t1, 0, 1) == "m" ? $magia_[txt(t1, 2)] : $cmd_[txt(t1, 2)]
-      refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
-      se obj.autohab2(persobat, aulas)
-        ret obj.exechab(persobat, alvo.persobat, aulas, persobat.pnivel)
-      fimse
-    senao !atkenv # Ataque automático
-      persobat.atkauto(alvo.persobat, 8)
-    fimse
-  fimse
-# Acerta condição do personagem
-# pmove = pmovemax, pmana = pmanamax, pvida < pvidamax && (pvida += 1)
-# Checa se é tempo de agir
-  ret p_tmove, p_proc = p_tmove + 1
-  ret posicao == 7, p_proc = 30
-# Come corpos
-  se p_comecorpo && posicao >= 5 && (alvo = dono.dentro1.objini("comum_corpo"))
-    $mens.p(este, nulo, alvo)
-    $mens.mtodos1("$P come $o.")
-    alvo.apagar(1)
-    p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
-# Movimenta-se
-  senao p_mover && posicao == 8
-    textotxt t
-    prog p
-    refvar r = ref(dono)
-    epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-      refvar x = ref(r.[p.texto](este))
-      x && x.dentro2.total - x.socktot < x.s_pnj && t.addfim(txt(p.texto, 4))
-    efim
-    t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
-    txt10 dir
-    dir = t.ini.texto # Direção escolhida
-    ret !dir || p_mover == 1 && r.dir_[dir](este).s_area != r.s_area, p_proc = 50
-    $cmd_[dir].escr(este)
-    p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
-    !p_tempoatu && (p_tempoatu = 100)
-  fimse
+  ret 0
 
 func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   refvar recup = contr.dono.s_recup(este) / 1200
@@ -658,22 +624,36 @@ func animalnum # Retorna o animal a partir do número
   ret ref(i.obj)
 
 func p_proc_exec # Processar comportamento do personagem
-  ret sock, comum_persobat:p_proc_exec # Checa se está sendo controlado por jogador
-  ret p_espera, comum_persobat:p_proc_exec # Checa tempo para agir
-# Escolhe animal
-  se persoesc == este || !persoesc.pvida
-    listaitem i
-    epara i = dentro2.ini, i, i.depois
-      sair i.obj.pvida && i.obj.pnivel <= pnivel + config:animal_n
-    efim
-    persobat = i ? i.obj : este
-    se persoesc != persobat
-      p_espera = 5
-      persoesc = persobat
-      $mens.p(este, persoesc)
-      ret persobat != este, $mens.mvis1("$P escolhe $b.")
-      ret $mens.mvis1("$P não escolhe ninguém.")
-    fimse
+  ret este != contr, nulo # Retorna se pertence a outro personagem
+  ret atkenv && pvida < p_fugir, $cmd_fugir.fugir(este) # Tenta fugir da luta
+  ret sock, nulo # Retorna se está sendo controlado por jogador
+  ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
+  !p_tempoatu && (p_tempoatu = 100)
+# Evento do personagem
+  ret cmd_pnj_proc, nulo
+# Ações do personagem
+  ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
+  ret p_proc_atacar(p_proc_alvo), nulo
+  ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
+  ret posicao == 7, p_proc = 30 # Retorna se está lutando
+  ret p_comecorpo && posicao >= 5 && p_proc_comecorpo, nulo
+  ret p_mover && posicao == 8 && p_proc_mover, nulo
+  p_proc = 50
+
+func p_proc_animal # Escolhe um animal em condições de batalhar
+# Retorna: 1=mudou de animal, 0=não mudou de animal
+  ret persoesc != este && persoesc.pvida, 0
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    sair i.obj.pvida && i.obj.pnivel <= pnivel + config:animal_n
+  efim
+  persobat = i ? i.obj : este
+  se persoesc != persobat
+    p_espera = 5
+    persoesc = persobat
+    $mens.p(este, persoesc)
+    refvar m = persobat == este ? "$P não escolhe ninguém." : "$P escolhe $b."
+    $mens.mvis1(m)
+    ret 1
   fimse
-# Comportamento de PNJ que pode batalhar
-  comum_persobat:p_proc_exec
+  ret 0

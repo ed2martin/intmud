@@ -148,6 +148,10 @@ func cmd_pnj_proc
 Chamado cada vez que o personagem não jogador decidir fazer alguma coisa.
 Não é chamado se estiver sendo controlado por um jogador ou pertencer
 a outro personagem.
+Se retornar verdadeiro (exemplo, retornar 1), o personagem não prossegue
+com as ações habituais (ir de um lugar a outro, lutar, etc.). Nesse caso,
+deve-se colocar na variável p_proc quando o personagem deverá agir novamente
+(em décimos de segundo).
 
 func cmd_podevestir
 arg0 = personagem

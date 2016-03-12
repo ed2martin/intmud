@@ -18,6 +18,59 @@ func efeito
   d.ini
   $magia_[arg2.f_magia3].escr(arg0, arg1, arg2, arg2.f_nivel3)
 
+func comer # Personagem arg0 come item arg1
+# Retorna: 1=conseguiu comer, 0=não conseguiu comer
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_comer(arg0, arg1, arg0), 0
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    ret l.objini.cmd_comer(arg0, arg1, arg1), 0
+  efim
+# Come o objeto
+  $mens.p(arg0, nulo, arg1)
+  refvar msg1 = arg1.f_msgperso ? arg1.f_msgperso : "$P come $o."
+  $mens.mvis2(msg1, arg1.f_msgoutros ? arg1.f_msgoutros : msg1)
+  arg1.apagar(1)
+  efeito(arg0, "", arg1, 1)
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_comeu(arg0, arg1, arg0)
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    l.objini.cmd_comeu(arg0, arg1, arg1)
+  efim
+  ret 1
+
+func beber # Personagem arg0 bebe item arg1
+# Eventos
+  l.limpar
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_beber(arg0, arg1, arg0), nulo
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    ret l.objini.cmd_beber(arg0, arg1, arg1), nulo
+  efim
+# Bebe o objeto
+  $mens.p(arg0, nulo, arg1)
+  se arg1.f_tipo == 1
+    refvar msg1 = arg1.f_msgperso ? arg1.f_msgperso : "$P bebe $d $o."
+    $mens.mvis2(msg1, arg1.f_msgoutros ? arg1.f_msgoutros : msg1)
+  senao
+    refvar msg1 = arg1.f_msgperso ? arg1.f_msgperso : "$P bebe $o."
+    $mens.mvis2(msg1, arg1.f_msgoutros ? arg1.f_msgoutros : msg1)
+    arg1.apagar(1)
+  fimse
+  efeito(arg0, "", arg1, 1)
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_bebeu(arg0, arg1, arg0)
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    l.objini.cmd_bebeu(arg0, arg1, arg1)
+  efim
+
 
 classe cmd_comer
 herda comando_comebebe
@@ -51,27 +104,8 @@ func escr
     $mens.mvis1("$P não consegue levar $o à boca.")
     ret
   fimse
-# Eventos
-  l.limpar
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_comer(arg0, r, arg0), nulo
-  efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    ret l.objini.cmd_comer(arg0, r, r), nulo
-  efim
-# Come o objeto
-  $mens.p(arg0, nulo, r)
-  refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P come $o."
-  $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
-  r.apagar(1)
-  efeito(arg0, "", r, 1)
-# Eventos
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_comeu(arg0, r, arg0)
-  efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    l.objini.cmd_comeu(arg0, r, r)
-  efim
+# Come
+  comer(arg0, r)
 
 
 classe cmd_beber
@@ -117,32 +151,8 @@ func escr
     $mens.mvis1("$P não consegue levar $o à boca.")
     ret
   fimse
-# Eventos
-  l.limpar
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_beber(arg0, r, arg0), nulo
-  efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    ret l.objini.cmd_beber(arg0, r, r), nulo
-  efim
-# Bebe o objeto
-  $mens.p(arg0, nulo, r)
-  se r.f_tipo == 1
-    refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P bebe $d $o."
-    $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
-  senao
-    refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P bebe $o."
-    $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
-    r.apagar(1)
-  fimse
-  efeito(arg0, "", r, 1)
-# Eventos
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_bebeu(arg0, r, arg0)
-  efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    l.objini.cmd_bebeu(arg0, r, r)
-  efim
+# Bebe
+  beber(arg0, r)
 
 
 classe cmd_tomar

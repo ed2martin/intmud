@@ -159,21 +159,18 @@ const msg_11 = "<!DOCTYPE html>\n\
       font-size: 85%;\n\
     }\n\
     .term {\n\
-      font-family: Monaco,Consolas,Lucida Console,DejaVu Sans Mono,Courier New,Droid Sans \
-Mono,monospace;\n\
+      font-family: Monaco,Consolas,Lucida Console,DejaVu Sans Mono,Courier New,Droid Sans Mono,monospace;\n\
       font-size: 100%;\n\
       background-color: #1D1D1D;\n\
       color: #C0C0C0;\n\
     }\n\
-    #botaoguia { position:fixed; z-index: 1; right: 10px; top: 5px; display: block; border:1px \
-solid #888; color: white; background-color: #222; }\n\
+    #opcoes { position:fixed; z-index: 1; right: 10px; top: 5px; font-size: 12px; }\n\
+    #botaoguia { border:1px solid #888; color: white; background-color: #222; }\n\
     #botaoguia:hover { background-color: white; color: black; }\n\
     #botaoguia:focus { text-decoration: underline; }\n\
-    .guia { position:fixed; z-index: 1; width: 320px; right: 10px; top: 30px; display: none; \
-border:1px solid #888; padding: 1px 3px;\n"
+    .guia { position:fixed; z-index: 1; width: 320px; right: 10px; top: 30px; display: none; border:1px solid #888; padding: 1px 3px;\n"
 #
-const msg_12 = "      background-color:#000; font-family: Verdana,Arial,Helvetica,sans-serif; \
-font-size: 12px; }\n\
+const msg_12 = "      background-color:#000; font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 12px; }\n\
     .guia button { color: white; background-color:#111; font-size: 12px; margin: 1px 1px; }\n\
     .guia button:hover { background-color: white; color: black; }\n\
     .guia button:focus { text-decoration: underline; }\n\
@@ -188,83 +185,100 @@ font-size: 12px; }\n\
 </head>\n\
 <body>\n\
   <noscript style=\"color: #ff0000;\">Please enable Javascript.</noscript>\n\
-  <!-- div style=\"position: fixed; height: auto; width: 99%; margin: 0 auto; top: 0; bottom: \
-30px; overflow: auto;\"> -->\n\
-  <div style=\"height: auto; width: auto; margin: 0 0 40px 0;\">\n"
+  <div style=\"height: auto; width: auto; margin: 0 0 40px 0;\">\n\
+    <pre class=\"term\" id=\"terminal\" style=\"height: auto; width: 100%; margin: 0 auto;\">\n\
+    <span><br><span></pre>\n\
+  </div>\n"
 #
-const msg_13 = "    <pre class=\"term\" id=\"terminal\" style=\"height: auto; width: 100%; \
-margin: 0 auto;\"></pre>\n\
-<!-- aa<span style=\"color:#FF8000;background-color:#000080;\">b</span>c -->\n\
-  </div>\n\
-  <div style=\"position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 40px; background\
--color:#1D1D1D;\">\n\
-    <input size=\"77\" name=\"i\" id=\"cmd\" class=\"term\" style=\"margin: 11px 2px; border:1px \
-solid #888;\" type=\"text\">\n\
+const msg_13 = "  <div style=\"position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 40px; background-color:#1D1D1D;\">\n\
+    <input size=\"77\" name=\"i\" id=\"cmd\" class=\"term\" style=\"margin: 11px 2px; border:1px solid #888;\" type=\"text\">\n\
     <div style=\"margin: 0em\">\n\
-    <img id=\"vida\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAAM4yMiH+EUNyZWF0ZWQgd2l0aCBH\
-SU1QACwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
+    <img id=\"vida\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAAM4yMiH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
 style=\"left:10px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
-    <img id=\"mana\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAADLONiwAAAAACgAFAAACCYSPocvt\
-r5AEBQA7\"\n\
+    <img id=\"mana\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAADLONiwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
 style=\"left:220px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
-    <img id=\"move\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAADIyziwAAAAACgAFAAACCYSPocvt\
-r5AEBQA7\"\n"
-#
-const msg_14 = "style=\"left:430px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
+    <img id=\"move\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAADIyziwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
+style=\"left:430px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
     </div>\n\
-    <img id=\"exp\" src=\"data:image/gif;base64,R0lGODlhCgADAIABAJ6env///ywAAAAACgADAAACBYSPqWsFA\
-Ds=\"\n\
-style=\"left:10px; top:7px; position: absolute;\" height=\"2px\" width=\"2px\">\n\
+    <img id=\"exp\" src=\"data:image/gif;base64,R0lGODlhCgADAIABAJ6env///ywAAAAACgADAAACBYSPqWsFADs=\"\n"
+#
+const msg_14 = "style=\"left:10px; top:7px; position: absolute;\" height=\"2px\" width=\"2px\">\n\
   </div>\n\
-  <button id=\"botaoguia\">Comandos</button>\n\
+  <div id=\"opcoes\">\n\
+    <input id=\"chkbipe\" name=\"chkbipe\" value=\"1\" type=\"checkbox\">\n\
+    <label for=\"chkbipe\">Som ao chegar mensagem</label>\n\
+    <input id=\"chkrolagem\" name=\"chkrolagem\" value=\"checked\" type=\"checkbox\" checked>\n\
+    <label for=\"chkrolagem\">Rolagem automática</label>\n\
+    <button id=\"botaoguia\">Comandos</button>\n\
+  </div>\n\
   <div id=\"guia\" class=\"guia\">\n\
     <h1>Principais comandos</h1>\n\
     <div id=\"guia1\"></div>\n\
     <div id=\"guia2\"></div>\n\
   </div>\n\
-<script><!--\n\n\
+<audio id=\"sombipe\" style=\"display: none;\">\n\
+<source type=\"audio/mpeg\" src=\"data:audio/mp3;base64,//NAxAAQ60rS\n\
+UUEQASK7c2VwGYx3MC4xuAC+MhP536EJ/53/kJ58hCN8hCEIQmQhCEIRpCE/////\n\
+5z//+c53+c7///53/Oc7znOc53kDizh6I1h0d2dneINXkpdAhYQA8mwbVoycnbj/\n\
+80LEFxnzKvcdjCgBtc1Ra7R1cVFQQTESgYSEgKZzOQPAYXMJCZu4fVgxyCQ063lD\n\
+p3KHTs1Sms7vVSEntETOK//6+s/6UnZ/Rf120OJmJ0zU+yFKn//s13/r8SRqeAmQ\n\
+eAiQmQeAwG7/80DECxcCczMfizgCOBAKBgAESUk/x0kIo7yc3j2JDVPqAKZrxGJD\n"
+#
+const msg_15 = "pLX41FQ8PiR/5YHxUdIEzk9f8SR5WPciNh7//+qmHnGoh7Gj3///+Kx8WExsOsBk\n\
+k9X//pWWTEFNRTMuOTkuNf/zQsQKAAADSAHAAACqqqqqqqqqqqqqqqqqqqqqqqqq\n\
+qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq\n\
+qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==\">\n\
+</audio>\n\
+<script><!--\n\
+\n\
 var historico = [ ]; // Histórico do que foi digitado\n\
 var histnum = 0; // Em qual linha do histórico está\n\
 var conectado = false; // Se está conectado\n\
-var conec = null; // Conexão WebSocket\n\n\
+var conec = null; // Conexão WebSocket\n\
+\n\
 var corfrente = 7; // 0-15\n\
 var corfundo = 0; // 0-15\n\
-var coratrib = 0; // +1=sublinhado +2=piscante +4=troca frente/fundo\n\n\
+var coratrib = 0; // +1=sublinhado +2=piscante +4=troca frente/fundo\n\
+\n\
 // Add and remove events, based on\n\
 // http://www.javascripter.net/faq/addeventlistenerattachevent.htm\n\
 function addEventHandler(obj,eventType,handler) {\n\
-  var elem = document.getElementById(obj);\n"
-#
-const msg_15 = "  if (elem.addEventListener) elem.addEventListener (eventType,handler,false);\n\
-  else if (elem.attachEvent) elem.attachEvent ('on'+eventType,handler);\n\
-}\n\n\
-function removeEventHandler(obj,eventType,handler) {\n\
   var elem = document.getElementById(obj);\n\
+  if (elem.addEventListener) elem.addEventListener (eventType,handler,false);\n\
+  else if (elem.attachEvent) elem.attachEvent ('on'+eventType,handler);\n\
+}\n\
+\n\
+function removeEventHandler(obj,eventType,handler) {\n"
+#
+const msg_16 = "  var elem = document.getElementById(obj);\n\
   if (elem.removeEventListener) elem.removeEventListener (eventType,handler,false);\n\
   if (elem.detachEvent)         elem.detachEvent ('on'+eventType,handler);\n\
-}\n\n\
+}\n\
+\n\
 // Adiciona texto no terminal\n\
 function env_tela(msg) {\n\
   var term = document.getElementById('terminal');\n\
   while (term.childElementCount >= 300)\n\
     term.removeChild(term.firstChild);\n\
-  var node = document.createElement(\"span\");\n\
+  var node = document.createElement('span');\n\
   node.innerHTML = msg + \"\\n\";\n\
   term.appendChild(node);\n\
-  window.scrollTo(0,document.body.scrollHeight);\n\
+  if (document.getElementById('chkrolagem').checked)\n\
+    window.scrollTo(0,document.body.scrollHeight);\n\
   return node;\n\
-}\n\n\
+}\n\
+\n\
 // Retorna o código da cor a partir do número da cor, de 0 a 15\n\
 function estilo_cor(cor) {\n\
   switch (cor)\n\
   {\n\
     case 0:  return \"#1D1D1D;\"; break; // BLACK\n\
-    case 1:  return \"#B00000;\"; break; // RED\n"
-#
-const msg_16 = "    case 2:  return \"#00B000;\"; break; // GREEN\n\
+    case 1:  return \"#B00000;\"; break; // RED\n\
+    case 2:  return \"#00B000;\"; break; // GREEN\n\
     case 3:  return \"#B0B000;\"; break; // YELLOW\n\
-    case 4:  return \"#0000B0;\"; break; // BLUE\n\
-    case 5:  return \"#B000B0;\"; break; // PURPLE\n\
+    case 4:  return \"#0000B0;\"; break; // BLUE\n"
+#
+const msg_17 = "    case 5:  return \"#B000B0;\"; break; // PURPLE\n\
     case 6:  return \"#00B0B0;\"; break; // CYAN\n\
     case 7:  return \"#C0C0C0;\"; break; // WHITE\n\
     case 8:  return \"#808080;\"; break; // BLACK\n\
@@ -277,7 +291,8 @@ const msg_16 = "    case 2:  return \"#00B000;\"; break; // GREEN\n\
     case 15: return \"#FFFFFF;\"; break; // WHITE\n\
   }\n\
   return \"#000000\";\n\
-}\n\n\
+}\n\
+\n\
 // Retorna o estilo (um texto) a partir dos atributos de cor\n\
 function estilo_atrib() {\n\
   var estilo = \"\";\n\
@@ -286,18 +301,19 @@ function estilo_atrib() {\n\
     estilo += \"background-color:\" + estilo_cor(corfrente);\n\
   }\n\
   else {\n\
-    estilo += \"color:\" + estilo_cor(corfrente);\n"
-#
-const msg_17 = "    estilo += \"background-color:\" + estilo_cor(corfundo);\n\
+    estilo += \"color:\" + estilo_cor(corfrente);\n\
+    estilo += \"background-color:\" + estilo_cor(corfundo);\n\
   }\n\
   if ((coratrib & 3) == 1)\n\
-    estilo += \"text-decoration:underline;\";\n\
-  else if ((coratrib & 3) == 2)\n\
+    estilo += \"text-decoration:underline;\";\n"
+#
+const msg_18 = "  else if ((coratrib & 3) == 2)\n\
     estilo += \"text-decoration:blink;\";\n\
   else if ((coratrib & 3) == 3)\n\
     estilo += \"text-decoration:underline blink;\";\n\
   return estilo;\n\
-}\n\n\
+}\n\
+\n\
 // Chegou mensagem do servidor\n\
 function recv_message(e) {\n\
   //console.log(\">> recv_message: \" + e.data.length + \" = \" + e.data);\n\
@@ -312,17 +328,19 @@ function recv_message(e) {\n\
       document.getElementById('exp').width = 620 * res[3] / 100;\n\
     }\n\
   }\n\
-}\n\n\
+}\n\
+\n\
 function msg_tela(str) {\n\
   var ret = \"\"; // Texto que será enviado para a tela\n\
-  var tam = 0; // Quantos caracteres na tela\n"
-#
-const msg_18 = "  var i = 0;\n\
+  var tam = 0; // Quantos caracteres na tela\n\
+  var i = 0;\n\
   var est_ini = estilo_atrib();\n\
   var completa = (((coratrib) & 4) ? (corfrente != 0) : (corfundo != 0));\n\
-  var estilo = \"\";\n\
-  var atualizar = false;\n\
-  var barra = false;\n\n\
+  var estilo = \"\";\n"
+#
+const msg_19 = "  var atualizar = false;\n\
+  var barra = false;\n\
+\n\
   while (i < str.length)\n\
   {\n\
     if (str.charCodeAt(i) < 32 && str.charCodeAt(i) >= 0) {\n\
@@ -355,15 +373,15 @@ const msg_18 = "  var i = 0;\n\
         env_tela(ret).style = est_ini;\n\
         est_ini = estilo_atrib();\n\
         tam = 0;\n\
-        ret = \"\";\n"
-#
-const msg_19 = "        completa = ((coratrib & 4 ? corfrente : corfundo) == 7);\n\
+        ret = \"\";\n\
+        completa = ((coratrib & 4 ? corfrente : corfundo) == 7);\n\
       }\n\
       continue;\n\
     }\n\
     if (i >= str.length)\n\
-      break;\n\
-    ch = str.charAt(i++);\n\
+      break;\n"
+#
+const msg_20 = "    ch = str.charAt(i++);\n\
     if (ch == '\\\\' || ch == '\"') {\n\
       barra = true; i--;\n\
     }\n\
@@ -395,12 +413,12 @@ const msg_19 = "        completa = ((coratrib & 4 ? corfrente : corfundo) == 7);
       switch (str.charAt(i++).toLocaleLowerCase())\n\
       {\n\
       case '0': corfrente = 0; break;\n\
-      case '1': corfrente = 1; break;\n"
-#
-const msg_20 = "      case '2': corfrente = 2; break;\n\
+      case '1': corfrente = 1; break;\n\
+      case '2': corfrente = 2; break;\n\
       case '3': corfrente = 3; break;\n\
-      case '4': corfrente = 4; break;\n\
-      case '5': corfrente = 5; break;\n\
+      case '4': corfrente = 4; break;\n"
+#
+const msg_21 = "      case '5': corfrente = 5; break;\n\
       case '6': corfrente = 6; break;\n\
       case '7': corfrente = 7; break;\n\
       case '8': corfrente = 8; break;\n\
@@ -419,13 +437,13 @@ const msg_20 = "      case '2': corfrente = 2; break;\n\
       case 'l': coratrib &= ~2; break; // - piscante\n\
       case 'm': // Echo off\n\
         document.getElementById('cmd').type = 'password';\n\
-        break;\n"
-#
-const msg_21 = "      case 'n': // Echo on\n\
+        break;\n\
+      case 'n': // Echo on\n\
         document.getElementById('cmd').type = 'text';\n\
         break;\n\
-      }\n\
-      atualizar = true;\n\
+      }\n"
+#
+const msg_22 = "      atualizar = true;\n\
     }\n\
   }\n\
   if (estilo != \"\")\n\
@@ -437,12 +455,22 @@ const msg_21 = "      case 'n': // Echo on\n\
     }\n\
     env_tela(ret).style = est_ini;\n\
   }\n\
-}\n\n\
+  if (document.getElementById('chkbipe').checked) {\n\
+    var bell = document.getElementById('sombipe');\n\
+    if (!bell.paused) {\n\
+      bell.pause();\n\
+      bell.currentTime = 0;\n\
+    }\n\
+    bell.play();\n\
+  }\n\
+}\n\
+\n\
 // Usuário pressionou uma tecla\n\
 function tecla(e) {\n\
   var keysym = (e ? e : window.event).keyCode;\n\
   var cmd = document.getElementById('cmd');\n\
-  //console.log(\"key \" + keysym);\n\n\
+  //console.log(\"key \" + keysym);\n\
+\n\
   switch (keysym)\n\
   {\n\
   case 38: // Seta para cima\n\
@@ -459,12 +487,12 @@ function tecla(e) {\n\
     break;\n\
   case 13: // Enter\n\
     if (!conectado)\n\
-      break;\n\
-    //console.log(\"Enviar \" + cmd.value);\n\
-    conec.send(\"+\" + cmd.value);\n\
-    if (cmd.type == 'text') {\n"
+      break;\n"
 #
-const msg_22 = "      if (historico.length == 0)\n\
+const msg_23 = "    //console.log(\"Enviar \" + cmd.value);\n\
+    conec.send(\"+\" + cmd.value);\n\
+    if (cmd.type == 'text') {\n\
+      if (historico.length == 0)\n\
         historico.push(cmd.value)\n\
       else if (historico[historico.length - 1] != cmd.value)\n\
         historico.push(cmd.value)\n\
@@ -474,16 +502,17 @@ const msg_22 = "      if (historico.length == 0)\n\
     }\n\
     cmd.value = \"\";\n\
     break;\n\
-  }\n\n\
+  }\n\
+\n\
   return 0;\n\
-}\n\n\
+}\n\
+\n\
 window.onload = function() {\n\
   document.getElementById(\"cmd\").focus();\n\
   addEventHandler(\"cmd\", \"keydown\", tecla);\n\
   addEventHandler(\"botaoguia\", \"click\", janelaguia);\n\
   if (window.WebSocket) {\n\
-    msg_tela(\"Setas \\\\cbCIMA\\\\b e \\\\cbBAIXO\\\\b acessam o histórico do que você digitou\"\
-);\n\
+    msg_tela(\"Setas \\\\cbCIMA\\\\b e \\\\cbBAIXO\\\\b acessam o histórico do que você digitou\");\n\
     env_tela(\"\");\n\
     conectar();\n\
   }\n\
@@ -493,13 +522,14 @@ window.onload = function() {\n\
     document.getElementById('cmd').style.display = 'none';\n\
   }\n\
   criarguia();\n\
-}\n\n\
-function conectar() {\n\
-  msg_tela(\"Conectando em \" + endserv);\n\
-  conec = new WebSocket('ws://' + endserv + '/ws');\n\
-  conec.onmessage = recv_message;\n"
+}\n\
+\n\
+function conectar() {\n"
 #
-const msg_23 = "  conec.onopen = function() {\n\
+const msg_24 = "  msg_tela(\"Conectando em \" + endserv);\n\
+  conec = new WebSocket('ws://' + endserv + '/ws');\n\
+  conec.onmessage = recv_message;\n\
+  conec.onopen = function() {\n\
     console.log(\">> WebSock.onopen\");\n\
     conectado = true;\n\
     msg_tela(\"Conectado!\");\n\
@@ -522,22 +552,25 @@ const msg_23 = "  conec.onopen = function() {\n\
     conectado = false;\n\
     msg_tela(\"\\\\cF\\\\d1Desconectado\");\n\
   };\n\
-}\n\n\
+}\n\
+\n\
 function janelaguia() {\n\
   var guia = document.getElementById('guia');\n\
   if (guia.style.display != \"block\")\n\
     guia.style.display = \"block\";\n\
   else\n\
     guia.style.display = \"none\";\n\
-}\n\n\
-var ajudafim = null;\n\n\
+}\n\
+\n\
+var ajudafim = null;\n\
+\n\
 function criarguia() {\n\
-  var guia1 = document.getElementById('guia1');\n\
-  var guia2 = document.getElementById('guia2');\n\
-  for (var i = 0; i < TextoGuia.length; i++) {\n\
-    if (TextoGuia[i][0] == \"titulo\") {\n"
+  var guia1 = document.getElementById('guia1');\n"
 #
-const msg_24 = "      var node = document.createElement(\"h2\");\n\
+const msg_25 = "  var guia2 = document.getElementById('guia2');\n\
+  for (var i = 0; i < TextoGuia.length; i++) {\n\
+    if (TextoGuia[i][0] == \"titulo\") {\n\
+      var node = document.createElement(\"h2\");\n\
       node.innerHTML = TextoGuia[i][1];\n\
       guia1.appendChild(node);\n\
       //guia1.appendChild(document.createTextNode(TextoGuia[i][1]));\n\
@@ -561,25 +594,26 @@ const msg_24 = "      var node = document.createElement(\"h2\");\n\
     //node1.onmouseout = function() {\n\
     //  var e = document.getElementById(\"ajuda-\" + this.id);\n\
     //  e.style.display = \"none\";\n\
-    //};\n\
-    node1.onclick = function() {\n\
+    //};\n"
+#
+const msg_26 = "    node1.onclick = function() {\n\
       if (this.className != \"opcao\") {\n\
         conec.send(\"+\" + this.firstChild.nodeValue);\n\
         return;\n\
-      }\n"
-#
-const msg_25 = "      document.getElementById('cmd').value = this.firstChild.nodeValue + \" \
-\";\n\
+      }\n\
+      document.getElementById('cmd').value = this.firstChild.nodeValue + \" \";\n\
       document.getElementById(\"cmd\").focus();\n\
     };\n\
-    guia1.appendChild(node1);\n\n\
+    guia1.appendChild(node1);\n\
+\n\
     var node2 = document.createElement(\"div\");\n\
     node2.innerHTML = \"<h2>\" + TextoGuia[i][1] + \"</h2>\" + TextoGuia[i][2];\n\
     node2.id = \"ajuda-cmd-\" + i;\n\
     node2.style.display = \"none\";\n\
     guia2.appendChild(node2);\n\
   }\n\
-}\n\n\
+}\n\
+\n\
 var TextoGuia = [\n\
   [\"titulo\", \"Movimentação\"],\n\
   [\"move1\", \"NO\", \"Anda para o noroeste.\"],\n\
@@ -592,94 +626,77 @@ var TextoGuia = [\n\
   [\"envia\", \"Cima\", \"Vai para cima.\"],\n\
   [\"envia\", \"Entrar\", \"Entra (exceto em objetos).\"],\n\
   [\"envia\", \"Ver\", \"Mostra resumidamente aonde você está.\"],\n\
-  [\"br\"],\n\
-  [\"move1\", \"SO\", \"Anda para o sudoeste.\"],\n\
-  [\"move1\", \"S\",  \"Anda para o sul.\"],\n\
-  [\"move1\", \"SE\", \"Anda para o sudeste.\"],\n"
+  [\"br\"],\n"
 #
-const msg_26 = "  [\"envia\", \"Baixo\", \"Vai para baixo.\"],\n\
+const msg_27 = "  [\"move1\", \"SO\", \"Anda para o sudoeste.\"],\n\
+  [\"move1\", \"S\",  \"Anda para o sul.\"],\n\
+  [\"move1\", \"SE\", \"Anda para o sudeste.\"],\n\
+  [\"envia\", \"Baixo\", \"Vai para baixo.\"],\n\
   [\"envia\", \"Sair\", \"Sai.\"],\n\
   [\"envia\", \"Olhar\", \"Mostra aonde você está.\"],\n\
   [\"br\"],\n\
   [\"envia\", \"dormir\", \"Dorme, se estiver acordado. Assim, recupera mais rapidamente.\"],\n\
   [\"envia\", \"acordar\", \"Acorda, se estiver dormindo.\"],\n\
   [\"envia\", \"descansar\", \"Descansa. Recupera um pouco mais rápido.\"],\n\
-  [\"envia\", \"sentar\", \"Senta. No entanto, para sentar-se em algum objeto, você deve teclar \
-SENTAR seguido do nome do objeto.\"],\n\
+  [\"envia\", \"sentar\", \"Senta. No entanto, para sentar-se em algum objeto, você deve teclar SENTAR seguido do nome do objeto.\"],\n\
   [\"envia\", \"levantar\", \"Levanta.\"],\n\
-  [\"opcao\", \"abrir\", \"Abre uma porta ou um objeto. Exemplo, ABRIR N abre a porta ao norte, \
-ABRIR BOLSA abre uma mala.\"],\n\
-  [\"opcao\", \"fechar\", \"Fecha uma porta ou um objeto. Exemplo, FECHAR N fecha a porta ao \
-norte, FECHAR BOLSA fecha uma mala.\"],\n\
-  [\"opcao\", \"trancar\", \"Tranca uma porta ou um objeto. Exemplo, TRANCAR N tranca a porta ao \
-norte, TRANCAR BOLSA tranca uma mala.\"],\n"
+  [\"opcao\", \"abrir\", \"Abre uma porta ou um objeto. Exemplo, ABRIR N abre a porta ao norte, ABRIR BOLSA abre uma mala.\"],\n\
+  [\"opcao\", \"fechar\", \"Fecha uma porta ou um objeto. Exemplo, FECHAR N fecha a porta ao norte, FECHAR BOLSA fecha uma mala.\"],\n"
 #
-const msg_27 = "  [\"opcao\", \"destrancar\", \"Destranca uma porta ou um objeto. Exemplo, \
-DESTRANCAR N destranca a porta ao norte, DESTRANCAR BOLSA destranca uma mala.\"],\n\n\
+const msg_28 = "  [\"opcao\", \"trancar\", \"Tranca uma porta ou um objeto. Exemplo, TRANCAR N tranca a porta ao norte, TRANCAR BOLSA tranca uma mala.\"],\n\
+  [\"opcao\", \"destrancar\", \"Destranca uma porta ou um objeto. Exemplo, DESTRANCAR N destranca a porta ao norte, DESTRANCAR BOLSA destranca uma mala.\"],\n\
+\n\
   [\"titulo\", \"Informação\"],\n\
-  [\"envia\", \"ajuda\", \"Mostra os tópicos de ajuda do jogo. Para saber sobre um tópico ou \
-comando, teclar AJUDA seguido do nome. Exemplo, AJUDA VER.\"],\n\
+  [\"envia\", \"ajuda\", \"Mostra os tópicos de ajuda do jogo. Para saber sobre um tópico ou comando, teclar AJUDA seguido do nome. Exemplo, AJUDA VER.\"],\n\
   [\"envia\", \"quem\", \"Mostra os jogadores online que estão visíveis a você.\"],\n\
-  [\"envia\", \"onde\", \"Mostra a área aonde você está e os jogadores que estão na mesma \
-área.\"],\n\
+  [\"envia\", \"onde\", \"Mostra a área aonde você está e os jogadores que estão na mesma área.\"],\n\
   [\"envia\", \"vida\", \"Mostra os seus pontos de vida.\"],\n\
   [\"envia\", \"moedas\", \"Mostra quantas moedas você possui.\"],\n\
   [\"envia\", \"estat\", \"Mostra as estatísticas do eu personagem.\"],\n\
-  [\"envia\", \"efeito\", \"Mostra os efeitos que estão afetando o seu personagem.\"],\n\
-  [\"envia\", \"equip\", \"Mostra os itens que seu personagem está vestindo ou usando. Pode-se \
-ainda ver todas as posições teclando EQUIP TUDO.\"],\n"
+  [\"envia\", \"efeito\", \"Mostra os efeitos que estão afetando o seu personagem.\"],\n"
 #
-const msg_28 = "  [\"envia\", \"hab\", \"Mostra as habilidades do seu personagem. É possível \
-ainda saber detalhes sobre uma habilidade teclando HAB e o nome da habilidade.\"],\n\
-  [\"envia\", \"magia\", \"Mostra as magias do seu personagem. É possível ainda saber detalhes \
-sobre uma magia teclando MAGIA e o nome da magia.\"],\n\
-  [\"opcao\", \"ver\", \"Mostra resumidamente informações sobre um item ou personagem. Exemplo, \
-VER BOLSA. Teclando apenas VER mostra aonde você está.\"],\n\
-  [\"opcao\", \"olhar\", \"Mostra informações sobre um item ou personagem. Exemplo, OLHAR BOLSA. \
-Teclando apenas OLHAR mostra aonde você está.\"],\n\n\
+const msg_29 = "  [\"envia\", \"equip\", \"Mostra os itens que seu personagem está vestindo ou usando. Pode-se ainda ver todas as posições teclando EQUIP TUDO.\"],\n\
+  [\"envia\", \"hab\", \"Mostra as habilidades do seu personagem. É possível ainda saber detalhes sobre uma habilidade teclando HAB e o nome da habilidade.\"],\n\
+  [\"envia\", \"magia\", \"Mostra as magias do seu personagem. É possível ainda saber detalhes sobre uma magia teclando MAGIA e o nome da magia.\"],\n\
+  [\"opcao\", \"ver\", \"Mostra resumidamente informações sobre um item ou personagem. Exemplo, VER BOLSA. Teclando apenas VER mostra aonde você está.\"],\n\
+  [\"opcao\", \"olhar\", \"Mostra informações sobre um item ou personagem. Exemplo, OLHAR BOLSA. Teclando apenas OLHAR mostra aonde você está.\"],\n\
+\n\
   [\"titulo\", \"Objetos\"],\n\
   [\"opcao\", \"pegar\", \"Pega um objeto. Exemplo, PEGAR CHAVE.\"],\n\
   [\"opcao\", \"soltar\", \"Solta um objeto. Exemplo, SOLTAR CHAVE.\"],\n\
-  [\"opcao\", \"guardar\", \"Coloca um objeto dentro de outro. Exemplo, GUARDAR CHAVE BOLSA.\"],\n\
-  [\"opcao\", \"dar\", \"Dá alguma coisa para alguém. Exemplo, DAR CHAVE GUARDA.\"],\n\
-  [\"opcao\", \"empunhar\", \"Empunha uma arma. Exemplo, EMPUNHAR ESPADA.\"],\n"
+  [\"opcao\", \"guardar\", \"Coloca um objeto dentro de outro. Exemplo, GUARDAR CHAVE BOLSA.\"],\n"
 #
-const msg_29 = "  [\"opcao\", \"vestir\", \"Veste um objeto. Exemplo, VESTIR CAMISA.\"],\n\
-  [\"opcao\", \"remover\", \"Remove um objeto que esteja vestindo ou empunhando. Exemplo, \
-REMOVER CAMISA.\"],\n\
+const msg_30 = "  [\"opcao\", \"dar\", \"Dá alguma coisa para alguém. Exemplo, DAR CHAVE GUARDA.\"],\n\
+  [\"opcao\", \"empunhar\", \"Empunha uma arma. Exemplo, EMPUNHAR ESPADA.\"],\n\
+  [\"opcao\", \"vestir\", \"Veste um objeto. Exemplo, VESTIR CAMISA.\"],\n\
+  [\"opcao\", \"remover\", \"Remove um objeto que esteja vestindo ou empunhando. Exemplo, REMOVER CAMISA.\"],\n\
   [\"opcao\", \"acender\", \"Acende um objeto. Exemplo, ACENDER VELA.\"],\n\
   [\"opcao\", \"apagar\", \"Apaga um objeto. Exemplo, APAGAR VELA.\"],\n\
   [\"opcao\", \"beber\", \"Bebe alguma coisa. Exemplo, BEBER CANTIL.\"],\n\
   [\"opcao\", \"comer\", \"Come alguma coisa. Exemplo, COMER PÃO.\"],\n\
-  [\"opcao\", \"recitar\", \"Recita um pergaminho.\"],\n\n\
+  [\"opcao\", \"recitar\", \"Recita um pergaminho.\"],\n\
+\n\
   [\"titulo\", \"Comunicação\"],\n\
-  [\"opcao\", \"falar\", \"FALAR &lt;mensagem&gt;<br>Fala para quem estiver na mesma sala. \
-Exemplo, FALAR bom dia!\"],\n\
-  [\"opcao\", \"gritar\", \"GRUTAR &lt;mensagem&gt;<br>Grita para quem estiver na mesma área. \
-Exemplo, GRITAR bom dia!\"],\n\
-  [\"opcao\", \"sussurrar\", \"SUSSURRAR &lt;personagem&gt; &lt;mensagem&gt;<br>Sussurra para \
-outro personagem. Exemplo, SUSSURRAR JOAQUIM bom dia!\"],\n\
-  [\"opcao\", \"novatos\", \"NOVATOS &lt;mensagem&gt;<br>Fala no canal de novatos.\"],\n"
+  [\"opcao\", \"falar\", \"FALAR &lt;mensagem&gt;<br>Fala para quem estiver na mesma sala. Exemplo, FALAR bom dia!\"],\n\
+  [\"opcao\", \"gritar\", \"GRUTAR &lt;mensagem&gt;<br>Grita para quem estiver na mesma área. Exemplo, GRITAR bom dia!\"],\n"
 #
-const msg_30 = "  [\"opcao\", \"chat\", \"CHAT &lt;mensagem&gt;<br>Fala no canal chat.\"],\n\
-  [\"opcao\", \"telepatia\", \"TELEPATIA &lt;personagem&gt; &lt;mensagem&gt;<br>Fala para um \
-jogador.\"],\n\
-  [\"opcao\", \"ignorar\", \"IGNORAR &lt;personagem&gt;<br>Ignora outro jogador. Se já estiver \
-ignorando, esse comando deixa de ignorar.\"],\n\n\
+const msg_31 = "  [\"opcao\", \"sussurrar\", \"SUSSURRAR &lt;personagem&gt; &lt;mensagem&gt;<br>Sussurra para outro personagem. Exemplo, SUSSURRAR JOAQUIM bom dia!\"],\n\
+  [\"opcao\", \"novatos\", \"NOVATOS &lt;mensagem&gt;<br>Fala no canal de novatos.\"],\n\
+  [\"opcao\", \"chat\", \"CHAT &lt;mensagem&gt;<br>Fala no canal chat.\"],\n\
+  [\"opcao\", \"telepatia\", \"TELEPATIA &lt;personagem&gt; &lt;mensagem&gt;<br>Fala para um jogador.\"],\n\
+  [\"opcao\", \"ignorar\", \"IGNORAR &lt;personagem&gt;<br>Ignora outro jogador. Se já estiver ignorando, esse comando deixa de ignorar.\"],\n\
+\n\
   [\"titulo\", \"Outros\"],\n\
   [\"opcao\", \"seguir\", \"Segue alguém. Exemplo: SEGUIR CACHORRO.\"],\n\
-  [\"opcao\", \"lançar\", \"LANÇAR &lt;magia&gt; [personagem]<br>Lança uma magia. Exemplo: \
-LANÇAR SONO_PROFUNDO CACHORRO.\"],\n\
-  [\"opcao\", \"matar\", \"MATAR  &lt;personagem&gt;<br>Inicia um combate. Exemplo: MATAR \
-CACHORRO\"],\n\
-  [\"opcao\", \"fugir\", \"Fugir seguido de um número permite fugir automaticamente. Exemplo, \
-FUGIR 30 fará fugir quanto o personagem tiver menos de 30 pontos de vida.\"],\n\
-  [\"envia\", \"fugir\", \"Se achar que vai morrer, pode tentar fugir do combate.\"],\n"
+  [\"opcao\", \"lançar\", \"LANÇAR &lt;magia&gt; [personagem]<br>Lança uma magia. Exemplo: LANÇAR SONO_PROFUNDO CACHORRO.\"],\n\
+  [\"opcao\", \"matar\", \"MATAR  &lt;personagem&gt;<br>Inicia um combate. Exemplo: MATAR CACHORRO\"],\n"
 #
-const msg_31 = "  [\"envia\", \"fim\", \"Sai do jogo retirando o seu personagem. Sair sem teclar \
-FIM pode deixar seu personagem no jogo por alguns minutos.\"],\n];\n\n"
+const msg_32 = "  [\"opcao\", \"fugir\", \"Fugir seguido de um número permite fugir automaticamente. Exemplo, FUGIR 30 fará fugir quanto o personagem tiver menos de 30 pontos de vida.\"],\n\
+  [\"envia\", \"fugir\", \"Se achar que vai morrer, pode tentar fugir do combate.\"],\n\
+  [\"envia\", \"fim\", \"Sai do jogo retirando o seu personagem. Sair sem teclar FIM pode deixar seu personagem no jogo por alguns minutos.\"],\n\
+];\n\n"
 #
-const msg_32 = "var endserv = '" + host + "';\n\n// -->\n</script>\n</body></html>\n"
+const msg_33 = "var endserv = '" + host + "';\n\n// -->\n</script>\n</body></html>\n"
 
 
 classe jogohttp_usr
