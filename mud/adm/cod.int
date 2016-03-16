@@ -426,10 +426,10 @@ func escr # Listar funções inclusive as herdadas
     arg0.msg("\bClasse não existe: " + arg1)
   senao
     textotxt t
-    epara p.inifunc(arg1), p.lin, p.depois
+    epara p.inilinha(arg1), p.lin, p.depois
       t.addfim(p.texto)
     efim
     arg0.msg("Classe " + arg1)
-    arg0.msg("md5 = " + txtmd5(t.ini.texto(100000)))
-    arg0.msg("sha1 = " + txtsha1(t.ini.texto(100000)))
+    arg0.msg("md5 = " + txtmd5(t.ini.textolin(100000)))
+    arg0.msg("sha1 = " + txtsha1(t.ini.textolin(100000)))
   fimse

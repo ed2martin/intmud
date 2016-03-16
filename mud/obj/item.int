@@ -250,10 +250,13 @@ const nome = "corpo"
 txt100 descnome
 txt100 ident
 inttempo tempo
+int8 tipocorpo # Variável p_corpo do personagem que gerou o corpo
 
 func ini
 # arg0 = personagem que morreu
-# arg1 = verdadeiro se deve transferir os itens do personagem que morreu
+# arg1 = variável p_corpo do personagem
+# Se arg1 >=2, transfere os itens do personagem que morreu
+# Se arg1 >=3, quando o corpo se decompõe, itens e dinheiro vão para a sala
   tempo = 1200, volobj = arg0.volobj, pesoobj = arg0.pesoobj
   descnome = arg0.descnome
   se txt2(descnome)
@@ -274,7 +277,8 @@ func ini
   comum_obj:ini
   arg0.dono && mudadono(arg0.dono)
   recalc_exec
-  ret !arg1, nulo
+  tipocorpo = arg1
+  ret tipocorpo < 2, nulo
   var.z_moedas = arg0.var.z_moedas
   listaobj l
   epara l.addfim(arg0.dentro1, arg0.dentro2), l, l.ini.remove
@@ -293,8 +297,17 @@ func ini
   fimse
 
 func tempo_exec
-  dono.msg(txtcopiamai(descnome, "A") + " se decompôs totalmente.")
-  este.apagar(100000)
+  refvar d = ref(dono)
+  d.msg(txtcopiamai(descnome, "A") + " se decompôs totalmente.")
+  este.apagar(100000) # Isso altera a variável dono
+  se tipocorpo >= 3
+    d.var.z_moedas_ += var.z_moedas_
+    var.z_moedas_ = 0
+    listaobj l
+    epara l.addfim(dentro1, dentro2), l, l.ini.remove
+      l.objini.mudadono(d, 100000)
+    efim
+  fimse
 
 
 classe comum_chave

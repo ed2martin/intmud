@@ -443,7 +443,7 @@ func morreu # Procedimentos quando morre
     pvida = 0, batalhaexp(1), batalhafim
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
     apagar(este)
-    p_corpo && (corpo = criar("comum_corpo", este, p_corpo == 2))
+    p_corpo && (corpo = criar("comum_corpo", este, p_corpo))
     corpo.var.z_moedas && arg0.jogconfig.10 && arg0.pegamoedas(corpo)
   fimse
 # Apaga efeitos
