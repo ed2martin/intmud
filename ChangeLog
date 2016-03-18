@@ -1,3 +1,51 @@
+* 17/3/2016 IntMUD 1.07 MUD baseado na revisão 399
+
+   Diversos:
+  1. Criado diretório progs-int para os programas pequenos escritos na
+     linguagem do IntMUD
+  2. Acrescentado arquivo progs-int/txtparaint.int
+  3. Adicionado programa para converter arquivos de som e imagem para
+     Base64 (arquivo progs-int/imgbase64.int)
+
+   No IntMUD:
+  1. Variáveis TextoVar agora possuem mais tipos de variáveis e a função
+     Tipo
+  2. Corrigido bug: em determinada situação, ao juntar dois textos,
+     estava truncando o segundo em 16384 caracteres, por isso o comando
+     Mudler ficou com problema
+  3. Versão do programa mudou para 1.07
+
+   No MUD:
+  1. Corrigido bug na opção Ataque/Nível animais do comando Econfig
+  2. Corrigido bug nos comandos Ares e Sres: ao sair do MUD e entrar
+     novamente, esses comandos não aceitavam mais adicionar personagens
+     e itens
+  3. Corrigido bug nos comandos Ares e Sres: não funcionavam sem
+     argumentos quando estivessem restritos à área aonde o jogador tem
+     permissão
+  4. Corrigido bug: comando Ban não estava bloqueando jogadores que
+     entram através de um chat
+  5. Adicionado comando Md5Cl, principalmente para saber se uma classe
+     está igual em dois MUDs
+  6. Código do comando Mudler mudado para funcionar com TextoVar
+  7. Ataques manuais (quando se digita para atacar) não funcionam mais
+     se o nível do personagem estiver abaixo do nível do ataque
+  8. Após renascer (comando Renascer), agora é possível escolher as
+     novas raças/classes de todas as raças/classes que o jogador já
+     completou
+  9. Adicionadas opções no acesso via navegador
+ 10. No acesso via navegador, agora leitores de tela, como o NVDA, devem
+     informar sobre mensagens que chegam do jogo
+ 11. Comando Atalhos agora diz quantos atalhos existem
+ 12. Criadas opções no comando EPerm para permitir o comando Tele
+     somente entre área de edição e uma outra sala
+ 13. Adicionadas opções no comando Eperso para personagens do tipo
+     simples andarem pelo MUD e comerem corpos
+ 14. Criada opção no comando Eperso, em Quando morre, Corpo: Deixa corpo
+     com itens e moedas, depois vão para sala
+ 15. Quando um personagem come um corpo (opção comer corpos), agora são
+     gerados eventos cmd_comer e cmd_comeu
+
 * 23/1/2016 IntMUD 1.06 MUD baseado na revisão 391
 
    No IntMUD:

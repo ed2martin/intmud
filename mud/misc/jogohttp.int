@@ -187,28 +187,32 @@ const msg_12 = "      background-color:#000; font-family: Verdana,Arial,Helvetic
   <noscript style=\"color: #ff0000;\">Please enable Javascript.</noscript>\n\
   <div style=\"height: auto; width: auto; margin: 0 0 40px 0;\">\n\
     <pre class=\"term\" id=\"terminal\" style=\"height: auto; width: 100%; margin: 0 auto;\"\n\
-      aria-relevant=\"text additions\" aria-atomic=\"false\" aria-live=\"polite\">\n\
-    <span><br><span></pre>\n\
-  </div>\n"
+      aria-relevant=\"text additions\" aria-atomic=\"false\" aria-live=\"polite\">\n"
 #
-const msg_13 = "  <div style=\"position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 40px; background-color:#1D1D1D;\">\n\
-    <input size=\"77\" name=\"i\" id=\"cmd\" class=\"term\" style=\"margin: 11px 2px; border:1px solid #888;\" type=\"text\">\n\
+const msg_13 = "    <span><br><span></pre>\n\
+  </div>\n\
+  <div style=\"position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 40px; background-color:#1D1D1D;\">\n\
+    <input type=\"text\" size=\"77\" name=\"i\" id=\"cmd\" class=\"term\" style=\"margin: 11px 2px; border:1px solid #888;\">\n\
     <div style=\"margin: 0em\">\n\
     <img id=\"vida\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAAM4yMiH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
-style=\"left:10px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
+      style=\"left:10px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\"\n\
+      alt=\"Pontos de vida\">\n\
     <img id=\"mana\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAADLONiwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
-style=\"left:220px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
+      style=\"left:220px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\"\n\
+      alt=\"Pontos de mana\">\n\
     <img id=\"move\" src=\"data:image/gif;base64,R0lGODlhCgAFAIACAAAAADIyziwAAAAACgAFAAACCYSPocvtr5AEBQA7\"\n\
-style=\"left:430px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\">\n\
-    </div>\n\
-    <img id=\"exp\" src=\"data:image/gif;base64,R0lGODlhCgADAIABAJ6env///ywAAAAACgADAAACBYSPqWsFADs=\"\n"
+      style=\"left:430px; top:2px; position: absolute;\" height=\"5px\" width=\"2px\"\n\
+      alt=\"Pontos de movimento\">\n\
+    </div>\n"
 #
-const msg_14 = "style=\"left:10px; top:7px; position: absolute;\" height=\"2px\" width=\"2px\">\n\
+const msg_14 = "    <img id=\"exp\" src=\"data:image/gif;base64,R0lGODlhCgADAIABAJ6env///ywAAAAACgADAAACBYSPqWsFADs=\"\n\
+      style=\"left:10px; top:7px; position: absolute;\" height=\"2px\" width=\"2px\"\n\
+      alt=\"Pontos para subir de nível\">\n\
   </div>\n\
   <div id=\"opcoes\">\n\
-    <input id=\"chkbipe\" name=\"chkbipe\" value=\"1\" type=\"checkbox\">\n\
+    <input type=\"checkbox\" id=\"chkbipe\" name=\"chkbipe\" value=\"1\">\n\
     <label for=\"chkbipe\">Som ao chegar mensagem</label>\n\
-    <input id=\"chkrolagem\" name=\"chkrolagem\" value=\"checked\" type=\"checkbox\" checked>\n\
+    <input type=\"checkbox\" id=\"chkrolagem\" name=\"chkrolagem\" value=\"checked\" checked>\n\
     <label for=\"chkrolagem\">Rolagem automática</label>\n\
     <button id=\"botaoguia\">Comandos</button>\n\
   </div>\n\
@@ -221,11 +225,11 @@ const msg_14 = "style=\"left:10px; top:7px; position: absolute;\" height=\"2px\"
 <source type=\"audio/mpeg\" src=\"data:audio/mp3;base64,//NAxAAQ60rS\n\
 UUEQASK7c2VwGYx3MC4xuAC+MhP536EJ/53/kJ58hCN8hCEIQmQhCEIRpCE/////\n\
 5z//+c53+c7///53/Oc7znOc53kDizh6I1h0d2dneINXkpdAhYQA8mwbVoycnbj/\n\
-80LEFxnzKvcdjCgBtc1Ra7R1cVFQQTESgYSEgKZzOQPAYXMJCZu4fVgxyCQ063lD\n\
-p3KHTs1Sms7vVSEntETOK//6+s/6UnZ/Rf120OJmJ0zU+yFKn//s13/r8SRqeAmQ\n\
-eAiQmQeAwG7/80DECxcCczMfizgCOBAKBgAESUk/x0kIo7yc3j2JDVPqAKZrxGJD\n"
+80LEFxnzKvcdjCgBtc1Ra7R1cVFQQTESgYSEgKZzOQPAYXMJCZu4fVgxyCQ063lD\n"
 #
-const msg_15 = "pLX41FQ8PiR/5YHxUdIEzk9f8SR5WPciNh7//+qmHnGoh7Gj3///+Kx8WExsOsBk\n\
+const msg_15 = "p3KHTs1Sms7vVSEntETOK//6+s/6UnZ/Rf120OJmJ0zU+yFKn//s13/r8SRqeAmQ\n\
+eAiQmQeAwG7/80DECxcCczMfizgCOBAKBgAESUk/x0kIo7yc3j2JDVPqAKZrxGJD\n\
+pLX41FQ8PiR/5YHxUdIEzk9f8SR5WPciNh7//+qmHnGoh7Gj3///+Kx8WExsOsBk\n\
 k9X//pWWTEFNRTMuOTkuNf/zQsQKAAADSAHAAACqqqqqqqqqqqqqqqqqqqqqqqqq\n\
 qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq\n\
 qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==\">\n\
@@ -245,13 +249,13 @@ var coratrib = 0; // +1=sublinhado +2=piscante +4=troca frente/fundo\n\
 // http://www.javascripter.net/faq/addeventlistenerattachevent.htm\n\
 function addEventHandler(obj,eventType,handler) {\n\
   var elem = document.getElementById(obj);\n\
-  if (elem.addEventListener) elem.addEventListener (eventType,handler,false);\n\
-  else if (elem.attachEvent) elem.attachEvent ('on'+eventType,handler);\n\
+  if (elem.addEventListener) elem.addEventListener (eventType,handler,false);\n"
+#
+const msg_16 = "  else if (elem.attachEvent) elem.attachEvent ('on'+eventType,handler);\n\
 }\n\
 \n\
-function removeEventHandler(obj,eventType,handler) {\n"
-#
-const msg_16 = "  var elem = document.getElementById(obj);\n\
+function removeEventHandler(obj,eventType,handler) {\n\
+  var elem = document.getElementById(obj);\n\
   if (elem.removeEventListener) elem.removeEventListener (eventType,handler,false);\n\
   if (elem.detachEvent)         elem.detachEvent ('on'+eventType,handler);\n\
 }\n\
@@ -275,11 +279,11 @@ function estilo_cor(cor) {\n\
   {\n\
     case 0:  return \"#1D1D1D;\"; break; // BLACK\n\
     case 1:  return \"#B00000;\"; break; // RED\n\
-    case 2:  return \"#00B000;\"; break; // GREEN\n\
-    case 3:  return \"#B0B000;\"; break; // YELLOW\n\
-    case 4:  return \"#0000B0;\"; break; // BLUE\n"
+    case 2:  return \"#00B000;\"; break; // GREEN\n"
 #
-const msg_17 = "    case 5:  return \"#B000B0;\"; break; // PURPLE\n\
+const msg_17 = "    case 3:  return \"#B0B000;\"; break; // YELLOW\n\
+    case 4:  return \"#0000B0;\"; break; // BLUE\n\
+    case 5:  return \"#B000B0;\"; break; // PURPLE\n\
     case 6:  return \"#00B0B0;\"; break; // CYAN\n\
     case 7:  return \"#C0C0C0;\"; break; // WHITE\n\
     case 8:  return \"#808080;\"; break; // BLACK\n\
@@ -302,13 +306,13 @@ function estilo_atrib() {\n\
     estilo += \"background-color:\" + estilo_cor(corfrente);\n\
   }\n\
   else {\n\
-    estilo += \"color:\" + estilo_cor(corfrente);\n\
-    estilo += \"background-color:\" + estilo_cor(corfundo);\n\
+    estilo += \"color:\" + estilo_cor(corfrente);\n"
+#
+const msg_18 = "    estilo += \"background-color:\" + estilo_cor(corfundo);\n\
   }\n\
   if ((coratrib & 3) == 1)\n\
-    estilo += \"text-decoration:underline;\";\n"
-#
-const msg_18 = "  else if ((coratrib & 3) == 2)\n\
+    estilo += \"text-decoration:underline;\";\n\
+  else if ((coratrib & 3) == 2)\n\
     estilo += \"text-decoration:blink;\";\n\
   else if ((coratrib & 3) == 3)\n\
     estilo += \"text-decoration:underline blink;\";\n\
@@ -324,9 +328,14 @@ function recv_message(e) {\n\
     var res = e.data.substring(1).split(' ');\n\
     if (res.length >= 4) {\n\
       document.getElementById('vida').width = 2 * res[0];\n\
+      document.getElementById('vida').alt = 'Vida ' + res[0] + '%';\n\
       document.getElementById('mana').width = 2 * res[1];\n\
+      document.getElementById('mana').alt = 'Mana ' + res[1] + '%';\n\
       document.getElementById('move').width = 2 * res[2];\n\
-      document.getElementById('exp').width = 620 * res[3] / 100;\n\
+      document.getElementById('move').alt = 'Movimentos ' + res[2] + '%';\n"
+#
+const msg_19 = "      document.getElementById('exp').width = 620 * res[3] / 100;\n\
+      document.getElementById('exp').alt = 'Experiência ' + res[3] + '%';\n\
     }\n\
   }\n\
 }\n\
@@ -337,9 +346,8 @@ function msg_tela(str) {\n\
   var i = 0;\n\
   var est_ini = estilo_atrib();\n\
   var completa = (((coratrib) & 4) ? (corfrente != 0) : (corfundo != 0));\n\
-  var estilo = \"\";\n"
-#
-const msg_19 = "  var atualizar = false;\n\
+  var estilo = \"\";\n\
+  var atualizar = false;\n\
   var barra = false;\n\
 \n\
   while (i < str.length)\n\
@@ -362,8 +370,9 @@ const msg_19 = "  var atualizar = false;\n\
             ret += \"<span style=\\\"\" + estilo + \"\\\">\";\n\
         }\n\
       }\n\
-      if (ch == \"<\")\n\
-        ret += \"&lt;\";\n\
+      if (ch == \"<\")\n"
+#
+const msg_20 = "        ret += \"&lt;\";\n\
       else if (ch == \">\")\n\
         ret += \"&gt;\";\n\
       else if (ch == \"&\")\n\
@@ -380,9 +389,8 @@ const msg_19 = "  var atualizar = false;\n\
       continue;\n\
     }\n\
     if (i >= str.length)\n\
-      break;\n"
-#
-const msg_20 = "    ch = str.charAt(i++);\n\
+      break;\n\
+    ch = str.charAt(i++);\n\
     if (ch == '\\\\' || ch == '\"') {\n\
       barra = true; i--;\n\
     }\n\
@@ -403,8 +411,9 @@ const msg_20 = "    ch = str.charAt(i++);\n\
       case '3': corfundo = 3; break;\n\
       case '4': corfundo = 4; break;\n\
       case '5': corfundo = 5; break;\n\
-      case '6': corfundo = 6; break;\n\
-      case '7': corfundo = 7; break;\n\
+      case '6': corfundo = 6; break;\n"
+#
+const msg_21 = "      case '7': corfundo = 7; break;\n\
       }\n\
       atualizar = true;\n\
     }\n\
@@ -417,9 +426,8 @@ const msg_20 = "    ch = str.charAt(i++);\n\
       case '1': corfrente = 1; break;\n\
       case '2': corfrente = 2; break;\n\
       case '3': corfrente = 3; break;\n\
-      case '4': corfrente = 4; break;\n"
-#
-const msg_21 = "      case '5': corfrente = 5; break;\n\
+      case '4': corfrente = 4; break;\n\
+      case '5': corfrente = 5; break;\n\
       case '6': corfrente = 6; break;\n\
       case '7': corfrente = 7; break;\n\
       case '8': corfrente = 8; break;\n\
@@ -432,8 +440,9 @@ const msg_21 = "      case '5': corfrente = 5; break;\n\
       case 'f': corfrente = 15; break;\n\
       case 'g': coratrib |=  1; break; // + sublinhado\n\
       case 'h': coratrib &= ~1; break; // - sublinhado\n\
-      case 'i': coratrib |=  4; break; // + inverter frente/fundo\n\
-      case 'j': coratrib &= ~4; break; // - inverter frente/fundo\n\
+      case 'i': coratrib |=  4; break; // + inverter frente/fundo\n"
+#
+const msg_22 = "      case 'j': coratrib &= ~4; break; // - inverter frente/fundo\n\
       case 'k': coratrib |=  2; break; // + piscante\n\
       case 'l': coratrib &= ~2; break; // - piscante\n\
       case 'm': // Echo off\n\
@@ -442,9 +451,8 @@ const msg_21 = "      case '5': corfrente = 5; break;\n\
       case 'n': // Echo on\n\
         document.getElementById('cmd').type = 'text';\n\
         break;\n\
-      }\n"
-#
-const msg_22 = "      atualizar = true;\n\
+      }\n\
+      atualizar = true;\n\
     }\n\
   }\n\
   if (estilo != \"\")\n\
@@ -473,8 +481,9 @@ function tecla(e) {\n\
   //console.log(\"key \" + keysym);\n\
 \n\
   switch (keysym)\n\
-  {\n\
-  case 38: // Seta para cima\n\
+  {\n"
+#
+const msg_23 = "  case 38: // Seta para cima\n\
     if (histnum != 0)\n\
       cmd.value = historico[--histnum];\n\
     break;\n\
@@ -488,9 +497,8 @@ function tecla(e) {\n\
     break;\n\
   case 13: // Enter\n\
     if (!conectado)\n\
-      break;\n"
-#
-const msg_23 = "    //console.log(\"Enviar \" + cmd.value);\n\
+      break;\n\
+    //console.log(\"Enviar \" + cmd.value);\n\
     conec.send(\"+\" + cmd.value);\n\
     if (cmd.type == 'text') {\n\
       if (historico.length == 0)\n\
@@ -512,8 +520,9 @@ window.onload = function() {\n\
   document.getElementById(\"cmd\").focus();\n\
   addEventHandler(\"cmd\", \"keydown\", tecla);\n\
   addEventHandler(\"botaoguia\", \"click\", janelaguia);\n\
-  if (window.WebSocket) {\n\
-    msg_tela(\"Setas \\\\cbCIMA\\\\b e \\\\cbBAIXO\\\\b acessam o histórico do que você digitou\");\n\
+  if (window.WebSocket) {\n"
+#
+const msg_24 = "    msg_tela(\"Setas \\\\cbCIMA\\\\b e \\\\cbBAIXO\\\\b acessam o histórico do que você digitou\");\n\
     env_tela(\"\");\n\
     conectar();\n\
   }\n\
@@ -525,9 +534,8 @@ window.onload = function() {\n\
   criarguia();\n\
 }\n\
 \n\
-function conectar() {\n"
-#
-const msg_24 = "  msg_tela(\"Conectando em \" + endserv);\n\
+function conectar() {\n\
+  msg_tela(\"Conectando em \" + endserv);\n\
   conec = new WebSocket('ws://' + endserv + '/ws');\n\
   conec.onmessage = recv_message;\n\
   conec.onopen = function() {\n\
@@ -549,8 +557,9 @@ const msg_24 = "  msg_tela(\"Conectando em \" + endserv);\n\
   conec.onclose = function(error) {\n\
     console.log('WebSocket Error ' + error);\n\
     if (!conectado)\n\
-      return;\n\
-    conectado = false;\n\
+      return;\n"
+#
+const msg_25 = "    conectado = false;\n\
     msg_tela(\"\\\\cF\\\\d1Desconectado\");\n\
   };\n\
 }\n\
@@ -566,9 +575,8 @@ function janelaguia() {\n\
 var ajudafim = null;\n\
 \n\
 function criarguia() {\n\
-  var guia1 = document.getElementById('guia1');\n"
-#
-const msg_25 = "  var guia2 = document.getElementById('guia2');\n\
+  var guia1 = document.getElementById('guia1');\n\
+  var guia2 = document.getElementById('guia2');\n\
   for (var i = 0; i < TextoGuia.length; i++) {\n\
     if (TextoGuia[i][0] == \"titulo\") {\n\
       var node = document.createElement(\"h2\");\n\
@@ -585,8 +593,9 @@ const msg_25 = "  var guia2 = document.getElementById('guia2');\n\
     node1.innerHTML = TextoGuia[i][1];\n\
     node1.className = TextoGuia[i][0];\n\
     node1.id = \"cmd-\" + i;\n\
-    node1.onmouseover = function() {\n\
-      if (ajudafim != null)\n\
+    node1.onmouseover = function() {\n"
+#
+const msg_26 = "      if (ajudafim != null)\n\
         ajudafim.style.display = \"none\";\n\
       var e = document.getElementById(\"ajuda-\" + this.id);\n\
       e.style.display = \"block\";\n\
@@ -595,9 +604,8 @@ const msg_25 = "  var guia2 = document.getElementById('guia2');\n\
     //node1.onmouseout = function() {\n\
     //  var e = document.getElementById(\"ajuda-\" + this.id);\n\
     //  e.style.display = \"none\";\n\
-    //};\n"
-#
-const msg_26 = "    node1.onclick = function() {\n\
+    //};\n\
+    node1.onclick = function() {\n\
       if (this.className != \"opcao\") {\n\
         conec.send(\"+\" + this.firstChild.nodeValue);\n\
         return;\n\
@@ -617,8 +625,9 @@ const msg_26 = "    node1.onclick = function() {\n\
 \n\
 var TextoGuia = [\n\
   [\"titulo\", \"Movimentação\"],\n\
-  [\"move1\", \"NO\", \"Anda para o noroeste.\"],\n\
-  [\"move1\", \"N\",  \"Anda para o norte.\"],\n\
+  [\"move1\", \"NO\", \"Anda para o noroeste.\"],\n"
+#
+const msg_27 = "  [\"move1\", \"N\",  \"Anda para o norte.\"],\n\
   [\"move1\", \"NE\", \"Anda para o nordeste.\"],\n\
   [\"br\"],\n\
   [\"move1\", \"O\", \"Anda para o oeste.\"],\n\
@@ -627,9 +636,8 @@ var TextoGuia = [\n\
   [\"envia\", \"Cima\", \"Vai para cima.\"],\n\
   [\"envia\", \"Entrar\", \"Entra (exceto em objetos).\"],\n\
   [\"envia\", \"Ver\", \"Mostra resumidamente aonde você está.\"],\n\
-  [\"br\"],\n"
-#
-const msg_27 = "  [\"move1\", \"SO\", \"Anda para o sudoeste.\"],\n\
+  [\"br\"],\n\
+  [\"move1\", \"SO\", \"Anda para o sudoeste.\"],\n\
   [\"move1\", \"S\",  \"Anda para o sul.\"],\n\
   [\"move1\", \"SE\", \"Anda para o sudeste.\"],\n\
   [\"envia\", \"Baixo\", \"Vai para baixo.\"],\n\
@@ -639,35 +647,35 @@ const msg_27 = "  [\"move1\", \"SO\", \"Anda para o sudoeste.\"],\n\
   [\"envia\", \"dormir\", \"Dorme, se estiver acordado. Assim, recupera mais rapidamente.\"],\n\
   [\"envia\", \"acordar\", \"Acorda, se estiver dormindo.\"],\n\
   [\"envia\", \"descansar\", \"Descansa. Recupera um pouco mais rápido.\"],\n\
-  [\"envia\", \"sentar\", \"Senta. No entanto, para sentar-se em algum objeto, você deve teclar SENTAR seguido do nome do objeto.\"],\n\
-  [\"envia\", \"levantar\", \"Levanta.\"],\n\
-  [\"opcao\", \"abrir\", \"Abre uma porta ou um objeto. Exemplo, ABRIR N abre a porta ao norte, ABRIR BOLSA abre uma mala.\"],\n\
-  [\"opcao\", \"fechar\", \"Fecha uma porta ou um objeto. Exemplo, FECHAR N fecha a porta ao norte, FECHAR BOLSA fecha uma mala.\"],\n"
+  [\"envia\", \"sentar\", \"Senta. No entanto, para sentar-se em algum objeto, você deve teclar SENTAR seguido do nome do objeto.\"],\n"
 #
-const msg_28 = "  [\"opcao\", \"trancar\", \"Tranca uma porta ou um objeto. Exemplo, TRANCAR N tranca a porta ao norte, TRANCAR BOLSA tranca uma mala.\"],\n\
+const msg_28 = "  [\"envia\", \"levantar\", \"Levanta.\"],\n\
+  [\"opcao\", \"abrir\", \"Abre uma porta ou um objeto. Exemplo, ABRIR N abre a porta ao norte, ABRIR BOLSA abre uma mala.\"],\n\
+  [\"opcao\", \"fechar\", \"Fecha uma porta ou um objeto. Exemplo, FECHAR N fecha a porta ao norte, FECHAR BOLSA fecha uma mala.\"],\n\
+  [\"opcao\", \"trancar\", \"Tranca uma porta ou um objeto. Exemplo, TRANCAR N tranca a porta ao norte, TRANCAR BOLSA tranca uma mala.\"],\n\
   [\"opcao\", \"destrancar\", \"Destranca uma porta ou um objeto. Exemplo, DESTRANCAR N destranca a porta ao norte, DESTRANCAR BOLSA destranca uma mala.\"],\n\
 \n\
   [\"titulo\", \"Informação\"],\n\
   [\"envia\", \"ajuda\", \"Mostra os tópicos de ajuda do jogo. Para saber sobre um tópico ou comando, teclar AJUDA seguido do nome. Exemplo, AJUDA VER.\"],\n\
   [\"envia\", \"quem\", \"Mostra os jogadores online que estão visíveis a você.\"],\n\
   [\"envia\", \"onde\", \"Mostra a área aonde você está e os jogadores que estão na mesma área.\"],\n\
-  [\"envia\", \"vida\", \"Mostra os seus pontos de vida.\"],\n\
-  [\"envia\", \"moedas\", \"Mostra quantas moedas você possui.\"],\n\
-  [\"envia\", \"estat\", \"Mostra as estatísticas do eu personagem.\"],\n\
-  [\"envia\", \"efeito\", \"Mostra os efeitos que estão afetando o seu personagem.\"],\n"
+  [\"envia\", \"vida\", \"Mostra os seus pontos de vida.\"],\n"
 #
-const msg_29 = "  [\"envia\", \"equip\", \"Mostra os itens que seu personagem está vestindo ou usando. Pode-se ainda ver todas as posições teclando EQUIP TUDO.\"],\n\
+const msg_29 = "  [\"envia\", \"moedas\", \"Mostra quantas moedas você possui.\"],\n\
+  [\"envia\", \"estat\", \"Mostra as estatísticas do eu personagem.\"],\n\
+  [\"envia\", \"efeito\", \"Mostra os efeitos que estão afetando o seu personagem.\"],\n\
+  [\"envia\", \"equip\", \"Mostra os itens que seu personagem está vestindo ou usando. Pode-se ainda ver todas as posições teclando EQUIP TUDO.\"],\n\
   [\"envia\", \"hab\", \"Mostra as habilidades do seu personagem. É possível ainda saber detalhes sobre uma habilidade teclando HAB e o nome da habilidade.\"],\n\
   [\"envia\", \"magia\", \"Mostra as magias do seu personagem. É possível ainda saber detalhes sobre uma magia teclando MAGIA e o nome da magia.\"],\n\
   [\"opcao\", \"ver\", \"Mostra resumidamente informações sobre um item ou personagem. Exemplo, VER BOLSA. Teclando apenas VER mostra aonde você está.\"],\n\
   [\"opcao\", \"olhar\", \"Mostra informações sobre um item ou personagem. Exemplo, OLHAR BOLSA. Teclando apenas OLHAR mostra aonde você está.\"],\n\
 \n\
-  [\"titulo\", \"Objetos\"],\n\
-  [\"opcao\", \"pegar\", \"Pega um objeto. Exemplo, PEGAR CHAVE.\"],\n\
-  [\"opcao\", \"soltar\", \"Solta um objeto. Exemplo, SOLTAR CHAVE.\"],\n\
-  [\"opcao\", \"guardar\", \"Coloca um objeto dentro de outro. Exemplo, GUARDAR CHAVE BOLSA.\"],\n"
+  [\"titulo\", \"Objetos\"],\n"
 #
-const msg_30 = "  [\"opcao\", \"dar\", \"Dá alguma coisa para alguém. Exemplo, DAR CHAVE GUARDA.\"],\n\
+const msg_30 = "  [\"opcao\", \"pegar\", \"Pega um objeto. Exemplo, PEGAR CHAVE.\"],\n\
+  [\"opcao\", \"soltar\", \"Solta um objeto. Exemplo, SOLTAR CHAVE.\"],\n\
+  [\"opcao\", \"guardar\", \"Coloca um objeto dentro de outro. Exemplo, GUARDAR CHAVE BOLSA.\"],\n\
+  [\"opcao\", \"dar\", \"Dá alguma coisa para alguém. Exemplo, DAR CHAVE GUARDA.\"],\n\
   [\"opcao\", \"empunhar\", \"Empunha uma arma. Exemplo, EMPUNHAR ESPADA.\"],\n\
   [\"opcao\", \"vestir\", \"Veste um objeto. Exemplo, VESTIR CAMISA.\"],\n\
   [\"opcao\", \"remover\", \"Remove um objeto que esteja vestindo ou empunhando. Exemplo, REMOVER CAMISA.\"],\n\
@@ -677,11 +685,11 @@ const msg_30 = "  [\"opcao\", \"dar\", \"Dá alguma coisa para alguém. Exemplo, D
   [\"opcao\", \"comer\", \"Come alguma coisa. Exemplo, COMER PÃO.\"],\n\
   [\"opcao\", \"recitar\", \"Recita um pergaminho.\"],\n\
 \n\
-  [\"titulo\", \"Comunicação\"],\n\
-  [\"opcao\", \"falar\", \"FALAR &lt;mensagem&gt;<br>Fala para quem estiver na mesma sala. Exemplo, FALAR bom dia!\"],\n\
-  [\"opcao\", \"gritar\", \"GRUTAR &lt;mensagem&gt;<br>Grita para quem estiver na mesma área. Exemplo, GRITAR bom dia!\"],\n"
+  [\"titulo\", \"Comunicação\"],\n"
 #
-const msg_31 = "  [\"opcao\", \"sussurrar\", \"SUSSURRAR &lt;personagem&gt; &lt;mensagem&gt;<br>Sussurra para outro personagem. Exemplo, SUSSURRAR JOAQUIM bom dia!\"],\n\
+const msg_31 = "  [\"opcao\", \"falar\", \"FALAR &lt;mensagem&gt;<br>Fala para quem estiver na mesma sala. Exemplo, FALAR bom dia!\"],\n\
+  [\"opcao\", \"gritar\", \"GRUTAR &lt;mensagem&gt;<br>Grita para quem estiver na mesma área. Exemplo, GRITAR bom dia!\"],\n\
+  [\"opcao\", \"sussurrar\", \"SUSSURRAR &lt;personagem&gt; &lt;mensagem&gt;<br>Sussurra para outro personagem. Exemplo, SUSSURRAR JOAQUIM bom dia!\"],\n\
   [\"opcao\", \"novatos\", \"NOVATOS &lt;mensagem&gt;<br>Fala no canal de novatos.\"],\n\
   [\"opcao\", \"chat\", \"CHAT &lt;mensagem&gt;<br>Fala no canal chat.\"],\n\
   [\"opcao\", \"telepatia\", \"TELEPATIA &lt;personagem&gt; &lt;mensagem&gt;<br>Fala para um jogador.\"],\n\
@@ -689,10 +697,10 @@ const msg_31 = "  [\"opcao\", \"sussurrar\", \"SUSSURRAR &lt;personagem&gt; &lt;
 \n\
   [\"titulo\", \"Outros\"],\n\
   [\"opcao\", \"seguir\", \"Segue alguém. Exemplo: SEGUIR CACHORRO.\"],\n\
-  [\"opcao\", \"lançar\", \"LANÇAR &lt;magia&gt; [personagem]<br>Lança uma magia. Exemplo: LANÇAR SONO_PROFUNDO CACHORRO.\"],\n\
-  [\"opcao\", \"matar\", \"MATAR  &lt;personagem&gt;<br>Inicia um combate. Exemplo: MATAR CACHORRO\"],\n"
+  [\"opcao\", \"lançar\", \"LANÇAR &lt;magia&gt; [personagem]<br>Lança uma magia. Exemplo: LANÇAR SONO_PROFUNDO CACHORRO.\"],\n"
 #
-const msg_32 = "  [\"opcao\", \"fugir\", \"Fugir seguido de um número permite fugir automaticamente. Exemplo, FUGIR 30 fará fugir quanto o personagem tiver menos de 30 pontos de vida.\"],\n\
+const msg_32 = "  [\"opcao\", \"matar\", \"MATAR  &lt;personagem&gt;<br>Inicia um combate. Exemplo: MATAR CACHORRO\"],\n\
+  [\"opcao\", \"fugir\", \"Fugir seguido de um número permite fugir automaticamente. Exemplo, FUGIR 30 fará fugir quanto o personagem tiver menos de 30 pontos de vida.\"],\n\
   [\"envia\", \"fugir\", \"Se achar que vai morrer, pode tentar fugir do combate.\"],\n\
   [\"envia\", \"fim\", \"Sai do jogo retirando o seu personagem. Sair sem teclar FIM pode deixar seu personagem no jogo por alguns minutos.\"],\n\
 ];\n\n"
