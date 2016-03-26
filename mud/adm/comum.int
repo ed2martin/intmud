@@ -2,7 +2,7 @@ classe comando_adm
 # Funções necessárias para os comandos de administração
 #
 const posic = 8 # Posição mínima para usar o comando; não usado em classes adm_
-const objcmd = arg0.jogperm == "admin" ? este # Objeto que processa o comando
+const objcmd = arg1 == $perm_admin ? este # Objeto que processa o comando
 const iniclasse = !$[arg0] && criar(arg0)
 const admcod = txttroca(txttroca(arg0, "\"", "\\\""), "\n", "\\n")
 const admdec = txttroca(txtvis(arg0), "\\\"", "\"")

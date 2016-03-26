@@ -227,10 +227,15 @@ arg0 = objeto do personagem
 Retorna um texto que contém informações, para os comandos hab, magia e
 quando o jogador pede informações sobre uma aula.
 
-func escr( personagem, o que escreveu, item, nível )
+func escr( personagem, o que escreveu )
 É chamado quando o jogador digita o comando para usar a hab/magia.
+Tem o mesmo efeito que chamar escrhab( personagem, o que escreveu ).
+
+func escrhab( personagem, o que escreveu, item, nível )
+É chamado quando o jogador digita o comando para usar a hab/magia ou
+quando come ou bebe algo ou recita um pergaminho.
 Essa função basicamente obtém o alvo e chama a função exechab.
-O argumento é o item que disparou a hab/magia (uma comida, bebida
+O argumento item é o item que disparou a hab/magia (uma comida, bebida
 ou pergaminho), ou nulo se não usou nenhum.
 O argumento nível é o nível da hab/magia, quando o item não for nulo.
 

@@ -57,7 +57,7 @@ func escr # Executa reset
 
 classe adm_lres
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_lres ? este
+const objcmd = arg1.c_lres ? este
 const txtajuda = "\b\c3Lres\b\n\
 Sintaxe: LRES [nome]\n\
 Lista todas as salas que começam com o nome especificado e possuem algum\n\
@@ -69,7 +69,7 @@ func escr # Listar salas com reset
   txtmais.limpar
   prog p
   txt100 lin
-  refvar naarea = int($perm_[arg0.jogperm].c_lres) < 2
+  refvar naarea = int(arg2.c_lres) < 2
   refvar prefixo = "s_" + arg0.jogarea
   se naarea && arg1 == txt(arg0.jogarea, 0, inttotal(arg1))
     p.iniclasse(prefixo)
@@ -91,7 +91,7 @@ func escr # Listar salas com reset
 
 classe adm_ares
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_ares ? este
+const objcmd = arg1.c_ares ? este
 const txtajuda = "\b\c3Ares\b\n\
 Sintaxe: ARES [nome da sala]\n\
 Reset de área. Edita os comandos executados quando ocorre o reset da área.\n\
@@ -102,7 +102,7 @@ Nota: Esse comando criada a constante a_reset e a função a_reset1 na sala."
 
 func escr
   refvar var = arg0.sock.var
-  refvar adm = $perm_[arg0.jogperm].c_ares >= 2
+  refvar adm = arg2.c_ares >= 2
   se !arg1
     se txt(arg0.dono, 0, 2) != "s_"
       ret arg0.msg("Você não está em uma sala")
@@ -122,7 +122,7 @@ func escr
 
 classe adm_sres
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_sres ? este
+const objcmd = arg1.c_sres ? este
 const txtajuda = "\b\c3Sres\b\n\
 Sintaxe: ARES [nome da sala]\n\
 Reset de sala. Edita os comandos executados quando algum jogador entra\n\
@@ -131,7 +131,7 @@ Nota: Esse comando criada a constante s_reset e a função s_reset1 na sala."
 
 func escr
   refvar var = arg0.sock.var
-  refvar adm = $perm_[arg0.jogperm].c_ares >= 2
+  refvar adm = arg2.c_ares >= 2
   se !arg1
     se txt(arg0.dono, 0, 2) != "s_"
       ret arg0.msg("Você não está em uma sala")

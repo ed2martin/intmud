@@ -1,0 +1,192 @@
+classe comando_identificar
+herda comando_hab, opc_atribcomum
+const posic = 8
+const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
+const cmdmenu = "identif" # Editável via "menu_hab_identif" e "menu_magia_identif"
+const tipoalvo = 6 # Não agressivo
+const c_espera = 15 # Tempo de esperar após usar esse comando
+textovar var
+const p_atrib_atk1 = "normais\nespeciais\n" + config:atknomes
+const p_atrib_def1 = "normal\nespecial\n" + config:atknomes
+const p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
+#
+# Ordem que deve organizar as constantes:
+const admordem = "nomevar\n\
+c_espera\n\
+c_vida1 c_vida2\n\
+c_mana1 c_mana2\n\
+c_move1 c_move2\n\
+aulaini aulafim\n\
+depende\n\
+precisao\n\
+tipoarma\n\
+tipoperso\n\
+valor\n\
+msgextra msgini1 msgini2\n\
+msgperso1 msgperso2 msgperso3 msgobj1 msgobj2\n\
+msgerrou1 msgerrou2 msgnulo1 msgnulo2"
+#
+const escr = escrhab(arg0, arg1)
+
+func escrhab
+# arg0 = personagem
+# arg1 = o que o personagem digitou; usado para obter o item ou personagem alvo
+# arg2 = item usado, ou nulo se não usou nenhum item
+  ret !arg1, arg0.msg("Identificar o quê?")
+  ret !checahab1(arg0.persobat, arg2), nulo
+  nomeobj n
+  listaobj l
+  n.ini(arg1, 1)
+  l.addfim(arg0.dono.dentro1, arg0.dono.dentro2, arg0.dentro1)
+  epara nulo, l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ref r
+    r = l.objini
+# Eventos
+    l.limpar
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_ident(arg0, r, arg0), nulo
+    efim
+    epara l.addfim(r.evento), l, l.ini.remove
+      ret l.objini.cmd_ident(arg0, r, r), nulo
+    efim
+# Checa se pode identificar
+    se !arg2.item
+      custohab1(arg0.persobat)
+      $mens.p(arg0) + $mens.mvis2(msgini1, msgini2)
+    fimse
+    arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+    se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+      ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
+    senao rand(100) >= precisao || arg0.atkenv # Checa a precisão e se está batalhando
+      ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
+    fimse
+    se r.perso
+      $mens.p(arg0, r)
+      $mens.mvis3(msgperso1, msgperso2, msgperso3)
+    senao
+      $mens.p(arg0, nulo, r)
+      $mens.mvis2(msgobj1, msgobj2)
+    fimse
+# Identifica
+    textotxt t
+    txtident(arg0, r, t)
+# Envia mensagem
+    arg0.msg2(t.remove(1000))
+    arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+    ret
+  efim
+  arg0.msg("Você não vê isso.")
+
+func txtident # Adiciona informações de item ou personagem em um textotxt
+# arg0 = personagem que está solicitando as informações
+# arg1 = item ou personagem sendo identificado
+# arg2 = textotxt aonde colocar as informações
+  txt100 lin
+# Identificar personagem
+  se arg1.perso
+    lin = txtcopiamai(arg1.persobat.descnome, "A")
+    se arg1 != arg1.persobat
+      lin += " de " + arg1.descnome, arg1 = arg1.persobat
+    fimse
+    lin += ", nível " + arg1.pnivel
+    arg1.prenascer && (lin += ", R" + arg1.prenascer)
+    arg1.tipo1 && (lin += ", " + txtcopiamai(arg1.tipo1, "A"))
+    arg1.tipo2 && (lin += ", " + txtcopiamai(arg1.tipo2, "A"))
+    arg1.tipo3 && (lin += ", " + txtcopiamai(arg1.tipo3, "A"))
+    arg2.addfim(lin)
+    refvar m = txt(arg1.descident(arg0))
+    m && arg2.addfim(m)
+    ret
+  fimse
+# Nível do item
+  se arg1.pnivel || arg1.prenascer
+    lin = "É um objeto do nível " + arg1.pnivel
+    arg1.prenascer && (lin += ", R" + arg1.prenascer)
+    arg2.addfim(lin + ".")
+  fimse
+# Peso e valor
+  refvar peso = arg1.pesoobj + arg1.pesoden
+  lin = peso < 10000 ? txt(peso) + "g" : txt(peso / 1000) + "Kg"
+  se !arg1.valor
+  senao arg1.valor == 1
+    lin += " e vale uma moeda"
+  senao arg1.valor == 2
+    lin += " e vale duas moedas"
+  senao
+    lin += " e vale " + arg1.valor + " moedas"
+  fimse
+  arg2.addfim("Isso pesa " + lin + ".")
+# Se é arma
+  se arg1.armatipo
+    lin = "É uma arma do tipo \"" + txtsublin(config:arma_txt, arg1.armatipo, 1)
+    lin += "\" de ataque " + arg1.armamin
+    arg1.armamin != arg1.armamax && (lin += " a " + arg1.armamax)
+    lin += " e precisão " + arg1.armaprecisao + "."
+    arg2.addfim(lin)
+  fimse
+# Aonde pode ser vestido
+  se 1
+    uint8 x
+    int32 valor
+    lin = "", valor = arg1.vestir1
+    arg1.armatipo && (lin += ", empunhando")
+    enquanto x < 30 && valor
+      valor & 1 && (lin += ", " + txtsublin(config:equip_txt, x, 1))
+      x += 1, valor = valor >> 1
+    efim
+    lin && arg2.addfim("Pode ser usado em: " + txt(lin, 2) + ".")
+  fimse
+# Quem não pode vestir
+  se arg1.vestirnao
+    arg2.addfim("Não pode ser usado por: " + txttroca(arg1.vestirnao, "\n", ",") + ".")
+  fimse
+# Diversos
+  arg1.i_chave && arg2.addfim("É um tipo de chave.")
+  arg1.i_captura && arg2.addfim("Pode ser usado para capturar animais.")
+# Obtém os efeitos (Extrai os atributos de uma função)
+  atrib_ler(arg1, arg1.perso ? "recalc1_auto" : "recalc2_auto")
+# Efeitos numéricos
+  int8 x
+  epara nulo, x < p_atrib_bit, x += 1
+    continuar !vatrib.[x]
+    lin = txtmin(txtsublin(p_atrib_txtnum, x, 1))
+    arg2.addfim("Afeta " + lin + " em " + vatrib.[x] + ".")
+  efim
+# Efeitos sim/não
+  lin = ""
+  epara nulo, x < p_atrib_atk, x += 1
+    continuar !vatrib.[x]
+    lin += ", " + txtmin(txtsublin(p_atrib_txtbit, x - p_atrib_bit, 1))
+  efim
+  lin && arg2.addfim("Propriedades:" + txt(lin, 1) + ".")
+# Efeitos de ataque
+  refvar total = intsublin(p_atrib_atk1) * 2 + p_atrib_atk
+  epara x = p_atrib_atk, x < total, x += 2
+    continuar vatrib.[x] == 100
+    lin = txtsublin(p_atrib_atk1, x - p_atrib_atk >> 1, 1)
+    se vatrib.[x] == 0
+      arg2.addfim("Anula ataques " + lin + ".")
+    senao vatrib.[x] < 100
+      arg2.addfim("Reduz ataques " + lin + " em " + int(100 - vatrib.[x]) + "%.")
+    senao
+      arg2.addfim("Aumenta ataques " + lin + " em " + int(vatrib.[x] - 100) + "%.")
+    fimse
+  efim
+# Efeitos de defesa
+  epara x = p_atrib_atk + 1, x < total, x += 2
+    continuar vatrib.[x] == 100
+    se vatrib.[x] == 0
+      lin = txtsublin(p_atrib_def2, x - p_atrib_atk >> 1, 1)
+      arg2.addfim("Torna imune a " + lin + ".")
+    senao vatrib.[x] < 100
+      lin = txtsublin(p_atrib_def1, x - p_atrib_atk >> 1, 1)
+      arg2.addfim("Melhora defesa " + lin + " em " + int(10000 / vatrib.[x] - 100) + "%.")
+    senao
+      lin = txtsublin(p_atrib_def1, x - p_atrib_atk >> 1, 1)
+      arg2.addfim("Piora defesa " + lin + " em " + int(100 - 10000 / vatrib.[x]) + "%.")
+    fimse
+  efim
+# Identificação
+  refvar m = txt(arg1.descident(arg0))
+  m && arg2.addfim(m)

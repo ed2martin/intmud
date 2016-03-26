@@ -302,6 +302,11 @@ const info6 = "Para qual sala vai ao teclar Tele sem argumentos"
 const tipo6 = "opc_sala"
 const clas6 = var.classe1
 const vari6 = "c_salatele"
+#
+const nome7 = "Atalhos admin"
+const info7 = "Atalhos para comandos de administração"
+const tipo7 = "opc_perm_atalhos--"
+const clas7 = var.classe1
 
 
 classe menu_perm
@@ -373,9 +378,14 @@ const tipo10 = "menu_perm_adm--"
 const nome11 = "Comandos edição"
 const tipo11 = "menu_perm_editor--"
 #
-const nome12 = "Outros comandos"
-const tipo12 = "opc_ajuda--"
-const extr12 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
+const nome12 = "Atalhos admin"
+const info12 = "Atalhos para comandos de administração"
+const tipo12 = "opc_perm_atalhos--"
+const clas12 = var.classe1
+#
+const nome13 = "Outros comandos"
+const tipo13 = "opc_ajuda--"
+const extr13 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
 LSAV, ASAV, ESAV, MUDANOME: interferem com personagens de administradores\n\
 BAN2: bloqueia a entrada de administradores\n\
 ECONFIG: muda configurações do MUD, inclusive senha de administração\n\
@@ -530,9 +540,8 @@ const clas5 = var.classe1
 const vari5 = "c_ban"
 #
 const nome6 = "Tele,Lugar"
-const info6 = "Libera também os comandos TeleEntra e TeleSai\n\
-A opção \"1 Tele na área de edição\" só permite teletransportar entre salas\n\
-da área de edição ou uma sala da área de edição e a \"Sala Tele\""
+const info6 = "A opção \"1 Tele na área de edição\" só permite teletransportar entre\n\
+salas da área de edição ou uma sala da área de edição e a \"Sala Tele\""
 const tipo6 = "opc_opcao"
 const clas6 = var.classe1
 const vari6 = "c_tele"
@@ -678,6 +687,126 @@ const tipo13 = "opc_opcao"
 const clas13 = var.classe1
 const vari13 = "c_sres"
 const extr13 = "Não\nÁrea onde tem permissão\nTudo"
+
+
+classe opc_perm_atalhos
+herda comando_adm
+
+func menu
+# arg0=nome da classe, arg1=nome da variável
+  textovar v
+  prog p
+  epara p.inifunctudo(arg0, "cmd_"), p.lin, p.depois
+    v.mudar(txt(p.texto, 4) + ",", "1")
+  efim
+  epara p.inifunctudo(arg0, "ajuda_"), p.lin, p.depois
+    v.mudar(txt(p.texto, 6) + ",", "1")
+  efim
+  epara p.inifunctudo(arg0, "div_"), p.lin, p.depois
+    v.mudar(txt(p.texto, 4) + ",", "1")
+  efim
+  ret v.total == 0, "Nenhum atalho"
+  ret v.total == 1, "1 atalho"
+  ret txt(v.total("")) + " atalhos"
+
+func passo # Menu de atalhos
+  arg0.passo = este
+  se txt(arg1, 0, 1) == "m" # Executa comando do MUD
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
+  senao arg1 == "" || arg1 == "\b"
+    refvar nome = txt(arg0.var.classe1, 5)
+    arg0.msg("Atalhos de " + nome + ", tecle O para saber as opções")
+  senao arg1 == "z"
+    arg0.var.opcmenuperm = ""
+    ret $menu_perm.passo(arg0, "\b")
+  senao arg1 == "o"
+    refvar txtmais = arg0.txtmais
+    txtmais.limpar
+    textovar v
+    prog p
+    epara p.inifunctudo(arg0.var.classe1, "cmd_"), p.lin, p.depois
+      v.mudar(txt(p.texto, 4) + ",", "1")
+    efim
+    epara p.inifunctudo(arg0.var.classe1, "ajuda_"), p.lin, p.depois
+      v.mudar(txt(p.texto, 6) + ",", "1")
+    efim
+    epara p.inifunctudo(arg0.var.classe1, "div_"), p.lin, p.depois
+      v.mudar(txt(p.texto, 4) + ",", "1")
+    efim
+    enquanto v.ini
+      txtmais.addfim(v.ini)
+      v.valorini = ""
+    efim
+    se txtmais.linhas
+      textopos pos
+      pos = txtmais.fim, pos.antes
+      pos.mudar("", inttotal(pos.texto) - 1, 1)
+      txtmais.juntar
+      txtmais.dividelin(50, 70)
+    senao
+      txtmais.addfim("Não há nenhum atalho")
+    fimse
+    txtmais.addini("Atalhos de " + txt(arg0.var.classe1, 5) + ":")
+    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    txtmais.addfim("Ou digite o nome de um atalho para editar ou apagar")
+    arg0.txtmostra
+  senao
+    refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
+    se nome == ""
+      arg0.msg("Atalho não pode ser vazio, digite outro, Z desiste")
+    senao nome != txtsepara(nome, "EO+DEOL,DEOL+EO")
+      arg0.msg("Atalho só pode ter letras e números, digite outro, Z desiste")
+    senao
+      arg0.var.opcmenuperm = nome
+      $menu_perm_atalhos.passo(arg0, "\b")
+    fimse
+  fimse
+  ret 1
+
+
+classe menu_perm_atalhos
+herda comando_menu
+const titulo = "Atalho " + var.opcmenuperm
+const menufim = "opc_perm_atalhos"
+const colunas = 25
+#
+const nome1 = "Executa comando"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "cmd_" + var.opcmenuperm
+#
+const nome2 = "Ajuda diversos"
+const info2 = "Explicação curta do comando; aparece ao teclar Ajuda Diversos"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "div_" + var.opcmenuperm
+#
+const nome3 = "Ajuda " + var.opcmenuperm
+const info3 = "Explicação completa do comando"
+const tipo3 = "opc_texto"
+const clas3 = var.classe1
+const vari3 = "ajuda_" + var.opcmenuperm
+#
+const nome4 = "Executa comando"
+const tipo4 = "opc_ajuda--"
+const extr4 = "\b\c3Texto da opção Executa comando:\b\n\
+Os seguintes sequências de caracteres têm um significado especial:\n\
+ \c2$1\b  Primeira palavra digitada após o nome do atalho\n\
+ \c2$2\b  Segunda palavra digitada após o nome do atalho\n\
+ \c2$3 a \c2$9\b  Terceira à nona palavra digitada após o nome do atalho\n\
+ \c2$0\b  Todas as palavras\n\
+ \c2$S\b  Da segunda palavra em diante\n\
+ \c2$T\b  Da terceira palavra em diante\n\
+ \c2$$\b  O Caracter $\n\
+Quando forem os comandos \c2CMD\b, \c2CMDP\b ou \c2CMDJ\b, o texto dessas sequências\n\
+é transformado em texto da linguagem do IntMUD: aspas no início e no fim.\n\
+Exemplo, se houver um atalho chamado nivel com o seguinte comando:\n\
+ cmd $1 pnivel=$2, recalc=1\n\
+E o usuário digitar:\n\
+ nivel xis 10\n\
+Será executado:\n\
+ cmd \"xis\" pnivel=\"10\", recalc=1\n\
+Notar que $2 foi substituído pelo número 10 e foram acrescentadas aspas."
 
 
 classe comum_perm

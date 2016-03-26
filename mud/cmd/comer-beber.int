@@ -12,16 +12,16 @@ func efeito
   arg0.p_diges = intmin($miscfome.cheio, arg0.p_diges + arg2.f_diges * arg3)
   debug d
 # Magias
-  $magia_[arg2.f_magia1].escr(arg0, arg1, arg2, arg2.f_nivel1)
+  $magia_[arg2.f_magia1].escrhab(arg0, arg1, arg2, arg2.f_nivel1)
   d.ini
-  $magia_[arg2.f_magia2].escr(arg0, arg1, arg2, arg2.f_nivel2)
+  $magia_[arg2.f_magia2].escrhab(arg0, arg1, arg2, arg2.f_nivel2)
   d.ini
-  $magia_[arg2.f_magia3].escr(arg0, arg1, arg2, arg2.f_nivel3)
+  $magia_[arg2.f_magia3].escrhab(arg0, arg1, arg2, arg2.f_nivel3)
 
 func comer # Personagem arg0 come item arg1
 # Retorna: 1=conseguiu comer, 0=não conseguiu comer
+  listaobj l
 # Eventos
-  l.limpar
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_comer(arg0, arg1, arg0), 0
   efim
@@ -44,8 +44,8 @@ func comer # Personagem arg0 come item arg1
   ret 1
 
 func beber # Personagem arg0 bebe item arg1
+  listaobj l
 # Eventos
-  l.limpar
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_beber(arg0, arg1, arg0), nulo
   efim

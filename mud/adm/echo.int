@@ -1,6 +1,6 @@
 classe adm_echo
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_echo ? este
+const objcmd = arg1.c_echo ? este
 const txtajuda = "\b\c3Echo\b\n\
 Sintaxe: ECHO <mensagem>\n\
 Envia uma mensagem para todos os jogadores."
@@ -21,7 +21,7 @@ func escr
 
 classe adm_secho
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_echo ? este
+const objcmd = arg1.c_echo ? este
 const txtajuda = "\b\c3Secho\b\n\
 Sintaxe: SECHO <mensagem>\n\
 Envia uma mensagem para todos da sala em que você está."
@@ -38,7 +38,7 @@ func escr
 
 classe adm_jecho
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_echo ? este
+const objcmd = arg1.c_echo ? este
 const txtajuda = "\b\c3Jecho\b\n\
 Sintaxe: JECHO <jogador> <mensagem>\n\
 Envia uma mensagem para um jogador."

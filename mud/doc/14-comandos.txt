@@ -27,10 +27,13 @@ geralmente o nome dessa classe começa com 'comando_'.
 
 Classes de comandos podem ter as seguintes funções e constantes:
 const objcmd = este # Objeto que processa o comando, ou nulo se não existe
+# arg0 = objeto do personagem
+# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
 
 func escr # Processa o comando
 # arg0 = objeto do personagem
 # arg1 = texto digitado após o nome do comando
+# arg2 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
 
 func txtajuda
 # arg0 = objeto do personagem

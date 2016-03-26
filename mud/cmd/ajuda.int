@@ -13,7 +13,8 @@ const ta3 = "  \c2COMBATE\b   Lutas com outros personagens\n\
   \c2GRUPO\b     Jogando em grupo\n\
   \c2LOJAS\b     Lojas e professores\n\
   \c2NOMES\b     Digitando nomes de objetos e personagens\n\
-  \c2JOG\b       Outros comandos para jogadores"
+  \c2JOG\b       Outros comandos para jogadores\n\
+  \c2DIVERSOS\b  Diversos comandos"
 const ta4 = "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func txtajuda
@@ -30,6 +31,8 @@ func escr
     ret t1, arg0.msg2(t1)
     refvar t2 = $cmdfim_[txt1(arg1)].txtajuda(arg0)
     ret t2, arg0.msg2(t2)
+    refvar t3 = arg2.ajuda_[txt1(arg1)]
+    ret t3, arg0.msg2("\b\c3" + txtmaimin(arg1) + "\b\n" + t3)
   fimse
   prog p
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
@@ -250,3 +253,24 @@ As seguintes sequências de caracteres mudam outros atributos:\n\
  %ck  Liga texto piscante\n\
  %cl  Desliga texto piscante\n\n\
 Veja também: PROMPT"
+
+
+classe cmd_diversos
+const iniclasse = !$[arg0] && criar(arg0)
+
+func txtajuda
+  refvar perm = $perm_[arg0.jogperm]
+  textotxt t
+  t.addfim("\b\c3Diversos comandos\b")
+  prog p
+  epara p.inifunctudo(perm, "div_"), p.lin, p.depois
+    continuar !perm.[p.texto]
+    refvar lin = "  \c2" + txtmai(txt(p.texto, 4)) + "\b "
+    t.addfim(lin + txtesp(15 - inttotal(lin)) + txtmudamai(perm.[p.texto], "A"))
+  efim
+  se t.linhas <= 1
+    t.addfim("Nenhum comando definido aqui")
+  senao
+    t.addfim("Nota: esses comandos não podem ser abreviados")
+  fimse
+  ret t.remove(1000)

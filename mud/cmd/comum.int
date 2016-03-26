@@ -1,13 +1,18 @@
 classe comando_comum
 # Comandos para os jogadores
 #
-const posic = 8 # Posição mínima para usar o comando
-const objcmd = este # Objeto que processa o comando, ou nulo se não existe
 const iniclasse = !$[arg0] && criar(arg0)
+const posic = 8 # Posição mínima para usar o comando
+#
+const objcmd = este # Objeto que processa o comando, ou nulo se não existe
+# Em objcmd:
+# arg0 = objeto do personagem
+# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
 
 func escr # Processa o comando
 # arg0 = objeto do personagem
 # arg1 = texto digitado após o nome do comando
+# arg2 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
 
 
 classe cmd_lancar

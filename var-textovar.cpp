@@ -795,11 +795,13 @@ TBlocoVar::TBlocoVar(TTextoVar * var, const char * nome, const char * texto)
     Texto = tam1;
     TextoVar = var;
     RBinsert();
+    var->Total++;
 }
 
 //----------------------------------------------------------------------------
 TBlocoVar::~TBlocoVar()
 {
+    TextoVar->Total--;
     delete[] NomeVar;
     RBremove();
 }

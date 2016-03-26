@@ -20,13 +20,14 @@ Sintaxe: CMDJ <personagem jogador> <comando>\n\
 Executa comando na linguagem do IntMUD e mostra o resultado."
 
 func escr
-  se !txt2(arg1)
+  refvar nome = txttroca(txt1(arg1), "\"", "")
+  se !nome || !txt2(arg1)
     ret arg0.msg("Digite CMDJ seguido do nome do personagem jogador e o comando")
   fimse
   indiceitem item
-  item.ini("pn " + txts(txtnome(txt1(arg1))))
+  item.ini("pn " + txts(txtnome(nome)))
   se !item.obj
-    ret arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
+    ret arg0.msg("Jogador inexistente ou ausente: " + nome)
   senao txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)
     cmdlog(arg0, "cmdj", arg1)
   fimse
@@ -41,13 +42,14 @@ Sintaxe: CMDP <personagem da sala> <comando>\n\
 Executa comando na linguagem do IntMUD e mostra o resultado."
 
 func escr
+  refvar nome = txttroca(txt1(arg1), "\"", "")
+  se !nome || !txt2(arg1)
+    ret arg0.msg("Digite CMDP seguido do nome do personagem e o comando")
+  fimse
   listaobj l
   ref r
   nomeobj n # Para reconhecer os itens
-  se !txt2(arg1)
-    ret arg0.msg("Digite CMDP seguido do nome do personagem e o comando")
-  fimse
-  n.ini(txt1(arg1), 1000000)
+  n.ini(nome, 1000000)
   l.addfim(arg0.dono.dentro2)
   enquanto l
     r = l.objini, l.ini.remove
@@ -58,4 +60,4 @@ func escr
     debug d
     ret arg0.msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg1)))
   efim
-  arg0.msg("Não há nenhum personagem chamado " + txt1(arg1))
+  arg0.msg("Não há nenhum personagem chamado " + nome)

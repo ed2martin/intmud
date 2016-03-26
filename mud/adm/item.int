@@ -10,7 +10,7 @@ const txtajuda = "\b\c3Comandos de itens\b\n\
 
 classe adm_litem
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_litem ? este
+const objcmd = arg1.c_litem ? este
 const txtajuda = "\b\c3Litem\b\n\
 Sintaxe: LITEM [nome]\n\
 Lista os itens que começam com o nome especificado.\n\
@@ -25,7 +25,7 @@ func escr # Listar itens
   t.limpar
   d.exec = 50000
   p.iniclasse("i_" + txtremove(arg1, "EMDCT7"))
-  se int($perm_[arg0.jogperm].c_litem) >= 2
+  se int(arg2.c_litem) >= 2
     epara nulo, p.lin, p.depois
       lin = txt(p.texto, 2) + " " + txt(" SGC", [p.texto]:item, 1)
       t.addfim(lin + " " + inttotal($[p.texto]) + "  " + [p.texto]:nome)
@@ -51,19 +51,18 @@ func escr # Listar itens
 
 classe adm_iitem
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_iitem ? este
+const objcmd = arg1.c_iitem ? este
 const txtajuda = "\b\c3Iitem\b\n\
 Sintaxe: IITEM <nome>\n\
 Mostra aonde está cada item do tipo especificado."
 
 func escr # Listar personagens
   prog p
-  refvar perm = $perm_[arg0.jogperm].c_iperso
   se arg1 == ""
     arg0.msg("\bTecle o nome do item IITEM")
   senao !existe_i(arg0, arg1)
     arg0.msg("\bItem não existe: " + arg1)
-  senao perm <= 1 && arg0.jogarea + txtfim(arg1, 3) != arg1
+  senao arg2.c_iperso <= 1 && arg0.jogarea + txtfim(arg1, 3) != arg1
     arg0.msg("\bItem não existe: " + arg1)
   senao !$i_[arg1]
     arg0.msg("\bItem não está no jogo: " + arg1)
@@ -91,7 +90,7 @@ func escr # Listar personagens
 
 classe adm_citem
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_eitem ? este
+const objcmd = arg1.c_eitem ? este
 const txtajuda = "\b\c3Citem\b\n\
 Sintaxe: CITEM <nome>\n\
 Cria um item. Nome deve ser o nome de uma área ou do item.\n\
@@ -125,7 +124,7 @@ func escr # Criar item
     nome += txtfim(num, 3)
   fimse
 # Checa se pode criar sala
-  se $perm_[arg0.jogperm].c_eitem >= 2
+  se arg2.c_eitem >= 2
   senao nome != arg0.jogarea + txtfim(nome, 3)
     ret arg0.msg("Área não existe: " + txt(nome, 0, inttotal(nome) - 3))
   fimse
@@ -181,7 +180,7 @@ func passo # Escolher o tipo de item ao criar
 
 classe adm_aitem
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_eitem ? este
+const objcmd = arg1.c_eitem ? este
 const txtajuda = "\b\c3Aitem\b\n\
 Sintaxe: AITEM <nomes dos itens>\n\
 Apaga uma ou mais itens, com os nomes especificados."
@@ -197,7 +196,7 @@ func escr # Apagar item
     refvar nome = txtsub(nome, x, 1)
     se !p.existe("i_" + nome)
       ret arg0.msg("Item não existe: " + nome)
-    senao $perm_[arg0.jogperm].c_eitem >= 2
+    senao arg2.c_eitem >= 2
     senao nome != arg0.jogarea + txtfim(nome, 3)
       ret arg0.msg("Item não existe: " + nome)
     fimse
@@ -247,7 +246,7 @@ func infonome
 
 classe adm_eitem
 herda comando_adm
-const objcmd = $perm_[arg0.jogperm].c_eitem ? este
+const objcmd = arg1.c_eitem ? este
 const txtajuda = "\b\c3Eitem\b\n\
 Sintaxe: EITEM <nome>\n\
 Edita o item com o nome especificado."
@@ -262,7 +261,7 @@ func escr # Editar item
     ret arg0.msg("\bItem não existe: " + nome)
   senao !p.existe("menu_item" + (num = i_[nome]:item))
     ret arg0.msg("\bItem não pode ser editado: " + nome)
-  senao $perm_[arg0.jogperm].c_eitem >= 2
+  senao arg2.c_eitem >= 2
   senao nome != arg0.jogarea + txtfim(nome, 3)
     ret arg0.msg("\bItem não existe: " + nome)
   fimse

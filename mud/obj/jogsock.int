@@ -106,9 +106,9 @@ func reinicia # Volta ao início: pede o nome do personagem
 
 func recebe # Recebeu mensagem do jogador
   ret passo || !perso.var.t_[txt1(arg0)], recebe1(arg0)
-  $cmdalias.m_0 = txt2(arg0)
+  $cmdatalho.texto = txt2(arg0)
   textotxt t
-  t.addfim($cmdalias.mens(perso.var.t_[txt1(arg0)]))
+  t.addfim($cmdatalho.mens(perso.var.t_[txt1(arg0)]))
   debug d
   enquanto t.linhas
     d.ini
@@ -116,7 +116,7 @@ func recebe # Recebeu mensagem do jogador
   efim
 
 func recebe1 # Função recebe após uso de atalhos
-# Retorna verdadeiro se deve cancelar os comandos do alias
+# Retorna verdadeiro se deve cancelar os comandos do atalho
 # Checa quem está monitorando
   se lmonit
     casovar passo
@@ -141,10 +141,14 @@ func recebe1 # Função recebe após uso de atalhos
     txtmostra
     ret
   fimse
-# Passo atual / executa comando
+# Passo atual / obtém o comando
   txtmais.limpar
   se passo && $[passo].passo(este, arg0) # Função do passo
     comandos.limpar
+    ret
+  senao !perso # Checa se está controlando um personagem
+    cnome = "un", nome = ""
+    $ini_perso1.passo(este)
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
     ret !perso.jog, msg("Primeiro precisa retornar para seu personagem")
@@ -187,16 +191,32 @@ func recebe1 # Função recebe após uso de atalhos
     casofim
   fimse
 # Comando de administração
-  se perso
-    refvar r = $adm_[txt1(ultimocom)].objcmd(perso)
-    ret r, r.escr(perso, txt2(ultimocom)) + comandos.limpar
+  ref r
+  refvar perm = $perm_[jogperm] # Permissões do jogador
+  refvar atalho = perm.cmd_[txt1(ultimocom)] # Atalho definido nas permissões
+  se atalho && (r = $adm_[txt1(atalho)].objcmd(perso, $perm_admin)) != nulo
+    comandos.limpar
+    $cmdatalho.texto = txt2(ultimocom) # O que o jogador digitou
+    casovar txtmin(txt1(atalho))
+    casose "cmd"
+    casose "cmdp"
+    casose "cmdj"
+      r.escr(perso, $cmdatalho.cmd(txt2(atalho)), $perm_admin)
+      ret
+    casose
+      r.escr(perso, $cmdatalho.adm(txt2(atalho)), $perm_admin)
+      ret
+    casofim
+  senao (r = $adm_[txt1(ultimocom)].objcmd(perso, perm)) != nulo
+    comandos.limpar
+    r.escr(perso, txt2(ultimocom), perm)
+    ret
   fimse
 # Comando para o jogo
   se !perso.p_espera # Checa se pode processar o comando
     perso.teclou(ultimocom) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
   senao perso.atktempo # Checa se está batalhando
-# comandos && msg("Feito, aguarde")
     comandos.limpar
     comandos.addfim(ultimocom)
   senao comandos.bytes < 1024 # Não chegou ao limite de comandos
@@ -840,21 +860,56 @@ func ex2_exec
   efim
 
 
-classe cmdalias
-# Para processar o comando alias
+classe cmdatalho
+# Para processar o comando atalho
 const iniclasse = !$[arg0] && criar(arg0)
-txt512 m_0
+txt512 texto # O que o usuário digitou
+# Comandos comuns
+const mens = vartroca(txttroca(arg0, "$$", "$@"), "$", "m_")
+# Comandos de administração
+const adm = vartroca(txttroca(arg0, "$$", "$@"), "$", "a_")
+# Comandos cmd, cmdp e cmdj
+const cmd = vartroca(txttroca(arg0, "$$", "$@"), "$", "c_")
+#
+const m_0 = texto
 const m_1 = txt1(m_0)
-const m_2 = txtsub(m_0, 1, 1)
-const m_3 = txtsub(m_0, 2, 1)
-const m_4 = txtsub(m_0, 3, 1)
-const m_5 = txtsub(m_0, 4, 1)
-const m_6 = txtsub(m_0, 5, 1)
-const m_7 = txtsub(m_0, 6, 1)
-const m_8 = txtsub(m_0, 7, 1)
-const m_9 = txtsub(m_0, 8, 1)
-const m_S = txtsub(m_0, 1)
-const m_T = txtsub(m_0, 2)
+const m_2 = txtsub(texto, 1, 1)
+const m_3 = txtsub(texto, 2, 1)
+const m_4 = txtsub(texto, 3, 1)
+const m_5 = txtsub(texto, 4, 1)
+const m_6 = txtsub(texto, 5, 1)
+const m_7 = txtsub(texto, 6, 1)
+const m_8 = txtsub(texto, 7, 1)
+const m_9 = txtsub(texto, 8, 1)
+const m_S = txtsub(texto, 1)
+const m_T = txtsub(texto, 2)
 const m_Z = "\n"
 const m_@ = "$"
-const mens = vartroca(txttroca(arg0, "$$", "$@"), "$", "m_")
+#
+const a_0 = texto
+const a_1 = txt1(m_0)
+const a_2 = txtsub(texto, 1, 1)
+const a_3 = txtsub(texto, 2, 1)
+const a_4 = txtsub(texto, 3, 1)
+const a_5 = txtsub(texto, 4, 1)
+const a_6 = txtsub(texto, 5, 1)
+const a_7 = txtsub(texto, 6, 1)
+const a_8 = txtsub(texto, 7, 1)
+const m_9 = txtsub(texto, 8, 1)
+const a_S = txtsub(texto, 1)
+const a_T = txtsub(texto, 2)
+const a_@ = "$"
+#
+const c_0 = "\"" + txtvis(texto) + "\""
+const c_1 = "\"" + txtvis(txt1(texto)) + "\""
+const c_2 = "\"" + txtvis(txtsub(texto, 1, 1)) + "\""
+const c_3 = "\"" + txtvis(txtsub(texto, 2, 1)) + "\""
+const c_4 = "\"" + txtvis(txtsub(texto, 3, 1)) + "\""
+const c_5 = "\"" + txtvis(txtsub(texto, 4, 1)) + "\""
+const c_6 = "\"" + txtvis(txtsub(texto, 5, 1)) + "\""
+const c_7 = "\"" + txtvis(txtsub(texto, 6, 1)) + "\""
+const c_8 = "\"" + txtvis(txtsub(texto, 7, 1)) + "\""
+const c_9 = "\"" + txtvis(txtsub(texto, 8, 1)) + "\""
+const c_S = "\"" + txtvis(txtsub(texto, 1)) + "\""
+const c_T = "\"" + txtvis(txtsub(texto, 2)) + "\""
+const c_@ = "$"
