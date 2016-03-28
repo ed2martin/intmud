@@ -62,14 +62,14 @@ func escr # Ir para uma sala específica
   senao
     ret s == p.dono, arg0.msg(p.nome + " já está em " + txt(s, 2) + ".")
     $mens.p(p, arg0)
-    p.msginv("$A teletransporta você.")
+    $mens.msginv("$A teletransporta você.", p)
     $mens.mvis2("", "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
     $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
     se p.jogperm == "admin"
       $misclog.cmdlog("tele " + arg0.nome + ": " + p.nome + " para " + txt(s, 2))
     fimse
-    arg0.msg($mens.proc("$P transportad$s.", arg0))
+    $mens.msg("$P transportad$s.", arg0)
   fimse
 
 

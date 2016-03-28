@@ -74,11 +74,11 @@ func mover # Personagem anda em uma direção
     casovar $c_[s1.fechadura_[dir](arg0)].infotaxa
     casose "2" # Casa bloqueada por falta de pagamento
       $mens.p(arg0)
-      arg0.msginv(config:casamsgbloq)
+      $mens.msginv(config:casamsgbloq, arg0)
       ret 0
     casose "1" # Atrasou pagamento da taxa
       $mens.p(arg0)
-      arg0.msginv(config:casamsgaviso)
+      $mens.msginv(config:casamsgaviso, arg0)
     casofim
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
@@ -164,18 +164,18 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
 # abriu1 = mensagem para o personagem
   listaobj l
   $mens.p(arg0)
-  abriu1 && arg0.msgvis(abriu1)
+  abriu1 && $mens.msgvis(abriu1, arg0)
   se arg0.bitver & 256 # Anda em silêncio
     $mens.mens = " em silêncio"
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
-      l.objini.bitver & 0x1000 && l.objini.msgvis(arg2)
+      l.objini.bitver & 0x1000 && $mens.msgvis(arg2, l.objini)
     efim
     arg0.mudadono(arg1)
     $mens.p(arg0), $mens.mens = " em silêncio"
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
-      l.objini.bitver & 0x1000 && l.objini.msgvis(arg3)
+      l.objini.bitver & 0x1000 && $mens.msgvis(arg3, l.objini)
     efim
   senao
     $mens.mens = "", $mens.mvis2("", arg2)

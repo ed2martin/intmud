@@ -1,0 +1,117 @@
+classe cmdfim_schat
+herda comando_comum
+const posic = 0
+const objcmd = config:chattipo ? este
+const txtajuda = config:chattipo ? txtajuda1
+const txtajuda1 = config:chattipo == 1 ? aj1 + aj2 : aj1
+const aj1 = "\b\c3Schat\b\n\
+Sintaxe: SCHAT <comando social>\n\
+Executa um comando social no canal CHAT. Para saber quais comandos sociais\n\
+existem, basta teclar Social. Para habilitar ou desabilitar o canal CHAT,\n\
+use o comando CONFIG."
+const aj2 = "\n\
+Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
+não irão para as outras salas."
+#
+ref obj0 # Personagem
+ref obj1 # Alvo
+ref obj2 # Item
+const m_@ = "$"
+txt512 m_m
+
+func escr
+  prog p
+  p.iniclasse("soc_" + txt1(arg1))
+  refvar s = $[p.texto]
+# Checa se pode usar o comando
+  se arg2.c_chat
+    ret $mensjog.msg(arg2.c_chat, arg0)
+  senao arg2.c_social
+    ret $mensjog.msg(arg2.c_social, arg0)
+  senao arg0.pnivel < config:chatnivel
+    refvar nivel = txt(config:chatnivel) + "."
+    ret arg0.msg("Para usar o comando SCHAT você precisa estar no nível " + nivel)
+  senao !arg0.jogconfig.4
+    ret arg0.msg("Canal CHAT está desabilitado; para habilitar tecle CONFIG +CHAT")
+  senao !arg1
+    ret arg0.msg("Digite o comando social após SCHAT.")
+  senao !s
+    ret arg0.msg("Comando social inexistente: " + txt1(arg1))
+  fimse
+# Obtém a lista de jogadores em ljog
+  listaobj ljog
+  se config:chattipo == 2 # Escrever para todos
+    indiceitem item
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      item.obj.jogconfig.4 && ljog.addfim(item.obj.perso)
+    efim
+  senao # Escrever para quem estiver na mesma sala
+    listaobj l
+    epara arg0.sock.salaobj(l), l, l.ini.remove
+      l.objini.jogconfig.4 && ljog.addfim(l.objini.perso)
+    efim
+  fimse
+# Acerta variáveis
+  $mens.mens = txt2(arg1)
+  listaobj l
+# Schat sem argumentos
+  se !txt2(arg1)
+    ret !s.sem1, arg0.msg("Digite alguma coisa após Schat " + txt(s, 4))
+    perso(arg0)
+    mtodos(ljog, s.sem1, s.sem2, s.sem2)
+    ret
+  fimse
+# Schat com argumentos
+  nomeobj n
+  ref r
+  n.ini(txt2(arg1), 1)
+  s.perso1 && l.addfim(ljog)
+  s.item1 && l.addfim(arg0.dono.dentro1, arg0.dentro1)
+  epara nulo, l, l.ini.remove
+    r = l.objini
+    continuar r.jogconfig.17 || !n.nome(r.ident)
+    se r.var.u_[arg0.nome]
+      ret arg0.msg(r.nome + " ignora suas palavras.")
+    senao arg0.var.u_[r.nome]
+      ret arg0.msg("Você está ignorando " + r.nome + ".")
+    senao r == arg0 && s.auto1
+      ret r.posic < s.alvopos, arg0.msg("Você não está em condições.")
+      perso(arg0)
+      mtodos(ljog, s.auto1, s.auto2, s.auto2)
+    senao r.perso
+      $mens.p(arg0, r)
+      perso(arg0, r)
+      ret r.posic < s.alvopos, $mens.msg("$A não está em condições.", arg0)
+      mtodos(ljog, s.perso1, s.perso2, s.perso3)
+    senao
+      perso(arg0, nulo, r)
+      mtodos(ljog, s.item1, s.item2, s.item2)
+    fimse
+    ret
+  efim
+  $mens.p(arg0)
+  $mens.msg(s.invalido, arg0)
+
+func perso # Define os personagens
+  obj0 = arg0, obj1 = arg1, obj2 = arg2
+
+func mtodos # Envia mensagem
+# arg0 = listaobj com os personagens que receberão as mensagens
+# arg1 = mensagem para o personagem principal
+# arg2 = mensagem para o personagem alvo
+# arg3 = mensagem para os demais
+  refvar mens = config:schattipo ? $mens : $mensvis
+  mens.p(obj0, obj1, obj2)
+  arg1 && !obj0.var.u_[obj0.nome] && mens.msg(conv(arg1), obj0)
+  arg2 && !obj1.var.u_[obj0.nome] && mens.msg(conv(arg2), obj1)
+  ret !arg2, nulo
+  refvar texto = conv(arg3)
+  listaobj l0
+  l0.addfim(arg0)
+  epara l0.remove(obj0, obj1), l0, l0.ini.remove
+    !l.objini.var.u_[obj0.nome] && mens.msg(texto, l0.objini)
+  efim
+
+func conv # Junta mensagem do social com a mensagem do schat
+  m_m = arg0
+  ret vartroca(txttroca(config:schatmsg, "$$", "$@"), "$", "m_")

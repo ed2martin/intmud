@@ -15,8 +15,8 @@ func escr
   $misclog.rezou("rezou " + arg0.nome + ": " + arg1)
   $mens.p(arg0, item.obj)
   $mens.mens = txt2(arg1)
-  item.obj.msg($mens.proc(config:rezou2msg, item.obj.perso))
+  $mens.msg(config:rezou2msg, item.obj.perso)
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[nome]
-    item.obj.msg($mens.proc(config:rezou1msg, item.obj.perso))
+    $mens.msg(config:rezou1msg, item.obj.perso)
   efim

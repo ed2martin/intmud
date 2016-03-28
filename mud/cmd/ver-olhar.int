@@ -140,7 +140,7 @@ func escr
     se !completo
       ret arg0.msg("\b" + txtcopiamai(r.descnome, "A") + t2 + ".\b " + t.remove(1000))
     senao
-      refvar m1 = r.var.z_desc
+      refvar m1 = (!arg0.psexo && r.var.z_mdesc ? r.var.z_mdesc : r.var.z_desc)
       refvar m2 = r.descver(arg0)
       se m1 || m2 # Com descrição extra
         t2 && t.addini(txtcopiamai(r.descnome, "A") + t2 + ".")

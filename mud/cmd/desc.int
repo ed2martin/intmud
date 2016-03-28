@@ -5,6 +5,8 @@ Sintaxe: PDESC\n\
 Muda a descrição do seu personagem. Essa descrição aparece quando alguém\n\
 olha para você com o comando OLHAR."
 const posic = 5
+const vardesc = "z_desc"
+const msgini = "Editando descrição do personagem, O opções, X salvar, Z sair"
 
 func escr
   se arg0.pnivel < config:pdescnivel
@@ -18,14 +20,14 @@ func passo # Alterando descrição do personagem
   casose "\b"
     textopos p1
     arg0.teditor.limpar
-    arg0.teditor.addfim(arg0.perso.var.z_desc)
+    arg0.teditor.addfim(arg0.perso.var.[vardesc])
     arg0.teditor.bytes == 1 && arg0.teditor.limpar
     arg0.leditor = arg0.teditor.ini
     arg0.leditor1 = arg0.teditor.ini
     arg0.leditor2 = arg0.teditor.fim
     arg0.leditor2.antes
     arg0.passo = este
-    arg0.msg("Editando descrição do personagem, O opções, X salvar, Z sair")
+    arg0.msg(msgini)
     ret 1
   casose "z" # Sair do editor
     arg0.msg("Fechando editor")
@@ -35,15 +37,28 @@ func passo # Alterando descrição do personagem
     se arg0.teditor.linhas > 8
       arg0.msg("Máximo permitido 8 linhas.")
     senao !arg0.teditor.linhas
-      arg0.perso.var.z_desc = ""
+      arg0.perso.var.[vardesc] = ""
       arg0.msg("Descrição do personagem apagada.")
     senao
-      arg0.perso.var.z_desc = arg0.teditor.ini.textolin(100)
+      arg0.perso.var.[vardesc] = arg0.teditor.ini.textolin(100)
       arg0.msg("Descrição do personagem alterada.")
     fimse
     ret 1
   casofim
   ret passoeditor(arg0, arg1, config:pdescmax, "descrição do personagem")
+
+
+classe cmd_mdesc
+herda cmd_pdesc
+const txtajuda = "\b\c3MDesc\b\n\
+Sintaxe: MDESC\n\
+Muda a descrição do seu personagem para mulheres. Essa descrição aparece\n\
+quando alguém do sexo feminino olha para você com o comando OLHAR.\n\
+Se estiver ausente, será mostrada a descrição do comando PDesc para\n\
+ambos os sexos."
+const posic = 5
+const vardesc = "z_mdesc"
+const msgini = "Editando descrição para mulheres, O opções, X salvar, Z sair"
 
 
 classe cmd_sdesc

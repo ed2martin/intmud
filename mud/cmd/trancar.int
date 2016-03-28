@@ -241,11 +241,11 @@ func escrdir # Destrancar uma porta
     casovar $c_[arg0.dono.fechadura_[arg1](arg0)].infotaxa
     casose "2" # Casa bloqueada por falta de pagamento
       $mens.p(arg0)
-      arg0.msginv(config:casamsgbloq)
+      $mens.msginv(config:casamsgbloq, arg0)
       ret
     casose "1" # Atrasou pagamento da taxa
       $mens.p(arg0)
-      arg0.msginv(config:casamsgaviso)
+      $mens.msginv(config:casamsgaviso, arg0)
     casofim
   fimse
 # Gera eventos

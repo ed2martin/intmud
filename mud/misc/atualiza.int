@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 383, nulo
-  p.criar("config", "const versao = 383 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 401, nulo
+  p.criar("config", "const versao = 401 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -516,6 +516,10 @@ casa está atrasada.\"")
     se !p.existe("perm_jog")
       p.criar("perm_jog\nconfig/perm\nherda comum_perm")
     fimse
+  fimse
+# Canal Schat
+  se versao < 401
+    criafunc("config", "const schatmsg = \"(chat) $m\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

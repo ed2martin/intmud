@@ -64,7 +64,7 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
   refvar fecha = int(arg1.lojafim) - misc:hora
   se abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0
     $mens.p(arg1, arg0)
-    ret $mens.proc(arg1.lojafechada, arg0)
+    ret $mens.txt(arg1.lojafechada, arg0)
   fimse
   ret ""
 

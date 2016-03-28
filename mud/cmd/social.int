@@ -37,28 +37,28 @@ func escr_arg # Com algum argumento
   nome = txt2(txte(r))
   $mens.p(o1)
   se r.sem1 && r.sem2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + ", receberá:\n" + r.sem1, \
+    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + ", receberá:\n" + r.sem1, \
 o1))
-    t.addfim($mens.proc("E os demais:\n" + r.sem2, o2))
+    t.addfim($mens.txt("E os demais:\n" + r.sem2, o2))
   fimse
   $mens.p(o1, o1)
   se r.auto1 && r.auto2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", receberá:\
+    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", receberá:\
 \n" + r.auto1, o1))
-    t.addfim($mens.proc("E os demais:\n" + r.auto2, o2))
+    t.addfim($mens.txt("E os demais:\n" + r.auto2, o2))
   fimse
   $mens.p(o1, o2)
   se r.perso1 && r.perso2 && r.perso3
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", receberá:\
+    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", receberá:\
 \n" + r.perso1, o1))
-    t.addfim($mens.proc("E " + o2.descnome + ":\n" + r.perso2, o2))
-    t.addfim($mens.proc("E os demais:\n" + r.perso3, este))
+    t.addfim($mens.txt("E " + o2.descnome + ":\n" + r.perso2, o2))
+    t.addfim($mens.txt("E os demais:\n" + r.perso3, este))
   fimse
   $mens.p(o1, nulo, o3)
   se r.item1 && r.item2
-    t.addfim($mens.proc("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", receberá:\
+    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", receberá:\
 \n" + r.item1, o1))
-    t.addfim($mens.proc("E os demais:\n" + r.item2, este))
+    t.addfim($mens.txt("E os demais:\n" + r.item2, este))
   fimse
   se t.linhas
     t.addini("\b\c3" + txtcopiamai(nome, "A") + "\b")
@@ -119,8 +119,7 @@ const invalido = "Você não vê $m."
 func escr
   $mens.mens = arg1
   listaobj l
-  refvar perm_msg = $perm_[arg0.jogperm].c_social
-  ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  ret arg2.c_social, $mensjog.msg(arg2.c_social, arg0)
   se !arg1 # Sem argumentos
     ret !sem1, arg0.msg("Digite alguma coisa após " + txt(este, 4))
     $mens.p(arg0)
@@ -148,7 +147,7 @@ func escr
       mvis ? $mens.mtodos2(auto1, auto2) : $mens.mvis2(auto1, auto2)
     senao r.perso
       $mens.p(arg0, r)
-      ret r.posic < alvopos, $mens.mtodos2("$P não está em condições.", "")
+      ret r.posic < alvopos, $mens.msg("$A não está em condições.", arg0)
       mvis ? $mens.mtodos3(perso1, perso2, perso3) : $mens.mvis3(perso1, perso2, perso3)
     senao
       $mens.p(arg0, nulo, r)
@@ -165,4 +164,4 @@ func escr
     ret
   efim
   $mens.p(arg0)
-  $mens.mtodos2(invalido, "")
+  $mens.msg(invalido, arg0)

@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 383 # Para atualizar diretórios areas e config
+const versao = 401 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -317,6 +317,9 @@ const perigomsg = ""
 # Mensagem do canal Chat
 const chatmsg = "(chat) $R '$m'"
 #
+# Mensagem do comando SChat
+const schatmsg = "(chat) $m"
+#
 # Mensagem do comando GChat
 const gchatmsg = "(gchat) $R '$m'"
 #
@@ -384,6 +387,11 @@ const chattipo = 2 # Canal chat: 2 Para todo o MUD
 #
 # Nível necessário para escrever no canal Chat
 const chatnivel = 0
+#
+# Comando SChat
+# 0 = Personagens/itens sempre visíveis
+# 1 = Pode aparecer "alguém" e "alguma coisa"
+const schattipo = 0
 #
 # Canal novatos: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
 const novatostipo = 2 # Comando Novatos: 2 Para todo o MUD

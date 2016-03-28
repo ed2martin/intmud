@@ -83,8 +83,38 @@ const iniclasse = !$[arg0] && criar(arg0)
 func p # Define os personagens
   contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
 
+func txt # Prepara e retorna mensagem
+# arg0=mensagem, arg1=a quem se destina a mensagem
+  r = arg1
+  refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+  ret txtdec(vartroca(txtcod(t), "@d", "x_"))
+
+func msg # Envia mensagem para um personagem
+# arg0=mensagem, arg1=a quem se destina a mensagem
+  se arg1.sock
+    r = arg1
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
+func msgvis # Envia mensagem estiver acordado e vendo personagem perso
+# arg0=mensagem, arg1=a quem se destina a mensagem
+  se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
+    r = arg1
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
+func msginv # Envia mensagem se estiver acordado
+# arg0=mensagem, arg1=a quem se destina a mensagem
+  se arg1.sock && arg1.posicao > 4
+    r = arg1
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
 func mperso # Mensagem só para o personagem
-  contr.dono.socktot && arg0 && contr.msginv(arg0)
+  contr.dono.socktot && arg0 && $mens.msginv(arg0, contr)
 
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
@@ -92,67 +122,67 @@ func mtodos1 # Mensagem só para quem estiver acordado
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   enquanto l0
-    l0.objini.msginv(arg0), l0.ini.remove
+    msginv(arg0, l0.objini), l0.ini.remove
   efim
 
 func mtodos2 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
   ret !contr.dono.socktot, nulo
-  arg0 && contr.msginv(arg0)
+  arg0 && msginv(arg0, contr)
   ret !arg1, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   l0.remove(contr)
   enquanto l0
-    l0.objini.msginv(arg1), l0.ini.remove
+    msginv(arg1, l0.objini), l0.ini.remove
   efim
 
 func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   ret !contr.dono.socktot, nulo
-  arg0 && contr.msginv(arg0)
-  arg1 && alvo.contr != contr && alvo.contr.msginv(arg1)
+  arg0 && msginv(arg0, contr)
+  arg1 && alvo.contr != contr && msginv(arg1, alvo.contr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   l0.remove(contr, alvo.contr)
   enquanto l0
-    l0.objini.msginv(arg2), l0.ini.remove
+    msginv(arg2, l0.objini), l0.ini.remove
   efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para todos
   ret !(contr.dono.socktot && arg0), nulo
-  contr.msginv(arg0)
+  msginv(arg0, contr)
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   epara l0.remove(contr), l0, l0.ini.remove
-    l0.objini.msgvis(arg0)
+    msgvis(arg0, l0.objini)
   efim
 
 func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
   ret !contr.dono.socktot, nulo
-  arg0 && contr.msginv(arg0)
+  arg0 && msginv(arg0, contr)
   ret !arg1, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   l0.remove(contr)
   enquanto l0
-    l0.objini.msgvis(arg1), l0.ini.remove
+    msgvis(arg1, l0.objini), l0.ini.remove
   efim
 
 func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   ret !contr.dono.socktot, nulo
-  arg0 && contr.msginv(arg0)
-  arg1 && alvo.contr != contr && alvo.contr.msgvis(arg1)
+  arg0 && msginv(arg0, contr)
+  arg1 && alvo.contr != contr && msgvis(arg1, alvo.contr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   l0.remove(contr, alvo.contr)
   enquanto l0
-    l0.objini.msgvis(arg2), l0.ini.remove
+    msgvis(arg2, l0.objini), l0.ini.remove
   efim
 
 func mmud1 # Mensagem para todos do MUD
@@ -178,7 +208,7 @@ func mmudtodos1 # Mensagem para todos que estiverem acordados no MUD
 # arg0 = mensagem para todos
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    item.obj.perso.msginv(arg0)
+    msginv(arg0, item.obj.perso)
   efim
 
 func mmudtodosS # Mensagem para todos que estiverem acordados no MUD em outra sala
@@ -190,7 +220,7 @@ func mmudtodosS # Mensagem para todos que estiverem acordados no MUD em outra sa
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r != s && item.obj.perso.msginv(arg0)
+    r != s && msginv(arg0, item.obj.perso)
   efim
 
 func marea1 # Mensagem para todos que estiverem na mesma área
@@ -226,7 +256,7 @@ func mareatodos1 # Mensagem para quem está acordado na mesma área
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == area && item.obj.perso.msginv(arg0)
+    r.s_area == area && msginv(arg0, item.obj.perso)
   efim
 
 func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra sala
@@ -238,14 +268,8 @@ func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra s
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == s.s_area && r != s && item.obj.perso.msginv(arg0)
+    r.s_area == s.s_area && r != s && msginv(arg0, item.obj.perso)
   efim
-
-func proc # Prepara e retorna mensagem
-# arg0=mensagem, arg1=a quem se destina a mensagem
-  r = arg1
-  refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  ret txtdec(vartroca(txtcod(t), "@d", "x_"))
 
 const o_h = txtcopiamai(perso.msexo ? "um" : "uma", arg0)
 const o_i = txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
@@ -327,6 +351,46 @@ func o_o # Nome do objeto
   ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
 
 
+classe mensvis
+herda mens
+# Mesmo que a classe mens, porém considera-se os personagens e itens
+# sempre visíveis (não mostra "alguém" ou "alguma coisa")
+
+func o_p
+  se perso == perso.contr
+    ret r == perso, txtcopiamai("você", arg0)
+    ret arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+  senao r == perso.contr
+    ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
+  senao
+    refvar m = arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+    ret m + " de " + perso.contr.descnome
+  fimse
+
+func o_a
+  se alvo == alvo.contr
+    ret r == alvo, txtcopiamai("você", arg0)
+    ret arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+  senao r == alvo.contr
+    ret txtcopiamai(alvo.msexo ? "seu " : "sua ", arg0) + alvo.nome
+  senao
+    refvar m = arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+    ret m + " de " + alvo.contr.descnome
+  fimse
+
+func o_q # Nome do personagem sem citar o dono
+  ret r == perso, txtcopiamai("você", arg0)
+  ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+
+func o_b # Nome do alvo sem citar o dono
+  ret r == alvo, txtcopiamai("você", arg0)
+  ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+
+func o_o # Nome do objeto
+  ret r == obj, txtcopiamai("você", arg0)
+  ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
+
+
 classe mensjog
 herda mens_tabela
 ref perso # Personagem
@@ -377,59 +441,6 @@ func o_r # Nome do personagem no comando QUEM
 const o_b = "" # Nome do alvo sem citar o dono
 const o_c = "" # Nome do alvo no comando QUEM
 const o_o = "" # Nome do objeto
-
-
-classe mens_antigo
-# Exemplo de código da versão anterior da classe mens
-#
-ref contr # Mesmo que perso.contr
-ref perso # Personagem que está enviando a mensagem
-ref alvo # Personagem ou objeto alvo da ação
-ref obj # Objeto secundário
-ref r # Objeto que vai receber a mensagem
-txt512 mens # Mensagem usada em $M
-textotxt t0 # Usado em proc: texto que será enviado
-textopos p0 # Usado em proc: linha atual
-int16 i # Posição em p0 # Usado em proc: posição em p0
-txt1 opc # Usado em proc: opção
-txt100 lin # Usado em proc: linha
-const iniclasse = !$[arg0] && criar(arg0)
-
-func p # Define os personagens
-  contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
-
-func proc # Prepara e retorna mensagem
-# arg0=mensagem, arg1=objeto
-  t0.limpar, t0.addfim(arg0)
-  p0 = t0.ini, i = 0, r = arg1
-  enquanto (i = p0.txtproc("$", i)) >= 0
-    opc = p0.texto(i + 1, 1)
-    se opc === "$"
-      p0.mudar("", i, 1)
-      i += 1
-    senao opc === txtmai(opc)
-      lin = p0.texto(i + 2)
-      p0.mudar(opcmai_[opc](lin), i, inttotal(lin) + 2)
-    senao opc === txtmin(opc)
-      lin = p0.texto(i + 2)
-      p0.mudar(opcmin_[opc](lin), i, inttotal(lin) + 2)
-    senao
-      p0.mudar("", i, 2)
-    fimse
-  efim
-  ret t0.remove(1000)
-
-func opcmai_p # Nome do personagem
-  ret r == perso, "Você" + arg0
-  ret perso.visivel(r), txtcopiamai(perso.descnome, "A") + arg0
-  ret perso.perso, "Alguém" + arg0
-  ret "Alguma coisa" + arg0
-# func opcmai_a
-# # arg0 é o que vem depois de "$A", até 100 caracteres e sem "\n"
-# ret "teste" + arg0 # Substitui "$a" por "teste"
-# func opcmin_a
-# ret "R$$" + arg0 # Um $ no texto deve ser retornado com o$$
-# # Ou assim: ret txttroca("R$", "$", "$$") + arg0
 
 
 classe mens_prompt

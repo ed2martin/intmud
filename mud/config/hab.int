@@ -140,7 +140,7 @@ func cmd_atacar # Vai atacar
     arg0.pmove -= 20
   senao arg0.pvida > 20
     $mens.p(arg0)
-    arg0.msginv("Você se sente mais frac$s.")
+    $mens.msginv("Você se sente mais frac$s.", arg0)
     arg0.pvida -= 20
   senao
     arg0.msg("Pontos de movimento e vida insuficientes.")
@@ -423,7 +423,7 @@ const posic = 4
 func cmd_atacar
   se arg0.posicao > 4
     $mens.p(arg0)
-    arg0.msginv("$P não consegue roncar estando acordad$s.")
+    $mens.msginv("$P não consegue roncar estando acordad$s.", arg0)
     ret 1
   fimse
 

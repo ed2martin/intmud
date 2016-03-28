@@ -106,7 +106,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
       $mens.mens = pnivel
       $mens.p(este)
       $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
-      pnivel >= nmax && config:nmaxmsg && msginv(config:nmaxmsg)
+      pnivel >= nmax && config:nmaxmsg && $mens.msginv(config:nmaxmsg, este)
     fimse
   fimse
 # Acerta atributos básicos

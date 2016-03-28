@@ -200,7 +200,7 @@ func descsala # Retorna descrição da sala
         refvar r1 = ref($mens.contr)
         refvar r2 = ref($mens.perso)
         $mens.contr = $mens.perso = arg0
-        t.addfim($mens.proc(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
+        t.addfim($mens.txt(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
         $mens.contr = r1
         $mens.perso = r2
       fimse
@@ -280,7 +280,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
       fimse
       listaobj l
       epara l.addfim(r.dentro2), l, l.ini.remove
-        l.objini.msginv(arg3)
+        $mens.msginv(arg3, l.objini)
       efim
     fimse
   fimse
@@ -297,7 +297,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
     fimse
     listaobj l
     epara l.addfim(dentro2), l, l.ini.remove
-      l.objini.msginv(arg2)
+      $mens.msginv(arg2, l.objini)
     efim
   fimse
   ret 1

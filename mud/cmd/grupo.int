@@ -165,8 +165,8 @@ func escr
   ret !lider, arg0.msg("Você não está em nenhum grupo.")
   $mens.mens = arg1
   $mens.p(arg0)
-  lider.msginv(config:gchatmsg)
+  $mens.msginv(config:gchatmsg, lider)
   listaobj l
   epara l.addfim(lider.lseguir), l, l.ini.remove
-    l.objini.tseguir == 1 && l.objini.msginv(config:gchatmsg)
+    l.objini.tseguir == 1 && $mens.msginv(config:gchatmsg, l.objini)
   efim

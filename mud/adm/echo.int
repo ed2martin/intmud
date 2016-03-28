@@ -14,7 +14,7 @@ func escr
     $mens.mens = arg1
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.msg($mens.proc(config:echomsg, item.obj.perso))
+      $mens.msg(config:echomsg, item.obj.perso)
     efim
   fimse
 
@@ -53,5 +53,5 @@ func escr
   $misclog.rezou("jecho " + arg0.nome + ": " + arg1)
   $mens.p(arg0, item.obj)
   $mens.mens = txt2(arg1)
-  item.obj.msginv(config:jecho1msg)
-  arg0.msginv(config:jecho2msg)
+  $mens.msginv(config:jecho1msg, item.obj)
+  $mens.msginv(config:jecho2msg, arg0)

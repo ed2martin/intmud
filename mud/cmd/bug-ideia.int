@@ -20,11 +20,11 @@ func escr
     $misclog.bug("bug " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
     $mens.mens = arg1
-    arg0.msg($mens.proc(config:bug2msg, arg0))
+    $mens.msg(config:bug2msg, arg0)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[arg0.nome]
-      item.obj.msg($mens.proc(config:bug1msg, item.obj.perso))
+      $mens.msg(config:bug1msg, item.obj.perso)
     efim
   fimse
 
@@ -51,10 +51,10 @@ func escr
     $misclog.ideia("ideia " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
     $mens.mens = arg1
-    arg0.msg($mens.proc(config:ideia2msg, arg0))
+    $mens.msg(config:ideia2msg, arg0)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[arg0.nome]
-      item.obj.msg($mens.proc(config:ideia1msg, item.obj.perso))
+      $mens.msg(config:ideia1msg, item.obj.perso)
     efim
   fimse

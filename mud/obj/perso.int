@@ -394,14 +394,10 @@ func equippos # Retorna as posições aonde pode usar equipamentos
   ret ((equip1 ? equip1 : pos) | equip2) & ~equip3
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
-  se sock && posicao > 4 && $mens.perso.visivel(este) # Se tem jogador e está acordado
-    msg($mens.proc(arg0, este))
-  fimse
+  ret $mens.msgvis(arg0, este)
 
 func msginv # Mensagem mesmo se o alvo estiver invisível
-  se sock && posicao > 4 # Se tem jogador e está acordado
-    msg($mens.proc(arg0, este))
-  fimse
+  ret $mens.msginv(arg0, este)
 
 func morreu # Procedimentos quando morre
 # arg0 = quem atacou o personagem; pode ser nulo

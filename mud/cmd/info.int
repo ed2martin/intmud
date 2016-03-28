@@ -11,8 +11,8 @@ func escr
   txt100 t1
   int16 total.3
 # Lista de personagens dos jogadores
-  refvar ver = $perm_[arg0.jogperm].c_config & 4
-  refvar monit = $perm_[arg0.jogperm].c_monit
+  refvar ver = arg2.c_config & 4
+  refvar monit = arg2.c_monit
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !ver
@@ -559,7 +559,6 @@ func escr
   textotxt t
   textotxt h
   txt100 t1
-  refvar completo = $perm_[arg0.jogperm].infoperso # Se mostra informações completas
 # Obtém o personagem
   refvar r = misc:objperso(arg0, arg1)
   ret !r, nulo
@@ -570,7 +569,7 @@ func escr
   t1 += "  Vigor " + r.pmove + "/" + r.pmovemax
   t.addfim(t1)
 # Fome, sede e embriaguez, somente para administradores
-  se completo && r.jog
+  se arg2.infoperso && r.jog
     t1 = "Sede " + r.p_sede + " fome " + r.p_fome + " embriaguez " + r.p_bebida
     t1 += " digestão " + r.p_diges + "; máximo é " + $miscfome.cheio
     t.addfim(t1)

@@ -754,15 +754,15 @@ func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado d
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    ret arg1.pvida, arg1.contr.sock && menssub(lin, 5) && arg1.contr.msginv(lin.1)
+    ret arg1.pvida, arg1.contr.sock && menssub(lin, 5) && $mens.msginv(lin.1, arg1.contr)
     ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
   casose "1" # Não teve efeito
-    ret arg1.contr.sock && menssub(lin, 14) && arg1.contr.msginv(lin.1)
+    ret arg1.contr.sock && menssub(lin, 14) && $mens.msginv(lin.1, arg1.contr)
   casose "2" # Errou o alvo
-    ret arg1.contr.sock && menssub(lin, 11) && arg1.contr.msginv(lin.1)
+    ret arg1.contr.sock && menssub(lin, 11) && $mens.msginv(lin.1, arg1.contr)
   casose "3" # O alvo desviou
     ret !arg1.contr.sock, nulo
-    ret (menssub(lin, 17) || menssub(lin, 11)) && arg1.contr.msginv(lin.1)
+    ret (menssub(lin, 17) || menssub(lin, 11)) && $mens.msginv(lin.1, arg1.contr)
   casofim
 
 func menssub # Usado em mensgolpe

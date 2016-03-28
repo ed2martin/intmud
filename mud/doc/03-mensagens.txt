@@ -43,12 +43,27 @@ Enviar mensagem para todos que estiverem acordados no MUD.
 $mens.mmudtodosS(texto para todos)
 Mensagem para todos que estiverem acordados no MUD em outra sala.
 
+$mens.msg(texto, personagem)
+Envia mensagem para o personagem, mesmo que esteja dormindo.
+
+$mens.msginv(texto, personagem)
 <personagem>.msginv(texto)
 Envia mensagem para o personagem se ele estiver acordado.
 
+$mens.msgvis(texto, personagem)
 <personagem>.msgvis(texto)
 Envia mensagem para o personagem se ele estiver acordado e vendo
 o personagem definido em $mens.p.
+
+Para apenas obter o texto, fazendo as substituições com $, usar a função
+$mens.txt(texto, personagem)
+
+Para mostrar sempre o nome do personagem ou item ao invés de "alguém" e
+"alguma coisa", mesmo estando invisíveis, usar $mensvis ao invés de $mens.
+Exemplo, escrever:
+$mensvis("$P disse bom dia", arg0)
+ao invés de:
+$mens("$P disse bom dia", arg0)
 
 Para enviar mensagens para o próprio personagem, pode-se usar a classe
 mensjog, da seguinte forma:

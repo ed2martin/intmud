@@ -722,31 +722,24 @@ func passo # Menu de atalhos
   senao arg1 == "o"
     refvar txtmais = arg0.txtmais
     txtmais.limpar
+    txtmais.addfim("Atalhos de " + txt(arg0.var.classe1, 5) + ":")
     textovar v
     prog p
-    epara p.inifunctudo(arg0.var.classe1, "cmd_"), p.lin, p.depois
-      v.mudar(txt(p.texto, 4) + ",", "1")
+    refvar classe = $[arg0.var.classe1]
+    epara p.inifunctudo(classe, "cmd_"), p.lin, p.depois
+      v.mudar(txt(p.texto, 4) + " ", "1")
     efim
-    epara p.inifunctudo(arg0.var.classe1, "ajuda_"), p.lin, p.depois
-      v.mudar(txt(p.texto, 6) + ",", "1")
+    epara p.inifunctudo(classe, "ajuda_"), p.lin, p.depois
+      v.mudar(txt(p.texto, 6) + " ", "1")
     efim
-    epara p.inifunctudo(arg0.var.classe1, "div_"), p.lin, p.depois
-      v.mudar(txt(p.texto, 4) + ",", "1")
+    epara p.inifunctudo(classe, "div_"), p.lin, p.depois
+      v.mudar(txt(p.texto, 4) + " ", "1")
     efim
     enquanto v.ini
-      txtmais.addfim(v.ini)
+      txtmais.addfim(txtremove(v.ini + " " + classe.cmd_[v.ini], "D"))
       v.valorini = ""
     efim
-    se txtmais.linhas
-      textopos pos
-      pos = txtmais.fim, pos.antes
-      pos.mudar("", inttotal(pos.texto) - 1, 1)
-      txtmais.juntar
-      txtmais.dividelin(50, 70)
-    senao
-      txtmais.addfim("Não há nenhum atalho")
-    fimse
-    txtmais.addini("Atalhos de " + txt(arg0.var.classe1, 5) + ":")
+    txtmais.linhas <= 1 && txtmais.addfim("Não há nenhum atalho")
     txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
     txtmais.addfim("Ou digite o nome de um atalho para editar ou apagar")
     arg0.txtmostra
