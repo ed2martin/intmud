@@ -189,7 +189,7 @@ func mmud1 # Mensagem para todos do MUD
 # arg0 = mensagem para todos
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    item.obj.msg(proc(arg0, item.obj.perso))
+    msg(arg0, item.obj.perso)
   efim
 
 func mmudS # Mensagem para todos do MUD exceto na mesma sala
@@ -201,7 +201,7 @@ func mmudS # Mensagem para todos do MUD exceto na mesma sala
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r != s && item.obj.msg(proc(arg0, item.obj.perso))
+    r != s && msg(arg0, item.obj.perso)
   efim
 
 func mmudtodos1 # Mensagem para todos que estiverem acordados no MUD
@@ -232,7 +232,7 @@ func marea1 # Mensagem para todos que estiverem na mesma área
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == area && item.obj.msg(proc(arg0, item.obj.perso))
+    r.s_area == area && msg(arg0, item.obj.perso)
   efim
 
 func mareaS # Mensagem para todos que estiverem na mesma área mas em outra sala
@@ -244,7 +244,7 @@ func mareaS # Mensagem para todos que estiverem na mesma área mas em outra sala
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     epara r = item.obj.perso.dono, r.dono, r = r.dono
     efim
-    r.s_area == s.s_area && r != s && item.obj.msg(proc(arg0, item.obj.perso))
+    r.s_area == s.s_area && r != s && msg(arg0, item.obj.perso)
   efim
 
 func mareatodos1 # Mensagem para quem está acordado na mesma área

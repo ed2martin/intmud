@@ -26,6 +26,8 @@ public:
         ///< Move objeto para outro lugar
     bool CriarTextoVarSub(const char * nome);
         ///< Cria uma variável TTextoVarSub na pilha
+    bool CriarTextoVarSub(TBlocoVar * bl);
+        ///< Cria uma variável TTextoVarSub na pilha
     TBlocoVar * Procura(const char * texto);
         ///< Procura um objeto TIndiceObj a partir do nome
         /**< @param texto Nome a pesquisar
@@ -66,10 +68,16 @@ public:
 class TTextoVarSub /// Para acessar uma variável de TTextoVar
 {
 public:
-    void Criar(TTextoVar * var, const char * nome);
-                                ///< Adiciona objeto em um TTextoVar
-    void Apagar();              ///< Retira objeto de um textovar
-    void Mover(TTextoVarSub * destino); ///< Move bloco para outro lugar
+    void Criar(TTextoVar * var, const char * nome, bool checatipo);
+        ///< Adiciona objeto em um TTextoVar
+        /**< @param var Variável TextoVar
+         *   @param nome Nome da variável de TextoVar
+         *   @param checatipo Se deve obter o tipo a partir do nome
+         *           da variável */
+    void Apagar();
+        ///< Retira objeto de um textovar
+    void Mover(TTextoVarSub * destino);
+        ///< Move bloco para outro lugar
 
 // Lista ligada
     TTextoVar * TextoVar;       ///< A qual textovar pertence

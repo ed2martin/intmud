@@ -105,52 +105,26 @@ func reinicia # Volta ao início: pede o nome do personagem
   $ini_perso1.passo(este)
 
 func recebe # Recebeu mensagem do jogador
-  ret passo || !perso.var.t_[txt1(arg0)], recebe1(arg0)
-  $cmdatalho.texto = txt2(arg0)
-  textotxt t
-  t.addfim($cmdatalho.mens(perso.var.t_[txt1(arg0)]))
-  debug d
-  enquanto t.linhas
-    d.ini
-    ret recebe1(t.remove), nulo
-  efim
-
-func recebe1 # Função recebe após uso de atalhos
-# Retorna verdadeiro se deve cancelar os comandos do atalho
-# Checa quem está monitorando
-  se lmonit
-    casovar passo
-    casose
-      listaitem i
-      epara i = lmonit.ini, i, i.depois
-        i.obj.msg("<" + arg0, 1), i.obj.execprompt = 1
-      efim
-    casose "ini_criasenha1"
-    casose "ini_criasenha2"
-    casose "ini_entrasenha"
-    casose "ini_mudasenha1"
-    casose "ini_mudasenha2"
-    casose "ini_mudasenha3"
-    casose "cmdfim_autoapagar"
-    casofim
-  fimse
 # Atualiza tempo para sair do MUD
   temposair
-# Teclar M para mais
-  se arg0 == "m" && txtmais.linhas
+# Situações em que não se pode usar atalhos
+  se arg0 == "m" && txtmais.linhas # Tecle M para mais
+    lmonit && avisamonit(arg0)
     txtmostra
     ret
-  fimse
-# Passo atual / obtém o comando
-  txtmais.limpar
-  se passo && $[passo].passo(este, arg0) # Função do passo
+  senao $[passo] # Passo atual
+    lmonit && avisamonit(arg0)
+    txtmais.limpar
     comandos.limpar
+    $[passo].passo(este, arg0)
     ret
   senao !perso # Checa se está controlando um personagem
+    lmonit && avisamonit(arg0)
     cnome = "un", nome = ""
     $ini_perso1.passo(este)
     ret
   senao arg0 && arg0 == config:senhaadm # Administração
+    lmonit && avisamonit(arg0)
     ret !perso.jog, msg("Primeiro precisa retornar para seu personagem")
     txt512 t1
     t1 = $perm_[jogperm].saiumsg
@@ -175,60 +149,119 @@ func recebe1 # Função recebe após uso de atalhos
       obj != este && $perm_[obj.jogperm].i_admin && obj.msg(t1)
     efim
     ret
-  senao arg0 != "!" # Anota o último comando
-    casovar txt(arg0, 0, 1)
-    casose "."
-      ultimocom = "chat " + txt(arg0, 1)
-      sair
-    casose "'"
-      ultimocom = "falar " + txt(arg0, 1)
-      sair
-    casose "="
-      ultimocom = "telepatia " + txt(arg0, 1)
-      sair
-    casose
-      ultimocom = arg0
-    casofim
+# Coloca na variável ultimocom o comando que deve executar
+  senao arg0 != "!"
+    ultimocom = arg0
   fimse
-# Comando de administração
-  ref r
+# Obtém os comandos, desmembra atalho do personagem
+  textotxt t
+  refvar a1 = perso.var.t_[txt1(ultimocom)]
+  se a1
+    $cmdatalho.texto = txt2(ultimocom)
+    t.addfim($cmdatalho.mens(a1))
+  senao
+    t.addfim(ultimocom)
+  fimse
+# Processa comandos
   refvar perm = $perm_[jogperm] # Permissões do jogador
-  refvar atalho = perm.cmd_[txt1(ultimocom)] # Atalho definido nas permissões
-  se atalho && (r = $adm_[txt1(atalho)].objcmd(perso, $perm_admin)) != nulo
-    comandos.limpar
-    $cmdatalho.texto = txt2(ultimocom) # O que o jogador digitou
-    casovar txtmin(txt1(atalho))
-    casose "cmd"
-    casose "cmdp"
-    casose "cmdj"
-      r.escr(perso, $cmdatalho.cmd(txt2(atalho)), $perm_admin)
+  debug d
+  txt512 lin
+  enquanto t.linhas
+    d.ini
+    lin = txtremove(t.remove, "ED")
+    lmonit && avisamonit(lin)
+    se txtcor(lin) == "m" && txtmais.linhas # Tecle M para mais
+      txtmostra
+    senao $[passo] # Passo atual
+      txtmais.limpar
+      comandos.limpar
+      $[passo].passo(este, txtcor(lin))
+    senao !perso # Checa se está controlando um personagem
+      txtmais.limpar
+      cnome = "un", nome = ""
+      $ini_perso1.passo(este)
       ret
-    casose
-      r.escr(perso, $cmdatalho.adm(txt2(atalho)), $perm_admin)
-      ret
-    casofim
-  senao (r = $adm_[txt1(ultimocom)].objcmd(perso, perm)) != nulo
+    senao
+      txtmais.limpar
+      se txt(lin, 0, 1) != "\b"
+        refvar atalho = perm.cmd_[txt1(lin)] # Atalho definido nas permissões
+        se atalho
+          $cmdatalho.texto = txttroca(txttroca(txt2(lin), "\"", "\c2\""), "\\", "\c2\\")
+          t.addini($cmdatalho.adm(atalho))
+          lin = txtremove(t.remove, "ED")
+        fimse
+      fimse
+      casovar txt1(lin)
+      casose "\bcmd"
+      casose "\bcmdp"
+      casose "\bcmdj"
+        lin = txttroca(txttroca(lin, "\c1", "\""), "\c2", "\\")
+      casofim
+      ret recebe1(txtcor(lin), txt(lin, 0, 1) == "\b" ? $perm_admin : perm), nulo
+    fimse
+  efim
+
+func recebe1 # Função recebe após todos os atalhos
+# arg0 = o que o jogador digitou
+# arg1 = permissões do personagem
+# Retorna verdadeiro se deve cancelar os comandos do atalho
+#
+# Comando de administração
+  refvar r = $adm_[txt1(arg0)].objcmd(perso, arg1)
+  se r
     comandos.limpar
-    r.escr(perso, txt2(ultimocom), perm)
+    r.escr(perso, txt2(arg0), arg1)
     ret
   fimse
-# Comando para o jogo
+# Atalhos predefinidos
+  txt512 com
+  casovar txt(arg0, 0, 1)
+  casose "."
+    com = "chat " + txt(arg0, 1)
+    sair
+  casose "'"
+    com = "falar " + txt(arg0, 1)
+    sair
+  casose "="
+    com = "telepatia " + txt(arg0, 1)
+    sair
+  casose
+    com = arg0
+  casofim
+# Comando para o persongem
   se !perso.p_espera # Checa se pode processar o comando
-    perso.teclou(ultimocom) # Personagem processa comando
+    perso.teclouperm(com, arg1)
     perso.p_espera < 2 && (perso.p_espera = 2)
   senao perso.atktempo # Checa se está batalhando
     comandos.limpar
-    comandos.addfim(ultimocom)
+    comandos.addfim(com)
   senao comandos.bytes < 1024 # Não chegou ao limite de comandos
-    comandos.addfim(ultimocom)
+    comandos.addfim(com)
   senao # Chegou ao limite de comandos
     msg("Aguarde")
     ret 1
   fimse
 
+func avisamonit # Avisa quem está monitorando o personagem
+# arg0 = o que o jogador digitou
+  casovar passo
+  casose
+    listaitem i
+    epara i = lmonit.ini, i, i.depois
+      i.obj.msg("<" + arg0, 1), i.obj.execprompt = 1
+    efim
+  casose "ini_criasenha1"
+  casose "ini_criasenha2"
+  casose "ini_entrasenha"
+  casose "ini_mudasenha1"
+  casose "ini_mudasenha2"
+  casose "ini_mudasenha3"
+  casose "cmdfim_autoapagar"
+  casofim
+
 func espera_exec # Chamado por p_espera do personagem
   se comandos
-    perso.teclou(comandos.remove(1)) # Personagem processa comando
+    perso.teclouperm(comandos.remove(1), perm) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
   fimse
 
@@ -868,9 +901,7 @@ txt512 texto # O que o usuário digitou
 # Comandos comuns
 const mens = vartroca(txttroca(arg0, "$$", "$@"), "$", "m_")
 # Comandos de administração
-const adm = vartroca(txttroca(arg0, "$$", "$@"), "$", "a_")
-# Comandos cmd, cmdp e cmdj
-const cmd = vartroca(txttroca(arg0, "$$", "$@"), "$", "c_")
+const adm = "\b" + vartroca(txttroca(arg0, "$$", "$@"), "$", "a_")
 #
 const m_0 = texto
 const m_1 = txt1(m_0)
@@ -887,30 +918,19 @@ const m_T = txtsub(texto, 2)
 const m_Z = "\n"
 const m_@ = "$"
 #
-const a_0 = texto
-const a_1 = txt1(m_0)
-const a_2 = txtsub(texto, 1, 1)
-const a_3 = txtsub(texto, 2, 1)
-const a_4 = txtsub(texto, 3, 1)
-const a_5 = txtsub(texto, 4, 1)
-const a_6 = txtsub(texto, 5, 1)
-const a_7 = txtsub(texto, 6, 1)
-const a_8 = txtsub(texto, 7, 1)
-const m_9 = txtsub(texto, 8, 1)
-const a_S = txtsub(texto, 1)
-const a_T = txtsub(texto, 2)
+# Em cmd, cmdp e cmd: \c1 vira aspas, \c2 vira barra invertida
+# Nos outros comandos, \c1 e \c2 são eliminados
+const a_0 = "\c1" + texto + "\c1"
+const a_1 = "\c1" + txt1(texto) + "\c1"
+const a_2 = "\c1" + txtsub(texto, 1, 1) + "\c1"
+const a_3 = "\c1" + txtsub(texto, 2, 1) + "\c1"
+const a_4 = "\c1" + txtsub(texto, 3, 1) + "\c1"
+const a_5 = "\c1" + txtsub(texto, 4, 1) + "\c1"
+const a_6 = "\c1" + txtsub(texto, 5, 1) + "\c1"
+const a_7 = "\c1" + txtsub(texto, 6, 1) + "\c1"
+const a_8 = "\c1" + txtsub(texto, 7, 1) + "\c1"
+const a_9 = "\c1" + txtsub(texto, 8, 1) + "\c1"
+const a_S = "\c1" + txtsub(texto, 1) + "\c1"
+const a_T = "\c1" + txtsub(texto, 2) + "\c1"
+const a_Z = "\n\b"
 const a_@ = "$"
-#
-const c_0 = "\"" + txtvis(texto) + "\""
-const c_1 = "\"" + txtvis(txt1(texto)) + "\""
-const c_2 = "\"" + txtvis(txtsub(texto, 1, 1)) + "\""
-const c_3 = "\"" + txtvis(txtsub(texto, 2, 1)) + "\""
-const c_4 = "\"" + txtvis(txtsub(texto, 3, 1)) + "\""
-const c_5 = "\"" + txtvis(txtsub(texto, 4, 1)) + "\""
-const c_6 = "\"" + txtvis(txtsub(texto, 5, 1)) + "\""
-const c_7 = "\"" + txtvis(txtsub(texto, 6, 1)) + "\""
-const c_8 = "\"" + txtvis(txtsub(texto, 7, 1)) + "\""
-const c_9 = "\"" + txtvis(txtsub(texto, 8, 1)) + "\""
-const c_S = "\"" + txtvis(txtsub(texto, 1)) + "\""
-const c_T = "\"" + txtvis(txtsub(texto, 2)) + "\""
-const c_@ = "$"

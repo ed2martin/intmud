@@ -25,10 +25,10 @@ func escr
   criar("jog_lugar", arg0, sala)
 # Comando de administração
   refvar lin = txt2(arg1)
-  refvar r = $adm_[txt1(lin)].objcmd(arg0)
-  ret r, r.escr(arg0, txt2(lin))
+  refvar r = $adm_[txt1(lin)].objcmd(arg0, arg2)
+  ret r, r.escr(arg0, txt2(lin), arg2)
 # Comando para o jogo
-  arg0.teclou(lin) # Personagem processa comando
+  arg0.teclouperm(lin, perm) # Personagem processa comando
   arg0.p_espera < 2 && (arg0.p_espera = 2)
 
 

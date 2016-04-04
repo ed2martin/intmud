@@ -75,7 +75,26 @@ bool TTextoVar::CriarTextoVarSub(const char * nome)
     if (!Instr::CriarVar(Instr::InstrVarTextoVarSub))
         return false;
     TTextoVarSub * sub = Instr::VarAtual->end_textovarsub;
-    sub->Criar(this, nome);
+    sub->Criar(this, nome, true);
+    switch (sub->TipoVar)
+    {
+    case TextoVarTipoTxt: Instr::VarAtual->numfunc = varTxt; break;
+    case TextoVarTipoNum: Instr::VarAtual->numfunc = varDouble; break;
+    case TextoVarTipoDec: Instr::VarAtual->numfunc = varInt; break;
+    case TextoVarTipoRef: Instr::VarAtual->numfunc = varObj; break;
+    default: Instr::VarAtual->numfunc = varOutros;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TTextoVar::CriarTextoVarSub(TBlocoVar * bl)
+{
+    if (!Instr::CriarVar(Instr::InstrVarTextoVarSub))
+        return false;
+    TTextoVarSub * sub = Instr::VarAtual->end_textovarsub;
+    sub->Criar(this, bl->NomeVar, false);
+    sub->TipoVar = bl->TipoVar();
     switch (sub->TipoVar)
     {
     case TextoVarTipoTxt: Instr::VarAtual->numfunc = varTxt; break;
@@ -122,7 +141,7 @@ bool TTextoVar::FuncValorIni(TVariavel * v)
     Instr::ApagarVar(v);
     if (TextoAtual == 0)
         return false;
-    return CriarTextoVarSub(bl->NomeVar);
+    return CriarTextoVarSub(bl);
 }
 
 //----------------------------------------------------------------------------
@@ -143,7 +162,7 @@ bool TTextoVar::FuncValorFim(TVariavel * v)
     Instr::ApagarVar(v);
     if (TextoAtual == 0)
         return false;
-    return CriarTextoVarSub(bl->NomeVar);
+    return CriarTextoVarSub(bl);
 }
 
 //----------------------------------------------------------------------------
@@ -155,7 +174,7 @@ bool TTextoVar::FuncMudar(TVariavel * v)
     TTextoVarSub sub;
     if (Instr::VarAtual > v+1)
     {
-        sub.Criar(this, v[1].getTxt());
+        sub.Criar(this, v[1].getTxt(), true);
         switch (sub.TipoVar)
         {
         case TextoVarTipoNum:
@@ -188,7 +207,7 @@ bool TTextoVar::FuncMudar(TVariavel * v)
                 return false;
         }
         *d = 0;
-        sub.Criar(this, nome);
+        sub.Criar(this, nome, true);
         sub.setTxt(o);
     }
     sub.Apagar();
@@ -473,11 +492,13 @@ TBlocoVar * TTextoVar::ProcDepois(const char * texto)
 }
 
 //----------------------------------------------------------------------------
-void TTextoVarSub::Criar(TTextoVar * var, const char * nome)
+void TTextoVarSub::Criar(TTextoVar * var, const char * nome, bool checatipo)
 {
 // Acerta variável conforme o nome
     char * p = copiastr(NomeVar, nome, sizeof(NomeVar));
-    if (p > NomeVar)
+    if (!checatipo)
+        TipoVar = TextoVarTipoTxt;
+    else if (p > NomeVar)
     {
         p--;
         switch (*p)

@@ -219,34 +219,38 @@ func recalc_exec # Ajusta variáveis
   atribs_exec
   recalc = 0
 
-func teclou # Processa comando (arg0=comando)
-# Procura objeto que contém o comando
+func teclou # Processa comando
+# arg0=comando
+  teclouperm(arg0, $perm_[jogperm])
+
+func teclouperm # Processa comando com permissões específicas
+# arg0 = comando
+# arg1 = objeto perm que contém as permissões
   ref obj # Objeto que vai processar o comando
   prog p # Para procurar o objeto
   ret !arg0, nulo
 # Obtém o comando
-  refvar perm = $perm_[jogperm]
   enquanto 1
     se arg0 == intpos(arg0) && config:animal1 >= arg0 && config:animal1
       obj = $comando_escolhe_animal
       obj.num = arg0
       sair
     fimse
-    sair obj = $cmd_[txt1(arg0)].objcmd(este, perm) # Checa comando exato
-    sair obj = $soc_[txt1(arg0)].objcmd(este, perm) # Checa social exato
-    sair obj = $cmdfim_[txt1(arg0)].objcmd(este, perm) # Checa comando exato
+    sair obj = $cmd_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
+    sair obj = $soc_[txt1(arg0)].objcmd(este, arg1) # Checa social exato
+    sair obj = $cmdfim_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
     nomeobj n
     n.ini(txt1(arg0))
     epara p.iniclasse("cmd_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, perm)) && n.nome(txt(obj, 4))
+      sair (obj = $[p.texto].objcmd(este, arg1)) && n.nome(txt(obj, 4))
     efim
     sair obj
     epara p.iniclasse("soc_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, perm)) && n.nome(txt(obj, 4))
+      sair (obj = $[p.texto].objcmd(este, arg1)) && n.nome(txt(obj, 4))
     efim
     sair obj
     epara p.iniclasse("cmdfim_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, perm)) && n.nome(txt(obj, 7))
+      sair (obj = $[p.texto].objcmd(este, arg1)) && n.nome(txt(obj, 7))
     efim
     sair
   efim
@@ -275,7 +279,7 @@ func teclou # Processa comando (arg0=comando)
     senao posicao < obj.posic
       msg(erropos)
     senao
-      obj.escr(este, txt2(lin), perm)
+      obj.escr(este, txt2(lin), arg1)
     fimse
     ret
   fimse
@@ -287,7 +291,7 @@ func teclou # Processa comando (arg0=comando)
 # Executa comando
   ret !obj, msg("O quê?")
   ret posicao < obj.posic, msg(erropos)
-  ret obj.escr(este, txt2(arg0), perm)
+  ret obj.escr(este, txt2(arg0), arg1)
 
 func p_espera_exec # Pega o próximo comando
   sock ? sock.espera_exec : p_proc_exec

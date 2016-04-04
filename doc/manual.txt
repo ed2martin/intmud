@@ -3054,11 +3054,12 @@ v.mudar("y=10") # Cria variável y = 10
 v.y_ = 10 # Mesma coisa, porém y é numérico, enquanto que x é texto
 v.y_ += 2 # Faz a variável y ser 12 (10 + 2)
 v.mudar("y=teste", "z=12") # Faz a variável y ser "teste" e z ser "12"
+
 # As próximas instruções mostram todas as variáveis do textovar v
 telatxt tela # Para mostrar o resultado na tela
 txt80 nome
 epara nome = v.ini, nome, nome = v.depois(nome)
-tela.msg(nome + "=" + v.valor(nome) + "\n")
+tela.msg(nome + v.tipo(nome) + "=" + v.valor(nome + " ") + "\n")
 efim
 
 

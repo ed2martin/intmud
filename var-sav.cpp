@@ -659,7 +659,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                             *p1 = '=';
                 // Cria a variável
                     TTextoVarSub sub;
-                    sub.Criar(txtvar, mensvar);
+                    sub.Criar(txtvar, mensvar, true);
                     if (sub.TipoVar != TextoVarTipoRef)
                         sub.setTxt(texto);
                     else
