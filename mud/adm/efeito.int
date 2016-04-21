@@ -1,22 +1,31 @@
 classe adm_efeito
 const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Efeitos\b\n\
-Magias e habilidades podem lançar efeitos sobre um personagem.\n\
-Esses comandos permitem criar e editar os efeitos.\n\
+const txtajuda = "\b\c3Efeitos e modificadores\b\n\
   \c2LEF\b       Lista efeitos existentes\n\
   \c2CEF\b       Cria um efeito\n\
   \c2EEF\b       Edita um efeito\n\
-  \c2AEF\b       Apaga um ou mais efeitos"
+  \c2AEF\b       Apaga um ou mais efeitos\n\
+  \c2LMOD\b      Lista modificadores existentes\n\
+  \c2CMOD\b      Cria um modificador\n\
+  \c2EMOD\b      Edita um modificador\n\
+  \c2AMOD\b      Apaga um ou mais modificadores\n\
+Magias e habilidades podem lançar efeitos sobre um personagem.\n\
+Já os modificadores funcionam como efeitos, mas possuem menos opções.\n\
+Porém, itens que agrupam também podem receber modificadores.\n\
+Internamente, efeitos são objetos e modificadores são variáveis.\n\
+Para um personagem ou item ser criado com um modificador, definir\n\
+uma variável f_. Exemplo, no comando EITEM, colocar f_invisivel=1\n\
+na opção \"Variáveis\" coloca o modificador invisivel."
 
 
 classe adm_lef
 herda comando_adm
-const txtajuda = "\b\c3LEF\b\n\
+const txtajuda = "\b\c3Lef\b\n\
 Sintaxe: LEF [nome]\n\
 Lista os efeitos que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os efeitos."
 
-func escr # Listar efeitos
+func escr
   prog p
   se !p.iniclasse("e_" + arg1)
     arg0.msg("\bNenhum efeito encontrado.")
@@ -32,6 +41,29 @@ func escr # Listar efeitos
   fimse
 
 
+classe adm_lmod
+herda comando_adm
+const txtajuda = "\b\c3Lmod\b\n\
+Sintaxe: LMOD [nome]\n\
+Lista os modificadores que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os modificadores."
+
+func escr
+  prog p
+  se !p.iniclasse("f_" + arg1)
+    arg0.msg("\bNenhum modificador encontrado.")
+  senao
+    textotxt t
+    txt100 lin
+    t.addfim("\b\c6Modificador, Descrição interna\b")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txtcopiamai(txt2(txte(p.texto)), "A") + ", " + [p.texto]:desc)
+      p.depois
+    efim
+    arg0.msg2(t.remove(500))
+  fimse
+
+
 classe adm_cef
 herda comando_adm
 const txtajuda = "\b\c3Cef\b\n\
@@ -39,13 +71,13 @@ Sintaxe: CEF <nome>\n\
 Cria um efeito com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 
-func escr # Criar efeito
+func escr
   prog p
   txt80 nome
   uint16 num
-# Checa se digitou nome do ataque
+# Checa se digitou nome do efeito
   se arg1 == ""
-    ret arg0.msg("Tecle o nome da magia após CEF")
+    ret arg0.msg("Tecle o nome do efeito após CEF")
   fimse
 # Checa se nome válido
   nome = txte(txtremove(arg1, EMDSA))
@@ -64,6 +96,40 @@ func escr # Criar efeito
 # config:salvar
   arg0.msg("\bCriou efeito: " + nome)
   admlog(arg0, "criou efeito " + nome)
+
+
+classe adm_cmod
+herda comando_adm
+const txtajuda = "\b\c3Cmod\b\n\
+Sintaxe: CMOD <nome>\n\
+Cria um modificador com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+
+func escr
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do modificador
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do modificador após CMOD")
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg1, EMDSA))
+  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
+    ret arg0.msg("Nome inválido para modificador: " + nome)
+  senao p.existe("f_" + nome)
+    ret arg0.msg("Já existe o modificador: " + nome)
+  fimse
+# Cria modificador
+  txt200 lin
+  lin = "f_" + txts(txtmin(nome)) + "\nconfig/efeito\nherda comum_modif"
+  lin += "\nconst e_nome = \"" + txtcopiamai(nome, "A") + "\""
+  prog p
+  p.criar(lin)
+  criar("admordena", "config/efeito")
+# config:salvar
+  arg0.msg("\bCriou modificador: " + nome)
+  admlog(arg0, "criou modificador " + nome)
 
 
 classe adm_aef
@@ -109,7 +175,7 @@ func passo # Confirmar que quer apagar efeito
       admlog(arg0, "apagou efeito " + arg0.tpasso)
     senao
       arg0.msg("Efeitos apagados: " + arg0.tpasso)
-      admlog(arg0, "apagou efeitoss " + arg0.tpasso)
+      admlog(arg0, "apagou efeitos " + arg0.tpasso)
     fimse
   senao
     arg0.passo = este
@@ -119,10 +185,61 @@ func passo # Confirmar que quer apagar efeito
   ret 1
 
 
+classe adm_amod
+herda comando_adm
+const txtajuda = "\b\c3Amod\b\n\
+Sintaxe: AMOD <nomes dos modificadores>\n\
+Apaga uma ou mais modificadores, com os nomes especificados.\n\
+Para apagar um modificador cujo nome contém espaços no meio, use sublinhado\n\
+no lugar dos espaços. Exemplo, se o nome do modificador for Ver Invisível,\n\
+você deve teclar: amod Ver_Invisivel"
+
+func escr # Apagar efeito
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de efeitos após AEF")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("f_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Modificador não existe: " + txtsub(arg1, x, 1))
+    fimse
+    x += 1
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar efeito
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("f_" + txtsub(arg0.tpasso, x, 1))
+      x += 1
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Modificador apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou efeito " + arg0.tpasso)
+    senao
+      arg0.msg("Modificadores apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou modificadores " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "modificadores" : "modificador"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
 classe adm_eef
 herda comando_adm
-const txtajuda = "\b\c3Eefeito\b\n\
-Sintaxe: EEFEITO <nome>\n\
+const txtajuda = "\b\c3Eef\b\n\
+Sintaxe: EEF <nome>\n\
 Edita o efeito com o nome especificado."
 
 func escr # Editar efeito
@@ -140,13 +257,32 @@ func escr # Editar efeito
   fimse
 
 
+classe adm_emod
+herda comando_adm
+const txtajuda = "\b\c3Emod\b\n\
+Sintaxe: EMOD <nome>\n\
+Edita o modificador com o nome especificado."
+
+func escr # Editar modificador
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do modificador após EMOD")
+  senao !p.existe("f_" + arg1)
+    arg0.msg("Modificador não existe: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "f_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_modif"
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
 classe menu_efeito
 herda comando_menu
 const titulo = "Efeito " + txt(var.classe1, 2)
 const colunas = 25
 #
 const nome1 = "Nome"
-const info1 = "Nome que aparece no comando efeitos"
+const info1 = "Nome que aparece no comando Lef"
 const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "e_nome"
@@ -158,7 +294,7 @@ const clas2 = var.classe1
 const vari2 = "e_desc"
 #
 const nome3 = "Descrição interna"
-const info3 = "Uma breve descrição do que faz; aparece apenas no comando lef"
+const info3 = "Uma breve descrição do que faz; aparece apenas no comando Lef"
 const tipo3 = "opc_linha"
 const clas3 = var.classe1
 const vari3 = "desc"
@@ -334,3 +470,93 @@ const nome10 = "Outros"
 const tipo10 = "opc_linha"
 const clas10 = var.classe1
 const vari10 = "msgreduz2"
+
+
+classe menu_modif
+herda comando_menu
+const titulo = "Modificador " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome1 = "Nome"
+const info1 = "Nome que aparece no comando Lmod"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "e_nome"
+#
+const nome2 = "Descrição"
+const info2 = "Descrição do efeito, para os jogadores"
+const tipo2 = "opc_texto"
+const clas2 = var.classe1
+const vari2 = "e_desc"
+#
+const nome3 = "Descrição interna"
+const info3 = "Uma breve descrição do que faz; aparece apenas no comando Lmod"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "desc"
+#
+const nome4 = "Atrib texto"
+const info4 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
+Exemplo: *  ... e está protegid$s por uma luz"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "m_atribs2"
+#
+const nome5 = "Atrib números"
+const tipo5 = "opc_atribnum"
+const clas5 = var.classe1
+const vari5 = "recalc2_auto"
+#
+const nome6 = "Atrib sim/não"
+const tipo6 = "opc_atribbit"
+const clas6 = var.classe1
+const vari6 = "recalc2_auto"
+#
+const nome7 = "Atrib ataque"
+const info7 = "Afetam os danos quando o personagem ataca alguém"
+const tipo7 = "opc_atribatk"
+const clas7 = var.classe1
+const vari7 = "recalc2_auto"
+#
+const nome8 = "Atrib defesa"
+const info8 = "Afetam os danos quando alguém ataca o personagem"
+const tipo8 = "opc_atribdef"
+const clas8 = var.classe1
+const vari8 = "recalc2_auto"
+#
+const nome9 = "Atualizar"
+const tipo9 = "opc_modif"
+const clas9 = var.classe1
+const vari9 = "recalc2_auto"
+
+
+classe opc_modif
+herda opc_opcao
+const menu = ""
+
+func passo # Mudar o estado atual
+  int32 total
+  prog p
+  debug d
+  ref r
+  refvar nome = txt(arg0.var.classe1) + " "
+  d.exec = 500000
+  epara p.iniherdainv("comum_perso"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.var.valor(nome) && (total += (r.recalc = 1))
+    efim
+  efim
+  epara p.iniherdainv("comum_item"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.var.valor(nome) && (total += (r.recalc = 1))
+    efim
+  efim
+  se total == 0
+    arg0.msg("Nenhum personagem ou item com o modificador")
+  senao total = 1
+    arg0.msg("Um personagem/item atualizado")
+  senao
+    arg0.msg(txt(total) + " personagens/itens atualizados")
+  fimse
+  ret passosair(arg0)

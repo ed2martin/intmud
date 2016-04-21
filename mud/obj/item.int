@@ -62,7 +62,7 @@ vestirsim\n\
 volexp volmax volobj\n\
 inivar evhora eveste evperso evitem evsala"
 
-func ini # Objeto foi criado (arg0=dono, arg1=nível)
+func ini # Objeto foi criado (arg0=dono, arg1=nível, arg2=variáveis de var)
   se arg2 || inivar
     textotxt t
     epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
@@ -80,9 +80,6 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   mdono(arg0), cmd_mudadono
   ret este
 
-func recalc_exec # Ajusta variáveis
-  bitver = 17, bitinv = 3, cmd_recalc1(este), atribs_exec
-
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
   idono.remove, vestpos = arg0
@@ -94,6 +91,25 @@ func vestir # Veste o item, arg0=posição
   fimse
 
 const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
+
+func recalc_exec # Ajusta variáveis
+  bitver = 17, bitinv = 3
+  recalc1_auto, cmd_recalc1(este)
+# Modificadores
+  txt512 lin
+  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+  efim
+# Efeitos
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este)
+  efim
+  epara i = evento.ini, i, i.depois
+    i.obj.cmd_recalc3(este)
+  efim
+  atribs_exec
+  recalc = 0
 
 
 classe comum_itemgrupo
@@ -108,11 +124,20 @@ func objproc # Procura um objeto do mesmo tipo em uma listaobj
 # Objetivo: saber se pode agrupar objetos
 # arg0 = variável listaobj
 # Retorna: o objeto correspondente ou nulo se não houver
-  ret arg0.objini(este)
+  listaitem i
+  epara i = arg0.ini(este), i, i.objdepois
+    ret i.obj.var == var, ref(i.obj)
+  efim
 
-func ini # Objeto foi criado (arg0=dono, arg1=quantidade)
+func ini # Objeto foi criado (arg0=dono, arg1=quantidade, arg2=variáveis de var)
   objtot = arg1
   !objtot && (objtot = 1) # Garante pelo menos um item
+  se arg2 || inivar
+    textotxt t
+    epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
+    efim
+  fimse
+  var.limpar("e_")
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0, objtot)
   recalc_exec
@@ -127,7 +152,9 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
       r.objtot += arg1, r.ajustapeso
       ret r
     senao
-      ret criar(este, arg0, arg1)
+      r = criar(este, arg0, arg1)
+      r.var = var
+      ret r
     fimse
   senao r # Se já existe objeto no destino
     r.objtot += arg1, r.ajustapeso
@@ -159,6 +186,7 @@ func vestir # Veste o item, arg0=posição
     dono.recalc = 1 # Para recalcular atributos
     objtot -= 1, ajustapeso
     refvar r = criar(este)
+    r.var = var
     r.mdono(dono), r.vestpos = pos
     r.idono.remove, r.idono = dono.dentro2.addfim(r)
     pos == 50 && (r.dono.iempu = r.idono)
@@ -192,9 +220,9 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   ret este
 
 func recalc_exec # Acerta variáveis do item
-  bitver = 17, bitinv = luztempo ? 1 : 3, cmd_recalc1(este)
+  bitver = 17, bitinv = luztempo ? 1 : 3
+  recalc1_auto, cmd_recalc1(este)
   int(i_abertoini) < 2 || i_aberto < 2 ? (i_aberto = i_abertoini)
-  atribs_exec
   se int(luzitem) != 7 # Se não acende ao vestir
   senao vestpos && luztempo < 0 # Vestiu: acende
     luztempo.pos, ajustapeso
@@ -211,11 +239,26 @@ func recalc_exec # Acerta variáveis do item
       ret l.objini.cmd_apagou(dono, este), nulo
     efim
   fimse
-  se intpos(luztempo) > 0
-    textopos p
-    p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
-    atribs.addini("Aceso")
-  fimse
+#  se intpos(luztempo) > 0
+#    textopos p
+#    p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
+#    atribs.addini("Aceso")
+#  fimse
+# Modificadores
+  txt512 lin
+  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+  efim
+# Efeitos
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este)
+  efim
+  epara i = evento.ini, i, i.depois
+    i.obj.cmd_recalc3(este)
+  efim
+  atribs_exec
+  recalc = 0
 
 func luztempo_exec # A luz apagou
   se luztxt

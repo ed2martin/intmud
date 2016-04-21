@@ -201,14 +201,19 @@ func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
   bitver = 17, bitinv = 3
 # Acerta atributos conforme o tipo de personagem
-  config:atribcfg, recalc_auto
+  config:atribcfg, recalc1_auto
   t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto
   t_[tipo1]:recalc, t_[tipo2]:recalc, t_[tipo3]:recalc
   cmd_recalc1(este)
+# Modificadores
+  txt512 lin
+  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+  efim
 # Efeitos conforme o que está vestindo
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc_auto, i.obj.cmd_recalc2(este)
+    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este)
   efim
   epara i = evento.ini, i, i.depois
     i.obj.cmd_recalc3(este)

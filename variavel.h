@@ -116,14 +116,17 @@ public:
     void setObj(TObjeto * obj); ///< Muda variável a partir de referência
 
 // Operadores numéricos
-    int Compara(TVariavel * v); ///< Compara com outra variável do mesmo tipo
-                        /**< @return -1 se menor, 0 se igual, 1 se maior */
-    void Igual(TVariavel * v); ///< Operador igual com variável do mesmo tipo
-    bool Func(const char * nome);///< Executa função da variável
-                /**< Deve verificar argumentos, após a variável
-                    @param nome Nome da função
-                    @retval true se processou
-                    @retval false se função inexistente */
+    int Compara(TVariavel * v);
+        ///< Compara com outra variável do mesmo tipo
+        /**< @return -1 se menor, 0 se igual, 1 se maior */
+    void Igual(TVariavel * v);
+        ///< Operador igual com variável do mesmo tipo
+    bool Func(const char * nome);
+        ///< Executa função da variável
+        /**< Deve verificar argumentos, após a variável
+         *   @param nome Nome da função
+         *   @retval true se processou
+         *   @retval false se função inexistente */
 
 // Variáveis
     const char * defvar;

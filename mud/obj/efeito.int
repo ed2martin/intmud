@@ -1,5 +1,5 @@
 classe comum_efeito
-# Efeitos que afetam os personagens
+# Efeitos que afetam os itens e personagens
 sav listaitem idono # Uso interno: aonde o objeto está
 listaitem evrec.3 # Usado internamente, para receber eventos
 ref dono # Personagem que contém esse efeito; mesmo que: idono.objlista
@@ -155,3 +155,8 @@ func cmd_chegou # Alguém mudou de sala: acerta eventos do dono do personagem
 
 func tatual_exec # Apaga personagem
   apagar(este), apagar(dono)
+
+
+classe comum_modif
+# Modificadores que afetam os itens e personagens
+const iniclasse = !$[arg0] && criar(arg0)

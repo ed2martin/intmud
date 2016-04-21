@@ -28,6 +28,11 @@ public:
         ///< Cria uma variável TTextoVarSub na pilha
     bool CriarTextoVarSub(TBlocoVar * bl);
         ///< Cria uma variável TTextoVarSub na pilha
+    int Compara(TTextoVar * v);
+        ///< Compara com outra variável TTextoVar
+        /**< @return -1 se menor, 0 se igual, 1 se maior */
+    void Igual(TTextoVar * v);
+        ///< Operador igual com variável TTextoVar
     TBlocoVar * Procura(const char * texto);
         ///< Procura um objeto TIndiceObj a partir do nome
         /**< @param texto Nome a pesquisar
@@ -118,7 +123,7 @@ public:
     virtual const char * Tipo() = 0;
         ///< Caracter após o nome da variável que indica o tipo
     virtual TextoVarTipo TipoVar() = 0;
-        ///< Tipo de variável */
+        ///< Tipo de variável
 
 // Funções get
     virtual bool   getBool()=0;           ///< Retorna valor como bool

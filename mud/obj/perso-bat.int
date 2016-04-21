@@ -120,6 +120,11 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto
   t_[tipo1]:recalc, t_[tipo2]:recalc, t_[tipo3]:recalc
   cmd_recalc1(este)
+# Modificadores
+  txt512 lin
+  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+  efim
 # Bônus conforme o que está vestindo e os efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois

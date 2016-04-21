@@ -116,7 +116,7 @@ func recebe # Recebeu mensagem do jogador
     lmonit && avisamonit(arg0)
     txtmais.limpar
     comandos.limpar
-    $[passo].passo(este, arg0)
+    !$[passo].passo(este, arg0) && (passo = "")
     ret
   senao !perso # Checa se está controlando um personagem
     lmonit && avisamonit(arg0)
@@ -169,13 +169,14 @@ func recebe # Recebeu mensagem do jogador
   enquanto t.linhas
     d.ini
     lin = txtremove(t.remove, "ED")
+    txt(lin, 0, 2) == "\b " && (lin = "\b" + txtremove(txt(lin, 1), "ED"))
     lmonit && avisamonit(lin)
     se txtcor(lin) == "m" && txtmais.linhas # Tecle M para mais
       txtmostra
     senao $[passo] # Passo atual
       txtmais.limpar
       comandos.limpar
-      $[passo].passo(este, txtcor(lin))
+      ret !$[passo].passo(este, txtcor(lin)), passo = ""
     senao !perso # Checa se está controlando um personagem
       txtmais.limpar
       cnome = "un", nome = ""
@@ -189,12 +190,14 @@ func recebe # Recebeu mensagem do jogador
           $cmdatalho.texto = txttroca(txttroca(txt2(lin), "\"", "\c2\""), "\\", "\c2\\")
           t.addini($cmdatalho.adm(atalho))
           lin = txtremove(t.remove, "ED")
+          txt(lin, 0, 2) == "\b " && (lin = "\b" + txtremove(txt(lin, 1), "ED"))
         fimse
       fimse
       casovar txt1(lin)
       casose "\bcmd"
       casose "\bcmdp"
       casose "\bcmdj"
+      casose "\bcmdi"
         lin = txttroca(txttroca(lin, "\c1", "\""), "\c2", "\\")
       casofim
       ret recebe1(txtcor(lin), txt(lin, 0, 1) == "\b" ? $perm_admin : perm), nulo
@@ -918,7 +921,7 @@ const m_T = txtsub(texto, 2)
 const m_Z = "\n"
 const m_@ = "$"
 #
-# Em cmd, cmdp e cmd: \c1 vira aspas, \c2 vira barra invertida
+# Em cmd, cmdp, cmdj e cmdi: \c1 vira aspas, \c2 vira barra invertida
 # Nos outros comandos, \c1 e \c2 são eliminados
 const a_0 = "\c1" + texto + "\c1"
 const a_1 = "\c1" + txt1(texto) + "\c1"

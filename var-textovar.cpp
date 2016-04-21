@@ -106,6 +106,110 @@ bool TTextoVar::CriarTextoVarSub(TBlocoVar * bl)
     return true;
 }
 
+//------------------------------------------------------------------------------
+int TTextoVar::Compara(TTextoVar * v)
+{
+    TBlocoVar * bl1 = (RBroot ? RBroot->RBfirst() : 0);
+    TBlocoVar * bl2 = (v->RBroot ? v->RBroot->RBfirst() : 0);
+    while (bl1 && bl2)
+    {
+    // Compara o nome da variável
+        int cmp1 = strcmp(bl1->NomeVar, bl2->NomeVar);
+        if (cmp1 != 0)
+            return cmp1;
+    // Compara o tipo de variável
+        const char * tipo1 = bl1->Tipo();
+        const char * tipo2 = bl2->Tipo();
+        int cmp2 = strcmp(tipo1, tipo2);
+        if (cmp2 != 0)
+            return cmp1;
+    // Compara o conteúdo da variável
+        switch (bl1->TipoVar())
+        {
+        case TextoVarTipoTxt:
+            {
+                int cmp2 = strcmp(bl1->getTxt(), bl2->getTxt());
+                if (cmp2 == 0)
+                    break;
+                return (cmp2 < 0 ? -1 : 1);
+            }
+        case TextoVarTipoNum:
+            {
+                double v1 = bl1->getDouble();
+                double v2 = bl2->getDouble();
+                if (v1 == v2)
+                    break;
+                return (v1 < v2 ? -1 : 1);
+            }
+        case TextoVarTipoDec:
+            {
+                int v1 = bl1->getDouble();
+                int v2 = bl2->getDouble();
+                if (v1 == v2)
+                    break;
+                return (v1 < v2 ? -1 : 1);
+            }
+        case TextoVarTipoRef:
+            {
+                TObjeto * v1 = bl1->getObj();
+                TObjeto * v2 = bl2->getObj();
+                if (v1 == v2)
+                    break;
+                return (v1 < v2 ? -1 : 1);
+            }
+        }
+    // Passa para a próxima variável
+        bl1 = TBlocoVar::RBnext(bl1);
+        bl2 = TBlocoVar::RBnext(bl2);
+    }
+    return (bl1 ? -1 : bl2 ? 1 : 0);
+}
+
+//------------------------------------------------------------------------------
+void TTextoVar::Igual(TTextoVar * v)
+{
+    if (v == this)
+        return;
+    while (RBroot)
+        delete RBroot;
+    TBlocoVar * bl1 = (v->RBroot ? v->RBroot->RBfirst() : 0);
+    for (; bl1; bl1 = TBlocoVar::RBnext(bl1))
+    {
+        const char * nome = bl1->NomeVar;
+        switch (bl1->TipoVar())
+        {
+        case TextoVarTipoTxt:
+            {
+                const char * p = bl1->getTxt();
+                if (*p)
+                    new TBlocoVarTxt(this, nome, p);
+                break;
+            }
+        case TextoVarTipoNum:
+            {
+                double valor = bl1->getDouble();
+                if (valor != 0)
+                    new TBlocoVarNum(this, nome, valor);
+                break;
+            }
+        case TextoVarTipoDec:
+            {
+                int valor = bl1->getInt();
+                if (valor != 0)
+                    new TBlocoVarDec(this, nome, valor);
+                break;
+            }
+        case TextoVarTipoRef:
+            {
+                TObjeto * obj = bl1->getObj();
+                if (obj)
+                    new TBlocoVarRef(this, nome, obj);
+                break;
+            }
+        }
+    }
+}
+
 //----------------------------------------------------------------------------
 // Variável
 bool TTextoVar::FuncValor(TVariavel * v)

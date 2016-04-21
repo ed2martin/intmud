@@ -1858,6 +1858,8 @@ int TVariavel::Compara(TVariavel * v)
             break;
         case Instr::cTextoPos:
             return end_textopos[indice].Compara(v->end_textopos + v->indice);
+        case Instr::cTextoVar:
+            return end_textovar[indice].Compara(v->end_textovar + v->indice);
         case Instr::cSocket:
             var1 = end_socket->Socket + indice;
             var2 = v->end_socket->Socket + v->indice;
@@ -1884,6 +1886,9 @@ void TVariavel::Igual(TVariavel * v)
         break;
     case Instr::cTextoPos:
         end_textopos[indice].Igual(v->end_textopos + v->indice);
+        break;
+    case Instr::cTextoVar:
+        end_textovar[indice].Igual(v->end_textovar + v->indice);
         break;
     case Instr::cSocket:
         end_socket[indice].Igual(v->end_socket + v->indice);

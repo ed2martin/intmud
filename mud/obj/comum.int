@@ -224,11 +224,15 @@ func atribs_exec # Organiza a variável atribs
     atribs.addfim("Flutuando")
   fimse
   txt512 lin
+  txt512 atr
   (lin = $perm_[jogperm].m_atribs) && atribs.addfim(lin)
   (lin = m_atribs1(este)) && atribs.addfim(lin)
   listaitem i
   epara i = dentro2.ini, i, i.depois
     (lin = i.obj.m_atribs2(este)) && atribs.addfim(lin)
+  efim
+  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+    (atr = $[lin].m_atribs2(este)) && atribs.addfim(atr)
   efim
   ret atribs.bytes == 0, atribs.addfim(" ")
   atribs.ordena
