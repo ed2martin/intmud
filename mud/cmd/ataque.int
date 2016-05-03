@@ -564,7 +564,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     result = 2
     log.m(">Errou porque a o golpe é impreciso")
     ret
-  senao arma1 && rand(100) >= arma1.armaprecisao
+  senao arma1 && rand(100) >= arma1.var.z_armaprecisao_
     result = 2
     log.m(">Errou porque a arma é imprecisa")
     ret
@@ -581,7 +581,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     log.m(">Acertou porque o alvo está embriagado")
   senao # Checa se acertou
     real2 v
-    v = result + arg0.precisao + addprecisao + arma1.armaaddprecisao - arg1.evasao
+    v = result + arg0.precisao + addprecisao + arma1.var.z_armaaddprecisao_ - arg1.evasao
     !arg1.visivel(arg0) && (v -= 5) # Invisível é mais difícil de acertar
     result = 2
     ret v <= 0, nulo
@@ -635,12 +635,12 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   se log
     se arma1
       se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-        dano *= arg0.atkesp + rand(arma1.armamin, arma1.armamax)
+        dano *= arg0.atkesp + rand(arma1.var.z_armamin_, arma1.var.z_armamax_)
         log.mul(">Ataque especial + ataque da arma", dano)
         dano *= arg0.atkesp, log.mul(">Ataque especial", dano)
         dano /= arg1.defesp, log.div(">Defesa especial", dano)
       senao
-        dano *= arg0.atknorm + rand(arma1.armamin, arma1.armamax)
+        dano *= arg0.atknorm + rand(arma1.var.z_armamin_, arma1.var.z_armamax_)
         log.mul(">Ataque normal + ataque da arma", dano)
         dano *= arg0.atknorm, log.mul(">Ataque normal", dano)
         dano /= arg1.defnorm, log.div(">Defesa normal", dano)
@@ -670,10 +670,10 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # Calcula dano com arma
   senao arma1
     se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-      dano *= arg0.atkesp + rand(arma1.armamin, arma1.armamax)
+      dano *= arg0.atkesp + rand(arma1.var.z_armamin_, arma1.var.z_armamax_)
       dano *= arg0.atkesp / (arg1.defesp * 300)
     senao
-      dano *= arg0.atknorm + rand(arma1.armamin, arma1.armamax)
+      dano *= arg0.atknorm + rand(arma1.var.z_armamin_, arma1.var.z_armamax_)
       dano *= arg0.atknorm / (arg1.defnorm * 300)
     fimse
     se config:atknivel >= 2

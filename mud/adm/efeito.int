@@ -340,69 +340,77 @@ const vari8 = "m_atribs2"
 const exec8 = "atribs_dono"
 #
 const nome9 = "Atrib números"
+const info9 = "Afetam apenas personagens"
 const tipo9 = "opc_atribnum"
 const clas9 = var.classe1
 const vari9 = "recalc2_auto"
 const exec9 = "recalc_dono"
 #
-const nome10 = "Atrib sim/não"
-const tipo10 = "opc_atribbit"
+const nome10 = "Atrib itens"
+const info10 = "Afetam apenas itens"
+const tipo10 = "opc_atribobj"
 const clas10 = var.classe1
 const vari10 = "recalc2_auto"
 const exec10 = "recalc_dono"
 #
-const nome11 = "Atrib ataque"
-const info11 = "Afetam os danos quando o personagem ataca alguém"
-const tipo11 = "opc_atribatk"
+const nome11 = "Atrib sim/não"
+const tipo11 = "opc_atribbit"
 const clas11 = var.classe1
 const vari11 = "recalc2_auto"
 const exec11 = "recalc_dono"
 #
-const nome12 = "Atrib defesa"
-const info12 = "Afetam os danos quando alguém ataca o personagem"
-const tipo12 = "opc_atribdef"
+const nome12 = "Atrib ataque"
+const info12 = "Afetam os danos quando o personagem ataca alguém"
+const tipo12 = "opc_atribatk"
 const clas12 = var.classe1
 const vari12 = "recalc2_auto"
 const exec12 = "recalc_dono"
 #
-const nome13 = "Tempo reduzir"
-const info13 = "De quantos em quantos décimos de segundo reduz algo"
-const tipo13 = "opc_numero"
+const nome13 = "Atrib defesa"
+const info13 = "Afetam os danos quando alguém ataca o personagem"
+const tipo13 = "opc_atribdef"
 const clas13 = var.classe1
-const vari13 = "r_tempo"
-const extr13 = "0 10000"
+const vari13 = "recalc2_auto"
+const exec13 = "recalc_dono"
 #
-const nome14 = "Reduz vida"
+const nome14 = "Tempo reduzir"
+const info14 = "De quantos em quantos décimos de segundo reduz algo"
 const tipo14 = "opc_numero"
 const clas14 = var.classe1
-const vari14 = "r_vida"
+const vari14 = "r_tempo"
+const extr14 = "0 10000"
 #
-const nome15 = "Reduz mana"
+const nome15 = "Reduz vida"
 const tipo15 = "opc_numero"
 const clas15 = var.classe1
-const vari15 = "r_mana"
+const vari15 = "r_vida"
 #
-const nome16 = "Reduz vigor"
+const nome16 = "Reduz mana"
 const tipo16 = "opc_numero"
 const clas16 = var.classe1
-const vari16 = "r_move"
+const vari16 = "r_mana"
 #
-const nome17 = "Mensagens"
-const tipo17 = "menu_efeito_msg--"
+const nome17 = "Reduz vigor"
+const tipo17 = "opc_numero"
+const clas17 = var.classe1
+const vari17 = "r_move"
 #
-const nome18 = "Eventos hora"
-const info18 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
-const tipo18 = "opc_simnao"
-const clas18 = var.classe1
-const vari18 = "evhora"
-const exec18 = "ajustaobj"
+const nome18 = "Mensagens"
+const tipo18 = "menu_efeito_msg--"
 #
-const nome19 = "Eventos perso"
-const info19 = "Se recebe eventos do personagem que está com o efeito"
+const nome19 = "Eventos hora"
+const info19 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
 const tipo19 = "opc_simnao"
 const clas19 = var.classe1
-const vari19 = "evperso"
+const vari19 = "evhora"
 const exec19 = "ajustaobj"
+#
+const nome20 = "Eventos perso"
+const info20 = "Se recebe eventos do personagem que está com o efeito"
+const tipo20 = "opc_simnao"
+const clas20 = var.classe1
+const vari20 = "evperso"
+const exec20 = "ajustaobj"
 
 
 classe menu_efeito_msg
@@ -504,31 +512,38 @@ const clas4 = var.classe1
 const vari4 = "m_atribs2"
 #
 const nome5 = "Atrib números"
+const info5 = "Afetam apenas personagens"
 const tipo5 = "opc_atribnum"
 const clas5 = var.classe1
 const vari5 = "recalc2_auto"
 #
-const nome6 = "Atrib sim/não"
-const tipo6 = "opc_atribbit"
+const nome6 = "Atrib itens"
+const info6 = "Afetam apenas itens"
+const tipo6 = "opc_atribobj"
 const clas6 = var.classe1
 const vari6 = "recalc2_auto"
 #
-const nome7 = "Atrib ataque"
-const info7 = "Afetam os danos quando o personagem ataca alguém"
-const tipo7 = "opc_atribatk"
+const nome7 = "Atrib sim/não"
+const tipo7 = "opc_atribbit"
 const clas7 = var.classe1
 const vari7 = "recalc2_auto"
 #
-const nome8 = "Atrib defesa"
-const info8 = "Afetam os danos quando alguém ataca o personagem"
-const tipo8 = "opc_atribdef"
+const nome8 = "Atrib ataque"
+const info8 = "Afetam os danos quando o personagem ataca alguém"
+const tipo8 = "opc_atribatk"
 const clas8 = var.classe1
 const vari8 = "recalc2_auto"
 #
-const nome9 = "Atualizar"
-const tipo9 = "opc_modif"
+const nome9 = "Atrib defesa"
+const info9 = "Afetam os danos quando alguém ataca o personagem"
+const tipo9 = "opc_atribdef"
 const clas9 = var.classe1
 const vari9 = "recalc2_auto"
+#
+const nome10 = "Atualizar"
+const tipo10 = "opc_modif"
+const clas10 = var.classe1
+const vari10 = "recalc2_auto"
 
 
 classe opc_modif

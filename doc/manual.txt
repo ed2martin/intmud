@@ -1494,7 +1494,7 @@ dígito hexadecimal pelos quatro dígitos correspondente em binário:
 001011111000
 
 
-13.7. Operadores de bit com textos
+13.7. OPERADORES DE BIT COM TEXTOS
 
 Para converter entre sistemas de numeração pelo IntMUD, usar a função
 txtconv. Por exemplo, a conversão de 0x2f8 em binário pode ser feita assim:
@@ -1523,7 +1523,30 @@ mas mantém a mesma quantidade de dígitos. O operando à direita é sempre
 um número, embora o operando da esquerda seja um texto.
 
 Exemplo, "f208" << 3 resulta em "9040", enquanto que "f208" >> 3 resulta
-em "1e41". Algo como "4000" >> 10 sinifica 10 deslocamentos para a direita.
+em "1e41". Algo como "4000" >> 10 significa 10 deslocamentos para a direita.
+
+Na prática, o melhor é inverter a ordem dos bits. Assim, o primeiro caracter
+corresponde aos bits 0 a 3, o segundo bits 4 a 7, o terceiro, bits 8 a 11,
+e assim sucessivamente. E se mais tarde for necessário usar mais bits,
+basta aumentar a quantidade de caracteres.
+
+É interessante, também, estabelecer quantos caracteres serão usados. Supondo
+que serão 16 caracteres (portanto 64 bits), esses operadores podem ser usados
+da seguinte forma:
+
+refvar bit0 = "8000000000000000"
+txt16 t
+t |= bit0 >> 33 # Faz 0 bit 33 ser 1
+t &= ~(bit0 >> 25) # Faz o bit 25 ser 0
+t ^= bit0 >> 20 # Inverte o bit 20 (se estiver em 0 vai para 1 e vice-versa)
+se (t << 33) >= "8"
+  telatxt tela
+  tela.msg("O bit 33 está em 1\n")
+fimse
+se (t << 25) < "8"
+  telatxt tela
+  tela.msg("O bit 25 está em 0\n")
+fimse
 
 
 14. INSTRUÇÕES DE CONTROLE DE FLUXO

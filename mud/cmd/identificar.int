@@ -120,9 +120,9 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Se é arma
   se arg1.armatipo
     lin = "É uma arma do tipo \"" + txtsublin(config:arma_txt, arg1.armatipo, 1)
-    lin += "\" de ataque " + arg1.armamin
-    arg1.armamin != arg1.armamax && (lin += " a " + arg1.armamax)
-    lin += " e precisão " + arg1.armaprecisao + "."
+    lin += "\" de ataque " + arg1.var.z_armamin_
+    arg1.var.z_armamin_ != arg1.var.z_armamax_ && (lin += " a " + arg1.var.z_armamax_)
+    lin += " e precisão " + arg1.var.z_armaprecisao_ + "."
     arg2.addfim(lin)
   fimse
 # Aonde pode ser vestido
@@ -148,43 +148,46 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   atrib_ler(arg1, arg1.perso ? "recalc1_auto" : "recalc2_auto")
 # Efeitos numéricos
   int8 x
-  epara nulo, x < p_atrib_bit, x += 1
-    continuar !vatrib.[x]
-    lin = txtmin(txtsublin(p_atrib_txtnum, x, 1))
-    arg2.addfim("Afeta " + lin + " em " + vatrib.[x] + ".")
+  int8 total
+  total = intsubtotal(p_atrib_num)
+  epara x = 0, x < total, x += 1
+    continuar !numatrib.[x]
+    lin = txtmin(txtsublin(p_atrib_num, x, 1))
+    arg2.addfim("Afeta " + lin + " em " + numatrib.[x] + ".")
   efim
 # Efeitos sim/não
   lin = ""
-  epara nulo, x < p_atrib_atk, x += 1
-    continuar !vatrib.[x]
-    lin += ", " + txtmin(txtsublin(p_atrib_txtbit, x - p_atrib_bit, 1))
+  total = intsubtotal(p_atrib_bit)
+  epara x = 0, x < total, x += 1
+    continuar !bitatrib.[x]
+    lin += ", " + txtmin(txtsublin(p_atrib_bit, x, 1))
   efim
   lin && arg2.addfim("Propriedades:" + txt(lin, 1) + ".")
 # Efeitos de ataque
-  refvar total = intsublin(p_atrib_atk1) * 2 + p_atrib_atk
-  epara x = p_atrib_atk, x < total, x += 2
-    continuar vatrib.[x] == 100
-    lin = txtsublin(p_atrib_atk1, x - p_atrib_atk >> 1, 1)
-    se vatrib.[x] == 0
+  total = intsublin(p_atrib_atk1)
+  epara x = 0, x < total, x += 1
+    continuar atkatrib.[x] == 100
+    lin = txtsublin(p_atrib_atk1, x, 1)
+    se atkatrib.[x] == 0
       arg2.addfim("Anula ataques " + lin + ".")
-    senao vatrib.[x] < 100
-      arg2.addfim("Reduz ataques " + lin + " em " + int(100 - vatrib.[x]) + "%.")
+    senao atkatrib.[x] < 100
+      arg2.addfim("Reduz ataques " + lin + " em " + int(100 - atkatrib.[x]) + "%.")
     senao
-      arg2.addfim("Aumenta ataques " + lin + " em " + int(vatrib.[x] - 100) + "%.")
+      arg2.addfim("Aumenta ataques " + lin + " em " + int(atkatrib.[x] - 100) + "%.")
     fimse
   efim
 # Efeitos de defesa
-  epara x = p_atrib_atk + 1, x < total, x += 2
-    continuar vatrib.[x] == 100
-    se vatrib.[x] == 0
-      lin = txtsublin(p_atrib_def2, x - p_atrib_atk >> 1, 1)
-      arg2.addfim("Torna imune a " + lin + ".")
-    senao vatrib.[x] < 100
-      lin = txtsublin(p_atrib_def1, x - p_atrib_atk >> 1, 1)
-      arg2.addfim("Melhora defesa " + lin + " em " + int(10000 / vatrib.[x] - 100) + "%.")
+  epara x = 0, x < total, x += 1
+    continuar defatrib.[x] == 100
+    se defatrib.[x] == 0
+      lin = "Torna imune a " + txtsublin(p_atrib_def2, x, 1)
+      arg2.addfim(lin + ".")
+    senao defatrib.[x] < 100
+      lin = "Melhora defesa " + txtsublin(p_atrib_def1, x, 1)
+      arg2.addfim(lin + " em " + int(10000 / defatrib.[x] - 100) + "%.")
     senao
-      lin = txtsublin(p_atrib_def1, x - p_atrib_atk >> 1, 1)
-      arg2.addfim("Piora defesa " + lin + " em " + int(100 - 10000 / vatrib.[x]) + "%.")
+      lin = "Piora defesa " + txtsublin(p_atrib_def1, x, 1)
+      arg2.addfim(lin + " em " + int(100 - 10000 / defatrib.[x]) + "%.")
     fimse
   efim
 # Identificação
