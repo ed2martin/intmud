@@ -684,10 +684,15 @@ double TTextoVarSub::getDouble()
 //----------------------------------------------------------------------------
 const char * TTextoVarSub::getTxt()
 {
-    if (TextoVar==0)
-        return "";
-    TBlocoVar * bl = TextoVar->Procura(NomeVar);
-    return (bl ? bl->getTxt() : "");
+    if (TextoVar)
+    {
+        TBlocoVar * bl = TextoVar->Procura(NomeVar);
+        if (bl)
+            return bl->getTxt();
+    }
+    if (TipoVar == TextoVarTipoNum || TipoVar == TextoVarTipoDec)
+        return "0";
+    return "";
 }
 
 //----------------------------------------------------------------------------

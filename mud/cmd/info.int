@@ -217,7 +217,7 @@ Seguido de um número de 0 a $ mostra os itens do animal correspondente."
 func escr
   textotxt t
   listaitem item
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, nulo
   epara item = r.dentro1.fim, item, item.antes
     refvar i = item.obj
@@ -259,7 +259,7 @@ func escr
   ref pos.55
   txt50 nomepos
 # Obtém o personagem
-  refvar r = arg1 == "tudo" ? arg0 : misc:objperso(arg0, arg1)
+  refvar r = arg1 == "tudo" ? arg0 : misc:persoinfo(arg0, arg1)
   ret !r, nulo
 # Preenche pos
   epara item = r.dentro2.fim, item, item.antes
@@ -345,7 +345,7 @@ Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
 Seguido de um número de 0 a $ mostra as informações do animal correspondente."
 
 func escr
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, nulo
   se r == arg0
     arg0.msg(vidalin(arg0))
@@ -560,7 +560,7 @@ func escr
   textotxt h
   txt100 t1
 # Obtém o personagem
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, nulo
   t.addfim("\b\c6Estatísticas de \"" + r.nome + "\"\b")
 # Vida, mana e vigor

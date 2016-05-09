@@ -3,9 +3,9 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "27/3/2016"
+const versao = "8/5/2016"
 #
-# Objetos usados em misc:separa, misc:sepitem e misc:sepperso
+# Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
 comum txt100 sep2 # Objeto ou personagem destino
 #
@@ -143,30 +143,61 @@ func separa # Separa o nome do objeto do nome do destino
     misc:sep2 = txtsub(x, tam)
   casofim
 
-func sepitem # Procura o item destino
-# arg0 = personagem, misc:sep2 = nome do alvo
-# Retorna: o alvo ou nulo se não encontrar
+func itemtudo # Obtém um item no personagem ou na sala
+# arg0 = personagem, arg1 = nome do item (que o usuário digitou)
+# Retorna: o objeto do item ou nulo se não encontrou
   listaitem i
   nomeobj n
-  n.ini(misc:sep2, 1)
+  n.ini(arg1, 1)
   epara i = arg0.dentro1.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
   efim
   epara i = arg0.dono.dentro1.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
   efim
 
-func sepperso # Procura o personagem destino
-# arg0 = personagem, misc:sep2 = nome do alvo
-# Retorna: o alvo ou nulo se não encontrar
+func itemdono # Obtém um item na sala
+# arg0 = personagem, arg1 = nome do item (que o usuário digitou)
+# Retorna: o objeto do item ou nulo se não encontrou
   listaitem i
   nomeobj n
-  n.ini(misc:sep2, 1)
-  epara i = arg0.dono.dentro2.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident), i.obj
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
   efim
 
-func objperso # Obtém o personagem que o jogador quer consultar a partir de um texto
+func itemdentro # Obtém um item no personagem
+# arg0 = personagem, arg1 = nome do item (que o usuário digitou)
+# Retorna: o objeto do item ou nulo se não encontrou
+  listaitem i
+  nomeobj n
+  n.ini(arg1, 1)
+  epara i = arg0.dentro1.ini, i, i.depois
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+  efim
+
+func persodono # Obtém um personagem na sala
+# arg0 = personagem, arg1 = nome do personagem (que o usuário digitou)
+# Retorna: o objeto do personagem ou nulo se não encontrou
+  listaitem i
+  nomeobj n
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+  efim
+
+func persooutro # Obtém um personagem na sala que não seja o próprio personagem
+# arg0 = personagem, arg1 = nome do personagem (que o usuário digitou)
+# Retorna: o objeto do personagem ou nulo se não encontrou
+  listaitem i
+  nomeobj n
+  n.ini(arg1, 1)
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    refvar r = i.obj
+    ret r != arg0 && r.visivel(arg0) && n.nome(r.ident, r.objtot), ref(r)
+  efim
+
+func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um texto
 # Com jogadores normais, sempre retorna o personagem escolhido
 # arg0 = personagem
 # arg1 = texto do tipo: [nome do personagem na sala] [número do animal]
@@ -198,19 +229,6 @@ func objperso # Obtém o personagem que o jogador quer consultar a partir de um t
   refvar rr = r.animalnum(num)
   !rr && arg0.msg(txtcopiamai(r.descnome, "A") + " não possui animal " + num + ".")
   ret rr
-
-func objpersosala # Obtém um personagem que está na sala e não é o próprio personagem
-# arg0 = personagem que está consultando
-# arg1 = nome do personagem (texto)
-# Retorna o objeto do personagem, ou nulo se não encontrou
-  listaobj l
-  ref r
-  nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1000000)
-  epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-    r = l.objini
-    ret r.visivel(arg0) && n.nome(r.ident, r.objtot), r
-  efim
 
 func txtmoedas # Retorna texto correspondente à quantidade de moedas
 # arg0 = quantidade de moedas

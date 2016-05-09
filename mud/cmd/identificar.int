@@ -166,28 +166,28 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Efeitos de ataque
   total = intsublin(p_atrib_atk1)
   epara x = 0, x < total, x += 1
-    continuar atkatrib.[x] == 100
+    continuar atribatk.[x] == 100
     lin = txtsublin(p_atrib_atk1, x, 1)
-    se atkatrib.[x] == 0
+    se atribatk.[x] == 0
       arg2.addfim("Anula ataques " + lin + ".")
-    senao atkatrib.[x] < 100
-      arg2.addfim("Reduz ataques " + lin + " em " + int(100 - atkatrib.[x]) + "%.")
+    senao atribatk.[x] < 100
+      arg2.addfim("Reduz ataques " + lin + " em " + int(100 - atribatk.[x]) + "%.")
     senao
-      arg2.addfim("Aumenta ataques " + lin + " em " + int(atkatrib.[x] - 100) + "%.")
+      arg2.addfim("Aumenta ataques " + lin + " em " + int(atribatk.[x] - 100) + "%.")
     fimse
   efim
 # Efeitos de defesa
   epara x = 0, x < total, x += 1
-    continuar defatrib.[x] == 100
-    se defatrib.[x] == 0
+    continuar atribdef.[x] == 100
+    se atribdef.[x] == 0
       lin = "Torna imune a " + txtsublin(p_atrib_def2, x, 1)
       arg2.addfim(lin + ".")
-    senao defatrib.[x] < 100
+    senao atribdef.[x] < 100
       lin = "Melhora defesa " + txtsublin(p_atrib_def1, x, 1)
-      arg2.addfim(lin + " em " + int(10000 / defatrib.[x] - 100) + "%.")
+      arg2.addfim(lin + " em " + int(10000 / atribdef.[x] - 100) + "%.")
     senao
       lin = "Piora defesa " + txtsublin(p_atrib_def1, x, 1)
-      arg2.addfim(lin + " em " + int(100 - 10000 / defatrib.[x]) + "%.")
+      arg2.addfim(lin + " em " + int(100 - 10000 / atribdef.[x]) + "%.")
     fimse
   efim
 # Identificação

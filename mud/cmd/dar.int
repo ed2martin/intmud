@@ -40,7 +40,7 @@ func escr
 # Obtém para quem dar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   ret !misc:sep2, arg0.msg("Dar itens para quem?")
-  sala = misc:sepperso(arg0) # Procura o alvo para o personagem arg0
+  sala = misc:persodono(arg0, misc:sep2) # Procura o alvo para o personagem arg0
   se !sala
     ret arg0.msg("Você não vê " + misc:sep2 + ".")
   senao !sala.p_recebe(arg0)

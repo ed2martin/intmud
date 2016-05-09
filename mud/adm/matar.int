@@ -49,7 +49,7 @@ Mata instantaneamente um personagem."
 
 func escr
   ret !arg1, arg0.msg("Matar quem?")
-  refvar r = misc:objpersosala(arg0, arg1)
+  refvar r = misc:persodono(arg0, arg1)
   ret !r, arg0.msg("Não há nenhum personagem chamado " + arg1)
   arg0.msg("Matando " + r.nome)
   r.morreu(arg0)

@@ -133,7 +133,7 @@ Sintaxe: IHAB [personagem] [número do animal]\n\
 Informa as habilidades de um personagem na sala."
 
 func escr
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, 1
   txt100 t1
   txt100 t2
@@ -161,7 +161,7 @@ Sintaxe: IMAG [personagem] [número do animal]\n\
 Informa as magias de um personagem na sala."
 
 func escr
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, 1
   txt100 t1
   txt100 t2
@@ -189,7 +189,7 @@ Sintaxe: IEF [personagem] [número do animal]\n\
 Informa os efeitos afetando um personagem na sala."
 
 func escr
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, 1
   refvar txtmais = arg0.sock.txtmais
   txtmais.limpar
@@ -344,7 +344,7 @@ Mostra o histórico de um personagem na mesma sala ou animal desse\n\
 personagem, ou seja, os últimos 10 personagens que ele matou."
 
 func escr
-  refvar r = misc:objperso(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1)
   ret !r, 1
   ret !r.p_hist.linhas, arg0.msg(txtcopiamai(r.nome, "A") + " não matou ninguém.")
   arg0.sock.txtmais.limpar

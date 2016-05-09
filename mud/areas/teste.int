@@ -1583,6 +1583,54 @@ func entrou10
   arg0.msginv(config:telepatia2) # Pega a mensagem da configuração
 
 
+classe p_teste034
+herda comum_perso
+const nome = "Afiador de facas"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Personagem escreveu alguma coisa
+  se txt1(arg1) == "afiar"
+    se !txt2(arg1)
+      arg0.msg("Afiador de facas: Afiar o quê?")
+      ret 1
+    fimse
+    ref item
+    item = misc:itemdentro(arg0, txt2(arg1))
+    se item == nulo
+      arg0.msg("Afiador de facas: Você não possui " + txt2(arg1))
+    senao int(item.armatipo) != 3 # 3 = Lâminas curtas
+      arg0.msg("Afiador de facas: Eu não sei afiar isso.")
+    senao item.var.f_afiado_
+      arg0.msg("Afiador de facas: Isso já está bem afiado!")
+    senao arg0.var.z_moedas_ < 100
+      arg0.msg("Afiador de facas: Você não tem 100 moedas para me pagar.")
+    senao
+      arg0.var.z_moedas_ -= 100
+      item = item.mudadono(este, 1) # Pega o item, para o caso de itens que agrupam
+      item.var.f_afiado_ = 1 # Coloca modificador Afiado
+      item.recalc = 1 # Necessário quando se coloca ou retira um modificador
+      item = item.mudadono(arg0, 1) # Devolve o item para o jogador
+      $mens.p(este, arg0, item)
+      $mens.mvis2("", "$P afia $o para $a.")
+    fimse
+    ret 1
+  fimse # Afiar
+
+func cmd_soltouobj
+  se arg1 == dono && arg2.item != 2 # Soltou item que não agrupa na sala
+    se !arg2.dentro2.objini("e_flutuar") && !arg2.dentro2.iniobj("e_voar")
+      $mens.p(este, nulo, arg2)
+      $mens.mvis2("", "$P faz um gesto rápido com as mãos.")
+      criar("e_flutuar", arg2, 0) # Cria efeito Flutuar nível 0 em arg1
+    fimse
+  fimse
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -4071,8 +4119,10 @@ const dir_n = $s_teste041
 classe s_teste145
 herda b_teste
 const s_titulo = "Subsolo 5: Diversos"
-const s_desc = "Ao norte: Checando hora e enviando mensagens telepáticas"
+const s_desc = "Ao norte: Checando hora e enviando mensagens telepáticas\n\
+Ao sul: Efeitos e modificadores"
 const dir_n = $s_teste146
+const dir_s = $s_teste147
 const dir_c = $s_teste119
 
 
@@ -4089,4 +4139,22 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste033:objsolto.total < 1
     criar("p_teste033", este, 0)
+  fimse
+
+
+classe s_teste147
+herda b_teste
+const s_titulo = "Efeitos em itens"
+const s_desc = "Aqui você pode afiar facas ou qualquer outra arma de lâmina curta,\n\
+digitando afiar e o nome do item. O afiador cobra 100 moedas por item.\n\
+Ele faz mágica também. Solte algum item no chão, e se não for do tipo\n\
+que agrupa, ele faz o item flutuar por algum tempo.\n\
+Nota: Tem uma faca na sala teste028"
+const dir_n = $s_teste145
+const s_reset = "P 100 teste034 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste034:objsolto.total < 1
+    criar("p_teste034", este, 0)
   fimse

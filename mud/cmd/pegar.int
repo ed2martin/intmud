@@ -29,7 +29,7 @@ func escr
     sala = arg0.dono
     mens = "."
   senao
-    sala = misc:sepitem(arg0) # Procura o alvo para o personagem arg0
+    sala = misc:itemtudo(arg0, misc:sep2) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
     senao !sala.i_aberto
