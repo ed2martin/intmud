@@ -300,6 +300,133 @@ bool Instr::FuncTxtBit(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Função intbith
+bool Instr::FuncIntBitH(TVariavel * v, int valor)
+{
+    char mens[BUF_MENS];
+    int  inicio = BUF_MENS - 1;
+    mens[BUF_MENS-1] = 0;
+
+    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    {
+        const char * p = var->getTxt();
+        while (*p)
+        {
+            if (*p < '0' || *p > '9')
+            {
+                p++;
+                continue;
+            }
+            int valor = *p - '0';
+            for (p++; *p >= '0' && *p <= '9'; p++)
+            {
+                valor = 10 * valor + *p - '0';
+                if (valor >= BUF_MENS * 4)
+                    break;
+            }
+            if (valor >= BUF_MENS * 4)
+                continue;
+            int ender = BUF_MENS - 1 - valor/4;
+            if (ender < inicio)
+            {
+                memset(mens + ender, 0, inicio - ender);
+                inicio = ender;
+            }
+            mens[ender] |= (1 << (valor&3));
+        }
+    }
+
+    for (char * p = mens+inicio; p<mens+BUF_MENS; p++)
+    {
+        unsigned char ch = *p;
+        *p = (ch < 10 ? ch+'0' : ch+'7');
+    }
+
+    ApagarVar(v);
+    return CriarVarTexto(mens + inicio, BUF_MENS - inicio);
+}
+
+//----------------------------------------------------------------------------
+/// Função txtbith
+bool Instr::FuncTxtBitH(TVariavel * v, int valor)
+{
+    char mens[BUF_MENS];    // Resultado
+    char * destino = mens;
+    char separador[1024];
+    const char * pini = (VarAtual >= v+1 ? v[1].getTxt() : "");
+    const char * p = pini;
+    int bit = 0;
+    while (*p)
+        p++;
+    if (VarAtual >= v+2)
+        copiastr(separador, v[2].getTxt(), sizeof(separador));
+    else
+        strcpy(separador, " ");
+    while (p >= pini)
+    {
+        char ch = *p--;
+        if (ch>='0' && ch<='9')
+            ch-='0';
+        else if (ch>='A' && ch<='Z')
+            ch-='A'-10;
+        else if (ch>='a' && ch<='z')
+            ch-='a'-10;
+        else
+            continue;
+        for (int x=1; x<16; x<<=1,bit++)
+        {
+            if ((ch & x) == 0)
+                continue;
+            if (destino != mens)
+            {
+                const char * sep = separador;
+                while (*sep && destino<mens+sizeof(mens))
+                    *destino++ = *sep++;
+            }
+            if (destino >= mens+sizeof(mens)-5)
+                break;
+            int valor = bit;
+            if (valor >= 10000) *destino++ = valor/10000%10+'0';
+            if (valor >= 1000)  *destino++ = valor/1000%10+'0';
+            if (valor >= 100)   *destino++ = valor/100%10+'0';
+            if (valor >= 10)    *destino++ = valor/10%10+'0';
+            *destino++ = valor%10+'0';
+        }
+    }
+
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino-mens);
+}
+
+//----------------------------------------------------------------------------
+/// Função txthex
+bool Instr::FuncTxtHex(TVariavel * v, int valor)
+{
+    if (VarAtual < v+2)
+        return false;
+    char mens[BUF_MENS];
+    const char * p = v[1].getTxt();
+    int requerido = v[2].getInt();
+    int total = strlen(p);
+    if (requerido <= 0)
+    {
+        ApagarVar(v);
+        return CriarVarTexto("", 0);
+    }
+    if (requerido > BUF_MENS)
+        requerido = BUF_MENS;
+    if (total >= requerido)
+        memcpy(mens, p+total-requerido, requerido);
+    else
+    {
+        memset(mens, '0', requerido-total);
+        memcpy(mens+requerido-total, p, total);
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, requerido);
+}
+
+//----------------------------------------------------------------------------
 /// Função intmax
 bool Instr::FuncMax(TVariavel * v, int valor)
 {

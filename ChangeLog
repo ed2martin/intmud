@@ -1,3 +1,50 @@
+* 14/5/2016 IntMUD 1.08 MUD baseado na revisão 406
+
+   No Manual.txt:
+  1. Tópico 13.7 (Operadores de bit com textos) foi alterado de acordo
+     com as mudanças no IntMUD
+
+   No IntMUD:
+  1. Corrigido bug: função textovar.total estava retornando 0
+  2. Corrigido bug: textovar.valorini e textovar.valorfim não estavam
+     funcionando corretamente quando o nome da variável termina com
+     espaço
+  3. Corrigido bug: variáveis numéricas de Textovar (terminam com
+     sublinhado ou arroba) que não existem eram lidas como se fosse um
+     texto vazio ao invés de "0"
+  4. Agora pode-se usar os operadores =, ==, !=, <=, <, >= e > com
+     variáveis TextoVar
+  5. Criadas funções txtbith, intbith e txthex
+  6. Quando se trata de textos, operadores de bit agora funcionam de
+     forma diferente; vide tópico 13.7 do manual.txt
+  7. Versão do programa mudou para 1.08
+
+   No MUD:
+  1. Corrigido bug: funções cmd_comer, cmd_comeu, cmd_beber e cmd_bebeu
+     não estavam sendo chamadas
+  2. Criada opção no comando Eperm: Atalhos para comandos de
+     administração
+  3. Criado comando Mdesc
+  4. Criado comando Schat e as respectivas opções no comando Econfig
+  5. Criado comando de administração Cmdi
+  6. Criadas funções $mens.msg, $mens.msgvis e $mens.msginv
+  7. Função $mens.proc mudou de nome para $mens.txt
+  8. Criada classe Mensvis para enviar mensagens como se personagens e
+     itens estivessem sempre visíveis
+  9. Itens agora podem ter efeitos e modificadores
+ 10. Personagens podem ter modificadores
+ 11. Agora itens que agrupam só agrupam com outros que possuem as mesmas
+     variáveis da variável var do item
+ 12. Criados comandos para modificadores: Lmod, Cmod, Emod, Amod
+ 13. Atributos para efeitos e modificadores em itens: ataque mínimo e
+     máximo e precisão
+ 14. Criado afiador de facas, sala teste147, para demonstrar efeitos e
+     modificadores em itens
+ 15. Criado modificador Afiado (classe f_afiado do arquivo
+     config/efeito.int), para a sala teste147
+ 16. Documentadas funções para obter personagem e item - tópico 2 do
+     arquivo mud/doc/14-comandos.txt
+
 * 17/3/2016 IntMUD 1.07 MUD baseado na revisão 399
 
    Diversos:

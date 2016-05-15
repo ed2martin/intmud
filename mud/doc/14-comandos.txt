@@ -1,7 +1,8 @@
 Índice
 1. Comandos
-2. Criando menus de edição (administração)
-3. Funcionamento interno das opções dos menus
+2. Funções para obter personagem e item
+3. Criando menus de edição (administração)
+4. Funcionamento interno das opções dos menus
 
 
 1. Comandos
@@ -47,7 +48,58 @@ func passo
 # Deve retornar 1 se processou o que o jogador digitou
 
 
-2. Criando menus de edição (administração)
+2. Funções para obter personagem e item
+
+As funções abaixo permitem obter o objeto correspondente ao item ou
+personagem, a partir do que o usuário digitou. Se o item ou personagem
+não for encontrado, essas funções retornam nulo. Vide exemplo mais adiante.
+
+misc:itemtudo(<personagem>, <nome do item>)
+Obtém um item no personagem ou na sala
+
+misc:itemdono(<personagem>, <nome do item>)
+Obtém um item na sala
+
+misc:itemdentro(<personagem>, <nome do item>)
+Obtém um item no personagem
+
+misc:persodono(<personagem>, <nome do personagem>)
+Obtém um personagem na sala
+
+misc:persooutro(<personagem>, <nome do personagem>)
+Obtém um personagem na sala que não seja o próprio personagem
+
+misc:persoinfo(<personagem>, <nome do personagem>)
+Obtém o personagem que o jogador quer consultar a partir de um texto
+
+misc:separa(<texto>)
+Essa função separa o texto em o nome do objeto e nome do alvo
+Faz: misc:sep1 = objeto, misc:sep2 = alvo
+Exemplo, misc:separa("10 carne joaquim") fará misc:sep1="10 carne"
+e misc:sep2="joaquim"
+
+Exemplo: Comando Copiar, faz o jogador ficar da mesma raça, classe
+e subclasse de outro personagem.
+
+classe cmd_copiar
+herda comando_comum
+const txtajuda = "\b\c3Copiar\b\n\
+Sintaxe: COPIAR <personagem>\n\
+Copia raça e classe de outro personagem."
+
+func escr
+  ret !arg1, arg0.msg("Digite copiar seguido do nome do personagem.")
+  refvar r = misc:persooutro(arg0, arg1)
+  ret !r, arg0.msg("Você não vê ninguém chamado " + arg1 + ".")
+  $mens.p(arg0, r)
+  $mens.msg("Você copia $a.", arg0)
+  arg0.tipo1 = r.tipo1
+  arg0.tipo2 = r.tipo2
+  arg0.tipo3 = r.tipo3
+  arg0.recalc = 1
+
+
+3. Criando menus de edição (administração)
 
 Primeiro criar uma classe como a seguinte:
 
@@ -177,7 +229,7 @@ Alguns exemplos de uso dos diversos tipos de dados:
   determinada habilidade ou magia
 
 
-3. Funcionamento interno das opções dos menus
+4. Funcionamento interno das opções dos menus
 
 Para cada tipo de opção, deve existir uma classe com o mesmo nome,
 com duas funções:

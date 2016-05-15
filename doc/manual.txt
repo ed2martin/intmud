@@ -1502,51 +1502,69 @@ txtconv("2F8", "hx") # Resulta em "0000001011111000"
 
 Os operadores de bit '|' (ou), '&' (e) e '^' (ou exclusivo), funcionam
 de outra forma quando o primeiro operando for um texto. Nesse caso,
-o texto é tratado como se fosse um número em hexadecimal. São considerados
-somente os dígitos de 0 a 9 e as letras de A a F.
+o texto é tratado como se fosse um número em hexadecimal. Ou seja, são
+considerados somente os dígitos de 0 a 9 e as letras de A a F.
 
 Exemplo, "123" ^ "456" resulta em "575". Isso acontece porque comparando
 dígito por dígito temos: 1^4=5, 2^5=7 e 3^6=5.
 
-Quando um dos textos é menor, são acrescentados zeros no final antes da
-operação, até que os dois tenham a mesma quantidade de caracteres.
+Como é de se esperar, quando um dos textos é menor, é considerado como
+se houvessem zeros no começo.
 
-Exemplo, "1" | "abc" é tratado como "100" | "abc", e resulta em "bbc".
+Por exemplo, considere a expressão:
+"1" | "abc"
 
-O operador '~' (inverter) com um texto inverte os bits de cada dígito
-do número.
+Isso é o mesmo que:
+"001" | "abc"
 
-Exemplo, ~"c430" resulta em "3bcf".
+E resulta em "abd".
 
-Os operadores '>>' e '<<', deslocam os bits do número em hexadecimal,
-mas mantém a mesma quantidade de dígitos. O operando à direita é sempre
-um número, embora o operando da esquerda seja um texto.
+O operador '~' (inverter) com um texto inverte os bits de cada dígito.
 
-Exemplo, "f208" << 3 resulta em "9040", enquanto que "f208" >> 3 resulta
-em "1e41". Algo como "4000" >> 10 significa 10 deslocamentos para a direita.
+Exemplo, ~"1111" (em cada dígito, apenas o bit 0 está ativo) resulta em
+"eeee" (bit 0 desativado e todos os outros três bits: 1, 2 e 3 estão
+ativados em cada dígito).
 
-Na prática, o melhor é inverter a ordem dos bits. Assim, o primeiro caracter
-corresponde aos bits 0 a 3, o segundo bits 4 a 7, o terceiro, bits 8 a 11,
-e assim sucessivamente. E se mais tarde for necessário usar mais bits,
-basta aumentar a quantidade de caracteres.
+Antes de inverter os bits, geralmente é interessante definir quantos
+caracteres um número tem, acrescentando zeros no começo se necessário.
+Isso é feito com a função txthex, da seguinte forma:
+txthex(<texto>, <quantidade de caracteres>).
 
-É interessante, também, estabelecer quantos caracteres serão usados. Supondo
-que serão 16 caracteres (portanto 64 bits), esses operadores podem ser usados
-da seguinte forma:
+Exemplo, para inverter os bits do número "11" considerando 5 dígitos:
+~txthex("11", 5)
 
-refvar bit0 = "8000000000000000"
-txt16 t
-t |= bit0 >> 33 # Faz 0 bit 33 ser 1
-t &= ~(bit0 >> 25) # Faz o bit 25 ser 0
-t ^= bit0 >> 20 # Inverte o bit 20 (se estiver em 0 vai para 1 e vice-versa)
-se (t << 33) >= "8"
-  telatxt tela
-  tela.msg("O bit 33 está em 1\n")
-fimse
-se (t << 25) < "8"
-  telatxt tela
-  tela.msg("O bit 25 está em 0\n")
-fimse
+Como o número informado, "11", tem menos de 5 dígitos, a função txthex
+acrescenta zeros à esquerda, retornando o valor "00011". Em seguida,
+ao inveter os bits com o operador '~', resulta em "fffee". Isso seria
+o mesmo que ~"00011".
+
+Quando o número informado ultrapassa a quantidade de caracteres definida,
+a função txthex funciona como txtfim, retornando os últimos caracteres
+do texto.
+
+Exemplo, txthex("11188", 2) resulta em "88".
+
+Os operadores '>>' e '<<', deslocam os bits do número em hexadecimal, para
+a direita e para a esquerda respectivamente. O operando da direita, por ser
+o número de deslocamentos, é sempre um número. O valor em hexadecimal,
+que possui a sequência dos bits, é o operando da esquerda.
+
+Exemplo, "220" << 4 resulta em "2200", enquanto que "220" >> 4 resulta
+em "22". Algo como "1" << 10 significa 10 deslocamentos para a esquerda.
+e resulta em "400".
+
+Para eliminar os zeros à esquerda do número, basta fazer uma operação "ou"
+ou "ou exclusivo" com 0. Exemplo, "000045" | 0 resulta em "45".
+
+Seguem abaixo outras aplicações práticas. Notar que na operação de zerar
+bit, o resultado não passará de 10 dígitos.
+
+a = "12f0" | ("1" << 3) # Coloca o bit 3 de "12f0 em 1 (faz a="12f8")
+a = "12f0" | intbith(3) # Mesma coisa, porém usando intbith
+b = "12f0" & ~txthex("1" << 4, 10) # Zera o bit 5 de "12f0" (faz b="12e0")
+b = "12f0" & ~txthex(intbith(4), 10) # Mesma coisa, porém usando intbith
+c = "12f0" ^ ("1" << 2) # Inverte o bit 2 de "12f0" (faz c="12f4)
+c = "12f0" ^ intbith(2) # Mesma coisa, porém usando intbith
 
 
 14. INSTRUÇÕES DE CONTROLE DE FLUXO
@@ -1880,7 +1898,7 @@ os números, inclusive o sinal de menos.
 Vide também o tópico 13.6 - Operadores de bit.
 
 Exemplo 1:
-intbit("0 1 4) # Retorna 19, que corresponde aos bits 0, 1 e 4 em 1
+intbit("0 1 4") # Retorna 19, que corresponde aos bits 0, 1 e 4 em 1
 # 19 = 1+2+16 = 2 elevado a 0 + 2 elevado a 1 + 2 elevado a 4
 
 Exemplo 2:
@@ -1904,7 +1922,11 @@ senao x & intbit("2 5") == intbit("5")
   t.msg("O bit 2 de x está em 0 e o bit 5 de x está em 1\n")
 fimse
 
-15.2.20. txtbit(<número>, [delimitador])
+15.2.21. intbith(<um ou mais textos>)
+Funciona exatamente como txtbit, porém retorna um texto que é o número
+em hexadecimal.
+
+15.2.22. txtbit(<número>, [delimitador])
 Retorna um texto formado por números de 0 a 31, que correspondem aos bits
 do número que estiverem em 1. Os números são separados pelo texto usado
 delimitador. Se for omitido, será usado um espaço.
@@ -1913,6 +1935,14 @@ Essa função faz o processo inverso de intbit.
 Exemplos:
 txtbit(10) # Retorna o texto "1 3"
 txtbit(52, ", ") # Retorna o texto "2, 4, 5"
+
+15.2.23. txtbith(<número>, [delimitador])
+Funciona exatamente como txtbit, porém o número é um texto em hexadecimal.
+
+15.2.24. hexbit(<texto>, <quantidade de caracteres>)
+Assim como txtfim, retorna um texto que contém os últimos caracteres do texto.
+Porém, se o texto não tiver a quantidade de caracteres especificada, são
+acrescentados zeros no início.
 
 
 15.3. FUNÇÕES DE TEXTO
