@@ -149,17 +149,17 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Efeitos numéricos
   int8 x
   int8 total
-  total = intsubtotal(p_atrib_num)
+  total = intsublin(p_atrib_num)
   epara x = 0, x < total, x += 1
-    continuar !numatrib.[x]
+    continuar !atribnum.[x]
     lin = txtmin(txtsublin(p_atrib_num, x, 1))
-    arg2.addfim("Afeta " + lin + " em " + numatrib.[x] + ".")
+    arg2.addfim("Afeta " + lin + " em " + atribnum.[x] + ".")
   efim
 # Efeitos sim/não
   lin = ""
-  total = intsubtotal(p_atrib_bit)
+  total = intsublin(p_atrib_bit)
   epara x = 0, x < total, x += 1
-    continuar !bitatrib.[x]
+    continuar !atribbit.[x]
     lin += ", " + txtmin(txtsublin(p_atrib_bit, x, 1))
   efim
   lin && arg2.addfim("Propriedades:" + txt(lin, 1) + ".")
