@@ -117,7 +117,7 @@ func escr2 # Consultar um item
       epara t2.addfim(p.taxacasa), t2.linhas, t2.remove
         refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + t2.ini.texto)
         continuar !casa
-        continuar txt(linha += 1) != arg1 && !n.nome(casa.ident, 1)
+        continuar txt(++linha) != arg1 && !n.nome(casa.ident, 1)
         valor = hora.numdias - casa.diataxa
         se valor < 0
           ret arg0.msg(txtcopiamai(p.descnome, "A") + " informa que a taxa já está paga.")

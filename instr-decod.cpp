@@ -22,17 +22,11 @@ using namespace Instr;
 // Retorna: endereço do fim do texto
 static char * copiaini(char * destino, const char * texto)
 {
-    int total = strlen(texto);
-    char * fim = destino;
-    while (*fim)
-        fim++;
-    if (total==0)
-        return fim;
-    for (char * copia = fim; copia>=destino; copia--)
-        copia[total] = copia[0];
-    while (*texto)
-        *destino++ = *texto++;
-    return fim + total;
+    int total1 = strlen(texto);
+    int total2 = strlen(destino);
+    memmove(destino + total1, destino, total2 + 1);
+    memmove(destino, texto, total1);
+    return destino + total1 + total2;
 }
 
 //------------------------------------------------------------------------------
@@ -324,8 +318,9 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                 // Bit 0=1: Apagar a indicação anterior de operando
                 // Bit 1=1: Copiar texto de nome[]
                 // Bit 2=1: Processar texto = nome da variável
-                // Bit 3=1: Operador unitário; nome[] contém o texto
-                // Bit 4=1: Operador binário; nome[] contém o texto
+                // Bit 3=1: Operador unitário antes; nome[] contém o texto
+                // Bit 4=1: Operador unitário depois; nome[] contém o texto
+                // Bit 5=1: Operador binário; nome[] contém o texto
                 // Se for operador: fará automaticamente origem++
                 // indica=0 -> Comando desconhecido
         *nome=0;
@@ -596,47 +591,55 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             }
 
         // Operadores
-        case exo_virgula:      strcpy(nome, ", ");   indica=16; break;
+        case exo_virgula:      strcpy(nome, ", ");   indica=32; break;
         case exo_neg:          strcpy(nome, "-");    indica=8;  break;
         case exo_exclamacao:   strcpy(nome, "!");    indica=8;  break;
         case exo_b_comp:       strcpy(nome, "~");    indica=8;  break;
-        case exo_mul:          strcpy(nome, " * ");  indica=16; break;
-        case exo_div:          strcpy(nome, " / ");  indica=16; break;
-        case exo_porcent:      strcpy(nome, " % ");  indica=16; break;
-        case exo_add:          strcpy(nome, " + ");  indica=16; break;
-        case exo_sub:          strcpy(nome, " - ");  indica=16; break;
-        case exo_b_shl:        strcpy(nome, " << ");  indica=16; break;
-        case exo_b_shr:        strcpy(nome, " >> ");  indica=16; break;
-        case exo_b_e:          strcpy(nome, " & ");  indica=16; break;
-        case exo_b_ouou:       strcpy(nome, " ^ ");  indica=16; break;
-        case exo_b_ou:         strcpy(nome, " | ");  indica=16; break;
-        case exo_menor:        strcpy(nome, " < ");  indica=16; break;
-        case exo_menorigual:   strcpy(nome, " <= "); indica=16; break;
-        case exo_maior:        strcpy(nome, " > ");  indica=16; break;
-        case exo_maiorigual:   strcpy(nome, " >= "); indica=16; break;
-        case exo_igual:        strcpy(nome, " == "); indica=16; break;
-        case exo_igual2:       strcpy(nome, " === "); indica=16; break;
-        case exo_diferente:    strcpy(nome, " != "); indica=16; break;
-        case exo_diferente2:   strcpy(nome, " !== "); indica=16; break;
-        case exo_e:            strcpy(nome, " && "); indica=16; break;
-        case exo_ou:           strcpy(nome, " || "); indica=16; break;
-        case exo_int2:         strcpy(nome, " ? "); indica=16; break;
-        case exo_dponto2:      strcpy(nome, " : "); indica=16; break;
-        case exo_atrib:        strcpy(nome, " = ");  indica=16; break;
-        case exo_i_mul:        strcpy(nome, " *= "); indica=16,origem+=2; break;
-        case exo_i_div:        strcpy(nome, " /= "); indica=16,origem+=2; break;
-        case exo_i_porcent:    strcpy(nome, " %= "); indica=16,origem+=2; break;
-        case exo_i_add:        strcpy(nome, " += "); indica=16,origem+=2; break;
-        case exo_i_sub:        strcpy(nome, " -= "); indica=16,origem+=2; break;
-        case exo_i_b_shl:      strcpy(nome, " <<= "); indica=16,origem+=2; break;
-        case exo_i_b_shr:      strcpy(nome, " >>= "); indica=16,origem+=2; break;
-        case exo_i_b_e:        strcpy(nome, " &= "); indica=16,origem+=2; break;
-        case exo_i_b_ouou:     strcpy(nome, " ^= "); indica=16,origem+=2; break;
-        case exo_i_b_ou:       strcpy(nome, " |= "); indica=16,origem+=2; break;
+        case exo_add_antes:    strcpy(nome, "++");   indica=8;  break;
+        case exo_sub_antes:    strcpy(nome, "--");   indica=8;  break;
+        case exo_add_depois:   strcpy(nome, "++");   indica=16;  break;
+        case exo_sub_depois:   strcpy(nome, "--");   indica=16;  break;
+        case exo_add_sub1:     strcpy(nome, " **add_sub1**");   indica=16;  break;
+        case exo_add_sub2:     strcpy(nome, " **add_sub2**");   indica=16;  break;
+        case exo_mul:          strcpy(nome, " * ");  indica=32; break;
+        case exo_div:          strcpy(nome, " / ");  indica=32; break;
+        case exo_porcent:      strcpy(nome, " % ");  indica=32; break;
+        case exo_add:          strcpy(nome, " + ");  indica=32; break;
+        case exo_sub:          strcpy(nome, " - ");  indica=32; break;
+        case exo_b_shl:        strcpy(nome, " << ");  indica=32; break;
+        case exo_b_shr:        strcpy(nome, " >> ");  indica=32; break;
+        case exo_b_e:          strcpy(nome, " & ");  indica=32; break;
+        case exo_b_ouou:       strcpy(nome, " ^ ");  indica=32; break;
+        case exo_b_ou:         strcpy(nome, " | ");  indica=32; break;
+        case exo_menor:        strcpy(nome, " < ");  indica=32; break;
+        case exo_menorigual:   strcpy(nome, " <= "); indica=32; break;
+        case exo_maior:        strcpy(nome, " > ");  indica=32; break;
+        case exo_maiorigual:   strcpy(nome, " >= "); indica=32; break;
+        case exo_igual:        strcpy(nome, " == "); indica=32; break;
+        case exo_igual2:       strcpy(nome, " === "); indica=32; break;
+        case exo_diferente:    strcpy(nome, " != "); indica=32; break;
+        case exo_diferente2:   strcpy(nome, " !== "); indica=32; break;
+        case exo_e:            strcpy(nome, " && "); indica=32; break;
+        case exo_ou:           strcpy(nome, " || "); indica=32; break;
+        case exo_int2:         strcpy(nome, " ? "); indica=32; break;
+        case exo_intint2:      strcpy(nome, " ?? "); indica=32; break;
+        case exo_dponto2:      strcpy(nome, " : "); indica=32; break;
+        case exo_atrib:        strcpy(nome, " = ");  indica=32; break;
+        case exo_i_mul:        strcpy(nome, " *= "); indica=32,origem+=2; break;
+        case exo_i_div:        strcpy(nome, " /= "); indica=32,origem+=2; break;
+        case exo_i_porcent:    strcpy(nome, " %= "); indica=32,origem+=2; break;
+        case exo_i_add:        strcpy(nome, " += "); indica=32,origem+=2; break;
+        case exo_i_sub:        strcpy(nome, " -= "); indica=32,origem+=2; break;
+        case exo_i_b_shl:      strcpy(nome, " <<= "); indica=32,origem+=2; break;
+        case exo_i_b_shr:      strcpy(nome, " >>= "); indica=32,origem+=2; break;
+        case exo_i_b_e:        strcpy(nome, " &= "); indica=32,origem+=2; break;
+        case exo_i_b_ouou:     strcpy(nome, " ^= "); indica=32,origem+=2; break;
+        case exo_i_b_ou:       strcpy(nome, " |= "); indica=32,origem+=2; break;
         case exo_virg_expr:
         case exo_ee:
         case exo_ouou:
         case exo_int1:
+        case exo_intint1:
         case exo_dponto1:      indica=0x80; break;
         }
         origem++;
@@ -708,7 +711,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                     assert(0);
             }
         }
-        if (indica&8) // Operador unitário
+        if (indica&8) // Operador unitário antes
         {
             //printf("unitário: %s\n", nome); fflush(stdout);
             int op = Instr::Prioridade(origem[-1]);
@@ -730,7 +733,30 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             *destino=0;
             destino = copiaini(p, nome);
         }
-        if (indica&16) // Operador binário
+        if (indica&16) // Operador unitário depois
+        {
+            //printf("unitário: %s\n", nome); fflush(stdout);
+            int op = Instr::Prioridade(origem[-1]);
+            assert(op!=0);
+        // Recua até operando anterior
+            char * p = destino-1;
+            for (; *(unsigned char*)p>=' '; p--)
+                assert(p>dest_ini);
+        // Decide se deve colocar entre parênteses
+            if (op < *p)
+            {
+                *destino = 0;
+                copiaini(p+1, "(");
+                destino++;
+                *destino++=')';
+            }
+            *p++ = op;
+        // Anota o texto
+            if (destino + strlen(nome) + 1 > dest_fim)
+                return false;
+            destino = copiastr(destino, nome);
+        }
+        if (indica&32) // Operador binário
         {
             //printf("binário: %s\n", nome); fflush(stdout);
             const char * txtprimeiro = "";

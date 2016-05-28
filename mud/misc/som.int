@@ -36,14 +36,14 @@ func inserir # Insere um som em arquivo
 # Checa o nome do som
   int16 pos
   refvar nome = txtremove(txtmin(txtsub(arg0, 1, 1)), "EDC7")
-  epara pos = inttotal(nome) - 1, pos >= 0, pos -= 1
+  epara pos = inttotal(nome) - 1, pos >= 0, pos--
     refvar ch = txt(nome, pos, 1)
     continuar ch >= "a" && ch <= "z" || ch >= "0" && ch <= "9" || ch == "_" || ch == "@"
     ret "Caracter não permitido no nome do som: " + ch
   efim
 # Checa o nome do arquivo
   refvar arq = txttroca(txtsub(arg0, 2, 1), "\\", "/")
-  epara pos = inttotal(arq) - 1, pos >= 0, pos -= 1
+  epara pos = inttotal(arq) - 1, pos >= 0, pos--
     refvar ch = txt(arq, pos, 1)
     continuar ch >= "a" && ch <= "z" || ch >= "A" && ch <= "Z" || ch >= "0" && ch <= "9"
     continuar ch == "_" || ch == "/" || ch == "."

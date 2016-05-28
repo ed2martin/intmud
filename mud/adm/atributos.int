@@ -234,12 +234,12 @@ func atrib_salvar # Salva os atributos em função conforme variáveis atrib
   x && t.addfim("bitinv|=" + x)
   txt100 lin
   refvar total = intsublin(p_atrib_atk)
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     continuar atribatk.[x] == 100
     lin = " # " + txtsublin(p_atrib_atk, x, 1)
     t.addfim("atktipo." + x + "*=" + atribatk.[x] / 100 + lin)
   efim
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     continuar atribdef.[x] == 100
     lin = " # " + txtsublin(p_atrib_atk, x, 1)
     t.addfim("deftipo." + x + "*=" + atribdef.[x] / 100 + lin)
@@ -272,7 +272,7 @@ func menu # Retorna a quantidade de atributos numéricos
   refvar total = intsublin(lista)
   int8 x
   int8 linhas
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     linhas += vetor.[x] != 0
   efim
   prog p
@@ -310,7 +310,7 @@ func passo # Editando atributos
     arg0.txtmais.addfim("Atributos")
     textotxt t1
     textotxt t2
-    epara t1.addfim(lista), t1.linhas, linha += 1
+    epara t1.addfim(lista), t1.linhas, linha++
       refvar lin = "\b\c2" + txt(linha + 1) + (linha < 9 ? "\b. " : "\b.") + t1.remove
       refvar n = vetor.[linha]
       se n
@@ -325,7 +325,7 @@ func passo # Editando atributos
     arg0.msg("Opção inexistente: " + txt1(arg1))
   senao
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
-    linha -= 1
+    linha--
     arg0.var.opcpasso2 = este
     arg0.var.opclin = linha
     arg0.msg(txtsublin(lista, linha, 1) + ": " + vetor.[linha])
@@ -350,7 +350,7 @@ func menu # Retorna a quantidade de atributos sim/não
   prog p
   uint16 linhas
   epara p.inilinha(arg0, arg1) && p.depois, p.lin, p.depois
-    txt(p.texto, 0, 3) == "bit" && (linhas += 1)
+    txt(p.texto, 0, 3) == "bit" && linhas++
   efim
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -386,7 +386,7 @@ func passo # Editando atributos
     arg0.txtmais.addfim("Atributos")
     textotxt t1
     textotxt t2
-    epara t1.addfim(p_atrib_bit), t1.linhas, linha += 1
+    epara t1.addfim(p_atrib_bit), t1.linhas, linha++
       refvar lin = "\b\c2" + txt(linha + 1) + (linha < 9 ? "\b. " : "\b.") + t1.remove
       se atribbit.[linha]
         arg0.txtmais.addfim(txt(lin + txtesp(29), 0, 34) + ": \c6Sim\b")
@@ -400,7 +400,7 @@ func passo # Editando atributos
     arg0.msg("Opção inexistente: " + txt1(arg1))
   senao
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
-    linha -= 1
+    linha--
     atribbit.[linha] = !atribbit.[linha]
     atrib_salvar(arg0)
     refvar lin = atribbit.[linha] ? "Sim" : "Não"
@@ -420,7 +420,7 @@ func menu # Retorna a quantidade de ataques
   prog p
   uint16 linhas
   epara p.inilinha(arg0, arg1) && p.depois, p.lin, p.depois
-    txt(p.texto, 0, 7) == nome && (linhas += 1)
+    txt(p.texto, 0, 7) == nome && linhas++
   efim
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -457,7 +457,7 @@ func passo # Editando atributos
     textotxt t1
     textotxt t2
     txt100 lin
-    epara t1.addfim(p_atrib_atk), t1.linhas, linha += 1
+    epara t1.addfim(p_atrib_atk), t1.linhas, linha++
       lin = "\b\c2" + txt(linha + 1) + (linha < 9 ? "\b. Danos " : "\b.Danos ") + t1.remove
       refvar n = vetor.[linha]
       se n != 100
@@ -472,7 +472,7 @@ func passo # Editando atributos
     arg0.msg("Opção inexistente: " + txt1(arg1))
   senao
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
-    linha -= 1
+    linha--
     arg0.var.opcpasso2 = este
     arg0.var.opclin = linha
     refvar nomedano = txtsublin(p_atrib_atk, linha, 1)
@@ -539,7 +539,7 @@ func menu # Retorna a quantidade de atributos numéricos
   prog p
   uint16 linhas
   epara p.inilinha(arg0, arg1) && p.depois, p.lin, p.depois
-    linhas += 1
+    linhas++
   efim
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
@@ -576,7 +576,7 @@ func passo
     arg0.txtmais.addfim("Atributos")
     textotxt t1
     txt100 lin
-    epara t1.addfim(p_atrib_num), t1.linhas, linha += 1
+    epara t1.addfim(p_atrib_num), t1.linhas, linha++
       lin = "\b\c2" + txt(linha + 1) + (linha < 9 ? "\b. " : "\b.") + t1.remove
       arg0.txtmais.addfim(txt(lin + txtesp(29), 0, 34) + ": \c3" + atribnum.[linha] + "\b")
     efim
@@ -585,7 +585,7 @@ func passo
     arg0.msg("Opção inexistente: " + txt1(arg1))
   senao
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
-    linha -= 1
+    linha--
     arg0.var.opclin = linha
     arg0.msg(txtsublin(p_atrib_num, linha, 1) + ": " + atribnum.[linha])
     ret $opc_atribcfg2.passo(arg0, "\b")

@@ -82,7 +82,7 @@ func escr # Criar casa
   senao !p.existe("a_" + nome)
     ret arg0.msg("Área não existe: " + nome)
   senao
-    epara num = 1001, p.existe("c_" + nome + txtfim(num, 3)), num += 1
+    epara num = 1001, p.existe("c_" + nome + txtfim(num, 3)), num++
       continuar num < 2000
       ret arg0.msg("Atingido limite de casas na área " + nome)
     efim
@@ -115,7 +115,7 @@ func escr # Apagar casa
     se !p.existe("c_" + txtsub(nome, x, 1))
       ret arg0.msg("Casa não existe: " + txtsub(nome, x, 1))
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = nome
   passo(arg0.sock, "")
@@ -129,7 +129,7 @@ func passo # Confirmar que quer apagar casa
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("c_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2

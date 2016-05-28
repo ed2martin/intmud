@@ -191,7 +191,7 @@ func descsala # Retorna descrição da sala
   textotxt t
   se visivel(arg0)
 # t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo(arg0) + "\b")
-    t.addfim("\b\c6" + (var.z_titulo ? var.z_titulo : s_titulo(arg0)) + "\b")
+    t.addfim("\b\c6" + (var.z_titulo ?? s_titulo(arg0)) + "\b")
     t.bytes <= 5 && t.limpar
     se arg1 & 1
       se var.z_desc

@@ -607,7 +607,7 @@ func menu2 # Retorna o texto correspondente a uma opção
   int8 x
   valor = arg0
   epara t.addfim(arg1), t.linhas, valor = valor >> 1
-    valor & 1 ? (lin += ", " + x + "-" + t.remove) : t.remove, x += 1
+    valor & 1 ? (lin += ", " + x + "-" + t.remove) : t.remove, x++
   efim
   ret lin ? "\c6" + txt(lin, 2) + "\b" : ""
 
@@ -1061,9 +1061,9 @@ func salvar # Opçao salvar
   enquanto t1.linhas
     x = lin = t1.remove
     se txt(x) == txt(lin, 0, inttotal(txt(x)))
-      p1 = arg0.teditor.ini, arg0 && (x += 1)
+      p1 = arg0.teditor.ini, arg0 && x++
       enquanto p1.txtproc("\\\n") >= 0 && p1.linha < x
-        p1.depois, x += 1
+        p1.depois, x++
       efim
       lin = txt(x) + txt(lin, inttotal(txt(x)))
     fimse
@@ -1139,7 +1139,7 @@ func passoeditor # Processamento de qualquer editor de texto
     x > 8 && (x = 8)
     x < 1 && (x = 1)
     enquanto x > 0
-      arg0.leditor.antes, x -= 1
+      arg0.leditor.antes, x--
       arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
       ret !arg0.leditor.linha, 1
     efim
@@ -1150,7 +1150,7 @@ func passoeditor # Processamento de qualquer editor de texto
     x > 8 && (x = 8)
     x < 1 && (x = 1)
     enquanto x > 0
-      arg0.leditor.depois, x -= 1
+      arg0.leditor.depois, x--
       se !arg0.leditor.lin
         arg0.msg("Fim do texto")
         ret 1
@@ -1403,7 +1403,7 @@ func ini
 func ordem_exec
   tantes = ""
   t.limpar
-  (cont += 1) < 50 && t.addfim(txttroca([nomeclasse]:admordem, " ", "\n"))
+  ++cont < 50 && t.addfim(txttroca([nomeclasse]:admordem, " ", "\n"))
   p.inifunccl(nomeclasse)
   enquanto t.linhas
     se p.existe(nomeclasse, t.ini.texto) != 1 || p.vartipo(nomeclasse, t.ini.texto) != "const"

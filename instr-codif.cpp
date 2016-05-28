@@ -1566,9 +1566,21 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case '+': sinal=exo_add;
                   if (origem[1]=='=')
                       sinal=exo_i_add,origem++;
+                  else if (origem[1]=='+')
+                  {
+                      sinal=(arg ? exo_add_depois : exo_add_antes);
+                      bsinal=arg;
+                      origem++;
+                  }
                   break;
         case '-': if (origem[1]=='=')
                       sinal=exo_i_sub,origem++;
+                  else if (origem[1]=='-')
+                  {
+                      sinal=(arg ? exo_sub_depois : exo_sub_antes);
+                      bsinal=arg;
+                      origem++;
+                  }
                   else if (arg)
                       sinal=exo_sub;
                   else
@@ -1606,23 +1618,29 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                       sinal=exo_igual2,origem+=2;
                   break;
 
-        case '&': sinal=exo_b_e;
-                  if (origem[1]=='&')
+        case '&': if (origem[1]=='&')
                        sinal=exo_e,origem++;
                   else if (origem[1]=='=')
                       sinal=exo_i_b_e,origem++;
+                  else
+                      sinal=exo_b_e;
                   break;
-        case '|': sinal=exo_b_ou;
-                  if (origem[1]=='|')
+        case '|': if (origem[1]=='|')
                        sinal=exo_ou,origem++;
                   else if (origem[1]=='=')
                       sinal=exo_i_b_ou,origem++;
+                  else
+                      sinal=exo_b_ou;
                   break;
-        case '^': sinal=exo_b_ouou;
-                  if (origem[1]=='=')
+        case '^': if (origem[1]=='=')
                       sinal=exo_i_b_ouou,origem++;
+                  else
+                      sinal=exo_b_ouou;
                   break;
-        case '?': sinal=exo_int2; break;
+        case '?': sinal=exo_int2;
+                  if (origem[1]=='?')
+                      sinal=exo_intint2,origem++;
+                  break;
         case ':': sinal=exo_dponto2; break;
 
         default:
@@ -1662,6 +1680,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case exo_e: *destino++ = exo_ee; break;
         case exo_ou: *destino++ = exo_ouou; break;
         case exo_int2: *destino++ = exo_int1; break;
+        case exo_intint2: *destino++ = exo_intint1; break;
         case exo_dponto2: *destino++ = exo_dponto1; break;
         case exo_virgula:
             if (topo != pilha + 1)
@@ -1691,6 +1710,6 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
 
         *topo++ = modo;
         modo = sinal;
-        arg=false;
+        arg = (pri_sinal == 3);
     }
 }

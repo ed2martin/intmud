@@ -12,7 +12,7 @@ inttempo rbot
 func ini
   rbot_tempo
   int8 x
-  epara x = 1, x <= 10, x += 1
+  epara x = 1, x <= 10, x++
     refvar lin = config:inicom[x]
     casovar txtmin(txt1(lin))
     casose "bot"
@@ -49,7 +49,7 @@ func rbot_exec
   rbot_tempo
   indiceitem item
   int8 x
-  epara x = 1, x <= 10, x += 1
+  epara x = 1, x <= 10, x++
     refvar lin = config:inicom[x]
     continuar txt1(lin) != "rbot" && txt1(lin) != "rbot2"
     continuar intsub(lin) < 5 || item.obj("cn " + txtsub(lin, 1, 1))

@@ -153,7 +153,7 @@ func escr # Apagar efeito
     senao e_[txtsub(arg1, x, 1)]:interno
       ret arg0.msg("Efeito não pode ser apagado: " + txtsub(arg1, x, 1))
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = arg1
   passo(arg0.sock, "")
@@ -167,7 +167,7 @@ func passo # Confirmar que quer apagar efeito
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("e_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2
@@ -204,7 +204,7 @@ func escr # Apagar efeito
     se !p.existe("f_" + txtsub(arg1, x, 1))
       ret arg0.msg("Modificador não existe: " + txtsub(arg1, x, 1))
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = arg1
   passo(arg0.sock, "")
@@ -218,7 +218,7 @@ func passo # Confirmar que quer apagar efeito
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("f_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2

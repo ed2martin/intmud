@@ -133,7 +133,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     arg1.armatipo && (lin += ", empunhando")
     enquanto x < 30 && valor
       valor & 1 && (lin += ", " + txtsublin(config:equip_txt, x, 1))
-      x += 1, valor = valor >> 1
+      x++, valor = valor >> 1
     efim
     lin && arg2.addfim("Pode ser usado em: " + txt(lin, 2) + ".")
   fimse
@@ -150,7 +150,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   int8 x
   int8 total
   total = intsublin(p_atrib_num)
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     continuar !atribnum.[x]
     lin = txtmin(txtsublin(p_atrib_num, x, 1))
     arg2.addfim("Afeta " + lin + " em " + atribnum.[x] + ".")
@@ -158,14 +158,14 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Efeitos sim/não
   lin = ""
   total = intsublin(p_atrib_bit)
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     continuar !atribbit.[x]
     lin += ", " + txtmin(txtsublin(p_atrib_bit, x, 1))
   efim
   lin && arg2.addfim("Propriedades:" + txt(lin, 1) + ".")
 # Efeitos de ataque
   total = intsublin(p_atrib_atk1)
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     continuar atribatk.[x] == 100
     lin = txtsublin(p_atrib_atk1, x, 1)
     se atribatk.[x] == 0
@@ -177,7 +177,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     fimse
   efim
 # Efeitos de defesa
-  epara x = 0, x < total, x += 1
+  epara x = 0, x < total, x++
     continuar atribdef.[x] == 100
     se atribdef.[x] == 0
       lin = "Torna imune a " + txtsublin(p_atrib_def2, x, 1)

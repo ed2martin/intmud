@@ -234,6 +234,9 @@ const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, (char)0xFF, 0,
 const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrVarTextoObjSub[] =  { 9, 0, Instr::cTextoObjSub, (char)0xFF, 0, 0, 0, '+', 0 };
 const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, (char)0xFF, 0, 0, 0, 'f', 0 };
+const char Instr::InstrAddSub[] = { 9, 0, Instr::cConstExpr, (char)0xFF, 0,
+        Instr::exo_add_sub1, Instr::exo_atrib,
+        Instr::exo_add_sub2, Instr::ex_fim };
 
 static void ApagaVarEscopo()
 {
@@ -706,7 +709,7 @@ bool Instr::ExecX()
             TVariavel * v = VarAtual - x;
             if (v<VarPilha)
                 continue;
-            printf("    v%d %p m%d/%d l%d ", v-VarPilha, v->endvar,
+            printf("    v%d %p m%d/%d l%d ", (int)(v-VarPilha), v->endvar,
                    v->indice, (unsigned char)v->defvar[endVetor], v->tamanho);
             const char * p = NomeComando(v->defvar[2]);
             if (p)
@@ -1200,6 +1203,115 @@ bool Instr::ExecX()
             else
                 VarAtual->setInt(~VarAtual->getInt());
             break;
+
+// EXO_ADD_SUB tratando varfunc:
+// Apaga a varfunc do topo da pilha
+// Cria variável double: 1, ou ou -1 (será adicionado ao resultado final)
+// Cria varfunc
+// Cria variável double: 1, ou ou -1 (será adicionado à varfunc)
+// Cria varfunc
+// Cria função que começa com a primeira variável criada
+
+// Em seguida é chamado exo_add_sub1:
+// Resolve a varfunc no topo da pilha
+// Obtém: double valor = VarAtual->getDouble()
+// Apaga a variável do topo da pilha
+// Soma a variável valor às duas variáveis double criadas
+
+// Depois vem exo_atrib, para atribuir o valor numérico obtido à varfunc
+
+// Depois é chamado exo_add_sub2:
+// Apaga a variável do topo da pilha, que é a varfunc
+// Desse modo, fica no topo da pilha a primeira variável double criada
+// Apaga a função atual (volta para a função anterior)
+
+#define EXO_ADD_SUB(somavar, somaresult)                                      \
+            FuncAtual->expr++;                                                \
+            if (VarAtual->defvar[2] != cVarFunc &&                            \
+                VarAtual->defvar[2] != cConstVar)                             \
+            {                                                                 \
+                double valor = VarAtual->getDouble();                         \
+                VarAtual->setDouble(valor + (somavar));                       \
+                ApagarVar(VarAtual);                                          \
+                if (!CriarVar(InstrDouble))                                   \
+                    return RetornoErro(2);                                    \
+                VarAtual->setDouble(valor + (somaresult));                    \
+                break;                                                        \
+            }                                                                 \
+            else                                                              \
+            {                                                                 \
+                /* Varfunc:                                                   \
+                 * 1. Apaga varfunc                                           \
+                 * 2. Cria nova função                                        \
+                 * 3. Cria variável double -> adicionado ao resultado final   \
+                 * 4. Criar uma cópia da varfunc                              \
+                 * 5. Criar variável double -> adicionado ao varfunc          \
+                 * 6. Criar uma cópia da varfunc                              \
+                 */                                                           \
+                if (FuncAtual >= FuncFim - 1 || VarAtual >= VarFim-4)         \
+                    return RetornoErro(1);                                    \
+                assert(VarAtual->tamanho == 0);                               \
+                                                                              \
+                const char * defvar = InstrAddSub + endIndice;                \
+                FuncAtual++;                                                  \
+                FuncAtual->nome = defvar;                                     \
+                FuncAtual->linha = defvar;                                    \
+                FuncAtual->este = FuncAtual[-1].este;                         \
+                FuncAtual->expr = defvar + defvar[endIndice];                 \
+                FuncAtual->inivar = VarAtual;                                 \
+                FuncAtual->fimvar = VarAtual;                                 \
+                FuncAtual->numarg = 0;                                        \
+                FuncAtual->tipo = 0;                                          \
+                FuncAtual->indent = 0;                                        \
+                FuncAtual->objdebug = FuncAtual[-1].objdebug;                 \
+                FuncAtual->funcdebug = FuncAtual[-1].funcdebug;               \
+                                                                              \
+                TVariavel variavel_varfunc = VarAtual[0];                     \
+                ApagarVar(VarAtual);                                          \
+                if (!CriarVar(InstrDouble))                                   \
+                    return RetornoErro(2);                                    \
+                VarAtual->setDouble(somaresult);                              \
+                VarAtual++;                                                   \
+                VarAtual[0] = variavel_varfunc;                               \
+                if (!CriarVar(InstrDouble))                                   \
+                    return RetornoErro(2);                                    \
+                VarAtual->setDouble(somavar);                                 \
+                VarAtual++;                                                   \
+                VarAtual[0] = variavel_varfunc;                               \
+                break;                                                        \
+            }
+
+        case exo_add_antes:     // Operador: ++a
+            EXO_ADD_SUB(1, 1)
+            break;
+        case exo_sub_antes:     // Operador: --a
+            EXO_ADD_SUB(-1, -1)
+            break;
+        case exo_add_depois:    // Operador: a++
+            EXO_ADD_SUB(1, 0)
+            break;
+        case exo_sub_depois:    // Operador: a--
+            EXO_ADD_SUB(-1, 0)
+            break;
+        case exo_add_sub1:
+            {
+                if (VarFuncIni(VarAtual-1))
+                    break;
+                FuncAtual->expr++;
+                double valor = VarAtual->getDouble();
+                ApagarVar(VarAtual);
+                VarAtual->setDouble(valor + VarAtual->getDouble());
+                VarAtual[-2].setDouble(valor + VarAtual[-2].getDouble());
+                break;
+            }
+        case exo_add_sub2:
+            {
+                FuncAtual->expr++;
+                ApagarVar(VarAtual);
+                FuncAtual--;
+                break;
+            }
+
         case exo_mul:        // Operador: a*b
             {
                 if (VarFuncIni(VarAtual-1))
@@ -1923,6 +2035,22 @@ exo_compara_sair:
                 assert(p!=0);
                 FuncAtual->expr = p + 1;
             }
+            break;
+        case exo_intint1:       // Operador: Início do operador "??"
+            if (VarFuncIni(VarAtual))
+                break;
+            FuncAtual->expr++;
+            if (VarAtual->getBool())
+            {
+                const char * p = ProcuraExpr(FuncAtual->expr, exo_intint2);
+                assert(p!=0);
+                FuncAtual->expr = p + 1;
+                break;
+            }
+            ApagarVar(VarAtual);
+            break;
+        case exo_intint2:       // Operador: Fim do operador "??"
+            FuncAtual->expr++;
             break;
         case exo_dponto1:       // Operador: Início do operador ":"
             FuncAtual->expr++;

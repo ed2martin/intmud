@@ -452,7 +452,13 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_virg_expr:    strcpy(nome, " ,(expr)"); break;
         case exo_neg:          strcpy(nome, " -(unitário)"); break;
         case exo_exclamacao:   strcpy(nome, " !");  break;
-        case exo_b_comp:       strcpy(nome, " ~");   break;
+        case exo_b_comp:       strcpy(nome, " ~");  break;
+        case exo_add_antes:    strcpy(nome, " ++(antes)"); break;
+        case exo_sub_antes:    strcpy(nome, " --(antes)"); break;
+        case exo_add_depois:   strcpy(nome, " ++(depois)"); break;
+        case exo_sub_depois:   strcpy(nome, " --(depois)"); break;
+        case exo_add_sub1:     strcpy(nome, " (add_sub1)"); break;
+        case exo_add_sub2:     strcpy(nome, " (add_sub2)"); break;
         case exo_mul:          strcpy(nome, " *");  break;
         case exo_div:          strcpy(nome, " /");  break;
         case exo_porcent:      strcpy(nome, " %");  break;
@@ -489,6 +495,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_ouou:         strcpy(nome, " ||início"); break;
         case exo_int1:         strcpy(nome, " ?início"); break;
         case exo_int2:         strcpy(nome, " ?fim"); break;
+        case exo_intint1:      strcpy(nome, " ??início"); break;
+        case exo_intint2:      strcpy(nome, " ??fim"); break;
         case exo_dponto1:      strcpy(nome, " :início"); break;
         case exo_dponto2:      strcpy(nome, " :fim"); break;
 

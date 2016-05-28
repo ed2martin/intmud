@@ -27,9 +27,10 @@ IntMUD (Interpretador MUD)
 13.2. Lista de operadores
 13.3. Precedência de operadores
 13.4. Operadores ? e :
-13.5. Conversão de tipos em operadores binários
-13.6. Operadores de bit
-13.7. Operadores de bit com textos
+13.5. Operador ??
+13.6. Conversão de tipos em operadores binários
+13.7. Operadores de bit
+13.8. Operadores de bit com textos
 14. Instruções de controle de fluxo
 15. Lista de funções
 15.1. Funções chamadas pelo interpretador
@@ -1111,7 +1112,7 @@ A|B        - Operação 'OU' para bits entre A e B;
 A^B        - Operação 'OU exclusivo' para bits entre A e B;
 A&B        - Operação 'E' para bits entre A e B;
 
-OPERADORES DE COMPARAÇÃO E ATRIBUIÇÃO
+COMPARAÇÃO E ATRIBUIÇÃO
 !A         - Se A for falso, o resultado será 1 (verdadeiro); Se A for
              verdadeiro, o resultado será 0 (falso);
 A<B        - Verdadeiro se A for menor que B;
@@ -1126,7 +1127,7 @@ A&&B       - Verdadeiro se A for verdadeiro e B também for;
 A||B       - Verdadeiro se A for verdadeiro e/ou B for verdadeiro;
 A=B        - Operador de atribuição, faz A igual a B.
 
-Alguns operadores podem ter uma forma compacta:
+FORMAS COMPACTAS
 A*=B       - O mesmo que: A = A * B;
 A/=B       - O mesmo que: A = A / B;
 A%=B       - O mesmo que: A = A % B;
@@ -1137,6 +1138,20 @@ A>>=B      - O mesmo que: A = A >> B;
 A|=B       - O mesmo que: A = A | B;
 A^=B       - O mesmo que: A = A ^ B;
 A&=B       - O mesmo que: A = A & B.
+
+INCREMENTO E DECREMENTO
+++A        - O mesmo que (A = A + 1), mas sempre resulta em um valor numérico
+--A        - O mesmo que (A = A - 1), mas sempre resulta em um valor numérico
+A++        - Mesmo que ++A, mas o resultado é o valor de A antes da soma
+A--        - Mesmo que --A, mas o resultado é o valor de A antes da soma
+
+Exemplo:
+int8 x # Nesse momento, x=0
+int8 y # Nesse momento, y=0
+int8 a
+x++, y++ # Faz x e y serem 1
+a = ++x # Faz x=2 e a=2
+a = y++ # Faz y=2 e a=1
 
 Pode-se usar também os parênteses em expressões.
 
@@ -1158,7 +1173,7 @@ subtração. Porém, uma soma entre parênteses é calculada antes, pois os
 parênteses tem precedência sobre a multiplicação e a divisão.
 
 Os operadores são avaliados na seguinte ordem:
-! ~             - 'NÃO' lógico e complemento;
+! ~ ++ --       - 'NÃO' lógico, complemento, incremento e decremento;
 * / %           - Multiplicação, divisão e resto;
 + -             - Soma e subtração;
 << >>           - Rotação para esquerda e para direita;
@@ -1170,7 +1185,7 @@ Os operadores são avaliados na seguinte ordem:
                   exatamente igual a;
 &&              - 'E' lógico;
 ||              - 'OU' lógico;
-? :             - Comparação similar a 'se' e 'senao';
+? : ??          - Comparação similar a 'se' e 'senao' e operador ??;
 = *= /= += -=   - Atribuição e formas compactas de atribuição.
 
 Todos os operadores são processados da esquerda para a direita, com
@@ -1235,7 +1250,21 @@ terá outro significado. Por exemplo, 'a : b' funciona como explicado acima.
 Já 'a:b' significa a função ou variável b da classe a.
 
 
-13.5. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
+13.5. OPERADOR ??
+
+É usado da seguinte forma:
+a ?? b
+Se a for verdadeiro, resulta em a. Se for falso, resulta em b.
+Vide também tópico 13.1 Verdadeiro e falso.
+
+Exemplos:
+1 ?? 2
+Resulta em 1, porque 1 é considerado verdadeiro.
+0 ?? 2
+Resulta em 2, porque 0 é considerado falso.
+
+
+13.6. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
 
 Via de regra, os operadores binários convertem o segundo operando para
 o mesmo tipo do primeiro.
@@ -1250,7 +1279,7 @@ Exemplos:
 1 + "2" # É o mesmo que 1 + 2, portanto resulta em 3
 
 
-13.6. OPERADORES DE BIT
+13.7. OPERADORES DE BIT
 
 Bit é a menor unidade de informação e pode assumir apenas dois valores,
 0 ou 1. Variáveis int1 correspondem a um bit.
@@ -1494,7 +1523,7 @@ dígito hexadecimal pelos quatro dígitos correspondente em binário:
 001011111000
 
 
-13.7. OPERADORES DE BIT COM TEXTOS
+13.8. OPERADORES DE BIT COM TEXTOS
 
 Para converter entre sistemas de numeração pelo IntMUD, usar a função
 txtconv. Por exemplo, a conversão de 0x2f8 em binário pode ser feita assim:

@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "14/5/2016"
+const versao = "26/5/2016"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -360,7 +360,7 @@ const iniclasse = !$[arg0] && criar(arg0)
 const ini = tempo = 1, noar = -1
 
 func tempo_exec
-  tempo = 600, noar += 1
+  tempo = 600, noar++
   debug d
   stempo = intpos(d.stempo - stempo_antes), stempo_antes = d.stempo
   utempo = intpos(d.utempo - utempo_antes), utempo_antes = d.utempo
@@ -383,10 +383,10 @@ func ini
 # Com muita fome/sede
   t.0 = 3, f.0 = 2
 # Com fome/sede
-  epara ind = 1, ind <= 30, ind += 1
+  epara ind = 1, ind <= 30, ind++
     t.[ind] = 2, f.[ind] = 1
   efim
 # Com pouca fome/sede
-  epara nulo, ind <= 45, ind += 1
+  epara nulo, ind <= 45, ind++
     t.[ind] = 1
   efim

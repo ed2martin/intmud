@@ -136,6 +136,7 @@ int Instr::InfoFunc(const char * nome)
 /** @param operador Operador em Instr::Expressao
     @retval 2-0x2F Número que corresponde à prioridade do operador;
             2 é operador unitário (é também o de maior prioridade);
+            3 é operador unitário que vem depois do operando
             20 é atribuição (processado da direita para a esquerda)
     @retval 0 Operador inválido */
 int Instr::Prioridade(int operador)
@@ -147,30 +148,38 @@ int Instr::Prioridade(int operador)
     case exo_neg:        return 2;
     case exo_exclamacao: return 2;
     case exo_b_comp:     return 2;
-    case exo_mul:        return 3;
-    case exo_div:        return 3;
-    case exo_porcent:    return 3;
-    case exo_add:        return 4;
-    case exo_sub:        return 4;
-    case exo_b_shl:      return 5;
-    case exo_b_shr:      return 5;
-    case exo_b_e:        return 6;
-    case exo_b_ouou:     return 7;
-    case exo_b_ou:       return 8;
-    case exo_menor:      return 9;
-    case exo_menorigual: return 9;
-    case exo_maior:      return 9;
-    case exo_maiorigual: return 9;
-    case exo_igual:      return 10;
-    case exo_igual2:     return 10;
-    case exo_diferente:  return 10;
-    case exo_diferente2: return 10;
-    case exo_e:          return 11;
-    case exo_ou:         return 12;
-    case exo_int1:       return 13;
-    case exo_int2:       return 13;
-    case exo_dponto1:    return 13;
-    case exo_dponto2:    return 13;
+    case exo_add_antes:  return 2;
+    case exo_sub_antes:  return 2;
+    case exo_add_depois: return 3;
+    case exo_sub_depois: return 3;
+    case exo_add_sub1:   return 3;
+    case exo_add_sub2:   return 3;
+    case exo_mul:        return 4;
+    case exo_div:        return 4;
+    case exo_porcent:    return 4;
+    case exo_add:        return 5;
+    case exo_sub:        return 5;
+    case exo_b_shl:      return 6;
+    case exo_b_shr:      return 6;
+    case exo_b_e:        return 7;
+    case exo_b_ouou:     return 8;
+    case exo_b_ou:       return 9;
+    case exo_menor:      return 10;
+    case exo_menorigual: return 10;
+    case exo_maior:      return 10;
+    case exo_maiorigual: return 10;
+    case exo_igual:      return 11;
+    case exo_igual2:     return 11;
+    case exo_diferente:  return 11;
+    case exo_diferente2: return 11;
+    case exo_e:          return 12;
+    case exo_ou:         return 13;
+    case exo_int1:       return 14;
+    case exo_int2:       return 14;
+    case exo_intint1:    return 14;
+    case exo_intint2:    return 14;
+    case exo_dponto1:    return 14;
+    case exo_dponto2:    return 14;
     case exo_atrib:      return 20;
     case exo_i_mul:      return 20;
     case exo_i_div:      return 20;
@@ -531,6 +540,7 @@ void Instr::ApagarRet(TVariavel * v)
         DadosTopo = (char*)VarAtual->endvar + VarAtual->tamanho;
     }
 }
+
 //----------------------------------------------------------------------------
 /// Inicialização de varfunc
 /** Prepara para executar varfunc
@@ -847,6 +857,12 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_neg:
         case exo_exclamacao:
         case exo_b_comp:
+        case exo_add_antes:
+        case exo_add_depois:
+        case exo_sub_antes:
+        case exo_sub_depois:
+        case exo_add_sub1:
+        case exo_add_sub2:
         case exo_mul:
         case exo_div:
         case exo_porcent:
@@ -880,12 +896,14 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_e:
         case exo_ou:
         case exo_int2:
+        case exo_intint2:
         case exo_dponto2:
             contagem--;
             break;
         case exo_ee:
         case exo_ouou:
         case exo_int1:
+        case exo_intint1:
         case exo_dponto1:
             contagem++;
             break;
@@ -1145,6 +1163,12 @@ const char * Instr::NomeExpr(int valor)
     case exo_neg:           return "exo_neg";
     case exo_exclamacao:    return "exo_exclamacao";
     case exo_b_comp:        return "exo_b_comp";
+    case exo_add_antes:     return "exo_add_antes";
+    case exo_sub_antes:     return "exo_sub_antes";
+    case exo_add_depois:    return "exo_add_depois";
+    case exo_sub_depois:    return "exo_sub_depois";
+    case exo_add_sub1:      return "exo_add_sub1";
+    case exo_add_sub2:      return "exo_add_sub2";
     case exo_mul:           return "exo_mul";
     case exo_div:           return "exo_div";
     case exo_porcent:       return "exo_porcent";
@@ -1181,6 +1205,8 @@ const char * Instr::NomeExpr(int valor)
     case exo_ouou:          return "exo_ouou";
     case exo_int1:          return "exo_int1";
     case exo_int2:          return "exo_int2";
+    case exo_intint1:       return "exo_intint1";
+    case exo_intint2:       return "exo_intint2";
     case exo_dponto1:       return "exo_dponto1";
     case exo_dponto2:       return "exo_dponto2";
 

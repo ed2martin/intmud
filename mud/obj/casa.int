@@ -101,7 +101,7 @@ func acerta_mudou # Chamado quando a lista das salas da casa mudou
   lin += "# Não alterar; função criada automaticamente\nret objmudou"
   prog p
   int8 x
-  epara x = 1, x < 10, x += 1
+  epara x = 1, x < 10, x++
     p.existe(este, "s" + x) && (lin += "||s" + x + ".objmudou")
   efim
   p.criar(este, lin)

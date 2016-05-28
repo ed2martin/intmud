@@ -25,7 +25,7 @@ func escr
     txt100 nome
     nome = arg0.var.ini("u_")
     enquanto txt(nome, 0, 2) == "u_" && total < 20
-      nome = arg0.var.depois(nome), total += 1
+      nome = arg0.var.depois(nome), total++
     efim
     ret total >= 20, arg0.msg("Atingido o limite de usuários ignorados.")
     arg0.var.u_[arg1] = 1

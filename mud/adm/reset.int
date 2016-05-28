@@ -546,7 +546,7 @@ func passo # Equipar personagem
       arg0.txtmais.addfim("Opções:")
       uint8 n
       arg0.txtmais.addfim("0 empunhando")
-      epara n = 0, n < total, n += 1
+      epara n = 0, n < total, n++
         arg0.txtmais.addfim(txt(n + 1) + " " + txtsublin(config:equip_txt, n, 1))
       efim
       arg0.txtmostra

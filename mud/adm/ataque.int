@@ -260,7 +260,7 @@ func escr # Apagar habilidade
     senao !$cmd_[txtsub(arg1, x, 1)].cmdmenu
       ret arg0.msg("Comando não é uma habilidade: " + txtsub(arg1, x, 1))
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = arg1
   passo(arg0.sock, "")
@@ -274,7 +274,7 @@ func passo # Confirmar que quer apagar habilidade
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("cmd_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2
@@ -313,7 +313,7 @@ func escr # Apagar magia
     senao !$magia_[txtsub(arg1, x, 1)].cmdmenu
       ret arg0.msg("Magia não pode ser apagada: " + txtsub(arg1, x, 1))
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = arg1
   passo(arg0.sock, "")
@@ -327,7 +327,7 @@ func passo # Confirmar que quer apagar magia
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("magia_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2

@@ -128,7 +128,7 @@ func escr # Criar personagem
   senao !p.existe("a_" + nome)
     ret arg0.msg("Área não existe: " + nome)
   senao
-    epara num = 1001, p.existe("p_" + nome + txtfim(num, 3)), num += 1
+    epara num = 1001, p.existe("p_" + nome + txtfim(num, 3)), num++
       continuar num < 2000
       ret arg0.msg("Atingido limite de personagens na área " + nome)
     efim
@@ -211,7 +211,7 @@ func escr # Apagar personagem
     senao nome != arg0.jogarea + txtfim(nome, 3)
       ret arg0.msg("Personagem não existe: " + nome)
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = nome
   passo(arg0.sock, "")
@@ -225,7 +225,7 @@ func passo # Confirmar que quer apagar personagem
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("p_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2
@@ -534,7 +534,7 @@ func passo # Inserir ou editar aula
       arg0.txtmais.limpar
       arg0.txtmais.addfim("Opções:")
       uint8 n
-      epara n = 1, n < intsublin(misc:aulas), n += 1
+      epara n = 1, n < intsublin(misc:aulas), n++
         arg0.txtmais.addfim(txt(n) + " " + txtsublin(misc:aulas, n, 1))
       efim
       arg0.txtmostra

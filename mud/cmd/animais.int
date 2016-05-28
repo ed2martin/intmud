@@ -38,7 +38,7 @@ func escr
   t.addfim((arg0.persobat == arg0 ? "0* Você  N" : "0  Você  N") + arg0.pnivel)
   epara i = arg0.dentro2.ini, i, i.depois
     continuar !i.obj.perso
-    lin = txt(num += 1) + (arg0.persobat == i.obj ? "*" : " ")
+    lin = txt(++num) + (arg0.persobat == i.obj ? "*" : " ")
     se i.obj.pvida
       lin += " " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
     senao

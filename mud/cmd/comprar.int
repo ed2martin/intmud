@@ -36,7 +36,7 @@ func escr
     textotxt t2
     epara t2.addfim(p.lojaitem(arg0)), t2.linhas, t2.remove
       continuar !t2.ini.texto
-      lin = "i_" + txt1(t2.ini.texto), linha += 1
+      lin = "i_" + txt1(t2.ini.texto), linha++
       continuar !n.nome([lin]:nome, 1) && txt(linha) != nomeitem
       nivel = txt2(t2.ini.texto)
       nivel == 0 && (nivel = [lin]:nivel)
@@ -60,7 +60,7 @@ func escr
       se [lin]:item == 2
         r = criar(lin, arg0, total)
       senao
-        epara linha = 0, linha < total, linha += 1
+        epara linha = 0, linha < total, linha++
           r = criar(lin, arg0, nivel)
         efim
       fimse
@@ -78,7 +78,7 @@ func escr
       listaobj e
       p.lojainv && e.addfim(p.dentro1)
       epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
-        continuar txt(linha += 1) != arg1 && !n.nome(e.objini.ident, 1)
+        continuar txt(++linha) != arg1 && !n.nome(e.objini.ident, 1)
         ref r
         r = ref(e.objini)
         valor = (100 + p.taxavenda) / 100 * r.valor
@@ -111,7 +111,7 @@ func escr
       epara prg.iniclasse("c_" + p.lojacasa), prg.lin, prg.depois
         r = $[prg.texto]
         sair r.area != p.lojacasa
-        continuar r.nomejog || txt(linha += 1) != arg1 && !n.nome(r.ident, 1)
+        continuar r.nomejog || txt(++linha) != arg1 && !n.nome(r.ident, 1)
         se !arg0.senha
           ret arg0.msg("Você precisa ter jogo salvo para comprar uma casa.")
         senao arg0.pnivel < config:casanivel
@@ -122,7 +122,7 @@ func escr
         lin = "cj " + txt2(arg0.sock.cnome)
         indiceitem item
         epara item.ini(lin + " "), txtsub(item.txt, 0, 2) == lin, item.depois
-          valor -= 1
+          valor--
         efim
         ret valor <= 0, arg0.msg("Atingido o limite de casas por jogador.")
         valor = (100 + p.taxavenda) / 100 * r.valor
@@ -148,7 +148,7 @@ func escr
       indiceitem item
       refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
       se !casa
-      senao txt(linha += 1) == arg1 || n.nome("chave da casa", 1)
+      senao txt(++linha) == arg1 || n.nome("chave da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casachave
         se arg0.dentro1.total + 1 > arg0.objmax
           ret arg0.msg("Você não consegue carregar tanta coisa.")
@@ -166,7 +166,7 @@ func escr
         $mens.p(arg0, p)
         $mens.mtodos1("$A fez uma chave para $p.")
         ret
-      senao txt(linha += 1) == arg1 || n.nome("fechadura da casa", 1)
+      senao txt(++linha) == arg1 || n.nome("fechadura da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casafechadura
         se arg0.var.z_moedas_ < valor
           lin = "Você não tem $" + valor + "."

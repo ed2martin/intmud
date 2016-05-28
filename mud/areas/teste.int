@@ -1903,7 +1903,7 @@ func cmd_escr # Escreveu algo
     arg0.pnivel += 9
     arg0.recalc = 1
   casose "a"
-    arg0.pnivel += 1
+    arg0.pnivel++
     arg0.recalc = 1
     se arg0.pnivel > 80
       arg0.msg("Nível máximo é 80")
@@ -1916,7 +1916,7 @@ func cmd_escr # Escreveu algo
     arg0.pnivel -= 9
     arg0.recalc = 1
   casose "d"
-    arg0.pnivel -= 1
+    arg0.pnivel--
     arg0.recalc = 1
     arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
     ret 1
@@ -3171,7 +3171,7 @@ func entrou2
     arg0.var.j_contador = 1
     arg0.msg("Esta é a primeira vez que você entra aqui.")
   senao
-    arg0.var.j_contador_ += 1
+    arg0.var.j_contador_++
 # Mesmo que arg0.var.j_contador_ = arg0.var.j_contador_ + 1
 # Ou seja, pega o número de arg0.var.j_contador, soma 1 e guarda
 # o resultado em arg0.var.j_contador
@@ -3194,7 +3194,7 @@ func cmd_salaperso
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
 
 func entrou2
-  contador += 1 # Soma 1
+  contador++
   se contador == 1
     arg0.msg("Você é o primeiro personagem a entrar aqui.")
   senao

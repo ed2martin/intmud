@@ -84,14 +84,14 @@ func mudaperso # Muda o personagem, arg0=novo personagem
   ref r
 # Indica que o jogador não controla o antigo personagem
   epara r = perso, r, r = r.dono
-    r.socktot -= 1
+    r.socktot--
   efim
   perso.sock = nulo
 # Indica que o jogador controla o novo personagem
   perso = arg0
   perso.sock = este
   epara r = perso, r, r = r.dono
-    r.socktot += 1
+    r.socktot++
   efim
 
 func reinicia # Volta ao início: pede o nome do personagem

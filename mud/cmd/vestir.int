@@ -75,7 +75,7 @@ func escr
       continuar
     fimse
     uint8 x
-    epara x = n, x, x -= 1
+    epara x = n, x, x--
 # Vestir - checa se o item pode ser vestido
       refvar lugar2 = lugar & r.vestir1
       se !lugar2
@@ -105,7 +105,7 @@ func escr
       int32 erro1 # Posição aonde já está vestindo o item
       int32 erro2 # Posições aonde tem itens em cima
       uint8 pos
-      epara pos = 0, pos < 32, pos += 1
+      epara pos = 0, pos < 32, pos++
         continuar !(lugar2 >> pos & 1) # Checa se é o lugar
         se vest.[pos]
           erro1 = pos + 1

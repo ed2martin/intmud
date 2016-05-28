@@ -221,7 +221,7 @@ func escr # Criar sala na direção especificada
     ret arg0.msg("\bJá existe sala na direção " + dir)
   fimse
 # Obtém número da sala
-  epara num = 1001, p.existe(nome + txtfim(num, 3)), num += 1
+  epara num = 1001, p.existe(nome + txtfim(num, 3)), num++
     continuar num < 2000
     ret arg0.msg("\bAtingido limite de salas na área " + txt(nome, 2))
   efim
@@ -269,7 +269,7 @@ func escr # Criar sala
   senao !p.existe("a_" + nome)
     ret arg0.msg("Área não existe: " + nome)
   senao
-    epara num = 1001, p.existe("s_" + nome + txtfim(num, 3)), num += 1
+    epara num = 1001, p.existe("s_" + nome + txtfim(num, 3)), num++
       continuar num < 2000
       ret arg0.msg("Atingido limite de salas na área " + nome)
     efim
@@ -313,7 +313,7 @@ func escr # Apagar sala
     senao nome != arg0.jogarea + txtfim(nome, 3)
       ret arg0.msg("Não pode apagar a sala: " + nome)
     fimse
-    x += 1
+    x++
   efim
   arg0.sock.tpasso = nome
   passo(arg0.sock, "")
@@ -327,7 +327,7 @@ func passo # Confirmar que quer apagar sala
     uint16 x
     enquanto txtsub(arg0.tpasso, x, 1)
       p.apagar("s_" + txtsub(arg0.tpasso, x, 1))
-      x += 1
+      x++
     efim
     config:salvar
     se x < 2

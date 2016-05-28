@@ -45,7 +45,7 @@ func escr1 # Consultar a lista de itens
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + lin
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         nivel && (lin += "   N" + nivel)
-        t.addfim(lin), linha += 1
+        t.addfim(lin), linha++
       efim
     fimse
 # Itens que possui e itens em uma sala
@@ -60,7 +60,7 @@ func escr1 # Consultar a lista de itens
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         nivel && (lin += "   N" + nivel)
         lin += "   x" + e.objini.objtot
-        t.addfim(lin), linha += 1
+        t.addfim(lin), linha++
       efim
     fimse
 # Casas
@@ -74,7 +74,7 @@ func escr1 # Consultar a lista de itens
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
         lin += txtcopiamai($[prg.texto].nome, "A")
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
-        t.addfim(lin), linha += 1
+        t.addfim(lin), linha++
       efim
       !lin && t.addfim("Não há nenhuma casa à venda.")
     fimse
@@ -85,11 +85,11 @@ func escr1 # Consultar a lista de itens
         valor = lucro * config:casachave
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + "Chave da casa"
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
-        t.addfim(lin), linha += 1
+        t.addfim(lin), linha++
         valor = lucro * config:casafechadura
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + "Fechadura da casa"
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
-        t.addfim(lin), linha += 1
+        t.addfim(lin), linha++
       senao
         t.addfim("Você não possui nenhuma casa nessa cidade.")
       fimse
@@ -119,7 +119,7 @@ func escr2 # Consultar um item
     epara t2.addfim(p.lojaitem), t2.linhas, t2.remove
       continuar !t2.ini.texto
       lin = "i_" + txt1(t2.ini.texto)
-      continuar txt(linha += 1) != arg1 && !n.nome([lin]:nome, 1)
+      continuar txt(++linha) != arg1 && !n.nome([lin]:nome, 1)
       ref r
       r = criar(lin), apagar(r)
       valor = lucro * r.valor
@@ -135,7 +135,7 @@ func escr2 # Consultar um item
       listaobj e
       p.lojainv && e.addfim(p.dentro1)
       epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
-        continuar txt(linha += 1) != arg1 && !n.nome(e.objini.ident, 1)
+        continuar txt(++linha) != arg1 && !n.nome(e.objini.ident, 1)
         nivel = e.objini.pnivel
         valor = lucro * e.objini.valor
         t2.limpar
@@ -155,7 +155,7 @@ func escr2 # Consultar um item
       epara prg.iniclasse("c_" + p.lojacasa), prg.lin, prg.depois
         r = $[prg.texto]
         sair r.area != p.lojacasa
-        continuar r.nomejog || txt(linha += 1) != arg1 && !n.nome(r.ident, 1)
+        continuar r.nomejog || txt(++linha) != arg1 && !n.nome(r.ident, 1)
         valor = lucro * r.valor
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
@@ -168,13 +168,13 @@ func escr2 # Consultar um item
     se $a_[p.lojachave]
       indiceitem item
       se !item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
-      senao txt(linha += 1) == arg1 || n.nome("chave da casa", 1)
+      senao txt(++linha) == arg1 || n.nome("chave da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casachave
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
         t2.addfim("Faço uma cópia da chave da sua casa por $" + valor + ".")
         ret arg0.msg2(t2.remove(1000))
-      senao txt(linha += 1) == arg1 || n.nome("fechadura da casa", 1)
+      senao txt(++linha) == arg1 || n.nome("fechadura da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casafechadura
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")

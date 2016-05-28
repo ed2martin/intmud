@@ -177,7 +177,7 @@ func vestir # Veste o item, arg0=posição
     dono.recalc = 1 # Para recalcular atributos
     refvar r = objproc(dono.dentro1) # Procura objeto que não está vestindo
     se r # Encontrou: aumenta a quantidade
-      r.objtot += 1, r.ajustapeso, apagar(este), mdono(nulo)
+      r.objtot++, r.ajustapeso, apagar(este), mdono(nulo)
     senao # Não encontrou: move
       vestpos = 0, idono.remove, idono = dono.dentro1.addfim(este)
     fimse
@@ -188,7 +188,7 @@ func vestir # Veste o item, arg0=posição
     vestpos == 50 && (dono.iempu = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
-    objtot -= 1, ajustapeso
+    objtot--, ajustapeso
     refvar r = criar(este)
     r.var = var
     r.mdono(dono), r.vestpos = pos

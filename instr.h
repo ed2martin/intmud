@@ -115,6 +115,8 @@ extern const char InstrVarTextoVarSub[];
 extern const char InstrVarTextoObjSub[];
 /// TVariavel::func para Instr::cDebug
 extern const char InstrDebugFunc[];
+/// TVariavel::defvar para operadores ++ e --
+extern const char InstrAddSub[];
 /// Quantas instruções pode executar antes que o controle retorne ao programa
 extern int VarExec;
 /// Valor inicial de Instr::VarExec quando Instr::ExecIni é executado
@@ -470,6 +472,12 @@ enum Expressao
     exo_neg,        ///< Operador: -a
     exo_exclamacao, ///< Operador: !a
     exo_b_comp,     ///< Operador: ~a
+    exo_add_antes,  ///< Operador: ++a
+    exo_sub_antes,  ///< Operador: --a
+    exo_add_depois, ///< Operador: a++
+    exo_sub_depois, ///< Operador: a--
+    exo_add_sub1,   ///< Usado em ++ e --
+    exo_add_sub2,   ///< Usado em ++ e --
     exo_mul,        ///< Operador: a * b
     exo_div,        ///< Operador: a / b
     exo_porcent,    ///< Operador: a % b
@@ -502,10 +510,12 @@ enum Expressao
     exo_i_b_ouou,   ///< Operador: a ^= b   (segue exo_b_ouou, exo_atrib)
     exo_i_b_ou,     ///< Operador: a |= b   (segue exo_b_ou, exo_atrib)
     exo_int2,       ///< Operador: Fim de ?
+    exo_intint2,    ///< Operador: Fim de ??
     exo_dponto2,    ///< Operador: Fim de :
     exo_fim,        ///< Operador: Marca o fim dos operadores
     exo_int1,       ///< Operador: Início de ?
     exo_dponto1,    ///< Operador: Início de :
+    exo_intint1,    ///< Operador: Início de ??
     exo_ee,         ///< Operador: Início do operador &&
     exo_ouou,       ///< Operador: Início do operador ||
 

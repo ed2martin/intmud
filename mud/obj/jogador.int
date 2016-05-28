@@ -76,12 +76,12 @@ func mudasenha # Usuário quer mudar a senha
   ret sock, senha ? $ini_mudasenha1.passo(sock) : $ini_mudasenha2.passo(sock)
 
 func tempojogo1_exec
-  tempojogo1 = 864000, tempojogo2 += 1
+  tempojogo1 = 864000, tempojogo2++
 
 func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
   p_tempoatu = rand(150, 200)
 # Checa tempo para sair do jogo
-  se p_tempofim && (p_tempofim -= 1) == 0
+  se p_tempofim && --p_tempofim == 0
     msg("Muito tempo sem digitar")
     ret apagar(este)
   fimse
@@ -154,7 +154,7 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
     p_bebida -= 2
   fimse
 # Mensagens de fome e sede e pontos de vida
-  se !(p_tempomsg -= 1)
+  se --p_tempomsg <= 0
     casovar txtchr(97 + $miscfome.t.[p_fome]) + $miscfome.t.[p_sede]
     casose "a1" # Pouca sede
       p_tempomsg = 5
