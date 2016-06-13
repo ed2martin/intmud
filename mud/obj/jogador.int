@@ -301,7 +301,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   int32 tempo
   se jogperm == "admin"
     tempo = config:salvaadmin
-  senao pnivel < config:nivelveterano
+  senao pnivel < config:nivelveterano && prenascer == 0
     tempo = config:salvainiciante
   senao
     tempo = config:salvaveterano

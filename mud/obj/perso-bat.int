@@ -322,19 +322,20 @@ func atkauto # Realiza um ataque automático
   ret 1
 
 func atktempo_exec # Encerra a batalha depois de um tempo
-  ret !atkenv, batalhafim(1) # Termina a batalha se não tem um alvo
+  refvar alvo = atkenv.objlista # Personagem alvo dos ataques
+  ret !alvo || alvo.dono != dono, batalhafim(1)
   atktempo = config:atktempo
   se pvida < p_fugir
 # $cmd_fugir.fugir(este)
-  senao persobat.atkauto(atkenv.objlista.persobat, 8)
+  senao persobat.atkauto(alvo.persobat, 8)
     ret !atkenv || !persobat.var.h_segundo_ataque_, nulo
     debug d
-    d.ini, persobat.atkauto(atkenv.objlista.persobat, persobat.var.h_segundo_ataque_)
+    d.ini, persobat.atkauto(alvo.persobat, persobat.var.h_segundo_ataque_)
     ret !atkenv || !persobat.var.h_terceiro_ataque_, nulo
-    d.ini, persobat.atkauto(atkenv.objlista.persobat, persobat.var.h_terceiro_ataque_)
+    d.ini, persobat.atkauto(alvo.persobat, persobat.var.h_terceiro_ataque_)
     ret
   fimse
-  $mens.p(este, atkenv.objlista)
+  $mens.p(este, alvo)
   casovar ++atkturno
   casose "1"
     ret

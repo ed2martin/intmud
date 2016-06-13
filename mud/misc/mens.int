@@ -105,12 +105,31 @@ func msgvis # Envia mensagem estiver acordado e vendo personagem perso
     arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
 
+func msgvisdir # Envia mensagem estiver acordado e vendo personagem perso
+# arg0=mensagem, arg1=a quem se destina a mensagem
+# arg2=mensagem da direção, quando não está na mesma sala do personagem
+  se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
+    r = arg1
+    refvar dir = (arg1.contr.dono ?? contr.dono) != contr.dono ? arg2
+    arg1.msg(txt(dir) + txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
 func msginv # Envia mensagem se estiver acordado
 # arg0=mensagem, arg1=a quem se destina a mensagem
   se arg1.sock && arg1.posicao > 4
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
+func msginvdir # Envia mensagem se estiver acordado
+# arg0=mensagem, arg1=a quem se destina a mensagem
+# arg2=mensagem da direção, quando não está na mesma sala do personagem
+  se arg1.sock && arg1.posicao > 4
+    r = arg1
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    refvar dir = (arg1.contr.dono ?? contr.dono) != contr.dono ? arg2
+    arg1.msg(txt(dir) + txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
 
 func mperso # Mensagem só para o personagem
@@ -120,9 +139,8 @@ func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
   ret !(contr.dono.socktot && arg0), nulo
   listaobj l0
-  l0.addfim(contr.dono.dentro2)
-  enquanto l0
-    msginv(arg0, l0.objini), l0.ini.remove
+  epara l0.addfim(contr.dono.dentro2), l0, l0.ini.remove
+    msginv(arg0, l0.objini)
   efim
 
 func mtodos2 # Mensagem só para quem estiver acordado
@@ -132,22 +150,40 @@ func mtodos2 # Mensagem só para quem estiver acordado
   ret !arg1, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  l0.remove(contr)
-  enquanto l0
-    msginv(arg1, l0.objini), l0.ini.remove
+  epara l0.remove(contr), lo, l0.ini.remove
+    msginv(arg1, l0.objini)
   efim
 
 func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   ret !contr.dono.socktot, nulo
   arg0 && msginv(arg0, contr)
-  arg1 && alvo.contr != contr && msginv(arg1, alvo.contr)
+  arg1 && contr != alvo.contr && msginv(arg1, alvo.contr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  l0.remove(contr, alvo.contr)
-  enquanto l0
-    msginv(arg2, l0.objini), l0.ini.remove
+  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
+    msginv(arg2, l0.objini)
+  efim
+
+func mtodos3dir # Mensagem só para quem estiver acordado
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+# arg3 = mensagem da direção, para quem não está na mesma sala do personagem
+  ret !(contr.dono.socktot || alvo.contr.dono.socktot), nulo
+  refvar saladif = (alvo.contr.dono ?? contr.dono) != contr.dono
+  arg0 && msginv(arg0, contr)
+  arg1 && contr != alvo.contr && msginv(saladif ? txt(arg3) + arg1 : arg1, alvo.contr)
+  ret !arg2, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
+    msginv(arg2, l0.objini)
+  efim
+  ret !saladif, nulo
+  listaobj l0
+  l0.addfim(alvo.contr.dono.dentro2)
+  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
+    msginv(txt(arg3) + arg2, l0.objini)
   efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
@@ -167,22 +203,40 @@ func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
   ret !arg1, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  l0.remove(contr)
-  enquanto l0
-    msgvis(arg1, l0.objini), l0.ini.remove
+  epara l0.remove(contr), l0, l0.ini.remove
+    msgvis(arg1, l0.objini)
   efim
 
 func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
   ret !contr.dono.socktot, nulo
   arg0 && msginv(arg0, contr)
-  arg1 && alvo.contr != contr && msgvis(arg1, alvo.contr)
+  arg1 && contr != alvo.contr && msgvis(arg1, alvo.contr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  l0.remove(contr, alvo.contr)
-  enquanto l0
-    msgvis(arg2, l0.objini), l0.ini.remove
+  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
+    msgvis(arg2, l0.objini)
+  efim
+
+func mvis3dir # Mensagem só para quem pode ver o personagem e estiver acordado
+# arg0,arg1,arg2 = mensagens para personagem, alvo e outros
+# arg3 = mensagem da direção, para quem não está na mesma sala do personagem
+  ret !(contr.dono.socktot || alvo.contr.dono.socktot), nulo
+  refvar saladif = (alvo.contr.dono ?? contr.dono) != contr.dono
+  arg0 && msgvis(arg0, contr)
+  arg1 && contr != alvo.contr && msgvis(saladif ? txt(arg3) + arg1 : arg1, alvo.contr)
+  ret !arg2, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
+    msgvis(arg2, l0.objini)
+  efim
+  ret !saladif, nulo
+  listaobj l0
+  l0.addfim(alvo.contr.dono.dentro2)
+  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
+    msgvis(txt(arg3) + arg2, l0.objini)
   efim
 
 func mmud1 # Mensagem para todos do MUD

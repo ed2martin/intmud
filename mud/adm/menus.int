@@ -276,7 +276,7 @@ func menu # Retorna quantidade de linhas de texto de várias linhas
     ret "<nulo> " + menu2([arg0]:[arg1])
   casofim
 
-func menu2 # Usado por t_texto
+func menu2
   txt10 x
   x = intsublin(arg0)
   ret x != "1" ? "\c6" + x + " linhas\b" : "\c6Uma linha\b"
@@ -890,8 +890,7 @@ func passo # Alterando a sala
     arg0.msg("Apagado: " + arg0.var.opcnome)
     admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
   senao arg1 != "z"
-    txt100 nome
-    nome = txtmin(txts(arg1))
+    refvar nome = txtmin(txts(arg1))
     se !p.existe("s_" + nome)
       arg0.msg("\bSala \"" + nome + "\" não existe, escolha outra.")
       ret 1
@@ -901,6 +900,89 @@ func passo # Alterando a sala
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     arg0.msg(arg0.var.opcnome + " mudou para " + nome)
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
+  fimse
+  ret passosair(arg0)
+
+
+classe opc_txtsala
+herda comando_editor
+# Um texto contendo nomes das salas (nomes dos objetos sem o "s_" no começo)
+
+func menu # Retorna quantidade de linhas de texto de várias linhas
+# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
+  prog p
+  casovar p.existe(arg0, arg1)
+  casose "1" # Na própria classe
+    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<" + txt1(p.texto) + ">"
+  casose "2" # Em uma classe herdada
+    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    p.inilinha(arg0, arg1)
+    ret "<herda " + txt1(p.texto) + ">"
+  casose # Não foi definido
+    ret "<nulo> " + menu2([arg0]:[arg1])
+  casofim
+
+func menu2
+  txt10 x
+  x = intsublin(arg0)
+  ret x != "1" ? "\c6" + x + " salas\b" : "\c6Uma sala\b"
+
+func passo # Alterando a sala
+  prog p
+  se arg1 == "" || arg1 == "\b"
+    arg0.passo = este
+    se arg0.var.opcvalido
+      arg0.msg("Entre com o nome da sala, O mostra as salas, Z cancela")
+    senao
+      arg0.msg("Entre com o nome da sala, O mostra as salas, N nenhuma, Z cancela")
+    fimse
+    ret 1
+  senao arg1 == "n" && !arg0.var.opcvalido
+    p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg("Apagado: " + arg0.var.opcnome)
+    admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
+  senao arg1 == "o"
+    textotxt t
+    t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+    se t.bytes <= 1
+      arg0.msg("Nenhuma sala")
+      ret 1
+    fimse
+    textopos pos
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("Salas:")
+    epara pos = t.ini, pos.lin, pos.depois
+      arg0.txtmais.addfim(pos.texto + "  " + $[pos.texto].s_titulo(arg0))
+    efim
+    arg0.txtmostra
+    ret 1
+  senao arg1 != "z"
+    refvar nome = txtmin(txts(arg1))
+    textotxt t
+    t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
+    t.bytes <= 1 && t.limpar
+    textopos pos
+    pos = t.ini
+    se pos.txtproc("\n" + nome + "\n") >= 0
+      pos.remove
+      arg0.msg("Sala removida: " + nome)
+    senao !p.existe("s_" + nome)
+      arg0.msg("Sala não existe: " + nome)
+      ret passo(arg0, "\b")
+    senao
+      t.addfim(lin), t.ordena
+      arg0.msg("Sala adicionada: " + nome)
+    fimse
+    lin = "const " + arg0.var.opcvar + "=\""
+    p.criar(arg0.var.opcclasse, lin + txtvis(t.ini.textolin(1000)) + "\"")
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
+    ret passo(arg0, "\b")
   fimse
   ret passosair(arg0)
 

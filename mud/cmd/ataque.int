@@ -17,21 +17,30 @@ func habajuda # Retorna um texto que contém informações
     t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
     t.juntar, t.dividelin(40, 75)
   fimse
-  txt100 lin
-  lin = "\c3" + misc:nomevar(nomevar)
+  txt512 lin
+  refvar sintaxe = (txt(nomevar, 0, 1) == "m" ? "Lançar " : "") + txts(txt(nomevar, 2))
+  lin = "\c3" + misc:nomevar(nomevar) + "\b\n"
+  se tipoalvo >= 8
+  senao tipoalvo == 7
+    lin += "Sintaxe: " + sintaxe + "\n"
+  senao armamove
+    lin += "Sintaxe: " + sintaxe + " [personagem]\n"
+    lin += "         " + sintaxe + " <direção> [personagem]\n"
+  senao
+    lin += "Sintaxe: " + sintaxe + " [personagem]\n"
+  fimse
   se tipoalvo < 6
-    lin += "\b\nAtaque do nível "
+    lin += "Ataque do nível "
     lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
     lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
     lin += ", Força " + ataque + ", Velocidade " + vel
     lin += precisao <= 100 ? ", Precisão " + precisao : ", Não falha"
-    t.addini(lin)
   senao
-    lin += "\b\nNível "
+    lin += "Nível "
     lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
     lin += precisao < 100 ? ", Acerta " + precisao + "%" : ", Não falha"
-    t.addini(lin)
   fimse
+  t.addini(lin)
   msgextra && t.addfim(msgextra)
   se c_vida1 || c_vida2
     refvar min = int(c_vida2)
@@ -213,6 +222,7 @@ aulaini aulafim\n\
 depende\n\
 precisao\n\
 addprecisao\n\
+armamove\n\
 tipoarma\n\
 tipoatk\n\
 tipobonus\n\
@@ -231,17 +241,55 @@ func escrhab # Atacar alguém
   ref r
   refvar perm = $perm_[arg0.jogperm]
   refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
+  txt100 dir
   se m1
     ret arg0.msg(m1)
   senao arg0.pnivel < intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
     ret arg0.msg("Você ainda não consegue fazer isso.")
   senao arg1 # Digitou o alvo
+    int16 move
     listaitem i
     nomeobj nome
-    nome.ini(arg1, 1)
-    epara i = arg0.dono.dentro2.ini, i, i.depois
-      sair i.obj.visivel(arg0) && nome.nome(i.obj.ident)
-    efim
+    refvar dist = 2 * intmin(100, arma1 ? arma1.armamove : armamove)
+    dir = dist > 0 ? misc:d1[txt1(arg1)]
+    se !misc:d3[dir] # Atacar na mesma sala
+      nome.ini(arg1, 1)
+      epara i = arg0.dono.dentro2.ini, i, i.depois
+        sair i.obj.visivel(arg0) && nome.nome(i.obj.ident)
+      efim
+    senao txt2(arg1) # Atacar um alvo específico em outra sala
+      ref sala
+      nome.ini(txt2(arg1), 1)
+      epara sala = arg0.dono, sala && move < dist, sala = sala.dir_[dir]
+        se move
+          epara i = sala.dentro2.ini, i, i.depois
+            sair i.obj.visivel(arg0) && nome.nome(i.obj.ident)
+          efim
+        fimse
+        sair i.obj || int(sala.porta_[dir]) >= 2 # Achou o alvo ou porta fechada
+        move += intmax(1, sala.totalmove + sala.dir_[dir].totalmove)
+      efim
+    senao # Atacar qualquer um em outra sala
+      ref sala
+      uint8 totalperso
+      sala = arg0.dono
+      epara sala = arg0.dono, sala && move < dist, sala = sala.dir_[dir]
+        se move
+          epara i = sala.dentro2.ini, i, i.depois
+            i.obj.visivel(arg0) && totalperso++
+          efim
+        fimse
+        se totalperso
+          totalperso = rand(totalperso)
+          epara i = sala.dentro2.ini, i, i.depois
+            sair i.obj.visivel(arg0) && totalperso-- == 0
+          efim
+          sair
+        fimse
+        sair int(sala.porta_[dir]) >= 2 # Achou porta fechada
+        move += intmax(1, sala.totalmove + sala.dir_[dir].totalmove)
+      efim
+    fimse
     r = i.obj
     ret !r, arg0.msg("Você não vê isso.")
   senao tipoalvo >= 6 # Hab não agressiva: o alvo é o próprio personagem
@@ -257,9 +305,9 @@ func escrhab # Atacar alguém
   fimse
   refvar p = arg0.persoesc
   se arg2
-    exechab(p, r.persobat, 0.5, arg3, arg2)
+    exechab(p, r.persobat, 0.5, arg3, arg2, dir)
   senao
-    exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel)
+    exechab(p, r.persobat, intpos(p.var.[nomevar] - 1) / 7, p.pnivel, nulo, dir)
   fimse
 
 func exechabperso # Personagem usa uma habilidade ou magia
@@ -273,7 +321,9 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # arg3 = nível da habilidade ou magia (=nível do personagem)
 # arg4 = item usado, ou nulo se não usou nenhum item
+# arg5 = direção de onde veio o ataque, se o alvo não estiver na mesma
   ret !checahab2(arg0, arg2, arg4), nulo
+  refvar textodirecao = misc:d3[arg5]
 # Checa a condição de batalha
   se a_batalha == 1 && !arg0.contr.atkenv
     ret arg0.contr.msg("Você não está lutando com ninguém.")
@@ -327,7 +377,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       efeitohab(arg0, arg1, arg2, arg3)
     fimse
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
-    mensgolpe(arg0, arg1)
+    mensgolpe(arg0, arg1, textodirecao)
     cmd_alvofim(arg0, arg1, este)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg0)
@@ -377,14 +427,14 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   fimse
   se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     result = 1
-    mensgolpe(arg0, arg1)
+    mensgolpe(arg0, arg1, textodirecao)
     ret arg0.acertapos(1)
   fimse
 # Alvos secundários (somente ataques de área)
   se tipoalvo >= 2 && tipoalvo <= 5
     listaitem i
     refvar p1 = arg0.contr
-    l.addfim(p1.dono.dentro2)
+    l.addfim(arg1.contr.dono.dentro2)
     l.remove(p1, arg1.contr)
     se p1.tseguir == 2 # Líder do grupo: não ataca os outros integrantes
       i = l.ini
@@ -460,7 +510,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     !result && (arg0.contr.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
-    mensgolpe(arg0, arg1)
+    mensgolpe(arg0, arg1, textodirecao)
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg0)
@@ -473,6 +523,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Ataca os alvos secundários
   log = nulo # Os alvos secundários não entram no log
   ref r
+  txt200 danos
+  refvar lutando = atkenv ? 1 # Se não está lutando, significa que matou o alvo principal
   epara nulo, l, l.ini.remove
     continuar l.objini.perso < 2 # Não prossegue se for pacífico
     r = l.objini.persobat
@@ -480,9 +532,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
     execgolpe(arg0, r, atk) # Ataca
     continuar result == 4
-    !result && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
+    refvar acertou = !result
+    acertou && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
-    mensgolpe2(arg0, r)
+    mensgolpe2(arg0, r, textodirecao)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, arg0)
@@ -490,8 +543,20 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(r.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, r)
     efim
-    r.pvida ? r.acertapos(1) : r.morreu(arg0)
+    se r.pvida
+      acertou && (danos += ", " + r.nome + " " + mudavida)
+      r.acertapos(1)
+    senao
+      !lutando && arg0.batalhafim # Não ganha experiência matando esse alvo
+      r.morreu(arg0)
+    fimse
   efim
+  se danos
+    danos = "Danos:" + txt(danos, 1)
+    epara l.addfim(arg0.contr.dono.dentro2), l, l.ini.remove
+      l.objini.msg(danos)
+    efim
+  fimse
   arg0.acertapos(1)
 
 func efeitohab # Efeito da habilidade ou magia sobre o alvo
@@ -726,43 +791,49 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
 func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
+# arg2 = mensagem da direção, para quem não está na mesma sala de quem está atacando
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
     se !arg1.pvida # Se morreu
-      ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
+      ret menssub(lin, 8) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
-      ret menssub(lin, 3) && $mens.mtodos2(lin.0, lin.1)
+      ret menssub(lin, 3) && $mens.mtodos3dir(lin.0, lin.1, lin.1, arg2)
     senao # Outros casos
-      ret menssub(lin, 5) && $mens.mtodos3(lin.0, lin.1, lin.2)
+      ret menssub(lin, 5) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     fimse
   casose "1" # Não teve efeito
-    ret menssub(lin, 14) && $mens.mtodos3(lin.0, lin.1, lin.2)
+    ret menssub(lin, 14) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
   casose "2" # Errou o alvo
-    ret menssub(lin, 11) && $mens.mtodos3(lin.0, lin.1, lin.2)
+    ret menssub(lin, 11) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
   casose "3" # O alvo desviou
-    ret (menssub(lin, 17) || menssub(lin, 11)) && $mens.mtodos3(lin.0, lin.1, lin.2)
+    ret !menssub(lin, 17) && !menssub(lin, 11), nulo
+    ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
   casofim
 
 func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
+# arg2 = mensagem da direção, para quem não está na mesma sala de quem está atacando
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    ret arg1.pvida, arg1.contr.sock && menssub(lin, 5) && $mens.msginv(lin.1, arg1.contr)
-    ret menssub(lin, 8) && $mens.mtodos3(lin.0, lin.1, lin.2)
+    se arg1.pvida
+      ret arg1.contr.sock && menssub(lin, 5) && $mens.msginvdir(lin.1, arg1.contr, arg2)
+    senao
+      ret menssub(lin, 8) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+    fimse
   casose "1" # Não teve efeito
-    ret arg1.contr.sock && menssub(lin, 14) && $mens.msginv(lin.1, arg1.contr)
+    ret arg1.contr.sock && menssub(lin, 14) && $mens.msginvdir(lin.1, arg1.contr, arg2)
   casose "2" # Errou o alvo
-    ret arg1.contr.sock && menssub(lin, 11) && $mens.msginv(lin.1, arg1.contr)
+    ret arg1.contr.sock && menssub(lin, 11) && $mens.msginvdir(lin.1, arg1.contr, arg2)
   casose "3" # O alvo desviou
     ret !arg1.contr.sock, nulo
-    ret (menssub(lin, 17) || menssub(lin, 11)) && $mens.msginv(lin.1, arg1.contr)
+    ret (menssub(lin, 17) || menssub(lin, 11)) && $mens.msginvdir(lin.1, arg1.contr, arg2)
   casofim
 
 func menssub # Usado em mensgolpe
