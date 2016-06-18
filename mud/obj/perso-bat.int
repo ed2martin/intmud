@@ -122,7 +122,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   cmd_recalc1(este)
 # Modificadores
   txt512 lin
-  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+  epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
     [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
   efim
 # Bônus conforme o que está vestindo e os efeitos
@@ -542,12 +542,12 @@ func p_proc_atacar # Realiza um ataque
   listaobj l # Lista de habilidades e magias
   txt100 t1 # Nome da habilidade ou magia
   refvar var = persoesc.var
-  epara t1 = var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = var.depois(t1)
+  epara t1 = var.ini("h_"), t1, t1 = var.depois(t1, "h_")
     refvar r = $cmd_[txt(t1, 2)]
     r.cmdmenu && 8 != r.tipoalvo && l.addfim(r)
   efim
   se !dono.s_semmagia
-    epara t1 = var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = var.depois(t1)
+    epara t1 = var.ini("m_"), t1, t1 = var.depois(t1, "m_")
       refvar r = $magia_[txt(t1, 2)]
       r.cmdmenu && 8 != r.tipoalvo && l.addfim(r)
     efim

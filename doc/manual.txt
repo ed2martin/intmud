@@ -178,6 +178,9 @@ Por outro lado, se esse valor for muito baixo, corre-se o risco de alguma
 função não ser executada até o final. Pode ser cancelada por atingir a
 quantidade de linhas definidas em EXEC.
 
+A função CRIAR, em particular, não funcionará se EXEC for menor que 500.
+Nesse caso, ao invés de criar um objeto, o controle retornará ao IntMUD.
+
 Se uma função específica necessitar de um valor maior de EXEC, pode-se mudar
 temporariamente esse número em tempo de execução, através da variável DEBUG
 (vide em 'Outros tipos de variáveis').
@@ -3095,11 +3098,15 @@ _ (sublinhado) se for numérica;
 $ (cifrão) se for referência a um objeto;
 Um texto vazio se variável inexistente.
 
-21.4. antes(<nome da variável>)
+21.4. antes(<nome da variável>, [prefixo])
 Retorna nome da variável anterior ou um texto vazio se não existir.
+Prefixo é um texto. Se estiver definido e o nome da variável anterior
+não começar com o prefixo especificado, retorna um texto vazio.
 
-21.5. depois(<nome da variável>)
+21.5. depois(<nome da variável>, [prefixo])
 Retorna nome da próxima variável ou um texto vazio se não existir.
+Prefixo é um texto. Se estiver definido e o nome da próxima variável
+não começar com o prefixo especificado, retorna um texto vazio.
 
 21.6. valor(<nome da variável>)
 Corresponde à variável com o nome especificado.

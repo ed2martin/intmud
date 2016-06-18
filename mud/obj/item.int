@@ -102,7 +102,7 @@ func recalc_exec # Ajusta variáveis
   recalc1_auto, cmd_recalc1(este)
 # Modificadores
   txt512 lin
-  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+  epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
     [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
   efim
 # Efeitos
@@ -255,7 +255,7 @@ func recalc_exec # Acerta variáveis
 #  fimse
 # Modificadores
   txt512 lin
-  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+  epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
     [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
   efim
 # Efeitos

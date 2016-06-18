@@ -41,10 +41,8 @@ func escr
     refvar t = arg0.sock.txtmais
     t.limpar
     txt100 nome
-    nome = arg0.var.ini("t_")
-    enquanto txt(nome, 0, 2) == "t_"
+    epara nome = arg0.var.ini("t_"), nome, nome = arg0.var.depois(nome, "t_")
       t.addfim(txt(nome, 2) + " " + arg0.var.[nome])
-      nome = arg0.var.depois(nome)
     efim
     ret t.linhas == 0, arg0.msg("Nenhum atalho definido.")
     t.addini("\b\c6Atalhos(" + t.linhas + "):\b")
@@ -65,13 +63,9 @@ func escr
     arg0.var.t_[txt1(arg1)] = txt2(arg1)
     arg0.msg("Atalho mudado: " + arg1)
   senao
-    uint16 total
-    txt100 nome
-    total = config:atalhos, nome = arg0.var.ini("t_")
-    enquanto txt(nome, 0, 2) == "t_"
-      ret !(total -= 1), arg0.msg("Atingido limite de atalhos.")
-      nome = arg0.var.depois(nome)
-    efim
+    se arg0.var.total("t_") >= config:atalhos
+      ret arg0.msg("Atingido limite de atalhos.")
+    fimse
     arg0.var.t_[txt1(arg1)] = txt2(arg1)
     arg0.msg("Criado atalho: " + arg1)
   fimse

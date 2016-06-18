@@ -190,13 +190,13 @@ func passo4 # Escolha de uma habilidade ou magia
       txt100 t1
       nomeobj n
       n.ini(arg1)
-      epara t1 = var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = var.depois(t1)
+      epara t1 = var.ini("h_"), t1, t1 = var.depois(t1, "h_")
         continuar !n.nome(txt(t1, 2))
         tpasso += " " + t1
         arg0.msg("Você quer a habilidade " + txt2(txte(t1)) + "? (Tecle S ou N)")
         ret 0
       efim
-      epara t1 = var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = var.depois(t1)
+      epara t1 = var.ini("m_"), t1, t1 = var.depois(t1, "m_")
         continuar !n.nome(txt(t1, 2))
         tpasso += " " + t1
         arg0.msg("Você quer a magia " + txt2(txte(t1)) + "? (Tecle S ou N)")

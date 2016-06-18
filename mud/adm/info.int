@@ -139,7 +139,7 @@ func escr
   txt100 t2
   refvar txtmais = arg0.sock.txtmais
   txtmais.limpar
-  epara t1 = r.var.ini("h_"), txt(t1, 0, 2) == "h_", t1 = r.var.depois(t1)
+  epara t1 = r.var.ini("h_"), t1, t1 = r.var.depois(t1, "h_")
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
     t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
     txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
@@ -167,7 +167,7 @@ func escr
   txt100 t2
   refvar txtmais = arg0.sock.txtmais
   txtmais.limpar
-  epara t1 = r.var.ini("m_"), txt(t1, 0, 2) == "m_", t1 = r.var.depois(t1)
+  epara t1 = r.var.ini("m_"), t1, t1 = r.var.depois(t1, "m_")
     t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
     t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
     txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))

@@ -231,7 +231,7 @@ func atribs_exec # Organiza a variável atribs
   epara i = dentro2.ini, i, i.depois
     (lin = i.obj.m_atribs2(este)) && atribs.addfim(lin)
   efim
-  epara lin = var.ini("f_"), txt(lin, 0, 2) == "f_", lin = var.depois(lin)
+  epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
     (atr = $[lin].m_atribs2(este)) && atribs.addfim(atr)
   efim
   ret atribs.bytes == 0, atribs.addfim(" ")

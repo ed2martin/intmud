@@ -23,7 +23,8 @@ textovar arqlista # Data e hora dos arquivos, para detectar quando mudaram
 textotxt arqmudou # Sufixo dos arquivos que mudaram
 textovar apagarcl # Classes que serão apagadas
 textovar mudarcl # Novo conteúdo das classes
-textovar inicl # Classes que serão inicializadas (funçao iniclasse)
+textovar ordemcl # Ordem das classes
+textovar inicl # Classes que serão inicializadas (função iniclasse)
 intexec passofunc # Para mudar classes
 uint8 passonum # Número do passo atual
 const errlin = 20 # Quantidade máxima de linhas de erros
@@ -40,6 +41,11 @@ func acertalista # Acerta variável arqlista
   efim
 
 func exec # Recarrega arquivos
+  arqmudou.limpar
+  apagarcl.limpar
+  mudarcl.limpar
+  ordemcl.limpar
+  inicl.limpar
   passonum = 1, passofunc = 1
 
 func msg
@@ -61,7 +67,6 @@ func passo1 # Atualiza lista de arquivos que mudaram
 # Acerta variável: textotxt arqmudou
   arqdir dir
   arqprog aprg
-  arqmudou.limpar
 # Arquivos apagados
   epara p.iniarq, p.lin, p.depois
     dir.tipo(p.arqnome(p.texto)) != "A" && arqmudou.addfim("*" + p.texto)
@@ -92,7 +97,6 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
   textopos p1
   textopos p2
   textotxt t1
-  inicl.limpar
   epara p1 = arqmudou.ini, p1, p1.depois
 # Lê arquivo
     continuar p1.texto(0, 1) == "*"
@@ -109,6 +113,7 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
       p2.depois, p2.juntar, d.exec = 100000
     efim
 # Obtém as classes
+    txt100 nomedepois # Nome da classe que vem depois
     epara p2 = t1.fim, p2.linha, p2.antes
       continuar txt1(p2.texto) != "classe" || !txt2(p2.texto)
       d.exec = 100000
@@ -120,6 +125,8 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
 # msg("CLASSE: " + nome + "," + p1.texto)
 # msg("MUDAR: " + mudarcl.valor(nome))
       p2.remove(10000)
+      nomedepois && ordemcl.mudar(nomedepois + "\b=" + nome)
+      nomedepois = nome
       continuar p.existe(nome) # Checa se classe já existe
       p.criar(nome + "\n" + p1.texto + "\n") # Cria classe vazia
       inicl.mudar(nome + "\b=1") # Marca como "inicializar"
@@ -183,6 +190,7 @@ func passo4 # Muda as classes
   ret 1
 
 func passo5 # Apaga as classes pendentes e inicializa outras classes
+  d.exec = 100000
   textotxt t1
   textotxt t2
   txt100 nome
@@ -207,9 +215,14 @@ func passo5 # Apaga as classes pendentes e inicializa outras classes
     t2.addfim(txtcor(nome))
   efim
   t2 && t1.addfim("Mudado: " + txttroca(t2.remove(1000), "\n", ", "))
+# Acerta ordem das classes
+  epara nome = ordemcl.ini, nome, nome = ordemcl.depois(nome)
+   p.cldepois(ordemcl.valor(nome), txtcor(nome))
+  efim
 # Mensagem na tela
   mudarcl.limpar
   apagarcl.limpar
+  ordemcl.limpar
   msg(t1 ? t1.remove(errlin) : "Nada mudou")
   ret 1
 

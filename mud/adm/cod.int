@@ -12,6 +12,7 @@ const txtajuda = "\b\c3Comandos de edição do código\b\n\
   \c2EHERDA\b    Edita herança de uma classe\n\
   \c2LFUNC\b     Lista funções de uma classe\n\
   \c2LFUNC2\b    Lista todas funções de uma classe, inclusive as herdadas\n\
+  \c2LARQ\b      Lista os arquivos e as classes de cada arquivo\n\
   \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados\n\
   \c2MD5CL\b     Calcula o MD5 do texto de uma classe (para saber se mudou)"
 
@@ -260,7 +261,6 @@ func escr # Listar funções
       t.addfim(p.vartipo(arg1, p.texto) + " " + p.texto)
       p.depois
     efim
-    lin && t.addfim(lin)
     arg0.msg2(t.remove(1000))
   fimse
 
@@ -286,9 +286,47 @@ func escr # Listar funções inclusive as herdadas
       t.addfim(p.vartipo(arg1, p.texto) + " " + p.texto)
       p.depois
     efim
-    lin && t.addfim(lin)
     arg0.msg2(t.remove(1000))
   fimse
+
+
+classe adm_larq
+herda comando_adm
+const txtajuda = "\b\c3Larq\b\n\
+Sintaxe: LARQ [prefixo do arquivo]\n\
+Sem argumentos lista os arquivos que compõem o programa.\n\
+Com um hífen lista as classes do arquivo principal.\n\
+Seguido de um nome lista as classes do arquivo especificado."
+
+func escr
+  prog p
+  textotxt t
+  txt100 lin
+  se !arg1
+    epara p.iniarq, p.lin, p.depois
+      p.texto && t.addfim(p.texto + ",")
+    efim
+    t.ordena
+    lin = "\b\c6Arquivos (" + t.linhas + "):\b"
+  senao arg1 == "-"
+    epara p.iniarq(""), p.lin, p.depois
+      t.addfim(p.texto + ",")
+    efim
+    ret !t.linhas, arg0.msg("Arquivo principal está vazio.")
+    lin = "\b\c6Arquivo principal (" + t.linhas + "):\b"
+  senao
+    epara p.iniarq(arg1), p.lin, p.depois
+      t.addfim(p.texto + ",")
+    efim
+    lin = "\b\c6Arquivo " + arg1 + " (" + t.linhas + "):\b"
+  fimse
+  textopos pos
+  pos = t.fim, pos.antes
+  pos.mudar("", inttotal(pos.texto) - 1, 1)
+  t.juntar
+  t.dividelin(50, 70)
+  t.addini(lin)
+  arg0.msg2(t.remove(1000))
 
 
 classe adm_lherda

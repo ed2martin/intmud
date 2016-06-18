@@ -72,6 +72,12 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
 {
     if (VarAtual <= v)
         return false;
+// Se VarExec for muito pequeno, pode ter problemas ao executar a função ini
+    if (VarExec < 500)
+    {
+        VarExec = -1;
+        return false;
+    }
 // Procura a classe
     TClasse * c = TClasse::Procura(v[1].getTxt());
     if (c==0)

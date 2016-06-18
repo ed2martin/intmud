@@ -157,6 +157,12 @@ bool TTextoObj::FuncAntes(TVariavel * v)
     TBlocoObj * bl = 0;
     if (Instr::VarAtual >= v+1)
         bl = ProcAntes(v[1].getTxt());
+    if (Instr::VarAtual >= v+2 && bl)
+    {
+        int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
+        if (cmp!=0 && cmp!=2) // 0=textos iguais, 2=texto 1 contém texto 2
+            bl = 0;
+    }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
@@ -168,6 +174,12 @@ bool TTextoObj::FuncDepois(TVariavel * v)
     TBlocoObj * bl = 0;
     if (Instr::VarAtual >= v+1)
         bl = ProcDepois(v[1].getTxt());
+    if (Instr::VarAtual >= v+2 && bl)
+    {
+        int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
+        if (cmp!=0 && cmp!=2) // 0=textos iguais, 2=texto 1 contém texto 2
+            bl = 0;
+    }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
 }
