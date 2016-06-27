@@ -308,8 +308,8 @@ int comparaVar(const char * string1, const char * string2)
         unsigned char ch1,ch2;
         if (*string1==0 || *string2==0)
             return (*string1 ? 2 : *string2 ? -2 : 0);
-        ch1=tabNOMES2[*(unsigned char *)string1];
-        ch2=tabNOMES2[*(unsigned char *)string2];
+        ch1=TABELA_COMPARAVAR[*(unsigned char *)string1];
+        ch2=TABELA_COMPARAVAR[*(unsigned char *)string2];
         if (ch1!=ch2)
             return (ch1<ch2 ? -1 : 1);
     }

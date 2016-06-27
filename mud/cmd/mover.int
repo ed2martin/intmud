@@ -83,6 +83,9 @@ func mover # Personagem anda em uma direção
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
+  senao !arg0.cabedentro(s2)
+    arg0.msg("Não tem espaço para seguir nessa direção.")
+    ret 0
   senao s1.voar_[dir](arg0) && !(arg0.bitver & 512 || arg0.bitinv & 48)
     arg0.msg("Você não consegue porque não está flutuando.")
     ret 0
@@ -187,22 +190,14 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
 func fugirdir # Obtém direção para onde pode fugir
 # Entrada: arg0 = personagem
 # Retorna: direção ou "" se não há para onde fugir
-  refvar r = ref(arg0.dono)
+  refvar dono = ref(arg0.dono)
   txt100 t
   prog p
-  se arg0.jog
-    epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-      refvar y = txt(p.texto, 4)
-      r.[p.texto](arg0) && !r.fugir_[y](arg0) && int(r.porta_[y]) < 2 && (t += y + " ")
-    efim
-  senao
-    epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-      refvar x = ref(r.[p.texto](arg0))
-      continuar !x || x.dentro2.total - x.socktot >= x.s_pnj
-      refvar y = txt(p.texto, 4)
-      !r.fugir_[y](arg0) && int(r.porta_[y]) < 2 && (t += y + " ")
-    efim
-  fimse
+  epara p.inifunctudo(dono, "dir_"), p.lin, p.depois
+    continuar !arg0.cabedentro(dono.[p.texto](arg0))
+    refvar y = txt(p.texto, 4)
+    !dono.fugir_[y](arg0) && int(dono.porta_[y]) < 2 && (t += y + " ")
+  efim
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
 

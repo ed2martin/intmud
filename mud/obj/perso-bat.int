@@ -50,7 +50,8 @@ real atkdanos1 # Usado em batalhaexp: danos totais causados pelo grupo
 real atkdanos2 # Usado em batalhaexp: quantidade de personagens do grupo
 inttempo p_tempoatu # Tempo para atualizar personagem
 inttempo p_proc # Para processar comportamento do personagem
-intdec p_tmove # Quanto para se mover novamente
+txt40 p_atacou_nome # Nome do personagem do jogador que atacou esse personagem
+txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sala)
 
 func pnivelmax
   refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))
@@ -178,6 +179,8 @@ func bat_ini_int # Chamado internamente por batalhaini
   atkturno = arg0.atkturno = 0
   !p_proc && (p_proc = 1)
   arg0.p_proc = 1 # Para gerar evento de PNJs
+  jog && (arg0.contr.p_atacou_nome = nome)
+  jog && arg0.p_lembra && (arg0.var.r_[nome]@ = 600 * arg0.p_lembra)
 # Apaga eventos que só existem fora da batalha
   listaitem i
   epara i = atkbat.ini, i, i.depois
@@ -390,6 +393,10 @@ func morreu # Procedimentos quando morre
   fimse
 # Jogador: anota no log, perde experiência e transfere jogador para outro lugar
   se jog
+    listaitem litem
+    epara litem = dono.dentro2.ini, litem, litem.depois
+      litem.obj.var.r_[nome]_ = 0
+    efim
     se !arg0.perso
       $misclog.mortes(nome + " N" + pnivel)
     senao arg0.contr.jog
@@ -514,9 +521,19 @@ func p_proc_exec # Processar comportamento do personagem
 # Evento do personagem
   ret cmd_pnj_proc, nulo
 # Ações do personagem
+  atkenv && atkenv.objlista.dono != dono && batalhafim
+  ret atkenv, p_proc = 30 # Retorna se está lutando
+  se p_atacou_nome
+    ret p_proc_atkjog(p_atacou_nome), nulo # Ataca se quem atacou está na mesma sala
+    ret p_atacou_dir && p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
+    ret p_persegue && p_proc_perseguir(p_atacou_nome), p_atacou_dir = ""
+    p_atacou_nome = p_atacou_dir = ""
+  senao p_atacou_dir
+    ret p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
+    p_atacou_dir = ""
+  fimse
   ret p_proc_atacar(p_proc_alvo), nulo
   ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
-  ret posicao == 7, p_proc = 30 # Retorna se está lutando
   ret p_comecorpo && posicao >= 5 && p_proc_comecorpo, nulo
   ret p_mover && posicao == 8 && p_proc_mover, nulo
   p_proc = 50
@@ -528,7 +545,8 @@ func p_proc_alvo # Obtém um jogador alvo para atacar, se for agressivo
   listaitem i
   listaobj l
   epara i = dono.dentro2.ini, i, i.depois
-    i.obj.jog && p_agressivo(i.obj) == 2 && i.obj.visivel(este) && l.addfim(i.obj)
+    refvar r = i.obj
+    r.jog && p_agressivo(r) >= (var.r_[r.nome]_ ? 1 : 2) && r.visivel(este) && l.addfim(r)
   efim
   se l.total
     i = l.ini, i.depois(rand(l.total))
@@ -562,6 +580,38 @@ func p_proc_atacar # Realiza um ataque
     ret 1
   senao !atkenv # Ataque automático
     persobat.atkauto(arg0.persobat, 8)
+    ret 1
+  fimse
+  ret 0
+
+func p_proc_atkjog # Ataca jogador se estiver na mesma sala
+# arg0 = nome do personagem do jogador
+# Retorna: 1=conseguiu, 0=não conseguiu atacar
+  indiceitem item
+  refvar objjog = item.obj("pn " + txts(txtnome(p_atacou_nome)))
+  ret objjog.dono == dono, p_proc_atacar(objjog)
+
+func p_proc_perseguir # Persegue e ataca um personagem de jogador
+# arg0 = nome do personagem do jogador
+# Retorna: 1=conseguiu, 0=desistiu da perseguição
+  ret !arg0 || atkenv, 0
+# Procura rastro (recente) do jogador nas salas vizinhas
+  prog p
+  refvar dono1 = ref(dono)
+  refvar nomevar = "r_" + arg0 # Nome da variável
+  txt100 dir # Direção a ser tomada
+  int32 tempo # Tempo correspondente à direção a ser tomada
+  tempo = dono.var.[nomevar]_
+  epara p.inifunctudo(dono1, "dir_"), p.lin, p.depois
+    refvar x = ref(dono1.[p.texto](este))
+    continuar !cabedentro(x) || int(x.porta_[txt(p.texto, 4)]) >= 2
+    continuar x.var.[nomevar]_ <= tempo # Rastro mais antigo
+    tempo = x.var.[nomevar]_ # Anota tempo do rastro
+    dir = txt(p.texto, 4) # Anota direção da sala
+  efim
+# Anda na direção do rastro ou desiste da perseguição
+  se dir && (int(p_mover) > 1 || dono1.dir_[dir](este).s_area == dono1.s_area)
+    $cmd_[dir].escr(este)
     ret 1
   fimse
   ret 0
@@ -638,10 +688,20 @@ func p_proc_exec # Processar comportamento do personagem
 # Evento do personagem
   ret cmd_pnj_proc, nulo
 # Ações do personagem
+  atkenv && atkenv.objlista.dono != dono && batalhafim
   ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
+  ret atkenv, p_proc = 30 # Retorna se está lutando
+  se p_atacou_nome
+    ret p_proc_atkjog(p_atacou_nome), nulo # Ataca se quem atacou está na mesma sala
+    ret p_atacou_dir && p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
+    ret p_persegue && p_proc_perseguir(p_atacou_nome), p_atacou_dir = ""
+    p_atacou_nome = p_atacou_dir = ""
+  senao p_atacou_dir
+    ret p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
+    p_atacou_dir = ""
+  fimse
   ret p_proc_atacar(p_proc_alvo), nulo
   ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
-  ret posicao == 7, p_proc = 30 # Retorna se está lutando
   ret p_comecorpo && posicao >= 5 && p_proc_comecorpo, nulo
   ret p_mover && posicao == 8 && p_proc_mover, nulo
   p_proc = 50

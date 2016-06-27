@@ -50,14 +50,18 @@ herda comum_obj
 # Estrutura de uma sala
 #
 const objsav = 3 # Se deve salvar a sala ao salvar casa do jogador
+const s_sala = 1 # Indica que é uma sala (personagens podem entrar)
 const s_titulo = "Sem nome"
 const s_desc = ""
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
 const s_pnj = 10 # Quantidade máxima de PNJs na sala
+const s_jog = 100 # Quantidade máxima de jogadores na sala
 const s_noite = s_desc(arg0) # Inicialmente descrição de noite e de dia são iguais
 const s_recup = 100 # Taxa de recuperação de vida, mana e movimentos
 const s_gritar = s_falar(arg0) # Mensagem ao gritar; se estiver vazia, pode gritar
+const s_som = "sala"
+const s_atk_move = 1
 int1 objmudou # Para salvar sala ao salvar a casa
 #
 uint8 porta_n # Tipo de saída
@@ -86,12 +90,14 @@ s_morre\n\
 s_naoresg\n\
 s_ocultar\n\
 s_pnj\n\
+s_jog\n\
 s_recup\n\
 s_reserva\n\
 s_semmagia\n\
 s_soltar\n\
 s_retornar\n\
 s_terreno\n\
+s_atk_move\n\
 s_voltar\n\
 s_som\n\
 volmax\n\
@@ -123,7 +129,6 @@ comechave_entrar fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n
 dir_sair portaini_sair portanome_sair portaartigo_sair fechadura_sair\n\
 comechave_sair fugir_sair inv_sair fecha_sair tranc_sair voar_sair"
 const iniclasse = !$[arg0] && criar(arg0)
-const s_som = "sala"
 
 func ini # Objeto foi criado: inicializa variáveis
   porta_n = portaini_n

@@ -168,22 +168,22 @@ func mtodos3 # Mensagem só para quem estiver acordado
 
 func mtodos3dir # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-# arg3 = mensagem da direção, para quem não está na mesma sala do personagem
+# arg3 = direção do personagem ao alvo, quando não estão na mesma sala
+  ret (alvo.contr.dono ?? contr.dono) == contr.dono, mtodos3(arg0, arg1, arg2)
   ret !(contr.dono.socktot || alvo.contr.dono.socktot), nulo
-  refvar saladif = (alvo.contr.dono ?? contr.dono) != contr.dono
-  arg0 && msginv(arg0, contr)
-  arg1 && contr != alvo.contr && msginv(saladif ? txt(arg3) + arg1 : arg1, alvo.contr)
+  refvar t1 = txt(misc:d3[arg3])
+  refvar t2 = txt(misc:d4[arg3])
+  arg0 && msginv(t1 + arg0, contr)
+  arg1 && contr != alvo.contr && msginv(t2 + arg1, alvo.contr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
-    msginv(arg2, l0.objini)
+  epara l0.remove(contr), l0, l0.ini.remove
+    msginv(t1 + arg2, l0.objini)
   efim
-  ret !saladif, nulo
-  listaobj l0
   l0.addfim(alvo.contr.dono.dentro2)
-  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
-    msginv(txt(arg3) + arg2, l0.objini)
+  epara l0.remove(alvo.contr), l0, l0.ini.remove
+    msginv(t2 + arg2, l0.objini)
   efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
@@ -221,22 +221,22 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 
 func mvis3dir # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-# arg3 = mensagem da direção, para quem não está na mesma sala do personagem
+# arg3 = direção do personagem ao alvo, quando não estão na mesma sala
+  ret (alvo.contr.dono ?? contr.dono) == contr.dono, mvis3(arg0, arg1, arg2)
   ret !(contr.dono.socktot || alvo.contr.dono.socktot), nulo
-  refvar saladif = (alvo.contr.dono ?? contr.dono) != contr.dono
-  arg0 && msgvis(arg0, contr)
-  arg1 && contr != alvo.contr && msgvis(saladif ? txt(arg3) + arg1 : arg1, alvo.contr)
+  refvar t1 = txt(misc:d3[arg3])
+  refvar t2 = txt(misc:d4[arg3])
+  arg0 && msgvis(t1 + arg0, contr)
+  arg1 && contr != alvo.contr && msgvis(t2 + arg1, alvo.contr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
-  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
-    msgvis(arg2, l0.objini)
+  epara l0.remove(contr), l0, l0.ini.remove
+    msgvis(t1 + arg2, l0.objini)
   efim
-  ret !saladif, nulo
-  listaobj l0
   l0.addfim(alvo.contr.dono.dentro2)
-  epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
-    msgvis(txt(arg3) + arg2, l0.objini)
+  epara l0.remove(alvo.contr), l0, l0.ini.remove
+    msgvis(t2 + arg2, l0.objini)
   efim
 
 func mmud1 # Mensagem para todos do MUD

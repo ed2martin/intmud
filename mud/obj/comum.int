@@ -183,7 +183,8 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
       r.socktot += socktot
     efim
   fimse
-# Limpa outras variáveis
+# Limpa outras variáveis e adiciona rastro de jogador
+  jog && (dono.var.r_[nome]@ = 36000) # 60*60*10 = uma hora
   perso && atkenv.remove + atkrec.limpar
   var.limpar("d_")
 

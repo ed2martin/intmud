@@ -34,6 +34,7 @@ const p_morreu1 = "$P morreu."
 const p_morreu2 = "$P desmaiou."
 const p_fome = 100 # Não está com fome
 const p_sede = 100 # Não está com sede
+intdec p_tmove # Quanto para se mover novamente
 const lojafechada = "$P: Volte outra hora"
 #
 # Ordem que deve organizar as constantes:
@@ -62,6 +63,8 @@ taxacompra\n\
 taxavenda\n\
 tipoitem\n\
 p_agressivo\n\
+p_atk_anda\n\
+p_atk_desvia\n\
 p_atktipo\n\
 p_captura\n\
 p_comecorpo\n\
@@ -69,12 +72,14 @@ p_corpo\n\
 p_exp\n\
 p_fugir\n\
 p_imortal\n\
+p_lembra\n\
 p_morreu1\n\
 p_morreu2\n\
 p_mover\n\
 p_movervel\n\
 p_naoresg\n\
 p_naoseguir\n\
+p_persegue\n\
 p_recebe\n\
 p_soltar\n\
 inivar evhora eveste evperso evitem evsala"
@@ -169,7 +174,7 @@ func mudadono # Coloca personagem em outra sala
     casofim
     listaobj l
     epara l.addfim(dono.dentro2), l, l.ini.remove
-      l.objini.p_agressivo(este) == 2 && (l.objini.p_proc = 1)
+      (l.objini.p_agressivo(este) == 2 || l.objini.var.r_[nome]_) && (l.objini.p_proc = 1)
     efim
 # Se vai ser animal de um personagem, acerta quem é o primeiro dono
   senao dono.perso && !var.z_dono
@@ -196,6 +201,12 @@ func mudadono # Coloca personagem em outra sala
     msg2(dono.descsala(este, cfg))
   fimse
   ret este
+
+func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
+# arg0 = sala
+  ret !arg0.s_sala || arg0.volden + voltot > arg0.volmax, 0
+  ret jog, int(arg0.dentro2.total("jogador") < arg0.s_jog)
+  ret int(arg0.dentro2.total - arg0.dentro2.total("jogador") < arg0.s_pnj)
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
@@ -463,8 +474,7 @@ func p_proc_mover # Personagem tenta se movimentar em uma direção aleatória
   prog p
   refvar r = ref(dono)
   epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-    refvar x = ref(r.[p.texto](este))
-    x && x.dentro2.total - x.socktot < x.s_pnj && t.addfim(txt(p.texto, 4))
+    cabedentro(r.[p.texto](este)) && t.addfim(txt(p.texto, 4))
   efim
   t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
   txt10 dir
@@ -472,4 +482,11 @@ func p_proc_mover # Personagem tenta se movimentar em uma direção aleatória
   ret !dir || p_mover == 1 && r.dir_[dir](este).s_area != r.s_area, 0
   $cmd_[dir].escr(este)
   p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
-  ret 1
+  ret (r != dono)
+
+func p_proc_dir # Personagem tenta se movimentar em uma direção específica
+# arg0 = direção
+# Retorna: 1=conseguiu se movimentar, 0=não conseguiu
+  refvar r = ref(dono)
+  $cmd_[arg0].escr(este)
+  ret (r != dono)

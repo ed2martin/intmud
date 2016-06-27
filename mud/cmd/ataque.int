@@ -162,7 +162,8 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # Retorna verdadeiro se pode usar
-  ret !arg0.pvida || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel, nulo
+  ret !arg0.pvida || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel, \
+nulo
   ret arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
@@ -250,7 +251,7 @@ func escrhab # Atacar alguém
     int16 move
     listaitem i
     nomeobj nome
-    refvar dist = 2 * intmin(100, arma1 ? arma1.armamove : armamove)
+    refvar dist = int(arma1 ? arma1.armamove : armamove)
     dir = dist > 0 ? misc:d1[txt1(arg1)]
     se !misc:d3[dir] # Atacar na mesma sala
       nome.ini(arg1, 1)
@@ -267,12 +268,11 @@ func escrhab # Atacar alguém
           efim
         fimse
         sair i.obj || int(sala.porta_[dir]) >= 2 # Achou o alvo ou porta fechada
-        move += intmax(1, sala.totalmove + sala.dir_[dir].totalmove)
+        move += intmax(1, sala.dir_[dir].s_atk_move)
       efim
     senao # Atacar qualquer um em outra sala
       ref sala
       uint8 totalperso
-      sala = arg0.dono
       epara sala = arg0.dono, sala && move < dist, sala = sala.dir_[dir]
         se move
           epara i = sala.dentro2.ini, i, i.depois
@@ -287,7 +287,7 @@ func escrhab # Atacar alguém
           sair
         fimse
         sair int(sala.porta_[dir]) >= 2 # Achou porta fechada
-        move += intmax(1, sala.totalmove + sala.dir_[dir].totalmove)
+        move += intmax(1, sala.dir_[dir].s_atk_move)
       efim
     fimse
     r = i.obj
@@ -321,9 +321,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # arg3 = nível da habilidade ou magia (=nível do personagem)
 # arg4 = item usado, ou nulo se não usou nenhum item
-# arg5 = direção de onde veio o ataque, se o alvo não estiver na mesma
+# arg5 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
   ret !checahab2(arg0, arg2, arg4), nulo
-  refvar textodirecao = misc:d3[arg5]
 # Checa a condição de batalha
   se a_batalha == 1 && !arg0.contr.atkenv
     ret arg0.contr.msg("Você não está lutando com ninguém.")
@@ -377,7 +376,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       efeitohab(arg0, arg1, arg2, arg3)
     fimse
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
-    mensgolpe(arg0, arg1, textodirecao)
+    mensgolpe(arg0, arg1, arg5)
     cmd_alvofim(arg0, arg1, este)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg0)
@@ -427,7 +426,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   fimse
   se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     result = 1
-    mensgolpe(arg0, arg1, textodirecao)
+    mensgolpe(arg0, arg1, arg5)
     ret arg0.acertapos(1)
   fimse
 # Alvos secundários (somente ataques de área)
@@ -505,12 +504,18 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Ataca o alvo escolhido
   listaobj e
   tipoalvo != 8 && velgolpe(arg0, arg1) # Tempo do golpe
-  execgolpe(arg0, arg1, atk) # Ataca
+  arg5 && (arg1.contr.p_atacou_dir = misc:d2[arg5])
+  se arg5 && arg1.p_atk_desvia
+    arg0.batalhaini(arg1)
+    result = 2 # Desvia
+  senao
+    execgolpe(arg0, arg1, atk) # Ataca
+  fimse
   se result != 4
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
     !result && (arg0.contr.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
-    mensgolpe(arg0, arg1, textodirecao)
+    mensgolpe(arg0, arg1, arg5)
     cmd_atacou(arg0, arg1, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg0)
@@ -530,12 +535,18 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     r = l.objini.persobat
     continuar !r.contr.p_agressivo(arg0)
     tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
-    execgolpe(arg0, r, atk) # Ataca
-    continuar result == 4
+    arg5 && 2 == r.contr.p_ataquelonge && (r.contr.p_atacou_dir = misc:d2[arg5])
+    se arg5 && r.p_atk_desvia
+      arg0.batalhaini(r)
+      result = 2 # Desvia
+    senao
+      execgolpe(arg0, r, atk) # Ataca
+      continuar result == 4
+    fimse
     refvar acertou = !result
     acertou && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
-    mensgolpe2(arg0, r, textodirecao)
+    mensgolpe2(arg0, r, arg5)
     cmd_atacou(arg0, r, este)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, arg0)
@@ -791,7 +802,7 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
 func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
-# arg2 = mensagem da direção, para quem não está na mesma sala de quem está atacando
+# arg2 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
   casovar result
@@ -816,7 +827,7 @@ func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do 
 func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado do ataque
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
-# arg2 = mensagem da direção, para quem não está na mesma sala de quem está atacando
+# arg2 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
   $mens.p(arg0, arg1, arma1)
   txt512 lin.3
   casovar result

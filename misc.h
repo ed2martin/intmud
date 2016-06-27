@@ -14,6 +14,9 @@
 // Valor máximo de IntTempo é INTTEMPO_MAX*INTTEMPO_MAX-1
 #define INTTEMPO_MAX 0x400
 
+// Tabela de caracteres usada em comparaVar (para comparar variáveis)
+#define TABELA_COMPARAVAR tabNOMES2
+
 extern unsigned long TempoIni; ///< Tempo desde que o programa foi executado, 10=1seg
                          /**< @note Atualizado em main.cpp */
 

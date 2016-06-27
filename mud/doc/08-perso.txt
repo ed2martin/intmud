@@ -126,6 +126,10 @@ Pega o próximo comando da lista.
 func teclouproc( texto do comando )
 Processa comando, sem espera.
 
+func cabedentro( sala )
+Retorna 1 se o personagem cabe na sala especificada ou 0 se não cabe.
+Essa função checa o volume e a quantidade de personagens na sala.
+
 func erropos
 Retorna uma mensagem conforme a posição atual, para indicar que o que
 o personagem digitou não pode ser feito.
@@ -221,6 +225,21 @@ Se não permite resgatar jogadores lutando com esse personagem.
 const p_comecorpo = 0
 Se come corpos de outros personagens (desde que esteja cordado).
 (0=não come, 1=come)
+
+const p_lembra = 0
+Por quanto tempo se lembra dos jogadores que atacaram, em minutos.
+
+const p_persegue = 0
+Se deve perseguir jogadores.
+(0=não, 1=se atacarem)
+
+const p_atk_anda = 0
+Se deve ir na direção de quem atacou, quando recebe ataque de outra sala.
+(0=não, 1=sim)
+
+const p_atk_desvia = 0
+Se sempre desvia de ataques vindos de outras salas.
+(0=não, 1=sim)
 
 const lojaini = 0
 Que horas a loja abre ou o PNJ começa a ensinar.

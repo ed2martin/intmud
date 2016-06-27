@@ -154,8 +154,8 @@ func escr # Editar área
   se !$a_[prefixo]
     arg0.msg("\bÁrea não existe: " + prefixo)
   senao
-    arg0.sock.var.classe1 = "a_" + prefixo
-    arg0.sock.var.classe2 = "b_" + prefixo
+    arg0.sock.var.classe1 = "b_" + prefixo
+    arg0.sock.var.classe2 = "a_" + prefixo
     arg0.sock.m_menu("menu_area")
   fimse
 
@@ -451,192 +451,8 @@ func escr # Apagar descrição extra
   fimse
 
 
-classe menu_area
-herda comando_menu
-const titulo = "Área " + txt(var.classe1, 2)
-const colunas = 25
-#
-const nome1 = "Nome"
-const tipo1 = "opc_linha-"
-const clas1 = var.classe1
-const vari1 = "a_nome"
-#
-const nome2 = "Autor"
-const tipo2 = "opc_linha-"
-const clas2 = var.classe1
-const vari2 = "a_autor"
-#
-const nome3 = "Tempo de reset"
-const info3 = "Tempo aproximado em minutos"
-const tipo3 = "opc_numero"
-const clas3 = var.classe1
-const vari3 = "a_tempo"
-const exec3 = "reset_atualiza"
-#
-const nome4 = "Modo de reset"
-const tipo4 = "opc_opcao"
-const clas4 = var.classe1
-const vari4 = "a_reset"
-const extr4 = "Nunca\nQuando não há jogadores\nNormal"
-#
-const nome5 = "Mensagem de reset"
-const tipo5 = "opc_linha"
-const clas5 = var.classe1
-const vari5 = "a_txtreset"
-const extr5 = "Enviada para os jogadores na área quando ocorre reset"
-#
-const nome6 = "Terreno"
-const tipo6 = "opc_opcao"
-const clas6 = var.classe2
-const vari6 = "s_terreno"
-const extr6 = adm_sala:txt_terreno
-#
-const nome7 = "Luz"
-const tipo7 = "opc_opcao"
-const clas7 = var.classe2
-const vari7 = "s_luz"
-const extr7 = adm_sala:txt_luz
-#
-const nome8 = "Recuperação"
-const info8 = "Taxa de recuperação de vida, mana e movimentos\n\
-Quanto maior, mais recupera; 0 não recupera"
-const tipo8 = "opc_numero"
-const clas8 = var.classe2
-const vari8 = "s_recup"
-#
-const nome9 = "Fome e sede"
-const tipo9 = "opc_opcao"
-const clas9 = var.classe2
-const vari9 = "s_fome"
-const extr9 = "Presente\nAusente\nSome aos poucos"
-#
-const nome10 = "Apagar itens"
-const info10 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
-const tipo10 = "opc_numero"
-const clas10 = var.classe2
-const vari10 = "s_item"
-#
-const nome11 = "Morre ao entrar"
-const tipo11 = "opc_opcao"
-const clas11 = var.classe2
-const vari11 = "s_morre"
-const extr11 = "Não\n\
-Sim\n\
-Sim e perde itens e dinheiro\n\
-Sim e perde itens\n\
-Sim e perde dinheiro"
-#
-const nome12 = "Ao tentar falar"
-const info12 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
-const tipo12 = "opc_linha"
-const clas12 = var.classe2
-const vari12 = "s_falar"
-#
-const nome13 = "Ao tentar gritar"
-const info13 = "Mensagem recebida ao usar o comando gritar; se nulo permite gritar"
-const tipo13 = "opc_linha"
-const clas13 = var.classe2
-const vari13 = "s_gritar"
-#
-const nome14 = "Batalha"
-const tipo14 = "opc_opcao"
-const clas14 = var.classe2
-const vari14 = "s_luta"
-const extr14 = adm_sala:txt_luta
-#
-const nome15 = "Sem resgate"
-const info15 = "Se não é possível resgatar outro jogador"
-const tipo15 = "opc_simnao"
-const clas15 = var.classe2
-const vari15 = "s_naoresg"
-#
-const nome16 = "Sem magia"
-const tipo16 = "opc_simnao"
-const clas16 = var.classe2
-const vari16 = "s_semmagia"
-#
-const nome17 = "Comando retornar"
-const tipo17 = "opc_opcao"
-const clas17 = var.classe2
-const vari17 = "s_retornar"
-const extr17 = "Permitido\n\
-Não permitido\n\
-Muda o ponto de retorno para essa sala\n\
-Muda o ponto de retorno se não possuir"
-#
-const nome18 = "Comando reserva"
-const tipo18 = "opc_simnao"
-const clas18 = var.classe2
-const vari18 = "s_reserva"
-#
-const nome19 = "Sala ao voltar"
-const info19 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
-const tipo19 = "opc_sala"
-const clas19 = var.classe2
-const vari19 = "s_voltar"
-#
-const nome20 = "PNJs na sala"
-const info20 = "Quantidade máxima de PNJs na sala; não afeta o reset"
-const tipo20 = "opc_numero"
-const clas20 = var.classe2
-const vari20 = "s_pnj"
-#
-const nome21 = "Soltar itens"
-const tipo21 = "opc_opcao"
-const clas21 = var.classe2
-const vari21 = "s_soltar"
-const extr21 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
-#
-const nome22 = "Volume dentro"
-const tipo22 = "opc_numero"
-const clas22 = var.classe2
-const vari22 = "volmax"
-#
-const nome23 = "Objetos máximo"
-const tipo23 = "opc_numero"
-const clas23 = var.classe2
-const vari23 = "objmax"
-#
-const nome24 = "Som das salas"
-const info24 = "Nome do som tocado ao entrar nas salas; vide adm som"
-const tipo24 = "opc_linha"
-const clas24 = var.classe2
-const vari24 = "s_som"
-
-
-classe menu_sala
-herda comando_menu
-const titulo = "Sala " + txt(var.classe1, 2)
-const colunas = 25
-#
-const nome1 = "Título"
-const tipo1 = "opc_linha"
-const clas1 = var.classe1
-const vari1 = "s_titulo"
-#
-const nome2 = "Descrição"
-const info2 = "Aceita caracteres especiais do personagem; vide adm mens"
-const tipo2 = "opc_texto"
-const clas2 = var.classe1
-const vari2 = "s_desc"
-#
-const nome3 = "Desc de noite"
-const info3 = "Se quiser uma descrição diferente quando etiver de noite"
-const tipo3 = "opc_texto"
-const clas3 = var.classe1
-const vari3 = "s_noite"
-#
-const nome4 = "Desc completa"
-const info4 = "Se quiser substituir a descrição completa, mostrada ao teclar 'olhar'"
-const tipo4 = "opc_texto"
-const clas4 = var.classe1
-const vari4 = "descsala"
-#
-const nome5 = "Ocultar desc"
-const info5 = "Se não deve mostrar descrição ao entrar na sala"
-const tipo5 = "opc_simnao"
-const clas5 = var.classe1
-const vari5 = "s_ocultar"
+classe menu_area_sala
+# Opções em comum dos comandos Larea e Lsala
 #
 const nome6 = "Terreno"
 const tipo6 = "opc_opcao"
@@ -734,27 +550,109 @@ const tipo20 = "opc_numero"
 const clas20 = var.classe1
 const vari20 = "s_pnj"
 #
-const nome21 = "Soltar itens"
-const tipo21 = "opc_opcao"
+const nome21 = "Jogadores na sala"
+const info21 = "Quantidade máxima de jogadores na sala"
+const tipo21 = "opc_numero"
 const clas21 = var.classe1
-const vari21 = "s_soltar"
-const extr21 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
+const vari21 = "s_jog"
 #
-const nome22 = "Volume dentro"
+const nome22 = "Movimentos ataque"
+const info22 = "Quantidade de movimentos que um ataque de outra sala usa para checar nessa"
 const tipo22 = "opc_numero"
 const clas22 = var.classe1
-const vari22 = "volmax"
+const vari22 = "s_atk_move"
 #
-const nome23 = "Objetos máximo"
-const tipo23 = "opc_numero"
+const nome23 = "Soltar itens"
+const tipo23 = "opc_opcao"
 const clas23 = var.classe1
-const vari23 = "objmax"
+const vari23 = "s_soltar"
+const extr23 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
 #
-const nome24 = "Som da sala"
-const info24 = "Nome do som tocado ao entrar na sala; vide adm som"
-const tipo24 = "opc_linha"
+const nome24 = "Volume dentro"
+const tipo24 = "opc_numero"
 const clas24 = var.classe1
-const vari24 = "s_som"
+const vari24 = "volmax"
+#
+const nome25 = "Objetos máximo"
+const tipo25 = "opc_numero"
+const clas25 = var.classe1
+const vari25 = "objmax"
+#
+const nome26 = "Som da sala"
+const info26 = "Nome do som tocado ao entrar na sala; vide adm som"
+const tipo26 = "opc_linha"
+const clas26 = var.classe1
+const vari26 = "s_som"
+
+
+classe menu_area
+herda comando_menu, menu_area_sala
+const titulo = "Área " + txt(var.classe2, 2)
+const colunas = 25
+#
+const nome1 = "Nome"
+const tipo1 = "opc_linha-"
+const clas1 = var.classe2
+const vari1 = "a_nome"
+#
+const nome2 = "Autor"
+const tipo2 = "opc_linha-"
+const clas2 = var.classe2
+const vari2 = "a_autor"
+#
+const nome3 = "Tempo de reset"
+const info3 = "Tempo aproximado em minutos"
+const tipo3 = "opc_numero"
+const clas3 = var.classe2
+const vari3 = "a_tempo"
+const exec3 = "reset_atualiza"
+#
+const nome4 = "Modo de reset"
+const tipo4 = "opc_opcao"
+const clas4 = var.classe2
+const vari4 = "a_reset"
+const extr4 = "Nunca\nQuando não há jogadores\nNormal"
+#
+const nome5 = "Mensagem de reset"
+const info5 = "Enviada para os jogadores na área quando ocorre reset"
+const tipo5 = "opc_linha"
+const clas5 = var.classe2
+const vari5 = "a_txtreset"
+
+
+classe menu_sala
+herda comando_menu, menu_area_sala
+const titulo = "Sala " + txt(var.classe1, 2)
+const colunas = 25
+#
+const nome1 = "Título"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "s_titulo"
+#
+const nome2 = "Descrição"
+const info2 = "Aceita caracteres especiais do personagem; vide adm mens"
+const tipo2 = "opc_texto"
+const clas2 = var.classe1
+const vari2 = "s_desc"
+#
+const nome3 = "Desc de noite"
+const info3 = "Se quiser uma descrição diferente quando etiver de noite"
+const tipo3 = "opc_texto"
+const clas3 = var.classe1
+const vari3 = "s_noite"
+#
+const nome4 = "Desc completa"
+const info4 = "Se quiser substituir a descrição completa, mostrada ao teclar 'olhar'"
+const tipo4 = "opc_texto"
+const clas4 = var.classe1
+const vari4 = "descsala"
+#
+const nome5 = "Ocultar desc"
+const info5 = "Se não deve mostrar descrição ao entrar na sala"
+const tipo5 = "opc_simnao"
+const clas5 = var.classe1
+const vari5 = "s_ocultar"
 #
 const nome51 = "Eventos hora"
 const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"

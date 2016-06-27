@@ -2159,7 +2159,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     int  tampadrao=0;   // Tamanho do texto sem o zero
     origem = v[2].getTxt();
     while (*origem && tampadrao<(int)sizeof(txtpadrao))
-        txtpadrao[tampadrao++] = tabCOMPLETO[*(unsigned char*)origem++];
+        txtpadrao[tampadrao++] = TABELA_COMPARAVAR[*(unsigned char*)origem++];
 #if 0
     printf("Padrão = [");
     for (int x=0; x<tampadrao; x++)
@@ -2213,7 +2213,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         int x;
     // Verifica padrão
         for (x=0; x<tampadrao; x++)
-            if (tabCOMPLETO[(unsigned char)origem[x]] != txtpadrao[x])
+            if (TABELA_COMPARAVAR[(unsigned char)origem[x]] != txtpadrao[x])
                 break;
     // Não achou - anota caracter
         if (x<tampadrao)
@@ -2233,19 +2233,20 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             int xini=-1, xfim=fim;
         // Obtém o caracter que está procurando
             const char * p1 = origem + tampadrao + cont - tamvar;
-            unsigned char ch1 = tabCOMPLETO[*(unsigned char*)p1];
+            unsigned char ch1 = TABELA_COMPARAVAR[*(unsigned char*)p1];
             if (ch1 == 0) // Se for o fim do texto
                 break;
         // Obtém: xini = primeira palavra com a letra
             while (ini<=fim)
             {
                 int meio = (ini+fim)/2;
-                unsigned char ch2 = tabCOMPLETO[
+                unsigned char ch2 = TABELA_COMPARAVAR[
                         (unsigned char)c->InstrVar[meio][cont] ];
 #if 0
                 int comp = (ch1==ch2 ? 0 : ch1<ch2 ? -1 : 1);
-                printf("cmp1 [%s] [%s] = %d\n", origem+tampadrao,
-                        c->InstrVar[meio] + tamvar, comp); fflush(stdout);
+                printf("cmp1  ini=%d fim=%d  [%s] [%s] = %d\n",
+                       ini, fim, origem+tampadrao,
+                       c->InstrVar[meio] + tamvar, comp); fflush(stdout);
 #endif
                 if (ch2 == ch1)
                     fim = meio - 1, xini = meio;
@@ -2257,17 +2258,19 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         // Checa se tem alguma palavra com a letra
             if (xini < 0)
                 break;
+            assert(xini <= xfim);
         // Obtém: xfim = última palavra com a letra
             ini = xini, fim = xfim;
             while (ini<=fim)
             {
                 int meio = (ini+fim)/2;
-                unsigned char ch2 = tabCOMPLETO[
+                unsigned char ch2 = TABELA_COMPARAVAR[
                         (unsigned char)c->InstrVar[meio][cont] ];
-#if  0
+#if 0
                 int comp = (ch1==ch2 ? 0 : ch1<ch2 ? -1 : 1);
-                printf("cmp2 [%s] [%s] = %d\n", origem+tampadrao,
-                        c->InstrVar[meio] + tamvar, comp); fflush(stdout);
+                printf("cmp2  ini=%d fim=%d  [%s] [%s] = %d\n",
+                       ini, fim, origem+tampadrao,
+                       c->InstrVar[meio] + tamvar, comp); fflush(stdout);
 #endif
                 if (ch2 == ch1)
                     ini = meio + 1, xfim = meio;
@@ -2281,9 +2284,9 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             const char * p3 = c->InstrVar[xfim] + cont;
             while (*p1)
             {
-                char ch1 = tabCOMPLETO[*(unsigned char*)p1];
-                if (ch1 != tabCOMPLETO[*(unsigned char*)p2] ||
-                    ch1 != tabCOMPLETO[*(unsigned char*)p3])
+                char ch1 = TABELA_COMPARAVAR[*(unsigned char*)p1];
+                if (ch1 != TABELA_COMPARAVAR[*(unsigned char*)p2] ||
+                    ch1 != TABELA_COMPARAVAR[*(unsigned char*)p3])
                     break;
                 p1++, p2++, p3++;
                 cont++;

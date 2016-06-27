@@ -7,7 +7,9 @@ const iniclasse = !$[arg0] && criar(arg0)
 func ini # Lê os sons de arquivo
   t1.limpar
   t2.limpar
+  debug d
   arqtxt arq
+  d.exec = 50000
   epara arq.abrir("sav2/som.txt", 0), !arq.eof, inserir(arq.ler) + d.ini
   efim
 
@@ -34,26 +36,24 @@ func inserir # Insere um som em arquivo
     ret "Opção inexistente: " + arg0
   casofim
 # Checa o nome do som
+  txt100 checa
   int16 pos
-  refvar nome = txtremove(txtmin(txtsub(arg0, 1, 1)), "EDC7")
-  epara pos = inttotal(nome) - 1, pos >= 0, pos--
-    refvar ch = txt(nome, pos, 1)
-    continuar ch >= "a" && ch <= "z" || ch >= "0" && ch <= "9" || ch == "_" || ch == "@"
-    ret "Caracter não permitido no nome do som: " + ch
-  efim
+  refvar nome = txtmin(txtremove(txtmin(txtsub(arg0, 1, 1)), "EDC7"))
+  checa = vartroca(nome, "", "ch_")
+  ret txt(checa, 1), "Caracteres não permitidos no nome do som: " + checa
+  ret checa, "Caracter não permitido no nome do som: " + checa
 # Checa o nome do arquivo
   refvar arq = txttroca(txtsub(arg0, 2, 1), "\\", "/")
-  epara pos = inttotal(arq) - 1, pos >= 0, pos--
-    refvar ch = txt(arq, pos, 1)
-    continuar ch >= "a" && ch <= "z" || ch >= "A" && ch <= "Z" || ch >= "0" && ch <= "9"
-    continuar ch == "_" || ch == "/" || ch == "."
-    ret "Caracter não permitido no nome do arquivo: " + ch
-  efim
+  checa = vartroca(arq, "", "ch_")
+  checa = txttroca(checa, "/" , "")
+  checa = txttroca(checa, "." , "")
+  ret txt(checa, 1), "Caracteres não permitidos no nome do arquivo: " + checa
+  ret checa, "Caracter não permitido no nome do arquivo: " + checa
   casovar txt(arq, 0, 1)
   casose "/"
     ret "O nome do arquivo não pode começar com /"
   casose "."
-    ret "O nome do arquivo não pode começar com /"
+    ret "O nome do arquivo não pode começar com ponto"
   casofim
 # Checa o volume
   pos = txtsub(arg0, 3, 1)
@@ -94,3 +94,42 @@ func inserir # Insere um som em arquivo
   t1._[nome] = txtmin(txt1(arg0)) + " " + nome + " " + arq + " " + txtsub(arg0, 3)
   t2._[nome] = lin + ")"
   ret ""
+
+const ch_a = ""
+const ch_b = ""
+const ch_c = ""
+const ch_d = ""
+const ch_e = ""
+const ch_f = ""
+const ch_g = ""
+const ch_h = ""
+const ch_i = ""
+const ch_j = ""
+const ch_k = ""
+const ch_l = ""
+const ch_m = ""
+const ch_n = ""
+const ch_o = ""
+const ch_p = ""
+const ch_q = ""
+const ch_r = ""
+const ch_s = ""
+const ch_t = ""
+const ch_u = ""
+const ch_v = ""
+const ch_w = ""
+const ch_x = ""
+const ch_y = ""
+const ch_z = ""
+const ch_0 = ""
+const ch_1 = ""
+const ch_2 = ""
+const ch_3 = ""
+const ch_4 = ""
+const ch_5 = ""
+const ch_6 = ""
+const ch_7 = ""
+const ch_8 = ""
+const ch_9 = ""
+const ch__ = ""
+const ch_@ = ""
