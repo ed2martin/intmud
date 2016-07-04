@@ -6,7 +6,6 @@ const tipo1 = "normal" # Tipo de personagem
 const p_agressivo = 1 # Ataca se atacarem
 const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
 const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
-const p_movervel = 140
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 #
@@ -52,6 +51,8 @@ inttempo p_tempoatu # Tempo para atualizar personagem
 inttempo p_proc # Para processar comportamento do personagem
 txt40 p_atacou_nome # Nome do personagem do jogador que atacou esse personagem
 txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sala)
+intdec p_tpersegue # Quanto para se ir de outra sala perseguindo
+const p_perseguevel = 20
 
 func pnivelmax
   refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))
@@ -522,15 +523,28 @@ func p_proc_exec # Processar comportamento do personagem
   ret cmd_pnj_proc, nulo
 # Ações do personagem
   atkenv && atkenv.objlista.dono != dono && batalhafim
-  ret atkenv, p_proc = 30 # Retorna se está lutando
-  se p_atacou_nome
-    ret p_proc_atkjog(p_atacou_nome), nulo # Ataca se quem atacou está na mesma sala
-    ret p_atacou_dir && p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
-    ret p_persegue && p_proc_perseguir(p_atacou_nome), p_atacou_dir = ""
-    p_atacou_nome = p_atacou_dir = ""
-  senao p_atacou_dir
-    ret p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
+  ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
+  ret atkenv, p_proc = 30 # Se está lutando
+  se !(p_atacou_nome || p_atacou_dir) # Se não foi atacado
+  senao p_atacou_nome && p_proc_atkjog(p_atacou_nome)
+    p_atacou_nome = ""
+    ret
+  senao p_atacou_dir && p_atk_anda && p_proc_dir(p_atacou_dir)
     p_atacou_dir = ""
+    p_tpersegue = rand(70, 130) * p_perseguevel / 100
+    ret
+  senao p_atacou_nome && p_persegue
+    se p_tpersegue # Se não é hora de se movimentar
+    senao p_proc_perseguir(p_atacou_nome) # Se conseguiu se movimentar
+      p_tpersegue = rand(70, 130) * p_perseguevel / 100
+    senao # Se não conseguiu se movimentar
+      p_atacou_nome = ""
+    fimse
+    p_proc = p_tpersegue + 1
+    p_atacou_dir = ""
+    ret
+  senao
+    p_atacou_nome = p_atacou_dir = ""
   fimse
   ret p_proc_atacar(p_proc_alvo), nulo
   ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
@@ -616,6 +630,8 @@ func p_proc_perseguir # Persegue e ataca um personagem de jogador
   fimse
   ret 0
 
+const p_proc_animal = 0 # Indica que não escolheu nenhum animal
+
 func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   refvar recup = contr.dono.s_recup(este) / 1200
   ret !(recup && pvida), nulo
@@ -678,33 +694,6 @@ func animalnum # Retorna o animal a partir do número
     sair i.obj.perso && !--x
   efim
   ret ref(i.obj)
-
-func p_proc_exec # Processar comportamento do personagem
-  ret este != contr, nulo # Retorna se pertence a outro personagem
-  ret atkenv && pvida < p_fugir, $cmd_fugir.fugir(este) # Tenta fugir da luta
-  ret sock, nulo # Retorna se está sendo controlado por jogador
-  ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
-  !p_tempoatu && (p_tempoatu = 100)
-# Evento do personagem
-  ret cmd_pnj_proc, nulo
-# Ações do personagem
-  atkenv && atkenv.objlista.dono != dono && batalhafim
-  ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
-  ret atkenv, p_proc = 30 # Retorna se está lutando
-  se p_atacou_nome
-    ret p_proc_atkjog(p_atacou_nome), nulo # Ataca se quem atacou está na mesma sala
-    ret p_atacou_dir && p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
-    ret p_persegue && p_proc_perseguir(p_atacou_nome), p_atacou_dir = ""
-    p_atacou_nome = p_atacou_dir = ""
-  senao p_atacou_dir
-    ret p_atk_anda && p_proc_dir(p_atacou_dir), p_atacou_dir = ""
-    p_atacou_dir = ""
-  fimse
-  ret p_proc_atacar(p_proc_alvo), nulo
-  ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
-  ret p_comecorpo && posicao >= 5 && p_proc_comecorpo, nulo
-  ret p_mover && posicao == 8 && p_proc_mover, nulo
-  p_proc = 50
 
 func p_proc_animal # Escolhe um animal em condições de batalhar
 # Retorna: 1=mudou de animal, 0=não mudou de animal

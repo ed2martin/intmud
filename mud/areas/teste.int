@@ -772,6 +772,38 @@ func cmd_atkenv
   fimse
 
 
+classe i_teste049
+herda comum_itemgrupo
+const nome = "Óculos escuros"
+const descnome = "um par de óculos escuros"
+const vestir1 = 4 # Aonde vestir: 2-olhos
+
+
+classe i_teste050
+herda comum_itemperso
+const nome = "caixa de fósforo"
+const descnome = "uma caixa de fósforo"
+const i_itens = "teste009"
+const i_abertoini = 1 # Container: 1 Sempre aberto
+const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
+const tipoitem = 256 # Tipo de produto: Fonte de luz
+const volmax = 20
+const eveste = 1 # Eventos item: Sim
+const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
+
+func cmd_acender
+  refvar palito = dentro1.objini("i_teste009")
+  se !palito
+    arg0.msg("Caixa de fósforo está vazia.")
+  senao
+    palito.apagar(1)
+    criar("i_teste010", arg0, 0) # Cria um palito aceso
+    $mens.p(arg0)
+    $mens.mvis1("$P risca um palito de fósforo.")
+  fimse
+  ret 1
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1631,6 +1663,12 @@ func cmd_soltouobj
   fimse
 
 
+classe p_teste035
+herda comum_perso
+const nome = "Técnico de luz"
+const lojaaula = "m_Proteção_de_luz 8"
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2073,6 +2111,7 @@ Você pode acender e apagar usando os comandos acender e apagar.\n\
 Para acender um fósforo da caixa, basta tentar acender a caixa.\n\
 Já a tocha requer algum fogo para ser acesa (fósforo ou lambião).\n\
 O cinto dourado produz luz ao vestir e apaga ao remover."
+const dir_l = $s_teste149
 const dir_o = $s_teste023
 const s_reset = "S 100 teste006 0 S\n\
 S 100 teste005 0 S\n\
@@ -3269,10 +3308,10 @@ func s_reset1 # Realiza o reset
 classe s_teste095
 herda b_teste
 const s_titulo = "Subsolo 3: Diversos"
-const s_desc = "Ao norte: um ajudante que te seguirá, chama protetora e chute élfico\n\
+const s_desc = "Ao norte: um ajudante que te seguirá, Chama Protetora e Chute Élfico\n\
 Ao sul: itens apagados após um tempo e poção mortal\n\
 A leste: algumas opções com itens e transportando personagens de uma sala\n\
-A oeste: Se estiver empunhando uma arma, guarda a arma"
+A oeste: Guarda a arma se estiver empunhando e magia Proteção de Luz"
 const dir_n = $s_teste096
 const dir_s = $s_teste097
 const dir_l = $s_teste108
@@ -4001,6 +4040,7 @@ const s_titulo = "Guardar arma"
 const s_desc = "O personagem que entrar nessa sala empunhando uma arma, guardará a arma\n\
 automaticamente."
 const dir_l = $s_teste095
+const dir_o = $s_teste148
 
 func cmd_salaperso # Personagem chegou
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
@@ -4158,3 +4198,38 @@ func s_reset1 # Realiza o reset
   se p_teste034:objsolto.total < 1
     criar("p_teste034", este, 0)
   fimse
+
+
+classe s_teste148
+herda b_teste
+const s_titulo = "Proteção de luz"
+const s_desc = "Aqui pode-se aprender a magia Proteção de luz, teclando aprender 1.\n\
+Ela reduz danos de luz e trevas em 30%. No entanto, é necessário usar\n\
+óculos ou qualquer outro item na posição \"nos olhos\". Caso contrário\n\
+perde-se a concentração e a proteção se desfaz."
+const dir_l = $s_teste137
+const s_reset = "P 100 teste035 0 0 1\nS 100 teste049 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste035:objsolto.total < 1
+    criar("p_teste035", este, 0)
+  fimse
+  !dentro1.objini("i_teste049") && criar("i_teste049", este, 3)
+
+
+classe s_teste149
+herda b_teste
+const s_titulo = "Caixa de fósforo"
+const s_desc = "Esta caixa de fósforo é um pouco diferente da outra.\n\
+É possível pegar palitos apagados, ou guardar (comandos Pegar e Guardar).\n\
+Porém, acende-se um palito da mesma forma."
+const dir_o = $s_teste024
+const s_reset = "S 100 teste050 1 S\nS 100 teste009 20 teste050"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref r # Usado como rascunho
+  !dentro1.objini("i_teste050") && criar("i_teste050", este, 1)
+  (r = dentro1.objini("i_teste050")) && !r.dentro1.objini("i_teste009") && criar("i_teste009", \
+r, 20)

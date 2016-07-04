@@ -33,6 +33,7 @@ const txt_porta = "Sem porta\nPorta aberta\nPorta fechada\nPorta trancada"
 #
 const txtajuda = "\b\c3Comandos de salas\b\n\
   \c2LSALA\b     Lista salas existentes\n\
+  \c2PSALA\b     Pesquisa salas com um determinado título\n\
   \c2CSALA\b     Cria sala\n\
   \c2CDIR\b      Cria sala em uma direção\n\
   \c2ESALA\b     Edita sala\n\
@@ -168,13 +169,21 @@ Sintaxe: LSALA [nome]\n\
 Lista as salas que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as salas."
 
-func escr # Listar salas
+func escr
+  listar(arg0, arg1, arg2, "")
+
+func listar # Listar salas
+# arg0 = para que jogador listar
+# arg1 = nome da classe (para comando lperso) ou "" se todas
+# arg2 = permissões do jogador
+# arg3 = nome do personagem (para comando pperso), ou "" se todos
   refvar t = arg0.sock.txtmais
   t.limpar
   prog p
   p.iniclasse("s_" + txtremove(arg1, "EMDCT7"))
   se int(arg2.c_lsala) >= 2
     epara nulo, p.lin && t.linhas < 500, p.depois
+      continuar arg3 && txtproc($[p.texto].s_titulo(arg0), arg3) < 0
       t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo(arg0))
     efim
   senao
@@ -182,11 +191,24 @@ func escr # Listar salas
     arg1 == txt(arg0.jogarea, 0, inttotal(arg1)) && p.iniclasse(prefixo)
     epara nulo, p.lin && t.linhas < 500, p.depois
       sair prefixo + txtfim(p.texto, 3) != p.texto
+      continuar arg3 && txtproc($[p.texto].s_titulo(arg0), arg3) < 0
       t.addfim(txt(p.texto, 2) + "  " + $[p.texto].s_titulo(arg0))
     efim
   fimse
   t.addini(t.linhas ? "\b\c6Salas:\b" : "\bNenhuma sala encontrada.")
   arg0.sock.txtmostra
+
+
+classe adm_psala
+herda adm_lsala
+const objcmd = arg1.c_lsala ? este
+const txtajuda = "\b\c3Psala\b\n\
+Sintaxe: PSALA [título]\n\
+Pesquisa as salas com o título especificado ou parte dele.\n\
+Se o título for omitido, lista todas as salas."
+
+func escr
+  listar(arg0, "", arg2, arg1)
 
 
 classe adm_cdir

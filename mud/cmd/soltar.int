@@ -70,6 +70,7 @@ func escr
   ret achou, nulo
 # Solta moedas
   se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
+    ret sala.i_itens, arg0.msg("Não é possível colocar moedas em " + sala.descnome + ".")
     total = n
     ret soltarmoedas(arg0, sala)
   fimse
@@ -137,6 +138,9 @@ func soltarobj
   senao arg1.volden + arg2.voltot * total / arg2.objtot > arg1.volmax
     erro = "Não há espaço suficiente para soltar isso."
     ret
+  senao arg1.i_itens && txtproc("\n" + arg1.i_itens + "\n", "\n" + txt(arg2, 2) + "\n") < 0
+    erro = "Não é possível colocar " + arg2.descnome + " em " + arg1.descnome + "."
+    ret
   fimse
   achou++
   listaobj e
@@ -183,7 +187,7 @@ func soltarobj
   arg0.p_espera += 2
 
 func soltarmoedas
-# arg0=persoangem, arg1=aonde soltar, total=quantidade de moedas
+# arg0=personagem, arg1=aonde soltar, total=quantidade de moedas
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltarmoedas(arg0, arg1, total, arg0), nulo

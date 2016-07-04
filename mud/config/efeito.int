@@ -279,6 +279,27 @@ func cmd_atacou
   fimse
 
 
+classe e_proteção_de_luz
+herda comum_efeito
+const e_nome = "Proteção de luz"
+const tempo1 = 3000
+const tempo2 = 5
+const msgini2 = "Uma luz passa a rodear $p."
+const msgfim2 = "A luz que rodeava $p sumiu."
+const m_atribs2 = "* ... e está protegid$s por uma luz"
+const evperso = 1 # Eventos perso: Sim
+
+func recalc2_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.12 *= 0.5 # Luz
+  deftipo.13 *= 0.5 # Trevas
+
+func cmd_removeu
+  se arg2 == 3 # No menu do Econfig 2 é nos olhos, aqui soma 1
+    apagar(este)
+  fimse
+
+
 classe e_queimando
 herda comum_efeito
 const e_nome = "Queimando"

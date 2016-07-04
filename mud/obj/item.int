@@ -34,6 +34,7 @@ f_bebida\n\
 f_fome\n\
 f_sede\n\
 f_diges\n\
+i_itens\n\
 f_magia1 f_magia2 f_magia2\n\
 f_msgperso f_msgoutros\n\
 f_nivel1 f_nivel2 f_nivel3\n\
@@ -198,7 +199,7 @@ func vestir # Veste o item, arg0=posição
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)
-  ret objtot -= arg0, nulo
+  ret objtot -= arg0, ajustapeso
   apagar(este), mdono(nulo)
 
 

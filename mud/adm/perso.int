@@ -2,6 +2,7 @@ classe adm_perso
 const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
   \c2LPERSO\b    Lista personagens existentes\n\
+  \c2PPERSO\b    Pesquisa personagens com um determinado nome\n\
   \c2IPERSO\b    Mostra aonde está um personagem\n\
   \c2CPERSO\b    Cria um personagem\n\
   \c2EPERSO\b    Edita um personagem\n\
@@ -16,7 +17,14 @@ Sintaxe: LPERSO [nome]\n\
 Lista os personagens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os personagens."
 
-func escr # Listar personagens
+func escr
+  listar(arg0, arg1, arg2, "")
+
+func listar # Listar personagens
+# arg0 = para que jogador listar
+# arg1 = nome da classe (para comando lperso) ou "" se todas
+# arg2 = permissões do jogador
+# arg3 = nome do personagem (para comando pperso), ou "" se todos
   refvar t = arg0.sock.txtmais
   debug d
   prog p
@@ -27,6 +35,7 @@ func escr # Listar personagens
   p.iniclasse("p_" + txtremove(arg1, "EMDCT7"))
   se int(arg2.c_lperso) >= 2
     epara nulo, p.lin, p.depois
+      continuar arg3 && txtproc([p.texto]:nome, arg3) < 0
       lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
       se inttotal($[p.texto]) == [p.texto]:objsolto.total
         lin += " " + inttotal($[p.texto])
@@ -41,6 +50,7 @@ func escr # Listar personagens
     arg1 == txt(arg0.jogarea, 0, inttotal(arg1)) && p.iniclasse(prefixo)
     epara nulo, p.lin, p.depois
       sair prefixo + txtfim(p.texto, 3) != p.texto
+      continuar arg3 && txtproc([p.texto]:nome, arg3) < 0
       lin = txt(p.texto, 2) + " " + txt(" SBA", [p.texto]:perso, 1)
       se inttotal($[p.texto]) == [p.texto]:objsolto.total
         lin += " " + inttotal($[p.texto])
@@ -57,6 +67,18 @@ func escr # Listar personagens
     t.addini("\bNenhum personagem encontrado.")
   fimse
   arg0.sock.txtmostra
+
+
+classe adm_pperso
+herda adm_lperso
+const objcmd = arg1.c_lperso ? este
+const txtajuda = "\b\c3Pperso\b\n\
+Sintaxe: PPERSO <nome>\n\
+Pesquisa os personagens com o nome especificado ou parte dele.\n\
+Se o nome for omitido, lista todos os personagens."
+
+func escr
+  listar(arg0, "", arg2, arg1)
 
 
 classe adm_iperso
@@ -1068,10 +1090,10 @@ const clas2 = var.classe1
 const vari2 = "p_movervel"
 const extr2 = "5 1000"
 #
-const nome6 = "Come corpos"
-const tipo6 = "opc_simnao"
-const clas6 = var.classe1
-const vari6 = "p_comecorpo"
+const nome3 = "Come corpos"
+const tipo3 = "opc_simnao"
+const clas3 = var.classe1
+const vari3 = "p_comecorpo"
 
 
 classe menu_pcomportamento2
@@ -1080,28 +1102,23 @@ const titulo = "Comportamento"
 const menufim = var.menufim
 const colunas = 25
 #
-const nome3 = "Agressivo"
-const tipo3 = "opc_opcao"
-const clas3 = var.classe1
-const vari3 = "p_agressivo"
-const extr3 = "Pacífico\nSe atacarem\nSim"
-#
-const nome4 = "Foge abaixo de"
-const info4 = "Se os pontos de vida caírem abaixo desse número, o personagem foge"
-const tipo4 = "opc_numero"
+const nome4 = "Agressivo"
+const tipo4 = "opc_opcao"
 const clas4 = var.classe1
-const vari4 = "p_fugir"
+const vari4 = "p_agressivo"
+const extr4 = "Pacífico\nSe atacarem\nSim"
 #
-const nome5 = "Sem resgate"
-const info5 = "Se não permite resgatar jogadores lutando com esse personagem"
-const tipo5 = "opc_simnao"
+const nome5 = "Foge abaixo de"
+const info5 = "Se os pontos de vida caírem abaixo desse número, o personagem foge"
+const tipo5 = "opc_numero"
 const clas5 = var.classe1
-const vari5 = "p_naoresg"
+const vari5 = "p_fugir"
 #
-const nome6 = "Come corpos"
+const nome6 = "Sem resgate"
+const info6 = "Se não permite resgatar jogadores lutando com esse personagem"
 const tipo6 = "opc_simnao"
 const clas6 = var.classe1
-const vari6 = "p_comecorpo"
+const vari6 = "p_naoresg"
 #
 const nome7 = "Lembra"
 const info7 = "Por quanto tempo se lembra dos jogadores que atacaram, em minutos"
@@ -1110,23 +1127,30 @@ const clas7 = var.classe1
 const vari7 = "p_lembra"
 const extr7 = "0 1747" # Valor máximo de inttempo dividido por 600
 #
-const nome8 = "Persegue jogadores"
-const tipo8 = "opc_opcao"
+const nome8 = "Anda ataque"
+const info8 = "Se deve ir na direção de quem atacou, quando recebe ataque de outra sala"
+const tipo8 = "opc_simnao"
 const clas8 = var.classe1
-const vari8 = "p_persegue"
-const extr8 = "Não\nSe atacarem"
+const vari8 = "p_atk_anda"
 #
-const nome9 = "Anda ataque"
-const info9 = "Se deve ir na direção de quem atacou, quando recebe ataque de outra sala"
+const nome9 = "Desvia ataque"
+const info9 = "Se sempre desvia de ataques vindos de outras salas"
 const tipo9 = "opc_simnao"
 const clas9 = var.classe1
-const vari9 = "p_atk_anda"
+const vari9 = "p_atk_desvia"
 #
-const nome10 = "Desvia ataque"
-const info10 = "Se sempre desvia de ataques vindos de outras salas"
-const tipo10 = "opc_simnao"
+const nome10 = "Persegue jogadores"
+const tipo10 = "opc_opcao"
 const clas10 = var.classe1
-const vari10 = "p_atk_desvia"
+const vari10 = "p_persegue"
+const extr10 = "Não\nSe atacarem"
+#
+const nome11 = "Tempo persegue"
+const info11 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo11 = "opc_numero"
+const clas11 = var.classe1
+const vari11 = "p_perseguevel"
+const extr11 = "5 1000"
 
 
 classe menu_perso1

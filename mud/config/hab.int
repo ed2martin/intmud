@@ -683,6 +683,30 @@ const c_mana2 = 5
 const msgatk0 = "$P fala solenemente 'Inv'"
 
 
+classe magia_proteção_de_luz
+herda comando_ataque
+const nomevar = "m_Proteção de luz"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_efeito1 = "proteção de luz"
+const c_mana1 = 10
+const c_mana2 = 5
+const msgextra = "Corta pela metade os danos de luz e trevas que você receber."
+const msgatk0 = "\n\n\n\
+$P respira fundo e uma luz começa a aparecer.\n\n\
+$P ataca $a, $m\n\n\n\
+$P respira fundo e sucumbe em seguida.\n\n\n\
+$P respira fundo e por um instante uma luz começa a aparecer e some em seguida.\n\n\n\
+$P respira fundo mas nada acontece."
+
+func cmd_alvo
+  listaitem i
+  epara i = arg0.dentro2.ini, i, i.depois
+    ret i.obj.vestpos == 3, nulo # 2 no menu do Econfig é nos olhos, aqui é 2+1
+  efim
+  arg0.msg("Sem usar nada nos olhos, você não consegue se concentrar.")
+  ret 1
+
+
 classe magia_raio_confusão
 herda comando_ataque
 const nomevar = "m_Raio confusão"
