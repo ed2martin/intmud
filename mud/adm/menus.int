@@ -1053,7 +1053,7 @@ func passo # Alterando o item
     se pos.txtproc("\n" + nome + "\n") >= 0
       pos.remove
       arg0.msg("Item removido: " + nome)
-    senao !p.existe("s_" + nome)
+    senao !p.existe("i_" + nome)
       arg0.msg("Item não existe: " + nome)
       ret passo(arg0, "\b")
     senao

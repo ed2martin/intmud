@@ -242,13 +242,15 @@ O argumento nível é o nível da hab/magia, quando o item não for nulo.
 func exechabperso( personagem, alvo )
 Personagem usa uma habilidade ou magia. É uma versão simplificada de exechab.
 
-func exechab( personagem, alvo, quanto sabe, nível, item usado )
+func exechab( personagem, alvo, quanto sabe, nível, item usado, direção )
 Chamado quando personagem usa habilidade ou magia.
 O argumento quanto sabe é um número de 0 a 1 que indica quanto sabe da
 habilidade ou magia (0=iniciante até 1=perito).
 O argumento nível geralmente é o nível do personagem.
 O argumento item é o item que disparou a hab/magia (uma comida, bebida
 ou pergaminho), ou nulo se não usou nenhum.
+O argumento direção é a direção tomada do personagem até o alvo, quando
+o personagem atacou de outra sala.
 
 func efeitohab( personagem, alvo, quanto sabe, nível )
 Aplica o efeito da habilidade ou magia sobre o alvo.

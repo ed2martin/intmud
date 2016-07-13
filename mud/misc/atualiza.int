@@ -1,4 +1,4 @@
-classe atualiza
+classe atualiza_413
 # Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 401, nulo
-  p.criar("config", "const versao = 401 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 413, nulo
+  p.criar("config", "const versao = 413 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -520,6 +520,17 @@ casa está atrasada.\"")
 # Canal Schat
   se versao < 401
     criafunc("config", "const schatmsg = \"(chat) $m\"")
+  fimse
+# Tipos de arma Arco e flecha e Revolver
+  se versao < 413
+    txt512 lin
+    lin = txtsublin(config:arma_txt, 0, 6) + "\nArco e flecha\n"
+    lin += txtsublin(config:arma_txt, 7, 1) + "\nRevolver\n"
+    lin += txtsublin(config:arma_txt, 9)
+    se txtfim(lin, 1) == "\n"
+      lin = txt(lin, 0, inttotal(lin) - 1)
+    fimse
+    p.criar("config", "const arma_txt = \"" + txtvis(lin) + "\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

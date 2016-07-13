@@ -130,7 +130,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
       arg0.contr.msg("Não possui a arma necessária.")
       ret
     fimse
-  senao arg0.iempu && tipoarma & intbit(arg0.iempu.obj.armatipo)
+  senao tipoarma & intbit(arg0.iempu.obj.armatipo)
   senao tipoarma == 1
     arg0.contr.msg("Empunhando uma arma?")
     ret
@@ -228,6 +228,8 @@ tipoarma\n\
 tipoatk\n\
 tipobonus\n\
 tipoperso\n\
+tipomunicao\n\
+itemmunicao\n\
 valor\n\
 vel\n\
 msgextra msgatk0 msgatk1 msgatk2 msgatk3 msgatk4"
@@ -251,6 +253,7 @@ func escrhab # Atacar alguém
     int16 move
     listaitem i
     nomeobj nome
+    refvar arma1 = tipoarma ? ref(arg0.iempu.obj) : nulo
     refvar dist = int(arma1 ? arma1.armamove : armamove)
     dir = dist > 0 ? misc:d1[txt1(arg1)]
     se !misc:d3[dir] # Atacar na mesma sala
@@ -320,7 +323,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # arg3 = nível da habilidade ou magia (=nível do personagem)
-# arg4 = item usado, ou nulo se não usou nenhum item
+# arg4 = item usado (exemplo, um pergaminho), ou nulo se não usou nenhum item
 # arg5 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
   ret !checahab2(arg0, arg2, arg4), nulo
 # Checa a condição de batalha
@@ -337,8 +340,31 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret arg0.contr.msg("A magia não teve efeito.")
   fimse
 # Obtém a arma usada
-  arma1 = nulo
-  tipoarma && (arma1 = arg0.iempu.obj)
+  arma1 = tipoarma ? ref(arg0.iempu.obj) : nulo
+  se tipomunicao
+    se !arma1 # Sem arma: munição no inventário
+      refvar lista = txttroca("\n" + itemmunicao, "\n", "\ni_") + "\n"
+      listaitem i
+      epara i = arg0.dentro1.ini, i, i.depois
+        sair txtproc(lista, "\n" + i.obj + "\n") >= 0
+      efim
+      arma1 = i.obj
+      ret !arma1, arg0.msg("Está sem munição.")
+    senao arma1.armamunicao == 1 # Munição no inventário
+      refvar lista = txttroca("\n" + arma1.i_municao, "\n", "\ni_") + "\n"
+      listaitem i
+      epara i = arg0.dentro1.ini, i, i.depois
+        sair txtproc(lista, "\n" + i.obj + "\n") >= 0
+      efim
+      arma1 = i.obj
+      ret !arma1, arg0.msg("Está sem munição.")
+    senao arma1.armamunicao == 2 # Munição na arma
+      arma1 = arma1.dentro1.objini
+      ret !arma1, arg0.contr.msg("Está sem munição.")
+    senao
+      ret arg0.contr.msg("Essa arma não possui munição")
+    fimse
+  fimse
 # Técnicas não agressivas
   listaobj l
   casovar tipoalvo
@@ -366,6 +392,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       custohab2(arg0, arg2)
       mensinicio(arg0, arg1)
     fimse
+    tipomunicao == 2 && arma1.apagar(1)
     mudavida = 0
     se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       result = 1 # Sem efeito
@@ -424,6 +451,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     custohab2(arg0, arg2)
     mensinicio(arg0, arg1)
   fimse
+  tipomunicao == 2 && arma1.apagar(1)
   se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     result = 1
     mensgolpe(arg0, arg1, arg5)

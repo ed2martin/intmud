@@ -774,7 +774,7 @@ func cmd_atkenv
 
 classe i_teste049
 herda comum_itemgrupo
-const nome = "Óculos escuros"
+const nome = "óculos escuros"
 const descnome = "um par de óculos escuros"
 const vestir1 = 4 # Aonde vestir: 2-olhos
 
@@ -802,6 +802,63 @@ func cmd_acender
     $mens.mvis1("$P risca um palito de fósforo.")
   fimse
   ret 1
+
+
+classe i_teste051
+herda comum_itemgrupo
+const nome = "arco"
+const descnome = "um arco"
+const armamove = 2
+const armatipo = 6 # Tipo de arma: 6 Arco e flecha
+const armamunicao = 1 # Origem da munição: Sim
+const i_municao = "teste052"
+
+
+classe i_teste052
+herda comum_itemgrupo
+const nome = "flecha"
+const descnome = "uma flecha"
+const armamax = 15
+const armamin = 10
+
+
+classe i_teste053
+herda comum_item
+const nome = "revolver"
+const descnome = "um revolver"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const armacarregar = 3 # Carregar: 3 Básico
+const armamunicao = 2 # Origem da munição: 2 Itens na arma
+const armatipo = 8 # Tipo de arma: 8 Revolver
+const i_municao = "teste054"
+const volmax = 6
+
+
+classe i_teste054
+herda comum_itemgrupo
+const nome = "bala"
+const descnome = "uma bala de metal"
+const armamax = 70
+const armamin = 50
+
+
+classe i_teste055
+herda comum_itemgrupo
+const nome = "faca de fogo"
+const descnome = "uma faca de fogo"
+const armamax = 120
+const armamin = 70
+const armaprecisao = 100
+const armatipo = 3 # Arma tipo: 1 Lâmina curta
+const pesoobj = 300
+const tipoitem = 3 # Tipo de produto: Possui metal, Arma
+const valor = 50
+const evperso = 1 # Eventos dono perso: Sim
+
+func cmd_atacou
+  se arg2.result == 0 && arg2.arma1 == este
+    $magia_fogo.exechabperso(arg0, arg1)
+  fimse
 
 
 classe p_teste001
@@ -1335,6 +1392,12 @@ func cmd_mudadono
 # Aqui fazemos ele voltar a receber
   misc:evento(iseguir.objlista)
 
+func cabedentro
+# arg0 = sala
+# Retornando 1 indica que o personagem cabe na sala
+# Assim, consegue entrar em salass cheias e em salas que não permitem PNJ
+  ret 1
+
 func cmd_falou
   se arg1 == "dispensar"
     apagar(este)
@@ -1667,6 +1730,12 @@ classe p_teste035
 herda comum_perso
 const nome = "Técnico de luz"
 const lojaaula = "m_Proteção_de_luz 8"
+
+
+classe p_teste036
+herda comum_perso
+const nome = "treinadora de tiros"
+const lojaaula = "h_Sapato 8\nh_Arco_e_flecha 8\nh_Revolver 8"
 
 
 classe s_teste001
@@ -2154,6 +2223,7 @@ Para aprender a cortar, nessa sala, tecle cortar.\n\
 armas cortantes. Ao norte, imunidade a socos e bota que melhora os chutes."
 const eveste = 1 # Eventos sala: Sim
 const dir_n = $s_teste138
+const dir_s = $s_teste150
 const dir_l = $s_teste028
 const dir_o = $s_teste027
 const dir_c = $s_teste052
@@ -3311,7 +3381,7 @@ const s_titulo = "Subsolo 3: Diversos"
 const s_desc = "Ao norte: um ajudante que te seguirá, Chama Protetora e Chute Élfico\n\
 Ao sul: itens apagados após um tempo e poção mortal\n\
 A leste: algumas opções com itens e transportando personagens de uma sala\n\
-A oeste: Guarda a arma se estiver empunhando e magia Proteção de Luz"
+A oeste: guarda a arma se estiver empunhando e magia Proteção de Luz"
 const dir_n = $s_teste096
 const dir_s = $s_teste097
 const dir_l = $s_teste108
@@ -3762,9 +3832,9 @@ const dir_n = $s_teste117
 classe s_teste119
 herda b_teste
 const s_titulo = "Subsolo 4: Mensagens e Diversos"
-const s_desc = "Ao norte: Frases aleatórias e frutas que recuperam pontos de vida\n\
-Ao sul: Comandos sociais, poça d'água e ao vestir ou remover item\n\
-A leste: Mensagens para a área e para o MUD inteiro\n\
+const s_desc = "Ao norte: frases aleatórias e frutas que recuperam pontos de vida\n\
+Ao sul: comandos sociais, poça d'água e ao vestir ou remover item\n\
+A leste: nensagens para a área e para o MUD inteiro\n\
 A oeste: bloquear canais de comunicação de um jogador com efeitos"
 const dir_n = $s_teste120
 const dir_s = $s_teste129
@@ -4060,6 +4130,7 @@ const s_desc = "Essa gosma é imune a socos (a habilidade socar), mas não a chute
 Já a boneca solta uma risada se tentarem chutá-la. A bota aumenta os\n\
 estragos dos chutes. Os danos de magias aqui são reduzidas a um terço.\n\
 Nota: essas características foram feitas com triggers."
+const dir_n = $s_teste152
 const dir_s = $s_teste026
 const s_reset = "P 100 teste030 4 4 1\nP 100 teste031 4 4 1\nS 100 teste048 3 S"
 
@@ -4159,7 +4230,7 @@ const dir_n = $s_teste041
 classe s_teste145
 herda b_teste
 const s_titulo = "Subsolo 5: Diversos"
-const s_desc = "Ao norte: Checando hora e enviando mensagens telepáticas\n\
+const s_desc = "Ao norte: checando hora e enviando mensagens telepáticas\n\
 Ao sul: Efeitos e modificadores"
 const dir_n = $s_teste146
 const dir_s = $s_teste147
@@ -4233,3 +4304,56 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste050") && criar("i_teste050", este, 1)
   (r = dentro1.objini("i_teste050")) && !r.dentro1.objini("i_teste009") && criar("i_teste009", \
 r, 20)
+
+
+classe s_teste150
+herda b_teste
+const s_titulo = "Munição"
+const s_desc = "Aqui pode-se aprender as seguintes habilidades:\n\
+Sapato - jogar sapatos e botas, não precisa de arma\n\
+Arco_e_flecha - atirar flecha (do inventário) com um arco (empunhando)\n\
+Revolver - atirar com revolver, bem como Carregar e Descarregar"
+const dir_n = $s_teste026
+const dir_s = $s_teste151
+const s_reset = "P 100 teste036 0 0 1\nS 100 teste018 5 S\nS 100 teste048 5 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste036:objsolto.total < 1
+    criar("p_teste036", este, 0)
+  fimse
+  !dentro1.objini("i_teste018") && criar("i_teste018", este, 5)
+  !dentro1.objini("i_teste048") && criar("i_teste048", este, 5)
+
+
+classe s_teste151
+herda b_teste
+const s_titulo = "Danos com munição"
+const s_desc = "Quando um ataque envolve munição, são considerados os danos definidos\n\
+na munição. Os danos definidos na arma são ignorados."
+const dir_n = $s_teste150
+const s_reset = "S 100 teste051 2 S\n\
+S 100 teste052 30 S\n\
+S 100 teste053 1 S\n\
+S 100 teste054 30 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste051") && criar("i_teste051", este, 2)
+  !dentro1.objini("i_teste052") && criar("i_teste052", este, 30)
+  !dentro1.objini("i_teste053") && criar("i_teste053", este, 1)
+  !dentro1.objini("i_teste054") && criar("i_teste054", este, 30)
+
+
+classe s_teste152
+herda b_teste
+const s_titulo = "Faca de fogo"
+const s_desc = "Essa faca é como a faca da sala teste028, porém sempre que alguém acerta\n\
+um golpe com ela, recebe danos da magia Fogo (vide sala teste031).\n\
+Nota: isso foi feito com triggers."
+const dir_s = $s_teste138
+const s_reset = "S 100 teste055 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste055") && criar("i_teste055", este, 3)

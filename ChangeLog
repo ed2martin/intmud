@@ -1,3 +1,65 @@
+* 12/7/2016 IntMUD 1.09 MUD baseado na revisão 413
+
+   No IntMUD:
+  1. Corrigido bug em Varfunc que pode derrubar o programa em algumas
+     situações
+  2. Criado operadores ++, -- e ??, com explicação nos tópicos 13.2 e
+     13.5 do manual
+  3. As funções Antes e Depois de Textovar e Textoobj agora podem ter
+     mais um argumento: o prefixo do nome da variável
+  4. A função Criar agora não funciona quando Exec for menor que 500;
+     vide tópico 2.2 do manual.txt
+  5. Versão mudou para 1.09
+
+   No MUD:
+  1. Comando Identificar não estava mostrando opções dos menus de
+     atributos Números ao vestir e Sim/não ao vestir
+  2. Corrigido bug: quando corpo de um PNJ se desfaz e itens vão para a
+     sala, os que agrupam estavam indo para a sala na quantidade de
+     65535
+  3. Corrigido bug: função cmd_vestiu não estava sendo chamada
+  4. Corrigido bug: ao salvar personagem do jogador, quem renasceu
+     sempre deveria ser considerado veterano
+  5. Corrigido bug: dependendo do tamanho do arquivo de sons, não lia o
+     arquivo inteiro ao ativar o MUD
+  6. Corrigido bug: opção 8 (nota vida/mana/vigor) da opçao 11 (Afeta o
+     alvo) dos menus Ehab e Emag não estava funcionando
+  7. Corrigido bug: Comandos Csai e Csai2 não estavam verificando
+     permissões
+  8. Comando Mudler agora acerta a ordem das classes tal qual estão nos
+     arquivos
+  9. Diversos arquivos foram mudados para usar os operadores ++, -- e ??
+ 10. Criado comando de administração: Larq
+ 11. Criada opção "Alcance da arma" nos comandos Ehab, Emag e Eitem
+ 12. Magia fogo agora pode atacar à distância
+ 13. Ao teclar hab e a habilidade ou magia e a magia, agora é mostrada a
+     sintaxe do comando
+ 14. Quando um ataque causa danos em vários personagens, agora vem uma
+     mensagem informando os danos nos personagens secundários
+ 15. Nos ataques que acertam vários personagens, só se recebe
+     experiência do alvo principal
+ 16. Novas opções para o comportamento dos PNJs: Lembra, Persegue
+     jogadores, Desvia ataque e Anda ataque
+ 17. Opção nas salas: Quantidade máxima de jogadores
+ 18. Quantidade de movimentos dos ataques é baseado na opção "Movimentos
+     ataque" da sala
+ 19. Algumas opções do menu do comando Eitem foram para o submenu
+     10.Dentro
+ 20. Criada opção para itens: que itens podem ser colocados dentro
+ 21. Criada sala teste148 com magia e efeito Proteção de luz
+ 22. Criada sala teste149 e caixa de fósforo (teste050) que permite
+     colocar palitos apagados dentro
+ 23. Criados comandos Psala, Pitem e Pperso
+ 24. Criada opção para comportamento dos personagens: Tempo persegue
+ 25. Tipo de arma Mangual mudou para Arco e flecha, e Arma exótica mudou
+     para Revolver
+ 26. Criadas salas teste150 e teste151, com exemplos de armas com
+     munição
+ 27. Criada sala teste152, com uma faca que causa danos de fogo quando
+     acerta o alvo
+ 28. O ajudante da sala teste096 entra em outras salas mesmo lotadas ou
+     que PNJ não entra
+
 * 14/5/2016 IntMUD 1.08 MUD baseado na revisão 406
 
    No Manual.txt:

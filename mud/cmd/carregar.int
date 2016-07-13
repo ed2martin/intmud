@@ -1,0 +1,90 @@
+classe cmd_carregar
+herda comando_comum
+const txtajuda = "\b\c3Carregar\b\n\
+Sintaxe: CARREGAR\n\
+         CARREGAR <objeto>\n\
+Carrega a arma que você estiver empunhando com um objeto que você está\n\
+carregando. Sem argumentos você verifica se a arma está carregada\n\
+e com o quê."
+const posic = 5
+
+func escr
+  refvar perm_msg = $perm_[arg0.jogperm].item
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  refvar arma = ref(arg0.iempu.obj)
+  se !arma
+    arg0.msg("Você não está empunhando nenhuma arma.")
+  senao !arma.armatipo || int(arma.armamunicao) != 2
+    arg0.msg(txtmaimin(arma.descnome, "A") + " não usa munição.")
+  senao !arg1
+    textotxt t
+    listaitem item
+    epara item = arma.dentro1.ini, item, item.depois
+      continuar !item.obj.visivel(arg0)
+      t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
+    efim
+    refvar n = txtmaimin(arma.descnome, "A")
+    se !t.linhas
+      t.addfim(arma.msexo ? n + " está descarregado." : n + " está descarregada.")
+    senao
+      t.juntalin("(", "x)")
+      t.addini(n + (arma.msexo ? " está carregado com:" : " está carregada com:"))
+    fimse
+    arg0.msg2(t.remove(1000))
+  senao !arma.armacarregar
+    $mens.p(arg0, nulo, arma)
+    $mens.msg("$O não pode ser carregad$u.", arg0)
+  senao
+    refvar tipo = txtsublin(config:arma_txt, arma.armatipo, 1)
+    se arg0.var.h_[tipo]_ < arma.armacarregar
+      arg0.msg("Não possui conhecimento suficiente em " + tipo + ".")
+    senao
+      nomeobj n # Para reconhecer os itens
+      listaobj l
+      txt100 erro # Mensagem de erro, no caso de não ter carregado
+      int8 achou # Se carregou com algum item
+      n.ini(arg1, misc:objmax, misc:tudo)
+      epara l.addfim(arg0.dentro1), l, l.ini.remove
+        continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+        refvar e = carregar(arg0, arma, l.objini, int(n))
+        e ? (erro = e) : achou++
+        sair achou >= 10
+      efim
+      !achou && arg0.msg(erro ?? "Você não vê isso.")
+    fimse
+  fimse
+
+func carregar # Carrega arma com um item
+# arg0=personagem, arg1=arma, arg2=item, arg3=quantidade de itens
+# Retorna mensagem de erro ou nulo se carregou
+  se txtproc("\n" + arg1.i_municao + "\n", "\n" + txt(arg2, 2) + "\n") < 0
+    ret "Não é possível carregar " + arg1.descnome + " com " + arg2.descnome + "."
+  senao arg1.dentro1.total + (arg2.item == 2 ? 1 : arg3) > arg1.objmax
+    ret "Não consegue carregar " + arg1.descnome + " com mais nada."
+  senao arg1.volden + arg2.voltot * arg3 / arg2.objtot > arg1.volmax
+    ret "Não há espaço suficiente para carregar com isso."
+  fimse
+  listaobj e
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_carregarobj(arg0, arg1, arg2, arg3, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_carregarobj(arg0, arg1, arg2, arg3, arg1), nulo
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    ret e.objini.cmd_carregarobj(arg0, arg1, arg2, arg3, arg2), nulo
+  efim
+  $mens.p(arg0, arg1, arg2)
+  $mens.mvis1("$P carrega $a com " + (arg3 <= 1 ? "$o." : txt(arg3) + "x $o."))
+  ref r
+  r = arg2.mudadono(arg1, arg3)
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    e.objini.cmd_carregouobj(arg0, arg1, r, total, arg0)
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    e.objini.cmd_carregouobj(arg0, arg1, r, total, arg1)
+  efim
+  epara e.addfim(r.evento), e, e.ini.remove
+    e.objini.cmd_carregouobj(arg0, arg1, r, total, r)
+  efim
+  arg0.p_espera += 2

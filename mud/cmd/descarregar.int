@@ -1,0 +1,69 @@
+classe cmd_descarregar
+herda comando_comum
+const txtajuda = "\b\c3Descarregar\b\n\
+Sintaxe: DESCARREGAR\n\
+Descarrega a arma que você estiver empunhando."
+const posic = 5
+
+func escr
+  refvar perm_msg = $perm_[arg0.jogperm].item
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  refvar arma = ref(arg0.iempu.obj)
+  se !arma
+    arg0.msg("Você não está empunhando nenhuma arma.")
+  senao !arma.armatipo || int(arma.armamunicao) != 2
+    arg0.msg(txtmaimin(arma.descnome, "A") + " não usa munição.")
+  senao !arma.armacarregar
+    $mens.p(arg0, nulo, arma)
+    $mens.msg("$O não pode ser descarregad$u.", arg0)
+  senao
+    refvar tipo = txtsublin(config:arma_txt, arma.armatipo, 1)
+    se arg0.var.h_[tipo]_ < arma.armacarregar
+      arg0.msg("Não possui conhecimento suficiente em " + tipo + ".")
+    senao arma.dentro1.total == 0
+      $mens.p(arg0, nulo, arma)
+      $mens.msg("$O não está carregad$u.", arg0)
+    senao
+      listaobj l
+      txt100 erro
+      int8 achou
+      epara l.addfim(arg0.dentro1), l, l.ini.remove
+        erro = descarregar(arg0, arma, l.objini, l.objini.objtot)
+        sair achou >= 10 || erro
+      efim
+      erro && arg0.msg(erro)
+    fimse
+  fimse
+
+func descarregar # Descarrega arma, tirando um item
+# arg0=personagem, arg1=arma, arg2=item, arg3=quantidade de itens
+# Retorna mensagem de erro ou nulo se descarregou
+  se arg0.dentro1.total + (arg2.item == 2 ? 1 : arg3) > arg0.objmax
+    ret "Você não consegue carregar tanta coisa."
+  senao arg0.volden + arg2.voltot * arg3 / arg2.objtot > arg0.volmax
+    ret "Você não consegue carregar tanta coisa."
+  fimse
+  listaobj e
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg1), nulo
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg2), nulo
+  efim
+  $mens.p(arg0, arg1, arg2)
+  $mens.mvis1("$P carrega $a com " + (arg3 <= 1 ? "$o." : txt(arg3) + "x $o."))
+  ref r
+  r = arg2.mudadono(arg0, arg3)
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    e.objini.cmd_descarregouobj(arg0, arg1, r, total, arg0)
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    e.objini.cmd_descarregouobj(arg0, arg1, r, total, arg1)
+  efim
+  epara e.addfim(r.evento), e, e.ini.remove
+    e.objini.cmd_descarregouobj(arg0, arg1, r, total, r)
+  efim
+  arg0.p_espera += 2

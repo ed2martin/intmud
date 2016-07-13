@@ -9,6 +9,7 @@ const descnome = nome
 const descpos = txtcopiamai(descnome, "A") + " está aqui."
 const objsav = 1 # Se deve salvar o item ao salvar personagem do jogador
 const pnivel = nivel # Nível atual (personagens de nível mais baixo não vestem)
+const armaprecisao = 100
 sav uint8 vestpos # Em que posição está vestindo, 0=nenhuma
 #
 # Ordem que deve organizar as constantes:
@@ -22,9 +23,11 @@ msexo\n\
 m_atrib1 m_atrib2\n\
 nivel\n\
 renascer\n\
+armacarregar\n\
 armamanual\n\
 armamax\n\
 armamin\n\
+armamunicao\n\
 armaprecisao\n\
 armaaddprecisao\n\
 armamove\n\
@@ -34,17 +37,18 @@ f_bebida\n\
 f_fome\n\
 f_sede\n\
 f_diges\n\
-i_itens\n\
 f_magia1 f_magia2 f_magia2\n\
 f_msgperso f_msgoutros\n\
 f_nivel1 f_nivel2 f_nivel3\n\
 f_remove\n\
 i_captura\n\
 i_chave\n\
+i_itens\n\
 i_pegar\n\
 i_movel\n\
 i_lugar\n\
 i_abertoini\n\
+i_municao\n\
 i_tranc\n\
 i_fechadura\n\
 i_comechave\n\
@@ -249,11 +253,11 @@ func recalc_exec # Acerta variáveis
       ret l.objini.cmd_apagou(dono, este), nulo
     efim
   fimse
-#  se intpos(luztempo) > 0
-#    textopos p
-#    p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
-#    atribs.addini("Aceso")
-#  fimse
+# se intpos(luztempo) > 0
+# textopos p
+# p = atribs.ini, p.txtproc("\nBrilhando\n", 0) >= 0 && p.remove
+# atribs.addini("Aceso")
+# fimse
 # Modificadores
   txt512 lin
   epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")

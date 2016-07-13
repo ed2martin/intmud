@@ -1252,12 +1252,12 @@ bool Instr::ExecX()
                     return RetornoErro(1);                                    \
                 assert(VarAtual->tamanho == 0);                               \
                                                                               \
-                const char * defvar = InstrAddSub + endIndice;                \
+                const char * defvar = InstrAddSub;                            \
                 FuncAtual++;                                                  \
                 FuncAtual->nome = defvar;                                     \
                 FuncAtual->linha = defvar;                                    \
                 FuncAtual->este = FuncAtual[-1].este;                         \
-                FuncAtual->expr = defvar + defvar[endIndice];                 \
+                FuncAtual->expr = defvar + endIndice;                         \
                 FuncAtual->inivar = VarAtual;                                 \
                 FuncAtual->fimvar = VarAtual;                                 \
                 FuncAtual->numarg = 0;                                        \

@@ -1,3 +1,17 @@
+classe cmd_arco_e_flecha
+herda comando_ataque
+const nomevar = "h_Arco_e_flecha"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const tipoarma = 64 # Requer arma: 6-Arco e flecha
+const tipomunicao = 2 # Munição: 2 Usa e perde uma munição
+const msgatk0 = "\n\n\n\
+$P lança $o $e $a, $m\n\n\
+$P lança $o $e $a, $m\n\n\n\
+$P lança $o e mata $a, $m\n\n\n\
+$P lança $o, mas $a desvia\n\n\n\
+$P lança $o, mas $a sente apenas cóssegas"
+
+
 classe cmd_arma_exótica
 herda comando_ataque
 const nomevar = "h_arma_exótica"
@@ -398,6 +412,20 @@ const msgerrou1 = "Você não consegue retornar."
 const msgnulo1 = "Você não consegue retornar."
 
 
+classe cmd_revolver
+herda comando_ataque
+const nomevar = "h_Revolver"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const tipoarma = 256 # Requer arma: 8-Revolver
+const tipomunicao = 2 # Munição: 2 Usa e perde uma munição
+const msgatk0 = "\n\n\n\
+$P atira $e $a, $m\n\n\
+$P atira $e $a, $m\n\n\n\
+$P atira $e e mata $a, $m\n\n\n\
+$P atira, mas $a desvia\n\n\n\
+$P atira, mas $a sente apenas cóssegas"
+
+
 classe cmd_roncar
 herda comando_ataque
 const nomevar = "h_Roncar"
@@ -444,6 +472,25 @@ $P rosna para $a.\n\n\n\
 $P mata $a rosnando.\n\n\n\
 $P rosna para onde $a estava.\n\n\n\
 $A não entende por que $p rosnou."
+
+
+classe cmd_sapato
+herda comando_ataque
+const nomevar = "h_Sapato"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const ataque = 30
+const tipomunicao = 1 # Munição: 1 Usa mas não perde
+const itemmunicao = "teste018\nteste048"
+const msgextra = "Ataca atirando sapatos e botas, que vão parar na sala."
+const msgatk0 = "\n\n\n\
+$P joga $o em $a, $m\n\n\
+$P joga $o em $a, $m\n\n\n\
+$P mata $a jogando $o, $m\n\n\n\
+$P joga $o, mas $a desvia\n\n\n\
+$P joga $o, que cai centímetros antes de acertar $a"
+
+func cmd_atacou
+  arg2.arma1.mudadono(arg0.dono, 1) # Sapato vai para a sala
 
 
 classe cmd_socar
