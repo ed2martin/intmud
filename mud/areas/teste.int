@@ -808,9 +808,10 @@ classe i_teste051
 herda comum_itemgrupo
 const nome = "arco"
 const descnome = "um arco"
+const armamanual = 1 # Só ataca manual: Sim
+const armamunicao = 1 # Origem da munição: Sim
 const armamove = 2
 const armatipo = 6 # Tipo de arma: 6 Arco e flecha
-const armamunicao = 1 # Origem da munição: Sim
 const i_municao = "teste052"
 
 
@@ -818,6 +819,7 @@ classe i_teste052
 herda comum_itemgrupo
 const nome = "flecha"
 const descnome = "uma flecha"
+const armamanual = 1 # Só ataca manual: Sim
 const armamax = 15
 const armamin = 10
 
@@ -828,6 +830,7 @@ const nome = "revolver"
 const descnome = "um revolver"
 const msexo = 1 # Sexo Msg: 1 Masculino
 const armacarregar = 3 # Carregar: 3 Básico
+const armamanual = 1 # Só ataca manual: Sim
 const armamunicao = 2 # Origem da munição: 2 Itens na arma
 const armatipo = 8 # Tipo de arma: 8 Revolver
 const i_municao = "teste054"
@@ -849,7 +852,7 @@ const descnome = "uma faca de fogo"
 const armamax = 120
 const armamin = 70
 const armaprecisao = 100
-const armatipo = 3 # Arma tipo: 1 Lâmina curta
+const armatipo = 3 # Tipo de arma: 3 Lâmina curta
 const pesoobj = 300
 const tipoitem = 3 # Tipo de produto: Possui metal, Arma
 const valor = 50
@@ -2629,10 +2632,10 @@ herda b_teste
 const s_titulo = "Quarto andar: Fórmulas de batalha, calculadas a cada golpe"
 const s_desc = "Norte, qual habilidade é usada nos ataques automáticos\n\
 Sul, os critérios para saber se um golpe acertou o alvo\n\
-Leste, cálculo básico dos danos de batalha e comando atklog\n\
+Leste, cálculo básico dos danos de batalha e comandos dhab e dmag\n\
 Oeste, ataques automáticos, arma, fome, sede e nível\n\
-Sudeste, conhecimento do golpe e bônus do personagem\n\
-Sudoeste, posição do alvo e tipo de ataque; Nordeste, tempo de espera"
+Sudoeste, bônus do personagem, posição do alvo e tipo de ataque\n\
+Nordeste, tempo de espera"
 const dir_n = $s_teste053
 const dir_s = $s_teste056
 const dir_l = $s_teste059
@@ -2640,8 +2643,7 @@ const dir_o = $s_teste061
 const dir_c = $s_teste030
 const dir_b = $s_teste026
 const dir_ne = $s_teste139
-const dir_se = $s_teste122
-const dir_so = $s_teste124
+const dir_so = $s_teste123
 
 
 classe s_teste053
@@ -2733,8 +2735,8 @@ const s_desc = "Se você possui 50 pontos de ataque, não está usando nenhuma arma
 um chute de força 70 em um personagem com 30 pontos de defesa, os danos\n\
 serão 50*50*70/30/300, que resulta em 19 pontos de vida. O valor de 19,444\n\
 é arredondado para 19. Na prática, não é preciso ficar calculando. Basta\n\
-teclar atklog e o jogo mostrará os cálculos realizados no próximo ataque\n\
-que você fizer ou receber."
+usar os comandos dhab (habilidades) e dmag (magias) para saber os danos\n\
+que um personagem causaria."
 const dir_o = $s_teste059
 
 
@@ -3871,24 +3873,14 @@ Portanto, atacar personagens de nível mais baixo causa mais danos."
 const dir_l = $s_teste062
 
 
-classe s_teste122
-herda b_teste
-const s_titulo = "Conhecimento do golpe"
-const s_desc = "Dependendo de quanto o seu personagem conhece um golpe, os danos podem\n\
-aumentar em até 50% (no nível perito) ou cair pela metade (iniciante)\n\
-perito=150%, mestre=135%, muito avançado=121%, avançado=107%,\n\
-intermediário=92%, básico=78%, muito básico=64%, iniciante=50%"
-const dir_no = $s_teste052
-const dir_se = $s_teste123
-
-
 classe s_teste123
 herda b_teste
 const s_titulo = "Bônus do personagem"
 const s_desc = "Ao editar um ataque, é possível especificar que tipos de personagens\n\
 (ou seja, raças e classes) possuem bônus (lidam melhor com o ataque).\n\
 Esse bônus aumenta os danos em cinquenta por cento."
-const dir_no = $s_teste122
+const dir_ne = $s_teste052
+const dir_so = $s_teste124
 
 
 classe s_teste124
@@ -3898,7 +3890,7 @@ const s_desc = "Dependendo da posição do personagem alvo, os danos causados por 
 golpe podem ser maiores.\n\
 Sentado, 33% a mais. Descansando, 67% a mais. Dormindo, o dano dobra.\n\
 E se estiver incapacitado, 133% a mais."
-const dir_ne = $s_teste052
+const dir_ne = $s_teste123
 const dir_so = $s_teste125
 
 

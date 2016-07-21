@@ -1,4 +1,4 @@
-classe atualiza_413
+classe atualiza_414
 # Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 413, nulo
-  p.criar("config", "const versao = 413 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 414, nulo
+  p.criar("config", "const versao = 414 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -531,6 +531,19 @@ casa está atrasada.\"")
       lin = txt(lin, 0, inttotal(lin) - 1)
     fimse
     p.criar("config", "const arma_txt = \"" + txtvis(lin) + "\"")
+  fimse
+# Ataque
+  se versao < 414
+    debug d
+    epara p.iniherdainv("comando_ataque"), p.lin, p.depois
+      d.ini
+      se p.existe(p.texto, "ataque") == 1
+        refvar atk = [p.texto]:ataque
+        p.criar(p.texto, "const ataquemin = " + int(atk * 0.5))
+        p.criar(p.texto, "const ataquemax = " + int(atk * 1.5))
+        p.apagar(p.texto, "ataque")
+      fimse
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

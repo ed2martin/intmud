@@ -31,7 +31,7 @@ func listar # Listar itens
   int32 total
   txt100 lin
   t.limpar
-  d.exec = 50000
+  d.exec = 100000
   p.iniclasse("i_" + txtremove(arg1, "EMDCT7"))
   se int(arg2.c_litem) >= 2
     epara nulo, p.lin, p.depois
@@ -376,45 +376,45 @@ const tipo2 = "opc_linha"
 const clas2 = var.classe1
 const vari2 = "armaatk"
 #
-const nome3 = "Precisão arma"
-const info3 = "Para armas que por natureza são imprecisas\n\
-De 0 a 100, 0=sempre erra e 100=mesma precisão que atacar sem arma"
-const tipo3 = "opc_numero"
+const nome3 = "Só ataca manual"
+const info3 = "Se o personagem não usa essa arma em ataques automáticos"
+const tipo3 = "opc_simnao"
 const clas3 = var.classe1
-const vari3 = "armaprecisao"
-const extr3 = "0 100"
-const exec3 = "recalc_exec"
+const vari3 = "armamanual"
 #
-const nome4 = "Precisão perso"
-const info4 = "Quanta precisão o personagem ganha durante um ataque com essa arma"
+const nome4 = "Precisão arma"
+const info4 = "Para armas que por natureza são imprecisas\n\
+De 0 a 100, 0=sempre erra e 100=mesma precisão que atacar sem arma"
 const tipo4 = "opc_numero"
 const clas4 = var.classe1
-const vari4 = "armaaddprecisao"
+const vari4 = "armaprecisao"
+const extr4 = "0 100"
 const exec4 = "recalc_exec"
 #
-const nome5 = "Alcance da arma"
-const info5 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
+const nome5 = "Precisão perso"
+const info5 = "Quanta precisão o personagem ganha durante um ataque com essa arma"
 const tipo5 = "opc_numero"
 const clas5 = var.classe1
-const vari5 = "armamove"
+const vari5 = "armaaddprecisao"
+const exec5 = "recalc_exec"
 #
-const nome6 = "Ataque mín"
+const nome6 = "Alcance da arma"
+const info6 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
 const tipo6 = "opc_numero"
 const clas6 = var.classe1
-const vari6 = "armamin"
-const exec6 = "recalc_exec"
+const vari6 = "armamove"
 #
-const nome7 = "Ataque máx"
+const nome7 = "Ataque mín"
 const tipo7 = "opc_numero"
 const clas7 = var.classe1
-const vari7 = "armamax"
+const vari7 = "armamin"
 const exec7 = "recalc_exec"
 #
-const nome8 = "Só ataca manual"
-const info8 = "Se o personagem não usa essa arma em ataques automáticos"
-const tipo8 = "opc_simnao"
+const nome8 = "Ataque máx"
+const tipo8 = "opc_numero"
 const clas8 = var.classe1
-const vari8 = "armamanual"
+const vari8 = "armamax"
+const exec8 = "recalc_exec"
 #
 const nome10 = "Itens munição"
 const info10 = "Que itens podem ser usados como munição"
@@ -752,8 +752,8 @@ const colunas = 25
 const nome10 = "Dentro"
 const tipo10 = "menu_identro3--"
 #
-const nome21 = "Arma"
-const tipo21 = "menu_iarma3--"
+const nome11 = "Arma"
+const tipo11 = "menu_iarma3--"
 #
 const nome26 = "Mobília"
 const info26 = "Sentar/dormir confortavelmente se recupera mais rápido"

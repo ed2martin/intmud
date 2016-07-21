@@ -322,7 +322,8 @@ arg1 = personagem alvo
 arg2 = objeto que trata do comando
 arg2.result = resultado do ataque:
     0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=cancelar ataque
-arg2.arma1 = arma usada no ataque ou munição, se houver munição
+arg2.arma1 = arma usada, ou nulo se não houver
+arg2.arma2 = munição usada, ou nulo se não houver
 arg2.mudavida = quantos pontos de vida mudaram no alvo
 arg3 = origem do evento: arg0 ou arg1
 É chamada também a função cmd_atacou do objeto que trata do comando.
@@ -508,7 +509,8 @@ func cmd_atacarcontr
 arg0 = personagem que quer usar uma habilidade ou magia agressiva
 arg1 = personagem alvo
 arg2 = objeto que trata do comando
-arg2.arma1 = arma usada no ataque ou munição, se houver munição
+arg2.arma1 = arma usada, ou nulo se não houver
+arg2.arma2 = munição usada, ou nulo se não houver
 arg3 = origem do evento: arg0.contr ou arg1.contr (quem está controlando
        arg0 ou arg1)
 
@@ -516,7 +518,8 @@ func cmd_atacar
 arg0 = personagem que quer usar uma habilidade ou magia agressiva
 arg1 = personagem alvo
 arg2 = objeto que trata do comando
-arg2.arma1 = arma usada no ataque ou munição, se houver munição
+arg2.arma1 = arma usada, ou nulo se não houver
+arg2.arma2 = munição usada, ou nulo se não houver
 arg3 = origem do evento: arg0 ou arg1
 É chamada também a função cmd_atacar do objeto que trata do comando.
 

@@ -7,9 +7,8 @@ const txtajuda = "\b\c3Habilidades e magias\b\n\
   \c2CMAG\b      Cria uma magia\n\
   \c2EHAB\b      Edita uma habilidade\n\
   \c2EMAG\b      Edita uma magia\n\
-  \c2AHAB\b      Edita uma ou mais habilidades\n\
-  \c2AMAG\b      Edita uma ou mais magias\n\
-  \c2ATKLOG\b    Mostra os cálculos de batalha no próximo ataque"
+  \c2AHAB\b      Apaga uma ou mais habilidades\n\
+  \c2AMAG\b      Apaga uma ou mais magias"
 
 
 classe adm_lhab
@@ -19,7 +18,7 @@ Sintaxe: LHAB [nome]\n\
 Lista as habilidades que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as habilidades."
 
-func escr # Listar habilidades
+func escr
   prog p
   se !p.iniclasse("cmd_" + arg1)
     ret arg0.msg("\bNenhuma habilidade encontrada.")
@@ -77,7 +76,7 @@ Sintaxe: LMAG [nome]\n\
 Lista as magias que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as magias."
 
-func escr # Listar magias
+func escr
   prog p
   se !p.iniclasse("magia_" + arg1)
     ret arg0.msg("\bNenhuma magia encontrada.")
@@ -136,7 +135,7 @@ Cria uma habilidade com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "habilidade"
 
-func escr # Criar habilidade
+func escr
   prog p
   txt80 nome
   uint16 num
@@ -218,7 +217,7 @@ Cria uma magia com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "magia"
 
-func escr # Criar magia
+func escr
   prog p
   txt80 nome
   uint16 num
@@ -248,7 +247,7 @@ Para apagar uma habilidade cujo nome contém espaços no meio, use\n\
 sublinhado no lugar dos espaços. Exemplo, se o nome da magia for\n\
 Chute Forte, você deve teclar: ahab Chute_Forte"
 
-func escr # Apagar habilidade
+func escr
   prog p
   se arg1 == ""
     ret arg0.msg("Tecle um ou mais nomes de habilidades após AHAB")
@@ -301,7 +300,7 @@ Para apagar uma magia cujo nome contém espaços no meio, use sublinhado\n\
 no lugar dos espaços. Exemplo, se o nome da magia for Curar Cegueira,\n\
 você deve teclar: amag Curar_Cegueira"
 
-func escr # Apagar magia
+func escr
   prog p
   se arg1 == ""
     ret arg0.msg("Tecle um ou mais nomes de magias após AMAG")
@@ -351,7 +350,7 @@ const txtajuda = "\b\c3Ehab\b\n\
 Sintaxe: EHAB <nome>\n\
 Edita a habilidade com o nome especificado."
 
-func escr # Editar habilidade
+func escr
   prog p
   se arg1 == ""
     arg0.msg("Tecle o nome da habilidade após EHAB")
@@ -369,10 +368,10 @@ func escr # Editar habilidade
 classe adm_emag
 herda comando_adm
 const txtajuda = "\b\c3Emag\b\n\
-Sintaxe: EMSG <nome>\n\
+Sintaxe: EMAG <nome>\n\
 Edita a magia com o nome especificado."
 
-func escr # Editar magia
+func escr
   prog p
   se arg1 == ""
     arg0.msg("Tecle o nome da magia após EMAG")
@@ -387,20 +386,70 @@ func escr # Editar magia
   fimse
 
 
-classe adm_atklog
+classe adm_dhab
 herda comando_adm
-const txtajuda = "\b\c3Atklog\b\n\
-Sintaxe: ATKLOG\n\
-Mostra os cálculos de batalha no próximo ataque que o seu personagem fizer\n\
-ou receber, exceto quando seu personagem for um alvo secundário."
+const txtajuda = "\b\c3Dhab\b\n\
+Sintaxe: DHAB <habilidade> <alvo>\n\
+         DHAB <personagem> <habilidade> <alvo>\n\
+Calcula os danos que uma habilidade faria no personagem alvo.\n\
+Se for fornecido apenas a habalidade e o alvo, calcula os danos que\n\
+o seu personagem faria."
+const prefixo = "cmd_"
+const naoencontrado = "Habilidade não encontrada: "
+const naoataque = "Habilidade não é ataque: "
 
-func escr # Mostrar ou não cálculos de batalha
-  arg0.atklog = !arg0.atklog
-  se arg0.atklog
-    arg0.msg("Informando cálculos de batalha.")
+func escr
+  txt100 nome
+  ref perso
+  ref alvo
+  ref obj
+  ret !arg1, arg0.msg(txtmaimin(txt(este, 4)) + " requer 2 ou 3 argumentos")
+  se intsub(arg1) >= 3
+    perso = misc:persodono(arg0, txt1(arg1))
+    nome = txtsub(arg1, 1, 1)
+    alvo = misc:persodono(arg0, txtsub(arg1, 2))
+    ret !perso, arg0.msg("Personagem não existe: " + txt1(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txtsub(arg1, 2))
   senao
-    arg0.msg("Não informando cálculos de batalha.")
+    perso = arg0
+    nome = txt1(arg1)
+    alvo = misc:persodono(arg0, txt2(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txt2(arg1))
   fimse
+  enquanto 1
+    refvar perm = $perm_[jogperm]
+    obj = $[prefixo + nome] # Checa comando exato
+    sair obj.cmdmenu
+    refvar tam = inttotal(prefixo)
+    prog p
+    nomeobj n
+    n.ini(txt1(arg0))
+    epara p.iniclasse(prefixo + txt1(txte(nome))), p.lin, p.depois
+      obj = $[p.texto]
+      sair obj.cmdmenu && !n.nome(txt(obj, tam))
+    efim
+    sair p.lin
+    ret arg0.msg(naoencontrado + nome)
+  efim
+  arg0.msg(">" + obj.cmdmenu)
+  ret obj.cmdmenu != "ataque", arg0.msg(naoataque + txt(obj.nomevar, 2))
+  ret obj.tipoalvo > 5 && obj.tipoalvo < 8, arg0.msg(naoataque + txt(obj.nomevar, 2))
+  textotxt t
+  obj.danosgolpe(perso, alvo, t)
+  arg0.msg2(t.remove(1000))
+
+
+classe adm_dmag
+herda adm_dhab
+const txtajuda = "\b\c3Dmag\b\n\
+Sintaxe: DMAG <magia> <alvo>\n\
+         DMAG <personagem> <magia> <alvo>\n\
+Calcula os danos que uma magia faria no personagem alvo.\n\
+Se for fornecido apenas a magia e o alvo, calcula os danos que\n\
+o seu personagem faria."
+const prefixo = "magia_"
+const naoencontrado = "Magia não encontrada: "
+const naoataque = "Magia não é ataque: "
 
 
 classe menu_hab_custo
@@ -550,6 +599,103 @@ const info15 = "Efeitos que serão removidos; uma linha por efeito"
 const tipo15 = "opc_texto"
 const clas15 = var.classe1
 const vari15 = "a_remove"
+
+
+classe menu_hab_opcataque
+herda comando_menu
+const titulo = "Ataque"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Fórmula"
+const tipo1 = "opc_ajuda--"
+const extr1 = "Os danos (pontos de vida que o alvo perde) são calculados assim:\n\
+danos = força * tipo * ataque1 * ataque2 / (defesa * fator)\n\
+Dependendo do tipo de ataque, os danos podem aumentar ou diminuir\n\
+Quando não há opções modificando ataque e defesa, é 1\n\
+O tipo também define se será usado ataque e defesa normal ou especial\n\
+Nota: quando o personagem está com fome e/ou com sede, o ataque é mais fraco"
+#
+const nome2 = "Tipo"
+const tipo2 = "opc_opcao"
+const clas2 = var.classe1
+const vari2 = "tipoatk"
+const extr2 = config:atknomes
+#
+const nome3 = "Força iniciante"
+const tipo3 = "opc_numero"
+const clas3 = var.classe1
+const vari3 = "ataquemin"
+#
+const nome4 = "Força perito"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "ataquemax"
+#
+const nome5 = "Fator mínimo"
+const info5 = "Fator é um número aleatório de fator mínimo a fator máximo"
+const tipo5 = "opc_numero"
+const clas5 = var.classe1
+const vari5 = "fatormin"
+#
+const nome6 = "Fator máximo"
+const info6 = "Fator é um número aleatório de fator mínimo a fator máximo"
+const tipo6 = "opc_numero"
+const clas6 = var.classe1
+const vari6 = "fatormax"
+#
+const nome7 = "Ataque1"
+const tipo7 = "opc_numero"
+const clas7 = var.classe1
+const vari7 = "ataque1"
+#
+const nome8 = "Somar perso"
+const info8 = "Se deve somar o ataque do personagem em ataque1"
+const tipo8 = "opc_simnao"
+const clas8 = var.classe1
+const vari8 = "ataque1perso"
+#
+const nome9 = "Somar arma"
+const info9 = "Se deve somar o ataque da arma em ataque1"
+const tipo9 = "opc_simnao"
+const clas9 = var.classe1
+const vari9 = "ataque1arma"
+#
+const nome10 = "Somar munição"
+const info10 = "Se deve somar o ataque da munição em ataque1"
+const tipo10 = "opc_simnao"
+const clas10 = var.classe1
+const vari10 = "ataque1municao"
+#
+const nome11 = "Ataque2"
+const info11 = "Se 0, ataque2 é o ataque do personagem"
+const tipo11 = "opc_numero"
+const clas11 = var.classe1
+const vari11 = "ataque2"
+#
+const nome12 = "Bônus"
+const info12 = "Quais raças e classes atacam com mais força"
+const tipo12 = "opc_tipos"
+const clas12 = var.classe1
+const vari12 = "tipobonus"
+#
+const nome13 = "Velocidade"
+const info13 = "Em porcentagem"
+const tipo13 = "opc_numero"
+const clas13 = var.classe1
+const vari13 = "vel"
+#
+const nome14 = "Precisão perso"
+const info14 = "Quanta precisão o personagem ganha durante o ataque"
+const tipo14 = "opc_numero"
+const clas14 = var.classe1
+const vari14 = "addprecisao"
+#
+const nome15 = "Alcance sem arma"
+const info15 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
+const tipo15 = "opc_numero"
+const clas15 = var.classe1
+const vari15 = "armamove"
 
 
 classe menu_hab_msg0
@@ -825,70 +971,35 @@ const tipo13 = "opc_listaitem"
 const clas13 = var.classe1
 const vari13 = "itemmunicao"
 #
-const titu14 = " * Ataque"
+const nome14 = "Ataque"
+const tipo14 = "menu_hab_opcataque--"
 #
-const nome14 = "Tipo"
-const tipo14 = "opc_opcao"
-const clas14 = var.classe1
-const vari14 = "tipoatk"
-const extr14 = config:atknomes
+const titu15 = " * Textos"
 #
-const nome15 = "Força"
-const info15 = "Em porcentagem; se 0 o alvo não perde pontos de vida"
-const tipo15 = "opc_numero"
+const nome15 = "Informações"
+const info15 = "Informações extras"
+const tipo15 = "opc_texto"
 const clas15 = var.classe1
-const vari15 = "ataque"
+const vari15 = "msgextra"
 #
-const nome16 = "Velocidade"
-const info16 = "Em porcentagem"
-const tipo16 = "opc_numero"
-const clas16 = var.classe1
-const vari16 = "vel"
+const nome16 = "Mensagens 1"
+const tipo16 = "menu_hab_msg0--"
 #
-const nome17 = "Precisão perso"
-const info17 = "Quanta precisão o personagem ganha durante o ataque"
-const tipo17 = "opc_numero"
-const clas17 = var.classe1
-const vari17 = "addprecisao"
+const nome17 = "Mensagens 2"
+const tipo17 = "menu_hab_msg1--"
 #
-const nome18 = "Alcance sem arma"
-const info18 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
-const tipo18 = "opc_numero"
-const clas18 = var.classe1
-const vari18 = "armamove"
+const nome18 = "Mensagens 3"
+const tipo18 = "menu_hab_msg2--"
 #
-const nome19 = "Bônus"
-const info19 = "Quais raças e classes atacam com mais força"
-const tipo19 = "opc_tipos"
-const clas19 = var.classe1
-const vari19 = "tipobonus"
+const nome19 = "Mensagens 4"
+const tipo19 = "menu_hab_msg3--"
 #
-const titu20 = " * Textos"
+const nome20 = "Mensagens 5"
+const tipo20 = "menu_hab_msg4--"
 #
-const nome20 = "Informações"
-const info20 = "Informações extras"
-const tipo20 = "opc_texto"
-const clas20 = var.classe1
-const vari20 = "msgextra"
-#
-const nome21 = "Mensagens 1"
-const tipo21 = "menu_hab_msg0--"
-#
-const nome22 = "Mensagens 2"
-const tipo22 = "menu_hab_msg1--"
-#
-const nome23 = "Mensagens 3"
-const tipo23 = "menu_hab_msg2--"
-#
-const nome24 = "Mensagens 4"
-const tipo24 = "menu_hab_msg3--"
-#
-const nome25 = "Mensagens 5"
-const tipo25 = "menu_hab_msg4--"
-#
-const nome26 = "Menus de mensagens"
-const tipo26 = "opc_ajuda--"
-const extr26 = menu_hab_ataque:msg1 + "\n" + menu_hab_ataque:msg2
+const nome21 = "Menus de mensagens"
+const tipo21 = "opc_ajuda--"
+const extr21 = menu_hab_ataque:msg1 + "\n" + menu_hab_ataque:msg2
 #
 const msg1 = "\c3Menus de mensagens:\b\n\
 Em princípio, pode-se colocar todas as mensagens no menu Mensagens 1.\n\
