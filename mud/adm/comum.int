@@ -70,6 +70,27 @@ func existe_s # Checa se sala existe no comando Lsala
   casofim
   ret 0
 
+func p_vartexto # Mesmo prog.vartexto, porém checa redirecionamento como "const a = b:c"
+  prog p
+  ret p.vartexto(arg0, arg1), 1
+  p.inilinha(arg0, arg1)
+  ret txt1(p.texto) != "const", 0
+  refvar lin = txtsub(p.texto, 3)
+  refvar ind1 = txtproc(lin, ":") # Aonde termina o nome da classe
+  refvar ind2 = txtproc(lin, "#") + 1 ?? 10000 # Aonde termina o nome da função
+  refvar funcao = txtremove(txt(lin, ind1 + 1, ind2 - ind1 - 2), "d")
+  ret p.vartexto(txt(lin, 0, ind1), funcao)
+
+func p_varnum # Mesmo prog.varnum, porém checa redirecionamento como "const a = b:c"
+  prog p
+  ret p.varnum(arg0, arg1), 1
+  p.inilinha(arg0, arg1)
+  ret txt1(p.texto) != "const", 0
+  refvar lin = txtsub(p.texto, 3)
+  refvar ind1 = txtproc(lin, ":") # Aonde termina o nome da classe
+  refvar ind2 = txtproc(lin, "#") + 1 ?? 10000 # Aonde termina o nome da função
+  refvar funcao = txtremove(txt(lin, ind1 + 1, ind2 - ind1 - 2), "d")
+  ret p.varnum(txt(lin, 0, ind1), funcao)
 
 classe admordena
 herda comando_adm

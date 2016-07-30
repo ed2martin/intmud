@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 414 # Para atualizar diretórios areas e config
+const versao = 415 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -244,7 +244,7 @@ const atkfor = 30
 const atk_evasao1 = "Esquiva"
 #
 # Quantos pontos de evasão por aula de esquiva
-const atk_evasao2 = "2"
+const atk_evasao2 = 2
 #
 # Animais não obedecem mais os jogadores se o nível do jogador somado
 # com esse número for menor que o nível do animal
@@ -630,6 +630,22 @@ const vestir26 = 0
 const vestir27 = 0
 const vestir28 = 0
 const vestir29 = 0
+#
+# Comando MudaExp - Quanta experiência os personagens dão quando morrem
+# (quando estiver contando tempo), em porcentagem
+const mudaexp_exp = 200
+#
+# Comando MudaExp - Tempo entre as mensagens que se repetem, em minutos
+const mudaexp_tempo = 2
+#
+# Comando MudaExp - Mensagem inicial
+const mudaexp_msgini = "Bônus! Agora pnjs dão o dobro de experiência!"
+#
+# Comando MudaExp - Mensagem que se repete
+const mudaexp_msgrep = "Aproveite, $m minutos para terminar!"
+#
+# Comando MudaExp - Mensagem final
+const mudaexp_msgfim = "Acabou a experiência extra."
 
 func atribcfg # Altera atributos do personagem
 # Função criada automaticamente
@@ -644,22 +660,6 @@ func atribcfg # Altera atributos do personagem
   evasao = 2 * pnivel + 30
   precisao = 2 * pnivel + 30
   pesomax = 20000
-# Comando MudaExp - Quanta experiência os personagens dão quando morrem
-# (quando estiver contando tempo), em porcentagem
-
-const mudaexp_exp = 200
-#
-# Comando MudaExp - Tempo entre as mensagens que se repetem, em minutos
-const mudaexp_tempo = 2
-#
-# Comando MudaExp - Mensagem inicial
-const mudaexp_msgini = "Bônus! Agora pnjs dão o dobro de experiência!"
-#
-# Comando MudaExp - Mensagem que se repete
-const mudaexp_msgrep = "Aproveite, $m minutos para terminar!"
-#
-# Comando MudaExp - Mensagem final
-const mudaexp_msgfim = "Acabou a experiência extra."
 
 func salvar # Salva o programa
   prog p

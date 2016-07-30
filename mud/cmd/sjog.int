@@ -1,0 +1,35 @@
+classe cmd_sjog
+herda comando_comum
+const posic = 0
+const txtajuda = "\b\c3Sjoga\b\n\
+Sintaxe: SJOG [jogador]\n\
+Esse comando só funciona quando você estiver em uma casa sua.\n\
+Permite que um jogador pegue itens da sala ou solte itens. Ou bloqueia,\n\
+se o jogador já tiver permissão. Se não houver nenhum jogador com permissão,\n\
+qualquer um poderá pegar itens da sala.\n\
+Digitando apenas sjog, sem nenhum argumento, mostra quem tem permissão."
+
+func escr
+  refvar var = arg0.dono.var
+  se !arg0.dentrocasa && !arg0.j_imortal
+    arg0.msg("Você não está dentro da sua casa.")
+  senao !arg1
+    textotxt t
+    txt100 nome
+    epara nome = var.ini("u_"), nome, nome = var.depois(nome, "u_")
+      t.addfim(txt(nome, 2))
+    efim
+    ret t.linhas == 0, arg0.msg("Qualquer um pode pegar e soltar itens aqui.")
+    arg0.msg("Só podem pegar e soltar itens: " + txttroca(t.remove(1000), "\n", ", "))
+  senao var.u_[arg1]
+    var.u_[arg1] = ""
+    arg0.dono.objmudou = 1
+    arg0.msg("Retirada permissão de " + arg1 + ".")
+  senao
+    se var.total("u_") >= 20
+      ret arg0.msg("Atingido o limite de usuários permitidos.")
+    fimse
+    var.u_[arg1] = 1
+    arg0.dono.objmudou = 1
+    arg0.msg("Concedida permissão a " + arg1 + ".")
+  fimse

@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #ifdef __WIN32__
 #include <windows.h>
 #else
@@ -154,6 +155,9 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
             obj = FuncAtual->este, def_instr = v[1].getTxt();
     // Codifica as instruções
         TAddBuffer mens;
+            // Adiciona definição de função
+        assert(TMudarAux::CodifInstr(&mens, "func f"));
+        unsigned int TotalFunc = mens.Total;
         if (!TMudarAux::CodifInstr(&mens, def_instr)) // Checa se erro
         {
             mens.Add("\x00\x00", 2); // Zero no fim da mensagem
@@ -161,7 +165,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto(mens.Buf);
         }
-        if (mens.Total==0) // Nenhuma instrução
+        if (mens.Total == TotalFunc) // Nenhuma instrução
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("");
@@ -198,9 +202,31 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         TClasse::AcertaComandos(mens.Buf);
     // Anota instruções em DadosPilha
         ApagarVar(v);
-        if (CriarVarTexto(mens.Buf, mens.Total) < 0)
+        if (CriarVarTexto(mens.Buf + TotalFunc, mens.Total - TotalFunc) < 0)
             return CriarVarTexto(
                     "Quantidade de instruções muito grande");
+    // Para mostrar o que codificou
+#if 0
+        for (const char * p = VarAtual->end_char; Num16(p); p+=Num16(p))
+        {
+            char mens[4096];
+            int total = Num16(p);
+            putchar('-');
+            for (int x=0; x<total; x++)
+                printf(" %02X", (unsigned char)p[x]);
+            putchar('\n');
+            if (Instr::Mostra(mens, p, sizeof(mens)))
+                printf("+ %s\n", mens);
+            if (Instr::Decod(mens, p, sizeof(mens)))
+                printf("%s\n", mens);
+            else
+            {
+                printf("**** Erro\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        putchar('\n');
+#endif
     // Acerta função
         FuncAtual++;
         FuncAtual->nome = VarAtual->end_char;
@@ -208,25 +234,12 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         FuncAtual->este = obj;
         FuncAtual->expr = 0;
         FuncAtual->inivar = VarAtual + 1;
-        //FuncAtual->fimvar = VarAtual + 1;
+        FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = 0;
         FuncAtual->tipo = 4;
         FuncAtual->indent = 0;
         FuncAtual->objdebug = FuncAtual[-1].objdebug;
         FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
-    // Acerta variáveis
-        int numargs = FuncAtual[-1].numarg;
-        for (TVariavel * v1=FuncAtual[-1].inivar; v1<v-1; v1++)
-        {
-            if (VarAtual >= VarFim-1)
-                break;
-            VarAtual++;
-            *VarAtual = *v1;
-            VarAtual->tamanho = 0;
-            if (numargs)
-                numargs--, FuncAtual->numarg++;
-        }
-        FuncAtual->fimvar = VarAtual + 1;
         return true;
     }
 // Execução passo-a-passo

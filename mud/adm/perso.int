@@ -312,11 +312,11 @@ func menu # Retorna quantidade de aulas
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -338,11 +338,11 @@ func menu # Retorna quantidade de produtos
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido

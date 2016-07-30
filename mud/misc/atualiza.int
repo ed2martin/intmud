@@ -1,4 +1,4 @@
-classe atualiza_414
+classe atualiza_415
 # Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 414, nulo
-  p.criar("config", "const versao = 414 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 415, nulo
+  p.criar("config", "const versao = 415 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -533,16 +533,35 @@ casa está atrasada.\"")
     p.criar("config", "const arma_txt = \"" + txtvis(lin) + "\"")
   fimse
 # Ataque
-  se versao < 414
+  se versao < 415
     debug d
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
       d.ini
-      se p.existe(p.texto, "ataque") == 1
-        refvar atk = [p.texto]:ataque
-        p.criar(p.texto, "const ataquemin = " + int(atk * 0.5))
-        p.criar(p.texto, "const ataquemax = " + int(atk * 1.5))
-        p.apagar(p.texto, "ataque")
+      continuar p.existe(p.texto, "ataque") != 1
+      refvar atk = [p.texto]:ataque
+      p.criar(p.texto, "const ataquemin = " + int(atk * 0.5))
+      p.criar(p.texto, "const ataquemax = " + int(atk * 1.5))
+      p.apagar(p.texto, "ataque")
+    efim
+    epara p.iniherdainv("casa"), p.lin, p.depois
+      d.ini
+      continuar p.existe(p.texto, "c_salas") == 1
+      refvar c = $[p.texto]
+      txt512 lin
+      c.s1 && (lin += "\n" + txt(c.s1, 2)), c.s2 && (lin += "\n" + txt(c.s2, 2))
+      c.s3 && (lin += "\n" + txt(c.s3, 2)), c.s4 && (lin += "\n" + txt(c.s4, 2))
+      c.s5 && (lin += "\n" + txt(c.s5, 2)), c.s6 && (lin += "\n" + txt(c.s6, 2))
+      c.s7 && (lin += "\n" + txt(c.s7, 2)), c.s8 && (lin += "\n" + txt(c.s8, 2))
+      c.s9 && (lin += "\n" + txt(c.s9, 2))
+      lin = txt(lin, 1)
+      se lin
+        p.criar(p.texto, "const c_salas = \"" + txtvis(lin) + "\"")
+        p.apagar(p.texto, "s1"), p.apagar(p.texto, "s2"), p.apagar(p.texto, "s3")
+        p.apagar(p.texto, "s4"), p.apagar(p.texto, "s5"), p.apagar(p.texto, "s6")
+        p.apagar(p.texto, "s7"), p.apagar(p.texto, "s8"), p.apagar(p.texto, "s9")
       fimse
+      p.apagar(p.texto, "mudou")
+      c.acerta_funcoes(lin)
     efim
   fimse
 # Avisa que atualizou arquivos

@@ -16,11 +16,11 @@ Editável pelo comando ecasa.
 const valor = 1200
 Valor da casa, em moedas. Editável pelo comando ecasa.
 
-const s1 até const s9
-Salas que correspondem à casa (até 9). Se uma dessas constantes mudar,
-deve-se chamar a função acerta_mudou da casa. O comando Ecasa cria
-constantes como essa:
-const s1 = $s_teste116
+const c_salas = ""
+Lista de salas que correspondem à casa, uma sala por linha (nome da
+classe sem o "s_" na frente). Se essa constante mudar, deve-se chamar
+a função acerta_mudou da casa. O comando Ecasa cria constantes como essa:
+const c_salas = "teste117\nteste118"
 
 func mudachave
 Muda o código da fechadura da casa. Isso é necessário quando o jogador
@@ -29,13 +29,27 @@ vende a casa ou perde por falta de pagamento.
 func mudou
 Retorna 1 (verdadeiro) se houve alguma mudança na casa (ela será salva
 em arquivo) ou 0 se não houve.
-A função acerta_mudou cria essa função de acordo com as variáveis s1 a s9.
+A função acerta_mudou cria essa função de acordo com a variável c_salas.
+
+func zerar
+Indica que a casa e as salas não precisam ser salvas.
+É usado após carregar ou salvar a casa.
+A função acerta_mudou cria essa função de acordo com a variável c_salas.
+
+func addlista(listaobj)
+Adiciona as salas que correspondem à casa em uma listaobj.
+É usado após salvar a casa.
+A função acerta_mudou cria essa função de acordo com a variável c_salas.
+
+func acerta_funcoes(texto contendo a lista de salas)
+Apenas cria as funções mudou, zerar e addlista, de acordo com a lista
+de salas, mas não chama config:salvar para salvar as funções em arquivo.
 
 func salvar
 Salva a casa junto com as salas que pertencem à casa e os objetos que
 estiverem dentro. Para cada casa existe um arquivo SAV no diretório sav2.
 
-descloja
+func descloja
 Retorna um texto que contém informações da casa para a venda.
 Esse texto é exibido pelo comando lista.
 

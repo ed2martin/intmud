@@ -84,10 +84,10 @@ public:
     static char * FimInstr(char * comando);
         ///< Avança para o fim da lista de instruções (dois bytes =0)
     static bool CodifInstr(TAddBuffer * destino, const char * origem);
-        ///< Codifica instruções
+        ///< Codifica instruções e adiciona em um buffer
         /**< @param destino Aonde anotar as instruções codificadas
              @param origem Endereço origem (texto)
-             @retval true Sucesso; destino contém as instruções codificadas
+             @retval true Sucesso; instruções codificadas foram adicionadas em destino
              @retval false Falha; destino contém as mensagens de erro */
     void AddBloco(const char * ender, int tamanho);
         ///< Adiciona um bloco de instruções na lista

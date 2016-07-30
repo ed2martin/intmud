@@ -179,7 +179,6 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
     char * linhaend = mens;
     bool codifok = true;
 
-    destino->Limpar();
     while (true)
     {
     // Lê uma linha

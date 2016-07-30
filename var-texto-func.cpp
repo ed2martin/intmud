@@ -711,6 +711,7 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         int valor;
         bool (TTextoPos::*Func)(TVariavel * v, int valor); } ExecFunc[] = {
         { "add",          0, &TTextoPos::FuncAdd },
+        { "addpos",       1, &TTextoPos::FuncAdd },
         { "antes",        0, &TTextoPos::FuncAntes },
         { "byte",         0, &TTextoPos::FuncByte },
         { "depois",       0, &TTextoPos::FuncDepois },
@@ -919,47 +920,61 @@ bool TTextoPos::FuncMudar(TVariavel * v, int valor)
 bool TTextoPos::FuncAdd(TVariavel * v, int valor)
 {
     if (TextoTxt==0 || Instr::VarAtual < v+1)
-        return false;
-// Se só um argumento: adiciona texto puro
-    if (Instr::VarAtual == v+1)
     {
-        const char * txt = v[1].getTxt();
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(0);
+    }
+    int lin_antes = TextoTxt->Linhas;
+
+    while (true)
+    {
+    // Se só um argumento: adiciona texto puro
+        if (Instr::VarAtual == v+1)
+        {
+            const char * txt = v[1].getTxt();
+            TextoTxt->IniBloco();
+            Mudar(txt, strlen(txt)+1, 0);
+            DebugTextoTxt(TextoTxt);
+            break;
+        }
+    // Obtém número de linhas
+        int linhas = v[2].getInt();
+        if (linhas<=0)
+            break;
+    // Obtém variável textopos
+        if (v[1].defvar[2] != Instr::cTextoPos)
+            break;
+        TTextoPos * pos = v[1].end_textopos + v[1].indice;
+        if (pos->TextoTxt==0 || pos->Bloco==0)
+            break;
+    // Adiciona o texto
+    // Evita alocação temporária de memória com "new" se o texto for pequeno
+        int total = pos->Bloco->LinhasBytes(pos->PosicBloco, linhas);
+        if (total<=0)
+            break;
         TextoTxt->IniBloco();
-        Mudar(txt, strlen(txt)+1, 0);
+        if (total <= 8192)
+        {
+            char txt[8192];
+            pos->Bloco->CopiarTxt(pos->PosicBloco, txt, total);
+            Mudar(txt, total, 0);
+        }
+        else
+        {
+            char * txt = new char[total];
+            pos->Bloco->CopiarTxt(pos->PosicBloco, txt, total);
+            Mudar(txt, total, 0);
+            delete[] txt;
+        }
         DebugTextoTxt(TextoTxt);
-        return false;
+        break;
     }
-// Obtém número de linhas
-    int linhas = v[2].getInt();
-    if (linhas<=0)
-        return false;
-// Obtém variável textopos
-    if (v[1].defvar[2] != Instr::cTextoPos)
-        return false;
-    TTextoPos * pos = v[1].end_textopos + v[1].indice;
-    if (pos->TextoTxt==0 || pos->Bloco==0)
-        return false;
-// Adiciona o texto
-// Evita alocação temporária de memória com "new" se o texto for pequeno
-    int total = pos->Bloco->LinhasBytes(pos->PosicBloco, linhas);
-    if (total<=0)
-        return false;
-    TextoTxt->IniBloco();
-    if (total <= 8192)
-    {
-        char txt[8192];
-        pos->Bloco->CopiarTxt(pos->PosicBloco, txt, total);
-        Mudar(txt, total, 0);
-    }
-    else
-    {
-        char * txt = new char[total];
-        pos->Bloco->CopiarTxt(pos->PosicBloco, txt, total);
-        Mudar(txt, total, 0);
-        delete[] txt;
-    }
-    DebugTextoTxt(TextoTxt);
-    return false;
+
+    int lin_add = TextoTxt->Linhas - lin_antes;
+    if (valor && lin_add)
+        MoverPos(lin_add);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(lin_add);
 }
 
 //----------------------------------------------------------------------------

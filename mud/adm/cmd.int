@@ -6,11 +6,15 @@ Executa comando na linguagem do IntMUD e mostra o resultado.\n\
 O objeto \"este\" é sempre o seu personagem."
 
 func escr
-  se txtsepara(arg1, "L+DLEOV,DLEOV+L", "\b") != arg1
+  prog p
+  refvar erro = p.classe(este, "func f\n" + arg1)
+  se erro != "0" && erro != "1"
+    ret arg0.msg("Erro em: " + arg1 + "\n" + txt2(erro))
+  senao txtsepara(arg1, "L+DLEOV,DLEOV+L", "\b") != arg1
     cmdlog(arg0, "cmd", arg1)
   fimse
   debug d
-  arg0.msg(">" + d.cmd(arg0, "ret " + arg1))
+  arg0.msg(">" + d.cmd(arg0, "ret (" + arg1 + ")"))
 
 
 classe adm_cmdj
@@ -28,6 +32,11 @@ func escr
   item.ini("pn " + txts(txtnome(nome)))
   se !item.obj
     ret arg0.msg("Jogador inexistente ou ausente: " + nome)
+  fimse
+  prog p
+  refvar erro = p.classe(este, "func f\n" + txt2(arg1))
+  se erro != "0" && erro != "1"
+    ret arg0.msg("Erro em: " + txt2(arg1) + "\n" + txt2(erro))
   senao txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)
     cmdlog(arg0, "cmdj", arg1)
   fimse
@@ -54,7 +63,11 @@ func escr
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    se txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)
+    prog p
+    refvar erro = p.classe(este, "func f\n" + txt2(arg1))
+    se erro != "0" && erro != "1"
+      ret arg0.msg("Erro em: " + txt2(arg1) + "\n" + txt2(erro))
+    senao txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)
       cmdlog(arg0, "cmdp", arg1)
     fimse
     debug d
@@ -82,7 +95,11 @@ func escr
   enquanto l
     r = l.objini, l.ini.remove
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    se txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)
+    prog p
+    refvar erro = p.classe(este, "func f\n" + txt2(arg1))
+    se erro != "0" && erro != "1"
+      ret arg0.msg("Erro em: " + txt2(arg1) + "\n" + txt2(erro))
+    senao txtsepara(txt2(arg1), "L+DLEOV,DLEOV+L", "\b") != txt2(arg1)
       cmdlog(arg0, "cmdi", arg1)
     fimse
     debug d

@@ -15,11 +15,21 @@ herda casa
 const area = "teste"
 const nome = "casa 1"
 const valor = 1200
-const s1 = $s_teste116
+const c_salas = "teste116"
 
 func mudou # Se houve alguma mudança
 # Não alterar; função criada automaticamente
-  ret objmudou || s1.objmudou
+  ret objmudou || $s_teste116.objmudou
+
+func zerar # Indica que não houve mudança na casa
+# Não alterar; função criada automaticamente
+  objmudou = 0
+  $s_teste116.objmudou = 0
+
+func addlista # Adiciona salas da casa em uma listaobj
+# arg0 = listaobj
+# Não alterar; função criada automaticamente
+  arg0.addfim($s_teste116)
 
 
 classe c_teste002
@@ -27,12 +37,21 @@ herda casa
 const area = "teste"
 const nome = "casa 2"
 const valor = 2000
-const s1 = $s_teste117
-const s2 = $s_teste118
+const c_salas = "teste117\nteste118"
 
 func mudou # Se houve alguma mudança
 # Não alterar; função criada automaticamente
-  ret objmudou || s1.objmudou || s2.objmudou
+  ret objmudou || $s_teste117.objmudou || $s_teste118.objmudou
+
+func zerar # Indica que não houve mudança na casa
+# Não alterar; função criada automaticamente
+  objmudou = 0
+  $s_teste117.objmudou = 0, $s_teste118.objmudou = 0
+
+func addlista # Adiciona salas da casa em uma listaobj
+# arg0 = listaobj
+# Não alterar; função criada automaticamente
+  arg0.addfim($s_teste117, $s_teste118)
 
 
 classe i_teste001

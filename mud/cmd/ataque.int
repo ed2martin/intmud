@@ -718,7 +718,8 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     dano *= ataque1 + (ataque1perso ? arg0.atknorm) + arma + muni
     dano *= (ataque2 ?? arg0.atknorm) / (arg1.defnorm * rand(fatormin, fatormax))
   fimse
-  se config:atknivel >= 2
+# Diferençá de nível
+  se config:atknivel >= (arma1 ? 2 : 1)
     dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
   fimse
 # Modificadores de posição
@@ -871,10 +872,10 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   danomax /= fatormin
   danomin /= fatormax
 # Diferença de nível
-  se config:atknivel >= 2
-    temp = 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
-    dano *= temp
-    arg2.addfim(txt(++num) + ". Diferença de nível: \bmultiplica por " + temp)
+  se config:atknivel >= (arma1 ? 2 : 1)
+    temp1 = 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
+    dano *= temp1
+    arg2.addfim(txt(++num) + ". Diferença de nível: \bmultiplica por " + temp1)
   fimse
 # Modificadores de posição
   casovar arg1.posicao
@@ -905,13 +906,11 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   lin = ""
   danomin *= dano, danomax *= dano
   se ataquemedio >= 0
-    lin = "Danos " + aulas + ": \b" + danosg_sub(danomin * ataquemedio)
-    lin += (danomin != danomax ? " a " + danosg_sub(danomax * ataquemedio) : "") + "\n"
+    lin = "Danos " + aulas + ": \b"
+    lin += danosg_sub(danomin * ataquemedio, danomax * ataquemedio) + "\n"
   fimse
-  lin += "Danos Iniciante: \b" + danosg_sub(danomin * ataquemin)
-  danomin != danomax && (lin += " a " + danosg_sub(danomax * ataquemin))
-  lin += "\nDanos Perito: \b" + danosg_sub(danomin * ataquemax)
-  danomin != danomax && (lin += " a " + danosg_sub(danomax * ataquemax))
+  lin += "Danos Iniciante: \b" + danosg_sub(danomin * ataquemin, danomax * ataquemin)
+  lin += "\nDanos Perito: \b" + danosg_sub(danomin * ataquemax, danomax * ataquemax)
   arg2.addini(lin)
 # Cabeçalho
   lin = txtmaimin(txt(nomevar, 2)) + ": " + arg0.descnome + " ataca " + arg1.descnome
@@ -927,8 +926,14 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
     ind > 0 && ind < 24 && pos.mudar(txtesp(24 - ind), ind, 1)
   efim
 
-const danosg_sub = arg0 < 1, 1 : int(arg0)
-
+func danosg_sub
+  se int(arg0) != int(arg1)
+    ret txt(arg0 < 1 ? 1 : int(arg0)) + " a " + (arg1 < 1 ? 1 : int(arg1))
+  senao arg0 == 0
+    ret "Nenhum"
+  senao
+    ret txt(arg0 < 1 ? 1 : int(arg0))
+  fimse
 
 func mensinicio # Envia mensagem inicial da habilidade ou magia
 # arg0 = personagem que está usando a habilidade ou magia

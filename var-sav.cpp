@@ -31,7 +31,7 @@
 
 //#define DEBUG // Mostrar diretórios e arquivos acessados pela função LIMPAR
 
-#define MAX_OBJ 1024 // Número de objetos por arquivo
+#define MAX_OBJ 4000 // Número de objetos por arquivo
 
 bool TVarSav::InicVar = false;
 int TVarSav::HoraReg = 0;

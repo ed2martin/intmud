@@ -117,11 +117,11 @@ func menu
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), "\c3" + txtsub([arg0]:[arg1], 0, 4) + "\b"
+    ret p_vartexto(arg0, arg1), "\c3" + txtsub([arg0]:[arg1], 0, 4) + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> \c3" + txtsub([arg0]:[arg1], 0, 4) + "\b"
+    ret p_vartexto(arg0, arg1), "<herda> \c3" + txtsub([arg0]:[arg1], 0, 4) + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido

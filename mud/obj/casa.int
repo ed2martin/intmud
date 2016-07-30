@@ -12,7 +12,7 @@ int1 objmudou # Se as informações da casa foram mudadas (precisa salvar a casa)
 const ident = nome
 #
 # Ordem que deve organizar as constantes:
-const admordem = "area\nnome\ndesc\nident\nvalor\ns1\ns2\ns3\ns4\ns5"
+const admordem = "area\nnome\ndesc\nident\nvalor\nc_salas"
 
 func fim # Apaga arquivo da casa
   ret inttotal(este) != 1, nulo # Por segurança: só apaga arquivo se tiver 1 objeto
@@ -45,10 +45,7 @@ func inicasa_exec # Carrega objetos da casa
     $casa_reset.l.addfim(item.obj) # Para chamar a função cmd_sav do item
   efim
 # Indica que nenhuma sala mudou
-  objmudou = 0
-  s1.objmudou = 0, s2.objmudou = 0, s3.objmudou = 0
-  s4.objmudou = 0, s5.objmudou = 0, s6.objmudou = 0
-  s7.objmudou = 0, s8.objmudou = 0, s9.objmudou = 0
+  zerar
 # Checa a fechadura
   !chave && mudachave
 # Checa se ainda pertence a um jogador
@@ -96,17 +93,36 @@ func tempotaxa_exec # Atualiza variável infotaxa
   fimse
 
 func acerta_mudou # Chamado quando a lista das salas da casa mudou
-  txt512 lin
-  lin = "func mudou # Se houve alguma mudança\n"
-  lin += "# Não alterar; função criada automaticamente\nret objmudou"
-  prog p
-  int8 x
-  epara x = 1, x < 10, x++
-    p.existe(este, "s" + x) && (lin += "||s" + x + ".objmudou")
-  efim
-  p.criar(este, lin)
+  acerta_funcoes(c_salas)
   config:salvar
   objmudou = 1
+
+func acerta_funcoes # Cria lista de funções necessárias para a casa
+# arg0 = lista de salas
+  textotxt t
+  textopos pos
+  txt512 f_mudou
+  txt512 f_zerar
+  txt512 f_addlista
+  f_mudou = "func mudou # Se houve alguma mudança\n"
+  f_mudou += "# Não alterar; função criada automaticamente\nret objmudou"
+  f_zerar = "func zerar # Indica que não houve mudança na casa\n"
+  f_zerar += "# Não alterar; função criada automaticamente\nobjmudou=0"
+  f_addlista = "func addlista # Adiciona salas da casa em uma listaobj\n"
+  f_addlista += "# arg0 = listaobj\n"
+  f_addlista += "# Não alterar; função criada automaticamente\n"
+  arg0 && t.addfim(arg0)
+  epara pos = t.ini, pos.lin, pos.depois
+    refvar lin = pos.texto
+    f_mudou += ((pos.linha + 1) % 3 ? "||$s_" : ",1\nret $s_") + lin + ".objmudou"
+    f_zerar += (pos.linha % 3 ? ", $s_" : "\n$s_") + lin + ".objmudou=0"
+    f_addlista += (pos.linha ? ",$s_" : "\narg0.addfim($s_") + lin
+  efim
+  t.linhas && (f_addlista += ")")
+  prog p
+  p.criar(este, f_mudou)
+  p.criar(este, f_zerar)
+  p.criar(este, f_addlista)
 
 func mudachave # Muda o código da fechadura da casa
   datahora hora
@@ -119,15 +135,13 @@ func mudou # Se houve alguma mudança (há necessidade de salvar)
   ret objmudou
 
 func salvar # Salva objetos da casa
-  objmudou = 0
-  s1.objmudou = 0, s2.objmudou = 0, s3.objmudou = 0
-  s4.objmudou = 0, s5.objmudou = 0, s6.objmudou = 0
-  s7.objmudou = 0, s8.objmudou = 0, s9.objmudou = 0
   listaitem item
   listaobj lista
   debug dbg
   dbg.exec = 50000
-  lista.addfim1(este, s1, s2, s3, s4, s5, s6, s7, s8, s9)
+  zerar
+  lista.addfim(este)
+  addlista(lista)
   item = lista.ini, item.depois
   enquanto item
     se item.obj.objsav & 1 != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
@@ -144,9 +158,12 @@ func salvar # Salva objetos da casa
 func descloja # Retorna informações da casa para a venda
   uint16 itens
   uint8 salas
-  itens = s1.objmax + s2.objmax + s3.objmax + s4.objmax + s5.objmax
-  itens += s6.objmax + s7.objmax + s8.objmax + s9.objmax
-  salas = 9 - !s1 - !s2 - !s3 - !s4 - !s5 - !s6 - !s7 - !s8 - !s9
+  textotxt t
+  textopos p
+  c_salas && t.addfim(c_salas)
+  epara p = t.ini, p.lin, p.depois
+    itens += $s_[p.texto].objmax, salas++
+  efim
   txt300 lin
   lin = txtcopiamai(nome, "A")
   lin += salas == 1 ? ", possui uma sala" : ", possui " + salas + " salas"

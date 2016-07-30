@@ -28,10 +28,15 @@ func escr
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
     sala = arg0.dono
     mens = "."
+    se sala.var.ini("u_") && !sala.var.u_[arg0.nome]_
+      ret arg0.msg("Melhor não pegar nada daqui.")
+    fimse
   senao
     sala = misc:itemtudo(arg0, misc:sep2) # Procura o alvo para o personagem arg0
     se !sala
       ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    senao sala.dono.s_sala && sala.dono.var.ini("u_") && !sala.dono.var.u_[arg0.nome]_
+      ret arg0.msg("Melhor não pegar nada daqui.")
     senao !sala.i_aberto
       ret arg0.msg(txtcopiamai(sala.descnome, "A") + " não é container.")
     senao sala.i_aberto > 2 && !arg0.j_imortal

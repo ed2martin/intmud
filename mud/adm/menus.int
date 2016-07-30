@@ -134,11 +134,11 @@ func menu
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), "\c3" + admdec([arg0]:[arg1]) + "\b"
+    ret p_vartexto(arg0, arg1), "\c3" + admdec([arg0]:[arg1]) + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> \c3" + admdec([arg0]:[arg1]) + "\b"
+    ret p_vartexto(arg0, arg1), "<herda> \c3" + admdec([arg0]:[arg1]) + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -201,11 +201,11 @@ func menu
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), "\c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + "\b"
+    ret p_vartexto(arg0, arg1), "\c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> \c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + \
+    ret p_vartexto(arg0, arg1), "<herda> \c3" + admdec(txtsublin([arg0]:[arg1], arg2, 1)) + \
 "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
@@ -265,11 +265,11 @@ func menu # Retorna quantidade de linhas de texto de várias linhas
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -338,11 +338,11 @@ func menu # Retorna número, do tipo "const x = 10"
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.varnum(arg0, arg1), "\c6" + [arg0]:[arg1] + "\b"
+    ret p_varnum(arg0, arg1), "\c6" + [arg0]:[arg1] + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.varnum(arg0, arg1), "<herda> \c6" + [arg0]:[arg1] + "\b"
+    ret p_varnum(arg0, arg1), "<herda> \c6" + [arg0]:[arg1] + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -435,11 +435,11 @@ func menu # Retorna uma opção baseado numa lista de opções
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.varnum(arg0, arg1), menu2([arg0]:[arg1], arg2)
+    ret p_varnum(arg0, arg1), menu2([arg0]:[arg1], arg2)
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.varnum(arg0, arg1), "<herda> " + menu2([arg0]:[arg1], arg2)
+    ret p_varnum(arg0, arg1), "<herda> " + menu2([arg0]:[arg1], arg2)
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -586,11 +586,11 @@ func menu # Retorna as opções selecionadas de lista de opções
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.varnum(arg0, arg1), menu2([arg0]:[arg1], arg2)
+    ret p_varnum(arg0, arg1), menu2([arg0]:[arg1], arg2)
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.varnum(arg0, arg1), "<herda> " + menu2([arg0]:[arg1], arg2)
+    ret p_varnum(arg0, arg1), "<herda> " + menu2([arg0]:[arg1], arg2)
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -666,11 +666,11 @@ func menu # Retorna uma lista de textos
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), "\c3" + txttroca([arg0]:[arg1], "\n", " ") + "\b"
+    ret p_vartexto(arg0, arg1), "\c3" + txttroca([arg0]:[arg1], "\n", " ") + "\b"
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> \c3" + txttroca([arg0]:[arg1], "\n", " ") + "\b"
+    ret p_vartexto(arg0, arg1), "<herda> \c3" + txttroca([arg0]:[arg1], "\n", " ") + "\b"
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -783,7 +783,7 @@ func menu # Retorna opção que pode ser 0 (não) ou 1 (sim)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    se !p.varnum(arg0, arg1)
+    se !p_varnum(arg0, arg1)
       p.inilinha(arg0, arg1)
       ret "<" + txt1(p.texto) + ">"
     senao [arg0]:[arg1]
@@ -792,7 +792,7 @@ func menu # Retorna opção que pode ser 0 (não) ou 1 (sim)
       ret "\c6" + [arg0]:[arg1] + " Não\b"
     fimse
   casose "2" # Em uma classe herdada
-    se !p.varnum(arg0, arg1)
+    se !p_varnum(arg0, arg1)
       p.inilinha(arg0, arg1)
       ret "<herda " + txt1(p.texto) + ">"
     senao [arg0]:[arg1]
@@ -824,8 +824,8 @@ func passo # Alterando uma opção que pode ser "SIM" ou "NÃO"
       config:salvar
       criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
       arg0.msg("Apagado: " + arg0.var.opcnome)
-      admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnom\
-e)
+      refvar lin = "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar
+      admlog(arg0, lin + " " + arg0.var.opcnome)
       sair
     fimse
   casose
@@ -913,11 +913,11 @@ func menu # Retorna quantidade de linhas de texto de várias linhas
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -973,6 +973,9 @@ func passo # Alterando a sala
     senao !p.existe("s_" + nome)
       arg0.msg("Sala não existe: " + nome)
       ret passo(arg0, "\b")
+    senao arg0.var.opcextra && t.linhas >= arg0.var.opcextra_
+      arg0.msg("Atingido limite de salas")
+      ret passo(arg0, "\b")
     senao
       t.addfim(nome), t.ordena
       arg0.msg("Sala adicionada: " + nome)
@@ -996,11 +999,11 @@ func menu # Retorna quantidade de linhas de texto de várias linhas
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p.vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p.vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
@@ -1055,6 +1058,9 @@ func passo # Alterando o item
       arg0.msg("Item removido: " + nome)
     senao !p.existe("i_" + nome)
       arg0.msg("Item não existe: " + nome)
+      ret passo(arg0, "\b")
+    senao arg0.var.opcextra && t.linhas >= arg0.var.opcextra_
+      arg0.msg("Atingido limite de itens")
       ret passo(arg0, "\b")
     senao
       t.addfim(nome), t.ordena
