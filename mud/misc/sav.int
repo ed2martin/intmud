@@ -34,10 +34,17 @@ func apagousav # Deve ser chamado quando um arquivo de jogador for apagado
   efim
 
 func ini
+  debug dbg
+  dbg.exec = 1000000
 # Cria diretório de jogos salvos, se não existir
   arqdir d
   d.criardir("sav1")
   d.criardir("sav2")
+# Limpa arquivos sav antigos
+  arqsav sav
+  sav.limpar("sav1") # Limpa jogos antigos
+  sav.limpar # Faz imediatamente
+  sav.limpou # Limpa a lista de arquivos excluídos
 # Inicia contagem de tempo hora MUD
 # Nota: o tempo MUD é 12 vezes mais rápido que o tempo real
 # um dia MUD = 2 horas (7200 segundos), uma hora MUD = 300 segundos
@@ -49,10 +56,6 @@ func ini
   misc:dia = dh.numdias % 7 * 12 + intdiv(dh.numseg / 7200)
   misc:dia = misc:dia % 7
   misc:luz = misc:hora >= 6 && misc:hora < 18
-  arqsav sav
-  sav.limpar("sav1") # Limpa jogos antigos
-  sav.limpar # Faz imediatamente
-  sav.limpou # Limpa a lista de arquivos excluídos
 
 func horatempo_exec # Atualiza hora MUD
 # Acerta minuto, hora e luz

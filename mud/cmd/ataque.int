@@ -624,17 +624,14 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # vel = velocidade do golpe
-  real2 tempo
-  tempo = arg0.pveloc * vel / 70
-  se tempo <= intmax(0, arg1.pveloc)
-    tempo = config:atkmtempo
-  senao arg1.pveloc <= 0
-    tempo = 8
+  refvar p_espera = arg0.contr.p_espera
+  se arg0.pveloc <= 0 || vel <= 0
+    p_espera = intmax(p_espera, config:atkmtempo)
   senao
-    tempo = arg1.pveloc * config:atkmtempo / tempo
-    tempo = intmax(8, intmin(config:atkmtempo, tempo))
+    refvar t1 = config:atkmtempo * arg1.pveloc * 70 / (arg0.pveloc * vel)
+    refvar t2 = intmax(8, intmin(config:atkmtempo, t1))
+    p_espera = intmax(p_espera, t2)
   fimse
-  arg0.contr.p_espera < tempo && (arg0.contr.p_espera = tempo)
 
 func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # arg0 = personagem que está atacando
@@ -758,6 +755,7 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   real2 danomin # Menor dano = dano * danomin * força
   real2 danomax # Maior dano = dano * danomax * força
   real2 ataquemedio # Força, de ataquemin a ataquemax, conforme o quanto conhece
+  real2 tempoespera # Tempo de espera após cada golpe
   danomin = danomax = dano = 1
   refvar aulas = txtsublin(misc:aulas, arg0.var.[nomevar]_, 1)
 # Obtém arma e munição
@@ -768,6 +766,7 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   se ataquemedio >= 0
     ataquemedio = ataquemin + (ataquemax - ataquemin) * ataquemedio
   fimse
+  arg2.addfim("\c3Danos:\c7")
 # Força
   arg2.addfim(txt(++num) + ". Força: \b" + ataquemin + " a " + ataquemax)
   se ataquemedio >= 0
@@ -859,11 +858,11 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   danomin *= temp1
   danomax *= temp2
 # Variável Ataque2 na fórmula
-  temp1 = (ataque2 ?? (misc:atkesp(tipoatk) ? arg0.atkesp : arg0.atknorm))
+  temp1 = ataque2 ?? (misc:atkesp(tipoatk) ? arg0.atkesp : arg0.atknorm)
   dano *= temp1
   arg2.addfim(txt(++num) + ". Ataque2: \bmultiplica por " + temp1)
 # Defesa
-  temp1 = (ataque2 ?? (misc:atkesp(tipoatk) ? arg1.defesp : arg1.defnorm))
+  temp1 = ataque2 ?? (misc:atkesp(tipoatk) ? arg1.defesp : arg1.defnorm)
   dano /= temp1
   arg2.addfim(txt(++num) + ". Defesa: \bdivide por " + temp1)
 # Fator
@@ -902,6 +901,37 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
     arg2.addfim(txt(++num) + ". Posição sentado: \bmultiplica por 1.333")
     sair
   casofim
+# Cálculo do tempo de espera
+  num = 0
+  arg2.addfim("\c3Tempo em décimos de segundo:\c7")
+  se tipoalvo == 8
+    arg2.addfim(txt(++num) + ". Ataque automático: \b" + config:atktempo)
+    tempoespera = config:atktempo
+  senao arg0.pveloc <= 0
+    arg2.addfim(txt(++num) + ". Vel. personagem: \b" + arg0.pveloc)
+    arg2.addfim(txt(++num) + ". Resultado: \b" + config:atkmtempo)
+    tempoespera = config:atkmtempo
+  senao vel <= 0
+    arg2.addfim(txt(++num) + ". Velocidade golpe: \b" + vel)
+    arg2.addfim(txt(++num) + ". Resultado: \b" + config:atkmtempo)
+    tempoespera = config:atkmtempo
+  senao
+    arg2.addfim(txt(++num) + ". Tempo do turno: \b" + config:atkmtempo)
+    arg2.addfim(txt(++num) + ". Vel. alvo: \bmultiplica por " + vel)
+    arg2.addfim(txt(++num) + ". Fator fixo: \bmultiplica por 70")
+    arg2.addfim(txt(++num) + ". Vel. personagem: \bdivide por " + arg0.pveloc)
+    arg2.addfim(txt(++num) + ". Vel. golpe: \bdivide por " + vel)
+    tempoespera = config:atkmtempo * arg1.pveloc * 70 / (arg0.pveloc * vel)
+    arg2.addfim(txt(++num) + ". Resultado: \b" + tempoespera)
+    se tempoespera < 8
+      arg2.addfim(txt(++num) + ". Limite mínimo: \n8")
+      tempoespera = 8
+    senao tempoespera > config:atkmtempo
+      arg2.addfim(txt(++num) + ". Limite máximo: \b" + config:atkmtempo)
+      tempoespera = config:atkmtempo
+    fimse
+  fimse
+  arg2.addini("Tempo de espera: \b" + int(tempoespera) / 10 + " seg.")
 # Danos
   lin = ""
   danomin *= dano, danomax *= dano
@@ -913,7 +943,8 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   lin += "\nDanos Perito: \b" + danosg_sub(danomin * ataquemax, danomax * ataquemax)
   arg2.addini(lin)
 # Cabeçalho
-  lin = txtmaimin(txt(nomevar, 2)) + ": " + arg0.descnome + " ataca " + arg1.descnome
+  lin = "\c6" + txtmaimin(txt(nomevar, 2)) + ":\c7 " + arg0.descnome
+  lin += " ataca " + arg1.descnome
   se arma1 || arma2
     lin += "\n" + (arma1 ? "Arma: " + arma1.descnome) + (arma1 && arma2 ? "   ")
     lin += arma2 ? "Munição: " + arma2.descnome

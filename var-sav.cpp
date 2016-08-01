@@ -14,6 +14,9 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <assert.h>
+#ifdef __WIN32__
+ #include <windows.h>
+#endif
 #include "var-sav.h"
 #include "var-listaobj.h"
 #include "var-texto.h"
@@ -727,7 +730,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
             v[2].defvar[2] != Instr::cListaObj) // Não é listaobj
         return 0;
 // Cria arquivo
-    FILE * arq = fopen(arqnome, "w");
+    FILE * arq = fopen("intmud-temp.txt", "w");
     if (arq==0)
         return 0;
 // Anota a quantidade de dias para expirar
@@ -1201,7 +1204,17 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
     } // for ... objetos
 // Fecha arquivo
     fclose(arq);
-    return 1;
+// Renomeia arquivo
+#ifdef __WIN32__
+    if (MoveFileEx("intmud-temp.txt", arqnome,
+            MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED))
+        return 1;
+#else
+    if (rename("intmud-temp.txt", arqnome) >= 0)
+        return 1;
+#endif
+    remove("intmud-temp.txt");
+    return 0;
 }
 
 //----------------------------------------------------------------------------

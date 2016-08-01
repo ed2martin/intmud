@@ -124,6 +124,12 @@ func acerta_funcoes # Cria lista de funções necessárias para a casa
   p.criar(este, f_zerar)
   p.criar(este, f_addlista)
 
+func limpa_sjog # Retira as permissões das salas (comando Sjog)
+  ret !c_salas, nulo
+  textotxt t
+  epara t.addfim(c_salas), t.linhas, $s_[t.remove].var.limpar("u_")
+  efim
+
 func mudachave # Muda o código da fechadura da casa
   datahora hora
   hora.agora

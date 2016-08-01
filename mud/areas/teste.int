@@ -4167,11 +4167,11 @@ func cmd_atkrec
 classe s_teste139
 herda b_teste
 const s_titulo = "Tempo de espera em ataques manuais 1 de 2"
-const s_desc = "O cálculo é a velocidade do seu personagem vezes velocidade do golpe\n\
-dividido por 70. Se o resultado for menor ou igual à velocidade do alvo\n\
-ou sua velocidade for menor ou igual a 0, você espera o tempo de um turno\n\
-após cada ataque. No comando Econfig, em Ataques e batalha, define-se\n\
-o tempo do turno. Inicialmente é 40 décimos de segundo (4 segundos)."
+const s_desc = "No comando Econfig, em Ataques e batalha, define-se o tempo do turno.\n\
+Inicialmente é 40 décimos de segundo (4 segundos).\n\
+Se a velocidade do personagem ou do ataque for menor ou igual a zero,\n\
+o tempo de espera será o tempo do turno.\n\
+Nos outros casos, é usada uma fórmula."
 const dir_ne = $s_teste140
 const dir_so = $s_teste052
 
@@ -4179,10 +4179,11 @@ const dir_so = $s_teste052
 classe s_teste140
 herda b_teste
 const s_titulo = "Tempo de espera 2 de 2"
-const s_desc = "Se superar a velocidade do alvo, o tempo de espera será o tempo do turno\n\
-multiplicado pela velocidade do alvo dividido pelo cálculo explicado\n\
-na sala anterior (velocidade do personagem vezes velocidade do golpe\n\
-dividido por 70)."
+const s_desc = "Nos outros casos, o tempo (décimos de segundo) é o resultado da fórmula:\n\
+tempo de espera = tempo do turno * velocidade do alvo * 70 / velocidade\n\
+do personagem / velocidade do golpe\n\
+No entanto, se o resultado for menor que 8, espera-se 8 décimos de segundo.\n\
+Se for maior que o tempo do turno, espera-se o tempo do turno."
 const dir_ne = $s_teste141
 const dir_so = $s_teste139
 

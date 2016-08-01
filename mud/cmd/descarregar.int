@@ -26,12 +26,15 @@ func escr
     senao
       listaobj l
       txt100 erro
-      int8 achou
-      epara l.addfim(arg0.dentro1), l, l.ini.remove
+      epara l.addfim(arma.dentro1), l && !erro, l.ini.remove
         erro = descarregar(arg0, arma, l.objini, l.objini.objtot)
-        sair achou >= 10 || erro
       efim
-      erro && arg0.msg(erro)
+      se erro
+        arg0.msg(erro)
+      senao
+        $mens.p(arg0, nulo, arma)
+        $mens.mvis1("$P descarrega $o.")
+      fimse
     fimse
   fimse
 
@@ -53,8 +56,6 @@ func descarregar # Descarrega arma, tirando um item
   epara e.addfim(arg2.evento), e, e.ini.remove
     ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg2), nulo
   efim
-  $mens.p(arg0, arg1, arg2)
-  $mens.mvis1("$P carrega $a com " + (arg3 <= 1 ? "$o." : txt(arg3) + "x $o."))
   ref r
   r = arg2.mudadono(arg0, arg3)
   epara e.addfim(arg0.evento), e, e.ini.remove

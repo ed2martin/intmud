@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#ifdef __WIN32__
+ #include <windows.h>
+#endif
 #include "classe.h"
 #include "arqmapa.h"
 #include "console.h"
@@ -302,13 +305,17 @@ void TArqMapa::SalvarArq(bool tudo)
         }
         fclose(arq);
     // Renomeia arquivo
-#ifdef __WIN32__
-        remove(arqnome);
-#endif
 #ifdef DEBUG
         printf("TArqMapa::Salvar( %s )\n", arqnome); fflush(stdout);
 #endif
-        if (rename("intmud-temp.txt", arqnome) >= 0)
+#ifdef __WIN32__
+        bool salvou = MoveFileEx("intmud-temp.txt", arqnome,
+            MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
+
+#else
+        bool salvou = (rename("intmud-temp.txt", arqnome) >= 0);
+#endif
+        if (salvou)
         {
             arqmapa->Existe = true;
             arqmapa->Mudou = false;
