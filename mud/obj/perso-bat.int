@@ -5,7 +5,7 @@ const objmax = 1 # Quantos itens pode carregar
 const tipo1 = "normal" # Tipo de personagem
 const p_agressivo = 1 # Ataca se atacarem
 const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
-const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
+const p_exp = config:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 #
@@ -52,7 +52,7 @@ inttempo p_proc # Para processar comportamento do personagem
 txt40 p_atacou_nome # Nome do personagem do jogador que atacou esse personagem
 txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sala)
 intdec p_tpersegue # Quanto para se ir de outra sala perseguindo
-const p_perseguevel = 20
+const p_perseguevel = config:p_perseguevel
 
 func pnivelmax
   refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))

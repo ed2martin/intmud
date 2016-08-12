@@ -140,17 +140,17 @@ func escr
     se !completo
       ret arg0.msg("\b" + txtcopiamai(r.descnome, "A") + t2 + ".\b " + t.remove(1000))
     senao
-      refvar m1 = (!arg0.psexo && r.var.z_mdesc ? r.var.z_mdesc : r.var.z_desc)
+      refvar m1 = !arg0.psexo && r.var.z_mdesc ? r.var.z_mdesc : r.var.z_desc
       refvar m2 = r.descver(arg0)
       se m1 || m2 # Com descrição extra
         t2 && t.addini(txtcopiamai(r.descnome, "A") + t2 + ".")
         m1 && t.addini(m1)
         m2 && t.addini(m2)
-        t.addini("\b\c6" + txtcopiamai(r.descnome, "A") + "\b")
+        t.addini("\b\c6" + nomevolume(r) + "\b")
         arg0.msg2(t.remove(1000))
       senao # Sem descrição extra
         !t.linhas && t.addfim("Você não vê nada de especial.")
-        arg0.msg2("\b\c6" + txtcopiamai(r.descnome, "A") + t2 + ".\b\n" + t.remove(1000))
+        arg0.msg2("\b\c6" + nomevolume(r) + t2 + ".\b\n" + t.remove(1000))
       fimse
     fimse
 # Envia mensagem
@@ -201,6 +201,16 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
     arg0.prenascer && (t += " R" + arg0.prenascer)
   fimse
   ret t ? txt(arg1) + t + arg2 : ""
+
+func nomevolume # Nome do item ou personagem e volume
+# arg0 = item ou personagem
+  ret !config:olharvolume, txtcopiamai(arg0.descnome, "A")
+  txt100 nome
+  nome = txtcopiamai(arg0.descnome, "A") + " (volume " + arg0.voltot / arg0.objtot
+  se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2)
+    ret nome + " dentro " + arg0.volden + "/" + arg0.volmax + ")"
+  fimse
+  ret nome + ")"
 
 
 classe cmd_olhar

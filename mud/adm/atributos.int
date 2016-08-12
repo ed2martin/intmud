@@ -31,8 +31,8 @@ Precisão por nível\n\
 Carrega (gramas)\n\
 Carrega (gramas) por nível"
 #
-const p_atrib_obj = "Precisão arma\n\
-Precisão arma por nível\n\
+const p_atrib_obj = "Falha arma\n\
+Falha arma por nível\n\
 Precisão perso\n\
 Precisão perso por nível\n\
 Ataque mín\n\
@@ -114,7 +114,7 @@ func atrib_ler # Extrai os atributos de uma função para variáveis atrib
     casose "pesomax"
       atrib_ler2(p.texto, atribnum.20, atribnum.21)
       sair
-    casose "var.z_armaprecisao_"
+    casose "var.z_armafalha_"
       atrib_ler2(p.texto, atribobj.0, atribobj.1)
       sair
     casose "var.z_armaaddprecisao_"
@@ -203,7 +203,7 @@ func atrib_salvar # Salva os atributos em função conforme variáveis atrib
   (anum.16 || anum.17) && t.addfim("evasao+=" + atrib2txt(anum.16, anum.17))
   (anum.18 || anum.19) && t.addfim("precisao+=" + atrib2txt(anum.18, anum.19))
   (anum.20 || anum.21) && t.addfim("pesomax+=" + atrib2txt(anum.20, anum.21))
-  (aobj.0 || aobj.1) && t.addfim("var.z_armaprecisao_+=" + atrib2txt(aobj.0, aobj.1))
+  (aobj.0 || aobj.1) && t.addfim("var.z_armafalha_+=" + atrib2txt(aobj.0, aobj.1))
   (aobj.2 || aobj.3) && t.addfim("var.z_armaaddprecisao_+=" + atrib2txt(aobj.2, aobj.3))
   (aobj.4 || aobj.5) && t.addfim("var.z_armamin_+=" + atrib2txt(aobj.4, aobj.5))
   (aobj.6 || aobj.7) && t.addfim("var.z_armamax_+=" + atrib2txt(aobj.6, aobj.7))

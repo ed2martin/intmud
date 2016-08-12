@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 415 # Para atualizar diretórios areas e config
+const versao = 417 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -445,6 +445,9 @@ const olharnivel = 1 # Olhar mostra nível: Sim
 # 0=não, 1=sim
 const olhartipo = 0 # Olhar mostra raça e classe: Não
 #
+# Se o comando Olhar mostra o volume
+const olharvolume = 1
+#
 # Nível necessário para usar o comando PTitulo
 const ptitulonivel = 10
 #
@@ -646,6 +649,69 @@ const mudaexp_msgrep = "Aproveite, $m minutos para terminar!"
 #
 # Comando MudaExp - Mensagem final
 const mudaexp_msgfim = "Acabou a experiência extra."
+#
+# Quantos itens pode ter (objetos em dentro1) - salas, itens e personagens
+const s_objmax = 100
+const i_objmax = 100
+const p_objmax = 100
+#
+# Volume máximo do que pode ter dentro - salas, itens e personagens
+const s_volmax = 1000000
+const i_volmax = 1000000
+const p_volmax = 1000000
+#
+# Taxa de recuperação de vida, mana e movimentos
+const s_recup = 100
+#
+# Quantidade máxima de PNJs na sala
+const s_pnj = 10
+#
+# Quantidade máxima de jogadores na sala
+const s_jog = 100
+#
+# Som ao entrar na sala
+const s_som = "sala"
+#
+# Quantidade de movimentos que um ataque de outra sala usa para chegar na sala
+const s_atk_move = 1
+#
+# Personagens quando morrem:
+# 0 = Não deixa corpo
+# 1 = Deixa corpo vazio
+# 2 = Deixa corpo com itens e moedas, somem com o corpo
+# 3 = Deixa corpo com itens e moedas, depois vão para sala
+const p_corpo = 0
+#
+# Quantidade de experiência que um personagem dá, em porcentagem
+const p_exp = 100
+#
+# Mensagem morreu
+const p_morreu1 = "$P morreu."
+#
+# Mensagem desmaiou (quando pertence a outro personagem)
+const p_morreu2 = "$P desmaiou."
+#
+# Tempo médio em décimos de segundo para ir para outra sala
+const p_movervel = 140
+#
+# Perseguição:
+# Tempo médio em décimos de segundo para ir para outra sala
+const p_perseguevel = 20
+#
+# Ataques: força de ataque nível iniciante, 100 significa 100%
+const a_ataquemin = 25
+#
+# Ataques: força de ataque nível perito, 100 significa 100%
+const a_ataquemax = 75
+#
+# Ataques: fator mínimo
+const a_fatormin = 270
+#
+# Ataques: fator máximo
+const a_fatormax = 330
+#
+# Ataques: velocidade do golpe, 100 significa 100%
+const a_vel = 50
 
 func atribcfg # Altera atributos do personagem
 # Função criada automaticamente

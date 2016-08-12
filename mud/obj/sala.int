@@ -55,13 +55,15 @@ const s_titulo = "Sem nome"
 const s_desc = ""
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
-const s_pnj = 10 # Quantidade máxima de PNJs na sala
-const s_jog = 100 # Quantidade máxima de jogadores na sala
 const s_noite = s_desc(arg0) # Inicialmente descrição de noite e de dia são iguais
-const s_recup = 100 # Taxa de recuperação de vida, mana e movimentos
 const s_gritar = s_falar(arg0) # Mensagem ao gritar; se estiver vazia, pode gritar
-const s_som = "sala"
-const s_atk_move = 1
+const volmax = config:s_volmax
+const objmax = config:s_objmax
+const s_recup = config:s_recup # Taxa de recuperação de vida, mana e movimentos
+const s_pnj = config:s_pnj # Quantidade máxima de PNJs na sala
+const s_jog = config:s_jog # Quantidade máxima de jogadores na sala
+const s_atk_move = config:s_atk_move
+const s_som = config:s_som
 int1 objmudou # Para salvar sala ao salvar a casa
 #
 uint8 porta_n # Tipo de saída

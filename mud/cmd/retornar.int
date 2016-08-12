@@ -20,7 +20,7 @@ c_mana1 c_mana2\n\
 c_move1 c_move2\n\
 aulaini aulafim\n\
 depende\n\
-precisao\n\
+falha\n\
 tipoarma\n\
 tipoperso\n\
 valor\n\
@@ -52,7 +52,7 @@ func escrhab # Personagem retorna
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
   senao arg0.dono.s_retornar(arg0) == 1
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
-  senao rand(100) >= precisao || arg0.atkenv # Checa a precisão e se está batalhando
+  senao rand(100) < falha || arg0.atkenv # Checa a precisão e se está batalhando
     ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   fimse
   $mens.p(arg0)

@@ -18,7 +18,7 @@ c_mana1 c_mana2\n\
 c_move1 c_move2\n\
 aulaini aulafim\n\
 depende\n\
-precisao\n\
+falha\n\
 tipoarma\n\
 tipoperso\n\
 valor\n\
@@ -58,7 +58,7 @@ func escrhab
     arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
     se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
-    senao rand(100) >= precisao || arg0.atkenv # Checa a precisão e se está batalhando
+    senao rand(100) < falha || arg0.atkenv # Checa a precisão e se está batalhando
       ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
     fimse
     se r.perso
@@ -122,7 +122,9 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     lin = "É uma arma do tipo \"" + txtsublin(config:arma_txt, arg1.armatipo, 1)
     lin += "\" de ataque " + arg1.var.z_armamin_
     arg1.var.z_armamin_ != arg1.var.z_armamax_ && (lin += " a " + arg1.var.z_armamax_)
-    lin += " e precisão " + arg1.var.z_armaprecisao_ + "."
+    refvar falha = arg1.var.z_armafalha_
+    lin += !falha ? "" : falha > 0 ? ", falha " + falha + "%" : ", não falha"
+    lin += "."
     arg2.addfim(lin)
   fimse
 # Aonde pode ser vestido

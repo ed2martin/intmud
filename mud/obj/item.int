@@ -9,7 +9,8 @@ const descnome = nome
 const descpos = txtcopiamai(descnome, "A") + " está aqui."
 const objsav = 1 # Se deve salvar o item ao salvar personagem do jogador
 const pnivel = nivel # Nível atual (personagens de nível mais baixo não vestem)
-const armaprecisao = 100
+const volmax = config:i_volmax
+const objmax = config:i_objmax
 sav uint8 vestpos # Em que posição está vestindo, 0=nenhuma
 #
 # Ordem que deve organizar as constantes:
@@ -28,7 +29,7 @@ armamanual\n\
 armamax\n\
 armamin\n\
 armamunicao\n\
-armaprecisao\n\
+armafalha\n\
 armaaddprecisao\n\
 armamove\n\
 armatipo\n\
@@ -100,7 +101,8 @@ const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
 
 func recalc_exec # Ajusta variáveis
   bitver = 17, bitinv = 3
-  var.z_armaprecisao_ = armaprecisao
+  var.z_armaprecisao_ = 0
+  var.z_armafalha_ = armafalha
   var.z_armaaddprecisao_ = armaaddprecisao
   var.z_armamin_ = armamin
   var.z_armamax_ = armamax
@@ -231,7 +233,8 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
 
 func recalc_exec # Acerta variáveis
   bitver = 17, bitinv = luztempo ? 1 : 3
-  var.z_armaprecisao_ = armaprecisao
+  var.z_armaprecisao_ = 0
+  var.z_armafalha_ = armafalha
   var.z_armaaddprecisao_ = armaaddprecisao
   var.z_armamin_ = armamin
   var.z_armamax_ = armamax

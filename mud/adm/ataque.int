@@ -403,8 +403,9 @@ func escr
   ref perso
   ref alvo
   ref obj
-  ret !arg1, arg0.msg(txtmaimin(txt(este, 4)) + " requer 2 ou 3 argumentos")
-  se intsub(arg1) >= 3
+  se intsub(arg1) < 2
+    ret arg0.msg(txtmaimin(txt(este, 4)) + " requer 2 ou 3 argumentos")
+  senao intsub(arg1) >= 3
     perso = misc:persodono(arg0, txt1(arg1))
     nome = txtsub(arg1, 1, 1)
     alvo = misc:persodono(arg0, txtsub(arg1, 2))
@@ -678,23 +679,30 @@ const tipo12 = "opc_tipos"
 const clas12 = var.classe1
 const vari12 = "tipobonus"
 #
-const nome13 = "Velocidade"
-const info13 = "Em porcentagem"
-const tipo13 = "opc_numero"
+const nome13 = "Danos dif. nível"
+const info13 = "Se a diferença de nível entre os personagens influencia nos danos"
+const tipo13 = "opc_opcao"
 const clas13 = var.classe1
-const vari13 = "vel"
+const vari13 = "atknivel"
+const extr13 = "Não\nSomente sem arma\nSim"
 #
-const nome14 = "Precisão perso"
-const info14 = "Quanta precisão o personagem ganha durante o ataque"
+const nome14 = "Velocidade"
+const info14 = "Em porcentagem"
 const tipo14 = "opc_numero"
 const clas14 = var.classe1
-const vari14 = "addprecisao"
+const vari14 = "vel"
 #
-const nome15 = "Alcance sem arma"
-const info15 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
+const nome15 = "Precisão perso"
+const info15 = "Quanta precisão o personagem ganha durante o ataque"
 const tipo15 = "opc_numero"
 const clas15 = var.classe1
-const vari15 = "armamove"
+const vari15 = "addprecisao"
+#
+const nome16 = "Alcance sem arma"
+const info16 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
+const tipo16 = "opc_numero"
+const clas16 = var.classe1
+const vari16 = "armamove"
 
 
 classe menu_hab_msg0
@@ -879,13 +887,13 @@ const n_variavel = "msgatk4"
 
 classe menu_hab_comum
 herda comando_menu
-const nome3 = "Precisão"
-const info3 = "Para habilidades e magias que por natureza são imprecisas\n\
-De 0 (sempre erra) a 100 (mesmo que atacar sem arma) ou 101 (nunca falha)"
+const nome3 = "Taxa de falha"
+const info3 = "Porcentagem de falha para habilidades e magias que por natureza\n\
+podem falhar. De 0 a 100 (100 sempre falha) ou -1 se nunca falha."
 const tipo3 = "opc_numero"
 const clas3 = var.classe1
-const vari3 = "precisao"
-const extr3 = "0 101"
+const vari3 = "falha"
+const extr3 = "-1 100"
 #
 const nome4 = "Requer arma"
 const info4 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"

@@ -1,4 +1,4 @@
-classe atualiza_415
+classe atualiza_417
 # Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 415, nulo
-  p.criar("config", "const versao = 415 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 417, nulo
+  p.criar("config", "const versao = 417 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -532,8 +532,8 @@ casa está atrasada.\"")
     fimse
     p.criar("config", "const arma_txt = \"" + txtvis(lin) + "\"")
   fimse
-# Ataque
-  se versao < 415
+# Ataque, casas e menu Herda do comando Econfig
+  se versao < 417
     debug d
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
       d.ini
@@ -563,6 +563,44 @@ casa está atrasada.\"")
       p.apagar(p.texto, "mudou")
       c.acerta_funcoes(lin)
     efim
+    epara p.iniherdainv("comum_item"), p.lin, p.depois
+      d.ini
+      continuar p.existe(p.texto, "armaprecisao") != 1
+      se [p.texto]:armaprecisao != 100
+        p.criar(p.texto, "const armafalha = " + (100 - [p.texto]:armaprecisao))
+      fimse
+      p.apagar(p.texto, "armaprecisao")
+    efim
+    epara p.iniherdainv("comando_hab"), p.lin, p.depois
+      d.ini
+      continuar p.existe(p.texto, "precisao") != 1
+      se [p.texto]:precisao != 100
+        p.criar(p.texto, "const falha = " + (100 - [p.texto]:precisao))
+      fimse
+      p.apagar(p.texto, "precisao")
+    efim
+    criafunc("config", "const s_objmax = 100")
+    criafunc("config", "const i_objmax = 100")
+    criafunc("config", "const p_objmax = 100")
+    criafunc("config", "const s_volmax = 1000000")
+    criafunc("config", "const i_volmax = 1000000")
+    criafunc("config", "const p_volmax = 1000000")
+    criafunc("config", "const s_recup = 100")
+    criafunc("config", "const s_pnj = 10")
+    criafunc("config", "const s_jog = 100")
+    criafunc("config", "const s_som = \"sala\"")
+    criafunc("config", "const s_atk_move = 1")
+    criafunc("config", "const p_corpo = 0")
+    criafunc("config", "const p_exp = 100")
+    criafunc("config", "const p_morreu1 = \"$P morreu.\"")
+    criafunc("config", "const p_morreu2 = \"$P desmaiou.\"")
+    criafunc("config", "const p_movervel = 140")
+    criafunc("config", "const p_perseguevel = 20")
+    criafunc("config", "const a_ataquemin = 25")
+    criafunc("config", "const a_ataquemax = 75")
+    criafunc("config", "const a_fatormin = 270")
+    criafunc("config", "const a_fatormax = 330")
+    criafunc("config", "const a_vel = 50")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

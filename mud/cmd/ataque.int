@@ -2,7 +2,7 @@ classe comando_hab
 herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
 const posic = 7
-const precisao = 100 # Precisão do golpe, maior que 100 nunca falha
+const falha = 0
 const tipoalvo = 6
 
 func habajuda # Retorna um texto que contém informações
@@ -33,12 +33,13 @@ func habajuda # Retorna um texto que contém informações
     lin += "Ataque do nível "
     lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
     lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
-    lin += ", Força " + ataque + ", Velocidade " + vel
-    lin += precisao <= 100 ? ", Precisão " + precisao : ", Não falha"
+    lin += ", Força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
+    lin += ", Velocidade " + vel
+    lin += !falha ? "" : falha > 0 ? ", Falha " + falha + "%" : ", Não falha"
   senao
     lin += "Nível "
     lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
-    lin += precisao < 100 ? ", Acerta " + precisao + "%" : ", Não falha"
+    lin += !falha ? "" : falha > 0 ? ", Falha " + falha + "%" : ", Não falha"
   fimse
   t.addini(lin)
   msgextra && t.addfim(msgextra)
@@ -185,22 +186,23 @@ func custohab2 # Aplica os custos da habilidade/magia
 
 
 classe comando_ataque
-herda comando_hab
+herda comando_hab, comando_danos
 const objcmd = tipoalvo < 8 && arg0.persoesc.var.[nomevar] ? este
 const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const tipoalvo = 0 # Alvo
 const tipoatk = 0 # Tipo de golpe
-const ataquemin = 25 # Força de ataque nível iniciante, 100 significa 100%
-const ataquemax = 75 # Força de ataque nível perito, 100 significa 100%
-const fatormin = 270
-const fatormax = 330
+const ataquemin = config:a_ataquemin # Força de ataque nível iniciante, 100 significa 100%
+const ataquemax = config:a_ataquemax # Força de ataque nível perito, 100 significa 100%
+const fatormin = config:a_fatormin
+const fatormax = config:a_fatormax
 const ataque1 = 0
 const ataque1perso = 1
 const ataque1arma = 1
 const ataque1municao = 1
 const ataque2 = 0
-const vel = 50 # Velocidade do golpe, 100 significa 100%
+const atknivel = config:atknivel
+const vel = config:a_vel # Velocidade do golpe, 100 significa 100%
 const a_prob1 = 100
 const a_prob2 = 100
 const a_prob3 = 100
@@ -229,10 +231,10 @@ c_move1 c_move2\n\
 ataquemin ataquemax\n\
 fatormin fatormax\n\
 ataque1 ataque1perso ataque1arma ataque1municao\n\
-ataque2\n\
+ataque2 atknivel\n\
 aulaini aulafim\n\
 depende\n\
-precisao\n\
+falha\n\
 addprecisao\n\
 armamove\n\
 tipoarma\n\
@@ -384,7 +386,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     mudavida = 0
     se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       result = 1 # Sem efeito
-    senao rand(100) >= precisao
+    senao rand(100) < falha
       result = 2 # Errou o alvo
     senao
       result = 0 # Acertou o alvo
@@ -657,11 +659,14 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   fimse
 # Checa se acertou o alvo
   result = rand(1, 20)
-  se precisao > 100
-  senao rand(100) >= precisao
+  se falha < 0
+  senao rand(100) < falha
     result = 2
     ret
-  senao arma1 && rand(100) >= arma1.var.z_armaprecisao_
+  senao arma1 && rand(100) < arma1.var.z_armafalha_
+    result = 2
+    ret
+  senao arma2 && rand(100) < arma2.var.z_armafalha_
     result = 2
     ret
   senao result == 20 || arg1.posicao == 4 # Acertou automaticamente
@@ -716,7 +721,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     dano *= (ataque2 ?? arg0.atknorm) / (arg1.defnorm * rand(fatormin, fatormax))
   fimse
 # Diferençá de nível
-  se config:atknivel >= (arma1 ? 2 : 1)
+  se atknivel >= (arma1 ? 2 : 1)
     dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
   fimse
 # Modificadores de posição
@@ -743,228 +748,6 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   mudavida = dano < 1 ? -1 : -dano
   arg1.pvida += mudavida
 
-func danosgolpe # Obtém informações sobre os danos que o ataque causaria
-# arg0 = personagem que está atacando
-# arg1 = personagem alvo
-# arg2 = textotxt aonde colocar as informações
-  int8 num
-  txt512 lin # Texto usado temporariamente
-  real2 temp1 # Número usado temporariamente
-  real2 temp2 # Número usado temporariamente
-  real2 dano
-  real2 danomin # Menor dano = dano * danomin * força
-  real2 danomax # Maior dano = dano * danomax * força
-  real2 ataquemedio # Força, de ataquemin a ataquemax, conforme o quanto conhece
-  real2 tempoespera # Tempo de espera após cada golpe
-  danomin = danomax = dano = 1
-  refvar aulas = txtsublin(misc:aulas, arg0.var.[nomevar]_, 1)
-# Obtém arma e munição
-  refvar errmuni = execmunicao(arg0)
-  ret errmuni, arg2.addfim(errmuni)
-#
-  ataquemedio = (arg0.var.[nomevar]_ - 1) / 7 # Quanto conhece, de 0 a 1, <0 se não conhece
-  se ataquemedio >= 0
-    ataquemedio = ataquemin + (ataquemax - ataquemin) * ataquemedio
-  fimse
-  arg2.addfim("\c3Danos:\c7")
-# Força
-  arg2.addfim(txt(++num) + ". Força: \b" + ataquemin + " a " + ataquemax)
-  se ataquemedio >= 0
-    arg2.addfim("   Força " + aulas + ": \b" + ataquemedio)
-  fimse
-# Ataque automático
-  se tipoalvo == 8
-    arg2.addfim(txt(++num) + ". Ataque automático: \bmultiplica por " + config:atkfor / 100)
-    dano *= config:atkfor / 100
-  fimse
-# Peso da arma
-  se arma1
-    real2 carga
-    carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
-    se carga > 1.2 # Muito pesado
-      carga = carga < 1.4 ? 10 : 100
-      dano /= carga
-      arg2.addfim(txt(++num) + ". É muito peso: \bdivide por " + carga)
-    senao carga > 1 # Um pouco pesado
-      carga = 5 - 4 * carga # se carga=1,atk*=1  se carga=1.2,atk*=0.2
-      dano *= carga
-      arg2.addfim(txt(++num) + ". Bastante peso: \bmultiplica por " + carga)
-    fimse
-  fimse
-# Fome e sede
-  refvar fome = (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
-  se fome != 1
-    arg2.addfim(txt(++num) + ". Fome e sede: \bdivide por " + fome)
-  fimse
-# Tipo
-  temp1 = arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
-  se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-    temp1 *= arg0.atktipo.1 * arg1.deftipo.1
-  senao
-    temp1 *= arg0.atktipo.0 * arg1.deftipo.0
-  fimse
-  lin = txtsublin(config:atknomes, int(tipoatk), 1)
-  arg2.addfim(txt(++num) + ". Tipo " + lin + ": \bmultiplica por " + temp1)
-  dano *= temp1
-# Tipo normal ou especial
-  se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-    temp1 = arg0.atktipo.1 * arg1.deftipo.1
-    arg2.addfim(txt(++num) + ". Tipo especial: \bmultiplica por " + temp1)
-  senao
-    temp1 = arg0.atktipo.0 * arg1.deftipo.0
-    arg2.addfim(txt(++num) + ". Tipo normal: \bmultiplica por " + temp1)
-  fimse
-  danos *= temp1
-# Bônus do personagem
-  se tipobonus
-    refvar tbonus = "\n" + txte(tipobonus) + "\n"
-    se arg0.tipo1 && txtproc(tbonus, "\n" + arg0.tipo1 + "\n") >= 0
-      dano *= 1.5
-      arg2.addfim(txt(++num) + ". Bônus " + arg0.tipo1 + ": \bmultiplica por 1.5")
-    senao arg0.tipo2 && txtproc(tbonus, "\n" + arg0.tipo2 + "\n") >= 0
-      dano *= 1.5
-      arg2.addfim(txt(++num) + ". Bônus " + arg0.tipo2 + ": \bmultiplica por 1.5")
-    senao arg0.tipo3 && txtproc(tbonus, "\n" + arg0.tipo3 + "\n") >= 0
-      dano *= 1.5
-      arg2.addfim(txt(++num) + ". Bônus " + arg0.tipo3 + ": \bmultiplica por 1.5")
-    fimse
-  fimse
-# Variável Ataque1 na fórmula
-  temp1 = temp2 = 0
-  lin = ""
-  se ataque1
-    lin += "\n   No ataque: " + ataque1, temp1 = temp2 = ataque1
-  fimse
-  se ataque1perso
-    refvar valor = misc:atkesp(tipoatk) ? arg0.atkesp : arg0.atknorm
-    lin += "\n   No personagem: " + valor
-    temp1 += valor, temp2 += valor
-  fimse
-  se ataque1arma && arma1
-    lin += "\n   Na arma: " + arma1.var.z_armamin_ + " a " + arma1.var.z_armamax_
-    temp1 += arma1.var.z_armamin_
-    temp2 += arma1.var.z_armamax_
-  fimse
-  se ataque1municao && arma2
-    lin += "\n   Na munição: " + arma2.var.z_armamin_ + " a " + arma2.var.z_armamax_
-    temp1 += arma2.var.z_armamin_
-    temp2 += arma2.var.z_armamax_
-  fimse
-  se temp1 == temp2
-    arg2.addfim(txt(++num) + ". Ataque1: \bmultiplica por " + temp1 + lin)
-  senao
-    arg2.addfim(txt(++num) + ". Ataque1: \bmultiplica por " + temp1 + " a " + temp2 + lin)
-  fimse
-  danomin *= temp1
-  danomax *= temp2
-# Variável Ataque2 na fórmula
-  temp1 = ataque2 ?? (misc:atkesp(tipoatk) ? arg0.atkesp : arg0.atknorm)
-  dano *= temp1
-  arg2.addfim(txt(++num) + ". Ataque2: \bmultiplica por " + temp1)
-# Defesa
-  temp1 = ataque2 ?? (misc:atkesp(tipoatk) ? arg1.defesp : arg1.defnorm)
-  dano /= temp1
-  arg2.addfim(txt(++num) + ". Defesa: \bdivide por " + temp1)
-# Fator
-  lin = txt(++num) + ". Fator: \bdivide por " + fatormin
-  arg2.addfim(lin + (fatormin != fatormax ? " a " + fatormax))
-  danomax /= fatormin
-  danomin /= fatormax
-# Diferença de nível
-  se config:atknivel >= (arma1 ? 2 : 1)
-    temp1 = 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
-    dano *= temp1
-    arg2.addfim(txt(++num) + ". Diferença de nível: \bmultiplica por " + temp1)
-  fimse
-# Modificadores de posição
-  casovar arg1.posicao
-  casose "0" # Morto
-  casose "1" # Mortalmente ferido
-  casose "2" # Incapacitado
-    dano *= 2.666
-    arg2.addfim(txt(++num) + ". Posição indefeso: \bmultiplica por 2.666")
-    sair
-  casose "3" # Muito fraco
-    dano *= 2.333
-    arg2.addfim(txt(++num) + ". Posição muito fraco: \bmultiplica por 2.333")
-    sair
-  casose "4" # dormindo
-    dano *= 2
-    arg2.addfim(txt(++num) + ". Posição dormindo: \bmultiplica por 2")
-    sair
-  casose "5" # descansando
-    dano *= 1.666
-    arg2.addfim(txt(++num) + ". Posição descansando: \bmultiplica por 1.666")
-    sair
-  casose "6" # sentado
-    dano *= 1.333
-    arg2.addfim(txt(++num) + ". Posição sentado: \bmultiplica por 1.333")
-    sair
-  casofim
-# Cálculo do tempo de espera
-  num = 0
-  arg2.addfim("\c3Tempo em décimos de segundo:\c7")
-  se tipoalvo == 8
-    arg2.addfim(txt(++num) + ". Ataque automático: \b" + config:atktempo)
-    tempoespera = config:atktempo
-  senao arg0.pveloc <= 0
-    arg2.addfim(txt(++num) + ". Vel. personagem: \b" + arg0.pveloc)
-    arg2.addfim(txt(++num) + ". Resultado: \b" + config:atkmtempo)
-    tempoespera = config:atkmtempo
-  senao vel <= 0
-    arg2.addfim(txt(++num) + ". Velocidade golpe: \b" + vel)
-    arg2.addfim(txt(++num) + ". Resultado: \b" + config:atkmtempo)
-    tempoespera = config:atkmtempo
-  senao
-    arg2.addfim(txt(++num) + ". Tempo do turno: \b" + config:atkmtempo)
-    arg2.addfim(txt(++num) + ". Vel. alvo: \bmultiplica por " + vel)
-    arg2.addfim(txt(++num) + ". Fator fixo: \bmultiplica por 70")
-    arg2.addfim(txt(++num) + ". Vel. personagem: \bdivide por " + arg0.pveloc)
-    arg2.addfim(txt(++num) + ". Vel. golpe: \bdivide por " + vel)
-    tempoespera = config:atkmtempo * arg1.pveloc * 70 / (arg0.pveloc * vel)
-    arg2.addfim(txt(++num) + ". Resultado: \b" + tempoespera)
-    se tempoespera < 8
-      arg2.addfim(txt(++num) + ". Limite mínimo: \n8")
-      tempoespera = 8
-    senao tempoespera > config:atkmtempo
-      arg2.addfim(txt(++num) + ". Limite máximo: \b" + config:atkmtempo)
-      tempoespera = config:atkmtempo
-    fimse
-  fimse
-  arg2.addini("Tempo de espera: \b" + int(tempoespera) / 10 + " seg.")
-# Danos
-  lin = ""
-  danomin *= dano, danomax *= dano
-  se ataquemedio >= 0
-    lin = "Danos " + aulas + ": \b"
-    lin += danosg_sub(danomin * ataquemedio, danomax * ataquemedio) + "\n"
-  fimse
-  lin += "Danos Iniciante: \b" + danosg_sub(danomin * ataquemin, danomax * ataquemin)
-  lin += "\nDanos Perito: \b" + danosg_sub(danomin * ataquemax, danomax * ataquemax)
-  arg2.addini(lin)
-# Cabeçalho
-  lin = "\c6" + txtmaimin(txt(nomevar, 2)) + ":\c7 " + arg0.descnome
-  lin += " ataca " + arg1.descnome
-  se arma1 || arma2
-    lin += "\n" + (arma1 ? "Arma: " + arma1.descnome) + (arma1 && arma2 ? "   ")
-    lin += arma2 ? "Munição: " + arma2.descnome
-  fimse
-  arg2.addini(lin)
-# Acerta posições dos textos
-  textopos pos
-  epara pos = arg2.ini, pos.lin, pos.depois
-    refvar ind = pos.txtproc("\b")
-    ind > 0 && ind < 24 && pos.mudar(txtesp(24 - ind), ind, 1)
-  efim
-
-func danosg_sub
-  se int(arg0) != int(arg1)
-    ret txt(arg0 < 1 ? 1 : int(arg0)) + " a " + (arg1 < 1 ? 1 : int(arg1))
-  senao arg0 == 0
-    ret "Nenhum"
-  senao
-    ret txt(arg0 < 1 ? 1 : int(arg0))
-  fimse
 
 func mensinicio # Envia mensagem inicial da habilidade ou magia
 # arg0 = personagem que está usando a habilidade ou magia
