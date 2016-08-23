@@ -249,7 +249,8 @@ enum EndVar
     endProp=4,
     endIndice=5,
     endVetor=6,
-    endNome=7,
+    endExtra=7,
+    endNome=8,
     endVar=4
 };
 
@@ -269,11 +270,14 @@ enum EndVar
       - bit 1=1 se sav
       .
     - byte 5 (Instr::endIndice)
-      - tamanho do texto em cTxt1 e cTxt2
-      - índice para os dados extras das variáveis Const
+      - índice para os dados extras das variáveis (expressão)
+      - Ou 0 se não há dados extras
       .
     - byte 6 (Instr::endVetor)
       - número de elementos do vetor ou 0 se não for vetor
+      .
+    - byte 7 (Instr::endExtra)
+      - tamanho do texto em cTxt1 e cTxt2
       .
     - X bytes (Instr::endNome) = nome da variável em ASCIIZ
     - Y bytes = expressão numérica, em cConstExp

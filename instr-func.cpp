@@ -2198,6 +2198,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     mens[Instr::endProp] = 0;
     mens[Instr::endIndice] = Instr::endNome+2; // Aonde começam os dados da constante
     mens[Instr::endVetor] = 0; // Não é vetor
+    mens[Instr::endExtra] = 0;
     mens[Instr::endNome] = '+'; // Nome da variável
     mens[Instr::endNome+1] = 0;
     mens[Instr::endNome+2] = ex_txt;

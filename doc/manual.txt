@@ -338,6 +338,14 @@ TXT8 TESTE1
 Nesse caso, temos duas variáveis, teste0 que é do tipo int8, e teste1, que
 é do tipo txt8.
 
+Quando a variável estiver definida em uma função, é possível atribuir um
+valor inicial a ela, conforme a seguinte sintaxe:
+<tipo da variável> <nome da variável> = <valor>
+
+Exemplos:
+INT8 TESTE0 = 4
+TXT8 TESTE1 = "Fulano"
+
 Os tipos de variaveis serão detalhados mais adiante.
 
 
@@ -3051,6 +3059,14 @@ de minúsculas.
 Mesmo que txtproc (acima), exceto que diferencia letras maiúsculas,
 acentuadas e sem acento. Exemplo, 'a', 'A' e 'Á' são consideradas três
 letras diferentes em txtprocdif.
+
+20.20. txtmd5([número de linhas])
+Calcula e retorna o MD5 do texto correspondente ao número de linhas
+especificado. Se o número de linhas for omitido, será 1.
+
+20.21. txtsha1([número de linhas])
+Calcula e retorna o SHA1 do texto correspondente ao número de linhas
+especificado. Se o número de linhas for omitido, será 1.
 
 
 21. TEXTOVAR - LISTA DE VARIÁVEIS DE TEXTO

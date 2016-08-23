@@ -213,11 +213,13 @@ func descsala # Retorna descrição da sala
       fimse
     fimse
     se !config:perigomsg
-    senao dir_n.s_morre || dir_s.s_morre || dir_l.s_morre || dir_o.s_morre
+    senao dir_n(arg0).s_morre || dir_s(arg0).s_morre || dir_l(arg0).s_morre
       t.addfim(config:perigomsg)
-    senao dir_ne.s_morre || dir_no.s_morre || dir_l.se_morre || dir_so.s_morre
+    senao dir_o(arg0).s_morre || dir_ne(arg0).s_morre || dir_no(arg0).s_morre
       t.addfim(config:perigomsg)
-    senao dir_c.s_morre || dir_b.s_morre || dir_entrar.s_morre || dir_sair.s_morre
+    senao dir_se(arg0).se_morre || dir_so(arg0).s_morre || dir_c(arg0).s_morre
+      t.addfim(config:perigomsg)
+    senao dir_b(arg0).s_morre || dir_entrar(arg0).s_morre || dir_sair(arg0).s_morre
       t.addfim(config:perigomsg)
     fimse
     arg1 & 2 && t.addfim(txtsai(arg0))

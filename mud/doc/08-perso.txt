@@ -15,6 +15,10 @@ const perso = 1
 2 = personagem que batalha (classe comum_persobat)
 3 = personagem que batalha e carrega animais (classe comum_persoanimal)
 
+func cabedentro( sala )
+Retorna 1 se o personagem cabe na sala especificada ou 0 se não cabe.
+Essa função checa o volume e a quantidade de personagens na sala.
+
 sav uint8 posicao
 Posição do personagem:
 0 = morto
@@ -125,10 +129,6 @@ Pega o próximo comando da lista.
 
 func teclouproc( texto do comando )
 Processa comando, sem espera.
-
-func cabedentro( sala )
-Retorna 1 se o personagem cabe na sala especificada ou 0 se não cabe.
-Essa função checa o volume e a quantidade de personagens na sala.
 
 func erropos
 Retorna uma mensagem conforme a posição atual, para indicar que o que

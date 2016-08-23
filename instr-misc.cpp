@@ -268,6 +268,21 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
         else if (esperando == 2 && InfoFunc(instr + endNome) >= 0)
             return "Variável tem o nome de uma função da linguagem, "
                     "por isso não pode pertencer a uma função";
+        else if (esperando < 2 && instr[endIndice] != 0)
+            switch (cod)
+            {
+            case cConstNulo:
+            case cConstTxt:
+            case cConstNum:
+            case cConstExpr:
+            case cConstVar:
+            case cFunc:
+            case cVarFunc:
+                break;
+            default:
+                return "Somente variáveis definidas em funções permitem "
+                        "atribuição de valor";
+            }
         return 0;
     }
 // Instrução

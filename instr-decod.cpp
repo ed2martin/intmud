@@ -50,8 +50,12 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 // Comentário em variáveis
     if (origem[2] >= cVariaveis || origem[2] == cRefVar)
     {
-        for (coment=endNome; origem[coment]; coment++);
-        coment++;
+        expr = origem[endIndice];
+        if (expr == 0)
+        {
+            for (coment=endNome; origem[coment]; coment++);
+            coment++;
+        }
     }
 
 // Anota o nome da instrução
@@ -169,10 +173,10 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
 // Variáveis
     case cVariaveis: break;
     case cTxt1:
-        sprintf(nome, "txt%d", (unsigned char)origem[endIndice]+1);
+        sprintf(nome, "txt%d", (unsigned char)origem[endExtra]+1);
         break;
     case cTxt2:
-        sprintf(nome, "txt%d", (unsigned char)origem[endIndice]+257);
+        sprintf(nome, "txt%d", (unsigned char)origem[endExtra]+257);
         break;
     case cInt1:      strcpy(nome, "int1"); break;
     case cInt8:      strcpy(nome, "int8"); break;

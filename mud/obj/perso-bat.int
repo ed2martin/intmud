@@ -524,7 +524,7 @@ func p_proc_exec # Processar comportamento do personagem
 # Ações do personagem
   atkenv && atkenv.objlista.dono != dono && batalhafim
   ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
-  ret atkenv, p_proc = 30 # Se está lutando
+  ret atkenv, (p_proc = 10) + p_proc_atacar(atkenv.objlista) # Se está lutando
   se !(p_atacou_nome || p_atacou_dir) # Se não foi atacado
   senao p_atacou_nome && p_proc_atkjog(p_atacou_nome)
     p_atacou_nome = ""

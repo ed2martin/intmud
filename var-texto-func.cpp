@@ -16,6 +16,8 @@
 #include "procurar.h"
 #include "instr.h"
 #include "misc.h"
+#include "sha1.h"
+#include "md5.h"
 
 //#define DEBUG_TXT // Texto guardado em TTextoTxt
 
@@ -722,9 +724,11 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
         { "remove",       0, &TTextoPos::FuncRemove },
         { "texto",        0, &TTextoPos::FuncTexto },
         { "textolin",     0, &TTextoPos::FuncTextoLin },
+        { "txtmd5",       0, &TTextoPos::FuncMd5Sha1 },
         { "txtproc",      0, &TTextoPos::FuncTxtProc },
         { "txtprocdif",   2, &TTextoPos::FuncTxtProc },
-        { "txtprocmai",   1, &TTextoPos::FuncTxtProc }  };
+        { "txtprocmai",   1, &TTextoPos::FuncTxtProc },
+        { "txtsha1",      1, &TTextoPos::FuncMd5Sha1 } };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -1145,6 +1149,84 @@ bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
     valor = txtfim - PosicTxt;
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(valor);
+}
+
+//----------------------------------------------------------------------------
+bool TTextoPos::FuncMd5Sha1(TVariavel * v, int valor)
+{
+    int linhas = 1;
+    if (Instr::VarAtual >= v+1)
+        linhas = v[1].getInt();
+    Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
+
+// Obtém o número de bytes e bloco/posição inicial
+    char mens[80];
+    unsigned int posic = PosicBloco;
+    TTextoBloco * obj = Bloco;
+    int tambuf = 0;
+    if (linhas > 0 && obj)
+        tambuf = obj->LinhasBytes(posic, linhas) - 1;
+
+// MD5
+    if (valor == 0)
+    {
+        unsigned char digest[16];
+        cvs_MD5Context md5Info;
+        cvs_MD5Init(&md5Info);
+        if (obj)
+            if (posic>=obj->Bytes)
+                obj=obj->Depois, posic=0;
+        while (obj)
+        {
+            if (tambuf <= (int)obj->Bytes - (int)posic)
+                break;
+            int total = obj->Bytes - posic;
+            cvs_MD5Update(&md5Info, (unsigned char *)obj->Texto+posic, total);
+            tambuf -= total;
+            obj=obj->Depois, posic=0;
+        }
+        if (tambuf > 0)
+            cvs_MD5Update(&md5Info, (unsigned char *)obj->Texto+posic, tambuf);
+        cvs_MD5Final(digest, &md5Info);
+        for (int x=0; x<16; x++)
+        {
+            int valor = digest[x] >> 4;
+            mens[x*2] = (valor<10 ? valor+'0' : valor+'a'-10);
+            valor = digest[x] & 0x0F;
+            mens[x*2+1] = (valor<10 ? valor+'0' : valor+'a'-10);
+        }
+        return Instr::CriarVarTexto(mens, 32);
+    }
+// SHA1
+    else
+    {
+        unsigned char digest[20];
+        SHA_CTX shaInfo;
+        SHAInit(&shaInfo);
+        if (obj)
+            if (posic>=obj->Bytes)
+                obj=obj->Depois, posic=0;
+        while (obj)
+        {
+            if (tambuf <= (int)obj->Bytes - (int)posic)
+                break;
+            int total = obj->Bytes - posic;
+            SHAUpdate(&shaInfo, (unsigned char *)obj->Texto+posic, total);
+            tambuf -= total;
+            obj=obj->Depois, posic=0;
+        }
+        if (tambuf > 0)
+            SHAUpdate(&shaInfo, (unsigned char *)obj->Texto+posic, tambuf);
+        SHAFinal(digest, &shaInfo);
+        for (int x=0; x<20; x++)
+        {
+            int valor = digest[x] >> 4;
+            mens[x*2] = (valor<10 ? valor+'0' : valor+'a'-10);
+            valor = digest[x] & 0x0F;
+            mens[x*2+1] = (valor<10 ? valor+'0' : valor+'a'-10);
+        }
+        return Instr::CriarVarTexto(mens, 40);
+    }
 }
 
 //----------------------------------------------------------------------------

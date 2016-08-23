@@ -79,8 +79,7 @@ func escr
       p.lojainv && e.addfim(p.dentro1)
       epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
         continuar txt(++linha) != arg1 && !n.nome(e.objini.ident, 1)
-        ref r
-        r = ref(e.objini)
+        ref r = e.objini
         valor = (100 + p.taxavenda) / 100 * r.valor
         total > r.objtot && (total = r.objtot)
         se arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax

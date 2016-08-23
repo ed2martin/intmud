@@ -638,7 +638,7 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
 {
 // Obtém número de variáveis e tamanho de uma variável
     int numvar = (unsigned char)v->defvar[Instr::endVetor];
-    int tamvar = (unsigned char)v->defvar[Instr::endIndice] + 2;
+    int tamvar = (unsigned char)v->defvar[Instr::endExtra] + 2;
     if (v->defvar[2] == Instr::cTxt2)
         tamvar += 256;
 // Texto do vetor

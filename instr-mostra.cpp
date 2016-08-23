@@ -38,8 +38,12 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 // Comentário em variáveis
     if (origem[2] >= cVariaveis || origem[2] == cRefVar)
     {
-        for (coment=endNome; origem[coment]; coment++);
-        coment++;
+        expr = origem[endIndice];
+        if (expr == 0)
+        {
+            for (coment=endNome; origem[coment]; coment++);
+            coment++;
+        }
     }
 
 // Anota o nome da instrução

@@ -208,6 +208,28 @@ func apagar # Apaga o item (arg0 = quantidade)
   ret objtot -= arg0, ajustapeso
   apagar(este), mdono(nulo)
 
+func cabedentro # Retorna 1 se item cabe em sala/item/personagem ou 0 se não cabe
+# arg0 = sala, item ou personagem
+# arg1 = quantidade; se omitido assume 1
+  refvar total = args <= 1 ? 1 : int(arg1)
+  ret este == arg0, 0
+  ret arg0.dentro1.total + (arg0.item == 2 ? 1 : total) > arg0.objmax, 0
+  ret arg0.volden + voltot * total / objtot > arg0.volmax, 0
+  se arg0.item
+    ref r1
+    ref r2
+    epara r1 = este, r1.item, r1 = r1.dono
+    efim
+    epara r2 = arg0, r2.item, r2 = r2.dono
+    efim
+    ret r1 == r2 || (objnum >> 1) + (arg0.objnum >> 1) <= config:itens
+  senao
+    ref r1
+    epara r1 = este, r1.item, r1 = r1.dono
+    efim
+    ret r1 == arg0 || (objnum >> 1) + (arg0.objnum >> 1) <= config:itens
+  fimse
+
 
 classe comum_itemperso
 herda comum_item
@@ -245,15 +267,23 @@ func recalc_exec # Acerta variáveis
     luztempo.pos, ajustapeso
 # $mens.p(arg0, nulo, r)
 # $mens.mvis1(r.luzliga ? r.luzliga : "$P acende $o.")
+    refvar d = dono
     listaobj l
-    epara l.addfim(dono.evento, evento), l, l.ini.remove
-      ret l.objini.cmd_acendeu(dono, este), nulo
+    epara l.addfim(d.evento), l, l.ini.remove
+      l.objini.cmd_acendeu(d, este, d)
+    efim
+    epara l.addfim(evento), l, l.ini.remove
+      l.objini.cmd_acendeu(d, este, este)
     efim
   senao !vestpos && luztempo > 0 # Removeu: apaga
     luztempo.neg, ajustapeso
+    refvar d = dono
     listaobj l
-    epara l.addfim(dono.evento, evento), l, l.ini.remove
-      ret l.objini.cmd_apagou(dono, este), nulo
+    epara l.addfim(d.evento), l, l.ini.remove
+      l.objini.cmd_apagou(d, este, d)
+    efim
+    epara l.addfim(evento), l, l.ini.remove
+      l.objini.cmd_apagou(d, este, este)
     efim
   fimse
 # se intpos(luztempo) > 0
@@ -284,7 +314,12 @@ func luztempo_exec # A luz apagou
     efim
     r.msg(luztxt)
   fimse
-  luzfim ? apagar(este) : ajustapeso + recalc_exec
+  luzfim && apagar(este)
+  listaobj l
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_apagou(nulo, este, este)
+  efim
+  !luzfim && ajustapeso + recalc_exec
 
 func vestir # Veste o item, arg0=posição
   luzitem == 7 && (recalc = 1) # Para acender ou apagar o item

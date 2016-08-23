@@ -178,6 +178,7 @@ public:
     bool FuncRemove(TVariavel * v, int valor);
     bool FuncJuntar(TVariavel * v, int valor);
     bool FuncTxtProc(TVariavel * v, int valor);
+    bool FuncMd5Sha1(TVariavel * v, int valor);
 };
 
 //----------------------------------------------------------------------------

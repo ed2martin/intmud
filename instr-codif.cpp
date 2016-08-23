@@ -453,6 +453,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     destino[4]=0;
     destino[5]=0;
     destino[6]=0;
+    destino[7]=0;
     bool testar_def = true; // Se deve testar se é definição de variável
     {
         const char * p = origem;
@@ -505,14 +506,14 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 if (valor<=256) // 1 a 256
                 {
                     destino[2] = cTxt1;
-                    destino[endIndice] = valor-1;
+                    destino[endExtra] = valor-1;
                     origem = p;
                     break;
                 }
                 if (valor<=512) // 257 a 512
                 {
                     destino[2] = cTxt2;
-                    destino[endIndice] = valor-257;
+                    destino[endExtra] = valor-257;
                     origem = p;
                     break;
                 }
@@ -790,9 +791,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     // Outros tipos de variáveis
         else if (*origem && *origem!='#')
         {
-            copiastr(dest_ini,
-                    "Variável não permite atribuição de valor", tamanho);
-            return false;
+            origem++;
+            dest_ini[endIndice] = destino - dest_ini;
+            proc_expr=true;
         }
     }
 

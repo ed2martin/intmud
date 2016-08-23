@@ -23,7 +23,6 @@ const msg2 = sock.msg2(arg0) # Mensagem grande para o jogador
 const msgsom = sock.msgsom(arg0) # Mensagem de som
 ref sock # Objeto do jogador, se nulo não é contolado pelo jogador
 const objsav = 2 # Se deve salvar o personagem ao salvar personagem do jogador
-const objmax = 15 # Quantos itens pode carregar
 const luztipo = 1 # 1=não é fonte de luz, mas repassa a luz
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
 sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
@@ -210,6 +209,7 @@ func mudadono # Coloca personagem em outra sala
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
 # arg0 = sala
   ret !arg0.s_sala || arg0.volden + voltot > arg0.volmax, 0
+  ret sock, 1
   ret jog, int(arg0.dentro2.total("jogador") < arg0.s_jog)
   ret int(arg0.dentro2.total - arg0.dentro2.total("jogador") < arg0.s_pnj)
 

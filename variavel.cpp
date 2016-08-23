@@ -107,8 +107,8 @@ int TVariavel::Tamanho(const char * instr)
     switch (instr[2])
     {
 // Variáveis
-    case Instr::cTxt1:      return 2 + (unsigned char)instr[Instr::endIndice];
-    case Instr::cTxt2:      return 258 + (unsigned char)instr[Instr::endIndice];
+    case Instr::cTxt1:      return 2 + (unsigned char)instr[Instr::endExtra];
+    case Instr::cTxt2:      return 258 + (unsigned char)instr[Instr::endExtra];
     case Instr::cInt1:
     case Instr::cInt8:
     case Instr::cUInt8:     return 1;

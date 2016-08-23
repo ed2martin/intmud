@@ -681,31 +681,33 @@ void TClasse::AcertaComandos(char * comandos)
         }
 
         // Acrescenta variáveis locais em varlocal
+        char * expr = 0;
         if (alin && (unsigned char)p[2] > Instr::cVariaveis)
         {
             if (totallocal < 255)
                 varlocal[totallocal++] = p;
-            continue;
+            int ind = (unsigned char)p[Instr::endIndice];
+            if (ind == 0)
+                continue;
+            expr = p + ind;
         }
-
         // Checa se instrução contém expressão numérica
-        char * expr = 0;
-        switch ((unsigned char)p[2])
-        {
-        case Instr::cRefVar:
-            expr = p + Instr::endNome;
-            while (*expr++);
-            break;
-        case Instr::cExpr:        expr = p + Instr::endVar; break;
-        case Instr::cSe:          expr = p + Instr::endVar+2; break;
-        case Instr::cSenao2:      expr = p + Instr::endVar+2; break;
-        case Instr::cEnquanto:    expr = p + Instr::endVar+2; break;
-        case Instr::cEPara:       expr = p + Instr::endVar+6; break;
-        case Instr::cCasoVar:     expr = p + Instr::endVar+2; break;
-        case Instr::cRet2:        expr = p + Instr::endVar; break;
-        case Instr::cSair2:       expr = p + Instr::endVar+2; break;
-        case Instr::cContinuar2:  expr = p + Instr::endVar+2; break;
-        }
+        else
+            switch ((unsigned char)p[2])
+            {
+            case Instr::cRefVar:
+                expr = p + (unsigned char)p[Instr::endIndice];
+                break;
+            case Instr::cExpr:        expr = p + Instr::endVar; break;
+            case Instr::cSe:          expr = p + Instr::endVar+2; break;
+            case Instr::cSenao2:      expr = p + Instr::endVar+2; break;
+            case Instr::cEnquanto:    expr = p + Instr::endVar+2; break;
+            case Instr::cEPara:       expr = p + Instr::endVar+6; break;
+            case Instr::cCasoVar:     expr = p + Instr::endVar+2; break;
+            case Instr::cRet2:        expr = p + Instr::endVar; break;
+            case Instr::cSair2:       expr = p + Instr::endVar+2; break;
+            case Instr::cContinuar2:  expr = p + Instr::endVar+2; break;
+            }
         if (expr == 0)
             continue;
 

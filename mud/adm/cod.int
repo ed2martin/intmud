@@ -14,7 +14,9 @@ const txtajuda = "\b\c3Comandos de edição do código\b\n\
   \c2LFUNC2\b    Lista todas funções de uma classe, inclusive as herdadas\n\
   \c2LARQ\b      Lista os arquivos e as classes de cada arquivo\n\
   \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados\n\
-  \c2MD5CL\b     Calcula o MD5 do texto de uma classe (para saber se mudou)"
+  \c2MD5CL\b     Calcula o MD5 do texto de uma classe (para saber se mudou)\n\
+  \c2MD5SALVAR\b Calcula o MD5 de diversos arquivos e salva em mud-md5.txt\n\
+  \c2MD5CHECAR\b Verifica se os arquivos listados em mud-md5.txt mudaram"
 
 
 classe adm_lcl
@@ -471,3 +473,69 @@ func escr # Listar funções inclusive as herdadas
     arg0.msg("md5 = " + txtmd5(t.ini.textolin(100000)))
     arg0.msg("sha1 = " + txtsha1(t.ini.textolin(100000)))
   fimse
+
+
+classe adm_md5salvar
+herda comando_adm
+const txtajuda = "\b\c3Md5salvar\b\n\
+Sintaxe: MD5SALVAR\n\
+Calcula o MD5 e o SHA1 de todos os arquivos dos diretórios adm, cmd, misc\n\
+e obj, via Textotxt. O resultado é salvo no arquivo mud-md5.txt e pode ser\n\
+verificado com o comando Md5checar. Quando o conteúdo de um arquivo muda,\n\
+o MD5 e o SHA1 também mudam."
+
+func escr # Listar funções inclusive as herdadas
+  datahora dh
+  textotxt t
+  textotxt f
+  dh.agora
+  f.addfim(txt(dh.dia) + "/" + dh.mes + "/" + dh.ano + " " + dh.hora + ":" + dh.min)
+  arqdir dir
+  epara dir.abrir("adm"), dir.lin, dir.depois
+    continuar !t.ler("adm/" + dir.texto)
+    f.addfim("adm/" + dir.texto + " " + t.ini.txtmd5(100000) + " " + t.ini.txtsha1(100000))
+  efim
+  epara dir.abrir("cmd"), dir.lin, dir.depois
+    continuar !t.ler("cmd/" + dir.texto)
+    f.addfim("cmd/" + dir.texto + " " + t.ini.txtmd5(100000) + " " + t.ini.txtsha1(100000))
+  efim
+  epara dir.abrir("misc"), dir.lin, dir.depois
+    continuar !t.ler("misc/" + dir.texto)
+    f.addfim("misc/" + dir.texto + " " + t.ini.txtmd5(100000) + " " + t.ini.txtsha1(100000))
+  efim
+  epara dir.abrir("obj"), dir.lin, dir.depois
+    continuar !t.ler("obj/" + dir.texto)
+    f.addfim("obj/" + dir.texto + " " + t.ini.txtmd5(100000) + " " + t.ini.txtsha1(100000))
+  efim
+  f.salvar("mud-md5.txt")
+  arg0.msg("Arquivo salvo: mud-md5.txt")
+
+
+classe adm_md5checar
+herda comando_adm
+const txtajuda = "\b\c3Md5checar\b\n\
+Sintaxe: MD5CHECAR\n\
+Checa o MD5 e o SHA1 dos arquivos listados no arquivo mud-md5.txt.\n\
+Esse arquivo é criado com o comando md5salvar."
+
+func escr # Listar funções inclusive as herdadas
+  textotxt t
+  textotxt f
+  arqtxt arq
+  se !arq.abrir("mud-md5.txt", 0)
+    ret arg0.msg("Não foi possível abrir o arquivo mud-md5.txt")
+  fimse
+  f.addfim("Comparando " + arq.ler)
+  enquanto !arq.eof
+    refvar lin = arq.ler
+    se !lin
+    senao !t.ler(txt1(lin))
+      f.addfim(txt1(lin) + ": erro ao abrir arquivo")
+    senao txt2(lin) != t.ini.txtmd5(100000) + " " + t.ini.txtsha1(100000)
+      f.addfim(txt1(lin) + ": mudou")
+# f.addfim(" < " + txt2(lin))
+# f.addfim(" > " + t.ini.txtmd5(100000) + " " + t.ini.txtsha1(100000))
+    fimse
+  efim
+  f.linhas <= 1 && f.addfim("Nenhuma diferença encontrada")
+  arg0.msg2(f.remove(1000))

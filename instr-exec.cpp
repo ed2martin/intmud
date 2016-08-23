@@ -219,21 +219,22 @@ Instr::ExecFunc * const Instr::FuncFim = Instr::FuncPilha + 40;
 Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
-const char Instr::InstrNulo[] = { 9, 0, Instr::cConstNulo, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrDouble[] = { 9, 0, Instr::cReal2, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrSocket[] = { 9, 0, Instr::cSocket, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrTxtFixo[] = { 9, 0, Instr::cTxtFixo, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarNome[] = { 9, 0, Instr::cVarNome, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarInicio[] = { 9, 0, Instr::cVarInicio, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarIniFunc[] = { 9, 0, Instr::cVarIniFunc, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarClasse[] = { 9, 0, Instr::cVarClasse, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarObjeto[] = { 9, 0, Instr::cVarObjeto, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarInt[] = { 9, 0, Instr::cVarInt, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarListaItem[] = { 9, 0, Instr::cListaItem, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarTextoPos[] =  { 9, 0, Instr::cTextoPos, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarTextoVarSub[] =  { 9, 0, Instr::cTextoVarSub, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrVarTextoObjSub[] =  { 9, 0, Instr::cTextoObjSub, (char)0xFF, 0, 0, 0, '+', 0 };
-const char Instr::InstrDebugFunc[] = { 9, 0, cFunc, (char)0xFF, 0, 0, 0, 'f', 0 };
+#define INSTR_COMPL (char)0xFF, 0, 0, 0, 0, '+', 0
+const char Instr::InstrNulo[] = { 10, 0, Instr::cConstNulo, INSTR_COMPL };
+const char Instr::InstrDouble[] = { 10, 0, Instr::cReal2, INSTR_COMPL };
+const char Instr::InstrSocket[] = { 10, 0, Instr::cSocket, INSTR_COMPL };
+const char Instr::InstrTxtFixo[] = { 10, 0, Instr::cTxtFixo, INSTR_COMPL };
+const char Instr::InstrVarNome[] = { 10, 0, Instr::cVarNome, INSTR_COMPL };
+const char Instr::InstrVarInicio[] = { 10, 0, Instr::cVarInicio, INSTR_COMPL };
+const char Instr::InstrVarIniFunc[] = { 10, 0, Instr::cVarIniFunc, INSTR_COMPL };
+const char Instr::InstrVarClasse[] = { 10, 0, Instr::cVarClasse, INSTR_COMPL };
+const char Instr::InstrVarObjeto[] = { 10, 0, Instr::cVarObjeto, INSTR_COMPL };
+const char Instr::InstrVarInt[] = { 10, 0, Instr::cVarInt, INSTR_COMPL };
+const char Instr::InstrVarListaItem[] = { 10, 0, Instr::cListaItem, INSTR_COMPL };
+const char Instr::InstrVarTextoPos[] =  { 10, 0, Instr::cTextoPos, INSTR_COMPL };
+const char Instr::InstrVarTextoVarSub[] =  { 10, 0, Instr::cTextoVarSub, INSTR_COMPL };
+const char Instr::InstrVarTextoObjSub[] =  { 10, 0, Instr::cTextoObjSub, INSTR_COMPL };
+const char Instr::InstrDebugFunc[] = { 10, 0, INSTR_COMPL };
 const char Instr::InstrAddSub[] = { 9, 0, Instr::cConstExpr, (char)0xFF, 0,
         Instr::exo_add_sub1, Instr::exo_atrib,
         Instr::exo_add_sub2, Instr::ex_fim };
@@ -623,7 +624,11 @@ bool Instr::ExecX()
                     return RetornoErro(2);
                 FuncAtual->fimvar++;
                 FuncAtual->indent = VarAtual->defvar[endAlin];
-                FuncAtual->linha += Num16(FuncAtual->linha);
+                int desloc = FuncAtual->linha[endIndice];
+                if (desloc != 0)
+                    FuncAtual->expr = FuncAtual->linha + desloc;
+                else
+                    FuncAtual->linha += Num16(FuncAtual->linha);
                 //printf("CRIOU %d\n", VarAtual-VarPilha); fflush(stdout);
                 continue;
             }
@@ -633,10 +638,12 @@ bool Instr::ExecX()
             {
             case cRefVar: // Referência a uma variável
                 {
-                    const char * p = FuncAtual->linha + endNome;
-                    while (*p++);
-                    FuncAtual->expr = p;
-                    break;
+                    int desloc = FuncAtual->linha[endIndice];
+                    if (desloc != 0)
+                        FuncAtual->expr = FuncAtual->linha + desloc;
+                    else
+                        FuncAtual->linha += Num16(FuncAtual->linha);
+                    continue;
                 }
             case cSe:   // Processa expressão numérica
             case cEnquanto:
@@ -954,6 +961,35 @@ bool Instr::ExecX()
                 }
                 break;
             default:
+                if (FuncAtual->linha[2] > cVariaveis)
+                {
+                    ApagarVar(FuncAtual->fimvar + 1);
+                    if (VarFuncIni(VarAtual))
+                        break;
+                    switch (VarAtual[-1].Tipo())
+                    {
+                    case varOutros:
+                        // Chama função Igual() se forem variáveis diferentes,
+                        // mas do mesmo tipo
+                        if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
+                                (VarAtual[-1].endvar != VarAtual[0].endvar ||
+                                    VarAtual[-1].indice != VarAtual[0].indice) )
+                            VarAtual[-1].Igual(VarAtual);
+                        break;
+                    case varInt:
+                        VarAtual[-1].setInt( VarAtual->getInt() );
+                        break;
+                    case varDouble:
+                        VarAtual[-1].setDouble( VarAtual->getDouble() );
+                        break;
+                    case varTxt:
+                        VarAtual[-1].setTxt( VarAtual->getTxt() );
+                        break;
+                    case varObj:
+                        VarAtual[-1].setObj( VarAtual->getObj() );
+                        break;
+                    }
+                }
                 FuncAtual->expr = 0;
                 FuncAtual->linha += Num16(FuncAtual->linha);
                 ApagarVar(FuncAtual->fimvar);

@@ -687,9 +687,8 @@ herda comando_comum
 
 func passo
   indiceitem ind
-  txt20 texto
+  txt20 texto = txts(txtnome(arg0.tpasso))
   arqsav sav1
-  texto = txts(txtnome(arg0.tpasso))
   arg0.passo = este
   se !arg1
     arg0.msg("Digite a senha ou tecle Z se não for seu: \cm")
