@@ -69,7 +69,7 @@ vestirsim\n\
 volexp volmax volobj\n\
 inivar evhora eveste evperso evitem evsala"
 
-func ini # Objeto foi criado (arg0=dono, arg1=nível, arg2=variáveis de var)
+func ini # Objeto foi criado (arg0=dono, arg1 é ignorado, arg2=variáveis de var)
   se arg2 || inivar
     textotxt t
     epara t.addfim(txttroca(txt(arg2) + "\n" + inivar, ",", "\n")), t.linhas, var.mudar(t.remove)
@@ -98,6 +98,28 @@ func vestir # Veste o item, arg0=posição
   fimse
 
 const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
+
+func cabedentro # Retorna quantos itens iguais a esse cabem em sala/item/personagem
+# arg0 = sala, item ou personagem
+  ret este == arg0, 0
+  refvar v1 = arg0.objmax - arg0.dentro1.total
+  refvar v2 = (arg0.volmax - arg0.volden) / voltot
+  real2 v3 = v2
+  se arg0.item
+    ref r1
+    ref r2
+    epara r1 = este, r1.item, r1 = r1.dono
+    efim
+    epara r2 = arg0, r2.item, r2 = r2.dono
+    efim
+    r1 != r2 && (v3 = (r2.objlimite - (r2.objnum >> 1)) / (objnum >> 1))
+  senao
+    ref r1
+    epara r1 = este, r1.item, r1 = r1.dono
+    efim
+    r1 != arg0 && (v3 = (arg0.objlimite - (arg0.objnum >> 1)) / (objnum >> 1))
+  fimse
+  ret intpos(intdiv(intmin(v1, v2, v3)))
 
 func recalc_exec # Ajusta variáveis
   bitver = 17, bitinv = 3
@@ -208,13 +230,10 @@ func apagar # Apaga o item (arg0 = quantidade)
   ret objtot -= arg0, ajustapeso
   apagar(este), mdono(nulo)
 
-func cabedentro # Retorna 1 se item cabe em sala/item/personagem ou 0 se não cabe
+func cabedentro # Retorna quantos itens iguais a esse cabem em sala/item/personagem
 # arg0 = sala, item ou personagem
-# arg1 = quantidade; se omitido assume 1
-  refvar total = args <= 1 ? 1 : int(arg1)
   ret este == arg0, 0
-  ret arg0.dentro1.total + (arg0.item == 2 ? 1 : total) > arg0.objmax, 0
-  ret arg0.volden + voltot * total / objtot > arg0.volmax, 0
+  ret arg0.objmax <= arg0.dentro1.total, 0
   se arg0.item
     ref r1
     ref r2
@@ -222,13 +241,15 @@ func cabedentro # Retorna 1 se item cabe em sala/item/personagem ou 0 se não cab
     efim
     epara r2 = arg0, r2.item, r2 = r2.dono
     efim
-    ret r1 == r2 || (objnum >> 1) + (arg0.objnum >> 1) <= config:itens
+    ret r1 != r2 && r2.objlimite <= r2.objnum >> 1, 0
   senao
     ref r1
     epara r1 = este, r1.item, r1 = r1.dono
     efim
-    ret r1 == arg0 || (objnum >> 1) + (arg0.objnum >> 1) <= config:itens
+    ret r1 != arg0 && arg0.objlimite <= arg0.objnum >> 1, 0
   fimse
+  refvar v1 = (arg0.volmax - arg0.volden) * objtot / voltot
+  ret intpos(intdiv(v1))
 
 
 classe comum_itemperso

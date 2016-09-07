@@ -20,7 +20,7 @@ txt60 nomefim # Nome ao apresentar quando o usuário sair do jogo
 textotxt txtmais # Texto do tecle M para mais
 txt20 jogperm # Permissões do personagem (objeto $perm_[jogperm])
 txt20 jogarea # Área aonde o personagem tem permissão
-int1 jogconfig.24 # Configurações do personagem
+int1 jogconfig.32 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Comandos em espera para serem processados
 intexec execprompt # Para enviar mensagens do prompt
@@ -778,9 +778,11 @@ func passo
     efim
     epara item = l1.fim, item, item.antes
       d.ini
-      !item.obj.dono && !item.obj.jog && apagar(item.obj)
-      item.obj.var.limpar("d_", "j_")
-      item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
+      ref obj = item.obj
+      !obj.dono && !obj.jog && apagar(obj)
+      obj.jog && obj.ajustajog
+      obj.var.limpar("d_", "j_")
+      obj.ajustapeso, obj.acertapos, obj.recalc = 1
     efim
     epara item = arg0.perso.dentro2.ini, item, item.depois
       continuar !item.obj.perso || item.obj.var.z_dono

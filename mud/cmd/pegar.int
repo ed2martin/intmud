@@ -85,22 +85,16 @@ func pegarobj
     casofim
     erro = "Você não consegue pegar porque tem alguém em cima."
     ret
-  senao arg0.dentro1.total + (arg2.item == 2 ? 1 : total) > arg0.objmax
-    erro = "Você não consegue carregar tanta coisa."
-    ret
-  senao arg0.volden + arg2.voltot * total / arg2.objtot > arg0.volmax
+  senao arg2.cabedentro(arg0) < total
     erro = "Você não consegue carregar tanta coisa."
     ret
   senao arg0 == arg1.dono
   senao arg0.pesoden - arg0.pesoveste + arg2.pesotot * total / arg2.objtot > arg0.pesomax
-    se arg2.pesotot > arg2.objtot * arg0.pesomax * 2
+    se arg2.pesotot > arg2.objtot * arg0.pesomax
       erro = "É pesado demais."
     senao
       erro = "Você não consegue carregar tanto peso."
     fimse
-    ret
-  senao (arg0.objnum >> 1) + (arg2.objnum >> 1) > config:itens
-    erro = "Você não consegue carregar tanta coisa."
     ret
   fimse
   achou++
@@ -133,7 +127,7 @@ func pegarobj
   arg0.p_espera += 2
 
 func pegarmoedas
-# arg0=persoangem, arg1=de onde pegar, total=quantidade de moedas
+# arg0=personagem, arg1=de onde pegar, total=quantidade de moedas
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_pegarmoedas(arg0, arg1, total, arg0), nulo

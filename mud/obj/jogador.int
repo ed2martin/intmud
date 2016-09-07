@@ -10,19 +10,20 @@ const msexo = psexo # Sexo do personagem
 txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
 sav txt20 jogperm # Permissões do personagem, mesmo que sock.jogperm
 sav txt20 jogarea # Área aonde o personagem tem permissão, mesmo que sock.jogarea
-sav int1 jogconfig.24 # Configurações do personagem, mesmo que sock.jogconfig
+sav int1 jogconfig.32 # Configurações do personagem, mesmo que sock.jogconfig
 sav listaobj dentro3 # Lista de animais reserva
 inttempo p_tempoatu # Tempo para atualizar personagem
 uint8 p_tempomsg # Para enviar mensagens de fome e sede em tempoatu_exec
 uint8 p_tempofim # Para sair do jogo após algum tempo sem digitar nada
 sav inttempo tempojogo1 # Em décimos de segundo, até 24 horas
 sav uint16 tempojogo2 # Dias, para contar o tempo de jogo
-const pesoobj = 65000
 const p_recebe = 1 # Para poder receber itens de outros personagens
 sav uint16 prenascer # Quantas vezes renasceu (usou o comando renascer)
 sav txt32 tipo1 # Raça do jogador; vide classes "t_*" em config/tipo.int
 sav txt32 tipo2 # Classe do jogador; vide classes "t_*" em config/tipo.int
 sav txt32 tipo3 # Subclasse do jogador; vide classes "t_*" em config/tipo.int
+sav uint32 pesoobj # Peso do personagem (em gramas)
+sav uint32 volobj # Volume do personagem
 const p_agressivo = int($perm_[jogperm].batalha)
 const p_naoseguir = !jogconfig.5
 const p_imortal = jogconfig.14
@@ -323,3 +324,24 @@ func cmd_recalc1 # Recalcula variáveis do personagem
   jogconfig.14 && (bitver |= 0x107C) # Propriedade config +imortal
   jogconfig.18 && (bitinv |= 128) # Propriedade config +invsala
   $perm_[jogperm].c_config & 8 && (bitver |= 128) # Ver personagens com config +invsala
+
+func ajustajog # Ajusta variáveis do jogador: pesoobj e volobj
+  int8 ajusta
+  refvar r = $t_[tipo1]
+  se volobj < r.volmin || volobj > r.volmax
+    volobj = rand(r.volmin, r.volmax) ?? volobj
+    ajusta = 1
+  fimse
+  se pesoobj < r.pesomin || pesoobj > r.pesomax
+    pesoobj = rand(r.pesomin, r.pesomax) ?? pesoobj
+    ajusta = 1
+  fimse
+  ret !ajusta, nulo
+# Aproxima peso do volume
+  se r.volmax > r.volmin && r.pesomax > r.pesomin
+    refvar num1 = (volobj - r.volmin) / (r.volmax - r.volmin)
+    refvar num2 = r.pesomin + num1 * (r.pesomax - r.pesomin)
+    pesoobj = (pesoobj + num2 * 3) / 4
+  fimse
+# Acerta peso e volume do personagem
+  ajustapeso

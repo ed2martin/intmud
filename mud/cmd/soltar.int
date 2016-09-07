@@ -125,10 +125,14 @@ func soltarobj
       erro = "Não é possível colocar " + arg1.descnome + " dentro dela mesma."
     fimse
     ret
-  senao arg1.dentro1.total + (arg2.item == 2 ? 1 : total) > arg1.objmax
+  senao arg1.i_itens && txtproc("\n" + arg1.i_itens + "\n", "\n" + txt(arg2, 2) + "\n") < \
+0
+    erro = "Não é possível colocar " + arg2.descnome + " em " + arg1.descnome + "."
+    ret
+  senao arg2.cabedentro(arg1) < total
     se !arg1.item
-      erro = "Não consegue soltar nada aqui."
-      ret 1
+      erro = "Não consegue soltar tanta coisa aqui."
+      ret
     fimse
     erro = arg1.descnome + "."
     casovar txtmin(txt1(erro))
@@ -140,13 +144,6 @@ func soltarobj
       ret
     casofim
     erro = "Não consegue colocar mais nada em " + erro
-    ret
-  senao arg1.volden + arg2.voltot * total / arg2.objtot > arg1.volmax
-    erro = "Não há espaço suficiente para soltar isso."
-    ret
-  senao arg1.i_itens && txtproc("\n" + arg1.i_itens + "\n", "\n" + txt(arg2, 2) + "\n") < \
-0
-    erro = "Não é possível colocar " + arg2.descnome + " em " + arg1.descnome + "."
     ret
   fimse
   achou++

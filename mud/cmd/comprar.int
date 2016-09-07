@@ -11,7 +11,6 @@ func escr
   negociar_ini(arg0)
   txt200 lin # Texto da linha atual
   int32 linha # Qual linha está verificando
-  int1 mudou # Para saber se já enviou uma mensagem no comando avaliar
   txt100 nomeitem # O nome do item que está procurando
   uint32 valor # Preço da aula
   uint32 nivel # Nível do item
@@ -24,7 +23,6 @@ func escr
   senao
     nomeitem = txt2(arg1)
   fimse
-  mudou = 0
   l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
     refvar p = ref(l.objini) # Personagem que está sendo verificado
@@ -38,38 +36,39 @@ func escr
       continuar !t2.ini.texto
       lin = "i_" + txt1(t2.ini.texto), linha++
       continuar !n.nome([lin]:nome, 1) && txt(linha) != nomeitem
-      nivel = txt2(t2.ini.texto)
-      nivel == 0 && (nivel = [lin]:nivel)
+      nivel = txt2(t2.ini.texto) ?? [lin]:nivel
       valor = (100 + p.taxavenda) / 100 * [lin]:valor
-      se [lin]:item == 2 # Checa a quantidade de itens
-        total > 100 && (total = 100), linha = 1
-      senao
-        total > 10 && (total = 10), linha = total
-      fimse
-      se arg0.dentro1.total + linha > arg0.objmax
-        ret arg0.msg("Você não consegue carregar tanta coisa.")
-      senao arg0.volden + [lin]:volobj * total > arg0.volmax
-        ret arg0.msg("Você não consegue carregar tanta coisa.")
-      senao arg0.pesoden - arg0.pesoveste + [lin]:pesoobj * total > arg0.pesomax
-        ret arg0.msg("Você não consegue carregar tanto peso.")
-      senao arg0.var.z_moedas_ < valor * total
+      total > 100 && (total = 100)
+      se arg0.var.z_moedas_ < valor * total
         lin = "Você não tem $" + valor * total + "."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
-      ref r
-      se [lin]:item == 2
-        r = criar(lin, arg0, total)
-      senao
-        epara linha = 0, linha < total, linha++
-          r = criar(lin, arg0, nivel)
-        efim
-      fimse
-      arg0.var.z_moedas_ -= valor * total
-      $mens.p(arg0, p, r)
-      se total == 1
+      txt100 erro
+      uint16 totcompra
+      ref item
+      epara linha = 0, linha < 10 && total, linha++
+        ref r = criar(lin, nulo, total)
+        se arg0.pesoden - arg0.pesoveste + r.pesotot > arg0.pesomax
+          apagar(r)
+          erro = "Você não consegue carregar tanto peso."
+          sair
+        senao r.cabedentro(arg0) >= r.objtot
+          totcompra += r.objtot
+          total -= r.objtot
+          arg0.var.z_moedas_ -= r.objtot * valor
+          item = r.mudadono(arg0, r.objtot)
+        senao
+          apagar(r)
+          erro = "Você não consegue carregar tanta coisa."
+          sair
+        fimse
+      efim
+      ret !totcompra, arg0.msg(erro)
+      $mens.p(arg0, p, item)
+      se totcompra == 1
         $mens.mtodos1("$P compra $o $d $A.")
       senao
-        $mens.mtodos1("$P compra " + total + "x $o $d $A.")
+        $mens.mtodos1("$P compra " + totcompra + "x $o $d $A.")
       fimse
       ret
     efim
@@ -82,9 +81,7 @@ func escr
         ref r = e.objini
         valor = (100 + p.taxavenda) / 100 * r.valor
         total > r.objtot && (total = r.objtot)
-        se arg0.dentro1.total + (r.item == 2 ? 1 : total) > arg0.objmax
-          ret arg0.msg("Você não consegue carregar tanta coisa.")
-        senao arg0.volden + r.voltot * total / r.objtot > arg0.volmax
+        se r.cabedentro(arg0) < total
           ret arg0.msg("Você não consegue carregar tanta coisa.")
         senao arg0.pesoden - arg0.pesoveste + r.pesotot * total / r.objtot > arg0.pesomax
           ret arg0.msg("Você não consegue carregar tanto peso.")
@@ -137,8 +134,9 @@ func escr
         r.mudachave # Já faz r.objmudou=1
         r.limpa_sjog
         arg0.var.z_moedas_ -= valor
+        r.salvar, arg0.salvar # Salva casa e personagem do jogador
         $mens.p(arg0, p)
-        $mens.mens = r.nome ? r.nome : "uma casa"
+        $mens.mens = r.nome ?? "uma casa"
         $mens.mtodos1("$P compra $m $d $a.")
         ret
       efim
@@ -180,7 +178,7 @@ func escr
       fimse
     fimse
   efim
-  !mudou && arg0.msg("Ninguém vende isso aqui.")
+  arg0.msg("Ninguém vende isso aqui.")
 
 func evento # Gera evento para arg0 e arg1
   listaobj l

@@ -4,9 +4,8 @@ Para criar um item
 criar("nome da classe", aonde está, quantidade de itens, "variáveis")
 Em itens que agrupam: se a quantidade for omitida ou for menor que 1, será 1.
 Em itens que não agrupam: a quantidade é ignorada.
-Variáveis só têm sentido em itens que não agrupam. É um texto do tipo
-"variável=valor". Quando houver mais de uma variável, separar por vírgula
-(exemplo, "v1=10,v2=20").
+Variáveis são textos do tipo "variável=valor". Quando houver mais de uma
+variável, separar por vírgula (exemplo, "v1=10,v2=20").
 São criadas as variáveis correspondentes em 'textovar var' do item.
 
 const item = 1
@@ -14,9 +13,8 @@ const item = 1
 2 = Pode agrupar (classe comum_itemgrupo)
 3 = Completo (classe comum_itemperso)
 
-func cabedentro( sala , quantidade )
-Retorna 1 se o item cabe em sala/item/personagem ou 0 se não cabe.
-Se a quantidade for omitida, assume 1.
+func cabedentro( sala/item/personagem )
+Retorna quantos itens iguais a esse cabem em sala/item/personagem
 Essa função checa o volume e a quantidade de itens, mas não checa o peso.
 
 const mantersala = 0

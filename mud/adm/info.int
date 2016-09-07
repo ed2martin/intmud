@@ -58,8 +58,8 @@ func info # Usado por escr
   arg.socktotal == 1
   lin = "Dentro: " + arg0.socktot + " jogador" + (arg0.socktot != 1 ? "es")
   lin += ", " + arg0.dentro1.total + (arg0.dentro1.total == 1 ? " item" : " itens")
-  lin += ", " + arg0.dentro2.total + " perso, " + arg0.objnum
-  lin += arg0.objnum == 1 ? " item ao todo" : " itens ao todo"
+  lin += ", " + arg0.dentro2.total + " perso, representa " + (arg0.objnum >> 1)
+  lin += arg0.objnum >> 1 == 1 ? " item" : " itens"
   arg1.addfim(lin)
 # Seguindo
   arg0.iseguir && arg1.addfim("Seguindo:         " + nobj(arg0.iseguir.objlista))
@@ -230,7 +230,7 @@ sav uint16 prenascer
 sav txt32 tipo1
 sav txt32 tipo2
 sav txt32 tipo3
-sav int1 jogconfig.24
+sav int1 jogconfig.32
 sav int32 tempojogo1
 sav uint16 tempojogo2
 

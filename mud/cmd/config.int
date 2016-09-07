@@ -94,7 +94,7 @@ func escr
       senao opc.[atual]
         x += " +" + txtmai(txt(p.texto, 4))
       senao
-        y += " -" + txtmai(txt(p.texto, 4))
+        y += " -" + txtmin(txt(p.texto, 4))
       fimse
     efim
     arg0.msg("CONFIG" + x + y)
@@ -113,7 +113,7 @@ func escr
         mudou += " +" + txtmai(txt(p.texto, 4))
       senao txt(x, 0, 1) == "-"
         opc.[atual] = 0
-        mudou += " -" + txtmai(txt(p.texto, 4))
+        mudou += " -" + txtmin(txt(p.texto, 4))
       senao
         y += " " + txt1(x)
       fimse

@@ -233,10 +233,12 @@ const clas14 = var.classe1
 const vari14 = "equip3"
 const extr14 = config:equip_txt
 #
+const titu15 = "* Somente jogadores"
+#
 const nome15 = "Nível mínimo"
-const info15 = "Quando o personagem do jogador é criado ou renasce, ele vai para esse\n\
-nível. Se houverem níveis diferentes na raça, classe e subclasse, é\n\
-considerado somente o maior."
+const info15 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
+Se houverem níveis diferentes na raça, classe e subclasse, é considerado\n\
+somente o maior."
 const tipo15 = "opc_numero"
 const clas15 = var.classe1
 const vari15 = "nmin"
@@ -257,8 +259,35 @@ const info17 = "Os novos tipos que o personagem pode escolher no comando renasce
 const clas17 = var.classe1
 const vari17 = "evoluir"
 #
+const nome18 = "Volume mínimo"
+const info18 = "Somente raças; o volume é escolhido aleatoriamente"
+const tipo18 = "opc_numero"
+const clas18 = var.classe1
+const vari18 = "volmin"
+const exec18 = "jogador:ajustajog"
+#
+const nome19 = "Volume máximo"
+const info19 = "Somente raças; o volume é escolhido aleatoriamente"
+const tipo19 = "opc_numero"
+const clas19 = var.classe1
+const vari19 = "volmax"
+const exec19 = "jogador:ajustajog"
+#
+const nome20 = "Peso mínimo"
+const info20 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo20 = "opc_numero"
+const clas20 = var.classe1
+const vari20 = "pesomin"
+const exec20 = "jogador:ajustajog"
+#
+const nome21 = "Peso máximo"
+const info21 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo21 = "opc_numero"
+const clas21 = var.classe1
+const vari21 = "pesomax"
+const exec21 = "jogador:ajustajog"
+#
 const nome50 = "Variáveis"
-const info50 = "Só tem efeito em jogadores"
 const tipo50 = "opc_linha"
 const clas50 = var.classe1
 const vari50 = "inivar"
@@ -268,7 +297,7 @@ classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome nomequem menu desc sexo racas classes\n\
-equip1 equip2 equip3 nmin nmax evoluir inivar"
+equip1 equip2 equip3 nmin nmax evoluir volmin volmax pesomin pesomax inivar"
 const iniclasse = !$[arg0] && criar(arg0)
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado

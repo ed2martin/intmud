@@ -24,7 +24,7 @@ func escr
   negociar_ini(arg0)
   txt200 lin
   listaobj l
-# Avaliar/comprar casas
+# Avaliar/vender casas
   se arg1 == "casa"
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
@@ -44,6 +44,7 @@ func escr
         arg0.var.z_moedas_ += valor
         r.nomejog = ""
         r.mudachave # Já faz r.objmudou=1
+        arg0.salvar, r.salvar # Salva personagem do jogador e casa
         $mens.p(arg0, p)
         $mens.mens = r.nome ? r.nome : "uma casa"
         lin = "$P vende $m para $a"
@@ -68,7 +69,7 @@ func escr
     efim
     ret arg0.msg("Ninguém quer comprar casa.")
   fimse
-# Avaliar/comprar itens
+# Avaliar/vender itens
   nomeobj n # Para reconhecer os itens
   n.ini(arg1, 1000000)
   epara l.addfim(arg0.dentro1), l, l.ini.remove

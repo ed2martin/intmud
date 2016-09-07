@@ -964,10 +964,10 @@ const char * Instr::NomeInstr(const char * instr)
 
     case cVariaveis:        return "";
     case cTxt1:
-        sprintf(nome, "txt%d", (unsigned char)instr[endIndice]+1);
+        sprintf(nome, "txt%d", (unsigned char)instr[endExtra]+1);
         return nome;
     case cTxt2:
-        sprintf(nome, "txt%d", (unsigned char)instr[endIndice]+257);
+        sprintf(nome, "txt%d", (unsigned char)instr[endExtra]+257);
         return nome;
     case cInt1:             return "int1";
     case cInt8:             return "int8";
