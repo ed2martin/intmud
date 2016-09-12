@@ -1,3 +1,73 @@
+* 11/9/2016 IntMUD 1.09 MUD baseado na revisão 420
+
+   No IntMUD:
+  1. Corrigido bug: debug.cmd não estava considerando as variáveis do
+     código; exemplo, em "refvar l=1\nret l" não estava retornando 1,
+     que é a variável l
+  2. Função textopos.add agora retorna quantas linhas foram adicionadas
+  3. Criada função textopos.addpos, que funciona como textopos.add,
+     porém posiciona o textopos após o texto que foi adicionado
+  4. Criadas funções textopos.txtmd5 e textopos.txtsha1
+  5. Salvar jogos (com arqsav) está mais seguro, porque o IntMUD salva
+     em um arquivo temporário (intmud-temp.txt) e depois renomeia para o
+     arquivo sav correspondente
+  6. Quando uma variável estiver em uma função, é possível atribuir um
+     valor inicial a ela, com a sintaxe: tipo nome-da-variável = valor
+  7. Versão mudou para 1.10
+
+   No MUD:
+  1. Corrigido bug: Comando Descarregar não estava descarregando a arma
+     que o personagem está empunhando
+  2. Corrigido bug: Digitar no MUD "cmd pnivel=0,recalc=1" não executava
+     a segunda instrução: recalc=1
+  3. Corrigido bug: no comando Eitem, nos itens completos, o menu de
+     armas estava na opção 21 ao invés da 11, ocultando assim o menu de
+     atributos
+  4. Corrigido bug: nas lutas, personagens não jogador só estavam
+     atacando com o ataque automático
+  5. Corrigido bug: em itens que produzem luz, quando a luz se apagava
+     sozinha, não estava gerando eventos cmd_apagou
+  6. Corrigido bug em $mens.mtodos2: só estava enviando a mensagem para
+     o próprio personagem
+  7. Corrigidas algumas tags no código HTML do acesso via navegador
+  8. Opções de ataques dos comandos Ehab e Emag foram colocadas em um
+     submenu e foram adicionadas mais opções nesse submenu
+  9. Apagado comando Atklog e criados comandos Dhab e Dmag no lugar
+ 10. Apagada sala teste122 porque explicação sobre conhecimento do golpe
+     foi substituída pelas opções força iniciante e força perito dos
+     ataques
+ 11. A opção 26 do comando Eperso, quando não definida agora aparece
+     "<herda> Bater" (vindo do Econfig) ao invés de "<herda const>"
+ 12. Criado comando Sjog
+ 13. Casas dos jogadores agora podem ter até 20 salas
+ 14. Ao comprar uma casa, as permissões das salas (comando Sjog) são
+     apagadas
+ 15. As descrições das salas teste139 e teste140 (tempo de espera) foram
+     reformuladas
+ 16. Acrescentada opção "Olhar mostra volume" no menu "Comandos" do
+     comando Econfig
+ 17. Criado menu "Herda" no comando Econfig
+ 18. A opção "22 Movimentos ataque" dos comandos Earea e Esala agora é a
+     7
+ 19. Nos itens: opção precisão arma mudou para taxa de falha
+ 20. Nas habilidades e magias: opção precisão mudou para taxa de falha
+ 21. Criados comandos Md5salvar e Md5checar
+ 22. Usuários controlando PNJs agora entram em salas que não permitem
+     PNJs e salas que não permitem jogadores
+ 23. O personagem e a casa são salvos quando alguém compra ou vende uma
+     casa
+ 24. Corrigido bug: comando Info estava mostrando quantidade errada de
+     itens ao todo
+ 25. Checagem de volume e quantidade de itens e personagem agora está
+     concentrada na função cabedentro
+ 26. Comando Config agora mostra opções desativas (quando tem um hífen
+     na frente) em minúsculas
+ 27. Criadas opções para tipos, quando forem raças de jogadores: volume
+     e peso mínimo e máximo e se pode sentir fome e sede
+ 28. Criadas opções para tipos, quando forem jogadores: ataque
+     automático (sem arma)
+ 29. Criadas opções "Condição efeitos" e "Anula efeitos" para os efeitos
+
 * 12/7/2016 IntMUD 1.09 MUD baseado na revisão 413
 
    No IntMUD:

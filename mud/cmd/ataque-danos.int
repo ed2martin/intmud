@@ -175,6 +175,10 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
     lin = "Danos " + aulas + ": \b"
     lin += danosg_sub(danomin, danomax, ataquemedio, danosporseg) + "\n"
   fimse
+  se tipoalvo == 8
+    lin += "Danos sem arma:\b"
+    lin += danosg_sub(danomin, danomax, (ataquemin + ataquemax) / 2, danosporseg) + "\n"
+  fimse
   lin += "Danos Iniciante: \b"
   lin += danosg_sub(danomin, danomax, ataquemin, danosporseg)
   lin += "\nDanos Perito: \b"

@@ -25,6 +25,7 @@ sav txt32 tipo3 # Subclasse do jogador; vide classes "t_*" em config/tipo.int
 sav uint32 pesoobj # Peso do personagem (em gramas)
 sav uint32 volobj # Volume do personagem
 const p_agressivo = int($perm_[jogperm].batalha)
+const p_atktipo = $t_[tipo1].atipo ?? $t_[tipo2].atipo ?? $t_[tipo3].atipo ?? config:atk_txt
 const p_naoseguir = !jogconfig.5
 const p_imortal = jogconfig.14
 const j_imortal = jogconfig.14
@@ -136,7 +137,7 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
     p_sede = intmax($miscfome.semfome, p_sede - 1)
     p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida = intmin(1, p_bebida - 1)
-  senao !$perm_[jogperm].fome # Sem fome/sede
+  senao !$perm_[jogperm].fome || !$t_[tipo1].fome # Sem fome/sede
     p_sede = intmax($miscfome.semfome, p_sede - 1)
     p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida -= 2

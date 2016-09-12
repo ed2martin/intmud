@@ -16,12 +16,13 @@ const msgfim1 = msgfim2
 const msgfalhou1 = msgfalhou2
 const msgnulo1 = msgnulo2
 const msgreduz1 = msgreduz2
-intexec evini # Para inicializar o efeito
+intexec e_evini # Para inicializar o efeito
 #
 # Ordem que deve organizar as constantes:
 const admordem = "e_nome\n\
-e_condicao\n\
 e_desc\n\
+e_condicao\n\
+e_ef_condicao e_ef_apaga\n\
 desc\n\
 maximo\n\
 r_mana r_move r_tempo r_vida\n\
@@ -42,20 +43,33 @@ evhora\nevperso"
 func ini # Cria efeito
 # arg0 = personagem que receberá o efeito
 # arg1 = nível de quem usou o efeito
-  evini = 1
+  e_evini = 1
   ret !(dono = arg0), apagar(este) # Acerta dono e apaga efeito se for nulo
-  idono = dono.dentro2.addini(este) # Adiciona como personagem
+  refvar lista = dono.dentro2
   ret 0 > arg1, t_duracao = -1
-  ret dono.dentro2.total(este) > maximo || e_condicao == (dono.contr.atkenv ? 3 : 2), t_duracao \
-= -2
-  t_reduzir = r_tempo, t_duracao = intpos(tempo1 + tempo2 * arg1)
+  ret lista.total(este) >= maximo, nulo
+  ret e_condicao == (dono.contr.atkenv ? 3 : 2), nulo
+  textotxt t
+  epara t.addfim(e_ef_condicao), t.linhas, t.remove
+    ret lista.objini("e_" + t.ini.texto), nulo
+  efim
+  idono = lista.addini(este) # Adiciona como personagem
+  t_reduzir = r_tempo
+  t_duracao = intpos(tempo1 + tempo2 * arg1)
 
-func evini_exec # Inicializa efeito
-  se t_duracao >= 0
+func e_evini_exec # Inicializa efeito
+  se idono
     evhora && (evrec.0 = $miscsav.evhora.addfim(este))
     evperso && (evrec.1 = dono.evento.addfim(este))
     e_condicao >= 2 && (evrec.2 = dono.contr.atkbat.addfim(este))
     dono.recalc = 1
+    textotxt t
+    listaitem i
+    epara t.addfim(e_ef_apaga), t.linhas, t.remove
+      epara i = dono.dentro2.ini("e_" + t.ini.texto), i, i.objdepois
+        apagar(i.obj)
+      efim
+    efim
     $mens.p(dono) + $mens.mvis2(msgini1, msgini2)
     cmd_ini(dono)
   senao t_duracao == -1
@@ -67,7 +81,7 @@ func evini_exec # Inicializa efeito
   fimse
 
 func fim # Apaga efeito
-  ret evini || !idono, nulo
+  ret !idono, nulo
   idono.remove
   dono.recalc = 0
   dono.recalc_exec

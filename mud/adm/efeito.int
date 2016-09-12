@@ -316,101 +316,117 @@ Durante a batalha e tem pontos de vida\n\
 Fora da batalha e tem pontos de vida"
 const exec5 = "ajustaobj"
 #
-const nome6 = "Duração"
-const info6 = "Quantos décimos de segundo o efeito dura ou 0 se não expira"
-const tipo6 = "opc_numero"
+const nome6 = "Condição efeitos"
+const info6 = "Quais efeitos impedem que esse efeito seja criado"
+const tipo6 = "opc_listaefeito"
 const clas6 = var.classe1
-const vari6 = "tempo1"
-const extr6 = "0 1000000"
+const vari6 = "e_ef_condicao"
+const extr6 = "100"
+const exec6 = "acerta_mudou"
 #
-const nome7 = "Duração por nível"
-const info7 = "Quantos décimos de segundo dura para cada nível de quem lançou"
-const tipo7 = "opc_numero"
+const nome7 = "Anula efeitos"
+const info7 = "Quais efeitos são são anulados quando esse efeito é criado"
+const tipo7 = "opc_listaefeito"
 const clas7 = var.classe1
-const vari7 = "tempo2"
-const extr7 = "0 100000"
+const vari7 = "e_ef_apaga"
+const extr7 = "100"
+const exec7 = "acerta_mudou"
 #
-const nome8 = "Atrib texto"
-const info8 = "Aparece na frente da descrição do personagem, entre parênteses\n\
+const nome8 = "Duração"
+const info8 = "Quantos décimos de segundo o efeito dura ou 0 se não expira"
+const tipo8 = "opc_numero"
+const clas8 = var.classe1
+const vari8 = "tempo1"
+const extr8 = "0 1000000"
+#
+const nome9 = "Duração por nível"
+const info9 = "Quantos décimos de segundo dura para cada nível de quem lançou"
+const tipo9 = "opc_numero"
+const clas9 = var.classe1
+const vari9 = "tempo2"
+const extr9 = "0 100000"
+#
+const nome10 = "Atrib texto"
+const info10 = "Aparece na frente da descrição do personagem, entre parênteses\n\
 Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
 Exemplo: *  ... e está protegid$s por uma luz"
-const tipo8 = "opc_linha"
-const clas8 = var.classe1
-const vari8 = "m_atribs2"
-const exec8 = "atribs_dono"
-#
-const nome9 = "Atrib números"
-const info9 = "Afetam apenas personagens"
-const tipo9 = "opc_atribnum"
-const clas9 = var.classe1
-const vari9 = "recalc2_auto"
-const exec9 = "recalc_dono"
-#
-const nome10 = "Atrib itens"
-const info10 = "Afetam apenas itens"
-const tipo10 = "opc_atribobj"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
-const vari10 = "recalc2_auto"
-const exec10 = "recalc_dono"
+const vari10 = "m_atribs2"
+const exec10 = "atribs_dono"
 #
-const nome11 = "Atrib sim/não"
-const tipo11 = "opc_atribbit"
+const nome11 = "Atrib números"
+const info11 = "Afetam apenas personagens"
+const tipo11 = "opc_atribnum"
 const clas11 = var.classe1
 const vari11 = "recalc2_auto"
 const exec11 = "recalc_dono"
 #
-const nome12 = "Atrib ataque"
-const info12 = "Afetam os danos quando o personagem ataca alguém"
-const tipo12 = "opc_atribatk"
+const nome12 = "Atrib itens"
+const info12 = "Afetam apenas itens"
+const tipo12 = "opc_atribobj"
 const clas12 = var.classe1
 const vari12 = "recalc2_auto"
 const exec12 = "recalc_dono"
 #
-const nome13 = "Atrib defesa"
-const info13 = "Afetam os danos quando alguém ataca o personagem"
-const tipo13 = "opc_atribdef"
+const nome13 = "Atrib sim/não"
+const tipo13 = "opc_atribbit"
 const clas13 = var.classe1
 const vari13 = "recalc2_auto"
 const exec13 = "recalc_dono"
 #
-const nome14 = "Tempo reduzir"
-const info14 = "De quantos em quantos décimos de segundo reduz algo"
-const tipo14 = "opc_numero"
+const nome14 = "Atrib ataque"
+const info14 = "Afetam os danos quando o personagem ataca alguém"
+const tipo14 = "opc_atribatk"
 const clas14 = var.classe1
-const vari14 = "r_tempo"
-const extr14 = "0 10000"
+const vari14 = "recalc2_auto"
+const exec14 = "recalc_dono"
 #
-const nome15 = "Reduz vida"
-const tipo15 = "opc_numero"
+const nome15 = "Atrib defesa"
+const info15 = "Afetam os danos quando alguém ataca o personagem"
+const tipo15 = "opc_atribdef"
 const clas15 = var.classe1
-const vari15 = "r_vida"
+const vari15 = "recalc2_auto"
+const exec15 = "recalc_dono"
 #
-const nome16 = "Reduz mana"
+const nome16 = "Tempo reduzir"
+const info16 = "De quantos em quantos décimos de segundo reduz algo"
 const tipo16 = "opc_numero"
 const clas16 = var.classe1
-const vari16 = "r_mana"
+const vari16 = "r_tempo"
+const extr16 = "0 10000"
 #
-const nome17 = "Reduz vigor"
+const nome17 = "Reduz vida"
 const tipo17 = "opc_numero"
 const clas17 = var.classe1
-const vari17 = "r_move"
+const vari17 = "r_vida"
 #
-const nome18 = "Mensagens"
-const tipo18 = "menu_efeito_msg--"
+const nome18 = "Reduz mana"
+const tipo18 = "opc_numero"
+const clas18 = var.classe1
+const vari18 = "r_mana"
 #
-const nome19 = "Eventos hora"
-const info19 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
-const tipo19 = "opc_simnao"
+const nome19 = "Reduz vigor"
+const tipo19 = "opc_numero"
 const clas19 = var.classe1
-const vari19 = "evhora"
-const exec19 = "ajustaobj"
+const vari19 = "r_move"
 #
-const nome20 = "Eventos perso"
-const info20 = "Se recebe eventos do personagem que está com o efeito"
-const tipo20 = "opc_simnao"
-const clas20 = var.classe1
-const vari20 = "evperso"
-const exec20 = "ajustaobj"
+const nome20 = "Mensagens"
+const tipo20 = "menu_efeito_msg--"
+#
+const nome21 = "Eventos hora"
+const info21 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
+const tipo21 = "opc_simnao"
+const clas21 = var.classe1
+const vari21 = "evhora"
+const exec21 = "ajustaobj"
+#
+const nome22 = "Eventos perso"
+const info22 = "Se recebe eventos do personagem que está com o efeito"
+const tipo22 = "opc_simnao"
+const clas22 = var.classe1
+const vari22 = "evperso"
+const exec22 = "ajustaobj"
 
 
 classe menu_efeito_msg

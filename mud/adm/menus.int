@@ -907,36 +907,43 @@ func passo # Alterando a sala
 classe opc_listasala
 herda comando_editor
 # Um texto contendo nomes das salas (nomes dos objetos sem o "s_" no começo)
+#
+const prefixo = "s_"
+const m_aviso1 = "Entre com o nome da sala, O mostra as salas, Z cancela"
+const m_aviso2 = "Entre com o nome da sala, O mostra as salas, N nenhuma, Z cancela"
+const m_lista = "Salas:"
+const m_nenhum = "Nenhuma sala"
+const m_adicionado = "Sala adicionada: "
+const m_removido = "Sala removida: "
+const m_naoexiste = "Sala não existe: "
+const m_limite = "Atingido limite de salas"
+const m_nome = $s_[arg1].s_titulo(arg0)
+const m_total = arg0 == 1 ? "\c6Uma sala\b" : "\c6" + arg0 + " salas\b"
 
 func menu # Retorna quantidade de linhas de texto de várias linhas
 # arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), m_total(intsublin([arg0]:[arg1]))
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
+    ret p_vartexto(arg0, arg1), "<herda> " + m_total(intsublin([arg0]:[arg1]))
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
-    ret "<nulo> " + menu2([arg0]:[arg1])
+    ret "<nulo> " + m_total(intsublin([arg0]:[arg1]))
   casofim
 
-func menu2
-  txt10 x
-  x = intsublin(arg0)
-  ret x != "1" ? "\c6" + x + " salas\b" : "\c6Uma sala\b"
-
-func passo # Alterando a sala
+func passo # Alterando
   prog p
   se arg1 == "" || arg1 == "\b"
     arg0.passo = este
     se arg0.var.opcvalido
-      arg0.msg("Entre com o nome da sala, O mostra as salas, Z cancela")
+      arg0.msg(m_aviso1)
     senao
-      arg0.msg("Entre com o nome da sala, O mostra as salas, N nenhuma, Z cancela")
+      arg0.msg(m_aviso2)
     fimse
     ret 1
   senao arg1 == "n" && !arg0.var.opcvalido
@@ -949,14 +956,14 @@ func passo # Alterando a sala
     textotxt t
     t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
     se t.bytes <= 1
-      arg0.msg("Nenhuma sala")
+      arg0.msg(m_nenhum)
       ret 1
     fimse
     textopos pos
     arg0.txtmais.limpar
-    arg0.txtmais.addfim("Salas:")
+    arg0.txtmais.addfim(m_lista)
     epara pos = t.ini, pos.lin, pos.depois
-      arg0.txtmais.addfim(pos.texto + "  " + $[pos.texto].s_titulo(arg0))
+      arg0.txtmais.addfim(pos.texto + "  " + m_nome(arg0, pos.texto))
     efim
     arg0.txtmostra
     ret 1
@@ -969,16 +976,16 @@ func passo # Alterando a sala
     pos = t.ini
     se pos.txtproc("\n" + nome + "\n") >= 0
       pos.remove
-      arg0.msg("Sala removida: " + nome)
-    senao !p.existe("s_" + nome)
-      arg0.msg("Sala não existe: " + nome)
+      arg0.msg(m_removido + nome)
+    senao !p.existe(prefixo + nome)
+      arg0.msg(m_naoexiste + nome)
       ret passo(arg0, "\b")
     senao arg0.var.opcextra && t.linhas >= arg0.var.opcextra_
       arg0.msg("Atingido limite de salas")
       ret passo(arg0, "\b")
     senao
       t.addfim(nome), t.ordena
-      arg0.msg("Sala adicionada: " + nome)
+      arg0.msg(m_adicionado + nome)
     fimse
     refvar lin = "const " + arg0.var.opcvar + "=\""
     p.criar(arg0.var.opcclasse, lin + txtvis(t.ini.textolin(1000)) + "\"")
@@ -991,89 +998,37 @@ func passo # Alterando a sala
 
 
 classe opc_listaitem
-herda comando_editor
+herda opc_listasala
 # Um texto contendo nomes dos itens (nomes dos objetos sem o "i_" no começo)
+#
+const prefixo = "i_"
+const m_aviso1 = "Entre com o nome do item, O mostra os itens, Z cancela"
+const m_aviso2 = "Entre com o nome do item, O mostra os itens, N nenhum, Z cancela"
+const m_lista = "Itens:"
+const m_nenhum = "Nenhum item"
+const m_adicionado = "Item adicionado: "
+const m_removido = "Item removido: "
+const m_naoexiste = "Item não existe: "
+const m_limite = "Atingido limite de itens"
+const m_nome = i_[arg1]:nome
+const m_total = arg0 == 1 ? "\c6Um item\b" : "\c6" + arg0 + " itens\b"
 
-func menu # Retorna quantidade de linhas de texto de várias linhas
-# arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
-  prog p
-  casovar p.existe(arg0, arg1)
-  casose "1" # Na própria classe
-    ret p_vartexto(arg0, arg1), menu2([arg0]:[arg1])
-    p.inilinha(arg0, arg1)
-    ret "<" + txt1(p.texto) + ">"
-  casose "2" # Em uma classe herdada
-    ret p_vartexto(arg0, arg1), "<herda> " + menu2([arg0]:[arg1])
-    p.inilinha(arg0, arg1)
-    ret "<herda " + txt1(p.texto) + ">"
-  casose # Não foi definido
-    ret "<nulo> " + menu2([arg0]:[arg1])
-  casofim
 
-func menu2
-  txt10 x
-  x = intsublin(arg0)
-  ret x != "1" ? "\c6" + x + " itens\b" : "\c6Um item\b"
-
-func passo # Alterando o item
-  prog p
-  se arg1 == "" || arg1 == "\b"
-    arg0.passo = este
-    se arg0.var.opcvalido
-      arg0.msg("Entre com o nome do item, O mostra os itens, Z cancela")
-    senao
-      arg0.msg("Entre com o nome do item, O mostra os itens, N nenhum, Z cancela")
-    fimse
-    ret 1
-  senao arg1 == "n" && !arg0.var.opcvalido
-    p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
-    config:salvar
-    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
-    arg0.msg("Apagado: " + arg0.var.opcnome)
-    admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
-  senao arg1 == "o"
-    textotxt t
-    t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
-    se t.bytes <= 1
-      arg0.msg("Nenhum item")
-      ret 1
-    fimse
-    textopos pos
-    arg0.txtmais.limpar
-    arg0.txtmais.addfim("Itens:")
-    epara pos = t.ini, pos.lin, pos.depois
-      arg0.txtmais.addfim(pos.texto + "  " + i_[pos.texto]:nome)
-    efim
-    arg0.txtmostra
-    ret 1
-  senao arg1 != "z"
-    refvar nome = txtmin(txts(arg1))
-    textotxt t
-    t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
-    t.bytes <= 1 && t.limpar
-    textopos pos
-    pos = t.ini
-    se pos.txtproc("\n" + nome + "\n") >= 0
-      pos.remove
-      arg0.msg("Item removido: " + nome)
-    senao !p.existe("i_" + nome)
-      arg0.msg("Item não existe: " + nome)
-      ret passo(arg0, "\b")
-    senao arg0.var.opcextra && t.linhas >= arg0.var.opcextra_
-      arg0.msg("Atingido limite de itens")
-      ret passo(arg0, "\b")
-    senao
-      t.addfim(nome), t.ordena
-      arg0.msg("Item adicionado: " + nome)
-    fimse
-    refvar lin = "const " + arg0.var.opcvar + "=\""
-    p.criar(arg0.var.opcclasse, lin + txtvis(t.ini.textolin(1000)) + "\"")
-    config:salvar
-    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
-    admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
-    ret passo(arg0, "\b")
-  fimse
-  ret passosair(arg0)
+classe opc_listaefeito
+herda opc_listasala
+# Um texto contendo nomes dos efeitos (nomes dos objetos sem o "e_" no começo)
+#
+const prefixo = "e_"
+const m_aviso1 = "Entre com o nome do efeito, O mostra os itens, Z cancela"
+const m_aviso2 = "Entre com o nome do efeito, O mostra os efeitos, N nenhum, Z cancela"
+const m_lista = "Efeitos:"
+const m_nenhum = "Nenhum efeito"
+const m_adicionado = "Efeito adicionado: "
+const m_removido = "Efeito removido: "
+const m_naoexiste = "Efeito não existe: "
+const m_limite = "Atingido limite de efeitos"
+const m_nome = e_[arg1]:nome
+const m_total = arg0 == 1 ? "\c6Um efeito\b" : "\c6" + arg0 + " efeitos\b"
 
 
 classe admmudou

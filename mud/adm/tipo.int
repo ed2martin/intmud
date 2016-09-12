@@ -259,33 +259,45 @@ const info17 = "Os novos tipos que o personagem pode escolher no comando renasce
 const clas17 = var.classe1
 const vari17 = "evoluir"
 #
-const nome18 = "Volume mínimo"
-const info18 = "Somente raças; o volume é escolhido aleatoriamente"
-const tipo18 = "opc_numero"
+const nome18 = "Fome e sede"
+const info18 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
+const tipo18 = "opc_simnao"
 const clas18 = var.classe1
-const vari18 = "volmin"
-const exec18 = "jogador:ajustajog"
+const vari18 = "fome"
 #
-const nome19 = "Volume máximo"
-const info19 = "Somente raças; o volume é escolhido aleatoriamente"
-const tipo19 = "opc_numero"
+const nome19 = "Ataque automático"
+const info19 = "Habilidade usada em ataques automáticos sem arma"
+const tipo19 = "opc_linha"
 const clas19 = var.classe1
-const vari19 = "volmax"
-const exec19 = "jogador:ajustajog"
+const vari19 = "atipo"
 #
-const nome20 = "Peso mínimo"
-const info20 = "Somente raças; o peso é escolhido aleatoriamente"
+const nome20 = "Volume mínimo"
+const info20 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo20 = "opc_numero"
 const clas20 = var.classe1
-const vari20 = "pesomin"
+const vari20 = "volmin"
 const exec20 = "jogador:ajustajog"
 #
-const nome21 = "Peso máximo"
-const info21 = "Somente raças; o peso é escolhido aleatoriamente"
+const nome21 = "Volume máximo"
+const info21 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo21 = "opc_numero"
 const clas21 = var.classe1
-const vari21 = "pesomax"
+const vari21 = "volmax"
 const exec21 = "jogador:ajustajog"
+#
+const nome22 = "Peso mínimo"
+const info22 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo22 = "opc_numero"
+const clas22 = var.classe1
+const vari22 = "pesomin"
+const exec22 = "jogador:ajustajog"
+#
+const nome23 = "Peso máximo"
+const info23 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo23 = "opc_numero"
+const clas23 = var.classe1
+const vari23 = "pesomax"
+const exec23 = "jogador:ajustajog"
 #
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
@@ -297,8 +309,10 @@ classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome nomequem menu desc sexo racas classes\n\
-equip1 equip2 equip3 nmin nmax evoluir volmin volmax pesomin pesomax inivar"
+equip1 equip2 equip3 nmin nmax evoluir fome atipo\n\
+volmin volmax pesomin pesomax inivar"
 const iniclasse = !$[arg0] && criar(arg0)
+const fome = 1
 
 func recalc_ajusta # Ajusta variáveis quando algum atributo foi mudado
   refvar nome = txt2(txte(este))

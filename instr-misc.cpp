@@ -688,10 +688,12 @@ bool Instr::VarFuncFim()
 /** @return true se são iguais, false se são diferentes */
 bool Instr::ComparaInstr(const char * instr1, const char * instr2)
 {
-    int total = Num16(instr1);
+    int total = Num16(instr1); // Quantidade de bytes em instr1
     int inicio = Instr::endVar;
-    const char * expr = 0;
-    if (total==0)
+    const char * expr = 0; // Expressão numérica que está analisando
+               // Se 0, não checa expressão; apenas compara bytes a partir
+               // de instr1+inicio com instr2+inicio
+    if (total==0) // Fim das instruções em instr1: checa fim em instr2
         return (instr2[0]==0 && instr2[1]==0);
     if (memcmp(instr1, instr2, 3) != 0)
         return false;
@@ -717,6 +719,14 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
     case cContinuar1:   inicio = endVar+2; break;
     case cTerminar:     inicio = endVar;   break;
     case cRefVar:
+        if (strcmp(instr1 + endNome, instr2 + endNome) != 0)
+            return false;
+        expr = instr1 + endNome;
+        while (*expr++);
+        break;
+    default:
+        if (instr1[2] < cVariaveis || instr1[endIndice] == 0)
+            break;
         if (strcmp(instr1 + endNome, instr2 + endNome) != 0)
             return false;
         expr = instr1 + endNome;
