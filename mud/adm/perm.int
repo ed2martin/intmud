@@ -279,34 +279,42 @@ const clas2 = var.classe1
 const vari2 = "m_atribs"
 const exec2 = "jogrecalc"
 #
-const nome3 = "Fome/sede"
-const info3 = "Se pode sentir fome e sede (se não for imortal)"
-const tipo3 = "opc_simnao"
+const nome3 = "Dias salvar"
+const info3 = "Quantos dias personagens ficam salvos; se 0 pega do comando Econfig\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
-const vari3 = "fome"
+const vari3 = "salvardias"
+const extr3 = "0 10000"
 #
-const nome4 = "Ganhou permissão"
-const info4 = "Mensagem quando o jogador muda para esse grupo"
-const tipo4 = "opc_linha"
+const nome4 = "Fome/sede"
+const info4 = "Se pode sentir fome e sede (se não for imortal)"
+const tipo4 = "opc_simnao"
 const clas4 = var.classe1
-const vari4 = "entroumsg"
+const vari4 = "fome"
 #
-const nome5 = "Perdeu permissão"
-const info5 = "Mensagem quando o jogador deixa de ser desse grupo"
+const nome5 = "Ganhou permissão"
+const info5 = "Mensagem quando o jogador muda para esse grupo"
 const tipo5 = "opc_linha"
 const clas5 = var.classe1
-const vari5 = "saiumsg"
+const vari5 = "entroumsg"
 #
-const nome6 = "Sala Tele"
-const info6 = "Para qual sala vai ao teclar Tele sem argumentos"
-const tipo6 = "opc_sala"
+const nome6 = "Perdeu permissão"
+const info6 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo6 = "opc_linha"
 const clas6 = var.classe1
-const vari6 = "c_salatele"
+const vari6 = "saiumsg"
 #
-const nome7 = "Atalhos admin"
-const info7 = "Atalhos para comandos de administração"
-const tipo7 = "opc_perm_atalhos--"
+const nome7 = "Sala Tele"
+const info7 = "Para qual sala vai ao teclar Tele sem argumentos"
+const tipo7 = "opc_sala"
 const clas7 = var.classe1
+const vari7 = "c_salatele"
+#
+const nome8 = "Atalhos admin"
+const info8 = "Atalhos para comandos de administração"
+const tipo8 = "opc_perm_atalhos--"
+const clas8 = var.classe1
 
 
 classe menu_perm
@@ -329,14 +337,13 @@ const clas2 = var.classe1
 const vari2 = "m_atribs"
 const exec2 = "jogrecalc"
 #
-const nome3 = "Config"
-const info3 = "Opções extras do comando Config\n\
-Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
-const tipo3 = "opc_vetor"
+const nome3 = "Dias salvar"
+const info3 = "Quantos dias personagens ficam salvos; se 0 pega do comando Econfig\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
-const vari3 = "c_config"
-const extr3 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
-const exec3 = "jogrecalc"
+const vari3 = "salvardias"
+const extr3 = "0 10000"
 #
 const nome4 = "Fome/sede"
 const info4 = "Se pode sentir fome e sede (se não for imortal)"
@@ -344,48 +351,57 @@ const tipo4 = "opc_simnao"
 const clas4 = var.classe1
 const vari4 = "fome"
 #
-const nome5 = "Jogador entrando"
-const info5 = "Como deve avisar quando alguém entrar no MUD ou sair"
-const tipo5 = "opc_opcao"
+const nome5 = "Config"
+const info5 = "Opções extras do comando Config\n\
+Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
+const tipo5 = "opc_vetor"
 const clas5 = var.classe1
-const vari5 = "i_entrando"
-const extr5 = "Não informar\nInformar o nome\nInformações completas"
+const vari5 = "c_config"
+const extr5 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
+const exec5 = "jogrecalc"
 #
-const nome6 = "Mensagem Admin"
-const info6 = "Se é informado quando alguém digita a senha de administração"
-const tipo6 = "opc_simnao"
+const nome6 = "Jogador entrando"
+const info6 = "Como deve avisar quando alguém entrar no MUD ou sair"
+const tipo6 = "opc_opcao"
 const clas6 = var.classe1
-const vari6 = "i_admin"
+const vari6 = "i_entrando"
+const extr6 = "Não informar\nInformar o nome\nInformações completas"
 #
-const nome7 = "Ganhou permissão"
-const info7 = "Mensagem quando o jogador muda para esse grupo"
-const tipo7 = "opc_linha"
+const nome7 = "Mensagem Admin"
+const info7 = "Se é informado quando alguém digita a senha de administração"
+const tipo7 = "opc_simnao"
 const clas7 = var.classe1
-const vari7 = "entroumsg"
+const vari7 = "i_admin"
 #
-const nome8 = "Perdeu permissão"
-const info8 = "Mensagem quando o jogador deixa de ser desse grupo"
+const nome8 = "Ganhou permissão"
+const info8 = "Mensagem quando o jogador muda para esse grupo"
 const tipo8 = "opc_linha"
 const clas8 = var.classe1
-const vari8 = "saiumsg"
+const vari8 = "entroumsg"
 #
-const nome9 = "Comandos jogador"
-const tipo9 = "menu_perm_cmd--"
+const nome9 = "Perdeu permissão"
+const info9 = "Mensagem quando o jogador deixa de ser desse grupo"
+const tipo9 = "opc_linha"
+const clas9 = var.classe1
+const vari9 = "saiumsg"
 #
-const nome10 = "Comandos admin"
-const tipo10 = "menu_perm_adm--"
+const nome10 = "Comandos jogador"
+const tipo10 = "menu_perm_cmd--"
 #
-const nome11 = "Comandos edição"
-const tipo11 = "menu_perm_editor--"
+const nome11 = "Comandos admin"
+const tipo11 = "menu_perm_adm--"
 #
-const nome12 = "Atalhos admin"
-const info12 = "Atalhos para comandos de administração"
-const tipo12 = "opc_perm_atalhos--"
-const clas12 = var.classe1
+const nome12 = "Comandos edição"
+const tipo12 = "menu_perm_editor--"
 #
-const nome13 = "Outros comandos"
-const tipo13 = "opc_ajuda--"
-const extr13 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
+const nome13 = "Atalhos admin"
+const info13 = "Atalhos para comandos de administração"
+const tipo13 = "opc_perm_atalhos--"
+const clas13 = var.classe1
+#
+const nome14 = "Outros comandos"
+const tipo14 = "opc_ajuda--"
+const extr14 = "\c3Os seguintes comandos são apenas para o grupo Admin:\b\n\
 LSAV, ASAV, ESAV, MUDANOME: interferem com personagens de administradores\n\
 BAN2: bloqueia a entrada de administradores\n\
 ECONFIG: muda configurações do MUD, inclusive senha de administração\n\
@@ -807,7 +823,7 @@ classe comum_perm
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomequem c_config i_entrando i_admin\n\
-entroumsg saiumsg fome c_salvar c_chat c_novatos c_gritar\n\
+entroumsg saiumsg salvardias fome c_salvar c_chat c_novatos c_gritar\n\
 c_falar c_social c_telepatia c_rezar c_bug c_ideia\n\
 andar item vestir abrir usar_hab usar_mag batalha\n\
 c_admin c_serv c_rezou c_echo c_ban c_tele c_pnj c_monit c_matar\n\

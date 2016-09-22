@@ -90,8 +90,7 @@ func mover # Personagem anda em uma direção
     arg0.msg("Você não consegue porque não está flutuando.")
     ret 0
   fimse
-  uint8 total
-  total = s1.totalmove + s2.totalmove
+  uint8 total = s1.totalmove + s2.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
   total *= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos

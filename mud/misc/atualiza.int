@@ -1,4 +1,4 @@
-classe atualiza_417
+classe atualiza_421
 # Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 417, nulo
-  p.criar("config", "const versao = 417 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 421, nulo
+  p.criar("config", "const versao = 421 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -294,7 +294,6 @@ func ini2_exec
     criafunc("config", "const nivelveterano = 10")
     criafunc("config", "const salvainiciante = 30")
     criafunc("config", "const salvaveterano = 60")
-    criafunc("config", "const salvaadmin = 120")
   fimse
 # Retira mostraimortal e salvartipo, coloca mensagens de hora e nível
   se versao < 314
@@ -601,6 +600,12 @@ casa está atrasada.\"")
     criafunc("config", "const a_fatormin = 270")
     criafunc("config", "const a_fatormax = 330")
     criafunc("config", "const a_vel = 50")
+  fimse
+# Tempo para salvar jogo de admin
+  se versao < 421
+    p.apagar("config", "salvaadmin")
+    uint16 tempo = config:salvaadmin ?? 120
+    criafunc("perm_admin", "const salvardias = " + tempo)
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

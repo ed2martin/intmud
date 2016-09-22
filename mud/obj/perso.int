@@ -478,21 +478,21 @@ func p_proc_mover # Personagem tenta se movimentar em uma direção aleatória
 # Retorna: 1=conseguiu se movimentar, 0=não conseguiu
   textotxt t
   prog p
-  refvar r = ref(dono)
+  ref r = dono
   epara p.inifunctudo(r, "dir_"), p.lin, p.depois
-    cabedentro(r.[p.texto](este)) && t.addfim(txt(p.texto, 4))
+    t.addfim(p.texto)
   efim
-  t.remove(rand(t.linhas)) # Para escolher uma direção aleatoriamente
-  txt10 dir
-  dir = t.ini.texto # Direção escolhida
-  ret !dir || p_mover == 1 && r.dir_[dir](este).s_area != r.s_area, 0
-  $cmd_[dir].escr(este)
-  p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
-  ret r != dono
+  epara t.rand, t.linhas, t.remove
+    ref sala = r.[t.ini.texto](este)
+    continuar !sala || !cabedentro(sala) || p_mover == 1 && sala.s_area != r.s_area
+    $cmd_[txt(t.ini.texto, 4)].escr(este)
+    p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
+    ret r != dono
+  efim
 
 func p_proc_dir # Personagem tenta se movimentar em uma direção específica
 # arg0 = direção
 # Retorna: 1=conseguiu se movimentar, 0=não conseguiu
-  refvar r = ref(dono)
+  ref r = dono
   $cmd_[arg0].escr(este)
   ret r != dono

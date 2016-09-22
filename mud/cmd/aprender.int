@@ -33,9 +33,8 @@ func escr
       valor = r.valor(arg0) * p.taxaaula / 100
       aulas = txt2(t2.ini.texto)
 # Checa número de aulas
-      txt100 nomevar
-      nomevar = txt1(t2.ini.texto)
-      linha = arg0.pnivel + config:nrenascer * txt2(arg0.var.[nomevar])
+      txt100 nomevar = txt1(t2.ini.texto)
+      int32 nivel = arg0.pnivel + config:nrenascer * txt2(arg0.var.[nomevar])
       se arg0.var.[nomevar]_ >= aulas
         lin = "Não tenho mais o que ensinar sobre " + lin + "."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
@@ -50,14 +49,13 @@ func escr
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
       fimse
 # Checa se possui o nível necessário
-      se linha < int(r.aulaini)
+      se nivel < int(r.aulaini)
         lin = "Você não possui o nível necessário."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
-      senao linha >= int(r.aulafim)
+      senao nivel >= int(r.aulafim)
       senao
-        linha = linha - r.aulaini + 1
-        linha *= inttotal(misc:aulas) / (r.aulafim - r.aulaini + 1)
-        se arg0.var.[nomevar]_ < linha
+        nivel = intdiv(1 + (nivel - r.aulaini) * 7 / (r.aulafim - r.aulaini))
+        se arg0.var.[nomevar]_ >= nivel
           lin = "Você não possui o nível necessário."
           ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
         fimse

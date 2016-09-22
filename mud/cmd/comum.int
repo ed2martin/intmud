@@ -55,8 +55,8 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
   senao n_t2 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t2) >= 0
   senao n_t3 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t3) >= 0
   senao
-    lin = (tipo1 ? " " + arg0.tipo1 : "") + (tipo2 ? " " + arg0.tipo2 : "")
-    lin += tipo3 ? " " + arg0.tipo3 : ""
+    txt100 lin = arg0.tipo1 ? " " + arg0.tipo1
+    lin += (arg0.tipo2 ? " " + arg0.tipo2 : "") + (arg0.tipo3 ? " " + arg0.tipo3)
     !lin && (lin = " você")
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com" + lin
   fimse

@@ -300,12 +300,10 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   ret !lista.total, 0
 # Obtém o tempo do jogo salvo, em dias, e salva o jogo
   int32 tempo
-  se jogperm == "admin"
-    tempo = config:salvaadmin
-  senao pnivel < config:nivelveterano && prenascer == 0
-    tempo = config:salvainiciante
+  se pnivel < config:nivelveterano && prenascer == 0
+    tempo = $perm_[jogperm].salvardias ?? config:salvainiciante
   senao
-    tempo = config:salvaveterano
+    tempo = $perm_[jogperm].salvardias ?? config:salvaveterano
   fimse
 # Salva o arquivo
   arqsav sav1

@@ -30,17 +30,22 @@ func habajuda # Retorna um texto que contém informações
     lin += "Sintaxe: " + sintaxe + " [personagem]\n"
   fimse
   se tipoalvo < 6
-    lin += "Ataque do nível "
-    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
-    lin += ", " + txtsublin(config:atknomes, tipoatk, 1)
+    lin += "Ataque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
     lin += ", Força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
     lin += ", Velocidade " + vel
-    lin += !falha ? "" : falha > 0 ? ", Falha " + falha + "%" : ", Não falha"
-  senao
-    lin += "Nível "
-    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
-    lin += !falha ? "" : falha > 0 ? ", Falha " + falha + "%" : ", Não falha"
   fimse
+  se int(aulaini) != int(aulafim)
+    lin += "\nPrimeira aula a partir do nível "
+    lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    lin += ", perito nível "
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+  senao aulaini
+    lin += "\nPode aprender a partir do nível "
+    lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
+  senao
+    lin += "\nPode aprender em qualquer nível"
+  fimse
+  lin += !falha ? "" : falha > 0 ? ", Falha " + falha + "%" : ", Não falha"
   t.addini(lin)
   msgextra && t.addfim(msgextra)
   se c_vida1 || c_vida2
@@ -260,7 +265,7 @@ func escrhab # Atacar alguém
   txt100 dir
   se m1
     ret arg0.msg(m1)
-  senao arg0.pnivel < intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+  senao arg0.pnivel < intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
     ret arg0.msg("Você ainda não consegue fazer isso.")
   senao arg1 # Digitou o alvo
     int16 move
