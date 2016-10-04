@@ -21,11 +21,10 @@ func escr
 # Remove
   uint8 total
   listaobj l
-  ref r
   nomeobj n # Para reconhecer os itens
   n.ini(arg1, misc:objmax, misc:tudo)
   epara l.addfim(alvo.dentro2), l, l.ini.remove
-    r = l.objini
+    ref r = l.objini
     continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     total++
     refvar valor = vest.bits & config:vestir[r.vestpos - 1]
@@ -45,7 +44,7 @@ func escr
       epara e.addfim(r.evento), e, e.ini.remove
         ret e.objini.cmd_remover(alvo, r, posic, r), nulo
       efim
-      vest.[r.vestpos] = 0
+      vest.[r.vestpos - 1] = 0
       r.vestir(0)
       $mens.p(alvo, nulo, r)
       $mens.mvis1("$P remove $o.")

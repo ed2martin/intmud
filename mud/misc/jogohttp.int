@@ -716,13 +716,11 @@ classe jogohttp_usr
 herda jogsock
 socket j_conec # Usuário conectado
 ref j_servip # Objeto jogoservip que possui esse objeto
-# ref j_jogoserv # Objeto jogoserv
 inttempo j_ping_tempo
 inttempo j_pong_tempo
 txt40 j_ping_txt # Mensagem enviada no ping
 txt250 j_pong_txt # Mensagem pong que deve enviar
 textotxt j_recebeu_txt # Parte da mensagem recebida
-int8 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo), 2 se SSL
 const msgsala = msgsock(arg0)
 const info = "h " + j_conec.ip
 
@@ -764,8 +762,7 @@ func ini # Objeto foi criado
   j_conec.aflooder = 1
 # Checa número de conexões por IP
   indiceitem i
-  ref r
-  r = i.obj("ip " + j_conec.ip)
+  ref r = i.obj("ip " + j_conec.ip)
   se !r
     r = criar("jogoservip")
     r.endereco = "ip " + j_conec.ip

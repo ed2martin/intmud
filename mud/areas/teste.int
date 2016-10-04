@@ -5,6 +5,7 @@ const a_nome = "Testes e exemplos"
 
 classe b_teste
 herda sala
+const s_doarsalas = "teste155\nteste156\nteste157"
 const s_luta = 1
 const s_terreno = 1
 const s_area = "teste"
@@ -101,7 +102,6 @@ const i_abertoini = 2 # Container: 2 Inicialmente aberto
 const i_tranc = 1 # Trancar: 1 Pode ser trancado
 const objmax = 20
 const pesoobj = 200
-const tipoitem = 2048 # Tipo de produto: Container
 const volmax = 5000
 const volobj = 20
 
@@ -2803,7 +2803,9 @@ func s_reset1 # Realiza o reset
 classe s_teste064
 herda b_teste
 const s_titulo = "Sexto andar: Casas de jogadores"
-const s_desc = "A oeste há um gerenciador de casas e duas casas"
+const s_desc = "A oeste há um gerenciador de casas e duas casas\n\
+A leste salas de doação"
+const dir_l = $s_teste122
 const dir_o = $s_teste115
 const dir_b = $s_teste030
 
@@ -3891,6 +3893,18 @@ Portanto, atacar personagens de nível mais baixo causa mais danos."
 const dir_l = $s_teste062
 
 
+classe s_teste122
+herda b_teste
+const s_titulo = "Doação 1"
+const s_desc = "Ao doar algum item com o comando Doar, ele vai para uma das salas\n\
+definidas na opção \"Salas de doação\" da sala em que você está.\n\
+Caso uma sala de doação aceite um tipo específico de item (exemplo,\n\
+sala de armas), basta preencher as opções \"Itens doados\" e \"Itens\n\
+não doados\" da sala."
+const dir_l = $s_teste153
+const dir_o = $s_teste064
+
+
 classe s_teste123
 herda b_teste
 const s_titulo = "Bônus do personagem"
@@ -4368,3 +4382,56 @@ const s_reset = "S 100 teste055 3 S"
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste055") && criar("i_teste055", este, 3)
+
+
+classe s_teste153
+herda b_teste
+const s_titulo = "Doação 2"
+const s_desc = "É importante também preencher a opção \"Apagar itens\" das salas de doação\n\
+com 0, caso contrário os itens poderão ser apagados depois de um tempo.\n\
+As opções \"Salas de doação\", \"Itens doados\" e \"Itens não doados\" também\n\
+estão presentes na área e no comando Econfig. Assim, itens doados em\n\
+várias salas podem ir para as mesmas salas de doação."
+const dir_l = $s_teste154
+const dir_o = $s_teste122
+
+
+classe s_teste154
+herda b_teste
+const s_titulo = "Doação 3"
+const s_desc = "Os tipos de itens são definidos no comando Econfig. Podem existir até\n\
+30 tipos. Cada item pode ser de mais de um tipo. Isso é definido no\n\
+próprio item, na opção \"Tipo de item\" do comando Etipo.\n\
+Nesta área, as armas vão para a sala ao norte, enquanto que outros itens\n\
+vão para uma das salas ao sul, escolhida aleatoriamente."
+const dir_n = $s_teste155
+const dir_s = $s_teste156
+const dir_o = $s_teste153
+
+
+classe s_teste155
+herda b_teste
+const s_titulo = "Sala de doação"
+const s_desc = "Aqui ficam as armas doadas."
+const s_doarsim = 2 # Itens doados: 1-Arma
+const s_item = 0
+const dir_s = $s_teste154
+
+
+classe s_teste156
+herda b_teste
+const s_titulo = "Sala de doação"
+const s_desc = "Itens doados, exceto armas, vêm para cá ou a sala ao sul."
+const s_doarnao = 2 # Itens não doados: 1-Arma
+const s_item = 0
+const dir_n = $s_teste154
+const dir_s = $s_teste157
+
+
+classe s_teste157
+herda b_teste
+const s_titulo = "Sala de doação"
+const s_desc = "Itens doados, exceto armas, vêm para cá ou a sala ao norte."
+const s_doarnao = 2 # Itens não doados: 1-Arma
+const s_item = 0
+const dir_n = $s_teste156

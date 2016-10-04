@@ -112,6 +112,20 @@ Se é permitido soltar itens:
 3 = Se soltar, destrói caindo
 4 = Se soltar, desintegra
 
+const s_doarsalas = ""
+Para que salas os itens doados vão. Texto contendo a lista de salas,
+uma sala por linha (nomes das classes sem o s_ no começo).
+
+const s_doarsim = 0
+Itens doados que essa sala aceita; se vazio aceita qualquer item.
+É um valor numérico em que cada bit corresponde a um tipo de item
+da lista em config:produtos, no arquivo config/config.int.
+
+const s_doarnao = 0
+Itens doados que essa sala não aceita.
+É um valor numérico em que cada bit corresponde a um tipo de item
+da lista em config:produtos, no arquivo config/config.int.
+
 const dir_[direção] = nulo
 ref dir_[direção]
 arg0 = personagem que está consultando essa constante (pode ser nulo)
@@ -169,6 +183,20 @@ Se o nome da porta está no singular ou plural, feminino ou masculino.
 1 as (portas)
 2 o (portão)
 3 os (portões)
+
+const s_doarsalas = ""
+Para que salas os itens doados vão. Texto contendo a lista de salas,
+uma sala por linha (nomes das classes sem o s_ no começo).
+
+const s_doarsim = 0
+Itens doados que essa sala aceita; se vazio aceita qualquer item.
+É um valor numérico em que cada bit corresponde a um tipo de item
+da lista em config:produtos, no arquivo config/config.int.
+
+const s_doarnao = 0
+Itens doados que essa sala não aceita.
+É um valor numérico em que cada bit corresponde a um tipo de item
+da lista em config:produtos, no arquivo config/config.int.
 
 const s_reset
 Reset de sala:

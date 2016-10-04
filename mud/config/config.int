@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 421 # Para atualizar diretórios areas e config
+const versao = 422 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -30,7 +30,7 @@ const inicom8 = ""
 const inicom9 = ""
 const inicom10 = ""
 #
-# Limite de conexões por IP na porta definida em servporta
+# Limite de conexões por IP
 const servusr = 3
 #
 # Tempo entre duas conexões do mesmo endereço IP, em décimos de segundo
@@ -498,7 +498,7 @@ const casamsgaviso = "Há uma nota avisando que a taxa de manutenção da casa está
 # Mensagem bloqueado - ao entrar na casa, se está bloqueada por falta de pagamento
 const casamsgbloq = "A porta foi lacrada por falta de pagamento."
 #
-# Os tipos de produtos (itens) que vendedores podem comprar
+# Os tipos de produtos (itens) usados nos comandos Vender, Avaliar e Doar
 const produtos = "Possui metal\n\
 Arma\n\
 Armadura\n\
@@ -513,6 +513,16 @@ Poção\n\
 Container\n\
 Vasilhame\n\
 Comida\nBarco"
+#
+# Que tipos de produtos conforme os tipos de itens
+const item_container = 2048
+const item_arma = 2
+const item_luz = 256
+const item_vestimenta = 8
+const item_bebida = 1024
+const item_comida = 8192
+const item_pergaminho = 64
+const item_chave = 0
 #
 # Tipos de ataque existentes
 const atknomes = "Contusão\n\

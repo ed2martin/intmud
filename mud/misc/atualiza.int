@@ -1,4 +1,4 @@
-classe atualiza_421
+classe atualiza_422
 # Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 421, nulo
-  p.criar("config", "const versao = 421 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 422, nulo
+  p.criar("config", "const versao = 422 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -606,6 +606,17 @@ casa está atrasada.\"")
     p.apagar("config", "salvaadmin")
     uint16 tempo = config:salvaadmin ?? 120
     criafunc("perm_admin", "const salvardias = " + tempo)
+  fimse
+# Tipos de produtos
+  se versao < 422
+    criafunc("config", "const item_container = 2048")
+    criafunc("config", "const item_arma = 2")
+    criafunc("config", "const item_luz = 256")
+    criafunc("config", "const item_vestimenta = 8")
+    criafunc("config", "const item_bebida = 1024")
+    criafunc("config", "const item_comida = 8192")
+    criafunc("config", "const item_pergaminho = 64")
+    criafunc("config", "const item_chave = 0")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

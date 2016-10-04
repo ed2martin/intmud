@@ -65,7 +65,6 @@ socket j_conec # Usuário conectado
 inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
 uint8 j_passo # 0=definindo se Papovox, 1=entrando Papovox, 2=dentro
 ref j_servip # Objeto jogoservip que possui esse objeto
-ref j_jogoserv # Objeto jogoserv
 int8 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo), 2 se SSL
 txt1 j_t_crlf # Para controlar quando enviar CRLF no início
 const j_t_prompt = infotelnet ? j_conec.msg(j_t_crlf), j_t_crlf = ""
@@ -96,8 +95,7 @@ func ini # Objeto foi criado
   infotelnet = arg1.infotelnet
 # Checa número de conexões por IP
   indiceitem i
-  ref r
-  r = i.obj("ip " + j_conec.ip)
+  ref r = i.obj("ip " + j_conec.ip)
   se !r
     r = criar("jogoservip")
     r.endereco = "ip " + j_conec.ip

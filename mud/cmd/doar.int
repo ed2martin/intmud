@@ -1,0 +1,95 @@
+classe cmd_doar
+herda comando_comum
+const txtajuda = "\b\c3Doar\b\n\
+Sintaxe: DOAR <objeto>\n\
+         DOAR <quantidade> <objeto>\n\
+Doa um objeto que você está carregando."
+const posic = 5
+int8 achou # Quantos itens achou
+txt100 erro # Mensagem de erro
+
+func escr
+  refvar perm_msg = $perm_[arg0.jogperm].item
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_doar(arg0, arg1), nulo
+  efim
+  arg0.p_espera < 3 && (arg0.p_espera = 3)
+# Obtém o objeto de onde soltar
+  ref sala = arg0.dono
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1, misc:objmax)
+# Doa os itens
+  achou = 0, erro = "Você não vê isso."
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    doarobj(arg0, l.objini, int(n))
+    sair achou >= 10
+  efim
+# Mensagem se não doou nada
+  !achou && arg0.msg(erro)
+
+func doarobj
+# arg0=personagem, arg1=item que quer soltar, arg2=quantidade de itens
+# Faz achou++ se soltou o item
+# Coloca mensagem de erro na variável erro se não conseguiu pegar
+  refvar tipo = arg1.tipoitem2
+# Obtém as salas de doação
+  textotxt t
+  textopos p
+  t.addfim(arg0.dono.s_doarsalas)
+  p = t.ini
+  enquanto p.lin
+    refvar s = $s_[p.texto]
+    se !s || tipo & s.s_doarnao || s.s_doarsim && !(tipo & s.s_doarsim)
+      p.remove
+    senao
+      p.depois
+    fimse
+  efim
+# Obtém a salas de doação
+  se !t.linhas
+    erro = "Não é possível doar " + arg1.descnome + "."
+    ret
+  fimse
+  t.remove(rand(t.linhas))
+  refvar s = $s_[t.remove]
+# Checa se o item está vazio
+  se arg1.dentro1.total
+    refvar nome = txtcopiamai(arg1.descnome, "A")
+    erro = nome + " não está vazi" + (arg1.arg1.msexo ? "o." : "a.")
+    ret
+  fimse
+# Apaga itens antigos para abrir espaço se necessário
+  se arg1.cabedentro(s) < arg2
+    apagar(s.dentro1.objini)
+  fimse
+  achou++
+# Eventos
+  listaobj e
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_doarobj(arg0, s, arg1, arg2, arg0), nulo
+  efim
+  epara e.addfim(s.evento), e, e.ini.remove
+    ret e.objini.cmd_doarobj(arg0, s, arg1, arg2, s), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_doarobj(arg0, s, arg1, arg2, arg1), nulo
+  efim
+# Mensagens
+  $mens.p(arg0, nulo, arg1)
+  $mens.mvis1("$P doa " + (arg2 <= 1 ? "$o." : txt(arg2) + "x $o."))
+# Doa item
+  arg0.p_espera += 2
+  ref r = arg1.mudadono(s, arg2)
+# Eventos
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    e.objini.cmd_doouobj(arg0, s, r, arg2, arg0)
+  efim
+  epara e.addfim(s.evento), e, e.ini.remove
+    e.objini.cmd_doouobj(arg0, s, r, arg2, s)
+  efim
+  epara e.addfim(r.evento), e, e.ini.remove
+    e.objini.cmd_doouobj(arg0, s, r, arg2, r)
+  efim

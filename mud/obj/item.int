@@ -144,6 +144,21 @@ func recalc_exec # Ajusta variáveis
   atribs_exec
   recalc = 0
 
+func tipoitem2
+# Nota: ao adicionar ou remover algum tipo aqui, acertar também:
+# 1. a classe classe menu_econfig_itens em econfig.int
+# 2. a classe opc_vetorprodutos em menus.int
+  int32 tipo = tipoitem
+  i_abertoini && (tipo |= config:item_container)
+  armatipo && (tipo |= config:item_arma)
+  luzitem && (tipo |= config:item_luz)
+  i_chave && (tipo |= config:item_chave)
+  vestir1 && (tipo |= config:item_vestimenta)
+  (f_tipo == 1 || f_tipo == 2) && (tipo |= config:item_bebida)
+  f_tipo == 3 && (tipo |= config:item_comida)
+  f_tipo == 4 && (tipo |= config:item_pergaminho)
+  ret tipo
+
 
 classe comum_itemgrupo
 herda comum_item
@@ -199,8 +214,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   fimse
 
 func vestir # Veste o item, arg0=posição
-  uint8 pos
-  pos = arg0
+  uint8 pos = arg0
   se !pos # Checa se deve remover
     ret !vestpos, nulo # Retorna se não está vestindo
     dono.recalc = 1 # Para recalcular atributos
@@ -210,11 +224,11 @@ func vestir # Veste o item, arg0=posição
     senao # Não encontrou: move
       vestpos = 0, idono.remove, idono = dono.dentro1.addfim(este)
     fimse
-  senao vestpos || objtot <= 1 # Se já está vestindo ou só tem um objeto
+  senao objtot <= 1 # Se só tem um objeto
     dono.recalc = 1 # Para recalcular atributos
     vestpos = pos
     idono.remove, idono = dono.dentro2.addfim(este)
-    vestpos == 50 && (dono.iempu = idono)
+    pos == 50 && (dono.iempu = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
     objtot--, ajustapeso
