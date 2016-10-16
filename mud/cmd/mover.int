@@ -18,16 +18,21 @@ func escr # Executa o comando
 # arg1 = o que digitou após a direção
   $comando_mover.lseg.limpar
   $comando_mover.andou = 0
-  refvar sala = ref(arg0.dono)
+  ref sala = arg0.dono
 # Anda
   txt100 dir1
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
-    ret !mover(arg0), nulo
+    ref saladest = arg0.dono.dir_[dir1](arg0)
+    se saladest.item
+      ret !mover(arg0, saladest.dono, nulo, saladest)
+    senao
+      ret !mover(arg0, saladest), nulo
+    fimse
   senao # Bêbado andando em uma direção aleatória
-    dir1 = fugirdir(arg0)
-    !dir1 && (dir1 = dir)
-    ret !$cmd_[dir1].mover(arg0), nulo
+    dir1 = txt(fugirdir(arg0)) ?? dir
+    ref saladest = arg0.dono.dir_[dir1](arg0)
+    ret !$cmd_[dir1].mover(arg0, saladest), nulo
   fimse
 # Fecha a porta
   se sala.fecha_[dir1] && $comando_mover.andou
@@ -39,6 +44,9 @@ func escr # Executa o comando
 
 func mover # Personagem anda em uma direção
 # arg0 = personagem
+# arg1 = sala destino (se não for sala, não deixa prosseguir nessa direção)
+# arg2 = item aonde está entrando (na sala origem) ou nulo
+# arg3 = item de onde está saindo (na sala destino) ou nulo
 # Retorna 1 se conseguiu mover ou 0 se não conseguiu
   refvar perm_msg = $perm_[arg0.jogperm].andar
   se perm_msg
@@ -46,21 +54,20 @@ func mover # Personagem anda em uma direção
     ret 0
   fimse
   listaobj l
-  ref s1 # Sala aonde está
-  ref s2 # Sala para onde vai
+  ref s1 = arg0.dono # Sala aonde está
   debug dbg
   dbg.ini
   $comando_mover.lseg.addfim(arg0)
   abriu1 = abriu2 = ""
-  s1 = arg0.dono, s2 = s1.dir_[dir](arg0)
-  se s2 == nulo
+  se !arg1.s_sala
     arg0.msg("Impossível seguir nessa direção.")
     ret 0
-  senao s1.porta_[dir] & 3 >= 2 && !arg0.j_imortal
+  senao !arg2 && s1.porta_[dir] & 3 >= 2 && !arg0.j_imortal
     ret !s1.socktot, 0
-    refvar cod = $c_[s1.fechadura_[dir](arg0)].chave
+    refvar casa = $c_[s1.fechadura_[dir](arg0)]
+    refvar cod = casa.chave
     se !cod
-      arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+      arg0.msg($mens_porta.mens("$P est$o fechad$a.", s1, dir))
       ret 0
     fimse
     listaitem i
@@ -68,10 +75,10 @@ func mover # Personagem anda em uma direção
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     se !i
-      arg0.msg($mens_porta.mens("$P est$o fechad$a.", arg0.dono, dir))
+      arg0.msg($mens_porta.mens("$P est$o fechad$a.", s1, dir))
       ret 0
     fimse
-    casovar $c_[s1.fechadura_[dir](arg0)].infotaxa
+    casovar casa.infotaxa
     casose "2" # Casa bloqueada por falta de pagamento
       $mens.p(arg0)
       $mens.msginv(config:casamsgbloq, arg0)
@@ -83,14 +90,17 @@ func mover # Personagem anda em uma direção
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
-  senao !arg0.cabedentro(s2)
+  senao arg2 && arg2.i_aberto > 2 && !arg0.j_imortal
+    arg0.msg(txtcopiamai(arg2.descnome, "A") + " está fechad" + (item.msexo ? "o." : "a."))
+    ret 0
+  senao !arg0.cabedentro(arg1)
     arg0.msg("Não tem espaço para seguir nessa direção.")
     ret 0
-  senao s1.voar_[dir](arg0) && !(arg0.bitver & 512 || arg0.bitinv & 48)
+  senao !arg2 && s1.voar_[dir](arg0) && !(arg0.bitver & 512 || arg0.bitinv & 48)
     arg0.msg("Você não consegue porque não está flutuando.")
     ret 0
   fimse
-  uint8 total = s1.totalmove + s2.totalmove
+  uint8 total = s1.totalmove + arg1.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
   total *= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
@@ -106,28 +116,28 @@ func mover # Personagem anda em uma direção
   efim
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
-  arg0.p_espera = total > 30 ? 60 : total ? total * 2 : 2
-  se !(s1.socktot || s2.socktot) # Não tem jogador por perto
-    arg0.mudadono(s2)
+  arg0.p_espera = intmin(30, total ?? 1) * 2
+  se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
+    arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
     $mens.p(arg0) + $mens.mvis2(abriu1, abriu2 + m_sai4)
-    arg0.mudadono(s2)
+    arg0.mudadono(arg1)
     $mens.p(arg0) + $mens.mvis2("", m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    mover2(arg0, s2, abriu2 + m_sai3, m_entra3)
+    mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai3, m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
-    mover2(arg0, s2, abriu2 + m_sai2, m_entra2)
+    mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai2, m_entra2)
   senao # Não está voando nem flutuando
-    mover2(arg0, s2, abriu2 + m_sai1, m_entra1)
+    mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai1, m_entra1)
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_moveu(arg0, arg0.dono, dir, arg0)
+    l.objini.cmd_moveu(arg0, arg1, dir, arg0)
   efim
-  epara l.addfim(arg0.dono.evento), l, l.ini.remove
-    l.objini.cmd_moveu(arg0, arg0.dono, dir, arg0.dono)
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    l.objini.cmd_moveu(arg0, arg1, dir, arg1)
   efim
 # Checa se morre ao entrar
-  casovar arg0.dono.s_morre(arg0)
+  casovar arg1.s_morre(arg0)
   casose "1" # Morre
     sair arg0.j_imortal
     arg0.morreu
@@ -154,36 +164,40 @@ func mover # Personagem anda em uma direção
     continuar $comando_mover.lseg.possui(l.objini)
     continuar !arg0.visivel(l.objini) || !s1.visivel(l.objini)
     l.objini.msg("Você segue " + arg0.descnome + ".")
-    mover(l.objini)
+    mover(l.objini, arg1, arg2, arg3)
   efim
   ret 1
 
 func mover2 # Chamado por mover, para mudar de sala enviando mensagem
 # arg0 = personagem
 # arg1 = sala destino
-# arg2 = mensagem saiu
-# arg3 = mensagem chegou
+# arg2 = item aonde está entrando (na sala origem) ou nulo
+# arg3 = item de onde está saindo (na sala destino) ou nulo
+# arg4 = mensagem saiu da sala origem
+# arg5 = mensagem entrou na sala destino
 # abriu1 = mensagem para o personagem
   listaobj l
-  $mens.p(arg0)
+  $mens.p(arg0, nulo, arg2)
   abriu1 && $mens.msgvis(abriu1, arg0)
   se arg0.bitver & 256 # Anda em silêncio
-    $mens.mens = " em silêncio"
+    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o em silêncio" : " em silêncio")
+    refvar ment = arg3 ? "$P saiu $d $o em silêncio." : txttroca(arg5, "$m", " em silêncio")
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
-      l.objini.bitver & 0x1000 && $mens.msgvis(arg2, l.objini)
+      l.objini.bitver & 0x1000 && $mens.msgvis(msai, l.objini)
     efim
     arg0.mudadono(arg1)
-    $mens.p(arg0), $mens.mens = " em silêncio"
+    $mens.p(arg0, nulo, arg3)
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
-      l.objini.bitver & 0x1000 && $mens.msgvis(arg3, l.objini)
+      l.objini.bitver & 0x1000 && $mens.msgvis(ment, l.objini)
     efim
   senao
-    $mens.mens = "", $mens.mvis2("", arg2)
+    $mens.mvis2("", txttroca(arg4, "$m", arg2 ? " $e $o" : ""))
     arg0.mudadono(arg1)
-    $mens.p(arg0)
-    $mens.mens = "", $mens.mvis2("", arg3)
+    $mens.p(arg0, nulo, arg3)
+# $mens.mvis2("", txttroca(arg5, "$m", arg3 ? " $d $o" : ""))
+    $mens.mvis2("", arg3 ? "$P saiu $d $o." : txttroca(arg5, "$m", ""))
   fimse
 
 func fugirdir # Obtém direção para onde pode fugir
@@ -403,6 +417,35 @@ const m_sai4 = "$P entrou cambaleando."
 const m_fugir = "$P fugiu para dentro."
 const m_porta = "dentro"
 const dir = "entrar"
+
+func escr # Executa o comando
+# arg0 = personagem
+# arg1 = o que digitou após a direção
+  ret !arg1, comando_mover:escr(arg0, arg1)
+# Obtém o item e a sala
+  ref item = misc:itemdono(arg0, arg1)
+  ref dest = item.i_salaentrar
+# Checa se pode entrar
+  $mens.p(arg0, nulo, item)
+  se !item
+    ret arg0.msg("Você não vê " + arg1 + ".")
+  senao !(dest.s_sala || dest.item && dest.dono.s_sala)
+    ret $mens.msginv("Não é possível entrar $e $o." + dest, arg0)
+  senao item.i_aberto > 2 && !arg0.j_imortal
+    ret $mens.msginv("$O está fechad$s.", arg0)
+  fimse
+# Checa se está bêbado
+  se arg0.jog && rand($miscfome.bebedir, $miscfome.cheio) <= arg0.p_bebida
+    ret $mens.msginv("Você não consegue achar a entrada $d $o.", arg0)
+  fimse
+# Entra
+  $comando_mover.lseg.limpar
+  $comando_mover.andou = 0
+  se dest.item
+    ret !mover(arg0, dest.dono, item, dest)
+  senao
+    ret !mover(arg0, dest, item), nulo
+  fimse
 
 
 classe cmd_sair

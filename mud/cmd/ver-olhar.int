@@ -9,6 +9,10 @@ const posic = 5
 const completo = 0 # No comando olhar, essa variável é 1
 
 func escr
+  nomeobj n
+  prog p
+  ref r1
+# Descrição da sala
   se !arg1
     se arg0.jogconfig.16
       arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, completo ? 7 : 6))
@@ -17,67 +21,82 @@ func escr
     fimse
     ret
   fimse
-  nomeobj n
-  prog p
-  ref r
-  n.ini(arg1, 10000)
 # Descrições extras da sala
-  r = arg0.dono
-  se r.visivel(arg0) && txtfim(arg1, 1) != "@"
-    epara p.inifunctudo(r, "ver_"), p.lin, p.depois
+  n.ini(arg1, 10000)
+  r1 = arg0.dono
+  se r1.visivel(arg0) && txtfim(arg1, 1) != "@"
+    epara p.inifunctudo(r1, "ver_"), p.lin, p.depois
       casovar txtfim(p.texto, 2)
       casose "@d"
       casose "@D"
         continuar !misc:luz || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
-        refvar m = txt(r.[p.texto](arg0))
+        refvar m = txt(r1.[p.texto](arg0))
         ret m, arg0.msg2(m)
         continuar
       casose "@n"
       casose "@N"
         continuar misc:luz || !n.nome(txt(p.texto, 4, inttotal(p.texto) - 6))
-        refvar m = txt(r.[p.texto](arg0))
+        refvar m = txt(r1.[p.texto](arg0))
         ret m, arg0.msg2(m)
         continuar
       casose
         continuar !n.nome(txt(p.texto, 4))
-        refvar m = txt(r.[p.texto](arg0))
+        refvar m = txt(r1.[p.texto](arg0))
         ret m, arg0.msg2(m)
         continuar
       casofim
     efim
   fimse
 # Descrições de itens e personagens
+  textotxt t
   listaobj l
-  l.addfim(r.dentro1, r.dentro2, arg0.dentro1)
+  l.addfim(r1.dentro1, r1.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
 # ret arg0 == l.objini, arg0.msg("Olhar para você mesm" + (arg0.msexo ? "o?" : "a?"))
-    r = l.objini
+    r1 = l.objini
 # Gera eventos
     l.limpar
     se completo
       epara l.addfim(arg0.evento), l, l.ini.remove
-        ret l.objini.cmd_olhar(arg0, r, arg0), nulo
+        ret l.objini.cmd_olhar(arg0, r1, arg0), nulo
       efim
-      epara l.addfim(r.evento), l, l.ini.remove
-        ret l.objini.cmd_olhar(arg0, r, r), nulo
+      epara l.addfim(r1.evento), l, l.ini.remove
+        ret l.objini.cmd_olhar(arg0, r1, r1), nulo
       efim
     senao
       epara l.addfim(arg0.evento), l, l.ini.remove
-        ret l.objini.cmd_ver(arg0, r, arg0), nulo
+        ret l.objini.cmd_ver(arg0, r1, arg0), nulo
       efim
-      epara l.addfim(r.evento), l, l.ini.remove
-        ret l.objini.cmd_ver(arg0, r, r), nulo
+      epara l.addfim(r1.evento), l, l.ini.remove
+        ret l.objini.cmd_ver(arg0, r1, r1), nulo
       efim
     fimse
+# Sala definida ao ver/olhar o item
+    ref r2 = r1.i_salaver
+    se r2
+      r2.s_reset1
+      se arg0.jogconfig.16
+        arg0.msg2(txt(r2, 2) + "  " + r2.descsala(arg0, completo ? 7 : 6))
+      senao
+        arg0.msg2(r2.descsala(arg0, completo ? 7 : 6))
+      fimse
+      se completo && r1.dono != arg0
+        $mens.p(arg0, nulo, r2)
+        $mens.mvis2("", "$P olha para $o.")
+      fimse
+      ret
+    fimse
+# Sala para pegar e soltar itens
+    r2 = r1.item ? r1.i_salapegar
+    !r2 && (r2 = r1)
 # O que o personagem está vestindo
-    textotxt t
-    se r.perso
+    se r1.perso
       se completo
         int1 vest.32 # Aonde está vestindo
         ref pos.55
         listaitem item
-        epara item = r.dentro2.ini, item, item.depois
+        epara item = r1.dentro2.ini, item, item.depois
           vest.[item.obj.vestpos - 1] = 1, pos.[item.obj.vestpos] = item.obj
         efim
         txt512 lin
@@ -90,26 +109,26 @@ func escr
           nomepos += txtesp(20 - inttotal(nomepos))
           t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
         efim
-        t.linhas && t.addini(txtcopiamai(r.descnome, "A") + " está usando:")
+        t.linhas && t.addini(txtcopiamai(r1.descnome, "A") + " está usando:")
       fimse
 # O que o container possui
-    senao r.i_aberto == 5 # Indefinido
-    senao r.i_aberto >= 3 && !arg0.j_imortal # Fechado ou trancado
-      t.addini(r.msexo ? "Está fechado." : "Está fechada.")
-    senao r.i_aberto # Aberto
-      se !r.var.z_moedas
-      senao r.dono != arg0 || var.z_moedas_ <= 10
-        t.addfim("1 " + txtcopiamai(misc:txtmoedas(r.var.z_moedas), "A"))
+    senao r1.i_aberto == 5 # Indefinido
+    senao r1.i_aberto >= 3 && !arg0.j_imortal # Fechado ou trancado
+      t.addini(r1.msexo ? "Está fechado." : "Está fechada.")
+    senao r1.i_aberto || r1 != r2 # Aberto
+      se !r2.var.z_moedas
+      senao r2.dono != arg0 || var.z_moedas_ <= 10
+        t.addfim("1 " + txtcopiamai(misc:txtmoedas(r2.var.z_moedas), "A"))
       senao
-        t.addfim("1 " + txtnum(r.var.z_moedas_, ".") + " moedas")
+        t.addfim("1 " + txtnum(r2.var.z_moedas_, ".") + " moedas")
       fimse
       listaitem item
-      epara item = r.dentro1.ini, item, item.depois
+      epara item = r2.dentro1.ini, item, item.depois
         continuar !item.obj.visivel(arg0)
         t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
       efim
       se !t.linhas
-        t.addfim(r.msexo ? "Está vazio." : "Está vazia.")
+        t.addfim(r1.msexo ? "Está vazio." : "Está vazia.")
       senao completo
         t.juntalin("(", "x)")
         t.addini("Dentro você vê:")
@@ -119,47 +138,47 @@ func escr
     fimse
 # Nome, nível, situação atual e animal que escolheu
     txt200 t2
-    se r.perso
-      t2 += niveltipo(r, " é", ",") + " " + estado(r)
-      se r.persobat && r.persobat != r
-        t2 += ".\b\nEscolheu " + txtcopiamai(r.persobat.nome, "A")
-        t2 += niveltipo(r.persobat) + ", " + estado(r.persobat)
+    se r1.perso
+      t2 += niveltipo(r1, " é", ",") + " " + estado(r1)
+      se r1.persobat && r1.persobat != r1
+        t2 += ".\b\nEscolheu " + txtcopiamai(r1.persobat.nome, "A")
+        t2 += niveltipo(r1.persobat) + ", " + estado(r1.persobat)
       fimse
-    senao r.pnivel || r.renascer
-      t2 += " é um objeto do nível " + r.pnivel
-      r.renascer && (t2 += ", R" + r.renascer)
+    senao r1.pnivel || r1.renascer
+      t2 += " é um objeto do nível " + r1.pnivel
+      r1.renascer && (t2 += ", R" + r1.renascer)
     fimse
 # Luz
-    se int(r.luztempo.abs) >= 25
-      refvar tempo = int(r.luztempo.abs / 50)
-      r.luztempo > 0 && (t2 += r.msexo ? ", aceso" : ", acesa")
+    se int(r1.luztempo.abs) >= 25
+      refvar tempo = int(r1.luztempo.abs / 50)
+      r1.luztempo > 0 && (t2 += r1.msexo ? ", aceso" : ", acesa")
       t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
-# t2 += r.luztempo
+# t2 += r1.luztempo
     fimse
 # Descrição ao olhar
     se !completo
-      ret arg0.msg("\b" + txtcopiamai(r.descnome, "A") + t2 + ".\b " + t.remove(1000))
+      ret arg0.msg("\b" + txtcopiamai(r1.descnome, "A") + t2 + ".\b " + t.remove(1000))
     senao
-      refvar m1 = !arg0.psexo && r.var.z_mdesc ? r.var.z_mdesc : r.var.z_desc
-      refvar m2 = r.descver(arg0)
+      refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
+      refvar m2 = r1.descver(arg0)
       se m1 || m2 # Com descrição extra
-        t2 && t.addini(txtcopiamai(r.descnome, "A") + t2 + ".")
+        t2 && t.addini(txtcopiamai(r1.descnome, "A") + t2 + ".")
         m1 && t.addini(m1)
         m2 && t.addini(m2)
-        t.addini("\b\c6" + nomevolume(r) + "\b")
+        t.addini("\b\c6" + nomevolume(r1, r2) + "\b")
         arg0.msg2(t.remove(1000))
       senao # Sem descrição extra
         !t.linhas && t.addfim("Você não vê nada de especial.")
-        arg0.msg2("\b\c6" + nomevolume(r) + t2 + ".\b\n" + t.remove(1000))
+        arg0.msg2("\b\c6" + nomevolume(r1, r2) + t2 + ".\b\n" + t.remove(1000))
       fimse
     fimse
 # Envia mensagem
-    se r == arg0
-    senao r.perso
-      $mens.p(arg0, r)
+    se r1 == arg0
+    senao r1.perso
+      $mens.p(arg0, r1)
       $mens.mvis2("", "$P olha para $a.")
-    senao r.dono != arg0
-      $mens.p(arg0, nulo, r)
+    senao r1.dono != arg0
+      $mens.p(arg0, nulo, r1)
       $mens.mvis2("", "$P olha para $o.")
     fimse
     ret
@@ -204,11 +223,12 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
 
 func nomevolume # Nome do item ou personagem e volume
 # arg0 = item ou personagem
+# arg1 = objeto que representa o conteúdo interno do item ou personagem
   ret !config:olharvolume, txtcopiamai(arg0.descnome, "A")
   txt100 nome
   nome = txtcopiamai(arg0.descnome, "A") + " (volume " + arg0.voltot / arg0.objtot
-  se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2)
-    ret nome + " dentro " + arg0.volden + "/" + arg0.volmax + ")"
+  se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2) || arg1.s_sala
+    ret nome + " dentro " + arg1.volden + "/" + arg1.volmax + ")"
   fimse
   ret nome + ")"
 

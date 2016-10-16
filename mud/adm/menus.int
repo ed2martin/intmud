@@ -771,6 +771,7 @@ func passo2 # Usado intermanente: alterando um vetor de textos
 
 classe opc_sala
 herda comando_adm
+const salaitem = 0 # Se aceita também itens
 
 func menu # Retorna sala (constante do tipo "const x = $s_abc")
 # arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
@@ -778,25 +779,31 @@ func menu # Retorna sala (constante do tipo "const x = $s_abc")
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
     p.inilinha(arg0, arg1)
+    refvar tipo = txt(p.texto, 6, inttotal(arg1) + 6)
     se txt1(p.texto) != "const"
       ret "<" + txt1(p.texto) + ">"
-    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg1 + " = $s_"
+    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO"), " ") >= 0
       ret "<const>"
-    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
-      ret "<const>"
-    senao
+    senao tipo == arg1 + " = $s_"
       ret txt(p.texto, inttotal(arg1) + 12)
+    senao tipo == arg1 + " = $i_"
+      ret "item " + txt(p.texto, inttotal(arg1) + 12)
+    senao
+      ret "<const>"
     fimse
   casose "2" # Em uma classe herdada
     p.inilinha(arg0, arg1)
+    refvar tipo = txt(p.texto, 6, inttotal(arg1) + 6)
     se txt1(p.texto) != "const"
       ret "<herda " + txt1(p.texto) + ">"
-    senao txt(p.texto, 6, inttotal(arg1) + 6) != arg1 + " = $s_"
+    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO"), " ") >= 0
       ret "<herda const>"
-    senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO")) >= 0
-      ret "<herda const>"
-    senao
+    senao sala == arg1 + " = $s_"
       ret "<herda> " + txt(p.texto, inttotal(arg1) + 12)
+    senao sala == arg1 + " = $i_"
+      ret "<herda> item " + txt(p.texto, inttotal(arg1) + 12)
+    senao
+      ret "<herda const>"
     fimse
   casose # Não foi definido
     ret "<nulo>"
@@ -818,7 +825,7 @@ func passo # Alterando a sala
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     arg0.msg("Apagado: " + arg0.var.opcnome)
     admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
-  senao arg1 != "z"
+  senao arg1 != "z" && txt1(arg1) != "item"
     refvar nome = txtmin(txts(arg1))
     se !p.existe("s_" + nome)
       arg0.msg("\bSala \"" + nome + "\" não existe, escolha outra.")
@@ -829,8 +836,27 @@ func passo # Alterando a sala
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     arg0.msg(arg0.var.opcnome + " mudou para " + nome)
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
+  senao arg1 != "z"
+    refvar nome = txtmin(txt2(arg1))
+    se !salaitem
+      arg0.msg("\bEssa opção não aceita itens.")
+      ret 1
+    senao !p.existe("i_" + nome)
+      arg0.msg("\bItem \"" + nome + "\" não existe, escolha outro.")
+      ret 1
+    fimse
+    p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + "=$i_" + nome)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg(arg0.var.opcnome + " mudou para item " + nome)
+    admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
   fimse
   ret passosair(arg0)
+
+
+classe opc_salaitem
+herda opc_sala
+const salaitem = 1 # Se aceita também itens
 
 
 classe opc_listasala

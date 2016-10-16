@@ -22,15 +22,15 @@ func habajuda # Retorna um texto que contém informações
   lin = "\c3" + misc:nomevar(nomevar) + "\b\n"
   se tipoalvo >= 8
   senao tipoalvo == 7
-    lin += "Sintaxe: " + sintaxe + "\n"
+    lin += "Sintaxe: " + sintaxe
   senao armamove
     lin += "Sintaxe: " + sintaxe + " [personagem]\n"
-    lin += "         " + sintaxe + " <direção> [personagem]\n"
+    lin += "         " + sintaxe + " <direção> [personagem]"
   senao
-    lin += "Sintaxe: " + sintaxe + " [personagem]\n"
+    lin += "Sintaxe: " + sintaxe + " [personagem]"
   fimse
   se tipoalvo < 6
-    lin += "Ataque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
+    lin += "\nAtaque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
     lin += ", Força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
     lin += ", Velocidade " + vel
   fimse
@@ -177,7 +177,7 @@ nulo
   ret !arg0.contr.dono.s_luta && tipoalvo != 6 && tipoalvo != 7, nulo
   ret 1
 
-func costohab1 # Aplica os custos da habilidade/magia
+func custohab1 # Aplica os custos da habilidade/magia
 # arg0 = personagem
   ret custohab2(arg0, (arg0.var.[nomevar] - 1) / 7)
 
@@ -725,7 +725,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     dano *= ataque1 + (ataque1perso ? arg0.atknorm) + arma + muni
     dano *= (ataque2 ?? arg0.atknorm) / (arg1.defnorm * rand(fatormin, fatormax))
   fimse
-# Diferençá de nível
+# Diferença de nível
   se atknivel >= (arma1 ? 2 : 1)
     dano *= 1 + (arg0.pnivel - arg1.pnivel) / (arg0.pnivel + arg1.pnivel + 10)
   fimse

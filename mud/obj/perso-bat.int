@@ -68,7 +68,7 @@ func acertapos # Acerta posição
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
 # Retorna o corpo do personagem, se ele morreu e ficou o corpo
   p_imortal && pvida < pvidamax && (pvida = pvidamax) # Imortal
-  !p_tempoatu && (p_tempoatu = 100) # Para atualizar o personagem
+  !p_tempoatu && (p_tempoatu = 170) # Para atualizar o personagem
   casovar pvida * 100 / pvidamax
   casose "0" # Mortalmente ferito ou morto
   casose "1"
@@ -518,7 +518,7 @@ func p_proc_exec # Processar comportamento do personagem
   ret atkenv && pvida < p_fugir, $cmd_fugir.fugir(este) # Tenta fugir da luta
   ret sock, nulo # Retorna se está sendo controlado por jogador
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
-  !p_tempoatu && (p_tempoatu = 100)
+  !p_tempoatu && (p_tempoatu = 170)
 # Evento do personagem
   ret cmd_pnj_proc, nulo
 # Ações do personagem
@@ -639,7 +639,7 @@ func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   pvida < pvidamax && (x = pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))
   pmana < pmanamax && (x = pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
   pmove < pmovemax && (x = pmove = intmin(pmovemax, intmax(2, pmove + pmovemax * recup)))
-  x && (p_tempoatu = 100)
+  x && (p_tempoatu = 170)
   posicao < 4 && acertapos # Se estiver incapacitado, pode voltar a ficar normal
 
 

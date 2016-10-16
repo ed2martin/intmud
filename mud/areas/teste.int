@@ -219,7 +219,7 @@ const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
 func cmd_recalc2 # Recalcula variáveis do personagem
   arg0.defnorm += 10 # Ganha 10 pontos de defesa contra ataques normais
 # Nota os tipos de ataque são considerados normais ou especiais conforme
-# a constante config:atkespecial, no arquivo mud-b-config.int
+# a constante config:atkespecial, no arquivo mud/config/config.int
 # Mas não é necessário editar diretamente; use o comando econfig para isso
 
 
@@ -880,6 +880,67 @@ func cmd_atacou
   se arg2.result == 0 && arg2.arma1 == este
     $magia_fogo.exechabperso(arg0, arg1)
   fimse
+
+
+classe i_teste056
+herda comum_item
+const nome = "estante de armas"
+const descver = "Aqui ficam as armas doadas pelos jogadores."
+const i_pegar = "Isso está embutido na parede."
+const i_salapegar = $s_teste155
+
+
+classe i_teste057
+herda comum_item
+const nome = "estante de itens"
+const descver = "Aqui ficam os itens doados pelos jogadores, exceto armas."
+const i_pegar = "Isso está embutido na parede."
+const i_salapegar = $s_teste156
+
+
+classe i_teste058
+herda comum_item
+const nome = "estante de itens"
+const descver = "Aqui ficam os itens doados pelos jogadores, exceto armas."
+const i_pegar = "Isso está embutido na parede."
+const i_salapegar = $s_teste157
+
+
+classe i_teste059
+herda comum_item
+const nome = "câmera"
+const descnome = "uma câmera"
+const i_pegar = "A câmera está presa aqui."
+const i_salaver = $s_teste002
+
+
+classe i_teste060
+herda comum_item
+const nome = "grande espelho"
+const descnome = "um grande espelho"
+const i_pegar = "O espelho é grande demais."
+const i_salaver = $s_teste031
+const i_salaentrar = $s_teste031
+
+
+classe i_teste061
+herda comum_item
+const nome = "portal"
+const descnome = "um portal"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_pegar = "Você não consegue pegar o portal."
+const i_salaentrar = $i_teste062
+const mantersala = 1 # Mantém na sala: Sim
+
+
+classe i_teste062
+herda comum_item
+const nome = "portal"
+const descnome = "um portal"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_pegar = "Você não consegue pegar o portal."
+const i_salaentrar = $i_teste061
+const mantersala = 1 # Mantém na sala: Sim
 
 
 classe p_teste001
@@ -2307,7 +2368,7 @@ const s_desc = "Alguns itens só podem ser vestidos ou empunhados por determinado
 personagens. O colete dos elfos é um exemplo, só pode ser usado por elfos.\n\
 Uma forma de fazer isso é editar a opção \"Não podem vestir\" do item.\n\
 Outra é escrevendo a função cmd_podevestir do item. Nesse caso, veja\n\
-a classe i_teste014 no arquivo mud-a-teste.int."
+a classe i_teste014 no arquivo mud/areas/teste.int."
 const dir_s = $s_teste028
 const s_reset = "S 100 teste014 3 S\nS 100 teste017 1 S"
 
@@ -2612,7 +2673,7 @@ herda b_teste
 const s_titulo = "Mais sobre retornar"
 const s_desc = "Jogadores de nível mais alto podem retornar usando a magia retornar.\n\
 Faixa preta, indo a leste, ensina essa magia.\n\
-O personagem prefeito é a classe p_teste010 do arquivo mud-a-teste.int.\n\
+O personagem prefeito é a classe p_teste010 do arquivo mud/areas/teste.int.\n\
 Para mudar as mensagens ou o valor que ele cobra, basta mudar essa classe."
 const dir_l = $s_teste049
 const s_reset = "P 100 teste010 0 0 1"
@@ -2790,7 +2851,7 @@ nos tornozelos, teclando usar algemas mãos ou usar algemas tornozelos.\n\
 Quando usado nos tornozelos, perde-se muitos pontos de movimento ao andar.\n\
 Há também outro trigger que não deixa remover se você não tiver a chave.\n\
 Triggers são funções, na linguagem do IntMUD. No caso da algema, é\n\
-a classe i_teste019 do arquivo mud-a-teste.int."
+a classe i_teste019 do arquivo mud/areas/teste.int."
 const dir_n = $s_teste028
 const s_reset = "S 100 teste019 3 S\nS 100 teste020 3 S"
 
@@ -2805,6 +2866,7 @@ herda b_teste
 const s_titulo = "Sexto andar: Casas de jogadores"
 const s_desc = "A oeste há um gerenciador de casas e duas casas\n\
 A leste salas de doação"
+const dir_n = $s_teste159
 const dir_l = $s_teste122
 const dir_o = $s_teste115
 const dir_b = $s_teste030
@@ -2882,7 +2944,7 @@ classe s_teste070
 herda b_teste
 const s_titulo = "Editando triggers"
 const s_desc = "É possível também editar o arquivo diretamente, usando um editor de texto\n\
-qualquer. No caso do item teste002, abra o arquivo mud-a-teste.int.\n\
+qualquer. No caso do item teste002, abra o arquivo mud/areas/teste.int.\n\
 O item teste002 está a partir da linha que contém: classe s_teste002\n\
 Se o MUD estiver ativado, após alterar o arquivo, tecle mudler como\n\
 administrador ou pressione F10 na janela do IntMUD, para recarregar os\n\
@@ -3560,7 +3622,7 @@ const s_titulo = "Magia Chama Protetora"
 const s_desc = "Esse sujeito aqui ensina a magia Chama Protetora, que lança o efeito\n\
 de mesmo nome. Para aprender a magia tecle aprender chama.\n\
 Aqui foi criada a função cmd_alvo na classe magia_chama_protetora\n\
-(arquivo mud-b-hab.int) para apresentar a mensagem de \"Errou o alvo\"\n\
+(arquivo mud/config/hab.int) para apresentar a mensagem de \"Errou o alvo\"\n\
 da magia se for lançada em quem já estiver com o efeito Chama Protetora."
 const dir_n = $s_teste107
 const dir_s = $s_teste103
@@ -4406,6 +4468,7 @@ Nesta área, as armas vão para a sala ao norte, enquanto que outros itens\n\
 vão para uma das salas ao sul, escolhida aleatoriamente."
 const dir_n = $s_teste155
 const dir_s = $s_teste156
+const dir_l = $s_teste158
 const dir_o = $s_teste153
 
 
@@ -4435,3 +4498,56 @@ const s_desc = "Itens doados, exceto armas, vêm para cá ou a sala ao norte."
 const s_doarnao = 2 # Itens não doados: 1-Arma
 const s_item = 0
 const dir_n = $s_teste156
+
+
+classe s_teste158
+herda b_teste
+const s_titulo = "Doação 4"
+const s_desc = "Aqui, o que tem nas três estantes na verdade são os itens das salas\n\
+de doação. Nesse caso, geralmente as salas propriamente ditas ficam\n\
+fora do alcance dos jogadores."
+const dir_o = $s_teste154
+const s_reset = "S 100 teste056 1 S\nS 100 teste057 1 S\nS 100 teste058 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste056") && criar("i_teste056", este, 1)
+  !dentro1.objini("i_teste057") && criar("i_teste057", este, 1)
+  !dentro1.objini("i_teste058") && criar("i_teste058", este, 1)
+
+
+classe s_teste159
+herda b_teste
+const s_titulo = "Acesso a outras salas 1"
+const s_desc = "Aqui, olhando para a câmera, dá para ver como está a portaria.\n\
+Já o espelho reflete a escola de luta, mas pode-se também entrar nele.\n\
+O portal é diferente. Você entra nele e sai no portal da sala ao norte."
+const dir_n = $s_teste160
+const dir_s = $s_teste064
+const s_reset = "S 100 teste059 1 S\nS 100 teste060 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste059") && criar("i_teste059", este, 1)
+  !dentro1.objini("i_teste060") && criar("i_teste060", este, 1)
+
+const a_reset = "S 100 teste061 1 S"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  !dentro1.objini("i_teste061") && criar("i_teste061", este, 1)
+
+
+classe s_teste160
+herda b_teste
+const s_titulo = "Acesso a outras salas 2"
+const s_desc = "Os portais são os itens teste061 e teste062. Estão no Ares ao invés do\n\
+Sres, porque um portal não funciona sem o outro. No Sres, seria necessário\n\
+entrar nas duas salas. Ativando a opção \"Mantém na sala\" desses itens,\n\
+eles não são apagados depois de um tempo sem jogador."
+const dir_s = $s_teste159
+const a_reset = "S 100 teste062 1 S"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  !dentro1.objini("i_teste062") && criar("i_teste062", este, 1)

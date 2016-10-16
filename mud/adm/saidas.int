@@ -17,7 +17,7 @@ func escr # Listar saídas
   epara dir = misc:listadir, dir, dir = txt2(dir)
     continuar !p.existe(arg0.dono, "dir_" + txt1(dir))
     lin = txtmai(txt1(dir)) + "  "
-    lin += $opc_sala.menu(arg0.dono, "dir_" + txt1(dir))
+    lin += $opc_salaitem.menu(arg0.dono, "dir_" + txt1(dir))
     arg0.msg(lin)
   efim
   !lin && arg0.msg("Nenhuma")
@@ -65,15 +65,19 @@ herda comando_adm
 const objcmd = arg1.c_esala ? este
 const txtajuda = "\b\c3Csai\b\n\
 Sintaxe: CSAI <direção> <sala>\n\
+         CSAI <direção> item <item>\n\
 Cria uma saída na sala aonde você está, na direção especificada.\n\
+Saída para um item vai sempre para a sala aonde o item está.\n\
 Exemplo, se quiser que a saída para o norte vá para a sala teste001, tecle:\n\
 csai n teste001"
+const completo = 0
 const escr = escr1(arg0, arg1, arg2) # Criar saída
 
 func escr1
   prog p
-  txt10 dir
-  dir = misc:d1[txt1(arg1)]
+  txt10 dir = misc:d1[txt1(arg1)]
+  refvar sala = txtmin(txt2(arg1))
+  refvar item = txtmin(txtsub(arg1, 1, 1) == "item" ? txtsub(arg1, 2))
   se !arg0.dono
     arg0.msg("\bVocê não está em uma sala")
   senao arg2.c_esala <= 1 && arg0.jogarea + txtfim(arg0.dono, 3) != txt(arg0.dono, 2)
@@ -82,19 +86,29 @@ func escr1
     arg0.msg("\bDigite a direção após CSAI " + arg1)
   senao !dir
     arg0.msg("\bSaída não existe: " + txt1(arg1))
-  senao !txt2(arg1)
+  senao !sala
     arg0.msg("\bDigite a sala após CSAI " + arg1)
-  senao !existe_s(arg0, txt2(arg1))
-    arg0.msg("\bSala não existe: " + txt2(arg1))
-  senao arg2.c_esala <= 1 && arg0.jogarea + txtfim(txt2(arg1), 3) != txt2(arg1)
+  senao item && completo
+    arg0.msg("\bUse Csai para criar saída para um item")
+  senao item && c_sala <= 1
+    arg0.msg("\bNão pode criar saída para item")
+  senao item && !existe_i(arg0, item)
+    arg0.msg("\bItem não existe: " + item)
+  senao !item && !existe_s(arg0, sala)
+    arg0.msg("\bSala não existe: " + sala)
+  senao !item && arg2.c_esala <= 1 && arg0.jogarea + txtfim(sala, 3) != sala
     arg0.msg("\bNão pode criar saída para essa sala")
   senao
-    p.criar(arg0.dono, "const dir_" + dir + "=$s_" + txtmin(txt2(arg1)))
-    se arg3
-      p.criar("s_" + txt2(arg1), "const dir_" + misc:d2[dir] + "=$" + arg0.dono)
-      arg0.msg("\bSaída completa criada: " + dir + " para " + txtmin(txt2(arg1)))
+    se completo
+      p.criar(arg0.dono, "const dir_" + dir + "=$s_" + sala)
+      p.criar("s_" + sala, "const dir_" + misc:d2[dir] + "=$" + arg0.dono)
+      arg0.msg("\bSaída completa criada: " + dir + " para " + sala)
+    senao item
+      p.criar(arg0.dono, "const dir_" + dir + "=$i_" + item)
+      arg0.msg("\bSaída criada: " + dir + " para item " + item)
     senao
-      arg0.msg("\bSaída criada: " + dir + " para " + txtmin(txt2(arg1)))
+      p.criar(arg0.dono, "const dir_" + dir + "=$s_" + sala)
+      arg0.msg("\bSaída criada: " + dir + " para " + sala)
     fimse
     config:salvar
     criar("admmudou", arg0.dono)
@@ -109,7 +123,7 @@ const txtajuda = "\b\c3Csai2\b\n\
 Sintaxe: CSAI2 <direção> <sala>\n\
 Cria uma saída na sala aonde você está, na direção especificada, e cria\n\
 também uma saída no sentido contrário, da outra sala para essa."
-const escr = escr1(arg0, arg1, arg2, "2") # Criar saída completa
+const completo = 1 # Criar saída nos dois sentidos
 
 
 classe adm_esai

@@ -261,7 +261,8 @@ func txtsai # Retorna as saídas existentes
   ret sai ? "\bSaídas:" + sai : "\bSaídas: Nenhuma"
 
 func tsai2 # Para mostrar as saídas existentes
-  ret !dir_[arg1](arg0) || inv_[arg1](arg0), ""
+  ref sala = dir_[arg1](arg0)
+  ret !(sala.s_sala || sala.item && sala.dono.s_sala) || inv_[arg1](arg0), ""
   casovar int(porta_[arg1])
   casose "0"
   casose "1"

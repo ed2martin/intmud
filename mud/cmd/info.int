@@ -521,14 +521,16 @@ func escr
   fimse
   textotxt t
   txt80 dir
-  ref r
+  ref dono = arg0.dono
   epara dir = misc:listadir, dir, dir = txt2(dir)
     refvar nome = txt1(dir)
-    continuar !(r = arg0.dono.dir_[nome](arg0)) || arg0.dono.inv_[nome](arg0)
-    se int(arg0.dono.porta_[nome]) >= 2
+    ref sala = dono.dir_[nome](arg0)
+    sala.item && (sala = sala.dono)
+    continuar !sala.s_sala || dono.inv_[arg1](arg0)
+    se int(arg0.porta_[nome]) >= 2
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está fechado")
-    senao r.visivel(arg0)
-      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + r.s_titulo(arg0))
+    senao sala.visivel(arg0)
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + sala.s_titulo(arg0))
     senao
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está escuro")
     fimse

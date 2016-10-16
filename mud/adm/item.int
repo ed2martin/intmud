@@ -292,69 +292,94 @@ func escr # Editar item
   arg0.sock.m_menu("menu_item" + num)
 
 
-classe menu_identro1
+classe menu_identro2
 herda comando_menu
-const titulo = "Dentro"
+const titulo = "Dentro grupo"
 const menufim = var.menufim
 const colunas = 25
 #
-const nome1 = "Volume"
-const tipo1 = "opc_numero"
+const nome1 = "Sala pegar,soltar"
+const info1 = "Se definido, os comandos pegar e soltar pegam e soltam itens dessa sala"
+const tipo1 = "opc_sala"
 const clas1 = var.classe1
-const vari1 = "volmax"
+const vari1 = "i_salapegar"
 #
-const nome2 = "Expande"
-const info2 = "Volume aumenta se tiver itens dentro"
-const tipo2 = "opc_simnao"
+const nome2 = "Sala ver"
+const info2 = "Se definido, os comandos ver e olhar mostram a descrição dessa sala"
+const tipo2 = "opc_sala"
 const clas2 = var.classe1
-const vari2 = "volexp"
-const exec2 = "ajustapeso"
+const vari2 = "i_salaver"
 #
-const nome3 = "Objetos máximo"
-const tipo3 = "opc_numero"
+const nome3 = "Sala/item entrar"
+const info3 = "Para qual sala do MUD vai ao entrar no item\n\
+Para ir para a sala aonde um item está, escreva item e o nome do item"
+const tipo3 = "opc_salaitem"
 const clas3 = var.classe1
-const vari3 = "objmax"
+const vari3 = "i_salaentrar"
+
+
+classe menu_identro1
+herda menu_identro2
+const titulo = "Dentro simples"
 #
-const nome4 = "Itens dentro"
-const info4 = "Somente esses itens podem ser colocados dentro\n\
-Se vazio, pode-se colocar moedas e qualquer item dentro"
-const tipo4 = "opc_listaitem"
+const nome4 = "Volume"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
-const vari4 = "i_itens"
+const vari4 = "volmax"
+#
+const nome5 = "Expande"
+const info5 = "Volume aumenta se tiver itens dentro"
+const tipo5 = "opc_simnao"
+const clas5 = var.classe1
+const vari5 = "volexp"
+const exec5 = "ajustapeso"
+#
+const nome6 = "Objetos máximo"
+const tipo6 = "opc_numero"
+const clas6 = var.classe1
+const vari6 = "objmax"
+#
+const nome7 = "Itens dentro"
+const info7 = "Somente esses itens podem ser colocados dentro\n\
+Se vazio, pode-se colocar moedas e qualquer item dentro"
+const tipo7 = "opc_listaitem"
+const clas7 = var.classe1
+const vari7 = "i_itens"
 
 
 classe menu_identro3
 herda menu_identro1
+const titulo = "Dentro completo"
 #
-const nome5 = "Container"
-const tipo5 = "opc_opcao"
-const clas5 = var.classe1
-const vari5 = "i_abertoini"
-const exec5 = "recalc_exec"
-const extr5 = "Não\n\
+const nome8 = "Container"
+const tipo8 = "opc_opcao"
+const clas8 = var.classe1
+const vari8 = "i_abertoini"
+const exec8 = "recalc_exec"
+const extr8 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome6 = "Trancar"
-const tipo6 = "opc_opcao"
-const clas6 = var.classe1
-const vari6 = "i_tranc"
-const extr6 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
+const nome9 = "Trancar"
+const tipo9 = "opc_opcao"
+const clas9 = var.classe1
+const vari9 = "i_tranc"
+const extr9 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome7 = "Fechadura"
-const info7 = "Código da chave que tranca e destranca o container"
-const tipo7 = "opc_linha"
-const clas7 = var.classe1
-const vari7 = "i_fechadura"
+const nome10 = "Fechadura"
+const info10 = "Código da chave que tranca e destranca o container"
+const tipo10 = "opc_linha"
+const clas10 = var.classe1
+const vari10 = "i_fechadura"
 #
-const nome8 = "Come chave"
-const info8 = "Se o personagem perde a chave ao abrir o item"
-const tipo8 = "opc_simnao"
-const clas8 = var.classe1
-const vari8 = "i_comechave"
+const nome11 = "Come chave"
+const info11 = "Se o personagem perde a chave ao abrir o item"
+const tipo11 = "opc_simnao"
+const clas11 = var.classe1
+const vari11 = "i_comechave"
 
 
 classe menu_iarma1
@@ -739,6 +764,9 @@ classe menu_item2
 herda menu_icomum
 const titulo = "Item grupo " + txt(var.classe1, 2)
 const colunas = 25
+#
+const nome10 = "Dentro"
+const tipo10 = "menu_identro2--"
 #
 const nome11 = "Arma"
 const tipo11 = "menu_iarma2--"

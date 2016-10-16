@@ -1,5 +1,5 @@
 classe atualiza_422
-# Atualiza arquivos mud-a-*.int e mud-b-*.int de acordo com novas mudanças
+# Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
 uint16 versao
@@ -45,7 +45,7 @@ func ini
   ini2 = 1
 # Checa e muda a versão
   ret (versao = config:versao) >= 297, nulo
-  p.criar("config", "const versao = 297 # Para atualizar arquivos mud-a-*.int e mud-b-*.int")
+  p.criar("config", "const versao = 297 # Para atualizar arquivos mud/config/* e mud/areas/*")
   config:salvar
 # Coloca habilidades e magias no arquivo mud-b-config.int
   se versao < 292
