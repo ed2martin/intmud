@@ -12,11 +12,11 @@ const posic = 5
 uint32 total # Quantidade de itens do mesmo tipo
 txt20 mens # Parte da mensagem
 int8 achou # Quantos itens achou
-txt100 erro # Mensagem de erro
 
 func escr
   ref item # Item aonde está soltando os itens
   ref sala # Aonde soltar os itens
+  txt100 erro # Mensagem de erro
   listaobj l
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
@@ -52,11 +52,11 @@ func escr
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
   achou = 0, erro = "Você não vê isso."
-  epara l.addfim(sala.dentro1), l, l.ini.remove
+  epara l.addfim(sala.dentro1), l && achou < 10, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     total = n # Quantidade de itens
-    pegarobj(arg0, item, sala, l.objini)
-    sair achou >= 10
+    refvar erro1 = pegarobj(arg0, item, sala, l.objini)
+    erro1 && (erro = erro1)
   efim
   ret achou, nulo
 # Pega moedas
@@ -70,39 +70,34 @@ func escr
 func pegarobj
 # arg0 = personagem
 # arg1 = item ou sala de onde quer pegar (para mensagens)
-# arg2 = objeto que representa o conteúdo interno do item ou sala
+# arg2 = objeto que representa o conteúdo interno de arg1
 # arg3 = item que quer pegar
 # total = quantidade de itens
 # Faz achou++ se pegou o item
-# Coloca mensagem de erro na variável erro se não conseguiu pegar
-  se arg3.i_pegar
-    erro = arg3.i_pegar
-    ret
-  senao arg3.persolugar
+# Retorna mensagem de erro ou nulo se conseguiu pegar
+  ret arg3.i_pegar, arg3.i_pegar
+  listaitem i
+  epara i = arg3.dentro2.ini, i, i.depois
+    ret i.obj.s_sala, "Você não consegue pegar isso."
+  efim
+  se arg3.persolugar
     casovar arg3.persolugar.objini.posicao
     casose "4"
-      erro = "Você não consegue pegar porque tem alguém dormindo em cima."
-      ret
+      ret "Você não consegue pegar porque tem alguém dormindo em cima."
     casose "5"
-      erro = "Você não consegue pegar porque tem alguém descansando em cima."
-      ret
+      ret "Você não consegue pegar porque tem alguém descansando em cima."
     casose "6"
-      erro = "Você não consegue pegar porque tem alguém sentado em cima."
-      ret
+      ret "Você não consegue pegar porque tem alguém sentado em cima."
     casofim
-    erro = "Você não consegue pegar porque tem alguém em cima."
-    ret
+    ret "Você não consegue pegar porque tem alguém em cima."
   senao arg3.cabedentro(arg0) < total
-    erro = "Você não consegue carregar tanta coisa."
-    ret
+    ret "Você não consegue carregar tanta coisa."
   senao arg0 == arg2.dono
   senao arg0.pesoden - arg0.pesoveste + arg3.pesotot * total / arg3.objtot > arg0.pesomax
     se arg3.pesotot > arg3.objtot * arg0.pesomax
-      erro = "É pesado demais."
-    senao
-      erro = "Você não consegue carregar tanto peso."
+      ret "É pesado demais."
     fimse
-    ret
+    ret "Você não consegue carregar tanto peso."
   fimse
   achou++
   listaobj e

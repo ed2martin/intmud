@@ -943,6 +943,23 @@ const i_salaentrar = $i_teste061
 const mantersala = 1 # Mantém na sala: Sim
 
 
+classe i_teste063
+herda comum_item
+const nome = "barraca"
+const descnome = "uma pequena barraca"
+const i_salas = "teste162\nteste163"
+const volobj = 100
+
+
+classe i_teste064
+herda comum_item
+const nome = "janela"
+const descnome = "uma pequena janela"
+const descpos = "Há uma pequena janela na parede."
+const i_pegar = "Não tem como retirar a janela da parede."
+const i_salaver = dono.dono.dono
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -4545,9 +4562,47 @@ const s_desc = "Os portais são os itens teste061 e teste062. Estão no Ares ao in
 Sres, porque um portal não funciona sem o outro. No Sres, seria necessário\n\
 entrar nas duas salas. Ativando a opção \"Mantém na sala\" desses itens,\n\
 eles não são apagados depois de um tempo sem jogador."
+const dir_n = $s_teste161
 const dir_s = $s_teste159
 const a_reset = "S 100 teste062 1 S"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   !dentro1.objini("i_teste062") && criar("i_teste062", este, 1)
+
+
+classe s_teste161
+herda b_teste
+const s_titulo = "Itens com salas"
+const s_desc = "Aqui há uma pequena barraca com duas salas internas."
+const dir_s = $s_teste160
+const a_reset = "S 100 teste063 1 S"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  !dentro1.objini("i_teste063") && criar("i_teste063", este, 1)
+
+
+classe s_teste162
+herda b_teste
+const s_titulo = "Entrada da barraca"
+const s_desc = "Um pequeno compartimento.\n\
+A olhar para a janela, é possível ver a sala aonde a barraca está."
+const s_entrada = "porta"
+const dir_l = $s_teste163
+const s_reset = "S 100 teste064 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste064") && criar("i_teste064", este, 1)
+
+
+classe s_teste163
+herda b_teste
+const s_titulo = "Sala interna"
+const s_desc = "Um compartimento maior.\n\
+Aqui também é possível ver a sala aonde a barraca está teclando Ver janela\n\
+No entanto, aqui a janela é uma descrição (a constante ver_janela da\n\
+classe s_teste163 do arquivo areas/teste.int)."
+const dir_o = $s_teste162
+const ver_janela = dono.dono.descsala(arg0, 7)

@@ -14,11 +14,8 @@ func escr
   ref r1
 # Descrição da sala
   se !arg1
-    se arg0.jogconfig.16
-      arg0.msg2(txt(arg0.dono, 2) + "  " + arg0.dono.descsala(arg0, completo ? 7 : 6))
-    senao
-      arg0.msg2(arg0.dono.descsala(arg0, completo ? 7 : 6))
-    fimse
+    refvar cfg = (completo ? 7 : 6) + (arg0.jogconfig.16 ? 8)
+    arg0.msg2(arg0.dono.descsala(arg0, cfg))
     ret
   fimse
 # Descrições extras da sala
@@ -76,11 +73,8 @@ func escr
     ref r2 = r1.i_salaver
     se r2
       r2.s_reset1
-      se arg0.jogconfig.16
-        arg0.msg2(txt(r2, 2) + "  " + r2.descsala(arg0, completo ? 7 : 6))
-      senao
-        arg0.msg2(r2.descsala(arg0, completo ? 7 : 6))
-      fimse
+      refvar cfg = (completo ? 7 : 6) + (arg0.jogconfig.16 ? 8)
+      arg0.msg2(r2.descsala(arg0, cfg))
       se completo && r1.dono != arg0
         $mens.p(arg0, nulo, r2)
         $mens.mvis2("", "$P olha para $o.")

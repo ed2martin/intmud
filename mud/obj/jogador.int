@@ -294,7 +294,10 @@ func salvar # Salva o jogo, desde que a senha não seja nula
       item.depois
     fimse
   efim
-  salanome = dono
+  ref r
+  epara r = dono, r.dono, r = r.dono
+  efim
+  salanome = r
 # msg(txt2(cnome) + " , " + senha)
   dbg.exec = 2000
   ret !lista.total, 0

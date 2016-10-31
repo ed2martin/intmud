@@ -20,6 +20,7 @@ func escr # Listar saídas
     lin += $opc_salaitem.menu(arg0.dono, "dir_" + txt1(dir))
     arg0.msg(lin)
   efim
+  ret arg0.dono.s_entrada, arg0.msg("SAIR  (saída do item)")
   !lin && arg0.msg("Nenhuma")
 
 
@@ -129,6 +130,9 @@ const completo = 1 # Criar saída nos dois sentidos
 classe adm_esai
 herda comando_adm
 const objcmd = arg1.c_esala ? este
+const txtajuda = "\b\c3Esai\b\n\
+Sintaxe: ESAI <direção>\n\
+Edita a saída na direção especificada."
 
 func escr # Editar saída
   prog p
@@ -142,7 +146,7 @@ func escr # Editar saída
     arg0.msg("\bDigite a direção após ESAI")
   senao !dir
     arg0.msg("\bSaída não existe: " + arg1)
-  senao !p.existe(arg0.dono, "dir_" + dir)
+  senao !p.existe(arg0.dono, "dir_" + dir) && !(dir == "sair" && arg0.dono.s_entrada)
     arg0.msg("Não existe saída na direção " + txtmai(dir))
   senao arg2.c_esala <= 1 && arg0.jogarea + txtfim(txt2(arg1), 3) != txt2(arg1)
     arg0.msg("\bNão pode criar saída para essa sala")

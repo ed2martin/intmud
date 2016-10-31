@@ -1,5 +1,8 @@
 Salas (classe sala, em obj/sala.int)
 
+Para criar uma sala em um item:
+criar("nome da classe", item)
+
 const s_sala = 1
 Indica que é uma sala (personagens conseguem entrar).
 
@@ -126,13 +129,20 @@ Itens doados que essa sala não aceita.
 É um valor numérico em que cada bit corresponde a um tipo de item
 da lista em config:produtos, no arquivo config/config.int.
 
+const s_entrada = ""
+Nome da porta correspondente a essa sala, quando ela pertence a um item.
+Se definido, pode-se entrar no item por essa sala, e sair sai do item.
+Quando um item possui várias portas, o jogador deve escolher em qual entrar.
+
 const dir_[direção] = nulo
 ref dir_[direção]
 arg0 = personagem que está consultando essa constante (pode ser nulo)
 Sala na direção especificada.
-Geralmente definido dessa forma: const dir_s = $sala1
-As direções válidas são: n s l o ne no se so c b
-Se estiver ausente, não há sala nessa direção
+Se for item, será a sala aonde o item está.
+Se a sala estiver dentro de um item, procura a sala especificada no mesmo item.
+Se estiver ausente ou for nulo, não há sala nessa direção
+Geralmente é definido dessa forma: const dir_s = $sala1
+As direções válidas são: n s l o ne no se so c b entrar sair
 
 uint8 porta_[direção]
 const portaini_[direção]
@@ -227,9 +237,18 @@ Se modo=0, mostra o mais curto possível
 Somar 1 para mostrar descrição completa
 Somar 2 para mostrar saídas
 Somar 4 para mostrar os personagens e itens
+Somar 8 para mostrar o nome da sala
 
 func txtsai( jogador )
 Retorna as saídas existentes (texto)
+
+func dirsala( direção, personagem )
+Retorna a sala em uma direção ou nulo se não existir.
+Nota: personagem pode ser nulo se for genérico.
+
+func diritem( direção, personagem )
+Retorna o item em uma direção ou nulo se não for item.
+Nota: personagem pode ser nulo se for genérico.
 
 func mudaporta( saída, valor, mens1, mens2 )
 Muda estado de uma saída; variável porta_[arg0]

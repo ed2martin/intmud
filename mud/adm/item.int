@@ -322,64 +322,72 @@ classe menu_identro1
 herda menu_identro2
 const titulo = "Dentro simples"
 #
-const nome4 = "Volume"
-const tipo4 = "opc_numero"
+const nome4 = "Salas"
+const info4 = "Itens com salas não podem ser pegos\n\
+Mudar essa opção não cria ou remove salas nos itens que já existem"
+const tipo4 = "opc_listasala"
 const clas4 = var.classe1
-const vari4 = "volmax"
+const vari4 = "i_salas"
+const extr4 = "20"
 #
-const nome5 = "Expande"
-const info5 = "Volume aumenta se tiver itens dentro"
-const tipo5 = "opc_simnao"
+const nome5 = "Volume"
+const tipo5 = "opc_numero"
 const clas5 = var.classe1
-const vari5 = "volexp"
-const exec5 = "ajustapeso"
+const vari5 = "volmax"
 #
-const nome6 = "Objetos máximo"
-const tipo6 = "opc_numero"
+const nome6 = "Expande"
+const info6 = "Volume aumenta se tiver itens dentro"
+const tipo6 = "opc_simnao"
 const clas6 = var.classe1
-const vari6 = "objmax"
+const vari6 = "volexp"
+const exec6 = "ajustapeso"
 #
-const nome7 = "Itens dentro"
-const info7 = "Somente esses itens podem ser colocados dentro\n\
-Se vazio, pode-se colocar moedas e qualquer item dentro"
-const tipo7 = "opc_listaitem"
+const nome7 = "Objetos máximo"
+const tipo7 = "opc_numero"
 const clas7 = var.classe1
-const vari7 = "i_itens"
+const vari7 = "objmax"
+#
+const nome8 = "Itens dentro"
+const info8 = "Somente esses itens podem ser colocados dentro\n\
+Se vazio, pode-se colocar moedas e qualquer item dentro"
+const tipo8 = "opc_listaitem"
+const clas8 = var.classe1
+const vari8 = "i_itens"
 
 
 classe menu_identro3
 herda menu_identro1
 const titulo = "Dentro completo"
 #
-const nome8 = "Container"
-const tipo8 = "opc_opcao"
-const clas8 = var.classe1
-const vari8 = "i_abertoini"
-const exec8 = "recalc_exec"
-const extr8 = "Não\n\
+const nome9 = "Container"
+const tipo9 = "opc_opcao"
+const clas9 = var.classe1
+const vari9 = "i_abertoini"
+const exec9 = "recalc_exec"
+const extr9 = "Não\n\
 Sempre aberto\n\
 Inicialmente aberto\n\
 Inicialmente fechado\n\
 Inicialmente trancado\n\
 Indefinido; não checa se está aberto, fechado ou trancado"
 #
-const nome9 = "Trancar"
-const tipo9 = "opc_opcao"
-const clas9 = var.classe1
-const vari9 = "i_tranc"
-const extr9 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
-#
-const nome10 = "Fechadura"
-const info10 = "Código da chave que tranca e destranca o container"
-const tipo10 = "opc_linha"
+const nome10 = "Trancar"
+const tipo10 = "opc_opcao"
 const clas10 = var.classe1
-const vari10 = "i_fechadura"
+const vari10 = "i_tranc"
+const extr10 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
-const nome11 = "Come chave"
-const info11 = "Se o personagem perde a chave ao abrir o item"
-const tipo11 = "opc_simnao"
+const nome11 = "Fechadura"
+const info11 = "Código da chave que tranca e destranca o container"
+const tipo11 = "opc_linha"
 const clas11 = var.classe1
-const vari11 = "i_comechave"
+const vari11 = "i_fechadura"
+#
+const nome12 = "Come chave"
+const info12 = "Se o personagem perde a chave ao abrir o item"
+const tipo12 = "opc_simnao"
+const clas12 = var.classe1
+const vari12 = "i_comechave"
 
 
 classe menu_iarma1

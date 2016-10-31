@@ -524,9 +524,8 @@ func escr
   ref dono = arg0.dono
   epara dir = misc:listadir, dir, dir = txt2(dir)
     refvar nome = txt1(dir)
-    ref sala = dono.dir_[nome](arg0)
-    sala.item && (sala = sala.dono)
-    continuar !sala.s_sala || dono.inv_[arg1](arg0)
+    refvar sala = dono.dirsala(nome, arg0)
+    continuar !sala || dono.inv_[arg1](arg0)
     se int(arg0.porta_[nome]) >= 2
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está fechado")
     senao sala.visivel(arg0)

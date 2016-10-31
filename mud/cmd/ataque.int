@@ -282,19 +282,19 @@ func escrhab # Atacar alguém
     senao txt2(arg1) # Atacar um alvo específico em outra sala
       ref sala
       nome.ini(txt2(arg1), 1)
-      epara sala = arg0.dono, sala && move < dist, sala = sala.dir_[dir]
+      epara sala = arg0.dono, sala && move < dist, sala = sala.dirsala(dir)
         se move
           epara i = sala.dentro2.ini, i, i.depois
             sair i.obj.visivel(arg0) && nome.nome(i.obj.ident)
           efim
         fimse
         sair i.obj || int(sala.porta_[dir]) >= 2 # Achou o alvo ou porta fechada
-        move += intmax(1, sala.dir_[dir].s_atk_move)
+        move += intmax(1, sala.dirsala(dir).s_atk_move)
       efim
     senao # Atacar qualquer um em outra sala
       ref sala
       uint8 totalperso
-      epara sala = arg0.dono, sala && move < dist, sala = sala.dir_[dir]
+      epara sala = arg0.dono, sala && move < dist, sala = sala.dirsala(dir)
         se move
           epara i = sala.dentro2.ini, i, i.depois
             i.obj.visivel(arg0) && totalperso++
@@ -308,7 +308,7 @@ func escrhab # Atacar alguém
           sair
         fimse
         sair int(sala.porta_[dir]) >= 2 # Achou porta fechada
-        move += intmax(1, sala.dir_[dir].s_atk_move)
+        move += intmax(1, sala.dirsala(dir).s_atk_move)
       efim
     fimse
     r = i.obj

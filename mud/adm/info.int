@@ -125,6 +125,33 @@ func info # Usado por escr
   arg1.linhas <= 1 && arg1.addfim("Nenhuma variável")
 
 
+classe adm_iobj
+herda adm_info
+const objcmd = arg1.c_iobj ? este
+const txtajuda = "\b\c3Iobj\b\n\
+Sintaxe: IOBJ [personagem ou item]\n\
+Mostra os objetos dentro de um personagem ou item, na sala ou que você\n\
+carrega. Sem argumentos, mostra os objetos da sala aonde você está."
+
+func info # Usado por escr
+# arg0 = sala, personagem ou item
+# arg1 = textotxt aonde enviar as mensagens
+  arg1.limpar
+  arg1.addfim(cabe(arg0))
+  listaitem i
+  arg0.dentro1 && arg1.addfim("Dentro1:")
+  epara i = arg0.dentro1.ini, i, i.depois
+    refvar titulo = i.obj.s_sala ? i.obj.s_titulo : i.obj.descnome
+    arg1.addfim(txt(i.obj) + "  " + i.obj.objtot + "x  " + titulo)
+  efim
+  arg0.dentro2 && arg1.addfim("Dentro2:")
+  epara i = arg0.dentro2.ini, i, i.depois
+    refvar titulo = i.obj.s_sala ? i.obj.s_titulo : i.obj.descnome
+    arg1.addfim(txt(i.obj) + "  " + i.obj.objtot + "x  " + titulo)
+  efim
+  arg1.linhas <= 1 && arg1.addfim("Nenhuma variável")
+
+
 classe adm_ihab
 herda comando_adm
 const objcmd = arg1.i_perso ? este

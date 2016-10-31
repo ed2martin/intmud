@@ -23,15 +23,11 @@ func escr # Executa o comando
   txt100 dir1
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
-    ref saladest = arg0.dono.dir_[dir1](arg0)
-    se saladest.item
-      ret !mover(arg0, saladest.dono, nulo, saladest)
-    senao
-      ret !mover(arg0, saladest), nulo
-    fimse
+    refvar saladest = arg0.dono.dirsala(dir1, arg0)
+    ret !mover(arg0, saladest, nulo, arg0.dono.diritem(dir1, arg0))
   senao # Bêbado andando em uma direção aleatória
     dir1 = txt(fugirdir(arg0)) ?? dir
-    ref saladest = arg0.dono.dir_[dir1](arg0)
+    refvar saladest = arg0.dono.dirsala(dir1, arg0)
     ret !$cmd_[dir1].mover(arg0, saladest), nulo
   fimse
 # Fecha a porta
@@ -423,14 +419,47 @@ func escr # Executa o comando
 # arg1 = o que digitou após a direção
   ret !arg1, comando_mover:escr(arg0, arg1)
 # Obtém o item e a sala
-  ref item = misc:itemdono(arg0, arg1)
+  ref item = misc:itemdono(arg0, txt1(arg1))
   ref dest = item.i_salaentrar
-# Checa se pode entrar
+  ret !item, arg0.msg("Você não vê " + arg1 + ".")
   $mens.p(arg0, nulo, item)
-  se !item
-    ret arg0.msg("Você não vê " + arg1 + ".")
-  senao !(dest.s_sala || dest.item && dest.dono.s_sala)
-    ret $mens.msginv("Não é possível entrar $e $o." + dest, arg0)
+# Obtém a porta
+  se !dest || txt2(arg1)
+    listaitem i # Para verificar as salas
+    int8 portas # Número de portas
+    epara i = item.dentro2.ini, i, i.depois
+      portas += i.obj.s_sala && i.obj.s_entrada
+    efim
+    se portas == 1
+      epara i = item.dentro2.ini, i, i.depois
+        sair i.obj.s_sala && i.obj.s_entrada
+      efim
+      dest = i.obj
+    senao portas > 1 && txt2(arg1)
+      nomeobj n
+      n.ini(txt2(arg1), 1)
+      epara i = item.dentro2.ini, i, i.depois
+        sair i.obj.s_sala && i.obj.s_entrada && n.nome(i.obj.s_entrada, 1)
+      efim
+      dest = i.obj
+      se !dest
+        $mens.mens = txt2(arg1)
+        ret $mens.msginv("Não é possível entrar $e $o por $M.", arg0)
+      senao int(dest.porta_sair) >= 2
+        $mens.mens = txt2(arg1)
+        ret $mens.msginv("A entrada $M $d $o está fechada.", arg0)
+      fimse
+    senao portas > 1
+      arg0.msg(txtcopiamai(item.descnome, "A") + " possui as seguintes entradas:")
+      epara i = item.dentro2.ini, i, i.depois
+        i.obj.s_sala && i.obj.s_entrada && arg0.msg(i.obj.s_entrada)
+      efim
+      ret
+    fimse
+  fimse
+# Checa se pode entrar
+  se !(dest.s_sala || dest.item && dest.dono.s_sala)
+    ret $mens.msginv("Não é possível entrar $e $o.", arg0)
   senao item.i_aberto > 2 && !arg0.j_imortal
     ret $mens.msginv("$O está fechad$s.", arg0)
   fimse

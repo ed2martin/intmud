@@ -147,7 +147,7 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
   contr = perso && r.perso ? r : este
   se !r
     ret
-  senao perso
+  senao perso || s_sala
     idono = r.dentro2.addfim(este) # Adiciona personagem
   senao
     idono = r.dentro1.addfim(este) # Adiciona item
