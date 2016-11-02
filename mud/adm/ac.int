@@ -14,8 +14,10 @@ func escr
   senao !arg1
     arg0.msg("Tecle a mensagem após AC.")
   senao
+    $mens.p(arg0)
+    $mens.mens = arg1
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
-      item.obj.jogconfig.19 && item.obj.msg("(ac) " + arg0.sock.nome + ": " + arg1)
+      item.obj.jogconfig.19 && $mens.msg(config:acmsg, item.obj.perso)
     efim
   fimse

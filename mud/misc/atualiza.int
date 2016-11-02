@@ -1,4 +1,4 @@
-classe atualiza_422
+classe atualiza_425
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 422, nulo
-  p.criar("config", "const versao = 422 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 425, nulo
+  p.criar("config", "const versao = 425 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -617,6 +617,10 @@ casa está atrasada.\"")
     criafunc("config", "const item_comida = 8192")
     criafunc("config", "const item_pergaminho = 64")
     criafunc("config", "const item_chave = 0")
+  fimse
+# Mensagens do canal AC
+  se versao < 425
+    criafunc("config", "const acmsg = \"(ac) $R: $m\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

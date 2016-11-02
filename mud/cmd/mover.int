@@ -31,7 +31,7 @@ func escr # Executa o comando
     ret !$cmd_[dir1].mover(arg0, saladest), nulo
   fimse
 # Fecha a porta
-  se sala.fecha_[dir1] && $comando_mover.andou
+  se sala.fecha_[dir1] && sala.porta_[dir1] < 2 && $comando_mover.andou
     refvar m = sala.porta_[dir1] < 2 ? "$M se $2."
     sala.mudaporta(dir1, sala.tranc_[dir1](arg0) == 2 ? 3 : 2, m, m)
   fimse
