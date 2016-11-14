@@ -11,9 +11,8 @@ const p_exp = config:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 #
-const expmax = int((pnivel * pnivel + 20) * matpow(config:exp_renascer / 100, prenascer))
 sav textotxt p_hist # Histórico do personagem (quem ele matou)
-sav uint32 expatual # Experiência atual
+sav real expatual # Experiência atual
 sav uint16 pnivel # Nível atual
 sav uint32 pvida # Pontos de vida
 sav uint32 pmana # Pontos de mana
@@ -53,6 +52,17 @@ txt40 p_atacou_nome # Nome do personagem do jogador que atacou esse personagem
 txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sala)
 intdec p_tpersegue # Quanto para se ir de outra sala perseguindo
 const p_perseguevel = config:p_perseguevel
+
+func expmax
+  refvar n = args ? arg0 : pnivel
+  refvar t1 = $t_[tipo1]
+  refvar t2 = $t_[tipo2]
+  refvar t3 = $t_[tipo3]
+  real2 exp = 0 + t1.expmax_[n] + t2.expmax_[n] + t3.expmax_[n] + config:expmax_[n]
+  exp += config:expmax0 + t1.expmax0 + t2.expmax0 + t3.expmax0
+  exp += (config:expmax1 + t1.expmax1 + t2.expmax1 + t3.expmax1) * n
+  exp += (config:expmax2 + t1.expmax2 + t2.expmax2 + t3.expmax2) * n * n
+  ret intmax(1, exp * matpow(config:exp_renascer / 100, args ? arg1 : prenascer))
 
 func pnivelmax
   refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))

@@ -1,0 +1,99 @@
+classe opc_nivel
+herda comando_adm
+
+func menu
+# arg0=nome da classe, arg1=nome da variável
+  int16 total
+  prog p
+  epara p.inifunctudo(arg0, arg1), p.lin, p.depois
+    total++
+  efim
+  ret total == 0, "Nenhum nível definido"
+  ret total == 1, "1 nível"
+  ret txt(v.total("")) + " níveis"
+
+func passo
+  arg0.passo = este
+  se txt(arg1, 0, 1) == "m" # Executa comando do MUD
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
+  senao arg1 == "" || arg1 == "\b"
+    refvar nome = txt(arg0.var.classe1, 5)
+    arg0.msg("Experiência, tecle O para saber as opções")
+  senao arg1 == "z"
+    arg0.var.opcnivel = ""
+    ret passosair(arg0)
+  senao arg1 == "o"
+    prog p
+    refvar txtmais = arg0.txtmais
+    txtmais.limpar
+    txtmais.addfim("Experiência extra:")
+    refvar classe = arg0.var.opcclasse
+    refvar funcao = arg0.var.opcvar
+    int8 total1 = inttotal(funcao)
+    int8 total2
+    epara total2 = total1 + 1, total2 < total1 + 5, total2++
+      epara p.inifunctudo(classe, funcao), p.lin, p.depois
+        continuar inttotal(p.texto) != total2
+        real exp = [classe]:[p.texto]
+        se exp >= 0
+          txtmais.addfim("Nível " + txt(p.texto, total1) + "  Exp +" + exp)
+        senao
+          txtmais.addfim("Nível " + txt(p.texto, total1) + "  Exp " + exp)
+        fimse
+      efim
+    efim
+    txtmais.linhas <= 1 && txtmais.addfim("Nenhum nível definido")
+    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    txtmais.addfim("Ou digite o número do nível para aumentar ou diminuir a experiência")
+    arg0.txtmostra
+  senao
+    uint16 nivel = arg1
+    se txt(nivel) != arg1
+      arg0.msg("Nível deve ser de 0 a 65535, digite outro, Z cancela")
+    senao
+      arg0.var.opcnivel = arg1
+      $opc_nivel_mudar.passo(arg0, "\b")
+    fimse
+  fimse
+  ret 1
+
+
+classe opc_nivel_mudar
+herda comando_adm
+const menu = ""
+
+func passo
+  arg0.passo = este
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Digite a experiência extra do nível " + arg0.var.opcnivel + "?")
+    arg0.msg("Maior que 0 aumenta, menor que 0 diminuir, 0 apaga, Z cancela")
+    ret 1
+  senao arg1 == "z"
+    arg0.var.opcnivel = ""
+    ret $opc_nivel.passo(arg0, "\b")
+  fimse
+  prog p
+  refvar nome = arg0.var.opcvar + arg0.var.opcnivel
+  int32 valor = arg1
+  se txt(valor) != arg1
+    arg0.msg("Digite um número de -2147483648 a 2147483647, Z cancela")
+    ret 1
+  senao valor == 0
+    p.apagar(arg0.var.opcclasse, nome)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg("Apagada experiência nível " + arg0.var.opcnivel)
+    admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + nome + " " + arg0.var.opcnome)
+  senao
+    p.criar(arg0.var.opcclasse, "const " + nome + "=" + valor)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    se valor > 0
+      arg0.msg("Experiência no nível " + arg0.var.opcnivel + " aumenta em " + valor)
+    senao
+      arg0.msg("Experiência no nível " + arg0.var.opcnivel + " diminui em " + -valor)
+    fimse
+    admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + nome + " " + arg0.var.opcnome)
+  fimse
+  arg0.var.opcnivel = ""
+  ret $opc_nivel.passo(arg0, "\b")

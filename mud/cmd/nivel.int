@@ -1,0 +1,34 @@
+classe cmd_nivel
+herda comando_comum
+const txtajuda = "\b\c3Nível\b\n\
+Sintaxe: NIVEL [nível]\n\
+Mostra a quantidade de experiência necessária para os próximos níveis.\n\
+Digitando Nivel seguido de um número, mostra a experiência necessária\n\
+a partir desse nível."
+const posic = 0
+
+func escr
+  uint16 nivel = arg1
+  uint16 nmax = arg0.pnivelmax ?? 65535
+  se !arg1
+    nivel = arg0.pnivel
+  senao txt(nivel) != arg1
+    ret arg0.msg("Nível não existe: " + arg1)
+  senao nivel > nmax
+    ret arg0.msg("\bO nível máximo é " + nmax + ".")
+  fimse
+  se nmax > nivel + 5
+    nmax = nivel + 5
+  fimse
+  textotxt t0
+  se nmax == nivel
+    t0.addfim("\b\c6Experiência necessária, nível " + nivel + ":\b")
+  senao
+    t0.addfim("\b\c6Experiência necessária, níveis " + nivel + " a " + nmax + ":\b")
+  fimse
+  enquanto 1
+    refvar exp = arg0.expmax(nivel, arg0.prenascer)
+    t0.addfim(txtfim("    " + nivel, 5) + ":  " + txtnum(exp, ".") + " exp")
+    sair nivel++ >= nmax
+  efim
+  arg0.msg(t0.remove(1000))

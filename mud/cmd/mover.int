@@ -24,7 +24,7 @@ func escr # Executa o comando
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
     refvar saladest = arg0.dono.dirsala(dir1, arg0)
-    ret !mover(arg0, saladest, nulo, arg0.dono.diritem(dir1, arg0))
+    ret !mover(arg0, saladest, nulo, arg0.dono.diritem(dir1, arg0)), nulo
   senao # Bêbado andando em uma direção aleatória
     dir1 = txt(fugirdir(arg0)) ?? dir
     refvar saladest = arg0.dono.dirsala(dir1, arg0)

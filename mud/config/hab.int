@@ -778,13 +778,31 @@ const c_mana2 = 5
 const ataquemin = 40
 const ataquemax = 120
 const tipoatk = 14 # Ataque tipo: 14 Psíquico
-const msgextra = "Pode causar confusào."
+const msgextra = "Pode causar confusão.\n\
+Não funciona se o alvo estiver cego ou estiver usando algo nos olhos."
 const msgatk0 = "\n\n\n\
 $P lança em raio de confusão em si mesm$m, $m\n\n\
 $P lança um raio de confusão em $a, $m\n\n\n\
 $P destrói $a com um raio de confusão, $m\n\n\n\
 $P lança um raio de confusão na direção de $a\n\n\n\
 $P lança um raio em $a, mas o raio se dissipa."
+
+func cmd_atacar
+# Checa se o alvo está cego
+  se !(arg1.bitver & 1)
+    $mens.p(arg0, arg1)
+    $mens.mtodos1("$P lança um raio nos olhos $d $a, mas el$w está ceg$t!")
+    ret 1
+  fimse
+# Checa se o alvo está usando algo nos olhos
+  listaitem i
+  epara i = arg1.dentro2.ini, i && i.obj.vestpos != 3, i.depois
+  efim
+  se i.obj
+    $mens.p(arg0, arg1, i.obj)
+    $mens.mtodos1("$P lança um raio nos olhos $d $a, mas $o desvia o raio.")
+    ret 1
+  fimse
 
 
 classe magia_restaurar_vitalidade

@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 425 # Para atualizar diretórios areas e config
+const versao = 426 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -245,6 +245,12 @@ const atk_evasao2 = 2
 # Animais não obedecem mais os jogadores se o nível do jogador somado
 # com esse número for menor que o nível do animal
 const animal_n = 0
+#
+# A experiência para subir um nível é o resultado de:
+# expmax0 + expmax1 * nível + expmax2 * nível ao quadrado
+const expmax0 = 20
+const expmax1 = 0
+const expmax2 = 1
 #
 # Mensagem começa a amanhecer
 const horamsg5 = "Começa a amanhecer."
