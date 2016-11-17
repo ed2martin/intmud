@@ -1,0 +1,59 @@
+classe busca_dados
+# Armazena dados intermediários na busca
+txt20 dir
+ref sala
+
+func ini # Inicializa a classe
+# Arg0 = nome da direção; arg1 = nome da sala
+  dir = arg0
+  sala = arg1
+
+
+classe buscadordecaminhos
+# Busca de caminhos baseada em BFS
+listaobj lfila # Fila de caminhos a serem processados
+listaobj lvis # Caminhos já visitados
+const iniclasse = criar(arg0)
+
+func addsaida2 # Usado internamente: Adiciona sala na lista
+# Arg0 = sala; arg1 = direção
+  arg0 && !lvis.possui(arg0) && lfila.addfim(criar("busca_dados", arg1, arg0))
+
+func addsaida # Usado internamente na primeira passagem: adiciona a saída arg1 da sala arg0
+# Se arg2 for especificado, coloca saída como arg2
+  ref sala
+  txt10 sai
+  sai = arg2 ? arg2 : arg1
+  sala = arg0.dir_[arg1]
+  addsaida2(sala, sai)
+
+func addsaidas # Adiciona as saídas da sala
+# Arg0 = sala
+  prog p
+  epara p.inifunctudo(arg0, "dir_"), p.lin, p.depois
+    addsaida(arg0, txt(p.texto, txtproc(p.texto, "_") + 1), arg1)
+  efim
+
+func busca # Busca um caminho
+# Arg0 = início; arg1 = objetivo
+# Retorna a direção necessária para chegar no caminho
+  lvis.limpar, lfila.limpar
+  listaitem i
+  lvis.addini(arg0) # Ignora a sala de início na hora de fazer a busca
+  se arg0 == arg1
+    ret # Já está ali
+  fimse
+  addsaidas(arg0)
+  i = lfila.ini
+  enquanto i
+    ref r
+    r = i.obj
+    se r.sala == arg1 # Encontrou o final
+      ret r.dir
+    senao
+      lvis.addfim(r.sala)
+      addsaidas(r.sala, r.dir)
+    fimse
+    i.remove, i = lfila.ini
+  efim
+  ret # Não encontrou o caminho
