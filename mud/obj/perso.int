@@ -197,7 +197,7 @@ func mudadono # Coloca personagem em outra sala
   senao
     dono.t_item = 0
     msgsom(dono.s_som)
-    refvar cfg = jogconfig.bits & 3 | (dono.s_morre ? 5 : 4) | (jogconfig.16 ? 8)
+    refvar cfg = (jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)) | (jogconfig.16 ? 8)
     msg2(dono.descsala(este, cfg))
   fimse
   ret este
@@ -205,9 +205,8 @@ func mudadono # Coloca personagem em outra sala
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
 # arg0 = sala
   ret !arg0.s_sala || arg0.volden + voltot > arg0.volmax, 0
-  ret sock, 1
   ret jog, int(arg0.dentro2.total("jogador") < arg0.s_jog)
-  ret int(arg0.dentro2.total - arg0.dentro2.total("jogador") < arg0.s_pnj)
+  ret int(sock || arg0.dentro2.total - arg0.dentro2.total("jogador") < arg0.s_pnj)
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos

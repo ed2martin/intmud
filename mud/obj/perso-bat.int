@@ -51,6 +51,7 @@ inttempo p_proc # Para processar comportamento do personagem
 txt40 p_atacou_nome # Nome do personagem do jogador que atacou esse personagem
 txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sala)
 intdec p_tpersegue # Quanto para se ir de outra sala perseguindo
+const p_lembra = config:p_lembra
 const p_perseguevel = config:p_perseguevel
 
 func expmax
@@ -634,7 +635,7 @@ func p_proc_perseguir # Persegue e ataca um personagem de jogador
     dir = txt(p.texto, 4) # Anota direção da sala
   efim
 # Anda na direção do rastro ou desiste da perseguição
-  se dir && (int(p_mover) > 1 || dono1.dir_[dir](este).s_area == dono1.s_area)
+  se dir && (int(p_persegue) > 1 || dono1.dir_[dir](este).s_area == dono1.s_area)
     $cmd_[dir].escr(este)
     ret 1
   fimse

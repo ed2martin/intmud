@@ -344,37 +344,39 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg4 = item usado (exemplo, um pergaminho), ou nulo se não usou nenhum item
 # arg5 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
   ret !checahab2(arg0, arg2, arg4), nulo
+  refvar contr0 = arg0.contr
+  refvar contr1 = arg1.contr
 # Checa a condição de batalha
-  se a_batalha == 1 && !arg0.contr.atkenv
-    ret arg0.contr.msg("Você não está lutando com ninguém.")
-  senao a_batalha == 2 && arg0.contr.atkenv
-    ret arg0.contr.msg("Você está lutando pela sua vida.")
+  se a_batalha == 1 && !contr0.atkenv
+    ret contr0.msg("Você não está lutando com ninguém.")
+  senao a_batalha == 2 && contr0.atkenv
+    ret contr0.msg("Você está lutando pela sua vida.")
 # Checa condição do alvo
   senao !a_cond
-    ret !arg1.pvida, arg0.contr.msg("Alvo está desmaiado.")
+    ret !arg1.pvida, contr0.msg("Alvo está desmaiado.")
   senao a_cond == 1
-    ret arg1.pvida, arg0.contr.msg("Alvo não está desmaiado.")
+    ret arg1.pvida, contr0.msg("Alvo não está desmaiado.")
   senao dono.s_semmagia && txt(nomevar, 0, 1) == "m"
-    ret arg0.contr.msg("A magia não teve efeito.")
+    ret contr0.msg("A magia não teve efeito.")
   fimse
 # Obtém a arma usada
   refvar errmuni = execmunicao(arg0)
-  ret errmuni, arg0.contr.msg(errmuni)
+  ret errmuni, contr0.msg(errmuni)
 # Técnicas não agressivas
   listaobj l
   casovar tipoalvo
   casose "7"
     se arg0 != arg1
       refvar msg = txt(nomevar, 0, 1) == "m" ? "magia" : "habilidade"
-      arg0.contr.msg("Essa " + msg + " não pode ser usada nos outros.")
+      contr0.msg("Essa " + msg + " não pode ser usada nos outros.")
       ret
     fimse
   casose "6"
     ret cmd_alvo(arg0, arg1, este), nulo
-    epara l.addfim(arg0.contr.evento), l, l.ini.remove
+    epara l.addfim(contr0.evento), l, l.ini.remove
       ret l.objini.cmd_alvocontr(arg0, arg1, este, arg0), nulo
     efim
-    epara l.addfim(arg1.contr.evento), l, l.ini.remove
+    epara l.addfim(contr1.evento), l, l.ini.remove
       ret l.objini.cmd_alvocontr(arg0, arg1, este, arg1), nulo
     efim
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -389,7 +391,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     fimse
     tipomunicao == 2 && arma2.apagar(1)
     mudavida = 0
-    se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    se contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       result = 1 # Sem efeito
     senao rand(100) < falha
       result = 2 # Errou o alvo
@@ -413,27 +415,31 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casose "3"
   casose "5"
     sair arg0 != arg1
-    ret arg0.contr.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
+    ret contr0.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
   casofim
 # Checa o alvo
-  se arg0.contr.mesmogrupo(arg1.contr)
-    ret arg0.contr.msg("Atacar outro integrante do grupo?")
-  senao !arg0.contr.dono.s_luta
-    ret arg0.contr.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
-  senao !arg1.contr.p_agressivo(arg0)
-    ret arg0.contr.msg(txtcopiamai(arg1.contr.descnome, "A") + " não quer brigar.")
-  senao !arg0.contr.p_agressivo(arg1)
-    ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + ".")
-  senao arg0.contr.dono.s_luta == 1 && arg0.contr.jog && arg1.contr.jog && arg0 != arg1
-    ret arg0.contr.msg("Você não quer brigar com " + arg1.contr.descnome + " aqui.")
+  se contr0.mesmogrupo(contr1)
+    ret contr0.msg("Atacar outro integrante do grupo?")
+  senao !contr0.dono.s_luta
+    ret contr0.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
+  senao !contr1.dono.s_luta
+    ret contr0.msg(arg4.item ? "A magia falhou." : "O alvo está em um lugar pacífico.")
+  senao !contr1.p_agressivo(arg0)
+    ret contr0.msg(txtcopiamai(contr1.descnome, "A") + " não quer brigar.")
+  senao !contr0.p_agressivo(arg1)
+    ret contr0.msg("Você não quer brigar com " + contr1.descnome + ".")
+  senao contr0.jog && contr1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
+    se arg0 != arg1
+      ret contr0.msg("Você não quer brigar com " + contr1.descnome + " aqui.")
+    fimse
   fimse
 # Dispara eventos
   ret cmd_atacar(arg0, arg1, este), nulo
-  epara l.addfim(arg0.contr.evento), l, l.ini.remove
-    ret l.objini.cmd_atacarcontr(arg0, arg1, este, arg0.contr), nulo
+  epara l.addfim(contr0.evento), l, l.ini.remove
+    ret l.objini.cmd_atacarcontr(arg0, arg1, este, contr0), nulo
   efim
-  epara l.addfim(arg1.contr.evento), l, l.ini.remove
-    ret l.objini.cmd_atacarcontr(arg0, arg1, este, arg1.contr), nulo
+  epara l.addfim(contr1.evento), l, l.ini.remove
+    ret l.objini.cmd_atacarcontr(arg0, arg1, este, contr1), nulo
   efim
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_atacar(arg0, arg1, este, arg0), nulo
@@ -447,7 +453,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     mensinicio(arg0, arg1)
   fimse
   tipomunicao == 2 && arma2.apagar(1)
-  se arg0.contr.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+  se contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     result = 1
     mensgolpe(arg0, arg1, arg5)
     ret arg0.acertapos(1)
@@ -455,23 +461,22 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Alvos secundários (somente ataques de área)
   se tipoalvo >= 2 && tipoalvo <= 5
     listaitem i
-    refvar p1 = arg0.contr
-    l.addfim(arg1.contr.dono.dentro2)
-    l.remove(p1, arg1.contr)
-    se p1.tseguir == 2 # Líder do grupo: não ataca os outros integrantes
+    l.addfim(contr1.dono.dentro2)
+    l.remove(contr0, contr1)
+    se contr0.tseguir == 2 # Líder do grupo: não ataca os outros integrantes
       i = l.ini
       enquanto i
-        i.obj.tseguir == 1 && i.obj.iseguir.objlista == p1 ? i.removedepois : i.depois
+        i.obj.tseguir == 1 && i.obj.iseguir.objlista == contr0 ? i.removedepois : i.depois
       efim
-    senao p1.tseguir == 1 && p1.iseguir # Seguindo o líder do grupo
-      refvar p2 = p1.iseguir.objlista
+    senao contr0.tseguir == 1 && contr0.iseguir # Seguindo o líder do grupo
+      refvar p2 = contr0.iseguir.objlista
       l.remove(p2)
       i = l.ini
       enquanto i
         i.obj.tseguir == 1 && i.obj.iseguir.objlista == p2 ? i.removedepois : i.depois
       efim
     fimse
-    se p1.jog && p1.dono.s_luta < 2 # Sala não permite luta entre jogadores
+    se contr0.jog && contr0.dono.s_luta < 2 # Sala não permite luta entre jogadores
       epara i = l.ini, i, i.obj.jog ? i.removedepois : i.depois
       efim
     fimse
@@ -495,10 +500,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
     se carga > 1.2 # Muito pesado
       atk /= carga < 1.4 ? 10 : 100
-      arg0.contr.msg("É muito peso!")
+      contr0.msg("É muito peso!")
     senao carga > 1 # Um pouco pesado
       atk *= 5 - 4 * carga # se carga=1,atk*=1  se carga=1.2,atk*=0.2
-      arg0.contr.msg("Bastante peso!")
+      contr0.msg("Bastante peso!")
     fimse
   fimse
 # Checa sede e fome
@@ -506,7 +511,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Ataca o alvo escolhido
   listaobj e
   tipoalvo != 8 && velgolpe(arg0, arg1) # Tempo do golpe
-  arg5 && (arg1.contr.p_atacou_dir = misc:d2[arg5])
+  arg5 && (contr1.p_atacou_dir = misc:d2[arg5])
   se arg5 && arg1.p_atk_desvia
     arg0.batalhaini(arg1)
     result = 2 # Desvia
@@ -515,7 +520,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   fimse
   se result != 4
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
-    !result && (arg0.contr.atkdanos += intpos(-mudavida))
+    !result && (contr0.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     mensgolpe(arg0, arg1, arg5)
     cmd_atacou(arg0, arg1, este)
@@ -565,7 +570,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   efim
   se danos
     danos = "Danos:" + txt(danos, 1)
-    epara l.addfim(arg0.contr.dono.dentro2), l, l.ini.remove
+    epara l.addfim(contr0.dono.dentro2), l, l.ini.remove
       l.objini.msg(danos)
     efim
   fimse
@@ -576,31 +581,36 @@ func execmunicao # Obtém a arma usada: arma1 e arma2
 # Retorna mensagem de erro ou "" se conseguiu obter a munição
   arma1 = tipoarma ? ref(arg0.iempu.obj) : nulo
   arma2 = nulo
-  se tipomunicao
-    se !arma1 # Sem arma: munição no inventário
-      refvar lista = txttroca("\n" + itemmunicao, "\n", "\ni_") + "\n"
-      listaitem i
-      epara i = arg0.dentro1.ini, i, i.depois
-        sair txtproc(lista, "\n" + i.obj + "\n") >= 0
-      efim
-      arma2 = i.obj
-      ret !arma2, "Está sem munição."
-    senao arma1.armamunicao == 1 # Munição no inventário
-      refvar lista = txttroca("\n" + arma1.i_municao, "\n", "\ni_") + "\n"
-      listaitem i
-      epara i = arg0.dentro1.ini, i, i.depois
-        sair txtproc(lista, "\n" + i.obj + "\n") >= 0
-      efim
-      arma2 = i.obj
-      ret !arma2, "Está sem munição."
-    senao arma1.armamunicao == 2 # Munição na arma
-      arma2 = arma1.dentro1.objini
-      ret !arma2, "Está sem munição."
-    senao
-      ret !arma2, "Essa arma não possui munição"
-    fimse
+  se !tipomunicao # Não usa munição
+    ret ""
+  senao !arma1 # Sem arma: munição no inventário
+    int16 p_nivel = arg0.pnivel
+    int8 p_renascer = arg0.renascer
+    refvar lista = txttroca("\n" + itemmunicao, "\n", "\ni_") + "\n"
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      continuar txtproc(lista, "\n" + i.obj + "\n") < 0
+      sair p_nivel >= int(i.obj.pnivel) && p_renascer >= int(i.obj.renascer)
+    efim
+    arma2 = i.obj
+    ret !arma2, "Está sem munição."
+  senao arma1.armamunicao == 1 # Munição no inventário
+    int16 p_nivel = arg0.pnivel
+    int8 p_renascer = arg0.renascer
+    refvar lista = txttroca("\n" + arma1.i_municao, "\n", "\ni_") + "\n"
+    listaitem i
+    epara i = arg0.dentro1.ini, i, i.depois
+      continuar txtproc(lista, "\n" + i.obj + "\n") < 0
+      sair p_nivel >= int(i.obj.pnivel) && p_renascer >= int(i.obj.renascer)
+    efim
+    arma2 = i.obj
+    ret !arma2, "Está sem munição."
+  senao arma1.armamunicao == 2 # Munição na arma
+    arma2 = arma1.dentro1.objini
+    ret !arma2, "Está sem munição."
+  senao
+    ret "Essa arma não possui munição"
   fimse
-  ret ""
 
 func efeitohab # Efeito da habilidade ou magia sobre o alvo
 # arg0 = quem lançou a habilidade ou magia

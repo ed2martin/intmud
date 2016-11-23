@@ -745,7 +745,7 @@ func passo
     refvar alvo = arg0.perso.atkenv.objlista
     se !alvo
       arg0.perso.teclou("olhar")
-    senao alvo.visivel(arg0)
+    senao !alvo.visivel(arg0)
       arg0.msg("Alguém está lutando com você!")
     senao
       arg0.msg(txtcopiamai(alvo.descnome, "A") + " está lutando com você!")
