@@ -254,19 +254,23 @@ func teclouperm # Processa comando com permissões específicas
     fimse
     sair obj = $cmd_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
     sair obj = $soc_[txt1(arg0)].objcmd(este, arg1) # Checa social exato
-    sair obj = $cmdfim_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
+    uint8 nivel1 = 255
+    ref obj1
     nomeobj n
-    n.ini(txt1(arg0))
+    n.ini("1000 cmd_" + txt1(arg0), 1000)
     epara p.iniclasse("cmd_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, arg1)) && n.nome(txt(obj, 4))
+      continuar !(obj1 = $[p.texto].objcmd(este, arg1)) || !n.nome(obj1)
+      continuar nivel1 <= obj1.objnivel(este, arg1)
+      obj = obj1, nivel1 = obj1.objnivel(este, arg1)
+      sair !nivel1
     efim
-    sair obj
+    sair !nivel1
+    n.ini("1000 soc_" + txt1(arg0), 1000)
     epara p.iniclasse("soc_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, arg1)) && n.nome(txt(obj, 4))
-    efim
-    sair obj
-    epara p.iniclasse("cmdfim_" + txt1(txte(arg0))), p.lin, p.depois
-      sair (obj = $[p.texto].objcmd(este, arg1)) && n.nome(txt(obj, 7))
+      continuar !(obj1 = $[p.texto].objcmd(este, arg1)) || !n.nome(obj1)
+      continuar nivel1 <= obj1.objnivel(este, arg1)
+      obj = obj1, nivel1 = obj1.objnivel(este, arg1)
+      sair !nivel1
     efim
     sair
   efim
@@ -276,10 +280,15 @@ func teclouperm # Processa comando com permissões específicas
     lin = txtremove(txt2(arg0), "EMDSA")
     obj = ref($magia_[txt1(lin)].objcmd(este))
     se !obj && lin
+      uint8 nivel1 = 255
+      ref obj1
       nomeobj n
-      n.ini(txt1(lin))
+      n.ini("1000 magia_" + txt1(lin), 1000)
       epara p.iniclasse("magia_" + txt1(txte(lin))), p.lin, p.depois
-        sair (obj = $[p.texto].objcmd(este)) && n.nome(txt(obj, 6))
+        continuar !(obj1 = $[p.texto].objcmd(este, arg1)) || !n.nome(obj1)
+        continuar nivel1 <= obj1.objnivel(este, arg1)
+        obj = obj1, nivel1 = obj1.objnivel(este, arg1)
+        sair !nivel1
       efim
     fimse
 # Magia: Gera eventos

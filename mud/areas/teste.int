@@ -4236,11 +4236,11 @@ estragos dos chutes. Os danos de magias aqui são reduzidas a um terço.\n\
 Nota: essas características foram feitas com triggers."
 const dir_n = $s_teste152
 const dir_s = $s_teste026
-const s_reset = "P 100 teste030 4 4 1\nP 100 teste031 4 4 1\nS 100 teste048 3 S"
+const s_reset = "P 100 teste030 4 4 3\nP 100 teste031 4 4 1\nS 100 teste048 3 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
-  se p_teste030:objsolto.total < 1
+  se p_teste030:objsolto.total < 3
     criar("p_teste030", este, 4)
   fimse
   se p_teste031:objsolto.total < 1
@@ -4544,14 +4544,13 @@ Já o espelho reflete a escola de luta, mas pode-se também entrar nele.\n\
 O portal é diferente. Você entra nele e sai no portal da sala ao norte."
 const dir_n = $s_teste160
 const dir_s = $s_teste064
+const a_reset = "S 100 teste061 1 S"
 const s_reset = "S 100 teste059 1 S\nS 100 teste060 1 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste059") && criar("i_teste059", este, 1)
   !dentro1.objini("i_teste060") && criar("i_teste060", este, 1)
-
-const a_reset = "S 100 teste061 1 S"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
@@ -4590,14 +4589,20 @@ classe s_teste162
 herda b_teste
 const s_titulo = "Entrada da barraca"
 const s_desc = "Um pequeno compartimento.\n\
-A olhar para a janela, é possível ver a sala aonde a barraca está."
+A olhar para a janela, é possível ver a sala aonde a barraca está.\n\
+Nota: Se a quantidade máxima de gosmas no comando Ires fosse 1,\n\
+ao criar uma segunda barraca, não haveria uma gosma dentro, porque\n\
+nesse caso já existiria uma (na primeira barraca)."
 const s_entrada = "porta"
 const dir_l = $s_teste163
-const s_reset = "S 100 teste064 1 S"
+const i_reset = "S 100 teste064 1 S\nP 100 teste030 3 3 1000"
 
-func s_reset1 # Realiza o reset
-# Não alterar; função criada automaticamente a partir de s_reset
+func i_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de i_reset
   !dentro1.objini("i_teste064") && criar("i_teste064", este, 1)
+  se p_teste030:objsolto.total < 1000
+    criar("p_teste030", este, 3)
+  fimse
 
 
 classe s_teste163

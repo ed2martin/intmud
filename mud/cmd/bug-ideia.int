@@ -1,6 +1,7 @@
-classe cmdfim_bug
+classe cmd_bug
 herda comando_comum
 const objcmd = config:bugtipo ? este
+const objnivel = 4
 const txtajuda = config:bugtipo ? txtajuda1
 const txtajuda1 = "\b\c3Bug\b\n\
 Sintaxe: BUG <mensagem>\n\
@@ -29,9 +30,10 @@ func escr
   fimse
 
 
-classe cmdfim_ideia
+classe cmd_ideia
 herda comando_comum
 const objcmd = config:ideiatipo ? este
+const objnivel = 4
 const txtajuda = config:ideiatipo ? txtajuda1
 const txtajuda1 = "\b\c3Ideia\b\n\
 Sintaxe: IDEIA <mensagem>\n\

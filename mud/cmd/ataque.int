@@ -1,6 +1,7 @@
 classe comando_hab
 herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
+const objnivel = !tipoarma || (tipoarma & intbit(int(arg0.iempu.obj.armatipo))) ? 0 : 2
 const posic = 7
 const falha = 0
 const tipoalvo = 6
@@ -116,27 +117,25 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
       arg0.contr.msg(lin + " está frac" + (arg0.msexo ? "o" : "a") + " demais.")
       ret
     casose "4"
-      arg0.contr.msg(lin + " está dormind" + (arg0.msexo ? "o" : "a") + ".")
+      arg0.contr.msg(lin + " está dormindo.")
       ret
     casose "5"
-      arg0.contr.msg(lin + " está descansand" + (arg0.msexo ? "o" : "a") + ".")
+      arg0.contr.msg(lin + " está descansando.")
       ret
     casose "6"
       arg0.contr.msg(lin + " está sentad" + (arg0.msexo ? "o" : "a") + ".")
       ret
     casose "7"
-      arg0.contr.msg(lin + " está lutand" + (arg0.msexo ? "o" : "a") + ".")
+      arg0.contr.msg(lin + " está lutando.")
       ret
     casofim
     arg0.contr.msg(lin + " não consegue fazer isso.")
     ret
   senao !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
+  senao tipoarma & intbit(int(arg0.iempu.obj.armatipo)) # Usando a arma certa
   senao !arg0.iempu # Não está usando uma arma
-    se !(tipoarma & 1)
-      arg0.contr.msg("Não possui a arma necessária.")
-      ret
-    fimse
-  senao tipoarma & intbit(arg0.iempu.obj.armatipo)
+    arg0.contr.msg("Não possui a arma necessária.")
+    ret
   senao tipoarma == 1
     arg0.contr.msg("Empunhando uma arma?")
     ret
@@ -535,7 +534,6 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Ataca os alvos secundários
   ref r
   txt200 danos
-  refvar lutando = atkenv ? 1 # Se não está lutando, significa que matou o alvo principal
   epara nulo, l, l.ini.remove
     continuar l.objini.perso < 2 # Não prossegue se for pacífico
     r = l.objini.persobat
@@ -564,7 +562,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       acertou && (danos += ", " + r.nome + " " + mudavida)
       r.acertapos(1)
     senao
-      !lutando && arg0.batalhafim # Não ganha experiência matando esse alvo
+      arg0.batalhafim # Não ganha experiência matando esse alvo
       r.morreu(arg0)
     fimse
   efim

@@ -9,27 +9,38 @@
 
 São classes cujo nome começa com um dos seguintes textos:
 cmd_  para comandos normais
-cmdfim_ para comandos de baixa prioridade
 magia_  para magias (só podem ser lançadas com o comando Lançar)
+soc_  para comandos sociais
 adm_ para comandos de administração (não existem para não administradores)
 Em seguida vem o nome do comando.
 
 Exemplos:
-cmd_config  trata do comando Config
-cmdfim_chat  trata do comando Chat
+cmd_config   Trata do comando Config
+soc_abraçar  Trata do comando social Abraçar
 
 Quando o jogador digita algo, primeiro são verificas as classe 'adm_',
-caso seja um administrador. Depois, as classes 'magia_' e 'cmd_', e por
-último, 'cmdfim_'.
+caso seja um administrador. Depois, as classes 'magia_', 'cmd_' e 'soc_'.
 
 A classe 'comando_comum' é herdada por todos os comandos.
 Quando é necessário uma única classe herdada por dois ou mais comandos,
 geralmente o nome dessa classe começa com 'comando_'.
 
 Classes de comandos podem ter as seguintes funções e constantes:
+
 const objcmd = este # Objeto que processa o comando, ou nulo se não existe
 # arg0 = objeto do personagem
 # arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+
+const objnivel = 0 # Prioridade do comando (0=maior prioridade)
+# arg0 = objeto do personagem
+# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+Quando há mais de um comando que corresponde ao que o usuário digitou,
+é escolhido o que tem o menor valor de objnivel.
+Foram adotados os valores:
+0 = a maioria dos comandos
+2 = habilidades e magias em que o personagem não está com a arma necessária
+4 = baixa prioridade (exemplo, Chat)
+6 = comandos sociais (exemplo, Abraçar)
 
 func escr # Processa o comando
 # arg0 = objeto do personagem

@@ -17,6 +17,7 @@ const txtajuda = "\b\c3Reset\b\n\
   \c2LRES\b      Lista salas que possuem reset\n\
   \c2ARES\b      Edita comandos do reset de área\n\
   \c2SRES\b      Edita comandos do reset de sala\n\
+  \c2IRES\b      Edita comandos do reset inicial (quando a sala é criada)\n\
   \c2TRES\b      Edita comandos do reset de tipo (raça ou classe)\n\
   \c2CRES\b      Refaz funções do reset a partir das constantes do reset\n\
   \c2RESET\b     Executa reset de área\n\n\
@@ -36,22 +37,21 @@ F Fim (encerra o reset se criou animal ou personagem)\n\
 Nota: depende do último animal ou personagem ser criado com sucesso."
 
 func escr # Executa reset
+  ref r
   se !arg1
-    ref r
-    epara r = arg0, r.dono, r = r.dono
+    epara r = arg0, !r.s_sala && r.dono, r = r.dono
     efim
-# $reset.sala(r, r.a_reset)
-    r.a_reset1
-    arg0.msg("Reset de área efetuado sala " + txt(r, 2))
-  senao $a_[arg1]
-    $a_[arg1].reset_exec
-    arg0.msg("Reset de área efetuado área " + arg1)
   senao $s_[arg1]
-# $reset.sala($s_[arg1], $s_[arg1].a_reset)
-    $s_[arg1].a_reset1
-    arg0.msg("Reset de área efetuado sala " + arg1)
+    r = $s_[arg1]
   senao
-    arg0.msg("Área ou sala inexistente: " + arg1)
+    ret arg0.msg("Área ou sala inexistente: " + arg1)
+  fimse
+# $reset.sala(r, r.a_reset)
+  r.a_reset1
+  se r.dono
+    arg0.msg("Reset de área efetuado sala " + txt(r, 2) + " de " + txt(r.dono, 2))
+  senao
+    arg0.msg("Reset de área efetuado sala " + txt(r, 2))
   fimse
 
 
@@ -78,10 +78,11 @@ func escr # Listar salas com reset
   fimse
   epara nulo, p.lin, p.depois
     sair naarea && prefixo + txtfim(p.texto, 3) != p.texto
-    continuar ![p.texto]:s_reset && ![p.texto]:a_reset
+    continuar !([p.texto]:s_reset || [p.texto]:a_reset || [p.texto]:i_reset)
     lin = txt(p.texto, 2) + "  "
     [p.texto]:a_reset && (lin += "ares ")
     [p.texto]:s_reset && (lin += "sres ")
+    [p.texto]:i_reset && (lin += "ires ")
     txtmais.addfim(lin + " " + $[p.texto].s_titulo(arg0))
     sair txtmais.linhas >= 500
   efim
@@ -99,6 +100,9 @@ Se o nome for omitido, será a sala em que você está.\n\
 Para que o reset de área aconteça, é necessário também editar a área, com\n\
 o comando EAREA, e mudar as opções \"Tempo de reset\" e \"Modo de reset\".\n\
 Nota: Esse comando criada a constante a_reset e a função a_reset1 na sala."
+#
+const opcnome = "Reset "
+const opcvar = "a_reset"
 
 func escr
   refvar var = arg0.sock.var
@@ -115,37 +119,52 @@ func escr
   senao
     var.opcclasse = $s_[arg1]
   fimse
-  var.opcnome = "Reset "
-  var.opcvar = "a_reset"
+  var.opcnome = opcnome
+  var.opcvar = opcvar
   $reset_menu.passo(arg0.sock, "\b")
 
 
 classe adm_sres
-herda comando_adm
-const objcmd = arg1.c_sres ? este
+herda adm_ares
 const txtajuda = "\b\c3Sres\b\n\
 Sintaxe: SRES [nome da sala]\n\
 Reset de sala. Edita os comandos executados quando algum jogador entra\n\
 na sala. Se o nome for omitido, será a sala em que você está.\n\
 Nota: Esse comando criada a constante s_reset e a função s_reset1 na sala."
+const opcnome = "Ao entrar "
+const opcvar = "s_reset"
+
+
+classe adm_ires
+herda adm_ares
+const txtajuda = "\b\c3Ires\b\n\
+Sintaxe: SRES [nome da sala]\n\
+Reset de sala em um item. Edita os comandos executados quando a sala\n\
+é criada dentro de um item.\n\
+Nota: Esse comando criada a constante i_reset e a função i_reset1 na sala."
+const opcnome = "Reset de sala em um item "
+const opcvar = "i_reset"
+
+
+classe adm_tres
+herda comando_adm
+const txtajuda = "\b\c3Tres\b\n\
+Sintaxe: TRES [nome do tipo]\n\
+Reset de tipo (raça ou classe). Edita os comandos executados quando algum\n\
+jogador cria um personagem do tipo especificado.\n\
+Nota: Esse comando criada a constante t_reset e a função t_reset1 no tipo.\n\
+Vide também os comandos Ltipo, Ctipo, Etipo e Atipo."
 
 func escr
   refvar var = arg0.sock.var
-  refvar adm = arg2.c_ares >= 2
   se !arg1
-    se txt(arg0.dono, 0, 2) != "s_"
-      ret arg0.msg("Você não está em uma sala")
-    senao !adm && "s_" + arg0.jogarea + txtfim(arg0.dono, 3) != arg0.dono
-      ret arg0.msg("Não pode editar o reset dessa sala")
-    fimse
-    var.opcclasse = arg0.dono
-  senao !$s_[arg1] || !adm && arg0.jogarea + txtfim(arg1, 3) != arg1
-    ret arg0.msg("Sala inexistente: " + arg1)
-  senao
-    var.opcclasse = $s_[arg1]
+    ret arg0.msg("Digite TRES seguido do nome do tipo")
+  senao !$t_[arg1]
+    ret arg0.msg("Tipo inexistente: " + arg1)
   fimse
-  var.opcnome = "Ao entrar "
-  var.opcvar = "s_reset"
+  var.opcclasse = $t_[arg1]
+  var.opcnome = "Jogador criar "
+  var.opcvar = "t_reset"
   $reset_menu.passo(arg0.sock, "\b")
 
 
@@ -420,10 +439,10 @@ func passo # Personagem
     fimse
     ret 1
   casose "5" # Nível máximo
-    se txt(x) == arg1 && x >= int(txtsub(arg0.var.opclin, 3, 1))
+    se txt(x) == arg1 && x >= int(txtsub(arg0.var.opclin, 4, 1))
       arg0.var.opclin += " " + x, $reset_opc_p.passo(arg0, "")
     senao
-      arg0.msg("Entre com o nível máximo, a partir de " + txtsub(arg0.var.opclin, 3, 1) + ", Z \
+      arg0.msg("Entre com o nível máximo, a partir de " + txtsub(arg0.var.opclin, 4, 1) + ", Z \
 cancela")
     fimse
     ret 1
@@ -1025,25 +1044,3 @@ D 10 SE 0"
 # t1.msg("func: \n" + cmdsala(reset1))
 # prog p
 # t1.msg("\n\n>" + p.classe("x", "func n\n" + cmdsala(reset1)) + "\n")
-
-
-classe adm_tres
-herda comando_adm
-const txtajuda = "\b\c3Tres\b\n\
-Sintaxe: TRES [nome do tipo]\n\
-Reset de tipo (raça ou classe). Edita os comandos executados quando algum\n\
-jogador cria um personagem do tipo especificado.\n\
-Nota: Esse comando criada a constante t_reset e a função t_reset1 no tipo.\n\
-Vide também os comandos Ltipo, Ctipo, Etipo e Atipo."
-
-func escr
-  refvar var = arg0.sock.var
-  se !arg1
-    ret arg0.msg("Digite TRES seguido do nome do tipo")
-  senao !$t_[arg1]
-    ret arg0.msg("Tipo inexistente: " + arg1)
-  fimse
-  var.opcclasse = $t_[arg1]
-  var.opcnome = "Jogador criar "
-  var.opcvar = "t_reset"
-  $reset_menu.passo(arg0.sock, "\b")

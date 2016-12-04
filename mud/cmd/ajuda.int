@@ -29,17 +29,11 @@ func escr
     ret !arg1, arg0.msg2(txtajuda(arg0))
     refvar t1 = $cmd_[txt1(arg1)].txtajuda(arg0)
     ret t1, arg0.msg2(t1)
-    refvar t2 = $cmdfim_[txt1(arg1)].txtajuda(arg0)
-    ret t2, arg0.msg2(t2)
-    refvar t3 = arg2.ajuda_[txt1(arg1)]
-    ret t3, arg0.msg2("\b\c3" + txtmaimin(arg1) + "\b\n" + t3)
+    refvar t2 = arg2.ajuda_[txt1(arg1)]
+    ret t2, arg0.msg2("\b\c3" + txtmaimin(arg1) + "\b\n" + t3)
   fimse
   prog p
   epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
-    refvar t1 = $[p.texto].txtajuda(arg0)
-    ret t1, arg0.msg2(t1)
-  efim
-  epara p.iniclasse("cmdfim_" + txt1(arg1)), p.lin, p.depois
     refvar t1 = $[p.texto].txtajuda(arg0)
     ret t1, arg0.msg2(t1)
   efim

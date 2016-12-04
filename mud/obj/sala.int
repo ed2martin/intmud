@@ -1,32 +1,9 @@
 classe area
-inttempo reset # Para executar reset quando a área é criada
 inttempo resetcont # Tempo para o próximo reset
 const iniclasse = arg0 != "area" && !$[arg0] && criar(arg0)
 
 func ini
-  reset = 1
-
-func reset_exec # Executa o reset da área
   resetcont = rand(a_tempo * 500, a_tempo * 700)
-  prog p
-  uint16 x
-  debug d
-# Reset da área
-  x = d.exec
-  epara p.iniherdainv("b_" + txt(este, 2)), p.lin, p.depois
-    $[p.texto].a_reset1, d.exec = x
-  efim
-# Avisa jogadores
-  txt100 mres
-  mres = a_txtreset
-  ret !mres, nulo
-  indiceitem i
-  ref r
-  epara i.ini("un "), txt1(i.txt) == "un", i.depois
-    epara r = i.obj.perso.dono, r.dono, r = r.dono
-    efim
-    "a_" + r.s_area == este && i.obj.msg(mres)
-  efim
 
 func resetcont_exec
   resetcont = rand(a_tempo * 500, a_tempo * 700)
@@ -37,7 +14,25 @@ func resetcont_exec
       ret $[p.texto].socktot, nulo
     efim
   fimse
-  reset_exec # Realiza o reset
+# Executa o reset da área
+  prog p
+  debug d
+  ref r
+  uint16 x = d.exec
+  epara p.iniherdainv("b_" + txt(este, 2)), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.a_reset1, d.exec = x
+    efim
+  efim
+# Avisa jogadores
+  txt100 mres = a_txtreset
+  ret !mres, nulo
+  indiceitem i
+  epara i.ini("un "), txt1(i.txt) == "un", i.depois
+    epara r = i.obj.perso.dono, r.dono, r = r.dono
+    efim
+    "a_" + r.s_area == este && i.obj.msg(mres)
+  efim
 
 func reset_atualiza
   se resetcont <= 0 || resetcont >= a_tempo * 700
@@ -135,7 +130,8 @@ comechave_so fugir_so inv_so fecha_so tranc_so voar_so\n\
 dir_entrar portaini_entrar portanome_entrar portaartigo_entrar fechadura_entrar\n\
 comechave_entrar fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n\
 dir_sair portaini_sair portanome_sair portaartigo_sair fechadura_sair\n\
-comechave_sair fugir_sair inv_sair fecha_sair tranc_sair voar_sair"
+comechave_sair fugir_sair inv_sair fecha_sair tranc_sair voar_sair\n\
+a_reset i_reset s_reset"
 const iniclasse = !$[arg0] && criar(arg0)
 
 func ini # Objeto foi criado: inicializa variáveis (arg0=dono, pode ser nulo)
@@ -154,6 +150,7 @@ func ini # Objeto foi criado: inicializa variáveis (arg0=dono, pode ser nulo)
   porta_sair = portaini_sair
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mdono(arg0) + cmd_mudadono
+  a_reset1, i_reset1
 
 func msg # Mensagem para todos da sala
   ret !socktot, nulo
