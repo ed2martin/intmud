@@ -17,21 +17,24 @@ const iniclasse = criar(arg0)
 
 func addsaida2 # Usado internamente: Adiciona sala na lista
 # Arg0 = sala; arg1 = direção
-  arg0 && !lvis.possui(arg0) && lfila.addfim(criar("busca_dados", arg1, arg0))
+  !lvis.possui(arg0) && !lfila.possui(arg0) && lfila.addfim(criar("busca_dados", arg1, arg0))
 
 func addsaida # Usado internamente na primeira passagem: adiciona a saída arg1 da sala arg0
 # Se arg2 for especificado, coloca saída como arg2
   ref sala
   txt10 sai
   sai = arg2 ? arg2 : arg1
-  sala = arg0.dir_[arg1]
-  addsaida2(sala, sai)
+  sala = arg0.dirsala(arg1)
+  sala && addsaida2(sala, sai)
 
 func addsaidas # Adiciona as saídas da sala
 # Arg0 = sala
   prog p
+  txt10 dir
   epara p.inifunctudo(arg0, "dir_"), p.lin, p.depois
-    addsaida(arg0, txt(p.texto, txtproc(p.texto, "_") + 1), arg1)
+    dir = txt(p.texto, txtproc(p.texto, "_") + 1)
+    continuar int(arg0.porta_[dir]) >= 2 # Ignora portas fechadas
+    addsaida(arg0, dir, arg1)
   efim
 
 func busca # Busca um caminho
