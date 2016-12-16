@@ -1,0 +1,109 @@
+classe perso_exp
+# Informações sobre experiência ganha ao vencer um personagem
+
+func experiencia
+# arg0 = personagem que atacou
+# arg1 = personagem alvo
+# arg2 = textotxt aonde colocar as informações
+  txt512 lin # Texto usado temporariamente
+  int8 num
+  real exp = 1
+  int8 batalhaexp = 1 # Se 0, é a experiência pura que vai ganhar
+# Jogador: transfere jogador para outro lugar
+  se arg1.jog
+    listaitem litem
+    casovar config:atkmatoutipo
+    casose # Quem atacou ganha experiência como ao matar um PNJ
+      arg2.addfim("Jogador: Ganha experiência como ao matar um PNJ")
+      lin = ". Quantidade de experiência: \b" + config:atkmatouexp + "%"
+      arg2.addfim(txt(++num) + ". lin")
+      exp = config:atkmatouexp / 100
+      sair
+    casose "1" # Transfere experiência para quem atacou
+      arg2.addfim("Jogador: Transfere experiência para quem atacou")
+      arg2.addfim(txt(++num) + ". Experiência atual: \b " + arg1.expatual)
+      lin = ". Experiência ao morrer: \bmultiplica por " + config:atkmorreuexp + "%"
+      arg2.addfim(txt(++num) + lin)
+      lin = ". Quantidade de experiência: \bmultiplica por " + config:atkmatouexp + "%"
+      arg2.addfim(txt(++num) + lin)
+      exp = arg1.expatual * config:atkmorreuexp * config:atkmatouexp / 10000
+      batalhaexp = 0
+      sair
+    casose "2" # Quem atacou perde experiência
+      arg2.addfim("Jogador: Quem atacou perde experiência")
+      arg2.addfim(txt(++num) + ". Quanta experiência possui: \b " + arg0.expatual)
+      lin = ". Quantidade de experiência: \bmultiplica por " + -config:atkmatouexp + "%"
+      arg2.addfim(txt(++num) + lin)
+      exp = arg0.expatual * config:atkmatouexp / -100
+      batalhaexp = 0
+      sair
+    casofim
+# Animal do jogador: não dá experiência
+  senao arg1.dono.jog
+    arg2.addfim("Animal do jogador: Não dá experiência")
+    batalhaexp = 0
+# Outro personagem: dá experiência
+  senao arg1.dono.perso
+    arg2.addfim(txt(++num) + ". Animal de PNJ \b1.5")
+    exp = 1.5
+  senao
+    arg2.addfim(txt(++num) + ". PNJ \b1")
+  fimse
+# Experiência calculada pela função batalhaexp
+  se batalhaexp
+    se config:atkexp != 100
+      lin = ". Econfig/Exp. ganha \bmultiplica por " + config:atkexp + "%"
+      arg2.addfim(txt(++num) + lin)
+    fimse
+    se misc:mudaexp != 1
+      lin = ". Mudaexp \bmultiplica por " + misc:mudaexp
+      arg2.addfim(txt(++num) + lin)
+    fimse
+    lin = ". Nível mais 6 \bmultiplica por " + (arg1.pnivel + 6)
+    arg2.addfim(txt(++num) + lin)
+    lin = ". Constante \bdivide por 40"
+    arg2.addfim(txt(++num) + lin)
+    exp *= config:atkexp * misc:mudaexp * (arg1.pnivel + 6) / 4000
+    real2 v1 = arg1.pnivel - arg0.pnivel
+    se v1 < 0 # Atacou nível mais baixo
+      v1 = config:atkbexp ? intpos(1 + v1 / config:atkbexp) : 1
+      se v1 != 1
+        lin = ". Atacou nível menor \bmultiplica por " + v1
+        arg2.addfim(txt(++num) + lin)
+      fimse
+    senao v1 # Atacou nível mais alto
+      v1 = 1 + (config:atkcexp ? intmin(1, v1 / config:atkcexp) * config:atkmaxexp / 100)
+      se v1 != 1
+        lin = ". Atacou nível maior \bmultiplica por " + v1
+        arg2.addfim(txt(++num) + lin)
+      fimse
+    senao # Mesmo nível
+      v1 = 1
+    fimse
+    exp *= v1
+    se arg0.dono.perso && arg0.var.z_dono != arg0.dono.descnome
+      exp *= 1.5
+      lin = ". Dono original do animal é outro \bmultiplica por 1.5"
+      arg2.addfim(txt(++num) + lin)
+    fimse
+    v1 = arg1.p_exp(arg0)
+    exp *= v1
+    lin = ". Eperso/Experiência \bmultiplica por " + v1
+    arg2.addfim(txt(++num) + lin)
+  fimse
+# Cabeçalho
+  lin = "\c3Experiência de " + arg0.descnome + " ao vencer " + arg1.descnome + "\c7"
+  se exp == 0
+    lin += "\nNão ganha nem perde"
+  senao exp > 0
+    lin += "\nGanha \b" + int(exp) + " (" + exp + ")"
+  senao
+    lin += "\nPerde \b" + int(-exp) + " (" + -exp + ")"
+  fimse
+  arg2.addini(lin)
+# Acerta posições dos textos
+  textopos pos
+  epara pos = arg2.ini, pos.lin, pos.depois
+    refvar ind = pos.txtproc("\b")
+    ind > 0 && ind < 24 && pos.mudar(txtesp(24 - ind), ind, 1)
+  efim

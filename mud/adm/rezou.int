@@ -12,7 +12,7 @@ func escr
   indiceitem item
   item.ini("pn " + txts(txtnome(txt1(arg1))))
   ret !item.obj, arg0.msg("Jogador inexistente ou ausente: " + txt1(arg1))
-  $misclog.rezou("rezou " + arg0.nome + ": " + arg1)
+  $misclog.rezou("rezou " + arg0.nome + " para " + item.obj.nome + ": " + txt2(arg1))
   $mens.p(arg0, item.obj)
   $mens.mens = txt2(arg1)
   $mens.msg(config:rezou2msg, item.obj)

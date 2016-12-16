@@ -6,7 +6,8 @@ const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
   \c2IPERSO\b    Mostra aonde está um personagem\n\
   \c2CPERSO\b    Cria um personagem\n\
   \c2EPERSO\b    Edita um personagem\n\
-  \c2APERSO\b    Apaga um ou mais personagens"
+  \c2APERSO\b    Apaga um ou mais personagens\n\
+  \c3PEXP\b      Calcula experiência ganha ao vencer um personagem"
 
 
 classe adm_lperso
@@ -301,6 +302,36 @@ func escr # Editar personagem
   arg0.sock.var.classe1 = "p_" + txtmin(nome)
   arg0.sock.var.menufim = "menu_perso" + num
   arg0.sock.m_menu("menu_perso" + num)
+
+
+classe adm_pexp
+herda comando_adm
+const txtajuda = "\b\c3Pexp\b\n\
+Sintaxe: PEXP <alvo>\n\
+         PEXP <personagem> <alvo>\n\
+Calcula a experiência ganha ao vencer/matar um personagem.\n\
+Se for fornecido apenas o alvo, calcula a experiência que o seu\n\
+personagem ganharia."
+
+func escr
+  ref perso
+  ref alvo
+  ref obj
+  se intsub(arg1) < 1
+    ret arg0.msg(txtmaimin(txt(este, 4)) + " requer 1 ou 2 argumentos")
+  senao intsub(arg1) >= 2
+    perso = misc:persodono(arg0, txt1(arg1))
+    alvo = misc:persodono(arg0, txt2(arg1))
+    ret !perso, arg0.msg("Personagem não existe: " + txt1(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txt2(arg1))
+  senao
+    perso = arg0
+    alvo = misc:persodono(arg0, arg1)
+    ret !alvo, arg0.msg("Alvo não existe: " + arg1)
+  fimse
+  textotxt t
+  perso_exp:experiencia(perso, alvo, t)
+  arg0.msg2(t.remove(1000))
 
 
 classe opc_menuaula

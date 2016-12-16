@@ -38,6 +38,7 @@ func escr
   senao !txt2(arg1)
     $mens.msg("Escrever o quê?", arg0)
   senao
+    $misclog.telepatia("tele " + arg0.nome + " para " + item.obj.nome + ": " + txt2(arg1))
     $mens.msg(config:telepatia2, perso)
     $mens.msg(config:telepatia1, arg0)
   fimse

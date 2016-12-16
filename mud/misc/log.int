@@ -8,6 +8,9 @@ arqlog l4
 arqlog l5
 arqlog l6
 arqlog l7
+arqlog l8
+arqlog l9
+arqlog lA
 inttempo atualiza
 datahora h
 #
@@ -20,6 +23,9 @@ const rezou = h.agora, l4.msg(hora + " " + arg0)
 const mortes = h.agora, l5.msg(hora + " " + arg0)
 const bug = h.agora, l6.msg(hora + " " + arg0)
 const ideia = h.agora, l7.msg(hora + " " + arg0)
+const ac = h.agora, l8.msg(hora + " " + arg0)
+const falar = h.agora, l9.msg(hora + " " + arg0)
+const telepatia = h.agora, lA.msg(hora + " " + arg0)
 const hora = txt(h.dia) + "/" + h.mes + " " + h.hora + ":" + h.min
 
 func ini
@@ -59,3 +65,6 @@ func atualiza_exec
   l5.fechar, config:l_mortes ? l5.abrir("log/mortes-" + sufixo)
   l6.fechar, config:l_bug ? l6.abrir("log/bug-" + sufixo)
   l7.fechar, config:l_ideia ? l7.abrir("log/ideia-" + sufixo)
+  l8.fechar, config:l_ac ? l8.abrir("log/ac-" + sufixo)
+  l9.fechar, config:l_falar ? l9.abrir("log/falar-" + sufixo)
+  lA.fechar, config:l_telepatia ? lA.abrir("log/telepatia-" + sufixo)

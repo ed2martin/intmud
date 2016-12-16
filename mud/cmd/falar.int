@@ -18,6 +18,7 @@ func escr
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
   fimse
+  $misclog.falar("falar " + arg0.nome + ": " + arg1)
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   se txt(arg1, 0, 3) == "..."
@@ -66,6 +67,7 @@ func escr
     ret g, arg0.msg(g)
   efim
   arg0.pmove -= config:gritarmove
+  $misclog.falar("gritar " + arg0.nome + ": " + arg1)
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   indiceitem item
@@ -119,9 +121,11 @@ func escr
     senao arg0.var.u_[l.objini.nome]
       arg0.msg("Você está ignorando " + l.objini.nome)
     senao arg0 == l.objini
+      $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
       $mens.p(arg0, l.objini)
       $mens.mtodos1(config:sussurrar1msg)
     senao
+      $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
       $mens.p(arg0, l.objini)
       $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
       $mens.mtodos3(config:sussurrar2msg, config:sussurrar2msg, config:sussurrar3msg)
