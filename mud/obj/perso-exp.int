@@ -51,19 +51,16 @@ func experiencia
   fimse
 # Experiência calculada pela função batalhaexp
   se batalhaexp
-    se config:atkexp != 100
-      lin = ". Econfig/Exp. ganha \bmultiplica por " + config:atkexp + "%"
-      arg2.addfim(txt(++num) + lin)
-    fimse
+    lin = ". Econfig/Exp. ganha \bmultiplica por "
+    lin += txt(config:atkexp0 + arg1.pnivel * config:atkexp1)
+    arg2.addfim(txt(++num) + lin)
+    arg2.addfim("   Exp nível 0 \b" + config:atkexp0)
+    arg2.addfim("   Exp por nível \b" + config:atkexp1)
     se misc:mudaexp != 1
       lin = ". Mudaexp \bmultiplica por " + misc:mudaexp
       arg2.addfim(txt(++num) + lin)
     fimse
-    lin = ". Nível mais 6 \bmultiplica por " + (arg1.pnivel + 6)
-    arg2.addfim(txt(++num) + lin)
-    lin = ". Constante \bdivide por 40"
-    arg2.addfim(txt(++num) + lin)
-    exp *= config:atkexp * misc:mudaexp * (arg1.pnivel + 6) / 4000
+    exp *= (config:atkexp0 + arg1.pnivel * config:atkexp1) * misc:mudaexp / 4000
     real2 v1 = arg1.pnivel - arg0.pnivel
     se v1 < 0 # Atacou nível mais baixo
       v1 = config:atkbexp ? intpos(1 + v1 / config:atkbexp) : 1
@@ -89,6 +86,8 @@ func experiencia
     v1 = arg1.p_exp(arg0)
     exp *= v1
     lin = ". Eperso/Experiência \bmultiplica por " + v1
+    arg2.addfim(txt(++num) + lin)
+    lin = ". Constante \bdivide por 4000"
     arg2.addfim(txt(++num) + lin)
   fimse
 # Cabeçalho

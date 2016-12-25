@@ -562,7 +562,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       acertou && (danos += ", " + r.nome + " " + mudavida)
       r.acertapos(1)
     senao
-      arg0.batalhafim # Não ganha experiência matando esse alvo
+      !config:atkexpsecundario && arg0.batalhafim # Não ganha experiência matando esse alvo
       r.morreu(arg0)
     fimse
   efim

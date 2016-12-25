@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 427 # Para atualizar diretórios areas e config
+const versao = 430 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -188,8 +188,14 @@ const fomefim = 0
 # Fome e sede extremos sempre avisa
 const fomemsg = 1
 #
-# Quanta experiência os personagens dão quando morrem, em porcentagem
-const atkexp = 100
+# Experiência nível 0
+# Experiência ganha ao matar personagens do nível 0
+const atkexp0 = 600
+#
+# Experiência por nível
+# A experiência ganha ao matar personagens do nível 1 em diante é a mesma
+# do nível 0, porém somado a esse número vezes o nível do personagem
+const atkexp1 = 100
 #
 # Experiência do personagem ao morrer, em porcentagem
 # De 0 a 100, sendo que 0 perde tudo e 100 não perde experiência
@@ -224,6 +230,11 @@ const atkcexp = 8
 # do que está definido na opção "Exp máxima acima". Em porcentagem.
 # Exemplo, 0 não tem bônus, 50 ganha 50% a mais, 100 ganha o dobro.
 const atkmaxexp = 100
+#
+# Exp alvos secundários
+# Se ganha-se experiência matando alvos secundários
+# (com ataques que acertam vários personagens ao mesmo tempo)
+const atkexpsecundario = 0
 #
 # Danos diferença de nível
 # Se a diferença de nível entre os personagens influencia nos danos dos golpe

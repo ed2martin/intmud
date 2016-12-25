@@ -919,162 +919,175 @@ const titulo = "Ataques"
 const menufim = "menu_econfig"
 const colunas = 35
 #
-const nome1 = "Experiência ganha"
-const info1 = "Quanta experiência os personagens dão quando morrem, em porcentagem"
+const nome1 = "Experiência nível 0"
+const info1 = "Experiência ganha ao matar personagens do nível 0"
 const tipo1 = "opc_numero--"
 const clas1 = "config"
-const vari1 = "atkexp"
-const extr1 = "0 1000"
+const vari1 = "atkexp0"
 #
-const nome2 = "Experiência ao morrer"
-const info2 = "Quanta experiência o personagem perde ao morrer, em porcentagem\n\
-De 0 a 100, sendo que 100 perde tudo e 0 não perde experiência"
+const nome2 = "Experiência por nível"
+const info2 = "A experiência ganha ao matar personagens do nível 1 em diante é a mesma\n\
+do nível 0, porém somado a esse número vezes o nível do personagem"
 const tipo2 = "opc_numero--"
 const clas2 = "config"
-const vari2 = "atkmorreuexp"
-const extr2 = "0 100"
+const vari2 = "atkexp1"
 #
-const nome3 = "Ao matar um jogador"
-const tipo3 = "opc_opcao--"
+const nome3 = "Experiência ao morrer"
+const info3 = "Quanta experiência o personagem perde ao morrer, em porcentagem\n\
+De 0 a 100, sendo que 100 perde tudo e 0 não perde experiência"
+const tipo3 = "opc_numero--"
 const clas3 = "config"
-const vari3 = "atkmatoutipo"
-const extr3 = "Ganha experiência como ao matar PNJ\n\
+const vari3 = "atkmorreuexp"
+const extr3 = "0 100"
+#
+const nome4 = "Ao matar um jogador"
+const tipo4 = "opc_opcao--"
+const clas4 = "config"
+const vari4 = "atkmatoutipo"
+const extr4 = "Ganha experiência como ao matar PNJ\n\
 Ganha experiência que o jogador perdeu\n\
 Perde experiência que possui"
 #
-const nome4 = "Quantidade de experiência"
-const info4 = "Quantidade da opção ao matar um jogador, em porcentagem\n\
+const nome5 = "Quantidade de experiência"
+const info5 = "Quantidade da opção ao matar um jogador, em porcentagem\n\
 De 0 a 100, sendo que 0 não ganha nem perde e 100 ganha/perde tudo"
-const tipo4 = "opc_numero--"
-const clas4 = "config"
-const vari4 = "atkmatouexp"
-const extr4 = "0 100"
-#
-const nome5 = "Exp nível abaixo"
-const info5 = "Se essa opção não for 0, nas lutas com personagens abaixo do seu nível,\n\
-quanto maior a diferença entre os níveis, menor a experiência ganha.\n\
-Quando a diferença chegar nesse valor, você não ganha experiência."
 const tipo5 = "opc_numero--"
 const clas5 = "config"
-const vari5 = "atkbexp"
+const vari5 = "atkmatouexp"
+const extr5 = "0 100"
 #
-const nome6 = "Exp nível acima"
-const info6 = "Se essa opção não for 0, nas lutas com personagens acima do seu nível,\n\
+const nome6 = "Exp nível abaixo"
+const info6 = "Se essa opção não for 0, nas lutas com personagens abaixo do seu nível,\n\
+quanto maior a diferença entre os níveis, menor a experiência ganha.\n\
+Quando a diferença chegar nesse valor, você não ganha experiência."
+const tipo6 = "opc_numero--"
+const clas6 = "config"
+const vari6 = "atkbexp"
+#
+const nome7 = "Exp nível acima"
+const info7 = "Se essa opção não for 0, nas lutas com personagens acima do seu nível,\n\
 quanto maior a diferença entre os níveis, maior a experiência ganha.\n\
 No entanto, quando a diferença entre níveis passar desse valor, a taxa\n\
 de experiência será fixa, definida pela opção \"Exp máxima acima\"."
-const tipo6 = "opc_numero--"
-const clas6 = "config"
-const vari6 = "atkcexp"
+const tipo7 = "opc_numero--"
+const clas7 = "config"
+const vari7 = "atkcexp"
 #
-const nome7 = "Exp máxima acima"
-const info7 = "Somente nas lutas com personagens acima do seu nível. É o bônus de\n\
+const nome8 = "Exp máxima acima"
+const info8 = "Somente nas lutas com personagens acima do seu nível. É o bônus de\n\
 experiência ganha quando a diferença entre os níveis chegar ou passar\n\
 do que está definido na opção \"Exp máxima acima\". Em porcentagem.\n\
 Exemplo, 0 não tem bônus, 50 ganha 50% a mais, 100 ganha o dobro."
-const tipo7 = "opc_numero--"
-const clas7 = "config"
-const vari7 = "atkmaxexp"
-#
-const nome8 = "Turno ataque manual"
-const info8 = "Em décimos de segundo; tempo máximo após digitar um comando que ataca\n\
-Personagens esperam menos tempo quando a velocidade do personagem\n\
-vezes velocidade do golpe dividido por 70 superar a velocidade do alvo"
 const tipo8 = "opc_numero--"
 const clas8 = "config"
-const vari8 = "atkmtempo"
-const extr8 = "10 200"
+const vari8 = "atkmaxexp"
 #
-const nome9 = "Turno ataque automático"
-const info9 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
-const tipo9 = "opc_numero--"
+const nome9 = "Exp alvos secundários"
+const info9 = "Se ganha-se experiência matando alvos secundários\n\
+(com ataques que acertam vários personagens ao mesmo tempo)"
+const tipo9 = "opc_simnao--"
 const clas9 = "config"
-const vari9 = "atktempo"
-const extr9 = "10 200"
+const vari9 = "atkexpsecundario"
 #
-const nome10 = "Força do ataque automático"
+const nome10 = "Turno ataque manual"
+const info10 = "Em décimos de segundo; tempo máximo após digitar um comando que ataca\n\
+Personagens esperam menos tempo quando a velocidade do personagem\n\
+vezes velocidade do golpe dividido por 70 superar a velocidade do alvo"
 const tipo10 = "opc_numero--"
 const clas10 = "config"
-const vari10 = "atkfor"
-const extr10 = "1 100"
+const vari10 = "atkmtempo"
+const extr10 = "10 200"
 #
-const nome11 = "Tipos de ataques"
-const tipo11 = "opc_txtopcao--"
+const nome11 = "Turno ataque automático"
+const info11 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
+const tipo11 = "opc_numero--"
 const clas11 = "config"
-const vari11 = "atknomes"
-const extr11 = "1 30"
+const vari11 = "atktempo"
+const extr11 = "10 200"
 #
-const nome12 = "Ataques especiais"
-const info12 = "Os tipos de ataque que usam ataque e defesa especial"
-const tipo12 = "opc_vetor--"
+const nome12 = "Força do ataque automático"
+const tipo12 = "opc_numero--"
 const clas12 = "config"
-const vari12 = "atkespecial"
-const extr12 = config:atknomes
+const vari12 = "atkfor"
+const extr12 = "1 100"
 #
-const nome13 = "Tipos de armas"
-const info13 = "Habilidades usadas em ataques automáticos com arma"
+const nome13 = "Tipos de ataques"
 const tipo13 = "opc_txtopcao--"
 const clas13 = "config"
-const vari13 = "arma_txt"
-const extr13 = "1 30 1"
+const vari13 = "atknomes"
+const extr13 = "1 30"
 #
-const nome14 = "Ataque automático sem arma"
-const info14 = "Habilidade usada em ataques automáticos sem arma, se não for definida\n\
-no próprio personagem (se for PNJ) ou na raça ou classe (se for jogador)"
-const tipo14 = "opc_linha--"
+const nome14 = "Ataques especiais"
+const info14 = "Os tipos de ataque que usam ataque e defesa especial"
+const tipo14 = "opc_vetor--"
 const clas14 = "config"
-const vari14 = "atk_txt"
+const vari14 = "atkespecial"
+const extr14 = config:atknomes
 #
-const nome15 = "Habilidade de esquiva"
-const info15 = "Cada aula nessa habilidade aumenta a evasão do personagem"
-const tipo15 = "opc_linha--"
+const nome15 = "Tipos de armas"
+const info15 = "Habilidades usadas em ataques automáticos com arma"
+const tipo15 = "opc_txtopcao--"
 const clas15 = "config"
-const vari15 = "atk_evasao1"
+const vari15 = "arma_txt"
+const extr15 = "1 30 1"
 #
-const nome16 = "Evasão por aula"
-const info16 = "Quantos pontos de evasão por aula de esquiva"
-const tipo16 = "opc_numero--"
+const nome16 = "Ataque automático sem arma"
+const info16 = "Habilidade usada em ataques automáticos sem arma, se não for definida\n\
+no próprio personagem (se for PNJ) ou na raça ou classe (se for jogador)"
+const tipo16 = "opc_linha--"
 const clas16 = "config"
-const vari16 = "atk_evasao2"
-const extr16 = "0 1000"
-const exec16 = "admrecalc:exec"
+const vari16 = "atk_txt"
 #
-const nome17 = "Nível animais"
-const info17 = "Animais só lutam se o nível do jogador que possui o animal somado com\n\
+const nome17 = "Habilidade de esquiva"
+const info17 = "Cada aula nessa habilidade aumenta a evasão do personagem"
+const tipo17 = "opc_linha--"
+const clas17 = "config"
+const vari17 = "atk_evasao1"
+#
+const nome18 = "Evasão por aula"
+const info18 = "Quantos pontos de evasão por aula de esquiva"
+const tipo18 = "opc_numero--"
+const clas18 = "config"
+const vari18 = "atk_evasao2"
+const extr18 = "0 1000"
+const exec18 = "admrecalc:exec"
+#
+const nome19 = "Nível animais"
+const info19 = "Animais só lutam se o nível do jogador que possui o animal somado com\n\
 esse número for menor que o nível do animal\n\
 Nota 1: É permitido números negativos\n\
 Nota 2: Veja o resultado teclando ajuda animal"
-const tipo17 = "opc_numero--"
-const clas17 = "config"
-const vari17 = "animal_n"
-const exec17 = "jogador:escolhebat"
-#
-const nome18 = "Exp máxima fator 0"
-const info18 = "A experiência para subir um nível é o resultado de:\n\
-fator0 + fator1 * nível + fator2 * nível ao quadrado"
-const tipo18 = "opc_numreal--"
-const clas18 = "config"
-const vari18 = "expmax0"
-#
-const nome19 = "Exp máxima fator 1"
-const info19 = "A experiência para subir um nível é o resultado de:\n\
-fator0 + fator1 * nível + fator2 * nível ao quadrado"
-const tipo19 = "opc_numreal--"
+const tipo19 = "opc_numero--"
 const clas19 = "config"
-const vari19 = "expmax1"
+const vari19 = "animal_n"
+const exec19 = "jogador:escolhebat"
 #
-const nome20 = "Exp máxima fator 2"
+const nome20 = "Exp máxima fator 0"
 const info20 = "A experiência para subir um nível é o resultado de:\n\
 fator0 + fator1 * nível + fator2 * nível ao quadrado"
 const tipo20 = "opc_numreal--"
 const clas20 = "config"
-const vari20 = "expmax2"
+const vari20 = "expmax0"
 #
-const nome21 = "Exp máxima cada nível"
-const info21 = "Permite definir a experiência para subir um nível em níveis específicos"
-const tipo21 = "opc_nivel--"
+const nome21 = "Exp máxima fator 1"
+const info21 = "A experiência para subir um nível é o resultado de:\n\
+fator0 + fator1 * nível + fator2 * nível ao quadrado"
+const tipo21 = "opc_numreal--"
 const clas21 = "config"
-const vari21 = "expmax_"
+const vari21 = "expmax1"
+#
+const nome22 = "Exp máxima fator 2"
+const info22 = "A experiência para subir um nível é o resultado de:\n\
+fator0 + fator1 * nível + fator2 * nível ao quadrado"
+const tipo22 = "opc_numreal--"
+const clas22 = "config"
+const vari22 = "expmax2"
+#
+const nome23 = "Exp máxima cada nível"
+const info23 = "Permite definir a experiência para subir um nível em níveis específicos"
+const tipo23 = "opc_nivel--"
+const clas23 = "config"
+const vari23 = "expmax_"
 
 
 classe menu_econfig_casas
