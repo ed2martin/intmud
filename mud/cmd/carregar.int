@@ -62,7 +62,18 @@ func carregar # Carrega arma com um item
   senao arg1.dentro1.total + (arg2.item == 2 ? 1 : arg3) > arg1.objmax
     ret "Não consegue carregar " + arg1.descnome + " com mais nada."
   senao arg1.volden + arg2.voltot * arg3 / arg2.objtot > arg1.volmax
-    ret "Não há espaço suficiente para carregar com isso."
+    ret "Não há espaço suficiente para carregar com " + arg2.descnome + "."
+  senao int(arg2.pnivel) > arg0.pnivel
+    refvar lin = "Você precisa estar no nível " + int(arg2.pnivel)
+    ret lin + " para carregar com " + arg2.descnome + "."
+  senao int(arg2.renascer) > arg0.prenascer
+    txt100 lin = "para carregar com " + arg2.descnome + "."
+    se arg2.renascer == 1
+      ret "Você precisa renascer uma vez " + lin
+    senao arg2.renascer == 2
+      ret "Você precisa renascer duas vezes " + lin
+    fimse
+    ret "Você precisa renascer " + arg2.renascer + " vezes " + lin
   fimse
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove

@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "24/12/2016"
+const versao = "29/12/2016"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -290,37 +290,6 @@ func txtmoedas # Retorna texto correspondente à quantidade de moedas
   ret x <= 20000, "um morrinho de moedas"
   ret x <= 50000, "um pequeno morro de moedas"
   ret "uma quantidade imensa de moedas"
-
-func rastrear # Obtém o caminho para um item ou personagem chegar até uma sala
-# arg0 = personagem ou item
-# arg1 = sala para onde quer ir
-# arg2 = quantidade máxima de salas a verificar, se não for especificado assume 65535
-# Retorna: direções a seguir, separadas por "\n"
-# Se não achar o caminho ou já estiver na sala, retorna ""
-  ret !arg0 || !arg1 || arg0.dono == arg1, ""
-  uint16 total = (arg2 ?? 65536) - 1
-  listaitem item
-  listaobj lista
-  prog p
-  arg0.dono.s_rastrdir = ""
-  arg0.dono.s_rastreio = lista.addfim(arg0.dono)
-  epara item = lista.ini, item && total--, item.depois
-    epara p.inifunctudo(item.obj, "dir_"), p.lin, p.depois
-      refvar r = item.obj.dirsala(txt(p.texto, 4), arg0)
-      continuar !r || r.s_rastreio
-      lista.addfim(r)
-      r.s_rastreio = item
-      r.s_rastrdir = p.texto
-      continuar r != arg1
-      txt100 lin
-      lista.ini.remove
-      epara item = lista.fim, item, item = item.obj.s_rastreio
-        lin = txt(item.obj.s_rastrdir, 4) + "\n" + lin
-      efim
-      ret txtsublin(lin, 0, intsublin(lin) - 1)
-    efim
-  efim
-  ret ""
 
 func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos

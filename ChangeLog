@@ -1,3 +1,51 @@
+* 29/12/2016 IntMUD 1.10 MUD baseado na revisão 431
+
+   No MUD:
+  1. Corrigido bug: opção de fechar porta ao passar não estava
+     funcionando
+  2. Corrigido bug: quando um personagem olha para a câmera na sala
+     teste159, os outros recebiam a mensagem: Fulano olha para .
+  3. Corrigido bug: opção "Jogadores na sala" do comando Esala não
+     estava funcionando
+  4. Corrigido bug: era possível atacar um jogador em sala pacífica
+     estando em outra sala
+  5. Magia Raio Confusão agora não funciona se o alvo estiver cego ou se
+     estiver usando algo nos olhos
+  6. Personagem Faixa Preta, na sala teste031, agora ensina Raio
+     Confusão
+  7. Criadas opções Exp máxima no comando Econfig/Ataques e no comando
+     Etipo
+  8. Criado comando Nivel
+  9. Opção "Persegue jogadores" do comando Eperso agora aceita três
+     opções: Não, Mesma área se atacarem, Qualquer lugar se atacarem
+ 10. Opção "Tempo lembra" do comando Eperso agora também está no menu
+     Herda do comando Econfig
+ 11. Quando um ataque usa munição do inventário, o nível do personagem
+     precisa ser maior ou igual ao nível da munição
+ 12. Adicionada explicação do nível da munição na sala teste151
+ 13. Classes cmdfim_ mudaram de nome para cmd_ com variável objnivel=4
+ 14. Efeitos Rouquidão e Congelado mudaram devido a mudanças nos
+     comandos
+ 15. Ataques que requerem uma arma que o personagem não está empunhando
+     têm menos prioridade (exemplo, se houver atirar_revolver e
+     atirar_flecha e o jogador teclar apenas atirar)
+ 16. Criado comando Ires: reset que acontece quando a sala é criada
+ 17. Mudada descrição da sala teste162
+ 18. Criado comando Pexp, para mostrar a experiência ganha ao vencer um
+     personagem na batalha
+ 19. Opção "Arquivos de log" do comando Econfig agora permite gravar
+     canal AC, Falar, Gritar, Telepatia e Sussurrar
+ 20. Criada função rastrearsala em itens e personagens, para obter o
+     caminho até uma sala
+ 21. Opção "Experiência ganha" do comando Econfig foi desmembrada em
+     "Experiência nível 0" e "Experiência por nível"
+ 22. Ao agrupar e matar um personagem, os personagens do grupo que
+     estiverem na mesma sala e não lutaram também ganham experiência
+ 23. Criada opção no comando Econfig: Exp alvos secundários
+ 24. Não é possível carregar uma arma se o nível do personagem estiver
+     abaixo do nível da munição
+ 25. Criado comando Responder
+
 * 1/11/2016 IntMUD 1.10 MUD baseado na revisão 425
 
    No MUD:

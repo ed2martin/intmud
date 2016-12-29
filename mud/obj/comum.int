@@ -274,3 +274,39 @@ func mesmogrupo # Retorna 1 se arg0 está no mesmo grupo ou 0 se não está (vide c
   ret tseguir == 2, arg0.tseguir == 1 && arg0.iseguir.objlista == este
   ret arg0.tseguir == 2, tseguir == 1 && iseguir.objlista == arg0
   ret tseguir == 1 && arg0.tseguir == 1 && iseguir.objlista == arg0.iseguir.objlista
+
+func rastrearsala # Obtém o caminho para chegar até uma sala
+# arg0 = sala para onde quer ir
+# arg1 = um texto que pode ser "" ou ter uma ou mais letras entre:
+# "a" limita à mesma área, "p" não percorre portas fechadas, "d" checa se cabe nas salas
+# arg2 = quantidade máxima de salas a verificar, se não for especificado assume 65535
+# Retorna: direções a seguir, separadas por "\n"
+# Se não achar o caminho ou já estiver na sala, retorna ""
+  ret !arg0 || dono == arg0, ""
+  refvar aa = txtproc(arg1, "a") >= 0 ? arg0.s_area
+  refvar pp = txtproc(arg1, "p") >= 0
+  refvar dd = txtproc(arg1, "d") >= 0
+  uint16 total = arg2 ?? 65535
+  listaitem item
+  listaobj lista
+  prog p
+  dono.s_rastrdir = ""
+  dono.s_rastreio = lista.addfim(dono)
+  epara item = lista.ini, item && total--, item.depois
+    epara p.inifunctudo(item.obj, "dir_"), p.lin, p.depois
+      continuar pp && int(item.obj.porta_[txt(p.texto, 4)](este)) >= 2
+      refvar r = item.obj.dirsala(txt(p.texto, 4), este)
+      continuar !r || r.s_rastreio || (aa ? aa != r.s_area) || (dd ? !cabedentro(r))
+      lista.addfim(r)
+      r.s_rastreio = item
+      r.s_rastrdir = p.texto
+      continuar r != arg0
+      txt100 lin
+      lista.ini.remove
+      epara item = lista.fim, item, item = item.obj.s_rastreio
+        lin = txt(item.obj.s_rastrdir, 4) + "\n" + lin
+      efim
+      ret txtsublin(lin, 0, intsublin(lin) - 1)
+    efim
+  efim
+  ret ""

@@ -196,3 +196,16 @@ Se não for especificado o item ou personagem ou for nulo, deixa de seguir.
 func mesmogrupo( personagem ou item )
 Retorna 1 se o personagem ou item está no mesmo grupo ou 0 se não está
 (vide comando grupo).
+
+func rastrearsala( sala, opções, quantidade de salas )
+Obtém o caminho para chegar até uma sala
+Sala é a sala aonde quer ir (exemplo, $s_teste001)
+Opções é um texto que pode ser "" ou ter uma ou mais letras entre:
+"a" limita à mesma área
+"p" não percorre portas fechadas
+"d" checa se cabe nas salas
+Quantidade de salas é quantas salas deve verificar até chegar na sala
+especificada. Não é necessariamente a distância máxima entre o item ou
+personagem e a sala. Se estiver ausente, assume 65535.
+Retorna: direções a seguir, separadas por "\n"
+Se não achar o caminho ou já estiver na sala, retorna "".
