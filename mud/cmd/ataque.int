@@ -1,7 +1,7 @@
 classe comando_hab
 herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
-const objnivel = !tipoarma || (tipoarma & intbit(int(arg0.iempu.obj.armatipo))) ? 0 : 2
+const objnivel = !tipoarma || tipoarma & intbit(int(arg0.iempu.obj.armatipo)) ? 0 : 2
 const posic = 7
 const falha = 0
 const tipoalvo = 6
@@ -210,7 +210,7 @@ const vel = config:a_vel # Velocidade do golpe, 100 significa 100%
 const a_prob1 = 100
 const a_prob2 = 100
 const a_prob3 = 100
-const c_espera = 15 # Tempo de esperar após usar esse comando
+const c_espera = config:atkespera # Tempo de esperar após usar esse comando
 int32 mudavida # Para calcular mudança nos pontos de vida do alvo
 int8 result # Resultado da batalha:
 # 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=esquivou, 4=cancelar ataque
@@ -644,7 +644,7 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
     p_espera = intmax(p_espera, config:atkmtempo)
   senao
     refvar t1 = config:atkmtempo * arg1.pveloc * 70 / (arg0.pveloc * vel)
-    refvar t2 = intmax(8, intmin(config:atkmtempo, t1))
+    refvar t2 = intmax(2, intmin(config:atkmtempo, t1))
     p_espera = intmax(p_espera, t2)
   fimse
 

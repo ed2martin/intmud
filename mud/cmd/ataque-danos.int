@@ -236,9 +236,9 @@ func danosg_espera # Retorna o tempo de espera após cada golpe, em décimos de se
     arg2.addfim(txt(++num) + ". Vel. golpe: \bdivide por " + vel)
     tempoespera = config:atkmtempo * arg1.pveloc * 70 / (arg0.pveloc * vel)
     arg2.addfim(txt(++num) + ". Resultado: \b" + tempoespera)
-    se tempoespera < 8
-      arg2.addfim(txt(++num) + ". Limite mínimo: \b8")
-      tempoespera = 8
+    se tempoespera < config:atkespera
+      arg2.addfim(txt(++num) + ". Limite mínimo: \b" + config:atkespera)
+      tempoespera = config:atkespera
     senao tempoespera > config:atkmtempo
       arg2.addfim(txt(++num) + ". Limite máximo: \b" + config:atkmtempo)
       tempoespera = config:atkmtempo

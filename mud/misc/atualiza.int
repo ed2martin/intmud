@@ -1,4 +1,4 @@
-classe atualiza_430
+classe atualiza_432
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 430, nulo
-  p.criar("config", "const versao = 430 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 432, nulo
+  p.criar("config", "const versao = 432 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -631,6 +631,10 @@ casa está atrasada.\"")
     criafunc("config", "const atkexp0 = " + config:atkexp * 6)
     criafunc("config", "const atkexp1 = " + config:atkexp)
     p.apagar("config", "atkexp")
+  fimse
+# Espera ataques manuais
+  se versao < 432
+    criafunc("config", "const atkespera = 8")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

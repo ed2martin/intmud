@@ -43,6 +43,9 @@ func escr # Executa reset
     efim
   senao $s_[arg1]
     r = $s_[arg1]
+  senao $a_[arg1]
+    $a_[arg1].reset_exec
+    ret arg0.msg("Reset de área efetuado área " + arg1)
   senao
     ret arg0.msg("Área ou sala inexistente: " + arg1)
   fimse
