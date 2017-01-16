@@ -308,7 +308,7 @@ func escr_pegar # Pegar item do animal
   refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
   se !rec
     $mens.p(arg0.persoesc) + $mens.mperso("$P não carrega nenhum item.")
-  senao (arg0.objnum >> 1) + (rec.objnum >> 1) > config:itens
+  senao !rec.cabedentro(arg0)
     arg0.msg("Você não consegue carregar tanta coisa.")
   senao
     rec.mudadono(arg0, 1)
@@ -335,8 +335,9 @@ func escr_dar # Dar item para o animal
       $mens.p(arg0)
       $mens.mens = env.descnome + " para " + arg0.persoesc.nome
       $mens.mvis1("$P dá $m.")
-    senao (arg0.objnum >> 1) - (env.objnum >> 1) + (rec.objnum >> 1) > config:itens
-      arg0.msg("Você não consegue carregar tanta coisa.")
+    senao !rec.cabedentro(env)
+      refvar nome = txtcopiamai(arg0.persoesc.descnome, "A")
+      arg0.msg(nome + " não consegue carregar tanta coisa.")
     senao
       env.mudadono(arg0.persoesc, 1)
       rec.mudadono(arg0, 1)

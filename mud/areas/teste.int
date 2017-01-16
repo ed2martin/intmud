@@ -1838,6 +1838,49 @@ const nome = "treinadora de tiros"
 const lojaaula = "h_Sapato 8\nh_Arco_e_flecha 8\nh_Revolver 8"
 
 
+classe p_teste037
+herda comum_persobat
+const nome = "rato"
+const ident = "rato laboratório"
+const descnome = "um rato gordo"
+const descpadr = "Um rato gordo vaga sem rumo."
+const msexo = 1 # Sexo Msg: 1 Masculino
+
+
+classe p_teste038
+herda comum_persobat
+const eveste = 1 # Eventos perso: Sim
+txt40 ident
+txt40 nome
+txt40 descnome
+txt32 tipo1
+txt32 tipo2
+txt32 tipo3
+
+func cmd_ini
+  ident = nome = descnome = "clone"
+  se arg2.ident
+    ident = "clone " + arg2.ident
+    nome = "clone de " + arg2.nome
+    descnome = "clone de " + arg2.descnome
+    tipo1 = arg2.tipo1
+    tipo2 = arg2.tipo2
+    tipo3 = arg2.tipo3
+  fimse
+
+func cmd_morreu
+  se arg0.pnivel > 0
+    refvar r = criar("p_teste038", dono, arg0.pnivel - 1, arg0)
+# Essas linhas evitam que o clone do clone seja chamado de "clone de clone de fulano"
+    r.ident = arg0.ident
+    r.nome = arg0.nome
+    r.descnome = arg0.descnome
+# Anuncia a chegada do personagem
+    $mens.p(r)
+    $mens.mtodos1("Mais um $p aparece aqui!")
+  fimse
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -4335,7 +4378,7 @@ const dir_n = $s_teste041
 classe s_teste145
 herda b_teste
 const s_titulo = "Subsolo 5: Diversos"
-const s_desc = "Ao norte: checando hora e enviando mensagens telepáticas\n\
+const s_desc = "Ao norte: checando hora e enviando mensagens telepáticas e personagem clone\n\
 Ao sul: Efeitos e modificadores"
 const dir_n = $s_teste146
 const dir_s = $s_teste147
@@ -4348,6 +4391,7 @@ const s_titulo = "Hora e mensagens telepáticas"
 const s_desc = "Esse personagem fala telapaticamente com os jogadores que chegarem.\n\
 Fala bom dia das 6 horas até quase meio dia (hora MUD), boa tarde\n\
 meio dia até às 17:59 e boa noite das 18 horas até às 5:59."
+const dir_n = $s_teste164
 const dir_s = $s_teste145
 const s_reset = "P 100 teste033 0 0 1"
 
@@ -4614,3 +4658,30 @@ No entanto, aqui a janela é uma descrição (a constante ver_janela da\n\
 classe s_teste163 do arquivo areas/teste.int)."
 const dir_o = $s_teste162
 const ver_janela = dono.dono.descsala(arg0, 7)
+
+
+classe s_teste164
+herda b_teste
+const s_titulo = "Personagem clone"
+const s_desc = "Cada vez que algum personagem morre nessa sala, aparece um clone no lugar,\n\
+porém 3 níveis abaixo. Já o clone é diferente. Quando ele morre, mesmo\n\
+se estiver em outra sala, nasce outro um nível abaixo. Se ele já for\n\
+nível 0, não nasce outro."
+const dir_s = $s_teste146
+const s_reset = "P 100 teste037 4 4 2"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste037:objsolto.total < 2
+    criar("p_teste037", este, 4)
+  fimse
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_morreu
+  se arg2 == arg0 && txt(arg0) != "p_teste038" # Se não for o clone
+    refvar r = criar("p_teste038", este, arg0.pnivel - 3, arg0)
+    $mens.p(r)
+    $mens.mtodos1("$P aparece aqui!")
+  fimse

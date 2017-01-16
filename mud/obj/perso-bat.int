@@ -63,7 +63,7 @@ func expmax
   exp += config:expmax0 + t1.expmax0 + t2.expmax0 + t3.expmax0
   exp += (config:expmax1 + t1.expmax1 + t2.expmax1 + t3.expmax1) * n
   exp += (config:expmax2 + t1.expmax2 + t2.expmax2 + t3.expmax2) * n * n
-  ret intmax(1, exp * matpow(config:exp_renascer / 100, args ? arg1 : prenascer))
+  ret int(intmax(1, exp * matpow(config:exp_renascer / 100, args ? arg1 : prenascer)))
 
 func pnivelmax
   refvar nmax = int(intmax(t_[tipo1]:nmax, t_[tipo2]:nmax, t_[tipo3]:nmax))
@@ -259,7 +259,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   epara i = contr.atkrec.ini, i, i.obj.atkdiv ? i.depois : i.removedepois
     r = i.obj
     listaitem j
-    epara j = r.atkdiv, j, j.obj.pvida ? j.depois : j.removedepois
+    epara j = r.atkdiv.ini, j, j.obj.pvida ? j.depois : j.removedepois
     efim
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
     r.atkdanos1 = 0, r.atkdanos2 = 1
