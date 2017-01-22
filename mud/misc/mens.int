@@ -70,7 +70,8 @@ herda mens_tabela
 ref contr # Mesmo que perso.contr
 ref perso # Personagem que está enviando a mensagem
 ref alvo # Personagem ou objeto alvo da ação
-ref obj # Objeto secundário
+ref obj1 # Primeiro objeto
+ref obj2 # Segundo objeto
 ref r # Objeto que vai receber a mensagem
 txt512 mens # Mensagem usada em $M
 txt100 o_1 # Texto de $1
@@ -81,7 +82,7 @@ txt100 o_5 # Texto de $5
 const iniclasse = !$[arg0] && criar(arg0)
 
 func p # Define os personagens
-  contr = arg0.contr, perso = arg0, alvo = arg1, obj = arg2
+  contr = arg0.contr, perso = arg0, alvo = arg1, obj1 = arg2, obj2 = arg3
 
 func txt # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
@@ -327,14 +328,14 @@ func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra s
 
 const o_h = txtcopiamai(perso.msexo ? "um" : "uma", arg0)
 const o_i = txtcopiamai(alvo.msexo ? "um" : "uma", arg0)
-const o_j = txtcopiamai(obj.msexo ? "um" : "uma", arg0)
+const o_j = txtcopiamai(obj1.msexo ? "um" : "uma", arg0)
 const o_m = arg0 === "M" ? txtcopiamai(mens, "A") : mens
 const o_s = txtcopiamai(perso.msexo ? "o" : "a", arg0)
 const o_t = txtcopiamai(alvo.msexo ? "o" : "a", arg0)
-const o_u = txtcopiamai(obj.msexo ? "o" : "a", arg0)
+const o_u = txtcopiamai(obj1.msexo ? "o" : "a", arg0)
 const o_v = txtcopiamai(perso.msexo ? "e" : "a", arg0)
 const o_w = txtcopiamai(alvo.msexo ? "e" : "a", arg0)
-const o_x = txtcopiamai(obj.msexo ? "e" : "a", arg0)
+const o_x = txtcopiamai(obj1.msexo ? "e" : "a", arg0)
 
 func o_p
   se perso == perso.contr
@@ -396,13 +397,21 @@ func o_c # Nome do alvo no comando QUEM
   ret arg0 === "c", alvo.sock ? alvo.sock.nome : alvo.nome
   ret txtcopiamai(alvo.sock ? alvo.sock.nome : alvo.nome, "A")
 
-func o_o # Nome do objeto
-  se r == obj
+func o_o # Nome do primeiro objeto
+  se r == obj1
     ret txtcopiamai("você", arg0)
-  senao obj.visivel(r)
-    ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
+  senao obj1.visivel(r)
+    ret arg0 === "O" ? txtcopiamai(obj1.descnome, "A") : obj1.descnome
   fimse
-  ret txtcopiamai(obj.perso ? "alguém" : "alguma coisa", arg0)
+  ret txtcopiamai(obj1.perso ? "alguém" : "alguma coisa", arg0)
+
+func o_n # Nome do segundo objeto
+  se r == obj2
+    ret txtcopiamai("você", arg0)
+  senao obj2.visivel(r)
+    ret arg0 === "O" ? txtcopiamai(obj2.descnome, "A") : obj2.descnome
+  fimse
+  ret txtcopiamai(obj2.perso ? "alguém" : "alguma coisa", arg0)
 
 
 classe mensvis
@@ -440,9 +449,13 @@ func o_b # Nome do alvo sem citar o dono
   ret r == alvo, txtcopiamai("você", arg0)
   ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
 
-func o_o # Nome do objeto
-  ret r == obj, txtcopiamai("você", arg0)
-  ret arg0 === "O" ? txtcopiamai(obj.descnome, "A") : obj.descnome
+func o_o # Nome do primeiro objeto
+  ret r == obj1, txtcopiamai("você", arg0)
+  ret arg0 === "O" ? txtcopiamai(obj1.descnome, "A") : obj.descnome
+
+func o_n # Nome do segundo objeto
+  ret r == obj2, txtcopiamai("você", arg0)
+  ret arg0 === "O" ? txtcopiamai(obj2.descnome, "A") : obj.descnome
 
 
 classe mensjog
@@ -494,7 +507,8 @@ func o_r # Nome do personagem no comando QUEM
 
 const o_b = "" # Nome do alvo sem citar o dono
 const o_c = "" # Nome do alvo no comando QUEM
-const o_o = "" # Nome do objeto
+const o_o = "" # Nome do primeiro objeto
+const o_n = "" # Nome do segundo objeto
 
 
 classe mens_prompt

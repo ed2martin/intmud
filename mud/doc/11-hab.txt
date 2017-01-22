@@ -191,36 +191,43 @@ const tipobonus = "anão\nguerreiro"
 const msgextra = ""
 Informações extras, mostradas quando o jogador consulta sobre a hab/magia.
 
-const msgatk0 = ""
-Variáveis msgatk0 a msgatk4. Contém várias linhas de texto, sendo que cada
-linha é uma mensagem de batalha.
+const atk1_usar1 = ""
+Constantes atk1 a atk5. Cada constante é uma mensagem de batalha. Abaixo são
+listadas as constantes atk1, mas atk2 a atk5 seguem o mesmo padrão.
+
 Ao usar a habilidade ou magia:
-Linha 0 = para o personagem
-Linha 1 = para o alvo; se vazio assume linha 0
-Linha 2 = para os outros; se vazio assume linha 0
+atk1_usar1 = para o personagem
+atk1_usar2 = para o alvo; se vazio assume atk1_usar1
+atk1_usar3 = para os outros; se vazio assume atk1_usar1
+
 Quando acertou o golpe em si mesmo:
-Linha 3 = para o personagem
-Linha 4 = para os outros; se vazio assume linha 3
+atk1_auto1 = para o personagem
+atk1_auto2 = para os outros; se vazio assume atk1_auto1
+
 Quando acertou outro personagem:
-Linha 5 = para o personagem
-Linha 6 = para o alvo; se vazio assume linha 5
-Linha 7 = para os outros; se vazio assume linha 5
+atk1_perso1 = para o personagem
+atk1_perso2 = para o alvo; se vazio assume atk1_perso1
+atk1_perso3 = para os outros; se vazio assume atk1_perso1
+
 Quando matou o alvo:
-Linha 8 = para o personagem
-Linha 9 = para o alvo; se vazio assume linha 8
-Linha 10 = para os outros; se vazio assume linha 8
+atk1_matou1 = para o personagem
+atk1_matou2 = para o alvo; se vazio assume atk1_matou1
+atk1_matou3 = para os outros; se vazio assume atk1_matou1
+
 Quando errou o alvo:
-Linha 11 = para o personagem
-Linha 12 = para o alvo; se vazio assume linha 11
-Linha 13 = para os outros; se vazio assume linha 11
+atk1_errou1 = para o personagem
+atk1_errou2 = para o alvo; se vazio assume atk1_errou1
+atk1_errou3 = para os outros; se vazio assume atk1_errou1
+
 Quando o golpe não teve efeito:
-Linha 14 = para o personagem
-Linha 15 = para o alvo; se vazio assume linha 14
-Linha 16 = para os outros; se vazio assume linha 14
+atk1_nulo1 = para o personagem
+atk1_nulo2 = para o alvo; se vazio assume atk1_nulo1
+atk1_nulo3 = para os outros; se vazio assume atk1_nulo1
+
 Quando o alvo esquivou (opcional):
-Linha 17 = para o personagem
-Linha 18 = para o alvo; se vazio assume linha 17
-Linha 19 = para os outros; se vazio assume linha 17
+atk1_esquivou1 = para o personagem
+atk1_esquivou2 = para o alvo; se vazio assume atk1_esquivou1
+atk1_esquivou3 = para os outros; se vazio assume atk1_esquivou1
 
 func habajuda
 arg0 = objeto do personagem

@@ -216,6 +216,11 @@ int8 result # Resultado da batalha:
 # 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=esquivou, 4=cancelar ataque
 ref arma1 # Arma usada
 ref arma2 # Munição usada
+const atk1_auto1 = "$P ataca $a, $m"
+const atk1_perso1 = "$P ataca $a, $m"
+const atk1_matou1 = "$P ataca e mata $a, $m"
+const atk1_errou1 = "$P ataca $a, errou"
+const atk1_nulo1 = "$P ataca $a, nada acontece"
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomevar\n\
@@ -249,7 +254,37 @@ tipomunicao\n\
 itemmunicao\n\
 valor\n\
 vel\n\
-msgextra msgatk0 msgatk1 msgatk2 msgatk3 msgatk4"
+msgextra\n\
+atk1_usar1 atk1_usar2 atk1_usar3\n\
+atk1_auto1 atk1_auto2 atk1_perso1 atk1_perso2 atk1_perso3\n\
+atk1_matou1 atk1_matou2 atk1_matou3\n\
+atk1_errou1 atk1_errou2 atk1_errou3\n\
+atk1_nulo1 atk1_nulo2 atk1_nulo3\n\
+atk1_esquivou1 atk1_esquivou2 atk1_esquivou3\n\
+atk2_usar1 atk2_usar2 atk2_usar3\n\
+atk2_auto1 atk2_auto2 atk2_perso1 atk2_perso2 atk2_perso3\n\
+atk2_matou1 atk2_matou2 atk2_matou3\n\
+atk2_errou1 atk2_errou2 atk2_errou3\n\
+atk2_nulo1 atk2_nulo2 atk2_nulo3\n\
+atk2_esquivou1 atk2_esquivou2 atk2_esquivou3\n\
+atk3_usar1 atk3_usar2 atk3_usar3\n\
+atk3_auto1 atk3_auto2 atk3_perso1 atk3_perso2 atk3_perso3\n\
+atk3_matou1 atk3_matou2 atk3_matou3\n\
+atk3_errou1 atk3_errou2 atk3_errou3\n\
+atk3_nulo1 atk3_nulo2 atk3_nulo3\n\
+atk3_esquivou1 atk3_esquivou2 atk3_esquivou3\n\
+atk4_usar1 atk4_usar2 atk4_usar3\n\
+atk4_auto1 atk4_auto2 atk4_perso1 atk4_perso2 atk4_perso3\n\
+atk4_matou1 atk4_matou2 atk4_matou3\n\
+atk4_errou1 atk4_errou2 atk4_errou3\n\
+atk4_nulo1 atk4_nulo2 atk4_nulo3\n\
+atk4_esquivou1 atk4_esquivou2 atk4_esquivou3\n\
+atk5_usar1 atk5_usar2 atk5_usar3\n\
+atk5_auto1 atk5_auto2 atk5_perso1 atk5_perso2 atk5_perso3\n\
+atk5_matou1 atk5_matou2 atk5_matou3\n\
+atk5_errou1 atk5_errou2 atk5_errou3\n\
+atk5_nulo1 atk5_nulo2 atk5_nulo3\n\
+atk5_esquivou1 atk5_esquivou2 atk5_esquivou3"
 #
 const escr = escrhab(arg0, arg1)
 
@@ -765,8 +800,8 @@ func mensinicio # Envia mensagem inicial da habilidade ou magia
 # arg0 = personagem que está usando a habilidade ou magia
 # arg1 = personagem alvo
   txt512 lin.3
-  ret !menssub(lin, 0), nulo
-  $mens.p(arg0, arg1, arma1)
+  ret !menssub(lin, "ini"), nulo
+  $mens.p(arg0, arg1, arma1, arma2)
   ret arg0 == arg1, $mens.mtodos2(lin.0, lin.2)
   $mens.mtodos3(lin.0, lin.1, lin.2)
 
@@ -774,24 +809,29 @@ func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do 
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
-  $mens.p(arg0, arg1, arma1)
+  $mens.p(arg0, arg1, arma1, arma2)
   txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
     se !arg1.pvida # Se morreu
-      ret menssub(lin, 8) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+      ret !menssub(lin, "matou"), nulo
+      ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
-      ret menssub(lin, 3) && $mens.mtodos3dir(lin.0, lin.1, lin.1, arg2)
+      ret !menssub(lin, "auto"), nulo
+      ret $mens.mtodos3dir(lin.0, lin.1, lin.1, arg2)
     senao # Outros casos
-      ret menssub(lin, 5) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+      ret !menssub(lin, "perso"), nulo
+      ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     fimse
   casose "1" # Não teve efeito
-    ret menssub(lin, 14) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+    ret !menssub(lin, "nulo"), nulo
+    ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
   casose "2" # Errou o alvo
-    ret menssub(lin, 11) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+    ret !menssub(lin, "errou"), nulo
+    ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
   casose "3" # O alvo desviou
-    ret !menssub(lin, 17) && !menssub(lin, 11), nulo
+    ret !(menssub(lin, "esquivou") || menssub(lin, "errou")), nulo
     ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
   casofim
 
@@ -799,40 +839,43 @@ func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado d
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
-  $mens.p(arg0, arg1, arma1)
+  $mens.p(arg0, arg1, arma1, arma2)
   txt512 lin.3
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
     se arg1.pvida
-      ret arg1.contr.sock && menssub(lin, 5) && $mens.msginvdir(lin.1, arg1.contr, arg2)
+      ret !arg1.contr.sock || !menssub(lin, "perso"), nulo
+      ret $mens.msginvdir(lin.1, arg1.contr, arg2)
     senao
-      ret menssub(lin, 8) && $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+      ret !menssub(lin, "matou"), nulo
+      ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     fimse
   casose "1" # Não teve efeito
-    ret arg1.contr.sock && menssub(lin, 14) && $mens.msginvdir(lin.1, arg1.contr, arg2)
+    ret !(arg1.contr.sock && menssub(lin, "nulo")), nulo
+    ret $mens.msginvdir(lin.1, arg1.contr, arg2)
   casose "2" # Errou o alvo
-    ret arg1.contr.sock && menssub(lin, 11) && $mens.msginvdir(lin.1, arg1.contr, arg2)
+    ret !(arg1.contr.sock && menssub(lin, "errou")), nulo
+    ret $mens.msginvdir(lin.1, arg1.contr, arg2)
   casose "3" # O alvo desviou
-    ret !arg1.contr.sock, nulo
-    ret (menssub(lin, 17) || menssub(lin, 11)) && $mens.msginvdir(lin.1, arg1.contr, arg2)
+    ret !(arg1.contr.sock && (menssub(lin, "esquivou") || menssub(lin, "errou"))), nulo
+    ret $mens.msginvdir(lin.1, arg1.contr, arg2)
   casofim
 
 func menssub # Usado em mensgolpe
 # arg0 = variável txt512 lin.3
-# arg1 = índice da mensagem a obter
-# Retorna 0 se mensagem vazia ou 1 se há alguma mensagem
-  textotxt t
-  txtsublin(msgatk0, arg1, 1) && t.addfim("msgatk0")
-  txtsublin(msgatk1, arg1, 1) && t.addfim("msgatk1")
-  txtsublin(msgatk2, arg1, 1) && t.addfim("msgatk2")
-  txtsublin(msgatk3, arg1, 1) && t.addfim("msgatk3")
-  txtsublin(msgatk4, arg1, 1) && t.addfim("msgatk4")
-  ret !t.linhas, 0
-  t.remove(rand(t.linhas))
-  arg0.separar(txtsublin([t.remove], arg1, 3), "\n")
-  !arg0.1 && (arg0.1 = arg0.0)
-  !arg0.2 && (arg0.2 = arg0.0)
+# arg1 = nome da variável a obter
+  txt20 lin
+  atk1_[arg1]1 && (lin += "1")
+  atk2_[arg1]1 && (lin += "2")
+  atk3_[arg1]1 && (lin += "3")
+  atk4_[arg1]1 && (lin += "4")
+  atk5_[arg1]1 && (lin += "5")
+  ret !lin, 0
+  lin = "atk" + txt(lin, rand(inttotal(lin)), 1) + "_" + arg1
+  arg0.0 = [lin]1
+  arg0.1 = [lin]2 ?? arg0.0
+  arg0.2 = [lin]3 ?? arg0.0
   ret 1
 
 

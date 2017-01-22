@@ -45,8 +45,8 @@ func inserir # Insere um som em arquivo
 # Checa o nome do arquivo
   refvar arq = txttroca(txtsub(arg0, 2, 1), "\\", "/")
   checa = vartroca(arq, "", "ch_")
-  checa = txttroca(checa, "/" , "")
-  checa = txttroca(checa, "." , "")
+  checa = txttroca(checa, "/", "")
+  checa = txttroca(checa, ".", "")
   ret txt(checa, 1), "Caracteres não permitidos no nome do arquivo: " + checa
   ret checa, "Caracter não permitido no nome do arquivo: " + checa
   casovar txt(arq, 0, 1)

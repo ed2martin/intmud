@@ -196,9 +196,6 @@ func passo # Escolher o tipo de habilidade ou magia
   txt512 lin
   lin = arg0.var.opcclasse + "\nconfig/hab\nherda " + deriv
   lin += "\nconst nomevar = \"" + arg0.var.opcvar + "\""
-  lin += "\nconst msgatk0 = \"\\n\\n\\n$P ataca $a, $m\\n\\n$P ataca $a, $m\\n\\n\\n"
-  lin += "$P ataca e mata $a, $m\\n\\n\\n$P ataca $a, errou\\n\\n\\n"
-  lin += "$P ataca $a, nada acontece\\n\\n\\n\""
   prog p
   p.criar(lin)
   criar("admordena", "config/hab")
@@ -712,179 +709,159 @@ herda comando_menu
 const titulo = "Mensagens 1"
 const menufim = var.menufim
 const colunas = 25
-const n_variavel = "msgatk0"
+const n_variavel = "atk1"
 #
 const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
-const tipo1 = "opc_txtlinha"
+const tipo1 = "opc_linha"
 const clas1 = var.classe1
-const vari1 = n_variavel
-const extr1 = "0"
+const vari1 = n_variavel + "_usar1"
 #
 const nome2 = "Alvo"
 const info2 = "Se vazio, pega mensagem da opção 1"
-const tipo2 = "opc_txtlinha"
+const tipo2 = "opc_linha"
 const clas2 = var.classe1
-const vari2 = n_variavel
-const extr2 = "1"
+const vari2 = n_variavel + "_usar2"
 #
 const nome3 = "Outros"
 const info3 = "Se vazio, pega mensagem da opção 1"
-const tipo3 = "opc_txtlinha"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
-const vari3 = n_variavel
-const extr3 = "2"
+const vari3 = n_variavel + "_usar3"
 #
 const titu4 = " * Acertou em si mesmo"
 #
 const nome4 = "Perso"
-const tipo4 = "opc_txtlinha"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
-const vari4 = n_variavel
-const extr4 = "3"
+const vari4 = n_variavel + "_auto1"
 #
 const nome5 = "Outros"
 const info5 = "Se vazio, pega mensagem da opção 4"
-const tipo5 = "opc_txtlinha"
+const tipo5 = "opc_linha"
 const clas5 = var.classe1
-const vari5 = n_variavel
-const extr5 = "4"
+const vari5 = n_variavel + "_auto2"
 #
 const titu6 = " * Acertou outro personagem"
 #
 const nome6 = "Perso"
-const tipo6 = "opc_txtlinha"
+const tipo6 = "opc_linha"
 const clas6 = var.classe1
-const vari6 = n_variavel
-const extr6 = "5"
+const vari6 = n_variavel + "_perso1"
 #
 const nome7 = "Alvo"
 const info7 = "Se vazio, pega mensagem da opção 6"
-const tipo7 = "opc_txtlinha"
+const tipo7 = "opc_linha"
 const clas7 = var.classe1
-const vari7 = n_variavel
-const extr7 = "6"
+const vari7 = n_variavel + "_perso2"
 #
 const nome8 = "Outros"
 const info8 = "Se vazio, pega mensagem da opção 6"
-const tipo8 = "opc_txtlinha"
+const tipo8 = "opc_linha"
 const clas8 = var.classe1
-const vari8 = n_variavel
-const extr8 = "7"
+const vari8 = n_variavel + "_perso3"
 #
 const titu9 = " * Matou o alvo"
 #
 const nome9 = "Perso"
-const tipo9 = "opc_txtlinha"
+const tipo9 = "opc_linha"
 const clas9 = var.classe1
-const vari9 = n_variavel
-const extr9 = "8"
+const vari9 = n_variavel + "_matou1"
 #
 const nome10 = "Alvo"
 const info10 = "Se vazio, pega mensagem da opção 9"
-const tipo10 = "opc_txtlinha"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
-const vari10 = n_variavel
-const extr10 = "9"
+const vari10 = n_variavel + "_matou2"
 #
 const nome11 = "Outros"
 const info11 = "Se vazio, pega mensagem da opção 9"
-const tipo11 = "opc_txtlinha"
+const tipo11 = "opc_linha"
 const clas11 = var.classe1
-const vari11 = n_variavel
-const extr11 = "10"
+const vari11 = n_variavel + "_matou3"
 #
 const titu12 = " * Errou o alvo"
 #
 const nome12 = "Perso"
-const tipo12 = "opc_txtlinha"
+const tipo12 = "opc_linha"
 const clas12 = var.classe1
-const vari12 = n_variavel
-const extr12 = "11"
+const vari12 = n_variavel + "_errou1"
 #
 const nome13 = "Alvo"
 const info13 = "Se vazio, pega mensagem da opção 12"
-const tipo13 = "opc_txtlinha"
+const tipo13 = "opc_linha"
 const clas13 = var.classe1
-const vari13 = n_variavel
-const extr13 = "12"
+const vari13 = n_variavel + "_errou2"
 #
 const nome14 = "Outros"
 const info14 = "Se vazio, pega mensagem da opção 12"
-const tipo14 = "opc_txtlinha"
+const tipo14 = "opc_linha"
 const clas14 = var.classe1
-const vari14 = n_variavel
-const extr14 = "13"
+const vari14 = n_variavel + "_errou3"
 #
 const titu15 = " * Não teve efeito"
 #
 const nome15 = "Perso"
-const tipo15 = "opc_txtlinha"
+const tipo15 = "opc_linha"
 const clas15 = var.classe1
-const vari15 = n_variavel
-const extr15 = "14"
+const vari15 = n_variavel + "_nulo1"
 #
 const nome16 = "Alvo"
 const info16 = "Se vazio, pega mensagem da opção 15"
-const tipo16 = "opc_txtlinha"
+const tipo16 = "opc_linha"
 const clas16 = var.classe1
-const vari16 = n_variavel
-const extr16 = "15"
+const vari16 = n_variavel + "_nulo2"
 #
 const nome17 = "Outros"
 const info17 = "Se vazio, pega mensagem da opção 15"
-const tipo17 = "opc_txtlinha"
+const tipo17 = "opc_linha"
 const clas17 = var.classe1
-const vari17 = n_variavel
-const extr17 = "16"
+const vari17 = n_variavel + "_nulo3"
 #
 const titu18 = " * O alvo esquivou (opcional)"
 #
 const nome18 = "Perso"
 const info18 = "Quando não há mensagens de esquiva, pega de Errou o alvo"
-const tipo18 = "opc_txtlinha"
+const tipo18 = "opc_linha"
 const clas18 = var.classe1
-const vari18 = n_variavel
-const extr18 = "17"
+const vari18 = n_variavel + "_esquivou1"
 #
 const nome19 = "Alvo"
 const info19 = "Se vazio, pega mensagem da opção 18"
-const tipo19 = "opc_txtlinha"
+const tipo19 = "opc_linha"
 const clas19 = var.classe1
-const vari19 = n_variavel
-const extr19 = "18"
+const vari19 = n_variavel + "_esquivou2"
 #
 const nome20 = "Outros"
 const info20 = "Se vazio, pega mensagem da opção 18"
-const tipo20 = "opc_txtlinha"
+const tipo20 = "opc_linha"
 const clas20 = var.classe1
-const vari20 = n_variavel
-const extr20 = "19"
+const vari20 = n_variavel + "_esquivou3"
 
 
 classe menu_hab_msg1
 herda menu_hab_msg0
 const titulo = "Mensagens 2"
-const n_variavel = "msgatk1"
+const n_variavel = "atk2"
 
 
 classe menu_hab_msg2
 herda menu_hab_msg0
 const titulo = "Mensagens 3"
-const n_variavel = "msgatk2"
+const n_variavel = "atk3"
 
 
 classe menu_hab_msg3
 herda menu_hab_msg0
 const titulo = "Mensagens 4"
-const n_variavel = "msgatk3"
+const n_variavel = "atk4"
 
 
 classe menu_hab_msg4
 herda menu_hab_msg0
 const titulo = "Mensagens 5"
-const n_variavel = "msgatk4"
+const n_variavel = "atk5"
 
 
 classe menu_hab_comum

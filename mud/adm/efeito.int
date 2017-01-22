@@ -575,12 +575,12 @@ func passo # Mudar o estado atual
   d.exec = 500000
   epara p.iniherdainv("comum_perso"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)
-      r.var.valor(nome) && (total += (r.recalc = 1))
+      r.var.valor(nome) && (total += r.recalc = 1)
     efim
   efim
   epara p.iniherdainv("comum_item"), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)
-      r.var.valor(nome) && (total += (r.recalc = 1))
+      r.var.valor(nome) && (total += r.recalc = 1)
     efim
   efim
   se total == 0

@@ -1,4 +1,4 @@
-classe atualiza_433
+classe atualiza_434
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 433, nulo
-  p.criar("config", "const versao = 433 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 434, nulo
+  p.criar("config", "const versao = 434 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -632,11 +632,27 @@ casa está atrasada.\"")
     criafunc("config", "const atkexp1 = " + config:atkexp)
     p.apagar("config", "atkexp")
   fimse
-# Espera ataques manuais
-  se versao < 433
+# Espera em ataques manuais, mensagens dos ataques
+  se versao < 434
     criafunc("config", "const atkespera = 8")
     nomefunc("config", "itens", "p_objlimite")
-
+    int8 y
+    epara p.iniherdainv("comando_ataque"), p.lin, p.depois
+      d.ini
+      int8 x
+      enquanto x < 5
+        refvar linhas = [p.texto]:msgatk[x]
+        p.apagar(p.texto, "msgatk" + x)
+        x++
+        continuar !linhas
+        txt512 cod = linhas_atk
+        epara y = 0, cod, y++
+          txt100 lin = txtsublin(linhas, y, 1)
+          lin && criafunc(p.texto, "const atk" + x + txt1(cod) + "=\"" + txtvis(lin) + "\"")
+          cod = txt2(cod)
+        efim
+      efim
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
@@ -648,3 +664,6 @@ const nomequem = \"[Não autorizado]\"\n\
 const saiumsg = \"Seu personagem foi aprovado\"\n\
 const c_salvar = \"Seu personagem ainda não foi autorizado\"\n\
 const salvar = 0"
+#
+const linhas_atk = "_usar1 _usar2 _usar3 _auto1 _auto2 _perso1 _perso2 _perso3 _matou1 _matou2 \
+_matou3 _errou1 _errou2 _errou3 _nulo1 _nulo2 _nulo3 _esquivou1 _esquivou2 _esquivou3"
