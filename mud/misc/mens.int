@@ -247,10 +247,10 @@ func mmud1 # Mensagem para todos do MUD
     msg(arg0, item.obj.perso)
   efim
 
-func mmudS # Mensagem para todos do MUD exceto na mesma sala
+func mmudS # Mensagem para todos do MUD em outra sala
 # arg0 = mensagem para todos
   ref s
-  epara s = contr, s.dono, s = s.dono
+  epara s = perso, s.dono, s = s.dono
   efim
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
@@ -269,7 +269,7 @@ func mmudtodos1 # Mensagem para todos que estiverem acordados no MUD
 func mmudtodosS # Mensagem para todos que estiverem acordados no MUD em outra sala
 # arg0 = mensagem para todos
   ref s
-  epara s = contr, s.dono, s = s.dono
+  epara s = perso, s.dono, s = s.dono
   efim
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
@@ -280,7 +280,7 @@ func mmudtodosS # Mensagem para todos que estiverem acordados no MUD em outra sa
 
 func marea1 # Mensagem para todos que estiverem na mesma área
 # arg0 = mensagem para todos
-  epara r = contr, r.dono, r = r.dono
+  epara r = perso, r.dono, r = r.dono
   efim
   refvar area = r.s_area
   indiceitem item
@@ -293,7 +293,7 @@ func marea1 # Mensagem para todos que estiverem na mesma área
 func mareaS # Mensagem para todos que estiverem na mesma área mas em outra sala
 # arg0 = mensagem para todos
   ref s
-  epara s = contr, s.dono, s = s.dono
+  epara s = perso, s.dono, s = s.dono
   efim
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
@@ -304,7 +304,7 @@ func mareaS # Mensagem para todos que estiverem na mesma área mas em outra sala
 
 func mareatodos1 # Mensagem para quem está acordado na mesma área
 # arg0 = mensagem para todos
-  epara r = contr, r.dono, r = r.dono
+  epara r = perso, r.dono, r = r.dono
   efim
   refvar area = r.s_area
   indiceitem item
@@ -317,7 +317,7 @@ func mareatodos1 # Mensagem para quem está acordado na mesma área
 func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra sala
 # arg0 = mensagem para todos
   ref s
-  epara s = contr, s.dono, s = s.dono
+  epara s = perso, s.dono, s = s.dono
   efim
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois

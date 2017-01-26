@@ -247,11 +247,10 @@ func ini2_exec
     criafunc("config", "const telepatia2 = \"(telepatia) $R '$m'\"")
     criafunc("config", "const rezar1msg = \"(rezar) $R '$m'\"")
     criafunc("config", "const rezar2msg = \"Você rezou '$m'\"")
-    debug d
     epara p.iniclasse("s_"), p.lin, p.depois
       $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
       $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
-      d.ini
+      dbg.ini
     efim
   fimse
 # Tipos de ataque (em habilidades e magias)
@@ -346,9 +345,8 @@ casa está atrasada.\"")
     criafunc("config", "const atkmaxexp = 100")
     criafunc("config", "const ptitulonivel = 10")
     criafunc("config", "const pdescnivel = 5")
-    debug d
     epara p.iniclasse("c_"), p.lin, p.depois
-      d.ini
+      dbg.ini
       p.apagar(p.texto, "sfora")
     efim
   fimse
@@ -358,40 +356,39 @@ casa está atrasada.\"")
   fimse
 # SVN 334
   se versao < 334
-    debug d
     p.clfim("config/config", "config")
     epara p.iniclasse("e_"), p.lin, p.depois
-      d.ini, p.texto != "e_apagar" && p.clfim("config/efeito", p.texto)
+      dbg.ini, p.texto != "e_apagar" && p.clfim("config/efeito", p.texto)
     efim
     epara p.iniclasse("cmd_"), p.lin, p.depois
-      d.ini, [p.texto]:cmdmenu && p.clfim("config/hab", p.texto)
+      dbg.ini, [p.texto]:cmdmenu && p.clfim("config/hab", p.texto)
     efim
     epara p.iniclasse("magia_"), p.lin, p.depois
-      d.ini, p.clfim("config/hab", p.texto)
+      dbg.ini, p.clfim("config/hab", p.texto)
     efim
     epara p.iniclasse("soc_"), p.lin, p.depois
-      d.ini, p.clfim("config/social", p.texto)
+      dbg.ini, p.clfim("config/social", p.texto)
     efim
     epara p.iniclasse("tipo_"), p.lin, p.depois
-      d.ini, p.clfim("config/tipo", p.texto)
+      dbg.ini, p.clfim("config/tipo", p.texto)
     efim
     epara p.iniclasse("a_"), p.lin, p.depois
-      d.ini, p.clfim("areas/" + txt(p.texto, 2), p.texto)
+      dbg.ini, p.clfim("areas/" + txt(p.texto, 2), p.texto)
     efim
     epara p.iniclasse("b_"), p.lin, p.depois
-      d.ini, p.clfim("areas/" + txt(p.texto, 2), p.texto)
+      dbg.ini, p.clfim("areas/" + txt(p.texto, 2), p.texto)
     efim
     epara p.iniclasse("c_"), p.lin, p.depois
-      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+      dbg.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
     efim
     epara p.iniclasse("i_"), p.lin, p.depois
-      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+      dbg.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
     efim
     epara p.iniclasse("p_"), p.lin, p.depois
-      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+      dbg.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
     efim
     epara p.iniclasse("s_"), p.lin, p.depois
-      d.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
+      dbg.ini, p.clfim("areas/" + txt(p.texto, 2, inttotal(p.texto) - 5), p.texto)
     efim
   fimse
 # Opções do comando Econfig
@@ -420,8 +417,7 @@ casa está atrasada.\"")
       pos.remove(1)
       pos.add(lin)
       t.salvar("sav2/" + dir.texto)
-      debug d
-      d.ini
+      dbg.ini
     efim
   fimse
 # Tipos (raças e classes)
@@ -493,15 +489,14 @@ casa está atrasada.\"")
   fimse
 # Correção de recalc_auto para recalc1_auto e recalc2_auto
   se versao < 374
-    debug d
     epara p.iniclasse("p_"), p.lin, p.depois
-      d.ini, nomefunc(p.texto, "recalc_auto", "recalc1_auto")
+      dbg.ini, nomefunc(p.texto, "recalc_auto", "recalc1_auto")
     efim
     epara p.iniclasse("i_"), p.lin, p.depois
-      d.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
+      dbg.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
     efim
     epara p.iniclasse("e_"), p.lin, p.depois
-      d.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
+      dbg.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
     efim
   fimse
 # Permissões
@@ -533,9 +528,8 @@ casa está atrasada.\"")
   fimse
 # Ataque, casas e menu Herda do comando Econfig
   se versao < 417
-    debug d
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
-      d.ini
+      dbg.ini
       continuar p.existe(p.texto, "ataque") != 1
       refvar atk = [p.texto]:ataque
       p.criar(p.texto, "const ataquemin = " + int(atk * 0.5))
@@ -543,7 +537,7 @@ casa está atrasada.\"")
       p.apagar(p.texto, "ataque")
     efim
     epara p.iniherdainv("casa"), p.lin, p.depois
-      d.ini
+      dbg.ini
       continuar p.existe(p.texto, "c_salas") == 1
       refvar c = $[p.texto]
       txt512 lin
@@ -563,7 +557,7 @@ casa está atrasada.\"")
       c.acerta_funcoes(lin)
     efim
     epara p.iniherdainv("comum_item"), p.lin, p.depois
-      d.ini
+      dbg.ini
       continuar p.existe(p.texto, "armaprecisao") != 1
       se [p.texto]:armaprecisao != 100
         p.criar(p.texto, "const armafalha = " + (100 - [p.texto]:armaprecisao))
@@ -571,7 +565,7 @@ casa está atrasada.\"")
       p.apagar(p.texto, "armaprecisao")
     efim
     epara p.iniherdainv("comando_hab"), p.lin, p.depois
-      d.ini
+      dbg.ini
       continuar p.existe(p.texto, "precisao") != 1
       se [p.texto]:precisao != 100
         p.criar(p.texto, "const falha = " + (100 - [p.texto]:precisao))
@@ -638,7 +632,7 @@ casa está atrasada.\"")
     nomefunc("config", "itens", "p_objlimite")
     int8 y
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
-      d.ini
+      dbg.ini
       int8 x
       enquanto x < 5
         refvar linhas = [p.texto]:msgatk[x]
@@ -647,7 +641,7 @@ casa está atrasada.\"")
         continuar !linhas
         txt512 cod = linhas_atk
         epara y = 0, cod, y++
-          txt100 lin = txtsublin(linhas, y, 1)
+          refvar lin = txtsublin(linhas, y, 1)
           lin && criafunc(p.texto, "const atk" + x + txt1(cod) + "=\"" + txtvis(lin) + "\"")
           cod = txt2(cod)
         efim

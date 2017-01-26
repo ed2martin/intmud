@@ -192,8 +192,14 @@ const msgextra = ""
 Informações extras, mostradas quando o jogador consulta sobre a hab/magia.
 
 const atk1_usar1 = ""
-Constantes atk1 a atk5. Cada constante é uma mensagem de batalha. Abaixo são
-listadas as constantes atk1, mas atk2 a atk5 seguem o mesmo padrão.
+Constantes atk1 a atk5. Essa é uma delas. Cada constante contém uma mensagem
+de batalha. Essas constantes são chamadas pouco antes da mensagem ser enviada,
+por isso $mens já está preenchido corretamente:
+$mens.perso = personagem que está atacando
+$mens.alvo = personagem alvo dos ataques
+$mens.obj1 = arma usada, ou nulo se não está usando arma
+$mens.obj2 = munição usada, ou nulo se não está usando munição
+Abaixo são listadas as constantes atk1, mas atk2 a atk5 seguem o mesmo padrão.
 
 Ao usar a habilidade ou magia:
 atk1_usar1 = para o personagem

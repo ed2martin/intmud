@@ -4,7 +4,18 @@ Para enviar uma mensagem formatada a um ou mais personagens, usa-se
 a classe 'mens', contida no arquivo 'misc/mens.int'.
 
 Primeiro define-se de um a três objetos, com a seguinte função:
-$mens.p(<personagem>, [alvo], [objeto])
+$mens.p(<personagem>, [alvo], [objeto 1], [objeto 2])
+
+Essa função preenche as seguintes variáveis de $mens:
+ref perso # Personagem que está enviando a mensagem
+ref alvo # Personagem ou objeto alvo da ação
+ref obj1 # Primeiro objeto
+ref obj2 # Segundo objeto
+
+Esssa função também pode ser usada com a seguinte sintaxe:
+$mens.p(<sala>)
+Para enviar mensagens para uma área ou para todos do MUD (funções marea1,
+mareaS, mareatodos1, mareatodosS, mmud1, mmudS, mmudtodos1 e mmudtodosS).
 
 Depois, envia-se uma mensagem com uma das seguintes funções:
 
