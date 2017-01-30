@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 434 # Para atualizar diretórios areas e config
+const versao = 436 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -111,27 +111,6 @@ const salasav = $s_casa001
 # Sala quando morre
 const salafim = $s_fim001
 #
-# Comando Atalho: quantidade máxima de atalhos
-const atalhos = 50
-#
-# Comando PTitulo: quantos caracteres para os títulos dos jogadores
-const ptitulomax = 30
-#
-# Comando PDesc: quantos caracteres para as descrições dos jogadores
-const pdescmax = 1000
-#
-# Quantos animais pode ter numa batalha, de 0 a 8
-# Se 0, os comando para animais deixam de existir
-const animal1 = 5
-#
-# Quantos animais reserva pode guardar com o comando Reserva
-# Se 0, o comandos Reserva deixa de existir
-const animal2 = 50
-#
-# Se os animais capturados podem ir para a lista de reservas
-# 0=não pode, 1=pode
-const capturar = 1
-#
 # Nomes não permitidos para personagens dos jogadores, uma linha por nome
 const nomesnao = "cagar\n\
 defecar\n\
@@ -147,9 +126,6 @@ pariu\n\
 foder\n\
 fuder\n\
 fodido\nfudido"
-#
-# Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
-const salvacria = 0
 #
 # A partir de que nível um jogador é considerado veterano
 const nivelveterano = 10
@@ -174,6 +150,14 @@ const jogconfig = 319 # Config ao criar personagem: 0-desc, 1-saidas, 2-cores, 3
 # Se após criar um personagem, o jogador precisa de autorização para
 # o personagem ser salvo; vide também comando de administração Autorizar
 const autorizar = 0
+#
+# Nível necessário para usar o comando Salvar
+# Abaixo desse nível, só pode salvar quem já tem jogo salvo
+# Se for um número acima de 65535, quem não tem jogo salvo não salva
+const salvarnivel = 11
+#
+# Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
+const salvacria = 0
 #
 # A partir de que nível sente fome e sede
 const fomeini = 0
@@ -292,6 +276,14 @@ const nivelmsg1 = "$P avança para o nível $m."
 # Aqui $1 é o nome do personagem visível a todos, $m é o nível
 const nivelmsg2 = "$1 avança para o nível $m."
 #
+# Mensagem quando o personagem chegou no nível máximo
+const nmaxmsg = ""
+#
+# Mensagem quando tem sala perigosa por perto
+# Aparece após descrição e título da sala
+# Se estiver vazio, não é enviada nenhuma mensagem
+const perigomsg = ""
+#
 # Mensagem do comando Echo
 const echomsg = "\b\cb(ADM) $m\b"
 #
@@ -304,23 +296,17 @@ const jecho1msg = "\b\cb$m\b"
 # Mensagem para o jogador que usou o comando JEcho
 const jecho2msg = "\bJEcho para $a '$m'"
 #
+# Comando rezar: 0=não existe, 1=existe
+const rezartipo = 0
+#
+# Nível necessário para usar o comando Rezar
+const rezarnivel = 0
+#
 # Mensagem do canal Rezar
 const rezar1msg = "(rezar) $R '$m'"
 #
 # Mensagem quando o jogador usa o comando Rezar
 const rezar2msg = "Você rezou '$m'"
-#
-# Mensagem do canal Bug
-const bug1msg = "(bug) $R '$m'"
-#
-# Mensagem quando o jogador usa o comando Bug
-const bug2msg = "Bug enviado '$m'"
-#
-# Mensagem do canal Ideia
-const ideia1msg = "(ideia) $R '$m'"
-#
-# Mensagem quando o jogador usa o comando Ideia
-const ideia2msg = "Ideia enviada '$m'"
 #
 # Mensagem do canal Rezou
 const rezou1msg = "(rezou) $R para $c '$m'"
@@ -328,25 +314,58 @@ const rezou1msg = "(rezou) $R para $c '$m'"
 # Mensagem para o personagem alvo do comando Rezou
 const rezou2msg = "Os deuses responderam '$m'"
 #
+# Comando Bug: 0=não existe, 1=existe
+const bugtipo = 0
+#
+# Nível necessário para usar o comando Bug
+const bugnivel = 0
+#
+# Mensagem do canal Bug
+const bug1msg = "(bug) $R '$m'"
+#
+# Mensagem quando o jogador usa o comando Bug
+const bug2msg = "Bug enviado '$m'"
+#
+# Comando Ideia: 0=não existe, 1=existe
+const ideiatipo = 0
+#
+# Nível necessário para usar o comando Ideia
+const ideianivel = 0
+#
+# Mensagem do canal Ideia
+const ideia1msg = "(ideia) $R '$m'"
+#
+# Mensagem quando o jogador usa o comando Ideia
+const ideia2msg = "Ideia enviada '$m'"
+#
 # Mensagem do canal AC
 const acmsg = "(ac) $R: $m"
 #
-# Mensagem quando o personagem chegou no nível máximo
-const nmaxmsg = ""
+# Canal chat: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
+const chattipo = 2 # Canal chat: 2 Para todo o MUD
 #
-# Mensagem quando tem sala perigosa por perto
-# Aparece após descrição e título da sala
-# Se estiver vazio, não é enviada nenhuma mensagem
-const perigomsg = ""
+# Nível necessário para escrever no canal Chat
+const chatnivel = 0
 #
 # Mensagem do canal Chat
 const chatmsg = "(chat) $R '$m'"
+#
+# Comando SChat
+# 0 = Personagens/itens sempre visíveis
+# 1 = Pode aparecer "alguém" e "alguma coisa"
+const schattipo = 0
 #
 # Mensagem do comando SChat
 const schatmsg = "(chat) $m"
 #
 # Mensagem do comando GChat
 const gchatmsg = "(gchat) $R '$m'"
+#
+# Canal novatos: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
+const novatostipo = 2 # Comando Novatos: 2 Para todo o MUD
+#
+# Nível necessário para escrever no canal Novatos
+const novatosnivel = 0
 #
 # Mensagem do canal Novatos
 const novatosmsg = "(novatos) $R '$m'"
@@ -369,6 +388,15 @@ const continuarmsg = "$P continuou '$m'"
 # Gritar: ao teclar gritar e uma mensagem
 const gritarmsg = "$P gritou '$m'"
 #
+# Comando gritar: 0=não existe, 1=existe
+const gritartipo = 0 # Comando Gritar: 0 Desabilitado
+#
+# Nível necessário para usar o comando Gritar
+const gritarnivel = 0
+#
+# Quantos pontos de movimentos o personagem gasta ao gritar
+const gritarmove = 2
+#
 # Sussurrou para si mesmo
 const sussurrar1msg = "$P sussurou algumas palavras."
 #
@@ -384,66 +412,64 @@ const telepatia1 = "(+telepatia) $C '$m'"
 # Recebeu mensagem telepática
 const telepatia2 = "(telepatia) $R '$m'"
 #
-# Nível necessário para usar o comando Salvar
-# Abaixo desse nível, só pode salvar quem já tem jogo salvo
-# Se for um número acima de 65535, quem não tem jogo salvo não salva
-const salvarnivel = 11
-#
-# Comando rezar: 0=não existe, 1=existe
-const rezartipo = 0
-#
-# Nível necessário para usar o comando Rezar
-const rezarnivel = 0
-#
-# Comando Bug: 0=não existe, 1=existe
-const bugtipo = 0
-#
-# Nível necessário para usar o comando Bug
-const bugnivel = 0
-#
-# Comando Ideia: 0=não existe, 1=existe
-const ideiatipo = 0
-#
-# Nível necessário para usar o comando Ideia
-const ideianivel = 0
-#
-# Canal chat: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
-const chattipo = 2 # Canal chat: 2 Para todo o MUD
-#
-# Nível necessário para escrever no canal Chat
-const chatnivel = 0
-#
-# Comando SChat
-# 0 = Personagens/itens sempre visíveis
-# 1 = Pode aparecer "alguém" e "alguma coisa"
-const schattipo = 0
-#
-# Canal novatos: 0=não existe, 1=somente em uma sala de bot, 2=todo o chat
-const novatostipo = 2 # Comando Novatos: 2 Para todo o MUD
-#
-# Nível necessário para escrever no canal Novatos
-const novatosnivel = 0
-#
 # Comando emoção: 0=não existe, 1=existe
 const emocaotipo = 0 # Comando Emoção: 0 Desabilitado
 #
 # Nível necessário para usar o comando Emoção
 const emocaonivel = 0
 #
-# Comando gritar: 0=não existe, 1=existe
-const gritartipo = 0 # Comando Gritar: 0 Desabilitado
+# Se os comandos Olhar e Ver mostram o nível do personagem
+# 0=não, 1=sim
+const olharnivel = 1 # Olhar mostra nível: Sim
 #
-# Nível necessário para usar o comando Gritar
-const gritarnivel = 0
+# Se os comandos Olhar e Ver mostram a raça e a classe do personagem
+# 0=não, 1=sim
+const olhartipo = 0 # Olhar mostra raça e classe: Não
 #
-# Quantos pontos de movimentos o personagem gasta ao gritar
-const gritarmove = 2
+# Se o comando Olhar mostra o volume
+const olharvolume = 1
 #
-# Comando matar: 0=não existe, 1=existe
-const matartipo = 1 # Comando Matar: 1 Habilitado
+# Nível necessário para usar o comando PTitulo
+const ptitulonivel = 10
 #
-# Diferença máxima de nível entre os personagens de um grupo
-const gruponivel = 10
+# Comando PTitulo: quantos caracteres para os títulos dos jogadores
+const ptitulomax = 30
+#
+# Nível necessário para usar o comando PDesc
+const pdescnivel = 5
+#
+# Comando PDesc: quantos caracteres para as descrições dos jogadores
+const pdescmax = 1000
+#
+# Comando PDesc: quantas linhas para as descrições dos jogadores
+const pdesclinhas = 8
+#
+# Quantos animais pode ter numa batalha, de 0 a 8
+# Se 0, os comando para animais deixam de existir
+const animal1 = 5
+#
+# Quantos animais reserva pode guardar com o comando Reserva
+# Se 0, o comandos Reserva deixa de existir
+const animal2 = 50
+#
+# Se os animais capturados podem ir para a lista de reservas
+# 0=não pode, 1=pode
+const capturar = 1
+#
+# Não capturou animal
+const capturar_nao = "$P joga $o para $a, mas $a recusa."
+#
+# Capturou animal
+const capturar_sim = "$P joga $o para $a."
+#
+# Animal foi para a equipe
+const capturar_equipe = "$A entrou para a sua equipe."
+#
+# Animal foi para os reservas
+const capturar_reserva = "$A entrou para a sua equipe como reserva."
+#
+# Mensagem para os outros, quando capturou um animal
+const capturar_outros = "$A entrou para a equipe de $P."
 #
 # Comando renascer:
 # 0=não existe, 1=não perde hab/magias, 2 a 6 = escolhe de 1 a 5 habs/magias
@@ -462,22 +488,14 @@ const nivel_renascer = 0
 # é multiplicada por esse número.
 const exp_renascer = 100
 #
-# Se os comandos Olhar e Ver mostram o nível do personagem
-# 0=não, 1=sim
-const olharnivel = 1 # Olhar mostra nível: Sim
+# Comando matar: 0=não existe, 1=existe
+const matartipo = 1 # Comando Matar: 1 Habilitado
 #
-# Se os comandos Olhar e Ver mostram a raça e a classe do personagem
-# 0=não, 1=sim
-const olhartipo = 0 # Olhar mostra raça e classe: Não
+# Diferença máxima de nível entre os personagens de um grupo
+const gruponivel = 10
 #
-# Se o comando Olhar mostra o volume
-const olharvolume = 1
-#
-# Nível necessário para usar o comando PTitulo
-const ptitulonivel = 10
-#
-# Nível necessário para usar o comando PDesc
-const pdescnivel = 5
+# Comando Atalho: quantidade máxima de atalhos
+const atalhos = 50
 #
 # Quantos pontos de aulas ganha quando sobe de nível
 # Se 0, o comando aprender não usa pontos de aula

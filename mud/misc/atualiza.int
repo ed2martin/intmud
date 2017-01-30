@@ -1,4 +1,4 @@
-classe atualiza_434
+classe atualiza_436
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -23,7 +23,7 @@ func p_apagar # Para testar as modificações
 func criafunc # Cria função ou constante se não existir
 # arg0 = nome da classe
 # arg1 = definição da função ou constante
-  refvar nome = txtsub(txtsepara(arg1, "LD+O,O+LD"), 1, 1)
+  refvar nome = txtsub(txttroca(txttroca(arg1, "=", " ="), "#", " #"), 1, 1)
   !p.existe(arg0, nome) && p.criar(arg0, arg1)
 
 func nomefunc # Muda o nome de uma função, constante ou variável
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 434, nulo
-  p.criar("config", "const versao = 434 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 436, nulo
+  p.criar("config", "const versao = 436 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -647,6 +647,15 @@ casa está atrasada.\"")
         efim
       efim
     efim
+  fimse
+# Linhas de PDesc, mensagens de Capturar
+  se versao < 436
+    criafunc("config", "const pdesclinhas = 8")
+    criafunc("config", "const capturar_nao = \"$P joga $o para $a, mas $a recusa.\"")
+    criafunc("config", "const capturar_sim = \"$P joga $o para $a.\"")
+    criafunc("config", "const capturar_equipe = \"$A entrou para a sua equipe.\"")
+    criafunc("config", "const capturar_reserva = \"$A entrou para a sua equipe como reserva.\"")
+    criafunc("config", "const capturar_outros = \"$A entrou para a equipe de $P.\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

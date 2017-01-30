@@ -37,8 +37,9 @@ const tipo5 = "opc_sala--"
 const clas5 = "config"
 const vari5 = "salasav"
 #
-const nome6 = "Limites"
-const tipo6 = "menu_econfig_limites--"
+const nome6 = "Herda"
+const info6 = "Opções herdadas em outros comandos"
+const tipo6 = "menu_econfig_herda--"
 #
 const nome7 = "Criar e salvar personagem"
 const tipo7 = "menu_econfig_salvar--"
@@ -86,25 +87,18 @@ const tipo14 = "menu_econfig_log--"
 const nome15 = "Mensagens"
 const tipo15 = "menu_econfig_msg1--"
 #
-const nome16 = "Conversa entre jogadores"
-const tipo16 = "menu_econfig_msg2--"
+const nome16 = "Comandos"
+const tipo16 = "menu_econfig_cmd--"
 #
-const nome17 = "Comandos"
-const tipo17 = "menu_econfig_comandos--"
+const nome17 = "Ataques e batalha"
+const tipo17 = "menu_econfig_ataques--"
 #
-const nome18 = "Ataques e batalha"
-const tipo18 = "menu_econfig_ataques--"
+const nome18 = "Casas dos jogadores"
+const tipo18 = "menu_econfig_casas--"
 #
-const nome19 = "Casas dos jogadores"
-const tipo19 = "menu_econfig_casas--"
-#
-const nome20 = "Posições para vestir itens"
-const info20 = "Os nomes das posições"
-const tipo20 = "menu_econfig_vestir--"
-#
-const nome21 = "Herda"
-const info21 = "Opções herdadas em outros comandos"
-const tipo21 = "menu_econfig_herda--"
+const nome19 = "Posições para vestir itens"
+const info19 = "Os nomes das posições"
+const tipo19 = "menu_econfig_vestir--"
 
 
 classe menu_econfig_ativar
@@ -208,55 +202,6 @@ const clas15 = "config"
 const vari15 = "banda2"
 const exec15 = "admbanda:atualiza"
 const extr15 = "100 10000"
-
-
-classe menu_econfig_limites
-herda comando_menu
-const titulo = "Limites"
-const menufim = "menu_econfig"
-const colunas = 35
-#
-const nome1 = "Atalhos"
-const info1 = "Quantidade máxima de atalhos (comando Atalho)"
-const tipo1 = "opc_numero--"
-const clas1 = "config"
-const vari1 = "atalhos"
-#
-const nome2 = "Animais para batalhar"
-const info2 = "Quantos animais pode usar em batalha, de 0 a 8\n\
-Se 0, os comandos para animais deixam de existir"
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "animal1"
-const extr2 = "0 8"
-#
-const nome3 = "Animais reserva"
-const info3 = "Quantos animais pode guardar com o comando Reserva\n\
-Se 0, o comando Reserva deixa de existir"
-const tipo3 = "opc_numero--"
-const clas3 = "config"
-const vari3 = "animal2"
-const extr3 = "0 200"
-#
-const nome4 = "Capturar reserva"
-const info4 = "Se ao capturar um animal, ele pode ir para a lista de reservas"
-const tipo4 = "opc_simnao--"
-const clas4 = "config"
-const vari4 = "capturar"
-#
-const nome5 = "PTitulo"
-const info5 = "Quantos caracteres para os títulos dos jogadores"
-const tipo5 = "opc_numero--"
-const clas5 = "config"
-const vari5 = "ptitulomax"
-const extr5 = "5 100"
-#
-const nome6 = "PDesc"
-const info6 = "Quantos caracteres para as descrições dos jogadores"
-const tipo6 = "opc_numero--"
-const clas6 = "config"
-const vari6 = "pdescmax"
-const extr6 = "5 5000"
 
 
 classe menu_econfig_salvar
@@ -566,343 +511,16 @@ const tipo9 = "opc_linha--"
 const clas9 = "config"
 const vari9 = "nivelmsg2"
 #
-const nome10 = "Comando Echo"
-const tipo10 = "opc_linha--"
+const nome10 = "Chegou ao nível máximo"
+const tipo10 = "opc_texto--"
 const clas10 = "config"
-const vari10 = "echomsg"
+const vari10 = "nmaxmsg"
 #
-const nome11 = "Comando SEcho"
+const nome11 = "Sala perigosa por perto"
+const info11 = "Aparece após título e descrição da sala. Se estiver vazio, não aparece."
 const tipo11 = "opc_linha--"
 const clas11 = "config"
-const vari11 = "sechomsg"
-#
-const nome12 = "Comando JEcho"
-const tipo12 = "opc_linha--"
-const clas12 = "config"
-const vari12 = "jecho1msg"
-#
-const nome13 = "Enviou mensagem JEcho"
-const tipo13 = "opc_linha--"
-const clas13 = "config"
-const vari13 = "jecho2msg"
-#
-const nome14 = "Canal Rezar"
-const tipo14 = "opc_linha--"
-const clas14 = "config"
-const vari14 = "rezar1msg"
-#
-const nome15 = "Comando rezar"
-const tipo15 = "opc_linha--"
-const clas15 = "config"
-const vari15 = "rezar2msg"
-#
-const nome16 = "Canal Rezou"
-const tipo16 = "opc_linha--"
-const clas16 = "config"
-const vari16 = "rezou1msg"
-#
-const nome17 = "Comando Rezou"
-const tipo17 = "opc_linha--"
-const clas17 = "config"
-const vari17 = "rezou2msg"
-#
-const nome18 = "Canal Bug"
-const tipo18 = "opc_linha--"
-const clas18 = "config"
-const vari18 = "bug1msg"
-#
-const nome19 = "Comando Bug"
-const tipo19 = "opc_linha--"
-const clas19 = "config"
-const vari19 = "bug2msg"
-#
-const nome20 = "Canal Ideia"
-const tipo20 = "opc_linha--"
-const clas20 = "config"
-const vari20 = "ideia1msg"
-#
-const nome21 = "Comando Ideia"
-const tipo21 = "opc_linha--"
-const clas21 = "config"
-const vari21 = "ideia2msg"
-#
-const nome22 = "Canal AC"
-const tipo22 = "opc_linha--"
-const clas22 = "config"
-const vari22 = "acmsg"
-#
-const nome23 = "Chegou ao nível máximo"
-const tipo23 = "opc_texto--"
-const clas23 = "config"
-const vari23 = "nmaxmsg"
-#
-const nome24 = "Sala perigosa por perto"
-const info24 = "Aparece após título e descrição da sala. Se estiver vazio, não aparece."
-const tipo24 = "opc_linha--"
-const clas24 = "config"
-const vari24 = "perigomsg"
-
-
-classe menu_econfig_msg2
-herda comando_menu
-const titulo = "Conversa entre jogadores"
-const menufim = "menu_econfig"
-const colunas = 35
-#
-const nome1 = "Canal Chat"
-const tipo1 = "opc_linha--"
-const clas1 = "config"
-const vari1 = "chatmsg"
-#
-const nome2 = "Comando SChat"
-const tipo2 = "opc_linha--"
-const clas2 = "config"
-const vari2 = "schatmsg"
-#
-const nome3 = "Canal GChat"
-const tipo3 = "opc_linha--"
-const clas3 = "config"
-const vari3 = "gchatmsg"
-#
-const nome4 = "Canal Novatos"
-const tipo4 = "opc_linha--"
-const clas4 = "config"
-const vari4 = "novatosmsg"
-#
-const nome5 = "Falar"
-const info5 = "Ao teclar falar e uma mensagem qualquer"
-const tipo5 = "opc_linha--"
-const clas5 = "config"
-const vari5 = "falarmsg"
-#
-const nome6 = "Perguntar"
-const info6 = "Ao teclar falar e uma mensagem terminada com interrogação"
-const tipo6 = "opc_linha--"
-const clas6 = "config"
-const vari6 = "perguntarmsg"
-#
-const nome7 = "Exclamar"
-const info7 = "Ao teclar falar e uma mensagem terminada com exclamação"
-const tipo7 = "opc_linha--"
-const clas7 = "config"
-const vari7 = "exclamarmsg"
-#
-const nome8 = "Ponderar"
-const info8 = "Ao teclar falar e uma mensagem terminada com reticências"
-const tipo8 = "opc_linha--"
-const clas8 = "config"
-const vari8 = "ponderarmsg"
-#
-const nome9 = "Continuar"
-const info9 = "Ao teclar falar e uma mensagem começada com reticências"
-const tipo9 = "opc_linha--"
-const clas9 = "config"
-const vari9 = "continuarmsg"
-#
-const nome10 = "Gritar"
-const info10 = "Ao teclar gritar e uma mensagem"
-const tipo10 = "opc_linha--"
-const clas10 = "config"
-const vari10 = "gritarmsg"
-#
-const nome11 = "Sussurrou para si mesmo"
-const info11 = "Ao teclar sussurrar"
-const tipo11 = "opc_linha--"
-const clas11 = "config"
-const vari11 = "sussurrar1msg"
-#
-const nome12 = "Ouviu o sussurro"
-const info12 = "Ao teclar sussurrar e uma mensagem"
-const tipo12 = "opc_linha--"
-const clas12 = "config"
-const vari12 = "sussurrar2msg"
-#
-const nome13 = "Não ouviu o sussurro"
-const info13 = "Quando ouve duas pessoas sussurrando"
-const tipo13 = "opc_linha--"
-const clas13 = "config"
-const vari13 = "sussurrar3msg"
-#
-const nome14 = "Enviou mensagem telepática"
-const tipo14 = "opc_linha--"
-const clas14 = "config"
-const vari14 = "telepatia1"
-#
-const nome15 = "Recebeu mensagem telepática"
-const tipo15 = "opc_linha--"
-const clas15 = "config"
-const vari15 = "telepatia2"
-
-
-classe menu_econfig_comandos
-herda comando_menu
-const titulo = "Comandos"
-const menufim = "menu_econfig"
-const colunas = 35
-#
-const nome1 = "Comando Rezar"
-const tipo1 = "opc_opcao--"
-const clas1 = "config"
-const vari1 = "rezartipo"
-const extr1 = "Desabilitado\nHabilitado"
-#
-const nome2 = "Rezar a partir do nível"
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "rezarnivel"
-#
-const nome3 = "Comando Bug"
-const tipo3 = "opc_opcao--"
-const clas3 = "config"
-const vari3 = "bugtipo"
-const extr3 = "Desabilitado\nHabilitado"
-#
-const nome4 = "Bug a partir do nível"
-const tipo4 = "opc_numero--"
-const clas4 = "config"
-const vari4 = "bugnivel"
-#
-const nome5 = "Comando Ideia"
-const tipo5 = "opc_opcao--"
-const clas5 = "config"
-const vari5 = "ideiatipo"
-const extr5 = "Desabilitado\nHabilitado"
-#
-const nome6 = "Ideia a partir do nível"
-const tipo6 = "opc_numero--"
-const clas6 = "config"
-const vari6 = "ideianivel"
-#
-const nome7 = "Comando Chat"
-const tipo7 = "opc_opcao--"
-const clas7 = "config"
-const vari7 = "chattipo"
-const extr7 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
-#
-const nome8 = "Chat a partir do nível"
-const tipo8 = "opc_numero--"
-const clas8 = "config"
-const vari8 = "chatnivel"
-#
-const nome9 = "Comando SChat"
-const info9 = "Comandos sociais no canal Chat"
-const tipo9 = "opc_opcao--"
-const clas9 = "config"
-const vari9 = "schattipo"
-const extr9 = "Personagens/itens sempre visíveis\n\
-Pode aparecer \"alguém\" e \"alguma coisa\""
-#
-const nome10 = "Comando Novatos"
-const tipo10 = "opc_opcao--"
-const clas10 = "config"
-const vari10 = "novatostipo"
-const extr10 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
-#
-const nome11 = "Novatos a partir do nível"
-const tipo11 = "opc_numero--"
-const clas11 = "config"
-const vari11 = "novatosnivel"
-#
-const nome12 = "Comando Emoção"
-const tipo12 = "opc_opcao--"
-const clas12 = "config"
-const vari12 = "emocaotipo"
-const extr12 = "Desabilitado\nHabilitado"
-#
-const nome13 = "Emoção a partir do nível"
-const tipo13 = "opc_numero--"
-const clas13 = "config"
-const vari13 = "emocaonivel"
-#
-const nome14 = "Comando Gritar"
-const tipo14 = "opc_opcao--"
-const clas14 = "config"
-const vari14 = "gritartipo"
-const extr14 = "Desabilitado\nHabilitado"
-#
-const nome15 = "Gritar a partir do nível"
-const tipo15 = "opc_numero--"
-const clas15 = "config"
-const vari15 = "gritarnivel"
-#
-const nome16 = "Movimentos gastos ao gritar"
-const info16 = "Quantos pontos de movimentos o personagem gasta ao gritar"
-const tipo16 = "opc_numero--"
-const clas16 = "config"
-const vari16 = "gritarmove"
-#
-const nome17 = "Comando Matar"
-const tipo17 = "opc_opcao--"
-const clas17 = "config"
-const vari17 = "matartipo"
-const extr17 = "Desabilitado\nHabilitado"
-#
-const nome18 = "Grupo diferença de nível"
-const tipo18 = "opc_numero--"
-const clas18 = "config"
-const vari18 = "gruponivel"
-#
-const nome19 = "Renascer"
-const info19 = "Nota: Renascer não funciona se não houver nível máximo nas raças ou classes\n\
-Nota: A explicação de AJUDA RENASCER muda conforme essa opção e a próxima"
-const tipo19 = "opc_opcao--"
-const clas19 = "config"
-const vari19 = "renascer"
-const extr19 = "Desabilitado\n\
-Não perde as hab/magias\n\
-Escolhe uma hab/magia\n\
-Escolhe duas habs/magias\n\
-Escolhe três habs/magias\n\
-Escolhe quatro habs/magias\n\
-Escolhe cinco habs/magias"
-#
-const nome20 = "Renascer nível aula"
-const info20 = "Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,\n\
-poderá aprendê-la em um nível menor. Essa opção é quantos níveis reduzir."
-const tipo20 = "opc_numero--"
-const clas20 = "config"
-const vari20 = "nrenascer"
-#
-const nome21 = "Renascer nível máximo"
-const info21 = "Após renascer, o nível para renascer novamente aumenta conforme essa opção"
-const tipo21 = "opc_numero--"
-const clas21 = "config"
-const vari21 = "nivel_renascer"
-#
-const nome22 = "Renascer experiência máxima"
-const info22 = "Em porcentagem. Ao renascer, a experiência necessária para subir de nível\n\
-é multiplicada por esse número."
-const tipo22 = "opc_numero--"
-const clas22 = "config"
-const vari22 = "exp_renascer"
-const extr22 = "1 1000"
-#
-const nome23 = "Olhar mostra nível"
-const info23 = "Se os comandos Olhar e Ver mostram o nível do personagem"
-const tipo23 = "opc_simnao--"
-const clas23 = "config"
-const vari23 = "olharnivel"
-#
-const nome24 = "Olhar mostra raça e classe"
-const info24 = "Se os comandos Olhar e Ver mostram a raça e a classe do personagem"
-const tipo24 = "opc_simnao--"
-const clas24 = "config"
-const vari24 = "olhartipo"
-#
-const nome25 = "Olhar mostra volume"
-const tipo25 = "opc_simnao--"
-const clas25 = "config"
-const vari25 = "olharvolume"
-#
-const nome26 = "PTitulo a partir do nível"
-const tipo26 = "opc_numero--"
-const clas26 = "config"
-const vari26 = "ptitulonivel"
-#
-const nome27 = "PDesc a partir do nível"
-const tipo27 = "opc_numero--"
-const clas27 = "config"
-const vari27 = "pdescnivel"
+const vari11 = "perigomsg"
 
 
 classe menu_econfig_ataques
@@ -918,8 +536,8 @@ const clas1 = "config"
 const vari1 = "atkexp0"
 #
 const nome2 = "Experiência por nível"
-const info2 = "A experiência ganha ao matar personagens do nível 1 em diante é a mesma\n\
-do nível 0, porém somado a esse número vezes o nível do personagem"
+const info2 = "A experiência ganha ao matar personagens do nível 1 em diante é:\n\
+Experiência por nível * Nível do personagem + Experiência nível zero"
 const tipo2 = "opc_numero--"
 const clas2 = "config"
 const vari2 = "atkexp1"

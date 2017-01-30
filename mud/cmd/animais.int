@@ -228,13 +228,13 @@ func escr
     valor /= 2
     sair
   casofim
-  $mens.p(arg0, r)
+  $mens.p(arg0, r, item)
   se valor * item.i_captura(r) < r.pnivel * rand(5, 20)
-    $mens.mvis1("$P joga " + item.descnome + " para $a, mas $a recusa.")
+    $mens.mvis1(config:capturar_nao)
     item.apagar(1)
     ret
   fimse
-  $mens.mvis1("$P joga " + item.descnome + " para $a.")
+  $mens.mvis1(config:capturar_sim)
   item.apagar(1)
   pegar(arg0, arg0.dono, r)
 
@@ -258,10 +258,9 @@ func pegar # Pega o animal
   $mens.p(arg0, arg2)
   se estacheio
     arg2.idono.remove, arg2.idono = arg2.dono.dentro3.addfim(arg2)
-    $mens.mvis2("$A entrou para a sua equipe como reserva.", "$A entrou para a equipe de \
-$P.")
+    $mens.mvis2(config:capturar_reserva, config:capturar_outros)
   senao
-    $mens.mvis2("$A entrou para a sua equipe.", "$A entrou para a equipe de $P.")
+    $mens.mvis2(config:capturar_equipe, config:capturar_outros)
   fimse
   epara e.addfim(arg0.evento), e, e.ini.remove
     sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg0)

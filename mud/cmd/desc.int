@@ -34,8 +34,14 @@ func passo # Alterando descrição do personagem
     arg0.passo = ""
     ret 1
   casose "x" # Salvar o texto
-    se arg0.teditor.linhas > 8
-      arg0.msg("Máximo permitido 8 linhas.")
+    se arg0.teditor.linhas > config:pdesclinhas
+      se config:pdesclinhas == 1
+        arg0.msg("Máximo permitido uma linha.")
+      senao config:pdesclinhas == 2
+        arg0.msg("Máximo permitido duas linhas.")
+      senao
+        arg0.msg("Máximo permitido " + config:pdesclinhas + " linhas.")
+      fimse
     senao !arg0.teditor.linhas
       arg0.perso.var.[vardesc] = ""
       arg0.msg("Descrição do personagem apagada.")
