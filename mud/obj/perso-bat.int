@@ -14,22 +14,22 @@ const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, e
 sav textotxt p_hist # Histórico do personagem (quem ele matou)
 sav real expatual # Experiência atual
 sav uint16 pnivel # Nível atual
-sav uint32 pvida # Pontos de vida
-sav uint32 pmana # Pontos de mana
-sav uint32 pmove # Pontos de movimento
-uint32 pvidamax # Quantidade máxima de vida
-uint32 pmanamax # Quantidade máxima de mana
-uint32 pmovemax # Quantidade máxima de movimento
-uint16 pveloc1 # Velocidade calculada do personagem
+sav int32 pvida # Pontos de vida
+sav int32 pmana # Pontos de mana
+sav int32 pmove # Pontos de movimento
+int32 pvidamax # Quantidade máxima de vida
+int32 pmanamax # Quantidade máxima de mana
+int32 pmovemax # Quantidade máxima de movimento
+int16 pveloc1 # Velocidade calculada do personagem
 const pveloc = pveloc1 - int((pesoden - pesoveste) / 1500)
-uint32 atknorm # Quantidade de ataque normal, sem modificadores em atktipo
-uint32 defnorm # Quantidade de defesa normal, sem modificadores em deftipo
-uint32 atkesp # Quantidade de ataque especial, sem modificadores em atktipo
-uint32 defesp # Quantidade de defesa especial, sem modificadores em deftipo
-uint16 evasao # Habilidade de desviar dos golpes (thac0)
-uint16 precisao # Habilidade de acertar os golpes (hitroll)
-uint32 pesoveste # Metade do peso de tudo que está vestindo
-uint32 pesomax # Quanto peso consegue carregar
+int32 atknorm # Quantidade de ataque normal, sem modificadores em atktipo
+int32 defnorm # Quantidade de defesa normal, sem modificadores em deftipo
+int32 atkesp # Quantidade de ataque especial, sem modificadores em atktipo
+int32 defesp # Quantidade de defesa especial, sem modificadores em deftipo
+int16 evasao # Habilidade de desviar dos golpes (thac0)
+int16 precisao # Habilidade de acertar os golpes (hitroll)
+int32 pesoveste # Metade do peso de tudo que está vestindo
+int32 pesomax # Quanto peso consegue carregar
 #
 real atktipo.32 # Ataque para os diversos tipos de danos
 real deftipo.32 # Defesa contra os diversos tipos de danos

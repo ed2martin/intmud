@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 436 # Para atualizar diretórios areas e config
+const versao = 437 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -283,6 +283,24 @@ const nmaxmsg = ""
 # Aparece após descrição e título da sala
 # Se estiver vazio, não é enviada nenhuma mensagem
 const perigomsg = ""
+#
+# Jogador entrou
+const entrou_msgadm = "*. Entrou: $P, $C, N$N, $$$M"
+const entrou_msgjog = "*. $P entrou"
+#
+# Jogador saiu
+const saiu_msgadm = "*. Saiu: $P, $C"
+const saiu_msgjog = "*. $P saiu"
+#
+# Jogador está criando personagem
+const criar_msgadm = "*. Criando personagem: $P, $C"
+#
+# Jogador desistiu de criar personagem
+const naocriar_msgadm = "*. Desistiu de criar: $P, $C"
+#
+# Jogador criou personagem
+const criou_msgadm = "*. Criou personagem: $P, $C"
+const criou_msgjog = "*. $P entrou"
 #
 # Mensagem do comando Echo
 const echomsg = "\b\cb(ADM) $m\b"
@@ -794,3 +812,11 @@ func salvar # Salva o programa
 func sav # Para salvar acertando indentação e linhas entre classes e funções
   prog p
   p.salvartudo("L99N1I2C2F1V0")
+
+const entrou_msgadm = "*. Entrou: $p, $c, N$n, $$$m"
+const entrou_msgjog = "*. $p entrou"
+const saiu_msgadm = "*. Saiu: $p, $c"
+const saiu_msgjog = "*. $p saiu"
+const criar_msgadm = "*. Criando personagem: $p, $c"
+const criou_msgadm = "*. Criou personagem: $p, $c"
+const criou_msgjog = "*. $p entrou"

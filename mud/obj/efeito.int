@@ -101,8 +101,8 @@ func t_duracao_exec # Efeito expirou: apaga efeito
 func t_reduzir_exec # Executa redução
   t_reduzir = r_tempo
   $mens.p(dono) + $mens.mvis2(msgreduz1, msgreduz2)
-  dono.pmana -= r_mana
-  dono.pmove -= r_move
+  r_mana && (dono.pmana = intpos(dono.pmana - r_mana))
+  r_move && (dono.pmove = intpos(dono.pmove - r_move))
   se dono.pvida
     dono.pvida -= r_vida
     dono.acertapos(1)
