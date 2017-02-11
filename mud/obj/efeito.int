@@ -86,7 +86,7 @@ func fim # Apaga efeito
   idono.remove
   dono.recalc = 0
   dono.recalc_exec
-  dono.pvida > 0 && $mens.p(dono) + $mens.mvis2(msgfim1, msgfim2)
+  dono.pvidaok && $mens.p(dono) + $mens.mvis2(msgfim1, msgfim2)
   cmd_fim(dono)
 
 func ajustaobj # Acerta dono e eventos do objeto
@@ -103,7 +103,7 @@ func t_reduzir_exec # Executa redução
   $mens.p(dono) + $mens.mvis2(msgreduz1, msgreduz2)
   r_mana && (dono.pmana = intpos(dono.pmana - r_mana))
   r_move && (dono.pmove = intpos(dono.pmove - r_move))
-  se dono.pvida
+  se dono.pvidaok
     dono.pvida -= r_vida
     dono.acertapos(1)
   fimse

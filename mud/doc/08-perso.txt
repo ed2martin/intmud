@@ -153,6 +153,16 @@ Acerta posição do personagem, conforme pontos de vida e batalha.
 Para checar se morreu, chamar com: acertapos(1)
 Retorna o corpo do personagem, se ele morreu e ficou o corpo.
 
+func estadopos
+Retorna um texto que contém o estado atual do personagem.
+
+func ganahexp( valor )
+func ganahexp( valor, 1 )
+Personagem ganha experiência. Se valor for um número negativo, perde
+experiência. Com dois argumentos, sendo que o segundo é verdadeiro
+(a segunda sintaxe de ganhaexp), não avisa o personagem que ele ganhou
+experiência.
+
 func batalhaexp( valor )
 Dá experiência a quem estiver atacando o personagem
 Valor é o fator do ganho de experiência
@@ -163,6 +173,10 @@ Para checar se morreu, chamar com: batalhafim(1)
 
 func atktempo
 É chamado após algum tempo sem golpes, para encerrar a batalha.
+
+func pvidaok
+Se retornar verdadeiro, os pontos de vida são suficientes para o personagem
+ficar vivo. Se retornar falso, o personagem deve morrer.
 
 func morreu
 func morreu( quem matou o personagem )

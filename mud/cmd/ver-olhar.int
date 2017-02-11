@@ -133,10 +133,10 @@ func escr
 # Nome, nível, situação atual e animal que escolheu
     txt200 t2
     se r1.perso
-      t2 += niveltipo(r1, " é", ",") + " " + estado(r1)
+      t2 += niveltipo(r1, " é", ",") + " " + r1.estadopos
       se r1.persobat && r1.persobat != r1
         t2 += ".\b\nEscolheu " + txtcopiamai(r1.persobat.nome, "A")
-        t2 += niveltipo(r1.persobat) + ", " + estado(r1.persobat)
+        t2 += niveltipo(r1.persobat) + ", " + r1.persobat.estadopos
       fimse
     senao r1.pnivel || r1.renascer
       t2 += " é um objeto do nível " + r1.pnivel
@@ -178,25 +178,6 @@ func escr
     ret
   efim
   arg0.msg("Você não vê isso.")
-
-func estado # Retorna texto que contém o estado atual do personagem
-  ret !arg0.pvidamax, "perfeitamente saudável"
-  casovar intdiv(arg0.pvida * 6 / arg0.pvidamax)
-  casose "0"
-    ret arg0.pvida ? "está à beira da morte" : "está desmaiad" + (arg0.msexo ? "o" : "a")
-  casose "1"
-    ret "está sangrando bastante"
-  casose "2"
-    ret "está muito machucad" + (arg0.msexo ? "o." : "a")
-  casose "3"
-    ret "está bastante machucad" + (arg0.msexo ? "o." : "a")
-  casose "4"
-    ret "está um pouco machucad" + (arg0.msexo ? "o." : "a")
-  casose "5"
-    ret "possui algumas escoriações"
-  casose
-    ret "está perfeitamente saudável"
-  casofim
 
 func niveltipo # Usado para informar nível, raça e classe do personagem
 # arg0 = personagem

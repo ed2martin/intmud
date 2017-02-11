@@ -12,11 +12,12 @@ const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 #
 sav textotxt p_hist # Histórico do personagem (quem ele matou)
-sav real expatual # Experiência atual
+sav uint32 expatual # Experiência atual
 sav uint16 pnivel # Nível atual
 sav int32 pvida # Pontos de vida
 sav int32 pmana # Pontos de mana
 sav int32 pmove # Pontos de movimento
+const pvidaok = pvida > 0 # Se falso, pontos de vida estão abaixo do mínimo
 int32 pvidamax # Quantidade máxima de vida
 int32 pmanamax # Quantidade máxima de mana
 int32 pmovemax # Quantidade máxima de movimento
@@ -80,12 +81,15 @@ func acertapos # Acerta posição
 # Retorna o corpo do personagem, se ele morreu e ficou o corpo
   p_imortal && pvida < pvidamax && (pvida = pvidamax) # Imortal
   !p_tempoatu && (p_tempoatu = 170) # Para atualizar o personagem
-  casovar pvida * 100 / pvidamax
-  casose "0" # Mortalmente ferito ou morto
-  casose "1"
-    poslugar.remove
-    ret !(posicao = pvida > 0) && arg0, morreu
+  se !pvidaok # Morto
+    poslugar.remove, posicao = 0, arg0 && morreu
     ret
+  fimse
+  casovar intpos(pvida * 100 / pvidamax)
+  casose "0"
+    poslugar.remove, posicao = 1 # mortalmente ferido
+    ret
+  casose "1"
   casose "2"
     poslugar.remove, posicao = 2 # incapacitado
     ret
@@ -100,6 +104,26 @@ func acertapos # Acerta posição
     senao posicao < 4 || posicao == 7
       poslugar.remove, posicao = pospadr # posição padrão
     fimse
+  casofim
+
+func estadopos # Retorna texto que contém o estado atual do personagem
+  ret !pvidamax, "perfeitamente saudável"
+  ret !pvidaok, "está desmaiad" + (msexo ? "o" : "a")
+  casovar intpos(intdiv(pvida * 6 / pvidamax))
+  casose "0"
+    ret "está à beira da morte"
+  casose "1"
+    ret "está sangrando bastante"
+  casose "2"
+    ret "está muito machucad" + (msexo ? "o" : "a")
+  casose "3"
+    ret "está bastante machucad" + (msexo ? "o" : "a")
+  casose "4"
+    ret "está um pouco machucad" + (msexo ? "o" : "a")
+  casose "5"
+    ret "possui algumas escoriações"
+  casose
+    ret "está perfeitamente saudável"
   casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
@@ -259,7 +283,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   epara i = contr.atkrec.ini, i, i.obj.atkdiv ? i.depois : i.removedepois
     r = i.obj
     listaitem j
-    epara j = r.atkdiv.ini, j, j.obj.pvida ? j.depois : j.removedepois
+    epara j = r.atkdiv.ini, j, j.obj.pvidaok ? j.depois : j.removedepois
     efim
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
     r.atkdanos1 = 0, r.atkdanos2 = 1
@@ -282,7 +306,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
 # Desde que: não estejam batalhando, estejam na mesma sala e tenham pontos de vida
   epara nulo, lider, lider.ini.remove
     refvar p1 = lider.objini
-    se !p1.atkenv && p1.dono == contr.dono && p1.persobat.pvida
+    se !p1.atkenv && p1.dono == contr.dono && p1.persobat.pvidaok
       l.addfim(p1)
       p1.atkdiv.limpar
       p1.atkdiv.addfim(p1.persobat)
@@ -290,7 +314,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     fimse
     epara i = p1.lseguir.ini, i, i.depois
       refvar p2 = i.obj
-      se p2.tseguir == 1 && !p2.atkenv && p2.dono == contr.dono && p2.persobat.pvida
+      se p2.tseguir == 1 && !p2.atkenv && p2.dono == contr.dono && p2.persobat.pvidaok
         l.addfim(p2)
         p2.atkdiv.limpar
         p2.atkdiv.addfim(p2.persobat)
@@ -397,7 +421,7 @@ func atktempo_exec # Encerra a batalha depois de um tempo
 
 func restaurar # Restaura personagem (HP, mana, etc.)
   pmana = pmanamax, pmove = pmovemax
-  se !pvida && dono.perso
+  se !pvidaok && dono.perso
     pvida = pvidamax
     dono.escolhebat # Atualiza persobat
   senao
@@ -457,7 +481,7 @@ func morreu # Procedimentos quando morre
     casose "1" # Transfere experiência para quem atacou
       listaitem i
       epara i = contr.atkrec.ini, i, i.depois
-        i.obj.pvida && l.addfim(i.obj.atkdiv)
+        i.obj.pvidaok && l.addfim(i.obj.atkdiv)
       efim
       refvar valor = expatual * config:atkmorreuexp * config:atkmatouexp / 10000
       epara i = l.ini, i, i.depois
@@ -467,7 +491,7 @@ func morreu # Procedimentos quando morre
       sair
     casose "2" # Quem atacou perde experiência
       epara l.addfim(contr.atkrec.ini), l, l.ini.remove
-        continuar !l.objini.pvida
+        continuar !l.objini.pvidaok
         l.objini.ganhaexp(l.objini.expatual * config:atkmatouexp / -100)
       efim
       sair
@@ -606,7 +630,7 @@ func p_proc_alvo # Obtém um jogador alvo para atacar, se for agressivo
 func p_proc_atacar # Realiza um ataque
 # arg0 = personagem alvo do ataque
 # Retorna: 1=conseguiu atacar, 0=não conseguiu
-  ret !(arg0 && dono.s_luta && persobat.pvida), 0
+  ret !(arg0 && dono.s_luta && persobat.pvidaok), 0
   listaobj l # Lista de habilidades e magias
   txt100 t1 # Nome da habilidade ou magia
   refvar var = persoesc.var
@@ -670,7 +694,7 @@ const p_proc_animal = 0 # Indica que não escolheu nenhum animal
 
 func p_tempoatu_exec # Atualiza variáveis e salva o jogo de tempos em tempos
   refvar recup = contr.dono.s_recup(este) / 1200
-  ret !(recup && pvida), nulo
+  ret !(recup && pvidaok), nulo
   uint8 x
   pvida < pvidamax && (x = pvida = intmin(pvidamax, intmax(2, pvida + pvidamax * recup)))
   pmana < pmanamax && (x = pmana = intmin(pmanamax, intmax(2, pmana + pmanamax * recup)))
@@ -695,12 +719,12 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   escolhebat
 
 func escolhebat # Escolhe um personagem em condições de lutar
-  se persoesc.pvida && persoesc.pnivel <= pnivel + config:animal_n
+  se persoesc.pvidaok && persoesc.pnivel <= pnivel + config:animal_n
     persobat = persoesc
   senao
     listaitem i
     epara i = dentro2.ini, i, i.depois
-      sair i.obj.pvida && i.obj.pnivel <= pnivel + config:animal_n
+      sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
     efim
     persobat = i ? i.obj : este
   fimse
@@ -733,10 +757,10 @@ func animalnum # Retorna o animal a partir do número
 
 func p_proc_animal # Escolhe um animal em condições de batalhar
 # Retorna: 1=mudou de animal, 0=não mudou de animal
-  ret persoesc != este && persoesc.pvida, 0
+  ret persoesc != este && persoesc.pvidaok, 0
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    sair i.obj.pvida && i.obj.pnivel <= pnivel + config:animal_n
+    sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
   efim
   persobat = i ? i.obj : este
   se persoesc != persobat

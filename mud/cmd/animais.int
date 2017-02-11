@@ -65,7 +65,7 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
   senao arg0.persoesc == r
     arg0.msg("Você já escolheu " + num + ".")
   senao r == arg0
-    se arg0.persoesc.pvida && arg0.atkenv # Animal está bom e está lutando
+    se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = arg0
@@ -73,7 +73,7 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
     $mens.mvis1("$P não escolhe ninguém.")
     arg0.escolhebat # Atualiza persobat
   senao
-    se arg0.persoesc.pvida && arg0.atkenv # Animal está bom e está lutando
+    se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = r
@@ -107,7 +107,7 @@ func escr
     txt100 lin
     listaitem i
     epara i = arg0.dentro3.ini, i, i.depois
-      se i.obj.pvida
+      se i.obj.pvidaok
         lin = "1 " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
       senao
         lin = "1 (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel

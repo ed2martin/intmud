@@ -97,7 +97,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # arg2 = item usado, ou nulo se não usou nenhum item
 # Retorna verdadeiro se pode usar
-  se !arg0.pvida
+  se !arg0.pvidaok
     refvar lin = arg0 == arg0.contr ? "Você" : txtcopiamai(arg0.nome, "A")
     arg0.contr.msg(lin + " está desmaiad" + (arg0.msexo ? "o." : "a."))
     ret
@@ -167,7 +167,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # Retorna verdadeiro se pode usar
-  ret !arg0.pvida || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel, \
+  ret !arg0.pvidaok || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel, \
 nulo
   ret arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
@@ -387,9 +387,9 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret contr0.msg("Você está lutando pela sua vida.")
 # Checa condição do alvo
   senao !a_cond
-    ret !arg1.pvida, contr0.msg("Alvo está desmaiado.")
+    ret !arg1.pvidaok, contr0.msg("Alvo está desmaiado.")
   senao a_cond == 1
-    ret arg1.pvida, contr0.msg("Alvo não está desmaiado.")
+    ret arg1.pvidaok, contr0.msg("Alvo não está desmaiado.")
   senao dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     ret contr0.msg("A magia não teve efeito.")
   fimse
@@ -442,7 +442,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg1)
     efim
-    arg1.pvida ? arg1.acertapos(1) : arg1.morreu(arg0)
+    arg1.pvidaok ? arg1.acertapos(1) : arg1.morreu(arg0)
     arg0 != arg1 && arg0.acertapos(1)
     ret
   casose "1" # Ataque que não pode ser ao próprio personagem
@@ -564,7 +564,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(arg0 != arg1 ? arg1.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg1)
     efim
-    arg1.pvida ? arg1.acertapos(1) : arg1.morreu(arg0)
+    arg1.pvidaok ? arg1.acertapos(1) : arg1.morreu(arg0)
   fimse
 # Ataca os alvos secundários
   ref r
@@ -593,7 +593,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara e.addfim(r.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, r)
     efim
-    se r.pvida
+    se r.pvidaok
       acertou && (danos += ", " + r.nome + " " + mudavida)
       r.acertapos(1)
     senao
@@ -665,10 +665,11 @@ func efeitohab # Efeito da habilidade ou magia sobre o alvo
   valor = (a_mana1 + a_mana2 * arg3) * (0.5 + arg2)
   valor && (arg1.pmana = intmin(arg1.pmana + valor, arg1.pmanamax))
   ret !(valor = (a_vida1 + a_vida2 * arg3) * (0.5 + arg2)), nulo
+  refvar vidaok = arg1.pvidaok
   refvar vida = int(arg1.pvida)
   arg1.pvida = intmin(vida + valor, arg1.pvidamax)
   mudavida += arg1.pvida - vida
-  !vida && arg1.pvida && arg1.dono.perso && arg1.dono.escolhebat
+  !vidaok && arg1.pvidaok && arg1.dono.perso && arg1.dono.escolhebat
 
 func velgolpe # Acerta o tempo de espera conforme o golpe
 # arg0 = personagem que está atacando
@@ -814,7 +815,7 @@ func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do 
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    se !arg1.pvida # Se morreu
+    se !arg1.pvidaok # Se morreu
       ret !menssub(lin, "matou"), nulo
       ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
@@ -844,7 +845,7 @@ func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado d
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    se arg1.pvida
+    se arg1.pvidaok
       ret !arg1.contr.sock || !menssub(lin, "perso"), nulo
       ret $mens.msginvdir(lin.1, arg1.contr, arg2)
     senao
