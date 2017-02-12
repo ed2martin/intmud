@@ -1,4 +1,4 @@
-classe atualiza_437
+classe atualiza_438
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -187,8 +187,8 @@ func ini
 func ini2_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 437, nulo
-  p.criar("config", "const versao = 437 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 438, nulo
+  p.criar("config", "const versao = 438 # Para atualizar diretórios areas e config")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -649,7 +649,7 @@ casa está atrasada.\"")
     efim
   fimse
 # Linhas de PDesc, mensagens de Capturar, mensagens entrando no MUD
-  se versao < 437
+  se versao < 438
     criafunc("config", "const pdesclinhas = 8")
     criafunc("config", "const capturar_nao = \"$P joga $o para $a, mas $a recusa.\"")
     criafunc("config", "const capturar_sim = \"$P joga $o para $a.\"")
@@ -664,6 +664,8 @@ casa está atrasada.\"")
     criafunc("config", "const naocriar_msgadm = \"*. Desistiu de criar: $P, $C\"")
     criafunc("config", "const criou_msgadm = \"*. Criou personagem: $P, $C\"")
     criafunc("config", "const criou_msgjog = \"*. $P entrou\"")
+    criafunc("config", "const promptmsg = \"<%c3%hhp %c2%mmn %c6%vmv%b>\"")
+    criafunc("config", "const bpromptmsg = \"<%c3%hhp %c2%mmn %c6%vmv%b>\"")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

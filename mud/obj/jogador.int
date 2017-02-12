@@ -39,8 +39,8 @@ func ini # Objeto foi criado
   tempojogo1 = 864000
   p_sede = p_fome = 30
   p_tempoatu = rand(150, 200)
-  var.z_prompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
-  var.z_bprompt = "<%c3%hhp %c2%mmn %c6%vmv%b> "
+  var.z_prompt = config:promptmsg
+  var.z_bprompt = config:bpromptmsg
   tipo1 = arg1, tipo2 = arg2, tipo3 = arg3
   pnivel = intmax(t_[tipo1]:nmin, t_[j_tipo2]:nmin, t_[tipo3]:nmin)
   $t_[tipo1].t_reset1(este), $t_[tipo2].t_reset1(este), $t_[tipo3].t_reset1(este)

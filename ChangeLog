@@ -1,3 +1,48 @@
+* 12/02/2017 IntMUD 1.10 MUD baseado na revisão 439
+
+   No MUD:
+  1. Corrigido bug: Comando Reset volta a funcionar para ressetar uma
+     área inteira
+  2. Corrigido bug: No comando Eperm, menu "Atalhos de admin", opção "3
+     Ajuda" dos atalhos volta a funcionar
+  3. Corrigido bug: experiência para subir de nível era mostrada com
+     dígitos após a vírgula
+  4. Criada opção no comando Econfig, menu "Herda": Consome / Espera
+  5. Criado personagem clone, sala teste164
+  6. Menu Herda do comando Econfig agora possui essas opções: "Objetos
+     máximo" (estava no menu Limites) e "Objetos inventário" (estava
+     como Objetos máximo)
+  7. Opção "Objetos máximo" do comando Eperso foi desmembrada em
+     "Objetos inventário" e "Objetos máximo"
+  8. Acrescentada opção $N nas mensagens: nome do segundo objeto
+     (exemplo, munição usada)
+  9. Internamente, as mensagens de ataques (nos comandos Ehab e Emag)
+     agora são uma constante por mensagem ao invés de uma constante para
+     20 mensagens
+ 10. Agora pode-se usar $mens.p(<sala>) para enviar mensagens para a
+     área ou para o mud (está documentado em doc/03-mensagens.txt)
+ 11. No comando Econfig: menu Comandos agora está dividido em um submenu
+     para cada comando
+ 12. No comando Econfig: opções do menu Limites parte dos menus
+     Mensagens foram para o menu Comandos
+ 13. No comando Econfig: criadas opções "Linhas PDesc", Sala renascer e
+     mensagens do comando Capturar
+ 14. No comando Econfig: criada opção Sala renascer, no comando Renascer
+ 15. Mensagens de jogador entrando e saindo agora podem ser mudadas pelo
+     comando Econfig
+ 16. Criadas opções Prompt e BPrompt do menu Criar e salvar personagem
+     do comando Econfig
+ 17. Vida, mana, movimentos, ataque, defesa, precisão e esquiva agora
+     podem ser números negativos. Isso foi feito para corrigir problemas
+     nos cálculos dos atributos.
+ 18. Experiência dos personagens volta a ser um número inteiro de 0 a
+     4294967295
+ 19. Documentada função ganhaexp no arquivo mud/doc/08-perso.txt
+ 20. Efeito Dreno de Mana foi modificado para levar em consideração
+     pontos de mana negativos
+ 21. Criadas funções para personagens, documentadas em doc/08-perso.txt:
+     pvidaok e estadopos
+
 * 29/12/2016 IntMUD 1.10 MUD baseado na revisão 431
 
    No MUD:

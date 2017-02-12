@@ -48,7 +48,7 @@ Veja também: AJUDA CORES"
 func escr
   ret !arg1, arg0.msg("Prompt:\n" + arg0.var.z_prompt)
   txt100 lin
-  lin = arg1 == "ini" ? "<%c3%hhp %c2%mmn %c6%vmv%b> " : arg1
+  lin = arg1 == "ini" ? config:promptmsg : arg1
   arg0.var.z_prompt = lin
   arg0.msg("Prompt alterado para:\n" + lin)
 
@@ -59,6 +59,6 @@ herda cmd_prompt
 func escr
   ret !arg1, arg0.msg("Prompt de batalha:\n" + arg0.var.z_bprompt)
   txt100 lin
-  lin = arg1 == "ini" ? "<%c3%hhp %c2%mmn %c6%vmv%b> " : arg1
+  lin = arg1 == "ini" ? config:bpromptmsg : arg1
   arg0.var.z_bprompt = lin
   arg0.msg("Prompt de batalha alterado para:\n" + lin)
