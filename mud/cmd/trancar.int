@@ -117,9 +117,14 @@ func escrdir # Trancar uma porta
   efim
 # Tranca a porta
   arg0.dono.mudaporta(arg1, 3) # Tranca a porta
-  $mens.p(arg0)
-  $mens.mens = mporta
-  $mens.mtodos1("$P trancou $m.")
+  se arg0.dono.socktot
+    refvar som = arg0.dono.som_tranc_[arg1]
+    $mens.p(arg0)
+    $mens.mens = mporta
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      $mens.msgsominv("$P trancou $m.", som, l.objini)
+    efim
+  fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave, arg0)
   efim
@@ -259,9 +264,14 @@ func escrdir # Destrancar uma porta
 # Destranca a porta
   arg0.dono.comechave_[arg1] && chave.apagar(1)
   arg0.dono.mudaporta(arg1, 2) # Destranca a porta
-  $mens.p(arg0)
-  $mens.mens = mporta
-  $mens.mtodos1("$P destrancou $m.")
+  se arg0.dono.socktot
+    refvar som = arg0.dono.som_destr_[arg1]
+    $mens.p(arg0)
+    $mens.mens = mporta
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      $mens.msgsominv("$P destrancou $m.", som, l.objini)
+    efim
+  fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave, arg0)
   efim

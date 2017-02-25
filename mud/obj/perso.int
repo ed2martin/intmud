@@ -33,12 +33,13 @@ sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 listaitem poslugar # Em qual móvel está sentado ou deitado
 sav listaitem iempu # Arma que que está empunhando
+inttempo p_proc # Para processar comportamento do personagem
 const p_corpo = config:p_corpo
 const p_morreu1 = config:p_morreu1
 const p_morreu2 = config:p_morreu2
 const p_fome = 100 # Não está com fome
 const p_sede = 100 # Não está com sede
-intdec p_tmove # Quanto para se mover novamente
+intdec p_tmove # Quanto tempo para se mover novamente
 const p_movervel = config:p_movervel
 const lojafechada = "$P: Volte outra hora"
 #
@@ -88,6 +89,7 @@ p_persegue\n\
 p_perseguevel\n\
 p_recebe\n\
 p_soltar\n\
+p_som_entra p_som_voaentra p_som_sai p_som_voasai\n\
 inivar evhora eveste evperso evitem evsala"
 
 func ini # Coloca o objeto dentro de outro
@@ -468,7 +470,7 @@ func p_proc_exec # Processar comportamento do personagem
   ret p_tmove, p_proc = p_tmove + 1 # Retorna se não é hora de se movimentar
   ret p_comecorpo && posicao >= 5 && p_proc_comecorpo, nulo
   ret p_mover && posicao == 8 && p_proc_mover, nulo
-  p_proc = 50
+  p_mover && (p_proc = 50)
 
 func p_proc_comecorpo # Personagem tenta comer corpos
 # Retorna: 1=conseguiu comer, 0=não conseguiu

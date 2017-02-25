@@ -412,6 +412,14 @@ func ini
   arg0.dono && mudadono(arg0.dono)
   recalc_exec
   tipocorpo = arg1
+# Acorda personagens que comem corpos
+  se tipocorpo
+    listaitem i
+    epara i = dono.dentro2.ini, i, i.depois
+      i.obj.p_comecorpo && i.obj.p_proc == 0 && (i.obj.p_proc = 1)
+    efim
+  fimse
+# Transfere itens e moedas para o corpo
   ret tipocorpo < 2, nulo
   var.z_moedas = arg0.var.z_moedas
   listaobj l

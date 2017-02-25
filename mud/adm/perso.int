@@ -824,6 +824,9 @@ const tipo25 = "opc_simnao"
 const clas25 = var.classe1
 const vari25 = "p_naoseguir"
 #
+const nome26 = "Sons"
+const tipo26 = "menu_psom--"
+#
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
 const clas50 = var.classe1
@@ -868,17 +871,17 @@ const exec55 = "ajustaobj"
 classe menu_pcomum2
 herda comando_menu
 #
-const nome27 = "Comportamento"
-const tipo27 = "menu_pcomportamento2--"
+const nome28 = "Comportamento"
+const tipo28 = "menu_pcomportamento2--"
 #
-const nome28 = "Tipo de ataque"
-const info28 = "Que habilidade usa em ataques automáticos"
-const tipo28 = "opc_linha"
-const clas28 = var.classe1
-const vari28 = "p_atktipo"
+const nome29 = "Tipo de ataque"
+const info29 = "Que habilidade usa em ataques automáticos"
+const tipo29 = "opc_linha"
+const clas29 = var.classe1
+const vari29 = "p_atktipo"
 #
-const nome29 = "Quando morre"
-const tipo29 = "menu_pmorreu--"
+const nome30 = "Quando morre"
+const tipo30 = "menu_pmorreu--"
 
 
 classe menu_patribs1
@@ -1108,6 +1111,37 @@ const clas5 = var.classe1
 const vari5 = "p_morreu2"
 
 
+classe menu_psom
+herda comando_menu
+const titulo = "Sons"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Entrou"
+const info1 = "Para quem recebe a mensagem do personagem entrando na sala"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "p_som_entra"
+#
+const nome2 = "Entrou voando"
+const info2 = "Para quem recebe a mensagem do personagem entrando na sala"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "p_som_voaentra"
+#
+const nome3 = "Saiu"
+const info3 = "Para quem recebe a mensagem do personagem saindo da sala"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "p_som_sai"
+#
+const nome4 = "Saiu voando"
+const info4 = "Para quem recebe a mensagem do personagem saindo da sala"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "p_som_voasai"
+
+
 classe menu_pcomportamento1
 herda comando_menu
 const titulo = "Comportamento"
@@ -1120,6 +1154,7 @@ const tipo1 = "opc_opcao"
 const clas1 = var.classe1
 const vari1 = "p_mover"
 const extr1 = "Não sai do lugar\nSomente na área\nQualquer lugar"
+const exec1 = "p_proc_exec"
 #
 const nome2 = "Tempo move"
 const info2 = "Tempo médio em décimos de segundo para ir para outra sala"
@@ -1127,11 +1162,13 @@ const tipo2 = "opc_numero"
 const clas2 = var.classe1
 const vari2 = "p_movervel"
 const extr2 = "5 1000"
+const exec2 = "p_proc_exec"
 #
 const nome3 = "Come corpos"
 const tipo3 = "opc_simnao"
 const clas3 = var.classe1
 const vari3 = "p_comecorpo"
+const exec3 = "p_proc_exec"
 
 
 classe menu_pcomportamento2
@@ -1196,11 +1233,11 @@ herda menu_pcomum1
 const titulo = "Perso simples " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome26 = "Atributos"
-const tipo26 = "menu_patribs1--"
+const nome27 = "Atributos"
+const tipo27 = "menu_patribs1--"
 #
-const nome27 = "Comportamento"
-const tipo27 = "menu_pcomportamento1--"
+const nome28 = "Comportamento"
+const tipo28 = "menu_pcomportamento1--"
 
 
 classe menu_perso2
@@ -1208,22 +1245,22 @@ herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome26 = "Atributos"
-const tipo26 = "menu_patribs2--"
+const nome27 = "Atributos"
+const tipo27 = "menu_patribs2--"
 #
-const nome30 = "Capturar"
-const info30 = "Se pode ser capturado"
-const tipo30 = "opc_opcao"
-const clas30 = var.classe1
-const vari30 = "p_captura"
-const extr30 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
-#
-const nome31 = "Dar e soltar"
-const info31 = "Se esse personagem pode ser dado ou solto"
+const nome31 = "Capturar"
+const info31 = "Se pode ser capturado"
 const tipo31 = "opc_opcao"
 const clas31 = var.classe1
-const vari31 = "p_soltar"
-const extr31 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
+const vari31 = "p_captura"
+const extr31 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+#
+const nome32 = "Dar e soltar"
+const info32 = "Se esse personagem pode ser dado ou solto"
+const tipo32 = "opc_opcao"
+const clas32 = var.classe1
+const vari32 = "p_soltar"
+const extr32 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3
@@ -1231,5 +1268,5 @@ herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso completo " + txt(var.classe1, 2)
 const colunas = 25
 #
-const nome26 = "Atributos"
-const tipo26 = "menu_patribs2--"
+const nome27 = "Atributos"
+const tipo27 = "menu_patribs2--"

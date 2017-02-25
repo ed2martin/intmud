@@ -98,12 +98,21 @@ func msg # Envia mensagem para um personagem
     arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
 
-func msgvis # Envia mensagem estiver acordado e vendo personagem perso
+func msgvis # Envia mensagem se estiver acordado e vendo personagem perso
 # arg0=mensagem, arg1=a quem se destina a mensagem
   se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
+func msgsomvis # Envia mensagem/som se estiver acordado e vendo personagem perso
+# arg0=mensagem, arg1=nome do som, arg2=a quem se destina a mensagem
+  se arg2.sock && arg2.posicao > 4 && perso.visivel(arg2)
+    r = arg2
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    arg2.msgsom(arg1)
+    arg2.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
 
 func msgvisdir # Envia mensagem estiver acordado e vendo personagem perso
@@ -121,6 +130,15 @@ func msginv # Envia mensagem se estiver acordado
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
+func msgsominv # Envia mensagem/som se estiver acordado
+# arg0=mensagem, arg1=nome do som, arg2=a quem se destina a mensagem
+  se arg2.sock && arg2.posicao > 4
+    r = arg2
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    arg2.msgsom(arg1)
+    arg2.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
 
 func msginvdir # Envia mensagem se estiver acordado

@@ -1386,16 +1386,18 @@ func cmd_deuobj # Recebeu um item
     ret
   casose "2"
     arg0.var.j_teste019 = "" # Apaga a variável
-    dono.porta_n = 1 # Abre a porta da sala (o "dono" do personagem)
+    dono.mudaporta("n", 1) # Abre a porta da sala (o "dono" do personagem)
     misc:tempo("fechaporta", este) # Dispara funções 'fechaporta'
     $mens.p(este)
     $mens.mtodos1("$P faz um gesto e a porta ao norte se abre.")
   casofim
 
 func fechaporta80
-  dono.porta_n = 3 # Fecha e tranca a porta da sala (o "dono" do personagem)
-  $mens.p(este)
-  $mens.mtodos1("A porta ao norte fechou.")
+  dono.mudaporta("n", 3, "A porta ao norte fechou.", "A porta ao sul fechou.")
+# Outra forma de fechar e trancar a porta é:
+# dono.porta_n = 3 # Fecha e tranca a porta da sala (o "dono" do personagem)
+# $mens.p(este)
+# $mens.mtodos1("A porta ao norte fechou.")
 
 
 classe p_teste020

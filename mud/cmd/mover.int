@@ -116,9 +116,22 @@ func mover # Personagem anda em uma direção
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
-    $mens.p(arg0) + $mens.mvis2(abriu1, abriu2 + m_sai4)
+    abriu1 && $mens.msgvis(abriu1, arg0)
+    refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
+    refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
+    refvar msai = abriu2 + m_sai4
+    refvar ment = m_entra4
+    listaobj l
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      $mens.msgsomvis(msai, ssai, l.objini)
+    efim
     arg0.mudadono(arg1)
-    $mens.p(arg0) + $mens.mvis2("", m_entra4)
+    $mens.p(arg0, nulo, arg3)
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      $mens.msgsomvis(ment, sent, l.objini)
+    efim
   senao arg0.bitinv & 48 # Voando ou voando alto
     mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai3, m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
@@ -175,25 +188,34 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
   listaobj l
   $mens.p(arg0, nulo, arg2)
   abriu1 && $mens.msgvis(abriu1, arg0)
+  refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
+  refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
   se arg0.bitver & 256 # Anda em silêncio
     refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o em silêncio" : " em silêncio")
     refvar ment = arg3 ? "$P saiu $d $o em silêncio." : txttroca(arg5, "$m", " em silêncio")
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
-      l.objini.bitver & 0x1000 && $mens.msgvis(msai, l.objini)
+      l.objini.bitver & 0x1000 && $mens.msgsomvis(msai, ssai, l.objini)
     efim
     arg0.mudadono(arg1)
     $mens.p(arg0, nulo, arg3)
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
-      l.objini.bitver & 0x1000 && $mens.msgvis(ment, l.objini)
+      l.objini.bitver & 0x1000 && $mens.msgsomvis(ment, sent, l.objini)
     efim
   senao
-    $mens.mvis2("", txttroca(arg4, "$m", arg2 ? " $e $o" : ""))
+    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" : "")
+    refvar ment = arg3 ? "$P saiu $d $o." : txttroca(arg5, "$m", "")
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      $mens.msgsomvis(msai, ssai, l.objini)
+    efim
     arg0.mudadono(arg1)
     $mens.p(arg0, nulo, arg3)
-# $mens.mvis2("", txttroca(arg5, "$m", arg3 ? " $d $o" : ""))
-    $mens.mvis2("", arg3 ? "$P saiu $d $o." : txttroca(arg5, "$m", ""))
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0), l, l.ini.remove
+      $mens.msgsomvis(ment, sent, l.objini)
+    efim
   fimse
 
 func fugirdir # Obtém direção para onde pode fugir

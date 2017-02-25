@@ -113,28 +113,40 @@ evhora\n\
 eveste\n\
 dir_n portaini_n portanome_n portaartigo_n fechadura_n\n\
 comechave_n fugir_n inv_n fecha_n tranc_n voar_n\n\
+som_abrir_n som_fechar_n som_tranc_n som_destr_n\n\
 dir_s portaini_s portanome_s portaartigo_s fechadura_s\n\
 comechave_s fugir_s inv_s fecha_s tranc_s voar_s\n\
+som_abrir_s som_fechar_s som_tranc_s som_destr_s\n\
 dir_l portaini_l portanome_l portaartigo_l fechadura_l\n\
 comechave_l fugir_l inv_l fecha_l tranc_l voar_l\n\
+som_abrir_l som_fechar_l som_tranc_l som_destr_l\n\
 dir_o portaini_o portanome_o portaartigo_o fechadura_o\n\
 comechave_o fugir_o inv_o fecha_o tranc_o voar_o\n\
+som_abrir_o som_fechar_o som_tranc_o som_destr_o\n\
 dir_c portaini_c portanome_c portaartigo_c fechadura_c\n\
 comechave_c fugir_c inv_c fecha_c tranc_c voar_c\n\
+som_abrir_c som_fechar_c som_tranc_c som_destr_c\n\
 dir_b portaini_b portanome_b portaartigo_b fechadura_b\n\
 comechave_b fugir_b inv_b fecha_b tranc_b voar_b\n\
+som_abrir_b som_fechar_b som_tranc_b som_destr_b\n\
 dir_ne portaini_ne portanome_ne portaartigo_ne fechadura_ne\n\
 comechave_ne fugir_ne inv_ne fecha_ne tranc_ne voar_ne\n\
+som_abrir_ne som_fechar_ne som_tranc_ne som_destr_ne\n\
 dir_no portaini_no portanome_no portaartigo_no fechadura_no\n\
 comechave_no fugir_no inv_no fecha_no tranc_no voar_no\n\
+som_abrir_no som_fechar_no som_tranc_no som_destr_no\n\
 dir_se portaini_se portanome_se portaartigo_se fechadura_se\n\
 comechave_se fugir_se inv_se fecha_se tranc_se voar_se\n\
+som_abrir_se som_fechar_se som_tranc_se som_destr_se\n\
 dir_so portaini_so portanome_so portaartigo_so fechadura_so\n\
 comechave_so fugir_so inv_so fecha_so tranc_so voar_so\n\
+som_abrir_so som_fechar_so som_tranc_so som_destr_so\n\
 dir_entrar portaini_entrar portanome_entrar portaartigo_entrar fechadura_entrar\n\
 comechave_entrar fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n\
+som_abrir_entrar som_fechar_entrar som_tranc_entrar som_destr_entrar\n\
 dir_sair portaini_sair portanome_sair portaartigo_sair fechadura_sair\n\
 comechave_sair fugir_sair inv_sair fecha_sair tranc_sair voar_sair\n\
+som_abrir_sair som_fechar_sair som_tranc_sair som_destr_sair\n\
 a_reset i_reset s_reset"
 const iniclasse = !$[arg0] && criar(arg0)
 
@@ -320,8 +332,8 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
   se r.dir_[nome] == este && r.porta_[nome] == porta_[arg0]
     r.porta_[nome] = arg1
     se arg3 && r.socktot
-      txt200 mporta
-      mporta = r.portanome_[nome]
+      refvar som = arg1 < 2 ? r.som_abrir_[nome] : r.som_fechar_[nome]
+      txt200 mporta = r.portanome_[nome]
       !mporta && !(mporta = $cmd_[nome].m_porta) && (mporta = "uma porta")
       $mens.mens = mporta
       se r.portaartigo_[nome] & 1
@@ -331,14 +343,14 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
       fimse
       listaobj l
       epara l.addfim(r.dentro2), l, l.ini.remove
-        $mens.msginv(arg3, l.objini)
+        $mens.msgsominv(arg3, som, l.objini)
       efim
     fimse
   fimse
   porta_[arg0] = arg1
   se arg2 && socktot
-    txt100 mporta
-    mporta = portanome_[arg0]
+    refvar som = arg1 < 2 ? som_abrir_[arg0] : som_fechar_[arg0]
+    txt100 mporta = portanome_[arg0]
     !mporta && !(mporta = $cmd_[arg0].m_porta) && (mporta = "uma porta")
     $mens.mens = mporta
     se portaartigo_[arg0] & 1
@@ -348,7 +360,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
     fimse
     listaobj l
     epara l.addfim(dentro2), l, l.ini.remove
-      $mens.msginv(arg2, l.objini)
+      $mens.msgsominv(arg2, som, l.objini)
     efim
   fimse
   ret 1
