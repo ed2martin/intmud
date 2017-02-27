@@ -407,7 +407,7 @@ static void AdicionaIncluir()
 void Inicializa(const char * arg)
 {
 // Variáveis
-    char mens[2048];
+    char mens[BUF_CODIF];
     bool erro = false; // Se ocorreu algum erro
     bool telatxt = false; // Se deve abrir janela do console
     TArqLer arq;
@@ -686,7 +686,7 @@ void Inicializa(const char * arg)
     TClasse * classeatual = 0;
     Instr::ChecaLinha checalinha;
     TAddBuffer classecom;
-    char comando[2048];
+    char comando[BUF_CODIF];
     ini_arq = true;
 
     // Abre o arquivo principal

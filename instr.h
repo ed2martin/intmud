@@ -8,6 +8,7 @@ class TVariavel;
 #define OTIMIZAR_VAR // Otimização de funções predefinidas e variáveis locais
 #define VAR_NOME_TAM 80 // Tamanho máximo dos nomes das variáveis + 1
 #define BUF_MENS 16384 // Tamanho do buffer de texto usado nas funções
+#define BUF_CODIF 8192 // Tamanho do buffer com uma instrução codificada
 
 /// Codificar, decodificar e executar instruções
 /** Codificar, decodificar e executar instruções */

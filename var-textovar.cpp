@@ -1088,7 +1088,7 @@ double TBlocoVarNum::getDouble()
 //------------------------------------------------------------------------------
 const char * TBlocoVarNum::getTxt()
 {
-    DoubleToTxt(txtnum, getDouble());
+    DoubleToTxt(txtnum, ValorDouble);
     return txtnum;
 }
 
