@@ -952,6 +952,23 @@ func passo # Alterando
   ret passosair(arg0)
 
 
+classe opc_listaperso
+herda opc_listasala
+# Um texto contendo nomes dos personagens (nomes dos objetos sem o "p_" no começo)
+#
+const prefixo = "p_"
+const m_aviso1 = "Entre com o nome do personagem, O mostra os personagens, Z cancela"
+const m_aviso2 = "Entre com o nome do personagem, O mostra os personagens, N nenhum, Z cancela"
+const m_lista = "Personagens:"
+const m_nenhum = "Nenhum personagem"
+const m_adicionado = "Personagem adicionado: "
+const m_removido = "Personagem removido: "
+const m_naoexiste = "Personagem não existe: "
+const m_limite = "Atingido limite de personagens"
+const m_nome = p_[arg1]:nome
+const m_total = arg0 == 1 ? "\c6Um personagem\b" : "\c6" + arg0 + " personagens\b"
+
+
 classe opc_listaitem
 herda opc_listasala
 # Um texto contendo nomes dos itens (nomes dos objetos sem o "i_" no começo)

@@ -50,7 +50,7 @@ real atkdanos2 # Usado em batalhaexp: quantidade de personagens do grupo
 inttempo p_tempoatu # Tempo para atualizar personagem
 txt40 p_atacou_nome # Nome do personagem do jogador que atacou esse personagem
 txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sala)
-intdec p_tpersegue # Quanto para se ir de outra sala perseguindo
+intdec p_tpersegue # Quanto tempo para se ir de outra sala perseguindo
 const p_lembra = config:p_lembra
 const p_perseguevel = config:p_perseguevel
 
@@ -214,8 +214,7 @@ func bat_ini_int # Chamado internamente por batalhaini
   atkturno = arg0.atkturno = 0
   !p_proc && (p_proc = 1)
   arg0.p_proc = 1 # Para gerar evento de PNJs
-  jog && (arg0.contr.p_atacou_nome = nome)
-  jog && arg0.p_lembra && (arg0.var.r_[nome]@ = 600 * arg0.p_lembra)
+  jog && !arg0.jog && arg0.p_proc_batalha(este)
 # Apaga eventos que só existem fora da batalha
   listaitem i
   epara i = atkbat.ini, i, i.depois
@@ -688,6 +687,23 @@ func p_proc_perseguir # Persegue e ataca um personagem de jogador
     ret 1
   fimse
   ret 0
+
+func p_proc_batalha # Chamado se este personagem for um PNJ sendo atacado por um jogador
+# arg0 = jogador que está atacando
+  p_atacou_nome = arg0.nome # Anota nome do jogador em p_atacou_nome
+  p_lembra && (var.r_[arg0.nome]@ = 600 * p_lembra) # Lembra do jogador
+# Pede ajuda para outros personagens
+  se p_atk_ajuda
+    textotxt t
+    ref r
+    epara t.addfim(p_atk_ajuda), t.linhas, nulo
+      epara r = $p_[t.remove], r, r = objdepois(r)
+        continuar r.p_atacou_nome || r.p_atacou_dir
+        r.p_proc = 1
+        r.p_atacou_nome = arg0.nome
+      efim
+    efim
+  fimse
 
 const p_proc_animal = 0 # Indica que não escolheu nenhum animal
 
