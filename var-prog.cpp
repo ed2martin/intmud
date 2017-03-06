@@ -1665,7 +1665,7 @@ bool TVarProg::FuncRenomear(TVariavel * v)
     if (TClasse::NomeValido(antes)==false ||
         TClasse::NomeValido(depois)==false)
         return false;
-    if (comparaVar(antes, depois) == 0)
+    if (strcmp(antes, depois) == 0)
         return false;
     new TRenomeiaClasse(antes, depois);
     return false;

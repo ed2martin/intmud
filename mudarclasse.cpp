@@ -521,9 +521,13 @@ void TRenomeiaClasse::Processa()
 {
     while (Inicio)
     {
-        TClasse * cl = TClasse::Procura(Inicio->NomeAntes);
-        if (cl && TClasse::Procura(Inicio->NomeDepois)==0)
-            cl->MudaNome(Inicio->NomeDepois);
+        TClasse * cl1 = TClasse::Procura(Inicio->NomeAntes);
+        if (cl1)
+        {
+            TClasse * cl2 = TClasse::Procura(Inicio->NomeDepois);
+            if (cl2 == 0 || cl1 == cl2)
+                cl1->MudaNome(Inicio->NomeDepois);
+        }
         delete Inicio;
     }
 }

@@ -203,6 +203,16 @@ void TClasse::MudaNome(const char * novonome)
 {
     char nomeantes[CLASSE_NOME_TAM]; // Nome anterior da classe
 
+// Se os nomes são iguais na busca, atualiza apenas o nome
+    if (comparaVar(Nome, novonome) == 0 && strlen(Nome) == strlen(novonome))
+    {
+        if (strcmp(Nome, novonome) == 0)
+            return;
+        ArqArquivo->Mudou = true;
+        strcpy(Nome, novonome);
+        return;
+    }
+
 // Acerta o nome da classe e guarda o nome anterior
     ArqArquivo->Mudou = true;
     RBremove();
