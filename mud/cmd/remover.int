@@ -35,26 +35,27 @@ func escr
         sair valor & intbit(item.obj.vestpos - 1)
       efim
       alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
-    senao
-      refvar posic = int(r.vestpos)
-      listaobj e
-      epara e.addfim(alvo.evento), e, e.ini.remove
-        ret e.objini.cmd_remover(alvo, r, posic, alvo), nulo
-      efim
-      epara e.addfim(r.evento), e, e.ini.remove
-        ret e.objini.cmd_remover(alvo, r, posic, r), nulo
-      efim
-      vest.[r.vestpos - 1] = 0
-      r.vestir(0)
-      $mens.p(alvo, nulo, r)
-      $mens.mvis1("$P remove $o.")
-      epara e.addfim(alvo.evento), e, e.ini.remove
-        e.objini.cmd_removeu(alvo, r, posic, alvo)
-      efim
-      epara e.addfim(r.evento), e, e.ini.remove
-        e.objini.cmd_removeu(alvo, r, posic, r)
-      efim
+      continuar
     fimse
+    refvar posic = int(r.vestpos)
+    listaobj e
+    epara e.addfim(alvo.evento), e, e.ini.remove
+      ret e.objini.cmd_remover(alvo, r, posic, alvo), nulo
+    efim
+    epara e.addfim(r.evento), e, e.ini.remove
+      ret e.objini.cmd_remover(alvo, r, posic, r), nulo
+    efim
+    vest.[r.vestpos - 1] = 0
+    refvar som = r.vestpos == 50 ? r.i_som_emp0 : r.i_som_vest0
+    r.vestir(0)
+    $mens.p(alvo, nulo, r)
+    $mens.mvis1som("$P remove $o.", som)
+    epara e.addfim(alvo.evento), e, e.ini.remove
+      e.objini.cmd_removeu(alvo, r, posic, alvo)
+    efim
+    epara e.addfim(r.evento), e, e.ini.remove
+      e.objini.cmd_removeu(alvo, r, posic, r)
+    efim
   efim
 # Ajusta variáveis
   !total && $mens.p(alvo) + $mens.mperso("$P não está usando isso.")

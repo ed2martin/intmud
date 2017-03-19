@@ -164,7 +164,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
 # Bônus conforme o que está vestindo e os efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este), pesoveste += iobj.pesotot
+    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este), pesoveste += i.obj.pesotot
   efim
   pesoveste /= 2
   epara i = evento.ini, i, i.depois

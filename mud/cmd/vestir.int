@@ -141,7 +141,7 @@ func objvestir # Quer vestir um item
     vest |= intbit(numpos - 1)
     refvar mvestir = txtsublin(config:equip_vestir, numpos - 1, 1)
     $mens.p(arg0, nulo, arg1)
-    $mens.mvis1(mvestir ?? "$P veste $o.")
+    $mens.mvis1som(mvestir ?? "$P veste $o.", arg1.i_som_vest1)
 # Eventos
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_vestiu(arg0, arg1, numpos, arg0)

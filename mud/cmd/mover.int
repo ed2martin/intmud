@@ -121,17 +121,11 @@ func mover # Personagem anda em uma direção
     refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
     refvar msai = abriu2 + m_sai4
     refvar ment = m_entra4
-    listaobj l
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
-      $mens.msgsomvis(msai, ssai, l.objini)
-    efim
+    $mens.p(arg0, nulo, arg3)
+    $mens.mvis2som(msai, ssai)
     arg0.mudadono(arg1)
     $mens.p(arg0, nulo, arg3)
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
-      $mens.msgsomvis(ment, sent, l.objini)
-    efim
+    $mens.mvis2som(ment, sent)
   senao arg0.bitinv & 48 # Voando ou voando alto
     mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai3, m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
@@ -206,16 +200,10 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
   senao
     refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" : "")
     refvar ment = arg3 ? "$P saiu $d $o." : txttroca(arg5, "$m", "")
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
-      $mens.msgsomvis(msai, ssai, l.objini)
-    efim
+    $mens.mvis2som(msai, ssai)
     arg0.mudadono(arg1)
     $mens.p(arg0, nulo, arg3)
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
-      $mens.msgsomvis(ment, sent, l.objini)
-    efim
+    $mens.mvis2som(ment, sent)
   fimse
 
 func fugirdir # Obtém direção para onde pode fugir

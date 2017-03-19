@@ -1820,7 +1820,7 @@ func cmd_escr # Personagem escreveu alguma coisa
 
 func cmd_soltouobj
   se arg1 == dono && arg2.item != 2 # Soltou item que não agrupa na sala
-    se !arg2.dentro2.objini("e_flutuar") && !arg2.dentro2.iniobj("e_voar")
+    se !arg2.dentro2.objini("e_flutuar") && !arg2.dentro2.objini("e_voar")
       $mens.p(este, nulo, arg2)
       $mens.mvis2("", "$P faz um gesto rápido com as mãos.")
       criar("e_flutuar", arg2, 0) # Cria efeito Flutuar nível 0 em arg1
@@ -1894,6 +1894,7 @@ const s_luz = 1 # Luz: 1 Claro sem eventos de tempo
 const eveste = 1 # Receber eventos do próprio objeto
 const dir_n = $s_ini001
 const dir_s = $s_teste002
+const s_reset = "S 100 teste032 1 S"
 
 func cmd_mover
   se arg2 == "s"
@@ -1902,8 +1903,6 @@ func cmd_mover
     !arg0.pnivel && (arg0.pnivel = 1)
     arg0.recalc = 1
   fimse
-
-const s_reset = "S 100 teste032 1 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset

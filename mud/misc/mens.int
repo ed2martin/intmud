@@ -185,6 +185,23 @@ func mtodos3 # Mensagem só para quem estiver acordado
     msginv(arg2, l0.objini)
   efim
 
+func mtodos1som # Mensagem e som só para quem estiver acordado
+# arg0 = mensagem para todos, arg1=nome do som
+  ret !(contr.dono.socktot && arg0), nulo
+  listaobj l0
+  epara l0.addfim(contr.dono.dentro2), l0, l0.ini.remove
+    msgsominv(arg0, arg1, l0.objini)
+  efim
+
+func mtodos2som # Mesmo que mtodos1som, porém não envia mensagem para o personagem
+# arg0 = mensagem para todos, arg1=nome do som
+  ret !(contr.dono.socktot && arg0), nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  epara l0.remove(contr), l0, l0.ini.remove
+    msgsominv(arg0, arg1, l0.objini)
+  efim
+
 func mtodos3dir # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
 # arg3 = direção do personagem ao alvo, quando não estão na mesma sala
@@ -236,6 +253,23 @@ func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
   l0.addfim(contr.dono.dentro2)
   epara l0.remove(contr, alvo.contr), l0, l0.ini.remove
     msgvis(arg2, l0.objini)
+  efim
+
+func mvis1som # Mensagem e som só para quem pode ver o personagem e estiver acordado
+# arg0 = mensagem para todos, arg1=nome do som
+  ret !(contr.dono.socktot && arg0), nulo
+  listaobj l0
+  epara l0.addfim(contr.dono.dentro2), l0, l0.ini.remove
+    msgsomvis(arg0, arg1, l0.objini)
+  efim
+
+func mvis2som # Mesmo que mvis1som, porém não envia mensagem para o personagem
+# arg0 = mensagem para todos, arg1=nome do som
+  ret !(contr.dono.socktot && arg0), nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  epara l0.remove(contr), l0, l0.ini.remove
+    msgsomvis(arg0, arg1, l0.objini)
   efim
 
 func mvis3dir # Mensagem só para quem pode ver o personagem e estiver acordado

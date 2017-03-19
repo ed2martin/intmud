@@ -22,9 +22,9 @@ func escr
 
 func listar # Listar itens
 # arg0 = para que jogador listar
-# arg1 = nome da classe (para comando lperso) ou "" se todas
+# arg1 = nome da classe (para comando litem) ou "" se todas
 # arg2 = permissões do jogador
-# arg3 = nome do personagem (para comando pperso), ou "" se todos
+# arg3 = nome do item (para comando pitem), ou "" se todos
   refvar t = arg0.sock.txtmais
   debug d
   prog p
@@ -691,30 +691,33 @@ const tipo20 = "opc_tipos"
 const clas20 = var.classe1
 const vari20 = "vestirnao"
 #
-const nome21 = "Atributos"
-const tipo21 = "menu_iatribs--"
+const nome21 = "Sons"
+const tipo21 = "menu_isom--"
 #
-const nome22 = "Fome e sede"
-const tipo22 = "menu_ifome--"
+const nome22 = "Atributos"
+const tipo22 = "menu_iatribs--"
 #
-const nome23 = "Pega animal nível"
-const info23 = "Nível médio dos animais que podem ser capturados com esse item,\n\
+const nome23 = "Fome e sede"
+const tipo23 = "menu_ifome--"
+#
+const nome24 = "Pega animal nível"
+const info24 = "Nível médio dos animais que podem ser capturados com esse item,\n\
 ou 0 se não puder capturar"
-const tipo23 = "opc_numero"
-const clas23 = var.classe1
-const vari23 = "i_captura"
-#
-const nome24 = "Chave"
-const info24 = "Código da chave; abre fechaduras com o mesmo código"
-const tipo24 = "opc_linha"
+const tipo24 = "opc_numero"
 const clas24 = var.classe1
-const vari24 = "i_chave"
+const vari24 = "i_captura"
 #
-const nome25 = "Ao pegar"
-const info25 = "Mensagem ao tentar pegar o item; se vazio, consegue pegar"
+const nome25 = "Chave"
+const info25 = "Código da chave; abre fechaduras com o mesmo código"
 const tipo25 = "opc_linha"
 const clas25 = var.classe1
-const vari25 = "i_pegar"
+const vari25 = "i_chave"
+#
+const nome26 = "Ao pegar"
+const info26 = "Mensagem ao tentar pegar o item; se vazio, consegue pegar"
+const tipo26 = "opc_linha"
+const clas26 = var.classe1
+const vari26 = "i_pegar"
 #
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
@@ -792,24 +795,55 @@ const tipo10 = "menu_identro3--"
 const nome11 = "Arma"
 const tipo11 = "menu_iarma3--"
 #
-const nome26 = "Mobília"
-const info26 = "Sentar/dormir confortavelmente se recupera mais rápido"
-const tipo26 = "opc_opcao"
-const clas26 = var.classe1
-const vari26 = "i_movel"
-const extr26 = "Não\n\
+const nome27 = "Mobília"
+const info27 = "Sentar/dormir confortavelmente se recupera mais rápido"
+const tipo27 = "opc_opcao"
+const clas27 = var.classe1
+const vari27 = "i_movel"
+const extr27 = "Não\n\
 Sentar\n\
 Sentar e dormir\n\
 Sentar confortavelmente\n\
 Sentar e dormir confortavelmente"
 #
-const nome27 = "Lugares"
-const tipo27 = "opc_numero"
-const clas27 = var.classe1
-const vari27 = "i_lugar"
+const nome28 = "Lugares"
+const tipo28 = "opc_numero"
+const clas28 = var.classe1
+const vari28 = "i_lugar"
 #
-const nome28 = "Fonte de luz"
-const tipo28 = "menu_iluz--"
+const nome29 = "Fonte de luz"
+const tipo29 = "menu_iluz--"
+
+
+classe menu_isom
+herda comando_menu
+const titulo = "Sons"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Empunhou"
+const info1 = "Ao empunhar esse item"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "i_som_emp1"
+#
+const nome2 = "Removeu empunhar"
+const info2 = "Ao deixar de empunhar esse item"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "i_som_emp0"
+#
+const nome3 = "Vestiu"
+const info3 = "Ao vestir esse item"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "i_som_vest1"
+#
+const nome4 = "Removeu vestir"
+const info4 = "Ao deixar de vestir esse item"
+const tipo4 = "opc_linha"
+const clas4 = var.classe1
+const vari4 = "i_som_vest0"
 
 
 classe menu_iatribs
