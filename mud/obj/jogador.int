@@ -91,10 +91,10 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
   casovar posicao
   casose "1" # Mortalmente ferido
   casose "2" # Incapacitado
-    p_diges -= 1, vida += 1, acertapos
+    p_diges -= 1, pvida += 1, acertapos
     sair
   casose "3" # Fraco
-    p_diges -= 1, vida += 2, acertapos
+    p_diges -= 1, pvida += 2, acertapos
     sair
   casose "4" # Dormindo
     recup = contr.dono.s_recup(este) / (poslugar.objlista.i_movel(este) >= 3 ? 500 : 600)

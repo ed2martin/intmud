@@ -5,6 +5,7 @@ debug dbg
 uint16 versao
 telatxt tela
 intexec ini2
+intexec ini3
 
 func p_criar # Para testar as modificações
   se args == 1
@@ -24,7 +25,7 @@ func criafunc # Cria função ou constante se não existir
 # arg0 = nome da classe
 # arg1 = definição da função ou constante
   refvar nome = txtsub(txttroca(txttroca(arg1, "=", " ="), "#", " #"), 1, 1)
-  !p.existe(arg0, nome) && p.criar(arg0, arg1)
+  p.existe(arg0, nome) != 1 && p.criar(arg0, arg1)
 
 func nomefunc # Muda o nome de uma função, constante ou variável
 # arg0 = nome da classe
@@ -185,10 +186,10 @@ func ini
   fimse
 
 func ini2_exec
-  apagar(este)
+  ini3 = 1
 # Checa e muda a versão
-  ret (versao = config:versao) >= 438, nulo
-  p.criar("config", "const versao = 438 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 430, nulo
+  p.criar("config", "const versao = 430 # Para atualizar arquivos mud/config/* e mud/areas/*")
   config:salvar
 # Acerta variáveis das habilidades e magias
   se versao < 298
@@ -626,6 +627,13 @@ casa está atrasada.\"")
     criafunc("config", "const atkexp1 = " + config:atkexp)
     p.apagar("config", "atkexp")
   fimse
+
+func ini3_exec
+  apagar(este)
+# Checa e muda a versão
+  ret (versao = config:versao) >= 438, nulo
+  p.criar("config", "const versao = 438 # Para atualizar diretórios areas e config")
+  config:salvar
 # Espera em ataques manuais, mensagens dos ataques
   se versao < 434
     criafunc("config", "const atkespera = 8")

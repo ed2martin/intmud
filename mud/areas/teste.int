@@ -4380,7 +4380,7 @@ classe s_teste145
 herda b_teste
 const s_titulo = "Subsolo 5: Diversos"
 const s_desc = "Ao norte: checando hora e enviando mensagens telepáticas e personagem clone\n\
-Ao sul: Efeitos e modificadores"
+Ao sul: Efeitos e modificadores, e item transportado quando é solto"
 const dir_n = $s_teste146
 const dir_s = $s_teste147
 const dir_c = $s_teste119
@@ -4412,6 +4412,7 @@ Ele faz mágica também. Solte algum item no chão, e se não for do tipo\n\
 que agrupa, ele faz o item flutuar por algum tempo.\n\
 Nota: Tem uma faca na sala teste028"
 const dir_n = $s_teste145
+const dir_s = $s_teste165
 const s_reset = "P 100 teste034 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -4685,4 +4686,25 @@ func cmd_morreu
     refvar r = criar("p_teste038", este, arg0.pnivel - 3, arg0)
     $mens.p(r)
     $mens.mtodos1("$P aparece aqui!")
+  fimse
+
+
+classe s_teste165
+herda b_teste
+const s_titulo = "Ao soltar item"
+const s_desc = "Aqui, ao soltar um item, ele afunda aparece em uma das salas\n\
+teste145, teste146 ou teste147 (as três salas ao norte daqui)."
+const eveste = 1 # Eventos sala: Sim
+const dir_n = $s_teste147
+
+func cmd_soltouobj
+  se arg4 == este
+    refvar r = $s_teste[txtfim("000" + rand(145, 147), 3)]
+    se r
+      $mens.p(arg2, nulo, arg2)
+      $mens.mtodos1("Aos poucos, $o afunda, até desaparecer completamente.")
+      refvar item = arg2.mudadono(r, arg3)
+      $mens.p(item, nulo, item)
+      $mens.mtodos1("Descendo vagarosamente, $o pousa aqui.")
+    fimse
   fimse
