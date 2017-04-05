@@ -146,7 +146,6 @@ const vari1 = "animal"
 const tipo1 = "opc_numero--"
 # Tipo de dado - nome da classe responsável pelo dado sendo editado:
 # "opc_linha" = texto de uma linha (exemplo: título das salas)
-# "opc_txtlinha" = uma linha de um texto de várias linhas
 # "opc_texto" = texto de uma ou mais linhas (exemplo: descrição das salas)
 # "opc_numero" = valor numérico inteiro
 # "opc_numreal" = valor numérico que pode ter dígitos após a vírgula
@@ -183,7 +182,6 @@ const tipo1 = "opc_numero--"
 
 const extr1 = "1 8"
 # Opções extras. Os tipos que possuem opções extras são:
-# No tipo "opc_txtlinha" é o número da linha (começa no 0)
 # No tipo "opc_numero" são os valores mínimo e máximo (nesse caso, vai de 1 a 8)
 # No tipo "opc_opcao" é a lista de opções
 # No tipo "opc_txtopcao" são a quantidade mínima e a quantidade máxima de linhas
@@ -226,8 +224,8 @@ Alguns exemplos de uso dos diversos tipos de dados:
 "opc_texto" - descrição de uma sala, ao olhar para um personagem ou item,
   mensagem de apresentação do mud
 "opc_numero" - nível dos personagens e dos itens, tempo de reset de uma área
-"opc_numreal" - não foi usado, mas parece lógico existir números que podem
-  ter dígitos após a vírgula
+"opc_numreal" - taxa de manutenção das casas do MUD, porque pode ser um número
+  abaixo de 1% do valor da casa
 "opc_opcao" - tipo de terreno de uma sala, se uma saída não pode ser trancada,
   pode ser trancada ou tranca ao fechar, etc. Qualquer coisa que tenha duas
   opções ou mais, sendo cada uma um número

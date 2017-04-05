@@ -68,7 +68,7 @@ func escr
     ret arg0.msg("Tecle o nome do tipo após CTIPO")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, EMDSA))
+  nome = txte(txtremove(arg1, "EMDSA"))
   se txtsepara(nome, "O+DOL,DOL+O") != nome
     ret arg0.msg("Nome inválido para tipo de personagem: " + nome)
   senao p.existe("t_" + nome)

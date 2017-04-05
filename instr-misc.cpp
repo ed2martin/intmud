@@ -213,165 +213,46 @@ bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
     return false;
 }
 
-//------------------------------------------------------------------------------
-Instr::ChecaLinha::ChecaLinha()
+//----------------------------------------------------------------------------
+/// Passa para a próxima função ou variável
+/**
+ * @param instr Instrução atual (função ou variável)
+ * @param texto O nome da próxima função/variável deve começar com esse texto
+ * @param tamanho Quantos caracteres o texto tem
+ * @return Endereço da próxima instrução ou 0 se não houver
+ */
+const char * Instr::ProximaInstr(const char * instr, const char * texto, int tamanho)
 {
-    esperando=0;
-    pbuf=0;
-}
-
-//------------------------------------------------------------------------------
-void Instr::ChecaLinha::Inicio()
-{
-    esperando=0;
-    pbuf=0;
-}
-
-//------------------------------------------------------------------------------
-const char * Instr::ChecaLinha::Instr(const char * instr)
-{
-    if (instr[0]==0 && instr[1]==0)
-        return 0;
-    unsigned char cod = *(unsigned char*)(instr+2);
-// Instrução Herda
-    if (cod==cHerda)
+inicio:
+// Avançar para próxima variável
+    if (instr[2] != Instr::cFunc && instr[2] != Instr::cVarFunc)
     {
-        if (esperando!=0)
-            return "Instrução Herda deve ser a primeira da classe";
-        esperando=1;
-        return 0;
-    }
-    if (esperando==0)
-        esperando=1;
-// Comentário
-    if (cod==cComent)
-        return 0;
-// Função
-    if (cod==cFunc || cod==cVarFunc)
-    {
-        esperando=2;
-        return Fim();
-    }
-// Constante
-    if (cod==cConstNulo || cod==cConstTxt ||
-        cod==cConstNum  || cod==cConstExpr || cod==cConstVar)
-    {
-        if (esperando!=1)
-            esperando=3;
-        return Fim();
-    }
-// Variável
-    if (cod >= cVariaveis)
-    {
-        if (esperando == 3)
-            return "Variável não pertence a uma classe ou uma função";
-        else if (esperando == 2 && InfoFunc(instr + endNome) >= 0)
-            return "Variável tem o nome de uma função da linguagem, "
-                    "por isso não pode pertencer a uma função";
-        else if (esperando < 2 && instr[endIndice] != 0)
-            switch (cod)
+        for (instr += Num16(instr); instr[0] || instr[1]; instr += Num16(instr))
+            if (instr[2] > Instr::cVariaveis)
             {
-            case cConstNulo:
-            case cConstTxt:
-            case cConstNum:
-            case cConstExpr:
-            case cConstVar:
-            case cFunc:
-            case cVarFunc:
-                break;
-            default:
-                return "Somente variáveis definidas em funções permitem "
-                        "atribuição de valor";
+                if (tamanho && compara(texto, instr + Instr::endNome, tamanho) != 0)
+                    goto inicio;
+                return instr;
             }
         return 0;
     }
-// Instrução
-    if (esperando != 2)
-        return "Instrução não pertence a uma função";
-// Blocos de instruções
-    if (ChecaErro <= 0)
-        return 0;
-    switch (cod)
-    {
-    case cSe:
-        if (pbuf < sizeof(buf))
-            buf[pbuf++] = 0;
-        break;
-    case cSenao1:
-    case cSenao2:
-        if (pbuf ? buf[pbuf-1]!=0 : true)
-            return "Senão sem Se";
-        break;
-    case cFimSe:
-        if (pbuf ? buf[pbuf-1]!=0 : true)
-            return "FimSe sem Se";
-        pbuf--;
-        break;
-    case cEnquanto:
-    case cEPara:
-        if (pbuf < sizeof(buf))
-            buf[pbuf++] = 1;
-        break;
-    case cEFim:
-        if (pbuf ? buf[pbuf-1]!=1 : true)
-            return "EFim sem Enquanto ou EPara";
-        pbuf--;
-        break;
-    case cCasoVar:
-        if (pbuf < sizeof(buf))
-            buf[pbuf++] = 2;
-        break;
-    case cCasoSe:
-    case cCasoSePadrao:
-        if (pbuf ? buf[pbuf-1]!=2 : true)
-            return "CasoSe sem CasoVar";
-        break;
-    case cCasoFim:
-        if (pbuf ? buf[pbuf-1]!=2 : true)
-            return "CasoFim sem CasoVar";
-        pbuf--;
-        break;
-    case cSair1:
-    case cSair2:
-        if (pbuf)
-        {
-            for (int x=pbuf-1; x>=0; x--)
-                if (buf[x] != 0)
-                    return 0;
-        }
-        return "Sair sem Enquanto, EPara ou CasoVar";
-    case cContinuar1:
-    case cContinuar2:
-        if (pbuf)
-        {
-            for (int x=pbuf-1; x>=0; x--)
-                if (buf[x] == 1)
-                    return 0;
-        }
-        return "Continuar sem Enquanto ou EPara";
-    }
+// Avançar para próxima função
+    for (instr += Num16(instr); instr[0] || instr[1]; instr += Num16(instr))
+        if (instr[2] > Instr::cVariaveis)
+            switch (instr[2])
+            {
+            case Instr::cConstNulo:
+            case Instr::cConstTxt:
+            case Instr::cConstNum:
+            case Instr::cConstExpr:
+            case Instr::cConstVar:
+            case Instr::cFunc:
+            case Instr::cVarFunc:
+                if (tamanho && compara(texto, instr + Instr::endNome, tamanho) != 0)
+                    goto inicio;
+                return instr;
+            }
     return 0;
-}
-
-//------------------------------------------------------------------------------
-const char * Instr::ChecaLinha::Fim()
-{
-    if (ChecaErro <= 0)
-        return 0;
-    if (ChecaErro == 1)
-        for (; pbuf > 0; pbuf--)
-            if (buf[pbuf-1] != 0)
-                break;
-    if (pbuf == 0)
-        return 0;
-    int result = buf[pbuf-1];
-    pbuf = 0;
-    switch (result)
-    {
-    case 0: return "Falta FimSe antes dessa linha";
-    case 1: return "Falta EFim antes dessa linha";
-    default: return "Falta CasoFim antes dessa linha";
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -1242,4 +1123,165 @@ const char * Instr::NomeExpr(int valor)
     case ex_parenteses:     return "ex_parenteses";
     }
     return 0;
+}
+
+//------------------------------------------------------------------------------
+Instr::ChecaLinha::ChecaLinha()
+{
+    esperando=0;
+    pbuf=0;
+}
+
+//------------------------------------------------------------------------------
+void Instr::ChecaLinha::Inicio()
+{
+    esperando=0;
+    pbuf=0;
+}
+
+//------------------------------------------------------------------------------
+const char * Instr::ChecaLinha::Instr(const char * instr)
+{
+    if (instr[0]==0 && instr[1]==0)
+        return 0;
+    unsigned char cod = *(unsigned char*)(instr+2);
+// Instrução Herda
+    if (cod==cHerda)
+    {
+        if (esperando!=0)
+            return "Instrução Herda deve ser a primeira da classe";
+        esperando=1;
+        return 0;
+    }
+    if (esperando==0)
+        esperando=1;
+// Comentário
+    if (cod==cComent)
+        return 0;
+// Função
+    if (cod==cFunc || cod==cVarFunc)
+    {
+        esperando=2;
+        return Fim();
+    }
+// Constante
+    if (cod==cConstNulo || cod==cConstTxt ||
+        cod==cConstNum  || cod==cConstExpr || cod==cConstVar)
+    {
+        if (esperando!=1)
+            esperando=3;
+        return Fim();
+    }
+// Variável
+    if (cod >= cVariaveis)
+    {
+        if (esperando == 3)
+            return "Variável não pertence a uma classe ou uma função";
+        else if (esperando == 2 && InfoFunc(instr + endNome) >= 0)
+            return "Variável tem o nome de uma função da linguagem, "
+                    "por isso não pode pertencer a uma função";
+        else if (esperando < 2 && instr[endIndice] != 0)
+            switch (cod)
+            {
+            case cConstNulo:
+            case cConstTxt:
+            case cConstNum:
+            case cConstExpr:
+            case cConstVar:
+            case cFunc:
+            case cVarFunc:
+                break;
+            default:
+                return "Somente variáveis definidas em funções permitem "
+                        "atribuição de valor";
+            }
+        return 0;
+    }
+// Instrução
+    if (esperando != 2)
+        return "Instrução não pertence a uma função";
+// Blocos de instruções
+    if (ChecaErro <= 0)
+        return 0;
+    switch (cod)
+    {
+    case cSe:
+        if (pbuf < sizeof(buf))
+            buf[pbuf++] = 0;
+        break;
+    case cSenao1:
+    case cSenao2:
+        if (pbuf ? buf[pbuf-1]!=0 : true)
+            return "Senão sem Se";
+        break;
+    case cFimSe:
+        if (pbuf ? buf[pbuf-1]!=0 : true)
+            return "FimSe sem Se";
+        pbuf--;
+        break;
+    case cEnquanto:
+    case cEPara:
+        if (pbuf < sizeof(buf))
+            buf[pbuf++] = 1;
+        break;
+    case cEFim:
+        if (pbuf ? buf[pbuf-1]!=1 : true)
+            return "EFim sem Enquanto ou EPara";
+        pbuf--;
+        break;
+    case cCasoVar:
+        if (pbuf < sizeof(buf))
+            buf[pbuf++] = 2;
+        break;
+    case cCasoSe:
+    case cCasoSePadrao:
+        if (pbuf ? buf[pbuf-1]!=2 : true)
+            return "CasoSe sem CasoVar";
+        break;
+    case cCasoFim:
+        if (pbuf ? buf[pbuf-1]!=2 : true)
+            return "CasoFim sem CasoVar";
+        pbuf--;
+        break;
+    case cSair1:
+    case cSair2:
+        if (pbuf)
+        {
+            for (int x=pbuf-1; x>=0; x--)
+                if (buf[x] != 0)
+                    return 0;
+        }
+        return "Sair sem Enquanto, EPara ou CasoVar";
+    case cContinuar1:
+    case cContinuar2:
+        if (pbuf)
+        {
+            for (int x=pbuf-1; x>=0; x--)
+                if (buf[x] == 1)
+                    return 0;
+        }
+        return "Continuar sem Enquanto ou EPara";
+    }
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+const char * Instr::ChecaLinha::Fim()
+{
+    if (ChecaErro <= 0)
+        return 0;
+    if (ChecaErro == 1)
+        for (; pbuf > 0; pbuf--)
+            if (buf[pbuf-1] != 0)
+                break;
+    if (pbuf == 0)
+        return 0;
+    int result = buf[pbuf-1];
+    pbuf = 0;
+    switch (result)
+    {
+    case 0: return "Falta FimSe antes dessa linha";
+    case 1: return "Falta EFim antes dessa linha";
+    default: return "Falta CasoFim antes dessa linha";
+    }
 }

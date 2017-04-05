@@ -20,6 +20,10 @@ bool Codif(char * destino, const char * origem, int tamanho);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
 
+int  Prioridade(int operador);
+bool ChecaHerda(const char * instr, const char * nomeclasse);
+const char * ProximaInstr(const char * instr, const char * texto, int tamanho);
+
 bool CriarVarInt(int valor);
 bool CriarVarTexto(const char * mens, int tammens=-1);
 bool CriarVarObj(TObjeto * obj);
@@ -28,6 +32,7 @@ void ApagarVar(TVariavel * v);
 void ApagarRet(TVariavel * v);
 bool VarFuncIni(TVariavel * varini);
 bool VarFuncFim();
+bool ComparaInstr(const char * instr1, const char * instr2);
 const char * ProcuraExpr(const char * expr, int valor);
 const char * NomeInstr(const char * instr);
 const char * NomeComando(int valor);
@@ -79,10 +84,6 @@ bool FuncTxtSepara(TVariavel * v, int valor);
 bool FuncAntesDepois(TVariavel * v, int valor);
 bool FuncTotal(TVariavel * v, int valor);
 bool FuncVarTroca(TVariavel * v, int valor);
-
-bool ComparaInstr(const char * instr1, const char * instr2);
-bool ChecaHerda(const char * instr, const char * nomeclasse);
-int  Prioridade(int operador);
 
 //----------------------------------------------------------------------------
 // Variáveis predefinidas

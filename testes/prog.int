@@ -13,7 +13,18 @@ func ini
   msg("Digite o nome de uma variável ou:\n")
   msg("FIM          Encerrar o programa\n")
   msg("A, B ou C    Seleciona a classe\n")
-  msg("0 a 11       Escolhe uma função\n")
+  msg("0 [arquivo]  Lista classes de um arquivo - iniarq\n")
+  msg("1 [texto]    Lista classes cujo nome começam com um texto - iniclasse\n")
+  msg("2 [texto]    Lista as funções definidas na classe - inifunc\n")
+  msg("3 [texto]    Lista todas as funções da classes - inifunctudo\n")
+  msg("4 [texto]    Lista as funções na ordem em que aparecem na classe - inifunccl\n")
+  msg("5            Lista as classes definidas na instrução herda - iniherda\n")
+  msg("6            Lista todas as classes herdadas - iniherdatudo\n")
+  msg("7            Lista todas as classes que herdam essa classe - iniherdainv\n")
+  msg("8            Lista as linhas de uma classe - inilinha\n")
+  msg("9 <texto>    Lista as linhas de uma função - inilinha\n")
+  msg("10 <texto>   Lista o texto de uma constante - const\n")
+  msg("11           Lista as classes\n")
   msg("I <função>   Move função para o início da classe\n")
   msg("F <função>   Move função para o fim da classe\n")
   msg("I <f1> <f2>  Move função 1 para antes da função 2\n")
@@ -64,23 +75,23 @@ func pC
   nomeclasse = "C"
 func p0
   prog p
-  msg("iniarq=" + p.iniarq("") + " (lista de classes do arquivo)\n")
+  msg("iniarq=" + p.iniarq(arg0) + " (lista de classes do arquivo)\n")
   mostra(p)
 func p1
   prog p
-  msg("iniclasse=" + p.iniclasse + " (lista de classes)\n")
+  msg("iniclasse=" + p.iniclasse(arg0) + " (lista de classes)\n")
   mostra(p)
 func p2
   prog p
-  msg("inifunc=" + p.inifunc(nomeclasse) + " (funções definidas)\n")
+  msg("inifunc=" + p.inifunc(nomeclasse, arg0) + " (funções definidas)\n")
   mostra(p)
 func p3
   prog p
-  msg("inifunctudo=" + p.inifunctudo(nomeclasse) + " (todas as funções)\n")
+  msg("inifunctudo=" + p.inifunctudo(nomeclasse, arg0) + " (todas as funções)\n")
   mostra(p)
 func p4
   prog p
-  msg("inifunccl=" + p.inifunccl(nomeclasse) + " (funções na classe)\n")
+  msg("inifunccl=" + p.inifunccl(nomeclasse, arg0) + " (funções na classe)\n")
   mostra(p)
 func p5
   prog p
@@ -101,7 +112,7 @@ func p8
 func p9
   prog p
   se arg0 == ""
-    msg("Digite o nome de uma função ou variável após 8\n")
+    msg("Digite o nome de uma função ou variável após 9\n")
   senao
     msg("inilinha=" + p.inilinha(nomeclasse, arg0) + " (instruções da função)\n")
     mostra(p)
@@ -109,7 +120,7 @@ func p9
 func p10
   prog p
   se arg0 == ""
-    msg("Digite o nome de uma função ou variável após 9\n")
+    msg("Digite o nome de uma função ou variável após 10\n")
   senao
     msg("Texto da constante:\n" + p.const(nomeclasse, arg0) + "\n")
   fimse

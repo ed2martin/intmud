@@ -727,21 +727,35 @@ bool TVarProg::FuncIniLinha(TVariavel * v)
 bool TVarProg::FuncIniFuncCl(TVariavel * v)
 {
     TProgConsulta valor = prNada;
+    const char * p = 0;
     while (Instr::VarAtual >= v+1)
     {
         Classe = TClasse::Procura(v[1].getTxt());
         if (Classe==0)
             break;
-        const char * p = Classe->Comandos;
-        for (; p[0] || p[1]; p += Num16(p))
+        for (p = Classe->Comandos; p[0] || p[1]; p += Num16(p))
             if (p[2] >= Instr::cVariaveis)
             {
-                TextoAtual = p;
                 valor = prFuncCl;
                 break;
             }
+        if (valor == prNada)
+            break;
+        const char * texto = "";
+        if (Instr::VarAtual >= v+2)
+            texto = v[2].getTxt();
+        if (*texto == 0)
+        {
+            ValorFim = 0;
+            break;
+        }
+        ValorFim = strlen(texto);
+        p = Instr::ProximaInstr(p, texto, ValorFim);
+        if (p == 0)
+            valor = prNada;
         break;
     }
+    TextoAtual = p;
     MudaConsulta(valor);
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(valor != 0);
@@ -869,34 +883,11 @@ bool TVarProg::FuncDepois(TVariavel * v)
         for (; total>0 && consulta != prNada; total--)
         {
             const char * p = TextoAtual;
-        // Avançar para próxima variável
-            if (p[2] != Instr::cFunc && p[2] != Instr::cVarFunc)
-            {
-                for (p += Num16(p); p[0] || p[1]; p += Num16(p))
-                    if (p[2] > Instr::cVariaveis)
-                    {
-                        TextoAtual = p;
-                        return false;
-                    }
+            p = Instr::ProximaInstr(p, p + Instr::endNome, ValorFim);
+            if (p == 0)
                 MudaConsulta(prNada);
-                break;
-            }
-        // Avançár para próxima função
-            for (p += Num16(p); p[0] || p[1]; p += Num16(p))
-                if (p[2] > Instr::cVariaveis)
-                    switch (p[2])
-                    {
-                    case Instr::cConstNulo:
-                    case Instr::cConstTxt:
-                    case Instr::cConstNum:
-                    case Instr::cConstExpr:
-                    case Instr::cConstVar:
-                    case Instr::cFunc:
-                    case Instr::cVarFunc:
-                        TextoAtual = p;
-                        return false;
-                    }
-            MudaConsulta(prNada);
+            else
+                TextoAtual = p;
             break;
         }
     }

@@ -80,7 +80,7 @@ func escr
     ret arg0.msg("Tecle o nome do efeito após CEF")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, EMDSA))
+  nome = txte(txtremove(arg1, "EMDSA"))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
     ret arg0.msg("Nome inválido para efeito: " + nome)
   senao p.existe("e_" + nome)
@@ -114,7 +114,7 @@ func escr
     ret arg0.msg("Tecle o nome do modificador após CMOD")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, EMDSA))
+  nome = txte(txtremove(arg1, "EMDSA"))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
     ret arg0.msg("Nome inválido para modificador: " + nome)
   senao p.existe("f_" + nome)

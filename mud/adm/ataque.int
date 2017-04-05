@@ -146,7 +146,7 @@ func escr
     ret arg0.msg("Tecle o nome da habilidade após CHAB")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, EMDSA))
+  nome = txte(txtremove(arg1, "EMDSA"))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
     ret arg0.msg("Nome inválido para habilidade: " + nome)
   senao p.existe("cmd_" + nome)
@@ -225,7 +225,7 @@ func escr
     ret arg0.msg("Tecle o nome da magia após CMAG")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, EMDSA))
+  nome = txte(txtremove(arg1, "EMDSA"))
   se txtsepara(nome, "DO+DOL,DOL+DO") != nome
     ret arg0.msg("Nome inválido para magia: " + nome)
   senao p.existe("magia_" + nome)
