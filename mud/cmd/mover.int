@@ -105,10 +105,19 @@ func mover # Personagem anda em uma direção
     ret 0
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0), 0
+    ret l.objini.cmd_mover(arg0, s1, dir, arg0, arg1, arg2, arg3), 0
   efim
-  epara l.addfim(arg0.dono.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, arg0.dono, dir, arg0.dono), 0
+  epara l.addfim(s1.evento), l, l.ini.remove
+    ret l.objini.cmd_mover(arg0, s1, dir, s1, arg1, arg2, arg3), 0
+  efim
+  epara l.addfim(arg3.evento), l, l.ini.remove
+    ret l.objini.cmd_mover(arg0, s1, dir, arg3, arg1, arg2, arg3), 0
+  efim
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    ret l.objini.cmd_moverdest(arg0, s1, dir, arg1, arg1, arg2, arg3), 0
+  efim
+  epara l.addfim(arg2.evento), l, l.ini.remove
+    ret l.objini.cmd_moverdest(arg0, s1, dir, arg2, arg1, arg2, arg3), 0
   efim
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
@@ -134,10 +143,19 @@ func mover # Personagem anda em uma direção
     mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai1, m_entra1)
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_moveu(arg0, arg1, dir, arg0)
+    ret l.objini.cmd_moveu(arg0, s1, dir, arg0, arg1, arg2, arg3), 0
+  efim
+  epara l.addfim(s1.evento), l, l.ini.remove
+    ret l.objini.cmd_moveu(arg0, s1, dir, s1, arg1, arg2, arg3), 0
+  efim
+  epara l.addfim(arg3.evento), l, l.ini.remove
+    ret l.objini.cmd_moveu(arg0, s1, dir, arg3, arg1, arg2, arg3), 0
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    l.objini.cmd_moveu(arg0, arg1, dir, arg1)
+    ret l.objini.cmd_moveudest(arg0, s1, dir, arg1, arg1, arg2, arg3), 0
+  efim
+  epara l.addfim(arg2.evento), l, l.ini.remove
+    ret l.objini.cmd_moveudest(arg0, s1, dir, arg2, arg1, arg2, arg3), 0
   efim
 # Checa se morre ao entrar
   casovar arg1.s_morre(arg0)

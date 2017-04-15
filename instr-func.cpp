@@ -229,6 +229,16 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
             return false;
         VarAtual->setDouble(sqrt(numero));
         return true;
+    case 13: // matcima()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(ceil(numero));
+        return true;
+    case 14: // matbaixo()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(floor(numero));
+        return true;
     }
     return false;
 }

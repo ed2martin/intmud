@@ -58,6 +58,8 @@ func escr
 # Checa se o personagem pode vestir
     se r.vestirsim == (alvo == arg0 ? 2 : 1)
       erro = "$P não consegue vestir $o."
+    senao r.vestirsexo == (alvo.psexo ? 1 : 2)
+      erro = "$P não consegue vestir $o."
 # Checa o nível
     senao int(r.pnivel) > alvo.pnivel
       erro = "$P precisa estar no nível " + r.pnivel + " para vestir $o."

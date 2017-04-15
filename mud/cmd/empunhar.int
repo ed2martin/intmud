@@ -26,7 +26,9 @@ func escr
     se !r.armatipo
       ret $mens.mperso("$O não é arma.")
     senao r.vestirsim == (alvo == arg0 ? 2 : 1)
-      ret $mens.mperso("$P não consegue vestir $o.")
+      ret $mens.mperso("$P não consegue empunhar $o.")
+    senao r.vestirsexo == (alvo.psexo ? 1 : 2)
+      ret $mens.mperso("$P não consegue empunhar $o.")
     senao int(r.pnivel) > alvo.pnivel
       ret $mens.mperso("$P precisa estar no nível " + r.pnivel + " para empunhar $o.")
     senao int(r.renascer) > alvo.prenascer

@@ -55,6 +55,8 @@ const Instr::TListaFunc Instr::ListaFunc[] = {
     { "matacos",    Instr::FuncNumero, 8 },
     { "matasin",    Instr::FuncNumero, 7 },
     { "matatan",    Instr::FuncNumero, 9 },
+    { "matbaixo",   Instr::FuncNumero, 14 },
+    { "matcima",    Instr::FuncNumero, 13 },
     { "matcos",     Instr::FuncNumero, 5 },
     { "matexp",     Instr::FuncNumero, 10 },
     { "matlog",     Instr::FuncNumero, 11 },

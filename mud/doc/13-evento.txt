@@ -202,12 +202,17 @@ Chamado para os objetos em arg0.evento (os objetos que recebem os eventos
 do personagem), pela função recalc_exec, para ajustar as variáveis
 (pontos de vida, mana, etc.)
 
-func cmd_moveu
+func cmd_mover
 arg0 = personagem que andou em uma direção (comandos n, s, l, o, c, b, ne, etc.)
-arg0.donoantes = sala aonde estava
-arg1 = sala aonde foi parar
+arg1 = sala origem (aonde estava)
 arg2 = direção (um texto)
-arg3 = origem do evento: arg0 ou arg1
+arg3 = origem do evento: arg0, arg1 ou arg6
+arg4 = sala destino (aonde entrou)
+arg5 = item aonde entrou ou nulo
+arg6 = item de onde saiu ou nulo
+
+func cmd_moveudest
+Mesmo que cmd_moveu, porém a origem do evento pode ser arg4 ou arg5
 
 func cmd_falou
 arg0 = personagem
@@ -375,9 +380,15 @@ A origem do evento é sempre arg0
 
 func cmd_mover
 arg0 = personagem que quer ir em uma direção (comandos n, s, l, o, c, b, ne, etc.)
-arg1 = sala aonde está
+arg1 = sala origem (aonde está)
 arg2 = direção (um texto)
-arg3 = origem do evento: arg0 ou arg1
+arg3 = origem do evento: arg0, arg1 ou arg6
+arg4 = sala destino (aonde está entrando)
+arg5 = item aonde está entrando ou nulo
+arg6 = item de onde está saindo ou nulo
+
+func cmd_moverdest
+Mesmo que cmd_mover, porém a origem do evento pode ser arg4 ou arg5
 
 func cmd_ver
 func cmd_olhar

@@ -229,9 +229,8 @@ const nome = "colete dos elfos"
 const descnome = "o colete dos elfos"
 const msexo = 1 # Sexo: 1 Masculino
 const pesoobj = 1000
-const vestir1 = 64 # Aonde vestir: 6-sobre o corpo
-const pnivel = 3
 const tipoitem = 8 # Tipo de produto: Vestimenta
+const pnivel = 3
 
 func cmd_podevestir
 # Essa função é chamada sempre que um personagem tenta vestir um item
@@ -958,6 +957,31 @@ const descnome = "uma pequena janela"
 const descpos = "Há uma pequena janela na parede."
 const i_pegar = "Não tem como retirar a janela da parede."
 const i_salaver = dono.dono.dono
+
+
+classe i_teste065
+herda comum_itemperso
+const nome = "vaso grande"
+const descnome = "um vaso grande"
+const descpos = "Há um vaso grande no centro da sala."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_pegar = "É muito grande e pesado!"
+const i_abertoini = 1 # Container: 1 Sempre aberto
+const evhora = 1 # Eventos hora: Sim
+
+func cmd_ini
+  criar("i_teste066", este, 3)
+
+func cmd_hora
+  se int(dentro1.objini("i_teste066").objtot) < 10
+    criar("i_teste066", este, 1)
+  fimse
+
+
+classe i_teste066
+herda comum_itemgrupo
+const nome = "erva"
+const descnome = "uma erva"
 
 
 classe p_teste001
@@ -1880,6 +1904,32 @@ func cmd_morreu
 # Anuncia a chegada do personagem
     $mens.p(r)
     $mens.mtodos1("Mais um $p aparece aqui!")
+  fimse
+
+
+classe p_teste039
+herda comum_perso
+const nome = "jardineiro"
+const descnome = "um jardineiro"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_recebe = 1 # Recebe itens: Sim
+const eveste = 1 # Eventos perso: Sim
+
+func cmd_darobj # Alguém quer dar algum item
+# arg0=quem quer dar, arg1=quem vai receber, arg2=objeto, arg3=quantidade
+  se txt(arg2) != "i_teste066"
+    $mens.p(este, arg0, arg2)
+    $mens.msginv("$P diz para $a: $O não me interessa.", arg0)
+    ret 1 # Para não receber o item
+  fimse
+
+func cmd_deuobj
+  apagar(arg2) # Vai apagar o item que recebeu
+  se txt(arg2) == "i_teste066"
+    arg0.var.z_moedas_ += 20 * arg3
+    $mens.p(este, arg0)
+    $mens.mens = 20 * arg3
+    $mens.mtodos1("$P dá $m moedas para $a.")
   fimse
 
 
@@ -4175,6 +4225,7 @@ const s_desc = "Aqui um instrutor dá uma faca para o jogador.\n\
 Se você já possui uma faca ou está empunhando uma, o instrutor\n\
 não dá outra."
 const dir_l = $s_teste106
+const dir_o = $s_teste166
 const s_reset = "P 100 teste029 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -4708,3 +4759,20 @@ func cmd_soltouobj
       $mens.mtodos1("Descendo vagarosamente, $o pousa aqui.")
     fimse
   fimse
+
+
+classe s_teste166
+herda b_teste
+const s_titulo = "Dar ervas e receber moedas"
+const s_desc = "Aqui nasce uma erva no vaso a cada hora MUD (5 minutos), até chegar em 10.\n\
+Você pode pegar uma ou mas ervas e entregar ao jardineiro.\n\
+Ele lhe dará 20 moedas para cada uma dessas plantas."
+const dir_l = $s_teste131
+const s_reset = "P 100 teste039 0 0 1 n\\\nS 100 teste065 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste039:objsolto.total < 1
+    criar("p_teste039", este, 0, "n\\")
+  fimse
+  !dentro1.objini("i_teste065") && criar("i_teste065", este, 1)
