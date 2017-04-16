@@ -947,6 +947,7 @@ herda comum_item
 const nome = "barraca"
 const descnome = "uma pequena barraca"
 const i_salas = "teste162\nteste163"
+const mantersala = 1 # Mantém na sala: Sim
 const volobj = 100
 
 
@@ -982,6 +983,36 @@ classe i_teste066
 herda comum_itemgrupo
 const nome = "erva"
 const descnome = "uma erva"
+
+
+classe i_teste067
+herda comum_item
+const nome = "ônibus"
+const descnome = "um ônibus"
+const descpos = "Um ônibus antigo está aqui."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_salaentrar = $s_teste168
+const mantersala = 1 # Mantém na sala: Sim
+const eveste = 1 # Eventos item: Sim
+
+func cmd_moverdest
+  se arg5 == este && arg5 == arg3
+    se !arg0.dentro1.objini("i_teste068")
+      arg0.msg("Colocaram uma cartraca moderna em um ônibus antigo.")
+      arg0.msg("Você precisa de um bilhete para poder entrar.")
+      ret 1
+    senao
+      arg0.msg("Você coloca um bilhete na catraca.")
+      arg0.dentro1.objini("i_teste068").apagar(1)
+      ret
+    fimse
+  fimse
+
+
+classe i_teste068
+herda comum_itemgrupo
+const nome = "bilhete"
+const descnome = "um bilhete"
 
 
 classe p_teste001
@@ -1931,6 +1962,13 @@ func cmd_deuobj
     $mens.mens = 20 * arg3
     $mens.mtodos1("$P dá $m moedas para $a.")
   fimse
+
+
+classe p_teste040
+herda comum_perso
+const nome = "vendedora bilhetes"
+const descnome = "uma vendedora de bilhetes"
+const lojaitem = "teste068 0"
 
 
 classe s_teste001
@@ -4674,6 +4712,7 @@ classe s_teste161
 herda b_teste
 const s_titulo = "Itens com salas"
 const s_desc = "Aqui há uma pequena barraca com duas salas internas."
+const dir_n = $s_teste167
 const dir_s = $s_teste160
 const a_reset = "S 100 teste063 1 S"
 
@@ -4776,3 +4815,48 @@ func s_reset1 # Realiza o reset
     criar("p_teste039", este, 0, "n\\")
   fimse
   !dentro1.objini("i_teste065") && criar("i_teste065", este, 1)
+
+
+classe s_teste167
+herda b_teste
+const s_titulo = "Item aparentemente com salas"
+const s_desc = "Aqui, para entrar no ônibus, é necessário comprar um bilhete.\n\
+O ônibus é bem parecido com o portal: é criado no Ares, não é apagado\n\
+depois de um tempo e não possui uma sala interna. Ao entrar, na verdade\n\
+você vai para outra sala do MUD, e ao sair do ônibus, vai para a sala\n\
+aonde o item ônibus está."
+const dir_s = $s_teste161
+const a_reset = "S 100 teste067 1 S"
+
+func a_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de a_reset
+  !dentro1.objini("i_teste067") && criar("i_teste067", este, 1)
+
+const s_reset = "P 100 teste040 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste040:objsolto.total < 1
+    criar("p_teste040", este, 0)
+  fimse
+
+
+classe s_teste168
+herda b_teste
+const s_titulo = "Dentro do ônibus"
+const s_desc = "Esse é um modelo antigo, que já saiu de uso há muito tempo. Não anda mais.\n\
+Notar que esta é uma sala do MUD (o ônibus não possui uma sala interna).\n\
+Por isso, se precisar criar outro ônibus, é necessário criar outro item\n\
+e outras salas. No entanto, se o jogador sair do MUD e voltar, continuará\n\
+dentro do ônibus."
+const dir_c = $s_teste169
+const dir_sair = $i_teste067
+
+
+classe s_teste169
+herda b_teste
+const s_titulo = "Primeiro andar"
+const s_desc = "Aqui é o primeiro andar do ônibus. O teto é bem mais baixo.\n\
+Daqui consegue-se ver fora do ônibus teclando ver janela."
+const dir_b = $s_teste168
+const ver_janela = $i_teste067.dono.descsala(arg0, 7)

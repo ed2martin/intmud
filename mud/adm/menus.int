@@ -721,9 +721,9 @@ func menu # Retorna sala (constante do tipo "const x = $s_abc")
     senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO"), " ") >= 0
       ret "<const>"
     senao tipo == arg1 + " = $s_"
-      ret txt(p.texto, inttotal(arg1) + 12)
+      ret "\c6" + txt(p.texto, inttotal(arg1) + 12) + "\b"
     senao tipo == arg1 + " = $i_"
-      ret "item " + txt(p.texto, inttotal(arg1) + 12)
+      ret "\c6item " + txt(p.texto, inttotal(arg1) + 12) + "\b"
     senao
       ret "<const>"
     fimse
@@ -735,9 +735,9 @@ func menu # Retorna sala (constante do tipo "const x = $s_abc")
     senao txtproc(txtsepara("x" + txt(txtsub(p.texto, 3), 3), "LD+EO"), " ") >= 0
       ret "<herda const>"
     senao sala == arg1 + " = $s_"
-      ret "<herda> " + txt(p.texto, inttotal(arg1) + 12)
+      ret "<herda> \c6" + txt(p.texto, inttotal(arg1) + 12) + "\b"
     senao sala == arg1 + " = $i_"
-      ret "<herda> item " + txt(p.texto, inttotal(arg1) + 12)
+      ret "<herda> \c6item " + txt(p.texto, inttotal(arg1) + 12) + "\b"
     senao
       ret "<herda const>"
     fimse

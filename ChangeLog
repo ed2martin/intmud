@@ -1,3 +1,50 @@
+* 16/04/2017 IntMUD 1.10a MUD baseado na revisão 448
+
+   No IntMUD:
+  1. Cada instrução agora pode ter até 8192 bytes (antes era 2048 e não
+     estava mais aceitando a constante admordem do arquivo
+     mud/obj/sala.int)
+  2. Corrigido bug em prog.renomear para renomear uma classe da seguinte
+     forma: p.renomear("a z", "a_z")
+  3. Corrigido bug: estava ignorando o segundo argumento de
+     prog.inifunccl
+  4. Arquivo teste/prog.int foi modificado para testar melhor
+     prog.inifunccl
+  5. Criadas funções Matcima e Matbaixo (vide manual.txt)
+
+   No MUD:
+  1. Corrigido bug: não estava atualizando corretamente mensagens das
+     habilidades e magias (arquivo hab.int) na versão lançada em
+     12/2/2017
+  2. Corrigido bug: Opção Comportamento/Movimentar não estava
+     funcionando em PNJs do tipo simples
+  3. Corrigido bug: comando Saidas estava mostrando as saídas invisíveis
+     e estava mostrando nomes das sala quando a porta está fechada
+  4. Criadas funções msgsominv, msgsomvis, mtodos1som, mtodos2som,
+     mvis1som e mvis2som de $mens, vide mud/doc/03-mensagens.txt
+  5. Menu Sons nos comandos Eperso e Eitem
+  6. Sons abriu/fechou/trancou/destrancou no comando Esai
+  7. Criada classe opc_listaperso, para listas de personagens em menus
+  8. Criada opção "Pede ajuda" no menu Comportamento do comando Eperso
+  9. Nomes dos atalhos do comando Eperm agora podem ter letras
+     acentuadas
+ 10. No comando Econfig, a opção "Taxa de manutenção" agora aceita
+     números quebrados, como 0.5
+ 11. Opção txtlinha para os menus foi removida (era usada para agrupar
+     várias mensagens dos ataques em uma única constante)
+ 12. Evento cmd_mover agora possui 6 argumentos e foi criado evento
+     cmd_moverdest
+ 13. Eventos cmd_moveu e cmd_moveudest agora são semelhantes à cmd_mover
+     e cmd_moverdest
+ 14. Opção em itens: vestir sexo (se só homens ou só mulheres podem
+     vestir e empunhar)
+ 15. Criada sala teste165: ao soltar um item, ele é transportado para
+     uma das salas teste145, teste146 ou teste147
+ 16. Criada sala teste166: em um vaso nasce uma erva a cada 5 minutos, e
+     cada erva que o jardineiro receber, ele dá 20 moedas em troca
+ 17. Criada sala teste167: Item aparentemente com salas e bilhete para
+     entrar no item
+
 * 12/02/2017 IntMUD 1.10 MUD baseado na revisão 439
 
    No MUD:
