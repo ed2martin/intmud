@@ -220,9 +220,11 @@ func bat_ini_int # Chamado internamente por batalhaini
   epara i = atkbat.ini, i, i.depois
     i.obj.e_condicao == 3 && apagar(i.obj)
   efim
-# Obtém o líder do grupo do alvo
+# Checa se pode batalhar em grupo, obtém o líder do grupo do alvo
   ref r
-  se arg0.tseguir == 2
+  se p_atk_individual || arg0.p_atk_individual
+    ret
+  senao arg0.tseguir == 2
     r = arg0
   senao arg0.iseguir && arg0.tseguir == 1
     r = arg0.iseguir.objlista
@@ -301,25 +303,28 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     r.atkdanos2 += i.obj.atkdiv.total
   efim
 # Adiciona todos os personagens dos grupos
-# Desde que: não estejam batalhando, estejam na mesma sala e tenham pontos de vida
-  epara nulo, lider, lider.ini.remove
-    refvar p1 = lider.objini
-    se !p1.atkenv && p1.dono == contr.dono && p1.persobat.pvidaok
-      l.addfim(p1)
-      p1.atkdiv.limpar
-      p1.atkdiv.addfim(p1.persobat)
-      p1.atkdanos2++
-    fimse
-    epara i = p1.lseguir.ini, i, i.depois
-      refvar p2 = i.obj
-      se p2.tseguir == 1 && !p2.atkenv && p2.dono == contr.dono && p2.persobat.pvidaok
-        l.addfim(p2)
-        p2.atkdiv.limpar
-        p2.atkdiv.addfim(p2.persobat)
-        p1.atkdanos2++ # Aumenta quantidade de personagens no personagem líder
+# Desde que: não estejam batalhando, estejam na mesma sala, tenham pontos de vida
+# e este personagem não luta apenas individualmente
+  se !p_atk_individual
+    epara nulo, lider, lider.ini.remove
+      refvar p1 = lider.objini
+      se !p1.atkenv && p1.dono == contr.dono && p1.persobat.pvidaok
+        l.addfim(p1)
+        p1.atkdiv.limpar
+        p1.atkdiv.addfim(p1.persobat)
+        p1.atkdanos2++
       fimse
+      epara i = p1.lseguir.ini, i, i.depois
+        refvar p2 = i.obj
+        se p2.tseguir == 1 && !p2.atkenv && p2.dono == contr.dono && p2.persobat.pvidaok
+          l.addfim(p2)
+          p2.atkdiv.limpar
+          p2.atkdiv.addfim(p2.persobat)
+          p1.atkdanos2++ # Aumenta quantidade de personagens no personagem líder
+        fimse
+      efim
     efim
-  efim
+  fimse
 # Ganha experiência
   ret !v1, nulo
   refvar exp1 = arg0 * (config:atkexp0 + pnivel * config:atkexp1) * misc:mudaexp / (2000 * \

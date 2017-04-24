@@ -167,8 +167,8 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
 # arg0 = personagem
 # arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
 # Retorna verdadeiro se pode usar
-  ret !arg0.pvidaok || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel, \
-nulo
+  ret !arg0.pvidaok || arg0.posicao < posic || arg0.contr.pnivel + config:animal_n < arg0.pnivel,\
+ nulo
   ret arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
@@ -465,6 +465,11 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   senao contr0.jog && contr1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
     se arg0 != arg1
       ret contr0.msg("Você não quer brigar com " + contr1.descnome + " aqui.")
+    fimse
+  senao (contr0.p_atk_individual || contr1.p_atk_individual) && (contr0.atkenv || contr1.atkenv)
+    se !contr0.atkrec.possui(contr1) || !contr1.atkrec.possui(contr0)
+      refvar lin = "Você não quer brigar com " + contr1.descnome + " agora."
+      ret contr0.msg(contr1.p_atk_individual ?? lin)
     fimse
   fimse
 # Dispara eventos

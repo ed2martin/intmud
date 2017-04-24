@@ -143,8 +143,8 @@ int TTextoVar::Compara(TTextoVar * v)
             }
         case TextoVarTipoDec:
             {
-                int v1 = bl1->getDouble();
-                int v2 = bl2->getDouble();
+                int v1 = bl1->getInt();
+                int v2 = bl2->getInt();
                 if (v1 == v2)
                     break;
                 return (v1 < v2 ? -1 : 1);

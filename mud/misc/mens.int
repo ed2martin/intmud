@@ -117,9 +117,10 @@ func msgsomvis # Envia mensagem/som se estiver acordado e vendo personagem perso
 
 func msgvisdir # Envia mensagem estiver acordado e vendo personagem perso
 # arg0=mensagem, arg1=a quem se destina a mensagem
-# arg2=mensagem da direção, quando não está na mesma sala do personagem
+# arg2=mensagem da direção, quando arg1 e perso não estiverem na mesma sala
   se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
     r = arg1
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     refvar dir = (arg1.contr.dono ?? contr.dono) != contr.dono ? arg2
     arg1.msg(txt(dir) + txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
@@ -143,7 +144,7 @@ func msgsominv # Envia mensagem/som se estiver acordado
 
 func msginvdir # Envia mensagem se estiver acordado
 # arg0=mensagem, arg1=a quem se destina a mensagem
-# arg2=mensagem da direção, quando não está na mesma sala do personagem
+# arg2=mensagem da direção, quando arg1 e perso não estiverem na mesma sala
   se arg1.sock && arg1.posicao > 4
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
