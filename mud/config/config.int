@@ -742,19 +742,28 @@ const s_volmax = 1000000
 const i_volmax = 1000000
 const p_volmax = 1000000
 #
-# Taxa de recuperação de vida, mana e movimentos
+# Salas: Taxa de recuperação de vida, mana e movimentos
 const s_recup = 100
 #
-# Quantidade máxima de PNJs na sala
+# Salas: Quantidade máxima de PNJs
 const s_pnj = 10
 #
-# Quantidade máxima de jogadores na sala
+# Salas: Quantidade máxima de jogadores
 const s_jog = 100
 #
-# Som ao entrar na sala
+# Salas: Som ao entrar
 const s_som = "sala"
 #
-# Quantidade de movimentos que um ataque de outra sala usa para chegar na sala
+# Salas: Para que salas os itens doados vão
+const s_doarsalas = ""
+#
+# Salas: Itens doados que essa sala aceita; se vazio aceita qualquer item
+const s_doarsim = 0
+#
+# Salas: Itens doados que essa sala não aceita
+const s_doarnao = 0
+#
+# Salas: Quantidade de movimentos que um ataque de outra sala usa para chegar na sala
 const s_atk_move = 1
 #
 # Personagens quando morrem:
@@ -764,24 +773,31 @@ const s_atk_move = 1
 # 3 = Deixa corpo com itens e moedas, depois vão para sala
 const p_corpo = 0
 #
-# Quantidade de experiência que um personagem dá, em porcentagem
+# Personagens: Quantidade de experiência que dá, em porcentagem
 const p_exp = 100
 #
-# Mensagem morreu
+# Personagens: Mensagem morreu
 const p_morreu1 = "$P morreu."
 #
-# Mensagem desmaiou (quando pertence a outro personagem)
+# Personagens: Mensagem desmaiou (quando pertence a outro personagem)
 const p_morreu2 = "$P desmaiou."
 #
-# Tempo médio em décimos de segundo para ir para outra sala
+# Personagens: Tempo médio em décimos de segundo para ir para outra sala
 const p_movervel = 140
 #
-# Por quanto tempo se lembra dos jogadores que atacaram, em minutos
+# Personagens: Por quanto tempo se lembra dos jogadores que atacaram, em minutos
 const p_lembra = 0
 #
-# Perseguição:
+# Personagens: Perseguição
 # Tempo médio em décimos de segundo para ir para outra sala
 const p_perseguevel = 20
+#
+# Personagens: Alvo dos ataques
+# Como o personagem escolhe quem atacar, quando está lutando com vários
+# 0 Não muda
+# 1 Aleatório
+# 2 Personagem de menor nível
+const p_atk_alvo = 0
 #
 # Ataques: força de ataque nível iniciante, 100 significa 100%
 const a_ataquemin = 25

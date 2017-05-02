@@ -7,6 +7,7 @@ const tipo1 = "normal" # Tipo de personagem
 # const tipo3 = "" # Terceiro tipo do personagem
 const p_agressivo = 1 # Ataca se atacarem
 const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
+const p_atk_alvo = config:p_atk_alvo # Alvo dos ataques
 const p_exp = config:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
@@ -587,8 +588,27 @@ func p_proc_exec # Processar comportamento do personagem
 # Ações do personagem
   atkenv && atkenv.objlista.dono != dono && batalhafim
   ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
-  ret atkenv, (p_proc = 10) + p_proc_atacar(atkenv.objlista) # Se está lutando
-  se !(p_atacou_nome || p_atacou_dir) # Se não foi atacado
+  se atkenv # Se está lutando
+    p_proc = 10
+    casovar p_atk_alvo
+    casose "1" # Atacar qualquer um aleatoriamente
+      listaitem i = atkrec.ini
+      i.depois(rand(atkrec.total))
+      p_proc_atacar(i.obj ?? atkenv.objlista)
+      ret
+    casose "2" # Atacar o personagem de menor nível
+      ref r = atkenv.objlista
+      listaitem i
+      epara i = atkrec.ini, i, i.depois
+        r.pnivel > i.obj.pnivel && (r = i.obj)
+      efim
+      p_proc_atacar(r)
+      ret
+    casose # Não mudar o alvo do ataque
+      p_proc_atacar(atkenv.objlista)
+      ret
+    casofim
+  senao !(p_atacou_nome || p_atacou_dir) # Se não foi atacado
   senao p_atacou_nome && p_proc_atkjog(p_atacou_nome)
     p_atacou_nome = ""
     ret
