@@ -145,6 +145,22 @@ bool Instr::FuncApagar(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Funções chamadas como constantes
+bool Instr::FuncConstante(TVariavel * v, int valor)
+{
+    ApagarVar(v);
+    switch(valor)
+    {
+    case 0: // matpi()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(M_PI);
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
 /// Objeto "este"
 bool Instr::FuncEste(TVariavel * v, int valor)
 {
@@ -238,6 +254,16 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         if (!CriarVar(InstrDouble))
             return false;
         VarAtual->setDouble(floor(numero));
+        return true;
+    case 15: // matrad()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(numero / 180 * M_PI);
+        return true;
+    case 16: // matdeg()
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(numero / M_PI * 180);
         return true;
     }
     return false;
