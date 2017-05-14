@@ -419,14 +419,14 @@ i
 
 func equippos # Retorna as posições aonde pode usar equipamentos
   txt100 lin
-  int32 pos
+  txt12 pos
   lin = "t_" + tipo1
-  pos = (([lin]:equip1 ? [lin]:equip1 : -1) | [lin]:equip2) & ~[lin]:equip3
+  pos = (([lin]:equip1 ?? "FFFFFFFFFFFF") | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
   lin = "t_" + tipo2
-  pos = (([lin]:equip1 ? [lin]:equip1 : pos) | [lin]:equip2) & ~[lin]:equip3
+  pos = (([lin]:equip1 ?? pos) | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
   lin = "t_" + tipo3
-  pos = (([lin]:equip1 ? [lin]:equip1 : pos) | [lin]:equip2) & ~[lin]:equip3
-  ret ((equip1 ? equip1 : pos) | equip2) & ~equip3
+  pos = (([lin]:equip1 ?? pos) | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
+  ret ((equip1 ?? pos) | txt(equip2)) & ~txthex(equip3, 12)
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   ret $mens.msgvis(arg0, este)

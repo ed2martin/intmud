@@ -13,10 +13,10 @@ func escr
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc) # Quem vai remover
 # Preenche a variável vest com o que está vestindo
-  int1 vest.32 # Aonde está vestindo
+  txt12 vest # Aonde está vestindo
   listaitem item
   epara item = alvo.dentro2.ini, item, item.depois
-    vest.[item.obj.vestpos - 1] = 1
+    vest |= intbith(item.obj.vestpos - 1)
   efim
 # Remove
   uint8 total
@@ -27,12 +27,12 @@ func escr
     ref r = l.objini
     continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
     total++
-    refvar valor = vest.bits & config:vestir[r.vestpos - 1]
-    se valor
+    refvar valor = vest & txt(config:vestir[r.vestpos - 1])
+    se txttroca(valor, "0", "")
       listaitem item
       epara item = alvo.dentro2.ini, item, item.depois
         continuar !item.obj.vestpos
-        sair valor & intbit(item.obj.vestpos - 1)
+        sair valor & intbith(item.obj.vestpos - 1)
       efim
       alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
       continuar
@@ -45,7 +45,7 @@ func escr
     epara e.addfim(r.evento), e, e.ini.remove
       ret e.objini.cmd_remover(alvo, r, posic, r), nulo
     efim
-    vest.[r.vestpos - 1] = 0
+    vest &= ~txthex(intbith(r.vestpos - 1), 12)
     refvar som = r.vestpos == 50 ? r.i_som_emp0 : r.i_som_vest0
     r.vestir(0)
     $mens.p(alvo, nulo, r)

@@ -1,4 +1,4 @@
-classe atualiza_438
+classe atualiza_451
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -631,8 +631,8 @@ casa está atrasada.\"")
 func ini3_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 438, nulo
-  p.criar("config", "const versao = 438 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 451, nulo
+  p.criar("config", "const versao = 451 # Para atualizar diretórios areas e config")
   config:salvar
 # Espera em ataques manuais, mensagens dos ataques
   se versao < 434
@@ -675,9 +675,36 @@ func ini3_exec
     criafunc("config", "const promptmsg = \"<%c3%hhp %c2%mmn %c6%vmv%b>\"")
     criafunc("config", "const bpromptmsg = \"<%c3%hhp %c2%mmn %c6%vmv%b>\"")
   fimse
+# Constantes usadas ao vestir
+  se versao < 451
+    dbg.ini
+    int8 cont
+    epara cont = 0, cont < 30, cont++
+      c_hex("config", "vestir" + cont)
+    efim
+    epara p.iniherdainv("comum_item"), p.lin, p.depois
+      dbg.ini
+      c_hex(p.texto, "vestir1")
+    efim
+    epara p.iniherdainv("comum_perso"), p.lin, p.depois
+      dbg.ini
+      c_hex(p.texto, "equip1")
+      c_hex(p.texto, "equip2")
+      c_hex(p.texto, "equip3")
+    efim
+    epara p.iniherdainv("comum_tipo"), p.lin, p.depois
+      dbg.ini
+      c_hex(p.texto, "equip1")
+      c_hex(p.texto, "equip2")
+      c_hex(p.texto, "equip3")
+    efim
+  fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
 
+# Converte constante do tipo const a=10 para texto em hexadecimal como const a="a"
+const c_hex = p.varnum(arg0, arg1) ? p.criar(arg0, "const " + arg1 + " = \"" + ("0" | txtconv([arg0]:[arg1], "dh")) + "\"")
+#
 const perm_autorizar = "perm_autorizar\n\
 config/perm\n\
 herda comum_perm\n\

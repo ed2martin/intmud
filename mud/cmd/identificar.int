@@ -130,11 +130,11 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Aonde pode ser vestido
   se 1
     uint8 x
-    int32 valor
-    lin = "", valor = arg1.vestir1
-    arg1.armatipo && (lin += ", empunhando")
-    enquanto x < 30 && valor
-      valor & 1 && (lin += ", " + txtsublin(config:equip_txt, x, 1))
+    refvar xmax = intsublin(config:equip_txt)
+    txt100 valor = arg1.vestir1
+    lin = (arg1.armatipo ? ", empunhando" : "")
+    enquanto x < xmax && valor
+      (valor & "1") == "1" && (lin += ", " + txtsublin(config:equip_txt, x, 1))
       x++, valor = valor >> 1
     efim
     lin && arg2.addfim("Pode ser usado em: " + txt(lin, 2) + ".")

@@ -160,7 +160,7 @@ func tipoitem2
   armatipo && (tipo |= config:item_arma)
   luzitem && (tipo |= config:item_luz)
   i_chave && (tipo |= config:item_chave)
-  vestir1 && (tipo |= config:item_vestimenta)
+  vestir1 && vestir1 != "0" && (tipo |= config:item_vestimenta)
   (f_tipo == 1 || f_tipo == 2) && (tipo |= config:item_bebida)
   f_tipo == 3 && (tipo |= config:item_comida)
   f_tipo == 4 && (tipo |= config:item_pergaminho)
