@@ -750,7 +750,9 @@ bool TVarProg::FuncIniFuncCl(TVariavel * v)
             break;
         }
         ValorFim = strlen(texto);
-        p = Instr::ProximaInstr(p, texto, ValorFim);
+        if (p[2] <= Instr::cVariaveis ||
+                compara(texto, p + Instr::endNome, ValorFim) != 0)
+            p = Instr::ProximaInstr(p, texto, ValorFim);
         if (p == 0)
             valor = prNada;
         break;

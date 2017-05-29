@@ -29,36 +29,33 @@ func escr_arg # Com algum argumento
   textotxt t # Mensagens
   prog p # Para obter o objeto correspondente ao comando
   ref r # Objeto correspondente ao comando
-  txt100 nome # Nome do comando
   epara p.iniclasse("soc_" + arg1), p.lin, p.depois
     sair arg0.pnivel >= $[p.texto].nivel
   efim
   ret !p.lin, arg0.msg("Comando social não existe: " + arg1)
   r = $[p.texto]
-  nome = txt2(txte(r))
+  refvar nome = txt2(txte(r)) # Nome do comando
+  refvar msgini = "\nSe " + o1.descnome + " digitar " + nome
+  txt100
   $mens.p(o1)
   se r.sem1 && r.sem2
-    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + ", receberá:\n" + r.sem1, \
-o1))
+    t.addfim($mens.txt(msgini + ", el$v receberá:\n" + r.sem1, o1))
     t.addfim($mens.txt("E os demais:\n" + r.sem2, o2))
   fimse
   $mens.p(o1, o1)
   se r.auto1 && r.auto2
-    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + " " + o1.nome + ", receberá:\n\
-" + r.auto1, o1))
+    t.addfim($mens.txt(msgini + " " + o1.nome + ", el$v receberá:\n" + r.auto1, o1))
     t.addfim($mens.txt("E os demais:\n" + r.auto2, o2))
   fimse
   $mens.p(o1, o2)
   se r.perso1 && r.perso2 && r.perso3
-    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + " " + o2.nome + ", receberá:\n\
-" + r.perso1, o1))
+    t.addfim($mens.txt(msgini + " " + o2.nome + ", el$v receberá:\n" + r.perso1, o1))
     t.addfim($mens.txt("E " + o2.descnome + ":\n" + r.perso2, o2))
     t.addfim($mens.txt("E os demais:\n" + r.perso3, este))
   fimse
   $mens.p(o1, nulo, o3)
   se r.item1 && r.item2
-    t.addfim($mens.txt("\nSe " + o1.descnome + " digitar " + nome + " " + o3.nome + ", receberá:\n\
-" + r.item1, o1))
+    t.addfim($mens.txt(msgini + " " + o3.nome + ", el$v receberá:\n" + r.item1, o1))
     t.addfim($mens.txt("E os demais:\n" + r.item2, este))
   fimse
   se t.linhas
