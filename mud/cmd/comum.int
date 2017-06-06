@@ -28,15 +28,6 @@ const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 
 classe comum_negociar
 # Comandos em que o PNJ negocia com alguém: comprar, vender, avaliar, etc.
-txt30 n_t1 # arg0.tipo1
-txt30 n_t2 # arg0.tipo2
-txt30 n_t3 # arg0.tipo3
-
-func negociar_ini # Inicializa variáveis
-# arg0 = personagem do jogador
-  n_t1 = arg0.tipo1 ? "\n" + txte(arg0.tipo1) + "\n" : ""
-  n_t2 = arg0.tipo2 ? "\n" + txte(arg0.tipo2) + "\n" : ""
-  n_t3 = arg0.tipo3 ? "\n" + txte(arg0.tipo3) + "\n" : ""
 
 func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
 # arg0 = personagem do jogador
@@ -46,17 +37,17 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
   se !arg0.visivel(arg1)
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com quem não posso ver."
   senao !arg1.lojanao # negocia com todos
-  senao n_t1 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t1) >= 0
+  senao negociar_tipo(arg0.tipo1, arg1.lojanao)
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo1
-  senao n_t2 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t2) >= 0
+  senao negociar_tipo(arg0.tipo2, arg1.lojanao)
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo2
-  senao n_t3 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t3) >= 0
+  senao negociar_tipo(arg0.tipo3, arg1.lojanao)
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo3
   fimse
   se !arg1.lojasim # negocia com todos
-  senao n_t1 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t1) >= 0
-  senao n_t2 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t2) >= 0
-  senao n_t3 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t3) >= 0
+  senao negociar_tipo(arg0.tipo1, arg1.lojasim)
+  senao negociar_tipo(arg0.tipo2, arg1.lojasim)
+  senao negociar_tipo(arg0.tipo3, arg1.lojasim)
   senao
     txt100 lin = arg0.tipo1 ? " " + arg0.tipo1
     lin += (arg0.tipo2 ? " " + arg0.tipo2 : "") + (arg0.tipo3 ? " " + arg0.tipo3)
@@ -77,14 +68,14 @@ func negociar_checa # Checa se PNJ pode negociar
 # Retorna: "" se negocia ou "\b" se não negocia
   ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0) || !arg0.visivel(arg1), "\b"
   se arg1.lojanao
-    ret n_t1 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t1) >= 0, "\b"
-    ret n_t2 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t2) >= 0, "\b"
-    ret n_t3 && txtproc("\n" + txte(arg1.lojanao) + "\n", n_t3) >= 0, "\b"
+    ret negociar_tipo(arg0.tipo1, arg1.lojanao), "\b"
+    ret negociar_tipo(arg0.tipo2, arg1.lojanao), "\b"
+    ret negociar_tipo(arg0.tipo3, arg1.lojanao), "\b"
   fimse
   se !arg1.lojasim # negocia com todos
-  senao n_t1 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t1) >= 0
-  senao n_t2 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t2) >= 0
-  senao n_t3 && txtproc("\n" + txte(arg1.lojasim) + "\n", n_t3) >= 0
+  senao negociar_tipo(arg0.tipo1, arg1.lojasim)
+  senao negociar_tipo(arg0.tipo2, arg1.lojasim)
+  senao negociar_tipo(arg0.tipo3, arg1.lojasim)
   senao
     ret "\b"
   fimse
@@ -92,3 +83,8 @@ func negociar_checa # Checa se PNJ pode negociar
   refvar fecha = int(arg1.lojafim) - misc:hora
   ret abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0, "\b"
   ret ""
+
+func negociar_tipo # Retorna 1 se um tipo existe e está em uma lista
+# arg0 = tipo (nome de uma raça ou classe)
+# arg1 = lista de tipos (raças e classes), um tipo por linha
+  ret arg0 && txtproc("\n" + txte(arg1) + "\n", "\n" + txte(arg0) + "\n") >= 0

@@ -10,7 +10,6 @@ func escr
     ret arg0.msg("Você não possui pontos de aula.")
   fimse
   ret !arg1, arg0.msg("Aprender o quê?")
-  negociar_ini(arg0)
   uint32 aulas # Quantas aulas ensina
   uint32 valor # Preço da aula
   int32 linha
@@ -41,9 +40,9 @@ func escr
       fimse
 # Checa se está limitado a alguns tipos (raças/classes)
       se !r.tipoperso
-      senao n_t1 && txtproc("\n" + txte(r.tipoperso) + "\n", n_t1) >= 0
-      senao n_t2 && txtproc("\n" + txte(r.tipoperso) + "\n", n_t2) >= 0
-      senao n_t3 && txtproc("\n" + txte(r.tipoperso) + "\n", n_t3) >= 0
+      senao negociar_tipo(arg0.tipo1, r.tipoperso)
+      senao negociar_tipo(arg0.tipo2, r.tipoperso)
+      senao negociar_tipo(arg0.tipo3, r.tipoperso)
       senao
         lin = "Não tem como ensinar " + lin + " para sua raça e classe."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
