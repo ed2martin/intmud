@@ -1,4 +1,4 @@
-classe atualiza_451
+classe atualiza_454
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -6,6 +6,7 @@ uint16 versao
 telatxt tela
 intexec ini2
 intexec ini3
+intexec ini4
 
 func p_criar # Para testar as modificações
   se args == 1
@@ -629,10 +630,10 @@ casa está atrasada.\"")
   fimse
 
 func ini3_exec
-  apagar(este)
+  ini4 = 1
 # Checa e muda a versão
-  ret (versao = config:versao) >= 451, nulo
-  p.criar("config", "const versao = 451 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 453, nulo
+  p.criar("config", "const versao = 453 # Para atualizar arquivos mud/config/* e mud/areas/*")
   config:salvar
 # Espera em ataques manuais, mensagens dos ataques
   se versao < 434
@@ -697,6 +698,44 @@ func ini3_exec
       c_hex(p.texto, "equip1")
       c_hex(p.texto, "equip2")
       c_hex(p.texto, "equip3")
+    efim
+  fimse
+# sons
+  se versao < 453
+    arqtxt arq
+    arq.abrir("sav2/som.txt", 0)
+    enquanto !arq.eof
+      dbg.ini
+      refvar info = arq.ler
+      txt512 lin = "som_" + txtsub(info, 1, 1) + "\nconfig/som\nherda comum_som\n"
+      se txt1(info) == "e"
+        lin += "const tipo = 0\n"
+      senao txt1(info) == "i"
+        lin += "const tipo = 1\n"
+      senao txt1(info) == "m"
+        lin += "const tipo = 2\n"
+      senao
+        continuar
+      fimse
+      lin += "const arquivo = \"" + txtvis(txtsub(info, 2, 1)) + "\"\n"
+      txtsub(info, 3, 1) != "100" && (lin += "const volume = " + txtsub(info, 3, 1) + "\n")
+      txtsub(info, 4, 1) != "1" && (lin += "const repete = " + txtsub(info, 4, 1) + "\n")
+      p.criar(lin)
+    efim
+  fimse
+
+func ini4_exec
+  apagar(este)
+# Checa e muda a versão
+  ret (versao = config:versao) >= 454, nulo
+  p.criar("config", "const versao = 454 # Para atualizar diretórios areas e config")
+  config:salvar
+# Atualiza sons
+  se versao < 454
+    epara p.iniclasse("som_"), p.lin, p.depois
+      dbg.ini
+      [p.texto]:iniclasse(p.texto)
+      $[p.texto].atualiza
     efim
   fimse
 # Avisa que atualizou arquivos

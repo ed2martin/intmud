@@ -348,13 +348,13 @@ func msg # Envia mensagem
     refvar som = txt(txt1(p.texto(ini, 80)), 2)
     p.mudar("", ini, inttotal(som) + 3)
     continuar !jogconfig.12
-    casovar txt1($miscsom.t1._[som])
-    casose "m"
+    casovar txt1($som_[som].tipo)
+    casose "2" # Música contínua
       continuar msgsom_t == som
-    casose "i"
+    casose "1" # Música de fundo
       msgsom_t = arg0
-    casose "e"
-      p.mudar($miscsom.t2._[som] + "\n", 0, 0)
+    casose "0" # Efeito
+      p.mudar($som_[som].som + "\n", 0, 0)
     casofim
   efim
 # Configuração do jogador
@@ -385,13 +385,13 @@ func msgsom # Envia mensagem
   msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
   msgtot2 -= intdiv(msgtot2)
 # Som
-  casovar txt1($miscsom.t1._[arg0])
-  casose "m"
+  casovar txt1($som_[arg0].tipo)
+  casose "2" # Música contínua
     ret msgsom_t == arg0, nulo
-  casose "i"
+  casose "1" # Música de fundo
     msgsom_t = arg0
-  casose "e"
-    msgsock($miscsom.t2._[arg0])
+  casose "0" # Efeito
+    msgsock($som_[arg0].som)
   casofim
 
 func execprompt_exec
@@ -739,7 +739,7 @@ func passo
     txt200 lin
     arg0.nomefim = arg0.info
     $jogsock_chegou.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
-    $jogsock_chegou.msg("Criou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
+    $jogsock_chegou.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
     refvar alvo = arg0.perso.atkenv.objlista
     se !alvo
       arg0.perso.teclou("olhar")
@@ -793,7 +793,7 @@ func passo
     txt200 lin
     arg0.nomefim = arg0.info
     $jogsock_chegou.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
-    $jogsock_chegou.msg("Criou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
+    $jogsock_chegou.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
   fimse
   ret 1
 

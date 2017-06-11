@@ -1,30 +1,10 @@
 classe adm_som
-herda comando_adm
+const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
-\c2SOM\b\n\
-  Mostra os sons cadastrados.\n\
-\c2SOM A\b <nome>\n\
-  Apaga um som (efeito sonoro ou música).\n\
-\c2SOM E\b <nome> <arquivo> <volume> <repetições>\n\
-  Cadastra um efeito sonoro.\n\
-  Se o arquivo for off, cancela os efeitos sendo tocados\n\
-  <volume> vai de 0 a 100. Se for omitido, assume 100.\n\
-  <repetições> é quantas vezes deve repetir, de 1 a 10.\n\
-\c2SOM M\b <nome> <arquivo> <volume> <repetições>\n\
-  Cadastra uma música de fundo.\n\
-  Se o arquivo for off, a música que estiver tocando para de tocar.\n\
-  <volume> vai de 0 a 100.\n\
-  <repetições> é quantas vezes deve repetir, de 1 a 10 ou -1 se deve ser\n\
-  tocado indefinidamente.\n\
-\c2SOM I\b <nome> <arquivo> <volume> <repetições>\n\
-  Mesmo que o comando SOM M, porém quando o MUD pedir para tocar o mesmo\n\
-  arquivo uma segunda vez, a música é interrompida e reiniciada.\n\
-\c2Exemplos:\b\n\
-  som e água agua.wav 100 1     Tocar uma vez agua.wav com volume máximo\n\
-  som e fogo m/fogo.wav 80 2    Tocar duas vezes m/fogo.wav com volume 80\n\
-  som m fundo tema.mp3 100 -1   Tocar tema.mp3 indefinidamente\n\
-  som a fogo                    Apagar o som fogo\n\
-  som m mudo off 100 1          Parar a música que estiver tocando\n\
+  \c2LSOM\b      Lista sons existentes\n\
+  \c2CSOM\b      Cria um som\n\
+  \c2ESOM\b      Edita um som\n\
+  \c2ASOM\b      Apaga um ou mais sons\n\
 \c2Pré requisitos:\b\n\
   Os jogadores precisam usar um cliente com suporte a MSP, como zMUD,\n\
   Vipmud, Omnimud, etc. Precisam também baixar (de algum site) o pacote\n\
@@ -40,38 +20,269 @@ const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
   \\d=latido Um cão do mato olha para a porta e dá três latidos.\n\
   \\d=chat (chat) $R '$m'"
 
+
+classe adm_lsom
+herda comando_adm
+const txtajuda = "\b\c3Lsom\b\n\
+Sintaxe: LSOM [nome]\n\
+Lista os sons que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os sons."
+
 func escr
-  casovar txtmin(txt1(arg1))
-  casose ""
-    refvar txtmais = arg0.sock.txtmais
-    txtmais.limpar
-    txt100 lin
-    refvar t1 = $miscsom.t1
-    epara lin = t1.ini, lin, lin = t1.depois(lin)
-      txtmais.addfim(txtsublin(t1.[lin], 0, 1))
+  prog p
+  se !p.iniclasse("som_" + arg1)
+    arg0.msg("\bNenhum som encontrado.")
+  senao
+    textotxt t
+    t.addfim("\b\c6Som  Tipo  Arquivo\b")
+    enquanto p.lin && t.linhas < 500
+      refvar lin = ($[p.texto].tipo ? "M  " : "E  ") + $[p.texto].arquivo
+      t.addfim(txtcopiamai(txt2(txte(p.texto)), "A") + "  " + lin)
+      p.depois
     efim
-    se !txtmais.linhas
-      txtmais.addfim("Nenhum som cadastrado.")
-    senao
-      txtmais.addini("\b\c6Sons cadastrados:\b")
+    arg0.msg2(t.remove(500))
+  fimse
+
+
+classe adm_csom
+herda comando_adm
+const txtajuda = "\b\c3Csom\b\n\
+Sintaxe: CSOM <nome>\n\
+Cria um som com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+
+func escr
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do som
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do som após CSOM")
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg1, "EMDSA"))
+  se txtsepara(nome, "O+DOL,DOL+O") != nome
+    ret arg0.msg("Nome inválido para som: " + nome)
+  senao p.existe("som_" + nome)
+    ret arg0.msg("Já existe o som: " + nome)
+  fimse
+# Cria som
+  prog p
+  p.criar("som_" + txts(txtmin(nome)) + "\nconfig/som\nherda comum_som")
+  criar("admordena", "config/som")
+# config:salvar
+  arg0.msg("\bCriou som: " + nome)
+  admlog(arg0, "criou som " + nome)
+
+
+classe adm_asom
+herda comando_adm
+const txtajuda = "\b\c3Asom\b\n\
+Sintaxe: ASOM <nomes dos sons>\n\
+Apaga uma ou mais sons, com os nomes especificados.\n\
+Para apagar um som cujo nome contém espaços no meio, use sublinhado\n\
+no lugar dos espaços."
+
+func escr
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de sons após ASOM")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("som_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Som não existe: " + txtsub(arg1, x, 1))
     fimse
-    ret arg0.sock.txtmostra
-  casose "a"
-    refvar lin = txtsub(arg1, 1, 1)
-    ret !$miscsom.t1._[lin], arg0.msg("Som não está cadastrado: " + lin)
-    $miscsom.t1._[lin] = ""
-    $miscsom.t2._[lin] = ""
-    ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
-    arg0.msg("Som apagado: " + lin)
-    ret cmdlog(arg0, "som", "a " + lin)
-  casose "e"
-  casose "m"
-  casose "i"
-    refvar lin = $miscsom.inserir(arg1)
-    ret lin, arg0.msg(lin)
-    ret !$miscsom.salvar, arg0.msg("Erro ao salvar arquivo de sons")
-    refvar l2 = $miscsom.t1._[txtsub(arg1, 1, 1)]
-    arg0.msg("Som inserido: " + l2)
-    ret cmdlog(arg0, "som", l2)
+    x++
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar som
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("som_" + txtsub(arg0.tpasso, x, 1))
+      x++
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Som apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou som " + arg0.tpasso)
+    senao
+      arg0.msg("Sons apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou sons " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "sons" : "som"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_esom
+herda comando_adm
+const txtajuda = "\b\c3Esom\b\n\
+Sintaxe: ESOM <nome>\n\
+Edita o som com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do som após ESOM")
+  senao !p.existe("som_" + arg1)
+    arg0.msg("Som não existe: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "som_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_som"
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
+classe menu_som
+herda comando_menu
+const titulo = "Som " + txt(var.classe1, 4)
+const colunas = 25
+#
+const nome1 = "Tipo"
+const info1 = "Música contínua não interrompe/reinicia a música se o MUD pedir para\n\
+tocar a mesma música de fundo"
+const tipo1 = "opc_opcao"
+const clas1 = var.classe1
+const vari1 = "tipo"
+const extr1 = "Efeito sonoro\nMúsica de fundo\nMúsica contínua"
+const exec1 = "atualiza"
+#
+const nome2 = "Arquivo"
+const info2 = "Se for a palavra off, cancela a música ou os efeitos sonoros sendo tocados"
+const tipo2 = "opc_som_arquivo"
+const clas2 = var.classe1
+const vari2 = "arquivo"
+const exec2 = "atualiza"
+#
+const nome3 = "Volume"
+const info3 = "De 0 a 100, sendo 0 mudo e 100 volume máximo"
+const tipo3 = "opc_numero"
+const clas3 = var.classe1
+const vari3 = "volume"
+const extr3 = "0 100"
+const exec3 = "atualiza"
+#
+const nome4 = "Repetições"
+const info4 = "Quantas vezes deve repetir, de 1 a 10, ou -1 para tocar indefinidamente\n\
+Em efeitos sonoros, -1 faz tocar apenas uma vez"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "repete"
+const extr4 = "-1 10"
+const exec4 = "atualiza"
+
+
+classe opc_som_arquivo
+herda opc_linha
+
+func passo
+  casovar arg1
+  casose ""
+  casose "\b"
+  casose "n"
+  casose "v"
+  casose "z"
+    ret opc_linha:passo(arg0, arg1)
   casofim
-  arg0.msg("Opção inexistente: SOM " + txt1(arg1))
+  refvar nome = txttroca(arg1, "\\", "/")
+  txt200 checa = vartroca(nome, "", "ch_")
+  checa = txttroca(checa, "/", "")
+  checa = txttroca(checa, ".", "")
+  se txt(checa, 1)
+    arg0.msg("Caracteres não permitidos no nome do arquivo: " + checa)
+  senao checa
+    arg0.msg("Caracter não permitido no nome do arquivo: " + checa)
+  senao txt(nome, 0, 1) == "/"
+    arg0.msg("O nome do arquivo não pode começar com /")
+  senao txt(nome, 0, 1) == "."
+    arg0.msg("O nome do arquivo não pode começar com ponto")
+  senao
+    ret opc_linha:passo(arg0, arg1)
+  fimse
+  arg0.msg("Entre com outro nome, Z cancela")
+  ret 1
+
+const ch_a = ""
+const ch_b = ""
+const ch_c = ""
+const ch_d = ""
+const ch_e = ""
+const ch_f = ""
+const ch_g = ""
+const ch_h = ""
+const ch_i = ""
+const ch_j = ""
+const ch_k = ""
+const ch_l = ""
+const ch_m = ""
+const ch_n = ""
+const ch_o = ""
+const ch_p = ""
+const ch_q = ""
+const ch_r = ""
+const ch_s = ""
+const ch_t = ""
+const ch_u = ""
+const ch_v = ""
+const ch_w = ""
+const ch_x = ""
+const ch_y = ""
+const ch_z = ""
+const ch_0 = ""
+const ch_1 = ""
+const ch_2 = ""
+const ch_3 = ""
+const ch_4 = ""
+const ch_5 = ""
+const ch_6 = ""
+const ch_7 = ""
+const ch_8 = ""
+const ch_9 = ""
+const ch__ = ""
+const ch_@ = ""
+
+
+classe comum_som
+const iniclasse = !$[arg0] && criar(arg0)
+# Ordem que deve organizar as constantes:
+const admordem = "tipo\narquivo\nvolume\nrepete"
+const tipo = 0
+const volume = 100
+const repete = 1
+
+func texto # Retorna o texto que deve ser enviado ao cliente
+  txt512 lin
+  refvar arq = txttroca(arquivo, " ", "")
+  ret !arq || arq == "off", tipo ? "!!MUSIC(off)" : "!!SOUND(off)"
+  se tipo
+    lin = "!!MUSIC(off)\n!!MUSIC(" + arq
+  senao
+    lin = "!!SOUND(" + arq
+  fimse
+  se volume <= 0
+    lin += " V=0"
+  senao volume < 100
+    lin += " V=" + volume
+  fimse
+  se repete == -1 && tipo
+    lin += " L=-1"
+  senao int(repete) > 1
+    lin += " L=" + repete
+  fimse
+  ret lin + ")"
+
+func atualiza
+  prog p
+  p.criar(este, "const som = \"" + txtvis(texto) + "\"")
+  config:salvar
