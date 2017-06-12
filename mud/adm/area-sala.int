@@ -324,22 +324,22 @@ as que forem apagadas."
 
 func escr # Apagar sala
   prog p
-  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
-  se nome == ""
+  refvar nome1 = txtmin(txtremove(arg1, "EMDCT7"))
+  se nome1 == ""
     ret arg0.msg("Tecle um ou mais nomes da sala após ASALA")
   fimse
   uint16 x
-  enquanto txtsub(nome, x, 1)
-    refvar nome = txtsub(nome, x, 1)
-    se !p.existe("s_" + nome)
-      ret arg0.msg("Sala não existe: " + nome)
+  enquanto txtsub(nome1, x, 1)
+    refvar nome2 = txtsub(nome1, x, 1)
+    se !p.existe("s_" + nome2)
+      ret arg0.msg("Sala não existe: " + nome2)
     senao arg2.c_esala >= 2
-    senao nome != arg0.jogarea + txtfim(nome, 3)
-      ret arg0.msg("Não pode apagar a sala: " + nome)
+    senao nome2 != arg0.jogarea + txtfim(nome2, 3)
+      ret arg0.msg("Não pode apagar a sala: " + nome2)
     fimse
     x++
   efim
-  arg0.sock.tpasso = nome
+  arg0.sock.tpasso = nome1
   passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar sala
@@ -365,9 +365,19 @@ func passo # Confirmar que quer apagar sala
     txt10 m1
     arg0.passo = este
     txt2(arg0.tpasso) && (m1 = "s")
-    arg0.msg("Apagar sala" + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+    arg0.msg("Apagar sala" + m1 + infonome(arg0.tpasso) + "? Tecle S ou N")
   fimse
   ret 1
+
+func infonome
+  txt200 n1 = arg0
+  txt300 n2
+  enquanto n1
+    refvar agora = txt1(n1)
+    n1 = txt2(n1)
+    n2 += " " + agora + "(" + $s_[agora].s_titulo + ")"
+  efim
+  ret n2
 
 
 classe adm_esala

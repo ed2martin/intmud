@@ -519,6 +519,17 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       epara i = l.ini, i, i.obj.jog ? i.removedepois : i.depois
       efim
     fimse
+    i = l.ini # Não atacar PNJs que ajudam e que pedem ajuda
+    refvar lista = "\n" + contr0.p_atk_ajuda + "\n"
+    enquanto i
+      se txtproc("\n" + i.obj.p_atk_ajuda + "\n", "\n" + txt2(txte(contr0)) + "\n") >= 0
+        i.removedepois
+      senao txtproc(lista, "\n" + txt2(txte(i.obj)) + "\n") >= 0
+        i.removedepois
+      senao
+        i.depois
+      fimse
+    efim
   fimse
 # Força do ataque
   real2 atk

@@ -209,22 +209,22 @@ Apaga uma ou mais itens, com os nomes especificados."
 
 func escr # Apagar item
   prog p
-  refvar nome = txtmin(txtremove(arg1, "EMDCT7"))
-  se nome == ""
+  refvar nome1 = txtmin(txtremove(arg1, "EMDCT7"))
+  se nome1 == ""
     ret arg0.msg("Tecle um ou mais nomes de itens após AITEM")
   fimse
   uint16 x
-  enquanto txtsub(nome, x, 1)
-    refvar nome = txtsub(nome, x, 1)
-    se !p.existe("i_" + nome)
-      ret arg0.msg("Item não existe: " + nome)
+  enquanto txtsub(nome1, x, 1)
+    refvar nome2 = txtsub(nome1, x, 1)
+    se !p.existe("i_" + nome2)
+      ret arg0.msg("Item não existe: " + nome2)
     senao arg2.c_eitem >= 2
-    senao nome != arg0.jogarea + txtfim(nome, 3)
-      ret arg0.msg("Item não existe: " + nome)
+    senao nome2 != arg0.jogarea + txtfim(nome2, 3)
+      ret arg0.msg("Item não existe: " + nome2)
     fimse
     x++
   efim
-  arg0.sock.tpasso = nome
+  arg0.sock.tpasso = nome1
   passo(arg0.sock, "")
 
 func passo # Confirmar que quer apagar item
@@ -255,9 +255,8 @@ func passo # Confirmar que quer apagar item
   ret 1
 
 func infonome
-  txt200 n1
+  txt200 n1 = arg0
   txt300 n2
-  n1 = arg0
   enquanto n1
     refvar agora = txt1(n1)
     n1 = txt2(n1)
