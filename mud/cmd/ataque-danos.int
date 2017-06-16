@@ -285,10 +285,10 @@ func danosg_precisao # Retorna a taxa de acerto (em porcentagem, de 0 a 100)
       refvar bmax = $miscfome.cheio
       valor = danosg_rand(bmin, bmax, arg0.jog ? arg0.p_bebida : 0)
       lin = danosg_erro(pr_acerto, pr_indef, valor)
-      arg2.addfim(txt(++num) + ". Embriaguês perso: \b" + lin)
+      arg2.addfim(txt(++num) + ". Embriaguez perso: \b" + lin)
       valor = danosg_rand(bmin, bmax, arg1.jog ? arg1.p_bebida : 0)
       lin = danosg_acerto(pr_acerto, pr_indef, valor)
-      arg2.addfim(txt(++num) + ". Embriaguês alvo: \b" + lin)
+      arg2.addfim(txt(++num) + ". Embriaguez alvo: \b" + lin)
       valor = 2 + arg0.precisao + addprecisao + arma1.var.z_armaaddprecisao_ - arg1.evasao
       arg2.addfim(txt(++num) + ". Dado de 20 faces: \b2 a 19")
       arg2.addfim(txt(++num) + ". Precisão perso: \bsoma " + arg0.precisao)
