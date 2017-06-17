@@ -50,6 +50,7 @@ bool FuncArg(TVariavel * v, int valor);
 bool FuncArgs(TVariavel * v, int valor);
 bool FuncCriar(TVariavel * v, int valor);
 bool FuncApagar(TVariavel * v, int valor);
+bool FuncConstante(TVariavel * v, int valor);
 bool FuncEste(TVariavel * v, int valor);
 bool FuncNumero(TVariavel * v, int valor);
 bool FuncPow(TVariavel * v, int valor);
