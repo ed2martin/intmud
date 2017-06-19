@@ -190,7 +190,7 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
     arg0.tipo2 && (t += " " + txtcopiamai(txte(arg0.tipo2), "A"))
     arg0.tipo3 && (t += " " + txtcopiamai(txte(arg0.tipo3), "A"))
   fimse
-  se config:olharnivel && (arg0.pnivel || arg0.renascer)
+  se config:olharnivel && (arg0.pnivel || arg0.prenascer)
     t += " nível " + arg0.pnivel
     arg0.prenascer && (t += " R" + arg0.prenascer)
   fimse
