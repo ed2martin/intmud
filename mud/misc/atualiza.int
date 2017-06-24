@@ -1,4 +1,4 @@
-classe atualiza_456
+classe atualiza_457
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -727,8 +727,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 456, nulo
-  p.criar("config", "const versao = 456 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 457, nulo
+  p.criar("config", "const versao = 457 # Para atualizar diretórios areas e config")
   config:salvar
 # Atualiza sons
   se versao < 454
@@ -738,17 +738,16 @@ func ini4_exec
       $[p.texto].atualiza
     efim
   fimse
-# Comando Fim
-  se versao < 456
+# Comando Fim e Dicas aleatórias
+  se versao < 457
     criafunc("config", "const fimmsg = \"Até mais. Aguardamos o seu retorno.\"")
+    se !existe("config_dicas")
+      p.criar("config_dicas\nconfig/config\nconst tempo=30\nconst texto=\"\"")
+    fimse
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
-# Converte constante do tipo const a=10 para texto em hexadecimal como const a="a"
 
-const c_hex = p.varnum(arg0, arg1) ? p.criar(arg0, "const " + arg1 + " = \"" + ("0" | txtconv([ar\
-g0]:[arg1], "dh")) + "\"")
-#
 const perm_autorizar = "perm_autorizar\n\
 config/perm\n\
 herda comum_perm\n\
@@ -759,3 +758,7 @@ const salvar = 0"
 #
 const linhas_atk = "_usar1 _usar2 _usar3 _auto1 _auto2 _perso1 _perso2 _perso3 _matou1 _matou2 \
 _matou3 _errou1 _errou2 _errou3 _nulo1 _nulo2 _nulo3 _esquivou1 _esquivou2 _esquivou3"
+#
+# Converte constante do tipo const a=10 para texto em hexadecimal como const a="a"
+const c_hex = p.varnum(arg0, arg1) ? p.criar(arg0, "const " + arg1 + " = \"" + ("0" | txtconv([ar\
+g0]:[arg1], "dh")) + "\"")

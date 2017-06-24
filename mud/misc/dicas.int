@@ -1,0 +1,41 @@
+classe miscdicas
+const iniclasse = !$[arg0] && criar(arg0)
+const ini = atualiza
+inttempo tempo
+textotxt texto
+
+func atualiza
+  texto.limpar
+  se config_dicas:tempo <= 0 || !config_dicas:texto
+    tempo = 0
+  senao tempo <= 0
+    tempo_exec
+  senao tempo > config_dicas:tempo * 10
+    tempo = config_dicas:tempo * 10
+  fimse
+
+func tempo_exec
+  tempo = config_dicas:tempo * 10
+# Obtém a lista de jogadores
+  listaobj l
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.jogconfig.12 && l.addfim(item.obj)
+  efim
+  ret !l.total, nulo
+# Obtém a próxima dica
+  se !texto.linhas
+    texto.addfim(config_dicas:texto)
+    textopos pos = texto.ini
+    enquanto pos.txtproc("\n\n") >= 0
+      pos.remove
+    efim
+    texto.rand
+  fimse
+  refvar dica = texto.remove
+  ret !dica, nulo
+# Envia dica para os jogadores
+  listaitem i
+  epara i = l.ini, i, i.depois
+    i.obj.msg(dica)
+  efim

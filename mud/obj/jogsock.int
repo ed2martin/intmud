@@ -347,7 +347,7 @@ func msg # Envia mensagem
     refvar ini = p.txtproc("\d=")
     refvar som = txt(txt1(p.texto(ini, 80)), 2)
     p.mudar("", ini, inttotal(som) + 3)
-    continuar !jogconfig.12
+    continuar !jogconfig.13
     casovar txt1($som_[som].tipo)
     casose "2" # Música contínua
       continuar msgsom_t == som
@@ -379,7 +379,7 @@ func msgsom # Envia mensagem
       i.obj.msgsom(arg0, 1)
     efim
   fimse
-  ret !jogconfig.12, nulo
+  ret !jogconfig.13, nulo
 # Controle de banda
   ret msgtot1 >= admbanda:b1, nulo
   msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)

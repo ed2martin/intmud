@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 456 # Para atualizar diretórios areas e config
+const versao = 457 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -143,8 +143,8 @@ const salvaveterano = 60
 const email = 0
 #
 # Opções ativas do comando CONFIG quando um jogador cria um personagem
-const jogconfig = 319 # Config ao criar personagem: 0-desc, 1-saidas, 2-cores, 3-acento, 4-chat, \
-5-seguir, 8-telepatia
+const jogconfig = 319 # Config: 0-desc, 1-saidas, 2-cores, 3-acento, 4-chat, 5-seguir, 8-telepati\
+a
 #
 # Prompt ao criar personagem; vide comando Prompt
 const promptmsg = "<%c3%hhp %c2%mmn %c6%vmv%b>"
@@ -859,3 +859,8 @@ func salvar # Salva o programa
 func sav # Para salvar acertando indentação e linhas entre classes e funções
   prog p
   p.salvartudo("L99N1I2C2F1V0")
+
+
+classe config_dicas
+const tempo = 30
+const texto = ""

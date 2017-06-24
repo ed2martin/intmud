@@ -43,27 +43,30 @@ const tipo12 = "menu_econfig_cmd_animais--"
 const nome13 = "Renascer"
 const tipo13 = "menu_econfig_cmd_renascer--"
 #
-const nome14 = "Matar"
-const tipo14 = "opc_opcao--"
-const clas14 = "config"
-const vari14 = "matartipo"
-const extr14 = "Desabilitado\nHabilitado"
+const nome14 = "Config Dicas"
+const tipo14 = "menu_econfig_cmd_config--"
 #
-const nome15 = "Grupo diferença de nível"
-const tipo15 = "opc_numero--"
+const nome15 = "Matar"
+const tipo15 = "opc_opcao--"
 const clas15 = "config"
-const vari15 = "gruponivel"
+const vari15 = "matartipo"
+const extr15 = "Desabilitado\nHabilitado"
 #
-const nome16 = "Atalhos"
-const info16 = "Quantidade máxima de atalhos (comando Atalho)"
+const nome16 = "Grupo diferença de nível"
 const tipo16 = "opc_numero--"
 const clas16 = "config"
-const vari16 = "atalhos"
+const vari16 = "gruponivel"
 #
-const nome17 = "Fim (mensagem)"
-const tipo17 = "opc_texto--"
+const nome17 = "Atalhos"
+const info17 = "Quantidade máxima de atalhos (comando Atalho)"
+const tipo17 = "opc_numero--"
 const clas17 = "config"
-const vari17 = "fimmsg"
+const vari17 = "atalhos"
+#
+const nome18 = "Fim (mensagem)"
+const tipo18 = "opc_texto--"
+const clas18 = "config"
+const vari18 = "fimmsg"
 
 
 classe menu_econfig_cmd_echo
@@ -535,3 +538,24 @@ const info5 = "Para que sala vai após renascer; se ausente continua na mesma sal
 const tipo5 = "opc_sala"
 const clas5 = "config"
 const vari5 = "sala_renascer"
+
+
+classe menu_econfig_cmd_config
+herda comando_menu
+const titulo = "Config"
+const menufim = "menu_econfig_cmd"
+const colunas = 35
+#
+const nome1 = "Dicas"
+const info1 = "Uma dica por linha (vide também comando CONFIG +DICAS)"
+const tipo1 = "opc_texto--"
+const clas1 = "config_dicas"
+const vari1 = "texto"
+const exec1 = "miscdicas:atualiza"
+#
+const nome2 = "Tempo entre dicas"
+const info2 = "Em segundos, ou 0 para desativar as dicas"
+const tipo2 = "opc_numero--"
+const clas2 = "config_dicas"
+const vari2 = "tempo"
+const exec2 = "miscdicas:atualiza"

@@ -111,7 +111,7 @@ func escr
       t.addini(r1.msexo ? "Está fechado." : "Está fechada.")
     senao r1.i_aberto || r1 != r2 # Aberto
       se !r2.var.z_moedas
-      senao r2.dono != arg0 || var.z_moedas_ <= 10
+      senao r2.dono != arg0 || r2.var.z_moedas_ <= 10
         t.addfim("1 " + txtcopiamai(misc:txtmoedas(r2.var.z_moedas), "A"))
       senao
         t.addfim("1 " + txtnum(r2.var.z_moedas_, ".") + " moedas")
