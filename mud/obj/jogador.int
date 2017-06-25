@@ -27,8 +27,8 @@ sav uint32 volobj # Volume do personagem
 const p_agressivo = int($perm_[jogperm].batalha)
 const p_atktipo = $t_[tipo1].atipo ?? $t_[tipo2].atipo ?? $t_[tipo3].atipo ?? config:atk_txt
 const p_naoseguir = !jogconfig.5
-const p_imortal = jogconfig.14
-const j_imortal = jogconfig.14
+const p_imortal = jogconfig.20
+const j_imortal = jogconfig.20
 sav uint32 p_fugir
 sav uint8 p_sede # Sede, quanto menor mais sede tem
 sav uint8 p_fome # Fome, quanto menor mais fome tem
@@ -133,7 +133,7 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
   se p_bebida == 1 || p_bebida == 2
     msg(msexo ? "Você está sóbrio." : "Você está sóbria.")
   fimse
-  se jogconfig.14 # Imortal
+  se jogconfig.20 # Imortal
     p_sede = intmax($miscfome.semfome, p_sede - 1)
     p_fome = intmax($miscfome.semfome, p_fome - 1)
     p_bebida = intmin(1, p_bebida - 1)
@@ -323,7 +323,7 @@ func dentrocasa # Retorna verdadeiro se o jogador está dentro da própria casa
 
 func cmd_recalc1 # Recalcula variáveis do personagem
 # pnivel < 10 && (pvidamax += 50 - pnivel * 5)
-  jogconfig.14 && (bitver |= 0x107C) # Propriedade config +imortal
+  jogconfig.20 && (bitver |= 0x107C) # Propriedade config +imortal
   jogconfig.18 && (bitinv |= 128) # Propriedade config +invsala
   $perm_[jogperm].c_config & 8 && (bitver |= 128) # Ver personagens com config +invsala
 

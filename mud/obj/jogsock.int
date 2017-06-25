@@ -286,7 +286,7 @@ func temposair # Acerta variáveis de tempo para sair do MUD
   casose "t" # Conectado via Papovox
   casose "p" # Conectado via Telnet
     se perso
-      tempofim1 = jogconfig.14 ? 0 : 4800 # 8 * 600 (8 minutos)
+      tempofim1 = jogconfig.20 ? 0 : 4800 # 8 * 600 (8 minutos)
     senao
       tempofim1 = 1800, tempofim2 = 0
     fimse
@@ -347,14 +347,14 @@ func msg # Envia mensagem
     refvar ini = p.txtproc("\d=")
     refvar som = txt(txt1(p.texto(ini, 80)), 2)
     p.mudar("", ini, inttotal(som) + 3)
-    continuar !jogconfig.13
+    continuar !(jogconfig.13 || jogconfig.14)
     casovar txt1($som_[som].tipo)
     casose "2" # Música contínua
       continuar msgsom_t == som
     casose "1" # Música de fundo
       msgsom_t = arg0
     casose "0" # Efeito
-      p.mudar($som_[som].som + "\n", 0, 0)
+      p.mudar($som_[som].var.["som" + jogconfig.14 + jogconfig.13] + "\n", 0, 0)
     casofim
   efim
 # Configuração do jogador
@@ -379,7 +379,7 @@ func msgsom # Envia mensagem
       i.obj.msgsom(arg0, 1)
     efim
   fimse
-  ret !jogconfig.13, nulo
+  ret !(jogconfig.13 || jogconfig.14), nulo
 # Controle de banda
   ret msgtot1 >= admbanda:b1, nulo
   msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
@@ -391,7 +391,7 @@ func msgsom # Envia mensagem
   casose "1" # Música de fundo
     msgsom_t = arg0
   casose "0" # Efeito
-    msgsock($som_[arg0].som)
+    msgsock($som_[arg0].var.["som" + jogconfig.14 + jogconfig.13])
   casofim
 
 func execprompt_exec

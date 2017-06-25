@@ -21,9 +21,11 @@ const m_seguir = "Se outros personagens podem escolher seguir você"
 const m_moedas = "Pega as moedas do corpo do personagem após vencer uma batalha"
 const m_prompt = "Ativa o prompt normal"
 const m_bprompt = "Ativa o prompt de batalha"
-const m_som = "Ativa efeitos sonoros via MSP (MUD Sound Protocol)\n\
-            Nota: é necessário usar um cliente de MUD com suporte a MSP\n\
-            e baixar e instalar os sons do MUD"
+const m_som1 = "Ativa efeitos sonoros via MSP com volume baixo"
+const m_som2 = "Ativa efeitos sonoros via MSP com volume médio\n\
+            Nota 1: Para volume máximo, usar CONFIG +SOM1 +SOM2\n\
+            Nota 2: é necessário usar um cliente de MUD com suporte a MSP\n\
+            (MUD Sound Protocol) e baixar e instalar os sons do MUD"
 const m_dicas = "Mostra dicas aleatórias de tempos em tempos"
 const m_imortal = "Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
             cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
@@ -55,19 +57,20 @@ const opc_emocao = config:emocaotipo ? 9
 const opc_moedas = 10
 const opc_novatos = config:novatostipo ? 11
 const opc_dicas = 12
-const opc_som = 13
-const opc_imortal = arg0 & 1 ? 14
+const opc_som1 = 13
+const opc_som2 = 14
 const opc_execlog = arg0 & 0x80 ? 15
 const opc_sala = arg0 & 2 ? 16
 const opc_invquem = arg0 & 4 ? 17
 const opc_invsala = arg0 & 8 ? 18
 const opc_ac = arg0 & 0x10 ? 19
+const opc_imortal = arg0 & 1 ? 20
 const opc_admlog = arg0 & 0x20 ? 21
 const opc_cmdlog = arg0 & 0x40 ? 22
 #
 # Ordem das opções em AJUDA CONFIG
 const opcoes = "desc saidas cores acento telepatia chat novatos emocao seguir moedas prompt \
-bprompt som dicas imortal sala invquem invsala ac admlog cmdlog execlog"
+bprompt som1 som2 dicas imortal sala invquem invsala ac admlog cmdlog execlog"
 
 func txtajuda
   refvar perm = $perm_[arg0.jogperm].c_config
@@ -126,16 +129,22 @@ func escr
   efim
   ret y, arg0.msg("Opção inexistente:" + y)
 # Checa a propriedade SOM
-  se arg0.jogconfig.13 != opc.13 && arg0.sock.msgsom_t
-    arg0.sock.msgsom_t = ""
-    arg0.sock.msgsock("!!MUSIC(off)")
+  se arg0.jogconfig.13 != opc.13 || arg0.jogconfig.14 != opc.14 && arg0.sock.msgsom_t
+    se !opc.13 && !opc.14
+      arg0.sock.msgsock("!!MUSIC(off)")
+      arg0.sock.msgsom_t = ""
+    senao
+      refvar som = arg0.sock.msgsom_t
+      refvar lin = $som_[som].var.["som" + opc.14 + opc.13]
+      lin && arg0.sock.msgsock(lin)
+    fimse
   fimse
 # Checa a propriedade INVIS
   se arg0.jogconfig.18 != opc.18 # Se a propriedade INVIS mudou
     arg0.recalc = 1 # Deverá atualizar bitinv
   fimse
 # Checa a propriedade IMORTAL
-  se arg0.jogconfig.14 != opc.14 # Se a propriedade IMORTAL mudou
+  se arg0.jogconfig.20 != opc.20 # Se a propriedade IMORTAL mudou
     arg0.recalc = 1 # Deverá atualizar bitver
     arg0.sock.jogconfig.bits = opc.bits # Para função temposair
     arg0.sock.temposair # Atualiza tempo para sair do MUD

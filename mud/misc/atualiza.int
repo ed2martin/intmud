@@ -1,4 +1,4 @@
-classe atualiza_457
+classe atualiza_460
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -727,23 +727,23 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 457, nulo
-  p.criar("config", "const versao = 457 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 460, nulo
+  p.criar("config", "const versao = 460 # Para atualizar diretórios areas e config")
   config:salvar
-# Atualiza sons
-  se versao < 454
-    epara p.iniclasse("som_"), p.lin, p.depois
-      dbg.ini
-      [p.texto]:iniclasse(p.texto)
-      $[p.texto].atualiza
-    efim
-  fimse
 # Comando Fim e Dicas aleatórias
   se versao < 457
     criafunc("config", "const fimmsg = \"Até mais. Aguardamos o seu retorno.\"")
     se !existe("config_dicas")
       p.criar("config_dicas\nconfig/config\nconst tempo=30\nconst texto=\"\"")
     fimse
+  fimse
+# Atualiza sons
+  se versao < 460
+    epara p.iniclasse("som_"), p.lin, p.depois
+      dbg.ini
+      [p.texto]:iniclasse(p.texto)
+      p.apagar(p.texto, "som")
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

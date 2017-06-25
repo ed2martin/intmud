@@ -20,10 +20,10 @@ func escr
     refvar v1 = $t_[obj.tipo1].nomequem
     refvar v2 = $t_[obj.tipo2].nomequem
     refvar v3 = $t_[obj.tipo3].nomequem
-    total.[obj.jogconfig.14]++
+    total.[obj.jogconfig.20]++
     t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
     t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome
-    t1 = (obj.jogconfig.14 ? "A" : "B") + txt(999000 - obj.pnivel) + " " + nivel + t1
+    t1 = (obj.jogconfig.20 ? "A" : "B") + txt(999000 - obj.pnivel) + " " + nivel + t1
     obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     t1 += "  "
     obj.p_tempofim && (t1 += " [Desconectado]")

@@ -260,20 +260,23 @@ const admordem = "tipo\narquivo\nvolume\nrepete"
 const tipo = 0
 const volume = 100
 const repete = 1
+textovar var # Os sons são variáveis "som01", "som10" e "som11"
+const ini = atualiza
 
 func texto # Retorna o texto que deve ser enviado ao cliente
+# arg0 = volume, de 0 a 100
   txt512 lin
   refvar arq = txttroca(arquivo, " ", "")
-  ret !arq || arq == "off", tipo ? "!!MUSIC(off)" : "!!SOUND(off)"
+  ret !arq || arq == "off" || arg0 <= 0, tipo ? "!!MUSIC(off)" : "!!SOUND(off)"
   se tipo
     lin = "!!MUSIC(off)\n!!MUSIC(" + arq
   senao
     lin = "!!SOUND(" + arq
   fimse
-  se volume <= 0
+  se arg0 <= 0
     lin += " V=0"
-  senao volume < 100
-    lin += " V=" + volume
+  senao arg0 < 100
+    lin += " V=" + arg0
   fimse
   se repete == -1 && tipo
     lin += " L=-1"
@@ -283,6 +286,10 @@ func texto # Retorna o texto que deve ser enviado ao cliente
   ret lin + ")"
 
 func atualiza
-  prog p
-  p.criar(este, "const som = \"" + txtvis(texto) + "\"")
-  config:salvar
+  se volume <= 0
+    var.som01 = var.som10 = var.som11 = texto(0)
+  senao
+    var.som01 = texto(int(volume * 0.65 ?? 1))
+    var.som10 = texto(int(volume * 0.80 ?? 1))
+    var.som11 = texto(volume)
+  fimse
