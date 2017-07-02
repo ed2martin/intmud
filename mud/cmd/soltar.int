@@ -134,8 +134,7 @@ func soltarobj
       erro = "Não é possível colocar " + arg1.descnome + " dentro dela mesma."
     fimse
     ret
-  senao arg2.i_itens && txtproc("\n" + arg1.i_itens + "\n", "\n" + txt(arg3, 2) + "\n") < \
-0
+  senao arg2.i_itens && txtproclin(arg1.i_itens, txt(arg3, 2)) < 0
     erro = "Não é possível colocar " + arg3.descnome + " em " + arg1.descnome + "."
     ret
   senao arg3.cabedentro(arg2) < total

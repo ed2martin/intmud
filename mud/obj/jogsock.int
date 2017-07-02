@@ -603,12 +603,12 @@ func passo1
     refvar r = $[p.texto]
     continuar txt(r.menu) != tpasso
     se !r.racas || tpasso < 2
-    senao txtproc("\n" + r.racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
+    senao txtproclin(r.racas, arg0.var.j_tipo1) < 0
       continuar
     fimse
     continuar r.sexo && arg0.var.j_sexo != r.sexo - 1
     se !r.classes || tpasso < 3
-    senao txtproc("\n" + r.classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
+    senao txtproclin(r.classes, arg0.var.j_tipo2) < 0
       continuar
     fimse
     arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + r.nome)

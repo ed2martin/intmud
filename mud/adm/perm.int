@@ -229,8 +229,7 @@ func checaperm # Checa se pode mudar o grupo de permissões
   senao arg2 == "admin"
     arg0.msg("Somente Admin pode mudar permissão para Admin")
     ret 0
-  senao txtproc("\n" + $perm_[arg0.jogperm].c_mperm + "\n", "\n" + arg1 + " " + arg2 + "\n") < \
-0
+  senao txtproclin($perm_[arg0.jogperm].c_mperm, arg1 + " " + arg2) < 0
     arg0.msg("Você não pode mudar permissão " + arg1 + " para " + arg2)
     ret 0
   fimse

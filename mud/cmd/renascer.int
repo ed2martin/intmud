@@ -54,7 +54,7 @@ func escr
 func adiciona # Adiciona o texto arg1 na variável arg0
   se !arg0
     arg0 = arg1
-  senao arg1 && txtproc("\n" + arg0 + "\n", arg1) < 0
+  senao arg1 && txtproclin(arg0, arg1) < 0
     arg0 += "\n" + arg1
   fimse
 
@@ -111,12 +111,12 @@ func passo1 # Escolha da raça, classe e subclasse
   epara nulo, var.ini, var.valorini("") = ""
     refvar r = $[var.ini]
     se !r.racas || tpasso < 2
-    senao txtproc("\n" + r.racas + "\n", "\n" + arg0.var.j_tipo1 + "\n") < 0
+    senao txtproclin(r.racas, arg0.var.j_tipo1) < 0
       continuar
     fimse
     continuar r.sexo && arg0.perso.psexo != r.sexo - 1
     se !r.classes || tpasso < 3
-    senao txtproc("\n" + r.classes + "\n", "\n" + arg0.var.j_tipo2 + "\n") < 0
+    senao txtproclin(r.classes, arg0.var.j_tipo2) < 0
       continuar
     fimse
     arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + r.nome)

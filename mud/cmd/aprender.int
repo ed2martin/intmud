@@ -40,9 +40,9 @@ func escr
       fimse
 # Checa se está limitado a alguns tipos (raças/classes)
       se !r.tipoperso
-      senao negociar_tipo(arg0.tipo1, r.tipoperso)
-      senao negociar_tipo(arg0.tipo2, r.tipoperso)
-      senao negociar_tipo(arg0.tipo3, r.tipoperso)
+      senao arg0.tipo1 && txtproclin(txte(arg0.tipo1), txte(r.tipoperso)) >= 0
+      senao arg0.tipo2 && txtproclin(txte(arg0.tipo2), txte(r.tipoperso)) >= 0
+      senao arg0.tipo3 && txtproclin(txte(arg0.tipo3), txte(r.tipoperso)) >= 0
       senao
         lin = "Não tem como ensinar " + lin + " para sua raça e classe."
         ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)

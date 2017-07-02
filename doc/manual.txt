@@ -2337,7 +2337,21 @@ txtproc    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
 txtprocmai - Considera iguais letras maiúsculas e minúsculas;
 txtprocdif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
-15.4.6. txttroca(<texto>, <valor anterior>, <novo valor>)
+15.4.6. txtproclin(<texto1>, <texto2>, [linha inicial])
+Procura uma linha de <texto1> com o texto de <texto2>.
+Retorna -1 se não encontrou ou o número da linha se encontrou.
+Quando um texto possui mais de uma linha, as linhas são separadas com um
+caracter "\n". Tanto <texto1> quanto <texto2> podem ter várias linhas.
+A [linha inicial] indica o número da linha em que deve-se começar
+a busca. O valor 0 corresponde à primeira linha, o valor 1 à segunda,
+etc. Se omitido, começa na primeira.
+
+As funções txtproclinmai e txtproclindif fazem a mesma coisa, exceto que:
+txtproclin    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
+txtproclinmai - Considera iguais letras maiúsculas e minúsculas;
+txtproclindif - Diferencia letras maiúsculas, minúsculas e acentuadas.
+
+15.4.7. txttroca(<texto>, <valor anterior>, <novo valor>)
 Troca <valor anterior> por <novo valor> no <texto>.
 Retorna o texto modificado ao invés de alterar o texto original.
 Nota: Se <valor anterior> for um texto vazio, retorna <texto>.
@@ -2350,15 +2364,15 @@ txttroca    - Considera iguais letras minúsculas, maiúsculas e acentuadas;
 txttrocamai - Considera iguais letras maiúsculas e minúsculas;
 txttrocadif - Diferencia letras maiúsculas, minúsculas e acentuadas.
 
-15.4.7. txte(<texto>)
+15.4.8. txte(<texto>)
 Retorna o texto substituindo sublinhado '_' por espaço ' '.
 Tem o mesmo efeito de txttroca(<texto>, "_", " ").
 
-15.4.8. txts(<texto>)
+15.4.9. txts(<texto>)
 Retorna o texto substituindo espaço ' ' por sublinhado '_'.
 Tem o mesmo efeito de txttroca(<texto>, " ", "_").
 
-15.4.9. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
+15.4.10. vartroca(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
 Procura alguns textos em <texto> e substitui por variáveis ou funções
 do objeto 'este'.
 Os textos procurados são <texto2> seguido de uma palavra qualquer.

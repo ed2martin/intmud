@@ -520,11 +520,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       efim
     fimse
     i = l.ini # Não atacar PNJs que ajudam e que pedem ajuda
-    refvar lista = "\n" + contr0.p_atk_ajuda + "\n"
     enquanto i
-      se txtproc("\n" + i.obj.p_atk_ajuda + "\n", "\n" + txt2(txte(contr0)) + "\n") >= 0
+      se txtproclin(i.obj.p_atk_ajuda, txt2(txte(contr0))) >= 0
         i.removedepois
-      senao txtproc(lista, "\n" + txt2(txte(i.obj)) + "\n") >= 0
+      senao txtproclin(contr0.p_atk_ajuda, txt2(txte(i.obj))) >= 0
         i.removedepois
       senao
         i.depois
@@ -635,10 +634,10 @@ func execmunicao # Obtém a arma usada: arma1 e arma2
   senao !arma1 # Sem arma: munição no inventário
     int16 p_nivel = arg0.pnivel
     int8 p_renascer = arg0.renascer
-    refvar lista = txttroca("\n" + itemmunicao, "\n", "\ni_") + "\n"
+    refvar lista = itemmunicao ? "i_" + txttroca(itemmunicao, "\n", "\ni_") : ""
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
-      continuar txtproc(lista, "\n" + i.obj + "\n") < 0
+      continuar txtproclin(lista, i.obj) < 0
       sair p_nivel >= int(i.obj.pnivel) && p_renascer >= int(i.obj.renascer)
     efim
     arma2 = i.obj
@@ -646,10 +645,10 @@ func execmunicao # Obtém a arma usada: arma1 e arma2
   senao arma1.armamunicao == 1 # Munição no inventário
     int16 p_nivel = arg0.pnivel
     int8 p_renascer = arg0.renascer
-    refvar lista = txttroca("\n" + arma1.i_municao, "\n", "\ni_") + "\n"
+    refvar lista = arma1.i_municao ? "i_" + txttroca(arma1.i_municao, "\n", "\ni_") : ""
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
-      continuar txtproc(lista, "\n" + i.obj + "\n") < 0
+      continuar txtproclin(lista, i.obj) < 0
       sair p_nivel >= int(i.obj.pnivel) && p_renascer >= int(i.obj.renascer)
     efim
     arma2 = i.obj
@@ -766,12 +765,12 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   result = 0, dano *= arg2
 # Checa bônus do personagem
   se tipobonus
-    refvar tbonus = "\n" + txte(tipobonus) + "\n"
-    se arg0.tipo1 && txtproc(tbonus, "\n" + arg0.tipo1 + "\n") >= 0
+    refvar tbonus = txte(tipobonus)
+    se arg0.tipo1 && txtproclin(tbonus, arg0.tipo1) >= 0
       dano *= 1.5
-    senao arg0.tipo2 && txtproc(tbonus, "\n" + arg0.tipo2 + "\n") >= 0
+    senao arg0.tipo2 && txtproclin(tbonus, arg0.tipo2) >= 0
       dano *= 1.5
-    senao arg0.tipo3 && txtproc(tbonus, "\n" + arg0.tipo3 + "\n") >= 0
+    senao arg0.tipo3 && txtproclin(tbonus, arg0.tipo3) >= 0
       dano *= 1.5
     fimse
   fimse

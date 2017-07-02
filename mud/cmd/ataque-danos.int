@@ -75,14 +75,14 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   danos *= temp1
 # Bônus do personagem
   se tipobonus
-    refvar tbonus = "\n" + txte(tipobonus) + "\n"
-    se arg0.tipo1 && txtproc(tbonus, "\n" + arg0.tipo1 + "\n") >= 0
+    refvar tbonus = txte(tipobonus)
+    se arg0.tipo1 && txtproclin(tbonus, arg0.tipo1) >= 0
       dano *= 1.5
       arg2.addfim(txt(++num) + ". Bônus " + arg0.tipo1 + ": \bmultiplica por 1.5")
-    senao arg0.tipo2 && txtproc(tbonus, "\n" + arg0.tipo2 + "\n") >= 0
+    senao arg0.tipo2 && txtproclin(tbonus, arg0.tipo2) >= 0
       dano *= 1.5
       arg2.addfim(txt(++num) + ". Bônus " + arg0.tipo2 + ": \bmultiplica por 1.5")
-    senao arg0.tipo3 && txtproc(tbonus, "\n" + arg0.tipo3 + "\n") >= 0
+    senao arg0.tipo3 && txtproclin(tbonus, arg0.tipo3) >= 0
       dano *= 1.5
       arg2.addfim(txt(++num) + ". Bônus " + arg0.tipo3 + ": \bmultiplica por 1.5")
     fimse

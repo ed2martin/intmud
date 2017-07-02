@@ -11,9 +11,9 @@ func escr
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc)
   ret alvo.iempu, $mens.p(alvo) + $mens.mperso("$P já está empunhando uma arma.")
-  refvar tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
-  refvar tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
-  refvar tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
+  refvar tipo1 = txte(alvo.tipo1)
+  refvar tipo2 = txte(alvo.tipo2)
+  refvar tipo3 = txte(alvo.tipo3)
 # Empunha
   listaobj l
   ref r
@@ -41,11 +41,11 @@ func escr
     senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
       ret $mens.mperso("$P não conhece " + txtsublin(config:arma_txt, r.armatipo, 1) + ".")
     senao r.vestirnao
-      se tipo1 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo1) >= 0
+      se tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
         ret $mens.mperso("$P não consegue empunhar $o.")
-      senao tipo2 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo2) >= 0
+      senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
         ret $mens.mperso("$P não consegue empunhar $o.")
-      senao tipo3 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo3) >= 0
+      senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
         ret $mens.mperso("$P não consegue empunhar $o.")
       fimse
     fimse

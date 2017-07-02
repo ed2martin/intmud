@@ -20,9 +20,9 @@ func escr
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc) # Quem vai vestir
-  refvar tipo1 = alvo.tipo1 ? "\n" + alvo.tipo1 + "\n" : ""
-  refvar tipo2 = alvo.tipo2 ? "\n" + alvo.tipo2 + "\n" : ""
-  refvar tipo3 = alvo.tipo3 ? "\n" + alvo.tipo3 + "\n" : ""
+  refvar tipo1 = txte(alvo.tipo1)
+  refvar tipo2 = txte(alvo.tipo2)
+  refvar tipo3 = txte(alvo.tipo3)
 # Variáveis
   int8 total # Quantidade de itens encontrados
   nomeobj n # Para reconhecer os itens
@@ -43,7 +43,7 @@ func escr
     t.addfim(config:equip_txt)
     refvar lug2 = ~txthex(alvo.equippos, 12)
     epara p = t.ini, p, p.depois
-      !(lug2 & intbith(p.linha)) && n.nome(p.texto) && (lugar |= intbith(p.linha))
+      (lug2 & intbith(p.linha)) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
     efim
     ret lugar == "0", arg0.msg("Você não sabe aonde fica " + misc:sep2 + ".")
   fimse
@@ -73,11 +73,11 @@ func escr
       fimse
 # Checa se a classe ou a raça tem permissão
     senao !r.vestirnao
-    senao tipo1 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo1) >= 0
+    senao tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
       erro = "$P não consegue vestir $o."
-    senao tipo2 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo2) >= 0
+    senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
       erro = "$P não consegue vestir $o."
-    senao tipo3 && txtproc("\n" + txte(r.vestirnao) + "\n", tipo3) >= 0
+    senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
       erro = "$P não consegue vestir $o."
     fimse
 # Tenta vestir

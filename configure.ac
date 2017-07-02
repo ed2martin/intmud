@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(intmud, 1.10a, edx2martin@gmail.com)
+AC_INIT(intmud, 1.11, edx2martin@gmail.com)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([misc.cpp])
 AM_CONFIG_HEADER([config.h])

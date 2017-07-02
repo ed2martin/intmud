@@ -80,6 +80,7 @@ bool FuncTxtChr(TVariavel * v, int valor);
 bool FuncIntChr(TVariavel * v, int valor);
 bool FuncIntDist(TVariavel * v, int valor);
 bool FuncTxtProc(TVariavel * v, int valor);
+bool FuncTxtProcLin(TVariavel * v, int valor);
 bool FuncTxtTroca(TVariavel * v, int valor);
 bool FuncTxtSepara(TVariavel * v, int valor);
 bool FuncAntesDepois(TVariavel * v, int valor);

@@ -1973,6 +1973,108 @@ bool Instr::FuncTxtProc(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Procura linha (txtproclin)
+bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
+{
+    int posic = -1;     // Retorno - posição onde encontrou
+    int ini = 0;        // Início
+    while (VarAtual >= v+2)
+    {
+    // Obtém ini
+        if (VarAtual >= v+3)
+            ini = v[3].getInt();
+        if (ini<0)
+            ini=0;
+    // Obtém o padrão
+        const char * ptemp1 = v[2].getTxt();
+        char padrao[4096];
+        unsigned int tampadrao = 0;
+        switch (valor)
+        {
+        case 0: // Não diferencia
+            for (; tampadrao < sizeof(padrao) && *ptemp1; ptemp1++)
+                padrao[tampadrao++] = tabCOMPLETO[*(unsigned char*)ptemp1];
+            break;
+        case 1: // maiúsculas = minúsculas
+            for (; tampadrao < sizeof(padrao) && *ptemp1; ptemp1++)
+                padrao[tampadrao++] = tabMAI[*(unsigned char*)ptemp1];
+            break;
+        default: // Exato
+            while (tampadrao < sizeof(padrao) && *ptemp1)
+                padrao[tampadrao++] = *ptemp1++;
+            break;
+        }
+    // Obtém o texto a ser procurado
+        const char * txt = v[1].getTxt();
+        int linha = ini;
+        while (ini>0 && *txt)
+        {
+            while (*txt && *txt!=ex_barra_n) txt++;
+            if (*txt==ex_barra_n) txt++;
+            ini--;
+        }
+        if (ini > 0)
+            break;
+    // Procura
+        if (valor == 0)
+        {
+            while (true)
+            {
+                unsigned int r;
+                for (r=0; r<tampadrao; r++)
+                    if (padrao[r] != tabCOMPLETO[*(unsigned char*)(txt+r)])
+                        break;
+                if (r == tampadrao && (txt[r] == 0 || txt[r] == ex_barra_n))
+                {
+                    posic = linha;
+                    break;
+                }
+                while (*txt && *txt!=ex_barra_n) txt++;
+                if (*txt == 0) break;
+                txt++,linha++;
+            }
+        }
+        else if (valor == 1)
+        {
+            while (true)
+            {
+                unsigned int r;
+                for (r=0; r<tampadrao; r++)
+                    if (padrao[r] != tabMAI[*(unsigned char*)(txt+r)])
+                        break;
+                if (r == tampadrao && (txt[r] == 0 || txt[r] == ex_barra_n))
+                {
+                    posic = linha;
+                    break;
+                }
+                while (*txt && *txt!=ex_barra_n) txt++;
+                if (*txt == 0) break;
+                txt++,linha++;
+            }
+        }
+        else
+        {
+            while (true)
+            {
+                if (memcmp(txt, padrao, tampadrao) == 0 &&
+                        (txt[tampadrao] == 0 || txt[tampadrao] == ex_barra_n))
+                {
+                    posic = linha;
+                    break;
+                }
+                while (*txt && *txt!=ex_barra_n) txt++;
+                if (*txt == 0) break;
+                txt++,linha++;
+            }
+        }
+        break;
+    }
+// Retorna o resultado
+    ApagarVar(v);
+    return CriarVarInt(posic);
+}
+
+//----------------------------------------------------------------------------
 /// Troca texto (txttroca)
 bool Instr::FuncTxtTroca(TVariavel * v, int valor)
 {

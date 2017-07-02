@@ -316,9 +316,9 @@ func dentrocasa # Retorna verdadeiro se o jogador está dentro da própria casa
   ret txt(dono, 0, 2) != "s_" || !txt(dono, 2), nulo
   indiceitem item
   refvar t = "cj " + txt2(cnome)
-  refvar d = "\n" + txt(dono, 2) + "\n"
+  refvar d = txt(dono, 2)
   epara item.ini(t), txtsub(item.txt, 0, 2) == t, item.depois
-    ret txtproc("\n" + item.obj.c_salas + "\n", d) >= 0, 1
+    ret txtproclin(item.obj.c_salas, d) >= 0, 1
   efim
 
 func cmd_recalc1 # Recalcula variáveis do personagem

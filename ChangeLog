@@ -1,4 +1,54 @@
-* 16/04/2017 IntMUD 1.10a MUD baseado na revisão 448
+* 1/7/2017 IntMUD 1.11 MUD baseado na revisão 461
+
+   No IntMUD:
+  1. Corrigido bug: prog.inifunccl com dois argumentos, quando o segundo
+     argumento não é um texto vazio, estava pulando a primeira
+     variável/constante da classe
+  2. Criadas funções txtproclin, txtproclinmai e txtproclindif
+  3. Criadas funções matdeg e matrad, que convertem um valor real para
+     graus e radianos (por thgcode)
+  4. Criada função matpi para obter mais facilmente o número pi (por
+     thgcode)
+  5. Versão mudou para 1.11
+
+   No MUD:
+  1. Pequenas correções: colete (item teste014) não podia ser vestido,
+     $mens.msgvisdir não estava funcionando
+  2. Corrigido bug: Opções 8, 9 e 10 do menu Herda do comando Config não
+     estavam funcionando
+  3. Corrigido bug: comando Estat não estava mostrando fome, sede e
+     embriaguez para administradores
+  4. Corrigido bug: quando um jogador entra no MUD, estava indo para o
+     arquivo de log "Criou" ao invés de "Entrou"
+  5. Corrigido bug: comandos Aperso, Aitem e Asala não estavam
+     funcionando com dois ou mais nomes
+  6. Corrigido bug: ao olhar para um personagem nível 0, o valor de
+     renascer nunca aparecia
+  7. Opção no comando Eperso, em Comportamento: Msg luta individual
+  8. Opção no menu Comportamento do comando Eperso: Alvo dos ataques
+     (quando está sendo atacado por vários personagens)
+  9. Opção no menu Herda do comando Econfig: Alvo dos ataques
+ 10. Para os menus: criada classe "opc_vetorhex", que funciona como
+     "opc_vetor" porém os números são textos em hexadecimal
+ 11. Pode-se definir até 48 posições para o comando vestir (antes eram
+     30)
+ 12. Comando Som foi desmembrado em Lsom, Csom, Esom e Asom, e ADM SOM
+     mostra a lista de comandos e notas sobre os sons
+ 13. Comando Asala agora informa o título da sala
+ 14. Quando um PNJ estiver ajudando outro, ataques secundários de um não
+     atinge o outro
+ 15. Adicionada mensagem do comando Fim no comando Econfig
+ 16. Modificadores: foi retirada a descrição para os jogadores, porque
+     não estava sendo usada
+ 17. Criado sistema de dicas aleatórias (no menu 16 Comandos do comando
+     Econfig e o comando CONFIG +DICAS)
+ 18. Opção Config +som (comando Config) agora são duas opções: config
+     +som1 +som2
+
+Nota: Usuários com CONFIG +SOM ou com CONFIG +IMORTAL terão de usar
+o comando CONFIG novamente para acertar as opções SOM e IMORTAL
+
+* 16/4/2017 IntMUD 1.10a MUD baseado na revisão 448
 
    No IntMUD:
   1. Cada instrução agora pode ter até 8192 bytes (antes era 2048 e não
@@ -45,7 +95,7 @@
  17. Criada sala teste167: Item aparentemente com salas e bilhete para
      entrar no item
 
-* 12/02/2017 IntMUD 1.10 MUD baseado na revisão 439
+* 12/2/2017 IntMUD 1.10 MUD baseado na revisão 439
 
    No MUD:
   1. Corrigido bug: Comando Reset volta a funcionar para ressetar uma

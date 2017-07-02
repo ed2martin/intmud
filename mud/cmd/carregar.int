@@ -57,7 +57,7 @@ func escr
 func carregar # Carrega arma com um item
 # arg0=personagem, arg1=arma, arg2=item, arg3=quantidade de itens
 # Retorna mensagem de erro ou nulo se carregou
-  se txtproc("\n" + arg1.i_municao + "\n", "\n" + txt(arg2, 2) + "\n") < 0
+  se txtproclin(arg1.i_municao, txt(arg2, 2)) < 0
     ret "Não é possível carregar " + arg1.descnome + " com " + arg2.descnome + "."
   senao arg1.dentro1.total + (arg2.item == 2 ? 1 : arg3) > arg1.objmax
     ret "Não consegue carregar " + arg1.descnome + " com mais nada."
