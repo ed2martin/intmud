@@ -106,7 +106,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     arg2.addfim(lin + ".")
   fimse
 # Peso e valor
-  refvar peso = arg1.pesoobj + arg1.pesoden
+  refvar peso = arg1.pesoobj + arg1.pesoden + arg1.pesovar
   lin = peso < 10000 ? txt(peso) + "g" : txt(peso / 1000) + "Kg"
   se !arg1.valor
   senao arg1.valor == 1

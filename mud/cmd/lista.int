@@ -40,7 +40,7 @@ func escr1 # Consultar a lista de itens
         nivel = txt2(lin), lin = "i_" + txt1(lin)
         nivel == 0 && (nivel = [lin]:nivel)
         valor = lucro * [lin]:valor
-        lin = txtcopiamai([lin]:descnome, "A")
+        lin = txtcopiamai([lin]:descloja ?? [lin]:descnome, "A")
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + lin
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         nivel && (lin += "   N" + nivel)

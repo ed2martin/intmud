@@ -4,19 +4,21 @@ herda comando_comum
 func efeito
 # arg0 = personagem que usou o objeto
 # arg1 = o que o personagem digitou; usado ao lançar magias
-# arg2 = objeto
-# arg3 = quantidade
-  arg0.p_fome = intmin($miscfome.cheio, arg0.p_fome + arg2.f_fome * arg3)
-  arg0.p_sede = intmin($miscfome.cheio, arg0.p_sede + arg2.f_sede * arg3)
-  arg0.p_bebida = intmin($miscfome.cheio, arg0.p_bebida + arg2.f_bebida * arg3)
-  arg0.p_diges = intmin($miscfome.cheio, arg0.p_diges + arg2.f_diges * arg3)
-  debug d
+# arg2 = item (objeto)
+# arg3 = líquido (objeto ou nulo)
+# arg4 = quantidade de líquido (de 0 a 1)
+  refvar cheio = $miscfome.cheio
+  arg0.p_fome = intmin(cheio, arg0.p_fome + arg2.f_fome + arg3.f_fome * arg4)
+  arg0.p_sede = intmin(cheio, arg0.p_sede + arg2.f_sede + arg3.f_sede * arg4)
+  arg0.p_bebida = intmin(cheio, arg0.p_bebida + arg2.f_bebida + arg3.f_bebida * arg4)
+  arg0.p_diges = intmin(cheio, arg0.p_diges + arg2.f_diges + arg3.f_diges * arg4)
 # Magias
-  $magia_[arg2.f_magia1].escrhab(arg0, arg1, arg2, arg2.f_nivel1)
-  d.ini
-  $magia_[arg2.f_magia2].escrhab(arg0, arg1, arg2, arg2.f_nivel2)
-  d.ini
-  $magia_[arg2.f_magia3].escrhab(arg0, arg1, arg2, arg2.f_nivel3)
+  arg2.f_magia1 && $magia_[arg2.f_magia1].escrhab(arg0, arg1, arg2, arg2.f_nivel1)
+  arg2.f_magia2 && $magia_[arg2.f_magia2].escrhab(arg0, arg1, arg2, arg2.f_nivel2)
+  arg2.f_magia3 && $magia_[arg2.f_magia3].escrhab(arg0, arg1, arg2, arg2.f_nivel3)
+  arg3.f_magia1 && $magia_[arg3.f_magia1].escrhab(arg0, arg1, arg3, arg3.f_nivel1)
+  arg3.f_magia2 && $magia_[arg3.f_magia2].escrhab(arg0, arg1, arg3, arg3.f_nivel2)
+  arg3.f_magia3 && $magia_[arg3.f_magia3].escrhab(arg0, arg1, arg3, arg3.f_nivel3)
 
 func comer # Personagem arg0 come item arg1
 # Retorna: 1=conseguiu comer, 0=não conseguiu comer
@@ -30,10 +32,10 @@ func comer # Personagem arg0 come item arg1
   efim
 # Come o objeto
   $mens.p(arg0, nulo, arg1)
-  refvar msg1 = arg1.f_msgperso ? arg1.f_msgperso : "$P come $o."
-  $mens.mvis2(msg1, arg1.f_msgoutros ? arg1.f_msgoutros : msg1)
+  refvar msg1 = arg1.f_msgperso ?? "$P come $o."
+  $mens.mvis2(msg1, arg1.f_msgoutros ?? msg1)
   arg1.apagar(1)
-  efeito(arg0, "", arg1, 1)
+  efeito(arg0, "", arg1)
 # Eventos
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_comeu(arg0, arg1, arg0)
@@ -45,30 +47,51 @@ func comer # Personagem arg0 come item arg1
 
 func beber # Personagem arg0 bebe item arg1
   listaobj l
+  refvar liq = $liq_[arg1.f_tipo == 5 ? txt2(arg1.var.z_liquido) : arg1.f_liquido]
 # Eventos
+  ret liq.cmd_beber(arg0, arg1, liq, liq), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_beber(arg0, arg1, arg0), nulo
+    ret l.objini.cmd_beber(arg0, arg1, arg0, liq), nulo
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_beber(arg0, arg1, arg1), nulo
+    ret l.objini.cmd_beber(arg0, arg1, arg1, liq), nulo
   efim
 # Bebe o objeto
   $mens.p(arg0, nulo, arg1)
-  se arg1.f_tipo == 1
-    refvar msg1 = arg1.f_msgperso ? arg1.f_msgperso : "$P bebe $d $o."
-    $mens.mvis2(msg1, arg1.f_msgoutros ? arg1.f_msgoutros : msg1)
-  senao
-    refvar msg1 = arg1.f_msgperso ? arg1.f_msgperso : "$P bebe $o."
-    $mens.mvis2(msg1, arg1.f_msgoutros ? arg1.f_msgoutros : msg1)
+  se arg1.f_tipo == 1 # Fonte
+    refvar msg1 = arg1.f_msgperso ?? "$P bebe $d $o."
+    $mens.mvis2(msg1, arg1.f_msgoutros ?? msg1)
+    efeito(arg0, "", arg1, liq, 1)
+  senao arg1.f_tipo == 5 # Container de líquido
+    refvar msg1 = arg1.f_msgperso ?? "$P bebe $d $o."
+    $mens.mvis2(msg1, arg1.f_msgoutros ?? msg1)
+    refvar varliq = arg1.var.z_liquido
+    se !liq
+      varliq = ""
+      efeito(arg0, "", arg1)
+    senao int(varliq) > liq.beber
+      varliq = txt(int(varliq - liq.beber)) + " " + txt(varliq, 4)
+      arg1.ajustapeso
+      efeito(arg0, "", arg1, liq, 1)
+    senao
+      refvar total = txt1(varliq) / liq.beber
+      varliq = ""
+      arg1.ajustapeso
+      efeito(arg0, "", arg1, liq, total)
+    fimse
+  senao # Poção
+    refvar msg1 = arg1.f_msgperso ?? "$P bebe $o."
+    $mens.mvis2(msg1, arg1.f_msgoutros ?? msg1)
     arg1.apagar(1)
+    efeito(arg0, "", arg1)
   fimse
-  efeito(arg0, "", arg1, 1)
 # Eventos
+  liq.cmd_bebeu(arg0, arg1, liq, liq)
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_bebeu(arg0, arg1, arg0)
+    l.objini.cmd_bebeu(arg0, arg1, arg0, liq)
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    l.objini.cmd_bebeu(arg0, arg1, arg1)
+    l.objini.cmd_bebeu(arg0, arg1, arg1, liq)
   efim
 
 
@@ -135,6 +158,9 @@ func escr
     se !r
       ret arg0.msg("Você não vê isso.")
     senao r.f_tipo == 1 # Fonte
+    senao r.f_tipo == 5 # Container de líquido
+      ret !$liq_[txt2(r.var.z_liquido)], arg0.msg("Isso está vazio.")
+      ret r.i_aberto >= 3, arg0.msg("Isso está fechado.")
     senao r.f_tipo != 2 # Não é bebida ou poção
       ret arg0.msg("Você não consegue beber " + r.descnome + ".")
     senao r.dono != arg0

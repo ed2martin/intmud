@@ -545,8 +545,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casofim
 # Checa a arma usada
   se arma1
-    real2 carga
-    carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
+    real2 carga = arma1.pesoden + arma1.pesoobj + arma1.pesovar
+    carga = (arg0.pesoden - arg0.pesovest + carga * 4) / (arg0.pesomax + 1)
     se carga > 1.2 # Muito pesado
       atk /= carga < 1.4 ? 10 : 100
       contr0.msg("É muito peso!")

@@ -18,6 +18,7 @@ const admordem = "nome\n\
 ident\n\
 descnome\n\
 descpos\n\
+descloja\n\
 descver\n\
 descident\n\
 msexo\n\
@@ -34,6 +35,8 @@ armaaddprecisao\n\
 armamove\n\
 armatipo\n\
 f_tipo\n\
+f_liquido\n\
+f_totalml\n\
 f_bebida\n\
 f_fome\n\
 f_sede\n\
@@ -78,6 +81,11 @@ func ini # Objeto foi criado (arg0=dono, arg1 é ignorado, arg2=variáveis de var)
     efim
   fimse
   i_aberto = i_abertoini, luztempo = luzini
+  se f_tipo == 5 && f_totalml
+    refvar liq = $liq_[f_liquido]
+    liq && (var.z_liquido = txt(f_totalml) + " " + f_liquido)
+    pesovar = f_totalml * liq.peso
+  fimse
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mudadono(arg0)
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
@@ -89,6 +97,10 @@ func ini # Objeto foi criado (arg0=dono, arg1 é ignorado, arg2=variáveis de var)
     efim
   fimse
   recalc_exec
+
+func ajustapeso
+  pesovar = var.z_liquido ? txt1(var.z_liquido) * $liq_[txt2(var.z_liquido)].peso
+  comum_obj:ajustapeso
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   mdono(arg0), cmd_mudadono

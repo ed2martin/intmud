@@ -636,21 +636,21 @@ func passo # Inserir ou editar produto
     se txt(x) != arg1
       arg0.msg("Entre com o nível, 0=manter, Z cancela")
     senao
-      arg0.var.opclin += " " + x
+      refvar opclin = arg0.var.opclin
+      opclin += " " + x
       textotxt t
       textopos pos
       t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
       t.bytes == 1 && t.limpar
-      pos = t.ini, pos.linha = int(txt1(arg0.var.opclin)) - 1
+      pos = t.ini, pos.linha = int(txt1(opclin)) - 1
       !arg0.var.opcinserir && pos.remove
-      pos.add(txt2(arg0.var.opclin))
+      pos.add(txt2(opclin))
       prog p
       refvar lin = "=\"" + txttroca(t.remove(1000), "\n", "\\n") + "\""
       p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + lin)
       config:salvar
-      arg0.var.opclin = txtsub(arg0.var.opclin, 1, 1)
-      arg0.msg("Produto adicionado: " + arg0.var.opclin + "(" + i_[arg0.var.opclin]:nome + \
-")")
+      opclin = txtsub(opclin, 1, 1)
+      arg0.msg("Produto adicionado: " + opclin + "(" + i_[opclin]:nome + ")")
       admlog(arg0, "alterou produtos: " + arg0.var.opcclasse + ":" + arg0.var.opcvar)
       sair
     fimse
