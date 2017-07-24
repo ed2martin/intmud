@@ -110,11 +110,6 @@ func escr
     senao r1.i_aberto >= 3 && !arg0.j_imortal # Fechado ou trancado
       t.addini(r1.msexo ? "Está fechado." : "Está fechada.")
     senao r1.i_aberto || r1 != r2 # Aberto
-      refvar liq = $liq_[txt2(r2.var.z_liquido)]
-      se liq
-        refvar ml = 10 * int(10 * txt1(r2.var.z_liquido) / r2.f_totalml)
-        t.addfim("1 " + ml + "% com " + liq.nome)
-      fimse
       se !r2.var.z_moedas
       senao r2.dono != arg0 || r2.var.z_moedas_ <= 10
         t.addfim("1 " + txtcopiamai(misc:txtmoedas(r2.var.z_moedas), "A"))

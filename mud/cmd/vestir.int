@@ -30,8 +30,7 @@ func escr
   vest = lugar = "0"
 # Preenche a variável vest com o que está vestindo
   epara item = alvo.dentro2.ini, item, item.depois
-    refvar pos = item.obj.vestpos
-    pos > 0 && pos < 50 && (vest |= intbith(pos - 1))
+    item.obj.vestpos > 0 && (vest |= intbith(item.obj.vestpos - 1))
   efim
 # Descobre aonde quer vestir
   misc:separa(arg1) # Separa nome do objeto do nome da posição

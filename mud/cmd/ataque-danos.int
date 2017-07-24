@@ -37,8 +37,8 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   fimse
 # Peso da arma
   se arma1
-    real2 carga = arma1.pesoden + arma1.pesoobj + arma1.pesovar
-    carga = (arg0.pesoden - arg0.pesovest + carga * 4) / (arg0.pesomax + 1)
+    real2 carga
+    carga = (arg0.pesoden - arg0.pesovest + arma1.pesoobj * 4) / (arg0.pesomax + 1)
     se carga > 1.2 # Muito pesado
       carga = carga < 1.4 ? 10 : 100
       dano /= carga
