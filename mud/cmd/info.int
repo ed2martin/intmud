@@ -268,14 +268,14 @@ func escr
   efim
 # Mostra as posições
   txt512 lin
-  refvar lugar = arg1 == "tudo" ? r.equippos : 0
+  refvar lugar = arg1 == "tudo" ? r.equippos : "0"
   epara lin = config:equip_ordem, lin, lin = txt2(lin)
     refvar obj = pos.[1 + txt1(lin)]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(23 - inttotal(nomepos)) + obj.atribs.ini.texto(1)
       t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
-    senao lugar & intbith(1 + txt1(lin))
+    senao (lugar & intbith(1 + txt1(lin))) != "0"
       nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")
@@ -622,7 +622,8 @@ func escr
     t.addfim("Desmaios:         " + r.mortes)
   fimse
 # Carregando
-  t.addfim("Peso total:       " + txtnum((r.pesoden + r.pesoobj) / 1000, "0") + " Kg")
+  t1 = txtnum((r.pesoden + r.pesoobj + r.pesovar) / 1000, "0")
+  t.addfim("Peso total:       " + t1 + " Kg")
   t1 = "Carregando:       " + r.dentro1.total + "/" + r.objmax
   t1 += r.objmax == 1 ? " item" : " itens"
   t1 += ", " + txtnum((r.pesoden - r.pesoveste) / 1000, "0")

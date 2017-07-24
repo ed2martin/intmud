@@ -20,6 +20,7 @@ sav textovar var # Variáveis criadas sob demanda
 #
 uint32 pesoden # Somente leitura: quanto peso tem dentro
 uint32 pesotot # Somente leitura: peso total
+uint32 pesovar # Peso nas variáveis do objeto (em gramas)
 const pesoobj = 1 # Peso do objeto (em gramas)
 const pesoadd = 1 # Se falso, está voando/flutuando (pesotot será 0)
 #
@@ -42,7 +43,7 @@ uint16 luztot # Somente leitura: quantidade total de fontes de luz
 func ini # Objeto é criado, acerta eventos, peso, volume e luz
   evhora && (evrec.0 = $miscsav.evhora.addfim(este))
   eveste && (evrec.1 = evento.addfim(este))
-  pesoadd && (pesotot = pesoobj * objtot) # Acerta o peso
+  pesotot = pesoadd ? (pesoobj + pesovar) * objtot # Acerta o peso
   voltot = volobj * objtot # Acerta o volume
   luztipo > 1 && (luztot = 1) # Acerta a luz
 
@@ -62,7 +63,7 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   real2 x
   ref r
 # Acerta o peso (pesoden e pesotot)
-  x = pesoadd ? pesoden + pesoobj * objtot - pesotot : -pesotot
+  x = pesoadd ? pesoden + (pesoobj + pesovar) * objtot - pesotot : -pesotot
   se x
     pesotot += x, r = dono, r.pesoden += x
     enquanto r.pesoadd

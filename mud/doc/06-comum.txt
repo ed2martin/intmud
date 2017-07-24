@@ -37,6 +37,7 @@ Essa variável costuma estar presente somente nas salas
 Variáveis relacionadas ao peso
 uint32 pesoden # Somente leitura: quanto peso tem dentro
 uint32 pesotot # Somente leitura: peso total
+uint32 pesovar # Peso nas variáveis do objeto (em gramas)
 const pesoobj = 1 # Peso do objeto (em gramas)
 const pesoadd = 1 # Se falso, está voando/flutuando (pesotot será 0)
 
@@ -144,6 +145,11 @@ e por isso é raramente alterado.
 const descver = ""
 arg0 = personagem que está consultando essa constante
 Descrição quando alguém olha para o item ou personagem (comando olhar).
+
+const descloja = ""
+arg0 = personagem que está consultando essa constante
+Descrição de quando o item pode ser vendido na loja, mas ainda não existe.
+Se for um texto vazio, é usada a descrição de descnome ao invés de descloja.
 
 const descident = ""
 arg0 = personagem que está consultando essa constante
