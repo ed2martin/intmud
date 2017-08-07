@@ -1,0 +1,44 @@
+classe cmd_esvaziar
+herda comando_comum
+const txtajuda = "\b\c3Esvaziar\b\n\
+Sintaxe: ESVAZIAR <objeto>\n\
+Tenta esvaziar o objeto, jogando fora o líquido que tiver dentro."
+const posic = 5
+
+func escr
+  listaobj l
+# Obtém o objeto
+  ret !arg1, arg0.msg("Esvaziar o quê?")
+  refvar r1 = misc:itemdentro(arg0, txt1(arg1))
+  se !r1
+    $mens.mens = txt1(arg1)
+    ret $mens.mp("Você não vê $m.", arg0)
+  senao r1.i_aberto >= 3
+    ret $mens.mp("$O está fechad$u.", arg0, nulo, r1)
+  senao r1.f_tipo != 5
+    ret $mens.mp("Você não consegue esvaziar $o.", arg0, nulo, r1)
+  senao !r1.var.z_liquido
+    ret $mens.mp("$O está vazi$u.", arg0, nulo, r1)
+  fimse
+# Eventos
+  refvar liq = $liq_[txt2(r1.var.z_liquido)]
+  ret liq.cmd_esvaziar(arg0, r1, liq, liq), 0
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_esvaziar(arg0, r1, liq, arg0), 0
+  efim
+  epara l.addfim(r1.evento), l, l.ini.remove
+    ret l.objini.cmd_esvaziar(arg0, r1, liq, r1), 0
+  efim
+# Esvazia
+  r1.var.z_liquido = ""
+  r1.ajustapeso
+  $mens.p(arg0, nulo, r1)
+  $mens.mtodos1("$P esvaziou $o.")
+# Eventos
+  liq.cmd_esvaziou(arg0, r1, liq, liq)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_esvaziou(arg0, r1, liq, arg0), 0
+  efim
+  epara l.addfim(r1.evento), l, l.ini.remove
+    ret l.objini.cmd_esvaziou(arg0, r1, liq, r1), 0
+  efim

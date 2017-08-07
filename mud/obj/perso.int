@@ -479,7 +479,7 @@ func p_proc_comecorpo # Personagem tenta comer corpos
 # Retorna: 1=conseguiu comer, 0=não conseguiu
   ref r
   ret !(r = dono.dentro1.objini("comum_corpo")), 0
-  ret !$comando_comebebe.comer(este, r), 0
+  ret !$cmd_comer.comer(este, r), 0
   p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1
   ret 1
 

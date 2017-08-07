@@ -15,49 +15,47 @@ func escr
   refvar tipo2 = txte(alvo.tipo2)
   refvar tipo3 = txte(alvo.tipo3)
 # Empunha
-  listaobj l
-  ref r
-  nomeobj n # Para reconhecer os itens
-  n.ini(arg1, misc:objmax)
-  epara l.addfim(alvo.dentro1), l, l.ini.remove
-    r = l.objini
-    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    $mens.p(alvo, nulo, r)
-    se !r.armatipo
-      ret $mens.mperso("$O não é arma.")
-    senao r.vestirsim == (alvo == arg0 ? 2 : 1)
-      ret $mens.mperso("$P não consegue empunhar $o.")
-    senao r.vestirsexo == (alvo.psexo ? 1 : 2)
-      ret $mens.mperso("$P não consegue empunhar $o.")
-    senao int(r.pnivel) > alvo.pnivel
-      ret $mens.mperso("$P precisa estar no nível " + r.pnivel + " para empunhar $o.")
-    senao int(r.renascer) > alvo.prenascer
-      se r.renascer == 1
-        ret $mens.mperso("$P precisa renascer uma vez para empunhar $o.")
-      senao r.renascer == 2
-        ret $mens.mperso("$P precisa renascer duas vezes para empunhar $o.")
-      fimse
-      ret $mens.mperso("$P precisa renascer " + r.renascer + " vezes para empunhar $o.")
-    senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
-      ret $mens.mperso("$P não conhece " + txtsublin(config:arma_txt, r.armatipo, 1) + ".")
-    senao r.vestirnao
-      se tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
-        ret $mens.mperso("$P não consegue empunhar $o.")
-      senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
-        ret $mens.mperso("$P não consegue empunhar $o.")
-      senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
-        ret $mens.mperso("$P não consegue empunhar $o.")
-      fimse
+  ref r = misc:itemdentro(arg0, arg1)
+  $mens.p(alvo, nulo, r)
+  se !r
+    $mens.mens = arg1
+    ret $mens.mp("Você não vê $m.", arg0)
+  senao !r.armatipo
+    ret $mens.mp("$O não é arma.", arg0, nulo, r)
+  senao r.vestirsim == (alvo == arg0 ? 2 : 1)
+    ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+  senao r.vestirsexo == (alvo.psexo ? 1 : 2)
+    ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+  senao int(r.pnivel) > alvo.pnivel
+    $mens.mens = r.pnivel
+    ret $mens.mp("$P precisa estar no nível $m para empunhar $o.", arg0, nulo, r)
+  senao int(r.renascer) > alvo.prenascer
+    se r.renascer == 1
+      ret $mens.mp("$P precisa renascer uma vez para empunhar $o.", arg0, nulo, r)
+    senao r.renascer == 2
+      ret $mens.mp("$P precisa renascer duas vezes para empunhar $o.", arg0, nulo, r)
     fimse
-    listaobj e
-    epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
-      ret e.objini.cmd_vestir(alvo, r, 50), nulo
-    efim
-    r.vestir(50)
-    $mens.mvis1som("$P empunha $o.", r.i_som_emp1)
-    epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
-      e.objini.cmd_vestiu(alvo, r, 50)
-    efim
-    ret
+    $mens.mens = r.renascer
+    ret $mens.mp("$P precisa renascer $m vezes para empunhar $o.", arg0, nulo, r)
+  senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
+    $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
+    ret $mens.mp("$P não conhece $m.", arg0, nulo, r)
+  senao r.vestirnao
+    se tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
+      ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+    senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
+      ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+    senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
+      ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+    fimse
+  fimse
+  listaobj e
+  epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
+    ret e.objini.cmd_vestir(alvo, r, 50), nulo
   efim
-  arg0.msg("Você não vê isso.")
+  r.vestir(50)
+  $mens.p(arg0, nulo, r)
+  $mens.mvis1som("$P empunha $o.", r.i_som_emp1)
+  epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
+    e.objini.cmd_vestiu(alvo, r, 50)
+  efim

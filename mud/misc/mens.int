@@ -84,6 +84,13 @@ const iniclasse = !$[arg0] && criar(arg0)
 func p # Define os personagens
   contr = arg0.contr, perso = arg0, alvo = arg1, obj1 = arg2, obj2 = arg3
 
+func mp # Atalho para função p seguido da função msg
+  se arg1.sock
+    contr = arg0.contr, r = perso = arg1, alvo = arg2, obj1 = arg3, obj2 = arg4
+    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
+    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  fimse
+
 func txt # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   r = arg1

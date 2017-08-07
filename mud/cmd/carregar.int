@@ -13,9 +13,9 @@ func escr
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar arma = ref(arg0.iempu.obj)
   se !arma
-    arg0.msg("Você não está empunhando nenhuma arma.")
+    $mens.mp("$P não está empunhando nenhuma arma.", arg0)
   senao !arma.armatipo || int(arma.armamunicao) != 2
-    arg0.msg(txtmaimin(arma.descnome, "A") + " não usa munição.")
+    $mens.mp("$O não usa munição", arg0, nulo, arma)
   senao !arg1
     textotxt t
     listaitem item

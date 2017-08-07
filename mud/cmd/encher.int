@@ -1,0 +1,104 @@
+classe cmd_encher
+herda comando_comum
+const txtajuda = "\b\c3Encher\b\n\
+Sintaxe: ENCHER <objeto1> [objeto2]\n\
+Tenta encher o objeto1 com o líquido do objeto2. Digitando apenas o nome\n\
+do objeto1, enche com o líquido da fonte (caso exista uma por perto)."
+const posic = 5
+
+func escr
+  listaobj l
+  ref r1 # Primeiro objeto
+  ref r2 # Segundo objeto
+  ref liq
+# Obtém o primeiro objeto
+  ret !arg1, arg0.msg("Encher o quê?")
+  r1 = misc:itemdentro(arg0, txt1(arg1))
+  se !r1
+    $mens.mens = txt1(arg1)
+    ret $mens.mp("Você não vê $m.", arg0)
+  senao r1.i_aberto >= 3
+    ret $mens.mp("$O está fechad$u.", arg0, nulo, r1)
+  senao r1.f_tipo != 5
+    ret $mens.mp("Você não consegue encher $o.", arg0, nulo, r1)
+  fimse
+# Obtém o segundo objeto
+  se txt2(arg1)
+    r2 = misc:itemtudo(arg0, txt2(arg1))
+    se !r2
+      $mens.mens = txt2(arg1)
+      ret $mens.mp("Você não vê $m.", arg0, nulo, r1)
+    senao r2.f_tipo == 1 # Fonte
+      liq = $liq_[r2.f_liquido]
+      ret !liq, $mens.mp("Não é possível encher $a com $o.", arg0, r1, r2)
+    senao r2.f_tipo == 5 # Container de líquido
+      liq = $liq_[txt2(r2.var.z_liquido)]
+      se r2.dono != arg0
+        ret $mens.mp("Você precisa pegar $o primeiro.", arg0, nulo, r2)
+      senao r2.i_aberto >= 3
+        ret $mens.mp("$O está fechad$u.", arg0, nulo, r2)
+      senao !r2.var.z_liquido
+        ret $mens.mp("$O está vazi$u.", arg0, nulo, r2)
+      senao !liq
+        r2.var.z_liquido = ""
+        r2.ajustapeso
+        ret $mens.mp("$O está vazi$u.", arg0, nulo, r2)
+      fimse
+    senao
+      ret $mens.mp("$O não contém líquido.", arg0, nulo, r2)
+    fimse
+  senao
+    epara l.addfim(arg0.dono.dentro1), l, l.ini.remove
+      sair l.objini.f_tipo == 1 && l.objini.visivel(arg0)
+    efim
+    r2 = l.objini, l.limpar
+    ret !r2, arg0.msg("Não há uma fonte aqui.")
+    liq = $liq_[r2.f_liquido]
+    ret !liq, $mens.mp("Não é possível encher $a com $o.", arg0, r1, r2)
+  fimse
+# Obtém a quantidade de líquido
+  int32 qtd1 = r1.f_totalml - txt1(r1.var.z_liquido)
+  int32 qtd2 = r2.f_tipo == 5 ? txt1(r2.var.z_liquido) : qtd1
+  se qtd1 <= 0
+    ret $mens.mp("$O está chei$u.", arg0, nulo, r1)
+  senao qtd2 <= 0
+    ret $mens.mp("$O está vazi$u.", arg0, nulo, r1)
+  senao r1.var.z_liquido && $liq_[txt2(r1.var.z_liquido)] != liq
+    ret $mens.mp("$O contém outro líquido.", arg0, nulo, r2)
+  fimse
+  qtd2 = intmin(qtd1, qtd2)
+# Eventos
+  ret liq.cmd_encher(arg0, r1, r2, liq, qtd2, liq), 0
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, arg0), 0
+  efim
+  epara l.addfim(r1.evento), l, l.ini.remove
+    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, r1), 0
+  efim
+  epara l.addfim(r2.evento), l, l.ini.remove
+    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, r2), 0
+  efim
+# Transfere o líquido
+  $mens.mens = liq.nome
+  $mens.p(arg0, r2, r1)
+  r1.var.z_liquido = txt(intpos(qtd2 + r1.var.z_liquido)) + " " + txt(liq, 4)
+  r1.ajustapeso
+  se r2.f_tipo == 5
+    qtd2 = intpos(txt1(r2.var.z_liquido) - qtd2)
+    r2.var.z_liquido = qtd2 ? txt(qtd2) + " " + txt(liq, 4)
+    r2.ajustapeso
+    $mens.mtodos1("$P encheu $o com $m de $a.")
+  senao
+    $mens.mtodos1("$P encheu $o com $m.")
+  fimse
+# Eventos
+  liq.cmd_encheu(arg0, r1, r2, liq, qtd2, liq)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_encheu(arg0, r1, r2, liq, qtd2, arg0)
+  efim
+  epara l.addfim(r1.evento), l, l.ini.remove
+    l.objini.cmd_encheu(arg0, r1, r2, liq, qtd2, r1)
+  efim
+  epara l.addfim(r2.evento), l, l.ini.remove
+    l.objini.cmd_encheu(arg0, r1, r2, liq, qtd2, r2)
+  efim

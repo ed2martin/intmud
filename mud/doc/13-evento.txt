@@ -289,6 +289,22 @@ arg1 = sala
 arg2 = animal
 arg3 = origem do evento: arg0, arg1 ou arg2
 
+func cmd_encheu
+arg0 = personagem
+arg1 = item que foi enchido
+arg2 = item que foi esvaziado
+arg3 = líquido (objeto)
+arg4 = quantidade em ml
+arg5 = origem do evento: arg0, arg1, arg2 ou arg3
+É chamada também a função cmd_encheu de arg3.
+
+func cmd_esvaziou
+arg0 = personagem
+arg1 = item que foi esvaziado
+arg2 = líquido (objeto), pode ser nulo
+arg3 = origem do evento: arg0, arg1 ou arg2
+É chamada também a função cmd_esvaziou de arg2.
+
 func cmd_acendeu
 func cmd_apagou
 arg0 = personagem que acendeu ou apagou um item, ou nulo se apagou sozinho
@@ -468,6 +484,22 @@ arg0 = personagem que quer pegar (capturar), soltar ou dar algum animal
 arg1 = sala
 arg2 = animal
 arg3 = origem do evento: arg0, arg1 ou arg2
+
+func cmd_encher
+arg0 = personagem
+arg1 = item que será enchido
+arg2 = item que será esvaziado
+arg3 = líquido (objeto)
+arg4 = quantidade em ml
+arg5 = origem do evento: arg0, arg1, arg2 ou arg3
+É chamada também a função cmd_encher de arg3.
+
+func cmd_esvaziar
+arg0 = personagem
+arg1 = item que será esvaziado
+arg2 = líquido (objeto), pode ser nulo
+arg3 = origem do evento: arg0, arg1 ou arg2
+É chamada também a função cmd_esvaziar de arg2.
 
 func cmd_acender
 func cmd_apagar

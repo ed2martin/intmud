@@ -20,8 +20,34 @@ func efeito
   arg3.f_magia2 && $magia_[arg3.f_magia2].escrhab(arg0, arg1, arg3, arg3.f_nivel2)
   arg3.f_magia3 && $magia_[arg3.f_magia3].escrhab(arg0, arg1, arg3, arg3.f_nivel3)
 
+
+classe cmd_comer
+herda comando_comebebe
+const txtajuda = "\b\c3Comer\b\n\
+Sintaxe: COMER <objeto>\n\
+Tenta comer alguma coisa, geralmente um alimento."
+const posic = 5
+
+func escr
+  ret arg0.posicao == 7, arg0.msg(arg0.erropos(7)) # Não come durante a luta
+  ret !arg1, arg0.msg("Comer o quê?")
+  refvar r = misc:itemdentro(arg0, arg1)
+  se !r
+    ret arg0.msg("Você não vê isso.")
+  senao arg0.j_imortal # Se é imortal, consegue comer
+  senao r.f_tipo != 3 # Checa se é comida
+    ret $mens.mp("Você não consegue comer $o.", arg0, nulo, r)
+  senao arg0.p_fome >= $miscfome.cheio - 5
+    ret arg0.msg("Você não consegue comer mais nada.")
+  senao arg0.p_bebida >= $miscfome.cheio - 5
+    ret $mens.mp("Você não consegue levar $o à boca.", arg0, nulo, r)
+  fimse
+  comer(arg0, r)
+
 func comer # Personagem arg0 come item arg1
+# arg2 = mensagem ao comer
 # Retorna: 1=conseguiu comer, 0=não conseguiu comer
+# Nota: Essa função é chamada em obj/perso.int quando o personagem come corpos
   listaobj l
 # Eventos
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -31,6 +57,7 @@ func comer # Personagem arg0 come item arg1
     ret l.objini.cmd_comer(arg0, arg1, arg1), 0
   efim
 # Come o objeto
+  $mens.mens = ""
   $mens.p(arg0, nulo, arg1)
   refvar msg1 = arg1.f_msgperso ?? "$P come $o."
   $mens.mvis2(msg1, arg1.f_msgoutros ?? msg1)
@@ -45,7 +72,54 @@ func comer # Personagem arg0 come item arg1
   efim
   ret 1
 
-func beber # Personagem arg0 bebe item arg1
+
+classe cmd_beber
+herda comando_comebebe
+const txtajuda = "\b\c3Beber\b\n\
+Sintaxe: BEBER [objeto]\n\
+         TOMAR [objeto]\n\
+Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
+que encontrar."
+const posic = 5
+const totalml = 1
+
+func escr
+  listaobj l
+  ref r
+# Obtém o objeto
+  se !arg1
+    epara l.addfim(arg0.dono.dentro1), l, l.ini.remove
+      sair l.objini.f_tipo == 1 && l.objini.visivel(arg0)
+    efim
+    ret !l.objini, arg0.msg("Beber o quê?")
+    r = l.objini
+  senao
+    r = misc:itemtudo(arg0, arg1)
+    se !r
+      ret arg0.msg("Você não vê isso.")
+    senao r.f_tipo == 1 # Fonte
+    senao r.dono != arg0
+      ret $mens.mp("Você precisa pegar $o primeiro.", arg0, nulo, r)
+    senao r.f_tipo == 5 # Container de líquido
+      se !$liq_[txt2(r.var.z_liquido)]
+        ret $mens.mp("$O está vazi$u.", arg0, nulo, r)
+      senao r.i_aberto >= 3
+        ret $mens.mp("$O está fechad$u.", arg0, nulo, r)
+      fimse
+    senao r.f_tipo != 2 # Não é bebida ou poção
+      ret $mens.mp("Você não consegue beber $o.", arg0, nulo, r)
+    fimse
+  fimse
+# Checa se consegue beber
+  se arg0.p_sede >= $miscfome.cheio || arg0.p_fome >= $miscfome.cheio
+    ret arg0.msg("Você não consegue beber mais nada.")
+  senao arg0.p_bebida >= $miscfome.cheio - 5
+    ret $mens.mp("Você não consegue levar $o à boca.", arg0, nulo, r)
+  fimse
+# Bebe
+  beber(arg0, r, totalml)
+
+func beber # Personagem arg0 bebe item arg1, arg2=quantidade (de 0 a 1)
   listaobj l
   refvar liq = $liq_[arg1.f_tipo == 5 ? txt2(arg1.var.z_liquido) : arg1.f_liquido]
 # Eventos
@@ -66,15 +140,16 @@ func beber # Personagem arg0 bebe item arg1
     refvar msg1 = arg1.f_msgperso ?? "$P bebe $d $o."
     $mens.mvis2(msg1, arg1.f_msgoutros ?? msg1)
     refvar varliq = arg1.var.z_liquido
+    refvar totalml = intpos(int(liq.beber * arg2))
     se !liq
       varliq = ""
       efeito(arg0, "", arg1)
-    senao int(varliq) > liq.beber
-      varliq = txt(int(varliq - liq.beber)) + " " + txt(varliq, 4)
+    senao int(varliq) > totalml
+      varliq = txt(int(varliq - totalml)) + " " + txt(varliq, 4)
       arg1.ajustapeso
-      efeito(arg0, "", arg1, liq, 1)
+      efeito(arg0, "", arg1, liq, arg2)
     senao
-      refvar total = txt1(varliq) / liq.beber
+      refvar total = int(varliq) / liq.beber
       varliq = ""
       arg1.ajustapeso
       efeito(arg0, "", arg1, liq, total)
@@ -95,92 +170,15 @@ func beber # Personagem arg0 bebe item arg1
   efim
 
 
-classe cmd_comer
-herda comando_comebebe
-const txtajuda = "\b\c3Comer\b\n\
-Sintaxe: COMER <objeto>\n\
-Tenta comer alguma coisa, geralmente um alimento."
-const posic = 5
-
-func escr
-  ret arg0.posicao == 7, arg0.msg(arg0.erropos(7)) # Não come durante a luta
-  listaobj l
-  nomeobj n # Para reconhecer os itens
-# Obtém o objeto
-  n.ini(arg1, 1)
-  ret !arg1, arg0.msg("Comer o quê?")
-  epara l.addfim(arg0.dentro1), l, l.ini.remove
-    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
-  efim
-  ref r
-  r = l.objini
-# Checa se consegue comer
-  se !r
-    ret arg0.msg("Você não vê isso.")
-  senao arg0.j_imortal # Se é imortal, consegue comer
-  senao r.f_tipo != 3 # Checa se é comida
-    ret arg0.msg("Você não consegue comer " + r.descnome + ".")
-  senao arg0.p_fome >= $miscfome.cheio - 5
-    ret arg0.msg("Você não consegue comer mais nada.")
-  senao arg0.p_bebida >= $miscfome.cheio - 5
-    $mens.p(arg0, nulo, r)
-    $mens.mvis1("$P não consegue levar $o à boca.")
-    ret
-  fimse
-# Come
-  comer(arg0, r)
-
-
-classe cmd_beber
-herda comando_comebebe
-const txtajuda = "\b\c3Beber\b\n\
-Sintaxe: BEBER [objeto]\n\
-         TOMAR [objeto]\n\
-Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
-que encontrar."
-const posic = 5
-
-func escr
-  listaobj l
-  nomeobj n # Para reconhecer os itens
-# Obtém o objeto
-  n.ini(arg1, 1)
-  se !arg1
-    epara l.addfim(arg0.dono.dentro1), l, l.ini.remove
-      sair l.objini.f_tipo == 1 && l.objini.visivel(arg0)
-    efim
-    ret !l.objini, arg0.msg("Beber o quê?")
-  senao
-    epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
-      sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
-    efim
-    refvar r = l.objini
-    se !r
-      ret arg0.msg("Você não vê isso.")
-    senao r.f_tipo == 1 # Fonte
-    senao r.f_tipo == 5 # Container de líquido
-      ret !$liq_[txt2(r.var.z_liquido)], arg0.msg("Isso está vazio.")
-      ret r.i_aberto >= 3, arg0.msg("Isso está fechado.")
-    senao r.f_tipo != 2 # Não é bebida ou poção
-      ret arg0.msg("Você não consegue beber " + r.descnome + ".")
-    senao r.dono != arg0
-      ret arg0.msg("Você precisa pegar " + r.descnome + " primeiro.")
-    fimse
-  fimse
-  ref r
-  r = l.objini
-# Checa se consegue beber
-  se arg0.p_sede >= $miscfome.cheio || arg0.p_fome >= $miscfome.cheio
-    ret arg0.msg("Você não consegue beber mais nada.")
-  senao arg0.p_bebida >= $miscfome.cheio - 5
-    $mens.p(arg0, nulo, r)
-    $mens.mvis1("$P não consegue levar $o à boca.")
-    ret
-  fimse
-# Bebe
-  beber(arg0, r)
-
-
 classe cmd_tomar
 herda cmd_beber
 const objcmd = $cmd_beber
+
+
+classe cmd_provar
+herda cmd_beber
+const txtajuda = "\b\c3Provar\b\n\
+Sintaxe: PROVAR [objeto]\n\
+Tenta provar alguma coisa (bebe 1 décimo do que beberia teclando Beber).\n\
+Sem argumentos, prova a primeira fonte que encontrar."
+const totalml = 0.1

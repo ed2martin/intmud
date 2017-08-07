@@ -1,0 +1,271 @@
+classe adm_liq
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\c3Líquidos\b\n\
+  \c2LLIQ\b      Lista líquidos existentes\n\
+  \c2CLIQ\b      Cria um líquido\n\
+  \c2ELIQ\b      Edita um líquido\n\
+  \c2ALIQ\b      Apaga um ou mais líquidos"
+
+
+classe adm_lliq
+herda comando_adm
+const txtajuda = "\b\c3Lliq\b\n\
+Sintaxe: LLIQ [nome]\n\
+Lista os líquidos que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os líquidos."
+
+func escr
+  prog p
+  se !p.iniclasse("liq_" + arg1)
+    arg0.msg("\bNenhum líquido encontrado.")
+  senao
+    textotxt t
+    t.addfim("\b\c6Líquido\b")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txtcopiamai(txt2(txte(p.texto)), "A"))
+      p.depois
+    efim
+    arg0.msg2(t.remove(500))
+  fimse
+
+
+classe adm_cliq
+herda comando_adm
+const txtajuda = "\b\c3Cliq\b\n\
+Sintaxe: CLIQ <nome>\n\
+Cria um líquido com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+
+func escr
+  prog p
+  txt80 nome
+  uint16 num
+# Checa se digitou nome do líquido
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do líquido após CLIQ")
+  fimse
+# Checa se nome válido
+  nome = txte(txtremove(arg1, "EMDSA"))
+  se txtsepara(nome, "O+DOL,DOL+O") != nome
+    ret arg0.msg("Nome inválido para líquido: " + nome)
+  senao p.existe("liq_" + nome)
+    ret arg0.msg("Já existe o líquido: " + nome)
+  fimse
+# Cria líquido
+  prog p
+  refvar lin = "const nome = \"" + txte(txtmin(nome)) + "\""
+  p.criar("liq_" + txts(txtmin(nome)) + "\nconfig/liq\nherda comum_liq\n" + lin)
+  criar("admordena", "config/liq")
+# config:salvar
+  arg0.msg("\bCriou líquido: " + nome)
+  admlog(arg0, "criou líquido " + nome)
+
+
+classe adm_aliq
+herda comando_adm
+const txtajuda = "\b\c3Aliq\b\n\
+Sintaxe: ALIQ <nomes dos líquidos>\n\
+Apaga uma ou mais líquidos, com os nomes especificados.\n\
+Para apagar um líquido cujo nome contém espaços no meio, use sublinhado\n\
+no lugar dos espaços."
+
+func escr
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de líquidos após ALIQ")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("liq_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Líquido não existe: " + txtsub(arg1, x, 1))
+    fimse
+    x++
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar líquido
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("liq_" + txtsub(arg0.tpasso, x, 1))
+      x++
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Líquido apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou líquido " + arg0.tpasso)
+    senao
+      arg0.msg("líquidos apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou líquidos " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "líquidos" : "líquido"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_eliq
+herda comando_adm
+const txtajuda = "\b\c3Eliq\b\n\
+Sintaxe: ELIQ <nome>\n\
+Edita o líquido com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do líquido após ELIQ")
+  senao !p.existe("liq_" + arg1)
+    arg0.msg("Líquido não existe: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "liq_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_liq"
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
+classe menu_liq
+herda comando_menu
+const titulo = "Líquido " + txt(var.classe1, 4)
+const colunas = 25
+#
+const nome1 = "Nome"
+const info1 = "Nome para os jogadores"
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "nome"
+#
+const nome2 = "Aspecto"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "aspecto"
+#
+const nome3 = "Beber ml"
+const info3 = "Quantos ml bebe com o comando beber"
+const tipo3 = "opc_numero"
+const clas3 = var.classe1
+const vari3 = "beber"
+#
+const nome4 = "Peso"
+const info4 = "Peso de 1 ml em gramas (ou 1 litro em Kg)"
+const tipo4 = "opc_numreal"
+const clas4 = var.classe1
+const vari4 = "peso"
+#
+const nome5 = "Sacia a sede"
+const info5 = "Um minuto são de 3 a 4 unidades, exceto no deserto"
+const tipo5 = "opc_numero"
+const clas5 = var.classe1
+const vari5 = "f_sede"
+const extr5 = "-250 250"
+#
+const nome6 = "Sustenta"
+const info6 = "Um minuto são de 3 a 4 unidades"
+const tipo6 = "opc_numero"
+const clas6 = var.classe1
+const vari6 = "f_fome"
+const extr6 = "-250 250"
+#
+const nome7 = "Embriaguez"
+const info7 = "Um minuto são de 6 a 8 unidades"
+const tipo7 = "opc_numero"
+const clas7 = var.classe1
+const vari7 = "f_bebida"
+const extr7 = "-250 250"
+#
+const nome8 = "Digestão"
+const info8 = "Quanto tempo leva para digerir o alimento\n\
+Um minuto são de 3 a 12 unidades, dependendo da posição do personagem"
+const tipo8 = "opc_numero"
+const clas8 = var.classe1
+const vari8 = "f_diges"
+const extr8 = "-250 250"
+#
+const nome9 = "Magia 1"
+const info9 = "Nome da magia"
+const tipo9 = "opc_linha"
+const clas9 = var.classe1
+const vari9 = "f_magia1"
+#
+const nome10 = "Nível 1"
+const tipo10 = "opc_numero"
+const clas10 = var.classe1
+const vari10 = "f_nivel1"
+const extr10 = "0 65535"
+#
+const nome11 = "Magia 2"
+const info11 = "Nome da magia"
+const tipo11 = "opc_linha"
+const clas11 = var.classe1
+const vari11 = "f_magia2"
+#
+const nome12 = "Nível 2"
+const tipo12 = "opc_numero"
+const clas12 = var.classe1
+const vari12 = "f_nivel2"
+const extr12 = "0 65535"
+#
+const nome13 = "Magia 3"
+const info13 = "Nome da magia"
+const tipo13 = "opc_linha"
+const clas13 = var.classe1
+const vari13 = "f_magia3"
+#
+const nome14 = "Nível 3"
+const tipo14 = "opc_numero"
+const clas14 = var.classe1
+const vari14 = "f_nivel3"
+const extr14 = "0 65535"
+#
+const nome15 = "Atualizar"
+const tipo15 = "opc_liq"
+const clas15 = var.classe1
+const vari15 = "recalc2_auto"
+
+
+classe opc_liq
+herda opc_opcao
+const menu = ""
+
+func passo # Mudar o estado atual
+  int32 total
+  prog p
+  debug d
+  ref r
+  refvar nome = txt(arg0.var.classe1, 4)
+  epara p.iniherdainv("comum_item"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      d.ini, txt2(r.var.z_liquido) == nome && ++total && r.ajustapeso
+    efim
+  efim
+  se total == 0
+    arg0.msg("Nenhum item com o líquido")
+  senao total = 1
+    arg0.msg("Um item atualizado")
+  senao
+    arg0.msg(txt(total) + " itens atualizados")
+  fimse
+  ret passosair(arg0)
+
+
+classe comum_liq
+const iniclasse = !$[arg0] && criar(arg0)
+# Ordem que deve organizar as constantes:
+const admordem = "nome aspecto beber peso\n\
+f_sede\n\
+f_fome\n\
+f_bebida\n\
+f_diges\n\
+f_magia1 f_nivel1\n\
+f_magia2 f_nivel2\n\
+f_magia3 f_nivel3"
+const desc = nome
+const aspecto = ""
+const beber = 50
+const peso = 1
