@@ -42,17 +42,27 @@ Cria um comando social. Nome pode conter letras e números."
 
 func escr # Criar comando social
   prog p
+# Checa se digitou nome do comando social
   se arg1 == ""
-    arg0.msg("Tecle o nome do social após CSOC")
-  senao p.existe("soc_" + arg1)
-    arg0.msg("Social já existe: " + arg1)
-  senao
-    p.criar("soc_" + txtmin(arg1) + "\nconfig/social\nherda soccomum")
-    criar("admordena", "config/social")
-# config:salvar
-    arg0.msg("\bSocial criado: " + txtmin(arg1))
-    admlog(arg0, "criou social " + txtmin(arg1))
+    ret arg0.msg("Tecle o nome do social após CSOC")
   fimse
+# Checa se nome válido
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
+    ret arg0.msg("Nome inválido para social: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
+  senao p.existe("soc_" + nome)
+    ret arg0.msg("Já existe o social: " + nome)
+  senao p.existe("cmd_" + nome)
+    ret arg0.msg("Já existe o comando: " + nome)
+  fimse
+# Cria social
+  p.criar("soc_" + txts(txtmin(nome)) + "\nconfig/social\nherda soccomum")
+  criar("admordena", "config/social")
+# config:salvar
+  arg0.msg("\bSocial criado: " + nome)
+  admlog(arg0, "criou social " + nome)
 
 
 classe adm_esoc

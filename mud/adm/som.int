@@ -53,21 +53,20 @@ O nome deve ser composto de letras, mas pode ter espaços no meio."
 
 func escr
   prog p
-  txt80 nome
-  uint16 num
 # Checa se digitou nome do som
   se arg1 == ""
     ret arg0.msg("Tecle o nome do som após CSOM")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, "EMDSA"))
-  se txtsepara(nome, "O+DOL,DOL+O") != nome
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
     ret arg0.msg("Nome inválido para som: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
   senao p.existe("som_" + nome)
     ret arg0.msg("Já existe o som: " + nome)
   fimse
 # Cria som
-  prog p
   p.criar("som_" + txts(txtmin(nome)) + "\nconfig/som\nherda comum_som")
   criar("admordena", "config/som")
 # config:salvar

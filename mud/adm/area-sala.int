@@ -78,22 +78,25 @@ Cria uma ·rea com o nome especificado.\n\
 Nota: Nomes de ·rea devem ter de 2 a 16 letras de A a Z."
 
 func escr # Criar ·rea
-  txt100 prefixo
-  prefixo = txtmin(txtremove(arg1, "EMDCT7"))
-  se $a_[prefixo]
-    arg0.msg("\b¡rea j· existe: " + prefixo)
-  senao inttotal(prefixo) < 2 || inttotal(prefixo) > 10
-    arg0.msg("\bNome de ·rea deve ter de 2 a 10 caracteres")
-  senao prefixo != txtsepara(prefixo, "DEO+DEOL,DEOL+DEO")
-    arg0.msg("\bNome de ·rea deve ter apenas letras de a a z.")
-  senao
-    prog p
-    p.criar("a_" + prefixo + "\nareas/" + prefixo + "\nherda area")
-    p.criar("b_" + prefixo + "\nareas/" + prefixo + "\nherda sala\nconst s_area=\"" + prefixo + \
-"\"")
-    config:salvar, arg0.msg("\b¡rea criada: " + prefixo)
-    admlog(arg0, "criou ·rea " + prefixo)
+  prog p
+# Checa se digitou nome da ·rea
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da ·rea apÛs CAREA")
   fimse
+# Checa se nome v·lido
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
+    ret arg0.msg("Nome inv·lido para ·rea: " + nome)
+  senao inttotal(nome) > 10
+    ret arg0.msg("Nome deve ter atÈ 10 caracteres: " + nome)
+  senao p.existe("a_" + nome)
+    ret arg0.msg("J· existe a ·rea: " + nome)
+  fimse
+# Cria ·rea
+  p.criar("a_" + nome + "\nareas/" + nome + "\nherda area")
+  p.criar("b_" + nome + "\nareas/" + nome + "\nherda sala\nconst s_area=\"" + nome + "\"")
+  config:salvar, arg0.msg("\b¡rea criada: " + nome)
+  admlog(arg0, "criou ·rea " + nome)
 
 
 classe adm_aarea
@@ -274,15 +277,13 @@ Nomes de sala s„o sempre nomes de ·rea seguido de um n˙mero de 001 a 999."
 
 func escr # Criar sala
   prog p
-  txt40 nome
-  uint16 num
 # Checa se digitou nome da sala
   se arg1 == ""
     ret arg0.msg("Tecle o nome da sala ou ·rea apÛs CSALA")
   fimse
 # Checa nome completo
-  nome = txtmin(txtremove(arg1, "EMDCT7"))
-  num = int(txtfim(nome, 3)) + 1000
+  txt40 nome = txtmin(txtremove(arg1, "EMDCT7"))
+  uint16 num = int(txtfim(nome, 3)) + 1000
   se num > 1000 && txtfim(num, 3) == txtfim(arg1, 3)
     se !p.existe("a_" + txt(nome, 0, inttotal(nome) - 3))
       ret arg0.msg("¡rea n„o existe: " + txt(nome, 0, inttotal(nome) - 3))

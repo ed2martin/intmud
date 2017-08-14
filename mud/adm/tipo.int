@@ -61,22 +61,21 @@ Nota: tipos de personagens são raça e classe."
 
 func escr
   prog p
-  txt80 nome
-  uint16 num
 # Checa se digitou nome do tipo
   se arg1 == ""
     ret arg0.msg("Tecle o nome do tipo após CTIPO")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, "EMDSA"))
-  se txtsepara(nome, "O+DOL,DOL+O") != nome
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
     ret arg0.msg("Nome inválido para tipo de personagem: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
   senao p.existe("t_" + nome)
     ret arg0.msg("Já existe o tipo: " + nome)
   fimse
 # Cria tipo
-  txt200 lin
-  lin = "t_" + txts(nome) + "\nconfig/tipo\nherda comum_tipo"
+  txt200 lin = "t_" + txts(nome) + "\nconfig/tipo\nherda comum_tipo"
   lin += "\nconst nome = \"" + txtcopiamai(txte(nome), "A") + "\""
   p.criar(lin)
   criar("admordena", "config/tipo")

@@ -73,22 +73,21 @@ O nome deve ser composto de letras, mas pode ter espaços no meio."
 
 func escr
   prog p
-  txt80 nome
-  uint16 num
 # Checa se digitou nome do efeito
   se arg1 == ""
     ret arg0.msg("Tecle o nome do efeito após CEF")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, "EMDSA"))
-  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
     ret arg0.msg("Nome inválido para efeito: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
   senao p.existe("e_" + nome)
     ret arg0.msg("Já existe o efeito: " + nome)
   fimse
 # Cria efeito
-  txt200 lin
-  lin = "e_" + txts(txtmin(nome)) + "\nconfig/efeito\nherda comum_efeito"
+  txt200 lin = "e_" + txts(txtmin(nome)) + "\nconfig/efeito\nherda comum_efeito"
   lin += "\nconst e_nome = \"" + txtcopiamai(nome, "A") + "\""
   prog p
   p.criar(lin)
@@ -107,22 +106,21 @@ O nome deve ser composto de letras, mas pode ter espaços no meio."
 
 func escr
   prog p
-  txt80 nome
-  uint16 num
 # Checa se digitou nome do modificador
   se arg1 == ""
     ret arg0.msg("Tecle o nome do modificador após CMOD")
   fimse
 # Checa se nome válido
-  nome = txte(txtremove(arg1, "EMDSA"))
-  se txtsepara(nome, "DO+DOL,DOL+DO") != nome
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
     ret arg0.msg("Nome inválido para modificador: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
   senao p.existe("f_" + nome)
     ret arg0.msg("Já existe o modificador: " + nome)
   fimse
 # Cria modificador
-  txt200 lin
-  lin = "f_" + txts(txtmin(nome)) + "\nconfig/efeito\nherda comum_modif"
+  txt200 lin = "f_" + txts(txtmin(nome)) + "\nconfig/efeito\nherda comum_modif"
   lin += "\nconst e_nome = \"" + txtcopiamai(nome, "A") + "\""
   prog p
   p.criar(lin)
