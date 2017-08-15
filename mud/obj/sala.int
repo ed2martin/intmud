@@ -1,6 +1,9 @@
 classe area
 inttempo resetcont # Tempo para o próximo reset
 const iniclasse = arg0 != "area" && !$[arg0] && criar(arg0)
+#
+# Ordem que deve organizar as constantes:
+const admordem = "a_nome\na_autor\na_tempo\na_reset\na_txtreset"
 
 func ini
   resetcont = rand(a_tempo * 500, a_tempo * 700)
@@ -20,12 +23,12 @@ func reset_exec # Executa o reset da área
   prog p
   debug d
   ref r
-  uint16 x = d.exec
   epara p.iniherdainv("b_" + txt(este, 2)), p.lin, p.depois
     epara r = $[p.texto], r, r = objdepois(r)
-      r.a_reset1, d.exec = x
+      r.a_reset1, d.ini
     efim
   efim
+  cmd_reset
 # Avisa jogadores
   txt100 mres = a_txtreset
   ret !mres, nulo

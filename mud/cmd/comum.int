@@ -37,17 +37,17 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
   se !arg0.visivel(arg1)
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com quem não posso ver."
   senao !arg1.lojanao # negocia com todos
-  senao arg0.tipo1 && txtproclin(txte(arg0.tipo1), txte(arg1.lojanao)) >= 0
+  senao arg0.tipo1 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo1)) >= 0
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo1
-  senao arg0.tipo2 && txtproclin(txte(arg0.tipo2), txte(arg1.lojanao)) >= 0
+  senao arg0.tipo2 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo2)) >= 0
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo2
-  senao arg0.tipo3 && txtproclin(txte(arg0.tipo3), txte(arg1.lojanao)) >= 0
+  senao arg0.tipo3 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo3)) >= 0
     ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo3
   fimse
   se !arg1.lojasim # negocia com todos
-  senao arg0.tipo1 && txtproclin(txte(arg0.tipo1), txte(arg1.lojasim)) >= 0
-  senao arg0.tipo2 && txtproclin(txte(arg0.tipo2), txte(arg1.lojasim)) >= 0
-  senao arg0.tipo3 && txtproclin(txte(arg0.tipo3), txte(arg1.lojasim)) >= 0
+  senao arg0.tipo1 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo1)) >= 0
+  senao arg0.tipo2 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo2)) >= 0
+  senao arg0.tipo3 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo3)) >= 0
   senao
     txt100 lin = arg0.tipo1 ? " " + arg0.tipo1
     lin += (arg0.tipo2 ? " " + arg0.tipo2 : "") + (arg0.tipo3 ? " " + arg0.tipo3)
@@ -68,14 +68,14 @@ func negociar_checa # Checa se PNJ pode negociar
 # Retorna: "" se negocia ou "\b" se não negocia
   ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0) || !arg0.visivel(arg1), "\b"
   se arg1.lojanao
-    ret arg0.tipo1 && txtproclin(txte(arg0.tipo1), txte(arg1.lojanao)) >= 0, "\b"
-    ret arg0.tipo2 && txtproclin(txte(arg0.tipo2), txte(arg1.lojanao)) >= 0, "\b"
-    ret arg0.tipo3 && txtproclin(txte(arg0.tipo3), txte(arg1.lojanao)) >= 0, "\b"
+    ret arg0.tipo1 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo1)) >= 0, "\b"
+    ret arg0.tipo2 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo2)) >= 0, "\b"
+    ret arg0.tipo3 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo3)) >= 0, "\b"
   fimse
   se !arg1.lojasim # negocia com todos
-  senao arg0.tipo1 && txtproclin(txte(arg0.tipo1), txte(arg1.lojasim)) >= 0
-  senao arg0.tipo2 && txtproclin(txte(arg0.tipo2), txte(arg1.lojasim)) >= 0
-  senao arg0.tipo3 && txtproclin(txte(arg0.tipo3), txte(arg1.lojasim)) >= 0
+  senao arg0.tipo1 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo1)) >= 0
+  senao arg0.tipo2 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo2)) >= 0
+  senao arg0.tipo3 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo3)) >= 0
   senao
     ret "\b"
   fimse

@@ -449,7 +449,14 @@ func morreu # Procedimentos quando morre
   mortes++
   p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
   apagar(este)
-  p_corpo && criar("comum_corpo", este, p_corpo)
+  se p_corpo == 4
+    dono.var.z_moedas_ += var.z_moedas_
+    epara l.addfim(dentro1, dentro2), l, l.ini.remove
+      l.objini.item && l.objini.mudadono(dono, l.objini.objtot)
+    efim
+  senao
+    p_corpo && criar("comum_corpo", este, p_corpo)
+  fimse
 # Apaga efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois

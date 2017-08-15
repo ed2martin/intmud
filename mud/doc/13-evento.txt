@@ -164,6 +164,15 @@ arg0 = hora atual
 É chamado sempre que a hora MUD muda (a cada 5 minutos), desde que o objeto
 esteja recebendo eventos da hora. Vide também constante evhora (abaixo).
 
+func cmd_reset
+Chamado para o objeto a_ da área quando ocorre reset de área, logo após
+executar o reset nas salas da área. Exemplo, para informar as horas sempre
+que ocorre reset na área teste (desde que esteja configurada para ter reset),
+criar a seguinte função na classe a_teste, arquivo areas/teste.int:
+func cmd_reset
+  $mens.p($b_teste)
+  $mens.mareatodos1("Hora atual: " + misc:hora)
+
 
 3. Eventos incondicionais
 
