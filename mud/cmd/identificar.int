@@ -6,9 +6,6 @@ const cmdmenu = "identif" # Editável via "menu_hab_identif" e "menu_magia_identi
 const tipoalvo = 6 # Não agressivo
 const c_espera = 15 # Tempo de esperar após usar esse comando
 textovar var
-const p_atrib_atk1 = "normais\nespeciais\n" + config:atknomes
-const p_atrib_def1 = "normal\nespecial\n" + config:atknomes
-const p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomevar\n\
@@ -148,50 +145,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   arg1.i_captura && arg2.addfim("Pode ser usado para capturar animais.")
 # Obtém os efeitos (Extrai os atributos de uma função)
   atrib_ler(arg1, arg1.perso ? "recalc1_auto" : "recalc2_auto")
-# Efeitos numéricos
-  int8 x
-  int8 total
-  total = intsublin(p_atrib_num)
-  epara x = 0, x < total, x++
-    continuar !atribnum.[x]
-    lin = txtmin(txtsublin(p_atrib_num, x, 1))
-    arg2.addfim("Afeta " + lin + " em " + atribnum.[x] + ".")
-  efim
-# Efeitos sim/não
-  lin = ""
-  total = intsublin(p_atrib_bit)
-  epara x = 0, x < total, x++
-    continuar !atribbit.[x]
-    lin += ", " + txtmin(txtsublin(p_atrib_bit, x, 1))
-  efim
-  lin && arg2.addfim("Propriedades:" + txt(lin, 1) + ".")
-# Efeitos de ataque
-  total = intsublin(p_atrib_atk1)
-  epara x = 0, x < total, x++
-    continuar atribatk.[x] == 100
-    lin = txtsublin(p_atrib_atk1, x, 1)
-    se atribatk.[x] == 0
-      arg2.addfim("Anula ataques " + lin + ".")
-    senao atribatk.[x] < 100
-      arg2.addfim("Reduz ataques " + lin + " em " + int(100 - atribatk.[x]) + "%.")
-    senao
-      arg2.addfim("Aumenta ataques " + lin + " em " + int(atribatk.[x] - 100) + "%.")
-    fimse
-  efim
-# Efeitos de defesa
-  epara x = 0, x < total, x++
-    continuar atribdef.[x] == 100
-    se atribdef.[x] == 0
-      lin = "Torna imune a " + txtsublin(p_atrib_def2, x, 1)
-      arg2.addfim(lin + ".")
-    senao atribdef.[x] < 100
-      lin = "Melhora defesa " + txtsublin(p_atrib_def1, x, 1)
-      arg2.addfim(lin + " em " + int(10000 / atribdef.[x] - 100) + "%.")
-    senao
-      lin = "Piora defesa " + txtsublin(p_atrib_def1, x, 1)
-      arg2.addfim(lin + " em " + int(100 - 10000 / atribdef.[x]) + "%.")
-    fimse
-  efim
+  atrib_txt(arg2)
 # Identificação
   refvar m = txt(arg1.descident(arg0))
   m && arg2.addfim(m)

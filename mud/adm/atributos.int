@@ -259,6 +259,57 @@ func atrib_salvar # Salva os atributos em função conforme variáveis atrib
     admlog(arg0, "apagou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
   fimse
 
+func atrib_txt # Obtém texto com informações dos atributos, para os usuários
+# arg0 = textotxt aonde colocar as informações
+# Nota: antes chamar atrib_ler para preencher as variáveis atrib
+  refvar p_atrib_atk1 = "normais\nespeciais\n" + config:atknomes
+  refvar p_atrib_def1 = "normal\nespecial\n" + config:atknomes
+  refvar p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
+  txt100 lin
+# Efeitos numéricos
+  int8 x
+  int8 total = intsublin(p_atrib_num)
+  epara x = 0, x < total, x++
+    continuar !atribnum.[x]
+    lin = txtmin(txtsublin(p_atrib_num, x, 1))
+    arg0.addfim("Afeta " + lin + " em " + atribnum.[x] + ".")
+  efim
+# Efeitos sim/não
+  lin = ""
+  total = intsublin(p_atrib_bit)
+  epara x = 0, x < total, x++
+    continuar !atribbit.[x]
+    lin += ", " + txtmin(txtsublin(p_atrib_bit, x, 1))
+  efim
+  lin && arg0.addfim("Propriedades:" + txt(lin, 1) + ".")
+# Efeitos de ataque
+  total = intsublin(p_atrib_atk1)
+  epara x = 0, x < total, x++
+    continuar atribatk.[x] == 100
+    lin = txtsublin(p_atrib_atk1, x, 1)
+    se atribatk.[x] == 0
+      arg0.addfim("Anula ataques " + lin + ".")
+    senao atribatk.[x] < 100
+      arg0.addfim("Reduz ataques " + lin + " em " + int(100 - atribatk.[x]) + "%.")
+    senao
+      arg0.addfim("Aumenta ataques " + lin + " em " + int(atribatk.[x] - 100) + "%.")
+    fimse
+  efim
+# Efeitos de defesa
+  epara x = 0, x < total, x++
+    continuar atribdef.[x] == 100
+    se atribdef.[x] == 0
+      lin = "Torna imune a " + txtsublin(p_atrib_def2, x, 1)
+      arg0.addfim(lin + ".")
+    senao atribdef.[x] < 100
+      lin = "Melhora defesa " + txtsublin(p_atrib_def1, x, 1)
+      arg0.addfim(lin + " em " + int(10000 / atribdef.[x] - 100) + "%.")
+    senao
+      lin = "Piora defesa " + txtsublin(p_atrib_def1, x, 1)
+      arg0.addfim(lin + " em " + int(100 - 10000 / atribdef.[x]) + "%.")
+    fimse
+  efim
+
 
 classe opc_atribnum
 herda opc_atribcomum
