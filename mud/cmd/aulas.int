@@ -64,8 +64,7 @@ func escr2 # Consultar uma aula
       continuar !(lin = t2.ini.texto)
       lin = misc:nomevar(txt1(lin)), linha++
       continuar !n.nome(lin, 1) && txt(linha) != arg1
-      ref r
-      r = $[misc:objvar(t2.ini.texto)]
+      ref r = $[misc:objvar(t2.ini.texto)]
       valor = r.valor(arg0) * p.taxaaula / 100
       aulas = txt2(t2.ini.texto)
       t2.limpar
@@ -78,6 +77,11 @@ func escr2 # Consultar uma aula
       lin = "Ensino até o nível " + txtmin(txtsublin(misc:aulas, aulas, 1))
       lin += valor <= 0 ? ", não cobro nada." : ", cobro $" + valor + " por aula."
       t2.addfim(lin)
+      se r.aulapontos == 1
+        t2.addfim("Cada aula custa 1 ponto de aula.")
+      senao r.aulapontos > 1
+        t2.addfim("Cada aula custa " + r.aulapontos + " pontos de aula.")
+      fimse
       ret arg0.msg2(t2.remove(1000))
     efim
   efim

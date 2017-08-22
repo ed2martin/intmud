@@ -13,7 +13,7 @@ c_espera\n\
 c_vida1 c_vida2\n\
 c_mana1 c_mana2\n\
 c_move1 c_move2\n\
-aulaini aulafim\n\
+aulaini aulafim aulapontos\n\
 depende\n\
 falha\n\
 tipoarma\n\
@@ -24,6 +24,7 @@ msgperso1 msgperso2 msgperso3 msgobj1 msgobj2\n\
 msgerrou1 msgerrou2 msgnulo1 msgnulo2"
 #
 const escr = escrhab(arg0, arg1)
+const aulapontos = config:a_a_aulapontos
 
 func escrhab
 # arg0 = personagem
@@ -129,9 +130,9 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     uint8 x
     refvar xmax = intsublin(config:equip_txt)
     txt100 valor = arg1.vestir1
-    lin = (arg1.armatipo ? ", empunhando" : "")
+    lin = arg1.armatipo ? ", empunhando" : ""
     enquanto x < xmax && valor
-      (valor & "1") == "1" && (lin += ", " + txtsublin(config:equip_txt, x, 1))
+      valor & "1" == "1" && (lin += ", " + txtsublin(config:equip_txt, x, 1))
       x++, valor = valor >> 1
     efim
     lin && arg2.addfim("Pode ser usado em: " + txt(lin, 2) + ".")
