@@ -1040,6 +1040,19 @@ const i_abertoini = 3 # Container: 3 Inicialmente fechado
 const objmax = 0
 
 
+classe i_teste071
+herda comum_itemperso
+const nome = "aljava"
+const descnome = "uma aljava"
+const descloja = "aljava (bolsa) com 30 flechas"
+const msexo = 0 # Sexo Msg: 0 Feminino
+const i_itens = "teste052"
+const i_abertoini = 1 # Container: 1 Sempre aberto
+
+func cmd_ini
+  criar("i_teste052", este, 30)
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1174,7 +1187,8 @@ teste027 0\n\
 teste028 0\n\
 teste033 0\n\
 teste069 0\n\
-teste070 0"
+teste070 0\n\
+teste071 0"
 const taxacompra = 30
 const taxavenda = 20
 const tipoitem = 3 # Compra produtos: Possui metal, Arma
@@ -1919,7 +1933,7 @@ const lojaaula = "m_Proteção_de_luz 8"
 classe p_teste036
 herda comum_perso
 const nome = "treinadora de tiros"
-const lojaaula = "h_Sapato 8\nh_Arco_e_flecha 8\nh_Revolver 8"
+const lojaaula = "h_Sapato 8\nh_Arco_e_flecha 8\nh_Revolver 8\nm_Flechas_Enfurecidas 8"
 
 
 classe p_teste037
@@ -2587,6 +2601,7 @@ Os comandos comprar, vender e avaliar também podem ser usados em lojas.\n\
 Pode-se também saber o que é ensinado teclando aulas, seguido ou não de uma\n\
 habilidade. E para aprender, tecle aprender seguido de um número ou uma\n\
 habilidade mostrada no comando aulas."
+const dir_l = $s_teste170
 const dir_o = $s_teste030
 const s_reset = "P 100 teste007 0 0 1\nP 100 teste008 0 0 1"
 
@@ -4580,7 +4595,9 @@ const s_titulo = "Munição"
 const s_desc = "Aqui pode-se aprender as seguintes habilidades:\n\
 Sapato - jogar sapatos e botas, não precisa de arma\n\
 Arco_e_flecha - atirar flecha (do inventário) com um arco (empunhando)\n\
-Revolver - atirar com revolver, bem como Carregar e Descarregar"
+Revolver - atirar com revolver, bem como Carregar e Descarregar\n\
+Flechas Enfurecidas - foi feito com trigger para usar 3 flechas (a munição\n\
+deve ser um item que agrupa)"
 const dir_n = $s_teste026
 const dir_s = $s_teste151
 const s_reset = "P 100 teste036 0 0 1\nS 100 teste018 5 S\nS 100 teste048 5 S"
@@ -4888,3 +4905,12 @@ const s_desc = "Aqui é o primeiro andar do ônibus. O teto é bem mais baixo.\n\
 Daqui consegue-se ver fora do ônibus teclando ver janela."
 const dir_b = $s_teste168
 const ver_janela = $i_teste067.dono.descsala(arg0, 7)
+
+
+classe s_teste170
+herda b_teste
+const s_titulo = "Itens vendidos com itens dentro"
+const s_desc = "João o mercenário (a oeste) vende uma aljava com 30 flechas.\n\
+Isso foi feito com trigger. As flechas (item teste052) são criadas\n\
+na função cmd_ini da aljava (item teste071)."
+const dir_o = $s_teste031

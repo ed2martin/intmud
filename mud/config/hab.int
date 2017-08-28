@@ -660,6 +660,29 @@ func cmd_atacou
   fimse
 
 
+classe magia_flechas_enfurecidas
+herda comando_ataque
+const nomevar = "m_Flechas enfurecidas"
+const ataquemin = 40
+const ataquemax = 130
+const tipoarma = 64 # Requer arma: 6-Arco e flecha
+const tipomunicao = 1 # Munição: 1 Usa mas não perde
+const atk1_auto1 = "Com a força dos ventos, $p dispara 3 flechas $e $a, $m"
+const atk1_perso1 = "Com a força dos ventos, $p dispara 3 flechas $e $a, $m"
+const atk1_matou1 = "Com a força dos ventos, $p mata $a com 3 flechas, $m"
+const atk1_errou1 = "Com a força dos ventos, $p dispara 3 flechas, mas $a desvia"
+const atk1_nulo1 = "$P dispara 3 flechas que mal alcançam $a"
+
+func cmd_atacar
+  se arg2.arma2.objtot < 3
+    arg0.msg("Precisa de três flechas para essa magia.")
+    ret 1
+  fimse
+
+func cmd_atacou
+  arg2.arma2.apagar(3)
+
+
 classe magia_flutuar
 herda comando_ataque
 const nomevar = "m_Flutuar"
