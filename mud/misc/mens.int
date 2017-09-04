@@ -400,7 +400,7 @@ const o_x = txtcopiamai(obj1.msexo ? "e" : "a", arg0)
 func o_p
   se perso == perso.contr
     se r == perso
-      ret txtcopiamai("você", arg0)
+      ret txtcopiamai(config:mens_tu, arg0)
     senao perso.visivel(r)
       ret arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
     fimse
@@ -415,10 +415,28 @@ func o_p
   fimse
   ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
 
+func o_p1
+  se perso == perso.contr
+    se r == perso
+      ret txtcopiamai(config:mens_ti, arg0)
+    senao perso.visivel(r)
+      ret arg0 === "P1" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+    fimse
+    ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
+  senao r == perso.contr
+    ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
+  senao perso.contr.visivel(r)
+    refvar m = arg0 === "P1" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+    ret m + " de " + perso.contr.descnome
+  senao perso.visivel(r)
+    ret (arg0 === "P1" ? txtcopiamai(perso.descnome, "A") : perso.descnome) + " de alguém"
+  fimse
+  ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
+
 func o_a
   se alvo == alvo.contr
     se r == alvo
-      ret txtcopiamai("você", arg0)
+      ret txtcopiamai(config:mens_tu, arg0)
     senao alvo.visivel(r)
       ret arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
     fimse
@@ -433,11 +451,37 @@ func o_a
   fimse
   ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
 
+func o_a1
+  se alvo == alvo.contr
+    se r == alvo
+      ret txtcopiamai(config:mens_ti, arg0)
+    senao alvo.visivel(r)
+      ret arg0 === "A1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+    fimse
+    ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
+  senao r == alvo.contr
+    ret txtcopiamai(alvo.msexo ? "seu " : "sua ", arg0) + alvo.nome
+  senao alvo.contr.visivel(r)
+    refvar m = arg0 === "A1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+    ret m + " de " + alvo.contr.descnome
+  senao alvo.visivel(r)
+    ret (arg0 === "A1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome) + " de alguém"
+  fimse
+  ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
+
 func o_q # Nome do personagem sem citar o dono
   se r == perso
-    ret txtcopiamai("você", arg0)
+    ret txtcopiamai(config:mens_tu, arg0)
   senao perso.visivel(r)
     ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+  fimse
+  ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
+
+func o_qq # Nome do personagem sem citar o dono
+  se r == perso
+    ret txtcopiamai(config:mens_ti, arg0)
+  senao perso.visivel(r)
+    ret arg0 === "QQ" ? txtcopiamai(perso.descnome, "A") : perso.descnome
   fimse
   ret txtcopiamai(perso.perso ? "alguém" : "alguma coisa", arg0)
 
@@ -447,9 +491,17 @@ func o_r # Nome do personagem no comando QUEM
 
 func o_b # Nome do alvo sem citar o dono
   se r == alvo
-    ret txtcopiamai("você", arg0)
+    ret txtcopiamai(config:mens_tu, arg0)
   senao alvo.visivel(r)
     ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+  fimse
+  ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
+
+func o_b1 # Nome do alvo sem citar o dono
+  se r == alvo
+    ret txtcopiamai(config:mens_ti, arg0)
+  senao alvo.visivel(r)
+    ret arg0 === "B1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
   fimse
   ret txtcopiamai(alvo.perso ? "alguém" : "alguma coisa", arg0)
 
@@ -459,17 +511,33 @@ func o_c # Nome do alvo no comando QUEM
 
 func o_o # Nome do primeiro objeto
   se r == obj1
-    ret txtcopiamai("você", arg0)
+    ret txtcopiamai(config:mens_tu, arg0)
   senao obj1.visivel(r)
     ret arg0 === "O" ? txtcopiamai(obj1.descnome, "A") : obj1.descnome
   fimse
   ret txtcopiamai(obj1.perso ? "alguém" : "alguma coisa", arg0)
 
+func o_o1 # Nome do primeiro objeto
+  se r == obj1
+    ret txtcopiamai(config:mens_ti, arg0)
+  senao obj1.visivel(r)
+    ret arg0 === "O1" ? txtcopiamai(obj1.descnome, "A") : obj1.descnome
+  fimse
+  ret txtcopiamai(obj1.perso ? "alguém" : "alguma coisa", arg0)
+
 func o_n # Nome do segundo objeto
   se r == obj2
-    ret txtcopiamai("você", arg0)
+    ret txtcopiamai(config:mens_tu, arg0)
   senao obj2.visivel(r)
-    ret arg0 === "O" ? txtcopiamai(obj2.descnome, "A") : obj2.descnome
+    ret arg0 === "N" ? txtcopiamai(obj2.descnome, "A") : obj2.descnome
+  fimse
+  ret txtcopiamai(obj2.perso ? "alguém" : "alguma coisa", arg0)
+
+func o_n1 # Nome do segundo objeto
+  se r == obj2
+    ret txtcopiamai(config:mens_ti, arg0)
+  senao obj2.visivel(r)
+    ret arg0 === "N1" ? txtcopiamai(obj2.descnome, "A") : obj2.descnome
   fimse
   ret txtcopiamai(obj2.perso ? "alguém" : "alguma coisa", arg0)
 
@@ -481,7 +549,7 @@ herda mens
 
 func o_p
   se perso == perso.contr
-    ret r == perso, txtcopiamai("você", arg0)
+    ret r == perso, txtcopiamai(config:mens_tu, arg0)
     ret arg0 === "P" ? txtcopiamai(perso.descnome, "A") : perso.descnome
   senao r == perso.contr
     ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
@@ -490,9 +558,20 @@ func o_p
     ret m + " de " + perso.contr.descnome
   fimse
 
+func o_p1
+  se perso == perso.contr
+    ret r == perso, txtcopiamai(config:mens_ti, arg0)
+    ret arg0 === "P1" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+  senao r == perso.contr
+    ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
+  senao
+    refvar m = arg0 === "P1" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+    ret m + " de " + perso.contr.descnome
+  fimse
+
 func o_a
   se alvo == alvo.contr
-    ret r == alvo, txtcopiamai("você", arg0)
+    ret r == alvo, txtcopiamai(config:mens_tu, arg0)
     ret arg0 === "A" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
   senao r == alvo.contr
     ret txtcopiamai(alvo.msexo ? "seu " : "sua ", arg0) + alvo.nome
@@ -501,21 +580,48 @@ func o_a
     ret m + " de " + alvo.contr.descnome
   fimse
 
+func o_a1
+  se alvo == alvo.contr
+    ret r == alvo, txtcopiamai(config:mens_ti, arg0)
+    ret arg0 === "A1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+  senao r == alvo.contr
+    ret txtcopiamai(alvo.msexo ? "seu " : "sua ", arg0) + alvo.nome
+  senao
+    refvar m = arg0 === "A1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+    ret m + " de " + alvo.contr.descnome
+  fimse
+
 func o_q # Nome do personagem sem citar o dono
-  ret r == perso, txtcopiamai("você", arg0)
+  ret r == perso, txtcopiamai(config:mens_tu, arg0)
   ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
 
+func o_q1 # Nome do personagem sem citar o dono
+  ret r == perso, txtcopiamai(config:mens_ti, arg0)
+  ret arg0 === "Q1" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+
 func o_b # Nome do alvo sem citar o dono
-  ret r == alvo, txtcopiamai("você", arg0)
+  ret r == alvo, txtcopiamai(config:mens_tu, arg0)
   ret arg0 === "B" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
 
+func o_b1 # Nome do alvo sem citar o dono
+  ret r == alvo, txtcopiamai(config:mens_ti, arg0)
+  ret arg0 === "B1" ? txtcopiamai(alvo.descnome, "A") : alvo.descnome
+
 func o_o # Nome do primeiro objeto
-  ret r == obj1, txtcopiamai("você", arg0)
+  ret r == obj1, txtcopiamai(config:mens_tu, arg0)
   ret arg0 === "O" ? txtcopiamai(obj1.descnome, "A") : obj.descnome
 
+func o_o1 # Nome do primeiro objeto
+  ret r == obj1, txtcopiamai(config:mens_ti, arg0)
+  ret arg0 === "O1" ? txtcopiamai(obj1.descnome, "A") : obj.descnome
+
 func o_n # Nome do segundo objeto
-  ret r == obj2, txtcopiamai("você", arg0)
-  ret arg0 === "O" ? txtcopiamai(obj2.descnome, "A") : obj.descnome
+  ret r == obj2, txtcopiamai(config:mens_tu, arg0)
+  ret arg0 === "N" ? txtcopiamai(obj2.descnome, "A") : obj.descnome
+
+func o_n1 # Nome do segundo objeto
+  ret r == obj2, txtcopiamai(config:mens_ti, arg0)
+  ret arg0 === "N1" ? txtcopiamai(obj2.descnome, "A") : obj.descnome
 
 
 classe mensjog
@@ -554,12 +660,20 @@ const o_x = ""
 const o_a = ""
 
 func o_p
-  ret perso == perso.contr, txtcopiamai("você", arg0)
+  ret perso == perso.contr, txtcopiamai(config:mens_tu, arg0)
+  ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
+
+func o_p1
+  ret perso == perso.contr, txtcopiamai(config:mens_ti, arg0)
   ret txtcopiamai(perso.msexo ? "seu " : "sua ", arg0) + perso.nome
 
 func o_q # Nome do personagem sem citar o dono
-  ret r == perso, txtcopiamai("você", arg0)
+  ret r == perso, txtcopiamai(config:mens_tu, arg0)
   ret arg0 === "Q" ? txtcopiamai(perso.descnome, "A") : perso.descnome
+
+func o_q1 # Nome do personagem sem citar o dono
+  ret r == perso, txtcopiamai(config:mens_ti, arg0)
+  ret arg0 === "Q1" ? txtcopiamai(perso.descnome, "A") : perso.descnome
 
 func o_r # Nome do personagem no comando QUEM
   ret arg0 === "r", perso.sock ? perso.sock.nome : perso.nome

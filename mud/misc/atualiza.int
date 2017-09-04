@@ -1,4 +1,4 @@
-classe atualiza_460
+classe atualiza_471
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -727,8 +727,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 460, nulo
-  p.criar("config", "const versao = 460 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 471, nulo
+  p.criar("config", "const versao = 471 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -745,6 +745,9 @@ func ini4_exec
       p.apagar(p.texto, "som")
     efim
   fimse
+# Você/Tu/Ti
+  criafunc("config", "const mens_tu = \"você\"")
+  criafunc("config", "const mens_ti = \"você\"")
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
 
