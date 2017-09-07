@@ -18,7 +18,7 @@ func escrobj # Abrir um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Abrir o que?")
+  ret !arg1, arg0.msg("Abrir o quê?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -27,18 +27,19 @@ func escrobj # Abrir um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    ret !i, $mens.mp("Você não vê $m.", arg0)
   fimse
 # Checa se está aberto
   ref r
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está abert" + (r.msexo ? "o." : "a."))
+    ret $mens.mp("$O já está abert$u.", arg0, nulo, r)
   casose "4"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está trancad" + (r.msexo ? "o." : "a."))
+    ret $mens.mp("$O está trancad$u.", arg0, nulo, r)
   casose
-    ret arg0.msg("Não foi possível abrir " + r.descnome + ".")
+    ret $mens.mp("Não foi possível abrir $o.", arg0, nulo, r)
   casose "3"
   casose "5"
   casofim
@@ -112,7 +113,7 @@ func escrobj # Fechar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Fechar o que?")
+  ret !arg1, arg0.msg("Fechar o quê?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -121,7 +122,8 @@ func escrobj # Fechar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    ret !i, $mens.mp("Você não vê $m.", arg0)
   fimse
 # Checa se está fechado
   ref r
@@ -129,9 +131,9 @@ func escrobj # Fechar um item
   casovar r.i_aberto
   casose "3"
   casose "4"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está fechad" + (r.msexo ? "o." : "a."))
+    ret $mens.mp("$O já está fechad$u.", arg0, nulo, r)
   casose
-    ret arg0.msg("Não foi possível fechar " + r.descnome + ".")
+    ret $mens.mp("Não foi possível fechar $o.", arg0, nulo, r)
   casose "2"
   casose "5"
   casofim

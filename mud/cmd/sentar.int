@@ -10,7 +10,7 @@ func escr
   casose "6" # Sentado
     sair
   casose "8" # Em pé
-    ret arg0.msg("\c9Você já está em pé.\b")
+    ret $mens.mp("\c9Você já está em pé.\b", arg0)
   casose # Outras posições
     ret arg0.msg(arg0.erropos)
   casofim
@@ -43,7 +43,7 @@ func escr
     r = arg0.poslugar.objlista
     sair
   casose "6" # Sentado
-    ret arg0.msg("\c9Você já está sentad" + (arg0.msexo ? "o" : "a") + ".\b")
+    ret $mens.mp("\c9Você já está sentad$s.\b", arg0)
   casose "8" # Em pé
     sair
   casose # Outras posições
@@ -57,16 +57,16 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret r && r != i.obj, arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+    ret r && r != i.obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
     r = i.obj
   fimse
   listaobj l
 # Sentar em algum objeto
   se r
     se !r.i_movel(arg0)
-      ret arg0.msg("Não é possível descansar em " + r.descnome + ".")
+      ret $mens.mp("Não é possível descansar em $o.", arg0, nulo, r)
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
+      ret $mens.mp("Não cabe mais ninguém em $o.", arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_sentarobj(arg0, r, arg0), nulo
@@ -87,7 +87,8 @@ func escr
     efim
 # Sentar-se num objeto que não existe
   senao arg1
-    arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    $mens.mp("Você não vê $m.", arg0)
 # Sentar-se no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -115,7 +116,7 @@ func escr
 # Checa posição
   casovar arg0.posicao
   casose "5" # Descansando
-    ret arg0.msg("\c9Você já está descansando.\b")
+    ret $mens.mp("\c9Você já está descansando.\b", arg0)
   casose "6" # Sentado
     r = arg0.poslugar.objlista
     sair
@@ -132,16 +133,16 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret r && r != i.obj, arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+    ret r && r != i.obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
     r = i.obj
   fimse
   listaobj l
 # Descansar em algum objeto
   se r
     se !r.i_movel(arg0)
-      ret arg0.msg("Não é possível descansar em " + r.descnome + ".")
+      ret $mens.mp("Não é possível descansar em $o.", arg0, nulo, r)
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
+      ret $mens.mp("Não cabe mais ninguém em $o.", arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_descansarobj(arg0, r, arg0), nulo
@@ -162,7 +163,8 @@ func escr
     efim
 # Descansar num objeto que não existe
   senao arg1
-    arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    $mens.mp("Você não vê $m.", arg0)
 # Descansar no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove

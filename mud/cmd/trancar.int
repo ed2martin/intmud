@@ -19,7 +19,7 @@ func escrobj # Trancar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Trancar o que?")
+  ret !arg1, arg0.msg("Trancar o quê?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -28,30 +28,30 @@ func escrobj # Trancar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    ret !i, $mens.mp("Você não vê $m.", arg0)
   fimse
 # Checa se está destrancado
   ref r
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " está abert" + (r.msexo ? "o." : "a."))
+    ret $mens.mp("$O está abert$u.", arg0, nulo, r)
   casose "4"
-    ret arg0.msg(txtcopiamai(r.nome, "A") + " já está trancad" + (r.msexo ? "o." : "a."))
+    ret $mens.mp("$O já está trancad$u.", arg0, nulo, r)
   casose
-    ret arg0.msg("Não foi possível trancar " + r.nome + ".")
+    ret $mens.mp("Não foi possível trancar $o.", arg0, nulo, r)
   casose "3"
   casose "5"
   casofim
-  ret !r.i_tranc, arg0.msg(txtcopiamai(r.nome, "A") + " não pode ser trancad" + (r.msexo ? "o." \
-: "a."))
+  ret !r.i_tranc, $mens.mp("$O não pode ser trancad$u.", arg0, nulo, r)
 # Procura a chave
   ref chave
   se r.i_fechadura && !arg0.j_imortal
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave para trancar " + r.nome + ".")
+    ret !i, $mens.mp("Você não possui a chave para trancar $o.", arg0, nulo, r)
     chave = i.obj
   fimse
 # Gera eventos
@@ -104,7 +104,8 @@ func escrdir # Trancar uma porta
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave para trancar " + mporta + ".")
+    $mens.mens = mporta
+    ret !i, $mens.mp("Você não possui a chave para trancar $m.", arg0)
     chave = i.obj
   fimse
 # Gera eventos
@@ -154,7 +155,7 @@ func escrobj # Destrancar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Destrancar o que?")
+  ret !arg1, arg0.msg("Destrancar o quê?")
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -163,20 +164,20 @@ func escrobj # Destrancar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret !i, arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    ret !i, $mens.mp("Você não vê $m.", arg0)
   fimse
 # Checa se está trancado
   ref r
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " está abert" + (r.msexo ? "o." : "a."))
+    ret $mens.mp("$O está abert$u.", arg0, nulo, r)
   casose "3"
-    ret !r.i_tranc, arg0.msg(txtcopiamai(r.descnome, "A") + " não pode ser trancad" + (r.msexo ? \
-"o." : "a."))
-    ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está trancad" + (r.msexo ? "o." : "a."))
+    ret !r.i_tranc, $mens.mp("$O não pode ser trancad$u.", arg0, nulo, r)
+    ret $mens.mp("$O não está trancad$u.", arg0, nulo, r)
   casose
-    ret arg0.msg("Não foi possível destrancar " + r.descnome + ".")
+    ret $mens.mp("Não foi possível destrancar $o.", arg0, nulo, r)
   casose "4"
   casose "5"
   casofim
@@ -186,7 +187,7 @@ func escrobj # Destrancar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave para destrancar " + r.descnome + ".")
+    ret !i, $mens.mp("Você não possui a chave para destrancar $o.", arg0, nulo, r)
     chave = i.obj
   fimse
 # Gera eventos
@@ -241,7 +242,8 @@ func escrdir # Destrancar uma porta
     epara i = arg0.dentro1.ini, i, i.depois
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, arg0.msg("Você não possui a chave para destrancar " + mporta + ".")
+    $mens.mens = mporta
+    ret !i, $mens.mp("Você não possui a chave para destrancar $m.", arg0)
     chave = i.obj
     casovar $c_[arg0.dono.fechadura_[arg1](arg0)].infotaxa
     casose "2" # Casa bloqueada por falta de pagamento

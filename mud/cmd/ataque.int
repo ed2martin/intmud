@@ -473,8 +473,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       ret contr0.msg(contr1.p_atk_individual ?? lin)
     fimse
   fimse
-# Dispara eventos
-  ret cmd_atacar(arg0, arg1, este), nulo
+# Dispara eventos do primeiro alvo
+  ret cmd_atacar(arg0, arg1, este, nulo, 1), nulo
   epara l.addfim(contr0.evento), l, l.ini.remove
     ret l.objini.cmd_atacarcontr(arg0, arg1, este, contr0), nulo
   efim
@@ -482,10 +482,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret l.objini.cmd_atacarcontr(arg0, arg1, este, contr1), nulo
   efim
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_atacar(arg0, arg1, este, arg0), nulo
+    ret l.objini.cmd_atacar(arg0, arg1, este, arg0, 1), nulo
   efim
   epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_atacar(arg0, arg1, este, arg1), nulo
+    ret l.objini.cmd_atacar(arg0, arg1, este, arg1, 1), nulo
   efim
 # Custo da hab/magia e checa se é permitido usar ataques
   se !arg4.item
@@ -522,9 +522,9 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     fimse
     i = l.ini # Não atacar PNJs que ajudam e que pedem ajuda
     enquanto i
-      se txtproclin(i.obj.p_atk_ajuda, txt2(txte(contr0))) >= 0
+      se txt2(txte(contr0)) && txtproclin(i.obj.p_atk_ajuda, txt2(txte(contr0))) >= 0
         i.removedepois
-      senao txtproclin(contr0.p_atk_ajuda, txt2(txte(i.obj))) >= 0
+      senao txt2(txte(i.obj)) && txtproclin(contr0.p_atk_ajuda, txt2(txte(i.obj))) >= 0
         i.removedepois
       senao
         i.depois
@@ -573,12 +573,12 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     !result && (contr0.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     mensgolpe(arg0, arg1, arg5)
-    cmd_atacou(arg0, arg1, este)
+    cmd_atacou(arg0, arg1, este, nulo, 1)
     epara e.addfim(arg0.evento), e, e.ini.remove
-      e.objini.cmd_atacou(arg0, arg1, este, arg0)
+      e.objini.cmd_atacou(arg0, arg1, este, arg0, 1)
     efim
     epara e.addfim(arg0 != arg1 ? arg1.evento), e, e.ini.remove
-      e.objini.cmd_atacou(arg0, arg1, este, arg1)
+      e.objini.cmd_atacou(arg0, arg1, este, arg1, 1)
     efim
     arg1.pvidaok ? arg1.acertapos(1) : arg1.morreu(arg0)
   fimse
@@ -589,6 +589,16 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     continuar l.objini.perso < 2 # Não prossegue se for pacífico
     r = l.objini.persobat
     continuar !r.contr.p_agressivo(arg0)
+    continuar cmd_atacar(arg0, r, este, nulo, 0)
+    e.limpar
+    epara e.addfim(arg0.evento), e, e.ini.remove
+      sair e.objini.cmd_atacar(arg0, r, este, arg0, 0)
+    efim
+    continuar e
+    epara e.addfim(r.evento), e, e.ini.remove
+      sair e.objini.cmd_atacar(arg0, r, este, r, 0)
+    efim
+    continuar e
     tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
     arg5 && 2 == r.contr.p_ataquelonge && (r.contr.p_atacou_dir = misc:d2[arg5])
     se arg5 && r.p_atk_desvia
@@ -602,12 +612,12 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     acertou && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
     mensgolpe2(arg0, r, arg5)
-    cmd_atacou(arg0, r, este)
+    cmd_atacou(arg0, r, este, nulo, 0)
     epara e.addfim(arg0.evento), e, e.ini.remove
-      e.objini.cmd_atacou(arg0, r, este, arg0)
+      e.objini.cmd_atacou(arg0, r, este, arg0, 0)
     efim
     epara e.addfim(r.evento), e, e.ini.remove
-      e.objini.cmd_atacou(arg0, r, este, r)
+      e.objini.cmd_atacou(arg0, r, este, r, 0)
     efim
     se r.pvidaok
       acertou && (danos += ", " + r.nome + " " + mudavida)
@@ -617,6 +627,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       r.morreu(arg0)
     fimse
   efim
+  e.limpar
   se danos
     danos = "Danos:" + txt(danos, 1)
     epara l.addfim(contr0.dono.dentro2), l, l.ini.remove

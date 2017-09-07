@@ -674,13 +674,13 @@ const atk1_errou1 = "Com a força dos ventos, $p dispara 3 flechas, mas $a desvia
 const atk1_nulo1 = "$P dispara 3 flechas que mal alcançam $a"
 
 func cmd_atacar
-  se arg2.arma2.objtot < 3
+  se arg4 && arg2.arma2.objtot < 3
     arg0.msg("Precisa de três flechas para essa magia.")
     ret 1
   fimse
 
 func cmd_atacou
-  arg2.arma2.apagar(3)
+  arg4 && arg2.arma2.apagar(3)
 
 
 classe magia_flutuar
