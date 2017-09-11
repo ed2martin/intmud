@@ -7,15 +7,33 @@ Carrega a arma que você estiver empunhando com um objeto que você está\n\
 carregando. Sem argumentos você verifica se a arma está carregada\n\
 e com o quê."
 const posic = 5
+#
+const m_sem_arma = "Você não está empunhando nenhuma arma."
+const m_sem_municao = "$O não usa munição"
+const m_descarregado = "$O está descarregad$u."
+const m_carregado = "$O está carregad$u com:"
+const m_conhecimento = "Não possui conhecimento suficiente em $m."
+const m_carrega_um1 = "Você carrega $a com $o."
+const m_carrega_um2 = "$P carrega $a com $o."
+const m_carrega_mais1 = "Você carrega $a com $mx $o."
+const m_carrega_mais2 = "$P carrega $a com $mx $o."
+#
+const m_nao_pode = "Não é possível carregar $o com $n."
+const m_cheio = "Não consegue carregar $o com mais nada."
+const m_espaco = "Não há espaço suficiente para carregar $o com $n."
+const m_nivel = "Você precisa estar no nível $m para carregar $o com $n."
+const m_renascer1 = "Você precisa renascer uma vez para carregar com $n."
+const m_renascer2 = "Você precisa renascer duas vezes para carregar com $n."
+const m_renascer3 = "Você precisa renascer $m vezes para carregar com $n."
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar arma = ref(arg0.iempu.obj)
   se !arma
-    $mens.mp("$P não está empunhando nenhuma arma.", arg0)
+    $mens.mp(m_sem_arma, arg0)
   senao !arma.armatipo || int(arma.armamunicao) != 2
-    $mens.mp("$O não usa munição", arg0, nulo, arma)
+    $mens.mp(m_sem_municao, arg0, nulo, arma)
   senao !arg1
     textotxt t
     listaitem item
@@ -23,21 +41,22 @@ func escr
       continuar !item.obj.visivel(arg0)
       t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
     efim
-    refvar n = txtmaimin(arma.descnome, "A")
     se !t.linhas
-      t.addfim(arma.msexo ? n + " está descarregado." : n + " está descarregada.")
+      $mens.mp(m_descarregado, arg0, nulo, arma)
     senao
+      $mens.p(arg0, nulo, arma)
       t.juntalin("(", "x)")
-      t.addini(n + (arma.msexo ? " está carregado com:" : " está carregada com:"))
+      t.addini($mens.txt(m_carregado, arg0))
+      arg0.msg2(t.remove(1000))
     fimse
-    arg0.msg2(t.remove(1000))
   senao !arma.armacarregar
     $mens.p(arg0, nulo, arma)
     $mens.msg("$O não pode ser carregad$u.", arg0)
   senao
     refvar tipo = txtsublin(config:arma_txt, arma.armatipo, 1)
     se arg0.var.h_[tipo]_ < arma.armacarregar
-      arg0.msg("Não possui conhecimento suficiente em " + tipo + ".")
+      $mens.mens = tipo
+      $mens.mp(m_conhecimento, arg0, nulo, arma)
     senao
       nomeobj n # Para reconhecer os itens
       listaobj l
@@ -50,7 +69,13 @@ func escr
         e ? (erro = e) : achou++
         sair achou >= 10
       efim
-      !achou && arg0.msg(erro ?? "Você não vê isso.")
+      se achou
+      senao erro
+        arg0.msg(erro)
+      senao
+        $mens.mens = arg1
+        $mens.mp("Você não vê $m.", arg0)
+      fimse
     fimse
   fimse
 
@@ -58,22 +83,27 @@ func carregar # Carrega arma com um item
 # arg0=personagem, arg1=arma, arg2=item, arg3=quantidade de itens
 # Retorna mensagem de erro ou nulo se carregou
   se txtproclin(arg1.i_municao, txt(arg2, 2)) < 0
-    ret "Não é possível carregar " + arg1.descnome + " com " + arg2.descnome + "."
+    $mens.p(arg0, nulo, arg1, arg2)
+    ret $mens.txt(m_nao_pode, arg0)
   senao arg1.dentro1.total + (arg2.item == 2 ? 1 : arg3) > arg1.objmax
-    ret "Não consegue carregar " + arg1.descnome + " com mais nada."
+    $mens.p(arg0, nulo, arg1, arg2)
+    ret $mens.txt(m_cheio, arg0)
   senao arg1.volden + arg2.voltot * arg3 / arg2.objtot > arg1.volmax
-    ret "Não há espaço suficiente para carregar com " + arg2.descnome + "."
+    $mens.p(arg0, nulo, arg1, arg2)
+    ret $mens.txt(m_espaco, arg0)
   senao int(arg2.pnivel) > arg0.pnivel
-    refvar lin = "Você precisa estar no nível " + int(arg2.pnivel)
-    ret lin + " para carregar com " + arg2.descnome + "."
+    $mens.mens = int(arg2.pnivel)
+    $mens.p(arg0, nulo, arg1, arg2)
+    ret $mens.txt(m_nivel, arg0)
   senao int(arg2.renascer) > arg0.prenascer
-    txt100 lin = "para carregar com " + arg2.descnome + "."
+    $mens.mens = int(arg2.renascer)
+    $mens.p(arg0, nulo, arg1, arg2)
     se arg2.renascer == 1
-      ret "Você precisa renascer uma vez " + lin
+      ret $mens.txt(m_renascer1, arg0)
     senao arg2.renascer == 2
-      ret "Você precisa renascer duas vezes " + lin
+      ret $mens.txt(m_renascer2, arg0)
     fimse
-    ret "Você precisa renascer " + arg2.renascer + " vezes " + lin
+    ret $mens.txt(m_renascer3, arg0)
   fimse
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
@@ -86,9 +116,12 @@ func carregar # Carrega arma com um item
     ret e.objini.cmd_carregarobj(arg0, arg1, arg2, arg3, arg2), nulo
   efim
   $mens.p(arg0, arg1, arg2)
-  $mens.mvis1("$P carrega $a com " + (arg3 <= 1 ? "$o." : txt(arg3) + "x $o."))
-  ref r
-  r = arg2.mudadono(arg1, arg3)
+  se arg3 <= 1
+    $mens.mvis2(m_carrega_um1, m_carrega_um2)
+  senao
+    $mens.mvis2(m_carrega_mais1, m_carrega_mais2)
+  fimse
+  ref r = arg2.mudadono(arg1, arg3)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_carregouobj(arg0, arg1, r, total, arg0)
   efim

@@ -35,8 +35,9 @@ func escr
       txt100 nomevar = txt1(t2.ini.texto)
       int32 nivel = arg0.pnivel + config:nrenascer * txt2(arg0.var.[nomevar])
       se arg0.var.[nomevar]_ >= aulas
-        lin = "Não tenho mais o que ensinar sobre " + lin + "."
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        $mens.mens = lin
+        $mens.mp("$A: Não tenho mais o que ensinar sobre $m.", arg0, p)
+        ret
       fimse
 # Checa se está limitado a alguns tipos (raças/classes)
       se !r.tipoperso
@@ -44,8 +45,9 @@ func escr
       senao arg0.tipo2 && txtproclin(txte(r.tipoperso), txte(arg0.tipo2)) >= 0
       senao arg0.tipo3 && txtproclin(txte(r.tipoperso), txte(arg0.tipo3)) >= 0
       senao
-        lin = "Não tem como ensinar " + lin + " para sua raça e classe."
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        $mens.mens = lin
+        $mens.mp("$A: Não tem como ensinar $m para sua raça e classe.", arg0, p)
+        ret
       fimse
 # Checa se possui o nível necessário
       se nivel < int(r.aulaini)
@@ -55,8 +57,9 @@ func escr
       senao
         nivel = intdiv(1 + (nivel - r.aulaini) * 7 / (r.aulafim - r.aulaini))
         se arg0.var.[nomevar]_ >= nivel
-          lin = "Você não possui o nível necessário."
-          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+          $mens.mens = lin
+          $mens.mp("$A: Você não possui o nível necessário para aprender $m.", arg0, p)
+          ret
         fimse
       fimse
 # Checa se conhece as habilidades necessárias
@@ -64,19 +67,22 @@ func escr
       epara t2.addfim(r.depende), t2.linhas, t2.remove
         continuar !t2.ini.texto
         continuar arg0.var.[t2.ini.texto]_ > arg0.var.[nomevar]_
-        lin = misc:nomevar(txt1(t2.ini.texto))
-        lin = "Você não conhece o suficiente sobre " + lin + "."
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        $mens.mens = misc:nomevar(txt1(t2.ini.texto))
+        $mens.mp("$A: Você não conhece o suficiente sobre $m.", arg0, p)
+        ret
       efim
 # Checa se personagem pode pagar
       se valor >= 0 && arg0.var.z_moedas_ < valor
-        lin = "Você não tem $" + valor + " e eu não ensino " + lin + " de graça."
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        $mens.o_1 = valor
+        $mens.mens = lin
+        $mens.mp("$A: Você não tem $$$1 e eu não ensino $m de graça.", arg0, p)
+        ret
       fimse
 # Checa pontos de aula
       se arg0.var.z_aulas_ < int(r.aulapontos)
         $mens.mens = int(r.aulapontos)
-        ret $mens.mp($mens.mens == "1" ? m_pontos1 : m_pontos2, arg0)
+        $mens.mp($mens.mens == "1" ? m_pontos1 : m_pontos2, arg0)
+        ret
       fimse
 # Ensina
       arg0.var.z_aulas_ -= int(r.aulapontos)
@@ -95,7 +101,8 @@ func escr
       ret
     efim
   efim
-  arg0.msg("Ninguém ensina isso aqui.")
+  $mens.mens = arg1
+  $mens.mp("Ninguém ensina $m aqui.", arg0)
 
 func evento # Gera evento para arg0 e arg1
   listaobj l

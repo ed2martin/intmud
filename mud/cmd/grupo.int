@@ -22,32 +22,45 @@ do grupo.\n\
 Vide também os comandos: \c2SEGUIR\b  \c2GCHAT\b"
 uint16 nivelmax # Nível máximo para entrar no grupo; vide função nivelgrupo
 uint16 nivelmin # Nível mínimo para entrar no grupo; vide função nivelgrupo
+#
+const m_encerrado = "Grupo encerrado."
+const m_nenhum_grupo = "Você não está em nenhum grupo."
+const m_nao_lider = "Você não é $s líder do grupo."
+const m_lutando = "Você está lutando."
+const m_nivel_baixo = "$A está abaixo do nível $m."
+const m_nivel_alto = "$A está acima do nível $m."
+const m_nome_grupo = "Grupo $A"
+const m_nao_adicionar = "$A não pode ser adicionad$t."
+const m_adicionado = "Adicionado no grupo: $m"
+const m_removido = "Removido do grupo: $m"
+const m_ninguem_adicionado = "Nenhum personagem adicionado no grupo."
 
 func escr
   listaobj l
 # Encerrar o grupo
   se arg1 == "-"
     se arg0.tseguir == 2
+      $mens.p(arg0)
       epara l.addfim(arg0.lseguir), l, l.ini.remove
         continuar l.objini.tseguir != 1
         l.objini.iseguir.remove
         l.objini.tseguir = 0
-        l.objini.iseguir.msg("Grupo encerrado.")
+        $mens.msg(m_encerrado, l.objini.iseguir)
       efim
       arg0.tseguir = 0
-      arg0.msg("Grupo encerrado")
+      $mens.msg(m_encerrado, arg0)
       ret
     senao arg0.iseguir && arg0.tseguir == 1
-      ret arg0.msg("Você não é o líder do grupo.")
+      ret $mens.mp(m_nao_lider, arg0)
     senao
-      ret arg0.msg("Você não está em nenhum grupo.")
+      ret $mens.mp(m_nenhum_grupo, arg0)
     fimse
 # Adicionar quem está seguindo no grupo
   senao arg1 == "+"
     se arg0.iseguir && arg0.tseguir == 1
-      ret arg0.msg("Você não é o líder do grupo")
+      ret $mens.mp(m_nao_lider, arg0)
     senao arg0.atkenv
-      ret arg0.msg("Você está lutando.")
+      ret $mens.mp(m_lutando, arg0)
     fimse
     nivelgrupo(arg0)
     txt200 lin
@@ -55,44 +68,52 @@ func escr
       refvar obj = l.objini
       se obj.tseguir
       senao obj.pnivel < nivelmin
-        arg0.msg(txtcopiamai(obj.nome, "A") + " está abaixo do nível " + nivelmin + ".")
+        $mens.mens = nivelmin
+        $mens.mp(m_nivel_baixo, arg0, obj)
       senao obj.pnivel > nivelmax
-        arg0.msg(txtcopiamai(obj.nome, "A") + " está acima do nível " + nivelmax + ".")
+        $mens.mens = nivelmax
+        $mens.mp(m_nivel_alto, arg0, obj)
       senao
         obj.tseguir = 1
         lin += ", " + txtcopiamai(obj.nome, "A")
         nivelgrupo(arg0)
       fimse
     efim
-    ret !lin, arg0.msg("Nenhum personagem adicionado no grupo.")
+    ret !lin, $mens.mp(m_ninguem_adicionado, arg0)
     arg0.tseguir = 2
-    msggrupo(arg0, "Adicionado no grupo: " + txt2(lin))
+    msggrupo(arg0, m_adicionado, txt2(lin))
     ret
 # Adicionar um personagem no grupo
   senao arg1
     se arg0.iseguir && arg0.tseguir == 1
-      ret arg0.msg("Você não é o líder do grupo.")
+      ret $mens.mp(m_nao_lider, arg0)
     senao arg0.atkenv
-      ret arg0.msg("Você está lutando.")
+      ret $mens.mp(m_lutando, arg0)
     fimse
     nomeobj nome
     nome.ini(arg1, 1)
-    epara l.addfim(arg0.lseguir), l, l.ini.remove
-      sair l.objini.tseguir < 2 && nome.nome(l.objini.ident)
+    epara l.addfim(arg0.lseguir), l && !nome.nome(l.objini.ident), l.ini.remove
     efim
     refvar obj = ref(l.objini)
-    ret !obj, arg0.msg(txtcopiamai(arg1, "A") + " não pode ser adicionado.")
+    se !obj
+      $mens.mens = arg1
+      ret $mens.mp("Você não vê $m.", arg0)
+    senao int(l.objini.tseguir) >= 2
+      ret $mens.mp(m_nao_adicionar, arg0, obj)
+    fimse
     nivelgrupo(arg0)
     se obj.tseguir
-      msggrupo(arg0, "Removido do grupo: " + obj.nome)
+      msggrupo(arg0, m_removido, obj.nome)
       obj.tseguir = 0
     senao obj.pnivel < nivelmin
-      arg0.msg(txtcopiamai(obj.nome, "A") + " está abaixo do nível " + nivelmin + ".")
+      $mens.mens = nivelmin
+      $mens.mp(m_nivel_baixo, arg0, obj)
     senao obj.pnivel > nivelmax
-      arg0.msg(txtcopiamai(obj.nome, "A") + " está acima do nível " + nivelmax + ".")
+      $mens.mens = nivelmax
+      $mens.mp(m_nivel_alto, arg0, obj)
     senao
       obj.tseguir = 1, arg0.tseguir = 2
-      msggrupo(arg0, "Adicionado no grupo: " + obj.nome)
+      msggrupo(arg0, m_adicionado, obj.nome)
     fimse
     ret
 # Informações sobre os integrantes do grupo
@@ -103,8 +124,8 @@ func escr
     senao arg0.iseguir && arg0.tseguir == 1
       lider = arg0.iseguir.objlista
     fimse
-    ret !lider, arg0.msg("Você não está em nenhum grupo.")
-    arg0.msg("Grupo " + txtcopiamai(lider.nome, "A"))
+    ret !lider, $mens.mp(m_nenhum_grupo, arg0)
+    $mens.mp(m_nome_grupo, arg0, lider)
     arg0.msg(info(lider))
     epara l.addfim(lider.lseguir), l, l.ini.remove
       l.objini.tseguir == 1 && arg0.msg(info(l.objini))
@@ -125,10 +146,12 @@ func info # Retorna informações de um personagem
 func msggrupo # Envia mensagem para todos do grupo
 # arg0 = personagem líder do grupo
 # arg1 = mensagem
-  arg0.msg(arg1)
+# arg2 = $m na mensagem
+  refvar mens = txttroca(arg1, "$m", arg2)
+  arg0.msg(mens)
   listaobj l
   epara l.addfim(arg0.lseguir), l, l.ini.remove
-    l.objini.tseguir == 1 && l.objini.msg(arg1)
+    l.objini.tseguir == 1 && l.objini.msg(mens)
   efim
 
 func nivelgrupo # Acerta variáveis nivelmin e nivelmax

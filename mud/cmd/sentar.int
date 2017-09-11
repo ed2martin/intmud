@@ -64,9 +64,9 @@ func escr
 # Sentar em algum objeto
   se r
     se !r.i_movel(arg0)
-      ret $mens.mp("Não é possível descansar em $o.", arg0, nulo, r)
+      ret $mens.mp("Não é possível descansar $e $o.", arg0, nulo, r)
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret $mens.mp("Não cabe mais ninguém em $o.", arg0, nulo, r)
+      ret $mens.mp("Não cabe mais ninguém $e $o.", arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_sentarobj(arg0, r, arg0), nulo
@@ -140,9 +140,9 @@ func escr
 # Descansar em algum objeto
   se r
     se !r.i_movel(arg0)
-      ret $mens.mp("Não é possível descansar em $o.", arg0, nulo, r)
+      ret $mens.mp("Não é possível descansar $e $o.", arg0, nulo, r)
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret $mens.mp("Não cabe mais ninguém em $o.", arg0, nulo, r)
+      ret $mens.mp("Não cabe mais ninguém $e $o.", arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_descansarobj(arg0, r, arg0), nulo

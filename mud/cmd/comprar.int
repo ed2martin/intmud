@@ -5,9 +5,29 @@ Sintaxe: COMPRAR <nome ou número do objeto>\n\
          COMPRAR <quantidade>  <nome ou número do objeto>\n\
 Compra objetos de um vendedor.\n\
 Para saber o que é vendido em algum lugar, tecle LISTA."
+#
+const m_vazio = "Comprar o quê?"
+const m_nao_vende = "Ninguém vende $m aqui."
+const m_muita_coisa = "Você não consegue carregar tanta coisa."
+const m_muito_peso = "Você não consegue carregar tanto peso."
+const m_moedas = "$A: Você não tem $$$1."
+const m_compra_um1 = "Você compra $o $d $A."
+const m_compra_um2 = "$P compra $o $d $A."
+const m_compra_mais1 = "Você compra $mx $o $d $A."
+const m_compra_mais2 = "$P compra $mx $o $d $A."
+const m_tem_casa = "Você já tem uma casa aqui."
+const m_casa_salvar = "Você precisa ter jogo salvo para comprar uma casa."
+const m_casa_limite = "Atingido o limite de casas por jogador."
+const m_casa_nivel = "Você precisa estar no nível $m para comprar uma casa."
+const m_casa1 = "Você compra $m $d $a."
+const m_casa2 = "$P compra $m $d $a."
+const m_chave1 = "$A fez uma chave para você."
+const m_chave2 = "$A fez uma chave para $p."
+const m_fechadura1 = "$A manda alguém para trocar a fechadura da sua casa."
+const m_fechadura2 = "$A manda alguém para trocar a fechadura da casa $d $p."
 
 func escr
-  ret !arg1, arg0.msg("Comprar o quê?")
+  ret !arg1, $mens.mp(m_vazio, arg0)
   txt200 lin # Texto da linha atual
   int32 linha # Qual linha está verificando
   txt100 nomeitem # O nome do item que está procurando
@@ -39,17 +59,16 @@ func escr
       valor = (100 + p.taxavenda) / 100 * [lin]:valor
       total > 100 && (total = 100)
       se arg0.var.z_moedas_ < valor * total
-        lin = "Você não tem $" + valor * total + "."
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        $mens.o_1 = valor * total
+        $mens.mp(m_moedas, arg0, p)
+        ret
       fimse
-      txt100 erro
       uint16 totcompra
       ref item
       epara linha = 0, linha < 10 && total, linha++
         ref r = criar(lin, nulo, total)
         se arg0.pesoden - arg0.pesoveste + r.pesotot > arg0.pesomax
           apagar(r)
-          erro = "Você não consegue carregar tanto peso."
           sair
         senao r.cabedentro(arg0) >= r.objtot
           totcompra += r.objtot
@@ -58,16 +77,16 @@ func escr
           item = r.mudadono(arg0, r.objtot)
         senao
           apagar(r)
-          erro = "Você não consegue carregar tanta coisa."
           sair
         fimse
       efim
-      ret !totcompra, arg0.msg(erro)
+      ret !totcompra, $mens.mp(m_muita_coisa, arg0)
       $mens.p(arg0, p, item)
       se totcompra == 1
-        $mens.mtodos1("$P compra $o $d $A.")
+        $mens.mtodos2(m_compra_um1, m_compra_um2)
       senao
-        $mens.mtodos1("$P compra " + totcompra + "x $o $d $A.")
+        $mens.mens = totcompra
+        $mens.mtodos2(m_compra_mais1, m_compra_mais2)
       fimse
       ret
     efim
@@ -81,20 +100,22 @@ func escr
         valor = (100 + p.taxavenda) / 100 * r.valor
         total > r.objtot && (total = r.objtot)
         se r.cabedentro(arg0) < total
-          ret arg0.msg("Você não consegue carregar tanta coisa.")
+          ret $mens.mp(m_muita_coisa, arg0)
         senao arg0.pesoden - arg0.pesoveste + r.pesotot * total / r.objtot > arg0.pesomax
-          ret arg0.msg("Você não consegue carregar tanto peso.")
+          ret $mens.mp(m_muito_peso, arg0)
         senao arg0.var.z_moedas_ < valor * total
-          lin = "Você não tem $" + valor * total + "."
-          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+          $mens.o_1 = valor * total
+          $mens.mp(m_moedas, arg0, p)
+          ret
         fimse
         r = r.mudadono(arg0, total)
         arg0.var.z_moedas_ -= valor * total
         $mens.p(arg0, p, r)
         se total == 1
-          $mens.mtodos1("$P compra $o $d $a.")
+          $mens.mtodos2(m_compra_um1, m_compra_um2)
         senao
-          $mens.mtodos1("$P compra " + total + "x $o $d $a.")
+          $mens.mens = total
+          $mens.mtodos2(m_compra_mais1, m_compra_mais2)
         fimse
         ret
       efim
@@ -108,10 +129,11 @@ func escr
         sair r.area != p.lojacasa
         continuar r.nomejog || txt(++linha) != arg1 && !n.nome(r.ident, 1)
         se !arg0.senha
-          ret arg0.msg("Você precisa ter jogo salvo para comprar uma casa.")
+          ret $mens.mp(m_casa_salvar, arg0, p)
         senao arg0.pnivel < config:casanivel
-          refvar m = "Você precisa estar no nível " + config:casanivel
-          ret arg0.msg(m + " para comprar uma casa.")
+          $mens.mens = config:casanivel
+          $mens.mp(m_casa_nivel, arg0)
+          ret
         fimse
         valor = config:casajog
         lin = "cj " + txt2(arg0.sock.cnome)
@@ -119,13 +141,14 @@ func escr
         epara item.ini(lin + " "), txtsub(item.txt, 0, 2) == lin, item.depois
           valor--
         efim
-        ret valor <= 0, arg0.msg("Atingido o limite de casas por jogador.")
+        ret valor <= 0, $mens.mp(m_casa_limite, arg0, p)
         valor = (100 + p.taxavenda) / 100 * r.valor
         se item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
-          ret arg0.msg("Você já tem uma casa aqui.")
+          ret $mens.mp(m_tem_casa, arg0, p)
         senao arg0.var.z_moedas_ < valor
-          lin = "Você não tem $" + valor + "."
-          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+          $mens.o_1 = valor
+          $mens.mp(m_moedas, arg0, p)
+          ret
         fimse
         r.nomejog = "cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa
         r.diataxa = 0 # Para atualizar a taxa de manutenção da casa
@@ -136,7 +159,7 @@ func escr
         r.salvar, arg0.salvar # Salva casa e personagem do jogador
         $mens.p(arg0, p)
         $mens.mens = r.nome ?? "uma casa"
-        $mens.mtodos1("$P compra $m $d $a.")
+        $mens.mtodos2(m_casa1, m_casa2)
         ret
       efim
     fimse
@@ -148,36 +171,38 @@ func escr
       senao txt(++linha) == arg1 || n.nome("chave da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casachave
         se arg0.dentro1.total + 1 > arg0.objmax
-          ret arg0.msg("Você não consegue carregar tanta coisa.")
+          ret $mens.mp(m_muita_coisa, arg0)
         senao arg0.volden + comum_chave:voltot > arg0.volmax
-          ret arg0.msg("Você não consegue carregar tanta coisa.")
+          ret $mens.mp(m_muita_coisa, arg0)
         senao arg0.pesoden - arg0.pesoveste + comum_chave:pesotot > arg0.pesomax
-          ret arg0.msg("Você não consegue carregar tanto peso.")
+          ret $mens.mp(m_muito_peso, arg0)
         senao arg0.var.z_moedas_ < valor
-          lin = "Você não tem $" + valor + "."
-          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+          $mens.o_1 = valor
+          $mens.mp(m_moedas, arg0, p)
+          ret
         fimse
         refvar r = criar("comum_chave", arg0, 1)
         r.i_chave = casa.chave
         arg0.var.z_moedas_ -= valor
         $mens.p(arg0, p)
-        $mens.mtodos1("$A fez uma chave para $p.")
+        $mens.mtodos2(m_chave1, m_chave2)
         ret
       senao txt(++linha) == arg1 || n.nome("fechadura da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casafechadura
         se arg0.var.z_moedas_ < valor
-          lin = "Você não tem $" + valor + "."
-          ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+          $mens.o_1 = valor
+          $mens.mp(m_moedas, arg0, p)
+          ret
         fimse
         arg0.var.z_moedas_ -= valor
         casa.mudachave # Já faz r.objmudou=1
         $mens.p(arg0, p, r)
-        refvar m1 = "$A manda alguém para trocar a fechadura da "
-        ret $mens.mtodos2(m1 + "sua casa.", m1 + "casa $d $p.")
+        ret $mens.mtodos2(m_fechadura1, m_fechadura2)
       fimse
     fimse
   efim
-  arg0.msg("Ninguém vende isso aqui.")
+  $mens.mens = arg1
+  $mens.mp(m_nao_vende, arg0)
 
 func evento # Gera evento para arg0 e arg1
   listaobj l

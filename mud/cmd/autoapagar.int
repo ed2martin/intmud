@@ -7,6 +7,12 @@ Apaga definitivamente o seu personagem, retirando também você do jogo.\n\
 Após digitar esse comando, é necessário confirmar e digitar a senha atual\n\
 do seu personagem"
 const posic = 0
+#
+const m_confirma = "Deseja realmente apagar o personagem $r? Tecle S ou N"
+const m_senha = "Digite a senha ou tecle Z para cancelar"
+const m_senha_erro = "Senha incorreta; autoapagar cancelado"
+const m_cancelar = "Autoapagar cancelado"
+const m_erro = "Não foi possível apagar o personagem."
 
 func escr
   ret arg0.senha, passo(arg0.sock, "\b")
@@ -18,13 +24,12 @@ func passo
 # Pergunta se quer apagar o personagem
   se arg0.tpasso == "1"
     se !arg1 || arg1 == "\b"
-      arg0.msg("Deseja realmente apagar o personagem " + arg0.perso.nome + "? Tecle S ou \
-N")
+      $mens.mp(m_confirma, arg0.perso)
     senao arg1 == "s"
-      arg0.msg("Digite a senha ou tecle Z para cancelar")
+      $mens.mp(m_senha, arg0.perso)
       arg0.tpasso = "2"
     senao
-      arg0.msg("Autoapagar cancelado")
+      $mens.mp(m_cancelar, arg0.perso)
       arg0.passo = ""
     fimse
     ret 1
@@ -32,19 +37,19 @@ N")
 # Pede a senha para apagar o personagem
   arqsav sav1
   se !arg1
-    arg0.msg("Digite a senha ou tecle Z para cancelar")
+    $mens.mp(m_senha, arg0.perso)
   senao arg1 == "z"
-    arg0.msg("Autoapagar cancelado")
+    $mens.mp(m_cancelar, arg0.perso)
     arg0.passo = ""
   senao arg1 != arg0.perso.senha
-    arg0.msg("Senha incorreta; autoapagar cancelado")
+    $mens.mp(m_senha_erro, arg0.perso)
     arg0.passo = ""
   senao sav1.apagar("sav1/" + txt2(arg0.cnome) + ".sav")
     arg0.perso.senha = ""
     apagar(arg0.perso)
     $miscsav.apagousav(txt2(arg0.cnome))
   senao
-    arg0.msg("Não foi possível apagar o personagem.")
+    $mens.mp(m_erro, arg0.perso)
     arg0.passo = ""
   fimse
   ret 1

@@ -14,18 +14,16 @@ func escr
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro2.ini, i, i.depois
     continuar !i.obj.visivel(arg0) || !n.nome(i.obj.ident)
-    ref r
-    r = i.obj
+    ref r = i.obj
 # Checa se é possível resgatar
-    ret arg0 == r, arg0.msg("Resgatar você mesmo?")
-    ret !r.jog, arg0.msg(i.obj.descnome + " não é jogador.")
-    ret !r.atkrec.objini, arg0.msg(i.obj.descnome + " não está lutando.")
-    ret r.atkenv.objlista == arg0, arg0.msg(i.obj.descnome + " está lutando com você.")
+    ret arg0 == r, $mens.mp("Resgatar você mesm$s?", arg0)
+    ret !r.jog, $mens.mp("$A não é jogador.", arg0, r)
+    ret !r.atkrec.objini, $mens.mp("$A não está lutando.", arg0, r)
+    ret r.atkenv.objlista == arg0, $mens.mp("$A está lutando com você.", arg0, r)
 # Checa se personagens permitem resgate
     epara i = r.atkrec.ini, i, i.depois
       continuar !i.obj.p_naoresg
-      arg0.msg("Não é possível resgatar " + r.descnome + " de " + i.obj.descnome + ".")
-      ret
+      ret $mens.mp("Não é possível resgatar $a de $o.", arg0, r, i.obj)
     efim
 # Eventos
     listaobj l
@@ -43,4 +41,5 @@ func escr
     $mens.mvis1("$P resgata $a.")
     ret
   efim
-  arg0.msg("Você não vê " + arg1 + ".")
+  $mens.mens = arg1
+  $mens.mp("Você não vê $m.", arg0)

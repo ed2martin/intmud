@@ -4,7 +4,11 @@ const txtajuda = "\b\c3Quem\b\n\
 Sintaxe: QUEM\n\
 Mostra quem está conectado no MUD e jogando."
 const posic = 0
-const nivel = "N" # Texto na frente do nível
+#
+const m_nivel = "N" # Texto na frente do nível
+const m_imortal = "Imortais online:"
+const m_jogador = "Jogadores online:"
+const m_outros = "Outros:"
 
 func escr
   textotxt t0
@@ -23,7 +27,7 @@ func escr
     total.[obj.jogconfig.20]++
     t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
     t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome
-    t1 = (obj.jogconfig.20 ? "A" : "B") + txt(999000 - obj.pnivel) + " " + nivel + t1
+    t1 = (obj.jogconfig.20 ? "A" : "B") + txt(999000 - obj.pnivel) + " " + m_nivel + t1
     obj.var.z_titulo && (t1 += ", " + obj.var.z_titulo)
     t1 += "  "
     obj.p_tempofim && (t1 += " [Desconectado]")
@@ -50,17 +54,17 @@ func escr
       se obj.perso
         t1 = txt(obj.perso.pnivel)
         t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome + ", " + obj.perso.nome
-        t1 = "C" + txt(999000 - obj.perso.pnivel) + " " + nivel + t1
+        t1 = "C" + txt(999000 - obj.perso.pnivel) + " " + m_nivel + t1
       senao
-        t1 = "C999001 " + nivel + "?       " + obj.nome
+        t1 = "C999001 " + m_nivel + "?       " + obj.nome
       fimse
       t0.addfim(t1)
     efim
   fimse
 # Mostra a quantidade de personagens online
-  total.0 && t0.addfim("B 00000 \b\c6Jogadores online: " + total.0 + "\b")
-  total.1 && t0.addfim("A 00000 \b\c6Imortais online: " + total.1 + "\b")
-  total.2 && t0.addfim("C 00000 \b\c6Outros: " + total.2 + "\b")
+  total.0 && t0.addfim("B 00000 \b\c6" + m_jogador + " " + total.0 + "\b")
+  total.1 && t0.addfim("A 00000 \b\c6" + m_imortal + " " + total.1 + "\b")
+  total.2 && t0.addfim("C 00000 \b\c6" + m_outros + " " + total.2 + "\b")
 # Ordena e mostra para o jogador
   t0.ordena
   textopos pos
@@ -79,10 +83,14 @@ Sintaxe: HAB  [nome da habilidade]\n\
 Sem argumentos mostra as habilidades do seu personagem.\n\
 Seguido de um nome, mostra informações sobre a habilidade.\n\
 Geralmente pode-se usar uma habilidade teclando-se o nome dela."
+#
+const m_sem_info = "Nenhuma informação sobre a habilidade: $m"
+const m_nenhum = "Nenhuma habilidade."
+const m_lista1 = "Habilidades:"
+const m_lista2 = "Habilidades de $c:"
 
 func escr
-  ref r
-  r = arg0.persoesc
+  ref r = arg0.persoesc
   se arg1
     ref obj
     prog p
@@ -91,10 +99,9 @@ func escr
       refvar t1 = $[p.texto].habajuda(r)
       ret t1, arg0.msg2(t1)
     efim
-    ret arg0.msg("Nenhuma informação sobre a habilidade: " + arg1)
+    $mens.mens = arg1
+    ret $mens.mp(m_sem_info, arg0)
   fimse
-  txt100 n
-  r.persoesc != arg0 && (n = " de " + r.nome)
   textotxt h
   txt100 t1
   txt100 t2
@@ -104,8 +111,9 @@ func escr
     txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
     h.addfim(t2)
   efim
-  ret !h.linhas, arg0.msg("Nenhuma habilidade.")
-  h.addini("\b\c6Habilidades" + n + ":\b")
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, arg0.persoesc)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
   arg0.msg2(h.remove(1000))
 
 
@@ -117,10 +125,14 @@ Sintaxe: MAGIA  [nome da magia]\n\
 Sem argumentos mostra as magias do seu personagem.\n\
 Seguido de um nome, mostra informações sobre a magia.\n\
 Geralmente pode-se usar uma magia teclando-se lançar e o nome dela."
+#
+const m_sem_info = "Nenhuma informação sobre a magia: $m"
+const m_nenhum = "Nenhuma magia."
+const m_lista1 = "Magias:"
+const m_lista2 = "Magias de $c:"
 
 func escr
-  ref r
-  r = arg0.persoesc
+  ref r = arg0.persoesc
   se arg1
     ref obj
     prog p
@@ -129,10 +141,9 @@ func escr
       refvar t1 = $[p.texto].habajuda(r)
       ret t1, arg0.msg2(t1)
     efim
-    ret arg0.msg("Nenhuma informação sobre a magia: " + arg1)
+    $mens.mens = arg1
+    ret $mens.mp(m_sem_info, arg0)
   fimse
-  txt100 n
-  r.persoesc != arg0 && (n = " de " + r.nome)
   textotxt h
   txt100 t1
   txt100 t2
@@ -142,8 +153,9 @@ func escr
     txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
     h.addfim(t2)
   efim
-  ret !h.linhas, arg0.msg("Nenhuma magia.")
-  h.addini("\b\c6Magias" + n + ":\b")
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, arg0.persoesc)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
   arg0.msg2(h.remove(1000))
 
 
@@ -153,12 +165,13 @@ const posic = 5
 const txtajuda = "\b\c3Idioma\b\n\
 Sintaxe: IDIOMA\n\
 Mostra os idiomas que o seu personagem conhece."
+#
+const m_nenhum = "Nenhum idioma."
+const m_lista1 = "Idiomas:"
+const m_lista2 = "Idiomas de $c:"
 
 func escr
-  txt100 n
-  ref r
-  r = arg0.persoesc
-  r != arg0 && (n = " de " + r.nome)
+  ref r = arg0.persoesc
   textotxt h
   txt100 t1
   txt100 t2
@@ -167,8 +180,9 @@ func escr
     t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
     h.addfim(t2)
   efim
-  ret !h.linhas, arg0.msg("Nenhum idioma.")
-  h.addini("\b\c6Idiomas" + n + ":\b")
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, r)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
   arg0.msg(h.remove(1000))
 
 
@@ -179,11 +193,13 @@ const txtajuda = "\b\c3Outros\b\n\
 Sintaxe: OUTROS\n\
 Mostra itens e habilidades extras. Geralmente são permanentes (não pode-se\n\
 pegar, soltar, dar e vestir)."
+#
+const m_nenhum = "Nenhum item."
+const m_lista1 = "Outros:"
+const m_lista2 = "Outros de $c:"
 
 func escr
-  txt100 n
-  refvar r = arg0.persoesc
-  r != arg0 && (n = " de " + r.nome)
+  ref r = arg0.persoesc
   textotxt h
   txt100 t1
   txt100 t2
@@ -196,9 +212,10 @@ func escr
     fimse
     h.addfim(t2)
   efim
-  ret !h.linhas, arg0.msg("Nenhum item.")
-  h.addini("\b\c6Outros" + n + ":\b")
-  arg0.msg(h.remove(1000))
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, r)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
+  arg0.msg2(h.remove(1000))
 
 
 classe cmd_inv
@@ -213,6 +230,11 @@ Sintaxe: INV\n\
          INV <número>\n\
 Mostra os itens que o seu personagem está carregando.\n\
 Seguido de um número de 0 a $ mostra os itens do animal correspondente."
+#
+const m_nada1 = "Você não está carregando nada."
+const m_nada2 = "$A não está carregando nada."
+const m_lista1 = "Você carrega:"
+const m_lista2 = "$A carrega:"
 
 func escr
   textotxt t
@@ -226,11 +248,12 @@ func escr
     t.addfim(txt(i.objtot) + i.atribs.ini.texto + txtcopiamai(i.descnome, "A") + nn)
   efim
   t.juntalin("(", "x)")
-  refvar nome = r == arg0 ? "Você" : txtcopiamai(r.nome, "A")
   se t
-    arg0.msg2("\b\c6" + nome + " carrega:\b\n" + txttroca(t.remove(1000), "\d+", "\n"))
+    $mens.p(arg0, r)
+    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
+    arg0.msg2("\b\c6" + nome + "\b\n" + txttroca(t.remove(1000), "\d+", "\n"))
   senao
-    arg0.msg("\b" + nome + " não está carregando nada.")
+    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
   fimse
 
 
@@ -252,6 +275,11 @@ Mostra os itens que o seu personagem está vestindo ou usando.\n\
 Digitando EQUIP TUDO, são mostradas também as posições aonde o seu\n\
 personagem pode vestir algo.\n\
 Seguido de um número de 0 a $ mostra os itens do animal correspondente."
+#
+const m_nada1 = "Você não está vestindo/usando nada."
+const m_nada2 = "$A não está vestindo/usando nada."
+const m_lista1 = "Você está equipad$s com:"
+const m_lista2 = "$A está equipad$t com:"
 
 func escr
   textotxt t
@@ -283,12 +311,12 @@ func escr
     fimse
   efim
 # Envia mensagem
-  refvar nome = r == arg0 ? "Você" : txtcopiamai(r.nome, "A")
-  se t.linhas
-    refvar eq = r.msexo ? " está equipado" : " está equipada"
-    arg0.msg2("\b\c6" + nome + eq + " com:\b\n" + t.remove(1000))
+  se t
+    $mens.p(arg0, r)
+    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
+    arg0.msg2("\b\c6" + nome + "\b\n" + t.remove(1000))
   senao
-    arg0.msg("\b" + nome + " não está vestindo/usando nada.")
+    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
   fimse
 
 
@@ -299,6 +327,12 @@ const txtajuda = "\b\c3Efeito\b\n\
 Sintaxe: EFEITO  [nome do efeito]\n\
 Sem argumentos mostra os efeitos que estão afetando o seu personagem.\n\
 Seguido de um nome, mostra informações sobre o efeito."
+#
+const m_nada1 = "Nenhum efeito afetando você."
+const m_nada2 = "Nenhum efeito afetando $a."
+const m_lista1 = "Efeitos afetando você:"
+const m_lista2 = "Efeitos afetando $a:"
+const m_sem_info = "Nenhuma informação sobre o efeito: $m"
 
 func escr
   listaitem i
@@ -318,7 +352,8 @@ func escr
       i.obj.e_desc && t.addfim(i.obj.e_desc)
       ret arg0.msg2(t.remove(1000))
     efim
-    ret arg0.msg("Nenhuma informação sobre o efeito: " + arg1)
+    $mens.mens = arg1
+    ret $mens.mp(m_sem_info, arg0)
   fimse
   txt100 n
   r.persoesc != arg0 && (n = " de " + r.nome)
@@ -329,9 +364,11 @@ func escr
 ")"))
   efim
   refvar nome = r == arg0 ? "você" : r.nome
-  ret !h.linhas, arg0.msg("\bNenhum efeito afetando " + nome + ".")
+  ret !h.linhas, $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
+  $mens.p(arg0, r)
   h.ordenalin("", "x")
-  arg0.msg2("\b\c6Efeitos afetando " + nome + ":\b\n" + h.remove(1000))
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
+  arg0.msg2(h.remove(1000))
 
 
 classe cmd_vida

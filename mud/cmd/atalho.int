@@ -35,8 +35,18 @@ atalho con lançar \"raio confusão\" $1\n\
   terá o mesmo efeito de digitar lançar \"raio confusão\" silva.\n\n\
 atalho med\n\
   Apaga o atalho med, se existir."
+#
+const m_nenhum = "Nenhum atalho definido."
+const m_nao_existe = "Atalho não foi definido: $m"
+const m_atalho = "Não é possível criar um atalho chamado atalho."
+const m_igual = "Nomes de atalhos não podem ter o sinal de igual."
+const m_criou = "Criado atalho: $m"
+const m_mudou = "Atalho mudado: $m"
+const m_apagou = "Atalho apagado: $m"
+const m_limpou = "Atalhos apagados."
 
 func escr
+  $mens.mens = arg1
   se !arg1
     refvar t = arg0.sock.txtmais
     t.limpar
@@ -44,28 +54,28 @@ func escr
     epara nome = arg0.var.ini("t_"), nome, nome = arg0.var.depois(nome, "t_")
       t.addfim(txt(nome, 2) + " " + arg0.var.[nome])
     efim
-    ret t.linhas == 0, arg0.msg("Nenhum atalho definido.")
+    ret t.linhas == 0, $mens.mp(m_nenhum, arg0)
     t.addini("\b\c6Atalhos(" + t.linhas + "):\b")
     arg0.sock.txtmostra
   senao arg1 == "limpar"
-    ret !arg0.var.ini("t_"), arg0.msg("Nenhum atalho definido.")
+    ret !arg0.var.ini("t_"), $mens.mp(m_nenhum, arg0)
     arg0.var.limpar("t_")
-    arg0.msg("Atalhos apagados.")
+    $mens.mp(m_limpou, arg0)
   senao !txt2(arg1)
-    ret !arg0.var.t_[arg1], arg0.msg("Atalho não foi definido: " + arg1)
+    ret !arg0.var.t_[arg1], $mens.mp(m_nao_existe, arg0)
     arg0.var.t_[arg1] = ""
-    arg0.msg("Atalho apagado: " + arg1)
+    $mens.mp(m_apagou, arg0)
   senao txt1(arg1) == "atalho"
-    arg0.msg("Não é possível criar um atalho chamado atalho.")
+    $mens.mp(m_atalho, arg0)
   senao txtproc(txt1(arg1), "=") >= 0
-    arg0.msg("Nomes de atalhos não podem ter o sinal de igual.")
+    $mens.mp(m_igual, arg0)
   senao arg0.var.t_[txt1(arg1)]
     arg0.var.t_[txt1(arg1)] = txt2(arg1)
-    arg0.msg("Atalho mudado: " + arg1)
+    $mens.mp(m_mudou, arg0)
   senao
     se arg0.var.total("t_") >= config:atalhos
       ret arg0.msg("Atingido limite de atalhos.")
     fimse
     arg0.var.t_[txt1(arg1)] = txt2(arg1)
-    arg0.msg("Criado atalho: " + arg1)
+    $mens.mp(m_criou, arg0)
   fimse

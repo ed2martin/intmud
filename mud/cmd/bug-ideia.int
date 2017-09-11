@@ -8,20 +8,23 @@ Sintaxe: BUG <mensagem>\n\
 Envia mensagem para os administradores para relatar bugs (erros no jogo,\n\
 geralmente erros de programação)"
 const posic = 0
+#
+const m_nivel = "Para usar o comando BUG você precisa estar no nível $m."
+const m_msg = "Tecle a mensagem após BUG."
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_bug
   se perm_msg
     $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:bugnivel
-    arg0.msg("Para usar o comando BUG você precisa estar no nível " + config:bugnivel + ".")
+    $mens.mens = config:bugnivel
+    $mens.mp(m_nivel, arg0)
   senao !arg1
-    arg0.msg("Tecle a mensagem após BUG.")
+    $mens.mp(m_msg, arg0)
   senao
     $misclog.bug("bug " + arg0.nome + ": " + arg1)
-    $mens.p(arg0)
     $mens.mens = arg1
-    $mens.msg(config:bug2msg, arg0)
+    $mens.mp(config:bug2msg, arg0)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[arg0.nome]
@@ -39,16 +42,19 @@ const txtajuda1 = "\b\c3Ideia\b\n\
 Sintaxe: IDEIA <mensagem>\n\
 Envia mensagem para os administradores sobre ideias para o jogo."
 const posic = 0
+#
+const m_nivel = "Para usar o comando IDEIA você precisa estar no nível $m."
+const m_msg = "Tecle a mensagem após IDEIA."
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_ideia
   se perm_msg
     $mensjog.msg(perm_msg, arg0)
   senao arg0.pnivel < config:ideianivel
-    arg0.msg("Para usar o comando IDEIA você precisa estar no nível " + config:ideianivel + \
-".")
+    $mens.mens = config:ideianivel
+    $mens.mp(m_nivel, arg0)
   senao !arg1
-    arg0.msg("Tecle a mensagem após IDEIA.")
+    $mens.mp(m_msg, arg0)
   senao
     $misclog.ideia("ideia " + arg0.nome + ": " + arg1)
     $mens.p(arg0)

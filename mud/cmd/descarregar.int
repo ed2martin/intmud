@@ -4,47 +4,51 @@ const txtajuda = "\b\c3Descarregar\b\n\
 Sintaxe: DESCARREGAR\n\
 Descarrega a arma que você estiver empunhando."
 const posic = 5
+#
+const m_sem_arma = "Você não está empunhando nenhuma arma."
+const m_sem_municao = "$O não usa munição"
+const m_muita_coisa = "Você não consegue carregar tanta coisa."
+const m_descarregado = "$O não está carregad$u."
+const m_conhecimento = "Não possui conhecimento suficiente em $m."
+const m_nao_pode = "$O não pode ser descarregad$u."
+const m_descarrega1 = "Você descarrega $o."
+const m_descarrega2 = "$P descarrega $o."
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar arma = ref(arg0.iempu.obj)
   se !arma
-    arg0.msg("Você não está empunhando nenhuma arma.")
+    $mens.mp(m_sem_arma, arg0)
   senao !arma.armatipo || int(arma.armamunicao) != 2
-    arg0.msg(txtmaimin(arma.descnome, "A") + " não usa munição.")
+    $mens.mp(m_sem_municao, arg0, nulo, arma)
   senao !arma.armacarregar
-    $mens.p(arg0, nulo, arma)
-    $mens.msg("$O não pode ser descarregad$u.", arg0)
+    $mens.mp(m_nao_pode, arg0, nulo, arma)
   senao
     refvar tipo = txtsublin(config:arma_txt, arma.armatipo, 1)
     se arg0.var.h_[tipo]_ < arma.armacarregar
-      arg0.msg("Não possui conhecimento suficiente em " + tipo + ".")
+      $mens.mens = tipo
+      $mens.mp(m_conhecimento, arg0, nulo, arma)
     senao arma.dentro1.total == 0
-      $mens.p(arg0, nulo, arma)
-      $mens.msg("$O não está carregad$u.", arg0)
+      $mens.mp(m_descarregado, arg0, nulo, arma)
     senao
       listaobj l
-      txt100 erro
-      epara l.addfim(arma.dentro1), l && !erro, l.ini.remove
-        erro = descarregar(arg0, arma, l.objini, l.objini.objtot)
+      epara l.addfim(arma.dentro1), l, l.ini.remove
+        continuar descarregar(arg0, arma, l.objini, l.objini.objtot)
+        ret $mens.mp(m_muita_coisa, arg0)
       efim
-      se erro
-        arg0.msg(erro)
-      senao
-        $mens.p(arg0, nulo, arma)
-        $mens.mvis1("$P descarrega $o.")
-      fimse
+      $mens.p(arg0, nulo, arma)
+      $mens.mvis2(m_descarrega1, m_descarrega2)
     fimse
   fimse
 
 func descarregar # Descarrega arma, tirando um item
 # arg0=personagem, arg1=arma, arg2=item, arg3=quantidade de itens
-# Retorna mensagem de erro ou nulo se descarregou
+# Retorna 1 se descarregou ou 0 se o personagem não consegue carregar tanta coisa
   se arg0.dentro1.total + (arg2.item == 2 ? 1 : arg3) > arg0.objmax
-    ret "Você não consegue carregar tanta coisa."
+    ret 0
   senao arg0.volden + arg2.voltot * arg3 / arg2.objtot > arg0.volmax
-    ret "Você não consegue carregar tanta coisa."
+    ret 0
   fimse
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
@@ -56,8 +60,7 @@ func descarregar # Descarrega arma, tirando um item
   epara e.addfim(arg2.evento), e, e.ini.remove
     ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg2), nulo
   efim
-  ref r
-  r = arg2.mudadono(arg0, arg3)
+  ref r = arg2.mudadono(arg0, arg3)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_descarregouobj(arg0, arg1, r, total, arg0)
   efim
@@ -68,3 +71,4 @@ func descarregar # Descarrega arma, tirando um item
     e.objini.cmd_descarregouobj(arg0, arg1, r, total, r)
   efim
   arg0.p_espera += 2
+  ret 1

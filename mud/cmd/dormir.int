@@ -27,7 +27,7 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret r && r != i.obj, arg0.msg("\c9Talvez você deva se levantar primeiro.\b")
+    ret r && r != i.obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
     r = i.obj
   fimse
   listaobj l
@@ -35,12 +35,12 @@ func escr
   se r
     casovar r.i_movel(arg0)
     casose
-      ret arg0.msg("Não é possível dormir em " + r.descnome + ".")
+      ret $mens.mp("Não é possível dormir $e $o.", arg0, nulo, r)
     casose "2"
     casose "4"
     casofim
     se r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret arg0.msg("Não cabe mais ninguém em " + r.descnome + ".")
+      ret $mens.mp("Não cabe mais ninguém $e $o.", arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_dormirobj(arg0, r, arg0), nulo
@@ -61,7 +61,8 @@ func escr
     efim
 # Dormir num objeto que não existe
   senao arg1
-    arg0.msg("Você não vê " + arg1 + ".")
+    $mens.mens = arg1
+    $mens.mp("Você não vê $m.", arg0)
 # Dormir no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -96,9 +97,11 @@ func escr
     ref r
     r = i.obj
     se !r
-      ret arg0.msg("Você não vê " + arg1 + ".")
+      $mens.mens = arg1
+      $mens.mp("Você não vê $m.", arg0)
+      ret
     senao r.posicao != 4
-      ret arg0.msg(txtcopiamai(r.descnome, "A") + " não está dormindo.")
+      ret $mens.mp("$A não está dormindo.", arg0, r)
     senao r.bitver & 0xC00 == 0x400
       $mens.p(arg0, r)
       $mens.mtodos1("$P tenta acordar $a.")
@@ -122,9 +125,9 @@ func escr
     efim
 # Acordar o próprio personagem
   senao arg0.posicao > 4
-    ret arg0.msg("\c9Mas você já está acordad" + (arg0.msexo ? "o.\b" : "a.\b"))
+    ret $mens.mp("\c9Mas você já está acordad$s.\b", arg0)
   senao arg0.bitver & 0xC00 == 0x400
-    ret arg0.msg("Você não consegue acordar.")
+    ret $mens.mp("Você não consegue acordar.", arg0, r)
   senao
     listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove

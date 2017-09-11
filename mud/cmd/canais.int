@@ -13,6 +13,10 @@ Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 const aj2 = "\n\
 Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
 não irão para as outras salas."
+#
+const m_nivel = "Para usar o comando CHAT você precisa estar no nível $m."
+const m_desab = "Canal CHAT está desabilitado; para habilitar tecle CONFIG +CHAT"
+const m_msg = "Tecle a mensagem após CHAT."
 
 func escr
   $mens.p(arg0)
@@ -20,12 +24,12 @@ func escr
   se arg2.c_chat
     $mensjog.msg(arg2.c_chat, arg0)
   senao arg0.pnivel < config:chatnivel
-    arg0.msg("Para escrever no canal CHAT você precisa estar no nível " + config:chatnivel + \
-".")
+    $mens.mens = config:chatnivel
+    $mens.mp(m_nivel, arg0)
   senao !arg0.jogconfig.4
-    arg0.msg("Canal CHAT está desabilitado; para habilitar tecle CONFIG +CHAT")
+    $mens.mp(m_desab, arg0)
   senao !arg1
-    arg0.msg("Tecle a mensagem após CHAT.")
+    $mens.mp(m_msg, arg0)
   senao config:chattipo == 2 # Escrever para todos
     $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
     indiceitem item
@@ -58,6 +62,10 @@ Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 const aj2 = "\n\
 Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
 não irão para as outras salas."
+#
+const m_nivel = "Para usar o comando NOVATOS você precisa estar no nível $m."
+const m_desab = "Canal NOVATOS está desabilitado; para habilitar tecle CONFIG +NOVATOS"
+const m_msg = "Tecle a mensagem após NOVATOS."
 
 func escr
   $mens.p(arg0)
@@ -65,12 +73,12 @@ func escr
   se arg2.c_novatos
     $mensjog.msg(arg2.c_novatos, arg0)
   senao arg0.pnivel < config:novatosnivel
-    arg0.msg("Para escrever no canal NOVATOS você precisa estar no nível " + config:novatosnivel \
-+ ".")
+    $mens.mens = config:novatosnivel
+    $mens.mp(m_nivel, arg0)
   senao !arg0.jogconfig.11
-    arg0.msg("Canal NOVATOS está desabilitado; para habilitar tecle CONFIG +NOVATOS")
+    $mens.mp(m_desab, arg0)
   senao !arg1
-    arg0.msg("Tecle a mensagem após NOVATOS.")
+    $mens.mp(m_msg, arg0)
   senao config:novatostipo == 2 # Escrever para todos
     $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
     indiceitem item

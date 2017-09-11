@@ -57,20 +57,28 @@ classe comando_escolhe_animal
 herda comando_comum
 const posic = 5
 int8 num # Número do animal; preenchido pela função "teclou" do personagem
+#
+const m_ausente = "Você não possui $m."
+const m_escolheu = "Você já escolheu $m."
+const m_ninguem = "$P não escolhe ninguém."
+const m_escolhe1 = "Você escolhe $b."
+const m_escolhe2 = "$P escolhe $b."
 
 func escr # Chamado pela função "teclou" do personagem ao escolher um animal
   refvar r = arg0.animalnum(num)
   se !r
-    arg0.msg("Você não possui " + num + ".")
+    $mens.mens = num
+    $mens.mp(m_ausente, arg0)
   senao arg0.persoesc == r
-    arg0.msg("Você já escolheu " + num + ".")
+    $mens.mens = num
+    $mens.mp(m_escolheu, arg0)
   senao r == arg0
     se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = arg0
     $mens.p(arg0)
-    $mens.mvis1("$P não escolhe ninguém.")
+    $mens.mvis1(m_ninguem)
     arg0.escolhebat # Atualiza persobat
   senao
     se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
@@ -79,7 +87,7 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
     arg0.persoesc = r
     arg0.escolhebat # Atualiza persobat
     $mens.p(arg0, r)
-    $mens.mvis1("$P escolhe $b.")
+    $mens.mvis2(m_escolhe1, m_escolhe2)
   fimse
 
 
@@ -125,7 +133,11 @@ func escr
       ret arg0.msg("Atingido o limite de animais reserva.")
     fimse
     refvar r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui " + arg1 + ".")
+    se !r
+      $mens.mens = arg1
+      $mens.mp("Você não possui $m.", arg0)
+      ret
+    fimse
     listaobj e
     epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
       ret e.objini.cmd_reservaguarda(arg0, r, arg0.dono), nulo
@@ -134,7 +146,8 @@ func escr
     r.idono.remove
     r.idono = r.dono.dentro3.addfim(r)
     arg0.recalc = 1
-    arg0.msg("Você guardou " + r.descnome + " N" + r.pnivel)
+    $mens.mens = r.nivel
+    $mens.mp("Você guardou $a N$m.", arg0, r)
   senao
     listaobj l
     nomeobj n # Para reconhecer os itens
@@ -143,12 +156,18 @@ func escr
       sair n.nome(l.objini.ident, l.objini.objtot)
     efim
     refvar r = ref(l.objini)
-    ret !r, arg0.msg("Você não possui animal reserva " + arg1 + ".")
-    ret !arg0.animalmais, arg0.msg("Sem espaço para pegar animal reserva.")
+    se !r
+      $mens.mens = arg1
+      $mens.mp("Você não possui animal reserva $m.", arg0)
+      ret
+    senao !arg0.animalmais
+      ret $mens.mp("Sem espaço para pegar animal reserva.", arg0)
+    fimse
     r.idono.remove
     r.idono = r.dono.dentro2.addfim(r)
     arg0.recalc = 1
-    arg0.msg("Você pegou " + r.descnome + " N" + r.pnivel)
+    $mens.mens = r.nivel
+    $mens.mp("Você pegou $a N$m.", arg0, r)
   fimse
 
 
@@ -177,8 +196,7 @@ func escr
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    ret !r.i_captura, arg0.msg(txtcopiamai(r.descnome, "A") + " não serve para capturar animais."\
-)
+    ret !r.i_captura, $mens.mp("$O não serve para capturar animais.", arg0, nulo, r)
     item = r
     sair
   efim
@@ -188,18 +206,18 @@ func escr
   r = arg0.atkenv.objlista # Alvo do personagem
   se !r
     se arg1
-      arg0.msg("Você escolhe " + arg1 + " (" + item.descnome + ") para capturar animais.")
+      $mens.mens = arg1
+      $mens.mp("Você escolhe $m ($o) para capturar animais.", arg0, nulo, item)
     senao
-      arg0.msg("Não está lutando com nenhum animal.")
+      $mens.mp("Não está lutando com nenhum animal.", arg0)
     fimse
     ret
   senao !r.p_captura || r.perso != 2 || arg0.perso != 3
-    $mens.p(arg0, r)
-    $mens.mvis2("Não é possível capturar $a.", "")
+    $mens.mp("Não é possível capturar $a.", arg0, r)
     ret
   senao arg0.animalmais # Se tem espaço suficiente
   senao !config:capturar || arg0.dentro3.total >= config:animal2
-    arg0.msg("Sem espaço para guardar animal.")
+    $mens.mp("Sem espaço para guardar $a.", arg0, r)
     ret
   fimse
 # Decide se consegue capturar
@@ -306,14 +324,13 @@ func escr_pegar # Pegar item do animal
   ret arg0.persoesc == arg0, arg0.msg("Primeiro escolha um animal.")
   refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
   se !rec
-    $mens.p(arg0.persoesc) + $mens.mperso("$P não carrega nenhum item.")
+    $mens.mp("$A não carrega nenhum item.", arg0, arg0.persoesc)
   senao !rec.cabedentro(arg0)
-    arg0.msg("Você não consegue carregar tanta coisa.")
+    $mens.mp("Você não consegue carregar $o.", arg0, nulo, rec)
   senao
     rec.mudadono(arg0, 1)
-    $mens.p(arg0, nulo, rec)
-    $mens.mens = rec.descnome + " de " + arg0.persoesc.nome
-    $mens.mvis1("$P pega $m.")
+    $mens.p(arg0, arg0.persoesc, rec)
+    $mens.mvis1("$P pega $o de $a.")
   fimse
 
 func escr_dar # Dar item para o animal
@@ -328,25 +345,23 @@ func escr_dar # Dar item para o animal
     refvar env = ref(l.objini)
     refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
     se env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
-      arg0.msg(txtcopiamai(arg0.persoesc.descnome, "A") + " não consegue carregar isso.")
+      $mens.mp("$A não consegue carregar $o.", arg0, arg0.persoesc, env)
     senao !rec # Se animal não está carregando nada
       env.mudadono(arg0.persoesc, 1)
-      $mens.p(arg0)
-      $mens.mens = env.descnome + " para " + arg0.persoesc.nome
-      $mens.mvis1("$P dá $m.")
+      $mens.p(arg0, arg0.persoesc, env)
+      $mens.mvis1("$P dá $o para $a.")
     senao !rec.cabedentro(env)
-      refvar nome = txtcopiamai(arg0.persoesc.descnome, "A")
-      arg0.msg(nome + " não consegue carregar tanta coisa.")
+      $mens.mp("$A não consegue carregar $o.", arg0, arg0.persoesc, env)
     senao
       env.mudadono(arg0.persoesc, 1)
       rec.mudadono(arg0, 1)
-      $mens.p(arg0)
-      $mens.mens = rec.descnome + " de " + arg0.persoesc.nome + " e dá " + env.descnome
-      $mens.mvis1("$P pega $m.")
+      $mens.p(arg0, arg0.persoesc, env, rec)
+      $mens.mvis1("$P pega $n de $b e dá $o.")
     fimse
     ret
   efim
-  arg0.msg("Você não vê isso.")
+  $mens.mens = arg1
+  $mens.mp("Você não vê $m.", arg0)
 
 func escr_trocar # Trocar dois animais de lugar
 # arg0 = personagem
@@ -366,4 +381,6 @@ func escr_trocar # Trocar dois animais de lugar
 # Remove os itens antigos da lista
   i1.remove, i2.remove
 # Mensagens
-  arg0.msg("Você troca de lugar " + arg1 + " e " + arg2 + ".")
+  $mens.o_1 = arg1
+  $mens.o_2 = arg2
+  $mens.mp("Você troca de lugar $1 $o e $2 $n.", arg0, nulo, a1, a2)

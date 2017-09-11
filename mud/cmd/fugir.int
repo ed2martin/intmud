@@ -8,17 +8,28 @@ Seguido de um número, muda os pontos para a fuga. Quando os pontos\n\
 de vida do seu personagem estiverem abaixo desse número, ele tentará\n\
 fugir automaticamente.\n\
 Para saber quantos pontos foram definidos, tecle fugir fora da batalha."
+#
+const m_pontos_invalidos = "Pontos de vida inválidos: $m"
+const m_pontos_mudar = "Pontos de vida para fugir mudaram para: $m"
+const m_pontos_ver = "Pontos de vida para fugir: $m"
+const m_folego = "Você está sem fôlego."
+const m_falha1 = "$P tenta fugir, mas não consegue."
+const m_falha2 = m_falha1
+const m_sem_saida1 = "$P tenta fugir mas não vê para onde."
+const m_sem_saida2 = m_sem_saida1
 
 func escr
 # Checa posição
   se arg1
-    ret txt(intpos(arg1)) != arg1, arg0.msg("Pontos de vida inválidos: " + arg1)
+    $mens.mens = arg1
+    ret txt(intpos(arg1)) != arg1, $mens.mp(m_pontos_invalidos, arg0)
     arg0.p_fugir = arg1
-    ret arg0.msg("Pontos de vida para fugir mudaram para: " + arg1)
+    ret $mens.mp(m_pontos_mudar, arg0)
   senao arg0.posicao != 7
-    ret arg0.msg("Pontos de vida para fugir: " + arg0.p_fugir)
+    $mens.mens = arg0.p_fugir
+    ret $mens.mp(m_pontos_ver, arg0)
   senao
-    ret arg0.pmove < 5 && !arg0.j_imortal, arg0.msg("Você está sem fôlego.")
+    ret arg0.pmove < 5 && !arg0.j_imortal, $mens.mp(m_folego, arg0)
     arg0.p_espera = 5
     fugir(arg0)
   fimse
@@ -40,7 +51,7 @@ func fugir # Tenta fugir da luta
   se valor > 0 && !arg0.j_imortal
     $mens.p(arg0)
     $mens.mens = ""
-    $mens.mtodos1("$P tenta fugir, mas não consegue.")
+    $mens.mtodos2(m_falha1, m_falha2)
     ret
   fimse
 # Obtém direção para onde fugir
@@ -49,7 +60,7 @@ func fugir # Tenta fugir da luta
   se !r || r == arg0.dono || !dir
     $mens.p(arg0)
     $mens.mens = ""
-    $mens.mtodos1("$P tenta fugir mas não vê para onde.")
+    $mens.mtodos2(m_sem_saida1, m_sem_saida2)
     ret
   fimse
 # Foge

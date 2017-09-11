@@ -74,7 +74,8 @@ func escrhab
     arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
     ret
   efim
-  arg0.msg("Você não vê isso.")
+  $mens.mens = arg1
+  $mens.mp("Você não vê $m.", arg0)
 
 func txtident # Adiciona informações de item ou personagem em um textotxt
 # arg0 = personagem que está solicitando as informações

@@ -46,7 +46,11 @@ func escr
     epara p = t.ini, p, p.depois
       (lug2 & intbith(p.linha)) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
     efim
-    ret lugar == "0", arg0.msg("Você não sabe aonde fica " + misc:sep2 + ".")
+    se lugar == "0"
+      $mens.mens = misc:sep2
+      $mens.mp("Você não sabe aonde fica $m.", arg0)
+      ret
+    fimse
   fimse
 # Vestir itens
   listaobj l
@@ -84,14 +88,19 @@ func escr
 # Tenta vestir
     se erro
       $mens.p(alvo, nulo, r)
-      $mens.mperso(erro)
+      $mens.msginv(erro, arg0)
     senao
       erro = objvestir(arg0, r, int(n))
       erro && arg0.msg(erro)
     fimse
   efim
 # Avisa se não encontrou nenhum item
-  !total && arg0.msg("Você não vê isso.")
+  se !total
+    misc:separa(arg1)
+    $mens.mens = misc:sep1
+    $mens.mp("Você não vê $m.", arg0)
+  fimse
+
 
 func objvestir # Quer vestir um item
 # arg0 = personagem, arg1 = objeto, arg2 = quantidade

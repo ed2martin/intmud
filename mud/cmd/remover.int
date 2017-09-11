@@ -34,7 +34,7 @@ func escr
         continuar !item.obj.vestpos
         sair valor & intbith(item.obj.vestpos - 1)
       efim
-      alvo.msg("Antes precisa parar de usar " + item.obj.descnome + ".")
+      $mens.mp("Antes precisa parar de usar $o.", arg0, nulo, item.obj)
       continuar
     fimse
     refvar posic = int(r.vestpos)
@@ -58,4 +58,4 @@ func escr
     efim
   efim
 # Ajusta variáveis
-  !total && $mens.p(alvo) + $mens.mperso("$P não está usando isso.")
+  !total && $mens.mp("$A não está usando isso.", arg0, alvo)

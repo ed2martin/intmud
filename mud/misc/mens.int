@@ -159,9 +159,6 @@ func msginvdir # Envia mensagem se estiver acordado
     arg1.msg(txt(dir) + txtdec(vartroca(txtcod(t), "@d", "x_")))
   fimse
 
-func mperso # Mensagem só para o personagem
-  contr.dono.socktot && arg0 && $mens.msginv(arg0, contr)
-
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
   ret !(contr.dono.socktot && arg0), nulo

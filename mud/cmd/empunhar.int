@@ -4,13 +4,23 @@ const txtajuda = "\b\c3Empunhar\b\n\
 Sintaxe: EMPUNHAR <objeto>\n\
 Seu personagem empunha uma arma que está carregando."
 const posic = 5
+#
+const m_nao_arma = "$O não é arma."
+const m_nao_consegue = "Você não consegue empunhar $o."
+const m_conhecimento = "Você não conhece $m."
+const m_nivel = "Você precisa estar no nível $m para empunhar $o."
+const m_renascer1 = "Você precisa renascer uma vez para empunhar $o."
+const m_renascer2 = "Você precisa renascer duas vezes para empunhar $o."
+const m_renascer3 = "Você precisa renascer $m vezes para empunhar $o."
+const m_empunha1 = "Você empunha $o."
+const m_empunha2 = "$P empunha $o."
 
 func escr
   ret !arg1, arg0.msg("Empunhar o que?")
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc)
-  ret alvo.iempu, $mens.p(alvo) + $mens.mperso("$P já está empunhando uma arma.")
+  ret alvo.iempu, $mens.mp("$A já está empunhando uma arma.", arg0, alvo)
   refvar tipo1 = txte(alvo.tipo1)
   refvar tipo2 = txte(alvo.tipo2)
   refvar tipo3 = txte(alvo.tipo3)
@@ -21,32 +31,32 @@ func escr
     $mens.mens = arg1
     ret $mens.mp("Você não vê $m.", arg0)
   senao !r.armatipo
-    ret $mens.mp("$O não é arma.", arg0, nulo, r)
+    ret $mens.mp(m_nao_arma, arg0, nulo, r)
   senao r.vestirsim == (alvo == arg0 ? 2 : 1)
-    ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+    ret $mens.mp(m_nao_consegue, arg0, nulo, r)
   senao r.vestirsexo == (alvo.psexo ? 1 : 2)
-    ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+    ret $mens.mp(m_nao_consegue, arg0, nulo, r)
   senao int(r.pnivel) > alvo.pnivel
     $mens.mens = r.pnivel
-    ret $mens.mp("$P precisa estar no nível $m para empunhar $o.", arg0, nulo, r)
+    ret $mens.mp(m_nivel, arg0, nulo, r)
   senao int(r.renascer) > alvo.prenascer
-    se r.renascer == 1
-      ret $mens.mp("$P precisa renascer uma vez para empunhar $o.", arg0, nulo, r)
-    senao r.renascer == 2
-      ret $mens.mp("$P precisa renascer duas vezes para empunhar $o.", arg0, nulo, r)
-    fimse
     $mens.mens = r.renascer
-    ret $mens.mp("$P precisa renascer $m vezes para empunhar $o.", arg0, nulo, r)
+    se arg2.renascer == 1
+      ret $mens.mp(m_renascer1, arg0)
+    senao arg2.renascer == 2
+      ret $mens.mp(m_renascer2, arg0)
+    fimse
+    ret $mens.mp(m_renascer3, arg0)
   senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
     $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
-    ret $mens.mp("$P não conhece $m.", arg0, nulo, r)
+    ret $mens.mp(m_conhecimento, arg0, nulo, r)
   senao r.vestirnao
     se tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
-      ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+      ret $mens.mp(m_nao_consegue, arg0, nulo, r)
     senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
-      ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+      ret $mens.mp(m_nao_consegue, arg0, nulo, r)
     senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
-      ret $mens.mp("$P não consegue empunhar $o.", arg0, nulo, r)
+      ret $mens.mp(m_nao_consegue, arg0, nulo, r)
     fimse
   fimse
   listaobj e
@@ -55,7 +65,8 @@ func escr
   efim
   r.vestir(50)
   $mens.p(arg0, nulo, r)
-  $mens.mvis1som("$P empunha $o.", r.i_som_emp1)
+  $mens.msgsomvis(m_empunha1, r.i_som_emp1, arg0)
+  $mens.mvis2som(m_empunha2, r.i_som_emp1)
   epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
     e.objini.cmd_vestiu(alvo, r, 50)
   efim

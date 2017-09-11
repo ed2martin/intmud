@@ -17,19 +17,19 @@ func escr
     r = l.objini
 # Checa se pode acender
     se !r.luzitem || r.luzitem == 3
-      ret arg0.msg("Você não consegue acender " + r.descnome + ".")
+      ret $mens.mp("Você não consegue acender $o.", arg0, nulo, r)
     senao !r.luztempo
-      ret arg0.msg(txtcopiamai(r.descnome, "A") + " não acende mais.")
+      ret $mens.mp("$O não acende mais.", arg0, nulo, r)
     senao r.luztempo > 0
-      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está aces" + (r.msexo ? "o." : "a."))
+      ret $mens.mp("$O já está aces$u.", arg0, nulo, r)
     senao r.luzitem == 6 # Se requer fogo para acender
       l.limpar
       epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
         sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
       efim
-      ret !l.objini, arg0.msg("Você precisa de fogo para acender " + r.descnome + ".")
+      ret !l.objini, $mens.mp("Você precisa de fogo para acender $o.", arg0, nulo, r)
     senao r.luzitem == 7 # Se acende ao vestir
-      ret arg0.msg("Você acenderá " + r.descnome + " quando usar.")
+      ret $mens.mp("Você acenderá $o quando usar.", arg0, nulo, r)
     fimse
 # Eventos
     l.limpar
@@ -51,7 +51,8 @@ func escr
     efim
     ret
   efim
-  arg0.msg("Você não vê isso.")
+  $mens.mens = arg1
+  $mens.mp("Você não vê $m.", arg0)
 
 
 classe cmd_apagar
@@ -73,9 +74,9 @@ func escr
     r = l.objini
 # Checa se pode apagar
     se !r.luzitem || r.luzitem == 3
-      ret arg0.msg("Você não consegue apagar " + r.descnome + ".")
+      ret $mens.mp("Você não consegue apagar $o.", arg0, nulo, r)
     senao !r.luztempo || r.luztempo < 0
-      ret arg0.msg(txtcopiamai(r.descnome, "A") + " já está apagad" + (r.msexo ? "o." : "a."))
+      ret $mens.mp("$O já está apagad$u.", arg0, nulo, r)
     fimse
 # Eventos
     l.limpar
@@ -97,4 +98,5 @@ func escr
     efim
     ret
   efim
-  arg0.msg("Você não vê isso.")
+  $mens.mens = arg1
+  $mens.mp("Você não vê $m.", arg0)
